@@ -297,6 +297,7 @@ struct vendor_command_response {
 	uint16_t vc_subcommand;
 	union {
 		uint8_t num_restored_headers;
+		uint8_t recovery_button_state;
 	};
 };
 

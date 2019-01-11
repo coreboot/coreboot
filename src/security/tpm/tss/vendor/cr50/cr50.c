@@ -52,3 +52,19 @@ uint32_t tlcl_cr50_enable_update(uint16_t timeout_ms,
 	*num_restored_headers = response->vcr.num_restored_headers;
 	return TPM_SUCCESS;
 }
+
+uint32_t tlcl_cr50_get_recovery_button(uint8_t *recovery_button_state)
+{
+	struct tpm2_response *response;
+	uint16_t sub_command = TPM2_CR50_SUB_CMD_GET_REC_BTN;
+
+	printk(BIOS_INFO, "Checking cr50 for recovery request\n");
+
+	response = tpm_process_command(TPM2_CR50_VENDOR_COMMAND, &sub_command);
+
+	if (!response || response->hdr.tpm_code)
+		return TPM_E_INTERNAL_INCONSISTENCY;
+
+	*recovery_button_state = response->vcr.recovery_button_state;
+	return TPM_SUCCESS;
+}

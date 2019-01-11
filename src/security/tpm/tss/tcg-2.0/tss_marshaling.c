@@ -273,6 +273,9 @@ static int marshal_cr50_vendor_command(struct obuf *ob, void *command_body)
 		rc |= obuf_write_be16(ob, sub_command[0]);
 		rc |= obuf_write_be16(ob, sub_command[1]);
 		break;
+	case TPM2_CR50_SUB_CMD_GET_REC_BTN:
+		rc |= obuf_write_be16(ob, *sub_command);
+		break;
 	default:
 		/* Unsupported subcommand. */
 		printk(BIOS_WARNING, "Unsupported cr50 subcommand: 0x%04x\n",
@@ -473,6 +476,8 @@ static int unmarshal_vendor_command(struct ibuf *ib,
 	case TPM2_CR50_SUB_CMD_TURN_UPDATE_ON:
 		return ibuf_read_be8(ib, &vcr->num_restored_headers);
 		break;
+	case TPM2_CR50_SUB_CMD_GET_REC_BTN:
+		return ibuf_read_be8(ib, &vcr->recovery_button_state);
 	default:
 		printk(BIOS_ERR,
 		       "%s:%d - unsupported vendor command %#04x!\n",

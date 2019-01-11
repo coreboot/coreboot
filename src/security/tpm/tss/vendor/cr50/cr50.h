@@ -25,6 +25,7 @@
 #define TPM2_CR50_VENDOR_COMMAND ((TPM_CC)(TPM_CC_VENDOR_BIT_MASK | 0))
 #define TPM2_CR50_SUB_CMD_NVMEM_ENABLE_COMMITS (21)
 #define TPM2_CR50_SUB_CMD_TURN_UPDATE_ON (24)
+#define TPM2_CR50_SUB_CMD_GET_REC_BTN (29)
 
 /**
  * CR50 specific tpm command to enable nvmem commits before internal timeout
@@ -43,5 +44,13 @@ uint32_t tlcl_cr50_enable_nvcommits(void);
  */
 uint32_t tlcl_cr50_enable_update(uint16_t timeout_ms,
 				 uint8_t *num_restored_headers);
+
+/**
+ * CR50 specific tpm command to get the latched state of the recovery button.
+ *
+ * Return value indicates success or failure of accessing the TPM; in case of
+ * success the recovery button state is saved in recovery_button_state.
+ */
+uint32_t tlcl_cr50_get_recovery_button(uint8_t *recovery_button_state);
 
 #endif /* CR50_TSS_STRUCTURES_H_ */

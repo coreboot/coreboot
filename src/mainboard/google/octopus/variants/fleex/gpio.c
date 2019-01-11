@@ -28,8 +28,8 @@ static const struct pad_config default_override_table[] = {
 	PAD_NC(GPIO_67, UP_20K),
 	PAD_NC(GPIO_117, UP_20K),
 
-	PAD_NC(GPIO_138, DN_20K),
-	PAD_NC(GPIO_139, DN_20K),
+	PAD_NC(GPIO_138, UP_20K),
+	PAD_NC(GPIO_139, UP_20K),
 	PAD_NC(GPIO_140, UP_20K),
 	PAD_NC(GPIO_143, UP_20K),
 	PAD_NC(GPIO_144, UP_20K),

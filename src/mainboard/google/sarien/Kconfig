@@ -11,6 +11,7 @@ config BOARD_GOOGLE_BASEBOARD_SARIEN
 	select GENERIC_SPD_BIN
 	select HAVE_ACPI_RESUME
 	select HAVE_ACPI_TABLES
+	select INTEL_LPSS_UART_FOR_CONSOLE
 	select MAINBOARD_HAS_CHROMEOS
 	select MAINBOARD_HAS_I2C_TPM_CR50
 	select MAINBOARD_HAS_TPM2
@@ -81,6 +82,10 @@ config MAINBOARD_VENDOR
 config MAX_CPUS
 	int
 	default 8
+
+config UART_FOR_CONSOLE
+	int
+	default 2
 
 config VARIANT_DIR
 	string

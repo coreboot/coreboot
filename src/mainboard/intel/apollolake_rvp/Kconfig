@@ -5,6 +5,7 @@ config BOARD_SPECIFIC_OPTIONS
 	select SOC_INTEL_APOLLOLAKE
 	select BOARD_ROMSIZE_KB_8192
 	select HAVE_ACPI_TABLES
+	select INTEL_LPSS_UART_FOR_CONSOLE
 
 config MAINBOARD_DIR
 	string
@@ -18,4 +19,6 @@ config MAINBOARD_VENDOR
 	string
 	default "Intel"
 
+config UART_FOR_CONSOLE
+	default 2
 endif

@@ -15,6 +15,7 @@ config BOARD_SPECIFIC_OPTIONS
 	select HAVE_ACPI_RESUME
 	select HAVE_ACPI_TABLES
 	select HAVE_OPTION_TABLE
+	select INTEL_LPSS_UART_FOR_CONSOLE
 	select MAINBOARD_HAS_CHROMEOS
 	select MAINBOARD_HAS_LPC_TPM
 	select SOC_INTEL_SKYLAKE
@@ -72,4 +73,8 @@ config GBB_HWID
 	string
 	depends on CHROMEOS
 	default "KUNIMITSU TEST 8819"
+
+config UART_FOR_CONSOLE
+	int
+	default 2
 endif

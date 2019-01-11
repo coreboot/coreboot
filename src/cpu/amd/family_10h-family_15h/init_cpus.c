@@ -147,9 +147,6 @@ static void for_each_ap(uint32_t bsp_apicid, uint32_t core_range, int8_t node,
 	// here assume the OS don't change our apicid
 	u32 ap_apicid;
 
-	u8 nvram;
-	bool multicore;
-
 	u32 nodes;
 	u32 disable_siblings;
 	u32 cores_found;
@@ -158,13 +155,12 @@ static void for_each_ap(uint32_t bsp_apicid, uint32_t core_range, int8_t node,
 	/* get_nodes define in ht_wrapper.c */
 	nodes = get_nodes();
 
-	multicore = true;
-	if (get_option(&nvram, "multi_core") == CB_SUCCESS)
-		multicore = !!nvram;
-
-	disable_siblings = 0;
-	if (!IS_ENABLED(CONFIG_LOGICAL_CPUS) || !multicore)
+	if (!IS_ENABLED(CONFIG_LOGICAL_CPUS) ||
+	    read_option(multi_core, 0) != 0) {	// 0 means multi core
 		disable_siblings = 1;
+	} else {
+		disable_siblings = 0;
+	}
 
 	for (i = 0; i < nodes; i++) {
 		if ((node >= 0) && (i != node))
@@ -639,17 +635,11 @@ static void setup_remote_node(u8 node)
 //it is running on core0 of node0
 void start_other_cores(uint32_t bsp_apicid)
 {
-	u8 nvram;
 	u32 nodes;
 	u32 nodeid;
-	bool multicore;
 
 	// disable multi_core
-	multicore = true;
-	if (get_option(&nvram, "multi_core") == CB_SUCCESS)
-		multicore = !!nvram;
-
-	if (!multicore)  {
+	if (read_option(multi_core, 0) != 0)  {
 		printk(BIOS_DEBUG, "Skip additional core init\n");
 		return;
 	}

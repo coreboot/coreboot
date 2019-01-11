@@ -235,6 +235,11 @@ u32 decode_igd_memory_size(const u32 gms);
 u32 decode_igd_gtt_size(const u32 gsm);
 u8 decode_pciebar(u32 *const base, u32 *const len);
 
+/* Mainboard romstage callback functions */
+void mb_enable_lpc(void);
+void get_mb_spd_addrmap(u8 *spd_addr_map);
+void mb_pirq_setup(void); /* optional */
+
 struct acpi_rsdp;
 unsigned long northbridge_write_acpi_tables(unsigned long start, struct acpi_rsdp *rsdp);
 

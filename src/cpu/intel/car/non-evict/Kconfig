@@ -1,0 +1,5 @@
+config CPU_HAS_L2_ENABLE_MSR
+	bool
+	help
+	  Select this in Kconfig of CPU sockets/SOC where the CPU
+	  has an MSR to enable the L2 CPU cache

@@ -8,7 +8,7 @@ subdirs-y += ../microcode
 subdirs-y += ../hyperthreading
 subdirs-y += ../speedstep
 
-cpu_incs-y += $(src)/cpu/intel/car/p4-netburst/cache_as_ram.S
-postcar-y += ../car/p4-netburst/exit_car.S
+cpu_incs-y += $(src)/cpu/intel/car/non-evict/cache_as_ram.S
+postcar-y += ../car/non-evict/exit_car.S
 
 romstage-y += ../car/romstage.c

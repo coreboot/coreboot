@@ -24,6 +24,7 @@
 #define CACHE_AS_RAM_BASE CONFIG_DCACHE_RAM_BASE
 
 #define NoEvictMod_MSR 0x2e0
+#define BBL_CR_CTL3_MSR 0x11e
 
 .global bootblock_pre_c_entry
 
@@ -132,6 +133,18 @@ addrsize_set_high:
 	rdmsr
 	orl	$MTRR_DEF_TYPE_EN, %eax
 	wrmsr
+
+#if IS_ENABLED(CONFIG_CPU_HAS_L2_ENABLE_MSR)
+	/*
+	 * Enable the L2 cache. Currently this assumes that this
+	 * only affect socketed CPU's for which this is always valid,
+	 * hence the static preprocesser.
+	 */
+	movl	$BBL_CR_CTL3_MSR, %ecx
+	rdmsr
+	orl	$0x100, %eax
+	wrmsr
+#endif
 
 	/* Enable cache (CR0.CD = 0, CR0.NW = 0). */
 	movl	%cr0, %eax

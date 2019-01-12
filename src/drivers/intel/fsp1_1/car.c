@@ -39,6 +39,7 @@ asmlinkage void *cache_as_ram_main(struct cache_as_ram_params *car_params)
 	const int num_guards = 4;
 	const u32 stack_guard = 0xdeadbeef;
 	u32 *stack_base;
+	void *ram_stack;
 	u32 size;
 
 	/* Size of unallocated CAR. */
@@ -78,6 +79,9 @@ asmlinkage void *cache_as_ram_main(struct cache_as_ram_params *car_params)
 
 	set_fih_car(car_params->fih);
 
+	/* Return new stack value in RAM back to assembly stub. */
+	ram_stack = cache_as_ram_stage_main(car_params->fih);
+
 	/* Check the stack. */
 	for (i = 0; i < num_guards; i++) {
 		if (stack_base[i] == stack_guard)
@@ -85,8 +89,7 @@ asmlinkage void *cache_as_ram_main(struct cache_as_ram_params *car_params)
 		printk(BIOS_DEBUG, "Smashed stack detected in romstage!\n");
 	}
 
-	/* Return new stack value in RAM back to assembly stub. */
-	return cache_as_ram_stage_main(car_params->fih);
+	return ram_stack;
 }
 
 /* Entry point taken when romstage is called after a separate verstage. */

@@ -64,6 +64,8 @@ asmlinkage void *cache_as_ram_main(struct cache_as_ram_params *car_params)
 	printk(BIOS_SPEW, "bist: 0x%08x\n", car_params->bist);
 	printk(BIOS_SPEW, "tsc: 0x%016llx\n", car_params->tsc);
 
+	display_mtrrs();
+
 	if (car_params->bootloader_car_start != CONFIG_DCACHE_RAM_BASE ||
 	    car_params->bootloader_car_end !=
 			(CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE)) {

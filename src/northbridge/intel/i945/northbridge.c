@@ -66,6 +66,7 @@ static void mch_domain_read_resources(struct device *dev)
 	unsigned long long tomk, tomk_stolen;
 	uint64_t uma_memory_base = 0, uma_memory_size = 0;
 	uint64_t tseg_memory_base = 0, tseg_memory_size = 0;
+	struct device *const d0f0 = pcidev_on_root(0, 0);
 
 	pci_domain_read_resources(dev);
 
@@ -75,17 +76,14 @@ static void mch_domain_read_resources(struct device *dev)
 	pci_tolm = find_pci_tolm(dev->link_list);
 	printk(BIOS_DEBUG, "pci_tolm: 0x%x\n", pci_tolm);
 
-	printk(BIOS_SPEW, "Base of stolen memory: 0x%08x\n",
-		    pci_read_config32(pcidev_on_root(2, 0), BSM));
-
-	tolud = pci_read_config8(pcidev_on_root(0, 0), TOLUD);
+	tolud = pci_read_config8(d0f0, TOLUD);
 	printk(BIOS_SPEW, "Top of Low Used DRAM: 0x%08x\n", tolud << 24);
 
 	tomk = tolud << 14;
 	tomk_stolen = tomk;
 
 	/* Note: subtract IGD device and TSEG */
-	reg16 = pci_read_config16(pcidev_on_root(0, 0), GGC);
+	reg16 = pci_read_config16(d0f0, GGC);
 	if (!(reg16 & 2)) {
 		printk(BIOS_DEBUG, "IGD decoded, subtracting ");
 		int uma_size = decode_igd_memory_size((reg16 >> 4) & 7);
@@ -96,10 +94,12 @@ static void mch_domain_read_resources(struct device *dev)
 		/* For reserving UMA memory in the memory map */
 		uma_memory_base = tomk_stolen * 1024ULL;
 		uma_memory_size = uma_size * 1024ULL;
+
+		printk(BIOS_SPEW, "Base of stolen memory: 0x%08x\n",
+		       (unsigned int)uma_memory_base);
 	}
 
-	tseg_sizek = decode_tseg_size(pci_read_config8(pcidev_on_root(0, 0),
-							ESMRAMC)) >> 10;
+	tseg_sizek = decode_tseg_size(pci_read_config8(d0f0, ESMRAMC)) >> 10;
 	printk(BIOS_DEBUG, "TSEG decoded, subtracting %dM\n", tseg_sizek >> 10);
 	tomk_stolen -= tseg_sizek;
 	tseg_memory_base = tomk_stolen * 1024ULL;

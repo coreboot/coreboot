@@ -44,7 +44,23 @@ struct adesto_spi_flash_params {
 
 static const struct adesto_spi_flash_params adesto_spi_flash_table[] = {
 	{
+		.id			= 0x4218,
+		.l2_page_size		= 8,
+		.pages_per_sector	= 16,
+		.sectors_per_block	= 16,
+		.nr_blocks		= 256,
+		.name			= "AT25SL128A",
+	},
+	{
 		.id			= 0x4501,
+		.l2_page_size		= 8,
+		.pages_per_sector	= 16,
+		.sectors_per_block	= 16,
+		.nr_blocks		= 16,
+		.name			= "AT25DF081A", /* Yes, 81A id < 81 */
+	},
+	{
+		.id			= 0x4502,
 		.l2_page_size		= 8,
 		.pages_per_sector	= 16,
 		.sectors_per_block	= 16,
@@ -52,12 +68,36 @@ static const struct adesto_spi_flash_params adesto_spi_flash_table[] = {
 		.name			= "AT25DF081",
 	},
 	{
-		.id			= 0x4701,
+		.id			= 0x4602,
+		.l2_page_size		= 8,
+		.pages_per_sector	= 16,
+		.sectors_per_block	= 16,
+		.nr_blocks		= 32,
+		.name			= "AT25DF161",
+	},
+	{
+		.id			= 0x4603,
+		.l2_page_size		= 8,
+		.pages_per_sector	= 16,
+		.sectors_per_block	= 16,
+		.nr_blocks		= 32,
+		.name			= "AT25DL161",
+	},
+	{
+		.id			= 0x4700,
 		.l2_page_size		= 8,
 		.pages_per_sector	= 16,
 		.sectors_per_block	= 16,
 		.nr_blocks		= 64,
 		.name			= "AT25DF321",
+	},
+	{
+		.id			= 0x4701,
+		.l2_page_size		= 8,
+		.pages_per_sector	= 16,
+		.sectors_per_block	= 16,
+		.nr_blocks		= 64,
+		.name			= "AT25DF321A",
 	},
 	{
 		.id			= 0x4800,
@@ -66,6 +106,38 @@ static const struct adesto_spi_flash_params adesto_spi_flash_table[] = {
 		.sectors_per_block	= 16,
 		.nr_blocks		= 128,
 		.name			= "AT25DF641",
+	},
+	{
+		.id			= 0x8501,
+		.l2_page_size		= 8,
+		.pages_per_sector	= 16,
+		.sectors_per_block	= 16,
+		.nr_blocks		= 16,
+		.name			= "AT25SF081",
+	},
+	{
+		.id			= 0x8600,
+		.l2_page_size		= 8,
+		.pages_per_sector	= 16,
+		.sectors_per_block	= 16,
+		.nr_blocks		= 32,
+		.name			= "AT25DQ161",
+	},
+	{
+		.id			= 0x8601,
+		.l2_page_size		= 8,
+		.pages_per_sector	= 16,
+		.sectors_per_block	= 16,
+		.nr_blocks		= 32,
+		.name			= "AT25SF161",
+	},
+	{
+		.id			= 0x8700,
+		.l2_page_size		= 8,
+		.pages_per_sector	= 16,
+		.sectors_per_block	= 16,
+		.nr_blocks		= 64,
+		.name			= "AT25DQ321",
 	},
 };
 

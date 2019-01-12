@@ -39,14 +39,17 @@
 #define CMD_S25FLXX_DP		0xb9	/* Deep Power-down */
 #define CMD_S25FLXX_RES		0xab	/* Release from DP, and Read Signature */
 
-#define SPSN_MANUFACTURER_ID_S25FL116K	0x01
+#define SPSN_MANUFACTURER_ID_S25FL_K	0x01
 #define SPSN_ID_S25FL008A	0x0213
 #define SPSN_ID_S25FL016A	0x0214
 #define SPSN_ID_S25FL032A	0x0215
 #define SPSN_ID_S25FL064A	0x0216
 #define SPSN_ID_S25FL128S	0x0219
 #define SPSN_ID_S25FL128P	0x2018
+#define SPSN_ID_S25FL208K	0x4014
 #define SPSN_ID_S25FL116K	0x4015
+#define SPSN_ID_S25FL132K	0x4016
+#define SPSN_ID_S25FL164K	0x4017
 #define SPSN_EXT_ID_S25FL128P_256KB	0x0300
 #define SPSN_EXT_ID_S25FL128P_64KB	0x0301
 #define SPSN_EXT_ID_S25FL032P		0x4d00
@@ -176,10 +179,20 @@ static const struct spansion_spi_flash_params spansion_spi_flash_table[] = {
 		.page_size = 256,
 		.pages_per_sector = 256,
 		.nr_sectors = 256,
-		.name = "25FS128S",
+		.name = "S25FS128S",
 	},
 	{
-		.idcode0 = SPSN_MANUFACTURER_ID_S25FL116K,
+		.idcode0 = SPSN_MANUFACTURER_ID_S25FL_K,
+		.idcode1 = SPSN_ID_S25FL208K,
+		.idcode2 = 0,
+		.identify = identify_123,
+		.page_size = 256,
+		.pages_per_sector = 256,
+		.nr_sectors = 16,
+		.name = "S25FL208K",
+	},
+	{
+		.idcode0 = SPSN_MANUFACTURER_ID_S25FL_K,
 		.idcode1 = SPSN_ID_S25FL116K,
 		.idcode2 = 0,
 		.identify = identify_123,
@@ -187,6 +200,26 @@ static const struct spansion_spi_flash_params spansion_spi_flash_table[] = {
 		.pages_per_sector = 256,
 		.nr_sectors = 32,
 		.name = "S25FL116K_16M",
+	},
+	{
+		.idcode0 = SPSN_MANUFACTURER_ID_S25FL_K,
+		.idcode1 = SPSN_ID_S25FL132K,
+		.idcode2 = 0,
+		.identify = identify_123,
+		.page_size = 256,
+		.pages_per_sector = 256,
+		.nr_sectors = 64,
+		.name = "S25FL132K",
+	},
+	{
+		.idcode0 = SPSN_MANUFACTURER_ID_S25FL_K,
+		.idcode1 = SPSN_ID_S25FL164K,
+		.idcode2 = 0,
+		.identify = identify_123,
+		.page_size = 256,
+		.pages_per_sector = 256,
+		.nr_sectors = 128,
+		.name = "S25FL164K",
 	},
 };
 

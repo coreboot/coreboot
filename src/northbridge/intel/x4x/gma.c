@@ -60,7 +60,6 @@ void gma_set_gnvs_aslb(void *gnvs, uintptr_t aslb)
 
 static void gma_func0_init(struct device *dev)
 {
-	u16 reg16;
 	u32 reg32;
 
 	/* IGD needs to be Bus Master */
@@ -69,10 +68,7 @@ static void gma_func0_init(struct device *dev)
 	pci_write_config32(dev, PCI_COMMAND, reg32);
 
 	/* configure GMBUSFREQ */
-	reg16 = pci_read_config16(pcidev_on_root(0x2, 0), 0xcc);
-	reg16 &= ~0x1ff;
-	reg16 |= 0xbc;
-	pci_write_config16(pcidev_on_root(0x2, 0), 0xcc, reg16);
+	pci_update_config16(dev, 0xcc, ~0x1ff, 0xbc);
 
 	int vga_disable = (pci_read_config16(dev, D0F0_GGC) & 2) >> 1;
 

@@ -789,10 +789,6 @@ func main() {
 		}
 	}
 
-	at := Create(ctx, "acpi_tables.c")
-	defer at.Close()
-	at.WriteString("/* dummy */\n")
-
 	bi := Create(ctx, "board_info.txt")
 	defer bi.Close()
 

@@ -180,7 +180,10 @@ func (l *LogDevReader) GetInteltool() (ret InteltoolData) {
 	paragraph := ""
 	ret.GPIO = map[uint16]uint32{}
 	ret.RCBA = map[uint16]uint32{}
+	ret.IOBP = map[uint32]uint32{}
 	ret.IGD = map[uint32]uint32{}
+	ret.MCHBAR = map[uint16]uint32{}
+	ret.PMBASE = map[uint16]uint32{}
 	for scanner.Scan() {
 		line := scanner.Text()
 		switch {
@@ -188,10 +191,18 @@ func (l *LogDevReader) GetInteltool() (ret InteltoolData) {
 			addr, value := 0, 0
 			fmt.Sscanf(line, "0x%x: 0x%x", &addr, &value)
 			ret.RCBA[uint16(addr)] = uint32(value)
+		case len(line) > 11 && line[0] == '0' && line[1] == 'x' && line[10] == ':' && paragraph == "IOBP":
+			addr, value := 0, 0
+			fmt.Sscanf(line, "0x%x: 0x%x", &addr, &value)
+			ret.IOBP[uint32(addr)] = uint32(value)
 		case len(line) > 9 && line[0] == '0' && line[1] == 'x' && line[8] == ':' && paragraph == "IGD":
 			addr, value := 0, 0
 			fmt.Sscanf(line, "0x%x: 0x%x", &addr, &value)
 			ret.IGD[uint32(addr)] = uint32(value)
+		case len(line) > 7 && line[0] == '0' && line[1] == 'x' && line[6] == ':' && paragraph == "MCHBAR":
+			addr, value := 0, 0
+			fmt.Sscanf(line, "0x%x: 0x%x", &addr, &value)
+			ret.MCHBAR[uint16(addr)] = uint32(value)
 		case strings.Contains(line, "DEFAULT"):
 			continue
 		case strings.Contains(line, "DIFF"):
@@ -200,6 +211,10 @@ func (l *LogDevReader) GetInteltool() (ret InteltoolData) {
 			addr, value := 0, 0
 			fmt.Sscanf(line, "gpiobase+0x%x: 0x%x", &addr, &value)
 			ret.GPIO[uint16(addr)] = uint32(value)
+		case strings.HasPrefix(line, "pmbase"):
+			addr, value := 0, 0
+			fmt.Sscanf(line, "pmbase+0x%x: 0x%x", &addr, &value)
+			ret.PMBASE[uint16(addr)] = uint32(value)
 		case strings.HasPrefix(line, "============="):
 			paragraph = strings.Trim(line, "= ")
 		}

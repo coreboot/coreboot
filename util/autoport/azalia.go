@@ -61,4 +61,7 @@ func init() {
 	RegisterPCI(0x8086, 0x1c20, azalia{})
 	/* C216/ivybridge */
 	RegisterPCI(0x8086, 0x1e20, azalia{})
+	/* Lynx Point */
+	RegisterPCI(0x8086, 0x8c20, azalia{})
+	RegisterPCI(0x8086, 0x9c20, azalia{})
 }

@@ -275,7 +275,7 @@ static const struct pad_config gpio_table[] = {
 	/* F10 : I2C5_SDA ==> HP_IRQ_GPIO */
 	PAD_CFG_GPI_APIC(GPP_F10, 20K_PU, PLTRST),
 	/* F11 : I2C5_SCL ==> SPKR_RST_L */
-	PAD_CFG_GPO(GPP_F11, 1, RSMRST),
+	PAD_CFG_GPO(GPP_F11, 1, PLTRST),
 	/* F12 : EMMC_CMD */
 	PAD_CFG_NF(GPP_F12, NONE, DEEP, NF1),
 	/* F13 : EMMC_DATA0 */

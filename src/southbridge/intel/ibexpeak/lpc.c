@@ -632,8 +632,11 @@ static void southbridge_inject_dsdt(struct device *dev)
 		gnvs->apic = 1;
 		gnvs->mpen = 1;		/* Enable Multi Processing */
 		gnvs->pcnt = dev_count_cpu();
-		gnvs->ndid = gfx->ndid;
-		memcpy(gnvs->did, gfx->did, sizeof(gnvs->did));
+
+		if (gfx) {
+			gnvs->ndid = gfx->ndid;
+			memcpy(gnvs->did, gfx->did, sizeof(gnvs->did));
+		}
 
 		/* And tell SMI about it */
 		smm_setup_structures(gnvs, NULL, NULL);

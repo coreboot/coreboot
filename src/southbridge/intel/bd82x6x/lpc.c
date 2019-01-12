@@ -719,8 +719,10 @@ static void southbridge_inject_dsdt(struct device *dev)
 		gnvs->mpen = 1; /* Enable Multi Processing */
 		gnvs->pcnt = dev_count_cpu();
 
-		gnvs->ndid = gfx->ndid;
-		memcpy(gnvs->did, gfx->did, sizeof(gnvs->did));
+		if (gfx) {
+			gnvs->ndid = gfx->ndid;
+			memcpy(gnvs->did, gfx->did, sizeof(gnvs->did));
+		}
 
 #if IS_ENABLED(CONFIG_CHROMEOS)
 		chromeos_init_chromeos_acpi(&(gnvs->chromeos));

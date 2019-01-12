@@ -456,7 +456,8 @@ static void enable_lp_clock_gating(struct device *dev)
 	RCBA32_AND_OR(0x2614, 0x8bffffff, 0x0a206500);
 
 	/* Check for LPT-LP B2 stepping and 0:31.0@0xFA > 4 */
-	if (pci_read_config8(pcidev_on_root(2, 0), 0x8) >= 0x0b)
+	struct device *const gma = pcidev_on_root(2, 0);
+	if (gma && pci_read_config8(gma, 0x8) >= 0x0b)
 		RCBA32_OR(0x2614, (1 << 26));
 
 	RCBA32_OR(0x900, 0x0000031f);
@@ -760,8 +761,10 @@ static void southbridge_inject_dsdt(struct device *dev)
 		/* Update the mem console pointer. */
 		gnvs->cbmc = (u32)cbmem_find(CBMEM_ID_CONSOLE);
 
-		gnvs->ndid = gfx->ndid;
-		memcpy(gnvs->did, gfx->did, sizeof(gnvs->did));
+		if (gfx) {
+			gnvs->ndid = gfx->ndid;
+			memcpy(gnvs->did, gfx->did, sizeof(gnvs->did));
+		}
 
 		/* And tell SMI about it */
 		smm_setup_structures(gnvs, NULL, NULL);

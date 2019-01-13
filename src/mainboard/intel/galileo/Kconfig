@@ -133,7 +133,6 @@ config FSP_DEBUG_ALL
 	depends on FSP_VERSION_2_0 || FSP_VERSION_1_1
 	default y
 # Enable display and verification for coreboot build tests
-	select BOOTBLOCK_CONSOLE
 	select DISPLAY_HOBS
 	select DISPLAY_MTRRS
 	select DISPLAY_SMM_MEMORY_MAP

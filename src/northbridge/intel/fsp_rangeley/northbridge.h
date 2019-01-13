@@ -63,13 +63,6 @@ void rangeley_late_initialization(void);
 u32 sideband_read(int port, int reg);
 void sideband_write(int port, int reg, long data);
 
-/* debugging functions */
-void print_pci_devices(void);
-void dump_pci_device(unsigned dev);
-void dump_pci_devices(void);
-void dump_spd_registers(void);
-void report_platform_info(void);
-
 #ifndef __SIMPLE_DEVICE__
 void northbridge_acpi_fill_ssdt_generator(struct device *device);
 #endif

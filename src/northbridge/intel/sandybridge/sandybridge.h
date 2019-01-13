@@ -213,12 +213,6 @@ void sandybridge_init_iommu(void);
 void sandybridge_late_initialization(void);
 void northbridge_romstage_finalize(int s3resume);
 
-/* debugging functions */
-void print_pci_devices(void);
-void dump_pci_device(unsigned dev);
-void dump_pci_devices(void);
-void dump_spd_registers(void);
-
 #endif /* !__SMM__ */
 
 void pch_enable_lpc(void);

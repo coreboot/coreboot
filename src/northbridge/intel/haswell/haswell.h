@@ -223,11 +223,6 @@ void haswell_late_initialization(void);
 void set_translation_table(int start, int end, u64 base, int inc);
 void haswell_unhide_peg(void);
 
-/* debugging functions */
-void print_pci_devices(void);
-void dump_pci_device(unsigned dev);
-void dump_pci_devices(void);
-void dump_spd_registers(void);
 void report_platform_info(void);
 #endif /* !__SMM__ */
 

@@ -219,12 +219,41 @@ uint16_t gpio_acpi_pin(gpio_t gpio)
 	return gpio;
 }
 
+/*
+ * Returns the debounce type corresponding to a given interrupt type.
+ *
+ * This matches what the linux kernel will set during gpio configuration:
+ *
+ * Interrupt    Debounce
+ * Edge         Remove Glitch
+ * Level High   Preserve Low Glitch
+ * Level Low    Preserve High Glitch
+ */
+static uint32_t gpio_irq_debounce(uint32_t flag)
+{
+	uint32_t trigger;
+
+	trigger = flag & FLAGS_TRIGGER_MASK;
+	switch (trigger) {
+	case GPIO_TRIGGER_LEVEL_LOW:
+		return GPIO_IN_PRESERVE_HIGH_GLITCH;
+	case GPIO_TRIGGER_LEVEL_HIGH:
+		return GPIO_IN_PRESERVE_LOW_GLITCH;
+	case GPIO_TRIGGER_EDGE_LOW:
+		return GPIO_IN_REMOVE_GLITCH;
+	case GPIO_TRIGGER_EDGE_HIGH:
+		return GPIO_IN_REMOVE_GLITCH;
+	default:
+		return GPIO_IN_NO_DEBOUNCE;
+	}
+}
+
 void sb_program_gpios(const struct soc_amd_gpio *gpio_list_ptr, size_t size)
 {
 	uint8_t *mux_ptr;
 	uint32_t *gpio_ptr;
 	uint32_t control, control_flags, edge_level, direction;
-	uint32_t mask, bit_edge, bit_level;
+	uint32_t mask, bit_edge, bit_level, debounce;
 	uint8_t mux, index, gpio;
 	int gevent_num;
 
@@ -273,6 +302,10 @@ void sb_program_gpios(const struct soc_amd_gpio *gpio_list_ptr, size_t size)
 			case GPIO_SCI_FLAG:
 				mem_read_write32(gpio_ptr, control,
 						INT_SCI_SMI_MASK);
+				/* Always set debounce type for SCI gpio */
+				debounce = gpio_irq_debounce(control_flags);
+				mem_read_write32(gpio_ptr, debounce,
+						 GPIO_DEBOUNCE_MASK);
 				get_sci_config_bits(control_flags, &bit_edge,
 							&bit_level);
 				edge_level |= bit_edge << gevent_num;

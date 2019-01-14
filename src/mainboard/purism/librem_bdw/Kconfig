@@ -7,6 +7,7 @@ config BOARD_PURISM_BASEBOARD_LIBREM_BDW
 	select HAVE_ACPI_TABLES
 	select INTEL_INT15
 	select SOC_INTEL_BROADWELL
+	select NO_POST # This platform does not have any way to see POST codes
 
 if BOARD_PURISM_BASEBOARD_LIBREM_BDW
 
@@ -62,12 +63,6 @@ config MAINBOARD_VERSION
 config MAX_CPUS
 	int
 	default 8
-
-config NO_POST
-	def_bool y
-	help
-	  This platform does not have any way to see POST codes
-	  so disable them by default.
 
 config PRE_GRAPHICS_DELAY
 	int

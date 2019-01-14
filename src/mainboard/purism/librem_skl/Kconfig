@@ -11,6 +11,7 @@ config BOARD_PURISM_BASEBOARD_LIBREM_SKL
 	select MAINBOARD_USES_FSP2_0
 	select SPD_READ_BY_WORD
 	select MAINBOARD_HAS_LPC_TPM
+	select NO_POST # This platform does not have any way to see POST codes
 
 if BOARD_PURISM_BASEBOARD_LIBREM_SKL
 
@@ -53,12 +54,6 @@ config DEVICETREE
 config MAX_CPUS
 	int
 	default 8
-
-config NO_POST
-	def_bool y
-	help
-	  This platform does not have any way to see POST codes
-	  so disable them by default.
 
 config VGA_BIOS_ID
 	string

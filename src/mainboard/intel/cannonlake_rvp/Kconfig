@@ -12,6 +12,7 @@ config BOARD_SPECIFIC_OPTIONS
 	select DRIVERS_I2C_GENERIC
 	select SOC_INTEL_CANNONLAKE
 	select MAINBOARD_USES_IFD_EC_REGION
+	select INTEL_LPSS_UART_FOR_CONSOLE
 
 config MAINBOARD_DIR
 	string
@@ -65,4 +66,8 @@ config DIMM_SPD_SIZE
 config VBOOT
 	select VBOOT_LID_SWITCH
 	select VBOOT_MOCK_SECDATA
+
+config UART_FOR_CONSOLE
+	int
+	default 2
 endif

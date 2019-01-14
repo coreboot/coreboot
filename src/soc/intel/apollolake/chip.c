@@ -60,6 +60,46 @@
 #define DRD_MODE_MASK           (1 << 29)
 #define DRD_MODE_HOST           (1 << 29)
 
+#define CFG_XHCLKGTEN		0x8650
+/* Naking USB2.0 EPs for Backbone Clock Gating and PLL Shutdown */
+#define NUEFBCGPS		(1 << 28)
+/* SRAM Power Gate Enable */
+#define SRAMPGTEN		(1 << 27)
+/* SS Link PLL Shutdown Enable */
+#define SSLSE			(1 << 26)
+/* USB2 PLL Shutdown Enable */
+#define USB2PLLSE		(1 << 25)
+/* IOSF Sideband Trunk Clock Gating Enable */
+#define IOSFSTCGE		(1 << 24)
+/* BIT[23:20] HS Backbone PXP Trunk Clock Gate Enable */
+#define HSTCGE			(1 << 23 | 1 << 22)
+/* BIT[19:16] SS Backbone PXP Trunk Clock Gate Enable */
+#define SSTCGE			(1 << 19 | 1 << 18 | 1 << 17)
+/* XHC Ignore_EU3S */
+#define XHCIGEU3S		(1 << 15)
+/* XHC Frame Timer Clock Shutdown Enable */
+#define XHCFTCLKSE		(1 << 14)
+/* XHC Backbone PXP Trunk Clock Gate In Presence of ISOCH EP */
+#define XHCBBTCGIPISO		(1 << 13)
+/* XHC HS Backbone PXP Trunk Clock Gate U2 non RWE */
+#define XHCHSTCGU2NRWE		(1 << 12)
+/* BIT[11:10] XHC USB2 PLL Shutdown Lx Enable */
+#define XHCUSB2PLLSDLE		(1 << 11 | 1 << 10)
+/* BIT[9:8] HS Backbone PXP PLL Shutdown Ux Enable */
+#define HSUXDMIPLLSE		(1 << 9)
+/* BIT[7:5] SS Backbone PXP PLL shutdown Ux Enable */
+#define SSPLLSUE		(1 << 6)
+/* XHC Backbone Local Clock Gating Enable */
+#define XHCBLCGE		(1 << 4)
+/* HS Link Trunk Clock Gating Enable */
+#define HSLTCGE			(1 << 3)
+/* SS Link Trunk Clock Gating Enable */
+#define SSLTCGE			(1 << 2)
+/* IOSF Backbone Trunk Clock Gating Enable */
+#define IOSFBTCGE		(1 << 1)
+/* IOSF Gasket Backbone Local Clock Gating Enable */
+#define IOSFGBLCGE		(1 << 0)
+
 const char *soc_acpi_name(const struct device *dev)
 {
 	if (dev->path.type == DEVICE_PATH_DOMAIN)
@@ -679,9 +719,9 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *silupd)
 
 struct chip_operations soc_intel_apollolake_ops = {
 	CHIP_NAME("Intel Apollolake SOC")
-	.enable_dev = enable_dev,
-	.init = soc_init,
-	.final = soc_final
+	.enable_dev = &enable_dev,
+	.init = &soc_init,
+	.final = &soc_final
 };
 
 static void drop_privilege_all(void)
@@ -758,6 +798,26 @@ void platform_fsp_notify_status(enum fsp_notify_phase phase)
 		 */
 		if (check_xdci_enable())
 			configure_xhci_host_mode_port0();
+
+		/*
+		 * Override GLK xhci clock gating register(XHCLKGTEN) to
+		 * mitigate usb device suspend and resume failure.
+		 */
+		if (IS_ENABLED(CONFIG_SOC_INTEL_GLK)) {
+			uint32_t *cfg;
+			const struct resource *res;
+			uint32_t reg;
+			struct device *xhci_dev = PCH_DEV_XHCI;
+
+			res = find_resource(xhci_dev, PCI_BASE_ADDRESS_0);
+			cfg = (void *)(uintptr_t)(res->base + CFG_XHCLKGTEN);
+			reg = SRAMPGTEN | SSLSE | USB2PLLSE | IOSFSTCGE |
+				HSTCGE | HSUXDMIPLLSE | SSTCGE | XHCFTCLKSE |
+				XHCBBTCGIPISO | XHCUSB2PLLSDLE | SSPLLSUE |
+				XHCBLCGE | HSLTCGE | SSLTCGE | IOSFBTCGE |
+				IOSFGBLCGE;
+			write32(cfg, reg);
+		}
 	}
 }
 

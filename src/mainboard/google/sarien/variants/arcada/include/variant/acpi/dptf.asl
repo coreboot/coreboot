@@ -16,15 +16,23 @@
 #define DPTF_CPU_PASSIVE	80
 #define DPTF_CPU_CRITICAL	100
 
+/* Skin Sensor for CPU VR temperature monitor */
 #define DPTF_TSR0_SENSOR_ID	1
-#define DPTF_TSR0_SENSOR_NAME	"Thermal 1"
+#define DPTF_TSR0_SENSOR_NAME	"Skin"
 #define DPTF_TSR0_PASSIVE	55
-#define DPTF_TSR0_CRITICAL	80
+#define DPTF_TSR0_CRITICAL	70
 
+/* Memory Sensor for DDR temperature monitor */
 #define DPTF_TSR1_SENSOR_ID	2
-#define DPTF_TSR1_SENSOR_NAME	"Thermal 2"
+#define DPTF_TSR1_SENSOR_NAME	"DDR"
 #define DPTF_TSR1_PASSIVE	55
 #define DPTF_TSR1_CRITICAL	80
+
+/* M.2 Sensor for Ambient temperature monitor */
+#define DPTF_TSR2_SENSOR_ID	3
+#define DPTF_TSR2_SENSOR_NAME	"Ambient"
+#define DPTF_TSR2_PASSIVE	55
+#define DPTF_TSR2_CRITICAL	70
 
 #undef DPTF_ENABLE_FAN_CONTROL
 #undef DPTF_ENABLE_CHARGER
@@ -33,8 +41,14 @@ Name (DTRT, Package () {
 	/* CPU Throttle Effect on CPU */
 	Package () { \_SB.PCI0.B0D4, \_SB.PCI0.B0D4, 100, 10, 0, 0, 0, 0 },
 
-	/* CPU Effect on Board */
+	/* CPU Throttle Effect on Skin (TSR0) */
 	Package () { \_SB.PCI0.B0D4, \_SB.DPTF.TSR0, 100, 600, 0, 0, 0, 0 },
+
+	/* CPU Throttle Effect on DDR (TSR1) */
+	Package () { \_SB.PCI0.B0D4, \_SB.DPTF.TSR1, 100, 90, 0, 0, 0, 0 },
+
+	/* CPU Throttle Effect on Ambient (TSR2) */
+	Package () { \_SB.PCI0.B0D4, \_SB.DPTF.TSR2, 100, 600, 0, 0, 0, 0 },
 })
 
 Name (MPPC, Package ()

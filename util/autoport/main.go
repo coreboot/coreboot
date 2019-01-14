@@ -517,6 +517,8 @@ func (g GenericPCI) Scan(ctx Context, addr PCIDevData) {
 	PutPCIDevParent(addr, g.Comment, g.MissingParent)
 }
 
+var IGDEnabled bool = false
+
 func (g GenericVGA) Scan(ctx Context, addr PCIDevData) {
 	KconfigString["VGA_BIOS_ID"] = fmt.Sprintf("%04x,%04x",
 		addr.PCIVenID,
@@ -525,6 +527,7 @@ func (g GenericVGA) Scan(ctx Context, addr PCIDevData) {
 		addr.PCIVenID,
 		addr.PCIDevID)
 	PutPCIDevParent(addr, g.Comment, g.MissingParent)
+	IGDEnabled = true
 }
 
 func makeKconfigName(ctx Context) {
@@ -748,6 +751,12 @@ func main() {
 
 	ScanRoot(ctx)
 
+	if IGDEnabled {
+		KconfigBool["MAINBOARD_HAS_LIBGFXINIT"] = true
+		KconfigComment["MAINBOARD_HAS_LIBGFXINIT"] = "FIXME: check this"
+		AddRAMStageFile("gma-mainboard.ads", "CONFIG_MAINBOARD_USE_LIBGFXINIT")
+	}
+
 	if len(ROMStageFiles) > 0 || len(RAMStageFiles) > 0 || len(SMMFiles) > 0 {
 		mf := Create(ctx, "Makefile.inc")
 		defer mf.Close()
@@ -881,4 +890,45 @@ DefinitionBlock(
 }
 `)
 
+	if IGDEnabled {
+		gma := Create(ctx, "gma-mainboard.ads")
+		defer gma.Close()
+
+		gma.WriteString(`--
+-- This file is part of the coreboot project.
+--
+-- This program is free software; you can redistribute it and/or modify
+-- it under the terms of the GNU General Public License as published by
+-- the Free Software Foundation; either version 2 of the License, or
+-- (at your option) any later version.
+--
+-- This program is distributed in the hope that it will be useful,
+-- but WITHOUT ANY WARRANTY; without even the implied warranty of
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-- GNU General Public License for more details.
+--
+
+with HW.GFX.GMA;
+with HW.GFX.GMA.Display_Probing;
+
+use HW.GFX.GMA;
+use HW.GFX.GMA.Display_Probing;
+
+private package GMA.Mainboard is
+
+   -- FIXME: check this
+   ports : constant Port_List :=
+     (DP1,
+      DP2,
+      DP3,
+      HDMI1,
+      HDMI2,
+      HDMI3,
+      Analog,
+      Internal,
+      others => Disabled);
+
+end GMA.Mainboard;
+`)
+	}
 }

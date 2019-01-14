@@ -117,6 +117,9 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	/* GPIO_8 - DDR_ALERT_3V3_L (currently not used) */
 	PAD_GPI(GPIO_8, PULL_UP),
 
+	/* GPIO_9 - H1_PCH_INT_ODL, SCI */
+	PAD_SCI(GPIO_9, PULL_UP, EDGE_LOW),
+
 	/* GPIO_10 - SLP_S0_L (currently not used) */
 	PAD_NF(GPIO_10, S0A3_GPIO, PULL_UP),
 

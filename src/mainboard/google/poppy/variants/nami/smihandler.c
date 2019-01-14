@@ -22,6 +22,7 @@
 #define TOUCH_DISABLE         GPP_C3
 #define TOUCH_RESET           GPP_B3
 #define TOUCH_ENABLE          GPP_B4
+#define FP_PWR_ENABLE         GPP_B11
 
 /*
  * Elan touchscreen has higher delay requirements than the other
@@ -43,5 +44,7 @@ void variant_smi_sleep(u8 slp_typ)
 		/* EN_PP3300_DX_TOUCHSCREEN */
 		gpio_set(TOUCH_ENABLE, 0);
 		mdelay(ELAN_ENABLE_OFF_DELAY);
+		/* PCH_FP_PWR_EN */
+		gpio_set(FP_PWR_ENABLE, 0);
 	}
 }

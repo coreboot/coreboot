@@ -78,6 +78,11 @@ static const struct sst_spi_flash_params sst_spi_flash_table[] = {
 		.name = "SST25VF080B",
 		.ops = &spi_flash_ops_write_ai,
 	},{
+		.idcode1 = 0x80,
+		.nr_sectors = 256,
+		.name = "SST25VF080",
+		.ops = &spi_flash_ops_write_ai,
+	},{
 		.idcode1 = 0x41,
 		.nr_sectors = 512,
 		.name = "SST25VF016B",
@@ -111,6 +116,16 @@ static const struct sst_spi_flash_params sst_spi_flash_table[] = {
 		.idcode1 = 0x04,
 		.nr_sectors = 128,
 		.name = "SST25WF040",
+		.ops = &spi_flash_ops_write_ai,
+	},{
+		.idcode1 = 0x05,
+		.nr_sectors = 256,
+		.name = "SST25WF080",
+		.ops = &spi_flash_ops_write_ai,
+	},{
+		.idcode1 = 0x14,
+		.nr_sectors = 256,
+		.name = "SST25WF080B",
 		.ops = &spi_flash_ops_write_ai,
 	},
 };

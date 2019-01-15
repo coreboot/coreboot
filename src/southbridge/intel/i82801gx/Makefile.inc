@@ -15,6 +15,8 @@
 
 ifeq ($(CONFIG_SOUTHBRIDGE_INTEL_I82801GX),y)
 
+bootblock-y += bootblock_gcc.c
+
 ramstage-y += i82801gx.c
 ramstage-y += ac97.c
 ramstage-y += azalia.c

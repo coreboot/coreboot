@@ -57,19 +57,11 @@ void mainboard_romstage_entry(unsigned long bist)
 	if (bist == 0)
 		enable_lapic();
 
-	/* Disable watchdog timer */
-	RCBA32(GCS) = RCBA32(GCS) | 0x20;
-
 	/* Enable GPIOs */
 	pci_write_config32(LPC_DEV, GPIO_BASE, DEFAULT_GPIOBASE | 1);
 	pci_write_config8(LPC_DEV, GPIO_CNTL, 0x10);
 
 	setup_pch_gpios(&mainboard_gpio_map);
-
-	mb_enable_lpc(); // nm10_enable_lpc
-
-	/* Initialize console device(s) */
-	console_init();
 
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(bist);

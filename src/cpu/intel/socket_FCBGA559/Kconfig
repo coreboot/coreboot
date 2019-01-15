@@ -21,4 +21,11 @@ config DCACHE_RAM_SIZE
 	hex
 	default 0x4000
 
+config DCACHE_BSP_STACK_SIZE
+	hex
+	default 0x2000
+	help
+	  The amount of anticipated stack usage in CAR by bootblock and
+	  other stages.
+
 endif

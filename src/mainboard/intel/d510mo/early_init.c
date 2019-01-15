@@ -14,6 +14,7 @@
  * GNU General Public License for more details.
  */
 
+#include <bootblock_common.h>
 #include <device/pci_ops.h>
 #include <southbridge/intel/i82801gx/i82801gx.h>
 #include <northbridge/intel/pineview/pineview.h>
@@ -23,7 +24,7 @@
 #define SERIAL_DEV PNP_DEV(0x4e, W83627THG_SP1)
 #define SUPERIO_DEV PNP_DEV(0x4e, 0)
 
-void mb_enable_lpc(void)
+void bootblock_mainboard_early_init(void)
 {
 	/* Disable Serial IRQ */
 	pci_write_config8(PCI_DEV(0, 0x1f, 0), SERIRQ_CNTL, 0x00);

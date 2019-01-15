@@ -16,6 +16,8 @@
 
 ifeq ($(CONFIG_NORTHBRIDGE_INTEL_PINEVIEW),y)
 
+bootblock-y += bootblock.c
+
 ramstage-y += ram_calc.c
 ramstage-y += northbridge.c
 ramstage-y += gma.c

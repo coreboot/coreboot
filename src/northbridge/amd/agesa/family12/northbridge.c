@@ -45,6 +45,69 @@ static struct device *__f2_dev[FX_DEVS];
 static struct device *__f4_dev[FX_DEVS];
 static unsigned fx_devs = 0;
 
+struct dram_base_mask_t {
+	u32 base; //[47:27] at [28:8]
+	u32 mask; //[47:27] at [28:8] and enable at bit 0
+};
+
+static struct dram_base_mask_t get_dram_base_mask(u32 nodeid)
+{
+	struct device *dev;
+	struct dram_base_mask_t d;
+#if defined(__PRE_RAM__)
+	dev = PCI_DEV(0, DEV_CDB, 1);
+#else
+	dev = __f1_dev[0];
+#endif	// defined(__PRE_RAM__)
+
+	u32 temp;
+	temp = pci_read_config32(dev, 0x44); //[39:24] at [31:16]
+	d.mask = (temp & 0xffff0000); // mask out  DramMask [26:24] too
+
+	temp = pci_read_config32(dev, 0x40); //[35:24] at [27:16]
+	d.mask |= (temp & 1); // read enable bit
+
+	d.base = (temp & 0x0fff0000); // mask out DramBase [26:24) too
+
+	return d;
+}
+
+static u32 get_io_addr_index(u32 nodeid, u32 linkn)
+{
+	return 0;
+}
+
+static u32 get_mmio_addr_index(u32 nodeid, u32 linkn)
+{
+	return 0;
+}
+
+static void set_io_addr_reg(struct device *dev, u32 nodeid, u32 linkn, u32 reg,
+			    u32 io_min, u32 io_max)
+{
+
+	u32 tempreg;
+	/* io range allocation */
+	tempreg = (nodeid & 0xf) | ((nodeid & 0x30) << (8 - 4)) | (linkn << 4) |
+		  ((io_max & 0xf0) << (12 - 4)); //limit
+	pci_write_config32(__f1_dev[0], reg+4, tempreg);
+
+	tempreg = 3 | ((io_min & 0xf0) << (12 - 4)); //base :ISA and VGA ?
+	pci_write_config32(__f1_dev[0], reg, tempreg);
+}
+
+static void set_mmio_addr_reg(u32 nodeid, u32 linkn, u32 reg, u32 index,
+			      u32 mmio_min, u32 mmio_max, u32 nodes)
+{
+
+	u32 tempreg;
+	/* io range allocation */
+	tempreg = (nodeid & 0xf) | (linkn << 4) | (mmio_max & 0xffffff00);
+	pci_write_config32(__f1_dev[0], reg+4, tempreg);
+	tempreg = 3 | (nodeid & 0x30) | (mmio_min&0xffffff00);
+	pci_write_config32(__f1_dev[0], reg, tempreg);
+}
+
 static struct device *get_node_pci(u32 nodeid, u32 fn)
 {
 	return pcidev_on_root(DEV_CDB + nodeid, fn);
@@ -92,8 +155,6 @@ static u32 amdfam12_nodeid(struct device *dev)
 	printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s\n",__func__);
 	return (dev->path.pci.devfn >> 3) - DEV_CDB;
 }
-
-#include "amdfam12_conf.c"
 
 static void northbridge_init(struct device *dev)
 {

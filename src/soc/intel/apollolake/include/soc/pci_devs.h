@@ -44,6 +44,10 @@
 #define  SA_DEVFN_IGD		_SA_DEVFN(IGD)
 #define  SA_DEV_IGD		_SA_DEV(IGD)
 
+#define SA_DEV_SLOT_IPU		0x03
+#define  SA_DEVFN_IPU		_SA_DEVFN(IPU)
+#define  SA_DEV_IPU		_SA_DEV(IPU)
+
 /* PCH Devices */
 
 #define PCH_DEV_SLOT_NPK	0x00

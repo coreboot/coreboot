@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2015 - 2017 Intel Corp.
- * Copyright (C) 2017 - 2018 Siemens AG
+ * Copyright (C) 2017 - 2019 Siemens AG
  * (Written by Alexandru Gagniuc <alexandrux.gagniuc@intel.com> for Intel Corp.)
  * (Written by Andrey Petrov <andrey.petrov@intel.com> for Intel Corp.)
  *
@@ -522,6 +522,11 @@ static void disable_dev(struct device *dev, FSP_S_CONFIG *silconfig)
 	case PCH_DEVFN_SMBUS:
 		silconfig->SmbusEnable = 0;
 		break;
+#if !IS_ENABLED(CONFIG_SOC_INTEL_GLK)
+	case SA_DEVFN_IPU:
+		silconfig->IpuEn = 0;
+		break;
+#endif
 	default:
 		printk(BIOS_WARNING, "PCI:%02x.%01x: Could not disable the device\n",
 			PCI_SLOT(dev->path.pci.devfn),

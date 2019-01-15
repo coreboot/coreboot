@@ -86,10 +86,8 @@ verstage-y += tsc_freq.c
 verstage-$(CONFIG_DRIVERS_UART_8250MEM) += uart_debug.c
 
 CPPFLAGS_common += -I$(src)/soc/intel/denverton_ns/include
-CPPFLAGS_common += -I$(src)/vendorcode/intel/fsp/fsp2_0/denverton_ns
 
 ##Set FSP binary blobs memory location
-
 $(call strip_quotes,$(CONFIG_FSP_T_CBFS))-options := -b $(CONFIG_FSP_T_ADDR) --xip
 $(call strip_quotes,$(CONFIG_FSP_M_CBFS))-options := -b $(CONFIG_FSP_M_ADDR) --xip
 $(call strip_quotes,$(CONFIG_FSP_S_CBFS))-options := -b $(CONFIG_FSP_S_ADDR) --xip

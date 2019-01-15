@@ -122,7 +122,7 @@ func (i sandybridgemc) Scan(ctx Context, addr PCIDevData) {
 	KconfigInt["MAX_CPUS"] = 8
 
 	DSDTIncludes = append(DSDTIncludes, DSDTInclude{
-		File: "cpu/intel/model_206ax/acpi/cpu.asl",
+		File: "cpu/intel/common/acpi/cpu.asl",
 	})
 
 	DSDTPCI0Includes = append(DSDTPCI0Includes, DSDTInclude{

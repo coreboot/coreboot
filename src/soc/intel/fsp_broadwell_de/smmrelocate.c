@@ -220,9 +220,13 @@ static void fill_in_relocation_params(pci_devfn_t dev,
 	 * encompasses the SMRAM range as well as the IED range.
 	 * However, the SMRAM available to the handler is 4MiB since the IEDRAM
 	 * lives TSEG_BASE + 4MiB.
+	 *
+	 * Note that address bits 19:0 are ignored and not compared.
+	 * The result is that BASE[19:0] is effectively 00000h and LIMIT is
+	 * effectively FFFFFh.
 	 */
 	tseg_base = northbridge_get_base_reg(dev, TSEG_BASE);
-	tseg_limit = northbridge_get_base_reg(dev, TSEG_LIMIT);
+	tseg_limit = northbridge_get_base_reg(dev, TSEG_LIMIT) + 1 * MiB;
 	tseg_size = tseg_limit - tseg_base;
 
 	params->smram_base = tseg_base;

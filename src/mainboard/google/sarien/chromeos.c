@@ -19,6 +19,8 @@
 #include <soc/gpio.h>
 #include <variant/gpio.h>
 #include <vendorcode/google/chromeos/chromeos.h>
+#include <security/tpm/tss.h>
+
 
 void fill_lb_gpios(struct lb_gpios *gpios)
 {
@@ -70,7 +72,16 @@ int get_write_protect_state(void)
 
 int get_recovery_mode_switch(void)
 {
-	return cros_get_gpio_value(CROS_GPIO_REC);
+	uint8_t recovery_button_state;
+	int recovery_mode_switch = 0;
+
+	if (cros_get_gpio_value(CROS_GPIO_REC))
+		recovery_mode_switch = 1;
+	else if (tlcl_cr50_get_recovery_button(&recovery_button_state)
+		== TPM_SUCCESS)
+		recovery_mode_switch = recovery_button_state;
+
+	return recovery_mode_switch;
 }
 
 int get_lid_switch(void)

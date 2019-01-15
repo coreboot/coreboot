@@ -52,11 +52,24 @@
 #define STM_ID_M25P32		0x2016
 #define STM_ID_M25P64		0x2017
 #define STM_ID_M25P128		0x2018
+#define STM_ID_M25PX80		0x7114
+#define STM_ID_M25PX16		0x7115
+#define STM_ID_M25PX32		0x7116
+#define STM_ID_M25PX64		0x7117
+#define STM_ID_M25PE80		0x8014
+#define STM_ID_M25PE16		0x8015
+#define STM_ID_M25PE32		0x8016
+#define STM_ID_M25PE64		0x8017
+#define STM_ID_N25Q016__3E	0xba15
 #define STM_ID_N25Q032__3E	0xba16
-#define STM_ID_N25Q128A		0xba18
-#define STM_ID_N25Q256		0xba19
-#define STM_ID_N25Q064		0xbb17
-#define STM_ID_N25Q128		0xbb18
+#define STM_ID_N25Q064__3E	0xba17
+#define STM_ID_N25Q128__3E	0xba18
+#define STM_ID_N25Q256__3E	0xba19
+#define STM_ID_N25Q016__1E	0xbb15
+#define STM_ID_N25Q032__1E	0xbb16
+#define STM_ID_N25Q064__1E	0xbb17
+#define STM_ID_N25Q128__1E	0xbb18
+#define STM_ID_N25Q256__1E	0xbb19
 
 struct stmicro_spi_flash_params {
 	u16 device_id;
@@ -133,6 +146,78 @@ static const struct stmicro_spi_flash_params stmicro_spi_flash_table[] = {
 		.name = "M25P128",
 	},
 	{
+		.device_id = STM_ID_M25PX80,
+		.op_erase = CMD_M25PXX_SE,
+		.page_size = 256,
+		.pages_per_sector = 256,
+		.nr_sectors = 16,
+		.name = "M25PX80",
+	},
+	{
+		.device_id = STM_ID_M25PX16,
+		.op_erase = CMD_M25PXX_SE,
+		.page_size = 256,
+		.pages_per_sector = 256,
+		.nr_sectors = 32,
+		.name = "M25PX16",
+	},
+	{
+		.device_id = STM_ID_M25PX32,
+		.op_erase = CMD_M25PXX_SE,
+		.page_size = 256,
+		.pages_per_sector = 256,
+		.nr_sectors = 64,
+		.name = "M25PX32",
+	},
+	{
+		.device_id = STM_ID_M25PX64,
+		.op_erase = CMD_M25PXX_SE,
+		.page_size = 256,
+		.pages_per_sector = 256,
+		.nr_sectors = 128,
+		.name = "M25PX64",
+	},
+	{
+		.device_id = STM_ID_M25PE80,
+		.op_erase = CMD_M25PXX_SE,
+		.page_size = 256,
+		.pages_per_sector = 256,
+		.nr_sectors = 16,
+		.name = "M25PE80",
+	},
+	{
+		.device_id = STM_ID_M25PE16,
+		.op_erase = CMD_M25PXX_SE,
+		.page_size = 256,
+		.pages_per_sector = 256,
+		.nr_sectors = 32,
+		.name = "M25PE16",
+	},
+	{
+		.device_id = STM_ID_M25PE32,
+		.op_erase = CMD_M25PXX_SE,
+		.page_size = 256,
+		.pages_per_sector = 256,
+		.nr_sectors = 64,
+		.name = "M25PE32",
+	},
+	{
+		.device_id = STM_ID_M25PE64,
+		.op_erase = CMD_M25PXX_SE,
+		.page_size = 256,
+		.pages_per_sector = 256,
+		.nr_sectors = 128,
+		.name = "M25PE64",
+	},
+	{
+		.device_id = STM_ID_N25Q016__3E,
+		.op_erase = CMD_M25PXX_SSE,
+		.page_size = 256,
+		.pages_per_sector = 16,
+		.nr_sectors = 512,
+		.name = "N25Q016..3E",
+	},
+	{
 		.device_id = STM_ID_N25Q032__3E,
 		.op_erase = CMD_M25PXX_SSE,
 		.page_size = 256,
@@ -141,36 +226,68 @@ static const struct stmicro_spi_flash_params stmicro_spi_flash_table[] = {
 		.name = "N25Q032..3E",
 	},
 	{
-		.device_id = STM_ID_N25Q064,
+		.device_id = STM_ID_N25Q064__3E,
 		.op_erase = CMD_M25PXX_SSE,
 		.page_size = 256,
 		.pages_per_sector = 16,
 		.nr_sectors = 2048,
-		.name = "N25Q064",
+		.name = "N25Q064..3E",
 	},
 	{
-		.device_id = STM_ID_N25Q128,
+		.device_id = STM_ID_N25Q128__3E,
 		.op_erase = CMD_M25PXX_SSE,
 		.page_size = 256,
 		.pages_per_sector = 16,
 		.nr_sectors = 4096,
-		.name = "N25Q128",
+		.name = "N25Q128..3E",
 	},
 	{
-		.device_id = STM_ID_N25Q128A,
-		.op_erase = CMD_M25PXX_SSE,
-		.page_size = 256,
-		.pages_per_sector = 16,
-		.nr_sectors = 4096,
-		.name = "N25Q128A",
-	},
-	{
-		.device_id = STM_ID_N25Q256,
+		.device_id = STM_ID_N25Q256__3E,
 		.op_erase = CMD_M25PXX_SSE,
 		.page_size = 256,
 		.pages_per_sector = 16,
 		.nr_sectors = 8192,
-		.name = "N25Q256",
+		.name = "N25Q256..3E",
+	},
+	{
+		.device_id = STM_ID_N25Q016__1E,
+		.op_erase = CMD_M25PXX_SSE,
+		.page_size = 256,
+		.pages_per_sector = 16,
+		.nr_sectors = 512,
+		.name = "N25Q016..1E",
+	},
+	{
+		.device_id = STM_ID_N25Q032__1E,
+		.op_erase = CMD_M25PXX_SSE,
+		.page_size = 256,
+		.pages_per_sector = 16,
+		.nr_sectors = 1024,
+		.name = "N25Q032..1E",
+	},
+	{
+		.device_id = STM_ID_N25Q064__1E,
+		.op_erase = CMD_M25PXX_SSE,
+		.page_size = 256,
+		.pages_per_sector = 16,
+		.nr_sectors = 2048,
+		.name = "N25Q064..1E",
+	},
+	{
+		.device_id = STM_ID_N25Q128__1E,
+		.op_erase = CMD_M25PXX_SSE,
+		.page_size = 256,
+		.pages_per_sector = 16,
+		.nr_sectors = 4096,
+		.name = "N25Q128..1E",
+	},
+	{
+		.device_id = STM_ID_N25Q256__1E,
+		.op_erase = CMD_M25PXX_SSE,
+		.page_size = 256,
+		.pages_per_sector = 16,
+		.nr_sectors = 8192,
+		.name = "N25Q256..1E",
 	},
 };
 

@@ -69,7 +69,7 @@ $(CONFIG_FSP_S_CBFS)-type := fsp
 
 ifeq ($(CONFIG_FSP_USE_REPO),y)
 $(obj)/Fsp_M.fd: $(call strip_quotes,$(CONFIG_FSP_FD_PATH))
-	python2 3rdparty/fsp/Tools/SplitFspBin.py split -f $(CONFIG_FSP_FD_PATH) -o "$(obj)"
+	python2 3rdparty/fsp/Tools/SplitFspBin.py split -f $(CONFIG_FSP_FD_PATH) -o "$(obj)" -n "Fsp.fd"
 
 $(obj)/Fsp_S.fd: $(call strip_quotes,$(CONFIG_FSP_FD_PATH)) $(obj)/Fsp_M.fd
 	true

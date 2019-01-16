@@ -31,8 +31,9 @@
 static void pmc_set_afterg3(struct device *dev, int s5pwr)
 {
 	uint8_t reg8;
+	uint8_t *pmcbase = pmc_mmio_regs();
 
-	reg8 = pci_read_config8(dev, GEN_PMCON_B);
+	reg8 = read8(pmcbase + GEN_PMCON_A);
 
 	switch (s5pwr) {
 	case MAINBOARD_POWER_STATE_OFF:
@@ -46,7 +47,7 @@ static void pmc_set_afterg3(struct device *dev, int s5pwr)
 		break;
 	}
 
-	pci_write_config8(dev, GEN_PMCON_B, reg8);
+	write8(pmcbase + GEN_PMCON_A, reg8);
 }
 
 /*

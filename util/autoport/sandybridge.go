@@ -55,7 +55,7 @@ func (i sandybridgemc) Scan(ctx Context, addr PCIDevData) {
 			"gfx.link_frequency_270_mhz":          FormatBool(link_frequency > 200000),
 			/* FIXME:XX hardcoded.  */
 			"gfx.ndid": "3",
-			"gfx.did":  "{ 0x80000100, 0x80000240, 0x80000410, 0x80000410, 0x00000005 }",
+			"gfx.did":  "{ 0x80000100, 0x80000240, 0x80000410 }",
 		},
 		Children: []DevTreeNode{
 			{

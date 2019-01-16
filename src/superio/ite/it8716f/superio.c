@@ -75,17 +75,19 @@ static struct device_operations ops = {
 };
 
 static struct pnp_info pnp_dev_info[] = {
-	{ NULL, IT8716F_FDC, PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, 0x07f8, },
-	{ NULL, IT8716F_SP1, PNP_IO0 | PNP_IRQ0, 0x07f8, },
-	{ NULL, IT8716F_SP2, PNP_IO0 | PNP_IRQ0, 0x07f8, },
-	{ NULL, IT8716F_PP, PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, 0x07f8, },
-	{ NULL, IT8716F_EC, PNP_IO0 | PNP_IO1 | PNP_IRQ0, 0x07f8, 0x07f8, },
-	{ NULL, IT8716F_KBCK, PNP_IO0 | PNP_IO1 | PNP_IRQ0, 0x07ff, 0x07ff, },
+	{ NULL, IT8716F_FDC, PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, 0x0ff8, },
+	{ NULL, IT8716F_SP1, PNP_IO0 | PNP_IRQ0, 0x0ff8, },
+	{ NULL, IT8716F_SP2, PNP_IO0 | PNP_IRQ0, 0x0ff8, },
+	{ NULL, IT8716F_PP, PNP_IO0 | PNP_IO1 | PNP_IRQ0 | PNP_DRQ0,
+		0x0ff8, 0x0ffc, },
+	{ NULL, IT8716F_EC, PNP_IO0 | PNP_IO1 | PNP_IRQ0, 0x0ff8, 0x0ff8, },
+	{ NULL, IT8716F_KBCK, PNP_IO0 | PNP_IO1 | PNP_IRQ0, 0x0fff, 0x0fff, },
 	{ NULL, IT8716F_KBCM, PNP_IRQ0, },
-	{ NULL, IT8716F_GPIO, PNP_IO1 | PNP_IO2, 0, 0x07f8, 0x07f8, },
-	{ NULL, IT8716F_MIDI, PNP_IO0 | PNP_IRQ0, 0x07fe, },
-	{ NULL, IT8716F_GAME, PNP_IO0, 0x07ff, },
-	{ NULL, IT8716F_IR, },
+	{ NULL, IT8716F_GPIO, PNP_IO0 | PNP_IO1 | PNP_IO2,
+		0x0ff8, 0x0ff8, 0x0ff8, },
+	{ NULL, IT8716F_MIDI, PNP_IO0 | PNP_IRQ0, 0x0ff8, },
+	{ NULL, IT8716F_GAME, PNP_IO0, 0x0ff8, },
+	{ NULL, IT8716F_IR, PNP_IO0 | PNP_IRQ0, 0x0ff8, },
 };
 
 static void enable_dev(struct device *dev)

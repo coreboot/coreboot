@@ -223,11 +223,11 @@ end_microcode_update:
 
 	/* push TSC and BIST to stack */
 	movd	%mm0, %eax
-	pushl	%eax 	/* BIST */
+	pushl	%eax	/* BIST */
 	movd	%mm2, %eax
 	pushl	%eax	/* tsc[63:32] */
 	movd	%mm1, %eax
-	pushl	%eax 	/* tsc[31:0] */
+	pushl	%eax	/* tsc[31:0] */
 
 before_c_entry:
 	post_code(0x29)

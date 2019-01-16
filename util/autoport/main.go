@@ -838,13 +838,14 @@ func main() {
 
 	for _, define := range DSDTDefines {
 		if define.Comment != "" {
-			fmt.Fprintf(dsdt, "\t/* %s.  */\n", define.Comment)
+			fmt.Fprintf(dsdt, "\t/* %s. */\n", define.Comment)
 		}
 		dsdt.WriteString("#define " + define.Key + " " + define.Value + "\n")
 	}
 
 	dsdt.WriteString(
-		`#include <arch/acpi.h>
+		`
+#include <arch/acpi.h>
 DefinitionBlock(
 	"dsdt.aml",
 	"DSDT",
@@ -854,31 +855,29 @@ DefinitionBlock(
 	0x20141018	// OEM revision
 )
 {
-	// Some generic macros
+	/* Some generic macros */
 	#include "acpi/platform.asl"
 `)
 
 	for _, x := range DSDTIncludes {
 		if x.Comment != "" {
-			fmt.Fprintf(dsdt, "\t/* %s.  */\n", x.Comment)
+			fmt.Fprintf(dsdt, "\t/* %s. */\n", x.Comment)
 		}
 		fmt.Fprintf(dsdt, "\t#include <%s>\n", x.File)
 	}
 
 	dsdt.WriteString(`
-	Scope (\_SB) {
-		Device (PCI0)
-		{
+	Device (\_SB.PCI0)
+	{
 `)
 	for _, x := range DSDTPCI0Includes {
 		if x.Comment != "" {
-			fmt.Fprintf(dsdt, "\t/* %s.  */\n", x.Comment)
+			fmt.Fprintf(dsdt, "\t/* %s. */\n", x.Comment)
 		}
 		fmt.Fprintf(dsdt, "\t\t#include <%s>\n", x.File)
 	}
 	dsdt.WriteString(
-		`		}
-	}
+		`	}
 }
 `)
 

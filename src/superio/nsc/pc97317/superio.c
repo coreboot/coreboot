@@ -48,10 +48,10 @@ static struct device_operations ops = {
 };
 
 static struct pnp_info pnp_dev_info[] = {
-	{ NULL, PC97317_KBCK, PNP_IO0 | PNP_IO1 | PNP_IRQ0, 0x0ffb, 0x0ffb, },
+	{ NULL, PC97317_KBCK, PNP_IO0 | PNP_IO1 | PNP_IRQ0, 0x0fff, 0x0fff, },
 	{ NULL, PC97317_KBCM, PNP_IRQ0, },
 	{ NULL, PC97317_RTC,  PNP_IO0 | PNP_IRQ0, 0xfffe, },
-	{ NULL, PC97317_FDC,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, 0xfffa, },
+	{ NULL, PC97317_FDC,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, 0xfff8, },
 	{ NULL, PC97317_PP,   PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, 0x03fc, },
 	{ NULL, PC97317_SP2,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0 | PNP_DRQ1,
 		0xfff8, },

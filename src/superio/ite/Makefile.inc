@@ -20,6 +20,7 @@ romstage-$(CONFIG_SUPERIO_ITE_COMMON_PRE_RAM) += common/early_serial.c
 ## include generic ite environment controller driver
 ramstage-$(CONFIG_SUPERIO_ITE_ENV_CTRL) += common/env_ctrl.c
 
+subdirs-y += it8528e
 subdirs-y += it8623e
 subdirs-y += it8671f
 subdirs-y += it8712f

@@ -163,6 +163,7 @@ Contents:
 * [Getting Started](getting_started/index.md)
 * [Rookie Guide](lessons/index.md)
 * [Coding Style](coding_style.md)
+* [Project Ideas](contributing/project_ideas.md)
 * [Code of Conduct](community/code_of_conduct.md)
 * [Community forums](community/forums.md)
 * [coreboot at conferences](community/conferences.md)

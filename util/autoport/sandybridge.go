@@ -10,7 +10,9 @@ func (i sandybridgemc) Scan(ctx Context, addr PCIDevData) {
 	/* FIXME:XX Move this somewhere else.  */
 	MainboardIncludes = append(MainboardIncludes, "drivers/intel/gma/int15.h")
 	MainboardEnable += (`	/* FIXME: fix those values*/
-	install_intel_vga_int15_handler(GMA_INT15_ACTIVE_LFP_INT_LVDS, GMA_INT15_PANEL_FIT_DEFAULT, GMA_INT15_BOOT_DISPLAY_DEFAULT, 0);
+	install_intel_vga_int15_handler(GMA_INT15_ACTIVE_LFP_INT_LVDS,
+					GMA_INT15_PANEL_FIT_DEFAULT,
+					GMA_INT15_BOOT_DISPLAY_DEFAULT, 0);
 `)
 
 	pchLVDS := inteltool.IGD[0xe1180]

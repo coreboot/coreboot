@@ -49,7 +49,6 @@ postcar-$(CONFIG_ENABLE_BUILTIN_HSUART1) += uart_common.c
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi.c
 ramstage-y += chip.c
 ramstage-y += ehci.c
-ramstage-$(CONFIG_PLATFORM_USES_FSP1_1) += fsp1_1.c
 ramstage-$(CONFIG_PLATFORM_USES_FSP2_0) += fsp2_0.c
 ramstage-y += gpio_i2c.c
 ramstage-y += i2c.c

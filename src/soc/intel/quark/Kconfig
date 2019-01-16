@@ -107,17 +107,6 @@ config ENABLE_DEBUG_LED_ESRAM
 	  Indicate that ESRAM has been successfully initialized.  If the SD LED
 	  does not light then the ESRAM initialization needs to be debugged.
 
-config ENABLE_DEBUG_LED_FINDFSP
-	bool "SD LED indicates fsp.bin file was found"
-	depends on PLATFORM_USES_FSP1_1
-	default n
-	select ENABLE_DEBUG_LED
-	help
-	  Indicate that fsp.bin was found.  If the SD LED does not light then
-	  the code between ESRAM initialization through find_fsp needs to
-	  debugged.  Start by verifying that the correct fsp.bin is in the
-	  image.
-
 config ENABLE_DEBUG_LED_BOOTBLOCK_ENTRY
 	bool "SD LED indicates bootblock.c successfully entered"
 	default n
@@ -160,12 +149,10 @@ config ENABLE_DEBUG_LED_SOC_INIT_ENTRY
 
 config DCACHE_RAM_BASE
 	hex
-	default 0x80070000 if PLATFORM_USES_FSP1_1
 	default 0x80000000
 
 config DCACHE_RAM_SIZE
 	hex
-	default 0x8000 if PLATFORM_USES_FSP1_1
 	default 0x40000
 
 config DISPLAY_ESRAM_LAYOUT
@@ -197,47 +184,11 @@ config CBFS_SIZE
 #     SoC code to boot coreboot and its payload.
 #####
 
-config ADD_FSP_RAW_BIN
-	bool "Add the Intel FSP binary to the flash image without relocation"
-	default n
-	depends on PLATFORM_USES_FSP1_1
-	help
-	  Select this option to add an Intel FSP binary to
-	  the resulting coreboot image.
-
-	  Note: Without this binary, coreboot builds relying on the FSP
-	  will not boot
-
-config FSP_FILE
-	string "Intel FSP binary path and filename"
-	default "3rdparty/blobs/soc/intel/quark/$(CONFIG_FSP_TYPE)/$(CONFIG_FSP_BUILD_TYPE)/FSP.fd"
-	depends on PLATFORM_USES_FSP1_1
-	depends on ADD_FSP_RAW_BIN
-	help
-	  The path and filename of the Intel FSP binary for this platform.
-
-config FSP_LOC
-	hex
-	default 0xfff80000
-	depends on PLATFORM_USES_FSP1_1
-	help
-	  The location in CBFS that the FSP is located. This must match the
-	  value that is set in the FSP binary.  If the FSP needs to be moved,
-	  rebase the FSP with Intel's BCT (tool).
-
 config FSP_ESRAM_LOC
 	hex
-	default 0x80000000 if PLATFORM_USES_FSP1_1
 	default 0x80040000
 	help
 	  The location in ESRAM where a copy of the FSP binary is placed.
-
-config RELOCATE_FSP_INTO_DRAM
-	bool "Relocate FSP into DRAM"
-	default n
-	depends on PLATFORM_USES_FSP1_1
-	help
-	  Relocate the FSP binary into DRAM before the call to SiliconInit.
 
 config FSP_M_FILE
 	string

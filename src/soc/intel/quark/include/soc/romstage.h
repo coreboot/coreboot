@@ -22,11 +22,7 @@
 #error "Don't include romstage.h from a ramstage compilation unit!"
 #endif
 
-#if IS_ENABLED(CONFIG_PLATFORM_USES_FSP1_1)
-#include <fsp/romstage.h>
-#else
 #include <soc/car.h>
-#endif
 #include <soc/reg_access.h>
 
 asmlinkage void *car_stage_c_entry(void);

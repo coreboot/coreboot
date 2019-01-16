@@ -23,6 +23,10 @@ config BOARD_SPECIFIC_OPTIONS
 	select SOC_INTEL_QUARK
 	select MAINBOARD_HAS_I2C_TPM_ATMEL
 	select MAINBOARD_HAS_TPM2
+	select PLATFORM_USES_FSP2_0
+	select UDK_2015_BINDING
+	select POSTCAR_STAGE
+
 
 config MAINBOARD_DIR
 	string
@@ -46,31 +50,6 @@ config GALILEO_GEN2
 	  should initialize.
 
 choice
-	prompt "FSP version"
-	default FSP_VERSION_2_0
-
-config FSP_VERSION_1_1
-	bool "FSP 1.1"
-	select PLATFORM_USES_FSP1_1
-#	select ADD_FSP_RAW_BIN
-	help
-	  Use FSP 1_1 binary
-config FSP_VERSION_2_0
-	bool "FSP 2.0"
-	select PLATFORM_USES_FSP2_0
-	select UDK_2015_BINDING
-	select POSTCAR_STAGE
-	help
-	  Use FSP 2.0 binary
-
-endchoice
-
-config FSP_VERSION
-	string
-	default "fsp1_1" if FSP_VERSION_1_1
-	default "fsp2_0" if FSP_VERSION_2_0
-
-choice
 	prompt "FSP binary type"
 	default FSP_BUILD_TYPE_DEBUG
 
@@ -92,28 +71,14 @@ config FSP_BUILD_TYPE
 
 choice
 	prompt "FSP type"
-	depends on FSP_VERSION_2_0 || FSP_VERSION_1_1
-	default FSP_TYPE_1_1_PEI if FSP_VERSION_1_1
-	default FSP_TYPE_2_0_PEI if FSP_VERSION_2_0
+	default FSP_TYPE_2_0_PEI
 
-config FSP_TYPE_1_1
-	bool "MemInit subroutine"
-	depends on FSP_VERSION_1_1
-	help
-	  FSP 1.1 implemented as subroutines, no EDK-II cores
-config FSP_TYPE_1_1_PEI
-	bool "SEC + PEI Core + MemInit PEIM"
-	depends on FSP_VERSION_1_1
-	help
-	  FSP 1.1 implemented using SEC and PEI core
 config FSP_TYPE_2_0
 	bool "MemInit subroutine"
-	depends on FSP_VERSION_2_0
 	help
 	  FSP 2.0 implemented as subroutines, no EDK-II cores
 config FSP_TYPE_2_0_PEI
 	bool "SEC + PEI Core + MemInit PEIM"
-	depends on FSP_VERSION_2_0
 	help
 	  FSP 2.0 implemented using SEC and PEI core
 
@@ -121,26 +86,22 @@ endchoice
 
 config FSP_TYPE
 	string
-	default "Fsp1_1" if FSP_TYPE_1_1
-	default "Fsp1_1Pei" if FSP_TYPE_1_1_PEI
 	default "Fsp2_0" if FSP_TYPE_2_0
 	default "Fsp2_0Pei" if FSP_TYPE_2_0_PEI
 
 config FSP_DEBUG_ALL
 	bool "Enable all FSP debug support"
-	depends on FSP_VERSION_2_0 || FSP_VERSION_1_1
 	default y
 # Enable display and verification for coreboot build tests
 	select DISPLAY_HOBS
 	select DISPLAY_MTRRS
 	select DISPLAY_SMM_MEMORY_MAP
 	select DISPLAY_UPD_DATA
-	select DISPLAY_ESRAM_LAYOUT if FSP_VERSION_2_0
-	select DISPLAY_FSP_CALLS_AND_STATUS if FSP_VERSION_2_0
-	select DISPLAY_FSP_HEADER if FSP_VERSION_2_0
-	select POSTCAR_CONSOLE if FSP_VERSION_2_0
-	select VERIFY_HOBS if FSP_VERSION_2_0
-	select DISPLAY_FSP_ENTRY_POINTS if FSP_VERSION_1_1
+	select DISPLAY_ESRAM_LAYOUT
+	select DISPLAY_FSP_CALLS_AND_STATUS
+	select DISPLAY_FSP_HEADER
+	select POSTCAR_CONSOLE
+	select VERIFY_HOBS
 	help
 	  Turn on debug support to display HOBS, MTRRS, SMM_MEMORY_MAP, UPD_DATA
 	  also turn on FSP 2.0 debug support for ESRAM_LAYOUT,

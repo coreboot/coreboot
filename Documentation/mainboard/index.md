@@ -51,6 +51,11 @@ The boards in this section are not real mainboards, but emulators.
 
 - [Compaq 8200 Elite SFF](hp/compaq_8200_sff.md)
 
+### EliteBook series
+
+- [EliteBook common](hp/elitebook_series.md)
+- [EliteBook 8760w](hp/8760w.md)
+
 ## Lenovo
 
 - [Mainboard codenames](lenovo/codenames.md)

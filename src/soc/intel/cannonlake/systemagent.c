@@ -54,7 +54,6 @@ void soc_add_fixed_mmio_resources(struct device *dev, int *index)
 
 	sa_add_fixed_mmio_resources(dev, index, soc_fixed_resources,
 			ARRAY_SIZE(soc_fixed_resources));
-
 }
 
 /*

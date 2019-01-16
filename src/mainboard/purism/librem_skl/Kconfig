@@ -77,6 +77,6 @@ config CPU_MICROCODE_CBFS_LOC
 
 config CBFS_SIZE
 	hex
-	default 0x5c0000
+	default 0xe00000
 
 endif

@@ -60,7 +60,7 @@ EXPAT_VERSION=2.2.6
 # CLANG version number
 CLANG_VERSION=7.0.1
 MAKE_VERSION=4.2.1
-CMAKE_VERSION=3.13.2
+CMAKE_VERSION=3.13.3
 
 # GCC toolchain archive locations
 # These are sanitized by the jenkins toolchain test builder, so if

@@ -267,6 +267,10 @@ void variant_devtree_update(void)
 	case SKU_2_EKKO:
 	case SKU_3_EKKO:
 		pl2_id = PL2_ID_BARD_EKKO;
+		cfg->usb2_ports[5].enable = 0;
+		cfg->usb2_ports[7].enable = 0;
+		cfg->usb2_ports[8].enable = 0;
+		cfg->usb2_ports[9].enable = 0;
 		break;
 	default:
 		break;

@@ -20,7 +20,7 @@ INCLUDELIST="src util payloads Makefile* toolchain.inc"
 
 # shellcheck disable=SC2086,SC2046
 if uname | grep -qi "linux"; then
-	grep -l "[[:space:]][[:space:]]*$" \
+	grep -n -H "[[:space:]][[:space:]]*$" \
 		$(git ls-files $INCLUDELIST | \
 			grep -Ev "($EXCLUDELIST)" ) | \
 		sed -e "s,^.*$,File & has lines ending with whitespace.,"

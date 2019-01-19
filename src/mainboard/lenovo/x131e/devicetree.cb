@@ -90,18 +90,12 @@ chip northbridge/intel/sandybridge
 			device pci 1d.0 on end # USB2 EHCI #1
 			device pci 1e.0 off end # PCI bridge
 			device pci 1f.0 on # LPC bridge PCI-LPC bridge
-				chip ec/lenovo/pmh7
-					register "backlight_enable" = "0x01"
-					register "dock_event_enable" = "0x00"
-					device pnp ff.1 on end # dummy
-				end
-
 				chip drivers/pc80/tpm
 					device pnp 0c31.0 on end
 				end
 
 				chip ec/lenovo/h8
-					device pnp ff.2 on # dummy
+					device pnp ff.1 on # dummy
 						io 0x60 = 0x62
 						io 0x62 = 0x66
 						io 0x64 = 0x1600

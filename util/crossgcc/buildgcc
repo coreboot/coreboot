@@ -31,7 +31,7 @@
 cd "$(dirname "$0")" || exit 1
 
 CROSSGCC_DATE="$(git log -n 1 --pretty=%ad --date=short .)"
-CROSSGCC_VERSION="$(git describe $(git log -n 1 --pretty=%h .))"
+CROSSGCC_VERSION="$(git log -n 1 --pretty=%h .)"
 CROSSGCC_COMMIT=$( git describe )
 
 # default settings

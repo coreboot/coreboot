@@ -354,8 +354,6 @@ static void ich7_setup_dmi_rcrb(void)
 	RCBA32(HDD) = 0x0f000003;
 	RCBA32(RP5D) = 0x05000002;
 
-	RCBA32(RPFN) = 0x00543210;
-
 	pci_write_config16(PCI_DEV(0, 0x1c, 0), 0x42, 0x0141);
 	pci_write_config16(PCI_DEV(0, 0x1c, 4), 0x42, 0x0141);
 	pci_write_config16(PCI_DEV(0, 0x1c, 5), 0x42, 0x0141);

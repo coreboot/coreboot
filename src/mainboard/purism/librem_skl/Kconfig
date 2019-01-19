@@ -22,6 +22,7 @@ config IRQ_SLOT_COUNT
 config VARIANT_DIR
 	string
 	default "librem13v2" if BOARD_PURISM_LIBREM13_V2
+	default "librem13v2" if BOARD_PURISM_LIBREM13_V3
 	default "librem15v3" if BOARD_PURISM_LIBREM15_V3
 	default "librem13v2" if BOARD_PURISM_LIBREM13_V4
 	default "librem15v3" if BOARD_PURISM_LIBREM15_V4
@@ -33,6 +34,7 @@ config MAINBOARD_VENDOR
 config MAINBOARD_FAMILY
 	string
 	default "Librem 13" if BOARD_PURISM_LIBREM13_V2
+	default "Librem 13" if BOARD_PURISM_LIBREM13_V3
 	default "Librem 15" if BOARD_PURISM_LIBREM15_V3
 	default "Librem 13" if BOARD_PURISM_LIBREM13_V4
 	default "Librem 15" if BOARD_PURISM_LIBREM15_V4
@@ -40,6 +42,7 @@ config MAINBOARD_FAMILY
 config MAINBOARD_PART_NUMBER
 	string
 	default "Librem 13 v2" if BOARD_PURISM_LIBREM13_V2
+	default "Librem 13 v2" if BOARD_PURISM_LIBREM13_V3
 	default "Librem 15 v3" if BOARD_PURISM_LIBREM15_V3
 	default "Librem 13 v4" if BOARD_PURISM_LIBREM13_V4
 	default "Librem 15 v4" if BOARD_PURISM_LIBREM15_V4
@@ -47,6 +50,7 @@ config MAINBOARD_PART_NUMBER
 config MAINBOARD_VERSION
 	string
 	default "2.0" if BOARD_PURISM_LIBREM13_V2
+	default "3.0" if BOARD_PURISM_LIBREM13_V3
 	default "3.0" if BOARD_PURISM_LIBREM15_V3
 	default "4.0" if BOARD_PURISM_LIBREM13_V4
 	default "4.0" if BOARD_PURISM_LIBREM15_V4
@@ -66,6 +70,7 @@ config MAX_CPUS
 config VGA_BIOS_ID
 	string
 	default "8086,1916" if BOARD_PURISM_LIBREM13_V2
+	default "8086,1916" if BOARD_PURISM_LIBREM13_V3
 	default "8086,1916" if BOARD_PURISM_LIBREM15_V3
 	default "8086,5916" if BOARD_PURISM_LIBREM13_V4
 	default "8086,5916" if BOARD_PURISM_LIBREM15_V4

@@ -2546,29 +2546,19 @@ static void sdram_jedec_enable(struct sys_info *sysinfo)
 	u32 bankaddr = 0, tmpaddr, mrsaddr = 0;
 
 	for (i = 0, nonzero = -1; i < 8; i++) {
-		if (sysinfo->banksize[i]  == 0)
+		if (sysinfo->banksize[i] == 0)
 			continue;
 
 		printk(BIOS_DEBUG, "jedec enable sequence: bank %d\n", i);
-		switch (i) {
-		case 0:
-			/* Start at address 0 */
-			bankaddr = 0;
-			break;
-		case 4:
-			if (sysinfo->interleaved) {
+
+		if (nonzero != -1) {
+			if (sysinfo->interleaved && nonzero < 4 && i >= 4) {
 				bankaddr = 0x40;
-				break;
-			}
-		default:
-			if (nonzero != -1) {
+			} else {
 				printk(BIOS_DEBUG, "bankaddr from bank size of rank %d\n", nonzero);
 				bankaddr += sysinfo->banksize[nonzero] <<
 					(sysinfo->interleaved ? 26 : 25);
-				break;
 			}
-			/* No populated bank hit before. Start at address 0 */
-			bankaddr = 0;
 		}
 
 		/* We have a bank with a non-zero size.. Remember it

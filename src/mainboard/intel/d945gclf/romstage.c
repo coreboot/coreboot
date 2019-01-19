@@ -47,7 +47,6 @@ static void rcba_config(void)
 {
 	/* Set up virtual channel 0 */
 	//RCBA32(0x0014) = 0x80000001;
-	//RCBA32(0x001c) = 0x03128010;
 
 	/* dev irq route register */
 	RCBA16(D31IR) = 0x0132;

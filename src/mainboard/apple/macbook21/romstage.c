@@ -143,8 +143,6 @@ static void rcba_config(void)
 {
 	/* V0CTL Virtual Channel 0 Resource Control */
 	RCBA32(0x0014) = 0x80000001;
-	/* V1CAP Virtual Channel 1 Resource Capability */
-	RCBA32(0x001c) = 0x03128010;
 
 	/* Device 1f interrupt pin register */
 	RCBA32(0x3100) = 0x00042210;

@@ -77,7 +77,6 @@ static void rcba_config(void)
 {
 	/* Set up virtual channel 0 */
 	RCBA32(V0CTL) = 0x80000001;
-	RCBA32(V1CAP) = 0x03128010;
 
 	/* Device 1f interrupt pin register */
 	RCBA32(D31IP) = 0x00001230;

@@ -63,16 +63,6 @@ func (i sandybridgemc) Scan(ctx Context, addr PCIDevData) {
 				Dev:  0,
 				Children: []DevTreeNode{
 					{
-						Chip: "cpu/intel/socket_rPGA989",
-						Children: []DevTreeNode{
-							{
-								Chip: "lapic",
-								Dev:  0,
-							},
-						},
-					},
-
-					{
 						Chip:    "cpu/intel/model_206ax",
 						Comment: "FIXME: check all registers",
 						Registers: map[string]string{
@@ -85,6 +75,10 @@ func (i sandybridgemc) Scan(ctx Context, addr PCIDevData) {
 							"c3_battery": "5",
 						},
 						Children: []DevTreeNode{
+							{
+								Chip: "lapic",
+								Dev:  0,
+							},
 							{
 								Chip:     "lapic",
 								Dev:      0xacac,
@@ -114,7 +108,6 @@ func (i sandybridgemc) Scan(ctx Context, addr PCIDevData) {
 	/* FIXME:XX some configs are unsupported.  */
 	KconfigBool["SANDYBRIDGE_IVYBRIDGE_LVDS"] = true
 
-	KconfigBool["CPU_INTEL_SOCKET_RPGA989"] = true
 	KconfigBool["NORTHBRIDGE_INTEL_"+i.variant+"BRIDGE"] = true
 	KconfigBool["USE_NATIVE_RAMINIT"] = true
 	KconfigBool["INTEL_INT15"] = true

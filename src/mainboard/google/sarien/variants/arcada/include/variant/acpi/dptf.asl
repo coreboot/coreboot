@@ -39,16 +39,16 @@
 
 Name (DTRT, Package () {
 	/* CPU Throttle Effect on CPU */
-	Package () { \_SB.PCI0.B0D4, \_SB.PCI0.B0D4, 100, 10, 0, 0, 0, 0 },
+	Package () { \_SB.PCI0.TCPU, \_SB.PCI0.TCPU, 100, 10, 0, 0, 0, 0 },
 
 	/* CPU Throttle Effect on Skin (TSR0) */
-	Package () { \_SB.PCI0.B0D4, \_SB.DPTF.TSR0, 100, 600, 0, 0, 0, 0 },
+	Package () { \_SB.PCI0.TCPU, \_SB.DPTF.TSR0, 100, 600, 0, 0, 0, 0 },
 
 	/* CPU Throttle Effect on DDR (TSR1) */
-	Package () { \_SB.PCI0.B0D4, \_SB.DPTF.TSR1, 100, 90, 0, 0, 0, 0 },
+	Package () { \_SB.PCI0.TCPU, \_SB.DPTF.TSR1, 100, 90, 0, 0, 0, 0 },
 
 	/* CPU Throttle Effect on Ambient (TSR2) */
-	Package () { \_SB.PCI0.B0D4, \_SB.DPTF.TSR2, 100, 600, 0, 0, 0, 0 },
+	Package () { \_SB.PCI0.TCPU, \_SB.DPTF.TSR2, 100, 600, 0, 0, 0, 0 },
 })
 
 Name (MPPC, Package ()

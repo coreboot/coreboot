@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  */
 
-#define DPTF_CPU_DEVICE		B0D4
+#define DPTF_CPU_DEVICE		TCPU
 #define DPTF_CPU_ADDR		0x00040000
 
 #ifndef DPTF_CPU_PASSIVE

@@ -247,13 +247,13 @@ static void sdram_detect_errors(struct sys_info *sysinfo)
 	u8 reg8;
 	u8 do_reset = 0;
 
-	reg8 = pci_read_config8(PCI_DEV(0, 0x1f, 0), 0xa2);
+	reg8 = pci_read_config8(PCI_DEV(0, 0x1f, 0), GEN_PMCON_2);
 
 	if (reg8 & ((1<<7)|(1<<2))) {
 		if (reg8 & (1<<2)) {
 			printk(BIOS_DEBUG, "SLP S4# Assertion Width Violation.\n");
 			/* Write back clears bit 2 */
-			pci_write_config8(PCI_DEV(0, 0x1f, 0), 0xa2, reg8);
+			pci_write_config8(PCI_DEV(0, 0x1f, 0), GEN_PMCON_2, reg8);
 			do_reset = 1;
 
 		}
@@ -261,14 +261,14 @@ static void sdram_detect_errors(struct sys_info *sysinfo)
 		if (reg8 & (1<<7)) {
 			printk(BIOS_DEBUG, "DRAM initialization was interrupted.\n");
 			reg8 &= ~(1<<7);
-			pci_write_config8(PCI_DEV(0, 0x1f, 0), 0xa2, reg8);
+			pci_write_config8(PCI_DEV(0, 0x1f, 0), GEN_PMCON_2, reg8);
 			do_reset = 1;
 		}
 
 		/* Set SLP_S3# Assertion Stretch Enable */
-		reg8 = pci_read_config8(PCI_DEV(0, 0x1f, 0), 0xa4); /* GEN_PMCON_3 */
+		reg8 = pci_read_config8(PCI_DEV(0, 0x1f, 0), GEN_PMCON_3);
 		reg8 |= (1 << 3);
-		pci_write_config8(PCI_DEV(0, 0x1f, 0), 0xa4, reg8);
+		pci_write_config8(PCI_DEV(0, 0x1f, 0), GEN_PMCON_3, reg8);
 
 		if (do_reset) {
 			printk(BIOS_DEBUG, "Reset required.\n");
@@ -277,9 +277,9 @@ static void sdram_detect_errors(struct sys_info *sysinfo)
 	}
 
 	/* Set DRAM initialization bit in ICH7 */
-	reg8 = pci_read_config8(PCI_DEV(0, 0x1f, 0), 0xa2);
+	reg8 = pci_read_config8(PCI_DEV(0, 0x1f, 0), GEN_PMCON_2);
 	reg8 |= (1<<7);
-	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0xa2, reg8);
+	pci_write_config8(PCI_DEV(0, 0x1f, 0), GEN_PMCON_2, reg8);
 
 	/* clear self refresh status if check is disabled or not a resume */
 	if (!CONFIG(CHECK_SLFRCS_ON_RESUME)
@@ -1807,9 +1807,9 @@ static void sdram_program_memory_frequency(struct sys_info *sysinfo)
 	 */
 	goto cache_code;
 vco_update:
-	reg8 = pci_read_config8(PCI_DEV(0, 0x1f, 0), 0xa2);
+	reg8 = pci_read_config8(PCI_DEV(0, 0x1f, 0), GEN_PMCON_2);
 	reg8 &= ~(1 << 7);
-	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0xa2, reg8);
+	pci_write_config8(PCI_DEV(0, 0x1f, 0), GEN_PMCON_2, reg8);
 
 	clkcfg &= ~(1 << 10);
 	MCHBAR32(CLKCFG) = clkcfg;
@@ -2813,9 +2813,9 @@ void sdram_initialize(int boot_path, const u8 *spd_addresses)
 	sdram_enable_rcomp();
 
 	/* Tell ICH7 that we're done */
-	reg8 = pci_read_config8(PCI_DEV(0, 0x1f, 0), 0xa2);
+	reg8 = pci_read_config8(PCI_DEV(0, 0x1f, 0), GEN_PMCON_2);
 	reg8 &= ~(1 << 7);
-	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0xa2, reg8);
+	pci_write_config8(PCI_DEV(0, 0x1f, 0), GEN_PMCON_2, reg8);
 
 	printk(BIOS_DEBUG, "RAM initialization finished.\n");
 

@@ -17,6 +17,14 @@ ramstage-y += model_406dx_init.c
 subdirs-y += ../../x86/name
 subdirs-y += ../common
 
+subdirs-y += ../../x86/tsc
+subdirs-y += ../../x86/mtrr
+subdirs-y += ../../x86/lapic
+subdirs-y += ../../x86/cache
+subdirs-y += ../../x86/smm
+subdirs-y += ../microcode
+subdirs-y += ../turbo
+
 ramstage-y += acpi.c
 
 CPPFLAGS_romstage += -I$(src)/cpu/intel/fsp_model_406dx

@@ -15,10 +15,8 @@
 chip northbridge/intel/fsp_rangeley
 
 	device cpu_cluster 0 on
-		chip cpu/intel/socket_rPGA989
-			device lapic 0 on end
-		end
 		chip cpu/intel/fsp_model_406dx
+			device lapic 0 on end
 			# Magic APIC ID to locate this chip
 			device lapic 0xACAC off end
 

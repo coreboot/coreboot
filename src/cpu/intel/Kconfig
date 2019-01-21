@@ -27,7 +27,6 @@ source src/cpu/intel/socket_mPGA478MN/Kconfig
 source src/cpu/intel/socket_mPGA604/Kconfig
 source src/cpu/intel/socket_441/Kconfig
 source src/cpu/intel/socket_LGA775/Kconfig
-source src/cpu/intel/socket_rPGA989/Kconfig
 # Architecture specific features
 source src/cpu/intel/fit/Kconfig
 source src/cpu/intel/turbo/Kconfig

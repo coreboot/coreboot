@@ -67,8 +67,7 @@ void pnp_enter_conf_mode_870155aa(struct device *dev)
 
 void pnp_exit_conf_mode_0202(struct device *dev)
 {
-	outb(0x02, dev->path.pnp.port);
-	outb(0x02, dev->path.pnp.port + 1);
+	pnp_write_config(dev, 0x02, (1 << 1));
 }
 
 

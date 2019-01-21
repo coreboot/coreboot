@@ -558,9 +558,11 @@ static void fam15_finalize(void *chip_info)
 
 	/* disable No Snoop */
 	dev = pcidev_on_root(1, 1);
-	value = pci_read_config32(dev, 0x60);
-	value &= ~(1 << 11);
-	pci_write_config32(dev, 0x60, value);
+	if (dev != NULL) {
+		value = pci_read_config32(dev, 0x60);
+		value &= ~(1 << 11);
+		pci_write_config32(dev, 0x60, value);
+	}
 }
 
 struct chip_operations northbridge_amd_pi_00660F01_ops = {

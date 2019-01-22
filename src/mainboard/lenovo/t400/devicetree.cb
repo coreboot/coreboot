@@ -76,14 +76,6 @@ chip northbridge/intel/gm45
 			register "pcie_power_limits" = "{ { 10, 0 }, { 10, 0 }, { 0, 0 }, { 10, 0 }, { 0, 0 }, { 0, 0 } }"
 			register "pcie_hotplug_map" = "{ 0, 0, 0, 1, 0, 0, 0, 0 }"
 
-			chip drivers/generic/ioapic
-				register "have_isa_interrupts" = "1"
-				register "irq_on_fsb" = "1"
-				register "enable_virtual_wire" = "1"
-				register "base" = "(void *)0xfec00000"
-				device ioapic 2 on end
-			end
-
 			device pci 19.0 on end # LAN
 			device pci 1a.0 on # UHCI
 				subsystemid 0x17aa 0x20f0
@@ -141,6 +133,15 @@ chip northbridge/intel/gm45
 			end
 			device pci 1f.0 on # LPC bridge
 				subsystemid 0x17aa 0x20f5
+
+				chip drivers/generic/ioapic
+					register "have_isa_interrupts" = "1"
+					register "irq_on_fsb" = "1"
+					register "enable_virtual_wire" = "1"
+					register "base" = "(void *)0xfec00000"
+					device ioapic 2 on end
+				end
+
 				chip ec/lenovo/pmh7
 					device pnp ff.1 on # dummy
 					end

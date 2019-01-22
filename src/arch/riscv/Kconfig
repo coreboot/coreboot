@@ -40,10 +40,12 @@ config ARCH_RISCV_U
 config ARCH_RISCV_RV64
 	bool
 	default n
+	select ARCH_RISCV
 
 config ARCH_RISCV_RV32
 	bool
 	default n
+	select ARCH_RISCV
 
 config ARCH_RISCV_PMP
 	bool
@@ -52,7 +54,6 @@ config ARCH_RISCV_PMP
 config ARCH_BOOTBLOCK_RISCV
 	bool
 	default n
-	select ARCH_RISCV
 	select C_ENVIRONMENT_BOOTBLOCK
 
 config ARCH_VERSTAGE_RISCV

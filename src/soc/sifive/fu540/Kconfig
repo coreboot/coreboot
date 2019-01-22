@@ -13,7 +13,6 @@
 
 config SOC_SIFIVE_FU540
 	bool
-	select ARCH_RISCV
 	select ARCH_RISCV_RV64
 	select ARCH_RISCV_S
 	select ARCH_RISCV_U

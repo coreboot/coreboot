@@ -36,6 +36,11 @@ chip soc/intel/cannonlake
 	register "tdp_pl1_override" = "25"
 	register "tdp_pl2_override" = "51"
 	register "Device4Enable" = "1"
+	register "AcousticNoiseMitigation" = "1"
+	register "SlowSlewRateForIa" = "0"
+	register "SlowSlewRateForGt" = "0"
+	register "SlowSlewRateForSa" = "0"
+	register "SlowSlewRateForFivr" = "0"
 
 	# Intel Common SoC Config
 	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC_SKIP)"	# Left Type-C Port

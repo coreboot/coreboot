@@ -14,6 +14,7 @@
  */
 
 #include <arch/acpi.h>
+#include <arch/early_variables.h>
 #include <boot/coreboot_tables.h>
 #include <gpio.h>
 #include <soc/gpio.h>
@@ -21,12 +22,20 @@
 #include <vendorcode/google/chromeos/chromeos.h>
 #include <security/tpm/tss.h>
 
+enum rec_mode_state {
+	REC_MODE_UNINITIALIZED,
+	REC_MODE_NOT_REQUESTED,
+	REC_MODE_REQUESTED,
+};
+static enum rec_mode_state saved_rec_mode CAR_GLOBAL;
 
 void fill_lb_gpios(struct lb_gpios *gpios)
 {
 	struct lb_gpio chromeos_gpios[] = {
-		{-1, ACTIVE_HIGH, get_write_protect_state(), "write protect"},
-		{-1, ACTIVE_HIGH, get_recovery_mode_switch(), "recovery"},
+		{GPIO_PCH_WP, ACTIVE_HIGH, get_write_protect_state(),
+		 "write protect"},
+		{GPIO_REC_MODE, ACTIVE_LOW, get_recovery_mode_switch(),
+		 "recovery"},
 		{-1, ACTIVE_HIGH, get_lid_switch(), "lid"},
 		{-1, ACTIVE_HIGH, 0, "power"},
 		{-1, ACTIVE_HIGH, gfx_get_init_done(), "oprom"},
@@ -72,16 +81,30 @@ int get_write_protect_state(void)
 
 int get_recovery_mode_switch(void)
 {
-	uint8_t recovery_button_state;
-	int recovery_mode_switch = 0;
+	enum rec_mode_state state = car_get_var(saved_rec_mode);
+	uint8_t recovery_button_state = 0;
 
+	/* Check the global variable first. */
+	if (state == REC_MODE_NOT_REQUESTED)
+		return 0;
+	else if (state == REC_MODE_REQUESTED)
+		return 1;
+
+	state = REC_MODE_NOT_REQUESTED;
+
+	/* Read state from the GPIO controlled by servo. */
 	if (cros_get_gpio_value(CROS_GPIO_REC))
-		recovery_mode_switch = 1;
+		state = REC_MODE_REQUESTED;
+	/* Read one-time recovery request from cr50. */
 	else if (tlcl_cr50_get_recovery_button(&recovery_button_state)
-		== TPM_SUCCESS)
-		recovery_mode_switch = recovery_button_state;
+		 == TPM_SUCCESS)
+		state = recovery_button_state ?
+			REC_MODE_REQUESTED : REC_MODE_NOT_REQUESTED;
 
-	return recovery_mode_switch;
+	/* Store the state in case this is called again in verstage. */
+	car_set_var(saved_rec_mode, state);
+
+	return state == REC_MODE_REQUESTED;
 }
 
 int get_lid_switch(void)

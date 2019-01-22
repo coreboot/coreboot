@@ -552,8 +552,6 @@ static void i945_setup_pci_express_x16(void)
 	u32 reg32;
 	u16 reg16;
 
-	u8 reg8;
-
 	printk(BIOS_DEBUG, "Enabling PCI Express x16 Link\n");
 
 	reg16 = pci_read_config16(PCI_DEV(0, 0x00, 0), DEVEN);
@@ -732,9 +730,6 @@ static void i945_setup_pci_express_x16(void)
 
 	reg32 = pci_read_config32(PCI_DEV(0, 0x01, 0), 0x328);
 	pci_write_config32(PCI_DEV(0, 0x01, 0), 0x328, reg32);
-
-	reg8 = pci_read_config8(PCI_DEV(0, 0x01, 0), SLOTCAP);
-	pci_write_config8(PCI_DEV(0, 0x01, 0), SLOTCAP, reg8);
 
 	/* Additional PCIe graphics setup */
 	reg32 = pci_read_config32(PCI_DEV(0, 0x01, 0), 0xf0);

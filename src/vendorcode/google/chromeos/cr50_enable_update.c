@@ -21,6 +21,9 @@
 #include <security/tpm/tss.h>
 #include <vb2_api.h>
 #include <security/vboot/vboot_common.h>
+#include <vendorcode/google/chromeos/chromeos.h>
+
+void __weak mainboard_cr50_update_reset(void) {}
 
 static void enable_update(void *unused)
 {
@@ -51,6 +54,9 @@ static void enable_update(void *unused)
 	/* If no headers were restored there is no reset forthcoming. */
 	if (!num_restored_headers)
 		return;
+
+	/* Give mainboard a chance to take action */
+	mainboard_cr50_update_reset();
 
 	elog_add_event(ELOG_TYPE_CR50_UPDATE);
 

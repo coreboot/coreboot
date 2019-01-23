@@ -33,6 +33,9 @@ static inline void mark_watchdog_tombstone(void) { return; }
 static inline void reboot_from_watchdog(void) { return; }
 #endif /* CONFIG_CHROMEOS */
 
+/* Defined as weak function in cr50_enable_update.c */
+void mainboard_cr50_update_reset(void);
+
 struct romstage_handoff;
 
 #include "gnvs.h"

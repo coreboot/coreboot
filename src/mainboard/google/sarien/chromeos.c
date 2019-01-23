@@ -21,6 +21,10 @@
 #include <variant/gpio.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 #include <security/tpm/tss.h>
+#include <device/device.h>
+#include <intelblocks/pmclib.h>
+#include <soc/pmc.h>
+#include <soc/pci_devs.h>
 
 enum rec_mode_state {
 	REC_MODE_UNINITIALIZED,
@@ -110,4 +114,12 @@ int get_recovery_mode_switch(void)
 int get_lid_switch(void)
 {
 	return 1;
+}
+
+void mainboard_cr50_update_reset(void)
+{
+#if ENV_RAMSTAGE
+	/* Ensure system powers up after CR50 reset */
+	pmc_set_afterg3(PCH_DEV_PMC, MAINBOARD_POWER_STATE_ON);
+#endif
 }

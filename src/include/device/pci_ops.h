@@ -175,4 +175,21 @@ void pci_update_config32(const struct device *dev, u16 reg, u32 mask, u32 or)
 	pci_write_config32(dev, reg, reg32);
 }
 
+u16 pci_s_find_next_capability(pci_devfn_t dev, u16 cap, u16 last);
+u16 pci_s_find_capability(pci_devfn_t dev, u16 cap);
+
+#ifndef __SIMPLE_DEVICE__
+static __always_inline
+u16 pci_find_next_capability(const struct device *dev, u16 cap, u16 last)
+{
+	return pci_s_find_next_capability(PCI_BDF(dev), cap, last);
+}
+
+static __always_inline
+u16 pci_find_capability(const struct device *dev, u16 cap)
+{
+	return pci_s_find_capability(PCI_BDF(dev), cap);
+}
+#endif
+
 #endif /* PCI_OPS_H */

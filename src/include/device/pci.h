@@ -125,16 +125,6 @@ static inline const struct pci_operations *ops_pci(struct device *dev)
 pci_devfn_t pci_locate_device(unsigned int pci_id, pci_devfn_t dev);
 pci_devfn_t pci_locate_device_on_bus(unsigned int pci_id, unsigned int bus);
 
-#ifdef __SIMPLE_DEVICE__
-unsigned int pci_find_next_capability(pci_devfn_t dev, unsigned int cap,
-	unsigned int last);
-unsigned int pci_find_capability(pci_devfn_t dev, unsigned int cap);
-#else /* !__SIMPLE_DEVICE__ */
-unsigned int pci_find_next_capability(struct device *dev, unsigned int cap,
-	unsigned int last);
-unsigned int pci_find_capability(struct device *dev, unsigned int cap);
-#endif /* __SIMPLE_DEVICE__ */
-
 void pci_early_mmio_window(pci_devfn_t p2p_bridge, u32 mmio_base,
 			   u32 mmio_size);
 int pci_early_device_probe(u8 bus, u8 dev, u32 mmio_base);

@@ -17,6 +17,8 @@
  * Derived from Cavium's BSD-3 Clause OCTEONTX-SDK-6.2.0.
  */
 
+#define __SIMPLE_DEVICE__
+
 #include <device/pci_ops.h>
 #include <device/pci_def.h>
 #include <device/pci.h>
@@ -27,15 +29,11 @@
  * Get PCI BAR address from cavium specific extended capability.
  * Use regular BAR if not found in extended capability space.
  *
- * @return The pyhsical address of the BAR, zero on error
+ * @return The physical address of the BAR, zero on error
  */
-#ifdef __SIMPLE_DEVICE__
 uint64_t ecam0_get_bar_val(pci_devfn_t dev, u8 bar)
-#else
-uint64_t ecam0_get_bar_val(struct device *dev, u8 bar)
-#endif
 {
-	size_t cap_offset = pci_find_capability(dev, 0x14);
+	size_t cap_offset = pci_s_find_capability(dev, 0x14);
 	uint64_t h, l, ret = 0;
 	if (cap_offset) {
 		/* Found EA */

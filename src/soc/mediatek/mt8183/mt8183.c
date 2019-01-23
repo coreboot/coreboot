@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright 2018 MediaTek Inc.
+ * Copyright 2019 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,10 +13,10 @@
  * GNU General Public License for more details.
  */
 
-#include <bootblock_common.h>
-#include <soc/pll.h>
+#include <soc/mt8183.h>
+#include <soc/wdt.h>
 
-void bootblock_soc_init(void)
+void mt8183_early_init(void)
 {
-	mt_pll_init();
+	mtk_wdt_init();
 }

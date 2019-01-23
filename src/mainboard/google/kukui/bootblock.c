@@ -16,6 +16,7 @@
 #include <bootblock_common.h>
 #include <gpio.h>
 #include <soc/gpio.h>
+#include <soc/mt8183.h>
 #include <soc/spi.h>
 
 #include "gpio.h"
@@ -25,6 +26,8 @@
 
 void bootblock_mainboard_init(void)
 {
+	mt8183_early_init();
+
 	setup_chromeos_gpios();
 
 	/* Turn on real eMMC. */

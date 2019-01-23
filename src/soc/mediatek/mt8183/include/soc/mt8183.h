@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright 2018 MediaTek Inc.
+ * Copyright 2019 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,10 +13,11 @@
  * GNU General Public License for more details.
  */
 
-#include <bootblock_common.h>
-#include <soc/pll.h>
+#ifndef __SOC_MEDIATEK_MT8183_H__
+#define __SOC_MEDIATEK_MT8183_H__
 
-void bootblock_soc_init(void)
-{
-	mt_pll_init();
-}
+/* Mainboards should manually call this function in early stages (bootblock or
+ * verstage). */
+void mt8183_early_init(void);
+
+#endif /* __SOC_MEDIATEK_MT8183_H__ */

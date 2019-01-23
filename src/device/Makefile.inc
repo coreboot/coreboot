@@ -13,7 +13,6 @@ ramstage-$(CONFIG_ARCH_RAMSTAGE_X86_32) += pnp_device.c
 ramstage-$(CONFIG_ARCH_RAMSTAGE_X86_64) += pnp_device.c
 ramstage-$(CONFIG_PCI) += pci_ops.c
 ramstage-$(CONFIG_MMCONF_SUPPORT) += pci_ops_mmconf.c
-ramstage-$(CONFIG_PCI) += pci_early.c
 ramstage-$(CONFIG_PCI) += pci_rom.c
 ramstage-y += smbus_ops.c
 
@@ -28,12 +27,10 @@ verstage-y += device_const.c
 romstage-y += device_const.c
 ramstage-y += device_const.c
 
-ifeq ($(CONFIG_ARCH_X86),y)
 bootblock-$(CONFIG_PCI) += pci_early.c
 verstage-$(CONFIG_PCI) += pci_early.c
 romstage-$(CONFIG_PCI) += pci_early.c
 postcar-$(CONFIG_PCI) += pci_early.c
-endif
 
 subdirs-y += oprom dram
 

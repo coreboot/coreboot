@@ -18,9 +18,10 @@
 #include <arch/io.h>
 #include <device/pci.h>
 #include <device/pci_def.h>
+#include <device/pci_ops.h>
+#include <device/pci_type.h>
 #include <delay.h>
 
-#if !ENV_RAMSTAGE
 unsigned pci_find_next_capability(pci_devfn_t dev, unsigned cap, unsigned last)
 {
 	unsigned pos = 0;
@@ -68,9 +69,6 @@ unsigned pci_find_capability(pci_devfn_t dev, unsigned cap)
 {
 	return pci_find_next_capability(dev, cap, 0);
 }
-#endif
-
-#if IS_ENABLED(CONFIG_EARLY_PCI_BRIDGE)
 
 static void pci_bridge_reset_secondary(pci_devfn_t p2p_bridge)
 {
@@ -167,4 +165,3 @@ void pci_early_bridge_init(void)
 
 	pci_early_mmio_window(p2p_bridge, CONFIG_EARLY_PCI_MMIO_BASE, 0x4000);
 }
-#endif /* CONFIG_EARLY_PCI_BRIDGE */

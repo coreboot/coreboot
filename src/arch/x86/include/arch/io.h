@@ -208,7 +208,7 @@ static __always_inline void write64(volatile void *addr,
 #define PNP_DEV(PORT, FUNC) (((PORT) << 8) | (FUNC))
 
 #include <arch/pci_io_cfg.h>
-#include <arch/pci_mmio_cfg.h>
+#include <device/pci_mmio_cfg.h>
 
 static __always_inline
 uint8_t pci_read_config8(pci_devfn_t dev, unsigned int where)

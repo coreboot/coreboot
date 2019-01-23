@@ -14,7 +14,9 @@
 #ifndef _PCI_IO_CFG_H
 #define _PCI_IO_CFG_H
 
+#include <stdint.h>
 #include <arch/io.h>
+#include <device/pci_type.h>
 
 static __always_inline
 unsigned int pci_io_encode_addr(pci_devfn_t dev, unsigned int where)
@@ -74,5 +76,45 @@ void pci_io_write_config32(pci_devfn_t dev, unsigned int where, uint32_t value)
 	outl(0x80000000 | (addr & ~3), 0xCF8);
 	outl(value, 0xCFC);
 }
+
+#if !IS_ENABLED(CONFIG_MMCONF_SUPPORT)
+#ifdef __SIMPLE_DEVICE__
+static __always_inline
+uint8_t pci_read_config8(pci_devfn_t dev, unsigned int where)
+{
+	return pci_io_read_config8(dev, where);
+}
+
+static __always_inline
+uint16_t pci_read_config16(pci_devfn_t dev, unsigned int where)
+{
+	return pci_io_read_config16(dev, where);
+}
+
+static __always_inline
+uint32_t pci_read_config32(pci_devfn_t dev, unsigned int where)
+{
+	return pci_io_read_config32(dev, where);
+}
+
+static __always_inline
+void pci_write_config8(pci_devfn_t dev, unsigned int where, uint8_t value)
+{
+	pci_io_write_config8(dev, where, value);
+}
+
+static __always_inline
+void pci_write_config16(pci_devfn_t dev, unsigned int where, uint16_t value)
+{
+	pci_io_write_config16(dev, where, value);
+}
+
+static __always_inline
+void pci_write_config32(pci_devfn_t dev, unsigned int where, uint32_t value)
+{
+	pci_io_write_config32(dev, where, value);
+}
+#endif /* __SIMPLE_DEVICE__ */
+#endif
 
 #endif /* _PCI_IO_CFG_H */

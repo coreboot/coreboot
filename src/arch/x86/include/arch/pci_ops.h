@@ -14,6 +14,9 @@
 #ifndef ARCH_I386_PCI_OPS_H
 #define ARCH_I386_PCI_OPS_H
 
+#include <arch/pci_io_cfg.h>
+#include <device/pci_mmio_cfg.h>
+
 #ifndef __SIMPLE_DEVICE__
 
 extern const struct pci_bus_operations pci_cf8_conf1;

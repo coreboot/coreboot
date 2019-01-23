@@ -203,66 +203,13 @@ static __always_inline void write64(volatile void *addr,
 }
 #endif
 
+/* FIXME: We should avoid this indirect include. Also this has to
+ * appear here after all MMIO and IO read/write functions. */
+#include <arch/pci_ops.h>
+
 #ifdef __SIMPLE_DEVICE__
 
 #define PNP_DEV(PORT, FUNC) (((PORT) << 8) | (FUNC))
-
-#include <arch/pci_io_cfg.h>
-#include <device/pci_mmio_cfg.h>
-
-static __always_inline
-uint8_t pci_read_config8(pci_devfn_t dev, unsigned int where)
-{
-	if (IS_ENABLED(CONFIG_MMCONF_SUPPORT))
-		return pci_mmio_read_config8(dev, where);
-	else
-		return pci_io_read_config8(dev, where);
-}
-
-static __always_inline
-uint16_t pci_read_config16(pci_devfn_t dev, unsigned int where)
-{
-	if (IS_ENABLED(CONFIG_MMCONF_SUPPORT))
-		return pci_mmio_read_config16(dev, where);
-	else
-		return pci_io_read_config16(dev, where);
-}
-
-static __always_inline
-uint32_t pci_read_config32(pci_devfn_t dev, unsigned int where)
-{
-	if (IS_ENABLED(CONFIG_MMCONF_SUPPORT))
-		return pci_mmio_read_config32(dev, where);
-	else
-		return pci_io_read_config32(dev, where);
-}
-
-static __always_inline
-void pci_write_config8(pci_devfn_t dev, unsigned int where, uint8_t value)
-{
-	if (IS_ENABLED(CONFIG_MMCONF_SUPPORT))
-		pci_mmio_write_config8(dev, where, value);
-	else
-		pci_io_write_config8(dev, where, value);
-}
-
-static __always_inline
-void pci_write_config16(pci_devfn_t dev, unsigned int where, uint16_t value)
-{
-	if (IS_ENABLED(CONFIG_MMCONF_SUPPORT))
-		pci_mmio_write_config16(dev, where, value);
-	else
-		pci_io_write_config16(dev, where, value);
-}
-
-static __always_inline
-void pci_write_config32(pci_devfn_t dev, unsigned int where, uint32_t value)
-{
-	if (IS_ENABLED(CONFIG_MMCONF_SUPPORT))
-		pci_mmio_write_config32(dev, where, value);
-	else
-		pci_io_write_config32(dev, where, value);
-}
 
 /* Generic functions for pnp devices */
 static __always_inline void pnp_write_config(

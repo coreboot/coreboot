@@ -71,7 +71,7 @@ static const struct pci_bus_operations pci_ops_mmconf = {
 	.write32 = pci_mmconf_write_config32,
 };
 
-const struct pci_bus_operations *pci_bus_default_ops(struct device *dev)
+const struct pci_bus_operations *pci_bus_default_ops(void)
 {
 	return &pci_ops_mmconf;
 }

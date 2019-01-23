@@ -24,7 +24,7 @@ u32 pci_read_config32(struct device *dev, unsigned int where);
 void pci_write_config8(struct device *dev, unsigned int where, u8 val);
 void pci_write_config16(struct device *dev, unsigned int where, u16 val);
 void pci_write_config32(struct device *dev, unsigned int where, u32 val);
-const struct pci_bus_operations *pci_bus_default_ops(struct device *dev);
+const struct pci_bus_operations *pci_bus_default_ops(void);
 #endif
 
 #ifdef __SIMPLE_DEVICE__

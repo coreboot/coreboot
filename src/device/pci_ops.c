@@ -27,7 +27,7 @@ static const struct pci_bus_operations *pci_bus_ops(struct bus *bus, struct devi
 		bops = bus->dev->ops->ops_pci_bus(dev);
 	}
 	if (!bops)
-		bops = pci_bus_default_ops(dev);
+		bops = pci_bus_default_ops();
 	return bops;
 }
 

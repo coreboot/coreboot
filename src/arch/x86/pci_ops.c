@@ -16,7 +16,7 @@
 #include <device/device.h>
 #include <device/pci_ops.h>
 
-const struct pci_bus_operations *pci_bus_default_ops(struct device *dev)
+const struct pci_bus_operations *pci_bus_default_ops(void)
 {
 	return &pci_cf8_conf1;
 }

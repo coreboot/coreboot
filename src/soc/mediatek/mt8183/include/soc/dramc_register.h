@@ -265,10 +265,7 @@ check_member(dramc_nao_regs, cmddrv2, 0x0474);
 struct dramc_ao_regs_rk {
 	uint32_t dqsosc;
 	uint32_t rsvd_1[5];
-	uint32_t dummy_rd_wdata0;
-	uint32_t dummy_rd_wdata1;
-	uint32_t dummy_rd_wdata2;
-	uint32_t dummy_rd_wdata3;
+	uint32_t dummy_rd_wdata[4];
 	uint32_t dummy_rd_adr;
 	uint32_t dummy_rd_bk;
 	uint32_t pre_tdqsck[12];

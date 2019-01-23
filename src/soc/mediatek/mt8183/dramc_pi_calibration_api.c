@@ -86,7 +86,7 @@ struct per_byte_dly {
 	u16 final_dly;
 };
 
-static void auto_refresh_switch(u8 chn, bool option)
+static void dramc_auto_refresh_switch(u8 chn, bool option)
 {
 	clrsetbits_le32(&ch[chn].ao.refctrl0, 1 << REFCTRL0_REFDIS_SHIFT,
 		(option ? 0 : 1) << REFCTRL0_REFDIS_SHIFT);
@@ -157,7 +157,7 @@ static void dramc_write_leveling(u8 chn, u8 rank,
 	}
 }
 
-static void cmd_bus_training(u8 chn, u8 rank,
+static void dramc_cmd_bus_training(u8 chn, u8 rank,
 		const struct sdram_params *params)
 {
 	u32 cbt_cs, mr12_value;
@@ -257,7 +257,7 @@ void dramc_enable_phy_dcm(bool en)
 	dramc_set_broadcast(broadcast_bak);
 }
 
-static void reset_delay_chain_before_calibration(void)
+static void dramc_reset_delay_chain_before_calibration(void)
 {
 	for (size_t chn = 0; chn < CHANNEL_MAX; chn++)
 		for (size_t rank = 0; rank < RANK_MAX; rank++) {
@@ -290,10 +290,10 @@ static void dramc_rx_input_delay_tracking_init_by_freq(u8 chn)
 	clrbits_le32(&shu->b[1].dq[7], (0x1 << 12) | (0x1 << 13));
 }
 
-void dramc_apply_pre_calibration_config(void)
+void dramc_apply_config_before_calibration(void)
 {
 	dramc_enable_phy_dcm(false);
-	reset_delay_chain_before_calibration();
+	dramc_reset_delay_chain_before_calibration();
 
 	setbits_le32(&ch[0].ao.shu[0].conf[3], 0x1ff << 16);
 	setbits_le32(&ch[0].ao.spcmdctrl, 0x1 << 24);
@@ -344,7 +344,53 @@ void dramc_apply_pre_calibration_config(void)
 	}
 }
 
-static void rx_dqs_isi_pulse_cg_switch(u8 chn, bool flag)
+static void dramc_set_mr13_vrcg_to_Normal(u8 chn)
+{
+	for (u8 rank = 0; rank < RANK_MAX; rank++)
+		dramc_mode_reg_write_by_rank(chn, rank, 13, 0xd0);
+
+	for (u8 shu = 0; shu < DRAM_DFS_SHUFFLE_MAX; shu++)
+		clrbits_le32(&ch[chn].ao.shu[shu].hwset_vrcg, 0x1 << 19);
+}
+
+void dramc_apply_config_after_calibration(void)
+{
+	for (size_t chn = 0; chn < CHANNEL_MAX; chn++) {
+		setbits_le32(&ch[chn].phy.misc_cg_ctrl4, 0x11400000);
+		clrbits_le32(&ch[chn].ao.refctrl1, 0x1 << 7);
+		clrbits_le32(&ch[chn].ao.shuctrl, 0x1 << 2);
+		clrbits_le32(&ch[chn].phy.ca_cmd[6], 0x1 << 6);
+		dramc_set_mr13_vrcg_to_Normal(chn);
+
+		clrbits_le32(&ch[chn].phy.b[0].dq[6], 0x3);
+		clrbits_le32(&ch[chn].phy.b[1].dq[6], 0x3);
+		clrbits_le32(&ch[chn].phy.ca_cmd[6], 0x3);
+		setbits_le32(&ch[chn].phy.b[0].dq[6], 0x1 << 5);
+		setbits_le32(&ch[chn].phy.b[1].dq[6], 0x1 << 5);
+		setbits_le32(&ch[chn].phy.ca_cmd[6], 0x1 << 5);
+
+		clrbits_le32(&ch[chn].ao.impcal, 0x3 << 24);
+		clrbits_le32(&ch[chn].phy.misc_imp_ctrl0, 0x7);
+
+		clrbits_le32(&ch[chn].phy.misc_ctrl0, 0x1 << 31);
+		clrbits_le32(&ch[chn].phy.misc_ctrl1, 0x1 << 25);
+
+		setbits_le32(&ch[chn].ao.spcmdctrl, 1 << 29);
+		setbits_le32(&ch[chn].ao.dqsoscr, 1 << 24);
+
+		for (u8 shu = 0; shu < DRAM_DFS_SHUFFLE_MAX; shu++)
+			clrbits_le32(&ch[chn].ao.shu[shu].scintv, 0x1 << 30);
+
+		clrbits_le32(&ch[chn].ao.dummy_rd, (0x7 << 20) | (0x1 << 7));
+		dramc_cke_fix_onoff(chn, false, false);
+		clrbits_le32(&ch[chn].ao.dramc_pd_ctrl, 0x1 << 26);
+
+		clrbits_le32(&ch[chn].ao.eyescan, 0x7 << 8);
+		clrsetbits_le32(&ch[chn].ao.test2_4, 0x7 << 28, 0x4 << 28);
+	}
+}
+
+static void dramc_rx_dqs_isi_pulse_cg_switch(u8 chn, bool flag)
 {
 	for (size_t b = 0; b < 2; b++)
 		clrsetbits_le32(&ch[chn].phy.b[b].dq[6], 1 << 5,
@@ -468,7 +514,7 @@ static void dramc_engine2_end(u8 chn)
 	clrbits_le32(&ch[chn].ao.test2_4, 0x1 << 17);
 }
 
-static void find_gating_window(u32 result_r, u32 result_f, u32 *debug_cnt,
+static void dramc_find_gating_window(u32 result_r, u32 result_f, u32 *debug_cnt,
 		u8 dly_coarse_large, u8 dly_coarse_0p5t, u8 *pass_begin,
 		u8 *pass_count, u8 *dly_fine_xt, u32 *coarse_tune, u8 *dqs_high)
 {
@@ -509,7 +555,7 @@ static void find_gating_window(u32 result_r, u32 result_f, u32 *debug_cnt,
 	}
 }
 
-static void find_dly_tune(u8 chn, u8 dly_coarse_large, u8 dly_coarse_0p5t,
+static void dramc_find_dly_tune(u8 chn, u8 dly_coarse_large, u8 dly_coarse_0p5t,
 		u8 dly_fine_xt, u8 *dqs_high, u8 *dly_coarse_large_cnt,
 		u8 *dly_coarse_0p5t_cnt, u8 *dly_fine_tune_cnt, u8 *dqs_trans)
 {
@@ -577,7 +623,7 @@ static void dramc_set_gating_mode(u8 chn, bool mode)
 
 static void dramc_rx_dqs_gating_cal_pre(u8 chn, u8 rank)
 {
-	rx_dqs_isi_pulse_cg_switch(chn, false);
+	dramc_rx_dqs_isi_pulse_cg_switch(chn, false);
 	clrbits_le32(&ch[chn].ao.refctrl0, 1 << REFCTRL0_PBREFEN_SHIFT);
 
 	dramc_hw_gating_onoff(chn, false);
@@ -606,7 +652,7 @@ static void dramc_write_dqs_gating_result(u8 chn, u8 rank,
 	u8 best_coarse_rodt_p1[DQS_NUMBER];
 	u8 best_coarse_0p5t_rodt_p1[DQS_NUMBER];
 
-	rx_dqs_isi_pulse_cg_switch(chn, true);
+	dramc_rx_dqs_isi_pulse_cg_switch(chn, true);
 
 	write32(&ch[chn].ao.shu[0].rk[rank].selph_dqsg0,
 		((u32) best_coarse_tune2t[0] <<
@@ -807,9 +853,9 @@ static void dramc_rx_dqs_gating_cal(u8 chn, u8 rank)
 			dramc_set_gating_mode(chn, 1);
 			dramc_engine2_run(chn, TE_OP_READ_CHECK);
 
-			find_dly_tune(chn, dly_coarse_large, dly_coarse_0p5t,
-				dly_fine_xt, dqs_high, dly_coarse_large_cnt,
-				dly_coarse_0p5t_cnt,
+			dramc_find_dly_tune(chn, dly_coarse_large,
+				dly_coarse_0p5t, dly_fine_xt, dqs_high,
+				dly_coarse_large_cnt, dly_coarse_0p5t_cnt,
 				dly_fine_tune_cnt, dqs_transition);
 
 			dramc_dbg("%d %d %d |", dly_coarse_large,
@@ -825,7 +871,7 @@ static void dramc_rx_dqs_gating_cal(u8 chn, u8 rank)
 			}
 
 			dramc_dbg("\n");
-			find_gating_window(result_r, result_f, debug_cnt,
+			dramc_find_gating_window(result_r, result_f, debug_cnt,
 				dly_coarse_large, dly_coarse_0p5t, pass_begin,
 				pass_count, &dly_fine_xt, &coarse_tune,
 				dqs_high);
@@ -971,7 +1017,7 @@ static void dramc_transfer_dly_tune(
 	dly_tune->coarse_tune_large_oen = tmp_val >> 3;
 }
 
-static void set_rx_dly_factor(u8 chn, u8 rank, enum RX_TYPE type, u32 val)
+static void dramc_set_rx_dly_factor(u8 chn, u8 rank, enum RX_TYPE type, u32 val)
 {
 	u32 tmp, mask;
 
@@ -1006,7 +1052,8 @@ static void set_rx_dly_factor(u8 chn, u8 rank, enum RX_TYPE type, u32 val)
 	}
 }
 
-static void set_tx_dly_factor(u8 chn, u8 rank, enum CAL_TYPE type, u32 val)
+static void dramc_set_tx_dly_factor(u8 chn, u8 rank,
+		enum CAL_TYPE type, u32 val)
 {
 	struct tx_dly_tune dly_tune = {0};
 	u32 coarse_tune_large = 0, coarse_tune_large_oen = 0;
@@ -1203,19 +1250,18 @@ static void dramc_set_rx_dly(u8 chn, u8 rank, s32 dly)
 {
 	if (dly <= 0) {
 		/* Hold time calibration */
-		set_rx_dly_factor(chn, rank, RX_DQS, -dly);
+		dramc_set_rx_dly_factor(chn, rank, RX_DQS, -dly);
 		dram_phy_reset(chn);
 	} else {
 		/* Setup time calibration */
-		set_rx_dly_factor(chn, rank, RX_DQS, 0);
-		set_rx_dly_factor(chn, rank, RX_DQM, dly);
+		dramc_set_rx_dly_factor(chn, rank, RX_DQS, 0);
+		dramc_set_rx_dly_factor(chn, rank, RX_DQM, dly);
 		dram_phy_reset(chn);
-		set_rx_dly_factor(chn, rank, RX_DQ, dly);
+		dramc_set_rx_dly_factor(chn, rank, RX_DQ, dly);
 	}
-
 }
 
-static void set_tx_best_dly_factor(u8 chn, u8 rank_start,
+static void dramc_set_tx_best_dly_factor(u8 chn, u8 rank_start,
 		struct per_byte_dly *tx_perbyte_dly, u16 dq_precal_result[])
 {
 	u32 coarse_tune_large = 0;
@@ -1268,7 +1314,7 @@ static void set_tx_best_dly_factor(u8 chn, u8 rank_start,
 				FINE_TUNE_DQM_SHIFT));
 }
 
-static void set_rx_best_dly_factor(u8 chn, u8 rank,
+static void dramc_set_rx_best_dly_factor(u8 chn, u8 rank,
 		struct dqdqs_perbit_dly *dqdqs_perbit_dly,
 		u32 *max_dqsdly_byte, u32 *ave_dqm_dly)
 {
@@ -1335,7 +1381,7 @@ static void dramc_set_dqdqs_dly(u8 chn, u8 rank, enum CAL_TYPE type, s32 dly)
 	if ((type == RX_WIN_RD_DQC) || (type == RX_WIN_TEST_ENG))
 		dramc_set_rx_dly(chn, rank, dly);
 	else
-		set_tx_dly_factor(chn, rank, type, dly);
+		dramc_set_tx_dly_factor(chn, rank, type, dly);
 }
 
 static void dramc_set_tx_best_dly(u8 chn, u8 rank,
@@ -1380,7 +1426,8 @@ static void dramc_set_tx_best_dly(u8 chn, u8 rank,
 			byte_dly_cell[i]);
 	}
 
-	set_tx_best_dly_factor(chn, rank, tx_perbyte_dly, tx_dq_precal_result);
+	dramc_set_tx_best_dly_factor(chn, rank, tx_perbyte_dly,
+		tx_dq_precal_result);
 }
 
 static int dramc_set_rx_best_dly(u8 chn, u8 rank,
@@ -1425,7 +1472,7 @@ static int dramc_set_rx_best_dly(u8 chn, u8 rank,
 		return -1;
 	}
 
-	set_rx_best_dly_factor(chn, rank, rx_dly, max_dqsdly_byte,
+	dramc_set_rx_best_dly_factor(chn, rank, rx_dly, max_dqsdly_byte,
 			       ave_dqmdly_byte);
 	return 0;
 }
@@ -1546,8 +1593,10 @@ static u8 dramc_window_perbit_cal(u8 chn, u8 rank,
 			dramc_set_vref(chn, rank, type, vref_dly.vref);
 
 		if ((type == RX_WIN_RD_DQC) || (type == RX_WIN_TEST_ENG)) {
-			set_rx_dly_factor(chn, rank, RX_DQM, FIRST_DQ_DELAY);
-			set_rx_dly_factor(chn, rank, RX_DQ, FIRST_DQ_DELAY);
+			dramc_set_rx_dly_factor(chn, rank,
+				RX_DQM, FIRST_DQ_DELAY);
+			dramc_set_rx_dly_factor(chn, rank,
+				RX_DQ, FIRST_DQ_DELAY);
 		}
 
 		dramc_get_dly_range(chn, rank, type, dq_precal_result,
@@ -1625,7 +1674,7 @@ static u8 dramc_window_perbit_cal(u8 chn, u8 rank,
 	return 0;
 }
 
-static void dle_factor_handler(u8 chn, u8 val)
+static void dramc_dle_factor_handler(u8 chn, u8 val)
 {
 	val = MAX(val, 2);
 	clrsetbits_le32(&ch[chn].ao.shu[0].conf[1],
@@ -1650,7 +1699,7 @@ static u8 dramc_rx_datlat_cal(u8 chn, u8 rank)
 	dramc_engine2_init(chn, rank, 0x400, false);
 
 	for (datlat = 12; datlat < DATLAT_TAP_NUMBER; datlat++) {
-		dle_factor_handler(chn, datlat);
+		dramc_dle_factor_handler(chn, datlat);
 
 		u32 err = dramc_engine2_run(chn, TE_OP_WRITE_READ_CHECK);
 
@@ -1679,7 +1728,7 @@ static u8 dramc_rx_datlat_cal(u8 chn, u8 rank)
 
 	assert(sum != 0);
 
-	dle_factor_handler(chn, best_step);
+	dramc_dle_factor_handler(chn, best_step);
 
 	clrsetbits_le32(&ch[chn].ao.padctrl, PADCTRL_DQIENQKEND_MASK,
 		(0x1 << PADCTRL_DQIENQKEND_SHIFT) |
@@ -1691,7 +1740,7 @@ static u8 dramc_rx_datlat_cal(u8 chn, u8 rank)
 static void dramc_dual_rank_rx_datlat_cal(u8 chn, u8 datlat0, u8 datlat1)
 {
 	u8 final_datlat = MAX(datlat0, datlat1);
-	dle_factor_handler(chn, final_datlat);
+	dramc_dle_factor_handler(chn, final_datlat);
 }
 
 static void dramc_rx_dqs_gating_post_process(u8 chn)
@@ -1794,10 +1843,10 @@ void dramc_calibrate_all_channels(const struct sdram_params *pams)
 	for (u8 chn = 0; chn < CHANNEL_MAX; chn++) {
 		for (u8 rk = RANK_0; rk < RANK_MAX; rk++) {
 			dramc_show("Start K ch:%d, rank:%d\n", chn, rk);
-			auto_refresh_switch(chn, false);
-			cmd_bus_training(chn, rk, pams);
+			dramc_auto_refresh_switch(chn, false);
+			dramc_cmd_bus_training(chn, rk, pams);
 			dramc_write_leveling(chn, rk, pams->wr_level);
-			auto_refresh_switch(chn, true);
+			dramc_auto_refresh_switch(chn, true);
 			dramc_rx_dqs_gating_cal(chn, rk);
 			dramc_window_perbit_cal(chn, rk, RX_WIN_RD_DQC, pams);
 			dramc_window_perbit_cal(chn, rk, TX_WIN_DQ_DQM, pams);

@@ -292,11 +292,21 @@ static void init_dram(const struct sdram_params *params)
 	emi_init2(params);
 }
 
+void enable_emi_dcm(void)
+{
+	clrbits_le32(&emi_regs->conm, 0xff << 24);
+	clrbits_le32(&emi_regs->conn, 0xff << 24);
+
+	for (size_t chn = 0; chn < CHANNEL_MAX; chn++)
+		clrbits_le32(&ch[chn].emi.chn_conb, 0xff << 24);
+}
+
 static void do_calib(const struct sdram_params *params)
 {
-	dramc_apply_pre_calibration_config();
+	dramc_apply_config_before_calibration();
 	dramc_calibrate_all_channels(params);
 	dramc_ac_timing_optimize();
+	dramc_apply_config_after_calibration();
 	dramc_runtime_config();
 }
 

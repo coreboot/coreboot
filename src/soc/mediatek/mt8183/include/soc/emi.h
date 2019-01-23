@@ -38,6 +38,7 @@ extern const u8 phy_mapping[CHANNEL_MAX][16];
 int complex_mem_test(u8 *start, unsigned int len);
 size_t sdram_size(void);
 const struct sdram_params *get_sdram_config(void);
+void enable_emi_dcm(void);
 void mt_set_emi(const struct sdram_params *params);
 void mt_mem_init(const struct sdram_params *params);
 

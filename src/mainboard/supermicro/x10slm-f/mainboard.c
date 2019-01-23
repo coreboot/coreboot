@@ -32,7 +32,7 @@
  */
 static void hide_ast2400(void)
 {
-	struct device *dev = dev_find_slot(0, PCI_DEVFN(0x1c, 0));
+	struct device *dev = pcidev_on_root(0x1c, 0);
 	if (!dev)
 		return;
 

@@ -45,8 +45,7 @@ static void *smp_write_config_table(void *v)
 		u32 *dword;
 		u8 byte;
 
-		dev = dev_find_slot(0, //pirq_router_bus TODO: why bus_sp5100[0] use same value of bus_sr5650[0] assigned by get_pci1234(), instead of 0.
-				  PCI_DEVFN(0x14, 0));
+		dev = pcidev_on_root(0x14, 0);
 		if (dev) {
 			dword = (u32 *)(pci_read_config32(dev, 0x74) & 0xfffffff0);
 			smp_write_ioapic(mc, apicid_sp5100, 0x11, dword);
@@ -79,7 +78,7 @@ static void *smp_write_config_table(void *v)
 			 * 00:14.6: INTB MCI
 			 */
 		}
-		dev = dev_find_slot(0, PCI_DEVFN(0, 0));
+		dev = pcidev_on_root(0, 0);
 		if (dev) {
 			pci_write_config32(dev, 0xF8, 0x1);
 			dword = (u32 *)(pci_read_config32(dev, 0xFC) & 0xfffffff0);

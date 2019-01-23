@@ -34,7 +34,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 					   IO_APIC_ADDR, gsi_base);
 	/* IOAPIC on rs5690 */
 	gsi_base += 24;		/* SB700 has 24 IOAPIC entries. */
-	dev = dev_find_slot(0, PCI_DEVFN(0, 0));
+	dev = pcidev_on_root(0, 0);
 	if (dev) {
 		pci_write_config32(dev, 0xF8, 0x1);
 		dword = pci_read_config32(dev, 0xFC) & 0xfffffff0;

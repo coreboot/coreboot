@@ -173,7 +173,7 @@ static void mainboard_init(void *chip_info)
 		if (!ethernet_disable)
 			continue;
 		printk(BIOS_DEBUG, "Disabling Ethernet NIC #%d\n", i);
-		dev = dev_find_slot(0, PCI_DEVFN(28, i - 1));
+		dev = pcidev_on_root(28, i - 1);
 		if (dev == NULL) {
 			printk(BIOS_ERR,
 			       "Disabling Ethernet NIC: Cannot find 00:1c.%d!\n",

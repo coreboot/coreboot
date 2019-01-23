@@ -266,11 +266,9 @@
  * For ramstage individual source file may define __SIMPLE_DEVICE__
  * before including any header files to force that particular source
  * be built with simple device model.
- *
- * For now only x86 is supported.
  */
 
-#if ENV_X86 && (defined(__PRE_RAM__) || ENV_SMM || ENV_POSTCAR)
+#if (defined(__PRE_RAM__) || ENV_SMM || ENV_POSTCAR)
 #define __SIMPLE_DEVICE__
 #endif
 

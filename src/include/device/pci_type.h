@@ -19,4 +19,11 @@
 typedef u32 pci_devfn_t;
 typedef u32 pnp_devfn_t;
 
+#define PCI_DEV(SEGBUS, DEV, FN) ( \
+	(((SEGBUS) & 0xFFF) << 20) | \
+	(((DEV) & 0x1F) << 15) | \
+	(((FN)  & 0x07) << 12))
+
+#define PCI_DEV_INVALID (0xffffffffU)
+
 #endif /* DEVICE_PCI_TYPE_H */

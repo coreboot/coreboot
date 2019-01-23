@@ -205,11 +205,6 @@ static __always_inline void write64(volatile void *addr,
 
 #ifdef __SIMPLE_DEVICE__
 
-#define PCI_DEV(SEGBUS, DEV, FN) ( \
-	(((SEGBUS) & 0xFFF) << 20) | \
-	(((DEV) & 0x1F) << 15) | \
-	(((FN)  & 0x07) << 12))
-
 #define PCI_ID(VENDOR_ID, DEVICE_ID) \
 	((((DEVICE_ID) & 0xFFFF) << 16) | ((VENDOR_ID) & 0xFFFF))
 
@@ -273,7 +268,6 @@ void pci_write_config32(pci_devfn_t dev, unsigned int where, uint32_t value)
 		pci_io_write_config32(dev, where, value);
 }
 
-#define PCI_DEV_INVALID (0xffffffffU)
 static inline pci_devfn_t pci_io_locate_device(unsigned int pci_id,
 	pci_devfn_t dev)
 {

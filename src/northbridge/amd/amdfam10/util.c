@@ -38,8 +38,8 @@
 #define MMIO_ROUTE_END		0xb8
 #define PCIIO_ROUTE_START	0xc0
 #define PCIIO_ROUTE_END		0xd8
-#define CONFIG_ROUTE_START	0xe0
-#define CONFIG_ROUTE_END	0xec
+#define CONF_ROUTE_START	0xe0
+#define CONF_ROUTE_END		0xec
 
 #define PCI_IO_BASE0		0xc0
 #define PCI_IO_BASE1		0xc8
@@ -246,7 +246,7 @@ static void showallpciio(int level, struct device *dev)
 static void showallconfig(int level, struct device *dev)
 {
 	u8 reg;
-	for (reg = CONFIG_ROUTE_START; reg <= CONFIG_ROUTE_END; reg += 4) {
+	for (reg = CONF_ROUTE_START; reg <= CONF_ROUTE_END; reg += 4) {
 		u32 val = pci_read_config32(dev, reg);
 		if (val)
 			showconfig(level, reg, val);

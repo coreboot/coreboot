@@ -37,7 +37,7 @@
  * Mutex for accesses to the configuration ports (prolog and
  * epilog commands are used, so synchronization is useful)
  */
-Mutex(CONFIG_MODE_MUTEX, 1)
+Mutex(CONF_MODE_MUTEX, 1)
 
 /*
  * Enter configuration mode (and aquire mutex)
@@ -47,7 +47,7 @@ Mutex(CONFIG_MODE_MUTEX, 1)
  */
 Method (ENTER_CONFIG_MODE, 1)
 {
-	Acquire (CONFIG_MODE_MUTEX, 0xFFFF)
+	Acquire (CONF_MODE_MUTEX, 0xFFFF)
 #ifdef PNP_ENTER_MAGIC_1ST
 	Store (PNP_ENTER_MAGIC_1ST, PNP_ADDR_REG)
 #ifdef PNP_ENTER_MAGIC_2ND
@@ -77,12 +77,12 @@ Method (EXIT_CONFIG_MODE)
 #if defined(PNP_EXIT_SPECIAL_REG) && defined(PNP_EXIT_SPECIAL_VAL)
 	Store (PNP_EXIT_SPECIAL_VAL, PNP_EXIT_SPECIAL_REG)
 #endif
-	Release (CONFIG_MODE_MUTEX)
+	Release (CONF_MODE_MUTEX)
 }
 
 /*
  * Just change the LDN. Make sure that you are in config mode (or
- * have otherwise acquired CONFIG_MODE_MUTEX), when calling.
+ * have otherwise acquired CONF_MODE_MUTEX), when calling.
  */
 Method (SWITCH_LDN, 1)
 {

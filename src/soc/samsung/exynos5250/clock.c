@@ -22,7 +22,7 @@
 #include <timer.h>
 
 /* input clock of PLL: SMDK5250 has 24MHz input clock */
-#define CONFIG_SYS_CLK_FREQ            24000000
+#define CONF_SYS_CLK_FREQ            24000000
 
 static struct arm_clk_ratios arm_clk_ratios[] = {
 	{
@@ -213,7 +213,7 @@ unsigned long get_pll_clk(int pllreg)
 	/* SDIV [2:0] */
 	s = r & 0x7;
 
-	freq = CONFIG_SYS_CLK_FREQ;
+	freq = CONF_SYS_CLK_FREQ;
 
 	if (pllreg == EPLL) {
 		k = k & 0xffff;

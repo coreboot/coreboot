@@ -381,8 +381,8 @@ static struct rk3288_msch_regs * const rk3288_msch[2] = {
 #define LP_TRIG_VAL(n)			(((n) >> 4) & 7)
 #define PCTL_STAT_MSK			(7)
 #define INIT_MEM			(0)
-#define CONFIG				(1)
-#define CONFIG_REQ			(2)
+#define CONF				(1)
+#define CONF_REQ			(2)
 #define ACCESS				(3)
 #define ACCESS_REQ			(4)
 #define LOW_POWER			(5)
@@ -760,10 +760,10 @@ static void move_to_config_state(struct rk3288_ddr_publ_regs *ddr_publ_regs,
 		case INIT_MEM:
 			write32(&ddr_pctl_regs->sctl, CFG_STATE);
 			while ((read32(&ddr_pctl_regs->stat) & PCTL_STAT_MSK)
-				!= CONFIG)
+				!= CONF)
 				;
 			break;
-		case CONFIG:
+		case CONF:
 			return;
 		default:
 			break;
@@ -907,12 +907,12 @@ static void move_to_access_state(u32 chnum)
 		case INIT_MEM:
 			write32(&ddr_pctl_regs->sctl, CFG_STATE);
 			while ((read32(&ddr_pctl_regs->stat) & PCTL_STAT_MSK)
-				!= CONFIG)
+				!= CONF)
 				;
-		case CONFIG:
+		case CONF:
 			write32(&ddr_pctl_regs->sctl, GO_STATE);
 			while ((read32(&ddr_pctl_regs->stat) & PCTL_STAT_MSK)
-				== CONFIG)
+				== CONF)
 				;
 			break;
 		case ACCESS:

@@ -11,10 +11,10 @@
  * is a problem (and well your system already is broken), so err on the side
  * of caution in case we're dealing with slower SPI buses and/or processors.
  */
-#define CONFIG_SYS_HZ 100
-#define SPI_FLASH_PROG_TIMEOUT		(2 * CONFIG_SYS_HZ)
-#define SPI_FLASH_PAGE_ERASE_TIMEOUT	(5 * CONFIG_SYS_HZ)
-#define SPI_FLASH_SECTOR_ERASE_TIMEOUT	(10 * CONFIG_SYS_HZ)
+#define CONF_SYS_HZ 100
+#define SPI_FLASH_PROG_TIMEOUT		(2 * CONF_SYS_HZ)
+#define SPI_FLASH_PAGE_ERASE_TIMEOUT	(5 * CONF_SYS_HZ)
+#define SPI_FLASH_SECTOR_ERASE_TIMEOUT	(10 * CONF_SYS_HZ)
 
 /* Common commands */
 #define CMD_READ_ID			0x9f

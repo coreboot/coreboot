@@ -49,16 +49,16 @@ void try_enabling_LPC47N207_uart(void)
 	u16 lpc_port;
 	int i, j;
 
-#define CONFIG_ENABLE    0x55
-#define CONFIG_DISABLE   0xaa
+#define CONF_ENABLE    0x55
+#define CONF_DISABLE   0xaa
 
 	for (j = 0; j < ARRAY_SIZE(lpc_ports); j++) {
 		lpc_port = lpc_ports[j];
 
 		/* enable CONFIG mode */
-		outb(CONFIG_ENABLE, lpc_port);
+		outb(CONF_ENABLE, lpc_port);
 		reg_value = inb(lpc_port);
-		if (reg_value != CONFIG_ENABLE) {
+		if (reg_value != CONF_ENABLE) {
 			continue; /* There is no LPC device at this address */
 		}
 
@@ -94,6 +94,6 @@ void try_enabling_LPC47N207_uart(void)
 				outb(reg_value, lpc_port + 1);
 			}
 		} while (0);
-		outb(CONFIG_DISABLE, lpc_port);
+		outb(CONF_DISABLE, lpc_port);
 	}
 }

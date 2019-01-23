@@ -22,7 +22,7 @@
 #include <timer.h>
 
 /* input clock of PLL: SMDK5420 has 24MHz input clock */
-#define CONFIG_SYS_CLK_FREQ            24000000
+#define CONF_SYS_CLK_FREQ            24000000
 
 /* Epll Clock division values to achieve different frequency output */
 static struct st_epll_con_val epll_div[] = {
@@ -96,7 +96,7 @@ unsigned long get_pll_clk(int pllreg)
 	/* SDIV [2:0] */
 	s = r & 0x7;
 
-	freq = CONFIG_SYS_CLK_FREQ;
+	freq = CONF_SYS_CLK_FREQ;
 
 	if (pllreg == EPLL || pllreg == RPLL) {
 		k = k & 0xffff;

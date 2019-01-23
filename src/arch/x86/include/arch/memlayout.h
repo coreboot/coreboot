@@ -23,7 +23,7 @@
 #define ARCH_STAGE_HAS_BSS_SECTION 0
 #endif
 
-#if !defined(CONFIG_RAMTOP) || !CONFIG_RAMTOP
+#if (CONFIG_RAMTOP == 0)
 # error "CONFIG_RAMTOP not configured"
 #endif
 

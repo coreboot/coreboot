@@ -15,7 +15,7 @@
 #include <device/pci.h>
 #include <device/pci_ops.h>
 
-#if !defined(CONFIG_MMCONF_BASE_ADDRESS) || !CONFIG_MMCONF_BASE_ADDRESS
+#if (CONFIG_MMCONF_BASE_ADDRESS == 0)
 #error "CONFIG_MMCONF_BASE_ADDRESS needs to be non-zero!"
 #endif
 

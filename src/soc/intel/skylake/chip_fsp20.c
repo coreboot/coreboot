@@ -391,14 +391,16 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 		params->SpiFlashCfgLockDown = 0;
 	}
 	/* only replacing preexisting subsys ID defaults when non-zero */
-#if defined(CONFIG_SUBSYSTEM_VENDOR_ID) && CONFIG_SUBSYSTEM_VENDOR_ID
-	params->DefaultSvid = CONFIG_SUBSYSTEM_VENDOR_ID;
-	params->PchSubSystemVendorId = CONFIG_SUBSYSTEM_VENDOR_ID;
-#endif
-#if defined(CONFIG_SUBSYSTEM_DEVICE_ID) && CONFIG_SUBSYSTEM_DEVICE_ID
-	params->DefaultSid = CONFIG_SUBSYSTEM_DEVICE_ID;
-	params->PchSubSystemId = CONFIG_SUBSYSTEM_DEVICE_ID;
-#endif
+	if (CONFIG_SUBSYSTEM_VENDOR_ID != 0) {
+		params->DefaultSvid = CONFIG_SUBSYSTEM_VENDOR_ID;
+		params->PchSubSystemVendorId = CONFIG_SUBSYSTEM_VENDOR_ID;
+	}
+
+	if (CONFIG_SUBSYSTEM_DEVICE_ID != 0) {
+		params->DefaultSid = CONFIG_SUBSYSTEM_DEVICE_ID;
+		params->PchSubSystemId = CONFIG_SUBSYSTEM_DEVICE_ID;
+	}
+
 	params->PchPmWolEnableOverride = config->WakeConfigWolEnableOverride;
 	params->PchPmPcieWakeFromDeepSx = config->WakeConfigPcieWakeFromDeepSx;
 	params->PchPmDeepSxPol = config->PmConfigDeepSxPol;

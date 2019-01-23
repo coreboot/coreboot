@@ -198,7 +198,7 @@ unsigned int read_option_lowlevel(unsigned int start, unsigned int size,
 # include "option_table.h"
 # define CMOS_POST_OFFSET (CMOS_VSTART_cmos_post_offset >> 3)
 #else
-# if defined(CONFIG_CMOS_POST_OFFSET) && CONFIG_CMOS_POST_OFFSET
+# if (CONFIG_CMOS_POST_OFFSET != 0)
 #  define CMOS_POST_OFFSET CONFIG_CMOS_POST_OFFSET
 # else
 #  error "Must configure CONFIG_CMOS_POST_OFFSET"

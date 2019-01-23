@@ -21,7 +21,7 @@
 #include <soc/pci_devs.h>
 #include <timer.h>
 
-#if !defined(CONFIG_PCR_BASE_ADDRESS) || (CONFIG_PCR_BASE_ADDRESS == 0)
+#if (CONFIG_PCR_BASE_ADDRESS == 0)
 #error "PCR_BASE_ADDRESS need to be non-zero!"
 #endif
 

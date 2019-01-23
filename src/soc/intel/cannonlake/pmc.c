@@ -30,7 +30,7 @@
  * Set which power state system will be after reapplying
  * the power (from G3 State)
  */
-static void pmc_set_afterg3(struct device *dev, int s5pwr)
+void pmc_set_afterg3(struct device *dev, int s5pwr)
 {
 	uint8_t reg8;
 	uint8_t *pmcbase = pmc_mmio_regs();

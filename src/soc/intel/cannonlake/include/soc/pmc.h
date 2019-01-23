@@ -162,4 +162,8 @@
 #define  SCIS_IRQ21			5
 #define  SCIS_IRQ22			6
 #define  SCIS_IRQ23			7
+
+struct device;
+void pmc_set_afterg3(struct device *dev, int s5pwr);
+
 #endif

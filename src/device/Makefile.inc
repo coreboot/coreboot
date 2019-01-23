@@ -2,18 +2,9 @@ ramstage-y += device.c
 ramstage-y += root_device.c
 ramstage-y += cpu_device.c
 ramstage-y += device_util.c
-ramstage-$(CONFIG_PCI) += pci_class.c
-ramstage-$(CONFIG_PCI) += pci_device.c
-ramstage-$(CONFIG_HYPERTRANSPORT_PLUGIN_SUPPORT) += hypertransport.c
-ramstage-$(CONFIG_PCIX_PLUGIN_SUPPORT) += pcix_device.c
-ramstage-$(CONFIG_PCIEXP_PLUGIN_SUPPORT) += pciexp_device.c
-ramstage-$(CONFIG_CARDBUS_PLUGIN_SUPPORT) += cardbus_device.c
 ramstage-$(CONFIG_AZALIA_PLUGIN_SUPPORT) += azalia_device.c
 ramstage-$(CONFIG_ARCH_RAMSTAGE_X86_32) += pnp_device.c
 ramstage-$(CONFIG_ARCH_RAMSTAGE_X86_64) += pnp_device.c
-ramstage-$(CONFIG_PCI) += pci_ops.c
-ramstage-$(CONFIG_MMCONF_SUPPORT) += pci_ops_mmconf.c
-ramstage-$(CONFIG_PCI) += pci_rom.c
 ramstage-y += smbus_ops.c
 
 ifeq ($(CONFIG_AZALIA_PLUGIN_SUPPORT),y)
@@ -27,10 +18,23 @@ verstage-y += device_const.c
 romstage-y += device_const.c
 ramstage-y += device_const.c
 
-bootblock-$(CONFIG_PCI) += pci_early.c
-verstage-$(CONFIG_PCI) += pci_early.c
-romstage-$(CONFIG_PCI) += pci_early.c
-postcar-$(CONFIG_PCI) += pci_early.c
+ifeq ($(CONFIG_PCI),y)
+bootblock-y += pci_early.c
+verstage-y += pci_early.c
+romstage-y += pci_early.c
+postcar-y += pci_early.c
+
+ramstage-y += pci_class.c
+ramstage-y += pci_device.c
+ramstage-y += pci_ops.c
+ramstage-y += pci_rom.c
+
+ramstage-$(CONFIG_HYPERTRANSPORT_PLUGIN_SUPPORT) += hypertransport.c
+ramstage-$(CONFIG_PCIX_PLUGIN_SUPPORT) += pcix_device.c
+ramstage-$(CONFIG_PCIEXP_PLUGIN_SUPPORT) += pciexp_device.c
+ramstage-$(CONFIG_CARDBUS_PLUGIN_SUPPORT) += cardbus_device.c
+ramstage-$(CONFIG_MMCONF_SUPPORT) += pci_ops_mmconf.c
+endif
 
 subdirs-y += oprom dram
 

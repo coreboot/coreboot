@@ -1,3 +1,20 @@
+/*
+ * This file is part of the coreboot project.
+ *
+ * Copyright (C) 2004 Linux Networx
+ * (Written by Eric Biederman <ebiederman@lnxi.com> for Linux Networx)
+ * Copyright (C) 2009 coresystems GmbH
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
 #ifndef PCI_OPS_H
 #define PCI_OPS_H
 
@@ -19,13 +36,66 @@
 #define pci_write_config16 pci_s_write_config16
 #define pci_write_config32 pci_s_write_config32
 #else
-u8 pci_read_config8(struct device *dev, unsigned int where);
-u16 pci_read_config16(struct device *dev, unsigned int where);
-u32 pci_read_config32(struct device *dev, unsigned int where);
-void pci_write_config8(struct device *dev, unsigned int where, u8 val);
-void pci_write_config16(struct device *dev, unsigned int where, u16 val);
-void pci_write_config32(struct device *dev, unsigned int where, u32 val);
+
+#include <device/pci.h>
+
 const struct pci_bus_operations *pci_bus_default_ops(void);
+
+static __always_inline const struct pci_bus_operations *pci_bus_ops(void)
+{
+	return pci_bus_default_ops();
+}
+
+void __noreturn pcidev_die(void);
+
+static __always_inline void pcidev_assert(const struct device *dev)
+{
+	if (!dev)
+		pcidev_die();
+}
+
+static __always_inline
+u8 pci_read_config8(struct device *dev, unsigned int where)
+{
+	pcidev_assert(dev);
+	return pci_bus_ops()->read8(dev, where);
+}
+
+static __always_inline
+u16 pci_read_config16(struct device *dev, unsigned int where)
+{
+	pcidev_assert(dev);
+	return pci_bus_ops()->read16(dev, where);
+}
+
+static __always_inline
+u32 pci_read_config32(struct device *dev, unsigned int where)
+{
+	pcidev_assert(dev);
+	return pci_bus_ops()->read32(dev, where);
+}
+
+static __always_inline
+void pci_write_config8(struct device *dev, unsigned int where, u8 val)
+{
+	pcidev_assert(dev);
+	pci_bus_ops()->write8(dev, where, val);
+}
+
+static __always_inline
+void pci_write_config16(struct device *dev, unsigned int where, u16 val)
+{
+	pcidev_assert(dev);
+	pci_bus_ops()->write16(dev, where, val);
+}
+
+static __always_inline
+void pci_write_config32(struct device *dev, unsigned int where, u32 val)
+{
+	pcidev_assert(dev);
+	pci_bus_ops()->write32(dev, where, val);
+}
+
 #endif
 
 #ifdef __SIMPLE_DEVICE__

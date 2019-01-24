@@ -72,7 +72,11 @@ smm-y += smi_util.c
 #
 # EC ROM should be 64K aligned.
 
+ifeq ($(CONFIG_AMDFW_OUTSIDE_CBFS),y)
 HUDSON_FWM_POSITION=$(call int-add, $(call int-subtract, 0xffffffff $(CONFIG_ROM_SIZE)) 0x20000 1)
+else
+HUDSON_FWM_POSITION=0xfff20000
+endif
 
 ifeq ($(CONFIG_HUDSON_PSP), y)
 
@@ -191,6 +195,7 @@ $(obj)/amdfw.rom:	$(call strip_quotes, $(CONFIG_HUDSON_XHCI_FWM_FILE)) \
 		$(OPT_2SMUFIRMWARE2_FN_FILE) \
 		$(OPT_2SMUSCS_FILE) \
 		--flashsize $(CONFIG_ROM_SIZE) \
+		--location $(HUDSON_FWM_POSITION) \
 		--output	$@
 
 ifeq ($(CONFIG_AMDFW_OUTSIDE_CBFS),y)

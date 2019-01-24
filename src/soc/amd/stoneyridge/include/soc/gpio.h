@@ -41,6 +41,10 @@ struct soc_amd_i2c_save {
 	uint8_t mux_value;
 };
 
+#define GPIO_MASTER_SWITCH	0xFC
+#define   GPIO_MASK_STS_EN	BIT(28)
+#define   GPIO_INTERRUPT_EN	BIT(30)
+
 #define GPIO_I2C0_SCL		BIT(0)
 #define GPIO_I2C1_SCL		BIT(1)
 #define GPIO_I2C2_SCL		BIT(2)

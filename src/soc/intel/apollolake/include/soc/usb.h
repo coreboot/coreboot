@@ -30,6 +30,7 @@ struct usb2_eye_per_port {
 	uint8_t Usb20IUsbTxEmphasisEn;
 	uint8_t Usb20PerPortRXISet;
 	uint8_t Usb20HsNpreDrvSel;
+	uint8_t Usb20OverrideEn;
 };
 
 #endif /* _SOC_APOLLOLAKE_USB_H_ */

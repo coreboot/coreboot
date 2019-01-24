@@ -593,6 +593,22 @@ static void glk_fsp_silicon_init_params_cb(
 	struct soc_intel_apollolake_config *cfg, FSP_S_CONFIG *silconfig)
 {
 #if IS_ENABLED(CONFIG_SOC_INTEL_GLK)
+	uint8_t port;
+
+	for (port = 0; port < APOLLOLAKE_USB2_PORT_MAX; port++) {
+		if (!cfg->usb2eye[port].Usb20OverrideEn)
+			continue;
+
+		silconfig->Usb2AfePehalfbit[port] =
+			cfg->usb2eye[port].Usb20PerPortTxPeHalf;
+		silconfig->Usb2AfePetxiset[port] =
+			cfg->usb2eye[port].Usb20PerPortPeTxiSet;
+		silconfig->Usb2AfeTxiset[port] =
+			cfg->usb2eye[port].Usb20PerPortTxiSet;
+		silconfig->Usb2AfePredeemp[port] =
+			cfg->usb2eye[port].Usb20IUsbTxEmphasisEn;
+	}
+
 	silconfig->Gmm = 0;
 
 	/* On Geminilake, we need to override the default FSP PCIe de-emphasis

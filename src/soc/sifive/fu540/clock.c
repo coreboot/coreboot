@@ -59,6 +59,8 @@ static struct prci_ctlr *prci = (void *)FU540_PRCI;
 
 #define PRCI_DDRPLLCFG1_MASK (1u << 31)
 
+#define PRCI_GEMGXLPPLCFG1_MASK (1u << 31)
+
 #define PRCI_CORECLKSEL_CORECLKSEL 1
 
 #define PRCI_DEVICESRESET_DDR_CTRL_RST_N(x) (((x) & 0x1)  << 0)
@@ -141,6 +143,15 @@ static const struct pll_settings ddrpll_settings = {
 	.fse = 1,
 };
 
+static const struct pll_settings gemgxlpll_settings = {
+	.divr = 0,
+	.divf = 59,
+	.divq = 5,
+	.range = 4,
+	.bypass = 0,
+	.fse = 1,
+};
+
 static void init_coreclk(void)
 {
 	// switch coreclk to input reference frequency before modifying PLL
@@ -167,6 +178,19 @@ static void init_pll_ddr(void)
 	setbits_le32(&cfg1, PRCI_DDRPLLCFG1_MASK);
 	write32(&prci->ddrpllcfg1, cfg1);
 }
+
+static void init_gemgxlclk(void)
+{
+	u32 cfg1 = read32(&prci->gemgxlpllcfg1);
+	clrbits_le32(&cfg1, PRCI_GEMGXLPPLCFG1_MASK);
+	write32(&prci->gemgxlpllcfg1, cfg1);
+
+	configure_pll(&prci->gemgxlpllcfg0, &gemgxlpll_settings);
+
+	setbits_le32(&cfg1, PRCI_GEMGXLPPLCFG1_MASK);
+	write32(&prci->gemgxlpllcfg1, cfg1);
+}
+
 
 #define FU540_UART_DEVICES 2
 #define FU540_UART_REG_DIV 0x18
@@ -227,6 +251,17 @@ void clock_init(void)
 	// device?
 	for (int i = 0; i < 256; i++)
 		asm volatile ("nop");
+
+	init_gemgxlclk();
+
+	write32(&prci->devicesresetreg,
+		PRCI_DEVICESRESET_DDR_CTRL_RST_N(1) |
+		PRCI_DEVICESRESET_DDR_AXI_RST_N(1) |
+		PRCI_DEVICESRESET_DDR_AHB_RST_N(1) |
+		PRCI_DEVICESRESET_DDR_PHY_RST_N(1) |
+		PRCI_DEVICESRESET_GEMGXL_RST_N(1));
+
+	asm volatile ("fence");
 }
 #endif /* ENV_ROMSTAGE */
 

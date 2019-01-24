@@ -530,7 +530,7 @@ static void i945_setup_dmi_rcrb(void)
 	DMIBAR32(0x314) = DMIBAR32(0x314);
 	DMIBAR32(0x324) = DMIBAR32(0x324);
 	DMIBAR32(0x328) = DMIBAR32(0x328);
-	DMIBAR32(0x338) = DMIBAR32(0x334);
+	DMIBAR32(0x334) = DMIBAR32(0x334);
 	DMIBAR32(0x338) = DMIBAR32(0x338);
 
 	if (i945_silicon_revision() == 1 && (MCHBAR8(DFT_STRAP1) & (1 << 5))) {

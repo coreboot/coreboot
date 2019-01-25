@@ -1,5 +1,4 @@
 chip soc/intel/apollolake
-
 	# Intel Common SoC Config
 	#+-------------------+---------------------------+
 	#| Field             |  Value                    |
@@ -8,11 +7,19 @@ chip soc/intel/apollolake
 	#|                   | required to set up a BAR  |
 	#|                   | for TPM communication     |
 	#|                   | before memory is up       |
+	#| I2C5              | Audio                     |
+	#| I2C6              | Trackpad                  |
 	#+-------------------+---------------------------+
 	register "common_soc_config" = "{
 		.gspi[0] = {
 			.speed_mhz = 1,
 			.early_init = 1,
+		},
+		.i2c[6] = {
+			.speed = I2C_SPEED_FAST,
+			.rise_time_ns = 66,
+			.fall_time_ns = 90,
+			.data_hold_time_ns = 350,
 		},
 	}"
 

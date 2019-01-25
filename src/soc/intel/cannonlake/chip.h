@@ -100,16 +100,16 @@ struct soc_intel_cannonlake_config {
 	uint16_t FreqSaGvMid;
 
 	/* System Agent dynamic frequency support. Only effects ULX/ULT CPUs.
-	 * for CNL options are as following
-	 * When enabled memory will be training at three different frequencies.
+	 * For CNL, options are as following
+	 * When enabled, memory will be training at three different frequencies.
 	 * 0:Disabled, 1:FixedLow, 2:FixedMid, 3:FixedHigh, 4:Enabled
-	 * for WHL/CFL options are as following
-	 * When enabled memory will be training at two different frequencies.
+	 * For WHL/CFL options are as following
+	 * When enabled, memory will be training at two different frequencies.
 	 * 0:Disabled, 1:FixedLow, 2:FixedHigh, 3:Enabled*/
 	enum {
 		SaGv_Disabled,
 		SaGv_FixedLow,
-#if IS_ENABLED(CONFIG_SOC_INTEL_CANNONLAKE)
+#if !IS_ENABLED(CONFIG_SOC_INTEL_COFFEELAKE)
 		SaGv_FixedMid,
 #endif
 		SaGv_FixedHigh,

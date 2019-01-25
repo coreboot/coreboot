@@ -50,6 +50,9 @@ DefinitionBlock(
 	/* Chipset specific sleep states */
 	#include <soc/intel/cannonlake/acpi/sleepstates.asl>
 
+	/* Low power idle table */
+	#include <soc/intel/cannonlake/acpi/lpit.asl>
+
 #if IS_ENABLED(CONFIG_EC_GOOGLE_WILCO)
 	/* Chrome OS Embedded Controller */
 	Scope (\_SB.PCI0.LPCB)

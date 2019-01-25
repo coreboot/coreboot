@@ -81,16 +81,17 @@ postcar-y += common.c
 
 romstage-$(CONFIG_FSP2_0_USES_TPM_MRC_HASH) += mrc_cache_hash_tpm.c
 
+vboot-fixup-includes = $(patsubst -I%,-I$(top)/%,\
+		       $(patsubst $(src)/%.h,$(top)/$(src)/%.h,\
+		       $(filter-out -I$(obj),$(1))))
 
 # call with $1 = stage name to create rules for building the library
 # for the stage and adding it to the stage's set of object files.
 define vboot-for-stage
 VB2_LIB_$(1) = $(obj)/external/vboot_reference-$(1)/vboot_fw20.a
-VBOOT_CFLAGS_$(1) += $$(patsubst -I%,-I$(top)/%,\
-		$$(patsubst $(src)/%.h,$(top)/$(src)/%.h,\
-		$$(filter-out -I$(obj), $$(CPPFLAGS_$(1)))))
+VBOOT_CFLAGS_$(1) += $$(call vboot-fixup-includes,$$(CPPFLAGS_$(1)))
 VBOOT_CFLAGS_$(1) += $$(CFLAGS_$(1))
-VBOOT_CFLAGS_$(1) += $$($(1)-c-ccopts)
+VBOOT_CFLAGS_$(1) += $$(call vboot-fixup-includes,$$($(1)-c-ccopts))
 VBOOT_CFLAGS_$(1) += -I$(abspath $(obj)) -Wno-missing-prototypes
 VBOOT_CFLAGS_$(1) += -DVBOOT_DEBUG
 

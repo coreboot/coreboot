@@ -250,7 +250,11 @@ chip soc/intel/cannonlake
 			end
 		end # GSPI #0
 		device pci 1e.3 off end # GSPI #1
-		device pci 1f.0 on end # LPC/eSPI
+		device pci 1f.0 on
+			chip ec/google/chromeec
+				device pnp 0c09.0 on end
+			end
+		end # eSPI Interface
 		device pci 1f.1 on  end # P2SB
 		device pci 1f.2 on  end # Power Management Controller
 		device pci 1f.3 off end # Intel HDA

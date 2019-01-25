@@ -18,6 +18,7 @@ bootblock-$(CONFIG_CHROMEOS) += chromeos.c
 
 ramstage-y += ramstage.c
 ramstage-$(CONFIG_CHROMEOS) += chromeos.c
+ramstage-$(CONFIG_EC_GOOGLE_CHROMEEC) += ec.c
 
 romstage-y += romstage.c
 romstage-$(CONFIG_CHROMEOS) += chromeos.c

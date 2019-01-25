@@ -143,6 +143,9 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_G6, NONE, DEEP, NF1),
 	/* SD_WP => NC */
 	PAD_NC(GPP_G7, DN_20K),
+
+	/* GPD2: LAN_WAKE# ==> EC_PCH_WAKE_OD */
+	PAD_CFG_NF(GPD2, NONE, DEEP, NF1),
 };
 
 const struct pad_config *__weak variant_gpio_table(size_t *num)

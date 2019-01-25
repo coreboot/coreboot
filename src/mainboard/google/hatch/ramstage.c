@@ -15,6 +15,7 @@
 
 #include <arch/acpi.h>
 #include <baseboard/variants.h>
+#include <ec/ec.h>
 #include <soc/ramstage.h>
 #include <variant/gpio.h>
 #include <vendorcode/google/chromeos/chromeos.h>
@@ -30,6 +31,8 @@ void mainboard_silicon_init_params(FSP_S_CONFIG *params)
 
 static void mainboard_enable(struct device *dev)
 {
+	mainboard_ec_init();
+
 	dev->ops->acpi_inject_dsdt_generator = chromeos_dsdt_generator;
 }
 

@@ -65,6 +65,10 @@ ifeq ($(CONFIG_PXE_NO_PROMT),y)
 	sed 's|#define\s*BANNER_TIMEOUT.*|#define BANNER_TIMEOUT 0|' "$(project_dir)/src/config/general.h" > "$(project_dir)/src/config/general.h.tmp"
 	mv "$(project_dir)/src/config/general.h.tmp" "$(project_dir)/src/config/general.h"
 endif
+ifeq ($(CONFIG_PXE_HAS_HTTPS),y)
+	sed 's|.*DOWNLOAD_PROTO_HTTPS|#define DOWNLOAD_PROTO_HTTPS|g' "$(project_dir)/src/config/general.h" > "$(project_dir)/src/config/general.h.tmp"
+	mv "$(project_dir)/src/config/general.h.tmp" "$(project_dir)/src/config/general.h"
+endif
 
 build: config $(CONFIG_SCRIPT)
 ifeq ($(CONFIG_HAS_SCRIPT),y)

@@ -113,5 +113,13 @@ config PXE_SCRIPT
 	  Uses the ipxe script instead showing the prompt:
 	  "Press Ctrl-B to start iPXE..."
 
+config PXE_HAS_HTTPS
+	bool "Enable HTTPS protocol"
+	default y
+	depends on BUILD_IPXE
+	help
+	  Enable HTTPS protocol, which allows you to encrypt all communication
+	  with a web server and to verify the server's identity
+
 endmenu
 endif

@@ -142,3 +142,5 @@ Name (DWTL, Package () { 0x35, 0xff, WR })	/* DPTF: Write Trip Low */
 Name (DWTH, Package () { 0x36, 0xff, WR })	/* DPTF: Write Trip High */
 Name (DWHY, Package () { 0x37, 0xff, WR })	/* DPTF: Write Hysteresis */
 Name (DWTQ, Package () { 0x38, 0xff, WR })	/* DPTF: Write Trip Query */
+Name (CSOS, Package () { 0xb8, 0xff, WR })	/* OS support for S0ix */
+Name (CSEX, Package () { 0xb9, 0xff, WR })	/* OS enter(1)/exit(0) S0ix */

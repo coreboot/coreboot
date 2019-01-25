@@ -472,6 +472,28 @@ const char *__weak smbios_system_sku(void)
 	return "";
 }
 
+static int get_socket_type(void)
+{
+	if (CONFIG(CPU_INTEL_SLOT_1))
+		return 0x08;
+	if (CONFIG(CPU_INTEL_SOCKET_MPGA604))
+		return 0x13;
+	if (CONFIG(CPU_INTEL_SOCKET_LGA775))
+		return 0x15;
+	if (CONFIG(CPU_AMD_SOCKET_AM2R2))
+		return 0x17;
+	if (CONFIG(CPU_AMD_SOCKET_F_1207))
+		return 0x18;
+	if (CONFIG(CPU_AMD_SOCKET_G34_NON_AGESA))
+		return 0x1a;
+	if (CONFIG(CPU_AMD_SOCKET_AM3))
+		return 0x1b;
+	if (CONFIG(CPU_AMD_SOCKET_C32_NON_AGESA))
+		return 0x1c;
+
+	return 0x02; /* Unknown */
+}
+
 static int smbios_write_type1(unsigned long *current, int handle)
 {
 	struct smbios_type1 *t = (struct smbios_type1 *)*current;
@@ -574,7 +596,7 @@ static int smbios_write_type4(unsigned long *current, int handle)
 	t->l1_cache_handle = 0xffff;
 	t->l2_cache_handle = 0xffff;
 	t->l3_cache_handle = 0xffff;
-	t->processor_upgrade = 1;
+	t->processor_upgrade = get_socket_type();
 	len = t->length + smbios_string_table_len(t->eos);
 	*current += len;
 	return len;

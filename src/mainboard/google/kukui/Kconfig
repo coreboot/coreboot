@@ -59,4 +59,10 @@ config EC_GOOGLE_CHROMEEC_SPI_BUS
 	hex
 	default 0x2
 
+config GBB_HWID
+	string
+	depends on CHROMEOS
+	default "KUKUI TEST 9847" if BOARD_GOOGLE_KUKUI
+	default "FLAPJACK TEST 4147" if BOARD_GOOGLE_FLAPJACK
+
 endif

@@ -111,15 +111,15 @@ config MAINBOARD_USES_IFD_GBE_REGION
 	def_bool n
 
 config HAVE_GBE_BIN
-	bool "Add gigabit ethernet firmware"
+	bool "Add gigabit ethernet configuration"
 	depends on HAVE_IFD_BIN && MAINBOARD_USES_IFD_GBE_REGION
 	help
-	  The integrated gigabit ethernet controller needs a firmware file.
-	  Select this if you are going to use the PCH integrated controller
-	  and have the firmware.
+	  The integrated gigabit ethernet controller needs a configuration
+	  file. Select this if you are going to use the PCH integrated
+	  controller and want to add that file.
 
 config GBE_BIN_PATH
-	string "Path to gigabit ethernet firmware"
+	string "Path to gigabit ethernet configuration"
 	depends on HAVE_GBE_BIN
 	default "3rdparty/blobs/mainboard/$(MAINBOARDDIR)/gbe.bin"
 

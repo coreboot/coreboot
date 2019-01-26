@@ -59,12 +59,10 @@ static void append_field_to_blob (unsigned char b[], unsigned int w)
 	binary->bloblen += w;
 }
 
-static void set_bitfield(struct field **sym_table_ptr, char *name,
-			 unsigned int value)
+static void set_bitfield(char *name, unsigned int value)
 {
 	unsigned long long i;
-
-	struct field *bf = getsym(sym_table_ptr, name);
+	struct field *bf = getsym (name);
 	if (bf) {
 		bf->value = value & 0xffffffff;
 		i = (1 << bf->width) - 1;
@@ -80,30 +78,28 @@ static void set_bitfield(struct field **sym_table_ptr, char *name,
 	}
 }
 
-static void set_bitfield_array(struct field **sym_table_ptr, char *name,
-			       unsigned int n, unsigned int value)
+static void set_bitfield_array(char *name, unsigned int n, unsigned int value)
 {
 	unsigned int i;
 	unsigned long len = strlen (name);
 	char *namen = (char *) malloc ((len + 9) * sizeof (char));
-
 	check_pointer(namen);
 	for (i = 0; i < n; i++) {
 		snprintf (namen, len + 8, "%s%x", name, i);
-		set_bitfield (sym_table_ptr, namen, value);
+		set_bitfield (namen, value);
 	}
 	free(namen);
 }
 
-static void create_new_bitfield(struct field **sym_table_ptr, char *name, unsigned int width)
+static void create_new_bitfield(char *name, unsigned int width)
 {
 	struct field *bf;
 
-	if (!(bf = putsym (sym_table_ptr, name, width))) return;
+	if (!(bf = putsym (name, width))) return;
 	//fprintf(stderr, "Added bitfield `%s` : %d\n", bf->name, width);
 }
 
-static void create_new_bitfields(struct field **sym_table_ptr, char *name, unsigned int n, unsigned int width)
+static void create_new_bitfields(char *name, unsigned int n, unsigned int width)
 {
 	unsigned int i;
 	unsigned long len = strlen (name);
@@ -111,41 +107,38 @@ static void create_new_bitfields(struct field **sym_table_ptr, char *name, unsig
 	check_pointer(namen);
 	for (i = 0; i < n; i++) {
 		snprintf (namen, len + 8, "%s%x", name, i);
-		create_new_bitfield (sym_table_ptr, namen, width);
+		create_new_bitfield (namen, width);
 	}
 	free(namen);
 }
 
-static struct field *putsym (struct field **sym_table_ptr,  char const *sym_name,
-		       unsigned int w)
+static struct field *putsym (char const *sym_name, unsigned int w)
 {
-	if (getsym(sym_table_ptr, sym_name)) {
+	if (getsym(sym_name)) {
 		fprintf(stderr, "Cannot add duplicate named bitfield `%s`\n",
 			sym_name);
 		return 0;
 	}
-	struct field *ptr = (field_t ) malloc (sizeof (struct field));
+	struct field *ptr = (struct field *) malloc (sizeof (struct field));
 	check_pointer(ptr);
 	ptr->name = (char *) malloc (strlen (sym_name) + 1);
 	check_pointer(ptr->name);
 	strcpy (ptr->name, sym_name);
 	ptr->width = w;
 	ptr->value = 0;
-	ptr->next = (field_t)0;
+	ptr->next = (struct field *)0;
 	if (sym_table_tail) {
 		sym_table_tail->next = ptr;
 	} else {
-		*sym_table_ptr = ptr;
+		sym_table = ptr;
 	}
 	sym_table_tail = ptr;
 	return ptr;
 }
 
-static struct field *getsym (struct field **sym_table_ptr, char const *sym_name)
+static struct field *getsym (char const *sym_name)
 {
 	struct field *ptr;
-	struct field *sym_table = *sym_table_ptr;
-
 	for (ptr = sym_table; ptr != (struct field *) 0;
 			ptr = (struct field *)ptr->next) {
 		if (strcmp (ptr->name, sym_name) == 0)
@@ -154,11 +147,9 @@ static struct field *getsym (struct field **sym_table_ptr, char const *sym_name)
 	return 0;
 }
 
-static void dump_all_values (struct field **sym_table_ptr)
+static void dump_all_values (void)
 {
 	struct field *ptr;
-	struct field *sym_table = *sym_table_ptr;
-
 	for (ptr = sym_table; ptr != (struct field *) 0;
 			ptr = (struct field *)ptr->next) {
 		fprintf(stderr, "%s = %d (%d bits)\n",
@@ -168,12 +159,10 @@ static void dump_all_values (struct field **sym_table_ptr)
 	}
 }
 
-static void empty_field_table(struct field **sym_table_ptr)
+static void empty_field_table(void)
 {
 	struct field *ptr;
 	struct field *ptrnext;
-
-	struct field *sym_table = *sym_table_ptr;
 
 	for (ptr = sym_table; ptr != (struct field *) 0; ptr = ptrnext) {
 		if (ptr) {
@@ -219,12 +208,10 @@ static void interpret_next_blob_value (struct field *f)
 }
 
 /* {}%BIN -> {} */
-static void generate_setter_bitfields(FILE* fp, struct field **sym_table_ptr,
-				      unsigned char *bin)
+static void generate_setter_bitfields(FILE* fp, unsigned char *bin)
 {
 	unsigned int i;
 	struct field *ptr;
-	struct field *sym_table = *sym_table_ptr;
 
 	/* Convert bytes to bit array */
 	for (i = 0; i < binary->lenactualblob; i++) {
@@ -246,13 +233,10 @@ static void generate_setter_bitfields(FILE* fp, struct field **sym_table_ptr,
 	fprintf (fp, "\n}\n");
 }
 
-static void generate_binary_with_gbe_checksum(FILE* fp,
-					      struct field **sym_table_ptr)
+static void generate_binary_with_gbe_checksum(FILE* fp)
 {
 	int i;
 	unsigned short checksum;
-
-	struct field *sym_table = *sym_table_ptr;
 
 	/* traverse spec, push to blob and add up for checksum */
 	struct field *ptr;
@@ -293,7 +277,7 @@ static void generate_binary_with_gbe_checksum(FILE* fp,
 	checksum = (0xbaba - binary->checksum) & 0xffff;
 
 	/* Now write checksum */
-	set_bitfield (sym_table_ptr, "checksum_gbe", checksum);
+	set_bitfield ("checksum_gbe", checksum);
 
 	fprintf(fp, "%c", checksum & 0xff);
 	fprintf(fp, "%c", (checksum & 0xff00) >> 8);
@@ -321,11 +305,10 @@ static void generate_binary_with_gbe_checksum(FILE* fp,
 }
 
 /* {}{} -> BIN */
-static void generate_binary(FILE* fp, struct field **sym_table_ptr)
+static void generate_binary(FILE* fp)
 {
 	unsigned int i;
 	struct field *ptr;
-	struct field *sym_table = *sym_table_ptr;
 
 	if (binary->bloblen % 8) {
 		fprintf (stderr,
@@ -333,8 +316,8 @@ static void generate_binary(FILE* fp, struct field **sym_table_ptr)
 		exit (1);
 	}
 
-	if (getsym (sym_table_ptr, "checksum_gbe")) {
-		generate_binary_with_gbe_checksum(fp, sym_table_ptr);
+	if (getsym ("checksum_gbe")) {
+		generate_binary_with_gbe_checksum(fp);
 		return;
 	}
 
@@ -370,7 +353,7 @@ static void generate_binary(FILE* fp, struct field **sym_table_ptr)
 	unsigned char u8;
 	unsigned char *u8array;
 }
-%parse-param {FILE* fp} {struct field** sym_table_ptr}
+%parse-param {FILE* fp}
 
 %token <str> name
 %token <u32> val
@@ -389,13 +372,13 @@ static void generate_binary(FILE* fp, struct field **sym_table_ptr)
 
 input:
   /* empty */
-| input spec setter eof		{ empty_field_table(sym_table_ptr); YYACCEPT;}
+| input spec setter eof		{ empty_field_table(); YYACCEPT;}
 | input spec blob		{ fprintf (stderr, "Parsed all bytes\n");
-				  empty_field_table(sym_table_ptr); YYACCEPT;}
+				  empty_field_table(); YYACCEPT;}
 ;
 
 blob:
-  '%' eof			{ generate_setter_bitfields(fp, sym_table_ptr,
+  '%' eof			{ generate_setter_bitfields(fp,
 				  binary->actualblob); }
 ;
 
@@ -411,15 +394,14 @@ specmembers:
 ;
 
 specpair:
-  name ':' val		{	create_new_bitfield(sym_table_ptr, $1, $3); }
-| name '[' val ']' ':' val	{ create_new_bitfields(sym_table_ptr, $1, $3,
-						       $6); }
+  name ':' val		{	create_new_bitfield($1, $3); }
+| name '[' val ']' ':' val	{ create_new_bitfields($1, $3, $6); }
 ;
 
 setter:
   '{' '}'		{	fprintf (stderr, "No values\n"); }
 | '{' valuemembers '}'	{	fprintf (stderr, "Parsed all values\n");
-				generate_binary(fp, sym_table_ptr); }
+				generate_binary(fp); }
 ;
 
 valuemembers:
@@ -428,15 +410,14 @@ valuemembers:
 ;
 
 setpair:
-name '=' val		{	set_bitfield(sym_table_ptr, $1, $3); }
-| name '[' val ']' '=' val	{ set_bitfield_array(sym_table_ptr, $1, $3,
-						     $6); }
+  name '=' val		{	set_bitfield($1, $3); }
+| name '[' val ']' '=' val	{ set_bitfield_array($1, $3, $6); }
 ;
 
 %%
 
 /* Called by yyparse on error.  */
-static void yyerror (FILE* fp, struct field **sym_table_ptr, char const *s)
+static void yyerror (FILE* fp, char const *s)
 {
 	fprintf (stderr, "yyerror: %s\n", s);
 }
@@ -445,10 +426,9 @@ static void yyerror (FILE* fp, struct field **sym_table_ptr, char const *s)
 void set_input_string(char* in);
 
 /* This function parses a string */
-static int parse_string(FILE* fp, struct field **sym_table_ptr, unsigned char* in)
-{
+static int parse_string(FILE* fp, unsigned char* in) {
 	set_input_string ((char *)in);
-	return yyparse (fp, sym_table_ptr);
+	return yyparse (fp);
 }
 
 static unsigned int loadfile (FILE* fp, char *file, char *filetype,
@@ -484,7 +464,6 @@ int main (int argc, char *argv[])
 	unsigned int pos = 0;
 	int ret = 0;
 	FILE* fp;
-	struct field *sym_table;
 
 #if YYDEBUG == 1
 	yydebug = 1;
@@ -505,7 +484,7 @@ int main (int argc, char *argv[])
 			       argv[3]);
 			exit(1);
 		}
-		ret = parse_string(fp, &sym_table, parsestring);
+		ret = parse_string(fp, parsestring);
 		free(parsestring);
 	} else if (argc == 5 && strcmp (argv[1], "-d") == 0) {
 		/* Decompile mode */
@@ -537,7 +516,7 @@ int main (int argc, char *argv[])
 			       argv[4]);
 			exit(1);
 		}
-		ret = parse_string(fp, &sym_table, parsestring);
+		ret = parse_string(fp, parsestring);
 		free(parsestring);
 		free(binary->actualblob);
 		fclose(fp);

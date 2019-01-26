@@ -2414,9 +2414,6 @@ static void sdram_program_receive_enable(struct sys_info *sysinfo)
 {
 	MCHBAR32(REPC) |= (1 << 0);
 
-	/* enable upper CMOS */
-	RCBA32(0x3400) = (1 << 2);
-
 	/* Program Receive Enable Timings */
 	if (sysinfo->boot_path == BOOT_PATH_RESUME) {
 		sdram_recover_receive_enable();

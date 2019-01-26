@@ -157,7 +157,6 @@ static void i945_setup_bars(void)
 
 	/* Setting up Southbridge. In the northbridge code. */
 	printk(BIOS_DEBUG, "Setting up static southbridge registers...");
-	pci_write_config32(PCI_DEV(0, 0x1f, 0), RCBA, (uintptr_t)DEFAULT_RCBA | 1);
 
 	pci_write_config32(PCI_DEV(0, 0x1f, 0), PMBASE, DEFAULT_PMBASE | 1);
 	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0x44, 0x80); /* ACPI_CNTL: Enable ACPI BAR */
@@ -173,9 +172,6 @@ static void i945_setup_bars(void)
 	outw((1 <<  3), DEFAULT_PMBASE | 0x60 | 0x04);	/* clear timeout */
 	outw((1 <<  1), DEFAULT_PMBASE | 0x60 | 0x06);	/* clear 2nd timeout */
 	printk(BIOS_DEBUG, " done.\n");
-
-	/* Enable upper 128bytes of CMOS */
-	RCBA32(RC) = (1 << 2);
 
 	printk(BIOS_DEBUG, "Setting up static northbridge registers...");
 	/* Set up all hardcoded northbridge BARs */

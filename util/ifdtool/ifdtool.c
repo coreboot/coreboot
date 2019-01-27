@@ -943,6 +943,7 @@ static void lock_descriptor(const char *filename, char *image, int size)
 		fmba->flmstr1 &= 0xff;
 		fmba->flmstr2 &= 0xff;
 		fmba->flmstr3 &= 0xff;
+		fmba->flmstr5 &= 0xff;
 	} else {
 		wr_shift = FLMSTR_WR_SHIFT_V1;
 		rd_shift = FLMSTR_RD_SHIFT_V1;
@@ -1015,6 +1016,7 @@ static void unlock_descriptor(const char *filename, char *image, int size)
 		fmba->flmstr1 = 0xffffff00 | (fmba->flmstr1 & 0xff);
 		fmba->flmstr2 = 0xffffff00 | (fmba->flmstr2 & 0xff);
 		fmba->flmstr3 = 0xffffff00 | (fmba->flmstr3 & 0xff);
+		fmba->flmstr5 = 0xffffff00 | (fmba->flmstr5 & 0xff);
 	} else {
 		fmba->flmstr1 = 0xffff0000;
 		fmba->flmstr2 = 0xffff0000;

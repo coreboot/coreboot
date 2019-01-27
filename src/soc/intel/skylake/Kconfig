@@ -42,7 +42,6 @@ config CPU_SPECIFIC_OPTIONS
 	select PARALLEL_MP_AP_WORK
 	select PCIEX_LENGTH_64MB
 	select REG_SCRIPT
-	select RTC
 	select SA_ENABLE_DPR
 	select SMM_TSEG
 	select SMP

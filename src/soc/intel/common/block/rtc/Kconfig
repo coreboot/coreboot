@@ -1,4 +1,5 @@
 config SOC_INTEL_COMMON_BLOCK_RTC
 	bool
+	select RTC
 	help
 	  Intel Processor common RTC support

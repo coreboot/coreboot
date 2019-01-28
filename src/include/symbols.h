@@ -114,6 +114,10 @@ extern u8 _pdpt[];
 extern u8 _epdpt[];
 #define _pdpt_size (_epdpt - _pdpt)
 
+extern u8 _bl31[];
+extern u8 _ebl31[];
+#define _bl31_size (_ebl31 - _bl31)
+
 /* Put this into a .c file accessing a linker script region to mark that region
  * as "optional". If it is defined in memlayout.ld (or anywhere else), the
  * values from that definition will be used. If not, start, end and size will

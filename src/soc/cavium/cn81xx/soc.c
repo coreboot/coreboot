@@ -319,18 +319,11 @@ static int dt_platform_fixup(struct device_tree_fixup *fixup,
 	return 0;
 }
 
-extern u8 _bl31[];
-extern u8 _ebl31[];
 extern u8 _sff8104[];
 extern u8 _esff8104[];
 
 void bootmem_platform_add_ranges(void)
 {
-	/* ATF reserved */
-	bootmem_add_range((uintptr_t)_bl31,
-			  ((uintptr_t)_ebl31 - (uintptr_t)_bl31),
-			  BM_MEM_RESERVED);
-
 	bootmem_add_range((uintptr_t)_sff8104,
 			  ((uintptr_t)_esff8104 - (uintptr_t)_sff8104),
 			  BM_MEM_RESERVED);

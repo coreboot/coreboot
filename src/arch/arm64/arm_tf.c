@@ -50,7 +50,7 @@ void arm_tf_run_bl31(u64 payload_entry, u64 payload_arg0, u64 payload_spsr)
 	if (prog_locate(&bl31))
 		die("BL31 not found");
 
-	if (!selfload(&bl31))
+	if (!selfload_check(&bl31, BM_MEM_BL31))
 		die("BL31 load failed");
 	bl31_entry = prog_entry(&bl31);
 

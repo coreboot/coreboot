@@ -16,6 +16,7 @@
 
 #include <arch/io.h>
 #include <arch/cache.h>
+#include <bootmem.h>
 #include <bootmode.h>
 #include <bootstate.h>
 #include <console/console.h>
@@ -33,13 +34,23 @@
 
 #include "chip.h"
 
+void bootmem_platform_add_ranges(void)
+{
+	uintptr_t begin;
+	size_t size;
+	carveout_range(CARVEOUT_TZ, &begin, &size);
+	if (size == 0)
+		return;
+	bootmem_add_range(begin * MiB, size * MiB, BM_MEM_BL31);
+}
+
 static void soc_read_resources(struct device *dev)
 {
 	unsigned long index = 0;
 	int i; uintptr_t begin, end;
 	size_t size;
 
-	for (i = 0; i < CARVEOUT_NUM; i++) {
+	for (i = CARVEOUT_TZ + 1; i < CARVEOUT_NUM; i++) {
 		carveout_range(i, &begin, &size);
 		if (size == 0)
 			continue;

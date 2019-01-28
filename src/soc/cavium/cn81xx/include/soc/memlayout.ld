@@ -22,7 +22,7 @@ SECTIONS
 {
 	DRAM_START(0x00000000)
 	/* Secure region 0 - 1MiB */
-	REGION(bl31, 0, 0xe0000, 0x1000)
+	BL31(0, 0xe0000)
 	REGION(sff8104, 0xe0000, 0x20000, 0x1000)
 
 	/* Insecure region 1MiB - TOP OF DRAM */

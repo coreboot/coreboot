@@ -13,9 +13,15 @@
  * GNU General Public License for more details.
  */
 
+#include <bootmem.h>
 #include <device/device.h>
 #include <symbols.h>
 #include <soc/emi.h>
+
+void bootmem_platform_add_ranges(void)
+{
+	bootmem_add_range(0x101000, 124 * KiB, BM_MEM_BL31);
+}
 
 static void soc_read_resources(struct device *dev)
 {

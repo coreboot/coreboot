@@ -20,6 +20,8 @@
 #include <boot/coreboot_tables.h>
 #include <symbols.h>
 
+DECLARE_OPTIONAL_REGION(bl31);
+
 void arch_write_tables(uintptr_t coreboot_table)
 {
 }
@@ -27,6 +29,9 @@ void arch_write_tables(uintptr_t coreboot_table)
 void bootmem_arch_add_ranges(void)
 {
 	bootmem_add_range((uintptr_t)_ttb, _ttb_size, BM_MEM_RAMSTAGE);
+
+	if (IS_ENABLED(CONFIG_ARM64_USE_ARM_TRUSTED_FIRMWARE) && _bl31_size > 0)
+		bootmem_add_range((uintptr_t)_bl31, _bl31_size, BM_MEM_BL31);
 
 	if (!IS_ENABLED(CONFIG_COMMON_CBFS_SPI_WRAPPER))
 		return;

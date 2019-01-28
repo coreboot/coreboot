@@ -37,4 +37,8 @@
 	REGION(stack, addr, size, 16) \
 	_ = ASSERT(size >= 2K, "stack should be >= 2K, see toolchain.inc");
 
+#define BL31(addr, size) \
+	REGION(bl31, addr, size, 4K) \
+	_ = ASSERT(size % 4K == 0, "BL31 size must be divisible by 4K!");
+
 #endif /* __ARCH_MEMLAYOUT_H */

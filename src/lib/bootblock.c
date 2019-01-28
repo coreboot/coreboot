@@ -42,11 +42,11 @@ asmlinkage void bootblock_main_with_timestamp(uint64_t base_timestamp,
 				      timestamps[i].entry_stamp);
 	}
 
-	sanitize_cmos();
-	cmos_post_init();
-
 	bootblock_soc_early_init();
 	bootblock_mainboard_early_init();
+
+	sanitize_cmos();
+	cmos_post_init();
 
 	if (CONFIG(BOOTBLOCK_CONSOLE)) {
 		console_init();

@@ -201,31 +201,23 @@ bool bootmem_walk(range_action_t action, void *arg)
 	return false;
 }
 
-static int bootmem_region_targets_ram(uint64_t start, uint64_t end,
-				struct memranges *bm)
+int bootmem_region_targets_type(uint64_t start, uint64_t size,
+				enum bootmem_type dest_type)
 {
 	const struct range_entry *r;
+	uint64_t end = start + size;
 
-	memranges_each_entry(r, bm) {
+	memranges_each_entry(r, &bootmem) {
 		/* All further bootmem entries are beyond this range. */
 		if (end <= range_entry_base(r))
 			break;
 
 		if (start >= range_entry_base(r) && end <= range_entry_end(r)) {
-			if (range_entry_tag(r) == BM_MEM_RAM)
+			if (range_entry_tag(r) == dest_type)
 				return 1;
 		}
 	}
 	return 0;
-}
-
-/* Common testcase for loading any segments to bootmem.
- * Returns 1 if the requested memory range is all tagged as type BM_MEM_RAM.
- * Otherwise returns 0.
- */
-int bootmem_region_targets_usable_ram(uint64_t start, uint64_t size)
-{
-	return bootmem_region_targets_ram(start, start + size, &bootmem);
 }
 
 void *bootmem_allocate_buffer(size_t size)

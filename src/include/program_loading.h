@@ -16,6 +16,7 @@
 #ifndef PROGRAM_LOADING_H
 #define PROGRAM_LOADING_H
 
+#include <bootmem.h>
 #include <commonlib/region.h>
 #include <stdint.h>
 #include <stddef.h>
@@ -206,7 +207,7 @@ void mirror_payload(struct prog *payload);
  *
  * Defined in src/lib/selfboot.c
  */
-bool selfload_check(struct prog *payload);
+bool selfload_check(struct prog *payload, enum bootmem_type dest_type);
 bool selfload(struct prog *payload);
 
 #endif /* PROGRAM_LOADING_H */

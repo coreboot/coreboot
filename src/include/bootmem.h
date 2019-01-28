@@ -94,8 +94,11 @@ bool bootmem_walk_os_mem(range_action_t action, void *arg);
  */
 bool bootmem_walk(range_action_t action, void *arg);
 
-/* Return 1 if region targets usable RAM, 0 otherwise. */
-int bootmem_region_targets_usable_ram(uint64_t start, uint64_t size);
+/* Returns 1 if the requested memory range is all tagged as type dest_type.
+ * Otherwise returns 0.
+ */
+int bootmem_region_targets_type(uint64_t start, uint64_t size,
+		enum bootmem_type dest_type);
 
 /* Allocate a temporary buffer from the unused RAM areas. */
 void *bootmem_allocate_buffer(size_t size);

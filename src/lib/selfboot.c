@@ -30,7 +30,7 @@
 #include <cbmem.h>
 
 /* The type syntax for C is essentially unparsable. -- Rob Pike */
-typedef int (*checker_t)(struct cbfs_payload_segment *cbfssegs);
+typedef int (*checker_t)(struct cbfs_payload_segment *cbfssegs, void *args);
 
 /* Decode a serialized cbfs payload segment
  * from memory into native endianness.
@@ -46,10 +46,11 @@ static void cbfs_decode_payload_segment(struct cbfs_payload_segment *segment,
 	segment->mem_len     = read_be32(&src->mem_len);
 }
 
-static int segment_targets_usable_ram(void *dest, unsigned long memsz)
+static int segment_targets_type(void *dest, unsigned long memsz,
+		enum bootmem_type dest_type)
 {
 	uintptr_t d = (uintptr_t) dest;
-	if (bootmem_region_targets_usable_ram(d, memsz))
+	if (bootmem_region_targets_type(d, memsz, dest_type))
 		return 1;
 
 	if (payload_arch_usable_ram_quirk(d, memsz))
@@ -140,11 +141,13 @@ static int last_loadable_segment(struct cbfs_payload_segment *seg)
 	return read_be32(&(seg + 1)->type) == PAYLOAD_SEGMENT_ENTRY;
 }
 
-static int check_payload_segments(struct cbfs_payload_segment *cbfssegs)
+static int check_payload_segments(struct cbfs_payload_segment *cbfssegs,
+		void *args)
 {
 	uint8_t *dest;
 	size_t memsz;
 	struct cbfs_payload_segment *first_segment, *seg, segment;
+	enum bootmem_type dest_type = *(enum bootmem_type *)args;
 
 	for (first_segment = seg = cbfssegs;; ++seg) {
 		printk(BIOS_DEBUG, "Checking segment from ROM address 0x%p\n", seg);
@@ -153,7 +156,7 @@ static int check_payload_segments(struct cbfs_payload_segment *cbfssegs)
 		memsz = segment.mem_len;
 		if (segment.type == PAYLOAD_SEGMENT_ENTRY)
 			break;
-		if (!segment_targets_usable_ram(dest, memsz))
+		if (!segment_targets_type(dest, memsz, dest_type))
 			return -1;
 	}
 	return 0;
@@ -244,7 +247,7 @@ static void *selfprepare(struct prog *payload)
 	return data;
 }
 
-static bool _selfload(struct prog *payload, checker_t f)
+static bool _selfload(struct prog *payload, checker_t f, void *args)
 {
 	uintptr_t entry = 0;
 	struct cbfs_payload_segment *cbfssegs;
@@ -256,7 +259,7 @@ static bool _selfload(struct prog *payload, checker_t f)
 
 	cbfssegs = &((struct cbfs_payload *)data)->segments;
 
-	if (f && f(cbfssegs))
+	if (f && f(cbfssegs, args))
 		goto out;
 
 	if (load_payload_segments(cbfssegs, &entry))
@@ -275,12 +278,12 @@ out:
 	return false;
 }
 
-bool selfload_check(struct prog *payload)
+bool selfload_check(struct prog *payload, enum bootmem_type dest_type)
 {
-	return _selfload(payload, check_payload_segments);
+	return _selfload(payload, check_payload_segments, &dest_type);
 }
 
 bool selfload(struct prog *payload)
 {
-	return _selfload(payload, NULL);
+	return _selfload(payload, NULL, 0);
 }

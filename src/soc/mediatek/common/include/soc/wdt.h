@@ -17,6 +17,7 @@
 #define SOC_MEDIATEK_COMMON_WDT_H
 
 #include <stdint.h>
+#include <soc/addressmap.h>
 
 struct mtk_wdt_regs {
 	u32 wdt_mode;
@@ -47,6 +48,8 @@ enum {
 	MTK_WDT_STA_SW_RST	= 1 << 30,
 	MTK_WDT_STA_HW_RST	= 1 << 31
 };
+
+static struct mtk_wdt_regs *const mtk_wdt = (void *)RGU_BASE;
 
 int mtk_wdt_init(void);
 

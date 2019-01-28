@@ -15,12 +15,8 @@
 
 #include <arch/io.h>
 #include <console/console.h>
-#include <reset.h>
-#include <soc/addressmap.h>
 #include <soc/wdt.h>
 #include <vendorcode/google/chromeos/chromeos.h>
-
-static struct mtk_wdt_regs *const mtk_wdt = (void *)RGU_BASE;
 
 int mtk_wdt_init(void)
 {
@@ -55,9 +51,4 @@ int mtk_wdt_init(void)
 			MTK_WDT_MODE_EXTEN | MTK_WDT_MODE_KEY);
 
 	return wdt_sta;
-}
-
-void do_board_reset(void)
-{
-	write32(&mtk_wdt->wdt_swrst, MTK_WDT_SWRST_KEY);
 }

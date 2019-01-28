@@ -5,9 +5,9 @@ COPY makeSphinx.sh /makeSphinx.sh
 RUN apk add --no-cache python3 make bash git \
  && pip3 install --upgrade --no-cache-dir pip \
  && pip3 install --no-cache-dir  \
-    sphinx===1.7.7 \
-    sphinx_rtd_theme===0.4.1 \
-    recommonmark===0.4.0 \
+    sphinx===1.8.3 \
+    sphinx_rtd_theme===0.4.2 \
+    recommonmark===0.5.0 \
     sphinx_autobuild===0.7.1 \
  && chmod 755 /makeSphinx.sh
 

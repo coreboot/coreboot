@@ -143,7 +143,20 @@ chip soc/intel/apollolake
 		device pci 13.3 off end	# - PCIe-A 3
 		device pci 14.0 off end	# - PCIe-B 0
 		device pci 14.1 off end	# - PCIe-B 1
-		device pci 15.0 on  end	# - XHCI
+		device pci 15.0 on
+			chip drivers/usb/acpi
+				register "desc" = ""Root Hub""
+				register "type" = "UPC_TYPE_HUB"
+				device usb 0.0 on
+					chip drivers/usb/acpi
+						register "desc" = ""Bluetooth""
+						register "type" = "UPC_TYPE_INTERNAL"
+						register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPIO_109)"
+						device usb 2.2 on end
+					end
+				end
+			end
+		end	# - XHCI
 		device pci 15.1 on  end	# - XDCI
 		device pci 16.0 on  end	# - I2C 0
 		device pci 16.1 on  end	# - I2C 1

@@ -14,7 +14,7 @@ chip soc/intel/cannonlake
 	register "gen3_dec" = "0x000c0951" # 0x950-0x95f
 
 	# FSP configuration
-	register "SaGv" = "3"
+	register "SaGv" = "SaGv_Enabled"
 	register "HeciEnabled" = "1"
 	register "SataSalpSupport" = "1"
 	register "SataMode" = "Sata_AHCI"

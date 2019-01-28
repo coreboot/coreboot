@@ -5,7 +5,7 @@ chip soc/intel/cannonlake
 	end
 
 	# FSP configuration
-	register "SaGv" = "3"
+	register "SaGv" = "SaGv_Enabled"
 	register "ScsEmmcHs400Enabled" = "1"
 
 	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC0)"

@@ -363,8 +363,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_104, DN_20K, DEEP, NF1, HIZCRx0, ENPD),
 	/* SIO_SPI_FS0_1V8 - Connected to ESPI_CS0# of SMARC connector. */
 	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_105, DN_20K, DEEP, NF1, HIZCRx0, ENPD),
-	/* SIO_SPI_FS1_1V8 - Connected to ESPI_CS1# of SMARC connector. */
-	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_106, UP_20K, DEEP, NF1, HIZCRx0, ENPD),
+	/* SIO_SPI_FS1_1V8 - Connected to FST_SPI_CS2_N of SMARC connector. */
+	PAD_CFG_NF(GPIO_106, NATIVE, DEEP, NF3),
 	/* SIO_SPI_MISO_1V8 - Connected to ESPI_IO_0 of SMARC connector. */
 	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_109, DN_20K, DEEP, NF1, HIZCRx0, ENPD),
 	/* SIO_SPI_MOSI_1V8 - Connected to ESPI_IO_1 of SMARC connector. */

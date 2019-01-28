@@ -52,4 +52,4 @@ distclean: clean
 	rm -f corebootPortingGuide.pdf
 
 livesphinx:
-	$(MAKE) -f Makefile.sphinx livehtml
+	$(MAKE) -f Makefile.sphinx livehtml SPHINXOPTS="$(SPHINXOPTS)"

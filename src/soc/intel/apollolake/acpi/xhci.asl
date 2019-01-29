@@ -14,7 +14,7 @@
  */
 
 /* XHCI Controller 0:15.0 */
-Device (XHC1) {
+Device (XHCI) {
 	Name (_ADR, 0x00150000)  /* Device 21, Function 0 */
 
 	Name (_S3D, 3)  /* D3 supported in S3 */

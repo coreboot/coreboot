@@ -23,6 +23,8 @@ void *memchr(const void *s, int c, size_t n);
 int snprintf(char *buf, size_t size, const char *fmt, ...);
 int vsnprintf(char *buf, size_t size, const char *fmt, va_list args);
 #endif
+char *strdup(const char *s);
+char *strconcat(const char *s1, const char *s2);
 
 // simple string functions
 
@@ -50,26 +52,6 @@ static inline char *strchr(const char *s, int c)
 	}
 	return 0;
 }
-
-#if !defined(__PRE_RAM__)
-static inline char *strdup(const char *s)
-{
-	size_t sz = strlen(s) + 1;
-	char *d = malloc(sz);
-	memcpy(d, s, sz);
-	return d;
-}
-
-static inline char *strconcat(const char *s1, const char *s2)
-{
-	size_t sz_1 = strlen(s1);
-	size_t sz_2 = strlen(s2);
-	char *d = malloc(sz_1 + sz_2 + 1);
-	memcpy(d, s1, sz_1);
-	memcpy(d + sz_1, s2, sz_2 + 1);
-	return d;
-}
-#endif
 
 /**
  * Find a character in a string.

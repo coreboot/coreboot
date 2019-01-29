@@ -118,6 +118,7 @@ ramstage-y += bootmem.c
 ramstage-y += fmap.c
 ramstage-y += memchr.c
 ramstage-y += memcmp.c
+ramstage-y += string.c
 ramstage-y += malloc.c
 smm-$(CONFIG_SMM_TSEG) += malloc.c
 ramstage-y += dimm_info_util.c

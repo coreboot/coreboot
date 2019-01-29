@@ -458,7 +458,7 @@ void main(void)
 	post_code(POST_CONSOLE_READY);
 
 	/*
-	 * CBMEM needs to be recovered because timestamps, APCI, etc rely on
+	 * CBMEM needs to be recovered because timestamps, ACPI, etc rely on
 	 * the cbmem infrastructure being around. Explicitly recover it.
 	 */
 	cbmem_initialize();

@@ -37,7 +37,7 @@ static const struct pad_config default_override_table[] = {
 	PAD_NC(GPIO_119, UP_20K), /* PCIE_WAKE3_B - only use CNVI */
 
 	/* PCIE_CLKREQ3_B -- unused */
-	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_122, UP_20K, DEEP, NF1, HIZCRx1, ENPU),
+	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_123, UP_20K, DEEP, NF1, HIZCRx1, ENPU),
 
 	PAD_NC(GPIO_138, UP_20K), /* PEN_PDCT_ODL -- unused */
 	PAD_NC(GPIO_139, UP_20K), /* PEN_INT_ODL -- unused */

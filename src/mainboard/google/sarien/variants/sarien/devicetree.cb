@@ -99,6 +99,7 @@ chip soc/intel/cannonlake
 
 	# PCIe port 8 for Card Reader
 	register "PcieRpEnable[7]" = "1"
+	register "PcieRpLtrEnable[7]" = "1"
 	register "PcieClkSrcUsage[4]" = "7"
 	register "PcieClkSrcClkReq[4]" = "4"
 

@@ -168,6 +168,26 @@ struct soc_intel_apollolake_config {
 	 * 0:FALSE(Default), 1:True.
 	 */
 	uint8_t DisableComplianceMode;
+
+	/* Options to change USB3 ModPhy setting for the Integrated Filter (IF)
+	 * value. Default is 0 to not changing default IF value (0x12). Set
+	 * value with the range from 0x01 to 0xff to change IF value.
+	 */
+	uint8_t ModPhyIfValue;
+
+	/* Options to bump USB3 LDO voltage. Default is FALSE to not increasing
+	 * LDO voltage. Set TRUE to increase LDO voltage with 40mV.
+	 * 0:FALSE (default), 1:True.
+	 */
+	uint8_t ModPhyVoltageBump;
+
+	/* Options to adjust PMIC Vdd2 voltage. Default is 0 to not adjusting
+	 * the PMIC Vdd2 default voltage 1.20v. Upd for changing Vdd2 Voltage
+	 * configuration: I2C_Slave_Address (31:23) + Register_Offset (23:16)
+	 * + OR Value (15:8) + AND Value (7:0) through BUCK5_VID[3:2]:
+	 * 00=1.10v, 01=1.15v, 10=1.24v, 11=1.20v (default).
+	 */
+	uint32_t PmicVdd2Voltage;
 };
 
 typedef struct soc_intel_apollolake_config config_t;

@@ -1,6 +1,6 @@
 /** @file
 
-Copyright (c) 2018, Intel Corporation. All rights reserved.<BR>
+Copyright (c) 2019, Intel Corporation. All rights reserved.<BR>
 
 Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -1721,7 +1721,25 @@ typedef struct {
 **/
   UINT32                      PmicPmcIpcCtrl;
 
-/** Offset 0x03AF
+/** Offset 0x03AF - ModPhyIfValue
+  Upd To modify the Integrated Filter (IF) value as 0x12(Default) for WIN and 0x16
+  for Chrome
+**/
+  UINT8                       ModPhyIfValue;
+
+/** Offset 0x03B0 - ModPhyVoltageBump
+  ModPhyVoltageBump. 1: enable, 0: disable
+  $EN_DIS
+**/
+  UINT8                       ModPhyVoltageBump;
+
+/** Offset 0x03B1 - Vdd2 Voltage configuration
+  Upd for changing Vdd2 Voltage configuration : I2C_Slave_Address (31:23) + Register_Offset
+  (23:16) + OR Value (15:8) + AND Value (7:0)
+**/
+  UINT32                      PmicVdd2Voltage;
+
+/** Offset 0x03B5
 **/
   UINT8                       ReservedFspsUpd[1];
 } FSP_S_CONFIG;
@@ -1792,9 +1810,9 @@ typedef struct {
 **/
   FSP_S_CONFIG                FspsConfig;
 
-/** Offset 0x03B0
+/** Offset 0x03B6
 **/
-  UINT8                       UnusedUpdSpace7[16];
+  UINT8                       UnusedUpdSpace7[10];
 
 /** Offset 0x03C0
 **/

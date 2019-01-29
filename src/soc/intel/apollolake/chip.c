@@ -639,6 +639,21 @@ static void glk_fsp_silicon_init_params_cb(
 	 * Options to disable XHCI Link Compliance Mode.
 	 */
 	silconfig->DisableComplianceMode = cfg->DisableComplianceMode;
+
+	/*
+	 * Options to change USB3 ModPhy setting for Integrated Filter value.
+	 */
+	silconfig->ModPhyIfValue = cfg->ModPhyIfValue;
+
+	/*
+	 * Options to bump USB3 LDO voltage with 40mv.
+	 */
+	silconfig->ModPhyVoltageBump = cfg->ModPhyVoltageBump;
+
+	/*
+	 * Options to adjust PMIC Vdd2 voltage.
+	 */
+	silconfig->PmicVdd2Voltage = cfg->PmicVdd2Voltage;
 #endif
 }
 

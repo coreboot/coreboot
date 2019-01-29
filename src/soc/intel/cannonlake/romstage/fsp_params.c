@@ -53,7 +53,7 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg, const config_t *config)
 		m_cfg->VmxEnable = 0;
 	else
 		m_cfg->VmxEnable = config->VmxEnable;
-#if IS_ENABLED(CONFIG_SOC_INTEL_COFFEELAKE)
+#if IS_ENABLED(CONFIG_SOC_INTEL_COMMON_CANNONLAKE_BASE)
 	m_cfg->SkipMpInit = !chip_get_fsp_mp_init();
 #endif
 

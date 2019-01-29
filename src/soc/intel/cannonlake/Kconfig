@@ -3,12 +3,32 @@ config SOC_INTEL_CANNONLAKE
 	help
 	  Intel Cannonlake support
 
-config SOC_INTEL_COFFEELAKE
+config SOC_INTEL_COMMON_CANNONLAKE_BASE
 	bool
 	default n
 	select SOC_INTEL_CANNONLAKE
 	help
+	  Single Kconfig option to select common base Cannonlake support.
+	  This Kconfig will help to select majority of CNL SoC features.
+	  Major difference that exist today between
+	  SOC_INTEL_COMMON_CANNONLAKE_BASE and SOC_INTEL_CANNONLAKE Kconfig
+	  are in FSP Header Files. Hence this Kconfig might help to select
+	  required SoC support FSP headers. Any future Intel SoC would
+	  like to make use of CNL support might just select this Kconfig.
+
+config SOC_INTEL_COFFEELAKE
+	bool
+	default n
+	select SOC_INTEL_COMMON_CANNONLAKE_BASE
+	help
 	  Intel Coffeelake support
+
+config SOC_INTEL_WHISKEYLAKE
+	bool
+	default n
+	select SOC_INTEL_COMMON_CANNONLAKE_BASE
+	help
+	  Intel Whiskeylake support
 
 config SOC_INTEL_CANNONLAKE_PCH_H
 	bool
@@ -244,12 +264,12 @@ endchoice
 
 config FSP_HEADER_PATH
 	string "Location of FSP headers"
-	default "src/vendorcode/intel/fsp/fsp2_0/cannonlake/" if !SOC_INTEL_COFFEELAKE
-	default "3rdparty/fsp/CoffeeLakeFspBinPkg/Include/" if SOC_INTEL_COFFEELAKE
+	default "3rdparty/fsp/CoffeeLakeFspBinPkg/Include/" if SOC_INTEL_COFFEELAKE || SOC_INTEL_WHISKEYLAKE
+	default "src/vendorcode/intel/fsp/fsp2_0/cannonlake/"
 
 config FSP_FD_PATH
 	string
 	depends on FSP_USE_REPO
-	default "3rdparty/fsp/CoffeeLakeFspBinPkg/Fsp.fd" if SOC_INTEL_COFFEELAKE
+	default "3rdparty/fsp/CoffeeLakeFspBinPkg/Fsp.fd" if SOC_INTEL_COFFEELAKE || SOC_INTEL_WHISKEYLAKE
 
 endif

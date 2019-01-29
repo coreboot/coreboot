@@ -36,8 +36,6 @@
 #include <soc/gpio_defs.h>
 #endif
 
-
-
 struct soc_intel_cannonlake_config {
 
 	/* Common struct containing soc config data required by common code */
@@ -109,7 +107,7 @@ struct soc_intel_cannonlake_config {
 	enum {
 		SaGv_Disabled,
 		SaGv_FixedLow,
-#if !IS_ENABLED(CONFIG_SOC_INTEL_COFFEELAKE)
+#if !IS_ENABLED(CONFIG_SOC_INTEL_COMMON_CANNONLAKE_BASE)
 		SaGv_FixedMid,
 #endif
 		SaGv_FixedHigh,

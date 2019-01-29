@@ -55,6 +55,8 @@ chip soc/intel/cannonlake
 	register "HeciEnabled" = "1"
 	# Enable Speed Shift Technology support
 	register "speed_shift_enable" = "1"
+	# Enable S0ix
+	register "s0ix_enable" = "1"
 
 	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC2)"	# Type-C Port 0
 	register "usb2_ports[1]" = "USB2_PORT_TYPE_C(OC2)"	# Type-C Port 1

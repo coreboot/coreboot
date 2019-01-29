@@ -5,7 +5,6 @@ chip soc/intel/apollolake
 	end
 
 	register "sci_irq" = "SCIS_IRQ10"
-	register "serirq_mode" = "SERIRQ_CONTINUOUS"
 
 	# Disable all clkreq of PCIe root ports as SMARC interface do not
 	# have this pins.

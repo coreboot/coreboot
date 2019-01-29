@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright 2018 MediaTek Inc.
+ * Copyright 2019 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,20 +13,28 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/stages.h>
-#include <soc/emi.h>
-#include <soc/mmu_operations.h>
-#include <soc/mt6358.h>
+#include <gpio.h>
+#include <soc/mt8183.h>
+#include <soc/spi.h>
 
 #include "early_init.h"
+#include "gpio.h"
 
-void platform_romstage_main(void)
+#define BOOTBLOCK_EN_L (GPIO(KPROW0))
+#define AP_IN_SLEEP_L (GPIO(SRCLKENA0))
+
+void mainboard_early_init(void)
 {
-	/* This will be done in verstage if CONFIG_VBOOT is enabled. */
-	if (!IS_ENABLED(CONFIG_VBOOT))
-		mainboard_early_init();
+	mt8183_early_init();
 
-	mt6358_init();
-	mt_mem_init(get_sdram_config());
-	mtk_mmu_after_dram();
+	/* Turn on real eMMC and allow communication to EC. */
+	gpio_output(BOOTBLOCK_EN_L, 1);
+
+	setup_chromeos_gpios();
+
+	/* Declare we are in S0 */
+	gpio_output(AP_IN_SLEEP_L, 1);
+
+	mtk_spi_init(CONFIG_DRIVER_TPM_SPI_BUS, SPI_PAD0_MASK, 1 * MHz);
+	gpio_eint_configure(CR50_IRQ, IRQ_TYPE_EDGE_RISING);
 }

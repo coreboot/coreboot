@@ -14,13 +14,10 @@
  */
 
 #include <security/vboot/vboot_common.h>
-#include <soc/gpio.h>
-#include <soc/spi.h>
 
-#include "gpio.h"
+#include "early_init.h"
 
 void verstage_mainboard_init(void)
 {
-	mtk_spi_init(CONFIG_DRIVER_TPM_SPI_BUS, SPI_PAD0_MASK, 1 * MHz);
-	gpio_eint_configure(CR50_IRQ, IRQ_TYPE_EDGE_RISING);
+	mainboard_early_init();
 }

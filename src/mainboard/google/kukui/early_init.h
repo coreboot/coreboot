@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright 2018 MediaTek Inc.
+ * Copyright 2019 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,20 +13,9 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/stages.h>
-#include <soc/emi.h>
-#include <soc/mmu_operations.h>
-#include <soc/mt6358.h>
+#ifndef __MAINBOARD_GOOGLE_KUKUI_EARLY_INIT_H__
+#define __MAINBOARD_GOOGLE_KUKUI_EARLY_INIT_H__
 
-#include "early_init.h"
+void mainboard_early_init(void);
 
-void platform_romstage_main(void)
-{
-	/* This will be done in verstage if CONFIG_VBOOT is enabled. */
-	if (!IS_ENABLED(CONFIG_VBOOT))
-		mainboard_early_init();
-
-	mt6358_init();
-	mt_mem_init(get_sdram_config());
-	mtk_mmu_after_dram();
-}
+#endif

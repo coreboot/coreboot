@@ -40,6 +40,10 @@ static struct {
 	{ CPUID_WHISKEYLAKE_V0, "Whiskeylake V0" },
 	{ CPUID_WHISKEYLAKE_W0, "Whiskeylake W0" },
 	{ CPUID_COFFEELAKE_U0, "Coffeelake U0 (6+2)" },
+	{ CPUID_COMETLAKE_U_A0, "Cometlake-U A0 (6+2)" },
+	{ CPUID_COMETLAKE_U_K0_S0, "Cometlake-U K0/S0 (6+2)/(4+2)" },
+	{ CPUID_COMETLAKE_H_S_6_2_P0, "Cometlake-H/S P0 (6+2)" },
+	{ CPUID_COMETLAKE_H_S_10_2_P0, "Cometlake-H/S P0 (10+2)" },
 };
 
 static struct {

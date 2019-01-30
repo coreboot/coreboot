@@ -1261,7 +1261,9 @@ void acpigen_write_pld(const struct acpi_pld *pld)
 		return;
 
 	acpigen_write_name("_PLD");
+	acpigen_write_package(1);
 	acpigen_write_byte_buffer(buf, ARRAY_SIZE(buf));
+	acpigen_pop_len();
 }
 
 void acpigen_write_dsm(const char *uuid, void (**callbacks)(void *),

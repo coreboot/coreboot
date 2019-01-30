@@ -604,4 +604,10 @@ void i2c_soc_early_init(void);
 /* Initialize all the i2c buses that are not marked with early init. */
 void i2c_soc_init(void);
 
+/*
+ * If a system reset is about to be requested, modify the PM1 register so it
+ * will never be misinterpreted as an S3 resume.
+ */
+void set_pm1cnt_s5(void);
+
 #endif /* __STONEYRIDGE_H__ */

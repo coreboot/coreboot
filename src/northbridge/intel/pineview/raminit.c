@@ -273,7 +273,7 @@ static void sdram_read_spds(struct sysinfo *s)
 	u8 i, chan;
 	s->dt0mode = 0;
 	FOR_EACH_DIMM(i) {
-		if (i2c_block_read(s->spd_map[i], 0, 64, s->dimms[i].spd_data) != 64)
+		if (i2c_eeprom_read(s->spd_map[i], 0, 64, s->dimms[i].spd_data) != 64)
 			s->dimms[i].card_type = 0;
 
 		s->dimms[i].card_type = s->dimms[i].spd_data[62] & 0x1f;

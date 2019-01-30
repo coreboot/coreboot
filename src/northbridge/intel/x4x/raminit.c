@@ -47,15 +47,15 @@ static inline int spd_read_byte(unsigned int device, unsigned int address)
 static u16 ddr2_get_crc(u8 device, u8 len)
 {
 	u8 raw_spd[128] = {};
-	i2c_block_read(device, 64, 9, &raw_spd[64]);
-	i2c_block_read(device, 93, 6, &raw_spd[93]);
+	i2c_eeprom_read(device, 64, 9, &raw_spd[64]);
+	i2c_eeprom_read(device, 93, 6, &raw_spd[93]);
 	return spd_ddr2_calc_unique_crc(raw_spd, len);
 }
 
 static u16 ddr3_get_crc(u8 device, u8 len)
 {
 	u8 raw_spd[256] = {};
-	i2c_block_read(device, 117, 11, &raw_spd[117]);
+	i2c_eeprom_read(device, 117, 11, &raw_spd[117]);
 	return spd_ddr3_calc_unique_crc(raw_spd, len);
 }
 
@@ -531,7 +531,7 @@ static void decode_spd_select_timings(struct sysinfo *s)
 			die("Mixing up dimm types is not supported!\n");
 
 		printk(BIOS_DEBUG, "Decoding dimm %d\n", i);
-		if (i2c_block_read(device, 0, 128, raw_spd) != 128) {
+		if (i2c_eeprom_read(device, 0, 128, raw_spd) != 128) {
 			printk(BIOS_DEBUG, "i2c block operation failed,"
 				" trying smbus byte operation.\n");
 			for (j = 0; j < 128; j++)

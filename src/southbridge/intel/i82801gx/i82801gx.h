@@ -45,7 +45,7 @@ void i82801gx_enable(struct device *dev);
 #else
 void enable_smbus(void);
 int smbus_read_byte(unsigned int device, unsigned int address);
-int i2c_block_read(unsigned int device, unsigned int cmd, unsigned int bytes,
+int i2c_eeprom_read(unsigned int device, unsigned int cmd, unsigned int bytes,
 		u8 *buf);
 int smbus_block_read(unsigned int device, unsigned int cmd, u8 bytes, u8 *buf);
 int smbus_block_write(unsigned int device, unsigned int cmd, u8 bytes,

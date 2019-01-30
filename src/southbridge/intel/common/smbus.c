@@ -363,10 +363,21 @@ int do_smbus_block_write(unsigned int smbus_base, u8 device, u8 cmd,
 }
 
 /* Only since ICH5 */
-int do_i2c_block_read(unsigned int smbus_base, u8 device,
+static int has_i2c_read_command(void)
+{
+	if (IS_ENABLED(CONFIG_SOUTHBRIDGE_INTEL_I82371EB) ||
+	    IS_ENABLED(CONFIG_SOUTHBRIDGE_INTEL_I82801DX))
+		return 0;
+	return 1;
+}
+
+int do_i2c_eeprom_read(unsigned int smbus_base, u8 device,
 		unsigned int offset, const unsigned int bytes, u8 *buf)
 {
 	int ret;
+
+	if (!has_i2c_read_command())
+		return SMBUS_ERROR;
 
 	/* Set up for a i2c block data read.
 	 *

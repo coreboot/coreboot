@@ -51,9 +51,9 @@ int smbus_read_byte(unsigned device, unsigned address)
 	return do_smbus_read_byte(SMBUS_IO_BASE, device, address);
 }
 
-int i2c_block_read(unsigned int device, unsigned int offset, u32 bytes, u8 *buf)
+int i2c_eeprom_read(unsigned int device, unsigned int offset, u32 bytes, u8 *buf)
 {
-	return do_i2c_block_read(SMBUS_IO_BASE, device, offset, bytes, buf);
+	return do_i2c_eeprom_read(SMBUS_IO_BASE, device, offset, bytes, buf);
 }
 
 int smbus_block_read(unsigned int device, unsigned int cmd, u8 bytes, u8 *buf)

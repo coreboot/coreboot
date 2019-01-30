@@ -21,7 +21,7 @@ bootblock-y += lpc.c
 bootblock-y += p2sb.c
 bootblock-y += uart.c
 
-romstage-$(CONFIG_SOC_INTEL_CANNONLAKE_MEMCFG_INIT) += cnl_memcfg_init.c
+romstage-y += cnl_memcfg_init.c
 romstage-y += gspi.c
 romstage-y += i2c.c
 romstage-y += lpc.c

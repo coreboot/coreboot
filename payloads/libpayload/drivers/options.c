@@ -357,7 +357,11 @@ int set_option_from_string(const struct nvram_accessor *nvram, struct cb_cmos_op
 			*(u64*)raw = strtoull(value, NULL, 0);
 			break;
 		case 's':
-			raw = strdup(value);
+			raw = malloc(cmos_entry->length);
+			if (!raw)
+				return 1;
+			memset(raw, 0x00, cmos_entry->length);
+			strncpy(raw, value, cmos_entry->length);
 			break;
 		case 'e':
 			cmos_enum = lookup_cmos_enum_by_label(option_table, cmos_entry->config_id, value);

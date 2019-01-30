@@ -25,6 +25,7 @@
 #include <ip_checksum.h>
 #include <pc80/mc146818rtc.h>
 #include <device/pci_def.h>
+#include <lib.h>
 #include <mrc_cache.h>
 #include <halt.h>
 #include <timestamp.h>
@@ -262,10 +263,23 @@ void sdram_initialize(struct pei_data *pei_data)
 	report_memory_config();
 }
 
+/* These are the location and structure of MRC_VAR data in CAR. */
+#define DCACHE_RAM_MRC_VAR_BASE \
+	(CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE)
+
+struct mrc_var_data {
+	u32 acpi_timer_flag;
+	u32 pool_used;
+	u32 pool_base;
+	u32 tx_byte;
+	u32 reserved[4];
+} __packed;
+
 void perform_raminit(int s3resume)
 {
 	int cbmem_was_initted;
 	struct pei_data pei_data;
+	struct mrc_var_data *mrc_var;
 
 	/* Prepare USB controller early in S3 resume */
 	if (!mainboard_should_reset_usb(s3resume))
@@ -277,6 +291,18 @@ void perform_raminit(int s3resume)
 	pei_data.boot_mode = s3resume ? 2 : 0;
 	timestamp_add_now(TS_BEFORE_INITRAM);
 	sdram_initialize(&pei_data);
+
+	mrc_var = (void *)DCACHE_RAM_MRC_VAR_BASE;
+	/* Sanity check mrc_var location by verifying a known field. */
+	if (mrc_var->tx_byte == (uintptr_t)pei_data.tx_byte) {
+		printk(BIOS_DEBUG, "MRC_VAR pool occupied [%08x,%08x]\n",
+		       mrc_var->pool_base,
+		       mrc_var->pool_base + mrc_var->pool_used);
+	} else {
+		printk(BIOS_ERR, "Could not parse MRC_VAR data\n");
+		hexdump32(BIOS_ERR, mrc_var, sizeof(*mrc_var)/sizeof(u32));
+	}
+
 	cbmem_was_initted = !cbmem_recovery(s3resume);
 	if (!s3resume)
 		save_mrc_data(&pei_data);

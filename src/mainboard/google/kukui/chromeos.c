@@ -24,6 +24,7 @@ void setup_chromeos_gpios(void)
 {
 	gpio_input_pullup(EC_IN_RW);
 	gpio_input_pullup(EC_IRQ);
+	gpio_output(GPIO_RESET, 0);
 }
 
 void fill_lb_gpios(struct lb_gpios *gpios)

@@ -54,7 +54,7 @@ struct nhlt_format_config;
 /* Obtain an nhlt object for adding endpoints. Returns NULL on error. */
 struct nhlt *nhlt_init(void);
 
-/* Return the size of the NHLT table including APCI header. */
+/* Return the size of the NHLT table including ACPI header. */
 size_t nhlt_current_size(struct nhlt *nhlt);
 
 /*

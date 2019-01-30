@@ -166,7 +166,7 @@ static void bcm5785_early_setup(void)
 	// enable device on bcm5785 at first
 	dev = pci_locate_device(PCI_ID(0x1166, 0x0205), 0);
 	dword = pci_read_config32(dev, 0x64);
-	dword |= (1 << 15) | (1 << 11) | (1 << 3); // ioapci enable
+	dword |= (1 << 15) | (1 << 11) | (1 << 3); // IOAPIC enable
 	dword |= 1 << 8; // USB enable
 	dword |= /* (1 << 27)|*/ 1 << 14; // IDE enable
 	pci_write_config32(dev, 0x64, dword);

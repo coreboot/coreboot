@@ -197,7 +197,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	fill_mem_ctrl(sysinfo->nodes, sysinfo->ctrl, spd_addr);
 	enable_smbus();
 
-	//do we need apci timer, tsc...., only debug need it for better output
+	//do we need ACPI timer, tsc...., only debug need it for better output
 	/* all ap stopped? */
 //	init_timer(); // Need to use TMICT to synchronize FID/VID
 

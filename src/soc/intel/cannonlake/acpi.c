@@ -121,13 +121,13 @@ static const acpi_cstate_t cstate_map[NUM_C_STATES] = {
 	},
 };
 
-static int cstate_set_s0ix[] = {
+static int cstate_set_non_s0ix[] = {
 	C_STATE_C1E,
 	C_STATE_C6_LONG_LAT,
 	C_STATE_C7S_LONG_LAT
 };
 
-static int cstate_set_non_s0ix[] = {
+static int cstate_set_s0ix[] = {
 	C_STATE_C1E,
 	C_STATE_C7S_LONG_LAT,
 	C_STATE_C10

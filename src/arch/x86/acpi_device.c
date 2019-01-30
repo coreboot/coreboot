@@ -632,7 +632,7 @@ static void acpi_dp_free(struct acpi_dp *dp)
 void acpi_dp_write(struct acpi_dp *table)
 {
 	struct acpi_dp *dp, *prop;
-	char *dp_count, *prop_count;
+	char *dp_count, *prop_count = NULL;
 	int child_count = 0;
 
 	if (!table || table->type != ACPI_DP_TYPE_TABLE)
@@ -644,32 +644,42 @@ void acpi_dp_write(struct acpi_dp *table)
 	/* Device Property list starts with the next entry */
 	prop = table->next;
 
-	/* Package (DP), default to 2 elements (assuming no children) */
-	dp_count = acpigen_write_package(2);
-
-	/* ToUUID (ACPI_DP_UUID) */
-	acpigen_write_uuid(ACPI_DP_UUID);
-
-	/* Package (PROP), element count determined as it is populated */
-	prop_count = acpigen_write_package(0);
+	/* Package (DP), default to assuming no properties or children */
+	dp_count = acpigen_write_package(0);
 
 	/* Print base properties */
 	for (dp = prop; dp; dp = dp->next) {
 		if (dp->type == ACPI_DP_TYPE_CHILD) {
 			child_count++;
 		} else {
+			/*
+			 * The UUID and package is only added when
+			 * we come across the first property.  This
+			 * is to avoid creating a zero-length package
+			 * in situations where there are only children.
+			 */
+			if (!prop_count) {
+				*dp_count += 2;
+				/* ToUUID (ACPI_DP_UUID) */
+				acpigen_write_uuid(ACPI_DP_UUID);
+				/*
+				 * Package (PROP), element count determined as
+				 * it is populated
+				 */
+				prop_count = acpigen_write_package(0);
+			}
 			(*prop_count)++;
 			acpi_dp_write_property(dp);
 		}
 	}
-
-	/* Package (PROP) length */
-	acpigen_pop_len();
+	if (prop_count) {
+		/* Package (PROP) length, if a package was written */
+		acpigen_pop_len();
+	}
 
 	if (child_count) {
-		/* Update DP package count to 4 */
-		*dp_count = 4;
-
+		/* Update DP package count to 2 or 4 */
+		*dp_count += 2;
 		/* ToUUID (ACPI_DP_CHILD_UUID) */
 		acpigen_write_uuid(ACPI_DP_CHILD_UUID);
 
@@ -679,7 +689,7 @@ void acpi_dp_write(struct acpi_dp *table)
 		for (dp = prop; dp; dp = dp->next)
 			if (dp->type == ACPI_DP_TYPE_CHILD)
 				acpi_dp_write_property(dp);
-
+		/* Package (CHILD) length */
 		acpigen_pop_len();
 	}
 

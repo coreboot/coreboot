@@ -27,38 +27,13 @@
 #include <cbmem.h>
 #include <romstage_handoff.h>
 #include <console/console.h>
+#include <southbridge/intel/common/gpio.h>
 #include <southbridge/intel/i82801ix/i82801ix.h>
 #include <northbridge/intel/gm45/gm45.h>
 #include <superio/smsc/lpc47n227/lpc47n227.h>
 
 #define LPC_DEV PCI_DEV(0, 0x1f, 0)
 #define SERIAL_DEV PNP_DEV(0x2e, LPC47N227_SP1)
-
-static void default_southbridge_gpio_setup(void)
-{
-	/* Enable GPIOs [31:0]. */
-	outl(0x197e7dfe, DEFAULT_GPIOBASE + 0x00);
-	/* Set input/output mode [31:0] (0 == out, 1 == in). */
-	outl(0xe0ea43fe, DEFAULT_GPIOBASE + 0x04);
-	/* Set gpio levels [31:0]. orig: 0x01140800 (~SATA0, ~SATA1, GSM, BT,
-						     WLAN, ~ANTMUX, ~GPIO12,
-						     ~SUSPWR, SMBALERT) */
-	outl(0x00000800, DEFAULT_GPIOBASE + 0x0c);
-
-	/* Disable blink [31:0]. */
-	outl(0x00000000, DEFAULT_GPIOBASE + 0x18);
-	/* Set input inversion [31:0]. */
-	outl(0x00000182, DEFAULT_GPIOBASE + 0x2c);
-
-	/* Enable GPIOs [60:32]. */
-	outl(0x130300fe, DEFAULT_GPIOBASE + 0x30);
-	/* Set input/output mode [60:32] (0 == out, 1 == in). */
-	outl(0x0e55ffb0, DEFAULT_GPIOBASE + 0x34);
-	/* Set gpio levels [60:32]. orig: 0x10020046 (LNKALERT, ~ATAIO,
-						      DMITERM, TXT, ~CLKSATA,
-						      GPS, AUDIO)  */
-	outl(0x10020042, DEFAULT_GPIOBASE + 0x38);
-}
 
 static void early_lpc_setup(void)
 {
@@ -142,7 +117,7 @@ void mainboard_romstage_entry(unsigned long bist)
 		gm45_early_reset();
 	}
 
-	default_southbridge_gpio_setup();
+	setup_pch_gpios(&mainboard_gpio_map);
 
 	/* ASPM related setting, set early by original BIOS. */
 	DMIBAR16(0x204) &= ~(3 << 10);

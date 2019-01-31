@@ -16,17 +16,7 @@
 
 /* __PRE_RAM__ means: use "unsigned" for device, not a struct. */
 
-#include <stdint.h>
-#include <string.h>
 #include <arch/io.h>
-#include <cpu/x86/lapic.h>
-#include <cpu/x86/msr.h>
-#include <cpu/x86/tsc.h>
-#include <cpu/intel/romstage.h>
-#include <arch/acpi.h>
-#include <cbmem.h>
-#include <romstage_handoff.h>
-#include <console/console.h>
 #include <southbridge/intel/common/gpio.h>
 #include <southbridge/intel/i82801ix/i82801ix.h>
 #include <northbridge/intel/gm45/gm45.h>
@@ -35,7 +25,7 @@
 #define LPC_DEV PCI_DEV(0, 0x1f, 0)
 #define SERIAL_DEV PNP_DEV(0x2e, LPC47N227_SP1)
 
-static void early_lpc_setup(void)
+void mb_setup_lpc(void)
 {
 	/* Set up SuperIO LPC forwards */
 
@@ -47,7 +37,7 @@ static void early_lpc_setup(void)
 	pci_write_config16(LPC_DEV, D31F0_LPC_EN, 0x3c03);
 }
 
-static void default_superio_gpio_setup(void)
+void mb_setup_superio(void)
 {
 	/* Original settings:
 	   idx 30 31 32 33 34 35 36 37  38 39
@@ -87,81 +77,12 @@ static void default_superio_gpio_setup(void)
 	/* Set GPIO output values: */
 	outb(0x88, 0x600 + 0xb + 3); /* GP30 - GP37 */
 	outb(0x10, 0x600 + 0xb + 4); /* GP40 - GP47 */
+
+	lpc47n227_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 }
 
-void mainboard_romstage_entry(unsigned long bist)
+void get_mb_spd_addrmap(u8 *spd_addrmap)
 {
-	sysinfo_t sysinfo;
-	int s3resume = 0;
-	int cbmem_initted;
-	u16 reg16;
-
-	/* basic northbridge setup, including MMCONF BAR */
-	gm45_early_init();
-
-	if (bist == 0)
-		enable_lapic();
-
-	/* First, run everything needed for console output. */
-	i82801ix_early_init();
-	early_lpc_setup();
-	default_superio_gpio_setup();
-	lpc47n227_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
-	console_init();
-	printk(BIOS_DEBUG, "running main(bist = %lu)\n", bist);
-
-	reg16 = pci_read_config16(LPC_DEV, D31F0_GEN_PMCON_3);
-	pci_write_config16(LPC_DEV, D31F0_GEN_PMCON_3, reg16);
-	if ((MCHBAR16(SSKPD_MCHBAR) == 0xCAFE) && !(reg16 & (1 << 9))) {
-		printk(BIOS_DEBUG, "soft reset detected, rebooting properly\n");
-		gm45_early_reset();
-	}
-
-	setup_pch_gpios(&mainboard_gpio_map);
-
-	/* ASPM related setting, set early by original BIOS. */
-	DMIBAR16(0x204) &= ~(3 << 10);
-
-	/* Check for S3 resume. */
-	const u32 pm1_cnt = inl(DEFAULT_PMBASE + 0x04);
-	if (((pm1_cnt >> 10) & 7) == 5) {
-		if (acpi_s3_resume_allowed()) {
-			printk(BIOS_DEBUG, "Resume from S3 detected.\n");
-			s3resume = 1;
-			/* Clear SLP_TYPE. This will break stage2 but
-			 * we care for that when we get there.
-			 */
-			outl(pm1_cnt & ~(7 << 10), DEFAULT_PMBASE + 0x04);
-		} else {
-			printk(BIOS_DEBUG, "Resume from S3 detected, but disabled.\n");
-		}
-	}
-
-	/* RAM initialization */
-	enter_raminit_or_reset();
-	memset(&sysinfo, 0, sizeof(sysinfo));
-	get_gmch_info(&sysinfo);
-	sysinfo.spd_map[0] = 0x50;
-	sysinfo.spd_map[1] = 0;
-	sysinfo.spd_map[2] = 0x52;
-	sysinfo.spd_map[3] = 0;
-	sysinfo.enable_igd = 1;
-	sysinfo.enable_peg = 0;
-	raminit(&sysinfo, s3resume);
-
-	init_pm(&sysinfo, 1);
-
-	i82801ix_dmi_setup();
-	gm45_late_init(sysinfo.stepping);
-	i82801ix_dmi_poll_vc1();
-
-	MCHBAR16(SSKPD_MCHBAR) = 0xCAFE;
-
-	init_iommu();
-
-	cbmem_initted = !cbmem_recovery(s3resume);
-
-	romstage_handoff_init(cbmem_initted && s3resume);
-
-	printk(BIOS_SPEW, "exit main()\n");
+	spd_addrmap[0] = 0x50;
+	spd_addrmap[2] = 0x52;
 }

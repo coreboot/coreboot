@@ -16,15 +16,7 @@
 
 // __PRE_RAM__ means: use "unsigned" for device, not a struct.
 
-#include <stdint.h>
-#include <string.h>
 #include <arch/io.h>
-#include <arch/acpi.h>
-#include <cpu/x86/lapic.h>
-#include <cpu/x86/tsc.h>
-#include <cpu/intel/romstage.h>
-#include <cbmem.h>
-#include <romstage_handoff.h>
 #include <console/console.h>
 #include <southbridge/intel/i82801ix/i82801ix.h>
 #include <southbridge/intel/common/gpio.h>
@@ -33,7 +25,6 @@
 #include "dock.h"
 
 #define LPC_DEV PCI_DEV(0, 0x1f, 0)
-#define MCH_DEV PCI_DEV(0, 0, 0)
 
 static void hybrid_graphics_init(sysinfo_t *sysinfo)
 {
@@ -45,7 +36,9 @@ static void hybrid_graphics_init(sysinfo_t *sysinfo)
 	sysinfo->enable_peg = peg;
 }
 
-static void early_lpc_setup(void)
+static int dock_err;
+
+void mb_setup_lpc(void)
 {
 	/* Set up SuperIO LPC forwards */
 
@@ -59,99 +52,35 @@ static void early_lpc_setup(void)
 	pci_write_config32(LPC_DEV, D31F0_GEN3_DEC, 0x1c1681);
 }
 
-void mainboard_romstage_entry(unsigned long bist)
+void mb_setup_superio(void)
 {
-	sysinfo_t sysinfo;
-	int s3resume = 0;
-	int cbmem_initted;
-	int err;
-	u16 reg16;
-
-	/* basic northbridge setup, including MMCONF BAR */
-	gm45_early_init();
-
-	if (bist == 0)
-		enable_lapic();
-
-	/* First, run everything needed for console output. */
-	i82801ix_early_init();
-	early_lpc_setup();
-
 	/* Minimal setup to detect dock */
-	err = pc87382_early();
-	if (err == 0)
+	dock_err = pc87382_early();
+	if (dock_err == 0)
 		dock_connect();
+}
 
-	console_init();
-	printk(BIOS_DEBUG, "running main(bist = %lu)\n", bist);
+void get_mb_spd_addrmap(u8 *spd_addrmap)
+{
+	spd_addrmap[0] = 0x50;
+	spd_addrmap[2] = 0x51;
+}
 
-	/* Print dock info */
-	if (err)
+void mb_pre_raminit_setup(sysinfo_t *sysinfo)
+{
+	/* Console is not yet initialized in mb_setup_superio, so we print
+	   the dock information here */
+	if (dock_err)
 		printk(BIOS_ERR, "DOCK: Failed to init pc87382\n");
 	else
 		dock_info();
 
-	reg16 = pci_read_config16(LPC_DEV, D31F0_GEN_PMCON_3);
-	pci_write_config16(LPC_DEV, D31F0_GEN_PMCON_3, reg16);
-	if ((MCHBAR16(SSKPD_MCHBAR) == 0xCAFE) && !(reg16 & (1 << 9))) {
-		printk(BIOS_DEBUG, "soft reset detected, rebooting properly\n");
-		gm45_early_reset();
-	}
+	hybrid_graphics_init(sysinfo);
+}
 
-	setup_pch_gpios(&mainboard_gpio_map);
-
-	/* ASPM related setting, set early by original BIOS. */
-	DMIBAR16(0x204) &= ~(3 << 10);
-
-	/* Check for S3 resume. */
-	const u32 pm1_cnt = inl(DEFAULT_PMBASE + 0x04);
-	if (((pm1_cnt >> 10) & 7) == 5) {
-		if (acpi_s3_resume_allowed()) {
-			printk(BIOS_DEBUG, "Resume from S3 detected.\n");
-			s3resume = 1;
-			/* Clear SLP_TYPE. This will break stage2 but
-			 * we care for that when we get there.
-			 */
-			outl(pm1_cnt & ~(7 << 10), DEFAULT_PMBASE + 0x04);
-		} else {
-			printk(BIOS_DEBUG, "Resume from S3 detected, but disabled.\n");
-		}
-	}
-
-	/* RAM initialization */
-	enter_raminit_or_reset();
-	memset(&sysinfo, 0, sizeof(sysinfo));
-	sysinfo.spd_map[0] = 0x50;
-	sysinfo.spd_map[2] = 0x51;
-	get_gmch_info(&sysinfo);
-
-	/* Configure graphic GPIOs.
-	* Make sure there's a little delay between
-	* setup_pch_gpios() and this call ! */
-	hybrid_graphics_init(&sysinfo);
-
-	raminit(&sysinfo, s3resume);
-
-	const u32 deven = pci_read_config32(MCH_DEV, D0F0_DEVEN);
-	/* Disable D4F0 (unknown signal controller). */
-	pci_write_config32(MCH_DEV, D0F0_DEVEN, deven & ~0x4000);
-
-	init_pm(&sysinfo, 0);
-
-	i82801ix_dmi_setup();
-	gm45_late_init(sysinfo.stepping);
-	i82801ix_dmi_poll_vc1();
-
-	MCHBAR16(SSKPD_MCHBAR) = 0xCAFE;
-
-	init_iommu();
-
-	/* FIXME: make a proper SMBUS mux support.  */
+void mb_post_raminit_setup(void)
+{
+	/* FIXME: make a proper SMBUS mux support. */
+	/* Set the SMBUS mux to the eeprom */
 	set_gpio(42, GPIO_LEVEL_LOW);
-
-	cbmem_initted = !cbmem_recovery(s3resume);
-
-	romstage_handoff_init(cbmem_initted && s3resume);
-
-	printk(BIOS_SPEW, "exit main()\n");
 }

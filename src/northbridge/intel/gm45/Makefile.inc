@@ -27,6 +27,7 @@ romstage-y += igd.c
 romstage-y += pm.c
 romstage-y += ram_calc.c
 romstage-y += iommu.c
+romstage-y += romstage.c
 
 ramstage-y += acpi.c
 

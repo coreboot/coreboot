@@ -47,12 +47,12 @@ struct dbgp_pipe
 	u8 endpoint;
 	u8 pid;
 	u8 status;
-	int timeout;
+	u16 timeout;
 
 	u8 bufidx;
 	u8 buflen;
 	char buf[8];
-};
+} __packed;
 
 void dbgp_put(struct dbgp_pipe *pipe);
 int dbgp_try_get(struct dbgp_pipe *pipe);

@@ -32,7 +32,7 @@ static void enable_hwm_smbus(struct device *dev)
 {
 	u8 reg8;
 
-	/* Configure pins 91/92 as SDA/SCL (I2C bus). */
+	/* Configure pins 89/90 as SDA/SCL (I2C bus). */
 	reg8 = pnp_read_config(dev, 0x2a);
 	reg8 |= (1 << 1);
 	pnp_write_config(dev, 0x2a, reg8);

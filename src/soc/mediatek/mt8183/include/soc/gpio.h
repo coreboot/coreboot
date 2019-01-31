@@ -616,5 +616,6 @@ struct gpio_regs {
 check_member(gpio_regs, mode[22].val, 0x460);
 
 static struct gpio_regs *const mtk_gpio = (void *)(GPIO_BASE);
+void gpio_set_i2c_eh_rsel(void);
 
 #endif

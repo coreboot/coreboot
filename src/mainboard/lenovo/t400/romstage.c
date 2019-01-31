@@ -147,7 +147,7 @@ void mainboard_romstage_entry(unsigned long bist)
 	init_iommu();
 
 	/* FIXME: make a proper SMBUS mux support.  */
-	outl(inl(DEFAULT_GPIOBASE + 0x38) & ~0x400, DEFAULT_GPIOBASE + 0x38);
+	set_gpio(42, GPIO_LEVEL_LOW);
 
 	cbmem_initted = !cbmem_recovery(s3resume);
 

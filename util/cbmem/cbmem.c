@@ -302,7 +302,7 @@ static void parse_memory_tags(const struct lb_memory *mem)
 			continue;
 		debug("      LB_MEM_TABLE found.\n");
 		/* The last one found is CBMEM */
-		cbmem = mem->map[i];
+		aligned_memcpy(&cbmem, &mem->map[i], sizeof(cbmem));
 	}
 }
 

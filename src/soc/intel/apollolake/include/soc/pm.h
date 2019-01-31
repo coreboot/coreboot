@@ -172,6 +172,7 @@
 #define  SRS			(1 << 20)
 #define  MS4V			(1 << 18)
 #define  RPS			(1 << 2)
+#define  SLEEP_AFTER_POWER_FAIL	(1 << 0)
 #define GEN_PMCON1_CLR1_BITS	(COLD_BOOT_STS | COLD_RESET_STS | \
 				 WARM_RESET_STS | GLOBAL_RESET_STS | \
 				 SRS | MS4V)

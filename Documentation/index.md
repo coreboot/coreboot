@@ -13,6 +13,8 @@ Contents:
 * [Code of Conduct](community/code_of_conduct.md)
 * [Community forums](community/forums.md)
 * [coreboot at conferences](community/conferences.md)
+* [Payloads](payloads.md)
+* [Distributions](distributions.md)
 * [Timestamps](timestamp.md)
 * [Intel IFD Binary Extraction](Binary_Extraction.md)
 * [Dealing with Untrusted Input in SMM](technotes/2017-02-dealing-with-untrusted-input-in-smm.md)

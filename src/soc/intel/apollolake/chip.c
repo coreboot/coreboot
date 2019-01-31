@@ -121,6 +121,9 @@ const char *soc_acpi_name(const struct device *dev)
 			case 5: return "HS06";
 			case 6: return "HS07";
 			case 7: return "HS08";
+			case 8:
+				if (IS_ENABLED(CONFIG_SOC_INTEL_GLK))
+					return "HS09";
 			}
 			break;
 		case 3:

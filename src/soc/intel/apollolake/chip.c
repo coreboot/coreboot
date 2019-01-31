@@ -532,6 +532,9 @@ static void disable_dev(struct device *dev, FSP_S_CONFIG *silconfig)
 		silconfig->IpuEn = 0;
 		break;
 #endif
+	case PCH_DEVFN_HDA:
+		silconfig->HdaEnable = 0;
+		break;
 	default:
 		printk(BIOS_WARNING, "PCI:%02x.%01x: Could not disable the device\n",
 			PCI_SLOT(dev->path.pci.devfn),

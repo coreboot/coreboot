@@ -96,10 +96,6 @@
 #define SMRR_SUPPORTED (1 << 11)
 #define PRMRR_SUPPORTED (1 << 12)
 
-/* IA32_MISC_ENABLE bits */
-#define FAST_STRINGS_ENABLE_BIT (1 << 0)
-#define SPEED_STEP_ENABLE_BIT (1 << 16)
-
 /* Read BCLK from MSR */
 unsigned int bus_freq_khz(void);
 

@@ -131,23 +131,31 @@ static const struct pad_community *gpio_get_community(gpio_t pad)
 static void gpio_configure_owner(const struct pad_config *cfg,
 				const struct pad_community *comm)
 {
-	uint16_t hostsw_reg;
+	uint32_t hostsw_own;
+	uint16_t hostsw_own_offset;
 	int pin;
 
 	pin = relative_pad_in_comm(comm, cfg->pad);
 
-	/* The 4th bit in pad_config 1 (RO) is used to indicate if the pad
-	 * needs GPIO driver ownership.
-	 */
-	if (!(cfg->pad_config[1] & PAD_CFG1_GPIO_DRIVER))
-		return;
-
 	/* Based on the gpio pin number configure the corresponding bit in
 	 * HOSTSW_OWN register. Value of 0x1 indicates GPIO Driver onwership.
 	 */
-	hostsw_reg = comm->host_own_reg_0;
-	hostsw_reg += gpio_group_index_scaled(comm, pin, sizeof(uint32_t));
-	pcr_or32(comm->port, hostsw_reg, gpio_bitmask_within_group(comm, pin));
+	hostsw_own_offset = comm->host_own_reg_0;
+	hostsw_own_offset += gpio_group_index_scaled(comm, pin,
+		sizeof(uint32_t));
+
+	hostsw_own = pcr_read32(comm->port, hostsw_own_offset);
+
+	/* The 4th bit in pad_config 1 (RO) is used to indicate if the pad
+	 * needs GPIO driver ownership.  Set the bit if GPIO driver ownership
+	 * requested, otherwise clear the bit.
+	 */
+	if (cfg->pad_config[1] & PAD_CFG1_GPIO_DRIVER)
+		hostsw_own |= gpio_bitmask_within_group(comm, pin);
+	else
+		hostsw_own &= ~gpio_bitmask_within_group(comm, pin);
+
+	pcr_write32(comm->port, hostsw_own_offset, hostsw_own);
 }
 
 static void gpi_enable_smi(const struct pad_config *cfg,

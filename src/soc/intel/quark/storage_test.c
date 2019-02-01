@@ -33,8 +33,8 @@ uint8_t log_index CAR_GLOBAL;
 int log_full CAR_GLOBAL;
 long log_start_time CAR_GLOBAL;
 #endif
-extern uint8_t _car_drivers_storage_start;
-extern uint8_t _car_drivers_storage_end;
+
+static uint8_t drivers_storage[256] CAR_GLOBAL;
 
 #define STORAGE_DEBUG  BIOS_DEBUG
 #define LOG_DEBUG  (IS_ENABLED(CONFIG_STORAGE_LOG) ? STORAGE_DEBUG : BIOS_NEVER)
@@ -169,16 +169,15 @@ void storage_test(uint32_t bar, int full_initialization)
 	unsigned int previous_partition;
 	struct sdhci_ctrlr *sdhci_ctrlr;
 
+	ASSERT(sizeof(struct sdhci_ctrlr) <= sizeof(drivers_storage));
+
 	/* Get the structure addresses */
 	media = NULL;
 	if (ENV_ROMSTAGE)
-		media = car_get_var_ptr(&_car_drivers_storage_start);
+		media = car_get_var_ptr(drivers_storage);
 	else
 		media = cbmem_find(CBMEM_ID_STORAGE_DATA);
 	sdhci_ctrlr = (void *)(((uintptr_t)(media + 1) + 0x7) & ~7);
-	if (ENV_ROMSTAGE)
-		ASSERT((struct sdhci_ctrlr *)&_car_drivers_storage_end
-			>= (sdhci_ctrlr + 1));
 	media->ctrlr = (struct sd_mmc_ctrlr *)sdhci_ctrlr;
 	sdhci_ctrlr->ioaddr = (void *)bar;
 
@@ -247,19 +246,15 @@ static void copy_storage_structures(int is_recovery)
 {
 	struct storage_media *media;
 	struct sdhci_ctrlr *sdhci_ctrlr;
-	size_t size;
+	size_t size = sizeof(drivers_storage);
 
 	/* Locate the data structures in CBMEM */
-	size = &_car_drivers_storage_end - &_car_drivers_storage_start;
-	ASSERT(size == 256);
 	media = cbmem_add(CBMEM_ID_STORAGE_DATA, size);
 	ASSERT(media != NULL);
 	sdhci_ctrlr = (void *)(((uintptr_t)(media + 1) + 0x7) & ~7);
-	ASSERT((sdhci_ctrlr + 1)
-		<= (struct sdhci_ctrlr *)&_car_drivers_storage_end);
 
 	/* Migrate the data into CBMEM */
-	memcpy(media, &_car_drivers_storage_start, size);
+	memcpy(media, car_get_var_ptr(drivers_storage), size);
 	media->ctrlr = &sdhci_ctrlr->sd_mmc_ctrlr;
 }
 

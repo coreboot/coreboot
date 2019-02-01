@@ -79,7 +79,7 @@ Method (ECQ2, 1, Serialized)
 
 	If (EBIT (E2QS, Arg0)) {
 		Printf ("QS EVENT")
-		Notify (^WLCO, 0x90)
+		Notify (^WEVT, 0x90)
 	}
 }
 
@@ -124,20 +124,4 @@ Method (_Q66, 0, Serialized)
 	If (Local0) {
 		ECQ4 (Local0)
 	}
-}
-
-/* Get Event Buffer */
-Method (QSET, 0, Serialized)
-{
-	/* Get count of event bytes */
-	Local0 = R (QSEC)
-	Name (QBUF, Buffer (Local0) {})
-
-	/* Fill QS event buffer with Local0 bytes */
-	For (Local1 = 0, Local1 < Local0, Local1++) {
-		QBUF[Local1] = R (QSEB)
-	}
-
-	Printf ("QS = %o", QBUF)
-	Return (QBUF)
 }

@@ -754,6 +754,9 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *silupd)
 	if (!xdci_can_enable())
 		dev->enabled = 0;
 	silconfig->UsbOtg = dev->enabled;
+
+	/* Set VTD feature according to devicetree */
+	silconfig->VtdEnable = cfg->enable_vtd;
 }
 
 struct chip_operations soc_intel_apollolake_ops = {

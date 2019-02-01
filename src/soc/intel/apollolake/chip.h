@@ -188,6 +188,12 @@ struct soc_intel_apollolake_config {
 	 * 00=1.10v, 01=1.15v, 10=1.24v, 11=1.20v (default).
 	 */
 	uint32_t PmicVdd2Voltage;
+
+	/* Option to enable VTD feature. Default is 0 which disables VTD
+	 * capability in FSP. Setting this option to 1 in devicetree will enable
+	 * the Upd parameter VtdEnable.
+	 */
+	uint8_t enable_vtd;
 };
 
 typedef struct soc_intel_apollolake_config config_t;

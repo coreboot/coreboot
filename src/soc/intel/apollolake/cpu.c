@@ -17,6 +17,7 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/acpi.h>
 #include <assert.h>
 #include <console/console.h>
 #include "chip.h"
@@ -70,10 +71,11 @@ static const struct reg_script core_msr_script[] = {
 void soc_core_init(struct device *cpu)
 {
 	/* Clear out pending MCEs */
-	/* TODO(adurbin): This should only be done on a cold boot. Also, some
-	 * of these banks are core vs package scope. For now every CPU clears
-	 * every bank. */
-	mca_configure(NULL);
+	/* TODO(adurbin): Some of these banks are core vs package
+			  scope. For now every CPU clears every bank. */
+	if (IS_ENABLED(SOC_INTEL_COMMON_BLOCK_SGX) ||
+	    acpi_get_sleep_type() == ACPI_S5)
+		mca_configure(NULL);
 
 	/* Set core MSRs */
 	reg_script_run(core_msr_script);

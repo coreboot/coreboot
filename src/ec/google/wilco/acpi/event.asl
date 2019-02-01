@@ -81,12 +81,32 @@ Method (ECQ2, 1, Serialized)
 		Printf ("QS EVENT")
 		Notify (^WEVT, 0x90)
 	}
+
+	If (EBIT (E2OR, Arg0)) {
+		If (R (OTBL)) {
+			Printf ("EC event indicates tablet mode")
+			Notify (^VBTN, ^VTBL)
+		} Else {
+			Printf ("EC event indicates laptop mode")
+			Notify (^VBTN, ^VLAP)
+		}
+	}
 }
 
 /* Handle events in PmEv3 */
 Method (ECQ3, 1, Serialized)
 {
 	Printf ("EVT3: %o", Arg0)
+
+	If (EBIT (E3CP, Arg0)) {
+		If (R (P2PB)) {
+			Printf ("Power button pressed")
+			Notify (^VBTN, ^VPPB)
+		} Else {
+			Printf ("Power button released")
+			Notify (^VBTN, ^VRPB)
+		}
+	}
 
 #ifdef EC_ENABLE_DPTF
 	/* Theraml Events */

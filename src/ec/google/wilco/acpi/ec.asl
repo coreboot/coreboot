@@ -164,6 +164,7 @@ Device (EC0)
 	#include "event.asl"
 	#include "lid.asl"
 	#include "platform.asl"
+	#include "vbtn.asl"
 #ifdef EC_ENABLE_DPTF
 	#include "dptf.asl"
 #endif

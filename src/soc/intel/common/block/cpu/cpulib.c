@@ -323,6 +323,8 @@ void mca_configure(void *unused)
 	int i;
 	int num_banks;
 
+	printk(BIOS_DEBUG, "Clearing out pending MCEs\n");
+
 	msr = rdmsr(IA32_MCG_CAP);
 	num_banks = msr.lo & 0xff;
 	msr.lo = msr.hi = 0;

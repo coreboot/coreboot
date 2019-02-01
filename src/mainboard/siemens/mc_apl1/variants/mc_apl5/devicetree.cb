@@ -46,6 +46,9 @@ chip soc/intel/apollolake
 	# 0:HS400(Default), 1:HS200, 2:DDR50
 	register "emmc_host_max_speed" = "2"
 
+	# Enable Vtd feature
+	register "enable_vtd" = "1"
+
 	# Intel Common SoC Config
 	#+-------------------+---------------------------+
 	#| Field             |  Value                    |

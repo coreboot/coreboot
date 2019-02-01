@@ -134,7 +134,7 @@ chip soc/intel/cannonlake
 						device usb 2.3 on end
 					end
 					chip drivers/usb/acpi
-						register "desc" = ""Bluetooth""
+						register "desc" = ""Discrete bluetooth""
 						register "type" = "UPC_TYPE_INTERNAL"
 						device usb 2.4 on end
 					end
@@ -147,6 +147,11 @@ chip soc/intel/cannonlake
 						register "desc" = ""Camera""
 						register "type" = "UPC_TYPE_INTERNAL"
 						device usb 2.6 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""Integrated CnVi bluetooth""
+						register "type" = "UPC_TYPE_INTERNAL"
+						device usb 2.9 on end
 					end
 					chip drivers/usb/acpi
 						register "desc" = ""Left Type-C Port""

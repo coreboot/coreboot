@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2013 Google Inc.
- * Copyright (C) 2017 Intel Corporation.
+ * Copyright (C) 2017-2019 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,12 +17,26 @@
 #ifndef _SERIALIO_H_
 #define _SERIALIO_H_
 
+#if IS_ENABLED(CONFIG_SOC_INTEL_COMETLAKE)
 typedef enum {
+	PchSerialIoNotInitialized,
+	PchSerialIoDisabled,
+	PchSerialIoPci,
+	PchSerialIoHidden,
+	PchSerialIoLegacyUart,
+	PchSerialIoSkipInit,
+	PchSerialIoMax,
+} PCH_SERIAL_IO_MODE;
+#else
+typedef enum {
+	PchSerialIoNotInitialized,
 	PchSerialIoDisabled,
 	PchSerialIoPci,
 	PchSerialIoAcpi,
 	PchSerialIoHidden,
+	PchSerialIoMax,
 } PCH_SERIAL_IO_MODE;
+#endif
 
 typedef enum {
 	PchSerialIoIndexI2C0,

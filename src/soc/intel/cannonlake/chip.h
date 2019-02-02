@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2007-2008 coresystems GmbH
  * Copyright (C) 2014 Google Inc.
- * Copyright (C) 2017-2018 Intel Corporation.
+ * Copyright (C) 2017-2019 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,6 +35,8 @@
 #else
 #include <soc/gpio_defs.h>
 #endif
+
+#define SOC_INTEL_CML_UART_DEV_MAX 3
 
 struct soc_intel_cannonlake_config {
 
@@ -101,7 +103,7 @@ struct soc_intel_cannonlake_config {
 	 * For CNL, options are as following
 	 * When enabled, memory will be training at three different frequencies.
 	 * 0:Disabled, 1:FixedLow, 2:FixedMid, 3:FixedHigh, 4:Enabled
-	 * For WHL/CFL options are as following
+	 * For WHL/CFL/CML options are as following
 	 * When enabled, memory will be training at two different frequencies.
 	 * 0:Disabled, 1:FixedLow, 2:FixedHigh, 3:Enabled*/
 	enum {
@@ -308,10 +310,30 @@ struct soc_intel_cannonlake_config {
 	 * PchSerialIoIndexUART2
 	 *
 	 * Mode select:
+	 * For Cannonlake PCH following values are supported:
+	 * PchSerialIoNotInitialized
 	 * PchSerialIoDisabled
 	 * PchSerialIoPci
 	 * PchSerialIoAcpi
 	 * PchSerialIoHidden
+	 * PchSerialIoMax
+	 *
+	 * For Cometlake following values are supported:
+	 * PchSerialIoNotInitialized
+	 * PchSerialIoDisabled,
+	 * PchSerialIoPci,
+	 * PchSerialIoHidden,
+	 * PchSerialIoLegacyUart,
+	 * PchSerialIoSkipInit,
+	 * PchSerialIoMax
+	 *
+	 * NOTE:
+	 * PchSerialIoNotInitialized is not an option provided by FSP, this
+	 * option is default selected in case devicetree doesn't fill this param
+	 * In case PchSerialIoNotInitialized is selected or an invalid value is
+	 * provided from devicetree, coreboot will configure device into PCI
+	 * mode by default.
+	 *
 	 */
 	uint8_t SerialIoDevMode[PchSerialIoIndexMAX];
 

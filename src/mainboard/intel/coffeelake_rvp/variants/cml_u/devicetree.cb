@@ -8,6 +8,22 @@ chip soc/intel/cannonlake
 	register "SaGv" = "SaGv_Enabled"
 	register "ScsEmmcHs400Enabled" = "1"
 	register "HeciEnabled" = "1"
+	register "s0ix_enable" = "1"
+
+	register "SerialIoDevMode" = "{
+		[PchSerialIoIndexI2C0]  = PchSerialIoPci,
+		[PchSerialIoIndexI2C1]  = PchSerialIoPci,
+		[PchSerialIoIndexI2C2]  = PchSerialIoPci,
+		[PchSerialIoIndexI2C3]  = PchSerialIoPci,
+		[PchSerialIoIndexI2C4]  = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C5]  = PchSerialIoPci,
+		[PchSerialIoIndexSPI0] = PchSerialIoPci,
+		[PchSerialIoIndexSPI1] = PchSerialIoPci,
+		[PchSerialIoIndexSPI2] = PchSerialIoDisabled,
+		[PchSerialIoIndexUART0] = PchSerialIoSkipInit,
+		[PchSerialIoIndexUART1] = PchSerialIoDisabled,
+		[PchSerialIoIndexUART2] = PchSerialIoSkipInit,
+	}"
 
 	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC0)"
 	register "usb2_ports[1]" = "USB2_PORT_MID(OC0)"

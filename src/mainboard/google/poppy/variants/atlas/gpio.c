@@ -160,8 +160,8 @@ static const struct pad_config gpio_table[] = {
 
 	/* D0  : SPI1_CS# ==> NC */
 	PAD_CFG_NC(GPP_D0),
-	/* D1  : SPI1_CLK ==> TRACKPAD_RESET_1V8_ODL */
-	PAD_CFG_GPO(GPP_D1, 0, DEEP),
+	/* D1  : SPI1_CLK ==> NC */
+	PAD_CFG_NC(GPP_D1),
 	/* D2  : SPI1_MISO ==> NC */
 	PAD_CFG_NC(GPP_D2),
 	/* D3  : SPI1_MOSI ==> NC */

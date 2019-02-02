@@ -30,6 +30,13 @@ config SOC_INTEL_WHISKEYLAKE
 	help
 	  Intel Whiskeylake support
 
+config SOC_INTEL_COMETLAKE
+	bool
+	default n
+	select SOC_INTEL_COMMON_CANNONLAKE_BASE
+	help
+	  Intel Cometlake support
+
 config SOC_INTEL_CANNONLAKE_PCH_H
 	bool
 	default n
@@ -274,6 +281,7 @@ endchoice
 config FSP_HEADER_PATH
 	string "Location of FSP headers"
 	default "3rdparty/fsp/CoffeeLakeFspBinPkg/Include/" if SOC_INTEL_COFFEELAKE || SOC_INTEL_WHISKEYLAKE
+	default "src/vendorcode/intel/fsp/fsp2_0/cometlake/" if SOC_INTEL_COMETLAKE
 	default "src/vendorcode/intel/fsp/fsp2_0/cannonlake/"
 
 config FSP_FD_PATH

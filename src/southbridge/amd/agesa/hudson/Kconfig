@@ -38,7 +38,7 @@ config EHCI_BAR
 
 config HUDSON_XHCI_ENABLE
 	bool "Enable Hudson XHCI Controller"
-	default y
+	default y if HUDSON_XHCI_FWM
 	help
 	  The XHCI controller must be enabled and the XHCI firmware
 	  must be added in order to have USB 3.0 support configured

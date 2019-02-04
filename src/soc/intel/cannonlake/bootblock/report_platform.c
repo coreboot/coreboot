@@ -57,6 +57,13 @@ static struct {
 	{ PCI_DEVICE_ID_INTEL_WHL_ID_Wx2, "Whiskeylake W (2+2)" },
 	{ PCI_DEVICE_ID_INTEL_CFL_ID_H, "Coffeelake-H" },
 	{ PCI_DEVICE_ID_INTEL_CFL_ID_S, "Coffeelake-S" },
+	{ PCI_DEVICE_ID_INTEL_CML_ULT, "CometLake-U (4+2)" },
+	{ PCI_DEVICE_ID_INTEL_CML_ULT_6_2, "CometLake-U (6+2)" },
+	{ PCI_DEVICE_ID_INTEL_CML_ULX, "CometLake-ULX (4+2)" },
+	{ PCI_DEVICE_ID_INTEL_CML_S, "CometLake-S (6+2)" },
+	{ PCI_DEVICE_ID_INTEL_CML_S_10_2, "CometLake-S (10+2)" },
+	{ PCI_DEVICE_ID_INTEL_CML_H, "CometLake-H (6+2)" },
+	{ PCI_DEVICE_ID_INTEL_CML_H_8_2, "CometLake-H (8+2)" },
 };
 
 static struct {
@@ -86,6 +93,24 @@ static struct {
 	{ PCI_DEVICE_ID_INTEL_WHL_GT2_ULT_1, "Whiskeylake ULT GT1" },
 	{ PCI_DEVICE_ID_INTEL_CFL_H_GT2, "Coffeelake-H GT2" },
 	{ PCI_DEVICE_ID_INTEL_CFL_S_GT2, "Coffeelake-S GT2" },
+	{ PCI_DEVICE_ID_INTEL_CML_GT1_ULT_1, "CometLake ULT GT1" },
+	{ PCI_DEVICE_ID_INTEL_CML_GT1_ULT_2, "CometLake ULT GT1" },
+	{ PCI_DEVICE_ID_INTEL_CML_GT2_ULT_1, "CometLake ULT GT2" },
+	{ PCI_DEVICE_ID_INTEL_CML_GT2_ULT_2, "CometLake ULT GT2" },
+	{ PCI_DEVICE_ID_INTEL_CML_GT1_ULT_3, "CometLake ULT GT1" },
+	{ PCI_DEVICE_ID_INTEL_CML_GT1_ULT_4, "CometLake ULT GT1" },
+	{ PCI_DEVICE_ID_INTEL_CML_GT2_ULT_3, "CometLake ULT GT2" },
+	{ PCI_DEVICE_ID_INTEL_CML_GT2_ULT_4, "CometLake ULT GT2" },
+	{ PCI_DEVICE_ID_INTEL_CML_GT1_ULX_1, "CometLake ULX GT1" },
+	{ PCI_DEVICE_ID_INTEL_CML_GT2_ULX_1, "CometLake ULX GT2" },
+	{ PCI_DEVICE_ID_INTEL_CML_GT1_S_1, "CometLake S GT1" },
+	{ PCI_DEVICE_ID_INTEL_CML_GT1_S_2, "CometLake S GT1" },
+	{ PCI_DEVICE_ID_INTEL_CML_GT2_S_1, "CometLake S GT2" },
+	{ PCI_DEVICE_ID_INTEL_CML_GT2_S_2, "CometLake S GT2" },
+	{ PCI_DEVICE_ID_INTEL_CML_GT1_H_1, "CometLake H GT1" },
+	{ PCI_DEVICE_ID_INTEL_CML_GT1_H_2, "CometLake H GT1" },
+	{ PCI_DEVICE_ID_INTEL_CML_GT2_H_1, "CometLake H GT2" },
+	{ PCI_DEVICE_ID_INTEL_CML_GT2_H_2, "CometLake H GT2" },
 };
 
 static uint8_t get_dev_revision(pci_devfn_t dev)

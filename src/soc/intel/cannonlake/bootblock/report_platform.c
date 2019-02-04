@@ -75,6 +75,11 @@ static struct {
 	{ PCI_DEVICE_ID_INTEL_CNL_Y_PREMIUM_LPC, "Cannonlake-Y Premium" },
 	{ PCI_DEVICE_ID_INTEL_CNP_H_LPC_Q370, "Cannonlake-H Q370" },
 	{ PCI_DEVICE_ID_INTEL_CNP_H_LPC_QM370, "Cannonlake-H QM370" },
+	{ PCI_DEVICE_ID_INTEL_CMP_SUPER_U_LPC, "Cometlake-U Super" },
+	{ PCI_DEVICE_ID_INTEL_CMP_PREMIUM_Y_LPC, "Cometlake-Y Premium" },
+	{ PCI_DEVICE_ID_INTEL_CMP_PREMIUM_U_LPC, "Cometlake-U Premium" },
+	{ PCI_DEVICE_ID_INTEL_CMP_BASE_U_LPC, "Cometlake-U Base" },
+	{ PCI_DEVICE_ID_INTEL_CMP_SUPER_Y_LPC, "Cometlake-Y Super" },
 };
 
 static struct {

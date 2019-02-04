@@ -343,7 +343,7 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_G7, DN_20K),
 
 	/*
-	 * H0  : AUDIO IRQ
+	 * H0  : HP_INT_L
 	 * TODO Configure it back to invert mode, when
 	 * ITSS IPCx configuration is fixed in FSP.
 	 */
@@ -352,7 +352,7 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_H1, NONE, DEEP, NF3),
 	/* H2  : CNV_CLKREQ0 */
 	PAD_CFG_NF(GPP_H2, NONE, DEEP, NF3),
-	/* H3  : SPEAKER SD MODE ENABLE */
+	/* H3  : SPKR_PA_EN */
 	PAD_CFG_GPO(GPP_H3, 0, DEEP),
 	/* H4  : PCH_I2C_PEN_SDA */
 	PAD_NC(GPP_H4, NONE),

@@ -97,4 +97,6 @@ OemCustomizeInitEarly (
 	)
 {
 	InitEarly->GnbConfig.PcieComplexList = &PcieComplex;
+	InitEarly->PlatformConfig.CStateMode = CStateModeC6;
+	InitEarly->PlatformConfig.CpbMode = CpbModeAuto;
 }

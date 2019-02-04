@@ -15,3 +15,9 @@
 
 /* Enable EC backed Keyboard Backlight in ACPI */
 #define EC_ENABLE_KEYBOARD_BACKLIGHT
+
+/*
+ * Enable EC sync interrupt via GPIO controller, EC_SYNC_IRQ is defined in
+ * variant/gpio.h
+ */
+#define EC_ENABLE_SYNC_IRQ_GPIO

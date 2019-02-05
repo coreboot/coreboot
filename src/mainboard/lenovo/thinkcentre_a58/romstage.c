@@ -23,7 +23,6 @@
 #include <cpu/intel/romstage.h>
 #include <superio/smsc/smscsuperio/smscsuperio.h>
 #include <northbridge/intel/x4x/iomap.h>
-#include <device/pnp_def.h>
 
 #define SERIAL_DEV PNP_DEV(0x2e, SMSCSUPERIO_SP1)
 #define LPC_DEV PCI_DEV(0, 0x1f, 0)

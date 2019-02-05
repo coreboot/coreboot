@@ -15,7 +15,6 @@
  */
 
 #include <arch/io.h>
-#include <device/pnp_def.h>
 #include <southbridge/intel/i82801gx/i82801gx.h>
 #include <northbridge/intel/pineview/pineview.h>
 #include <superio/winbond/w83627thg/w83627thg.h>

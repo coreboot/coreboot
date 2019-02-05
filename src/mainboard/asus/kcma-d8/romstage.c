@@ -22,7 +22,6 @@
 #include <device/pci_def.h>
 #include <arch/io.h>
 #include <arch/cpu.h>
-#include <device/pnp_def.h>
 #include <cpu/x86/lapic.h>
 #include <console/console.h>
 #include <romstage_handoff.h>

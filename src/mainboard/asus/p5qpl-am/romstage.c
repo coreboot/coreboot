@@ -24,7 +24,6 @@
 #include <superio/winbond/w83627dhg/w83627dhg.h>
 #include <superio/winbond/common/winbond.h>
 #include <northbridge/intel/x4x/iomap.h>
-#include <device/pnp_def.h>
 #include <halt.h>
 #include <cpu/intel/speedstep.h>
 #include <cpu/x86/msr.h>

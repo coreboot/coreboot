@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <device/pnp_def.h>
 #include <northbridge/amd/agesa/state_machine.h>
 #include <superio/winbond/common/winbond.h>
 #include <superio/winbond/w83627dhg/w83627dhg.h>

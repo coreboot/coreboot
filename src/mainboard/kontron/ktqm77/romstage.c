@@ -18,7 +18,6 @@
 #include <string.h>
 #include <timestamp.h>
 #include <device/pci_def.h>
-#include <device/pnp_def.h>
 #include <cpu/x86/lapic.h>
 #include <arch/acpi.h>
 #include <northbridge/intel/sandybridge/sandybridge.h>

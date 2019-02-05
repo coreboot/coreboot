@@ -14,7 +14,6 @@
  * GNU General Public License for more details.
  */
 
-#include <device/pnp_def.h>
 #include <northbridge/amd/agesa/state_machine.h>
 #include <superio/fintek/common/fintek.h>
 #include <superio/fintek/f71869ad/f71869ad.h>

@@ -16,7 +16,6 @@
  */
 
 #include <arch/io.h>
-#include <device/pnp_def.h>
 #include <commonlib/loglevel.h>
 #include <northbridge/amd/agesa/state_machine.h>
 #include <southbridge/amd/common/amd_defs.h>

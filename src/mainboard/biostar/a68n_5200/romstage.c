@@ -19,7 +19,6 @@
 #include <string.h>
 #include <device/pci_def.h>
 #include <arch/io.h>
-#include <device/pnp_def.h>
 #include <commonlib/loglevel.h>
 #include <northbridge/amd/agesa/state_machine.h>
 #include <southbridge/amd/agesa/hudson/hudson.h>

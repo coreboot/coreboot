@@ -15,7 +15,6 @@
  */
 
 #include <device/pci_def.h>
-#include <device/pnp_def.h>
 #include <console/console.h>
 #include <southbridge/intel/i82371eb/i82371eb.h>
 #include <northbridge/intel/i440bx/raminit.h>

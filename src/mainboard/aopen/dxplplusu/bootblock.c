@@ -14,7 +14,6 @@
  */
 
 #include <bootblock_common.h>
-#include <device/pnp_def.h>
 #include <superio/smsc/lpc47m10x/lpc47m10x.h>
 
 #define SERIAL_DEV PNP_DEV(0x2e, LPC47M10X2_SP1)

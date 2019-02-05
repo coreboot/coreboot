@@ -15,7 +15,6 @@
  */
 
 #include <arch/io.h>
-#include <device/pnp_def.h>
 #include <northbridge/amd/agesa/state_machine.h>
 #include <southbridge/amd/agesa/hudson/hudson.h>
 #include <superio/nuvoton/common/nuvoton.h>

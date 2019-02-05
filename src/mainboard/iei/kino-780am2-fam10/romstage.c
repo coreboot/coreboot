@@ -25,7 +25,6 @@
 #include <console/console.h>
 #include <timestamp.h>
 #include <cpu/amd/model_10xxx_rev.h>
-#include <commonlib/loglevel.h>
 #include <cpu/x86/bist.h>
 #include <superio/fintek/common/fintek.h>
 #include <superio/fintek/f71859/f71859.h>

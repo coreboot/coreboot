@@ -24,7 +24,6 @@
 #include <timestamp.h>
 #include <cpu/amd/model_10xxx_rev.h>
 #include <arch/cpu.h>
-#include <commonlib/loglevel.h>
 #include <cpu/x86/bist.h>
 #include <superio/winbond/common/winbond.h>
 #include <superio/winbond/w83627hf/w83627hf.h>

@@ -18,7 +18,6 @@
 #include <device/pnp_ops.h>
 #include <device/pci_ops.h>
 #include <console/console.h>
-#include <commonlib/loglevel.h>
 #include <northbridge/amd/agesa/state_machine.h>
 #include <southbridge/amd/common/amd_defs.h>
 #include <southbridge/amd/agesa/hudson/hudson.h>

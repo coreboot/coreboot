@@ -20,6 +20,8 @@
 #include <arch/cpu.h>
 #include <console/post_codes.h>
 #include <console/vtxprintf.h>
+
+/* console.h is supposed to provide the log levels defined in here: */
 #include <commonlib/loglevel.h>
 
 #define RAM_DEBUG (CONFIG(DEBUG_RAM_SETUP) ? BIOS_DEBUG : BIOS_NEVER)

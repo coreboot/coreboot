@@ -23,7 +23,75 @@
 #include <security/vboot/vboot_common.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
-void __weak mainboard_cr50_update_reset(void) {}
+#define C50_RESET_DELAY_MS 1000
+
+void __weak mainboard_prepare_cr50_reset(void) {}
+
+/**
+ * Check if the Cr50 TPM state requires a chip reset of the Cr50 device.
+ *
+ * Returns 0 if the Cr50 TPM state is good or if the TPM_MODE command is
+ * unsupported.  Returns 1 if the Cr50 was reset.
+ */
+static int cr50_reset_if_needed(uint16_t timeout_ms)
+{
+	int ret;
+	int cr50_must_reset = 0;
+	uint8_t tpm_mode;
+
+	ret = tlcl_cr50_get_tpm_mode(&tpm_mode);
+
+	if (ret == TPM_E_NO_SUCH_COMMAND) {
+		printk(BIOS_INFO,
+		       "Cr50 does not support TPM mode command\n");
+		/* Older Cr50 firmware, assume no Cr50 reset is required */
+		return 0;
+	}
+
+	if (ret == TPM_E_MUST_REBOOT) {
+		/*
+		 * Cr50 indicated a reboot is required to restore TPM
+		 * functionality.
+		 */
+		cr50_must_reset = 1;
+	} else if (ret != TPM_SUCCESS)	{
+		/* TPM command failed, continue booting. */
+		printk(BIOS_ERR,
+		       "ERROR: Attempt to get CR50 TPM mode failed: %x\n", ret);
+		return 0;
+	}
+
+	/* If the TPM mode is not enabled-tentative, then the TPM mode is locked
+	 * and cannot be changed.  Perform a Cr50 reset because vboot may need
+	 * to disable TPM as part of booting an untrusted OS.
+	 *
+	 * This is not an expected state, as the Cr50 always sets the TPM mode
+	 * to TPM_MODE_ENABLED_TENTATIVE during any TPM reset action.
+	 */
+	if (tpm_mode != TPM_MODE_ENABLED_TENTATIVE) {
+		printk(BIOS_NOTICE,
+		       "NOTICE: Unexpected Cr50 TPM mode (%d). "
+		       "A Cr50 reset is required.\n", tpm_mode);
+		cr50_must_reset = 1;
+	}
+
+	/* If TPM state is okay, no reset needed. */
+	if (!cr50_must_reset)
+		return 0;
+
+	ret = tlcl_cr50_immediate_reset(timeout_ms);
+
+	if (ret != TPM_SUCCESS) {
+		/* TPM command failed, continue booting. */
+		printk(BIOS_ERR,
+		       "ERROR: Attempt to reset CR50 failed: %x\n",
+		       ret);
+		return 0;
+	}
+
+	/* Cr50 is about to be reset, caller needs to prepare */
+	return 1;
+}
 
 static void enable_update(void *unused)
 {
@@ -37,33 +105,53 @@ static void enable_update(void *unused)
 	ret = tlcl_lib_init();
 
 	if (ret != VB2_SUCCESS) {
-		printk(BIOS_ERR, "tlcl_lib_init() failed for CR50 update: %x\n",
-			ret);
+		printk(BIOS_ERR,
+		       "ERROR: tlcl_lib_init() failed for CR50 update: %x\n",
+		       ret);
 		return;
 	}
 
 	/* Reboot in 1000 ms if necessary. */
-	ret = tlcl_cr50_enable_update(1000, &num_restored_headers);
+	ret = tlcl_cr50_enable_update(C50_RESET_DELAY_MS,
+				      &num_restored_headers);
 
 	if (ret != TPM_SUCCESS) {
-		printk(BIOS_ERR, "Attempt to enable CR50 update failed: %x\n",
-			ret);
+		printk(BIOS_ERR,
+		       "ERROR: Attempt to enable CR50 update failed: %x\n",
+		       ret);
 		return;
 	}
 
-	/* If no headers were restored there is no reset forthcoming. */
-	if (!num_restored_headers)
-		return;
+	if (!num_restored_headers) {
+		/* If no headers were restored there is no reset forthcoming due
+		 * to a Cr50 firmware update.  Also check if the Cr50 TPM mode
+		 * requires a reset.
+		 *
+		 * TODO: to eliminate a TPM command during every boot, the
+		 * TURN_UPDATE_ON command could be enhanced/replaced in the Cr50
+		 * firmware to perform the TPM mode/key-ladder check in addition
+		 * to the FW version check.
+		 */
+
+		/*
+		 * If the Cr50 was not reset, continue booting.
+		 */
+		if (!cr50_reset_if_needed(C50_RESET_DELAY_MS))
+			return;
+
+		printk(BIOS_INFO, "Waiting for CR50 reset to enable TPM.\n");
+		elog_add_event(ELOG_TYPE_CR50_NEED_RESET);
+	} else {
+		printk(BIOS_INFO,
+		       "Waiting for CR50 reset to pick up update.\n");
+		elog_add_event(ELOG_TYPE_CR50_UPDATE);
+	}
 
 	/* Give mainboard a chance to take action */
-	mainboard_cr50_update_reset();
-
-	elog_add_event(ELOG_TYPE_CR50_UPDATE);
+	mainboard_prepare_cr50_reset();
 
 	/* clear current post code avoid chatty eventlog on subsequent boot*/
 	post_code(0);
-
-	printk(BIOS_INFO, "Waiting for CR50 reset to pick up update.\n");
 
 	if (IS_ENABLED(CONFIG_POWER_OFF_ON_CR50_UPDATE))
 		poweroff();

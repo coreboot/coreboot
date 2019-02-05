@@ -266,6 +266,14 @@ static int marshal_cr50_vendor_command(struct obuf *ob, void *command_body)
 	uint16_t *sub_command = command_body;
 
 	switch (*sub_command) {
+	case TPM2_CR50_SUB_CMD_IMMEDIATE_RESET:
+		/* The 16-bit timeout parameter is optional for the
+		 * IMMEDIATE_RESET command.  However in coreboot, the timeout
+		 * parameter must be specified.
+		 */
+		rc |= obuf_write_be16(ob, sub_command[0]);
+		rc |= obuf_write_be16(ob, sub_command[1]);
+		break;
 	case TPM2_CR50_SUB_CMD_NVMEM_ENABLE_COMMITS:
 		rc |= obuf_write_be16(ob, *sub_command);
 		break;
@@ -274,6 +282,18 @@ static int marshal_cr50_vendor_command(struct obuf *ob, void *command_body)
 		rc |= obuf_write_be16(ob, sub_command[1]);
 		break;
 	case TPM2_CR50_SUB_CMD_GET_REC_BTN:
+		rc |= obuf_write_be16(ob, *sub_command);
+		break;
+	case TPM2_CR50_SUB_CMD_TPM_MODE:
+		/* The Cr50 TPM_MODE command supports an optional parameter.
+		 * When the parameter is present the Cr50 will attempt to change
+		 * the TPM state (enable or disable) and returns the new state
+		 * in the response.  When the parameter is absent, the Cr50
+		 * returns the current TPM state.
+		 *
+		 * coreboot currently only uses the TPM get capability and does
+		 * not set a new TPM state with the Cr50.
+		 */
 		rc |= obuf_write_be16(ob, *sub_command);
 		break;
 	default:
@@ -471,12 +491,16 @@ static int unmarshal_vendor_command(struct ibuf *ib,
 		return -1;
 
 	switch (vcr->vc_subcommand) {
+	case TPM2_CR50_SUB_CMD_IMMEDIATE_RESET:
+		break;
 	case TPM2_CR50_SUB_CMD_NVMEM_ENABLE_COMMITS:
 		break;
 	case TPM2_CR50_SUB_CMD_TURN_UPDATE_ON:
 		return ibuf_read_be8(ib, &vcr->num_restored_headers);
 	case TPM2_CR50_SUB_CMD_GET_REC_BTN:
 		return ibuf_read_be8(ib, &vcr->recovery_button_state);
+	case TPM2_CR50_SUB_CMD_TPM_MODE:
+		return ibuf_read_be8(ib, &vcr->tpm_mode);
 	default:
 		printk(BIOS_ERR,
 		       "%s:%d - unsupported vendor command %#04x!\n",

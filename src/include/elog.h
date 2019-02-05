@@ -223,6 +223,9 @@ struct elog_event_mem_cache_update {
 #define  ELOG_SLEEP_PENDING_PM1_WAKE       0x01
 #define  ELOG_SLEEP_PENDING_GPE0_WAKE      0x02
 
+/* Cr50 reset to enable TPM */
+#define ELOG_TYPE_CR50_NEED_RESET         0xb2
+
 struct elog_event_extended_event {
 	u8 event_type;
 	u32 event_complement;

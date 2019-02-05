@@ -115,7 +115,7 @@ int get_lid_switch(void)
 	return 1;
 }
 
-void mainboard_cr50_update_reset(void)
+void mainboard_prepare_cr50_reset(void)
 {
 #if ENV_RAMSTAGE
 	/* Ensure system powers up after CR50 reset */

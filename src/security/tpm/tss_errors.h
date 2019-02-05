@@ -42,5 +42,6 @@
 #define TPM_E_NV_DEFINED             ((uint32_t)0x0000500b)  /* vboot local */
 #define TPM_E_INVALID_ARG            ((uint32_t)0x0000500c)
 #define TPM_E_HASH_ERROR             ((uint32_t)0x0000500d)
+#define TPM_E_NO_SUCH_COMMAND        ((uint32_t)0x0000500e)
 
 #endif /* TSS_ERRORS_H_ */

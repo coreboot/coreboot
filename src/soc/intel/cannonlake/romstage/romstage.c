@@ -92,6 +92,7 @@ static void save_dimm_info(void)
 				src_dimm->DimmCapacity,
 				memory_info_hob->MemoryType,
 				memory_info_hob->ConfiguredMemoryClockSpeed,
+				src_dimm->RankInDimm,
 				channel_info->ChannelId,
 				src_dimm->DimmId,
 				(const char *)src_dimm->ModulePartNum,

@@ -85,6 +85,7 @@ void save_lpddr4_dimm_info_part_num(const char *dram_part_num)
 				src_dimm->SizeInMb,
 				memory_info_hob->MemoryType,
 				memory_info_hob->MemoryFrequencyInMHz,
+				0,
 				channel_info->ChannelId,
 				src_dimm->DimmId,
 				dram_part_num,

@@ -16,6 +16,7 @@
 #include <arch/acpi.h>
 #include <baseboard/variants.h>
 #include <ec/ec.h>
+#include <soc/gpio.h>
 #include <soc/ramstage.h>
 #include <variant/gpio.h>
 #include <vendorcode/google/chromeos/chromeos.h>
@@ -26,7 +27,7 @@ void mainboard_silicon_init_params(FSP_S_CONFIG *params)
 	size_t num_gpios;
 
 	gpio_table = variant_gpio_table(&num_gpios);
-	gpio_configure_pads(gpio_table, num_gpios);
+	cnl_configure_pads(gpio_table, num_gpios);
 }
 
 static void mainboard_enable(struct device *dev)

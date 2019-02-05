@@ -1,0 +1,44 @@
+#
+# This file is part of the coreboot project.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; version 2 of the License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+
+if BOARD_ASUS_P5QL_EM
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select ARCH_X86
+	select CPU_INTEL_SOCKET_LGA775
+	select NORTHBRIDGE_INTEL_X4X
+	select SOUTHBRIDGE_INTEL_I82801JX
+	select SUPERIO_WINBOND_W83627DHG
+	select HAVE_ACPI_TABLES
+	select BOARD_ROMSIZE_KB_1024
+	select HAVE_OPTION_TABLE
+	select HAVE_CMOS_DEFAULT
+	select HAVE_ACPI_RESUME
+	select INTEL_GMA_HAVE_VBT
+	select MAINBOARD_HAS_LIBGFXINIT
+	select REALTEK_8168_RESET
+
+config MAINBOARD_DIR
+	string
+	default "asus/p5ql-em"
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "P5QL-EM"
+
+config MAX_CPUS
+	int
+	default 4
+
+endif # BOARD_ASUS_P5QL_EM

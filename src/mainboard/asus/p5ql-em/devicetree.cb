@@ -1,0 +1,159 @@
+#
+# This file is part of the coreboot project.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+
+chip northbridge/intel/x4x		# Northbridge
+	device cpu_cluster 0 on		# APIC cluster
+		chip cpu/intel/socket_LGA775
+			device lapic 0 on end
+		end
+		chip cpu/intel/model_1067x		# CPU
+			device lapic 0xACAC off end
+		end
+	end
+	device domain 0 on		# PCI domain
+		device pci 0.0 on		# Host Bridge
+			subsystemid 0x1043 0x8336
+		end
+		device pci 1.0 on		# PEG
+			subsystemid 0x1043 0x8336
+		end
+		device pci 2.0 on		# Integrated graphics controller
+			subsystemid 0x1043 0x8336
+		end
+		device pci 2.1 on		# Integrated graphics controller 2
+			subsystemid 0x1043 0x8336
+		end
+		device pci 3.0 off end		# ME
+		device pci 3.1 off end		# ME
+		device pci 3.2 off end		# ME
+		device pci 3.3 off end		# ME
+		chip southbridge/intel/i82801jx	# Southbridge
+			register "gpe0_en" = "0x40"
+
+			# Set AHCI mode.
+			register "sata_port_map"	= "0x3f"
+			register "sata_clock_request"	= "0"
+			register "sata_traffic_monitor"	= "0"
+
+			# Enable PCIe ports 0,1,3,4,5 as slots.
+			register "pcie_slot_implemented"	= "0x3b"
+
+			device pci 19.0 off end		# GBE
+			device pci 1a.0 on		# USB
+				subsystemid 0x1043 0x82d4
+			end
+			device pci 1a.1 on		# USB
+				subsystemid 0x1043 0x82d4
+			end
+			device pci 1a.2 on		# USB
+				subsystemid 0x1043 0x82d4
+			end
+			device pci 1a.7 on		# USB
+				subsystemid 0x1043 0x82d4
+			end
+			device pci 1b.0 on		# Audio
+				subsystemid 0x1043 0x82fe
+			end
+			device pci 1c.0 on end		# PCIe 1 PCIe x1 Slot #1
+			device pci 1c.1 on end		# PCIe 2 PCIe x1 Slot #2
+			device pci 1c.2 off end		# PCIe 3
+			device pci 1c.3 on		# PCIe 4 1394 controller
+				device pci 0.0 on
+					subsystemid 0x1043 0x8313
+				end
+			end
+			device pci 1c.4 on		# PCIe 5 Marvell IDE
+				device pci 0.0 on
+					subsystemid 0x1043 0x82a2
+				end
+			end
+			device pci 1c.5 on		# PCIe 6 Realtek LAN
+				device pci 0.0 on
+					subsystemid 0x1043 0x82c6
+				end
+			end
+			device pci 1d.0 on		# USB
+				subsystemid 0x1043 0x82d4
+			end
+			device pci 1d.1 on		# USB
+				subsystemid 0x1043 0x82d4
+			end
+			device pci 1d.2 on		# USB
+				subsystemid 0x1043 0x82d4
+			end
+			device pci 1d.7 on		# USB
+				subsystemid 0x1043 0x82d4
+			end
+			device pci 1e.0 on end		# PCI bridge
+			device pci 1f.0 on		# LPC bridge
+				subsystemid 0x1043 0x82d4
+				chip superio/winbond/w83627dhg
+					device pnp 2e.0 on		# Floppy
+						# global
+						irq 0x2c = 0x92
+						#floppy
+						io 0x60 = 0x3f0
+						irq 0x70 = 0x06
+						drq 0x74 = 0x02
+					end
+					device pnp 2e.1 on		# Parallel port
+						# parallel port
+						io 0x60 = 0x378
+						irq 0x70 = 7
+						drq 0x74 = 3
+					end
+					device pnp 2e.2 on		# COM1
+						io 0x60 = 0x3f8
+						irq 0x70 = 4
+					end
+					device pnp 2e.3 off end		# COM2, IR
+					device pnp 2e.5 on		# Keyboard, mouse
+						io 0x60 = 0x60
+						io 0x62 = 0x64
+						irq 0x70 = 1
+						irq 0x72 = 12
+					end
+					device pnp 2e.6 off end		# SPI
+					device pnp 2e.7 on end		# GPIO6 (all input)
+					device pnp 2e.8 off end		# WDT0#, PLED
+					device pnp 2e.9 off end		# GPIO2
+					device pnp 2e.109 on		# GPIO3
+						irq 0xf0 = 0xf3
+					end
+					device pnp 2e.209 on		# GPIO4
+						irq 0xf4 = 0x06
+					end
+					device pnp 2e.309 on		# GPIO5
+						irq 0xe0 = 0xdf
+						irq 0xf3 = 0x09 # RSVD SUSLED settings
+					end
+					device pnp 2e.a off end		# ACPI
+					device pnp 2e.b on		# HWM, front panel LED
+						io 0x60 = 0x290
+						irq 0x70 = 0
+					end
+					device pnp 2e.c off end		# PECI, SST
+				end
+			end
+			device pci 1f.2 on		# SATA
+				subsystemid 0x1043 0x82d4
+			end
+			device pci 1f.3 on		# SMbus
+				subsystemid 0x1043 0x82d4
+			end
+			device pci 1f.5 off end		# SATA IDE mode
+			device pci 1f.6 off end		# Thermal
+		end
+	end
+end

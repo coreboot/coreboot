@@ -5,42 +5,57 @@ to build boot firmware for all kinds of purposes. These third-parties can be
 broadly separated in two groups: Those shipping coreboot on their hardware,
 and those providing after-market firmware to extend the usefulness of devices.
 
-## Shipping coreboot on hardware
+
+## Hardware shipping with coreboot
 
 ### Purism
 
-[Purism](https://www.puri.sm) sells laptops with a focus on privacy and
-part of that is their push to remove as much unaccounted code (that is,
-binary only) from their devices as possible.
+[Purism](https://www.puri.sm) sells laptops with a focus on user privacy and
+security; part of that effort is to minimize the amount of proprietary and/or
+binary code. Their laptops ship with a blob-free OS and coreboot firmware
+with a neutralized Intel Management Engine (ME) and SeaBIOS as the payload.
 
-### Chromebooks
+### ChromeOS Devices
 
-All Chromebooks (and related devices) that hit the market after 2013 are
-using coreboot as their main firmware. And even the Embedded Controller,
-a small microcontroller to support various peripherals (like battery
-management or the keyboard) is running open source firmware.
+All ChromeOS devices (Chromebooks, Chromeboxes, Chromebit, etc) released from
+2012 onward use coreboot for their main system firmware. Additionally, starting
+with the 2013 Chromebook Pixel, the firmware running on the Embedded Controller
+(EC - a small microcontroller which provides functions like battery management,
+keyboard support, and sensor interfacing) is open source as well.
+
+### Libretrend
+
+[Libretrend](https://libretrend.com) sells the Librebox, a NUC-like PC which
+ships with coreboot firmware.
 
 
 ## After-market firmware
 
 ### Libreboot
 
-[Libreboot](https://libreboot.org) is a project that provides ready-made
-binaries for platforms where those can be built entirely from source
-code. Their copy of the coreboot repository is therefore stripped of
-all devices that require binary components to boot.
+[Libreboot](https://libreboot.org) is a downstream coreboot distribution that
+provides ready-made firmware images for supported devices: those which can be
+built entirely from source code. Their copy of the coreboot repository is
+therefore stripped of all devices that require binary components to boot.
 
-### Mr. Chromebox
+### MrChromebox
 
-[Matt Devo](https://mrchromebox.tech/) provides replacement firmware for
-various Chromebooks. Why replace coreboot with coreboot?  You might want
-to do different things than what the Google engineers prepared for the
-mass market, that's why. This firmware is "with training wheels off".
+[MrChromebox](https://mrchromebox.tech/) provides upstream coreboot firmware
+images for the vast majority of x86-based Chromebooks and Chromeboxes, using
+Tianocore as the payload to provide a modern UEFI bootloader. Why replace
+coreboot with coreboot? Mr Chromebox's images are built using upstream
+coreboot (vs Google's older, static tree/branch), include many features and
+fixes not found in the stock firmware, and offer much broader OS compatibility
+(i.e., they run Windows as well as Linux). They also offer updated CPU
+microcode, as well as firmware updates for the device's embedded controller
+(EC). This firmware "takes the training wheels off" your ChromeOS device :)
 
 ### John Lewis
 
-[John Lewis](https://johnlewis.ie/custom-chromebook-firmware) also
-provides replacements for Chromebook firmware, for the same reasons
-as Mr. Chromebox. It's a somewhat different set of devices, and with
-different configurations, so check out both if Chromebooks are what
-you're dealing with.
+[John Lewis](https://johnlewis.ie/custom-chromebook-firmware) also provides
+replacement firmware for ChromeOS devices, for the express purpose of
+running Linux on Chromebooks. John Lewis' firmware supports a much smaller
+set of devices, and uses SeaBIOS as the payload to support Legacy BIOS booting.
+His firmware images are significantly older, and not actively maintained or
+supported, but worth a look if you need Legacy Boot support and is not
+available via Mr Chromebox's firmware.

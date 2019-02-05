@@ -37,8 +37,8 @@ const FSPT_UPD temp_ram_init_params = {
 			.MicrocodeRegionLength =
 				(UINT32)CONFIG_CPU_MICROCODE_CBFS_LEN,
 			.CodeRegionBase =
-				(UINT32)(0x100000000ULL - CONFIG_CBFS_SIZE),
-			.CodeRegionLength = (UINT32)CONFIG_CBFS_SIZE,
+				(UINT32)(0x100000000ULL - CONFIG_ROM_SIZE),
+			.CodeRegionLength = (UINT32)CONFIG_ROM_SIZE,
 			.Reserved1 = {0},
 	},
 	.FsptConfig = {

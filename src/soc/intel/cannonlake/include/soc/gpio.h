@@ -16,7 +16,6 @@
 #ifndef _SOC_CANNONLAKE_GPIO_H_
 #define _SOC_CANNONLAKE_GPIO_H_
 
-
 #if IS_ENABLED(CONFIG_SOC_INTEL_CANNONLAKE_PCH_H)
 #include <soc/gpio_defs_cnp_h.h>
 #define CROS_GPIO_DEVICE_NAME	"INT3450:00"
@@ -25,5 +24,10 @@
 #define CROS_GPIO_DEVICE_NAME	"INT34BB:00"
 #endif
 #include <intelblocks/gpio.h>
+
+#ifndef __ACPI__
+struct pad_config;
+void cnl_configure_pads(const struct pad_config *cfg, size_t num_pads);
+#endif
 
 #endif

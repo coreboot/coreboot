@@ -140,6 +140,33 @@ const char *soc_acpi_name(const struct device *dev)
 }
 #endif
 
+/*
+ * TODO(furquan): Get rid of this workaround once FSP is fixed. Currently, FSP-S
+ * configures GPIOs when it should not and this results in coreboot GPIO
+ * configuration being overwritten. Until FSP is fixed, maintain the reference
+ * of GPIO config table from mainboard and use that to re-configure GPIOs after
+ * FSP-S is done.
+ */
+void cnl_configure_pads(const struct pad_config *cfg, size_t num_pads)
+{
+	static const struct pad_config *g_cfg;
+	static size_t g_num_pads;
+
+	/*
+	 * If cfg and num_pads are passed in from mainboard, maintain a
+	 * reference to the GPIO table.
+	 */
+	if ((cfg == NULL) || (num_pads == 0)) {
+		cfg = g_cfg;
+		num_pads = g_num_pads;
+	} else {
+		g_cfg = cfg;
+		g_num_pads = num_pads;
+	}
+
+	gpio_configure_pads(cfg, num_pads);
+}
+
 void soc_init_pre_device(void *chip_info)
 {
 	/* Snapshot the current GPIO IRQ polarities. FSP is setting a
@@ -154,6 +181,9 @@ void soc_init_pre_device(void *chip_info)
 
 	/* Restore GPIO IRQ polarities back to previous settings. */
 	itss_restore_irq_polarities(GPIO_IRQ_START, GPIO_IRQ_END);
+
+	/* TODO(furquan): Get rid of this workaround once FSP is fixed. */
+	cnl_configure_pads(NULL, 0);
 }
 
 static void pci_domain_set_resources(struct device *dev)

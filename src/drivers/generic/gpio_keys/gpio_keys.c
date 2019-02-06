@@ -40,10 +40,8 @@ static struct acpi_dp *gpio_keys_add_child_node(
 				    key->linux_input_type);
 	if (key->label)
 		acpi_dp_add_string(dsd, "label", key->label);
-	if (key->is_wakeup_source)
-		acpi_dp_add_integer(dsd, "wakeup-source",
-				    key->is_wakeup_source);
 	if (key->wake) {
+		acpi_dp_add_integer(dsd, "wakeup-source", 1);
 		acpigen_write_PRW(key->wake, 3);
 		acpi_dp_add_integer(dsd, "wakeup-event-action",
 					key->wakeup_event_action);

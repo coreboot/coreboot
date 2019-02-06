@@ -50,8 +50,6 @@ struct key_info {
 	uint32_t linux_input_type;
 	/* Descriptive name of the key */
 	const char *label;
-	/* Can this key wake-up the system? */
-	bool is_wakeup_source;
 	/* Wake GPE */
 	unsigned int wake;
 	/* Trigger for Wakeup Event Action as defined in EV_ACT_* enum */

@@ -18,7 +18,13 @@
 
 // NOTE: this is the size of hls_t below. A static_assert would be
 // nice to have.
+#if __riscv_xlen == 64
 #define HLS_SIZE 88
+#endif
+
+#if __riscv_xlen == 32
+#define HLS_SIZE 52
+#endif
 
 /* We save 37 registers, currently. */
 #define MENTRY_FRAME_SIZE (HLS_SIZE + 37 * 8)
@@ -26,6 +32,7 @@
 #ifndef __ASSEMBLER__
 
 #include <arch/encoding.h>
+#include <arch/smp/atomic.h>
 #include <stdint.h>
 
 typedef struct {
@@ -38,8 +45,8 @@ typedef struct {
 struct blocker {
 	void *arg;
 	void (*fn)(void *arg);
-	uint32_t sync_a;
-	uint32_t sync_b;
+	atomic_t sync_a;
+	atomic_t sync_b;
 };
 
 typedef struct {

@@ -1,5 +1,4 @@
 config SOC_UCB_RISCV
-	select ARCH_RISCV_RV64
 	select ARCH_RISCV_S
 	select ARCH_RISCV_U
 	select ARCH_RISCV_PMP
@@ -15,6 +14,8 @@ config SOC_UCB_RISCV
 
 if SOC_UCB_RISCV
 
+if ARCH_RISCV_RV64
+
 config RISCV_ARCH
 	string
 	default "rv64imafd"
@@ -26,6 +27,24 @@ config RISCV_ABI
 config RISCV_CODEMODEL
 	string
 	default "medany"
+
+endif
+
+if ARCH_RISCV_RV32
+
+config RISCV_ARCH
+	string
+	default "rv32im"
+
+config RISCV_ABI
+	string
+	default "ilp32"
+
+config RISCV_CODEMODEL
+	string
+	default "medany"
+
+endif
 
 config RISCV_WORKING_HARTID
 	int

@@ -16,6 +16,21 @@
 # util/riscv/make-spike-elf.sh build/coreboot.rom build/coreboot.elf
 # qemu-system-riscv64 -M virt -m 1024M -nographic -kernel build/coreboot.elf
 
+
+if BOARD_EMULATION_QEMU_RISCV_RV64
+
+config BOARD_EMULATION_QEMU_RISCV
+	def_bool y
+	select ARCH_RISCV_RV64
+endif
+
+if BOARD_EMULATION_QEMU_RISCV_RV32
+
+config BOARD_EMULATION_QEMU_RISCV
+	def_bool y
+	select ARCH_RISCV_RV32
+endif
+
 if BOARD_EMULATION_QEMU_RISCV
 
 config BOARD_SPECIFIC_OPTIONS

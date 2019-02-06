@@ -20,7 +20,8 @@
  * <lib.h> in case GCC does not have an assembly version for this arch.
  */
 
-#if !IS_ENABLED(CONFIG_ARCH_X86) /* work around lack of --gc-sections on x86 */
+#if !IS_ENABLED(CONFIG_ARCH_X86)	       /* work around lack of --gc-sections on x86 */ \
+	&& !IS_ENABLED(CONFIG_ARCH_RISCV_RV32) /* defined in rv32 libgcc.a */
 int __clzsi2(u32 a);
 int __clzsi2(u32 a)
 {

@@ -86,6 +86,10 @@ $(objcbfs)/bootblock.debug: $$(bootblock-objs)
 bootblock-c-ccopts += $(riscv_flags)
 bootblock-S-ccopts += $(riscv_asm_flags)
 
+ifeq ($(CONFIG_ARCH_RISCV_RV32),y)
+LDFLAGS_bootblock += -m elf32lriscv
+endif #CONFIG_ARCH_RISCV_RV32
+
 endif #CONFIG_ARCH_BOOTBLOCK_RISCV
 
 ################################################################################
@@ -115,6 +119,10 @@ $(objcbfs)/romstage.debug: $$(romstage-objs)
 
 romstage-c-ccopts += $(riscv_flags)
 romstage-S-ccopts += $(riscv_asm_flags)
+
+ifeq ($(CONFIG_ARCH_RISCV_RV32),y)
+LDFLAGS_romstage += -m elf32lriscv
+endif #CONFIG_ARCH_RISCV_RV32
 
 endif #CONFIG_ARCH_ROMSTAGE_RISCV
 
@@ -160,6 +168,10 @@ $(objcbfs)/ramstage.debug: $$(ramstage-objs)
 
 ramstage-c-ccopts += $(riscv_flags)
 ramstage-S-ccopts += $(riscv_asm_flags)
+
+ifeq ($(CONFIG_ARCH_RISCV_RV32),y)
+LDFLAGS_ramstage += -m elf32lriscv
+endif #CONFIG_ARCH_RISCV_RV32
 
 endif #CONFIG_ARCH_RAMSTAGE_RISCV
 endif #CONFIG_ARCH_RISCV

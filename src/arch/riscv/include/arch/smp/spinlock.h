@@ -21,7 +21,7 @@
 #define barrier() { asm volatile ("fence" ::: "memory"); }
 
 typedef struct {
-	volatile atomic_t lock;
+	atomic_t lock;
 } spinlock_t;
 
 static inline void spinlock_lock(spinlock_t *lock)

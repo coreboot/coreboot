@@ -14,6 +14,7 @@
  */
 
 #include <arch/encoding.h>
+#include <bits.h>
 #include <mcall.h>
 
 .section ".text._start", "ax", %progbits
@@ -27,7 +28,7 @@ _start:
 	slli t1, a0, RISCV_PGSHIFT
 	add  t0, t0, t1
 	li   t1, 0xDEADBEEF
-	sd   t1, 0(t0)
+	STORE t1, 0(t0)
 	li   t1, RISCV_PGSIZE - HLS_SIZE
 	add  sp, t0, t1
 

@@ -32,13 +32,13 @@ void smp_pause(int working_hartid)
 		/* waiting for work hart */
 		do {
 			barrier();
-		} while (SYNCA != 0x01234567);
+		} while (atomic_read(&SYNCA) != 0x01234567);
 
 		clear_csr(mstatus, MSTATUS_MIE);
 		write_csr(mie, MIP_MSIP);
 
 		/* count how many cores enter the halt */
-		__sync_fetch_and_add(&SYNCB, 1);
+		atomic_add(&SYNCB, 1);
 
 		do {
 			barrier();
@@ -49,17 +49,17 @@ void smp_pause(int working_hartid)
 	} else {
 		/* Initialize the counter and
 		 * mark the work hart into smp_pause */
-		SYNCB = 0;
-		SYNCA = 0x01234567;
+		atomic_set(&SYNCB, 0);
+		atomic_set(&SYNCA, 0x01234567);
 
 		/* waiting for other Hart to enter the halt */
 		do {
 			barrier();
-		} while (SYNCB + 1 < CONFIG_MAX_CPUS);
+		} while (atomic_read(&SYNCB) + 1 < CONFIG_MAX_CPUS);
 
 		/* initialize for the next call */
-		SYNCA = 0;
-		SYNCB = 0;
+		atomic_set(&SYNCA, 0);
+		atomic_set(&SYNCB, 0);
 	}
 #undef SYNCA
 #undef SYNCB

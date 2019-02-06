@@ -1,6 +1,7 @@
 ## This file is part of the coreboot project.
 ##
 ## Copyright (C) 2018 Intel Corporation.
+## Copyright 2019 Google LLC
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -12,12 +13,12 @@
 ## GNU General Public License for more details.
 ##
 
-SPD_SOURCES = samsung_dimm_K4A4G165WE-BCRC-4GB	# 0b000
+SPD_SOURCES = 4G_2400		# 0b000
 SPD_SOURCES += empty_ddr4	# 0b001
 SPD_SOURCES += empty_ddr4	# 0b010
 SPD_SOURCES += empty_ddr4	# 0b011
 SPD_SOURCES += empty_ddr4	# 0b100
-SPD_SOURCES += hynix_dimm_H5AN8G6NCJR-VKC-8GB	# 0b101
+SPD_SOURCES += 8G_2666		# 0b101
 
 bootblock-y += gpio.c
 

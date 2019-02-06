@@ -60,11 +60,19 @@ static void per_cpu_smm_trigger(void)
 		/* We don't care if the lock is already setting
 		   as our smm relocation handler is able to handle
 		   setups where SMRR is not enabled here. */
-		if (!IS_ENABLED(CONFIG_SET_IA32_FC_LOCK_BIT))
-			printk(BIOS_INFO,
-			       "Overriding CONFIG_SET_IA32_FC_LOCK_BIT to enable SMRR\n");
-		ia32_ft_ctrl.lo |= (1 << 3) | (1 << 0);
-		wrmsr(IA32_FEATURE_CONTROL, ia32_ft_ctrl);
+		if (ia32_ft_ctrl.lo & (1 << 0)) {
+			/* IA32_FEATURE_CONTROL locked. If we set it again we
+			   get an illegal instruction. */
+			printk(BIOS_DEBUG, "IA32_FEATURE_CONTROL already locked\n");
+			printk(BIOS_DEBUG, "SMRR status: %senabled\n",
+			       ia32_ft_ctrl.lo & (1 << 3) ? "" : "not ");
+		} else {
+			if (!IS_ENABLED(CONFIG_SET_IA32_FC_LOCK_BIT))
+				printk(BIOS_INFO,
+				       "Overriding CONFIG_SET_IA32_FC_LOCK_BIT to enable SMRR\n");
+			ia32_ft_ctrl.lo |= (1 << 3) | (1 << 0);
+			wrmsr(IA32_FEATURE_CONTROL, ia32_ft_ctrl);
+		}
 	} else {
 		set_vmx_and_lock();
 	}

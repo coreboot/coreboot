@@ -66,3 +66,16 @@ set of devices, and uses SeaBIOS as the payload to support Legacy BIOS booting.
 His firmware images are significantly older, and not actively maintained or
 supported, but worth a look if you need Legacy Boot support and is not
 available via Mr Chromebox's firmware.
+
+### Heads
+
+[Heads](http://osresearch.net) is an open source custom firmware and OS
+configuration for laptops and servers that aims to provide slightly better
+physical security and protection for data on the system. Unlike
+[Tails](https://tails.boum.org/), which aims to be a stateless OS that leaves
+no trace on the computer of its presence, Heads is intended for the case where
+you need to store data and state on the computer.
+
+Heads is not just another Linux distribution – it combines physical hardening
+of specific hardware platforms and flash security features with custom coreboot
+firmware and a Linux boot loader in ROM.

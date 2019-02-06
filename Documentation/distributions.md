@@ -29,6 +29,13 @@ keyboard support, and sensor interfacing) is open source as well.
 ships with coreboot firmware.
 
 
+### PC Engines APUs
+
+[PC Engines](https://pcengines.ch) designs and sells embedded PC hardware that
+ships with coreboot and support upstream maintenance for the devices through a
+third party, [3mdeb](https://3mdeb.com). They provide current and tested
+firmware binaries on [GitHub](https://pcengines.github.io).
+
 ## After-market firmware
 
 ### Libreboot

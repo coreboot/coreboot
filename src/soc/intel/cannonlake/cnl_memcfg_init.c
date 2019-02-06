@@ -49,14 +49,16 @@ static void meminit_memcfg(FSP_M_CONFIG *mem_cfg,
 }
 
 static void meminit_memcfg_spd(FSP_M_CONFIG *mem_cfg,
-			const struct cnl_mb_cfg *board_cfg,
+			const struct cnl_mb_cfg *cnl_cfg,
 			size_t spd_data_len, uintptr_t spd_data_ptr)
 {
 	mem_cfg->MemorySpdDataLen = spd_data_len;
-	mem_cfg->MemorySpdPtr00 = spd_data_ptr;
 
-	/* Use the same spd data for channel 1, Dimm 0 */
-	mem_cfg->MemorySpdPtr10 = mem_cfg->MemorySpdPtr00;
+	if (cnl_cfg->channel_empty[0] == 0)
+		mem_cfg->MemorySpdPtr00 = spd_data_ptr;
+
+	if (cnl_cfg->channel_empty[1] == 0)
+		mem_cfg->MemorySpdPtr10 = spd_data_ptr;
 }
 
 /*

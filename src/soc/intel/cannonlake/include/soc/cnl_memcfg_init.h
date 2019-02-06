@@ -62,7 +62,7 @@ struct cnl_mb_cfg {
 	 * and let the meminit_lpddr4() routine take care of clearing the
 	 * unused fields for the caller.
 	 */
-	const uint8_t dq_map[DDR_NUM_CHANNELS][3][DDR_NUM_PACKAGES];
+	uint8_t dq_map[DDR_NUM_CHANNELS][3][DDR_NUM_PACKAGES];
 
 	/*
 	 * DQS CPU<>DRAM map Ch0 and Ch1.  Each array entry represents a
@@ -71,38 +71,51 @@ struct cnl_mb_cfg {
 	 * on the memory part, and the values in the array represent which
 	 * pin on the CPU that DRAM pin connects to.
 	 */
-	const uint8_t dqs_map[DDR_NUM_CHANNELS][DQ_BITS_PER_DQS];
+	uint8_t dqs_map[DDR_NUM_CHANNELS][DQ_BITS_PER_DQS];
 
 	/*
 	 * Rcomp resistor values.  These values represent the resistance in
 	 * ohms of the three rcomp resistors attached to the DDR_COMP_0,
 	 * DDR_COMP_1, and DDR_COMP_2 pins on the DRAM.
 	 */
-	const uint16_t rcomp_resistor[3];
+	uint16_t rcomp_resistor[3];
 
 	/*
 	 * Rcomp target values.  These will typically be the following
 	 * values for Cannon Lake : { 80, 40, 40, 40, 30 }
 	 */
-	const uint16_t rcomp_targets[5];
+	uint16_t rcomp_targets[5];
 
 	/*
 	 * Indicates whether memory is interleaved.
 	 * Set to 1 for an interleaved design,
 	 * set to 0 for non-interleaved design.
 	 */
-	const uint8_t dq_pins_interleaved;
+	uint8_t dq_pins_interleaved;
 
 	/*
-	 * VREF_CA configuraation.
+	 * VREF_CA configuration.
 	 * Set to 0 VREF_CA goes to both CH_A and CH_B,
 	 * set to 1 VREF_CA goes to CH_A and VREF_DQ_A goes to CH_B,
 	 * set to 2 VREF_CA goes to CH_A and VREF_DQ_B goes to CH_B.
 	 */
-	const uint8_t vref_ca_config;
+	uint8_t vref_ca_config;
 
 	/* Early Command Training Enabled */
-	const uint8_t ect;
+	uint8_t ect;
+
+	/*
+	 * Flags to indicate which channels are populated.  We
+	 * currently support single or dual channel configurations.
+	 * Set 1 to indicate that the channel is not populated Set 0
+	 * to indicate that the channel is populated.  For example,
+	 * dual channel memory configuration would have both
+	 * channel_empty[0] = 0 and channel_empty[1] = 0.  Note that
+	 * this flag is only used for soldered down DRAM where we get
+	 * SPD data from CBFS.  We need the value 0 to default to
+	 * populated in order to support existing boards.
+	 */
+	uint8_t channel_empty[2];
 };
 
 /*

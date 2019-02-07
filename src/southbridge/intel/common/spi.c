@@ -24,6 +24,7 @@
 #include <delay.h>
 #include <arch/io.h>
 #include <console/console.h>
+#include <device/device.h>
 #include <device/pci.h>
 #include <spi_flash.h>
 
@@ -33,36 +34,6 @@
 #define HSFC_FCYCLE		(0x3 << HSFC_FCYCLE_OFF)
 #define HSFC_FDBC_OFF		8	/* 8-13: Flash Data Byte Count */
 #define HSFC_FDBC		(0x3f << HSFC_FDBC_OFF)
-
-
-#ifdef __SMM__
-#define pci_read_config_byte(dev, reg, targ)\
-	*(targ) = pci_read_config8(dev, reg)
-#define pci_read_config_word(dev, reg, targ)\
-	*(targ) = pci_read_config16(dev, reg)
-#define pci_read_config_dword(dev, reg, targ)\
-	*(targ) = pci_read_config32(dev, reg)
-#define pci_write_config_byte(dev, reg, val)\
-	pci_write_config8(dev, reg, val)
-#define pci_write_config_word(dev, reg, val)\
-	pci_write_config16(dev, reg, val)
-#define pci_write_config_dword(dev, reg, val)\
-	pci_write_config32(dev, reg, val)
-#else /* !__SMM__ */
-#include <device/device.h>
-#define pci_read_config_byte(dev, reg, targ)\
-	*(targ) = pci_read_config8(dev, reg)
-#define pci_read_config_word(dev, reg, targ)\
-	*(targ) = pci_read_config16(dev, reg)
-#define pci_read_config_dword(dev, reg, targ)\
-	*(targ) = pci_read_config32(dev, reg)
-#define pci_write_config_byte(dev, reg, val)\
-	pci_write_config8(dev, reg, val)
-#define pci_write_config_word(dev, reg, val)\
-	pci_write_config16(dev, reg, val)
-#define pci_write_config_dword(dev, reg, val)\
-	pci_write_config32(dev, reg, val)
-#endif /* !__SMM__ */
 
 static int spi_is_multichip(void);
 
@@ -308,7 +279,7 @@ void spi_init(void)
 	struct device *dev = pcidev_on_root(31, 0);
 #endif
 
-	pci_read_config_dword(dev, 0xf0, &rcba);
+	rcba = pci_read_config32(dev, 0xf0);
 	/* Bits 31-14 are the base address, 13-1 are reserved, 0 is enable. */
 	rcrb = (uint8_t *)(rcba & 0xffffc000);
 	if (IS_ENABLED(CONFIG_SOUTHBRIDGE_INTEL_I82801GX)) {
@@ -356,10 +327,10 @@ void spi_init(void)
 	ich_set_bbar(0);
 
 	/* Disable the BIOS write protect so write commands are allowed. */
-	pci_read_config_byte(dev, 0xdc, &bios_cntl);
+	bios_cntl = pci_read_config8(dev, 0xdc);
 	/* Deassert SMM BIOS Write Protect Disable. */
 	bios_cntl &= ~(1 << 5);
-	pci_write_config_byte(dev, 0xdc, bios_cntl | 0x1);
+	pci_write_config8(dev, 0xdc, bios_cntl | 0x1);
 }
 
 static void spi_init_cb(void *unused)

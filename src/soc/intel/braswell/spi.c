@@ -19,6 +19,8 @@
 #include <commonlib/helpers.h>
 #include <console/console.h>
 #include <delay.h>
+#include <device/device.h>
+#include <device/pci.h>
 #include <soc/lpc.h>
 #include <soc/pci_devs.h>
 #include <spi_flash.h>
@@ -26,36 +28,6 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
-
-#if ENV_SMM
-#define pci_read_config_byte(dev, reg, targ)\
-	*(targ) = pci_read_config8(dev, reg)
-#define pci_read_config_word(dev, reg, targ)\
-	*(targ) = pci_read_config16(dev, reg)
-#define pci_read_config_dword(dev, reg, targ)\
-	*(targ) = pci_read_config32(dev, reg)
-#define pci_write_config_byte(dev, reg, val)\
-	pci_write_config8(dev, reg, val)
-#define pci_write_config_word(dev, reg, val)\
-	pci_write_config16(dev, reg, val)
-#define pci_write_config_dword(dev, reg, val)\
-	pci_write_config32(dev, reg, val)
-#else /* ENV_SMM */
-#include <device/device.h>
-#include <device/pci.h>
-#define pci_read_config_byte(dev, reg, targ)\
-	*(targ) = pci_read_config8(dev, reg)
-#define pci_read_config_word(dev, reg, targ)\
-	*(targ) = pci_read_config16(dev, reg)
-#define pci_read_config_dword(dev, reg, targ)\
-	*(targ) = pci_read_config32(dev, reg)
-#define pci_write_config_byte(dev, reg, val)\
-	pci_write_config8(dev, reg, val)
-#define pci_write_config_word(dev, reg, val)\
-	pci_write_config16(dev, reg, val)
-#define pci_write_config_dword(dev, reg, val)\
-	pci_write_config32(dev, reg, val)
-#endif /* ENV_SMM */
 
 typedef struct spi_slave ich_spi_slave;
 
@@ -242,7 +214,7 @@ static ich9_spi_regs *spi_regs(void)
 		return NULL;
 	}
 
-	pci_read_config_dword(dev, SBASE, &sbase);
+	sbase = pci_read_config32(dev, SBASE);
 	sbase &= ~0x1ff;
 
 	return (void *)sbase;

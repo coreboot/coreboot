@@ -21,42 +21,14 @@
 #include <delay.h>
 #include <arch/io.h>
 #include <console/console.h>
+#include <device/device.h>
+#include <device/pci.h>
 #include <device/pci_ids.h>
 
 #include <spi_flash.h>
 #include <spi-generic.h>
 
 static int ich_status_poll(u16 bitmask, int wait_til_set);
-
-#ifdef __SMM__
-#define pci_read_config_byte(dev, reg, targ)\
-	*(targ) = pci_read_config8(dev, reg)
-#define pci_read_config_word(dev, reg, targ)\
-	*(targ) = pci_read_config16(dev, reg)
-#define pci_read_config_dword(dev, reg, targ)\
-	*(targ) = pci_read_config32(dev, reg)
-#define pci_write_config_byte(dev, reg, val)\
-	pci_write_config8(dev, reg, val)
-#define pci_write_config_word(dev, reg, val)\
-	pci_write_config16(dev, reg, val)
-#define pci_write_config_dword(dev, reg, val)\
-	pci_write_config32(dev, reg, val)
-#else /* !__SMM__ */
-#include <device/device.h>
-#include <device/pci.h>
-#define pci_read_config_byte(dev, reg, targ)\
-	*(targ) = pci_read_config8(dev, reg)
-#define pci_read_config_word(dev, reg, targ)\
-	*(targ) = pci_read_config16(dev, reg)
-#define pci_read_config_dword(dev, reg, targ)\
-	*(targ) = pci_read_config32(dev, reg)
-#define pci_write_config_byte(dev, reg, val)\
-	pci_write_config8(dev, reg, val)
-#define pci_write_config_word(dev, reg, val)\
-	pci_write_config16(dev, reg, val)
-#define pci_write_config_dword(dev, reg, val)\
-	pci_write_config32(dev, reg, val)
-#endif /* !__SMM__ */
 
 typedef struct spi_slave ich_spi_slave;
 
@@ -349,7 +321,7 @@ void spi_init(void)
 #else
 	struct device *dev = pcidev_on_root(31, 0);
 #endif
-	pci_read_config_dword(dev, 0, &ids);
+	ids = pci_read_config32(dev, 0);
 	vendor_id = ids;
 	device_id = (ids >> 16);
 
@@ -370,7 +342,7 @@ void spi_init(void)
 		{
 			uint8_t *spibase; /* SPI Base Address */
 			uint32_t sbase; /* SPI Base Address Register */
-			pci_read_config_dword(dev, 0x54, &sbase);
+			sbase = pci_read_config32(dev, 0x54);
 			/* Bits 31-9 are the base address, 8-4 are reserved, 3-0 are used. */
 			spibase = (uint8_t *)(sbase & 0xffffff00);
 			ich10_spi_regs *ich10_spi =

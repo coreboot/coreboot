@@ -264,7 +264,7 @@ static ich9_spi_regs *spi_regs(void)
 {
 	uint32_t sbase;
 
-#ifdef __SMM__
+#ifdef __SIMPLE_DEVICE__
 	pci_devfn_t dev = PCI_DEV(0, LPC_DEV, LPC_FUNC);
 #else
 	struct device *dev = pcidev_on_root(LPC_DEV, LPC_FUNC);

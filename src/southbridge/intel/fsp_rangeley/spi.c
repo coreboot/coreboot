@@ -344,7 +344,7 @@ void spi_init(void)
 	uint32_t ids;
 	uint16_t vendor_id, device_id;
 
-#ifdef __SMM__
+#ifdef __SIMPLE_DEVICE__
 	pci_devfn_t dev = PCI_DEV(0, 31, 0);
 #else
 	struct device *dev = pcidev_on_root(31, 0);

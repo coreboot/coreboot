@@ -1067,10 +1067,11 @@ void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
 	fadt->x_dsdt_h = 0;
 
 	if (IS_ENABLED(CONFIG_SYSTEM_TYPE_CONVERTIBLE) ||
-	    IS_ENABLED(CONFIG_SYSTEM_TYPE_DETACHABLE) ||
-	    IS_ENABLED(CONFIG_SYSTEM_TYPE_LAPTOP) ||
-	    IS_ENABLED(CONFIG_SYSTEM_TYPE_TABLET))
+	    IS_ENABLED(CONFIG_SYSTEM_TYPE_LAPTOP))
 		fadt->preferred_pm_profile = PM_MOBILE;
+	else if (IS_ENABLED(CONFIG_SYSTEM_TYPE_DETACHABLE) ||
+		 IS_ENABLED(CONFIG_SYSTEM_TYPE_TABLET))
+		fadt->preferred_pm_profile = PM_TABLET;
 	else
 		fadt->preferred_pm_profile = PM_DESKTOP;
 

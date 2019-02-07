@@ -16,4 +16,7 @@ TODO: add them
 
 ## Talks
 
-TODO: link to recorded talks
+[Open Source Firmware at Facebook](https://fosdem.org/2019/schedule/event/open_source_firmware_at_facebook/)  by [David Hendricks](https://github.com/dhendrix) and [Andrea Barberio](https://github.com/insomniacslk) at [FOSDEM 2019](https://fosdem.org/2019/) ([video](https://video.fosdem.org/2019/K.4.401/open_source_firmware_at_facebook.mp4)) ([slides](https://insomniac.slackware.it/static/2019_fosdem_linuxboot_at_facebook.pdf)) (2019-02-03)
+
+[Open Source Firmware - A love story](https://www.youtube.com/watch?v=xfqKm190dbU) by [Philipp Deppenwiese](https://cybersecurity.9elements.com) at [35c3](https://events.ccc.de/congress/2018)
+([slides](https://cdn.media.ccc.de/congress/2018/slides-h264-hd/35c3-9778-deu-eng-Open_Source_Firmware_hd-slides.mp4)) (2018-12-27)

@@ -57,6 +57,11 @@ chip soc/intel/cannonlake
 	register "speed_shift_enable" = "1"
 	# Enable S0ix
 	register "s0ix_enable" = "1"
+	# Enable DPTF
+	register "dptf_enable" = "1"
+	register "tdp_pl1_override" = "15"
+	register "tdp_pl2_override" = "44"
+	register "Device4Enable" = "1"
 
 	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC2)"	# Type-C Port 0
 	register "usb2_ports[1]" = "USB2_PORT_TYPE_C(OC2)"	# Type-C Port 1

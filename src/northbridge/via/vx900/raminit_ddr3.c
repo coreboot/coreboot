@@ -485,9 +485,9 @@ static void vx900_dram_driving_ctrl(const dimm_info * dimm)
 
 	/* Enable strong CLK driving for DIMMs with more than one rank */
 	if (dimm->dimm[0].ranks > 1)
-		pci_mod_config8(MCU, 0xd6, 0, (1 << 7));
+		pci_or_config8(MCU, 0xd6, (1 << 7));
 	if (dimm->dimm[1].ranks > 1)
-		pci_mod_config8(MCU, 0xd6, 0, (1 << 6));
+		pci_or_config8(MCU, 0xd6, (1 << 6));
 
 	/* DRAM ODT Lookup Table */
 	for (i = 0;; i++) {
@@ -528,7 +528,7 @@ static void vx900_map_pr_vr(u8 pr, u8 vr)
 	val = 0x8 | vr;
 	/* Now move the value to the appropriate PR */
 	val <<= (pr * 4);
-	pci_mod_config16(MCU, 0x54, 0xf << (pr * 4), val);
+	pci_update_config16(MCU, 0x54, ~(0xf << (pr * 4)), val);
 	printram("Mapping PR %u to VR %u\n", pr, vr);
 }
 
@@ -629,7 +629,7 @@ static void vx900_dram_timing(ramctr_timing * ctrl)
 	val = DIV_ROUND_UP(ctrl->tWTR, ctrl->tCK);
 	printram("Selected tWTR          : %uT\n", val);
 	reg8 |= ((val - 2) & 0x7);
-	pci_mod_config8(MCU, 0xc4, 0x3f, reg8);
+	pci_update_config8(MCU, 0xc4, ~0x3f, reg8);
 
 	/* DRAM Timing for All Ranks - VI
 	 * [7:6] CKE Assertion Minimum Pulse Width
@@ -662,7 +662,7 @@ static void vx900_dram_freq(ramctr_timing * ctrl)
 	u8 val;
 
 	/* Step 1 - Reset the PLL */
-	pci_mod_config8(MCU, 0x90, 0x00, 0x0f);
+	pci_or_config8(MCU, 0x90, 0x0f);
 	/* Wait at least 10 ns; VIA code delays by 640us */
 	udelay(640);
 
@@ -681,30 +681,30 @@ static void vx900_dram_freq(ramctr_timing * ctrl)
 		ctrl->tCK = TCK_266MHZ;
 	}
 	/* Restart the PLL with the desired frequency */
-	pci_mod_config8(MCU, 0x90, 0x0f, val);
+	pci_update_config8(MCU, 0x90, ~0x0f, val);
 
 	/* Step 3 - Wait for PLL to stabilize */
 	udelay(2000);
 
 	/* Step 4 - Reset the DLL - Clear [7,4] */
-	pci_mod_config8(MCU, 0x6b, 0x90, 0x00);
+	pci_update_config8(MCU, 0x6b, (u8)~0x90, 0x00);
 	udelay(2000);
 
 	/* Step 5 - Enable the DLL - Set bits [7,4] to 01b */
-	pci_mod_config8(MCU, 0x6b, 0x00, 0x10);
+	pci_or_config8(MCU, 0x6b, 0x10);
 	udelay(2000);
 
 	/* Step 6 - Start DLL Calibration - Set bit [7] */
-	pci_mod_config8(MCU, 0x6b, 0x00, 0x80);
+	pci_or_config8(MCU, 0x6b, 0x80);
 	udelay(5);
 
 	/* Step 7 - Finish DLL Calibration - Clear bit [7] */
-	pci_mod_config8(MCU, 0x6b, 0x80, 0x00);
+	pci_update_config8(MCU, 0x6b, (u8)~0x80, 0x00);
 
 	/* Step 8 - If we have registered DIMMs, we need to set bit[0] */
 	if (spd_dimm_is_registered_ddr3(ctrl->dimm_type)) {
 		printram("Enabling RDIMM support in memory controller\n");
-		pci_mod_config8(MCU, 0x6c, 0x00, 0x01);
+		pci_or_config8(MCU, 0x6c, 0x01);
 	}
 }
 
@@ -803,7 +803,7 @@ static void vx900_dram_ddr3_do_sw_mrs(u8 ma_swap, enum ddr3_mr1_rtt_nom rtt_nom,
 	/*    Was already done for us before calling us */
 
 	/* Step 08 - Set Fun3_RX6B[2:0] to 011b (MSR Enable). */
-	pci_mod_config8(MCU, 0x6b, 0x07, 0x03);	/* MSR Enable */
+	pci_update_config8(MCU, 0x6b, ~0x07, 0x03);	/* MSR Enable */
 
 	/* Step 09 - Issue MR2 cycle. Read a double word from the address
 	 * depended on DRAM's Rtt_WR and CWL settings. */
@@ -853,7 +853,7 @@ static void vx900_dram_ddr3_do_sw_mrs(u8 ma_swap, enum ddr3_mr1_rtt_nom rtt_nom,
 	udelay(1000);
 
 	/* Step 13 - Set Fun3_RX6B[2:0] to 110b (Long ZQ calibration cmd) */
-	pci_mod_config8(MCU, 0x6b, 0x07, 0x06);	/* Long ZQ */
+	pci_update_config8(MCU, 0x6b, ~0x07, 0x06);	/* Long ZQ */
 	/* Step 14 - Read a double word from any address of the DIMM. */
 	volatile_read(0);
 	udelay(1000);
@@ -873,9 +873,9 @@ static void vx900_dram_ddr3_dimm_init(const ramctr_timing * ctrl,
 	vx900_dram_set_ma_pin_map(VX900_MRS_MA_MAP);
 
 	/* Step 01 - Set Fun3_Rx6E[5] to 1b to support burst length. */
-	pci_mod_config8(MCU, 0x6e, 0, 1 << 5);
+	pci_or_config8(MCU, 0x6e, 1 << 5);
 	/* Step 02 - Set Fun3_RX69[0] to 0b (Disable Multiple Page Mode). */
-	pci_mod_config8(MCU, 0x69, (1 << 0), 0x00);
+	pci_update_config8(MCU, 0x69, ~(1 << 0), 0x00);
 	/* And set [7:6] to 10b ? */
 	pci_write_config8(MCU, 0x69, 0x87);
 
@@ -887,7 +887,7 @@ static void vx900_dram_ddr3_dimm_init(const ramctr_timing * ctrl,
 	pci_write_config8(MCU, 0x50, 0xd8);
 	/* Step 05 - Set Fun3_RX6B[5] to 1b to de-assert RESET# and wait for at
 	 * least 500 us. */
-	pci_mod_config8(MCU, 0x6b, 0x00, (1 << 5));
+	pci_or_config8(MCU, 0x6b, (1 << 5));
 	udelay(500);
 
 	/* Step 6 -> 15 - Set the target physical rank to virtual rank 0 and
@@ -903,9 +903,9 @@ static void vx900_dram_ddr3_dimm_init(const ramctr_timing * ctrl,
 		vx900_map_pr_vr(i, 0);
 
 		/* FIXME: Is this needed on HW init? */
-		pci_mod_config8(MCU, 0x6b, 0x07, 0x01);	/* Enable NOP */
+		pci_update_config8(MCU, 0x6b, ~0x07, 0x01);	/* Enable NOP */
 		volatile_read(0x0);	/* Do NOP */
-		pci_mod_config8(MCU, 0x6b, 0x07, 0x03);	/* MSR Enable */
+		pci_update_config8(MCU, 0x6b, ~0x07, 0x03);	/* MSR Enable */
 
 		/* See init_dram_by_rank.c and get_basic_information.c
 		 * in the VIA provided code */
@@ -934,20 +934,20 @@ static void vx900_dram_ddr3_dimm_init(const ramctr_timing * ctrl,
 						  0, 0);
 
 		/* Normal SDRAM Mode */
-		pci_mod_config8(MCU, 0x6b, 0x07, 0x00);
+		pci_update_config8(MCU, 0x6b, ~0x07, 0x00);
 
 		/* Step 15, set the rank to virtual rank 3 */
 		vx900_map_pr_vr(i, 3);
 	}
 
 	/* Step 16 - Set Fun3_Rx6B[2:0] to 000b (Normal SDRAM Mode). */
-	pci_mod_config8(MCU, 0x6b, 0x07, 0x00);
+	pci_update_config8(MCU, 0x6b, ~0x07, 0x00);
 
 	/* Set BA[0/1/2] to [A13/14/15] */
 	vx900_dram_set_ma_pin_map(VX900_CALIB_MA_MAP);
 
 	/* Step 17 - Set Fun3_Rx69[0] to 1b (Enable Multiple Page Mode). */
-	pci_mod_config8(MCU, 0x69, 0x00, (1 << 0));
+	pci_or_config8(MCU, 0x69, (1 << 0));
 
 	printram("DIMM initialization sequence complete\n");
 }
@@ -961,7 +961,7 @@ static void vx900_dram_send_soft_mrs(mrs_cmd_t cmd, u8 pin_swap)
 {
 	u32 addr;
 	/* Set Fun3_RX6B[2:0] to 011b (MSR Enable). */
-	pci_mod_config8(MCU, 0x6b, 0x07, (3 << 0));
+	pci_update_config8(MCU, 0x6b, ~0x07, (3 << 0));
 	/* Is this a funky rank with Address pins swapped? */
 	if (pin_swap)
 		cmd = ddr3_mrs_mirror_pins(cmd);
@@ -970,18 +970,18 @@ static void vx900_dram_send_soft_mrs(mrs_cmd_t cmd, u8 pin_swap)
 	/* Execute the MRS */
 	volatile_read(addr);
 	/* Set Fun3_Rx6B[2:0] to 000b (Normal SDRAM Mode). */
-	pci_mod_config8(MCU, 0x6b, 0x07, 0x00);
+	pci_update_config8(MCU, 0x6b, ~0x07, 0x00);
 }
 
 static void vx900_dram_enter_read_leveling(u8 pinswap)
 {
 	/* Precharge all before issuing read leveling MRS to DRAM */
-	pci_mod_config8(MCU, 0x06b, 0x07, 0x02);
+	pci_update_config8(MCU, 0x06b, ~0x07, 0x02);
 	volatile_read(0x0);
 	udelay(1000);
 
 	/* Enable read leveling: Set D0F3Rx71[7]=1 */
-	pci_mod_config8(MCU, 0x71, 0, (1 << 7));
+	pci_or_config8(MCU, 0x71, (1 << 7));
 
 	/* Put DRAM in read leveling mode */
 	mrs_cmd_t cmd = ddr3_get_mr3(1);
@@ -995,7 +995,7 @@ static void vx900_dram_exit_read_leveling(u8 pinswap)
 	vx900_dram_send_soft_mrs(cmd, pinswap);
 
 	/* Disable read leveling: Set D0F3Rx71[7]=0 */
-	pci_mod_config8(MCU, 0x71, (1 << 7), 0);
+	pci_update_config8(MCU, 0x71, (u8)~(1 << 7), 0);
 }
 
 /*
@@ -1096,7 +1096,7 @@ static void vx900_rx_capture_range_calib(u8 pinswap)
 	const u32 cal_addr = 0x20;
 
 	/* Set IO calibration address */
-	pci_mod_config16(MCU, 0x8c, 0xfff0, cal_addr & (0xfff0));
+	pci_update_config16(MCU, 0x8c, (u16)~0xfff0, cal_addr & (0xfff0));
 	/* Data pattern must be 0x00 for this calibration
 	 * See paragraph describing Rx8e */
 	pci_write_config8(MCU, 0x8e, 0x00);
@@ -1128,7 +1128,7 @@ static void vx900_rx_dqs_delay_calib(u8 pinswap)
 	const u8 ref_cnt = pci_read_config8(MCU, 0xc7);
 	pci_write_config8(MCU, 0xc7, 0);
 	/* Set IO calibration address */
-	pci_mod_config16(MCU, 0x8c, 0xfff0, cal_addr & (0xfff0));
+	pci_update_config16(MCU, 0x8c, (u16)~0xfff0, cal_addr & (0xfff0));
 	/* Data pattern must be 0x00 for this calibration
 	 * See paragraph describing Rx8e */
 	pci_write_config8(MCU, 0x8e, 0x00);
@@ -1138,10 +1138,10 @@ static void vx900_rx_dqs_delay_calib(u8 pinswap)
 
 	/* From VIA code; Undocumented
 	 * In theory this enables MODT[3:0] to be asserted */
-	pci_mod_config8(MCU, 0x9e, 0, 0x80);
+	pci_or_config8(MCU, 0x9e, 0x80);
 
 	/* Trigger calibration: Set D0F3Rx71[1:0]=10b */
-	pci_mod_config8(MCU, 0x71, 0x03, 0x02);
+	pci_update_config8(MCU, 0x71, ~0x03, 0x02);
 
 	/* Wait for calibration to complete */
 	while (pci_read_config8(MCU, 0x71) & 0x02);
@@ -1159,7 +1159,7 @@ static void vx900_tx_dqs_trigger_calib(u8 pattern)
 	/* Data pattern for calibration */
 	pci_write_config8(MCU, 0x8e, pattern);
 	/* Trigger calibration */
-	pci_mod_config8(MCU, 0x75, 0, 0x20);
+	pci_or_config8(MCU, 0x75, 0x20);
 	/* Wait for calibration */
 	while (pci_read_config8(MCU, 0x75) & 0x20);
 }
@@ -1171,9 +1171,9 @@ static void vx900_tx_dqs_delay_calib(void)
 {
 	const u32 cal_addr = 0x00;
 	/* Set IO calibration address */
-	pci_mod_config16(MCU, 0x8c, 0xfff0, cal_addr & (0xfff0));
+	pci_update_config16(MCU, 0x8c, (u16)~0xfff0, cal_addr & (0xfff0));
 	/* Set circuit to use calibration results - Clear Rx75[0] */
-	pci_mod_config8(MCU, 0x75, 0x01, 0);
+	pci_update_config8(MCU, 0x75, ~0x01, 0);
 	/* Run calibration with first data pattern */
 	vx900_tx_dqs_trigger_calib(0x5a);
 	/* Run again with different pattern */
@@ -1188,7 +1188,7 @@ static void vx900_tx_dq_delay_calib(void)
 	/* Data pattern for calibration */
 	pci_write_config8(MCU, 0x8e, 0x5a);
 	/* Trigger calibration */
-	pci_mod_config8(MCU, 0x75, 0, 0x02);
+	pci_or_config8(MCU, 0x75, 0x02);
 	/* Wait for calibration */
 	while (pci_read_config8(MCU, 0x75) & 0x02);
 }
@@ -1217,7 +1217,7 @@ static void vx900_rxdqs_adjust(delay_range * dly)
 	}
 
 	/* Put Rx DQS delay into manual mode (Set Rx[2,0] to 01) */
-	pci_mod_config8(MCU, 0x71, 0x05, 0x01);
+	pci_update_config8(MCU, 0x71, ~0x05, 0x01);
 	/* Now write the new settings */
 	vx900_delay_calib_mode_select(CALIB_RxDQS, CALIB_MANUAL);
 	vx900_write_0x78_0x7f(dly->avg);
@@ -1261,7 +1261,7 @@ static void vx900_dram_calibrate_receive_delays(vx900_delay_calib * delays,
 			dump_delay(rx_dq_cr->avg);
 		}
 		/* We need to put the setting on manual mode */
-		pci_mod_config8(MCU, 0x71, 0, 1 << 4);
+		pci_or_config8(MCU, 0x71, 1 << 4);
 		vx900_delay_calib_mode_select(CALIB_RxDQ_CR, CALIB_MANUAL);
 		vx900_write_0x78_0x7f(rx_dq_cr->avg);
 
@@ -1276,7 +1276,7 @@ static void vx900_dram_calibrate_receive_delays(vx900_delay_calib * delays,
 
 		/* We're good to go. Switch to manual and write the manual
 		 * setting */
-		pci_mod_config8(MCU, 0x71, 0, 1 << 0);
+		pci_or_config8(MCU, 0x71, 1 << 0);
 		vx900_delay_calib_mode_select(CALIB_RxDQS, CALIB_MANUAL);
 		vx900_write_0x78_0x7f(rx_dqs->avg);
 		break;
@@ -1316,7 +1316,7 @@ static void vx900_dram_calibrate_transmit_delays(delay_range * tx_dq,
 		/************* TxDQ  *************/
 		/* FIXME: not sure if multiple page mode should be enabled here
 		 * Vendor BIOS does it */
-		pci_mod_config8(MCU, 0x69, 0, 0x01);
+		pci_or_config8(MCU, 0x69, 0x01);
 
 		dq_tries++;
 		vx900_tx_dq_delay_calib();
@@ -1375,10 +1375,10 @@ static void vx900_dram_calibrate_delays(const ramctr_timing * ctrl,
 	else
 		val = 0;
 	val++;			/* FIXME: vendor BIOS sets this to 3 */
-	pci_mod_config8(MCU, 0x74, (0x03 << 1), ((val & 0x03) << 1));
+	pci_update_config8(MCU, 0x74, ~(0x03 << 1), ((val & 0x03) << 1));
 
 	/* FIXME: The vendor BIOS increases the MD input delay - WHY ? */
-	pci_mod_config8(MCU, 0xef, (3 << 4), 3 << 4);
+	pci_update_config8(MCU, 0xef, ~(3 << 4), 3 << 4);
 
 	/**** Write delay control ****/
 	/* FIXME: The vendor BIOS does this, but WHY?
@@ -1386,14 +1386,14 @@ static void vx900_dram_calibrate_delays(const ramctr_timing * ctrl,
 	 * to depend on the DRAM frequency.
 	 */
 	/* Early DQ/DQS for write cycles */
-	pci_mod_config8(MCU, 0x76, (3 << 2), 2 << 2);
+	pci_update_config8(MCU, 0x76, ~(3 << 2), 2 << 2);
 	/* FIXME: The vendor BIOS does this - Output preamble ? */
 	pci_write_config8(MCU, 0x77, 0x10);
 
 	/* Set BA[0/1/2] to [A17/18/19] */
 	vx900_dram_set_ma_pin_map(VX900_MRS_MA_MAP);
 	/* Disable Multiple Page Mode - Set Rx69[0] to 0 */
-	pci_mod_config8(MCU, 0x69, (1 << 0), 0x00);
+	pci_update_config8(MCU, 0x69, ~(1 << 0), 0x00);
 
 	/* It's very important that we keep all ranks which are not calibrated
 	 * mapped to VR3. Even if we disable them, if they are mapped to VR0
@@ -1422,7 +1422,7 @@ static void vx900_dram_calibrate_delays(const ramctr_timing * ctrl,
 	dump_delay_range(delay_cal.rx_dqs);
 
 	/* Enable multiple page mode for when calibrating transmit delays */
-	pci_mod_config8(MCU, 0x69, 0, 1 << 1);
+	pci_or_config8(MCU, 0x69, 1 << 1);
 
 	/*
 	 * Unlike the receive delays, we need to run the transmit calibration
@@ -1464,7 +1464,7 @@ static void vx900_dram_calibrate_delays(const ramctr_timing * ctrl,
 		dump_delay(delay_cal.tx_dq[0].avg);
 	}
 	/* Write manual settings */
-	pci_mod_config8(MCU, 0x75, 0, 0x01);
+	pci_or_config8(MCU, 0x75, 0x01);
 	vx900_delay_calib_mode_select(CALIB_TxDQS, CALIB_MANUAL);
 	vx900_write_0x78_0x7f(delay_cal.tx_dqs[0].avg);
 	vx900_delay_calib_mode_select(CALIB_TxDQ, CALIB_MANUAL);
@@ -1538,7 +1538,7 @@ static void vx900_dram_range(ramctr_timing * ctrl, rank_layout * ranks)
 	 * all devices and know pci_tolm. */
 	tolm_mb = MIN(ramsize_mb, TOLM_3_5G >> 20);
 	u16 reg_tolm = (tolm_mb << 4) & 0xfff0;
-	pci_mod_config16(MCU, 0x84, 0xfff0, reg_tolm);
+	pci_update_config16(MCU, 0x84, (u16)~0xfff0, reg_tolm);
 
 	printram("Initialized %u virtual ranks, with a total size of %u MB\n",
 		 (int)vrank, ramsize_mb);
@@ -1609,10 +1609,10 @@ static void vx900_dram_write_final_config(ramctr_timing * ctrl)
 
 	/* FIXME: Why are we doing this? */
 	/* Tri-state  MCSi# when rank is in self-refresh */
-	pci_mod_config8(MCU, 0x99, 0, 0x0f);
+	pci_or_config8(MCU, 0x99, 0x0f);
 
 	/* Enable paging mode and 8 page registers */
-	pci_mod_config8(MCU, 0x69, 0, 0xe5);
+	pci_or_config8(MCU, 0x69, 0xe5);
 
 	/* Enable automatic triggering of short ZQ calibration */
 	pci_write_config8(MCU, 0xc8, 0x80);

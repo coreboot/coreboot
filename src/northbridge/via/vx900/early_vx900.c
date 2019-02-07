@@ -109,7 +109,7 @@ void vx900_disable_legacy_rom_shadow(void)
 	pci_write_config8(MCU, 0x83, 0x31);
 
 	/* Bits 6:0 are the ROM shadow on top of 4G, so leave those untouched */
-	pci_mod_config8(LPC, 0x41, 1 << 7, 0);	/* LPC ROM 896k - 960k */
+	pci_update_config8(LPC, 0x41, (u8)~(1 << 7), 0);	/* LPC ROM 896k - 960k */
 
 	pci_write_config8(SNMIC, 0x61, 0);	/* 768k - 832k */
 	pci_write_config8(SNMIC, 0x62, 0);	/* 832k - 896k */
@@ -126,5 +126,5 @@ void vx900_disable_legacy_rom_shadow(void)
 void vx900_disable_gfx(void)
 {
 	/* Disable GFX */
-	pci_mod_config8(MCU, 0xa1, 1 << 7, 0);
+	pci_update_config8(MCU, 0xa1, (u8)~(1 << 7), 0);
 }

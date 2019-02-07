@@ -151,7 +151,7 @@ static void chrome9hd_handle_uma(struct device *dev)
 	pci_write_config8(dev, 0xb2, ((0xff << (fb_pow - 2)) & ~(1 << 7)));
 	vga_sr_write(0x68, (0xff << (fb_pow - 1)));
 	/* And also that the framebuffer is in the system, RAM */
-	pci_mod_config8(dev, 0xb0, 0, 1 << 0);
+	pci_or_config8(dev, 0xb0, 1 << 0);
 }
 
 /**
@@ -175,13 +175,13 @@ static void chrome9hd_biosguide_init_seq(struct device *dev)
 	/* Step 1 - Enable VGA controller */
 	/* FIXME: This is the VGA hole @ 640k-768k, and the vga port io
 	 * We need the port IO, but can we disable the memory hole? */
-	pci_mod_config8(mcu, 0xa4, 0, (1 << 7));	/* VGA memory hole */
+	pci_or_config8(mcu, 0xa4, (1 << 7));	/* VGA memory hole */
 
 	/* Step 2 - Forward MDA cycles to GFX */
-	pci_mod_config8(host, 0x4e, 0, (1 << 1));
+	pci_or_config8(host, 0x4e, (1 << 1));
 
 	/* Step 3 - Enable GFX I/O space */
-	pci_mod_config8(dev, PCI_COMMAND, 0, PCI_COMMAND_IO);
+	pci_or_config8(dev, PCI_COMMAND, PCI_COMMAND_IO);
 
 	/* Step 4 - Enable video subsystem */
 	vga_enable_mask((1 << 0), (1 << 0));
@@ -248,7 +248,7 @@ static void chrome9hd_enable(struct device *dev)
 	struct device *mcu = dev_find_device(PCI_VENDOR_ID_VIA,
 					    PCI_DEVICE_ID_VIA_VX900_MEMCTRL, 0);
 	/* FIXME: here? -=- ACLK 250MHz */
-	pci_mod_config8(mcu, 0xbb, 0, 0x01);
+	pci_or_config8(mcu, 0xbb, 0x01);
 }
 
 static void chrome9hd_disable(struct device *dev)
@@ -257,7 +257,7 @@ static void chrome9hd_disable(struct device *dev)
 					    PCI_DEVICE_ID_VIA_VX900_MEMCTRL, 0);
 	/* Disable GFX - This step effectively renders the GFX inert
 	 * It won't even show up as a PCI device during enumeration */
-	pci_mod_config8(mcu, 0xa1, 1 << 7, 0);
+	pci_update_config8(mcu, 0xa1, (u8)~(1 << 7), 0);
 }
 
 static struct device_operations chrome9hd_operations = {

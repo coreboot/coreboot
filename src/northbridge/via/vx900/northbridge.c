@@ -129,7 +129,7 @@ static u64 vx900_remap_above_4g(struct device *mcu, u32 tolm)
 
 	/* The "start remapping from where ?" register */
 	reg16 = ((tolm >> 20) & 0xfff) << 4;
-	pci_mod_config16(mcu, 0x84, 0xfff0, reg16);
+	pci_update_config16(mcu, 0x84, (u16)~0xfff0, reg16);
 
 	/* Find the chunk size */
 	tor = vx900_get_top_of_ram(mcu);

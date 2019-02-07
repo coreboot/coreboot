@@ -178,11 +178,11 @@ static void vx900_sata_dump_phy_config(sata_phy_config cfg)
 static void vx900_native_ide_mode(struct device *dev)
 {
 	/* Disable subclass write protect */
-	pci_mod_config8(dev, 0x45, 1 << 7, 0);
+	pci_update_config8(dev, 0x45, (u8)~(1 << 7), 0);
 	/* Change the device class to IDE */
 	pci_write_config16(dev, PCI_CLASS_DEVICE, PCI_CLASS_STORAGE_IDE);
 	/* Re-enable subclass write protect */
-	pci_mod_config8(dev, 0x45, 0, 1 << 7);
+	pci_or_config8(dev, 0x45, 1 << 7);
 	/* Put it in native IDE mode */
 	pci_write_config8(dev, PCI_CLASS_PROG, 0x8f);
 }
@@ -190,20 +190,20 @@ static void vx900_native_ide_mode(struct device *dev)
 static void vx900_sata_init(struct device *dev)
 {
 	/* Enable SATA primary channel IO access */
-	pci_mod_config8(dev, 0x40, 0, 1 << 1);
+	pci_or_config8(dev, 0x40, 1 << 1);
 	/* Just SATA, so it makes sense to be in native SATA mode */
 	vx900_native_ide_mode(dev);
 
 	/* TP Layer Idle at least 20us before the Following Command */
-	pci_mod_config8(dev, 0x53, 0, 1 << 7);
+	pci_or_config8(dev, 0x53, 1 << 7);
 	/* Resend COMRESET When Recovering SATA Gen2 Device Error */
-	pci_mod_config8(dev, 0x62, 1 << 1, 1 << 7);
+	pci_update_config8(dev, 0x62, ~(1 << 1), 1 << 7);
 
 	/* Fix "PMP Device Can't Detect HDD Normally" (VIA Porting Guide)
 	 * SATA device detection will not work unless we clear these bits.
 	 * Without doing this, SeaBIOS (and potentially other payloads) will
 	 * timeout when detecting SATA devices */
-	pci_mod_config8(dev, 0x89, (1 << 3) | (1 << 6), 0);
+	pci_update_config8(dev, 0x89, ~(1 << 3) | (1 << 6), 0);
 
 	/* 12.7 Two Software Resets May Affect the System
 	 * When the software does the second reset before the first reset
@@ -216,7 +216,7 @@ static void vx900_sata_init(struct device *dev)
 	 * second one anymore. The BSY bit of slave port would be always 1 after
 	 * the second software reset issues. BIOS should set the following
 	 * bit to avoid this issue. */
-	pci_mod_config8(dev, 0x80, 0, 1 << 6);
+	pci_or_config8(dev, 0x80, 1 << 6);
 
 	/* We need to set the EPHY values before doing anything with the link */
 	sata_phy_config ephy;
@@ -243,7 +243,7 @@ static void vx900_sata_init(struct device *dev)
 	pci_write_config32(dev, 0xac, 0xffffffff);
 
 	/* Start OOB link negotiation sequence */
-	pci_mod_config8(dev, 0xb9, 0, 3 << 4);
+	pci_or_config8(dev, 0xb9, 3 << 4);
 
 	/* FIXME: From now on, we are just doing DEBUG stuff
 	 * Wait until PHY communication is enabled */

@@ -93,7 +93,7 @@ static void vx900_north_ioapic_setup(struct device *dev)
 	/* Second register of the base.
 	 * Bit[7] also enables the IOAPIC and bit[5] enables MSI cycles */
 	base_val = (((uintptr_t)config->base) >> 16) & 0xf;
-	pci_mod_config8(dev, 0x40, 0, base_val | (1 << 7) | (1 << 5));
+	pci_or_config8(dev, 0x40, base_val | (1 << 7) | (1 << 5));
 }
 
 /*

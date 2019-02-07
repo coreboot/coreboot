@@ -53,7 +53,7 @@ static void vx900_lpc_misc_stuff(struct device *dev)
 	struct northbridge_via_vx900_config *nb = (void *)dev->chip_info;
 
 	/* GPIO 11,10 to SATALED [1,0] */
-	pci_mod_config8(dev, 0xe4, 0, 1 << 0);
+	pci_or_config8(dev, 0xe4, 1 << 0);
 
 	/* Route the external interrupt line */
 	extint = nb->ext_int_route_to_pirq;
@@ -65,7 +65,7 @@ static void vx900_lpc_misc_stuff(struct device *dev)
 		       extint);
 		val = extint - 'A';
 		val |= (1 << 3);	/* bit3 enables the external int */
-		pci_mod_config8(dev, 0x55, 0xf, val);
+		pci_update_config8(dev, 0x55, ~0xf, val);
 
 	}
 }
@@ -78,11 +78,11 @@ static void vx900_lpc_dma_setup(struct device *dev)
 	/* FIXME: Setting this seems to hang our system */
 
 	/* Positive decoding for ROM + APIC + On-board IO ports */
-	pci_mod_config8(dev, 0x6c, 0, (1 << 2) | (1 << 3) | (1 << 7));
+	pci_or_config8(dev, 0x6c, (1 << 2) | (1 << 3) | (1 << 7));
 	/* Enable DMA channels. BIOS guide recommends DMA channel 2 off */
 	pci_write_config8(dev, 0x53, 0xfb);
 	/* Disable PCI/DMA Memory Cycles Output to PCI Bus */
-	pci_mod_config8(dev, 0x5b, (1 << 5), 0);
+	pci_update_config8(dev, 0x5b, ~(1 << 5), 0);
 	/* DMA bandwidth control - Improved bandwidth */
 	pci_write_config8(dev, 0x53, 0xff);
 	/* ISA Positive Decoding control */
@@ -147,20 +147,20 @@ static void vx900_lpc_ioapic_setup(struct device *dev)
 	 * So much work for one line of code. Talk about bloat :)
 	 * The 8259 PIC should still work even if the IOAPIC is enabled, so
 	 * there's no crime in enabling the IOAPIC here. */
-	pci_mod_config8(dev, 0x58, 0, 1 << 6);
+	pci_or_config8(dev, 0x58, 1 << 6);
 }
 
 static void vx900_lpc_interrupt_stuff(struct device *dev)
 {
 	/* Enable setting trigger mode through 0x4d0, and 0x4d1 ports
 	 * And enable I/O recovery time */
-	pci_mod_config8(dev, 0x40, 0, (1 << 2) | (1 << 6));
+	pci_or_config8(dev, 0x40, (1 << 2) | (1 << 6));
 	/* Set serial IRQ frame width to 6 PCI cycles (recommended by VIA)
 	 * And enable serial IRQ */
-	pci_mod_config8(dev, 0x52, 3 << 0, (1 << 3) | (1 << 0));
+	pci_update_config8(dev, 0x52, ~(3 << 0), (1 << 3) | (1 << 0));
 
 	/* Disable IRQ12 storm FIXME: bad comment */
-	pci_mod_config8(dev, 0x51, (1 << 2), 0);
+	pci_update_config8(dev, 0x51, ~(1 << 2), 0);
 
 	pci_write_config8(dev, 0x4c, (1 << 6));
 
@@ -253,12 +253,12 @@ void pirq_assign_irqs(const u8 *pirq)
 			      PCI_DEVICE_ID_VIA_VX900_LPC, 0);
 
 	/* Take care of INTA -> INTD */
-	pci_mod_config8(lpc, 0x55, (0xf << 4), pirq[0] << 4);
+	pci_update_config8(lpc, 0x55, (u8)~(0xf << 4), pirq[0] << 4);
 	pci_write_config8(lpc, 0x56, pirq[1] | (pirq[2] << 4));
 	pci_write_config8(lpc, 0x57, pirq[3] << 4);
 
 	/* Enable INTE -> INTH to be on separate IRQs */
-	pci_mod_config8(lpc, 0x46, 0, 1 << 4);
+	pci_or_config8(lpc, 0x46, 1 << 4);
 	/* Now do INTE -> INTH */
 	pci_write_config8(lpc, 0x44, pirq[4] | (pirq[5] << 4));
 	pci_write_config8(lpc, 0x45, pirq[6] | (pirq[7] << 4));

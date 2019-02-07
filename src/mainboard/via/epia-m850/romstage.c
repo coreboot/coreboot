@@ -95,5 +95,5 @@ void main(unsigned long bist)
 
 	/* FIXME: See if this is needed or take this out please */
 	/* Disable Memcard and SDIO */
-	pci_mod_config8(LPC, 0x51, 0, (1 << 7) | (1 << 4));
+	pci_or_config8(LPC, 0x51, (1 << 7) | (1 << 4));
 }

@@ -44,7 +44,7 @@ void run_payload(struct prog *prog, void *fdt, int payload_mode)
 	write_csr(mepc, doit);
 	asm volatile(
 		"mv a0, %0\n\t"
-		"mv a1, %0\n\t"
+		"mv a1, %1\n\t"
 		"mret" ::"r"(hart_id),
 		"r"(fdt)
 		: "a0", "a1");

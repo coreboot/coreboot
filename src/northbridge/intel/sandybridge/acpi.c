@@ -71,7 +71,7 @@ static unsigned long acpi_create_igfx_rmrr(const unsigned long current)
 {
 	const u32 base_mask = ~(u32)(MiB - 1);
 
-	struct device *const host = dev_find_slot(0, PCI_DEVFN(0, 0));
+	struct device *const host = pcidev_on_root(0, 0);
 	if (!host)
 		return 0;
 

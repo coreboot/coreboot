@@ -216,11 +216,6 @@ static __always_inline void write64(volatile void *addr,
 
 #define PNP_DEV(PORT, FUNC) (((PORT) << 8) | (FUNC))
 
-/* FIXME: We need to make the coreboot to run at 64bit mode, So when read/write
- * memory above 4G, We don't need to set %fs, and %gs anymore
- * Before that We need to use %gs, and leave %fs to other RAM access
- */
-
 #include <arch/pci_io_cfg.h>
 #include <arch/pci_mmio_cfg.h>
 

@@ -304,7 +304,7 @@ no_msr_11e:
 	/* Cache the whole rom to fetch microcode updates */
 	movl	$MTRR_PHYS_BASE(1), %ecx
 	xorl	%edx, %edx
-	movl	$CACHE_ROM_BASE | MTRR_TYPE_WRPROT, %eax
+	movl	$(CACHE_ROM_BASE | MTRR_TYPE_WRPROT), %eax
 	wrmsr
 
 	movl	$MTRR_PHYS_MASK(1), %ecx

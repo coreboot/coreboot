@@ -19,6 +19,7 @@
 
 #include <arch/io.h>
 #include <console/console.h>
+#include <device/pci.h>
 #include "smbus.h"
 #include "mcp55.h"
 

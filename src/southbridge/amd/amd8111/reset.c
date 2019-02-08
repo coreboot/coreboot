@@ -16,6 +16,7 @@
 
 #include <arch/io.h>
 #include <reset.h>
+#include <device/pci.h>
 #include <device/pci_ids.h>
 
 

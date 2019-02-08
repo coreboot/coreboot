@@ -205,10 +205,6 @@ static __always_inline void write64(volatile void *addr,
 
 #ifdef __SIMPLE_DEVICE__
 
-#define PCI_ID(VENDOR_ID, DEVICE_ID) \
-	((((DEVICE_ID) & 0xFFFF) << 16) | ((VENDOR_ID) & 0xFFFF))
-
-
 #define PNP_DEV(PORT, FUNC) (((PORT) << 8) | (FUNC))
 
 #include <arch/pci_io_cfg.h>
@@ -266,47 +262,6 @@ void pci_write_config32(pci_devfn_t dev, unsigned int where, uint32_t value)
 		pci_mmio_write_config32(dev, where, value);
 	else
 		pci_io_write_config32(dev, where, value);
-}
-
-static inline pci_devfn_t pci_io_locate_device(unsigned int pci_id,
-	pci_devfn_t dev)
-{
-	for (; dev <= PCI_DEV(255, 31, 7); dev += PCI_DEV(0, 0, 1)) {
-		unsigned int id;
-		id = pci_io_read_config32(dev, 0);
-		if (id == pci_id)
-			return dev;
-	}
-	return PCI_DEV_INVALID;
-}
-
-static inline pci_devfn_t pci_locate_device(unsigned int pci_id,
-	pci_devfn_t dev)
-{
-	for (; dev <= PCI_DEV(255, 31, 7); dev += PCI_DEV(0, 0, 1)) {
-		unsigned int id;
-		id = pci_read_config32(dev, 0);
-		if (id == pci_id)
-			return dev;
-	}
-	return PCI_DEV_INVALID;
-}
-
-static inline pci_devfn_t pci_locate_device_on_bus(unsigned int pci_id,
-	unsigned int bus)
-{
-	pci_devfn_t dev, last;
-
-	dev = PCI_DEV(bus, 0, 0);
-	last = PCI_DEV(bus, 31, 7);
-
-	for (; dev <= last; dev += PCI_DEV(0, 0, 1)) {
-		unsigned int id;
-		id = pci_read_config32(dev, 0);
-		if (id == pci_id)
-			return dev;
-	}
-	return PCI_DEV_INVALID;
 }
 
 /* Generic functions for pnp devices */

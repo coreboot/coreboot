@@ -133,6 +133,12 @@ static inline const struct pci_operations *ops_pci(struct device *dev)
 	return pops;
 }
 
+#define PCI_ID(VENDOR_ID, DEVICE_ID) \
+	((((DEVICE_ID) & 0xFFFF) << 16) | ((VENDOR_ID) & 0xFFFF))
+
+pci_devfn_t pci_locate_device(unsigned int pci_id, pci_devfn_t dev);
+pci_devfn_t pci_locate_device_on_bus(unsigned int pci_id, unsigned int bus);
+
 #ifdef __SIMPLE_DEVICE__
 unsigned int pci_find_next_capability(pci_devfn_t dev, unsigned int cap,
 	unsigned int last);

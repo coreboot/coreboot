@@ -17,6 +17,21 @@
 #include <stdint.h>
 #include <arch/io.h>
 #include <device/pci_ids.h>
+#include <device/pci_type.h>
+
+#define PCI_ID(VENDOR_ID, DEVICE_ID) \
+	((((DEVICE_ID) & 0xFFFF) << 16) | ((VENDOR_ID) & 0xFFFF))
+
+static pci_devfn_t pci_io_locate_device(unsigned int pci_id, pci_devfn_t dev)
+{
+	for (; dev <= PCI_DEV(255, 31, 7); dev += PCI_DEV(0, 0, 1)) {
+		unsigned int id;
+		id = pci_io_read_config32(dev, 0);
+		if (id == pci_id)
+			return dev;
+	}
+	return PCI_DEV_INVALID;
+}
 
 /* Enable 5MB ROM access at 0xFFB00000 - 0xFFFFFFFF. */
 static void amd8111_enable_rom(void)

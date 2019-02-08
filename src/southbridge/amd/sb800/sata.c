@@ -87,7 +87,6 @@ static void sata_init(struct device *dev)
 
 	struct device *sm_dev;
 	/* SATA SMBus Disable */
-	/* sm_dev = pci_locate_device(PCI_ID(0x1002, 0x4385), 0); */
 	sm_dev = pcidev_on_root(0x14, 0);
 
 	/* get rev_id */

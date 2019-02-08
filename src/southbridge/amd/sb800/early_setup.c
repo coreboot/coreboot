@@ -78,7 +78,7 @@ static u8 get_sb800_revision(void)
 
 	/* if (rev != 0) return rev; */
 
-	dev = PCI_DEV(0, 0x14, 0);//pci_locate_device(PCI_ID(0x1002, 0x4385), 0);
+	dev = PCI_DEV(0, 0x14, 0);
 
 	if (dev == PCI_DEV_INVALID) {
 		die("SMBUS controller not found\n");
@@ -124,8 +124,7 @@ static void sb800_lpc_init(void)
 	u8 reg8;
 	pci_devfn_t dev;
 
-	//dev = pci_locate_device(PCI_ID(0x1002, 0x4385), 0);	/* SMBUS controller */
-	dev = PCI_DEV(0, 0x14, 0);
+	dev = PCI_DEV(0, 0x14, 0); /* SMBUS controller */
 	/* NOTE: Set BootTimerDisable, otherwise it would keep rebooting!!
 	 * This bit has no meaning if debug strap is not enabled. So if the
 	 * board keeps rebooting and the code fails to reach here, we could
@@ -139,7 +138,7 @@ static void sb800_lpc_init(void)
 	reg8 |= 1 << 0;
 	pmio_write(0xEC, reg8);
 
-	dev = PCI_DEV(0, 0x14, 3);//pci_locate_device(PCI_ID(0x1002, 0x439d), 0);	/* LPC Controller */
+	dev = PCI_DEV(0, 0x14, 3); /* LPC Controller */
 	/* Decode port 0x3f8-0x3ff (Serial 0) */
 	//#warning Serial port decode on LPC is hardcoded to 0x3f8
 	reg8 = pci_read_config8(dev, 0x44);
@@ -168,7 +167,7 @@ u32 get_sbdn(u32 bus)
 	pci_devfn_t dev;
 
 	/* Find the device. */
-	dev = PCI_DEV(bus, 0x14, 0);//pci_locate_device_on_bus(PCI_ID(0x1002, 0x4385), bus);
+	dev = PCI_DEV(bus, 0x14, 0);
 	return (dev >> 15) & 0x1f;
 }
 
@@ -240,7 +239,7 @@ void sb800_pci_port80(void)
 	pci_devfn_t dev;
 
 	/* P2P Bridge */
-	dev = PCI_DEV(0, 0x14, 4);//pci_locate_device(PCI_ID(0x1002, 0x4384), 0);
+	dev = PCI_DEV(0, 0x14, 4);
 
 	/* Chip Control: Enable subtractive decoding */
 	byte = pci_read_config8(dev, 0x40);
@@ -272,7 +271,7 @@ void sb800_pci_port80(void)
 	pci_write_config8(dev, 0x04, byte);
 
 	/* LPC controller */
-	dev = PCI_DEV(0, 0x14, 3);//pci_locate_device(PCI_ID(0x1002, 0x439D), 0);
+	dev = PCI_DEV(0, 0x14, 3);
 
 	byte = pci_read_config8(dev, 0x4A);
 	byte &= ~(1 << 5);	/* disable lpc port 80 */
@@ -351,7 +350,7 @@ void sb800_lpc_port80(void)
 	pmio_write(0xEC, byte);
 
 	/* Enable port 80 LPC decode in pci function 3 configuration space. */
-	dev = PCI_DEV(0, 0x14, 3);//pci_locate_device(PCI_ID(0x1002, 0x439D), 0);
+	dev = PCI_DEV(0, 0x14, 3);
 	byte = pci_read_config8(dev, 0x4a);
 	byte |= 1 << 5;		/* enable port 80 */
 	pci_write_config8(dev, 0x4a, byte);
@@ -366,7 +365,7 @@ static void sb800_devices_por_init(void)
 	printk(BIOS_INFO, "sb800_devices_por_init()\n");
 	/* SMBus Device, BDF:0-20-0 */
 	printk(BIOS_INFO, "sb800_devices_por_init(): SMBus Device, BDF:0-20-0\n");
-	dev = PCI_DEV(0, 0x14, 0);//pci_locate_device(PCI_ID(0x1002, 0x4385), 0);
+	dev = PCI_DEV(0, 0x14, 0);
 
 	if (dev == PCI_DEV_INVALID) {
 		die("SMBUS controller not found\n");
@@ -434,7 +433,7 @@ static void sb800_devices_por_init(void)
 
 	/* IDE Device, BDF:0-20-1 */
 	printk(BIOS_INFO, "sb800_devices_por_init(): IDE Device, BDF:0-20-1\n");
-	dev = PCI_DEV(0, 0x14, 1);//pci_locate_device(PCI_ID(0x1002, 0x439C), 0);
+	dev = PCI_DEV(0, 0x14, 1);
 	/* Disable prefetch */
 	byte = pci_read_config8(dev, 0x63);
 	byte |= 0x1;
@@ -442,7 +441,7 @@ static void sb800_devices_por_init(void)
 
 	/* LPC Device, BDF:0-20-3 */
 	printk(BIOS_INFO, "sb800_devices_por_init(): LPC Device, BDF:0-20-3\n");
-	dev = PCI_DEV(0, 0x14, 3);//pci_locate_device(PCI_ID(0x1002, 0x439D), 0);
+	dev = PCI_DEV(0, 0x14, 3);
 	/* DMA enable */
 	pci_write_config8(dev, 0x40, 0x04);
 
@@ -461,7 +460,7 @@ static void sb800_devices_por_init(void)
 	/* P2P Bridge, BDF:0-20-4, the configuration of the registers in this dev are copied from CIM,
 	 */
 	printk(BIOS_INFO, "sb800_devices_por_init(): P2P Bridge, BDF:0-20-4\n");
-	dev = PCI_DEV(0, 0x14, 4);//pci_locate_device(PCI_ID(0x1002, 0x4384), 0);
+	dev = PCI_DEV(0, 0x14, 4);
 
 	/* Arbiter enable. */
 	pci_write_config8(dev, 0x43, 0xff);
@@ -478,7 +477,7 @@ static void sb800_devices_por_init(void)
 
 	/* SATA Device, BDF:0-17-0, Non-Raid-5 SATA controller */
 	printk(BIOS_INFO, "sb800_devices_por_init(): SATA Device, BDF:0-18-0\n");
-	dev = PCI_DEV(0, 0x11, 0);//pci_locate_device(PCI_ID(0x1002, 0x4390), 0);
+	dev = PCI_DEV(0, 0x11, 0);
 
 	/*PHY Global Control*/
 	pci_write_config16(dev, 0x86, 0x2C00);
@@ -546,7 +545,7 @@ static void sb800_pci_cfg(void)
 	u8 byte;
 
 	/* SMBus Device, BDF:0-20-0 */
-	dev = PCI_DEV(0, 0x14, 0);//pci_locate_device(PCI_ID(0x1002, 0x4385), 0);
+	dev = PCI_DEV(0, 0x14, 0);
 	/* Enable watchdog decode timer */
 	byte = pci_read_config8(dev, 0x41);
 	byte |= (1 << 3);
@@ -559,7 +558,7 @@ static void sb800_pci_cfg(void)
 	pmio_write(0xF0, byte);
 
 	/* IDE Device, BDF:0-20-1 */
-	dev = PCI_DEV(0, 0x14, 1);//pci_locate_device(PCI_ID(0x1002, 0x439C), 0);
+	dev = PCI_DEV(0, 0x14, 1);
 	/* Enable IDE Explicit prefetch, 0x63[0] clear */
 	byte = pci_read_config8(dev, 0x63);
 	byte &= 0xfe;
@@ -569,7 +568,7 @@ static void sb800_pci_cfg(void)
 	/* The code below is ported from old chipset. It is not
 	 * Mentioned in RPR. But I keep them. The registers and the
 	 * comments are compatible. */
-	dev = PCI_DEV(0, 0x14, 3);//pci_locate_device(PCI_ID(0x1002, 0x439D), 0);
+	dev = PCI_DEV(0, 0x14, 3);
 	/* Enabling LPC DMA function. */
 	byte = pci_read_config8(dev, 0x40);
 	byte |= (1 << 2);
@@ -584,7 +583,7 @@ static void sb800_pci_cfg(void)
 	pci_write_config8(dev, 0x78, byte);
 
 	/* SATA Device, BDF:0-17-0, Non-Raid-5 SATA controller */
-	dev = PCI_DEV(0, 0x11, 0);//pci_locate_device(PCI_ID(0x1002, 0x4390), 0);
+	dev = PCI_DEV(0, 0x11, 0);
 	/* rpr7.12 SATA MSI and D3 Power State Capability. */
 	byte = pci_read_config8(dev, 0x40);
 	byte |= 1 << 0;

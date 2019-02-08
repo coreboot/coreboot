@@ -92,7 +92,7 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 	fadt->day_alrm = 0xd;
 	fadt->mon_alrm = 0x00;
 	fadt->century = 0x32;
-	fadt->iapc_boot_arch = 0x00;
+	fadt->iapc_boot_arch = ACPI_FADT_LEGACY_FREE;
 	fadt->flags = ACPI_FADT_WBINVD | ACPI_FADT_C1_SUPPORTED |
 			ACPI_FADT_SLEEP_BUTTON | ACPI_FADT_S4_RTC_WAKE |
 			ACPI_FADT_DOCKING_SUPPORTED | ACPI_FADT_RESET_REGISTER |

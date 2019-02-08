@@ -18,6 +18,7 @@
 
 #include <string.h>
 #include <types.h>
+#include <arch/acpi.h>
 #include <arch/acpigen.h>
 #include <arch/io.h>
 #include <arch/smp/mpspec.h>
@@ -222,7 +223,7 @@ void acpi_fill_in_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
 	fadt->day_alrm       = 0x0D;
 	fadt->mon_alrm       = 0x00;
 	fadt->century        = 0x00;
-	fadt->iapc_boot_arch = 0;
+	fadt->iapc_boot_arch = ACPI_FADT_LEGACY_FREE;
 
 	fadt->flags = ACPI_FADT_WBINVD | ACPI_FADT_C1_SUPPORTED |
 			ACPI_FADT_C2_MP_SUPPORTED | ACPI_FADT_SLEEP_BUTTON |

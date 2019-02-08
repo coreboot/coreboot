@@ -82,7 +82,7 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 	fadt->day_alrm = 0x7d;
 	fadt->mon_alrm = 0x7e;
 	fadt->century = 0x32;
-	fadt->iapc_boot_arch = 0;
+	fadt->iapc_boot_arch = ACPI_FADT_LEGACY_FREE;
 	fadt->flags = 0xa5;
 
 #ifdef LONG_FADT

@@ -93,7 +93,7 @@ void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
 	fadt->mon_alrm = 0x7e;
 	fadt->century = 0x32;
 
-	fadt->iapc_boot_arch = 0x0;
+	fadt->iapc_boot_arch = ACPI_FADT_LEGACY_FREE;
 
 	fadt->flags = 0x4a5;
 	fadt->reset_reg.space_id = 0;

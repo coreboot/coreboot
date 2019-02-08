@@ -259,7 +259,7 @@ uint8_t pc_keyboard_init(uint8_t probe_aux)
 
 	/* Run a keyboard controller self-test */
 	err = kbc_self_test(probe_aux, &aux_dev_detected);
-	/* Ignore iterface failure as it's non-fatal.  */
+	/* Ignore interface failure as it's non-fatal.  */
 	if (err != CB_SUCCESS && err != CB_KBD_INTERFACE_FAILURE)
 		return 0;
 
@@ -370,7 +370,7 @@ void set_kbc_ps2_mode(void)
 
 	/* Run a keyboard controller self-test */
 	err = kbc_self_test(0, NULL);
-	/* Ignore iterface failure as it's non-fatal.  */
+	/* Ignore interface failure as it's non-fatal.  */
 	if (err != CB_SUCCESS && err != CB_KBD_INTERFACE_FAILURE)
 		return;
 

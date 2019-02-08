@@ -203,35 +203,6 @@ static __always_inline void write64(volatile void *addr,
 }
 #endif
 
-/* Conflicts with definition in lib.h */
-#if defined(__ROMCC__)
-static inline int log2(u32 value)
-{
-	unsigned int r = 0;
-	__asm__ volatile (
-		"bsrl %1, %0\n\t"
-		"jnz 1f\n\t"
-		"movl $-1, %0\n\t"
-		"1:\n\t"
-		: "=r" (r) : "r" (value));
-	return r;
-
-}
-
-static inline int __ffs(u32 value)
-{
-	unsigned int r = 0;
-	__asm__ volatile (
-		"bsfl %1, %0\n\t"
-		"jnz 1f\n\t"
-		"movl $-1, %0\n\t"
-		"1:\n\t"
-		: "=r" (r) : "r" (value));
-	return r;
-
-}
-#endif
-
 #ifdef __SIMPLE_DEVICE__
 
 #define PCI_DEV(SEGBUS, DEV, FN) ( \

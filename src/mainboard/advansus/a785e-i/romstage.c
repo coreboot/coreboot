@@ -15,9 +15,6 @@
 
 #define SYSTEM_TYPE 1	/* SERVER=0, DESKTOP=1, MOBILE=2 */
 
-#define FAM10_SCAN_PCI_BUS 0
-#define FAM10_ALLOCATE_IO_RANGE 0
-
 #include <stdint.h>
 #include <string.h>
 #include <device/pci_def.h>

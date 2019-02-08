@@ -15,10 +15,6 @@
 
 #define SYSTEM_TYPE 1	/* DESKTOP */
 
-/* used by incoherent_ht */
-#define FAM10_SCAN_PCI_BUS 0
-#define FAM10_ALLOCATE_IO_RANGE 0
-
 #include <stdint.h>
 #include <string.h>
 #include <device/pci_def.h>

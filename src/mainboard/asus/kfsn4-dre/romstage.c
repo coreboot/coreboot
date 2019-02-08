@@ -17,9 +17,6 @@
  * GNU General Public License for more details.
  */
 
-#define FAM10_SCAN_PCI_BUS 0
-#define FAM10_ALLOCATE_IO_RANGE 1
-
 #include <stdint.h>
 #include <string.h>
 #include <device/pci_def.h>

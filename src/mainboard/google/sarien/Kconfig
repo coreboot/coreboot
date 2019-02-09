@@ -97,6 +97,11 @@ config DEVICETREE
 	string
 	default "variants/$(CONFIG_VARIANT_DIR)/devicetree.cb"
 
+config TOUCHSCREEN_HID
+	string "Specify the touchscreen HID enabled for the OS"
+	default "WCOM48E2" if BOARD_GOOGLE_ARCADA
+	default "NONE" if BOARD_GOOGLE_SARIEN
+
 config VBOOT
 	select HAS_RECOVERY_MRC_CACHE
 	select MRC_CLEAR_NORMAL_CACHE_ON_RECOVERY_RETRAIN

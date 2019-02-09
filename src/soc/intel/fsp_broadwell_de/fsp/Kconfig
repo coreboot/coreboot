@@ -127,3 +127,14 @@ config FSP_EHCI2_ENABLE
 	default n
 	help
 	  Enable EHCI controller 2
+
+config FSP_DEBUG_LEVEL
+	int "FSP debug level (0-3)"
+	default 0
+	range 0 3
+	help
+	  Select the debug level, where:
+	   0: DISABLED
+	   1: MINIMUM
+	   2: NORMAL
+	   3: MAXIMUM

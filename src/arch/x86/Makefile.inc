@@ -122,7 +122,7 @@ else
 $(eval $(call early_x86_stage,bootblock,elf64-x86-64))
 endif
 
-bootblock-y += walkcbfs.S
+bootblock-$(CONFIG_ARCH_BOOTBLOCK_X86_32) += walkcbfs.S
 
 else # !C_ENVIRONMENT_BOOTBLOCK
 
@@ -235,7 +235,7 @@ romstage-y += memset.c
 romstage-$(CONFIG_X86_TOP4G_BOOTMEDIA_MAP) += mmap_boot.c
 romstage-y += postcar_loader.c
 romstage-$(CONFIG_COLLECT_TIMESTAMPS_TSC) += timestamp.c
-romstage-y += walkcbfs.S
+romstage-$(CONFIG_ARCH_ROMSTAGE_X86_32) += walkcbfs.S
 
 romstage-srcs += $(wildcard $(src)/mainboard/$(MAINBOARDDIR)/romstage.c)
 romstage-libs ?=

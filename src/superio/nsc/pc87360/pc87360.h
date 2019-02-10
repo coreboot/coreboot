@@ -30,9 +30,4 @@
 #define PC87360_FSCM 0x09
 #define PC87360_WDT  0x0A
 
-#include <arch/io.h>
-#include <stdint.h>
-
-void pc87360_enable_serial(pnp_devfn_t dev, u16 iobase);
-
 #endif /* SUPERIO_NSC_PC87360_H */

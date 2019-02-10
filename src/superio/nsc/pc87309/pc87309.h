@@ -27,9 +27,4 @@
 #define PC87309_KBCM 0x05	/* Mouse */
 #define PC87309_KBCK 0x06	/* Keyboard */
 
-#include <arch/io.h>
-#include <stdint.h>
-
-void pc87309_enable_serial(pnp_devfn_t dev, u16 iobase);
-
 #endif /* SUPERIO_NSC_PC87309_H */

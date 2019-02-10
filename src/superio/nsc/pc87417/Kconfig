@@ -15,3 +15,4 @@
 
 config SUPERIO_NSC_PC87417
 	bool
+	select SUPERIO_NSC_COMMON_PRE_RAM

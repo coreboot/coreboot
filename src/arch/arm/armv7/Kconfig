@@ -1,37 +1,39 @@
 config ARCH_BOOTBLOCK_ARMV7
-	def_bool n
+	bool
 	select ARCH_BOOTBLOCK_ARM
 
 config ARCH_VERSTAGE_ARMV7
-	def_bool n
+	bool
 	select ARCH_VERSTAGE_ARM
 
 config ARCH_ROMSTAGE_ARMV7
-	def_bool n
+	bool
 	select ARCH_ROMSTAGE_ARM
 
 config ARCH_RAMSTAGE_ARMV7
-	def_bool n
+	bool
 	select ARCH_RAMSTAGE_ARM
+
 config ARCH_BOOTBLOCK_ARMV7_M
-	def_bool n
+	bool
 	select ARCH_BOOTBLOCK_ARM
+
 config ARCH_VERSTAGE_ARMV7_M
-	def_bool n
+	bool
 	select ARCH_VERSTAGE_ARM
 
 config ARCH_BOOTBLOCK_ARMV7_R
-	def_bool n
+	bool
 	select ARCH_BOOTBLOCK_ARM
 
 config ARCH_VERSTAGE_ARMV7_R
-	def_bool n
+	bool
 	select ARCH_VERSTAGE_ARM
 
 config ARCH_ROMSTAGE_ARMV7_R
-	def_bool n
+	bool
 	select ARCH_ROMSTAGE_ARM
 
 config ARCH_RAMSTAGE_ARMV7_R
-	def_bool n
+	bool
 	select ARCH_RAMSTAGE_ARM

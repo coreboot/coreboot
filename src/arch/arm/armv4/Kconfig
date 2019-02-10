@@ -1,15 +1,15 @@
 config ARCH_BOOTBLOCK_ARMV4
-	def_bool n
+	bool
 	select ARCH_BOOTBLOCK_ARM
 
 config ARCH_VERSTAGE_ARMV4
-	def_bool n
+	bool
 	select ARCH_VERSTAGE_ARM
 
 config ARCH_ROMSTAGE_ARMV4
-	def_bool n
+	bool
 	select ARCH_ROMSTAGE_ARM
 
 config ARCH_RAMSTAGE_ARMV4
-	def_bool n
+	bool
 	select ARCH_RAMSTAGE_ARM

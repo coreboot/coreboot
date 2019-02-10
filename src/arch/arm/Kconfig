@@ -1,24 +1,22 @@
 config ARCH_ARM
 	bool
-	default n
 
 config ARCH_BOOTBLOCK_ARM
 	bool
-	default n
 	select ARCH_ARM
 	select C_ENVIRONMENT_BOOTBLOCK
 
 config ARCH_VERSTAGE_ARM
 	bool
-	default n
+	select ARCH_ARM
 
 config ARCH_ROMSTAGE_ARM
 	bool
-	default n
+	select ARCH_ARM
 
 config ARCH_RAMSTAGE_ARM
 	bool
-	default n
+	select ARCH_ARM
 
 source src/arch/arm/armv4/Kconfig
 source src/arch/arm/armv7/Kconfig

@@ -41,7 +41,6 @@ static void enable_rom_caching(void)
 	msr_t msr;
 
 	disable_cache();
-	/* Why only top 4MiB ? */
 	set_var_mtrr(1, CACHE_ROM_BASE, CACHE_ROM_SIZE, MTRR_TYPE_WRPROT);
 	enable_cache();
 

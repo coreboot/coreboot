@@ -1,6 +1,15 @@
+config ARCH_RISCV_RV64
+	bool
+	select ARCH_RISCV
+
+config ARCH_RISCV_RV32
+	bool
+	select ARCH_RISCV
+
 config ARCH_RISCV
 	bool
-	default n
+
+if ARCH_RISCV
 
 config RISCV_ARCH
 	string
@@ -37,16 +46,6 @@ config ARCH_RISCV_U
 	bool
 	default n
 
-config ARCH_RISCV_RV64
-	bool
-	default n
-	select ARCH_RISCV
-
-config ARCH_RISCV_RV32
-	bool
-	default n
-	select ARCH_RISCV
-
 config ARCH_RISCV_PMP
 	bool
 	default n
@@ -74,3 +73,5 @@ config RISCV_USE_ARCH_TIMER
 
 config RISCV_WORKING_HARTID
 	int
+
+endif # if ARCH_RISCV

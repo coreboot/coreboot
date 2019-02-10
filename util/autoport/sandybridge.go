@@ -139,4 +139,12 @@ func init() {
 	} {
 		RegisterPCI(0x8086, id, GenericVGA{GenericPCI{Comment: "VGA controller"}})
 	}
+
+	/* PCIe bridge */
+	for _, id := range []uint16{
+		0x0101, 0x0105, 0x0109, 0x010d,
+		0x0151, 0x0155, 0x0159, 0x015d,
+	} {
+		RegisterPCI(0x8086, id, GenericPCI{})
+	}
 }

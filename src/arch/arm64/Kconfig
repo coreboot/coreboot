@@ -1,26 +1,26 @@
 config ARCH_ARM64
 	bool
-	default n
 
 config ARCH_BOOTBLOCK_ARM64
 	bool
-	default n
 	select ARCH_ARM64
 	select C_ENVIRONMENT_BOOTBLOCK
 
 config ARCH_VERSTAGE_ARM64
 	bool
-	default n
+	select ARCH_ARM64
 
 config ARCH_ROMSTAGE_ARM64
 	bool
-	default n
+	select ARCH_ARM64
 
 config ARCH_RAMSTAGE_ARM64
 	bool
-	default n
+	select ARCH_ARM64
 
 source src/arch/arm64/armv8/Kconfig
+
+if ARCH_ARM64
 
 config ARM64_USE_ARCH_TIMER
 	bool
@@ -58,3 +58,5 @@ config ARM64_A53_ERRATUM_843419
 	  incorrect address calculations in rare cases. This option enables a
 	  linker workaround to avoid those cases if your toolchain supports it.
 	  Should be selected automatically by SoCs that are affected.
+
+endif # if ARCH_ARM64

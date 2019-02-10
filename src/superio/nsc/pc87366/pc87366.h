@@ -34,9 +34,4 @@
 #define PC87366_VLM  0x0D
 #define PC87366_TMS  0x0E
 
-#include <arch/io.h>
-#include <stdint.h>
-
-void pc87366_enable_serial(pnp_devfn_t dev, u16 iobase);
-
 #endif /* SUPERIO_NSC_PC87366_H */

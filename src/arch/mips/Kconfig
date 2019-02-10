@@ -16,12 +16,12 @@
 
 config ARCH_MIPS
 	bool
-	default n
+
+if ARCH_MIPS
 
 config ARCH_BOOTBLOCK_MIPS
 	bool
 	default n
-	select ARCH_MIPS
 	select BOOTBLOCK_CUSTOM
 	select C_ENVIRONMENT_BOOTBLOCK
 
@@ -36,3 +36,5 @@ config ARCH_ROMSTAGE_MIPS
 config ARCH_RAMSTAGE_MIPS
 	bool
 	default n
+
+endif # if ARCH_MIPS

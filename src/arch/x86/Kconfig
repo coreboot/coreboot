@@ -13,7 +13,6 @@
 
 config ARCH_X86
 	bool
-	default n
 	select PCI
 	select RELOCATABLE_MODULES
 
@@ -21,17 +20,16 @@ config ARCH_X86
 
 config ARCH_BOOTBLOCK_X86_32
 	bool
-	default n
 	select ARCH_X86
 	select BOOTBLOCK_CUSTOM if ROMCC_BOOTBLOCK
 
 config ARCH_VERSTAGE_X86_32
 	bool
-	default n
+	select ARCH_X86
 
 config ARCH_ROMSTAGE_X86_32
 	bool
-	default n
+	select ARCH_X86
 
 config ARCH_POSTCAR_X86_32
 	bool
@@ -39,23 +37,22 @@ config ARCH_POSTCAR_X86_32
 
 config ARCH_RAMSTAGE_X86_32
 	bool
-	default n
+	select ARCH_X86
 
 # stage selectors for x64
 
 config ARCH_BOOTBLOCK_X86_64
 	bool
-	default n
 	select ARCH_X86
 	select BOOTBLOCK_CUSTOM if ROMCC_BOOTBLOCK
 
 config ARCH_VERSTAGE_X86_64
 	bool
-	default n
+	select ARCH_X86
 
 config ARCH_ROMSTAGE_X86_64
 	bool
-	default n
+	select ARCH_X86
 
 config ARCH_POSTCAR_X86_64
 	bool
@@ -63,7 +60,9 @@ config ARCH_POSTCAR_X86_64
 
 config ARCH_RAMSTAGE_X86_64
 	bool
-	default n
+	select ARCH_X86
+
+if ARCH_X86
 
 config ARCH_X86_64_PGTBL_LOC
 	hex "x86_64 page table location in CBFS"
@@ -350,3 +349,5 @@ config MAX_PIRQ_LINKS
 	  also have a separate link for ATA or IOAPIC interrupts. When the PIRQ
 	  table specifies links greater than 4, pirq_route_irqs will not
 	  function properly, unless this variable is correctly set.
+
+endif

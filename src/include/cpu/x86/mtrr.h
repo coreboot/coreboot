@@ -150,7 +150,7 @@ static inline unsigned int fls(unsigned int x)
 #define _ALIGN_DOWN_POW2(x)	((x) & ~_POW2_MASK(x))
 
 /* Calculate `4GiB - x` (e.g. absolute address for offset from 4GiB) */
-#define _FROM_4G_TOP(x) (((1 << 20) - ((x) >> 12)) << 12)
+#define _FROM_4G_TOP(x) ((0xffffffff - (x)) + 1)
 
 /* At the end of romstage, low RAM 0..CACHE_TM_RAMTOP may be set
  * as write-back cacheable to speed up ramstage decompression.

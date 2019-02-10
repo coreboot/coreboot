@@ -32,13 +32,11 @@ uint8_t variant_board_sku(void)
 	return sku;
 }
 
-#if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
 void variant_mainboard_suspend_resume(void)
 {
 	/* Enable backlight - GPIO 133 active low */
 	gpio_set(GPIO_133, 0);
 }
-#endif
 
 void board_bh720(struct device *dev)
 {

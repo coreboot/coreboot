@@ -31,8 +31,6 @@ const struct soc_amd_gpio *variant_early_gpio_table(size_t *size);
 const struct soc_amd_gpio *variant_romstage_gpio_table(size_t *size);
 const struct soc_amd_gpio *variant_gpio_table(size_t *size);
 void variant_romstage_entry(int s3_resume);
-#if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
 void variant_mainboard_suspend_resume(void);
-#endif
 
 #endif /* __BASEBOARD_VARIANTS_H__ */

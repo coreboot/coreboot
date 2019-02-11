@@ -19,4 +19,7 @@ config SET_IA32_FC_LOCK_BIT
 	  However, leaving the lock bit unset will break Windows' detection of
 	  VMX support and built-in virtualization features like Hyper-V.
 
+config CPU_INTEL_COMMON_TIMEBASE
+	bool
+
 endif

@@ -67,4 +67,11 @@ DECLARE_REGION(bl31)
  */
 #define DECLARE_OPTIONAL_REGION(name) asm (".weak _" #name ", _e" #name)
 
+/* Returns true when pre-RAM symbols are known to the linker.
+ * (Does not necessarily mean that the memory is accessible.) */
+static inline int preram_symbols_available(void)
+{
+	return !IS_ENABLED(CONFIG_CACHE_AS_RAM) || ENV_CACHE_AS_RAM;
+}
+
 #endif /* __SYMBOLS_H */

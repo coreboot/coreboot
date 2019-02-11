@@ -438,5 +438,6 @@ void verstage_main(void)
 
 	printk(BIOS_INFO, "Slot %c is selected\n", is_slot_a(&ctx) ? 'A' : 'B');
 	vb2_set_selected_region(region_device_region(&fw_main));
+	vb2_finalize_work_context(&ctx);
 	timestamp_add_now(TS_END_VBOOT);
 }

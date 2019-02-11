@@ -27,6 +27,9 @@
 _Static_assert(CONFIG(VBOOT_STARTS_IN_BOOTBLOCK) +
 	       CONFIG(VBOOT_STARTS_IN_ROMSTAGE) == 1,
 	       "vboot must either start in bootblock or romstage (not both!)");
+_Static_assert(CONFIG(VBOOT_STARTS_IN_BOOTBLOCK) ||
+	       !CONFIG(VBOOT_MIGRATE_WORKING_DATA),
+	       "no need to migrate working data after CBMEM is already up!");
 _Static_assert(!CONFIG(VBOOT_SEPARATE_VERSTAGE) ||
 	       CONFIG(VBOOT_STARTS_IN_BOOTBLOCK),
 	       "stand-alone verstage must start in (i.e. after) bootblock");
@@ -126,10 +129,8 @@ static void vboot_prepare(void)
 	 * other platforms the vboot cbmem objects are initialized when
 	 * cbmem comes online.
 	 */
-	if (ENV_ROMSTAGE && CONFIG(VBOOT_STARTS_IN_ROMSTAGE)) {
-		vb2_store_selected_region();
+	if (ENV_ROMSTAGE && CONFIG(VBOOT_STARTS_IN_ROMSTAGE))
 		vboot_fill_handoff();
-	}
 }
 
 static int vboot_locate(struct cbfs_props *props)

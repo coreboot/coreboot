@@ -14,6 +14,7 @@
 #include <arch/early_variables.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/msr.h>
+#include <cpu/x86/tsc.h>
 #include <cpu/intel/speedstep.h>
 #include <cpu/intel/fsb.h>
 #include <console/console.h>
@@ -21,15 +22,18 @@
 #include <delay.h>
 
 static u32 g_timer_fsb CAR_GLOBAL;
+static u32 g_timer_tsc CAR_GLOBAL;
 
-static int get_fsb(void)
+/* This is not an architectural MSR. */
+#define MSR_PLATFORM_INFO 0xce
+
+static int get_fsb_tsc(int *fsb, int *ratio)
 {
 	struct cpuinfo_x86 c;
 	static const short core_fsb[8] = { -1, 133, -1, 166, -1, 100, -1, -1 };
 	static const short core2_fsb[8] = { 266, 133, 200, 166, 333, 100, 400, -1 };
 	static const short f2x_fsb[8] = { 100, 133, 200, 166, 333, -1, -1, -1 };
 	msr_t msr;
-	int ret = -2;
 
 	get_fms(&c, cpuid_eax(1));
 	switch (c.x86) {
@@ -37,53 +41,75 @@ static int get_fsb(void)
 		switch (c.x86_model) {
 		case 0xe:  /* Core Solo/Duo */
 		case 0x1c: /* Atom */
-			ret = core_fsb[rdmsr(MSR_FSB_FREQ).lo & 7];
+			*fsb = core_fsb[rdmsr(MSR_FSB_FREQ).lo & 7];
+			*ratio = rdmsr(MSR_EBC_FREQUENCY_ID).lo >> 24;
 			break;
 		case 0xf:  /* Core 2 or Xeon */
 		case 0x17: /* Enhanced Core */
-			ret = core2_fsb[rdmsr(MSR_FSB_FREQ).lo & 7];
+			*fsb = core2_fsb[rdmsr(MSR_FSB_FREQ).lo & 7];
+			*ratio = rdmsr(MSR_EBC_FREQUENCY_ID).lo >> 24;
 			break;
 		case 0x25: /* Nehalem BCLK fixed at 133MHz */
-			ret = 133;
+			*fsb = 133;
+			*ratio = (rdmsr(MSR_PLATFORM_INFO).lo >> 8) & 0xff;
 			break;
 		case 0x2a: /* SandyBridge BCLK fixed at 100MHz */
 		case 0x3a: /* IvyBridge BCLK fixed at 100MHz */
 		case 0x3c: /* Haswell BCLK fixed at 100MHz */
 		case 0x45: /* Haswell-ULT BCLK fixed at 100MHz */
 		case 0x4d: /* Rangeley BCLK fixed at 100MHz */
-			ret = 100;
+			*fsb = 100;
+			*ratio = (rdmsr(MSR_PLATFORM_INFO).lo >> 8) & 0xff;
 			break;
+		default:
+			return -2;
 		}
 		break;
 	case 0xf: /* Netburst */
 		msr = rdmsr(MSR_EBC_FREQUENCY_ID);
+		*ratio = msr.lo >> 24;
 		switch (c.x86_model) {
 		case 0x2:
-			ret = f2x_fsb[(msr.lo >> 16) & 7];
+			*fsb = f2x_fsb[(msr.lo >> 16) & 7];
 			break;
 		case 0x3:
 		case 0x4:
 		case 0x6:
-			ret = core2_fsb[(msr.lo >> 16) & 7];
+			*fsb = core2_fsb[(msr.lo >> 16) & 7];
 			break;
+		default:
+			return -2;
 		}
+		break;
+	default:
+		return -2;
 	}
-	return ret;
+	if (*fsb > 0)
+		return 0;
+	return -1;
 }
 
-static int set_timer_fsb(void)
+static void resolve_timebase(void)
 {
-	int ret = get_fsb();
+	int ret, fsb, ratio;
 
-	if (ret > 0) {
-		car_set_var(g_timer_fsb, ret);
-		return 0;
+	ret = get_fsb_tsc(&fsb, &ratio);
+	if (ret == 0) {
+		u32 tsc = 100 * DIV_ROUND_CLOSEST(ratio * fsb, 100);
+		car_set_var(g_timer_fsb, fsb);
+		car_set_var(g_timer_tsc, tsc);
+		return;
 	}
+
 	if (ret == -1)
 		printk(BIOS_ERR, "FSB not found\n");
 	if (ret == -2)
 		printk(BIOS_ERR, "CPU not supported\n");
-	return -1;
+
+	/* Set some semi-ridiculous defaults. */
+	car_set_var(g_timer_fsb, 500);
+	car_set_var(g_timer_tsc, 5000);
+	return;
 }
 
 u32 get_timer_fsb(void)
@@ -94,8 +120,20 @@ u32 get_timer_fsb(void)
 	if (fsb > 0)
 		return fsb;
 
-	set_timer_fsb();
+	resolve_timebase();
 	return car_get_var(g_timer_fsb);
+}
+
+unsigned long tsc_freq_mhz(void)
+{
+	u32 tsc;
+
+	tsc = car_get_var(g_timer_tsc);
+	if (tsc > 0)
+		return tsc;
+
+	resolve_timebase();
+	return car_get_var(g_timer_tsc);
 }
 
 /**

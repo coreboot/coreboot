@@ -23,13 +23,16 @@
 
 void mainboard_memory_init_params(FSPM_UPD *memupd)
 {
+	struct cnl_mb_cfg memcfg;
+
 	const struct spd_info spd = {
 		.spd_by_index = true,
 		.spd_spec.spd_index = variant_memory_sku(),
 	};
 
+	variant_memory_params(&memcfg);
 	cannonlake_memcfg_init(&memupd->FspmConfig,
-			variant_memory_params(), &spd);
+			       &memcfg, &spd);
 }
 
 void mainboard_get_dram_part_num(const char **part_num, size_t *len)

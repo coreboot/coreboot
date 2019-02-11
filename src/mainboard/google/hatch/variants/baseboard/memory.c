@@ -17,6 +17,7 @@
 #include <baseboard/gpio.h>
 #include <gpio.h>
 #include <soc/cnl_memcfg_init.h>
+#include <string.h>
 
 static const struct cnl_mb_cfg baseboard_memcfg = {
 	/*
@@ -42,9 +43,25 @@ static const struct cnl_mb_cfg baseboard_memcfg = {
 	.ect = 1,
 };
 
-const struct cnl_mb_cfg *__weak variant_memory_params(void)
+void __weak variant_memory_params(struct cnl_mb_cfg *bcfg)
 {
-	return &baseboard_memcfg;
+	memcpy(bcfg, &baseboard_memcfg, sizeof(baseboard_memcfg));
+	/*
+	 * GPP_F2 is the MEM_CH_SEL gpio, which is set to 1 for single
+	 * channel skus and 0 for dual channel skus.
+	 */
+	if (gpio_get(GPP_F2) == 1) {
+		/*
+		 * Single channel config: for Hatch, Channel 0 is
+		 * always populated.
+		 */
+		bcfg->channel_empty[0] = 0;
+		bcfg->channel_empty[1] = 1;
+	} else {
+		/* Dual channel config: both channels populated. */
+		bcfg->channel_empty[0] = 0;
+		bcfg->channel_empty[1] = 0;
+	}
 }
 
 int __weak variant_memory_sku(void)

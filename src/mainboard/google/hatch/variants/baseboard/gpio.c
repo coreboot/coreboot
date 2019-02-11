@@ -281,7 +281,7 @@ static const struct pad_config gpio_table[] = {
 	/* F1  : WWAN_RESET_1V8_ODL */
 	PAD_CFG_GPO(GPP_F1, 1, DEEP),
 	/* F2  : MEM_CH_SEL */
-	PAD_CFG_GPI(GPP_F2, NONE, PLTRST),
+	PAD_CFG_GPI(GPP_F2, DN_20K, PLTRST),
 	/* F3  : GPP_F3 ==> NC */
 	PAD_NC(GPP_F3, NONE),
 	/* F4  : CNV_BRI_DT */
@@ -429,7 +429,7 @@ static const struct pad_config early_gpio_table[] = {
 	/* C23 : WLAN_PE_RST# */
 	PAD_CFG_GPO(GPP_C23, 1, DEEP),
 	/* F2  : MEM_CH_SEL */
-	PAD_CFG_GPI(GPP_F2, NONE, PLTRST),
+	PAD_CFG_GPI(GPP_F2, DN_20K, PLTRST),
 	/* F11 : PCH_MEM_STRAP2 */
 	PAD_CFG_GPI(GPP_F11, NONE, PLTRST),
 	/* F20 : PCH_MEM_STRAP0 */

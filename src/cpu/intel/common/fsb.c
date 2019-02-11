@@ -39,8 +39,11 @@ static int get_fsb(void)
 		case 0x17: /* Enhanced Core */
 			ret = core2_fsb[rdmsr(MSR_FSB_FREQ).lo & 7];
 			break;
-		case 0x2a: /* SandyBridge BCLK fixed at 100MHz*/
-		case 0x3a: /* IvyBridge BCLK fixed at 100MHz*/
+		case 0x25: /* Nehalem BCLK fixed at 133MHz */
+			ret = 133;
+			break;
+		case 0x2a: /* SandyBridge BCLK fixed at 100MHz */
+		case 0x3a: /* IvyBridge BCLK fixed at 100MHz */
 		case 0x3c: /* Haswell BCLK fixed at 100MHz */
 		case 0x45: /* Haswell-ULT BCLK fixed at 100MHz */
 			ret = 100;

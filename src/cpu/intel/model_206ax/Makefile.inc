@@ -17,11 +17,6 @@ ramstage-y += common.c
 romstage-y += common.c
 smm-y += common.c
 
-ramstage-y += tsc_freq.c
-romstage-y += tsc_freq.c
-postcar-y += tsc_freq.c
-smm-y += tsc_freq.c
-
 smm-y += finalize.c
 
 cpu_microcode_bins += $(wildcard 3rdparty/intel-microcode/intel-ucode/06-2a-*)

@@ -13,26 +13,26 @@
  * GNU General Public License for more details.
  */
 
-#define DPTF_CPU_PASSIVE	80
-#define DPTF_CPU_CRITICAL	100
+#define DPTF_CPU_PASSIVE	96
+#define DPTF_CPU_CRITICAL	103
 
 /* Skin Sensor for CPU VR temperature monitor */
 #define DPTF_TSR0_SENSOR_ID	1
 #define DPTF_TSR0_SENSOR_NAME	"Skin"
-#define DPTF_TSR0_PASSIVE	55
-#define DPTF_TSR0_CRITICAL	70
+#define DPTF_TSR0_PASSIVE	56
+#define DPTF_TSR0_CRITICAL	108
 
 /* Memory Sensor for DDR temperature monitor */
 #define DPTF_TSR1_SENSOR_ID	2
 #define DPTF_TSR1_SENSOR_NAME	"DDR"
-#define DPTF_TSR1_PASSIVE	55
-#define DPTF_TSR1_CRITICAL	80
+#define DPTF_TSR1_PASSIVE	70
+#define DPTF_TSR1_CRITICAL	95
 
 /* M.2 Sensor for Ambient temperature monitor */
 #define DPTF_TSR2_SENSOR_ID	3
 #define DPTF_TSR2_SENSOR_NAME	"Ambient"
-#define DPTF_TSR2_PASSIVE	55
-#define DPTF_TSR2_CRITICAL	70
+#define DPTF_TSR2_PASSIVE	50
+#define DPTF_TSR2_CRITICAL	95
 
 #undef DPTF_ENABLE_FAN_CONTROL
 #undef DPTF_ENABLE_CHARGER
@@ -57,9 +57,9 @@ Name (MPPC, Package ()
 	Package () {	/* Power Limit 1 */
 		0,	/* PowerLimitIndex, 0 for Power Limit 1 */
 		3000,	/* PowerLimitMinimum */
-		25000,	/* PowerLimitMaximum */
+		21000,	/* PowerLimitMaximum */
 		28000,	/* TimeWindowMinimum */
-		32000,	/* TimeWindowMaximum */
+		28000,	/* TimeWindowMaximum */
 		100	/* StepSize */
 	},
 	Package () {	/* Power Limit 2 */
@@ -67,7 +67,7 @@ Name (MPPC, Package ()
 		15000,	/* PowerLimitMinimum */
 		51000,	/* PowerLimitMaximum */
 		28000,	/* TimeWindowMinimum */
-		32000,	/* TimeWindowMaximum */
+		28000,	/* TimeWindowMaximum */
 		100	/* StepSize */
 	}
 })

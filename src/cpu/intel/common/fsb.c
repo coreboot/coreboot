@@ -18,7 +18,7 @@
 #include <console/console.h>
 #include <commonlib/helpers.h>
 
-int get_ia32_fsb(void)
+static int get_fsb(void)
 {
 	struct cpuinfo_x86 c;
 	static const short core_fsb[8] = { -1, 133, -1, 166, -1, 100, -1, -1 };
@@ -60,6 +60,14 @@ int get_ia32_fsb(void)
 			break;
 		}
 	}
+	return ret;
+}
+
+int get_ia32_fsb(void)
+{
+	int ret;
+
+	ret = get_fsb();
 	if (ret == -1)
 		printk(BIOS_ERR, "FSB not found\n");
 	if (ret == -2)

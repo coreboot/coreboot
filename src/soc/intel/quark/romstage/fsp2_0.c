@@ -173,7 +173,7 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *fspm_upd, uint32_t version)
 	upd->RankMask = config->RankMask;
 	upd->RmuBaseAddress = (uintptr_t)rmu_data;
 	upd->RmuLength = rmu_data_len;
-	upd->SerialPortWriteChar = console_log_level(BIOS_SPEW)
+	upd->SerialPortWriteChar = !!console_log_level(BIOS_SPEW)
 		? (uintptr_t)fsp_write_line : 0;
 	upd->SmmTsegSize = IS_ENABLED(CONFIG_HAVE_SMI_HANDLER) ?
 		config->SmmTsegSize : 0;

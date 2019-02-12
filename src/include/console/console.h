@@ -62,6 +62,8 @@ void do_putchar(unsigned char byte);
 #define printk(LEVEL, fmt, args...) \
 	do { do_printk(LEVEL, fmt, ##args); } while (0)
 
+enum { CONSOLE_LOG_NONE = 0, CONSOLE_LOG_FAST, CONSOLE_LOG_ALL };
+
 #if IS_ENABLED(CONFIG_CONSOLE_OVERRIDE_LOGLEVEL)
 /*
  * This function should be implemented at mainboard level.

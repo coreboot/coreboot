@@ -1,4 +1,22 @@
 chip soc/intel/apollolake
+	# Override USB2 PER PORT register (PORT 4)
+	register "usb2eye[4]" = "{
+		.Usb20OverrideEn = 1,
+		.Usb20PerPortPeTxiSet = 7,
+		.Usb20PerPortTxiSet = 3,
+		.Usb20IUsbTxEmphasisEn = 3,
+		.Usb20PerPortTxPeHalf = 0,
+	}"
+
+	# Override USB2 PER PORT register (PORT 6)
+	register "usb2eye[6]" = "{
+		.Usb20OverrideEn = 1,
+		.Usb20PerPortPeTxiSet = 3,
+		.Usb20PerPortTxiSet = 0,
+		.Usb20IUsbTxEmphasisEn = 3,
+		.Usb20PerPortTxPeHalf = 0,
+	}"
+
 	# Intel Common SoC Config
 	#+-------------------+---------------------------+
 	#| Field             |  Value                    |

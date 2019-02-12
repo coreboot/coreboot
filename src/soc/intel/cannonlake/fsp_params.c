@@ -163,6 +163,9 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 		dev->enabled = 0;
 	params->XdciEnable = dev->enabled;
 
+	/* Set Debug serial port */
+	params->SerialIoDebugUartNumber = CONFIG_UART_FOR_CONSOLE;
+
 	/* Enable CNVi Wifi if enabled in device tree */
 	dev = dev_find_slot(0, PCH_DEVFN_CNViWIFI);
 	params->PchCnviMode = dev->enabled;

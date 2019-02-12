@@ -969,8 +969,8 @@ static void lock_descriptor(const char *filename, char *image, int size)
 	case PLATFORM_CNL:
 	case PLATFORM_ICL:
 	case PLATFORM_SKLKBL:
-		/* CPU/BIOS can read descriptor, BIOS and GbE. */
-		fmba->flmstr1 |= 0xb << rd_shift;
+		/* CPU/BIOS can read descriptor, BIOS, EC and GbE. */
+		fmba->flmstr1 |= 0x10b << rd_shift;
 		/* CPU/BIOS can write BIOS and Gbe. */
 		fmba->flmstr1 |= 0xa << wr_shift;
 		/* ME can read descriptor, ME and GbE. */

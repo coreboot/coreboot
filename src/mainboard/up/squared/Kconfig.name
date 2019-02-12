@@ -1,0 +1,2 @@
+config BOARD_UP_SQUARED
+	bool "Squared"

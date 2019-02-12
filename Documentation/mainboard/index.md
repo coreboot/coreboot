@@ -82,3 +82,7 @@ The boards in this section are not real mainboards, but emulators.
 ## Supermicro
 
 - [X10SLM+-F](supermicro/x10slm-f.md)
+
+## UP
+
+- [Squared](up/squared/index.md)

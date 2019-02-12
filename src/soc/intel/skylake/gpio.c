@@ -168,3 +168,18 @@ const struct pmc_to_gpio_route *soc_pmc_gpio_routes(size_t *num)
 	*num = ARRAY_SIZE(routes);
 	return routes;
 }
+
+uint32_t soc_gpio_pad_config_fixup(const struct pad_config *cfg,
+					int dw_reg, uint32_t reg_val)
+{
+	if (IS_ENABLED(CONFIG_SKYLAKE_SOC_PCH_H))
+		return reg_val;
+	/*
+	 * For U/Y series, clear PAD_CFG1_TOL_1V8 in GPP_F4
+	 * ~ GPP_F11.
+	 */
+	if (cfg->pad >= GPP_F4 && cfg->pad <= GPP_F11 && dw_reg == 1)
+		reg_val = reg_val & ~(PAD_CFG1_TOL_1V8);
+	return reg_val;
+
+}

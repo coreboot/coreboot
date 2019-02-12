@@ -197,5 +197,15 @@ void gpio_route_gpe(uint8_t gpe0b, uint8_t gpe0c, uint8_t gpe0d);
  */
 uint8_t gpio_get_pad_portid(const gpio_t pad);
 
+/*
+ * Function to patch GPIO settings for SoC specifically
+ *  cfg = pad config contains pad number and reg value.
+ *  dw_reg = pad config dword number.
+ *  reg_val = the reg value need to be patched.
+ * Returns gpio setting patched for SoC specifically
+ */
+uint32_t soc_gpio_pad_config_fixup(const struct pad_config *cfg,
+						int dw_reg, uint32_t reg_val);
+
 #endif
 #endif /* _SOC_INTELBLOCKS_GPIO_H_ */

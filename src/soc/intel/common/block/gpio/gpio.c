@@ -273,6 +273,9 @@ static void gpio_configure_pad(const struct pad_config *cfg)
 		soc_pad_conf &= mask[i];
 		soc_pad_conf |= pad_conf & ~mask[i];
 
+		/* Patch GPIO settings for SoC specifically */
+		soc_pad_conf = soc_gpio_pad_config_fixup(cfg, i, soc_pad_conf);
+
 		if (IS_ENABLED(CONFIG_DEBUG_GPIO))
 			printk(BIOS_DEBUG,
 			"gpio_padcfg [0x%02x, %02zd] DW%d [0x%08x : 0x%08x"
@@ -570,4 +573,10 @@ const char *gpio_acpi_path(gpio_t gpio_num)
 {
 	const struct pad_community *comm = gpio_get_community(gpio_num);
 	return comm->acpi_path;
+}
+
+uint32_t __weak soc_gpio_pad_config_fixup(const struct pad_config *cfg,
+						int dw_reg, uint32_t reg_val)
+{
+	return reg_val;
 }

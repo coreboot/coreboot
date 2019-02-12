@@ -22,6 +22,7 @@ INCLUDED_FILES='.*\.[ch]\|Kconfig.*$'
 EXCLUDED_DIRS="^payloads/libpayload/util/kconfig\|\
 ^payloads/libpayload/curses/PDCurses\|\
 ^util/crossgcc/patches\|\
+^util/inteltool\|\
 ^util/kconfig\|\
 ^util/superiotool\|\
 ^src/vendorcode\|\

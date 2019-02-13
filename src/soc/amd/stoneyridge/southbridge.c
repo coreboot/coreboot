@@ -389,20 +389,28 @@ static void sb_enable_legacy_io(void)
 	pm_write32(PM_DECODE_EN, reg | LEGACY_IO_EN);
 }
 
-void sb_clk_output_48Mhz(void)
+void sb_clk_output_48Mhz(u32 osc)
 {
 	u32 ctrl;
 	u32 *misc_clk_cntl_1_ptr = (u32 *)(uintptr_t)(MISC_MMIO_BASE
 				+ MISC_CLK_CNTL1);
 
 	/*
-	 * Enable the X14M_25M_48M_OSC pin and leaving it at it's default so
-	 * 48Mhz will be on ball AP13 (FT3b package)
+	 * Clear the disable for OSCOUT1 (signal typically named XnnM_25M_48M)
+	 * or OSCOUT2 (USBCLK/25M_48M_OSC).  The frequency defaults to 48MHz.
 	 */
 	ctrl = read32(misc_clk_cntl_1_ptr);
 
-	/* clear the OSCOUT1_ClkOutputEnb to enable the 48 Mhz clock */
-	ctrl &= ~OSCOUT1_CLK_OUTPUT_ENB;
+	switch (osc) {
+	case 1:
+		ctrl &= ~OSCOUT1_CLK_OUTPUT_ENB;
+		break;
+	case 2:
+		ctrl &= ~OSCOUT2_CLK_OUTPUT_ENB;
+		break;
+	default:
+		return; /* do nothing if invalid */
+	}
 	write32(misc_clk_cntl_1_ptr, ctrl);
 }
 

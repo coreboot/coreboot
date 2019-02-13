@@ -186,6 +186,7 @@
 #define MISC_CLK_CNTL1			0x40
 #define   CG1PLL_FBDIV_TEST		BIT(26)
 #define   OSCOUT1_CLK_OUTPUT_ENB	BIT(2)  /* 0 = Enabled, 1 = Disabled */
+#define   OSCOUT2_CLK_OUTPUT_ENB	BIT(7)  /* 0 = Enabled, 1 = Disabled */
 
 /* XHCI_PM Registers:  0xfed81c00 */
 #define XHCI_PM_INDIRECT_INDEX		0x48
@@ -477,7 +478,7 @@ struct soc_power_reg {
 void enable_aoac_devices(void);
 void sb_enable_rom(void);
 void configure_stoneyridge_i2c(void);
-void sb_clk_output_48Mhz(void);
+void sb_clk_output_48Mhz(u32 osc);
 void sb_disable_4dw_burst(void);
 void sb_enable(struct device *dev);
 void southbridge_final(void *chip_info);

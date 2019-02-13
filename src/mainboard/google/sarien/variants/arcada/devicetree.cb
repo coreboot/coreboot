@@ -42,6 +42,82 @@ chip soc/intel/cannonlake
 	register "SlowSlewRateForSa" = "0"
 	register "SlowSlewRateForFivr" = "0"
 
+	# VR Settings Configuration for 4 Domains
+	#+----------------+-------+-------+-------+-------+
+	#| Domain/Setting |  SA   |  IA   | GTUS  |  GTS  |
+	#+----------------+-------+-------+-------+-------+
+	#| Psi1Threshold  | 20A   | 20A   | 20A   | 20A   |
+	#| Psi2Threshold  | 5A    | 5A    | 5A    | 5A    |
+	#| Psi3Threshold  | 1A    | 1A    | 1A    | 1A    |
+	#| Psi3Enable     | 1     | 1     | 1     | 1     |
+	#| Psi4Enable     | 1     | 1     | 1     | 1     |
+	#| ImonSlope      | 0     | 0     | 0     | 0     |
+	#| ImonOffset     | 0     | 0     | 0     | 0     |
+	#| IccMax         | 6A    | 70A   | 31A   | 31A   |
+	#| VrVoltageLimit | 1.52V | 1.52V | 1.52V | 1.52V |
+	#| AcLoadline     | 10.3  | 1.8   | 3.1   | 3.1   |
+	#| DcLoadline     | 10.3  | 1.8   | 3.1   | 3.1   |
+	#+----------------+-------+-------+-------+-------+
+	register "domain_vr_config[VR_SYSTEM_AGENT]" = "{
+		.vr_config_enable = 1,
+		.psi1threshold = VR_CFG_AMP(20),
+		.psi2threshold = VR_CFG_AMP(5),
+		.psi3threshold = VR_CFG_AMP(1),
+		.psi3enable = 1,
+		.psi4enable = 1,
+		.imon_slope = 0x0,
+		.imon_offset = 0x0,
+		.icc_max = VR_CFG_AMP(6),
+		.voltage_limit = 1520,
+		.ac_loadline = 1030,
+		.dc_loadline = 1030,
+	}"
+
+	register "domain_vr_config[VR_IA_CORE]" = "{
+		.vr_config_enable = 1,
+		.psi1threshold = VR_CFG_AMP(20),
+		.psi2threshold = VR_CFG_AMP(5),
+		.psi3threshold = VR_CFG_AMP(1),
+		.psi3enable = 1,
+		.psi4enable = 1,
+		.imon_slope = 0x0,
+		.imon_offset = 0x0,
+		.icc_max = VR_CFG_AMP(70),
+		.voltage_limit = 1520,
+		.ac_loadline = 180,
+		.dc_loadline = 180,
+	}"
+
+	register "domain_vr_config[VR_GT_UNSLICED]" = "{
+		.vr_config_enable = 1,
+		.psi1threshold = VR_CFG_AMP(20),
+		.psi2threshold = VR_CFG_AMP(5),
+		.psi3threshold = VR_CFG_AMP(1),
+		.psi3enable = 1,
+		.psi4enable = 1,
+		.imon_slope = 0x0,
+		.imon_offset = 0x0,
+		.icc_max = VR_CFG_AMP(31),
+		.voltage_limit = 1520,
+		.ac_loadline = 310,
+		.dc_loadline = 310,
+	}"
+
+	register "domain_vr_config[VR_GT_SLICED]" = "{
+		.vr_config_enable = 1,
+		.psi1threshold = VR_CFG_AMP(20),
+		.psi2threshold = VR_CFG_AMP(5),
+		.psi3threshold = VR_CFG_AMP(1),
+		.psi3enable = 1,
+		.psi4enable = 1,
+		.imon_slope = 0x0,
+		.imon_offset = 0x0,
+		.icc_max = VR_CFG_AMP(31),
+		.voltage_limit = 1520,
+		.ac_loadline = 310,
+		.dc_loadline = 310,
+	}"
+
 	# Intel Common SoC Config
 	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC_SKIP)"	# Left Type-C Port
 	register "usb2_ports[1]" = "USB2_PORT_LONG(OC0)"	# Left Type-A Port

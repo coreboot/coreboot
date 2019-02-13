@@ -54,12 +54,12 @@ entries
 400          1       e       2        hyper_threading
 401         3        e      12        gfx_uma_size
 
-#404          4       r       0        unused
+#404          3       r       0        unused
 
 # coreboot config options: southbridge
-408          1       e       1        nmi
-409          2       e       7        power_on_after_fail
-411          1       e       11       sata_mode
+407          1       e       1        nmi
+408          2       e       7        power_on_after_fail
+410          2       e       11       sata_mode
 
 # coreboot config options: additional mainboard options
 412          4       e      10        systemp_type
@@ -130,6 +130,7 @@ enumerations
 10    4     LM75@9e
 11    0     AHCI
 11    1     Compatible
+11    2     Legacy
 12    0     32M
 12    1     64M
 12    2     96M

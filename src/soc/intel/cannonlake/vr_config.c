@@ -19,7 +19,54 @@
 #include <soc/vr_config.h>
 
 static const struct vr_config default_configs[NUM_VR_DOMAINS] = {
-	/* TODO: define this*/
+	[VR_SYSTEM_AGENT] = {
+		.vr_config_enable = 1,
+		.psi1threshold = VR_CFG_AMP(20),
+		.psi2threshold = VR_CFG_AMP(5),
+		.psi3threshold = VR_CFG_AMP(1),
+		.psi3enable = 1,
+		.psi4enable = 1,
+		.imon_slope = 0x0,
+		.imon_offset = 0x0,
+		.icc_max = VR_CFG_AMP(6),
+		.voltage_limit = 1520,
+	},
+	[VR_IA_CORE] = {
+		.vr_config_enable = 1,
+		.psi1threshold = VR_CFG_AMP(20),
+		.psi2threshold = VR_CFG_AMP(5),
+		.psi3threshold = VR_CFG_AMP(1),
+		.psi3enable = 1,
+		.psi4enable = 1,
+		.imon_slope = 0x0,
+		.imon_offset = 0x0,
+		.icc_max = VR_CFG_AMP(70),
+		.voltage_limit = 1520,
+	},
+	[VR_GT_UNSLICED] = {
+		.vr_config_enable = 1,
+		.psi1threshold = VR_CFG_AMP(20),
+		.psi2threshold = VR_CFG_AMP(5),
+		.psi3threshold = VR_CFG_AMP(1),
+		.psi3enable = 1,
+		.psi4enable = 1,
+		.imon_slope = 0x0,
+		.imon_offset = 0x0,
+		.icc_max = VR_CFG_AMP(31),
+		.voltage_limit = 1520,
+	},
+	[VR_GT_SLICED] = {
+		.vr_config_enable = 1,
+		.psi1threshold = VR_CFG_AMP(20),
+		.psi2threshold = VR_CFG_AMP(5),
+		.psi3threshold = VR_CFG_AMP(1),
+		.psi3enable = 1,
+		.psi4enable = 1,
+		.imon_slope = 0x0,
+		.imon_offset = 0x0,
+		.icc_max = VR_CFG_AMP(31),
+		.voltage_limit = 1520,
+	},
 };
 
 void fill_vr_domain_config(void *params,

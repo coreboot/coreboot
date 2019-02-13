@@ -55,6 +55,8 @@ struct vr_config {
 	uint16_t dc_loadline;
 };
 
+#define VR_CFG_AMP(i) ((i) * 4)
+
 /* VrConfig Settings for 4 domains
  * 0 = System Agent, 1 = IA Core,
  * 2 = GT unsliced,  3 = GT sliced */

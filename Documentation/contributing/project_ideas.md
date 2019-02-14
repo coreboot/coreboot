@@ -91,3 +91,22 @@ would help to ensure code quality and make the runtime code more robust.
 
 ### Mentors
 * Werner Zeh <werner.zeh@gmx.net>
+
+## Port payloads to ARM, AArch64, MIPS or RISC-V
+While we have a rather big set of payloads for x86 based platforms, all other
+architectures are rather limited. Improve the situation by porting a payload
+to one of the platforms, for example GRUB2, U-Boot (the UI part), Tianocore,
+yabits, FILO, or Linux-as-Payload.
+
+Since this is a bit of a catch-all idea, an application to GSoC should pick a
+combination of payload and architecture to support.
+
+### Requirements
+* coreboot knowledge: Should know the general boot flow in coreboot
+* other knowledge: It helps to be familiar with the architecture you want to
+  work on.
+* hardware requirements: Much of this can be done in QEMU or other emulators,
+  but the ability to test on real hardware is a plus.
+
+### Mentors
+* Simon Glass <sjg@chromium.org> for U-Boot payload projects

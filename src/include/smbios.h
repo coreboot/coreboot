@@ -250,6 +250,7 @@ struct smbios_type0 {
 	u8 system_bios_minor_release;
 	u8 ec_major_release;
 	u8 ec_minor_release;
+	u16 extended_bios_rom_size;
 	u8 eos[2];
 } __packed;
 

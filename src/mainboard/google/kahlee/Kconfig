@@ -62,7 +62,6 @@ config VARIANT_DIR
 	string
 	default "aleena" if BOARD_GOOGLE_ALEENA
 	default "careena" if BOARD_GOOGLE_CAREENA
-	default "delan" if BOARD_GOOGLE_DELAN
 	default "grunt" if BOARD_GOOGLE_GRUNT
 	default "liara" if BOARD_GOOGLE_LIARA
 
@@ -116,7 +115,6 @@ config GBB_HWID
 	depends on CHROMEOS
 	default "ALEENA TEST 7281" if BOARD_GOOGLE_ALEENA
 	default "CAREENA TEST 8777" if BOARD_GOOGLE_CAREENA
-	default "DELAN TEST 0359" if BOARD_GOOGLE_DELAN
 	default "GRUNT TEST 8296" if BOARD_GOOGLE_GRUNT
 	default "LIARA TEST 0464" if BOARD_GOOGLE_LIARA
 

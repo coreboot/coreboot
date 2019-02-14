@@ -34,7 +34,7 @@ static void max98373_fill_ssdt(struct device *dev)
 	struct acpi_i2c i2c = {
 		.address = dev->path.i2c.device,
 		.mode_10bit = dev->path.i2c.mode_10bit,
-		.speed = config->bus_speed ? : I2C_SPEED_STANDARD,
+		.speed = config->bus_speed ? : I2C_SPEED_FAST,
 		.resource = scope,
 	};
 	struct acpi_dp *dp;

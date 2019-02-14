@@ -18,6 +18,13 @@ else
 $(eval $(call create_class_compiler,libagesa,x86_64))
 endif
 
+$(obj)/libagesa.a: $$(libagesa-objs)
+	@printf "    AGESA        $(subst $(obj)/,,$(@))\n"
+	$(AR_libagesa) rcsDT $@ $+
+
+romstage-libs  += $(obj)/libagesa.a
+ramstage-libs  += $(obj)/libagesa.a
+
 # buildOpts should be in libagesa
 $(obj)/romstage/mainboard/$(MAINBOARDDIR)/buildOpts.o: CPPFLAGS_x86_32 += $(BUILDOPTS_INCLUDES)
 $(obj)/ramstage/mainboard/$(MAINBOARDDIR)/buildOpts.o: CPPFLAGS_x86_32 += $(BUILDOPTS_INCLUDES)

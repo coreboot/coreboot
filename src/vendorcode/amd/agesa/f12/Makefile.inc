@@ -55,10 +55,3 @@ CPPFLAGS_x86_64 += $(AGESA_INC) $(CPPFLAGS_x86_ANY)
 
 subdirs-y += Legacy/Proc
 subdirs-y += $(dir $(shell cd $(dir); find Proc -name Makefile.inc))
-
-$(obj)/libagesa.fam12.a: $$(libagesa-objs)
-	@printf "    AGESA        $(subst $(obj)/,,$(@))\n"
-	$(AR_libagesa) rcsDT $@ $+
-
-romstage-libs  += $(obj)/libagesa.fam12.a
-ramstage-libs  += $(obj)/libagesa.fam12.a

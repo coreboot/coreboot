@@ -39,9 +39,8 @@ static void wrap_putchar(unsigned char byte, void *data)
 	do_putchar(byte);
 }
 
-int do_printk(int msg_level, const char *fmt, ...)
+int vprintk(int msg_level, const char *fmt, va_list args)
 {
-	va_list args;
 	int i;
 
 	if (IS_ENABLED(CONFIG_SQUELCH_EARLY_SMP) && ENV_CACHE_AS_RAM &&
@@ -60,9 +59,7 @@ int do_printk(int msg_level, const char *fmt, ...)
 	spin_lock(&console_lock);
 #endif
 
-	va_start(args, fmt);
 	i = vtxprintf(wrap_putchar, fmt, args, NULL);
-	va_end(args);
 
 	console_tx_flush();
 
@@ -78,12 +75,14 @@ int do_printk(int msg_level, const char *fmt, ...)
 	return i;
 }
 
-#if IS_ENABLED(CONFIG_VBOOT)
-void do_printk_va_list(int msg_level, const char *fmt, va_list args)
+int do_printk(int msg_level, const char *fmt, ...)
 {
-	if (!console_log_level(msg_level))
-		return;
-	vtxprintf(wrap_putchar, fmt, args, NULL);
-	console_tx_flush();
+	va_list args;
+	int i;
+
+	va_start(args, fmt);
+	i = vprintk(msg_level, fmt, args);
+	va_end(args);
+
+	return i;
 }
-#endif /* CONFIG_VBOOT */

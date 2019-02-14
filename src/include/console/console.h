@@ -19,6 +19,7 @@
 #include <stdint.h>
 #include <arch/cpu.h>
 #include <console/post_codes.h>
+#include <console/vtxprintf.h>
 #include <commonlib/loglevel.h>
 
 #define RAM_DEBUG (IS_ENABLED(CONFIG_DEBUG_RAM_SETUP) ? BIOS_DEBUG : BIOS_NEVER)
@@ -56,8 +57,6 @@ void die_notify(void);
 #if __CONSOLE_ENABLE__
 asmlinkage void console_init(void);
 int console_log_level(int msg_level);
-int do_printk(int msg_level, const char *fmt, ...)
-	__attribute__((format(printf, 2, 3)));
 void do_putchar(unsigned char byte);
 
 #define printk(LEVEL, fmt, args...) \
@@ -82,15 +81,10 @@ static inline void printk(int LEVEL, const char *fmt, ...) {}
 static inline void do_putchar(unsigned char byte) {}
 #endif
 
-#if IS_ENABLED(CONFIG_VBOOT)
-/* FIXME: Collision of varargs with AMD headers without guard. */
-#include <console/vtxprintf.h>
-#if __CONSOLE_ENABLE__
-void do_printk_va_list(int msg_level, const char *fmt, va_list args);
-#else
-static inline void do_printk_va_list(int l, const char *fmt, va_list args) {}
-#endif
-#endif
+int vprintk(int msg_level, const char *fmt, va_list args);
+
+int do_printk(int msg_level, const char *fmt, ...)
+	__attribute__((format(printf, 2, 3)));
 
 #endif /* !__ROMCC__ */
 

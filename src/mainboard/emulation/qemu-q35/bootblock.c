@@ -14,6 +14,7 @@
 #include <device/pci_ops.h>
 #include <bootblock_common.h>
 #include <southbridge/intel/i82801ix/i82801ix.h>
+#include <console/console.h>
 
 /* Just define these here, there is no gm35.h file to include. */
 #define D0F0_PCIEXBAR_LO 0x60
@@ -39,6 +40,12 @@ static void bootblock_northbridge_init(void)
 	pci_io_write_config32(PCI_DEV(0,0,0), D0F0_PCIEXBAR_HI, reg);
 	reg = CONFIG_MMCONF_BASE_ADDRESS | 1; /* 256MiB - 0-255 buses. */
 	pci_io_write_config32(PCI_DEV(0,0,0), D0F0_PCIEXBAR_LO, reg);
+
+	/* MCFG is now active. If it's not qemu was started for machine PC */
+	if (CONFIG(BOOTBLOCK_CONSOLE) &&
+	    (pci_read_config32(PCI_DEV(0, 0, 0), D0F0_PCIEXBAR_LO) !=
+	     (CONFIG_MMCONF_BASE_ADDRESS | 1)))
+		die("You must run qemu for machine Q35 (-M q35)");
 }
 
 static void enable_spi_prefetch(void)

@@ -188,7 +188,7 @@ static const struct pad_config gpio_table[] = {
 /* I2S2_SCLK */		PAD_NC(GPP_H0, NONE),
 /* I2S2_SFRM */		PAD_CFG_NF(GPP_H1, NONE, DEEP, NF3), /* CNV_RF_RESET# */
 /* I2S2_TXD */		PAD_CFG_NF(GPP_H2, NONE, DEEP, NF3), /* CLKREQ_CNV# */
-/* I2S2_RXD */		PAD_CFG_GPI(GPP_H3, NONE, DEEP), /* CNVI_EN# */
+/* I2S2_RXD */		PAD_CFG_GPO(GPP_H3, 0, DEEP), /* CNVI_EN# */
 /* I2C2_SDA */		PAD_NC(GPP_H4, NONE), /* T388 */
 /* I2C2_SCL */		PAD_NC(GPP_H5, NONE), /* T389 */
 /* I2C3_SDA */		PAD_NC(GPP_H6, NONE), /* T378 */

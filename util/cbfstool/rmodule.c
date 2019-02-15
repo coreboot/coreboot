@@ -66,7 +66,6 @@ static int should_emit_amd64(Elf64_Rela *rel)
 
 	/* Only emit absolute relocations */
 	return (type == R_AMD64_64 ||
-		type == R_AMD64_PC64 ||
 		type == R_AMD64_32S ||
 		type == R_AMD64_32);
 }

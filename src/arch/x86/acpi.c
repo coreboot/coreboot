@@ -47,6 +47,7 @@
 #include <cpu/x86/lapic_def.h>
 #include <cpu/cpu.h>
 #include <cbfs.h>
+#include <version.h>
 
 u8 acpi_checksum(u8 *table, u32 length)
 {
@@ -409,7 +410,7 @@ void acpi_create_ssdt_generator(acpi_header_t *ssdt, const char *oem_table_id)
 	memcpy(&ssdt->oem_table_id, oem_table_id, 8);
 	ssdt->oem_revision = 42;
 	memcpy(&ssdt->asl_compiler_id, ASLC, 4);
-	ssdt->asl_compiler_revision = 42;
+	ssdt->asl_compiler_revision = asl_revision;
 	ssdt->length = sizeof(acpi_header_t);
 
 	acpigen_set_current((char *) current);
@@ -1056,7 +1057,7 @@ void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
 	memcpy(header->oem_id, OEM_ID, 6);
 	memcpy(header->oem_table_id, ACPI_TABLE_CREATOR, 8);
 	memcpy(header->asl_compiler_id, ASLC, 4);
-	header->asl_compiler_revision = 0;
+	header->asl_compiler_revision = asl_revision;
 
 	fadt->firmware_ctrl = (unsigned long) facs;
 	fadt->dsdt = (unsigned long) dsdt;

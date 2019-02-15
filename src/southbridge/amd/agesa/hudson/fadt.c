@@ -22,6 +22,8 @@
 #include <arch/acpi.h>
 #include <arch/io.h>
 #include <device/device.h>
+#include <version.h>
+
 #include "hudson.h"
 #include "smi.h"
 
@@ -53,7 +55,7 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 	memcpy(header->oem_id, OEM_ID, 6);
 	memcpy(header->oem_table_id, ACPI_TABLE_CREATOR, 8);
 	memcpy(header->asl_compiler_id, ASLC, 4);
-	header->asl_compiler_revision = 0;
+	header->asl_compiler_revision = asl_revision;
 
 	if ((uintptr_t)facs > 0xffffffff)
 		printk(BIOS_DEBUG, "ACPI: FACS lives above 4G\n");

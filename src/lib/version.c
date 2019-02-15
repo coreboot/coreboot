@@ -43,3 +43,5 @@ const struct bcd_date coreboot_build_date = {
 	.day = COREBOOT_BUILD_DAY_BCD,
 	.weekday = COREBOOT_BUILD_WEEKDAY_BCD,
 };
+
+const unsigned int asl_revision = ASL_VERSION;

@@ -22,6 +22,8 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
+#include <version.h>
+
 #include "i82371eb.h"
 
 /**
@@ -44,7 +46,7 @@ void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
 	memcpy(header->oem_id, OEM_ID, 6);
 	memcpy(header->oem_table_id, ACPI_TABLE_CREATOR, 8);
 	memcpy(header->asl_compiler_id, ASLC, 4);
-	header->asl_compiler_revision = 42;
+	header->asl_compiler_revision = asl_revision;
 
 	fadt->firmware_ctrl = (uintptr_t)facs;
 	fadt->dsdt = (uintptr_t)dsdt;

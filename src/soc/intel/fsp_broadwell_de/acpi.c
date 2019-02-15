@@ -38,6 +38,7 @@
 #include <soc/pci_devs.h>
 #include <soc/broadwell_de.h>
 #include <chip.h>
+#include <version.h>
 
 uint16_t get_pmbase(void)
 {
@@ -171,7 +172,7 @@ void acpi_fill_in_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
 	memcpy(header->oem_id, OEM_ID, 6);
 	memcpy(header->oem_table_id, ACPI_TABLE_CREATOR, 8);
 	memcpy(header->asl_compiler_id, ASLC, 4);
-	header->asl_compiler_revision = 1;
+	header->asl_compiler_revision = asl_revision;
 
 	/* ACPI Pointers */
 	fadt->firmware_ctrl = (unsigned long) facs;

@@ -20,6 +20,7 @@
 #include <arch/acpi.h>
 #include <southbridge/intel/fsp_rangeley/soc.h>
 #include <arch/io.h>
+#include <version.h>
 
 #if IS_ENABLED(CONFIG_HAVE_SMI_HANDLER)
 #include <cpu/x86/smm.h>
@@ -52,7 +53,7 @@ void acpi_fill_in_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 	memcpy(header->oem_id, OEM_ID, 6);
 	memcpy(header->oem_table_id, ACPI_TABLE_CREATOR, 8);
 	memcpy(header->asl_compiler_id, ASLC, 4);
-	header->asl_compiler_revision = 1;
+	header->asl_compiler_revision = asl_revision;
 
 	/* ACPI Pointers */
 	fadt->firmware_ctrl = (unsigned long) facs;

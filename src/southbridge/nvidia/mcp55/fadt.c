@@ -22,6 +22,7 @@
 #include <arch/io.h>
 #include <device/device.h>
 #include <device/pci_ids.h>
+#include <version.h>
 
 extern unsigned pm_base;
 
@@ -43,7 +44,7 @@ void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
 	memcpy(header->oem_id, OEM_ID, 6);
 	memcpy(header->oem_table_id, ACPI_TABLE_CREATOR, 8);
 	memcpy(header->asl_compiler_id, ASLC, 4);
-	header->asl_compiler_revision = 42;
+	header->asl_compiler_revision = asl_revision;
 
 	printk(BIOS_INFO, "ACPI: pm_base: %u...\n", pm_base);
 

@@ -34,6 +34,7 @@
 #include <soc/northbridge.h>
 #include <soc/nvs.h>
 #include <soc/gpio.h>
+#include <version.h>
 
 unsigned long acpi_fill_madt(unsigned long current)
 {
@@ -82,7 +83,7 @@ void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
 	memcpy(header->oem_id, OEM_ID, 6);
 	memcpy(header->oem_table_id, ACPI_TABLE_CREATOR, 8);
 	memcpy(header->asl_compiler_id, ASLC, 4);
-	header->asl_compiler_revision = 0;
+	header->asl_compiler_revision = asl_revision;
 
 	fadt->firmware_ctrl = (u32) facs;
 	fadt->dsdt = (u32) dsdt;

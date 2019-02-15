@@ -27,4 +27,7 @@ struct bcd_date {
 
 extern const struct bcd_date coreboot_build_date;
 
+/* IASL version */
+extern const unsigned int asl_revision;
+
 #endif /* VERSION_H */

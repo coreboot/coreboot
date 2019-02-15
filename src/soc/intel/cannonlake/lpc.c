@@ -70,19 +70,25 @@ void soc_setup_dmi_pcr_io_dec(uint32_t *gen_io_dec)
 uint8_t get_pch_series(void)
 {
 	uint16_t lpc_did_hi_byte;
-
+	uint8_t pch_series = PCH_UNKNOWN_SERIES;
 	/*
 	 * Fetch upper 8 bits on LPC device ID to determine PCH type
 	 * Adding 1 to the offset to fetch upper 8 bits
 	 */
 	lpc_did_hi_byte = pci_read_config8(PCH_DEV_LPC, PCI_DEVICE_ID + 1);
 
-	if (lpc_did_hi_byte == 0x9D)
-		return PCH_LP;
-	else if (lpc_did_hi_byte == 0xA3)
-		return PCH_H;
-	else
-		return PCH_UNKNOWN_SERIES;
+	switch (lpc_did_hi_byte) {
+	case 0x9D: /* CNL-LP */
+	case 0x02: /* CML-LP */
+		pch_series = PCH_LP;
+		break;
+	case 0xA3:
+		pch_series = PCH_H;
+		break;
+	default:
+		break;
+	}
+	return pch_series;
 }
 
 #if ENV_RAMSTAGE

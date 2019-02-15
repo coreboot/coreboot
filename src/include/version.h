@@ -10,6 +10,8 @@ extern const char coreboot_version[];
 extern const char coreboot_extra_version[];
 extern const char coreboot_build[];
 extern const unsigned int coreboot_version_timestamp;
+extern const unsigned int coreboot_major_revision;
+extern const unsigned int coreboot_minor_revision;
 
 /* When coreboot was compiled */
 extern const char coreboot_compile_time[];

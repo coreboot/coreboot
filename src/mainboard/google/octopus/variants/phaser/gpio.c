@@ -68,13 +68,21 @@ static const struct pad_config sku1_default_override_table[] = {
 	PAD_NC(GPIO_214, DN_20K),
 };
 
+bool no_touchscreen_sku(uint32_t sku_id)
+{
+	if ((sku_id == 1) || (sku_id == 6))
+		return true;
+	else
+		return false;
+}
+
 const struct pad_config *variant_override_gpio_table(size_t *num)
 {
 	const struct pad_config *c;
 	uint32_t sku_id = SKU_UNKNOWN;
 
 	google_chromeec_cbi_get_sku_id(&sku_id);
-	if (sku_id == 1) {
+	if (no_touchscreen_sku(sku_id)) {
 		c = sku1_default_override_table;
 		*num = ARRAY_SIZE(sku1_default_override_table);
 	} else {

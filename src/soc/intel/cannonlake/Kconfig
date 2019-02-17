@@ -235,6 +235,15 @@ config CBFS_SIZE
 	hex
 	default 0x200000
 
+config MB_HAS_ACTIVE_HIGH_SD_PWR_ENABLE
+	bool
+	default n
+	help
+	  Select this if the board has a SD_PWR_ENABLE pin connected to a
+	  active high sensing load switch to turn on power to the card reader.
+	  This will enable a workaround in ASL _PS3 and _PS0 methods to force
+	  SD_PWR_ENABLE to stay low in D3.
+
 choice
 	prompt "Cache-as-ram implementation"
 	default USE_CANNONLAKE_CAR_NEM_ENHANCED if MAINBOARD_HAS_CHROMEOS

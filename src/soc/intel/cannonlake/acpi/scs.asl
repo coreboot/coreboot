@@ -111,6 +111,11 @@ Scope (\_SB.PCI0) {
 			/* Set Power State to D0 */
 			And (PMCR, 0xFFFC, PMCR)
 			Store (PMCR, ^TEMP)
+
+#if IS_ENABLED(CONFIG_MB_HAS_ACTIVE_HIGH_SD_PWR_ENABLE)
+			/* Change pad mode to Native */
+			GPMO(SD_PWR_EN_PIN, 0x1)
+#endif
 		}
 
 		Method (_PS3, 0, Serialized)
@@ -120,6 +125,17 @@ Scope (\_SB.PCI0) {
 			/* Set Power State to D3 */
 			Or (PMCR, 0x0003, PMCR)
 			Store (PMCR, ^TEMP)
+
+#if IS_ENABLED(CONFIG_MB_HAS_ACTIVE_HIGH_SD_PWR_ENABLE)
+			/* Change pad mode to GPIO control */
+			GPMO(SD_PWR_EN_PIN, 0x0)
+
+			/* Enable Tx Buffer */
+			GTXE(SD_PWR_EN_PIN, 0x1)
+
+			/* Drive TX to zero */
+			CTXS(SD_PWR_EN_PIN)
+#endif
 		}
 
 		Device (CARD)

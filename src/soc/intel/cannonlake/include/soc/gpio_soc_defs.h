@@ -352,4 +352,6 @@
 #define NUM_GPIO_COM3_PADS	(GPIO_RSVD_38 - HDA_BCLK + 1)
 
 #define TOTAL_PADS		275
+
+#define SD_PWR_EN_PIN		GPP_A17
 #endif

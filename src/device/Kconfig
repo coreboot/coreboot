@@ -613,6 +613,41 @@ config VGA_BIOS_ID
 
 	  Under GNU/Linux you can run `lspci -nn` to list the IDs of your PCI devices.
 
+config VGA_BIOS_DGPU
+	bool "Add a discrete VGA BIOS image"
+	depends on VGA_BIOS
+	help
+	  Select this option if you have a VGA BIOS image for discrete GPU
+	  that you would like to add to your ROM.
+
+	  You will be able to specify the location and file name of the
+	  image later.
+
+config VGA_BIOS_DGPU_FILE
+	string "Discrete VGA BIOS path and filename"
+	depends on VGA_BIOS_DGPU
+	default "vgabios_dgpu.bin"
+	help
+	  The path and filename of the file to use as VGA BIOS for discrete GPU.
+
+config VGA_BIOS_DGPU_ID
+	string "Discrete VGA device PCI IDs"
+	depends on VGA_BIOS_DGPU
+	default "1002,6663"
+	help
+	  The comma-separated PCI vendor and device ID that would associate
+	  your VGA BIOS to your discrete video card.
+
+	  Examples:
+	      1002,6663 for HD 8570M
+	      1002,6665 for R5 M230
+
+	  In the above examples 1002 is the PCI vendor ID (in hex, but without
+	  the "0x" prefix) and 6663 / 6665 specifies the PCI device ID of the
+	  discrete video card (also in hex, without "0x" prefix).
+
+	  Under GNU/Linux you can run `lspci -nn` to list the IDs of your PCI devices.
+
 config INTEL_GMA_HAVE_VBT
 	bool
 	help

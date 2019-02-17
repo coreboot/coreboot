@@ -8,7 +8,7 @@ Download, configure, and build coreboot
 ---------------------------------------
 
 ### Step 1 - Install tools and libraries needed for coreboot
-    $ sudo apt-get install -y bison build-essential curl flex git gnat-5 libncurses5-dev m4 zlib1g-dev
+    $ sudo apt-get install -y bison build-essential curl flex git gnat libncurses5-dev m4 zlib1g-dev
 
 ### Step 2 - Download coreboot source tree
     $ git clone https://review.coreboot.org/coreboot
@@ -99,8 +99,9 @@ required installed by default.
 on some Ubuntu flavors, and not on others.
 * `git` is needed to download coreboot from the coreboot git repository.
 * `libncurses5-dev` is needed to build the menu for 'make menuconfig'
-* `m4, bison, curl, flex, gnat-5, zlib1g-dev` are needed to build the coreboot
-toolchain.
+* `m4, bison, curl, flex, zlib1g-dev, gcc, gnat` and `g++` or `clang`
+are needed to build the coreboot toolchain. `gcc` and `gnat` have to be
+of the same version.
 
 If you started with a different distribution, you might need to install many
 other items which vary by distribution.

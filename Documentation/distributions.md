@@ -80,3 +80,12 @@ you need to store data and state on the computer.
 Heads is not just another Linux distribution – it combines physical hardening
 of specific hardware platforms and flash security features with custom coreboot
 firmware and a Linux boot loader in ROM.
+
+### Skulls
+
+[Skulls](https://github.com/merge/skulls) provides firmware images for
+laptops like the Lenovo Thinkpad X230. It uses upstream coreboot, an easy
+to use payload like SeaBIOS and Intel's latest microcode update.
+
+It simplifies installation and includes compact documentation. Skulls also
+enables easy switching to [Heads](#heads) and back.

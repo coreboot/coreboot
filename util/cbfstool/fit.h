@@ -72,11 +72,4 @@ int fit_add_microcode_file(struct fit_table *fit,
 			   fit_offset_converter_t offset_helper,
 			   const size_t max_fit_entries);
 
-/* Legacy code */
-int fit_update_table(struct buffer *bootblock, struct cbfs_image *image,
-		     const char *microcode_blob_name,
-		     unsigned int empty_entries,
-		     fit_offset_converter_t offset_fn, uint32_t topswap_size,
-		     uint32_t first_mcu_addr);
-
 #endif

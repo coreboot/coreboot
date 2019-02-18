@@ -21,7 +21,6 @@ cbfsobj += cbfs-mkpayload.o
 cbfsobj += elfheaders.o
 cbfsobj += rmodule.o
 cbfsobj += xdr.o
-cbfsobj += fit.o
 cbfsobj += partitioned_file.o
 # COMMONLIB
 cbfsobj += cbfs.o

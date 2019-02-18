@@ -28,7 +28,6 @@
 #include "cbfs_image.h"
 #include "cbfs_sections.h"
 #include "elfparsing.h"
-#include "fit.h"
 #include "partitioned_file.h"
 #include <commonlib/fsp.h>
 #include <commonlib/endian.h>
@@ -84,7 +83,6 @@ static struct param {
 	bool autogen_attr;
 	bool machine_parseable;
 	bool unprocessed;
-	int fit_empty_entries;
 	enum comp_algo compression;
 	int precompression;
 	enum vb2_hash_algorithm hash;
@@ -1190,54 +1188,6 @@ static int cbfs_read(void)
 	return buffer_write_file(param.image_region, param.filename);
 }
 
-static int cbfs_update_fit(void)
-{
-	if (!param.name) {
-		ERROR("You need to specify -n/--name.\n");
-		return 1;
-	}
-
-	if (param.fit_empty_entries <= 0) {
-		ERROR("Invalid number of fit entries "
-		        "(-x/--empty-fits): %d\n", param.fit_empty_entries);
-		return 1;
-	}
-
-	struct buffer bootblock;
-	// The bootblock is part of the CBFS on x86
-	buffer_clone(&bootblock, param.image_region);
-
-	struct cbfs_image image;
-	if (cbfs_image_from_buffer(&image, param.image_region,
-							param.headeroffset))
-		return 1;
-
-	uint32_t addr = 0;
-
-	/*
-	 * Get the address of provided region for first row.
-	 */
-	if (param.ucode_region) {
-		struct buffer ucode;
-
-		if (partitioned_file_read_region(&ucode,
-				param.image_file, param.ucode_region))
-			addr = -convert_to_from_top_aligned(&ucode, 0);
-		else
-			return 1;
-	}
-
-
-	if (fit_update_table(&bootblock, &image, param.name,
-			param.fit_empty_entries, convert_to_from_top_aligned,
-						param.topswap_size, addr))
-		return 1;
-
-	// The region to be written depends on the type of image, so we write it
-	// here rather than having main() write the CBFS region back as usual.
-	return !partitioned_file_write_region(param.image_file, &bootblock);
-}
-
 static int cbfs_copy(void)
 {
 	struct cbfs_image src_image;
@@ -1320,7 +1270,6 @@ static const struct command commands[] = {
 	{"print", "H:r:vkh?", cbfs_print, true, false},
 	{"read", "r:f:vh?", cbfs_read, true, false},
 	{"remove", "H:r:n:vh?", cbfs_remove, true, true},
-	{"update-fit", "H:r:n:x:vh?j:q:", cbfs_update_fit, true, true},
 	{"write", "r:f:i:Fudvh?", cbfs_write, true, true},
 	{"expand", "r:h?", cbfs_expand, true, true},
 	{"truncate", "r:h?", cbfs_truncate, true, true},
@@ -1486,15 +1435,6 @@ static void usage(char *name)
 			"Truncate CBFS and print new size on stdout\n"
 	     " expand [-r fmap-region]                                     "
 			"Expand CBFS to span entire region\n"
-	     " update-fit [-r image,regions] -n MICROCODE_BLOB_NAME \\\n"
-	     "        -x EMTPY_FIT_ENTRIES \\                         \n"
-	     "        [-j topswap-size [-q ucode-region](Intel CPUs only)] "
-			"Updates the FIT table with microcode entries.\n"
-	     "                                                         "
-	     "    ucode-region is a region in the FMAP, its address is \n"
-	     "                                                         "
-	     "    inserted as the first entry in the topswap FIT.  \n"
-	     "\n"
 	     "OFFSETs:\n"
 	     "  Numbers accompanying -b, -H, and -o switches* may be provided\n"
 	     "  in two possible formats: if their value is greater than\n"
@@ -1731,15 +1671,6 @@ int main(int argc, char **argv)
 				break;
 			case 'w':
 				param.show_immutable = true;
-				break;
-			case 'x':
-				param.fit_empty_entries = strtol(
-						optarg, &suffix, 0);
-				if (!*optarg || (suffix && *suffix)) {
-					ERROR("Invalid number of fit entries "
-						"'%s'.\n", optarg);
-					return 1;
-				}
 				break;
 			case 'j':
 				param.topswap_size = strtol(optarg, NULL, 0);

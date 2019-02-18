@@ -46,5 +46,5 @@ config INTEL_TOP_SWAP_FIT_ENTRY_FMAP_REG
 	  hold a microcode) whose address as the first entry in the topswap FIT.
 	  This is useful in creating a asymmetric FIT in top swap bootblock
 	  than the one in non-topswap bootblock. This string will be passed
-	  onto cbfstool (-q option). cbfstool will not parse the region for MCU
+	  onto ifittool (-A -n option). ifittool will not parse the region for MCU
 	  entries, and only locate the region and insert its address into FIT.

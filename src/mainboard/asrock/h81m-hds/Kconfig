@@ -40,14 +40,6 @@ config CBFS_SIZE
 	hex
 	default 0x200000
 
-#
-# The override of GFX_GMA_CPU_VARIANT should be removed once the patches
-# for dynamic CPU detection are merged in libgfxinit.
-#
-config GFX_GMA_CPU_VARIANT
-	string
-	default "Normal"
-
 config MAINBOARD_DIR
 	string
 	default asrock/h81m-hds

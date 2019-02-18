@@ -196,7 +196,7 @@ int spi_flash_cmd_wait_ready(const struct spi_flash *flash,
 int spi_flash_cmd_erase(const struct spi_flash *flash, u32 offset, size_t len)
 {
 	u32 start, end, erase_size;
-	int ret;
+	int ret = -1;
 	u8 cmd[4];
 
 	erase_size = flash->sector_size;

@@ -20,6 +20,7 @@
 #define BRIGHTNESS_DOWN \_SB.PCI0.GFX0.DECB
 #define ACPI_VIDEO_DEVICE \_SB.PCI0.GFX0
 #define EC_LENOVO_H8_ME_WORKAROUND 1
+#define EC_LENOVO_H8_ALT_FN_F2F3_LAYOUT 1
 
 #include <arch/acpi.h>
 DefinitionBlock(

@@ -195,6 +195,26 @@ Device(EC)
 		^HKEY.RHK (0x01)
 	}
 
+	/*
+	 * Alternative layout (like in the Thinkpad X1 Carbon 1st generation):
+	 *  * Fn-F2 (_Q11) -> not mapped
+	 *  * Fn-F3 (_Q12) -> scancode 0x01 (KEY_COFFEE)
+	 *
+	 * Default layout (like in the Thinkpad X220):
+	 *  * Fn-F2 (_Q11) -> scancode 0x01 (KEY_COFFEE)
+	 *  * Fn-F3 (_Q12) -> scancode 0x02 (KEY_BATTERY)
+	 */
+#ifdef EC_LENOVO_H8_ALT_FN_F2F3_LAYOUT
+	Method (_Q11, 0, NotSerialized)
+	{
+		// Not mapped
+	}
+
+	Method (_Q12, 0, NotSerialized)
+	{
+		^HKEY.RHK (0x02)
+	}
+#else
 	Method (_Q11, 0, NotSerialized)
 	{
 		^HKEY.RHK (0x02)
@@ -204,6 +224,7 @@ Device(EC)
 	{
 		^HKEY.RHK (0x03)
 	}
+#endif
 
 	Method (_Q64, 0, NotSerialized)
 	{

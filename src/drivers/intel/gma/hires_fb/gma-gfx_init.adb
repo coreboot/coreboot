@@ -13,7 +13,7 @@ use HW.GFX.GMA.Display_Probing;
 
 with GMA.Mainboard;
 
-package body GMA
+package body GMA.GFX_Init
 is
 
    fb_valid : boolean := false;
@@ -114,4 +114,4 @@ is
       end if;
    end gfxinit;
 
-end GMA;
+end GMA.GFX_Init;

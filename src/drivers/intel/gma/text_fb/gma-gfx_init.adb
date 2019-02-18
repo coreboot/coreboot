@@ -8,7 +8,7 @@ use HW.GFX.GMA.Display_Probing;
 
 with GMA.Mainboard;
 
-package body GMA
+package body GMA.GFX_Init
 is
 
    function fill_lb_framebuffer
@@ -65,4 +65,4 @@ is
       end if;
    end gfxinit;
 
-end GMA;
+end GMA.GFX_Init;

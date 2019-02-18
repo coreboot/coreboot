@@ -189,6 +189,12 @@ static const struct lpddr4_sku cbi_skus[] = {
 		.ch1_rank_density = LP4_8Gb_DENSITY,
 		.ch1_dual_rank = 1,
 	},
+	/* Dual Channel Config 6GiB System Capacity */
+	[7] = {
+		.speed = LP4_SPEED_2400,
+		.ch0_rank_density = LP4_12Gb_DENSITY,
+		.ch1_rank_density = LP4_12Gb_DENSITY,
+	},
 };
 
 static const struct lpddr4_cfg cbi_lp4cfg = {

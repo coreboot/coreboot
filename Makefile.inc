@@ -513,6 +513,7 @@ CBFSTOOL:=$(objutil)/cbfstool/cbfstool
 FMAPTOOL:=$(objutil)/cbfstool/fmaptool
 RMODTOOL:=$(objutil)/cbfstool/rmodtool
 IFWITOOL:=$(objutil)/cbfstool/ifwitool
+IFITTOOL:=$(objutil)/cbfstool/ifittool
 
 $(obj)/cbfstool: $(CBFSTOOL)
 	cp $< $@
@@ -524,6 +525,9 @@ $(obj)/rmodtool: $(RMODTOOL)
 	cp $< $@
 
 $(obj)/ifwitool: $(IFWITOOL)
+	cp $< $@
+
+$(obj)/ifittool: $(IFITTOOL)
 	cp $< $@
 
 _WINCHECK=$(shell uname -o 2> /dev/null)
@@ -638,7 +642,7 @@ install-git-commit-clangfmt:
 include util/crossgcc/Makefile.inc
 
 .PHONY: tools
-tools: $(objutil)/kconfig/conf $(CBFSTOOL) $(objutil)/cbfstool/cbfs-compression-tool $(FMAPTOOL) $(RMODTOOL) $(IFWITOOL) $(objutil)/nvramtool/nvramtool $(ROMCC_BIN) $(objutil)/sconfig/sconfig $(IFDTOOL) $(CBOOTIMAGE) $(AMDFWTOOL) $(FUTILITY) $(BINCFG)
+tools: $(objutil)/kconfig/conf $(CBFSTOOL) $(objutil)/cbfstool/cbfs-compression-tool $(FMAPTOOL) $(RMODTOOL) $(IFWITOOL) $(objutil)/nvramtool/nvramtool $(ROMCC_BIN) $(objutil)/sconfig/sconfig $(IFDTOOL) $(CBOOTIMAGE) $(AMDFWTOOL) $(FUTILITY) $(BINCFG) $(IFITTOOL)
 
 ###########################################################################
 # Common recipes for all stages
@@ -1008,10 +1012,9 @@ $(obj)/fmap.fmap: $(obj)/fmap.fmd $(FMAPTOOL)
 
 ifeq ($(CONFIG_INTEL_ADD_TOP_SWAP_BOOTBLOCK),y)
 TS_OPTIONS := -j $(CONFIG_INTEL_TOP_SWAP_BOOTBLOCK_SIZE)
-FIT_OPTIONS := $(TS_OPTIONS)
 endif
 ifneq ($(CONFIG_UPDATE_IMAGE),y)
-$(obj)/coreboot.pre: $(objcbfs)/bootblock.bin $$(prebuilt-files) $(CBFSTOOL) $$(cpu_ucode_cbfs_file) $(obj)/fmap.fmap $(obj)/fmap.desc
+$(obj)/coreboot.pre: $(objcbfs)/bootblock.bin $$(prebuilt-files) $(CBFSTOOL) $(IFITTOOL) $$(cpu_ucode_cbfs_file) $(obj)/fmap.fmap $(obj)/fmap.desc
 	$(CBFSTOOL) $@.tmp create -M $(obj)/fmap.fmap -r $(shell cat $(obj)/fmap.desc)
 ifeq ($(CONFIG_ARCH_X86),y)
 	$(CBFSTOOL) $@.tmp add \
@@ -1055,9 +1058,6 @@ $(REFCODE_BLOB): $(RMODTOOL)
 endif
 
 FIT_ENTRY=$(call strip_quotes, $(CONFIG_INTEL_TOP_SWAP_FIT_ENTRY_FMAP_REG))
-ifneq ($(FIT_ENTRY),)
-FIT_OPTIONS += -q $(FIT_ENTRY)
-endif
 
 ifeq ($(CONFIG_HAVE_RAMSTAGE),y)
 RAMSTAGE=$(objcbfs)/ramstage.elf
@@ -1087,15 +1087,38 @@ endif
 ifeq ($(CONFIG_CPU_INTEL_FIRMWARE_INTERFACE_TABLE),y)
 ifeq ($(CONFIG_CPU_MICROCODE_CBFS_EXTERNAL_HEADER),y)
 	@printf "    UPDATE-FIT\n"
-	$(CBFSTOOL) $@.tmp update-fit -n cpu_microcode_blob.bin -x $(CONFIG_CPU_INTEL_NUM_FIT_ENTRIES) \
-	$(FIT_OPTIONS)
+	$(IFITTOOL) -f $@.tmp -a -n cpu_microcode_blob.bin -t 1 -s $(CONFIG_CPU_INTEL_NUM_FIT_ENTRIES) \
+	-r COREBOOT
 endif
-
 ifeq ($(CONFIG_USE_CPU_MICROCODE_CBFS_BINS),y)
 	@printf "    UPDATE-FIT\n"
-	$(CBFSTOOL) $@.tmp update-fit -n cpu_microcode_blob.bin -x $(CONFIG_CPU_INTEL_NUM_FIT_ENTRIES) \
-	$(FIT_OPTIONS)
+	$(IFITTOOL) -f $@.tmp -a -n cpu_microcode_blob.bin -t 1 -s $(CONFIG_CPU_INTEL_NUM_FIT_ENTRIES) \
+	-r COREBOOT
 endif
+	$(IFITTOOL) -f $@.tmp -D -r COREBOOT
+
+# Second FIT in TOP_SWAP bootblock
+ifeq ($(CONFIG_INTEL_ADD_TOP_SWAP_BOOTBLOCK),y)
+# INTEL_TOP_SWAP_FIT_ENTRY_FMAP_REG adds a region as first ucode into the seconds bootblock
+ifneq ($(FIT_ENTRY),)
+	@printf "    UPDATE-FIT2\n"
+	$(IFITTOOL) -f $@.tmp -A -n $(FIT_ENTRY) -t 1 -s $(CONFIG_CPU_INTEL_NUM_FIT_ENTRIES) \
+	$(TS_OPTIONS) -r COREBOOT
+endif
+ifeq ($(CONFIG_CPU_MICROCODE_CBFS_EXTERNAL_HEADER),y)
+	@printf "    UPDATE-FIT2\n"
+	$(IFITTOOL) -f $@.tmp -a -n cpu_microcode_blob.bin -t 1 -s $(CONFIG_CPU_INTEL_NUM_FIT_ENTRIES) \
+	$(TS_OPTIONS) -r COREBOOT
+endif
+ifeq ($(CONFIG_USE_CPU_MICROCODE_CBFS_BINS),y)
+	@printf "    UPDATE-FIT2\n"
+	$(IFITTOOL) -f $@.tmp -a -n cpu_microcode_blob.bin -t 1 -s $(CONFIG_CPU_INTEL_NUM_FIT_ENTRIES) \
+	$(TS_OPTIONS) -r COREBOOT
+endif
+	$(IFITTOOL) -f $@.tmp -D $(TS_OPTIONS) -r COREBOOT
+
+endif
+
 endif
 	mv $@.tmp $@
 	@printf "    CBFSLAYOUT  $(subst $(obj)/,,$(@))\n\n"

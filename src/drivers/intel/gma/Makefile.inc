@@ -50,7 +50,7 @@ CONFIG_GFX_GMA_DEFAULT_MMIO := 0 # dummy, will be overwritten at runtime
 
 subdirs-y += ../../../../3rdparty/libgfxinit
 
-ramstage-y += gma.ads
+ramstage-y += gma.ads gma.adb
 
 ramstage-$(CONFIG_MAINBOARD_USE_LIBGFXINIT) += gma-gfx_init.ads
 ifeq ($(CONFIG_LINEAR_FRAMEBUFFER),y)

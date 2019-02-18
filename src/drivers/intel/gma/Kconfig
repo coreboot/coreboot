@@ -54,6 +54,9 @@ config INTEL_GMA_SWSMISCI
 	  Select this option for Atom-based platforms which use the SWSMISCI
 	  register (0xe0) rather than the SWSCI register (0xe8).
 
+config INTEL_GMA_LIBGFXINIT_EDID
+	bool
+
 config GFX_GMA_ANALOG_I2C_HDMI_B
 	bool
 
@@ -71,7 +74,7 @@ config GFX_GMA
 		|| SOC_INTEL_BROADWELL || SOC_INTEL_SKYLAKE || SOC_INTEL_APOLLOLAKE \
 		|| SOC_INTEL_KABYLAKE || SOC_INTEL_COFFEELAKE \
 		|| SOC_INTEL_WHISKEYLAKE
-	depends on MAINBOARD_USE_LIBGFXINIT
+	depends on MAINBOARD_USE_LIBGFXINIT || INTEL_GMA_LIBGFXINIT_EDID
 	select RAMSTAGE_LIBHWBASE
 
 config GFX_GMA_INTERNAL_IS_EDP

@@ -76,7 +76,6 @@ config MAINBOARD_USE_LIBGFXINIT
 	depends on MAINBOARD_HAS_LIBGFXINIT
 	select HAVE_VGA_TEXT_FRAMEBUFFER
 	select HAVE_LINEAR_FRAMEBUFFER
-	select RAMSTAGE_LIBHWBASE
 	select VGA if VGA_TEXT_FRAMEBUFFER
 	help
 	  Use the SPARK library `libgfxinit` for the native graphics

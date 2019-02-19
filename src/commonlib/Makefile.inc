@@ -36,3 +36,5 @@ verstage-y += lz4_wrapper.c
 romstage-y += lz4_wrapper.c
 ramstage-y += lz4_wrapper.c
 postcar-y += lz4_wrapper.c
+
+ramstage-y += sort.c

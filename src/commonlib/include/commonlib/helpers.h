@@ -38,6 +38,11 @@
 #define ABS(a) (((a) < 0) ? (-(a)) : (a))
 #define IS_POWER_OF_2(x)  (((x) & ((x) - 1)) == 0)
 #define DIV_ROUND_UP(x, y)  (((x) + (y) - 1) / (y))
+#define SWAP(a, b)	do { \
+				typeof(a) tmp = a; \
+				a = (typeof(a)) b; \
+				b = (typeof(b)) tmp; \
+			} while (0)
 /*
  * Divide positive or negative dividend by positive divisor and round
  * to closest integer. Result is undefined for negative divisors and

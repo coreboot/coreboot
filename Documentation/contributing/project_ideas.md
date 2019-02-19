@@ -13,6 +13,13 @@ should also list people interested in supporting people who want to work
 on them - since we started building this list for Google Summer of Code,
 we'll adopt its term for those people and call them mentors.
 
+The requirements for each project aim for productive work on the project,
+but it's always possible to learn them "on the job". If you have any
+doubt if you can bring yourself up to speed in a required time frame
+(e.g. for GSoC), feel free to ask in the community or the mentors listed
+with the projects. We can then try together to figure out if you're a
+good match for a project, even when requirements might not all be met.
+
 ## Provide toolchain binaries
 Our crossgcc subproject provides a uniform compiler environment for
 working on coreboot and related projects. Sadly, building it takes hours,
@@ -23,7 +30,6 @@ Windows, Mac OS. For Windows, this should also include the environment
 (shell, make, ...).
 
 ### Requirements
-
 * coreboot knowledge: Should know how to build coreboot images and where
   the compiler comes into play in our build system.
 * other knowledge: Should know how packages or installers for their

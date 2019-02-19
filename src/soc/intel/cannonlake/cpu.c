@@ -31,6 +31,8 @@
 #include <soc/pm.h>
 #include <soc/smm.h>
 #include <soc/systemagent.h>
+#include <cpu/x86/mtrr.h>
+#include <cpu/intel/microcode.h>
 
 /* Convert time in seconds to POWER_LIMIT_1_TIME MSR value */
 static const u8 power_limit_time_sec_to_msr[] = {
@@ -483,4 +485,35 @@ void soc_init_cpus(struct bus *cpu_bus)
 
 	/* Thermal throttle activation offset */
 	configure_thermal_target();
+}
+
+int soc_skip_ucode_update(u32 current_patch_id, u32 new_patch_id)
+{
+	msr_t msr1;
+	msr_t msr2;
+
+	/*
+	 * CFL and WHL CPU die are based on KBL CPU so we need to
+	 * have this check, where CNL CPU die is not based on KBL CPU
+	 * so skip this check for CNL.
+	 */
+	if (!IS_ENABLED(CONFIG_SOC_INTEL_COMMON_CANNONLAKE_BASE))
+		return 0;
+
+	/*
+	 * If PRMRR/SGX is supported the FIT microcode load will set the msr
+	 * 0x08b with the Patch revision id one less than the id in the
+	 * microcode binary. The PRMRR support is indicated in the MSR
+	 * MTRRCAP[12]. If SGX is not enabled, check and avoid reloading the
+	 * same microcode during CPU initialization. If SGX is enabled, as
+	 * part of SGX BIOS initialization steps, the same microcode needs to
+	 * be reloaded after the core PRMRR MSRs are programmed.
+	 */
+	msr1 = rdmsr(MTRR_CAP_MSR);
+	msr2 = rdmsr(MSR_PRMRR_PHYS_BASE);
+	if (msr2.lo && (current_patch_id == new_patch_id - 1))
+		return 0;
+
+	return (msr1.lo & PRMRR_SUPPORTED) &&
+		(current_patch_id == new_patch_id - 1);
 }

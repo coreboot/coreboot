@@ -8,7 +8,7 @@
  * Copyright (C) 2005-2009 coresystems GmbH
  * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>,
  * Raptor Engineering
- * Copyright (C) 2016-2017 Siemens AG
+ * Copyright (C) 2016-2019 Siemens AG
  *
  * ACPI FADT, FACS, and DSDT table support added by
  * Nick Barker <nick.barker9@btinternet.com>, and those portions
@@ -48,6 +48,7 @@
 #include <cpu/cpu.h>
 #include <cbfs.h>
 #include <version.h>
+#include <commonlib/sort.h>
 
 u8 acpi_checksum(u8 *table, u32 length)
 {
@@ -149,7 +150,7 @@ int acpi_create_madt_lapic(acpi_madt_lapic_t *lapic, u8 cpu, u8 apic)
 unsigned long acpi_create_madt_lapics(unsigned long current)
 {
 	struct device *cpu;
-	int index = 0;
+	int index, apic_ids[CONFIG_MAX_CPUS], num_cpus = 0;
 
 	for (cpu = all_devices; cpu; cpu = cpu->next) {
 		if ((cpu->path.type != DEVICE_PATH_APIC) ||
@@ -158,9 +159,14 @@ unsigned long acpi_create_madt_lapics(unsigned long current)
 		}
 		if (!cpu->enabled)
 			continue;
+		if (num_cpus >= ARRAY_SIZE(apic_ids))
+			break;
+		apic_ids[num_cpus++] = cpu->path.apic.apic_id;
+	}
+	bubblesort(apic_ids, num_cpus, NUM_ASCENDING);
+	for (index = 0; index < num_cpus; index++) {
 		current += acpi_create_madt_lapic((acpi_madt_lapic_t *)current,
-				index, cpu->path.apic.apic_id);
-		index++;
+				index, apic_ids[index]);
 	}
 
 	return current;

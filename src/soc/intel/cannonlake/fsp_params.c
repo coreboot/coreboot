@@ -88,6 +88,13 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 
 	mainboard_silicon_init_params(params);
 
+	/* Set PsysPmax if it is available from DT */
+	if (config->psys_pmax) {
+		printk(BIOS_DEBUG, "psys_pmax = %dW\n", config->psys_pmax);
+		/* PsysPmax is in unit of 1/8 Watt */
+		tconfig->PsysPmax = config->psys_pmax * 8;
+	}
+
 	/* Unlock upper 8 bytes of RTC RAM */
 	params->PchLockDownRtcMemoryLock = 0;
 

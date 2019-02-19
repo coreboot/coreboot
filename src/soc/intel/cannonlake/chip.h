@@ -216,6 +216,8 @@ struct soc_intel_cannonlake_config {
 	uint32_t tdp_psyspl3_dutycycle;
 	/* PL4 Value in Watts */
 	uint32_t tdp_pl4;
+	/* Estimated maximum platform power in Watts */
+	uint16_t psys_pmax;
 
 	/* Intel Speed Shift Technology */
 	uint8_t speed_shift_enable;

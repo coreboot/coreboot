@@ -17,4 +17,16 @@ INTERMEDIATE+=add_acm_fit
 add_acm_fit: $(obj)/coreboot.pre $(IFITTOOL)
 	$(IFITTOOL) -r COREBOOT -a -n txt_bios_acm.bin -t 2 -s $(CONFIG_CPU_INTEL_NUM_FIT_ENTRIES) -f $<
 
+# Initial BootBlock files
+ibb-files := $(foreach file,$(cbfs-files), \
+        $(if $(shell echo '$(call extract_nth,7,$(file))'|grep -- --ibb), \
+                $(call extract_nth,2,$(file)),))
+
+ibb-files += bootblock
+
+INTERMEDIATE+=add_ibb_fit
+add_ibb_fit: $(obj)/coreboot.pre $(IFITTOOL)
+	$(foreach file, $(ibb-files), $(shell $(IFITTOOL) -f $< -a -n $(file) -t 7 -s $(CONFIG_CPU_INTEL_NUM_FIT_ENTRIES) \
+        -r COREBOOT)) true
+
 endif

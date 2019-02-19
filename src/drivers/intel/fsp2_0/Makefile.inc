@@ -50,14 +50,14 @@ cbfs-files-$(CONFIG_FSP_CAR) += $(CONFIG_FSP_T_CBFS)
 $(CONFIG_FSP_T_CBFS)-file := $(call strip_quotes,$(CONFIG_FSP_T_FILE))
 $(CONFIG_FSP_T_CBFS)-type := fsp
 ifeq ($(CONFIG_FSP_T_XIP),y)
-$(CONFIG_FSP_T_CBFS)-options := --xip
+$(CONFIG_FSP_T_CBFS)-options := --xip $(TXTIBB)
 endif
 
 cbfs-files-$(CONFIG_ADD_FSP_BINARIES) += $(CONFIG_FSP_M_CBFS)
 $(CONFIG_FSP_M_CBFS)-file := $(call strip_quotes,$(CONFIG_FSP_M_FILE))
 $(CONFIG_FSP_M_CBFS)-type := fsp
 ifeq ($(CONFIG_FSP_M_XIP),y)
-$(CONFIG_FSP_M_CBFS)-options := --xip
+$(CONFIG_FSP_M_CBFS)-options := --xip $(TXTIBB)
 endif
 
 cbfs-files-$(CONFIG_ADD_FSP_BINARIES) += $(CONFIG_FSP_S_CBFS)

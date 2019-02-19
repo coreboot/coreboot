@@ -155,6 +155,7 @@ $(CONFIG_CBFS_PREFIX)/verstage-options += --xip
 endif
 
 endif
+$(CONFIG_CBFS_PREFIX)/verstage-options += $(TXTIBB)
 
 else # CONFIG_VBOOT_SEPARATE_VERSTAGE
 ifeq ($(CONFIG_VBOOT_STARTS_IN_BOOTBLOCK),y)

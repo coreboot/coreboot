@@ -30,7 +30,7 @@ cbfs-files-y += fsp.bin
 fsp.bin-file := $(call strip_quotes,$(CONFIG_FSP_FILE))
 fsp.bin-position := $(CONFIG_FSP_LOC)
 fsp.bin-type := fsp
-fsp.bin-options := --xip
+fsp.bin-options := --xip $(TXTIBB)
 endif
 
 ifeq ($(CONFIG_ENABLE_MRC_CACHE),y)

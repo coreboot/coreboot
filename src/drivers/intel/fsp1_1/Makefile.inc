@@ -52,7 +52,7 @@ ifeq ($(CONFIG_HAVE_FSP_BIN),y)
 cbfs-files-y += fsp.bin
 fsp.bin-file := $(call strip_quotes,$(CONFIG_FSP_FILE))
 fsp.bin-type := fsp
-fsp.bin-options := --xip
+fsp.bin-options := --xip $(TXTIBB)
 fsp.bin-COREBOOT-position := $(CONFIG_FSP_LOC)
 endif
 

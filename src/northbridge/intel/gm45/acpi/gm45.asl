@@ -75,4 +75,4 @@ Device (PDRC)
 #include "peg.asl"
 
 // Integrated graphics 0:2.0
-#include <drivers/intel/gma/acpi/non-pch.asl>
+#include <drivers/intel/gma/acpi/gma.asl>

@@ -46,4 +46,10 @@ config SMM_RESERVED_SIZE
 	hex
 	default 0x100000
 
+config INTEL_GMA_BCLV_OFFSET
+	default 0x61254
+
+config INTEL_GMA_BCLM_OFFSET
+	default 0x61256
+
 endif

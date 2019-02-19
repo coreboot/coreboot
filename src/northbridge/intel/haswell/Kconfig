@@ -107,4 +107,7 @@ config RO_REGION_ONLY
 	depends on VBOOT
 	default "mrc.bin"
 
+config INTEL_GMA_BCLV_OFFSET
+	default 0x48254
+
 endif

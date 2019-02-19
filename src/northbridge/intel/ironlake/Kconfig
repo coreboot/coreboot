@@ -61,4 +61,7 @@ config MMCONF_BASE_ADDRESS
 	hex
 	default 0xe0000000
 
+config INTEL_GMA_BCLV_OFFSET
+	default 0x48254
+
 endif

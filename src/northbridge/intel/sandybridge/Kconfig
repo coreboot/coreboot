@@ -121,4 +121,7 @@ config MRC_FILE
 
 endif # !USE_NATIVE_RAMINIT
 
+config INTEL_GMA_BCLV_OFFSET
+	default 0x48254
+
 endif

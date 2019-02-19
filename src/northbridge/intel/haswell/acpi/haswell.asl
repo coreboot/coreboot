@@ -48,4 +48,4 @@ Device (PDRC)
 }
 
 // Integrated graphics 0:2.0
-#include <drivers/intel/gma/acpi/pch.asl>
+#include <drivers/intel/gma/acpi/gma.asl>

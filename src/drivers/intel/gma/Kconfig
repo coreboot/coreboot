@@ -29,6 +29,22 @@ config INTEL_GMA_ACPI
 	bool
 	default n
 
+config INTEL_GMA_BCLV_OFFSET
+	hex
+	default 0xc8254
+
+config INTEL_GMA_BCLV_WIDTH
+	int
+	default 16
+
+config INTEL_GMA_BCLM_OFFSET
+	hex
+	default 0xc8256
+
+config INTEL_GMA_BCLM_WIDTH
+	int
+	default 16
+
 config INTEL_GMA_SSC_ALTERNATE_REF
 	bool
 	default n

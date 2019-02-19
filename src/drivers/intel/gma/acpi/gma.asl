@@ -19,10 +19,10 @@ Device (GFX0)
 	OperationRegion (GFRG, SystemMemory, And (BAR0, 0xfffffffffffffff0), 0x400000)
 	Field (GFRG, DWordAcc, NoLock, Preserve)
 	{
-		Offset (0x48254),
-		BCLV, 16,
-		Offset (0xc8256),
-		BCLM, 16
+		Offset (CONFIG_INTEL_GMA_BCLV_OFFSET),
+		BCLV, CONFIG_INTEL_GMA_BCLV_WIDTH,
+		Offset (CONFIG_INTEL_GMA_BCLM_OFFSET),
+		BCLM, CONFIG_INTEL_GMA_BCLM_WIDTH
 	}
 
 #include "configure_brightness_levels.asl"

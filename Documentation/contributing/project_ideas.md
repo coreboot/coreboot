@@ -110,3 +110,32 @@ combination of payload and architecture to support.
 
 ### Mentors
 * Simon Glass <sjg@chromium.org> for U-Boot payload projects
+
+## Fully support building coreboot with the Clang compiler
+Most coreboot code is written in C, and it would be useful to support
+a second compiler suite in addition to gcc. Clang is another popular
+compiler suite and the build system generally supports building coreboot
+with it, but firmware is a rather special situation and we need to
+adjust coreboot and Clang some more to get usable binaries out of that
+combination.
+
+The goal would be to get the emulation targets to boot reliably first,
+but also to support real hardware. If you don't have hardware around,
+you likely will find willing testers for devices they own and work from
+their bug reports.
+
+### Requirements
+* coreboot knowledge: Have a general concept of the build system
+* Clang knowledge: It may be necessary to apply minor modifications to Clang
+  itself, but at least there will be Clang-specific compiler options etc to
+  adapt, so some idea how compilers work and how to modify their behavior is
+  helpful.
+* hardware requirements: If you have your own hardware that is already
+  supported by coreboot that can be a good test target, but you will debug
+  other people's hardware, too.
+* debugging experience: It helps if you know how to get the most out of a bug
+  report, generate theories, build patches to test them and figure out what's
+  going on from the resulting logs.
+
+### Mentors
+* Patrick Georgi <patrick@georgi.software>

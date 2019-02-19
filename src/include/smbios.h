@@ -493,6 +493,7 @@ struct smbios_type38 {
 	u64 base_address;
 	u8 base_address_modifier;
 	u8 irq;
+	u8 eos[2];
 } __packed;
 
 enum smbios_bmc_interface_type {

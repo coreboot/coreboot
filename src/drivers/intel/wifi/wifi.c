@@ -350,6 +350,7 @@ static const unsigned short pci_device_ids[] = {
 	/* Harrison Peak */
 	PCI_DEVICE_ID_HrP_9560_SERIES_1_WIFI,
 	PCI_DEVICE_ID_HrP_9560_SERIES_2_WIFI,
+	PCI_DEVICE_ID_HrP_9560_SERIES_3_WIFI,
 	0
 };
 

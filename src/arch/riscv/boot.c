@@ -19,6 +19,7 @@
 #include <arch/encoding.h>
 #include <arch/smp/smp.h>
 #include <mcall.h>
+#include <commonlib/cbfs_serialized.h>
 
 /*
  * A pointer to the Flattened Device Tree passed to coreboot by the boot ROM.
@@ -32,6 +33,12 @@ static void do_arch_prog_run(struct prog *prog)
 	void (*doit)(int hart_id, void *fdt);
 	int hart_id;
 	void *fdt = prog_entry_arg(prog);
+
+	/*
+	 * Workaround selfboot putting the coreboot table into prog_entry_arg
+	 */
+	if (prog_cbfs_type(prog) == CBFS_TYPE_SELF)
+		fdt = HLS()->fdt;
 
 	/*
 	 * If prog_entry_arg is not set (e.g. by fit_payload), use fdt from HLS

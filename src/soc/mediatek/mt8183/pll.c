@@ -345,6 +345,9 @@ void mt_pll_init(void)
 	/* enable infrasys DCM */
 	setbits_le32(&mt8183_infracfg->infra_bus_dcm_ctrl, 0x3 << 21);
 
+	/* enable [11] for change i2c module source clock to TOPCKGEN */
+	setbits_le32(&mt8183_infracfg->module_clk_sel, 0x1 << 11);
+
 	/*
 	 * TOP CLKMUX -- DO NOT CHANGE WITHOUT ADJUSTING <soc/pll.h> CONSTANTS!
 	 */

@@ -17,6 +17,7 @@
 #include <soc/emi.h>
 #include <soc/mmu_operations.h>
 #include <soc/mt6358.h>
+#include <soc/rtc.h>
 
 #include "early_init.h"
 
@@ -27,6 +28,7 @@ void platform_romstage_main(void)
 		mainboard_early_init();
 
 	mt6358_init();
+	rtc_boot();
 	mt_mem_init(get_sdram_config());
 	mtk_mmu_after_dram();
 }

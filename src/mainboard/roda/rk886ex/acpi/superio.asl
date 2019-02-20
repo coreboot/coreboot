@@ -280,11 +280,11 @@ Device (SIO1)
 			}
 
 			CreateWordField(RSRC,
-				\_SB.PCI0.LPCB.SIO1.COMA._CRS._IOA._MIN, IOMN)
+				\_SB.PCI0.LPCB.SIO1.COMB._CRS._IOB._MIN, IOMN)
 			CreateWordField(RSRC,
-				\_SB.PCI0.LPCB.SIO1.COMA._CRS._IOA._MAX, IOMX)
+				\_SB.PCI0.LPCB.SIO1.COMB._CRS._IOB._MAX, IOMX)
 			CreateWordField(RSRC,
-				\_SB.PCI0.LPCB.SIO1.COMA._CRS._IRA._INT, IRQ)
+				\_SB.PCI0.LPCB.SIO1.COMB._CRS._IRB._INT, IRQ)
 
 			/* I/O Base */
 			Store (READ(0, 0x25, 0xfe), Local0)

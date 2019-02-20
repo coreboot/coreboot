@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2014 Siemens AG
+ * Copyright (C) 2014-2019 Siemens AG
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,6 +39,7 @@
 #define EIB_FEATRUE_OFFSET	0x00e
 #define LEN_MAGIC_NUM		0x007
 #define BLOCK_MAGIC		"H1W2M3I"
+#define HWI_MAX_NAME_LEN	32
 
 /* Define all supported block types. */
 enum {
@@ -78,6 +79,9 @@ static uint8_t *all_blocks[MAX_BLOCK_NUM] CAR_GLOBAL;
  * variable so that they can be used later to check boundaries.
  */
 static uint16_t all_blk_size[MAX_BLOCK_NUM] CAR_GLOBAL;
+
+/* Storage for the cbfs file name of the currently open hwi file. */
+static char current_hwi[HWI_MAX_NAME_LEN] CAR_GLOBAL;
 
 
 static uint32_t hwilib_read_bytes (const struct param_info *param, uint8_t *dst,
@@ -469,11 +473,21 @@ enum cb_err hwilib_find_blocks (const char *hwi_filename)
 	uint32_t next_offset = 1;
 	uint8_t **blk_ptr = car_get_var_ptr(&all_blocks[0]);
 	uint16_t *all_blk_size_ptr = car_get_var_ptr(&all_blk_size[0]);
+	char *curr_hwi_name_ptr = car_get_var_ptr(&current_hwi);
 	size_t filesize = 0;
 
 	/* Check for a valid parameter */
 	if (!hwi_filename)
 		return CB_ERR_ARG;
+	/* Check if this file is already open. If yes, just leave as there is
+	   nothing left to do here. */
+	if (curr_hwi_name_ptr &&
+	    !strncmp(curr_hwi_name_ptr, hwi_filename, HWI_MAX_NAME_LEN)) {
+		printk(BIOS_SPEW, "HWILIB: File \"%s\" already open.\n",
+			hwi_filename);
+		return CB_SUCCESS;
+	}
+
 	ptr = cbfs_boot_map_with_leak(hwi_filename, CBFS_TYPE_RAW, &filesize);
 	if (!ptr) {
 		printk(BIOS_ERR,"HWILIB: Missing file \"%s\" in cbfs.\n",
@@ -533,8 +547,11 @@ enum cb_err hwilib_find_blocks (const char *hwi_filename)
 	}
 	/* We should have found at least one valid block */
 	if (blk_ptr[BLK_HIB] || blk_ptr[BLK_SIB] || blk_ptr[BLK_EIB] ||
-	    blk_ptr[BLK_XIB])
+	    blk_ptr[BLK_XIB]) {
+		/* Save currently opened hwi filename. */
+		strncpy(curr_hwi_name_ptr, hwi_filename, HWI_MAX_NAME_LEN);
 		return CB_SUCCESS;
+	}
 	else
 		return CB_ERR;
 }

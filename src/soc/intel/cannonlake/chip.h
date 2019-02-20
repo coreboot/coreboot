@@ -383,6 +383,21 @@ struct soc_intel_cannonlake_config {
 
 	/* SATA Power Optimizer */
 	uint8_t satapwroptimize;
+
+	/* Enable or disable eDP device */
+	uint8_t DdiPortEdp;
+
+	/* Enable or disable HPD of DDI port B/C/D/F */
+	uint8_t DdiPortBHpd;
+	uint8_t DdiPortCHpd;
+	uint8_t DdiPortDHpd;
+	uint8_t DdiPortFHpd;
+
+	/* Enable or disable DDC of DDI port B/C/D/F  */
+	uint8_t DdiPortBDdc;
+	uint8_t DdiPortCDdc;
+	uint8_t DdiPortDDdc;
+	uint8_t DdiPortFDdc;
 };
 
 typedef struct soc_intel_cannonlake_config config_t;

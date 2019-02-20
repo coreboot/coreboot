@@ -177,6 +177,21 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	params->PchHdaAudioLinkSndw3 = config->PchHdaAudioLinkSndw3;
 	params->PchHdaAudioLinkSndw4 = config->PchHdaAudioLinkSndw4;
 
+	/* eDP device */
+	params->DdiPortEdp = config->DdiPortEdp;
+
+	/* HPD of DDI ports */
+	params->DdiPortBHpd = config->DdiPortBHpd;
+	params->DdiPortCHpd = config->DdiPortCHpd;
+	params->DdiPortDHpd = config->DdiPortDHpd;
+	params->DdiPortFHpd = config->DdiPortFHpd;
+
+	/* DDC of DDI ports */
+	params->DdiPortBDdc = config->DdiPortBDdc;
+	params->DdiPortCDdc = config->DdiPortCDdc;
+	params->DdiPortDDdc = config->DdiPortDDdc;
+	params->DdiPortFDdc = config->DdiPortFDdc;
+
 	/* S0ix */
 	params->PchPmSlpS0Enable = config->s0ix_enable;
 

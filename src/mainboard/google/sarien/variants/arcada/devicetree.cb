@@ -41,6 +41,13 @@ chip soc/intel/cannonlake
 	register "SlowSlewRateForGt" = "0"
 	register "SlowSlewRateForSa" = "0"
 	register "SlowSlewRateForFivr" = "0"
+	# Enable eDP device
+	register "DdiPortEdp" = "1"
+	# Enable HPD for DDI ports B/C
+	register "DdiPortBHpd" = "1"
+	register "DdiPortCHpd" = "1"
+	# Enable DDC for DDI port B
+	register "DdiPortBDdc" = "1"
 
 	# VR Settings Configuration for 4 Domains
 	#+----------------+-------+-------+-------+-------+

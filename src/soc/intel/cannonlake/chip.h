@@ -22,6 +22,7 @@
 #include <drivers/i2c/designware/dw_i2c.h>
 #include <intelblocks/gpio.h>
 #include <intelblocks/gspi.h>
+#include <intelblocks/lpc_lib.h>
 #include <smbios.h>
 #include <stdint.h>
 #include <soc/gpio.h>
@@ -359,6 +360,8 @@ struct soc_intel_cannonlake_config {
 	 *
 	 */
 	uint8_t SerialIoDevMode[PchSerialIoIndexMAX];
+
+	enum serirq_mode serirq_mode;
 
 	/* GPIO SD card detect pin */
 	unsigned int sdcard_cd_gpio;

@@ -210,6 +210,8 @@ static void pch_misc_init(void)
 
 void lpc_soc_init(struct device *dev)
 {
+	const config_t *config = dev->chip_info;
+
 	/* Legacy initialization */
 	isa_dma_init();
 	pch_misc_init();
@@ -218,10 +220,7 @@ void lpc_soc_init(struct device *dev)
 	lpc_enable_pci_clk_cntl();
 
 	/* Set LPC Serial IRQ mode */
-	if (CONFIG(SERIRQ_CONTINUOUS_MODE))
-		lpc_set_serirq_mode(SERIRQ_CONTINUOUS);
-	else
-		lpc_set_serirq_mode(SERIRQ_QUIET);
+	lpc_set_serirq_mode(config->serirq_mode);
 
 	/* Interrupt configuration */
 	pch_enable_ioapic(dev);

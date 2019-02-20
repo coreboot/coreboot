@@ -416,6 +416,10 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	/* Unlock all GPIO pads */
 	tconfig->PchUnlockGpioPads = config->PchUnlockGpioPads;
 
+	/* Set correct Sirq mode based on config */
+	params->PchSirqEnable = config->serirq_mode != SERIRQ_OFF;
+	params->PchSirqMode = config->serirq_mode == SERIRQ_CONTINUOUS;
+
 	/*
 	 * GSPI Chip Select parameters
 	 * The GSPI driver assumes that CS0 is the used chip-select line,

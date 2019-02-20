@@ -188,6 +188,8 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	       sizeof(config->PcieClkSrcClkReq));
 	memcpy(params->PcieRpLtrEnable, config->PcieRpLtrEnable,
 	       sizeof(config->PcieRpLtrEnable));
+	memcpy(params->PcieRpHotPlug, config->PcieRpHotPlug,
+	       sizeof(config->PcieRpHotPlug));
 
 	/* eMMC and SD */
 	dev = dev_find_slot(0, PCH_DEVFN_EMMC);

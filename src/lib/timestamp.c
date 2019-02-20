@@ -125,9 +125,6 @@ static struct timestamp_table *timestamp_table_get(void)
 	MAYBE_STATIC struct timestamp_table *ts_table = NULL;
 	struct timestamp_cache *ts_cache;
 
-	if (!timestamp_should_run())
-		return NULL;
-
 	if (ts_table != NULL)
 		return ts_table;
 
@@ -187,6 +184,9 @@ static void timestamp_add_table_entry(struct timestamp_table *ts_table,
 void timestamp_add(enum timestamp_id id, uint64_t ts_time)
 {
 	struct timestamp_table *ts_table;
+
+	if (!timestamp_should_run())
+		return;
 
 	ts_table = timestamp_table_get();
 

@@ -121,10 +121,8 @@ void smm_region_info(void **start, size_t *size);
  */
 int smm_subregion(int sub, void **start, size_t *size);
 void domain_enable_resources(struct device *dev);
-void domain_read_resources(struct device *dev);
 void domain_set_resources(struct device *dev);
 void fam15_finalize(void *chip_info);
-void setup_uma_memory(void);
 uint32_t nb_ioapic_read(unsigned int index);
 void nb_ioapic_write(unsigned int index, uint32_t value);
 void *get_ap_entry_ptr(void);

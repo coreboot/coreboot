@@ -477,7 +477,6 @@ struct soc_power_reg {
 
 void enable_aoac_devices(void);
 void sb_enable_rom(void);
-void configure_stoneyridge_i2c(void);
 void sb_clk_output_48Mhz(u32 osc);
 void sb_disable_4dw_burst(void);
 void sb_enable(struct device *dev);

@@ -83,7 +83,7 @@ void set_feature_ctrl_lock(void)
 	msr = rdmsr(IA32_FEATURE_CONTROL);
 
 	if (msr.lo & (1 << 0)) {
-		printk(BIOS_DEBUG, "IA32_FEATURE_CONTROL already locked; ");
+		printk(BIOS_DEBUG, "IA32_FEATURE_CONTROL already locked\n");
 		/* IA32_FEATURE_CONTROL locked. If we set it again we get an
 		 * illegal instruction
 		 */

@@ -19,6 +19,7 @@
 #define __MEMLAYOUT_H
 
 #include <arch/memlayout.h>
+#include <vb2_constants.h>
 
 /* Macros that the architecture can override. */
 #ifndef ARCH_POINTER_ALIGN_SIZE
@@ -157,12 +158,13 @@
 		REGION(ramstage, addr, sz, 1)
 #endif
 
-/* Careful: required work buffer size depends on RW properties such as key size
- * and algorithm -- what works for you might stop working after an update. Do
- * NOT lower the asserted minimum without consulting vboot devs (rspangler)! */
-#define VBOOT2_WORK(addr, size) \
-	REGION(vboot2_work, addr, size, 16) \
-	_ = ASSERT(size >= 12K, "vboot2 work buffer must be at least 12K!");
+/* VBOOT2_WORK must always use VB2_FIRMWARE_WORKBUF_RECOMMENDED_SIZE for its
+ * size argument.  The constant is imported via vb2_workbuf_size.h.  */
+#define VBOOT2_WORK(addr, sz) \
+	REGION(vboot2_work, addr, sz, 16) \
+	_ = ASSERT(sz == VB2_FIRMWARE_WORKBUF_RECOMMENDED_SIZE, \
+		STR(vboot2 work buffer size must be equivalent to \
+			VB2_FIRMWARE_WORKBUF_RECOMMENDED_SIZE! (sz)));
 
 #define VBOOT2_TPM_LOG(addr, size) \
 	REGION(vboot2_tpm_log, addr, size, 16) \

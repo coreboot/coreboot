@@ -29,7 +29,7 @@
 	/* Vboot work buffer only needs to be available when verified boot
 	 * starts in bootblock. */
 #if CONFIG(VBOOT_STARTS_IN_BOOTBLOCK)
-	VBOOT2_WORK(., 16K)
+	VBOOT2_WORK(., 12K)
 #endif
 	/* Vboot measured boot TCPA log measurements.
 	 * Needs to be transferred until CBMEM is available

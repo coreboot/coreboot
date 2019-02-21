@@ -25,19 +25,6 @@
 #include <security/vboot/symbols.h>
 #include <security/vboot/vboot_common.h>
 
-/* TODO(kitching): Use VB2_FIRMWARE_WORKBUF_RECOMMENDED_SIZE instead. */
-static size_t vboot_working_data_size(void)
-{
-	if (CONFIG(VBOOT_STARTS_IN_ROMSTAGE))
-		return 12 * KiB;
-
-	else if (CONFIG(VBOOT_STARTS_IN_BOOTBLOCK) &&
-		 preram_symbols_available())
-		return REGION_SIZE(vboot2_work);
-
-	die("impossible!");
-}
-
 struct vboot_working_data * const vboot_get_working_data(void)
 {
 	struct vboot_working_data *wd = NULL;
@@ -58,16 +45,17 @@ void vboot_init_work_context(struct vb2_context *ctx)
 {
 	struct vboot_working_data *wd;
 
-	/* First initialize the working data struct. */
+	/* First initialize the working data region. */
 	wd = vboot_get_working_data();
-	memset(wd, 0, sizeof(struct vboot_working_data));
+	memset(wd, 0, VB2_FIRMWARE_WORKBUF_RECOMMENDED_SIZE);
 
 	/*
 	 * vboot prefers 16-byte alignment. This takes away 16 bytes
 	 * from the VBOOT2_WORK region, but the vboot devs said that's okay.
 	 */
 	wd->buffer_offset = ALIGN_UP(sizeof(*wd), 16);
-	wd->buffer_size = vboot_working_data_size() - wd->buffer_offset;
+	wd->buffer_size = VB2_FIRMWARE_WORKBUF_RECOMMENDED_SIZE
+			  - wd->buffer_offset;
 
 	/* Initialize the vb2_context. */
 	memset(ctx, 0, sizeof(*ctx));
@@ -157,7 +145,8 @@ ROMSTAGE_CBMEM_INIT_HOOK(vboot_migrate_cbmem)
 static void vboot_setup_cbmem(int unused)
 {
 	struct vboot_working_data *wd_cbmem =
-		cbmem_add(CBMEM_ID_VBOOT_WORKBUF, vboot_working_data_size());
+		cbmem_add(CBMEM_ID_VBOOT_WORKBUF,
+			  VB2_FIRMWARE_WORKBUF_RECOMMENDED_SIZE);
 	assert(wd_cbmem != NULL);
 }
 ROMSTAGE_CBMEM_INIT_HOOK(vboot_setup_cbmem)

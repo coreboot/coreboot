@@ -78,6 +78,7 @@ code doesn't entirely break these architectures
   hardware is available.
 
 ### Mentors
+* Patrick Georgi <patrick@georgi.software>
 
 ## Add Kernel Address Sanitizer functionality to coreboot
 The Kernel Address Sanitizer (KASAN) is a runtime dynamic memory error detector.

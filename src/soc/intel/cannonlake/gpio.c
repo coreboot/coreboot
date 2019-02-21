@@ -56,7 +56,7 @@ static const struct pad_group cnl_community1_groups[] = {
 	INTEL_GPP_BASE(GPP_D0, GPP_D0, GPIO_RSVD_12, 96),	/* GPP_D */
 	INTEL_GPP_BASE(GPP_D0, GPP_F0, GPP_F23, 128),		/* GPP_F */
 	INTEL_GPP_BASE(GPP_D0, GPP_H0, GPP_H23, 160),		/* GPP_H */
-	INTEL_GPP_BASE(GPP_D0, GPIO_RSVD_13, GPIO_RSVD_52, 192),/* VGPIO */
+	INTEL_GPP_BASE(GPP_D0, CNV_BTEN, vSD3_CD_B, 192),	/* VGPIO */
 };
 
 /* This community is not visible to the OS */
@@ -67,14 +67,14 @@ static const struct pad_group cnl_community2_groups[] = {
 /* This community is not visible to the OS */
 static const struct pad_group cnl_community3_groups[] = {
 	INTEL_GPP(HDA_BCLK, HDA_BCLK, SSP1_TXD),		/* AZA */
-	INTEL_GPP(HDA_BCLK, GPIO_RSVD_68, GPIO_RSVD_78),	/* CPU */
+	INTEL_GPP(HDA_BCLK, GPIO_RSVD_28, GPIO_RSVD_38),	/* CPU */
 };
 
 static const struct pad_group cnl_community4_groups[] = {
 	INTEL_GPP_BASE(GPP_C0, GPP_C0, GPP_C23, 256),		/* GPP_C */
 	INTEL_GPP_BASE(GPP_C0, GPP_E0, GPP_E23, 288),		/* GPP_E */
-	INTEL_GPP(GPP_C0, GPIO_RSVD_53, GPIO_RSVD_61),		/* JTAG */
-	INTEL_GPP(GPP_C0, GPIO_RSVD_62, GPIO_RSVD_67),		/* HVMOS */
+	INTEL_GPP(GPP_C0, GPIO_RSVD_13, GPIO_RSVD_21),		/* JTAG */
+	INTEL_GPP(GPP_C0, GPIO_RSVD_22, GPIO_RSVD_27),		/* HVMOS */
 };
 
 static const struct pad_community cnl_communities[] = {
@@ -97,7 +97,7 @@ static const struct pad_community cnl_communities[] = {
 	}, { /* GPP D, F, H, VGPIO */
 		.port = PID_GPIOCOM1,
 		.first_pad = GPP_D0,
-		.last_pad = GPIO_RSVD_52,
+		.last_pad = vSD3_CD_B,
 		.num_gpi_regs = NUM_GPIO_COM1_GPI_REGS,
 		.pad_cfg_base = PAD_CFG_BASE,
 		.host_own_reg_0 = HOSTSW_OWN_REG_0,
@@ -129,7 +129,7 @@ static const struct pad_community cnl_communities[] = {
 	}, { /* AZA, CPU */
 		.port = PID_GPIOCOM3,
 		.first_pad = HDA_BCLK,
-		.last_pad = GPIO_RSVD_78,
+		.last_pad = GPIO_RSVD_38,
 		.num_gpi_regs = NUM_GPIO_COM3_GPI_REGS,
 		.pad_cfg_base = PAD_CFG_BASE,
 		.host_own_reg_0 = HOSTSW_OWN_REG_0,
@@ -145,7 +145,7 @@ static const struct pad_community cnl_communities[] = {
 	}, { /* GPP C, E, JTAG, HVMOS */
 		.port = PID_GPIOCOM4,
 		.first_pad = GPP_C0,
-		.last_pad = GPIO_RSVD_67,
+		.last_pad = GPIO_RSVD_27,
 		.num_gpi_regs = NUM_GPIO_COM4_GPI_REGS,
 		.pad_cfg_base = PAD_CFG_BASE,
 		.host_own_reg_0 = HOSTSW_OWN_REG_0,

@@ -80,7 +80,7 @@ Method (GADD, 1, NotSerialized)
 		Subtract (Arg0, GPP_A0, Local1)
 	}
 	/* GPIO Community 1 */
-	If (LAnd (LGreaterEqual (Arg0, GPP_D0), LLessEqual (Arg0, GPIO_RSVD_52)))
+	If (LAnd (LGreaterEqual (Arg0, GPP_D0), LLessEqual (Arg0, vSD3_CD_B)))
 	{
 		Store (PID_GPIOCOM1, Local0)
 		Subtract (Arg0, GPP_D0, Local1)
@@ -92,13 +92,13 @@ Method (GADD, 1, NotSerialized)
 		Subtract (Arg0, GPD0, Local1)
 	}
 	/* GPIO Community 3 */
-	If (LAnd (LGreaterEqual (Arg0, HDA_BCLK), LLessEqual (Arg0, GPIO_RSVD_78)))
+	If (LAnd (LGreaterEqual (Arg0, HDA_BCLK), LLessEqual (Arg0, GPIO_RSVD_38)))
 	{
 		Store (PID_GPIOCOM1, Local0)
 		Subtract (Arg0, HDA_BCLK, Local1)
 	}
 	/* GPIO Community 04*/
-	If (LAnd (LGreaterEqual (Arg0, GPP_C0), LLessEqual (Arg0, GPIO_RSVD_67)))
+	If (LAnd (LGreaterEqual (Arg0, GPP_C0), LLessEqual (Arg0, GPIO_RSVD_27)))
 	{
 		Store (PID_GPIOCOM4, Local0)
 		Subtract (Arg0, GPP_C0, Local1)

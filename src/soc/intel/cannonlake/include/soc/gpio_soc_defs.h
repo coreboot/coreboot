@@ -197,48 +197,48 @@
 #define GPP_H22			139
 #define GPP_H23			140
 /* Group VGPIO */
-#define GPIO_RSVD_13		141
-#define GPIO_RSVD_14		142
-#define GPIO_RSVD_15		143
-#define GPIO_RSVD_16		144
-#define GPIO_RSVD_17		145
-#define GPIO_RSVD_18		146
-#define GPIO_RSVD_19		147
-#define GPIO_RSVD_20		148
-#define GPIO_RSVD_21		149
-#define GPIO_RSVD_22		150
-#define GPIO_RSVD_23		151
-#define GPIO_RSVD_24		152
-#define GPIO_RSVD_25		153
-#define GPIO_RSVD_26		154
-#define GPIO_RSVD_27		155
-#define GPIO_RSVD_28		156
-#define GPIO_RSVD_29		157
-#define GPIO_RSVD_30		158
-#define GPIO_RSVD_31		159
-#define GPIO_RSVD_32		160
-#define GPIO_RSVD_33		161
-#define GPIO_RSVD_34		162
-#define GPIO_RSVD_35		163
-#define GPIO_RSVD_36		164
-#define GPIO_RSVD_37		165
-#define GPIO_RSVD_38		166
-#define GPIO_RSVD_39		167
-#define GPIO_RSVD_40		168
-#define GPIO_RSVD_41		169
-#define GPIO_RSVD_42		170
-#define GPIO_RSVD_43		171
-#define GPIO_RSVD_44		172
-#define GPIO_RSVD_45		173
-#define GPIO_RSVD_46		174
-#define GPIO_RSVD_47		175
-#define GPIO_RSVD_48		176
-#define GPIO_RSVD_49		177
-#define GPIO_RSVD_50		178
-#define GPIO_RSVD_51		179
-#define GPIO_RSVD_52		180
+#define CNV_BTEN		141
+#define CNV_GNEN		142
+#define CNV_WFEN		143
+#define CNV_WCEN		144
+#define CNV_BT_HOST_WAKEB	145
+#define CNV_BT_IF_SELECT	146
+#define vCNV_BT_UART_TXD	147
+#define vCNV_BT_UART_RXD	148
+#define vCNV_BT_UART_CTS_B	149
+#define vCNV_BT_UART_RTS_B	150
+#define vCNV_MFUART1_TXD	151
+#define vCNV_MFUART1_RXD	152
+#define vCNV_MFUART1_CTS_B	153
+#define vCNV_MFUART1_RTS_B	154
+#define vCNV_GNSS_UART_TXD	155
+#define vCNV_GNSS_UART_RXD	156
+#define vCNV_GNSS_UART_CTS_B	157
+#define vCNV_GNSS_UART_RTS_B	158
+#define vUART0_TXD		159
+#define vUART0_RXD		160
+#define vUART0_CTS_B		161
+#define vUART0_RTS_B		162
+#define vISH_UART0_TXD		163
+#define vISH_UART0_RXD		164
+#define vISH_UART0_CTS_B	165
+#define vISH_UART0_RTS_B	166
+#define vISH_UART1_TXD		167
+#define vISH_UART1_RXD		168
+#define vISH_UART1_CTS_B	169
+#define vISH_UART1_RTS_B	170
+#define vCNV_BT_I2S_BCLK	171
+#define vCNV_BT_I2S_WS_SYNC	172
+#define vCNV_BT_I2S_SDO		173
+#define vCNV_BT_I2S_SDI		174
+#define vSSP2_SCLK		175
+#define vSSP2_SFRM		176
+#define vSSP2_TXD		177
+#define vSSP2_RXD		178
+#define vCNV_GNSS_HOST_WAKEB	179
+#define vSD3_CD_B		180
 
-#define NUM_GPIO_COM1_PADS	(GPIO_RSVD_52 - GPP_D0 + 1)
+#define NUM_GPIO_COM1_PADS	(vSD3_CD_B - GPP_D0 + 1)
 
 /* Group C */
 #define GPP_C0			181
@@ -291,24 +291,24 @@
 #define GPP_E22			227
 #define GPP_E23			228
 /* Group Jtag */
-#define GPIO_RSVD_53		229
-#define GPIO_RSVD_54		230
-#define GPIO_RSVD_55		231
-#define GPIO_RSVD_56		232
-#define GPIO_RSVD_57		233
-#define GPIO_RSVD_58		234
-#define GPIO_RSVD_59		235
-#define GPIO_RSVD_60		236
-#define GPIO_RSVD_61		237
+#define GPIO_RSVD_13		229
+#define GPIO_RSVD_14		230
+#define GPIO_RSVD_15		231
+#define GPIO_RSVD_16		232
+#define GPIO_RSVD_17		233
+#define GPIO_RSVD_18		234
+#define GPIO_RSVD_19		235
+#define GPIO_RSVD_20		236
+#define GPIO_RSVD_21		237
 /* Group HVMOS */
-#define GPIO_RSVD_62		238
-#define GPIO_RSVD_63		239
-#define GPIO_RSVD_64		240
-#define GPIO_RSVD_65		241
-#define GPIO_RSVD_66		242
-#define GPIO_RSVD_67		243
+#define GPIO_RSVD_22		238
+#define GPIO_RSVD_23		239
+#define GPIO_RSVD_24		240
+#define GPIO_RSVD_25		241
+#define GPIO_RSVD_26		242
+#define GPIO_RSVD_27		243
 
-#define NUM_GPIO_COM4_PADS	(GPIO_RSVD_67 - GPP_C0 + 1)
+#define NUM_GPIO_COM4_PADS	(GPIO_RSVD_27 - GPP_C0 + 1)
 
 /* Group GPD  */
 #define GPD0			244
@@ -337,19 +337,19 @@
 #define SSP1_SFRM		262
 #define SSP1_TXD		263
 /* Group CPU */
-#define GPIO_RSVD_68		264
-#define GPIO_RSVD_69		265
-#define GPIO_RSVD_70		266
-#define GPIO_RSVD_71		267
-#define GPIO_RSVD_72		268
-#define GPIO_RSVD_73		269
-#define GPIO_RSVD_74		270
-#define GPIO_RSVD_75		271
-#define GPIO_RSVD_76		272
-#define GPIO_RSVD_77		273
-#define GPIO_RSVD_78		274
+#define GPIO_RSVD_28		264
+#define GPIO_RSVD_29		265
+#define GPIO_RSVD_30		266
+#define GPIO_RSVD_31		267
+#define GPIO_RSVD_32		268
+#define GPIO_RSVD_33		269
+#define GPIO_RSVD_34		270
+#define GPIO_RSVD_35		271
+#define GPIO_RSVD_36		272
+#define GPIO_RSVD_37		273
+#define GPIO_RSVD_38		274
 
-#define NUM_GPIO_COM3_PADS	(GPIO_RSVD_78 - HDA_BCLK + 1)
+#define NUM_GPIO_COM3_PADS	(GPIO_RSVD_38 - HDA_BCLK + 1)
 
 #define TOTAL_PADS		275
 #endif

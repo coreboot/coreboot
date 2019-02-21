@@ -37,8 +37,8 @@ static struct {
 	{ CPUID_CANNONLAKE_C0, "Cannonlake C0" },
 	{ CPUID_CANNONLAKE_D0, "Cannonlake D0" },
 	{ CPUID_COFFEELAKE_D0, "Coffeelake D0" },
-	{ CPUID_WHISKEYLAKE_V0, "Whiskeylake V0"},
-	{ CPUID_WHISKEYLAKE_W0, "Whiskeylake W0"},
+	{ CPUID_WHISKEYLAKE_V0, "Whiskeylake V0" },
+	{ CPUID_WHISKEYLAKE_W0, "Whiskeylake W0" },
 	{ CPUID_COFFEELAKE_U0, "Coffeelake U0 (6+2)" },
 };
 
@@ -49,8 +49,8 @@ static struct {
 	{ PCI_DEVICE_ID_INTEL_CNL_ID_U, "Cannonlake-U" },
 	{ PCI_DEVICE_ID_INTEL_CNL_ID_Y, "Cannonlake-Y" },
 	{ PCI_DEVICE_ID_INTEL_CFL_ID_U, "Coffeelake U (4+3e)"},
-	{ PCI_DEVICE_ID_INTEL_WHL_ID_Wx4, "Whiskeylake W (4+2)"},
-	{ PCI_DEVICE_ID_INTEL_WHL_ID_Wx2, "Whiskeylake W (2+2)"},
+	{ PCI_DEVICE_ID_INTEL_WHL_ID_Wx4, "Whiskeylake W (4+2)" },
+	{ PCI_DEVICE_ID_INTEL_WHL_ID_Wx2, "Whiskeylake W (2+2)" },
 	{ PCI_DEVICE_ID_INTEL_CFL_ID_H, "Coffeelake-H" },
 	{ PCI_DEVICE_ID_INTEL_CFL_ID_S, "Coffeelake-S" },
 };
@@ -78,8 +78,8 @@ static struct {
 	{ PCI_DEVICE_ID_INTEL_CNL_GT2_ULT_2, "Cannonlake ULT GT1.5" },
 	{ PCI_DEVICE_ID_INTEL_CNL_GT2_ULT_3, "Cannonlake ULT GT1" },
 	{ PCI_DEVICE_ID_INTEL_CNL_GT2_ULT_4, "Cannonlake ULT GT0.5" },
-	{ PCI_DEVICE_ID_INTEL_CFL_GT2_ULT, "Coffeelake ULT GT2"},
-	{ PCI_DEVICE_ID_INTEL_WHL_GT2_ULT_1, "Whiskeylake ULT GT1"},
+	{ PCI_DEVICE_ID_INTEL_CFL_GT2_ULT, "Coffeelake ULT GT2" },
+	{ PCI_DEVICE_ID_INTEL_WHL_GT2_ULT_1, "Whiskeylake ULT GT1" },
 	{ PCI_DEVICE_ID_INTEL_CFL_H_GT2, "Coffeelake-H GT2" },
 	{ PCI_DEVICE_ID_INTEL_CFL_S_GT2, "Coffeelake-S GT2" },
 };

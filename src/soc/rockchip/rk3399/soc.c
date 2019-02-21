@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <bootmem.h>
 #include <bootmode.h>
 #include <console/console.h>
 #include <device/device.h>
@@ -20,11 +21,18 @@
 #include <soc/clock.h>
 #include <soc/display.h>
 #include <soc/sdram.h>
+#include <soc/symbols.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
 #include <symbols.h>
 #include <arm-trusted-firmware/plat/rockchip/rk3399/include/shared/bl31_param.h>
+
+void bootmem_platform_add_ranges(void)
+{
+	bootmem_add_range((uintptr_t)_pmu_sram, _pmu_sram_size, BM_MEM_BL31);
+	bootmem_add_range((uintptr_t)_bl31_sram, _bl31_sram_size, BM_MEM_BL31);
+}
 
 static void soc_read_resources(struct device *dev)
 {

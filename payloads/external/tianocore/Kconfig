@@ -11,28 +11,22 @@ choice
 	default TIANOCORE_STABLE
 	help
 	  Select which version of Tianocore to build (default is to build stable)
-	  stable: a version of Tianocore that builds without any errors
-	  master: most recent version from upstream Tianocore repository
+	  stable: MrChromebox's customized version of Tianocore which works on most
+	  (all?) x86_64 devices
 	  revision: use specific commit or branch to build Tianocore (specified by user)
 
 config TIANOCORE_STABLE
 	bool "stable"
 	help
-	  Select this option to build the stable tianocore version
-	  i.e. a version of Tianocore that builds without any errors
-
-config TIANOCORE_MASTER
-	bool "master"
-	help
-	  Select this option to build the master tianocore version
-	  i.e. most recent version from upstream Tianocore repository
+	  Select this option to build using MrChromebox's custom Tianocore tree
+	  i.e. a version of Tianocore that builds without any errors and just works.
 
 config TIANOCORE_REVISION
 	bool "git revision"
 	help
 	  Select this option if you have a specific commit or branch
-	  that you want to use as the revision from which to
-	  build Tianocore.
+	  that you want to use from either MrChromebox's tree or upstream
+	  EDK2 from which to build Tianocore.
 
 	  You will be able to specify the name of a branch or a commit id
 	  later.
@@ -42,7 +36,7 @@ endchoice
 config TIANOCORE_REVISION_ID
 	string "Insert a commit's SHA-1 or a branch name"
 	depends on TIANOCORE_REVISION
-	default "origin/master"
+	default "upstream/master"
 	help
 	   The commit's SHA-1 or branch name of the revision to use.
 

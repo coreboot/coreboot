@@ -16,15 +16,15 @@
 # force the shell to bash - the edksetup.sh script doesn't work with dash
 export SHELL := env bash
 
-# STABLE_COMMIT_ID represent official edk2 release, currently UDK2018
-STABLE_COMMIT_ID=3e72ffe8afdd03f1f89eba65c921cbdcb004cfee
-TAG-$(CONFIG_TIANOCORE_MASTER)=origin/master
-TAG-$(CONFIG_TIANOCORE_STABLE)=$(STABLE_COMMIT_ID)
-TAG-$(CONFIG_TIANOCORE_REVISION)=$(CONFIG_TIANOCORE_REVISION_ID)
-
 project_name=Tianocore
 project_dir=$(CURDIR)/tianocore
-project_git_repo=https://github.com/tianocore/edk2
+project_git_repo=https://github.com/mrchromebox/edk2
+project_git_branch=coreboot_fb
+upstream_git_repo=https://github.com/tianocore/edk2
+
+# STABLE revision is MrChromebox's coreboot framebuffer (coreboot_fb) branch
+TAG-$(CONFIG_TIANOCORE_STABLE)=origin/$(project_git_branch)
+TAG-$(CONFIG_TIANOCORE_REVISION)=$(CONFIG_TIANOCORE_REVISION_ID)
 
 export EDK_TOOLS_PATH=$(project_dir)/BaseTools
 
@@ -44,39 +44,28 @@ else
 	BUILD_STR=-a IA32 -a X64 -t COREBOOT -p CorebootPayloadPkg/CorebootPayloadPkgIa32X64.dsc -b $(BUILD_TYPE) $(TIMER)
 endif
 
-all: build
+all: clean build
 
 $(project_dir):
 	echo "    Cloning $(project_name) from Git"
-	git clone $(project_git_repo) $(project_dir)
+	git clone --single-branch --branch $(project_git_branch) $(project_git_repo) $(project_dir); \
+		cd $(project_dir); \
+		git remote add upstream $(upstream_git_repo)
 
-fetch: $(project_dir)
-	cd $(project_dir); \
-		git show $(TAG-y) >/dev/null 2>&1 ; \
-		if [ $$? -ne 0 ] || [ "$(TAG-y)" = "origin/master" ]; then \
-			echo "    Fetching new commits from the $(project_name) repo"; \
-			git fetch; \
-		fi
-
-$(project_dir)/.version_$(TAG-y): fetch
-	if  ! [[ -e $(project_dir)/.version_$(STABLE_COMMIT_ID) ]] || \
-		[ "$(TAG-y)" = "origin/master" ] ; then \
-		rm -f .version_*; \
-		echo "    Checking out $(project_name) revision $(TAG-y)"; \
-		cd  $(project_dir); \
-			git checkout master; \
-			git branch -D coreboot 2>/dev/null; \
-			git checkout -b coreboot $(TAG-y); \
-		for patch in $(CURDIR)/patches/*.patch; do \
-			echo "Applying $$patch"; \
-			cd $(project_dir); \
-			git am --keep-cr --ignore-space-change $$patch || \
-				( echo " Error when applying patches.\n"; git am --abort; exit 1; ); \
-		done; \
-		if ! [ "$(TAG-y)" = "origin/master" ] ; then \
-			touch $(project_dir)/.version_$(STABLE_COMMIT_ID); \
+update: $(project_dir)
+	cd  $(project_dir); \
+		echo "    Fetching new commits from the $(project_name) repo"; \
+		git fetch --multiple origin upstream 2>/dev/null; \
+		if ! git rev-parse --verify -q $(TAG-y) >/dev/null; then \
+			echo "    $(TAG-y) is not a valid git reference"; \
+			exit 1; \
 		fi; \
-	fi; \
+		if git describe --all --dirty | grep -qv dirty; then \
+			echo "    Checking out $(project_name) revision $(TAG-y)"; \
+			git checkout --detach $(TAG-y); \
+		else \
+			echo "    Working directory not clean; will not overwrite"; \
+		fi
 
 checktools:
 	echo "Checking uuid-dev..."
@@ -89,7 +78,7 @@ checktools:
 	type nasm > /dev/null 2>&1 && echo " found nasm." || \
 		( echo " Not found."; echo "Error: Please install nasm."; exit 1 )
 
-build: $(project_dir)/.version_$(TAG-y) checktools
+build: update checktools
 	unset CC; $(MAKE) -C $(project_dir)/BaseTools
 	echo " build $(project_name) $(TAG-y)"
 	cd $(project_dir); \
@@ -109,4 +98,4 @@ clean:
 distclean:
 	rm -rf $(project_dir)
 
-.PHONY: all fetch checkout checktools config build clean distclean
+.PHONY: all update checktools config build clean distclean

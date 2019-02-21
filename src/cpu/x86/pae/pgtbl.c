@@ -2,6 +2,8 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2005 Yinghai Lu
+ * Copyright (C) 2019 9elements Agency GmbH
+ * Copyright (C) 2019 Facebook Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,6 +24,7 @@
 #include <cpu/x86/pae.h>
 #include <string.h>
 #include <symbols.h>
+#include <assert.h>
 
 #define PDPTE_PRES (1ULL << 0)
 #define PDPTE_ADDR_MASK (~((1ULL << 12) - 1))
@@ -59,8 +62,19 @@
 #define PTE_IDX_SHIFT 12
 #define PTE_IDX_MASK  0x1ff
 
+#define OVERLAP(a, b, s, e) ((b) > (s) && (a) < (e))
+
 static const size_t s2MiB = 2 * MiB;
 static const size_t s4KiB = 4 * KiB;
+
+struct pde {
+	uint32_t addr_lo;
+	uint32_t addr_hi;
+} __packed;
+struct pg_table {
+	struct pde pd[2048];
+	struct pde pdp[512];
+} __packed;
 
 void paging_enable_pae_cr3(uintptr_t cr3)
 {
@@ -99,6 +113,119 @@ void paging_disable_pae(void)
 	cr4 = read_cr4();
 	cr4 &= ~(CRx_TYPE)CR4_PAE;
 	write_cr4(cr4);
+}
+
+/*
+ * Use PAE to map a page and then memset it with the pattern specified.
+ * In order to use PAE pagetables for virtual addressing are set up and reloaded
+ * on a 2MiB boundary. After the function is done, virtual addressing mode is
+ * disabled again. The PAT are set to all cachable, but MTRRs still apply.
+ *
+ * Requires a scratch memory for pagetables and a virtual address for
+ * non identity mapped memory.
+ *
+ * The scratch memory area containing pagetables must not overlap with the
+ * memory range to be cleared.
+ * The scratch memory area containing pagetables must not overlap with the
+ * virtual address for non identity mapped memory.
+ *
+ * @param vmem_addr Where the virtual non identity mapped page resides, must
+ *                  be 2 aligned MiB and at least 2 MiB in size.
+ *                  Content at physical address is preserved.
+ * @param pgtbl     Where pagetables reside, must be 4 KiB aligned and 20 KiB in
+ *                  size.
+ *                  Must not overlap memory range pointed to by dest.
+ *                  Must not overlap memory range pointed to by vmem_addr.
+ *                  Content at physical address isn't preserved.
+ * @param length    The length of the memory segment to memset
+ * @param dest      Physical memory address to memset
+ * @param pat       The pattern to write to the pyhsical memory
+ * @return 0 on success, 1 on error
+ */
+int memset_pae(uint64_t dest, unsigned char pat, uint64_t length, void *pgtbl,
+	       void *vmem_addr)
+{
+	struct pg_table *pgtbl_buf = (struct pg_table *)pgtbl;
+	ssize_t offset;
+
+	printk(BIOS_DEBUG, "%s: Using virtual address %p as scratchpad\n",
+	       __func__, vmem_addr);
+	printk(BIOS_DEBUG, "%s: Using address %p for page tables\n",
+	       __func__, pgtbl_buf);
+
+	/* Cover some basic error conditions */
+	if (!IS_ALIGNED((uintptr_t)pgtbl_buf, s4KiB) ||
+	    !IS_ALIGNED((uintptr_t)vmem_addr, s2MiB)) {
+		printk(BIOS_ERR, "%s: Invalid alignment\n", __func__);
+		return 1;
+	}
+	const uintptr_t pgtbl_s = (uintptr_t)pgtbl_buf;
+	const uintptr_t pgtbl_e = pgtbl_s + sizeof(struct pg_table);
+
+	if (OVERLAP(dest, dest + length, pgtbl_s, pgtbl_e)) {
+		printk(BIOS_ERR, "%s: destination overlaps page tables\n",
+		       __func__);
+		return 1;
+	}
+
+	if (OVERLAP((uintptr_t)vmem_addr, (uintptr_t)vmem_addr + s2MiB,
+		    pgtbl_s, pgtbl_e)) {
+		printk(BIOS_ERR, "%s: vmem address overlaps page tables\n",
+		       __func__);
+		return 1;
+	}
+
+	paging_disable_pae();
+
+	struct pde *pd = pgtbl_buf->pd, *pdp = pgtbl_buf->pdp;
+	/* Point the page directory pointers at the page directories. */
+	memset(pgtbl_buf->pdp, 0, sizeof(pgtbl_buf->pdp));
+
+	pdp[0].addr_lo = ((uintptr_t)&pd[512*0]) | PDPTE_PRES;
+	pdp[1].addr_lo = ((uintptr_t)&pd[512*1]) | PDPTE_PRES;
+	pdp[2].addr_lo = ((uintptr_t)&pd[512*2]) | PDPTE_PRES;
+	pdp[3].addr_lo = ((uintptr_t)&pd[512*3]) | PDPTE_PRES;
+
+	offset = dest - ALIGN_DOWN(dest, s2MiB);
+	dest = ALIGN_DOWN(dest, s2MiB);
+
+	/* Identity map the whole 32-bit address space */
+	for (size_t i = 0; i < 2048; i++) {
+		pd[i].addr_lo = (i << PDE_IDX_SHIFT) | PDE_PS | PDE_PRES | PDE_RW;
+		pd[i].addr_hi = 0;
+	}
+
+	/* Get pointer to PD that's not identity mapped */
+	pd = &pgtbl_buf->pd[((uintptr_t)vmem_addr) >> PDE_IDX_SHIFT];
+
+	paging_enable_pae_cr3((uintptr_t)pdp);
+
+	do {
+		const size_t len = MIN(length, s2MiB - offset);
+
+		/*
+		 * Map a page using PAE at virtual address vmem_addr.
+		 * dest is already 2 MiB aligned.
+		 */
+		pd->addr_lo = dest | PDE_PS | PDE_PRES | PDE_RW;
+		pd->addr_hi = dest >> 32;
+
+		/* Update page tables */
+		asm volatile ("invlpg (%0)" :: "b"(vmem_addr) : "memory");
+
+		printk(BIOS_SPEW, "%s: Clearing %llx[%lx] - %zx\n", __func__,
+		       dest + offset, (uintptr_t)vmem_addr + offset, len);
+
+		memset(vmem_addr + offset, pat, len);
+
+		dest += s2MiB;
+		length -= len;
+		offset = 0;
+	} while (length > 0);
+
+	paging_disable_pae();
+
+	return 0;
 }
 
 #if ENV_RAMSTAGE

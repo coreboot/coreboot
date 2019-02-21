@@ -2,6 +2,8 @@
 
 This section contains documentation about coreboot on x86 architecture.
 
+* [x86 PAE support](pae.md)
+
 ## State of x86_64 support
 At the moment there's no single board that supports x86_64 or to be exact
 `ARCH_RAMSTAGE_X86_64` and `ARCH_ROMSTAGE_X86_64`.

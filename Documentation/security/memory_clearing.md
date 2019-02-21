@@ -42,3 +42,7 @@ Without MTRRs (and caches enabled) clearing memory takes multiple seconds.
 
 As some platforms place code and stack in DRAM (FSP1.0), the regions can be
 skipped.
+
+## Architecture specific implementations
+
+* [x86 PAE](../arch/x86/pae.md)

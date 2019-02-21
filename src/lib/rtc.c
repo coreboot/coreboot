@@ -27,57 +27,41 @@
 #define DAYS_IN_YEAR(a)		(LEAP_YEAR(a) ? 366 : 365)
 #define DAYS_IN_MONTH(a)	(month_days[(a) - 1])
 
-static const int month_offset[] = {
-	0,  31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334
-};
-
 static const char *const weekdays[] = {
-	"Sun",  "Mon",  "Tues",  "Wednes",  "Thurs",  "Fri",  "Satur",
+	"Sun", "Mon", "Tues", "Wednes", "Thurs", "Fri", "Satur"
 };
 
-static int leaps_to_year(int year)
-{
-	return year / 4 - year / 100 + year / 400;
-}
-
-/* This only works for the Gregorian calendar after Jan 1 1971. */
+/* Zeller's rule */
 static int rtc_calc_weekday(struct rtc_time *tm)
 {
-	int leaps_to_date;
-	int day;
-
 	if (tm->year < 1971)
 		return -1;
 
-	day = 4; /* Jan 1 1970 was a Thursday. */
-
-	/* Number of leap corrections to apply up to end of last year */
-	leaps_to_date = leaps_to_year(tm->year - 1) - leaps_to_year(1970);
+	/* In Zeller's rule, January and February are treated as if they
+	   are months 13 and 14 of the previous year (March is still month 3) */
+	const int zyear = ((tm->mon < 3) ? tm->year - 1 : tm->year);
+	const int q = tm->mday;
+	const int m = (tm->mon < 3) ? tm->mon + 12 : tm->mon;
+	const int K = zyear % 100;
+	const int J = zyear / 100;
 
 	/*
-	 * This year is a leap year if it is divisible by 4 except when it is
-	 * divisible by 100 unless it is divisible by 400
-	 *
-	 * e.g. 1904 was a leap year,  1900 was not,  1996 is, and 2000 is.
+	 * Because of the way the modulo operator works with negative numbers,
+	 * the traditional formulation of Zeller's rule must be modified
+	 * slightly to make the numerator positive (i.e., add 5J instead of
+	 * subtracting 2J).  Also subtract 1 so that Sunday is day 0.
 	 */
-	if ((tm->year % 4) &&
-	    ((tm->year % 100 != 0) || (tm->year % 400 == 0)) &&
-	    (tm->mon > 2)) {
-		/* We are past Feb. 29 in a leap year */
-		day++;
-	}
+	const int h = (q + (13 * (m + 1)) / 5
+		       + K + (K / 4) + (J / 4) + (5 * J) - 1) % 7;
 
-	day += (tm->year - 1970) * 365 + leaps_to_date +
-		month_offset[tm->mon-1] + tm->mday;
-	tm->wday = day % 7;
-
+	tm->wday = h;
 	return 0;
 }
 
 int rtc_to_tm(int tim, struct rtc_time *tm)
 {
 	int month_days[12] = {
-		31,  28,  31,  30,  31,  30,  31,  31,  30,  31,  30,  31
+		31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31
 	};
 	register int i;
 	register long hms, day;
@@ -112,7 +96,7 @@ int rtc_to_tm(int tim, struct rtc_time *tm)
 
 /*
  * Converts Gregorian date to seconds since 1970-01-01 00:00:00.
- * Assumes input in normal date format,  i.e. 1980-12-31 23:59:59
+ * Assumes input in normal date format, i.e. 1980-12-31 23:59:59
  * => year=1980,  mon=12,  day=31,  hour=23,  min=59,  sec=59.
  *
  * [For the Julian calendar (which was used in Russia before 1917,
@@ -130,7 +114,7 @@ unsigned long rtc_mktime(const struct rtc_time *tm)
 {
 	int mon = tm->mon;
 	int year = tm->year;
-	int days,  hours;
+	int days, hours;
 
 	mon -= 2;
 	if (0 >= (int)mon) {	/* 1..12 -> 11, 12, 1..10 */
@@ -139,15 +123,15 @@ unsigned long rtc_mktime(const struct rtc_time *tm)
 	}
 
 	days = (unsigned long)(year / 4 - year / 100 + year / 400 +
-			367 * mon / 12 + tm->mday) +
-			year * 365 - 719499;
+			       367 * mon / 12 + tm->mday) +
+			       year * 365 - 719499;
 	hours = days * 24 + tm->hour;
 	return (hours * 60 + tm->min) * 60 + tm->sec;
 }
 
 void rtc_display(const struct rtc_time *tm)
 {
-	printk(BIOS_INFO,  "Date: %4d-%02d-%02d (%sday)  Time: %2d:%02d:%02d\n",
+	printk(BIOS_INFO, "Date: %5d-%02d-%02d (%sday)  Time: %2d:%02d:%02d\n",
 	       tm->year,  tm->mon,  tm->mday,
 	       (tm->wday < 0 || tm->wday > 6) ? "unknown " : weekdays[tm->wday],
 	       tm->hour,  tm->min,  tm->sec);

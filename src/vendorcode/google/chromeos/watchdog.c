@@ -30,7 +30,7 @@ DECLARE_OPTIONAL_REGION(watchdog_tombstone);
 
 static void elog_handle_watchdog_tombstone(void *unused)
 {
-	if (!_watchdog_tombstone_size)
+	if (!REGION_SIZE(watchdog_tombstone))
 		return;
 
 	if (read32(_watchdog_tombstone) == WATCHDOG_TOMBSTONE_MAGIC)
@@ -44,7 +44,7 @@ BOOT_STATE_INIT_ENTRY(BS_POST_DEVICE, BS_ON_ENTRY,
 
 void mark_watchdog_tombstone(void)
 {
-	assert(_watchdog_tombstone_size);
+	assert(REGION_SIZE(watchdog_tombstone));
 	write32(_watchdog_tombstone, WATCHDOG_TOMBSTONE_MAGIC);
 }
 

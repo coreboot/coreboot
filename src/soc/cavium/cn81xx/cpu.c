@@ -81,7 +81,7 @@ size_t start_cpu(size_t cpu, void (*entry_64)(size_t core_id))
 		return 1;
 
 	/* Check stack here, instead of in cpu_secondary.S */
-	if ((CONFIG_STACK_SIZE * cpu) > _stack_sec_size)
+	if ((CONFIG_STACK_SIZE * cpu) > REGION_SIZE(stack_sec))
 		return 1;
 
 	/* Write the address of the main entry point */

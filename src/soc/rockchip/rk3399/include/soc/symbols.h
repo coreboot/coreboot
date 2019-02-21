@@ -16,12 +16,9 @@
 #ifndef __SOC_SYMBOLS_H__
 #define __SOC_SYMBOLS_H__
 
-extern unsigned char _bl31_sram[];
-extern unsigned char _ebl31_sram[];
-#define _bl31_sram_size (_ebl31_sram - _bl31_sram)
+#include <symbols.h>
 
-extern unsigned char _pmu_sram[];
-extern unsigned char _epmu_sram[];
-#define _pmu_sram_size (_epmu_sram - _pmu_sram)
+DECLARE_REGION(bl31_sram)
+DECLARE_REGION(pmu_sram)
 
 #endif

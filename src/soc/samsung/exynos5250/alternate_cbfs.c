@@ -88,7 +88,7 @@ static int sdmmc_cbfs_open(void)
 	 * figuring out the true image size from in here. Since this is mainly a
 	 * developer/debug boot mode, those shortcomings should be bearable.
 	 */
-	const u32 count = _cbfs_cache_size / 512;
+	const u32 count = REGION_SIZE(cbfs_cache) / 512;
 	static int first_run = 1;
 	int (*irom_load_sdmmc)(u32 start, u32 count, void *dst) =
 		*irom_sdmmc_read_blocks_ptr;
@@ -131,7 +131,7 @@ const struct region_device *boot_device_ro(void)
 void boot_device_init(void)
 {
 	mem_region_device_ro_init(&alternate_rdev, _cbfs_cache,
-			_cbfs_cache_size);
+			REGION_SIZE(cbfs_cache));
 
 	if (*iram_secondary_base == SECONDARY_BASE_BOOT_USB) {
 		printk(BIOS_DEBUG, "Using Exynos alternate boot mode USB A-A\n");

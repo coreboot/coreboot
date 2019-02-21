@@ -17,6 +17,7 @@
 #define __SOC_MEDIATEK_COMMON_MMU_OPERATIONS_H__
 
 #include <arch/mmu.h>
+#include <symbols.h>
 
 enum {
 	DEV_MEM			= MA_DEV | MA_S  | MA_RW,
@@ -26,9 +27,7 @@ enum {
 	NONSECURE_UNCACHED_MEM	= MA_MEM | MA_NS | MA_RW | MA_MEM_NC,
 };
 
-extern unsigned char _sram_l2c[];
-extern unsigned char _esram_l2c[];
-#define _sram_l2c_size (_esram_l2c - _sram_l2c)
+DECLARE_REGION(sram_l2c)
 
 void mtk_soc_after_dram(void);
 void mtk_soc_disable_l2c_sram(void);

@@ -111,5 +111,6 @@ void arch_segment_loaded(uintptr_t start, size_t size, int flags)
 {
 	cache_invalidate_all(start, size);
 	if (flags & SEG_FINAL)
-		cache_invalidate_all((uintptr_t)_cbfs_cache, _cbfs_cache_size);
+		cache_invalidate_all((uintptr_t)_cbfs_cache,
+				     REGION_SIZE(cbfs_cache));
 }

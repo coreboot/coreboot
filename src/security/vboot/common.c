@@ -56,7 +56,7 @@ static size_t vb2_working_data_size(void)
 	if (IS_ENABLED(CONFIG_VBOOT_STARTS_IN_ROMSTAGE))
 		return vb_work_buf_size;
 	else
-		return _vboot2_work_size;
+		return REGION_SIZE(vboot2_work);
 }
 
 static struct selected_region *vb2_selected_region(void)

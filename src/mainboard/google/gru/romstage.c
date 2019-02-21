@@ -74,5 +74,6 @@ void platform_romstage_main(void)
 
 	mmu_config_range((void *)0, (uintptr_t)sdram_size_mb() * MiB,
 			 CACHED_MEM);
-	mmu_config_range(_dma_coherent, _dma_coherent_size, UNCACHED_MEM);
+	mmu_config_range(_dma_coherent, REGION_SIZE(dma_coherent),
+			 UNCACHED_MEM);
 }

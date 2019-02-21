@@ -55,13 +55,14 @@ static void __attribute__((noinline)) romstage(void)
 	/* Device memory below DRAM is uncached. */
 	mmu_config_range(0, dram_start_mb, DCACHE_OFF);
 	/* SRAM is cached. MMU code will round size up to page size. */
-	mmu_config_range((uintptr_t)_sram/MiB, DIV_ROUND_UP(_sram_size, MiB),
+	mmu_config_range((uintptr_t)_sram/MiB,
+			 DIV_ROUND_UP(REGION_SIZE(sram), MiB),
 			 DCACHE_WRITEBACK);
 	/* DRAM is cached. */
 	mmu_config_range(dram_start_mb, dram_size_mb, DCACHE_WRITEBACK);
 	/* A window for DMA is uncached. */
 	mmu_config_range((uintptr_t)_dma_coherent/MiB,
-			 _dma_coherent_size/MiB, DCACHE_OFF);
+			 REGION_SIZE(dma_coherent)/MiB, DCACHE_OFF);
 	/* The space above DRAM is uncached. */
 	if (dram_end_mb < 4096)
 		mmu_config_range(dram_end_mb, 4096 - dram_end_mb, DCACHE_OFF);

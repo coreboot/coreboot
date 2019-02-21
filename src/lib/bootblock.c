@@ -33,7 +33,8 @@ asmlinkage void bootblock_main_with_timestamp(uint64_t base_timestamp,
 	struct timestamp_entry *timestamps, size_t num_timestamps)
 {
 	/* Initialize timestamps if we have TIMESTAMP region in memlayout.ld. */
-	if (IS_ENABLED(CONFIG_COLLECT_TIMESTAMPS) && _timestamp_size > 0) {
+	if (IS_ENABLED(CONFIG_COLLECT_TIMESTAMPS) &&
+	    REGION_SIZE(timestamp) > 0) {
 		int i;
 		timestamp_init(base_timestamp);
 		for (i = 0; i < num_timestamps; i++)

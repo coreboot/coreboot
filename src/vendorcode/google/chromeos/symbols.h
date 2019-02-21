@@ -16,8 +16,8 @@
 #ifndef __CHROMEOS_SYMBOLS_H
 #define __CHROMEOS_SYMBOLS_H
 
-extern u8 _watchdog_tombstone[];
-extern u8 _ewatchdog_tombstone[];
-#define _watchdog_tombstone_size (_ewatchdog_tombstone - _watchdog_tombstone)
+#include <symbols.h>
+
+DECLARE_REGION(watchdog_tombstone)
 
 #endif /* __CHROMEOS_SYMBOLS_H */

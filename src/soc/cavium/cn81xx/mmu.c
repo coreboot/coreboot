@@ -31,7 +31,7 @@ void soc_mmu_init(void)
 	 * Need to use secure mem attribute, as firmware is running in ARM TZ
 	 * region.
 	 */
-	mmu_config_range((void *)_ttb, _ttb_size, secure_mem);
+	mmu_config_range((void *)_ttb, REGION_SIZE(ttb), secure_mem);
 	mmu_config_range((void *)_dram, sdram_size_mb() * MiB, secure_mem);
 	/* IO space has the MSB set and is divided into 4 sub-regions:
 	 * * NCB

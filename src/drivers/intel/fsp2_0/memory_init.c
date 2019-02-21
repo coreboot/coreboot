@@ -398,7 +398,7 @@ void fsp_memory_init(bool s3wake)
 	memranges_init_empty(&memmap, &freeranges[0], ARRAY_SIZE(freeranges));
 	memranges_insert(&memmap, (uintptr_t)_car_region_start,
 		_car_relocatable_data_end - _car_region_start, 0);
-	memranges_insert(&memmap, (uintptr_t)_program, _program_size, 0);
+	memranges_insert(&memmap, (uintptr_t)_program, REGION_SIZE(program), 0);
 
 	if (!IS_ENABLED(CONFIG_FSP_M_XIP))
 		status = load_fspm_mem(&hdr, &file_data, &memmap);

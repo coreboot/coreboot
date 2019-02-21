@@ -32,13 +32,13 @@ void mtk_mmu_init(void)
 	mmu_config_range((void *)0, (uintptr_t)4U * GiB, DEV_MEM);
 
 	/* SRAM is cached */
-	mmu_config_range(_sram, _sram_size, SECURE_CACHED_MEM);
+	mmu_config_range(_sram, REGION_SIZE(sram), SECURE_CACHED_MEM);
 
 	/* L2C SRAM is cached */
-	mmu_config_range(_sram_l2c, _sram_l2c_size, SECURE_CACHED_MEM);
+	mmu_config_range(_sram_l2c, REGION_SIZE(sram_l2c), SECURE_CACHED_MEM);
 
 	/* DMA is non-cached and is reserved for TPM & da9212 I2C DMA */
-	mmu_config_range(_dma_coherent, _dma_coherent_size,
+	mmu_config_range(_dma_coherent, REGION_SIZE(dma_coherent),
 			 SECURE_UNCACHED_MEM);
 
 	mmu_enable();
@@ -56,7 +56,7 @@ void mtk_mmu_disable_l2c_sram(void)
 {
 	/* Unmap L2C SRAM so it can be reclaimed by L2 cache */
 	/* TODO: Implement true unmapping, and also use it for the zero-page! */
-	mmu_config_range(_sram_l2c, _sram_l2c_size, DEV_MEM);
+	mmu_config_range(_sram_l2c, REGION_SIZE(sram_l2c), DEV_MEM);
 
 	/* Careful: changing cache geometry while it's active is a bad idea! */
 	mmu_disable();

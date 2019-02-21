@@ -172,7 +172,8 @@ void acpi_prepare_resume_backup(void)
 	if (IS_ENABLED(CONFIG_RELOCATABLE_RAMSTAGE))
 		return;
 
-	backup_create_or_update(NULL, (uintptr_t)_program, _program_size);
+	backup_create_or_update(NULL, (uintptr_t)_program,
+				REGION_SIZE(program));
 }
 
 #define WAKEUP_BASE 0x600

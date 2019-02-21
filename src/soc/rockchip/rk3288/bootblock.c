@@ -33,7 +33,7 @@ void bootblock_soc_init(void)
 	/* SRAM is tightly wedged between registers, need to use subtables. Map
 	 * write-through as equivalent for non-cacheable without XN on A17. */
 	mmu_config_range_kb((uintptr_t)_sram/KiB,
-			    _sram_size/KiB, DCACHE_WRITETHROUGH);
+			    REGION_SIZE(sram)/KiB, DCACHE_WRITETHROUGH);
 	dcache_mmu_enable();
 
 	rkclk_configure_crypto(148500*KHz);

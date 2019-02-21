@@ -462,7 +462,7 @@ static void mainboard_enable(struct device *dev)
 	/* set up caching for the DRAM */
 	mmu_config_range(DRAM_START, DRAM_SIZE, DCACHE_WRITEBACK);
 	mmu_config_range((uintptr_t)_dma_coherent/MiB,
-			 _dma_coherent_size/MiB, DCACHE_OFF);
+			 REGION_SIZE(dma_coherent)/MiB, DCACHE_OFF);
 
 	const unsigned epll_hz = 192000000;
 	const unsigned sample_rate = 48000;
@@ -487,5 +487,5 @@ void lb_board(struct lb_header *header)
 	dma->tag = LB_TAB_DMA;
 	dma->size = sizeof(*dma);
 	dma->range_start = (uintptr_t)_dma_coherent;
-	dma->range_size = _dma_coherent_size;
+	dma->range_size = REGION_SIZE(dma_coherent);
 }

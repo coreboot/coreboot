@@ -171,10 +171,10 @@ static int nor_read(const struct spi_flash *flash, u32 addr, size_t len,
 
 	if (ENV_BOOTBLOCK || ENV_VERSTAGE) {
 		dma_buf = (uintptr_t)_dma_coherent;
-		dma_buf_len = _dma_coherent_size;
+		dma_buf_len = REGION_SIZE(dma_coherent);
 	} else {
 		dma_buf = (uintptr_t)_dram_dma;
-		dma_buf_len = _dram_dma_size;
+		dma_buf_len = REGION_SIZE(dram_dma);
 	}
 
 	while (len - done >= SFLASH_DMA_ALIGN) {

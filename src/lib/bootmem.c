@@ -89,8 +89,10 @@ static void bootmem_init(void)
 	/* Add memory used by CBMEM. */
 	cbmem_add_bootmem();
 
-	bootmem_add_range((uintptr_t)_stack, _stack_size, BM_MEM_RAMSTAGE);
-	bootmem_add_range((uintptr_t)_program, _program_size, BM_MEM_RAMSTAGE);
+	bootmem_add_range((uintptr_t)_stack, REGION_SIZE(stack),
+			  BM_MEM_RAMSTAGE);
+	bootmem_add_range((uintptr_t)_program, REGION_SIZE(program),
+			  BM_MEM_RAMSTAGE);
 
 	bootmem_arch_add_ranges();
 	bootmem_platform_add_ranges();

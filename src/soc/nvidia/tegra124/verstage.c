@@ -30,7 +30,8 @@ static void enable_cache(void)
 	/* Whole space is uncached. */
 	mmu_config_range(0, 4096, DCACHE_OFF);
 	/* SRAM is cached. MMU code will round size up to page size. */
-	mmu_config_range((uintptr_t)_sram/MiB, DIV_ROUND_UP(_sram_size, MiB),
+	mmu_config_range((uintptr_t)_sram/MiB,
+			 DIV_ROUND_UP(REGION_SIZE(sram), MiB),
 			 DCACHE_WRITEBACK);
 	mmu_disable_range(0, 1);
 	dcache_mmu_enable();

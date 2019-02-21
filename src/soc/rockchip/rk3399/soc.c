@@ -30,8 +30,10 @@
 
 void bootmem_platform_add_ranges(void)
 {
-	bootmem_add_range((uintptr_t)_pmu_sram, _pmu_sram_size, BM_MEM_BL31);
-	bootmem_add_range((uintptr_t)_bl31_sram, _bl31_sram_size, BM_MEM_BL31);
+	bootmem_add_range((uintptr_t)_pmu_sram, REGION_SIZE(pmu_sram),
+			  BM_MEM_BL31);
+	bootmem_add_range((uintptr_t)_bl31_sram, REGION_SIZE(bl31_sram),
+			  BM_MEM_BL31);
 }
 
 static void soc_read_resources(struct device *dev)

@@ -105,7 +105,7 @@ static void switch_to_postram_cache(int unused)
 	boot_device_init();
 	if (_preram_cbfs_cache != _postram_cbfs_cache)
 		mmap_helper_device_init(&mdev, _postram_cbfs_cache,
-					_postram_cbfs_cache_size);
+					REGION_SIZE(postram_cbfs_cache));
 }
 ROMSTAGE_CBMEM_INIT_HOOK(switch_to_postram_cache);
 
@@ -122,7 +122,7 @@ void boot_device_init(void)
 
 	spi_flash_init_done = true;
 
-	mmap_helper_device_init(&mdev, _cbfs_cache, _cbfs_cache_size);
+	mmap_helper_device_init(&mdev, _cbfs_cache, REGION_SIZE(cbfs_cache));
 }
 
 /* Return the CBFS boot device. */

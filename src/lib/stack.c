@@ -30,7 +30,8 @@ it with the version available from LANL.
 int checkstack(void *top_of_stack, int core)
 {
 	/* Not all archs use CONFIG_STACK_SIZE, those who don't set it to 0. */
-	size_t stack_size = CONFIG_STACK_SIZE ? CONFIG_STACK_SIZE : _stack_size;
+	size_t stack_size = CONFIG_STACK_SIZE ?
+			    CONFIG_STACK_SIZE : REGION_SIZE(stack);
 	int i;
 	u32 *stack = (u32 *) (top_of_stack - stack_size);
 

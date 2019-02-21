@@ -111,7 +111,8 @@ void cbmemc_init(void)
 {
 #ifdef __PRE_RAM__
 	/* Pre-RAM environments use special buffer placed by linker script. */
-	init_console_ptr(_preram_cbmem_console, _preram_cbmem_console_size);
+	init_console_ptr(_preram_cbmem_console,
+			 REGION_SIZE(preram_cbmem_console));
 #else
 	/* Post-RAM uses static (BSS) buffer before CBMEM is reinitialized. */
 	init_console_ptr(static_console, sizeof(static_console));

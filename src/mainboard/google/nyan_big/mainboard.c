@@ -260,5 +260,5 @@ void lb_board(struct lb_header *header)
 	dma->tag = LB_TAB_DMA;
 	dma->size = sizeof(*dma);
 	dma->range_start = (uintptr_t)_dma_coherent;
-	dma->range_size = _dma_coherent_size;
+	dma->range_size = REGION_SIZE(dma_coherent);
 }

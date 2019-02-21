@@ -45,7 +45,7 @@ static void tegra210_mmu_config(void)
 	mmu_config_range((void *)(start * MiB), (end-start) * MiB, cachedmem);
 
 	/* SRAM */
-	mmu_config_range(_sram, _sram_size, cachedmem);
+	mmu_config_range(_sram, REGION_SIZE(sram), cachedmem);
 
 	/* Add TZ carveout. */
 	carveout_range(CARVEOUT_TZ, &tz_base_mib, &tz_size_mib);
@@ -89,8 +89,8 @@ void tegra210_mmu_init(void)
 	 *
 	 */
 	carveout_range(CARVEOUT_TZ, &tz_base_mib, &tz_size_mib);
-	assert((uintptr_t)_ttb + _ttb_size == (tz_base_mib + tz_size_mib) * MiB
-		&& _ttb_size <= tz_size_mib * MiB);
+	assert((uintptr_t)_ttb + REGION_SIZE(ttb) == (tz_base_mib + tz_size_mib)
+		* MiB && REGION_SIZE(ttb) <= tz_size_mib * MiB);
 
 	mmu_enable();
 }

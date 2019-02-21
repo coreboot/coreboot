@@ -24,7 +24,7 @@ void cbmem_run_init_hooks(int is_recovery)
 	cbmem_init_hook_t *einit_hook_ptr =
 		(cbmem_init_hook_t *)&_ecbmem_init_hooks;
 
-	if (_cbmem_init_hooks_size == 0)
+	if (REGION_SIZE(cbmem_init_hooks) == 0)
 		return;
 
 	while (init_hook_ptr !=  einit_hook_ptr) {

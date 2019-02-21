@@ -18,6 +18,7 @@
 #define __SOC_CAVIUM_CN81XX_CPU_H__
 
 #include <stdint.h>
+#include <symbols.h>
 
 /**
  * Number of the Core on which the program is currently running.
@@ -70,8 +71,6 @@ void secondary_cpu_init(size_t core_id);
 
 /* Symbols in memlayout.ld */
 
-extern u8 _stack_sec[];
-extern u8 _estack_sec[];
-#define _stack_sec_size (_estack_sec - _stack_sec)
+DECLARE_REGION(stack_sec)
 
 #endif	/* __SOC_CAVIUM_CN81XX_CPU_H__ */

@@ -326,7 +326,7 @@ static void mainboard_enable(struct device *dev)
 	mmu_config_range(0, DRAM_START, DCACHE_OFF);
 	mmu_config_range(DRAM_START, DRAM_SIZE, DCACHE_WRITEBACK);
 	mmu_config_range((uintptr_t)_dma_coherent/MiB,
-			 _dma_coherent_size/MiB, DCACHE_OFF);
+			 REGION_SIZE(dma_coherent)/MiB, DCACHE_OFF);
 	mmu_config_range(DRAM_END, 4096 - DRAM_END, DCACHE_OFF);
 	dcache_mmu_enable();
 
@@ -353,5 +353,5 @@ void lb_board(struct lb_header *header)
 	dma->tag = LB_TAB_DMA;
 	dma->size = sizeof(*dma);
 	dma->range_start = (uintptr_t)_dma_coherent;
-	dma->range_size = _dma_coherent_size;
+	dma->range_size = REGION_SIZE(dma_coherent);
 }

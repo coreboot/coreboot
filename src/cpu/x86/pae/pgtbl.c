@@ -239,12 +239,12 @@ int paging_enable_for_car(const char *pdpt_name, const char *pt_name)
 	if (!ENV_CACHE_AS_RAM)
 		return -1;
 
-	if (read_from_cbfs(pdpt_name, _pdpt, _pdpt_size)) {
+	if (read_from_cbfs(pdpt_name, _pdpt, REGION_SIZE(pdpt))) {
 		printk(BIOS_ERR, "Couldn't load pdpt\n");
 		return -1;
 	}
 
-	if (read_from_cbfs(pt_name, _pagetables, _pagetables_size)) {
+	if (read_from_cbfs(pt_name, _pagetables, REGION_SIZE(pagetables))) {
 		printk(BIOS_ERR, "Couldn't load page tables\n");
 		return -1;
 	}

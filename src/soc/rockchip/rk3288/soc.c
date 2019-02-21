@@ -34,7 +34,7 @@ static void soc_init(struct device *dev)
 	ram_resource(dev, 0, (uintptr_t)_dram/KiB, sdram_size_mb()*(MiB/KiB));
 	if (display_init_required())
 		rk_display_init(dev, (uintptr_t)_framebuffer,
-				_framebuffer_size);
+				REGION_SIZE(framebuffer));
 	else
 		printk(BIOS_INFO, "Skipping display init.\n");
 }

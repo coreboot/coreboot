@@ -29,7 +29,7 @@
 
 /* DMA memory for drivers */
 #define DMA_START            ((uintptr_t)_dma_coherent / MiB)
-#define DMA_SIZE             (_dma_coherent_size / MiB)
+#define DMA_SIZE             (REGION_SIZE(dma_coherent) / MiB)
 
 void setup_dram_mappings(enum dram_state dram)
 {

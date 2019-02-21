@@ -28,9 +28,9 @@ void sdm845_mmu_init(void)
 	mmu_init();
 
 	mmu_config_range((void *)(4 * KiB), ((4UL * GiB) - (4 * KiB)), DEV_MEM);
-	mmu_config_range((void *)_ssram, _ssram_size, CACHED_RAM);
-	mmu_config_range((void *)_bsram, _bsram_size, CACHED_RAM);
-	mmu_config_range((void *)_dma_coherent, _dma_coherent_size,
+	mmu_config_range((void *)_ssram, REGION_SIZE(ssram), CACHED_RAM);
+	mmu_config_range((void *)_bsram, REGION_SIZE(bsram), CACHED_RAM);
+	mmu_config_range((void *)_dma_coherent, REGION_SIZE(dma_coherent),
 			 UNCACHED_RAM);
 
 	mmu_enable();

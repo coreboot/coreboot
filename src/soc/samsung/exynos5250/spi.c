@@ -179,7 +179,7 @@ void exynos_init_spi_boot_device(void)
 {
 	boot_slave_regs = (void *)EXYNOS5_SPI1_BASE;
 
-	mmap_helper_device_init(&mdev, _cbfs_cache, _cbfs_cache_size);
+	mmap_helper_device_init(&mdev, _cbfs_cache, REGION_SIZE(cbfs_cache));
 }
 
 const struct region_device *exynos_spi_boot_device(void)

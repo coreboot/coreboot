@@ -42,7 +42,7 @@ struct __packed timestamp_cache {
 DECLARE_OPTIONAL_REGION(timestamp);
 
 #if defined(__PRE_RAM__)
-#define USE_TIMESTAMP_REGION (_timestamp_size > 0)
+#define USE_TIMESTAMP_REGION (REGION_SIZE(timestamp) > 0)
 #else
 #define USE_TIMESTAMP_REGION 0
 #endif
@@ -70,7 +70,7 @@ static void timestamp_cache_init(struct timestamp_cache *ts_cache,
 	ts_cache->cache_state = TIMESTAMP_CACHE_INITIALIZED;
 
 	if (USE_TIMESTAMP_REGION)
-		ts_cache->table.max_entries = (_timestamp_size -
+		ts_cache->table.max_entries = (REGION_SIZE(timestamp) -
 			offsetof(struct timestamp_cache, entries))
 			/ sizeof(struct timestamp_entry);
 }
@@ -82,7 +82,7 @@ static struct timestamp_cache *timestamp_cache_get(void)
 	if (TIMESTAMP_CACHE_IN_BSS) {
 		ts_cache = &timestamp_cache;
 	} else if (USE_TIMESTAMP_REGION) {
-		if (_timestamp_size < sizeof(*ts_cache))
+		if (REGION_SIZE(timestamp) < sizeof(*ts_cache))
 			BUG();
 		ts_cache = car_get_var_ptr((void *)_timestamp);
 	}

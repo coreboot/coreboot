@@ -89,7 +89,7 @@ chip soc/intel/cannonlake
 	register "PcieClkSrcClkReq[1]" = "1"
 
 	# GPIO for SD card detect
-	register "sdcard_cd_gpio" = "GPP_G5"
+	register "sdcard_cd_gpio" = "vSD3_CD_B"
 
 	# PCIe port 14 for M.2 E-key WLAN
 	register "PcieRpEnable[13]" = "1"

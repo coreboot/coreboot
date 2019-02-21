@@ -178,6 +178,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_H10, NONE),
 	/* PCH_I2C_TRACKPAD_SCL */
 	PAD_NC(GPP_H11, NONE),
+	/* SD card detect VGPIO */
+	PAD_CFG_GPI_GPIO_DRIVER(vSD3_CD_B, NONE, DEEP),
 
 	/* GPD2: LAN_WAKE# ==> EC_PCH_WAKE_OD */
 	PAD_CFG_NF(GPD2, NONE, DEEP, NF1),

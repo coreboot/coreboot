@@ -81,6 +81,15 @@ checktools:
 build: update checktools
 	unset CC; $(MAKE) -C $(project_dir)/BaseTools
 	echo " build $(project_name) $(TAG-y)"
+	if [ -n $(CONFIG_TIANOCORE_BOOTSPLASH_FILE) ]; then \
+		echo "    Copying custom bootsplash image"; \
+		case "$(CONFIG_TIANOCORE_BOOTSPLASH_FILE)" in \
+			/*) cp $(CONFIG_TIANOCORE_BOOTSPLASH_FILE) \
+				$(project_dir)/CorebootPayloadPkg/Logo/Logo.bmp;; \
+			*) cp $(top)/$(CONFIG_TIANOCORE_BOOTSPLASH_FILE) \
+				$(project_dir)/CorebootPayloadPkg/Logo/Logo.bmp;; \
+		esac \
+	fi; \
 	cd $(project_dir); \
 		export EDK_TOOLS_PATH=$(project_dir)/BaseTools; \
 		export WORKSPACE=$(project_dir); \
@@ -90,7 +99,8 @@ build: update checktools
 			cat ../tools_def.txt >> $(project_dir)/Conf/tools_def.txt; \
 		fi; \
 		build $(BUILD_STR); \
-		mv $(project_dir)/Build/CorebootPayloadPkg*/*/FV/UEFIPAYLOAD.fd $(project_dir)/Build/UEFIPAYLOAD.fd
+		mv $(project_dir)/Build/CorebootPayloadPkg*/*/FV/UEFIPAYLOAD.fd $(project_dir)/Build/UEFIPAYLOAD.fd; \
+		git checkout CorebootPayloadPkg/Logo/Logo.bmp > /dev/null 2>&1
 
 clean:
 	test -d $(project_dir) && (cd $(project_dir); rm -rf Build; rm -f Conf/tools_def.txt) || exit 0

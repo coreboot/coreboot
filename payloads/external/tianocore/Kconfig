@@ -87,4 +87,24 @@ config TIANOCORE_USE_8254_TIMER
 	help
 	  Use 8254 Timer for legacy support.
 
+config TIANOCORE_BOOTSPLASH_IMAGE
+	bool "Use a custom bootsplash image"
+	depends on TIANOCORE_STABLE
+	help
+	  Select this option if you have a bootsplash image that you would
+	  like to be used. If this option is not selected, the default
+	  coreboot logo (European Brown Hare) will used.
+
+config TIANOCORE_BOOTSPLASH_FILE
+	string "Tianocore Bootsplash path and filename"
+	depends on TIANOCORE_BOOTSPLASH_IMAGE
+	default "bootsplash.bmp"
+	help
+	  The path and filename of the file to use as graphical bootsplash
+	  screen. The file format must be uncompressed BMP, and the file's
+	  resolution must be less than the native resolution of the display.
+
+	  If an absolute path is not given, the path will assumed to be
+	  relative to the coreboot root directory.
+
 endif

@@ -3,6 +3,7 @@
  *
  * Copyright 2018       Facebook, Inc.
  * Copyright 2003-2017  Cavium Inc.  <support@cavium.com>
+ * Copyright 2019       9elements Agency GmbH
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,16 +29,60 @@
 #include <libbdk-hal/bdk-utils.h>
 #include <libbdk-hal/bdk-l2c.h>
 #include <libdram/libdram-config.h>
+#include <soc/ecam.h>
+#include <device/pci_ops.h>
+#include <device/pci.h>
 
 size_t sdram_size_mb(void)
 {
 	return bdk_dram_get_size_mbytes(0);
 }
 
+#define BDK_RNM_CTL_STATUS	0
+#define BDK_RNM_RANDOM		0x100000
+
+#if ENV_ROMSTAGE
+/* Enable RNG for DRAM init */
+static void rnm_init(void)
+{
+	/* Bus numbers are hardcoded in ASIC. No need to program bridges. */
+	pci_devfn_t dev = PCI_DEV(2, 0, 0);
+
+	u64 *bar = (u64 *)ecam0_get_bar_val(dev, 0);
+	if (!bar) {
+		printk(BIOS_ERR, "RNG: Failed to get BAR0\n");
+		return;
+	}
+
+	printk(BIOS_DEBUG, "RNG: BAR0 at %p\n", bar);
+
+	u64 reg = read64(&bar[BDK_RNM_CTL_STATUS]);
+	/*
+	 * Enables the output of the RNG.
+	 * Entropy enable for random number generator.
+	 */
+	reg |= 3;
+	write64(&bar[BDK_RNM_CTL_STATUS], reg);
+
+	/* Read back after enable so we know it is done. */
+	reg = read64(&bar[BDK_RNM_CTL_STATUS]);
+	/*
+	 * Errata (RNM-22528) First consecutive reads to RNM_RANDOM return same
+	 * value. Before using the random entropy, read RNM_RANDOM at least once
+	 * and discard the data
+	 */
+	reg = read64(&bar[BDK_RNM_RANDOM]);
+	printk(BIOS_SPEW, "RNG: RANDOM %llx\n", reg);
+	reg = read64(&bar[BDK_RNM_RANDOM]);
+	printk(BIOS_SPEW, "RNG: RANDOM %llx\n", reg);
+}
+
 /* based on bdk_boot_dram() */
 void sdram_init(void)
 {
 	printk(BIOS_DEBUG, "Initializing DRAM\n");
+
+	rnm_init();
 
 	/**
 	 * FIXME: second arg is actually a desired frequency if set (the
@@ -100,3 +145,4 @@ void sdram_init(void)
 
 	printk(BIOS_INFO, "SDRAM initialization finished.\n");
 }
+#endif

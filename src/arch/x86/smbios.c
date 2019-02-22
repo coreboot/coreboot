@@ -560,7 +560,6 @@ static int smbios_write_type4(unsigned long *current, int handle)
 	t->processor_version = smbios_processor_name(t->eos);
 	t->processor_family = (res.eax > 0) ? 0x0c : 0x6;
 	t->processor_type = 3; /* System Processor */
-	t->processor_upgrade = 0x06;
 	t->core_count = (res.ebx >> 16) & 0xff;
 	t->l1_cache_handle = 0xffff;
 	t->l2_cache_handle = 0xffff;

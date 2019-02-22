@@ -22,6 +22,7 @@
 #include <device/pci_ops.h>
 #include <soc/addressmap.h>
 #include <soc/cavium/common/pci/chip.h>
+#include <soc/ecam.h>
 #include <assert.h>
 
 #define CAVM_PCCPF_XXX_VSEC_CTL 0x108
@@ -137,50 +138,6 @@ static void ecam0_fix_missing_devices(struct bus *link)
 }
 
 /**
- * Get PCI BAR address from cavium specific extended capability.
- * Use regular BAR if not found in extended capability space.
- *
- * @return The pyhsical address of the BAR, zero on error
- */
-static uint64_t get_bar_val(struct device *dev, u8 bar)
-{
-	size_t cap_offset = pci_find_capability(dev, 0x14);
-	uint64_t h, l, ret = 0;
-	if (cap_offset) {
-		/* Found EA */
-		u8 es, bei;
-		u8 ne = pci_read_config8(dev, cap_offset + 2) & 0x3f;
-
-		cap_offset += 4;
-		while (ne) {
-			uint32_t dw0 = pci_read_config32(dev, cap_offset);
-
-			es = dw0 & 7;
-			bei = (dw0 >> 4) & 0xf;
-			if (bei == bar) {
-				h = 0;
-				l = pci_read_config32(dev, cap_offset + 4);
-				if (l & 2)
-					h = pci_read_config32(dev,
-							      cap_offset + 12);
-				ret = (h << 32) | (l & ~0xfull);
-				break;
-			}
-			cap_offset += (es + 1) * 4;
-			ne--;
-		}
-	} else {
-		h = 0;
-		l = pci_read_config32(dev, bar * 4 + PCI_BASE_ADDRESS_0);
-		if (l & 4)
-			h = pci_read_config32(dev, bar * 4 + PCI_BASE_ADDRESS_0
-					      + 4);
-		ret = (h << 32) | (l & ~0xfull);
-	}
-	return ret;
-}
-
-/**
  * pci_enable_msix - configure device's MSI-X capability structure
  * @dev: pointer to the pci_dev data structure of MSI-X device function
  * @entries: pointer to an array of MSI-X entries
@@ -237,7 +194,7 @@ static size_t ecam0_pci_enable_msix(struct device *dev,
 		       dev_path(dev));
 		return -1;
 	}
-	bar = get_bar_val(dev, bar_idx);
+	bar = ecam0_get_bar_val(dev, bar_idx);
 	if (!bar) {
 		printk(BIOS_ERR, "ERROR: %s: Failed to find MSI-X bar\n",
 		       dev_path(dev));

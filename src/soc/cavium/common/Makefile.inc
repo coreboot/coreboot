@@ -25,11 +25,13 @@ bootblock-$(CONFIG_BOOTBLOCK_CUSTOM) += bootblock.c
 # romstage
 
 romstage-y += bdk-coreboot.c
+romstage-y += ecam.c
 
 ################################################################################
 # ramstage
 
 ramstage-y += bdk-coreboot.c
+ramstage-y += ecam.c
 
 CPPFLAGS_common += -Isrc/soc/cavium/common/include
 

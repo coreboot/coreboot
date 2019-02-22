@@ -53,6 +53,7 @@ Name (P5U1, Package () { 0x04, 0x01, RD })	/* PmSt5_BAT1_UPDATE */
 Name (P6ST, Package () { 0x05, 0xff, RD })	/* PmSt6 */
 Name (P6AC, Package () { 0x05, 0x08, RD })	/* PmSt6_AC_UPDATE */
 
+Name (PWSR, Package () { 0x06, 0xff, RD })	/* POWER_SOURCE */
 Name (ACEX, Package () { 0x06, 0x01, RD })	/* AC Present */
 Name (BTEX, Package () { 0x06, 0x02, RD })	/* Battery Present */
 Name (BTSC, Package () { 0x06, 0x04, RD })	/* Battery Status Changed */
@@ -121,11 +122,6 @@ Name (OECH, Package () { 0x3a, 0x01, RD })	/* Event: Orientation */
 Name (OERL, Package () { 0x3a, 0x02, RD })	/* Event: Rotation Lock */
 
 Name (BCCY, Package () { 0x3e, 0xffff, RD })	/* BCACHE: Cycle Count */
-
-Name (APWR, Package () { 0x47, 0xff, RD })	/* POWER: Full Status */
-Name (APAC, Package () { 0x47, 0x01, RD })	/* POWER: AC */
-Name (APB1, Package () { 0x47, 0x02, RD })	/* POWER: Main Battery */
-Name (APC1, Package () { 0x47, 0x04, RD })	/* POWER: Main Batt Status */
 
 /*
  * EC RAM WRITE

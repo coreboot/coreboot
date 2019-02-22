@@ -19,17 +19,17 @@ Name (ECPR, 0)
 
 Method (ECQP, 0, Serialized)
 {
-	Local0 = R (APWR)
+	Local0 = R (PWSR)
 	Local1 = Local0 ^ ECPR
 	ECPR = Local0
 
-	If (EBIT (APAC, Local1)) {
+	If (EBIT (ACEX, Local1)) {
 		Printf ("AC Power Status Changed")
 		Notify (AC, 0x80)
 	}
 
-	If (EBIT (APB1, Local1)) {
-		If (EBIT (APB1, Local0)) {
+	If (EBIT (BTEX, Local1)) {
+		If (EBIT (BTEX, Local0)) {
 			Printf ("BAT0 Inserted")
 			Notify (BAT0, 0x81)
 		} Else {
@@ -39,7 +39,7 @@ Method (ECQP, 0, Serialized)
 		}
 	}
 
-	If (EBIT (APC1, Local1)) {
+	If (EBIT (BTSC, Local1)) {
 		Printf ("BAT0 Status Change")
 		Notify (BAT0, 0x80)
 	}

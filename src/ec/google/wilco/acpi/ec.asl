@@ -42,7 +42,7 @@ Device (EC0)
 		EREG = Arg1
 
 		/* Store initial value for power status */
-		ECPR = R (APWR)
+		ECPR = R (PWSR)
 
 		/* Indicate to EC that OS is ready for queries */
 		W (ERDY, Arg1)

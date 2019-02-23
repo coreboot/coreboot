@@ -355,17 +355,18 @@ static uint32_t integrate_psp_firmwares(char *base, uint32_t pos,
 	int fd;
 	ssize_t bytes;
 	struct stat fd_stat;
-	unsigned int i;
+	unsigned int i, count;
 	uint32_t rom_base_address = 0xFFFFFFFF - rom_size + 1;
 
-	for (i = 0; fw_table[i].type != AMD_FW_INVALID; i++) {
+	for (i = 0, count = 0; fw_table[i].type != AMD_FW_INVALID; i++) {
 		if (fw_table[i].type == AMD_PSP_FUSE_CHAIN) {
-			pspdir[4+4*i+0] = fw_table[i].type;
-			pspdir[4+4*i+1] = 0xFFFFFFFF;
-			pspdir[4+4*i+2] = 1;
-			pspdir[4+4*i+3] = 0;
+			pspdir[4+4*count+0] = fw_table[i].type;
+			pspdir[4+4*count+1] = 0xFFFFFFFF;
+			pspdir[4+4*count+2] = 1;
+			pspdir[4+4*count+3] = 0;
+			count++;
 		} else if (fw_table[i].filename != NULL) {
-			pspdir[4+4*i+0] = fw_table[i].type;
+			pspdir[4+4*count+0] = fw_table[i].type;
 
 			fd = open(fw_table[i].filename, O_RDONLY);
 			if (fd < 0) {
@@ -378,10 +379,10 @@ static uint32_t integrate_psp_firmwares(char *base, uint32_t pos,
 				free(base);
 				exit(1);
 			}
-			pspdir[4+4*i+1] = (uint32_t)fd_stat.st_size;
+			pspdir[4+4*count+1] = (uint32_t)fd_stat.st_size;
 
-			pspdir[4+4*i+2] = pos + rom_base_address;
-			pspdir[4+4*i+3] = 0;
+			pspdir[4+4*count+2] = pos + rom_base_address;
+			pspdir[4+4*count+3] = 0;
 
 			if (pos + fd_stat.st_size > rom_size) {
 				printf("Error: Specified ROM size of %d"
@@ -404,11 +405,12 @@ static uint32_t integrate_psp_firmwares(char *base, uint32_t pos,
 
 			close(fd);
 			pos = ALIGN(pos, 0x100U);
+			count++;
 		} else {
 			/* This APU doesn't have this firmware. */
 		}
 	}
-	fill_psp_head(pspdir, i);
+	fill_psp_head(pspdir, count);
 	return pos;
 }
 

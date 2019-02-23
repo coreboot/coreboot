@@ -78,6 +78,10 @@
 
 #define ALIGN(val, by) (((val) + (by) - 1) & ~((by) - 1))
 
+#define EMBEDDED_FW_SIGNATURE 0x55aa55aa
+#define PSP_COOKIE 0x50535024	/* 'PSP$' */
+#define PSP2_COOKIE 0x50535032	/* 'PSP2' */
+
 /*
   Reserved for future.
   TODO: PSP2 is for Combo BIOS, which is the idea that one image supports 2
@@ -92,6 +96,7 @@
    #define PSP_COMBO 0
 #endif
 
+typedef unsigned long long int uint64_t;
 typedef unsigned int uint32_t;
 typedef unsigned char uint8_t;
 typedef unsigned short uint16_t;
@@ -272,17 +277,68 @@ static amd_fw_entry amd_fw_table[] = {
 	{ .type = AMD_FW_INVALID },
 };
 
-static void fill_psp_head(uint32_t *pspdir, uint32_t count)
+typedef struct _embedded_firmware {
+	uint32_t signature; /* 0x55aa55aa */
+	uint32_t imc_entry;
+	uint32_t gec_entry;
+	uint32_t xhci_entry;
+	uint32_t psp_entry;
+	uint32_t comboable;
+} __attribute__((packed, aligned(16))) embedded_firmware;
+
+typedef struct _psp_directory_header {
+	uint32_t cookie;
+	uint32_t checksum;
+	uint32_t num_entries;
+	uint32_t reserved;
+} __attribute__((packed, aligned(16))) psp_directory_header;
+
+typedef struct _psp_directory_entry {
+	uint32_t type; /* b[15:8] may be a modifier, e.g. subprogram */
+	uint32_t size;
+	uint64_t addr; /* or a value in some cases */
+} __attribute__((packed)) psp_directory_entry;
+
+typedef struct _psp_directory_table {
+	psp_directory_header header;
+	psp_directory_entry entries[];
+} __attribute__((packed)) psp_directory_table;
+
+typedef struct _psp_combo_header {
+	uint32_t cookie;
+	uint32_t checksum;
+	uint32_t num_entries;
+	uint32_t lookup;
+	uint64_t reserved[2];
+} __attribute__((packed, aligned(16))) psp_combo_header;
+
+typedef struct _psp_combo_entry {
+	uint32_t id_sel;
+	uint32_t id;
+	uint64_t lvl2_addr;
+} __attribute__((packed)) psp_combo_entry;
+
+typedef struct _psp_combo_directory {
+	psp_combo_header header;
+	psp_combo_entry entries[];
+} __attribute__((packed)) psp_combo_directory;
+
+static void fill_psp_head(psp_directory_table *pspdir, uint32_t count)
 {
-	pspdir[0] = 0x50535024;		/* 'PSP$' */
-	pspdir[2] = count;		/* size */
-	pspdir[3] = 0;
-	pspdir[1] = fletcher32((uint16_t *)&pspdir[1],
-			(count * 16 + 16) / 2 - 2);
+	pspdir->header.cookie = PSP_COOKIE;
+	pspdir->header.num_entries = count;
+	pspdir->header.reserved = 0;
+	/* checksum everything that comes after the Checksum field */
+	pspdir->header.checksum = fletcher32(
+					(void *)&pspdir->header.num_entries,
+					(count * sizeof(psp_directory_entry)
+					+ sizeof(pspdir->header.num_entries)
+					+ sizeof(pspdir->header.reserved)) / 2);
 }
 
-static uint32_t integrate_firmwares(char *base, uint32_t pos, uint32_t *romsig,
-				    amd_fw_entry *fw_table, uint32_t rom_size)
+static uint32_t integrate_firmwares(char *base, uint32_t pos,
+				embedded_firmware *romsig,
+				amd_fw_entry *fw_table, uint32_t rom_size)
 {
 	int fd;
 	ssize_t bytes;
@@ -307,13 +363,13 @@ static uint32_t integrate_firmwares(char *base, uint32_t pos, uint32_t *romsig,
 			switch (fw_table[i].type) {
 			case AMD_FW_IMC:
 				pos = ALIGN(pos, 0x10000U);
-				romsig[1] = pos + rom_base_address;
+				romsig->imc_entry = pos + rom_base_address;
 				break;
 			case AMD_FW_GEC:
-				romsig[2] = pos + rom_base_address;
+				romsig->gec_entry = pos + rom_base_address;
 				break;
 			case AMD_FW_XHCI:
-				romsig[3] = pos + rom_base_address;
+				romsig->xhci_entry = pos + rom_base_address;
 				break;
 			default:
 				/* Error */
@@ -348,7 +404,7 @@ static uint32_t integrate_firmwares(char *base, uint32_t pos, uint32_t *romsig,
 }
 
 static uint32_t integrate_psp_firmwares(char *base, uint32_t pos,
-					uint32_t *pspdir,
+					psp_directory_table *pspdir,
 					amd_fw_entry *fw_table,
 					uint32_t rom_size)
 {
@@ -360,13 +416,12 @@ static uint32_t integrate_psp_firmwares(char *base, uint32_t pos,
 
 	for (i = 0, count = 0; fw_table[i].type != AMD_FW_INVALID; i++) {
 		if (fw_table[i].type == AMD_PSP_FUSE_CHAIN) {
-			pspdir[4+4*count+0] = fw_table[i].type;
-			pspdir[4+4*count+1] = 0xFFFFFFFF;
-			pspdir[4+4*count+2] = 1;
-			pspdir[4+4*count+3] = 0;
+			pspdir->entries[count].type = fw_table[i].type;
+			pspdir->entries[count].size = 0xFFFFFFFF;
+			pspdir->entries[count].addr = 1;
 			count++;
 		} else if (fw_table[i].filename != NULL) {
-			pspdir[4+4*count+0] = fw_table[i].type;
+			pspdir->entries[count].type = fw_table[i].type;
 
 			fd = open(fw_table[i].filename, O_RDONLY);
 			if (fd < 0) {
@@ -379,10 +434,8 @@ static uint32_t integrate_psp_firmwares(char *base, uint32_t pos,
 				free(base);
 				exit(1);
 			}
-			pspdir[4+4*count+1] = (uint32_t)fd_stat.st_size;
-
-			pspdir[4+4*count+2] = pos + rom_base_address;
-			pspdir[4+4*count+3] = 0;
+			pspdir->entries[count].size = (uint32_t)fd_stat.st_size;
+			pspdir->entries[count].addr = pos + rom_base_address;
 
 			if (pos + fd_stat.st_size > rom_size) {
 				printf("Error: Specified ROM size of %d"
@@ -505,7 +558,7 @@ int main(int argc, char **argv)
 	int retval = 0;
 #if PSP2
 	int psp2flag = 0;
-	uint32_t *psp2dir;
+	psp_directory_table *psp2dir;
 	char *tmp;
 #endif
 #if PSP_COMBO
@@ -514,7 +567,8 @@ int main(int argc, char **argv)
 
 	char *rom = NULL;
 	uint32_t current;
-	uint32_t *amd_romsig, *pspdir;
+	embedded_firmware *amd_romsig;
+	psp_directory_table *pspdir;
 
 	int targetfd;
 	char *output = NULL;
@@ -746,13 +800,13 @@ int main(int argc, char **argv)
 	printf("    AMDFWTOOL  Using firmware directory location of %08lx\n",
 			(unsigned long)rom_base_address + current);
 
-	amd_romsig = (void *)(rom + romsig_offset);
-	amd_romsig[0] = 0x55AA55AA; /* romsig */
-	amd_romsig[1] = 0;
-	amd_romsig[2] = 0;
-	amd_romsig[3] = 0;
+	amd_romsig = (embedded_firmware *)(rom + romsig_offset);
+	amd_romsig->signature = EMBEDDED_FW_SIGNATURE;
+	amd_romsig->imc_entry = 0;
+	amd_romsig->gec_entry = 0;
+	amd_romsig->xhci_entry = 0;
 
-	current += 0x20;	    /* size of ROMSIG */
+	current += sizeof(embedded_firmware);
 	current = ALIGN(current, 0x1000U);
 	current = integrate_firmwares(rom, current, amd_romsig,
 			amd_fw_table, rom_size);
@@ -760,7 +814,7 @@ int main(int argc, char **argv)
 	if (pspflag == 1) {
 		current = ALIGN(current, 0x10000U);
 		pspdir = (void *)(rom + current);
-		amd_romsig[4] = current + rom_base_address;
+		amd_romsig->psp_entry = current + rom_base_address;
 
 		current += 0x200;	/* Conservative size of pspdir */
 		current = integrate_psp_firmwares(rom, current, pspdir,
@@ -771,35 +825,34 @@ int main(int argc, char **argv)
 	if (psp2flag == 1) {
 		current = ALIGN(current, 0x10000U); /* PSP2 dir */
 		psp2dir = (void *)(rom + current);
-		amd_romsig[5] = current + rom_base_address;
+		amd_romsig->comboable = current + rom_base_address;
 		current += 0x200;	/* Add conservative size of psp2dir. */
 
 #if PSP_COMBO
 		/* TODO: remove the hardcode. */
-		psp2count = 1;		/* Start from 1. */
-		/* for (; psp2count <= PSP2COUNT; psp2count++, current=ALIGN(current, 0x100)) { */
-		/* Now the psp2dir is psp combo dir. */
-		psp2dir[psp2count*4 + 0 + 4] = 0; /* 0 -Compare PSP ID, 1 -Compare chip family ID */
-		psp2dir[psp2count*4 + 1 + 4] = 0x10220B00; /* TODO: PSP ID. Documentation is needed. */
-		psp2dir[psp2count*4 + 2 + 4] = current + rom_base_address;
-		pspdir = rom + current;
-		psp2dir[psp2count*4 + 3 + 4] = 0;
+		psp_combo_directory *combo_dir = (psp_combo_directory *)psp2dir;
+		combo_dir->entries[0].id_sel = 0; /* 0 -Compare PSP ID, 1 -Compare chip family ID */
+		combo_dir->entries[0].id = 0x10220B00; /* TODO: PSP ID. Documentation is needed. */
+		combo_dir->entries[0].lvl2_addr = current + rom_base_address;
+		pspdir = (psp_directory_table *)(rom + current);
 
 		current += 0x200;	/* Add conservative size of pspdir. Start of PSP entries. */
 		current = integrate_psp_firmwares(rom, current, pspdir,
 				amd_psp2_fw_table, rom_size);
-		/* } */ /* End of loop */
 
 		/* fill the PSP combo head */
-		psp2dir[0] = 0x50535032;  /* 'PSP2' */
-		psp2dir[2] = psp2count;		  /* Count */
-		psp2dir[3] = 1;		/* 0-Dynamic look up through all entries, 1-PSP/chip ID match */
-		psp2dir[4] = 0;		/* reserved 4 dwords. */
-		psp2dir[5] = 0;
-		psp2dir[6] = 0;
-		psp2dir[7] = 0;
-		psp2dir[1] = fletcher32((uint16_t *)&psp2dir[1],
-				(psp2count * 16 + 32) / 2 - 2);
+		combo_dir->header.cookie = PSP2_COOKIE;
+		combo_dir->header.num_entries = 1;
+		combo_dir->header.lookup = 1;
+		combo_dir->header.reserved[0] = 0;
+		combo_dir->header.reserved[1] = 0;
+		combo_dir->header.checksum = fletcher32(
+				(void *)&combo_dir->header.num_entries,
+				(1 * sizeof(psp_directory_entry)
+				+ sizeof(combo_dir->header.num_entries)
+				+ sizeof(combo_dir->header.lookup)
+				+ sizeof(combo_dir->header.reserved[0])
+				+ sizeof(combo_dir->header.reserved[1])) / 2);
 #else
 		current = integrate_psp_firmwares(rom, current, psp2dir,
 				amd_psp2_fw_table, rom_size);

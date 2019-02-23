@@ -61,12 +61,14 @@ chip soc/intel/skylake
 	register "Device4Enable" = "1"
 	register "HeciEnabled" = "0"
 	register "SaGv" = "3"
-	register "SerialIrqConfigSirqEnable" = "1"
 	register "PmConfigSlpS3MinAssert" = "2"		# 50ms
 	register "PmConfigSlpS4MinAssert" = "1"		# 1s
 	register "PmConfigSlpSusMinAssert" = "3"	# 500ms
 	register "PmConfigSlpAMinAssert" = "3"		# 2s
 	register "PmTimerDisabled" = "0"
+
+	# EC/KBC requires continuous mode
+	register "serirq_mode" = "SERIRQ_CONTINUOUS"
 
 	register "pirqa_routing" = "PCH_IRQ11"
 	register "pirqb_routing" = "PCH_IRQ10"

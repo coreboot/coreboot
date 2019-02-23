@@ -162,13 +162,6 @@ config PCR_BASE_ADDRESS
 	help
 	  This option allows you to select MMIO Base Address of sideband bus.
 
-config SERIRQ_CONTINUOUS_MODE
-	bool
-	default n
-	help
-	  If you set this option to y, the serial IRQ machine will be
-	  operated in continuous mode.
-
 config SMM_RESERVED_SIZE
 	hex
 	default 0x200000

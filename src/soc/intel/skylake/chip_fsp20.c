@@ -26,6 +26,7 @@
 #include <fsp/util.h>
 #include <intelblocks/chip.h>
 #include <intelblocks/itss.h>
+#include <intelblocks/lpc_lib.h>
 #include <intelblocks/xdci.h>
 #include <intelpch/lockdown.h>
 #include <romstage_handoff.h>
@@ -418,8 +419,8 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	/* Indicate whether platform supports Voltage Margining */
 	params->PchPmSlpS0VmEnable = config->PchPmSlpS0VmEnable;
 
-	params->PchSirqEnable = config->SerialIrqConfigSirqEnable;
-	params->PchSirqMode = config->SerialIrqConfigSirqMode;
+	params->PchSirqEnable = config->serirq_mode != SERIRQ_OFF;
+	params->PchSirqMode = config->serirq_mode == SERIRQ_CONTINUOUS;
 
 	params->CpuConfig.Bits.SkipMpInit = !chip_get_fsp_mp_init();
 

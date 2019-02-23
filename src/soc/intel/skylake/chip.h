@@ -24,6 +24,7 @@
 #include <drivers/i2c/designware/dw_i2c.h>
 #include <intelblocks/chip.h>
 #include <intelblocks/gspi.h>
+#include <intelblocks/lpc_lib.h>
 #include <stdint.h>
 #include <soc/gpe.h>
 #include <soc/gpio.h>
@@ -428,13 +429,7 @@ struct soc_intel_skylake_config {
 		RESET_POWER_CYCLE_4S      = 4,
 	} PmConfigPwrCycDur;
 
-	/* Determines if enable Serial IRQ. Values 0: Disabled, 1: Enabled.*/
-	u8 SerialIrqConfigSirqEnable;
-
-	enum {
-		SERIAL_IRQ_QUIET_MODE      = 0,
-		SERIAL_IRQ_CONTINUOUS_MODE = 1,
-	} SerialIrqConfigSirqMode;
+	enum serirq_mode serirq_mode;
 
 	enum {
 		SERIAL_IRQ_FRAME_PULSE_4CLK = 0,

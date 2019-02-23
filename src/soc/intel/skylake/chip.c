@@ -22,6 +22,7 @@
 #include <fsp/util.h>
 #include <intelblocks/chip.h>
 #include <intelblocks/itss.h>
+#include <intelblocks/lpc_lib.h>
 #include <intelblocks/xdci.h>
 #include <intelpch/lockdown.h>
 #include <soc/acpi.h>
@@ -190,8 +191,9 @@ void soc_silicon_init_params(SILICON_INIT_UPD *params)
 	params->PmConfigPwrBtnOverridePeriod =
 		config->PmConfigPwrBtnOverridePeriod;
 	params->PmConfigPwrCycDur = config->PmConfigPwrCycDur;
-	params->SerialIrqConfigSirqEnable = config->SerialIrqConfigSirqEnable;
-	params->SerialIrqConfigSirqMode = config->SerialIrqConfigSirqMode;
+	params->SerialIrqConfigSirqEnable = config->serirq_mode != SERIRQ_OFF;
+	params->SerialIrqConfigSirqMode =
+		config->serirq_mode == SERIRQ_CONTINUOUS;
 	params->SerialIrqConfigStartFramePulse =
 		config->SerialIrqConfigStartFramePulse;
 

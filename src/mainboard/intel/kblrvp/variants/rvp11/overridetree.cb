@@ -11,7 +11,7 @@ chip soc/intel/skylake
 	register "Heci3Enabled" = "0"
 	register "PmTimerDisabled" = "0"
 
-        register "SerialIrqConfigSirqMode" = "0x01"
+	register "serirq_mode" = "SERIRQ_CONTINUOUS"
 
 	# Enable PCIE slot
 	register "PcieRpEnable[5]" = "1"

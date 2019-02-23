@@ -54,8 +54,6 @@ chip soc/intel/skylake
 	# SLP_A Minimum Assertion Width. Values 0: 0ms, 1: 4s, 2: 98ms, 3: 2s
 	register "PmConfigSlpAMinAssert" = "0x03"
 
-	# Determines if enable Serial IRQ. Values 0: Disabled, 1: Enabled
-	register "SerialIrqConfigSirqEnable" = "0x01"
 
 	# VR Settings Configuration for 4 Domains
 	#+----------------+-------+-------+-------+-------+

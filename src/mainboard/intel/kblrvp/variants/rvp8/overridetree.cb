@@ -10,7 +10,8 @@ chip soc/intel/skylake
 	register "ScsSdCardEnabled" = "0"
 	register "HeciEnabled" = "0"
 	register "PmTimerDisabled" = "0"
-	register "SerialIrqConfigSirqMode" = "0x01"
+
+	register "serirq_mode" = "SERIRQ_CONTINUOUS"
 
 	# VR Settings Configuration for 5 Domains
 	#+----------------+-------+-------+-------------+-------------+-------+

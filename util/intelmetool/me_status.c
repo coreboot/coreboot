@@ -24,6 +24,8 @@ static const char *me_cws_values[] = {
 	[ME_HFS_CWS_RESET]	= "Reset",
 	[ME_HFS_CWS_INIT]	= "Initializing",
 	[ME_HFS_CWS_REC]	= "Recovery",
+	[ME_HFS_CWS_TEST]	= "Test",
+	[ME_HFS_CWS_DISABLED]	= "Disabled",
 	[ME_HFS_CWS_NORMAL]	= "Normal",
 	[ME_HFS_CWS_WAIT]	= "Platform Disable Wait",
 	[ME_HFS_CWS_TRANS]	= "OP State Transition",
@@ -53,6 +55,7 @@ static const char *me_opmode_values[] = {
 static const char *me_error_values[] = {
 	[ME_HFS_ERROR_NONE]	= "No Error",
 	[ME_HFS_ERROR_UNCAT]	= "Uncategorized Failure",
+	[ME_HFS_ERROR_DISABLED]	= "Disabled",
 	[ME_HFS_ERROR_IMAGE]	= "Image Failure",
 	[ME_HFS_ERROR_DEBUG]	= "Debug Failure"
 };

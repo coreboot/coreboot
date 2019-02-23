@@ -33,6 +33,8 @@
 #define  ME_HFS_CWS_RESET	0
 #define  ME_HFS_CWS_INIT	1
 #define  ME_HFS_CWS_REC		2
+#define  ME_HFS_CWS_TEST	3
+#define  ME_HFS_CWS_DISABLED	4
 #define  ME_HFS_CWS_NORMAL	5
 #define  ME_HFS_CWS_WAIT	6
 #define  ME_HFS_CWS_TRANS	7
@@ -45,6 +47,7 @@
 #define  ME_HFS_STATE_ERROR	7
 #define  ME_HFS_ERROR_NONE	0
 #define  ME_HFS_ERROR_UNCAT	1
+#define  ME_HFS_ERROR_DISABLED	2
 #define  ME_HFS_ERROR_IMAGE	3
 #define  ME_HFS_ERROR_DEBUG	4
 #define  ME_HFS_MODE_NORMAL	0

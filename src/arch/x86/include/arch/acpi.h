@@ -77,16 +77,12 @@ enum coreboot_acpi_ids {
 	COREBOOT_ACPI_ID_MAX		= 0xFFFF, /* BOOTFFFF */
 };
 
-/* Table 5-30 DESCRIPTION_HEADER Signatures for tables defined by ACPI 6.2a
- *  Additional tables mssing in 5-30:  MADT, RSDP, VFCT, NHLT
- */
 enum acpi_tables {
-	APIC, BERT, BGRT, CPEP, DSDT, ECDT, EINJ, ERST, FACP, FADT, FACS,
-	FPDT, GTDT, HEST, MSCT, MPST, NFIT, OEMX, PCCT, PMTT, PSDT, RASF,
-	RSDT, SBST, SDEV, SLIT, SRAT, SSDT, XSDT, BOOT, CSRT, DBG2, DBGP,
-	DMAR, DPPT, DRTM, ETDT, HPET, IBFT, IORT, IVRS, LPIT, MCFG, MCHI,
-	MSDM, SDEI, SLIC, SPCR, SPMI, STAO, TCPA, TPM2, WAET, WDAT, WDRT,
-	WPBT, WSMT, XENV, MADT, RSDP, VFCT, NHLT
+	/* Tables defined by ACPI and used by coreboot */
+	BERT, DBG2, DMAR, DSDT, FACS, FADT, HEST, HPET, IVRS, MADT, MCFG,
+	RSDP, RSDT, SLIT, SRAT, SSDT, TCPA, TPM2, XSDT, ECDT,
+	/* Additional proprietary tables used by coreboot */
+	VFCT, NHLT
 };
 
 /* RSDP (Root System Description Pointer) */

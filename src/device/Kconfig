@@ -265,7 +265,7 @@ if FRAMEBUFFER_SET_VESA_MODE
 
 choice
 	prompt "framebuffer graphics resolution"
-	default FRAMEBUFFER_VESA_MODE_117
+	default FRAMEBUFFER_VESA_MODE_118
 	help
 	  This option sets the resolution used for the coreboot framebuffer (and
 	  bootsplash screen).
@@ -391,7 +391,7 @@ config FRAMEBUFFER_VESA_MODE
 	default 0x119 if FRAMEBUFFER_VESA_MODE_119
 	default 0x11A if FRAMEBUFFER_VESA_MODE_11A
 	default 0x11B if FRAMEBUFFER_VESA_MODE_11B
-	default 0x117 if FRAMEBUFFER_VESA_MODE_USER
+	default 0x118 if FRAMEBUFFER_VESA_MODE_USER
 
 config BOOTSPLASH
 	prompt "Show graphical bootsplash"

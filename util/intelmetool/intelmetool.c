@@ -138,7 +138,12 @@ static int pci_platform_scan(void)
 		if (dev->vendor_id != PCI_VENDOR_ID_INTEL)
 			continue;
 
-		if (PCI_DEV_HAS_ME_DISABLE(dev->device_id)) {
+		if (PCI_DEV_NO_ME(dev->device_id)) {
+			printf(CGRN "Good news, you have a `%s` so you have "
+			       "no ME present at all, continuing...\n\n"
+			       RESET, name);
+			break;
+		} else if (PCI_DEV_HAS_ME_DISABLE(dev->device_id)) {
 			printf(CGRN "Good news, you have a `%s` so ME is "
 			       "present but can be disabled, continuing...\n\n"
 			       RESET, name);

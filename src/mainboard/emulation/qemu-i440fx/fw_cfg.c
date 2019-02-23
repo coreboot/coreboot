@@ -251,7 +251,7 @@ unsigned long fw_cfg_acpi_tables(unsigned long start)
 
 			printk(BIOS_DEBUG, "QEMU: loading \"%s\" to 0x%lx (len %d)\n",
 			       s[i].alloc.file, current, f.size);
-			fw_cfg_get(f.select, (void *)current, sizeof(current));
+			fw_cfg_get(f.select, (void *)current, f.size);
 			addrs[i] = current;
 			current += f.size;
 			break;
@@ -454,7 +454,7 @@ unsigned long fw_cfg_smbios_tables(int *handle, unsigned long *current)
 	 * We'll exclude the end marker as coreboot will add one.
 	 */
 	printk(BIOS_DEBUG, "QEMU: loading smbios tables to 0x%lx\n", start);
-	fw_cfg_get(f.select, (void *)start, sizeof(start));
+	fw_cfg_get(f.select, (void *)start, f.size);
 	end = start;
 	do {
 		t0 = (struct smbios_type0*)end;

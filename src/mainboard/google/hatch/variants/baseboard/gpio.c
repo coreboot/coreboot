@@ -201,6 +201,8 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_NF(GPP_B17, NONE, DEEP, NF1),
 	/* H1_SLAVE_SPI_MOSI_R */
 	PAD_CFG_NF(GPP_B18, NONE, DEEP, NF1),
+	/* PCH_WP_OD */
+	PAD_CFG_GPI(GPP_C20, NONE, DEEP),
 	/*
 	 * H1_PCH_INT_ODL
 	 * TODO Configure it back to invert mode, when
@@ -218,6 +220,8 @@ const struct pad_config *__weak variant_early_gpio_table(size_t *num)
 }
 
 static const struct cros_gpio cros_gpios[] = {
+	CROS_GPIO_REC_AL(CROS_GPIO_VIRTUAL, CROS_GPIO_DEVICE_NAME),
+	CROS_GPIO_WP_AH(GPIO_PCH_WP, CROS_GPIO_DEVICE_NAME),
 };
 
 const struct cros_gpio *__weak variant_cros_gpios(size_t *num)

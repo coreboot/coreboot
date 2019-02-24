@@ -40,14 +40,6 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "GA-H61M-S2PV"
 
-config VGA_BIOS_FILE
-	string
-	default "pci8086,0102.rom"
-
-config VGA_BIOS_ID
-	string
-	default "8086,0102"
-
 config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
 	hex
 	default 0x5001
@@ -60,7 +52,7 @@ config MAX_CPUS
 	int
 	default 8
 
-config USBDEBUG_HCD_INDEX # FIXME: check this
+config USBDEBUG_HCD_INDEX # Bottom left port seen from rear
 	int
 	default 2
 

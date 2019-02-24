@@ -14,7 +14,9 @@
  */
 
 #define ACPI_VIDEO_DEVICE \_SB.PCI0.GFX0
+
 #include <arch/acpi.h>
+
 DefinitionBlock(
 	"dsdt.aml",
 	"DSDT",
@@ -24,7 +26,6 @@ DefinitionBlock(
 	0x20141018	// OEM revision
 )
 {
-	// Some generic macros
 	#include "acpi/mainboard.asl"
 	#include "acpi/platform.asl"
 	#include "acpi/superio.asl"
@@ -32,16 +33,14 @@ DefinitionBlock(
 	#include <cpu/intel/common/acpi/cpu.asl>
 	#include <southbridge/intel/bd82x6x/acpi/platform.asl>
 
-	/* global NVS and variables.  */
+	/* global NVS and variables. */
 	#include <southbridge/intel/bd82x6x/acpi/globalnvs.asl>
 	#include <southbridge/intel/bd82x6x/acpi/sleepstates.asl>
 
-	Scope (\_SB) {
-		Device (PCI0)
-		{
-			#include <northbridge/intel/sandybridge/acpi/sandybridge.asl>
-			#include <drivers/intel/gma/acpi/default_brightness_levels.asl>
-			#include <southbridge/intel/bd82x6x/acpi/pch.asl>
-		}
+	Device (\_SB.PCI0)
+	{
+		#include <northbridge/intel/sandybridge/acpi/sandybridge.asl>
+		#include <drivers/intel/gma/acpi/default_brightness_levels.asl>
+		#include <southbridge/intel/bd82x6x/acpi/pch.asl>
 	}
 }

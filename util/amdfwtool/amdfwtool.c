@@ -121,12 +121,15 @@ typedef unsigned short uint16_t;
  *              inserted 8 bytes after the beginning of the file.
  *    stderr:   Used to print out error messages.
  */
-static uint32_t fletcher32(const uint16_t *pptr, int length)
+static uint32_t fletcher32(const void *data, int length)
 {
 	uint32_t c0;
 	uint32_t c1;
 	uint32_t checksum;
 	int index;
+	const uint16_t *pptr = data;
+
+	length /= 2;
 
 	c0 = 0xFFFF;
 	c1 = 0xFFFF;
@@ -138,13 +141,15 @@ static uint32_t fletcher32(const uint16_t *pptr, int length)
 		c0 += *(pptr++);
 		c1 += c0;
 		if ((index % 360) == 0) {
-			c0 = (c0 & 0xFFFF) + (c0 >> 16);	// Sum0 modulo 65535 + the overflow
-			c1 = (c1 & 0xFFFF) + (c1 >> 16);	// Sum1 modulo 65535 + the overflow
+			/* Sums[0,1] mod 64K + overflow */
+			c0 = (c0 & 0xFFFF) + (c0 >> 16);
+			c1 = (c1 & 0xFFFF) + (c1 >> 16);
 		}
 	}
 
-	c0 = (c0 & 0xFFFF) + (c0 >> 16);	// Sum0 modulo 65535 + the overflow
-	c1 = (c1 & 0xFFFF) + (c1 >> 16);	// Sum1 modulo 65535 + the overflow
+	/* Sums[0,1] mod 64K + overflow */
+	c0 = (c0 & 0xFFFF) + (c0 >> 16);
+	c1 = (c1 & 0xFFFF) + (c1 >> 16);
 	checksum = (c1 << 16) | c0;
 
 	return checksum;
@@ -331,9 +336,9 @@ static void fill_psp_head(psp_directory_table *pspdir, uint32_t count)
 	/* checksum everything that comes after the Checksum field */
 	pspdir->header.checksum = fletcher32(
 					(void *)&pspdir->header.num_entries,
-					(count * sizeof(psp_directory_entry)
+					count * sizeof(psp_directory_entry)
 					+ sizeof(pspdir->header.num_entries)
-					+ sizeof(pspdir->header.reserved)) / 2);
+					+ sizeof(pspdir->header.reserved));
 }
 
 static uint32_t integrate_firmwares(char *base, uint32_t pos,
@@ -848,11 +853,11 @@ int main(int argc, char **argv)
 		combo_dir->header.reserved[1] = 0;
 		combo_dir->header.checksum = fletcher32(
 				(void *)&combo_dir->header.num_entries,
-				(1 * sizeof(psp_directory_entry)
+				1 * sizeof(psp_directory_entry)
 				+ sizeof(combo_dir->header.num_entries)
 				+ sizeof(combo_dir->header.lookup)
 				+ sizeof(combo_dir->header.reserved[0])
-				+ sizeof(combo_dir->header.reserved[1])) / 2);
+				+ sizeof(combo_dir->header.reserved[1]));
 #else
 		current = integrate_psp_firmwares(rom, current, psp2dir,
 				amd_psp2_fw_table, rom_size);

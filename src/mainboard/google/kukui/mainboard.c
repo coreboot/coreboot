@@ -14,6 +14,7 @@
  */
 
 #include <assert.h>
+#include <bl31.h>
 #include <boardid.h>
 #include <bootmode.h>
 #include <cbfs.h>
@@ -30,7 +31,10 @@
 #include <soc/usb.h>
 #include <string.h>
 
+#include "gpio.h"
 #include "panel.h"
+
+#include <arm-trusted-firmware/include/export/plat/mediatek/common/plat_params_exp.h>
 
 static void configure_emmc(void)
 {
@@ -172,6 +176,17 @@ static bool configure_display(void)
 	return true;
 }
 
+static void register_reset_to_bl31(void)
+{
+	static struct bl_aux_param_gpio param_reset = {
+		.h = { .type = BL_AUX_PARAM_MTK_RESET_GPIO },
+		.gpio = { .polarity = ARM_TF_GPIO_LEVEL_HIGH },
+	};
+
+	param_reset.gpio.index = GPIO_RESET.id;
+	register_bl31_aux_param(&param_reset.h);
+}
+
 static void mainboard_init(struct device *dev)
 {
 	if (display_init_required()) {
@@ -186,6 +201,8 @@ static void mainboard_init(struct device *dev)
 	configure_emmc();
 	configure_usb();
 	configure_audio();
+
+	register_reset_to_bl31();
 }
 
 static void mainboard_enable(struct device *dev)

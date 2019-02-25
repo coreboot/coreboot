@@ -67,5 +67,5 @@ printf "#define COREBOOT_BUILD_WEEKDAY_BCD 0x$(our_date "$DATE" +%w)\n"
 printf "#define COREBOOT_DMI_DATE \"$(our_date "$DATE" +%m/%d/%Y)\"\n"
 printf "\n"
 printf "#define COREBOOT_COMPILE_TIME \"$(our_date "$DATE" +%T)\"\n"
-printf "#define ASL_VERSION %d\n" `./util/crossgcc/xgcc/bin/iasl -v | grep version | sed 's/.*version //'`
+printf "#define ASL_VERSION 0x%d\n" `./util/crossgcc/xgcc/bin/iasl -v | grep version | sed 's/.*version //'`
 printf "#endif\n"

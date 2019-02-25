@@ -20,10 +20,6 @@
 #include <intelblocks/msr.h>
 
 #define MSR_PIC_MSG_CONTROL		0x2e
-#define MSR_EMULATE_PM_TIMER		0x121
-#define  EMULATE_PM_TMR_EN		(1 << 16)
-#define  EMULATE_DELAY_OFFSET_VALUE	20
-#define  EMULATE_DELAY_VALUE		0x13
 #define MSR_LT_LOCK_MEMORY		0x2e7
 #define MSR_UNCORE_PRMRR_PHYS_BASE	0x2f4
 #define MSR_UNCORE_PRMRR_PHYS_MASK	0x2f5

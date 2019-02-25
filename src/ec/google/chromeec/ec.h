@@ -155,6 +155,12 @@ typedef int (*crosec_io_t)(size_t req_size, size_t resp_size, void *context);
 int crosec_command_proto(struct chromeec_command *cec_command,
 			 crosec_io_t crosec_io, void *context);
 
+/**
+ * Send a command to a CrOS EC
+ *
+ * @param cec_command: CrOS EC command to send
+ * @return 0 for success. Non-zero for error.
+ */
 int google_chromeec_command(struct chromeec_command *cec_command);
 
 struct google_chromeec_event_info {

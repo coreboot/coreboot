@@ -10,6 +10,7 @@ This section contains documentation about coreboot on specific mainboards.
 ## ASRock
 
 - [H81M-HDS](asrock/h81m-hds.md)
+- [H110M-DVS](asrock/h110m-dvs.md)
 
 ## Cavium
 

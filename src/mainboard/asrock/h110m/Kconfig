@@ -1,0 +1,54 @@
+if BOARD_ASROCK_H110M_DVS
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select BOARD_ROMSIZE_KB_8192
+	select HAVE_ACPI_RESUME
+	select HAVE_ACPI_TABLES
+	select HAVE_OPTION_TABLE
+	select HAVE_CMOS_DEFAULT
+	select INTEL_GMA_HAVE_VBT
+	select INTEL_INT15
+	select SOC_INTEL_KABYLAKE
+	select SKYLAKE_SOC_PCH_H
+	select MAINBOARD_USES_FSP2_0
+	select GENERIC_SPD_BIN
+	select SUPERIO_NUVOTON_NCT6791D
+	select SUPERIO_NUVOTON_NCT6776_COM_A
+	select REALTEK_8168_RESET
+	select RT8168_SET_LED_MODE
+
+config IRQ_SLOT_COUNT
+	int
+	default 18
+
+config MAINBOARD_DIR
+	string
+	default "asrock/h110m"
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "H110M"
+
+config MAX_CPUS
+	int
+	default 8
+
+config DEVICETREE
+	string
+	default "devicetree.cb"
+
+config PRERAM_CBMEM_CONSOLE_SIZE
+	hex
+	default 0xd00
+
+config DIMM_SPD_SIZE
+	int
+	default 512 #DDR4
+
+# This is overridden if CMOS is used for configuration values.
+config MAINBOARD_POWER_ON_AFTER_POWER_FAIL
+	bool
+	default n
+
+endif

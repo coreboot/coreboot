@@ -23,6 +23,7 @@
 #include <rmodule.h>
 #include <romstage_handoff.h>
 #include <stage_cache.h>
+#include <timestamp.h>
 
 static inline void stack_push(struct postcar_frame *pcf, uint32_t val)
 {
@@ -170,6 +171,9 @@ void run_postcar_phase(struct postcar_frame *pcf)
 		finalize_load(prog.arg, pcf->stack);
 	} else
 		load_postcar_cbfs(&prog, pcf);
+
+	/* As postcar exist, it's end of romstage here */
+	timestamp_add_now(TS_END_ROMSTAGE);
 
 	prog_run(&prog);
 }

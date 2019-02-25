@@ -131,7 +131,9 @@ void run_ramstage(void)
 	if (ENV_POSTCAR)
 		timestamp_add_now(TS_END_POSTCAR);
 
-	timestamp_add_now(TS_END_ROMSTAGE);
+	/* Call "end of romstage" here if postcar stage doesn't exist */
+	if (ENV_ROMSTAGE)
+		timestamp_add_now(TS_END_ROMSTAGE);
 
 	/*
 	 * Only x86 systems using ramstage stage cache currently take the same

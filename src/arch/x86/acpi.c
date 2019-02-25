@@ -223,6 +223,7 @@ void acpi_create_madt(acpi_madt_t *madt)
 	memcpy(header->oem_table_id, ACPI_TABLE_CREATOR, 8);
 	memcpy(header->asl_compiler_id, ASLC, 4);
 
+	header->asl_compiler_revision = asl_revision;
 	header->length = sizeof(acpi_madt_t);
 	header->revision = get_acpi_table_revision(MADT);
 
@@ -251,6 +252,7 @@ void acpi_create_mcfg(acpi_mcfg_t *mcfg)
 	memcpy(header->oem_table_id, ACPI_TABLE_CREATOR, 8);
 	memcpy(header->asl_compiler_id, ASLC, 4);
 
+	header->asl_compiler_revision = asl_revision;
 	header->length = sizeof(acpi_mcfg_t);
 	header->revision = get_acpi_table_revision(MCFG);
 
@@ -304,6 +306,7 @@ static void acpi_create_tcpa(acpi_tcpa_t *tcpa)
 	memcpy(header->oem_table_id, ACPI_TABLE_CREATOR, 8);
 	memcpy(header->asl_compiler_id, ASLC, 4);
 
+	header->asl_compiler_revision = asl_revision;
 	header->length = sizeof(acpi_tcpa_t);
 	header->revision = get_acpi_table_revision(TCPA);
 
@@ -362,6 +365,7 @@ static void acpi_create_tpm2(acpi_tpm2_t *tpm2)
 	memcpy(header->oem_table_id, ACPI_TABLE_CREATOR, 8);
 	memcpy(header->asl_compiler_id, ASLC, 4);
 
+	header->asl_compiler_revision = asl_revision;
 	header->length = sizeof(acpi_tpm2_t);
 	header->revision = get_acpi_table_revision(TPM2);
 
@@ -481,6 +485,7 @@ void acpi_create_srat(acpi_srat_t *srat,
 	memcpy(header->oem_table_id, ACPI_TABLE_CREATOR, 8);
 	memcpy(header->asl_compiler_id, ASLC, 4);
 
+	header->asl_compiler_revision = asl_revision;
 	header->length = sizeof(acpi_srat_t);
 	header->revision = get_acpi_table_revision(SRAT);
 
@@ -507,6 +512,7 @@ void acpi_create_dmar(acpi_dmar_t *dmar, enum dmar_flags flags,
 	memcpy(header->oem_table_id, ACPI_TABLE_CREATOR, 8);
 	memcpy(header->asl_compiler_id, ASLC, 4);
 
+	header->asl_compiler_revision = asl_revision;
 	header->length = sizeof(acpi_dmar_t);
 	header->revision = get_acpi_table_revision(DMAR);
 
@@ -640,6 +646,7 @@ void acpi_create_slit(acpi_slit_t *slit,
 	memcpy(header->oem_table_id, ACPI_TABLE_CREATOR, 8);
 	memcpy(header->asl_compiler_id, ASLC, 4);
 
+	header->asl_compiler_revision = asl_revision;
 	header->length = sizeof(acpi_slit_t);
 	header->revision = get_acpi_table_revision(SLIT);
 
@@ -664,6 +671,7 @@ void acpi_create_hpet(acpi_hpet_t *hpet)
 	memcpy(header->oem_table_id, ACPI_TABLE_CREATOR, 8);
 	memcpy(header->asl_compiler_id, ASLC, 4);
 
+	header->asl_compiler_revision = asl_revision;
 	header->length = sizeof(acpi_hpet_t);
 	header->revision = get_acpi_table_revision(HPET);
 
@@ -697,6 +705,7 @@ void acpi_create_vfct(struct device *device,
 	memcpy(header->oem_table_id, ACPI_TABLE_CREATOR, 8);
 	memcpy(header->asl_compiler_id, ASLC, 4);
 
+	header->asl_compiler_revision = asl_revision;
 	header->length = sizeof(struct acpi_vfct);
 	header->revision = get_acpi_table_revision(VFCT);
 
@@ -722,6 +731,7 @@ void acpi_create_ivrs(acpi_ivrs_t *ivrs,
 	memcpy(header->oem_table_id, ACPI_TABLE_CREATOR, 8);
 	memcpy(header->asl_compiler_id, ASLC, 4);
 
+	header->asl_compiler_revision = asl_revision;
 	header->length = sizeof(acpi_ivrs_t);
 	header->revision = get_acpi_table_revision(IVRS);
 
@@ -773,6 +783,7 @@ void acpi_create_dbg2(acpi_dbg2_header_t *dbg2,
 	memcpy(header->oem_id, OEM_ID, 6);
 	memcpy(header->oem_table_id, ACPI_TABLE_CREATOR, 8);
 	memcpy(header->asl_compiler_id, ASLC, 4);
+	header->asl_compiler_revision = asl_revision;
 
 	/* One debug device defined */
 	dbg2->devices_offset = sizeof(acpi_dbg2_header_t);
@@ -892,6 +903,7 @@ static void acpi_write_rsdt(acpi_rsdt_t *rsdt, char *oem_id, char *oem_table_id)
 	memcpy(header->oem_table_id, oem_table_id, 8);
 	memcpy(header->asl_compiler_id, ASLC, 4);
 
+	header->asl_compiler_revision = asl_revision;
 	header->length = sizeof(acpi_rsdt_t);
 	header->revision = get_acpi_table_revision(RSDT);
 
@@ -911,6 +923,7 @@ static void acpi_write_xsdt(acpi_xsdt_t *xsdt, char *oem_id, char *oem_table_id)
 	memcpy(header->oem_table_id, oem_table_id, 8);
 	memcpy(header->asl_compiler_id, ASLC, 4);
 
+	header->asl_compiler_revision = asl_revision;
 	header->length = sizeof(acpi_xsdt_t);
 	header->revision = get_acpi_table_revision(XSDT);
 
@@ -1021,6 +1034,7 @@ void acpi_write_hest(acpi_hest_t *hest,
 	memcpy(header->oem_id, OEM_ID, 6);
 	memcpy(header->oem_table_id, ACPI_TABLE_CREATOR, 8);
 	memcpy(header->asl_compiler_id, ASLC, 4);
+	header->asl_compiler_revision = asl_revision;
 	header->length += sizeof(acpi_hest_t);
 	header->revision = get_acpi_table_revision(HEST);
 
@@ -1041,6 +1055,7 @@ void acpi_write_bert(acpi_bert_t *bert, uintptr_t region, size_t length)
 	memcpy(header->oem_id, OEM_ID, 6);
 	memcpy(header->oem_table_id, ACPI_TABLE_CREATOR, 8);
 	memcpy(header->asl_compiler_id, ASLC, 4);
+	header->asl_compiler_revision = asl_revision;
 	header->length += sizeof(acpi_bert_t);
 	header->revision = get_acpi_table_revision(BERT);
 

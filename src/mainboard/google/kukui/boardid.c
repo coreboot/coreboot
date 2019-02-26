@@ -19,7 +19,8 @@
 #include <ec/google/chromeec/ec.h>
 #include <stddef.h>
 
-#define FLAPJACK_UNDEF_SKU_ID 2 /* For all un-provisioned Flapjack boards */
+/* For CBI un-provisioned/corrupted Flapjack board. */
+#define FLAPJACK_UNDEF_SKU_ID 0
 
 static uint32_t get_index(unsigned int channel, uint32_t *cached_id)
 {
@@ -67,7 +68,7 @@ uint32_t sku_id(void)
 {
 	static uint32_t cached_sku_id = BOARD_ID_INIT;
 
-	/* On Flapjack, getting the SKU via CBI */
+	/* On Flapjack, getting the SKU via CBI. */
 	if (IS_ENABLED(CONFIG_BOARD_GOOGLE_FLAPJACK)) {
 		if (cached_sku_id == BOARD_ID_INIT &&
 		    google_chromeec_cbi_get_sku_id(&cached_sku_id))

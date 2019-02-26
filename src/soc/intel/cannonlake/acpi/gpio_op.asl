@@ -94,3 +94,47 @@ Method (GPMO, 2, Serialized)
 	And (ShiftLeft (Arg1, GPIOPADMODE_SHIFT, Arg1), GPIOPADMODE_MASK, Arg1)
 	Or (Local0, Arg1, VAL0)
 }
+
+/*
+ * Enable/Disable Tx buffer
+ * Arg0 - GPIO Number
+ * Arg1 - TxBuffer state
+ *     0 = Disable Tx Buffer
+ *     1 = Enable Tx Buffer
+ */
+Method (GTXE, 2, Serialized)
+{
+	OperationRegion (PREG, SystemMemory, GADD (Arg0), 4)
+	Field (PREG, AnyAcc, NoLock, Preserve)
+	{
+		VAL0, 32
+	}
+
+	If (LEqual (Arg1, 1)) {
+		And (Not (GPIOTXBUFDIS_MASK), VAL0, VAL0)
+	} ElseIf (LEqual (Arg1, 0)){
+		Or (GPIOTXBUFDIS_MASK, VAL0, VAL0)
+	}
+}
+
+/*
+ * Enable/Disable Rx buffer
+ * Arg0 - GPIO Number
+ * Arg1 - RxBuffer state
+ *     0 = Disable Rx Buffer
+ *     1 = Enable Rx Buffer
+ */
+Method (GRXE, 2, Serialized)
+{
+	OperationRegion (PREG, SystemMemory, GADD (Arg0), 4)
+	Field (PREG, AnyAcc, NoLock, Preserve)
+	{
+		VAL0, 32
+	}
+
+	If (LEqual (Arg1, 1)) {
+		And (Not (GPIORXBUFDIS_MASK), VAL0, VAL0)
+	} ElseIf (LEqual (Arg1, 0)){
+		Or (GPIORXBUFDIS_MASK, VAL0, VAL0)
+	}
+}

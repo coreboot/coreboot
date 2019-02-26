@@ -595,7 +595,7 @@ static int cbi_get_uint32(uint32_t *id, uint32_t tag)
 	cmd.cmd_dev_index = 0;
 
 	rv = google_chromeec_command(&cmd);
-	if (rv < 0)
+	if (rv != 0)
 		return rv;
 	*id = r;
 	return 0;
@@ -627,7 +627,7 @@ static int cbi_get_string(char *buf, size_t bufsize, uint32_t tag)
 	int rv;
 
 	rv = google_chromeec_command(&cmd);
-	if (rv < 0)
+	if (rv != 0)
 		return rv;
 
 	/* Ensure NUL termination. */

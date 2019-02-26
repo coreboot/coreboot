@@ -144,8 +144,6 @@ static void pmc_init(void *unused)
 	/* Initialize power management */
 	pch_power_options(dev);
 
-	pmc_set_acpi_mode();
-
 	config_deep_s3(config->deep_s3_enable_ac, config->deep_s3_enable_dc);
 	config_deep_s5(config->deep_s5_enable_ac, config->deep_s5_enable_dc);
 	config_deep_sx(config->deep_sx_config);
@@ -159,3 +157,21 @@ static void pmc_init(void *unused)
 * allocate resources.
 */
 BOOT_STATE_INIT_ENTRY(BS_DEV_INIT_CHIPS, BS_ON_EXIT, pmc_init, NULL);
+
+void pmc_soc_init(struct device *dev)
+{
+	/*
+	 * PMC initialization happens earlier for this SoC because FSP-Silicon
+	 * init hides PMC from PCI bus. However, pmc_set_acpi_mode, which
+	 * disables ACPI mode doesn't need to happen that early and can be
+	 * delayed till typical pmc_soc_init callback. This ensures that ACPI
+	 * mode disabling happens the same way for all SoCs and hence the
+	 * ordering of events is the same.
+	 *
+	 * This is important to ensure that the ordering does not break the
+	 * assumptions of any other drivers (e.g. ChromeEC) which could be
+	 * taking different actions based on disabling of ACPI (e.g. flushing of
+	 * all EC hostevent bits).
+	 */
+	pmc_set_acpi_mode();
+}

@@ -74,7 +74,10 @@ static int host_completed(u8 status)
 {
 	if (status & SMBHSTSTS_HOST_BUSY)
 		return 0;
-	status &= ~(SMBHSTSTS_SMBALERT_STS | SMBHSTSTS_INUSE_STS);
+
+	/* These status bits do not imply completion of transaction. */
+	status &= ~(SMBHSTSTS_BYTE_DONE | SMBHSTSTS_INUSE_STS |
+		    SMBHSTSTS_SMBALERT_STS);
 	return status != 0;
 }
 
@@ -89,8 +92,9 @@ static int recover_master(int smbus_base, int ret)
 
 static int cb_err_from_stat(u8 status)
 {
-	/* Ignore the "In Use" status... */
-	status &= ~(SMBHSTSTS_SMBALERT_STS | SMBHSTSTS_INUSE_STS);
+	/* These status bits do not imply errors. */
+	status &= ~(SMBHSTSTS_BYTE_DONE | SMBHSTSTS_INUSE_STS |
+		    SMBHSTSTS_SMBALERT_STS);
 
 	if (status == SMBHSTSTS_INTR)
 		return 0;

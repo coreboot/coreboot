@@ -19,8 +19,8 @@
 #ifndef __ACPI__
 #include <stddef.h>
 #endif
+#include <soc/gpio_common.h>
 #include <soc/gpio_soc_defs_cnp_h.h>
-
 
 #define GPIO_NUM_PAD_CFG_REGS   4 /* DW0, DW1, DW2, DW3 */
 
@@ -324,13 +324,4 @@
 #define GPI_SMI_EN_0				0x1A0
 #define PAD_CFG_BASE				0x600
 
-#define GPIORXSTATE_MASK			0x1
-#define GPIORXSTATE_SHIFT			1
-#define GPIOTXSTATE_MASK			0x1
-#define GPIOPADMODE_MASK			0xC00
-#define GPIOPADMODE_SHIFT			10
-#define GPIOTXBUFDIS_MASK			0x100
-#define GPIOTXBUFDIS_SHIFT			8
-#define GPIORXBUFDIS_MASK			0x200
-#define GPIORXBUFDIS_SHIFT			9
 #endif

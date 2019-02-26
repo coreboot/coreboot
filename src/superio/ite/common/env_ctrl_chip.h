@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2011 The ChromiumOS Authors.  All rights reserved.
  * Copyright (C) 2016 secunet Security Networks AG
+ * Copyright (C) 2019 Protectli
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +20,12 @@
 #define SUPERIO_ITE_ENV_CTRL_CHIP_H
 
 #define ITE_EC_TMPIN_CNT	3
+
+#if IS_ENABLED(CONFIG_SUPERIO_ITE_ENV_CTRL_5FANS)
+#define ITE_EC_FAN_CNT		5
+#else
 #define ITE_EC_FAN_CNT		3
+#endif
 
 /* Supported thermal mode on TMPINx */
 enum ite_ec_thermal_mode {
@@ -105,5 +111,7 @@ struct ite_ec_config {
 #define FAN1	ec.fan[0]
 #define FAN2	ec.fan[1]
 #define FAN3	ec.fan[2]
+#define FAN4	ec.fan[3]
+#define FAN5	ec.fan[4]
 
 #endif /* SUPERIO_ITE_ENV_CTRL_CHIP_H */

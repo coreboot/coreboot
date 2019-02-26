@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2011 The ChromiumOS Authors.  All rights reserved.
  * Copyright (C) 2016 secunet Security Networks AG
+ * Copyright (C) 2019 Protectli
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,8 +53,20 @@
 
 #define ITE_EC_FAN_TAC_COUNTER_ENABLE		0x0c
 #define   ITE_EC_FAN_TAC_16BIT_ENABLE(x)	(1 << ((x)-1))
-#define ITE_EC_FAN_TAC_LIMIT(x)			(0x10 + ((x)-1))
-#define ITE_EC_FAN_TAC_EXT_LIMIT(x)		(0x1b + ((x)-1))
+
+#define ITE_EC_FAN_SEC_CTL			0x0c
+#define   ITE_EC_FAN_SEC_CTL_TAC_EN(x)		(1 << (x))
+
+#define ITE_EC_FAN_TAC_LIMIT(x)						\
+	(((x) > 3 && IS_ENABLED(CONFIG_SUPERIO_ITE_ENV_CTRL_5FANS))	\
+						? (0x84 + ((x)-4) * 2)	\
+						: (0x10 + ((x)-1))	\
+	)
+#define ITE_EC_FAN_TAC_EXT_LIMIT(x)					\
+	(((x) > 3 && IS_ENABLED(CONFIG_SUPERIO_ITE_ENV_CTRL_5FANS))	\
+						? (0x85 + ((x)-4) * 2)	\
+						: (0x1b + ((x)-1))	\
+	)
 
 #define ITE_EC_FAN_MAIN_CTL			0x13
 #define   ITE_EC_FAN_MAIN_CTL_TAC_EN(x)		(1 << ((x)+3))
@@ -72,7 +85,21 @@
 #define   ITE_EC_FAN_PWM_CLOCK_51KHZ		(7 << 4)
 #define   ITE_EC_FAN_PWM_MIN_DUTY_20		(1 << 3)
 #define   ITE_EC_FAN_CTL_ON(x)			(1 << ((x)-1))
-#define ITE_EC_FAN_CTL_PWM_CONTROL(x)		(0x15 + ((x)-1))
+
+#define ITE_EC_FAN_CTL_PWM_CONTROL(x)					\
+	(((x) > 3 && IS_ENABLED(CONFIG_SUPERIO_ITE_ENV_CTRL_5FANS))	\
+						? (0x1e + ((x)-4))	\
+						: (0x15 + ((x)-1))	\
+	)
+
+#if IS_ENABLED(CONFIG_SUPERIO_ITE_ENV_CTRL_5FANS)
+#define   ITE_EC_FAN_CTL_TEMPIN_MASK		(7 << 3)
+#define   ITE_EC_FAN_CTL_TEMPIN(x)		((((x)-1) & 7) << 3)
+#else
+#define   ITE_EC_FAN_CTL_TEMPIN_MASK		(3 << 0)
+#define   ITE_EC_FAN_CTL_TEMPIN(x)		(((x)-1) & 3)
+#endif
+
 #define   ITE_EC_FAN_CTL_PWM_MODE_SOFTWARE	(0 << 7)
 #define   ITE_EC_FAN_CTL_PWM_MODE_AUTOMATIC	(1 << 7)
 #define   ITE_EC_FAN_CTL_PWM_DUTY_MASK		(ITE_EC_FAN_MAX_PWM << 0)
@@ -83,8 +110,6 @@
 			? ITE_EC_FAN_MAX_PWM			\
 			: (_p * ITE_EC_FAN_MAX_PWM) / 100;	\
 	  })
-#define   ITE_EC_FAN_CTL_TEMPIN_MASK		(3 << 0)
-#define   ITE_EC_FAN_CTL_TEMPIN(x)		(((x)-1) & 3)
 
 #define ITE_EC_HIGH_TEMP_LIMIT(x)		(0x40 + ((x-1) * 2))
 #define ITE_EC_LOW_TEMP_LIMIT(x)		(0x41 + ((x-1) * 2))
@@ -119,16 +144,46 @@ static const u8 ITE_EC_TEMP_ADJUST[] = { 0x56, 0x57, 0x59 };
 #define   ITE_EC_BEEP_TONE_DIVISOR(x)		(((x) & 0x0f) << 4)
 #define   ITE_EC_BEEP_FREQ_DIVISOR(x)		(((x) & 0x0f) << 0)
 
-#define ITE_EC_FAN_CTL_TEMP_LIMIT_OFF(x)	(0x60 + ((x)-1) * 8)
-#define ITE_EC_FAN_CTL_TEMP_LIMIT_START(x)	(0x61 + ((x)-1) * 8)
-#define ITE_EC_FAN_CTL_TEMP_LIMIT_FULL(x)	(0x62 + ((x)-1) * 8)
-#define ITE_EC_FAN_CTL_PWM_START(x)		(0x63 + ((x)-1) * 8)
+#define ITE_EC_FAN_CTL_TEMP_LIMIT_OFF(x)				\
+	(((x) == 5 && IS_ENABLED(CONFIG_SUPERIO_ITE_ENV_CTRL_5FANS))	\
+						? (0xa0)		\
+						: (0x60 + ((x)-1) * 8)	\
+	)
+#define ITE_EC_FAN_CTL_TEMP_LIMIT_START(x)				\
+	(((x) == 5 && IS_ENABLED(CONFIG_SUPERIO_ITE_ENV_CTRL_5FANS))	\
+						? (0xa1)		\
+						: (0x61 + ((x)-1) * 8)	\
+	)
+#define ITE_EC_FAN_CTL_TEMP_LIMIT_FULL(x)				\
+	(((x) == 5 && IS_ENABLED(CONFIG_SUPERIO_ITE_ENV_CTRL_5FANS))	\
+						? (0xa2)		\
+						: (0x62 + ((x)-1) * 8)	\
+	)
+#define ITE_EC_FAN_CTL_PWM_START(x)					\
+	(((x) == 5 && IS_ENABLED(CONFIG_SUPERIO_ITE_ENV_CTRL_5FANS))	\
+						? (0xa3)		\
+						: (0x63 + ((x)-1) * 8)	\
+	)
+#define ITE_EC_FAN_CTL_PWM_AUTO(x)					\
+	(((x) == 5 && IS_ENABLED(CONFIG_SUPERIO_ITE_ENV_CTRL_5FANS))	\
+						? (0xa4)		\
+						: (0x64 + ((x)-1) * 8)	\
+	)
+#define ITE_EC_FAN_CTL_DELTA_TEMP(x)					\
+	(((x) == 5 && IS_ENABLED(CONFIG_SUPERIO_ITE_ENV_CTRL_5FANS))	\
+						? (0xa5)		\
+						: (0x65 + ((x)-1) * 8)	\
+	)
+
+/* Common for ITE_EC_FAN_CTL_PWM_START */
 #define   ITE_EC_FAN_CTL_PWM_SLOPE_BIT6(s)	(((s) & 0x40) << 1)
 #define   ITE_EC_FAN_CTL_PWM_START_DUTY(p)	ITE_EC_FAN_CTL_PWM_DUTY(p)
-#define ITE_EC_FAN_CTL_PWM_AUTO(x)		(0x64 + ((x)-1) * 8)
+
+/* Common for ITE_EC_FAN_CTL_PWM_AUTO */
 #define   ITE_EC_FAN_CTL_AUTO_SMOOTHING_EN	(1 << 7)
 #define   ITE_EC_FAN_CTL_PWM_SLOPE_LOWER(s)	((s) & 0x3f)
-#define ITE_EC_FAN_CTL_DELTA_TEMP(x)		(0x65 + ((x)-1) * 8)
+
+/* Common for ITE_EC_FAN_CTL_DELTA_TEMP */
 #define   ITE_EC_FAN_CTL_DELTA_TEMP_INTRVL(c)	((c) & 0x1f)
 
 #define ITE_EC_EXTEMP_STATUS			0x88

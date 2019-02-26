@@ -243,12 +243,9 @@ void *cbfs_get_contents(struct cbfs_handle *handle, size_t *size, size_t limit)
 	}
 
 	if (algo == CBFS_COMPRESS_NONE) {
-		if (limit != 0 && limit < on_media_size) {
-			*size = limit;
+		if (limit != 0 && limit < on_media_size)
 			on_media_size = limit;
-		} else {
-			*size = on_media_size;
-		}
+		*size = on_media_size;
 	}
 
 	void *data = m->map(m, handle->media_offset + handle->content_offset,
@@ -257,10 +254,15 @@ void *cbfs_get_contents(struct cbfs_handle *handle, size_t *size, size_t limit)
 		return NULL;
 
 	ret = malloc(*size);
-	if (ret != NULL &&
-	    !cbfs_decompress(algo, data, on_media_size, ret, *size)) {
-		free(ret);
-		ret = NULL;
+	if (ret != NULL) {
+		size_t final_size = cbfs_decompress(algo, data, on_media_size,
+						    ret, *size);
+		if (final_size != *size) {
+			ERROR("Expect %zu bytes but got %zu bytes after "
+			      "decompression.\n", *size, final_size);
+			free(ret);
+			ret = NULL;
+		}
 	}
 
 	m->unmap(m, data);

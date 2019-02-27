@@ -48,6 +48,7 @@
  *
  */
 
+#include <libpayload.h>
 #include <cbfs.h>
 #include <string.h>
 #include <sysinfo.h>
@@ -256,7 +257,8 @@ void *cbfs_get_contents(struct cbfs_handle *handle, size_t *size, size_t limit)
 		return NULL;
 
 	ret = malloc(*size);
-	if (ret != NULL && !cbfs_decompress(algo, data, ret, *size)) {
+	if (ret != NULL &&
+	    !cbfs_decompress(algo, data, on_media_size, ret, *size)) {
 		free(ret);
 		ret = NULL;
 	}
@@ -321,24 +323,27 @@ void *cbfs_get_attr(struct cbfs_handle *handle, uint32_t tag)
 	return NULL;
 }
 
-int cbfs_decompress(int algo, void *src, void *dst, int len)
+size_t cbfs_decompress(int algo, const void *src, size_t srcn, void *dst,
+		       size_t dstn)
 {
+	size_t len;
 	switch (algo) {
 		case CBFS_COMPRESS_NONE:
+			len = MIN(srcn, dstn);
 			memcpy(dst, src, len);
 			return len;
 #ifdef CBFS_CORE_WITH_LZMA
 		case CBFS_COMPRESS_LZMA:
-			return ulzma(src, dst);
+			return ulzman(src, srcn, dst, dstn);
 #endif
 #ifdef CBFS_CORE_WITH_LZ4
 		case CBFS_COMPRESS_LZ4:
-			return ulz4f(src, dst);
+			return ulz4fn(src, srcn, dst, dstn);
 #endif
 		default:
-			ERROR("tried to decompress %d bytes with algorithm #%x,"
-			      "but that algorithm id is unsupported.\n", len,
-			      algo);
+			ERROR("tried to decompress %zu bytes with algorithm "
+			      "#%x, but that algorithm id is unsupported.\n",
+			      srcn, algo);
 			return 0;
 	}
 }

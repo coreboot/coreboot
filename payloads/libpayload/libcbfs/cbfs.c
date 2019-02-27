@@ -114,8 +114,9 @@ void * cbfs_load_stage(struct cbfs_media *media, const char *name)
 	final_size = cbfs_decompress(stage->compression,
 				     ((unsigned char *) stage) +
 				     sizeof(struct cbfs_stage),
+				     stage->len,
 				     (void *) (uintptr_t) stage->load,
-				     stage->len);
+				     stage->memlen);
 	if (!final_size) {
 		entry = -1;
 		goto out;

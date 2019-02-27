@@ -253,8 +253,9 @@ struct cbfs_media {
 void *cbfs_get_file_content(struct cbfs_media *media, const char *name,
 			    int type, size_t *sz);
 
-/* returns decompressed size on success, 0 on failure */
-int cbfs_decompress(int algo, void *src, void *dst, int len);
+/* Returns decompressed size on success, 0 on failure. */
+size_t cbfs_decompress(int algo, const void *src, size_t srcn, void *dst,
+		       size_t dstn);
 
 /* returns a pointer to CBFS master header, or CBFS_HEADER_INVALID_ADDRESS
  *  on failure */

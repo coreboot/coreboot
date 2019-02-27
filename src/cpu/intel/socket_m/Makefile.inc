@@ -1,5 +1,3 @@
-subdirs-y += ../model_69x
-subdirs-y += ../model_6dx
 subdirs-y += ../model_6ex
 subdirs-y += ../model_6fx
 subdirs-y += ../../x86/tsc

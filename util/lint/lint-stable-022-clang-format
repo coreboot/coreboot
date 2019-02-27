@@ -30,5 +30,9 @@ if [ -z "$files_to_check" ]; then
 fi
 
 if [ $(clang-format $files_to_check | wc -l) -gt 0 ]; then
-	git diff HEAD~..HEAD -- $files_to_check | clang-format-diff
+	if [ "$(git diff --no-prefix HEAD~..HEAD -- $files_to_check | clang-format-diff)" != "" ]; then
+		echo "Coding style mismatch. The following patch fixes it:"
+		git diff --no-prefix HEAD~..HEAD -- $files_to_check | clang-format-diff
+		exit 1
+	fi
 fi

@@ -323,9 +323,9 @@ EOF
 			INTEL_SOCKET_MPGA604)
 				cpu_nice="Intel® Xeon®";
 				socket_nice="Socket 604";;
-			INTEL_SOCKET_MFCPGA478)
+			INTEL_SOCKET_M)
 				cpu_nice="Intel® Core™ 2 Duo Mobile, Core™ Duo/Solo, Celeron® M";
-				socket_nice="Socket mPGA478";;
+				socket_nice="Socket M (mPGA478MT)";;
 			INTEL_SOCKET_LGA771)
 				cpu_nice="Intel Xeon™ 5000 series";
 				socket_nice="Socket LGA771";;

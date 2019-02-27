@@ -20,7 +20,7 @@ chip northbridge/intel/i945
 	register "gfx.did" = "{ 0x80000100, 0x80000410, 0x80000320, 0x80000410, 0x00000005 }"
 
         device cpu_cluster 0 on
-                chip cpu/intel/socket_mFCPGA478
+                chip cpu/intel/socket_m
                         device lapic 0 on end
                 end
         end

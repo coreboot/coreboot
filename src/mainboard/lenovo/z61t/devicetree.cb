@@ -30,7 +30,7 @@ chip northbridge/intel/i945
 	register "gpu_panel_power_cycle_delay" = "2"
 
 	device cpu_cluster 0 on
-		chip cpu/intel/socket_mFCPGA478
+		chip cpu/intel/socket_m
 			device lapic 0 on end
 		end
 	end

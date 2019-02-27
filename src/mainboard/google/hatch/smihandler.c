@@ -12,7 +12,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
-
+#include <baseboard/variants.h>
 #include <cpu/x86/smm.h>
 #include <ec/google/chromeec/ec.h>
 #include <ec/google/chromeec/smm.h>
@@ -27,6 +27,12 @@ void mainboard_smi_espi_handler(void)
 
 void mainboard_smi_sleep(u8 slp_typ)
 {
+	const struct pad_config *pads;
+	size_t num;
+
+	pads = variant_sleep_gpio_table(slp_typ, &num);
+	gpio_configure_pads(pads, num);
+
 	chromeec_smi_sleep(slp_typ, MAINBOARD_EC_S3_WAKE_EVENTS,
 			MAINBOARD_EC_S5_WAKE_EVENTS);
 }

@@ -411,6 +411,30 @@ const struct pad_config *__weak variant_gpio_table(size_t *num)
 	return gpio_table;
 }
 
+/* Default GPIO settings before entering sleep. */
+static const struct pad_config default_sleep_gpio_table[] = {
+};
+
+/*
+ * GPIO settings before entering S5, which are same as
+ * default_sleep_gpio_table but also,
+ * turn off EN_PP3300_WWAN.
+ */
+static const struct pad_config s5_sleep_gpio_table[] = {
+	PAD_CFG_GPO(GPP_A18, 0, DEEP), /* EN_PP3300_WWAN */
+};
+
+const struct pad_config * __weak
+variant_sleep_gpio_table(u8 slp_typ, size_t *num)
+{
+	if (slp_typ == ACPI_S5) {
+		*num = ARRAY_SIZE(s5_sleep_gpio_table);
+		return s5_sleep_gpio_table;
+	}
+	*num = ARRAY_SIZE(default_sleep_gpio_table);
+	return default_sleep_gpio_table;
+}
+
 /* GPIOs needed prior to ramstage. */
 static const struct pad_config early_gpio_table[] = {
 	/* B15 : H1_SLAVE_SPI_CS_L */

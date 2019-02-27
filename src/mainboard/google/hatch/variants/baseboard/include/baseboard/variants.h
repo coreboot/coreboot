@@ -32,6 +32,9 @@ int variant_memory_sku(void);
 /* Return board specific memory configuration */
 void variant_memory_params(struct cnl_mb_cfg *bcfg);
 
+/* Return variant specific gpio pads to be configured during sleep */
+const struct pad_config *variant_sleep_gpio_table(u8 slp_typ, size_t *num);
+
 /* Return ChromeOS gpio table and fill in number of entries. */
 const struct cros_gpio *variant_cros_gpios(size_t *num);
 

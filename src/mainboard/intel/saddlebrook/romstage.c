@@ -56,7 +56,7 @@ void mainboard_memory_init_params(
 	printk(BIOS_SPEW, "spd block length: 0x%08x\n", blk.len);
 
 	memory_params->MemorySpdPtr00 = (UINT32) blk.spd_array[0];
-	memory_params->MemorySpdPtr10 = (UINT32) blk.spd_array[2];
+	memory_params->MemorySpdPtr10 = (UINT32) blk.spd_array[1];
 	printk(BIOS_SPEW, "0x%08x: SpdDataBuffer_0_0\n",
 		memory_params->MemorySpdPtr00);
 	printk(BIOS_SPEW, "0x%08x: SpdDataBuffer_1_0\n",

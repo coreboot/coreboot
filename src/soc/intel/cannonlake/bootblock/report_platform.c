@@ -58,6 +58,7 @@ static struct {
 	{ PCI_DEVICE_ID_INTEL_CFL_ID_H, "Coffeelake-H" },
 	{ PCI_DEVICE_ID_INTEL_CFL_ID_S, "Coffeelake-S" },
 	{ PCI_DEVICE_ID_INTEL_CML_ULT, "CometLake-U (4+2)" },
+	{ PCI_DEVICE_ID_INTEL_CML_ULT_2_2, "CometLake-U (2+2)" },
 	{ PCI_DEVICE_ID_INTEL_CML_ULT_6_2, "CometLake-U (6+2)" },
 	{ PCI_DEVICE_ID_INTEL_CML_ULX, "CometLake-ULX (4+2)" },
 	{ PCI_DEVICE_ID_INTEL_CML_S, "CometLake-S (6+2)" },

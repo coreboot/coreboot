@@ -141,9 +141,23 @@ config EC_BIN_PATH
 	depends on HAVE_EC_BIN
 	default "3rdparty/blobs/mainboard/$(MAINBOARDDIR)/ec.bin"
 
+choice
+	prompt "Protect flash regions"
+	default UNLOCK_FLASH_REGIONS
+	help
+	  This option allows you to protect flash regions.
+
+config DO_NOT_TOUCH_DESCRIPTOR_REGION
+	bool "Use the preset values to protect the regions"
+	help
+	  Read and write access permissions to different regions in the flash
+	  can be controlled via dedicated bitfields in the flash descriptor.
+	  These permissions can be modified with the Intel Flash Descriptor
+	  Tool (ifdtool). If you don't want to change these permissions and
+	  keep the ones provided in the initial descriptor, use this option.
+
 config LOCK_MANAGEMENT_ENGINE
 	bool "Lock ME/TXE section"
-	default n
 	help
 	  The Intel Firmware Descriptor supports preventing write accesses
 	  from the host to the ME or TXE section in the firmware
@@ -152,7 +166,15 @@ config LOCK_MANAGEMENT_ENGINE
 	  want to increase security of your ROM image once you are sure
 	  that the ME/TXE firmware is no longer going to change.
 
-	  If unsure, say N.
+	  If unsure, select "Unlock flash regions".
+
+config UNLOCK_FLASH_REGIONS
+	bool "Unlock flash regions"
+	help
+	  All regions are completely unprotected and can be overwritten using
+	  a flash programming tool.
+
+endchoice
 
 config CBFS_SIZE
 	hex

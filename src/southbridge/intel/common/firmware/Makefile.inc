@@ -68,12 +68,14 @@ ifeq ($(CONFIG_HAVE_EC_BIN),y)
 		$(obj)/coreboot.pre
 	mv $(obj)/coreboot.pre.new $(obj)/coreboot.pre
 endif
+
 ifeq ($(CONFIG_LOCK_MANAGEMENT_ENGINE),y)
 	printf "    IFDTOOL    Locking Management Engine\n"
 	$(objutil)/ifdtool/ifdtool \
 		$(IFDTOOL_USE_CHIPSET) -l $(obj)/coreboot.pre
 	mv $(obj)/coreboot.pre.new $(obj)/coreboot.pre
-else
+endif
+ifeq ($(CONFIG_UNLOCK_FLASH_REGIONS),y)
 	printf "    IFDTOOL    Unlocking Management Engine\n"
 	$(objutil)/ifdtool/ifdtool \
 	$(IFDTOOL_USE_CHIPSET) -u $(obj)/coreboot.pre

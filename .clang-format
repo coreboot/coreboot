@@ -7,7 +7,7 @@ AllowShortIfStatementsOnASingleLine:		false
 IndentCaseLabels:				false
 SortIncludes:					false
 ContinuationIndentWidth:			8
-ColumnLimit:					0
+ColumnLimit:					96
 AlwaysBreakBeforeMultilineStrings:		true
 AllowShortLoopsOnASingleLine:			false
 AllowShortFunctionsOnASingleLine:		false

@@ -3,9 +3,7 @@ source src/cpu/intel/model_6xx/Kconfig
 source src/cpu/intel/model_65x/Kconfig
 source src/cpu/intel/model_67x/Kconfig
 source src/cpu/intel/model_68x/Kconfig
-source src/cpu/intel/model_69x/Kconfig
 source src/cpu/intel/model_6bx/Kconfig
-source src/cpu/intel/model_6dx/Kconfig
 source src/cpu/intel/model_6ex/Kconfig
 source src/cpu/intel/model_6fx/Kconfig
 source src/cpu/intel/model_1067x/Kconfig

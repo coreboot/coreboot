@@ -164,9 +164,12 @@ static void usage(void)
 	printf("-g | --gec <FILE>              Add GEC blob\n");
 
 	printf("\nPSP options:\n");
+	printf("-A | --combo-capable           Place PSP directory pointer at Embedded Firmware\n");
+	printf("                               offset able to support combo directory\n");
 	printf("-p | --pubkey <FILE>           Add pubkey\n");
 	printf("-b | --bootloader <FILE>       Add bootloader\n");
 	printf("-s | --smufirmware <FILE>      Add smufirmware\n");
+	printf("-j | --smufnfirmware <FILE>    Add fanless smufirmware\n");
 	printf("-r | --recovery <FILE>         Add recovery\n");
 	printf("-k | --rtmpubkey <FILE>        Add rtmpubkey\n");
 	printf("-c | --secureos <FILE>         Add secureos\n");
@@ -175,6 +178,7 @@ static void usage(void)
 	printf("-t | --trustlets <FILE>        Add trustlets\n");
 	printf("-u | --trustletkey <FILE>      Add trustletkey\n");
 	printf("-w | --smufirmware2 <FILE>     Add smufirmware2\n");
+	printf("-e | --smufnfirmware2 <FILE>   Add fanless smufirmware2\n");
 	printf("-m | --smuscs <FILE>           Add smuscs\n");
 
 #if PSP2
@@ -474,9 +478,9 @@ static uint32_t integrate_psp_firmwares(char *base, uint32_t pos,
 
 #if PSP2
 static const char *optstring  =
-	"x:i:g:p:b:s:r:k:c:n:d:t:u:w:m:P:B:S:L:R:K:C:N:D:T:U:W:E:M:o:f:l:h";
+	"x:i:g:Ap:b:s:r:k:c:n:d:t:u:w:e:j:m:P:B:S:L:R:K:C:N:D:T:U:W:E:M:o:f:l:h";
 #else
-static const char *optstring  = "x:i:g:p:b:s:r:k:c:n:d:t:u:w:m:o:f:l:h";
+static const char *optstring  = "x:i:g:Ap:b:s:r:k:c:n:d:t:u:w:e:j:m:o:f:l:h";
 #endif
 
 static struct option long_options[] = {
@@ -484,9 +488,11 @@ static struct option long_options[] = {
 	{"imc",              required_argument, 0, 'i' },
 	{"gec",              required_argument, 0, 'g' },
 	/* PSP */
+	{"combo-capable",          no_argument, 0, 'A' },
 	{"pubkey",           required_argument, 0, 'p' },
 	{"bootloader",       required_argument, 0, 'b' },
 	{"smufirmware",      required_argument, 0, 's' },
+	{"smufnfirmware",    required_argument, 0, 'j' },
 	{"recovery",         required_argument, 0, 'r' },
 	{"rtmpubkey",        required_argument, 0, 'k' },
 	{"secureos",         required_argument, 0, 'c' },
@@ -495,6 +501,7 @@ static struct option long_options[] = {
 	{"trustlets",        required_argument, 0, 't' },
 	{"trustletkey",      required_argument, 0, 'u' },
 	{"smufirmware2",     required_argument, 0, 'w' },
+	{"smufnfirmware2",   required_argument, 0, 'e' },
 	{"smuscs",           required_argument, 0, 'm' },
 
 	/* TODO: PSP2 */
@@ -574,6 +581,7 @@ int main(int argc, char **argv)
 	uint32_t current;
 	embedded_firmware *amd_romsig;
 	psp_directory_table *pspdir;
+	int comboable = 0;
 
 	int targetfd;
 	char *output = NULL;
@@ -600,6 +608,9 @@ int main(int argc, char **argv)
 		case 'g':
 			register_fw_filename(AMD_FW_GEC, optarg, 0);
 			break;
+		case 'A':
+			comboable = 1;
+			break;
 		case 'p':
 			register_fw_filename(AMD_FW_PSP_PUBKEY, optarg, 1);
 			pspflag = 1;
@@ -610,6 +621,11 @@ int main(int argc, char **argv)
 			break;
 		case 's':
 			register_fw_filename(AMD_FW_PSP_SMU_FIRMWARE,
+					optarg, 1);
+			pspflag = 1;
+			break;
+		case 'j':
+			register_fw_filename(AMD_FW_PSP_SMU_FN_FIRMWARE,
 					optarg, 1);
 			pspflag = 1;
 			break;
@@ -644,6 +660,11 @@ int main(int argc, char **argv)
 			break;
 		case 'w':
 			register_fw_filename(AMD_FW_PSP_SMU_FIRMWARE2,
+					optarg, 1);
+			pspflag = 1;
+			break;
+		case 'e':
+			register_fw_filename(AMD_FW_PSP_SMU_FN_FIRMWARE2,
 					optarg, 1);
 			pspflag = 1;
 			break;
@@ -816,11 +837,14 @@ int main(int argc, char **argv)
 	current = integrate_firmwares(rom, current, amd_romsig,
 			amd_fw_table, rom_size);
 
-	if (pspflag == 1) {
-		current = ALIGN(current, 0x10000U);
-		pspdir = (void *)(rom + current);
+	current = ALIGN(current, 0x10000U);
+	if (psp2flag || comboable)
+		amd_romsig->comboable = current + rom_base_address;
+	else
 		amd_romsig->psp_entry = current + rom_base_address;
 
+	if (pspflag == 1) {
+		pspdir = (void *)(rom + current);
 		current += 0x200;	/* Conservative size of pspdir */
 		current = integrate_psp_firmwares(rom, current, pspdir,
 				amd_psp_fw_table, rom_size);
@@ -828,9 +852,7 @@ int main(int argc, char **argv)
 
 #if PSP2
 	if (psp2flag == 1) {
-		current = ALIGN(current, 0x10000U); /* PSP2 dir */
 		psp2dir = (void *)(rom + current);
-		amd_romsig->comboable = current + rom_base_address;
 		current += 0x200;	/* Add conservative size of psp2dir. */
 
 #if PSP_COMBO

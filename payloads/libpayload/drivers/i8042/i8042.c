@@ -229,8 +229,10 @@ u8 i8042_probe(void)
 	}
 
 	/* Test secondary port */
-	if (i8042_cmd_with_response(I8042_CMD_AUX_TEST) == 0)
-		aux_fifo = fifo_init(4 * 32);
+	if (IS_ENABLED(CONFIG_LP_PC_MOUSE)) {
+		if (i8042_cmd_with_response(I8042_CMD_AUX_TEST) == 0)
+			aux_fifo = fifo_init(4 * 32);
+	}
 
 	/* Test first PS/2 port */
 	if (i8042_cmd_with_response(I8042_CMD_KB_TEST) == 0)

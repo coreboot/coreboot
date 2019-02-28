@@ -67,7 +67,7 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 	else
 		fadt->dsdt = (uintptr_t)dsdt;
 
-	fadt->model = 0;		/* reserved, should be 0 ACPI 3.0 */
+	fadt->reserved = 0;		/* reserved, should be 0 ACPI 3.0 */
 	fadt->preferred_pm_profile = FADT_PM_PROFILE;
 	fadt->sci_int = 9;		/* HUDSON - IRQ 09 - ACPI SCI */
 

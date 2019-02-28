@@ -484,7 +484,7 @@ typedef struct acpi_fadt {
 	struct acpi_table_header header;
 	u32 firmware_ctrl;
 	u32 dsdt;
-	u8 model;	/* Eliminated in ACPI 2.0. Platforms should set
+	u8 reserved;	/* Eliminated in ACPI 2.0. Platforms should set
 			 * this field to zero but field values of one
 			 * are also allowed to maintain compatibility
 			 * with ACPI 1.0.

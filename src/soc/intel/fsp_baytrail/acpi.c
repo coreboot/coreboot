@@ -198,7 +198,7 @@ void acpi_fill_in_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 	fadt->firmware_ctrl = (unsigned long) facs;
 	fadt->dsdt = (unsigned long) dsdt;
 
-	fadt->model = 0;		/* reserved, should be 0 ACPI 3.0 */
+	fadt->reserved = 0;		/* reserved, should be 0 ACPI 3.0 */
 	fadt->preferred_pm_profile = config->fadt_pm_profile; /* unknown is default */
 
 	/* System Management */

@@ -32,7 +32,7 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 
 	fadt->firmware_ctrl = (unsigned long) facs;
 	fadt->dsdt = (unsigned long) dsdt;
-	fadt->model = 1;
+	fadt->reserved = 0;
 	fadt->preferred_pm_profile = PM_MOBILE;
 
 	fadt->x_firmware_ctl_l = (unsigned long)facs;

@@ -87,9 +87,6 @@ static void per_cpu_smm_trigger(void)
 
 	/* Relocate the SMM handler. */
 	smm_relocate();
-
-	/* After SMM relocation a 2nd microcode load is required. */
-	intel_microcode_load_unlocked(microcode_patch);
 }
 
 static void post_mp_init(void)

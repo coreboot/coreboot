@@ -309,16 +309,16 @@ void keyboard_init(void)
 
 	/* Set scancode set 1 */
 	ret = keyboard_cmd(I8042_KBCMD_SET_SCANCODE);
-	if (!ret)
+	if (!ret && !IS_ENABLED(CONFIG_LP_PC_KEYBOARD_IGNORE_INIT_FAILURE))
 		return;
 
 	ret = keyboard_cmd(I8042_SCANCODE_SET_1);
-	if (!ret)
+	if (!ret && !IS_ENABLED(CONFIG_LP_PC_KEYBOARD_IGNORE_INIT_FAILURE))
 		return;
 
 	/* Enable scanning */
 	ret = keyboard_cmd(I8042_KBCMD_EN);
-	if (!ret)
+	if (!ret && !IS_ENABLED(CONFIG_LP_PC_KEYBOARD_IGNORE_INIT_FAILURE))
 		return;
 
 	console_add_input_driver(&cons);

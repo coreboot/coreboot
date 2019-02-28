@@ -27,6 +27,8 @@ static const void *microcode_patch;
 
 static void pre_mp_init(void)
 {
+	intel_microcode_load_unlocked(microcode_patch);
+
 	/* Setup MTRRs based on physical address size. */
 	x86_setup_mtrrs_with_detect();
 	x86_mtrr_check();
@@ -40,6 +42,12 @@ static int get_cpu_count(void)
 	printk(BIOS_DEBUG, "CPU has %u cores.\n", cores);
 
 	return cores;
+}
+
+static void get_microcode_info(const void **microcode, int *parallel)
+{
+	*microcode = microcode_patch;
+	*parallel = 1;
 }
 
 /* the SMRR enable and lock bit need to be set in IA32_FEATURE_CONTROL
@@ -98,6 +106,7 @@ static const struct mp_ops mp_ops = {
 	.pre_mp_init = pre_mp_init,
 	.get_cpu_count = get_cpu_count,
 	.get_smm_info = smm_info,
+	.get_microcode_info = get_microcode_info,
 	.pre_mp_smm_init = pre_mp_smm_init,
 	.per_cpu_smm_trigger = per_cpu_smm_trigger,
 	.relocation_handler = smm_relocation_handler,
@@ -106,6 +115,8 @@ static const struct mp_ops mp_ops = {
 
 void bsp_init_and_start_aps(struct bus *cpu_bus)
 {
+	microcode_patch = intel_microcode_find();
+
 	if (mp_init_with_smm(cpu_bus, &mp_ops))
 		printk(BIOS_ERR, "MP initialization failure.\n");
 }

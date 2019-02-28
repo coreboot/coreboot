@@ -205,22 +205,22 @@ add_opt_prefix=$(if $(call strip_quotes, $(1)), $(2) $(call strip_quotes, $(1)),
 OPT_STONEYRIDGE_XHCI_FWM_FILE=$(call add_opt_prefix, $(CONFIG_STONEYRIDGE_XHCI_FWM_FILE), --xhci)
 OPT_STONEYRIDGE_GEC_FWM_FILE=$(call add_opt_prefix, $(CONFIG_STONEYRIDGE_GEC_FWM_FILEddd), --gec)
 
-OPT_2AMD_PUBKEY_FILE=$(call add_opt_prefix, $(CONFIG_AMD_PUBKEY_FILE), --pubkey2)
-OPT_2PSPBTLDR_FILE=$(call add_opt_prefix, $(PSPBTLDR_FILE), --bootloader2)
-OPT_2SMUFWM_FILE=$(call add_opt_prefix, $(SMUFWM_FILE), --smufirmware_2)
-OPT_2PSPRCVR_FILE=$(call add_opt_prefix, $(PSPRCVR_FILE), --recovery2)
-OPT_2PUBSIGNEDKEY_FILE=$(call add_opt_prefix, $(PUBSIGNEDKEY_FILE), --rtmpubkey2)
-OPT_2PSPNVRAM_FILE=$(call add_opt_prefix, $(PSPNVRAM_FILE), --nvram2)
-OPT_2PSPSECUREDEBUG_FILE=$(call add_opt_prefix, $(PSPSECUREDEBUG_FILE), --securedebug2)
+OPT_AMD_PUBKEY_FILE=$(call add_opt_prefix, $(CONFIG_AMD_PUBKEY_FILE), --pubkey)
+OPT_PSPBTLDR_FILE=$(call add_opt_prefix, $(PSPBTLDR_FILE), --bootloader)
+OPT_SMUFWM_FILE=$(call add_opt_prefix, $(SMUFWM_FILE), --smufirmware)
+OPT_PSPRCVR_FILE=$(call add_opt_prefix, $(PSPRCVR_FILE), --recovery)
+OPT_PUBSIGNEDKEY_FILE=$(call add_opt_prefix, $(PUBSIGNEDKEY_FILE), --rtmpubkey)
+OPT_PSPNVRAM_FILE=$(call add_opt_prefix, $(PSPNVRAM_FILE), --nvram)
+OPT_PSPSECUREDEBUG_FILE=$(call add_opt_prefix, $(PSPSECUREDEBUG_FILE), --securedebug)
 ifeq ($(CONFIG_USE_PSPSCUREOS),y)
-OPT_2PSPSCUREOS_FILE=$(call add_opt_prefix, $(PSPSCUREOS_FILE), --secureos2)
-OPT_2PSPTRUSTLETS_FILE=$(call add_opt_prefix, $(PSPTRUSTLETS_FILE), --trustlets2)
-OPT_2TRUSTLETKEY_FILE=$(call add_opt_prefix, $(TRUSTLETKEY_FILE), --trustletkey2)
+OPT_PSPSCUREOS_FILE=$(call add_opt_prefix, $(PSPSCUREOS_FILE), --secureos)
+OPT_PSPTRUSTLETS_FILE=$(call add_opt_prefix, $(PSPTRUSTLETS_FILE), --trustlets)
+OPT_TRUSTLETKEY_FILE=$(call add_opt_prefix, $(TRUSTLETKEY_FILE), --trustletkey)
 endif
-OPT_2SMUFIRMWARE2_FILE=$(call add_opt_prefix, $(SMUFIRMWARE2_FILE), --smufirmware2_2)
-OPT_2SMUSCS_FILE=$(call add_opt_prefix, $(SMUSCS_FILE), --smuscs2)
-OPT_2SMUFWM_FN_FILE=$(call add_opt_prefix, $(SMUFWM_FN_FILE), --smufnfirmware_2)
-OPT_2SMUFIRMWARE2_FN_FILE=$(call add_opt_prefix, $(SMUFIRMWARE2_FN_FILE), --smufnfirmware2_2)
+OPT_SMUFIRMWARE2_FILE=$(call add_opt_prefix, $(SMUFIRMWARE2_FILE), --smufirmware2)
+OPT_SMUSCS_FILE=$(call add_opt_prefix, $(SMUSCS_FILE), --smuscs)
+OPT_SMUFWM_FN_FILE=$(call add_opt_prefix, $(SMUFWM_FN_FILE), --smufnfirmware)
+OPT_SMUFIRMWARE2_FN_FILE=$(call add_opt_prefix, $(SMUFIRMWARE2_FN_FILE), --smufnfirmware2)
 
 
 $(obj)/amdfw.rom:	$(call strip_quotes, $(CONFIG_STONEYRIDGE_XHCI_FWM_FILE)) \
@@ -257,20 +257,21 @@ $(obj)/amdfw.rom:	$(call strip_quotes, $(CONFIG_STONEYRIDGE_XHCI_FWM_FILE)) \
 		$(OPT_TRUSTLETKEY_FILE) \
 		$(OPT_SMUFIRMWARE2_FILE) \
 		$(OPT_SMUSCS_FILE) \
-		$(OPT_2AMD_PUBKEY_FILE) \
-		$(OPT_2PSPBTLDR_FILE) \
-		$(OPT_2SMUFWM_FILE) \
-		$(OPT_2SMUFWM_FN_FILE) \
-		$(OPT_2PSPRCVR_FILE) \
-		$(OPT_2PUBSIGNEDKEY_FILE) \
-		$(OPT_2PSPSCUREOS_FILE) \
-		$(OPT_2PSPNVRAM_FILE) \
-		$(OPT_2PSPSECUREDEBUG_FILE) \
-		$(OPT_2PSPTRUSTLETS_FILE) \
-		$(OPT_2TRUSTLETKEY_FILE) \
-		$(OPT_2SMUFIRMWARE2_FILE) \
-		$(OPT_2SMUFIRMWARE2_FN_FILE) \
-		$(OPT_2SMUSCS_FILE) \
+		$(OPT_AMD_PUBKEY_FILE) \
+		$(OPT_PSPBTLDR_FILE) \
+		$(OPT_SMUFWM_FILE) \
+		$(OPT_SMUFWM_FN_FILE) \
+		$(OPT_PSPRCVR_FILE) \
+		$(OPT_PUBSIGNEDKEY_FILE) \
+		$(OPT_PSPSCUREOS_FILE) \
+		$(OPT_PSPNVRAM_FILE) \
+		$(OPT_PSPSECUREDEBUG_FILE) \
+		$(OPT_PSPTRUSTLETS_FILE) \
+		$(OPT_TRUSTLETKEY_FILE) \
+		$(OPT_SMUFIRMWARE2_FILE) \
+		$(OPT_SMUFIRMWARE2_FN_FILE) \
+		$(OPT_SMUSCS_FILE) \
+		--combo-capable \
 		--flashsize $(CONFIG_ROM_SIZE) \
 		--location $(shell printf "0x%x" $(STONEYRIDGE_FWM_POSITION)) \
 		--output	$@

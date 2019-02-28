@@ -322,30 +322,48 @@ static void fill_dir_header(void *directory, uint32_t count, uint32_t cookie)
 	}
 }
 
+static ssize_t copy_blob(void *dest, const char *src_file, size_t room)
+{
+	int fd;
+	struct stat fd_stat;
+	ssize_t bytes;
+
+	fd = open(src_file, O_RDONLY);
+	if (fd < 0) {
+		printf("Error: %s\n", strerror(errno));
+		return -1;
+	}
+
+	if (fstat(fd, &fd_stat)) {
+		printf("fstat error: %s\n", strerror(errno));
+		return -2;
+	}
+
+	if (fd_stat.st_size > room) {
+		printf("Error: %s will not fit.  Exiting.\n", src_file);
+		return -3;
+	}
+
+	bytes = read(fd, dest, (size_t)fd_stat.st_size);
+	close(fd);
+	if (bytes != (ssize_t)fd_stat.st_size) {
+		printf("Error while reading %s\n", src_file);
+		return -4;
+	}
+
+	return bytes;
+}
+
 static uint32_t integrate_firmwares(char *base, uint32_t pos,
 				embedded_firmware *romsig,
 				amd_fw_entry *fw_table, uint32_t rom_size)
 {
-	int fd;
 	ssize_t bytes;
-	struct stat fd_stat;
 	int i;
 	uint32_t rom_base_address = 0xFFFFFFFF - rom_size + 1;
 
 	for (i = 0; fw_table[i].type != AMD_FW_INVALID; i++) {
 		if (fw_table[i].filename != NULL) {
-			fd = open(fw_table[i].filename, O_RDONLY);
-			if (fd < 0) {
-				printf("Error: %s\n", strerror(errno));
-				free(base);
-				exit(1);
-			}
-			if (fstat(fd, &fd_stat)) {
-				printf("fstat error: %s\n", strerror(errno));
-				free(base);
-				exit(1);
-			}
-
 			switch (fw_table[i].type) {
 			case AMD_FW_IMC:
 				pos = ALIGN(pos, 0x10000U);
@@ -362,27 +380,14 @@ static uint32_t integrate_firmwares(char *base, uint32_t pos,
 				break;
 			}
 
-			if (pos + fd_stat.st_size > rom_size) {
-				printf("Error: Specified ROM size of %d"
-					" will not fit %s.  Exiting.\n",
-					rom_size, fw_table[i].filename);
+			bytes = copy_blob(base + pos,
+					fw_table[i].filename, rom_size - pos);
+			if (bytes <= 0) {
 				free(base);
 				exit(1);
 			}
 
-			bytes = read(fd, (void *)(base + pos),
-					(size_t)fd_stat.st_size);
-			if (bytes == (ssize_t)fd_stat.st_size)
-				pos += fd_stat.st_size;
-			else {
-				printf("Error while reading %s\n",
-					fw_table[i].filename);
-				free(base);
-				exit(1);
-			}
-
-			close(fd);
-			pos = ALIGN(pos, 0x100U);
+			pos = ALIGN(pos + bytes, 0x100U);
 		}
 	}
 
@@ -394,9 +399,7 @@ static uint32_t integrate_psp_firmwares(char *base, uint32_t pos,
 					amd_fw_entry *fw_table,
 					uint32_t rom_size)
 {
-	int fd;
 	ssize_t bytes;
-	struct stat fd_stat;
 	unsigned int i, count;
 	uint32_t rom_base_address = 0xFFFFFFFF - rom_size + 1;
 
@@ -407,43 +410,18 @@ static uint32_t integrate_psp_firmwares(char *base, uint32_t pos,
 			pspdir->entries[count].addr = 1;
 			count++;
 		} else if (fw_table[i].filename != NULL) {
+			bytes = copy_blob(base + pos,
+					fw_table[i].filename, rom_size - pos);
+			if (bytes <= 0) {
+				free(base);
+				exit(1);
+			}
+
 			pspdir->entries[count].type = fw_table[i].type;
+			pspdir->entries[count].size = (uint32_t)bytes;
+			pspdir->entries[count].addr = rom_base_address + pos;
 
-			fd = open(fw_table[i].filename, O_RDONLY);
-			if (fd < 0) {
-				printf("Error: %s\n", strerror(errno));
-				free(base);
-				exit(1);
-			}
-			if (fstat(fd, &fd_stat)) {
-				printf("fstat error: %s\n", strerror(errno));
-				free(base);
-				exit(1);
-			}
-			pspdir->entries[count].size = (uint32_t)fd_stat.st_size;
-			pspdir->entries[count].addr = pos + rom_base_address;
-
-			if (pos + fd_stat.st_size > rom_size) {
-				printf("Error: Specified ROM size of %d"
-					" will not fit %s.  Exiting.\n",
-					rom_size, fw_table[i].filename);
-				free(base);
-				exit(1);
-			}
-
-			bytes = read(fd, (void *)(base + pos),
-					(size_t)fd_stat.st_size);
-			if (bytes == (ssize_t)fd_stat.st_size)
-				pos += fd_stat.st_size;
-			else {
-				printf("Error while reading %s\n",
-					fw_table[i].filename);
-				free(base);
-				exit(1);
-			}
-
-			close(fd);
-			pos = ALIGN(pos, 0x100U);
+			pos = ALIGN(pos + bytes, 0x100U);
 			count++;
 		} else {
 			/* This APU doesn't have this firmware. */

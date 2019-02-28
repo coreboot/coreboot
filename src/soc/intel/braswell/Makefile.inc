@@ -27,7 +27,6 @@ ramstage-y += gpio.c
 ramstage-y += gfx.c
 
 ramstage-y += gpio_support.c
-ramstage-y += hda.c
 ramstage-y += iosf.c
 ramstage-y += lpe.c
 ramstage-y += lpss.c

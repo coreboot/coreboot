@@ -43,12 +43,12 @@ Scope(\)
 	OperationRegion(GPIO, SystemIO, DEFAULT_GPIOBASE, 0x3c)
 	Field(GPIO, ByteAcc, NoLock, Preserve)
 	{
-		Offset(0x00),	// GPIO Use Select
+		// GPIO Use Select
 		GU00, 8,
 		GU01, 8,
 		GU02, 8,
 		GU03, 8,
-		Offset(0x04),	// GPIO IO Select
+		// GPIO IO Select
 		GIO0, 8,
 		GIO1, 8,
 		GIO2, 8,
@@ -96,17 +96,17 @@ Scope(\)
 		GIV1, 8,
 		GIV2, 8,
 		GIV3, 8,
-		Offset(0x30),	// GPIO Use Select 2
+		// GPIO Use Select 2
 		GU04, 8,
 		GU05, 8,
 		GU06, 8,
 		GU07, 8,
-		Offset(0x34),	// GPIO IO Select 2
+		// GPIO IO Select 2
 		GIO4, 8,
 		GIO5, 8,
 		GIO6, 8,
 		GIO7, 8,
-		Offset(0x38),	// GPIO Level 2
+		// GPIO Level 2
 		GP32, 1,
 		GP33, 1,
 		GP34, 1,
@@ -125,7 +125,7 @@ Scope(\)
 	OperationRegion(RCRB, SystemMemory, DEFAULT_RCBA, 0x4000)
 	Field(RCRB, DWordAcc, Lock, Preserve)
 	{
-		Offset(0x0000), // Backbone
+		// Backbone
 		Offset(0x1000), // Chipset
 		Offset(0x3000), // Legacy Configuration Registers
 		Offset(0x3404), // High Performance Timer Configuration
@@ -148,7 +148,7 @@ Scope(\)
 		, 2,		// Reserved
 		LPBD, 1,	// LPC bridge disable
 		EHCD, 1,	// EHCI disable
-		Offset(0x341a), // FD Root Ports
+		// FD Root Ports
 		RP1D, 1,	// Root Port 1 disable
 		RP2D, 1,	// Root Port 2 disable
 		RP3D, 1,	// Root Port 3 disable

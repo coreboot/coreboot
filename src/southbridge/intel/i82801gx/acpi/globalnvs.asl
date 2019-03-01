@@ -30,7 +30,6 @@ OperationRegion (GNVS, SystemMemory, NVSA, 0x100)
 Field (GNVS, ByteAcc, NoLock, Preserve)
 {
 	/* Miscellaneous */
-	Offset (0x00),
 	OSYS,	16,	// 0x00 - Operating System
 	SMIF,	 8,	// 0x02 - SMI function
 	PRM0,	 8,	// 0x03 - SMI function parameter
@@ -48,7 +47,6 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	LINX,    8,	// 0x12 - Linux OS
 	DCKN,	 8,	// 0x13 - PCIe docking state
 	/* Thermal policy */
-	Offset (0x14),
 	ACTT,	 8,	// 0x14 - active trip point
 	TPSV,	 8,	// 0x15 - passive trip point
 	TC1V,	 8,	// 0x16 - passive trip point TC1
@@ -87,7 +85,6 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	UTIL,	 8,	// 0x3a -
 	ACIN,	 8,	// 0x3b -
 	/* Integrated Graphics Device */
-	Offset (0x3c),
 	IGDS,	 8,	// 0x3c - IGD state (primary = 1)
 	TLST,	 8,	// 0x3d - Display Toggle List pointer
 	CADL,	 8,	// 0x3e - Currently Attached Devices List
@@ -95,7 +92,6 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	CSTE,	16,	// 0x40 - Current display state
 	NSTE,	16,	// 0x42 - Next display state
 	SSTE,	16,	// 0x44 - Set display state
-	Offset (0x46),
 	NDID,	 8,	// 0x46 - Number of Device IDs
 	DID1,	32,	// 0x47 - Device ID 1
 	DID2,	32,	// 0x4b - Device ID 2

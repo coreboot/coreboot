@@ -70,7 +70,11 @@ typedef struct {
 	u32	mehh[8];	// d9e management engine hash
 	u32	ramoops_base;	// dbe ramoops base address
 	u32	ramoops_len;	// dc2 ramoops length
-	u8	pad[314];	// dc6-eff
+	u32	vpd_ro_base;	// dc6 pointer to RO_VPD
+	u32	vpd_ro_size;	// dca size of RO_VPD
+	u32	vpd_rw_base;	// dce pointer to RW_VPD
+	u32	vpd_rw_size;	// dd2 size of RW_VPD
+	u8	pad[298];	// dd6-eff
 } __packed chromeos_acpi_t;
 
 void chromeos_init_chromeos_acpi(chromeos_acpi_t *init);

@@ -20,6 +20,7 @@
 #include <cbmem.h>
 #include <console/console.h>
 #include <elog.h>
+#include <fmap.h>
 #include <security/vboot/vbnv.h>
 #include <security/vboot/vboot_common.h>
 #include <vboot_struct.h>
@@ -30,14 +31,41 @@
 static chromeos_acpi_t *chromeos_acpi;
 static u32 me_hash_saved[8];
 
+static size_t chromeos_vpd_region(const char *region, uintptr_t *base)
+{
+	struct region_device vpd;
+
+	if (fmap_locate_area_as_rdev(region, &vpd))
+		return 0;
+
+	*base = (uintptr_t)rdev_mmap_full(&vpd);
+
+	return region_device_sz(&vpd);
+}
+
 void chromeos_init_chromeos_acpi(chromeos_acpi_t *init)
 {
+	size_t vpd_size;
+	uintptr_t vpd_base = 0;
+
 	chromeos_acpi = init;
 
 	/* Copy saved ME hash into NVS */
 	memcpy(chromeos_acpi->mehh, me_hash_saved, sizeof(chromeos_acpi->mehh));
 
 	chromeos_ram_oops_init(chromeos_acpi);
+
+	vpd_size = chromeos_vpd_region("RO_VPD", &vpd_base);
+	if (vpd_size && vpd_base) {
+		chromeos_acpi->vpd_ro_base = vpd_base;
+		chromeos_acpi->vpd_ro_size = vpd_size;
+	}
+
+	vpd_size = chromeos_vpd_region("RW_VPD", &vpd_base);
+	if (vpd_size && vpd_base) {
+		chromeos_acpi->vpd_rw_base = vpd_base;
+		chromeos_acpi->vpd_rw_size = vpd_size;
+	}
 }
 
 void chromeos_set_me_hash(u32 *hash, int len)

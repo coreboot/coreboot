@@ -32,4 +32,8 @@ VBTA,	32,	// 0xd9a - pointer to smbios FWID
 MEHH,  256,	// 0xd9e - Management Engine Hash
 RMOB,   32,	// 0xdbe - RAM oops base address
 RMOL,   32,	// 0xdc2 - RAM oops length
-		// 0xdc6
+ROVP,	32,	// 0xdc6 - pointer to RO_VPD
+ROVL,	32,	// 0xdca - size of RO_VPD
+RWVP,	32,	// 0xdce - pointer to RW_VPD
+RWVL,	32,	// 0xdd2 - size of RW_VPD
+		// 0xdd6

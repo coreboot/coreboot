@@ -213,7 +213,7 @@ static void enable_fan(const u16 base, const u8 fan,
 		ite_ec_write(base, ITE_EC_FAN_CTL_MODE, reg);
 	}
 
-	if (IS_ENABLED(SUPERIO_ITE_ENV_CTRL_FAN16_CONFIG)
+	if (IS_ENABLED(CONFIG_SUPERIO_ITE_ENV_CTRL_FAN16_CONFIG)
 	    && conf->mode >= FAN_MODE_ON) {
 		reg = ite_ec_read(base, ITE_EC_FAN_TAC_COUNTER_ENABLE);
 		reg |= ITE_EC_FAN_TAC_16BIT_ENABLE(fan);

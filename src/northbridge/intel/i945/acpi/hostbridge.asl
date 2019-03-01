@@ -34,18 +34,18 @@ Device (MCHC)
 		,	11,	//
 		EPBR,	20,	// EPBAR
 
-		Offset (0x44),	// MCHBAR
+		// MCHBAR
 		MHEN,	 1,	// Enable
 		,	13,	//
 		MHBR,	18,	// MCHBAR
 
-		Offset (0x48),	// PCIe BAR
+		// PCIe BAR
 		PXEN,	 1,	// Enable
 		PXSZ,	 2,	// BAR size
 		,	23,	//
 		PXBR,	 6,	// PCIe BAR
 
-		Offset (0x4c),	// DMIBAR
+		// DMIBAR
 		DMEN,	 1,	// Enable
 		,	11,	//
 		DMBR,	20,	// DMIBAR
@@ -56,32 +56,32 @@ Device (MCHC)
 		,	 4,
 		PM0H,	 2,
 		,	 2,
-		Offset (0x91),	// PAM1
+		// PAM1
 		PM1L,	 2,
 		,	 2,
 		PM1H,	 2,
 		,	 2,
-		Offset (0x92),	// PAM2
+		// PAM2
 		PM2L,	 2,
 		,	 2,
 		PM2H,	 2,
 		,	 2,
-		Offset (0x93),	// PAM3
+		// PAM3
 		PM3L,	 2,
 		,	 2,
 		PM3H,	 2,
 		,	 2,
-		Offset (0x94),	// PAM4
+		// PAM4
 		PM4L,	 2,
 		,	 2,
 		PM4H,	 2,
 		,	 2,
-		Offset (0x95),	// PAM5
+		// PAM5
 		PM5L,	 2,
 		,	 2,
 		PM5H,	 2,
 		,	 2,
-		Offset (0x96),	// PAM6
+		// PAM6
 		PM6L,	 2,
 		,	 2,
 		PM6H,	 2,

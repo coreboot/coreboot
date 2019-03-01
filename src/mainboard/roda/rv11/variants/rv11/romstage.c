@@ -15,6 +15,7 @@
 
 #include <stdint.h>
 #include <device/pci.h>
+#include <device/pci_ops.h>
 #include <northbridge/intel/sandybridge/raminit.h>
 #include <northbridge/intel/sandybridge/raminit_native.h>
 #include <northbridge/intel/sandybridge/sandybridge.h>

@@ -17,6 +17,7 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
+#include <device/pci_ops.h>
 #include <device/pcix.h>
 
 static void pcix_tune_dev(struct device *dev)

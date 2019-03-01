@@ -21,6 +21,7 @@
 #include "pch.h"
 #include <device/pci_ehci.h>
 #include <arch/io.h>
+#include <device/pci_ops.h>
 
 static void usb_xhci_init(struct device *dev)
 {

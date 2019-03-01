@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <device/pci_ops.h>
 #include <northbridge/amd/amdfam10/raminit.h>
 #include <northbridge/amd/amdfam10/amdfam10.h>
 #include <delay.h>

@@ -18,6 +18,7 @@
 
 #include <arch/cpu.h>
 #include <cpu/amd/multicore.h>
+#include <device/pci_ops.h>
 #ifdef __PRE_RAM__
 #include <cpu/amd/msr.h>
 #endif

@@ -18,6 +18,7 @@
 #define __SR5650_CMN_H__
 
 #include <arch/io.h>
+#include <device/pci_ops.h>
 
 #define NBMISC_INDEX	0x60
 #define NBHTIU_INDEX	0x94 /* Note: It is different with RS690, whose HTIU index is 0xA8 */

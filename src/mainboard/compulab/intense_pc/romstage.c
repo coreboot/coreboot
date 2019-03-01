@@ -15,6 +15,7 @@
 
 #include <stdint.h>
 #include <arch/io.h>
+#include <device/pci_ops.h>
 #include <northbridge/intel/sandybridge/raminit_native.h>
 #include <superio/smsc/sio1007/chip.h>
 

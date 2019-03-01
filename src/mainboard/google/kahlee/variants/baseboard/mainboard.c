@@ -20,6 +20,7 @@
 #include <smbios.h>
 #include <variant/gpio.h>
 #include <device/pci.h>
+#include <device/pci_ops.h>
 #include <drivers/generic/bayhub/bh720.h>
 
 uint8_t variant_board_sku(void)

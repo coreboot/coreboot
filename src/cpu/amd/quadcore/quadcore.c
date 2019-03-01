@@ -17,6 +17,7 @@
 
 #include <arch/cpu.h>
 #include <console/console.h>
+#include <device/pci_ops.h>
 #include <pc80/mc146818rtc.h>
 #if IS_ENABLED(CONFIG_HAVE_OPTION_TABLE)
 #include "option_table.h"

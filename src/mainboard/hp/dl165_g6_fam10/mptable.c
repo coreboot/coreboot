@@ -26,6 +26,7 @@
 #include <console/console.h>
 #include <arch/smp/mpspec.h>
 #include <arch/io.h>
+#include <device/pci_ops.h>
 #include <device/pci.h>
 #include <string.h>
 #include <stdint.h>

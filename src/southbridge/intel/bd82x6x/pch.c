@@ -24,6 +24,7 @@
 #include <device/device.h>
 #include <device/pci.h>
 #endif
+#include <device/pci_ops.h>
 #include "pch.h"
 #include <string.h>
 

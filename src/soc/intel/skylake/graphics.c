@@ -18,6 +18,7 @@
 #include <cbmem.h>
 #include <console/console.h>
 #include <device/pci.h>
+#include <device/pci_ops.h>
 #include <drivers/intel/gma/i915_reg.h>
 #include <drivers/intel/gma/libgfxinit.h>
 #include <intelblocks/graphics.h>

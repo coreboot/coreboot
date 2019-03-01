@@ -17,6 +17,7 @@
 #include <arch/cpu.h>
 #include <cpu/x86/msr.h>
 #include <console/console.h>
+#include <device/pci_ops.h>
 #include "ht_wrapper.h"
 
 /*----------------------------------------------------------------------------

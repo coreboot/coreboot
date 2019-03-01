@@ -18,6 +18,7 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <arch/io.h>
+#include <device/pci_ops.h>
 #include "chip.h"
 
 static void rce822_enable(struct device *dev)

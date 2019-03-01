@@ -20,6 +20,7 @@
 #include <assert.h>
 #include <console/console.h>
 #include <device/pci.h>
+#include <device/pci_ops.h>
 #include <intelblocks/lpc_lib.h>
 #include <lib.h>
 #include "lpc_def.h"

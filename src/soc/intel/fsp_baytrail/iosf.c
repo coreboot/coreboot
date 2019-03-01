@@ -16,6 +16,7 @@
  */
 
 #include <arch/io.h>
+#include <device/pci_ops.h>
 #include <soc/iosf.h>
 
 #if !defined(__PRE_RAM__)

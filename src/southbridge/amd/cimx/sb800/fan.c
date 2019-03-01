@@ -16,6 +16,7 @@
 #include <southbridge/amd/cimx/cimx_util.h>
 #include <device/device.h>
 #include <device/pci.h>		/* device_operations */
+#include <device/pci_ops.h>
 #include "SBPLATFORM.h"
 #include "sb_cimx.h"
 #include "chip.h"		/* struct southbridge_amd_cimx_sb800_config */

@@ -18,6 +18,7 @@
 #include <console/console.h>
 #include <string.h>
 #include <arch/io.h>
+#include <device/pci_ops.h>
 #include <cpu/x86/msr.h>
 #include <cbmem.h>
 #include <arch/cbfs.h>

@@ -16,6 +16,7 @@
 
 #include <console/console.h>
 #include <cpu/x86/smm.h>
+#include <device/pci_ops.h>
 #include <southbridge/intel/ibexpeak/nvs.h>
 #include <southbridge/intel/ibexpeak/pch.h>
 #include <southbridge/intel/ibexpeak/me.h>

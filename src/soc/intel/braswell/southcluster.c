@@ -17,6 +17,7 @@
  */
 
 #include <arch/io.h>
+#include <device/pci_ops.h>
 #include <arch/acpi.h>
 #include <arch/acpigen.h>
 #include <bootstate.h>

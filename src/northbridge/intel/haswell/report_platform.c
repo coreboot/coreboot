@@ -18,6 +18,7 @@
 #include <string.h>
 #include <southbridge/intel/lynxpoint/pch.h>
 #include <arch/io.h>
+#include <device/pci_ops.h>
 #include <cpu/x86/msr.h>
 #include "haswell.h"
 

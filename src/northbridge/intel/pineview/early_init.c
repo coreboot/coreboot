@@ -18,6 +18,7 @@
 #include <stdlib.h>
 #include <console/console.h>
 #include <arch/io.h>
+#include <device/pci_ops.h>
 #include <device/pci_def.h>
 #include <device/pci.h>
 #include <halt.h>

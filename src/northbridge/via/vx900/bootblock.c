@@ -15,6 +15,7 @@
  */
 
 #include <arch/io.h>
+#include <device/pci_ops.h>
 
 #if CONFIG_ROM_SIZE == 0x80000
 #  define ROM_DECODE_MAP 0x00

@@ -15,6 +15,7 @@
 
 #include <string.h>
 #include <arch/io.h>
+#include <device/pci_ops.h>
 #include <bootmode.h>
 #include <device/device.h>
 #include <device/pci.h>

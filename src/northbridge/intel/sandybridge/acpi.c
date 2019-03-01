@@ -21,6 +21,7 @@
 #include <arch/acpi.h>
 #include <device/device.h>
 #include <device/pci.h>
+#include <device/pci_ops.h>
 #include "sandybridge.h"
 #include <southbridge/intel/bd82x6x/pch.h>
 

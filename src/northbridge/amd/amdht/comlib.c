@@ -18,6 +18,7 @@
 #include "comlib.h"
 
 #include <device/pci.h>
+#include <device/pci_ops.h>
 #include <console/console.h>
 #include <cpu/amd/msr.h>
 #include <device/pci_def.h>

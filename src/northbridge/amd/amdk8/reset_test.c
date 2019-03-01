@@ -12,6 +12,7 @@
  */
 
 #include <arch/io.h>
+#include <device/pci_ops.h>
 #include <stdint.h>
 #include <cpu/x86/lapic.h>
 #include "amdk8.h"

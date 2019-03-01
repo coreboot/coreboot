@@ -20,6 +20,7 @@
 #include "vx900.h"
 
 #include <device/pci.h>
+#include <device/pci_ops.h>
 #include <cbmem.h>
 
 #define MCU PCI_DEV(0, 0, 3)

@@ -16,6 +16,7 @@
 
 #include <types.h>
 #include <arch/io.h>
+#include <device/pci_ops.h>
 #include <halt.h>
 #include "gm45.h"
 

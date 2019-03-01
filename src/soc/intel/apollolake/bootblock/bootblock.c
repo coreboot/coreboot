@@ -18,6 +18,7 @@
 #include <bootblock_common.h>
 #include <cpu/x86/pae.h>
 #include <device/pci.h>
+#include <device/pci_ops.h>
 #include <intelblocks/cpulib.h>
 #include <intelblocks/fast_spi.h>
 #include <intelblocks/p2sb.h>

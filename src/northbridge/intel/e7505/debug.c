@@ -15,6 +15,7 @@
 #include <console/console.h>
 #include <stdlib.h>
 #include <arch/io.h>
+#include <device/pci_ops.h>
 #include <spd.h>
 
 #include "raminit.h"

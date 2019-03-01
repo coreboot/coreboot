@@ -19,6 +19,7 @@
 #include <romstage_handoff.h>
 #include <console/console.h>
 #include <arch/io.h>
+#include <device/pci_ops.h>
 #include <arch/acpi.h>
 #include <cpu/x86/lapic.h>
 #include <cpu/x86/bist.h>

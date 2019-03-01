@@ -204,6 +204,8 @@
 #ifndef __ACPI__
 #ifndef __ASSEMBLER__
 
+#include <device/pci_ops.h>
+
 static inline int lpc_is_mobile(const u16 devid)
 {
 	return (devid == 0x2917) || (devid == 0x2919);

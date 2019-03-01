@@ -15,6 +15,7 @@
 
 #include <arch/acpi.h>
 #include <arch/io.h>
+#include <device/pci_ops.h>
 #include <console/console.h>
 #include <cpu/x86/smm.h>
 #include <device/pci.h>

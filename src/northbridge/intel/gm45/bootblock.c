@@ -12,6 +12,7 @@
  */
 
 #include <arch/io.h>
+#include <device/pci_ops.h>
 
 /* Just re-define these instead of including gm45.h. It blows up romcc. */
 #define D0F0_PCIEXBAR_LO 0x60

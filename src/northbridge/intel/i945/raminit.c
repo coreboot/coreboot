@@ -17,6 +17,7 @@
 #include <console/console.h>
 #include <cpu/x86/cache.h>
 #include <device/pci_def.h>
+#include <device/pci_ops.h>
 #include <device/device.h>
 #include <lib.h>
 #include <pc80/mc146818rtc.h>

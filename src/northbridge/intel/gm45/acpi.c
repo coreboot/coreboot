@@ -21,6 +21,7 @@
 #include <arch/acpigen.h>
 #include <device/device.h>
 #include <device/pci.h>
+#include <device/pci_ops.h>
 #include "gm45.h"
 
 unsigned long acpi_fill_mcfg(unsigned long current)

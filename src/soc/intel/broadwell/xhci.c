@@ -19,6 +19,7 @@
 #include <device/pci_ids.h>
 #include <arch/acpi.h>
 #include <arch/io.h>
+#include <device/pci_ops.h>
 #include <soc/ramstage.h>
 #include <soc/xhci.h>
 #include <soc/cpu.h>

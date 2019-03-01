@@ -15,6 +15,7 @@
  */
 
 #include <arch/io.h>
+#include <device/pci_ops.h>
 #include <console/console.h>
 #include <southbridge/intel/i82801jx/i82801jx.h>
 #include <southbridge/intel/common/gpio.h>

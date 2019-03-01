@@ -21,6 +21,7 @@
 #include <assert.h>
 #include <commonlib/sdhci.h>
 #include <device/pci.h>
+#include <device/pci_ops.h>
 #include "sd_mmc.h"
 #include <stdint.h>
 #include "storage.h"

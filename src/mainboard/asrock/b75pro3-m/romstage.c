@@ -14,6 +14,7 @@
  * GNU General Public License for more details.
  */
 
+#include <device/pci_ops.h>
 #include <northbridge/intel/sandybridge/raminit_native.h>
 #include <superio/nuvoton/nct6776/nct6776.h>
 #include <superio/nuvoton/common/nuvoton.h>

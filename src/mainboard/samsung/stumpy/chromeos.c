@@ -16,6 +16,7 @@
 #include <string.h>
 #include <bootmode.h>
 #include <arch/io.h>
+#include <device/pci_ops.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <southbridge/intel/bd82x6x/pch.h>

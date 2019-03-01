@@ -15,6 +15,7 @@
  */
 
 #include <arch/io.h>
+#include <device/pci_ops.h>
 #include "i82801ix.h"
 
 void i82801ix_early_init(void)

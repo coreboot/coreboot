@@ -12,6 +12,7 @@
  */
 
 #include <arch/io.h>
+#include <device/pci_ops.h>
 
 static void bootblock_northbridge_init(void)
 {

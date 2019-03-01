@@ -18,6 +18,7 @@
 #include <assert.h>
 #include <cpu/x86/mtrr.h>
 #include <console/console.h>
+#include <device/pci_ops.h>
 #include <soc/pci_devs.h>
 #include <soc/ramstage.h>
 #include <soc/reg_access.h>

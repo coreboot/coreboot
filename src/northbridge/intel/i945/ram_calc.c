@@ -17,6 +17,7 @@
 #define __SIMPLE_DEVICE__
 
 #include <arch/io.h>
+#include <device/pci_ops.h>
 #include <arch/cpu.h>
 #include <cbmem.h>
 #include "i945.h"

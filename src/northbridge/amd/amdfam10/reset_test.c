@@ -15,6 +15,7 @@
 
 #include <stdint.h>
 #include <cpu/x86/lapic.h>
+#include <device/pci_ops.h>
 #include <northbridge/amd/amdfam10/raminit.h>
 #include <northbridge/amd/amdfam10/amdfam10.h>
 

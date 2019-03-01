@@ -18,6 +18,7 @@
 #include <bootmode.h>
 #include <string.h>
 #include <arch/io.h>
+#include <device/pci_ops.h>
 #include <cbmem.h>
 #include <arch/cbfs.h>
 #include <cbfs.h>

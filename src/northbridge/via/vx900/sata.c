@@ -16,6 +16,7 @@
 
 #include <console/console.h>
 #include <device/pci.h>
+#include <device/pci_ops.h>
 #include <device/pci_ids.h>
 
 #include "vx900.h"

@@ -17,6 +17,7 @@
 #include <console/console.h>
 #include <device/pci.h>
 #include <arch/io.h>
+#include <device/pci_ops.h>
 #include <string.h>
 #include <amdblocks/amd_pci_util.h>
 #include <pc80/i8259.h>

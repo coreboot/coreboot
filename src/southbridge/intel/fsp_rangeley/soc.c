@@ -20,6 +20,7 @@
 #include <delay.h>
 #include <device/device.h>
 #include <device/pci.h>
+#include <device/pci_ops.h>
 #include "soc.h"
 
 static int soc_revision_id = -1;

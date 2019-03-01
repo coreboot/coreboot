@@ -15,6 +15,7 @@
  */
 
 #include <arch/io.h>
+#include <device/pci_ops.h>
 #include <soc/gpio.h>
 #include <soc/lpc.h>
 #include <soc/pci_devs.h>

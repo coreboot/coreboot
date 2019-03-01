@@ -203,10 +203,6 @@ static __always_inline void write64(volatile void *addr,
 }
 #endif
 
-/* FIXME: We should avoid this indirect include. Also this has to
- * appear here after all MMIO and IO read/write functions. */
-#include <arch/pci_ops.h>
-
 #ifdef __SIMPLE_DEVICE__
 
 #define PNP_DEV(PORT, FUNC) (((PORT) << 8) | (FUNC))

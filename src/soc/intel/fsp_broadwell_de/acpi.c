@@ -21,6 +21,7 @@
 #include <arch/acpi.h>
 #include <arch/acpigen.h>
 #include <arch/io.h>
+#include <device/pci_ops.h>
 #include <arch/smp/mpspec.h>
 #include <console/console.h>
 #include <cpu/x86/msr.h>

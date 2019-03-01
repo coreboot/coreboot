@@ -21,6 +21,7 @@
 #include <arch/smp/mpspec.h>
 #include <device/device.h>
 #include <device/pci.h>
+#include <device/pci_ops.h>
 #include <version.h>
 
 #include "../qemu-i440fx/fw_cfg.h"

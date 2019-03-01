@@ -14,6 +14,7 @@
  */
 
 #include <arch/io.h>
+#include <device/pci_ops.h>
 #include <bootstate.h>
 #include <commonlib/helpers.h>
 #include <console/console.h>

@@ -17,6 +17,7 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
+#include <device/pci_ops.h>
 #include "i82801gx.h"
 #include "sata.h"
 

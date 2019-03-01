@@ -15,6 +15,7 @@
 
 #include <stdint.h>
 #include <arch/io.h>
+#include <device/pci_ops.h>
 
 /*
  * Enable 4MB (LPC) ROM access at 0xFFC00000 - 0xFFFFFFFF.

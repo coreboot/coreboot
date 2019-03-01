@@ -23,7 +23,6 @@
 #include <device/pci_def.h>
 #include <device/resource.h>
 #include <device/device.h>
-#include <device/pci_ops.h>
 #include <device/pci_rom.h>
 
 

@@ -15,6 +15,7 @@
  */
 
 #include <cpu/amd/msr.h>
+#include <device/pci_ops.h>
 #include "init_cpus.h"
 
 #if IS_ENABLED(CONFIG_HAVE_OPTION_TABLE)

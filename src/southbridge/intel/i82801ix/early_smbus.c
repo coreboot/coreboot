@@ -16,6 +16,7 @@
  */
 
 #include <arch/io.h>
+#include <device/pci_ops.h>
 #include <console/console.h>
 #include <device/pci_def.h>
 #include <southbridge/intel/common/smbus.h>

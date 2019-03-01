@@ -23,6 +23,7 @@
 #include <arch/acpigen.h>
 #include <cpu/amd/powernow.h>
 #include <device/pci.h>
+#include <device/pci_ops.h>
 #include <cpu/amd/mtrr.h>
 #include <cpu/amd/amdfam10_sysconf.h>
 #include <arch/cpu.h>

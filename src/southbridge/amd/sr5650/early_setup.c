@@ -18,6 +18,7 @@
 #include <stdint.h>
 #include <arch/cpu.h>
 #include <arch/io.h>
+#include <device/pci_ops.h>
 #include <console/console.h>
 #include <cpu/x86/msr.h>
 #include <cpu/amd/msr.h>

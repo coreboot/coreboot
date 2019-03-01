@@ -19,6 +19,7 @@
 #include <cbfs.h>
 #include <console/console.h>
 #include <arch/io.h>
+#include <device/pci_ops.h>
 #include <northbridge/intel/sandybridge/sandybridge.h>
 #include <northbridge/intel/sandybridge/raminit_native.h>
 #include <southbridge/intel/bd82x6x/pch.h>

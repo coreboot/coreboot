@@ -21,6 +21,7 @@
 #include <cpu/amd/mtrr.h>
 #include <device/device.h>
 #include <device/pci.h>
+#include <device/pci_ops.h>
 #include <string.h>
 #include <cpu/x86/smm.h>
 #include <cpu/x86/pae.h>

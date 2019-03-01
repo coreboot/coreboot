@@ -17,6 +17,7 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <arch/io.h>
+#include <device/pci_ops.h>
 #include <device/pci_def.h>
 #include <console/console.h>
 #include <pc80/mc146818rtc.h>

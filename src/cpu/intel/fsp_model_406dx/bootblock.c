@@ -20,6 +20,7 @@
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
 #include <arch/io.h>
+#include <device/pci_ops.h>
 #include <reset.h>
 #include <southbridge/intel/fsp_rangeley/soc.h>
 

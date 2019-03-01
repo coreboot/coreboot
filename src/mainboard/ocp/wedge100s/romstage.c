@@ -20,6 +20,7 @@
 #include <cpu/x86/msr.h>
 #include <cf9_reset.h>
 #include <console/console.h>
+#include <device/pci_ops.h>
 #include <soc/pci_devs.h>
 #include <soc/lpc.h>
 #include <superio/ite/common/ite.h>

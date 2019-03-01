@@ -14,6 +14,7 @@
  */
 
 #include <arch/io.h>
+#include <device/pci_ops.h>
 
 static void enable_rom(void)
 {

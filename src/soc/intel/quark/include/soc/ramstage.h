@@ -20,6 +20,7 @@
 #include <arch/cpu.h>
 #include <chip.h>
 #include <device/device.h>
+#include <device/pci_ops.h>
 #include <soc/QuarkNcSocId.h>
 
 void mainboard_gpio_i2c_init(struct device *dev);

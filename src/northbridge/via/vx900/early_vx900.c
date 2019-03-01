@@ -16,6 +16,7 @@
 
 #include "early_vx900.h"
 #include <arch/io.h>
+#include <device/pci_ops.h>
 #include <console/console.h>
 
 /**

@@ -19,6 +19,7 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <arch/io.h>
+#include <device/pci_ops.h>
 #include "pch.h"
 
 typedef struct southbridge_intel_lynxpoint_config config_t;

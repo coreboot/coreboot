@@ -19,6 +19,7 @@
 #include <string.h>
 #include <console/console.h>
 #include <arch/io.h>
+#include <device/pci_ops.h>
 #include <cpu/x86/lapic.h>
 #include <timestamp.h>
 #include "sandybridge.h"

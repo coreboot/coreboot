@@ -20,6 +20,7 @@
 #include <arch/acpi.h>
 #include <southbridge/intel/fsp_rangeley/soc.h>
 #include <arch/io.h>
+#include <device/pci_ops.h>
 #include <version.h>
 
 #if IS_ENABLED(CONFIG_HAVE_SMI_HANDLER)

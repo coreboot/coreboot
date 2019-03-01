@@ -14,6 +14,7 @@
  */
 
 #include <arch/io.h>
+#include <device/pci_ops.h>
 #include "i82801jx.h"
 
 static void enable_spi_prefetch(void)

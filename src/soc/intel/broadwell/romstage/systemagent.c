@@ -16,6 +16,7 @@
 
 #include <stdlib.h>
 #include <arch/io.h>
+#include <device/pci_ops.h>
 #include <device/pci_def.h>
 #include <reg_script.h>
 #include <soc/iomap.h>

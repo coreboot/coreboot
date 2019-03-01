@@ -16,6 +16,7 @@
  */
 
 #include <arch/io.h>
+#include <device/pci_ops.h>
 #include <pc80/mc146818rtc.h>
 
 void bootblock_mainboard_init(void)

@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <device/pci_ops.h>
 #include "pci.h"
 
 /* bit [10,8] are dev func, bit[1,0] are dev index */

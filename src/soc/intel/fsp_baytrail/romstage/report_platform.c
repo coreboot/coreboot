@@ -16,6 +16,7 @@
 
 #include <console/console.h>
 #include <arch/io.h>
+#include <device/pci_ops.h>
 #include <soc/iosf.h>
 #include <soc/romstage.h>
 #include <cpu/x86/msr.h>

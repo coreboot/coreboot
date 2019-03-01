@@ -15,6 +15,7 @@
  */
 
 #include <arch/io.h>
+#include <device/pci_ops.h>
 #include <cbmem.h>
 #include <device/device.h>
 #include <device/pci.h>

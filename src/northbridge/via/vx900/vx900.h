@@ -27,8 +27,8 @@
 #define VX900_MAX_MEM_RANKS 4
 
 #include <arch/io.h>
+#include <device/pci_ops.h>
 #include <device/pci.h>
-
 #include <console/console.h>
 
 u32 vx900_get_tolm(void);

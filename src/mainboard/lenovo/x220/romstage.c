@@ -20,6 +20,7 @@
 #include <timestamp.h>
 #include <arch/byteorder.h>
 #include <arch/io.h>
+#include <device/pci_ops.h>
 #include <device/pci_def.h>
 #include <cpu/x86/lapic.h>
 #include <arch/acpi.h>

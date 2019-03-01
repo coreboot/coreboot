@@ -15,6 +15,7 @@
 
 
 #include <arch/io.h>
+#include <device/pci_ops.h>
 #include <arch/ioapic.h>
 #include <arch/acpi.h>
 #include <arch/acpigen.h>

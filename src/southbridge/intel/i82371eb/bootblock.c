@@ -16,6 +16,7 @@
 
 #include <stdint.h>
 #include <arch/io.h>
+#include <device/pci_ops.h>
 #include <device/pci_ids.h>
 #include <device/pci_type.h>
 #include "i82371eb.h"

@@ -16,6 +16,7 @@
  */
 
 #include <device/device.h>
+#include <device/pci_ops.h>
 #include <intelblocks/systemagent.h>
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>

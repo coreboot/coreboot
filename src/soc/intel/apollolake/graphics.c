@@ -23,6 +23,7 @@
 #include <fsp/util.h>
 #include <device/device.h>
 #include <device/pci.h>
+#include <device/pci_ops.h>
 #include <intelblocks/graphics.h>
 #include <drivers/intel/gma/opregion.h>
 #include <drivers/intel/gma/libgfxinit.h>

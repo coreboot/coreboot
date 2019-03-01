@@ -19,6 +19,7 @@
 #include <stdint.h>
 #include <arch/byteorder.h>
 #include <arch/io.h>
+#include <device/pci_ops.h>
 #include <device/pci_def.h>
 #include <superio/nuvoton/npcd378/npcd378.h>
 #include <superio/nuvoton/common/nuvoton.h>

@@ -29,6 +29,7 @@
 
 #include <arch/cpu.h>
 #include <device/pci.h>
+#include <device/pci_ops.h>
 #include <console/console.h>
 #include <cpu/x86/lapic_def.h>
 #include <cpu/amd/msr.h>

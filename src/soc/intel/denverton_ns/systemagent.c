@@ -18,6 +18,7 @@
 #include <console/console.h>
 #include <arch/acpi.h>
 #include <arch/io.h>
+#include <device/pci_ops.h>
 #include <stdint.h>
 #include <delay.h>
 #include <device/device.h>

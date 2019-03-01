@@ -25,6 +25,7 @@
 #include <cpu/x86/msr.h>
 #include <device/device.h>
 #include <device/pci.h>
+#include <device/pci_ops.h>
 #include <intelblocks/acpi.h>
 #include <intelblocks/chip.h>
 #include <intelblocks/fast_spi.h>

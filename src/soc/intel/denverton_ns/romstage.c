@@ -18,6 +18,7 @@
 #include <cf9_reset.h>
 #include <console/console.h>
 #include <cpu/x86/mtrr.h>
+#include <device/pci_ops.h>
 #include <soc/fiamux.h>
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>

@@ -16,6 +16,7 @@
  */
 
 #include <arch/io.h>
+#include <device/pci_ops.h>
 #include <device/pci_def.h>
 #include <cpu/x86/lapic.h>
 #include <drivers/intel/fsp1_0/fsp_util.h>

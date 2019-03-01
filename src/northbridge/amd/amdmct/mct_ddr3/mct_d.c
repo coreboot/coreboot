@@ -40,6 +40,7 @@
 #include <cpu/x86/msr.h>
 #include <cpu/amd/msr.h>
 #include <cpu/x86/mtrr.h>
+#include <device/pci_ops.h>
 #include <arch/acpi.h>
 #include <string.h>
 #include <device/dram/ddr3.h>

@@ -15,6 +15,7 @@
 
 #include <stdint.h>
 #include <arch/io.h>
+#include <device/pci_ops.h>
 #include <device/pci_ids.h>
 
 /*

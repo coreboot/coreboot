@@ -24,6 +24,7 @@
 #include <cpu/x86/smm.h>
 #include <string.h>
 #include <device/pci.h>
+#include <device/pci_ops.h>
 #include <cbmem.h>
 
 #include <intelblocks/acpi.h>

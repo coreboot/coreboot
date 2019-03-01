@@ -18,9 +18,10 @@
  * Inspired from the EPIA-M700
  */
 #include <stdint.h>
-#include <device/pci_def.h>
 #include <arch/io.h>
 #include <console/console.h>
+#include <device/pci_ops.h>
+#include <device/pci_def.h>
 #include <lib.h>
 #include <cpu/x86/bist.h>
 #include <string.h>

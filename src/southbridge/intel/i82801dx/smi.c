@@ -20,6 +20,7 @@
 #include <console/console.h>
 #include <arch/acpi.h>
 #include <arch/io.h>
+#include <device/pci_ops.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/smm.h>
 #include <string.h>

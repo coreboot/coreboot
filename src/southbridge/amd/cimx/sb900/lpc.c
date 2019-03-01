@@ -14,6 +14,7 @@
  */
 
 #include <device/pci.h>
+#include <device/pci_ops.h>
 #include "lpc.h"
 #include <console/console.h>	/* printk */
 #include <arch/ioapic.h>

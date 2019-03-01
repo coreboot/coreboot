@@ -12,6 +12,7 @@
  */
 
 #include <arch/io.h>
+#include <device/pci_ops.h>
 #define PCIEXBAR 0x60
 #define MMCONF_256_BUSSES 16
 #define ENABLE 1

@@ -21,6 +21,7 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
+#include <device/pci_ops.h>
 #include <fsp/api.h>
 #include <fsp/util.h>
 #include <intelblocks/fast_spi.h>

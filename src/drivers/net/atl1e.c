@@ -25,6 +25,7 @@
 #include <string.h>
 #include <console/console.h>
 #include <device/pci.h>
+#include <device/pci_ops.h>
 
 #define REG_SPI_FLASH_CTRL		0x200
 #define SPI_FLASH_CTRL_EN_VPD		0x2000

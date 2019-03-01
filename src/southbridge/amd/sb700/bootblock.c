@@ -16,6 +16,7 @@
 
 #include <stdint.h>
 #include <arch/io.h>
+#include <device/pci_ops.h>
 
 #define IO_MEM_PORT_DECODE_ENABLE_5	0x48
 #define IO_MEM_PORT_DECODE_ENABLE_6	0x4a

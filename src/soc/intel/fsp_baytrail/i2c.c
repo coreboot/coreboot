@@ -14,6 +14,7 @@
  */
 
 #include <device/pci.h>
+#include <device/pci_ops.h>
 #include <soc/baytrail.h>
 #include <soc/pci_devs.h>
 #include <soc/iosf.h>

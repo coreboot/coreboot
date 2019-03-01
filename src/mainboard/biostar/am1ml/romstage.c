@@ -15,6 +15,7 @@
  */
 
 #include <arch/io.h>
+#include <device/pci_ops.h>
 #include <console/console.h>
 #include <commonlib/loglevel.h>
 #include <northbridge/amd/agesa/state_machine.h>

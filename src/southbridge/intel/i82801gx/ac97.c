@@ -19,6 +19,7 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <arch/io.h>
+#include <device/pci_ops.h>
 #include <delay.h>
 #include "i82801gx.h"
 

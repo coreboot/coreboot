@@ -12,6 +12,7 @@
  */
 
 #include <arch/io.h>
+#include <device/pci_ops.h>
 #include <bootblock_common.h>
 #include <southbridge/intel/i82801ix/i82801ix.h>
 

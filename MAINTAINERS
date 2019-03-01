@@ -306,8 +306,10 @@ S:	Supported
 F:	/src/mainboard/intel/strago/
 
 INTEL BRASWELL SOC
-M:	Hannah Williams <hannah.williams@intel.com>
-S:	Supported
+M:	Piotr Król <piotr.krol@3mdeb.com>
+M:	Michał Żygowski <michal.zygowski@3mdeb.com>
+M:	Frans Hendriks <fhendriks@eltan.com>
+S:	Maintained
 F:	/src/soc/intel/braswell
 F:	/src/vendorcode/intel/fsp/fsp1_1/braswell
 

@@ -59,6 +59,7 @@ const struct valstr flag_lut[] = {
 	{ FMAP_AREA_STATIC, "static" },
 	{ FMAP_AREA_COMPRESSED, "compressed" },
 	{ FMAP_AREA_RO, "ro" },
+	{ FMAP_AREA_PRESERVE, "preserve" },
 };
 
 /* returns size of fmap data structure if successful, <0 to indicate error */

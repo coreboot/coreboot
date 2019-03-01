@@ -32,7 +32,6 @@ OperationRegion (GNVS, SystemMemory, NVSA, 0x2000)
 Field (GNVS, ByteAcc, NoLock, Preserve)
 {
 	/* Miscellaneous */
-	Offset (0x00),
 	OSYS,	16,	// 0x00 - Operating System
 	SMIF,	8,	// 0x02 - SMI function
 	PCNT,	8,	// 0x03 - Processor Count

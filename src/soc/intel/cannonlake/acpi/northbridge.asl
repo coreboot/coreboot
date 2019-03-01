@@ -54,11 +54,9 @@ Device (MCHC)
 		, 11,
 		DIBR, 20,	/* DMIBAR [31:12] */
 
-		Offset (0xa0),	/* Top of Used Memory */
-		TOM, 64,
-
-		Offset (0xa8),	/* Top of Upper Used Memory */
-		TUUD, 64,
+		Offset (0xa0),
+		TOM, 64,	/* Top of Used Memory */
+		TUUD, 64,	/* Top of Upper Used Memory */
 
 		Offset (0xbc),	/* Top of Low Used Memory */
 		TLUD, 32,

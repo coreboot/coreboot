@@ -1,0 +1,5 @@
+config DRIVERS_INTEL_ISH
+	bool
+	help
+	   When enabled, chip driver/intel/ish will publish information to the
+	   SSDT _DSD table for the ISH device.

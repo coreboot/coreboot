@@ -48,7 +48,7 @@ all: clean build
 
 $(project_dir):
 	echo "    Cloning $(project_name) from Git"
-	git clone --single-branch --branch $(project_git_branch) $(project_git_repo) $(project_dir); \
+	git clone --branch $(project_git_branch) $(project_git_repo) $(project_dir); \
 		cd $(project_dir); \
 		git remote add upstream $(upstream_git_repo)
 

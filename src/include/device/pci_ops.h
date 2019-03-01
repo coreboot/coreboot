@@ -5,7 +5,19 @@
 #include <device/device.h>
 #include <arch/pci_ops.h>
 
-#ifndef __SIMPLE_DEVICE__
+#ifdef __SIMPLE_DEVICE__
+
+/* Avoid name collisions as different stages have different signature
+ * for these functions. The _s_ stands for simple, fundamental IO or
+ * MMIO variant.
+ */
+#define pci_read_config8 pci_s_read_config8
+#define pci_read_config16 pci_s_read_config16
+#define pci_read_config32 pci_s_read_config32
+#define pci_write_config8 pci_s_write_config8
+#define pci_write_config16 pci_s_write_config16
+#define pci_write_config32 pci_s_write_config32
+#else
 u8 pci_read_config8(struct device *dev, unsigned int where);
 u16 pci_read_config16(struct device *dev, unsigned int where);
 u32 pci_read_config32(struct device *dev, unsigned int where);

@@ -11,6 +11,7 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/io.h>
 #include <device/pci_ops.h>
 #include "amd8111_smbus.h"
 

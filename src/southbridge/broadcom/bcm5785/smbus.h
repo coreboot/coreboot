@@ -14,6 +14,7 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/io.h>
 #include <device/smbus_def.h>
 
 #define SMBHSTSTAT 0x0

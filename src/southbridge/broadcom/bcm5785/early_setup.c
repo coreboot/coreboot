@@ -14,6 +14,7 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/io.h>
 #include <reset.h>
 #include <southbridge/amd/common/reset.h>
 #include "bcm5785.h"

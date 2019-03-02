@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/io.h>
 #include <device/pci_ids.h>
 #include <reset.h>
 #include <southbridge/amd/common/reset.h>

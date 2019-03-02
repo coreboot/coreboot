@@ -16,6 +16,7 @@
 #ifndef _SB800_EARLY_SETUP_C_
 #define _SB800_EARLY_SETUP_C_
 
+#include <arch/io.h>
 #include <reset.h>
 #include <southbridge/amd/common/amd_defs.h>
 #include <southbridge/amd/common/reset.h>

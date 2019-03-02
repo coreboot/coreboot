@@ -17,7 +17,6 @@
 #include <stdint.h>
 
 typedef u32 pci_devfn_t;
-typedef u32 pnp_devfn_t;
 
 #define PCI_DEV(SEGBUS, DEV, FN) ( \
 	(((SEGBUS) & 0xFFF) << 20) | \

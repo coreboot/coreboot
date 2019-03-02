@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <device/device.h>
+#include <device/pci_type.h>
 #include <arch/pci_ops.h>
 
 #ifdef __SIMPLE_DEVICE__

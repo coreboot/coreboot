@@ -16,7 +16,6 @@
 
 #include <endian.h>
 #include <stdint.h>
-#include <device/pci_type.h>
 
 /*
  * This file contains the definitions for the x86 IO instructions
@@ -202,6 +201,8 @@ static __always_inline void write64(volatile void *addr,
 	*((volatile uint64_t *)(addr)) = value;
 }
 #endif
+
+typedef u32 pnp_devfn_t;
 
 #ifdef __SIMPLE_DEVICE__
 

@@ -18,6 +18,7 @@
 
 #include <inttypes.h>
 #include <arch/io.h>
+#include <device/pci_type.h>
 #include <device/pci_def.h>
 
 u32 pci_read_config32_index(pci_devfn_t dev, u32 index_reg, u32 index);

@@ -17,8 +17,8 @@
 #define REG_SCRIPT_H
 
 #include <stdint.h>
-#include <arch/io.h>
 #include <device/device.h>
+#include <device/pci_type.h>
 #include <device/resource.h>
 
 /*

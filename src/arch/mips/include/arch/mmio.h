@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  */
 
-#ifndef __MIPS_ARCH_IO_H
-#define __MIPS_ARCH_IO_H
+#ifndef __ARCH_MMIO_H__
+#define __ARCH_MMIO_H__
 
 #include <types.h>
 #include <arch/cache.h>

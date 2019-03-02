@@ -11,8 +11,8 @@
  * GNU General Public License for more details.
  */
 
-#ifndef _ASM_IO_H
-#define _ASM_IO_H
+#ifndef __ARCH_MMIO_H__
+#define __ARCH_MMIO_H__
 
 #include <endian.h>
 #include <stdint.h>
@@ -57,4 +57,4 @@ static __always_inline void write64(volatile void *addr, uint64_t value)
 	*((volatile uint64_t *)(addr)) = value;
 }
 
-#endif
+#endif /* __ARCH_MMIO_H__ */

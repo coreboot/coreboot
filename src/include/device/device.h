@@ -14,7 +14,6 @@
 #include <device/resource.h>
 #include <device/path.h>
 #include <device/pci_type.h>
-#include <arch/io.h>
 
 struct device;
 struct pci_operations;

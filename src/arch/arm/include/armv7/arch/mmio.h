@@ -25,40 +25,51 @@
  *  12-Dec-1999	RMK	More cleanups
  *  18-Jun-2000 RMK	Removed virt_to_* and friends definitions
  */
-#ifndef __ARCH_IO_H
-#define __ARCH_IO_H
 
+#ifndef __ARCH_MMIO_H__
+#define __ARCH_MMIO_H__
+
+#include <arch/cache.h>		/* for dmb() */
 #include <endian.h>
 #include <stdint.h>
 
 static inline uint8_t read8(const void *addr)
 {
-	return *(volatile uint8_t *)addr;
+	dmb();
+	return *(volatile uint8_t *)__builtin_assume_aligned(addr, sizeof(uint8_t));
 }
 
 static inline uint16_t read16(const void *addr)
 {
-	return *(volatile uint16_t *)addr;
+	dmb();
+	return *(volatile uint16_t *)__builtin_assume_aligned(addr, sizeof(uint16_t));
 }
 
 static inline uint32_t read32(const void *addr)
 {
-	return *(volatile uint32_t *)addr;
+	dmb();
+	return *(volatile uint32_t *)__builtin_assume_aligned(addr, sizeof(uint32_t));
 }
 
 static inline void write8(void *addr, uint8_t val)
 {
-	*(volatile uint8_t *)addr = val;
+	dmb();
+	*(volatile uint8_t *)__builtin_assume_aligned(addr, sizeof(uint8_t)) = val;
+	dmb();
 }
 
 static inline void write16(void *addr, uint16_t val)
 {
-	*(volatile uint16_t *)addr = val;
+	dmb();
+	*(volatile uint16_t *)__builtin_assume_aligned(addr, sizeof(uint16_t)) = val;
+	dmb();
 }
 
 static inline void write32(void *addr, uint32_t val)
 {
-	*(volatile uint32_t *)addr = val;
+	dmb();
+	*(volatile uint32_t *)__builtin_assume_aligned(addr, sizeof(uint32_t)) = val;
+	dmb();
 }
 
-#endif	/* __ARCH_IO_H */
+#endif /* __ARCH_MMIO_H__ */

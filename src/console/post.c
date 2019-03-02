@@ -14,12 +14,15 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/io.h>
+#include <stdint.h>
 #include <elog.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <pc80/mc146818rtc.h>
 #include <smp/spinlock.h>
+#if IS_ENABLED(CONFIG_POST_IO)
+#include <arch/io.h>
+#endif
 
 /* Write POST information */
 

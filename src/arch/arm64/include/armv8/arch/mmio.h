@@ -2,7 +2,7 @@
  * Originally imported from linux/include/asm-arm/io.h. This file has changed
  * substantially since then.
  *
- *  Copyright 2013 Google Inc.
+ *  Copyright 2014 Google Inc.
  *  Copyright (C) 1996-2000 Russell King
  *
  * This program is free software; you can redistribute it and/or modify
@@ -25,50 +25,65 @@
  *  12-Dec-1999	RMK	More cleanups
  *  18-Jun-2000 RMK	Removed virt_to_* and friends definitions
  */
-#ifndef __ARCH_IO_H
-#define __ARCH_IO_H
 
-#include <arch/cache.h>		/* for dmb() */
+#ifndef __ARCH_MMIO_H__
+#define __ARCH_MMIO_H__
+
 #include <endian.h>
 #include <stdint.h>
+#include <arch/barrier.h>
+#include <arch/lib_helpers.h>
 
 static inline uint8_t read8(const void *addr)
 {
 	dmb();
-	return *(volatile uint8_t *)__builtin_assume_aligned(addr, sizeof(uint8_t));
+	return *(volatile uint8_t *)addr;
 }
 
 static inline uint16_t read16(const void *addr)
 {
 	dmb();
-	return *(volatile uint16_t *)__builtin_assume_aligned(addr, sizeof(uint16_t));
+	return *(volatile uint16_t *)addr;
 }
 
 static inline uint32_t read32(const void *addr)
 {
 	dmb();
-	return *(volatile uint32_t *)__builtin_assume_aligned(addr, sizeof(uint32_t));
+	return *(volatile uint32_t *)addr;
+}
+
+static inline uint64_t read64(const void *addr)
+{
+	dmb();
+	return *(volatile uint64_t *)addr;
 }
 
 static inline void write8(void *addr, uint8_t val)
 {
 	dmb();
-	*(volatile uint8_t *)__builtin_assume_aligned(addr, sizeof(uint8_t)) = val;
+	*(volatile uint8_t *)addr = val;
 	dmb();
 }
 
 static inline void write16(void *addr, uint16_t val)
 {
 	dmb();
-	*(volatile uint16_t *)__builtin_assume_aligned(addr, sizeof(uint16_t)) = val;
+	*(volatile uint16_t *)addr = val;
 	dmb();
 }
 
 static inline void write32(void *addr, uint32_t val)
 {
 	dmb();
-	*(volatile uint32_t *)__builtin_assume_aligned(addr, sizeof(uint32_t)) = val;
+	*(volatile uint32_t *)addr = val;
 	dmb();
 }
 
-#endif	/* __ARCH_IO_H */
+static inline void write64(void *addr, uint64_t val)
+{
+	dmb();
+	*(volatile uint64_t *)addr = val;
+	dmb();
+}
+
+#endif /* __ARCH_MMIO_H__ */

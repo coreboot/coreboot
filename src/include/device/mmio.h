@@ -15,7 +15,7 @@
 #ifndef __DEVICE_MMIO_H__
 #define __DEVICE_MMIO_H__
 
-/* FIXME: We only want the volatile MMIO ops. */
-#include <arch/io.h>
+#include <arch/mmio.h>
+#include <endian.h>
 
 #endif

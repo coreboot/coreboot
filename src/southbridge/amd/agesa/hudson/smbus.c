@@ -16,7 +16,7 @@
 #ifndef _HUDSON_SMBUS_C_
 #define _HUDSON_SMBUS_C_
 
-#include <io.h>
+#include <arch/io.h>
 #include <stdint.h>
 #include "smbus.h"
 

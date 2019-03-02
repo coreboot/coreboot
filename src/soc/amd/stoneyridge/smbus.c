@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  */
 
-#include <io.h>
+#include <arch/io.h>
 #include <stdint.h>
 #include <soc/smbus.h>
 #include <soc/southbridge.h>

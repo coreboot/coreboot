@@ -15,7 +15,6 @@
 
 #include <string.h>
 #include <bootmode.h>
-#include <arch/io.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <soc/gpio.h>

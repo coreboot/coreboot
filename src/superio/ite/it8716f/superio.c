@@ -21,7 +21,6 @@
 #include <device/pnp.h>
 #include <console/console.h>
 #include <pc80/keyboard.h>
-#include <arch/io.h>
 #include <stdlib.h>
 #include <superio/conf_mode.h>
 

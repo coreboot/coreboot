@@ -17,7 +17,6 @@
 #include <types.h>
 #include <console/console.h>
 #include <device/device.h>
-#include <arch/io.h>
 #include <ec/compal/ene932/ec.h>
 #include "ec.h"
 

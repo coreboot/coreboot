@@ -14,7 +14,6 @@
  */
 
 #include <arch/cache.h>
-#include <arch/io.h>
 #include <boardid.h>
 #include <boot/coreboot_tables.h>
 #include <bootmode.h>

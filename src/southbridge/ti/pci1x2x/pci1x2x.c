@@ -20,7 +20,6 @@
 #include <device/pci_ops.h>
 #include <device/cardbus.h>
 #include <console/console.h>
-#include <arch/io.h>
 #include "chip.h"
 
 static void ti_pci1x2y_init(struct device *dev)

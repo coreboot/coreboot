@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/io.h>
 #include <device/pci_ops.h>
 
 static void enable_spi_prefetch(void)

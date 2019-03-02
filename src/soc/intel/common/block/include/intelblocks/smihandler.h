@@ -16,7 +16,6 @@
 #ifndef SOC_INTEL_COMMON_BLOCK_SMI_HANDLER_H
 #define SOC_INTEL_COMMON_BLOCK_SMI_HANDLER_H
 
-#include <arch/io.h>
 #include <device/device.h>
 #include <stdint.h>
 

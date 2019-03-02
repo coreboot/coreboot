@@ -19,7 +19,6 @@
 
 #include <device/device.h>
 #include <device/pnp.h>
-#include <arch/io.h>
 #include <stdlib.h>
 #include <superio/conf_mode.h>
 

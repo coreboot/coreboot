@@ -18,7 +18,6 @@
 
 #include "ec.h"
 
-#include <arch/io.h>
 #include <console/console.h>
 #include <cpu/x86/smm.h>
 #include <delay.h>

@@ -20,7 +20,6 @@
 #define _PCH_DEVFN(slot, func)	PCI_DEVFN(PCH_DEV_SLOT_ ## slot, func)
 
 #if defined(__SIMPLE_DEVICE__)
-#include <arch/io.h>
 #define _SA_DEV(slot)		PCI_DEV(0, SA_DEV_SLOT_ ## slot, 0)
 #define _PCH_DEV(slot, func)	PCI_DEV(0, PCH_DEV_SLOT_ ## slot, func)
 #else

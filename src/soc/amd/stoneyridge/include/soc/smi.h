@@ -18,7 +18,6 @@
 #ifndef __SOUTHBRIDGE_AMD_PI_STONEYRIDGE_SMI_H__
 #define __SOUTHBRIDGE_AMD_PI_STONEYRIDGE_SMI_H__
 
-#include <arch/io.h>
 
 #define SMI_GEVENTS			24
 #define SCIMAPS				58

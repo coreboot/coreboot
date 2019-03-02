@@ -30,7 +30,6 @@
  * stuff (e.g. HWM, ACPI, SMBus) more work is probably required.
  */
 
-#include <arch/io.h>
 #include <device/device.h>
 #include <device/pnp.h>
 #include <superio/conf_mode.h>

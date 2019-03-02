@@ -16,7 +16,6 @@
  */
 
 #include <arch/acpigen.h>
-#include <arch/io.h>
 #include <console/console.h>
 #include <cpu/intel/turbo.h>
 #include <cpu/x86/msr.h>

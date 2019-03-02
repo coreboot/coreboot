@@ -16,7 +16,6 @@
 
 #include <arch/acpi.h>
 #include <arch/acpigen.h>
-#include <arch/io.h>
 #include <arch/smp/mpspec.h>
 #include <cbmem.h>
 #include <device/pci_ops.h>

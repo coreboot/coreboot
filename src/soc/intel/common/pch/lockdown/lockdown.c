@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/io.h>
 #include <bootstate.h>
 #include <intelblocks/chip.h>
 #include <intelblocks/fast_spi.h>

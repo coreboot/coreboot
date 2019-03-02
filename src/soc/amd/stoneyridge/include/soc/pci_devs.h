@@ -22,7 +22,6 @@
 #include <device/device.h>
 #define _SOC_DEV(slot, func)	pcidev_on_root(slot, func)
 #else
-#include <arch/io.h>
 #define _SOC_DEV(slot, func)	PCI_DEV(0, slot, func)
 #endif
 

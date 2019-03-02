@@ -15,7 +15,6 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/io.h>
 #include <cpu/x86/msr.h>
 #include <delay.h>
 #include <device/device.h>

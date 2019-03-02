@@ -16,7 +16,6 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
-#include <arch/io.h>
 #include <southbridge/amd/common/amd_defs.h>
 #include <device/pci_def.h>
 #include <southbridge/amd/rs780/rs780.h>

@@ -18,7 +18,6 @@
 #ifndef _DENVERTON_NS_PM_H_
 #define _DENVERTON_NS_PM_H_
 
-#include <arch/io.h>
 #include <soc/pmc.h>
 #include <arch/acpi.h>
 

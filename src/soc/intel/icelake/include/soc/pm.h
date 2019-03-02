@@ -140,7 +140,6 @@
 #if !defined(__ACPI__)
 
 #include <arch/acpi.h>
-#include <arch/io.h>
 #include <soc/gpe.h>
 #include <soc/iomap.h>
 #include <soc/smbus.h>

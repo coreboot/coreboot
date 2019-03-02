@@ -15,7 +15,6 @@
  */
 
 #include <arch/acpi.h>
-#include <arch/io.h>
 #include <console/console.h>
 #include <cpu/intel/haswell/haswell.h>
 #include <cpu/x86/smm.h>

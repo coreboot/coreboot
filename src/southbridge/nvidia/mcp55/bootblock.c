@@ -18,7 +18,6 @@
  */
 
 #include <stdint.h>
-#include <arch/io.h>
 #include <device/pci_ops.h>
 #include "mcp55.h"
 

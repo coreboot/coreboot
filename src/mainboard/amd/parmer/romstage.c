@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/io.h>
 #include <device/pci_ops.h>
 #include <northbridge/amd/agesa/state_machine.h>
 #include <southbridge/amd/agesa/hudson/hudson.h>

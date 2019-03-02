@@ -18,7 +18,6 @@
 #ifndef SUPERIO_FINTEK_F71808A_INTERNAL_H
 #define SUPERIO_FINTEK_F71808A_INTERNAL_H
 
-#include <arch/io.h>
 #include <device/pnp.h>
 
 void f71808a_multifunc_init(struct device *dev);

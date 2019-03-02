@@ -15,7 +15,6 @@
 
 #include <console/console.h>
 #include <delay.h>
-#include <arch/io.h>
 #include <soc/iobp.h>
 #include <soc/rcba.h>
 

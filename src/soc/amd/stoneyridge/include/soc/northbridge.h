@@ -17,7 +17,6 @@
 #ifndef __PI_STONEYRIDGE_NORTHBRIDGE_H__
 #define __PI_STONEYRIDGE_NORTHBRIDGE_H__
 
-#include <arch/io.h>
 #include <device/device.h>
 
 /* D0F0 - Root Complex */

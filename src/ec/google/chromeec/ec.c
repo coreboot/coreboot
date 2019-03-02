@@ -18,7 +18,6 @@
 #include <cbmem.h>
 #include <console/console.h>
 #include <arch/early_variables.h>
-#include <arch/io.h>
 #include <assert.h>
 #include <bootmode.h>
 #include <bootstate.h>

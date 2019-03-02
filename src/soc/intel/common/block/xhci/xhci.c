@@ -17,7 +17,6 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <arch/io.h>
 #include <intelblocks/acpi.h>
 #include <intelblocks/xhci.h>
 

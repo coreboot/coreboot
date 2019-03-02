@@ -17,7 +17,6 @@
 #ifndef __STONEYRIDGE_H__
 #define __STONEYRIDGE_H__
 
-#include <arch/io.h>
 #include <types.h>
 #include <device/device.h>
 #include <device/pci_def.h>

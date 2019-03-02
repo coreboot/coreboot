@@ -15,7 +15,6 @@
 
 #include <types.h>
 #include <console/uart.h>
-#include <arch/io.h>
 #include <boot/coreboot_tables.h>
 #include <mainboard/addressmap.h>
 

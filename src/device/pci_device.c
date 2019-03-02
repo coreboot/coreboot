@@ -32,7 +32,6 @@
  */
 
 #include <arch/acpi.h>
-#include <arch/io.h>
 #include <device/pci_ops.h>
 #include <bootmode.h>
 #include <console/console.h>

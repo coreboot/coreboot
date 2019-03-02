@@ -16,7 +16,6 @@
  *
  */
 
-#include <arch/io.h>
 #include <boot/tables.h>
 #include <console/console.h>
 #include <cpu/cpu.h>

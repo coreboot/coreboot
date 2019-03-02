@@ -15,7 +15,6 @@
 
 #include <stddef.h>
 #include <stdint.h>
-#include <arch/io.h>
 #include <arch/cbfs.h>
 #include <arch/early_variables.h>
 #include <bootblock_common.h>

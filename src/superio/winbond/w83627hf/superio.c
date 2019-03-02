@@ -17,7 +17,6 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/io.h>
 #include <device/device.h>
 #include <device/pnp.h>
 #include <superio/conf_mode.h>

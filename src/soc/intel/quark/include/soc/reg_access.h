@@ -16,7 +16,6 @@
 #ifndef _QUARK_REG_ACCESS_H_
 #define _QUARK_REG_ACCESS_H_
 
-#include <arch/io.h>
 #include <cpu/x86/cr.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>

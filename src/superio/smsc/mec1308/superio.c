@@ -15,7 +15,6 @@
 
 /* RAM driver for the SMSC MEC1308 Super I/O chip */
 
-#include <arch/io.h>
 #include <device/device.h>
 #include <device/pnp.h>
 #include <superio/conf_mode.h>

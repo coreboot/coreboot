@@ -31,7 +31,6 @@
 #define IT8783EF_SP6	0x0b /* COM6 */
 #define IT8783EF_CIR	0x0c /* Consumer IR */
 
-#include <arch/io.h>
 #include <stdint.h>
 
 #endif /* SUPERIO_ITE_IT8783EF_H */

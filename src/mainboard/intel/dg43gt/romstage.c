@@ -14,7 +14,6 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/io.h>
 #include <device/pci_ops.h>
 #include <console/console.h>
 #include <southbridge/intel/i82801jx/i82801jx.h>

@@ -18,7 +18,6 @@
 #include <console/console.h>
 #include <delay.h>
 #include <thread.h>
-#include <arch/io.h>
 #include <arch/cpu.h>
 #include <arch/early_variables.h>
 #include <cpu/intel/fsb.h>

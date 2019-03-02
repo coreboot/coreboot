@@ -19,7 +19,6 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <device/pci_ehci.h>
-#include <arch/io.h>
 #include <soc/acpi.h>
 #include <soc/pci_devs.h>
 #include <soc/southbridge.h>

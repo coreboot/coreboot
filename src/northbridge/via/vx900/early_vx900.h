@@ -20,7 +20,6 @@
 #include "raminit.h"
 #include "vx900.h"
 
-#include <arch/io.h>
 #include <stdint.h>
 
 /* North Module devices */

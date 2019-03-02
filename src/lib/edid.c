@@ -31,7 +31,6 @@
 #include <assert.h>
 #include <stddef.h>
 #include <console/console.h>
-#include <arch/io.h>
 #include <stdint.h>
 #include <string.h>
 #include <stdlib.h>

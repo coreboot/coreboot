@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/io.h>
 #include <boardid.h>
 #include <cbfs.h>
 #include <console/console.h>

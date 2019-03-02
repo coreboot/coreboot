@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/io.h>
 #include <stdint.h>
 #include <device/device.h>
 #include <device/pci_ops.h>

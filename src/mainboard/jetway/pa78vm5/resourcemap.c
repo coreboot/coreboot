@@ -16,7 +16,6 @@
 
 
 
-#include <arch/io.h>
 #include <commonlib/helpers.h>
 #include <northbridge/amd/amdfam10/amdfam10.h>
 

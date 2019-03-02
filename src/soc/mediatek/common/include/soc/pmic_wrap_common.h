@@ -16,7 +16,6 @@
 #ifndef SOC_MEDIATEK_PMIC_WRAP_COMMON_H
 #define SOC_MEDIATEK_PMIC_WRAP_COMMON_H
 
-#include <arch/io.h>
 #include <console/console.h>
 #include <timer.h>
 

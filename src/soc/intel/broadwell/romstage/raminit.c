@@ -14,7 +14,6 @@
  */
 
 #include <arch/cbfs.h>
-#include <arch/io.h>
 #include <assert.h>
 #include <cbfs.h>
 #include <cbmem.h>

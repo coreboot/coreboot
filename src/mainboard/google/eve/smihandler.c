@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/io.h>
 #include <cpu/x86/smm.h>
 #include <ec/google/chromeec/smm.h>
 #include <gpio.h>

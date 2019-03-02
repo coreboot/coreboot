@@ -20,7 +20,6 @@
  * Todo: Add support for Fan1 and Fan3
  */
 
-#include <arch/io.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pnp.h>

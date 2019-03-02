@@ -14,7 +14,6 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/io.h>
 #include <device/pci_ops.h>
 #include <southbridge/intel/i82801gx/i82801gx.h>
 #include <northbridge/intel/pineview/pineview.h>

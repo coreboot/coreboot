@@ -18,7 +18,6 @@
 #include <cpu/x86/msr.h>
 #include <cpu/amd/mtrr.h>
 
-#include <arch/io.h>
 #include <device/pci_ops.h>
 #include <device/device.h>
 #include <device/pci.h>

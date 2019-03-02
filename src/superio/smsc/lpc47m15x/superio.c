@@ -15,7 +15,6 @@
 
 /* RAM driver for the SMSC LPC47M15X Super I/O chip */
 
-#include <arch/io.h>
 #include <device/device.h>
 #include <device/pnp.h>
 #include <superio/conf_mode.h>

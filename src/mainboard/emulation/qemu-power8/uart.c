@@ -15,7 +15,6 @@
 
 #include <types.h>
 #include <console/uart.h>
-#include <arch/io.h>
 #include <boot/coreboot_tables.h>
 
 static uint8_t *buf = (void *)0;

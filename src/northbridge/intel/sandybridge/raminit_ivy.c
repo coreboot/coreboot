@@ -18,7 +18,6 @@
 #include <console/console.h>
 #include <console/usb.h>
 #include <delay.h>
-#include <arch/io.h>
 #include <device/pci_ops.h>
 #include "raminit_native.h"
 #include "raminit_common.h"

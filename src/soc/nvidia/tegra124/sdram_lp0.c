@@ -32,7 +32,6 @@
  * Contrary to U-Boot, we transform the same macros directly into hardcoded
  * assignments (without any pesky function calls or volatile qualifiers) to give
  * the compiler as much room for optimization as possible. For that reason, we
- * also intentionally avoid <arch/io.h> read/write macros, under the assumption
  * that PMC scratch register accesses should not have side effects and can be
  * arbitrarily reordered. For the few accesses that do have side-effects, the
  * code must contain explicit memory barriers.

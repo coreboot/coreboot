@@ -14,7 +14,6 @@
  */
 
 #include <stdint.h>
-#include <arch/io.h>
 #include <bootstate.h>
 #include <console/console.h>
 #include <reg_script.h>

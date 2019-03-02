@@ -14,7 +14,6 @@
  */
 
 #include <arch/acpi.h>
-#include <arch/io.h>
 #include <console/console.h>
 #include <ec/ec.h>
 #include <ec/google/chromeec/ec.h>

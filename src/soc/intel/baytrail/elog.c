@@ -14,7 +14,6 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/io.h>
 #include <arch/acpi.h>
 #include <stdint.h>
 #include <console/console.h>

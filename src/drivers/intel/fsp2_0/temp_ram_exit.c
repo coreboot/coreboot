@@ -9,7 +9,6 @@
  * (at your option) any later version.
  */
 
-#include <arch/io.h>
 #include <arch/cpu.h>
 #include <console/console.h>
 #include <fsp/api.h>

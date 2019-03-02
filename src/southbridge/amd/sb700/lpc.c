@@ -26,7 +26,6 @@
 #include <arch/acpi.h>
 #include <arch/acpigen.h>
 #include <pc80/isa-dma.h>
-#include <arch/io.h>
 #include <arch/ioapic.h>
 #include <cpu/amd/powernow.h>
 #include "sb700.h"

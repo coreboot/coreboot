@@ -17,7 +17,6 @@
 #include "cfg.h"
 #include <OEM.h>
 
-#include <arch/io.h>
 #include <arch/acpi.h>
 
 /**

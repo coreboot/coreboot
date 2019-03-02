@@ -15,7 +15,6 @@
 
 #include <arch/cache.h>
 #include <arch/exception.h>
-#include <arch/io.h>
 #include <cbmem.h>
 #include <console/console.h>
 #include <reset.h>

@@ -19,7 +19,6 @@
 #ifndef SUPERIO_FINTEK_F81866D_INTERNAL_H
 #define SUPERIO_FINTEK_F81866D_INTERNAL_H
 
-#include <arch/io.h>
 #include <device/pnp.h>
 
 void f81866d_hwm_init(struct device *dev);

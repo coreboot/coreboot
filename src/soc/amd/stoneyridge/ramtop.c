@@ -17,7 +17,6 @@
 
 #include <assert.h>
 #include <stdint.h>
-#include <arch/io.h>
 #include <cpu/x86/msr.h>
 #include <cpu/amd/msr.h>
 #include <cpu/amd/mtrr.h>

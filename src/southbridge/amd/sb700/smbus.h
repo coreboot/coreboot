@@ -19,7 +19,6 @@
 
 #include <stdint.h>
 #include "stddef.h"
-#include <arch/io.h>
 
 #define SMBUS_IO_BASE 0xb00
 #define SMBUS_AUX_IO_BASE 0xb20

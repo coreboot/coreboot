@@ -17,7 +17,6 @@
 #include <console/console.h>
 
 #include <arch/cpu.h>
-#include <arch/io.h>
 #include "raminit.h"
 #include <northbridge/amd/amdmct/amddefs.h>
 

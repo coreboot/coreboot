@@ -17,7 +17,6 @@
 #ifndef __SOC_IMGTEC_DANUBE_SPI_H__
 #define __SOC_IMGTEC_DANUBE_SPI_H__
 
-#include <arch/io.h>
 #include <arch/types.h>
 
 #define spi_read_reg_field(regval, field)		\

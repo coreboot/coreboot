@@ -14,7 +14,6 @@
  */
 
 #include <types.h>
-#include <arch/io.h>
 #include <device/pci_ops.h>
 #include <northbridge/amd/amdmct/mct/mct_d.h>
 #include <console/console.h>

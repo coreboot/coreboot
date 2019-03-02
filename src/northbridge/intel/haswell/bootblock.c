@@ -11,7 +11,6 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/io.h>
 #include <device/pci_ops.h>
 
 /* Just re-define this instead of including haswell.h. It blows up romcc. */

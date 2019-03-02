@@ -15,7 +15,6 @@
  */
 
 #include "chip.h"
-#include <arch/io.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>

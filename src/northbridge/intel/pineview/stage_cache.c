@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/io.h>
 #include <cbmem.h>
 #include <device/pci.h>
 #include <stage_cache.h>

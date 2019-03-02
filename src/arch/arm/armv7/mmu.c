@@ -36,7 +36,6 @@
 #include <console/console.h>
 
 #include <arch/cache.h>
-#include <arch/io.h>
 
 #if IS_ENABLED(CONFIG_ARM_LPAE)
 /* See B3.6.2 of ARMv7 Architecture Reference Manual */

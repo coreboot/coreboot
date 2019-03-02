@@ -16,7 +16,6 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
-#include <arch/io.h>
 #include <cpu/x86/msr.h>
 #include <cpu/amd/mtrr.h>
 #include <southbridge/amd/common/amd_defs.h>

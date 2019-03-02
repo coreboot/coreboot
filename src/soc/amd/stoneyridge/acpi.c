@@ -22,7 +22,6 @@
 #include <console/console.h>
 #include <arch/acpi.h>
 #include <arch/acpigen.h>
-#include <arch/io.h>
 #include <device/pci_ops.h>
 #include <arch/ioapic.h>
 #include <cpu/x86/smm.h>

@@ -12,7 +12,6 @@
  */
 
 #include <cpu/intel/car/bootblock.h>
-#include <arch/io.h>
 #include <device/pci_ops.h>
 
 void bootblock_early_southbridge_init(void)

@@ -21,7 +21,6 @@
 #include <device/pci.h>
 #include <pc80/isa-dma.h>
 #include <pc80/i8259.h>
-#include <arch/io.h>
 #include <arch/ioapic.h>
 #include <intelblocks/itss.h>
 #include <intelblocks/lpc_lib.h>

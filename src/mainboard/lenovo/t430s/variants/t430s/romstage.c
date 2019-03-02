@@ -17,7 +17,6 @@
 
 #include <option.h>
 #include <arch/byteorder.h>
-#include <arch/io.h>
 #include <device/pci_ops.h>
 #include <device/pci_def.h>
 #include <northbridge/intel/sandybridge/raminit_native.h>

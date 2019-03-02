@@ -19,7 +19,6 @@
 #include <device/pnp.h>
 #include <drivers/uart/uart8250reg.h>
 #include <pc80/keyboard.h>
-#include <arch/io.h>
 #include <stdlib.h>
 #include "chip.h"
 #include "wpcd376i.h"

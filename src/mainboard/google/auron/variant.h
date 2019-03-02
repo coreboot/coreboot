@@ -14,7 +14,6 @@
 #ifndef VARIANT_H
 #define VARIANT_H
 
-#include <arch/io.h>
 #include <device/device.h>
 #include <soc/romstage.h>
 

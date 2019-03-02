@@ -17,7 +17,6 @@
  */
 
 #include <console/console.h>
-#include <arch/io.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <delay.h>

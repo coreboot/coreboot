@@ -13,7 +13,6 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
-#include <arch/io.h>
 #include <symbols.h>
 #include <console/console.h>
 #include <device/device.h>

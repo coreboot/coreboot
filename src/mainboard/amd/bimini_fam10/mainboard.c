@@ -16,7 +16,6 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
-#include <arch/io.h>
 #include <device/pci_def.h>
 #include <southbridge/amd/common/amd_defs.h>
 #include <southbridge/amd/sb800/sb800.h>

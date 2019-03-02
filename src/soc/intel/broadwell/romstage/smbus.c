@@ -14,7 +14,6 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/io.h>
 #include <device/pci_def.h>
 #include <reg_script.h>
 #include <soc/iomap.h>

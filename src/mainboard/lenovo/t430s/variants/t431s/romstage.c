@@ -17,7 +17,6 @@
 
 #include <option.h>
 #include <arch/byteorder.h>
-#include <arch/io.h>
 #include <device/pci_def.h>
 #include <console/console.h>
 #include <cbfs.h>

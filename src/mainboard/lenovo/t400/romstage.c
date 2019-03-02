@@ -16,7 +16,6 @@
 
 // __PRE_RAM__ means: use "unsigned" for device, not a struct.
 
-#include <arch/io.h>
 #include <device/pci_ops.h>
 #include <console/console.h>
 #include <southbridge/intel/i82801ix/i82801ix.h>

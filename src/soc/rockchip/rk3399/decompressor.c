@@ -14,7 +14,6 @@
  *
  */
 
-#include <arch/io.h>
 #include <arch/mmu.h>
 #include <bootblock_common.h>
 #include <soc/mmu_operations.h>

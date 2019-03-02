@@ -18,7 +18,6 @@
 
 #include <types.h>
 #include <string.h>
-#include <arch/io.h>
 #include <arch/acpi.h>
 #include <device/device.h>
 #include <device/pci.h>

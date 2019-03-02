@@ -16,7 +16,6 @@
 #include <string.h>
 #include <arch/acpi.h>
 #include <arch/ioapic.h>
-#include <arch/io.h>
 #include <device/pci.h>
 
 extern u32 apicid_sb900;

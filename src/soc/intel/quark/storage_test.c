@@ -14,7 +14,6 @@
  */
 
 #include <arch/early_variables.h>
-#include <arch/io.h>
 #include <device/pci_ops.h>
 #include <assert.h>
 #include <cbmem.h>

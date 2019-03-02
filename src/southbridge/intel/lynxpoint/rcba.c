@@ -14,7 +14,6 @@
  */
 
 #include <device/pci_def.h>
-#include <arch/io.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include "pch.h"

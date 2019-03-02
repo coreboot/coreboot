@@ -14,7 +14,6 @@
 
 #define __SIMPLE_DEVICE__
 
-#include <arch/io.h>
 #include <device/pci_ops.h>
 #include <reset.h>
 #include <device/pci.h>

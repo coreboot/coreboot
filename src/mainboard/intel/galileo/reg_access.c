@@ -16,7 +16,6 @@
 #define __SIMPLE_DEVICE__
 
 #include <assert.h>
-#include <arch/io.h>
 #include <console/console.h>
 #include <device/i2c_simple.h>
 #include <soc/pci_devs.h>

@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/io.h>
 #include <commonlib/sdhci.h>
 #include <commonlib/storage.h>
 #include <device/device.h>

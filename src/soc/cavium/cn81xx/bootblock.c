@@ -16,7 +16,6 @@
  * Derived from Cavium's BSD-3 Clause OCTEONTX-SDK-6.2.0.
  */
 
-#include <arch/io.h>
 #include <commonlib/helpers.h>
 #include <soc/bootblock.h>
 #include <soc/sysreg.h>

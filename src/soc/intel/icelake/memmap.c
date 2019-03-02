@@ -14,7 +14,6 @@
  */
 
 #include <arch/ebda.h>
-#include <arch/io.h>
 #include <cbmem.h>
 #include <chip.h>
 #include <console/console.h>

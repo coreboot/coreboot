@@ -19,7 +19,6 @@
 #include <device/pci_def.h>
 #include <arch/ioapic.h>
 #include "lpc.h"
-#include <arch/io.h>
 #include <device/pci_ops.h>
 
 void lpc_read_resources(struct device *dev)

@@ -14,7 +14,6 @@
  */
 
 #include <arch/acpi.h>
-#include <arch/io.h>
 #include <bootmode.h>
 #include <types.h>
 #include <console/console.h>

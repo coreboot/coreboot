@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/io.h>
 #include <gpio.h>
 #include <soc/gpio.h>
 #include <soc/grf.h>

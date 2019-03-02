@@ -19,7 +19,6 @@
 
 #if !defined(__ASSEMBLER__) && !defined(__ACPI__)
 #if !defined(__PRE_RAM__)
-#include <arch/io.h>
 #include <device/device.h>
 #include "chip.h"
 

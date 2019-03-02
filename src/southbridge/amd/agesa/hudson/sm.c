@@ -18,7 +18,6 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <device/smbus.h>
-#include <arch/io.h>
 #include <cpu/x86/lapic.h>
 #include <arch/ioapic.h>
 #include <stdlib.h>

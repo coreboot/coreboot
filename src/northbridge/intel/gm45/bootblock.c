@@ -11,7 +11,6 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/io.h>
 #include <device/pci_ops.h>
 
 /* Just re-define these instead of including gm45.h. It blows up romcc. */

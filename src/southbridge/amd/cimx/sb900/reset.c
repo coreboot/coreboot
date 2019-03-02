@@ -16,7 +16,6 @@
 // Use simple device model for this file even in ramstage
 #define __SIMPLE_DEVICE__
 
-#include <arch/io.h>
 #include <device/pci_ops.h>
 #include <cf9_reset.h>
 #include <reset.h>

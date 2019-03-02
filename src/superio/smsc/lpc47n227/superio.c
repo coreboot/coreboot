@@ -16,7 +16,6 @@
 
 /* RAM-based driver for SMSC LPC47N227 Super I/O chip. */
 
-#include <arch/io.h>
 #include <device/device.h>
 #include <device/pnp.h>
 #include <console/console.h>

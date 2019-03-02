@@ -15,7 +15,6 @@
  */
 
 #include <string.h>
-#include <arch/io.h>
 #include <cbmem.h>
 #include <device/pci_def.h>
 #include "northbridge.h"

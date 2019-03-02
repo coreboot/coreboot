@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/io.h>
 #include <assert.h>
 #include <console/console.h>
 #include <soc/addressmap.h>

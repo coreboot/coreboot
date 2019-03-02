@@ -17,7 +17,6 @@
 #include <commonlib/helpers.h>
 #include <console/console.h>
 #include <arch/acpi.h>
-#include <arch/io.h>
 #include <stdint.h>
 #include <delay.h>
 #include <cpu/intel/haswell/haswell.h>

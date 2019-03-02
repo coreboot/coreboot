@@ -15,7 +15,6 @@
  */
 
 #include <stddef.h>
-#include <arch/io.h>
 #include <arch/cbfs.h>
 #include <console/console.h>
 #include <cpu/x86/mtrr.h>

@@ -14,7 +14,6 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/io.h>
 #include <stdlib.h>
 #include <device/pci_ops.h>
 #include "sandybridge.h"

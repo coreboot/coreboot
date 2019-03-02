@@ -16,7 +16,6 @@
 #ifndef SOC_INTEL_COMMON_BLOCK_UART_H
 #define SOC_INTEL_COMMON_BLOCK_UART_H
 
-#include <arch/io.h>
 #include <console/uart.h>
 #include <device/device.h>
 #include <intelblocks/gpio.h>

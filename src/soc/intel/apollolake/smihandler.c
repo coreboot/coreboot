@@ -14,7 +14,6 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/io.h>
 #include <cpu/x86/smm.h>
 #include <intelblocks/smihandler.h>
 #include <soc/gpio.h>

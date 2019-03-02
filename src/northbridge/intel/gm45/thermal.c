@@ -17,7 +17,6 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <string.h>
-#include <arch/io.h>
 #include <device/pci_def.h>
 #include <spd.h>
 #include "delay.h"

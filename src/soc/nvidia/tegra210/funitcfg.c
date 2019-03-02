@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/io.h>
 #include <soc/addressmap.h>
 #include <soc/clock.h>
 #include <soc/funitcfg.h>

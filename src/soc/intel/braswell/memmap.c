@@ -14,7 +14,6 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/io.h>
 #include <cbmem.h>
 #include <fsp/memmap.h>
 #include <soc/iosf.h>

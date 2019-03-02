@@ -27,7 +27,6 @@
  * SUCH DAMAGE.
  */
 
-#include <arch/io.h>
 #include <assert.h>
 #include <console/console.h>
 #include <delay.h>

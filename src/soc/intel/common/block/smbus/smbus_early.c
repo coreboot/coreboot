@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/io.h>
 #include <device/pci_def.h>
 #include <device/early_smbus.h>
 #include <intelblocks/smbus.h>

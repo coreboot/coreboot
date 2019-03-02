@@ -14,7 +14,6 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/io.h>
 #include <device/pci_ops.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/msr.h>

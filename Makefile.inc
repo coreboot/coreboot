@@ -382,7 +382,6 @@ COREBOOT_EXPORTS += COREBOOT_EXTRA_VERSION
 endif
 
 CPPFLAGS_common := -Isrc -Isrc/include -Isrc/commonlib/include -I$(obj)
-CPPFLAGS_common += -Isrc/device/oprom/include
 VBOOT_SOURCE ?= 3rdparty/vboot
 CPPFLAGS_common += -I$(VBOOT_SOURCE)/firmware/include
 CPPFLAGS_common += -include $(src)/include/kconfig.h
@@ -390,6 +389,10 @@ CPPFLAGS_common += -include $(src)/include/rules.h
 CPPFLAGS_common += -include $(src)/commonlib/include/commonlib/compiler.h
 CPPFLAGS_common += -I3rdparty
 CPPFLAGS_common += -D__BUILD_DIR__=\"$(obj)\"
+
+ifeq ($(CONFIG_PCI_OPTION_ROM_RUN_YABEL)$(CONFIG_PCI_OPTION_ROM_RUN_REALMODE),y)
+CPPFLAGS_ramstage += -Isrc/device/oprom/include
+endif
 
 CFLAGS_common += -pipe -g -nostdinc -std=gnu11
 CFLAGS_common += -nostdlib -Wall -Wundef -Wstrict-prototypes -Wmissing-prototypes

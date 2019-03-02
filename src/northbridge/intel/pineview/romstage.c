@@ -17,6 +17,7 @@
  * so this one is named with prefix mainboard.
  */
 
+#include <arch/io.h>
 #include <lib.h>
 #include <timestamp.h>
 #include <console/console.h>

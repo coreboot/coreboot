@@ -8,6 +8,7 @@
 #define CPU_AMD_VR_H
 
 #include <stdint.h>
+#include <arch/io.h>
 
 #define VRC_INDEX				0xAC1C	// Index register
 #define VRC_DATA				0xAC1E	// Data register

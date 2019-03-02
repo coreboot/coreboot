@@ -16,6 +16,7 @@
  */
 
 #include <device/pci_def.h>
+#include <arch/io.h>
 #include <device/device.h>
 #include <ec/lenovo/pmh7/pmh7.h>
 #include <ec/lenovo/h8/h8.h>

@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/io.h>
 #include <inttypes.h>
 #include <string.h>
 #include "mct_d.h"

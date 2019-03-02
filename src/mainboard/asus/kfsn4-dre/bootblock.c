@@ -15,6 +15,7 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/io.h>
 #include <pc80/mc146818rtc.h>
 
 #include <superio/winbond/common/winbond.h>

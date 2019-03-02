@@ -14,6 +14,7 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/io.h>
 #include <inttypes.h>
 #include <console/console.h>
 #include <device/pci_ops.h>

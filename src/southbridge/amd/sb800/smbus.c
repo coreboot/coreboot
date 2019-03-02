@@ -16,6 +16,7 @@
 #ifndef _SB800_SMBUS_C_
 #define _SB800_SMBUS_C_
 
+#include <arch/io.h>
 #include "smbus.h"
 
 static int smbus_wait_until_ready(u32 smbus_io_base)

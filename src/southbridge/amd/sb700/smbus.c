@@ -16,6 +16,7 @@
 #ifndef _SB700_SMBUS_C_
 #define _SB700_SMBUS_C_
 
+#include <arch/io.h>
 #include "smbus.h"
 
 extern uint8_t amd_sb700_aux_smbus;

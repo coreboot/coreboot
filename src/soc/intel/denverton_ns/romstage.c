@@ -14,6 +14,7 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/io.h>
 #include <cbmem.h>
 #include <cf9_reset.h>
 #include <console/console.h>

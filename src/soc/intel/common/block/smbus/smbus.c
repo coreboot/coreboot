@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/io.h>
 #include <device/device.h>
 #include <device/path.h>
 #include <device/smbus.h>

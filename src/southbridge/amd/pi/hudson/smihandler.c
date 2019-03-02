@@ -18,6 +18,7 @@
  * SMI handler for Hudson southbridges
  */
 
+#include <arch/io.h>
 #include "hudson.h"
 #include "smi.h"
 

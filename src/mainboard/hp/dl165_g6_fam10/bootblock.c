@@ -11,6 +11,7 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/io.h>
 #include <device/pnp_def.h>
 
 #define SCH4307_CONFIG_PORT     0x162e

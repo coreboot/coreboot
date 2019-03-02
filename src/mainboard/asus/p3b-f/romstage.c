@@ -14,6 +14,7 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/io.h>
 #include <device/pci_def.h>
 #include <console/console.h>
 #include <southbridge/intel/i82371eb/i82371eb.h>

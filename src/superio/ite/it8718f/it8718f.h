@@ -17,7 +17,7 @@
 #ifndef SUPERIO_ITE_IT8718F_H
 #define SUPERIO_ITE_IT8718F_H
 
-#include <arch/io.h>
+#include <device/pnp_type.h>
 
 /* Datasheet: http://www.ite.com.tw/product_info/PC/Brief-IT8718_2.asp */
 

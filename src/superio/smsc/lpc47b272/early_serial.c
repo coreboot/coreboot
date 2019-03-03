@@ -17,6 +17,7 @@
 /* Pre-RAM driver for SMSC LPC47B272 Super I/O chip. */
 
 #include <arch/io.h>
+#include <device/pnp_ops.h>
 #include <device/pnp.h>
 #include <stdint.h>
 #include "lpc47b272.h"

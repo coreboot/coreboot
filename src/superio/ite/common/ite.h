@@ -17,7 +17,7 @@
 #ifndef SUPERIO_ITE_COMMON_PRE_RAM_H
 #define SUPERIO_ITE_COMMON_PRE_RAM_H
 
-#include <arch/io.h>
+#include <device/pnp_type.h>
 #include <stdint.h>
 
 #define ITE_UART_CLK_PREDIVIDE_48 0x00 /* default */

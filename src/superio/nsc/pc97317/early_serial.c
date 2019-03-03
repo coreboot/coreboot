@@ -15,6 +15,7 @@
  */
 
 #include <arch/io.h>
+#include <device/pnp_ops.h>
 #include <device/pnp.h>
 #include <stdint.h>
 #include "pc97317.h"

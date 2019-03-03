@@ -17,6 +17,8 @@
 #ifndef SUPERIO_INTEL_I8900_I8900_H
 #define SUPERIO_INTEL_I8900_I8900_H
 
+#include <device/pnp_type.h>
+
 /*
  * The SIW ("Serial I/O and Watchdog Timer") integrated into the i8900 is
  * very similar to a Super I/O, both in functionality and config mechanism.

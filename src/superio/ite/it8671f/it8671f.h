@@ -17,7 +17,7 @@
 #ifndef SUPERIO_ITE_IT8671F_H
 #define SUPERIO_ITE_IT8671F_H
 
-#include <arch/io.h>
+#include <device/pnp_type.h>
 #include <stdint.h>
 
 /* Datasheet: Not available online, got it from ITE per request. */

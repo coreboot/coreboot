@@ -17,7 +17,7 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/io.h>
+#include <device/pnp_ops.h>
 #include <device/pnp_def.h>
 #include <stdint.h>
 #include "nsc.h"

@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/io.h>
+#include <device/pnp_type.h>
 #include <superio/ite/common/ite.h>
 #include "it8718f.h"
 

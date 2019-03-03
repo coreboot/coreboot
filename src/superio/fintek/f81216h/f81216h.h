@@ -17,6 +17,8 @@
 #ifndef SUPERIO_FINTEK_F81216H_H
 #define SUPERIO_FINTEK_F81216H_H
 
+#include <device/pnp_type.h>
+
 /* Logical Device Numbers (LDN). */
 #define F81216H_SP1    0x00	/* UART1 (+CIR mode) */
 #define F81216H_SP2    0x01	/* UART2 */

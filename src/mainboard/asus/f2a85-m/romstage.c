@@ -15,6 +15,7 @@
  */
 
 #include <arch/io.h>
+#include <device/pnp_type.h>
 #include <device/pci_ops.h>
 
 #include <northbridge/amd/agesa/state_machine.h>

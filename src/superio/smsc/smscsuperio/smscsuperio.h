@@ -17,7 +17,7 @@
 #ifndef SUPERIO_SMSC_SMSCSUPERIO_H
 #define SUPERIO_SMSC_SMSCSUPERIO_H
 
-#include <arch/io.h>
+#include <device/pnp_type.h>
 #include <stdint.h>
 
 /* All known/supported SMSC Super I/Os have the same logical device IDs

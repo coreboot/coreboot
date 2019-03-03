@@ -27,7 +27,7 @@
 #define LPC47B397_HWM		8	/* HW Monitor */
 #define LPC47B397_RT		10	/* Runtime reg*/
 
-#include <arch/io.h>
+#include <device/pnp_type.h>
 #include <stdint.h>
 
 void lpc47b397_enable_serial(pnp_devfn_t dev, u16 iobase);

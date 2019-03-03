@@ -17,7 +17,7 @@
 /* Pre-RAM driver for the Winbond WPCD376I Super I/O chip. */
 
 
-#include <arch/io.h>
+#include <device/pnp_ops.h>
 #include <device/pnp_def.h>
 #include "wpcd376i.h"
 

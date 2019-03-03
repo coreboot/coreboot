@@ -16,6 +16,7 @@
  */
 
 #include <arch/io.h>
+#include <device/pnp_ops.h>
 #include <device/pnp_def.h>
 #include <stdint.h>
 

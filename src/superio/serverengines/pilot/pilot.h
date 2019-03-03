@@ -18,6 +18,8 @@
 #ifndef SUPERIO_SERVERENGINES_PILOT_PILOT_H
 #define SUPERIO_SERVERENGINES_PILOT_PILOT_H
 
+#include <device/pnp_type.h>
+
 /* PILOT Super I/O is only based on LPC observation done on factory system. */
 
 #define PILOT_LD1 0x01 /* Logical device 1 */

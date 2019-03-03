@@ -18,7 +18,7 @@
 #ifndef SUPERIO_WINBOND_WPCD376I_WPCD376I_H
 #define SUPERIO_WINBOND_WPCD376I_WPCD376I_H
 
-#include <arch/io.h>
+#include <device/pnp_type.h>
 
 /* Logical Device Numbers (LDN). */
 #define WPCD376I_FDC	0x00  /* Floppy */

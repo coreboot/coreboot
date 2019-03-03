@@ -19,7 +19,7 @@
 
 #define BLUBB_DEV PNP_DEV(port, 0x04)
 
-#include <arch/io.h>
+#include <device/pnp_ops.h>
 #include <console/console.h>
 #include <device/pnp.h>
 #include "pilot.h"

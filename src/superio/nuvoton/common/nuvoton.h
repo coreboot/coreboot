@@ -18,7 +18,7 @@
 #ifndef SUPERIO_NUVOTON_COMMON_PRE_RAM_H
 #define SUPERIO_NUVOTON_COMMON_PRE_RAM_H
 
-#include <arch/io.h>
+#include <device/pnp_type.h>
 #include <stdint.h>
 
 void nuvoton_pnp_enter_conf_state(pnp_devfn_t dev);

@@ -26,7 +26,7 @@
 #define DME1737_KBC		7	/* Keyboard & Mouse */
 #define DME1737_RT		10	/* Runtime reg*/
 
-#include <arch/io.h>
+#include <device/pnp_type.h>
 #include <stdint.h>
 
 void dme1737_enable_serial(pnp_devfn_t dev, u16 iobase);

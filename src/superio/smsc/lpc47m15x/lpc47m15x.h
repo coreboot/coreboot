@@ -27,7 +27,7 @@
 
 #define LPC47M15X2_MAX_CONFIG_REGISTER	0x5F
 
-#include <arch/io.h>
+#include <device/pnp_type.h>
 #include <stdint.h>
 
 void lpc47m15x_enable_serial(pnp_devfn_t dev, u16 iobase);

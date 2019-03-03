@@ -27,7 +27,7 @@
 #define PC97317_GPIO 0x07
 #define PC97317_PM   0x08 /* Power Management */
 
-#include <arch/io.h>
+#include <device/pnp_type.h>
 #include <stdint.h>
 
 void pc97317_enable_serial(pnp_devfn_t dev, u16 iobase);

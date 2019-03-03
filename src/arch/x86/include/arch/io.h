@@ -202,11 +202,9 @@ static __always_inline void write64(volatile void *addr,
 }
 #endif
 
-typedef u32 pnp_devfn_t;
+#include <device/pnp_type.h>
 
 #ifdef __SIMPLE_DEVICE__
-
-#define PNP_DEV(PORT, FUNC) (((PORT) << 8) | (FUNC))
 
 /* Generic functions for pnp devices */
 static __always_inline void pnp_write_config(

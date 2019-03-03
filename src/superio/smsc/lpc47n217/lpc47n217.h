@@ -17,7 +17,7 @@
 #ifndef SUPERIO_SMSC_LPC47N217_LPC47N217_H
 #define SUPERIO_SMSC_LPC47N217_LPC47N217_H
 
-#include <arch/io.h>
+#include <device/pnp_type.h>
 #include <stdint.h>
 
 /*

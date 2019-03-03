@@ -16,6 +16,8 @@
 #ifndef SUPERIO_SMSC_LPC47N227_LPC47N227_H
 #define SUPERIO_SMSC_LPC47N227_LPC47N227_H
 
+#include <device/pnp_type.h>
+
 /*
  * Since the LPC47N227 does not have logical devices but a flat configuration
  * space, these are arbitrary, but must match declarations in the mainboard

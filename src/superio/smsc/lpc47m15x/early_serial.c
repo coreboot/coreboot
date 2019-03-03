@@ -16,6 +16,7 @@
 /* Pre-RAM driver for the SMSC LPC47M15X Super I/O chip */
 
 #include <arch/io.h>
+#include <device/pnp_ops.h>
 #include <device/pnp.h>
 #include <stdint.h>
 

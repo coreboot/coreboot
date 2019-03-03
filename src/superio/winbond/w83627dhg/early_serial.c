@@ -16,6 +16,7 @@
  */
 
 #include <arch/io.h>
+#include <device/pnp_ops.h>
 #include <stdint.h>
 #include "w83627dhg.h"
 

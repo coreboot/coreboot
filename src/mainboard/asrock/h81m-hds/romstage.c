@@ -18,6 +18,7 @@
 #include <stdint.h>
 #include <cpu/intel/romstage.h>
 #include <cpu/intel/haswell/haswell.h>
+#include <device/pnp_ops.h>
 #include <northbridge/intel/haswell/haswell.h>
 #include <northbridge/intel/haswell/pei_data.h>
 #include <southbridge/intel/common/gpio.h>

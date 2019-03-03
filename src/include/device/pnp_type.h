@@ -1,8 +1,6 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2012 Advanced Micro Devices, Inc.
- *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; version 2 of the License.
@@ -13,18 +11,13 @@
  * GNU General Public License for more details.
  */
 
-#ifndef SUPERIO_SMSC_SIO1306_H
-#define SUPERIO_SMSC_SIO1306_H
+#ifndef __DEVICE_PNP_TYPE_H__
+#define __DEVICE_PNP_TYPE_H__
 
-#define SIO1036_SP1		0 /* Com1 */
-
-#define UART_POWER_DOWN		(1 << 7)
-#define LPT_POWER_DOWN		(1 << 2)
-#define IR_OUTPUT_MUX		(1 << 6)
-
-#include <device/pnp_type.h>
 #include <stdint.h>
 
-void sio1036_enable_serial(pnp_devfn_t dev, u16 iobase);
+typedef u32 pnp_devfn_t;
 
-#endif /* SUPERIO_SMSC_SIO1306_H */
+#define PNP_DEV(PORT, FUNC) (((PORT) << 8) | (FUNC))
+
+#endif /* __DEVICE_PNP_TYPE_H__ */

@@ -16,6 +16,7 @@
  */
 
 #include <arch/io.h>
+#include <device/pnp_ops.h>
 #include <pc80/mc146818rtc.h>
 
 #include <superio/winbond/common/winbond.h>

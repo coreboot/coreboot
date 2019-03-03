@@ -15,6 +15,7 @@
  */
 
 #include <arch/io.h>
+#include <device/pnp_type.h>
 #include <device/pnp.h>
 #include <stdint.h>
 #include "it8671f.h"

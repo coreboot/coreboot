@@ -17,7 +17,7 @@
 #ifndef SUPERIO_SMSC_KBC1100_H
 #define SUPERIO_SMSC_KBC1100_H
 
-#include <arch/io.h>
+#include <device/pnp_type.h>
 #include <stdint.h>
 
 #define KBC1100_PM1              1            /* PM1 */

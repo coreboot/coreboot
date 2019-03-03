@@ -17,7 +17,7 @@
 #ifndef SUPERIO_WINBOND_COMMON_PRE_RAM_H
 #define SUPERIO_WINBOND_COMMON_PRE_RAM_H
 
-#include <arch/io.h>
+#include <device/pnp_type.h>
 #include <stdint.h>
 
 void winbond_enable_serial(pnp_devfn_t dev, uint16_t iobase);

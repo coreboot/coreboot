@@ -126,7 +126,7 @@ enum thermal_mode {
 /* GPIO Mode: 0: input mode, 1: output mode */
 #define GPIO_REG_OUTPUT(x)   (0xc8 + (x))
 
-#include <arch/io.h>
+#include <device/pnp_type.h>
 #include <stdint.h>
 
 u8 it8772f_sio_read(pnp_devfn_t dev, u8 reg);

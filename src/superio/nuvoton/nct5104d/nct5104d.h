@@ -18,6 +18,8 @@
 #ifndef SUPERIO_NUVOTON_NCT5104D_H
 #define SUPERIO_NUVOTON_NCT5104D_H
 
+#include <device/pnp_type.h>
+
 /* SIO global configuration */
 #define IRQ_TYPE_SEL_CR10   0x10     /* UARTA,UARTB */
 #define IRQ_TYPE_SEL_CR11   0x11     /* SMI,UARTC,UARTD,WDTO */

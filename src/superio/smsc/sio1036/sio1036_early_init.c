@@ -16,6 +16,7 @@
 /* Pre-RAM driver for the SMSC KBC1100 Super I/O chip */
 
 #include <arch/io.h>
+#include <device/pnp_ops.h>
 #include <stdint.h>
 
 #include "sio1036.h"

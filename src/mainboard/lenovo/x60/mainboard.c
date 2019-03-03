@@ -34,9 +34,7 @@
 		.space_id = ACPI_ADDRESS_SPACE_FIXED,	    \
 		.bit_width = ACPI_FFIXEDHW_VENDOR_INTEL,    \
 		.bit_offset = ACPI_FFIXEDHW_CLASS_MWAIT,    \
-		{					    \
-			.resv = 0,			    \
-		},					    \
+		.access_size = 0,			    \
 		.addrl = (((state) << 4) | (sub_state)),    \
 		.addrh = 0,				    \
 			 }

@@ -103,10 +103,7 @@ typedef struct acpi_gen_regaddr {
 	u8  space_id;		/* Address space ID */
 	u8  bit_width;		/* Register size in bits */
 	u8  bit_offset;		/* Register bit offset */
-	union {
-		u8  resv;		/* Reserved in ACPI 2.0 - 2.0b */
-		u8  access_size;	/* Access size since ACPI 2.0c */
-	};
+	u8  access_size;	/* Access size since ACPI 2.0c */
 	u32 addrl;		/* Register address, low 32 bits */
 	u32 addrh;		/* Register address, high 32 bits */
 } __packed acpi_addr_t;

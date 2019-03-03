@@ -114,7 +114,7 @@ static void write_cstates_for_core(int coreID)
 		cstate.resource.bit_offset = 0;
 		cstate.resource.addrl = rdmsr(MSR_CSTATE_ADDRESS).lo + 1;
 		cstate.resource.addrh = 0;
-		cstate.resource.resv = 1;
+		cstate.resource.access_size = 1;
 	} else {
 		cstate.ctype = 2;
 		cstate.latency = 75;
@@ -124,7 +124,7 @@ static void write_cstates_for_core(int coreID)
 		cstate.resource.bit_offset = 0;
 		cstate.resource.addrl = rdmsr(MSR_CSTATE_ADDRESS).lo;
 		cstate.resource.addrh = 0;
-		cstate.resource.resv = 1;
+		cstate.resource.access_size = 1;
 	}
 
 	acpigen_write_CST_package(&cstate, cstate_count);

@@ -580,14 +580,12 @@ void acpigen_write_empty_PTC(void)
 	})
 */
 	acpi_addr_t addr = {
-		.space_id   = ACPI_ADDRESS_SPACE_FIXED,
-		.bit_width  = 0,
-		.bit_offset = 0,
-		{
-			.resv       = 0
-		},
-		.addrl      = 0,
-		.addrh      = 0,
+		.space_id    = ACPI_ADDRESS_SPACE_FIXED,
+		.bit_width   = 0,
+		.bit_offset  = 0,
+		.access_size = 0,
+		.addrl       = 0,
+		.addrh       = 0,
 	};
 
 	acpigen_write_name("_PTC");
@@ -845,7 +843,7 @@ static void acpigen_write_register(const acpi_addr_t *addr)
 	acpigen_emit_byte(addr->space_id);	/* Address Space ID */
 	acpigen_emit_byte(addr->bit_width);	/* Register Bit Width */
 	acpigen_emit_byte(addr->bit_offset);	/* Register Bit Offset */
-	acpigen_emit_byte(addr->resv);		/* Register Access Size */
+	acpigen_emit_byte(addr->access_size);	/* Register Access Size */
 	acpigen_emit_dword(addr->addrl);	/* Register Address Low */
 	acpigen_emit_dword(addr->addrh);	/* Register Address High */
 }

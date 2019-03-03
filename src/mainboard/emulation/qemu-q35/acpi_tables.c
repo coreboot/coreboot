@@ -103,7 +103,7 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 	fadt->reset_reg.space_id = ACPI_ADDRESS_SPACE_IO;
 	fadt->reset_reg.bit_width = 8;
 	fadt->reset_reg.bit_offset = 0;
-	fadt->reset_reg.resv = 0;
+	fadt->reset_reg.access_size = 0;
 	fadt->reset_reg.addrl = 0xcf9;
 	fadt->reset_reg.addrh = 0;
 	fadt->reset_value = 0x06;
@@ -117,14 +117,14 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 	fadt->x_pm1a_evt_blk.space_id = 1;
 	fadt->x_pm1a_evt_blk.bit_width = 32;
 	fadt->x_pm1a_evt_blk.bit_offset = 0;
-	fadt->x_pm1a_evt_blk.resv = 0;
+	fadt->x_pm1a_evt_blk.access_size = 0;
 	fadt->x_pm1a_evt_blk.addrl = pmbase;
 	fadt->x_pm1a_evt_blk.addrh = 0x0;
 
 	fadt->x_pm1b_evt_blk.space_id = 0;
 	fadt->x_pm1b_evt_blk.bit_width = 0;
 	fadt->x_pm1b_evt_blk.bit_offset = 0;
-	fadt->x_pm1b_evt_blk.resv = 0;
+	fadt->x_pm1b_evt_blk.access_size = 0;
 	fadt->x_pm1b_evt_blk.addrl = 0x0;
 	fadt->x_pm1b_evt_blk.addrh = 0x0;
 
@@ -132,42 +132,42 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 	fadt->x_pm1a_cnt_blk.bit_width = 16; /* Upper word is reserved and
 						Linux complains about 32 bit. */
 	fadt->x_pm1a_cnt_blk.bit_offset = 0;
-	fadt->x_pm1a_cnt_blk.resv = 0;
+	fadt->x_pm1a_cnt_blk.access_size = 0;
 	fadt->x_pm1a_cnt_blk.addrl = pmbase + 0x4;
 	fadt->x_pm1a_cnt_blk.addrh = 0x0;
 
 	fadt->x_pm1b_cnt_blk.space_id = 0;
 	fadt->x_pm1b_cnt_blk.bit_width = 0;
 	fadt->x_pm1b_cnt_blk.bit_offset = 0;
-	fadt->x_pm1b_cnt_blk.resv = 0;
+	fadt->x_pm1b_cnt_blk.access_size = 0;
 	fadt->x_pm1b_cnt_blk.addrl = 0x0;
 	fadt->x_pm1b_cnt_blk.addrh = 0x0;
 
 	fadt->x_pm2_cnt_blk.space_id = 1;
 	fadt->x_pm2_cnt_blk.bit_width = 8;
 	fadt->x_pm2_cnt_blk.bit_offset = 0;
-	fadt->x_pm2_cnt_blk.resv = 0;
+	fadt->x_pm2_cnt_blk.access_size = 0;
 	fadt->x_pm2_cnt_blk.addrl = pmbase + 0x50;
 	fadt->x_pm2_cnt_blk.addrh = 0x0;
 
 	fadt->x_pm_tmr_blk.space_id = 1;
 	fadt->x_pm_tmr_blk.bit_width = 32;
 	fadt->x_pm_tmr_blk.bit_offset = 0;
-	fadt->x_pm_tmr_blk.resv = 0;
+	fadt->x_pm_tmr_blk.access_size = 0;
 	fadt->x_pm_tmr_blk.addrl = pmbase + 0x8;
 	fadt->x_pm_tmr_blk.addrh = 0x0;
 
 	fadt->x_gpe0_blk.space_id = 1;
 	fadt->x_gpe0_blk.bit_width = 128;
 	fadt->x_gpe0_blk.bit_offset = 0;
-	fadt->x_gpe0_blk.resv = 0;
+	fadt->x_gpe0_blk.access_size = 0;
 	fadt->x_gpe0_blk.addrl = pmbase + 0x20;
 	fadt->x_gpe0_blk.addrh = 0x0;
 
 	fadt->x_gpe1_blk.space_id = 0;
 	fadt->x_gpe1_blk.bit_width = 0;
 	fadt->x_gpe1_blk.bit_offset = 0;
-	fadt->x_gpe1_blk.resv = 0;
+	fadt->x_gpe1_blk.access_size = 0;
 	fadt->x_gpe1_blk.addrl = 0x0;
 	fadt->x_gpe1_blk.addrh = 0x0;
 

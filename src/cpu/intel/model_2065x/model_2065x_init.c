@@ -49,7 +49,7 @@ static acpi_cstate_t cstate_map[] = {
 			.space_id = ACPI_ADDRESS_SPACE_FIXED,
 			.bit_width = ACPI_FFIXEDHW_VENDOR_INTEL,
 			.bit_offset = ACPI_FFIXEDHW_CLASS_MWAIT,
-			.resv = ACPI_FFIXEDHW_FLAG_HW_COORD,
+			.access_size = ACPI_FFIXEDHW_FLAG_HW_COORD,
 		}
 	},
 	{	/* 2: C1E */
@@ -60,7 +60,7 @@ static acpi_cstate_t cstate_map[] = {
 			.space_id = ACPI_ADDRESS_SPACE_FIXED,
 			.bit_width = ACPI_FFIXEDHW_VENDOR_INTEL,
 			.bit_offset = ACPI_FFIXEDHW_CLASS_MWAIT,
-			.resv = ACPI_FFIXEDHW_FLAG_HW_COORD,
+			.access_size = ACPI_FFIXEDHW_FLAG_HW_COORD,
 		}
 	},
 	{	/* 3: C3 */
@@ -71,7 +71,7 @@ static acpi_cstate_t cstate_map[] = {
 			.space_id = ACPI_ADDRESS_SPACE_FIXED,
 			.bit_width = ACPI_FFIXEDHW_VENDOR_INTEL,
 			.bit_offset = ACPI_FFIXEDHW_CLASS_MWAIT,
-			.resv = ACPI_FFIXEDHW_FLAG_HW_COORD,
+			.access_size = ACPI_FFIXEDHW_FLAG_HW_COORD,
 		}
 	},
 	{	/* 4: C6 */
@@ -82,7 +82,7 @@ static acpi_cstate_t cstate_map[] = {
 			.space_id = ACPI_ADDRESS_SPACE_FIXED,
 			.bit_width = ACPI_FFIXEDHW_VENDOR_INTEL,
 			.bit_offset = ACPI_FFIXEDHW_CLASS_MWAIT,
-			.resv = ACPI_FFIXEDHW_FLAG_HW_COORD,
+			.access_size = ACPI_FFIXEDHW_FLAG_HW_COORD,
 		}
 	},
 	{	/* 5: C7 */
@@ -93,7 +93,7 @@ static acpi_cstate_t cstate_map[] = {
 			.space_id = ACPI_ADDRESS_SPACE_FIXED,
 			.bit_width = ACPI_FFIXEDHW_VENDOR_INTEL,
 			.bit_offset = ACPI_FFIXEDHW_CLASS_MWAIT,
-			.resv = ACPI_FFIXEDHW_FLAG_HW_COORD,
+			.access_size = ACPI_FFIXEDHW_FLAG_HW_COORD,
 		}
 	},
 	{	/* 6: C7S */
@@ -104,7 +104,7 @@ static acpi_cstate_t cstate_map[] = {
 			.space_id = ACPI_ADDRESS_SPACE_FIXED,
 			.bit_width = ACPI_FFIXEDHW_VENDOR_INTEL,
 			.bit_offset = ACPI_FFIXEDHW_CLASS_MWAIT,
-			.resv = ACPI_FFIXEDHW_FLAG_HW_COORD,
+			.access_size = ACPI_FFIXEDHW_FLAG_HW_COORD,
 		}
 	},
 	{ 0 }

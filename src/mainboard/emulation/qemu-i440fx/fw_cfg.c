@@ -11,8 +11,8 @@
  * GNU General Public License for more details.
  */
 
+#include <endian.h>
 #include <string.h>
-#include <swab.h>
 #include <smbios.h>
 #include <console/console.h>
 #include <arch/io.h>

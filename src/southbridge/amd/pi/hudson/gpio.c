@@ -15,7 +15,7 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/io.h>
+#include <device/mmio.h>
 #include "gpio.h"
 
 int gpio_get(gpio_t gpio_num)

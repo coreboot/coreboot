@@ -13,11 +13,11 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/io.h>
 #include <boardid.h>
 #include <bootblock_common.h>
 #include <delay.h>
 #include <gpio.h>
+#include <device/mmio.h>
 #include <soc/gpio.h>
 #include <soc/i2c.h>
 #include <soc/mt6391.h>

@@ -21,7 +21,7 @@
 
 #define __SIMPLE_DEVICE__
 
-#include <arch/io.h>
+#include <device/mmio.h>
 #include <cbmem.h>
 #include <device/device.h>
 #include <device/pci.h>

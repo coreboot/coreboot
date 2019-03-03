@@ -27,7 +27,7 @@
  * SUCH DAMAGE.
  */
 
-#include <arch/io.h>
+#include <device/mmio.h>
 #include <soc/iomap.h>
 #include <soc/gsbi.h>
 #include <console/console.h>

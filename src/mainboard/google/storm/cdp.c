@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <device/mmio.h>
 #include <gpio.h>
 #include <soc/cdp.h>
 #include <soc/ebi2.h>

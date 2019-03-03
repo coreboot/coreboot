@@ -16,6 +16,7 @@
  */
 
 #include <console/console.h>
+#include <device/mmio.h>
 #include <soc/iomap.h>
 #include <reset.h>
 

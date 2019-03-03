@@ -15,7 +15,7 @@
 
 /* Power setup code for EXYNOS5 */
 
-#include <arch/io.h>
+#include <device/mmio.h>
 #include <halt.h>
 #include <reset.h>
 #include <soc/dmc.h>

@@ -17,7 +17,7 @@
 #define __SOC_NVIDIA_TEGRA210_INCLUDE_SOC_ID_H__
 
 
-#include <arch/io.h>
+#include <device/mmio.h>
 #include <soc/addressmap.h>
 
 static inline int context_avp(void)

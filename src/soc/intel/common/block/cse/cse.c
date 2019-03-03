@@ -17,6 +17,7 @@
 #include <assert.h>
 #include <commonlib/helpers.h>
 #include <console/console.h>
+#include <device/mmio.h>
 #include <delay.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>

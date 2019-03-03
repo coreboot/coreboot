@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/io.h>
+#include <device/mmio.h>
 #include <device/pci_ops.h>
 #include "pch.h"
 #include "cpu/intel/model_2065x/model_2065x.h"

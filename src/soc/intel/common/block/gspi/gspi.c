@@ -15,7 +15,7 @@
  */
 
 #include <arch/early_variables.h>
-#include <arch/io.h>
+#include <device/mmio.h>
 #include <assert.h>
 #include <console/console.h>
 #include <delay.h>

@@ -18,7 +18,7 @@
 #ifndef __SOC_IMGTEC_DANUBE_CPU_H__
 #define __SOC_IMGTEC_DANUBE_CPU_H__
 
-#include <arch/io.h>
+#include <device/mmio.h>
 
 #define IMG_SPIM0_BASE_ADDRESS	0xB8100F00
 #define IMG_SPIM1_BASE_ADDRESS	0xB8101000

@@ -16,7 +16,7 @@
  * Derived from Cavium's BSD-3 Clause OCTEONTX-SDK-6.2.0.
  */
 
-#include <arch/io.h>
+#include <device/mmio.h>
 #include <console/uart.h>
 #include <delay.h>
 #include <endian.h>

@@ -19,7 +19,7 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <device/pci_ehci.h>
-#include <arch/io.h>
+#include <device/mmio.h>
 #include <option.h>
 #include "sb700.h"
 

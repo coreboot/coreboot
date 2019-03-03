@@ -16,6 +16,7 @@
 #include <console/console.h>
 
 #include <arch/io.h>
+#include <device/mmio.h>
 #include <arch/acpi.h>
 
 #include <device/device.h>

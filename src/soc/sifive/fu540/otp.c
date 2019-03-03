@@ -16,7 +16,7 @@
 #include <stddef.h>
 #include <delay.h>
 #include <arch/barrier.h>
-#include <arch/io.h>
+#include <device/mmio.h>
 #include <console/console.h>
 #include <console/uart.h>
 #include <soc/addressmap.h>

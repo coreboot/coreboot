@@ -16,6 +16,7 @@
 
 #include <arch/acpi.h>
 #include <arch/io.h>
+#include <device/mmio.h>
 #include <console/console.h>
 #include <cpu/x86/smm.h>
 #include "ec.h"

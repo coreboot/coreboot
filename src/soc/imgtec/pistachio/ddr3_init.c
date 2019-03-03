@@ -15,7 +15,7 @@
  */
 
 #include <stdint.h>
-#include <arch/io.h>
+#include <device/mmio.h>
 #include <soc/ddr_init.h>
 #include <soc/ddr_private_reg.h>
 

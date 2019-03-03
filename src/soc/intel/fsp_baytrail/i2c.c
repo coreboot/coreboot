@@ -18,6 +18,7 @@
 #include <soc/baytrail.h>
 #include <soc/pci_devs.h>
 #include <soc/iosf.h>
+#include <device/mmio.h>
 #include <delay.h>
 #include <soc/i2c.h>
 

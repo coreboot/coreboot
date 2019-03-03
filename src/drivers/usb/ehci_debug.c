@@ -18,6 +18,7 @@
 #include <console/console.h>
 #include <console/usb.h>
 #include <arch/io.h>
+#include <device/mmio.h>
 #include <arch/symbols.h>
 #include <arch/early_variables.h>
 #include <string.h>

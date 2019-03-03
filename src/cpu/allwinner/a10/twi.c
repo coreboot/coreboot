@@ -23,7 +23,7 @@
 #include "memmap.h"
 #include "twi.h"
 
-#include <arch/io.h>
+#include <device/mmio.h>
 #include <delay.h>
 #include <device/i2c_simple.h>
 

@@ -15,7 +15,7 @@
 
 #include <mcall.h>
 #include <stdint.h>
-#include <arch/io.h>
+#include <device/mmio.h>
 #include <soc/addressmap.h>
 
 void mtime_init(void)

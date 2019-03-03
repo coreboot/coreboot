@@ -15,7 +15,7 @@
 
 #include <arch/cache.h>
 #include <arch/exception.h>
-#include <arch/io.h>
+#include <device/mmio.h>
 #include <armv7.h>
 #include <assert.h>
 #include <cbmem.h>

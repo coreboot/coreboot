@@ -14,6 +14,7 @@
  */
 
 #include <arch/io.h>
+#include <device/mmio.h>
 #include <device/pci_ops.h>
 #include <cbmem.h>
 #include <console/console.h>

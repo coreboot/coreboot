@@ -19,12 +19,11 @@
 
 #include <stdint.h>
 #include <stddef.h>
-#include <arch/io.h>
 #include <device/pci_def.h>
 #include <device/resource.h>
 #include <device/device.h>
 #include <device/pci_rom.h>
-
+#include <device/pci_type.h>
 
 /* Common pci operations without a standard interface */
 struct pci_operations {

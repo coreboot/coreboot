@@ -18,7 +18,7 @@
 
 #include "clock.h"
 
-#include <arch/io.h>
+#include <device/mmio.h>
 #include <console/console.h>
 #include <delay.h>
 #include <lib.h>

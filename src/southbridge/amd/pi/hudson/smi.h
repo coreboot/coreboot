@@ -21,7 +21,7 @@
 #ifndef _SOUTHBRIDGE_AMD_PI_HUDSON_SMI_H
 #define _SOUTHBRIDGE_AMD_PI_HUDSON_SMI_H
 
-#include <arch/io.h>
+#include <device/mmio.h>
 
 /* ACPI_MMIO_BASE + 0x200 -- leave this string here so grep catches it.
  * This is defined by AGESA, but we dpn't include AGESA headers to avoid

@@ -15,7 +15,7 @@
 
 #include <types.h>
 #include <console/console.h>
-#include <arch/io.h>
+#include <device/mmio.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <delay.h>

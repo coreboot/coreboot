@@ -15,7 +15,7 @@
 
 /* DDR3 mem setup file for SMDK5250 board based on EXYNOS5 */
 
-#include <arch/io.h>
+#include <device/mmio.h>
 #include <console/console.h>
 #include <delay.h>
 #include <soc/clk.h>

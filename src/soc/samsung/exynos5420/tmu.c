@@ -16,7 +16,7 @@
 
 /* EXYNOS - Thermal Management Unit */
 
-#include <arch/io.h>
+#include <device/mmio.h>
 #include <console/console.h>
 #include <soc/power.h>
 #include <soc/tmu.h>

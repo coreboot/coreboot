@@ -27,7 +27,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <delay.h>
-#include <arch/io.h>
+#include <device/mmio.h>
 #include <arch/acpi.h>
 #include <arch/acpigen.h>
 #include <arch/acpi_device.h>

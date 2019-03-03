@@ -19,6 +19,7 @@
 #include <stddef.h>
 #include <arch/early_variables.h>
 #include <arch/io.h>
+#include <device/mmio.h>
 #include <device/pci_ops.h>
 #include <arch/cbfs.h>
 #include <chip.h>

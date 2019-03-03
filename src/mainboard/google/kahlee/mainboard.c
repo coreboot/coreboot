@@ -16,8 +16,8 @@
 #include <string.h>
 #include <console/console.h>
 #include <device/device.h>
+#include <device/mmio.h>
 #include <arch/acpi.h>
-#include <arch/io.h>
 #include <amdblocks/agesawrapper.h>
 #include <amdblocks/amd_pci_util.h>
 #include <cbmem.h>

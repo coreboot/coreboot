@@ -15,7 +15,7 @@
 
 #include <types.h>
 #include <soc/addressmap.h>
-#include <arch/io.h>
+#include <device/mmio.h>
 #include <soc/cpu.h>
 #include <bdk-coreboot.h>
 #include <console/console.h>

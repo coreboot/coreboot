@@ -17,7 +17,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
-#include <arch/io.h>
+#include <device/mmio.h>
 #include <console/console.h>
 #include <spi-generic.h>
 #include <spi_flash.h>

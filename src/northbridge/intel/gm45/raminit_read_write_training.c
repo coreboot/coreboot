@@ -15,7 +15,7 @@
  */
 
 #include <stdint.h>
-#include <arch/io.h>
+#include <device/mmio.h>
 #include <pc80/mc146818rtc.h>
 #include <console/console.h>
 #include "gm45.h"

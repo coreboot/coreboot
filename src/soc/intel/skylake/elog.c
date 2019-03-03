@@ -17,6 +17,7 @@
 #include <bootstate.h>
 #include <cbmem.h>
 #include <console/console.h>
+#include <device/mmio.h>
 #include <device/pci_ops.h>
 #include <stdint.h>
 #include <elog.h>

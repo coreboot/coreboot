@@ -15,7 +15,7 @@
 
 #include <console/console.h>
 #include <soc/gpio.h>
-#include <arch/io.h>
+#include <device/mmio.h>
 #include <endian.h>
 #include <soc/addressmap.h>
 

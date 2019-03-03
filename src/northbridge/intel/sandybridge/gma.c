@@ -14,6 +14,7 @@
  */
 
 #include <arch/io.h>
+#include <device/mmio.h>
 #include <console/console.h>
 #include <bootmode.h>
 #include <delay.h>

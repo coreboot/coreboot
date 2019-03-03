@@ -15,6 +15,8 @@
  */
 
 #include <console/console.h>
+#include <arch/io.h>
+#include <device/mmio.h>
 #include <device/pci.h>
 #include <soc/gpio.h>
 #include <soc/pm.h>

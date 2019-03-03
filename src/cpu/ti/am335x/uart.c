@@ -15,7 +15,7 @@
 #include <stdlib.h>
 #include <types.h>
 #include <console/uart.h>
-#include <arch/io.h>
+#include <device/mmio.h>
 #include <boot/coreboot_tables.h>
 #include <cpu/ti/am335x/uart.h>
 

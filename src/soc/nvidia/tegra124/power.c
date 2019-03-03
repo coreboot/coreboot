@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/io.h>
+#include <device/mmio.h>
 #include <console/console.h>
 #include <soc/addressmap.h>
 #include <soc/clock.h>

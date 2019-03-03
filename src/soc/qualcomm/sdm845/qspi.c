@@ -16,7 +16,7 @@
 #include <spi-generic.h>
 #include <spi_flash.h>
 #include <arch/cache.h>
-#include <arch/io.h>
+#include <device/mmio.h>
 #include <soc/addressmap.h>
 #include <soc/qspi.h>
 #include <soc/gpio.h>

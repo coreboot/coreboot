@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/io.h>
+#include <device/mmio.h>
 #include <bootblock_common.h>
 #include <soc/grf.h>
 #include <soc/mmu_operations.h>

@@ -17,7 +17,7 @@
 #define _PCI_MMIO_CFG_H
 
 #include <stdint.h>
-#include <arch/io.h>
+#include <device/mmio.h>
 #include <device/pci_type.h>
 
 #define DEFAULT_PCIEXBAR	CONFIG_MMCONF_BASE_ADDRESS

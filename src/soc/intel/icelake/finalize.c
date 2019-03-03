@@ -14,6 +14,7 @@
  */
 
 #include <arch/io.h>
+#include <device/mmio.h>
 #include <bootstate.h>
 #include <chip.h>
 #include <console/console.h>

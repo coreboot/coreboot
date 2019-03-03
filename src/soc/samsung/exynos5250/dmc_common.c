@@ -16,7 +16,7 @@
 /* Mem setup common file for different types of DDR present on SMDK5250 boards.
  */
 
-#include <arch/io.h>
+#include <device/mmio.h>
 #include <delay.h>
 #include <soc/clk.h>
 #include <soc/dmc.h>

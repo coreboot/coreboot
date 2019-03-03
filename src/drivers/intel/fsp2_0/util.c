@@ -11,7 +11,7 @@
  * (at your option) any later version.
  */
 
-#include <arch/io.h>
+#include <device/mmio.h>
 #include <cf9_reset.h>
 #include <console/console.h>
 #include <fsp/util.h>

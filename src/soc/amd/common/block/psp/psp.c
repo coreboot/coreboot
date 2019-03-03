@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/io.h>
+#include <device/mmio.h>
 #include <cpu/x86/msr.h>
 #include <cbfs.h>
 #include <region_file.h>

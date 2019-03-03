@@ -12,6 +12,8 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  */
+
+#include <device/mmio.h>
 #include <gpio.h>
 #include <console/console.h>
 #include <soc/gpio.h>

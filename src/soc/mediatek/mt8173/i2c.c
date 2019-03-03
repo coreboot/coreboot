@@ -19,7 +19,7 @@
 #include <string.h>
 #include <symbols.h>
 #include <timer.h>
-#include <arch/io.h>
+#include <device/mmio.h>
 #include <soc/addressmap.h>
 #include <soc/i2c.h>
 #include <soc/pll.h>

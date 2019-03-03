@@ -15,7 +15,9 @@
 
 #include <console/console.h>
 #include <bootmode.h>
+#include <device/mmio.h>
 #include <delay.h>
+#include <arch/io.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ops.h>

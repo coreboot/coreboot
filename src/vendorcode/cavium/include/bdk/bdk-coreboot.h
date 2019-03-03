@@ -12,7 +12,7 @@
 #ifndef __BDK_BDK_COREBOOT_H
 #define __BDK_BDK_COREBOOT_H
 
-#include <arch/io.h>
+#include <device/mmio.h>
 #include <delay.h>
 
 /**

@@ -16,7 +16,7 @@
 
 /* LCD driver for Exynos */
 
-#include <arch/io.h>
+#include <device/mmio.h>
 #include <console/console.h>
 #include <delay.h>
 #include <soc/dp.h>

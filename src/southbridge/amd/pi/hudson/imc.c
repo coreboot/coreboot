@@ -16,7 +16,7 @@
 #define __SIMPLE_DEVICE__
 
 #include "imc.h"
-#include <arch/io.h>
+#include <device/mmio.h>
 #include <device/pci_ops.h>
 #include <device/device.h>
 #include <delay.h>

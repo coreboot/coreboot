@@ -16,7 +16,7 @@
 #include <cbfs.h>
 #include <string.h>
 #include <console/console.h>
-#include <arch/io.h>
+#include <device/mmio.h>
 #include <arch/early_variables.h>
 #include "hwilib.h"
 

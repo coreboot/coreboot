@@ -16,6 +16,7 @@
 #include <console/console.h>
 
 #include <arch/io.h>
+#include <device/mmio.h>
 #include <bootstate.h>
 #include <cpu/x86/smm.h>
 #include <device/device.h>

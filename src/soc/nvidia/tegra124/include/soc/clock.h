@@ -18,8 +18,8 @@
 #define __SOC_NVIDIA_TEGRA124_CLOCK_H__
 
 #include <arch/hlt.h>
-#include <arch/io.h>
 #include <console/console.h>
+#include <device/mmio.h>
 #include <soc/clk_rst.h>
 #include <stdint.h>
 #include <stdlib.h>

@@ -17,7 +17,7 @@
 #ifndef __COMMONLIB_STORAGE_SDHCI_H__
 #define __COMMONLIB_STORAGE_SDHCI_H__
 
-#include <arch/io.h>
+#include <device/mmio.h>
 #include <commonlib/sd_mmc_ctrlr.h>
 
 /*

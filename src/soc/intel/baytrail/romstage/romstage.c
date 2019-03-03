@@ -16,6 +16,7 @@
 #include <stddef.h>
 #include <arch/cpu.h>
 #include <arch/io.h>
+#include <device/mmio.h>
 #include <device/pci_ops.h>
 #include <bootblock_common.h>
 #include <console/console.h>

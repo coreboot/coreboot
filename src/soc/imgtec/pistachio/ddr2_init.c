@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/io.h>
+#include <device/mmio.h>
 #include <soc/ddr_init.h>
 #include <soc/ddr_private_reg.h>
 #include <stdint.h>

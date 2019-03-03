@@ -14,6 +14,7 @@
  */
 
 #include <console/console.h>
+#include <device/mmio.h>
 #include <soc/cpu.h>
 #include <soc/spi.h>
 #include <spi_flash.h>

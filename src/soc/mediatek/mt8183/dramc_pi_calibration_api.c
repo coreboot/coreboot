@@ -15,7 +15,7 @@
 
 #include <assert.h>
 #include <delay.h>
-#include <arch/io.h>
+#include <device/mmio.h>
 #include <soc/emi.h>
 #include <soc/dramc_register.h>
 #include <soc/dramc_pi_api.h>

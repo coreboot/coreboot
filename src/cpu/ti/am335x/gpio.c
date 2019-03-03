@@ -12,7 +12,7 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/io.h>
+#include <device/mmio.h>
 #include <console/console.h>
 #include <cpu/ti/am335x/gpio.h>
 #include <stdint.h>

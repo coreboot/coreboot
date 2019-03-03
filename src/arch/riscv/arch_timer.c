@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/io.h>
+#include <device/mmio.h>
 #include <arch/encoding.h>
 #include <console/console.h>
 #include <stddef.h>

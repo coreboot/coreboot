@@ -18,7 +18,7 @@
 #include <device/pci.h>
 #include <device/pci_ops.h>
 #include <device/azalia_device.h>
-#include <arch/io.h>
+#include <device/mmio.h>
 #include <delay.h>
 
 #define HDA_ICII_REG 0x68

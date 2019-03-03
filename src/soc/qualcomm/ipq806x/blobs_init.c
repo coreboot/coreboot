@@ -15,7 +15,7 @@
  */
 
 #include <arch/cache.h>
-#include <arch/io.h>
+#include <device/mmio.h>
 #include <cbfs.h>
 #include <console/console.h>
 #include <string.h>

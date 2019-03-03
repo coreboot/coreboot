@@ -19,7 +19,7 @@
 
 #include "timer.h"
 
-#include <arch/io.h>
+#include <device/mmio.h>
 #include <delay.h>
 #include <timer.h>
 

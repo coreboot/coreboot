@@ -16,6 +16,7 @@
 #include <arch/cache.h>
 #include <boot/coreboot_tables.h>
 #include <console/console.h>
+#include <device/mmio.h>
 #include <delay.h>
 #include <device/device.h>
 #include <device/i2c_simple.h>

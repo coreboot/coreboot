@@ -15,6 +15,7 @@
  * GNU General Public License for more details.
  */
 
+#include <device/mmio.h>
 #include <soc/iomap.h>
 #include <reset.h>
 

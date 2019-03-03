@@ -33,7 +33,7 @@
 #include <console/console.h>
 #include <soc/clock.h>
 #include <soc/lcc-reg.h>
-#include <arch/io.h>
+#include <device/mmio.h>
 
 typedef struct {
 	void *gcc_apcs_regs;

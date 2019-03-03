@@ -14,6 +14,7 @@
  */
 
 #include <arch/cpu.h>
+#include <device/mmio.h>
 #include <soc/cpu.h>
 #include <stdint.h>
 #include <timer.h>

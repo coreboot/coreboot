@@ -15,7 +15,7 @@
  */
 
 #include <arch/ebda.h>
-#include <arch/io.h>
+#include <device/mmio.h>
 #include <cbmem.h>
 #include <chip.h>
 #include <console/console.h>

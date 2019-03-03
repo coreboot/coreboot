@@ -14,7 +14,7 @@
  */
 
 #include <stdint.h>
-#include <arch/io.h>
+#include <device/mmio.h>
 #include <southbridge/amd/common/amd_defs.h>
 #include <boardid.h>
 

@@ -20,6 +20,7 @@
  * This driver sets the macaddress of a Atheros AR8121/AR8113/AR8114
  */
 
+#include <device/mmio.h>
 #include <device/device.h>
 #include <cbfs.h>
 #include <string.h>

@@ -15,6 +15,7 @@
 
 #include <arch/lib_helpers.h>
 #include <arch/stages.h>
+#include <device/mmio.h>
 #include <gic.h>
 #include <soc/addressmap.h>
 #include <soc/clock.h>

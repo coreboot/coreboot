@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/io.h>
+#include <device/mmio.h>
 #include <device/pci_ops.h>
 #include <assert.h>
 #include <bootstate.h>

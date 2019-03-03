@@ -20,7 +20,7 @@
 #include <cpu/amd/msr.h>
 #include <cpu/amd/microcode.h>
 #include <cbfs.h>
-#include <arch/io.h>
+#include <device/mmio.h>
 #include <smp/spinlock.h>
 
 #define UCODE_DEBUG(fmt, args...)	\

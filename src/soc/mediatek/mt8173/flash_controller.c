@@ -15,7 +15,7 @@
 
 /* NOR Flash is clocked with 26MHz, from CLK26M -> TOP_SPINFI_IFR */
 
-#include <arch/io.h>
+#include <device/mmio.h>
 #include <assert.h>
 #include <console/console.h>
 #include <spi_flash.h>

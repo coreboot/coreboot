@@ -14,7 +14,7 @@
 #include <stddef.h>
 #include <cbmem.h>
 #include <symbols.h>
-#include <arch/io.h>
+#include <device/mmio.h>
 #include "mainboard.h"
 
 #define PATTERN1 0x55

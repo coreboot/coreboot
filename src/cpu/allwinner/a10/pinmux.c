@@ -20,7 +20,7 @@
 
 #include "gpio.h"
 
-#include <arch/io.h>
+#include <device/mmio.h>
 
 static struct a10_gpio *const gpio = (void *)GPIO_BASE;
 

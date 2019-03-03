@@ -15,6 +15,8 @@
 #ifndef __TEGRA_DSI_H__
 #define __TEGRA_DSI_H__
 
+#include <device/mmio.h>
+
 #define DSI_INCR_SYNCPT			0x00
 #define DSI_INCR_SYNCPT_CONTROL		0x01
 #define DSI_INCR_SYNCPT_ERROR		0x02

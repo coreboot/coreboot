@@ -12,7 +12,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
-#include <arch/io.h>
+#include <device/mmio.h>
 #include <assert.h>
 #include <gpio.h>
 #include <types.h>

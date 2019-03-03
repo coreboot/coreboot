@@ -18,6 +18,7 @@
 #include <bootstate.h>
 #include <chip.h>
 #include <console/console.h>
+#include <device/mmio.h>
 #include <device/device.h>
 #include <device/pci_ops.h>
 #include <intelblocks/pmc.h>

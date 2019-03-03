@@ -15,6 +15,7 @@
 
 #include <arch/early_variables.h>
 #include <arch/io.h>
+#include <device/mmio.h>
 #include <cbmem.h>
 #include <console/console.h>
 #include <halt.h>

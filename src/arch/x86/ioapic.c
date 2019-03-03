@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/io.h>
+#include <device/mmio.h>
 #include <arch/ioapic.h>
 #include <console/console.h>
 #include <cpu/x86/lapic.h>

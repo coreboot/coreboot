@@ -21,6 +21,7 @@
 #include <cpu/x86/mtrr.h>
 #include <device/pci_ops.h>
 #include <soc/fiamux.h>
+#include <device/mmio.h>
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>
 #include <soc/pcr.h>

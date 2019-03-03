@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <device/mmio.h>
 #include <delay.h>
 #include <soc/clock.h>
 #include <types.h>

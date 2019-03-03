@@ -18,6 +18,7 @@
 #include <arch/stages.h>
 #include <bootblock_common.h>
 #include <console/console.h>
+#include <device/mmio.h>
 #include <delay.h>
 #include <program_loading.h>
 #include <soc/addressmap.h>

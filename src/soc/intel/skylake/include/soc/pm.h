@@ -18,7 +18,7 @@
 #define _SOC_PM_H_
 
 #include <arch/acpi.h>
-#include <arch/io.h>
+#include <device/mmio.h>
 #include <soc/gpe.h>
 #include <soc/iomap.h>
 #include <soc/pmc.h>

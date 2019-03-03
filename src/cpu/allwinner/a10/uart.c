@@ -19,7 +19,7 @@
  */
 
 #include "uart.h"
-#include <arch/io.h>
+#include <device/mmio.h>
 #include <console/uart.h>
 #include <drivers/uart/uart8250reg.h>
 

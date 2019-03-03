@@ -23,6 +23,7 @@
 #include <console/console.h>
 #include <cpu/x86/mp.h>
 #include <cpu/x86/msr.h>
+#include <device/mmio.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ops.h>

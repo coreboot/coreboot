@@ -14,7 +14,7 @@
  */
 
 /* This file is derived from the flashrom project. */
-#include <arch/io.h>
+#include <device/mmio.h>
 #include <device/pci_ops.h>
 #include <bootstate.h>
 #include <commonlib/helpers.h>

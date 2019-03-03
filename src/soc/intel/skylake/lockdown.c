@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/io.h>
+#include <device/mmio.h>
 #include <intelblocks/chip.h>
 #include <intelblocks/lpc_lib.h>
 #include <intelpch/lockdown.h>

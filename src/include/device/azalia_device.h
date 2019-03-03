@@ -20,7 +20,7 @@
 #include <string.h>
 #include <console/console.h>
 #include <arch/acpi.h>
-#include <arch/io.h>
+#include <device/mmio.h>
 #include <arch/interrupt.h>
 
 #include <device/device.h>

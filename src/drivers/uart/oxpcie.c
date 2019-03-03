@@ -19,7 +19,7 @@
 #include <device/pci_ids.h>
 #include <console/console.h>
 #include <console/uart.h>
-#include <arch/io.h>
+#include <device/mmio.h>
 #include <device/pci_ops.h>
 
 static void oxford_oxpcie_enable(struct device *dev)

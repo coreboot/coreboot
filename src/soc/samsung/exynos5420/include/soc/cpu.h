@@ -16,7 +16,6 @@
 #ifndef CPU_SAMSUNG_EXYNOS5420_CPU_H
 #define CPU_SAMSUNG_EXYNOS5420_CPU_H
 
-#include <arch/io.h>
 #include <symbols.h>
 
 #define EXYNOS5_SRAM_BASE		0x02020000

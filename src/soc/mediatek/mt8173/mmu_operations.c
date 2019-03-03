@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/io.h>
+#include <device/mmio.h>
 #include <arch/mmu.h>
 #include <symbols.h>
 #include <soc/symbols.h>

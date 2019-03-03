@@ -18,7 +18,7 @@
 #include <string.h>
 #include <bootstate.h>
 #include <delay.h>
-#include <arch/io.h>
+#include <device/mmio.h>
 #include <device/pci_ops.h>
 #include <commonlib/helpers.h>
 #include <console/console.h>

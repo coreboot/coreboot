@@ -16,6 +16,7 @@
 #include <arch/smp/mpspec.h>
 #include <device/pci.h>
 #include <arch/io.h>
+#include <device/mmio.h>
 #include <string.h>
 #include <stdint.h>
 #include <arch/cpu.h>

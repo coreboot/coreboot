@@ -21,7 +21,7 @@
 #include <device/pci_ids.h>
 #include "pch.h"
 #include <device/pci_ehci.h>
-#include <arch/io.h>
+#include <device/mmio.h>
 #include <device/pci_ops.h>
 
 static void usb_ehci_init(struct device *dev)

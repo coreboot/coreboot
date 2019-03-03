@@ -18,6 +18,7 @@
 #ifndef __SOC_IMGTEC_PISTACHIO_DDR_PRIVATE_REG_H__
 #define __SOC_IMGTEC_PISTACHIO_DDR_PRIVATE_REG_H__
 
+#include <device/mmio.h>
 #include <timer.h>
 
 #define MAX_WAIT_MICROS			100000

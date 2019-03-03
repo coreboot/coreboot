@@ -18,6 +18,7 @@
 #include <device/pci.h>
 #include <console/console.h>
 #include <arch/io.h>
+#include <device/mmio.h>
 #include <cpu/x86/smm.h>
 #include <string.h>
 

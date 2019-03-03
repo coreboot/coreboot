@@ -16,6 +16,7 @@
 
 #include <assert.h>
 #include <console/console.h>
+#include <device/mmio.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <intelblocks/graphics.h>

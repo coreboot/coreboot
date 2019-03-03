@@ -15,6 +15,7 @@
 
 #include <assert.h>
 #include <console/console.h>
+#include <device/mmio.h>
 #include <delay.h>
 #include <soc/addressmap.h>
 #include <soc/clock.h>

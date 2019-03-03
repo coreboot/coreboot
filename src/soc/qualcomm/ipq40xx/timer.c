@@ -27,6 +27,7 @@
  * IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <device/mmio.h>
 #include <delay.h>
 #include <soc/iomap.h>
 #include <soc/ipq_timer.h>

@@ -15,7 +15,7 @@
  */
 
 #include <arch/cpu.h>
-#include <arch/io.h>
+#include <device/mmio.h>
 #include <soc/cpu.h>
 #include <soc/power.h>
 #include <stdlib.h>

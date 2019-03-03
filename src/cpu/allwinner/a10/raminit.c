@@ -29,7 +29,7 @@
 #include "memmap.h"
 #include "timer.h"
 
-#include <arch/io.h>
+#include <device/mmio.h>
 #include <delay.h>
 
 static struct a1x_dramc *const dram = (void *)A1X_DRAMC_BASE;

@@ -18,6 +18,7 @@
 
 #include <stdint.h>
 #include <arch/io.h>
+#include <device/mmio.h>
 #include <device/pci_ehci.h>
 #include <device/pci_def.h>
 #include "sb800.h"

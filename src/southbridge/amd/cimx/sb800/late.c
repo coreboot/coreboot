@@ -15,6 +15,7 @@
  */
 
 
+#include <device/mmio.h>
 #include <device/device.h>
 #include <device/pci.h>		/* device_operations */
 #include <device/pci_ops.h>

@@ -14,7 +14,7 @@
  */
 
 #include <assert.h>
-#include <arch/io.h>
+#include <device/mmio.h>
 #include <commonlib/helpers.h>
 #include <console/console.h>
 #include <soc/addressmap.h>

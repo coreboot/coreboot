@@ -14,7 +14,7 @@
  *
  */
 
-#include <arch/io.h>
+#include <device/mmio.h>
 #include <soc/addressmap.h>
 #include <soc/sdram.h>
 #include <soc/nvidia/tegra/apbmisc.h>

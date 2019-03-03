@@ -20,7 +20,7 @@
 #include <device/pci_ids.h>
 #include "i82801gx.h"
 #include <device/pci_ehci.h>
-#include <arch/io.h>
+#include <device/mmio.h>
 #include <device/pci_ops.h>
 
 static void usb_ehci_init(struct device *dev)

@@ -37,7 +37,7 @@
 #include <soc/pmc.h>
 #include <soc/irq.h>
 #include <soc/iosf.h>
-#include <arch/io.h>
+#include <device/mmio.h>
 #include <device/pci_ops.h>
 #include <soc/msr.h>
 #include <soc/pattrs.h>

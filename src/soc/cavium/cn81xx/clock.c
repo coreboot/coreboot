@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  */
 #include <soc/clock.h>
-#include <arch/io.h>
+#include <device/mmio.h>
 #include <soc/addressmap.h>
 
 #define PLL_REF_CLK	50000000	/* 50 MHz */

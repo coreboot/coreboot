@@ -14,7 +14,7 @@
  */
 
 #include "imc.h"
-#include <arch/io.h>
+#include <device/mmio.h>
 #include <delay.h>
 #include <Porting.h>
 #include <AGESA.h>

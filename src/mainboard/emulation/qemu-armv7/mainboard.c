@@ -21,7 +21,7 @@
 #include <halt.h>
 #include "mainboard.h"
 #include <edid.h>
-#include <arch/io.h>
+#include <device/mmio.h>
 
 static void init_gfx(void)
 {

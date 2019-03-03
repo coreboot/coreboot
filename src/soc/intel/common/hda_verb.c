@@ -16,7 +16,7 @@
  */
 
 #include <console/console.h>
-#include <arch/io.h>
+#include <device/mmio.h>
 #include <delay.h>
 #include "hda_verb.h"
 

@@ -16,7 +16,6 @@
 #ifndef __COREBOOT_SRC_SOC_ROCKCHIP_COMMON_INCLUDE_SOC_SOC_H
 #define __COREBOOT_SRC_SOC_ROCKCHIP_COMMON_INCLUDE_SOC_SOC_H
 
-#include <arch/io.h>
 #include <symbols.h>
 
 #define RK_CLRSETBITS(clr, set) ((((clr) | (set)) << 16) | set)

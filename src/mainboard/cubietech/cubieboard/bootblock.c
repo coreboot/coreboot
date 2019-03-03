@@ -19,7 +19,7 @@
  * It sets up CPU clock, and enables the bootblock console.
  */
 
-#include <arch/io.h>
+#include <device/mmio.h>
 #include <bootblock_common.h>
 #include <console/uart.h>
 #include <console/console.h>

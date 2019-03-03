@@ -15,7 +15,7 @@
 
 #include <stddef.h>
 
-#include <arch/io.h>
+#include <device/mmio.h>
 #include <soc/mtcmos.h>
 #include <soc/spm.h>
 

@@ -36,7 +36,7 @@
 #ifndef __SOC_QUALCOMM_IPQ40XX_IOMAP_H_
 #define __SOC_QUALCOMM_IPQ40XX_IOMAP_H_
 
-#include <arch/io.h>
+#include <device/mmio.h>
 #include <soc/cdp.h>
 #include <soc/blsp.h>
 

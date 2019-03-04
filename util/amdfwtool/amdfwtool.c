@@ -175,7 +175,6 @@ static void usage(void)
 	printf("-b | --bootloader <FILE>       Add bootloader\n");
 	printf("-S | --subprogram <number>     Sets subprogram field for the next firmware\n");
 	printf("-s | --smufirmware <FILE>      Add smufirmware\n");
-	printf("-j | --smufnfirmware <FILE>    Add fanless smufirmware\n");
 	printf("-r | --recovery <FILE>         Add recovery\n");
 	printf("-k | --rtmpubkey <FILE>        Add rtmpubkey\n");
 	printf("-c | --secureos <FILE>         Add secureos\n");
@@ -184,7 +183,6 @@ static void usage(void)
 	printf("-t | --trustlets <FILE>        Add trustlets\n");
 	printf("-u | --trustletkey <FILE>      Add trustletkey\n");
 	printf("-w | --smufirmware2 <FILE>     Add smufirmware2\n");
-	printf("-e | --smufnfirmware2 <FILE>   Add fanless smufirmware2\n");
 	printf("-m | --smuscs <FILE>           Add smuscs\n");
 	printf("\n-o | --output <filename>     output filename\n");
 	printf("-f | --flashsize <HEX_VAL>     ROM size in bytes\n");
@@ -485,7 +483,7 @@ static void integrate_psp_firmwares(context *ctx,
 	fill_dir_header(pspdir, count, PSP_COOKIE);
 }
 
-static const char *optstring  = "x:i:g:AS:p:b:s:r:k:c:n:d:t:u:w:e:j:m:o:f:l:h";
+static const char *optstring  = "x:i:g:AS:p:b:s:r:k:c:n:d:t:u:w:m:o:f:l:h";
 
 static struct option long_options[] = {
 	{"xhci",             required_argument, 0, 'x' },
@@ -497,7 +495,6 @@ static struct option long_options[] = {
 	{"pubkey",           required_argument, 0, 'p' },
 	{"bootloader",       required_argument, 0, 'b' },
 	{"smufirmware",      required_argument, 0, 's' },
-	{"smufnfirmware",    required_argument, 0, 'j' },
 	{"recovery",         required_argument, 0, 'r' },
 	{"rtmpubkey",        required_argument, 0, 'k' },
 	{"secureos",         required_argument, 0, 'c' },
@@ -506,7 +503,6 @@ static struct option long_options[] = {
 	{"trustlets",        required_argument, 0, 't' },
 	{"trustletkey",      required_argument, 0, 'u' },
 	{"smufirmware2",     required_argument, 0, 'w' },
-	{"smufnfirmware2",   required_argument, 0, 'e' },
 	{"smuscs",           required_argument, 0, 'm' },
 	{"output",           required_argument, 0, 'o' },
 	{"flashsize",        required_argument, 0, 'f' },
@@ -598,12 +594,6 @@ int main(int argc, char **argv)
 								sub, optarg);
 			sub = 0;
 			break;
-		case 'j':
-			/* todo: remove the fanless option */
-			register_fw_filename(AMD_FW_PSP_SMU_FIRMWARE,
-								1, optarg);
-			sub = 0;
-			break;
 		case 'r':
 			register_fw_filename(AMD_FW_PSP_RECOVERY, sub, optarg);
 			sub = 0;
@@ -639,12 +629,6 @@ int main(int argc, char **argv)
 		case 'w':
 			register_fw_filename(AMD_FW_PSP_SMU_FIRMWARE2,
 								sub, optarg);
-			sub = 0;
-			break;
-		case 'e':
-			/* todo: remove the fanless option */
-			register_fw_filename(AMD_FW_PSP_SMU_FIRMWARE2,
-								1, optarg);
 			sub = 0;
 			break;
 		case 'm':

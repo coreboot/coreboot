@@ -23,6 +23,7 @@
 static bool fmap_append_fmd_node(struct fmap **flashmap,
 				const struct flashmap_descriptor *section,
 						unsigned absolute_watermark) {
+	uint16_t flags = 0;
 	if (strlen(section->name) >= FMAP_STRLEN) {
 		ERROR("Section name ('%s') exceeds %d character FMAP format limit\n",
 						section->name, FMAP_STRLEN - 1);
@@ -31,8 +32,11 @@ static bool fmap_append_fmd_node(struct fmap **flashmap,
 
 	absolute_watermark += section->offset;
 
+	if (section->flags.f.preserve)
+		flags |= FMAP_AREA_PRESERVE;
+
 	if (fmap_append_area(flashmap, absolute_watermark, section->size,
-					(uint8_t *)section->name, 0) < 0) {
+					(uint8_t *)section->name, flags) < 0) {
 		ERROR("Failed to insert section '%s' into FMAP\n",
 								section->name);
 		return false;

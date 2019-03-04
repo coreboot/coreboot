@@ -60,6 +60,7 @@ void yyerror(const char *s);
 %token OCTAL
 %token <strval> STRING
 %token FLAG_CBFS
+%token FLAG_PRESERVE
 
 %type <region_ptr> flash_region
 %type <strval> region_name
@@ -107,6 +108,7 @@ region_flags_opt: { $$ = (union flashmap_flags){ .v=0 }; }
 	| '(' region_flags ')' { $$ = $2; };
 region_flags: region_flag | region_flag region_flags { $$.v = $1.v | $2.v; };
 region_flag: FLAG_CBFS { $$.v = 0; $$.f.cbfs = 1; };
+region_flag: FLAG_PRESERVE { $$.v = 0; $$.f.preserve = 1; };
 region_offset_opt: { $$ = (struct unsigned_option){false, 0}; }
 	| region_offset;
 region_offset: '@' INTEGER { $$ = (struct unsigned_option){true, $2}; };

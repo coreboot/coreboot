@@ -75,7 +75,8 @@ void yyerror(const char *s);
     INTEGER = 258,
     OCTAL = 259,
     STRING = 260,
-    FLAG_CBFS = 261
+    FLAG_CBFS = 261,
+    FLAG_PRESERVE = 262
   };
 #endif
 /* Tokens.  */
@@ -83,6 +84,7 @@ void yyerror(const char *s);
 #define OCTAL 259
 #define STRING 260
 #define FLAG_CBFS 261
+#define FLAG_PRESERVE 262
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
@@ -98,7 +100,7 @@ union YYSTYPE
 	union flashmap_flags flags;
 	struct descriptor_list region_listhdr;
 
-#line 102 "y.tab.h" /* yacc.c:1909  */
+#line 104 "y.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;

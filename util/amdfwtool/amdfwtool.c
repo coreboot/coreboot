@@ -173,6 +173,7 @@ static void usage(void)
 	printf("                               offset able to support combo directory\n");
 	printf("-p | --pubkey <FILE>           Add pubkey\n");
 	printf("-b | --bootloader <FILE>       Add bootloader\n");
+	printf("-S | --subprogram <number>     Sets subprogram field for the next firmware\n");
 	printf("-s | --smufirmware <FILE>      Add smufirmware\n");
 	printf("-j | --smufnfirmware <FILE>    Add fanless smufirmware\n");
 	printf("-r | --recovery <FILE>         Add recovery\n");
@@ -194,13 +195,10 @@ static void usage(void)
 	printf("-h | --help                    show this help\n");
 }
 
-#define FANLESS_FW 0x100 /* type[15:8]: 0=non-fanless OPNs, 1=fanless */
-
 typedef enum _amd_fw_type {
 	AMD_FW_PSP_PUBKEY = 0,
 	AMD_FW_PSP_BOOTLOADER = 1,
 	AMD_FW_PSP_SMU_FIRMWARE = 8,
-	AMD_FW_PSP_SMU_FN_FIRMWARE = FANLESS_FW + AMD_FW_PSP_SMU_FIRMWARE,
 	AMD_FW_PSP_RECOVERY = 3,
 	AMD_FW_PSP_RTM_PUBKEY = 5,
 	AMD_FW_PSP_SECURED_OS = 2,
@@ -209,7 +207,6 @@ typedef enum _amd_fw_type {
 	AMD_FW_PSP_TRUSTLETS = 12,
 	AMD_FW_PSP_TRUSTLETKEY = 13,
 	AMD_FW_PSP_SMU_FIRMWARE2 = 18,
-	AMD_FW_PSP_SMU_FN_FIRMWARE2 = FANLESS_FW + AMD_FW_PSP_SMU_FIRMWARE2,
 	AMD_PSP_FUSE_CHAIN = 11,
 	AMD_FW_PSP_SMUSCS = 95,
 
@@ -221,6 +218,7 @@ typedef enum _amd_fw_type {
 
 typedef struct _amd_fw_entry {
 	amd_fw_type type;
+	uint8_t subprog;
 	char *filename;
 } amd_fw_entry;
 
@@ -235,8 +233,8 @@ static amd_fw_entry amd_psp_fw_table[] = {
 	{ .type = AMD_FW_PSP_SECURED_DEBUG },
 	{ .type = AMD_FW_PSP_TRUSTLETS },
 	{ .type = AMD_FW_PSP_TRUSTLETKEY },
-	{ .type = AMD_FW_PSP_SMU_FN_FIRMWARE },
-	{ .type = AMD_FW_PSP_SMU_FN_FIRMWARE2 },
+	{ .type = AMD_FW_PSP_SMU_FIRMWARE, .subprog = 1 },
+	{ .type = AMD_FW_PSP_SMU_FIRMWARE2, .subprog = 1 },
 	{ .type = AMD_FW_PSP_SMU_FIRMWARE2 },
 	{ .type = AMD_FW_PSP_SMUSCS },
 	{ .type = AMD_PSP_FUSE_CHAIN },
@@ -267,7 +265,9 @@ typedef struct _psp_directory_header {
 } __attribute__((packed, aligned(16))) psp_directory_header;
 
 typedef struct _psp_directory_entry {
-	uint32_t type; /* b[15:8] may be a modifier, e.g. subprogram */
+	uint8_t type;
+	uint8_t subprog;
+	uint16_t rsvd;
 	uint32_t size;
 	uint64_t addr; /* or a value in some cases */
 } __attribute__((packed)) psp_directory_entry;
@@ -449,6 +449,8 @@ static void integrate_psp_firmwares(context *ctx,
 	for (i = 0, count = 0; fw_table[i].type != AMD_FW_INVALID; i++) {
 		if (fw_table[i].type == AMD_PSP_FUSE_CHAIN) {
 			pspdir->entries[count].type = fw_table[i].type;
+			pspdir->entries[count].subprog = fw_table[i].subprog;
+			pspdir->entries[count].rsvd = 0;
 			pspdir->entries[count].size = 0xFFFFFFFF;
 			pspdir->entries[count].addr = 1;
 			count++;
@@ -461,6 +463,8 @@ static void integrate_psp_firmwares(context *ctx,
 			}
 
 			pspdir->entries[count].type = fw_table[i].type;
+			pspdir->entries[count].subprog = fw_table[i].subprog;
+			pspdir->entries[count].rsvd = 0;
 			pspdir->entries[count].size = (uint32_t)bytes;
 			pspdir->entries[count].addr = RUN_CURRENT(*ctx);
 
@@ -481,7 +485,7 @@ static void integrate_psp_firmwares(context *ctx,
 	fill_dir_header(pspdir, count, PSP_COOKIE);
 }
 
-static const char *optstring  = "x:i:g:Ap:b:s:r:k:c:n:d:t:u:w:e:j:m:o:f:l:h";
+static const char *optstring  = "x:i:g:AS:p:b:s:r:k:c:n:d:t:u:w:e:j:m:o:f:l:h";
 
 static struct option long_options[] = {
 	{"xhci",             required_argument, 0, 'x' },
@@ -489,6 +493,7 @@ static struct option long_options[] = {
 	{"gec",              required_argument, 0, 'g' },
 	/* PSP */
 	{"combo-capable",          no_argument, 0, 'A' },
+	{"subprogram",       required_argument, 0, 'S' },
 	{"pubkey",           required_argument, 0, 'p' },
 	{"bootloader",       required_argument, 0, 'b' },
 	{"smufirmware",      required_argument, 0, 's' },
@@ -511,7 +516,7 @@ static struct option long_options[] = {
 	{NULL,               0,                 0,  0  }
 };
 
-static void register_fw_filename(amd_fw_type type, char filename[])
+static void register_fw_filename(amd_fw_type type, uint8_t sub, char filename[])
 {
 	unsigned int i;
 
@@ -523,7 +528,10 @@ static void register_fw_filename(amd_fw_type type, char filename[])
 	}
 
 	for (i = 0; i < sizeof(amd_psp_fw_table) / sizeof(amd_fw_entry); i++) {
-		if (amd_psp_fw_table[i].type == type) {
+		if (amd_psp_fw_table[i].type != type)
+			continue;
+
+		if (amd_psp_fw_table[i].subprog == sub) {
 			amd_psp_fw_table[i].filename = filename;
 			return;
 		}
@@ -547,6 +555,7 @@ int main(int argc, char **argv)
 	uint32_t dir_location = 0;
 	uint32_t romsig_offset;
 	uint32_t rom_base_address;
+	uint8_t sub = 0;
 
 	while (1) {
 		int optindex = 0;
@@ -558,60 +567,89 @@ int main(int argc, char **argv)
 
 		switch (c) {
 		case 'x':
-			register_fw_filename(AMD_FW_XHCI, optarg);
+			register_fw_filename(AMD_FW_XHCI, sub, optarg);
+			sub = 0; /* subprogram is N/A but clear anyway */
 			break;
 		case 'i':
-			register_fw_filename(AMD_FW_IMC, optarg);
+			register_fw_filename(AMD_FW_IMC, sub, optarg);
+			sub = 0; /* subprogram is N/A but clear anyway */
 			break;
 		case 'g':
-			register_fw_filename(AMD_FW_GEC, optarg);
+			register_fw_filename(AMD_FW_GEC, sub, optarg);
+			sub = 0; /* subprogram is N/A but clear anyway */
 			break;
 		case 'A':
 			comboable = 1;
 			break;
+		case 'S':
+			sub = (uint8_t)strtoul(optarg, &tmp, 16);
+			break;
 		case 'p':
-			register_fw_filename(AMD_FW_PSP_PUBKEY, optarg);
+			register_fw_filename(AMD_FW_PSP_PUBKEY, sub, optarg);
+			sub = 0;
 			break;
 		case 'b':
-			register_fw_filename(AMD_FW_PSP_BOOTLOADER, optarg);
+			register_fw_filename(AMD_FW_PSP_BOOTLOADER,
+								sub, optarg);
+			sub = 0;
 			break;
 		case 's':
-			register_fw_filename(AMD_FW_PSP_SMU_FIRMWARE, optarg);
+			register_fw_filename(AMD_FW_PSP_SMU_FIRMWARE,
+								sub, optarg);
+			sub = 0;
 			break;
 		case 'j':
-			register_fw_filename(AMD_FW_PSP_SMU_FN_FIRMWARE,
-					optarg);
+			/* todo: remove the fanless option */
+			register_fw_filename(AMD_FW_PSP_SMU_FIRMWARE,
+								1, optarg);
+			sub = 0;
 			break;
 		case 'r':
-			register_fw_filename(AMD_FW_PSP_RECOVERY, optarg);
+			register_fw_filename(AMD_FW_PSP_RECOVERY, sub, optarg);
+			sub = 0;
 			break;
 		case 'k':
-			register_fw_filename(AMD_FW_PSP_RTM_PUBKEY, optarg);
+			register_fw_filename(AMD_FW_PSP_RTM_PUBKEY,
+								sub, optarg);
+			sub = 0;
 			break;
 		case 'c':
-			register_fw_filename(AMD_FW_PSP_SECURED_OS, optarg);
+			register_fw_filename(AMD_FW_PSP_SECURED_OS,
+								sub, optarg);
+			sub = 0;
 			break;
 		case 'n':
-			register_fw_filename(AMD_FW_PSP_NVRAM, optarg);
+			register_fw_filename(AMD_FW_PSP_NVRAM, sub, optarg);
+			sub = 0;
 			break;
 		case 'd':
-			register_fw_filename(AMD_FW_PSP_SECURED_DEBUG, optarg);
+			register_fw_filename(AMD_FW_PSP_SECURED_DEBUG,
+								sub, optarg);
+			sub = 0;
 			break;
 		case 't':
-			register_fw_filename(AMD_FW_PSP_TRUSTLETS, optarg);
+			register_fw_filename(AMD_FW_PSP_TRUSTLETS, sub, optarg);
+			sub = 0;
 			break;
 		case 'u':
-			register_fw_filename(AMD_FW_PSP_TRUSTLETKEY, optarg);
+			register_fw_filename(AMD_FW_PSP_TRUSTLETKEY,
+								sub, optarg);
+			sub = 0;
 			break;
 		case 'w':
-			register_fw_filename(AMD_FW_PSP_SMU_FIRMWARE2, optarg);
+			register_fw_filename(AMD_FW_PSP_SMU_FIRMWARE2,
+								sub, optarg);
+			sub = 0;
 			break;
 		case 'e':
-			register_fw_filename(AMD_FW_PSP_SMU_FN_FIRMWARE2,
-					optarg);
+			/* todo: remove the fanless option */
+			register_fw_filename(AMD_FW_PSP_SMU_FIRMWARE2,
+								1, optarg);
+			sub = 0;
 			break;
 		case 'm':
-			register_fw_filename(AMD_FW_PSP_SMUSCS, optarg);
+			register_fw_filename(AMD_FW_PSP_SMUSCS, sub, optarg);
+			sub = 0;
 			break;
 		case 'o':
 			output = optarg;

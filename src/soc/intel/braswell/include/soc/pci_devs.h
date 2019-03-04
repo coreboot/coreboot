@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2013 Google Inc.
  * Copyright (C) 2015 Intel Corp.
+ * Copyright (C) 2019 Eltan B.V.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,6 +29,11 @@
 #define GFX_DEV 0x2
 #define GFX_FUNC 0
 # define GFX_DEVID 0x22b1
+
+/* P-Unit DPTF */
+#define PUNIT_DEV 0xB
+#define PUNIT_FUNC 0
+#define PUNIT_DEVID 0x22DC
 
 /* MMC Port */
 #define MMC_DEV 0x10

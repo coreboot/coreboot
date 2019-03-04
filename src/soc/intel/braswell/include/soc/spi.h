@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2013 Google Inc.
  * Copyright (C) 2015 Intel Corp.
+ * Copyright (C) 2019 Eltan B.V.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,6 +32,10 @@
 # define DATA_CYCLE			(0x1 << 14)
 #define PREOP				0x94
 #define OPTYPE				0x96
+# define SPI_OPTYPE_RD_NOADDR		0x00	/* Read, no address */
+# define SPI_OPTYPE_WR_NOADDR		0x01	/* Write, no address */
+# define SPI_OPTYPE_RD_ADDR		0x02	/* Read, address required */
+# define SPI_OPTYPE_WR_ADDR		0x03	/* Write, address required */
 #define OPMENU0				0x98
 #define OPMENU1				0x9c
 #define LVSCC				0xc4

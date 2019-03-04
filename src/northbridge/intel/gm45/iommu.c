@@ -19,7 +19,6 @@
 
 #include <device/pci_ops.h>
 #include <device/pci_def.h>
-#include <arch/acpi.h>
 
 #include "gm45.h"
 

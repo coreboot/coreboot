@@ -22,7 +22,6 @@
 #if IS_ENABLED(CONFIG_VGA_ROM_RUN)
 #include <x86emu/x86emu.h>
 #endif
-#include <arch/acpi.h>
 #include <arch/interrupt.h>
 #include <boot/coreboot_tables.h>
 

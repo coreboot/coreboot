@@ -19,7 +19,6 @@
 #include <console/console.h>
 #include <arch/io.h>
 #include <device/pci_ops.h>
-#include <arch/acpi.h>
 #include <device/pci_def.h>
 #include <elog.h>
 #include <pc80/mc146818rtc.h>

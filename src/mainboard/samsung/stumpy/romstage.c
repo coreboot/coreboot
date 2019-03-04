@@ -21,7 +21,6 @@
 #include <device/pci_def.h>
 #include <cpu/x86/lapic.h>
 #include <pc80/mc146818rtc.h>
-#include <arch/acpi.h>
 #include <console/console.h>
 #include <bootmode.h>
 #include <superio/ite/common/ite.h>

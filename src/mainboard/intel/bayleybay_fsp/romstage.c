@@ -24,7 +24,6 @@
 #include <soc/lpc.h>
 #include <soc/pci_devs.h>
 #include <soc/romstage.h>
-#include <soc/acpi.h>
 #include <soc/baytrail.h>
 #include <drivers/intel/fsp1_0/fsp_util.h>
 

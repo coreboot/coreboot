@@ -16,7 +16,6 @@
 
 #include <stdlib.h>
 #include <arch/cpu.h>
-#include <arch/acpi.h>
 #include <console/console.h>
 #include <cpu/intel/microcode.h>
 #include <cpu/x86/cr.h>

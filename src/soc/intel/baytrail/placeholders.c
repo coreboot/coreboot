@@ -12,7 +12,6 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/acpi.h>
 #include <device/pci_rom.h>
 #include <soc/acpi.h>
 

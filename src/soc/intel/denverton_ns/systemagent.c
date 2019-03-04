@@ -16,7 +16,6 @@
  */
 
 #include <console/console.h>
-#include <arch/acpi.h>
 #include <device/mmio.h>
 #include <device/pci_ops.h>
 #include <stdint.h>

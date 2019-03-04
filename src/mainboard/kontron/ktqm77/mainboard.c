@@ -25,7 +25,6 @@
 #include <x86emu/x86emu.h>
 #endif
 #include <pc80/mc146818rtc.h>
-#include <arch/acpi.h>
 #include <arch/interrupt.h>
 #include <boot/coreboot_tables.h>
 #include <southbridge/intel/bd82x6x/pch.h>

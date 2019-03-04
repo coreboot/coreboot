@@ -13,11 +13,9 @@
  * GNU General Public License for more details.
  */
 
-#include <cbmem.h>
-#include <device/pci.h>
+#include <stdint.h>
 #include <stage_cache.h>
 #include <cpu/intel/smm/gen1/smi.h>
-#include "gm45.h"
 
 void stage_cache_external_region(void **base, size_t *size)
 {

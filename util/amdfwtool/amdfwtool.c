@@ -77,6 +77,8 @@
 #define MIN_ROM_KB		256
 
 #define ALIGN(val, by) (((val) + (by) - 1) & ~((by) - 1))
+#define TABLE_ALIGNMENT 0x1000U
+#define BLOB_ALIGNMENT 0x100U
 
 #define EMBEDDED_FW_SIGNATURE 0x55aa55aa
 #define PSP_COOKIE 0x50535024	/* 'PSP$' */
@@ -275,6 +277,8 @@ typedef struct _psp_directory_table {
 	psp_directory_entry entries[];
 } __attribute__((packed)) psp_directory_table;
 
+#define MAX_PSP_ENTRIES 0x1f
+
 typedef struct _psp_combo_header {
 	uint32_t cookie;
 	uint32_t checksum;
@@ -293,6 +297,44 @@ typedef struct _psp_combo_directory {
 	psp_combo_header header;
 	psp_combo_entry entries[];
 } __attribute__((packed)) psp_combo_directory;
+
+#define MAX_COMBO_ENTRIES 1
+
+typedef struct _context {
+	char *rom;		/* target buffer, size of flash device */
+	uint32_t rom_size;	/* size of flash device */
+	uint32_t current;	/* pointer within flash & proxy buffer */
+} context;
+
+#define RUN_BASE(ctx) (0xFFFFFFFF - (ctx).rom_size + 1)
+#define RUN_OFFSET(ctx, offset) (RUN_BASE(ctx) + (offset))
+#define RUN_CURRENT(ctx) RUN_OFFSET((ctx), (ctx).current)
+#define BUFF_OFFSET(ctx, offset) ((void *)((ctx).rom + (offset)))
+#define BUFF_CURRENT(ctx) BUFF_OFFSET((ctx), (ctx).current)
+#define BUFF_TO_RUN(ctx, ptr) RUN_OFFSET((ctx), ((char *)(ptr) - (ctx).rom))
+#define BUFF_ROOM(ctx) ((ctx).rom_size - (ctx).current)
+
+static void *new_psp_dir(context *ctx)
+{
+	void *ptr;
+
+	ctx->current = ALIGN(ctx->current, TABLE_ALIGNMENT);
+	ptr = BUFF_CURRENT(*ctx);
+	ctx->current += sizeof(psp_directory_header)
+			+ MAX_PSP_ENTRIES * sizeof(psp_directory_entry);
+	return ptr;
+}
+
+static void *new_combo_dir(context *ctx)
+{
+	void *ptr;
+
+	ctx->current = ALIGN(ctx->current, TABLE_ALIGNMENT);
+	ptr = BUFF_CURRENT(*ctx);
+	ctx->current += sizeof(psp_combo_header)
+			+ MAX_COMBO_ENTRIES * sizeof(psp_combo_entry);
+	return ptr;
+}
 
 static void fill_dir_header(void *directory, uint32_t count, uint32_t cookie)
 {
@@ -354,54 +396,55 @@ static ssize_t copy_blob(void *dest, const char *src_file, size_t room)
 	return bytes;
 }
 
-static uint32_t integrate_firmwares(char *base, uint32_t pos,
+static void integrate_firmwares(context *ctx,
 				embedded_firmware *romsig,
-				amd_fw_entry *fw_table, uint32_t rom_size)
+				amd_fw_entry *fw_table)
 {
 	ssize_t bytes;
 	int i;
-	uint32_t rom_base_address = 0xFFFFFFFF - rom_size + 1;
+
+	ctx->current += sizeof(embedded_firmware);
+	ctx->current = ALIGN(ctx->current, BLOB_ALIGNMENT);
 
 	for (i = 0; fw_table[i].type != AMD_FW_INVALID; i++) {
 		if (fw_table[i].filename != NULL) {
 			switch (fw_table[i].type) {
 			case AMD_FW_IMC:
-				pos = ALIGN(pos, 0x10000U);
-				romsig->imc_entry = pos + rom_base_address;
+				ctx->current = ALIGN(ctx->current, 0x10000U);
+				romsig->imc_entry = RUN_CURRENT(*ctx);
 				break;
 			case AMD_FW_GEC:
-				romsig->gec_entry = pos + rom_base_address;
+				romsig->gec_entry = RUN_CURRENT(*ctx);
 				break;
 			case AMD_FW_XHCI:
-				romsig->xhci_entry = pos + rom_base_address;
+				romsig->xhci_entry = RUN_CURRENT(*ctx);
 				break;
 			default:
 				/* Error */
 				break;
 			}
 
-			bytes = copy_blob(base + pos,
-					fw_table[i].filename, rom_size - pos);
+			bytes = copy_blob(BUFF_CURRENT(*ctx),
+					fw_table[i].filename, BUFF_ROOM(*ctx));
 			if (bytes <= 0) {
-				free(base);
+				free(ctx->rom);
 				exit(1);
 			}
 
-			pos = ALIGN(pos + bytes, 0x100U);
+			ctx->current = ALIGN(ctx->current + bytes,
+							BLOB_ALIGNMENT);
 		}
 	}
-
-	return pos;
 }
 
-static uint32_t integrate_psp_firmwares(char *base, uint32_t pos,
+static void integrate_psp_firmwares(context *ctx,
 					psp_directory_table *pspdir,
-					amd_fw_entry *fw_table,
-					uint32_t rom_size)
+					amd_fw_entry *fw_table)
 {
 	ssize_t bytes;
 	unsigned int i, count;
-	uint32_t rom_base_address = 0xFFFFFFFF - rom_size + 1;
+
+	ctx->current = ALIGN(ctx->current, BLOB_ALIGNMENT);
 
 	for (i = 0, count = 0; fw_table[i].type != AMD_FW_INVALID; i++) {
 		if (fw_table[i].type == AMD_PSP_FUSE_CHAIN) {
@@ -410,25 +453,32 @@ static uint32_t integrate_psp_firmwares(char *base, uint32_t pos,
 			pspdir->entries[count].addr = 1;
 			count++;
 		} else if (fw_table[i].filename != NULL) {
-			bytes = copy_blob(base + pos,
-					fw_table[i].filename, rom_size - pos);
+			bytes = copy_blob(BUFF_CURRENT(*ctx),
+					fw_table[i].filename, BUFF_ROOM(*ctx));
 			if (bytes <= 0) {
-				free(base);
+				free(ctx->rom);
 				exit(1);
 			}
 
 			pspdir->entries[count].type = fw_table[i].type;
 			pspdir->entries[count].size = (uint32_t)bytes;
-			pspdir->entries[count].addr = rom_base_address + pos;
+			pspdir->entries[count].addr = RUN_CURRENT(*ctx);
 
-			pos = ALIGN(pos + bytes, 0x100U);
+			ctx->current = ALIGN(ctx->current + bytes,
+							BLOB_ALIGNMENT);
 			count++;
 		} else {
 			/* This APU doesn't have this firmware. */
 		}
 	}
+
+	if (count > MAX_PSP_ENTRIES) {
+		printf("Error: PSP entries exceed max allowed items\n");
+		free(ctx->rom);
+		exit(1);
+	}
+
 	fill_dir_header(pspdir, count, PSP_COOKIE);
-	return pos;
 }
 
 static const char *optstring  = "x:i:g:Ap:b:s:r:k:c:n:d:t:u:w:e:j:m:o:f:l:h";
@@ -486,14 +536,14 @@ int main(int argc, char **argv)
 	int retval = 0;
 	char *tmp;
 	char *rom = NULL;
-	uint32_t current;
 	embedded_firmware *amd_romsig;
 	psp_directory_table *pspdir;
 	int comboable = 0;
-
 	int targetfd;
 	char *output = NULL;
-	uint32_t rom_size = CONFIG_ROM_SIZE;
+	context ctx = {
+		.rom_size = CONFIG_ROM_SIZE,
+	};
 	uint32_t dir_location = 0;
 	uint32_t romsig_offset;
 	uint32_t rom_base_address;
@@ -567,7 +617,7 @@ int main(int argc, char **argv)
 			output = optarg;
 			break;
 		case 'f':
-			rom_size = (uint32_t)strtoul(optarg, &tmp, 16);
+			ctx.rom_size = (uint32_t)strtoul(optarg, &tmp, 16);
 			if (*tmp != '\0') {
 				printf("Error: ROM size specified"
 					" incorrectly (%s)\n\n", optarg);
@@ -596,20 +646,15 @@ int main(int argc, char **argv)
 		retval = 1;
 	}
 
-	if (!rom_size) {
-		printf("Error: ROM Size is not specified.\n\n");
-		retval = 1;
-	}
-
-	if (rom_size % 1024 != 0) {
+	if (ctx.rom_size % 1024 != 0) {
 		printf("Error: ROM Size (%d bytes) should be a multiple of"
-			" 1024 bytes.\n\n", rom_size);
+			" 1024 bytes.\n\n", ctx.rom_size);
 		retval = 1;
 	}
 
-	if (rom_size < MIN_ROM_KB * 1024) {
+	if (ctx.rom_size < MIN_ROM_KB * 1024) {
 		printf("Error: ROM Size (%dKB) must be at least %dKB.\n\n",
-			rom_size / 1024, MIN_ROM_KB);
+			ctx.rom_size / 1024, MIN_ROM_KB);
 		retval = 1;
 	}
 
@@ -618,9 +663,9 @@ int main(int argc, char **argv)
 		return retval;
 	}
 
-	printf("    AMDFWTOOL  Using ROM size of %dKB\n", rom_size / 1024);
+	printf("    AMDFWTOOL  Using ROM size of %dKB\n", ctx.rom_size / 1024);
 
-	rom_base_address = 0xFFFFFFFF - rom_size + 1;
+	rom_base_address = 0xFFFFFFFF - ctx.rom_size + 1;
 	if (dir_location && (dir_location < rom_base_address)) {
 		printf("Error: Directory location outside of ROM.\n\n");
 		return 1;
@@ -642,60 +687,54 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
-	rom = malloc(rom_size);
-	if (!rom)
+	ctx.rom = malloc(ctx.rom_size);
+	if (!ctx.rom) {
+		printf("Error: Failed to allocate memory\n");
 		return 1;
-	memset(rom, 0xFF, rom_size);
+	}
+	memset(ctx.rom, 0xFF, ctx.rom_size);
 
 	if (dir_location)
-		romsig_offset = current = dir_location - rom_base_address;
+		romsig_offset = ctx.current = dir_location - rom_base_address;
 	else
-		romsig_offset = current = AMD_ROMSIG_OFFSET;
-	printf("    AMDFWTOOL  Using firmware directory location of %08lx\n",
-			(unsigned long)rom_base_address + current);
+		romsig_offset = ctx.current = AMD_ROMSIG_OFFSET;
+	printf("    AMDFWTOOL  Using firmware directory location of 0x%08x\n",
+			RUN_CURRENT(ctx));
 
-	amd_romsig = (embedded_firmware *)(rom + romsig_offset);
+	amd_romsig = BUFF_OFFSET(ctx, romsig_offset);
 	amd_romsig->signature = EMBEDDED_FW_SIGNATURE;
 	amd_romsig->imc_entry = 0;
 	amd_romsig->gec_entry = 0;
 	amd_romsig->xhci_entry = 0;
 
-	current += sizeof(embedded_firmware);
-	current = ALIGN(current, 0x1000U);
-	current = integrate_firmwares(rom, current, amd_romsig,
-			amd_fw_table, rom_size);
+	integrate_firmwares(&ctx, amd_romsig, amd_fw_table);
 
-	current = ALIGN(current, 0x10000U);
+	ctx.current = ALIGN(ctx.current, 0x10000U); /* todo: is necessary? */
+
+	pspdir = new_psp_dir(&ctx);
+	integrate_psp_firmwares(&ctx, pspdir, amd_psp_fw_table);
+
 	if (comboable)
-		amd_romsig->comboable = current + rom_base_address;
+		amd_romsig->comboable = BUFF_TO_RUN(ctx, pspdir);
 	else
-		amd_romsig->psp_entry = current + rom_base_address;
+		amd_romsig->psp_entry = BUFF_TO_RUN(ctx, pspdir);
 
 #if PSP_COMBO
-	/* TODO: remove the hardcode. */
-	psp_combo_directory *combo_dir =
-			(psp_combo_directory *)(rom + current);
-	current = ALIGN(current + sizeof(psp_combo_header)
-			+ 1 * sizeof(psp_combo_entry), 0x1000);
+	psp_combo_directory *combo_dir = new_combo_dir(&ctx);
+	amd_romsig->comboable = BUFF_TO_RUN(ctx, combo_dir);
 	/* 0 -Compare PSP ID, 1 -Compare chip family ID */
 	combo_dir->entries[0].id_sel = 0;
 	/* TODO: PSP ID. Documentation is needed. */
 	combo_dir->entries[0].id = 0x10220B00;
-	combo_dir->entries[0].lvl2_addr = current + rom_base_address;
+	combo_dir->entries[0].lvl2_addr = BUFF_TO_RUN(ctx, pspdir);
 
 	combo_dir->header.lookup = 1;
 	fill_dir_header(combo_dir, 1, PSP2_COOKIE);
 #endif
 
-	pspdir = (void *)(rom + current);
-	current += 0x200;	/* Conservative size of pspdir */
-	current = integrate_psp_firmwares(rom, current, pspdir,
-			amd_psp_fw_table, rom_size);
-
-
 	targetfd = open(output, O_RDWR | O_CREAT | O_TRUNC, 0666);
 	if (targetfd >= 0) {
-		write(targetfd, amd_romsig, current - romsig_offset);
+		write(targetfd, amd_romsig, ctx.current - romsig_offset);
 		close(targetfd);
 	} else {
 		printf("Error: could not open file: %s\n", output);

@@ -294,17 +294,32 @@ typedef struct _psp_combo_directory {
 	psp_combo_entry entries[];
 } __attribute__((packed)) psp_combo_directory;
 
-static void fill_psp_head(psp_directory_table *pspdir, uint32_t count)
+static void fill_dir_header(void *directory, uint32_t count, uint32_t cookie)
 {
-	pspdir->header.cookie = PSP_COOKIE;
-	pspdir->header.num_entries = count;
-	pspdir->header.reserved = 0;
-	/* checksum everything that comes after the Checksum field */
-	pspdir->header.checksum = fletcher32(
-					(void *)&pspdir->header.num_entries,
+	if (cookie == PSP2_COOKIE) {
+		/* caller is responsible for lookup mode */
+		psp_combo_directory *cdir = directory;
+		cdir->header.cookie = cookie;
+		cdir->header.num_entries = count;
+		cdir->header.reserved[0] = 0;
+		cdir->header.reserved[1] = 0;
+		/* checksum everything that comes after the Checksum field */
+		cdir->header.checksum = fletcher32(&cdir->header.num_entries,
+					count * sizeof(psp_combo_entry)
+					+ sizeof(cdir->header.num_entries)
+					+ sizeof(cdir->header.lookup)
+					+ 2 * sizeof(cdir->header.reserved[0]));
+	} else {
+		psp_directory_table *dir = directory;
+		dir->header.cookie = cookie;
+		dir->header.num_entries = count;
+		dir->header.reserved = 0;
+		/* checksum everything that comes after the Checksum field */
+		dir->header.checksum = fletcher32(&dir->header.num_entries,
 					count * sizeof(psp_directory_entry)
-					+ sizeof(pspdir->header.num_entries)
-					+ sizeof(pspdir->header.reserved));
+					+ sizeof(dir->header.num_entries)
+					+ sizeof(dir->header.reserved));
+	}
 }
 
 static uint32_t integrate_firmwares(char *base, uint32_t pos,
@@ -434,7 +449,7 @@ static uint32_t integrate_psp_firmwares(char *base, uint32_t pos,
 			/* This APU doesn't have this firmware. */
 		}
 	}
-	fill_psp_head(pspdir, count);
+	fill_dir_header(pspdir, count, PSP_COOKIE);
 	return pos;
 }
 
@@ -690,19 +705,8 @@ int main(int argc, char **argv)
 	combo_dir->entries[0].id = 0x10220B00;
 	combo_dir->entries[0].lvl2_addr = current + rom_base_address;
 
-	/* fill the PSP combo head */
-	combo_dir->header.cookie = PSP2_COOKIE;
-	combo_dir->header.num_entries = 1;
 	combo_dir->header.lookup = 1;
-	combo_dir->header.reserved[0] = 0;
-	combo_dir->header.reserved[1] = 0;
-	combo_dir->header.checksum = fletcher32(
-			(void *)&combo_dir->header.num_entries,
-			1 * sizeof(psp_directory_entry)
-			+ sizeof(combo_dir->header.num_entries)
-			+ sizeof(combo_dir->header.lookup)
-			+ sizeof(combo_dir->header.reserved[0])
-			+ sizeof(combo_dir->header.reserved[1]));
+	fill_dir_header(combo_dir, 1, PSP2_COOKIE);
 #endif
 
 	pspdir = (void *)(rom + current);

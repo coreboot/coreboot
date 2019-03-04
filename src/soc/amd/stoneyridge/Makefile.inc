@@ -219,8 +219,9 @@ OPT_TRUSTLETKEY_FILE=$(call add_opt_prefix, $(TRUSTLETKEY_FILE), --trustletkey)
 endif
 OPT_SMUFIRMWARE2_FILE=$(call add_opt_prefix, $(SMUFIRMWARE2_FILE), --smufirmware2)
 OPT_SMUSCS_FILE=$(call add_opt_prefix, $(SMUSCS_FILE), --smuscs)
-OPT_SMUFWM_FN_FILE=$(call add_opt_prefix, $(SMUFWM_FN_FILE), --smufnfirmware)
-OPT_SMUFIRMWARE2_FN_FILE=$(call add_opt_prefix, $(SMUFIRMWARE2_FN_FILE), --smufnfirmware2)
+SUBPROG_FN_SMU_FW=1
+OPT_SMUFWM_FN_FILE=$(call add_opt_prefix, $(SMUFWM_FN_FILE), --subprogram $(SUBPROG_FN_SMU_FW) --smufirmware)
+OPT_SMUFIRMWARE2_FN_FILE=$(call add_opt_prefix, $(SMUFIRMWARE2_FN_FILE), --subprogram $(SUBPROG_FN_SMU_FW) --smufirmware2)
 
 
 $(obj)/amdfw.rom:	$(call strip_quotes, $(CONFIG_STONEYRIDGE_XHCI_FWM_FILE)) \

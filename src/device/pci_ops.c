@@ -36,41 +36,35 @@ static void pcidev_assert(const struct device *dev)
 u8 pci_read_config8(struct device *dev, unsigned int where)
 {
 	pcidev_assert(dev);
-	return pci_bus_ops()->read8(dev->bus->secondary,
-					dev->path.pci.devfn, where);
+	return pci_bus_ops()->read8(dev, where);
 }
 
 u16 pci_read_config16(struct device *dev, unsigned int where)
 {
 	pcidev_assert(dev);
-	return pci_bus_ops()->read16(dev->bus->secondary,
-					 dev->path.pci.devfn, where);
+	return pci_bus_ops()->read16(dev, where);
 }
 
 u32 pci_read_config32(struct device *dev, unsigned int where)
 {
 	pcidev_assert(dev);
-	return pci_bus_ops()->read32(dev->bus->secondary,
-					 dev->path.pci.devfn, where);
+	return pci_bus_ops()->read32(dev, where);
 }
 
 void pci_write_config8(struct device *dev, unsigned int where, u8 val)
 {
 	pcidev_assert(dev);
-	pci_bus_ops()->write8(dev->bus->secondary,
-				  dev->path.pci.devfn, where, val);
+	pci_bus_ops()->write8(dev, where, val);
 }
 
 void pci_write_config16(struct device *dev, unsigned int where, u16 val)
 {
 	pcidev_assert(dev);
-	pci_bus_ops()->write16(dev->bus->secondary,
-				   dev->path.pci.devfn, where, val);
+	pci_bus_ops()->write16(dev, where, val);
 }
 
 void pci_write_config32(struct device *dev, unsigned int where, u32 val)
 {
 	pcidev_assert(dev);
-	pci_bus_ops()->write32(dev->bus->secondary,
-				   dev->path.pci.devfn, where, val);
+	pci_bus_ops()->write32(dev, where, val);
 }

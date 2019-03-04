@@ -23,43 +23,43 @@
  * Functions for accessing PCI configuration space with mmconf accesses
  */
 
-#define PCI_MMIO_ADDR(SEGBUS, DEVFN, WHERE, MASK)	\
+#define PCI_MMIO_ADDR(dev, where, mask)	\
 			((void *)(((uintptr_t)CONFIG_MMCONF_BASE_ADDRESS |\
-				   (((SEGBUS) & 0xFFF) << 20) |\
-				   (((DEVFN) & 0xFF) << 12) |\
-				   ((WHERE) & 0xFFF)) & ~MASK))
+				   (((dev)->bus->secondary & 0xFFF) << 20) |\
+				   (((dev)->path.pci.devfn & 0xFF) << 12) |\
+				   ((where) & 0xFFF)) & ~mask))
 
-static uint8_t pci_mmconf_read_config8(int bus, int devfn, int where)
+static uint8_t pci_mmconf_read_config8(struct device *dev, int where)
 {
-	return read8(PCI_MMIO_ADDR(bus, devfn, where, 0));
+	return read8(PCI_MMIO_ADDR(dev, where, 0));
 }
 
-static uint16_t pci_mmconf_read_config16(int bus, int devfn, int where)
+static uint16_t pci_mmconf_read_config16(struct device *dev, int where)
 {
-	return read16(PCI_MMIO_ADDR(bus, devfn, where, 1));
+	return read16(PCI_MMIO_ADDR(dev, where, 1));
 }
 
-static uint32_t pci_mmconf_read_config32(int bus, int devfn, int where)
+static uint32_t pci_mmconf_read_config32(struct device *dev, int where)
 {
-	return read32(PCI_MMIO_ADDR(bus, devfn, where, 3));
+	return read32(PCI_MMIO_ADDR(dev, where, 3));
 }
 
-static void pci_mmconf_write_config8(int bus, int devfn, int where,
+static void pci_mmconf_write_config8(struct device *dev, int where,
 				     uint8_t value)
 {
-	write8(PCI_MMIO_ADDR(bus, devfn, where, 0), value);
+	write8(PCI_MMIO_ADDR(dev, where, 0), value);
 }
 
-static void pci_mmconf_write_config16(int bus, int devfn, int where,
+static void pci_mmconf_write_config16(struct device *dev, int where,
 				      uint16_t value)
 {
-	write16(PCI_MMIO_ADDR(bus, devfn, where, 1), value);
+	write16(PCI_MMIO_ADDR(dev, where, 1), value);
 }
 
-static void pci_mmconf_write_config32(int bus, int devfn, int where,
+static void pci_mmconf_write_config32(struct device *dev, int where,
 				      uint32_t value)
 {
-	write32(PCI_MMIO_ADDR(bus, devfn, where, 3), value);
+	write32(PCI_MMIO_ADDR(dev, where, 3), value);
 }
 
 static const struct pci_bus_operations pci_ops_mmconf = {

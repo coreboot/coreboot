@@ -23,6 +23,7 @@
 #include <ip_checksum.h>
 #include <timestamp.h>
 #include <cpu/intel/microcode.h>
+#include <cf9_reset.h>
 
 #ifndef __PRE_RAM__
 /* Globals pointers for FSP structures */
@@ -62,6 +63,17 @@ void FspNotify (u32 Phase)
 #endif /* #ifndef __PRE_RAM__ */
 
 #ifdef __PRE_RAM__
+
+/* The FSP returns here after the fsp_early_init call */
+static void ChipsetFspReturnPoint(EFI_STATUS Status, VOID *HobListPtr)
+{
+	*(void **)CBMEM_FSP_HOB_PTR = HobListPtr;
+
+	if (Status == 0xFFFFFFFF)
+		system_reset();
+
+	romstage_main_continue(Status, HobListPtr);
+}
 
 /*
  * Call the FSP to do memory init. The FSP doesn't return to this function.

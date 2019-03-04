@@ -24,8 +24,6 @@
 #include <stdint.h>
 #include <fsp.h>
 
-void romstage_main_continue(EFI_STATUS status, void *hob_list_ptr);
-
 #define NUM_ROMSTAGE_TS 4
 
 void early_mainboard_romstage_entry(void);

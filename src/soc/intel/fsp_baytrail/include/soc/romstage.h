@@ -27,7 +27,6 @@ void report_platform_info(void);
 #include <drivers/intel/fsp1_0/fsp_util.h>
 
 void main(FSP_INFO_HEADER *fsp_info_header);
-void romstage_main_continue(EFI_STATUS status, void *hob_list_ptr);
 uint32_t chipset_prev_sleep_state(uint32_t clear);
 
 #define NUM_ROMSTAGE_TS 4

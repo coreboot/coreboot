@@ -19,7 +19,6 @@
 #include <console/console.h>
 #include <bootstate.h>
 #include <cbmem.h>
-#include <cf9_reset.h>
 #include <device/device.h>
 #include <southbridge/intel/fsp_rangeley/pci_devs.h>
 #include <drivers/intel/fsp1_0/fsp_util.h>
@@ -164,18 +163,6 @@ void chipset_fsp_early_init(FSP_INIT_PARAMS *pFspInitParams,
 	pFspInitParams->NvsBufferPtr = find_and_set_fastboot_cache();
 
 	return;
-}
-
-/* The FSP returns here after the fsp_early_init call */
-void ChipsetFspReturnPoint(EFI_STATUS Status,
-		VOID *HobListPtr)
-{
-	*(void **)CBMEM_FSP_HOB_PTR = HobListPtr;
-
-	if (Status == 0xFFFFFFFF) {
-		system_reset();
-	}
-	romstage_main_continue(Status, HobListPtr);
 }
 
 #endif	/* __PRE_RAM__ */

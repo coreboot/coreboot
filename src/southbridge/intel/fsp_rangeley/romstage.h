@@ -29,6 +29,4 @@ void early_mainboard_romstage_entry(void);
 void late_mainboard_romstage_entry(void);
 void get_func_disables(uint32_t *mask);
 
-void romstage_main_continue(EFI_STATUS status, void *hob_list_ptr);
-
 #endif /* _RANGELEY_ROMSTAGE_H_ */

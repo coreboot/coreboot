@@ -14,32 +14,20 @@
  * GNU General Public License for more details.
  */
 
-#include <device/mmio.h>
+#include <stdint.h>
 #include <device/pci_ops.h>
 #include <console/console.h>
 #include <soc/iosf.h>
 
-#if ENV_RAMSTAGE
-#define IOSF_PCI_BASE (CONFIG_MMCONF_BASE_ADDRESS + (IOSF_PCI_DEV << 12))
+static inline void write_iosf_reg(int reg, uint32_t value)
+{
+	pci_s_write_config32(IOSF_PCI_DEV, reg, value);
+}
 
-static inline void write_iosf_reg(int reg, uint32_t value)
-{
-	write32((void *)(IOSF_PCI_BASE + reg), value);
-}
 static inline uint32_t read_iosf_reg(int reg)
 {
-	return read32((void *)(IOSF_PCI_BASE + reg));
+	return pci_s_read_config32(IOSF_PCI_DEV, reg);
 }
-#else
-static inline void write_iosf_reg(int reg, uint32_t value)
-{
-	pci_write_config32(IOSF_PCI_DEV, reg, value);
-}
-static inline uint32_t read_iosf_reg(int reg)
-{
-	return pci_read_config32(IOSF_PCI_DEV, reg);
-}
-#endif /* ENV_RAMSTAGE */
 
 /* Common sequences for all the port accesses. */
 static uint32_t iosf_read_port(uint32_t cr, int reg)

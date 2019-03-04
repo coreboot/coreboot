@@ -27,6 +27,7 @@ struct flashmap_descriptor *res = NULL;
 	char *strval;
 	struct unsigned_option maybe_intval;
 	struct flashmap_descriptor *region_ptr;
+	union flashmap_flags flags;
 	struct descriptor_list region_listhdr;
 }
 
@@ -49,20 +50,22 @@ struct descriptor_list {
 
 extern struct flashmap_descriptor *res;
 
-struct flashmap_descriptor *parse_descriptor(char *name,
-	struct unsigned_option offset, struct unsigned_option size,
-					struct descriptor_list children);
+struct flashmap_descriptor *parse_descriptor(
+	char *name, union flashmap_flags flags, struct unsigned_option offset,
+	struct unsigned_option size, struct descriptor_list children);
 void yyerror(const char *s);
 }
 
 %token <intval> INTEGER
 %token OCTAL
 %token <strval> STRING
+%token FLAG_CBFS
 
 %type <region_ptr> flash_region
 %type <strval> region_name
-%type <strval> region_annotation_opt
-%type <strval> region_annotation
+%type <flags> region_flags_opt
+%type <flags> region_flags
+%type <flags> region_flag
 %type <maybe_intval> region_offset_opt
 %type <maybe_intval> region_offset
 %type <maybe_intval> region_size_opt
@@ -75,23 +78,21 @@ void yyerror(const char *s);
 
 flash_chip: region_name region_offset_opt region_size region_list
 {
-	if (!(res = parse_descriptor($1, $2, $3, $4)))
+	union flashmap_flags flags = { .v=0 };
+	if (!(res = parse_descriptor($1, flags, $2, $3, $4)))
 		YYABORT;
 };
-flash_region: region_name region_annotation_opt region_offset_opt
-						region_size_opt region_list_opt
+flash_region: region_name region_flags_opt region_offset_opt region_size_opt
+	      region_list_opt
 {
-	struct flashmap_descriptor *node = parse_descriptor($1, $3, $4, $5);
+	struct flashmap_descriptor *node = parse_descriptor($1, $2, $3, $4, $5);
 	if (!node)
 		YYABORT;
 
-	char *annotation = $2;
-	if (annotation && !fmd_process_annotation_impl(node, annotation)) {
-		ERROR("Section '%s' has unexpected annotation '(%s)'\n",
-							node->name, annotation);
+	if (node->flags.f.cbfs && !fmd_process_flag_cbfs(node)) {
+		ERROR("Section '%s' cannot have flag 'CBFS''\n", node->name);
 		YYABORT;
 	}
-	free(annotation);
 
 	$$ = node;
 };
@@ -102,9 +103,10 @@ region_name: STRING
 		YYABORT;
 	}
 };
-region_annotation_opt: { $$ = NULL; }
-	| region_annotation;
-region_annotation: '(' STRING ')' { $$ = $2; };
+region_flags_opt: { $$ = (union flashmap_flags){ .v=0 }; }
+	| '(' region_flags ')' { $$ = $2; };
+region_flags: region_flag | region_flag region_flags { $$.v = $1.v | $2.v; };
+region_flag: FLAG_CBFS { $$.v = 0; $$.f.cbfs = 1; };
 region_offset_opt: { $$ = (struct unsigned_option){false, 0}; }
 	| region_offset;
 region_offset: '@' INTEGER { $$ = (struct unsigned_option){true, $2}; };
@@ -146,9 +148,9 @@ region_list_entries: flash_region
 
 %%
 
-struct flashmap_descriptor *parse_descriptor(char *name,
-	struct unsigned_option offset, struct unsigned_option size,
-					struct descriptor_list children)
+struct flashmap_descriptor *parse_descriptor(
+	char *name, union flashmap_flags flags, struct unsigned_option offset,
+	struct unsigned_option size, struct descriptor_list children)
 {
 	struct flashmap_descriptor *region = malloc(sizeof(*region));
 	if (!region) {
@@ -156,6 +158,7 @@ struct flashmap_descriptor *parse_descriptor(char *name,
 		return NULL;
 	}
 	region->name = name;
+	region->flags = flags;
 	region->offset_known = offset.val_known;
 	region->offset = offset.val;
 	region->size_known = size.val_known;

@@ -24,13 +24,16 @@ int copy_string(const char *src);
 %}
 
 %option noyywrap
+%s FLAGS
 
 MULTIPLIER [KMG]
 
 %%
-
 [[:space:]]+                /* Eat whitespace. */
 #.*$                        /* Eat comments. */
+\(                          BEGIN(FLAGS); return *yytext;
+<FLAGS>\)                   BEGIN(INITIAL); return *yytext;
+<FLAGS>CBFS                 return FLAG_CBFS;
 0{MULTIPLIER}?              |
 [1-9][0-9]*{MULTIPLIER}?    return parse_integer(yytext, 10);
 0[0-9]+{MULTIPLIER}?        return OCTAL;

@@ -57,26 +57,25 @@ static void descriptor_list_append(struct descriptor_list *list,
 }
 
 /* Implementation of cbfs module's callback; invoked during fmd file parsing */
-bool fmd_process_annotation_impl(const struct flashmap_descriptor *node,
-							const char *annotation)
+bool fmd_process_flag_cbfs(const struct flashmap_descriptor *node)
 {
-	if (strcmp(annotation, SECTION_ANNOTATION_CBFS) == 0 &&
-							node->list_len == 0) {
-		struct descriptor_node *list_node = malloc(sizeof(*list_node));
-		list_node->val = node;
-		list_node->next = NULL;
+	struct descriptor_node *list_node;
 
-		if (strcmp(node->name, SECTION_NAME_PRIMARY_CBFS) == 0) {
-			descriptor_list_prepend(&cbfs_sections, list_node);
-			seen_primary_section = true;
-		} else {
-			descriptor_list_append(&cbfs_sections, list_node);
-		}
+	if (node->list_len != 0)
+		return false;
 
-		return true;
+	list_node = (struct descriptor_node *)malloc(sizeof(*list_node));
+	list_node->val = node;
+	list_node->next = NULL;
+
+	if (strcmp(node->name, SECTION_NAME_PRIMARY_CBFS) == 0) {
+		descriptor_list_prepend(&cbfs_sections, list_node);
+		seen_primary_section = true;
+	} else {
+		descriptor_list_append(&cbfs_sections, list_node);
 	}
 
-	return false;
+	return true;
 }
 
 cbfs_section_iterator_t cbfs_sections_iterator(void)

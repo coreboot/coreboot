@@ -1,8 +1,8 @@
-/* A Bison parser, made by GNU Bison 3.0.2.  */
+/* A Bison parser, made by GNU Bison 3.0.4.  */
 
 /* Bison interface for Yacc-like parsers in C
 
-   Copyright (C) 1984, 1989-1990, 2000-2013 Free Software Foundation, Inc.
+   Copyright (C) 1984, 1989-1990, 2000-2015 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -40,7 +40,7 @@
 extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
-#line 37 "fmd_parser.y" /* yacc.c:1909  */
+#line 34 "fmd_parser.y" /* yacc.c:1909  */
 
 #include "fmd.h"
 #include "option.h"
@@ -60,9 +60,9 @@ struct descriptor_list {
 
 extern struct flashmap_descriptor *res;
 
-struct flashmap_descriptor *parse_descriptor(char *name,
-	struct unsigned_option offset, struct unsigned_option size,
-					struct descriptor_list children);
+struct flashmap_descriptor *parse_descriptor(
+	char *name, union flashmap_flags flags, struct unsigned_option offset,
+	struct unsigned_option size, struct descriptor_list children);
 void yyerror(const char *s);
 
 #line 69 "y.tab.h" /* yacc.c:1909  */
@@ -74,29 +74,34 @@ void yyerror(const char *s);
   {
     INTEGER = 258,
     OCTAL = 259,
-    STRING = 260
+    STRING = 260,
+    FLAG_CBFS = 261
   };
 #endif
 /* Tokens.  */
 #define INTEGER 258
 #define OCTAL 259
 #define STRING 260
+#define FLAG_CBFS 261
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-typedef union YYSTYPE YYSTYPE;
+
 union YYSTYPE
 {
-#line 29 "fmd_parser.y" /* yacc.c:1909  */
+#line 25 "fmd_parser.y" /* yacc.c:1909  */
 
 	unsigned intval;
 	char *strval;
 	struct unsigned_option maybe_intval;
 	struct flashmap_descriptor *region_ptr;
+	union flashmap_flags flags;
 	struct descriptor_list region_listhdr;
 
-#line 99 "y.tab.h" /* yacc.c:1909  */
+#line 102 "y.tab.h" /* yacc.c:1909  */
 };
+
+typedef union YYSTYPE YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
 #endif

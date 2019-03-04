@@ -23,6 +23,19 @@
 
 #define FMD_NOTFOUND UINT_MAX
 
+/**
+ * Flags used by flashmap_descriptor.
+ * These flags can be set by adding (NAME) after description name.
+ * For example, declaring a CBFS section named as COREBOOT for 16k:
+ *   COREBOOT(CBFS) 16k
+ */
+union flashmap_flags {
+	struct {
+		int cbfs: 1;  /* The section contains a CBFS area. */
+	} f;
+	int v;
+};
+
 struct flashmap_descriptor {
 	char *name;
 	bool offset_known;
@@ -40,32 +53,25 @@ struct flashmap_descriptor {
 	/** It is an error to read this field unless size_known is set. */
 	unsigned size;
 	size_t list_len;
+	union flashmap_flags flags;
 	/** It is an error to dereference this array if list_len is 0. */
 	struct flashmap_descriptor **list;
 };
 
 /**
- * **Client-defined** callback.
- * This call is used to notify client code that the user has annotated the given
- * section node by accompanying it with a string enclosed in parentheses. It is
- * only invoked for nodes that have annotations, and then only once per node.
- * The annotations' syntactic validity and semantic meaning are not determined
- * by the compiler; rather, implementations of this function should use their
- * return type to tell the compiler whether the annotation was valid syntax, as
- * well as perform whatever actions are necessary given the particular
- * annotation. It's worth reiterating that this is only called on section nodes,
- * and will never be called with the final, complete flashmap_descriptor because
- * it is impossible to annotate the image as a whole. Note that, although the
- * node received by this function will be preserved in memory as part of the
- * ultimate flashmap_descriptor, the annotation string will only persist during
- * this function call: if the implementation needs it longer, it must copy it.
+ * **Client-defined** callback for flag "CBFS".
+ * This call is used to notify client code that the user has requested the given
+ * section node to be flagged with "CBFS". Implementations of this function
+ * should use their return type to tell the compiler whether the flag can be
+ * applied and can perform whatever actions are necessary.
+ * It's worth reiterating that this is only called on section nodes, and will
+ * never be called with the final, complete flashmap_descriptor because
+ * it is impossible to set flags for the image as a whole.
  *
- * @param flashmap_descriptor The section node carrying the annotation
- * @param annotation          What the user wrote (only valid during callback)
- * @return                    Whether this annotation represented valid syntax
+ * @param flashmap_descriptor The section node with flag set
+ * @return                    Whether this flag can be applied
  */
-bool fmd_process_annotation_impl(const struct flashmap_descriptor *node,
-							const char *annotation);
+bool fmd_process_flag_cbfs(const struct flashmap_descriptor *node);
 
 /**
  * Parse and validate a flashmap descriptor from the specified stream.

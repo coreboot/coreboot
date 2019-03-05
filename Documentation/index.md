@@ -181,6 +181,7 @@ Contents:
 * [System on Chip-specific documentation](soc/index.md)
 * [Mainboard-specific documentation](mainboard/index.md)
 * [Payload-specific documentation](lib/payloads/index.md)
+* [Library-specific documentation](lib/index.md)
 * [SuperIO-specific documentation](superio/index.md)
 * [Vendorcode-specific documentation](vendorcode/index.md)
 * [Utilities](util.md)

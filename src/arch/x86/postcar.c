@@ -19,6 +19,7 @@
 #include <cpu/x86/mtrr.h>
 #include <main_decl.h>
 #include <program_loading.h>
+#include <timestamp.h>
 
 /*
  * Systems without a native coreboot cache-as-ram teardown may implement
@@ -34,6 +35,8 @@ void main(void)
 
 	/* Recover cbmem so infrastruture using it is functional. */
 	cbmem_initialize();
+
+	timestamp_add_now(TS_START_POSTCAR);
 
 	display_mtrrs();
 

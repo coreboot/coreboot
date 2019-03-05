@@ -63,6 +63,8 @@ enum timestamp_id {
 	TS_LOAD_PAYLOAD = 90,
 	TS_ACPI_WAKE_JUMP = 98,
 	TS_SELFBOOT_JUMP = 99,
+	TS_START_POSTCAR = 100,
+	TS_END_POSTCAR = 101,
 
 	/* 500+ reserved for vendorcode extensions (500-600: google/chromeos) */
 	TS_START_COPYVER = 501,
@@ -257,6 +259,8 @@ static const struct timestamp_id_to_name {
 	{ TS_FSP_BEFORE_END_OF_FIRMWARE, "calling FspNotify(EndOfFirmware)" },
 	{ TS_FSP_AFTER_END_OF_FIRMWARE,
 		"returning from FspNotify(EndOfFirmware)" },
+	{ TS_START_POSTCAR,	"start of postcar" },
+	{ TS_END_POSTCAR,	"end of postcar" },
 };
 
 #endif

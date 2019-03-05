@@ -128,6 +128,9 @@ void run_ramstage(void)
 	struct prog ramstage =
 		PROG_INIT(PROG_RAMSTAGE, CONFIG_CBFS_PREFIX "/ramstage");
 
+	if (ENV_POSTCAR)
+		timestamp_add_now(TS_END_POSTCAR);
+
 	timestamp_add_now(TS_END_ROMSTAGE);
 
 	/*

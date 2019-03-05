@@ -1,0 +1,68 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+
+chip northbridge/intel/sandybridge
+	register "spd_addresses" = "{0x50, 0x51, 0x52, 0x53}"
+	device domain 0 on
+		subsystemid 0x103c 0x1631 inherit
+		device pci 01.0 on end # PCIe Bridge for discrete graphics
+		device pci 02.0 off end # Internal graphics
+
+		chip southbridge/intel/bd82x6x # Intel Series 6 Cougar Point PCH
+			register "docking_supported" = "0"
+			register "gen1_dec" = "0x007c0201"
+			register "gen2_dec" = "0x000c0101"
+			register "gen3_dec" = "0x00fcfe01"
+			register "gen4_dec" = "0x000402e9"
+			register "gpi6_routing" = "2"
+			register "pcie_hotplug_map" = "{ 0, 1, 1, 0, 0, 0, 0, 0 }"
+			# HDD(0), ODD(1), eSATA(4)
+			register "sata_port_map" = "0x3b"
+
+			register "usb_port_config" = "{
+				{ 1, 1, 0 }, /* USB0 */
+				{ 1, 1, 0 }, /* USB1 */
+				{ 1, 1, 1 }, /* eSATA */
+				{ 1, 1, 1 }, /* camera */
+				{ 0, 0, 2 },
+				{ 1, 0, 2 }, /* bluetooth */
+				{ 0, 0, 3 },
+				{ 1, 0, 3 },
+				{ 0, 1, 4 },
+				{ 1, 1, 4 }, /* WWAN */
+				{ 1, 0, 5 },
+				{ 1, 0, 5 }, /* dock */
+				{ 1, 0, 6 },
+				{ 1, 0, 6 },
+			}"
+
+			device pci 1c.0 on  end # PCIe Port #1, WWAN
+			device pci 1c.1 on  end # PCIe Port #2, ExpressCard
+			device pci 1c.2 on  end # PCIe Port #3, SD/MMC
+			device pci 1c.3 on  end # PCIe Port #4, WLAN
+			device pci 1c.4 off end # PCIe Port #5
+			device pci 1c.5 off end # PCIe Port #6
+			device pci 1c.6 off end # PCIe Port #7
+			device pci 1c.7 on  end # PCIe Port #8, NEC USB 3.0 Host Controller
+			device pci 1f.0 on	# LPC bridge
+				chip ec/hp/kbc1126
+					register "ec_data_port" = "0x60"
+					register "ec_cmd_port"  = "0x64"
+					register "ec_ctrl_reg"  = "0xca"
+					register "ec_fan_ctrl_value" = "0x6b"
+					device pnp ff.1 off end
+				end
+				chip superio/smsc/lpc47n217
+					device pnp 4e.3 on	# Parallel
+						io  0x60 = 0x378
+						irq 0x70 = 7
+					end
+					device pnp 4e.4 on	# COM1
+						io  0x60 = 0x3f8
+						irq 0x70 = 4
+					end
+					device pnp 4e.5 off end	# COM2
+				end
+			end
+		end
+	end
+end

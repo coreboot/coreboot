@@ -18,6 +18,9 @@ config BOARD_HP_8460P
 config BOARD_HP_8470P
 	bool "EliteBook 8470p"
 
+config BOARD_HP_8560W
+	bool "EliteBook 8560w"
+
 config BOARD_HP_8770W
 	bool "EliteBook 8770w"
 

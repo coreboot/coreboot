@@ -69,6 +69,12 @@ config BOARD_HP_8470P
 	select SOUTHBRIDGE_INTEL_C216
 	select SUPERIO_SMSC_LPC47N217
 
+config BOARD_HP_8560W
+	select BOARD_HP_SNB_IVB_LAPTOPS_COMMON
+	select BOARD_ROMSIZE_KB_8192
+	select SOUTHBRIDGE_INTEL_BD82X6X
+	select SUPERIO_SMSC_LPC47N217
+
 config BOARD_HP_8770W
 	select BOARD_HP_SNB_IVB_LAPTOPS_COMMON
 	select BOARD_ROMSIZE_KB_16384
@@ -118,6 +124,7 @@ config VARIANT_DIR
 	default "2760p"          if BOARD_HP_2760P
 	default "8460p"          if BOARD_HP_8460P
 	default "8470p"          if BOARD_HP_8470P
+	default "8560w"          if BOARD_HP_8560W
 	default "8770w"          if BOARD_HP_8770W
 	default "folio_9470m"    if BOARD_HP_FOLIO_9470M
 	default "probook_6360b"  if BOARD_HP_PROBOOK_6360B
@@ -130,6 +137,7 @@ config MAINBOARD_PART_NUMBER
 	default "EliteBook 2760p"          if BOARD_HP_2760P
 	default "EliteBook 8460p"          if BOARD_HP_8460P
 	default "EliteBook 8470p"          if BOARD_HP_8470P
+	default "EliteBook 8560w"          if BOARD_HP_8560W
 	default "EliteBook 8770w"          if BOARD_HP_8770W
 	default "EliteBook Folio 9470m"    if BOARD_HP_FOLIO_9470M
 	default "ProBook 6360b"            if BOARD_HP_PROBOOK_6360B
@@ -146,7 +154,7 @@ config VGA_BIOS_ID
 config USBDEBUG_HCD_INDEX
 	int
 	default 0 if BOARD_HP_2170P || BOARD_HP_FOLIO_9470M
-	default 1 if BOARD_HP_2560P || BOARD_HP_2760P || BOARD_HP_8460P
+	default 1 if BOARD_HP_2560P || BOARD_HP_2760P || BOARD_HP_8460P || BOARD_HP_8560W
 	default 2 if BOARD_HP_2570P || BOARD_HP_8470P || BOARD_HP_8770W
 	default 1 if BOARD_HP_PROBOOK_6360B # FIXME: check this
 	default 2 if BOARD_HP_REVOLVE_810_G1 # FIXME: check this

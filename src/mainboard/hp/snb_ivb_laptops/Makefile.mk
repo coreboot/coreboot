@@ -9,3 +9,5 @@ ramstage-$(CONFIG_MAINBOARD_USE_LIBGFXINIT) += variants/$(VARIANT_DIR)/gma-mainb
 
 # FIXME: Other variants with same size onboard RAM may exist.
 SPD_SOURCES = hynix_4g
+
+subdirs-y += variants/$(VARIANT_DIR)

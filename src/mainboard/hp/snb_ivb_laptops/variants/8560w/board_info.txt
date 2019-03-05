@@ -1,0 +1,7 @@
+Category: laptop
+Board URL: https://support.hp.com/us-en/product/hp-elitebook-8560w-mobile-workstation/5071171
+ROM package: SOIC-8
+ROM protocol: SPI
+ROM socketed: n
+Flashrom support: y
+Release year: 2011

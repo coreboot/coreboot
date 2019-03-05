@@ -142,6 +142,7 @@ HP Laptops with KBC1126 EC <hp/hp_kbc1126_laptops.md>
 HP Sure Start <hp/hp_sure_start.md>
 EliteBook 2170p <hp/2170p.md>
 EliteBook 2560p <hp/2560p.md>
+EliteBook 8560w <hp/8560w.md>
 EliteBook 8760w <hp/8760w.md>
 EliteBook Folio 9480m <hp/folio_9480m.md>
 EliteBook 820 G2 <hp/elitebook_820_g2.md>

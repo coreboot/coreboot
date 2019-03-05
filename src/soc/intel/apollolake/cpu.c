@@ -73,7 +73,7 @@ void soc_core_init(struct device *cpu)
 	/* Clear out pending MCEs */
 	/* TODO(adurbin): Some of these banks are core vs package
 			  scope. For now every CPU clears every bank. */
-	if (IS_ENABLED(SOC_INTEL_COMMON_BLOCK_SGX) ||
+	if (IS_ENABLED(CONFIG_SOC_INTEL_COMMON_BLOCK_SGX) ||
 	    acpi_get_sleep_type() == ACPI_S5)
 		mca_configure(NULL);
 

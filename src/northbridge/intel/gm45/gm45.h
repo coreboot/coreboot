@@ -195,8 +195,6 @@ enum {
 #define DEFAULT_EPBAR		0xfed19000
 #define DEFAULT_HECIBAR		((u8 *)0xfed1a000)
 
-				/* 4 KB per PCIe device */
-#define DEFAULT_PCIEXBAR	CONFIG_MMCONF_BASE_ADDRESS
 
 #define IOMMU_BASE1 0xfed90000
 #define IOMMU_BASE2 0xfed91000

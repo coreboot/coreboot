@@ -17,7 +17,6 @@
 #define NORTHBRIDGE_INTEL_I945_H
 
 /* Northbridge BARs */
-#define DEFAULT_PCIEXBAR	CONFIG_MMCONF_BASE_ADDRESS	/* 4 KB per PCIe device */
 #define DEFAULT_X60BAR		0xfed13000
 #ifndef __ACPI__
 #define DEFAULT_MCHBAR		((u8 *)0xfed14000)	/* 16 KB */

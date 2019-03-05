@@ -52,8 +52,6 @@ typedef struct {
 
 #define DEFAULT_HECIBAR		((u8 *)0xfed17000)
 
-				/* 4 KB per PCIe device */
-#define DEFAULT_PCIEXBAR	CONFIG_MMCONF_BASE_ADDRESS
 
 #define IOMMU_BASE1 0xfed90000
 #define IOMMU_BASE2 0xfed91000
@@ -128,7 +126,6 @@ typedef struct {
 #define IED_SIZE	0x400000
 
 /* Northbridge BARs */
-#define DEFAULT_PCIEXBAR	CONFIG_MMCONF_BASE_ADDRESS	/* 4 KB per PCIe device */
 #ifndef __ACPI__
 #define DEFAULT_MCHBAR		((u8 *)0xfed10000)	/* 16 KB */
 #define DEFAULT_DMIBAR		((u8 *)0xfed18000)	/* 4 KB */

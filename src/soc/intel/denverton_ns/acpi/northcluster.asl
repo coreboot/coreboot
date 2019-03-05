@@ -138,7 +138,7 @@ Device (PDRC)
 
 	Name (PDRS, ResourceTemplate() {
 		// PCIEXBAR memory range
-		Memory32Fixed(ReadOnly, DEFAULT_PCIEXBAR, 0x10000000)
+		Memory32Fixed(ReadOnly, CONFIG_MMCONF_BASE_ADDRESS, 0x10000000)
 		// TSEG
 		Memory32Fixed(ReadOnly, 0x00000000, 0x00000000, TSMB)
 	})

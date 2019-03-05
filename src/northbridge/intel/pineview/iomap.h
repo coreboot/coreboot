@@ -17,9 +17,6 @@
 #ifndef PINEVIEW_IOMAP_H
 #define PINEVIEW_IOMAP_H
 
-/* 4 KB per PCIe device */
-#define DEFAULT_PCIEXBAR	CONFIG_MMCONF_BASE_ADDRESS
-
 #define DEFAULT_MCHBAR		0xfed14000	/* 16 KB */
 #define DEFAULT_DMIBAR		0xfed18000	/* 4 KB */
 #define DEFAULT_EPBAR		0xfed19000	/* 4 KB */

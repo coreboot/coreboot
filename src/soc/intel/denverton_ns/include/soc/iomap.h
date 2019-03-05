@@ -23,7 +23,6 @@
  */
 
 /* Northbridge BARs */
-#define DEFAULT_PCIEXBAR CONFIG_MMCONF_BASE_ADDRESS /* 4 KB per PCIe device */
 #define DEFAULT_MCHBAR 0xfed10000		    /* 16 KB */
 
 /* Southbridge internal device IO BARs (Set to match FSP settings) */

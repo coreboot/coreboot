@@ -236,11 +236,11 @@ sub check_for_ifdef {
     my @collected_is_enabled;
     if ($dont_use_git_grep) {
         @collected_is_enabled =
-            `grep -Irn -- "[[:space:]]IS_ENABLED[[:space:]]*(.*)" | grep -v '$exclude_dirs_and_files' | grep -v "kconfig.h"`;
+            `grep -Irn -- "\\<IS_ENABLED[[:space:]]*(.*)" | grep -v '$exclude_dirs_and_files' | grep -v "kconfig.h"`;
     }
     else {
         @collected_is_enabled =
-            `git grep -In -- "[[:space:]]IS_ENABLED[[:space:]]*(.*)" | grep -v '$exclude_dirs_and_files' | grep -v "kconfig.h"`;
+            `git grep -In -- "\\<IS_ENABLED[[:space:]]*(.*)" | grep -v '$exclude_dirs_and_files' | grep -v "kconfig.h"`;
     }
 
     while ( my $line = shift @collected_is_enabled ) {

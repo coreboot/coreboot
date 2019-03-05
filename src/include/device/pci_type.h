@@ -18,6 +18,10 @@
 
 typedef u32 pci_devfn_t;
 
+/* Convert pci_devfn_t to offset in MMCONF space.
+ * As it is one-to-one,  nothing needs to be done. */
+#define PCI_DEVFN_OFFSET(x) ((x))
+
 #define PCI_DEV(SEGBUS, DEV, FN) ( \
 	(((SEGBUS) & 0xFFF) << 20) | \
 	(((DEV) & 0x1F) << 15) | \

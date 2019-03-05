@@ -10,3 +10,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
+
+#include <stdint.h>
+
+u8 *const pci_mmconf = (void *)(uintptr_t)CONFIG_MMCONF_BASE_ADDRESS;

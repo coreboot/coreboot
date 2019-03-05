@@ -107,12 +107,12 @@ func (l *LogDevReader) GetACPI() (Tables map[string][]byte) {
 	curTable := ""
 	for scanner.Scan() {
 		line := scanner.Text()
-		/* Only supports ACPI tables up to 0x10000 in size, FIXME if needed */
-		is_hexline, _ := regexp.MatchString(" *[0-9A-Fa-f]{4}: ", line)
+		/* Only supports ACPI tables up to 0x100000 in size, FIXME if needed */
+		is_hexline, _ := regexp.MatchString(" *[0-9A-Fa-f]{4,5}: ", line)
 		switch {
 		case len(line) >= 6 && line[5] == '@':
 			curTable = line[0:4]
-			Tables[curTable] = make([]byte, 0, 100000)
+			Tables[curTable] = make([]byte, 0, 0x100000)
 		case is_hexline:
 			Tables[curTable] = l.AssignHexLine(line, Tables[curTable])
 		}

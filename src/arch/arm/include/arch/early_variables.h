@@ -18,7 +18,9 @@
 
 static inline void *car_get_var_ptr(void *var) { return var; }
 #define car_get_var(var) (var)
-#define car_sync_var(var) (var)
 #define car_set_var(var, val) do { (var) = (val); } while (0)
+
+#define car_get_ptr car_get_var
+#define car_set_ptr car_set_var
 
 #endif

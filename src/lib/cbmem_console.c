@@ -73,12 +73,12 @@ static u8 static_console[STATIC_CONSOLE_SIZE];
 
 static struct cbmem_console *current_console(void)
 {
-	return car_sync_var(cbmem_console_p);
+	return car_get_ptr(cbmem_console_p);
 }
 
 static void current_console_set(struct cbmem_console *new_console_p)
 {
-	car_set_var(cbmem_console_p, new_console_p);
+	car_set_ptr(cbmem_console_p, new_console_p);
 }
 
 static int buffer_valid(struct cbmem_console *cbm_cons_p, u32 total_space)

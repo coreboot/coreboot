@@ -4,7 +4,7 @@
  * Copyright (C) 2008-2009 coresystems GmbH
  * Copyright (C) 2013 Google Inc.
  * Copyright (C) 2015 Intel Corp.
- * Copyright (C) 2018 Eltan B.V.
+ * Copyright (C) 2018-2019 Eltan B.V.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -267,12 +267,21 @@ static void sc_init(struct device *dev)
 	int i;
 	const unsigned long pr_base = ILB_BASE_ADDRESS + 0x08;
 	const unsigned long ir_base = ILB_BASE_ADDRESS + 0x20;
+	const unsigned long ilb_base = ILB_BASE_ADDRESS;
 	void *gen_pmcon1 = (void *)(PMC_BASE_ADDRESS + GEN_PMCON1);
 	const struct soc_irq_route *ir = &global_soc_irq_route;
 	struct soc_intel_braswell_config *config = dev->chip_info;
 
 	printk(BIOS_SPEW, "%s/%s (%s)\n",
 			__FILE__, __func__, dev_name(dev));
+
+	/* Set the value for PCI command register. */
+	pci_write_config16(dev, PCI_COMMAND,
+		PCI_COMMAND_IO | PCI_COMMAND_MEMORY |
+		PCI_COMMAND_MASTER | PCI_COMMAND_SPECIAL);
+
+	/* Use IRQ9 for SCI Interrupt */
+	write32((void *)(ilb_base + ACTL), 0);
 
 	isa_dma_init();
 

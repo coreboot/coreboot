@@ -150,7 +150,7 @@ int acpi_create_madt_lapic(acpi_madt_lapic_t *lapic, u8 cpu, u8 apic)
 unsigned long acpi_create_madt_lapics(unsigned long current)
 {
 	struct device *cpu;
-	int index, apic_ids[CONFIG_MAX_CPUS], num_cpus = 0;
+	int index, apic_ids[CONFIG_MAX_CPUS] = {0}, num_cpus = 0;
 
 	for (cpu = all_devices; cpu; cpu = cpu->next) {
 		if ((cpu->path.type != DEVICE_PATH_APIC) ||

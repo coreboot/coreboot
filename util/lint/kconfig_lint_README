@@ -43,23 +43,20 @@ Notes:
 - Show when the range set for a hex or int does not match a previous range
 
 Warnings in Kconfig files:
-- Any 'default' expressions that can never be reached.
 - Symbols that are defined but never used.
-- Directories specified in a 'source' keyword do not exist.
 - A 'source' keyword loading a Kconfig file that has already been loaded.
 - A 'source' keyword loading a Kconfig file that doesn't exist. Note that
   globs are excluded from this check.
 
 Warnings in coreboot source files:
-- #define of Kconfig symbol - Symbols should only be defined in Kconfig.
-- #define starting with 'CONFIG_' - these should be reserved for Kconfig
-  symbols.
 - 'IS_ENABLED()' block that could not be interpreted.
 - Kconfig files that are not loaded by a 'source' keyword.
-- '#ifdef' or '#if defined' used on bool, int, or hex - these are always
-  defined in coreboot's version of Kconfig.
+- IS_ENABLED() used on a Kconfig (deprecated in favor of CONFIG())
+- Naked use of boolean CONFIG_XXX Kconfig in C that's not wrapped in CONFIG()
 
 Errors in Kconfig files:
+- Any 'default' expressions that can never be reached.
+- Directories specified in a 'source' keyword do not exist.
 - Selects do not work on symbols created in a choice block.
 - All symbols used in selects or expressions must be defined in a config
   statement.
@@ -94,8 +91,13 @@ Errors in Kconfig that are also caught by Kconfig itself:
 - Symbols with no defined type.
 
 Errors in coreboot source files:
-- The IS_ENABLED macro is only valid for bool symbols.
-- The IS_ENABLED used on unknown CONFIG_ value, like an obsolete symbol.
-- The IS_ENABLED macro is used on a symbol without the CONFIG_ prefix.
+- #define of Kconfig symbol - Symbols should only be defined in Kconfig.
+- #define starting with 'CONFIG_' - these should be reserved for Kconfig
+  symbols.
+- '#ifdef' or '#if defined' used on bool, int, or hex - these are always
+  defined in coreboot's version of Kconfig.
+- The CONFIG() and IS_ENABLED() macros is only valid for bool symbols.
+- CONFIG() or IS_ENABLED() used on unknown Kconfig, like an obsolete symbol.
+- The IS_ENABLED() macro is used on a symbol without the CONFIG_ prefix.
 
 TODO: check for choice entries at the top level

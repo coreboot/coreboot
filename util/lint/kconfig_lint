@@ -199,35 +199,16 @@ sub check_for_ifdef {
             my $symbol = $3;
 
             if ( ( exists $symbols{$symbol} ) && ( $symbols{$symbol}{type} ne "string" ) ) {
-                show_warning( "#ifdef 'CONFIG_$symbol' used at $file:$lineno."
+                show_error( "#ifdef 'CONFIG_$symbol' used at $file:$lineno."
                       . "  Symbols of type '$symbols{$symbol}{type}' are always defined." );
             }
-        } elsif ( $line =~ /^([^:]+):(\d+):\s*#\s*if\s+!?\s*defined\s*\(?\s*CONFIG(?:_|\()(\w+)/ ) {
+        } elsif ( $line =~ /^([^:]+):(\d+):.+defined\s*\(?\s*CONFIG(?:_|\()(\w+)/ ) {
             my $file   = $1;
             my $lineno = $2;
             my $symbol = $3;
 
             if ( ( exists $symbols{$symbol} ) && ( $symbols{$symbol}{type} ne "string" ) ) {
-                show_warning( "#ifdef 'CONFIG_$symbol' used at $file:$lineno."
-                      . "  Symbols of type '$symbols{$symbol}{type}' are always defined." );
-            }
-        }
-    }
-
-    # look for (#if) defined SYMBOL
-    @ifdef_symbols = @collected_symbols;
-    while ( my $line = shift @ifdef_symbols ) {
-        if ( $line =~ /^([^:]+):(\d+):.+defined\s*\(\s*CONFIG(?:_|\()(\w+)/ ) {
-            my $file   = $1;
-            my $lineno = $2;
-            my $symbol = $3;
-
-            #ignore '#if defined(symbol) && symbol' type statements
-            next
-              if ( $line =~ /^([^:]+):(\d+):.+defined\s*\(\s*CONFIG_$symbol.*(&&|\|\|)\s*!?\s*\(?\s*CONFIG_$symbol/ );
-
-            if ( ( exists $symbols{$symbol} ) && ( $symbols{$symbol}{type} ne "string" ) ) {
-                show_warning( "defined 'CONFIG_$symbol' used at $file:$lineno."
+                show_error( "defined(CONFIG_$symbol) used at $file:$lineno."
                       . "  Symbols of type '$symbols{$symbol}{type}' are always defined." );
             }
         }
@@ -272,10 +253,10 @@ sub check_for_def {
             my $symbol = $3;
 
             if ( ( exists $symbols{$symbol} ) ) {
-                show_warning("#define of symbol 'CONFIG_$symbol' used at $file:$lineno.");
+                show_error("#define of symbol 'CONFIG_$symbol' used at $file:$lineno.");
             }
             else {
-                show_warning( "#define 'CONFIG_$symbol' used at $file:$lineno."
+                show_error( "#define 'CONFIG_$symbol' used at $file:$lineno."
                       . "  Other #defines should not look like Kconfig symbols." );
             }
         }
@@ -383,6 +364,24 @@ sub check_is_enabled {
                           . "  CONFIG($symbol) should be used for type 'bool'" );
                 }
             }
+        } elsif ( $line =~ /^([^:]+):(\d+):(.+\bCONFIG_.+)/ ) {
+            my $file   = $1;
+            my $lineno = $2;
+            $line = $3;
+            if ( $file =~ /.*\.(c|h|asl|ld)/ ) {
+                while ( $line =~ /(.*)\bCONFIG_(\w+)(.*)/ && $1 !~ /\/\/|\/\*/ ) {
+                    my $symbol = $2;
+                    $line = $1 . $3;
+                    if ( exists $symbols{$symbol} ) {
+                        if ( $symbols{$symbol}{type} eq "bool" ) {
+                            show_warning( "Naked reference to CONFIG_$symbol used at $file:$lineno."
+                                . "  A 'bool' Kconfig should always be accessed through CONFIG($symbol)." );
+                        }
+                    } else {
+                        show_warning( "Unknown config option CONFIG_$symbol used at $file:$lineno." );
+                    }
+                }
+            }
         }
     }
 }
@@ -437,7 +436,7 @@ sub check_defaults {
                                 }
                         } elsif  ($symbols{$sym}{type} eq "bool") {
                             if ($symbols{$sym}{$sym_num}{default}{$def_num}{default} =~ /[01YN]/) {
-                                show_warning("default value ($symbols{$sym}{$sym_num}{default}{$def_num}{default}) for bool symbol $sym uses value other than y/n at $filename:$line_no.");
+                                show_error("default value ($symbols{$sym}{$sym_num}{default}{$def_num}{default}) for bool symbol $sym uses value other than y/n at $filename:$line_no.");
                             } else {
                                 show_error("non bool default value ($symbols{$sym}{$sym_num}{default}{$def_num}{default}) used for bool symbol $sym at $filename:$line_no.");
                             }
@@ -447,7 +446,7 @@ sub check_defaults {
 
                 #if a default is already set, display an error
                 if ($default_set) {
-                    show_warning( "Default for '$sym' referenced at $filename:$line_no will never be set"
+                    show_error( "Default for '$sym' referenced at $filename:$line_no will never be set"
                           . " - overridden by default set at $default_filename:$default_line_no" );
                 }
                 else {
@@ -1140,7 +1139,7 @@ sub handle_type {
     ( $type, $expression ) = handle_if_line( $type, $inside_config, $filename, $line_no );
 
     if ( $type =~ /tristate/ ) {
-        show_warning("$filename:$line_no - tristate types are not used.");
+        show_error("$filename:$line_no - tristate types are not used.");
     }
 
     if ($inside_config) {
@@ -1265,7 +1264,7 @@ sub load_kconfig_file {
 
         #the directory should exist when using a glob
         else {
-            show_warning("Could not find dir '$dir_prefix'");
+            show_error("Could not find dir '$dir_prefix'");
         }
     }
 

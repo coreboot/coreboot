@@ -13,7 +13,6 @@
 # GNU General Public License for more details.
 #
 
-romstage-y += power_state.c
 romstage-y += romstage.c
 romstage-y += fsp_params.c
 romstage-y += systemagent.c

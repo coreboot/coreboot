@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <device/device.h>
 #include <arch/acpigen.h>
 
 int get_cst_entries(acpi_cstate_t **entries)

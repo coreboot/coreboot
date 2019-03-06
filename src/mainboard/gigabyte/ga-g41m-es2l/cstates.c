@@ -14,8 +14,6 @@
  */
 
 #include <arch/acpigen.h>
-#include <device/device.h>
-#include <southbridge/intel/i82801gx/i82801gx.h>
 
 static acpi_cstate_t cst_entries[] = {};
 

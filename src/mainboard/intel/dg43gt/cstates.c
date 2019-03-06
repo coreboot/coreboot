@@ -12,8 +12,6 @@
  */
 
 #include <arch/acpigen.h>
-#include <device/device.h>
-#include <southbridge/intel/i82801jx/i82801jx.h>
 
 int get_cst_entries(acpi_cstate_t **entries)
 {

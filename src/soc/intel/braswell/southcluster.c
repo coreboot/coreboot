@@ -20,7 +20,6 @@
 #include <device/mmio.h>
 #include <device/pci_ops.h>
 #include <arch/acpi.h>
-#include <arch/acpigen.h>
 #include <bootstate.h>
 #include "chip.h"
 #include <console/console.h>

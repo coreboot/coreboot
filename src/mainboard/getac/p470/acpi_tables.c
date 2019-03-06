@@ -18,7 +18,6 @@
 #include <string.h>
 #include <console/console.h>
 #include <arch/acpi.h>
-#include <arch/acpigen.h>
 #include <arch/smp/mpspec.h>
 #include <device/device.h>
 #include <device/pci.h>

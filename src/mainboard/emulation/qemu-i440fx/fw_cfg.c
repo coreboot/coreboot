@@ -16,7 +16,7 @@
 #include <smbios.h>
 #include <console/console.h>
 #include <arch/io.h>
-#include <arch/acpigen.h>
+#include <arch/acpi.h>
 #include <commonlib/endian.h>
 
 #include "fw_cfg.h"

@@ -14,7 +14,6 @@
  */
 
 #include <arch/acpi.h>
-#include <arch/acpigen.h>
 #include <console/console.h>
 #include <drivers/i2c/designware/dw_i2c.h>
 #include <soc/iomap.h>

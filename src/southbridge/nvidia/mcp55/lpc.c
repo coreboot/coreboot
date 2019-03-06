@@ -32,9 +32,6 @@
 #include <cpu/x86/lapic.h>
 #include <arch/acpi.h>
 #include <stdlib.h>
-#if CONFIG(HAVE_ACPI_TABLES)
-#include <arch/acpigen.h>
-#endif
 #include <cpu/amd/powernow.h>
 #include "mcp55.h"
 

@@ -17,14 +17,12 @@
 #include <string.h>
 #include <arch/acpi.h>
 #include <arch/ioapic.h>
-#include <arch/acpigen.h>
 #include <arch/smp/mpspec.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <soc/acpi.h>
 #include <soc/nvs.h>
 #include <variant/thermal.h>
-
 
 static void acpi_update_thermal_table(global_nvs_t *gnvs)
 {

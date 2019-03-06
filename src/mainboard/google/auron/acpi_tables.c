@@ -14,7 +14,7 @@
  */
 
 #include <arch/ioapic.h>
-#include <arch/acpigen.h>
+#include <arch/acpi.h>
 #include <soc/acpi.h>
 #include <soc/nvs.h>
 #include <variant/thermal.h>

@@ -45,7 +45,7 @@
  * @defgroup malloc Memory allocation functions
  * @{
  */
-#if IS_ENABLED(CONFIG_LP_DEBUG_MALLOC) && !defined(IN_MALLOC_C)
+#if CONFIG(LP_DEBUG_MALLOC) && !defined(IN_MALLOC_C)
 #define free(p)	\
 	({ \
 	 extern void print_malloc_map(void); \
@@ -222,7 +222,7 @@ void gdb_exit(s8 exit_status);
 void halt(void) __attribute__((noreturn));
 void exit(int status) __attribute__((noreturn));
 #define abort() halt()    /**< Alias for the halt() function */
-#if IS_ENABLED(CONFIG_LP_REMOTEGDB)
+#if CONFIG(LP_REMOTEGDB)
 /* Override abort()/halt() to trap into GDB if it is enabled. */
 #define halt() do { gdb_enter(); halt(); } while (0)
 #endif

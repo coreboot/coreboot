@@ -31,27 +31,27 @@
 #include <libpayload.h>
 #include <video_console.h>
 
-#if IS_ENABLED(CONFIG_LP_GEODELX_VIDEO_CONSOLE)
+#if CONFIG(LP_GEODELX_VIDEO_CONSOLE)
 extern struct video_console geodelx_video_console;
 #endif
 
-#if IS_ENABLED(CONFIG_LP_COREBOOT_VIDEO_CONSOLE)
+#if CONFIG(LP_COREBOOT_VIDEO_CONSOLE)
 extern struct video_console coreboot_video_console;
 #endif
 
-#if IS_ENABLED(CONFIG_LP_VGA_VIDEO_CONSOLE)
+#if CONFIG(LP_VGA_VIDEO_CONSOLE)
 extern struct video_console vga_video_console;
 #endif
 
 static struct video_console *console_list[] =
 {
-#if IS_ENABLED(CONFIG_LP_GEODELX_VIDEO_CONSOLE)
+#if CONFIG(LP_GEODELX_VIDEO_CONSOLE)
 	&geodelx_video_console,
 #endif
-#if IS_ENABLED(CONFIG_LP_COREBOOT_VIDEO_CONSOLE)
+#if CONFIG(LP_COREBOOT_VIDEO_CONSOLE)
 	&coreboot_video_console,
 #endif
-#if IS_ENABLED(CONFIG_LP_VGA_VIDEO_CONSOLE)
+#if CONFIG(LP_VGA_VIDEO_CONSOLE)
 	&vga_video_console,
 #endif
 };

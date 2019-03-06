@@ -45,7 +45,7 @@ static struct layout_maps *map;
 static int modifier = 0;
 
 static struct layout_maps keyboard_layouts[] = {
-#if IS_ENABLED(CONFIG_LP_PC_KEYBOARD_LAYOUT_US)
+#if CONFIG(LP_PC_KEYBOARD_LAYOUT_US)
 { .country = "us", .map = {
 	{ /* No modifier */
 	 0x00, 0x1B, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36,
@@ -101,7 +101,7 @@ static struct layout_maps keyboard_layouts[] = {
 	 }
 }},
 #endif
-#if IS_ENABLED(CONFIG_LP_PC_KEYBOARD_LAYOUT_DE)
+#if CONFIG(LP_PC_KEYBOARD_LAYOUT_DE)
 { .country = "de", .map = {
 	{ /* No modifier */
 	 0x00, 0x1B, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36,
@@ -309,16 +309,16 @@ void keyboard_init(void)
 
 	/* Set scancode set 1 */
 	ret = keyboard_cmd(I8042_KBCMD_SET_SCANCODE);
-	if (!ret && !IS_ENABLED(CONFIG_LP_PC_KEYBOARD_IGNORE_INIT_FAILURE))
+	if (!ret && !CONFIG(LP_PC_KEYBOARD_IGNORE_INIT_FAILURE))
 		return;
 
 	ret = keyboard_cmd(I8042_SCANCODE_SET_1);
-	if (!ret && !IS_ENABLED(CONFIG_LP_PC_KEYBOARD_IGNORE_INIT_FAILURE))
+	if (!ret && !CONFIG(LP_PC_KEYBOARD_IGNORE_INIT_FAILURE))
 		return;
 
 	/* Enable scanning */
 	ret = keyboard_cmd(I8042_KBCMD_EN);
-	if (!ret && !IS_ENABLED(CONFIG_LP_PC_KEYBOARD_IGNORE_INIT_FAILURE))
+	if (!ret && !CONFIG(LP_PC_KEYBOARD_IGNORE_INIT_FAILURE))
 		return;
 
 	console_add_input_driver(&cons);

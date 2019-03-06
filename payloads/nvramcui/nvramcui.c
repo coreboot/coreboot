@@ -176,7 +176,7 @@ int main(void)
 	int ch, done;
 	int i;
 
-	if (IS_ENABLED(CONFIG_LP_USB))
+	if (CONFIG(LP_USB))
 		usb_initialize();
 
 	/* coreboot data structures */

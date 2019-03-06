@@ -173,10 +173,10 @@ void exception_dispatch(void)
 		handlers[vec](vec);
 		goto success;
 	} else if (vec >= EXC_COUNT
-		   && IS_ENABLED(CONFIG_LP_IGNORE_UNKNOWN_INTERRUPTS)) {
+		   && CONFIG(LP_IGNORE_UNKNOWN_INTERRUPTS)) {
 		goto success;
 	} else if (vec >= EXC_COUNT
-		   && IS_ENABLED(CONFIG_LP_LOG_UNKNOWN_INTERRUPTS)) {
+		   && CONFIG(LP_LOG_UNKNOWN_INTERRUPTS)) {
 		printf("Ignoring interrupt vector %u\n", vec);
 		goto success;
 	}
@@ -192,7 +192,7 @@ void exception_dispatch(void)
 	return;
 
 success:
-	if (IS_ENABLED(CONFIG_LP_ENABLE_APIC))
+	if (CONFIG(LP_ENABLE_APIC))
 		apic_eoi(vec);
 }
 

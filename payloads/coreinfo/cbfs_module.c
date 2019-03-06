@@ -16,7 +16,7 @@
 #include "coreinfo.h"
 #include "endian.h"
 
-#if IS_ENABLED(CONFIG_MODULE_CBFS)
+#if CONFIG(MODULE_CBFS)
 
 #define FILES_VISIBLE		19
 

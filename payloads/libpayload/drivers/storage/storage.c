@@ -28,7 +28,7 @@
  */
 
 #include <libpayload.h>
-#if IS_ENABLED(CONFIG_LP_STORAGE_AHCI)
+#if CONFIG(LP_STORAGE_AHCI)
 # include <storage/ahci.h>
 #endif
 #include <storage/storage.h>
@@ -110,7 +110,7 @@ ssize_t storage_read_blocks512(const size_t dev_num,
  */
 void storage_initialize(void)
 {
-#if IS_ENABLED(CONFIG_LP_STORAGE_AHCI)
+#if CONFIG(LP_STORAGE_AHCI)
 	ahci_initialize();
 #endif
 }

@@ -40,7 +40,7 @@ static int mb_add_memrange(struct sysinfo_t *info, unsigned long long base,
 	if (info->n_memranges >= SYSINFO_MAX_MEM_RANGES)
 		return -1;
 
-#if IS_ENABLED(CONFIG_LP_MEMMAP_RAM_ONLY)
+#if CONFIG(LP_MEMMAP_RAM_ONLY)
 	/* 1 == normal RAM.  Ignore everything else for now */
 	if (type != 1)
 		return 0;

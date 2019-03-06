@@ -14,7 +14,7 @@
 #include "coreinfo.h"
 #include <commonlib/timestamp_serialized.h>
 
-#if IS_ENABLED(CONFIG_MODULE_TIMESTAMPS)
+#if CONFIG(MODULE_TIMESTAMPS)
 
 #define LINES_SHOWN 19
 #define TAB_WIDTH 2

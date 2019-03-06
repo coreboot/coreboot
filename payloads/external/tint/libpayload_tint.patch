@@ -371,7 +371,7 @@ diff -rupN tint-0.04+nmu1/tint.c tint/tint.c
     int ch;
     engine_t engine;
     /* Initialize */
-+   if (IS_ENABLED(CONFIG_LP_USB))
++   if (CONFIG(LP_USB))
 +      usb_initialize();
     rand_init ();							/* must be called before engine_init () */
     engine_init (&engine,score_function);	/* must be called before using engine.curshape */

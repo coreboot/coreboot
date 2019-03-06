@@ -16,7 +16,7 @@
 #include <multiboot_tables.h>
 #include "coreinfo.h"
 
-#if IS_ENABLED(CONFIG_MODULE_MULTIBOOT)
+#if CONFIG(MODULE_MULTIBOOT)
 
 #define MAX_MEMORY_COUNT  10
 

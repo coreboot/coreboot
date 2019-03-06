@@ -50,7 +50,7 @@ void arch_ndelay(uint64_t ns)
 	if (ns > APIC_INTERRUPT_LATENCY_NS)
 		apic_us = (ns - APIC_INTERRUPT_LATENCY_NS) / NSECS_PER_USEC;
 
-	if (IS_ENABLED(CONFIG_LP_ENABLE_APIC) && apic_initialized() && apic_us)
+	if (CONFIG(LP_ENABLE_APIC) && apic_initialized() && apic_us)
 		apic_delay(apic_us);
 
 	if (delta > PAUSE_THRESHOLD_TICKS)

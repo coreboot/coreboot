@@ -88,7 +88,7 @@ xhci_init_cycle_ring(transfer_ring_t *const tr, const size_t ring_size)
 }
 
 /* On Panther Point: switch ports shared with EHCI to xHCI */
-#if IS_ENABLED(CONFIG_LP_USB_PCI)
+#if CONFIG(LP_USB_PCI)
 static void
 xhci_switch_ppt_ports(pcidev_t addr)
 {
@@ -112,7 +112,7 @@ xhci_switch_ppt_ports(pcidev_t addr)
 }
 #endif
 
-#if IS_ENABLED(CONFIG_LP_USB_PCI)
+#if CONFIG(LP_USB_PCI)
 /* On Panther Point: switch all ports back to EHCI */
 static void
 xhci_switchback_ppt_ports(pcidev_t addr)
@@ -297,7 +297,7 @@ _free_xhci:
 	return NULL;
 }
 
-#if IS_ENABLED(CONFIG_LP_USB_PCI)
+#if CONFIG(LP_USB_PCI)
 hci_t *
 xhci_pci_init (pcidev_t addr)
 {
@@ -336,7 +336,7 @@ xhci_reset(hci_t *const controller)
 	 * Without this delay, the subsequent HC register access,
 	 * may result in a system hang very rarely.
 	 */
-	if (IS_ENABLED(CONFIG_LP_ARCH_X86))
+	if (CONFIG(LP_ARCH_X86))
 		mdelay(1);
 
 	xhci_debug("Resetting controller... ");
@@ -426,7 +426,7 @@ xhci_shutdown(hci_t *const controller)
 	xhci_t *const xhci = XHCI_INST(controller);
 	xhci_stop(controller);
 
-#if IS_ENABLED(CONFIG_LP_USB_PCI)
+#if CONFIG(LP_USB_PCI)
         if (controller->pcidev)
 		xhci_switchback_ppt_ports(controller->pcidev);
 #endif
@@ -563,7 +563,7 @@ xhci_enqueue_td(transfer_ring_t *const tr, const int ep, const size_t mps,
 			cur_length = length;
 			packets = 0;
 			length = 0;
-		} else if (!IS_ENABLED(CONFIG_LP_USB_XHCI_MTK_QUIRK)) {
+		} else if (!CONFIG(LP_USB_XHCI_MTK_QUIRK)) {
 			packets -= (residue + cur_length) / mps;
 			residue = (residue + cur_length) % mps;
 			length -= cur_length;
@@ -576,7 +576,7 @@ xhci_enqueue_td(transfer_ring_t *const tr, const int ep, const size_t mps,
 		TRB_SET(TDS, trb, MIN(TRB_MAX_TD_SIZE, packets));
 		TRB_SET(CH, trb, 1);
 
-		if (length && IS_ENABLED(CONFIG_LP_USB_XHCI_MTK_QUIRK)) {
+		if (length && CONFIG(LP_USB_XHCI_MTK_QUIRK)) {
 			/*
 			 * For MTK's xHCI controller, TDS defines a number of
 			 * packets that remain to be transferred for a TD after

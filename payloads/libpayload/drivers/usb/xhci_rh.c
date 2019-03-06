@@ -122,7 +122,7 @@ xhci_rh_reset_port(usbdev_t *const dev, const int port)
 static int
 xhci_rh_enable_port(usbdev_t *const dev, int port)
 {
-	if (IS_ENABLED(CONFIG_LP_USB_XHCI_MTK_QUIRK)) {
+	if (CONFIG(LP_USB_XHCI_MTK_QUIRK)) {
 		xhci_t *const xhci = XHCI_INST(dev->controller);
 		volatile u32 *const portsc =
 			&xhci->opreg->prs[port - 1].portsc;

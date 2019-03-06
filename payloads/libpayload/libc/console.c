@@ -102,16 +102,16 @@ int console_remove_output_driver(void *function)
 
 void console_init(void)
 {
-#if IS_ENABLED(CONFIG_LP_VIDEO_CONSOLE)
+#if CONFIG(LP_VIDEO_CONSOLE)
 	video_console_init();
 #endif
-#if IS_ENABLED(CONFIG_LP_SERIAL_CONSOLE)
+#if CONFIG(LP_SERIAL_CONSOLE)
 	serial_console_init();
 #endif
-#if IS_ENABLED(CONFIG_LP_PC_KEYBOARD)
+#if CONFIG(LP_PC_KEYBOARD)
 	keyboard_init();
 #endif
-#if IS_ENABLED(CONFIG_LP_CBMEM_CONSOLE)
+#if CONFIG(LP_CBMEM_CONSOLE)
 	cbmem_console_init();
 #endif
 }
@@ -147,7 +147,7 @@ int puts(const char *s)
 
 int havekey(void)
 {
-#if IS_ENABLED(CONFIG_LP_USB)
+#if CONFIG(LP_USB)
 	usb_poll();
 #endif
 	struct console_input_driver *in;
@@ -164,7 +164,7 @@ int havekey(void)
 int getchar(void)
 {
 	while (1) {
-#if IS_ENABLED(CONFIG_LP_USB)
+#if CONFIG(LP_USB)
 		usb_poll();
 #endif
 		struct console_input_driver *in;

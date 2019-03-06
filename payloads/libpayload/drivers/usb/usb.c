@@ -563,7 +563,7 @@ set_address (hci_t *controller, usb_speed speed, int hubport, int hubaddr)
 		break;
 	case hid_device:
 		usb_debug ("HID\n");
-#if IS_ENABLED(CONFIG_LP_USB_HID)
+#if CONFIG(LP_USB_HID)
 		dev->init = usb_hid_init;
 		return dev->address;
 #else
@@ -581,7 +581,7 @@ set_address (hci_t *controller, usb_speed speed, int hubport, int hubaddr)
 		break;
 	case msc_device:
 		usb_debug ("MSC\n");
-#if IS_ENABLED(CONFIG_LP_USB_MSC)
+#if CONFIG(LP_USB_MSC)
 		dev->init = usb_msc_init;
 		return dev->address;
 #else
@@ -590,7 +590,7 @@ set_address (hci_t *controller, usb_speed speed, int hubport, int hubaddr)
 		break;
 	case hub_device:
 		usb_debug ("hub\n");
-#if IS_ENABLED(CONFIG_LP_USB_HUB)
+#if CONFIG(LP_USB_HUB)
 		dev->init = usb_hub_init;
 		return dev->address;
 #else

@@ -850,7 +850,7 @@ ehci_init (unsigned long physical_bar)
 	return controller;
 }
 
-#if IS_ENABLED(CONFIG_LP_USB_PCI)
+#if CONFIG(LP_USB_PCI)
 hci_t *
 ehci_pci_init (pcidev_t addr)
 {

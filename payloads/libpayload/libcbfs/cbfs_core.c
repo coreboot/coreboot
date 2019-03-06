@@ -119,7 +119,7 @@ static int get_cbfs_range(uint32_t *offset, uint32_t *cbfs_end,
 	// Logical offset (for source media) of first file.
 	*offset = ntohl(header->offset);
 	*cbfs_end = ntohl(header->romsize);
-#if IS_ENABLED(CONFIG_LP_ARCH_X86)
+#if CONFIG(LP_ARCH_X86)
 	// resolve actual length of ROM used for CBFS components
 	// the bootblock size was not taken into account
 	*cbfs_end -= ntohl(header->bootblocksize);

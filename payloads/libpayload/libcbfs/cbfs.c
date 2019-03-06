@@ -31,11 +31,11 @@
 
 #ifdef LIBPAYLOAD
 # include <libpayload-config.h>
-# if IS_ENABLED(CONFIG_LP_LZMA)
+# if CONFIG(LP_LZMA)
 #  include <lzma.h>
 #  define CBFS_CORE_WITH_LZMA
 # endif
-# if IS_ENABLED(CONFIG_LP_LZ4)
+# if CONFIG(LP_LZ4)
 #  include <lz4.h>
 #  define CBFS_CORE_WITH_LZ4
 # endif

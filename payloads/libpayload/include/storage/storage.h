@@ -34,7 +34,7 @@
 #include <unistd.h>
 
 
-#if !IS_ENABLED(CONFIG_LP_STORAGE_64BIT_LBA)
+#if !CONFIG(LP_STORAGE_64BIT_LBA)
 typedef u32 lba_t;
 #else
 typedef u64 lba_t;

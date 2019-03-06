@@ -40,7 +40,7 @@
  */
 struct sysinfo_t lib_sysinfo = {
 	.cpu_khz = CPU_KHZ_DEFAULT,
-#if IS_ENABLED(CONFIG_LP_SERIAL_CONSOLE)
+#if CONFIG(LP_SERIAL_CONSOLE)
 	.ser_ioport = CONFIG_LP_SERIAL_IOBASE,
 #else
 	.ser_ioport = 0x3f8,
@@ -51,7 +51,7 @@ int lib_get_sysinfo(void)
 {
 	int ret;
 
-#if IS_ENABLED(CONFIG_LP_MULTIBOOT)
+#if CONFIG(LP_MULTIBOOT)
 	/* Get the information from the multiboot tables,
 	 * if they exist */
 	get_multiboot_info(&lib_sysinfo);

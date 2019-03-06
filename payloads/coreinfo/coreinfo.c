@@ -28,34 +28,34 @@ extern struct coreinfo_module cbfs_module;
 extern struct coreinfo_module timestamps_module;
 
 struct coreinfo_module *system_modules[] = {
-#if IS_ENABLED(CONFIG_MODULE_CPUINFO)
+#if CONFIG(MODULE_CPUINFO)
 	&cpuinfo_module,
 #endif
-#if IS_ENABLED(CONFIG_MODULE_PCI)
+#if CONFIG(MODULE_PCI)
 	&pci_module,
 #endif
-#if IS_ENABLED(CONFIG_MODULE_NVRAM)
+#if CONFIG(MODULE_NVRAM)
 	&nvram_module,
 #endif
-#if IS_ENABLED(CONFIG_MODULE_RAMDUMP)
+#if CONFIG(MODULE_RAMDUMP)
 	&ramdump_module,
 #endif
 };
 
 struct coreinfo_module *firmware_modules[] = {
-#if IS_ENABLED(CONFIG_MODULE_COREBOOT)
+#if CONFIG(MODULE_COREBOOT)
 	&coreboot_module,
 #endif
-#if IS_ENABLED(CONFIG_MODULE_MULTIBOOT)
+#if CONFIG(MODULE_MULTIBOOT)
 	&multiboot_module,
 #endif
-#if IS_ENABLED(CONFIG_MODULE_BOOTLOG)
+#if CONFIG(MODULE_BOOTLOG)
 	&bootlog_module,
 #endif
-#if IS_ENABLED(CONFIG_MODULE_CBFS)
+#if CONFIG(MODULE_CBFS)
 	&cbfs_module,
 #endif
-#if IS_ENABLED(CONFIG_MODULE_TIMESTAMPS)
+#if CONFIG(MODULE_TIMESTAMPS)
 	&timestamps_module,
 #endif
 };
@@ -114,7 +114,7 @@ static void print_submenu(struct coreinfo_cat *cat)
 	mvwprintw(menuwin, 0, 0, menu);
 }
 
-#if IS_ENABLED(CONFIG_SHOW_DATE_TIME)
+#if CONFIG(SHOW_DATE_TIME)
 static void print_time_and_date(void)
 {
 	struct tm tm;
@@ -149,7 +149,7 @@ static void print_menu(void)
 
 	mvwprintw(menuwin, 1, 0, menu);
 
-#if IS_ENABLED(CONFIG_SHOW_DATE_TIME)
+#if CONFIG(SHOW_DATE_TIME)
 	print_time_and_date();
 #endif
 }
@@ -253,7 +253,7 @@ static void loop(void)
 	while (1) {
 		int ch = -1;
 
-#if IS_ENABLED(CONFIG_SHOW_DATE_TIME)
+#if CONFIG(SHOW_DATE_TIME)
 		print_time_and_date();
 		wrefresh(menuwin);
 #endif
@@ -291,7 +291,7 @@ int main(void)
 {
 	int i, j;
 
-	if (IS_ENABLED(CONFIG_LP_USB))
+	if (CONFIG(LP_USB))
 		usb_initialize();
 
 	initscr();

@@ -72,7 +72,7 @@ int PDC_scr_open(int argc, char **argv)
     SP->lines = PDC_get_rows();
     SP->cols = PDC_get_columns();
 
-#if IS_ENABLED(CONFIG_LP_SPEAKER)
+#if CONFIG(LP_SPEAKER)
     SP->audible = TRUE;
 #endif
 

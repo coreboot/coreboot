@@ -18,7 +18,7 @@
 #include <libpayload.h>
 #include "coreinfo.h"
 
-#if IS_ENABLED(CONFIG_MODULE_PCI)
+#if CONFIG(MODULE_PCI)
 
 struct pci_devices {
 	pcidev_t device;

@@ -15,7 +15,7 @@
 
 #include "coreinfo.h"
 
-#if IS_ENABLED(CONFIG_MODULE_BOOTLOG)
+#if CONFIG(MODULE_BOOTLOG)
 
 #define LINES_SHOWN 19
 #define TAB_WIDTH 2

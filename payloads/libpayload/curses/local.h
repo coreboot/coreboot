@@ -70,13 +70,13 @@
 
 /* Flags used to determine what output methods are available */
 
-#if IS_ENABLED(CONFIG_LP_VIDEO_CONSOLE)
+#if CONFIG(LP_VIDEO_CONSOLE)
 #define F_ENABLE_CONSOLE 0x01
 #else
 #define F_ENABLE_CONSOLE 0x00
 #endif
 
-#if IS_ENABLED(CONFIG_LP_SERIAL_CONSOLE)
+#if CONFIG(LP_SERIAL_CONSOLE)
 #define F_ENABLE_SERIAL  0x02
 #else
 #define F_ENABLE_SERIAL  0x00

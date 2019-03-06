@@ -193,7 +193,7 @@ sub check_for_ifdef {
 
     #look for #ifdef SYMBOL
     while ( my $line = shift @ifdef_symbols ) {
-        if ( $line =~ /^([^:]+):(\d+):\s*#\s*ifn?def\s*\(?\s*CONFIG_(\w+)/ ) {
+        if ( $line =~ /^([^:]+):(\d+):\s*#\s*ifn?def\s*\(?\s*CONFIG(?:_|\()(\w+)/ ) {
             my $file   = $1;
             my $lineno = $2;
             my $symbol = $3;
@@ -202,7 +202,7 @@ sub check_for_ifdef {
                 show_warning( "#ifdef 'CONFIG_$symbol' used at $file:$lineno."
                       . "  Symbols of type '$symbols{$symbol}{type}' are always defined." );
             }
-        } elsif ( $line =~ /^([^:]+):(\d+):\s*#\s*if\s+!?\s*defined\s*\(?\s*CONFIG_(\w+)/ ) {
+        } elsif ( $line =~ /^([^:]+):(\d+):\s*#\s*if\s+!?\s*defined\s*\(?\s*CONFIG(?:_|\()(\w+)/ ) {
             my $file   = $1;
             my $lineno = $2;
             my $symbol = $3;
@@ -217,7 +217,7 @@ sub check_for_ifdef {
     # look for (#if) defined SYMBOL
     @ifdef_symbols = @collected_symbols;
     while ( my $line = shift @ifdef_symbols ) {
-        if ( $line =~ /^([^:]+):(\d+):.+defined\s*\(\s*CONFIG_(\w+)/ ) {
+        if ( $line =~ /^([^:]+):(\d+):.+defined\s*\(\s*CONFIG(?:_|\()(\w+)/ ) {
             my $file   = $1;
             my $lineno = $2;
             my $symbol = $3;
@@ -308,16 +308,35 @@ sub check_type {
 }
 
 #-------------------------------------------------------------------------------
-# check_is_enabled - The IS_ENABLED() macro is only valid for symbols of type
-# bool. It would probably work on type hex or int if the value was 0 or 1, but
-# this seems like a bad plan.  Using it on strings is dead out.
+# check_is_enabled - The IS_ENABLED() and CONFIG() macros are only valid for
+# symbols of type bool. It would probably work on type hex or int if the value
+# was 0 or 1, but this seems like a bad plan.  Using it on strings is dead out.
 #-------------------------------------------------------------------------------
 sub check_is_enabled {
     my @is_enabled_symbols = @collected_symbols;
 
     #sort through symbols found by grep and store them in a hash for easy access
     while ( my $line = shift @is_enabled_symbols ) {
-        if ( $line =~ /^([^:]+):(\d+):(.+IS_ENABLED.*)/ ) {
+        if ( $line =~ /^([^:]+):(\d+):(.+\bCONFIG\(.*)/ ) {
+            my $file   = $1;
+            my $lineno = $2;
+            $line = $3;
+            while ( $line =~ /(.*)\bCONFIG\(([^)]*)\)(.*)/ ) {
+                my $symbol = $2;
+                $line = $1 . $3;
+
+                #make sure that the type is bool
+                if ( exists $symbols{$symbol} ) {
+                    if ( $symbols{$symbol}{type} ne "bool" ) {
+                        show_error( "CONFIG($symbol) used at $file:$lineno."
+                              . "  CONFIG() is only valid for type 'bool', not '$symbols{$symbol}{type}'." );
+                    }
+                }
+                else {
+                    show_warning("CONFIG() used on unknown value ($symbol) at $file:$lineno.");
+                }
+            }
+        } elsif ( $line =~ /^([^:]+):(\d+):(.+IS_ENABLED.*)/ ) {
             my $file   = $1;
             my $lineno = $2;
             $line = $3;
@@ -334,6 +353,8 @@ sub check_is_enabled {
                     if ( $symbols{$symbol}{type} ne "bool" ) {
                         show_error( "IS_ENABLED(CONFIG_$symbol) used at $file:$lineno."
                               . "  IS_ENABLED is only valid for type 'bool', not '$symbols{$symbol}{type}'." );
+                    } else {
+                        show_warning("IS_ENABLED(CONFIG_$symbol) at $file:$lineno is deprecated. Use CONFIG($symbol) instead." );
                     }
                 }
                 else {
@@ -348,10 +369,10 @@ sub check_is_enabled {
             if ( exists $symbols{$symbol} ) {
                 if ( $symbols{$symbol}{type} eq "bool" ) {
                     show_error( "#if CONFIG_$symbol used at $file:$lineno."
-                          . "  IS_ENABLED should be used for type 'bool'" );
+                          . "  CONFIG($symbol) should be used for type 'bool'" );
                 }
             }
-        }  elsif ( $line =~ /^([^:]+):(\d+):\s*#\s*(?:el)?if.*(?:&&|\|\|)\s+!?\s*\(?\s*CONFIG_(\w+)\)?(\s*==\s*1)?$/ ) {
+        } elsif ( $line =~ /^([^:]+):(\d+):\s*#\s*(?:el)?if.*(?:&&|\|\|)\s+!?\s*\(?\s*CONFIG_(\w+)\)?(\s*==\s*1)?$/ ) {
             my $file   = $1;
             my $lineno = $2;
             my $symbol = $3;
@@ -359,7 +380,7 @@ sub check_is_enabled {
             if ( exists $symbols{$symbol} ) {
                 if ( $symbols{$symbol}{type} eq "bool" ) {
                     show_error( "#if CONFIG_$symbol used at $file:$lineno."
-                          . "  IS_ENABLED should be used for type 'bool'" );
+                          . "  CONFIG($symbol) should be used for type 'bool'" );
                 }
             }
         }
@@ -471,17 +492,17 @@ sub collect_used_symbols {
     # find all references to CONFIG_ statements in the tree
 
     if ($dont_use_git_grep) {
-        @collected_symbols = `grep -Irn -- "CONFIG_" | grep -v '$exclude_dirs_and_files'; grep -In -- "CONFIG_" $payload_files_to_check`;
+        @collected_symbols = `grep -Irn -- "CONFIG\\(_\\|(\\)" | grep -v '$exclude_dirs_and_files'; grep -In -- "CONFIG\\(_\\|(\\)" $payload_files_to_check`;
     }
     else {
-        @collected_symbols = `git grep -In -- "CONFIG_" | grep -v '$exclude_dirs_and_files'; git grep -In -- "CONFIG_" $payload_files_to_check`;
+        @collected_symbols = `git grep -In -- "CONFIG\\(_\\|(\\)" | grep -v '$exclude_dirs_and_files'; git grep -In -- "CONFIG\\(_\\|(\\)" $payload_files_to_check`;
     }
 
     my @used_symbols = @collected_symbols;
 
     #sort through symbols found by grep and store them in a hash for easy access
     while ( my $line = shift @used_symbols ) {
-        while ( $line =~ /[^A-Za-z0-9_]CONFIG_([A-Za-z0-9_]+)/g ) {
+        while ( $line =~ /[^A-Za-z0-9_]CONFIG(?:_|\()([A-Za-z0-9_]+)/g ) {
             my $symbol   = $1;
             my $filename = "";
             if ( $line =~ /^([^:]+):/ ) {
@@ -684,9 +705,9 @@ sub build_and_parse_kconfig_tree {
 
         # visible if <expr>
         elsif ( $line =~ /^\s*visible if.*$/ ) {
-	    # Must come directly after menu line (and on a separate line)
-	    # but kconfig already checks for that.
-	    # Ignore it.
+        # Must come directly after menu line (and on a separate line)
+        # but kconfig already checks for that.
+        # Ignore it.
         }
 
         # endmenu

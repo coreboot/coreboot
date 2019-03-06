@@ -52,13 +52,13 @@ asmlinkage void *romstage_main(FSP_INFO_HEADER *fih)
 	timestamp_add_now(TS_START_ROMSTAGE);
 
 	/* Load microcode before RAM init */
-	if (IS_ENABLED(CONFIG_SUPPORT_CPU_UCODE_IN_CBFS))
+	if (CONFIG(SUPPORT_CPU_UCODE_IN_CBFS))
 		intel_update_microcode_from_cbfs();
 
 	memset(&pei_data, 0, sizeof(pei_data));
 
 	/* Display parameters */
-	if (!IS_ENABLED(CONFIG_NO_MMCONF_SUPPORT))
+	if (!CONFIG(NO_MMCONF_SUPPORT))
 		printk(BIOS_SPEW, "CONFIG_MMCONF_BASE_ADDRESS: 0x%08x\n",
 			CONFIG_MMCONF_BASE_ADDRESS);
 	printk(BIOS_INFO, "Using FSP 1.1\n");
@@ -104,7 +104,7 @@ void romstage_common(struct romstage_params *params)
 	pei_data->boot_mode = params->power_state->prev_sleep_state;
 	s3wake = params->power_state->prev_sleep_state == ACPI_S3;
 
-	if (IS_ENABLED(CONFIG_ELOG_BOOT_COUNT) && !s3wake)
+	if (CONFIG(ELOG_BOOT_COUNT) && !s3wake)
 		boot_count_increment();
 
 	/* Perform remaining SOC initialization */
@@ -119,7 +119,7 @@ void romstage_common(struct romstage_params *params)
 			/* Recovery mode does not use MRC cache */
 			printk(BIOS_DEBUG,
 			       "Recovery mode: not using MRC cache.\n");
-		} else if (IS_ENABLED(CONFIG_CACHE_MRC_SETTINGS)
+		} else if (CONFIG(CACHE_MRC_SETTINGS)
 			&& (!mrc_cache_get_current(MRC_TRAINING_DATA,
 							params->fsp_version,
 							&rdev))) {
@@ -128,7 +128,7 @@ void romstage_common(struct romstage_params *params)
 				region_device_sz(&rdev);
 			params->pei_data->saved_data = rdev_mmap_full(&rdev);
 			/* Assume boot device is memory mapped. */
-			assert(IS_ENABLED(CONFIG_BOOT_DEVICE_MEMORY_MAPPED));
+			assert(CONFIG(BOOT_DEVICE_MEMORY_MAPPED));
 		} else if (params->pei_data->boot_mode == ACPI_S3) {
 			/* Waking from S3 and no cache. */
 			printk(BIOS_DEBUG,
@@ -146,7 +146,7 @@ void romstage_common(struct romstage_params *params)
 	timestamp_add_now(TS_AFTER_INITRAM);
 
 	/* Save MRC output */
-	if (IS_ENABLED(CONFIG_CACHE_MRC_SETTINGS)) {
+	if (CONFIG(CACHE_MRC_SETTINGS)) {
 		printk(BIOS_DEBUG, "MRC data at %p %d bytes\n",
 			pei_data->data_to_save, pei_data->data_to_save_size);
 		if ((params->pei_data->boot_mode != ACPI_S3)
@@ -214,7 +214,7 @@ __weak void mainboard_save_dimm_info(
 	memory_info_hob = (FSP_SMBIOS_MEMORY_INFO *)(hob_ptr + 1);
 
 	/* Display the data in the FSP_SMBIOS_MEMORY_INFO HOB */
-	if (IS_ENABLED(CONFIG_DISPLAY_HOBS)) {
+	if (CONFIG(DISPLAY_HOBS)) {
 		printk(BIOS_DEBUG, "FSP_SMBIOS_MEMORY_INFO HOB\n");
 		printk(BIOS_DEBUG, "    0x%02x: Revision\n",
 			memory_info_hob->Revision);

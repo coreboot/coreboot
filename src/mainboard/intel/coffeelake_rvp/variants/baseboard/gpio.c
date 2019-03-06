@@ -17,7 +17,7 @@
 #include <baseboard/variants.h>
 #include <commonlib/helpers.h>
 
-#if !IS_ENABLED(CONFIG_SOC_INTEL_CANNONLAKE_PCH_H)
+#if !CONFIG(SOC_INTEL_CANNONLAKE_PCH_H)
 static const struct pad_config gpio_table[] = {
 	/* GPPC */
 	/* A0  : RCINB_TIME_SYNC_1 */
@@ -264,7 +264,7 @@ static const struct pad_config gpio_table[] = {
 	/* H21 : GPPC_H_21 */
 	/* H22 : GPPC_H_22 */
 	PAD_CFG_GPI(GPP_H22, NONE, DEEP),
-#if IS_ENABLED(CONFIG_BOARD_INTEL_WHISKEYLAKE_RVP)
+#if CONFIG(BOARD_INTEL_WHISKEYLAKE_RVP)
 	PAD_CFG_GPO(GPP_H22, 1, PLTRST),
 #else
 	PAD_CFG_GPI(GPP_H22, NONE, DEEP),

@@ -167,7 +167,7 @@ static const uint8_t secdata_kernel[] = {
  */
 static const uint8_t rec_hash_data[REC_HASH_NV_SIZE] = { };
 
-#if IS_ENABLED(CONFIG_TPM2)
+#if CONFIG(TPM2)
 /*
  * Different sets of NVRAM space attributes apply to the "ro" spaces,
  * i.e. those which should not be possible to delete or modify once
@@ -264,7 +264,7 @@ static uint32_t _factory_initialize_tpm(struct vb2_context *ctx)
 	 */
 	RETURN_ON_FAILURE(set_kernel_space(secdata_kernel));
 
-	if (IS_ENABLED(CONFIG_VBOOT_HAS_REC_HASH_SPACE))
+	if (CONFIG(VBOOT_HAS_REC_HASH_SPACE))
 		RETURN_ON_FAILURE(set_rec_hash_space(rec_hash_data));
 
 	RETURN_ON_FAILURE(set_firmware_space(ctx->secdata));
@@ -385,7 +385,7 @@ static uint32_t _factory_initialize_tpm(struct vb2_context *ctx)
 					VB2_SECDATA_SIZE));
 
 	/* Define and set rec hash space, if available. */
-	if (IS_ENABLED(CONFIG_VBOOT_HAS_REC_HASH_SPACE))
+	if (CONFIG(VBOOT_HAS_REC_HASH_SPACE))
 		RETURN_ON_FAILURE(set_rec_hash_space(rec_hash_data));
 
 	return TPM_SUCCESS;
@@ -481,7 +481,7 @@ uint32_t antirollback_read_space_firmware(struct vb2_context *ctx)
 
 uint32_t antirollback_write_space_firmware(struct vb2_context *ctx)
 {
-	if (IS_ENABLED(CONFIG_CR50_IMMEDIATELY_COMMIT_FW_SECDATA))
+	if (CONFIG(CR50_IMMEDIATELY_COMMIT_FW_SECDATA))
 		tlcl_cr50_enable_nvcommits();
 	return write_secdata(FIRMWARE_NV_INDEX, ctx->secdata, VB2_SECDATA_SIZE);
 }

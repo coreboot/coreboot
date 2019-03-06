@@ -194,7 +194,7 @@ static struct device_operations pci_domain_ops = {
 	.read_resources   = &pci_domain_read_resources,
 	.set_resources    = &pci_domain_set_resources,
 	.scan_bus         = &pci_domain_scan_bus,
-#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+#if CONFIG(HAVE_ACPI_TABLES)
 	.write_acpi_tables	= &northbridge_write_acpi_tables,
 	.acpi_name		= &soc_acpi_name,
 #endif
@@ -205,7 +205,7 @@ static struct device_operations cpu_bus_ops = {
 	.set_resources    = DEVICE_NOOP,
 	.enable_resources = DEVICE_NOOP,
 	.init             = DEVICE_NOOP,
-#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+#if CONFIG(HAVE_ACPI_TABLES)
 	.acpi_fill_ssdt_generator = generate_cpu_entries,
 #endif
 };
@@ -323,7 +323,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	params->LogoPtr = config->LogoPtr;
 	params->LogoSize = config->LogoSize;
 
-	params->CpuConfig.Bits.VmxEnable = IS_ENABLED(CONFIG_ENABLE_VMX);
+	params->CpuConfig.Bits.VmxEnable = CONFIG(ENABLE_VMX);
 
 	params->PchPmWoWlanEnable = config->PchPmWoWlanEnable;
 	params->PchPmWoWlanDeepSxEnable = config->PchPmWoWlanDeepSxEnable;

@@ -45,7 +45,7 @@ static void uart_lpss_init(uintptr_t baseaddr)
 			CONFIG_SOC_INTEL_COMMON_LPSS_UART_CLK_N_VAL);
 }
 
-#if IS_ENABLED(CONFIG_DRIVERS_UART_8250MEM)
+#if CONFIG(DRIVERS_UART_8250MEM)
 uintptr_t uart_platform_base(int idx)
 {
 	/* return Base address for UART console index */
@@ -92,7 +92,7 @@ struct device *uart_get_device(void)
 	 * config option is not selected.
 	 * By default return NULL in this case to avoid compilation errors.
 	 */
-	if (!IS_ENABLED(CONFIG_INTEL_LPSS_UART_FOR_CONSOLE))
+	if (!CONFIG(INTEL_LPSS_UART_FOR_CONSOLE))
 		return NULL;
 
 	int console_index = uart_get_valid_index();
@@ -141,7 +141,7 @@ void uart_bootblock_init(void)
 	uart_common_init(uart_get_device(),
 		UART_BASE(CONFIG_UART_FOR_CONSOLE));
 
-	if (!IS_ENABLED(CONFIG_DRIVERS_UART_8250MEM_32))
+	if (!CONFIG(DRIVERS_UART_8250MEM_32))
 		/* Put UART in byte access mode for 16550 compatibility */
 		soc_uart_set_legacy_mode();
 
@@ -156,7 +156,7 @@ static void uart_read_resources(struct device *dev)
 	pci_dev_read_resources(dev);
 
 	/* Set the configured UART base address for the debug port */
-	if (IS_ENABLED(CONFIG_INTEL_LPSS_UART_FOR_CONSOLE) &&
+	if (CONFIG(INTEL_LPSS_UART_FOR_CONSOLE) &&
 	    uart_is_debug_controller(dev)) {
 		struct resource *res = find_resource(dev, PCI_BASE_ADDRESS_0);
 		/* Need to set the base and size for the resource allocator. */
@@ -204,7 +204,7 @@ static bool uart_controller_needs_init(struct device *dev)
 	 * If coreboot has CONSOLE_SERIAL enabled, the skip re-initializing
 	 * controller here.
 	 */
-	if (IS_ENABLED(CONFIG_CONSOLE_SERIAL))
+	if (CONFIG(CONSOLE_SERIAL))
 		return false;
 
 	/* If this device does not correspond to debug port, then skip. */

@@ -16,7 +16,7 @@
 #ifndef _AGESAWRAPPER_H_
 #define _AGESAWRAPPER_H_
 
-#if IS_ENABLED(CONFIG_BINARYPI_LEGACY_WRAPPER)
+#if CONFIG(BINARYPI_LEGACY_WRAPPER)
 
 #include <stdint.h>
 #include <Porting.h>
@@ -51,7 +51,7 @@ static inline int agesawrapper_amds3laterestore(void) { return -1; }
 
 #endif
 
-#if IS_ENABLED(CONFIG_BINARYPI_LEGACY_WRAPPER)
+#if CONFIG(BINARYPI_LEGACY_WRAPPER)
 const void *agesawrapper_locate_module (const CHAR8 name[8]);
 
 VOID OemCustomizeInitEarly (IN OUT AMD_EARLY_PARAMS *InitEarly);

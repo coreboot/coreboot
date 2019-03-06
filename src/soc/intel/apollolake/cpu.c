@@ -46,7 +46,7 @@
 #include <soc/pm.h>
 
 static const struct reg_script core_msr_script[] = {
-#if !IS_ENABLED(CONFIG_SOC_INTEL_GLK)
+#if !CONFIG(SOC_INTEL_GLK)
 	/* Enable C-state and IO/MWAIT redirect */
 	REG_MSR_WRITE(MSR_PKG_CST_CONFIG_CONTROL,
 		(PKG_C_STATE_LIMIT_C2_MASK | CORE_C_STATE_LIMIT_C10_MASK
@@ -73,7 +73,7 @@ void soc_core_init(struct device *cpu)
 	/* Clear out pending MCEs */
 	/* TODO(adurbin): Some of these banks are core vs package
 			  scope. For now every CPU clears every bank. */
-	if (IS_ENABLED(CONFIG_SOC_INTEL_COMMON_BLOCK_SGX) ||
+	if (CONFIG(SOC_INTEL_COMMON_BLOCK_SGX) ||
 	    acpi_get_sleep_type() == ACPI_S5)
 		mca_configure(NULL);
 
@@ -87,20 +87,20 @@ void soc_core_init(struct device *cpu)
 	enable_pm_timer_emulation();
 
 	/* Configure Core PRMRR for SGX. */
-	if (IS_ENABLED(CONFIG_SOC_INTEL_COMMON_BLOCK_SGX))
+	if (CONFIG(SOC_INTEL_COMMON_BLOCK_SGX))
 		prmrr_core_configure();
 
 	/* Set Max Non-Turbo ratio if RAPL is disabled. */
-	if (IS_ENABLED(CONFIG_APL_SKIP_SET_POWER_LIMITS)) {
+	if (CONFIG(APL_SKIP_SET_POWER_LIMITS)) {
 		cpu_set_p_state_to_max_non_turbo_ratio();
 		cpu_disable_eist();
-	} else if (IS_ENABLED(CONFIG_APL_SET_MIN_CLOCK_RATIO)) {
+	} else if (CONFIG(APL_SET_MIN_CLOCK_RATIO)) {
 		cpu_set_p_state_to_min_clock_ratio();
 		cpu_disable_eist();
 	}
 }
 
-#if !IS_ENABLED(CONFIG_SOC_INTEL_COMMON_BLOCK_CPU_MPINIT)
+#if !CONFIG(SOC_INTEL_COMMON_BLOCK_CPU_MPINIT)
 static void soc_init_core(struct device *cpu)
 {
 	soc_core_init(cpu);
@@ -139,7 +139,7 @@ static struct smm_relocation_attrs relo_attrs;
 /*
  * Do essential initialization tasks before APs can be fired up.
  *
- * IF (IS_ENABLED(CONFIG_SOC_INTEL_COMMON_BLOCK_CPU_MPINIT)) -
+ * IF (CONFIG(SOC_INTEL_COMMON_BLOCK_CPU_MPINIT)) -
  * Skip Pre MP init MTRR programming, as MTRRs are mirrored from BSP,
  * that are set prior to ramstage.
  * Real MTRRs are programmed after resource allocation.
@@ -155,7 +155,7 @@ static struct smm_relocation_attrs relo_attrs;
  */
 static void pre_mp_init(void)
 {
-	if (IS_ENABLED(CONFIG_SOC_INTEL_COMMON_BLOCK_CPU_MPINIT)) {
+	if (CONFIG(SOC_INTEL_COMMON_BLOCK_CPU_MPINIT)) {
 		fsps_load(romstage_handoff_is_resume());
 		return;
 	}
@@ -163,7 +163,7 @@ static void pre_mp_init(void)
 	x86_mtrr_check();
 }
 
-#if !IS_ENABLED(CONFIG_SOC_INTEL_COMMON_BLOCK_CPU_MPINIT)
+#if !CONFIG(SOC_INTEL_COMMON_BLOCK_CPU_MPINIT)
 static void read_cpu_topology(unsigned int *num_phys, unsigned int *num_virt)
 {
 	msr_t msr;
@@ -247,7 +247,7 @@ static void post_mp_init(void)
 {
 	smm_southbridge_enable(PWRBTN_EN | GBL_EN);
 
-	if (IS_ENABLED(CONFIG_SOC_INTEL_COMMON_BLOCK_SGX))
+	if (CONFIG(SOC_INTEL_COMMON_BLOCK_SGX))
 		mp_run_on_all_cpus(sgx_configure, NULL, 2000);
 }
 
@@ -270,13 +270,13 @@ void soc_init_cpus(struct bus *cpu_bus)
 
 void apollolake_init_cpus(struct device *dev)
 {
-	if (IS_ENABLED(CONFIG_SOC_INTEL_COMMON_BLOCK_CPU_MPINIT))
+	if (CONFIG(SOC_INTEL_COMMON_BLOCK_CPU_MPINIT))
 		return;
 	soc_init_cpus(dev->link_list);
 
 	/* Temporarily cache the memory-mapped boot media. */
-	if (IS_ENABLED(CONFIG_BOOT_DEVICE_MEMORY_MAPPED) &&
-		IS_ENABLED(CONFIG_BOOT_DEVICE_SPI_FLASH))
+	if (CONFIG(BOOT_DEVICE_MEMORY_MAPPED) &&
+		CONFIG(BOOT_DEVICE_SPI_FLASH))
 		fast_spi_cache_bios_region();
 }
 

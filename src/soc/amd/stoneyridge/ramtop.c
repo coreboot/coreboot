@@ -36,7 +36,7 @@ uintptr_t restore_top_of_low_cacheable(void)
 	return biosram_read32(BIOSRAM_CBMEM_TOP);
 }
 
-#if IS_ENABLED(CONFIG_ACPI_BERT)
+#if CONFIG(ACPI_BERT)
  #if CONFIG_SMM_TSEG_SIZE == 0x0
   #define BERT_REGION_MAX_SIZE 0x100000
  #else
@@ -49,7 +49,7 @@ uintptr_t restore_top_of_low_cacheable(void)
 
 void bert_reserved_region(void **start, size_t *size)
 {
-	if (IS_ENABLED(CONFIG_ACPI_BERT))
+	if (CONFIG(ACPI_BERT))
 		*start = cbmem_top();
 	else
 		start = NULL;

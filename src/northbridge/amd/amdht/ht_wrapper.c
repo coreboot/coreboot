@@ -272,7 +272,7 @@ void amd_ht_init(struct sys_info *sysinfo)
  */
 void amd_ht_fixup(struct sys_info *sysinfo) {
 	printk(BIOS_DEBUG, "%s\n", __func__);
-	if (IS_ENABLED(CONFIG_CPU_AMD_MODEL_10XXX)) {
+	if (CONFIG(CPU_AMD_MODEL_10XXX)) {
 		uint8_t rev_gte_d = 0;
 		uint8_t fam15h = 0;
 		uint8_t dual_node = 0;

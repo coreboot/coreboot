@@ -24,14 +24,14 @@
 #include <security/vboot/vboot_common.h>
 
 /* Ensure vboot configuration is valid: */
-_Static_assert(IS_ENABLED(CONFIG_VBOOT_STARTS_IN_BOOTBLOCK) +
-	       IS_ENABLED(CONFIG_VBOOT_STARTS_IN_ROMSTAGE) == 1,
+_Static_assert(CONFIG(VBOOT_STARTS_IN_BOOTBLOCK) +
+	       CONFIG(VBOOT_STARTS_IN_ROMSTAGE) == 1,
 	       "vboot must either start in bootblock or romstage (not both!)");
-_Static_assert(!IS_ENABLED(CONFIG_VBOOT_SEPARATE_VERSTAGE) ||
-	       IS_ENABLED(CONFIG_VBOOT_STARTS_IN_BOOTBLOCK),
+_Static_assert(!CONFIG(VBOOT_SEPARATE_VERSTAGE) ||
+	       CONFIG(VBOOT_STARTS_IN_BOOTBLOCK),
 	       "stand-alone verstage must start in (i.e. after) bootblock");
-_Static_assert(!IS_ENABLED(CONFIG_VBOOT_RETURN_FROM_VERSTAGE) ||
-	       IS_ENABLED(CONFIG_VBOOT_SEPARATE_VERSTAGE),
+_Static_assert(!CONFIG(VBOOT_RETURN_FROM_VERSTAGE) ||
+	       CONFIG(VBOOT_SEPARATE_VERSTAGE),
 	       "return from verstage only makes sense for separate verstages");
 
 /* The stage loading code is compiled and entered from multiple stages. The
@@ -40,11 +40,11 @@ _Static_assert(!IS_ENABLED(CONFIG_VBOOT_RETURN_FROM_VERSTAGE) ||
 
 static int verification_should_run(void)
 {
-	if (IS_ENABLED(CONFIG_VBOOT_SEPARATE_VERSTAGE))
+	if (CONFIG(VBOOT_SEPARATE_VERSTAGE))
 		return ENV_VERSTAGE;
-	else if (IS_ENABLED(CONFIG_VBOOT_STARTS_IN_ROMSTAGE))
+	else if (CONFIG(VBOOT_STARTS_IN_ROMSTAGE))
 		return ENV_ROMSTAGE;
-	else if (IS_ENABLED(CONFIG_VBOOT_STARTS_IN_BOOTBLOCK))
+	else if (CONFIG(VBOOT_STARTS_IN_BOOTBLOCK))
 		return ENV_BOOTBLOCK;
 	else
 		die("impossible!");
@@ -52,7 +52,7 @@ static int verification_should_run(void)
 
 static int verstage_should_load(void)
 {
-	if (IS_ENABLED(CONFIG_VBOOT_SEPARATE_VERSTAGE))
+	if (CONFIG(VBOOT_SEPARATE_VERSTAGE))
 		return ENV_BOOTBLOCK;
 	else
 		return 0;
@@ -67,10 +67,10 @@ int vb2_logic_executed(void)
 	if (verstage_should_load() || verification_should_run())
 		return car_get_var(vboot_executed);
 
-	if (IS_ENABLED(CONFIG_VBOOT_STARTS_IN_BOOTBLOCK)) {
+	if (CONFIG(VBOOT_STARTS_IN_BOOTBLOCK)) {
 		/* All other stages are "after the bootblock" */
 		return !ENV_BOOTBLOCK;
-	} else if (IS_ENABLED(CONFIG_VBOOT_STARTS_IN_ROMSTAGE)) {
+	} else if (CONFIG(VBOOT_STARTS_IN_ROMSTAGE)) {
 		/* Post-RAM stages are "after the romstage" */
 #ifdef __PRE_RAM__
 		return 0;
@@ -112,7 +112,7 @@ static void vboot_prepare(void)
 		/* This is not actually possible to hit this condition at
 		 * runtime, but this provides a hint to the compiler for dead
 		 * code elimination below. */
-		if (!IS_ENABLED(CONFIG_VBOOT_RETURN_FROM_VERSTAGE))
+		if (!CONFIG(VBOOT_RETURN_FROM_VERSTAGE))
 			return;
 
 		car_set_var(vboot_executed, 1);
@@ -126,7 +126,7 @@ static void vboot_prepare(void)
 	 * other platforms the vboot cbmem objects are initialized when
 	 * cbmem comes online.
 	 */
-	if (ENV_ROMSTAGE && IS_ENABLED(CONFIG_VBOOT_STARTS_IN_ROMSTAGE)) {
+	if (ENV_ROMSTAGE && CONFIG(VBOOT_STARTS_IN_ROMSTAGE)) {
 		vb2_store_selected_region();
 		vboot_fill_handoff();
 	}

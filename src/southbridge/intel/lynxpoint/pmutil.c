@@ -26,7 +26,7 @@
 #include <console/console.h>
 #include "pch.h"
 
-#if IS_ENABLED(CONFIG_INTEL_LYNXPOINT_LP)
+#if CONFIG(INTEL_LYNXPOINT_LP)
 #include "lp_gpio.h"
 #endif
 

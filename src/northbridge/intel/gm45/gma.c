@@ -190,7 +190,7 @@ static void gma_func0_init(struct device *dev)
 	mmio = res2mmio(gtt_res, 0, 0);
 
 
-	if (!IS_ENABLED(CONFIG_MAINBOARD_USE_LIBGFXINIT)) {
+	if (!CONFIG(MAINBOARD_USE_LIBGFXINIT)) {
 		/* PCI Init, will run VBIOS */
 		printk(BIOS_DEBUG, "Initialising IGD using VBIOS\n");
 		pci_dev_init(dev);
@@ -205,7 +205,7 @@ static void gma_func0_init(struct device *dev)
 	/* Post VBIOS init */
 	gma_pm_init_post_vbios(dev, edid_lvds.ascii_string);
 
-	if (IS_ENABLED(CONFIG_MAINBOARD_USE_LIBGFXINIT)) {
+	if (CONFIG(MAINBOARD_USE_LIBGFXINIT)) {
 		int vga_disable = (pci_read_config16(dev, D0F0_GGC) & 2) >> 1;
 		if (vga_disable) {
 			printk(BIOS_INFO,

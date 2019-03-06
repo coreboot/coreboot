@@ -79,7 +79,7 @@ static void pch_enable_serial_irqs(struct device *dev)
 	/* Set packet length and toggle silent mode bit for one frame. */
 	pci_write_config8(dev, SERIRQ_CNTL,
 			  (1 << 7) | (1 << 6) | ((21 - 17) << 2) | (0 << 0));
-#if !IS_ENABLED(CONFIG_SERIRQ_CONTINUOUS_MODE)
+#if !CONFIG(SERIRQ_CONTINUOUS_MODE)
 	pci_write_config8(dev, SERIRQ_CNTL,
 			  (1 << 7) | (0 << 6) | ((21 - 17) << 2) | (0 << 0));
 #endif
@@ -724,7 +724,7 @@ static void southbridge_inject_dsdt(struct device *dev)
 			memcpy(gnvs->did, gfx->did, sizeof(gnvs->did));
 		}
 
-#if IS_ENABLED(CONFIG_CHROMEOS)
+#if CONFIG(CHROMEOS)
 		chromeos_init_chromeos_acpi(&(gnvs->chromeos));
 #endif
 
@@ -915,8 +915,8 @@ static void lpc_final(struct device *dev)
 	RCBA32(0x389c) = spi_opmenu[1];
 
 	/* Call SMM finalize() handlers before resume */
-	if (IS_ENABLED(CONFIG_HAVE_SMI_HANDLER)) {
-		if (IS_ENABLED(CONFIG_INTEL_CHIPSET_LOCKDOWN) ||
+	if (CONFIG(HAVE_SMI_HANDLER)) {
+		if (CONFIG(INTEL_CHIPSET_LOCKDOWN) ||
 		    acpi_is_wakeup_s3()) {
 			outb(APM_CNT_FINALIZE, APM_CNT);
 		}

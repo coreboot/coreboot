@@ -342,7 +342,7 @@ int dbgp_probe_gadget(struct ehci_dbg_port *ehci_debug, struct dbgp_pipe *pipe)
 		}
 	}
 
-	if (IS_ENABLED(CONFIG_USBDEBUG_DONGLE_FTDI_FT232H)) {
+	if (CONFIG(USBDEBUG_DONGLE_FTDI_FT232H)) {
 		ret = probe_for_ftdi(ehci_debug, pipe);
 	} else {
 		ret = probe_for_debug_descriptor(ehci_debug, pipe);

@@ -30,7 +30,7 @@
 	/* Switch to the stack in RAM */
 	movl	%eax, %esp
 
-#if IS_ENABLED(CONFIG_SKIP_FSP_CAR)
+#if CONFIG(SKIP_FSP_CAR)
 
 	/* chipset_teardown_car() is expected to disable cache-as-ram. */
 	call	chipset_teardown_car
@@ -87,7 +87,7 @@
 	 *   +0: Number of variable MTRRs to clear
 	 */
 
-#if IS_ENABLED(CONFIG_SOC_SETS_MSRS)
+#if CONFIG(SOC_SETS_MSRS)
 	push	%esp
 	call	soc_set_mtrrs
 
@@ -147,7 +147,7 @@
 
 	post_code(0x3a)
 
-#if IS_ENABLED(CONFIG_SOC_SETS_MSRS)
+#if CONFIG(SOC_SETS_MSRS)
 	call	soc_enable_mtrrs
 #else
 	/* Enable MTRR. */

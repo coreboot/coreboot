@@ -219,7 +219,7 @@ static const struct reg_script pch_misc_init_script[] = {
 	REG_MMIO_OR32(RCBA_BASE_ADDRESS + 0x1114, (1 << 15) | (1 << 14)),
 	/* Setup SERIRQ, enable continuous mode */
 	REG_PCI_OR8(SERIRQ_CNTL, (1 << 7) | (1 << 6)),
-#if !IS_ENABLED(CONFIG_SERIRQ_CONTINUOUS_MODE)
+#if !CONFIG(SERIRQ_CONTINUOUS_MODE)
 	REG_PCI_RMW8(SERIRQ_CNTL, ~(1 << 6), 0),
 #endif
 	REG_SCRIPT_END
@@ -429,7 +429,7 @@ static void pch_cg_init(struct device *dev)
 
 static void pch_set_acpi_mode(void)
 {
-#if IS_ENABLED(CONFIG_HAVE_SMI_HANDLER)
+#if CONFIG(HAVE_SMI_HANDLER)
 	if (!acpi_is_wakeup_s3()) {
 		printk(BIOS_DEBUG, "Disabling ACPI via APMC:\n");
 		outb(APM_CNT_ACPI_DISABLE, APM_CNT);
@@ -621,7 +621,7 @@ static unsigned long broadwell_write_acpi_tables(struct device *device,
 						 unsigned long current,
 						 struct acpi_rsdp *rsdp)
 {
-	if (IS_ENABLED(CONFIG_INTEL_PCH_UART_CONSOLE))
+	if (CONFIG(INTEL_PCH_UART_CONSOLE))
 		current = acpi_write_dbg2_pci_uart(rsdp, current,
 			(CONFIG_INTEL_PCH_UART_CONSOLE_NUMBER == 1) ?
 				PCH_DEV_UART1 : PCH_DEV_UART0,

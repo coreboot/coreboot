@@ -31,7 +31,7 @@ typedef enum {
 #define S3_DATA_MTRR_SIZE			0x1000
 #define S3_DATA_NONVOLATILE_SIZE	0x1000
 
-#if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME) && \
+#if CONFIG(HAVE_ACPI_RESUME) && \
 	(S3_DATA_MTRR_SIZE + S3_DATA_NONVOLATILE_SIZE) > CONFIG_S3_DATA_SIZE
 #error "Please increase the value of S3_DATA_SIZE"
 #endif
@@ -94,7 +94,7 @@ AGESA_STATUS OemS3LateRestore(AMD_S3_PARAMS *dataBlock)
 
 static int spi_SaveS3info(u32 pos, u32 size, u8 *buf, u32 len)
 {
-#if IS_ENABLED(CONFIG_SPI_FLASH)
+#if CONFIG(SPI_FLASH)
 	struct spi_flash flash;
 
 	spi_init();

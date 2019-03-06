@@ -35,9 +35,9 @@
 	*(.text._start);
 	*(.text.stage_entry);
 #if (ENV_DECOMPRESSOR || ENV_BOOTBLOCK && \
-		!IS_ENABLED(CONFIG_COMPRESS_BOOTBLOCK)) && \
-    !(IS_ENABLED(CONFIG_ARCH_BOOTBLOCK_X86_32) || \
-      IS_ENABLED(CONFIG_ARCH_BOOTBLOCK_X86_64))
+		!CONFIG(COMPRESS_BOOTBLOCK)) && \
+    !(CONFIG(ARCH_BOOTBLOCK_X86_32) || \
+      CONFIG(ARCH_BOOTBLOCK_X86_64))
 	KEEP(*(.id));
 #endif
 	*(.text);
@@ -73,7 +73,7 @@
 	_etext = .;
 } : to_load
 
-#if ENV_RAMSTAGE && IS_ENABLED(CONFIG_COVERAGE)
+#if ENV_RAMSTAGE && CONFIG(COVERAGE)
 .ctors . : {
 	. = ALIGN(0x100);
 	__CTOR_LIST__ = .;

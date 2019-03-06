@@ -297,7 +297,7 @@ static void ck804_lpc_enable_resources(struct device *dev)
 	ck804_lpc_enable_childrens_resources(dev);
 }
 
-#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+#if CONFIG(HAVE_ACPI_TABLES)
 
 static void southbridge_acpi_fill_ssdt_generator(struct device *device)
 {
@@ -310,7 +310,7 @@ static struct device_operations lpc_ops = {
 	.read_resources   = ck804_lpc_read_resources,
 	.set_resources    = ck804_lpc_set_resources,
 	.enable_resources = ck804_lpc_enable_resources,
-#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+#if CONFIG(HAVE_ACPI_TABLES)
 	.acpi_fill_ssdt_generator = southbridge_acpi_fill_ssdt_generator,
 	.write_acpi_tables      = acpi_write_hpet,
 #endif
@@ -335,7 +335,7 @@ static struct device_operations lpc_slave_ops = {
 	.read_resources   = ck804_lpc_read_resources,
 	.set_resources    = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+#if CONFIG(HAVE_ACPI_TABLES)
 	.write_acpi_tables      = acpi_write_hpet,
 #endif
 	.init             = lpc_slave_init,

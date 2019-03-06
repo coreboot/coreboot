@@ -30,7 +30,7 @@
 #define rmb()		asm volatile("dsb ld" : : : "memory")
 #define wmb()		asm volatile("dsb st" : : : "memory")
 
-#if IS_ENABLED(CONFIG_SMP)
+#if CONFIG(SMP)
 #define barrier() __asm__ __volatile__("": : :"memory")
 #endif
 

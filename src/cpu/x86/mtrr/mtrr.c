@@ -36,7 +36,7 @@
 #include <memrange.h>
 #include <cpu/amd/mtrr.h>
 #include <assert.h>
-#if IS_ENABLED(CONFIG_X86_AMD_FIXED_MTRRS)
+#if CONFIG(X86_AMD_FIXED_MTRRS)
 #define MTRR_FIXED_WRBACK_BITS (MTRR_READ_MEM | MTRR_WRITE_MEM)
 #else
 #define MTRR_FIXED_WRBACK_BITS 0
@@ -86,7 +86,7 @@ void fixed_mtrrs_expose_amd_rwdram(void)
 {
 	msr_t syscfg;
 
-	if (!IS_ENABLED(CONFIG_X86_AMD_FIXED_MTRRS))
+	if (!CONFIG(X86_AMD_FIXED_MTRRS))
 		return;
 
 	syscfg = rdmsr(SYSCFG_MSR);
@@ -98,7 +98,7 @@ void fixed_mtrrs_hide_amd_rwdram(void)
 {
 	msr_t syscfg;
 
-	if (!IS_ENABLED(CONFIG_X86_AMD_FIXED_MTRRS))
+	if (!CONFIG(X86_AMD_FIXED_MTRRS))
 		return;
 
 	syscfg = rdmsr(SYSCFG_MSR);

@@ -210,7 +210,7 @@ static void dram_find_spds_ddr3(spd_raw_data *spd, ramctr_timing *ctrl)
 				printram("XMP profile supports %u DIMMs, but %u DIMMs are installed.\n",
 						 dimm->dimm[channel][slot].dimms_per_channel,
 						 dimms_on_channel);
-				if (IS_ENABLED(CONFIG_NATIVE_RAMINIT_IGNORE_XMP_MAX_DIMMS))
+				if (CONFIG(NATIVE_RAMINIT_IGNORE_XMP_MAX_DIMMS))
 					printk(BIOS_WARNING, "XMP maximum DIMMs will be ignored.\n");
 				else
 					spd_decode_ddr3(&dimm->dimm[channel][slot], spd[spd_slot]);

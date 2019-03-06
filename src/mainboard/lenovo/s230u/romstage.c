@@ -43,7 +43,7 @@ void pch_enable_lpc(void)
 	pci_write_config16(PCH_LPC_DEV, BIOS_DEC_EN1, 0xffc0);
 
 	/* Enable external USB port power. */
-	if (IS_ENABLED(CONFIG_USBDEBUG))
+	if (CONFIG(USBDEBUG))
 		ec_mm_set_bit(0x3b, 4);
 }
 

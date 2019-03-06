@@ -15,7 +15,7 @@
  */
 
 /* S1 support: bit 0, S2 Support: bit 1, etc. S0 & S5 assumed */
-#if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
+#if CONFIG(HAVE_ACPI_RESUME)
 Name (SSFG, 0x0D)
 #else
 Name (SSFG, 0x09)

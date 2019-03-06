@@ -67,7 +67,7 @@ static void gfx_init(struct device *dev)
 	printk(BIOS_SPEW, "%s/%s (%s)\n",
 			__FILE__, __func__, dev_name(dev));
 
-	if (!IS_ENABLED(CONFIG_RUN_FSP_GOP)) {
+	if (!CONFIG(RUN_FSP_GOP)) {
 		/* Pre VBIOS Init */
 		gfx_pre_vbios_init(dev);
 

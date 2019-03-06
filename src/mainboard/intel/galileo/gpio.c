@@ -25,15 +25,15 @@ void car_mainboard_pre_console_init(void)
 	const struct reg_script *script;
 
 	/* Initialize the GPIO controllers */
-	if (IS_ENABLED(CONFIG_GALILEO_GEN2))
+	if (CONFIG(GALILEO_GEN2))
 		script = gen2_gpio_init;
 	else
 		script = gen1_gpio_init;
 	reg_script_run(script);
 
 	/* Initialize the RXD and TXD paths for UART0 */
-	if (IS_ENABLED(CONFIG_ENABLE_BUILTIN_HSUART0)) {
-		if (IS_ENABLED(CONFIG_GALILEO_GEN2))
+	if (CONFIG(ENABLE_BUILTIN_HSUART0)) {
+		if (CONFIG(GALILEO_GEN2))
 			script = gen2_hsuart0;
 		else
 			script = (reg_legacy_gpio_read(
@@ -51,7 +51,7 @@ void mainboard_gpio_i2c_init(struct device *dev)
 	printk(BIOS_INFO, "Galileo I2C chip initialization\n");
 
 	/* Determine the correct script for the board */
-	if (IS_ENABLED(CONFIG_GALILEO_GEN2))
+	if (CONFIG(GALILEO_GEN2))
 		script = gen2_i2c_init;
 	else
 		/* Determine which I2C address is in use */
@@ -69,7 +69,7 @@ void mainboard_gpio_pcie_reset(uint32_t pin_value)
 	uint32_t value;
 
 	/* Determine the correct PCIe reset pin */
-	if (IS_ENABLED(CONFIG_GALILEO_GEN2))
+	if (CONFIG(GALILEO_GEN2))
 		pin_number = GEN2_PCI_RESET_RESUMEWELL_GPIO;
 	else
 		pin_number = GEN1_PCI_RESET_RESUMEWELL_GPIO;

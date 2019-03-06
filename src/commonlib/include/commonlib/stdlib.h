@@ -35,7 +35,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#if IS_ENABLED(CONFIG_COREBOOT_BUILD)
+#if CONFIG(COREBOOT_BUILD)
 #include <console/console.h>
 #include <halt.h>
 #define printf(...)		printk(BIOS_ERR, __VA_ARGS__)

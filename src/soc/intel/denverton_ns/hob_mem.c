@@ -44,7 +44,7 @@ void soc_save_dimm_info(void)
 		return;
 
 	/* Display the data in the FSP_SMBIOS_MEMORY_INFO HOB */
-	if (IS_ENABLED(CONFIG_DISPLAY_HOBS))
+	if (CONFIG(DISPLAY_HOBS))
 		soc_display_fsp_smbios_memory_info_hob(memory_info_hob);
 
 	/*

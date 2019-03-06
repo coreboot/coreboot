@@ -127,7 +127,7 @@ static void configure_usb(void)
 	if (board_id() + CONFIG_BOARD_ID_ADJUSTMENT > 3) {
 		/* Type C port 0 Over current alert pin */
 		gpio_input_pullup(GPIO(MSDC3_DSL));
-		if (!IS_ENABLED(CONFIG_BOARD_GOOGLE_ROWAN)) {
+		if (!CONFIG(BOARD_GOOGLE_ROWAN)) {
 			/* Enable USB3 type A port 0 5V load switch */
 			gpio_output(GPIO(CM2MCLK), 1);
 			/* USB3 Type A port 0 power over current alert pin */
@@ -150,7 +150,7 @@ static void configure_usb(void)
 
 static void configure_usb_hub(void)
 {
-	if (IS_ENABLED(CONFIG_BOARD_GOOGLE_ROWAN))
+	if (CONFIG(BOARD_GOOGLE_ROWAN))
 		return;
 
 	/* set usb hub reset pin (low active) to high */
@@ -278,7 +278,7 @@ static void display_startup(void)
 	u32 mipi_dsi_flags;
 	bool dual_dsi_mode;
 
-	if (IS_ENABLED(CONFIG_BOARD_GOOGLE_ROWAN)) {
+	if (CONFIG(BOARD_GOOGLE_ROWAN)) {
 		edid = rowan_boe_edid;
 		dual_dsi_mode = true;
 		mipi_dsi_flags = MIPI_DSI_MODE_VIDEO |
@@ -327,7 +327,7 @@ static void mainboard_init(struct device *dev)
 
 	if (display_init_required()) {
 		mtcmos_display_power_on();
-		if (IS_ENABLED(CONFIG_BOARD_GOOGLE_ROWAN)) {
+		if (CONFIG(BOARD_GOOGLE_ROWAN)) {
 			configure_backlight_rowan();
 			configure_display_rowan();
 		} else {

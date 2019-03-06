@@ -21,7 +21,7 @@
 static __always_inline
 unsigned int pci_io_encode_addr(pci_devfn_t dev, unsigned int where)
 {
-	if (IS_ENABLED(CONFIG_PCI_IO_CFG_EXT)) {
+	if (CONFIG(PCI_IO_CFG_EXT)) {
 		// seg == 0
 		return dev >> 4 | (where & 0xff) | ((where & 0xf00) << 16);
 	} else {
@@ -77,7 +77,7 @@ void pci_io_write_config32(pci_devfn_t dev, unsigned int where, uint32_t value)
 	outl(value, 0xCFC);
 }
 
-#if !IS_ENABLED(CONFIG_MMCONF_SUPPORT)
+#if !CONFIG(MMCONF_SUPPORT)
 
 /* Avoid name collisions as different stages have different signature
  * for these functions. The _s_ stands for simple, fundamental IO or

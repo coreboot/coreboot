@@ -21,7 +21,7 @@
 #include <console/console.h>
 
 #define dramc_show(_x_...) printk(BIOS_INFO, _x_)
-#if IS_ENABLED(CONFIG_DEBUG_DRAM)
+#if CONFIG(DEBUG_DRAM)
 #define dramc_dbg(_x_...) printk(BIOS_DEBUG, _x_)
 #else
 #define dramc_dbg(_x_...)

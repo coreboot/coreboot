@@ -36,9 +36,9 @@
 #include <pc80/vga.h>
 #include <pc80/vga_io.h>
 
-#if IS_ENABLED(CONFIG_SOUTHBRIDGE_INTEL_I82801JX)
+#if CONFIG(SOUTHBRIDGE_INTEL_I82801JX)
 #include <southbridge/intel/i82801jx/nvs.h>
-#elif IS_ENABLED(CONFIG_SOUTHBRIDGE_INTEL_I82801GX)
+#elif CONFIG(SOUTHBRIDGE_INTEL_I82801GX)
 #include <southbridge/intel/i82801gx/nvs.h>
 #endif
 
@@ -71,7 +71,7 @@ static void gma_func0_init(struct device *dev)
 
 	int vga_disable = (pci_read_config16(dev, D0F0_GGC) & 2) >> 1;
 
-	if (IS_ENABLED(CONFIG_MAINBOARD_USE_LIBGFXINIT)) {
+	if (CONFIG(MAINBOARD_USE_LIBGFXINIT)) {
 		if (vga_disable) {
 			printk(BIOS_INFO,
 			       "IGD is not decoding legacy VGA MEM and IO: skipping NATIVE graphic init\n");

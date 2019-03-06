@@ -16,7 +16,7 @@
 
 #include <rules.h>
 
-#if IS_ENABLED(CONFIG_C_ENVIRONMENT_BOOTBLOCK)
+#if CONFIG(C_ENVIRONMENT_BOOTBLOCK)
 
 /*
  * This path is for stages that are post bootblock when employing
@@ -43,8 +43,8 @@ _start:
 	sub	%edi, %ecx
 	rep	stosl
 
-#if ((ENV_VERSTAGE && IS_ENABLED(CONFIG_VERSTAGE_DEBUG_SPINLOOP)) \
-	|| (ENV_ROMSTAGE && IS_ENABLED(CONFIG_ROMSTAGE_DEBUG_SPINLOOP)))
+#if ((ENV_VERSTAGE && CONFIG(VERSTAGE_DEBUG_SPINLOOP)) \
+	|| (ENV_ROMSTAGE && CONFIG(ROMSTAGE_DEBUG_SPINLOOP)))
 
 	/* Wait for a JTAG debugger to break in and set EBX non-zero */
 	xor	%ebx, %ebx
@@ -55,7 +55,7 @@ debug_spinloop:
 #endif
 
 	andl	$0xfffffff0, %esp
-#if IS_ENABLED(CONFIG_IDT_IN_EVERY_STAGE)
+#if CONFIG(IDT_IN_EVERY_STAGE)
 	call	exception_init
 #endif
 	call	car_stage_entry
@@ -75,7 +75,7 @@ car_stage_entry:
 #include <arch/x86/prologue.inc>
 #include <cpu/x86/32bit/entry32.inc>
 #include <cpu/x86/fpu_enable.inc>
-#if IS_ENABLED(CONFIG_SSE)
+#if CONFIG(SSE)
 #include <cpu/x86/sse_enable.inc>
 #endif
 

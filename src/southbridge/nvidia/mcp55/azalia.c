@@ -24,7 +24,7 @@
 #include <delay.h>
 #include "mcp55.h"
 
-#if IS_ENABLED(CONFIG_MCP55_USE_AZA)
+#if CONFIG(MCP55_USE_AZA)
 #define HDA_ICII_REG 0x68
 #define HDA_ICII_BUSY (1 << 0)
 #define HDA_ICII_VALID (1 << 1)
@@ -203,7 +203,7 @@ static void codecs_init(struct device *dev, u8 *base, u32 codec_mask)
 
 static void azalia_init(struct device *dev)
 {
-#if IS_ENABLED(CONFIG_MCP55_USE_AZA)
+#if CONFIG(MCP55_USE_AZA)
 	u8 *base;
 	u32 codec_mask, reg32;
 	struct resource *res;

@@ -67,7 +67,7 @@ static int platform_i2c_write(uint32_t restart, uint8_t *tx_buffer, int length,
 		if (status & (IC_INTR_RX_OVER | IC_INTR_RX_UNDER
 				| IC_INTR_TX_ABRT | IC_INTR_TX_OVER)) {
 			i2c_disable(regs);
-			if (IS_ENABLED(CONFIG_I2C_DEBUG))
+			if (CONFIG(I2C_DEBUG))
 				printk(BIOS_ERR,
 					"0x%08x: ic_raw_intr_stat, I2C write error!\n",
 					status);
@@ -76,7 +76,7 @@ static int platform_i2c_write(uint32_t restart, uint8_t *tx_buffer, int length,
 
 		/* Check for timeout */
 		if (stopwatch_expired(timeout)) {
-			if (IS_ENABLED(CONFIG_I2C_DEBUG))
+			if (CONFIG(I2C_DEBUG))
 				printk(BIOS_ERR,
 					"0x%08x: ic_raw_intr_stat, I2C write timeout!\n",
 					status);
@@ -142,7 +142,7 @@ static int platform_i2c_read(uint32_t restart, uint8_t *rx_buffer, int length,
 		if (status & (IC_INTR_RX_OVER | IC_INTR_RX_UNDER
 				| IC_INTR_TX_ABRT | IC_INTR_TX_OVER)) {
 			i2c_disable(regs);
-			if (IS_ENABLED(CONFIG_I2C_DEBUG))
+			if (CONFIG(I2C_DEBUG))
 				printk(BIOS_ERR,
 					"0x%08x: ic_raw_intr_stat, I2C read error!\n",
 					status);
@@ -151,7 +151,7 @@ static int platform_i2c_read(uint32_t restart, uint8_t *rx_buffer, int length,
 
 		/* Check for timeout */
 		if (stopwatch_expired(timeout)) {
-			if (IS_ENABLED(CONFIG_I2C_DEBUG))
+			if (CONFIG(I2C_DEBUG))
 				printk(BIOS_ERR,
 					"0x%08x: ic_raw_intr_stat, I2C read timeout!\n",
 					status);
@@ -204,7 +204,7 @@ int platform_i2c_transfer(unsigned int bus, struct i2c_msg *segment,
 	uint8_t *tx_buffer;
 	int tx_bytes;
 
-	if (IS_ENABLED(CONFIG_I2C_DEBUG)) {
+	if (CONFIG(I2C_DEBUG)) {
 		for (index = 0; index < seg_count;) {
 			if (index == 0)
 				printk(BIOS_ERR, "I2C Start\n");
@@ -283,7 +283,7 @@ int platform_i2c_transfer(unsigned int bus, struct i2c_msg *segment,
 
 			/* Return any detected error */
 			if (data_bytes < 0) {
-				if (IS_ENABLED(CONFIG_I2C_DEBUG))
+				if (CONFIG(I2C_DEBUG))
 					printk(BIOS_ERR,
 						"I2C segment[%d] failed\n",
 						index);
@@ -299,7 +299,7 @@ int platform_i2c_transfer(unsigned int bus, struct i2c_msg *segment,
 
 			/* Return any detected error */
 			if (data_bytes < 0) {
-				if (IS_ENABLED(CONFIG_I2C_DEBUG))
+				if (CONFIG(I2C_DEBUG))
 					printk(BIOS_ERR,
 						"I2C segment[%d] failed\n",
 						index);
@@ -330,7 +330,7 @@ int platform_i2c_transfer(unsigned int bus, struct i2c_msg *segment,
 			if (status & (IC_INTR_RX_OVER | IC_INTR_RX_UNDER
 					| IC_INTR_TX_ABRT | IC_INTR_TX_OVER)) {
 				i2c_disable(regs);
-				if (IS_ENABLED(CONFIG_I2C_DEBUG)) {
+				if (CONFIG(I2C_DEBUG)) {
 					printk(BIOS_ERR,
 						"0x%08x: ic_raw_intr_stat, I2C read error!\n",
 						status);
@@ -343,7 +343,7 @@ int platform_i2c_transfer(unsigned int bus, struct i2c_msg *segment,
 
 			/* Check for timeout */
 			if (stopwatch_expired(&timeout)) {
-				if (IS_ENABLED(CONFIG_I2C_DEBUG)) {
+				if (CONFIG(I2C_DEBUG)) {
 					printk(BIOS_ERR,
 						"0x%08x: ic_raw_intr_stat, I2C read timeout!\n",
 						status);
@@ -362,7 +362,7 @@ int platform_i2c_transfer(unsigned int bus, struct i2c_msg *segment,
 	regs->ic_tar = 0;
 
 	/* Return the number of bytes transferred */
-	if (IS_ENABLED(CONFIG_I2C_DEBUG))
+	if (CONFIG(I2C_DEBUG))
 		printk(BIOS_ERR, "0x%08x: bytes transferred\n",
 			bytes_transferred);
 	return bytes_transferred;

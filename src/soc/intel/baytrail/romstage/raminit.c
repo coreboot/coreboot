@@ -112,7 +112,7 @@ void raminit(struct mrc_params *mp, int prev_sleep_state)
 	mp->version = MRC_PARAMS_VER;
 	mp->console_out = &send_to_console;
 	mp->prev_sleep_state = prev_sleep_state;
-	mp->rmt_enabled = IS_ENABLED(CONFIG_MRC_RMT);
+	mp->rmt_enabled = CONFIG(MRC_RMT);
 
 	/* Default to 2GiB IO hole. */
 	if (!mp->io_hole_mb)
@@ -124,7 +124,7 @@ void raminit(struct mrc_params *mp, int prev_sleep_state)
 		mp->saved_data_size = region_device_sz(&rdev);
 		mp->saved_data = rdev_mmap_full(&rdev);
 		/* Assume boot device is memory mapped. */
-		assert(IS_ENABLED(CONFIG_BOOT_DEVICE_MEMORY_MAPPED));
+		assert(CONFIG(BOOT_DEVICE_MEMORY_MAPPED));
 	} else if (prev_sleep_state == ACPI_S3) {
 		/* If waking from S3 and no cache then. */
 		printk(BIOS_DEBUG, "No MRC cache found in S3 resume path.\n");
@@ -157,7 +157,7 @@ void raminit(struct mrc_params *mp, int prev_sleep_state)
 	if (prev_sleep_state != ACPI_S3) {
 		cbmem_initialize_empty();
 	} else if (cbmem_initialize()) {
-	#if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
+	#if CONFIG(HAVE_ACPI_RESUME)
 		printk(BIOS_DEBUG, "Failed to recover CBMEM in S3 resume.\n");
 		/* Failed S3 resume, reset to come up cleanly */
 		system_reset();

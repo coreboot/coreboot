@@ -34,7 +34,7 @@
 
 void __weak mainboard_config_gpios(void) {}
 
-#if IS_ENABLED(CONFIG_DISPLAY_HOBS)
+#if CONFIG(DISPLAY_HOBS)
 static void display_fsp_smbios_memory_info_hob(void)
 {
 	const FSP_SMBIOS_MEMORY_INFO *memory_info_hob;
@@ -141,7 +141,7 @@ asmlinkage void car_stage_entry(void)
 	struct postcar_frame pcf;
 	uintptr_t top_of_ram;
 
-#if IS_ENABLED(CONFIG_HAVE_SMI_HANDLER)
+#if CONFIG(HAVE_SMI_HANDLER)
 	void *smm_base;
 	size_t smm_size;
 	uintptr_t tseg_base;
@@ -157,7 +157,7 @@ asmlinkage void car_stage_entry(void)
 
 	fsp_memory_init(false);
 
-#if IS_ENABLED(CONFIG_DISPLAY_HOBS)
+#if CONFIG(DISPLAY_HOBS)
 	display_fsp_smbios_memory_info_hob();
 #endif
 
@@ -176,7 +176,7 @@ asmlinkage void car_stage_entry(void)
 	/* Cache the memory-mapped boot media. */
 	postcar_frame_add_romcache(&pcf, MTRR_TYPE_WRPROT);
 
-#if IS_ENABLED(CONFIG_HAVE_SMI_HANDLER)
+#if CONFIG(HAVE_SMI_HANDLER)
 	/*
 	 * Cache the TSEG region at the top of ram. This region is
 	 * not restricted to SMM mode until SMM has been relocated.
@@ -200,7 +200,7 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg)
 	BL_HSIO_INFORMATION *hsio_config;
 
 	/* Set the parameters for MemoryInit */
-	m_cfg->PcdEnableIQAT = IS_ENABLED(CONFIG_IQAT_ENABLE);
+	m_cfg->PcdEnableIQAT = CONFIG(IQAT_ENABLE);
 
 	/* if ME HECI communication is disabled, apply default one*/
 	if (mupd->FspmConfig.PcdMeHeciCommunication == 0) {

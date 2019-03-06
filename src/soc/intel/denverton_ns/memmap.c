@@ -51,7 +51,7 @@ u32 top_of_32bit_ram(void)
 /*
  * Add IQAT region size if enabled.
  */
-#if IS_ENABLED(CONFIG_IQAT_ENABLE)
+#if CONFIG(IQAT_ENABLE)
 	iqat_region_size = CONFIG_IQAT_MEMORY_REGION_SIZE;
 #endif
 	return system_agent_region_base(TOLUD) -

@@ -19,7 +19,7 @@
 #include <device/device.h>
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
-#if IS_ENABLED(CONFIG_VGA_ROM_RUN)
+#if CONFIG(VGA_ROM_RUN)
 #include <x86emu/x86emu.h>
 #endif
 #include <arch/interrupt.h>

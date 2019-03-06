@@ -22,7 +22,7 @@
 #include <console/console.h>
 #include <cbmem.h>
 #include <cpu/x86/mtrr.h>
-#if IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC)
+#if CONFIG(EC_GOOGLE_CHROMEEC)
 #include <ec/google/chromeec/ec.h>
 #endif
 #include <elog.h>
@@ -193,7 +193,7 @@ static int chipset_prev_sleep_state(struct chipset_power_state *ps)
 	if (ps->pm1_sts & WAK_STS) {
 		switch (acpi_sleep_from_pm1(ps->pm1_cnt)) {
 		case ACPI_S3:
-			if (IS_ENABLED(CONFIG_HAVE_ACPI_RESUME))
+			if (CONFIG(HAVE_ACPI_RESUME))
 				prev_sleep_state = ACPI_S3;
 			break;
 		case ACPI_S5:
@@ -224,7 +224,7 @@ void romstage_common(struct romstage_params *params)
 
 	printk(BIOS_DEBUG, "prev_sleep_state = S%d\n", prev_sleep_state);
 
-#if IS_ENABLED(CONFIG_ELOG_BOOT_COUNT)
+#if CONFIG(ELOG_BOOT_COUNT)
 	if (prev_sleep_state != ACPI_S3)
 		boot_count_increment();
 #endif

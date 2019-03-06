@@ -135,7 +135,7 @@ static void ImcWakeup(void)
 
 int chipset_volatile_group_begin(const struct spi_flash *flash)
 {
-	if (!IS_ENABLED(CONFIG_SB800_IMC_FWM))
+	if (!CONFIG(SB800_IMC_FWM))
 		return 0;
 
 	ImcSleep();
@@ -144,7 +144,7 @@ int chipset_volatile_group_begin(const struct spi_flash *flash)
 
 int chipset_volatile_group_end(const struct spi_flash *flash)
 {
-	if (!IS_ENABLED(CONFIG_SB800_IMC_FWM))
+	if (!CONFIG(SB800_IMC_FWM))
 		return 0;
 
 	ImcWakeup();

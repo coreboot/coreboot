@@ -17,7 +17,7 @@
 
 #include <device/azalia_device.h>
 
-#if IS_ENABLED(CONFIG_BOARD_FOXCONN_G41S_K)
+#if CONFIG(BOARD_FOXCONN_G41S_K)
 const u32 cim_verb_data[] = {
 	/* coreboot specific header */
 	0x10ec0888, /* Vendor ID */

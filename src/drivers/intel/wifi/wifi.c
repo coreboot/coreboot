@@ -32,7 +32,7 @@
 #define PMCS_DR 0xcc
 #define PME_STS (1 << 15)
 
-#if IS_ENABLED(CONFIG_GENERATE_SMBIOS_TABLES)
+#if CONFIG(GENERATE_SMBIOS_TABLES)
 static int smbios_write_wifi(struct device *dev, int *handle,
 			     unsigned long *current)
 {
@@ -71,7 +71,7 @@ int get_wifi_sar_limits(struct wifi_sar_limits *sar_limits)
 	return -1;
 }
 
-#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+#if CONFIG(HAVE_ACPI_TABLES)
 static void emit_sar_acpi_structures(void)
 {
 	int i, j, package_size;
@@ -139,7 +139,7 @@ static void emit_sar_acpi_structures(void)
 	acpigen_pop_len();
 
 
-	if (!IS_ENABLED(CONFIG_GEO_SAR_ENABLE))
+	if (!CONFIG(GEO_SAR_ENABLE))
 		return;
 
 	/*
@@ -219,7 +219,7 @@ static void intel_wifi_fill_ssdt(struct device *dev)
 		acpigen_write_PRW(config->wake, 3);
 
 	/* Fill regulatory domain structure */
-	if (IS_ENABLED(CONFIG_HAVE_REGULATORY_DOMAIN)) {
+	if (CONFIG(HAVE_REGULATORY_DOMAIN)) {
 		/*
 		 * Name ("WRDD", Package () {
 		 *   WRDD_REVISION, // Revision
@@ -240,7 +240,7 @@ static void intel_wifi_fill_ssdt(struct device *dev)
 	}
 
 	/* Fill Wifi sar related ACPI structures */
-	if (IS_ENABLED(CONFIG_USE_SAR))
+	if (CONFIG(USE_SAR))
 		emit_sar_acpi_structures();
 
 	acpigen_pop_len(); /* Device */
@@ -260,7 +260,7 @@ static void wifi_pci_dev_init(struct device *dev)
 {
 	pci_dev_init(dev);
 
-	if (IS_ENABLED(CONFIG_ELOG)) {
+	if (CONFIG(ELOG)) {
 		uint32_t val;
 		val = pci_read_config16(dev, PMCS_DR);
 		if (val & PME_STS)
@@ -277,11 +277,11 @@ struct device_operations device_ops = {
 	.set_resources            = pci_dev_set_resources,
 	.enable_resources         = pci_dev_enable_resources,
 	.init                     = wifi_pci_dev_init,
-#if IS_ENABLED(CONFIG_GENERATE_SMBIOS_TABLES)
+#if CONFIG(GENERATE_SMBIOS_TABLES)
 	.get_smbios_data          = smbios_write_wifi,
 #endif
 	.ops_pci                  = &pci_ops,
-#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+#if CONFIG(HAVE_ACPI_TABLES)
 	.acpi_name                = intel_wifi_acpi_name,
 	.acpi_fill_ssdt_generator = intel_wifi_fill_ssdt,
 #endif

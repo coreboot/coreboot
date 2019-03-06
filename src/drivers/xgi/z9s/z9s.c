@@ -39,7 +39,7 @@ static void xgi_z9s_init(struct device *dev)
 	u8 ret;
 	struct xgifb_video_info *xgifb_info;
 
-	if (IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT)) {
+	if (CONFIG(MAINBOARD_DO_NATIVE_VGA_INIT)) {
 		printk(BIOS_INFO, "XGI Z9s: initializing video device\n");
 		xgifb_info = malloc(sizeof(*xgifb_info));
 		ret = xgifb_probe(dev, xgifb_info);

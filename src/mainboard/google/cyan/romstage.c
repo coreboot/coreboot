@@ -33,7 +33,7 @@ void mainboard_memory_init_params(struct romstage_params *params,
 	MEMORY_INIT_UPD *memory_params)
 {
 	/* Update SPD data */
-	if (IS_ENABLED(CONFIG_BOARD_GOOGLE_CYAN)) {
+	if (CONFIG(BOARD_GOOGLE_CYAN)) {
 		memory_params->PcdMemoryTypeEnable = MEM_DDR3;
 		memory_params->PcdMemorySpdPtr =
 				(u32)params->pei_data->spd_data_ch0;

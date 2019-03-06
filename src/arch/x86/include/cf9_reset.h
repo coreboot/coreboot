@@ -27,7 +27,7 @@ void do_system_reset(void);
 void do_full_reset(void);
 
 /* Called by functions below before reset. */
-#if IS_ENABLED(CONFIG_HAVE_CF9_RESET_PREPARE)
+#if CONFIG(HAVE_CF9_RESET_PREPARE)
 void cf9_reset_prepare(void);
 #else
 static inline void cf9_reset_prepare(void) {}

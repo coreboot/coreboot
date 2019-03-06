@@ -17,7 +17,7 @@
 #ifndef _SOC_APL_GPIO_H_
 #define _SOC_APL_GPIO_H_
 
-#if IS_ENABLED(CONFIG_SOC_INTEL_GLK)
+#if CONFIG(SOC_INTEL_GLK)
 #include <soc/gpio_glk.h>
 #else
 #include <soc/gpio_apl.h>

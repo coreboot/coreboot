@@ -13,14 +13,14 @@
  * GNU General Public License for more details.
  */
 
-#if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
+#if CONFIG(HAVE_ACPI_RESUME)
 #include <arch/acpi.h>
 #endif
 #include <arch/early_variables.h>
 #include <bootstate.h>
 #include <cbmem.h>
 #include <console/console.h>
-#if IS_ENABLED(CONFIG_ARCH_X86)
+#if CONFIG(ARCH_X86)
 #include <pc80/mc146818rtc.h>
 #endif
 #include <bcd.h>
@@ -36,7 +36,7 @@
 #include "elog_internal.h"
 
 
-#if IS_ENABLED(CONFIG_ELOG_DEBUG)
+#if CONFIG(ELOG_DEBUG)
 #define elog_debug(STR...) printk(BIOS_DEBUG, STR)
 #else
 #define elog_debug(STR...)
@@ -207,7 +207,7 @@ static void elog_debug_dump_buffer(const char *msg)
 	struct region_device *rdev;
 	void *buffer;
 
-	if (!IS_ENABLED(CONFIG_ELOG_DEBUG))
+	if (!CONFIG(ELOG_DEBUG))
 		return;
 
 	elog_debug(msg);
@@ -628,7 +628,7 @@ static inline u8 *elog_flash_offset_to_address(void)
 	struct elog_state *es = car_get_var_ptr(&g_elog_state);
 
 	/* Only support memory-mapped devices. */
-	if (!IS_ENABLED(CONFIG_BOOT_DEVICE_MEMORY_MAPPED))
+	if (!CONFIG(BOOT_DEVICE_MEMORY_MAPPED))
 		return NULL;
 
 	if (!region_device_sz(&es->nv_dev))
@@ -651,7 +651,7 @@ int elog_smbios_write_type15(unsigned long *current, int handle)
 	struct elog_state *es = car_get_var_ptr(&g_elog_state);
 	size_t elog_size = region_device_sz(&es->nv_dev);
 
-	if (IS_ENABLED(CONFIG_ELOG_CBMEM)) {
+	if (CONFIG(ELOG_CBMEM)) {
 		/* Save event log buffer into CBMEM for the OS to read */
 		void *cbmem = cbmem_add(CBMEM_ID_ELOG, elog_size);
 		if (cbmem)
@@ -790,7 +790,7 @@ static bool elog_do_add_boot_count(void)
 	if (ENV_SMM)
 		return false;
 
-#if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
+#if CONFIG(HAVE_ACPI_RESUME)
 	return !acpi_is_wakeup_s3();
 #else
 	return true;
@@ -802,9 +802,9 @@ static void ramstage_elog_add_boot_count(void)
 	if (elog_do_add_boot_count()) {
 		elog_add_event_dword(ELOG_TYPE_BOOT, boot_count_read());
 
-#if IS_ENABLED(CONFIG_ARCH_X86)
+#if CONFIG(ARCH_X86)
 		/* Check and log POST codes from previous boot */
-		if (IS_ENABLED(CONFIG_CMOS_POST))
+		if (CONFIG(CMOS_POST))
 			cmos_post_log();
 #endif
 	}
@@ -869,7 +869,7 @@ int elog_init(void)
  */
 static void elog_fill_timestamp(struct event_header *event)
 {
-#if IS_ENABLED(CONFIG_RTC)
+#if CONFIG(RTC)
 	struct rtc_time time;
 
 	rtc_get(&time);

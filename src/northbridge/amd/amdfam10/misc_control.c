@@ -153,7 +153,7 @@ static void misc_control_init(struct device *dev)
 
 	printk(BIOS_DEBUG, "NB: Function 3 Misc Control.. ");
 
-#if IS_ENABLED(CONFIG_DIMM_DDR3) && !IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_AGESA)
+#if CONFIG(DIMM_DDR3) && !CONFIG(NORTHBRIDGE_AMD_AGESA)
 	uint8_t node;
 	uint8_t slot;
 	uint8_t dimm_present;

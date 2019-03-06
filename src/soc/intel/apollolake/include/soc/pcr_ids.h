@@ -20,7 +20,7 @@
 /*
  * Port ids.
  */
-#if IS_ENABLED(CONFIG_SOC_INTEL_GLK)
+#if CONFIG(SOC_INTEL_GLK)
 #define PID_GPIO_AUDIO	0xC9
 #define PID_GPIO_SCC	0xC8
 #else

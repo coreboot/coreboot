@@ -46,7 +46,7 @@
  */
 uint32_t vboot_init_crtm(void);
 
-#if (IS_ENABLED(CONFIG_VBOOT_MEASURED_BOOT) && \
+#if (CONFIG(VBOOT_MEASURED_BOOT) && \
 !ENV_BOOTBLOCK && !ENV_DECOMPRESSOR && !ENV_SMM)
 /*
  * Measures cbfs data via hook (cbfs)

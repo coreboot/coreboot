@@ -16,7 +16,7 @@
 
 #include <variant/onboard.h>
 
-#if !IS_ENABLED(CONFIG_BOARD_GOOGLE_BUDDY)
+#if !CONFIG(BOARD_GOOGLE_BUDDY)
 Scope (\_SB.PCI0.RP01)
 {
 	Device (WLAN)

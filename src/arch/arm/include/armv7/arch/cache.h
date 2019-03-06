@@ -134,7 +134,7 @@ static inline void write_mair0(uint32_t val)
 /* write translation table base register 0 (TTBR0) */
 static inline void write_ttbr0(uint32_t val)
 {
-	if (IS_ENABLED(CONFIG_ARM_LPAE))
+	if (CONFIG(ARM_LPAE))
 		asm volatile ("mcrr p15, 0, %[val], %[zero], c2" : :
 			[val] "r" (val), [zero] "r" (0));
 	else

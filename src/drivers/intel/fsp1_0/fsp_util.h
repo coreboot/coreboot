@@ -19,7 +19,7 @@
 #include <chipset_fsp_util.h>
 #include "fsp_values.h"
 
-#if IS_ENABLED(CONFIG_ENABLE_MRC_CACHE)
+#if CONFIG(ENABLE_MRC_CACHE)
 int save_mrc_data(void *hob_start);
 void *find_and_set_fastboot_cache(void);
 #endif
@@ -61,7 +61,7 @@ void printguid(EFI_GUID *guid);
 #define EFI_HOB_TYPE_HANDOFF		0x0001
 #define EFI_HOB_TYPE_MEMORY_POOL	0x0007
 
-#if IS_ENABLED(CONFIG_ENABLE_MRC_CACHE)
+#if CONFIG(ENABLE_MRC_CACHE)
 #define MRC_DATA_ALIGN			0x1000
 #define MRC_DATA_SIGNATURE		(('M'<<0)|('R'<<8)|('C'<<16)|('D'<<24))
 

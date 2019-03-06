@@ -369,8 +369,8 @@ struct reg_script_bus_entry {
 	REG_RES_RXW32(bar_, reg_, 0xffffffff, value_)
 
 
-#if IS_ENABLED(CONFIG_SOC_INTEL_BAYTRAIL) || \
-IS_ENABLED(CONFIG_SOC_INTEL_FSP_BAYTRAIL)
+#if CONFIG(SOC_INTEL_BAYTRAIL) || \
+CONFIG(SOC_INTEL_FSP_BAYTRAIL)
 /*
  * IO Sideband Function
  */

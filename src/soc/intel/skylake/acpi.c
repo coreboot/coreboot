@@ -182,15 +182,15 @@ static void acpi_create_gnvs(global_nvs_t *gnvs)
 	/* CPU core count */
 	gnvs->pcnt = dev_count_cpu();
 
-#if IS_ENABLED(CONFIG_CONSOLE_CBMEM)
+#if CONFIG(CONSOLE_CBMEM)
 	/* Update the mem console pointer. */
 	gnvs->cbmc = (u32)cbmem_find(CBMEM_ID_CONSOLE);
 #endif
 
-#if IS_ENABLED(CONFIG_CHROMEOS)
+#if CONFIG(CHROMEOS)
 	/* Initialize Verified Boot data */
 	chromeos_init_chromeos_acpi(&(gnvs->chromeos));
-#if IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC)
+#if CONFIG(EC_GOOGLE_CHROMEEC)
 	gnvs->chromeos.vbt2 = google_ec_running_ro() ?
 		ACTIVE_ECFW_RO : ACTIVE_ECFW_RW;
 #endif
@@ -207,7 +207,7 @@ static void acpi_create_gnvs(global_nvs_t *gnvs)
 	gnvs->u2we = config->usb2_wake_enable_bitmap;
 	gnvs->u3we = config->usb3_wake_enable_bitmap;
 
-	if (IS_ENABLED(CONFIG_SOC_INTEL_COMMON_BLOCK_SGX))
+	if (CONFIG(SOC_INTEL_COMMON_BLOCK_SGX))
 		sgx_fill_gnvs(gnvs);
 }
 
@@ -275,7 +275,7 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	fadt->mon_alrm = 0x00;
 	fadt->century = 0x00;
 	fadt->iapc_boot_arch = ACPI_FADT_LEGACY_FREE;
-	if (!IS_ENABLED(CONFIG_NO_FADT_8042))
+	if (!CONFIG(NO_FADT_8042))
 		fadt->iapc_boot_arch |= ACPI_FADT_8042;
 
 	fadt->flags = ACPI_FADT_WBINVD | ACPI_FADT_C1_SUPPORTED |

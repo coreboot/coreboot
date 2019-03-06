@@ -52,10 +52,10 @@ static struct tcpa_table *tcpa_log_init(void)
 	/* We are dealing here with pre CBMEM environment.
 	 * If cbmem isn't available use CAR or SRAM */
 	if (!cbmem_possibly_online() &&
-		!IS_ENABLED(CONFIG_VBOOT_RETURN_FROM_VERSTAGE))
+		!CONFIG(VBOOT_RETURN_FROM_VERSTAGE))
 		return (struct tcpa_table *)_vboot2_tpm_log;
 	else if (ENV_ROMSTAGE &&
-		!IS_ENABLED(CONFIG_VBOOT_RETURN_FROM_VERSTAGE)) {
+		!CONFIG(VBOOT_RETURN_FROM_VERSTAGE)) {
 		tclt = tcpa_cbmem_init();
 		if (!tclt)
 			return (struct tcpa_table *)_vboot2_tpm_log;
@@ -136,7 +136,7 @@ void tcpa_preram_log_clear(void)
 	tclt->num_entries = 0;
 }
 
-#if !IS_ENABLED(CONFIG_VBOOT_RETURN_FROM_VERSTAGE)
+#if !CONFIG(VBOOT_RETURN_FROM_VERSTAGE)
 static void recover_tcpa_log(int is_recovery)
 {
 	struct tcpa_table *preram_log = (struct tcpa_table *)_vboot2_tpm_log;

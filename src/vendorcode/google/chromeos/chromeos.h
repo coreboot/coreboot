@@ -24,7 +24,7 @@
 #include <security/vboot/misc.h>
 #include <security/vboot/vboot_common.h>
 
-#if IS_ENABLED(CONFIG_CHROMEOS)
+#if CONFIG(CHROMEOS)
 /* functions implemented in watchdog.c */
 void mark_watchdog_tombstone(void);
 void reboot_from_watchdog(void);
@@ -44,9 +44,9 @@ struct romstage_handoff;
 #include "gnvs.h"
 struct device;
 
-#if IS_ENABLED(CONFIG_CHROMEOS_RAMOOPS)
+#if CONFIG(CHROMEOS_RAMOOPS)
 void chromeos_ram_oops_init(chromeos_acpi_t *chromeos);
-#if IS_ENABLED(CONFIG_CHROMEOS_RAMOOPS_DYNAMIC)
+#if CONFIG(CHROMEOS_RAMOOPS_DYNAMIC)
 static inline void chromeos_reserve_ram_oops(struct device *dev, int idx) {}
 #else /* CONFIG_CHROMEOS_RAMOOPS_DYNAMIC */
 void chromeos_reserve_ram_oops(struct device *dev, int idx);
@@ -70,7 +70,7 @@ void chromeos_acpi_gpio_generate(const struct cros_gpio *gpios, size_t num);
  * ACPI-specific Chrome OS needs.
  */
 void mainboard_chromeos_acpi_generate(void);
-#if IS_ENABLED(CONFIG_CHROMEOS)
+#if CONFIG(CHROMEOS)
 void chromeos_dsdt_generator(struct device *dev);
 #else
 #define chromeos_dsdt_generator DEVICE_NOOP

@@ -59,7 +59,7 @@ AGESA_STATUS agesa_fch_initenv(uint32_t Func, uintptr_t FchData,
 		printk(BIOS_DEBUG, "Fch OEM config in INIT ENV ");
 
 		/* XHCI configuration */
-		if (IS_ENABLED(CONFIG_STONEYRIDGE_XHCI_ENABLE))
+		if (CONFIG(STONEYRIDGE_XHCI_ENABLE))
 			FchParams_env->Usb.Xhci0Enable = TRUE;
 		else
 			FchParams_env->Usb.Xhci0Enable = FALSE;

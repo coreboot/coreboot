@@ -26,7 +26,7 @@
  * lizations automatically. When not, we have to call it explicitly.
  */
 
-#if IS_ENABLED(CONFIG_RAMSTAGE_ADA)
+#if CONFIG(RAMSTAGE_ADA)
 void ramstage_adainit(void);
 #else
 static inline void ramstage_adainit(void) {}

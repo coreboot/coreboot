@@ -95,7 +95,7 @@ void smm_region_info(void **start, size_t *size)
 	*size = sa_get_tseg_size();
 }
 
-#if IS_ENABLED(CONFIG_SOC_INTEL_COMMON_BLOCK_SMM_ESPI_ACPI_DIS)
+#if CONFIG(SOC_INTEL_COMMON_BLOCK_SMM_ESPI_ACPI_DIS)
 static void smm_disable_espi(void *dest)
 {
 	pmc_disable_smi(ESPI_SMI_EN);

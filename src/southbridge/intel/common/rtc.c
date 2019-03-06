@@ -41,7 +41,7 @@ void sb_rtc_init(void)
 	int rtc_failed = rtc_failure();
 
 	if (rtc_failed) {
-		if (IS_ENABLED(CONFIG_ELOG))
+		if (CONFIG(ELOG))
 			elog_add_event(ELOG_TYPE_RTC_RESET);
 		pci_update_config8(PCH_LPC_DEV, D31F0_GEN_PMCON_3,
 				   ~RTC_BATTERY_DEAD, 0);

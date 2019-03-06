@@ -525,7 +525,7 @@ detailed_block(struct edid *result_edid, unsigned char *x, int in_extension,
 	 * another call to edid_set_framebuffer_bits_per_pixel(). As a cheap
 	 * heuristic, assume that X86 systems require a 64-byte row alignment
 	 * (since that seems to be true for most Intel chipsets). */
-	if (IS_ENABLED(CONFIG_ARCH_X86))
+	if (CONFIG(ARCH_X86))
 		edid_set_framebuffer_bits_per_pixel(out, 32, 64);
 	else
 		edid_set_framebuffer_bits_per_pixel(out, 32, 0);

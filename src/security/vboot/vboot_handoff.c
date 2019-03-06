@@ -79,18 +79,18 @@ static void fill_vboot_handoff(struct vboot_handoff *vboot_handoff,
 		vb_sd->flags |= VBSD_LF_DEV_SWITCH_ON;
 	}
 	/* TODO: Set these in depthcharge */
-	if (!IS_ENABLED(CONFIG_VBOOT_PHYSICAL_DEV_SWITCH))
+	if (!CONFIG(VBOOT_PHYSICAL_DEV_SWITCH))
 		vb_sd->flags |= VBSD_HONOR_VIRT_DEV_SWITCH;
-	if (IS_ENABLED(CONFIG_VBOOT_EC_SOFTWARE_SYNC)) {
+	if (CONFIG(VBOOT_EC_SOFTWARE_SYNC)) {
 		vb_sd->flags |= VBSD_EC_SOFTWARE_SYNC;
-		if (IS_ENABLED(CONFIG_VBOOT_EC_SLOW_UPDATE))
+		if (CONFIG(VBOOT_EC_SLOW_UPDATE))
 			vb_sd->flags |= VBSD_EC_SLOW_UPDATE;
-		if (IS_ENABLED(CONFIG_VBOOT_EC_EFS))
+		if (CONFIG(VBOOT_EC_EFS))
 			vb_sd->flags |= VBSD_EC_EFS;
 	}
-	if (!IS_ENABLED(CONFIG_VBOOT_PHYSICAL_REC_SWITCH))
+	if (!CONFIG(VBOOT_PHYSICAL_REC_SWITCH))
 		vb_sd->flags |= VBSD_BOOT_REC_SWITCH_VIRTUAL;
-	if (IS_ENABLED(CONFIG_VBOOT_OPROM_MATTERS)) {
+	if (CONFIG(VBOOT_OPROM_MATTERS)) {
 		vb_sd->flags |= VBSD_OPROM_MATTERS;
 		/*
 		 * Inform vboot if the display was enabled by dev/rec
@@ -179,7 +179,7 @@ void vboot_fill_handoff(void)
  * Therefore, the vboot results would not be initialized so don't
  * automatically add results when cbmem comes online.
  */
-#if !IS_ENABLED(CONFIG_VBOOT_STARTS_IN_ROMSTAGE)
+#if !CONFIG(VBOOT_STARTS_IN_ROMSTAGE)
 static void vb2_fill_handoff_cbmem(int unused)
 {
 	vboot_fill_handoff();

@@ -30,7 +30,7 @@ static struct device_operations pci_domain_ops = {
 	.read_resources    = &pci_domain_read_resources,
 	.set_resources     = &pci_domain_set_resources,
 	.scan_bus          = &pci_domain_scan_bus,
-#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+#if CONFIG(HAVE_ACPI_TABLES)
 	.write_acpi_tables = &northbridge_write_acpi_tables,
 #endif
 };

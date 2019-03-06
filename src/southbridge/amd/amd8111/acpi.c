@@ -99,7 +99,7 @@ static int lsmbus_block_write(struct device *dev, uint8_t cmd, u8 bytes,
 }
 
 
-#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+#if CONFIG(HAVE_ACPI_TABLES)
 unsigned pm_base;
 #endif
 
@@ -171,7 +171,7 @@ static void acpi_init(struct device *dev)
 				(on * 12) + (on >> 1), (on & 1) * 5);
 	}
 
-#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+#if CONFIG(HAVE_ACPI_TABLES)
 	pm_base = pci_read_config16(dev, 0x58) & 0xff00;
 	printk(BIOS_DEBUG, "pm_base: 0x%04x\n", pm_base);
 #endif

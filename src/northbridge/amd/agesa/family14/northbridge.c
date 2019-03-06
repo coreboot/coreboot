@@ -410,7 +410,7 @@ static void set_resource(struct device *dev, struct resource *resource,
 	report_resource_stored(dev, resource, buf);
 }
 
-#if IS_ENABLED(CONFIG_CONSOLE_VGA_MULTI)
+#if CONFIG(CONSOLE_VGA_MULTI)
 extern struct device *vga_pri;	// the primary vga device, defined in device.c
 #endif
 
@@ -424,7 +424,7 @@ static void create_vga_resource(struct device *dev, unsigned nodeid)
 	 * we only deal with the 'first' vga card */
 	for (link = dev->link_list; link; link = link->next) {
 		if (link->bridge_ctrl & PCI_BRIDGE_CTL_VGA) {
-#if IS_ENABLED(CONFIG_CONSOLE_VGA_MULTI)
+#if CONFIG(CONSOLE_VGA_MULTI)
 			printk(BIOS_DEBUG,
 				"VGA: vga_pri bus num = %d bus range [%d,%d]\n",
 				 vga_pri->bus->secondary, link->secondary,

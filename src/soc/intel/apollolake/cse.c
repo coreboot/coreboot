@@ -222,7 +222,7 @@ static void dump_cse_version(void *unused)
 	 * Print ME version only if UART debugging is enabled. Else, it takes
 	 * ~0.6 second to talk to ME and get this information.
 	 */
-	if (!IS_ENABLED(CONFIG_CONSOLE_SERIAL))
+	if (!CONFIG(CONSOLE_SERIAL))
 		return;
 
 	msg.mkhi_hdr.fields.group_id = MKHI_GROUP_ID_GEN;

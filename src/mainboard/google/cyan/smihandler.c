@@ -55,14 +55,14 @@ int mainboard_io_trap_handler(int smif)
 	return 1;
 }
 
-#if IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC)
+#if CONFIG(EC_GOOGLE_CHROMEEC)
 static uint8_t mainboard_smi_ec(void)
 {
 	uint8_t cmd = google_chromeec_get_event();
 	uint16_t pmbase = get_pmbase();
 	uint32_t pm1_cnt;
 
-#if IS_ENABLED(CONFIG_ELOG_GSMI)
+#if CONFIG(ELOG_GSMI)
 	/* Log this event */
 	if (cmd)
 		elog_add_event_byte(ELOG_TYPE_EC_EVENT, cmd);
@@ -89,7 +89,7 @@ static uint8_t mainboard_smi_ec(void)
  */
 void mainboard_smi_gpi(uint32_t alt_gpio_smi)
 {
-#if IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC)
+#if CONFIG(EC_GOOGLE_CHROMEEC)
 	if (alt_gpio_smi & (1 << EC_SMI_GPI)) {
 		/* Process all pending events */
 		while (mainboard_smi_ec() != 0)
@@ -106,7 +106,7 @@ void mainboard_smi_sleep(uint8_t slp_typ)
 	/* Disable USB charging if required */
 	switch (slp_typ) {
 	case ACPI_S3:
-#if IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC)
+#if CONFIG(EC_GOOGLE_CHROMEEC)
 		if (smm_get_gnvs()->s3u0 == 0)
 			google_chromeec_set_usb_charge_mode(
 				0, USB_CHARGE_MODE_DISABLED);
@@ -121,7 +121,7 @@ void mainboard_smi_sleep(uint8_t slp_typ)
 		enable_gpe(WAKE_GPIO_EN);
 		break;
 	case ACPI_S5:
-#if IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC)
+#if CONFIG(EC_GOOGLE_CHROMEEC)
 		if (smm_get_gnvs()->s5u0 == 0)
 			google_chromeec_set_usb_charge_mode(
 				0, USB_CHARGE_MODE_DISABLED);
@@ -145,7 +145,7 @@ void mainboard_smi_sleep(uint8_t slp_typ)
 		break;
 	}
 
-#if IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC)
+#if CONFIG(EC_GOOGLE_CHROMEEC)
 	/* Disable SCI and SMI events */
 	google_chromeec_set_smi_mask(0);
 	google_chromeec_set_sci_mask(0);
@@ -165,7 +165,7 @@ int mainboard_smi_apmc(uint8_t apmc)
 {
 	switch (apmc) {
 	case APM_CNT_ACPI_ENABLE:
-#if IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC)
+#if CONFIG(EC_GOOGLE_CHROMEEC)
 		google_chromeec_set_smi_mask(0);
 		/* Clear all pending events */
 		while (google_chromeec_get_event() != 0)
@@ -174,7 +174,7 @@ int mainboard_smi_apmc(uint8_t apmc)
 #endif
 		break;
 	case APM_CNT_ACPI_DISABLE:
-#if IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC)
+#if CONFIG(EC_GOOGLE_CHROMEEC)
 		google_chromeec_set_sci_mask(0);
 		/* Clear all pending events */
 		while (google_chromeec_get_event() != 0)

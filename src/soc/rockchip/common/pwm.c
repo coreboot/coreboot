@@ -67,7 +67,7 @@ void pwm_init(u32 id, u32 period_ns, u32 duty_ns)
 {
 	unsigned long period, duty;
 
-#if IS_ENABLED(CONFIG_SOC_ROCKCHIP_RK3288)
+#if CONFIG(SOC_ROCKCHIP_RK3288)
 	/*use rk pwm*/
 	write32(&rk3288_grf->soc_con2, RK_SETBITS(1 << 0));
 #endif

@@ -54,7 +54,7 @@ static void romstage_main(unsigned long bist)
 	platform_enter_postcar();
 }
 
-#if !IS_ENABLED(CONFIG_C_ENVIRONMENT_BOOTBLOCK)
+#if !CONFIG(C_ENVIRONMENT_BOOTBLOCK)
 /* This wrapper enables easy transition towards C_ENVIRONMENT_BOOTBLOCK,
  * keeping changes in cache_as_ram.S easy to manage.
  */

@@ -105,7 +105,7 @@ typedef struct msrinit_struct {
 	msr_t msr;
 } msrinit_t;
 
-#if IS_ENABLED(CONFIG_SOC_SETS_MSRS)
+#if CONFIG(SOC_SETS_MSRS)
 msr_t soc_msr_read(unsigned int index);
 void soc_msr_write(unsigned int index, msr_t msr);
 

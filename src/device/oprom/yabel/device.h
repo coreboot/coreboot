@@ -83,7 +83,7 @@ typedef struct {
 typedef struct {
 	u8 bus;
 	u8 devfn;
-#if IS_ENABLED(CONFIG_PCI_OPTION_ROM_RUN_YABEL)
+#if CONFIG(PCI_OPTION_ROM_RUN_YABEL)
 	struct device* dev;
 #else
 	u64 puid;
@@ -105,7 +105,7 @@ typedef struct {
 } biosemu_device_t;
 
 typedef struct {
-#if IS_ENABLED(CONFIG_PCI_OPTION_ROM_RUN_YABEL)
+#if CONFIG(PCI_OPTION_ROM_RUN_YABEL)
 	unsigned long info;
 #else
 	u8 info;
@@ -149,7 +149,7 @@ u8 biosemu_dev_translate_address(int type, unsigned long * addr);
 static inline void
 out32le(void *addr, u32 val)
 {
-#if IS_ENABLED(CONFIG_ARCH_X86) || IS_ENABLED(CONFIG_ARCH_ARM)
+#if CONFIG(ARCH_X86) || CONFIG(ARCH_ARM)
 	*((u32*) addr) = cpu_to_le32(val);
 #else
 	asm volatile ("stwbrx  %0, 0, %1"::"r" (val), "r"(addr));
@@ -160,7 +160,7 @@ static inline u32
 in32le(void *addr)
 {
 	u32 val;
-#if IS_ENABLED(CONFIG_ARCH_X86) || IS_ENABLED(CONFIG_ARCH_ARM)
+#if CONFIG(ARCH_X86) || CONFIG(ARCH_ARM)
 	val = cpu_to_le32(*((u32 *) addr));
 #else
 	asm volatile ("lwbrx  %0, 0, %1":"=r" (val):"r"(addr));
@@ -171,7 +171,7 @@ in32le(void *addr)
 static inline void
 out16le(void *addr, u16 val)
 {
-#if IS_ENABLED(CONFIG_ARCH_X86) || IS_ENABLED(CONFIG_ARCH_ARM)
+#if CONFIG(ARCH_X86) || CONFIG(ARCH_ARM)
 	*((u16*) addr) = cpu_to_le16(val);
 #else
 	asm volatile ("sthbrx  %0, 0, %1"::"r" (val), "r"(addr));
@@ -182,7 +182,7 @@ static inline u16
 in16le(void *addr)
 {
 	u16 val;
-#if IS_ENABLED(CONFIG_ARCH_X86) || IS_ENABLED(CONFIG_ARCH_ARM)
+#if CONFIG(ARCH_X86) || CONFIG(ARCH_ARM)
 	val = cpu_to_le16(*((u16*) addr));
 #else
 	asm volatile ("lhbrx %0, 0, %1":"=r" (val):"r"(addr));

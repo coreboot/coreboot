@@ -15,7 +15,7 @@
 
 #include <security/vboot/vbnv_layout.h>
 
-#if IS_ENABLED(CONFIG_CHROMEOS)
+#if CONFIG(CHROMEOS)
 
 /* GPIO package generated at run time. */
 External (OIPG)

@@ -102,7 +102,7 @@ void print_fsp_info(FSP_INFO_HEADER *fsp_header)
 			(u8)((fsp_header->ImageRevision >> 16) & 0xff),
 			(u8)((fsp_header->ImageRevision >> 8) & 0xff),
 			(u8)(fsp_header->ImageRevision  & 0xff));
-#if IS_ENABLED(CONFIG_DISPLAY_FSP_ENTRY_POINTS)
+#if CONFIG(DISPLAY_FSP_ENTRY_POINTS)
 	printk(BIOS_SPEW, "FSP Entry Points:\n");
 	printk(BIOS_SPEW, "    0x%p: Image Base\n", fsp_base);
 	printk(BIOS_SPEW, "    0x%p: TempRamInit\n",

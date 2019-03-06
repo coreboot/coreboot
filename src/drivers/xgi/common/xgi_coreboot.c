@@ -118,7 +118,7 @@ int xgifb_probe(struct pci_dev *pdev, struct xgifb_video_info *xgifb_info)
 		xgifb_info->video_size = video_size_max;
 	}
 
-	if (IS_ENABLED(CONFIG_LINEAR_FRAMEBUFFER)) {
+	if (CONFIG(LINEAR_FRAMEBUFFER)) {
 		/* Enable PCI_LINEAR_ADDRESSING and MMIO_ENABLE  */
 		xgifb_reg_or(XGISR,
 			     IND_SIS_PCI_ADDRESS_SET,
@@ -263,7 +263,7 @@ int xgifb_probe(struct pci_dev *pdev, struct xgifb_video_info *xgifb_info)
 			xgifb_info->mode_idx =
 				XGIfb_GetXG21DefaultLVDSModeIdx(xgifb_info);
 		else
-			if (IS_ENABLED(CONFIG_LINEAR_FRAMEBUFFER))
+			if (CONFIG(LINEAR_FRAMEBUFFER))
 				xgifb_info->mode_idx = DEFAULT_MODE;
 			else
 				xgifb_info->mode_idx = DEFAULT_TEXT_MODE;
@@ -338,7 +338,7 @@ int xgifb_modeset(struct pci_dev *pdev, struct xgifb_video_info *xgifb_info)
 
 	hw_info = &xgifb_info->hw_info;
 
-	if (IS_ENABLED(CONFIG_LINEAR_FRAMEBUFFER)) {
+	if (CONFIG(LINEAR_FRAMEBUFFER)) {
 		/* Set mode */
 		XGIfb_pre_setmode(xgifb_info);
 		if (XGISetModeNew(xgifb_info, hw_info,

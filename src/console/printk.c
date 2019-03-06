@@ -26,7 +26,7 @@
 #include <stddef.h>
 #include <trace.h>
 
-#if (!defined(__PRE_RAM__) && IS_ENABLED(CONFIG_HAVE_ROMSTAGE_CONSOLE_SPINLOCK)) || !IS_ENABLED(CONFIG_HAVE_ROMSTAGE_CONSOLE_SPINLOCK)
+#if (!defined(__PRE_RAM__) && CONFIG(HAVE_ROMSTAGE_CONSOLE_SPINLOCK)) || !CONFIG(HAVE_ROMSTAGE_CONSOLE_SPINLOCK)
 DECLARE_SPIN_LOCK(console_lock)
 #endif
 
@@ -49,7 +49,7 @@ int vprintk(int msg_level, const char *fmt, va_list args)
 {
 	int i, log_this;
 
-	if (IS_ENABLED(CONFIG_SQUELCH_EARLY_SMP) && ENV_CACHE_AS_RAM &&
+	if (CONFIG(SQUELCH_EARLY_SMP) && ENV_CACHE_AS_RAM &&
 		!boot_cpu())
 		return 0;
 
@@ -59,7 +59,7 @@ int vprintk(int msg_level, const char *fmt, va_list args)
 
 	DISABLE_TRACE;
 #ifdef __PRE_RAM__
-#if IS_ENABLED(CONFIG_HAVE_ROMSTAGE_CONSOLE_SPINLOCK)
+#if CONFIG(HAVE_ROMSTAGE_CONSOLE_SPINLOCK)
 	spin_lock(romstage_console_lock());
 #endif
 #else
@@ -74,7 +74,7 @@ int vprintk(int msg_level, const char *fmt, va_list args)
 	}
 
 #ifdef __PRE_RAM__
-#if IS_ENABLED(CONFIG_HAVE_ROMSTAGE_CONSOLE_SPINLOCK)
+#if CONFIG(HAVE_ROMSTAGE_CONSOLE_SPINLOCK)
 	spin_unlock(romstage_console_lock());
 #endif
 #else

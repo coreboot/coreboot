@@ -79,7 +79,7 @@ static const struct reg_script mtrr_init[] = {
 
 asmlinkage void bootblock_c_entry(uint64_t base_timestamp)
 {
-	if (IS_ENABLED(CONFIG_ENABLE_DEBUG_LED_BOOTBLOCK_ENTRY))
+	if (CONFIG(ENABLE_DEBUG_LED_BOOTBLOCK_ENTRY))
 		light_sd_led();
 
 	bootblock_main_with_timestamp(base_timestamp, NULL, 0);
@@ -87,7 +87,7 @@ asmlinkage void bootblock_c_entry(uint64_t base_timestamp)
 
 void bootblock_soc_early_init(void)
 {
-	if (IS_ENABLED(CONFIG_ENABLE_DEBUG_LED_SOC_EARLY_INIT_ENTRY))
+	if (CONFIG(ENABLE_DEBUG_LED_SOC_EARLY_INIT_ENTRY))
 		light_sd_led();
 
 	/* Initialize the MTRRs */
@@ -98,18 +98,18 @@ void bootblock_soc_early_init(void)
 	reg_script_run_on_dev(LPC_BDF, legacy_gpio_init);
 
 	/* Enable the HSUART */
-	if (IS_ENABLED(CONFIG_ENABLE_BUILTIN_HSUART0))
+	if (CONFIG(ENABLE_BUILTIN_HSUART0))
 		reg_script_run_on_dev(HSUART0_BDF, hsuart_init);
-	if (IS_ENABLED(CONFIG_ENABLE_BUILTIN_HSUART1))
+	if (CONFIG(ENABLE_BUILTIN_HSUART1))
 		reg_script_run_on_dev(HSUART1_BDF, hsuart_init);
 
-	if (IS_ENABLED(CONFIG_ENABLE_DEBUG_LED_SOC_EARLY_INIT_EXIT))
+	if (CONFIG(ENABLE_DEBUG_LED_SOC_EARLY_INIT_EXIT))
 		light_sd_led();
 }
 
 void bootblock_soc_init(void)
 {
-	if (IS_ENABLED(CONFIG_ENABLE_DEBUG_LED_SOC_INIT_ENTRY))
+	if (CONFIG(ENABLE_DEBUG_LED_SOC_INIT_ENTRY))
 		light_sd_led();
 
 	display_mtrrs();

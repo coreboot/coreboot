@@ -44,7 +44,7 @@ static void sb700_enable_rom(void)
 	dev = PCI_DEV(0, 0x14, 3);
 
 	reg8 = pci_io_read_config8(dev, IO_MEM_PORT_DECODE_ENABLE_5);
-	if (IS_ENABLED(CONFIG_SPI_FLASH))
+	if (CONFIG(SPI_FLASH))
 		/* Disable decode of variable LPC ROM address ranges 1 and 2. */
 		reg8 &= ~((1 << 3) | (1 << 4));
 	else
@@ -100,7 +100,7 @@ static void sb700_configure_rom(void)
 
 	dev = PCI_DEV(0, 0x14, 3);
 
-	if (IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_SB700_33MHZ_SPI)) {
+	if (CONFIG(SOUTHBRIDGE_AMD_SB700_33MHZ_SPI)) {
 		uint32_t prev_spi_cfg;
 		volatile uint32_t *spi_mmio;
 

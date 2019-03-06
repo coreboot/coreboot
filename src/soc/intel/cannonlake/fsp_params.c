@@ -213,7 +213,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	} else {
 		params->ScsSdCardEnabled = dev->enabled;
 		params->SdCardPowerEnableActiveHigh =
-			IS_ENABLED(CONFIG_MB_HAS_ACTIVE_HIGH_SD_PWR_ENABLE);
+			CONFIG(MB_HAS_ACTIVE_HIGH_SD_PWR_ENABLE);
 	}
 
 	dev = dev_find_slot(0, PCH_DEVFN_UFS);

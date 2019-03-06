@@ -28,7 +28,7 @@ car_stage_entry:
 
 .Lhlt:
 	xchg	%al, %ah
-#if IS_ENABLED(CONFIG_POST_IO)
+#if CONFIG(POST_IO)
 	outb	%al, $CONFIG_POST_IO_PORT
 #else
 	post_code(POST_DEAD_CODE)

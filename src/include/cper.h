@@ -386,7 +386,7 @@ typedef struct cper_ia32x64_ctx_x64state {
 static inline cper_timestamp_t cper_timestamp(int precise)
 {
 	cper_timestamp_t ts;
-#if IS_ENABLED(CONFIG_RTC)
+#if CONFIG(RTC)
 	struct rtc_time time;
 
 	rtc_get(&time);

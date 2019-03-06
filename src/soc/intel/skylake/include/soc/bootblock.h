@@ -18,7 +18,7 @@
 
 #include <intelblocks/systemagent.h>
 
-#if IS_ENABLED(CONFIG_PLATFORM_USES_FSP1_1)
+#if CONFIG(PLATFORM_USES_FSP1_1)
 #include <fsp/bootblock.h>
 #else
 static inline void bootblock_fsp_temp_ram_init(void) {}

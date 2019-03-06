@@ -98,7 +98,7 @@ bad_ctc:
 
 static unsigned long calibrate_tsc(void)
 {
-	if (IS_ENABLED(CONFIG_TSC_CONSTANT_RATE))
+	if (CONFIG(TSC_CONSTANT_RATE))
 		return tsc_freq_mhz();
 	else
 		return calibrate_tsc_with_pit();
@@ -135,7 +135,7 @@ void udelay(unsigned int us)
 	}
 }
 
-#if IS_ENABLED(CONFIG_TSC_MONOTONIC_TIMER)
+#if CONFIG(TSC_MONOTONIC_TIMER)
 #include <timer.h>
 
 static struct monotonic_counter {

@@ -27,7 +27,7 @@
 #include "hudson.h"
 #include "smi.h"
 
-#if IS_ENABLED(CONFIG_HUDSON_LEGACY_FREE)
+#if CONFIG(HUDSON_LEGACY_FREE)
 	#define FADT_BOOT_ARCH ACPI_FADT_LEGACY_FREE
 #else
 	#define FADT_BOOT_ARCH (ACPI_FADT_LEGACY_DEVICES | ACPI_FADT_8042)
@@ -71,7 +71,7 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 	fadt->preferred_pm_profile = FADT_PM_PROFILE;
 	fadt->sci_int = 9;		/* HUDSON - IRQ 09 - ACPI SCI */
 
-	if (IS_ENABLED(CONFIG_HAVE_SMI_HANDLER)) {
+	if (CONFIG(HAVE_SMI_HANDLER)) {
 		fadt->smi_cmd = ACPI_SMI_CTL_PORT;
 		fadt->acpi_enable = ACPI_SMI_CMD_ENABLE;
 		fadt->acpi_disable = ACPI_SMI_CMD_DISABLE;

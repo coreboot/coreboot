@@ -384,7 +384,7 @@ static int pmc_prev_sleep_state(const struct chipset_power_state *ps)
 	if (ps->pm1_sts & WAK_STS) {
 		switch (acpi_sleep_from_pm1(ps->pm1_cnt)) {
 		case ACPI_S3:
-			if (IS_ENABLED(CONFIG_HAVE_ACPI_RESUME))
+			if (CONFIG(HAVE_ACPI_RESUME))
 				prev_sleep_state = ACPI_S3;
 			break;
 		case ACPI_S5:
@@ -432,7 +432,7 @@ int pmc_fill_power_state(struct chipset_power_state *ps)
 	return ps->prev_sleep_state;
 }
 
-#if IS_ENABLED(CONFIG_PMC_GLOBAL_RESET_ENABLE_LOCK)
+#if CONFIG(PMC_GLOBAL_RESET_ENABLE_LOCK)
 /*
  * If possible, lock 0xcf9. Once the register is locked, it can't be changed.
  * This lock is reset on cold boot, hard reset, soft reset and Sx.

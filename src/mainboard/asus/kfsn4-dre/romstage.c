@@ -251,7 +251,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	 */
 	wait_all_core0_started();
 
-	if (IS_ENABLED(CONFIG_SET_FIDVID)) {
+	if (CONFIG(SET_FIDVID)) {
 		msr = rdmsr(MSR_COFVID_STS);
 		printk(BIOS_DEBUG, "\nBegin FIDVID MSR 0xc0010071 0x%08x 0x%08x\n", msr.hi, msr.lo);
 
@@ -270,7 +270,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		printk(BIOS_DEBUG, "End FIDVIDMSR 0xc0010071 0x%08x 0x%08x\n", msr.hi, msr.lo);
 	}
 
-	if (IS_ENABLED(CONFIG_LOGICAL_CPUS)) {
+	if (CONFIG(LOGICAL_CPUS)) {
 		/* Core0 on each node is configured. Now setup any additional cores. */
 		printk(BIOS_DEBUG, "start_other_cores()\n");
 		start_other_cores(bsp_apicid);
@@ -311,9 +311,9 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 #if 0
 	/* FIXME
 	 * After the AMD K10 code has been converted to use
-	 * IS_ENABLED(CONFIG_DEBUG_SMBUS) uncomment this block
+	 * CONFIG(DEBUG_SMBUS) uncomment this block
 	 */
-	if (IS_ENABLED(CONFIG_DEBUG_SMBUS)) {
+	if (CONFIG(DEBUG_SMBUS)) {
 		dump_spd_registers(&cpu[0]);
 		dump_smbus_registers();
 	}

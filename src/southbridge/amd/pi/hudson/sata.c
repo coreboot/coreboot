@@ -23,7 +23,7 @@
 
 static void sata_init(struct device *dev)
 {
-#if IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_PI_AVALON) || IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_PI_KERN)
+#if CONFIG(SOUTHBRIDGE_AMD_PI_AVALON) || CONFIG(SOUTHBRIDGE_AMD_PI_KERN)
 	/**************************************
 	 * Configure the SATA port multiplier *
 	 **************************************/

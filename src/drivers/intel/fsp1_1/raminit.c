@@ -51,7 +51,7 @@ void raminit(struct romstage_params *params)
 	VPD_DATA_REGION *vpd_ptr;
 	UPD_DATA_REGION *upd_ptr;
 	int fsp_verification_failure = 0;
-#if IS_ENABLED(CONFIG_DISPLAY_HOBS)
+#if CONFIG(DISPLAY_HOBS)
 	unsigned long int data;
 	EFI_PEI_HOB_POINTERS hob_ptr;
 #endif
@@ -101,13 +101,13 @@ void raminit(struct romstage_params *params)
 	soc_memory_init_params(params, &memory_init_params);
 	mainboard_memory_init_params(params, &memory_init_params);
 
-	if (IS_ENABLED(CONFIG_MMA))
+	if (CONFIG(MMA))
 		setup_mma(&memory_init_params);
 
 	post_code(POST_MEM_PREINIT_PREP_END);
 
 	/* Display the UPD data */
-	if (IS_ENABLED(CONFIG_DISPLAY_UPD_DATA))
+	if (CONFIG(DISPLAY_UPD_DATA))
 		soc_display_memory_init_params(original_params,
 			&memory_init_params);
 
@@ -146,7 +146,7 @@ void raminit(struct romstage_params *params)
 	}
 
 	/* Display SMM area */
-#if IS_ENABLED(CONFIG_HAVE_SMI_HANDLER)
+#if CONFIG(HAVE_SMI_HANDLER)
 	char *smm_base;
 	size_t smm_size;
 
@@ -162,7 +162,7 @@ void raminit(struct romstage_params *params)
 			fsp_reserved_bytes);
 	} else if (cbmem_initialize_id_size(CBMEM_ID_FSP_RESERVED_MEMORY,
 		fsp_reserved_bytes)) {
-#if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
+#if CONFIG(HAVE_ACPI_RESUME)
 		printk(BIOS_DEBUG, "Failed to recover CBMEM in S3 resume.\n");
 		/* Failed S3 resume, reset to come up cleanly */
 		/* FIXME: A "system" reset is likely enough: */
@@ -194,7 +194,7 @@ void raminit(struct romstage_params *params)
 			memory_info_hob);
 	}
 
-#if IS_ENABLED(CONFIG_DISPLAY_HOBS)
+#if CONFIG(DISPLAY_HOBS)
 	if (hob_list_ptr == NULL)
 		die("ERROR - HOB pointer is NULL!\n");
 
@@ -266,7 +266,7 @@ void raminit(struct romstage_params *params)
 			(unsigned int)fsp_reserved_memory_area))) {
 		fsp_verification_failure = 1;
 		printk(BIOS_DEBUG, "ERROR - Reserving FSP memory area!\n");
-#if IS_ENABLED(CONFIG_HAVE_SMI_HANDLER)
+#if CONFIG(HAVE_SMI_HANDLER)
 		if (cbmem_root != NULL) {
 			size_t delta_bytes = (unsigned int)smm_base
 				- cbmem_root->PhysicalStart

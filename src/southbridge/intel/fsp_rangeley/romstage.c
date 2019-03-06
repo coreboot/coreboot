@@ -102,7 +102,7 @@ void romstage_main_continue(EFI_STATUS status, void *hob_list_ptr) {
 		__func__, (u32) status, (u32) hob_list_ptr);
 
 	/* FSP reconfigures USB, so reinit it to have debug */
-	if (IS_ENABLED(CONFIG_USBDEBUG_IN_PRE_RAM))
+	if (CONFIG(USBDEBUG_IN_PRE_RAM))
 		usbdebug_hw_init(true);
 
 	printk(BIOS_DEBUG, "FSP Status: 0x%0x\n", (u32)status);

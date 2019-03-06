@@ -24,7 +24,7 @@
 static void ipq_setup_tpm(void)
 {
 
-	if (IS_ENABLED(CONFIG_I2C_TPM)) {
+	if (CONFIG(I2C_TPM)) {
 		gpio_tlmm_config_set(TPM_RESET_GPIO, FUNC_SEL_GPIO,
 				     GPIO_PULL_UP, GPIO_6MA, 1);
 		gpio_set(TPM_RESET_GPIO, 0);

@@ -88,7 +88,7 @@ uint32_t vboot_init_crtm(void)
 		}
 	}
 
-	if (IS_ENABLED(CONFIG_VBOOT_STARTS_IN_ROMSTAGE)) {
+	if (CONFIG(VBOOT_STARTS_IN_ROMSTAGE)) {
 		struct cbfsf romstage_data;
 		/* measure romstage from RO */
 		if (cbfs_boot_locate(&romstage_data,
@@ -111,7 +111,7 @@ uint32_t vboot_init_crtm(void)
 		}
 	}
 
-	if (IS_ENABLED(CONFIG_VBOOT_SEPARATE_VERSTAGE)) {
+	if (CONFIG(VBOOT_SEPARATE_VERSTAGE)) {
 		struct cbfsf verstage_data;
 		/* measure verstage from RO */
 		if (cbfs_boot_locate(&verstage_data,

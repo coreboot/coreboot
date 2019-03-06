@@ -21,7 +21,7 @@ void set_power_led(int state)
 {
 	int polarity;
 
-	if (IS_ENABLED(CONFIG_BOARD_GOOGLE_TIDUS)) {
+	if (CONFIG(BOARD_GOOGLE_TIDUS)) {
 		polarity = state == LED_OFF ? 0x00 : 0x01;
 	} else {
 		polarity = state == LED_BLINK ? 0x01 : 0x00;

@@ -174,7 +174,7 @@ static const PCIe_COMPLEX_DESCRIPTOR PcieComplex = {
 void board_BeforeInitReset(struct sysinfo *cb, AMD_RESET_PARAMS *Reset)
 {
 	FCH_RESET_INTERFACE *FchReset = &Reset->FchInterface;
-	FchReset->Xhci0Enable = IS_ENABLED(CONFIG_HUDSON_XHCI_ENABLE);
+	FchReset->Xhci0Enable = CONFIG(HUDSON_XHCI_ENABLE);
 	FchReset->Xhci1Enable = FALSE;
 }
 

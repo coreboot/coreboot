@@ -23,7 +23,7 @@
 #include <device/device.h>
 #include "chromeos.h"
 
-#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+#if CONFIG(HAVE_ACPI_TABLES)
 
 static void set_ramoops(chromeos_acpi_t *chromeos, void *ram_oops, size_t size)
 {
@@ -42,7 +42,7 @@ static void reserve_ram_oops_dynamic(chromeos_acpi_t *chromeos)
 	const size_t size = CONFIG_CHROMEOS_RAMOOPS_RAM_SIZE;
 	void *ram_oops;
 
-	if (!IS_ENABLED(CONFIG_CHROMEOS_RAMOOPS_DYNAMIC))
+	if (!CONFIG(CHROMEOS_RAMOOPS_DYNAMIC))
 		return;
 
 	ram_oops = cbmem_add(CBMEM_ID_RAM_OOPS, size);
@@ -50,7 +50,7 @@ static void reserve_ram_oops_dynamic(chromeos_acpi_t *chromeos)
 	set_ramoops(chromeos, ram_oops, size);
 }
 
-#if IS_ENABLED(CONFIG_CHROMEOS_RAMOOPS_DYNAMIC)
+#if CONFIG(CHROMEOS_RAMOOPS_DYNAMIC)
 static inline void set_global_chromeos_pointer(chromeos_acpi_t *chromeos) {}
 #else /* !CONFIG_CHROMEOS_RAMOOPS_DYNAMIC */
 
@@ -96,7 +96,7 @@ void chromeos_ram_oops_init(chromeos_acpi_t *chromeos)
 	reserve_ram_oops_dynamic(chromeos);
 }
 
-#elif IS_ENABLED(CONFIG_CHROMEOS_RAMOOPS_NON_ACPI)
+#elif CONFIG(CHROMEOS_RAMOOPS_NON_ACPI)
 
 static void ramoops_alloc(void *arg)
 {

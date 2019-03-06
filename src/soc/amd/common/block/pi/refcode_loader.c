@@ -60,7 +60,7 @@ static int agesa_locate_stage_file_ramstage(const char *name,
 		.prog = &prog,
 	};
 
-	if (acpi_is_wakeup_s3() && !IS_ENABLED(CONFIG_NO_STAGE_CACHE)) {
+	if (acpi_is_wakeup_s3() && !CONFIG(NO_STAGE_CACHE)) {
 		printk(BIOS_INFO, "AGESA: Loading stage from cache\n");
 		// There is no way to tell if this succeeded.
 		stage_cache_load_stage(STAGE_REFCODE, &prog);
@@ -71,7 +71,7 @@ static int agesa_locate_stage_file_ramstage(const char *name,
 		if (rmodule_stage_load(&rmod_agesa) < 0)
 			return -1;
 
-		if (!IS_ENABLED(CONFIG_NO_STAGE_CACHE)) {
+		if (!CONFIG(NO_STAGE_CACHE)) {
 			printk(BIOS_INFO, "AGESA: Saving stage to cache\n");
 			stage_cache_add(STAGE_REFCODE, &prog);
 		}
@@ -83,14 +83,14 @@ static int agesa_locate_stage_file_ramstage(const char *name,
 
 static int agesa_locate_stage_file(const char *name, struct region_device *rdev)
 {
-	if (!ENV_RAMSTAGE || !IS_ENABLED(CONFIG_AGESA_SPLIT_MEMORY_FILES))
+	if (!ENV_RAMSTAGE || !CONFIG(AGESA_SPLIT_MEMORY_FILES))
 		return agesa_locate_stage_file_early(name, rdev);
 	return agesa_locate_stage_file_ramstage(name, rdev);
 }
 
 static const char *get_agesa_cbfs_name(void)
 {
-	if (!IS_ENABLED(CONFIG_AGESA_SPLIT_MEMORY_FILES))
+	if (!CONFIG(AGESA_SPLIT_MEMORY_FILES))
 		return CONFIG_AGESA_CBFS_NAME;
 	if (!ENV_RAMSTAGE)
 		return CONFIG_AGESA_PRE_MEMORY_CBFS_NAME;
@@ -108,7 +108,7 @@ const void *agesawrapper_locate_module(const char name[8])
 
 	fname = get_agesa_cbfs_name();
 
-	if (IS_ENABLED(CONFIG_AGESA_BINARY_PI_AS_STAGE))
+	if (CONFIG(AGESA_BINARY_PI_AS_STAGE))
 		ret = agesa_locate_stage_file(fname, &rdev);
 	else
 		ret = agesa_locate_raw_file(fname, &rdev);
@@ -119,7 +119,7 @@ const void *agesawrapper_locate_module(const char name[8])
 	file_size = region_device_sz(&rdev);
 
 	/* Assume boot device is memory mapped so the mapping can leak. */
-	assert(IS_ENABLED(CONFIG_BOOT_DEVICE_MEMORY_MAPPED));
+	assert(CONFIG(BOOT_DEVICE_MEMORY_MAPPED));
 
 	agesa = rdev_mmap_full(&rdev);
 

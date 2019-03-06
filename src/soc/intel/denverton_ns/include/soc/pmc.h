@@ -264,7 +264,7 @@
 
 #if !defined(__ASSEMBLER__) && !defined(__ACPI__)
 
-#if IS_ENABLED(CONFIG_ELOG)
+#if CONFIG(ELOG)
 void southcluster_log_state(void);
 #else
 static inline void southcluster_log_state(void) {}

@@ -192,7 +192,7 @@ void smihandler_southbridge_sleep(
 	mainboard_smi_sleep(slp_typ);
 
 	/* Log S3, S4, and S5 entry */
-	if (slp_typ >= ACPI_S3 && IS_ENABLED(CONFIG_ELOG_GSMI))
+	if (slp_typ >= ACPI_S3 && CONFIG(ELOG_GSMI))
 		elog_add_event_byte(ELOG_TYPE_ACPI_ENTER, slp_typ);
 
 	/* Clear pending GPE events */
@@ -324,7 +324,7 @@ static void finalize(void)
 	}
 	finalize_done = 1;
 
-	if (IS_ENABLED(CONFIG_SPI_FLASH_SMM))
+	if (CONFIG(SPI_FLASH_SMM))
 		/* Re-init SPI driver to handle locked BAR */
 		fast_spi_init();
 
@@ -361,13 +361,13 @@ void smihandler_southbridge_apmc(
 		break;
 	case APM_CNT_ACPI_DISABLE:
 		pmc_disable_pm1_control(SCI_EN);
-		if (IS_ENABLED(CONFIG_SOC_INTEL_COMMON_BLOCK_SMM_ESPI_ACPI_DIS))
+		if (CONFIG(SOC_INTEL_COMMON_BLOCK_SMM_ESPI_ACPI_DIS))
 			pmc_enable_smi(ESPI_SMI_EN);
 		printk(BIOS_DEBUG, "SMI#: ACPI disabled.\n");
 		break;
 	case APM_CNT_ACPI_ENABLE:
 		pmc_enable_pm1_control(SCI_EN);
-		if (IS_ENABLED(CONFIG_SOC_INTEL_COMMON_BLOCK_SMM_ESPI_ACPI_DIS))
+		if (CONFIG(SOC_INTEL_COMMON_BLOCK_SMM_ESPI_ACPI_DIS))
 			pmc_disable_smi(ESPI_SMI_EN);
 		printk(BIOS_DEBUG, "SMI#: ACPI enabled.\n");
 		break;
@@ -387,11 +387,11 @@ void smihandler_southbridge_apmc(
 		}
 		break;
 	case APM_CNT_ELOG_GSMI:
-		if (IS_ENABLED(CONFIG_ELOG_GSMI))
+		if (CONFIG(ELOG_GSMI))
 			southbridge_smi_gsmi(save_state_ops);
 		break;
 	case APM_CNT_SMMSTORE:
-		if (IS_ENABLED(CONFIG_SMMSTORE))
+		if (CONFIG(SMMSTORE))
 			southbridge_smi_store(save_state_ops);
 		break;
 	case APM_CNT_FINALIZE:
@@ -414,7 +414,7 @@ void smihandler_southbridge_pm1(
 	 */
 	if ((pm1_sts & PWRBTN_STS) && (pm1_en & PWRBTN_EN)) {
 		/* power button pressed */
-		if (IS_ENABLED(CONFIG_ELOG_GSMI))
+		if (CONFIG(ELOG_GSMI))
 			elog_add_event(ELOG_TYPE_POWER_BUTTON);
 		pmc_disable_pm1_control(-1UL);
 		pmc_enable_pm1_control(SLP_EN | (SLP_TYP_S5 << SLP_TYP_SHIFT));

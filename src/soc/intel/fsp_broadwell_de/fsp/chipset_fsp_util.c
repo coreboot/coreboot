@@ -51,22 +51,22 @@ static void ConfigureDefaultUpdData(UPD_DATA_REGION *UpdData)
 	/*
 	 * Serial Port
 	 */
-	if (IS_ENABLED(CONFIG_INTEGRATED_UART)) {
+	if (CONFIG(INTEGRATED_UART)) {
 		UpdData->SerialPortConfigure = 1;
 		/* values are from FSP .bsf file */
-		if (IS_ENABLED(CONFIG_CONSOLE_SERIAL_9600))
+		if (CONFIG(CONSOLE_SERIAL_9600))
 			UpdData->SerialPortBaudRate = 8;
-		else if (IS_ENABLED(CONFIG_CONSOLE_SERIAL_19200))
+		else if (CONFIG(CONSOLE_SERIAL_19200))
 			UpdData->SerialPortBaudRate = 9;
-		else if (IS_ENABLED(CONFIG_CONSOLE_SERIAL_38400))
+		else if (CONFIG(CONSOLE_SERIAL_38400))
 			UpdData->SerialPortBaudRate = 10;
-		else if (IS_ENABLED(CONFIG_CONSOLE_SERIAL_57600))
+		else if (CONFIG(CONSOLE_SERIAL_57600))
 			UpdData->SerialPortBaudRate = 11;
-		else if (IS_ENABLED(CONFIG_CONSOLE_SERIAL_115200))
+		else if (CONFIG(CONSOLE_SERIAL_115200))
 			UpdData->SerialPortBaudRate = 12;
 	}
 
-	if (!IS_ENABLED(CONFIG_CONSOLE_SERIAL))
+	if (!CONFIG(CONSOLE_SERIAL))
 		UpdData->SerialPortType = 0;
 
 	UpdData->DebugOutputLevel = CONFIG_FSP_DEBUG_LEVEL;
@@ -74,19 +74,19 @@ static void ConfigureDefaultUpdData(UPD_DATA_REGION *UpdData)
 	/*
 	 * Memory Down
 	 */
-	if (IS_ENABLED(CONFIG_FSP_MEMORY_DOWN)) {
+	if (CONFIG(FSP_MEMORY_DOWN)) {
 		UpdData->MemDownEnable = 1;
 
-		if (IS_ENABLED(CONFIG_FSP_MEMORY_DOWN_CH0DIMM0_SPD_PRESENT))
+		if (CONFIG(FSP_MEMORY_DOWN_CH0DIMM0_SPD_PRESENT))
 			UpdData->MemDownCh0Dimm0SpdPtr
 			= (UINT32)cbfs_boot_map_with_leak("spd_ch0_dimm0.bin", CBFS_TYPE_SPD, NULL);
-		if (IS_ENABLED(CONFIG_FSP_MEMORY_DOWN_CH0DIMM1_SPD_PRESENT))
+		if (CONFIG(FSP_MEMORY_DOWN_CH0DIMM1_SPD_PRESENT))
 			UpdData->MemDownCh0Dimm1SpdPtr
 			= (UINT32)cbfs_boot_map_with_leak("spd_ch0_dimm1.bin", CBFS_TYPE_SPD, NULL);
-		if (IS_ENABLED(CONFIG_FSP_MEMORY_DOWN_CH1DIMM0_SPD_PRESENT))
+		if (CONFIG(FSP_MEMORY_DOWN_CH1DIMM0_SPD_PRESENT))
 			UpdData->MemDownCh1Dimm0SpdPtr
 			= (UINT32)cbfs_boot_map_with_leak("spd_ch1_dimm0.bin", CBFS_TYPE_SPD, NULL);
-		if (IS_ENABLED(CONFIG_FSP_MEMORY_DOWN_CH1DIMM1_SPD_PRESENT))
+		if (CONFIG(FSP_MEMORY_DOWN_CH1DIMM1_SPD_PRESENT))
 			UpdData->MemDownCh1Dimm1SpdPtr
 			= (UINT32)cbfs_boot_map_with_leak("spd_ch1_dimm1.bin", CBFS_TYPE_SPD, NULL);
 	} else {
@@ -98,7 +98,7 @@ static void ConfigureDefaultUpdData(UPD_DATA_REGION *UpdData)
 	/*
 	 * Fast Boot
 	 */
-	if (IS_ENABLED(CONFIG_ENABLE_MRC_CACHE))
+	if (CONFIG(ENABLE_MRC_CACHE))
 		UpdData->MemFastBoot = 1;
 	else
 		UpdData->MemFastBoot = 0;
@@ -106,18 +106,18 @@ static void ConfigureDefaultUpdData(UPD_DATA_REGION *UpdData)
 	/*
 	 * Hyper-Threading
 	 */
-	if (IS_ENABLED(CONFIG_FSP_HYPERTHREADING))
+	if (CONFIG(FSP_HYPERTHREADING))
 		UpdData->HyperThreading = 1;
 	else
 		UpdData->HyperThreading = 0;
 
 	/* Enable USB */
-	if (IS_ENABLED(CONFIG_FSP_EHCI1_ENABLE))
+	if (CONFIG(FSP_EHCI1_ENABLE))
 		UpdData->Ehci1Enable = 1;
 	else
 		UpdData->Ehci1Enable = 0;
 
-	if (IS_ENABLED(CONFIG_FSP_EHCI2_ENABLE))
+	if (CONFIG(FSP_EHCI2_ENABLE))
 		UpdData->Ehci2Enable = 1;
 	else
 		UpdData->Ehci2Enable = 0;
@@ -133,7 +133,7 @@ void chipset_fsp_early_init(FSP_INIT_PARAMS *pFspInitParams, FSP_INFO_HEADER *fs
 	ConfigureDefaultUpdData(pFspRtBuffer->Common.UpdDataRgnPtr);
 	pFspInitParams->NvsBufferPtr = NULL;
 
-#if IS_ENABLED(CONFIG_ENABLE_MRC_CACHE)
+#if CONFIG(ENABLE_MRC_CACHE)
 	/* Find the fastboot cache that was saved in the ROM */
 	pFspInitParams->NvsBufferPtr = find_and_set_fastboot_cache();
 #endif

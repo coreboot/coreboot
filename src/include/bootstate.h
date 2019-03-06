@@ -115,12 +115,12 @@ struct boot_state_callback {
 	void (*callback)(void *arg);
 	/* For use internal to the boot state machine. */
 	struct boot_state_callback *next;
-#if IS_ENABLED(CONFIG_DEBUG_BOOT_STATE)
+#if CONFIG(DEBUG_BOOT_STATE)
 	const char *location;
 #endif
 };
 
-#if IS_ENABLED(CONFIG_DEBUG_BOOT_STATE)
+#if CONFIG(DEBUG_BOOT_STATE)
 #define BOOT_STATE_CALLBACK_LOC __FILE__ ":" STRINGIFY(__LINE__)
 #define BOOT_STATE_CALLBACK_INIT_DEBUG .location = BOOT_STATE_CALLBACK_LOC,
 #define INIT_BOOT_STATE_CALLBACK_DEBUG(bscb_)			\

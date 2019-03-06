@@ -130,11 +130,11 @@ static void smbus_read_spd(u8 *spd, u8 addr)
 	u16 i;
 	u8 step = 1;
 
-	if (IS_ENABLED(CONFIG_SPD_READ_BY_WORD))
+	if (CONFIG(SPD_READ_BY_WORD))
 		step = sizeof(uint16_t);
 
 	for (i = 0; i < SPD_PAGE_LEN; i += step) {
-		if (IS_ENABLED(CONFIG_SPD_READ_BY_WORD))
+		if (CONFIG(SPD_READ_BY_WORD))
 			((u16*)spd)[i / sizeof(uint16_t)] =
 				 smbus_read_word(0, addr, i);
 		else

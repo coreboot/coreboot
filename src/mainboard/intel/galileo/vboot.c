@@ -60,7 +60,7 @@ void verstage_mainboard_init(void)
 	 */
 
 	/* Determine the correct script for the board */
-	if (IS_ENABLED(CONFIG_GALILEO_GEN2))
+	if (CONFIG(GALILEO_GEN2))
 		script = gen2_i2c_init;
 	else
 		/* Determine which I2C address is in use */
@@ -86,7 +86,7 @@ void __weak vboot_platform_prepare_reboot(void)
 	 */
 
 	/* Determine the correct script for the board */
-	if (IS_ENABLED(CONFIG_GALILEO_GEN2))
+	if (CONFIG(GALILEO_GEN2))
 		script = gen2_tpm_reset;
 	else
 		/* Determine which I2C address is in use */

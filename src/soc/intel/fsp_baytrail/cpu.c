@@ -150,7 +150,7 @@ static void relocation_handler(int cpu, uintptr_t curr_smbase,
 
 static void enable_smis(void)
 {
-	if (IS_ENABLED(CONFIG_HAVE_SMI_HANDLER))
+	if (CONFIG(HAVE_SMI_HANDLER))
 		southcluster_smm_enable_smi();
 }
 

@@ -200,7 +200,7 @@ void amd_update_microcode_from_cbfs(uint32_t equivalent_processor_rev_id)
 		}
 
 #ifdef __PRE_RAM__
-#if IS_ENABLED(CONFIG_HAVE_ROMSTAGE_MICROCODE_CBFS_SPINLOCK)
+#if CONFIG(HAVE_ROMSTAGE_MICROCODE_CBFS_SPINLOCK)
 		spin_lock(romstage_microcode_cbfs_lock());
 #endif
 #endif
@@ -210,7 +210,7 @@ void amd_update_microcode_from_cbfs(uint32_t equivalent_processor_rev_id)
 		if (!ucode) {
 			UCODE_DEBUG("microcode file not found. Skipping updates.\n");
 #ifdef __PRE_RAM__
-#if IS_ENABLED(CONFIG_HAVE_ROMSTAGE_MICROCODE_CBFS_SPINLOCK)
+#if CONFIG(HAVE_ROMSTAGE_MICROCODE_CBFS_SPINLOCK)
 			spin_unlock(romstage_microcode_cbfs_lock());
 #endif
 #endif
@@ -220,7 +220,7 @@ void amd_update_microcode_from_cbfs(uint32_t equivalent_processor_rev_id)
 		amd_update_microcode(ucode, ucode_len, equivalent_processor_rev_id);
 
 #ifdef __PRE_RAM__
-#if IS_ENABLED(CONFIG_HAVE_ROMSTAGE_MICROCODE_CBFS_SPINLOCK)
+#if CONFIG(HAVE_ROMSTAGE_MICROCODE_CBFS_SPINLOCK)
 		spin_unlock(romstage_microcode_cbfs_lock());
 #endif
 #endif

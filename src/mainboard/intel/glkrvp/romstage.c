@@ -211,7 +211,7 @@ static void fill_memory_params(FSP_M_CONFIG *cfg)
 {
 	uint8_t boardid;
 
-	if (IS_ENABLED(CONFIG_IS_GLK_RVP_1))
+	if (CONFIG(IS_GLK_RVP_1))
 		boardid = BOARD_ID_GLK_RVP1_DDR4;
 	else
 		boardid = BOARD_ID_GLK_RVP2_LP4;

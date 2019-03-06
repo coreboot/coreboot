@@ -497,7 +497,7 @@ int soc_skip_ucode_update(u32 current_patch_id, u32 new_patch_id)
 	 * have this check, where CNL CPU die is not based on KBL CPU
 	 * so skip this check for CNL.
 	 */
-	if (!IS_ENABLED(CONFIG_SOC_INTEL_COMMON_CANNONLAKE_BASE))
+	if (!CONFIG(SOC_INTEL_COMMON_CANNONLAKE_BASE))
 		return 0;
 
 	/*

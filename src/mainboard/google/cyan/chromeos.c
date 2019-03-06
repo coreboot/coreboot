@@ -54,7 +54,7 @@ int get_write_protect_state(void)
 	 * in the reading.
 	 */
 #if ENV_ROMSTAGE
-	if (IS_ENABLED(CONFIG_BOARD_GOOGLE_CYAN)) {
+	if (CONFIG(BOARD_GOOGLE_CYAN)) {
 		write32((void *)(COMMUNITY_GPEAST_BASE + WP_STATUS_PAD_CFG0),
 			(PAD_PULL_UP_20K | PAD_GPIO_ENABLE | PAD_CONFIG0_GPI_DEFAULT));
 		write32((void *)(COMMUNITY_GPEAST_BASE + WP_STATUS_PAD_CFG1),
@@ -65,7 +65,7 @@ int get_write_protect_state(void)
 #endif
 
 	/* WP is enabled when the pin is reading high. */
-	if (IS_ENABLED(CONFIG_BOARD_GOOGLE_CYAN)) {
+	if (CONFIG(BOARD_GOOGLE_CYAN)) {
 		return (read32((void *)(COMMUNITY_GPEAST_BASE + WP_STATUS_PAD_CFG0))
 			& PAD_VAL_HIGH);
 	} else {

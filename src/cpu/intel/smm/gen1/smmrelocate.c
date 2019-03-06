@@ -175,7 +175,7 @@ static void fill_in_relocation_params(struct smm_relocation_params *params)
 	}
 
 	/* Adjust available SMM handler memory size. */
-	if (IS_ENABLED(CONFIG_CACHE_RELOCATED_RAMSTAGE_OUTSIDE_CBMEM)) {
+	if (CONFIG(CACHE_RELOCATED_RAMSTAGE_OUTSIDE_CBMEM)) {
 		ASSERT(params->smram_size > CONFIG_SMM_RESERVED_SIZE);
 		params->smram_size -= CONFIG_SMM_RESERVED_SIZE;
 	}

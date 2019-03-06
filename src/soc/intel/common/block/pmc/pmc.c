@@ -66,7 +66,7 @@ static void pch_pmc_add_io_resources(struct device *dev,
 			cfg->abase_addr, cfg->abase_size,
 			 IORESOURCE_IO | IORESOURCE_ASSIGNED |
 			 IORESOURCE_FIXED);
-	if (IS_ENABLED(CONFIG_PMC_INVALID_READ_AFTER_WRITE)) {
+	if (CONFIG(PMC_INVALID_READ_AFTER_WRITE)) {
 		/*
 		 * The ACPI IO BAR (offset 0x20) is not PCI compliant. We've
 		 * observed cases where the BAR reads back as 0, but the IO
@@ -105,7 +105,7 @@ static void pch_pmc_read_resources(struct device *dev)
 
 void pmc_set_acpi_mode(void)
 {
-	if (IS_ENABLED(CONFIG_HAVE_SMI_HANDLER) && !acpi_is_wakeup_s3()) {
+	if (CONFIG(HAVE_SMI_HANDLER) && !acpi_is_wakeup_s3()) {
 		printk(BIOS_DEBUG, "Disabling ACPI via APMC:\n");
 		outb(APM_CNT_ACPI_DISABLE, APM_CNT);
 		printk(BIOS_DEBUG, "done.\n");

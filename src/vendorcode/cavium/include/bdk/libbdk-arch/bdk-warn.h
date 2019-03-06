@@ -103,19 +103,19 @@ typedef enum
  */
 #define BDK_TRACE(area, format, ...) do {                           \
     if ((BDK_TRACE_ENABLE_INIT == BDK_TRACE_ENABLE_##area &&        \
-        IS_ENABLED(CONFIG_CAVIUM_BDK_VERBOSE_INIT)) ||              \
+        CONFIG(CAVIUM_BDK_VERBOSE_INIT)) ||              \
         (BDK_TRACE_ENABLE_DRAM == BDK_TRACE_ENABLE_##area &&        \
-         IS_ENABLED(CONFIG_CAVIUM_BDK_VERBOSE_DRAM)) ||             \
+         CONFIG(CAVIUM_BDK_VERBOSE_DRAM)) ||             \
         (BDK_TRACE_ENABLE_DRAM_TEST == BDK_TRACE_ENABLE_##area &&   \
-         IS_ENABLED(CONFIG_CAVIUM_BDK_VERBOSE_DRAM_TEST)) ||        \
+         CONFIG(CAVIUM_BDK_VERBOSE_DRAM_TEST)) ||        \
         (BDK_TRACE_ENABLE_QLM == BDK_TRACE_ENABLE_##area &&         \
-         IS_ENABLED(CONFIG_CAVIUM_BDK_VERBOSE_QLM)) ||              \
+         CONFIG(CAVIUM_BDK_VERBOSE_QLM)) ||              \
         (BDK_TRACE_ENABLE_PCIE_CONFIG == BDK_TRACE_ENABLE_##area && \
-         IS_ENABLED(CONFIG_CAVIUM_BDK_VERBOSE_PCIE_CONFIG)) ||      \
+         CONFIG(CAVIUM_BDK_VERBOSE_PCIE_CONFIG)) ||      \
         (BDK_TRACE_ENABLE_PCIE == BDK_TRACE_ENABLE_##area &&        \
-         IS_ENABLED(CONFIG_CAVIUM_BDK_VERBOSE_PCIE)) ||             \
+         CONFIG(CAVIUM_BDK_VERBOSE_PCIE)) ||             \
         (BDK_TRACE_ENABLE_PHY == BDK_TRACE_ENABLE_##area &&         \
-         IS_ENABLED(CONFIG_CAVIUM_BDK_VERBOSE_PHY)))                \
+         CONFIG(CAVIUM_BDK_VERBOSE_PHY)))                \
         printk(BIOS_DEBUG, #area ": " format, ##__VA_ARGS__);       \
     } while (0)
 

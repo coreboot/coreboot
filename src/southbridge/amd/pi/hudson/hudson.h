@@ -191,7 +191,7 @@ void lpc_wideio_16_window(uint16_t base);
 void hudson_tpm_decode_spi(void);
 int s3_save_nvram_early(u32 dword, int size, int  nvram_pos);
 int s3_load_nvram_early(int size, u32 *old_dword, int nvram_pos);
-#if IS_ENABLED(CONFIG_HUDSON_UART)
+#if CONFIG(HUDSON_UART)
 void configure_hudson_uart(void);
 #endif
 

@@ -76,7 +76,7 @@ static int setup_sio_gpio(void)
 	pnp_enter_ext_func_mode(GPIO_DEV);
 	pnp_set_logical_device(GPIO_DEV);
 
-	if (IS_ENABLED(CONFIG_BOARD_ASUS_P5QPL_AM)) {
+	if (CONFIG(BOARD_ASUS_P5QPL_AM)) {
 		/*
 		 * P5QPL-AM:
 		 * BSEL0 -> not hooked up (not supported anyways)

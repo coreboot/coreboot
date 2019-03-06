@@ -21,9 +21,9 @@
 // can it be cleaned up so this include is not required?
 // It's needed right now because we get our DEFAULT_PMBASE from
 // here.
-#if IS_ENABLED(CONFIG_SOUTHBRIDGE_INTEL_I82801DX)
+#if CONFIG(SOUTHBRIDGE_INTEL_I82801DX)
 #include <southbridge/intel/i82801dx/i82801dx.h>
-#elif IS_ENABLED(CONFIG_SOUTHBRIDGE_INTEL_I82801IX)
+#elif CONFIG(SOUTHBRIDGE_INTEL_I82801IX)
 #include <southbridge/intel/i82801ix/i82801ix.h>
 #else
 #error "Southbridge needs SMM handler support."
@@ -32,7 +32,7 @@
 // ADDR32() macro
 #include <arch/registers.h>
 
-#if IS_ENABLED(CONFIG_SMM_TSEG)
+#if CONFIG(SMM_TSEG)
 #error "Don't use this file with TSEG."
 
 #endif /* CONFIG_SMM_TSEG */
@@ -154,7 +154,7 @@ smm_relocate:
 
 	/* End of southbridge specific section. */
 
-#if IS_ENABLED(CONFIG_DEBUG_SMM_RELOCATION)
+#if CONFIG(DEBUG_SMM_RELOCATION)
 	/* print [SMM-x] so we can determine if CPUx went to SMM */
 	movw $CONFIG_TTYS0_BASE, %dx
 	mov $'[', %al

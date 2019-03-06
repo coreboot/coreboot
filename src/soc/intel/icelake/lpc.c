@@ -220,7 +220,7 @@ void lpc_soc_init(struct device *dev)
 	lpc_enable_pci_clk_cntl();
 
 	/* Set LPC Serial IRQ mode */
-	if (IS_ENABLED(CONFIG_SERIRQ_CONTINUOUS_MODE))
+	if (CONFIG(SERIRQ_CONTINUOUS_MODE))
 		lpc_set_serirq_mode(SERIRQ_CONTINUOUS);
 	else
 		lpc_set_serirq_mode(SERIRQ_QUIET);

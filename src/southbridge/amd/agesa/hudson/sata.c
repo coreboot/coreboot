@@ -23,7 +23,7 @@
 
 static void sata_init(struct device *dev)
 {
-#if IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_AGESA_YANGTZE)
+#if CONFIG(SOUTHBRIDGE_AMD_AGESA_YANGTZE)
 	/**************************************
 	 * Configure the SATA port multiplier *
 	 **************************************/

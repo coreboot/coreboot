@@ -59,7 +59,7 @@ void mainboard_smi_sleep(u8 slp_typ)
 		set_power_led(LED_BLINK);
 
 		/* Enable DCP mode */
-		if (IS_ENABLED(CONFIG_BOARD_GOOGLE_TIDUS)) {
+		if (CONFIG(BOARD_GOOGLE_TIDUS)) {
 			set_gpio(GPIO_USB_CTL_1, 0);
 		}
 		break;

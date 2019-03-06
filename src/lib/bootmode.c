@@ -35,7 +35,7 @@ void gfx_set_init_done(int done)
 int display_init_required(void)
 {
 	/* For Chrome OS always honor vboot_handoff_skip_display_init(). */
-	if (IS_ENABLED(CONFIG_CHROMEOS))
+	if (CONFIG(CHROMEOS))
 		return !vboot_handoff_skip_display_init();
 
 	/* By default always initialize display. */

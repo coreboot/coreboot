@@ -56,7 +56,7 @@ const struct reg_script system_agent_finalize_script[] = {
 };
 
 const struct reg_script pch_finalize_script[] = {
-#if !IS_ENABLED(CONFIG_SPI_CONSOLE)
+#if !CONFIG(SPI_CONSOLE)
 	/* Set SPI opcode menu */
 	REG_MMIO_WRITE16(RCBA_BASE_ADDRESS + SPIBAR_OFFSET + SPIBAR_PREOP,
 			 SPI_OPPREFIX),

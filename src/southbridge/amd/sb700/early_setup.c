@@ -151,7 +151,7 @@ void sb7xx_51xx_lpc_init(void)
 	reg32 |= 1 << 20;
 	pci_write_config32(dev, 0x64, reg32);
 
-#if IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_SUBTYPE_SP5100)
+#if CONFIG(SOUTHBRIDGE_AMD_SUBTYPE_SP5100)
 	post_code(0x66);
 	dev = pci_locate_device(PCI_ID(0x1002, 0x439d), 0);     /* LPC Controller */
 	reg8 = pci_read_config8(dev, 0xBB);
@@ -165,7 +165,7 @@ void sb7xx_51xx_lpc_init(void)
 	// XXX Serial port decode on LPC is hardcoded to 0x3f8
 	reg8 = pci_read_config8(dev, 0x44);
 	reg8 |= 1 << 6;
-#if IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_SUBTYPE_SP5100)
+#if CONFIG(SOUTHBRIDGE_AMD_SUBTYPE_SP5100)
 #if CONFIG_TTYS0_BASE == 0x2f8
 	reg8 |= 1 << 7;
 #endif
@@ -404,7 +404,7 @@ static void sb700_devices_por_init(void)
 		printk(BIOS_INFO, "%s: Secondary SMBUS controller I/O not found\n", __func__);
 	}
 	else {
-		if (IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_SUBTYPE_SP5100)) {
+		if (CONFIG(SOUTHBRIDGE_AMD_SUBTYPE_SP5100)) {
 			/* Disable legacy sensor support / reset ASF Slave state machine per RPR 2.27 step 3 */
 			outb(0x40, SMBUS_AUX_IO_BASE + SMBSLVMISC);
 		}
@@ -459,7 +459,7 @@ static void sb700_devices_por_init(void)
 	/*pci_write_config8(dev, 0x79, 0x4F); */
 	pci_write_config8(dev, 0x78, 0xFF);
 
-	if (IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_SB700_DISABLE_ISA_DMA)) {
+	if (CONFIG(SOUTHBRIDGE_AMD_SB700_DISABLE_ISA_DMA)) {
 		printk(BIOS_DEBUG, "%s: Disabling ISA DMA support\n", __func__);
 		/* Disable LPC ISA DMA Capability */
 		byte = pci_read_config8(dev, 0x78);
@@ -484,7 +484,7 @@ static void sb700_devices_por_init(void)
 	/* LPC Device, BDF:0-20-3 */
 	printk(BIOS_INFO, "sb700_devices_por_init(): LPC Device, BDF:0-20-3\n");
 	dev = pci_locate_device(PCI_ID(0x1002, 0x439D), 0);
-	if (!IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_SB700_DISABLE_ISA_DMA)) {
+	if (!CONFIG(SOUTHBRIDGE_AMD_SB700_DISABLE_ISA_DMA)) {
 		/* DMA enable */
 		pci_write_config8(dev, 0x40, 0x04);
 	}
@@ -531,7 +531,7 @@ static void sb700_devices_por_init(void)
 	pci_write_config8(dev, 0x50, 0x01);
 
 	if (!sata_ahci_mode){
-#if IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_SUBTYPE_SP5100)
+#if CONFIG(SOUTHBRIDGE_AMD_SUBTYPE_SP5100)
 		/* SP5100 default SATA mode is RAID5 MODE */
 		dev = pci_locate_device(PCI_ID(0x1002, 0x4392), 0);
 
@@ -597,7 +597,7 @@ static void sb700_pmio_por_init(void)
 	uint8_t enable_c_states;
 
 	enable_c_states = 0;
-#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+#if CONFIG(HAVE_ACPI_TABLES)
 	if (get_option(&byte, "cpu_c_states") == CB_SUCCESS)
 		enable_c_states = !!byte;
 #endif
@@ -608,7 +608,7 @@ static void sb700_pmio_por_init(void)
 	byte |= 0x20;
 	pmio_write(0x66, byte);
 
-	if (IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_SUBTYPE_SP5100)) {
+	if (CONFIG(SOUTHBRIDGE_AMD_SUBTYPE_SP5100)) {
 		/* RPR 2.11 Sx State Settings */
 		byte = pmio_read(0x65);
 		byte &= ~(1 << 7);		/* SpecialFunc = 0 */
@@ -687,7 +687,7 @@ static void sb700_pmio_por_init(void)
 	byte |= 0xc0;
 	pmio_write(0xbb, byte);
 
-#if IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_SUBTYPE_SP5100)
+#if CONFIG(SOUTHBRIDGE_AMD_SUBTYPE_SP5100)
 	/* RPR 2.26 Alter CPU reset timing */
 	byte = pmio_read(0xb2);
 	byte |= 0x1 << 2;	/* Enable CPU reset timing option */
@@ -736,7 +736,7 @@ static void sb700_pci_cfg(void)
 	 * mentioned in RPR. But I keep them. The registers and the
 	 * comments are compatible. */
 	dev = pci_locate_device(PCI_ID(0x1002, 0x439D), 0);
-	if (!IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_SB700_DISABLE_ISA_DMA)) {
+	if (!CONFIG(SOUTHBRIDGE_AMD_SB700_DISABLE_ISA_DMA)) {
 		/* Enabling LPC DMA function. */
 		byte = pci_read_config8(dev, 0x40);
 		byte |= (1 << 2);

@@ -146,7 +146,7 @@ static size_t calculate_traditional_mem_size(uintptr_t dram_base,
 	traditional_mem_base -= sa_get_tseg_size();
 
 	/* Get DPR size */
-	if (IS_ENABLED(CONFIG_SA_ENABLE_DPR))
+	if (CONFIG(SA_ENABLE_DPR))
 		traditional_mem_base -= sa_get_dpr_size();
 
 	/* Traditional Area Size */

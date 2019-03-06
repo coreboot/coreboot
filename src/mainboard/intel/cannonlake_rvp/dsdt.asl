@@ -39,7 +39,7 @@ DefinitionBlock(
 		}
 	}
 
-	#if IS_ENABLED(CONFIG_CHROMEOS)
+	#if CONFIG(CHROMEOS)
 	// Chrome OS specific
 	#include <vendorcode/google/chromeos/acpi/chromeos.asl>
 	#endif

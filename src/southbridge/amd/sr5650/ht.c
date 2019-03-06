@@ -155,7 +155,7 @@ static void pcie_init(struct device *dev)
 
 static void sr5690_read_resource(struct device *dev)
 {
-	if (IS_ENABLED(CONFIG_EXT_CONF_SUPPORT)) {
+	if (CONFIG(EXT_CONF_SUPPORT)) {
 		printk(BIOS_DEBUG,"%s: %s\n", __func__, dev_path(dev));
 		set_nbmisc_enable_bits(dev, 0x0, 1 << 3, 1 << 3);	/* Hide BAR3 */
 	}
@@ -174,7 +174,7 @@ static void sr5690_set_resources(struct device *dev)
 {
 	pci_write_config32(dev, 0xf8, 0x1);	/* Set IOAPIC's index to 1 and make sure no one changes it */
 
-	if (IS_ENABLED(CONFIG_EXT_CONF_SUPPORT)) {
+	if (CONFIG(EXT_CONF_SUPPORT)) {
 		uint32_t reg;
 		struct device *amd_ht_cfg_dev;
 		struct device *amd_addr_map_dev;

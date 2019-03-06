@@ -76,7 +76,7 @@ static inline int sb_ide_enable(void)
 void SetFchResetParams(FCH_RESET_INTERFACE *params)
 {
 	const struct device *dev = pcidev_path_on_root(SATA_DEVFN);
-	params->Xhci0Enable = IS_ENABLED(CONFIG_STONEYRIDGE_XHCI_ENABLE);
+	params->Xhci0Enable = CONFIG(STONEYRIDGE_XHCI_ENABLE);
 	if (dev && dev->enabled) {
 		params->SataEnable = sb_sata_enable();
 		params->IdeEnable = sb_ide_enable();
@@ -553,7 +553,7 @@ static void sb_lpc_early_setup(void)
 	dword |= SPI_FROM_HOST_PREFETCH_EN | SPI_FROM_USB_PREFETCH_EN;
 	pci_write_config32(SOC_LPC_DEV, LPC_ROM_DMA_EC_HOST_CONTROL, dword);
 
-	if (IS_ENABLED(CONFIG_STONEYRIDGE_LEGACY_FREE)) {
+	if (CONFIG(STONEYRIDGE_LEGACY_FREE)) {
 		/* Decode SIOs at 2E/2F and 4E/4F */
 		dword = pci_read_config32(SOC_LPC_DEV,
 						LPC_IO_OR_MEM_DECODE_ENABLE);
@@ -742,7 +742,7 @@ static void sb_init_acpi_ports(void)
 	/* CpuControl is in \_PR.CP00, 6 bytes */
 	pm_write16(PM_CPU_CTRL, ACPI_CPU_CONTROL);
 
-	if (IS_ENABLED(CONFIG_HAVE_SMI_HANDLER)) {
+	if (CONFIG(HAVE_SMI_HANDLER)) {
 		/* APMC - SMI Command Port */
 		pm_write16(PM_ACPI_SMI_CMD, APM_CNT);
 		configure_smi(SMITYPE_SMI_CMD_PORT, SMI_MODE_SMI);
@@ -804,7 +804,7 @@ static uint16_t print_pm1_status(uint16_t pm1_sts)
 
 static void sb_log_pm1_status(uint16_t pm1_sts)
 {
-	if (!IS_ENABLED(CONFIG_ELOG))
+	if (!CONFIG(ELOG))
 		return;
 
 	if (pm1_sts & WAK_STS)
@@ -952,7 +952,7 @@ void southbridge_final(void *chip_info)
 {
 	uint8_t restored_power = PM_S5_AT_POWER_RECOVERY;
 
-	if (IS_ENABLED(CONFIG_MAINBOARD_POWER_RESTORE))
+	if (CONFIG(MAINBOARD_POWER_RESTORE))
 		restored_power = PM_RESTORE_S0_IF_PREV_S0;
 	pm_write8(PM_RTC_SHADOW, restored_power);
 

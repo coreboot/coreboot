@@ -97,7 +97,7 @@ static void ConfigureDefaultUpdData(UPD_DATA_REGION *UpdData)
 	if (config->MrcRmtCpgcNumBursts) {
 		UpdData->PcdMrcRmtCpgcNumBursts = config->MrcRmtCpgcNumBursts;
 	}
-#if IS_ENABLED(CONFIG_ENABLE_FSP_FAST_BOOT)
+#if CONFIG(ENABLE_FSP_FAST_BOOT)
 	UpdData->PcdFastboot = UPD_ENABLE;
 #endif
 	/*

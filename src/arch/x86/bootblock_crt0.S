@@ -32,7 +32,7 @@
 #include <cpu/x86/16bit/reset16.inc>
 #include <cpu/x86/32bit/entry32.inc>
 
-#if IS_ENABLED(CONFIG_BOOTBLOCK_DEBUG_SPINLOOP)
+#if CONFIG(BOOTBLOCK_DEBUG_SPINLOOP)
 
 	/* Wait for a JTAG debugger to break in and set EBX non-zero */
 	xor	%ebx, %ebx
@@ -44,7 +44,7 @@ debug_spinloop:
 
 bootblock_protected_mode_entry:
 
-#if !IS_ENABLED(CONFIG_USE_MARCH_586)
+#if !CONFIG(USE_MARCH_586)
 	/* MMX registers required here */
 
 	/* BIST result in eax */
@@ -57,12 +57,12 @@ bootblock_protected_mode_entry:
 	movd	%edx, %mm2
 #endif
 
-#if IS_ENABLED(CONFIG_SSE)
+#if CONFIG(SSE)
 enable_sse:
 	mov	%cr4, %eax
 	or	$CR4_OSFXSR, %ax
 	mov	%eax, %cr4
-#endif /* IS_ENABLED(CONFIG_SSE) */
+#endif /* CONFIG(SSE) */
 
 	/* We're done. Now it's up to platform-specific code */
 	jmp	bootblock_pre_c_entry

@@ -37,7 +37,7 @@
 
 #include <arch/cache.h>
 
-#if IS_ENABLED(CONFIG_ARM_LPAE)
+#if CONFIG(ARM_LPAE)
 /* See B3.6.2 of ARMv7 Architecture Reference Manual */
 /* TODO: Utilize the contiguous hint flag */
 #define ATTR_BLOCK (\
@@ -170,7 +170,7 @@ static pte_t *mmu_create_subtable(pte_t *pgd_entry)
 	/* Initialize the new subtable with entries of the same attributes
 	 * (XN bit moves from 4 to 0, set PAGE unless block was unmapped). */
 	pte_t attr = *pgd_entry & ~(BLOCK_MASK);
-	if (!IS_ENABLED(CONFIG_ARM_LPAE) && (attr & (1 << 4)))
+	if (!CONFIG(ARM_LPAE) && (attr & (1 << 4)))
 		attr = ((attr & ~(1 << 4)) | (1 << 0));
 	if (attr & ATTR_BLOCK)
 		attr = (attr & ~ATTR_BLOCK) | ATTR_PAGE;
@@ -208,7 +208,7 @@ void mmu_config_range_kb(u32 start_kb, u32 size_kb, enum dcache_policy policy)
 
 	/* Always _one_ _damn_ bit that won't fit... (XN moves from 4 to 0) */
 	pte_t attr = attrs[policy].value;
-	if (!IS_ENABLED(CONFIG_ARM_LPAE) && (attr & (1 << 4)))
+	if (!CONFIG(ARM_LPAE) && (attr & (1 << 4)))
 		attr = ((attr & ~(1 << 4)) | (1 << 0));
 
 	/* Mask away high address bits that are handled by upper level table. */

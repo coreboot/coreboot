@@ -94,7 +94,7 @@ Device (EC0)
 		USPP, 8,	// USB Port Power
 }
 
-#if IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC_ACPI_MEMMAP)
+#if CONFIG(EC_GOOGLE_CHROMEEC_ACPI_MEMMAP)
 	OperationRegion (EMEM, EmbeddedControl,
 			 EC_ACPI_MEM_MAPPED_BEGIN, EC_ACPI_MEM_MAPPED_SIZE)
 	Field (EMEM, ByteAcc, Lock, Preserve)
@@ -525,7 +525,7 @@ Device (EC0)
 		}
 	}
 
-#if IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC_ACPI_USB_PORT_POWER)
+#if CONFIG(EC_GOOGLE_CHROMEEC_ACPI_USB_PORT_POWER)
 	/*
 	 * Enable USB Port Power
 	 *   Arg0 = USB port ID

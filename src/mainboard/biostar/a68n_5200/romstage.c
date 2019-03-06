@@ -60,10 +60,10 @@ void board_BeforeAgesa(struct sysinfo *cb)
 	pci_devfn_t dev = PCI_DEV(0, 0x14, 3);
 	pci_write_config32(dev, 0x44, 0xff03ffd5);
 
-	if (IS_ENABLED(CONFIG_POST_DEVICE_PCI_PCIE))
+	if (CONFIG(POST_DEVICE_PCI_PCIE))
 		hudson_pci_port80();
 
-	if (IS_ENABLED(CONFIG_POST_DEVICE_LPC))
+	if (CONFIG(POST_DEVICE_LPC))
 		hudson_lpc_port80();
 
 	/* enable SIO LPC decode */

@@ -97,7 +97,7 @@ static void register_gpio_suspend(void)
 	 * 1.5V and 1.8V are EC-controlled on Scarlet derivatives,
 	 * so we skip them.
 	 */
-	if (!IS_ENABLED(CONFIG_GRU_BASEBOARD_SCARLET)) {
+	if (!CONFIG(GRU_BASEBOARD_SCARLET)) {
 		static struct bl31_gpio_param param_p15_en = {
 			.h = { .type = PARAM_SUSPEND_GPIO },
 			.gpio = { .polarity = BL31_GPIO_LEVEL_LOW },
@@ -164,7 +164,7 @@ static void configure_sdmmc(void)
 	gpio_output(GPIO(2, A, 2), 1);  /* SDMMC_SDIO_PWR_EN */
 
 	/* set SDMMC_DET_L pin */
-	if (IS_ENABLED(CONFIG_GRU_BASEBOARD_SCARLET))
+	if (CONFIG(GRU_BASEBOARD_SCARLET))
 		/*
 		 * do not have external pull up, so need to
 		 * set this pin internal pull up
@@ -178,7 +178,7 @@ static void configure_sdmmc(void)
 	 * In Scarlet derivatives, this GPIO set to high will get 3v,
 	 * With other board variants setting this GPIO low results in 3V.
 	 */
-	if (IS_ENABLED(CONFIG_GRU_BASEBOARD_SCARLET))
+	if (CONFIG(GRU_BASEBOARD_SCARLET))
 		gpio_output(GPIO(2, D, 4), 1);
 	else
 		gpio_output(GPIO(2, D, 4), 0);
@@ -226,7 +226,7 @@ static void configure_codec(void)
 	write32(&rk3399_grf->iomux_i2s0, IOMUX_I2S0_SD0);
 	write32(&rk3399_grf->iomux_i2sclk, IOMUX_I2SCLK);
 
-	if (!IS_ENABLED(CONFIG_GRU_BASEBOARD_SCARLET))
+	if (!CONFIG(GRU_BASEBOARD_SCARLET))
 		gpio_output(GPIO_P18V_AUDIO_PWREN, 1);
 	gpio_output(GPIO_SPK_PA_EN, 0);
 
@@ -239,7 +239,7 @@ static void configure_display(void)
 	 * Rainier is Scarlet-derived, but uses EDP so use board-specific
 	 * config rather than baseboard.
 	 */
-	if (IS_ENABLED(CONFIG_BOARD_GOOGLE_SCARLET)) {
+	if (CONFIG(BOARD_GOOGLE_SCARLET)) {
 		gpio_output(GPIO(4, D, 1), 0);	/* DISPLAY_RST_L */
 		gpio_output(GPIO(4, D, 3), 1);	/* PPVARP_LCD */
 		mdelay(10);
@@ -342,9 +342,9 @@ static void mainboard_init(struct device *dev)
 	if (display_init_required())
 		configure_display();
 	setup_usb(0);
-	if (IS_ENABLED(CONFIG_GRU_HAS_WLAN_RESET))
+	if (CONFIG(GRU_HAS_WLAN_RESET))
 		assert_wifi_reset();
-	if (!IS_ENABLED(CONFIG_GRU_BASEBOARD_SCARLET)) {
+	if (!CONFIG(GRU_BASEBOARD_SCARLET)) {
 		configure_touchpad();		/* Scarlet: works differently */
 		setup_usb(1);			/* Scarlet: only one USB port */
 	}
@@ -370,10 +370,10 @@ void mainboard_power_on_backlight(void)
 	gpio_output(GPIO_BL_EN, 1);  /* BL_EN */
 
 	/* Configure as output GPIO, to be toggled by payload. */
-	if (IS_ENABLED(CONFIG_GRU_BASEBOARD_SCARLET))
+	if (CONFIG(GRU_BASEBOARD_SCARLET))
 		gpio_output(GPIO_BACKLIGHT, 0);
 
-	if (IS_ENABLED(CONFIG_BOARD_GOOGLE_GRU))
+	if (CONFIG(BOARD_GOOGLE_GRU))
 		prepare_backlight_i2c();
 }
 

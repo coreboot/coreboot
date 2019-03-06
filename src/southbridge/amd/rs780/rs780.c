@@ -204,7 +204,7 @@ static void rs780_nb_gfx_dev_table(struct device *nb_dev, struct device *dev)
 
 	/* Program Straps. */
 	romstrap2 = 1 << 26; // enables audio function
-#if IS_ENABLED(CONFIG_GFXUMA)
+#if CONFIG(GFXUMA)
 	// bits 7-9: aperture size
 	// 0-7: 128mb, 256mb, 64mb, 32mb, 512mb, 1g, 2g, 4g
 	if (uma_memory_size == 0x02000000) romstrap2 |= 3 << 7;

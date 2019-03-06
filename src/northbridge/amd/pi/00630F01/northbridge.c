@@ -36,7 +36,7 @@
 #include <assert.h>
 #include <northbridge/amd/pi/nb_common.h>
 #include <northbridge/amd/agesa/agesa_helper.h>
-#if IS_ENABLED(CONFIG_BINARYPI_LEGACY_WRAPPER)
+#if CONFIG(BINARYPI_LEGACY_WRAPPER)
 #include <northbridge/amd/pi/agesawrapper.h>
 #include <northbridge/amd/pi/agesawrapper_call.h>
 #endif
@@ -370,7 +370,7 @@ static void create_vga_resource(struct device *dev, unsigned nodeid)
 	 * we only deal with the 'first' vga card */
 	for (link = dev->link_list; link; link = link->next) {
 		if (link->bridge_ctrl & PCI_BRIDGE_CTL_VGA) {
-			if (IS_ENABLED(CONFIG_MULTIPLE_VGA_ADAPTERS)) {
+			if (CONFIG(MULTIPLE_VGA_ADAPTERS)) {
 				extern struct device *vga_pri; // the primary vga device, defined in device.c
 				printk(BIOS_DEBUG, "VGA: vga_pri bus num = %d bus range [%d,%d]\n", vga_pri->bus->secondary,
 					link->secondary,link->subordinate);
@@ -611,7 +611,7 @@ static void domain_read_resources(struct device *dev)
 
 static void domain_enable_resources(struct device *dev)
 {
-#if IS_ENABLED(CONFIG_BINARYPI_LEGACY_WRAPPER)
+#if CONFIG(BINARYPI_LEGACY_WRAPPER)
 	/* Must be called after PCI enumeration and resource allocation */
 	if (!acpi_is_wakeup_s3()) {
 		/* Enable MMIO on AMD CPU Address Map Controller */

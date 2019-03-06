@@ -237,7 +237,7 @@ static unsigned long agesa_write_acpi_tables(struct device *device,
 	current += hest->header.length;
 
 	/* BERT */
-	if (IS_ENABLED(CONFIG_ACPI_BERT) && bert_errors_present()) {
+	if (CONFIG(ACPI_BERT) && bert_errors_present()) {
 		/* Skip the table if no errors are present.  ACPI driver reports
 		 * a table with a 0-length region:
 		 *   BERT: [Firmware Bug]: table invalid.

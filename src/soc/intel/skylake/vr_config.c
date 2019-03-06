@@ -127,7 +127,7 @@ static const struct vr_config default_configs[NUM_VR_DOMAINS] = {
 		.icc_max = VR_CFG_AMP(34),
 		.voltage_limit = 1520,
 	},
-#if IS_ENABLED(CONFIG_PLATFORM_USES_FSP1_1)
+#if CONFIG(PLATFORM_USES_FSP1_1)
 	[VR_RING] = {
 		.vr_config_enable = 1,
 		.psi1threshold = VR_CFG_AMP(20),
@@ -240,7 +240,7 @@ void fill_vr_domain_config(void *params,
 	vr_params->IccMax[domain] = get_sku_icc_max(domain, cfg->icc_max);
 	vr_params->VrVoltageLimit[domain] = cfg->voltage_limit;
 
-#if IS_ENABLED(CONFIG_PLATFORM_USES_FSP2_0)
+#if CONFIG(PLATFORM_USES_FSP2_0)
 	vr_params->AcLoadline[domain] = cfg->ac_loadline;
 	vr_params->DcLoadline[domain] = cfg->dc_loadline;
 #endif

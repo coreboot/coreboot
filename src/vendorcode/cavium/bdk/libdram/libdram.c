@@ -149,9 +149,9 @@ static void bdk_dram_disable_ecc_reporting(bdk_node_t node)
 static int bdk_libdram_tune_node(int node)
 {
     int errs, tot_errs;
-    int do_dllro_hw = IS_ENABLED(CONFIG_CAVIUM_BDK_DDR_TUNE_HW_OFFSETS);
-    int do_dllwo = IS_ENABLED(CONFIG_CAVIUM_BDK_DDR_TUNE_WRITE_OFFSETS);
-    int do_eccdll = IS_ENABLED(CONFIG_CAVIUM_BDK_DDR_TUNE_ECC_ENABLE);
+    int do_dllro_hw = CONFIG(CAVIUM_BDK_DDR_TUNE_HW_OFFSETS);
+    int do_dllwo = CONFIG(CAVIUM_BDK_DDR_TUNE_WRITE_OFFSETS);
+    int do_eccdll = CONFIG(CAVIUM_BDK_DDR_TUNE_ECC_ENABLE);
     BDK_CSR_INIT(lmc_config, node, BDK_LMCX_CONFIG(0)); // FIXME: probe LMC0
     do_eccdll = (lmc_config.s.ecc_ena != 0); // change to ON if ECC enabled
 

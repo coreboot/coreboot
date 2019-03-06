@@ -32,7 +32,7 @@
  * The type and enable fields are common in ACPI, but the
  * values themselves are hardware implementation defined.
  */
-#if IS_ENABLED(CONFIG_ACPI_INTEL_HARDWARE_SLEEP_VALUES)
+#if CONFIG(ACPI_INTEL_HARDWARE_SLEEP_VALUES)
  #define SLP_EN		(1 << 13)
  #define SLP_TYP_SHIFT	10
  #define SLP_TYP	(7 << SLP_TYP_SHIFT)
@@ -41,7 +41,7 @@
  #define  SLP_TYP_S3	5
  #define  SLP_TYP_S4	6
  #define  SLP_TYP_S5	7
-#elif IS_ENABLED(CONFIG_ACPI_AMD_HARDWARE_SLEEP_VALUES)
+#elif CONFIG(ACPI_AMD_HARDWARE_SLEEP_VALUES)
  #define SLP_EN		(1 << 13)
  #define SLP_TYP_SHIFT	10
  #define SLP_TYP	(7 << SLP_TYP_SHIFT)
@@ -776,7 +776,7 @@ unsigned long acpi_fill_ivrs_ioapic(acpi_ivrs_t *ivrs, unsigned long current);
 void acpi_create_ssdt_generator(acpi_header_t *ssdt, const char *oem_table_id);
 void acpi_write_bert(acpi_bert_t *bert, uintptr_t region, size_t length);
 void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt);
-#if IS_ENABLED(CONFIG_COMMON_FADT)
+#if CONFIG(COMMON_FADT)
 void acpi_fill_fadt(acpi_fadt_t *fadt);
 #endif
 
@@ -885,8 +885,8 @@ enum {
 	ACPI_S5,
 };
 
-#if IS_ENABLED(CONFIG_ACPI_INTEL_HARDWARE_SLEEP_VALUES) \
-		|| IS_ENABLED(CONFIG_ACPI_AMD_HARDWARE_SLEEP_VALUES)
+#if CONFIG(ACPI_INTEL_HARDWARE_SLEEP_VALUES) \
+		|| CONFIG(ACPI_AMD_HARDWARE_SLEEP_VALUES)
 /* Given the provided PM1 control register return the ACPI sleep type. */
 static inline int acpi_sleep_from_pm1(uint32_t pm1_cnt)
 {
@@ -909,7 +909,7 @@ int acpi_get_gpe(int gpe);
 
 static inline int acpi_s3_resume_allowed(void)
 {
-	return IS_ENABLED(CONFIG_HAVE_ACPI_RESUME);
+	return CONFIG(HAVE_ACPI_RESUME);
 }
 
 /* Return address in reserved memory where to backup low memory
@@ -919,7 +919,7 @@ static inline int acpi_s3_resume_allowed(void)
  */
 void *acpi_backup_container(uintptr_t base, size_t size);
 
-#if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
+#if CONFIG(HAVE_ACPI_RESUME)
 
 #ifdef __PRE_RAM__
 static inline int acpi_is_wakeup_s3(void)

@@ -104,8 +104,8 @@ void board_BeforeInitReset(struct sysinfo *cb, AMD_RESET_PARAMS *Reset)
 {
 	FCH_RESET_INTERFACE *FchReset = &Reset->FchInterface;
 
-	FchReset->Xhci0Enable = IS_ENABLED(CONFIG_HUDSON_XHCI_ENABLE);
-	FchReset->Xhci1Enable = IS_ENABLED(CONFIG_HUDSON_XHCI_ENABLE);
+	FchReset->Xhci0Enable = CONFIG(HUDSON_XHCI_ENABLE);
+	FchReset->Xhci1Enable = CONFIG(HUDSON_XHCI_ENABLE);
 
 	FchReset->SataEnable = 1;
 	FchReset->IdeEnable = 0;

@@ -28,7 +28,7 @@
 
 /* UART pad configuration. Support RXD and TXD for now. */
 const struct uart_gpio_pad_config uart_gpio_pads[] = {
-#if IS_ENABLED(CONFIG_SOC_INTEL_GLK)
+#if CONFIG(SOC_INTEL_GLK)
 	{
 		.console_index = 0,
 		.gpios = {

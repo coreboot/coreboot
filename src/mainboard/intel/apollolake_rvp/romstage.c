@@ -122,7 +122,7 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 	mupd->FspmConfig.LowMemoryMaxValue = 0;
 	mupd->FspmConfig.HighMemoryMaxValue = 0;
 
-	if (IS_ENABLED(CONFIG_BOARD_INTEL_APOLLOLAKE_RVP1))
+	if (CONFIG(BOARD_INTEL_APOLLOLAKE_RVP1))
 		rvp1_fill_memory_params(mupd);
 	else
 		rvp2_fill_memory_params(mupd);

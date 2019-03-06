@@ -54,7 +54,7 @@ static const uart_params_t uart_board_param = {
 	.blsp_uart = BLSP1_UART1,
 	.dbg_uart_gpio = {
 		{
-#if IS_ENABLED(CONFIG_IPQ_QFN_PART)
+#if CONFIG(IPQ_QFN_PART)
 			.gpio = 60,
 			.func = 2,
 #else	/* bga */
@@ -66,7 +66,7 @@ static const uart_params_t uart_board_param = {
 			.enable = GPIO_ENABLE
 		},
 		{
-#if IS_ENABLED(CONFIG_IPQ_QFN_PART)
+#if CONFIG(IPQ_QFN_PART)
 			.gpio = 61,
 			.func = 2,
 #else	/* bga */

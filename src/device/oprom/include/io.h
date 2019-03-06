@@ -14,7 +14,7 @@
 #ifndef __OPROM_IO_H__
 #define __OPROM_IO_H__
 
-#if IS_ENABLED(CONFIG_ARCH_X86)
+#if CONFIG(ARCH_X86)
 #include <arch/io.h>
 #else
 void outb(u8 val, u16 port);

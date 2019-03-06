@@ -156,7 +156,7 @@ static void fan_smartconfig(const u16 base, const u8 fan,
 
 		/* 50% duty cycle by default */
 		const u8 duty = conf->pwm_start ? conf->pwm_start : 50;
-		if (IS_ENABLED(CONFIG_SUPERIO_ITE_ENV_CTRL_8BIT_PWM))
+		if (CONFIG(SUPERIO_ITE_ENV_CTRL_8BIT_PWM))
 			pwm_start = ITE_EC_FAN_CTL_PWM_DUTY(duty);
 		else
 			pwm_ctrl |= ITE_EC_FAN_CTL_PWM_DUTY(duty);
@@ -193,12 +193,12 @@ static void enable_fan(const u16 base, const u8 fan,
 	u8 reg;
 
 	if (conf->mode == FAN_IGNORE ||
-	    (IS_ENABLED(CONFIG_SUPERIO_ITE_ENV_CTRL_NO_ONOFF) &&
+	    (CONFIG(SUPERIO_ITE_ENV_CTRL_NO_ONOFF) &&
 	     conf->mode <= FAN_MODE_OFF))
 		return;
 
 	/* FAN_CTL2 might have its own frequency setting */
-	if (IS_ENABLED(CONFIG_SUPERIO_ITE_ENV_CTRL_PWM_FREQ2) && fan == 2) {
+	if (CONFIG(SUPERIO_ITE_ENV_CTRL_PWM_FREQ2) && fan == 2) {
 		reg = ite_ec_read(base, ITE_EC_ADC_TEMP_EXTRA_CHANNEL_ENABLE);
 		reg &= ~ITE_EC_FAN_PWM_CLOCK_MASK;
 		reg |= ITE_EC_FAN_PWM_DEFAULT_CLOCK;
@@ -216,14 +216,14 @@ static void enable_fan(const u16 base, const u8 fan,
 		ite_ec_write(base, ITE_EC_FAN_CTL_MODE, reg);
 	}
 
-	if (IS_ENABLED(CONFIG_SUPERIO_ITE_ENV_CTRL_FAN16_CONFIG)
+	if (CONFIG(SUPERIO_ITE_ENV_CTRL_FAN16_CONFIG)
 	    && conf->mode >= FAN_MODE_ON) {
 		reg = ite_ec_read(base, ITE_EC_FAN_TAC_COUNTER_ENABLE);
 		reg |= ITE_EC_FAN_TAC_16BIT_ENABLE(fan);
 		ite_ec_write(base, ITE_EC_FAN_TAC_COUNTER_ENABLE, reg);
 	}
 
-	if (IS_ENABLED(CONFIG_SUPERIO_ITE_ENV_CTRL_5FANS) && fan > 3) {
+	if (CONFIG(SUPERIO_ITE_ENV_CTRL_5FANS) && fan > 3) {
 		reg = ite_ec_read(base, ITE_EC_FAN_SEC_CTL);
 		if (conf->mode >= FAN_MODE_ON)
 			reg |= ITE_EC_FAN_SEC_CTL_TAC_EN(fan);
@@ -238,7 +238,7 @@ static void enable_fan(const u16 base, const u8 fan,
 			reg &= ~ITE_EC_FAN_MAIN_CTL_TAC_EN(fan);
 
 		/* Some ITEs have SmartGuardian always enabled */
-		if (!IS_ENABLED(CONFIG_SUPERIO_ITE_ENV_CTRL_NO_ONOFF)) {
+		if (!CONFIG(SUPERIO_ITE_ENV_CTRL_NO_ONOFF)) {
 			if (conf->mode >= FAN_SMART_SOFTWARE)
 				reg |= ITE_EC_FAN_MAIN_CTL_SMART(fan);
 			else

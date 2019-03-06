@@ -808,7 +808,7 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 	struct resource *res;
 	resource_t mmconf_base = EXT_CONF_BASE_ADDRESS;
 
-	if (IS_ENABLED(CONFIG_EXT_CONF_SUPPORT)) {
+	if (CONFIG(EXT_CONF_SUPPORT)) {
 		res = sr5650_retrieve_cpu_mmio_resource();
 		if (res)
 			mmconf_base = res->base;

@@ -88,7 +88,7 @@ void soc_update_memory_params_for_mma(MEMORY_INIT_UPD *memory_cfg,
 		struct mma_config_param *mma_cfg)
 {
 	/* Boot media is memory mapped for Skylake and Kabylake (SPI). */
-	assert(IS_ENABLED(CONFIG_BOOT_DEVICE_MEMORY_MAPPED));
+	assert(CONFIG(BOOT_DEVICE_MEMORY_MAPPED));
 
 	memory_cfg->MmaTestContentPtr =
 			(uintptr_t) rdev_mmap_full(&mma_cfg->test_content);

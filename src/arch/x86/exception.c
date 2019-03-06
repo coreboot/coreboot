@@ -22,7 +22,7 @@
 #include <stdint.h>
 #include <string.h>
 
-#if IS_ENABLED(CONFIG_GDB_STUB)
+#if CONFIG(GDB_STUB)
 
 /* BUFMAX defines the maximum number of characters in inbound/outbound buffers.
  * At least NUM_REGBYTES*2 are needed for register packets
@@ -394,7 +394,7 @@ void x86_exception(struct eregs *info);
 
 void x86_exception(struct eregs *info)
 {
-#if IS_ENABLED(CONFIG_GDB_STUB)
+#if CONFIG(GDB_STUB)
 	int signo;
 	memcpy(gdb_stub_registers, info, 8*sizeof(uint32_t));
 	gdb_stub_registers[PC] = info->eip;

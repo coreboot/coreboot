@@ -38,7 +38,7 @@
 #include "me.h"
 #include "pch.h"
 
-#if IS_ENABLED(CONFIG_CHROMEOS)
+#if CONFIG(CHROMEOS)
 #include <vendorcode/google/chromeos/chromeos.h>
 #include <vendorcode/google/chromeos/gnvs.h>
 #endif
@@ -64,7 +64,7 @@ void intel_me_mbp_clear(pci_devfn_t dev);
 void intel_me_mbp_clear(struct device *dev);
 #endif
 
-#if IS_ENABLED(CONFIG_DEBUG_INTEL_ME)
+#if CONFIG(DEBUG_INTEL_ME)
 static void mei_dump(void *ptr, int dword, int offset, const char *type)
 {
 	struct mei_csr *csr;
@@ -378,7 +378,7 @@ static int mei_recv_msg(void *header, int header_bytes,
 	return mei_wait_for_me_ready();
 }
 
-#if IS_ENABLED (CONFIG_DEBUG_INTEL_ME) || defined(__SMM__)
+#if CONFIG(DEBUG_INTEL_ME) || defined(__SMM__)
 static inline int mei_sendrecv_mkhi(struct mkhi_header *mkhi,
 				    void *req_data, int req_bytes,
 				    void *rsp_data, int rsp_bytes)
@@ -480,7 +480,7 @@ static void me_print_fw_version(mbp_fw_version_name *vers_name)
 	       vers_name->hotfix_version, vers_name->build_version);
 }
 
-#if IS_ENABLED (CONFIG_DEBUG_INTEL_ME)
+#if CONFIG(DEBUG_INTEL_ME)
 static inline void print_cap(const char *name, int state)
 {
 	printk(BIOS_DEBUG, "ME Capability: %-41s : %sabled\n",
@@ -536,7 +536,7 @@ static void me_print_fwcaps(mbp_mefwcaps *cap)
 #endif /* CONFIG_DEBUG_INTEL_ME */
 #endif
 
-#if IS_ENABLED(CONFIG_CHROMEOS) && 0 /* DISABLED */
+#if CONFIG(CHROMEOS) && 0 /* DISABLED */
 /* Tell ME to issue a global reset */
 static int mkhi_global_reset(void)
 {
@@ -596,7 +596,7 @@ void intel_me_finalize_smm(void)
 	if (!mei_base_address || mei_base_address == (u32 *)0xfffffff0)
 		return;
 
-#if IS_ENABLED(CONFIG_ME_MBP_CLEAR_LATE)
+#if CONFIG(ME_MBP_CLEAR_LATE)
 	/* Wait for ME MBP Cleared indicator */
 	intel_me_mbp_clear(PCH_ME_DEV);
 #endif
@@ -723,7 +723,7 @@ static me_bios_path intel_me_path(struct device *dev)
 		path = ME_ERROR_BIOS_PATH;
 	}
 
-#if IS_ENABLED(CONFIG_ELOG)
+#if CONFIG(ELOG)
 	if (path != ME_NORMAL_BIOS_PATH) {
 		struct elog_event_data_me_extended data = {
 			.current_working_state = hfs.working_state,
@@ -812,7 +812,7 @@ static int intel_me_extend_valid(struct device *dev)
 	}
 	printk(BIOS_DEBUG, "\n");
 
-#if IS_ENABLED(CONFIG_CHROMEOS)
+#if CONFIG(CHROMEOS)
 	/* Save hash in NVS for the OS to verify */
 	chromeos_set_me_hash(extend, count);
 #endif
@@ -851,7 +851,7 @@ static void intel_me_init(struct device *dev)
 
 #if (CONFIG_DEFAULT_CONSOLE_LOGLEVEL >= BIOS_DEBUG)
 	me_print_fw_version(mbp_data.fw_version_name);
-#if IS_ENABLED(CONFIG_DEBUG_INTEL_ME)
+#if CONFIG(DEBUG_INTEL_ME)
 	me_print_fwcaps(mbp_data.fw_capabilities);
 #endif
 
@@ -1008,7 +1008,7 @@ static int intel_me_read_mbp(me_bios_payload *mbp_data, struct device *dev)
 	host.interrupt_generate = 1;
 	write_host_csr(&host);
 
-#if !IS_ENABLED(CONFIG_ME_MBP_CLEAR_LATE)
+#if !CONFIG(ME_MBP_CLEAR_LATE)
 	/* Wait for the mbp_cleared indicator. */
 	intel_me_mbp_clear(dev);
 #endif
@@ -1017,7 +1017,7 @@ static int intel_me_read_mbp(me_bios_payload *mbp_data, struct device *dev)
 #if (CONFIG_DEFAULT_CONSOLE_LOGLEVEL >= BIOS_DEBUG)
 	printk(BIOS_INFO, "ME MBP: Header: items: %d, size dw: %d\n",
 	       mbp->header.num_entries, mbp->header.mbp_size);
-#if IS_ENABLED(CONFIG_DEBUG_INTEL_ME)
+#if CONFIG(DEBUG_INTEL_ME)
 	for (i = 0; i < mbp->header.mbp_size - 1; i++) {
 		printk(BIOS_INFO, "ME MBP: %04x: 0x%08x\n", i, mbp->data[i]);
 	}

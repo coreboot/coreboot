@@ -745,7 +745,7 @@ static int should_run_oprom(struct device *dev)
 	if (should_run >= 0)
 		return should_run;
 
-	if (IS_ENABLED(CONFIG_ALWAYS_RUN_OPROM)) {
+	if (CONFIG(ALWAYS_RUN_OPROM)) {
 		should_run = 1;
 		return should_run;
 	}
@@ -755,7 +755,7 @@ static int should_run_oprom(struct device *dev)
 	 */
 	should_run = display_init_required();
 
-	if (!should_run && IS_ENABLED(CONFIG_CHROMEOS))
+	if (!should_run && CONFIG(CHROMEOS))
 		should_run = vboot_wants_oprom();
 
 	if (!should_run)
@@ -768,10 +768,10 @@ static int should_load_oprom(struct device *dev)
 	/* If S3_VGA_ROM_RUN is disabled, skip running VGA option
 	 * ROMs when coming out of an S3 resume.
 	 */
-	if (!IS_ENABLED(CONFIG_S3_VGA_ROM_RUN) && acpi_is_wakeup_s3() &&
+	if (!CONFIG(S3_VGA_ROM_RUN) && acpi_is_wakeup_s3() &&
 		((dev->class >> 8) == PCI_CLASS_DISPLAY_VGA))
 		return 0;
-	if (IS_ENABLED(CONFIG_ALWAYS_LOAD_OPROM))
+	if (CONFIG(ALWAYS_LOAD_OPROM))
 		return 1;
 	if (should_run_oprom(dev))
 		return 1;
@@ -784,7 +784,7 @@ void pci_dev_init(struct device *dev)
 {
 	struct rom_header *rom, *ram;
 
-	if (!IS_ENABLED(CONFIG_VGA_ROM_RUN))
+	if (!CONFIG(VGA_ROM_RUN))
 		return;
 
 	/* Only execute VGA ROMs. */
@@ -822,7 +822,7 @@ struct device_operations default_pci_ops_dev = {
 	.read_resources   = pci_dev_read_resources,
 	.set_resources    = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+#if CONFIG(HAVE_ACPI_TABLES)
 	.write_acpi_tables = pci_rom_write_acpi_tables,
 	.acpi_fill_ssdt_generator = pci_rom_ssdt,
 #endif
@@ -864,7 +864,7 @@ struct device_operations default_pci_ops_bus = {
  */
 static struct device_operations *get_pci_bridge_ops(struct device *dev)
 {
-#if IS_ENABLED(CONFIG_PCIX_PLUGIN_SUPPORT)
+#if CONFIG(PCIX_PLUGIN_SUPPORT)
 	unsigned int pcixpos;
 	pcixpos = pci_find_capability(dev, PCI_CAP_ID_PCIX);
 	if (pcixpos) {
@@ -872,7 +872,7 @@ static struct device_operations *get_pci_bridge_ops(struct device *dev)
 		return &default_pcix_ops_bus;
 	}
 #endif
-#if IS_ENABLED(CONFIG_HYPERTRANSPORT_PLUGIN_SUPPORT)
+#if CONFIG(HYPERTRANSPORT_PLUGIN_SUPPORT)
 	unsigned int htpos = 0;
 	while ((htpos = pci_find_next_capability(dev, PCI_CAP_ID_HT, htpos))) {
 		u16 flags;
@@ -885,7 +885,7 @@ static struct device_operations *get_pci_bridge_ops(struct device *dev)
 		}
 	}
 #endif
-#if IS_ENABLED(CONFIG_PCIEXP_PLUGIN_SUPPORT)
+#if CONFIG(PCIEXP_PLUGIN_SUPPORT)
 	unsigned int pciexpos;
 	pciexpos = pci_find_capability(dev, PCI_CAP_ID_PCIE);
 	if (pciexpos) {
@@ -975,7 +975,7 @@ static void set_pci_ops(struct device *dev)
 			goto bad;
 		dev->ops = get_pci_bridge_ops(dev);
 		break;
-#if IS_ENABLED(CONFIG_CARDBUS_PLUGIN_SUPPORT)
+#if CONFIG(CARDBUS_PLUGIN_SUPPORT)
 	case PCI_HEADER_TYPE_CARDBUS:
 		dev->ops = &default_cardbus_ops_bus;
 		break;
@@ -1534,7 +1534,7 @@ int get_pci_irq_pins(struct device *dev, struct device **parent_bdg)
 	return target_pin;
 }
 
-#if IS_ENABLED(CONFIG_PC80_SYSTEM)
+#if CONFIG(PC80_SYSTEM)
 /**
  * Assign IRQ numbers.
  *
@@ -1583,7 +1583,7 @@ void pci_assign_irqs(unsigned bus, unsigned slot,
 		printk(BIOS_DEBUG, "  Readback = %d\n", irq);
 #endif
 
-#if IS_ENABLED(CONFIG_PC80_SYSTEM)
+#if CONFIG(PC80_SYSTEM)
 		/* Change to level triggered. */
 		i8259_configure_irq_trigger(pIntAtoD[line - 1],
 					    IRQ_LEVEL_TRIGGERED);

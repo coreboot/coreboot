@@ -82,7 +82,7 @@ static void pch_enable_serial_irqs(struct device *dev)
 	/* Set packet length and toggle silent mode bit for one frame. */
 	pci_write_config8(dev, SERIRQ_CNTL,
 			  (1 << 7) | (1 << 6) | ((21 - 17) << 2) | (0 << 0));
-#if !IS_ENABLED(CONFIG_SERIRQ_CONTINUOUS_MODE)
+#if !CONFIG(SERIRQ_CONTINUOUS_MODE)
 	pci_write_config8(dev, SERIRQ_CNTL,
 			  (1 << 7) | (0 << 6) | ((21 - 17) << 2) | (0 << 0));
 #endif
@@ -490,7 +490,7 @@ static void enable_lp_clock_gating(struct device *dev)
 
 static void pch_set_acpi_mode(void)
 {
-#if IS_ENABLED(CONFIG_HAVE_SMI_HANDLER)
+#if CONFIG(HAVE_SMI_HANDLER)
 	if (!acpi_is_wakeup_s3()) {
 #if ENABLE_ACPI_MODE_IN_COREBOOT
 		printk(BIOS_DEBUG, "Enabling ACPI via APMC:\n");
@@ -754,7 +754,7 @@ static void southbridge_inject_dsdt(struct device *dev)
 		gnvs->mpen = 1; /* Enable Multi Processing */
 		gnvs->pcnt = dev_count_cpu();
 
-#if IS_ENABLED(CONFIG_CHROMEOS)
+#if CONFIG(CHROMEOS)
 		chromeos_init_chromeos_acpi(&(gnvs->chromeos));
 #endif
 
@@ -976,7 +976,7 @@ static void lpc_final(struct device *dev)
 	RCBA32(0x3898) = SPI_OPMENU_LOWER;
 	RCBA32(0x389c) = SPI_OPMENU_UPPER;
 
-	if (acpi_is_wakeup_s3() || IS_ENABLED(CONFIG_INTEL_CHIPSET_LOCKDOWN))
+	if (acpi_is_wakeup_s3() || CONFIG(INTEL_CHIPSET_LOCKDOWN))
 		outb(APM_CNT_FINALIZE, APM_CNT);
 }
 

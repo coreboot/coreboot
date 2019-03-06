@@ -58,7 +58,7 @@ static const PCIe_PORT_DESCRIPTOR PortList[] = {
 	{	/* PCIe x4 Connector J120, GPP[7:4], Lanes [15:12] */
 		DESCRIPTOR_TERMINATE_LIST,
 		PCIE_ENGINE_DATA_INITIALIZER(
-				IS_ENABLED(CONFIG_ENABLE_DP3_DAUGHTER_CARD_IN_J120) ? PcieUnusedEngine : PciePortEngine,
+				CONFIG(ENABLE_DP3_DAUGHTER_CARD_IN_J120) ? PcieUnusedEngine : PciePortEngine,
 				12, 15
 		),
 		PCIE_PORT_DATA_INITIALIZER_V2(
@@ -78,7 +78,7 @@ static const PCIe_DDI_DESCRIPTOR DdiList[] = {
 	{	/* DP3 */
 		0,
 		PCIE_ENGINE_DATA_INITIALIZER(
-				IS_ENABLED(CONFIG_ENABLE_DP3_DAUGHTER_CARD_IN_J120) ? PcieDdiEngine : PcieUnusedEngine,
+				CONFIG(ENABLE_DP3_DAUGHTER_CARD_IN_J120) ? PcieDdiEngine : PcieUnusedEngine,
 				12, 15
 		),
 		PCIE_DDI_DATA_INITIALIZER(ConnectorTypeDP, Aux4, Hdp4)

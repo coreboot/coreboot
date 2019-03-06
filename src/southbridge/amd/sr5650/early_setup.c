@@ -57,7 +57,7 @@ static void set_fam10_ext_cfg_enable_bits(pci_devfn_t fam10_dev,
 	u32 reg_old, reg;
 
 	/* family 10 only, for reg > 0xFF */
-	if (!IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_AMDFAM10))
+	if (!CONFIG(NORTHBRIDGE_AMD_AMDFAM10))
 		return;
 
 	reg = reg_old = pci_read_config32(fam10_dev, reg_pos);
@@ -222,7 +222,7 @@ void sr5650_htinit(void)
 		/* Enable Protocol checker */
 		set_htiu_enable_bits(sr5650_f0, 0x1E, 0xFFFFFFFF, 0x7FFFFFFC);
 
-#if IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_AMDFAM10)
+#if CONFIG(NORTHBRIDGE_AMD_AMDFAM10)
 		/* HT3 mode, RPR 5.4.3 */
 		set_nbcfg_enable_bits(sr5650_f0, 0x9c, 0x3 << 16, 0);
 
@@ -307,7 +307,7 @@ void fam10_optimization(void)
 	msr_t msr;
 	u32 val;
 
-	if (!IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_AMDFAM10))
+	if (!CONFIG(NORTHBRIDGE_AMD_AMDFAM10))
 		return;
 
 	printk(BIOS_INFO, "fam10_optimization()\n");

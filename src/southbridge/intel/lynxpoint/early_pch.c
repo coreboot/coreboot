@@ -23,7 +23,7 @@
 #include "pch.h"
 #include "chip.h"
 
-#if IS_ENABLED(CONFIG_INTEL_LYNXPOINT_LP)
+#if CONFIG(INTEL_LYNXPOINT_LP)
 #include "lp_gpio.h"
 #else
 #include <southbridge/intel/common/gpio.h>
@@ -127,7 +127,7 @@ int early_pch_init(const void *gpio_map,
 
 	pch_enable_bars();
 
-#if IS_ENABLED(CONFIG_INTEL_LYNXPOINT_LP)
+#if CONFIG(INTEL_LYNXPOINT_LP)
 	setup_pch_lp_gpios(gpio_map);
 #else
 	setup_pch_gpios(gpio_map);
@@ -150,7 +150,7 @@ int early_pch_init(const void *gpio_map,
 
 	wake_from_s3 = sleep_type_s3();
 
-#if IS_ENABLED(CONFIG_ELOG_BOOT_COUNT)
+#if CONFIG(ELOG_BOOT_COUNT)
 	if (!wake_from_s3)
 		boot_count_increment();
 #endif

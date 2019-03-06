@@ -22,7 +22,7 @@
 
 /* Enable EC backed PD MCU device in ACPI */
 #define EC_ENABLE_PD_MCU_DEVICE
-#if IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC)
+#if CONFIG(EC_GOOGLE_CHROMEEC)
 
 /* Enable LID switch and provide wake pin for EC */
 #define EC_ENABLE_LID_SWITCH

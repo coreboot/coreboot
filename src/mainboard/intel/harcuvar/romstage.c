@@ -22,7 +22,7 @@
 #include <fsp/soc_binding.h>
 #include <string.h>
 
-#if IS_ENABLED(CONFIG_ENABLE_FSP_MEMORY_DOWN)
+#if CONFIG(ENABLE_FSP_MEMORY_DOWN)
 
 /*
  * Define platform specific Memory Down Configure structure.
@@ -118,7 +118,7 @@ void mainboard_config_gpios(void)
 
 void mainboard_memory_init_params(FSPM_UPD *mupd)
 {
-#if IS_ENABLED(CONFIG_ENABLE_FSP_MEMORY_DOWN)
+#if CONFIG(ENABLE_FSP_MEMORY_DOWN)
 	uint8_t *spd_data_ptr = NULL;
 
 	/* Get SPD data pointer */

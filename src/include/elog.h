@@ -231,7 +231,7 @@ struct elog_event_extended_event {
 	u32 event_complement;
 } __packed;
 
-#if IS_ENABLED(CONFIG_ELOG)
+#if CONFIG(ELOG)
 /* Eventlog backing storage must be initialized before calling elog_init(). */
 extern int elog_init(void);
 extern int elog_clear(void);
@@ -264,7 +264,7 @@ static inline int elog_add_extended_event(u8 type, u32 complement) { return 0; }
 
 extern u32 gsmi_exec(u8 command, u32 *param);
 
-#if IS_ENABLED(CONFIG_ELOG_BOOT_COUNT)
+#if CONFIG(ELOG_BOOT_COUNT)
 u32 boot_count_read(void);
 #else
 static inline u32 boot_count_read(void)

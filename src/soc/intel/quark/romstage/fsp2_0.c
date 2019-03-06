@@ -36,7 +36,7 @@ asmlinkage void *car_stage_c_entry(void)
 	post_code(0x20);
 	console_init();
 
-	if (IS_ENABLED(CONFIG_STORAGE_TEST)) {
+	if (CONFIG(STORAGE_TEST)) {
 		uint32_t bar;
 		pci_devfn_t dev;
 		uint32_t previous_bar;
@@ -132,7 +132,7 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *fspm_upd, uint32_t version)
 	aupd->BootMode = FSP_BOOT_WITH_FULL_CONFIGURATION;
 
 	/* Display the ESRAM layout */
-	if (IS_ENABLED(CONFIG_DISPLAY_ESRAM_LAYOUT)) {
+	if (CONFIG(DISPLAY_ESRAM_LAYOUT)) {
 		printk(BIOS_SPEW, "\nESRAM Layout:\n\n");
 		printk(BIOS_SPEW,
 			"+-------------------+ 0x80080000 - ESRAM end\n");
@@ -175,7 +175,7 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *fspm_upd, uint32_t version)
 	upd->RmuLength = rmu_data_len;
 	upd->SerialPortWriteChar = !!console_log_level(BIOS_SPEW)
 		? (uintptr_t)fsp_write_line : 0;
-	upd->SmmTsegSize = IS_ENABLED(CONFIG_HAVE_SMI_HANDLER) ?
+	upd->SmmTsegSize = CONFIG(HAVE_SMI_HANDLER) ?
 		config->SmmTsegSize : 0;
 	upd->SocRdOdtVal = config->SocRdOdtVal;
 	upd->SocWrRonVal = config->SocWrRonVal;

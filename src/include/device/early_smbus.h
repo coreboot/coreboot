@@ -52,7 +52,7 @@
 /**
  * \brief printk macro for SMBus debugging
  */
-#if IS_ENABLED(CONFIG_DEBUG_SMBUS)
+#if CONFIG(DEBUG_SMBUS)
 #define printsmbus(x, ...) printk(BIOS_DEBUG, x, ##__VA_ARGS__)
 #else
 #define printsmbus(x, ...)

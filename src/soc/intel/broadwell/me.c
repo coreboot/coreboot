@@ -40,7 +40,7 @@
 #include <soc/rcba.h>
 #include <soc/intel/broadwell/chip.h>
 
-#if IS_ENABLED(CONFIG_CHROMEOS)
+#if CONFIG(CHROMEOS)
 #include <vendorcode/google/chromeos/chromeos.h>
 #include <vendorcode/google/chromeos/gnvs.h>
 #endif
@@ -58,7 +58,7 @@ static const char *me_bios_path_values[] = {
 /* MMIO base address for MEI interface */
 static u8 *mei_base_address;
 
-#if IS_ENABLED(CONFIG_DEBUG_INTEL_ME)
+#if CONFIG(DEBUG_INTEL_ME)
 static void mei_dump(void *ptr, int dword, int offset, const char *type)
 {
 	struct mei_csr *csr;
@@ -483,7 +483,7 @@ static void me_print_fw_version(mbp_fw_version_name *vers_name)
 	       vers_name->hotfix_version, vers_name->build_version);
 }
 
-#if IS_ENABLED(CONFIG_DEBUG_INTEL_ME)
+#if CONFIG(DEBUG_INTEL_ME)
 static inline void print_cap(const char *name, int state)
 {
 	printk(BIOS_DEBUG, "ME Capability: %-41s : %sabled\n",
@@ -703,7 +703,7 @@ static me_bios_path intel_me_path(struct device *dev)
 		path = ME_ERROR_BIOS_PATH;
 	}
 
-#if IS_ENABLED(CONFIG_ELOG)
+#if CONFIG(ELOG)
 	if (path != ME_NORMAL_BIOS_PATH) {
 		struct elog_event_data_me_extended data = {
 			.current_working_state = hfs.working_state,
@@ -792,7 +792,7 @@ static int intel_me_extend_valid(struct device *dev)
 	}
 	printk(BIOS_DEBUG, "\n");
 
-#if IS_ENABLED(CONFIG_CHROMEOS)
+#if CONFIG(CHROMEOS)
 	/* Save hash in NVS for the OS to verify */
 	chromeos_set_me_hash(extend, count);
 #endif
@@ -804,7 +804,7 @@ static void intel_me_print_mbp(me_bios_payload *mbp_data)
 {
 	me_print_fw_version(mbp_data->fw_version_name);
 
-#if IS_ENABLED(CONFIG_DEBUG_INTEL_ME)
+#if CONFIG(DEBUG_INTEL_ME)
 	me_print_fwcaps(mbp_data->fw_capabilities);
 #endif
 
@@ -912,7 +912,7 @@ static int intel_me_read_mbp(me_bios_payload *mbp_data, struct device *dev)
 	}
 
 	/* Dump out the MBP contents. */
-#if IS_ENABLED(CONFIG_DEBUG_INTEL_ME)
+#if CONFIG(DEBUG_INTEL_ME)
 	printk(BIOS_INFO, "ME MBP: Header: items: %d, size dw: %d\n",
 	       mbp->header.num_entries, mbp->header.mbp_size);
 	for (i = 0; i < mbp->header.mbp_size - 1; i++)

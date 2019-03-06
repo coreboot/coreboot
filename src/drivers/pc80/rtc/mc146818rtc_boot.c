@@ -18,7 +18,7 @@
 #include <cbfs.h>
 #endif
 #include <pc80/mc146818rtc.h>
-#if IS_ENABLED(CONFIG_USE_OPTION_TABLE)
+#if CONFIG(USE_OPTION_TABLE)
 #include <option_table.h>
 #endif
 
@@ -34,7 +34,7 @@ int cmos_error(void)
 int cmos_chksum_valid(void);
 int cmos_chksum_valid(void)
 {
-#if IS_ENABLED(CONFIG_USE_OPTION_TABLE)
+#if CONFIG(USE_OPTION_TABLE)
 	unsigned char addr;
 	u16 sum, old_sum;
 
@@ -53,11 +53,11 @@ int cmos_chksum_valid(void)
 #endif
 }
 
-#if IS_ENABLED(CONFIG_USE_OPTION_TABLE)
+#if CONFIG(USE_OPTION_TABLE)
 void sanitize_cmos(void)
 {
 	if (cmos_error() || !cmos_chksum_valid() ||
-	    IS_ENABLED(CONFIG_STATIC_OPTION_TABLE)) {
+	    CONFIG(STATIC_OPTION_TABLE)) {
 		size_t length = 128;
 		const unsigned char *cmos_default =
 #ifdef __ROMCC__

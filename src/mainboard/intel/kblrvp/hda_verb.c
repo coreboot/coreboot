@@ -14,6 +14,6 @@
  * GNU General Public License for more details.
  */
 
-#if !IS_ENABLED(CONFIG_BOARD_INTEL_KBLRVP8)
+#if !CONFIG(BOARD_INTEL_KBLRVP8)
 #include "variant/hda_verb.h"
 #endif

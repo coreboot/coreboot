@@ -228,7 +228,7 @@ void southbridge_smm_init(void)
 	u16 pm1_en;
 	u32 gpe0_en;
 
-#if IS_ENABLED(CONFIG_ELOG)
+#if CONFIG(ELOG)
 	/* Log events from chipset before clearing */
 	pch_log_state();
 #endif

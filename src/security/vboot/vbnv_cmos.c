@@ -39,7 +39,7 @@ static void clear_vbnv_battery_cutoff_flag(uint8_t *vbnv_copy)
 /* Return non-zero if backup was used. */
 static int restore_from_backup(uint8_t *vbnv_copy)
 {
-	if (!IS_ENABLED(CONFIG_VBOOT_VBNV_CMOS_BACKUP_TO_FLASH))
+	if (!CONFIG(VBOOT_VBNV_CMOS_BACKUP_TO_FLASH))
 		return 0;
 
 	printk(BIOS_INFO, "VBNV: CMOS invalid, restoring from flash\n");
@@ -99,7 +99,7 @@ void vbnv_init_cmos(uint8_t *vbnv_copy)
 	}
 }
 
-#if IS_ENABLED(CONFIG_VBOOT_VBNV_CMOS_BACKUP_TO_FLASH)
+#if CONFIG(VBOOT_VBNV_CMOS_BACKUP_TO_FLASH)
 static void back_up_vbnv_cmos(void *unused)
 {
 	uint8_t vbnv_cmos[VBOOT_VBNV_BLOCK_SIZE];

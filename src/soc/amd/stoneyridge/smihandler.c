@@ -103,7 +103,7 @@ static void sb_apmc_smi_handler(void)
 		acpi_write32(MMIO_ACPI_PM1_CNT_BLK, reg32);
 		break;
 	case APM_CNT_ELOG_GSMI:
-		if (IS_ENABLED(CONFIG_ELOG_GSMI))
+		if (CONFIG(ELOG_GSMI))
 			southbridge_smi_gsmi();
 		break;
 	}
@@ -156,7 +156,7 @@ static void sb_slp_typ_handler(void)
 
 	if (slp_typ >= ACPI_S3) {
 		/* Sleep Type Elog S3, S4, and S5 entry */
-		if (IS_ENABLED(CONFIG_ELOG_GSMI))
+		if (CONFIG(ELOG_GSMI))
 			elog_add_event_byte(ELOG_TYPE_ACPI_ENTER, slp_typ);
 
 		wbinvd();
@@ -183,7 +183,7 @@ static void sb_slp_typ_handler(void)
 		 * it and continue normal path. S3 will fail and the wake event
 		 * becomes a SCI.
 		 */
-		if (IS_ENABLED(CONFIG_ELOG_GSMI)) {
+		if (CONFIG(ELOG_GSMI)) {
 			reg16 = acpi_read16(MMIO_ACPI_PM1_EN);
 			reg16 &= acpi_read16(MMIO_ACPI_PM1_STS);
 			if (reg16)
@@ -197,7 +197,7 @@ static void sb_slp_typ_handler(void)
 				elog_add_extended_event(
 						ELOG_SLEEP_PENDING_GPE0_WAKE,
 						reg32);
-		} /* if (IS_ENABLED(CONFIG_ELOG_GSMI)) */
+		} /* if (CONFIG(ELOG_GSMI)) */
 
 		/*
 		 * An IO cycle is required to trigger the STPCLK/STPGNT

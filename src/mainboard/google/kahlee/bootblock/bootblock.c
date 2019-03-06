@@ -34,7 +34,7 @@ void bootblock_mainboard_early_init(void)
 
 void bootblock_mainboard_init(void)
 {
-	if (IS_ENABLED(CONFIG_EM100)) {
+	if (CONFIG(EM100)) {
 		/*
 		 * We should be able to rely on defaults, but it seems safer
 		 * to explicitly set up these registers.

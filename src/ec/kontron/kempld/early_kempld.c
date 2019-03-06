@@ -47,7 +47,7 @@ void kempld_release_mutex(void)
 
 void kempld_enable_uart_for_console(void)
 {
-	if (!IS_ENABLED(CONFIG_CONSOLE_SERIAL))
+	if (!CONFIG(CONSOLE_SERIAL))
 		return;
 
 	if (kempld_get_mutex(100) < 0)

@@ -58,7 +58,7 @@
 static int lookup_store(struct region_device *rstore)
 {
 	struct cbfsf file;
-	if (IS_ENABLED(CONFIG_SMMSTORE_IN_CBFS)) {
+	if (CONFIG(SMMSTORE_IN_CBFS)) {
 		if (cbfs_locate_file_in_region(&file,
 			       CONFIG_SMMSTORE_REGION,
 			       CONFIG_SMMSTORE_FILENAME, NULL) < 0) {

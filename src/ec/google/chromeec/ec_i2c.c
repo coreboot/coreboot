@@ -22,7 +22,7 @@
 #include "ec.h"
 #include "ec_commands.h"
 
-#if IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC_I2C_PROTO3)
+#if CONFIG(EC_GOOGLE_CHROMEEC_I2C_PROTO3)
 
 #define PROTO3_FRAMING_BYTES sizeof(uint32_t)
 /* Just use the LPC host packet size to size the buffer. */

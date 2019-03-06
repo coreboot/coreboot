@@ -60,7 +60,7 @@ struct eregs {
 };
 #endif // !ASSEMBLER
 
-#if IS_ENABLED(CONFIG_COMPILER_LLVM_CLANG)
+#if CONFIG(COMPILER_LLVM_CLANG)
 #define ADDR32(opcode) opcode
 #else
 #define ADDR32(opcode) addr32 opcode

@@ -26,7 +26,7 @@
 
 static void sdhci_display_bus_width(struct sdhci_ctrlr *sdhci_ctrlr)
 {
-	if (IS_ENABLED(CONFIG_SDHC_DEBUG)) {
+	if (CONFIG(SDHC_DEBUG)) {
 		int bits;
 		uint8_t host_ctrl;
 		uint16_t host2;
@@ -53,7 +53,7 @@ static void sdhci_display_bus_width(struct sdhci_ctrlr *sdhci_ctrlr)
 
 static void sdhci_display_clock(struct sdhci_ctrlr *sdhci_ctrlr)
 {
-	if (IS_ENABLED(CONFIG_SDHC_DEBUG)) {
+	if (CONFIG(SDHC_DEBUG)) {
 		uint16_t clk_ctrl;
 		uint32_t clock;
 		uint32_t divisor;
@@ -79,7 +79,7 @@ static void sdhci_display_clock(struct sdhci_ctrlr *sdhci_ctrlr)
 
 static void sdhci_display_voltage(struct sdhci_ctrlr *sdhci_ctrlr)
 {
-	if (IS_ENABLED(CONFIG_SDHC_DEBUG)) {
+	if (CONFIG(SDHC_DEBUG)) {
 		u8 pwr_ctrl;
 		const char *voltage;
 		const char *voltage_table[8] = {

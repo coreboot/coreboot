@@ -20,7 +20,7 @@
 #include <device/i2c.h>
 #include <stdint.h>
 
-#if IS_ENABLED(CONFIG_DRIVERS_I2C_DESIGNWARE_DEBUG)
+#if CONFIG(DRIVERS_I2C_DESIGNWARE_DEBUG)
 #define DW_I2C_DEBUG BIOS_DEBUG
 
 #else

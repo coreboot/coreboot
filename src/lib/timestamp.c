@@ -114,7 +114,7 @@ static struct timestamp_table *timestamp_alloc_cbmem_table(void)
 static int timestamp_should_run(void)
 {
 	/* Only check boot_cpu() in other stages than ramstage on x86. */
-	if ((!ENV_RAMSTAGE && IS_ENABLED(CONFIG_ARCH_X86)) && !boot_cpu())
+	if ((!ENV_RAMSTAGE && CONFIG(ARCH_X86)) && !boot_cpu())
 		return 0;
 
 	return 1;
@@ -173,7 +173,7 @@ static void timestamp_add_table_entry(struct timestamp_table *ts_table,
 	tse->entry_id = id;
 	tse->entry_stamp = ts_time - ts_table->base_time;
 
-	if (IS_ENABLED(CONFIG_TIMESTAMPS_ON_CONSOLE))
+	if (CONFIG(TIMESTAMPS_ON_CONSOLE))
 		printk(BIOS_SPEW, "Timestamp - %s: %" PRIu64 "\n",
 				timestamp_name(id), ts_time);
 
@@ -250,7 +250,7 @@ static void timestamp_sync_cache_to_cbmem(int is_recovery)
 	/* cbmem is being recovered. */
 	if (is_recovery) {
 		/* x86 resume path expects timestamps to be reset. */
-		if (IS_ENABLED(CONFIG_ARCH_ROMSTAGE_X86_32) && ENV_ROMSTAGE)
+		if (CONFIG(ARCH_ROMSTAGE_X86_32) && ENV_ROMSTAGE)
 			ts_cbmem_table = timestamp_alloc_cbmem_table();
 		else {
 			/* Find existing table in cbmem. */
@@ -357,7 +357,7 @@ uint64_t  __weak timestamp_get(void)
 {
 	struct mono_time t1, t2;
 
-	if (!IS_ENABLED(CONFIG_HAVE_MONOTONIC_TIMER))
+	if (!CONFIG(HAVE_MONOTONIC_TIMER))
 		return 0;
 
 	mono_time_set_usecs(&t1, 0);

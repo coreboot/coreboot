@@ -26,7 +26,7 @@ __noreturn void board_reset(void)
 	halt();
 }
 
-#if IS_ENABLED(CONFIG_MISSING_BOARD_RESET)
+#if CONFIG(MISSING_BOARD_RESET)
 void do_board_reset(void)
 {
 	printk(BIOS_CRIT, "No board_reset implementation, hanging...\n");

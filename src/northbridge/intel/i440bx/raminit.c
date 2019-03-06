@@ -31,7 +31,7 @@
  */
 
 /* Debugging macros. */
-#if IS_ENABLED(CONFIG_DEBUG_RAM_SETUP)
+#if CONFIG(DEBUG_RAM_SETUP)
 #define PRINT_DEBUG(x...)	printk(BIOS_DEBUG, x)
 #define DUMPNORTH()		dump_pci_device(NB)
 #else
@@ -297,7 +297,7 @@ static const u8 register_values[] = {
 	 *         0 = 3 clocks of RAS# precharge
 	 *         1 = 2 clocks of RAS# precharge
 	 */
-#if IS_ENABLED(CONFIG_SDRAMPWR_4DIMM)
+#if CONFIG(SDRAMPWR_4DIMM)
 	SDRAMC + 0, 0x00, 0x10, /* The board has 4 DIMM slots. */
 #else
 	SDRAMC + 0, 0x00, 0x00, /* The board has 3 DIMM slots. */
@@ -460,7 +460,7 @@ static void set_dram_buffer_strength(void)
 		}
 	}
 
-	if (IS_ENABLED(CONFIG_SDRAMPWR_4DIMM)) {
+	if (CONFIG(SDRAMPWR_4DIMM)) {
 	/*
 	 * For a 4 DIMM board, based on ASUS P2B-LS mainboard.
 	 *

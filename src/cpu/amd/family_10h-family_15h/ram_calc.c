@@ -44,7 +44,7 @@ static inline uint8_t is_fam15h(void)
 uint64_t get_uma_memory_size(uint64_t topmem)
 {
 	uint64_t uma_size = 0;
-	if (IS_ENABLED(CONFIG_GFXUMA)) {
+	if (CONFIG(GFXUMA)) {
 		/* refer to UMA Size Consideration in 780 BDG. */
 		if (topmem >= 0x40000000)	/* 1GB and above system memory */
 			uma_size = 0x10000000;	/* 256M recommended UMA */

@@ -48,7 +48,7 @@ static const char *HeapStatusStr[] = {
 
 const char *agesa_struct_name(int state)
 {
-#if IS_ENABLED(CONFIG_CPU_AMD_AGESA_OPENSOURCE)
+#if CONFIG(CPU_AMD_AGESA_OPENSOURCE)
 	if ((state < AMD_INIT_RECOVERY) || (state > AMD_IDENTIFY_DIMMS))
 		return undefined;
 

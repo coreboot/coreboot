@@ -20,7 +20,7 @@
 #include <arch/early_variables.h>
 #include <symbols.h>
 
-#if IS_ENABLED(CONFIG_PLATFORM_USES_FSP1_0)
+#if CONFIG(PLATFORM_USES_FSP1_0)
 #include <drivers/intel/fsp1_0/fsp_util.h>
 #endif
 typedef void (* const car_migration_func_t)(void);
@@ -61,7 +61,7 @@ void *car_get_var_ptr(void *var)
 		return var;
 	}
 
-#if IS_ENABLED(CONFIG_PLATFORM_USES_FSP1_0)
+#if CONFIG(PLATFORM_USES_FSP1_0)
 	migrated_base = (char *)find_saved_temp_mem(
 			*(void **)CBMEM_FSP_HOB_PTR);
 	/* FSP 1.0 migrates the entire DCACHE RAM */
@@ -96,7 +96,7 @@ void *car_sync_var_ptr(void *var)
 	 * keep console buffer in CAR until cbmemc_reinit() moves it.
 	 */
 	if (*mig_var == _preram_cbmem_console) {
-		if (IS_ENABLED(CONFIG_PLATFORM_USES_FSP1_0))
+		if (CONFIG(PLATFORM_USES_FSP1_0))
 			*mig_var += (char *)mig_var - (char *)var;
 		return mig_var;
 	}
@@ -142,7 +142,7 @@ static void do_car_migrate_variables(void)
 
 static void car_migrate_variables(int is_recovery)
 {
-	if (!IS_ENABLED(CONFIG_PLATFORM_USES_FSP1_0))
+	if (!CONFIG(PLATFORM_USES_FSP1_0))
 		do_car_migrate_variables();
 }
 ROMSTAGE_CBMEM_INIT_HOOK(car_migrate_variables)

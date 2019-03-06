@@ -135,9 +135,9 @@ static void bochs_init_text_mode(struct device *dev)
 
 static void bochs_init(struct device *dev)
 {
-	if (IS_ENABLED(CONFIG_LINEAR_FRAMEBUFFER))
+	if (CONFIG(LINEAR_FRAMEBUFFER))
 		bochs_init_linear_fb(dev);
-	else if (IS_ENABLED(CONFIG_VGA_TEXT_FRAMEBUFFER))
+	else if (CONFIG(VGA_TEXT_FRAMEBUFFER))
 		bochs_init_text_mode(dev);
 }
 

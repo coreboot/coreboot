@@ -23,7 +23,7 @@
 #include <cpu/intel/microcode/microcode.c>
 #include "haswell.h"
 
-#if IS_ENABLED(CONFIG_SOUTHBRIDGE_INTEL_LYNXPOINT)
+#if CONFIG(SOUTHBRIDGE_INTEL_LYNXPOINT)
 /* Needed for RCBA access to set Soft Reset Data register */
 #include <southbridge/intel/lynxpoint/pch.h>
 #else

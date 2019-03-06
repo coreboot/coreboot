@@ -191,7 +191,7 @@ DEVTREE_CONST struct device *pcidev_path_on_root(pci_devfn_t devfn)
 	 * due tue complicated devicetree with topology
 	 * being manipulated on-the-fly.
 	 */
-	if (IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_AMDFAM10))
+	if (CONFIG(NORTHBRIDGE_AMD_AMDFAM10))
 		return dev_find_slot(0, devfn);
 
 	pci_domain = dev_find_path(NULL, DEVICE_PATH_DOMAIN);

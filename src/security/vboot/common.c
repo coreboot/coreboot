@@ -44,7 +44,7 @@ static const size_t vb_work_buf_size = 16 * KiB;
 
 static struct vb2_working_data * const vboot_get_working_data(void)
 {
-	if (IS_ENABLED(CONFIG_VBOOT_STARTS_IN_ROMSTAGE))
+	if (CONFIG(VBOOT_STARTS_IN_ROMSTAGE))
 		/* cbmem_add() does a cbmem_find() first. */
 		return cbmem_add(CBMEM_ID_VBOOT_WORKBUF, vb_work_buf_size);
 	else
@@ -53,7 +53,7 @@ static struct vb2_working_data * const vboot_get_working_data(void)
 
 static size_t vb2_working_data_size(void)
 {
-	if (IS_ENABLED(CONFIG_VBOOT_STARTS_IN_ROMSTAGE))
+	if (CONFIG(VBOOT_STARTS_IN_ROMSTAGE))
 		return vb_work_buf_size;
 	else
 		return REGION_SIZE(vboot2_work);
@@ -171,7 +171,7 @@ void vb2_store_selected_region(void)
  * Therefore, the selected region contents would not be initialized
  * so don't automatically add results when cbmem comes online.
  */
-#if !IS_ENABLED(CONFIG_VBOOT_STARTS_IN_ROMSTAGE)
+#if !CONFIG(VBOOT_STARTS_IN_ROMSTAGE)
 static void vb2_store_selected_region_cbmem(int unused)
 {
 	vb2_store_selected_region();

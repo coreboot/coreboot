@@ -63,7 +63,7 @@ static inline __attribute__((unused)) int do_normal_boot(void)
 
 unsigned read_option_lowlevel(unsigned start, unsigned size, unsigned def)
 {
-#if IS_ENABLED(CONFIG_USE_OPTION_TABLE)
+#if CONFIG(USE_OPTION_TABLE)
 	unsigned byte;
 
 	byte = cmos_read(start/8);

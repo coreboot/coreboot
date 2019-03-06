@@ -31,11 +31,11 @@ void fsp_debug_before_memory_init(fsp_memory_init_fn memory_init,
 	display_mtrrs();
 
 	/* Display the UPD values */
-	if (IS_ENABLED(CONFIG_DISPLAY_UPD_DATA))
+	if (CONFIG(DISPLAY_UPD_DATA))
 		fspm_display_upd_values(fspm_old_upd, fspm_new_upd);
 
 	/* Display the call entry point and parameters */
-	if (!IS_ENABLED(CONFIG_DISPLAY_FSP_CALLS_AND_STATUS))
+	if (!CONFIG(DISPLAY_FSP_CALLS_AND_STATUS))
 		return;
 	printk(BIOS_SPEW, "Calling FspMemoryInit: 0x%p\n", memory_init);
 	printk(BIOS_SPEW, "\t0x%p: raminit_upd\n", fspm_new_upd);
@@ -44,7 +44,7 @@ void fsp_debug_before_memory_init(fsp_memory_init_fn memory_init,
 
 void fsp_debug_after_memory_init(uint32_t status)
 {
-	if (IS_ENABLED(CONFIG_DISPLAY_FSP_CALLS_AND_STATUS))
+	if (CONFIG(DISPLAY_FSP_CALLS_AND_STATUS))
 		printk(BIOS_SPEW, "FspMemoryInit returned 0x%08x\n", status);
 
 	if (status != FSP_SUCCESS)
@@ -55,9 +55,9 @@ void fsp_debug_after_memory_init(uint32_t status)
 		die("ERROR - HOB list pointer was not returned!\n");
 
 	/* Display and verify the HOBs */
-	if (IS_ENABLED(CONFIG_DISPLAY_HOBS))
+	if (CONFIG(DISPLAY_HOBS))
 		fsp_display_hobs();
-	if (IS_ENABLED(CONFIG_VERIFY_HOBS))
+	if (CONFIG(VERIFY_HOBS))
 		fsp_verify_memory_init_hobs();
 
 	display_mtrrs();
@@ -74,11 +74,11 @@ void fsp_debug_before_silicon_init(fsp_silicon_init_fn silicon_init,
 	display_mtrrs();
 
 	/* Display the UPD values */
-	if (IS_ENABLED(CONFIG_DISPLAY_UPD_DATA))
+	if (CONFIG(DISPLAY_UPD_DATA))
 		soc_display_fsps_upd_params(fsps_old_upd, fsps_new_upd);
 
 	/* Display the call to FSP SiliconInit */
-	if (!IS_ENABLED(CONFIG_DISPLAY_FSP_CALLS_AND_STATUS))
+	if (!CONFIG(DISPLAY_FSP_CALLS_AND_STATUS))
 		return;
 	printk(BIOS_SPEW, "Calling FspSiliconInit: 0x%p\n", silicon_init);
 	printk(BIOS_SPEW, "\t0x%p: upd\n", fsps_new_upd);
@@ -86,11 +86,11 @@ void fsp_debug_before_silicon_init(fsp_silicon_init_fn silicon_init,
 
 void fsp_debug_after_silicon_init(uint32_t status)
 {
-	if (IS_ENABLED(CONFIG_DISPLAY_FSP_CALLS_AND_STATUS))
+	if (CONFIG(DISPLAY_FSP_CALLS_AND_STATUS))
 		printk(BIOS_SPEW, "FspSiliconInit returned 0x%08x\n", status);
 
 	/* Display the HOBs */
-	if (IS_ENABLED(CONFIG_DISPLAY_HOBS))
+	if (CONFIG(DISPLAY_HOBS))
 		fsp_display_hobs();
 
 	display_mtrrs();
@@ -104,7 +104,7 @@ void fsp_before_debug_notify(fsp_notify_fn notify,
 	const struct fsp_notify_params *notify_params)
 {
 	/* Display the call to FspNotify */
-	if (!IS_ENABLED(CONFIG_DISPLAY_FSP_CALLS_AND_STATUS))
+	if (!CONFIG(DISPLAY_FSP_CALLS_AND_STATUS))
 		return;
 	printk(BIOS_SPEW, "0x%08x: notify_params->phase\n",
 		notify_params->phase);
@@ -114,11 +114,11 @@ void fsp_before_debug_notify(fsp_notify_fn notify,
 
 void fsp_debug_after_notify(uint32_t status)
 {
-	if (IS_ENABLED(CONFIG_DISPLAY_FSP_CALLS_AND_STATUS))
+	if (CONFIG(DISPLAY_FSP_CALLS_AND_STATUS))
 		printk(BIOS_SPEW, "FspNotify returned 0x%08x\n", status);
 
 	/* Display the HOBs */
-	if (IS_ENABLED(CONFIG_DISPLAY_HOBS))
+	if (CONFIG(DISPLAY_HOBS))
 		fsp_display_hobs();
 
 	display_mtrrs();

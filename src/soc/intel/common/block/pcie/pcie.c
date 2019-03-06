@@ -46,7 +46,7 @@ static void pch_pcie_init(struct device *dev)
 	/* disable parity error response, enable ISA */
 	pci_update_config16(dev, PCI_BRIDGE_CONTROL, ~1, 1<<2);
 
-	if (IS_ENABLED(CONFIG_PCIE_DEBUG_INFO)) {
+	if (CONFIG(PCIE_DEBUG_INFO)) {
 		printk(BIOS_SPEW, "    MBL    = 0x%08x\n",
 				pci_read_config32(dev, PCI_MEMORY_BASE));
 		printk(BIOS_SPEW, "    PMBL   = 0x%08x\n",

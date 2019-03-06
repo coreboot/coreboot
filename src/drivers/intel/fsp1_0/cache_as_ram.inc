@@ -95,7 +95,7 @@ before_romstage:
 	jmp	.Lhlt
 
 .Lhlt:
-#if IS_ENABLED(CONFIG_POST_IO)
+#if CONFIG(POST_IO)
 	outb	%al, $CONFIG_POST_IO_PORT
 #endif
 	hlt

@@ -56,7 +56,7 @@ void arm_tf_run_bl31(u64 payload_entry, u64 payload_arg0, u64 payload_spsr)
 
 	SET_PARAM_HEAD(&bl31_params, PARAM_BL31, VERSION_1, 0);
 
-	if (IS_ENABLED(CONFIG_ARM64_USE_SECURE_OS)) {
+	if (CONFIG(ARM64_USE_SECURE_OS)) {
 		struct prog bl32 = PROG_INIT(PROG_BL32,
 					     CONFIG_CBFS_PREFIX"/secure_os");
 

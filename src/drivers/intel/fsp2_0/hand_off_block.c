@@ -219,7 +219,7 @@ const void *fsp_find_extension_hob_by_guid(const uint8_t *guid, size_t *size)
 
 static void display_fsp_version_info_hob(const void *hob, size_t size)
 {
-#if IS_ENABLED(CONFIG_DISPLAY_FSP_VERSION_INFO)
+#if CONFIG(DISPLAY_FSP_VERSION_INFO)
 	const FIRMWARE_VERSION_INFO *fvi;
 	const FIRMWARE_VERSION_INFO_HOB *fvih =
 			(FIRMWARE_VERSION_INFO_HOB *)hob;

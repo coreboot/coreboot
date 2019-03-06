@@ -32,7 +32,7 @@ void platform_BeforeInitPost(struct sysinfo *cb, AMD_POST_PARAMS *Post)
 {
 	AGESA_STATUS status;
 
-	if (IS_ENABLED(CONFIG_ENABLE_MRC_CACHE)) {
+	if (CONFIG(ENABLE_MRC_CACHE)) {
 		status = OemInitResume(&Post->MemConfig.MemContext);
 		if (status == AGESA_SUCCESS)
 			Post->MemConfig.MemRestoreCtl = 1;

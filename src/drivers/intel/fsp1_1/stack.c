@@ -116,7 +116,7 @@ void *setup_stack_and_mtrrs(void)
 	slot = stack_push32(slot, aligned_ram | MTRR_TYPE_WRBACK);
 	num_mtrrs++;
 
-#if IS_ENABLED(CONFIG_HAVE_SMI_HANDLER)
+#if CONFIG(HAVE_SMI_HANDLER)
 	void *smm_base;
 	size_t smm_size;
 	uint32_t tseg_base;

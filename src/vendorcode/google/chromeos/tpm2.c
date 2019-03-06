@@ -22,10 +22,10 @@ static void disable_platform_hierarchy(void *unused)
 {
 	int ret;
 
-	if (!IS_ENABLED(CONFIG_TPM2))
+	if (!CONFIG(TPM2))
 		return;
 
-	if (!IS_ENABLED(CONFIG_RESUME_PATH_SAME_AS_BOOT))
+	if (!CONFIG(RESUME_PATH_SAME_AS_BOOT))
 		return;
 
 	ret = tlcl_lib_init();

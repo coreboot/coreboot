@@ -20,7 +20,7 @@
 #include <AGESA.h>
 #include <AMD.h>
 
-#define HAS_LEGACY_WRAPPER IS_ENABLED(CONFIG_BINARYPI_LEGACY_WRAPPER)
+#define HAS_LEGACY_WRAPPER CONFIG(BINARYPI_LEGACY_WRAPPER)
 
 /* eventlog */
 const char *agesa_struct_name(int state);
@@ -30,7 +30,7 @@ AGESA_STATUS agesawrapper_amdreadeventlog(UINT8 HeapStatus);
 
 /* For suspend-to-ram support. */
 
-#if !IS_ENABLED(CONFIG_CPU_AMD_PI)
+#if !CONFIG(CPU_AMD_PI)
 /* TODO: With binaryPI we need different interface. */
 AGESA_STATUS OemInitResume(AMD_S3_PARAMS *dataBlock);
 AGESA_STATUS OemS3LateRestore(AMD_S3_PARAMS *dataBlock);
@@ -89,18 +89,18 @@ void platform_AfterInitResume(struct sysinfo *cb, AMD_RESUME_PARAMS *Resume);
 void platform_BeforeS3LateRestore(struct sysinfo *cb, AMD_S3LATE_PARAMS *S3Late);
 void platform_AfterS3LateRestore(struct sysinfo *cb, AMD_S3LATE_PARAMS *S3Late);
 
-#if IS_ENABLED(CONFIG_CPU_AMD_PI_00660F01)
+#if CONFIG(CPU_AMD_PI_00660F01)
 typedef void AMD_S3SAVE_PARAMS;
 #endif
 void platform_AfterS3Save(struct sysinfo *cb, AMD_S3SAVE_PARAMS *S3Save);
 
 /* FCH callouts, not used with CIMx. */
 #define HAS_AGESA_FCH_OEM_CALLOUT \
-	IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_AGESA_HUDSON) || \
-	IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_AGESA_YANGTZE) || \
-	IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_PI_AVALON) || \
-	IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_PI_BOLTON) || \
-	IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_PI_KERN)
+	CONFIG(SOUTHBRIDGE_AMD_AGESA_HUDSON) || \
+	CONFIG(SOUTHBRIDGE_AMD_AGESA_YANGTZE) || \
+	CONFIG(SOUTHBRIDGE_AMD_PI_AVALON) || \
+	CONFIG(SOUTHBRIDGE_AMD_PI_BOLTON) || \
+	CONFIG(SOUTHBRIDGE_AMD_PI_KERN)
 
 #if HAS_AGESA_FCH_OEM_CALLOUT
 /* FIXME:  Structures included here were supposed to be private to AGESA. */

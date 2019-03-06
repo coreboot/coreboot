@@ -346,7 +346,7 @@ int smm_load_module(void *smram, size_t size, struct smm_loader_params *params)
 		return -1;
 
 	/* Clear SMM region */
-	if (IS_ENABLED(CONFIG_DEBUG_SMI))
+	if (CONFIG(DEBUG_SMI))
 		memset(smram, 0xcd, size);
 
 	total_stack_size = params->per_cpu_stack_size *
@@ -370,7 +370,7 @@ int smm_load_module(void *smram, size_t size, struct smm_loader_params *params)
 		base += alignment_size;
 	}
 
-	if (IS_ENABLED(CONFIG_SSE)) {
+	if (CONFIG(SSE)) {
 		fxsave_size = FXSAVE_SIZE * params->num_concurrent_stacks;
 		/* FXSAVE area below all the stacks stack. */
 		fxsave_area = params->stack_top;

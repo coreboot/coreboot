@@ -19,7 +19,7 @@
 . = CONFIG_DCACHE_RAM_BASE;
 .car.data . (NOLOAD) : {
 	_car_region_start = . ;
-#if IS_ENABLED(CONFIG_PAGING_IN_CACHE_AS_RAM)
+#if CONFIG(PAGING_IN_CACHE_AS_RAM)
 	/* Page table pre-allocation. CONFIG_DCACHE_RAM_BASE should be 4KiB
 	 * aligned when using this option. */
 	_pagetables = . ;
@@ -28,7 +28,7 @@
 #endif
 	/* Vboot work buffer only needs to be available when verified boot
 	 * starts in bootblock. */
-#if IS_ENABLED(CONFIG_VBOOT_STARTS_IN_BOOTBLOCK)
+#if CONFIG(VBOOT_STARTS_IN_BOOTBLOCK)
 	VBOOT2_WORK(., 16K)
 #endif
 	/* Vboot measured boot TCPA log measurements.
@@ -38,7 +38,7 @@
 	/* Stack for CAR stages. Since it persists across all stages that
 	 * use CAR it can be reused. The chipset/SoC is expected to provide
 	 * the stack size. */
-#if IS_ENABLED(CONFIG_C_ENVIRONMENT_BOOTBLOCK)
+#if CONFIG(C_ENVIRONMENT_BOOTBLOCK)
 	_car_stack_start = .;
 	. += CONFIG_DCACHE_BSP_STACK_SIZE;
 	_car_stack_end = .;
@@ -48,7 +48,7 @@
          * multiple stages (romstage and verstage) have a consistent
          * link address of these shared objects. */
 	PRERAM_CBMEM_CONSOLE(., CONFIG_PRERAM_CBMEM_CONSOLE_SIZE)
-#if IS_ENABLED(CONFIG_PAGING_IN_CACHE_AS_RAM)
+#if CONFIG(PAGING_IN_CACHE_AS_RAM)
 	. = ALIGN(32);
 	/* Page directory pointer table resides here. There are 4 8-byte entries
 	 * totalling 32 bytes that need to be 32-byte aligned. The reason the
@@ -74,7 +74,7 @@
 	 * cbmem console. This is useful for clearing this area on a per-stage
 	 * basis when more than one stage uses cache-as-ram for CAR_GLOBALs. */
 	_car_global_start = .;
-#if IS_ENABLED(CONFIG_NO_CAR_GLOBAL_MIGRATION)
+#if CONFIG(NO_CAR_GLOBAL_MIGRATION)
 	/* Allow global unitialized variables when CAR_GLOBALs are not used. */
 	*(.bss)
 	*(.bss.*)
@@ -89,15 +89,15 @@
 	_car_global_end = .;
 	_car_relocatable_data_end = .;
 
-#if IS_ENABLED(CONFIG_NORTHBRIDGE_INTEL_SANDYBRIDGE) && \
-    !IS_ENABLED(CONFIG_USE_NATIVE_RAMINIT)
+#if CONFIG(NORTHBRIDGE_INTEL_SANDYBRIDGE) && \
+    !CONFIG(USE_NATIVE_RAMINIT)
 	. = ABSOLUTE(0xff7e1000);
 	_mrc_pool = .;
 	. += 0x5000;
 	_emrc_pool = .;
 #endif
 
-#if !IS_ENABLED(CONFIG_C_ENVIRONMENT_BOOTBLOCK)
+#if !CONFIG(C_ENVIRONMENT_BOOTBLOCK)
 	_car_stack_start = .;
 	_car_stack_end = _car_region_end;
 #endif
@@ -113,7 +113,7 @@
 .illegal_globals . : {
 	*(EXCLUDE_FILE ("*/libagesa.*.a:" "*/romstage*/buildOpts.o" "*/romstage*/agesawrapper.o" "*/vendorcode/amd/agesa/*" "*/vendorcode/amd/cimx/*") .data)
 		*(EXCLUDE_FILE ("*/libagesa.*.a:" "*/romstage*/buildOpts.o" "*/romstage*/agesawrapper.o" "*/vendorcode/amd/agesa/*" "*/vendorcode/amd/cimx/*") .data.*)
-#if !IS_ENABLED(CONFIG_NO_CAR_GLOBAL_MIGRATION)
+#if !CONFIG(NO_CAR_GLOBAL_MIGRATION)
 	*(.bss)
 	*(.bss.*)
 	*(.sbss)
@@ -125,9 +125,9 @@
 }
 
 _bogus = ASSERT((CONFIG_DCACHE_RAM_SIZE == 0) || (SIZEOF(.car.data) <= CONFIG_DCACHE_RAM_SIZE), "Cache as RAM area is too full");
-#if IS_ENABLED(CONFIG_PAGING_IN_CACHE_AS_RAM)
+#if CONFIG(PAGING_IN_CACHE_AS_RAM)
 _bogus2 = ASSERT(_pagetables == ALIGN(_pagetables, 4096), "_pagetables aren't 4KiB aligned");
 #endif
-#if IS_ENABLED(CONFIG_C_ENVIRONMENT_BOOTBLOCK)
+#if CONFIG(C_ENVIRONMENT_BOOTBLOCK)
 _bogus3 = ASSERT(CONFIG_DCACHE_BSP_STACK_SIZE > 0x0, "BSP stack size not configured");
 #endif

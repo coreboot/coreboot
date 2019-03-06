@@ -78,7 +78,7 @@ static void add_fixed_resources(struct device *dev, int index)
 	reserved_ram_resource(dev, index++, 0xc0000 >> 10,
 			      (0x100000 - 0xc0000) >> 10);
 
-#if IS_ENABLED(CONFIG_CHROMEOS_RAMOOPS)
+#if CONFIG(CHROMEOS_RAMOOPS)
 	reserved_ram_resource(dev, index++,
 			      CONFIG_CHROMEOS_RAMOOPS_RAM_START >> 10,
 			      CONFIG_CHROMEOS_RAMOOPS_RAM_SIZE >> 10);
@@ -90,7 +90,7 @@ static void pci_domain_set_resources(struct device *dev)
 	assign_resources(dev->link_list);
 }
 
-#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+#if CONFIG(HAVE_ACPI_TABLES)
 static const char *northbridge_acpi_name(const struct device *dev)
 {
 	if (dev->path.type == DEVICE_PATH_DOMAIN)
@@ -114,7 +114,7 @@ static struct device_operations pci_domain_ops = {
 	.enable_resources = NULL,
 	.init = NULL,
 	.scan_bus = pci_domain_scan_bus,
-#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+#if CONFIG(HAVE_ACPI_TABLES)
 	.acpi_name = northbridge_acpi_name,
 #endif
 };

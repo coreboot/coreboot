@@ -217,7 +217,7 @@ struct chip_operations mainboard_ops = {
 
 void lb_board(struct lb_header *header)
 {
-#if IS_ENABLED(CONFIG_CHROMEOS)
+#if CONFIG(CHROMEOS)
 	lb_table_add_serialno_from_vpd(header);
 #endif
 	soc_add_mtc(header);

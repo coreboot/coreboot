@@ -91,7 +91,7 @@ void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
 	fadt->preferred_pm_profile = FADT_PM_PROFILE;
 	fadt->sci_int = 9;		/* IRQ 09 - ACPI SCI */
 
-	if (IS_ENABLED(CONFIG_HAVE_SMI_HANDLER)) {
+	if (CONFIG(HAVE_SMI_HANDLER)) {
 		fadt->smi_cmd = APM_CNT;
 		fadt->acpi_enable = APM_CNT_ACPI_ENABLE;
 		fadt->acpi_disable = APM_CNT_ACPI_DISABLE;
@@ -268,10 +268,10 @@ static void acpi_create_gnvs(struct global_nvs_t *gnvs)
 	/* Clear out GNVS. */
 	memset(gnvs, 0, sizeof(*gnvs));
 
-	if (IS_ENABLED(CONFIG_CONSOLE_CBMEM))
+	if (CONFIG(CONSOLE_CBMEM))
 		gnvs->cbmc = (uintptr_t)cbmem_find(CBMEM_ID_CONSOLE);
 
-	if (IS_ENABLED(CONFIG_CHROMEOS)) {
+	if (CONFIG(CHROMEOS)) {
 		/* Initialize Verified Boot data */
 		chromeos_init_chromeos_acpi(&gnvs->chromeos);
 		gnvs->chromeos.vbt2 = ACTIVE_ECFW_RO;

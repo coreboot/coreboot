@@ -35,7 +35,7 @@ void acpi_create_gnvs(global_nvs_t *gnvs)
 	gnvs->dpte = 1;
 
 	/* Disable PMIC I2C port for ACPI for all boards except cyan */
-	if (!IS_ENABLED(CONFIG_BOARD_GOOGLE_CYAN))
+	if (!CONFIG(BOARD_GOOGLE_CYAN))
 		gnvs->dev.lpss_en[LPSS_NVS_I2C2] = 0;
 }
 

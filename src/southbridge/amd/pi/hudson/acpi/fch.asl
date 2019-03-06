@@ -47,7 +47,7 @@ Device(SBUS) {
 #include "usb.asl"
 
 /* 0:14.2 - HD Audio */
-#if !IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_PI_KERN)
+#if !CONFIG(SOUTHBRIDGE_AMD_PI_KERN)
 #include "audio.asl"
 #endif
 
@@ -129,7 +129,7 @@ Method(_CRS, 0) {
 	Return(CRES) /* note to change the Name buffer */
 } /* end of Method(_SB.PCI0._CRS) */
 
-#if IS_ENABLED(CONFIG_HUDSON_IMC_FWM)
+#if CONFIG(HUDSON_IMC_FWM)
 	/* TODO: It is unstable.
 	 * might be fixed by restructuring
 	 */
@@ -161,8 +161,8 @@ Method(_INI, 0) {
 	/* Determine the OS we're running on */
 	OSFL()
 
-#if IS_ENABLED(CONFIG_HUDSON_IMC_FWM)
-#if IS_ENABLED(CONFIG_ACPI_ENABLE_THERMAL_ZONE)
+#if CONFIG(HUDSON_IMC_FWM)
+#if CONFIG(ACPI_ENABLE_THERMAL_ZONE)
 	ITZE() /* enable IMC Fan Control*/
 #endif
 #endif

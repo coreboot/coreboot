@@ -62,7 +62,7 @@ SECTIONS
 #include <cpu/x86/16bit/entry16.ld>
 #include <cpu/x86/16bit/reset16.ld>
 #include <arch/x86/id.ld>
-#if IS_ENABLED(CONFIG_CPU_INTEL_FIRMWARE_INTERFACE_TABLE)
+#if CONFIG(CPU_INTEL_FIRMWARE_INTERFACE_TABLE)
 #include <cpu/intel/fit/fit.ld>
 #endif
 #endif  /* ENV_BOOTBLOCK */

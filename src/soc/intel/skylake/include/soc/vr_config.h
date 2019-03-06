@@ -19,7 +19,7 @@
 #ifndef _SOC_VR_CONFIG_H_
 #define _SOC_VR_CONFIG_H_
 
-#if IS_ENABLED(CONFIG_PLATFORM_USES_FSP1_1)
+#if CONFIG(PLATFORM_USES_FSP1_1)
 #include <fsp/soc_binding.h>
 #else
 #include <fsp/api.h>
@@ -69,7 +69,7 @@ struct vr_config {
 
 #define VR_CFG_AMP(i) ((i) * 4)
 
-#if IS_ENABLED(CONFIG_PLATFORM_USES_FSP1_1)
+#if CONFIG(PLATFORM_USES_FSP1_1)
 /* VrConfig Settings for 5 domains
  * 0 = System Agent, 1 = IA Core, 2 = Ring,
  * 3 = GT unsliced,  4 = GT sliced

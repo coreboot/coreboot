@@ -536,7 +536,7 @@ void copy_mct_data_to_save_variable(struct amd_s3_persistent_data *persistent_da
 			data->f2x9cx0d0f812f = read_amd_dct_index_register_dct(dev_fn2, node, channel, 0x98, 0x0d0f812f);
 
 			/* Stage 11 */
-			if (IS_ENABLED(CONFIG_DIMM_DDR3)) {
+			if (CONFIG(DIMM_DDR3)) {
 				for (i = 0; i < 12; i++)
 					data->f2x9cx30[i] = read_amd_dct_index_register_dct(dev_fn2, node, channel, 0x98, 0x30 + i);
 				for (i = 0; i < 12; i++)
@@ -654,7 +654,7 @@ void restore_mct_data_from_save_variable(struct amd_s3_persistent_data *persiste
 				for (i = 0; i < 12; i++)
 					write_amd_dct_index_register_dct(PCI_DEV(0, 0x18 + node, 2), node, channel, 0x98, 0x20 + i, data->f2x9cx20[i]);
 
-				if (IS_ENABLED(CONFIG_DIMM_DDR3)) {
+				if (CONFIG(DIMM_DDR3)) {
 					for (i = 0; i < 12; i++)
 						write_amd_dct_index_register_dct(PCI_DEV(0, 0x18 + node, 2), node, channel, 0x98, 0x30 + i, data->f2x9cx30[i]);
 					for (i = 0; i < 12; i++)
@@ -1093,7 +1093,7 @@ void restore_mct_data_from_save_variable(struct amd_s3_persistent_data *persiste
 	}
 
 	/* Stage 11 */
-	if (IS_ENABLED(CONFIG_DIMM_DDR3)) {
+	if (CONFIG(DIMM_DDR3)) {
 		for (node = 0; node < MAX_NODES_SUPPORTED; node++) {
 			for (channel = 0; channel < 2; channel++) {
 				struct amd_s3_persistent_mct_channel_data *data = &persistent_data->node[node].channel[channel];

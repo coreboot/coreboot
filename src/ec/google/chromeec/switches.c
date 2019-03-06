@@ -17,10 +17,10 @@
 #include <cbmem.h>
 #include <ec/google/chromeec/ec.h>
 
-#if IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC_LPC)
+#if CONFIG(EC_GOOGLE_CHROMEEC_LPC)
 int get_lid_switch(void)
 {
-	if (!IS_ENABLED(CONFIG_VBOOT_LID_SWITCH))
+	if (!CONFIG(VBOOT_LID_SWITCH))
 		return -1;
 
 	return !!(google_chromeec_get_switches() & EC_SWITCH_LID_OPEN);
@@ -30,7 +30,7 @@ int get_lid_switch(void)
 int get_recovery_mode_switch(void)
 {
 	/* Check for dedicated recovery switch first. */
-	if (IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC_LPC) &&
+	if (CONFIG(EC_GOOGLE_CHROMEEC_LPC) &&
 	    (google_chromeec_get_switches() & EC_SWITCH_DEDICATED_RECOVERY))
 		return 1;
 

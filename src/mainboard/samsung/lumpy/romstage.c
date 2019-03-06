@@ -30,7 +30,7 @@
 #include <southbridge/intel/common/gpio.h>
 #include <halt.h>
 #include "option_table.h"
-#if IS_ENABLED(CONFIG_DRIVERS_UART_8250IO)
+#if CONFIG(DRIVERS_UART_8250IO)
 #include <superio/smsc/lpc47n207/lpc47n207.h>
 #endif
 
@@ -39,7 +39,7 @@ void pch_enable_lpc(void)
 	/* Set COM1/COM2 decode range */
 	pci_write_config16(PCH_LPC_DEV, LPC_IO_DEC, 0x0010);
 
-#if IS_ENABLED(CONFIG_DRIVERS_UART_8250IO)
+#if CONFIG(DRIVERS_UART_8250IO)
 	/* Enable SuperIO + EC + KBC + COM1 + lpc47n207 config*/
 	pci_write_config16(PCH_LPC_DEV, LPC_EN, CNF1_LPC_EN | MC_LPC_EN |
 		KBC_LPC_EN | CNF2_LPC_EN | COMA_LPC_EN);

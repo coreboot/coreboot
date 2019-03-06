@@ -134,7 +134,7 @@ addrsize_set_high:
 	orl	$MTRR_DEF_TYPE_EN, %eax
 	wrmsr
 
-#if IS_ENABLED(CONFIG_CPU_HAS_L2_ENABLE_MSR)
+#if CONFIG(CPU_HAS_L2_ENABLE_MSR)
 	/*
 	 * Enable the L2 cache. Currently this assumes that this
 	 * only affect socketed CPU's for which this is always valid,
@@ -152,7 +152,7 @@ addrsize_set_high:
 	invd
 	movl	%eax, %cr0
 
-#if IS_ENABLED(CONFIG_MICROCODE_UPDATE_PRE_RAM)
+#if CONFIG(MICROCODE_UPDATE_PRE_RAM)
 update_microcode:
 	/* put the return address in %esp */
 	movl	$end_microcode_update, %esp

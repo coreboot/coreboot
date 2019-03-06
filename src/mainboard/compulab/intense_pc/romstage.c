@@ -38,7 +38,7 @@ void pch_enable_lpc(void)
 	/* Map a range for the runtime_port registers to the LPC bus. */
 	pci_write_config32(dev, LPC_GEN2_DEC, 0xc0181);
 
-#if IS_ENABLED(CONFIG_DRIVERS_UART_8250IO)
+#if CONFIG(DRIVERS_UART_8250IO)
 	/* Enable COM1 */
 	if (sio1007_enable_uart_at(SIO_PORT)) {
 		pci_write_config16(dev, LPC_EN,

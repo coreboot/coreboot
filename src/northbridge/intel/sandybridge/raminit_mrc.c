@@ -41,7 +41,7 @@
  * MRC scrambler seed offsets should be reserved in
  * mainboard cmos.layout and not covered by checksum.
  */
-#if IS_ENABLED(CONFIG_USE_OPTION_TABLE)
+#if CONFIG(USE_OPTION_TABLE)
 #include "option_table.h"
 #define CMOS_OFFSET_MRC_SEED     (CMOS_VSTART_mrc_scrambler_seed >> 3)
 #define CMOS_OFFSET_MRC_SEED_S3  (CMOS_VSTART_mrc_scrambler_seed_s3 >> 3)
@@ -241,7 +241,7 @@ void sdram_initialize(struct pei_data *pei_data)
 	}
 
 	/* mrc.bin reconfigures USB, so reinit it to have debug */
-	if (IS_ENABLED(CONFIG_USBDEBUG_IN_PRE_RAM))
+	if (CONFIG(USBDEBUG_IN_PRE_RAM))
 		usbdebug_hw_init(true);
 
 	/* For reference print the System Agent version

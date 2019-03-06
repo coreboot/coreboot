@@ -51,7 +51,7 @@ DefinitionBlock(
 	#include "acpi/ipu_mainboard.asl"
 	#include "acpi/mipi_camera.asl"
 
-#if IS_ENABLED(CONFIG_CHROMEOS)
+#if CONFIG(CHROMEOS)
 	// Chrome OS specific
 	#include <vendorcode/google/chromeos/acpi/chromeos.asl>
 #endif

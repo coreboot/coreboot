@@ -65,7 +65,7 @@ static const struct cache_region recovery_training = {
 	.cbmem_id = CBMEM_ID_MRCDATA,
 	.type = MRC_TRAINING_DATA,
 	.elog_slot = ELOG_MEM_CACHE_UPDATE_SLOT_RECOVERY,
-#if IS_ENABLED(CONFIG_HAS_RECOVERY_MRC_CACHE)
+#if CONFIG(HAS_RECOVERY_MRC_CACHE)
 	.flags = RECOVERY_FLAG,
 #else
 	.flags = 0,
@@ -431,10 +431,10 @@ static int nvm_is_write_protected(void)
 	u8 wp_gpio;
 	u8 wp_spi;
 
-	if (!IS_ENABLED(CONFIG_CHROMEOS))
+	if (!CONFIG(CHROMEOS))
 		return 0;
 
-	if (!IS_ENABLED(CONFIG_BOOT_DEVICE_SPI_FLASH))
+	if (!CONFIG(BOOT_DEVICE_SPI_FLASH))
 		return 0;
 
 	/* Read Write Protect GPIO if available */
@@ -458,10 +458,10 @@ static int nvm_protect(const struct region *r)
 {
 	const struct spi_flash *flash = boot_device_spi_flash();
 
-	if (!IS_ENABLED(CONFIG_MRC_SETTINGS_PROTECT))
+	if (!CONFIG(MRC_SETTINGS_PROTECT))
 		return 0;
 
-	if (!IS_ENABLED(CONFIG_BOOT_DEVICE_SPI_FLASH))
+	if (!CONFIG(BOOT_DEVICE_SPI_FLASH))
 		return 0;
 
 	return spi_flash_ctrlr_protect_region(flash, r, WRITE_PROTECT);
@@ -472,7 +472,7 @@ static int protect_mrc_cache(const char *name)
 {
 	struct region region;
 
-	if (!IS_ENABLED(CONFIG_MRC_SETTINGS_PROTECT))
+	if (!CONFIG(MRC_SETTINGS_PROTECT))
 		return 0;
 
 	if (lookup_region_by_name(name, &region) < 0) {
@@ -507,7 +507,7 @@ static void protect_mrc_region(void)
 	if (protect_mrc_cache(UNIFIED_MRC_CACHE) == 0)
 		return;
 
-	if (IS_ENABLED(CONFIG_HAS_RECOVERY_MRC_CACHE))
+	if (CONFIG(HAS_RECOVERY_MRC_CACHE))
 		protect_mrc_cache(RECOVERY_MRC_CACHE);
 
 	protect_mrc_cache(DEFAULT_MRC_CACHE);
@@ -548,10 +548,10 @@ static void update_mrc_cache(void *unused)
 {
 	update_mrc_cache_by_type(MRC_TRAINING_DATA);
 
-	if (IS_ENABLED(CONFIG_MRC_SETTINGS_VARIABLE_DATA))
+	if (CONFIG(MRC_SETTINGS_VARIABLE_DATA))
 		update_mrc_cache_by_type(MRC_VARIABLE_DATA);
 
-	if (IS_ENABLED(CONFIG_MRC_CLEAR_NORMAL_CACHE_ON_RECOVERY_RETRAIN))
+	if (CONFIG(MRC_CLEAR_NORMAL_CACHE_ON_RECOVERY_RETRAIN))
 		invalidate_normal_cache();
 
 	protect_mrc_region();
@@ -562,7 +562,7 @@ static void update_mrc_cache(void *unused)
  * Some implementations may require this to be later than others.
  */
 
-#if IS_ENABLED(CONFIG_MRC_WRITE_NV_LATE)
+#if CONFIG(MRC_WRITE_NV_LATE)
 BOOT_STATE_INIT_ENTRY(BS_OS_RESUME_CHECK, BS_ON_ENTRY, update_mrc_cache, NULL);
 #else
 BOOT_STATE_INIT_ENTRY(BS_DEV_ENUMERATE, BS_ON_EXIT, update_mrc_cache, NULL);

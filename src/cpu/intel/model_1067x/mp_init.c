@@ -75,7 +75,7 @@ static void per_cpu_smm_trigger(void)
 			printk(BIOS_DEBUG, "SMRR status: %senabled\n",
 			       ia32_ft_ctrl.lo & (1 << 3) ? "" : "not ");
 		} else {
-			if (!IS_ENABLED(CONFIG_SET_IA32_FC_LOCK_BIT))
+			if (!CONFIG(SET_IA32_FC_LOCK_BIT))
 				printk(BIOS_INFO,
 				       "Overriding CONFIG_SET_IA32_FC_LOCK_BIT to enable SMRR\n");
 			ia32_ft_ctrl.lo |= (1 << 3) | (1 << 0);

@@ -18,7 +18,7 @@
  * Functions for accessing PCI configuration space with type 1 accesses
  */
 
-#if !IS_ENABLED(CONFIG_PCI_IO_CFG_EXT)
+#if !CONFIG(PCI_IO_CFG_EXT)
 #define CONF_CMD(dev, where)	(0x80000000 | ((dev)->bus->secondary << 16) | \
 					((dev)->path.pci.devfn << 8) | (where & ~3))
 #else

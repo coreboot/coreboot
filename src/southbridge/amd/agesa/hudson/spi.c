@@ -36,7 +36,7 @@
 #define SPI_REG_CNTRL11		0xd
  #define CNTRL11_FIFOPTR_MASK	0x07
 
-#if IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_AGESA_YANGTZE)
+#if CONFIG(SOUTHBRIDGE_AMD_AGESA_YANGTZE)
 #define AMD_SB_SPI_TX_LEN	64
 #else
 #define AMD_SB_SPI_TX_LEN	8
@@ -110,7 +110,7 @@ static int spi_ctrlr_xfer(const struct spi_slave *slave, const void *dout,
 
 	readoffby1 = bytesout ? 0 : 1;
 
-#if IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_AGESA_YANGTZE)
+#if CONFIG(SOUTHBRIDGE_AMD_AGESA_YANGTZE)
 	spi_write(0x1E, 5);
 	spi_write(0x1F, bytesout); /* SpiExtRegIndx [5] - TxByteCount */
 	spi_write(0x1E, 6);
@@ -144,7 +144,7 @@ static int spi_ctrlr_xfer(const struct spi_slave *slave, const void *dout,
 
 int chipset_volatile_group_begin(const struct spi_flash *flash)
 {
-	if (!IS_ENABLED (CONFIG_HUDSON_IMC_FWM))
+	if (!CONFIG(HUDSON_IMC_FWM))
 		return 0;
 
 	ImcSleep(NULL);
@@ -153,7 +153,7 @@ int chipset_volatile_group_begin(const struct spi_flash *flash)
 
 int chipset_volatile_group_end(const struct spi_flash *flash)
 {
-	if (!IS_ENABLED (CONFIG_HUDSON_IMC_FWM))
+	if (!CONFIG(HUDSON_IMC_FWM))
 		return 0;
 
 	ImcWakeup(NULL);

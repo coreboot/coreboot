@@ -127,7 +127,7 @@ int mmc_send_ext_csd(struct sd_mmc_ctrlr *ctrlr, unsigned char *ext_csd)
 
 	rv = ctrlr->send_cmd(ctrlr, &cmd, &data);
 
-	if (!rv && IS_ENABLED(CONFIG_SD_MMC_TRACE)) {
+	if (!rv && CONFIG(SD_MMC_TRACE)) {
 		int i, size;
 
 		size = data.blocks * data.blocksize;

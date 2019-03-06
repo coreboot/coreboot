@@ -52,12 +52,12 @@ struct device_operations {
 	void (*disable)(struct device *dev);
 	void (*set_link)(struct device *dev, unsigned int link);
 	void (*reset_bus)(struct bus *bus);
-#if IS_ENABLED(CONFIG_GENERATE_SMBIOS_TABLES)
+#if CONFIG(GENERATE_SMBIOS_TABLES)
 	int (*get_smbios_data)(struct device *dev, int *handle,
 		unsigned long *current);
 	void (*get_smbios_strings)(struct device *dev, struct smbios_type11 *t);
 #endif
-#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+#if CONFIG(HAVE_ACPI_TABLES)
 	unsigned long (*write_acpi_tables)(struct device *dev,
 		unsigned long start, struct acpi_rsdp *rsdp);
 	void (*acpi_fill_ssdt_generator)(struct device *dev);
@@ -158,7 +158,7 @@ extern struct bus	*free_links;
 
 extern const char mainboard_name[];
 
-#if IS_ENABLED(CONFIG_GFXUMA)
+#if CONFIG(GFXUMA)
 /* IGD UMA memory */
 extern uint64_t uma_memory_base;
 extern uint64_t uma_memory_size;

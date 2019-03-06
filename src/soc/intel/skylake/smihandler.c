@@ -27,7 +27,7 @@ const struct smm_save_state_ops *get_smm_save_state_ops(void)
 
 void smihandler_soc_check_illegal_access(uint32_t tco_sts)
 {
-	if (!((tco_sts & (1 << 8)) && IS_ENABLED(CONFIG_SPI_FLASH_SMM)
+	if (!((tco_sts & (1 << 8)) && CONFIG(SPI_FLASH_SMM)
 			&& fast_spi_wpd_status()))
 		return;
 

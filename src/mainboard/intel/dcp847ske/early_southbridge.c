@@ -27,7 +27,7 @@
 #include "superio.h"
 #include "thermal.h"
 
-#if IS_ENABLED(CONFIG_DISABLE_UART_ON_TESTPADS)
+#if CONFIG(DISABLE_UART_ON_TESTPADS)
 #define DEBUG_UART_EN 0
 #else
 #define DEBUG_UART_EN COMA_LPC_EN
@@ -46,7 +46,7 @@ void mainboard_rcba_config(void)
 	/* Disable devices */
 	RCBA32(FD) |= PCH_DISABLE_P2P | PCH_DISABLE_XHCI;
 
-#if IS_ENABLED(CONFIG_USE_NATIVE_RAMINIT)
+#if CONFIG(USE_NATIVE_RAMINIT)
 	/* Enable Gigabit Ethernet */
 	if (RCBA32(BUC) & PCH_DISABLE_GBE) {
 		RCBA32(BUC) &= ~PCH_DISABLE_GBE;
@@ -125,7 +125,7 @@ static const u16 superio_initvals[] = {
 	SUPERIO_INITVAL(0x1a, 0x02),
 	SUPERIO_INITVAL(0x1b, 0x6a),
 	SUPERIO_INITVAL(0x27, 0x80),
-#if IS_ENABLED(CONFIG_DISABLE_UART_ON_TESTPADS)
+#if CONFIG(DISABLE_UART_ON_TESTPADS)
 	SUPERIO_INITVAL(0x2a, 0x80),
 #else
 	SUPERIO_INITVAL(0x2a, 0x00),

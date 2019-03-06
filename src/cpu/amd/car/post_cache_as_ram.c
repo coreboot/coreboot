@@ -36,7 +36,7 @@
 	#error "You need to set CONFIG_RAMTOP greater than 1M"
 #endif
 
-#if IS_ENABLED(CONFIG_DEBUG_CAR)
+#if CONFIG(DEBUG_CAR)
 #define print_car_debug(format, arg...) printk(BIOS_DEBUG, "%s: " format, __func__, ##arg)
 #else
 #define print_car_debug(format, arg...)

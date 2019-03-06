@@ -45,7 +45,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <smp/spinlock.h>
-#if IS_ENABLED(CONFIG_ARCH_X86)
+#if CONFIG(ARCH_X86)
 #include <arch/ebda.h>
 #endif
 #include <timer.h>
@@ -99,7 +99,7 @@ void dev_finalize_chips(void)
 
 DECLARE_SPIN_LOCK(dev_lock)
 
-#if IS_ENABLED(CONFIG_GFXUMA)
+#if CONFIG(GFXUMA)
 /* IGD UMA memory */
 uint64_t uma_memory_base = 0;
 uint64_t uma_memory_size = 0;
@@ -1129,7 +1129,7 @@ static void init_dev(struct device *dev)
 		return;
 
 	if (!dev->initialized && dev->ops && dev->ops->init) {
-#if IS_ENABLED(CONFIG_HAVE_MONOTONIC_TIMER)
+#if CONFIG(HAVE_MONOTONIC_TIMER)
 		struct stopwatch sw;
 		stopwatch_init(&sw);
 #endif
@@ -1141,7 +1141,7 @@ static void init_dev(struct device *dev)
 		printk(BIOS_DEBUG, "%s init ...\n", dev_path(dev));
 		dev->initialized = 1;
 		dev->ops->init(dev);
-#if IS_ENABLED(CONFIG_HAVE_MONOTONIC_TIMER)
+#if CONFIG(HAVE_MONOTONIC_TIMER)
 		printk(BIOS_DEBUG, "%s init finished in %ld usecs\n", dev_path(dev),
 			stopwatch_duration_usecs(&sw));
 #endif
@@ -1177,12 +1177,12 @@ void dev_initialize(void)
 
 	printk(BIOS_INFO, "Initializing devices...\n");
 
-#if IS_ENABLED(CONFIG_ARCH_X86)
+#if CONFIG(ARCH_X86)
 	/*
 	 * Initialize EBDA area in ramstage if early
 	 * initialization is not done.
 	 */
-	if (!IS_ENABLED(CONFIG_EARLY_EBDA_INIT))
+	if (!CONFIG(EARLY_EBDA_INIT))
 		/* Ensure EBDA is prepared before Option ROMs. */
 		setup_default_ebda();
 #endif

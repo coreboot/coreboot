@@ -22,7 +22,7 @@
  */
 void main(void)
 {
-	if (IS_ENABLED(CONFIG_BOOTBLOCK_CONSOLE)) {
+	if (CONFIG(BOOTBLOCK_CONSOLE)) {
 		console_init();
 	}
 

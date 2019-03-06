@@ -30,7 +30,7 @@
 #include <soc/serialio.h>
 #include <soc/usb.h>
 #include <soc/vr_config.h>
-#if IS_ENABLED(CONFIG_SOC_INTEL_CANNONLAKE_PCH_H)
+#if CONFIG(SOC_INTEL_CANNONLAKE_PCH_H)
 #include <soc/gpio_defs_cnp_h.h>
 #else
 #include <soc/gpio_defs.h>
@@ -107,7 +107,7 @@ struct soc_intel_cannonlake_config {
 	enum {
 		SaGv_Disabled,
 		SaGv_FixedLow,
-#if !IS_ENABLED(CONFIG_SOC_INTEL_COMMON_CANNONLAKE_BASE)
+#if !CONFIG(SOC_INTEL_COMMON_CANNONLAKE_BASE)
 		SaGv_FixedMid,
 #endif
 		SaGv_FixedHigh,

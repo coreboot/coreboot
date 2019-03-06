@@ -63,7 +63,7 @@ uint32_t chipset_prev_sleep_state(uint32_t clear)
 	if (pm1_sts & WAK_STS) {
 		switch (acpi_sleep_from_pm1(pm1_cnt)) {
 		case ACPI_S3:
-			if (IS_ENABLED(CONFIG_HAVE_ACPI_RESUME))
+			if (CONFIG(HAVE_ACPI_RESUME))
 				prev_sleep_state = ACPI_S3;
 			break;
 		case ACPI_S4:
@@ -229,7 +229,7 @@ void romstage_main_continue(EFI_STATUS status, void *hob_list_ptr)
 		__func__, (u32) status, (u32) hob_list_ptr);
 
 	/* FSP reconfigures USB, so reinit it to have debug */
-	if (IS_ENABLED(CONFIG_USBDEBUG_IN_PRE_RAM))
+	if (CONFIG(USBDEBUG_IN_PRE_RAM))
 		usbdebug_hw_init(true);
 
 	printk(BIOS_DEBUG, "FSP Status: 0x%0x\n", (u32)status);

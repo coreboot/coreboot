@@ -19,7 +19,7 @@
 #include <security/tpm/tss_errors.h>
 #include <security/tpm/tss/vendor/cr50/cr50.h>
 
-#if IS_ENABLED(CONFIG_TPM1)
+#if CONFIG(TPM1)
 
 #include <security/tpm/tss/tcg-1.2/tss_structures.h>
 
@@ -53,7 +53,7 @@ uint32_t tlcl_get_permanent_flags(TPM_PERMANENT_FLAGS *pflags);
 
 #endif
 
-#if IS_ENABLED(CONFIG_TPM2)
+#if CONFIG(TPM2)
 
 #include <security/tpm/tss/tcg-2.0/tss_structures.h>
 

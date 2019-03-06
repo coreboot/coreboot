@@ -90,7 +90,7 @@ static void meminit_cbfs_spd_index(FSP_M_CONFIG *mem_cfg,
 		die("spd.bin not found or incorrect index\n");
 	spd_data_len = region_device_sz(&spd_rdev);
 	/* Memory leak is ok since we have memory mapped boot media */
-	assert(IS_ENABLED(CONFIG_BOOT_DEVICE_MEMORY_MAPPED));
+	assert(CONFIG(BOOT_DEVICE_MEMORY_MAPPED));
 	spd_data_ptr = (uintptr_t)rdev_mmap_full(&spd_rdev);
 	meminit_spd_data(mem_cfg, cnl_cfg, spd_data_len, spd_data_ptr);
 }

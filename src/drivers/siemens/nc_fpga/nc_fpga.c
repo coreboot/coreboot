@@ -140,7 +140,7 @@ static void nc_fpga_init(struct device *dev)
 	}
 }
 
-#if IS_ENABLED(CONFIG_NC_FPGA_NOTIFY_CB_READY)
+#if CONFIG(NC_FPGA_NOTIFY_CB_READY)
 /* Set FW_DONE bit in FPGA before jumping to payload. */
 static void set_fw_done(void *unused)
 {

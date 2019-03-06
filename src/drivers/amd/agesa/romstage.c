@@ -28,7 +28,7 @@
 #include <northbridge/amd/agesa/agesa_helper.h>
 #include <northbridge/amd/agesa/state_machine.h>
 
-#if !IS_ENABLED(CONFIG_POSTCAR_STAGE)
+#if !CONFIG(POSTCAR_STAGE)
 #error "Only POSTCAR_STAGE is supported."
 #endif
 #if HAS_LEGACY_WRAPPER

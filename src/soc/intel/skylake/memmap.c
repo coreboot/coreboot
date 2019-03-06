@@ -31,7 +31,7 @@
 
 size_t mmap_region_granularity(void)
 {
-	if (IS_ENABLED(CONFIG_HAVE_SMI_HANDLER))
+	if (CONFIG(HAVE_SMI_HANDLER))
 		/* Align to TSEG size when SMM is in use */
 		if (CONFIG_SMM_TSEG_SIZE != 0)
 			return CONFIG_SMM_TSEG_SIZE;
@@ -142,7 +142,7 @@ static size_t get_prmrr_size(uintptr_t dram_base,
 	uintptr_t prmrr_base = dram_base;
 	size_t prmrr_size;
 
-	if (IS_ENABLED(CONFIG_PLATFORM_USES_FSP1_1))
+	if (CONFIG(PLATFORM_USES_FSP1_1))
 		prmrr_size = 1*MiB;
 	else
 		prmrr_size = config->PrmrrSize;
@@ -186,7 +186,7 @@ static size_t calculate_traditional_mem_size(uintptr_t dram_base,
 	traditional_mem_base -= sa_get_tseg_size();
 
 	/* Get DPR size */
-	if (IS_ENABLED(CONFIG_SA_ENABLE_DPR))
+	if (CONFIG(SA_ENABLE_DPR))
 		traditional_mem_base -= sa_get_dpr_size();
 
 	/* Traditional Area Size */

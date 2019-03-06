@@ -38,17 +38,17 @@ void bootblock_main(const uint64_t reg_x0,
 
 	init_timer();
 
-	if (IS_ENABLED(CONFIG_COLLECT_TIMESTAMPS))
+	if (CONFIG(COLLECT_TIMESTAMPS))
 		base_timestamp = timestamp_get();
 
 	/* Initialize timestamps if we have TIMESTAMP region in memlayout.ld. */
-	if (IS_ENABLED(CONFIG_COLLECT_TIMESTAMPS) && REGION_SIZE(timestamp) > 0)
+	if (CONFIG(COLLECT_TIMESTAMPS) && REGION_SIZE(timestamp) > 0)
 		timestamp_init(base_timestamp);
 
 	bootblock_soc_early_init();
 	bootblock_mainboard_early_init();
 
-	if (IS_ENABLED(CONFIG_BOOTBLOCK_CONSOLE)) {
+	if (CONFIG(BOOTBLOCK_CONSOLE)) {
 		console_init();
 		exception_init();
 

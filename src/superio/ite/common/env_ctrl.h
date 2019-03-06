@@ -21,7 +21,7 @@
 
 #include "env_ctrl_chip.h"
 
-#if IS_ENABLED(CONFIG_SUPERIO_ITE_ENV_CTRL_8BIT_PWM)
+#if CONFIG(SUPERIO_ITE_ENV_CTRL_8BIT_PWM)
 #define ITE_EC_FAN_MAX_PWM			0xff
 #define ITE_EC_FAN_PWM_DEFAULT_CLOCK		ITE_EC_FAN_PWM_CLOCK_6MHZ
 #else
@@ -58,12 +58,12 @@
 #define   ITE_EC_FAN_SEC_CTL_TAC_EN(x)		(1 << (x))
 
 #define ITE_EC_FAN_TAC_LIMIT(x)						\
-	(((x) > 3 && IS_ENABLED(CONFIG_SUPERIO_ITE_ENV_CTRL_5FANS))	\
+	(((x) > 3 && CONFIG(SUPERIO_ITE_ENV_CTRL_5FANS))	\
 						? (0x84 + ((x)-4) * 2)	\
 						: (0x10 + ((x)-1))	\
 	)
 #define ITE_EC_FAN_TAC_EXT_LIMIT(x)					\
-	(((x) > 3 && IS_ENABLED(CONFIG_SUPERIO_ITE_ENV_CTRL_5FANS))	\
+	(((x) > 3 && CONFIG(SUPERIO_ITE_ENV_CTRL_5FANS))	\
 						? (0x85 + ((x)-4) * 2)	\
 						: (0x1b + ((x)-1))	\
 	)
@@ -87,12 +87,12 @@
 #define   ITE_EC_FAN_CTL_ON(x)			(1 << ((x)-1))
 
 #define ITE_EC_FAN_CTL_PWM_CONTROL(x)					\
-	(((x) > 3 && IS_ENABLED(CONFIG_SUPERIO_ITE_ENV_CTRL_5FANS))	\
+	(((x) > 3 && CONFIG(SUPERIO_ITE_ENV_CTRL_5FANS))	\
 						? (0x1e + ((x)-4))	\
 						: (0x15 + ((x)-1))	\
 	)
 
-#if IS_ENABLED(CONFIG_SUPERIO_ITE_ENV_CTRL_5FANS)
+#if CONFIG(SUPERIO_ITE_ENV_CTRL_5FANS)
 #define   ITE_EC_FAN_CTL_TEMPIN_MASK		(7 << 3)
 #define   ITE_EC_FAN_CTL_TEMPIN(x)		((((x)-1) & 7) << 3)
 #else
@@ -145,32 +145,32 @@ static const u8 ITE_EC_TEMP_ADJUST[] = { 0x56, 0x57, 0x59 };
 #define   ITE_EC_BEEP_FREQ_DIVISOR(x)		(((x) & 0x0f) << 0)
 
 #define ITE_EC_FAN_CTL_TEMP_LIMIT_OFF(x)				\
-	(((x) == 5 && IS_ENABLED(CONFIG_SUPERIO_ITE_ENV_CTRL_5FANS))	\
+	(((x) == 5 && CONFIG(SUPERIO_ITE_ENV_CTRL_5FANS))	\
 						? (0xa0)		\
 						: (0x60 + ((x)-1) * 8)	\
 	)
 #define ITE_EC_FAN_CTL_TEMP_LIMIT_START(x)				\
-	(((x) == 5 && IS_ENABLED(CONFIG_SUPERIO_ITE_ENV_CTRL_5FANS))	\
+	(((x) == 5 && CONFIG(SUPERIO_ITE_ENV_CTRL_5FANS))	\
 						? (0xa1)		\
 						: (0x61 + ((x)-1) * 8)	\
 	)
 #define ITE_EC_FAN_CTL_TEMP_LIMIT_FULL(x)				\
-	(((x) == 5 && IS_ENABLED(CONFIG_SUPERIO_ITE_ENV_CTRL_5FANS))	\
+	(((x) == 5 && CONFIG(SUPERIO_ITE_ENV_CTRL_5FANS))	\
 						? (0xa2)		\
 						: (0x62 + ((x)-1) * 8)	\
 	)
 #define ITE_EC_FAN_CTL_PWM_START(x)					\
-	(((x) == 5 && IS_ENABLED(CONFIG_SUPERIO_ITE_ENV_CTRL_5FANS))	\
+	(((x) == 5 && CONFIG(SUPERIO_ITE_ENV_CTRL_5FANS))	\
 						? (0xa3)		\
 						: (0x63 + ((x)-1) * 8)	\
 	)
 #define ITE_EC_FAN_CTL_PWM_AUTO(x)					\
-	(((x) == 5 && IS_ENABLED(CONFIG_SUPERIO_ITE_ENV_CTRL_5FANS))	\
+	(((x) == 5 && CONFIG(SUPERIO_ITE_ENV_CTRL_5FANS))	\
 						? (0xa4)		\
 						: (0x64 + ((x)-1) * 8)	\
 	)
 #define ITE_EC_FAN_CTL_DELTA_TEMP(x)					\
-	(((x) == 5 && IS_ENABLED(CONFIG_SUPERIO_ITE_ENV_CTRL_5FANS))	\
+	(((x) == 5 && CONFIG(SUPERIO_ITE_ENV_CTRL_5FANS))	\
 						? (0xa5)		\
 						: (0x65 + ((x)-1) * 8)	\
 	)

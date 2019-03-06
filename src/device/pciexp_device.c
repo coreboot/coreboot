@@ -426,19 +426,19 @@ static void pciexp_tune_dev(struct device *dev)
 		return;
 
 	/* Check for and enable Common Clock */
-	if (IS_ENABLED(CONFIG_PCIEXP_COMMON_CLOCK))
+	if (CONFIG(PCIEXP_COMMON_CLOCK))
 		pciexp_enable_common_clock(root, root_cap, dev, cap);
 
 	/* Check if per port CLK req is supported by endpoint*/
-	if (IS_ENABLED(CONFIG_PCIEXP_CLK_PM))
+	if (CONFIG(PCIEXP_CLK_PM))
 		pciexp_enable_clock_power_pm(dev, cap);
 
 	/* Enable L1 Sub-State when both root port and endpoint support */
-	if (IS_ENABLED(CONFIG_PCIEXP_L1_SUB_STATE))
+	if (CONFIG(PCIEXP_L1_SUB_STATE))
 		pciexp_config_L1_sub_state(root, dev);
 
 	/* Check for and enable ASPM */
-	if (IS_ENABLED(CONFIG_PCIEXP_ASPM))
+	if (CONFIG(PCIEXP_ASPM))
 		pciexp_enable_aspm(root, root_cap, dev, cap);
 }
 

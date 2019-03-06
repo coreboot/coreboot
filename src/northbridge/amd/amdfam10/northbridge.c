@@ -35,7 +35,7 @@
 #include <cpu/amd/msr.h>
 #include <cpu/amd/family_10h-family_15h/ram_calc.h>
 
-#if IS_ENABLED(CONFIG_LOGICAL_CPUS)
+#if CONFIG(LOGICAL_CPUS)
 #include <cpu/amd/multicore.h>
 #include <pc80/mc146818rtc.h>
 #endif
@@ -49,7 +49,7 @@
 #include <cpu/amd/model_10xxx_rev.h>
 #endif
 
-#if IS_ENABLED(CONFIG_DIMM_DDR3)
+#if CONFIG(DIMM_DDR3)
 #include "../amdmct/mct_ddr3/s3utils.h"
 #endif
 
@@ -316,7 +316,7 @@ static void amdfam10_scan_chains(struct device *dev)
 {
 	struct bus *link;
 
-#if IS_ENABLED(CONFIG_CPU_AMD_SOCKET_G34_NON_AGESA)
+#if CONFIG(CPU_AMD_SOCKET_G34_NON_AGESA)
 	if (is_fam15h()) {
 		uint8_t current_link_number = 0;
 
@@ -361,7 +361,7 @@ static void amdfam10_scan_chains(struct device *dev)
 
 	for (link = dev->link_list; link; link = link->next) {
 		if (link->ht_link_up) {
-			if (IS_ENABLED(CONFIG_CPU_AMD_MODEL_10XXX))
+			if (CONFIG(CPU_AMD_MODEL_10XXX))
 				amd_g34_fixup(link, dev);
 			amdfam10_scan_chain(link);
 		}
@@ -581,7 +581,7 @@ static void amdfam10_create_vga_resource(struct device *dev, unsigned nodeid)
 	 * we only deal with the 'first' vga card */
 	for (link = dev->link_list; link; link = link->next) {
 		if (link->bridge_ctrl & PCI_BRIDGE_CTL_VGA) {
-#if IS_ENABLED(CONFIG_MULTIPLE_VGA_ADAPTERS)
+#if CONFIG(MULTIPLE_VGA_ADAPTERS)
 			extern struct device *vga_pri; // the primary vga device, defined in device.c
 			printk(BIOS_DEBUG, "VGA: vga_pri bus num = %d bus range [%d,%d]\n", vga_pri->bus->secondary,
 				link->secondary,link->subordinate);
@@ -640,7 +640,7 @@ static void mcf0_control_init(struct device *dev)
 {
 }
 
-#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+#if CONFIG(HAVE_ACPI_TABLES)
 static const char *amdfam10_northbridge_acpi_name(const struct device *dev)
 {
 	return "";
@@ -653,7 +653,7 @@ static struct device_operations northbridge_operations = {
 	.enable_resources = pci_dev_enable_resources,
 	.init		  = mcf0_control_init,
 	.scan_bus	  = amdfam10_scan_chains,
-#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+#if CONFIG(HAVE_ACPI_TABLES)
 	.write_acpi_tables = northbridge_write_acpi_tables,
 	.acpi_fill_ssdt_generator = northbridge_acpi_write_vars,
 	.acpi_name = amdfam10_northbridge_acpi_name,
@@ -886,7 +886,7 @@ static struct hw_mem_hole_info get_hw_mem_hole_info(void)
 
 static void setup_uma_memory(void)
 {
-#if IS_ENABLED(CONFIG_GFXUMA)
+#if CONFIG(GFXUMA)
 	uint32_t topmem = (uint32_t) bsp_topmem();
 	uma_memory_size = get_uma_memory_size(topmem);
 	uma_memory_base = topmem - uma_memory_size;	/* TOP_MEM1 */
@@ -985,7 +985,7 @@ static void amdfam10_domain_set_resources(struct device *dev)
 			     i, mmio_basek, basek, limitk);
 	}
 
-#if IS_ENABLED(CONFIG_GFXUMA)
+#if CONFIG(GFXUMA)
 	uma_resource(dev, 7, uma_memory_base >> 10, uma_memory_size >> 10);
 #endif
 
@@ -1035,7 +1035,7 @@ static void amdfam10_domain_scan_bus(struct device *dev)
 	}
 }
 
-#if IS_ENABLED(CONFIG_GENERATE_SMBIOS_TABLES)
+#if CONFIG(GENERATE_SMBIOS_TABLES)
 static int amdfam10_get_smbios_data16(int *count, int handle,
 				      unsigned long *current)
 {
@@ -1085,7 +1085,7 @@ static int amdfam10_get_smbios_data16(int *count, int handle,
 static uint16_t amdmct_mct_speed_enum_to_mhz(uint8_t speed)
 {
 	if (is_fam15h()) {
-		if (IS_ENABLED(CONFIG_DIMM_DDR3)) {
+		if (CONFIG(DIMM_DDR3)) {
 			switch (speed) {
 				case 0x4:
 					return 333;
@@ -1106,7 +1106,7 @@ static uint16_t amdmct_mct_speed_enum_to_mhz(uint8_t speed)
 			return 0;
 		}
 	} else {
-		if (IS_ENABLED(CONFIG_DIMM_DDR2)) {
+		if (CONFIG(DIMM_DDR2)) {
 			switch (speed) {
 				case 1:
 					return 200;
@@ -1121,7 +1121,7 @@ static uint16_t amdmct_mct_speed_enum_to_mhz(uint8_t speed)
 				default:
 					return 0;
 			}
-		} else if (IS_ENABLED(CONFIG_DIMM_DDR3)) {
+		} else if (CONFIG(DIMM_DDR3)) {
 			switch (speed) {
 				case 3:
 					return 333;
@@ -1185,7 +1185,7 @@ static int amdfam10_get_smbios_data17(int *count, int handle, int parent_handle,
 				cols = mem_info->dct_stat[node].DimmCols[slot];
 				ranks = mem_info->dct_stat[node].DimmRanks[slot];
 				banks = mem_info->dct_stat[node].DimmBanks[slot];
-#if IS_ENABLED(CONFIG_DIMM_DDR3)
+#if CONFIG(DIMM_DDR3)
 				chip_size = mem_info->dct_stat[node].DimmChipSize[slot];
 				chip_width = mem_info->dct_stat[node].DimmChipWidth[slot];
 #else
@@ -1193,7 +1193,7 @@ static int amdfam10_get_smbios_data17(int *count, int handle, int parent_handle,
 				chip_width = 0;
 #endif
 				uint64_t dimm_size_bytes;
-				if (IS_ENABLED(CONFIG_DIMM_DDR3)) {
+				if (CONFIG(DIMM_DDR3)) {
 					width = mem_info->dct_stat[node].DimmWidth[slot];
 					dimm_size_bytes = ((width / chip_width) * chip_size * ranks) / 8;
 				} else {
@@ -1226,9 +1226,9 @@ static int amdfam10_get_smbios_data17(int *count, int handle, int parent_handle,
 					snprintf(string_buffer, sizeof(string_buffer), "NODE %d DIMM_%s%d", node, (slot & 0x1)?"B":"A", (slot >> 1) + 1);
 				}
 				t->device_locator = smbios_add_string(t->eos, string_buffer);
-				if (IS_ENABLED(CONFIG_DIMM_DDR2))
+				if (CONFIG(DIMM_DDR2))
 					t->memory_type = MEMORY_TYPE_DDR2;
-				else if (IS_ENABLED(CONFIG_DIMM_DDR3))
+				else if (CONFIG(DIMM_DDR3))
 					t->memory_type = MEMORY_TYPE_DDR3;
 				t->type_detail = MEMORY_TYPE_DETAIL_SYNCHRONOUS;
 				if (mem_info->dct_stat[node].DimmRegistered[slot])
@@ -1245,13 +1245,13 @@ static int amdfam10_get_smbios_data17(int *count, int handle, int parent_handle,
 					snprintf(string_buffer, sizeof(string_buffer), "%08X", mem_info->dct_stat[node].DimmSerialNumber[slot]);
 					t->serial_number = smbios_add_string(t->eos, string_buffer);
 				}
-				if (IS_ENABLED(CONFIG_DIMM_DDR2)) {
+				if (CONFIG(DIMM_DDR2)) {
 					/* JEDEC specifies 1.8V only, so assume that the memory is configured for 1.8V */
 					t->minimum_voltage = 1800;
 					t->maximum_voltage = 1800;
 					t->configured_voltage = 1800;
-				} else if (IS_ENABLED(CONFIG_DIMM_DDR3)) {
-#if IS_ENABLED(CONFIG_DIMM_DDR3)
+				} else if (CONFIG(DIMM_DDR3)) {
+#if CONFIG(DIMM_DDR3)
 					/* Find the maximum and minimum supported voltages */
 					uint8_t supported_voltages = mem_info->dct_stat[node].DimmSupportedVoltages[slot];
 					uint8_t configured_voltage = mem_info->dct_stat[node].DimmConfiguredVoltage[slot];
@@ -1308,7 +1308,7 @@ static int amdfam10_get_smbios_data(struct device *dev, int *handle, unsigned lo
 }
 #endif
 
-#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+#if CONFIG(HAVE_ACPI_TABLES)
 static const char *amdfam10_domain_acpi_name(const struct device *dev)
 {
 	if (dev->path.type == DEVICE_PATH_DOMAIN)
@@ -1324,10 +1324,10 @@ static struct device_operations pci_domain_ops = {
 	.enable_resources = NULL,
 	.init		  = NULL,
 	.scan_bus	  = amdfam10_domain_scan_bus,
-#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+#if CONFIG(HAVE_ACPI_TABLES)
 	.acpi_name	  = amdfam10_domain_acpi_name,
 #endif
-#if IS_ENABLED(CONFIG_GENERATE_SMBIOS_TABLES)
+#if CONFIG(GENERATE_SMBIOS_TABLES)
 	.get_smbios_data  = amdfam10_get_smbios_data,
 #endif
 };
@@ -1356,7 +1356,7 @@ static void sysconf_init(struct device *dev) // first node
 	sysconf.bsp_apicid = lapicid();
 	sysconf.apicid_offset = sysconf.bsp_apicid;
 
-#if IS_ENABLED(CONFIG_ENABLE_APIC_EXT_ID)
+#if CONFIG(ENABLE_APIC_EXT_ID)
 	if (pci_read_config32(dev, 0x68) & (HTTC_APIC_EXT_ID|HTTC_APIC_EXT_BRD_CST))
 	{
 		sysconf.enabled_apic_ext_id = 1;
@@ -1451,7 +1451,7 @@ static void cpu_bus_scan(struct device *dev)
 	}
 
 	disable_siblings = !CONFIG_LOGICAL_CPUS;
-#if IS_ENABLED(CONFIG_LOGICAL_CPUS)
+#if CONFIG(LOGICAL_CPUS)
 	get_option(&disable_siblings, "multi_core");
 #endif
 
@@ -1656,7 +1656,7 @@ static void cpu_bus_scan(struct device *dev)
 				}
 			}
 
-#if IS_ENABLED(CONFIG_ENABLE_APIC_EXT_ID) && (CONFIG_APIC_ID_OFFSET > 0)
+#if CONFIG(ENABLE_APIC_EXT_ID) && (CONFIG_APIC_ID_OFFSET > 0)
 			if (sysconf.enabled_apic_ext_id) {
 				if (apic_id != 0 || sysconf.lift_bsp_apicid) {
 					apic_id += sysconf.apicid_offset;
@@ -1978,7 +1978,7 @@ static void root_complex_enable_dev(struct device *dev)
 }
 
 static void root_complex_finalize(void *chip_info) {
-#if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME) && IS_ENABLED(CONFIG_DIMM_DDR3)
+#if CONFIG(HAVE_ACPI_RESUME) && CONFIG(DIMM_DDR3)
 	save_mct_information_to_nvram();
 #endif
 }

@@ -238,17 +238,17 @@ void arch_write_tables(uintptr_t coreboot_table)
 	unsigned long rom_table_end = 0xf0000;
 
 	/* This table must be between 0x0f0000 and 0x100000 */
-	if (IS_ENABLED(CONFIG_GENERATE_PIRQ_TABLE))
+	if (CONFIG(GENERATE_PIRQ_TABLE))
 		rom_table_end = write_pirq_table(rom_table_end);
 
 	/* The smp table must be in 0-1K, 639K-640K, or 960K-1M */
-	if (IS_ENABLED(CONFIG_GENERATE_MP_TABLE))
+	if (CONFIG(GENERATE_MP_TABLE))
 		rom_table_end = write_mptable(rom_table_end);
 
-	if (IS_ENABLED(CONFIG_HAVE_ACPI_TABLES))
+	if (CONFIG(HAVE_ACPI_TABLES))
 		rom_table_end = write_acpi_table(rom_table_end);
 
-	if (IS_ENABLED(CONFIG_GENERATE_SMBIOS_TABLES))
+	if (CONFIG(GENERATE_SMBIOS_TABLES))
 		rom_table_end = write_smbios_table(rom_table_end);
 
 	sz = write_coreboot_forwarding_table(forwarding_table, coreboot_table);

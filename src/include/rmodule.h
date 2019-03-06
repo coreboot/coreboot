@@ -69,7 +69,7 @@ struct rmodule {
 	void *relocations;
 };
 
-#if IS_ENABLED(CONFIG_RELOCATABLE_MODULES)
+#if CONFIG(RELOCATABLE_MODULES)
 /* Rmodules have an entry point of named _start. */
 #define RMODULE_ENTRY(entry_) \
 	void _start(void *) __attribute__((alias(STRINGIFY(entry_))))

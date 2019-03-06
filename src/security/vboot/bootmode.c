@@ -36,7 +36,7 @@ static int vb2_get_recovery_reason_shared_data(void)
 
 void vb2_save_recovery_reason_vbnv(void)
 {
-	if (!IS_ENABLED(CONFIG_VBOOT_SAVE_RECOVERY_REASON_ON_REBOOT))
+	if (!CONFIG(VBOOT_SAVE_RECOVERY_REASON_ON_REBOOT))
 		return;
 
 	int reason =  vb2_get_recovery_reason_shared_data();
@@ -48,7 +48,7 @@ void vb2_save_recovery_reason_vbnv(void)
 
 static void vb2_clear_recovery_reason_vbnv(void *unused)
 {
-	if (!IS_ENABLED(CONFIG_VBOOT_SAVE_RECOVERY_REASON_ON_REBOOT))
+	if (!CONFIG(VBOOT_SAVE_RECOVERY_REASON_ON_REBOOT))
 		return;
 
 	set_recovery_mode_into_vbnv(0);
@@ -73,13 +73,13 @@ BOOT_STATE_INIT_ENTRY(BS_DEV_INIT, BS_ON_EXIT,
  */
 static int vboot_possibly_executed(void)
 {
-	if (IS_ENABLED(CONFIG_VBOOT_STARTS_IN_BOOTBLOCK)) {
-		if (ENV_BOOTBLOCK && IS_ENABLED(CONFIG_VBOOT_SEPARATE_VERSTAGE))
+	if (CONFIG(VBOOT_STARTS_IN_BOOTBLOCK)) {
+		if (ENV_BOOTBLOCK && CONFIG(VBOOT_SEPARATE_VERSTAGE))
 			return 0;
 		return 1;
 	}
 
-	if (IS_ENABLED(CONFIG_VBOOT_STARTS_IN_ROMSTAGE)) {
+	if (CONFIG(VBOOT_STARTS_IN_ROMSTAGE)) {
 		if (ENV_BOOTBLOCK)
 			return 0;
 		return 1;
@@ -169,7 +169,7 @@ int vboot_developer_mode_enabled(void)
 	return 0;
 }
 
-#if IS_ENABLED(CONFIG_VBOOT_NO_BOARD_SUPPORT)
+#if CONFIG(VBOOT_NO_BOARD_SUPPORT)
 /**
  * TODO: Create flash protection interface which implements get_write_protect_state.
  * get_recovery_mode_switch should be implemented as default function.

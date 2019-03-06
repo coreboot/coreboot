@@ -459,7 +459,7 @@ stackless_PCIConfig_Read:
 
 esram_init_done:
 
-#if IS_ENABLED(CONFIG_ENABLE_DEBUG_LED)
+#if CONFIG(ENABLE_DEBUG_LED)
 sd_led:
 
 	/* Set the SDIO controller's base address */
@@ -491,7 +491,7 @@ L43:
 	jmp	stackless_PCIConfig_Read
 
 L44:
-#if IS_ENABLED(CONFIG_ENABLE_DEBUG_LED_ESRAM)
+#if CONFIG(ENABLE_DEBUG_LED_ESRAM)
 	jmp	light_sd_led
 #endif /* CONFIG_ENABLE_DEBUG_LED_ESRAM */
 #endif /* CONFIG_ENABLE_DEBUG_LED */

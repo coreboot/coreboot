@@ -30,7 +30,7 @@ void *cbmem_top(void)
 	const config_t *config;
 	void *tolum = (void *)sa_get_tseg_base();
 
-	if (!IS_ENABLED(CONFIG_SOC_INTEL_GLK))
+	if (!CONFIG(SOC_INTEL_GLK))
 		return tolum;
 
 	dev = dev_find_slot(0, PCH_DEVFN_LPC);

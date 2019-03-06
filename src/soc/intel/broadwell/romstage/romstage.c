@@ -123,7 +123,7 @@ void romstage_common(struct romstage_params *params)
 
 	params->pei_data->boot_mode = params->power_state->prev_sleep_state;
 
-#if IS_ENABLED(CONFIG_ELOG_BOOT_COUNT)
+#if CONFIG(ELOG_BOOT_COUNT)
 	if (params->power_state->prev_sleep_state != ACPI_S3)
 		boot_count_increment();
 #endif

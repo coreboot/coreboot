@@ -54,9 +54,9 @@ void car_soc_pre_console_init(void)
 	reg_script_run_on_dev(LPC_BDF, legacy_gpio_init);
 
 	/* Enable the HSUART */
-	if (IS_ENABLED(CONFIG_ENABLE_BUILTIN_HSUART0))
+	if (CONFIG(ENABLE_BUILTIN_HSUART0))
 		reg_script_run_on_dev(HSUART0_BDF, hsuart_init);
-	if (IS_ENABLED(CONFIG_ENABLE_BUILTIN_HSUART1))
+	if (CONFIG(ENABLE_BUILTIN_HSUART1))
 		reg_script_run_on_dev(HSUART1_BDF, hsuart_init);
 }
 

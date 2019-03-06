@@ -34,7 +34,7 @@ void load_vbt(uint8_t s3_resume, SILICON_INIT_UPD *params)
 		/* Get VBT data */
 		vbt_data = locate_vbt(&vbt_len);
 		if (vbt_data != NULL) {
-			if (IS_ENABLED(CONFIG_DISPLAY_VBT)) {
+			if (CONFIG(DISPLAY_VBT)) {
 				/* Display the vbt file contents */
 				printk(BIOS_DEBUG, "VBT Data:\n");
 				hexdump(vbt_data, vbt_len);

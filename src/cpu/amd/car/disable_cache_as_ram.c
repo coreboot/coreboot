@@ -80,7 +80,7 @@ void disable_cache_as_ram_real(uint8_t skip_sharedc_config)
 
 	family = amd_fam1x_cpu_family();
 
-#if IS_ENABLED(CONFIG_CPU_AMD_MODEL_10XXX)
+#if CONFIG(CPU_AMD_MODEL_10XXX)
 	if (family >= 0x6f) {
 		/* Family 15h or later */
 

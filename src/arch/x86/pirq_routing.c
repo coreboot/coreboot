@@ -198,9 +198,9 @@ unsigned long copy_pirq_routing_table(unsigned long addr,
 		addr);
 	memcpy((void *)addr, routing_table, routing_table->size);
 	printk(BIOS_INFO, "done.\n");
-	if (IS_ENABLED(CONFIG_DEBUG_PIRQ))
+	if (CONFIG(DEBUG_PIRQ))
 		verify_copy_pirq_routing_table(addr, routing_table);
-	if (IS_ENABLED(CONFIG_PIRQ_ROUTE))
+	if (CONFIG(PIRQ_ROUTE))
 		pirq_route_irqs(addr);
 
 	return addr + routing_table->size;

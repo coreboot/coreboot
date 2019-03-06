@@ -74,7 +74,7 @@ static void nb_control_init(struct device *dev)
 
 		enable_c_states = 0;
 		enable_cc6 = 0;
-#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+#if CONFIG(HAVE_ACPI_TABLES)
 		uint8_t nvram;
 
 		if (get_option(&nvram, "cpu_c_states") == CB_SUCCESS)

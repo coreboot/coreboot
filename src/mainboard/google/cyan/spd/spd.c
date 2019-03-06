@@ -81,7 +81,7 @@ void mainboard_fill_spd_data(struct pei_data *ps)
 	spd_content = get_spd_pointer(spd_file,
 				      spd_file_len / SPD_PAGE_LEN,
 				      &dual_channel);
-	if (IS_ENABLED(CONFIG_DISPLAY_SPD_DATA) && spd_content != NULL) {
+	if (CONFIG(DISPLAY_SPD_DATA) && spd_content != NULL) {
 		printk(BIOS_DEBUG, "SPD Data:\n");
 		hexdump(spd_content, SPD_PAGE_LEN);
 		printk(BIOS_DEBUG, "\n");
@@ -137,7 +137,7 @@ static void set_dimm_info(uint8_t *spd, struct dimm_info *dimm)
 	}
 
 	/* Parse the SPD data to determine the DIMM information */
-	if (IS_ENABLED(CONFIG_BOARD_GOOGLE_CYAN)) {
+	if (CONFIG(BOARD_GOOGLE_CYAN)) {
 		dimm->ddr_type = MEMORY_TYPE_DDR3;
 	} else {
 		dimm->ddr_type = MEMORY_TYPE_LPDDR3;

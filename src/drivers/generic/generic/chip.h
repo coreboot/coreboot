@@ -16,7 +16,7 @@
 #ifndef __GENERIC_GENERIC_CHIP_H__
 #define __GENERIC_GENERIC_CHIP_H__
 
-#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+#if CONFIG(HAVE_ACPI_TABLES)
 
 #include <arch/acpi_device.h>
 

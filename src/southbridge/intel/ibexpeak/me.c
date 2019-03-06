@@ -40,7 +40,7 @@
 #include "me.h"
 #include "pch.h"
 
-#if IS_ENABLED(CONFIG_CHROMEOS)
+#if CONFIG(CHROMEOS)
 #include <vendorcode/google/chromeos/gnvs.h>
 #endif
 
@@ -59,7 +59,7 @@ static const char *me_bios_path_values[] = {
 /* MMIO base address for MEI interface */
 static u32 *mei_base_address;
 
-#if IS_ENABLED(CONFIG_DEBUG_INTEL_ME)
+#if CONFIG(DEBUG_INTEL_ME)
 static void mei_dump(void *ptr, int dword, int offset, const char *type)
 {
 	struct mei_csr *csr;
@@ -470,7 +470,7 @@ static me_bios_path intel_me_path(struct device *dev)
 	if (hfs.error_code || hfs.fpt_bad)
 		path = ME_ERROR_BIOS_PATH;
 
-#if IS_ENABLED(CONFIG_ELOG)
+#if CONFIG(ELOG)
 	if (path != ME_NORMAL_BIOS_PATH) {
 		struct elog_event_data_me_extended data = {
 			.current_working_state = hfs.working_state,
@@ -559,7 +559,7 @@ static int intel_me_extend_valid(struct device *dev)
 	}
 	printk(BIOS_DEBUG, "\n");
 
-#if IS_ENABLED(CONFIG_CHROMEOS)
+#if CONFIG(CHROMEOS)
 	/* Save hash in NVS for the OS to verify */
 	chromeos_set_me_hash(extend, count);
 #endif

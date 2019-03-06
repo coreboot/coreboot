@@ -58,7 +58,7 @@ static const PSO_ENTRY DDR4LiaraMemoryConfiguration[] = {
 
 void OemPostParams(AMD_POST_PARAMS *PostParams)
 {
-	if (IS_ENABLED(CONFIG_BOARD_GOOGLE_LIARA))
+	if (CONFIG(BOARD_GOOGLE_LIARA))
 		PostParams->MemConfig.PlatformMemoryConfiguration =
 			(PSO_ENTRY *)DDR4LiaraMemoryConfiguration;
 	else

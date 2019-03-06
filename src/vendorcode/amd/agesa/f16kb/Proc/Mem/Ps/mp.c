@@ -489,7 +489,7 @@ MemPIsIdSupported (
       return TRUE;
     }
   }
-  if (IS_ENABLED(CONFIG_FORCE_AM1_SOCKET_SUPPORT))
+  if (CONFIG(FORCE_AM1_SOCKET_SUPPORT))
     return TRUE;
   else
     return FALSE;

@@ -31,7 +31,7 @@ void set_feature_ctrl_vmx(void)
 {
 	msr_t msr;
 	uint32_t feature_flag;
-	int enable = IS_ENABLED(CONFIG_ENABLE_VMX);
+	int enable = CONFIG(ENABLE_VMX);
 
 	feature_flag = cpu_get_feature_flags_ecx();
 	/* Check that the VMX is supported before reading or writing the MSR. */
@@ -71,7 +71,7 @@ void set_feature_ctrl_vmx(void)
 void set_feature_ctrl_lock(void)
 {
 	msr_t msr;
-	int lock = IS_ENABLED(CONFIG_SET_IA32_FC_LOCK_BIT);
+	int lock = CONFIG(SET_IA32_FC_LOCK_BIT);
 	uint32_t feature_flag = cpu_get_feature_flags_ecx();
 
 	/* Check if VMX is supported before reading or writing the MSR */

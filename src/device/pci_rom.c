@@ -55,7 +55,7 @@ struct rom_header *pci_rom_probe(struct device *dev)
 	if (rom_header) {
 		printk(BIOS_DEBUG, "In CBFS, ROM address for %s = %p\n",
 		       dev_path(dev), rom_header);
-	} else if (!IS_ENABLED(CONFIG_ON_DEVICE_ROM_LOAD)) {
+	} else if (!CONFIG(ON_DEVICE_ROM_LOAD)) {
 			printk(BIOS_DEBUG, "PCI Option ROM loading disabled "
 				"for %s\n", dev_path(dev));
 			return NULL;
@@ -65,7 +65,7 @@ struct rom_header *pci_rom_probe(struct device *dev)
 		rom_address = pci_read_config32(dev, PCI_ROM_ADDRESS);
 
 		if (rom_address == 0x00000000 || rom_address == 0xffffffff) {
-#if IS_ENABLED(CONFIG_BOARD_EMULATION_QEMU_X86)
+#if CONFIG(BOARD_EMULATION_QEMU_X86)
 			if ((dev->class >> 8) == PCI_CLASS_DISPLAY_VGA)
 				rom_address = 0xc0000;
 			else
@@ -151,7 +151,7 @@ struct rom_header *pci_rom_load(struct device *dev,
 	 * devices have a mismatch between the hardware and the ROM.
 	 */
 	if ((dev->class >> 8) == PCI_CLASS_DISPLAY_VGA) {
-#if !IS_ENABLED(CONFIG_MULTIPLE_VGA_ADAPTERS)
+#if !CONFIG(MULTIPLE_VGA_ADAPTERS)
 		extern struct device *vga_pri; /* Primary VGA device (device.c). */
 		if (dev != vga_pri) return NULL; /* Only one VGA supported. */
 #endif
@@ -174,7 +174,7 @@ struct rom_header *pci_rom_load(struct device *dev,
 }
 
 /* ACPI */
-#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+#if CONFIG(HAVE_ACPI_TABLES)
 
 /* VBIOS may be modified after oprom init so use the copy if present. */
 static struct rom_header *check_initialized(struct device *dev)
@@ -182,7 +182,7 @@ static struct rom_header *check_initialized(struct device *dev)
 	struct rom_header *run_rom;
 	struct pci_data *rom_data;
 
-	if (!IS_ENABLED(CONFIG_VGA_ROM_RUN))
+	if (!CONFIG(VGA_ROM_RUN))
 		return NULL;
 
 	run_rom = (struct rom_header *)(uintptr_t)PCI_VGA_RAM_IMAGE_START;

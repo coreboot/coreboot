@@ -18,7 +18,7 @@
 #ifndef __ACPI__
 #include <stddef.h>
 #endif
-#if IS_ENABLED(CONFIG_SKYLAKE_SOC_PCH_H)
+#if CONFIG(SKYLAKE_SOC_PCH_H)
 # include <soc/gpio_pch_h_defs.h>
 #else
 # include <soc/gpio_soc_defs.h>

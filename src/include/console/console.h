@@ -22,13 +22,13 @@
 #include <console/vtxprintf.h>
 #include <commonlib/loglevel.h>
 
-#define RAM_DEBUG (IS_ENABLED(CONFIG_DEBUG_RAM_SETUP) ? BIOS_DEBUG : BIOS_NEVER)
-#define RAM_SPEW  (IS_ENABLED(CONFIG_DEBUG_RAM_SETUP) ? BIOS_SPEW  : BIOS_NEVER)
+#define RAM_DEBUG (CONFIG(DEBUG_RAM_SETUP) ? BIOS_DEBUG : BIOS_NEVER)
+#define RAM_SPEW  (CONFIG(DEBUG_RAM_SETUP) ? BIOS_SPEW  : BIOS_NEVER)
 
 #ifndef __ROMCC__
 
 void post_code(u8 value);
-#if IS_ENABLED(CONFIG_CMOS_POST_EXTRA)
+#if CONFIG(CMOS_POST_EXTRA)
 void post_log_extra(u32 value);
 struct device;
 void post_log_path(const struct device *dev);
@@ -49,10 +49,10 @@ void __noreturn die(const char *msg);
 void die_notify(void);
 
 #define __CONSOLE_ENABLE__ \
-	((ENV_BOOTBLOCK && IS_ENABLED(CONFIG_BOOTBLOCK_CONSOLE)) || \
-	(ENV_POSTCAR && IS_ENABLED(CONFIG_POSTCAR_CONSOLE)) || \
+	((ENV_BOOTBLOCK && CONFIG(BOOTBLOCK_CONSOLE)) || \
+	(ENV_POSTCAR && CONFIG(POSTCAR_CONSOLE)) || \
 	ENV_VERSTAGE || ENV_ROMSTAGE || ENV_RAMSTAGE || ENV_LIBAGESA || \
-	(ENV_SMM && IS_ENABLED(CONFIG_DEBUG_SMI)))
+	(ENV_SMM && CONFIG(DEBUG_SMI)))
 
 #if __CONSOLE_ENABLE__
 asmlinkage void console_init(void);
@@ -64,7 +64,7 @@ void do_putchar(unsigned char byte);
 
 enum { CONSOLE_LOG_NONE = 0, CONSOLE_LOG_FAST, CONSOLE_LOG_ALL };
 
-#if IS_ENABLED(CONFIG_CONSOLE_OVERRIDE_LOGLEVEL)
+#if CONFIG(CONSOLE_OVERRIDE_LOGLEVEL)
 /*
  * This function should be implemented at mainboard level.
  * The returned value will _replace_ the loglevel value;

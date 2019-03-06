@@ -48,7 +48,7 @@ Device (LPCB)
 		})
 	}
 
-#if !IS_ENABLED(CONFIG_DISABLE_HPET)
+#if !CONFIG(DISABLE_HPET)
 	Device (HPET)
 	{
 		Name (_HID, EISAID("PNP0103"))

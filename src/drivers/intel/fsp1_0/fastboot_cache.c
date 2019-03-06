@@ -57,7 +57,7 @@ static u32 get_mrc_cache_region(struct mrc_data_container **mrc_region_ptr)
 {
 	size_t region_size;
 
-	if (IS_ENABLED(CONFIG_MRC_CACHE_FMAP)) {
+	if (CONFIG(MRC_CACHE_FMAP)) {
 		struct region_device rdev;
 		if (fmap_locate_area_as_rdev("RW_MRC_CACHE", &rdev) == 0) {
 			*mrc_region_ptr = rdev_mmap_full(&rdev);

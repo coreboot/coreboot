@@ -43,7 +43,7 @@ static void disable_unused_touchscreen(void *unused)
 	struct drivers_i2c_hid_config *info;
 
 	/* Look for VPD key that indicates which touchscreen is present */
-	if (IS_ENABLED(CONFIG_VPD) &&
+	if (CONFIG(VPD) &&
 	    !vpd_gets(TOUCHSCREEN_VPD_KEY, touchscreen_hid,
 		      ARRAY_SIZE(touchscreen_hid), VPD_ANY))
 		printk(BIOS_INFO, "%s: VPD key '%s' not found, default to %s\n",

@@ -29,8 +29,8 @@
 
 #include <arch/rom_segs.h>
 
-#if IS_ENABLED(CONFIG_C_ENVIRONMENT_BOOTBLOCK) || \
-    IS_ENABLED(CONFIG_SIPI_VECTOR_IN_ROM)
+#if CONFIG(C_ENVIRONMENT_BOOTBLOCK) || \
+    CONFIG(SIPI_VECTOR_IN_ROM)
 /* Symbol _start16bit must be aligned to 4kB to start AP CPUs with
  * Startup IPI message without RAM.
  */
@@ -44,7 +44,7 @@ _start16bit:
 	cli
 	/* Save the BIST result */
 	movl	%eax, %ebp
-#if !IS_ENABLED(CONFIG_NO_EARLY_BOOTBLOCK_POSTCODES)
+#if !CONFIG(NO_EARLY_BOOTBLOCK_POSTCODES)
 	post_code(POST_RESET_VECTOR_CORRECT)
 #endif
 

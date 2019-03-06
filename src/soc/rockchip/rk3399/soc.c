@@ -49,7 +49,7 @@ static void soc_init(struct device *dev)
 	 */
 	mmio_resource(dev, 1, (TZRAM_BASE / KiB), (TZRAM_SIZE / KiB));
 
-	if (IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT) && display_init_required())
+	if (CONFIG(MAINBOARD_DO_NATIVE_VGA_INIT) && display_init_required())
 		rk_display_init(dev);
 	else
 		printk(BIOS_INFO, "Display initialization disabled.\n");

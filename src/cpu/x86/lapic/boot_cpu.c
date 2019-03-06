@@ -15,7 +15,7 @@
 #include <cpu/x86/msr.h>
 #include <cpu/x86/lapic_def.h>
 
-#if IS_ENABLED(CONFIG_SMP)
+#if CONFIG(SMP)
 int boot_cpu(void)
 {
 	int bsp;

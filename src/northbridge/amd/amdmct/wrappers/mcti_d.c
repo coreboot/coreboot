@@ -102,9 +102,9 @@ u16 mctGet_NVbits(u8 index)
 
 		if (get_option(&nvram, "max_mem_clock") == CB_SUCCESS) {
 			int limit = val;
-			if (IS_ENABLED(CONFIG_DIMM_DDR3))
+			if (CONFIG(DIMM_DDR3))
 				limit = ddr3_limits[nvram & 0xf];
-			else if (IS_ENABLED(CONFIG_DIMM_DDR2))
+			else if (CONFIG(DIMM_DDR2))
 				limit = ddr2_limits[nvram & 0x3];
 			val = min(limit, val);
 		}
@@ -130,16 +130,16 @@ u16 mctGet_NVbits(u8 index)
 		//val = 2;	/* S4 (Unbuffered SO-DIMMS) */
 		break;
 	case NV_BYPMAX:
-#if !IS_ENABLED(CONFIG_GFXUMA)
+#if !CONFIG(GFXUMA)
 		val = 4;
-#elif IS_ENABLED(CONFIG_GFXUMA)
+#elif CONFIG(GFXUMA)
 		val = 7;
 #endif
 		break;
 	case NV_RDWRQBYP:
-#if !IS_ENABLED(CONFIG_GFXUMA)
+#if !CONFIG(GFXUMA)
 		val = 2;
-#elif IS_ENABLED(CONFIG_GFXUMA)
+#elif CONFIG(GFXUMA)
 		val = 3;
 #endif
 		break;
@@ -193,9 +193,9 @@ u16 mctGet_NVbits(u8 index)
 			val = !!nvram;
 		break;
 	case NV_BurstLen32:
-#if !IS_ENABLED(CONFIG_GFXUMA)
+#if !CONFIG(GFXUMA)
 		val = 0;	/* 64 byte mode */
-#elif IS_ENABLED(CONFIG_GFXUMA)
+#elif CONFIG(GFXUMA)
 		val = 1;	/* 32 byte mode */
 #endif
 		break;
@@ -214,9 +214,9 @@ u16 mctGet_NVbits(u8 index)
 	case NV_BottomIO:
 	case NV_BottomUMA:
 		/* address bits [31:24] */
-#if !IS_ENABLED(CONFIG_GFXUMA)
+#if !CONFIG(GFXUMA)
 		val = (CONFIG_MMCONF_BASE_ADDRESS >> 24);
-#elif IS_ENABLED(CONFIG_GFXUMA)
+#elif CONFIG(GFXUMA)
   #if (CONFIG_MMCONF_BASE_ADDRESS < (MAXIMUM_GFXUMA_SIZE + MINIMUM_DRAM_BELOW_4G))
   #error "MMCONF_BASE_ADDRESS is too small"
   #endif
@@ -360,12 +360,12 @@ void mctGet_MaxLoadFreq(struct DCTStatStruc *pDCTstat)
 		if (pDCTstat->DimmRegistered[i + 1])
 			ch2_registered = 1;
 	}
-	if (IS_ENABLED(CONFIG_DEBUG_RAM_SETUP)) {
+	if (CONFIG(DEBUG_RAM_SETUP)) {
 		printk(BIOS_DEBUG, "mctGet_MaxLoadFreq: Channel 1: %d DIMM(s) detected\n", ch1_count);
 		printk(BIOS_DEBUG, "mctGet_MaxLoadFreq: Channel 2: %d DIMM(s) detected\n", ch2_count);
 	}
 
-#if IS_ENABLED(CONFIG_DIMM_DDR3)
+#if CONFIG(DIMM_DDR3)
 	for (i = 0; i < MAX_DIMMS_SUPPORTED; i = i + 2) {
 		if (pDCTstat->DIMMValid & (1 << i))
 			ch1_voltage |= pDCTstat->DimmConfiguredVoltage[i];
@@ -421,7 +421,7 @@ void mctHookAfterCPU(void)
 }
 
 
-#if IS_ENABLED(CONFIG_DIMM_DDR2)
+#if CONFIG(DIMM_DDR2)
 void mctSaveDQSSigTmg_D(void)
 {
 }
@@ -470,7 +470,7 @@ void mctHookAfterDramInit(void)
 {
 }
 
-#if IS_ENABLED(CONFIG_DIMM_DDR3)
+#if CONFIG(DIMM_DDR3)
 void vErratum372(struct DCTStatStruc *pDCTstat)
 {
 	msr_t msr = rdmsr(NB_CFG_MSR);
@@ -504,7 +504,7 @@ void vErratum414(struct DCTStatStruc *pDCTstat)
 
 void mctHookBeforeAnyTraining(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA)
 {
-#if IS_ENABLED(CONFIG_DIMM_DDR3)
+#if CONFIG(DIMM_DDR3)
   /* FIXME :  as of 25.6.2010 errata 350 and 372 should apply to  ((RB|BL|DA)-C[23])|(HY-D[01])|(PH-E0) but I don't find constants for all of them */
 	if (pDCTstatA->LogicalCPUID & (AMD_DRBH_Cx | AMD_DR_Dx)) {
 		vErratum372(pDCTstatA);
@@ -513,7 +513,7 @@ void mctHookBeforeAnyTraining(struct MCTStatStruc *pMCTstat, struct DCTStatStruc
 #endif
 }
 
-#if IS_ENABLED(CONFIG_DIMM_DDR3)
+#if CONFIG(DIMM_DDR3)
 u32 mct_AdjustSPDTimings(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA, u32 val)
 {
 	if (pDCTstatA->LogicalCPUID & AMD_DR_Bx) {
@@ -534,7 +534,7 @@ uint64_t mctGetLogicalCPUID_D(u8 node)
 	return mctGetLogicalCPUID(node);
 }
 
-#if IS_ENABLED(CONFIG_DIMM_DDR2)
+#if CONFIG(DIMM_DDR2)
 u8 mctSetNodeBoundary_D(void)
 {
 	return 0;

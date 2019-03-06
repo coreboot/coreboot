@@ -20,7 +20,7 @@
 #include <soc/iomap.h>
 #include <soc/pch.h>
 
-#if IS_ENABLED(CONFIG_FSP_CAR)
+#if CONFIG(FSP_CAR)
 #include <FsptUpd.h>
 
 const FSPT_UPD temp_ram_init_params = {
@@ -53,7 +53,7 @@ void bootblock_soc_early_init(void)
 	bootblock_pch_early_init();
 	bootblock_cpu_init();
 	pch_early_iorange_init();
-	if (IS_ENABLED(CONFIG_INTEL_LPSS_UART_FOR_CONSOLE))
+	if (CONFIG(INTEL_LPSS_UART_FOR_CONSOLE))
 		uart_bootblock_init();
 }
 

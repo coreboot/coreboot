@@ -92,10 +92,10 @@ void acpi_create_gnvs(struct global_nvs_t *gnvs)
 	/* Clear out GNVS. */
 	memset(gnvs, 0, sizeof(*gnvs));
 
-	if (IS_ENABLED(CONFIG_CONSOLE_CBMEM))
+	if (CONFIG(CONSOLE_CBMEM))
 		gnvs->cbmc = (uintptr_t) cbmem_find(CBMEM_ID_CONSOLE);
 
-	if (IS_ENABLED(CONFIG_CHROMEOS)) {
+	if (CONFIG(CHROMEOS)) {
 		/* Initialize Verified Boot data */
 		chromeos_init_chromeos_acpi(&gnvs->chromeos);
 		gnvs->chromeos.vbt2 = ACTIVE_ECFW_RO;
@@ -128,7 +128,7 @@ void acpi_create_gnvs(struct global_nvs_t *gnvs)
 		gnvs->scdo = gpio_acpi_pin(cfg->sdcard_cd_gpio);
 	}
 
-	if (IS_ENABLED(CONFIG_SOC_INTEL_COMMON_BLOCK_SGX))
+	if (CONFIG(SOC_INTEL_COMMON_BLOCK_SGX))
 		sgx_fill_gnvs(gnvs);
 }
 

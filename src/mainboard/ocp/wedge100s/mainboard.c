@@ -15,7 +15,7 @@
  */
 
 #include <device/device.h>
-#if IS_ENABLED(CONFIG_VGA_ROM_RUN)
+#if CONFIG(VGA_ROM_RUN)
 #include <x86emu/x86emu.h>
 #endif
 

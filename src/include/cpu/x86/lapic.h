@@ -45,7 +45,7 @@ static __always_inline unsigned long lapicid(void)
 	return lapic_read(LAPIC_ID) >> 24;
 }
 
-#if !IS_ENABLED(CONFIG_AP_IN_SIPI_WAIT)
+#if !CONFIG(AP_IN_SIPI_WAIT)
 /* If we need to go back to sipi wait, we use the long non-inlined version of
  * this function in lapic_cpu_init.c
  */
@@ -142,7 +142,7 @@ void do_lapic_init(void);
 /* See if I need to initialize the local APIC */
 static inline int need_lapic_init(void)
 {
-	return IS_ENABLED(CONFIG_SMP) || IS_ENABLED(CONFIG_IOAPIC);
+	return CONFIG(SMP) || CONFIG(IOAPIC);
 }
 
 static inline void setup_lapic(void)

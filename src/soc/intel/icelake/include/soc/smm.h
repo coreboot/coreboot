@@ -49,7 +49,7 @@ struct smm_relocation_params {
 /* Mainboard handler for eSPI SMIs */
 void mainboard_smi_espi_handler(void);
 
-#if IS_ENABLED(CONFIG_HAVE_SMI_HANDLER)
+#if CONFIG(HAVE_SMI_HANDLER)
 void smm_relocation_handler(int cpu, uintptr_t curr_smbase,
 				uintptr_t staggered_smbase);
 void smm_info(uintptr_t *perm_smbase, size_t *perm_smsize,

@@ -32,7 +32,7 @@
 
 #include <arch/cpu.h>
 
-#if IS_ENABLED(CONFIG_IDT_IN_EVERY_STAGE) || ENV_RAMSTAGE
+#if CONFIG(IDT_IN_EVERY_STAGE) || ENV_RAMSTAGE
 asmlinkage void exception_init(void);
 #else
 static inline void exception_init(void) { /* not implemented */ }

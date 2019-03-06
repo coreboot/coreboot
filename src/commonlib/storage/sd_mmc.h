@@ -75,12 +75,12 @@ int sd_set_partition(struct storage_media *media,
 /* Controller debug functions */
 #define sdhc_debug(format...) \
 	do {						\
-		if (IS_ENABLED(CONFIG_SDHC_DEBUG))	\
+		if (CONFIG(SDHC_DEBUG))	\
 			printk(BIOS_DEBUG, format);	\
 	} while (0)
 #define sdhc_trace(format...) \
 	do {						\
-		if (IS_ENABLED(CONFIG_SDHC_TRACE))	\
+		if (CONFIG(SDHC_TRACE))	\
 			printk(BIOS_DEBUG, format);	\
 	} while (0)
 #define sdhc_error(format...) printk(BIOS_ERR, "ERROR: " format)
@@ -88,12 +88,12 @@ int sd_set_partition(struct storage_media *media,
 /* Card/device debug functions */
 #define sd_mmc_debug(format...) \
 	do {						\
-		if (IS_ENABLED(CONFIG_SD_MMC_DEBUG))	\
+		if (CONFIG(SD_MMC_DEBUG))	\
 			printk(BIOS_DEBUG, format);	\
 	} while (0)
 #define sd_mmc_trace(format...) \
 	do {						\
-		if (IS_ENABLED(CONFIG_SD_MMC_TRACE))	\
+		if (CONFIG(SD_MMC_TRACE))	\
 			printk(BIOS_DEBUG, format);	\
 	} while (0)
 #define sd_mmc_error(format...) printk(BIOS_ERR, "ERROR: " format)

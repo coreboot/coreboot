@@ -21,7 +21,7 @@
 #include <console/console.h>
 #include <commonlib/helpers.h>
 #include <delay.h>
-#if IS_ENABLED(CONFIG_SOUTHBRIDGE_INTEL_I82801GX)
+#if CONFIG(SOUTHBRIDGE_INTEL_I82801GX)
 #include <southbridge/intel/i82801gx/i82801gx.h>
 #else
 #include <southbridge/intel/i82801jx/i82801jx.h>

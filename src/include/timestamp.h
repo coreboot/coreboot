@@ -19,7 +19,7 @@
 
 #include <commonlib/timestamp_serialized.h>
 
-#if IS_ENABLED(CONFIG_COLLECT_TIMESTAMPS)
+#if CONFIG(COLLECT_TIMESTAMPS)
 /*
  * timestamp_init() needs to be called once for each of these cases:
  *    1. __PRE_RAM__ (bootblock, romstage, verstage, etc) and
@@ -59,7 +59,7 @@ uint32_t get_us_since_boot(void);
 /**
  * Workaround for guard combination above.
  */
-#if IS_ENABLED(CONFIG_COLLECT_TIMESTAMPS)
+#if CONFIG(COLLECT_TIMESTAMPS)
 /* Implemented by the architecture code */
 uint64_t timestamp_get(void);
 #else

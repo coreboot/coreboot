@@ -22,7 +22,7 @@
 
 void *vbt_get(void)
 {
-	if (!IS_ENABLED(CONFIG_RUN_FSP_GOP))
+	if (!CONFIG(RUN_FSP_GOP))
 		return NULL;
 
 	/* Normal mode and S3 resume path PEIM GFX init is not needed.

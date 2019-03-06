@@ -39,7 +39,7 @@ const int BiosCalloutsLen = ARRAY_SIZE(BiosCallouts);
  * Copied from `/sys/class/sound/hwC1D0/init_pin_configs` when running
  * the vendor BIOS.
  */
-#if !IS_ENABLED(CONFIG_BOARD_ASUS_F2A85_M_LE)
+#if !CONFIG(BOARD_ASUS_F2A85_M_LE)
 const CODEC_ENTRY f2a85_m_alc887_VerbTbl[] = {
 	{0x11, 0x99430140},
 	{0x12, 0x411111f0},
@@ -85,7 +85,7 @@ static const CODEC_TBL_LIST CodecTableList[] =
 
 void board_FCH_InitReset(struct sysinfo *cb_NA, FCH_RESET_DATA_BLOCK *FchParams_reset)
 {
-	FchParams_reset->LegacyFree = IS_ENABLED(CONFIG_HUDSON_LEGACY_FREE);
+	FchParams_reset->LegacyFree = CONFIG(HUDSON_LEGACY_FREE);
 }
 
 void board_FCH_InitEnv(struct sysinfo *cb_NA, FCH_DATA_BLOCK *FchParams_env)

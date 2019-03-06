@@ -34,7 +34,7 @@ Device (XHCI) {
 		/* Root Hub */
 		Name (_ADR, Zero)
 
-#if IS_ENABLED(CONFIG_SOC_INTEL_GLK)
+#if CONFIG(SOC_INTEL_GLK)
 #include "xhci_glk_ports.asl"
 #else
 #include "xhci_apl_ports.asl"

@@ -86,7 +86,7 @@ void get_bus_conf(void)
 		m->bus_8132_2 = pci_read_config8(dev, PCI_SECONDARY_BUS);
 
 /*I/O APICs:	APIC ID	Version	State		Address*/
-	if (IS_ENABLED(CONFIG_LOGICAL_CPUS))
+	if (CONFIG(LOGICAL_CPUS))
 		apicid_base = get_apicid_base(3);
 	else
 		apicid_base = CONFIG_MAX_PHYSICAL_CPUS;

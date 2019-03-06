@@ -24,7 +24,7 @@
 #include <string.h>
 #include "chip.h"
 
-#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+#if CONFIG(HAVE_ACPI_TABLES)
 
 #define DA7219_ACPI_NAME	"DLG7"
 #define DA7219_ACPI_HID		"DLGS7219"
@@ -113,7 +113,7 @@ static struct device_operations da7219_ops = {
 	.read_resources		  = DEVICE_NOOP,
 	.set_resources		  = DEVICE_NOOP,
 	.enable_resources	  = DEVICE_NOOP,
-#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+#if CONFIG(HAVE_ACPI_TABLES)
 	.acpi_name		  = da7219_acpi_name,
 	.acpi_fill_ssdt_generator = da7219_fill_ssdt,
 #endif

@@ -101,7 +101,7 @@ uintptr_t uart_platform_base(int idx)
 
 void uart_init(int idx)
 {
-	if (!IS_ENABLED(CONFIG_DRIVERS_UART_8250IO_SKIP_INIT)) {
+	if (!CONFIG(DRIVERS_UART_8250IO_SKIP_INIT)) {
 		unsigned int div;
 		div = uart_baudrate_divisor(get_uart_baudrate(),
 			uart_platform_refclk(), uart_input_clock_divider());

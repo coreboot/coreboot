@@ -78,7 +78,7 @@ static void enable_tegra210_dev(struct device *dev)
 	if (dev->path.type == DEVICE_PATH_CPU_CLUSTER)
 		dev->ops = &soc_ops;
 
-	if (!IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT))
+	if (!CONFIG(MAINBOARD_DO_NATIVE_VGA_INIT))
 		return;
 
 	if (display_init_required())

@@ -190,7 +190,7 @@ static void program_mac_address(struct device *dev, u16 io_base)
 	bool mac_found = false;
 
 	/* check the VPD for the mac address */
-	if (IS_ENABLED(CONFIG_RT8168_GET_MAC_FROM_VPD)) {
+	if (CONFIG(RT8168_GET_MAC_FROM_VPD)) {
 		/* Current implementation is up to 10 NIC cards */
 		if (config && config->device_index <= MAX_DEVICE_SUPPORT) {
 			/* check "ethernet_mac" first when the device index is 1 */
@@ -294,11 +294,11 @@ static void r8168_init(struct device *dev)
 	program_mac_address(dev, io_base);
 
 	/* Program customized LED mode */
-	if (IS_ENABLED(CONFIG_RT8168_SET_LED_MODE))
+	if (CONFIG(RT8168_SET_LED_MODE))
 		r8168_set_customized_led(dev, io_base);
 }
 
-#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+#if CONFIG(HAVE_ACPI_TABLES)
 #define R8168_ACPI_HID "R8168"
 static void r8168_net_fill_ssdt(struct device *dev)
 {
@@ -346,7 +346,7 @@ static struct device_operations r8168_ops  = {
 	.enable_resources = pci_dev_enable_resources,
 	.init             = r8168_init,
 	.scan_bus         = 0,
-#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+#if CONFIG(HAVE_ACPI_TABLES)
 	.acpi_name                = r8168_net_acpi_name,
 	.acpi_fill_ssdt_generator = r8168_net_fill_ssdt,
 #endif

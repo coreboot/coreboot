@@ -74,7 +74,7 @@ static const struct pch_gpio_set1 pch_gpio_set1_direction = {
 };
 
 static const struct pch_gpio_set1 pch_gpio_set1_level = {
-	#if IS_ENABLED(CONFIG_ENABLE_MSATA)
+	#if CONFIG(ENABLE_MSATA)
 		.gpio8 = GPIO_LEVEL_LOW,
 	#else
 		.gpio8 = GPIO_LEVEL_HIGH,

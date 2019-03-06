@@ -377,7 +377,7 @@ static int _dw_i2c_transfer(unsigned int bus, const struct i2c_msg *segments,
 
 	/* Process each segment */
 	while (count--) {
-		if (IS_ENABLED(CONFIG_DRIVERS_I2C_DESIGNWARE_DEBUG)) {
+		if (CONFIG(DRIVERS_I2C_DESIGNWARE_DEBUG)) {
 			printk(BIOS_DEBUG, "i2c %u:%02x %s %d bytes : ",
 			       bus, segments->slave,
 			       (segments->flags & I2C_M_RD) ? "R" : "W",
@@ -401,7 +401,7 @@ static int _dw_i2c_transfer(unsigned int bus, const struct i2c_msg *segments,
 			}
 		}
 
-		if (IS_ENABLED(CONFIG_DRIVERS_I2C_DESIGNWARE_DEBUG)) {
+		if (CONFIG(DRIVERS_I2C_DESIGNWARE_DEBUG)) {
 			int j;
 			for (j = 0; j < segments->len; j++)
 				printk(BIOS_DEBUG, "%02x ", segments->buf[j]);

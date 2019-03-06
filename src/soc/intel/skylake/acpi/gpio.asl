@@ -78,7 +78,7 @@ Device (GPIO)
  */
 Method (GADD, 1, NotSerialized)
 {
-#if IS_ENABLED(CONFIG_SKYLAKE_SOC_PCH_H)
+#if CONFIG(SKYLAKE_SOC_PCH_H)
 	/* GPIO Community 0 */
 	If (LAnd (LGreaterEqual (Arg0, GPP_A0), LLessEqual (Arg0, GPP_B23)))
 	{

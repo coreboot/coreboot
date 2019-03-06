@@ -58,7 +58,7 @@ static void dmi_lockdown_cfg(void)
 
 static void fast_spi_lockdown_cfg(int chipset_lockdown)
 {
-	if (!IS_ENABLED(CONFIG_SOC_INTEL_COMMON_BLOCK_FAST_SPI))
+	if (!CONFIG(SOC_INTEL_COMMON_BLOCK_FAST_SPI))
 		return;
 
 	/* Set FAST_SPI opcode menu */

@@ -21,7 +21,7 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <ec/acpi/ec.h>
-#if IS_ENABLED(CONFIG_CHROMEOS)
+#if CONFIG(CHROMEOS)
 #include <vendorcode/google/chromeos/gnvs.h>
 #endif
 #include <southbridge/intel/bd82x6x/nvs.h>

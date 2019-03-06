@@ -19,7 +19,7 @@
 #include <arch/symbols.h>
 #include <stdlib.h>
 
-#if ENV_CACHE_AS_RAM && !IS_ENABLED(CONFIG_NO_CAR_GLOBAL_MIGRATION)
+#if ENV_CACHE_AS_RAM && !CONFIG(NO_CAR_GLOBAL_MIGRATION)
 asm(".section .car.global_data,\"w\",@nobits");
 asm(".previous");
 #ifdef __clang__
@@ -100,6 +100,6 @@ static inline int car_active(void) { return 0; }
 #define car_get_var(var) (var)
 #define car_sync_var(var) (var)
 #define car_set_var(var, val)	(var) = (val)
-#endif /* ENV_CACHE_AS_RAM && !IS_ENABLED(CONFIG_NO_CAR_GLOBAL_MIGRATION) */
+#endif /* ENV_CACHE_AS_RAM && !CONFIG(NO_CAR_GLOBAL_MIGRATION) */
 
 #endif /* ARCH_EARLY_VARIABLES_H */

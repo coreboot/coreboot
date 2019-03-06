@@ -43,12 +43,12 @@ DefinitionBlock(
 		}
 	}
 
-#if IS_ENABLED(CONFIG_CHROMEOS)
+#if CONFIG(CHROMEOS)
 	// Chrome OS specific
 	#include <vendorcode/google/chromeos/acpi/chromeos.asl>
 #endif
 
-#if IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC)
+#if CONFIG(EC_GOOGLE_CHROMEEC)
 	/* Chrome OS Embedded Controller */
 		Scope (\_SB.PCI0.LPCB)
 		{

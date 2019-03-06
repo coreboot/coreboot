@@ -41,10 +41,10 @@
 #include "compat/time.h"
 #include <device/resource.h>
 
-#if !IS_ENABLED(CONFIG_YABEL_DIRECTHW) || !IS_ENABLED(CONFIG_YABEL_DIRECTHW)
+#if !CONFIG(YABEL_DIRECTHW) || !CONFIG(YABEL_DIRECTHW)
 
 // define a check for access to certain (virtual) memory regions (interrupt handlers, BIOS Data Area, ...)
-#if IS_ENABLED(CONFIG_X86EMU_DEBUG)
+#if CONFIG(X86EMU_DEBUG)
 static u8 in_check = 0;	// to avoid recursion...
 
 static inline void DEBUG_CHECK_VMEM_READ(u32 _addr, u32 _rval)

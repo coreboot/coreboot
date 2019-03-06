@@ -35,7 +35,7 @@ struct ehci_debug_info {
 	struct dbgp_pipe ep_pipe[DBGP_MAX_ENDPOINTS];
 } __packed;
 
-#if IS_ENABLED(CONFIG_DEBUG_CONSOLE_INIT)
+#if CONFIG(DEBUG_CONSOLE_INIT)
 /* When selected, you can debug the connection of usbdebug dongle.
  * EHCI port register bits and USB packets are dumped on console,
  * assuming some other console already works.
@@ -217,7 +217,7 @@ static void dbgp_print_data(struct ehci_dbg_port *ehci_debug)
 	int len;
 	u32 ctrl, lo, hi;
 
-	if (!IS_ENABLED(CONFIG_DEBUG_CONSOLE_INIT) || dbgp_enabled())
+	if (!CONFIG(DEBUG_CONSOLE_INIT) || dbgp_enabled())
 		return;
 
 	ctrl = read32(&ehci_debug->control);
@@ -720,7 +720,7 @@ static void migrate_ehci_debug(int is_recovery)
 		return;
 	}
 
-	if (IS_ENABLED(CONFIG_USBDEBUG_IN_PRE_RAM)) {
+	if (CONFIG(USBDEBUG_IN_PRE_RAM)) {
 		/* Use state in CBMEM. */
 		dbg_info_cbmem = cbmem_find(CBMEM_ID_EHCI_DEBUG);
 		if (dbg_info_cbmem)
@@ -759,13 +759,13 @@ void usbdebug_init(void)
 	 * CBMEM_INIT_HOOKs for postcar and ramstage as we recover state
 	 * from CBMEM.
 	 */
-	if (IS_ENABLED(CONFIG_USBDEBUG_IN_PRE_RAM)
+	if (CONFIG(USBDEBUG_IN_PRE_RAM)
 	    && (ENV_ROMSTAGE || ENV_BOOTBLOCK))
 		usbdebug_hw_init(false);
 
 	/* USB console init is done early in ramstage if it was
 	 * not done in romstage, this does not require CBMEM.
 	 */
-	if (!IS_ENABLED(CONFIG_USBDEBUG_IN_PRE_RAM) && ENV_RAMSTAGE)
+	if (!CONFIG(USBDEBUG_IN_PRE_RAM) && ENV_RAMSTAGE)
 		usbdebug_hw_init(false);
 }

@@ -30,7 +30,7 @@ static void pci_domain_set_resources(struct device *dev)
 	assign_resources(dev->link_list);
 }
 
-#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+#if CONFIG(HAVE_ACPI_TABLES)
 static const char *domain_acpi_name(const struct device *dev)
 {
 	if (dev->path.type == DEVICE_PATH_DOMAIN)
@@ -45,7 +45,7 @@ static struct device_operations pci_domain_ops = {
 	.enable_resources = NULL,
 	.init             = NULL,
 	.scan_bus         = pci_domain_scan_bus,
-#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+#if CONFIG(HAVE_ACPI_TABLES)
 	.acpi_name        = domain_acpi_name
 #endif
 };

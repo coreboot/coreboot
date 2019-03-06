@@ -603,7 +603,7 @@ static void gma_func0_init(struct device *dev)
 	/* Init graphics power management */
 	gma_pm_init_pre_vbios(dev);
 
-	if (IS_ENABLED(CONFIG_MAINBOARD_USE_LIBGFXINIT)) {
+	if (CONFIG(MAINBOARD_USE_LIBGFXINIT)) {
 		struct northbridge_intel_nehalem_config *conf = dev->chip_info;
 		int lightup_ok;
 		printk(BIOS_SPEW, "Initializing VGA without OPROM.");

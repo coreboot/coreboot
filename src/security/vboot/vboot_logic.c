@@ -113,14 +113,14 @@ static int handle_digest_result(void *slot_hash, size_t slot_hash_sz)
 	 * Chrome EC is the only support for vboot_save_hash() &
 	 * vboot_retrieve_hash(), if Chrome EC is not enabled then return.
 	 */
-	if (!IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC))
+	if (!CONFIG(EC_GOOGLE_CHROMEEC))
 		return 0;
 
 	/*
 	 * Nothing to do since resuming on the platform doesn't require
 	 * vboot verification again.
 	 */
-	if (!IS_ENABLED(CONFIG_RESUME_PATH_SAME_AS_BOOT))
+	if (!CONFIG(RESUME_PATH_SAME_AS_BOOT))
 		return 0;
 
 	/*
@@ -128,7 +128,7 @@ static int handle_digest_result(void *slot_hash, size_t slot_hash_sz)
 	 * RW memory init code is not employed. i.e. memory init code
 	 * lives in RO CBFS.
 	 */
-	if (!IS_ENABLED(CONFIG_VBOOT_STARTS_IN_BOOTBLOCK))
+	if (!CONFIG(VBOOT_STARTS_IN_BOOTBLOCK))
 		return 0;
 
 	is_resume = vboot_platform_is_resuming();
@@ -306,7 +306,7 @@ void verstage_main(void)
 	 * which slot to boot.  This is only relevant to vboot if the platform
 	 * does verification of memory init and thus must ensure it resumes with
 	 * the same slot that it booted from. */
-	if (IS_ENABLED(CONFIG_RESUME_PATH_SAME_AS_BOOT) &&
+	if (CONFIG(RESUME_PATH_SAME_AS_BOOT) &&
 		vboot_platform_is_resuming())
 		ctx.flags |= VB2_CONTEXT_S3_RESUME;
 
@@ -318,27 +318,27 @@ void verstage_main(void)
 	timestamp_add_now(TS_END_TPMINIT);
 
 	/* Enable measured boot mode */
-	if (IS_ENABLED(CONFIG_VBOOT_MEASURED_BOOT) &&
+	if (CONFIG(VBOOT_MEASURED_BOOT) &&
 		!(ctx.flags & VB2_CONTEXT_S3_RESUME)) {
 		if (vboot_init_crtm() != VB2_SUCCESS)
 			die("Initializing measured boot mode failed!");
 	}
 
-	if (IS_ENABLED(CONFIG_VBOOT_PHYSICAL_DEV_SWITCH) &&
+	if (CONFIG(VBOOT_PHYSICAL_DEV_SWITCH) &&
 		get_developer_mode_switch())
 		ctx.flags |= VB2_CONTEXT_FORCE_DEVELOPER_MODE;
 
 	if (get_recovery_mode_switch()) {
 		ctx.flags |= VB2_CONTEXT_FORCE_RECOVERY_MODE;
-		if (IS_ENABLED(CONFIG_VBOOT_DISABLE_DEV_ON_RECOVERY))
+		if (CONFIG(VBOOT_DISABLE_DEV_ON_RECOVERY))
 			ctx.flags |= VB2_CONTEXT_DISABLE_DEVELOPER_MODE;
 	}
 
-	if (IS_ENABLED(CONFIG_VBOOT_WIPEOUT_SUPPORTED) &&
+	if (CONFIG(VBOOT_WIPEOUT_SUPPORTED) &&
 		get_wipeout_mode_switch())
 		ctx.flags |= VB2_CONTEXT_FORCE_WIPEOUT_MODE;
 
-	if (IS_ENABLED(CONFIG_VBOOT_LID_SWITCH) && !get_lid_switch())
+	if (CONFIG(VBOOT_LID_SWITCH) && !get_lid_switch())
 		ctx.flags |= VB2_CONTEXT_NOFAIL_BOOT;
 
 	/* Do early init (set up secdata and NVRAM, load GBB) */
@@ -424,7 +424,7 @@ void verstage_main(void)
 	timestamp_add_now(TS_END_TPMLOCK);
 
 	/* Lock rec hash space if available. */
-	if (IS_ENABLED(CONFIG_VBOOT_HAS_REC_HASH_SPACE)) {
+	if (CONFIG(VBOOT_HAS_REC_HASH_SPACE)) {
 		rv = antirollback_lock_space_rec_hash();
 		if (rv) {
 			printk(BIOS_INFO, "Failed to lock rec hash space(%x)\n",

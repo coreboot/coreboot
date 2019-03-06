@@ -207,7 +207,7 @@ static void setup_gpio_route(const struct soc_gpio_map *sus,
 		}
 	}
 
-#if IS_ENABLED(CONFIG_HAVE_SMI_HANDLER)
+#if CONFIG(HAVE_SMI_HANDLER)
 	southcluster_smm_save_gpio_route(route_reg);
 #endif
 }

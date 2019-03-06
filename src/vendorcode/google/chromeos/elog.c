@@ -18,7 +18,7 @@
 #include <elog.h>
 #include <security/vboot/vboot_common.h>
 
-#if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
+#if CONFIG(HAVE_ACPI_RESUME)
 #include <arch/acpi.h>
 #endif
 
@@ -41,7 +41,7 @@ static void elog_add_boot_reason(void *unused)
 	if (dev) {
 		int log_event = 1;
 
-#if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
+#if CONFIG(HAVE_ACPI_RESUME)
 		/* Skip logging developer mode in ACPI resume path */
 		if (acpi_is_wakeup())
 			log_event = 0;

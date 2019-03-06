@@ -135,7 +135,7 @@ static void oem_fan_control(FCH_DATA_BLOCK *FchParams)
 	LibAmdMemCopy ((VOID *)(FchParams->Hwm.HwmFanControl), &oem_factl, (sizeof (FCH_HWM_FAN_CTR) * 5), FchParams->StdHeader);
 
 	/* Enable IMC fan control. the recommended way */
-	if (IS_ENABLED(CONFIG_HUDSON_IMC_FWM)) {
+	if (CONFIG(HUDSON_IMC_FWM)) {
 		/* HwMonitorEnable = TRUE &&  HwmFchtsiAutoOpll ==FALSE to call FchECfancontrolservice */
 		FchParams->Hwm.HwMonitorEnable = TRUE;
 		FchParams->Hwm.HwmFchtsiAutoPoll = FALSE;               /* 0 disable, 1 enable TSI Auto Polling */
@@ -272,7 +272,7 @@ static AGESA_STATUS Fch_Oem_config(UINT32 Func, UINTN FchData, VOID *ConfigPtr)
 		FchParams->LegacyFree = CONFIG_HUDSON_LEGACY_FREE;
 		FchParams->FchReset.SataEnable = hudson_sata_enable();
 		FchParams->FchReset.IdeEnable = hudson_ide_enable();
-		FchParams->FchReset.Xhci0Enable = IS_ENABLED(CONFIG_HUDSON_XHCI_ENABLE);
+		FchParams->FchReset.Xhci0Enable = CONFIG(HUDSON_XHCI_ENABLE);
 		FchParams->FchReset.Xhci1Enable = FALSE;
 	} else if (StdHeader->Func == AMD_INIT_ENV) {
 		FCH_DATA_BLOCK *FchParams = (FCH_DATA_BLOCK *)FchData;
@@ -293,7 +293,7 @@ static AGESA_STATUS Fch_Oem_config(UINT32 Func, UINTN FchData, VOID *ConfigPtr)
 		oem_fan_control(FchParams);
 
 		/* XHCI configuration */
-		FchParams->Usb.Xhci0Enable = IS_ENABLED(CONFIG_HUDSON_XHCI_ENABLE);
+		FchParams->Usb.Xhci0Enable = CONFIG(HUDSON_XHCI_ENABLE);
 		FchParams->Usb.Xhci1Enable = FALSE;
 
 		/* sata configuration */

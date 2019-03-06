@@ -21,7 +21,7 @@ int variant_board_id(void)
 {
 	MAYBE_STATIC uint32_t id = BOARD_ID_INIT;
 
-	if (IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC)) {
+	if (CONFIG(EC_GOOGLE_CHROMEEC)) {
 		if (id == BOARD_ID_INIT) {
 			if (google_chromeec_get_board_version(&id))
 				id = BOARD_ID_UNKNOWN;

@@ -284,7 +284,7 @@ void lb_arch_add_records(struct lb_header *header)
 	struct lb_tsc_info *tsc_info;
 
 	/* Don't advertise a TSC rate unless it's constant. */
-	if (!IS_ENABLED(CONFIG_TSC_CONSTANT_RATE))
+	if (!CONFIG(TSC_CONSTANT_RATE))
 		return;
 
 	freq_khz = tsc_freq_mhz() * 1000;
@@ -302,7 +302,7 @@ void lb_arch_add_records(struct lb_header *header)
 void arch_bootstate_coreboot_exit(void)
 {
 	/* APs are already parked by existing infrastructure. */
-	if (!IS_ENABLED(CONFIG_PARALLEL_MP_AP_WORK))
+	if (!CONFIG(PARALLEL_MP_AP_WORK))
 		return;
 
 	/* APs are waiting for work. Last thing to do is park them. */

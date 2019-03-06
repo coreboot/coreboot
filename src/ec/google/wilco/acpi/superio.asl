@@ -29,7 +29,7 @@ Device (SIO)
 
 		Method (_STA, 0, NotSerialized)
 		{
-#if IS_ENABLED(CONFIG_DRIVERS_UART_8250IO)
+#if CONFIG(DRIVERS_UART_8250IO)
 			Return (0x0f)
 #else
 			Return (Zero)

@@ -39,7 +39,7 @@ void early_mainboard_romstage_entry(void);
 void late_mainboard_romstage_entry(void);
 void get_func_disables(uint32_t *mask, uint32_t *mask2);
 
-#if IS_ENABLED(CONFIG_ENABLE_BUILTIN_COM1)
+#if CONFIG(ENABLE_BUILTIN_COM1)
 void byt_config_com1_and_enable(void);
 #else
 static inline void byt_config_com1_and_enable(void) { }

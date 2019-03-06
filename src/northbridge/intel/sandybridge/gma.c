@@ -625,7 +625,7 @@ static void gma_func0_init(struct device *dev)
 	/* Init graphics power management */
 	gma_pm_init_pre_vbios(dev);
 
-	if (!IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT))
+	if (!CONFIG(MAINBOARD_DO_NATIVE_VGA_INIT))
 		/* PCI Init, will run VBIOS */
 		pci_dev_init(dev);
 
@@ -636,7 +636,7 @@ static void gma_func0_init(struct device *dev)
 
 	/* Running graphics init on S3 breaks Linux drm driver. */
 	if (!acpi_is_wakeup_s3() &&
-	    IS_ENABLED(CONFIG_MAINBOARD_USE_LIBGFXINIT)) {
+	    CONFIG(MAINBOARD_USE_LIBGFXINIT)) {
 		if (vga_disable) {
 			printk(BIOS_INFO,
 			       "IGD is not decoding legacy VGA MEM and IO: skipping NATIVE graphic init\n");

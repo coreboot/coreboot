@@ -40,8 +40,8 @@
  * NULL from cbmem_top() before that point.
  */
 #define CAN_USE_GLOBALS \
-	(!IS_ENABLED(CONFIG_ARCH_X86) || ENV_RAMSTAGE || ENV_POSTCAR || \
-	 IS_ENABLED(CONFIG_NO_CAR_GLOBAL_MIGRATION))
+	(!CONFIG(ARCH_X86) || ENV_RAMSTAGE || ENV_POSTCAR || \
+	 CONFIG(NO_CAR_GLOBAL_MIGRATION))
 
 static inline struct imd *cbmem_get_imd(void)
 {
@@ -303,7 +303,7 @@ void cbmem_get_region(void **baseptr, size_t *size)
 	imd_region_used(cbmem_get_imd(), baseptr, size);
 }
 
-#if ENV_RAMSTAGE || (IS_ENABLED(CONFIG_EARLY_CBMEM_LIST) \
+#if ENV_RAMSTAGE || (CONFIG(EARLY_CBMEM_LIST) \
 	&& (ENV_POSTCAR || ENV_ROMSTAGE))
 /*
  * -fdata-sections doesn't work so well on read only strings. They all

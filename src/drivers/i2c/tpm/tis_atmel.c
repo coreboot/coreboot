@@ -61,7 +61,7 @@ int tis_sendrecv(const uint8_t *sendbuf, size_t sbuf_size,
 	struct stopwatch sw;
 
 	ASSERT(sbuf_size >= 10);
-	if (IS_ENABLED(CONFIG_DRIVER_TPM_DISPLAY_TIS_BYTES)) {
+	if (CONFIG(DRIVER_TPM_DISPLAY_TIS_BYTES)) {
 		/* Display the TPM command */
 		if (sbuf_size >= 10)
 			printk(BIOS_DEBUG, "TPM Command: 0x%08x\n",
@@ -106,7 +106,7 @@ int tis_sendrecv(const uint8_t *sendbuf, size_t sbuf_size,
 	/* Determine if there is additional response data */
 	if (recv_bytes > hdr_bytes) {
 		/* Display the TPM response */
-		if (IS_ENABLED(CONFIG_DRIVER_TPM_DISPLAY_TIS_BYTES))
+		if (CONFIG(DRIVER_TPM_DISPLAY_TIS_BYTES))
 			hexdump(recvbuf, hdr_bytes);
 
 		/* Read the full TPM response */
@@ -120,7 +120,7 @@ int tis_sendrecv(const uint8_t *sendbuf, size_t sbuf_size,
 	*rbuf_len = status;
 
 	/* Display the TPM response */
-	if (IS_ENABLED(CONFIG_DRIVER_TPM_DISPLAY_TIS_BYTES)) {
+	if (CONFIG(DRIVER_TPM_DISPLAY_TIS_BYTES)) {
 		printk(BIOS_DEBUG, "TPM Response: 0x%08x\n",
 			read_at_be32(recvbuf, sizeof(uint16_t)
 				+ sizeof(uint32_t)));

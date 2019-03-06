@@ -24,7 +24,7 @@
 #define GPIO_RESET	GPIO(0, B, 3)
 #define GPIO_SDMMC_PWR	GPIO(4, D, 5)
 
-#if IS_ENABLED(CONFIG_GRU_BASEBOARD_SCARLET)
+#if CONFIG(GRU_BASEBOARD_SCARLET)
 #define GPIO_BL_EN	GPIO(4, C, 5)
 #define GPIO_BACKLIGHT	GPIO(4, C, 6)
 #define GPIO_EC_IN_RW	GPIO(0, A, 1)
@@ -50,7 +50,7 @@
 #define GPIO_WP		GPIO(1, C, 2)
 #endif
 
-#if IS_ENABLED(CONFIG_GRU_HAS_WLAN_RESET)
+#if CONFIG(GRU_HAS_WLAN_RESET)
 #define GPIO_WLAN_RST_L	GPIO(1, B, 3)
 #else
 #define GPIO_WLAN_RST_L	dead_code_t(gpio_t, "no WLAN reset on this board in FW")

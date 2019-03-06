@@ -133,7 +133,7 @@ static void tco_enable_bar(void)
  */
 void tco_configure(void)
 {
-	if (IS_ENABLED(CONFIG_SOC_INTEL_COMMON_BLOCK_TCO_ENABLE_THROUGH_SMBUS))
+	if (CONFIG(SOC_INTEL_COMMON_BLOCK_TCO_ENABLE_THROUGH_SMBUS))
 		tco_enable_bar();
 
 	tco_timer_disable();

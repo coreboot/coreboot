@@ -52,7 +52,7 @@ void acpi_create_gnvs(global_nvs_t *gnvs)
 	gnvs->tpmp = 1;
 
 
-#if IS_ENABLED(CONFIG_CHROMEOS)
+#if CONFIG(CHROMEOS)
 	gnvs->chromeos.vbt2 = google_ec_running_ro() ?
 		ACTIVE_ECFW_RO : ACTIVE_ECFW_RW;
 #endif

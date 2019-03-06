@@ -23,7 +23,7 @@
 #include <device/pci_ops.h>
 #include <version.h>
 
-#if IS_ENABLED(CONFIG_HAVE_SMI_HANDLER)
+#if CONFIG(HAVE_SMI_HANDLER)
 #include <cpu/x86/smm.h>
 #endif
 

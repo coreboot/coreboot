@@ -166,7 +166,7 @@ static const struct fsp_speed_profiles glk_profile = {
 
 static const struct fsp_speed_profiles *get_fsp_profile(void)
 {
-	if (IS_ENABLED(CONFIG_SOC_INTEL_GLK))
+	if (CONFIG(SOC_INTEL_GLK))
 		return &glk_profile;
 	else
 		return &apl_profile;

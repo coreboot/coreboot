@@ -167,11 +167,11 @@ clear_var_mtrr:
 	invd
 	mov	%eax, %cr0
 
-#if IS_ENABLED(CONFIG_INTEL_CAR_NEM)
+#if CONFIG(INTEL_CAR_NEM)
 	jmp car_nem
-#elif IS_ENABLED(CONFIG_INTEL_CAR_CQOS)
+#elif CONFIG(INTEL_CAR_CQOS)
 	jmp car_cqos
-#elif IS_ENABLED(CONFIG_INTEL_CAR_NEM_ENHANCED)
+#elif CONFIG(INTEL_CAR_NEM_ENHANCED)
 	jmp car_nem_enhanced
 #else
 	jmp	.halt_forever /* In case nothing has selected */
@@ -221,7 +221,7 @@ fixed_mtrr_list:
 	.word	MTRR_FIX_4K_F8000
 fixed_mtrr_list_size = . - fixed_mtrr_list
 
-#if IS_ENABLED(CONFIG_INTEL_CAR_NEM)
+#if CONFIG(INTEL_CAR_NEM)
 .global car_nem
 car_nem:
 	/* Disable cache eviction (setup stage) */
@@ -252,7 +252,7 @@ car_nem:
 
 	jmp car_init_done
 
-#elif IS_ENABLED(CONFIG_INTEL_CAR_CQOS)
+#elif CONFIG(INTEL_CAR_CQOS)
 .global car_cqos
 car_cqos:
 	/*
@@ -356,7 +356,7 @@ car_cqos:
 
 	jmp car_init_done
 
-#elif IS_ENABLED(CONFIG_INTEL_CAR_NEM_ENHANCED)
+#elif CONFIG(INTEL_CAR_NEM_ENHANCED)
 .global car_nem_enhanced
 car_nem_enhanced:
 	/* Disable cache eviction (setup stage) */

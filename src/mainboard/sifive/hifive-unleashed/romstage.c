@@ -30,7 +30,7 @@ void main(void)
 	clock_init();
 
 	// re-initialize UART
-	if (IS_ENABLED(CONFIG_CONSOLE_SERIAL))
+	if (CONFIG(CONSOLE_SERIAL))
 		uart_init(CONFIG_UART_FOR_CONSOLE);
 
 	sdram_init();

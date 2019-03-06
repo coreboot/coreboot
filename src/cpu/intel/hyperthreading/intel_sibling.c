@@ -19,7 +19,7 @@
 #include <smp/spinlock.h>
 #include <assert.h>
 
-#if IS_ENABLED(CONFIG_PARALLEL_CPU_INIT)
+#if CONFIG(PARALLEL_CPU_INIT)
 #error Intel hyper-threading requires serialized CPU init
 #endif
 

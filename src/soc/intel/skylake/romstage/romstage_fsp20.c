@@ -166,7 +166,7 @@ asmlinkage void car_stage_entry(void)
 	top_of_ram -= 16*MiB;
 	postcar_frame_add_mtrr(&pcf, top_of_ram, 16*MiB, MTRR_TYPE_WRBACK);
 
-	if (IS_ENABLED(CONFIG_HAVE_SMI_HANDLER)) {
+	if (CONFIG(HAVE_SMI_HANDLER)) {
 		void *smm_base;
 		size_t smm_size;
 		uintptr_t tseg_base;
@@ -225,7 +225,7 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 	m_cfg->RMT = config->Rmt;
 	m_cfg->CmdTriStateDis = config->CmdTriStateDis;
 	m_cfg->DdrFreqLimit = config->DdrFreqLimit;
-	m_cfg->VmxEnable = IS_ENABLED(CONFIG_ENABLE_VMX);
+	m_cfg->VmxEnable = CONFIG(ENABLE_VMX);
 	m_cfg->PrmrrSize = config->PrmrrSize;
 	for (i = 0; i < ARRAY_SIZE(config->PcieRpEnable); i++) {
 		if (config->PcieRpEnable[i])
@@ -281,7 +281,7 @@ void soc_update_memory_params_for_mma(FSP_M_CONFIG *memory_cfg,
 		struct mma_config_param *mma_cfg)
 {
 	/* Boot media is memory mapped for Skylake and Kabylake (SPI). */
-	assert(IS_ENABLED(CONFIG_BOOT_DEVICE_MEMORY_MAPPED));
+	assert(CONFIG(BOOT_DEVICE_MEMORY_MAPPED));
 
 	memory_cfg->MmaTestContentPtr =
 			(uintptr_t) rdev_mmap_full(&mma_cfg->test_content);

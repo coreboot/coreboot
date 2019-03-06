@@ -30,7 +30,7 @@ Method(_PRT)
 		Package(){0x000FFFFF, 0, 0, CSE_INT},
 		Package(){0x0011FFFF, 0, 0, ISH_INT},
 		Package(){0x0012FFFF, 0, 0, SATA_INT},
-#if IS_ENABLED(CONFIG_SOC_INTEL_GLK)
+#if CONFIG(SOC_INTEL_GLK)
 		Package(){0x000CFFFF, 0, 0, CNVI_INT},
 		Package(){0x0013FFFF, 0, 0, PIRQF_INT},
 		Package(){0x0013FFFF, 1, 0, PIRQF_INT},

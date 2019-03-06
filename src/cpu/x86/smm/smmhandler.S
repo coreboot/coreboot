@@ -77,7 +77,7 @@
 #endif
 .global smm_handler_start
 smm_handler_start:
-#if IS_ENABLED(CONFIG_SMM_LAPIC_REMAP_MITIGATION)
+#if CONFIG(SMM_LAPIC_REMAP_MITIGATION)
 	/* Check if the LAPIC register block overlaps with SMM.
 	 * This block needs to work without data accesses because they
 	 * may be routed into the LAPIC register block.
@@ -139,7 +139,7 @@ untampered_lapic:
 	/* This is an ugly hack, and we should find a way to read the CPU index
 	 * without relying on the LAPIC ID.
 	 */
-#if IS_ENABLED(CONFIG_CPU_AMD_AGESA_FAMILY15_TN)
+#if CONFIG(CPU_AMD_AGESA_FAMILY15_TN)
 	/* LAPIC IDs start from 0x10; map that to the proper core index */
 	subl	$0x10, %ecx
 #endif

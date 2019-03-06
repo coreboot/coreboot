@@ -37,7 +37,7 @@ void smm_region(void **start, size_t *size)
 size_t mmap_region_granularity(void)
 {
 	/* Align to TSEG size when SMM is in use, and 8MiB by default */
-	return IS_ENABLED(CONFIG_HAVE_SMI_HANDLER) ? smm_region_size()
+	return CONFIG(HAVE_SMI_HANDLER) ? smm_region_size()
 		: 8 << 20;
 }
 

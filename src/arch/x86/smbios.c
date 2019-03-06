@@ -30,7 +30,7 @@
 #include <memory_info.h>
 #include <spd.h>
 #include <cbmem.h>
-#if IS_ENABLED(CONFIG_CHROMEOS)
+#if CONFIG(CHROMEOS)
 #include <vendorcode/google/chromeos/gnvs.h>
 #endif
 
@@ -350,7 +350,7 @@ static int smbios_write_type0(unsigned long *current, int handle)
 	t->length = len - 2;
 
 	t->vendor = smbios_add_string(t->eos, "coreboot");
-#if !IS_ENABLED(CONFIG_CHROMEOS)
+#if !CONFIG(CHROMEOS)
 	t->bios_release_date = smbios_add_string(t->eos, coreboot_dmi_date);
 
 	t->bios_version = smbios_add_string(t->eos,
@@ -359,12 +359,12 @@ static int smbios_write_type0(unsigned long *current, int handle)
 #define SPACES \
 	"                                                                  "
 	t->bios_release_date = smbios_add_string(t->eos, coreboot_dmi_date);
-#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+#if CONFIG(HAVE_ACPI_TABLES)
 	u32 version_offset = (u32)smbios_string_table_len(t->eos);
 #endif
 	t->bios_version = smbios_add_string(t->eos, SPACES);
 
-#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+#if CONFIG(HAVE_ACPI_TABLES)
 	/* SMBIOS offsets start at 1 rather than 0 */
 	chromeos_get_chromeos_acpi()->vbt10 =
 		(u32)t->eos + (version_offset - 1);
@@ -390,10 +390,10 @@ static int smbios_write_type0(unsigned long *current, int handle)
 		BIOS_CHARACTERISTICS_SELECTABLE_BOOT |
 		BIOS_CHARACTERISTICS_UPGRADEABLE;
 
-	if (IS_ENABLED(CONFIG_CARDBUS_PLUGIN_SUPPORT))
+	if (CONFIG(CARDBUS_PLUGIN_SUPPORT))
 		t->bios_characteristics |= BIOS_CHARACTERISTICS_PC_CARD;
 
-	if (IS_ENABLED(CONFIG_HAVE_ACPI_TABLES))
+	if (CONFIG(HAVE_ACPI_TABLES))
 		t->bios_characteristics_ext1 = BIOS_EXT1_CHARACTERISTICS_ACPI;
 
 	t->bios_characteristics_ext2 = BIOS_EXT2_CHARACTERISTICS_TARGET;
@@ -402,7 +402,7 @@ static int smbios_write_type0(unsigned long *current, int handle)
 	return len;
 }
 
-#if !IS_ENABLED(CONFIG_SMBIOS_PROVIDED_BY_MOBO)
+#if !CONFIG(SMBIOS_PROVIDED_BY_MOBO)
 
 const char *__weak smbios_mainboard_serial_number(void)
 {
@@ -753,7 +753,7 @@ unsigned long smbios_write_tables(unsigned long current)
 		handle++));
 	update_max(len, max_struct_size, smbios_write_type11(&current,
 		&handle));
-	if (IS_ENABLED(CONFIG_ELOG))
+	if (CONFIG(ELOG))
 		update_max(len, max_struct_size,
 			elog_smbios_write_type15(&current,handle++));
 	update_max(len, max_struct_size, smbios_write_type17(&current,

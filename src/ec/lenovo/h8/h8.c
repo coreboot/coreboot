@@ -192,7 +192,7 @@ u8 h8_build_id_and_function_spec_version(char *buf, u8 buf_len)
 	return i;
 }
 
-#if IS_ENABLED(CONFIG_GENERATE_SMBIOS_TABLES)
+#if CONFIG(GENERATE_SMBIOS_TABLES)
 static void h8_smbios_strings(struct device *dev, struct smbios_type11 *t)
 {
 	char tpec[] = "IBM ThinkPad Embedded Controller -[                 ]-";
@@ -208,7 +208,7 @@ static void h8_init(struct device *dev)
 	pc_keyboard_init(NO_AUX_DEVICE);
 }
 
-#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+#if CONFIG(HAVE_ACPI_TABLES)
 static const char *h8_acpi_name(const struct device *dev)
 {
 	return "EC";
@@ -216,10 +216,10 @@ static const char *h8_acpi_name(const struct device *dev)
 #endif
 
 struct device_operations h8_dev_ops = {
-#if IS_ENABLED(CONFIG_GENERATE_SMBIOS_TABLES)
+#if CONFIG(GENERATE_SMBIOS_TABLES)
 	.get_smbios_strings = h8_smbios_strings,
 #endif
-#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+#if CONFIG(HAVE_ACPI_TABLES)
 	.acpi_fill_ssdt_generator = h8_ssdt_generator,
 	.acpi_name = h8_acpi_name,
 #endif
@@ -312,7 +312,7 @@ static void h8_enable(struct device *dev)
 	if (get_option(&val, "volume") == CB_SUCCESS && !acpi_is_wakeup_s3())
 		ec_write(H8_VOLUME_CONTROL, val);
 
-	val = (IS_ENABLED(CONFIG_H8_SUPPORT_BT_ON_WIFI) || h8_has_bdc(dev)) &&
+	val = (CONFIG(H8_SUPPORT_BT_ON_WIFI) || h8_has_bdc(dev)) &&
 		h8_bluetooth_nv_enable();
 	h8_bluetooth_enable(val);
 
@@ -340,7 +340,7 @@ static void h8_enable(struct device *dev)
 
 	h8_set_audio_mute(0);
 
-#if !IS_ENABLED(CONFIG_H8_DOCK_EARLY_INIT)
+#if !CONFIG(H8_DOCK_EARLY_INIT)
 	h8_mainboard_init_dock();
 #endif
 }

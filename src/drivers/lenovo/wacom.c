@@ -49,12 +49,12 @@ drivers_lenovo_is_wacom_present(void)
 	if (result != -1)
 		return result;
 
-	if (IS_ENABLED(CONFIG_DIGITIZER_PRESENT)) {
+	if (CONFIG(DIGITIZER_PRESENT)) {
 		printk (BIOS_INFO, "Digitizer state forced as present\n");
 		return (result = 1);
 	}
 
-	if (IS_ENABLED(CONFIG_DIGITIZER_ABSENT)) {
+	if (CONFIG(DIGITIZER_ABSENT)) {
 		printk (BIOS_INFO, "Digitizer state forced as absent\n");
 		return (result = 0);
 	}

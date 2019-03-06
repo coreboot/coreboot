@@ -55,7 +55,7 @@ static void display_hob_info(FSP_INFO_HEADER *fsp_info_header)
 	int missing_hob = 0;
 	void *hob_list_ptr = get_hob_list();
 
-	if (!IS_ENABLED(CONFIG_DISPLAY_HOBS))
+	if (!CONFIG(DISPLAY_HOBS))
 		return;
 
 	/* Verify the HOBs */
@@ -117,12 +117,12 @@ void fsp_run_silicon_init(FSP_INFO_HEADER *fsp_info_header, int is_s3_wakeup)
 	soc_silicon_init_params(&silicon_init_params);
 
 	/* Locate VBT and pass to FSP GOP */
-	if (IS_ENABLED(CONFIG_RUN_FSP_GOP))
+	if (CONFIG(RUN_FSP_GOP))
 		load_vbt(is_s3_wakeup, &silicon_init_params);
 	mainboard_silicon_init_params(&silicon_init_params);
 
 	/* Display the UPD data */
-	if (IS_ENABLED(CONFIG_DISPLAY_UPD_DATA))
+	if (CONFIG(DISPLAY_UPD_DATA))
 		soc_display_silicon_init_params(original_params,
 			&silicon_init_params);
 
@@ -139,7 +139,7 @@ void fsp_run_silicon_init(FSP_INFO_HEADER *fsp_info_header, int is_s3_wakeup)
 	printk(BIOS_DEBUG, "FspSiliconInit returned 0x%08x\n", status);
 
 	/* Mark graphics init done after SiliconInit if VBT was provided */
-#if IS_ENABLED(CONFIG_RUN_FSP_GOP)
+#if CONFIG(RUN_FSP_GOP)
 	/* GraphicsConfigPtr doesn't exist in Quark X1000's FSP, so this needs
 	 * to be #if'd out instead of using if (). */
 	if (silicon_init_params.GraphicsConfigPtr)
@@ -152,10 +152,10 @@ void fsp_run_silicon_init(FSP_INFO_HEADER *fsp_info_header, int is_s3_wakeup)
 
 static void fsp_cache_save(struct prog *fsp)
 {
-	if (IS_ENABLED(CONFIG_DISPLAY_SMM_MEMORY_MAP))
+	if (CONFIG(DISPLAY_SMM_MEMORY_MAP))
 		smm_memory_map();
 
-	if (IS_ENABLED(CONFIG_NO_STAGE_CACHE))
+	if (CONFIG(NO_STAGE_CACHE))
 		return;
 
 	printk(BIOS_DEBUG, "FSP: Saving binary in cache\n");
@@ -192,7 +192,7 @@ void fsp_load(void)
 	if (load_done)
 		return;
 
-	if (is_s3_wakeup && !IS_ENABLED(CONFIG_NO_STAGE_CACHE)) {
+	if (is_s3_wakeup && !CONFIG(NO_STAGE_CACHE)) {
 		printk(BIOS_DEBUG, "FSP: Loading binary from cache\n");
 		stage_cache_load_stage(STAGE_REFCODE, &fsp);
 	} else {

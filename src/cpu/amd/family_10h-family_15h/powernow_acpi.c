@@ -187,7 +187,7 @@ void amd_generate_powernow(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 	uint8_t enable_c_states;
 
 	enable_c_states = 0;
-#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+#if CONFIG(HAVE_ACPI_TABLES)
 	if (get_option(&nvram, "cpu_c_states") == CB_SUCCESS)
 		enable_c_states = !!nvram;
 #endif

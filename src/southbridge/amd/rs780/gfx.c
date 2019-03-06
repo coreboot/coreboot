@@ -380,7 +380,7 @@ static void internal_gfx_pci_dev_init(struct device *dev)
 
 	/* GFX_InitFBAccess finished. */
 
-#if IS_ENABLED(CONFIG_GFXUMA) /* for UMA mode. */
+#if CONFIG(GFXUMA) /* for UMA mode. */
 	/* GFX_StartMC. */
 	set_nbmc_enable_bits(nb_dev, 0x02, 0x00000000, 0x80000000);
 	set_nbmc_enable_bits(nb_dev, 0x01, 0x00000000, 0x00000001);
@@ -442,7 +442,7 @@ static void internal_gfx_pci_dev_init(struct device *dev)
 	vgainfo.sHeader.ucTableFormatRevision = 1;
 	vgainfo.sHeader.ucTableContentRevision = 2;
 
-#if !IS_ENABLED(CONFIG_GFXUMA) /* SP mode. */
+#if !CONFIG(GFXUMA) /* SP mode. */
 	// Side port support is incomplete, do not use it
 	// These parameters must match the motherboard
 	vgainfo.ulBootUpSidePortClock = 667*100;
@@ -627,7 +627,7 @@ static void internal_gfx_pci_dev_init(struct device *dev)
 	/* Transfer the Table to VBIOS. */
 	pointer = (u32 *)&vgainfo;
 	for (i = 0; i < sizeof(ATOM_INTEGRATED_SYSTEM_INFO_V2); i+=4) {
-#if IS_ENABLED(CONFIG_GFXUMA)
+#if CONFIG(GFXUMA)
 		*GpuF0MMReg = 0x80000000 + uma_memory_size - 512 + i;
 #else
 		*GpuF0MMReg = 0x80000000 + 0x8000000 - 512 + i;
@@ -756,7 +756,7 @@ static void rs780_internal_gfx_enable(struct device *dev)
 	struct device *nb_dev = pcidev_on_root(0x0, 0);
 	msr_t sysmem;
 
-#if !IS_ENABLED(CONFIG_GFXUMA)
+#if !CONFIG(GFXUMA)
 	u32 FB_Start, FB_End;
 #endif
 
@@ -799,7 +799,7 @@ static void rs780_internal_gfx_enable(struct device *dev)
 	set_nbmc_enable_bits(nb_dev, 0x25, 0xffffffff, 0x111f111f);
 	set_htiu_enable_bits(nb_dev, 0x37, 1<<24, 1<<24);
 
-#if IS_ENABLED(CONFIG_GFXUMA)
+#if CONFIG(GFXUMA)
 	/* GFX_InitUMA. */
 	/* Copy CPU DDR Controller to NB MC. */
 	struct device *k8_f1 = pcidev_on_root(0x18, 1);

@@ -34,7 +34,7 @@ static void dnv_ns_uart_read_resources(struct device *dev)
 {
 	/* read resources to be visible in the log*/
 	pci_dev_read_resources(dev);
-	if (!IS_ENABLED(CONFIG_LEGACY_UART_MODE))
+	if (!CONFIG(LEGACY_UART_MODE))
 		return;
 	struct resource *res = find_resource(dev, PCI_BASE_ADDRESS_0);
 	if (res == NULL)
@@ -88,6 +88,6 @@ void platform_fsp_notify_status(enum fsp_notify_phase phase)
 {
 	if (phase != END_OF_FIRMWARE)
 		return;
-	if (IS_ENABLED(CONFIG_LEGACY_UART_MODE))
+	if (CONFIG(LEGACY_UART_MODE))
 		hide_hsuarts();
 }

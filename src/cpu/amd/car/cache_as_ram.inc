@@ -141,7 +141,7 @@ CAR_FAM10_out:
 
 CAR_FAM10_errata_applied:
 
-#if IS_ENABLED(CONFIG_MMCONF_SUPPORT)
+#if CONFIG(MMCONF_SUPPORT)
    #if (CONFIG_MMCONF_BASE_ADDRESS > 0xFFFFFFFF)
    #error "MMCONF_BASE_ADDRESS too big"
    #elif (CONFIG_MMCONF_BASE_ADDRESS & 0xFFFFF)
@@ -315,7 +315,7 @@ clear_fixed_var_mtrr_out:
 	 */
 .endm
 
-#if IS_ENABLED(CONFIG_CPU_AMD_MODEL_10XXX)
+#if CONFIG(CPU_AMD_MODEL_10XXX)
   #if CacheSize > 0x80000
   #error Invalid CAR size, must be at most 128k (processor limit is 512k).
   #endif

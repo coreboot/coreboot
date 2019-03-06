@@ -240,7 +240,7 @@ void lpc_io_setup_comm_a_b(void)
 	uint16_t com_enable = LPC_IOE_COMA_EN;
 
 	/* ComB Range 2F8h-2FFh [6:4] */
-	if (IS_ENABLED(CONFIG_SOC_INTEL_COMMON_BLOCK_LPC_COMB_ENABLE)) {
+	if (CONFIG(SOC_INTEL_COMMON_BLOCK_LPC_COMB_ENABLE)) {
 		com_ranges |= LPC_IOD_COMB_RANGE;
 		com_enable |= LPC_IOE_COMB_EN;
 	}

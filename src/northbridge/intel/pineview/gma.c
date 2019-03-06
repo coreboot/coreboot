@@ -268,7 +268,7 @@ static void gma_func0_init(struct device *dev)
 	reg32 |= PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY | PCI_COMMAND_IO;
 	pci_write_config32(dev, PCI_COMMAND, reg32);
 
-	if (!IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT)) {
+	if (!CONFIG(MAINBOARD_DO_NATIVE_VGA_INIT)) {
 		/* PCI Init, will run VBIOS */
 		pci_dev_init(dev);
 	} else {

@@ -107,7 +107,7 @@ _cache_as_ram_setup:
 	pushl	%eax
 	call	romstage_main
 
-#if IS_ENABLED(CONFIG_POSTCAR_STAGE)
+#if CONFIG(POSTCAR_STAGE)
 
 /* We do not return. Execution continues with run_postcar_phase()
  * calling to chipset_teardown_car below.
@@ -138,7 +138,7 @@ chipset_teardown_car:
 /* Register %esp is preserved in AMD_DISABLE_STACK. */
 	AMD_DISABLE_STACK
 
-#if IS_ENABLED(CONFIG_POSTCAR_STAGE)
+#if CONFIG(POSTCAR_STAGE)
 
 	jmp	*%esp
 

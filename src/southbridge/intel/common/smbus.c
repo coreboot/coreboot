@@ -22,7 +22,7 @@
 #include "smbus.h"
 
 
-#if IS_ENABLED(CONFIG_DEBUG_SMBUS)
+#if CONFIG(DEBUG_SMBUS)
 #define dprintk(args...) printk(BIOS_DEBUG, ##args)
 #else
 #define dprintk(args...) do {} while (0)
@@ -369,8 +369,8 @@ int do_smbus_block_write(unsigned int smbus_base, u8 device, u8 cmd,
 /* Only since ICH5 */
 static int has_i2c_read_command(void)
 {
-	if (IS_ENABLED(CONFIG_SOUTHBRIDGE_INTEL_I82371EB) ||
-	    IS_ENABLED(CONFIG_SOUTHBRIDGE_INTEL_I82801DX))
+	if (CONFIG(SOUTHBRIDGE_INTEL_I82371EB) ||
+	    CONFIG(SOUTHBRIDGE_INTEL_I82801DX))
 		return 0;
 	return 1;
 }

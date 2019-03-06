@@ -89,15 +89,15 @@ void acpi_init_gnvs(global_nvs_t *gnvs)
 	/* Top of Low Memory (start of resource allocation) */
 	gnvs->tolm = nc_read_top_of_low_memory();
 
-#if IS_ENABLED(CONFIG_CONSOLE_CBMEM)
+#if CONFIG(CONSOLE_CBMEM)
 	/* Update the mem console pointer. */
 	gnvs->cbmc = (u32)cbmem_find(CBMEM_ID_CONSOLE);
 #endif
 
-#if IS_ENABLED(CONFIG_CHROMEOS)
+#if CONFIG(CHROMEOS)
 	/* Initialize Verified Boot data */
 	chromeos_init_chromeos_acpi(&(gnvs->chromeos));
-#if IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC)
+#if CONFIG(EC_GOOGLE_CHROMEEC)
 	gnvs->chromeos.vbt2 = google_ec_running_ro() ?
 		ACTIVE_ECFW_RO : ACTIVE_ECFW_RW;
 #endif
@@ -492,12 +492,12 @@ unsigned long southcluster_write_acpi_tables(struct device *device,
 	acpi_header_t *ssdt2;
 	global_nvs_t *gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
 
-	if (!IS_ENABLED(CONFIG_DISABLE_HPET)) {
+	if (!CONFIG(DISABLE_HPET)) {
 		current = acpi_write_hpet(device, current, rsdp);
 		current = acpi_align_current(current);
 	}
 
-	if (IS_ENABLED(CONFIG_INTEL_GMA_ADD_VBT)) {
+	if (CONFIG(INTEL_GMA_ADD_VBT)) {
 		igd_opregion_t *opregion;
 
 		printk(BIOS_DEBUG, "ACPI:    * IGD OpRegion\n");
@@ -543,7 +543,7 @@ void southcluster_inject_dsdt(struct device *device)
 	if (gnvs) {
 		acpi_create_gnvs(gnvs);
 		/* Fill in the Wifi Region id */
-		if (IS_ENABLED(CONFIG_HAVE_REGULATORY_DOMAIN))
+		if (CONFIG(HAVE_REGULATORY_DOMAIN))
 			gnvs->cid1 = wifi_regulatory_domain();
 		else
 			gnvs->cid1 = WRDD_DEFAULT_REGULATORY_DOMAIN;

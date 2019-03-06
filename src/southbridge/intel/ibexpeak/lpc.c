@@ -74,7 +74,7 @@ static void pch_enable_serial_irqs(struct device *dev)
 	/* Set packet length and toggle silent mode bit for one frame. */
 	pci_write_config8(dev, SERIRQ_CNTL,
 			  (1 << 7) | (1 << 6) | ((21 - 17) << 2) | (0 << 0));
-#if !IS_ENABLED(CONFIG_SERIRQ_CONTINUOUS_MODE)
+#if !CONFIG(SERIRQ_CONTINUOUS_MODE)
 	pci_write_config8(dev, SERIRQ_CNTL,
 			  (1 << 7) | (0 << 6) | ((21 - 17) << 2) | (0 << 0));
 #endif
@@ -283,7 +283,7 @@ static void pch_rtc_init(struct device *dev)
 	if (rtc_failed) {
 		reg8 &= ~RTC_BATTERY_DEAD;
 		pci_write_config8(dev, GEN_PMCON_3, reg8);
-#if IS_ENABLED(CONFIG_ELOG)
+#if CONFIG(ELOG)
 		elog_add_event(ELOG_TYPE_RTC_RESET);
 #endif
 	}
@@ -798,8 +798,8 @@ static void southbridge_fill_ssdt(struct device *device)
 static void lpc_final(struct device *dev)
 {
 	/* Call SMM finalize() handlers before resume */
-	if (IS_ENABLED(CONFIG_HAVE_SMI_HANDLER)) {
-		if (IS_ENABLED(CONFIG_INTEL_CHIPSET_LOCKDOWN) ||
+	if (CONFIG(HAVE_SMI_HANDLER)) {
+		if (CONFIG(INTEL_CHIPSET_LOCKDOWN) ||
 		    acpi_is_wakeup_s3()) {
 			outb(APM_CNT_FINALIZE, APM_CNT);
 		}

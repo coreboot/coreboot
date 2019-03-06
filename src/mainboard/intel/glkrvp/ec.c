@@ -54,7 +54,7 @@ static void bootblock_ec_init(void)
 
 void mainboard_ec_init(void)
 {
-	if (IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC)) {
+	if (CONFIG(EC_GOOGLE_CHROMEEC)) {
 		if (ENV_RAMSTAGE)
 			ramstage_ec_init();
 		else if (ENV_BOOTBLOCK)
@@ -69,7 +69,7 @@ void mainboard_ec_init(void)
 			| LPC_IOE_LGE_200);
 	}
 
-	if (IS_ENABLED(CONFIG_GLK_INTEL_EC)) {
+	if (CONFIG(GLK_INTEL_EC)) {
 		printk(BIOS_ERR, "S3 Hack Enable ACPI mode: outb(0xaa,0x66)\n");
 		outb(0xaa, 0x66);
 		printk(BIOS_INFO, "Hack to turn on the CPU fan\n");

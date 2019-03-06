@@ -69,7 +69,7 @@ uint32_t sku_id(void)
 	static uint32_t cached_sku_id = BOARD_ID_INIT;
 
 	/* On Flapjack, getting the SKU via CBI. */
-	if (IS_ENABLED(CONFIG_BOARD_GOOGLE_FLAPJACK)) {
+	if (CONFIG(BOARD_GOOGLE_FLAPJACK)) {
 		if (cached_sku_id == BOARD_ID_INIT &&
 		    google_chromeec_cbi_get_sku_id(&cached_sku_id))
 			cached_sku_id = FLAPJACK_UNDEF_SKU_ID;
@@ -77,7 +77,7 @@ uint32_t sku_id(void)
 	}
 
 	/* Quirk for KUKUI: All P1/SKU0 had incorrectly set SKU=1. */
-	if (IS_ENABLED(CONFIG_BOARD_GOOGLE_KUKUI)) {
+	if (CONFIG(BOARD_GOOGLE_KUKUI)) {
 		if (cached_sku_id == BOARD_ID_INIT && board_id() == 1) {
 			cached_sku_id = 0;
 			return cached_sku_id;

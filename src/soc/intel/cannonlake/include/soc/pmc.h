@@ -116,7 +116,7 @@
 #define  GPE0_DWX_MASK			0xf
 #define  GPE0_DW_SHIFT(x)		(4*(x))
 
-#if IS_ENABLED(CONFIG_SOC_INTEL_CANNONLAKE_PCH_H)
+#if CONFIG(SOC_INTEL_CANNONLAKE_PCH_H)
 #define PMC_GPP_A			0x0
 #define PMC_GPP_B			0x1
 #define PMC_GPP_C			0x2

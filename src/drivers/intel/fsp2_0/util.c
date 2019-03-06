@@ -80,7 +80,7 @@ enum cb_err fsp_validate_component(struct fsp_header *hdr,
 
 	rdev_munmap(rdev, membase);
 
-	if (IS_ENABLED(CONFIG_DISPLAY_FSP_HEADER))
+	if (CONFIG(DISPLAY_FSP_HEADER))
 		fsp_print_header_info(hdr);
 
 	/* Check if size specified in the header matches the cbfs file size */

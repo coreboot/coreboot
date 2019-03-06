@@ -61,7 +61,7 @@ void soc_enable(struct device *dev);
 
 void acpi_fill_in_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt);
 
-#if IS_ENABLED(CONFIG_ELOG)
+#if CONFIG(ELOG)
 void soc_log_state(void);
 #endif
 #else

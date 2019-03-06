@@ -49,7 +49,7 @@ typedef union _PCI_ADDR {
 #endif
 #define FIXUP_PTR(ptr)  ptr
 
-#if IS_ENABLED(CONFIG_SB800_IMC_FWM)
+#if CONFIG(SB800_IMC_FWM)
 	#define IMC_ENABLE_OVER_WRITE        0x01
 #endif
 

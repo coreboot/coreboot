@@ -29,7 +29,7 @@
 #include <soc/southbridge.h>
 #include <soc/pci_devs.h>
 
-#define SPI_DEBUG_DRIVER IS_ENABLED(CONFIG_DEBUG_SPI_FLASH)
+#define SPI_DEBUG_DRIVER CONFIG(DEBUG_SPI_FLASH)
 
 static uintptr_t spibar;
 

@@ -220,7 +220,7 @@ void exception_init(void)
 	printk(BIOS_DEBUG, "ARM64: Exception handlers installed.\n");
 
 	/* Only spend time testing on debug builds that are trying to detect more errors. */
-	if (IS_ENABLED(CONFIG_FATAL_ASSERTS)) {
+	if (CONFIG(FATAL_ASSERTS)) {
 		printk(BIOS_DEBUG, "ARM64: Testing exception\n");
 		test_exception();
 		printk(BIOS_DEBUG, "ARM64: Done test exception\n");

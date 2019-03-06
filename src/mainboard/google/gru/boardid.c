@@ -22,7 +22,7 @@
 static const int id_readings[] = {
 /*	ID : Volts : ADC value :    Bucket	*/
 /*	==   =====   =========    ==========	*/
-#if IS_ENABLED(CONFIG_BOARD_GOOGLE_KEVIN)
+#if CONFIG(BOARD_GOOGLE_KEVIN)
 /*	 0 : 0.109V:        62 :    0 -   91	*/	91,
 #else
 /*	 0 : 0.074V:        42 :    0 -   81	*/	81,
@@ -80,7 +80,7 @@ uint32_t ram_code(void)
 
 uint32_t sku_id(void)
 {
-	if (!IS_ENABLED(CONFIG_GRU_BASEBOARD_SCARLET))
+	if (!CONFIG(GRU_BASEBOARD_SCARLET))
 		return UNDEFINED_STRAPPING_ID;
 
 	static uint32_t sku_id = UNDEFINED_STRAPPING_ID;

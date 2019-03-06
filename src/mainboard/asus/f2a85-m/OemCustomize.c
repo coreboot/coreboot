@@ -134,8 +134,8 @@ static const PCIe_COMPLEX_DESCRIPTOR PcieComplex = {
 void board_BeforeInitReset(struct sysinfo *cb, AMD_RESET_PARAMS *Reset)
 {
 	FCH_RESET_INTERFACE *FchReset = &Reset->FchInterface;
-	FchReset->Xhci0Enable = IS_ENABLED(CONFIG_HUDSON_XHCI_ENABLE);
-	FchReset->Xhci1Enable = IS_ENABLED(CONFIG_HUDSON_XHCI_ENABLE);
+	FchReset->Xhci0Enable = CONFIG(HUDSON_XHCI_ENABLE);
+	FchReset->Xhci1Enable = CONFIG(HUDSON_XHCI_ENABLE);
 }
 
 void board_BeforeInitEarly(struct sysinfo *cb, AMD_EARLY_PARAMS *InitEarly)
@@ -179,9 +179,9 @@ static CONST PSO_ENTRY ROMDATA MemoryTable_M_LE[] = {
 
 void board_BeforeInitPost(struct sysinfo *cb, AMD_POST_PARAMS *InitPost)
 {
-	if (IS_ENABLED(CONFIG_BOARD_ASUS_F2A85_M) || IS_ENABLED(CONFIG_BOARD_ASUS_F2A85_M_PRO))
+	if (CONFIG(BOARD_ASUS_F2A85_M) || CONFIG(BOARD_ASUS_F2A85_M_PRO))
 		InitPost->MemConfig.PlatformMemoryConfiguration = (PSO_ENTRY *) MemoryTable_M;
-	else if (IS_ENABLED(CONFIG_BOARD_ASUS_F2A85_M_LE))
+	else if (CONFIG(BOARD_ASUS_F2A85_M_LE))
 		InitPost->MemConfig.PlatformMemoryConfiguration = (PSO_ENTRY *) MemoryTable_M_LE;
 }
 

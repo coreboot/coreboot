@@ -45,7 +45,7 @@ static uintptr_t sbi_set_timer(uint64_t when)
 	return 0;
 }
 
-#if IS_ENABLED(CONFIG_CONSOLE_SERIAL)
+#if CONFIG(CONSOLE_SERIAL)
 static uintptr_t sbi_console_putchar(uint8_t ch)
 {
 	uart_tx_byte(CONFIG_UART_FOR_CONSOLE, ch);
@@ -86,7 +86,7 @@ void handle_sbi(trapframe *tf)
 		ret = sbi_set_timer(arg0);
 #endif
 		break;
-#if IS_ENABLED(CONFIG_CONSOLE_SERIAL)
+#if CONFIG(CONSOLE_SERIAL)
 	case SBI_CONSOLE_PUTCHAR:
 		ret = sbi_console_putchar(arg0);
 		break;

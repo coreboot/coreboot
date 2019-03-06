@@ -161,7 +161,7 @@ int chipset_prev_sleep_state(struct chipset_power_state *ps)
 	if (ps->pm1_sts & WAK_STS) {
 		switch (acpi_sleep_from_pm1(ps->pm1_cnt)) {
 		case ACPI_S3:
-			if (IS_ENABLED(CONFIG_HAVE_ACPI_RESUME))
+			if (CONFIG(HAVE_ACPI_RESUME))
 				prev_sleep_state = ACPI_S3;
 			break;
 		case ACPI_S5:
@@ -229,7 +229,7 @@ void soc_memory_init_params(struct romstage_params *params,
 
 	config = dev->chip_info;
 	printk(BIOS_DEBUG, "Updating UPD values for MemoryInit\n");
-	upd->PcdMrcInitTsegSize = IS_ENABLED(CONFIG_HAVE_SMI_HANDLER) ?
+	upd->PcdMrcInitTsegSize = CONFIG(HAVE_SMI_HANDLER) ?
 		config->PcdMrcInitTsegSize : 0;
 	upd->PcdMrcInitMmioSize = config->PcdMrcInitMmioSize;
 	upd->PcdMrcInitSpdAddr1 = config->PcdMrcInitSpdAddr1;

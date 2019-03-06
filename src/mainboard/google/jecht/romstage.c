@@ -47,7 +47,7 @@ void mainboard_romstage_entry(struct romstage_params *rp)
 	/* Call into the real romstage main with this board's attributes. */
 	romstage_common(rp);
 
-	if (IS_ENABLED(CONFIG_CHROMEOS))
+	if (CONFIG(CHROMEOS))
 		init_bootmode_straps();
 }
 

@@ -19,7 +19,7 @@
 #include <device/pci_ops.h>
 #include <console/console.h>
 
-#if IS_ENABLED(CONFIG_VGA_ROM_RUN)
+#if CONFIG(VGA_ROM_RUN)
 
 #include <arch/interrupt.h>
 #include <x86emu/x86emu.h>
@@ -96,7 +96,7 @@ static void mainboard_enable(struct device *dev)
 {
 	(void)dev;
 
-#if IS_ENABLED(CONFIG_VGA_ROM_RUN)
+#if CONFIG(VGA_ROM_RUN)
 	printk(BIOS_DEBUG, "Installing INT15 handler...\n");
 	mainboard_interrupt_handlers(0x15, &vx900_int15_handler);
 #endif

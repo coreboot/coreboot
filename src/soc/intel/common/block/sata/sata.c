@@ -52,7 +52,7 @@ static void sata_final(struct device *dev)
 	/* Read Ports Implemented (GHC_PI) */
 	port_impl = read32(ahcibar + SATA_ABAR_PORT_IMPLEMENTED);
 
-	if (IS_ENABLED(CONFIG_SOC_AHCI_PORT_IMPLEMENTED_INVERT))
+	if (CONFIG(SOC_AHCI_PORT_IMPLEMENTED_INVERT))
 		port_impl = ~port_impl;
 
 	port_impl &= 0x07; /* bit 0-2 */

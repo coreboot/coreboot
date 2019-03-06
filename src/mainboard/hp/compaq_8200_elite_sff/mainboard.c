@@ -19,7 +19,7 @@
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <smbios.h>
 
-#if IS_ENABLED(CONFIG_GENERATE_SMBIOS_TABLES)
+#if CONFIG(GENERATE_SMBIOS_TABLES)
 static int mainboard_smbios_data(struct device *dev, int *handle,
 				 unsigned long *current)
 {
@@ -45,7 +45,7 @@ static void mainboard_enable(struct device *dev)
 	install_intel_vga_int15_handler(GMA_INT15_ACTIVE_LFP_NONE,
 					GMA_INT15_PANEL_FIT_DEFAULT,
 					GMA_INT15_BOOT_DISPLAY_DEFAULT, 0);
-#if IS_ENABLED(CONFIG_GENERATE_SMBIOS_TABLES)
+#if CONFIG(GENERATE_SMBIOS_TABLES)
 	dev->ops->get_smbios_data = mainboard_smbios_data;
 #endif
 }

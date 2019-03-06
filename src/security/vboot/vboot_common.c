@@ -60,7 +60,7 @@ int vboot_get_handoff_info(void **addr, uint32_t *size)
 	 * pre-ram stage, then bail out early.
 	 */
 	if (ENV_BOOTBLOCK ||
-	    (ENV_VERSTAGE && IS_ENABLED(CONFIG_VBOOT_STARTS_IN_BOOTBLOCK)))
+	    (ENV_VERSTAGE && CONFIG(VBOOT_STARTS_IN_BOOTBLOCK)))
 		return -1;
 
 	struct vboot_handoff *vboot_handoff;
@@ -124,7 +124,7 @@ void __weak vboot_platform_prepare_reboot(void)
 
 void vboot_reboot(void)
 {
-	if (IS_ENABLED(CONFIG_CONSOLE_CBMEM_DUMP_TO_UART))
+	if (CONFIG(CONSOLE_CBMEM_DUMP_TO_UART))
 		cbmem_dump_console();
 	vboot_platform_prepare_reboot();
 	board_reset();

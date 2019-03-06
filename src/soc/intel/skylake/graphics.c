@@ -59,9 +59,9 @@ void graphics_soc_init(struct device *dev)
 	 * In case of non-FSP solution, SoC need to select another
 	 * Kconfig to perform GFX initialization.
 	 */
-	if (IS_ENABLED(CONFIG_RUN_FSP_GOP)) {
+	if (CONFIG(RUN_FSP_GOP)) {
 		/* nothing to do */
-	} else if (IS_ENABLED(CONFIG_MAINBOARD_USE_LIBGFXINIT)) {
+	} else if (CONFIG(MAINBOARD_USE_LIBGFXINIT)) {
 		if (!acpi_is_wakeup_s3() && display_init_required()) {
 			int lightup_ok;
 			gma_gfxinit(&lightup_ok);
@@ -101,7 +101,7 @@ uintptr_t graphics_soc_write_acpi_opregion(struct device *device,
 	global_nvs_t *gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
 
 	/* If GOP is not used, exit here */
-	if (!IS_ENABLED(CONFIG_INTEL_GMA_ADD_VBT))
+	if (!CONFIG(INTEL_GMA_ADD_VBT))
 		return current;
 
 	/* If IGD is disabled, exit here */

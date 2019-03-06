@@ -355,7 +355,7 @@ static uint32_t gspi_csctrl_state_v1(uint32_t pol, enum cs_assert cs_assert)
 
 static uint32_t gspi_csctrl_state(uint32_t pol, enum cs_assert cs_assert)
 {
-	if (IS_ENABLED(CONFIG_SOC_INTEL_COMMON_BLOCK_GSPI_VERSION_2))
+	if (CONFIG(SOC_INTEL_COMMON_BLOCK_GSPI_VERSION_2))
 		return gspi_csctrl_state_v2(pol, cs_assert);
 
 	return gspi_csctrl_state_v1(pol, cs_assert);
@@ -379,7 +379,7 @@ static uint32_t gspi_csctrl_polarity_v1(enum spi_polarity active_pol)
 
 static uint32_t gspi_csctrl_polarity(enum spi_polarity active_pol)
 {
-	if (IS_ENABLED(CONFIG_SOC_INTEL_COMMON_BLOCK_GSPI_VERSION_2))
+	if (CONFIG(SOC_INTEL_COMMON_BLOCK_GSPI_VERSION_2))
 		return gspi_csctrl_polarity_v2(active_pol);
 
 	return gspi_csctrl_polarity_v1(active_pol);

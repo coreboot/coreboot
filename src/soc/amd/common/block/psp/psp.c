@@ -290,7 +290,7 @@ static int psp_load_blob(int type, void *addr)
 {
 	int cmd_status;
 
-	if (!IS_ENABLED(CONFIG_SOC_AMD_PSP_SELECTABLE_SMU_FW)) {
+	if (!CONFIG(SOC_AMD_PSP_SELECTABLE_SMU_FW)) {
 		printk(BIOS_ERR, "BUG: Selectable firmware is not supported\n");
 		return PSPSTS_UNSUPPORTED;
 	}

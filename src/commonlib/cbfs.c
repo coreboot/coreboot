@@ -27,7 +27,7 @@
 #endif
 #if defined(IS_ENABLED)
 
-#if IS_ENABLED(CONFIG_DEBUG_CBFS)
+#if CONFIG(DEBUG_CBFS)
 #define DEBUG(x...) printk(BIOS_SPEW, "CBFS: " x)
 #else
 #define DEBUG(x...)

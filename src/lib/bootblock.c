@@ -33,7 +33,7 @@ asmlinkage void bootblock_main_with_timestamp(uint64_t base_timestamp,
 	struct timestamp_entry *timestamps, size_t num_timestamps)
 {
 	/* Initialize timestamps if we have TIMESTAMP region in memlayout.ld. */
-	if (IS_ENABLED(CONFIG_COLLECT_TIMESTAMPS) &&
+	if (CONFIG(COLLECT_TIMESTAMPS) &&
 	    REGION_SIZE(timestamp) > 0) {
 		int i;
 		timestamp_init(base_timestamp);
@@ -48,7 +48,7 @@ asmlinkage void bootblock_main_with_timestamp(uint64_t base_timestamp,
 	bootblock_soc_early_init();
 	bootblock_mainboard_early_init();
 
-	if (IS_ENABLED(CONFIG_BOOTBLOCK_CONSOLE)) {
+	if (CONFIG(BOOTBLOCK_CONSOLE)) {
 		console_init();
 		exception_init();
 	}
@@ -65,13 +65,13 @@ void main(void)
 
 	init_timer();
 
-	if (IS_ENABLED(CONFIG_COLLECT_TIMESTAMPS))
+	if (CONFIG(COLLECT_TIMESTAMPS))
 		base_timestamp = timestamp_get();
 
 	bootblock_main_with_timestamp(base_timestamp, NULL, 0);
 }
 
-#if IS_ENABLED(CONFIG_COMPRESS_BOOTBLOCK)
+#if CONFIG(COMPRESS_BOOTBLOCK)
 /*
  * This is the bootblock entry point when it is run after a decompressor stage.
  * For non-decompressor builds, _start is generally defined in architecture-

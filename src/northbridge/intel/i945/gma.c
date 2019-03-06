@@ -236,9 +236,9 @@ static int intel_gma_init_lvds(struct northbridge_intel_i945_config *conf,
 	       BASE_FREQUENCY * (5 * (pixel_m1 + 2) + (pixel_m2 + 2)) /
 	       (pixel_n + 2) / (pixel_p1 * pixel_p2));
 
-	printk(BIOS_INFO, "VGA mode: %s\n", IS_ENABLED(CONFIG_LINEAR_FRAMEBUFFER) ?
+	printk(BIOS_INFO, "VGA mode: %s\n", CONFIG(LINEAR_FRAMEBUFFER) ?
 	       "Linear framebuffer" : "text");
-	if (IS_ENABLED(CONFIG_LINEAR_FRAMEBUFFER)) {
+	if (CONFIG(LINEAR_FRAMEBUFFER)) {
 		/* Disable panel fitter (we're in native resolution). */
 		write32(mmiobase + PF_CTL(0), 0);
 		write32(mmiobase + PF_WIN_SZ(0), 0);
@@ -301,7 +301,7 @@ static int intel_gma_init_lvds(struct northbridge_intel_i945_config *conf,
 		((vactive + bottom_border + vfront_porch + vsync - 1) << 16)
 		| (vactive + bottom_border + vfront_porch - 1));
 
-	if (IS_ENABLED(CONFIG_LINEAR_FRAMEBUFFER)) {
+	if (CONFIG(LINEAR_FRAMEBUFFER)) {
 		write32(mmiobase + PIPESRC(1), ((hactive - 1) << 16)
 			| (vactive - 1));
 	} else {
@@ -380,7 +380,7 @@ static int intel_gma_init_lvds(struct northbridge_intel_i945_config *conf,
 	else
 		printk(BIOS_ERR, "ERROR: GTT is still Disabled!!!\n");
 
-	if (IS_ENABLED(CONFIG_LINEAR_FRAMEBUFFER)) {
+	if (CONFIG(LINEAR_FRAMEBUFFER)) {
 		printk(BIOS_SPEW, "memset %p to 0x00 for %d bytes\n",
 			(void *)pgfx, hactive * vactive * 4);
 		memset((void *)pgfx, 0x00, hactive * vactive * 4);
@@ -660,7 +660,7 @@ static void gma_ngi(struct device *const dev)
 
 	int err;
 
-	if (IS_ENABLED(CONFIG_NORTHBRIDGE_INTEL_SUBTYPE_I945GM))
+	if (CONFIG(NORTHBRIDGE_INTEL_SUBTYPE_I945GM))
 		panel_setup(mmiobase, dev);
 
 	/* probe if VGA is connected and always run */
@@ -704,7 +704,7 @@ static void gma_func0_init(struct device *dev)
 
 	int vga_disable = (pci_read_config16(dev, GGC) & 2) >> 1;
 
-	if (IS_ENABLED(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT)) {
+	if (CONFIG(MAINBOARD_DO_NATIVE_VGA_INIT)) {
 		if (acpi_is_wakeup_s3()) {
 			printk(BIOS_INFO,
 				"Skipping native VGA initialization when resuming from ACPI S3.\n");

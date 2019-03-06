@@ -69,7 +69,7 @@ void mainboard_early_init(int s3resume)
 
 void mainboard_config_superio(void)
 {
-	if (IS_ENABLED(CONFIG_CONSOLE_SERIAL))
+	if (CONFIG(CONSOLE_SERIAL))
 		nuvoton_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 }
 

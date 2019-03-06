@@ -188,7 +188,7 @@ static void mainboard_init(struct device *dev)
 	struct device *ethernet_dev = NULL;
 	void *vpd_file;
 
-	if (IS_ENABLED(CONFIG_CHROMEOS)) {
+	if (CONFIG(CHROMEOS)) {
 		struct region_device rdev;
 
 		if (fmap_locate_area_as_rdev("RO_VPD", &rdev) == 0) {

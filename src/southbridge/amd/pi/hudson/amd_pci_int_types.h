@@ -23,13 +23,13 @@ const char *intr_types[] = {
 	[0x20] = "IMC INT0\t", "IMC INT1\t", "IMC INT2\t", "IMC INT3\t", "IMC INT4\t", "IMC INT5\t",
 	[0x30] = "Dev18.0 INTA", "Dev18.2 INTB", "Dev19.0 INTA", "Dev19.2 INTB", "Dev22.0 INTA", "Dev22.2 INTB", "Dev20.5 INTC",
 	[0x7F] = "RSVD\t",
-#if IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_PI_AVALON)
+#if CONFIG(SOUTHBRIDGE_AMD_PI_AVALON)
 	[0x40] = "RSVD\t", "SATA\t",
 	[0x60] = "RSVD\t", "RSVD\t", "GPIO\t",
-#elif IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_PI_BOLTON)
+#elif CONFIG(SOUTHBRIDGE_AMD_PI_BOLTON)
 	[0x40] = "IDE\t", "SATA\t",
 	[0x50] = "GPPInt0\t", "GPPInt1\t", "GPPInt2\t", "GPPInt3\t",
-#elif IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_PI_KERN)
+#elif CONFIG(SOUTHBRIDGE_AMD_PI_KERN)
 	[0x40] = "IDE\t", "SATA\t",
 	[0x50] = "GPPInt0\t", "GPPInt1\t", "GPPInt2\t", "GPPInt3\t",
 	[0x62] = "GPIO\t",

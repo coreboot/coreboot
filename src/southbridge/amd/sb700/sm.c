@@ -136,7 +136,7 @@ static void sm_init(struct device *dev)
 	pci_write_config8(dev, 0x41, byte);
 
 	byte = pm_ioread(0x61);
-	if (IS_ENABLED(CONFIG_CPU_AMD_MODEL_10XXX))
+	if (CONFIG(CPU_AMD_MODEL_10XXX))
 		byte &= ~(1 << 1);	/* Clear for non-K8 CPUs */
 	else
 		byte |= 1 << 1;		/* Set to enable NB/SB handshake during IOAPIC interrupt for AMD K8/K7 */
@@ -305,7 +305,7 @@ static void sm_init(struct device *dev)
 		pci_write_config32(dev, SB_MMIO_CFG_REG, dword);
 	}
 	byte = pci_read_config8(dev, 0xAE);
-	if (IS_ENABLED(CONFIG_ENABLE_APIC_EXT_ID))
+	if (CONFIG(ENABLE_APIC_EXT_ID))
 	byte |= 1 << 4;
 	byte |= 1 << 5;	/* ACPI_DISABLE_TIMER_IRQ_ENHANCEMENT_FOR_8254_TIMER */
 	byte |= 1 << 6;	/* Enable arbiter between APIC and PIC interrupts */

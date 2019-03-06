@@ -52,18 +52,18 @@ void main(void)
 {
 	init_timer();
 
-	if (IS_ENABLED(CONFIG_COLLECT_TIMESTAMPS))
+	if (CONFIG(COLLECT_TIMESTAMPS))
 		arg.base_timestamp = timestamp_get();
 
 	decompressor_soc_init();
 
-	if (IS_ENABLED(CONFIG_COLLECT_TIMESTAMPS))
+	if (CONFIG(COLLECT_TIMESTAMPS))
 		arg.timestamps[0].entry_stamp = timestamp_get();
 
 	size_t out_size = ulz4f(compressed_bootblock, _bootblock);
 	prog_segment_loaded((uintptr_t)_bootblock, out_size, SEG_FINAL);
 
-	if (IS_ENABLED(CONFIG_COLLECT_TIMESTAMPS))
+	if (CONFIG(COLLECT_TIMESTAMPS))
 		arg.timestamps[1].entry_stamp = timestamp_get();
 
 	prog_run(&prog_bootblock);

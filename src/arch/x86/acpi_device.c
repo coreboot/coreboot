@@ -19,7 +19,7 @@
 #include <arch/acpigen.h>
 #include <device/device.h>
 #include <device/path.h>
-#if IS_ENABLED(CONFIG_GENERIC_GPIO_LIB)
+#if CONFIG(GENERIC_GPIO_LIB)
 #include <gpio.h>
 #endif
 
@@ -342,7 +342,7 @@ void acpi_device_write_gpio(const struct acpi_gpio *gpio)
 	/* Pin Table, one word for each pin */
 	for (pin = 0; pin < gpio->pin_count; pin++) {
 		uint16_t acpi_pin = gpio->pins[pin];
-#if IS_ENABLED(CONFIG_GENERIC_GPIO_LIB)
+#if CONFIG(GENERIC_GPIO_LIB)
 		acpi_pin = gpio_acpi_pin(acpi_pin);
 #endif
 		acpigen_emit_word(acpi_pin);
@@ -352,7 +352,7 @@ void acpi_device_write_gpio(const struct acpi_gpio *gpio)
 	acpi_device_fill_from_len(resource_offset, start);
 
 	/* Resource Source Name String */
-#if IS_ENABLED(CONFIG_GENERIC_GPIO_LIB)
+#if CONFIG(GENERIC_GPIO_LIB)
 	acpigen_emit_string(gpio->resource ? : gpio_acpi_path(gpio->pins[0]));
 #else
 	acpigen_emit_string(gpio->resource);

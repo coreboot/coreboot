@@ -42,7 +42,7 @@ DefinitionBlock(
 		}
 	}
 
-#if IS_ENABLED(CONFIG_CHROMEOS)
+#if CONFIG(CHROMEOS)
 	/* Chrome OS specific */
 	#include <vendorcode/google/chromeos/acpi/chromeos.asl>
 	/* VPD support */
@@ -57,7 +57,7 @@ DefinitionBlock(
 	/* Low power idle table */
 	#include <soc/intel/cannonlake/acpi/lpit.asl>
 
-#if IS_ENABLED(CONFIG_EC_GOOGLE_WILCO)
+#if CONFIG(EC_GOOGLE_WILCO)
 	/* Chrome OS Embedded Controller */
 	Scope (\_SB.PCI0.LPCB)
 	{

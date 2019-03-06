@@ -19,7 +19,7 @@
 
 static void h8_panic(void)
 {
-	if (IS_ENABLED(CONFIG_H8_FLASH_LEDS_ON_DEATH)) {
+	if (CONFIG(H8_FLASH_LEDS_ON_DEATH)) {
 		static const u8 leds[] = {
 			H8_LED_CONTROL_POWER_LED,
 			H8_LED_CONTROL_BAT0_LED,
@@ -37,7 +37,7 @@ static void h8_panic(void)
 			ec_write(H8_LED_CONTROL,
 				 H8_LED_CONTROL_BLINK | leds[i]);
 	}
-	if (IS_ENABLED(CONFIG_H8_BEEP_ON_DEATH)) {
+	if (CONFIG(H8_BEEP_ON_DEATH)) {
 		/* Beep 4 Sec. 1250 Hz */
 		ec_write(H8_SOUND_ENABLE1, 4);
 		ec_write(H8_SOUND_REPEAT, 1);

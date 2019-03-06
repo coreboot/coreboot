@@ -22,7 +22,7 @@
 
 static void mainboard_init(struct device *dev)
 {
-#if IS_ENABLED(CONFIG_CHROMEOS)
+#if CONFIG(CHROMEOS)
 	/* Copy WIFI calibration data into CBMEM. */
 	cbmem_add_vpd_calibration_data();
 #endif
@@ -48,7 +48,7 @@ void lb_board(struct lb_header *header)
 	dma->range_start = (uintptr_t)_dma_coherent;
 	dma->range_size = REGION_SIZE(dma_coherent);
 
-#if IS_ENABLED(CONFIG_CHROMEOS)
+#if CONFIG(CHROMEOS)
 	/* Retrieve the switch interface MAC addresses. */
 	lb_table_add_macs_from_vpd(header);
 #endif

@@ -18,7 +18,7 @@
 /* Set the board version */
 const char *smbios_mainboard_version(void)
 {
-	if (IS_ENABLED(CONFIG_GALILEO_GEN2))
+	if (CONFIG(GALILEO_GEN2))
 		return "Gen 2";
 	return "1.0";
 }

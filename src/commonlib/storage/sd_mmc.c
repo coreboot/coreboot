@@ -168,7 +168,7 @@ int sd_mmc_enter_standby(struct storage_media *media)
 
 	/* Test for SD version 2 */
 	err = CARD_TIMEOUT;
-	if (IS_ENABLED(CONFIG_COMMONLIB_STORAGE_SD)) {
+	if (CONFIG(COMMONLIB_STORAGE_SD)) {
 		err = sd_send_if_cond(media);
 
 		/* Get SD card operating condition */
@@ -177,7 +177,7 @@ int sd_mmc_enter_standby(struct storage_media *media)
 	}
 
 	/* If the command timed out, we check for an MMC card */
-	if (IS_ENABLED(CONFIG_COMMONLIB_STORAGE_MMC) && (err == CARD_TIMEOUT)) {
+	if (CONFIG(COMMONLIB_STORAGE_MMC) && (err == CARD_TIMEOUT)) {
 		/* Some cards seem to need this */
 		sd_mmc_go_idle(media);
 

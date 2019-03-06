@@ -2620,7 +2620,7 @@ restartinit:
 			mct_ForceNBPState0_En_Fam15(pMCTstat, pDCTstat);
 		}
 
-#if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
+#if CONFIG(HAVE_ACPI_RESUME)
 		printk(BIOS_DEBUG, "mctAutoInitMCT_D: Restoring DCT configuration from NVRAM\n");
 		if (restore_mct_information_from_nvram(0) != 0)
 			printk(BIOS_CRIT, "%s: ERROR: Unable to restore DCT configuration from NVRAM\n", __func__);
@@ -2692,11 +2692,11 @@ restartinit:
 		nvram = 0;
 		set_option("allow_spd_nvram_cache_restore", &nvram);
 
-#if IS_ENABLED(CONFIG_DIMM_VOLTAGE_SET_SUPPORT)
+#if CONFIG(DIMM_VOLTAGE_SET_SUPPORT)
 		printk(BIOS_DEBUG, "%s: DIMMSetVoltage\n", __func__);
 		DIMMSetVoltages(pMCTstat, pDCTstatA);	/* Set the DIMM voltages (mainboard specific) */
 #endif
-		if (!IS_ENABLED(CONFIG_DIMM_VOLTAGE_SET_SUPPORT)) {
+		if (!CONFIG(DIMM_VOLTAGE_SET_SUPPORT)) {
 			/* Assume 1.5V operation */
 			for (Node = 0; Node < MAX_NODES_SUPPORTED; Node++) {
 				struct DCTStatStruc *pDCTstat;
@@ -3674,7 +3674,7 @@ retry_dqs_training_and_levelization:
 
 		mct_WriteLevelization_HW(pMCTstat, pDCTstatA, SecondPass);
 
-#if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
+#if CONFIG(HAVE_ACPI_RESUME)
 		printk(BIOS_DEBUG, "mctAutoInitMCT_D: Restoring DIMM training configuration from NVRAM\n");
 		if (restore_mct_information_from_nvram(1) != 0)
 			printk(BIOS_CRIT, "%s: ERROR: Unable to restore DCT configuration from NVRAM\n", __func__);
@@ -5836,7 +5836,7 @@ static void mct_preInitDCT(struct MCTStatStruc *pMCTstat,
 		}
 	}
 
-#if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
+#if CONFIG(HAVE_ACPI_RESUME)
 	calculate_and_store_spd_hashes(pMCTstat, pDCTstat);
 
 	if (load_spd_hashes_from_nvram(pMCTstat, pDCTstat) < 0) {
@@ -5853,7 +5853,7 @@ static void mct_preInitDCT(struct MCTStatStruc *pMCTstat,
 	if (get_option(&nvram, "allow_spd_nvram_cache_restore") == CB_SUCCESS)
 		allow_config_restore = !!nvram;
 
-#if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
+#if CONFIG(HAVE_ACPI_RESUME)
 	if (pMCTstat->nvram_checksum != calculate_nvram_mct_hash())
 		allow_config_restore = 0;
 #else

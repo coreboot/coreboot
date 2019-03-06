@@ -98,7 +98,7 @@ void udelay(u32 usecs)
 	} while ((start - value) < ticks);
 }
 
-#if IS_ENABLED(CONFIG_LAPIC_MONOTONIC_TIMER)
+#if CONFIG(LAPIC_MONOTONIC_TIMER)
 #include <timer.h>
 
 static struct monotonic_counter {

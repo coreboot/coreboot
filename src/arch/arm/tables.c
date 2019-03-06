@@ -32,7 +32,7 @@ void bootmem_arch_add_ranges(void)
 	bootmem_add_range((uintptr_t)_ttb_subtables, REGION_SIZE(ttb_subtables),
 			  BM_MEM_RAMSTAGE);
 
-	if (!IS_ENABLED(CONFIG_COMMON_CBFS_SPI_WRAPPER))
+	if (!CONFIG(COMMON_CBFS_SPI_WRAPPER))
 		return;
 	bootmem_add_range((uintptr_t)_postram_cbfs_cache,
 			  REGION_SIZE(postram_cbfs_cache), BM_MEM_RAMSTAGE);

@@ -91,11 +91,11 @@ void regen_vbnv_crc(uint8_t *vbnv_copy)
  */
 void read_vbnv(uint8_t *vbnv_copy)
 {
-	if (IS_ENABLED(CONFIG_VBOOT_VBNV_CMOS))
+	if (CONFIG(VBOOT_VBNV_CMOS))
 		read_vbnv_cmos(vbnv_copy);
-	else if (IS_ENABLED(CONFIG_VBOOT_VBNV_EC))
+	else if (CONFIG(VBOOT_VBNV_EC))
 		read_vbnv_ec(vbnv_copy);
-	else if (IS_ENABLED(CONFIG_VBOOT_VBNV_FLASH))
+	else if (CONFIG(VBOOT_VBNV_FLASH))
 		read_vbnv_flash(vbnv_copy);
 
 	/* Check data for consistency */
@@ -109,11 +109,11 @@ void read_vbnv(uint8_t *vbnv_copy)
  */
 void save_vbnv(const uint8_t *vbnv_copy)
 {
-	if (IS_ENABLED(CONFIG_VBOOT_VBNV_CMOS))
+	if (CONFIG(VBOOT_VBNV_CMOS))
 		save_vbnv_cmos(vbnv_copy);
-	else if (IS_ENABLED(CONFIG_VBOOT_VBNV_EC))
+	else if (CONFIG(VBOOT_VBNV_EC))
 		save_vbnv_ec(vbnv_copy);
-	else if (IS_ENABLED(CONFIG_VBOOT_VBNV_FLASH))
+	else if (CONFIG(VBOOT_VBNV_FLASH))
 		save_vbnv_flash(vbnv_copy);
 
 	/* Clear initialized flag to force cached data to be updated */
@@ -156,7 +156,7 @@ int vbnv_udc_enable_flag(void)
 
 void vbnv_init(uint8_t *vbnv_copy)
 {
-	if (IS_ENABLED(CONFIG_VBOOT_VBNV_CMOS))
+	if (CONFIG(VBOOT_VBNV_CMOS))
 		vbnv_init_cmos(vbnv_copy);
 	read_vbnv(vbnv_copy);
 }

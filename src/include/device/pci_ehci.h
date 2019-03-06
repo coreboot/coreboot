@@ -32,7 +32,7 @@ u8 *pci_ehci_base_regs(pci_devfn_t dev);
 void pci_ehci_dbg_set_port(pci_devfn_t dev, unsigned int port);
 
 #ifndef __PRE_RAM__
-#if !IS_ENABLED(CONFIG_USBDEBUG)
+#if !CONFIG(USBDEBUG)
 #define pci_ehci_read_resources pci_dev_read_resources
 #else
 /* Relocation of EHCI Debug Port BAR

@@ -93,7 +93,7 @@ asmlinkage void car_stage_entry(void)
 
 	console_init();
 
-	if (IS_ENABLED(CONFIG_SOC_AMD_PSP_SELECTABLE_SMU_FW))
+	if (CONFIG(SOC_AMD_PSP_SELECTABLE_SMU_FW))
 		load_smu_fw1();
 
 	mainboard_romstage_entry(s3_resume);
@@ -132,7 +132,7 @@ asmlinkage void car_stage_entry(void)
 		msr_t sys_cfg = rdmsr(SYSCFG_MSR);
 		sys_cfg.lo &= ~SYSCFG_MSR_TOM2WB;
 		wrmsr(SYSCFG_MSR, sys_cfg);
-		if (IS_ENABLED(CONFIG_ELOG_BOOT_COUNT))
+		if (CONFIG(ELOG_BOOT_COUNT))
 			boot_count_increment();
 	} else {
 		printk(BIOS_INFO, "S3 detected\n");
@@ -192,7 +192,7 @@ void SetMemParams(AMD_POST_PARAMS *PostParams)
 	if (!dev || !dev->chip_info) {
 		printk(BIOS_ERR, "ERROR: Cannot find SoC devicetree config\n");
 		/* In case of a BIOS error, only attempt to set UMA. */
-		PostParams->MemConfig.UmaMode = IS_ENABLED(CONFIG_GFXUMA) ?
+		PostParams->MemConfig.UmaMode = CONFIG(GFXUMA) ?
 					UMA_AUTO : UMA_NONE;
 		return;
 	}

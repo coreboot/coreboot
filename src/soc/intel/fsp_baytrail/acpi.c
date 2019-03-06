@@ -89,7 +89,7 @@ void acpi_init_gnvs(global_nvs_t *gnvs)
 	/* Top of Low Memory (start of resource allocation) */
 	gnvs->tolm = nc_read_top_of_low_memory();
 
-#if IS_ENABLED(CONFIG_CONSOLE_CBMEM)
+#if CONFIG(CONSOLE_CBMEM)
 	/* Update the mem console pointer. */
 	gnvs->cbmc = (u32)cbmem_find(CBMEM_ID_CONSOLE);
 #endif

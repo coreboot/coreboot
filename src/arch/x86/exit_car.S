@@ -61,7 +61,7 @@ _start:
 	 *   0x00: Number of variable MTRRs to clear
 	 */
 
-#if IS_ENABLED(CONFIG_SOC_SETS_MSRS)
+#if CONFIG(SOC_SETS_MSRS)
 
 	mov	%esp, %ebp
 	/* Need to align stack to 16 bytes at the call instruction. Therefore

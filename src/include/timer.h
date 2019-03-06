@@ -129,7 +129,7 @@ struct stopwatch {
 
 static inline void stopwatch_init(struct stopwatch *sw)
 {
-	if (IS_ENABLED(CONFIG_HAVE_MONOTONIC_TIMER))
+	if (CONFIG(HAVE_MONOTONIC_TIMER))
 		timer_monotonic_get(&sw->start);
 	else
 		sw->start.microseconds = 0;
@@ -153,7 +153,7 @@ static inline void stopwatch_init_msecs_expire(struct stopwatch *sw, long ms)
  */
 static inline void stopwatch_tick(struct stopwatch *sw)
 {
-	if (IS_ENABLED(CONFIG_HAVE_MONOTONIC_TIMER))
+	if (CONFIG(HAVE_MONOTONIC_TIMER))
 		timer_monotonic_get(&sw->current);
 	else
 		sw->current.microseconds = 0;

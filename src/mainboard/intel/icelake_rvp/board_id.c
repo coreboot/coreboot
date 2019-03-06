@@ -34,7 +34,7 @@ int get_board_id(void)
 	MAYBE_STATIC int id = -1;
 
 	if (id < 0) {
-		if (IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC))
+		if (CONFIG(EC_GOOGLE_CHROMEEC))
 			id = get_board_id_via_ext_ec();
 		else{
 			uint8_t buffer[2];

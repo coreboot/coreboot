@@ -70,7 +70,7 @@ void sdram_initialize(int boot_path, const u8 *sdram_addresses);
 int fixup_i945_errata(void);
 void udelay(u32 us);
 
-#if IS_ENABLED(CONFIG_DEBUG_RAM_SETUP)
+#if CONFIG(DEBUG_RAM_SETUP)
 void sdram_dump_mchbar_registers(void);
 #endif
 #endif				/* RAMINIT_H */

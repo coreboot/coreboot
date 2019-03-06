@@ -76,7 +76,7 @@
 #define  PAD_CFG1_PULL_UP_20K		(0xc << 10)
 #define  PAD_CFG1_PULL_UP_667		(0xd << 10)
 #define  PAD_CFG1_PULL_NATIVE		(0xf << 10)
-#if IS_ENABLED(CONFIG_SOC_INTEL_COMMON_BLOCK_GPIO_IOSTANDBY)
+#if CONFIG(SOC_INTEL_COMMON_BLOCK_GPIO_IOSTANDBY)
 /* Tx enabled driving last value driven, Rx enabled */
 #define PAD_CFG1_IOSSTATE_TxLASTRxE	(0x0 << 14)
 /* Tx enabled driving 0, Rx disabled and Rx driving 0 back to its controller
@@ -125,7 +125,7 @@
 #define PAD_CFG2_DEBOUNCE_MASK		0x1f
 
 /* voltage tolerance  0=3.3V default 1=1.8V tolerant */
-#if IS_ENABLED(CONFIG_SOC_INTEL_COMMON_BLOCK_GPIO_PADCFG_PADTOL)
+#if CONFIG(SOC_INTEL_COMMON_BLOCK_GPIO_PADCFG_PADTOL)
 #define PAD_CFG1_TOL_MASK		(0x1 << 25)
 #define  PAD_CFG1_TOL_1V8		(0x1 << 25)
 #endif /* CONFIG_SOC_INTEL_COMMON_BLOCK_GPIO_PADCFG_PADTOL */
@@ -134,7 +134,7 @@
 #define PAD_RESET(value)	PAD_CFG0_LOGICAL_RESET_##value
 #define PAD_PULL(value)		PAD_CFG1_PULL_##value
 
-#if IS_ENABLED(CONFIG_SOC_INTEL_COMMON_BLOCK_GPIO_IOSTANDBY)
+#if CONFIG(SOC_INTEL_COMMON_BLOCK_GPIO_IOSTANDBY)
 #define PAD_IOSSTATE(value)	PAD_CFG1_IOSSTATE_##value
 #define PAD_IOSTERM(value)	PAD_CFG1_IOSTERM_##value
 #else
@@ -147,7 +147,7 @@
 				PAD_CFG0_TRIG_##trig | \
 				PAD_CFG0_RX_POL_##inv)
 
-#if IS_ENABLED(CONFIG_SOC_INTEL_COMMON_BLOCK_GPIO_DUAL_ROUTE_SUPPORT)
+#if CONFIG(SOC_INTEL_COMMON_BLOCK_GPIO_DUAL_ROUTE_SUPPORT)
 #define PAD_IRQ_CFG_DUAL_ROUTE(route1, route2, trig, inv)  \
 				(PAD_CFG0_ROUTE_##route1 | \
 				PAD_CFG0_ROUTE_##route2 | \
@@ -180,7 +180,7 @@
 	_PAD_CFG_STRUCT(pad, PAD_RESET(rst) | PAD_FUNC(func), PAD_PULL(pull) | \
 		PAD_IOSSTATE(TxLASTRxE))
 
-#if IS_ENABLED(CONFIG_SOC_INTEL_COMMON_BLOCK_GPIO_PADCFG_PADTOL)
+#if CONFIG(SOC_INTEL_COMMON_BLOCK_GPIO_PADCFG_PADTOL)
 /* Native 1.8V tolerant pad, only applies to some pads like I2C/I2S
     Not applicable to all SOCs. Refer EDS
  */
@@ -269,7 +269,7 @@
  */
 #define PAD_NC(pad, pull)	PAD_CFG_GPI(pad, pull, DEEP)
 
-#if IS_ENABLED(CONFIG_SOC_INTEL_COMMON_BLOCK_GPIO_LEGACY_MACROS)
+#if CONFIG(SOC_INTEL_COMMON_BLOCK_GPIO_LEGACY_MACROS)
 
 #define PAD_CFG_GPI_APIC(pad, pull, rst) \
 	_PAD_CFG_STRUCT(pad,		\
@@ -384,7 +384,7 @@
 		PAD_IRQ_CFG(NMI, trig, inv), PAD_PULL(pull) | \
 		PAD_IOSSTATE(TxDRxE))
 
-#if IS_ENABLED(CONFIG_SOC_INTEL_COMMON_BLOCK_GPIO_DUAL_ROUTE_SUPPORT)
+#if CONFIG(SOC_INTEL_COMMON_BLOCK_GPIO_DUAL_ROUTE_SUPPORT)
 #define PAD_CFG_GPI_DUAL_ROUTE(pad, pull, rst, trig, inv, route1, route2) \
 	_PAD_CFG_STRUCT(pad,						\
 		PAD_FUNC(GPIO) | PAD_RESET(rst) | PAD_CFG0_TX_DISABLE | \

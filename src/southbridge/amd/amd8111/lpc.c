@@ -23,7 +23,7 @@
 #include <pc80/isa-dma.h>
 #include <cpu/x86/lapic.h>
 #include <arch/ioapic.h>
-#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+#if CONFIG(HAVE_ACPI_TABLES)
 #include <arch/acpi.h>
 #include <arch/acpigen.h>
 #include <cpu/amd/powernow.h>
@@ -131,7 +131,7 @@ static void lpci_set_subsystem(struct device *dev, unsigned int vendor,
 			   ((device & 0xffff) << 16) | (vendor & 0xffff));
 }
 
-#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+#if CONFIG(HAVE_ACPI_TABLES)
 
 extern u16 pm_base;
 
@@ -142,7 +142,7 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 }
 
 static void southbridge_acpi_fill_ssdt_generator(struct device *device) {
-#if IS_ENABLED(CONFIG_SET_FIDVID)
+#if CONFIG(SET_FIDVID)
 	amd_generate_powernow(pm_base + 0x10, 6, 1);
 	acpigen_write_mainboard_resources("\\_SB.PCI0.MBRS", "_CRS");
 #endif
@@ -160,7 +160,7 @@ static struct device_operations lpc_ops  = {
 	.set_resources    = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.init             = lpc_init,
-#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+#if CONFIG(HAVE_ACPI_TABLES)
 	.write_acpi_tables      = acpi_write_hpet,
 	.acpi_fill_ssdt_generator = southbridge_acpi_fill_ssdt_generator,
 #endif

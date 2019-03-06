@@ -307,7 +307,7 @@ void chipset_fsp_early_init(FSP_INIT_PARAMS *pFspInitParams,
 	ConfigureDefaultUpdData(fsp_ptr, pFspRtBuffer->Common.UpdDataRgnPtr);
 	pFspInitParams->NvsBufferPtr = NULL;
 
-#if IS_ENABLED(CONFIG_ENABLE_MRC_CACHE)
+#if CONFIG(ENABLE_MRC_CACHE)
 	/* Find the fastboot cache that was saved in the ROM */
 	pFspInitParams->NvsBufferPtr = find_and_set_fastboot_cache();
 #endif

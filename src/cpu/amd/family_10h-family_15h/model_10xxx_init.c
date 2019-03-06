@@ -62,7 +62,7 @@ static void model_10xxx_init(struct device *dev)
 	msr_t msr;
 	int num_banks;
 	struct node_core_id id;
-#if IS_ENABLED(CONFIG_LOGICAL_CPUS)
+#if CONFIG(LOGICAL_CPUS)
 	u32 siblings;
 #endif
 	uint8_t delay_start;
@@ -123,7 +123,7 @@ static void model_10xxx_init(struct device *dev)
 	/* Set the processor name string */
 	init_processor_name();
 
-#if IS_ENABLED(CONFIG_LOGICAL_CPUS)
+#if CONFIG(LOGICAL_CPUS)
 	siblings = cpuid_ecx(0x80000008) & 0xff;
 
 	if (siblings > 0) {
@@ -204,7 +204,7 @@ static void model_10xxx_init(struct device *dev)
 		wrmsr(BU_CFG2_MSR, msr);
 	}
 
-	if (IS_ENABLED(CONFIG_HAVE_SMI_HANDLER)) {
+	if (CONFIG(HAVE_SMI_HANDLER)) {
 		printk(BIOS_DEBUG, "Initializing SMM ASeg memory\n");
 
 		/* Set SMM base address for this CPU */

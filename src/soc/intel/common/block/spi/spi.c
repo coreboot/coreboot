@@ -26,7 +26,7 @@
 
 const struct spi_ctrlr_buses spi_ctrlr_bus_map[] = {
 	{ .ctrlr = &fast_spi_flash_ctrlr, .bus_start = 0, .bus_end = 0 },
-#if !ENV_SMM && IS_ENABLED(CONFIG_SOC_INTEL_COMMON_BLOCK_GSPI)
+#if !ENV_SMM && CONFIG(SOC_INTEL_COMMON_BLOCK_GSPI)
 	{ .ctrlr = &gspi_ctrlr, .bus_start = 1,
 	  .bus_end =  1 + (CONFIG_SOC_INTEL_COMMON_BLOCK_GSPI_MAX - 1)},
 #endif

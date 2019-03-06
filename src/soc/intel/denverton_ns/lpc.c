@@ -210,7 +210,7 @@ static void pch_enable_serial_irqs(struct device *dev)
 	/* Set packet length and toggle silent mode bit for one frame. */
 	pci_write_config8(dev, SERIRQ_CNTL,
 			  (1 << 7) | (1 << 6) | ((21 - 17) << 2) | (0 << 0));
-#if !IS_ENABLED(CONFIG_SERIRQ_CONTINUOUS_MODE)
+#if !CONFIG(SERIRQ_CONTINUOUS_MODE)
 	pci_write_config8(dev, SERIRQ_CNTL,
 			  (1 << 7) | (0 << 6) | ((21 - 17) << 2) | (0 << 0));
 #endif
@@ -310,7 +310,7 @@ void southcluster_enable_dev(struct device *dev)
 static struct device_operations device_ops = {
 	.read_resources = lpc_read_resources,
 	.set_resources = pci_dev_set_resources,
-#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+#if CONFIG(HAVE_ACPI_TABLES)
 	.acpi_inject_dsdt_generator = southcluster_inject_dsdt,
 	.write_acpi_tables = southcluster_write_acpi_tables,
 #endif

@@ -91,7 +91,7 @@ void intel_gma_opregion_register(uintptr_t opregion)
 	 * Atom-based platforms use a combined SMI/SCI register,
 	 * whereas non-Atom platforms use a separate SCI register.
 	 */
-	if (IS_ENABLED(CONFIG_INTEL_GMA_SWSMISCI))
+	if (CONFIG(INTEL_GMA_SWSMISCI))
 		sci_reg = SWSMISCI;
 	else
 		sci_reg = SWSCI;

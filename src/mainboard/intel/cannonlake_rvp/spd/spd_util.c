@@ -44,7 +44,7 @@ void mainboard_fill_dqs_map_ch0(void *dqs_map_ptr)
 
 	const u8 dqs_map_y[8] = { 2, 0, 3, 1, 6, 5, 7, 4 };
 
-	if (IS_ENABLED(CONFIG_BOARD_INTEL_CANNONLAKE_RVPU))
+	if (CONFIG(BOARD_INTEL_CANNONLAKE_RVPU))
 		memcpy(dqs_map_ptr, dqs_map_u, sizeof(dqs_map_u));
 	else
 		memcpy(dqs_map_ptr, dqs_map_y, sizeof(dqs_map_y));
@@ -57,7 +57,7 @@ void mainboard_fill_dqs_map_ch1(void *dqs_map_ptr)
 
 	const u8 dqs_map_y[8] = { 3, 1, 2, 0, 4, 5, 6, 7 };
 
-	if (IS_ENABLED(CONFIG_BOARD_INTEL_CANNONLAKE_RVPU))
+	if (CONFIG(BOARD_INTEL_CANNONLAKE_RVPU))
 		memcpy(dqs_map_ptr, dqs_map_u, sizeof(dqs_map_u));
 	else
 		memcpy(dqs_map_ptr, dqs_map_y, sizeof(dqs_map_y));

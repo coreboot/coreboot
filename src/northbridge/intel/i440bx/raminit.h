@@ -29,7 +29,7 @@ void sdram_enable(void);
 void sdram_initialize(void);
 
 /* Debug */
-#if IS_ENABLED(CONFIG_DEBUG_RAM_SETUP)
+#if CONFIG(DEBUG_RAM_SETUP)
 void dump_spd_registers(void);
 void dump_pci_device(unsigned dev);
 #else

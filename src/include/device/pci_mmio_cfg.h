@@ -69,7 +69,7 @@ void pci_mmio_write_config32(pci_devfn_t dev, unsigned int where, u32 value)
 	write32(addr, value);
 }
 
-#if IS_ENABLED(CONFIG_MMCONF_SUPPORT)
+#if CONFIG(MMCONF_SUPPORT)
 
 /* Avoid name collisions as different stages have different signature
  * for these functions. The _s_ stands for simple, fundamental IO or

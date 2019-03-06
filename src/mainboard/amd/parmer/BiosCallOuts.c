@@ -102,7 +102,7 @@ static const CODEC_TBL_LIST CodecTableList[] =
 static void oem_fan_control(FCH_DATA_BLOCK *FchParams)
 {
 	/* Enable IMC fan control. the recommand way */
-	if (IS_ENABLED(CONFIG_HUDSON_IMC_FWM)) {
+	if (CONFIG(HUDSON_IMC_FWM)) {
 		imc_reg_init();
 
 		/* HwMonitorEnable = TRUE &&  HwmFchtsiAutoOpll ==FALSE to call FchECfancontrolservice */
@@ -170,7 +170,7 @@ static void oem_fan_control(FCH_DATA_BLOCK *FchParams)
 
 void board_FCH_InitReset(struct sysinfo *cb_NA, FCH_RESET_DATA_BLOCK *FchParams_reset)
 {
-	FchParams_reset->LegacyFree = IS_ENABLED(CONFIG_HUDSON_LEGACY_FREE);
+	FchParams_reset->LegacyFree = CONFIG(HUDSON_LEGACY_FREE);
 }
 
 void board_FCH_InitEnv(struct sysinfo *cb_NA, FCH_DATA_BLOCK *FchParams_env)

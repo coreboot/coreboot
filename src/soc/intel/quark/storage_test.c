@@ -27,7 +27,7 @@
 #include <soc/storage_test.h>
 #include <string.h>
 
-#if IS_ENABLED(CONFIG_STORAGE_LOG)
+#if CONFIG(STORAGE_LOG)
 struct log_entry log[LOG_ENTRIES] CAR_GLOBAL;
 uint8_t log_index CAR_GLOBAL;
 int log_full CAR_GLOBAL;
@@ -37,7 +37,7 @@ long log_start_time CAR_GLOBAL;
 static uint8_t drivers_storage[256] CAR_GLOBAL;
 
 #define STORAGE_DEBUG  BIOS_DEBUG
-#define LOG_DEBUG  (IS_ENABLED(CONFIG_STORAGE_LOG) ? STORAGE_DEBUG : BIOS_NEVER)
+#define LOG_DEBUG  (CONFIG(STORAGE_LOG) ? STORAGE_DEBUG : BIOS_NEVER)
 
 #ifdef __SIMPLE_DEVICE__
 uint32_t storage_test_init(pci_devfn_t dev, uint32_t *previous_bar,
@@ -88,7 +88,7 @@ void storage_test_complete(struct device *dev, uint32_t previous_bar,
 static void display_log(void)
 {
 	/* Determine the array bounds */
-	if (IS_ENABLED(CONFIG_STORAGE_LOG)) {
+	if (CONFIG(STORAGE_LOG)) {
 		long delta;
 		uint8_t end;
 		uint8_t index;
@@ -121,7 +121,7 @@ static void display_log(void)
 
 void sdhc_log_command(struct mmc_command *cmd)
 {
-	if (IS_ENABLED(CONFIG_STORAGE_LOG)) {
+	if (CONFIG(STORAGE_LOG)) {
 		timer_monotonic_get(&log[log_index].time);
 		log[log_index].cmd = *cmd;
 		log[log_index].cmd_issued = 0;
@@ -133,7 +133,7 @@ void sdhc_log_command(struct mmc_command *cmd)
 
 void sdhc_log_command_issued(void)
 {
-	if (IS_ENABLED(CONFIG_STORAGE_LOG)) {
+	if (CONFIG(STORAGE_LOG)) {
 		log[log_index].cmd_issued = 1;
 	}
 }
@@ -142,7 +142,7 @@ void sdhc_log_response(uint32_t entries, uint32_t *response)
 {
 	unsigned int entry;
 
-	if (IS_ENABLED(CONFIG_STORAGE_LOG)) {
+	if (CONFIG(STORAGE_LOG)) {
 		log[log_index].response_entries = entries;
 		for (entry = 0; entry < entries; entry++)
 			log[log_index].response[entry] = response[entry];
@@ -151,7 +151,7 @@ void sdhc_log_response(uint32_t entries, uint32_t *response)
 
 void sdhc_log_ret(int ret)
 {
-	if (IS_ENABLED(CONFIG_STORAGE_LOG)) {
+	if (CONFIG(STORAGE_LOG)) {
 		log[log_index].ret = ret;
 		if (++log_index == 0)
 			log_full = 1;
@@ -189,7 +189,7 @@ void storage_test(uint32_t bar, int full_initialization)
 		storage_display_setup(media);
 	} else {
 		/* Initialize the log */
-		if (IS_ENABLED(CONFIG_STORAGE_LOG)) {
+		if (CONFIG(STORAGE_LOG)) {
 			log_index = 0;
 			log_full = 0;
 		}

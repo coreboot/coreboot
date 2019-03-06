@@ -22,7 +22,7 @@ void flashconsole_init(void);
 void flashconsole_tx_byte(unsigned char c);
 void flashconsole_tx_flush(void);
 
-#define __CONSOLE_FLASH_ENABLE__	IS_ENABLED(CONFIG_CONSOLE_SPI_FLASH)
+#define __CONSOLE_FLASH_ENABLE__	CONFIG(CONSOLE_SPI_FLASH)
 
 #if __CONSOLE_FLASH_ENABLE__
 static inline void __flashconsole_init(void)	{ flashconsole_init(); }

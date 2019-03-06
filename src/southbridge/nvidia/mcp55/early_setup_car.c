@@ -245,7 +245,7 @@ static void mcp55_early_setup(unsigned mcp55_num, unsigned *busn,
 	RES_PCI_IO, MCP55_DEV(6, 0, 0x74), 0xFFFFFFC0, 0x00000000,
 	RES_PCI_IO, MCP55_DEV(6, 0, 0xC0), 0x00000000, 0xCB8410DE,
 	RES_PCI_IO, MCP55_DEV(6, 0, 0xC4), 0xFFFFFFF8, 0x00000007,
-#if IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_AMDFAM10)
+#if CONFIG(NORTHBRIDGE_AMD_AMDFAM10)
 	/*
 	 * Avoid crash (complete with severe memory corruption!) during initial CAR boot
 	 * in mcp55_early_setup_x() on Fam10h systems by not touching 0x78.
@@ -257,7 +257,7 @@ static void mcp55_early_setup(unsigned mcp55_num, unsigned *busn,
 	RES_PCI_IO, MCP55_DEV(1, 0, 0x78), 0xC0FFFFFF, 0x19000000,
 #endif
 
-#if IS_ENABLED(CONFIG_MCP55_USE_AZA)
+#if CONFIG(MCP55_USE_AZA)
 	RES_PCI_IO, MCP55_DEV(6, 1, 0x40), 0x00000000, 0xCB8410DE,
 
 #endif
@@ -267,7 +267,7 @@ static void mcp55_early_setup(unsigned mcp55_num, unsigned *busn,
 	MCP55_MB_SETUP
 #endif
 
-#if IS_ENABLED(CONFIG_MCP55_USE_AZA)
+#if CONFIG(MCP55_USE_AZA)
 	RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+ 21, ~(3 << 2), (2 << 2),
 	RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+ 22, ~(3 << 2), (2 << 2),
 	RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+ 46, ~(3 << 2), (2 << 2),
@@ -291,7 +291,7 @@ static void mcp55_early_setup(unsigned mcp55_num, unsigned *busn,
 
 	RES_PORT_IO_32, ANACTRL_IO_BASE + 0x60, 0xFFFFFF00, 0x00000012,
 
-#if IS_ENABLED(CONFIG_MCP55_USE_NIC)
+#if CONFIG(MCP55_USE_NIC)
 	RES_PCI_IO, MCP55_DEV(1, 1, 0xe4), ~((1 << 22) | (1 << 20)), (1 << 22) | (1 << 20),
 
 	RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+ 4, ~(0xff), ((0 << 4) | (1 << 2) | (0 << 0)),

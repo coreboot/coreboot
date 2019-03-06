@@ -72,19 +72,19 @@ void __noreturn fsp_early_init (FSP_INFO_HEADER *fsp_ptr)
 	FSP_FSP_INIT FspInitApi;
 	FSP_INIT_PARAMS FspInitParams;
 	FSP_INIT_RT_BUFFER FspRtBuffer;
-#if IS_ENABLED(CONFIG_FSP_USES_UPD)
+#if CONFIG(FSP_USES_UPD)
 	UPD_DATA_REGION fsp_upd_data;
 #endif
 
 	/* Load microcode before RAM init */
-	if (IS_ENABLED(CONFIG_SUPPORT_CPU_UCODE_IN_CBFS))
+	if (CONFIG(SUPPORT_CPU_UCODE_IN_CBFS))
 		intel_update_microcode_from_cbfs();
 
 	memset((void *)&FspRtBuffer, 0, sizeof(FSP_INIT_RT_BUFFER));
 	FspRtBuffer.Common.StackTop = (u32 *)CONFIG_RAMTOP;
 	FspInitParams.NvsBufferPtr = NULL;
 
-#if IS_ENABLED(CONFIG_FSP_USES_UPD)
+#if CONFIG(FSP_USES_UPD)
 	FspRtBuffer.Common.UpdDataRgnPtr = &fsp_upd_data;
 #endif
 	FspInitParams.RtBufferPtr = (FSP_INIT_RT_BUFFER *)&FspRtBuffer;
@@ -238,7 +238,7 @@ void print_fsp_info(void) {
 }
 
 
-#if IS_ENABLED(CONFIG_ENABLE_MRC_CACHE)
+#if CONFIG(ENABLE_MRC_CACHE)
 /**
  *  Save the FSP memory HOB (mrc data) to the MRC area in CBMEM
  */
@@ -308,7 +308,7 @@ static void find_fsp_hob_update_mrc(void *unused)
 		/* 0x0000: Print all types */
 		print_hob_type_structure(0x000, FspHobListPtr);
 
-	#if IS_ENABLED(CONFIG_ENABLE_MRC_CACHE)
+	#if CONFIG(ENABLE_MRC_CACHE)
 		if (save_mrc_data(FspHobListPtr))
 			update_mrc_cache(NULL);
 		else

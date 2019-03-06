@@ -32,7 +32,7 @@ void mt_mem_init(const struct mt8173_sdram_params *sdram_params)
 	/* memory calibration */
 	mt_set_emi(sdram_params);
 
-	if (IS_ENABLED(CONFIG_MEMORY_TEST)) {
+	if (CONFIG(MEMORY_TEST)) {
 		/*
 		 * do memory test:
 		 * set memory scan range 0x2000

@@ -43,7 +43,7 @@ static void enable_cpu_power_partitions(void)
 	power_ungate_partition(POWER_PARTID_C0NC);
 	power_ungate_partition(POWER_PARTID_CE0);
 
-	if (IS_ENABLED(CONFIG_ARM64_USE_ARM_TRUSTED_FIRMWARE)) {
+	if (CONFIG(ARM64_USE_ARM_TRUSTED_FIRMWARE)) {
 		/*
 		 * Deassert reset signal of all the secondary CPUs.
 		 * PMC and flow controller will take over the power sequence

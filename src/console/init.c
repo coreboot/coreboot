@@ -73,7 +73,7 @@ int console_log_level(int msg_level)
 	if (msg_level <= log_level)
 		return CONSOLE_LOG_ALL;
 
-	if (IS_ENABLED(CONFIG_CONSOLE_CBMEM) && (msg_level <= BIOS_DEBUG))
+	if (CONFIG(CONSOLE_CBMEM) && (msg_level <= BIOS_DEBUG))
 		return CONSOLE_LOG_FAST;
 
 	return 0;
@@ -83,10 +83,10 @@ asmlinkage void console_init(void)
 {
 	init_log_level();
 
-	if (IS_ENABLED(CONFIG_DEBUG_CONSOLE_INIT))
+	if (CONFIG(DEBUG_CONSOLE_INIT))
 		car_set_var(console_inited, 1);
 
-	if (IS_ENABLED(CONFIG_EARLY_PCI_BRIDGE) && !ENV_SMM && !ENV_RAMSTAGE)
+	if (CONFIG(EARLY_PCI_BRIDGE) && !ENV_SMM && !ENV_RAMSTAGE)
 		pci_early_bridge_init();
 
 	console_hw_init();

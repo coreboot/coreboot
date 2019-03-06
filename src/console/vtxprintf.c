@@ -20,7 +20,7 @@
 
 #define call_tx(x) tx_byte(x, data)
 
-#if !IS_ENABLED(CONFIG_ARCH_MIPS)
+#if !CONFIG(ARCH_MIPS)
 #define SUPPORT_64BIT_INTS
 #endif
 

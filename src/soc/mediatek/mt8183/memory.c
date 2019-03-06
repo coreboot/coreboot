@@ -26,7 +26,7 @@ void mt_mem_init(const struct sdram_params *params)
 	/* memory calibration */
 	mt_set_emi(params);
 
-	if (IS_ENABLED(CONFIG_MEMORY_TEST)) {
+	if (CONFIG(MEMORY_TEST)) {
 		size_t r;
 		u8 *addr = _dram;
 

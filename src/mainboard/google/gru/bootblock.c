@@ -35,7 +35,7 @@ void bootblock_mainboard_early_init(void)
 	   so that we know we can use our GPIOs reliably in following code. */
 	write32(&rk3399_grf->io_vsel, RK_SETBITS(1 << 1 | 1 << 0));
 	/* On Scarlet-based boards, the 4C/4D domain is 1.8V (on others 3.0V) */
-	if (IS_ENABLED(CONFIG_GRU_BASEBOARD_SCARLET))
+	if (CONFIG(GRU_BASEBOARD_SCARLET))
 		write32(&rk3399_grf->io_vsel, RK_SETBITS(1 << 3));
 
 	/* Reconfigure GPIO1 from dynamic voltage selection through GPIO0_B1 to
@@ -46,10 +46,10 @@ void bootblock_mainboard_early_init(void)
 
 	/* Enable rails powering GPIO blocks, among other things. */
 	gpio_output(GPIO_P30V_EN, 1);
-	if (!IS_ENABLED(CONFIG_GRU_BASEBOARD_SCARLET))
+	if (!CONFIG(GRU_BASEBOARD_SCARLET))
 		gpio_output(GPIO_P15V_EN, 1);	/* Scarlet: EC-controlled */
 
-	if (IS_ENABLED(CONFIG_CONSOLE_SERIAL)) {
+	if (CONFIG(CONSOLE_SERIAL)) {
 		_Static_assert(CONFIG_CONSOLE_SERIAL_UART_ADDRESS == UART2_BASE,
 			       "CONSOLE_SERIAL_UART should be UART2");
 
@@ -89,10 +89,10 @@ static void configure_ec(void)
 
 static void configure_tpm(void)
 {
-	if (IS_ENABLED(CONFIG_GRU_HAS_TPM2)) {
+	if (CONFIG(GRU_HAS_TPM2)) {
 		rockchip_spi_init(CONFIG_DRIVER_TPM_SPI_BUS, 1500*KHz);
 
-		if (IS_ENABLED(CONFIG_GRU_BASEBOARD_SCARLET)) {
+		if (CONFIG(GRU_BASEBOARD_SCARLET)) {
 			gpio_input(GPIO(2, B, 1));	/* SPI2_MISO no-pull */
 			gpio_input(GPIO(2, B, 2));	/* SPI2_MOSI no-pull */
 			gpio_input(GPIO(2, B, 3));	/* SPI2_CLK no-pull */

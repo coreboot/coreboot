@@ -22,9 +22,9 @@
 /* Fields were removed from the structure and we cannot add them back
  * without new builds of the binaryPI blobs.
  */
-#if !IS_ENABLED(CONFIG_CPU_AMD_AGESA_BINARY_PI) || \
-	IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_PI_00630F01) || \
-	IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_PI_00730F01)
+#if !CONFIG(CPU_AMD_AGESA_BINARY_PI) || \
+	CONFIG(NORTHBRIDGE_AMD_PI_00630F01) || \
+	CONFIG(NORTHBRIDGE_AMD_PI_00730F01)
 
 #define HAS_ACPI_SRAT	TRUE
 #define HAS_ACPI_SLIT	TRUE

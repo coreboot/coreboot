@@ -199,7 +199,7 @@ void check_mca(void)
 						i, mci.cmask.hi, mci.cmask.lo);
 
 				mci.bank = i;
-				if (IS_ENABLED(CONFIG_ACPI_BERT)
+				if (CONFIG(ACPI_BERT)
 						&& mca_valid(mci.sts))
 					build_bert_mca_error(&mci);
 			}

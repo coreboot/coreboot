@@ -147,9 +147,9 @@ static int lapic_start_cpu(unsigned long apicid)
 		}
 		return 0;
 	}
-#if !IS_ENABLED(CONFIG_CPU_AMD_MODEL_10XXX) \
-	&& !IS_ENABLED(CONFIG_CPU_INTEL_MODEL_206AX) \
-	&& !IS_ENABLED(CONFIG_CPU_INTEL_MODEL_2065X)
+#if !CONFIG(CPU_AMD_MODEL_10XXX) \
+	&& !CONFIG(CPU_INTEL_MODEL_206AX) \
+	&& !CONFIG(CPU_INTEL_MODEL_2065X)
 	mdelay(10);
 #endif
 
@@ -320,7 +320,7 @@ int start_cpu(struct device *cpu)
 	return result;
 }
 
-#if IS_ENABLED(CONFIG_AP_IN_SIPI_WAIT)
+#if CONFIG(AP_IN_SIPI_WAIT)
 
 /**
  * Sending INIT IPI to self is equivalent of asserting #INIT with a bit of
@@ -408,7 +408,7 @@ asmlinkage void secondary_cpu_init(unsigned int index)
 {
 	atomic_inc(&active_cpus);
 
-	if (!IS_ENABLED(CONFIG_PARALLEL_CPU_INIT))
+	if (!CONFIG(PARALLEL_CPU_INIT))
 		spin_lock(&start_cpu_lock);
 
 #ifdef __SSE3__
@@ -423,7 +423,7 @@ asmlinkage void secondary_cpu_init(unsigned int index)
 #endif
 	cpu_initialize(index);
 
-	if (!IS_ENABLED(CONFIG_PARALLEL_CPU_INIT))
+	if (!CONFIG(PARALLEL_CPU_INIT))
 		spin_unlock(&start_cpu_lock);
 
 	atomic_dec(&active_cpus);
@@ -440,7 +440,7 @@ static void start_other_cpus(struct bus *cpu_bus, struct device *bsp_cpu)
 		if (cpu->path.type != DEVICE_PATH_APIC)
 			continue;
 
-		if (IS_ENABLED(CONFIG_PARALLEL_CPU_INIT) && (cpu == bsp_cpu))
+		if (CONFIG(PARALLEL_CPU_INIT) && (cpu == bsp_cpu))
 			continue;
 
 		if (!cpu->enabled)
@@ -454,7 +454,7 @@ static void start_other_cpus(struct bus *cpu_bus, struct device *bsp_cpu)
 			printk(BIOS_ERR, "CPU 0x%02x would not start!\n",
 				cpu->path.apic.apic_id);
 
-		if (!IS_ENABLED(CONFIG_PARALLEL_CPU_INIT))
+		if (!CONFIG(PARALLEL_CPU_INIT))
 			udelay(10);
 	}
 
@@ -554,24 +554,24 @@ void initialize_cpus(struct bus *cpu_bus)
 	if (is_smp_boot())
 		copy_secondary_start_to_lowest_1M();
 
-	if (!IS_ENABLED(CONFIG_SERIALIZED_SMM_INITIALIZATION))
+	if (!CONFIG(SERIALIZED_SMM_INITIALIZATION))
 		smm_init();
 
 	/* start all aps at first, so we can init ECC all together */
-	if (is_smp_boot() && IS_ENABLED(CONFIG_PARALLEL_CPU_INIT))
+	if (is_smp_boot() && CONFIG(PARALLEL_CPU_INIT))
 		start_other_cpus(cpu_bus, info->cpu);
 
 	/* Initialize the bootstrap processor */
 	cpu_initialize(0);
 
-	if (is_smp_boot() && !IS_ENABLED(CONFIG_PARALLEL_CPU_INIT))
+	if (is_smp_boot() && !CONFIG(PARALLEL_CPU_INIT))
 		start_other_cpus(cpu_bus, info->cpu);
 
 	/* Now wait the rest of the cpus stop*/
 	if (is_smp_boot())
 		wait_other_cpus_stop(cpu_bus);
 
-	if (IS_ENABLED(CONFIG_SERIALIZED_SMM_INITIALIZATION)) {
+	if (CONFIG(SERIALIZED_SMM_INITIALIZATION)) {
 		/* At this point, all APs are sleeping:
 		 * smm_init() will queue a pending SMI on all cpus
 		 * and smm_other_cpus() will start them one by one */
@@ -589,7 +589,7 @@ void initialize_cpus(struct bus *cpu_bus)
 		recover_lowest_1M();
 }
 
-#if !IS_ENABLED(CONFIG_HAVE_SMI_HANDLER)
+#if !CONFIG(HAVE_SMI_HANDLER)
 /* Empty stubs for platforms without SMI handlers. */
 void smm_init(void)
 {

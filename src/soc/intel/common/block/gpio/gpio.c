@@ -35,7 +35,7 @@
 	PAD_CFG0_TRIG_MASK | PAD_CFG0_RXRAW1_MASK |			\
 	PAD_CFG0_RXPADSTSEL_MASK | PAD_CFG0_RESET_MASK)
 
-#if IS_ENABLED(CONFIG_SOC_INTEL_COMMON_BLOCK_GPIO_PADCFG_PADTOL)
+#if CONFIG(SOC_INTEL_COMMON_BLOCK_GPIO_PADCFG_PADTOL)
 #define PAD_DW1_MASK	(PAD_CFG1_IOSTERM_MASK |			\
 			PAD_CFG1_PULL_MASK |				\
 			PAD_CFG1_TOL_MASK |				\
@@ -190,7 +190,7 @@ static void gpio_configure_itss(const struct pad_config *cfg, uint16_t port,
 	if (ENV_SMM)
 		return;
 
-	if (!IS_ENABLED(CONFIG_SOC_INTEL_COMMON_BLOCK_GPIO_ITSS_POL_CFG))
+	if (!CONFIG(SOC_INTEL_COMMON_BLOCK_GPIO_ITSS_POL_CFG))
 		return;
 
 	int irq;
@@ -276,7 +276,7 @@ static void gpio_configure_pad(const struct pad_config *cfg)
 		/* Patch GPIO settings for SoC specifically */
 		soc_pad_conf = soc_gpio_pad_config_fixup(cfg, i, soc_pad_conf);
 
-		if (IS_ENABLED(CONFIG_DEBUG_GPIO))
+		if (CONFIG(DEBUG_GPIO))
 			printk(BIOS_DEBUG,
 			"gpio_padcfg [0x%02x, %02zd] DW%d [0x%08x : 0x%08x"
 			" : 0x%08x]\n",
@@ -411,7 +411,7 @@ uint16_t gpio_acpi_pin(gpio_t gpio_num)
 	const struct pad_community *comm;
 	size_t group, pin;
 
-	if (IS_ENABLED(CONFIG_SOC_INTEL_COMMON_BLOCK_GPIO_MULTI_ACPI_DEVICES))
+	if (CONFIG(SOC_INTEL_COMMON_BLOCK_GPIO_MULTI_ACPI_DEVICES))
 		return relative_pad_in_comm(gpio_get_community(gpio_num),
 					    gpio_num);
 
@@ -489,7 +489,7 @@ void gpi_clear_get_smi_status(struct gpi_status *sts)
 		comm++;
 	}
 
-	if (IS_ENABLED(CONFIG_DEBUG_SMI))
+	if (CONFIG(DEBUG_SMI))
 		print_gpi_status(sts);
 
 }
@@ -560,7 +560,7 @@ void gpio_route_gpe(uint8_t gpe0b, uint8_t gpe0c, uint8_t gpe0d)
 			MISCCFG_GPE0_DW1_MASK |
 			MISCCFG_GPE0_DW0_MASK);
 
-	if (IS_ENABLED(CONFIG_DEBUG_GPIO))
+	if (CONFIG(DEBUG_GPIO))
 		printk(BIOS_DEBUG, "misccfg_mask:%x misccfg_value:%x\n",
 			misccfg_mask, misccfg_value);
 	comm = soc_gpio_get_community(&gpio_communities);

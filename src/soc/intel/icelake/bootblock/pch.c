@@ -139,7 +139,7 @@ void pch_early_iorange_init(void)
 		LPC_IOE_EC_62_66 | LPC_IOE_LGE_200;
 
 	/* IO Decode Range */
-	if (IS_ENABLED(CONFIG_DRIVERS_UART_8250IO))
+	if (CONFIG(DRIVERS_UART_8250IO))
 		lpc_io_setup_comm_a_b();
 
 	/* IO Decode Enable */

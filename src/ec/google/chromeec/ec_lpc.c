@@ -38,7 +38,7 @@ static void read_bytes(u16 port, unsigned int length, u8 *dest, u8 *csum)
 {
 	int i;
 
-#if IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC_MEC)
+#if CONFIG(EC_GOOGLE_CHROMEEC_MEC)
 	/* Access desired range though EMI interface */
 	if (port >= MEC_EMI_RANGE_START && port <= MEC_EMI_RANGE_END) {
 		u8 ret = mec_io_bytes(MEC_IO_READ, MEC_EMI_BASE,
@@ -77,7 +77,7 @@ static void write_bytes(u16 port, unsigned int length, u8 *msg, u8 *csum)
 {
 	int i;
 
-#if IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC_MEC)
+#if CONFIG(EC_GOOGLE_CHROMEEC_MEC)
 	/* Access desired range though EMI interface */
 	if (port >= MEC_EMI_RANGE_START && port <= MEC_EMI_RANGE_END) {
 		u8 ret = mec_io_bytes(MEC_IO_WRITE, MEC_EMI_BASE,
@@ -132,7 +132,7 @@ static int google_chromeec_wait_ready(u16 port)
 					    EC_LPC_CMDR_BUSY, 0);
 }
 
-#if IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC_ACPI_MEMMAP)
+#if CONFIG(EC_GOOGLE_CHROMEEC_ACPI_MEMMAP)
 /* Read memmap data through ACPI port 66/62 */
 static int read_memmap(u8 *data, u8 offset)
 {
@@ -166,7 +166,7 @@ static int google_chromeec_command_version(void)
 {
 	u8 id1, id2, flags;
 
-#if IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC_ACPI_MEMMAP)
+#if CONFIG(EC_GOOGLE_CHROMEEC_ACPI_MEMMAP)
 	if (read_memmap(&id1, EC_MEMMAP_ID) ||
 	    read_memmap(&id2, EC_MEMMAP_ID + 1) ||
 	    read_memmap(&flags, EC_MEMMAP_HOST_CMD_FLAGS)) {
@@ -386,7 +386,7 @@ void google_chromeec_ioport_range(uint16_t *out_base, size_t *out_size)
 	uint16_t base;
 	size_t size;
 
-	if (IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC_MEC)) {
+	if (CONFIG(EC_GOOGLE_CHROMEEC_MEC)) {
 		base = MEC_EMI_BASE;
 		size = MEC_EMI_SIZE;
 	} else {

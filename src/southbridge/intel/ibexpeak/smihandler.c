@@ -430,7 +430,7 @@ static void southbridge_smi_sleep(void)
 	/* Do any mainboard sleep handling */
 	mainboard_smi_sleep(slp_typ);
 
-#if IS_ENABLED(CONFIG_ELOG_GSMI)
+#if CONFIG(ELOG_GSMI)
 	/* Log S3, S4, and S5 entry */
 	if (slp_typ >= ACPI_S3)
 		elog_add_event_byte(ELOG_TYPE_ACPI_ENTER, slp_typ);
@@ -532,7 +532,7 @@ static em64t101_smm_state_save_area_t *smi_apmc_find_state_save(u8 cmd)
 	return NULL;
 }
 
-#if IS_ENABLED(CONFIG_ELOG_GSMI)
+#if CONFIG(ELOG_GSMI)
 static void southbridge_smi_gsmi(void)
 {
 	u32 *ret, *param;
@@ -604,7 +604,7 @@ static void southbridge_smi_apmc(void)
 			printk(BIOS_DEBUG, "SMI#: Setting GNVS to %p\n", gnvs);
 		}
 		break;
-#if IS_ENABLED(CONFIG_ELOG_GSMI)
+#if CONFIG(ELOG_GSMI)
 	case APM_CNT_ELOG_GSMI:
 		southbridge_smi_gsmi();
 		break;
@@ -628,7 +628,7 @@ static void southbridge_smi_pm1(void)
 		// power button pressed
 		u32 reg32;
 		reg32 = (7 << 10) | (1 << 13);
-#if IS_ENABLED(CONFIG_ELOG_GSMI)
+#if CONFIG(ELOG_GSMI)
 		elog_add_event(ELOG_TYPE_POWER_BUTTON);
 #endif
 		outl(reg32, pmbase + PM1_CNT);

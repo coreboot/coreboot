@@ -22,7 +22,7 @@ unsigned int uart_baudrate_divisor(unsigned int baudrate,
 	return (1 + (2 * refclk) / (baudrate * oversample)) / 2;
 }
 
-#if !IS_ENABLED(CONFIG_UART_OVERRIDE_INPUT_CLOCK_DIVIDER)
+#if !CONFIG(UART_OVERRIDE_INPUT_CLOCK_DIVIDER)
 unsigned int uart_input_clock_divider(void)
 {
 	/* Specify the default oversample rate for the UART.
@@ -39,7 +39,7 @@ unsigned int uart_input_clock_divider(void)
 }
 #endif
 
-#if !IS_ENABLED(CONFIG_UART_OVERRIDE_REFCLK)
+#if !CONFIG(UART_OVERRIDE_REFCLK)
 unsigned int uart_platform_refclk(void)
 {
 	/* Specify the default input clock frequency for the UART.

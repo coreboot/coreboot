@@ -161,7 +161,7 @@ enum {
 	SPI_OPCODE_TYPE_WRITE_WITH_ADDRESS =	3
 };
 
-#if IS_ENABLED(CONFIG_DEBUG_SPI_FLASH)
+#if CONFIG(DEBUG_SPI_FLASH)
 
 static u8 readb_(const void *addr)
 {
@@ -283,7 +283,7 @@ void spi_init(void)
 	rcba = pci_read_config32(dev, 0xf0);
 	/* Bits 31-14 are the base address, 13-1 are reserved, 0 is enable. */
 	rcrb = (uint8_t *)(rcba & 0xffffc000);
-	if (IS_ENABLED(CONFIG_SOUTHBRIDGE_INTEL_I82801GX)) {
+	if (CONFIG(SOUTHBRIDGE_INTEL_I82801GX)) {
 		ich7_spi = (ich7_spi_regs *)(rcrb + 0x3020);
 		cntlr->opmenu = ich7_spi->opmenu;
 		cntlr->menubytes = sizeof(ich7_spi->opmenu);
@@ -906,7 +906,7 @@ static int spi_flash_programmer_probe(const struct spi_slave *spi,
 {
 	ich_spi_controller *cntlr = &g_cntlr;
 
-	if (IS_ENABLED(CONFIG_SOUTHBRIDGE_INTEL_I82801GX))
+	if (CONFIG(SOUTHBRIDGE_INTEL_I82801GX))
 		return spi_flash_generic_probe(spi, flash);
 
 	/* Try generic probing first if spi_is_multichip returns 0. */
@@ -963,7 +963,7 @@ static u32 spi_fpr(u32 base, u32 limit)
 	u32 ret;
 	u32 mask, limit_shift;
 
-	if (IS_ENABLED(CONFIG_SOUTHBRIDGE_INTEL_I82801GX)) {
+	if (CONFIG(SOUTHBRIDGE_INTEL_I82801GX)) {
 		mask = ICH7_SPI_FPR_MASK;
 		limit_shift = ICH7_SPI_FPR_LIMIT_SHIFT;
 	} else {
@@ -1011,12 +1011,12 @@ static int spi_flash_protect(const struct spi_flash *flash,
 		protect_mask |= SPI_FPR_WPE;
 		break;
 	case READ_PROTECT:
-		if (IS_ENABLED(CONFIG_SOUTHBRIDGE_INTEL_I82801GX))
+		if (CONFIG(SOUTHBRIDGE_INTEL_I82801GX))
 			return -1;
 		protect_mask |= ICH9_SPI_FPR_RPE;
 		break;
 	case READ_WRITE_PROTECT:
-		if (IS_ENABLED(CONFIG_SOUTHBRIDGE_INTEL_I82801GX))
+		if (CONFIG(SOUTHBRIDGE_INTEL_I82801GX))
 			return -1;
 		protect_mask |= (ICH9_SPI_FPR_RPE | SPI_FPR_WPE);
 		break;

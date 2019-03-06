@@ -59,7 +59,7 @@ static void sandybridge_setup_bars(void)
 	pci_write_config8(PCI_DEV(0, 0x00, 0), PAM5, 0x33);
 	pci_write_config8(PCI_DEV(0, 0x00, 0), PAM6, 0x33);
 
-#if IS_ENABLED(CONFIG_ELOG_BOOT_COUNT)
+#if CONFIG(ELOG_BOOT_COUNT)
 	/* Increment Boot Counter for non-S3 resume */
 	if ((inw(DEFAULT_PMBASE + PM1_STS) & WAK_STS) &&
 	    ((inl(DEFAULT_PMBASE + PM1_CNT) >> 10) & 7) != SLP_TYP_S3)
@@ -68,7 +68,7 @@ static void sandybridge_setup_bars(void)
 
 	printk(BIOS_DEBUG, " done.\n");
 
-#if IS_ENABLED(CONFIG_ELOG_BOOT_COUNT)
+#if CONFIG(ELOG_BOOT_COUNT)
 	/* Increment Boot Counter except when resuming from S3 */
 	if ((inw(DEFAULT_PMBASE + PM1_STS) & WAK_STS) &&
 	    ((inl(DEFAULT_PMBASE + PM1_CNT) >> 10) & 7) == SLP_TYP_S3)
@@ -159,7 +159,7 @@ static void start_peg_link_training(void)
 	 * As the MRC has its own initialization code skip it. */
 	if (((pci_read_config16(PCI_DEV(0, 0, 0), PCI_DEVICE_ID) &
 			BASE_REV_MASK) != BASE_REV_IVB) ||
-		IS_ENABLED(CONFIG_HAVE_MRC))
+		CONFIG(HAVE_MRC))
 		return;
 
 	deven = pci_read_config32(PCI_DEV(0, 0, 0), DEVEN);

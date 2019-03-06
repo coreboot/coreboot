@@ -172,7 +172,7 @@ microcode_done:
 	test	%ebx, %ebx
 	jz	1f
 
-#if IS_ENABLED(CONFIG_X86_AMD_FIXED_MTRRS)
+#if CONFIG(X86_AMD_FIXED_MTRRS)
 	/* Allow modification of RdDram and WrDram bits */
 	mov	$SYSCFG_MSR, %ecx
 	rdmsr
@@ -189,7 +189,7 @@ load_msr:
 	dec	%ebx
 	jnz	load_msr
 
-#if IS_ENABLED(CONFIG_X86_AMD_FIXED_MTRRS)
+#if CONFIG(X86_AMD_FIXED_MTRRS)
 	mov	$SYSCFG_MSR, %ecx
 	rdmsr
 	and	$~SYSCFG_MSR_MtrrFixDramModEn, %eax
@@ -202,7 +202,7 @@ load_msr:
 	and	$~(CR0_CLEAR_FLAGS_CACHE_ENABLE), %eax
 	mov	%eax, %cr0
 
-#if IS_ENABLED(CONFIG_SSE)
+#if CONFIG(SSE)
 	/* Enable sse instructions. */
 	mov	%cr4, %eax
 	orl	$(CR4_OSFXSR | CR4_OSXMMEXCPT), %eax

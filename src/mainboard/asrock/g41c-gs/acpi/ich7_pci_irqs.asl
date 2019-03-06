@@ -18,7 +18,7 @@
  * IRQ routing for the 0:1e.0 PCI bridge of the ICH7
  */
 
-#if IS_ENABLED(CONFIG_BOARD_ASROCK_G41M_VS3_R2_0)
+#if CONFIG(BOARD_ASROCK_G41M_VS3_R2_0)
 If (PICM) {
 	Return (Package() {
 		/* PCI1 SLOT 1 */
@@ -53,9 +53,9 @@ If (PICM) {
 	})
 }
 #else
-/* IS_ENABLED(CONFIG_BOARD_ASROCK_G41C_GS_R2_0) \
-	|| IS_ENABLED(CONFIG_BOARD_ASROCK_G41C_GS) \
-        || IS_ENABLED(CONFIG_BOARD_ASROCK_G41M_GS) */
+/* CONFIG(BOARD_ASROCK_G41C_GS_R2_0) \
+	|| CONFIG(BOARD_ASROCK_G41C_GS) \
+        || CONFIG(BOARD_ASROCK_G41M_GS) */
 If (PICM) {
 	Return (Package() {
 		/* PCI1 SLOT 1 */

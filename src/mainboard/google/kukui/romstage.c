@@ -24,7 +24,7 @@
 void platform_romstage_main(void)
 {
 	/* This will be done in verstage if CONFIG_VBOOT is enabled. */
-	if (!IS_ENABLED(CONFIG_VBOOT))
+	if (!CONFIG(VBOOT))
 		mainboard_early_init();
 
 	mt6358_init();

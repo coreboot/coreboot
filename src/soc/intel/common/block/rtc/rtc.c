@@ -53,7 +53,7 @@ void rtc_conf_set_bios_interface_lockdown(void)
 					PCR_RTC_CONF_BILD);
 }
 
-#if IS_ENABLED(CONFIG_INTEL_HAS_TOP_SWAP)
+#if CONFIG(INTEL_HAS_TOP_SWAP)
 void configure_rtc_buc_top_swap(enum ts_config ts_state)
 {
 	pcr_rmw32(PID_RTC, PCR_RTC_BUC, ~PCR_RTC_BUC_TOP_SWAP, ts_state);

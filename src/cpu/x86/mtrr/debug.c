@@ -197,6 +197,6 @@ static void _display_mtrrs(void)
 
 asmlinkage void display_mtrrs(void)
 {
-	if (IS_ENABLED(CONFIG_DISPLAY_MTRRS))
+	if (CONFIG(DISPLAY_MTRRS))
 		_display_mtrrs();
 }

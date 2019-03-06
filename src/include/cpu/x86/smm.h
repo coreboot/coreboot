@@ -486,7 +486,7 @@ int mainboard_io_trap_handler(int smif);
 
 void southbridge_smi_set_eos(void);
 
-#if IS_ENABLED(CONFIG_SMM_TSEG)
+#if CONFIG(SMM_TSEG)
 void cpu_smi_handler(void);
 void northbridge_smi_handler(void);
 void southbridge_smi_handler(void);
@@ -501,7 +501,7 @@ void mainboard_smi_gpi(u32 gpi_sts);
 int  mainboard_smi_apmc(u8 data);
 void mainboard_smi_sleep(u8 slp_typ);
 
-#if !IS_ENABLED(CONFIG_SMM_TSEG)
+#if !CONFIG(SMM_TSEG)
 void smi_release_lock(void);
 #endif
 

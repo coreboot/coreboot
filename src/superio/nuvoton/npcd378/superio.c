@@ -103,7 +103,7 @@ static void npcd378_init(struct device *dev)
 	}
 }
 
-#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+#if CONFIG(HAVE_ACPI_TABLES)
 static void npcd378_ssdt(struct device *dev)
 {
 	struct resource *res;
@@ -157,7 +157,7 @@ static struct device_operations ops = {
 	.enable           = pnp_alt_enable,
 	.init             = npcd378_init,
 	.ops_pnp_mode     = &pnp_conf_mode_8787_aa,
-#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+#if CONFIG(HAVE_ACPI_TABLES)
 	.acpi_fill_ssdt_generator = npcd378_ssdt,
 	.acpi_name = npcd378_acpi_name,
 #endif

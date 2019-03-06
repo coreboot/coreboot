@@ -124,7 +124,7 @@ const char *soc_acpi_name(const struct device *dev)
 			case 6: return "HS07";
 			case 7: return "HS08";
 			case 8:
-				if (IS_ENABLED(CONFIG_SOC_INTEL_GLK))
+				if (CONFIG(SOC_INTEL_GLK))
 					return "HS09";
 			}
 			break;
@@ -300,7 +300,7 @@ static void set_power_limits(void)
 	uint32_t tdp, min_power, max_power;
 	uint32_t pl2_val;
 
-	if (IS_ENABLED(CONFIG_APL_SKIP_SET_POWER_LIMITS)) {
+	if (CONFIG(APL_SKIP_SET_POWER_LIMITS)) {
 		printk(BIOS_INFO, "Skip the RAPL settings.\n");
 		return;
 	}
@@ -527,7 +527,7 @@ static void disable_dev(struct device *dev, FSP_S_CONFIG *silconfig)
 	case PCH_DEVFN_SMBUS:
 		silconfig->SmbusEnable = 0;
 		break;
-#if !IS_ENABLED(CONFIG_SOC_INTEL_GLK)
+#if !CONFIG(SOC_INTEL_GLK)
 	case SA_DEVFN_IPU:
 		silconfig->IpuEn = 0;
 		break;
@@ -558,7 +558,7 @@ static void parse_devicetree(FSP_S_CONFIG *silconfig)
 static void apl_fsp_silicon_init_params_cb(struct soc_intel_apollolake_config
 	*cfg, FSP_S_CONFIG *silconfig)
 {
-#if !IS_ENABLED(CONFIG_SOC_INTEL_GLK) /* GLK FSP does not have these
+#if !CONFIG(SOC_INTEL_GLK) /* GLK FSP does not have these
 					 fields in FspsUpd.h yet */
 	uint8_t port;
 
@@ -597,7 +597,7 @@ static void apl_fsp_silicon_init_params_cb(struct soc_intel_apollolake_config
 static void glk_fsp_silicon_init_params_cb(
 	struct soc_intel_apollolake_config *cfg, FSP_S_CONFIG *silconfig)
 {
-#if IS_ENABLED(CONFIG_SOC_INTEL_GLK)
+#if CONFIG(SOC_INTEL_GLK)
 	uint8_t port;
 
 	for (port = 0; port < APOLLOLAKE_USB2_PORT_MAX; port++) {
@@ -730,7 +730,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *silupd)
 	/* Disable monitor mwait since it is broken due to a hardware bug
 	 * without a fix. Specific to Apollolake.
 	 */
-	if (!IS_ENABLED(CONFIG_SOC_INTEL_GLK))
+	if (!CONFIG(SOC_INTEL_GLK))
 		silconfig->MonitorMwaitEnable = 0;
 
 	silconfig->SkipMpInit = !chip_get_fsp_mp_init();
@@ -746,7 +746,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *silupd)
 	silconfig->HDAudioPwrGate = cfg->hdaudio_pwr_gate_enable;
 	/* Bios config lockdown Audio clk and power gate */
 	silconfig->BiosCfgLockDown = cfg->hdaudio_bios_config_lockdown;
-	if (IS_ENABLED(CONFIG_SOC_INTEL_GLK))
+	if (CONFIG(SOC_INTEL_GLK))
 		glk_fsp_silicon_init_params_cb(cfg, silconfig);
 	else
 		apl_fsp_silicon_init_params_cb(cfg, silconfig);
@@ -847,7 +847,7 @@ void platform_fsp_notify_status(enum fsp_notify_phase phase)
 		 * Override GLK xhci clock gating register(XHCLKGTEN) to
 		 * mitigate usb device suspend and resume failure.
 		 */
-		if (IS_ENABLED(CONFIG_SOC_INTEL_GLK)) {
+		if (CONFIG(SOC_INTEL_GLK)) {
 			uint32_t *cfg;
 			const struct resource *res;
 			uint32_t reg;

@@ -150,7 +150,7 @@ static void root_dev_reset(struct bus *bus)
 	board_reset();
 }
 
-#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+#if CONFIG(HAVE_ACPI_TABLES)
 static const char *root_dev_acpi_name(const struct device *dev)
 {
 	return "\\_SB";
@@ -171,7 +171,7 @@ struct device_operations default_dev_ops_root = {
 	.init             = DEVICE_NOOP,
 	.scan_bus         = root_dev_scan_bus,
 	.reset_bus        = root_dev_reset,
-#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+#if CONFIG(HAVE_ACPI_TABLES)
 	.acpi_name        = root_dev_acpi_name,
 #endif
 };

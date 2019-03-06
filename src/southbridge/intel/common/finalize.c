@@ -28,11 +28,11 @@ void intel_pch_finalize_smm(void)
 {
 	const pci_devfn_t lpc_dev = PCI_DEV(0, 0x1f, 0);
 
-	if (IS_ENABLED(CONFIG_LOCK_SPI_FLASH_RO) ||
-	    IS_ENABLED(CONFIG_LOCK_SPI_FLASH_NO_ACCESS)) {
+	if (CONFIG(LOCK_SPI_FLASH_RO) ||
+	    CONFIG(LOCK_SPI_FLASH_NO_ACCESS)) {
 		int i;
 		u32 lockmask = 1UL << 31;
-		if (IS_ENABLED(CONFIG_LOCK_SPI_FLASH_NO_ACCESS))
+		if (CONFIG(LOCK_SPI_FLASH_NO_ACCESS))
 			lockmask |= 1 << 15;
 		for (i = 0; i < 20; i += 4)
 			RCBA32(0x3874 + i) = RCBA32(0x3854 + i) | lockmask;
@@ -41,7 +41,7 @@ void intel_pch_finalize_smm(void)
 	/* Lock SPIBAR */
 	RCBA32_OR(0x3804, (1 << 15));
 
-	if (IS_ENABLED(CONFIG_SPI_FLASH_SMM))
+	if (CONFIG(SPI_FLASH_SMM))
 		/* Re-init SPI driver to handle locked BAR */
 		spi_init();
 
@@ -61,7 +61,7 @@ void intel_pch_finalize_smm(void)
 
 	pci_update_config32(lpc_dev, D31F0_ETR3, ~ETR3_CF9GR, ETR3_CF9LOCK);
 
-	if (IS_ENABLED(CONFIG_SOUTHBRIDGE_INTEL_LYNXPOINT))
+	if (CONFIG(SOUTHBRIDGE_INTEL_LYNXPOINT))
 		/* PMSYNC */
 		RCBA32_OR(0x33c4, (1UL << 31));
 

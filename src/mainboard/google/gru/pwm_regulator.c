@@ -58,12 +58,12 @@ int scarlet_pwm_design_voltage[][2] = {
 int pwm_enum_to_pwm_number[] = {
 	[PWM_REGULATOR_GPU] = 0,
 	[PWM_REGULATOR_LIT] = 2,
-#if IS_ENABLED(CONFIG_GRU_HAS_CENTERLOG_PWM)
+#if CONFIG(GRU_HAS_CENTERLOG_PWM)
 	[PWM_REGULATOR_CENTERLOG] = 3,
 #else
 	[PWM_REGULATOR_CENTERLOG] = -1,
 #endif
-#if IS_ENABLED(CONFIG_GRU_BASEBOARD_SCARLET)
+#if CONFIG(GRU_BASEBOARD_SCARLET)
 	[PWM_REGULATOR_BIG] = 3,
 #else
 	[PWM_REGULATOR_BIG] = 1,
@@ -78,14 +78,14 @@ void pwm_regulator_configure(enum pwm_regulator pwm, int millivolt)
 
 	voltage_min = pwm_design_voltage[pwm][0];
 	voltage_max = pwm_design_voltage[pwm][1];
-	if ((IS_ENABLED(CONFIG_BOARD_GOOGLE_KEVIN) && board_id() < 6) ||
-	    (IS_ENABLED(CONFIG_BOARD_GOOGLE_GRU) && board_id() < 2)) {
+	if ((CONFIG(BOARD_GOOGLE_KEVIN) && board_id() < 6) ||
+	    (CONFIG(BOARD_GOOGLE_GRU) && board_id() < 2)) {
 		voltage_min = PWM_DESIGN_VOLTAGE_MIN_OUTDATED;
 		voltage_max = PWM_DESIGN_VOLTAGE_MAX_OUTDATED;
-	} else if (IS_ENABLED(CONFIG_BOARD_GOOGLE_KEVIN) && board_id() >= 6) {
+	} else if (CONFIG(BOARD_GOOGLE_KEVIN) && board_id() >= 6) {
 		voltage_min = kevin6_pwm_design_voltage[pwm][0];
 		voltage_max = kevin6_pwm_design_voltage[pwm][1];
-	} else if (IS_ENABLED(CONFIG_GRU_BASEBOARD_SCARLET)) {
+	} else if (CONFIG(GRU_BASEBOARD_SCARLET)) {
 		voltage_min = scarlet_pwm_design_voltage[pwm][0];
 		voltage_max = scarlet_pwm_design_voltage[pwm][1];
 	}

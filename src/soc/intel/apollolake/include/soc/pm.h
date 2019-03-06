@@ -71,7 +71,7 @@
 #define SMI_EOS			1
 #define SMI_GBL			0
 
-#if IS_ENABLED(CONFIG_SOC_ESPI)
+#if CONFIG(SOC_ESPI)
 #define   ESPI_SMI_EN	(1 << SMI_ESPI) /* Valid for GLK with ESPI */
 #else
 #define   ESPI_SMI_EN	0
@@ -190,7 +190,7 @@
 #define  GPE0_DWX_MASK		0xf
 #define GPE0_DW_SHIFT(x)	(4 + 4*(x))
 
-#if IS_ENABLED(CONFIG_SOC_INTEL_GLK)
+#if CONFIG(SOC_INTEL_GLK)
 #define PMC_GPE_AUDIO_31_0	9
 #define PMC_GPE_N_95_64		8
 #define PMC_GPE_N_63_32		7

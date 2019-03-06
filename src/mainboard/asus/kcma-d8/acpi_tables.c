@@ -31,7 +31,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 	/* create all subtables for processors */
 	current = acpi_create_madt_lapics(current);
 
-	if (IS_ENABLED(CONFIG_ENABLE_APIC_EXT_ID) && (CONFIG_APIC_ID_OFFSET > 0))
+	if (CONFIG(ENABLE_APIC_EXT_ID) && (CONFIG_APIC_ID_OFFSET > 0))
 		apicid_sp5100 = 0x0;
 	else
 		apicid_sp5100 = 0x20;
@@ -70,7 +70,7 @@ unsigned long acpi_fill_ivrs_ioapic(acpi_ivrs_t *ivrs, unsigned long current)
 	uint32_t apicid_sp5100;
 	uint32_t apicid_sr5650;
 
-	if (IS_ENABLED(CONFIG_ENABLE_APIC_EXT_ID) && (CONFIG_APIC_ID_OFFSET > 0))
+	if (CONFIG(ENABLE_APIC_EXT_ID) && (CONFIG_APIC_ID_OFFSET > 0))
 		apicid_sp5100 = 0x0;
 	else
 		apicid_sp5100 = 0x20;

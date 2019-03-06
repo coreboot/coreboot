@@ -19,7 +19,7 @@
 #include <console/console.h>
 #include <device/pci_ops.h>
 #include <pc80/mc146818rtc.h>
-#if IS_ENABLED(CONFIG_HAVE_OPTION_TABLE)
+#if CONFIG(HAVE_OPTION_TABLE)
 #include "option_table.h"
 #endif
 
@@ -124,7 +124,7 @@ void real_start_other_core(uint32_t nodeid, uint32_t cores)
 	}
 }
 
-#if (!IS_ENABLED(CONFIG_CPU_AMD_MODEL_10XXX))
+#if (!CONFIG(CPU_AMD_MODEL_10XXX))
 //it is running on core0 of node0
 static void start_other_cores(void)
 {

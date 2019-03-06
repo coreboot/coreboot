@@ -155,7 +155,7 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 	fadt->x_gpe1_blk.addrl = 0;
 	fadt->x_gpe1_blk.addrh = 0x0;
 
-	if (IS_ENABLED(CONFIG_CPU_AMD_MODEL_10XXX))
+	if (CONFIG(CPU_AMD_MODEL_10XXX))
 		amd_powernow_update_fadt(fadt);
 
 	header->checksum = acpi_checksum((void *)fadt, sizeof(acpi_fadt_t));

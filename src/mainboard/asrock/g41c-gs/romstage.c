@@ -44,7 +44,7 @@ static void mb_lpc_setup(void)
 	setup_pch_gpios(&mainboard_gpio_map);
 
 	/* Set GPIOs on superio, enable UART */
-	if (IS_ENABLED(CONFIG_SUPERIO_NUVOTON_NCT6776)) {
+	if (CONFIG(SUPERIO_NUVOTON_NCT6776)) {
 		nuvoton_pnp_enter_conf_state(SERIAL_DEV_R2);
 		pnp_set_logical_device(SERIAL_DEV_R2);
 

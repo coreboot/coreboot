@@ -58,13 +58,13 @@ asmlinkage void bootblock_c_entry(uint64_t base_timestamp)
 void bootblock_soc_early_init(void)
 {
 
-#if (IS_ENABLED(CONFIG_CONSOLE_SERIAL))
+#if (CONFIG(CONSOLE_SERIAL))
 	early_uart_init();
 #endif
 };
 
 void bootblock_soc_init(void)
 {
-	if (IS_ENABLED(CONFIG_BOOTBLOCK_CONSOLE))
+	if (CONFIG(BOOTBLOCK_CONSOLE))
 		printk(BIOS_DEBUG, "FSP TempRamInit successful...\n");
 };

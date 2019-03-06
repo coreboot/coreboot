@@ -20,7 +20,7 @@
 void bootblock_cpu_init(void)
 {
 	/* Temporarily cache the memory-mapped boot media. */
-	if (IS_ENABLED(CONFIG_BOOT_DEVICE_MEMORY_MAPPED) &&
-		IS_ENABLED(CONFIG_BOOT_DEVICE_SPI_FLASH))
+	if (CONFIG(BOOT_DEVICE_MEMORY_MAPPED) &&
+		CONFIG(BOOT_DEVICE_SPI_FLASH))
 		fast_spi_cache_bios_region();
 }

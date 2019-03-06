@@ -71,7 +71,7 @@ static void soc_config_acpibase(void)
 	 */
 	reg32 = ((0x3f << 18) | ACPI_BASE_ADDRESS | 1);
 	pcr_write32(PID_DMI, PCR_DMI_ACPIBA, reg32);
-	if (IS_ENABLED(CONFIG_SKYLAKE_SOC_PCH_H))
+	if (CONFIG(SKYLAKE_SOC_PCH_H))
 		pcr_write32(PID_DMI, PCR_DMI_ACPIBDID, 0x23a8);
 	else
 		pcr_write32(PID_DMI, PCR_DMI_ACPIBDID, 0x23a0);
@@ -105,7 +105,7 @@ static void soc_config_pwrmbase(void)
 	pcr_write32(PID_DMI, PCR_DMI_PMBASEA,
 		((PCH_PWRM_BASE_ADDRESS & 0xFFFF0000) |
 		 (PCH_PWRM_BASE_ADDRESS >> 16)));
-	if (IS_ENABLED(CONFIG_SKYLAKE_SOC_PCH_H))
+	if (CONFIG(SKYLAKE_SOC_PCH_H))
 		pcr_write32(PID_DMI, PCR_DMI_PMBASEC, 0x800023a8);
 	else
 		pcr_write32(PID_DMI, PCR_DMI_PMBASEC, 0x800023a0);
@@ -131,7 +131,7 @@ void pch_early_iorange_init(void)
 			LPC_IOE_EC_62_66;
 
 	/* IO Decode Range */
-	if (IS_ENABLED(CONFIG_DRIVERS_UART_8250IO))
+	if (CONFIG(DRIVERS_UART_8250IO))
 		lpc_io_setup_comm_a_b();
 
 	/* IO Decode Enable */

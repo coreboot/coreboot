@@ -46,7 +46,7 @@ DefinitionBlock(
 		}
 	}
 
-#if IS_ENABLED(CONFIG_VARIANT_HAS_CAMERA_ACPI)
+#if CONFIG(VARIANT_HAS_CAMERA_ACPI)
 	/* Camera */
 	#include <variant/acpi/camera.asl>
 #endif

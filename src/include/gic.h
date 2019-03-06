@@ -16,7 +16,7 @@
 #ifndef GIC_H
 #define GIC_H
 
-#if IS_ENABLED(CONFIG_GIC)
+#if CONFIG(GIC)
 
 /* Initialize the GIC on the currently processor, including GICD and GICC. */
 void gic_init(void);

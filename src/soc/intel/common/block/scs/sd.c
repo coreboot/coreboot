@@ -19,7 +19,7 @@
 #include <device/pci_ids.h>
 #include <intelblocks/sd.h>
 
-#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+#if CONFIG(HAVE_ACPI_TABLES)
 static void sd_fill_ssdt(struct device *dev)
 {
 	const char *path;
@@ -59,7 +59,7 @@ static struct device_operations dev_ops = {
 	.read_resources			= pci_dev_read_resources,
 	.set_resources			= pci_dev_set_resources,
 	.enable_resources		= pci_dev_enable_resources,
-#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+#if CONFIG(HAVE_ACPI_TABLES)
 	.acpi_fill_ssdt_generator	= sd_fill_ssdt,
 #endif
 	.ops_pci			= &pci_dev_ops_pci,

@@ -31,7 +31,7 @@
 
 static void setup_usb(void)
 {
-#if !IS_ENABLED(CONFIG_BOARD_VARIANT_AP148)
+#if !CONFIG(BOARD_VARIANT_AP148)
 	gpio_tlmm_config_set(USB_ENABLE_GPIO, FUNC_SEL_GPIO,
 			     GPIO_PULL_UP, GPIO_10MA, GPIO_ENABLE);
 	gpio_set(USB_ENABLE_GPIO, 1);
@@ -90,7 +90,7 @@ static void mainboard_init(struct device *dev)
 	 /* Functionally a 0-cost no-op if NAND is not present */
 	 board_nand_init();
 
-#if IS_ENABLED(CONFIG_CHROMEOS)
+#if CONFIG(CHROMEOS)
 	/* Copy WIFI calibration data into CBMEM. */
 	cbmem_add_vpd_calibration_data();
 #endif
@@ -124,7 +124,7 @@ void lb_board(struct lb_header *header)
 	dma->range_start = (uintptr_t)_dma_coherent;
 	dma->range_size = REGION_SIZE(dma_coherent);
 
-#if IS_ENABLED(CONFIG_CHROMEOS)
+#if CONFIG(CHROMEOS)
 	/* Retrieve the switch interface MAC addresses. */
 	lb_table_add_macs_from_vpd(header);
 #endif

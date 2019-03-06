@@ -18,16 +18,16 @@
 #ifndef __ARCH_MEMLAYOUT_H
 #define __ARCH_MEMLAYOUT_H
 
-#define SUPERPAGE_SIZE ((1 + IS_ENABLED(CONFIG_ARM_LPAE)) * 1M)
+#define SUPERPAGE_SIZE ((1 + CONFIG(ARM_LPAE)) * 1M)
 
 #define TTB(addr, size) \
 	REGION(ttb, addr, size, 16K) \
-	_ = ASSERT(size >= 16K + IS_ENABLED(CONFIG_ARM_LPAE) * 32, \
+	_ = ASSERT(size >= 16K + CONFIG(ARM_LPAE) * 32, \
 		"TTB must be 16K (+ 32 for LPAE)!");
 
 #define TTB_SUBTABLES(addr, size) \
-	REGION(ttb_subtables, addr, size, IS_ENABLED(CONFIG_ARM_LPAE)*3K + 1K) \
-	_ = ASSERT(size % (1K + 3K * IS_ENABLED(CONFIG_ARM_LPAE)) == 0, \
+	REGION(ttb_subtables, addr, size, CONFIG(ARM_LPAE)*3K + 1K) \
+	_ = ASSERT(size % (1K + 3K * CONFIG(ARM_LPAE)) == 0, \
 		"TTB subtable region must be evenly divisible by table size!");
 
 /* ARM stacks need 8-byte alignment and stay in one place through ramstage. */

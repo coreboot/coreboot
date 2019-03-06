@@ -56,7 +56,7 @@ UPDATE AS NEEDED
 #endif
 
 #ifndef MAX_DIMMS_SUPPORTED
-#if IS_ENABLED(CONFIG_DIMM_DDR3)
+#if CONFIG(DIMM_DDR3)
  #define MAX_DIMMS_SUPPORTED		6
 #else
  #define MAX_DIMMS_SUPPORTED		8
@@ -72,7 +72,7 @@ UPDATE AS NEEDED
 #endif
 
 #ifndef MEM_MAX_LOAD_FREQ
-#if IS_ENABLED(CONFIG_DIMM_DDR3)
+#if CONFIG(DIMM_DDR3)
  #define MEM_MAX_LOAD_FREQ			933
  #define MEM_MIN_PLATFORM_FREQ_FAM10		400
  #define MEM_MIN_PLATFORM_FREQ_FAM15		333
@@ -112,13 +112,13 @@ UPDATE AS NEEDED
 static const uint16_t ddr2_limits[4] = {400, 333, 266, 200};
 static const uint16_t ddr3_limits[16] = {933, 800, 666, 533, 400, 333, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
-#if IS_ENABLED(CONFIG_DIMM_DDR3)
+#if CONFIG(DIMM_DDR3)
   #include <northbridge/amd/amdmct/mct_ddr3/mct_d.h>
 #else
   #include <northbridge/amd/amdmct/mct/mct_d.h>
 #endif
 
-#if IS_ENABLED(CONFIG_DIMM_DDR2)
+#if CONFIG(DIMM_DDR2)
 void mctSaveDQSSigTmg_D(void);
 void mctGetDQSSigTmg_D(void);
 u8 mctSetNodeBoundary_D(void);
@@ -144,7 +144,7 @@ void mctHookBeforeAnyTraining(struct MCTStatStruc *pMCTstat, struct DCTStatStruc
 void mctHookAfterAnyTraining(void);
 uint64_t mctGetLogicalCPUID_D(u8 node);
 
-#if IS_ENABLED(CONFIG_DIMM_DDR3)
+#if CONFIG(DIMM_DDR3)
 void vErratum372(struct DCTStatStruc *pDCTstat);
 void vErratum414(struct DCTStatStruc *pDCTstat);
 u32 mct_AdjustSPDTimings(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA, u32 val);

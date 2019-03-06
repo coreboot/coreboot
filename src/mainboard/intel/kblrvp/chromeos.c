@@ -43,7 +43,7 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 
 int get_lid_switch(void)
 {
-	if (IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC))
+	if (CONFIG(EC_GOOGLE_CHROMEEC))
 		/* Read lid switch state from the EC. */
 		return !!(google_chromeec_get_switches() & EC_SWITCH_LID_OPEN);
 
@@ -53,7 +53,7 @@ int get_lid_switch(void)
 
 int get_recovery_mode_switch(void)
 {
-	if (IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC)) {
+	if (CONFIG(EC_GOOGLE_CHROMEEC)) {
 		/* Check for dedicated recovery switch first. */
 		if (google_chromeec_get_switches() &
 			EC_SWITCH_DEDICATED_RECOVERY)
@@ -70,7 +70,7 @@ int get_recovery_mode_switch(void)
 
 int clear_recovery_mode_switch(void)
 {
-	if (IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC))
+	if (CONFIG(EC_GOOGLE_CHROMEEC))
 		/* Clear keyboard recovery event. */
 		return google_chromeec_clear_events_b(
 			EC_HOST_EVENT_MASK(EC_HOST_EVENT_KEYBOARD_RECOVERY));

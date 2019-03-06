@@ -41,7 +41,7 @@ static void pci_early_hsuart_device_probe(u8 bus, u8 dev, u8 func,
 	reg16 = pci_read_config16(uart_dev, PCI_BASE_ADDRESS_0) | mmio_base;
 	pci_write_config16(uart_dev, PCI_BASE_ADDRESS_0, reg16);
 
-#if (IS_ENABLED(CONFIG_NON_LEGACY_UART_MODE))
+#if (CONFIG(NON_LEGACY_UART_MODE))
 	/* Decode MMIO at MEMBA (BAR1) */
 	pci_write_config32(uart_dev, PCI_BASE_ADDRESS_1,
 			   CONFIG_CONSOLE_UART_BASE_ADDRESS +
@@ -53,12 +53,12 @@ static void pci_early_hsuart_device_probe(u8 bus, u8 dev, u8 func,
 	 */
 	pci_write_config16(uart_dev, PCI_COMMAND,
 			   pci_read_config16(uart_dev, PCI_COMMAND) |
-#if (IS_ENABLED(CONFIG_NON_LEGACY_UART_MODE))
+#if (CONFIG(NON_LEGACY_UART_MODE))
 			   PCI_COMMAND_MEMORY |
 #endif
 				   PCI_COMMAND_MASTER | PCI_COMMAND_IO);
 
-#if (IS_ENABLED(CONFIG_CONSOLE_SERIAL_230400))
+#if (CONFIG(CONSOLE_SERIAL_230400))
 	/* Change the highest speed to 230400 */
 	uint32_t *psr_reg =
 		(uint32_t *)(CONFIG_CONSOLE_UART_BASE_ADDRESS +

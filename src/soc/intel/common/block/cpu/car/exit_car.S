@@ -23,7 +23,7 @@
 .global chipset_teardown_car
 chipset_teardown_car:
 
-#if IS_ENABLED(CONFIG_PAGING_IN_CACHE_AS_RAM)
+#if CONFIG(PAGING_IN_CACHE_AS_RAM)
 	/*
 	 * Since Page table is located in CAR, disable paging before CAR
 	 * teardown. Also clear CR3 and CR4.PAE.
@@ -50,7 +50,7 @@ chipset_teardown_car:
 	and	$(~(MTRR_DEF_TYPE_EN | MTRR_DEF_TYPE_FIX_EN)), %eax
 	wrmsr
 
-#if IS_ENABLED(CONFIG_INTEL_CAR_NEM)
+#if CONFIG(INTEL_CAR_NEM)
 .global car_nem_teardown
 car_nem_teardown:
 
@@ -65,7 +65,7 @@ car_nem_teardown:
 	and	$(~(1 << 0)), %eax
 	wrmsr
 
-#elif IS_ENABLED(CONFIG_INTEL_CAR_CQOS)
+#elif CONFIG(INTEL_CAR_CQOS)
 .global car_cqos_teardown
 car_cqos_teardown:
 
@@ -86,7 +86,7 @@ car_cqos_teardown:
 	and	$~IA32_PQR_ASSOC_MASK, %edx
 	wrmsr
 
-#elif IS_ENABLED(CONFIG_INTEL_CAR_NEM_ENHANCED)
+#elif CONFIG(INTEL_CAR_NEM_ENHANCED)
 .global car_nem_enhanced_teardown
 car_nem_enhanced_teardown:
 

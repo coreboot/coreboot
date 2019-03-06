@@ -93,7 +93,7 @@ static void i945m_detect_chipset(void)
 	}
 	printk(BIOS_DEBUG, "\n");
 
-	if (IS_ENABLED(CONFIG_NORTHBRIDGE_INTEL_SUBTYPE_I945GC))
+	if (CONFIG(NORTHBRIDGE_INTEL_SUBTYPE_I945GC))
 		printk(BIOS_ERR, "coreboot is compiled for the wrong chipset.\n");
 }
 
@@ -143,7 +143,7 @@ static void i945_detect_chipset(void)
 	}
 	printk(BIOS_DEBUG, "\n");
 
-	if (IS_ENABLED(CONFIG_NORTHBRIDGE_INTEL_SUBTYPE_I945GM))
+	if (CONFIG(NORTHBRIDGE_INTEL_SUBTYPE_I945GM))
 		printk(BIOS_ERR, "coreboot is compiled for the wrong chipset.\n");
 }
 
@@ -237,7 +237,7 @@ static void i945_setup_egress_port(void)
 	/* Egress Port Virtual Channel 1 Configuration */
 	reg32 = EPBAR32(0x2c);
 	reg32 &= 0xffffff00;
-	if (IS_ENABLED(CONFIG_NORTHBRIDGE_INTEL_SUBTYPE_I945GC)) {
+	if (CONFIG(NORTHBRIDGE_INTEL_SUBTYPE_I945GC)) {
 		if ((MCHBAR32(CLKCFG) & 7) == 0)
 			reg32 |= 0x1a;	/* 1067MHz */
 	}
@@ -256,7 +256,7 @@ static void i945_setup_egress_port(void)
 	reg32 |= (0x0a << 16);
 	EPBAR32(EPVC1RCAP) = reg32;
 
-	if (IS_ENABLED(CONFIG_NORTHBRIDGE_INTEL_SUBTYPE_I945GC)) {
+	if (CONFIG(NORTHBRIDGE_INTEL_SUBTYPE_I945GC)) {
 		if ((MCHBAR32(CLKCFG) & 7) == 0) {	/* 1067MHz */
 			EPBAR32(EPVC1IST + 0) = 0x01380138;
 			EPBAR32(EPVC1IST + 4) = 0x01380138;
@@ -941,14 +941,14 @@ void i945_late_initialization(int s3resume)
 
 	i945_setup_dmi_rcrb();
 
-	if (IS_ENABLED(CONFIG_NORTHBRIDGE_INTEL_SUBTYPE_I945GM))
+	if (CONFIG(NORTHBRIDGE_INTEL_SUBTYPE_I945GM))
 		i945_setup_pci_express_x16();
 
 	i945_setup_root_complex_topology();
 
-#if !IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
+#if !CONFIG(HAVE_ACPI_RESUME)
 #if CONFIG_DEFAULT_CONSOLE_LOGLEVEL > 8
-#if IS_ENABLED(CONFIG_DEBUG_RAM_SETUP)
+#if CONFIG(DEBUG_RAM_SETUP)
 	sdram_dump_mchbar_registers();
 
 	{

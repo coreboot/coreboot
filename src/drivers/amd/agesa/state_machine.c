@@ -29,7 +29,7 @@
 
 #include <AMD.h>
 
-#if IS_ENABLED(CONFIG_CPU_AMD_AGESA_OPENSOURCE)
+#if CONFIG(CPU_AMD_AGESA_OPENSOURCE)
 #include "Dispatcher.h"
 #endif
 
@@ -40,7 +40,7 @@ CONST PSO_ENTRY ROMDATA DefaultPlatformMemoryConfiguration[] = {PSO_END};
 
 static void agesa_locate_image(AMD_CONFIG_PARAMS *StdHeader)
 {
-#if IS_ENABLED(CONFIG_CPU_AMD_AGESA_BINARY_PI)
+#if CONFIG(CPU_AMD_AGESA_BINARY_PI)
 	const char ModuleIdentifier[] = AGESA_ID;
 	const void *agesa, *image;
 	size_t file_size;
@@ -62,7 +62,7 @@ void agesa_set_interface(struct sysinfo *cb)
 
 	cb->StdHeader.CalloutPtr = GetBiosCallout;
 
-	if (IS_ENABLED(CONFIG_CPU_AMD_AGESA_BINARY_PI)) {
+	if (CONFIG(CPU_AMD_AGESA_BINARY_PI)) {
 		agesa_locate_image(&cb->StdHeader);
 		AMD_IMAGE_HEADER *image =
 			(void *)(uintptr_t)cb->StdHeader.ImageBasePtr;
@@ -78,10 +78,10 @@ AGESA_STATUS module_dispatch(AGESA_STRUCT_NAME func,
 {
 	MODULE_ENTRY dispatcher;
 
-#if IS_ENABLED(CONFIG_CPU_AMD_AGESA_OPENSOURCE)
+#if CONFIG(CPU_AMD_AGESA_OPENSOURCE)
 	dispatcher = AmdAgesaDispatcher;
 #endif
-#if IS_ENABLED(CONFIG_CPU_AMD_AGESA_BINARY_PI)
+#if CONFIG(CPU_AMD_AGESA_BINARY_PI)
 	AMD_IMAGE_HEADER *image = (void *)(uintptr_t)StdHeader->ImageBasePtr;
 	AMD_MODULE_HEADER *module = (void *)(uintptr_t)image->ModuleInfoOffset;
 	dispatcher = module->ModuleDispatcher;
@@ -339,7 +339,7 @@ static void amd_bs_dev_enable(void *arg)
 		agesa_execute_state(cb, AMD_INIT_MID);
 
 	/* FIXME */
-	if (IS_ENABLED(CONFIG_AMD_SB_CIMX) && acpi_is_wakeup_s3())
+	if (CONFIG(AMD_SB_CIMX) && acpi_is_wakeup_s3())
 		sb_After_Pci_Restore_Init();
 }
 

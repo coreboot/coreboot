@@ -25,7 +25,7 @@ void *backup_default_smm_area(void)
 	void *save_area;
 	const void *default_smm = (void *)SMM_DEFAULT_BASE;
 
-	if (!IS_ENABLED(CONFIG_HAVE_ACPI_RESUME))
+	if (!CONFIG(HAVE_ACPI_RESUME))
 		return NULL;
 
 	/*

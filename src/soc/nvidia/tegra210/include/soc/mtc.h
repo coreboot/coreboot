@@ -18,7 +18,7 @@
 
 #include <boot/coreboot_tables.h>
 
-#if IS_ENABLED(CONFIG_HAVE_MTC)
+#if CONFIG(HAVE_MTC)
 
 int tegra210_run_mtc(void);
 void soc_add_mtc(struct lb_header *header);

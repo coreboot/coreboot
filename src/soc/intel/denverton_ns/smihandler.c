@@ -209,7 +209,7 @@ static void finalize(void)
 	}
 	finalize_done = 1;
 
-	if (IS_ENABLED(CONFIG_SPI_FLASH_SMM))
+	if (CONFIG(SPI_FLASH_SMM))
 		/* Re-init SPI driver to handle locked BAR */
 		fast_spi_init();
 }

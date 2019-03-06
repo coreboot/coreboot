@@ -73,17 +73,17 @@ static unsigned long mainboard_write_acpi_tables(
 		printk(BIOS_ERR, "Couldn't add 2CH DMIC array.\n");
 
 	/* 4 Channel DMIC array. */
-	if (IS_ENABLED(CONFIG_NHLT_DMIC_4CH))
+	if (CONFIG(NHLT_DMIC_4CH))
 		if (nhlt_soc_add_dmic_array(nhlt, 4))
 			printk(BIOS_ERR, "Couldn't add 4CH DMIC arrays.\n");
 
 	/* ADI Smart Amps for left and right. */
-	if (IS_ENABLED(CONFIG_NHLT_SSM4567) && adi_codec_enable())
+	if (CONFIG(NHLT_SSM4567) && adi_codec_enable())
 		if (nhlt_soc_add_ssm4567(nhlt, AUDIO_LINK_SSP0))
 			printk(BIOS_ERR, "Couldn't add ssm4567.\n");
 
 	/* MAXIM Smart Amps for left and right. */
-	if (IS_ENABLED(CONFIG_NHLT_MAX98357) && max_codec_enable()) {
+	if (CONFIG(NHLT_MAX98357) && max_codec_enable()) {
 		if (nhlt_soc_add_max98357(nhlt, AUDIO_LINK_SSP0))
 			printk(BIOS_ERR, "Couldn't add max98357.\n");
 

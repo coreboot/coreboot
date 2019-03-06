@@ -40,7 +40,7 @@ static void move_gdt(int is_recovery)
 	struct gdtarg gdtarg;
 
 	/* ramstage is already in high memory. No need to use a new gdt. */
-	if (IS_ENABLED(CONFIG_RELOCATABLE_RAMSTAGE))
+	if (CONFIG(RELOCATABLE_RAMSTAGE))
 		return;
 
 	newgdt = cbmem_find(CBMEM_ID_GDT);

@@ -27,10 +27,10 @@ void usb_tx_flush(int idx);
 unsigned char usb_rx_byte(int idx);
 int usb_can_rx_byte(int idx);
 
-#define __CONSOLE_USB_ENABLE__	(IS_ENABLED(CONFIG_CONSOLE_USB) && \
-	((ENV_BOOTBLOCK && IS_ENABLED(CONFIG_USBDEBUG_IN_PRE_RAM)) || \
-	 (ENV_ROMSTAGE && IS_ENABLED(CONFIG_USBDEBUG_IN_PRE_RAM)) || \
-	 (ENV_POSTCAR && IS_ENABLED(CONFIG_USBDEBUG_IN_PRE_RAM)) || \
+#define __CONSOLE_USB_ENABLE__	(CONFIG(CONSOLE_USB) && \
+	((ENV_BOOTBLOCK && CONFIG(USBDEBUG_IN_PRE_RAM)) || \
+	 (ENV_ROMSTAGE && CONFIG(USBDEBUG_IN_PRE_RAM)) || \
+	 (ENV_POSTCAR && CONFIG(USBDEBUG_IN_PRE_RAM)) || \
 	 ENV_RAMSTAGE))
 
 #define USB_PIPE_FOR_CONSOLE 0
@@ -50,8 +50,8 @@ static inline void __usb_tx_flush(void)	{}
 #endif
 
 /*  */
-#if 0 && IS_ENABLED(CONFIG_GDB_STUB) && \
-	((ENV_ROMSTAGE && IS_ENABLED(CONFIG_USBDEBUG_IN_PRE_RAM)) \
+#if 0 && CONFIG(GDB_STUB) && \
+	((ENV_ROMSTAGE && CONFIG(USBDEBUG_IN_PRE_RAM)) \
 	 || ENV_RAMSTAGE)
 static inline void __gdb_hw_init(void)	{ usbdebug_init(); }
 static inline void __gdb_tx_byte(u8 data)

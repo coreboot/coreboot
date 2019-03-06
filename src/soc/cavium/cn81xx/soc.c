@@ -370,7 +370,7 @@ static void soc_init(struct device *dev)
 	/* Init ECAM, MDIO, PEM, PHY, QLM ... */
 	bdk_boot();
 
-	if (IS_ENABLED(CONFIG_PAYLOAD_FIT_SUPPORT)) {
+	if (CONFIG(PAYLOAD_FIT_SUPPORT)) {
 		struct device_tree_fixup *dt_fixup;
 
 		dt_fixup = malloc(sizeof(*dt_fixup));
@@ -381,7 +381,7 @@ static void soc_init(struct device *dev)
 		}
 	}
 
-	if (IS_ENABLED(CONFIG_ARM64_USE_ARM_TRUSTED_FIRMWARE))
+	if (CONFIG(ARM64_USE_ARM_TRUSTED_FIRMWARE))
 		soc_init_atf();
 }
 

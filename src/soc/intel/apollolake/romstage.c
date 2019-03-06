@@ -95,7 +95,7 @@ static void soc_early_romstage_init(void)
 	pci_write_config8(PCH_DEV_P2SB, P2SB_HPTC, P2SB_HPTC_ADDRESS_SELECT_0 |
 						P2SB_HPTC_ADDRESS_ENABLE);
 
-	if (IS_ENABLED(CONFIG_DRIVERS_UART_8250IO))
+	if (CONFIG(DRIVERS_UART_8250IO))
 		lpc_io_setup_comm_a_b();
 }
 
@@ -159,7 +159,7 @@ static bool punit_init(void)
 			PUINT_THERMAL_DEVICE_IRQ_VEC_NUMBER |
 			PUINT_THERMAL_DEVICE_IRQ_LOCK;
 
-	if (!IS_ENABLED(CONFIG_SOC_INTEL_GLK)) {
+	if (!CONFIG(SOC_INTEL_GLK)) {
 		data = MCHBAR32(0x7818);
 		data &= 0xFFFFE01F;
 		data |= 0x20 | 0x200;
@@ -277,8 +277,8 @@ asmlinkage void car_stage_entry(void)
 
 static void fill_console_params(FSPM_UPD *mupd)
 {
-	if (IS_ENABLED(CONFIG_CONSOLE_SERIAL)) {
-		if (IS_ENABLED(CONFIG_INTEL_LPSS_UART_FOR_CONSOLE)) {
+	if (CONFIG(CONSOLE_SERIAL)) {
+		if (CONFIG(INTEL_LPSS_UART_FOR_CONSOLE)) {
 			mupd->FspmConfig.SerialDebugPortDevice =
 					CONFIG_UART_FOR_CONSOLE;
 			/* use MMIO port type */
@@ -287,7 +287,7 @@ static void fill_console_params(FSPM_UPD *mupd)
 			mupd->FspmConfig.SerialDebugPortStrideSize = 2;
 			/* used only for port type set to external */
 			mupd->FspmConfig.SerialDebugPortAddress = 0;
-		} else if (IS_ENABLED(CONFIG_DRIVERS_UART_8250IO)) {
+		} else if (CONFIG(DRIVERS_UART_8250IO)) {
 			/* use external UART for debug */
 			mupd->FspmConfig.SerialDebugPortDevice = 3;
 			/* use I/O port type */
@@ -320,7 +320,7 @@ static void check_full_retrain(const FSPM_UPD *mupd)
 
 static void soc_memory_init_params(FSPM_UPD *mupd)
 {
-#if IS_ENABLED(CONFIG_SOC_INTEL_GLK)
+#if CONFIG(SOC_INTEL_GLK)
 	/* Only for GLK */
 	const struct device *dev = dev_find_slot(0, PCH_DEVFN_LPC);
 	assert(dev != NULL);
@@ -351,7 +351,7 @@ static void soc_memory_init_params(FSPM_UPD *mupd)
 
 static void parse_devicetree_setting(FSPM_UPD *m_upd)
 {
-#if IS_ENABLED(CONFIG_SOC_INTEL_GLK)
+#if CONFIG(SOC_INTEL_GLK)
 	DEVTREE_CONST struct device *dev = dev_find_slot(0, PCH_DEVFN_NPK);
 	if (!dev)
 		return;
@@ -368,7 +368,7 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 
 	fill_console_params(mupd);
 
-	if (IS_ENABLED(CONFIG_SOC_INTEL_GLK))
+	if (CONFIG(SOC_INTEL_GLK))
 		soc_memory_init_params(mupd);
 
 	mainboard_memory_init_params(mupd);
@@ -385,7 +385,7 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	 * as designed.
 	 */
 	mupd->FspmConfig.SkipCseRbp =
-		IS_ENABLED(CONFIG_BOOT_DEVICE_MEMORY_MAPPED);
+		CONFIG(BOOT_DEVICE_MEMORY_MAPPED);
 
 	/*
 	 * Converged Security Engine (CSE) has secure storage functionality.
@@ -407,7 +407,7 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 
 	if (mrc_cache_get_current(MRC_VARIABLE_DATA, version, &rdev) == 0) {
 		/* Assume leaking is ok. */
-		assert(IS_ENABLED(CONFIG_BOOT_DEVICE_MEMORY_MAPPED));
+		assert(CONFIG(BOOT_DEVICE_MEMORY_MAPPED));
 		mupd->FspmConfig.VariableNvsBufferPtr = rdev_mmap_full(&rdev);
 	}
 

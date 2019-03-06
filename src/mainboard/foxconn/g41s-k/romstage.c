@@ -82,7 +82,7 @@ static void ich7_enable_lpc(void)
 void mainboard_romstage_entry(unsigned long bist)
 {
 	//                          ch0      ch1
-#if IS_ENABLED(CONFIG_BOARD_FOXCONN_G41S_K)
+#if CONFIG(BOARD_FOXCONN_G41S_K)
 	const u8 spd_addrmap[4] = { 0x50, 0, 0, 0 };
 #else
 	/* TODO adapt raminit such that other slots can be used

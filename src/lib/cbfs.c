@@ -30,7 +30,7 @@
 
 #define ERROR(x...) printk(BIOS_ERR, "CBFS: " x)
 #define LOG(x...) printk(BIOS_INFO, "CBFS: " x)
-#if IS_ENABLED(CONFIG_DEBUG_CBFS)
+#if CONFIG(DEBUG_CBFS)
 #define DEBUG(x...) printk(BIOS_SPEW, "CBFS: " x)
 #else
 #define DEBUG(x...)
@@ -113,7 +113,7 @@ size_t cbfs_load_and_decompress(const struct region_device *rdev, size_t offset,
 
 	case CBFS_COMPRESS_LZ4:
 		if ((ENV_BOOTBLOCK || ENV_VERSTAGE) &&
-			!IS_ENABLED(CONFIG_COMPRESS_PRERAM_STAGES))
+			!CONFIG(COMPRESS_PRERAM_STAGES))
 			return 0;
 
 		/* Load the compressed image to the end of the available memory
@@ -133,10 +133,10 @@ size_t cbfs_load_and_decompress(const struct region_device *rdev, size_t offset,
 		/* We assume here romstage and postcar are never compressed. */
 		if (ENV_BOOTBLOCK || ENV_VERSTAGE)
 			return 0;
-		if (ENV_ROMSTAGE && IS_ENABLED(CONFIG_POSTCAR_STAGE))
+		if (ENV_ROMSTAGE && CONFIG(POSTCAR_STAGE))
 			return 0;
 		if ((ENV_ROMSTAGE || ENV_POSTCAR)
-		    && !IS_ENABLED(CONFIG_COMPRESS_RAMSTAGE))
+		    && !CONFIG(COMPRESS_RAMSTAGE))
 			return 0;
 		void *map = rdev_mmap(rdev, offset, in_size);
 		if (map == NULL)
@@ -255,8 +255,8 @@ int cbfs_prog_stage_load(struct prog *pstage)
 
 	/* Hacky way to not load programs over read only media. The stages
 	 * that would hit this path initialize themselves. */
-	if (ENV_VERSTAGE && !IS_ENABLED(CONFIG_NO_XIP_EARLY_STAGES) &&
-		IS_ENABLED(CONFIG_BOOT_DEVICE_MEMORY_MAPPED)) {
+	if (ENV_VERSTAGE && !CONFIG(NO_XIP_EARLY_STAGES) &&
+		CONFIG(BOOT_DEVICE_MEMORY_MAPPED)) {
 		void *mapping = rdev_mmap(fh, foffset, fsize);
 		rdev_munmap(fh, mapping);
 		if (mapping == load)
@@ -332,7 +332,7 @@ const struct cbfs_locator __weak cbfs_master_header_locator = {
 extern const struct cbfs_locator vboot_locator;
 
 static const struct cbfs_locator *locators[] = {
-#if IS_ENABLED(CONFIG_VBOOT)
+#if CONFIG(VBOOT)
 	/*
 	 * NOTE: Does not link in SMM, as the vboot_locator isn't compiled.
 	 * ATM there's no need for VBOOT functionality in SMM and it's not

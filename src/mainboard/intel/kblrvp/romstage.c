@@ -42,7 +42,7 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 	mainboard_fill_rcomp_res_data(&mem_cfg->RcompResistor);
 	mainboard_fill_rcomp_strength_data(&mem_cfg->RcompTarget);
 
-	if (IS_ENABLED(CONFIG_BOARD_INTEL_KBLRVP3)) {
+	if (CONFIG(BOARD_INTEL_KBLRVP3)) {
 		struct region_device spd_rdev;
 
 		mem_cfg->DqPinsInterleaved = 0;

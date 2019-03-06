@@ -43,8 +43,8 @@ const struct lpc_mmio_range *soc_get_fixed_mmio_ranges(void)
 }
 
 static const struct pad_config lpc_gpios[] = {
-#if IS_ENABLED(CONFIG_SOC_INTEL_GLK)
-#if !IS_ENABLED(CONFIG_SOC_ESPI)
+#if CONFIG(SOC_INTEL_GLK)
+#if !CONFIG(SOC_ESPI)
 	PAD_CFG_NF(GPIO_147, UP_20K, DEEP, NF1), /* LPC_ILB_SERIRQ */
 	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_148, NONE, DEEP, NF1, HIZCRx1,
 		DISPUPD), /* LPC_CLKOUT0 */
@@ -69,7 +69,7 @@ static const struct pad_config lpc_gpios[] = {
 	 * will keep LPC Controller awake and prevent S0ix entry
 	 */
 	PAD_NC(GPIO_154, NONE),
-#endif /* !IS_ENABLED(CONFIG_SOC_ESPI) */
+#endif /* !CONFIG(SOC_ESPI) */
 #else
 	PAD_CFG_NF(LPC_ILB_SERIRQ, UP_20K, DEEP, NF1),
 	PAD_CFG_NF(LPC_CLKRUNB, UP_20K, DEEP, NF1),

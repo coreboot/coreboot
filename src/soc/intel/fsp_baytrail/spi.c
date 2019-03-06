@@ -138,7 +138,7 @@ enum {
 static uint8_t readb_(const void *addr)
 {
 	uint8_t v = read8(addr);
-	if (IS_ENABLED(CONFIG_DEBUG_SPI_FLASH)) {
+	if (CONFIG(DEBUG_SPI_FLASH)) {
 		printk(BIOS_DEBUG, "SPI: read %2.2x from %4.4x\n",
 				v, (((uint32_t) addr) & SPI_OFFSET_MASK));
 	}
@@ -148,7 +148,7 @@ static uint8_t readb_(const void *addr)
 static uint16_t readw_(const void *addr)
 {
 	uint16_t v = read16(addr);
-	if (IS_ENABLED(CONFIG_DEBUG_SPI_FLASH)) {
+	if (CONFIG(DEBUG_SPI_FLASH)) {
 		printk(BIOS_DEBUG, "SPI: read %4.4x from %4.4x\n",
 				v, (((uint32_t) addr) & SPI_OFFSET_MASK));
 	}
@@ -158,7 +158,7 @@ static uint16_t readw_(const void *addr)
 static uint32_t readl_(const void *addr)
 {
 	uint32_t v = read32(addr);
-	if (IS_ENABLED(CONFIG_DEBUG_SPI_FLASH)) {
+	if (CONFIG(DEBUG_SPI_FLASH)) {
 		printk(BIOS_DEBUG, "SPI: read %8.8x from %4.4x\n",
 				v, (((uint32_t) addr) & SPI_OFFSET_MASK));
 	}
@@ -168,7 +168,7 @@ static uint32_t readl_(const void *addr)
 static void writeb_(uint8_t b, void *addr)
 {
 	write8(addr, b);
-	if (IS_ENABLED(CONFIG_DEBUG_SPI_FLASH)) {
+	if (CONFIG(DEBUG_SPI_FLASH)) {
 		printk(BIOS_DEBUG, "SPI: wrote %2.2x to %4.4x\n",
 				b, (((uint32_t) addr) & SPI_OFFSET_MASK));
 	}
@@ -177,7 +177,7 @@ static void writeb_(uint8_t b, void *addr)
 static void writew_(uint16_t b, void *addr)
 {
 	write16(addr, b);
-	if (IS_ENABLED(CONFIG_DEBUG_SPI_FLASH)) {
+	if (CONFIG(DEBUG_SPI_FLASH)) {
 		printk(BIOS_DEBUG, "SPI: wrote %4.4x to %4.4x\n",
 				b, (((uint32_t) addr) & SPI_OFFSET_MASK));
 	}
@@ -186,7 +186,7 @@ static void writew_(uint16_t b, void *addr)
 static void writel_(uint32_t b, void *addr)
 {
 	write32(addr, b);
-	if (IS_ENABLED(CONFIG_DEBUG_SPI_FLASH)) {
+	if (CONFIG(DEBUG_SPI_FLASH)) {
 		printk(BIOS_DEBUG, "SPI: wrote %8.8x to %4.4x\n",
 				b, (((uint32_t) addr) & SPI_OFFSET_MASK));
 	}

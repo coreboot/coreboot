@@ -217,7 +217,7 @@ int spi_flash_cmd_erase(const struct spi_flash *flash, u32 offset, size_t len)
 		spi_flash_addr(offset, cmd);
 		offset += erase_size;
 
-#if IS_ENABLED(CONFIG_DEBUG_SPI_FLASH)
+#if CONFIG(DEBUG_SPI_FLASH)
 		printk(BIOS_SPEW, "SF: erase %2x %2x %2x %2x (%x)\n", cmd[0], cmd[1],
 		      cmd[2], cmd[3], offset);
 #endif
@@ -276,38 +276,38 @@ static struct {
 		      struct spi_flash *flash);
 } flashes[] = {
 	/* Keep it sorted by define name */
-#if IS_ENABLED(CONFIG_SPI_FLASH_AMIC)
+#if CONFIG(SPI_FLASH_AMIC)
 	{ 0, 0x37, spi_flash_probe_amic, },
 #endif
-#if IS_ENABLED(CONFIG_SPI_FLASH_ATMEL)
+#if CONFIG(SPI_FLASH_ATMEL)
 	{ 0, 0x1f, spi_flash_probe_atmel, },
 #endif
-#if IS_ENABLED(CONFIG_SPI_FLASH_EON)
+#if CONFIG(SPI_FLASH_EON)
 	{ 0, 0x1c, spi_flash_probe_eon, },
 #endif
-#if IS_ENABLED(CONFIG_SPI_FLASH_GIGADEVICE)
+#if CONFIG(SPI_FLASH_GIGADEVICE)
 	{ 0, 0xc8, spi_flash_probe_gigadevice, },
 #endif
-#if IS_ENABLED(CONFIG_SPI_FLASH_MACRONIX)
+#if CONFIG(SPI_FLASH_MACRONIX)
 	{ 0, 0xc2, spi_flash_probe_macronix, },
 #endif
-#if IS_ENABLED(CONFIG_SPI_FLASH_SPANSION)
+#if CONFIG(SPI_FLASH_SPANSION)
 	{ 0, 0x01, spi_flash_probe_spansion, },
 #endif
-#if IS_ENABLED(CONFIG_SPI_FLASH_SST)
+#if CONFIG(SPI_FLASH_SST)
 	{ 0, 0xbf, spi_flash_probe_sst, },
 #endif
-#if IS_ENABLED(CONFIG_SPI_FLASH_STMICRO)
+#if CONFIG(SPI_FLASH_STMICRO)
 	{ 0, 0x20, spi_flash_probe_stmicro, },
 #endif
-#if IS_ENABLED(CONFIG_SPI_FLASH_WINBOND)
+#if CONFIG(SPI_FLASH_WINBOND)
 	{ 0, 0xef, spi_flash_probe_winbond, },
 #endif
 	/* Keep it sorted by best detection */
-#if IS_ENABLED(CONFIG_SPI_FLASH_STMICRO)
+#if CONFIG(SPI_FLASH_STMICRO)
 	{ 0, 0xff, spi_flash_probe_stmicro, },
 #endif
-#if IS_ENABLED(CONFIG_SPI_FLASH_ADESTO)
+#if CONFIG(SPI_FLASH_ADESTO)
 	{ 0, 0x1f, spi_flash_probe_adesto, },
 #endif
 };
@@ -324,7 +324,7 @@ int spi_flash_generic_probe(const struct spi_slave *spi,
 	if (ret)
 		return -1;
 
-	if (IS_ENABLED(CONFIG_DEBUG_SPI_FLASH)) {
+	if (CONFIG(DEBUG_SPI_FLASH)) {
 		printk(BIOS_SPEW, "SF: Got idcode: ");
 		for (i = 0; i < sizeof(idcode); i++)
 			printk(BIOS_SPEW, "%02x ", idcode[i]);
@@ -511,7 +511,7 @@ int spi_flash_volatile_group_begin(const struct spi_flash *flash)
 	uint32_t count;
 	int ret = 0;
 
-	if (!IS_ENABLED(CONFIG_SPI_FLASH_HAS_VOLATILE_GROUP))
+	if (!CONFIG(SPI_FLASH_HAS_VOLATILE_GROUP))
 		return ret;
 
 	count = car_get_var(volatile_group_count);
@@ -528,7 +528,7 @@ int spi_flash_volatile_group_end(const struct spi_flash *flash)
 	uint32_t count;
 	int ret = 0;
 
-	if (!IS_ENABLED(CONFIG_SPI_FLASH_HAS_VOLATILE_GROUP))
+	if (!CONFIG(SPI_FLASH_HAS_VOLATILE_GROUP))
 		return ret;
 
 	count = car_get_var(volatile_group_count);
@@ -547,7 +547,7 @@ void lb_spi_flash(struct lb_header *header)
 	struct lb_spi_flash *flash;
 	const struct spi_flash *spi_flash_dev;
 
-	if (!IS_ENABLED(CONFIG_BOOT_DEVICE_SPI_FLASH))
+	if (!CONFIG(BOOT_DEVICE_SPI_FLASH))
 		return;
 
 	flash = (struct lb_spi_flash *)lb_new_record(header);

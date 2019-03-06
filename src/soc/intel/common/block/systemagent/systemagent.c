@@ -160,7 +160,7 @@ static void sa_add_dram_resources(struct device *dev, int *resource_count)
 	uintptr_t top_of_ram;
 	int index = *resource_count;
 
-	if (IS_ENABLED(CONFIG_SA_ENABLE_DPR))
+	if (CONFIG(SA_ENABLE_DPR))
 		dpr_size = sa_get_dpr_size();
 
 	/* Get SoC reserve memory size as per user selection */
@@ -270,7 +270,7 @@ static void systemagent_read_resources(struct device *dev)
 	soc_add_fixed_mmio_resources(dev, &index);
 	/* Calculate and add DRAM resources. */
 	sa_add_dram_resources(dev, &index);
-	if (IS_ENABLED(CONFIG_SA_ENABLE_IMR))
+	if (CONFIG(SA_ENABLE_IMR))
 		/* Add the isolated memory ranges (IMRs). */
 		sa_add_imr_resources(dev, &index);
 }
@@ -292,7 +292,7 @@ static struct device_operations systemagent_ops = {
 	.enable_resources = pci_dev_enable_resources,
 	.init             = soc_systemagent_init,
 	.ops_pci          = &pci_dev_ops_pci,
-#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+#if CONFIG(HAVE_ACPI_TABLES)
 	.write_acpi_tables = sa_write_acpi_tables,
 #endif
 };

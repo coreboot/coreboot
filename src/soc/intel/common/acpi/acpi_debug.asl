@@ -13,11 +13,11 @@
  * GNU General Public License for more details.
  */
 
-#if IS_ENABLED(CONFIG_ACPI_CONSOLE)
+#if CONFIG(ACPI_CONSOLE)
 
 #include <soc/iomap.h>
 
-Name (UFLG, IS_ENABLED(CONFIG_CONSOLE_SERIAL))
+Name (UFLG, CONFIG(CONSOLE_SERIAL))
 
 Method (LURT, 1, Serialized)
 {
@@ -57,7 +57,7 @@ Method (APRT, 1, Serialized)
 	}
 	Store (INDX, LENG) /* Length of the String */
 
-#if IS_ENABLED(CONFIG_DRIVERS_UART_8250MEM_32)
+#if CONFIG(DRIVERS_UART_8250MEM_32)
 	OperationRegion (UBAR, SystemMemory,
 				UART_BASE_0_ADDR(CONFIG_UART_FOR_CONSOLE), 24)
 	Field (UBAR, AnyAcc, NoLock, Preserve)

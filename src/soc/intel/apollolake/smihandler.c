@@ -50,7 +50,7 @@ const smi_handler_t southbridge_smi[32] = {
 	[GPIO_SMI_STS] = smihandler_southbridge_gpi,
 	[TCO_SMI_STS] = smihandler_southbridge_tco,
 	[PERIODIC_SMI_STS] = smihandler_southbridge_periodic,
-#if IS_ENABLED(CONFIG_SOC_ESPI)
+#if CONFIG(SOC_ESPI)
 	[ESPI_SMI_STS_BIT] = smihandler_southbridge_espi,
 #endif
 };

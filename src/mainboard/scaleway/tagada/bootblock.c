@@ -24,6 +24,6 @@
 
 void bootblock_mainboard_init(void)
 {
-	if (IS_ENABLED(CONFIG_BOOTBLOCK_CONSOLE))
+	if (CONFIG(BOOTBLOCK_CONSOLE))
 		printk(BIOS_SPEW, "Board Serial: %s.\n", bmcinfo_serial());
 }

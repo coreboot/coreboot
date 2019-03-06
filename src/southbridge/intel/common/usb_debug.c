@@ -26,7 +26,7 @@ pci_devfn_t pci_ehci_dbg_dev(unsigned int hcd_idx)
 	u32 class;
 	pci_devfn_t dev;
 
-	if (!IS_ENABLED(CONFIG_HAVE_USBDEBUG_OPTIONS))
+	if (!CONFIG(HAVE_USBDEBUG_OPTIONS))
 		return PCI_DEV(0, 0x1d, 7);
 
 	if (hcd_idx == 2)

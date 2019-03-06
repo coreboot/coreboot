@@ -28,7 +28,7 @@ static void pcie_disable(struct device *dev)
 	dev->enabled = 0;
 }
 
-#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+#if CONFIG(HAVE_ACPI_TABLES)
 static const char *pcie_acpi_name(const struct device *dev)
 {
 	assert(dev);
@@ -90,7 +90,7 @@ static struct device_operations device_ops = {
 	.disable		= pcie_disable,
 	.init			= pci_dev_init,
 	.ops_pci		= &pci_ops,
-#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+#if CONFIG(HAVE_ACPI_TABLES)
 	.acpi_name		= pcie_acpi_name,
 #endif
 };

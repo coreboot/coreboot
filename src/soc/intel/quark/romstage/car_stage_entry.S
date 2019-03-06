@@ -29,7 +29,7 @@ car_stage_entry:
 	/* Enter the C code */
 	call	car_stage_c_entry
 
-#if IS_ENABLED(CONFIG_PLATFORM_USES_FSP1_1)
+#if CONFIG(PLATFORM_USES_FSP1_1)
 #if !ENV_VERSTAGE
 #include "src/drivers/intel/fsp1_1/after_raminit.S"
 #endif
@@ -57,7 +57,7 @@ car_stage_entry:
 .Lhlt:
 	xchg	%al, %ah
 	mov	$POST_DELAY, %dh
-#if IS_ENABLED(CONFIG_POST_IO)
+#if CONFIG(POST_IO)
 	outb	%al, $CONFIG_POST_IO_PORT
 #else
 	post_code(POST_DEAD_CODE)
@@ -67,7 +67,7 @@ car_stage_entry:
 .flash_delay:
 	outb	%al, $0xED
 	loop	.flash_delay
-#if IS_ENABLED(CONFIG_ENABLE_DEBUG_LED)
+#if CONFIG(ENABLE_DEBUG_LED)
 	movl	$SD_HOST_CTRL, %ebx
 	movb	0(%ebx), %dl
 	xorb	$1, %dl

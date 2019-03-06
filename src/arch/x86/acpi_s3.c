@@ -82,7 +82,7 @@ static int backup_create_or_update(struct resume_backup *backup_mem,
 {
 	uintptr_t top;
 
-	if (IS_ENABLED(CONFIG_ACPI_HUGE_LOWMEM_BACKUP)) {
+	if (CONFIG(ACPI_HUGE_LOWMEM_BACKUP)) {
 		base = CONFIG_RAMBASE;
 		size = HIGH_MEMORY_SAVE;
 	}
@@ -169,7 +169,7 @@ void acpi_prepare_resume_backup(void)
 	if (!acpi_s3_resume_allowed())
 		return;
 
-	if (IS_ENABLED(CONFIG_RELOCATABLE_RAMSTAGE))
+	if (CONFIG(RELOCATABLE_RAMSTAGE))
 		return;
 
 	backup_create_or_update(NULL, (uintptr_t)_program,
@@ -194,7 +194,7 @@ static void acpi_jump_to_wakeup(void *vector)
 		return;
 	}
 
-	if (!IS_ENABLED(CONFIG_RELOCATABLE_RAMSTAGE)) {
+	if (!CONFIG(RELOCATABLE_RAMSTAGE)) {
 		struct resume_backup *backup_mem = cbmem_find(CBMEM_ID_RESUME);
 		if (backup_mem && backup_mem->valid) {
 			backup_mem->valid = 0;
@@ -224,7 +224,7 @@ void __weak mainboard_suspend_resume(void)
 
 void acpi_resume(void *wake_vec)
 {
-	if (IS_ENABLED(CONFIG_HAVE_SMI_HANDLER)) {
+	if (CONFIG(HAVE_SMI_HANDLER)) {
 		void *gnvs_address = cbmem_find(CBMEM_ID_ACPI_GNVS);
 
 		/* Restore GNVS pointer in SMM if found */

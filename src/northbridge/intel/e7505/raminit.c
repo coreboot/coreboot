@@ -54,7 +54,7 @@ Definitions:
 // Unfortunately the code seems to chew up several K of space.
 //#define VALIDATE_DIMM_COMPATIBILITY
 
-#if IS_ENABLED(CONFIG_DEBUG_RAM_SETUP)
+#if CONFIG(DEBUG_RAM_SETUP)
 #define RAM_DEBUG_MESSAGE(x)	printk(BIOS_DEBUG, x)
 #define RAM_DEBUG_HEX32(x)	printk(BIOS_DEBUG, "%08x", x)
 #define RAM_DEBUG_HEX8(x)	printk(BIOS_DEBUG, "%02x", x)

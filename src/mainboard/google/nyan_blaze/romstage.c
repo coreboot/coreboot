@@ -50,7 +50,7 @@ static void __attribute__((noinline)) romstage(void)
 	u32 dram_end_mb = sdram_max_addressable_mb();
 	u32 dram_size_mb = dram_end_mb - dram_start_mb;
 
-#if !IS_ENABLED(CONFIG_VBOOT)
+#if !CONFIG(VBOOT)
 	configure_l2_cache();
 	mmu_init();
 	/* Device memory below DRAM is uncached. */
@@ -85,7 +85,7 @@ static void __attribute__((noinline)) romstage(void)
 	cbmem_initialize_empty();
 
 	/* This was already called from verstage in vboot context. */
-	if (!IS_ENABLED(CONFIG_VBOOT))
+	if (!CONFIG(VBOOT))
 		early_mainboard_init();
 
 	run_ramstage();
@@ -94,7 +94,7 @@ static void __attribute__((noinline)) romstage(void)
 /* Stub to force arm_init_caches to the top, before any stack/memory accesses */
 void main(void)
 {
-#if !IS_ENABLED(CONFIG_VBOOT)
+#if !CONFIG(VBOOT)
 	asm volatile ("bl arm_init_caches"
 		      ::: "r0","r1","r2","r3","r4","r5","ip");
 #endif

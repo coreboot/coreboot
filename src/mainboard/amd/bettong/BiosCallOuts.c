@@ -83,18 +83,18 @@ AGESA_STATUS Fch_Oem_config(UINT32 Func, UINTN FchData, VOID *ConfigPtr)
 		FCH_RESET_DATA_BLOCK *FchParams_reset = (FCH_RESET_DATA_BLOCK *)FchData;
 		printk(BIOS_DEBUG, "Fch OEM config in INIT RESET ");
 
-		FchParams_reset->FchReset.Xhci0Enable = IS_ENABLED(CONFIG_HUDSON_XHCI_ENABLE);
+		FchParams_reset->FchReset.Xhci0Enable = CONFIG(HUDSON_XHCI_ENABLE);
 		FchParams_reset->FchReset.Xhci1Enable = FALSE;
 		FchParams_reset->EarlyOemGpioTable = oem_bettong_gpio;
 	} else if (StdHeader->Func == AMD_INIT_ENV) {
 		FCH_DATA_BLOCK *FchParams_env = (FCH_DATA_BLOCK *)FchData;
 		printk(BIOS_DEBUG, "Fch OEM config in INIT ENV ");
 
-		if (IS_ENABLED(CONFIG_HUDSON_IMC_FWM))
+		if (CONFIG(HUDSON_IMC_FWM))
 			oem_fan_control(FchParams_env);
 
 		/* XHCI configuration */
-		if (IS_ENABLED(CONFIG_HUDSON_XHCI_ENABLE))
+		if (CONFIG(HUDSON_XHCI_ENABLE))
 			FchParams_env->Usb.Xhci0Enable = TRUE;
 		else
 			FchParams_env->Usb.Xhci0Enable = FALSE;

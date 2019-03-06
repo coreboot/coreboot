@@ -41,7 +41,7 @@ static const struct pad_group skl_community_com0_groups[] = {
 
 static const struct pad_group skl_community_com1_groups[] = {
 	INTEL_GPP(GPP_C0, GPP_C0, GPP_C23),	/* GPP C */
-#if IS_ENABLED(CONFIG_SKYLAKE_SOC_PCH_H)
+#if CONFIG(SKYLAKE_SOC_PCH_H)
 	INTEL_GPP(GPP_C0, GPP_D0, GPP_D23),	/* GPP D */
 	INTEL_GPP(GPP_C0, GPP_E0, GPP_E12),	/* GPP E */
 	INTEL_GPP(GPP_C0, GPP_F0, GPP_F23),	/* GPP F */
@@ -54,7 +54,7 @@ static const struct pad_group skl_community_com1_groups[] = {
 };
 
 static const struct pad_group skl_community_com3_groups[] = {
-#if IS_ENABLED(CONFIG_SKYLAKE_SOC_PCH_H)
+#if CONFIG(SKYLAKE_SOC_PCH_H)
 	INTEL_GPP(GPP_I0, GPP_I0, GPP_I10),	/* GPP I */
 #else
 	INTEL_GPP(GPP_F0, GPP_F0, GPP_F23),	/* GPP F */
@@ -86,7 +86,7 @@ static const struct pad_community skl_gpio_communities[] = {
 	}, {
 		.port = PID_GPIOCOM1,
 		.first_pad = GPP_C0,
-#if IS_ENABLED(CONFIG_SKYLAKE_SOC_PCH_H)
+#if CONFIG(SKYLAKE_SOC_PCH_H)
 		.last_pad = GPP_H23,
 #else
 		.last_pad = GPP_E23,
@@ -105,7 +105,7 @@ static const struct pad_community skl_gpio_communities[] = {
 		.num_groups = ARRAY_SIZE(skl_community_com1_groups),
 	}, {
 		.port = PID_GPIOCOM3,
-#if IS_ENABLED(CONFIG_SKYLAKE_SOC_PCH_H)
+#if CONFIG(SKYLAKE_SOC_PCH_H)
 		.first_pad = GPP_I0,
 		.last_pad = GPP_I10,
 #else
@@ -159,7 +159,7 @@ const struct pmc_to_gpio_route *soc_pmc_gpio_routes(size_t *num)
 		{ GPP_E, GPP_E},
 		{ GPP_F, GPP_F},
 		{ GPP_G, GPP_G},
-#if IS_ENABLED(CONFIG_SKYLAKE_SOC_PCH_H)
+#if CONFIG(SKYLAKE_SOC_PCH_H)
 		{ GPP_H, GPP_H},
 		{ GPP_I, GPP_I},
 #endif
@@ -172,7 +172,7 @@ const struct pmc_to_gpio_route *soc_pmc_gpio_routes(size_t *num)
 uint32_t soc_gpio_pad_config_fixup(const struct pad_config *cfg,
 					int dw_reg, uint32_t reg_val)
 {
-	if (IS_ENABLED(CONFIG_SKYLAKE_SOC_PCH_H))
+	if (CONFIG(SKYLAKE_SOC_PCH_H))
 		return reg_val;
 	/*
 	 * For U/Y series, clear PAD_CFG1_TOL_1V8 in GPP_F4

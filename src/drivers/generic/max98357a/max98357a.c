@@ -23,7 +23,7 @@
 #include <string.h>
 #include "chip.h"
 
-#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+#if CONFIG(HAVE_ACPI_TABLES)
 
 #define MAX98357A_ACPI_NAME	"MAXM"
 #define MAX98357A_ACPI_HID	"MX98357A"
@@ -76,7 +76,7 @@ static struct device_operations max98357a_ops = {
 	.read_resources		  = DEVICE_NOOP,
 	.set_resources		  = DEVICE_NOOP,
 	.enable_resources	  = DEVICE_NOOP,
-#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+#if CONFIG(HAVE_ACPI_TABLES)
 	.acpi_name                = max98357a_acpi_name,
 	.acpi_fill_ssdt_generator = max98357a_fill_ssdt,
 #endif

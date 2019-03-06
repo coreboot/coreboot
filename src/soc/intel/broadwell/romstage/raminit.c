@@ -24,7 +24,7 @@
 #include <memory_info.h>
 #include <mrc_cache.h>
 #include <string.h>
-#if IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC)
+#if CONFIG(EC_GOOGLE_CHROMEEC)
 #include <ec/google/chromeec/ec.h>
 #include <ec/google/chromeec/ec_commands.h>
 #endif
@@ -57,7 +57,7 @@ void raminit(struct pei_data *pei_data)
 		pei_data->saved_data_size = region_device_sz(&rdev);
 		pei_data->saved_data = rdev_mmap_full(&rdev);
 		/* Assume boot device is memory mapped. */
-		assert(IS_ENABLED(CONFIG_BOOT_DEVICE_MEMORY_MAPPED));
+		assert(CONFIG(BOOT_DEVICE_MEMORY_MAPPED));
 	} else if (pei_data->boot_mode == ACPI_S3) {
 		/* Waking from S3 and no cache. */
 		printk(BIOS_DEBUG, "No MRC cache found in S3 resume path.\n");
@@ -104,7 +104,7 @@ void raminit(struct pei_data *pei_data)
 	if (pei_data->boot_mode != ACPI_S3) {
 		cbmem_initialize_empty();
 	} else if (cbmem_initialize()) {
-#if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
+#if CONFIG(HAVE_ACPI_RESUME)
 		printk(BIOS_DEBUG, "Failed to recover CBMEM in S3 resume.\n");
 		/* Failed S3 resume, reset to come up cleanly */
 		system_reset();

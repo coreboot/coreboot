@@ -38,7 +38,7 @@
 #include <timestamp.h>
 
 static const struct pad_config tpm_spi_configs[] = {
-#if IS_ENABLED(CONFIG_SOC_INTEL_GLK)
+#if CONFIG(SOC_INTEL_GLK)
 	PAD_CFG_NF(GPIO_81, NATIVE, DEEP, NF3),	/* FST_SPI_CS2_N */
 #else
 	PAD_CFG_NF(GPIO_106, NATIVE, DEEP, NF3),	/* FST_SPI_CS2_N */
@@ -95,10 +95,10 @@ void bootblock_soc_early_init(void)
 	pmc_global_reset_enable(0);
 
 	/* Prepare UART for serial console. */
-	if (IS_ENABLED(CONFIG_INTEL_LPSS_UART_FOR_CONSOLE))
+	if (CONFIG(INTEL_LPSS_UART_FOR_CONSOLE))
 		uart_bootblock_init();
 
-	if (IS_ENABLED(CONFIG_TPM_ON_FAST_SPI))
+	if (CONFIG(TPM_ON_FAST_SPI))
 		tpm_enable();
 
 	enable_pm_timer_emulation();
@@ -116,7 +116,7 @@ void bootblock_soc_early_init(void)
 	/* Use Nx and paging to prevent the frontend from writing back dirty
 	 * cache-as-ram lines to backing store that doesn't exist when the L1I
 	 * speculatively fetches a line that is sitting in the L1D. */
-	if (IS_ENABLED(CONFIG_PAGING_IN_CACHE_AS_RAM)) {
+	if (CONFIG(PAGING_IN_CACHE_AS_RAM)) {
 		paging_set_nxe(1);
 		paging_set_default_pat();
 		paging_enable_for_car("pdpt", "pt");

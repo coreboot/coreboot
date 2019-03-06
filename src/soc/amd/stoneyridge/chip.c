@@ -159,7 +159,7 @@ static void earliest_ramstage(void *unused)
 			romstage_handoff_is_resume();
 	if (!s3_resume) {
 		post_code(0x46);
-		if (IS_ENABLED(CONFIG_SOC_AMD_PSP_SELECTABLE_SMU_FW))
+		if (CONFIG(SOC_AMD_PSP_SELECTABLE_SMU_FW))
 			psp_load_named_blob(MBOX_BIOS_CMD_SMU_FW2, "smu_fw2");
 
 		post_code(0x47);

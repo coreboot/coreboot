@@ -22,7 +22,7 @@
 #include <string.h>
 #include "chip.h"
 
-#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+#if CONFIG(HAVE_ACPI_TABLES)
 
 #define ADAU7002_ACPI_NAME	"ADAU"
 #define ADAU7002_ACPI_HID	"ADAU7002"
@@ -71,7 +71,7 @@ static struct device_operations adau7002_ops = {
 	.read_resources			= DEVICE_NOOP,
 	.set_resources			= DEVICE_NOOP,
 	.enable_resources		= DEVICE_NOOP,
-#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+#if CONFIG(HAVE_ACPI_TABLES)
 	.acpi_name			= adau7002_acpi_name,
 	.acpi_fill_ssdt_generator	= adau7002_fill_ssdt,
 #endif

@@ -25,7 +25,7 @@
 #error "PCR_BASE_ADDRESS need to be non-zero!"
 #endif
 
-#if !IS_ENABLED(CONFIG_PCR_COMMON_IOSF_1_0)
+#if !CONFIG(PCR_COMMON_IOSF_1_0)
 
 #define PCR_SBI_CMD_TIMEOUT	10 /* 10ms */
 
@@ -76,7 +76,7 @@ static void *__pcr_reg_address(uint8_t pid, uint16_t offset)
 
 void *pcr_reg_address(uint8_t pid, uint16_t offset)
 {
-	if (IS_ENABLED(CONFIG_PCR_COMMON_IOSF_1_0))
+	if (CONFIG(PCR_COMMON_IOSF_1_0))
 		assert(IS_ALIGNED(offset, sizeof(uint32_t)));
 
 	return __pcr_reg_address(pid, offset);
@@ -91,7 +91,7 @@ void *pcr_reg_address(uint8_t pid, uint16_t offset)
  */
 static inline void check_pcr_offset_align(uint16_t offset, size_t size)
 {
-	const size_t align = IS_ENABLED(CONFIG_PCR_COMMON_IOSF_1_0) ?
+	const size_t align = CONFIG(PCR_COMMON_IOSF_1_0) ?
 					sizeof(uint32_t) : size;
 
 	assert(IS_ALIGNED(offset, align));
@@ -219,7 +219,7 @@ void pcr_or8(uint8_t pid, uint16_t offset, uint8_t ordata)
 	pcr_write8(pid, offset, data8);
 }
 
-#if !IS_ENABLED(CONFIG_PCR_COMMON_IOSF_1_0)
+#if !CONFIG(PCR_COMMON_IOSF_1_0)
 
 #ifdef __SIMPLE_DEVICE__
 static int pcr_wait_for_completion(pci_devfn_t dev)

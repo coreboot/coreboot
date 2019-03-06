@@ -69,13 +69,13 @@
 #define LV2		0x14
 #define LV3		0x15
 #define LV4		0x16
-#if IS_ENABLED(CONFIG_SOUTHBRIDGE_INTEL_I82801GX)
+#if CONFIG(SOUTHBRIDGE_INTEL_I82801GX)
 #define PM2_CNT		0x20 // mobile only
 #define GPE0_STS	0x28
 #else
 #define PM2_CNT		0x50 // mobile only
 #define GPE0_STS	0x20
-#endif /* IS_ENABLED(CONFIG_SOUTHBRIDGE_INTEL_I82801GX) */
+#endif /* CONFIG(SOUTHBRIDGE_INTEL_I82801GX) */
 #define   USB4_STS	(1 << 14) /* i82801gx only */
 #define   PME_B0_STS	(1 << 13)
 #define   PME_STS	(1 << 11)
@@ -86,11 +86,11 @@
 #define   TCOSCI_STS	(1 << 6)
 #define   SWGPE_STS	(1 << 2)
 #define   HOT_PLUG_STS	(1 << 1)
-#if IS_ENABLED(CONFIG_SOUTHBRIDGE_INTEL_I82801GX)
+#if CONFIG(SOUTHBRIDGE_INTEL_I82801GX)
 #define GPE0_EN		0x2c
 #else
 #define GPE0_EN		0x28
-#endif /* IS_ENABLED(CONFIG_SOUTHBRIDGE_INTEL_I82801GX) */
+#endif /* CONFIG(SOUTHBRIDGE_INTEL_I82801GX) */
 #define   PME_B0_EN	(1 << 13)
 #define   PME_EN	(1 << 11)
 #define   TCOSCI_EN	(1 << 6)

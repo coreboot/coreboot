@@ -153,7 +153,7 @@ static void enable_update(void *unused)
 	/* clear current post code avoid chatty eventlog on subsequent boot*/
 	post_code(0);
 
-	if (IS_ENABLED(CONFIG_POWER_OFF_ON_CR50_UPDATE))
+	if (CONFIG(POWER_OFF_ON_CR50_UPDATE))
 		poweroff();
 	halt();
 }

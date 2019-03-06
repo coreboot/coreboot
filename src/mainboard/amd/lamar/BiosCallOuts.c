@@ -150,7 +150,7 @@ static void oem_fan_control(FCH_DATA_BLOCK *FchParams)
 	LibAmdMemCopy ((VOID *)(FchParams->Hwm.HwmFanControl), &oem_factl, (sizeof(FCH_HWM_FAN_CTR) * 5), FchParams->StdHeader);
 
 	/* Enable IMC fan control. the recommended way */
-	if (IS_ENABLED(CONFIG_HUDSON_IMC_FWM)) {
+	if (CONFIG(HUDSON_IMC_FWM)) {
 		imc_reg_init();
 
 		/* HwMonitorEnable = TRUE &&  HwmFchtsiAutoOpll ==FALSE to call FchECfancontrolservice */
@@ -287,7 +287,7 @@ static AGESA_STATUS Fch_Oem_config(UINT32 Func, UINTN FchData, VOID *ConfigPtr)
 		FCH_RESET_DATA_BLOCK *FchParams =  (FCH_RESET_DATA_BLOCK *) FchData;
 		printk(BIOS_DEBUG, "Fch OEM config in INIT RESET ");
 
-		FchParams->LegacyFree = IS_ENABLED(CONFIG_HUDSON_LEGACY_FREE);
+		FchParams->LegacyFree = CONFIG(HUDSON_LEGACY_FREE);
 
 		/* Turn on FCH GPP slots */
 		FchParams->FchReset.GppEnable = TRUE;

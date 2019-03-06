@@ -45,7 +45,7 @@
 #define TPM_MCI_UUID	"376054ed-cc13-4675-901c-4756d7f2d45d"
 /* coreboot wrapper for TPM driver (start) */
 #define	TPM_DEBUG(fmt, args...)		\
-	if (IS_ENABLED(CONFIG_DEBUG_TPM)) {		\
+	if (CONFIG(DEBUG_TPM)) {		\
 		printk(BIOS_DEBUG, PREFIX);		\
 		printk(BIOS_DEBUG, fmt, ##args);	\
 	}
@@ -126,7 +126,7 @@ static const struct device_name atmel_devices[] = {
 
 static const struct device_name infineon_devices[] = {
 	{0x000b, "SLB9635 TT 1.2"},
-#if IS_ENABLED(CONFIG_TPM2)
+#if CONFIG(TPM2)
 	{0x001a, "SLB9665 TT 2.0"},
 	{0x001b, "SLB9670 TT 2.0"},
 #else
@@ -602,7 +602,7 @@ static u32 tis_readresponse(u8 *buffer, size_t *len)
 		 * and tis_has_valid_data(), or some race-condition-related
 		 * issue will occur.
 		 */
-		if (IS_ENABLED(CONFIG_TPM_RDRESP_NEED_DELAY))
+		if (CONFIG(TPM_RDRESP_NEED_DELAY))
 			udelay(10);
 
 	} while (tis_has_valid_data(locality));
@@ -783,7 +783,7 @@ static void lpc_tpm_set_resources(struct device *dev)
 	}
 }
 
-#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+#if CONFIG(HAVE_ACPI_TABLES)
 
 static void tpm_ppi_func0_cb(void *arg)
 {
@@ -794,7 +794,7 @@ static void tpm_ppi_func0_cb(void *arg)
 
 static void tpm_ppi_func1_cb(void *arg)
 {
-	if (IS_ENABLED(CONFIG_TPM2))
+	if (CONFIG(TPM2))
 		/* Interface version: 2.0 */
 		acpigen_write_return_string("2.0");
 	else
@@ -942,7 +942,7 @@ static void lpc_tpm_fill_ssdt(struct device *dev)
 
 	acpigen_write_resourcetemplate_footer();
 
-	if (!IS_ENABLED(CONFIG_CHROMEOS)) {
+	if (!CONFIG(CHROMEOS)) {
 		/*
 		 * _DSM method
 		 */
@@ -981,7 +981,7 @@ static const char *lpc_tpm_acpi_name(const struct device *dev)
 static struct device_operations lpc_tpm_ops = {
 	.read_resources   = lpc_tpm_read_resources,
 	.set_resources    = lpc_tpm_set_resources,
-#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+#if CONFIG(HAVE_ACPI_TABLES)
 	.acpi_name		= lpc_tpm_acpi_name,
 	.acpi_fill_ssdt_generator = lpc_tpm_fill_ssdt,
 #endif

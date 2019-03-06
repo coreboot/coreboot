@@ -180,7 +180,7 @@ uint32_t acpi_fill_soc_wake(uint32_t generic_pm1_en,
 	return generic_pm1_en;
 }
 
-#if IS_ENABLED(CONFIG_SOC_INTEL_COMMON_ACPI_WAKE_SOURCE)
+#if CONFIG(SOC_INTEL_COMMON_ACPI_WAKE_SOURCE)
 /*
  * Save wake source information for calculating ACPI _SWS values
  *
@@ -452,7 +452,7 @@ void generate_cpu_entries(struct device *device)
 	acpigen_write_processor_cnot(cores_per_package);
 }
 
-#if IS_ENABLED(CONFIG_SOC_INTEL_COMMON_ACPI_WAKE_SOURCE)
+#if CONFIG(SOC_INTEL_COMMON_ACPI_WAKE_SOURCE)
 /* Save wake source data for ACPI _SWS methods in NVS */
 static void acpi_save_wake_source(void *unused)
 {

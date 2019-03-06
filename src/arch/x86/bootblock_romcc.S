@@ -37,7 +37,7 @@
 
 #include <arch/x86/timestamp.inc>
 
-#if IS_ENABLED(CONFIG_SSE)
+#if CONFIG(SSE)
 #include <cpu/x86/sse_enable.inc>
 #endif
 

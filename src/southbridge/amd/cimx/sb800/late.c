@@ -163,7 +163,7 @@ static struct device_operations lpc_ops = {
 	.read_resources = lpc_read_resources,
 	.set_resources = lpc_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+#if CONFIG(HAVE_ACPI_TABLES)
 	.write_acpi_tables = acpi_write_hpet,
 #endif
 	.init = lpc_init,
@@ -386,9 +386,9 @@ static void sb800_enable(struct device *dev)
 
 	case PCI_DEVFN(0x14, 3): /* 0:14:3 LPC */
 		/* Initialize the fans */
-#if IS_ENABLED(CONFIG_SB800_IMC_FAN_CONTROL)
+#if CONFIG(SB800_IMC_FAN_CONTROL)
 		init_sb800_IMC_fans(dev);
-#elif IS_ENABLED(CONFIG_SB800_MANUAL_FAN_CONTROL)
+#elif CONFIG(SB800_MANUAL_FAN_CONTROL)
 		init_sb800_MANUAL_fans(dev);
 #endif
 		break;

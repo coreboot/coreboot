@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  */
 
-#if IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC)
+#if CONFIG(EC_GOOGLE_CHROMEEC)
 Scope (\_SB)
 {
 	Device (PWRB)

@@ -24,7 +24,7 @@
 #include <string.h>
 #include "chip.h"
 
-#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+#if CONFIG(HAVE_ACPI_TABLES)
 
 #define NAU8825_ACPI_NAME	"NAU8"
 #define NAU8825_ACPI_HID	"10508825"
@@ -102,7 +102,7 @@ static struct device_operations nau8825_ops = {
 	.read_resources		  = DEVICE_NOOP,
 	.set_resources		  = DEVICE_NOOP,
 	.enable_resources	  = DEVICE_NOOP,
-#if IS_ENABLED(CONFIG_HAVE_ACPI_TABLES)
+#if CONFIG(HAVE_ACPI_TABLES)
 	.acpi_name                = nau8825_acpi_name,
 	.acpi_fill_ssdt_generator = nau8825_fill_ssdt,
 #endif

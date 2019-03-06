@@ -70,7 +70,7 @@ static void display_capacity(struct storage_media *media, int partition_number)
 	capacity = media->capacity[partition_number];
 	name = storage_partition_name(media, partition_number);
 	separator = "";
-	if (IS_ENABLED(CONFIG_COMMONLIB_STORAGE_MMC) && !IS_SD(media))
+	if (CONFIG(COMMONLIB_STORAGE_MMC) && !IS_SD(media))
 		separator = ": ";
 
 	/* Determine the decimal divisor for the capacity */
@@ -124,7 +124,7 @@ void storage_display_setup(struct storage_media *media)
 		* media->write_bl_len);
 
 	/* Display the partition capacities */
-	if (IS_ENABLED(CONFIG_SDHC_DEBUG)) {
+	if (CONFIG(SDHC_DEBUG)) {
 		for (partition_number = 0; partition_number
 			< ARRAY_SIZE(media->capacity); partition_number++) {
 			if (!media->capacity[partition_number])
@@ -175,9 +175,9 @@ int storage_startup(struct storage_media *media)
 		return err;
 
 	/* Increase the bus frequency */
-	if (IS_ENABLED(CONFIG_COMMONLIB_STORAGE_SD) && IS_SD(media))
+	if (CONFIG(COMMONLIB_STORAGE_SD) && IS_SD(media))
 		err = sd_change_freq(media);
-	else if (IS_ENABLED(CONFIG_COMMONLIB_STORAGE_MMC)) {
+	else if (CONFIG(COMMONLIB_STORAGE_MMC)) {
 		err = mmc_change_freq(media);
 		if (!err)
 			mmc_update_capacity(media);
@@ -189,9 +189,9 @@ int storage_startup(struct storage_media *media)
 	media->caps &= ctrlr->caps;
 
 	/* Increase the bus width if possible */
-	if (IS_ENABLED(CONFIG_COMMONLIB_STORAGE_SD) && IS_SD(media))
+	if (CONFIG(COMMONLIB_STORAGE_SD) && IS_SD(media))
 		err = sd_set_bus_width(media);
-	else if (IS_ENABLED(CONFIG_COMMONLIB_STORAGE_MMC))
+	else if (CONFIG(COMMONLIB_STORAGE_MMC))
 		err = mmc_set_bus_width(media);
 	if (err)
 		return err;
@@ -329,9 +329,9 @@ int storage_set_partition(struct storage_media *media,
 
 	/* Select the partition */
 	err = -1;
-	if (IS_ENABLED(CONFIG_COMMONLIB_STORAGE_SD) && IS_SD(media))
+	if (CONFIG(COMMONLIB_STORAGE_SD) && IS_SD(media))
 		err = sd_set_partition(media, partition_number);
-	else if (IS_ENABLED(CONFIG_COMMONLIB_STORAGE_MMC))
+	else if (CONFIG(COMMONLIB_STORAGE_MMC))
 		err = mmc_set_partition(media, partition_number);
 	if (err)
 		sd_mmc_error("Invalid partition number!\n");
@@ -345,9 +345,9 @@ const char *storage_partition_name(struct storage_media *media,
 
 	/* Get the partition name */
 	name = NULL;
-	if (IS_ENABLED(CONFIG_COMMONLIB_STORAGE_SD) && IS_SD(media))
+	if (CONFIG(COMMONLIB_STORAGE_SD) && IS_SD(media))
 		name = sd_partition_name(media, partition_number);
-	else if (IS_ENABLED(CONFIG_COMMONLIB_STORAGE_MMC))
+	else if (CONFIG(COMMONLIB_STORAGE_MMC))
 		name = mmc_partition_name(media, partition_number);
 	return name;
 }

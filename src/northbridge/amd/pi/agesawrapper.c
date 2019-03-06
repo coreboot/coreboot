@@ -55,8 +55,8 @@ AGESA_STATUS agesawrapper_amdinitreset(void)
 	AmdParamStruct.StdHeader.ImageBasePtr = 0;
 	AmdCreateStruct (&AmdParamStruct);
 
-	AmdResetParams.FchInterface.Xhci0Enable = IS_ENABLED(CONFIG_HUDSON_XHCI_ENABLE);
-	if (IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_PI_BOLTON))
+	AmdResetParams.FchInterface.Xhci0Enable = CONFIG(HUDSON_XHCI_ENABLE);
+	if (CONFIG(SOUTHBRIDGE_AMD_PI_BOLTON))
 		AmdResetParams.FchInterface.Xhci1Enable = TRUE;
 
 	AmdResetParams.FchInterface.SataEnable = !((CONFIG_HUDSON_SATA_MODE == 0) || (CONFIG_HUDSON_SATA_MODE == 3));
@@ -96,7 +96,7 @@ AGESA_STATUS agesawrapper_amdinitearly(void)
 	 * init_timer() needs to be called on CZ PI, because AGESA resets the LAPIC reload value
 	 * on the AMD_INIT_EARLY call
 	 */
-	if (IS_ENABLED(CONFIG_CPU_AMD_PI_00660F01))
+	if (CONFIG(CPU_AMD_PI_00660F01))
 		init_timer();
 	if (status != AGESA_SUCCESS) agesawrapper_amdreadeventlog(AmdParamStruct.StdHeader.HeapStatus);
 	AmdReleaseStruct (&AmdParamStruct);
@@ -299,7 +299,7 @@ const void *agesawrapper_locate_module (const CHAR8 name[8])
 	const AMD_MODULE_HEADER* module;
 	size_t file_size;
 
-	if (IS_ENABLED(CONFIG_VBOOT)) {
+	if (CONFIG(VBOOT)) {
 		/* Use phys. location in flash and prevent vboot from searching cbmem */
 		agesa = (void *)CONFIG_AGESA_BINARY_PI_LOCATION;
 		file_size = 0x100000;

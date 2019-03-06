@@ -98,7 +98,7 @@ static void lpc_init(struct device *dev)
 
 	/* Set up SERIRQ, enable continuous mode */
 	byte = (PM_SERIRQ_NUM_BITS_21 | PM_SERIRQ_ENABLE);
-	if (!IS_ENABLED(CONFIG_SERIRQ_CONTINUOUS_MODE))
+	if (!CONFIG(SERIRQ_CONTINUOUS_MODE))
 		byte |= PM_SERIRQ_MODE;
 
 	pm_write8(PM_SERIRQ_CONF, byte);

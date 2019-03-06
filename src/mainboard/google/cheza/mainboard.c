@@ -16,7 +16,6 @@
 #include <device/device.h>
 #include <bootblock_common.h>
 #include <gpio.h>
-#include <timestamp.h>
 
 static void setup_usb(void)
 {

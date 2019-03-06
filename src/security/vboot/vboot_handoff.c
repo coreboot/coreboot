@@ -31,7 +31,6 @@
 #include <console/vtxprintf.h>
 #include <fmap.h>
 #include <stdlib.h>
-#include <timestamp.h>
 #include <vboot_struct.h>
 #include <security/vboot/vbnv.h>
 #include <security/vboot/misc.h>

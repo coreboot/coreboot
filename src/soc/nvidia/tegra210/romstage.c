@@ -29,7 +29,6 @@
 #include <soc/nvidia/tegra/apbmisc.h>
 #include <symbols.h>
 #include <timer.h>
-#include <timestamp.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
 void __weak romstage_mainboard_init(void)

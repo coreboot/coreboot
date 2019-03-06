@@ -13,7 +13,6 @@
 #include <console/console.h>
 #include <string.h>
 #include <lib.h>
-#include <timestamp.h>
 
 #include "lzmadecode.h"
 

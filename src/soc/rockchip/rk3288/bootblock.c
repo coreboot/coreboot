@@ -20,7 +20,6 @@
 #include <soc/grf.h>
 #include <soc/timer.h>
 #include <symbols.h>
-#include <timestamp.h>
 
 void bootblock_soc_init(void)
 {

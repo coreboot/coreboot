@@ -28,8 +28,6 @@
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <southbridge/intel/common/gpio.h>
 #include <superio/winbond/common/winbond.h>
-#include <timestamp.h>
-
 
 void pch_enable_lpc(void)
 {

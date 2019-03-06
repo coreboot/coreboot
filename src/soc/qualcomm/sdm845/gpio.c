@@ -17,7 +17,6 @@
 #include <types.h>
 #include <delay.h>
 #include <timer.h>
-#include <timestamp.h>
 
 #include <gpio.h>
 

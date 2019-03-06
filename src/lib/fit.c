@@ -23,7 +23,6 @@
 #include <string.h>
 #include <cbfs.h>
 #include <program_loading.h>
-#include <timestamp.h>
 #include <memrange.h>
 #include <fit.h>
 #include <boardid.h>

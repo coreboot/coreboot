@@ -37,7 +37,6 @@
 #include <stage_cache.h>
 #include <stddef.h>
 #include <stdint.h>
-#include <timestamp.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
 /* SOC initialization before RAM is enabled */

@@ -15,7 +15,6 @@
 #include <fsp/util.h>
 #include <memrange.h>
 #include <string.h>
-#include <timestamp.h>
 #include <cbfs.h>
 
 void fsp_temp_ram_exit(void)

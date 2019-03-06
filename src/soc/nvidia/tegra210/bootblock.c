@@ -26,7 +26,6 @@
 #include <soc/nvidia/tegra/apbmisc.h>
 #include <soc/pmc.h>
 #include <soc/power.h>
-#include <timestamp.h>
 
 #define BCT_OFFSET_IN_BIT	0x4c
 #define ODMDATA_OFFSET_IN_BCT	0x508

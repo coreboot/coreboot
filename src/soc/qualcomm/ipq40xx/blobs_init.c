@@ -20,7 +20,6 @@
 #include <console/console.h>
 #include <string.h>
 #include <timer.h>
-#include <timestamp.h>
 #include <program_loading.h>
 
 #include <soc/iomap.h>

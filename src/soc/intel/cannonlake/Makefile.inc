@@ -55,6 +55,7 @@ ramstage-y += uart.c
 ramstage-y += vr_config.c
 ramstage-y += sd.c
 
+smm-y += elog.c
 smm-y += p2sb.c
 smm-y += pmutil.c
 smm-y += smihandler.c

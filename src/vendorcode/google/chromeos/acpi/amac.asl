@@ -19,7 +19,7 @@
  * passthru feature which can result in the dock ethernet port using the
  * same MAC address that is assigned to the internal NIC.  This is done
  * by calling an ACPI method at \_SB.AMAC() which returns a formatted
- * string containing the MAC address for the dock to use.
+ * string (as a buffer) containing the MAC address for the dock to use.
  *
  * The Linux kernel implementation can be found at
  * drivers/net/usb/r8152.c:vendor_mac_passthru_addr_read()
@@ -80,6 +80,6 @@ Scope (\_SB)
 		}
 
 		Printf ("AMAC = %o", ToString (Local2))
-		Return (ToString (Local2))
+		Return (Local2)
 	}
 }

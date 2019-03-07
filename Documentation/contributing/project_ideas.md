@@ -146,3 +146,23 @@ their bug reports.
 
 ### Mentors
 * Patrick Georgi <patrick@georgi.software>
+
+## Make coreboot coverity clean
+coreboot and several other of our projects are automatically tested
+using Synopsys' free "Coverity Scan" service. While some fare pretty
+good, like [em100](https://scan.coverity.com/projects/em100) at 0 known
+defects, there are still many open issues in other projects, most notably
+[coreboot](https://scan.coverity.com/projects/coreboot) itself (which
+is also the largest codebase).
+
+Not all of the reports are actual issues, but the project benefits a
+lot if the list of unhandled reports is down to 0 because that provides
+a baseline when future changes reintroduce new issues: it's easier to
+triage and handle a list of 5 issues rather than more than 350.
+
+This project would be going through all reports and handling them
+appropriately: Figure out if reports are valid or not and mark them
+as such. For valid reports, provide patches to fix the underlying issue.
+
+### Mentors
+* Patrick Georgi <patrick@georgi.software>

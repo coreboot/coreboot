@@ -29,6 +29,12 @@ Provide packages/installers of our compiler toolchain for Linux distros,
 Windows, Mac OS. For Windows, this should also include the environment
 (shell, make, ...).
 
+The scripts to generate these packages should be usable on a Linux
+host, as that's what we're using for our automated build testing system
+that we could extend to provide current packages going forward. This
+might include automating some virtualization system (eg. QEMU or CrosVM) for
+non-Linux builds or Docker for different Linux distributions.
+
 ### Requirements
 * coreboot knowledge: Should know how to build coreboot images and where
   the compiler comes into play in our build system.

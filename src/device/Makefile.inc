@@ -33,7 +33,6 @@ ramstage-$(CONFIG_HYPERTRANSPORT_PLUGIN_SUPPORT) += hypertransport.c
 ramstage-$(CONFIG_PCIX_PLUGIN_SUPPORT) += pcix_device.c
 ramstage-$(CONFIG_PCIEXP_PLUGIN_SUPPORT) += pciexp_device.c
 ramstage-$(CONFIG_CARDBUS_PLUGIN_SUPPORT) += cardbus_device.c
-ramstage-$(CONFIG_MMCONF_SUPPORT) += pci_ops_mmconf.c
 endif
 
 subdirs-y += oprom dram

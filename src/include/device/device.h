@@ -17,7 +17,6 @@
 
 struct device;
 struct pci_operations;
-struct pci_bus_operations;
 struct i2c_bus_operations;
 struct smbus_bus_operations;
 struct pnp_mode_ops;

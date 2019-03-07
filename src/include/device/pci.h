@@ -22,6 +22,7 @@
 #include <device/pci_def.h>
 #include <device/resource.h>
 #include <device/device.h>
+#include <device/pci_ops.h>
 #include <device/pci_rom.h>
 #include <device/pci_type.h>
 
@@ -32,19 +33,6 @@ struct pci_operations {
 		unsigned int device);
 	void (*set_L1_ss_latency)(struct device *dev, unsigned int off);
 };
-
-/* Common pci bus operations */
-struct pci_bus_operations {
-	uint8_t   (*read8)(pci_devfn_t dev, uint16_t reg);
-	uint16_t (*read16)(pci_devfn_t dev, uint16_t reg);
-	uint32_t (*read32)(pci_devfn_t dev, uint16_t reg);
-	void     (*write8)(pci_devfn_t dev, uint16_t reg, uint8_t val);
-	void    (*write16)(pci_devfn_t dev, uint16_t reg, uint16_t val);
-	void    (*write32)(pci_devfn_t dev, uint16_t reg, uint32_t val);
-};
-
-// FIXME: Needs complete pci_bus_operations
-#include <device/pci_ops.h>
 
 struct pci_driver {
 	const struct device_operations *ops;

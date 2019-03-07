@@ -172,3 +172,10 @@ as such. For valid reports, provide patches to fix the underlying issue.
 
 ### Mentors
 * Patrick Georgi <patrick@georgi.software>
+
+## Extend Ghidra to support analysis of firmware images
+[Ghidra](https://ghidra-sre.org) is a recently released cross-platform
+disassembler and decompiler that is extensible through plugins. Make it
+useful for firmware related work: Automatically parse formats (eg. by
+integrating UEFITool, cbfstool, decompressors), automatically identify
+16/32/64bit code on x86/amd64, etc.

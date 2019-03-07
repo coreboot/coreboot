@@ -35,12 +35,12 @@ struct pci_operations {
 
 /* Common pci bus operations */
 struct pci_bus_operations {
-	uint8_t   (*read8)(struct device *dev, int where);
-	uint16_t (*read16)(struct device *dev, int where);
-	uint32_t (*read32)(struct device *dev, int where);
-	void     (*write8)(struct device *dev, int where, uint8_t val);
-	void    (*write16)(struct device *dev, int where, uint16_t val);
-	void    (*write32)(struct device *dev, int where, uint32_t val);
+	uint8_t   (*read8)(const struct device *dev, uint16_t where);
+	uint16_t (*read16)(const struct device *dev, uint16_t where);
+	uint32_t (*read32)(const struct device *dev, uint16_t where);
+	void     (*write8)(const struct device *dev, uint16_t where, uint8_t val);
+	void    (*write16)(const struct device *dev, uint16_t where, uint16_t val);
+	void    (*write32)(const struct device *dev, uint16_t where, uint32_t val);
 };
 
 struct pci_driver {

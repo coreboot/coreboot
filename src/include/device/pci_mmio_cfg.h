@@ -22,7 +22,7 @@
 
 
 static __always_inline
-u8 pci_mmio_read_config8(pci_devfn_t dev, unsigned int where)
+uint8_t pci_mmio_read_config8(pci_devfn_t dev, uint16_t where)
 {
 	void *addr;
 	addr = (void *)(uintptr_t)(CONFIG_MMCONF_BASE_ADDRESS | dev | where);
@@ -30,7 +30,7 @@ u8 pci_mmio_read_config8(pci_devfn_t dev, unsigned int where)
 }
 
 static __always_inline
-u16 pci_mmio_read_config16(pci_devfn_t dev, unsigned int where)
+uint16_t pci_mmio_read_config16(pci_devfn_t dev, uint16_t where)
 {
 	void *addr;
 	addr = (void *)(uintptr_t)(CONFIG_MMCONF_BASE_ADDRESS | dev | (where & ~1));
@@ -38,7 +38,7 @@ u16 pci_mmio_read_config16(pci_devfn_t dev, unsigned int where)
 }
 
 static __always_inline
-u32 pci_mmio_read_config32(pci_devfn_t dev, unsigned int where)
+uint32_t pci_mmio_read_config32(pci_devfn_t dev, uint16_t where)
 {
 	void *addr;
 	addr = (void *)(uintptr_t)(CONFIG_MMCONF_BASE_ADDRESS | dev | (where & ~3));
@@ -46,7 +46,7 @@ u32 pci_mmio_read_config32(pci_devfn_t dev, unsigned int where)
 }
 
 static __always_inline
-void pci_mmio_write_config8(pci_devfn_t dev, unsigned int where, u8 value)
+void pci_mmio_write_config8(pci_devfn_t dev, uint16_t where, uint8_t value)
 {
 	void *addr;
 	addr = (void *)(uintptr_t)(CONFIG_MMCONF_BASE_ADDRESS | dev | where);
@@ -54,7 +54,7 @@ void pci_mmio_write_config8(pci_devfn_t dev, unsigned int where, u8 value)
 }
 
 static __always_inline
-void pci_mmio_write_config16(pci_devfn_t dev, unsigned int where, u16 value)
+void pci_mmio_write_config16(pci_devfn_t dev, uint16_t where, uint16_t value)
 {
 	void *addr;
 	addr = (void *)(uintptr_t)(CONFIG_MMCONF_BASE_ADDRESS | dev | (where & ~1));
@@ -62,7 +62,7 @@ void pci_mmio_write_config16(pci_devfn_t dev, unsigned int where, u16 value)
 }
 
 static __always_inline
-void pci_mmio_write_config32(pci_devfn_t dev, unsigned int where, u32 value)
+void pci_mmio_write_config32(pci_devfn_t dev, uint16_t where, uint32_t value)
 {
 	void *addr;
 	addr = (void *)(uintptr_t)(CONFIG_MMCONF_BASE_ADDRESS | dev | (where & ~3));
@@ -77,37 +77,37 @@ void pci_mmio_write_config32(pci_devfn_t dev, unsigned int where, u32 value)
  */
 
 static __always_inline
-uint8_t pci_s_read_config8(pci_devfn_t dev, unsigned int where)
+uint8_t pci_s_read_config8(pci_devfn_t dev, uint16_t where)
 {
 	return pci_mmio_read_config8(dev, where);
 }
 
 static __always_inline
-uint16_t pci_s_read_config16(pci_devfn_t dev, unsigned int where)
+uint16_t pci_s_read_config16(pci_devfn_t dev, uint16_t where)
 {
 	return pci_mmio_read_config16(dev, where);
 }
 
 static __always_inline
-uint32_t pci_s_read_config32(pci_devfn_t dev, unsigned int where)
+uint32_t pci_s_read_config32(pci_devfn_t dev, uint16_t where)
 {
 	return pci_mmio_read_config32(dev, where);
 }
 
 static __always_inline
-void pci_s_write_config8(pci_devfn_t dev, unsigned int where, uint8_t value)
+void pci_s_write_config8(pci_devfn_t dev, uint16_t where, uint8_t value)
 {
 	pci_mmio_write_config8(dev, where, value);
 }
 
 static __always_inline
-void pci_s_write_config16(pci_devfn_t dev, unsigned int where, uint16_t value)
+void pci_s_write_config16(pci_devfn_t dev, uint16_t where, uint16_t value)
 {
 	pci_mmio_write_config16(dev, where, value);
 }
 
 static __always_inline
-void pci_s_write_config32(pci_devfn_t dev, unsigned int where, uint32_t value)
+void pci_s_write_config32(pci_devfn_t dev, uint16_t where, uint32_t value)
 {
 	pci_mmio_write_config32(dev, where, value);
 }

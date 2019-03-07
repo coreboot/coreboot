@@ -19,7 +19,7 @@
 #include <device/pci_type.h>
 
 static __always_inline
-unsigned int pci_io_encode_addr(pci_devfn_t dev, unsigned int where)
+uint32_t pci_io_encode_addr(pci_devfn_t dev, uint16_t where)
 {
 	if (CONFIG(PCI_IO_CFG_EXT)) {
 		// seg == 0
@@ -30,49 +30,49 @@ unsigned int pci_io_encode_addr(pci_devfn_t dev, unsigned int where)
 }
 
 static __always_inline
-uint8_t pci_io_read_config8(pci_devfn_t dev, unsigned int where)
+uint8_t pci_io_read_config8(pci_devfn_t dev, uint16_t where)
 {
-	unsigned int addr = pci_io_encode_addr(dev, where);
+	uint32_t addr = pci_io_encode_addr(dev, where);
 	outl(0x80000000 | (addr & ~3), 0xCF8);
 	return inb(0xCFC + (addr & 3));
 }
 
 static __always_inline
-uint16_t pci_io_read_config16(pci_devfn_t dev, unsigned int where)
+uint16_t pci_io_read_config16(pci_devfn_t dev, uint16_t where)
 {
-	unsigned int addr = pci_io_encode_addr(dev, where);
+	uint32_t addr = pci_io_encode_addr(dev, where);
 	outl(0x80000000 | (addr & ~3), 0xCF8);
 	return inw(0xCFC + (addr & 2));
 }
 
 static __always_inline
-uint32_t pci_io_read_config32(pci_devfn_t dev, unsigned int where)
+uint32_t pci_io_read_config32(pci_devfn_t dev, uint16_t where)
 {
-	unsigned int addr = pci_io_encode_addr(dev, where);
+	uint32_t addr = pci_io_encode_addr(dev, where);
 	outl(0x80000000 | (addr & ~3), 0xCF8);
 	return inl(0xCFC);
 }
 
 static __always_inline
-void pci_io_write_config8(pci_devfn_t dev, unsigned int where, uint8_t value)
+void pci_io_write_config8(pci_devfn_t dev, uint16_t where, uint8_t value)
 {
-	unsigned int addr = pci_io_encode_addr(dev, where);
+	uint32_t addr = pci_io_encode_addr(dev, where);
 	outl(0x80000000 | (addr & ~3), 0xCF8);
 	outb(value, 0xCFC + (addr & 3));
 }
 
 static __always_inline
-void pci_io_write_config16(pci_devfn_t dev, unsigned int where, uint16_t value)
+void pci_io_write_config16(pci_devfn_t dev, uint16_t where, uint16_t value)
 {
-	unsigned int addr = pci_io_encode_addr(dev, where);
+	uint32_t addr = pci_io_encode_addr(dev, where);
 	outl(0x80000000 | (addr & ~3), 0xCF8);
 	outw(value, 0xCFC + (addr & 2));
 }
 
 static __always_inline
-void pci_io_write_config32(pci_devfn_t dev, unsigned int where, uint32_t value)
+void pci_io_write_config32(pci_devfn_t dev, uint16_t where, uint32_t value)
 {
-	unsigned int addr = pci_io_encode_addr(dev, where);
+	uint32_t addr = pci_io_encode_addr(dev, where);
 	outl(0x80000000 | (addr & ~3), 0xCF8);
 	outl(value, 0xCFC);
 }
@@ -85,37 +85,37 @@ void pci_io_write_config32(pci_devfn_t dev, unsigned int where, uint32_t value)
  */
 
 static __always_inline
-uint8_t pci_s_read_config8(pci_devfn_t dev, unsigned int where)
+uint8_t pci_s_read_config8(pci_devfn_t dev, uint16_t where)
 {
 	return pci_io_read_config8(dev, where);
 }
 
 static __always_inline
-uint16_t pci_s_read_config16(pci_devfn_t dev, unsigned int where)
+uint16_t pci_s_read_config16(pci_devfn_t dev, uint16_t where)
 {
 	return pci_io_read_config16(dev, where);
 }
 
 static __always_inline
-uint32_t pci_s_read_config32(pci_devfn_t dev, unsigned int where)
+uint32_t pci_s_read_config32(pci_devfn_t dev, uint16_t where)
 {
 	return pci_io_read_config32(dev, where);
 }
 
 static __always_inline
-void pci_s_write_config8(pci_devfn_t dev, unsigned int where, uint8_t value)
+void pci_s_write_config8(pci_devfn_t dev, uint16_t where, uint8_t value)
 {
 	pci_io_write_config8(dev, where, value);
 }
 
 static __always_inline
-void pci_s_write_config16(pci_devfn_t dev, unsigned int where, uint16_t value)
+void pci_s_write_config16(pci_devfn_t dev, uint16_t where, uint16_t value)
 {
 	pci_io_write_config16(dev, where, value);
 }
 
 static __always_inline
-void pci_s_write_config32(pci_devfn_t dev, unsigned int where, uint32_t value)
+void pci_s_write_config32(pci_devfn_t dev, uint16_t where, uint32_t value)
 {
 	pci_io_write_config32(dev, where, value);
 }

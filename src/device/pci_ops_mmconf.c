@@ -29,34 +29,34 @@
 				   (((dev)->path.pci.devfn & 0xFF) << 12) |\
 				   ((where) & 0xFFF)) & ~mask))
 
-static uint8_t pci_mmconf_read_config8(struct device *dev, int where)
+static uint8_t pci_mmconf_read_config8(const struct device *dev, uint16_t where)
 {
 	return read8(PCI_MMIO_ADDR(dev, where, 0));
 }
 
-static uint16_t pci_mmconf_read_config16(struct device *dev, int where)
+static uint16_t pci_mmconf_read_config16(const struct device *dev, uint16_t where)
 {
 	return read16(PCI_MMIO_ADDR(dev, where, 1));
 }
 
-static uint32_t pci_mmconf_read_config32(struct device *dev, int where)
+static uint32_t pci_mmconf_read_config32(const struct device *dev, uint16_t where)
 {
 	return read32(PCI_MMIO_ADDR(dev, where, 3));
 }
 
-static void pci_mmconf_write_config8(struct device *dev, int where,
+static void pci_mmconf_write_config8(const struct device *dev, uint16_t where,
 				     uint8_t value)
 {
 	write8(PCI_MMIO_ADDR(dev, where, 0), value);
 }
 
-static void pci_mmconf_write_config16(struct device *dev, int where,
+static void pci_mmconf_write_config16(const struct device *dev, uint16_t where,
 				      uint16_t value)
 {
 	write16(PCI_MMIO_ADDR(dev, where, 1), value);
 }
 
-static void pci_mmconf_write_config32(struct device *dev, int where,
+static void pci_mmconf_write_config32(const struct device *dev, uint16_t where,
 				      uint32_t value)
 {
 	write32(PCI_MMIO_ADDR(dev, where, 3), value);

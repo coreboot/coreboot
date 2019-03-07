@@ -27,39 +27,39 @@
 					((where & 0xf00)<<16))
 #endif
 
-static uint8_t pci_conf1_read_config8(struct device *dev, int where)
+static uint8_t pci_conf1_read_config8(const struct device *dev, uint16_t where)
 {
 	outl(CONF_CMD(dev, where), 0xCF8);
 	return inb(0xCFC + (where & 3));
 }
 
-static uint16_t pci_conf1_read_config16(struct device *dev, int where)
+static uint16_t pci_conf1_read_config16(const struct device *dev, uint16_t where)
 {
 	outl(CONF_CMD(dev, where), 0xCF8);
 	return inw(0xCFC + (where & 2));
 }
 
-static uint32_t pci_conf1_read_config32(struct device *dev, int where)
+static uint32_t pci_conf1_read_config32(const struct device *dev, uint16_t where)
 {
 	outl(CONF_CMD(dev, where), 0xCF8);
 	return inl(0xCFC);
 }
 
-static void pci_conf1_write_config8(struct device *dev, int where,
+static void pci_conf1_write_config8(const struct device *dev, uint16_t where,
 				    uint8_t value)
 {
 	outl(CONF_CMD(dev, where), 0xCF8);
 	outb(value, 0xCFC + (where & 3));
 }
 
-static void pci_conf1_write_config16(struct device *dev, int where,
+static void pci_conf1_write_config16(const struct device *dev, uint16_t where,
 				     uint16_t value)
 {
 	outl(CONF_CMD(dev, where), 0xCF8);
 	outw(value, 0xCFC + (where & 2));
 }
 
-static void pci_conf1_write_config32(struct device *dev, int where,
+static void pci_conf1_write_config32(const struct device *dev, uint16_t where,
 				     uint32_t value)
 {
 	outl(CONF_CMD(dev, where), 0xCF8);

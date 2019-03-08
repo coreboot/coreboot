@@ -179,3 +179,25 @@ disassembler and decompiler that is extensible through plugins. Make it
 useful for firmware related work: Automatically parse formats (eg. by
 integrating UEFITool, cbfstool, decompressors), automatically identify
 16/32/64bit code on x86/amd64, etc.
+
+## Learn hardware behavior from I/O and memory access logs
+[SerialICE](https://www.serialice.com) is a tool to trace the behavior of
+executable code like firmware images. One result of that is a long log file
+containing the accesses to hardware resources.
+
+It would be useful to have a tool that assists a developer-analyst in deriving
+knowledge about hardware from such logs. This likely can't be entirely
+automatic, but a tool that finds patterns and can propagate them across the
+log (incrementially raising the log from plain I/O accesses to a high-level
+description of driver behavior) would be of great use.
+
+This is a research-heavy project.
+
+### Requirements
+* Driver knowledge: Somebody working on this should be familiar with
+  how hardware works (eg. MMIO based register access, index/data port
+  accesses) and how to read data sheets.
+* Machine Learning: ML techniques may be useful to find structure in traces.
+
+### Mentors
+* Ron Minnich <rminnich@google.com>

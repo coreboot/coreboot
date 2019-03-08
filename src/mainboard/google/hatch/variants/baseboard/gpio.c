@@ -30,8 +30,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI_APIC(GPP_A6, NONE, DEEP, LEVEL, NONE),
 	/* A7  : PP3300_SOC_A */
 	PAD_NC(GPP_A7, NONE),
-	/* A8  : EMR_GARAGE_DET ==> NC */
-	PAD_NC(GPP_A8, NONE),
+	/* A8  : EMR_GARAGE_DET */
+	PAD_CFG_GPI_GPIO_DRIVER(GPP_A8, NONE, DEEP),
 	/* A9  : ESPI_CLK */
 	/* A10 : PEN_RESET_ODL */
 	PAD_NC(GPP_A10, NONE),

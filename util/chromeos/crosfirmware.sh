@@ -37,6 +37,7 @@ exit_if_dependencies_are_missing() {
 	exit_if_uninstalled "debugfs" "e2fsprogs"
 	exit_if_uninstalled "parted" "parted"
 	exit_if_uninstalled "curl" "curl"
+	exit_if_uninstalled "unzip" "unzip"
 }
 
 get_inventory()

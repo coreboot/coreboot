@@ -106,8 +106,6 @@ func (i sandybridgemc) Scan(ctx Context, addr PCIDevData) {
 	PutPCIDev(addr, "Host bridge")
 
 	/* FIXME:XX some configs are unsupported.  */
-	KconfigBool["SANDYBRIDGE_IVYBRIDGE_LVDS"] = true
-
 	KconfigBool["NORTHBRIDGE_INTEL_"+i.variant+"BRIDGE"] = true
 	KconfigBool["USE_NATIVE_RAMINIT"] = true
 	KconfigBool["INTEL_INT15"] = true

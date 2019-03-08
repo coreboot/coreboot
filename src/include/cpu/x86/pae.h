@@ -2,6 +2,7 @@
 #define CPU_X86_PAE_H
 
 #include <stdint.h>
+#include <stddef.h>
 
 /* Enable paging with cr3 value for page directory pointer table as well as PAE
    option in cr4. */

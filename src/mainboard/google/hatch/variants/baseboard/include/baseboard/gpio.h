@@ -35,4 +35,7 @@
 /* eSPI virtual wire reporting */
 #define EC_SCI_GPI		GPE0_ESPI
 
+/* EC sync irq is GPP_C13_IRQ */
+#define EC_SYNC_IRQ             GPP_C13_IRQ
+
 #endif /* BASEBOARD_GPIO_H */

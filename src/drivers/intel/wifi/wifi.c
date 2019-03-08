@@ -101,7 +101,7 @@ static void emit_sar_acpi_structures(void)
 	package_size = 1 + 1 + BYTES_PER_SAR_LIMIT;
 	acpigen_write_package(package_size);
 	acpigen_write_dword(WRDS_DOMAIN_TYPE_WIFI);
-	acpigen_write_dword(CONFIG_SAR_ENABLE);
+	acpigen_write_dword(CONFIG(SAR_ENABLE));
 	for (i = 0; i < BYTES_PER_SAR_LIMIT; i++)
 		acpigen_write_byte(sar_limits.sar_limit[0][i]);
 	acpigen_pop_len();
@@ -130,7 +130,7 @@ static void emit_sar_acpi_structures(void)
 	package_size = 1 + 1 + 1 + (NUM_SAR_LIMITS - 1) * BYTES_PER_SAR_LIMIT;
 	acpigen_write_package(package_size);
 	acpigen_write_dword(EWRD_DOMAIN_TYPE_WIFI);
-	acpigen_write_dword(CONFIG_DSAR_ENABLE);
+	acpigen_write_dword(CONFIG(DSAR_ENABLE));
 	acpigen_write_dword(CONFIG_DSAR_SET_NUM);
 	for (i = 1; i < NUM_SAR_LIMITS; i++)
 		for (j = 0; j < BYTES_PER_SAR_LIMIT; j++)

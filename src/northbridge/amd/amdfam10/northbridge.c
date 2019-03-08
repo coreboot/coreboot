@@ -177,7 +177,7 @@ static void ht_route_link(struct bus *link, scan_state mode)
 	pci_write_config32(link->dev, link->cap + 0x14, busses);
 
 	if (mode == HT_ROUTE_FINAL) {
-		if (CONFIG_HT_CHAIN_DISTRIBUTE)
+		if (CONFIG(HT_CHAIN_DISTRIBUTE))
 			parent->subordinate = ALIGN_UP(link->subordinate, 8) - 1;
 		else
 			parent->subordinate = link->subordinate;
@@ -1450,7 +1450,7 @@ static void cpu_bus_scan(struct device *dev)
 		siblings = 3; //quad core
 	}
 
-	disable_siblings = !CONFIG_LOGICAL_CPUS;
+	disable_siblings = !CONFIG(LOGICAL_CPUS);
 #if CONFIG(LOGICAL_CPUS)
 	get_option(&disable_siblings, "multi_core");
 #endif

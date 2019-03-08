@@ -139,16 +139,16 @@ static void config_gpio_mux(void)
 	uart = dev_find_slot_pnp(SIO_PORT, NCT5104D_SP3);
 	gpio = dev_find_slot_pnp(SIO_PORT, NCT5104D_GPIO0);
 	if (uart)
-		uart->enabled = CONFIG_APU1_PINMUX_UART_C;
+		uart->enabled = CONFIG(APU1_PINMUX_UART_C);
 	if (gpio)
-		gpio->enabled = CONFIG_APU1_PINMUX_GPIO0;
+		gpio->enabled = CONFIG(APU1_PINMUX_GPIO0);
 
 	uart = dev_find_slot_pnp(SIO_PORT, NCT5104D_SP4);
 	gpio = dev_find_slot_pnp(SIO_PORT, NCT5104D_GPIO1);
 	if (uart)
-		uart->enabled = CONFIG_APU1_PINMUX_UART_D;
+		uart->enabled = CONFIG(APU1_PINMUX_UART_D);
 	if (gpio)
-		gpio->enabled = CONFIG_APU1_PINMUX_GPIO1;
+		gpio->enabled = CONFIG(APU1_PINMUX_GPIO1);
 }
 
 static void pnp_raw_resource(struct device *dev, u8 reg, u8 val)
@@ -165,11 +165,11 @@ static void config_addon_uart(void)
 	struct device *uart;
 
 	uart = dev_find_slot_pnp(SIO_PORT, NCT5104D_SP3);
-	if (uart && uart->enabled && CONFIG_UART_C_RS485)
+	if (uart && uart->enabled && CONFIG(UART_C_RS485))
 		pnp_raw_resource(uart, 0xf2, 0x12);
 
 	uart = dev_find_slot_pnp(SIO_PORT, NCT5104D_SP4);
-	if (uart && uart->enabled && CONFIG_UART_D_RS485)
+	if (uart && uart->enabled && CONFIG(UART_D_RS485))
 		pnp_raw_resource(uart, 0xf2, 0x12);
 }
 

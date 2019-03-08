@@ -249,7 +249,7 @@ uint8_t pc_keyboard_init(uint8_t probe_aux)
 	enum cb_err err;
 	uint8_t aux_dev_detected;
 
-	if (!CONFIG_DRIVERS_PS2_KEYBOARD)
+	if (!CONFIG(DRIVERS_PS2_KEYBOARD))
 		return 0;
 
 	if (acpi_is_wakeup_s3())

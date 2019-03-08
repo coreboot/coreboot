@@ -177,7 +177,7 @@ void main(void)
 
 	bootblock_mainboard_early_init();
 
-	if (CONFIG_BOOTBLOCK_CONSOLE) {
+	if (CONFIG(BOOTBLOCK_CONSOLE)) {
 		console_init();
 		exception_init();
 		printk(BIOS_INFO, "T210: Bootblock here\n");

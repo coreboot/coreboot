@@ -101,7 +101,7 @@ void sb800_cimx_config(AMDSBCFG *sb_config)
 #endif
 	/* LPC */
 	/* SuperIO hardware monitor register access */
-	sb_config->SioHwmPortEnable = CONFIG_SB_SUPERIO_HWM;
+	sb_config->SioHwmPortEnable = CONFIG(SB_SUPERIO_HWM);
 
 	/*
 	 * GPP. default configure only enable port0 with 4 lanes,

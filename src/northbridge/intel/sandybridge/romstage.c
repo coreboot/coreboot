@@ -67,7 +67,7 @@ void mainboard_romstage_entry(unsigned long bist)
 	mainboard_config_superio();
 
 	/* USB is initialized in MRC if MRC is used.  */
-	if (CONFIG_USE_NATIVE_RAMINIT) {
+	if (CONFIG(USE_NATIVE_RAMINIT)) {
 		early_usb_init(mainboard_usb_ports);
 	}
 

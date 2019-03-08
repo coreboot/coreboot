@@ -677,10 +677,10 @@ static void gma_ngi(struct device *const dev)
 	if (err == 0)
 		gfx_set_init_done(1);
 	/* Linux relies on VBT for panel info.  */
-	if (CONFIG_NORTHBRIDGE_INTEL_SUBTYPE_I945GM) {
+	if (CONFIG(NORTHBRIDGE_INTEL_SUBTYPE_I945GM)) {
 		generate_fake_intel_oprom(&conf->gfx, dev, "$VBT CALISTOGA");
 	}
-	if (CONFIG_NORTHBRIDGE_INTEL_SUBTYPE_I945GC) {
+	if (CONFIG(NORTHBRIDGE_INTEL_SUBTYPE_I945GC)) {
 		generate_fake_intel_oprom(&conf->gfx, dev, "$VBT LAKEPORT-G");
 	}
 }

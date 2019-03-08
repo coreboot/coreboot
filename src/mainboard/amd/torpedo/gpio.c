@@ -340,7 +340,7 @@ void gpioEarlyInit(void) {
 	//
 	// Enable/Disable OnBoard LAN
 	//
-		if (!CONFIG_ONBOARD_LAN)
+		if (!CONFIG(ONBOARD_LAN))
 		{ // 1 - DISABLED
 			RWMEM (GpioMmioAddr + SB_GPIO_REG197, AccWidthUint8, 0xBF, 0);      // LOM_POWER off
 			RWMEM (GpioMmioAddr + SB_GPIO_REG25, AccWidthUint8, 0xBF, 0);
@@ -358,7 +358,7 @@ void gpioEarlyInit(void) {
 	//
 	// Enable/Disable 1394
 	//
-		if (!CONFIG_ONBOARD_1394)
+		if (!CONFIG(ONBOARD_1394))
 		{ // 1 - DISABLED
 //			RWMEM (GpioMmioAddr + SB_GPIO_REG170, AccWidthUint8, 0xBF, 0);      // set GPIO_GATE_C to LOW
 			RWMEM (GpioMmioAddr + SB_GPIO_REG59, AccWidthUint8, 0xBF, 0);       // 1394 power off
@@ -387,7 +387,7 @@ void gpioEarlyInit(void) {
 //                     GPIO172 used as FCH_USB3.0PORT_EN# 0:ENABLE; 1:DISABLE
 //	if ((Amd_SystemConfiguration.XhciSwitch == 1) || (SystemConfiguration.amdExternalUSBController == 1)) {
 // disable Onboard NEC USB3.0 controller
-		if (!CONFIG_ONBOARD_USB30) {
+		if (!CONFIG(ONBOARD_USB30)) {
 			RWMEM (GpioMmioAddr + SB_GPIO_REG200, AccWidthUint8, 0xBF, 0);
 			RWMEM (GpioMmioAddr + SB_GPIO_REG26, AccWidthUint8, 0xBF, 0);
 			RWMEM (GpioMmioAddr + SB_GPIO_REG46, AccWidthUint8, 0xFF, BIT3);   // PULL_UP DISABLE
@@ -401,7 +401,7 @@ void gpioEarlyInit(void) {
 //    amdBlueTooth: CMOS, 0 - AUTO, 1 - DISABLE
 //          GPIO07: BT_ON, 0 - OFF, 1 - ON
 //
-	if (!CONFIG_ONBOARD_BLUETOOTH) {
+	if (!CONFIG(ONBOARD_BLUETOOTH)) {
 	//-	if (SystemConfiguration.amdBlueTooth == 1) {
 		RWMEM (GpioMmioAddr + SB_GPIO_REG07, AccWidthUint8, 0xBF, 0);
 	//-	}
@@ -412,7 +412,7 @@ void gpioEarlyInit(void) {
 //    amdWebCam: CMOS, 0 - AUTO, 1 - DISABLE
 //       GPIO34: WEBCAM_ON#, 0 - ON, 1 - OFF
 //
-	if (!CONFIG_ONBOARD_WEBCAM) {
+	if (!CONFIG(ONBOARD_WEBCAM)) {
 	//-	if (SystemConfiguration.amdWebCam == 1) {
 		RWMEM (GpioMmioAddr + SB_GPIO_REG34, AccWidthUint8, 0xBF, BIT6);
 	//-	}
@@ -423,7 +423,7 @@ void gpioEarlyInit(void) {
 //    amdTravisCtrl: CMOS, 0 - DISABLE, 1 - ENABLE
 //           GPIO66: TRAVIS_EN#, 0 - ENABLE, 1 - DISABLE
 //
-	if (!CONFIG_ONBOARD_TRAVIS) {
+	if (!CONFIG(ONBOARD_TRAVIS)) {
 	//-	if (SystemConfiguration.amdTravisCtrl == 0) {
 		RWMEM (GpioMmioAddr + SB_GPIO_REG66, AccWidthUint8, 0xBF, BIT6);
 	//-	}
@@ -432,7 +432,7 @@ void gpioEarlyInit(void) {
 //
 // Disable Light Sensor if needed
 //
-	if (CONFIG_ONBOARD_LIGHTSENSOR) {
+	if (CONFIG(ONBOARD_LIGHTSENSOR)) {
 	//-    if (SystemConfiguration.amdLightSensor == 1) {
 		RWMEM (IoMuxMmioAddr + SB_GEVENT_REG12, AccWidthUint8, 0x00, 0x1);
 	//-    }

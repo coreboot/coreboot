@@ -28,7 +28,7 @@ SECTIONS
 	 * boundary anyway, so no pad byte appears between _rom and _start.
 	 */
 	.bogus ROMLOC_MIN : {
-		. = CONFIG_SIPI_VECTOR_IN_ROM ?	ALIGN(4096) : ALIGN(4);
+		. = CONFIG(SIPI_VECTOR_IN_ROM) ? ALIGN(4096) : ALIGN(4);
 		ROMLOC = .;
 	} >rom = 0xff
 
@@ -50,10 +50,10 @@ SECTIONS
 	 * address gets applied.
 	 */
 	ROMLOC_MIN = 0xffffff00 - (_erom - _rom + 16) -
-		(CONFIG_SIPI_VECTOR_IN_ROM ? 4096 : 0);
+		(CONFIG(SIPI_VECTOR_IN_ROM) ? 4096 : 0);
 
 	/* Post-check proper SIPI vector. */
-	_bogus = ASSERT(!CONFIG_SIPI_VECTOR_IN_ROM || (ap_sipi_vector_in_rom == 0xff),
+	_bogus = ASSERT(!CONFIG(SIPI_VECTOR_IN_ROM) || (ap_sipi_vector_in_rom == 0xff),
 		"Address mismatch on AP_SIPI_VECTOR");
 
 	/DISCARD/ : {

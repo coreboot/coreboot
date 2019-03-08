@@ -64,7 +64,7 @@ void main(void)
 	pinmux_set_config(PINMUX_UART2_RTS_N_INDEX,
 			  PINMUX_UART2_RTS_N_FUNC_UB3);
 
-	if (CONFIG_BOOTBLOCK_CONSOLE) {
+	if (CONFIG(BOOTBLOCK_CONSOLE)) {
 		console_init();
 		exception_init();
 	}

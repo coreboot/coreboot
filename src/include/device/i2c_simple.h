@@ -54,7 +54,7 @@ int i2c_write_field(unsigned int bus, uint8_t slave, uint8_t reg, uint8_t data,
 static inline int i2c_transfer(unsigned int bus, struct i2c_msg *segments,
 			       int count)
 {
-	if (CONFIG_SOFTWARE_I2C)
+	if (CONFIG(SOFTWARE_I2C))
 		if (bus < SOFTWARE_I2C_MAX_BUS && software_i2c[bus])
 			return software_i2c_transfer(bus, segments, count);
 

@@ -1084,7 +1084,7 @@ int init_fidvid_bsp(u32 bsp_apicid, u32 nodes)
 		init_fidvid_bsp_stage1(ap_apicidx.apicid[i], &fv);
 	}
 #else
-	for_each_ap(bsp_apicid, CONFIG_SET_FIDVID_CORE0_ONLY, -1, init_fidvid_bsp_stage1, &fv);
+	for_each_ap(bsp_apicid, CONFIG(SET_FIDVID_CORE0_ONLY), -1, init_fidvid_bsp_stage1, &fv);
 #endif
 
 	print_debug_fv("common_fid = ", fv.common_fid);

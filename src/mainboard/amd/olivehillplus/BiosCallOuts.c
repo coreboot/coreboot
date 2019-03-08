@@ -253,7 +253,7 @@ static AGESA_STATUS Fch_Oem_config(UINT32 Func, UINTN FchData, VOID *ConfigPtr)
 		FCH_RESET_DATA_BLOCK *FchParams =  (FCH_RESET_DATA_BLOCK *) FchData;
 		printk(BIOS_DEBUG, "Fch OEM config in INIT RESET ");
 		//FchParams_reset->EcChannel0 = TRUE; /* logical devicd 3 */
-		FchParams->LegacyFree = CONFIG_HUDSON_LEGACY_FREE;
+		FchParams->LegacyFree = CONFIG(HUDSON_LEGACY_FREE);
 		FchParams->FchReset.SataEnable = hudson_sata_enable();
 		FchParams->FchReset.IdeEnable = hudson_ide_enable();
 		FchParams->FchReset.Xhci0Enable = CONFIG(HUDSON_XHCI_ENABLE);

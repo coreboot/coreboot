@@ -74,7 +74,7 @@ u32 get_apicid_base(u32 ioapic_num)
 	u32 siblings;
 	u32 nb_cfg_54;
 
-	u32 disable_siblings = !CONFIG_LOGICAL_CPUS;
+	u32 disable_siblings = !CONFIG(LOGICAL_CPUS);
 
 	get_option(&disable_siblings, "multi_core");
 

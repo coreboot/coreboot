@@ -284,7 +284,7 @@ static void sdram_detect_errors(struct sys_info *sysinfo)
 	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0xa2, reg8);
 
 	/* clear self refresh status if check is disabled or not a resume */
-	if (!CONFIG_CHECK_SLFRCS_ON_RESUME
+	if (!CONFIG(CHECK_SLFRCS_ON_RESUME)
 			|| sysinfo->boot_path != BOOT_PATH_RESUME) {
 		MCHBAR8(SLFRCS) |= 3;
 	} else {

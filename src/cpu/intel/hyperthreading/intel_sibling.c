@@ -24,7 +24,7 @@
 #endif
 
 static int first_time = 1;
-static int disable_siblings = !CONFIG_LOGICAL_CPUS;
+static int disable_siblings = !CONFIG(LOGICAL_CPUS);
 
 /* Return true if running thread does not have the smallest lapic ID
  * within a CPU core.

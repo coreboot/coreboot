@@ -16,8 +16,6 @@
 #ifndef SOUTHBRIDGE_INTEL_I82801GX_I82801GX_H
 #define SOUTHBRIDGE_INTEL_I82801GX_I82801GX_H
 
-#include <arch/acpi.h>
-
 /*
  * It does not matter where we put the SMBus I/O base, as long as we
  * keep it consistent and don't interfere with other devices.  Stage2

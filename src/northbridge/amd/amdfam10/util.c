@@ -41,13 +41,6 @@
 #define CONF_ROUTE_START	0xe0
 #define CONF_ROUTE_END		0xec
 
-#define PCI_IO_BASE0		0xc0
-#define PCI_IO_BASE1		0xc8
-#define PCI_IO_BASE2		0xd0
-#define PCI_IO_BASE3		0xd8
-#define PCI_IO_BASE_VGA_EN	(1 << 4)
-#define PCI_IO_BASE_NO_ISA	(1 << 5)
-
 #define BITS(r, shift, mask) (((r>>shift)&mask))
 
 /**

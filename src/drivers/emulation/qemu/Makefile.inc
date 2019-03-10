@@ -1,4 +1,6 @@
+bootblock-$(CONFIG_CONSOLE_QEMU_DEBUGCON) += qemu_debugcon.c
 romstage-$(CONFIG_CONSOLE_QEMU_DEBUGCON) += qemu_debugcon.c
+postcar-$(CONFIG_CONSOLE_QEMU_DEBUGCON) += qemu_debugcon.c
 ramstage-$(CONFIG_CONSOLE_QEMU_DEBUGCON) += qemu_debugcon.c
 
 ramstage-$(CONFIG_DRIVERS_EMULATION_QEMU_BOCHS) += bochs.c

@@ -14,65 +14,17 @@
 #include <arch/io.h>
 #include <device/pci.h>
 #include <device/pci_ops.h>
+#include <arch/pci_io_cfg.h>
+
 /*
  * Functions for accessing PCI configuration space with type 1 accesses
  */
 
-#if !CONFIG(PCI_IO_CFG_EXT)
-#define CONF_CMD(dev, reg)	(0x80000000 | ((dev)->bus->secondary << 16) | \
-					((dev)->path.pci.devfn << 8) | (reg & ~3))
-#else
-#define CONF_CMD(dev, reg)	(0x80000000 | ((dev)->bus->secondary << 16) | \
-					((dev)->path.pci.devfn << 8) | ((reg & 0xff) & ~3) |\
-					((reg & 0xf00)<<16))
-#endif
-
-static uint8_t pci_conf1_read_config8(const struct device *dev, uint16_t reg)
-{
-	outl(CONF_CMD(dev, reg), 0xCF8);
-	return inb(0xCFC + (reg & 3));
-}
-
-static uint16_t pci_conf1_read_config16(const struct device *dev, uint16_t reg)
-{
-	outl(CONF_CMD(dev, reg), 0xCF8);
-	return inw(0xCFC + (reg & 2));
-}
-
-static uint32_t pci_conf1_read_config32(const struct device *dev, uint16_t reg)
-{
-	outl(CONF_CMD(dev, reg), 0xCF8);
-	return inl(0xCFC);
-}
-
-static void pci_conf1_write_config8(const struct device *dev, uint16_t reg,
-				    uint8_t value)
-{
-	outl(CONF_CMD(dev, reg), 0xCF8);
-	outb(value, 0xCFC + (reg & 3));
-}
-
-static void pci_conf1_write_config16(const struct device *dev, uint16_t reg,
-				     uint16_t value)
-{
-	outl(CONF_CMD(dev, reg), 0xCF8);
-	outw(value, 0xCFC + (reg & 2));
-}
-
-static void pci_conf1_write_config32(const struct device *dev, uint16_t reg,
-				     uint32_t value)
-{
-	outl(CONF_CMD(dev, reg), 0xCF8);
-	outl(value, 0xCFC);
-}
-
-#undef CONF_CMD
-
 const struct pci_bus_operations pci_cf8_conf1 = {
-	.read8 = pci_conf1_read_config8,
-	.read16 = pci_conf1_read_config16,
-	.read32 = pci_conf1_read_config32,
-	.write8 = pci_conf1_write_config8,
-	.write16 = pci_conf1_write_config16,
-	.write32 = pci_conf1_write_config32,
+	.read8 = pci_io_read_config8,
+	.read16 = pci_io_read_config16,
+	.read32 = pci_io_read_config32,
+	.write8 = pci_io_write_config8,
+	.write16 = pci_io_write_config16,
+	.write32 = pci_io_write_config32,
 };

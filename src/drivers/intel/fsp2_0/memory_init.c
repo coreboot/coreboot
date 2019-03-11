@@ -33,6 +33,11 @@
 #include <vb2_api.h>
 #include <fsp/memory_init.h>
 
+/* TPM MRC hash functionality depends on vboot starting before memory init. */
+_Static_assert(!CONFIG(FSP2_0_USES_TPM_MRC_HASH) ||
+	       CONFIG(VBOOT_STARTS_IN_BOOTBLOCK),
+	       "for TPM MRC hash functionality, vboot must start in bootblock");
+
 static void save_memory_training_data(bool s3wake, uint32_t fsp_version)
 {
 	size_t  mrc_data_size;
@@ -92,14 +97,6 @@ static void do_fsp_post_memory_init(bool s3wake, uint32_t fsp_version)
 
 	/* Create romstage handof information */
 	romstage_handoff_init(s3wake);
-
-	/*
-	 * Initialize the TPM, unless the TPM was already initialized
-	 * in verstage and used to verify romstage.
-	 */
-	if ((CONFIG(TPM1) || CONFIG(TPM2)) &&
-	    !CONFIG(VBOOT_STARTS_IN_BOOTBLOCK))
-		tpm_setup(s3wake);
 }
 
 static void fsp_fill_mrc_cache(FSPM_ARCH_UPD *arch_upd, uint32_t fsp_version)

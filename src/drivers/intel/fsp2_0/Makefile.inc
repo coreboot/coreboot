@@ -82,4 +82,7 @@ ifneq ($(call strip_quotes,$(CONFIG_FSP_HEADER_PATH)),)
 CPPFLAGS_common+=-I$(CONFIG_FSP_HEADER_PATH)
 endif
 
+# Include PPI directory of CONFIG_FSP_PEIM_TO_PEIM_INTERFACE is enable
+subdirs-$(CONFIG_FSP_PEIM_TO_PEIM_INTERFACE) += ppi
+
 endif

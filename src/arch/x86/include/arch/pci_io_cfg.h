@@ -34,7 +34,7 @@ uint8_t pci_io_read_config8(pci_devfn_t dev, uint16_t reg)
 {
 	uint32_t addr = pci_io_encode_addr(dev, reg);
 	outl(0x80000000 | (addr & ~3), 0xCF8);
-	return inb(0xCFC + (addr & 3));
+	return inb(0xCFC + (reg & 3));
 }
 
 static __always_inline
@@ -42,7 +42,7 @@ uint16_t pci_io_read_config16(pci_devfn_t dev, uint16_t reg)
 {
 	uint32_t addr = pci_io_encode_addr(dev, reg);
 	outl(0x80000000 | (addr & ~3), 0xCF8);
-	return inw(0xCFC + (addr & 2));
+	return inw(0xCFC + (reg & 2));
 }
 
 static __always_inline
@@ -58,7 +58,7 @@ void pci_io_write_config8(pci_devfn_t dev, uint16_t reg, uint8_t value)
 {
 	uint32_t addr = pci_io_encode_addr(dev, reg);
 	outl(0x80000000 | (addr & ~3), 0xCF8);
-	outb(value, 0xCFC + (addr & 3));
+	outb(value, 0xCFC + (reg & 3));
 }
 
 static __always_inline
@@ -66,7 +66,7 @@ void pci_io_write_config16(pci_devfn_t dev, uint16_t reg, uint16_t value)
 {
 	uint32_t addr = pci_io_encode_addr(dev, reg);
 	outl(0x80000000 | (addr & ~3), 0xCF8);
-	outw(value, 0xCFC + (addr & 2));
+	outw(value, 0xCFC + (reg & 2));
 }
 
 static __always_inline

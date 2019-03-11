@@ -55,83 +55,83 @@ static __always_inline void pcidev_assert(const struct device *dev)
 }
 
 static __always_inline
-u8 pci_read_config8(const struct device *dev, u16 where)
+u8 pci_read_config8(const struct device *dev, u16 reg)
 {
 	pcidev_assert(dev);
-	return pci_bus_ops()->read8(dev, where);
+	return pci_bus_ops()->read8(dev, reg);
 }
 
 static __always_inline
-u16 pci_read_config16(const struct device *dev, u16 where)
+u16 pci_read_config16(const struct device *dev, u16 reg)
 {
 	pcidev_assert(dev);
-	return pci_bus_ops()->read16(dev, where);
+	return pci_bus_ops()->read16(dev, reg);
 }
 
 static __always_inline
-u32 pci_read_config32(const struct device *dev, u16 where)
+u32 pci_read_config32(const struct device *dev, u16 reg)
 {
 	pcidev_assert(dev);
-	return pci_bus_ops()->read32(dev, where);
+	return pci_bus_ops()->read32(dev, reg);
 }
 
 static __always_inline
-void pci_write_config8(const struct device *dev, u16 where, u8 val)
+void pci_write_config8(const struct device *dev, u16 reg, u8 val)
 {
 	pcidev_assert(dev);
-	pci_bus_ops()->write8(dev, where, val);
+	pci_bus_ops()->write8(dev, reg, val);
 }
 
 static __always_inline
-void pci_write_config16(const struct device *dev, u16 where, u16 val)
+void pci_write_config16(const struct device *dev, u16 reg, u16 val)
 {
 	pcidev_assert(dev);
-	pci_bus_ops()->write16(dev, where, val);
+	pci_bus_ops()->write16(dev, reg, val);
 }
 
 static __always_inline
-void pci_write_config32(const struct device *dev, u16 where, u32 val)
+void pci_write_config32(const struct device *dev, u16 reg, u32 val)
 {
 	pcidev_assert(dev);
-	pci_bus_ops()->write32(dev, where, val);
+	pci_bus_ops()->write32(dev, reg, val);
 }
 
 #endif
 
 #ifdef __SIMPLE_DEVICE__
 static __always_inline
-void pci_or_config8(pci_devfn_t dev, u16 where, u8 ormask)
+void pci_or_config8(pci_devfn_t dev, u16 reg, u8 ormask)
 #else
 static __always_inline
-void pci_or_config8(const struct device *dev, u16 where, u8 ormask)
+void pci_or_config8(const struct device *dev, u16 reg, u8 ormask)
 #endif
 {
-	u8 value = pci_read_config8(dev, where);
-	pci_write_config8(dev, where, value | ormask);
+	u8 value = pci_read_config8(dev, reg);
+	pci_write_config8(dev, reg, value | ormask);
 }
 
 #ifdef __SIMPLE_DEVICE__
 static __always_inline
-void pci_or_config16(pci_devfn_t dev, u16 where, u16 ormask)
+void pci_or_config16(pci_devfn_t dev, u16 reg, u16 ormask)
 #else
 static __always_inline
-void pci_or_config16(const struct device *dev, u16 where, u16 ormask)
+void pci_or_config16(const struct device *dev, u16 reg, u16 ormask)
 #endif
 {
-	u16 value = pci_read_config16(dev, where);
-	pci_write_config16(dev, where, value | ormask);
+	u16 value = pci_read_config16(dev, reg);
+	pci_write_config16(dev, reg, value | ormask);
 }
 
 #ifdef __SIMPLE_DEVICE__
 static __always_inline
-void pci_or_config32(pci_devfn_t dev, u16 where, u32 ormask)
+void pci_or_config32(pci_devfn_t dev, u16 reg, u32 ormask)
 #else
 static __always_inline
-void pci_or_config32(const struct device *dev, u16 where, u32 ormask)
+void pci_or_config32(const struct device *dev, u16 reg, u32 ormask)
 #endif
 {
-	u32 value = pci_read_config32(dev, where);
-	pci_write_config32(dev, where, value | ormask);
+	u32 value = pci_read_config32(dev, reg);
+	pci_write_config32(dev, reg, value | ormask);
 }
 
 #ifdef __SIMPLE_DEVICE__

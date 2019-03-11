@@ -19,60 +19,60 @@
 #include <device/pci_type.h>
 
 static __always_inline
-uint32_t pci_io_encode_addr(pci_devfn_t dev, uint16_t where)
+uint32_t pci_io_encode_addr(pci_devfn_t dev, uint16_t reg)
 {
 	if (CONFIG(PCI_IO_CFG_EXT)) {
 		// seg == 0
-		return dev >> 4 | (where & 0xff) | ((where & 0xf00) << 16);
+		return dev >> 4 | (reg & 0xff) | ((reg & 0xf00) << 16);
 	} else {
-		return dev >> 4 | where;
+		return dev >> 4 | reg;
 	}
 }
 
 static __always_inline
-uint8_t pci_io_read_config8(pci_devfn_t dev, uint16_t where)
+uint8_t pci_io_read_config8(pci_devfn_t dev, uint16_t reg)
 {
-	uint32_t addr = pci_io_encode_addr(dev, where);
+	uint32_t addr = pci_io_encode_addr(dev, reg);
 	outl(0x80000000 | (addr & ~3), 0xCF8);
 	return inb(0xCFC + (addr & 3));
 }
 
 static __always_inline
-uint16_t pci_io_read_config16(pci_devfn_t dev, uint16_t where)
+uint16_t pci_io_read_config16(pci_devfn_t dev, uint16_t reg)
 {
-	uint32_t addr = pci_io_encode_addr(dev, where);
+	uint32_t addr = pci_io_encode_addr(dev, reg);
 	outl(0x80000000 | (addr & ~3), 0xCF8);
 	return inw(0xCFC + (addr & 2));
 }
 
 static __always_inline
-uint32_t pci_io_read_config32(pci_devfn_t dev, uint16_t where)
+uint32_t pci_io_read_config32(pci_devfn_t dev, uint16_t reg)
 {
-	uint32_t addr = pci_io_encode_addr(dev, where);
+	uint32_t addr = pci_io_encode_addr(dev, reg);
 	outl(0x80000000 | (addr & ~3), 0xCF8);
 	return inl(0xCFC);
 }
 
 static __always_inline
-void pci_io_write_config8(pci_devfn_t dev, uint16_t where, uint8_t value)
+void pci_io_write_config8(pci_devfn_t dev, uint16_t reg, uint8_t value)
 {
-	uint32_t addr = pci_io_encode_addr(dev, where);
+	uint32_t addr = pci_io_encode_addr(dev, reg);
 	outl(0x80000000 | (addr & ~3), 0xCF8);
 	outb(value, 0xCFC + (addr & 3));
 }
 
 static __always_inline
-void pci_io_write_config16(pci_devfn_t dev, uint16_t where, uint16_t value)
+void pci_io_write_config16(pci_devfn_t dev, uint16_t reg, uint16_t value)
 {
-	uint32_t addr = pci_io_encode_addr(dev, where);
+	uint32_t addr = pci_io_encode_addr(dev, reg);
 	outl(0x80000000 | (addr & ~3), 0xCF8);
 	outw(value, 0xCFC + (addr & 2));
 }
 
 static __always_inline
-void pci_io_write_config32(pci_devfn_t dev, uint16_t where, uint32_t value)
+void pci_io_write_config32(pci_devfn_t dev, uint16_t reg, uint32_t value)
 {
-	uint32_t addr = pci_io_encode_addr(dev, where);
+	uint32_t addr = pci_io_encode_addr(dev, reg);
 	outl(0x80000000 | (addr & ~3), 0xCF8);
 	outl(value, 0xCFC);
 }
@@ -85,39 +85,39 @@ void pci_io_write_config32(pci_devfn_t dev, uint16_t where, uint32_t value)
  */
 
 static __always_inline
-uint8_t pci_s_read_config8(pci_devfn_t dev, uint16_t where)
+uint8_t pci_s_read_config8(pci_devfn_t dev, uint16_t reg)
 {
-	return pci_io_read_config8(dev, where);
+	return pci_io_read_config8(dev, reg);
 }
 
 static __always_inline
-uint16_t pci_s_read_config16(pci_devfn_t dev, uint16_t where)
+uint16_t pci_s_read_config16(pci_devfn_t dev, uint16_t reg)
 {
-	return pci_io_read_config16(dev, where);
+	return pci_io_read_config16(dev, reg);
 }
 
 static __always_inline
-uint32_t pci_s_read_config32(pci_devfn_t dev, uint16_t where)
+uint32_t pci_s_read_config32(pci_devfn_t dev, uint16_t reg)
 {
-	return pci_io_read_config32(dev, where);
+	return pci_io_read_config32(dev, reg);
 }
 
 static __always_inline
-void pci_s_write_config8(pci_devfn_t dev, uint16_t where, uint8_t value)
+void pci_s_write_config8(pci_devfn_t dev, uint16_t reg, uint8_t value)
 {
-	pci_io_write_config8(dev, where, value);
+	pci_io_write_config8(dev, reg, value);
 }
 
 static __always_inline
-void pci_s_write_config16(pci_devfn_t dev, uint16_t where, uint16_t value)
+void pci_s_write_config16(pci_devfn_t dev, uint16_t reg, uint16_t value)
 {
-	pci_io_write_config16(dev, where, value);
+	pci_io_write_config16(dev, reg, value);
 }
 
 static __always_inline
-void pci_s_write_config32(pci_devfn_t dev, uint16_t where, uint32_t value)
+void pci_s_write_config32(pci_devfn_t dev, uint16_t reg, uint32_t value)
 {
-	pci_io_write_config32(dev, where, value);
+	pci_io_write_config32(dev, reg, value);
 }
 
 #endif

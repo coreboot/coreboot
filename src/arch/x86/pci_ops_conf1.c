@@ -19,50 +19,50 @@
  */
 
 #if !CONFIG(PCI_IO_CFG_EXT)
-#define CONF_CMD(dev, where)	(0x80000000 | ((dev)->bus->secondary << 16) | \
-					((dev)->path.pci.devfn << 8) | (where & ~3))
+#define CONF_CMD(dev, reg)	(0x80000000 | ((dev)->bus->secondary << 16) | \
+					((dev)->path.pci.devfn << 8) | (reg & ~3))
 #else
-#define CONF_CMD(dev, where)	(0x80000000 | ((dev)->bus->secondary << 16) | \
-					((dev)->path.pci.devfn << 8) | ((where & 0xff) & ~3) |\
-					((where & 0xf00)<<16))
+#define CONF_CMD(dev, reg)	(0x80000000 | ((dev)->bus->secondary << 16) | \
+					((dev)->path.pci.devfn << 8) | ((reg & 0xff) & ~3) |\
+					((reg & 0xf00)<<16))
 #endif
 
-static uint8_t pci_conf1_read_config8(const struct device *dev, uint16_t where)
+static uint8_t pci_conf1_read_config8(const struct device *dev, uint16_t reg)
 {
-	outl(CONF_CMD(dev, where), 0xCF8);
-	return inb(0xCFC + (where & 3));
+	outl(CONF_CMD(dev, reg), 0xCF8);
+	return inb(0xCFC + (reg & 3));
 }
 
-static uint16_t pci_conf1_read_config16(const struct device *dev, uint16_t where)
+static uint16_t pci_conf1_read_config16(const struct device *dev, uint16_t reg)
 {
-	outl(CONF_CMD(dev, where), 0xCF8);
-	return inw(0xCFC + (where & 2));
+	outl(CONF_CMD(dev, reg), 0xCF8);
+	return inw(0xCFC + (reg & 2));
 }
 
-static uint32_t pci_conf1_read_config32(const struct device *dev, uint16_t where)
+static uint32_t pci_conf1_read_config32(const struct device *dev, uint16_t reg)
 {
-	outl(CONF_CMD(dev, where), 0xCF8);
+	outl(CONF_CMD(dev, reg), 0xCF8);
 	return inl(0xCFC);
 }
 
-static void pci_conf1_write_config8(const struct device *dev, uint16_t where,
+static void pci_conf1_write_config8(const struct device *dev, uint16_t reg,
 				    uint8_t value)
 {
-	outl(CONF_CMD(dev, where), 0xCF8);
-	outb(value, 0xCFC + (where & 3));
+	outl(CONF_CMD(dev, reg), 0xCF8);
+	outb(value, 0xCFC + (reg & 3));
 }
 
-static void pci_conf1_write_config16(const struct device *dev, uint16_t where,
+static void pci_conf1_write_config16(const struct device *dev, uint16_t reg,
 				     uint16_t value)
 {
-	outl(CONF_CMD(dev, where), 0xCF8);
-	outw(value, 0xCFC + (where & 2));
+	outl(CONF_CMD(dev, reg), 0xCF8);
+	outw(value, 0xCFC + (reg & 2));
 }
 
-static void pci_conf1_write_config32(const struct device *dev, uint16_t where,
+static void pci_conf1_write_config32(const struct device *dev, uint16_t reg,
 				     uint32_t value)
 {
-	outl(CONF_CMD(dev, where), 0xCF8);
+	outl(CONF_CMD(dev, reg), 0xCF8);
 	outl(value, 0xCFC);
 }
 

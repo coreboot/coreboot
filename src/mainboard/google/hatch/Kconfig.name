@@ -3,7 +3,9 @@ comment "Hatch"
 config BOARD_GOOGLE_HATCH
 	bool "->  Hatch"
 	select BOARD_GOOGLE_BASEBOARD_HATCH
+	select SOC_INTEL_COMETLAKE
 
 config BOARD_GOOGLE_HATCH_WHL
 	bool "->  Hatch_whl"
 	select BOARD_GOOGLE_BASEBOARD_HATCH
+	select SOC_INTEL_WHISKEYLAKE

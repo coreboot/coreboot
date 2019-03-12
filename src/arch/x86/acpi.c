@@ -163,7 +163,8 @@ unsigned long acpi_create_madt_lapics(unsigned long current)
 			break;
 		apic_ids[num_cpus++] = cpu->path.apic.apic_id;
 	}
-	bubblesort(apic_ids, num_cpus, NUM_ASCENDING);
+	if (num_cpus > 1)
+		bubblesort(apic_ids, num_cpus, NUM_ASCENDING);
 	for (index = 0; index < num_cpus; index++) {
 		current += acpi_create_madt_lapic((acpi_madt_lapic_t *)current,
 				index, apic_ids[index]);

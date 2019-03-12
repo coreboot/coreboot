@@ -23,6 +23,10 @@ void bubblesort(int *v, size_t num_entries, sort_order_t order)
 	size_t i, j;
 	int swapped;
 
+	/* Make sure there are at least two entries to sort. */
+	if (num_entries < 2)
+		return;
+
 	for (j = 0; j < num_entries - 1; j++) {
 		swapped = 0;
 		for (i = 0; i < num_entries - j - 1; i++) {

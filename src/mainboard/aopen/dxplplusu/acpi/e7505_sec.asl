@@ -13,6 +13,8 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/ioapic.h>
+
 Name (PBRS, ResourceTemplate ()
 {
 	WordBusNumber (ResourceProducer, MinFixed, MaxFixed, PosDecode,

@@ -13,9 +13,8 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/ioapic.h>
-
 #include <arch/acpi.h>
+
 DefinitionBlock(
 	"dsdt.aml",
 	"DSDT",

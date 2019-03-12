@@ -13,6 +13,8 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/ioapic.h>
+
 Device (USB0)
 {
 	Name (_ADR, 0x001D0000)

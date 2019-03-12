@@ -1144,17 +1144,22 @@ typedef struct {
 **/
   UINT8                       SmbusEnable;
 
-/** Offset 0x0251 - PCH HPET Enabled
-  Enable/disable PCH HPET.
-  $EN_DIS
+/** Offset 0x0251 - Platform Debug Consent
+  To 'opt-in' for debug, please select 'Enabled' with the desired debug probe type.
+  Enabling this BIOS option may alter the default value of other debug-related BIOS
+  options. Note: DCI OOB (aka BSSB) uses CCA probe; [DCI OOB+DbC] and [USB2 DbC]
+  have the same setting
+  0:Disabled, 1:Enabled (DCI OOB+[DbC]), 2:Enabled (DCI OOB), 3:Enabled (USB3 DbC),
+  4:Enabled (XDP/MIPI60), 5:Enabled (USB2 DbC)
 **/
-  UINT8                       PchHpetEnable;
+  UINT8                       PlatformDebugConsent;
 
-/** Offset 0x0252 - PCH HPET BDF valid
-  Whether the BDF value is valid. 0: Disable; 1: Enable.
-  $EN_DIS
+/** Offset 0x0252 - USB3 Type-C UFP2DFP Kernel/Platform Debug Support
+  This BIOS option enables kernel and platform debug for USB3 interface over a UFP
+  Type-C receptacle, select 'No Change' will do nothing to UFP2DFP setting.
+  0:Disabled, 1:Enabled, 2:No Change
 **/
-  UINT8                       PchHpetBdfValid;
+  UINT8                       DciUsb3TypecUfpDbg;
 
 /** Offset 0x0253 - PCH Trace Hub Mode
   Select 'Host Debugger' if Trace Hub is used with host debugger tool or 'Target Debugger'
@@ -1163,1061 +1168,1052 @@ typedef struct {
 **/
   UINT8                       PchTraceHubMode;
 
-/** Offset 0x0254 - Enable Intel HD Audio (Azalia)
+/** Offset 0x0254 - PCH Trace Hub Memory Region 0 buffer Size
+  Specify size of Pch trace memory region 0 buffer, the size can be 0, 1MB, 8MB, 64MB,
+  128MB, 256MB, 512MB. Note : Limitation of total buffer size (PCH + CPU) is 512MB.
+  0:0, 1:1MB, 2:8MB, 3:64MB, 4:128MB, 5:256MB, 6:512MB
+**/
+  UINT8                       PchTraceHubMemReg0Size;
+
+/** Offset 0x0255 - PCH Trace Hub Memory Region 1 buffer Size
+  Specify size of Pch trace memory region 1 buffer, the size can be 0, 1MB, 8MB, 64MB,
+  128MB, 256MB, 512MB. Note : Limitation of total buffer size (PCH + CPU) is 512MB.
+  0:0, 1:1MB, 2:8MB, 3:64MB, 4:128MB, 5:256MB, 6:512MB
+**/
+  UINT8                       PchTraceHubMemReg1Size;
+
+/** Offset 0x0256 - Enable Intel HD Audio (Azalia)
   0: Disable, 1: Enable (Default) Azalia controller
   $EN_DIS
 **/
   UINT8                       PchHdaEnable;
 
-/** Offset 0x0255 - Enable PCH ISH Controller
+/** Offset 0x0257 - Enable PCH ISH Controller
   0: Disable, 1: Enable (Default) ISH Controller
   $EN_DIS
 **/
   UINT8                       PchIshEnable;
 
-/** Offset 0x0256
-**/
-  UINT8                       UnusedUpdSpace7[2];
-
-/** Offset 0x0258 - The HPET Base Address
-  The HPET base address. Default is 0xFED00000.
-**/
-  UINT32                      PchHpetBase;
-
-/** Offset 0x025C - PCH HPET Bus Number
-  Bus Number HPETn used as Requestor / Completer ID. Default is 0xF0.
-**/
-  UINT8                       PchHpetBusNumber;
-
-/** Offset 0x025D - PCH HPET Device Number
-  Device Number HPETn used as Requestor / Completer ID. Default is 0x1F.
-**/
-  UINT8                       PchHpetDeviceNumber;
-
-/** Offset 0x025E - PCH HPET Function Number
-  Function Number HPETn used as Requestor / Completer ID. Default is 0x00.
-**/
-  UINT8                       PchHpetFunctionNumber;
-
-/** Offset 0x025F - Enable PCH HSIO PCIE Rx Set Ctle
+/** Offset 0x0258 - Enable PCH HSIO PCIE Rx Set Ctle
   Enable PCH PCIe Gen 3 Set CTLE Value.
 **/
   UINT8                       PchPcieHsioRxSetCtleEnable[24];
 
-/** Offset 0x0277 - PCH HSIO PCIE Rx Set Ctle Value
+/** Offset 0x0270 - PCH HSIO PCIE Rx Set Ctle Value
   PCH PCIe Gen 3 Set CTLE Value.
 **/
   UINT8                       PchPcieHsioRxSetCtle[24];
 
-/** Offset 0x028F - Enble PCH HSIO PCIE TX Gen 1 Downscale Amplitude Adjustment value override
+/** Offset 0x0288 - Enble PCH HSIO PCIE TX Gen 1 Downscale Amplitude Adjustment value override
   0: Disable; 1: Enable.
 **/
   UINT8                       PchPcieHsioTxGen1DownscaleAmpEnable[24];
 
-/** Offset 0x02A7 - PCH HSIO PCIE Gen 2 TX Output Downscale Amplitude Adjustment value
+/** Offset 0x02A0 - PCH HSIO PCIE Gen 2 TX Output Downscale Amplitude Adjustment value
   PCH PCIe Gen 2 TX Output Downscale Amplitude Adjustment value.
 **/
   UINT8                       PchPcieHsioTxGen1DownscaleAmp[24];
 
-/** Offset 0x02BF - Enable PCH HSIO PCIE TX Gen 2 Downscale Amplitude Adjustment value override
+/** Offset 0x02B8 - Enable PCH HSIO PCIE TX Gen 2 Downscale Amplitude Adjustment value override
   0: Disable; 1: Enable.
 **/
   UINT8                       PchPcieHsioTxGen2DownscaleAmpEnable[24];
 
-/** Offset 0x02D7 - PCH HSIO PCIE Gen 2 TX Output Downscale Amplitude Adjustment value
+/** Offset 0x02D0 - PCH HSIO PCIE Gen 2 TX Output Downscale Amplitude Adjustment value
   PCH PCIe Gen 2 TX Output Downscale Amplitude Adjustment value.
 **/
   UINT8                       PchPcieHsioTxGen2DownscaleAmp[24];
 
-/** Offset 0x02EF - Enable PCH HSIO PCIE TX Gen 3 Downscale Amplitude Adjustment value override
+/** Offset 0x02E8 - Enable PCH HSIO PCIE TX Gen 3 Downscale Amplitude Adjustment value override
   0: Disable; 1: Enable.
 **/
   UINT8                       PchPcieHsioTxGen3DownscaleAmpEnable[24];
 
-/** Offset 0x0307 - PCH HSIO PCIE Gen 3 TX Output Downscale Amplitude Adjustment value
+/** Offset 0x0300 - PCH HSIO PCIE Gen 3 TX Output Downscale Amplitude Adjustment value
   PCH PCIe Gen 3 TX Output Downscale Amplitude Adjustment value.
 **/
   UINT8                       PchPcieHsioTxGen3DownscaleAmp[24];
 
-/** Offset 0x031F - Enable PCH HSIO PCIE Gen 1 TX Output De-Emphasis Adjustment Setting value override
+/** Offset 0x0318 - Enable PCH HSIO PCIE Gen 1 TX Output De-Emphasis Adjustment Setting value override
   0: Disable; 1: Enable.
 **/
   UINT8                       PchPcieHsioTxGen1DeEmphEnable[24];
 
-/** Offset 0x0337 - PCH HSIO PCIE Gen 1 TX Output De-Emphasis Adjustment value
+/** Offset 0x0330 - PCH HSIO PCIE Gen 1 TX Output De-Emphasis Adjustment value
   PCH PCIe Gen 1 TX Output De-Emphasis Adjustment Setting.
 **/
   UINT8                       PchPcieHsioTxGen1DeEmph[24];
 
-/** Offset 0x034F - Enable PCH HSIO PCIE Gen 2 TX Output -3.5dB De-Emphasis Adjustment Setting value override
+/** Offset 0x0348 - Enable PCH HSIO PCIE Gen 2 TX Output -3.5dB De-Emphasis Adjustment Setting value override
   0: Disable; 1: Enable.
 **/
   UINT8                       PchPcieHsioTxGen2DeEmph3p5Enable[24];
 
-/** Offset 0x0367 - PCH HSIO PCIE Gen 2 TX Output -3.5dB De-Emphasis Adjustment value
+/** Offset 0x0360 - PCH HSIO PCIE Gen 2 TX Output -3.5dB De-Emphasis Adjustment value
   PCH PCIe Gen 2 TX Output -3.5dB De-Emphasis Adjustment Setting.
 **/
   UINT8                       PchPcieHsioTxGen2DeEmph3p5[24];
 
-/** Offset 0x037F - Enable PCH HSIO PCIE Gen 2 TX Output -6.0dB De-Emphasis Adjustment Setting value override
+/** Offset 0x0378 - Enable PCH HSIO PCIE Gen 2 TX Output -6.0dB De-Emphasis Adjustment Setting value override
   0: Disable; 1: Enable.
 **/
   UINT8                       PchPcieHsioTxGen2DeEmph6p0Enable[24];
 
-/** Offset 0x0397 - PCH HSIO PCIE Gen 2 TX Output -6.0dB De-Emphasis Adjustment value
+/** Offset 0x0390 - PCH HSIO PCIE Gen 2 TX Output -6.0dB De-Emphasis Adjustment value
   PCH PCIe Gen 2 TX Output -6.0dB De-Emphasis Adjustment Setting.
 **/
   UINT8                       PchPcieHsioTxGen2DeEmph6p0[24];
 
-/** Offset 0x03AF - Enable PCH HSIO SATA Receiver Equalization Boost Magnitude Adjustment Value override
+/** Offset 0x03A8 - Enable PCH HSIO SATA Receiver Equalization Boost Magnitude Adjustment Value override
   0: Disable; 1: Enable.
 **/
   UINT8                       PchSataHsioRxGen1EqBoostMagEnable[8];
 
-/** Offset 0x03B7 - PCH HSIO SATA 1.5 Gb/s Receiver Equalization Boost Magnitude Adjustment value
+/** Offset 0x03B0 - PCH HSIO SATA 1.5 Gb/s Receiver Equalization Boost Magnitude Adjustment value
   PCH HSIO SATA 1.5 Gb/s Receiver Equalization Boost Magnitude Adjustment value.
 **/
   UINT8                       PchSataHsioRxGen1EqBoostMag[8];
 
-/** Offset 0x03BF - Enable PCH HSIO SATA Receiver Equalization Boost Magnitude Adjustment Value override
+/** Offset 0x03B8 - Enable PCH HSIO SATA Receiver Equalization Boost Magnitude Adjustment Value override
   0: Disable; 1: Enable.
 **/
   UINT8                       PchSataHsioRxGen2EqBoostMagEnable[8];
 
-/** Offset 0x03C7 - PCH HSIO SATA 3.0 Gb/s Receiver Equalization Boost Magnitude Adjustment value
+/** Offset 0x03C0 - PCH HSIO SATA 3.0 Gb/s Receiver Equalization Boost Magnitude Adjustment value
   PCH HSIO SATA 3.0 Gb/s Receiver Equalization Boost Magnitude Adjustment value.
 **/
   UINT8                       PchSataHsioRxGen2EqBoostMag[8];
 
-/** Offset 0x03CF - Enable PCH HSIO SATA Receiver Equalization Boost Magnitude Adjustment Value override
+/** Offset 0x03C8 - Enable PCH HSIO SATA Receiver Equalization Boost Magnitude Adjustment Value override
   0: Disable; 1: Enable.
 **/
   UINT8                       PchSataHsioRxGen3EqBoostMagEnable[8];
 
-/** Offset 0x03D7 - PCH HSIO SATA 6.0 Gb/s Receiver Equalization Boost Magnitude Adjustment value
+/** Offset 0x03D0 - PCH HSIO SATA 6.0 Gb/s Receiver Equalization Boost Magnitude Adjustment value
   PCH HSIO SATA 6.0 Gb/s Receiver Equalization Boost Magnitude Adjustment value.
 **/
   UINT8                       PchSataHsioRxGen3EqBoostMag[8];
 
-/** Offset 0x03DF - Enable PCH HSIO SATA 1.5 Gb/s TX Output Downscale Amplitude Adjustment value override
+/** Offset 0x03D8 - Enable PCH HSIO SATA 1.5 Gb/s TX Output Downscale Amplitude Adjustment value override
   0: Disable; 1: Enable.
 **/
   UINT8                       PchSataHsioTxGen1DownscaleAmpEnable[8];
 
-/** Offset 0x03E7 - PCH HSIO SATA 1.5 Gb/s TX Output Downscale Amplitude Adjustment value
+/** Offset 0x03E0 - PCH HSIO SATA 1.5 Gb/s TX Output Downscale Amplitude Adjustment value
   PCH HSIO SATA 1.5 Gb/s TX Output Downscale Amplitude Adjustment value.
 **/
   UINT8                       PchSataHsioTxGen1DownscaleAmp[8];
 
-/** Offset 0x03EF - Enable PCH HSIO SATA 3.0 Gb/s TX Output Downscale Amplitude Adjustment value override
+/** Offset 0x03E8 - Enable PCH HSIO SATA 3.0 Gb/s TX Output Downscale Amplitude Adjustment value override
   0: Disable; 1: Enable.
 **/
   UINT8                       PchSataHsioTxGen2DownscaleAmpEnable[8];
 
-/** Offset 0x03F7 - PCH HSIO SATA 3.0 Gb/s TX Output Downscale Amplitude Adjustment value
+/** Offset 0x03F0 - PCH HSIO SATA 3.0 Gb/s TX Output Downscale Amplitude Adjustment value
   PCH HSIO SATA 3.0 Gb/s TX Output Downscale Amplitude Adjustment value.
 **/
   UINT8                       PchSataHsioTxGen2DownscaleAmp[8];
 
-/** Offset 0x03FF - Enable PCH HSIO SATA 6.0 Gb/s TX Output Downscale Amplitude Adjustment value override
+/** Offset 0x03F8 - Enable PCH HSIO SATA 6.0 Gb/s TX Output Downscale Amplitude Adjustment value override
   0: Disable; 1: Enable.
 **/
   UINT8                       PchSataHsioTxGen3DownscaleAmpEnable[8];
 
-/** Offset 0x0407 - PCH HSIO SATA 6.0 Gb/s TX Output Downscale Amplitude Adjustment value
+/** Offset 0x0400 - PCH HSIO SATA 6.0 Gb/s TX Output Downscale Amplitude Adjustment value
   PCH HSIO SATA 6.0 Gb/s TX Output Downscale Amplitude Adjustment value.
 **/
   UINT8                       PchSataHsioTxGen3DownscaleAmp[8];
 
-/** Offset 0x040F - Enable PCH HSIO SATA 1.5 Gb/s TX Output De-Emphasis Adjustment Setting value override
+/** Offset 0x0408 - Enable PCH HSIO SATA 1.5 Gb/s TX Output De-Emphasis Adjustment Setting value override
   0: Disable; 1: Enable.
 **/
   UINT8                       PchSataHsioTxGen1DeEmphEnable[8];
 
-/** Offset 0x0417 - PCH HSIO SATA 1.5 Gb/s TX Output De-Emphasis Adjustment Setting
+/** Offset 0x0410 - PCH HSIO SATA 1.5 Gb/s TX Output De-Emphasis Adjustment Setting
   PCH HSIO SATA 1.5 Gb/s TX Output De-Emphasis Adjustment Setting.
 **/
   UINT8                       PchSataHsioTxGen1DeEmph[8];
 
-/** Offset 0x041F - Enable PCH HSIO SATA 3.0 Gb/s TX Output De-Emphasis Adjustment Setting value override
+/** Offset 0x0418 - Enable PCH HSIO SATA 3.0 Gb/s TX Output De-Emphasis Adjustment Setting value override
   0: Disable; 1: Enable.
 **/
   UINT8                       PchSataHsioTxGen2DeEmphEnable[8];
 
-/** Offset 0x0427 - PCH HSIO SATA 3.0 Gb/s TX Output De-Emphasis Adjustment Setting
+/** Offset 0x0420 - PCH HSIO SATA 3.0 Gb/s TX Output De-Emphasis Adjustment Setting
   PCH HSIO SATA 3.0 Gb/s TX Output De-Emphasis Adjustment Setting.
 **/
   UINT8                       PchSataHsioTxGen2DeEmph[8];
 
-/** Offset 0x042F - Enable PCH HSIO SATA 6.0 Gb/s TX Output De-Emphasis Adjustment Setting value override
+/** Offset 0x0428 - Enable PCH HSIO SATA 6.0 Gb/s TX Output De-Emphasis Adjustment Setting value override
   0: Disable; 1: Enable.
 **/
   UINT8                       PchSataHsioTxGen3DeEmphEnable[8];
 
-/** Offset 0x0437 - PCH HSIO SATA 6.0 Gb/s TX Output De-Emphasis Adjustment Setting
+/** Offset 0x0430 - PCH HSIO SATA 6.0 Gb/s TX Output De-Emphasis Adjustment Setting
   PCH HSIO SATA 6.0 Gb/s TX Output De-Emphasis Adjustment Setting.
 **/
   UINT8                       PchSataHsioTxGen3DeEmph[8];
 
-/** Offset 0x043F - PCH LPC Enhance the port 8xh decoding
+/** Offset 0x0438 - PCH LPC Enhance the port 8xh decoding
   Original LPC only decodes one byte of port 80h.
   $EN_DIS
 **/
   UINT8                       PchLpcEnhancePort8xhDecoding;
 
-/** Offset 0x0440 - PCH Acpi Base
-  Power management I/O base address. Default is 0x1800.
-**/
-  UINT16                      PchAcpiBase;
-
-/** Offset 0x0442 - PCH Port80 Route
+/** Offset 0x0439 - PCH Port80 Route
   Control where the Port 80h cycles are sent, 0: LPC; 1: PCI.
   $EN_DIS
 **/
   UINT8                       PchPort80Route;
 
-/** Offset 0x0443 - Enable SMBus ARP support
+/** Offset 0x043A - Enable SMBus ARP support
   Enable SMBus ARP support.
   $EN_DIS
 **/
   UINT8                       SmbusArpEnable;
 
-/** Offset 0x0444 - SMBUS Base Address
-  SMBUS Base Address (IO space).
-**/
-  UINT16                      PchSmbusIoBase;
-
-/** Offset 0x0446 - Number of RsvdSmbusAddressTable.
+/** Offset 0x043B - Number of RsvdSmbusAddressTable.
   The number of elements in the RsvdSmbusAddressTable.
 **/
   UINT8                       PchNumRsvdSmbusAddresses;
 
-/** Offset 0x0447
+/** Offset 0x043C - SMBUS Base Address
+  SMBUS Base Address (IO space).
 **/
-  UINT8                       UnusedUpdSpace8;
+  UINT16                      PchSmbusIoBase;
 
-/** Offset 0x0448 - Point of RsvdSmbusAddressTable
+/** Offset 0x043E - Size of PCIe IMR.
+  Size of PCIe IMR in megabytes
+**/
+  UINT16                      PcieImrSize;
+
+/** Offset 0x0440 - Point of RsvdSmbusAddressTable
   Array of addresses reserved for non-ARP-capable SMBus devices.
 **/
   UINT32                      RsvdSmbusAddressTablePtr;
 
-/** Offset 0x044C - Trace Hub Memory Region 0
-  Trace Hub Memory Region 0.
-**/
-  UINT32                      TraceHubMemReg0Size;
-
-/** Offset 0x0450 - Trace Hub Memory Region 1
-  Trace Hub Memory Region 1.
-**/
-  UINT32                      TraceHubMemReg1Size;
-
-/** Offset 0x0454 - Enable PCIE RP Mask
+/** Offset 0x0444 - Enable PCIE RP Mask
   Enable/disable PCIE Root Ports. 0: disable, 1: enable. One bit for each port, bit0
   for port1, bit1 for port2, and so on.
 **/
   UINT32                      PcieRpEnableMask;
 
-/** Offset 0x0458 - Debug Interfaces
+/** Offset 0x0448 - Enable PCIe IMR
+  0:Disable, 1:Enable
+  $EN_DIS
+**/
+  UINT8                       PcieImrEnabled;
+
+/** Offset 0x0449 - Root port number for IMR.
+  Root port number for IMR.
+**/
+  UINT8                       ImrRpSelection;
+
+/** Offset 0x044A - Enable SMBus Alert Pin
+  Enable SMBus Alert Pin.
+  $EN_DIS
+**/
+  UINT8                       PchSmbAlertEnable;
+
+/** Offset 0x044B - Debug Interfaces
   Debug Interfaces. BIT0-RAM, BIT1-UART, BIT3-USB3, BIT4-Serial IO, BIT5-TraceHub,
   BIT2 - Not used.
 **/
   UINT8                       PcdDebugInterfaceFlags;
 
-/** Offset 0x0459 - SerialIo Uart Number Selection
+/** Offset 0x044C - PcdSerialIoUartNumber
   Select SerialIo Uart Controller for debug.
   0:SerialIoUart0, 1:SerialIoUart1, 2:SerialIoUart2
 **/
   UINT8                       PcdSerialIoUartNumber;
 
-/** Offset 0x045A - PCH Pm Pcie Pll Ssc
-  Specifies the Pcie Pll Spread Spectrum Percentage. The default is 0xFF: AUTO - No
-  BIOS override.
-**/
-  UINT8                       PchPmPciePllSsc;
-
-/** Offset 0x045B - ReservedPchPreMem
+/** Offset 0x044D - ReservedPchPreMem
   Reserved for Pch Pre-Mem
   $EN_DIS
 **/
   UINT8                       ReservedPchPreMem[16];
 
-/** Offset 0x046B - ISA Serial Base selection
+/** Offset 0x045D - ISA Serial Base selection
   Select ISA Serial Base address. Default is 0x3F8.
   0:0x3F8, 1:0x2F8
 **/
   UINT8                       PcdIsaSerialUartBase;
 
-/** Offset 0x046C - GT PLL voltage offset
+/** Offset 0x045E - GT PLL voltage offset
   Core PLL voltage offset. <b>0: No offset</b>. Range 0-63
 **/
   UINT8                       GtPllVoltageOffset;
 
-/** Offset 0x046D - Ring PLL voltage offset
+/** Offset 0x045F - Ring PLL voltage offset
   Core PLL voltage offset. <b>0: No offset</b>. Range 0-63
 **/
   UINT8                       RingPllVoltageOffset;
 
-/** Offset 0x046E - System Agent PLL voltage offset
+/** Offset 0x0460 - System Agent PLL voltage offset
   Core PLL voltage offset. <b>0: No offset</b>. Range 0-63
 **/
   UINT8                       SaPllVoltageOffset;
 
-/** Offset 0x046F - Memory Controller PLL voltage offset
+/** Offset 0x0461 - Memory Controller PLL voltage offset
   Core PLL voltage offset. <b>0: No offset</b>. Range 0-63
 **/
   UINT8                       McPllVoltageOffset;
 
-/** Offset 0x0470 - MRC Safe Config
+/** Offset 0x0462 - MRC Safe Config
   Enables/Disable MRC Safe Config
   $EN_DIS
 **/
   UINT8                       MrcSafeConfig;
 
-/** Offset 0x0471 - PcdSerialDebugBaudRate
+/** Offset 0x0463 - PcdSerialDebugBaudRate
   Baud Rate for Serial Debug Messages. 3:9600, 4:19200, 6:56700, 7:115200.
   3:9600, 4:19200, 6:56700, 7:115200
 **/
   UINT8                       PcdSerialDebugBaudRate;
 
-/** Offset 0x0472 - HobBufferSize
+/** Offset 0x0464 - HobBufferSize
   Size to set HOB Buffer. 0:Default, 1: 1 Byte, 2: 1 KB, 3: Max value(assuming 63KB
   total HOB size).
   0:Default, 1: 1 Byte, 2: 1 KB, 3: Max value
 **/
   UINT8                       HobBufferSize;
 
-/** Offset 0x0473 - Early Command Training
+/** Offset 0x0465 - Early Command Training
   Enables/Disable Early Command Training
   $EN_DIS
 **/
   UINT8                       ECT;
 
-/** Offset 0x0474 - SenseAmp Offset Training
+/** Offset 0x0466 - SenseAmp Offset Training
   Enables/Disable SenseAmp Offset Training
   $EN_DIS
 **/
   UINT8                       SOT;
 
-/** Offset 0x0475 - Early ReadMPR Timing Centering 2D
+/** Offset 0x0467 - Early ReadMPR Timing Centering 2D
   Enables/Disable Early ReadMPR Timing Centering 2D
   $EN_DIS
 **/
   UINT8                       ERDMPRTC2D;
 
-/** Offset 0x0476 - Read MPR Training
+/** Offset 0x0468 - Read MPR Training
   Enables/Disable Read MPR Training
   $EN_DIS
 **/
   UINT8                       RDMPRT;
 
-/** Offset 0x0477 - Receive Enable Training
+/** Offset 0x0469 - Receive Enable Training
   Enables/Disable Receive Enable Training
   $EN_DIS
 **/
   UINT8                       RCVET;
 
-/** Offset 0x0478 - Jedec Write Leveling
+/** Offset 0x046A - Jedec Write Leveling
   Enables/Disable Jedec Write Leveling
   $EN_DIS
 **/
   UINT8                       JWRL;
 
-/** Offset 0x0479 - Early Write Time Centering 2D
+/** Offset 0x046B - Early Write Time Centering 2D
   Enables/Disable Early Write Time Centering 2D
   $EN_DIS
 **/
   UINT8                       EWRTC2D;
 
-/** Offset 0x047A - Early Read Time Centering 2D
+/** Offset 0x046C - Early Read Time Centering 2D
   Enables/Disable Early Read Time Centering 2D
   $EN_DIS
 **/
   UINT8                       ERDTC2D;
 
-/** Offset 0x047B - Write Timing Centering 1D
+/** Offset 0x046D - Write Timing Centering 1D
   Enables/Disable Write Timing Centering 1D
   $EN_DIS
 **/
   UINT8                       WRTC1D;
 
-/** Offset 0x047C - Write Voltage Centering 1D
+/** Offset 0x046E - Write Voltage Centering 1D
   Enables/Disable Write Voltage Centering 1D
   $EN_DIS
 **/
   UINT8                       WRVC1D;
 
-/** Offset 0x047D - Read Timing Centering 1D
+/** Offset 0x046F - Read Timing Centering 1D
   Enables/Disable Read Timing Centering 1D
   $EN_DIS
 **/
   UINT8                       RDTC1D;
 
-/** Offset 0x047E - Dimm ODT Training
+/** Offset 0x0470 - Dimm ODT Training
   Enables/Disable Dimm ODT Training
   $EN_DIS
 **/
   UINT8                       DIMMODTT;
 
-/** Offset 0x047F - DIMM RON Training
+/** Offset 0x0471 - DIMM RON Training
   Enables/Disable DIMM RON Training
   $EN_DIS
 **/
   UINT8                       DIMMRONT;
 
-/** Offset 0x0480 - Write Drive Strength/Equalization 2D
+/** Offset 0x0472 - Write Drive Strength/Equalization 2D
   Enables/Disable Write Drive Strength/Equalization 2D
   $EN_DIS
 **/
   UINT8                       WRDSEQT;
 
-/** Offset 0x0481 - Write Slew Rate Training
+/** Offset 0x0473 - Write Slew Rate Training
   Enables/Disable Write Slew Rate Training
   $EN_DIS
 **/
   UINT8                       WRSRT;
 
-/** Offset 0x0482 - Read ODT Training
+/** Offset 0x0474 - Read ODT Training
   Enables/Disable Read ODT Training
   $EN_DIS
 **/
   UINT8                       RDODTT;
 
-/** Offset 0x0483 - Read Equalization Training
+/** Offset 0x0475 - Read Equalization Training
   Enables/Disable Read Equalization Training
   $EN_DIS
 **/
   UINT8                       RDEQT;
 
-/** Offset 0x0484 - Read Amplifier Training
+/** Offset 0x0476 - Read Amplifier Training
   Enables/Disable Read Amplifier Training
   $EN_DIS
 **/
   UINT8                       RDAPT;
 
-/** Offset 0x0485 - Write Timing Centering 2D
+/** Offset 0x0477 - Write Timing Centering 2D
   Enables/Disable Write Timing Centering 2D
   $EN_DIS
 **/
   UINT8                       WRTC2D;
 
-/** Offset 0x0486 - Read Timing Centering 2D
+/** Offset 0x0478 - Read Timing Centering 2D
   Enables/Disable Read Timing Centering 2D
   $EN_DIS
 **/
   UINT8                       RDTC2D;
 
-/** Offset 0x0487 - Write Voltage Centering 2D
+/** Offset 0x0479 - Write Voltage Centering 2D
   Enables/Disable Write Voltage Centering 2D
   $EN_DIS
 **/
   UINT8                       WRVC2D;
 
-/** Offset 0x0488 - Read Voltage Centering 2D
+/** Offset 0x047A - Read Voltage Centering 2D
   Enables/Disable Read Voltage Centering 2D
   $EN_DIS
 **/
   UINT8                       RDVC2D;
 
-/** Offset 0x0489 - Command Voltage Centering
+/** Offset 0x047B - Command Voltage Centering
   Enables/Disable Command Voltage Centering
   $EN_DIS
 **/
   UINT8                       CMDVC;
 
-/** Offset 0x048A - Late Command Training
+/** Offset 0x047C - Late Command Training
   Enables/Disable Late Command Training
   $EN_DIS
 **/
   UINT8                       LCT;
 
-/** Offset 0x048B - Round Trip Latency Training
+/** Offset 0x047D - Round Trip Latency Training
   Enables/Disable Round Trip Latency Training
   $EN_DIS
 **/
   UINT8                       RTL;
 
-/** Offset 0x048C - Turn Around Timing Training
+/** Offset 0x047E - Turn Around Timing Training
   Enables/Disable Turn Around Timing Training
   $EN_DIS
 **/
   UINT8                       TAT;
 
-/** Offset 0x048D - Memory Test
+/** Offset 0x047F - Memory Test
   Enables/Disable Memory Test
   $EN_DIS
 **/
   UINT8                       MEMTST;
 
-/** Offset 0x048E - DIMM SPD Alias Test
+/** Offset 0x0480 - DIMM SPD Alias Test
   Enables/Disable DIMM SPD Alias Test
   $EN_DIS
 **/
   UINT8                       ALIASCHK;
 
-/** Offset 0x048F - Receive Enable Centering 1D
+/** Offset 0x0481 - Receive Enable Centering 1D
   Enables/Disable Receive Enable Centering 1D
   $EN_DIS
 **/
   UINT8                       RCVENC1D;
 
-/** Offset 0x0490 - Retrain Margin Check
+/** Offset 0x0482 - Retrain Margin Check
   Enables/Disable Retrain Margin Check
   $EN_DIS
 **/
   UINT8                       RMC;
 
-/** Offset 0x0491 - Write Drive Strength Up/Dn independently
+/** Offset 0x0483 - Write Drive Strength Up/Dn independently
   Enables/Disable Write Drive Strength Up/Dn independently
   $EN_DIS
 **/
   UINT8                       WRDSUDT;
 
-/** Offset 0x0492 - ECC Support
+/** Offset 0x0484 - ECC Support
   Enables/Disable ECC Support
   $EN_DIS
 **/
   UINT8                       EccSupport;
 
-/** Offset 0x0493 - Memory Remap
+/** Offset 0x0485 - Memory Remap
   Enables/Disable Memory Remap
   $EN_DIS
 **/
   UINT8                       RemapEnable;
 
-/** Offset 0x0494 - Rank Interleave support
+/** Offset 0x0486 - Rank Interleave support
   Enables/Disable Rank Interleave support. NOTE: RI and HORI can not be enabled at
   the same time.
   $EN_DIS
 **/
   UINT8                       RankInterleave;
 
-/** Offset 0x0495 - Enhanced Interleave support
+/** Offset 0x0487 - Enhanced Interleave support
   Enables/Disable Enhanced Interleave support
   $EN_DIS
 **/
   UINT8                       EnhancedInterleave;
 
-/** Offset 0x0496 - Memory Trace
+/** Offset 0x0488 - Memory Trace
   Enable Memory Trace of Ch 0 to Ch 1 using Stacked Mode. Both channels must be of
   equal size. This option may change TOLUD and REMAP values as needed.
   $EN_DIS
 **/
   UINT8                       MemoryTrace;
 
-/** Offset 0x0497 - Ch Hash Support
+/** Offset 0x0489 - Ch Hash Support
   Enable/Disable Channel Hash Support. NOTE: ONLY if Memory interleaved Mode
   $EN_DIS
 **/
   UINT8                       ChHashEnable;
 
-/** Offset 0x0498 - Extern Therm Status
+/** Offset 0x048A - Extern Therm Status
   Enables/Disable Extern Therm Status
   $EN_DIS
 **/
   UINT8                       EnableExtts;
 
-/** Offset 0x0499 - Closed Loop Therm Manage
+/** Offset 0x048B - Closed Loop Therm Manage
   Enables/Disable Closed Loop Therm Manage
   $EN_DIS
 **/
   UINT8                       EnableCltm;
 
-/** Offset 0x049A - Open Loop Therm Manage
+/** Offset 0x048C - Open Loop Therm Manage
   Enables/Disable Open Loop Therm Manage
   $EN_DIS
 **/
   UINT8                       EnableOltm;
 
-/** Offset 0x049B - DDR PowerDown and idle counter
+/** Offset 0x048D - DDR PowerDown and idle counter
   Enables/Disable DDR PowerDown and idle counter
   $EN_DIS
 **/
   UINT8                       EnablePwrDn;
 
-/** Offset 0x049C - DDR PowerDown and idle counter - LPDDR
+/** Offset 0x048E - DDR PowerDown and idle counter - LPDDR
   Enables/Disable DDR PowerDown and idle counter(For LPDDR Only)
   $EN_DIS
 **/
   UINT8                       EnablePwrDnLpddr;
 
-/** Offset 0x049D - Use user provided power weights, scale factor, and channel power floor values
+/** Offset 0x048F - Use user provided power weights, scale factor, and channel power floor values
   Enables/Disable Use user provided power weights, scale factor, and channel power
   floor values
   $EN_DIS
 **/
   UINT8                       UserPowerWeightsEn;
 
-/** Offset 0x049E - RAPL PL Lock
+/** Offset 0x0490 - RAPL PL Lock
   Enables/Disable RAPL PL Lock
   $EN_DIS
 **/
   UINT8                       RaplLim2Lock;
 
-/** Offset 0x049F - RAPL PL 2 enable
+/** Offset 0x0491 - RAPL PL 2 enable
   Enables/Disable RAPL PL 2 enable
   $EN_DIS
 **/
   UINT8                       RaplLim2Ena;
 
-/** Offset 0x04A0 - RAPL PL 1 enable
+/** Offset 0x0492 - RAPL PL 1 enable
   Enables/Disable RAPL PL 1 enable
   $EN_DIS
 **/
   UINT8                       RaplLim1Ena;
 
-/** Offset 0x04A1 - SelfRefresh Enable
+/** Offset 0x0493 - SelfRefresh Enable
   Enables/Disable SelfRefresh Enable
   $EN_DIS
 **/
   UINT8                       SrefCfgEna;
 
-/** Offset 0x04A2 - Throttler CKEMin Defeature - LPDDR
+/** Offset 0x0494 - Throttler CKEMin Defeature - LPDDR
   Enables/Disable Throttler CKEMin Defeature(For LPDDR Only)
   $EN_DIS
 **/
   UINT8                       ThrtCkeMinDefeatLpddr;
 
-/** Offset 0x04A3 - Throttler CKEMin Defeature
+/** Offset 0x0495 - Throttler CKEMin Defeature
   Enables/Disable Throttler CKEMin Defeature
   $EN_DIS
 **/
   UINT8                       ThrtCkeMinDefeat;
 
-/** Offset 0x04A4 - Enable RH Prevention
+/** Offset 0x0496 - Enable RH Prevention
   Enables/Disable RH Prevention
   $EN_DIS
 **/
   UINT8                       RhPrevention;
 
-/** Offset 0x04A5 - Exit On Failure (MRC)
+/** Offset 0x0497 - Exit On Failure (MRC)
   Enables/Disable Exit On Failure (MRC)
   $EN_DIS
 **/
   UINT8                       ExitOnFailure;
 
-/** Offset 0x04A6 - LPDDR Thermal Sensor
+/** Offset 0x0498 - LPDDR Thermal Sensor
   Enables/Disable LPDDR Thermal Sensor
   $EN_DIS
 **/
   UINT8                       DdrThermalSensor;
 
-/** Offset 0x04A7 - Select if CLK0 is shared between Rank0 and Rank1 in DDR4 DDP
+/** Offset 0x0499 - Select if CLK0 is shared between Rank0 and Rank1 in DDR4 DDP
   Select if CLK0 is shared between Rank0 and Rank1 in DDR4 DDP
   $EN_DIS
 **/
   UINT8                       Ddr4DdpSharedClock;
 
-/** Offset 0x04A8 - Select if ZQ pin is shared between Rank0 and Rank1 in DDR4 DDP
+/** Offset 0x049A - Select if ZQ pin is shared between Rank0 and Rank1 in DDR4 DDP
   ESelect if ZQ pin is shared between Rank0 and Rank1 in DDR4 DDP
   $EN_DIS
 **/
   UINT8                       Ddr4DdpSharedZq;
 
-/** Offset 0x04A9
+/** Offset 0x049B
 **/
-  UINT8                       UnusedUpdSpace9;
+  UINT8                       UnusedUpdSpace7;
 
-/** Offset 0x04AA - Ch Hash Mask
+/** Offset 0x049C - Ch Hash Mask
   Set the BIT(s) to be included in the XOR function. NOTE BIT mask corresponds to
   BITS [19:6
 **/
   UINT16                      ChHashMask;
 
-/** Offset 0x04AC - Base reference clock value
+/** Offset 0x049E
+**/
+  UINT8                       UnusedUpdSpace8[2];
+
+/** Offset 0x04A0 - Base reference clock value
   Base reference clock value, in Hertz(Default is 125Hz)
   100000000:100Hz, 125000000:125Hz, 167000000:167Hz, 250000000:250Hz
 **/
   UINT32                      BClkFrequency;
 
-/** Offset 0x04B0 - Ch Hash Interleaved Bit
+/** Offset 0x04A4 - Ch Hash Interleaved Bit
   Select the BIT to be used for Channel Interleaved mode. NOTE: BIT7 will interlave
   the channels at a 2 cacheline granularity, BIT8 at 4 and BIT9 at 8. Default is BIT8
   0:BIT6, 1:BIT7, 2:BIT8, 3:BIT9, 4:BIT10, 5:BIT11, 6:BIT12, 7:BIT13
 **/
   UINT8                       ChHashInterleaveBit;
 
-/** Offset 0x04B1 - Energy Scale Factor
+/** Offset 0x04A5 - Energy Scale Factor
   Energy Scale Factor, Default is 4
 **/
   UINT8                       EnergyScaleFact;
 
-/** Offset 0x04B2 - EPG DIMM Idd3N
+/** Offset 0x04A6 - EPG DIMM Idd3N
   Active standby current (Idd3N) in milliamps from datasheet. Must be calculated on
   a per DIMM basis. Default is 26
 **/
   UINT16                      Idd3n;
 
-/** Offset 0x04B4 - EPG DIMM Idd3P
+/** Offset 0x04A8 - EPG DIMM Idd3P
   Active power-down current (Idd3P) in milliamps from datasheet. Must be calculated
   on a per DIMM basis. Default is 11
 **/
   UINT16                      Idd3p;
 
-/** Offset 0x04B6 - CMD Slew Rate Training
+/** Offset 0x04AA - CMD Slew Rate Training
   Enable/Disable CMD Slew Rate Training
   $EN_DIS
 **/
   UINT8                       CMDSR;
 
-/** Offset 0x04B7 - CMD Drive Strength and Tx Equalization
+/** Offset 0x04AB - CMD Drive Strength and Tx Equalization
   Enable/Disable CMD Drive Strength and Tx Equalization
   $EN_DIS
 **/
   UINT8                       CMDDSEQ;
 
-/** Offset 0x04B8 - CMD Normalization
+/** Offset 0x04AC - CMD Normalization
   Enable/Disable CMD Normalization
   $EN_DIS
 **/
   UINT8                       CMDNORM;
 
-/** Offset 0x04B9 - Early DQ Write Drive Strength and Equalization Training
+/** Offset 0x04AD - Early DQ Write Drive Strength and Equalization Training
   Enable/Disable Early DQ Write Drive Strength and Equalization Training
   $EN_DIS
 **/
   UINT8                       EWRDSEQ;
 
-/** Offset 0x04BA - RH Activation Probability
+/** Offset 0x04AE - RH Activation Probability
   RH Activation Probability, Probability value is 1/2^(inputvalue)
 **/
   UINT8                       RhActProbability;
 
-/** Offset 0x04BB - RAPL PL 2 WindowX
+/** Offset 0x04AF - RAPL PL 2 WindowX
   Power PL 2 time window X value, (1/1024)*(1+(x/4))*(2^y) (1=Def)
 **/
   UINT8                       RaplLim2WindX;
 
-/** Offset 0x04BC - RAPL PL 2 WindowY
+/** Offset 0x04B0 - RAPL PL 2 WindowY
   Power PL 2 time window Y value, (1/1024)*(1+(x/4))*(2^y) (1=Def)
 **/
   UINT8                       RaplLim2WindY;
 
-/** Offset 0x04BD - RAPL PL 1 WindowX
+/** Offset 0x04B1 - RAPL PL 1 WindowX
   Power PL 1 time window X value, (1/1024)*(1+(x/4))*(2^y) (0=Def)
 **/
   UINT8                       RaplLim1WindX;
 
-/** Offset 0x04BE - RAPL PL 1 WindowY
+/** Offset 0x04B2 - RAPL PL 1 WindowY
   Power PL 1 time window Y value, (1/1024)*(1+(x/4))*(2^y) (0=Def)
 **/
   UINT8                       RaplLim1WindY;
 
-/** Offset 0x04BF
+/** Offset 0x04B3
 **/
-  UINT8                       UnusedUpdSpace10;
+  UINT8                       UnusedUpdSpace9;
 
-/** Offset 0x04C0 - RAPL PL 2 Power
+/** Offset 0x04B4 - RAPL PL 2 Power
   range[0;2^14-1]= [2047.875;0]in W, (222= Def)
 **/
   UINT16                      RaplLim2Pwr;
 
-/** Offset 0x04C2 - RAPL PL 1 Power
+/** Offset 0x04B6 - RAPL PL 1 Power
   range[0;2^14-1]= [2047.875;0]in W, (0= Def)
 **/
   UINT16                      RaplLim1Pwr;
 
-/** Offset 0x04C4 - Warm Threshold Ch0 Dimm0
+/** Offset 0x04B8 - Warm Threshold Ch0 Dimm0
   range[255;0]=[31.875;0] in W for OLTM, [127.5;0] in C for CLTM. Default is 255
 **/
   UINT8                       WarmThresholdCh0Dimm0;
 
-/** Offset 0x04C5 - Warm Threshold Ch0 Dimm1
+/** Offset 0x04B9 - Warm Threshold Ch0 Dimm1
   range[255;0]=[31.875;0] in W for OLTM, [127.5;0] in C for CLTM. Default is 255
 **/
   UINT8                       WarmThresholdCh0Dimm1;
 
-/** Offset 0x04C6 - Warm Threshold Ch1 Dimm0
+/** Offset 0x04BA - Warm Threshold Ch1 Dimm0
   range[255;0]=[31.875;0] in W for OLTM, [127.5;0] in C for CLTM. Default is 255
 **/
   UINT8                       WarmThresholdCh1Dimm0;
 
-/** Offset 0x04C7 - Warm Threshold Ch1 Dimm1
+/** Offset 0x04BB - Warm Threshold Ch1 Dimm1
   range[255;0]=[31.875;0] in W for OLTM, [127.5;0] in C for CLTM. Default is 255
 **/
   UINT8                       WarmThresholdCh1Dimm1;
 
-/** Offset 0x04C8 - Hot Threshold Ch0 Dimm0
+/** Offset 0x04BC - Hot Threshold Ch0 Dimm0
   range[255;0]=[31.875;0] in W for OLTM, [127.5;0] in C for CLTM. Default is 255
 **/
   UINT8                       HotThresholdCh0Dimm0;
 
-/** Offset 0x04C9 - Hot Threshold Ch0 Dimm1
+/** Offset 0x04BD - Hot Threshold Ch0 Dimm1
   range[255;0]=[31.875;0] in W for OLTM, [127.5;0] in C for CLTM. Default is 255
 **/
   UINT8                       HotThresholdCh0Dimm1;
 
-/** Offset 0x04CA - Hot Threshold Ch1 Dimm0
+/** Offset 0x04BE - Hot Threshold Ch1 Dimm0
   range[255;0]=[31.875;0] in W for OLTM, [127.5;0] in C for CLTM. Default is 255
 **/
   UINT8                       HotThresholdCh1Dimm0;
 
-/** Offset 0x04CB - Hot Threshold Ch1 Dimm1
+/** Offset 0x04BF - Hot Threshold Ch1 Dimm1
   range[255;0]=[31.875;0] in W for OLTM, [127.5;0] in C for CLTM. Default is 255
 **/
   UINT8                       HotThresholdCh1Dimm1;
 
-/** Offset 0x04CC - Warm Budget Ch0 Dimm0
+/** Offset 0x04C0 - Warm Budget Ch0 Dimm0
   range[255;0]=[31.875;0] in W for OLTM, [127.5;0] in C for CLTM
 **/
   UINT8                       WarmBudgetCh0Dimm0;
 
-/** Offset 0x04CD - Warm Budget Ch0 Dimm1
+/** Offset 0x04C1 - Warm Budget Ch0 Dimm1
   range[255;0]=[31.875;0] in W for OLTM, [127.5;0] in C for CLTM
 **/
   UINT8                       WarmBudgetCh0Dimm1;
 
-/** Offset 0x04CE - Warm Budget Ch1 Dimm0
+/** Offset 0x04C2 - Warm Budget Ch1 Dimm0
   range[255;0]=[31.875;0] in W for OLTM, [127.5;0] in C for CLTM
 **/
   UINT8                       WarmBudgetCh1Dimm0;
 
-/** Offset 0x04CF - Warm Budget Ch1 Dimm1
+/** Offset 0x04C3 - Warm Budget Ch1 Dimm1
   range[255;0]=[31.875;0] in W for OLTM, [127.5;0] in C for CLTM
 **/
   UINT8                       WarmBudgetCh1Dimm1;
 
-/** Offset 0x04D0 - Hot Budget Ch0 Dimm0
+/** Offset 0x04C4 - Hot Budget Ch0 Dimm0
   range[255;0]=[31.875;0] in W for OLTM, [127.5;0] in C for CLTM
 **/
   UINT8                       HotBudgetCh0Dimm0;
 
-/** Offset 0x04D1 - Hot Budget Ch0 Dimm1
+/** Offset 0x04C5 - Hot Budget Ch0 Dimm1
   range[255;0]=[31.875;0] in W for OLTM, [127.5;0] in C for CLTM
 **/
   UINT8                       HotBudgetCh0Dimm1;
 
-/** Offset 0x04D2 - Hot Budget Ch1 Dimm0
+/** Offset 0x04C6 - Hot Budget Ch1 Dimm0
   range[255;0]=[31.875;0] in W for OLTM, [127.5;0] in C for CLTM
 **/
   UINT8                       HotBudgetCh1Dimm0;
 
-/** Offset 0x04D3 - Hot Budget Ch1 Dimm1
+/** Offset 0x04C7 - Hot Budget Ch1 Dimm1
   range[255;0]=[31.875;0] in W for OLTM, [127.5;0] in C for CLTM
 **/
   UINT8                       HotBudgetCh1Dimm1;
 
-/** Offset 0x04D4 - Idle Energy Ch0Dimm0
+/** Offset 0x04C8 - Idle Energy Ch0Dimm0
   Idle Energy Consumed for 1 clk w/dimm idle/cke on, range[63;0],(10= Def)
 **/
   UINT8                       IdleEnergyCh0Dimm0;
 
-/** Offset 0x04D5 - Idle Energy Ch0Dimm1
+/** Offset 0x04C9 - Idle Energy Ch0Dimm1
   Idle Energy Consumed for 1 clk w/dimm idle/cke on, range[63;0],(10= Def)
 **/
   UINT8                       IdleEnergyCh0Dimm1;
 
-/** Offset 0x04D6 - Idle Energy Ch1Dimm0
+/** Offset 0x04CA - Idle Energy Ch1Dimm0
   Idle Energy Consumed for 1 clk w/dimm idle/cke on, range[63;0],(10= Def)
 **/
   UINT8                       IdleEnergyCh1Dimm0;
 
-/** Offset 0x04D7 - Idle Energy Ch1Dimm1
+/** Offset 0x04CB - Idle Energy Ch1Dimm1
   Idle Energy Consumed for 1 clk w/dimm idle/cke on, range[63;0],(10= Def)
 **/
   UINT8                       IdleEnergyCh1Dimm1;
 
-/** Offset 0x04D8 - PowerDown Energy Ch0Dimm0
+/** Offset 0x04CC - PowerDown Energy Ch0Dimm0
   PowerDown Energy Consumed w/dimm idle/cke off, range[63;0],(5= Def)
 **/
   UINT8                       PdEnergyCh0Dimm0;
 
-/** Offset 0x04D9 - PowerDown Energy Ch0Dimm1
+/** Offset 0x04CD - PowerDown Energy Ch0Dimm1
   PowerDown Energy Consumed w/dimm idle/cke off, range[63;0],(5= Def)
 **/
   UINT8                       PdEnergyCh0Dimm1;
 
-/** Offset 0x04DA - PowerDown Energy Ch1Dimm0
+/** Offset 0x04CE - PowerDown Energy Ch1Dimm0
   PowerDown Energy Consumed w/dimm idle/cke off, range[63;0],(5= Def)
 **/
   UINT8                       PdEnergyCh1Dimm0;
 
-/** Offset 0x04DB - PowerDown Energy Ch1Dimm1
+/** Offset 0x04CF - PowerDown Energy Ch1Dimm1
   PowerDown Energy Consumed w/dimm idle/cke off, range[63;0],(5= Def)
 **/
   UINT8                       PdEnergyCh1Dimm1;
 
-/** Offset 0x04DC - Activate Energy Ch0Dimm0
+/** Offset 0x04D0 - Activate Energy Ch0Dimm0
   Activate Energy Contribution, range[255;0],(172= Def)
 **/
   UINT8                       ActEnergyCh0Dimm0;
 
-/** Offset 0x04DD - Activate Energy Ch0Dimm1
+/** Offset 0x04D1 - Activate Energy Ch0Dimm1
   Activate Energy Contribution, range[255;0],(172= Def)
 **/
   UINT8                       ActEnergyCh0Dimm1;
 
-/** Offset 0x04DE - Activate Energy Ch1Dimm0
+/** Offset 0x04D2 - Activate Energy Ch1Dimm0
   Activate Energy Contribution, range[255;0],(172= Def)
 **/
   UINT8                       ActEnergyCh1Dimm0;
 
-/** Offset 0x04DF - Activate Energy Ch1Dimm1
+/** Offset 0x04D3 - Activate Energy Ch1Dimm1
   Activate Energy Contribution, range[255;0],(172= Def)
 **/
   UINT8                       ActEnergyCh1Dimm1;
 
-/** Offset 0x04E0 - Read Energy Ch0Dimm0
+/** Offset 0x04D4 - Read Energy Ch0Dimm0
   Read Energy Contribution, range[255;0],(212= Def)
 **/
   UINT8                       RdEnergyCh0Dimm0;
 
-/** Offset 0x04E1 - Read Energy Ch0Dimm1
+/** Offset 0x04D5 - Read Energy Ch0Dimm1
   Read Energy Contribution, range[255;0],(212= Def)
 **/
   UINT8                       RdEnergyCh0Dimm1;
 
-/** Offset 0x04E2 - Read Energy Ch1Dimm0
+/** Offset 0x04D6 - Read Energy Ch1Dimm0
   Read Energy Contribution, range[255;0],(212= Def)
 **/
   UINT8                       RdEnergyCh1Dimm0;
 
-/** Offset 0x04E3 - Read Energy Ch1Dimm1
+/** Offset 0x04D7 - Read Energy Ch1Dimm1
   Read Energy Contribution, range[255;0],(212= Def)
 **/
   UINT8                       RdEnergyCh1Dimm1;
 
-/** Offset 0x04E4 - Write Energy Ch0Dimm0
+/** Offset 0x04D8 - Write Energy Ch0Dimm0
   Write Energy Contribution, range[255;0],(221= Def)
 **/
   UINT8                       WrEnergyCh0Dimm0;
 
-/** Offset 0x04E5 - Write Energy Ch0Dimm1
+/** Offset 0x04D9 - Write Energy Ch0Dimm1
   Write Energy Contribution, range[255;0],(221= Def)
 **/
   UINT8                       WrEnergyCh0Dimm1;
 
-/** Offset 0x04E6 - Write Energy Ch1Dimm0
+/** Offset 0x04DA - Write Energy Ch1Dimm0
   Write Energy Contribution, range[255;0],(221= Def)
 **/
   UINT8                       WrEnergyCh1Dimm0;
 
-/** Offset 0x04E7 - Write Energy Ch1Dimm1
+/** Offset 0x04DB - Write Energy Ch1Dimm1
   Write Energy Contribution, range[255;0],(221= Def)
 **/
   UINT8                       WrEnergyCh1Dimm1;
 
-/** Offset 0x04E8 - Throttler CKEMin Timer
+/** Offset 0x04DC - Throttler CKEMin Timer
   Timer value for CKEMin, range[255;0]. Req'd min of SC_ROUND_T + BYTE_LENGTH (4).
   Default is 0x30
 **/
   UINT8                       ThrtCkeMinTmr;
 
-/** Offset 0x04E9 - Cke Rank Mapping
+/** Offset 0x04DD - Cke Rank Mapping
   Bits [7:4] - Channel 1, bits [3:0] - Channel 0. <b>0xAA=Default</b> Bit [i] specifies
   which rank CKE[i] goes to.
 **/
   UINT8                       CkeRankMapping;
 
-/** Offset 0x04EA - Rapl Power Floor Ch0
+/** Offset 0x04DE - Rapl Power Floor Ch0
   Power budget ,range[255;0],(0= 5.3W Def)
 **/
   UINT8                       RaplPwrFlCh0;
 
-/** Offset 0x04EB - Rapl Power Floor Ch1
+/** Offset 0x04DF - Rapl Power Floor Ch1
   Power budget ,range[255;0],(0= 5.3W Def)
 **/
   UINT8                       RaplPwrFlCh1;
 
-/** Offset 0x04EC - Command Rate Support
+/** Offset 0x04E0 - Command Rate Support
   CMD Rate and Limit Support Option. NOTE: ONLY supported in 1N Mode, Default is 3 CMDs
   0:Disable, 1:1 CMD, 2:2 CMDS, 3:3 CMDS, 4:4 CMDS, 5:5 CMDS, 6:6 CMDS, 7:7 CMDS
 **/
   UINT8                       EnCmdRate;
 
-/** Offset 0x04ED - REFRESH_2X_MODE
+/** Offset 0x04E1 - REFRESH_2X_MODE
   0- (Default)Disabled 1-iMC enables 2xRef when Warm and Hot 2- iMC enables 2xRef when Hot
   0:Disable, 1:Enabled for WARM or HOT, 2:Enabled HOT only
 **/
   UINT8                       Refresh2X;
 
-/** Offset 0x04EE - Energy Performance Gain
+/** Offset 0x04E2 - Energy Performance Gain
   Enable/disable(default) Energy Performance Gain.
   $EN_DIS
 **/
   UINT8                       EpgEnable;
 
-/** Offset 0x04EF - Row Hammer Solution
+/** Offset 0x04E3 - Row Hammer Solution
   Type of method used to prevent Row Hammer. Default is Hardware RHP
   0:Hardware RHP, 1:2x Refresh
 **/
   UINT8                       RhSolution;
 
-/** Offset 0x04F0 - User Manual Threshold
+/** Offset 0x04E4 - User Manual Threshold
   Disabled: Predefined threshold will be used.\n
   Enabled: User Input will be used.
   $EN_DIS
 **/
   UINT8                       UserThresholdEnable;
 
-/** Offset 0x04F1 - User Manual Budget
+/** Offset 0x04E5 - User Manual Budget
   Disabled: Configuration of memories will defined the Budget value.\n
   Enabled: User Input will be used.
   $EN_DIS
 **/
   UINT8                       UserBudgetEnable;
 
-/** Offset 0x04F2 -   TcritMax
+/** Offset 0x04E6 -   TcritMax
   Maximum Critical Temperature in Centigrade of the On-DIMM Thermal Sensor. TCRITMax
   has to be greater than THIGHMax .\n
   Critical temperature will be  TcritMax
 **/
   UINT8                       TsodTcritMax;
 
-/** Offset 0x04F3 - Event mode
+/** Offset 0x04E7 - Event mode
   Disable:Comparator mode.\n
   Enable:Interrupt mode
   $EN_DIS
 **/
   UINT8                       TsodEventMode;
 
-/** Offset 0x04F4 - EVENT polarity
+/** Offset 0x04E8 - EVENT polarity
   Disable:Active LOW.\n
   Enable:Active HIGH
   $EN_DIS
 **/
   UINT8                       TsodEventPolarity;
 
-/** Offset 0x04F5 - Critical event only
+/** Offset 0x04E9 - Critical event only
   Disable:Trips on alarm or critical.\n
   Enable:Trips only if criticaal temperature is reached
   $EN_DIS
 **/
   UINT8                       TsodCriticalEventOnly;
 
-/** Offset 0x04F6 - Event output control
+/** Offset 0x04EA - Event output control
   Disable:Event output disable.\n
   Enable:Event output enabled
   $EN_DIS
 **/
   UINT8                       TsodEventOutputControl;
 
-/** Offset 0x04F7 - Alarm window lock bit
+/** Offset 0x04EB - Alarm window lock bit
   Disable:Alarm trips are not locked and can be changed.\n
   Enable:Alarm trips are locked and cannot be changed
   $EN_DIS
 **/
   UINT8                       TsodAlarmwindowLockBit;
 
-/** Offset 0x04F8 - Critical trip lock bit
+/** Offset 0x04EC - Critical trip lock bit
   Disable:Critical trip is not locked and can be changed.\n
   Enable:Critical trip is locked and cannot be changed
   $EN_DIS
 **/
   UINT8                       TsodCriticaltripLockBit;
 
-/** Offset 0x04F9 - Shutdown mode
+/** Offset 0x04ED - Shutdown mode
   Disable:Temperature sensor enable.\n
   Enable:Temperature sensor disable
   $EN_DIS
 **/
   UINT8                       TsodShutdownMode;
 
-/** Offset 0x04FA - ThighMax
+/** Offset 0x04EE - ThighMax
   Thigh = ThighMax (Default is 93)
 **/
   UINT8                       TsodThigMax;
 
-/** Offset 0x04FB - User Manual Thig and Tcrit
+/** Offset 0x04EF - User Manual Thig and Tcrit
   Disabled(Default): Temperature will be given by the configuration of memories and
   1x or 2xrefresh rate.\n
   Enabled: User Input will define for Thigh and Tcrit.
@@ -2225,32 +2221,32 @@ typedef struct {
 **/
   UINT8                       TsodManualEnable;
 
-/** Offset 0x04FC - Force OLTM or 2X Refresh when needed
+/** Offset 0x04F0 - Force OLTM or 2X Refresh when needed
   Disabled(Default): = Force OLTM.\n
   Enabled: = Force 2x Refresh.
   $EN_DIS
 **/
   UINT8                       ForceOltmOrRefresh2x;
 
-/** Offset 0x04FD - Pwr Down Idle Timer
+/** Offset 0x04F1 - Pwr Down Idle Timer
   The minimum value should = to the worst case Roundtrip delay + Burst_Length. 0 means
   AUTO: 64 for ULX/ULT, 128 for DT/Halo
 **/
   UINT8                       PwdwnIdleCounter;
 
-/** Offset 0x04FE - Bitmask of ranks that have CA bus terminated
+/** Offset 0x04F2 - Bitmask of ranks that have CA bus terminated
   Offset 225 LPDDR4: Bitmask of ranks that have CA bus terminated. <b>0x01=Default,
   Rank0 is terminating and Rank1 is non-terminating</b>
 **/
   UINT8                       CmdRanksTerminated;
 
-/** Offset 0x04FF - GDXC  MOT enable
+/** Offset 0x04F3 - GDXC  MOT enable
   GDXC  MOT enable.
   $EN_DIS
 **/
   UINT8                       GdxcEnable;
 
-/** Offset 0x0500 - PcdSerialDebugLevel
+/** Offset 0x04F4 - PcdSerialDebugLevel
   Serial Debug Message Level. 0:Disable, 1:Error Only, 2:Error & Warnings, 3:Load,
   Error, Warnings & Info, 4:Load, Error, Warnings, Info & Event, 5:Load, Error, Warnings,
   Info & Verbose.
@@ -2259,95 +2255,95 @@ typedef struct {
 **/
   UINT8                       PcdSerialDebugLevel;
 
-/** Offset 0x0501 - Fivr Faults
+/** Offset 0x04F5 - Fivr Faults
   Fivr Faults; 0: Disabled; <b>1: Enabled.</b>
   $EN_DIS
 **/
   UINT8                       FivrFaults;
 
-/** Offset 0x0502 - Fivr Efficiency
+/** Offset 0x04F6 - Fivr Efficiency
   Fivr Efficiency Management; 0: Disabled; <b>1: Enabled.</b>
   $EN_DIS
 **/
   UINT8                       FivrEfficiency;
 
-/** Offset 0x0503 - Safe Mode Support
+/** Offset 0x04F7 - Safe Mode Support
   This option configures the varous items in the IO and MC to be more conservative.(def=Disable)
   $EN_DIS
 **/
   UINT8                       SafeMode;
 
-/** Offset 0x0504 - Ask MRC to clear memory content
+/** Offset 0x04F8 - Ask MRC to clear memory content
   Ask MRC to clear memory content <b>0: Do not Clear Memory;</b> 1: Clear Memory.
   $EN_DIS
 **/
   UINT8                       CleanMemory;
 
-/** Offset 0x0505 - LpDdrDqDqsReTraining
+/** Offset 0x04F9 - LpDdrDqDqsReTraining
   Enables/Disable LpDdrDqDqsReTraining
   $EN_DIS
 **/
   UINT8                       LpDdrDqDqsReTraining;
 
-/** Offset 0x0506 - Post Code Output Port
+/** Offset 0x04FA - Post Code Output Port
   This option configures Post Code Output Port
 **/
   UINT16                      PostCodeOutputPort;
 
-/** Offset 0x0508 - RMTLoopCount
+/** Offset 0x04FC - RMTLoopCount
   Specifies the Loop Count to be used during Rank Margin Tool Testing. 0 - AUTO
 **/
   UINT8                       RMTLoopCount;
 
-/** Offset 0x0509 - BER Support
+/** Offset 0x04FD - BER Support
   Enable/Disable the Rank Margin Tool interpolation/extrapolation.
   0:Disable, 1:Enable
 **/
   UINT8                       EnBER;
 
-/** Offset 0x050A - Dual Dimm Per-Channel Board Type
+/** Offset 0x04FE - Dual Dimm Per-Channel Board Type
   Option to indicate if Board Layout includes One/Two DIMMs per channel. This is used
   to limit maximum frequency for some SKUs.
   0:1DPC, 1:2DPC
 **/
   UINT8                       DualDimmPerChannelBoardType;
 
-/** Offset 0x050B - DDR4 Mixed U-DIMM 2DPC Limitation
+/** Offset 0x04FF - DDR4 Mixed U-DIMM 2DPC Limitation
   Enable/Disable 2667 Frequency Limitation for DDR4 U-DIMM Mixed Dimm 2DPC population.
   Disable=0, Enable(Default)=1
   $EN_DIS
 **/
   UINT8                       Ddr4MixedUDimm2DpcLimit;
 
-/** Offset 0x050C - CFL Reserved
+/** Offset 0x0500 - CFL Reserved
   Reserved FspmConfig CFL
   $EN_DIS
 **/
   UINT8                       ReservedFspmUpdCfl[2];
 
-/** Offset 0x050E - Memory Test on Warm Boot
+/** Offset 0x0502 - Memory Test on Warm Boot
   Run Base Memory Test on Warm Boot
   0:Disable, 1:Enable
 **/
   UINT8                       MemTestOnWarmBoot;
 
-/** Offset 0x050F - Throttler CKEMin Timer - LPDDR
+/** Offset 0x0503 - Throttler CKEMin Timer - LPDDR
   Timer value for CKEMin (For LPDDR Only), range[255;0]. Req'd min of SC_ROUND_T +
   BYTE_LENGTH (4). Default is 0x40
 **/
   UINT8                       ThrtCkeMinTmrLpddr;
 
-/** Offset 0x0510 - State of X2APIC_OPT_OUT bit in the DMAR table
+/** Offset 0x0504 - State of X2APIC_OPT_OUT bit in the DMAR table
   0=Disable/Clear, 1=Enable/Set
   $EN_DIS
 **/
   UINT8                       X2ApicOptOut;
 
-/** Offset 0x0511
+/** Offset 0x0505
 **/
-  UINT8                       UnusedUpdSpace11[6];
+  UINT8                       UnusedUpdSpace10[2];
 
-/** Offset 0x0517
+/** Offset 0x0507
 **/
   UINT8                       ReservedFspmUpd[9];
 } FSP_M_CONFIG;
@@ -2356,51 +2352,51 @@ typedef struct {
 **/
 typedef struct {
 
-/** Offset 0x0520
+/** Offset 0x0510
 **/
   UINT32                      Signature;
 
-/** Offset 0x0524 - Skip external display device scanning
+/** Offset 0x0514 - Skip external display device scanning
   Enable: Do not scan for external display device, Disable (Default): Scan external
   display devices
   $EN_DIS
 **/
   UINT8                       SkipExtGfxScan;
 
-/** Offset 0x0525 - Generate BIOS Data ACPI Table
+/** Offset 0x0515 - Generate BIOS Data ACPI Table
   Enable: Generate BDAT for MRC RMT or SA PCIe data. Disable (Default): Do not generate it
   $EN_DIS
 **/
   UINT8                       BdatEnable;
 
-/** Offset 0x0526 - Detect External Graphics device for LegacyOpROM
+/** Offset 0x0516 - Detect External Graphics device for LegacyOpROM
   Detect and report if external graphics device only support LegacyOpROM or not (to
   support CSM auto-enable). Enable(Default)=1, Disable=0
   $EN_DIS
 **/
   UINT8                       ScanExtGfxForLegacyOpRom;
 
-/** Offset 0x0527 - Lock PCU Thermal Management registers
+/** Offset 0x0517 - Lock PCU Thermal Management registers
   Lock PCU Thermal Management registers. Enable(Default)=1, Disable=0
   $EN_DIS
 **/
   UINT8                       LockPTMregs;
 
-/** Offset 0x0528 - DMI Max Link Speed
+/** Offset 0x0518 - DMI Max Link Speed
   Auto (Default)(0x0): Maximum possible link speed, Gen1(0x1): Limit Link to Gen1
   Speed, Gen2(0x2): Limit Link to Gen2 Speed, Gen3(0x3):Limit Link to Gen3 Speed
   0:Auto, 1:Gen1, 2:Gen2, 3:Gen3
 **/
   UINT8                       DmiMaxLinkSpeed;
 
-/** Offset 0x0529 - DMI Equalization Phase 2
+/** Offset 0x0519 - DMI Equalization Phase 2
   DMI Equalization Phase 2. (0x0): Disable phase 2, (0x1): Enable phase 2, (0x2)(Default):
   AUTO - Use the current default method
   0:Disable phase2, 1:Enable phase2, 2:Auto
 **/
   UINT8                       DmiGen3EqPh2Enable;
 
-/** Offset 0x052A - DMI Gen3 Equalization Phase3
+/** Offset 0x051A - DMI Gen3 Equalization Phase3
   DMI Gen3 Equalization Phase3. Auto(0x0)(Default): Use the current default method,
   HwEq(0x1): Use Adaptive Hardware Equalization, SwEq(0x2): Use Adaptive Software
   Equalization (Implemented in BIOS Reference Code), Static(0x3): Use the Static
@@ -2410,35 +2406,35 @@ typedef struct {
 **/
   UINT8                       DmiGen3EqPh3Method;
 
-/** Offset 0x052B - Phase2 EQ enable on the PEG 0:1:0.
+/** Offset 0x051B - Phase2 EQ enable on the PEG 0:1:0.
   Phase2 EQ enable on the PEG 0:1:0. Disabled(0x0): Disable phase 2, Enabled(0x1):
   Enable phase 2, Auto(0x2)(Default): Use the current default method
   0:Disable, 1:Enable, 2:Auto
 **/
   UINT8                       Peg0Gen3EqPh2Enable;
 
-/** Offset 0x052C - Phase2 EQ enable on the PEG 0:1:1.
+/** Offset 0x051C - Phase2 EQ enable on the PEG 0:1:1.
   Phase2 EQ enable on the PEG 0:1:0. Disabled(0x0): Disable phase 2, Enabled(0x1):
   Enable phase 2, Auto(0x2)(Default): Use the current default method
   0:Disable, 1:Enable, 2:Auto
 **/
   UINT8                       Peg1Gen3EqPh2Enable;
 
-/** Offset 0x052D - Phase2 EQ enable on the PEG 0:1:2.
+/** Offset 0x051D - Phase2 EQ enable on the PEG 0:1:2.
   Phase2 EQ enable on the PEG 0:1:0. Disabled(0x0): Disable phase 2, Enabled(0x1):
   Enable phase 2, Auto(0x2)(Default): Use the current default method
   0:Disable, 1:Enable, 2:Auto
 **/
   UINT8                       Peg2Gen3EqPh2Enable;
 
-/** Offset 0x052E - Phase2 EQ enable on the PEG 0:1:3.
+/** Offset 0x051E - Phase2 EQ enable on the PEG 0:1:3.
   Phase2 EQ enable on the PEG 0:1:0. Disabled(0x0): Disable phase 2, Enabled(0x1):
   Enable phase 2, Auto(0x2)(Default): Use the current default method
   0:Disable, 1:Enable, 2:Auto
 **/
   UINT8                       Peg3Gen3EqPh2Enable;
 
-/** Offset 0x052F - Phase3 EQ method on the PEG 0:1:0.
+/** Offset 0x051F - Phase3 EQ method on the PEG 0:1:0.
   PEG Gen3 Equalization Phase3. Auto(0x0)(Default): Use the current default method,
   HwEq(0x1): Use Adaptive Hardware Equalization, SwEq(0x2): Use Adaptive Software
   Equalization (Implemented in BIOS Reference Code), Static(0x3): Use the Static
@@ -2448,7 +2444,7 @@ typedef struct {
 **/
   UINT8                       Peg0Gen3EqPh3Method;
 
-/** Offset 0x0530 - Phase3 EQ method on the PEG 0:1:1.
+/** Offset 0x0520 - Phase3 EQ method on the PEG 0:1:1.
   PEG Gen3 Equalization Phase3. Auto(0x0)(Default): Use the current default method,
   HwEq(0x1): Use Adaptive Hardware Equalization, SwEq(0x2): Use Adaptive Software
   Equalization (Implemented in BIOS Reference Code), Static(0x3): Use the Static
@@ -2458,7 +2454,7 @@ typedef struct {
 **/
   UINT8                       Peg1Gen3EqPh3Method;
 
-/** Offset 0x0531 - Phase3 EQ method on the PEG 0:1:2.
+/** Offset 0x0521 - Phase3 EQ method on the PEG 0:1:2.
   PEG Gen3 Equalization Phase3. Auto(0x0)(Default): Use the current default method,
   HwEq(0x1): Use Adaptive Hardware Equalization, SwEq(0x2): Use Adaptive Software
   Equalization (Implemented in BIOS Reference Code), Static(0x3): Use the Static
@@ -2468,7 +2464,7 @@ typedef struct {
 **/
   UINT8                       Peg2Gen3EqPh3Method;
 
-/** Offset 0x0532 - Phase3 EQ method on the PEG 0:1:3.
+/** Offset 0x0522 - Phase3 EQ method on the PEG 0:1:3.
   PEG Gen3 Equalization Phase3. Auto(0x0)(Default): Use the current default method,
   HwEq(0x1): Use Adaptive Hardware Equalization, SwEq(0x2): Use Adaptive Software
   Equalization (Implemented in BIOS Reference Code), Static(0x3): Use the Static
@@ -2478,14 +2474,14 @@ typedef struct {
 **/
   UINT8                       Peg3Gen3EqPh3Method;
 
-/** Offset 0x0533 - Enable/Disable PEG GEN3 Static EQ Phase1 programming
+/** Offset 0x0523 - Enable/Disable PEG GEN3 Static EQ Phase1 programming
   Program PEG Gen3 EQ Phase1 Static Presets. Disabled(0x0): Disable EQ Phase1 Static
   Presets Programming, Enabled(0x1)(Default): Enable  EQ Phase1 Static Presets Programming
   $EN_DIS
 **/
   UINT8                       PegGen3ProgramStaticEq;
 
-/** Offset 0x0534 - PEG Gen3 SwEq Always Attempt
+/** Offset 0x0524 - PEG Gen3 SwEq Always Attempt
   Gen3 Software Equalization will be executed every boot. Disabled(0x0)(Default):
   Reuse EQ settings saved/restored from NVRAM whenever possible, Enabled(0x1): Re-test
   and generate new EQ values every boot, not recommended
@@ -2493,7 +2489,7 @@ typedef struct {
 **/
   UINT8                       Gen3SwEqAlwaysAttempt;
 
-/** Offset 0x0535 - Select number of TxEq presets to test in the PCIe/DMI SwEq
+/** Offset 0x0525 - Select number of TxEq presets to test in the PCIe/DMI SwEq
   Select number of TxEq presets to test in the PCIe/DMI SwEq. P7,P3,P5(0x0): Test
   Presets 7, 3, and 5, P0-P9(0x1): Test Presets 0-9, Auto(0x2)(Default): Use the
   current default method (Default)Auto will test Presets 7, 3, and 5.  It is possible
@@ -2503,7 +2499,7 @@ typedef struct {
 **/
   UINT8                       Gen3SwEqNumberOfPresets;
 
-/** Offset 0x0536 - Enable use of the Voltage Offset and Centering Test in the PCIe SwEq
+/** Offset 0x0526 - Enable use of the Voltage Offset and Centering Test in the PCIe SwEq
   Enable use of the Voltage Offset and Centering Test in the PCIe Software Equalization
   Algorithm. Disabled(0x0): Disable VOC Test, Enabled(0x1): Enable VOC Test, Auto(0x2)(Default):
   Use the current default
@@ -2511,7 +2507,7 @@ typedef struct {
 **/
   UINT8                       Gen3SwEqEnableVocTest;
 
-/** Offset 0x0537 - PCIe Rx Compliance Testing Mode
+/** Offset 0x0527 - PCIe Rx Compliance Testing Mode
   Disabled(0x0)(Default): Normal Operation - Disable PCIe Rx Compliance testing, Enabled(0x1):
   PCIe Rx Compliance Test Mode - PEG controller is in Rx Compliance Testing Mode;
   it should only be set when doing PCIe compliance testing
@@ -2519,12 +2515,12 @@ typedef struct {
 **/
   UINT8                       PegRxCemTestingMode;
 
-/** Offset 0x0538 - PCIe Rx Compliance Loopback Lane  When PegRxCemTestingMode is Enabled
+/** Offset 0x0528 - PCIe Rx Compliance Loopback Lane  When PegRxCemTestingMode is Enabled
   the specificied Lane (0 - 15) will be  used for RxCEMLoopback.  Default is Lane 0
 **/
   UINT8                       PegRxCemLoopbackLane;
 
-/** Offset 0x0539 - Generate PCIe BDAT Margin Table
+/** Offset 0x0529 - Generate PCIe BDAT Margin Table
   Set this policy to enable the generation and addition of PCIe margin data to the
   BDAT table. Disabled(0x0)(Default): Normal Operation - Disable PCIe BDAT margin
   data generation, Enable(0x1): Generate PCIe BDAT margin data
@@ -2532,7 +2528,7 @@ typedef struct {
 **/
   UINT8                       PegGenerateBdatMarginTable;
 
-/** Offset 0x053A - PCIe Non-Protocol Awareness for Rx Compliance Testing
+/** Offset 0x052A - PCIe Non-Protocol Awareness for Rx Compliance Testing
   Set this policy to enable the generation and addition of PCIe margin data to the
   BDAT table. Disabled(0x0)(Default): Normal Operation - Disable non-protocol awareness,
   Enable(0x1): Non-Protocol Awareness Enabled - Enable non-protocol awareness for
@@ -2541,7 +2537,7 @@ typedef struct {
 **/
   UINT8                       PegRxCemNonProtocolAwareness;
 
-/** Offset 0x053B - PCIe Override RxCTLE
+/** Offset 0x052B - PCIe Override RxCTLE
   Disable(0x0)(Default): Normal Operation - RxCTLE adaptive behavior enabled, Enable(0x1):
   Override RxCTLE - Disable RxCTLE adaptive behavior to keep the configured RxCTLE
   peak values unmodified
@@ -2549,7 +2545,7 @@ typedef struct {
 **/
   UINT8                       PegGen3RxCtleOverride;
 
-/** Offset 0x053C - Rsvd
+/** Offset 0x052C - Rsvd
   Disable(0x0)(Default): Normal Operation - RxCTLE adaptive behavior enabled, Enable(0x1):
   Override RxCTLE - Disable RxCTLE adaptive behavior to keep the configured RxCTLE
   peak values unmodified
@@ -2557,307 +2553,284 @@ typedef struct {
 **/
   UINT8                       PegGen3Rsvd;
 
-/** Offset 0x053D - PEG Gen3 Root port preset values per lane
+/** Offset 0x052D - PEG Gen3 Root port preset values per lane
   Used for programming PEG Gen3 preset values per lane. Range: 0-9, 8 is default for each lane
 **/
   UINT8                       PegGen3RootPortPreset[20];
 
-/** Offset 0x0551 - PEG Gen3 End port preset values per lane
+/** Offset 0x0541 - PEG Gen3 End port preset values per lane
   Used for programming PEG Gen3 preset values per lane. Range: 0-9, 7 is default for each lane
 **/
   UINT8                       PegGen3EndPointPreset[20];
 
-/** Offset 0x0565 - PEG Gen3 End port Hint values per lane
+/** Offset 0x0555 - PEG Gen3 End port Hint values per lane
   Used for programming PEG Gen3 Hint values per lane. Range: 0-6, 2 is default for each lane
 **/
   UINT8                       PegGen3EndPointHint[20];
 
-/** Offset 0x0579
+/** Offset 0x0569
 **/
-  UINT8                       UnusedUpdSpace12;
+  UINT8                       UnusedUpdSpace11;
 
-/** Offset 0x057A - Jitter Dwell Time for PCIe Gen3 Software Equalization
+/** Offset 0x056A - Jitter Dwell Time for PCIe Gen3 Software Equalization
   Range: 0-65535, default is 1000. @warning Do not change from the default
 **/
   UINT16                      Gen3SwEqJitterDwellTime;
 
-/** Offset 0x057C - Jitter Error Target for PCIe Gen3 Software Equalization
+/** Offset 0x056C - Jitter Error Target for PCIe Gen3 Software Equalization
   Range: 0-65535, default is 1. @warning Do not change from the default
 **/
   UINT16                      Gen3SwEqJitterErrorTarget;
 
-/** Offset 0x057E - VOC Dwell Time for PCIe Gen3 Software Equalization
+/** Offset 0x056E - VOC Dwell Time for PCIe Gen3 Software Equalization
   Range: 0-65535, default is 10000. @warning Do not change from the default
 **/
   UINT16                      Gen3SwEqVocDwellTime;
 
-/** Offset 0x0580 - VOC Error Target for PCIe Gen3 Software Equalization
+/** Offset 0x0570 - VOC Error Target for PCIe Gen3 Software Equalization
   Range: 0-65535, default is 2. @warning Do not change from the default
 **/
   UINT16                      Gen3SwEqVocErrorTarget;
 
-/** Offset 0x0582 - Panel Power Enable
+/** Offset 0x0572 - Panel Power Enable
   Control for enabling/disabling VDD force bit (Required only for early enabling of
   eDP panel). 0=Disable, 1(Default)=Enable
   $EN_DIS
 **/
   UINT8                       PanelPowerEnable;
 
-/** Offset 0x0583 - BdatTestType
+/** Offset 0x0573 - BdatTestType
   Indicates the type of Memory Training data to populate into the BDAT ACPI table.
   0:Rank Margin Tool, 1:Margin2D
 **/
   UINT8                       BdatTestType;
 
-/** Offset 0x0584 - Disable VT-d
+/** Offset 0x0574 - Disable VT-d
   0=Enable/FALSE(VT-d enabled), 1=Disable/TRUE (VT-d disabled)
   $EN_DIS
 **/
   UINT8                       VtdDisable;
 
-/** Offset 0x0585
+/** Offset 0x0575
 **/
-  UINT8                       UnusedUpdSpace13;
+  UINT8                       UnusedUpdSpace12;
 
-/** Offset 0x0586 - Delta T12 Power Cycle Delay required in ms
+/** Offset 0x0576 - Delta T12 Power Cycle Delay required in ms
   Select the value for delay required. 0(Default)= No delay, 0xFFFF = Auto calculate
   T12 Delay to max 500ms
   0 : No Delay, 0xFFFF : Auto Calulate T12 Delay
 **/
   UINT16                      DeltaT12PowerCycleDelayPreMem;
 
-/** Offset 0x0588 - SaPreMemTestRsvd
+/** Offset 0x0578 - SaPreMemTestRsvd
   Reserved for SA Pre-Mem Test
   $EN_DIS
 **/
   UINT8                       SaPreMemTestRsvd[9];
 
-/** Offset 0x0591
+/** Offset 0x0581
 **/
-  UINT8                       UnusedUpdSpace14;
+  UINT8                       UnusedUpdSpace13;
 
-/** Offset 0x0592 - TotalFlashSize
+/** Offset 0x0582 - TotalFlashSize
   Enable/Disable. 0: Disable, define default value of TotalFlashSize , 1: enable
 **/
   UINT16                      TotalFlashSize;
 
-/** Offset 0x0594 - BiosSize
+/** Offset 0x0584 - BiosSize
   Enable/Disable. 0: Disable, define default value of BiosSize , 1: enable
 **/
   UINT16                      BiosSize;
 
-/** Offset 0x0596 - TxtAcheckRequest
+/** Offset 0x0586 - TxtAcheckRequest
   Enable/Disable. When Enabled, it will forcing calling TXT Acheck once.
   $EN_DIS
 **/
   UINT8                       TxtAcheckRequest;
 
-/** Offset 0x0597 - SecurityTestRsvd
+/** Offset 0x0587 - SecurityTestRsvd
   Reserved for SA Pre-Mem Test
   $EN_DIS
 **/
   UINT8                       SecurityTestRsvd[3];
 
-/** Offset 0x059A - PCH Dci Enable
-  Enable/disable PCH Dci.
-  $EN_DIS
-**/
-  UINT8                       PchDciEn;
-
-/** Offset 0x059B - Smbus dynamic power gating
+/** Offset 0x058A - Smbus dynamic power gating
   Disable or Enable Smbus dynamic power gating.
   $EN_DIS
 **/
   UINT8                       SmbusDynamicPowerGating;
 
-/** Offset 0x059C - Disable and Lock Watch Dog Register
+/** Offset 0x058B - Disable and Lock Watch Dog Register
   Set 1 to clear WDT status, then disable and lock WDT registers.
   $EN_DIS
 **/
   UINT8                       WdtDisableAndLock;
 
-/** Offset 0x059D - SMBUS SPD Write Disable
+/** Offset 0x058C - SMBUS SPD Write Disable
   Set/Clear Smbus SPD Write Disable. 0: leave SPD Write Disable bit; 1: set SPD Write
   Disable bit. For security recommendations, SPD write disable bit must be set.
   $EN_DIS
 **/
   UINT8                       SmbusSpdWriteDisable;
 
-/** Offset 0x059E - ChipsetInit HECI message
-  Enable/Disable. 0: Disable, 1: enable, Enable or disable ChipsetInit HECI message.
-  If disabled, it prevents from sending ChipsetInit HECI message.
-  $EN_DIS
-**/
-  UINT8                       ChipsetInitMessage;
-
-/** Offset 0x059F - Bypass ChipsetInit sync reset.
-  0: disable, 1: enable, Set Enable to bypass the reset after ChipsetInit HECI message.
-  $EN_DIS
-**/
-  UINT8                       BypassPhySyncReset;
-
-/** Offset 0x05A0 - ReservedPchPreMemTest
+/** Offset 0x058D - ReservedPchPreMemTest
   Reserved for Pch Pre-Mem Test
   $EN_DIS
 **/
   UINT8                       ReservedPchPreMemTest[16];
 
-/** Offset 0x05B0 - Force ME DID Init Status
+/** Offset 0x059D - Force ME DID Init Status
   Test, 0: disable, 1: Success, 2: No Memory in Channels, 3: Memory Init Error, Set
   ME DID init stat value
   $EN_DIS
 **/
   UINT8                       DidInitStat;
 
-/** Offset 0x05B1 - CPU Replaced Polling Disable
+/** Offset 0x059E - CPU Replaced Polling Disable
   Test, 0: disable, 1: enable, Setting this option disables CPU replacement polling loop
   $EN_DIS
 **/
   UINT8                       DisableCpuReplacedPolling;
 
-/** Offset 0x05B2 - ME DID Message
+/** Offset 0x059F - ME DID Message
   Test, 0: disable, 1: enable, Enable/Disable ME DID Message (disable will prevent
   the DID message from being sent)
   $EN_DIS
 **/
   UINT8                       SendDidMsg;
 
-/** Offset 0x05B3 - Check HECI message before send
+/** Offset 0x05A0 - Check HECI message before send
   Test, 0: disable, 1: enable, Enable/Disable message check.
   $EN_DIS
 **/
   UINT8                       DisableMessageCheck;
 
-/** Offset 0x05B4 - Skip MBP HOB
+/** Offset 0x05A1 - Skip MBP HOB
   Test, 0: disable, 1: enable, Enable/Disable MOB HOB.
   $EN_DIS
 **/
   UINT8                       SkipMbpHob;
 
-/** Offset 0x05B5 - HECI2 Interface Communication
+/** Offset 0x05A2 - HECI2 Interface Communication
   Test, 0: disable, 1: enable, Adds or Removes HECI2 Device from PCI space.
   $EN_DIS
 **/
   UINT8                       HeciCommunication2;
 
-/** Offset 0x05B6 - Enable KT device
+/** Offset 0x05A3 - Enable KT device
   Test, 0: disable, 1: enable, Enable or Disable KT device.
   $EN_DIS
 **/
   UINT8                       KtDeviceEnable;
 
-/** Offset 0x05B7 - tRd2RdSG
+/** Offset 0x05A4 - tRd2RdSG
   Delay between Read-to-Read commands in the same Bank Group. 0-Auto, Range 4-54.
 **/
   UINT8                       tRd2RdSG;
 
-/** Offset 0x05B8 - tRd2RdDG
+/** Offset 0x05A5 - tRd2RdDG
   Delay between Read-to-Read commands in different Bank Group for DDR4. All other
   DDR technologies should set this equal to SG. 0-Auto, Range 4-54.
 **/
   UINT8                       tRd2RdDG;
 
-/** Offset 0x05B9 - tRd2RdDR
+/** Offset 0x05A6 - tRd2RdDR
   Delay between Read-to-Read commands in different Ranks. 0-Auto, Range 4-54.
 **/
   UINT8                       tRd2RdDR;
 
-/** Offset 0x05BA - tRd2RdDD
+/** Offset 0x05A7 - tRd2RdDD
   Delay between Read-to-Read commands in different DIMMs. 0-Auto, Range 4-54.
 **/
   UINT8                       tRd2RdDD;
 
-/** Offset 0x05BB - tWr2RdSG
+/** Offset 0x05A8 - tWr2RdSG
   Delay between Write-to-Read commands in the same Bank Group. 0-Auto, Range 4-86.
 **/
   UINT8                       tWr2RdSG;
 
-/** Offset 0x05BC - tWr2RdDG
+/** Offset 0x05A9 - tWr2RdDG
   Delay between Write-to-Read commands in different Bank Group for DDR4. All other
   DDR technologies should set this equal to SG. 0-Auto, Range 4-54.
 **/
   UINT8                       tWr2RdDG;
 
-/** Offset 0x05BD - tWr2RdDR
+/** Offset 0x05AA - tWr2RdDR
   Delay between Write-to-Read commands in different Ranks. 0-Auto, Range 4-54.
 **/
   UINT8                       tWr2RdDR;
 
-/** Offset 0x05BE - tWr2RdDD
+/** Offset 0x05AB - tWr2RdDD
   Delay between Write-to-Read commands in different DIMMs. 0-Auto, Range 4-54.
 **/
   UINT8                       tWr2RdDD;
 
-/** Offset 0x05BF - tWr2WrSG
+/** Offset 0x05AC - tWr2WrSG
   Delay between Write-to-Write commands in the same Bank Group. 0-Auto, Range 4-54.
 **/
   UINT8                       tWr2WrSG;
 
-/** Offset 0x05C0 - tWr2WrDG
+/** Offset 0x05AD - tWr2WrDG
   Delay between Write-to-Write commands in different Bank Group for DDR4. All other
   DDR technologies should set this equal to SG. 0-Auto, Range 4-54.
 **/
   UINT8                       tWr2WrDG;
 
-/** Offset 0x05C1 - tWr2WrDR
+/** Offset 0x05AE - tWr2WrDR
   Delay between Write-to-Write commands in different Ranks. 0-Auto, Range 4-54.
 **/
   UINT8                       tWr2WrDR;
 
-/** Offset 0x05C2 - tWr2WrDD
+/** Offset 0x05AF - tWr2WrDD
   Delay between Write-to-Write commands in different DIMMs. 0-Auto, Range 4-54.
 **/
   UINT8                       tWr2WrDD;
 
-/** Offset 0x05C3 - tRd2WrSG
+/** Offset 0x05B0 - tRd2WrSG
   Delay between Read-to-Write commands in the same Bank Group. 0-Auto, Range 4-54.
 **/
   UINT8                       tRd2WrSG;
 
-/** Offset 0x05C4 - tRd2WrDG
+/** Offset 0x05B1 - tRd2WrDG
   Delay between Read-to-Write commands in different Bank Group for DDR4. All other
   DDR technologies should set this equal to SG. 0-Auto, Range 4-54.
 **/
   UINT8                       tRd2WrDG;
 
-/** Offset 0x05C5 - tRd2WrDR
+/** Offset 0x05B2 - tRd2WrDR
   Delay between Read-to-Write commands in different Ranks. 0-Auto, Range 4-54.
 **/
   UINT8                       tRd2WrDR;
 
-/** Offset 0x05C6 - tRd2WrDD
+/** Offset 0x05B3 - tRd2WrDD
   Delay between Read-to-Write commands in different DIMMs. 0-Auto, Range 4-54.
 **/
   UINT8                       tRd2WrDD;
 
-/** Offset 0x05C7 - tRRD_L
+/** Offset 0x05B4 - tRRD_L
   Min Row Active to Row Active Delay Time for Same Bank Group, DDR4 Only. 0: AUTO, max: 31
 **/
   UINT8                       tRRD_L;
 
-/** Offset 0x05C8 - tRRD_S
+/** Offset 0x05B5 - tRRD_S
   Min Row Active to Row Active Delay Time for Different Bank Group, DDR4 Only. 0:
   AUTO, max: 31
 **/
   UINT8                       tRRD_S;
 
-/** Offset 0x05C9 - tWTR_L
+/** Offset 0x05B6 - tWTR_L
   Min Internal Write to Read Command Delay Time for Same Bank Group, DDR4 Only. 0:
   AUTO, max: 60
 **/
   UINT8                       tWTR_L;
 
-/** Offset 0x05CA - tWTR_S
+/** Offset 0x05B7 - tWTR_S
   Min Internal Write to Read Command Delay Time for Different Bank Group, DDR4 Only.
   0: AUTO, max: 28
 **/
   UINT8                       tWTR_S;
 
-/** Offset 0x05CB
-**/
-  UINT8                       UnusedUpdSpace15[1];
-
-/** Offset 0x05CC
+/** Offset 0x05B8
 **/
   UINT8                       ReservedFspmTestUpd[4];
 } FSP_M_TEST_CONFIG;
@@ -2878,15 +2851,11 @@ typedef struct {
 **/
   FSP_M_CONFIG                FspmConfig;
 
-/** Offset 0x0520
+/** Offset 0x0510
 **/
   FSP_M_TEST_CONFIG           FspmTestConfig;
 
-/** Offset 0x05D0
-**/
-  UINT8                       UnusedUpdSpace16[4];
-
-/** Offset 0x05D4
+/** Offset 0x05BC
 **/
   UINT32                      UpdTerminator;
 } FSPM_UPD;

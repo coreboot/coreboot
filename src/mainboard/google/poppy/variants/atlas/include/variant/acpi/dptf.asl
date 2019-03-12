@@ -19,22 +19,22 @@
 
 #define DPTF_TSR0_SENSOR_ID		1
 #define DPTF_TSR0_SENSOR_NAME		"Ambient"
-#define DPTF_TSR0_PASSIVE		48
-#define DPTF_TSR0_CRITICAL		90
+#define DPTF_TSR0_PASSIVE		50
+#define DPTF_TSR0_CRITICAL		75
 
 #define DPTF_TSR1_SENSOR_ID		2
 #define DPTF_TSR1_SENSOR_NAME		"Charger"
-#define DPTF_TSR1_PASSIVE		53
-#define DPTF_TSR1_CRITICAL		90
+#define DPTF_TSR1_PASSIVE		57
+#define DPTF_TSR1_CRITICAL		75
 
 #define DPTF_TSR2_SENSOR_ID		3
 #define DPTF_TSR2_SENSOR_NAME		"DRAM"
-#define DPTF_TSR2_PASSIVE		54
+#define DPTF_TSR2_PASSIVE		55
 #define DPTF_TSR2_CRITICAL		75
 
 #define DPTF_TSR3_SENSOR_ID		4
 #define DPTF_TSR3_SENSOR_NAME		"eMMC"
-#define DPTF_TSR3_PASSIVE		54
+#define DPTF_TSR3_PASSIVE		52
 #define DPTF_TSR3_CRITICAL		75
 
 #undef DPTF_ENABLE_FAN_CONTROL
@@ -53,25 +53,25 @@ Name (DTRT, Package () {
 	Package () { \_SB.PCI0.B0D4, \_SB.PCI0.B0D4, 100, 50, 0, 0, 0, 0 },
 
 	/* CPU Throttle Effect on Ambient */
-	Package () { \_SB.PCI0.B0D4, \_SB.DPTF.TSR0, 100, 600, 0, 0, 0, 0 },
+	Package () { \_SB.PCI0.B0D4, \_SB.DPTF.TSR0, 100, 200, 0, 0, 0, 0 },
 
 	/* CPU Throttle Effect on DRAM */
-	Package () { \_SB.PCI0.B0D4, \_SB.DPTF.TSR2, 100, 600, 0, 0, 0, 0 },
+	Package () { \_SB.PCI0.B0D4, \_SB.DPTF.TSR2, 100, 200, 0, 0, 0, 0 },
 
 	/* CPU Throttle Effect on eMMC */
-	Package () { \_SB.PCI0.B0D4, \_SB.DPTF.TSR3, 100, 600, 0, 0, 0, 0 },
+	Package () { \_SB.PCI0.B0D4, \_SB.DPTF.TSR3, 100, 200, 0, 0, 0, 0 },
 
 	/* Charger Throttle Effect on Ambient */
-	Package () { \_SB.DPTF.TCHG, \_SB.DPTF.TSR0, 200, 50, 0, 0, 0, 0 },
+	Package () { \_SB.DPTF.TCHG, \_SB.DPTF.TSR0, 200, 200, 0, 0, 0, 0 },
 
 	/* Charger Throttle Effect on Charger */
-	Package () { \_SB.DPTF.TCHG, \_SB.DPTF.TSR1, 200, 50, 0, 0, 0, 0 },
+	Package () { \_SB.DPTF.TCHG, \_SB.DPTF.TSR1, 200, 200, 0, 0, 0, 0 },
 
 	/* Charger Throttle Effect on DRAM */
-	Package () { \_SB.DPTF.TCHG, \_SB.DPTF.TSR2, 200, 50, 0, 0, 0, 0 },
+	Package () { \_SB.DPTF.TCHG, \_SB.DPTF.TSR2, 200, 200, 0, 0, 0, 0 },
 
 	/* Charger Throttle Effect on eMMC */
-	Package () { \_SB.DPTF.TCHG, \_SB.DPTF.TSR3, 200, 50, 0, 0, 0, 0 },
+	Package () { \_SB.DPTF.TCHG, \_SB.DPTF.TSR3, 200, 200, 0, 0, 0, 0 },
 })
 
 Name (MPPC, Package ()

@@ -64,6 +64,7 @@ int google_chromeec_kbbacklight(int percent);
 void google_chromeec_post(u8 postcode);
 int google_chromeec_vbnv_context(int is_read, uint8_t *data, int len);
 uint8_t google_chromeec_get_switches(void);
+bool google_chromeec_get_ap_watchdog_flag(void);
 
 /* Temporary secure storage commands */
 int google_chromeec_vstore_supported(void);

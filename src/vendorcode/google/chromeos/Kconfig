@@ -89,5 +89,11 @@ config CHROMEOS_DISABLE_PLATFORM_HIERARCHY_ON_RESUME
 	  on normal boot as well as resume and coreboot is only involved
 	  in the resume piece w.r.t. the platform hierarchy.
 
+config CHROMEOS_USE_EC_WATCHDOG_FLAG
+	bool
+	default n
+	help
+	  Use the AP watchdog flag stored in EC.
+
 endif # CHROMEOS
 endmenu

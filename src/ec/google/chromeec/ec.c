@@ -704,6 +704,29 @@ retry:
 	return cec_cmd.cmd_code;
 }
 
+static uint16_t google_chromeec_get_uptime_info(
+	struct ec_response_uptime_info *rsp)
+{
+	struct chromeec_command cmd = {
+		.cmd_code = EC_CMD_GET_UPTIME_INFO,
+		.cmd_version = 0,
+		.cmd_data_in = NULL,
+		.cmd_size_in = 0,
+		.cmd_data_out = rsp,
+		.cmd_size_out = sizeof(*rsp),
+		.cmd_dev_index = 0,
+	};
+	google_chromeec_command(&cmd);
+	return cmd.cmd_code;
+}
+
+bool google_chromeec_get_ap_watchdog_flag(void)
+{
+	struct ec_response_uptime_info rsp;
+	return (!google_chromeec_get_uptime_info(&rsp) &&
+		(rsp.ec_reset_flags & EC_RESET_FLAG_AP_WATCHDOG));
+}
+
 int google_chromeec_i2c_xfer(uint8_t chip, uint8_t addr, int alen,
 			     uint8_t *buffer, int len, int is_read)
 {
@@ -944,6 +967,7 @@ static const char *reset_cause_to_str(uint16_t cause)
 		"reset: debug warm reboot",
 		"reset: at AP's request",
 		"reset: during EC initialization",
+		"reset: AP watchdog",
 	};
 
 	static const size_t shutdown_cause_begin = 1 << 15;
@@ -997,22 +1021,13 @@ static void google_chromeec_log_uptimeinfo(void)
 		"usb-resume",
 		"rdd",
 		"rbox",
-		"security"
+		"security",
+		"ap-watchdog",
 	};
 	struct ec_response_uptime_info cmd_resp;
 	int i, flag, flag_count;
 
-	struct chromeec_command get_uptime_cmd = {
-		.cmd_code = EC_CMD_GET_UPTIME_INFO,
-		.cmd_version = 0,
-		.cmd_data_in = NULL,
-		.cmd_size_in = 0,
-		.cmd_data_out = &cmd_resp,
-		.cmd_size_out = sizeof(cmd_resp),
-		.cmd_dev_index = 0,
-	};
-	google_chromeec_command(&get_uptime_cmd);
-	if (get_uptime_cmd.cmd_code) {
+	if (google_chromeec_get_uptime_info(&cmd_resp)) {
 		/*
 		 * Deliberately say nothing for EC's that don't support this
 		 * command

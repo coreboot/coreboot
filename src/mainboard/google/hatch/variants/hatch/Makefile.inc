@@ -1,6 +1,5 @@
 ## This file is part of the coreboot project.
 ##
-## Copyright (C) 2018 Intel Corporation.
 ## Copyright 2019 Google LLC
 ##
 ## This program is free software; you can redistribute it and/or modify
@@ -13,11 +12,9 @@
 ## GNU General Public License for more details.
 ##
 
-bootblock-y += gpio.c
-
-romstage-y += gpio.c
-romstage-y += memory.c
-
-ramstage-y += gpio.c
-
-verstage-y += gpio.c
+SPD_SOURCES = 4G_2400		# 0b000
+SPD_SOURCES += empty_ddr4	# 0b001
+SPD_SOURCES += 8G_2400		# 0b010
+SPD_SOURCES += 8G_2666		# 0b011
+SPD_SOURCES += 16G_2400		# 0b100
+SPD_SOURCES += 16G_2666		# 0b101

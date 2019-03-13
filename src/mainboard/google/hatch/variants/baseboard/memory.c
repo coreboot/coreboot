@@ -30,8 +30,8 @@ static const struct cnl_mb_cfg baseboard_memcfg = {
 	.dqs_map[DDR_CH0] = { 0, 1, 4, 5, 2, 3, 6, 7 },
 	.dqs_map[DDR_CH1] = { 0, 1, 4, 5, 2, 3, 6, 7 },
 
-	/* Baseboard uses 120, 81 and 100 rcomp resistors */
-	.rcomp_resistor = { 120, 81, 100 },
+	/* Baseboard uses 121, 81 and 100 rcomp resistors */
+	.rcomp_resistor = { 121, 81, 100 },
 
 	/* Baseboard Rcomp target values */
 	.rcomp_targets = { 100, 40, 20, 20, 26 },

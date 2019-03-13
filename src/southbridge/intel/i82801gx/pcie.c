@@ -195,7 +195,7 @@ static void root_port_commit_config(struct device *dev)
 
 		pcie_dev = rpc.ports[i];
 
-		if (dev == NULL) {
+		if (pcie_dev == NULL) {
 			printk(BIOS_ERR, "Root Port %d device is NULL?\n",
 			       i + 1);
 			continue;

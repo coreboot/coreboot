@@ -145,6 +145,9 @@
 #define   GBLRST_CAUSE0_THERMTRIP	(1 << 5)
 #define GBLRST_CAUSE1			0x1928
 
+#define LTR_IGN				0x1B0C
+#define   IGN_GBE			(1 << 3)
+
 #define CPPMVRIC			0x1B1C
 #define   XTALSDQDIS			(1 << 22)
 

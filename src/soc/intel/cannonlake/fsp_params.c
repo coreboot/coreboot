@@ -107,6 +107,17 @@ static void parse_devicetree(FSP_S_CONFIG *params)
 	parse_devicetree_param(config, params);
 }
 
+/* Ignore LTR value for GBE devices */
+static void ignore_gbe_ltr(void)
+{
+	uint8_t reg8;
+	uint8_t *pmcbase = pmc_mmio_regs();
+
+	reg8 = read8(pmcbase + LTR_IGN);
+	reg8 |= IGN_GBE;
+	write8(pmcbase + LTR_IGN, reg8);
+}
+
 /* UPD parameters to be initialized before SiliconInit */
 void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 {
@@ -168,6 +179,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 			params->PchPmSlpS0VmRuntimeControl = 0;
 			params->PchPmSlpS0Vm070VSupport = 0;
 			params->PchPmSlpS0Vm075VSupport = 0;
+			ignore_gbe_ltr();
 		}
 	}
 

@@ -48,6 +48,17 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg, const config_t *config)
 	m_cfg->PrmrrSize = config->PrmrrSize;
 	m_cfg->EnableC6Dram = config->enable_c6dram;
 	m_cfg->PcdSerialIoUartNumber = CONFIG_UART_FOR_CONSOLE;
+	/*
+	 * PcdDebugInterfaceFlags
+	 * This config will allow coreboot to pass information to the FSP
+	 * regarding which debug interface is being used.
+	 * Debug Interfaces:
+	 * BIT0-RAM, BIT1-Legacy Uart BIT3-USB3, BIT4-LPSS Uart, BIT5-TraceHub
+	 * BIT2 - Not used.
+	 */
+	m_cfg->PcdDebugInterfaceFlags =
+				CONFIG(DRIVERS_UART_8250IO) ? 0x02 : 0x10;
+
 	/* Disable Vmx if Vt-d is already disabled */
 	if (config->VtdDisable)
 		m_cfg->VmxEnable = 0;

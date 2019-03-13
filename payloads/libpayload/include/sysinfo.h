@@ -97,6 +97,8 @@ struct sysinfo_t {
 
 	void	*vboot_handoff;
 	u32	vboot_handoff_size;
+	void *vboot_workbuf;
+	uint32_t vboot_workbuf_size;
 
 #if CONFIG(LP_ARCH_X86)
 	int x86_rom_var_mtrr_index;

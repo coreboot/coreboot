@@ -25,24 +25,6 @@
 #include <security/vboot/symbols.h>
 #include <security/vboot/vboot_common.h>
 
-struct selected_region {
-	uint32_t offset;
-	uint32_t size;
-};
-
-/*
- * this is placed at the start of the vboot work buffer. selected_region is used
- * for the verstage to return the location of the selected slot. buffer is used
- * by the vboot2 core. Keep the struct CPU architecture agnostic as it crosses
- * stage boundaries.
- */
-struct vboot_working_data {
-	struct selected_region selected_region;
-	/* offset of the buffer from the start of this struct */
-	uint32_t buffer_offset;
-	uint32_t buffer_size;
-};
-
 /* TODO(kitching): Use VB2_FIRMWARE_WORKBUF_RECOMMENDED_SIZE instead. */
 static size_t vboot_working_data_size(void)
 {
@@ -56,7 +38,7 @@ static size_t vboot_working_data_size(void)
 	die("impossible!");
 }
 
-static struct vboot_working_data * const vboot_get_working_data(void)
+struct vboot_working_data * const vboot_get_working_data(void)
 {
 	struct vboot_working_data *wd = NULL;
 

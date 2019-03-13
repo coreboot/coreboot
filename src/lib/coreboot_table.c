@@ -32,6 +32,7 @@
 #include <cbmem.h>
 #include <bootmem.h>
 #include <spi_flash.h>
+#include <security/vboot/misc.h>
 #include <security/vboot/vbnv_layout.h>
 #if CONFIG(USE_OPTION_TABLE)
 #include <option_table.h>
@@ -206,8 +207,8 @@ static void lb_vbnv(struct lb_header *header)
 	vbnv->range_size = VBOOT_VBNV_BLOCK_SIZE;
 #endif
 }
+#endif /* CONFIG_CHROMEOS */
 
-#if CONFIG(VBOOT)
 static void lb_vboot_handoff(struct lb_header *header)
 {
 	void *addr;
@@ -223,10 +224,18 @@ static void lb_vboot_handoff(struct lb_header *header)
 	vbho->range_start = (intptr_t)addr;
 	vbho->range_size = size;
 }
-#else
-static inline void lb_vboot_handoff(struct lb_header *header) {}
-#endif /* CONFIG_VBOOT */
-#endif /* CONFIG_CHROMEOS */
+
+static void lb_vboot_workbuf(struct lb_header *header)
+{
+	struct lb_range *vbwb;
+	struct vboot_working_data *wd = vboot_get_working_data();
+
+	vbwb = (struct lb_range *)lb_new_record(header);
+	vbwb->tag = LB_TAB_VBOOT_WORKBUF;
+	vbwb->size = sizeof(*vbwb);
+	vbwb->range_start = (uintptr_t)wd + wd->buffer_offset;
+	vbwb->range_size = wd->buffer_size;
+}
 
 __weak uint32_t board_id(void) { return UNDEFINED_STRAPPING_ID; }
 __weak uint32_t ram_code(void) { return UNDEFINED_STRAPPING_ID; }
@@ -535,10 +544,15 @@ static uintptr_t write_coreboot_table(uintptr_t rom_table_end)
 
 	/* pass along VBNV offsets in CMOS */
 	lb_vbnv(head);
-
-	/* pass along the vboot_handoff address. */
-	lb_vboot_handoff(head);
 #endif
+
+	if (CONFIG(VBOOT)) {
+		/* pass along the vboot_handoff address. */
+		lb_vboot_handoff(head);
+
+		/* pass along the vboot workbuf address. */
+		lb_vboot_workbuf(head);
+	}
 
 	/* Add strapping IDs if available */
 	lb_board_id(head);

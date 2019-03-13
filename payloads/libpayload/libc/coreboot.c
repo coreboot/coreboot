@@ -86,6 +86,14 @@ static void cb_parse_vboot_handoff(unsigned char *ptr, struct sysinfo_t *info)
 	info->vboot_handoff_size = vbho->range_size;
 }
 
+static void cb_parse_vboot_workbuf(unsigned char *ptr, struct sysinfo_t *info)
+{
+	struct lb_range *vbwb = (struct lb_range *)ptr;
+
+	info->vboot_workbuf = (void *)(uintptr_t)vbwb->range_start;
+	info->vboot_workbuf_size = vbwb->range_size;
+}
+
 static void cb_parse_vbnv(unsigned char *ptr, struct sysinfo_t *info)
 {
 	struct lb_range *vbnv = (struct lb_range *)ptr;
@@ -354,6 +362,9 @@ int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 			break;
 		case CB_TAG_VBOOT_HANDOFF:
 			cb_parse_vboot_handoff(ptr, info);
+			break;
+		case CB_TAG_VBOOT_WORKBUF:
+			cb_parse_vboot_workbuf(ptr, info);
 			break;
 		case CB_TAG_MAC_ADDRS:
 			cb_parse_mac_addresses(ptr, info);

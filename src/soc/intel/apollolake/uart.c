@@ -49,6 +49,13 @@ const struct uart_gpio_pad_config uart_gpio_pads[] = {
 	},
 #else
 	{
+		.console_index = 0,
+		.gpios = {
+			PAD_CFG_NF(GPIO_38, NATIVE, DEEP, NF1), /* UART0 RX */
+			PAD_CFG_NF(GPIO_39, NATIVE, DEEP, NF1), /* UART0 TX */
+		},
+	},
+	{
 		.console_index = 1,
 		.gpios = {
 			PAD_CFG_NF(GPIO_42, NATIVE, DEEP, NF1), /* UART1 RX */

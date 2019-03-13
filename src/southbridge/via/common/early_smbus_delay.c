@@ -14,7 +14,8 @@
  * GNU General Public License for more details.
  */
 
-#include "via_early_smbus.h"
+#include <arch/io.h>
+#include <device/early_smbus.h>
 
 /**
  * \brief Brief delay for SMBus transactions

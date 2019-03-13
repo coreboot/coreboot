@@ -14,6 +14,8 @@
  * GNU General Public License for more details.
  */
 
+#include <device/early_smbus.h>
+
 #include "via_early_smbus.h"
 
 /**

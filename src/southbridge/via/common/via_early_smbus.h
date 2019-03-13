@@ -35,6 +35,7 @@
 /**
  * \brief SMBus IO ports in relation to the base IO port
  */
+
 #define SMBHSTSTAT(base)		((u16)base + 0x0)
 #define SMBSLVSTAT(base)		((u16)base + 0x1)
 #define SMBHSTCTL(base)			((u16)base + 0x2)
@@ -48,6 +49,3 @@
 #define SMBSLVDATA (base)		((u16)base + 0xa)
 
 #define SMBUS_TIMEOUT			(100*1000*10)
-
-#include <device/early_smbus.h>
-#include <arch/io.h>

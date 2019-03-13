@@ -978,7 +978,7 @@ static const char *reset_cause_to_str(uint16_t cause)
  */
 static void google_chromeec_log_uptimeinfo(void)
 {
-	/* See also ChromiumOS EC include/system.h RESET_FLAG for details. */
+	/* See also ec_commands.h EC_RESET_FLAG_* for details. */
 	static const char * const reset_flag_strings[] = {
 		"other",
 		"reset-pin",

@@ -25,7 +25,9 @@
  * from the MSB (e.g. PowerPC), but until we cross that bridge, this macro is
  * perfectly fine.
  */
+#ifndef BIT
 #define BIT(x)				(1ul << (x))
+#endif
 
 /**
  * coreboot error codes

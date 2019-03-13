@@ -424,7 +424,7 @@ static void integrate_firmwares(context *ctx,
 
 			bytes = copy_blob(BUFF_CURRENT(*ctx),
 					fw_table[i].filename, BUFF_ROOM(*ctx));
-			if (bytes <= 0) {
+			if (bytes < 0) {
 				free(ctx->rom);
 				exit(1);
 			}
@@ -455,7 +455,7 @@ static void integrate_psp_firmwares(context *ctx,
 		} else if (fw_table[i].filename != NULL) {
 			bytes = copy_blob(BUFF_CURRENT(*ctx),
 					fw_table[i].filename, BUFF_ROOM(*ctx));
-			if (bytes <= 0) {
+			if (bytes < 0) {
 				free(ctx->rom);
 				exit(1);
 			}

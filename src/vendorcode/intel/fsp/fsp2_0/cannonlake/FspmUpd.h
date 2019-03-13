@@ -1,6 +1,6 @@
 /** @file
 
-Copyright (c) 2018, Intel Corporation. All rights reserved.<BR>
+Copyright (c) 2019, Intel Corporation. All rights reserved.<BR>
 
 Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -182,15 +182,9 @@ typedef struct {
 **/
   UINT8                       ProbelessTrace;
 
-/** Offset 0x00A3 - GDXC IOT SIZE
-  Size of IOT and MOT is in 8 MB chunks
+/** Offset 0x00A3
 **/
-  UINT8                       GdxcIotSize;
-
-/** Offset 0x00A4 - GDXC MOT SIZE
-  Size of IOT and MOT is in 8 MB chunks
-**/
-  UINT8                       GdxcMotSize;
+  UINT8                       UnusedUpdSpace0[2];
 
 /** Offset 0x00A5 - Enable SMBus
   Enable/disable SMBus controller.
@@ -250,7 +244,9 @@ typedef struct {
 
 /** Offset 0x00B8 - Internal Graphics Pre-allocated Memory
   Size of memory preallocated for internal graphics.
-  0x00:0 MB, 0x01:32 MB, 0x02:64 MB
+  0x00:0MB, 0x01:32MB, 0x02:64MB, 0xF0:4MB, 0xF1:8MB, 0xF2:12MB, 0xF3:16MB, 0xF4:20MB,
+  0xF5:24MB, 0xF6:28MB, 0xF7:32MB, 0xF8:36MB, 0xF9:40MB, 0xFA:44MB, 0xFB:48MB, 0xFC:52MB,
+  0xFD:56MB, 0xFE:60MB
 **/
   UINT8                       IgdDvmt50PreAlloc;
 
@@ -276,14 +272,14 @@ typedef struct {
 /** Offset 0x00BC - SA GV
   System Agent dynamic frequency support and when enabled memory will be training
   at two different frequencies. Only effects ULX/ULT CPUs. 0=Disabled, 1=FixedLow,
-  2=FixedHigh, and 3=Enabled.
-  0:Disabled, 1:FixedLow, 2:FixedHigh, 3:Enabled
+  2=FixedMid, 3=FixedHigh, and 4=Enabled.
+  0:Disabled, 1:FixedLow, 2:FixedMid, 3:FixedHigh, 4:Enabled
 **/
   UINT8                       SaGv;
 
 /** Offset 0x00BD
 **/
-  UINT8                       UnusedUpdSpace0;
+  UINT8                       UnusedUpdSpace1;
 
 /** Offset 0x00BE - DDR Frequency Limit
   Maximum Memory Frequency Selections in Mhz. Valid values should match the refclk,
@@ -331,9 +327,16 @@ typedef struct {
 **/
   UINT8                       ScramblerSupport;
 
-/** Offset 0x00C8
+/** Offset 0x00C8 - Skip Multi-Processor Initialization
+  When this is skipped, boot loader must initialize processors before SilicionInit
+  API. </b>0: Initialize; <b>1: Skip
+  $EN_DIS
 **/
-  UINT8                       UnusedUpdSpace1[16];
+  UINT8                       SkipMpInit;
+
+/** Offset 0x00C9
+**/
+  UINT8                       UnusedUpdSpace2[15];
 
 /** Offset 0x00D8 - SPD Profile Selected
   Select DIMM timing profile. Options are 0=Default profile, 1=Custom profile, 2=XMP
@@ -479,7 +482,9 @@ typedef struct {
   UINT8                       CpuTraceHubMemReg1Size;
 
 /** Offset 0x00F6 - Enable or Disable Peci C10 Reset command
-  Enable or Disable Peci C10 Reset command; <b>0: Disable;</b> 1: Enable.
+  Enable or Disable Peci C10 Reset command. If Enabled, BIOS will send the CPU message
+  to disable peci reset on C10 exit. The default value is <b>0: Disable</b> for CNL,
+  and <b>1: Enable</b> for all other CPU's
   $EN_DIS
 **/
   UINT8                       PeciC10Reset;
@@ -492,7 +497,7 @@ typedef struct {
 
 /** Offset 0x00F8
 **/
-  UINT8                       UnusedUpdSpace2[4];
+  UINT8                       UnusedUpdSpace3[4];
 
 /** Offset 0x00FC - Enable Intel HD Audio (Azalia)
   0: Disable, 1: Enable (Default) Azalia controller
@@ -514,7 +519,7 @@ typedef struct {
 
 /** Offset 0x00FF
 **/
-  UINT8                       UnusedUpdSpace3;
+  UINT8                       UnusedUpdSpace4;
 
 /** Offset 0x0100 - HECI1 BAR address
   BAR address of HECI1
@@ -685,7 +690,7 @@ typedef struct {
 
 /** Offset 0x0125
 **/
-  UINT8                       UnusedUpdSpace4[3];
+  UINT8                       UnusedUpdSpace5[3];
 
 /** Offset 0x0128 - DMI Gen3 Root port preset values per lane
   Used for programming DMI Gen3 preset values per lane. Range: 0-9, 8 is default for each lane
@@ -724,7 +729,7 @@ typedef struct {
 
 /** Offset 0x0146
 **/
-  UINT8                       UnusedUpdSpace5[2];
+  UINT8                       UnusedUpdSpace6[2];
 
 /** Offset 0x0148 - PEG Gen3 RxCTLEp per-Bundle control
   Range: 0-15, 12 is default for each bundle, must be specified based upon platform design
@@ -949,7 +954,7 @@ typedef struct {
 
 /** Offset 0x0205 - Maximum Core Turbo Ratio Override
   Maximum core turbo ratio override allows to increase CPU core frequency beyond the
-  fused max turbo ratio limit. <b>0: Hardware defaults.</b> Range: 0-83
+  fused max turbo ratio limit. <b>0: Hardware defaults.</b> Range: 0-255
 **/
   UINT8                       CoreMaxOcRatio;
 
@@ -959,13 +964,15 @@ typedef struct {
 **/
   UINT8                       CoreVoltageMode;
 
-/** Offset 0x0207
+/** Offset 0x0207 - Program Cache Attributes
+  Program Cache Attributes; <b>0: Program</b>; 1: Disable Program.
+  $EN_DIS
 **/
-  UINT8                       UnusedUpdSpace6;
+  UINT8                       DisableMtrrProgram;
 
 /** Offset 0x0208 - Maximum clr turbo ratio override
   Maximum clr turbo ratio override allows to increase CPU clr frequency beyond the
-  fused max turbo ratio limit. <b>0: Hardware defaults.</b>  Range: 0-83
+  fused max turbo ratio limit. <b>0: Hardware defaults.</b>  Range: 0-255
 **/
   UINT8                       RingMaxOcRatio;
 
@@ -1114,9 +1121,13 @@ typedef struct {
 **/
   UINT8                       Txt;
 
-/** Offset 0x0227
+/** Offset 0x0227 - DpSscMarginEnable TYPE:{Combo
+  Enable/Disable. 0: Disable, Use default DisplayPort SSC modulation range 0.5% down
+  spread, 1: Enable DisplayPort SSC range reduction. Note this should only be used
+  on systems that exceeds allowed SSC modulation range as defined in VESA's spec
+  $EN_DIS
 **/
-  UINT8                       UnusedUpdSpace8;
+  UINT8                       DpSscMarginEnable;
 
 /** Offset 0x0228 - PrmrrSize
   0=Invalid, 32MB=0x2000000, 64MB=0x4000000, 128MB=0x8000000, 256MB=0x10000000
@@ -1182,7 +1193,12 @@ typedef struct {
   Reserved for Security Pre-Mem
   $EN_DIS
 **/
-  UINT8                       ReservedSecurityPreMem[15];
+  UINT8                       ReservedSecurityPreMem[3];
+
+/** Offset 0x0264 - Base addresses for VT-d function MMIO access
+  Base addresses for VT-d MMIO access per VT-d engine
+**/
+  UINT32                      VtdBaseAddress[3];
 
 /** Offset 0x0270 - Enable PCH HSIO PCIE Rx Set Ctle
   Enable PCH PCIe Gen 3 Set CTLE Value.
@@ -1861,12 +1877,12 @@ typedef struct {
   UINT8                       RhActProbability;
 
 /** Offset 0x04C1 - RAPL PL 2 WindowX
-  Power PL 2 time window X value, (1/1024)*(1+(x/4))*(2^y) (0=Def)
+  Power PL 2 time window X value, (1/1024)*(1+(x/4))*(2^y) (1=Def)
 **/
   UINT8                       RaplLim2WindX;
 
 /** Offset 0x04C2 - RAPL PL 2 WindowY
-  Power PL 2 time window Y value, (1/1024)*(1+(x/4))*(2^y) (0=Def)
+  Power PL 2 time window Y value, (1/1024)*(1+(x/4))*(2^y) (1=Def)
 **/
   UINT8                       RaplLim2WindY;
 
@@ -1881,52 +1897,52 @@ typedef struct {
   UINT8                       RaplLim1WindY;
 
 /** Offset 0x04C5 - RAPL PL 2 Power
-  range[0;2^14-1]= [2047.875;0]in W, (224= Def)
+  range[0;2^14-1]= [2047.875;0]in W, (222= Def)
 **/
   UINT16                      RaplLim2Pwr;
 
 /** Offset 0x04C7 - RAPL PL 1 Power
-  range[0;2^14-1]= [2047.875;0]in W, (224= Def)
+  range[0;2^14-1]= [2047.875;0]in W, (0= Def)
 **/
   UINT16                      RaplLim1Pwr;
 
 /** Offset 0x04C9 - Warm Threshold Ch0 Dimm0
-  range[255;0]=[31.875;0] in W for OLTM, [127.5;0] in C for CLTM. Fefault is 255
+  range[255;0]=[31.875;0] in W for OLTM, [127.5;0] in C for CLTM. Default is 255
 **/
   UINT8                       WarmThresholdCh0Dimm0;
 
 /** Offset 0x04CA - Warm Threshold Ch0 Dimm1
-  range[255;0]=[31.875;0] in W for OLTM, [127.5;0] in C for CLTM. Fefault is 255
+  range[255;0]=[31.875;0] in W for OLTM, [127.5;0] in C for CLTM. Default is 255
 **/
   UINT8                       WarmThresholdCh0Dimm1;
 
 /** Offset 0x04CB - Warm Threshold Ch1 Dimm0
-  range[255;0]=[31.875;0] in W for OLTM, [127.5;0] in C for CLTM. Fefault is 255
+  range[255;0]=[31.875;0] in W for OLTM, [127.5;0] in C for CLTM. Default is 255
 **/
   UINT8                       WarmThresholdCh1Dimm0;
 
 /** Offset 0x04CC - Warm Threshold Ch1 Dimm1
-  range[255;0]=[31.875;0] in W for OLTM, [127.5;0] in C for CLTM. Fefault is 255
+  range[255;0]=[31.875;0] in W for OLTM, [127.5;0] in C for CLTM. Default is 255
 **/
   UINT8                       WarmThresholdCh1Dimm1;
 
 /** Offset 0x04CD - Hot Threshold Ch0 Dimm0
-  range[255;0]=[31.875;0] in W for OLTM, [127.5;0] in C for CLTM. Fefault is 255
+  range[255;0]=[31.875;0] in W for OLTM, [127.5;0] in C for CLTM. Default is 255
 **/
   UINT8                       HotThresholdCh0Dimm0;
 
 /** Offset 0x04CE - Hot Threshold Ch0 Dimm1
-  range[255;0]=[31.875;0] in W for OLTM, [127.5;0] in C for CLTM. Fefault is 255
+  range[255;0]=[31.875;0] in W for OLTM, [127.5;0] in C for CLTM. Default is 255
 **/
   UINT8                       HotThresholdCh0Dimm1;
 
 /** Offset 0x04CF - Hot Threshold Ch1 Dimm0
-  range[255;0]=[31.875;0] in W for OLTM, [127.5;0] in C for CLTM. Fefault is 255
+  range[255;0]=[31.875;0] in W for OLTM, [127.5;0] in C for CLTM. Default is 255
 **/
   UINT8                       HotThresholdCh1Dimm0;
 
 /** Offset 0x04D0 - Hot Threshold Ch1 Dimm1
-  range[255;0]=[31.875;0] in W for OLTM, [127.5;0] in C for CLTM. Fefault is 255
+  range[255;0]=[31.875;0] in W for OLTM, [127.5;0] in C for CLTM. Default is 255
 **/
   UINT8                       HotThresholdCh1Dimm1;
 
@@ -2072,7 +2088,7 @@ typedef struct {
 
 /** Offset 0x04ED - Throttler CKEMin Timer
   Timer value for CKEMin, range[255;0]. Req'd min of SC_ROUND_T + BYTE_LENGTH (4).
-  Dfault is 0x30
+  Default is 0x30
 **/
   UINT8                       ThrtCkeMinTmr;
 
@@ -2279,18 +2295,22 @@ typedef struct {
 **/
   UINT8                       EnBER;
 
-/** Offset 0x050F - Dual Dimm Per-Channel Board Type
-  Option to indicate if Board Layout includes One/Two DIMMs per channel. This is used
-  to limit maximum frequency for some SKUs.
-  0:1DPC, 1:2DPC
-**/
-  UINT8                       DualDimmPerChannelBoardType;
-
-/** Offset 0x0510 - CFL Reserved
-  Reserved FspmConfig CFL
+/** Offset 0x050F - PEG IMR support
+  This option configures the IMR support for PEG.(def=Disable)
   $EN_DIS
 **/
-  UINT8                       ReservedFspmUpdCfl[3];
+  UINT8                       PegImrEnable;
+
+/** Offset 0x0510 - PEG IMR size
+  The size of IMR to be allocated for PEG EndPoint device.PegImrSize can vary from
+  0 to 1024 MB in steps of 2 power N where N = 0 to 10
+**/
+  UINT16                      PegImrSize;
+
+/** Offset 0x0512 - PEG Root Port Selection
+  The Root Port for which the IMR to be allocated
+**/
+  UINT8                       PegImrRpSelection;
 
 /** Offset 0x0513 - Memory Test on Warm Boot
   Run Base Memory Test on Warm Boot
@@ -2298,9 +2318,27 @@ typedef struct {
 **/
   UINT8                       MemTestOnWarmBoot;
 
-/** Offset 0x0514
+/** Offset 0x0514 - Throttler CKEMin Timer - LPDDR
+  Timer value for CKEMin (For LPDDR Only), range[255;0]. Req'd min of SC_ROUND_T +
+  BYTE_LENGTH (4). Default is 0x40
 **/
-  UINT8                       ReservedFspmUpd[11];
+  UINT8                       ThrtCkeMinTmrLpddr;
+
+/** Offset 0x0515 - State of X2APIC_OPT_OUT bit in the DMAR table
+  0=Disable/Clear, 1=Enable/Set
+  $EN_DIS
+**/
+  UINT8                       X2ApicOptOut;
+
+/** Offset 0x0516 - MRC Force training on Warm
+  Enables/Disable the MRC training on warm boot
+  $EN_DIS
+**/
+  UINT8                       MrcTrainOnWarm;
+
+/** Offset 0x0517
+**/
+  UINT8                       ReservedFspmUpd[8];
 } FSP_M_CONFIG;
 
 /** Fsp M Test Configuration
@@ -2525,7 +2563,7 @@ typedef struct {
 
 /** Offset 0x0579
 **/
-  UINT8                       UnusedUpdSpace9;
+  UINT8                       UnusedUpdSpace8;
 
 /** Offset 0x057A - Jitter Dwell Time for PCIe Gen3 Software Equalization
   Range: 0-65535, default is 1000. @warning Do not change from the default
@@ -2560,11 +2598,24 @@ typedef struct {
 **/
   UINT8                       BdatTestType;
 
-/** Offset 0x0584 - SaPreMemTestRsvd
+/** Offset 0x0584 - Disable VT-d
+  0=Enable/FALSE(VT-d enabled), 1=Disable/TRUE (VT-d disabled)
+  $EN_DIS
+**/
+  UINT8                       VtdDisable;
+
+/** Offset 0x0585 - Delta T12 Power Cycle Delay required in ms
+  Select the value for delay required. 0(Default)= No delay, 0xFFFF = Auto calculate
+  T12 Delay to max 500ms
+  0 : No Delay, 0xFFFF : Auto Calulate T12 Delay
+**/
+  UINT16                      DeltaT12PowerCycleDelayPreMem;
+
+/** Offset 0x0587 - SaPreMemTestRsvd
   Reserved for SA Pre-Mem Test
   $EN_DIS
 **/
-  UINT8                       SaPreMemTestRsvd[12];
+  UINT8                       SaPreMemTestRsvd[9];
 
 /** Offset 0x0590 - TotalFlashSize
   Enable/Disable. 0: Disable, define default value of TotalFlashSize , 1: enable
@@ -2608,14 +2659,13 @@ typedef struct {
   UINT8                       SmbusSpdWriteDisable;
 
 /** Offset 0x059B - ChipsetInit HECI message
-  Enable/Disable. 0: Disable, 1: enable, Enable or disable ChipsetInit HECI message.
-  If disabled, it prevents from sending ChipsetInit HECI message.
+  DEPRECATED
   $EN_DIS
 **/
   UINT8                       ChipsetInitMessage;
 
 /** Offset 0x059C - Bypass ChipsetInit sync reset.
-  0: disable, 1: enable, Set Enable to bypass the reset after ChipsetInit HECI message.
+  DEPRECATED
   $EN_DIS
 **/
   UINT8                       BypassPhySyncReset;
@@ -2800,7 +2850,7 @@ typedef struct {
 
 /** Offset 0x051F
 **/
-  UINT8                       UnusedUpdSpace8;
+  UINT8                       UnusedUpdSpace7;
 
 /** Offset 0x0520
 **/

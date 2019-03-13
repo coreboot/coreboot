@@ -162,7 +162,7 @@ uint32_t vboot_measure_cbfs_hook(struct cbfsf *fh, const char *name)
 	struct region_device rdev;
 	char tcpa_metadata[TCPA_PCR_HASH_NAME];
 
-	if (!vb2_logic_executed())
+	if (!vboot_logic_executed())
 		return 0;
 
 	cbfsf_file_type(fh, &cbfs_type);

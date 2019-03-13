@@ -297,7 +297,7 @@ void verstage_main(void)
 	timestamp_add_now(TS_START_VBOOT);
 
 	/* Set up context and work buffer */
-	vb2_init_work_context(&ctx);
+	vboot_init_work_context(&ctx);
 
 	/* Initialize and read nvdata from non-volatile storage. */
 	vbnv_init(ctx.nvdata);
@@ -437,7 +437,7 @@ void verstage_main(void)
 	}
 
 	printk(BIOS_INFO, "Slot %c is selected\n", is_slot_a(&ctx) ? 'A' : 'B');
-	vb2_set_selected_region(region_device_region(&fw_main));
-	vb2_finalize_work_context(&ctx);
+	vboot_set_selected_region(region_device_region(&fw_main));
+	vboot_finalize_work_context(&ctx);
 	timestamp_add_now(TS_END_VBOOT);
 }

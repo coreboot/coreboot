@@ -141,7 +141,7 @@ void vboot_fill_handoff(void)
 	struct vboot_handoff *vh;
 	struct vb2_shared_data *sd;
 
-	sd = vb2_get_shared_data();
+	sd = vboot_get_shared_data();
 	sd->workbuf_hash_offset = 0;
 	sd->workbuf_hash_size = 0;
 

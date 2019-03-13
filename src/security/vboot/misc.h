@@ -21,18 +21,32 @@
 struct vb2_context;
 struct vb2_shared_data;
 
-void vboot_fill_handoff(void);
-
-void vb2_init_work_context(struct vb2_context *ctx);
-void vb2_finalize_work_context(struct vb2_context *ctx);
-struct vb2_shared_data *vb2_get_shared_data(void);
+/*
+ * Source: security/vboot/common.c
+ */
+void vboot_init_work_context(struct vb2_context *ctx);
+void vboot_finalize_work_context(struct vb2_context *ctx);
+struct vb2_shared_data *vboot_get_shared_data(void);
 
 /* Returns 0 on success. < 0 on failure. */
-int vb2_get_selected_region(struct region *region);
-void vb2_set_selected_region(const struct region *region);
-int vb2_is_slot_selected(void);
-int vb2_logic_executed(void);
+int vboot_get_selected_region(struct region *region);
 
-void vb2_save_recovery_reason_vbnv(void);
+void vboot_set_selected_region(const struct region *region);
+int vboot_is_slot_selected(void);
+
+/*
+ * Source: security/vboot/vboot_handoff.c
+ */
+void vboot_fill_handoff(void);
+
+/*
+ * Source: security/vboot/vboot_loader.c
+ */
+int vboot_logic_executed(void);
+
+/*
+ * Source: security/vboot/bootmode.c
+ */
+void vboot_save_recovery_reason_vbnv(void);
 
 #endif /* __VBOOT_MISC_H__ */

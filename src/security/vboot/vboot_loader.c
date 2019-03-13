@@ -63,7 +63,7 @@ static int verstage_should_load(void)
 
 static int vboot_executed CAR_GLOBAL;
 
-int vb2_logic_executed(void)
+int vboot_logic_executed(void)
 {
 	/* If we are in a stage that would load the verstage or execute the
 	   vboot logic directly, we store the answer in a global. */
@@ -91,7 +91,7 @@ static void vboot_prepare(void)
 		/* Note: this path is not used for VBOOT_RETURN_FROM_VERSTAGE */
 		verstage_main();
 		car_set_var(vboot_executed, 1);
-		vb2_save_recovery_reason_vbnv();
+		vboot_save_recovery_reason_vbnv();
 	} else if (verstage_should_load()) {
 		struct cbfsf file;
 		struct prog verstage =
@@ -138,10 +138,10 @@ static int vboot_locate(struct cbfs_props *props)
 	struct region selected_region;
 
 	/* Don't honor vboot results until the vboot logic has run. */
-	if (!vb2_logic_executed())
+	if (!vboot_logic_executed())
 		return -1;
 
-	if (vb2_get_selected_region(&selected_region))
+	if (vboot_get_selected_region(&selected_region))
 		return -1;
 
 	props->offset = region_offset(&selected_region);

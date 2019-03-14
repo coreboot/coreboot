@@ -19,7 +19,7 @@
 const char mainboard_name[] = CONFIG_MAINBOARD_VENDOR " " CONFIG_MAINBOARD_PART_NUMBER;
 
 /**
- * Scan devices on static buses.
+ * Enable devices on static buses.
  *
  * The enumeration of certain buses is purely static. The existence of
  * devices on those buses can be completely determined at compile time
@@ -36,7 +36,7 @@ const char mainboard_name[] = CONFIG_MAINBOARD_VENDOR " " CONFIG_MAINBOARD_PART_
  * @param bus Pointer to the device to which the static buses are attached to.
  */
 
-void scan_static_bus(struct device *bus)
+void enable_static_devices(struct device *bus)
 {
 	struct device *child;
 	struct bus *link;
@@ -60,7 +60,7 @@ void scan_lpc_bus(struct device *bus)
 {
 	printk(BIOS_SPEW, "%s for %s\n", __func__, dev_path(bus));
 
-	scan_static_bus(bus);
+	enable_static_devices(bus);
 
 	printk(BIOS_SPEW, "%s for %s done\n", __func__, dev_path(bus));
 }
@@ -71,7 +71,7 @@ void scan_usb_bus(struct device *bus)
 
 	printk(BIOS_SPEW, "%s for %s\n", __func__, dev_path(bus));
 
-	scan_static_bus(bus);
+	enable_static_devices(bus);
 
 	/* Scan bridges in case this device is a hub */
 	for (link = bus->link_list; link; link = link->next)
@@ -129,7 +129,7 @@ static void root_dev_scan_bus(struct device *bus)
 
 	printk(BIOS_SPEW, "%s for %s\n", __func__, dev_path(bus));
 
-	scan_static_bus(bus);
+	enable_static_devices(bus);
 
 	for (link = bus->link_list; link; link = link->next)
 		scan_bridges(link);

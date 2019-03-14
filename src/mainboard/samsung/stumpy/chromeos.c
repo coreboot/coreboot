@@ -30,7 +30,7 @@
 #define FLAG_REC_MODE	1
 #define FLAG_DEV_MODE	2
 
-#ifndef __PRE_RAM__
+#if ENV_RAMSTAGE
 #include <boot/coreboot_tables.h>
 
 #define GPIO_COUNT	6

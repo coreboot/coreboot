@@ -30,7 +30,7 @@
 #define DEVMODE_GPIO	54
 #define FORCE_RECOVERY_MODE	0
 
-#ifndef __PRE_RAM__
+#if ENV_RAMSTAGE
 #include <boot/coreboot_tables.h>
 
 #define GPIO_COUNT	6

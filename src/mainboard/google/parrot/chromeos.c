@@ -27,7 +27,7 @@
 #include "ec.h"
 
 
-#ifndef __PRE_RAM__
+#if ENV_RAMSTAGE
 #include <boot/coreboot_tables.h>
 
 #define GPIO_COUNT	6

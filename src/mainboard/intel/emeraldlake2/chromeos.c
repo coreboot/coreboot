@@ -23,7 +23,7 @@
 #include <southbridge/intel/common/gpio.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
-#ifndef __PRE_RAM__
+#if ENV_RAMSTAGE
 #include <boot/coreboot_tables.h>
 
 #define GPIO_COUNT	6

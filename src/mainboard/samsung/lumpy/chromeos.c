@@ -31,7 +31,7 @@
 #define FLAG_REC_MODE	1
 #define FLAG_DEV_MODE	2
 
-#ifndef __SIMPLE_DEVICE__
+#if ENV_RAMSTAGE
 #include <boot/coreboot_tables.h>
 #include "ec.h"
 #include <ec/smsc/mec1308/ec.h>

@@ -29,7 +29,7 @@
 #define FLAG_REC_MODE	1
 #define FLAG_DEV_MODE	2
 
-#ifndef __PRE_RAM__
+#if ENV_RAMSTAGE
 #include <boot/coreboot_tables.h>
 
 void fill_lb_gpios(struct lb_gpios *gpios)

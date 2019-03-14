@@ -16,6 +16,7 @@
 #include <console/console.h>
 #include <stdint.h>
 #include <string.h>
+#include <timestamp.h>
 
 #include <northbridge/amd/agesa/state_machine.h>
 #include <northbridge/amd/agesa/BiosCallOuts.h>
@@ -30,54 +31,78 @@ struct agesa_mapping
 {
 	AGESA_STRUCT_NAME func;
 	const char *name;
+	uint32_t entry_id;
+	uint32_t exit_id;
 };
 
 static const struct agesa_mapping entrypoint[] = {
 	{
 		.func = AMD_INIT_RESET,
 		.name = "AmdInitReset",
+		.entry_id = TS_AGESA_INIT_RESET_START,
+		.exit_id = TS_AGESA_INIT_RESET_DONE,
 	},
 	{
 		.func = AMD_INIT_EARLY,
 		.name = "AmdInitEarly",
+		.entry_id = TS_AGESA_INIT_EARLY_START,
+		.exit_id = TS_AGESA_INIT_EARLY_DONE,
 	},
 	{
 		.func = AMD_INIT_POST,
 		.name = "AmdInitPost",
+		.entry_id = TS_AGESA_INIT_POST_START,
+		.exit_id = TS_AGESA_INIT_POST_DONE,
 	},
 	{
 		.func = AMD_INIT_RESUME,
 		.name = "AmdInitResume",
+		.entry_id = TS_AGESA_INIT_RESUME_START,
+		.exit_id = TS_AGESA_INIT_RESUME_DONE,
 	},
 	{
 		.func = AMD_INIT_ENV,
 		.name = "AmdInitEnv",
+		.entry_id = TS_AGESA_INIT_ENV_START,
+		.exit_id = TS_AGESA_INIT_ENV_DONE,
 	},
 	{
 		.func = AMD_INIT_MID,
 		.name = "AmdInitMid",
+		.entry_id = TS_AGESA_INIT_MID_START,
+		.exit_id = TS_AGESA_INIT_MID_DONE,
 	},
 	{
 		.func = AMD_INIT_LATE,
 		.name = "AmdInitLate",
+		.entry_id = TS_AGESA_INIT_LATE_START,
+		.exit_id = TS_AGESA_INIT_LATE_DONE,
 	},
 	{
 		.func = AMD_S3LATE_RESTORE,
 		.name = "AmdS3LateRestore",
+		.entry_id = TS_AGESA_S3_LATE_START,
+		.exit_id = TS_AGESA_S3_LATE_DONE,
 	},
 #if !defined(AMD_S3_SAVE_REMOVED)
 	{
 		.func = AMD_S3_SAVE,
 		.name = "AmdS3Save",
+		.entry_id = TS_AGESA_INIT_RTB_START,
+		.exit_id = TS_AGESA_INIT_RTB_DONE,
 	},
 #endif
 	{
 		.func = AMD_S3FINAL_RESTORE,
 		.name = "AmdS3FinalRestore",
+		.entry_id = TS_AGESA_S3_FINAL_START,
+		.exit_id = TS_AGESA_S3_FINAL_DONE,
 	},
 	{
 		.func = AMD_INIT_RTB,
 		.name = "AmdInitRtb",
+		.entry_id = TS_AGESA_INIT_RTB_START,
+		.exit_id = TS_AGESA_INIT_RTB_DONE,
 	},
 };
 
@@ -92,6 +117,8 @@ void agesa_state_on_entry(struct agesa_state *task, AGESA_STRUCT_NAME func)
 	for (i = 0; i < ARRAY_SIZE(entrypoint); i++) {
 		if (task->func == entrypoint[i].func) {
 			task->function_name = entrypoint[i].name;
+			task->ts_entry_id = entrypoint[i].entry_id;
+			task->ts_exit_id = entrypoint[i].exit_id;
 			break;
 		}
 	}

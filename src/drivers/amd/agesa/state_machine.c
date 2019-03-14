@@ -20,7 +20,9 @@
 #include <arch/cpu.h>
 #include <bootstate.h>
 #include <cbfs.h>
-#include <console/console.h>
+#include <cbmem.h>
+#include <timestamp.h>
+
 #include <northbridge/amd/agesa/state_machine.h>
 #include <northbridge/amd/agesa/agesa_helper.h>
 #include <northbridge/amd/agesa/BiosCallOuts.h>
@@ -147,6 +149,11 @@ static AGESA_STATUS romstage_dispatch(struct sysinfo *cb,
 			platform_BeforeInitPost(cb, param);
 			board_BeforeInitPost(cb, param);
 			status = module_dispatch(func, StdHeader);
+
+			/* FIXME: Detect if TSC frequency really
+			 * changed during raminit? */
+			timestamp_rescale_table(1, 4);
+
 			platform_AfterInitPost(cb, param);
 			break;
 		}
@@ -156,6 +163,11 @@ static AGESA_STATUS romstage_dispatch(struct sysinfo *cb,
 			AMD_RESUME_PARAMS *param = (void *)StdHeader;
 			platform_BeforeInitResume(cb, param);
 			status = module_dispatch(func, StdHeader);
+
+			/* FIXME: Detect if TSC frequency really
+			 * changed during raminit? */
+			timestamp_rescale_table(1, 4);
+
 			platform_AfterInitResume(cb, param);
 			break;
 		}
@@ -262,11 +274,17 @@ int agesa_execute_state(struct sysinfo *cb, AGESA_STRUCT_NAME func)
 	AMD_CONFIG_PARAMS *StdHeader = aip.NewStructPtr;
 	ASSERT(StdHeader->Func == func);
 
+	if (CONFIG(AGESA_EXTRA_TIMESTAMPS) && task.ts_entry_id)
+		timestamp_add_now(task.ts_entry_id);
+
 	if (ENV_ROMSTAGE)
 		final = romstage_dispatch(cb, func, StdHeader);
 
 	if (ENV_RAMSTAGE)
 		final = ramstage_dispatch(cb, func, StdHeader);
+
+	if (CONFIG(AGESA_EXTRA_TIMESTAMPS) && task.ts_exit_id)
+		timestamp_add_now(task.ts_exit_id);
 
 	agesawrapper_trace(final, StdHeader, task.function_name);
 	ASSERT(final < AGESA_FATAL);

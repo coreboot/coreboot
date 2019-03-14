@@ -59,6 +59,8 @@ struct agesa_state {
 
 	AGESA_STRUCT_NAME func;
 	const char *function_name;
+	uint32_t ts_entry_id;
+	uint32_t ts_exit_id;
 };
 
 void agesa_state_on_entry(struct agesa_state *task, AGESA_STRUCT_NAME func);

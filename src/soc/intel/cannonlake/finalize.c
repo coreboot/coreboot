@@ -85,6 +85,8 @@ static void pch_finalize(void)
 	}
 
 	pch_handle_sideband(config);
+
+	pmc_clear_pmcon_sts();
 }
 
 static void soc_finalize(void *unused)

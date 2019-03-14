@@ -116,7 +116,7 @@ Name (DRHY, Package () { 0x37, 0xff, RD })	/* DPTF: Read Hysteresis */
 Name (DRTQ, Package () { 0x38, 0xff, RD })	/* DPTF: Read Trip Query */
 
 Name (ORST, Package () { 0x39, 0xff, RD })	/* Orientation State */
-Name (OTBL, Package () { 0x39, 0x02, RD })	/* Orientation: Tablet mode */
+Name (OTBL, Package () { 0x39, 0x03, RD })	/* Orient: Tablet/Tent mode */
 Name (OREV, Package () { 0x3a, 0xff, RD })	/* Orientation Events */
 Name (OECH, Package () { 0x3a, 0x01, RD })	/* Event: Orientation */
 Name (OERL, Package () { 0x3a, 0x02, RD })	/* Event: Rotation Lock */

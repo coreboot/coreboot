@@ -292,7 +292,7 @@ config ACPI_BERT
 	  ACPI Boot Error Record Table.  This option reserves an 8MB region
 	  for building the error structures.
 
-config USE_PSPSCUREOS
+config USE_PSPSECUREOS
 	bool "Include PSP SecureOS blobs in AMD firmware"
 	default y
 	help

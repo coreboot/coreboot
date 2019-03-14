@@ -132,7 +132,7 @@ static struct device_operations traf_ctrl_ops = {
 	.init = vx900_traf_ctr_init,
 	/* Need this here, or the IOAPIC driver won't be called.
 	 * FIXME: Technically not a LPC bus. */
-	.scan_bus = scan_lpc_bus,
+	.scan_bus = scan_static_bus,
 };
 
 static const struct pci_driver traf_ctrl_driver __pci_driver = {

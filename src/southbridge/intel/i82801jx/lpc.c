@@ -701,7 +701,7 @@ static struct device_operations device_ops = {
 	.acpi_fill_ssdt_generator = southbridge_fill_ssdt,
 	.acpi_name		= lpc_acpi_name,
 	.init			= lpc_init,
-	.scan_bus		= scan_lpc_bus,
+	.scan_bus		= scan_static_bus,
 	.ops_pci		= &pci_ops,
 };
 

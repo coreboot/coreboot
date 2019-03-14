@@ -164,7 +164,7 @@ static struct device_operations lpc_ops  = {
 	.write_acpi_tables      = acpi_write_hpet,
 	.acpi_fill_ssdt_generator = southbridge_acpi_fill_ssdt_generator,
 #endif
-	.scan_bus         = scan_lpc_bus,
+	.scan_bus         = scan_static_bus,
 	.enable           = amd8111_enable,
 	.ops_pci          = &lops_pci,
 };

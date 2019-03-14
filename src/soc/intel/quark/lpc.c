@@ -53,7 +53,7 @@ static struct device_operations device_ops = {
 	.read_resources		= pmc_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
-	.scan_bus		= scan_lpc_bus,
+	.scan_bus		= scan_static_bus,
 };
 
 static const struct pci_driver pmc __pci_driver = {

@@ -235,7 +235,7 @@ static struct device_operations vx900_lpc_ops = {
 	.set_resources = vx900_lpc_set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.init = vx900_lpc_init,
-	.scan_bus = scan_lpc_bus,
+	.scan_bus = scan_static_bus,
 };
 
 static const struct pci_driver lpc_driver __pci_driver = {

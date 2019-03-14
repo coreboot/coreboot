@@ -56,15 +56,6 @@ void enable_static_devices(struct device *bus)
 	}
 }
 
-void scan_lpc_bus(struct device *bus)
-{
-	printk(BIOS_SPEW, "%s for %s\n", __func__, dev_path(bus));
-
-	enable_static_devices(bus);
-
-	printk(BIOS_SPEW, "%s for %s done\n", __func__, dev_path(bus));
-}
-
 void scan_generic_bus(struct device *bus)
 {
 	struct device *child;

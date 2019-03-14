@@ -363,7 +363,7 @@ static struct device_operations lpc_ops = {
 	.write_acpi_tables = acpi_write_hpet,
 #endif
 	.init = lpc_init,
-	.scan_bus = scan_lpc_bus,
+	.scan_bus = scan_static_bus,
 	.ops_pci = &lops_pci,
 	.acpi_name = lpc_acpi_name,
 };

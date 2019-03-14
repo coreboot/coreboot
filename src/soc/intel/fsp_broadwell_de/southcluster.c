@@ -294,7 +294,7 @@ static struct device_operations device_ops = {
 	.write_acpi_tables = southcluster_write_acpi_tables,
 	.init             = sc_init,
 	.enable           = southcluster_enable_dev,
-	.scan_bus         = scan_lpc_bus,
+	.scan_bus         = scan_static_bus,
 	.ops_pci          = &soc_pci_ops,
 #if CONFIG(HAVE_ACPI_TABLES)
 	.acpi_name        = lpc_acpi_name,

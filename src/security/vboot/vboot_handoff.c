@@ -85,8 +85,6 @@ static void fill_vboot_handoff(struct vboot_handoff *vboot_handoff,
 		vb_sd->flags |= VBSD_EC_SOFTWARE_SYNC;
 		if (CONFIG(VBOOT_EC_SLOW_UPDATE))
 			vb_sd->flags |= VBSD_EC_SLOW_UPDATE;
-		if (CONFIG(VBOOT_EC_EFS))
-			vb_sd->flags |= VBSD_EC_EFS;
 	}
 	if (!CONFIG(VBOOT_PHYSICAL_REC_SWITCH))
 		vb_sd->flags |= VBSD_BOOT_REC_SWITCH_VIRTUAL;

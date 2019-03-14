@@ -13,8 +13,10 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/acpi.h>
 #include <bootstate.h>
 #include <device/pnp.h>
+#include <ec/acpi/ec.h>
 #include <pc80/keyboard.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -54,6 +56,13 @@ static void wilco_ec_init(struct device *dev)
 {
 	if (!dev->enabled)
 		return;
+
+	/* Disable S0ix support in EC RAM with ACPI EC interface */
+	if (!acpi_is_wakeup_s3()) {
+		ec_set_ports(CONFIG_EC_BASE_ACPI_COMMAND,
+			     CONFIG_EC_BASE_ACPI_DATA);
+		ec_write(EC_RAM_S0IX_SUPPORT, 0);
+	}
 
 	/* Print EC firmware information */
 	wilco_ec_print_all_info();

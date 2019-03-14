@@ -50,6 +50,11 @@ enum {
 	KB_BIOS_PROGRESS = 0xc2,
 };
 
+enum ec_ram_addr {
+	/* Indicate support for S0ix */
+	EC_RAM_S0IX_SUPPORT = 0xb8,
+};
+
 enum set_acpi_mode_cmd {
 	ACPI_OFF = 0,
 	ACPI_ON

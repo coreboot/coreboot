@@ -2,6 +2,7 @@ config EC_GOOGLE_WILCO
 	bool
 	default n
 	select EC_GOOGLE_COMMON_MEC
+	select EC_ACPI
 	help
 	  Google Wilco Embedded Controller interface.
 

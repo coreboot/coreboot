@@ -234,6 +234,9 @@ extern struct device_operations default_dev_ops_root;
 void pci_domain_read_resources(struct device *dev);
 void pci_domain_scan_bus(struct device *dev);
 
+void fixed_io_resource(struct device *dev, unsigned long index,
+		unsigned long base, unsigned long size);
+
 void fixed_mem_resource(struct device *dev, unsigned long index,
 		  unsigned long basek, unsigned long sizek, unsigned long type);
 
@@ -258,6 +261,9 @@ void mmconf_resource(struct device *dev, unsigned long index);
 
 #define mmio_resource(dev, idx, basek, sizek) \
 	fixed_mem_resource(dev, idx, basek, sizek, IORESOURCE_RESERVE)
+
+#define io_resource(dev, idx, base, size) \
+	fixed_io_resource(dev, idx, base, size)
 
 void tolm_test(void *gp, struct device *dev, struct resource *new);
 u32 find_pci_tolm(struct bus *bus);

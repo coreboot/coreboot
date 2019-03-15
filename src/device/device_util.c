@@ -801,6 +801,20 @@ void fixed_mem_resource(struct device *dev, unsigned long index,
 	resource->flags |= type;
 }
 
+void fixed_io_resource(struct device *dev, unsigned long index,
+			unsigned long base, unsigned long size)
+{
+	struct resource *resource;
+
+	resource = new_resource(dev, index);
+	resource->base = (resource_t)base;
+	resource->size = (resource_t)size;
+	resource->limit = resource->base + resource->size - 1;
+	resource->flags = IORESOURCE_IO | IORESOURCE_FIXED |
+		 IORESOURCE_STORED | IORESOURCE_ASSIGNED |
+		 IORESOURCE_RESERVE;
+}
+
 void mmconf_resource_init(struct resource *resource, resource_t base,
 	int buses)
 {

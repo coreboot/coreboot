@@ -883,6 +883,18 @@ static void pass1(FILE *fil, struct device *ptr, struct device *next)
 		emit_dev_links(fil, ptr);
 }
 
+static void expose_device_names(FILE *fil, struct device *ptr, struct device *next)
+{
+	/* Only devices on root bus here. */
+	if (ptr->bustype == PCI && ptr->parent->dev->bustype == DOMAIN)
+		fprintf(fil, "DEVTREE_CONST struct device *DEVTREE_CONST __pci_0_%02x_%d = &%s;\n",
+			ptr->path_a, ptr->path_b, ptr->name);
+
+	if (ptr->bustype == PNP)
+		fprintf(fil, "DEVTREE_CONST struct device *DEVTREE_CONST __pnp_%04x_%02x = &%s;\n",
+			ptr->path_a, ptr->path_b, ptr->name);
+}
+
 static void add_siblings_to_queue(struct queue_entry **bfs_q_head,
 				  struct device *d)
 {
@@ -1384,6 +1396,10 @@ int main(int argc, char **argv)
 	walk_device_tree(autogen, &base_root_dev, pass0);
 	fprintf(autogen, "\n/* pass 1 */\n");
 	walk_device_tree(autogen, &base_root_dev, pass1);
+
+	/* Expose static devicenames to global namespace. */
+	fprintf(autogen, "\n/* expose_device_names */\n");
+	walk_device_tree(autogen, &base_root_dev, expose_device_names);
 
 	fclose(autogen);
 

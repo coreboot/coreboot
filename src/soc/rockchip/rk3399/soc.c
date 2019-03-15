@@ -26,7 +26,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <symbols.h>
-#include <arm-trusted-firmware/plat/rockchip/rk3399/include/shared/bl31_param.h>
 
 void bootmem_platform_add_ranges(void)
 {
@@ -43,12 +42,6 @@ static void soc_read_resources(struct device *dev)
 
 static void soc_init(struct device *dev)
 {
-	/*
-	 * Reserve the whole TZRAM area because it will be marked as secure-only
-	 * by BL31 and can not be accessed by the non-secure kernel.
-	 */
-	mmio_resource(dev, 1, (TZRAM_BASE / KiB), (TZRAM_SIZE / KiB));
-
 	if (CONFIG(MAINBOARD_DO_NATIVE_VGA_INIT) && display_init_required())
 		rk_display_init(dev);
 	else

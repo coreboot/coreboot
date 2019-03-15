@@ -73,7 +73,7 @@ static void pcie_set_L1_ss_max_latency(struct device *dev, unsigned int offset)
 }
 
 static void pcie_dev_set_subsystem(struct device *dev,
-		unsigned vendor, unsigned device)
+		unsigned int vendor, unsigned int device)
 {
 	pci_write_config32(dev, PCIE_SUBSYSTEM_VENDOR_ID,
 			((device & 0xffff) << 16) | (vendor & 0xffff));

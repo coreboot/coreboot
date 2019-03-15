@@ -1577,8 +1577,8 @@ static int get_precedening_channels(ramctr_timing * ctrl, int target_channel)
 
 static void fill_pattern0(ramctr_timing * ctrl, int channel, u32 a, u32 b)
 {
-	unsigned j;
-	unsigned channel_offset =
+	unsigned int j;
+	unsigned int channel_offset =
 	    get_precedening_channels(ctrl, channel) * 0x40;
 	for (j = 0; j < 16; j++)
 		write32((void *)(0x04000000 + channel_offset + 4 * j), j & 2 ? b : a);
@@ -1595,10 +1595,10 @@ static int num_of_channels(const ramctr_timing * ctrl)
 
 static void fill_pattern1(ramctr_timing * ctrl, int channel)
 {
-	unsigned j;
-	unsigned channel_offset =
+	unsigned int j;
+	unsigned int channel_offset =
 	    get_precedening_channels(ctrl, channel) * 0x40;
-	unsigned channel_step = 0x40 * num_of_channels(ctrl);
+	unsigned int channel_step = 0x40 * num_of_channels(ctrl);
 	for (j = 0; j < 16; j++)
 		write32((void *)(0x04000000 + channel_offset + j * 4), 0xffffffff);
 	for (j = 0; j < 16; j++)
@@ -2125,10 +2125,10 @@ static int test_320c(ramctr_timing * ctrl, int channel, int slotrank)
 
 static void fill_pattern5(ramctr_timing * ctrl, int channel, int patno)
 {
-	unsigned i, j;
-	unsigned channel_offset =
+	unsigned int i, j;
+	unsigned int channel_offset =
 	    get_precedening_channels(ctrl, channel) * 0x40;
-	unsigned channel_step = 0x40 * num_of_channels(ctrl);
+	unsigned int channel_step = 0x40 * num_of_channels(ctrl);
 
 	if (patno) {
 		u8 base8 = 0x80 >> ((patno - 1) % 8);

@@ -573,7 +573,7 @@ struct chip_operations northbridge_amd_pi_00660F01_ops = {
 
 static void domain_read_resources(struct device *dev)
 {
-	unsigned reg;
+	unsigned int reg;
 
 	/* Find the already assigned resource pairs */
 	get_fx_devs();
@@ -583,7 +583,7 @@ static void domain_read_resources(struct device *dev)
 		limit = f1_read_config32(reg + 0x04);
 		/* Is this register allocated? */
 		if ((base & 3) != 0) {
-			unsigned nodeid, reg_link;
+			unsigned int nodeid, reg_link;
 			struct device *reg_dev;
 			if (reg < 0xc0) { // mmio
 				nodeid = (limit & 0xf) + (base & 0x30);
@@ -621,7 +621,7 @@ static void domain_enable_resources(struct device *dev)
 
 #if CONFIG_HW_MEM_HOLE_SIZEK != 0
 struct hw_mem_hole_info {
-	unsigned hole_startk;
+	unsigned int hole_startk;
 	int node_id;
 };
 static struct hw_mem_hole_info get_hw_mem_hole_info(void)
@@ -738,7 +738,7 @@ static void domain_set_resources(struct device *dev)
 		/* split the region to accommodate pci memory space */
 		if ((basek < 4*1024*1024) && (limitk > mmio_basek)) {
 			if (basek <= mmio_basek) {
-				unsigned pre_sizek;
+				unsigned int pre_sizek;
 				pre_sizek = mmio_basek - basek;
 				if (pre_sizek > 0) {
 					ram_resource(dev, (idx | i), basek, pre_sizek);

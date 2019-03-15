@@ -16,7 +16,7 @@
 #include <cpu/x86/lapic.h>
 #include "amdk8.h"
 
-static inline int cpu_init_detected(unsigned nodeid)
+static inline int cpu_init_detected(unsigned int nodeid)
 {
 	u32 htic;
 	pci_devfn_t dev;
@@ -61,7 +61,7 @@ void set_bios_reset(void)
 	pci_io_write_config32(PCI_DEV(0, 0x18, 0), HT_INIT_CONTROL, htic);
 }
 
-static unsigned node_link_to_bus(unsigned node, unsigned link)
+static unsigned int node_link_to_bus(unsigned int node, unsigned int link)
 {
 	u8 reg;
 
@@ -88,7 +88,7 @@ unsigned int get_sblk(void)
 	return ((reg>>8) & 3);
 }
 
-unsigned int get_sbbusn(unsigned sblk)
+unsigned int get_sbbusn(unsigned int sblk)
 {
 	return node_link_to_bus(0, sblk);
 }

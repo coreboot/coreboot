@@ -43,7 +43,7 @@ static struct device *__f0_dev[FX_DEVS];
 static struct device *__f1_dev[FX_DEVS];
 static struct device *__f2_dev[FX_DEVS];
 static struct device *__f4_dev[FX_DEVS];
-static unsigned fx_devs = 0;
+static unsigned int fx_devs = 0;
 
 struct dram_base_mask_t {
 	u32 base; //[47:27] at [28:8]
@@ -129,7 +129,7 @@ static void get_fx_devs(void)
 		die("Cannot find 0:0x18.[0|1]\n");
 }
 
-static u32 f1_read_config32(unsigned reg)
+static u32 f1_read_config32(unsigned int reg)
 {
 	if (fx_devs == 0)
 		get_fx_devs();
@@ -137,7 +137,7 @@ static u32 f1_read_config32(unsigned reg)
 	return pci_read_config32(__f1_dev[0], reg);
 }
 
-static void f1_write_config32(unsigned reg, u32 value)
+static void f1_write_config32(unsigned int reg, u32 value)
 {
 	int i;
 	if (fx_devs == 0)
@@ -176,11 +176,11 @@ static void set_vga_enable_reg(u32 nodeid, u32 linkn)
 }
 
 
-static int reg_useable(unsigned reg, struct device *goal_dev,
-		       unsigned goal_nodeid, unsigned goal_link)
+static int reg_useable(unsigned int reg, struct device *goal_dev,
+		       unsigned int goal_nodeid, unsigned int goal_link)
 {
 	struct resource *res;
-	unsigned nodeid, link = 0;
+	unsigned int nodeid, link = 0;
 	int result;
 	printk(BIOS_DEBUG, "\nFam12h - northbridge.c - %s - Start.\n",__func__);
 	res = 0;
@@ -206,7 +206,7 @@ static int reg_useable(unsigned reg, struct device *goal_dev,
 }
 
 static struct resource *amdfam12_find_iopair(struct device *dev,
-					     unsigned nodeid, unsigned link)
+					unsigned int nodeid, unsigned int link)
 {
 	struct resource *resource;
 	u32 result, reg;
@@ -324,7 +324,7 @@ static u32 my_find_pci_tolm(struct bus *bus, u32 tolm)
 #if CONFIG_HW_MEM_HOLE_SIZEK != 0
 
 struct hw_mem_hole_info {
-	unsigned hole_startk;
+	unsigned int hole_startk;
 	int node_id;
 };
 
@@ -378,7 +378,7 @@ static void set_resource(struct device *dev, struct resource *resource,
 			 u32 nodeid)
 {
 	resource_t rbase, rend;
-	unsigned reg, link_num;
+	unsigned int reg, link_num;
 	char buf[50];
 
 	printk(BIOS_DEBUG, "\nFam12h - northbridge.c - %s - Start.\n",__func__);
@@ -428,7 +428,7 @@ static void set_resource(struct device *dev, struct resource *resource,
 extern struct device *vga_pri;    // the primary vga device, defined in device.c
 #endif
 
-static void create_vga_resource(struct device *dev, unsigned nodeid)
+static void create_vga_resource(struct device *dev, unsigned int nodeid)
 {
 struct bus *link;
 
@@ -461,7 +461,7 @@ printk(BIOS_DEBUG, "\nFam12h - northbridge.c - %s - Start.\n",__func__);
 
 static void set_resources(struct device *dev)
 {
-	unsigned nodeid;
+	unsigned int nodeid;
 	struct bus *bus;
 	struct resource *res;
 
@@ -488,7 +488,7 @@ static void set_resources(struct device *dev)
 
 static void domain_read_resources(struct device *dev)
 {
-	unsigned reg;
+	unsigned int reg;
 
 	printk(BIOS_DEBUG, "\nFam12h - northbridge.c - %s - Start.\n",__func__);
 
@@ -500,7 +500,7 @@ static void domain_read_resources(struct device *dev)
 		limit = f1_read_config32(reg + 0x04);
 		/* Is this register allocated? */
 		if ((base & 3) != 0) {
-			unsigned nodeid, reg_link;
+			unsigned int nodeid, reg_link;
 			struct device *reg_dev;
 			if (reg < 0xc0) { // mmio
 				nodeid = (limit & 0xf) + (base&0x30);
@@ -622,7 +622,7 @@ static void domain_set_resources(struct device *dev)
 		/* split the region to accommodate pci memory space */
 		if ((basek < 4*1024*1024) && (limitk > mmio_basek)) {
 			if (basek <= mmio_basek) {
-				unsigned pre_sizek;
+				unsigned int pre_sizek;
 				pre_sizek = mmio_basek - basek;
 				if (pre_sizek > 0) {
 					ram_resource(dev, idx, basek, pre_sizek);

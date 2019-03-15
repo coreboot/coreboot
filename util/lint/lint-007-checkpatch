@@ -28,8 +28,6 @@ EXCLUDED_DIRS="^payloads/libpayload/util/kconfig\|\
 ^src/vendorcode\|\
 ^Documentation"
 
-opts="--max-line-length 96"
-
 # default: test src and util
 if [ "$1" = "" ]; then
 	INCLUDED_DIRS="src util"
@@ -37,7 +35,7 @@ if [ "$1" = "" ]; then
 elif [ "$1" = "diff" ]; then
 	args=$( echo $EXCLUDED_DIRS | \
 		sed -e 's,\\|, ,g' -e 's,\^,--exclude=,g' )
-	util/lint/checkpatch.pl --quiet --no-signoff $opts $args -
+	util/lint/checkpatch.pl --quiet --no-signoff $args -
 	exit $?
 # Space separated list of directories to test
 else
@@ -51,5 +49,5 @@ FILELIST=$( git ls-files $INCLUDED_DIRS | \
 		grep -v $EXCLUDED_DIRS )
 
 for FILE in $FILELIST; do
-	util/lint/checkpatch.pl --show-types --file --quiet $opts "$FILE"
+	util/lint/checkpatch.pl --show-types --file --quiet "$FILE"
 done

@@ -38,7 +38,6 @@
  */
 
 #include <console/console.h>
-#include <string.h>
 #include <arch/acpi.h>
 #include <arch/acpi_ivrs.h>
 #include <arch/acpigen.h>

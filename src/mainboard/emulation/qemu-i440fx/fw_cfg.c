@@ -225,6 +225,8 @@ unsigned long fw_cfg_acpi_tables(unsigned long start)
 	BiosLinkerLoaderEntry *s;
 	unsigned long *addrs, current;
 	uint8_t *ptr;
+	acpi_rsdp_t *rsdp = NULL;
+	acpi_header_t *ssdt;
 	int i, j, src, dst, max;
 
 	if (fw_cfg_check_file(&f, "etc/table-loader"))
@@ -251,6 +253,10 @@ unsigned long fw_cfg_acpi_tables(unsigned long start)
 
 			printk(BIOS_DEBUG, "QEMU: loading \"%s\" to 0x%lx (len %d)\n",
 			       s[i].alloc.file, current, f.size);
+			if(!strncmp(s[i].alloc.file, "etc/acpi/rsdp", 13)) {
+				printk(BIOS_DEBUG, "Found RSDP at 0x%lx\n", current);
+				rsdp = (acpi_rsdp_t *) current;
+			}
 			fw_cfg_get(f.select, (void *)current, f.size);
 			addrs[i] = current;
 			current += f.size;
@@ -321,6 +327,16 @@ unsigned long fw_cfg_acpi_tables(unsigned long start)
 			goto err;
 		};
 	}
+
+    if(rsdp) {
+        ssdt = (acpi_header_t *)current;
+        acpi_create_ssdt_generator(ssdt, ACPI_TABLE_CREATOR);
+        if (ssdt->length > sizeof(acpi_header_t)) {
+            current += ssdt->length;
+            acpi_add_table(rsdp, ssdt);
+            current = acpi_align_current(current);
+        }
+    }
 
 	printk(BIOS_DEBUG, "QEMU: loaded ACPI tables from fw_cfg.\n");
 	free(s);

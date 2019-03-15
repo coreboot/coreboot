@@ -14,6 +14,7 @@
 #define FW_CFG_H
 #include "fw_cfg_if.h"
 
+int is_rsdp(char *);
 void fw_cfg_get(uint16_t entry, void *dst, int dstlen);
 int fw_cfg_check_file(FWCfgFile *file, const char *name);
 int fw_cfg_max_cpus(void);

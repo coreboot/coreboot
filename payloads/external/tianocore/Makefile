@@ -100,7 +100,7 @@ build: update checktools
 		fi; \
 		build $(BUILD_STR); \
 		mv $(project_dir)/Build/CorebootPayloadPkg*/*/FV/UEFIPAYLOAD.fd $(project_dir)/Build/UEFIPAYLOAD.fd; \
-		git checkout CorebootPayloadPkg/Logo/Logo.bmp > /dev/null 2>&1
+		git checkout CorebootPayloadPkg/Logo/Logo.bmp > /dev/null 2>&1 || true
 
 clean:
 	test -d $(project_dir) && (cd $(project_dir); rm -rf Build; rm -f Conf/tools_def.txt) || exit 0

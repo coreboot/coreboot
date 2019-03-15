@@ -17,19 +17,22 @@
 
 #include <arch/acpi.h>
 #include <arch/acpigen.h>
-#include <device/mmio.h>
 #include <arch/smp/mpspec.h>
 #include <cbmem.h>
 #include <chip.h>
+#include <device/mmio.h>
+#include <device/pci_ops.h>
 #include <ec/google/chromeec/ec.h>
 #include <intelblocks/cpulib.h>
 #include <intelblocks/pmclib.h>
 #include <intelblocks/acpi.h>
+#include <intelblocks/p2sb.h>
 #include <soc/cpu.h>
 #include <soc/iomap.h>
 #include <soc/nvs.h>
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
+#include <soc/systemagent.h>
 #include <string.h>
 #include <vendorcode/google/chromeos/gnvs.h>
 #include <wrdd.h>
@@ -284,4 +287,81 @@ int acpigen_soc_set_tx_gpio(unsigned int gpio_num)
 int acpigen_soc_clear_tx_gpio(unsigned int gpio_num)
 {
 	return acpigen_soc_gpio_op("\\_SB.PCI0.CTXS", gpio_num);
+}
+
+static unsigned long soc_fill_dmar(unsigned long current)
+{
+	struct device *const igfx_dev = dev_find_slot(0, SA_DEVFN_IGD);
+	uint64_t gfxvtbar = MCHBAR64(GFXVTBAR) & VTBAR_MASK;
+	bool gfxvten = MCHBAR32(GFXVTBAR) & VTBAR_ENABLED;
+
+	if (igfx_dev && igfx_dev->enabled && gfxvtbar && gfxvten) {
+		unsigned long tmp = current;
+
+		current += acpi_create_dmar_drhd(current, 0, 0, gfxvtbar);
+		current += acpi_create_dmar_ds_pci(current, 0, 2, 0);
+
+		acpi_dmar_drhd_fixup(tmp, current);
+
+		/* Add RMRR entry */
+		tmp = current;
+		current += acpi_create_dmar_rmrr(current, 0,
+			sa_get_gsm_base(), sa_get_tolud_base() - 1);
+		current += acpi_create_dmar_ds_pci(current, 0, 2, 0);
+		acpi_dmar_rmrr_fixup(tmp, current);
+	}
+
+	struct device *const ipu_dev = dev_find_slot(0, SA_DEVFN_IPU);
+	uint64_t ipuvtbar = MCHBAR64(IPUVTBAR) & VTBAR_MASK;
+	bool ipuvten = MCHBAR32(IPUVTBAR) & VTBAR_ENABLED;
+
+	if (ipu_dev && ipu_dev->enabled && ipuvtbar && ipuvten) {
+		unsigned long tmp = current;
+
+		current += acpi_create_dmar_drhd(current, 0, 0, ipuvtbar);
+		current += acpi_create_dmar_ds_pci(current, 0, 5, 0);
+
+		acpi_dmar_drhd_fixup(tmp, current);
+	}
+
+	uint64_t vtvc0bar = MCHBAR64(VTVC0BAR) & VTBAR_MASK;
+	bool vtvc0en = MCHBAR32(VTVC0BAR) & VTBAR_ENABLED;
+
+	if (vtvc0bar && vtvc0en) {
+		const unsigned long tmp = current;
+
+		current += acpi_create_dmar_drhd(current,
+				DRHD_INCLUDE_PCI_ALL, 0, vtvc0bar);
+		current += acpi_create_dmar_ds_ioapic(current,
+				2, V_P2SB_CFG_IBDF_BUS, V_P2SB_CFG_IBDF_DEV,
+				V_P2SB_CFG_IBDF_FUNC);
+		current += acpi_create_dmar_ds_msi_hpet(current,
+				0, V_P2SB_CFG_HBDF_BUS, V_P2SB_CFG_HBDF_DEV,
+				V_P2SB_CFG_HBDF_FUNC);
+
+		acpi_dmar_drhd_fixup(tmp, current);
+	}
+
+	return current;
+}
+
+unsigned long sa_write_acpi_tables(struct device *dev, unsigned long current,
+				   struct acpi_rsdp *rsdp)
+{
+	acpi_dmar_t *const dmar = (acpi_dmar_t *)current;
+
+	/* Create DMAR table only if we have VT-d capability
+	 * and FSP does not override its feature.
+	 */
+	if ((pci_read_config32(dev, CAPID0_A) & VTD_DISABLE) ||
+	    !(MCHBAR32(VTVC0BAR) & VTBAR_ENABLED))
+		return current;
+
+	printk(BIOS_DEBUG, "ACPI:    * DMAR\n");
+	acpi_create_dmar(dmar, DMAR_INTR_REMAP, soc_fill_dmar);
+	current += dmar->header.length;
+	current = acpi_align_current(current);
+	acpi_add_table(rsdp, dmar);
+
+	return current;
 }

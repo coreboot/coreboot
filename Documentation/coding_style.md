@@ -30,11 +30,6 @@ the code move too far to the right, and makes it hard to read on a
 more than 3 levels of indentation, you're screwed anyway, and should
 fix your program.
 
-Since most code in a file is indented at least 1 level, we account for
-2 levels in addition to the 80 characters on the terminal under the
-assumption that editors can scroll to the right, making an 80 characters
-screen visible with little loss on the left end.
-
 In short, 8-char indents make things easier to read, and have the added
 benefit of warning you when you're nesting your functions too deep.
 Heed that warning.
@@ -85,11 +80,11 @@ Get a decent editor and don't leave whitespace at the end of lines.
 Coding style is all about readability and maintainability using commonly
 available tools.
 
-The limit on the length of lines is 96 columns (80 columns + 2 tab levels)
-and this is a strongly preferred limit.
+The limit on the length of lines is 80 columns and this is a strongly
+preferred limit.
 
-Statements longer than 96 columns will be broken into sensible chunks,
-unless exceeding 96 columns significantly increases readability and does
+Statements longer than 80 columns will be broken into sensible chunks,
+unless exceeding 80 columns significantly increases readability and does
 not hide information. Descendants are always substantially shorter than
 the parent and are placed substantially to the right. The same applies
 to function headers with a long argument list. However, never break

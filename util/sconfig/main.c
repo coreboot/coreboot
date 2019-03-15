@@ -15,6 +15,7 @@
  */
 
 #include <ctype.h>
+#include <commonlib/helpers.h>
 #include "sconfig.h"
 #include "sconfig.tab.h"
 

@@ -4,6 +4,7 @@ sconfigobj += sconfig.tab.o
 sconfigobj += main.o
 
 SCONFIGFLAGS += -I$(top)/util/sconfig -I$(objutil)/sconfig
+SCONFIGFLAGS += -I$(top)/src/commonlib/include
 
 $(objutil)/sconfig:
 	mkdir -p $@

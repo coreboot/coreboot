@@ -27,7 +27,6 @@
 #include <device/pci_def.h>
 #include <console/console.h>
 #include <intelblocks/pmclib.h>
-#include <halt.h>
 #include <intelblocks/lpc_lib.h>
 #include <intelblocks/tco.h>
 #include <stdlib.h>

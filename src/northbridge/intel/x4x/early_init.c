@@ -26,7 +26,6 @@
 #include <pc80/mc146818rtc.h>
 #include "x4x.h"
 #include <console/console.h>
-#include <halt.h>
 #include <romstage_handoff.h>
 
 void x4x_early_init(void)

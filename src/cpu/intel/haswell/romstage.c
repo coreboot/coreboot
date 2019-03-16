@@ -21,7 +21,6 @@
 #include <cpu/x86/bist.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
-#include <halt.h>
 #include <lib.h>
 #include <timestamp.h>
 #include <device/pci_def.h>

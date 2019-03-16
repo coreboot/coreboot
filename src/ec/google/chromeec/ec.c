@@ -23,7 +23,6 @@
 #include <bootstate.h>
 #include <delay.h>
 #include <elog.h>
-#include <halt.h>
 #include <reset.h>
 #include <rtc.h>
 #include <stdlib.h>

@@ -17,7 +17,6 @@
 
 #include <arch/cache.h>
 #include "bouncebuf.h"
-#include <halt.h>
 #include "storage.h"
 #include <string.h>
 #include <commonlib/stdlib.h>

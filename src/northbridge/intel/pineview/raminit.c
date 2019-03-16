@@ -20,7 +20,6 @@
 #include <console/console.h>
 #include <cpu/x86/cache.h>
 #include <delay.h>
-#include <halt.h>
 #include <lib.h>
 #include "pineview.h"
 #include "raminit.h"

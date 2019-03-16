@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <halt.h>
 #include <soc/rtc_common.h>
 #include <soc/rtc.h>
 #include <soc/mt6358.h>

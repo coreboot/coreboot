@@ -26,7 +26,6 @@
 #include <northbridge/intel/sandybridge/raminit_native.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <southbridge/intel/common/gpio.h>
-#include <halt.h>
 #include <bootmode.h>
 #include <ec/quanta/it8518/ec.h>
 #include "ec.h"

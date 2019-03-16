@@ -24,7 +24,6 @@
 #include <commonlib/storage.h>
 #include <delay.h>
 #include <endian.h>
-#include <halt.h>
 #include "sdhci.h"
 #include "sd_mmc.h"
 #include "storage.h"

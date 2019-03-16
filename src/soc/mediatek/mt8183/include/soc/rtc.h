@@ -17,7 +17,6 @@
 #define SOC_MEDIATEK_MT8183_RTC_H
 
 #include <soc/rtc_common.h>
-#include <halt.h>
 
 /* RTC registers */
 enum {

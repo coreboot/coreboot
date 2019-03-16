@@ -21,7 +21,6 @@
 #include <cpu/x86/lapic.h>
 #include <cpu/x86/msr.h>
 #include <device/pci_def.h>
-#include <halt.h>
 #include <northbridge/intel/sandybridge/raminit_native.h>
 #include <northbridge/intel/sandybridge/raminit.h>
 #include <northbridge/intel/sandybridge/sandybridge.h>

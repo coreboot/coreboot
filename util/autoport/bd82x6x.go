@@ -302,23 +302,21 @@ func (b bd82x6x) Scan(ctx Context, addr PCIDevData) {
 	sb := Create(ctx, "romstage.c")
 	defer sb.Close()
 	Add_gpl(sb)
-	sb.WriteString(`#include <stdint.h>
+	sb.WriteString(`/* FIXME: Check if all includes are needed. */
+
+#include <stdint.h>
 #include <string.h>
-#include <lib.h>
 #include <timestamp.h>
 #include <arch/byteorder.h>
 #include <arch/io.h>
-#include <device/pci_def.h>
-#include <device/pnp_def.h>
-#include <cpu/x86/lapic.h>
-#include <arch/acpi.h>
+#include <device/mmio.h>
+#include <device/pci_ops.h>
+#include <device/pnp_ops.h>
 #include <console/console.h>
 #include <northbridge/intel/sandybridge/sandybridge.h>
 #include <northbridge/intel/sandybridge/raminit_native.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <southbridge/intel/common/gpio.h>
-#include <arch/cpu.h>
-#include <cpu/x86/msr.h>
 
 void pch_enable_lpc(void)
 {

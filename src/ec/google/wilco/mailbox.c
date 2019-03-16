@@ -155,17 +155,17 @@ static int wilco_ec_transfer(struct wilco_ec_message *msg)
 	/* Start the command */
 	outb(EC_MAILBOX_START_COMMAND, CONFIG_EC_BASE_HOST_COMMAND);
 
-	/* Wait for it to complete */
-	if (wilco_ec_response_timed_out()) {
-		printk(BIOS_ERR, "%s: response timed out\n", __func__);
-		return -1;
-	}
-
 	/* Some commands will put the EC into a state where it cannot respond */
 	if (msg->type == WILCO_EC_MSG_NO_RESPONSE) {
 		printk(BIOS_DEBUG, "%s: EC does not respond to this command\n",
 		       __func__);
 		return 0;
+	}
+
+	/* Wait for it to complete */
+	if (wilco_ec_response_timed_out()) {
+		printk(BIOS_ERR, "%s: response timed out\n", __func__);
+		return -1;
 	}
 
 	/* Check result */

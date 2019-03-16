@@ -20,7 +20,6 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
-#include <device/pciexp.h>
 #include <device/pci_ids.h>
 #include <stdlib.h>
 #include "pch.h"

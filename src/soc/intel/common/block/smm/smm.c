@@ -41,6 +41,8 @@ void smm_southbridge_clear_state(void)
 
 void smm_southbridge_enable(uint16_t pm1_events)
 {
+	uint32_t smi_params = ENABLE_SMI_PARAMS;
+
 	printk(BIOS_DEBUG, "Enabling SMIs.\n");
 	/* Configure events */
 	pmc_enable_pm1(pm1_events);
@@ -60,14 +62,16 @@ void smm_southbridge_enable(uint16_t pm1_events)
 	 *  - on APMC writes (io 0xb2)
 	 *  - on writes to SLP_EN (sleep states)
 	 *  - on writes to GBL_RLS (bios commands)
-	 *  - on eSPI events (does nothing on LPC systems)
+	 *  - on eSPI events, unless disabled (does nothing on LPC systems)
 	 * No SMIs:
 	 *  - on microcontroller writes (io 0x62/0x66)
 	 *  - on TCO events
 	 */
+	if (CONFIG(SOC_INTEL_COMMON_BLOCK_SMM_ESPI_DISABLE))
+		smi_params &= ~ESPI_SMI_EN;
 
 	/* Enable SMI generation: */
-	pmc_enable_smi(ENABLE_SMI_PARAMS);
+	pmc_enable_smi(smi_params);
 }
 
 void smm_setup_structures(void *gnvs, void *tcg, void *smi1)
@@ -94,11 +98,3 @@ void smm_region_info(void **start, size_t *size)
 	*start = (void *)sa_get_tseg_base();
 	*size = sa_get_tseg_size();
 }
-
-#if CONFIG(SOC_INTEL_COMMON_BLOCK_SMM_ESPI_ACPI_DIS)
-static void smm_disable_espi(void *dest)
-{
-	pmc_disable_smi(ESPI_SMI_EN);
-}
-BOOT_STATE_INIT_ENTRY(BS_OS_RESUME, BS_ON_ENTRY, smm_disable_espi, NULL);
-#endif

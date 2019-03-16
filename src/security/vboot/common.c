@@ -163,11 +163,12 @@ static void vboot_migrate_cbmem(int unused)
 	size_t cbmem_size = wd_preram->buffer_offset + wd_preram->buffer_size;
 	struct vboot_working_data *wd_cbmem =
 		cbmem_add(CBMEM_ID_VBOOT_WORKBUF, cbmem_size);
+	assert(wd_cbmem != NULL);
+
 	printk(BIOS_DEBUG,
 	       "VBOOT: copying vboot_working_data (%zu bytes) to CBMEM...\n",
 	       cbmem_size);
 	memcpy(wd_cbmem, wd_preram, cbmem_size);
-	assert(wd_cbmem != NULL);
 }
 ROMSTAGE_CBMEM_INIT_HOOK(vboot_migrate_cbmem)
 #elif CONFIG(VBOOT_STARTS_IN_ROMSTAGE)

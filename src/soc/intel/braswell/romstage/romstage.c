@@ -43,7 +43,6 @@
 #include <soc/smm.h>
 #include <soc/spi.h>
 #include <build.h>
-#include <rtc.h>
 #include <pc80/mc146818rtc.h>
 
 void program_base_addresses(void)

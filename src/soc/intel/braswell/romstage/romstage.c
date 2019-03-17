@@ -29,7 +29,6 @@
 #include <device/pci_def.h>
 #include <elog.h>
 #include <mrc_cache.h>
-#include <romstage_handoff.h>
 #include <string.h>
 #include <timestamp.h>
 #include <reset.h>

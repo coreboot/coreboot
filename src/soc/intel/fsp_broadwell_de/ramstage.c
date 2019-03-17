@@ -23,7 +23,6 @@
 #include <device/device.h>
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
-#include <romstage_handoff.h>
 #include <soc/lpc.h>
 #include <soc/msr.h>
 #include <soc/pattrs.h>

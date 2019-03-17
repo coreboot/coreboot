@@ -24,7 +24,6 @@
 #include <console/usb.h>
 #include <cpu/x86/mtrr.h>
 #include <program_loading.h>
-#include <romstage_handoff.h>
 #include <timestamp.h>
 #include <version.h>
 #include <drivers/intel/fsp1_0/fsp_util.h>

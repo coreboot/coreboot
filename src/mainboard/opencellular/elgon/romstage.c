@@ -16,7 +16,6 @@
 
 #include <arch/exception.h>
 #include <cbmem.h>
-#include <romstage_handoff.h>
 #include <soc/sdram.h>
 #include <soc/timer.h>
 #include <soc/mmu.h>

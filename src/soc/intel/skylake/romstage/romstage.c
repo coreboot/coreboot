@@ -27,7 +27,6 @@
 #include <intelblocks/fast_spi.h>
 #include <intelblocks/pmclib.h>
 #include <reset.h>
-#include <romstage_handoff.h>
 #include <soc/pci_devs.h>
 #include <soc/pei_wrapper.h>
 #include <soc/pm.h>

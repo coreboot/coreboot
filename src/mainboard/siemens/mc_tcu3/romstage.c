@@ -18,7 +18,6 @@
 #include <arch/cbfs.h>
 #include <console/console.h>
 #include <cpu/x86/mtrr.h>
-#include <romstage_handoff.h>
 #include <soc/gpio.h>
 #include <soc/iomap.h>
 #include <soc/lpc.h>

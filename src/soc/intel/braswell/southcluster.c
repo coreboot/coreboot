@@ -30,7 +30,6 @@
 #include <pc80/isa-dma.h>
 #include <pc80/i8254.h>
 #include <pc80/i8259.h>
-#include <romstage_handoff.h>
 #include <soc/acpi.h>
 #include <soc/iomap.h>
 #include <soc/irq.h>

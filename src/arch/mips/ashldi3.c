@@ -19,7 +19,7 @@
 #errror "What endian are you!?"
 #endif
 
-typedef unsigned word_type;
+typedef unsigned int word_type;
 long long __ashldi3(long long u, word_type b);
 
 struct DWstruct {

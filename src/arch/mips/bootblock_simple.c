@@ -32,10 +32,10 @@ void main(void)
 
 	bootblock_mmu_init();
 
-	if (init_extra_hardware()) {
+	if (init_extra_hardware())
 		printk(BIOS_ERR, "bootblock_simple: failed to init HW.\n");
-	} else {
+	else
 		run_romstage();
-	}
+
 	halt();
 }

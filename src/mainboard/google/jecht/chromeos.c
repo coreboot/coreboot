@@ -27,7 +27,6 @@
 
 #define FLAG_SPI_WP	0
 #define FLAG_REC_MODE	1
-#define FLAG_DEV_MODE	2
 
 #if ENV_RAMSTAGE
 #include <boot/coreboot_tables.h>

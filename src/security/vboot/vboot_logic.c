@@ -324,10 +324,6 @@ void verstage_main(void)
 			die("Initializing measured boot mode failed!");
 	}
 
-	if (CONFIG(VBOOT_PHYSICAL_DEV_SWITCH) &&
-		get_developer_mode_switch())
-		ctx.flags |= VB2_CONTEXT_FORCE_DEVELOPER_MODE;
-
 	if (get_recovery_mode_switch()) {
 		ctx.flags |= VB2_CONTEXT_FORCE_RECOVERY_MODE;
 		if (CONFIG(VBOOT_DISABLE_DEV_ON_RECOVERY))

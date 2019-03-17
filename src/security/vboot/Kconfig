@@ -191,15 +191,6 @@ config VBOOT_SOFT_REBOOT_WORKAROUND
 	bool
 	default n
 
-config VBOOT_PHYSICAL_DEV_SWITCH
-	bool
-	default n
-	help
-	  Whether this platform has a physical developer switch. Note that this
-	  disables virtual dev switch functionality (through secdata). Operation
-	  where both a physical pin and the virtual switch get sampled is not
-	  supported by coreboot.
-
 config VBOOT_PHYSICAL_REC_SWITCH
 	bool
 	default n

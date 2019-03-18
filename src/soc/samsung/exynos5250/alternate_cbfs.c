@@ -13,10 +13,8 @@
  * GNU General Public License for more details.
  */
 
-
 #include <assert.h>
 #include <boot_device.h>
-#include <cbfs.h>  /* This driver serves as a CBFS media source. */
 #include <console/console.h>
 #include <soc/alternate_cbfs.h>
 #include <soc/power.h>

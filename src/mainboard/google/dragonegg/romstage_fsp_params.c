@@ -15,7 +15,6 @@
 
 #include <assert.h>
 #include <baseboard/variants.h>
-#include <cbfs.h>
 #include <console/console.h>
 #include <soc/romstage.h>
 #include <string.h>

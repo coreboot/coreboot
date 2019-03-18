@@ -15,6 +15,7 @@
 
 #include <console/console.h>
 #include <fmap.h>
+#include <cbfs.h>
 #include <security/vboot/vboot_crtm.h>
 #include <security/vboot/misc.h>
 

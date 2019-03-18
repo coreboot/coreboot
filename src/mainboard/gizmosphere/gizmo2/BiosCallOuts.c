@@ -17,9 +17,9 @@
 #include <northbridge/amd/agesa/BiosCallOuts.h>
 #include <northbridge/amd/agesa/state_machine.h>
 #include <FchPlatform.h>
-#include <cbfs.h>
-#include "imc.h"
 #include <stdlib.h>
+
+#include "imc.h"
 
 const BIOS_CALLOUT_STRUCT BiosCallouts[] =
 {

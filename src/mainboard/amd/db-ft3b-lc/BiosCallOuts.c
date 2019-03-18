@@ -18,10 +18,10 @@
 #include <northbridge/amd/agesa/BiosCallOuts.h>
 #include <device/azalia.h>
 #include <FchPlatform.h>
-#include <cbfs.h>
+#include <stdlib.h>
+
 #include "imc.h"
 #include "hudson.h"
-#include <stdlib.h>
 
 static AGESA_STATUS Fch_Oem_config(UINT32 Func, UINTN FchData, VOID *ConfigPtr);
 

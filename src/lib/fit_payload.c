@@ -24,8 +24,8 @@
 #include <fit.h>
 #include <program_loading.h>
 #include <timestamp.h>
-#include <cbfs.h>
 #include <string.h>
+#include <commonlib/cbfs_serialized.h>
 #include <commonlib/compression.h>
 #include <lib.h>
 #include <fit_payload.h>

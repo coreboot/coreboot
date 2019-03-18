@@ -21,11 +21,11 @@
 #include <bootmem.h>
 #include <stdlib.h>
 #include <string.h>
-#include <cbfs.h>
 #include <program_loading.h>
 #include <memrange.h>
 #include <fit.h>
 #include <boardid.h>
+#include <commonlib/cbfs_serialized.h>
 #include <commonlib/include/commonlib/stdlib.h>
 
 static struct list_node image_nodes;

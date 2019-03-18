@@ -17,11 +17,11 @@
 #include <spd_bin.h>
 #include <northbridge/amd/agesa/BiosCallOuts.h>
 #include <FchPlatform.h>
-#include <cbfs.h>
+#include <stdlib.h>
+
 #include "gpio_ftns.h"
 #include "imc.h"
 #include "hudson.h"
-#include <stdlib.h>
 
 static AGESA_STATUS Fch_Oem_config(UINT32 Func, UINTN FchData, VOID *ConfigPtr);
 static AGESA_STATUS board_ReadSpd_from_cbfs(UINT32 Func, UINTN Data, VOID *ConfigPtr);

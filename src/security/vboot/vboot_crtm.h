@@ -16,10 +16,10 @@
 #ifndef __SECURITY_VBOOT_CRTM_H__
 #define __SECURITY_VBOOT_CRTM_H__
 
+#include <commonlib/cbfs.h>
 #include <program_loading.h>
 #include <security/tpm/tspi.h>
 #include <types.h>
-#include <cbfs.h>
 
 /* CRTM */
 #define TPM_CRTM_PCR 2

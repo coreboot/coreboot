@@ -20,7 +20,6 @@
 #include <northbridge/amd/agesa/BiosCallOuts.h>
 #include <northbridge/amd/agesa/state_machine.h>
 #include <FchPlatform.h>
-#include <cbfs.h>
 #include <stdlib.h>
 #include <pc80/mc146818rtc.h>
 #include <types.h>

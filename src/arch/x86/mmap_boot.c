@@ -14,7 +14,6 @@
  */
 
 #include <boot_device.h>
-#include <cbfs.h>
 #include <endian.h>
 #include <stdlib.h>
 

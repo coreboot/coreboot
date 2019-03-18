@@ -20,6 +20,7 @@
 #include <device/mmio.h>
 #include <device/pci_ops.h>
 #include <arch/acpi.h>
+#include <arch/ioapic.h>
 #include <bootstate.h>
 #include "chip.h"
 #include <console/console.h>
@@ -74,6 +75,10 @@ static void sc_add_mmio_resources(struct device *dev)
 	add_mmio_resource(dev, MPBASE, MPHY_BASE_ADDRESS, MPHY_BASE_SIZE);
 	add_mmio_resource(dev, PUBASE, PUNIT_BASE_ADDRESS, PUNIT_BASE_SIZE);
 	add_mmio_resource(dev, RCBA, RCBA_BASE_ADDRESS, RCBA_BASE_SIZE);
+	add_mmio_resource(dev, 0xfff,
+		0xffffffff - (CONFIG_COREBOOT_ROMSIZE_KB*KiB) + 1,
+		(CONFIG_COREBOOT_ROMSIZE_KB*KiB));	/* BIOS ROM */
+	add_mmio_resource(dev, 0xfec, IO_APIC_ADDR, 0x00001000); /* IOAPIC */
 }
 
 /* Default IO range claimed by the LPC device. The upper bound is exclusive. */

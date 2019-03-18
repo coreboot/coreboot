@@ -20,7 +20,6 @@
 #include <cf9_reset.h>
 #include <console/console.h>
 #include <device/pci_def.h>
-#include <lib.h>
 #include <memory_info.h>
 #include <mrc_cache.h>
 #include <string.h>
@@ -97,9 +96,6 @@ void raminit(struct pei_data *pei_data)
 		(version >> 8) & 0xff, version & 0xff);
 
 	report_memory_config();
-
-	/* Basic memory sanity test */
-	quick_ram_check();
 
 	if (pei_data->boot_mode != ACPI_S3) {
 		cbmem_initialize_empty();

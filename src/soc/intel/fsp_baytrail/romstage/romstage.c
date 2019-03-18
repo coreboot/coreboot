@@ -15,7 +15,6 @@
  */
 
 #include <stddef.h>
-#include <lib.h>
 #include <arch/io.h>
 #include <device/mmio.h>
 #include <device/pci_ops.h>
@@ -244,12 +243,6 @@ void romstage_main_continue(EFI_STATUS status, void *hob_list_ptr)
 
 	late_mainboard_romstage_entry();
 	post_code(0x4c);
-
-	/* if S3 resume skip RAM check */
-	if (prev_sleep_state != ACPI_S3) {
-		quick_ram_check();
-		post_code(0x4d);
-	}
 
 	cbmem_was_initted = !cbmem_recovery(prev_sleep_state == ACPI_S3);
 

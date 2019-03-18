@@ -31,7 +31,6 @@
 #include <southbridge/intel/common/smbus.h>
 #include <cpu/x86/msr.h>
 #include <delay.h>
-#include <lib.h>
 #include "raminit_native.h"
 #include "raminit_common.h"
 #include "sandybridge.h"
@@ -418,9 +417,6 @@ static void init_dram_ddr3(int min_tck, int s3resume)
 
 	/* Zone config */
 	dram_zones(&ctrl, 0);
-
-	/* Non intrusive, fast ram check */
-	quick_ram_check();
 
 	intel_early_me_status();
 	intel_early_me_init_done(ME_INIT_STATUS_SUCCESS);

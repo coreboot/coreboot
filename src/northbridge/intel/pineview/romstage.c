@@ -18,7 +18,6 @@
  */
 
 #include <arch/io.h>
-#include <lib.h>
 #include <timestamp.h>
 #include <console/console.h>
 #include <device/pci_ops.h>
@@ -104,8 +103,6 @@ void mainboard_romstage_entry(unsigned long bist)
 	printk(BIOS_DEBUG, "Memory initialized\n");
 
 	post_code(0x31);
-
-	quick_ram_check();
 
 	mb_pirq_setup();
 

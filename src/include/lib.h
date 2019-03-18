@@ -24,10 +24,11 @@
 size_t ulzman(const void *src, size_t srcn, void *dst, size_t dstn);
 
 /* Defined in src/lib/ramtest.c */
+/* Assumption is 32-bit addressable UC memory. */
 void ram_check(unsigned long start, unsigned long stop);
 int ram_check_nodie(unsigned long start, unsigned long stop);
 int ram_check_noprint_nodie(unsigned long start, unsigned long stop);
-void quick_ram_check(void);
+void quick_ram_check_or_die(uintptr_t dst);
 
 /* Defined in primitive_memtest.c */
 int primitive_memtest(uintptr_t base, uintptr_t size);

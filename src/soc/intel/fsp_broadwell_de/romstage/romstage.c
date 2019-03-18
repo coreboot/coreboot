@@ -16,7 +16,6 @@
  */
 
 #include <stddef.h>
-#include <lib.h>
 #include <device/pci_ops.h>
 #include <arch/cbfs.h>
 #include <cbmem.h>
@@ -111,9 +110,6 @@ void romstage_main_continue(EFI_STATUS status, void *hob_list_ptr)
 
 	post_code(0x4b);
 	late_mainboard_romstage_entry();
-
-	post_code(0x4c);
-	quick_ram_check();
 
 	post_code(0x4d);
 	cbmem_was_initted = !cbmem_recovery(0);

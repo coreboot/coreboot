@@ -15,7 +15,6 @@
  */
 
 #include <stdint.h>
-#include <lib.h>
 #include <timestamp.h>
 #include <arch/io.h>
 #include <device/mmio.h>
@@ -113,9 +112,6 @@ void romstage_main_continue(EFI_STATUS status, void *hob_list_ptr) {
 
 	/* Decode E0000 and F0000 segment to DRAM */
 	sideband_write(B_UNIT, BMISC, sideband_read(B_UNIT, BMISC) | (1 << 1) | (1 << 0));
-
-	quick_ram_check();
-	post_code(0x4d);
 
 	cbmem_was_initted = !cbmem_recovery(0);
 

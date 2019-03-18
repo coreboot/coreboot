@@ -171,7 +171,10 @@ int ram_check_noprint_nodie(unsigned long start, unsigned long stop)
 	return failures;
 }
 
-static void __quick_ram_check(uintptr_t dst)
+/* Assumption is 32-bit addressable UC memory at dst. This also executes
+ * on S3 resume path so target memory must be restored.
+ */
+void quick_ram_check_or_die(uintptr_t dst)
 {
 	int fail = 0;
 	u32 backup;
@@ -199,9 +202,4 @@ static void __quick_ram_check(uintptr_t dst)
 		die("RAM INIT FAILURE!\n");
 	}
 	phys_memory_barrier();
-}
-
-void quick_ram_check(void)
-{
-	__quick_ram_check(0x100000);
 }

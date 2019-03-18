@@ -20,7 +20,6 @@
 #include <cpu/x86/bist.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
-#include <lib.h>
 #include <timestamp.h>
 #include <device/pci_def.h>
 #include <cpu/x86/lapic.h>
@@ -120,9 +119,6 @@ void romstage_common(const struct romstage_params *params)
 	post_code(0x3b);
 
 	intel_early_me_status();
-
-	quick_ram_check();
-	post_code(0x3e);
 
 	if (!wake_from_s3) {
 		cbmem_initialize_empty();

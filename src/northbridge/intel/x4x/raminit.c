@@ -23,7 +23,6 @@
 #include <arch/cpu.h>
 #include <delay.h>
 #include <halt.h>
-#include <lib.h>
 #include "iomap.h"
 #if CONFIG(SOUTHBRIDGE_INTEL_I82801GX)
 #include <southbridge/intel/i82801gx/i82801gx.h> /* smbus_read_byte */
@@ -734,6 +733,5 @@ void sdram_initialize(int boot_path, const u8 *spd_map)
 	}
 
 	timestamp_add_now(TS_AFTER_INITRAM);
-	quick_ram_check();
 	printk(BIOS_DEBUG, "Memory initialized\n");
 }

@@ -40,9 +40,6 @@ AGESA_INC += -I$(src)/mainboard/$(MAINBOARDDIR)	# OptionsIds.h
 
 BUILDOPTS_INCLUDES = -I$(AGESA_ROOT)/Config $(AGESA_INC) $(AGESA_AUTOINCLUDES)
 
-CFLAGS_x86_32 += -march=k8-sse3 -mtune=k8-sse3 -fno-zero-initialized-in-bss -fno-strict-aliasing
-CFLAGS_x86_64 += -march=k8-sse3 -mtune=k8-sse3 -fno-zero-initialized-in-bss -fno-strict-aliasing
-
 CPPFLAGS_x86_32 += $(AGESA_INC)
 CPPFLAGS_x86_64 += $(AGESA_INC)
 

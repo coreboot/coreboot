@@ -1,0 +1,59 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+# -----------------------------------------------------------------
+entries
+
+#start-bit length  config config-ID    name
+
+0          120       r       0        reserved_memory
+
+# RTC_BOOT_BYTE (coreboot hardcoded)
+384          1       e       4        boot_option
+388          4       h       0        reboot_counter
+
+# coreboot config options: console
+395          4       e       3        debug_level
+
+# coreboot config options: cpu
+400          1       e       2        hyper_threading
+401          1       e       2        vtd
+
+# coreboot config options: pch
+408          2       e       4        power_on_after_fail
+
+# coreboot config options: mainboard
+440          1       e       2        ethernet1
+
+# payload config options
+512        256       s       0        boot_devices
+768          8       h       0        boot_default
+784          1       e       1        cmos_defaults_loaded
+
+# coreboot config options: check sums
+984         16       h       0        check_sum
+
+# -----------------------------------------------------------------
+
+enumerations
+
+#ID value   text
+1     0     No
+1     1     Yes
+2     0     Disable
+2     1     Enable
+3     0     Emergency
+3     1     Alert
+3     2     Critical
+3     3     Error
+3     4     Warning
+3     5     Notice
+3     6     Info
+3     7     Debug
+3     8     Spew
+4     0     Disable
+4     1     Enable
+4     2     Keep
+# -----------------------------------------------------------------
+checksums
+
+checksum 392 983 984

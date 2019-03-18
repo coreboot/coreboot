@@ -1,0 +1,5 @@
+Vendor name: Siemens
+Category: eval
+ROM protocol: SPI
+ROM socketed: n
+Flashrom support: n

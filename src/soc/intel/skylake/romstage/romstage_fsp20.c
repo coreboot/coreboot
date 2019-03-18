@@ -202,6 +202,61 @@ static void cpu_flex_override(FSP_M_CONFIG *m_cfg)
 	m_cfg->CpuRatio = (flex_ratio.lo >> 8) & 0xff;
 }
 
+static void soc_peg_init_params(FSP_M_CONFIG *m_cfg,
+			FSP_M_TEST_CONFIG *m_t_cfg,
+			const struct soc_intel_skylake_config *config)
+{
+	const struct device *dev;
+	/*
+	 * To enable or disable the corresponding PEG root port you need to
+	 * add to the devicetree.cb:
+	 *
+	 *     device pci 01.0 on  end # enable PEG0 root port
+	 *     device pci 01.1 off end # do not configure PEG1
+	 *
+	 * If PEG port is not defined in the device tree, it will be disabled
+	 * in FSP
+	 */
+	dev = SA_DEV_PEG0; /* PEG 0:1:0 */
+	if (!dev || !dev->enabled)
+		m_cfg->Peg0Enable = 0;
+	else if (dev->enabled) {
+		m_cfg->Peg0Enable = dev->enabled;
+		m_cfg->Peg0MaxLinkWidth = config->Peg0MaxLinkWidth;
+		/* Use maximum possible link speed */
+		m_cfg->Peg0MaxLinkSpeed = 0;
+		/* Power down unused lanes based on the max possible width */
+		m_cfg->Peg0PowerDownUnusedLanes = 1;
+		/* Set [Auto] for options to enable equalization methods */
+		m_t_cfg->Peg0Gen3EqPh2Enable = 2;
+		m_t_cfg->Peg0Gen3EqPh3Method = 0;
+	}
+
+	dev = SA_DEV_PEG1; /* PEG 0:1:1 */
+	if (!dev || !dev->enabled)
+		m_cfg->Peg1Enable = 0;
+	else if (dev->enabled) {
+		m_cfg->Peg1Enable = dev->enabled;
+		m_cfg->Peg1MaxLinkWidth = config->Peg1MaxLinkWidth;
+		m_cfg->Peg1MaxLinkSpeed = 0;
+		m_cfg->Peg1PowerDownUnusedLanes = 1;
+		m_t_cfg->Peg1Gen3EqPh2Enable = 2;
+		m_t_cfg->Peg1Gen3EqPh3Method = 0;
+	}
+
+	dev = SA_DEV_PEG2; /* PEG 0:1:2 */
+	if (!dev || !dev->enabled)
+		m_cfg->Peg2Enable = 0;
+	else if (dev->enabled) {
+		m_cfg->Peg2Enable = dev->enabled;
+		m_cfg->Peg2MaxLinkWidth = config->Peg2MaxLinkWidth;
+		m_cfg->Peg2MaxLinkSpeed = 0;
+		m_cfg->Peg2PowerDownUnusedLanes = 1;
+		m_t_cfg->Peg2Gen3EqPh2Enable = 2;
+		m_t_cfg->Peg2Gen3EqPh3Method = 0;
+	}
+}
+
 static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 			const struct soc_intel_skylake_config *config)
 {
@@ -276,6 +331,7 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	config = dev->chip_info;
 
 	soc_memory_init_params(m_cfg, config);
+	soc_peg_init_params(m_cfg, m_t_cfg, config);
 
 	/* Skip creating Management Engine MBP HOB */
 	m_t_cfg->SkipMbpHob = 0x01;

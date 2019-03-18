@@ -37,6 +37,13 @@
 #define  SA_DEVFN_ROOT		_SA_DEVFN(ROOT)
 #define  SA_DEV_ROOT		_SA_DEV(ROOT)
 
+#define SA_DEV_SLOT_PEG		0x01
+#define  SA_DEVFN_PEG(func)	PCI_DEVFN(SA_DEV_SLOT_PEG, func)
+#define  SA_DEV_PEG(func)	dev_find_slot(0, SA_DEVFN_PEG(func))
+#define  SA_DEV_PEG0		SA_DEV_PEG(0)
+#define  SA_DEV_PEG1		SA_DEV_PEG(1)
+#define  SA_DEV_PEG2		SA_DEV_PEG(2)
+
 #define SA_DEV_SLOT_IGD		0x02
 #define  SA_DEVFN_IGD		_SA_DEVFN(IGD)
 #define  SA_DEV_IGD		_SA_DEV(IGD)

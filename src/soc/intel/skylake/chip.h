@@ -35,6 +35,8 @@
 #include <soc/usb.h>
 #include <soc/vr_config.h>
 
+#define MAX_PEG_PORTS	3
+
 enum skylake_i2c_voltage {
 	I2C_VOLTAGE_3V3,
 	I2C_VOLTAGE_1V8
@@ -212,6 +214,28 @@ struct soc_intel_skylake_config {
 	 * each element of array corresponds to
 	 * respective PCIe root port.
 	 */
+
+	/* PEG Max Link Width */
+	enum {
+		Peg0_x16,
+		Peg0_x1,
+		Peg0_x2,
+		Peg0_x4,
+		Peg0_x8,
+	} Peg0MaxLinkWidth;
+
+	enum {
+		Peg1_x8,
+		Peg1_x1,
+		Peg1_x2,
+		Peg1_x4,
+	} Peg1MaxLinkWidth;
+
+	enum {
+		Peg2_x4,
+		Peg2_x1,
+		Peg2_x2,
+	} Peg2MaxLinkWidth;
 
 	/*
 	 * Enable/Disable Root Port

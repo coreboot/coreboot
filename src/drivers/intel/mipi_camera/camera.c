@@ -20,7 +20,6 @@
 #include <device/i2c_simple.h>
 #include <device/device.h>
 #include <device/path.h>
-#include <string.h>
 #include "chip.h"
 
 static void camera_fill_ssdt(struct device *dev)

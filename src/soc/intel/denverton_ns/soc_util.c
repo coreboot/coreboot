@@ -20,7 +20,7 @@
 #include <device/pci.h>
 #include <device/pci_def.h>
 #include <device/device.h>
-
+#include <string.h>
 #include <soc/iomap.h>
 #include <soc/soc_util.h>
 #include <soc/pmc.h>

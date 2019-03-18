@@ -14,7 +14,6 @@
  */
 #include <delay.h>
 #include <stdlib.h>
-#include <string.h>
 
 #include <console/console.h>
 #include <device/device.h>

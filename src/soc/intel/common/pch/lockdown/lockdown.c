@@ -21,7 +21,6 @@
 #include <soc/pci_devs.h>
 #include <soc/pcr_ids.h>
 #include <soc/soc_chip.h>
-#include <string.h>
 
 #define PCR_DMI_GCS		0x274C
 #define PCR_DMI_GCS_BILD	(1 << 0)

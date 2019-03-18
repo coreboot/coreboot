@@ -21,7 +21,6 @@
 #include <gpio.h>
 #include <soc/cdp.h>
 #include <soc/gsbi.h>
-#include <string.h>
 #include <timer.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 

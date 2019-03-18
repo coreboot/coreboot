@@ -20,7 +20,6 @@
 #include <soc/mmu.h>
 #include <stdlib.h>
 #include <libbdk-hal/bdk-config.h>
-#include <string.h>
 
 extern const struct bdk_devicetree_key_value devtree[];
 

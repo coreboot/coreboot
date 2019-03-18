@@ -17,7 +17,6 @@
 #include <bootmode.h>
 #include <bootstate.h>
 #include <cbmem.h>
-#include <string.h>
 #include <vb2_api.h>
 #include <security/vboot/misc.h>
 #include <security/vboot/vbnv.h>

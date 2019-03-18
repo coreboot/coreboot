@@ -15,7 +15,6 @@
 
 #include <boot/coreboot_tables.h>
 #include <gpio.h>
-#include <string.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
 #include "board.h"

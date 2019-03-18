@@ -17,7 +17,6 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <arch/io.h>
-#include <string.h>
 #include <delay.h>
 #include "ipmi_kcs.h"
 

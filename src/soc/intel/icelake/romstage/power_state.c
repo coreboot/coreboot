@@ -18,7 +18,6 @@
 #include <device/device.h>
 #include <intelblocks/pmclib.h>
 #include <intelblocks/tco.h>
-#include <string.h>
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
 

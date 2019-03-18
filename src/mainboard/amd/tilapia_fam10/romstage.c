@@ -16,7 +16,6 @@
 #define SYSTEM_TYPE 1	/* DESKTOP */
 
 #include <stdint.h>
-#include <string.h>
 #include <device/pci_def.h>
 #include <arch/cpu.h>
 #include <cpu/x86/lapic.h>

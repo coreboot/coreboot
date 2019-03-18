@@ -22,7 +22,6 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <string.h>
 #include <device/pci_ops.h>
 
 #include <drivers/intel/gma/i915_reg.h>

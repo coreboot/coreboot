@@ -19,7 +19,6 @@
 #include <commonlib/region.h>
 #include <console/console.h>
 #include <smmstore.h>
-#include <string.h>
 
 /*
  * The region format is still not finalized, but so far it looks like this:

@@ -20,7 +20,6 @@
 #include <soc/power.h>
 #include <soc/spi.h>
 #include <stdlib.h>
-#include <string.h>
 #include <symbols.h>
 
 /* This allows USB A-A firmware upload from a compatible host in four parts:

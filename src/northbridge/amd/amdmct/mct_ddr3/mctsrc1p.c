@@ -16,7 +16,7 @@
 
 #include <arch/cpu.h>
 #include <inttypes.h>
-#include <string.h>
+
 #include "mct_d.h"
 #include "mct_d_gcc.h"
 

@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <string.h>
 #include <arch/acpi.h>
 #include <cbmem.h>
 #include <console/console.h>

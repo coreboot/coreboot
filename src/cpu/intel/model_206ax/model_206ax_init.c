@@ -18,7 +18,6 @@
 #include <assert.h>
 #include <console/console.h>
 #include <device/device.h>
-#include <string.h>
 #include <arch/acpi.h>
 #include <arch/cpu.h>
 #include <cpu/cpu.h>

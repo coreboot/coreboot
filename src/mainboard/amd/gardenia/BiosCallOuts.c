@@ -17,7 +17,6 @@
 #include <amdblocks/BiosCallOuts.h>
 #include <soc/southbridge.h>
 #include <stdlib.h>
-#include <string.h>
 
 void platform_FchParams_env(FCH_DATA_BLOCK *FchParams_env)
 {

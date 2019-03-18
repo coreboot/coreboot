@@ -21,7 +21,6 @@
 #include <console/console.h>
 #include <arch/io.h>
 #include <cpu/x86/smm.h>
-#include <string.h>
 
 #include <soc/iomap.h>
 #include <soc/soc_util.h>

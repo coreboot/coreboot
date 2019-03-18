@@ -21,7 +21,6 @@
 #include <gbb_header.h>
 #include <reset.h>
 #include <stddef.h>
-#include <string.h>
 #include <security/vboot/gbb.h>
 #include <security/vboot/vboot_common.h>
 #include <security/vboot/vbnv.h>

@@ -27,7 +27,6 @@
 #include "sdhci.h"
 #include "sd_mmc.h"
 #include "storage.h"
-#include <string.h>
 #include <timer.h>
 #include <commonlib/stdlib.h>
 

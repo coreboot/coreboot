@@ -20,7 +20,6 @@
 #include <device/path.h>
 #include <gpio.h>
 #include <stdint.h>
-#include <string.h>
 #include "chip.h"
 
 #if CONFIG(HAVE_ACPI_TABLES)

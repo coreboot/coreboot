@@ -25,6 +25,7 @@
 #include <soc/pci_devs.h>
 #include <soc/QuarkNcSocId.h>
 #include <soc/spi.h>
+#include <string.h>
 
 struct spi_context spi_driver_context = {
 	NULL,

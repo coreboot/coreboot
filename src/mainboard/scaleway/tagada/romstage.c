@@ -19,7 +19,6 @@
 #include <console/console.h>
 #include <fsp/api.h>
 #include <fsp/soc_binding.h>
-#include <string.h>
 #include "bmcinfo.h"
 
 void mainboard_config_gpios(void);

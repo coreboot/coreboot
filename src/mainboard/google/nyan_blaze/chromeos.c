@@ -16,7 +16,6 @@
 #include <boot/coreboot_tables.h>
 #include <bootmode.h>
 #include <gpio.h>
-#include <string.h>
 
 void fill_lb_gpios(struct lb_gpios *gpios)
 {

@@ -20,7 +20,6 @@
 #include <device/device.h>
 #include <gpio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <soc/nhlt.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 #include "ec.h"

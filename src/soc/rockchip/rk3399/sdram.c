@@ -22,7 +22,6 @@
 #include <soc/sdram.h>
 #include <soc/grf.h>
 #include <soc/soc.h>
-#include <string.h>
 #include <timer.h>
 #include <types.h>
 

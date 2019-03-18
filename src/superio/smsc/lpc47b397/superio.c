@@ -21,7 +21,6 @@
 #include <superio/conf_mode.h>
 #include <console/console.h>
 #include <device/smbus.h>
-#include <string.h>
 #include <pc80/keyboard.h>
 #include <stdlib.h>
 #include "lpc47b397.h"

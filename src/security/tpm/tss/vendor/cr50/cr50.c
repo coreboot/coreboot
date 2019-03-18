@@ -7,7 +7,6 @@
 #include <arch/early_variables.h>
 #include <console/console.h>
 #include <endian.h>
-#include <string.h>
 #include <vb2_api.h>
 #include <security/tpm/tis.h>
 #include <security/tpm/tss.h>

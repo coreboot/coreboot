@@ -16,7 +16,6 @@
 
 #include <device/device.h>
 #include <device/pnp.h>
-#include <string.h>
 #include <stdlib.h>
 #include "pc87392.h"
 

@@ -23,7 +23,6 @@
 #include <soc/bootblock.h>
 #include <soc/pci_devs.h>
 #include <soc/pcr_ids.h>
-#include <string.h>
 
 /* Serial IO UART controller legacy mode */
 #define PCR_SERIAL_IO_GPPRVRW7		0x618

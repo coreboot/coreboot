@@ -25,7 +25,6 @@
 #include <cpu/cpu.h>
 #include <cf9_reset.h>
 #include <reset.h>
-#include <string.h>
 
 #define RAM_4GB		(((u64)1) << 32)
 

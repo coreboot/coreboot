@@ -27,7 +27,6 @@
 #include <gpio.h>
 #include <stdlib.h>
 #include <stdint.h>
-#include <string.h>
 #include <soc/addressmap.h>
 #include <soc/hdmi.h>
 #include <soc/grf.h>

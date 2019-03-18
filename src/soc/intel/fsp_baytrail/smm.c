@@ -20,8 +20,6 @@
 #include <arch/io.h>
 #include <device/mmio.h>
 #include <cpu/x86/smm.h>
-#include <string.h>
-
 #include <soc/iomap.h>
 #include <soc/pmc.h>
 #include <soc/smm.h>

@@ -24,7 +24,6 @@
 #include <intelblocks/uart.h>
 #include <soc/gpio.h>
 #include <soc/pci_devs.h>
-#include <string.h>
 
 /* UART pad configuration. Support RXD and TXD for now. */
 const struct uart_gpio_pad_config uart_gpio_pads[] = {

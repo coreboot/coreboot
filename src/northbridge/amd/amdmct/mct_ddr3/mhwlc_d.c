@@ -16,11 +16,11 @@
 
 #include <inttypes.h>
 #include <console/console.h>
-#include <string.h>
+#include <northbridge/amd/amdfam10/amdfam10.h>
+
 #include "mct_d.h"
 #include "mct_d_gcc.h"
 #include "mwlc_d.h"
-#include <northbridge/amd/amdfam10/amdfam10.h>
 
 u32 swapAddrBits_wl(struct DCTStatStruc *pDCTstat, uint8_t dct, uint32_t MRSValue);
 u32 swapBankBits(struct DCTStatStruc *pDCTstat, uint8_t dct, uint32_t MRSValue);

@@ -17,7 +17,6 @@
 #include <arch/encoding.h>
 #include <arch/exception.h>
 #include <console/console.h>
-#include <string.h>
 #include <vm.h>
 #include <mcall.h>
 #include <sbi.h>

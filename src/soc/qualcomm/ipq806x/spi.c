@@ -20,7 +20,6 @@
 #include <soc/iomap.h>
 #include <soc/spi.h>
 #include <stdlib.h>
-#include <string.h>
 
 #define SUCCESS		0
 

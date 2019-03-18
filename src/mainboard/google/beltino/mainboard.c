@@ -15,7 +15,6 @@
  */
 
 #include <smbios.h>
-#include <string.h>
 #include <types.h>
 #include <arch/acpi.h>
 #include <arch/io.h>

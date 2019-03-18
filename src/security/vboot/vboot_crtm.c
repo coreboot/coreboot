@@ -18,6 +18,7 @@
 #include <cbfs.h>
 #include <security/vboot/vboot_crtm.h>
 #include <security/vboot/misc.h>
+#include <string.h>
 
 /*
  * This functions sets the TCPA log namespace

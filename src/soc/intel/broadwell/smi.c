@@ -20,7 +20,6 @@
 #include <arch/io.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/smm.h>
-#include <string.h>
 #include <soc/iomap.h>
 #include <soc/pch.h>
 #include <soc/pm.h>

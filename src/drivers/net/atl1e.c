@@ -23,7 +23,6 @@
 #include <device/mmio.h>
 #include <device/device.h>
 #include <cbfs.h>
-#include <string.h>
 #include <console/console.h>
 #include <device/pci.h>
 #include <device/pci_ops.h>

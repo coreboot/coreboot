@@ -24,7 +24,6 @@
 #include <soc/symbols.h>
 #include <stddef.h>
 #include <stdlib.h>
-#include <string.h>
 #include <symbols.h>
 
 void bootmem_platform_add_ranges(void)

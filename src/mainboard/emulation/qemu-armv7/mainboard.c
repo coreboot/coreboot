@@ -17,7 +17,6 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <cbmem.h>
-#include <string.h>
 #include <halt.h>
 #include "mainboard.h"
 #include <edid.h>

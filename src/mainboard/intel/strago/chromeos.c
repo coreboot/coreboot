@@ -15,7 +15,6 @@
  */
 
 #include <gpio.h>
-#include <string.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
 #define WP_GPIO	GP_E_22

@@ -26,7 +26,6 @@
 #include <spi_flash.h>
 #include <spi-generic.h>
 #include <stdlib.h>
-#include <string.h>
 
 /*
  * Get the FAST_SPIBAR.

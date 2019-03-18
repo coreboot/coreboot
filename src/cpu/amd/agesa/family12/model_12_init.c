@@ -19,7 +19,6 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/amd/mtrr.h>
 #include <device/device.h>
-#include <string.h>
 #include <cpu/x86/pae.h>
 #include <cpu/x86/lapic.h>
 #include <cpu/cpu.h>

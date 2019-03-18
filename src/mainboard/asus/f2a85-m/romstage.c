@@ -23,7 +23,6 @@
 #include <southbridge/amd/agesa/hudson/hudson.h>
 #include <southbridge/amd/agesa/hudson/smbus.h>
 #include <stdint.h>
-#include <string.h>
 
 #include <superio/ite/common/ite.h>
 #include <superio/ite/it8728f/it8728f.h>

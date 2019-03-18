@@ -18,7 +18,6 @@
 #include <delay.h>
 #include <edid.h>
 #include <stdlib.h>
-#include <string.h>
 
 #include <boot/coreboot_tables.h>
 #include <console/console.h>

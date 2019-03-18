@@ -20,7 +20,6 @@
 #include <device/pnp.h>
 #include <console/console.h>
 #include <device/smbus.h>
-#include <string.h>
 #include <assert.h>
 #include <stdlib.h>
 #include <pc80/keyboard.h>

@@ -26,7 +26,6 @@
  *
  */
 #include <types.h>
-#include <string.h>
 #include <stdlib.h>
 #include <device/device.h>
 #include <device/pci_def.h>

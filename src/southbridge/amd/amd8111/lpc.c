@@ -29,7 +29,7 @@
 #include <cpu/amd/powernow.h>
 #endif
 #include <stdlib.h>
-#include <string.h>
+
 #include "amd8111.h"
 
 #define NMI_OFF 0

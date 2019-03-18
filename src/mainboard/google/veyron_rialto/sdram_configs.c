@@ -16,7 +16,6 @@
 #include <console/console.h>
 #include <gpio.h>
 #include <soc/sdram.h>
-#include <string.h>
 #include <types.h>
 
 static struct rk3288_sdram_params sdram_configs[] = {

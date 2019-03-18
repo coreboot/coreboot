@@ -11,6 +11,7 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/acpi.h>
 #include <console/console.h>
 #include <device/pci_ops.h>
 #include <stdint.h>
@@ -18,9 +19,8 @@
 #include <device/pci.h>
 #include <cpu/cpu.h>
 #include <stdlib.h>
-#include <string.h>
+
 #include "e7505.h"
-#include <arch/acpi.h>
 
 unsigned long acpi_fill_mcfg(unsigned long current)
 {

@@ -17,7 +17,6 @@
 #include <device/pci.h>
 #include <arch/io.h>
 #include <device/pci_ops.h>
-#include <string.h>
 #include "amd_pci_util.h"
 #include <pc80/i8259.h>
 #include "amd_pci_int_defs.h"

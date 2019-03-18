@@ -16,7 +16,6 @@
  * GNU General Public License for more details.
  */
 
-#include <string.h>
 #include <assert.h>
 #include <soc/romstage.h>
 #include <spd_bin.h>

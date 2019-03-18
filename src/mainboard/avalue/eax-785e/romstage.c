@@ -16,7 +16,6 @@
 #define SYSTEM_TYPE 1	/* SERVER=0, DESKTOP=1, MOBILE=2 */
 
 #include <stdint.h>
-#include <string.h>
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
 #include <arch/cpu.h>

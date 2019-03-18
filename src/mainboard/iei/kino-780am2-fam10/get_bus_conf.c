@@ -14,11 +14,9 @@
  */
 
 #include <device/pci.h>
-#include <string.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <cpu/amd/multicore.h>
-
 #include <cpu/amd/amdfam10_sysconf.h>
 
 /* Global variables for MB layouts and these will be shared by irqtable mptable

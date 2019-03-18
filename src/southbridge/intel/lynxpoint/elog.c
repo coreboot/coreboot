@@ -19,7 +19,6 @@
 #include <device/pci.h>
 #include <device/pci_ops.h>
 #include <stdint.h>
-#include <string.h>
 #include <elog.h>
 #include "pch.h"
 

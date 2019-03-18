@@ -19,6 +19,7 @@
 
 #ifndef __ACPI__
 #include <device/device.h>
+#include <string.h>
 
 /* Silicon revisions */
 typedef enum {

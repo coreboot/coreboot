@@ -15,7 +15,6 @@
 
 #include <bootmode.h>
 #include <boot/coreboot_tables.h>
-#include <string.h>
 
 #include "gpio.h"
 

@@ -28,7 +28,6 @@
 #include <arch/io.h>
 #include <device/pci_ops.h>
 #include <device/pci.h>
-#include <string.h>
 #include <stdint.h>
 #if CONFIG(LOGICAL_CPUS)
 #include <cpu/amd/multicore.h>

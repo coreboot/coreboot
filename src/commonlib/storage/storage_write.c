@@ -19,9 +19,10 @@
  * GNU General Public License for more details.
  */
 
+#include <stdlib.h>
+
 #include "sd_mmc.h"
 #include "storage.h"
-#include <string.h>
 
 static uint32_t storage_write(struct storage_media *media, uint32_t start,
 	uint64_t block_count, const void *src)

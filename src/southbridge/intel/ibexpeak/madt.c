@@ -15,7 +15,6 @@
  * GNU General Public License for more details.
  */
 
-#include <string.h>
 #include <arch/ioapic.h>
 #include <arch/acpi.h>
 #include <arch/smp/mpspec.h>

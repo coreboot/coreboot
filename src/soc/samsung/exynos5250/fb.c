@@ -26,7 +26,6 @@
 #include <soc/power.h>
 #include <soc/sysreg.h>
 #include <stdlib.h>
-#include <string.h>
 #include <timer.h>
 
 /*

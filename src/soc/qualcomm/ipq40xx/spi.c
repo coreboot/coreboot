@@ -34,7 +34,6 @@
 #include <soc/iomap.h>
 #include <soc/spi.h>
 #include <stdlib.h>
-#include <string.h>
 
 static const struct blsp_spi spi_reg[] = {
 	/* BLSP0 registers for SPI interface */

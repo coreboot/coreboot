@@ -22,7 +22,6 @@
 #include <delay.h>
 #include <stdlib.h>
 #include <stdint.h>
-#include <string.h>
 #include <arch/io.h>
 #include <device/mmio.h>
 

@@ -17,7 +17,6 @@
 #include <arch/acpi.h>
 #include <cbmem.h>
 #include <delay.h>
-#include <string.h>
 #include <timestamp.h>
 #include <amdblocks/s3_resume.h>
 #include <amdblocks/agesawrapper.h>

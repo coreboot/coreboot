@@ -48,7 +48,6 @@
 #include <soc/romstage.h>
 #include <soc/systemagent.h>
 #include <spi_flash.h>
-#include <string.h>
 #include <timer.h>
 #include <timestamp.h>
 #include "chip.h"

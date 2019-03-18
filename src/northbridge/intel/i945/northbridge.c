@@ -21,7 +21,6 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <stdlib.h>
-#include <string.h>
 #include <cpu/cpu.h>
 #include <arch/acpi.h>
 #include <cpu/intel/smm/gen1/smi.h>

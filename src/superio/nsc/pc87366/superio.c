@@ -17,7 +17,6 @@
 
 #include <device/device.h>
 #include <device/pnp.h>
-#include <string.h>
 #include <pc80/keyboard.h>
 #include <stdlib.h>
 #include "pc87366.h"

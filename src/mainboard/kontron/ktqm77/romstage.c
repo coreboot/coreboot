@@ -15,7 +15,6 @@
  */
 
 #include <stdint.h>
-#include <string.h>
 #include <device/pnp_ops.h>
 #include <device/pci_ops.h>
 #include <cpu/x86/lapic.h>

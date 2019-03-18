@@ -22,7 +22,6 @@
 #include <cbmem.h>
 #include <halt.h>
 #include <romstage_handoff.h>
-#include <string.h>
 #include "i945.h"
 #include <pc80/mc146818rtc.h>
 #include <southbridge/intel/common/gpio.h>

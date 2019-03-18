@@ -18,6 +18,7 @@
 #include <cbmem.h>
 #include <console/console.h>
 #include <soc/intel/common/mma.h>
+#include <string.h>
 
 #define MMA_TEST_METADATA_FILENAME	"mma_test_metadata.bin"
 #define MMA_TEST_NAME_TAG		"MMA_TEST_NAME"

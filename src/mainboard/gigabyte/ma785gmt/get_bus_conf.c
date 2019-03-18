@@ -14,18 +14,15 @@
  */
 
 #include <device/pci.h>
-#include <string.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <cpu/amd/multicore.h>
-
 #include <cpu/amd/amdfam10_sysconf.h>
 
 /* Global variables for MB layouts and these will be shared by irqtable mptable
 * and acpi_tables busnum is default.
 */
 u32 apicid_sb700;
-
 
 void get_bus_conf(void)
 {

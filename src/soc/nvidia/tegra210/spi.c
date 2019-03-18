@@ -28,7 +28,6 @@
 #include <soc/spi.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <string.h>
 #include <symbols.h>
 #include <timer.h>
 

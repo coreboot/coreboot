@@ -30,6 +30,7 @@
 #include <device/pci_ids.h>
 #include <pc80/mc146818rtc.h>
 #include <drivers/uart/uart8250reg.h>
+#include <string.h>
 
 #include <soc/iomap.h>
 #include <soc/irq.h>

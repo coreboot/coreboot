@@ -14,7 +14,6 @@
 #define __SIMPLE_DEVICE__
 
 #include <types.h>
-#include <string.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ops.h>

@@ -16,7 +16,6 @@
 #include <device/mmio.h>
 #include <delay.h>
 #include <stdlib.h>
-#include <string.h>
 #include <stddef.h>
 #include <soc/addressmap.h>
 #include <soc/clock.h>

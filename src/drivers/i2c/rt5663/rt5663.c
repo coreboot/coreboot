@@ -21,7 +21,6 @@
 #include <device/device.h>
 #include <device/path.h>
 #include <stdint.h>
-#include <string.h>
 #include "chip.h"
 
 #define RT5663_ACPI_NAME	"RT53"

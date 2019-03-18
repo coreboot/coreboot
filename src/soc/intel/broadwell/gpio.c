@@ -14,7 +14,6 @@
  */
 
 #include <stdint.h>
-#include <string.h>
 #include <arch/io.h>
 #include <device/device.h>
 #include <device/pci.h>

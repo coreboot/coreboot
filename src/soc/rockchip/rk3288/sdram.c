@@ -21,7 +21,6 @@
 #include <soc/grf.h>
 #include <soc/soc.h>
 #include <soc/pmu.h>
-#include <string.h>
 #include <types.h>
 
 struct rk3288_ddr_pctl_regs {

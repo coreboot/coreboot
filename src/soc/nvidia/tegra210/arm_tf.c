@@ -19,7 +19,6 @@
 #include <soc/addressmap.h>
 #include <soc/console_uart.h>
 #include <stdlib.h>
-#include <string.h>
 #include <symbols.h>
 
 typedef struct bl31_plat_params {

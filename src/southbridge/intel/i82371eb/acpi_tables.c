@@ -16,7 +16,6 @@
  */
 
 #include <console/console.h>
-#include <string.h>
 #include <arch/acpi.h>
 #include <arch/acpigen.h>
 #include <arch/smp/mpspec.h>

@@ -23,7 +23,6 @@
 #include <console/console.h>
 #include <program_loading.h>
 #include <libbdk-hal/bdk-config.h>
-#include <string.h>
 #include <arch/stages.h>
 
 extern const struct bdk_devicetree_key_value devtree[];

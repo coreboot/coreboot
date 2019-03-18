@@ -22,7 +22,6 @@
 #include <delay.h>
 #include <soc/addressmap.h>
 #include <device/device.h>
-#include <string.h>
 #include <boot/tables.h>
 #include <soc/nvidia/tegra/dc.h>
 #include <soc/nvidia/tegra/types.h>

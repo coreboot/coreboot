@@ -26,7 +26,6 @@
 #include <soc/mt6391.h>
 #include <soc/pll.h>
 #include <soc/spm.h>
-#include <string.h>
 #include <types.h>
 
 struct mem_pll {

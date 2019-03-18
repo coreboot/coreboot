@@ -15,7 +15,6 @@
  */
 
 #include <stdint.h>
-#include <string.h>
 #include <soc/pei_data.h>
 #include <soc/pei_wrapper.h>
 #include "boardid.h"

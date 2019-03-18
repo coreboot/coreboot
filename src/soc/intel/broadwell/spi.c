@@ -14,7 +14,6 @@
 /* This file is derived from the flashrom project. */
 #include <stdint.h>
 #include <stdlib.h>
-#include <string.h>
 #include <bootstate.h>
 #include <commonlib/helpers.h>
 #include <delay.h>

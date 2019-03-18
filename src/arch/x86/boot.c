@@ -15,7 +15,6 @@
 #include <console/console.h>
 #include <program_loading.h>
 #include <ip_checksum.h>
-#include <string.h>
 #include <symbols.h>
 
 int payload_arch_usable_ram_quirk(uint64_t start, uint64_t size)

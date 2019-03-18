@@ -6,7 +6,6 @@
 
 #include <arch/early_variables.h>
 #include <console/console.h>
-#include <string.h>
 #include <security/tpm/tis.h>
 
 #include "tpm.h"

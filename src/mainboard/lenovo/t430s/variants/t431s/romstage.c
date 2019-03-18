@@ -21,6 +21,7 @@
 #include <console/console.h>
 #include <cbfs.h>
 #include <northbridge/intel/sandybridge/raminit_native.h>
+#include <string.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <ec/lenovo/pmh7/pmh7.h>
 

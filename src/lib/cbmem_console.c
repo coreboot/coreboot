@@ -19,7 +19,6 @@
 #include <cbmem.h>
 #include <arch/early_variables.h>
 #include <symbols.h>
-#include <string.h>
 
 /*
  * Structure describing console buffer. It is overlaid on a flat memory area,

@@ -19,7 +19,6 @@
 #include <delay.h>
 #include <soc/cpu.h>
 #include <soc/gpio.h>
-#include <string.h>
 
 #define CON_MASK(x)		(0xf << ((x) << 2))
 #define CON_SFR(x, v)		((v) << ((x) << 2))

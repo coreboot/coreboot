@@ -14,7 +14,6 @@
  */
 
 #include <stdint.h>
-#include <string.h>
 #include <console/console.h>
 #include <arch/cpu.h>
 #include <cf9_reset.h>

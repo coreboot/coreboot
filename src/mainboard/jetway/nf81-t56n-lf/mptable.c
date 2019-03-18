@@ -15,17 +15,13 @@
  * GNU General Public License for more details.
  */
 
-
 #include <arch/ioapic.h>
 #include <arch/smp/mpspec.h>
 #include <device/pci.h>
 #include <drivers/generic/ioapic/chip.h>
 #include <stdint.h>
-#include <string.h>
-
 #include <southbridge/amd/common/amd_pci_util.h>
 #include <southbridge/amd/cimx/sb800/SBPLATFORM.h>
-
 
 static void *smp_write_config_table(void *v)
 {

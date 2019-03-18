@@ -14,7 +14,6 @@
  */
 #include <stdint.h>
 #include <stdlib.h>
-#include <string.h>
 #include <device/mmio.h>
 #include <console/console.h>
 #include <spi_flash.h>

@@ -16,7 +16,6 @@
 #define SYSTEM_TYPE 0	/* SERVER */
 
 #include <stdint.h>
-#include <string.h>
 #include <device/pci_def.h>
 #include <arch/io.h>
 #include <arch/cpu.h>

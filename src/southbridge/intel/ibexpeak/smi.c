@@ -23,7 +23,6 @@
 #include <device/pci_ops.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/smm.h>
-#include <string.h>
 #include <cpu/intel/smm/gen1/smi.h>
 #include "pch.h"
 

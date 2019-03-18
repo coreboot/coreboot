@@ -19,7 +19,6 @@
 #include <fmap.h>
 #include <console/console.h>
 #include <console/flash.h>
-#include <string.h>
 
 #define LINE_BUFFER_SIZE 128
 #define READ_BUFFER_SIZE 0x100

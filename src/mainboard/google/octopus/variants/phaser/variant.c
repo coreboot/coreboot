@@ -15,7 +15,6 @@
 
 #include <baseboard/variants.h>
 #include <soc/pci_devs.h>
-#include <string.h>
 #include <ec/google/chromeec/ec.h>
 
 #define SKU_UNKNOWN     0xFFFFFFFF

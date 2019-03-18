@@ -18,7 +18,7 @@
 #include <inttypes.h>
 #include <console/console.h>
 #include <device/pci_ops.h>
-#include <string.h>
+
 #include "mct_d.h"
 #include "mct_d_gcc.h"
 

@@ -19,7 +19,6 @@
  * GNU General Public License for more details.
  */
 
-#include <string.h>
 #include <arch/acpi.h>
 #include <arch/smp/mpspec.h>
 #include <device/device.h>

@@ -23,7 +23,6 @@
 #include <device/pci_def.h>
 #include <lib.h>
 #include <cpu/x86/bist.h>
-#include <string.h>
 #include <timestamp.h>
 #include <cbmem.h>
 

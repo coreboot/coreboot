@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <string.h>
 #include <console/console.h>
 #include <security/tpm/tspi.h>
 #include <arch/early_variables.h>

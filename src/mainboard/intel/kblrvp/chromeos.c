@@ -18,7 +18,6 @@
 #include <device/pci.h>
 #include <gpio.h>
 #include <soc/gpio.h>
-#include <string.h>
 #include <ec/google/chromeec/ec.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 

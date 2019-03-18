@@ -24,7 +24,6 @@
 #include <soc/i2c.h>
 #include <soc/clock.h>
 #include <stdlib.h>
-#include <string.h>
 
 #define RETRY_COUNT	3
 /* 100000us = 100ms */

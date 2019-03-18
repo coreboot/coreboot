@@ -18,7 +18,6 @@
  * GNU General Public License for more details.
  */
 
-#include <string.h>
 #include <arch/acpi.h>
 #include <device/pci.h>
 #include <assert.h>

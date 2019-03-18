@@ -13,6 +13,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
+
 #include <arch/acpigen.h>
 #include <arch/ioapic.h>
 #include <arch/smp/mpspec.h>
@@ -30,6 +31,7 @@
 #include <soc/iomap.h>
 #include <soc/nvs.h>
 #include <soc/pm.h>
+#include <string.h>
 
 __attribute__((weak)) unsigned long acpi_fill_mcfg(unsigned long current)
 {

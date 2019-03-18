@@ -18,7 +18,6 @@
 #include <fsp/api.h>
 #include <soc/romstage.h>
 #include "spd/spd.h"
-#include <string.h>
 #include <spd_bin.h>
 
 void mainboard_memory_init_params(FSPM_UPD *mupd)

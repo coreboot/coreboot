@@ -21,7 +21,6 @@
 #include <cpu/x86/smm.h>
 #include <device/device.h>
 #include <device/pci.h>
-#include <string.h>
 #include <cpu/x86/pae.h>
 #include <cpu/x86/lapic.h>
 #include <cpu/cpu.h>

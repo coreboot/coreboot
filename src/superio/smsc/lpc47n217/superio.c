@@ -24,7 +24,6 @@
 #include <device/pnp.h>
 #include <console/console.h>
 #include <device/smbus.h>
-#include <string.h>
 #include <assert.h>
 #include <stdlib.h>
 #include "lpc47n217.h"

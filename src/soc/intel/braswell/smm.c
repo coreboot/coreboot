@@ -24,7 +24,6 @@
 #include <soc/iomap.h>
 #include <soc/pm.h>
 #include <soc/smm.h>
-#include <string.h>
 
 /* Save settings which will be committed in SMI functions. */
 static uint32_t smm_save_params[SMM_SAVE_PARAM_COUNT];

@@ -14,7 +14,6 @@
 #include <console/console.h>
 #include <cpu/x86/mtrr.h>
 #include <fsp/util.h>
-#include <string.h>
 #include <timestamp.h>
 
 static void fsp_notify(enum fsp_notify_phase phase)

@@ -23,7 +23,6 @@
 #include <cpu/x86/msr.h>
 #include <cpu/intel/speedstep.h>
 #include <device/device.h>
-#include <string.h>
 
 static int determine_total_number_of_cores(void)
 {

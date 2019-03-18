@@ -16,6 +16,7 @@
 
 #include <console/console.h>
 #include <stdint.h>
+#include <string.h>
 #include <rmodule.h>
 #include <arch/cpu.h>
 #include <commonlib/helpers.h>

@@ -21,7 +21,7 @@
 #include <arch/io.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/smm.h>
-#include <string.h>
+
 #include "pch.h"
 
 void southbridge_smm_clear_state(void)

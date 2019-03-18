@@ -15,8 +15,6 @@
 
 #include <AGESA.h>
 #include <PlatformMemoryConfiguration.h>
-
-#include <string.h>
 #include <northbridge/amd/agesa/state_machine.h>
 
 static const PCIe_PORT_DESCRIPTOR PortList[] = {

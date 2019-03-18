@@ -15,9 +15,9 @@
  */
 
 /* This file is derived from the flashrom project. */
+
 #include <stdint.h>
 #include <stdlib.h>
-#include <string.h>
 #include <commonlib/helpers.h>
 #include <delay.h>
 #include <device/mmio.h>

@@ -17,7 +17,6 @@
 
 #include <console/console.h>
 #include <device/device.h>
-#include <string.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mp.h>

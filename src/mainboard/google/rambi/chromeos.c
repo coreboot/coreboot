@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <string.h>
 #include <bootmode.h>
 #include <soc/gpio.h>
 #include <vendorcode/google/chromeos/chromeos.h>

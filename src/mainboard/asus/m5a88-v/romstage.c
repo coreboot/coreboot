@@ -18,7 +18,6 @@
 //#define SYSTEM_TYPE 2	/* MOBILE */
 
 #include <stdint.h>
-#include <string.h>
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
 #include <arch/cpu.h>

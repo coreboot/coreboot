@@ -25,7 +25,6 @@
 #include <soc/pmc.h>
 #include <soc/power.h>
 #include <soc/romstage.h>
-#include <string.h>
 #include <timer.h>
 
 #define PMC_REGS (void *)(uintptr_t)(TEGRA_PMC_BASE)

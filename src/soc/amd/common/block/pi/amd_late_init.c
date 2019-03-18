@@ -23,6 +23,7 @@
 #include <dimm_info_util.h>
 #include <memory_info.h>
 #include <lib.h>
+#include <string.h>
 
 #include <amdblocks/agesawrapper.h>
 #include <amdblocks/agesawrapper_call.h>

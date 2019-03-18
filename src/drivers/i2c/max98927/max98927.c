@@ -21,7 +21,6 @@
 #include <device/device.h>
 #include <device/path.h>
 #include <stdint.h>
-#include <string.h>
 #include "chip.h"
 
 #define MAX98927_ACPI_NAME	"MAXI"

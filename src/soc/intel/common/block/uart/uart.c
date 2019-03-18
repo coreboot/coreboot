@@ -27,7 +27,6 @@
 #include <soc/pci_devs.h>
 #include <soc/iomap.h>
 #include <soc/nvs.h>
-#include <string.h>
 
 #define UART_PCI_ENABLE	(PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER)
 #define UART_CONSOLE_INVALID_INDEX	0xFF

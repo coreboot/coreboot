@@ -17,7 +17,6 @@
 #define DEVICE_AZALIA_H
 
 #include <types.h>
-#include <string.h>
 #include <console/console.h>
 #include <arch/acpi.h>
 #include <device/mmio.h>

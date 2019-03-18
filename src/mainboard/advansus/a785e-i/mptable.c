@@ -16,7 +16,6 @@
 #include <arch/smp/mpspec.h>
 #include <device/pci.h>
 #include <arch/io.h>
-#include <string.h>
 #include <stdint.h>
 #include <cpu/amd/amdfam10_sysconf.h>
 

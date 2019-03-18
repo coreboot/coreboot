@@ -14,7 +14,6 @@
  */
 
 #include <types.h>
-#include <string.h>
 #include <console/console.h>
 #include "fsp_util.h"
 

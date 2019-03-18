@@ -15,7 +15,7 @@
 
 #include <arch/io.h>
 #include <inttypes.h>
-#include <string.h>
+
 #include "mct_d.h"
 #include "mct_d_gcc.h"
 #include "mwlc_d.h"

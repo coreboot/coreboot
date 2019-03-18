@@ -14,7 +14,6 @@
  */
 
 #include <types.h>
-#include <string.h>
 #include <device/device.h>
 #include <device/smbus.h>
 #include <smbios.h>

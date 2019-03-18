@@ -17,7 +17,6 @@
  */
 #include <delay.h>
 #include <stdlib.h>
-#include <string.h>
 #include <vbe.h>
 
 #include <console/console.h>

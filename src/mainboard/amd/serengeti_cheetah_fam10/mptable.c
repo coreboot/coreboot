@@ -16,7 +16,6 @@
 #include <arch/smp/mpspec.h>
 #include <arch/ioapic.h>
 #include <device/pci.h>
-#include <string.h>
 #include <stdint.h>
 #if CONFIG(LOGICAL_CPUS)
 #include <cpu/amd/multicore.h>

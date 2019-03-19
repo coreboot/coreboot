@@ -344,6 +344,12 @@ void mt_pll_init(void)
 
 	/* enable infrasys DCM */
 	setbits_le32(&mt8183_infracfg->infra_bus_dcm_ctrl, 0x3 << 21);
+	clrsetbits_le32(&mt8183_infracfg->infra_bus_dcm_ctrl,
+		DCM_INFRA_BUS_MASK, DCM_INFRA_BUS_ON);
+	setbits_le32(&mt8183_infracfg->mem_dcm_ctrl, DCM_INFRA_MEM_ON);
+	clrbits_le32(&mt8183_infracfg->p2p_rx_clk_on, DCM_INFRA_P2PRX_MASK);
+	clrsetbits_le32(&mt8183_infracfg->peri_bus_dcm_ctrl,
+		DCM_INFRA_PERI_MASK, DCM_INFRA_PERI_ON);
 
 	/* enable [11] for change i2c module source clock to TOPCKGEN */
 	setbits_le32(&mt8183_infracfg->module_clk_sel, 0x1 << 11);

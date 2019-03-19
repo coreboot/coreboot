@@ -98,6 +98,12 @@ cbfscompobj :=
 cbfscompobj += $(compressionobj)
 cbfscompobj += cbfscomptool.o
 
+amdcompobj :=
+amdcompobj += amdcompress.o
+amdcompobj += elfheaders.o
+amdcompobj += common.o
+amdcompobj += xdr.o
+
 TOOLCFLAGS ?= -Werror -Wall -Wextra
 TOOLCFLAGS += -Wcast-qual -Wmissing-prototypes -Wredundant-decls -Wshadow
 TOOLCFLAGS += -Wstrict-prototypes -Wwrite-strings
@@ -184,6 +190,10 @@ $(objutil)/cbfstool/ifittool: $(addprefix $(objutil)/cbfstool/,$(ifitobj))
 $(objutil)/cbfstool/cbfs-compression-tool: $(addprefix $(objutil)/cbfstool/,$(cbfscompobj))
 	printf "    HOSTCC     $(subst $(objutil)/,,$(@)) (link)\n"
 	$(HOSTCC) $(TOOLLDFLAGS) -o $@ $(addprefix $(objutil)/cbfstool/,$(cbfscompobj))
+
+$(objutil)/cbfstool/amdcompress: $(addprefix $(objutil)/cbfstool/,$(amdcompobj))
+	printf "    HOSTCC     $(subst $(objutil)/,,$(@)) (link)\n"
+	$(HOSTCC) $(TOOLLDFLAGS) -o $@ $(addprefix $(objutil)/cbfstool/,$(amdcompobj)) -lz
 
 # Yacc source is superset of header
 $(objutil)/cbfstool/fmd.o: TOOLCFLAGS += -Wno-redundant-decls

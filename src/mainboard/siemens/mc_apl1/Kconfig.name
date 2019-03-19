@@ -1,3 +1,5 @@
+comment "MC APLx"
+
 config BOARD_SIEMENS_MC_APL1
 	bool "-> MC APL1"
 	select BOARD_SIEMENS_BASEBOARD_MC_APL1

@@ -77,7 +77,7 @@ enum {
 	RTC_BBPU_RELOAD	= 1U << 5,
 	RTC_BBPU_CBUSY	= 1U << 6,
 
-	RTC_CBUSY_TIMEOUT_US = 800
+	RTC_CBUSY_TIMEOUT_US = 8000
 };
 
 enum {
@@ -104,6 +104,14 @@ enum {
 	RTC_EMBCK_SEL_MODE	= 3 << 6,
 	RTC_XOSC32_ENB		= 1 << 5,
 	RTC_REG_XOSC32_ENB	= 1 << 15
+};
+
+enum {
+	RTC_LPD_OPT_XOSC_AND_EOSC_LPD	= 0 << 13,
+	RTC_LPD_OPT_EOSC_LPD		= 1 << 13,
+	RTC_LPD_OPT_XOSC_LPD		= 2 << 13,
+	RTC_LPD_OPT_F32K_CK_ALIVE	= 3 << 13,
+	RTC_LPD_OPT_MASK		= 3 << 13
 };
 
 /* PMIC TOP Register Definition */

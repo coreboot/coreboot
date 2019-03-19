@@ -22,6 +22,11 @@
 #include <delay.h>
 #include <rtc.h>
 #include <timer.h>
+#include <soc/pmic_wrap_common.h>
+
+#define RTCTAG			"[RTC]"
+#define rtc_info(fmt, arg ...)	printk(BIOS_INFO, RTCTAG "%s,%d: " fmt, \
+				__func__, __LINE__, ## arg)
 
 /*
  * Default values for RTC initialization
@@ -93,13 +98,46 @@ enum {
 	RTC_STATE_INIT		= 2
 };
 
+/* RTC error code */
+enum {
+	RTC_STATUS_OK	= 0,
+	RTC_STATUS_POWERKEY_INIT_FAIL,
+	RTC_STATUS_WRITEIF_UNLOCK_FAIL,
+	RTC_STATUS_OSC_SETTING_FAIL,
+	RTC_STATUS_GPIO_INIT_FAIL,
+	RTC_STATUS_HW_INIT_FAIL,
+	RTC_STATUS_REG_INIT_FAIL,
+	RTC_STATUS_LPD_INIT_FAIL
+};
+
 /* external API */
 int rtc_busy_wait(void);
 int rtc_write_trigger(void);
 int rtc_writeif_unlock(void);
-void rtc_xosc_write(u16 val);
+int rtc_xosc_write(u16 val);
 int rtc_reg_init(void);
-u8 rtc_check_state(void);
 void rtc_boot_common(void);
+
+static inline s32 rtc_read(u16 addr, u16 *rdata)
+{
+	s32 ret;
+
+	ret = pwrap_read(addr, rdata);
+	if (ret < 0)
+		rtc_info("pwrap_read fail: ret=%d\n", ret);
+
+	return ret;
+}
+
+static inline s32 rtc_write(u16 addr, u16 wdata)
+{
+	s32 ret;
+
+	ret = pwrap_write(addr, wdata);
+	if (ret < 0)
+		rtc_info("pwrap_write fail: ret=%d\n", ret);
+
+	return ret;
+}
 
 #endif /* SOC_MEDIATEK_RTC_COMMON_H */

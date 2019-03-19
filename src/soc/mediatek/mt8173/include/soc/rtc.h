@@ -78,7 +78,7 @@ enum {
 	RTC_BBPU_RELOAD	= 1U << 5,
 	RTC_BBPU_CBUSY	= 1U << 6,
 
-	RTC_CBUSY_TIMEOUT_US = 800
+	RTC_CBUSY_TIMEOUT_US = 8000
 };
 
 enum {

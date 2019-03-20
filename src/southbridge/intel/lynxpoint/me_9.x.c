@@ -874,20 +874,8 @@ static void intel_me_init(struct device *dev)
 	 */
 }
 
-static void set_subsystem(struct device *dev, unsigned int vendor,
-			  unsigned int device)
-{
-	if (!vendor || !device) {
-		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
-			   pci_read_config32(dev, PCI_VENDOR_ID));
-	} else {
-		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
-			   ((device & 0xffff) << 16) | (vendor & 0xffff));
-	}
-}
-
 static struct pci_operations pci_ops = {
-	.set_subsystem = set_subsystem,
+	.set_subsystem = pci_dev_set_subsystem,
 };
 
 static void intel_me_enable(struct device *dev)

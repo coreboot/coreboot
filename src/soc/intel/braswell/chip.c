@@ -380,22 +380,8 @@ struct chip_operations soc_intel_braswell_ops = {
 	.init = soc_init,
 };
 
-static void pci_set_subsystem(struct device *dev, unsigned int vendor,
-	unsigned int device)
-{
-	printk(BIOS_SPEW, "%s/%s (%s, 0x%04x, 0x%04x)\n",
-			__FILE__, __func__, dev_name(dev), vendor, device);
-	if (!vendor || !device) {
-		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
-				pci_read_config32(dev, PCI_VENDOR_ID));
-	} else {
-		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
-				((device & 0xffff) << 16) | (vendor & 0xffff));
-	}
-}
-
 struct pci_operations soc_pci_ops = {
-	.set_subsystem = &pci_set_subsystem,
+	.set_subsystem = &pci_dev_set_subsystem,
 };
 
 /**

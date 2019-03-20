@@ -64,17 +64,6 @@ struct chip_operations soc_intel_broadwell_ops = {
 	.init       = &broadwell_init_pre_device,
 };
 
-static void pci_set_subsystem(struct device *dev, unsigned int vendor,
-	unsigned int device)
-{
-	if (!vendor || !device)
-		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
-				   pci_read_config32(dev, PCI_VENDOR_ID));
-	else
-		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
-				   (device << 16) | vendor);
-}
-
 struct pci_operations broadwell_pci_ops = {
-	.set_subsystem = &pci_set_subsystem
+	.set_subsystem = &pci_dev_set_subsystem
 };

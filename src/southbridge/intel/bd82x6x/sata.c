@@ -234,18 +234,6 @@ static void sata_enable(struct device *dev)
 	pci_write_config16(dev, 0x90, map);
 }
 
-static void sata_set_subsystem(struct device *dev, unsigned vendor,
-			       unsigned device)
-{
-	if (!vendor || !device) {
-		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
-				pci_read_config32(dev, PCI_VENDOR_ID));
-	} else {
-		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
-				((device & 0xffff) << 16) | (vendor & 0xffff));
-	}
-}
-
 static const char *sata_acpi_name(const struct device *dev)
 {
 	return "SATA";
@@ -258,7 +246,7 @@ static void sata_fill_ssdt(struct device *dev)
 }
 
 static struct pci_operations sata_pci_ops = {
-	.set_subsystem    = sata_set_subsystem,
+	.set_subsystem    = pci_dev_set_subsystem,
 };
 
 static struct device_operations sata_ops = {

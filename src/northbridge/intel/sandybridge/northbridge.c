@@ -285,18 +285,6 @@ static void mc_read_resources(struct device *dev)
 	}
 }
 
-static void intel_set_subsystem(struct device *dev, unsigned int vendor,
-				unsigned int device)
-{
-	if (!vendor || !device) {
-		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
-				pci_read_config32(dev, PCI_VENDOR_ID));
-	} else {
-		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
-				((device & 0xffff) << 16) | (vendor & 0xffff));
-	}
-}
-
 static void northbridge_dmi_init(struct device *dev)
 {
 	u32 reg32;
@@ -484,7 +472,7 @@ void northbridge_write_smram(u8 smram)
 }
 
 static struct pci_operations intel_pci_ops = {
-	.set_subsystem    = intel_set_subsystem,
+	.set_subsystem    = pci_dev_set_subsystem,
 };
 
 static struct device_operations mc_ops = {

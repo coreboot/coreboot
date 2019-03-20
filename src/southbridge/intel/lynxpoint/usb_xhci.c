@@ -373,20 +373,8 @@ static void usb_xhci_init(struct device *dev)
 	}
 }
 
-static void usb_xhci_set_subsystem(struct device *dev, unsigned int vendor,
-				   unsigned int device)
-{
-	if (!vendor || !device) {
-		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
-				pci_read_config32(dev, PCI_VENDOR_ID));
-	} else {
-		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
-				((device & 0xffff) << 16) | (vendor & 0xffff));
-	}
-}
-
 static struct pci_operations lops_pci = {
-	.set_subsystem = &usb_xhci_set_subsystem,
+	.set_subsystem = &pci_dev_set_subsystem,
 };
 
 static struct device_operations usb_xhci_ops = {

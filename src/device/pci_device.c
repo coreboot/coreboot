@@ -734,8 +734,13 @@ void pci_bus_reset(struct bus *bus)
 void pci_dev_set_subsystem(struct device *dev, unsigned int vendor,
 			   unsigned int device)
 {
-	pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
-			   ((device & 0xffff) << 16) | (vendor & 0xffff));
+	if (!vendor || !device) {
+		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
+			pci_read_config32(dev, PCI_VENDOR_ID));
+	} else {
+		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
+			((device & 0xffff) << 16) | (vendor & 0xffff));
+	}
 }
 
 static int should_run_oprom(struct device *dev)

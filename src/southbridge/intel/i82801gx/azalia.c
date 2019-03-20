@@ -303,20 +303,8 @@ static void azalia_init(struct device *dev)
 	}
 }
 
-static void azalia_set_subsystem(struct device *dev, unsigned int vendor,
-				 unsigned int device)
-{
-	if (!vendor || !device) {
-		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
-				pci_read_config32(dev, PCI_VENDOR_ID));
-	} else {
-		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
-				((device & 0xffff) << 16) | (vendor & 0xffff));
-	}
-}
-
 static struct pci_operations azalia_pci_ops = {
-	.set_subsystem    = azalia_set_subsystem,
+	.set_subsystem    = pci_dev_set_subsystem,
 };
 
 static struct device_operations azalia_ops = {

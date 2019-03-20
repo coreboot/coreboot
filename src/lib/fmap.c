@@ -173,3 +173,25 @@ int fmap_find_region_name(const struct region * const ar,
 
 	return -1;
 }
+
+ssize_t fmap_read_area(const char *name, void *buffer, size_t size)
+{
+	struct region_device rdev;
+	if (fmap_locate_area_as_rdev(name, &rdev))
+		return -1;
+	return rdev_readat(&rdev, buffer, 0,
+			MIN(size, region_device_sz(&rdev)));
+}
+
+ssize_t fmap_overwrite_area(const char *name, const void *buffer, size_t size)
+{
+	struct region_device rdev;
+
+	if (fmap_locate_area_as_rdev_rw(name, &rdev))
+		return -1;
+	if (size > region_device_sz(&rdev))
+		return -1;
+	if (rdev_eraseat(&rdev, 0, region_device_sz(&rdev)) < 0)
+		return -1;
+	return rdev_writeat(&rdev, buffer, 0, size);
+}

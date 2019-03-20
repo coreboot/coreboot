@@ -40,4 +40,12 @@ int fmap_locate_area(const char *name, struct region *r);
  * Return 0 on success, < 0 on error. */
 int fmap_find_region_name(const struct region * const ar,
 	char name[FMAP_STRLEN]);
+
+/* Read fmap area into provided buffer.
+ * Return size read on success, < 0 on error. */
+ssize_t fmap_read_area(const char *name, void *buffer, size_t size);
+
+/* Write provided buffer into fmap area.
+ * Return size written on success, < 0 on error. */
+ssize_t fmap_overwrite_area(const char *name, const void *buffer, size_t size);
 #endif

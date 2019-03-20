@@ -1,50 +1,39 @@
 #include <stdint.h>
 #include <lib.h> /* Prototypes */
 #include <console/console.h>
+#include <device/mmio.h>
 
-static void write_phys(unsigned long addr, u32 value)
+#if CONFIG(ARCH_X86) && CONFIG(SSE2)
+/* Assembler in lib/ is ugly. */
+static void write_phys(uintptr_t addr, u32 value)
 {
-	// Assembler in lib/ is very ugly. But we properly guarded
-	// it so let's obey this one for now
-#if CONFIG(SSE2)
-	asm volatile(
+	asm volatile (
 		"movnti %1, (%0)"
 		: /* outputs */
 		: "r" (addr), "r" (value) /* inputs */
-#ifndef __GNUC__ /* GCC does not like empty clobbers? */
-		: /* clobbers */
-#endif
-		);
-#else
-	volatile unsigned long *ptr;
-	ptr = (void *)addr;
-	*ptr = value;
-#endif
-}
-
-static u32 read_phys(unsigned long addr)
-{
-	volatile unsigned long *ptr;
-	ptr = (void *)addr;
-	return *ptr;
+	);
 }
 
 static void phys_memory_barrier(void)
 {
-#if CONFIG(SSE2)
 	// Needed for movnti
-	asm volatile (
-		"sfence"
-		::
-#ifdef __GNUC__ /* ROMCC does not like memory clobbers */
-		: "memory"
-#endif
-	);
+	asm volatile ("sfence" ::: "memory");
+}
 #else
-#ifdef __GNUC__ /* ROMCC does not like empty asm statements */
+static void write_phys(uintptr_t addr, u32 value)
+{
+	write32((void *)addr, value);
+}
+
+static void phys_memory_barrier(void)
+{
 	asm volatile ("" ::: "memory");
+}
 #endif
-#endif
+
+static u32 read_phys(uintptr_t addr)
+{
+	return read32((void *)addr);
 }
 
 /**

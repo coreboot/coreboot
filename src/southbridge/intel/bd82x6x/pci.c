@@ -62,20 +62,7 @@ static void pci_init(struct device *dev)
 
 static void ich_pci_dev_enable_resources(struct device *dev)
 {
-	const struct pci_operations *ops;
 	uint16_t command;
-
-	/* Set the subsystem vendor and device id for mainboard devices */
-	ops = ops_pci(dev);
-	if (dev->on_mainboard && ops && ops->set_subsystem) {
-		printk(BIOS_DEBUG, "%s subsystem <- %02x/%02x\n",
-			dev_path(dev),
-			CONFIG_MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID,
-			CONFIG_MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID);
-		ops->set_subsystem(dev,
-			CONFIG_MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID,
-			CONFIG_MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID);
-	}
 
 	command = pci_read_config16(dev, PCI_COMMAND);
 	command |= dev->command;
@@ -101,20 +88,8 @@ static void ich_pci_bus_enable_resources(struct device *dev)
 	ich_pci_dev_enable_resources(dev);
 }
 
-static void set_subsystem(struct device *dev, unsigned vendor, unsigned device)
-{
-	/* NOTE: This is not the default position! */
-	if (!vendor || !device) {
-		pci_write_config32(dev, 0x54,
-				pci_read_config32(dev, PCI_VENDOR_ID));
-	} else {
-		pci_write_config32(dev, 0x54,
-				((device & 0xffff) << 16) | (vendor & 0xffff));
-	}
-}
-
 static struct pci_operations pci_ops = {
-	.set_subsystem = set_subsystem,
+	.set_subsystem = pci_dev_set_subsystem,
 };
 
 static struct device_operations device_ops = {

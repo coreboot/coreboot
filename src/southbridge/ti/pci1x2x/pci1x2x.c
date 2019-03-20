@@ -46,8 +46,7 @@ static void ti_pci1x2y_set_subsystem(struct device *dev, unsigned vendor,
 	 * to the sub-vendor/device ids at 40 and 42.
 	 */
 	pci_write_config32(dev, 0x80, pci_read_config32(dev, 0x080) & ~0x10);
-	pci_write_config16(dev, 0x40, vendor);
-	pci_write_config16(dev, 0x42, device);
+	pci_dev_set_subsystem(dev, vendor, device);
 	pci_write_config32(dev, 0x80, pci_read_config32(dev, 0x80) | 0x10);
 }
 

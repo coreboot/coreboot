@@ -252,22 +252,8 @@ static void ich_pcie_enable(struct device *dev)
 		root_port_commit_config(dev);
 }
 
-
-static void pcie_set_subsystem(struct device *dev, unsigned int vendor,
-			       unsigned int device)
-{
-	/* NOTE: This is not the default position! */
-	if (!vendor || !device) {
-		pci_write_config32(dev, 0x94,
-				pci_read_config32(dev, 0));
-	} else {
-		pci_write_config32(dev, 0x94,
-				((device & 0xffff) << 16) | (vendor & 0xffff));
-	}
-}
-
 static struct pci_operations pci_ops = {
-	.set_subsystem = pcie_set_subsystem,
+	.set_subsystem = pci_dev_set_subsystem,
 };
 
 static struct device_operations device_ops = {

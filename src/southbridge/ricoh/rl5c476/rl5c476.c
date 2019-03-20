@@ -200,8 +200,8 @@ static void rl5c476_set_subsystem(struct device *dev, unsigned vendor,
 	/* Enable subsystem id register writes */
 	pci_write_config16(dev, 0x82, miscreg | 0x40);
 
-	pci_write_config16(dev, 0x40, vendor);
-	pci_write_config16(dev, 0x42, device);
+	pci_dev_set_subsystem(dev, vendor, device);
+
 	/* restore original contents */
 	pci_write_config16(dev, 0x82, miscreg);
 }

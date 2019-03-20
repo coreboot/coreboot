@@ -95,19 +95,6 @@ static void pci_init(struct device *dev)
 	}
 }
 
-static void pcie_set_subsystem(struct device *dev, unsigned vendor,
-			       unsigned device)
-{
-	/* NOTE: 0x94 is not the default position! */
-	if (!vendor || !device) {
-		pci_write_config32(dev, 0x94,
-				pci_read_config32(dev, 0));
-	} else {
-		pci_write_config32(dev, 0x94,
-				((device & 0xffff) << 16) | (vendor & 0xffff));
-	}
-}
-
 static void pch_pciexp_scan_bridge(struct device *dev)
 {
 	struct southbridge_intel_i82801jx_config *config = dev->chip_info;
@@ -121,7 +108,7 @@ static void pch_pciexp_scan_bridge(struct device *dev)
 }
 
 static struct pci_operations pci_ops = {
-	.set_subsystem = pcie_set_subsystem,
+	.set_subsystem = pci_dev_set_subsystem,
 };
 
 static struct device_operations device_ops = {

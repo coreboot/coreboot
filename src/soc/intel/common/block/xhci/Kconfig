@@ -2,3 +2,11 @@ config SOC_INTEL_COMMON_BLOCK_XHCI
 	bool
 	help
 	  Intel Processor common XHCI support
+
+config SOC_INTEL_COMMON_BLOCK_XHCI_ELOG
+	bool
+	default n
+	depends on SOC_INTEL_COMMON_BLOCK_XHCI
+	help
+	  Set this option to identify if XHCI caused a wake up and log that
+	  information into the event log.

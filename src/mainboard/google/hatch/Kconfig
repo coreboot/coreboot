@@ -80,6 +80,10 @@ config MAX_CPUS
 	int
 	default 8
 
+config OVERRIDE_DEVICETREE
+	string
+	default "variants/$(CONFIG_VARIANT_DIR)/overridetree.cb" if !BOARD_GOOGLE_HATCH_WHL
+
 config TPM_TIS_ACPI_INTERRUPT
 	int
 	default 53 # GPE0_DW1_21 (GPP_C21)

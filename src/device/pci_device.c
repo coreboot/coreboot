@@ -734,11 +734,31 @@ void pci_bus_reset(struct bus *bus)
 void pci_dev_set_subsystem(struct device *dev, unsigned int vendor,
 			   unsigned int device)
 {
+	uint8_t offset;
+
+	/* Header type */
+	switch (dev->hdr_type & 0x7f) {
+	case PCI_HEADER_TYPE_NORMAL:
+		offset = PCI_SUBSYSTEM_VENDOR_ID;
+		break;
+	case PCI_HEADER_TYPE_BRIDGE:
+		offset = pci_find_capability(dev, PCI_CAP_ID_SSVID);
+		if (!offset)
+			return;
+		offset += 4; /* Vendor ID at offset 4 */
+		break;
+	case PCI_HEADER_TYPE_CARDBUS:
+		offset = PCI_CB_SUBSYSTEM_VENDOR_ID;
+		break;
+	default:
+		return;
+	}
+
 	if (!vendor || !device) {
-		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
+		pci_write_config32(dev, offset,
 			pci_read_config32(dev, PCI_VENDOR_ID));
 	} else {
-		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
+		pci_write_config32(dev, offset,
 			((device & 0xffff) << 16) | (vendor & 0xffff));
 	}
 }

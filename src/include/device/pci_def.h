@@ -198,6 +198,7 @@
 #define  PCI_CAP_ID_HT          0x08	/* Hypertransport */
 #define  PCI_CAP_ID_EHCI_DEBUG	0x0A	/* EHCI debug port */
 #define  PCI_CAP_ID_SHPC	0x0C	/* PCI Standard Hot-Plug Controller */
+#define  PCI_CAP_ID_SSVID	0x0D	/* Bridge subsystem vendor/device ID */
 #define  PCI_CAP_ID_PCIE	0x10	/* PCI Express */
 #define  PCI_CAP_ID_MSIX	0x11	/* MSI-X */
 #define PCI_CAP_LIST_NEXT	1	/* Next capability in the list */

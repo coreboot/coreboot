@@ -18,7 +18,6 @@ ifeq ($(CONFIG_SOUTHBRIDGE_INTEL_LYNXPOINT),y)
 ramstage-y += pch.c
 ramstage-y += azalia.c
 ramstage-y += lpc.c
-ramstage-y += pci.c
 ramstage-y += pcie.c
 ramstage-y += sata.c
 ramstage-y += usb_ehci.c

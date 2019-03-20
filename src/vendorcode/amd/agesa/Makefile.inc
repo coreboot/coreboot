@@ -10,9 +10,10 @@ subdirs-y += common
 classes-y += libagesa
 libagesa-y =
 libagesa-generic-ccopts += -D__LIBAGESA__
+libagesa-generic-ccopts += -fno-zero-initialized-in-bss
 libagesa-generic-ccopts += $(AGESA_INC) $(AGESA_AUTOINCLUDES)
 
-AGESA_CFLAGS := -march=k8-sse3 -mtune=k8-sse3 -fno-zero-initialized-in-bss -fno-strict-aliasing
+AGESA_CFLAGS := -march=k8-sse3 -mtune=k8-sse3 -fno-strict-aliasing
 
 CFLAGS_x86_32 += $(AGESA_CFLAGS)
 CFLAGS_x86_64 += $(AGESA_CFLAGS)

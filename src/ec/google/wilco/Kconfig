@@ -3,7 +3,6 @@ config EC_GOOGLE_WILCO
 	default n
 	select EC_GOOGLE_COMMON_MEC
 	select EC_ACPI
-	select VBOOT_EC_SOFTWARE_SYNC if VBOOT
 	help
 	  Google Wilco Embedded Controller interface.
 

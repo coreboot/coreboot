@@ -240,18 +240,8 @@ static void byt_pciexp_scan_bridge(struct device *dev)
 	do_pci_scan_bridge(dev, pciexp_scan_bus);
 }
 
-static void pcie_root_set_subsystem(struct device *dev, unsigned vid,
-				    unsigned did)
-{
-	uint32_t didvid = ((did & 0xffff) << 16) | (vid & 0xffff);
-
-	if (!didvid)
-		didvid = pci_read_config32(dev, PCI_VENDOR_ID);
-	pci_write_config32(dev, 0x94, didvid);
-}
-
 static struct pci_operations pcie_root_ops = {
-	.set_subsystem = &pcie_root_set_subsystem,
+	.set_subsystem = pci_dev_set_subsystem,
 };
 
 static struct device_operations device_ops = {

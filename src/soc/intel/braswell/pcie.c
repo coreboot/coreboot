@@ -160,20 +160,8 @@ static void pcie_enable(struct device *dev)
 	southcluster_enable_dev(dev);
 }
 
-static void pcie_root_set_subsystem(struct device *dev, unsigned int vid,
-	unsigned int did)
-{
-	printk(BIOS_SPEW, "%s/%s (%s, 0x%04x, 0x%04x)\n",
-			__FILE__, __func__, dev_name(dev), vid, did);
-	uint32_t didvid = ((did & 0xffff) << 16) | (vid & 0xffff);
-
-	if (!didvid)
-		didvid = pci_read_config32(dev, PCI_VENDOR_ID);
-	pci_write_config32(dev, 0x94, didvid);
-}
-
 static struct pci_operations pcie_root_ops = {
-	.set_subsystem = &pcie_root_set_subsystem,
+	.set_subsystem = pci_dev_set_subsystem,
 };
 
 static struct device_operations device_ops = {

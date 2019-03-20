@@ -24,6 +24,8 @@
 #include <timer.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
+#define PP_SW   41
+#define PP_POL  ACTIVE_LOW
 #define REC_POL ACTIVE_LOW
 #define WP_POL  ACTIVE_LOW
 
@@ -68,6 +70,7 @@ static int read_gpio(gpio_t gpio_num)
 void fill_lb_gpios(struct lb_gpios *gpios)
 {
 	struct lb_gpio chromeos_gpios[] = {
+		{PP_SW, PP_POL, read_gpio(PP_SW), "presence"},
 		{get_rec_sw_gpio_pin(), REC_POL,
 			read_gpio(get_rec_sw_gpio_pin()), "recovery"},
 		{get_wp_status_gpio_pin(), WP_POL,

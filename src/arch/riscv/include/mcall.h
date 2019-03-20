@@ -27,7 +27,7 @@
 #endif
 
 /* We save 37 registers, currently. */
-#define MENTRY_FRAME_SIZE (HLS_SIZE + 37 * 8)
+#define MENTRY_FRAME_SIZE (HLS_SIZE + 37 * __SIZEOF_POINTER__)
 
 #ifndef __ASSEMBLER__
 

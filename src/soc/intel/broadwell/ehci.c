@@ -41,7 +41,7 @@ static void usb_ehci_set_subsystem(struct device *dev, unsigned int vendor,
 
 static void ehci_enable(struct device *dev)
 {
-	if (CONFIG_USBDEBUG)
+	if (CONFIG(USBDEBUG))
 		dev->enabled = 1;
 	else
 		pch_disable_devfn(dev);

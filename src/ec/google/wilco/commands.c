@@ -14,6 +14,7 @@
  */
 
 #include <console/console.h>
+#include <ec/acpi/ec.h>
 #include <stdint.h>
 #include <string.h>
 
@@ -166,4 +167,11 @@ int wilco_ec_change_wake(uint8_t source, enum ec_wake_change change)
 	return wilco_ec_mailbox(WILCO_EC_MSG_DEFAULT, KB_ACPI_WAKEUP_CHANGE,
 				wake_source, ARRAY_SIZE(wake_source),
 				NULL, 0);
+}
+
+int wilco_ec_signed_fw(void)
+{
+	ec_set_ports(CONFIG_EC_BASE_ACPI_COMMAND,
+		     CONFIG_EC_BASE_ACPI_DATA);
+	return !!ec_read(EC_RAM_SIGNED_FW);
 }

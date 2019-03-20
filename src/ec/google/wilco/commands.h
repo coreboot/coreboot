@@ -51,6 +51,8 @@ enum {
 };
 
 enum ec_ram_addr {
+	/* Indicate if EC uses signed firmware */
+	EC_RAM_SIGNED_FW = 0x5c,
 	/* Indicate support for S0ix */
 	EC_RAM_S0IX_SUPPORT = 0xb8,
 };
@@ -284,5 +286,14 @@ enum ec_acpi_wake_events {
 	EC_ACPI_WAKE_LID = BIT(1),	/* Wake up by lid switch */
 	EC_ACPI_WAKE_RTC = BIT(5),	/* Wake up by RTC */
 };
+
+/**
+ * wilco_ec_signed_fw
+ *
+ * Indicate if the EC uses signed firmware.
+ *
+ * Returns 1 if EC uses signed firmware, otherwise returns 0
+ */
+int wilco_ec_signed_fw(void);
 
 #endif /* EC_GOOGLE_WILCO_COMMANDS_H */

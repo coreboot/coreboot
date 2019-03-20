@@ -123,6 +123,8 @@ Name (OERL, Package () { 0x3a, 0x02, RD })	/* Event: Rotation Lock */
 
 Name (BCCY, Package () { 0x3e, 0xffff, RD })	/* BCACHE: Cycle Count */
 
+Name (ESGN, Package () { 0x5c, 0xff, RD })	/* Indicate EC uses signed FW */
+
 /*
  * EC RAM WRITE
  */

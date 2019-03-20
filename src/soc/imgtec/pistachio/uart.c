@@ -36,12 +36,12 @@
 #define GEN_ACCESSOR(name, idx)						\
 static inline uint8_t read_##name(unsigned base_port)			\
 {									\
-	return read8(base_port + (idx << UART_SHIFT));			\
+	return read8((void *)(base_port + (idx << UART_SHIFT)));	\
 }									\
 									\
 static inline void write_##name(unsigned base_port, uint8_t val)	\
 {									\
-	write8(base_port + (idx << UART_SHIFT), val);			\
+	write8((void *)(base_port + (idx << UART_SHIFT)), val);		\
 }
 
 GEN_ACCESSOR(rbr, UART8250_RBR)

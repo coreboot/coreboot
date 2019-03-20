@@ -48,7 +48,7 @@ static int wait_status(u32 reg, u32 shift)
 	struct stopwatch sw;
 
 	stopwatch_init_usecs_expire(&sw, SPI_TIMEOUT_VALUE_US);
-	while (!(read32(reg) & (1 << shift))) {
+	while (!(read32_x(reg) & (1 << shift))) {
 		if (stopwatch_expired(&sw))
 			return -SPIM_TIMEOUT;
 	}
@@ -71,7 +71,7 @@ static int transmitdata(const struct spi_slave *slave, u8 *buffer, u32 size)
 	base = img_slave->base;
 	while (size) {
 		/* Wait until FIFO empty */
-		write32(base + SPFI_INT_CLEAR_REG_OFFSET, SPFI_SDE_MASK);
+		write32_x(base + SPFI_INT_CLEAR_REG_OFFSET, SPFI_SDE_MASK);
 		ret = wait_status(base + SPFI_INT_STATUS_REG_OFFSET,
 					SPFI_SDE_SHIFT);
 		if (ret)
@@ -84,13 +84,13 @@ static int transmitdata(const struct spi_slave *slave, u8 *buffer, u32 size)
 		blocksize = SPIM_MAX_BLOCK_BYTES;
 		while ((size >= sizeof(u32)) && blocksize) {
 			memcpy(&write_data, buffer, sizeof(u32));
-			write32(base + SPFI_SEND_LONG_REG_OFFSET, write_data);
+			write32_x(base + SPFI_SEND_LONG_REG_OFFSET, write_data);
 			buffer += sizeof(u32);
 			size -= sizeof(u32);
 			blocksize -= sizeof(u32);
 		}
 		while (size && blocksize) {
-			write32(base + SPFI_SEND_BYTE_REG_OFFSET, *buffer);
+			write32_x(base + SPFI_SEND_BYTE_REG_OFFSET, *buffer);
 			buffer++;
 			size--;
 			blocksize--;
@@ -111,35 +111,35 @@ static int receivedata(const struct spi_slave *slave, u8 *buffer, u32 size)
 	 * Do 32bit reads first. Clear status GDEX32BIT here so that the first
 	 * status reg. read gets the actual bit state
 	 */
-	write32(base + SPFI_INT_CLEAR_REG_OFFSET, SPFI_GDEX32BIT_MASK);
+	write32_x(base + SPFI_INT_CLEAR_REG_OFFSET, SPFI_GDEX32BIT_MASK);
 	while (size >= sizeof(u32)) {
 		ret = wait_status(base + SPFI_INT_STATUS_REG_OFFSET,
 					SPFI_GDEX32BIT_SHIFT);
 		if (ret)
 			return ret;
-		read_data = read32(base + SPFI_GET_LONG_REG_OFFSET);
+		read_data = read32_x(base + SPFI_GET_LONG_REG_OFFSET);
 		memcpy(buffer, &read_data, sizeof(u32));
 		buffer += sizeof(u32);
 		size -= sizeof(u32);
 		/* Clear interrupt status on GDEX32BITL */
-		write32(base + SPFI_INT_CLEAR_REG_OFFSET, SPFI_GDEX32BIT_MASK);
+		write32_x(base + SPFI_INT_CLEAR_REG_OFFSET, SPFI_GDEX32BIT_MASK);
 	}
 
 	/*
 	 * Do the remaining 8bit reads. Clear status GDEX8BIT here so that
 	 * the first status reg. read gets the actual bit state
 	 */
-	write32(base + SPFI_INT_CLEAR_REG_OFFSET, SPFI_GDEX8BIT_MASK);
+	write32_x(base + SPFI_INT_CLEAR_REG_OFFSET, SPFI_GDEX8BIT_MASK);
 	while (size) {
 		ret = wait_status(base + SPFI_INT_STATUS_REG_OFFSET,
 					SPFI_GDEX8BIT_SHIFT);
 		if (ret)
 			return ret;
-		*buffer = read32(base + SPFI_GET_BYTE_REG_OFFSET);
+		*buffer = read32_x(base + SPFI_GET_BYTE_REG_OFFSET);
 		buffer++;
 		size--;
 		/* Clear interrupt status on SPFI_GDEX8BIT */
-		write32(base + SPFI_INT_CLEAR_REG_OFFSET, SPFI_GDEX8BIT_MASK);
+		write32_x(base + SPFI_INT_CLEAR_REG_OFFSET, SPFI_GDEX8BIT_MASK);
 	}
 	return SPIM_OK;
 }
@@ -153,7 +153,7 @@ static void  setparams(const struct spi_slave *slave, u32 port,
 
 	base = img_slave->base;
 	spim_parameters = 0;
-	port_state = read32(base + SPFI_PORT_STATE_REG_OFFSET);
+	port_state = read32_x(base + SPFI_PORT_STATE_REG_OFFSET);
 	port_state &= ~((SPIM_PORT0_MASK>>port)|SPFI_PORT_SELECT_MASK);
 	port_state |= params->cs_idle_level<<(SPIM_CS0_IDLE_SHIFT-port);
 	port_state |=
@@ -175,7 +175,7 @@ static void  setparams(const struct spi_slave *slave, u32 port,
 		break;
 	}
 	/* Set port state register */
-	write32(base + SPFI_PORT_STATE_REG_OFFSET, port_state);
+	write32_x(base + SPFI_PORT_STATE_REG_OFFSET, port_state);
 
 	/* Set up values to be written to device parameter register */
 	spim_parameters |= params->bitrate << SPIM_CLK_DIVIDE_SHIFT;
@@ -183,7 +183,7 @@ static void  setparams(const struct spi_slave *slave, u32 port,
 	spim_parameters |= params->cs_hold << SPIM_CS_HOLD_SHIFT;
 	spim_parameters |= params->cs_delay << SPIM_CS_DELAY_SHIFT;
 
-	write32(base + SPFI_PORT_0_PARAM_REG_OFFSET + 4 * port,
+	write32_x(base + SPFI_PORT_0_PARAM_REG_OFFSET + 4 * port,
 			spim_parameters);
 }
 
@@ -349,20 +349,20 @@ static int spim_io(const struct spi_slave *slave, struct spim_buffer *first,
 	 * Soft reset peripheral internals, this will terminate any
 	 * pending transactions
 	 */
-	write32(base + SPFI_CONTROL_REG_OFFSET, SPIM_SOFT_RESET_MASK);
-	write32(base + SPFI_CONTROL_REG_OFFSET, 0);
+	write32_x(base + SPFI_CONTROL_REG_OFFSET, SPIM_SOFT_RESET_MASK);
+	write32_x(base + SPFI_CONTROL_REG_OFFSET, 0);
 	/* Port state register */
-	reg = read32(base +  SPFI_PORT_STATE_REG_OFFSET);
+	reg = read32_x(base +  SPFI_PORT_STATE_REG_OFFSET);
 	reg = spi_write_reg_field(reg, SPFI_PORT_SELECT, slave->cs);
-	write32(base + SPFI_PORT_STATE_REG_OFFSET, reg);
+	write32_x(base + SPFI_PORT_STATE_REG_OFFSET, reg);
 	/* Set transaction register */
 	reg = transaction_reg_setup(first, second);
-	write32(base + SPFI_TRANSACTION_REG_OFFSET, reg);
+	write32_x(base + SPFI_TRANSACTION_REG_OFFSET, reg);
 	/* Clear status */
-	write32(base + SPFI_INT_CLEAR_REG_OFFSET, 0xffffffff);
+	write32_x(base + SPFI_INT_CLEAR_REG_OFFSET, 0xffffffff);
 	/* Set control register */
 	reg = control_reg_setup(first, second);
-	write32(base + SPFI_CONTROL_REG_OFFSET, reg);
+	write32_x(base + SPFI_CONTROL_REG_OFFSET, reg);
 	/* First transaction always exists */
 	transaction[0] = first;
 	trans_count = 1;
@@ -405,8 +405,8 @@ static int spim_io(const struct spi_slave *slave, struct spim_buffer *first,
 	 * Soft reset peripheral internals, this will terminate any
 	 * pending transactions
 	 */
-	write32(base + SPFI_CONTROL_REG_OFFSET, SPIM_SOFT_RESET_MASK);
-	write32(base + SPFI_CONTROL_REG_OFFSET, 0);
+	write32_x(base + SPFI_CONTROL_REG_OFFSET, SPIM_SOFT_RESET_MASK);
+	write32_x(base + SPFI_CONTROL_REG_OFFSET, 0);
 
 	return SPIM_OK;
 }
@@ -435,9 +435,9 @@ static int spi_ctrlr_claim_bus(const struct spi_slave *slave)
 	/* Set device parameters */
 	setparams(slave, slave->cs, &(img_slave->device_parameters));
 	/* Soft reset peripheral internals */
-	write32(img_slave->base + SPFI_CONTROL_REG_OFFSET,
+	write32_x(img_slave->base + SPFI_CONTROL_REG_OFFSET,
 		SPIM_SOFT_RESET_MASK);
-	write32(img_slave->base + SPFI_CONTROL_REG_OFFSET, 0);
+	write32_x(img_slave->base + SPFI_CONTROL_REG_OFFSET, 0);
 	img_slave->initialised = IMG_TRUE;
 	return SPIM_OK;
 }
@@ -455,9 +455,9 @@ static void spi_ctrlr_release_bus(const struct spi_slave *slave)
 	img_slave = get_img_slave(slave);
 	img_slave->initialised = IMG_FALSE;
 	/* Soft reset peripheral internals */
-	write32(img_slave->base + SPFI_CONTROL_REG_OFFSET,
+	write32_x(img_slave->base + SPFI_CONTROL_REG_OFFSET,
 		SPIM_SOFT_RESET_MASK);
-	write32(img_slave->base + SPFI_CONTROL_REG_OFFSET, 0);
+	write32_x(img_slave->base + SPFI_CONTROL_REG_OFFSET, 0);
 }
 
 /* SPI transfer */

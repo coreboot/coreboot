@@ -28,7 +28,7 @@
  * If we're not working on the FPGA this will be 0
  */
 #define PRIMARY_FPGA_VERSION		0xB8149060
-#define IMG_PLATFORM_ID()		read32(PRIMARY_FPGA_VERSION)
+#define IMG_PLATFORM_ID()		read32_x(PRIMARY_FPGA_VERSION)
 #define IMG_PLATFORM_ID_FPGA		0xD1400003 /* Last FPGA image */
 #define IMG_PLATFORM_ID_SILICON		0
 

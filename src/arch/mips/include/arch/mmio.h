@@ -24,43 +24,47 @@
 #include <arch/cache.h>
 #include <endian.h>
 
-static inline uint8_t read8(unsigned long addr)
+static inline uint8_t read8(const volatile void *addr)
 {
 	asm("sync");
 	return *(volatile uint8_t *)addr;
 }
 
-static inline uint16_t read16(unsigned long addr)
+static inline uint16_t read16(const volatile void *addr)
 {
 	asm("sync");
 	return *(volatile uint16_t *)addr;
 }
 
-static inline uint32_t read32(unsigned long addr)
+static inline uint32_t read32(const volatile void *addr)
 {
 	asm("sync");
 	return *(volatile uint32_t *)addr;
 }
 
-static inline void write8(unsigned long addr, uint8_t val)
+static inline void write8(volatile void *addr, uint8_t val)
 {
 	asm("sync");
 	*(volatile uint8_t *)addr = val;
 	asm("sync");
 }
 
-static inline void write16(unsigned long addr, uint16_t val)
+static inline void write16(volatile void *addr, uint16_t val)
 {
 	asm("sync");
 	*(volatile uint16_t *)addr = val;
 	asm("sync");
 }
 
-static inline void write32(unsigned long addr, uint32_t val)
+static inline void write32(volatile void *addr, uint32_t val)
 {
 	asm("sync");
 	*(volatile uint32_t *)addr = val;
 	asm("sync");
 }
+
+/* Fixing soc/imgtech/pistachio seemed painful at the time. */
+#define read32_x(addr)		read32((void *)(addr))
+#define write32_x(addr, val)	write32((void *)(addr), (val))
 
 #endif	/* __MIPS_ARCH_IO_H */

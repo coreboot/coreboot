@@ -22,5 +22,5 @@
 void do_board_reset(void)
 {
 	/* Generate system reset */
-	write32(PISTACHIO_WD_ADDR + PISTACHIO_WD_SW_RST_OFFSET, 0x1);
+	write32_x(PISTACHIO_WD_ADDR + PISTACHIO_WD_SW_RST_OFFSET, 0x1);
 }

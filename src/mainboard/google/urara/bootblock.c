@@ -66,10 +66,10 @@ static void pad_drive_strength(u32 pad, drive_strength strength)
 
 	/* Set drive strength value */
 	drive_strength_shift = (pad % 16) * PAD_DRIVE_STRENGTH_LENGTH;
-	reg = read32(PAD_DRIVE_STRENGTH_ADDR(pad / 16));
+	reg = read32_x(PAD_DRIVE_STRENGTH_ADDR(pad / 16));
 	reg &= ~(PAD_DRIVE_STRENGTH_MASK << drive_strength_shift);
 	reg |= strength << drive_strength_shift;
-	write32(PAD_DRIVE_STRENGTH_ADDR(pad / 16), reg);
+	write32_x(PAD_DRIVE_STRENGTH_ADDR(pad / 16), reg);
 }
 
 static void uart1_mfio_setup(void)
@@ -83,7 +83,7 @@ static void uart1_mfio_setup(void)
 	 * is no need to set up a function number in the corresponding
 	 * function select register.
 	 */
-	reg = read32(GPIO_BIT_EN_ADDR(3));
+	reg = read32_x(GPIO_BIT_EN_ADDR(3));
 	mfio_mask =  1 << (UART1_RXD_MFIO % 16);
 	mfio_mask |= 1 << (UART1_TXD_MFIO % 16);
 	/* Clear relevant bits */
@@ -93,7 +93,7 @@ static void uart1_mfio_setup(void)
 	 * in order to be able to modify the chosen pins
 	 */
 	reg |= mfio_mask << 16;
-	write32(GPIO_BIT_EN_ADDR(3), reg);
+	write32_x(GPIO_BIT_EN_ADDR(3), reg);
 }
 
 static void spim1_mfio_setup(void)
@@ -106,7 +106,7 @@ static void spim1_mfio_setup(void)
 	 * is no need to set up a function number in the corresponding
 	 * function select register.
 	 */
-	reg = read32(GPIO_BIT_EN_ADDR(0));
+	reg = read32_x(GPIO_BIT_EN_ADDR(0));
 
 	/* Disable GPIO for SPIM1 MFIOs */
 	mfio_mask = 1 << (SPIM1_D0_TXD_MFIO % 16);
@@ -123,7 +123,7 @@ static void spim1_mfio_setup(void)
 	 * in order to be able to modify the chosen pins
 	 */
 	reg |= mfio_mask << 16;
-	write32(GPIO_BIT_EN_ADDR(0), reg);
+	write32_x(GPIO_BIT_EN_ADDR(0), reg);
 
 	/* Set drive strength to maximum for these MFIOs */
 	pad_drive_strength(SPIM1_CS0_MFIO, DRIVE_STRENGTH_12mA);
@@ -142,7 +142,7 @@ static void i2c_mfio_setup(int interface)
 	/*
 	 * Disable GPIO for I2C MFIOs
 	 */
-	reg = read32(GPIO_BIT_EN_ADDR(I2C_DATA_MFIO(interface) / 16));
+	reg = read32_x(GPIO_BIT_EN_ADDR(I2C_DATA_MFIO(interface) / 16));
 	mfio_mask =  1 << (I2C_DATA_MFIO(interface) % 16);
 	mfio_mask |= 1 << (I2C_CLK_MFIO(interface) % 16);
 	/* Clear relevant bits */
@@ -152,7 +152,7 @@ static void i2c_mfio_setup(int interface)
 	 * in order to be able to modify the chosen pins
 	 */
 	reg |= mfio_mask << 16;
-	write32(GPIO_BIT_EN_ADDR(I2C_DATA_MFIO(interface) / 16), reg);
+	write32_x(GPIO_BIT_EN_ADDR(I2C_DATA_MFIO(interface) / 16), reg);
 
 	/* for I2C0 and I2C1:
 	 * Set bits to 0 (clear) which is the primary function
@@ -162,12 +162,12 @@ static void i2c_mfio_setup(int interface)
 	 */
 	if (interface > 1)
 		return;
-	reg = read32(PADS_FUNCTION_SELECT0_ADDR);
+	reg = read32_x(PADS_FUNCTION_SELECT0_ADDR);
 	reg &= ~(I2C_DATA_FUNCTION_MASK <<
 		I2C_DATA_FUNCTION_OFFSET(interface));
 	reg &= ~(I2C_CLK_FUNCTION_MASK <<
 		I2C_CLK_FUNCTION_OFFSET(interface));
-	write32(PADS_FUNCTION_SELECT0_ADDR, reg);
+	write32_x(PADS_FUNCTION_SELECT0_ADDR, reg);
 }
 
 static void bootblock_mainboard_init(void)

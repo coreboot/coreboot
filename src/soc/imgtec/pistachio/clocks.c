@@ -236,56 +236,56 @@ static int pll_setup(struct pll_parameters *param, u8 divider1, u8 divider2)
 		~(param->postdiv2_mask)));
 
 	/* Temporary bypass PLL (select XTAL as clock input) */
-	reg = read32(PISTACHIO_CLOCK_SWITCH);
+	reg = read32_x(PISTACHIO_CLOCK_SWITCH);
 	reg &= ~(param->external_bypass_mask);
-	write32(PISTACHIO_CLOCK_SWITCH, reg);
+	write32_x(PISTACHIO_CLOCK_SWITCH, reg);
 
 	/* Un-bypass PLL's internal bypass */
-	reg = read32(param->ctrl_addr);
+	reg = read32_x(param->ctrl_addr);
 	reg &= ~(param->internal_bypass_mask);
-	write32(param->ctrl_addr, reg);
+	write32_x(param->ctrl_addr, reg);
 
 	/* Disable power down */
-	reg = read32(param->power_down_ctrl_addr);
+	reg = read32_x(param->power_down_ctrl_addr);
 	reg &= ~(param->power_down_ctrl_mask);
-	write32(param->power_down_ctrl_addr, reg);
+	write32_x(param->power_down_ctrl_addr, reg);
 
 	/* Noise cancellation */
 	if (param->dacpd_addr) {
-		reg = read32(param->dacpd_addr);
+		reg = read32_x(param->dacpd_addr);
 		reg &= ~(param->dacpd_mask);
-		write32(param->dacpd_addr, reg);
+		write32_x(param->dacpd_addr, reg);
 	}
 
 	/* Functional mode */
 	if (param->dsmpd_addr) {
-		reg = read32(param->dsmpd_addr);
+		reg = read32_x(param->dsmpd_addr);
 		reg &= ~(param->dsmpd_mask);
-		write32(param->dsmpd_addr, reg);
+		write32_x(param->dsmpd_addr, reg);
 	}
 
 	if (param->feedback_addr) {
 		assert(!((param->feedback << param->feedback_shift) &
 			~(param->feedback_mask)));
-		reg = read32(param->feedback_addr);
+		reg = read32_x(param->feedback_addr);
 		reg &= ~(param->feedback_mask);
 		reg |= (param->feedback << param->feedback_shift) &
 			param->feedback_mask;
-		write32(param->feedback_addr, reg);
+		write32_x(param->feedback_addr, reg);
 	}
 
 	if (param->refdiv_addr) {
 		assert(!((param->refdivider << param->refdiv_shift) &
 			~(param->refdiv_mask)));
-		reg = read32(param->refdiv_addr);
+		reg = read32_x(param->refdiv_addr);
 		reg &= ~(param->refdiv_mask);
 		reg |= (param->refdivider << param->refdiv_shift) &
 			param->refdiv_mask;
-		write32(param->refdiv_addr, reg);
+		write32_x(param->refdiv_addr, reg);
 	}
 
 	/* Read postdivider register value */
-	reg = read32(param->postdiv_addr);
+	reg = read32_x(param->postdiv_addr);
 	/* Set divider 1 */
 	reg &= ~(param->postdiv1_mask);
 	reg |= (divider1 << param->postdiv1_shift) &
@@ -295,19 +295,19 @@ static int pll_setup(struct pll_parameters *param, u8 divider1, u8 divider2)
 	reg |= (divider2 << param->postdiv2_shift) &
 			param->postdiv2_mask;
 	/* Write back to register */
-	write32(param->postdiv_addr, reg);
+	write32_x(param->postdiv_addr, reg);
 
 	/* Waiting for PLL to lock*/
 	stopwatch_init_usecs_expire(&sw, PLL_TIMEOUT_VALUE_US);
-	while (!(read32(param->status_addr) & param->status_lock_mask)) {
+	while (!(read32_x(param->status_addr) & param->status_lock_mask)) {
 		if (stopwatch_expired(&sw))
 			return PLL_TIMEOUT;
 	}
 
 	/* Start using PLL */
-	reg = read32(PISTACHIO_CLOCK_SWITCH);
+	reg = read32_x(PISTACHIO_CLOCK_SWITCH);
 	reg |= param->external_bypass_mask;
-	write32(PISTACHIO_CLOCK_SWITCH, reg);
+	write32_x(PISTACHIO_CLOCK_SWITCH, reg);
 
 	return CLOCKS_OK;
 }
@@ -340,16 +340,16 @@ void uart1_clk_setup(u8 divider1, u16 divider2)
 	assert(!(divider2 & ~(UART1CLKOUT_MASK)));
 
 	/* Set divider 1 */
-	reg = read32(UART1CLKINTERNAL_CTRL_ADDR);
+	reg = read32_x(UART1CLKINTERNAL_CTRL_ADDR);
 	reg &= ~UART1CLKINTERNAL_MASK;
 	reg |= divider1 & UART1CLKINTERNAL_MASK;
-	write32(UART1CLKINTERNAL_CTRL_ADDR, reg);
+	write32_x(UART1CLKINTERNAL_CTRL_ADDR, reg);
 
 	/* Set divider 2 */
-	reg = read32(UART1CLKOUT_CTRL_ADDR);
+	reg = read32_x(UART1CLKOUT_CTRL_ADDR);
 	reg &= ~UART1CLKOUT_MASK;
 	reg |= divider2 & UART1CLKOUT_MASK;
-	write32(UART1CLKOUT_CTRL_ADDR, reg);
+	write32_x(UART1CLKOUT_CTRL_ADDR, reg);
 }
 
 /*
@@ -366,16 +366,16 @@ void i2c_clk_setup(u8 divider1, u16 divider2, u8 interface)
 	assert(!(divider2 & ~(I2CCLKOUT_MASK)));
 	assert(interface < 4);
 	/* Set divider 1 */
-	reg = read32(I2CCLKDIV1_CTRL_ADDR(interface));
+	reg = read32_x(I2CCLKDIV1_CTRL_ADDR(interface));
 	reg &= ~I2CCLKDIV1_MASK;
 	reg |= divider1 & I2CCLKDIV1_MASK;
-	write32(I2CCLKDIV1_CTRL_ADDR(interface), reg);
+	write32_x(I2CCLKDIV1_CTRL_ADDR(interface), reg);
 
 	/* Set divider 2 */
-	reg = read32(I2CCLKOUT_CTRL_ADDR(interface));
+	reg = read32_x(I2CCLKOUT_CTRL_ADDR(interface));
 	reg &= ~I2CCLKOUT_MASK;
 	reg |= divider2 & I2CCLKOUT_MASK;
-	write32(I2CCLKOUT_CTRL_ADDR(interface), reg);
+	write32_x(I2CCLKOUT_CTRL_ADDR(interface), reg);
 }
 
 /* system_clk_setup: sets up the system (peripheral) clock */
@@ -387,10 +387,10 @@ void system_clk_setup(u8 divider)
 	assert(!(divider & ~(SYSCLKINTERNAL_MASK)));
 
 	/* Set system clock divider */
-	reg = read32(SYSCLKINTERNAL_CTRL_ADDR);
+	reg = read32_x(SYSCLKINTERNAL_CTRL_ADDR);
 	reg &= ~SYSCLKINTERNAL_MASK;
 	reg |= divider & SYSCLKINTERNAL_MASK;
-	write32(SYSCLKINTERNAL_CTRL_ADDR, reg);
+	write32_x(SYSCLKINTERNAL_CTRL_ADDR, reg);
 
 	/* Small delay to cover a maximum lock time of 1500 cycles */
 	udelay(SYS_CLK_LOCK_DELAY);
@@ -405,16 +405,16 @@ void mips_clk_setup(u8 divider1, u8 divider2)
 	assert(!(divider2 & ~(MIPSCLKOUT_MASK)));
 
 	/* Set divider 1 */
-	reg = read32(MIPSCLKINTERNAL_CTRL_ADDR);
+	reg = read32_x(MIPSCLKINTERNAL_CTRL_ADDR);
 	reg &= ~MIPSCLKINTERNAL_MASK;
 	reg |= divider1 & MIPSCLKINTERNAL_MASK;
-	write32(MIPSCLKINTERNAL_CTRL_ADDR, reg);
+	write32_x(MIPSCLKINTERNAL_CTRL_ADDR, reg);
 
 	/* Set divider 2 */
-	reg = read32(MIPSCLKOUT_CTRL_ADDR);
+	reg = read32_x(MIPSCLKOUT_CTRL_ADDR);
 	reg &= ~MIPSCLKOUT_MASK;
 	reg |= divider2 & MIPSCLKOUT_MASK;
-	write32(MIPSCLKOUT_CTRL_ADDR, reg);
+	write32_x(MIPSCLKOUT_CTRL_ADDR, reg);
 }
 
 /* usb_clk_setup: sets up USB clock */
@@ -431,29 +431,29 @@ int usb_clk_setup(u8 divider, u8 refclksel, u8 fsel)
 		~(USBPHYCONTROL1_FSEL_MASK)));
 
 	/* Set USB divider */
-	reg = read32(USBPHYCLKOUT_CTRL_ADDR);
+	reg = read32_x(USBPHYCLKOUT_CTRL_ADDR);
 	reg &= ~USBPHYCLKOUT_MASK;
 	reg |= divider & USBPHYCLKOUT_MASK;
-	write32(USBPHYCLKOUT_CTRL_ADDR, reg);
+	write32_x(USBPHYCLKOUT_CTRL_ADDR, reg);
 
 	/* Set REFCLKSEL */
-	reg = read32(USBPHYSTRAPCTRL_ADDR);
+	reg = read32_x(USBPHYSTRAPCTRL_ADDR);
 	reg &= ~USBPHYSTRAPCTRL_REFCLKSEL_MASK;
 	reg |= (refclksel << USBPHYSTRAPCTRL_REFCLKSEL_SHIFT) &
 		USBPHYSTRAPCTRL_REFCLKSEL_MASK;
-	write32(USBPHYSTRAPCTRL_ADDR, reg);
+	write32_x(USBPHYSTRAPCTRL_ADDR, reg);
 
 	/* Set FSEL */
-	reg = read32(USBPHYCONTROL1_ADDR);
+	reg = read32_x(USBPHYCONTROL1_ADDR);
 	reg &= ~USBPHYCONTROL1_FSEL_MASK;
 	reg |= (fsel << USBPHYCONTROL1_FSEL_SHIFT) &
 		USBPHYCONTROL1_FSEL_MASK;
-	write32(USBPHYCONTROL1_ADDR, reg);
+	write32_x(USBPHYCONTROL1_ADDR, reg);
 
 	/* Waiting for USB clock status */
 	stopwatch_init_usecs_expire(&sw, USB_TIMEOUT_VALUE_US);
 	while (1) {
-		reg = read32(USBPHYSTATUS_ADDR);
+		reg = read32_x(USBPHYSTATUS_ADDR);
 		if (reg & USBPHYSTATUS_VBUS_FAULT_MASK)
 			return USB_VBUS_FAULT;
 		if (stopwatch_expired(&sw))
@@ -475,10 +475,10 @@ void rom_clk_setup(u8 divider)
 	assert(!(divider & ~(ROMCLKOUT_MASK)));
 
 	/* Set ROM divider */
-	reg = read32(ROMCLKOUT_CTRL_ADDR);
+	reg = read32_x(ROMCLKOUT_CTRL_ADDR);
 	reg &= ~ROMCLKOUT_MASK;
 	reg |= divider & ROMCLKOUT_MASK;
-	write32(ROMCLKOUT_CTRL_ADDR, reg);
+	write32_x(ROMCLKOUT_CTRL_ADDR, reg);
 }
 
 void eth_clk_setup(u8 mux, u8 divider)
@@ -493,21 +493,21 @@ void eth_clk_setup(u8 mux, u8 divider)
 	assert(!(mux & ~(0x1)));
 
 	/* Set ETH divider */
-	reg = read32(ENETCLKDIV_CTRL_ADDR);
+	reg = read32_x(ENETCLKDIV_CTRL_ADDR);
 	reg &= ~ENETCLKDIV_MASK;
 	reg |= divider & ENETCLKDIV_MASK;
-	write32(ENETCLKDIV_CTRL_ADDR, reg);
+	write32_x(ENETCLKDIV_CTRL_ADDR, reg);
 
 	/* Select source */
 	if (mux) {
-		reg = read32(PISTACHIO_CLOCK_SWITCH);
+		reg = read32_x(PISTACHIO_CLOCK_SWITCH);
 		reg |= ENETCLKMUX_MASK;
-		write32(PISTACHIO_CLOCK_SWITCH, reg);
+		write32_x(PISTACHIO_CLOCK_SWITCH, reg);
 	}
 }
 
 void setup_clk_gate_defaults(void)
 {
-	write32(MIPS_CLOCK_GATE_ADDR, MIPS_CLOCK_GATE_ALL_ON);
-	write32(RPU_CLOCK_GATE_ADDR, RPU_CLOCK_GATE_ALL_OFF);
+	write32_x(MIPS_CLOCK_GATE_ADDR, MIPS_CLOCK_GATE_ALL_ON);
+	write32_x(RPU_CLOCK_GATE_ADDR, RPU_CLOCK_GATE_ALL_OFF);
 }

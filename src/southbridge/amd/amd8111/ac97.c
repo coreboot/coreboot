@@ -19,15 +19,8 @@
 #include <device/pci_ops.h>
 #include "amd8111.h"
 
-static void lpci_set_subsystem(struct device *dev, unsigned int vendor,
-			       unsigned int device)
-{
-	pci_write_config32(dev, 0x2c,
-		((device & 0xffff) << 16) | (vendor & 0xffff));
-}
-
 static struct pci_operations lops_pci = {
-	.set_subsystem = lpci_set_subsystem,
+	.set_subsystem = pci_dev_set_subsystem,
 };
 
 static struct device_operations ac97audio_ops  = {

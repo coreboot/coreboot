@@ -134,15 +134,8 @@ static struct smbus_bus_operations lops_smbus_bus = {
 	.write_byte = lsmbus_write_byte,
 };
 
-static void lpci_set_subsystem(struct device *dev, unsigned vendor,
-			       unsigned device)
-{
-	pci_write_config32(dev, 0x2c,
-		((device & 0xffff) << 16) | (vendor & 0xffff));
-}
-
 static struct pci_operations lops_pci = {
-	.set_subsystem = lpci_set_subsystem,
+	.set_subsystem = pci_dev_set_subsystem,
 };
 
 static struct device_operations sb_ops = {

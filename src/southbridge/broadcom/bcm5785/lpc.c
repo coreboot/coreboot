@@ -115,15 +115,8 @@ static void bcm5785_lpc_enable_resources(struct device *dev)
 	bcm5785_lpc_enable_childrens_resources(dev);
 }
 
-static void lpci_set_subsystem(struct device *dev, unsigned vendor,
-			       unsigned device)
-{
-	pci_write_config32(dev, 0x40,
-		((device & 0xffff) << 16) | (vendor & 0xffff));
-}
-
 static struct pci_operations lops_pci = {
-	.set_subsystem = lpci_set_subsystem,
+	.set_subsystem = bcm5785_set_subsystem,
 };
 
 static struct device_operations lpc_ops  = {

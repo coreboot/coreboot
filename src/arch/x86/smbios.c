@@ -328,6 +328,17 @@ static int create_smbios_type17_for_dimm(struct dimm_info *dimm,
 	t->handle = *handle;
 	*handle += 1;
 	t->length = sizeof(struct smbios_type17) - 2;
+	t->memory_technology = MEMORY_TECHNOLOGY_UNKNOWN;
+	t->operating_mode_capability = MEMORY_OPERATING_MODE_CAP_UNKNOWN;
+	t->fw_version = 0xff;
+	t->manufacturer_id = dimm->mod_id;
+	t->product_id = 0x0000;
+	t->sub_ctrl_manufacturer_id = 0x0000;
+	t->sub_ctrl_product_id = 0x0000;
+	t->non_volatile_size = 0xffffffffffffffff;
+	t->volatile_size = 0xffffffffffffffff;
+	t->cache_size = 0xffffffffffffffff;
+	t->logical_size = 0xffffffffffffffff;
 	return t->length + smbios_string_table_len(t->eos);
 }
 
@@ -547,9 +558,31 @@ static int smbios_write_type3(unsigned long *current, int handle)
 	return len;
 }
 
+u16 __weak smbios_processor_core_thread_count(u16 level_type)
+{
+	u16 count = 0;
+	int ecx = 0;
+
+	for (ecx = 0 ; ecx < 255 ; ecx++) {
+		struct cpuid_result leaf_b;
+		leaf_b = cpuid_ext(0xb, ecx);
+		if ((cpuid_eax(0) < 0xb) ||
+		!(leaf_b.eax | leaf_b.ebx | leaf_b.ecx | leaf_b.edx))
+			return (((cpuid(1).ebx) >> 16) & 0x00ff);
+
+		if ((leaf_b.ecx & 0xff00) == level_type) {
+			count = leaf_b.ebx & 0xffff;
+			break;
+		}
+	}
+
+	return count;
+}
+
 static int smbios_write_type4(unsigned long *current, int handle)
 {
 	struct cpuid_result res;
+	u16 core_count = 0, thread_count = 0;
 	struct smbios_type4 *t = (struct smbios_type4 *)*current;
 	int len = sizeof(struct smbios_type4);
 
@@ -570,7 +603,15 @@ static int smbios_write_type4(unsigned long *current, int handle)
 	t->processor_version = smbios_processor_name(t->eos);
 	t->processor_family = (res.eax > 0) ? 0x0c : 0x6;
 	t->processor_type = 3; /* System Processor */
-	t->core_count = (res.ebx >> 16) & 0xff;
+
+	core_count = smbios_processor_core_thread_count(PROC_CORE_TYPE);
+	thread_count = smbios_processor_core_thread_count(PROC_THREAD_TYPE);
+	t->core_count2 = core_count;
+	t->core_count = (core_count > BYTE_LIMIT) ? 0xff : core_count;
+	t->thread_count2 = thread_count;
+	t->thread_count = (thread_count > BYTE_LIMIT) ? 0xff : core_count;
+	t->core_enabled2 = core_count;
+
 	t->l1_cache_handle = 0xffff;
 	t->l2_cache_handle = 0xffff;
 	t->l3_cache_handle = 0xffff;

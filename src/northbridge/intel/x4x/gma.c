@@ -16,17 +16,12 @@
  */
 
 #include <console/console.h>
-#include <delay.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <commonlib/helpers.h>
 #include <cbmem.h>
-
-#include "drivers/intel/gma/i915_reg.h"
-#include "chip.h"
-#include "x4x.h"
 #include <drivers/intel/gma/intel_bios.h>
 #include <drivers/intel/gma/edid.h>
 #include <drivers/intel/gma/i915.h>
@@ -34,6 +29,10 @@
 #include <drivers/intel/gma/libgfxinit.h>
 #include <pc80/vga.h>
 #include <pc80/vga_io.h>
+
+#include "chip.h"
+#include "drivers/intel/gma/i915_reg.h"
+#include "x4x.h"
 
 #if CONFIG(SOUTHBRIDGE_INTEL_I82801JX)
 #include <southbridge/intel/i82801jx/nvs.h>

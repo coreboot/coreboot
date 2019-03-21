@@ -15,8 +15,6 @@
  * GNU General Public License for more details.
  */
 
-#include "chip.h"
-#include <delay.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <pc80/isa-dma.h>
@@ -33,6 +31,8 @@
 #include <soc/lpc.h>
 #include <soc/pci_devs.h>
 #include <soc/pcr_ids.h>
+
+#include "chip.h"
 
 /*
 * As per the BWG, Chapter 5.9.1. "PCH BIOS component will reserve

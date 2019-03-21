@@ -20,7 +20,6 @@
 #include <cbmem.h>
 #include <console/console.h>
 #include <device/mmio.h>
-#include <delay.h>
 #include <program_loading.h>
 #include <soc/sdram.h>
 #include <soc/clock.h>

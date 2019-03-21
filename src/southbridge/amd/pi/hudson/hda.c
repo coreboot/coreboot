@@ -17,7 +17,7 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
-#include <delay.h>
+
 #include "hudson.h"
 
 static const unsigned short pci_device_ids[] = {

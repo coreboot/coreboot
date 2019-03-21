@@ -25,20 +25,19 @@
  *    Eugeni Dodonov <eugeni.dodonov@intel.com>
  *
  */
+
 #include <types.h>
 #include <stdlib.h>
 #include <device/device.h>
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
 #include <console/console.h>
-#include <delay.h>
 #include <arch/acpi.h>
 #include <arch/interrupt.h>
 #include <boot/coreboot_tables.h>
 #include <smbios.h>
 #include <device/pci.h>
 #include <ec/google/chromeec/ec.h>
-
 #include <cpu/x86/tsc.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/mtrr.h>

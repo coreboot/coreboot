@@ -20,7 +20,6 @@
 #include <libbdk-hal/bdk-config.h>
 #include <libbdk-hal/bdk-twsi.h>
 #include <soc/gpio.h>
-#include <delay.h>
 #include <soc/uart.h>
 #include <console/console.h>
 #include <soc/clock.h>

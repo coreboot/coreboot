@@ -28,7 +28,6 @@
 #include <cpu/x86/bist.h>
 #include <cpu/intel/romstage.h>
 #include <ec/acpi/ec.h>
-#include <delay.h>
 #include <timestamp.h>
 #include <arch/acpi.h>
 

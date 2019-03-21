@@ -21,7 +21,6 @@
 #include <cpu/x86/cache.h>
 #include <arch/acpi.h>
 #include <arch/hlt.h>
-#include <delay.h>
 #include <device/pci_def.h>
 #include <soc/smi.h>
 #include <soc/southbridge.h>

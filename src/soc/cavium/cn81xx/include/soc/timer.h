@@ -18,7 +18,6 @@
 
 #include <inttypes.h>
 #include <types.h>
-#include <delay.h>
 
 /* Watchdog functions */
 void watchdog_set(const size_t index, unsigned int timeout_ms);

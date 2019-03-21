@@ -17,9 +17,8 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
-#include <delay.h>
-#include "hudson.h"
 
+#include "hudson.h"
 
 static void hda_init(struct device *dev)
 {

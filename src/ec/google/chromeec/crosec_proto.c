@@ -14,9 +14,9 @@
  */
 
 #include <console/console.h>
-#include <delay.h>
 #include <stdint.h>
 #include <string.h>
+
 #include "ec.h"
 #include "ec_commands.h"
 #include "ec_message.h"

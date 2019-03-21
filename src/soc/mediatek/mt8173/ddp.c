@@ -14,7 +14,6 @@
  */
 
 #include <device/mmio.h>
-#include <delay.h>
 #include <edid.h>
 #include <stdlib.h>
 #include <stddef.h>

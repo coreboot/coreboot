@@ -18,7 +18,6 @@
 #include <bootmode.h>
 #include <console/console.h>
 #include <console/vtxprintf.h>
-#include <delay.h>
 #include <string.h>
 #include <timestamp.h>
 #include <vb2_api.h>

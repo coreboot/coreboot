@@ -12,17 +12,15 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
-#include <delay.h>
+
 #include <stdlib.h>
 #include <arch/io.h>
 #include <edid.h>
-
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
-
 #include <pc80/vga.h>
 
 #include "../common/aspeed_coreboot.h"

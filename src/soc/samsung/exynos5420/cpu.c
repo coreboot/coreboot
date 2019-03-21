@@ -17,7 +17,6 @@
 #include <arch/cache.h>
 #include <console/console.h>
 #include <device/mmio.h>
-#include <delay.h>
 #include <device/device.h>
 #include <ec/google/chromeec/ec.h>
 #include <soc/dp.h>

@@ -14,11 +14,11 @@
  * GNU General Public License for more details.
  */
 
+#include <delay.h>
+
 #include "xgi_coreboot.h"
 #include "vstruct.h"
-
 #include "XGIfb.h"
-
 #include "vb_def.h"
 #include "vb_init.h"
 #include "vb_util.h"

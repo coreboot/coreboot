@@ -14,7 +14,6 @@
  */
 
 #include <device/device.h>
-#include <delay.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>

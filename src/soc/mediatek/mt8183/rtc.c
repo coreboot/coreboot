@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <delay.h>
 #include <halt.h>
 #include <soc/rtc_common.h>
 #include <soc/rtc.h>

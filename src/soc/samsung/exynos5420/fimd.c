@@ -18,7 +18,6 @@
 
 #include <device/mmio.h>
 #include <console/console.h>
-#include <delay.h>
 #include <soc/clk.h>
 #include <soc/dp.h>
 #include <soc/fimd.h>

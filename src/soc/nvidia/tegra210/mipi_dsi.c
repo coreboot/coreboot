@@ -38,10 +38,10 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+
 #include <console/console.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <delay.h>
 #include <string.h>
 #include <soc/addressmap.h>
 #include <soc/clock.h>

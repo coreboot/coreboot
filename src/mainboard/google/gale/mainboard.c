@@ -16,7 +16,6 @@
 
 #include <boardid.h>
 #include <boot/coreboot_tables.h>
-#include <delay.h>
 #include <device/device.h>
 #include <gpio.h>
 #include <soc/clock.h>

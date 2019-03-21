@@ -16,16 +16,17 @@
  */
 
 #define __SIMPLE_DEVICE__
+
 #include <console/console.h>
 #include <arch/io.h>
 #include <device/pci_ops.h>
 #include <device/device.h>
 #include <device/pci.h>
-#include <delay.h>
-#include "dock.h"
 #include <southbridge/intel/i82801ix/i82801ix.h>
 #include <ec/lenovo/h8/h8.h>
 #include <ec/acpi/ec.h>
+
+#include "dock.h"
 
 #define LPC_DEV PCI_DEV(0, 0x1f, 0)
 

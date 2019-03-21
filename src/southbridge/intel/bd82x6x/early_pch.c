@@ -18,11 +18,10 @@
 #include <arch/cbfs.h>
 #include <ip_checksum.h>
 #include <device/pci_def.h>
-#include <delay.h>
-
-#include "pch.h"
 /* For DMI bar.  */
 #include <northbridge/intel/sandybridge/sandybridge.h>
+
+#include "pch.h"
 
 #define SOUTHBRIDGE PCI_DEV(0, 0x1f, 0)
 

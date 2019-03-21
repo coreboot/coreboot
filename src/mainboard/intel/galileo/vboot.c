@@ -14,16 +14,16 @@
 
 #include <assert.h>
 #include <bootmode.h>
-#include <delay.h>
 #include <device/i2c_simple.h>
 #include <soc/i2c.h>
 #include <soc/reg_access.h>
-#include "reg_access.h"
-#include "gen1.h"
-#include "gen2.h"
 #include <spi_flash.h>
 #include <security/vboot/vboot_common.h>
 #include <security/vboot/vbnv.h>
+
+#include "reg_access.h"
+#include "gen1.h"
+#include "gen2.h"
 
 int clear_recovery_mode_switch(void)
 {

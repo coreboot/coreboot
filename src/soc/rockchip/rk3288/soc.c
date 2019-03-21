@@ -16,7 +16,6 @@
 #include <arch/cache.h>
 #include <bootmode.h>
 #include <console/console.h>
-#include <delay.h>
 #include <device/device.h>
 #include <gpio.h>
 #include <soc/display.h>

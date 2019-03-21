@@ -21,21 +21,21 @@
 #include <cpu/x86/cache.h>
 #include <cpu/x86/mtrr.h>
 #include <arch/cpu.h>
-#include <delay.h>
 #include <halt.h>
-#include "iomap.h"
 #if CONFIG(SOUTHBRIDGE_INTEL_I82801GX)
 #include <southbridge/intel/i82801gx/i82801gx.h> /* smbus_read_byte */
 #else
 #include <southbridge/intel/i82801jx/i82801jx.h> /* smbus_read_byte */
 #endif
-#include "x4x.h"
 #include <spd.h>
 #include <string.h>
 #include <device/dram/ddr2.h>
 #include <device/dram/ddr3.h>
 #include <mrc_cache.h>
 #include <timestamp.h>
+
+#include "iomap.h"
+#include "x4x.h"
 
 #define MRC_CACHE_VERSION 0
 

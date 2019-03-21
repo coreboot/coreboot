@@ -15,8 +15,6 @@
  * GNU General Public License for more details.
  */
 
-#include "chip.h"
-#include <delay.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <pc80/isa-dma.h>
@@ -29,6 +27,8 @@
 #include <soc/iomap.h>
 #include <soc/pcr_ids.h>
 #include <soc/intel/common/block/lpc/lpc_def.h>
+
+#include "chip.h"
 
 /**
   PCH preserved MMIO range, 24 MB, from 0xFD000000 to 0xFE7FFFFF

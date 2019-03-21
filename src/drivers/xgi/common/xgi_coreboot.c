@@ -15,27 +15,23 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
-#include <delay.h>
+
 #include <stdlib.h>
 #include <vbe.h>
-
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
-
 #include <pc80/vga.h>
 
 #include "xgi_coreboot.h"
 #include "vstruct.h"
-
 #include "XGIfb.h"
 #include "XGI_main.h"
 #include "vb_init.h"
 #include "vb_util.h"
 #include "vb_setmode.h"
-
 #include "XGI_main.c"
 
 static int xgi_vbe_valid;

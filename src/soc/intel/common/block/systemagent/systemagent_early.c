@@ -15,7 +15,6 @@
 
 #include <device/mmio.h>
 #include <device/pci_ops.h>
-#include <delay.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <intelblocks/systemagent.h>

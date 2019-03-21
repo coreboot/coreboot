@@ -15,13 +15,13 @@
  *
  * This file consists of data imported from bdk-config.c
  */
+
 // coreboot
 #include <string.h>
 #include <assert.h>
 #include <device/i2c.h>
 #include <device/i2c_simple.h>
 #include <endian.h>
-#include <delay.h>
 #include <soc/timer.h>
 
 // BDK

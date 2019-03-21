@@ -19,7 +19,6 @@
 #include <device/mmio.h>
 #include <device/pci_ops.h>
 #include <device/device.h>
-#include <delay.h>
 #include <Porting.h>
 #include <AGESA.h>
 #include <Lib/amdlib.h>

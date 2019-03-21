@@ -20,7 +20,6 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <device/mmio.h>
-#include <delay.h>
 #include <soc/adsp.h>
 #include <soc/device_nvs.h>
 #include <soc/iobp.h>

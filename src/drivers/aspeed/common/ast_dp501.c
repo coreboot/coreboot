@@ -15,6 +15,8 @@
  * GNU General Public License for more details.
  */
 
+#include <delay.h>
+
 #include "ast_drv.h"
 
 static void send_ack(struct ast_private *ast)

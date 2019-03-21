@@ -16,15 +16,14 @@
  * GNU General Public License for more details.
  */
 
-#include "ec.h"
-
 #include <console/console.h>
 #include <cpu/x86/smm.h>
-#include <delay.h>
 #include <ec/acpi/ec.h>
 #include <ec/compal/ene932/ec.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <southbridge/intel/common/pmutil.h>
+
+#include "ec.h"
 
 #define GPE_PALMDET1	2
 #define GPE_PALMDET2	4

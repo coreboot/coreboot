@@ -24,7 +24,6 @@
 #include <northbridge/intel/nehalem/nehalem.h>
 #include <cpu/intel/model_2065x/model_2065x.h>
 #include <ec/acpi/ec.h>
-#include <delay.h>
 
 static void mainboard_smm_init(void)
 {

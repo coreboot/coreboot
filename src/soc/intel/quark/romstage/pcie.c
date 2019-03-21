@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <delay.h>
 #include <device/device.h>
 #include <soc/pci_devs.h>
 #include <soc/reg_access.h>

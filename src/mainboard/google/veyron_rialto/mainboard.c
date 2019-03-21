@@ -17,7 +17,6 @@
 #include <device/mmio.h>
 #include <boot/coreboot_tables.h>
 #include <console/console.h>
-#include <delay.h>
 #include <device/device.h>
 #include <device/i2c_simple.h>
 #include <edid.h>

@@ -19,11 +19,10 @@
  */
 
 #include <arch/io.h>
+#include <cpu/x86/smm.h>
+
 #include "hudson.h"
 #include "smi.h"
-
-#include <cpu/x86/smm.h>
-#include <delay.h>
 
 #define SMI_0x88_ACPI_COMMAND		(1 << 11)
 

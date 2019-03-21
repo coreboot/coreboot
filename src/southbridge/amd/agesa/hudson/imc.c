@@ -15,7 +15,6 @@
 
 #include "imc.h"
 #include <device/mmio.h>
-#include <delay.h>
 #include <Porting.h>
 #include <AGESA.h>
 #include <amdlib.h>

@@ -19,7 +19,6 @@
 #include <assert.h>
 #include <bcd.h>
 #include <console/console.h>
-#include <delay.h>
 #include <rtc.h>
 #include <soc/pmic_wrap_common.h>
 

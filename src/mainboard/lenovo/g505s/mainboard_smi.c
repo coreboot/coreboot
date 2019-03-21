@@ -17,15 +17,15 @@
 /*
  * SMI handler -- mostly takes care of SMIs from the EC
  */
-#include "ec.h"
 
 #include <arch/io.h>
 #include <console/console.h>
 #include <cpu/x86/smm.h>
-#include <delay.h>
 #include <ec/compal/ene932/ec.h>
 #include <southbridge/amd/agesa/hudson/hudson.h>
 #include <southbridge/amd/agesa/hudson/smi.h>
+
+#include "ec.h"
 
 #define ACPI_PM1_CNT_SLEEP(state) ((1 << 13) | (state & 0x7) << 10)
 

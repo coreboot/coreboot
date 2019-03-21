@@ -19,9 +19,9 @@
 #include <device/pci_ops.h>
 #include <device/pci_def.h>
 #include <device/mmio.h>
-#include <delay.h>
 #include <hwilib.h>
 #include <bootstate.h>
+
 #include "nc_fpga.h"
 
 static void *nc_fpga_bar0;

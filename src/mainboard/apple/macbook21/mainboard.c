@@ -16,7 +16,6 @@
  */
 
 #include <device/device.h>
-#include <delay.h>
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
 #include <arch/interrupt.h>
@@ -24,6 +23,7 @@
 #include <arch/acpigen.h>
 #include <drivers/intel/gma/int15.h>
 #include <ec/acpi/ec.h>
+
 #define PANEL INT15_5F35_CL_DISPLAY_DEFAULT
 
 static acpi_cstate_t cst_entries[] = {

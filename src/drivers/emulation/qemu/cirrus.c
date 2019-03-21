@@ -15,17 +15,14 @@
  */
 
 #include <stdint.h>
-#include <delay.h>
 #include <edid.h>
 #include <stdlib.h>
-
 #include <boot/coreboot_tables.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
-
 #include <pc80/vga.h>
 #include <pc80/vga_io.h>
 

@@ -18,7 +18,6 @@
 #include <cpu/x86/smm.h>
 #include <southbridge/intel/i82801gx/nvs.h>
 #include <southbridge/intel/common/pmutil.h>
-#include <delay.h>
 
 #define GPE_EC_SCI	12
 

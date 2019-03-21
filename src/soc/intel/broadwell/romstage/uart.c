@@ -14,7 +14,6 @@
  */
 
 #include <arch/early_variables.h>
-#include <delay.h>
 #include <device/pci_def.h>
 #include <reg_script.h>
 #include <stdint.h>

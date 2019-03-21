@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <delay.h>
 #include <soc/addressmap.h>
 #include <device/i2c_simple.h>
 #include <soc/clock.h>

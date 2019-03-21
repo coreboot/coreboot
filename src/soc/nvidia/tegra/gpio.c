@@ -18,7 +18,6 @@
 #include <soc/addressmap.h>
 #include <stddef.h>
 #include <stdint.h>
-#include <delay.h>
 
 #include "pinmux.h"
 

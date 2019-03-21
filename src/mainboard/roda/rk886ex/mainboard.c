@@ -18,10 +18,9 @@
 #include <device/device.h>
 #include <arch/io.h>
 #include <arch/interrupt.h>
-#include <delay.h>
 #include <drivers/intel/gma/int15.h>
-
 #include <ec/acpi/ec.h>
+
 #include "m3885.h"
 
 #define DUMP_RUNTIME_REGISTERS 0

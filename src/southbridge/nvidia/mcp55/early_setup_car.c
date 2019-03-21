@@ -16,6 +16,7 @@
  */
 
 #include <arch/io.h>
+#include <delay.h>
 
 #ifdef UNUSED_CODE
 int set_ht_link_buffer_counts_chain(u8 ht_c_num, unsigned vendorid, unsigned val);

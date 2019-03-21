@@ -33,7 +33,6 @@
 #include <cpu/x86/cache.h>
 #include <cpu/x86/name.h>
 #include <cpu/x86/smm.h>
-#include <delay.h>
 #include <intelblocks/cpulib.h>
 #include <intelblocks/fast_spi.h>
 #include <intelblocks/mp_init.h>

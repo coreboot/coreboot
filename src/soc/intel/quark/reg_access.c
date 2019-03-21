@@ -19,6 +19,7 @@
 #include <assert.h>
 #include <cpu/x86/mtrr.h>
 #include <console/console.h>
+#include <delay.h>
 #include <device/pci_ops.h>
 #include <soc/pci_devs.h>
 #include <soc/ramstage.h>

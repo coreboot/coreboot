@@ -19,7 +19,6 @@
 #include <device/mmio.h>
 #include <assert.h>
 #include <console/console.h>
-#include <delay.h>
 #include <endian.h>
 #include <soc/addressmap.h>
 #include <soc/spi.h>

@@ -29,8 +29,9 @@
 
 #define COREBOOT_AST_FAILOVER_TIMEOUT	10000000
 
-#include "ast_drv.h"
+#include <delay.h>
 
+#include "ast_drv.h"
 #include "ast_dram_tables.h"
 
 static void ast_init_dram_2300(struct drm_device *dev);

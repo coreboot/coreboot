@@ -15,7 +15,6 @@
  * GNU General Public License for more details.
  */
 
-#include <delay.h>
 #include <types.h>
 #include <arch/io.h>
 #include <device/pci_ops.h>
@@ -29,11 +28,10 @@
 #include <southbridge/intel/common/finalize.h>
 #include <northbridge/intel/haswell/haswell.h>
 #include <cpu/intel/haswell/haswell.h>
+
 #include "me.h"
 #include "pch.h"
-
 #include "nvs.h"
-
 
 static u8 smm_initialized = 0;
 

@@ -26,8 +26,10 @@
 /*
  * Authors: Dave Airlie <airlied@redhat.com>
  */
-#include "ast_drv.h"
 
+#include <delay.h>
+
+#include "ast_drv.h"
 #include "ast_dram_tables.h"
 
 void ast_set_index_reg_mask(struct ast_private *ast,

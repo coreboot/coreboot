@@ -16,10 +16,12 @@
 
 #include <device/mmio.h>
 #include <console/console.h>
-#include <delay.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
+#include <drivers/intel/gma/edid.h>
+#include <drivers/intel/gma/opregion.h>
+#include <drivers/intel/gma/libgfxinit.h>
 #include <string.h>
 #include <device/pci_ops.h>
 #include <commonlib/helpers.h>
@@ -29,9 +31,6 @@
 #include "drivers/intel/gma/i915_reg.h"
 #include "chip.h"
 #include "gm45.h"
-#include <drivers/intel/gma/edid.h>
-#include <drivers/intel/gma/opregion.h>
-#include <drivers/intel/gma/libgfxinit.h>
 
 static struct resource *gtt_res = NULL;
 

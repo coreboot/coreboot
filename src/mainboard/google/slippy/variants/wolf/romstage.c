@@ -14,7 +14,6 @@
  * GNU General Public License for more details.
  */
 
-#include <delay.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>

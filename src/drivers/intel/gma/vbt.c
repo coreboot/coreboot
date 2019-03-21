@@ -16,7 +16,6 @@
  */
 
 #include <device/pci_ops.h>
-#include <delay.h>
 #include <device/device.h>
 #include <string.h>
 #include <device/pci.h>

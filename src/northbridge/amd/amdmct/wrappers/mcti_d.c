@@ -17,9 +17,9 @@
 /* Call-backs */
 
 #include <arch/cpu.h>
-#include <delay.h>
 #include <cpu/amd/msr.h>
 #include <console/console.h>
+
 #include "mcti.h"
 
 #define NVRAM_DDR2_800 0

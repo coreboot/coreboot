@@ -15,7 +15,6 @@
 
 #include <device/mmio.h>
 #include <console/console.h>
-#include <delay.h>
 #include <soc/addressmap.h>
 #include <soc/usb.h>
 #include <timer.h>

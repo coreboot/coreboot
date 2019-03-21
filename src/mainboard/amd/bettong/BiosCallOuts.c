@@ -121,14 +121,20 @@ static AGESA_STATUS board_ReadSpd(UINT32 Func, UINTN Data, VOID *ConfigPtr)
 	AGESA_READ_SPD_PARAMS *info = ConfigPtr;
 
 	DEVTREE_CONST struct device *dev = pcidev_on_root(0x18, 2);
+
+	if (dev == NULL)
+		return AGESA_ERROR;
+
 	DEVTREE_CONST struct northbridge_amd_pi_00660F01_config *config = dev->chip_info;
+
+	if (config == NULL)
+		return AGESA_ERROR;
+
 	UINT8 spdAddrLookup_rev_F [2][2][4]= {
 		{ {0xA0, 0xA2}, {0xA4, 0xAC}, }, /* socket 0 - Channel 0 & 1 - 8-bit SPD addresses */
 		{ {0x00, 0x00}, {0x00, 0x00}, }, /* socket 1 - Channel 0 & 1 - 8-bit SPD addresses */
 	};
 
-	if ((dev == 0) || (config == 0))
-		return AGESA_ERROR;
 	if (info->SocketId >= ARRAY_SIZE(config->spdAddrLookup))
 		return AGESA_ERROR;
 	if (info->MemChannelId >= ARRAY_SIZE(config->spdAddrLookup[0]))

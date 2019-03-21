@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <chip.h>
 #include <bootmode.h>
 #include <bootstate.h>
 #include <device/pci.h>
@@ -41,6 +40,8 @@
 #include <soc/ramstage.h>
 #include <soc/systemagent.h>
 #include <string.h>
+
+#include "chip.h"
 
 struct pcie_entry {
 	unsigned int devfn;

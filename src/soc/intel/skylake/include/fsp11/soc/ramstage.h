@@ -17,10 +17,11 @@
 #ifndef _SOC_RAMSTAGE_H_
 #define _SOC_RAMSTAGE_H_
 
-#include <chip.h>
 #include <device/device.h>
 #include <fsp/ramstage.h>
 #include <fsp/soc_binding.h>
+
+#include "../../../chip.h"
 
 #define FSP_SIL_UPD SILICON_INIT_UPD
 #define FSP_MEM_UPD MEMORY_INIT_UPD

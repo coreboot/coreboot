@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <chip.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
@@ -24,6 +23,8 @@
 #include <soc/pci_devs.h>
 #include <soc/ramstage.h>
 #include <string.h>
+
+#include "chip.h"
 
 static const int serial_io_dev[] = {
 	PCH_DEVFN_I2C0,

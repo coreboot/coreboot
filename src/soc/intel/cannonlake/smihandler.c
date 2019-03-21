@@ -15,7 +15,6 @@
  * GNU General Public License for more details.
  */
 
-#include <chip.h>
 #include <console/console.h>
 #include <device/pci_def.h>
 #include <intelblocks/fast_spi.h>
@@ -26,6 +25,8 @@
 #include <soc/pci_devs.h>
 #include <soc/pcr_ids.h>
 #include <soc/pm.h>
+
+#include "chip.h"
 
 #define CSME0_FBE	0xf
 #define CSME0_BAR	0x0

@@ -15,7 +15,6 @@
  */
 
 #include <arch/acpi.h>
-#include <chip.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
@@ -32,6 +31,8 @@
 #include <soc/pci_devs.h>
 #include <soc/ramstage.h>
 #include <string.h>
+
+#include "chip.h"
 
 void soc_init_pre_device(void *chip_info)
 {

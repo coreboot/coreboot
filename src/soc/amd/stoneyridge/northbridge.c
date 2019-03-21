@@ -13,13 +13,11 @@
  * GNU General Public License for more details.
  */
 
-
 #include <device/pci_ops.h>
 #include <arch/ioapic.h>
 #include <arch/acpi.h>
 #include <arch/acpigen.h>
 #include <cbmem.h>
-#include <chip.h>
 #include <console/console.h>
 #include <cpu/amd/mtrr.h>
 #include <cpu/x86/lapic_def.h>
@@ -41,6 +39,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <arch/bert_storage.h>
+
+#include "chip.h"
 
 static void set_io_addr_reg(struct device *dev, u32 nodeid, u32 linkn, u32 reg,
 			u32 io_min, u32 io_max)

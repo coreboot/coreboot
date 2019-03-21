@@ -14,7 +14,6 @@
  * GNU General Public License for more details.
  */
 
-#include <chip.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
@@ -22,6 +21,8 @@
 #include <fsp/util.h>
 #include <soc/pci_devs.h>
 #include <soc/ramstage.h>
+
+#include "chip.h"
 
 static void pci_domain_set_resources(struct device *dev)
 {

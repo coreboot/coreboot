@@ -19,7 +19,6 @@
 #include <arch/acpigen.h>
 #include <arch/smp/mpspec.h>
 #include <cbmem.h>
-#include <chip.h>
 #include <console/console.h>
 #include <device/mmio.h>
 #include <device/pci_ops.h>
@@ -37,6 +36,8 @@
 #include <string.h>
 #include <vendorcode/google/chromeos/gnvs.h>
 #include <wrdd.h>
+
+#include "chip.h"
 
 /*
  * List of supported C-states in this processor.

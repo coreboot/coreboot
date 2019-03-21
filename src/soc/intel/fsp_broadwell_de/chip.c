@@ -22,7 +22,8 @@
 #include <drivers/intel/fsp1_0/fsp_util.h>
 #include <soc/pci_devs.h>
 #include <soc/ramstage.h>
-#include <chip.h>
+
+#include "chip.h"
 
 static void pci_domain_set_resources(struct device *dev)
 {

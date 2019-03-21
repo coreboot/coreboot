@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <chip.h>
 #include <cpu/x86/mtrr.h>
 #include <cbmem.h>
 #include <console/console.h>
@@ -29,6 +28,8 @@
 #include <soc/romstage.h>
 #include <string.h>
 #include <timestamp.h>
+
+#include "../chip.h"
 
 #define FSP_SMBIOS_MEMORY_INFO_GUID	\
 {	\

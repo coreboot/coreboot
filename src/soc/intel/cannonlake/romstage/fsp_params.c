@@ -14,7 +14,6 @@
  */
 
 #include <assert.h>
-#include <chip.h>
 #include <cpu/x86/msr.h>
 #include <console/console.h>
 #include <fsp/util.h>
@@ -24,6 +23,8 @@
 #include <soc/pci_devs.h>
 #include <soc/romstage.h>
 #include <vendorcode/google/chromeos/chromeos.h>
+
+#include "../chip.h"
 
 static void soc_memory_init_params(FSP_M_CONFIG *m_cfg, const config_t *config)
 {

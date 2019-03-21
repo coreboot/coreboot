@@ -20,7 +20,6 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/msr.h>
 #include <cbmem.h>
-#include <chip.h>
 #include <console/console.h>
 #include <device/pci_def.h>
 #include <fsp/util.h>
@@ -36,6 +35,8 @@
 #include <string.h>
 #include <timestamp.h>
 #include <security/vboot/vboot_common.h>
+
+#include "../chip.h"
 
 #define FSP_SMBIOS_MEMORY_INFO_GUID	\
 {	\

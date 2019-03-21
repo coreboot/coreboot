@@ -16,7 +16,6 @@
  */
 
 #include <bootstate.h>
-#include <chip.h>
 #include <console/console.h>
 #include <device/mmio.h>
 #include <device/device.h>
@@ -26,6 +25,8 @@
 #include <intelblocks/rtc.h>
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
+
+#include "chip.h"
 
 /*
  * Set which power state system will be after reapplying

@@ -18,7 +18,6 @@
 #include <device/mmio.h>
 #include <arch/smp/mpspec.h>
 #include <cbmem.h>
-#include <chip.h>
 #include <ec/google/chromeec/ec.h>
 #include <intelblocks/cpulib.h>
 #include <intelblocks/pmclib.h>
@@ -31,6 +30,8 @@
 #include <string.h>
 #include <vendorcode/google/chromeos/gnvs.h>
 #include <wrdd.h>
+
+#include "chip.h"
 
 /*
  * List of supported C-states in this processor.

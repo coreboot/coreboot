@@ -16,7 +16,6 @@
  */
 
 #include <bootstate.h>
-#include <chip.h>
 #include <console/console.h>
 #include <device/mmio.h>
 #include <device/device.h>
@@ -27,6 +26,8 @@
 #include <reg_script.h>
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
+
+#include "chip.h"
 
 void pmc_set_disb(void)
 {

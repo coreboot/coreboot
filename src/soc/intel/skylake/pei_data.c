@@ -14,7 +14,6 @@
  * GNU General Public License for more details.
  */
 
-#include <chip.h>
 #include <console/streams.h>
 #include <device/device.h>
 #include <device/pci_def.h>
@@ -24,6 +23,8 @@
 #include <soc/pci_devs.h>
 #include <soc/pei_data.h>
 #include <soc/pei_wrapper.h>
+
+#include "chip.h"
 
 static void ABI_X86 send_to_console(unsigned char b)
 {

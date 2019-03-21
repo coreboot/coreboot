@@ -38,8 +38,9 @@
 #include <soc/pattrs.h>
 #include <soc/pci_devs.h>
 #include <soc/broadwell_de.h>
-#include <chip.h>
 #include <version.h>
+
+#include "chip.h"
 
 uint16_t get_pmbase(void)
 {

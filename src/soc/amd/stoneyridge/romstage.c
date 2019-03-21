@@ -24,7 +24,6 @@
 #include <commonlib/helpers.h>
 #include <console/console.h>
 #include <device/device.h>
-#include <chip.h>
 #include <program_loading.h>
 #include <romstage_handoff.h>
 #include <elog.h>
@@ -34,6 +33,8 @@
 #include <soc/romstage.h>
 #include <soc/southbridge.h>
 #include <amdblocks/psp.h>
+
+#include "chip.h"
 
 void __weak mainboard_romstage_entry(int s3_resume)
 {

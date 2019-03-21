@@ -25,8 +25,9 @@
 #include <drivers/intel/fsp1_0/fsp_util.h>
 #include <soc/pci_devs.h>
 #include <soc/romstage.h>
-#include <chip.h>
 #include <fsp.h>
+
+#include "../chip.h"
 
 /* Copy the default UPD region and settings to a buffer for modification */
 static void GetUpdDefaultFromFsp (FSP_INFO_HEADER *FspInfo, UPD_DATA_REGION *UpdData)

@@ -16,7 +16,6 @@
 #include <arch/cpu.h>
 #include <console/console.h>
 #include <device/pci.h>
-#include <chip.h>
 #include <cpu/x86/lapic.h>
 #include <cpu/x86/mp.h>
 #include <cpu/x86/msr.h>
@@ -32,6 +31,8 @@
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
 #include <soc/smm.h>
+
+#include "chip.h"
 
 static void soc_fsp_load(void)
 {

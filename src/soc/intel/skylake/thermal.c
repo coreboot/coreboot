@@ -15,13 +15,14 @@
 
 #include <device/mmio.h>
 #include <device/pci_ops.h>
-#include <chip.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>
 #include <soc/thermal.h>
+
+#include "chip.h"
 
 #define MAX_TRIP_TEMP 205
 #define DEFAULT_TRIP_TEMP 50

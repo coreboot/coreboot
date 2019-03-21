@@ -15,7 +15,6 @@
 
 #include <arch/ebda.h>
 #include <cbmem.h>
-#include <chip.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
@@ -26,6 +25,8 @@
 #include <soc/smm.h>
 #include <soc/systemagent.h>
 #include <stdlib.h>
+
+#include "chip.h"
 
 void smm_region(void **start, size_t *size)
 {

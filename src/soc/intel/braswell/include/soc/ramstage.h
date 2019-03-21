@@ -17,9 +17,10 @@
 #ifndef _SOC_RAMSTAGE_H_
 #define _SOC_RAMSTAGE_H_
 
-#include <chip.h>
 #include <device/device.h>
 #include <fsp/ramstage.h>
+
+#include "../../chip.h"
 
 #define V_PCH_LPC_RID_A0		0x00  // A0 Stepping
 #define V_PCH_LPC_RID_A1		0x04  // A1 Stepping

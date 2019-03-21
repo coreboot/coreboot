@@ -18,7 +18,6 @@
 #include <device/mmio.h>
 #include <device/pci_ops.h>
 #include <bootstate.h>
-#include <chip.h>
 #include <console/console.h>
 #include <console/post_codes.h>
 #include <cpu/x86/mp.h>
@@ -40,6 +39,8 @@
 #include <soc/thermal.h>
 #include <stdlib.h>
 #include <timer.h>
+
+#include "chip.h"
 
 #define PSF_BASE_ADDRESS	0xA00
 #define PCR_PSFX_T0_SHDW_PCIEN	0x1C

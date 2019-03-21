@@ -32,7 +32,8 @@
 #include <soc/lpc.h>
 #include <soc/pci_devs.h>
 #include <soc/ramstage.h>
-#include <chip.h>
+
+#include "chip.h"
 
 typedef struct soc_intel_fsp_broadwell_de_config config_t;
 

@@ -14,7 +14,6 @@
  * GNU General Public License for more details.
  */
 #include <device/pci_ops.h>
-#include <chip.h>
 #include <device/device.h>
 #include <device/pci_def.h>
 #include <intelblocks/cse.h>
@@ -36,6 +35,8 @@
 #include <soc/pm.h>
 #include <soc/pmc.h>
 #include <soc/smbus.h>
+
+#include "../chip.h"
 
 #define PCR_DMI_DMICTL		0x2234
 #define  PCR_DMI_DMICTL_SRLOCK	(1 << 31)

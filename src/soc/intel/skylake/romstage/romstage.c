@@ -17,7 +17,6 @@
 #include <arch/cbfs.h>
 #include <arch/early_variables.h>
 #include <assert.h>
-#include <chip.h>
 #include <console/console.h>
 #include <cpu/x86/mtrr.h>
 #include <device/device.h>
@@ -36,6 +35,8 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <vendorcode/google/chromeos/chromeos.h>
+
+#include "../chip.h"
 
 /* SOC initialization before RAM is enabled */
 void soc_pre_ram_init(struct romstage_params *params)

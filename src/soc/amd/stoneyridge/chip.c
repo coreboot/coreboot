@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <chip.h>
 #include <bootstate.h>
 #include <console/console.h>
 #include <cpu/amd/mtrr.h>
@@ -29,6 +28,8 @@
 #include <amdblocks/psp.h>
 #include <amdblocks/agesawrapper.h>
 #include <amdblocks/agesawrapper_call.h>
+
+#include "chip.h"
 
 /* Supplied by i2c.c */
 extern struct device_operations stoneyridge_i2c_mmio_ops;

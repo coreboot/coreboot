@@ -21,7 +21,6 @@
 #include <arch/ioapic.h>
 #include <arch/smp/mpspec.h>
 #include <cbmem.h>
-#include <chip.h>
 #include <console/console.h>
 #include <cpu/x86/smm.h>
 #include <cpu/x86/msr.h>
@@ -50,6 +49,8 @@
 #include <vendorcode/google/chromeos/gnvs.h>
 #include <wrdd.h>
 #include <device/pci_ops.h>
+
+#include "chip.h"
 
 /*
  * List of suported C-states in this processor.

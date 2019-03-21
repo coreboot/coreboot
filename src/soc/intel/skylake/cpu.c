@@ -20,7 +20,6 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
-#include <chip.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/lapic.h>
@@ -45,6 +44,8 @@
 #include <soc/smm.h>
 #include <soc/systemagent.h>
 #include <timer.h>
+
+#include "chip.h"
 
 /* Convert time in seconds to POWER_LIMIT_1_TIME MSR value */
 static const u8 power_limit_time_sec_to_msr[] = {

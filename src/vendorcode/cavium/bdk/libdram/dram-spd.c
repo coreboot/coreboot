@@ -409,7 +409,7 @@ const char *ddr3_dimm_types[16] = {
     /* 0111 */ "Mini-CDIMM",
     /* 1000 */ "72b-SO-UDIMM",
     /* 1001 */ "72b-SO-RDIMM",
-    /* 1010 */ "72b-SO-CDIMM"
+    /* 1010 */ "72b-SO-CDIMM",
     /* 1011 */ "LRDIMM",
     /* 1100 */ "16b-SO-DIMM",
     /* 1101 */ "32b-SO-DIMM",

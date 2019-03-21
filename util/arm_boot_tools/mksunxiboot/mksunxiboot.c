@@ -156,7 +156,7 @@ int main(int argc, char *argv[])
 		return EXIT_FAILURE;
 	}
 
-	printf("File size: 0x%x\n", file_size);
+	printf("File size: 0x%lx\n", file_size);
 	if (fread(file_data, file_size, 1, fd_in) != 1) {
 		fprintf(stderr, "Cannot read %s: %s\n", argv[1],
 			strerror(errno));
@@ -168,7 +168,7 @@ int main(int argc, char *argv[])
 	if (load_size > SRAM_LOAD_MAX_SIZE)
 		load_size = SRAM_LOAD_MAX_SIZE;
 
-	printf("Load size: 0x%x\n", load_size);
+	printf("Load size: 0x%lx\n", load_size);
 
 	fd_out = fopen(argv[2], "w");
 	if (!fd_out) {

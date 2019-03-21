@@ -25,6 +25,10 @@ romstage-y += gpio.c
 romstage-y += clock.c
 romstage-$(CONFIG_SDM845_QSPI) += qspi.c
 romstage-y += usb.c
+romstage-y += ../common/qclib.c
+romstage-y += qclib.c
+romstage-y += ../common/mmu.c
+romstage-y += mmu.c
 
 ################################################################################
 ramstage-y += soc.c
@@ -39,6 +43,7 @@ ramstage-y += usb.c
 ################################################################################
 
 CPPFLAGS_common += -Isrc/soc/qualcomm/sdm845/include
+CPPFLAGS_common += -Isrc/soc/qualcomm/common/include
 
 $(objcbfs)/bootblock.bin: $(objcbfs)/bootblock.raw.bin
 	@printf "Generating: $(subst $(obj)/,,$(@))\n"

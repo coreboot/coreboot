@@ -16,11 +16,13 @@
 #include <symbols.h>
 #include <device/device.h>
 #include <soc/mmu.h>
+#include <soc/mmu_common.h>
 #include <soc/symbols.h>
 
 static void soc_read_resources(struct device *dev)
 {
-	ram_resource(dev, 0, (uintptr_t)_dram / KiB, DRAMSIZE4GB / KiB);
+	ram_resource(dev, 0, (uintptr_t)ddr_region->offset / KiB,
+				ddr_region->size / KiB);
 	reserved_ram_resource(dev, 1, (uintptr_t)_dram_reserved / KiB,
 				REGION_SIZE(dram_reserved) / KiB);
 }

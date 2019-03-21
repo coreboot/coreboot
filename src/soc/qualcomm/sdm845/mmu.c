@@ -17,11 +17,8 @@
 #include <arch/mmu.h>
 #include <arch/cache.h>
 #include <soc/mmu.h>
+#include <soc/mmu_common.h>
 #include <soc/symbols.h>
-
-#define   CACHED_RAM (MA_MEM | MA_S | MA_RW)
-#define UNCACHED_RAM (MA_MEM | MA_S | MA_RW | MA_MEM_NC)
-#define      DEV_MEM (MA_DEV | MA_S | MA_RW)
 
 void sdm845_mmu_init(void)
 {

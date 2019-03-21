@@ -17,10 +17,12 @@
 #define _SOC_QUALCOMM_SDM845_SYMBOLS_H_
 
 #include <symbols.h>
-#include <types.h>
 
 DECLARE_REGION(ssram)
 DECLARE_REGION(bsram)
 DECLARE_REGION(dram_reserved)
+DECLARE_REGION(dcb);
+DECLARE_REGION(pmic);
+DECLARE_REGION(limits_cfg);
 
 #endif // _SOC_QUALCOMM_SDM845_SYMBOLS_H_

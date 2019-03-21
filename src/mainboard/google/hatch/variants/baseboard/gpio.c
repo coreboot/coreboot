@@ -62,7 +62,10 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI_SCI(GPP_A21, NONE, DEEP, EDGE_SINGLE, INVERT),
 	/* A22 : FPMCU_PCH_BOOT0 */
 	PAD_CFG_GPO(GPP_A22, 0, DEEP),
-	/* A23 : FPMCU_PCH_INT_ODL */
+	/* A23 : FPMCU_PCH_INT_ODL
+	 * TODO Configure it back to invert mode, when
+	 * ITSS IPCx configuration is fixed in FSP.
+	*/
 	PAD_CFG_GPI_APIC(GPP_A23, NONE, PLTRST, LEVEL, NONE),
 
 	/* B0  : CORE_VID0 */

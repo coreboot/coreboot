@@ -243,6 +243,28 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 	}
 }
 
+static void soc_primary_gfx_config_params(FSP_M_CONFIG *m_cfg,
+				const struct soc_intel_skylake_config *config)
+{
+	const struct device *dev;
+
+	dev = dev_find_slot(0, SA_DEVFN_IGD);
+	if (!dev || !dev->enabled) {
+		/*
+		 * If iGPU is disabled or not defined in the devicetree.cb,
+		 * the FSP does not initialize this device
+		 */
+		m_cfg->InternalGfx = 0;
+		if (config->PrimaryDisplay == Display_iGFX)
+			m_cfg->PrimaryDisplay = Display_Auto;
+		else
+			m_cfg->PrimaryDisplay = config->PrimaryDisplay;
+	} else {
+		m_cfg->InternalGfx = 1;
+		m_cfg->PrimaryDisplay = config->PrimaryDisplay;
+	}
+}
+
 void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 {
 	const struct device *dev;
@@ -273,6 +295,9 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 
 	/* Enable SMBus controller based on config */
 	m_cfg->SmbusEnable = config->SmbusEnable;
+
+	/* Set primary graphic device */
+	soc_primary_gfx_config_params(m_cfg, config);
 
 	mainboard_memory_init_params(mupd);
 }

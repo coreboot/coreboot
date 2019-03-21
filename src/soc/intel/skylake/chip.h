@@ -311,7 +311,13 @@ struct soc_intel_skylake_config {
 
 	/* Gfx related */
 	u8 IgdDvmt50PreAlloc;
-	u8 PrimaryDisplay;
+	enum {
+		Display_iGFX,
+		Display_PEG,
+		Display_PCH_PCIe,
+		Display_Auto,
+		Display_Switchable,
+	} PrimaryDisplay;
 	u8 InternalGfx;
 	u8 ApertureSize;
 	u8 SkipExtGfxScan;

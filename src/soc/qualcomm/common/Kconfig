@@ -1,0 +1,5 @@
+
+config QC_SDI_ENABLE
+	bool
+	default n
+	prompt "Debug Build: enable SDI"

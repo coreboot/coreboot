@@ -16,6 +16,7 @@
 #include <soc/rtc_common.h>
 #include <soc/rtc.h>
 #include <soc/pmic_wrap.h>
+#include <timer.h>
 
 /* ensure rtc write success */
 int rtc_busy_wait(void)

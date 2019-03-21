@@ -17,6 +17,7 @@
 #include <soc/infracfg.h>
 #include <soc/pll.h>
 #include <soc/pmic_wrap.h>
+#include <timer.h>
 
 #define PRIORITY_FIELD(x)		((x % 4) * 8)
 #define PRIORITY_IN(id, priority)	(id << PRIORITY_FIELD(priority))

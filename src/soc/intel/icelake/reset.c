@@ -20,7 +20,6 @@
 #include <fsp/util.h>
 #include <soc/intel/common/reset.h>
 #include <string.h>
-#include <timer.h>
 #include <soc/pci_devs.h>
 
 /* Reset Request  */

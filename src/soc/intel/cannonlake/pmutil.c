@@ -38,8 +38,8 @@
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
 #include <soc/smbus.h>
-#include <timer.h>
 #include <security/vboot/vbnv.h>
+
 #include "chip.h"
 
 /*

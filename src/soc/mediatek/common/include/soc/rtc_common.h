@@ -21,7 +21,6 @@
 #include <console/console.h>
 #include <delay.h>
 #include <rtc.h>
-#include <timer.h>
 #include <soc/pmic_wrap_common.h>
 
 #define RTCTAG			"[RTC]"

@@ -35,8 +35,8 @@
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
 #include <soc/smbus.h>
-#include <timer.h>
 #include <security/vboot/vbnv.h>
+
 #include "chip.h"
 
 static uintptr_t read_pmc_mmio_bar(void)

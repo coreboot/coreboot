@@ -37,8 +37,8 @@
 #include <soc/pm.h>
 #include <soc/pmc.h>
 #include <soc/smbus.h>
-#include <timer.h>
 #include <security/vboot/vbnv.h>
+
 #include "chip.h"
 
 /*

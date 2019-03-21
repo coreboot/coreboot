@@ -25,6 +25,7 @@
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>
 #include <soc/storage_test.h>
+#include <timer.h>
 #include <string.h>
 
 #if CONFIG(STORAGE_LOG)

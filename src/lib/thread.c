@@ -12,6 +12,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
+
 #include <stddef.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -19,6 +20,7 @@
 #include <bootstate.h>
 #include <console/console.h>
 #include <thread.h>
+#include <timer.h>
 
 static void idle_thread_init(void);
 

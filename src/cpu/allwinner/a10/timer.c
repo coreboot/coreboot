@@ -17,11 +17,10 @@
  *
  */
 
-#include "timer.h"
-
 #include <device/mmio.h>
 #include <delay.h>
-#include <timer.h>
+
+#include "timer.h"
 
 struct a1x_timer_module *const timer_module = (void *)A1X_TIMER_BASE;
 struct a1x_timer *const tmr0 =

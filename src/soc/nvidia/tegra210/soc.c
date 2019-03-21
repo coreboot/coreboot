@@ -26,7 +26,6 @@
 #include <soc/cpu.h>
 #include <soc/mc.h>
 #include <soc/nvidia/tegra/apbmisc.h>
-#include <timer.h>
 #include <soc/sdram.h>
 #include <soc/sdram_configs.h>
 

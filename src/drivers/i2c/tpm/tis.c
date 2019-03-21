@@ -18,15 +18,14 @@
 #include <string.h>
 #include <assert.h>
 #include <commonlib/endian.h>
+#include <console/console.h>
 #include <delay.h>
 #include <device/i2c_simple.h>
 #include <endian.h>
 #include <lib.h>
 #include <security/tpm/tis.h>
-#include "tpm.h"
-#include <timer.h>
 
-#include <console/console.h>
+#include "tpm.h"
 
 /* global structure for tpm chip data */
 static struct tpm_chip g_chip CAR_GLOBAL;

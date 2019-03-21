@@ -22,11 +22,11 @@
 #include <commonlib/storage.h>
 #include <delay.h>
 #include <endian.h>
+#include <string.h>
+
 #include "sdhci.h"
 #include "sd_mmc.h"
 #include "storage.h"
-#include <string.h>
-#include <timer.h>
 
 static void sdhci_alloc_adma_descs(struct sdhci_ctrlr *sdhci_ctrlr,
 	u32 need_descriptors)

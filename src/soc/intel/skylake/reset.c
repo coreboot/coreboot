@@ -20,7 +20,6 @@
 #include <soc/intel/common/reset.h>
 #include <soc/me.h>
 #include <soc/pm.h>
-#include <timer.h>
 
 static void do_force_global_reset(void)
 {

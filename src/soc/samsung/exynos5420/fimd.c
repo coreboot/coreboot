@@ -24,7 +24,6 @@
 #include <soc/fimd.h>
 #include <soc/periph.h>
 #include <soc/sysreg.h>
-#include <timer.h>
 
 /* fairly useful debugging stuff. */
 #if 0

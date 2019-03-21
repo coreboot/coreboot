@@ -18,7 +18,6 @@
 
 #include <inttypes.h>
 #include <types.h>
-#include <timer.h>
 #include <delay.h>
 
 /* Watchdog functions */

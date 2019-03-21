@@ -22,8 +22,8 @@
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>
 #include <soc/systemagent.h>
+
 #include "systemagent_def.h"
-#include <timer.h>
 
 #if !ENV_RAMSTAGE
 void bootblock_systemagent_early_init(void)

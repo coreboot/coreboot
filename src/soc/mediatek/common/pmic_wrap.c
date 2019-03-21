@@ -16,6 +16,7 @@
 #include <device/mmio.h>
 #include <assert.h>
 #include <soc/pmic_wrap.h>
+#include <timer.h>
 
 u32 wait_for_state_idle(u32 timeout_us, void *wacs_register,
 			void *wacs_vldclr_register, u32 *read_reg)

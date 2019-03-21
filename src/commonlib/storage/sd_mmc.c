@@ -24,11 +24,11 @@
 #include <commonlib/storage.h>
 #include <delay.h>
 #include <endian.h>
+#include <string.h>
+
 #include "mmc.h"
 #include "sd_mmc.h"
 #include "storage.h"
-#include <string.h>
-#include <timer.h>
 
 uint64_t sd_mmc_extract_uint32_bits(const uint32_t *array, int start, int count)
 {

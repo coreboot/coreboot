@@ -19,9 +19,7 @@
 #include <cbfs.h>
 #include <console/console.h>
 #include <string.h>
-#include <timer.h>
 #include <program_loading.h>
-
 #include <soc/iomap.h>
 #include <soc/soc_services.h>
 

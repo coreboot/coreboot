@@ -17,10 +17,8 @@
 #include <types.h>
 #include <console/console.h>
 #include <delay.h>
-#include <timer.h>
 #include <commonlib/helpers.h>
 #include <assert.h>
-
 #include <soc/clock.h>
 
 #define DIV(div) (2*div - 1)

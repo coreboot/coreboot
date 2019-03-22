@@ -161,8 +161,15 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	dev = dev_find_slot(0, PCH_DEVFN_GBE);
 	if (!dev)
 		params->PchLanEnable = 0;
-	else
+	else {
 		params->PchLanEnable = dev->enabled;
+		if (config->s0ix_enable) {
+			params->SlpS0WithGbeSupport = 1;
+			params->PchPmSlpS0VmRuntimeControl = 0;
+			params->PchPmSlpS0Vm070VSupport = 0;
+			params->PchPmSlpS0Vm075VSupport = 0;
+		}
+	}
 
 	/* Audio */
 	params->PchHdaDspEnable = config->PchHdaDspEnable;

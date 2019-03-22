@@ -138,6 +138,15 @@ struct soc_intel_cannonlake_config {
 	uint8_t SataPortsEnable[8];
 	uint8_t SataPortsDevSlp[8];
 
+	/* Enable/Disable SLP_S0 with GBE Support. 0: disable, 1: enable */
+	uint8_t SlpS0WithGbeSupport;
+	/* SLP_S0 Voltage Margining Policy. 0: disable, 1: enable */
+	uint8_t PchPmSlpS0VmRuntimeControl;
+	/* SLP_S0 Voltage Margining  0.70V Policy. 0: disable, 1: enable */
+	uint8_t PchPmSlpS0Vm070VSupport;
+	/* SLP_S0 Voltage Margining  0.75V Policy. 0: disable, 1: enable */
+	uint8_t PchPmSlpS0Vm075VSupport;
+
 	/* Audio related */
 	uint8_t PchHdaDspEnable;
 

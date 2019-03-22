@@ -3,6 +3,7 @@
  *
  * Copyright 2014 The Chromium OS Authors. All rights reserved.
  * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
+ * Copyright (C) 2018-2019 Eltan B.V.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -144,7 +145,7 @@ static bool __cmos_init(bool invalid)
 				cmos_write(0, i);
 		}
 
-		if (cmos_invalid)
+		if (cmos_invalid || invalid)
 			cmos_reset_date();
 
 		printk(BIOS_WARNING, "RTC:%s%s%s%s\n",

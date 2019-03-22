@@ -8,12 +8,14 @@ bootblock-y += spi.c
 bootblock-y += mmu.c
 bootblock-y += gpio.c
 bootblock-y += clock.c
+bootblock-$(CONFIG_DRIVERS_UART) += uart.c
 
 ################################################################################
 verstage-y += timer.c
 verstage-y += spi.c
 verstage-y += gpio.c
 verstage-y += clock.c
+verstage-$(CONFIG_DRIVERS_UART) += uart.c
 
 ################################################################################
 romstage-y += timer.c
@@ -22,6 +24,7 @@ romstage-y += cbmem.c
 romstage-y += gpio.c
 romstage-y += clock.c
 romstage-y += usb.c
+romstage-$(CONFIG_DRIVERS_UART) += uart.c
 
 ################################################################################
 ramstage-y += soc.c
@@ -31,6 +34,7 @@ ramstage-y += cbmem.c
 ramstage-y += gpio.c
 ramstage-y += clock.c
 ramstage-y += usb.c
+ramstage-$(CONFIG_DRIVERS_UART) += uart.c
 
 ################################################################################
 

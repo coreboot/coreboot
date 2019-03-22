@@ -7,6 +7,7 @@ bootblock-y += bootblock.c
 verstage-y += memlayout.ld
 verstage-y += chromeos.c
 verstage-y += reset.c
+verstage-y += verstage.c
 
 romstage-y += memlayout.ld
 romstage-y += chromeos.c

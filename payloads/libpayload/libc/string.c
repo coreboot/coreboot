@@ -517,15 +517,10 @@ unsigned long long int strtoull(const char *ptr, char **endptr, int base)
 	/* Base 16 allows the 0x on front - so skip over it */
 
 	if (base == 16) {
-		if (ptr[0] == '0' && (ptr[1] == 'x' || ptr[1] == 'X'))
+		if (ptr[0] == '0' && (ptr[1] == 'x' || ptr[1] == 'X') &&
+		    _valid(ptr[2], base))
 			ptr += 2;
 	}
-
-	/* If the first character isn't valid, then don't
-	 * bother */
-
-	if (!*ptr || !_valid(*ptr, base))
-		return 0;
 
 	for( ; *ptr && _valid(*ptr, base); ptr++)
 		ret = (ret * base) + _offset(*ptr, base);

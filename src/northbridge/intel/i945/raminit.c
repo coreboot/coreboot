@@ -96,7 +96,6 @@ static void ram_read32(u32 offset)
 	read32((void *)offset);
 }
 
-#if CONFIG(DEBUG_RAM_SETUP)
 void sdram_dump_mchbar_registers(void)
 {
 	int i;
@@ -108,7 +107,6 @@ void sdram_dump_mchbar_registers(void)
 		printk(BIOS_DEBUG, "0x%04x: 0x%08x\n", i, MCHBAR32(i));
 	}
 }
-#endif
 
 static int memclk(void)
 {

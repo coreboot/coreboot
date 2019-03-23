@@ -940,22 +940,8 @@ void i945_late_initialization(int s3resume)
 
 	i945_setup_root_complex_topology();
 
-#if !CONFIG(HAVE_ACPI_RESUME)
-#if CONFIG_DEFAULT_CONSOLE_LOGLEVEL > 8
-#if CONFIG(DEBUG_RAM_SETUP)
-	sdram_dump_mchbar_registers();
-
-	{
-		/* This will not work if TSEG is in place! */
-		u32 tom = pci_read_config32(PCI_DEV(0, 2, 0), BSM);
-
-		printk(BIOS_DEBUG, "TOM: 0x%08x\n", tom);
-		ram_check(0x00000000, 0x000a0000);
-		ram_check(0x00100000, tom);
-	}
-#endif
-#endif
-#endif
+	if (CONFIG(DEBUG_RAM_SETUP))
+		sdram_dump_mchbar_registers();
 
 	MCHBAR16(SSKPD) = 0xCAFE;
 

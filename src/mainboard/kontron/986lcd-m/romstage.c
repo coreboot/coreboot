@@ -279,9 +279,8 @@ void mainboard_romstage_entry(unsigned long bist)
 	/* Enable SPD ROMs and DDR-II DRAM */
 	enable_smbus();
 
-#if CONFIG_DEFAULT_CONSOLE_LOGLEVEL > 8
-	dump_spd_registers();
-#endif
+	if (CONFIG(DEBUG_RAM_SETUP))
+		dump_spd_registers();
 
 	sdram_initialize(s3resume ? 2 : 0, NULL);
 

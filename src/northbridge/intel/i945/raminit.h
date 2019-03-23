@@ -69,8 +69,4 @@ void receive_enable_adjust(struct sys_info *sysinfo);
 void sdram_initialize(int boot_path, const u8 *sdram_addresses);
 int fixup_i945_errata(void);
 void udelay(u32 us);
-
-#if CONFIG(DEBUG_RAM_SETUP)
-void sdram_dump_mchbar_registers(void);
-#endif
 #endif				/* RAMINIT_H */

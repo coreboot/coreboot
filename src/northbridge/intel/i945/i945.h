@@ -375,6 +375,7 @@ void print_pci_devices(void);
 void dump_pci_device(unsigned int dev);
 void dump_pci_devices(void);
 void dump_spd_registers(void);
+void sdram_dump_mchbar_registers(void);
 
 u32 decode_igd_memory_size(u32 gms);
 u32 decode_tseg_size(const u8 esmramc);

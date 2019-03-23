@@ -67,7 +67,7 @@ static inline void test_pattern(unsigned short int idx,
  *
  * @param start   System memory offset, aligned to 128bytes
  */
-static int ram_bitset_nodie(unsigned long start)
+static int ram_bitset_nodie(uintptr_t start)
 {
 	unsigned long addr, value, value2;
 	unsigned short int idx;
@@ -117,7 +117,7 @@ static int ram_bitset_nodie(unsigned long start)
 }
 
 
-void ram_check(unsigned long start, unsigned long stop)
+void ram_check(uintptr_t start)
 {
 	/*
 	 * This is much more of a "Is my DRAM properly configured?"
@@ -131,7 +131,7 @@ void ram_check(unsigned long start, unsigned long stop)
 }
 
 
-int ram_check_nodie(unsigned long start, unsigned long stop)
+int ram_check_nodie(uintptr_t start)
 {
 	int ret;
 	/*
@@ -146,7 +146,7 @@ int ram_check_nodie(unsigned long start, unsigned long stop)
 	return ret;
 }
 
-int ram_check_noprint_nodie(unsigned long start, unsigned long stop)
+int ram_check_noprint_nodie(uintptr_t start)
 {
 	unsigned long addr, value, value2;
 	unsigned short int idx;

@@ -4708,7 +4708,7 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 	if (s3resume && cbmem_wasnot_inited) {
 		u32 reg32;
 		printk(BIOS_ERR, "Failed S3 resume.\n");
-		ram_check(0x100000, 0x200000);
+		ram_check_nodie(1 * MiB);
 
 		/* Clear SLP_TYPE.  */
 		reg32 = inl(DEFAULT_PMBASE + 0x04);

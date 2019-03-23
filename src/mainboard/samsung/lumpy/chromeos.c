@@ -34,46 +34,31 @@
 #include "ec.h"
 #include <ec/smsc/mec1308/ec.h>
 
-#define GPIO_COUNT	5
-
 void fill_lb_gpios(struct lb_gpios *gpios)
 {
 	struct device *dev = pcidev_on_root(0x1f, 0);
 	u16 gen_pmcon_1 = pci_read_config32(dev, GEN_PMCON_1);
-	u8  lid = ec_read(0x83);
+	u8 lid = ec_read(0x83);
 
-	gpios->size = sizeof(*gpios) + (GPIO_COUNT * sizeof(struct lb_gpio));
-	gpios->count = GPIO_COUNT;
+	struct lb_gpio chromeos_gpios[] = {
+		/* Write Protect: GPIO24 = KBC3_SPI_WP# */
+		{GPIO_SPI_WP, ACTIVE_HIGH, get_write_protect_state(),
+		 "write protect"},
 
-	/* Write Protect: GPIO24 = KBC3_SPI_WP# */
-	gpios->gpios[0].port = GPIO_SPI_WP;
-	gpios->gpios[0].polarity = ACTIVE_HIGH;
-	gpios->gpios[0].value = get_write_protect_state();
-	strncpy((char *)gpios->gpios[0].name,"write protect",
-							GPIO_MAX_NAME_LENGTH);
+		/* Recovery: GPIO42 = CHP3_REC_MODE# */
+		{GPIO_REC_MODE, ACTIVE_LOW, !get_recovery_mode_switch(),
+		 "recovery"},
 
-	/* Recovery: GPIO42 = CHP3_REC_MODE# */
-	gpios->gpios[1].port = GPIO_REC_MODE;
-	gpios->gpios[1].polarity = ACTIVE_LOW;
-	gpios->gpios[1].value = !get_recovery_mode_switch();
-	strncpy((char *)gpios->gpios[1].name,"recovery", GPIO_MAX_NAME_LENGTH);
+		{100, ACTIVE_HIGH, lid & 1, "lid"},
 
-	gpios->gpios[2].port = 100;
-	gpios->gpios[2].polarity = ACTIVE_HIGH;
-	gpios->gpios[2].value = lid & 1;
-	strncpy((char *)gpios->gpios[2].name,"lid", GPIO_MAX_NAME_LENGTH);
+		/* Power Button */
+		{101, ACTIVE_LOW, (gen_pmcon_1 >> 9) & 1, "power"},
 
-	/* Power Button */
-	gpios->gpios[3].port = 101;
-	gpios->gpios[3].polarity = ACTIVE_LOW;
-	gpios->gpios[3].value = (gen_pmcon_1 >> 9) & 1;
-	strncpy((char *)gpios->gpios[3].name,"power", GPIO_MAX_NAME_LENGTH);
-
-	/* Did we load the VGA Option ROM? */
-	gpios->gpios[4].port = -1; /* Indicate that this is a pseudo GPIO */
-	gpios->gpios[4].polarity = ACTIVE_HIGH;
-	gpios->gpios[4].value = gfx_get_init_done();
-	strncpy((char *)gpios->gpios[4].name,"oprom", GPIO_MAX_NAME_LENGTH);
+		/* Did we load the VGA Option ROM? */
+		/* -1 indicates that this is a pseudo GPIO */
+		{-1, ACTIVE_HIGH, gfx_get_init_done(), "oprom"},
+	};
+	lb_add_gpios(gpios, chromeos_gpios, ARRAY_SIZE(chromeos_gpios));
 }
 #endif
 

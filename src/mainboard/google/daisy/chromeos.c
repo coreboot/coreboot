@@ -25,44 +25,21 @@
 
 void fill_lb_gpios(struct lb_gpios *gpios)
 {
-	int count = 0;
+	struct lb_gpio chromeos_gpios[] = {
+		/* Write Protect: active low (WP_GPIO) */
+		{EXYNOS5_GPD1, ACTIVE_LOW, gpio_get_value(GPIO_D16),
+		 "write protect"},
 
-	/* Write Protect: active low */
-	gpios->gpios[count].port = EXYNOS5_GPD1;
-	gpios->gpios[count].polarity = ACTIVE_LOW;
-	gpios->gpios[count].value = gpio_get_value(GPIO_D16); // WP_GPIO
-	strncpy((char *)gpios->gpios[count].name, "write protect",
-		GPIO_MAX_NAME_LENGTH);
-	count++;
+		/* Recovery: active low */
+		{-1, ACTIVE_HIGH, get_recovery_mode_switch(), "recovery"},
 
-	/* Recovery: active low */
-	gpios->gpios[count].port = -1;
-	gpios->gpios[count].polarity = ACTIVE_HIGH;
-	gpios->gpios[count].value = get_recovery_mode_switch();
-	strncpy((char *)gpios->gpios[count].name, "recovery",
-		GPIO_MAX_NAME_LENGTH);
-	count++;
+		/* Lid: active high (LID_GPIO) */
+		{EXYNOS5_GPX3, ACTIVE_HIGH, gpio_get_value(GPIO_X35), "lid"},
 
-	/* Lid: active high */
-	gpios->gpios[count].port = EXYNOS5_GPX3;
-	gpios->gpios[count].polarity = ACTIVE_HIGH;
-	gpios->gpios[count].value = gpio_get_value(GPIO_X35); // LID_GPIO
-	strncpy((char *)gpios->gpios[count].name, "lid", GPIO_MAX_NAME_LENGTH);
-	count++;
-
-	/* Power: virtual GPIO active low */
-	gpios->gpios[count].port = EXYNOS5_GPX1;
-	gpios->gpios[count].polarity = ACTIVE_LOW;
-	gpios->gpios[count].value =
-		gpio_get_value(GPIO_X13); // POWER_GPIO
-	strncpy((char *)gpios->gpios[count].name, "power",
-		GPIO_MAX_NAME_LENGTH);
-	count++;
-
-	gpios->size = sizeof(*gpios) + (count * sizeof(struct lb_gpio));
-	gpios->count = count;
-
-	printk(BIOS_ERR, "Added %d GPIOS size %d\n", count, gpios->size);
+		/* Power: virtual GPIO active low (POWER_GPIO) */
+		{EXYNOS5_GPX1, ACTIVE_LOW, gpio_get_value(GPIO_X13), "power"},
+	};
+	lb_add_gpios(gpios, chromeos_gpios, ARRAY_SIZE(chromeos_gpios));
 }
 
 int get_recovery_mode_switch(void)

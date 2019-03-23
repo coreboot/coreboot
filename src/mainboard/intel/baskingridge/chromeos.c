@@ -26,52 +26,25 @@
 #if ENV_RAMSTAGE
 #include <boot/coreboot_tables.h>
 
-#define GPIO_COUNT	6
-
 void fill_lb_gpios(struct lb_gpios *gpios)
 {
-	struct device *dev = pcidev_on_root(0x1f, 0);
-	u16 gpio_base = pci_read_config32(dev, GPIOBASE) & 0xfffe;
+	struct lb_gpio chromeos_gpios[] = {
+		/* Write Protect: GPIO22 */
+		{0, ACTIVE_LOW, get_write_protect_state(), "write protect"},
 
-	if (!gpio_base)
-		return;
+		/* Recovery: GPIO69 - SV_DETECT - J8E3 (silkscreen: J8E2) */
+		{69, ACTIVE_HIGH, get_recovery_mode_switch(), "recovery"},
 
-	u32 gp_lvl  = inl(gpio_base + GP_LVL);
-	u32 gp_lvl3 = inl(gpio_base + GP_LVL3);
+		/* Hard code the lid switch GPIO to open. */
+		{-1, ACTIVE_HIGH, 1, "lid"},
 
-	gpios->size = sizeof(*gpios) + (GPIO_COUNT * sizeof(struct lb_gpio));
-	gpios->count = GPIO_COUNT;
+		/* Power Button */
+		{-1, ACTIVE_HIGH, 0, "power"},
 
-	/* Write Protect: GPIO22 */
-	gpios->gpios[0].port = 0;
-	gpios->gpios[0].polarity = ACTIVE_LOW;
-	gpios->gpios[0].value = (gp_lvl >> 22) & 1;
-	strncpy((char *)gpios->gpios[0].name,"write protect",
-							GPIO_MAX_NAME_LENGTH);
-
-	/* Recovery: GPIO69 - SV_DETECT - J8E3 (silkscreen: J8E2) */
-	gpios->gpios[1].port = 69;
-	gpios->gpios[1].polarity = ACTIVE_HIGH;
-	gpios->gpios[1].value = (gp_lvl3 >> (69-64)) & 1;
-	strncpy((char *)gpios->gpios[1].name,"recovery", GPIO_MAX_NAME_LENGTH);
-
-	/* Hard code the lid switch GPIO to open. */
-	gpios->gpios[3].port = -1;
-	gpios->gpios[3].polarity = ACTIVE_HIGH;
-	gpios->gpios[3].value = 1;
-	strncpy((char *)gpios->gpios[3].name,"lid", GPIO_MAX_NAME_LENGTH);
-
-	/* Power Button */
-	gpios->gpios[4].port = -1;
-	gpios->gpios[4].polarity = ACTIVE_HIGH;
-	gpios->gpios[4].value = 0;
-	strncpy((char *)gpios->gpios[4].name,"power", GPIO_MAX_NAME_LENGTH);
-
-	/* Did we load the VGA option ROM? */
-	gpios->gpios[5].port = -1;
-	gpios->gpios[5].polarity = ACTIVE_HIGH;
-	gpios->gpios[5].value = gfx_get_init_done();
-	strncpy((char *)gpios->gpios[5].name,"oprom", GPIO_MAX_NAME_LENGTH);
+		/* Did we load the VGA option ROM? */
+		{-1, ACTIVE_HIGH, gfx_get_init_done(), "oprom"},
+	};
+	lb_add_gpios(gpios, chromeos_gpios, ARRAY_SIZE(chromeos_gpios));
 }
 #endif
 
@@ -86,7 +59,8 @@ int get_recovery_mode_switch(void)
 
 int get_write_protect_state(void)
 {
-	return 0;
+	/* Write protect is active low, so invert it here */
+	return !get_gpio(22);
 }
 
 static const struct cros_gpio cros_gpios[] = {

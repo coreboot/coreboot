@@ -33,53 +33,28 @@
 #if ENV_RAMSTAGE
 #include <boot/coreboot_tables.h>
 
-#define GPIO_COUNT	6
-
 void fill_lb_gpios(struct lb_gpios *gpios)
 {
-	struct device *dev = pcidev_on_root(0x1f, 0);
-	u16 gpio_base = pci_read_config16(dev, GPIOBASE) & 0xfffe;
+	struct lb_gpio chromeos_gpios[] = {
+		/* Write Protect: GPIO active Low */
+		{WP_GPIO, ACTIVE_LOW, !get_write_protect_state(),
+		 "write protect"},
 
-	int lidswitch = 0;
-	if (!gpio_base)
-		return;
+		/* Recovery: virtual GPIO active high */
+		{-1, ACTIVE_HIGH, get_recovery_mode_switch(), "recovery"},
 
-	gpios->size = sizeof(*gpios) + (GPIO_COUNT * sizeof(struct lb_gpio));
-	gpios->count = GPIO_COUNT;
+		/* lid switch value from EC */
+		{-1, ACTIVE_HIGH, get_lid_switch(), "lid"},
 
-	/* Write Protect: GPIO active Low */
-	gpios->gpios[0].port = WP_GPIO;
-	gpios->gpios[0].polarity = ACTIVE_LOW;
-	gpios->gpios[0].value = !get_write_protect_state();
-	strncpy((char *)gpios->gpios[0].name,"write protect",
-							GPIO_MAX_NAME_LENGTH);
+		/* Power Button - Hardcode Low as power button may still be
+		 * pressed when read here.*/
+		{-1, ACTIVE_HIGH, 0, "power"},
 
-	/* Recovery: virtual GPIO active high */
-	gpios->gpios[1].port = -1;
-	gpios->gpios[1].polarity = ACTIVE_HIGH;
-	gpios->gpios[1].value = get_recovery_mode_switch();
-	strncpy((char *)gpios->gpios[1].name,"recovery", GPIO_MAX_NAME_LENGTH);
-
-	/* lid switch value from EC */
-	gpios->gpios[3].port = -1;
-	gpios->gpios[3].polarity = ACTIVE_HIGH;
-	gpios->gpios[3].value = get_lid_switch();
-	strncpy((char *)gpios->gpios[3].name,"lid", GPIO_MAX_NAME_LENGTH);
-	printk(BIOS_DEBUG,"LID SWITCH FROM EC: %x\n", lidswitch);
-
-	/* Power Button - Hardcode Low as power button may still be pressed
-	   when read here.*/
-	gpios->gpios[4].port = -1;
-	gpios->gpios[4].polarity = ACTIVE_HIGH;
-	gpios->gpios[4].value = 0;
-	strncpy((char *)gpios->gpios[4].name,"power", GPIO_MAX_NAME_LENGTH);
-
-	/* Was VGA Option ROM loaded? */
-	gpios->gpios[5].port = -1; /* Indicate that this is a pseudo GPIO */
-	gpios->gpios[5].polarity = ACTIVE_HIGH;
-	gpios->gpios[5].value = gfx_get_init_done();
-	strncpy((char *)gpios->gpios[5].name,"oprom", GPIO_MAX_NAME_LENGTH);
-
+		/* Was VGA Option ROM loaded? */
+		/* -1 indicates that this is a pseudo GPIO */
+		{-1, ACTIVE_HIGH, gfx_get_init_done(), "oprom"},
+	};
+	lb_add_gpios(gpios, chromeos_gpios, ARRAY_SIZE(chromeos_gpios));
 }
 #endif
 

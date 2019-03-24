@@ -19,6 +19,9 @@
 #include <device/pci_ops.h>
 #include <device/pci_def.h>
 #include <northbridge/intel/sandybridge/sandybridge.h>
+#include <southbridge/intel/common/rcba.h>
+#include <southbridge/intel/common/pmbase.h>
+
 #include "pch.h"
 
 void early_usb_init(const struct southbridge_usb_port *portmap)
@@ -32,46 +35,39 @@ void early_usb_init(const struct southbridge_usb_port *portmap)
 				 0x2000094a, 0x2000035f, 0x20000f53, 0x20000357,
 				 0x20000353 };
 	int i;
-	/* Activate PMBAR.  */
-	pci_write_config32(PCI_DEV(0, 0x1f, 0), PMBASE, DEFAULT_PMBASE | 1);
-	pci_write_config32(PCI_DEV(0, 0x1f, 0), PMBASE + 4, 0);
-	/* Enable ACPI BAR */
-	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0x44 /* ACPI_CNTL */, 0x80);
 
 	/* Unlock registers.  */
-	outw(inw(DEFAULT_PMBASE | UPRWC) | UPRWC_WR_EN,
-	     DEFAULT_PMBASE | UPRWC);
+	write_pmbase16(UPRWC, read_pmbase16(UPRWC) | UPRWC_WR_EN);
 
 	for (i = 0; i < 14; i++)
-		write32(DEFAULT_RCBABASE + (0x3500 + 4 * i),
-			 currents[portmap[i].current]);
+		RCBA32(0x3500 + 4 * i) = currents[portmap[i].current];
 	for (i = 0; i < 10; i++)
-		write32(DEFAULT_RCBABASE + (0x3538 + 4 * i), 0);
+		RCBA32(0x3538 + 4 * i) = 0;
 
 	for (i = 0; i < 8; i++)
-		write32(DEFAULT_RCBABASE + (0x3560 + 4 * i), rcba_dump[i]);
+		RCBA32(0x3560 + 4 * i) = rcba_dump[i];
 	for (i = 0; i < 8; i++)
-		write32(DEFAULT_RCBABASE + (0x3580 + 4 * i), 0);
+		RCBA32(0x3580 + 4 * i) = 0;
 	reg32 = 0;
 	for (i = 0; i < 14; i++)
 		if (!portmap[i].enabled)
 			reg32 |= (1 << i);
-	write32(DEFAULT_RCBABASE + USBPDO, reg32);
+	RCBA32(USBPDO) = reg32;
 	reg32 = 0;
 	for (i = 0; i < 8; i++)
 		if (portmap[i].enabled && portmap[i].oc_pin >= 0)
 			reg32 |= (1 << (i + 8 * portmap[i].oc_pin));
-	write32(DEFAULT_RCBABASE + USBOCM1, reg32);
+	RCBA32(USBOCM1) = reg32;
 	reg32 = 0;
 	for (i = 8; i < 14; i++)
 		if (portmap[i].enabled && portmap[i].oc_pin >= 4)
 			reg32 |= (1 << (i - 8 + 8 * (portmap[i].oc_pin - 4)));
-	write32(DEFAULT_RCBABASE + USBOCM2, reg32);
+	RCBA32(USBOCM2) = reg32;
 	for (i = 0; i < 22; i++)
-		write32(DEFAULT_RCBABASE + (0x35a8 + 4 * i), 0);
+		RCBA32(0x35a8 + 4 * i) = 0;
 
-	pci_write_config32(PCI_DEV(0, 0x14, 0), 0xe4, 0x00000000);
+	pci_write_config32(PCH_XHCI_DEV, 0xe4, 0x00000000);
 
 	/* Relock registers.  */
-	outw(0, DEFAULT_PMBASE | UPRWC);
+	write_pmbase16(UPRWC, 0);
 }

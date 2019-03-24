@@ -116,6 +116,16 @@ config NO_GFX_INIT
 
 endchoice
 
+config ONBOARD_VGA_IS_PRIMARY
+	bool "Use onboard VGA as primary video device"
+	default n
+	depends on PCI
+	help
+	  This option lets you select which VGA device will be used
+	  to decode legacy VGA cycles. Not all chipsets implement this
+	  however. If not selected, the last adapter found will be used,
+	  else the onboard adapter is used.
+
 config S3_VGA_ROM_RUN
 	bool "Re-run VGA Option ROMs on S3 resume"
 	default y

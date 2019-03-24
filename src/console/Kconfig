@@ -176,13 +176,6 @@ config CONSOLE_USB
 
 # TODO: Deps?
 # TODO: Improve description.
-config ONBOARD_VGA_IS_PRIMARY
-	bool "Use onboard VGA as primary video device"
-	default n
-	depends on PCI
-	help
-	  If not selected, the last adapter found will be used.
-
 config CONSOLE_NE2K
 	bool "Network console over NE2000 compatible Ethernet adapter"
 	default n

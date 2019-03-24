@@ -19,6 +19,7 @@
 #include <device/pci_ops.h>
 #include <device/device.h>
 #include <device/pci_def.h>
+#include <southbridge/intel/common/pmclib.h>
 #include <elog.h>
 #include "pch.h"
 #include "chip.h"
@@ -65,26 +66,6 @@ static void pch_generic_setup(void)
 	RCBA32(GCS) = RCBA32(GCS) | (1 << 5);	/* No reset */
 	outw((1 << 11), DEFAULT_PMBASE | 0x60 | 0x08);	/* halt timer */
 	printk(BIOS_DEBUG, " done.\n");
-}
-
-static int sleep_type_s3(void)
-{
-	u32 pm1_cnt;
-	u16 pm1_sts;
-	int is_s3 = 0;
-
-	/* Check PM1_STS[15] to see if we are waking from Sx */
-	pm1_sts = inw(DEFAULT_PMBASE + PM1_STS);
-	if (pm1_sts & WAK_STS) {
-		/* Read PM1_CNT[12:10] to determine which Sx state */
-		pm1_cnt = inl(DEFAULT_PMBASE + PM1_CNT);
-		if (((pm1_cnt >> 10) & 7) == SLP_TYP_S3) {
-			/* Clear SLP_TYPE. */
-			outl(pm1_cnt & ~(7 << 10), DEFAULT_PMBASE + PM1_CNT);
-			is_s3 = 1;
-		}
-	}
-	return is_s3;
 }
 
 void pch_enable_lpc(void)
@@ -148,7 +129,7 @@ int early_pch_init(const void *gpio_map,
 	/* Mainboard RCBA settings */
 	pch_config_rcba(rcba_config);
 
-	wake_from_s3 = sleep_type_s3();
+	wake_from_s3 = southbridge_detect_s3_resume();
 
 #if CONFIG(ELOG_BOOT_COUNT)
 	if (!wake_from_s3)

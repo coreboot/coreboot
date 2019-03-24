@@ -27,20 +27,6 @@
 
 static void sandybridge_setup_bars(void)
 {
-	/* Setting up Southbridge. In the northbridge code. */
-	printk(BIOS_DEBUG, "Setting up static southbridge registers...");
-	pci_write_config32(PCH_LPC_DEV, RCBA, (uintptr_t)DEFAULT_RCBA | 1);
-
-	pci_write_config32(PCH_LPC_DEV, PMBASE, DEFAULT_PMBASE | 1);
-	pci_write_config8(PCH_LPC_DEV, ACPI_CNTL, 0x80); /* Enable ACPI BAR */
-
-	printk(BIOS_DEBUG, " done.\n");
-
-	printk(BIOS_DEBUG, "Disabling Watchdog reboot...");
-	RCBA32(GCS) = RCBA32(GCS) | (1 << 5);	/* No reset */
-	outw((1 << 11), DEFAULT_PMBASE | 0x60 | 0x08);	/* halt timer */
-	printk(BIOS_DEBUG, " done.\n");
-
 	printk(BIOS_DEBUG, "Setting up static northbridge registers...");
 	/* Set up all hardcoded northbridge BARs */
 	pci_write_config32(PCI_DEV(0, 0x00, 0), EPBAR, DEFAULT_EPBAR | 1);

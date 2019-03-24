@@ -18,6 +18,9 @@
 #include <arch/cbfs.h>
 #include <ip_checksum.h>
 #include <device/pci_def.h>
+#include <southbridge/intel/common/gpio.h>
+#include <southbridge/intel/common/pmbase.h>
+
 /* For DMI bar.  */
 #include <northbridge/intel/sandybridge/sandybridge.h>
 
@@ -366,4 +369,35 @@ early_pch_init_native (void)
 	write_iobp(0xec000780, 0x02000020);
 
 	init_dmi();
+}
+
+static void pch_enable_bars(void)
+{
+	pci_write_config32(PCH_LPC_DEV, RCBA, (uintptr_t)DEFAULT_RCBA | 1);
+
+	pci_write_config32(PCH_LPC_DEV, PMBASE, DEFAULT_PMBASE | 1);
+
+	pci_write_config8(PCH_LPC_DEV, ACPI_CNTL, 0x80);
+
+	pci_write_config32(PCH_LPC_DEV, GPIO_BASE, DEFAULT_GPIOBASE | 1);
+
+	/* Enable GPIO functionality. */
+	pci_write_config8(PCH_LPC_DEV, GPIO_CNTL, 0x10);
+}
+
+static void pch_generic_setup(void)
+{
+	RCBA32(GCS) = RCBA32(GCS) | (1 << 5);	/* No reset */
+	write_pmbase16(TCO1_CNT, 1 << 11);	/* halt timer */
+}
+
+void early_pch_init(void)
+{
+	pch_enable_lpc();
+
+	pch_enable_bars();
+
+	pch_generic_setup();
+
+	setup_pch_gpios(&mainboard_gpio_map);
 }

@@ -28,10 +28,9 @@
 #include <device/device.h>
 #include <northbridge/intel/sandybridge/chip.h>
 #include <southbridge/intel/bd82x6x/pch.h>
-#include <southbridge/intel/common/gpio.h>
 #include <southbridge/intel/common/pmclib.h>
 
-static void early_pch_init(void)
+static void early_pch_reset_pmcon(void)
 {
 	u8 reg8;
 
@@ -56,13 +55,8 @@ void mainboard_romstage_entry(unsigned long bist)
 	if (bist == 0)
 		enable_lapic();
 
-	pch_enable_lpc();
-
-	/* Enable GPIOs */
-	pci_write_config32(PCH_LPC_DEV, GPIO_BASE, DEFAULT_GPIOBASE|1);
-	pci_write_config8(PCH_LPC_DEV, GPIO_CNTL, 0x10);
-
-	setup_pch_gpios(&mainboard_gpio_map);
+	/* Init LPC, GPIO, BARs, disable watchdog ... */
+	early_pch_init();
 
 	/* Initialize superio */
 	mainboard_config_superio();
@@ -101,7 +95,7 @@ void mainboard_romstage_entry(unsigned long bist)
 
 	post_code(0x3b);
 	/* Perform some initialization that must run before stage2 */
-	early_pch_init();
+	early_pch_reset_pmcon();
 	post_code(0x3c);
 
 	southbridge_configure_default_intmap();

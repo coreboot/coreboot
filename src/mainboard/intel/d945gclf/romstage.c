@@ -26,6 +26,7 @@
 #include <northbridge/intel/i945/i945.h>
 #include <northbridge/intel/i945/raminit.h>
 #include <southbridge/intel/i82801gx/i82801gx.h>
+#include <southbridge/intel/common/pmclib.h>
 
 #define SERIAL_DEV PNP_DEV(0x2e, LPC47M15X_SP1)
 #define PME_DEV PNP_DEV(0x2e, LPC47M15X_PME)

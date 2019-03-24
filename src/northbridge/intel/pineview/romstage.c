@@ -26,6 +26,7 @@
 #include <romstage_handoff.h>
 #include <southbridge/intel/i82801gx/i82801gx.h>
 #include <southbridge/intel/common/gpio.h>
+#include <southbridge/intel/common/pmclib.h>
 #include <cpu/intel/romstage.h>
 #include <cpu/x86/bist.h>
 #include <cpu/x86/lapic.h>

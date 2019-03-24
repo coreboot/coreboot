@@ -34,6 +34,6 @@ ramstage-y += watchdog.c
 
 smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c
 
-romstage-y += early_smbus.c early_lpc.c
+romstage-y += early_smbus.c
 
 endif

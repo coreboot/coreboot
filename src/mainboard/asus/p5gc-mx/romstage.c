@@ -32,6 +32,7 @@
 #include <northbridge/intel/i945/i945.h>
 #include <northbridge/intel/i945/raminit.h>
 #include <southbridge/intel/i82801gx/i82801gx.h>
+#include <southbridge/intel/common/pmclib.h>
 #include <cpu/x86/msr.h>
 #include <cpu/intel/speedstep.h>
 #include <arch/cpu.h>

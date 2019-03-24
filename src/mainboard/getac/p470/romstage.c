@@ -28,6 +28,7 @@
 #include <northbridge/intel/i945/i945.h>
 #include <northbridge/intel/i945/raminit.h>
 #include <southbridge/intel/i82801gx/i82801gx.h>
+#include <southbridge/intel/common/pmclib.h>
 #include "option_table.h"
 
 static void setup_special_ich7_gpios(void)

@@ -32,6 +32,7 @@
 #include <northbridge/intel/i945/raminit.h>
 #include <southbridge/intel/i82801gx/i82801gx.h>
 #include <southbridge/intel/common/gpio.h>
+#include <southbridge/intel/common/pmclib.h>
 #include "dock.h"
 
 static void ich7_enable_lpc(void)

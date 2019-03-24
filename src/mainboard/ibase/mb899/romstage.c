@@ -31,6 +31,7 @@
 #include <southbridge/intel/i82801gx/i82801gx.h>
 #include <superio/winbond/common/winbond.h>
 #include <superio/winbond/w83627ehg/w83627ehg.h>
+#include <southbridge/intel/common/pmclib.h>
 
 #define SERIAL_DEV PNP_DEV(0x4e, W83627EHG_SP1)
 #define SUPERIO_DEV PNP_DEV(0x4e, 0)

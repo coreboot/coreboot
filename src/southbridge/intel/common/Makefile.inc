@@ -25,6 +25,8 @@ postcar-$(CONFIG_SOUTHBRIDGE_INTEL_COMMON_RESET) += reset.c
 romstage-$(CONFIG_SOUTHBRIDGE_INTEL_COMMON_SMBUS) += smbus.c
 ramstage-$(CONFIG_SOUTHBRIDGE_INTEL_COMMON_SMBUS) += smbus.c
 
+romstage-$(CONFIG_SOUTHBRIDGE_INTEL_COMMON_PMCLIB) += pmclib.c
+
 ifeq ($(CONFIG_SOUTHBRIDGE_INTEL_COMMON),y)
 
 romstage-y += pmbase.c

@@ -43,7 +43,6 @@ mrc.bin-position := 0xfffa0000
 mrc.bin-type := mrc
 endif
 romstage-y += romstage.c
-romstage-y += iommu.c
 romstage-y += early_init.c
 romstage-y += ../../../arch/x86/walkcbfs.S
 

@@ -2,7 +2,9 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2007-2010 coresystems GmbH
+ * Copyright (C) 2015 secunet Security Networks AG
  * Copyright (C) 2011 Google Inc
+ * Copyright (C) 2018 Patrick Rudolph <patrick.rudolph@9elements.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,6 +19,8 @@
 #include <stdlib.h>
 #include <console/console.h>
 #include <arch/io.h>
+#include <device/mmio.h>
+#include <device/device.h>
 #include <device/pci_ops.h>
 #include <device/pci_def.h>
 #include <pc80/mc146818rtc.h>
@@ -24,6 +28,41 @@
 #include <types.h>
 
 #include "sandybridge.h"
+
+static void systemagent_vtd_init(void)
+{
+	const u32 capid0_a = pci_read_config32(PCI_DEV(0, 0, 0), CAPID0_A);
+	if (capid0_a & (1 << 23))
+		return;
+
+	/* setup BARs */
+	MCHBAR32(0x5404) = IOMMU_BASE1 >> 32;
+	MCHBAR32(0x5400) = IOMMU_BASE1 | 1;
+	MCHBAR32(0x5414) = IOMMU_BASE2 >> 32;
+	MCHBAR32(0x5410) = IOMMU_BASE2 | 1;
+
+	/* lock policies */
+	write32((void *)(IOMMU_BASE1 + 0xff0), 0x80000000);
+
+	const struct device *const azalia = pcidev_on_root(0x1b, 0);
+	if (azalia && azalia->enabled) {
+		write32((void *)(IOMMU_BASE2 + 0xff0), 0x20000000);
+		write32((void *)(IOMMU_BASE2 + 0xff0), 0xa0000000);
+	} else {
+		write32((void *)(IOMMU_BASE2 + 0xff0), 0x80000000);
+	}
+}
+
+static void enable_pam_region(void)
+{
+	pci_write_config8(PCI_DEV(0, 0x00, 0), PAM0, 0x30);
+	pci_write_config8(PCI_DEV(0, 0x00, 0), PAM1, 0x33);
+	pci_write_config8(PCI_DEV(0, 0x00, 0), PAM2, 0x33);
+	pci_write_config8(PCI_DEV(0, 0x00, 0), PAM3, 0x33);
+	pci_write_config8(PCI_DEV(0, 0x00, 0), PAM4, 0x33);
+	pci_write_config8(PCI_DEV(0, 0x00, 0), PAM5, 0x33);
+	pci_write_config8(PCI_DEV(0, 0x00, 0), PAM6, 0x33);
+}
 
 static void sandybridge_setup_bars(void)
 {
@@ -35,15 +74,6 @@ static void sandybridge_setup_bars(void)
 	pci_write_config32(PCI_DEV(0, 0x00, 0), MCHBAR + 4, (0LL+(uintptr_t)DEFAULT_MCHBAR) >> 32);
 	pci_write_config32(PCI_DEV(0, 0x00, 0), DMIBAR, (uintptr_t)DEFAULT_DMIBAR | 1);
 	pci_write_config32(PCI_DEV(0, 0x00, 0), DMIBAR + 4, (0LL+(uintptr_t)DEFAULT_DMIBAR) >> 32);
-
-	/* Set C0000-FFFFF to access RAM on both reads and writes */
-	pci_write_config8(PCI_DEV(0, 0x00, 0), PAM0, 0x30);
-	pci_write_config8(PCI_DEV(0, 0x00, 0), PAM1, 0x33);
-	pci_write_config8(PCI_DEV(0, 0x00, 0), PAM2, 0x33);
-	pci_write_config8(PCI_DEV(0, 0x00, 0), PAM3, 0x33);
-	pci_write_config8(PCI_DEV(0, 0x00, 0), PAM4, 0x33);
-	pci_write_config8(PCI_DEV(0, 0x00, 0), PAM5, 0x33);
-	pci_write_config8(PCI_DEV(0, 0x00, 0), PAM6, 0x33);
 
 	printk(BIOS_DEBUG, " done\n");
 }
@@ -156,7 +186,7 @@ static void start_peg_link_training(void)
 	}
 }
 
-void sandybridge_early_initialization(void)
+void systemagent_early_init(void)
 {
 	u32 capid0_a;
 	u32 deven;
@@ -179,8 +209,11 @@ void sandybridge_early_initialization(void)
 	/* Setup all BARs required for early PCIe and raminit */
 	sandybridge_setup_bars();
 
+	/* Set C0000-FFFFF to access RAM on both reads and writes */
+	enable_pam_region();
+
 	/* Setup IOMMU BARs */
-	sandybridge_init_iommu();
+	systemagent_vtd_init();
 
 	/* Device Enable, don't touch PEG bits */
 	deven = pci_read_config32(PCI_DEV(0, 0, 0), DEVEN) | DEVEN_IGD;

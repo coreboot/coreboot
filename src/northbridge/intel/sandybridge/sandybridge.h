@@ -216,7 +216,7 @@ static inline void barrier(void) { asm("" ::: "memory"); }
 void intel_sandybridge_finalize_smm(void);
 #else /* !__SMM__ */
 int bridge_silicon_revision(void);
-void sandybridge_early_initialization(void);
+void systemagent_early_init(void);
 void sandybridge_init_iommu(void);
 void sandybridge_late_initialization(void);
 void northbridge_romstage_finalize(int s3resume);

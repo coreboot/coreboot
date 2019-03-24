@@ -29,6 +29,7 @@
 #include <mrc_cache.h>
 #include <southbridge/intel/bd82x6x/me.h>
 #include <southbridge/intel/common/smbus.h>
+#include <southbridge/intel/bd82x6x/pch.h>
 #include <cpu/x86/msr.h>
 
 #include "raminit_native.h"

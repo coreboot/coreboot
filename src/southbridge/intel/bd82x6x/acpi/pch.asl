@@ -15,6 +15,7 @@
  */
 
 /* Intel Cougar Point PCH support */
+#include <southbridge/intel/bd82x6x/pch.h>
 
 Scope(\)
 {

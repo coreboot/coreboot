@@ -23,6 +23,7 @@
 #else
 #include <northbridge/intel/sandybridge/raminit.h>
 #endif
+#include <southbridge/intel/bd82x6x/pch.h>
 
 #if !CONFIG(USE_NATIVE_RAMINIT)
 void mainboard_fill_pei_data(struct pei_data *pei_data)

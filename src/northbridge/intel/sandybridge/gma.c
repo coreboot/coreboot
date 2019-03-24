@@ -25,6 +25,7 @@
 #include <drivers/intel/gma/libgfxinit.h>
 #include <southbridge/intel/bd82x6x/nvs.h>
 #include <drivers/intel/gma/opregion.h>
+#include <southbridge/intel/bd82x6x/pch.h>
 #include <cbmem.h>
 
 #include "chip.h"

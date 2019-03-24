@@ -52,8 +52,6 @@
 #define IOMMU_BASE1		0xfed90000ULL
 #define IOMMU_BASE2		0xfed91000ULL
 
-#include <southbridge/intel/bd82x6x/pch.h>
-
 /* Everything below this line is ignored in the DSDT */
 #ifndef __ACPI__
 #include <cpu/intel/model_206ax/model_206ax.h>

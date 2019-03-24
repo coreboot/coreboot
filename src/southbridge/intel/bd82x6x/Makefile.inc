@@ -38,7 +38,7 @@ ramstage-$(CONFIG_ELOG) += elog.c
 smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c me.c me_8.x.c pch.c
 
 romstage-y += early_smbus.c me_status.c
-romstage-y += early_spi.c early_pch_common.c
+romstage-y += early_spi.c
 romstage-y += early_rcba.c
 
 ifeq ($(CONFIG_USE_NATIVE_RAMINIT),y)
@@ -46,7 +46,5 @@ romstage-y += early_thermal.c early_pch.c early_me.c early_usb.c
 else
 romstage-y += early_me_mrc.c early_usb_mrc.c
 endif
-
-ramstage-y += early_pch_common.c
 
 endif

@@ -310,6 +310,8 @@ early_usb_init (const struct southbridge_usb_port *portmap);
 #define IOTR2		0x1e90	/* 64bit */
 #define IOTR3		0x1e98	/* 64bit */
 
+#define  VCNEGPND	2
+
 #define TCTL		0x3000	/*  8bit */
 
 #define NOINT		0

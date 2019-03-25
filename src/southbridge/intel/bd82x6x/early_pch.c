@@ -20,6 +20,7 @@
 #include <device/pci_def.h>
 #include <southbridge/intel/common/gpio.h>
 #include <southbridge/intel/common/pmbase.h>
+#include <console/console.h>
 
 /* For DMI bar.  */
 #include <northbridge/intel/sandybridge/sandybridge.h>
@@ -68,36 +69,29 @@ write_iobp(u32 address, u32 val)
 	read8(DEFAULT_RCBA + IOBPS); // call wait_iobp() instead here?
 }
 
-
 static void
 init_dmi (void)
 {
+	volatile u32 tmp;
 	int i;
 
-	write32 (DEFAULT_DMIBAR + 0x0914,
-		 read32 (DEFAULT_DMIBAR + 0x0914) | 0x80000000);
-	write32 (DEFAULT_DMIBAR + 0x0934,
-		 read32 (DEFAULT_DMIBAR + 0x0934) | 0x80000000);
-	for (i = 0; i < 4; i++)
-	{
-		write32 (DEFAULT_DMIBAR + 0x0a00 + (i << 4),
-			 read32 (DEFAULT_DMIBAR + 0x0a00 + (i << 4)) & 0xf3ffffff);
-		write32 (DEFAULT_DMIBAR + 0x0a04 + (i << 4),
-			 read32 (DEFAULT_DMIBAR + 0x0a04 + (i << 4)) | 0x800);
+	DMIBAR32(0x0914) |= 0x80000000;
+	DMIBAR32(0x0934) |= 0x80000000;
+
+	for (i = 0; i < 4; i++) {
+		DMIBAR32(0x0a00 + (i << 4)) &= 0xf3ffffff;
+		DMIBAR32(0x0a04 + (i << 4)) |= 0x800;
 	}
-	write32 (DEFAULT_DMIBAR + 0x0c30, (read32 (DEFAULT_DMIBAR + 0x0c30)
-					   & 0xfffffff) | 0x40000000);
-	for (i = 0; i < 2; i++)
-	{
-		write32 (DEFAULT_DMIBAR + 0x0904 + (i << 5),
-			 read32 (DEFAULT_DMIBAR + 0x0904 + (i << 5)) & 0xfe3fffff);
-		write32 (DEFAULT_DMIBAR + 0x090c + (i << 5),
-			 read32 (DEFAULT_DMIBAR + 0x090c + (i << 5)) & 0xfff1ffff);
+	DMIBAR32(0x0c30) = (DMIBAR32(0x0c30) & 0xfffffff) | 0x40000000;
+
+	for (i = 0; i < 2; i++) {
+		DMIBAR32(0x0904 + (i << 5)) &= 0xfe3fffff;
+		DMIBAR32(0x090c + (i << 5)) &= 0xfff1ffff;
 	}
-	write32 (DEFAULT_DMIBAR + 0x090c,
-		 read32 (DEFAULT_DMIBAR + 0x090c) & 0xfe1fffff);
-	write32 (DEFAULT_DMIBAR + 0x092c,
-		 read32 (DEFAULT_DMIBAR + 0x092c) & 0xfe1fffff);
+
+	DMIBAR32(0x090c) &= 0xfe1fffff;
+	DMIBAR32(0x092c) &= 0xfe1fffff;
+
 	read32 (DEFAULT_DMIBAR + 0x0904);	// !!! = 0x7a1842ec
 	write32 (DEFAULT_DMIBAR + 0x0904, 0x7a1842ec);
 	read32 (DEFAULT_DMIBAR + 0x090c);	// !!! = 0x00000208
@@ -226,33 +220,54 @@ init_dmi (void)
 	write32 (DEFAULT_DMIBAR + 0x0934, 0x98200280);
 	read32 (DEFAULT_DMIBAR + 0x022c);	// !!! = 0x00c26460
 	write32 (DEFAULT_DMIBAR + 0x022c, 0x00c2403c);
-	read8 (DEFAULT_RCBA + 0x21a4);	// !!! = 0x42
 
-	read32 (DEFAULT_RCBA + 0x21a4);	// !!! = 0x00012c42
-	read32 (DEFAULT_RCBA + 0x2340);	// !!! = 0x0013001b
-	write32 (DEFAULT_RCBA + 0x2340, 0x003a001b);
-	read8 (DEFAULT_RCBA + 0x21b0);	// !!! = 0x01
-	write8 (DEFAULT_RCBA + 0x21b0, 0x02);
-	read32 (DEFAULT_DMIBAR + 0x0084);	// !!! = 0x0041ac41
-	write32 (DEFAULT_DMIBAR + 0x0084, 0x0041ac42);
-	read8 (DEFAULT_DMIBAR + 0x0088);	// !!! = 0x00
-	write8 (DEFAULT_DMIBAR + 0x0088, 0x20);
-	read16 (DEFAULT_DMIBAR + 0x008a);	// !!! = 0x0041
-	read8 (DEFAULT_DMIBAR + 0x0088);	// !!! = 0x00
-	write8 (DEFAULT_DMIBAR + 0x0088, 0x20);
-	read16 (DEFAULT_DMIBAR + 0x008a);	// !!! = 0x0042
-	read16 (DEFAULT_DMIBAR + 0x008a);	// !!! = 0x0042
+	/* Link Capabilities Register */
+	RCBA32(0x21a4) = (RCBA32(0x21a4) & ~0x3fc00) |
+			 (3 << 10) | // L0s and L1 entry supported
+			 (2 << 12) | // L0s 128 ns to less than 256 ns
+			 (2 << 15);  // L1 2 us to less than 4 us
 
-	read32 (DEFAULT_DMIBAR + 0x0014);	// !!! = 0x8000007f
-	write32 (DEFAULT_DMIBAR + 0x0014, 0x80000019);
-	read32 (DEFAULT_DMIBAR + 0x0020);	// !!! = 0x01000000
-	write32 (DEFAULT_DMIBAR + 0x0020, 0x81000022);
-	read32 (DEFAULT_DMIBAR + 0x002c);	// !!! = 0x02000000
-	write32 (DEFAULT_DMIBAR + 0x002c, 0x82000044);
-	read32 (DEFAULT_DMIBAR + 0x0038);	// !!! = 0x07000080
-	write32 (DEFAULT_DMIBAR + 0x0038, 0x87000080);
-	read8 (DEFAULT_DMIBAR + 0x0004);	// !!! = 0x00
-	write8 (DEFAULT_DMIBAR + 0x0004, 0x01);
+	RCBA32(0x2340) = (RCBA32(0x2340) & ~0xff0000) | (0x3a << 16);
+	RCBA8(0x21b0) = (RCBA8(0x21b0) & ~0xf) | 2;
+
+	/* Write once settings. */
+	DMIBAR32(DMILCAP) = (DMIBAR32(DMILCAP) & ~0x3f00f) |
+			    (2 << 0) |  // 5GT/s
+			    (2 << 12) | // L0s 128 ns to less than 256 ns
+			    (2 << 15);  // L1 2 us to less than 4 us
+
+	DMIBAR8(DMILCTL) |= 0x20; // Retrain link
+	while (DMIBAR16(DMILSTS) & TXTRN)
+		;
+
+	DMIBAR8(DMILCTL) |= 0x20; // Retrain link
+	while (DMIBAR16(DMILSTS) & TXTRN)
+		;
+
+	const u8 w = (DMIBAR16(DMILSTS) >> 4) & 0x1f;
+	const u16 t = (DMIBAR16(DMILSTS) & 0xf) * 2500;
+
+	printk(BIOS_DEBUG, "DMI: Running at X%x @ %dMT/s\n", w, t);
+	/*
+	 * Virtual Channel resources must match settings in RCBA!
+	 *
+	 * Channel Vp and Vm are documented in
+	 * "Desktop 4th Generation Intel Core Processor Family, Desktop Intel
+	 * Pentium Processor Family, and Desktop Intel Celeron Processor Family
+	 * Vol. 2"
+	 */
+
+	/* Channel 0: Enable, Set ID to 0, map TC0 and TC3 and TC4 to VC0. */
+	DMIBAR32(DMIVC0RCTL) = (1 << 31) | (0 << 24) | (0x0c << 1) | 1;
+	/* Channel 1: Enable, Set ID to 1, map TC1 and TC5 to VC1. */
+	DMIBAR32(DMIVC1RCTL) = (1 << 31) | (1 << 24) | (0x11 << 1);
+	/* Channel p: Enable, Set ID to 2, map TC2 and TC6 to VCp  */
+	DMIBAR32(DMIVCPRCTL) = (1 << 31) | (2 << 24) | (0x22 << 1);
+	/* Channel m: Enable, Set ID to 0, map TC7 to VCm */
+	DMIBAR32(DMIVCMRCTL) = (1 << 31) | (7 << 24) | (0x40 << 1);
+
+	/* Set Extended VC Count (EVCC) to 1 as Channel 1 is active. */
+	DMIBAR8(DMIPVCCAP1) |= 1;
 
 	read32 (DEFAULT_RCBA + 0x0050);	// !!! = 0x01200654
 	write32 (DEFAULT_RCBA + 0x0050, 0x01200654);
@@ -261,27 +276,76 @@ init_dmi (void)
 	read32 (DEFAULT_RCBA + 0x0050);	// !!! = 0x012a0654
 	read8 (DEFAULT_RCBA + 0x1114);	// !!! = 0x00
 	write8 (DEFAULT_RCBA + 0x1114, 0x05);
-	read32 (DEFAULT_RCBA + 0x2014);	// !!! = 0x80000011
-	write32 (DEFAULT_RCBA + 0x2014, 0x80000019);
-	read32 (DEFAULT_RCBA + 0x2020);	// !!! = 0x00000000
-	write32 (DEFAULT_RCBA + 0x2020, 0x81000022);
-	read32 (DEFAULT_RCBA + 0x2020);	// !!! = 0x81000022
-	read32 (DEFAULT_RCBA + 0x2030);	// !!! = 0x00000000
-	write32 (DEFAULT_RCBA + 0x2030, 0x82000044);
-	read32 (DEFAULT_RCBA + 0x2030);	// !!! = 0x82000044
-	read32 (DEFAULT_RCBA + 0x2040);	// !!! = 0x00000000
-	write32 (DEFAULT_RCBA + 0x2040, 0x87000080);
-	read32 (DEFAULT_RCBA + 0x0050);	// !!! = 0x012a0654
-	write32 (DEFAULT_RCBA + 0x0050, 0x812a0654);
-	read32 (DEFAULT_RCBA + 0x0050);	// !!! = 0x812a0654
-	read16 (DEFAULT_RCBA + 0x201a);	// !!! = 0x0000
-	read16 (DEFAULT_RCBA + 0x2026);	// !!! = 0x0000
-	read16 (DEFAULT_RCBA + 0x2036);	// !!! = 0x0000
-	read16 (DEFAULT_RCBA + 0x2046);	// !!! = 0x0000
-	read16 (DEFAULT_DMIBAR + 0x001a);	// !!! = 0x0000
-	read16 (DEFAULT_DMIBAR + 0x0026);	// !!! = 0x0000
-	read16 (DEFAULT_DMIBAR + 0x0032);	// !!! = 0x0000
-	read16 (DEFAULT_DMIBAR + 0x003e);	// !!! = 0x0000
+
+	/*
+	 * Virtual Channel resources must match settings in DMIBAR!
+	 *
+	 * Some of the following settings are taken from
+	 * "Intel Core i5-600, i3-500 Desktop Processor Series and Intel
+	 * Pentium Desktop Processor 6000 Series Vol. 2" datasheet and
+	 * serialice traces.
+	 */
+
+	/* Virtual Channel 0 Resource Control Register.
+	 * Enable channel.
+	 * Set Virtual Channel Identifier.
+	 * Map TC0 and TC3 and TC4 to VC0.
+	 */
+
+	RCBA32(0x2014) = (1 << 31) | (0 << 24) | (0x0c << 1) | 1;
+
+	/* Virtual Channel 1 Resource Control Register.
+	 * Enable channel.
+	 * Set Virtual Channel Identifier.
+	 * Map TC1 and TC5 to VC1.
+	 */
+	RCBA32(0x2020) = (1 << 31) | (1 << 24) | (0x11 << 1);
+	/* Read back register */
+	tmp = RCBA32(0x2020);
+
+	/* Virtual Channel private Resource Control Register.
+	 * Enable channel.
+	 * Set Virtual Channel Identifier.
+	 * Map TC2 and TC6 to VCp.
+	 */
+	RCBA32(0x2030) = (1 << 31) | (2 << 24) | (0x22 << 1);
+	/* Read back register */
+	tmp = RCBA32(0x2030);
+
+	/* Virtual Channel ME Resource Control Register.
+	 * Enable channel.
+	 * Set Virtual Channel Identifier.
+	 * Map TC7 to VCm.
+	 */
+	RCBA32(0x2040) = (1 << 31) | (7 << 24) | (0x40 << 1);
+
+	/* Lock Virtual Channel Resource control register. */
+	RCBA32(0x0050) |= 0x80000000;
+	/* Read back register */
+	tmp = RCBA32(0x0050);
+
+	/* Wait for virtual channels negotiation pending */
+	while (RCBA16(0x201a) & VCNEGPND)
+		;
+	while (RCBA16(0x2026) & VCNEGPND)
+		;
+	while (RCBA16(0x2036) & VCNEGPND)
+		;
+	while (RCBA16(0x2046) & VCNEGPND)
+		;
+
+	/*
+	 * BIOS Requirement: Check if DMI VC Negotiation was successful.
+	 * Wait for virtual channels negotiation pending.
+	 */
+	while (DMIBAR16(DMIVC0RSTS) & VC0NP)
+		;
+	while (DMIBAR16(DMIVC1RSTS) & VC1NP)
+		;
+	while (DMIBAR16(DMIVCPRSTS) & VCPNP)
+		;
+	while (DMIBAR16(DMIVCMRSTS) & VCMNP)
+		;
 }
 
 void

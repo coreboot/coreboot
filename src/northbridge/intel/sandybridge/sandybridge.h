@@ -175,12 +175,23 @@ enum platform_type {
 #define DMIPVCCCTL	0x00c	/* 16bit */
 
 #define DMIVC0RCAP	0x010	/* 32bit */
-#define DMIVC0RCTL0	0x014	/* 32bit */
+#define DMIVC0RCTL	0x014	/* 32bit */
 #define DMIVC0RSTS	0x01a	/* 16bit */
+#define  VC0NP		0x2
 
 #define DMIVC1RCAP	0x01c	/* 32bit */
 #define DMIVC1RCTL	0x020	/* 32bit */
 #define DMIVC1RSTS	0x026	/* 16bit */
+#define  VC1NP		0x2
+
+#define DMIVCPRCTL	0x02c	/* 32bit */
+
+#define DMIVCPRSTS	0x032	/* 16bit */
+#define  VCPNP		0x2
+
+#define DMIVCMRCTL	0x0038	/* 32 bit */
+#define DMIVCMRSTS	0x003e	/* 16 bit */
+#define  VCMNP		0x2
 
 #define DMILE1D		0x050	/* 32bit */
 #define DMILE1A		0x058	/* 64bit */
@@ -190,7 +201,7 @@ enum platform_type {
 #define DMILCAP		0x084	/* 32bit */
 #define DMILCTL		0x088	/* 16bit */
 #define DMILSTS		0x08a	/* 16bit */
-
+#define  TXTRN		(1 << 11)
 #define DMICTL1		0x0f0	/* 32bit */
 #define DMICTL2		0x0fc	/* 32bit */
 

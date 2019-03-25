@@ -5,9 +5,9 @@ This page describes how to run coreboot on the [ASRock H110M-DVS].
 ## Required proprietary blobs
 
 Mainboard is based on Intel Skylake/Kaby Lake processor and H110 Chipset.
-Intel company provides [Firmware Support Package (2.0)](../../Documentation/soc/intel/fsp/index.md)
+Intel company provides [Firmware Support Package (2.0)](../../soc/intel/fsp/index.md)
 (intel FSP 2.0) to initialize this generation silicon. Please see this
-[document](../../Documentation/soc/intel/code_development_model/code_development_model.md).
+[document](../../soc/intel/code_development_model/code_development_model.md).
 
 FSP Information:
 
@@ -82,7 +82,7 @@ The main SPI flash can be accessed using [flashrom]. By default, only
 the BIOS region of the flash is writable. If you wish to change any
 other region, such as the Management Engine or firmware descriptor, then
 an external programmer is required (unless you find a clever way around
-the flash protection). More information about this [here](../../Documentation/flash_tutorial/index.md).
+the flash protection). More information about this [here](../../flash_tutorial/index.md).
 
 ### External programming
 

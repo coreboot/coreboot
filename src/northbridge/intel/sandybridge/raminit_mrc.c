@@ -20,6 +20,7 @@
 #include <string.h>
 #include <arch/io.h>
 #include <device/pci_ops.h>
+#include <arch/cpu.h>
 #include <cbmem.h>
 #include <arch/cbfs.h>
 #include <cbfs.h>
@@ -32,6 +33,7 @@
 #include "raminit.h"
 #include "pei_data.h"
 #include "sandybridge.h"
+#include "chip.h"
 #include <security/vboot/vboot_common.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 
@@ -275,6 +277,89 @@ struct mrc_var_data {
 	u32 reserved[4];
 } __packed;
 
+static void northbridge_fill_pei_data(struct pei_data *pei_data)
+{
+	pei_data->mchbar = (uintptr_t)DEFAULT_MCHBAR;
+	pei_data->dmibar = (uintptr_t)DEFAULT_DMIBAR;
+	pei_data->epbar = DEFAULT_EPBAR;
+	pei_data->pciexbar = CONFIG_MMCONF_BASE_ADDRESS;
+	pei_data->hpet_address = CONFIG_HPET_ADDRESS;
+	pei_data->thermalbase = 0xfed08000;
+	pei_data->system_type = get_platform_type() == PLATFORM_MOBILE ? 0 : 1;
+	pei_data->tseg_size = CONFIG_SMM_TSEG_SIZE;
+
+	if ((cpu_get_cpuid() & 0xffff0) == 0x306a0) {
+		const struct device *dev = pcidev_on_root(1, 0);
+		pei_data->pcie_init = dev && dev->enabled;
+	} else {
+		pei_data->pcie_init = 0;
+	}
+}
+
+static void southbridge_fill_pei_data(struct pei_data *pei_data)
+{
+	const struct device *dev = pcidev_on_root(0x19, 0);
+
+	pei_data->smbusbar = SMBUS_IO_BASE;
+	pei_data->wdbbar = 0x4000000;
+	pei_data->wdbsize = 0x1000;
+	pei_data->rcba = (uintptr_t)DEFAULT_RCBABASE;
+	pei_data->pmbase = DEFAULT_PMBASE;
+	pei_data->gpiobase = DEFAULT_GPIOBASE;
+	pei_data->gbe_enable = dev && dev->enabled;
+}
+
+static void devicetree_fill_pei_data(struct pei_data *pei_data)
+{
+	const struct northbridge_intel_sandybridge_config *cfg;
+
+	const struct device *dev = pcidev_on_root(0, 0);
+	if (!dev || !dev->chip_info)
+		return;
+
+	cfg = dev->chip_info;
+
+	switch (cfg->max_mem_clock_mhz) {
+	/* MRC only supports fixed numbers of frequencies */
+	default:
+		printk(BIOS_WARNING, "RAMINIT: Limiting DDR3 clock to 800 Mhz\n");
+		/* fallthrough */
+	case 400:
+		pei_data->max_ddr3_freq = 800;
+		break;
+	case 533:
+		pei_data->max_ddr3_freq = 1066;
+		break;
+	case 666:
+		pei_data->max_ddr3_freq = 1333;
+		break;
+	case 800:
+		pei_data->max_ddr3_freq = 1600;
+		break;
+
+	}
+
+	memcpy(pei_data->spd_addresses, cfg->spd_addresses,
+	       sizeof(pei_data->spd_addresses));
+
+	memcpy(pei_data->ts_addresses, cfg->ts_addresses,
+	       sizeof(pei_data->ts_addresses));
+
+	pei_data->ec_present = cfg->ec_present;
+	pei_data->ddr3lv_support = cfg->ddr3lv_support;
+
+	pei_data->nmode = cfg->nmode;
+	pei_data->ddr_refresh_rate_config = cfg->ddr_refresh_rate_config;
+
+	memcpy(pei_data->usb_port_config, cfg->usb_port_config,
+	       sizeof(pei_data->usb_port_config));
+
+	pei_data->usb3.mode = cfg->usb3.mode;
+	pei_data->usb3.hs_port_switch_mask = cfg->usb3.hs_port_switch_mask;
+	pei_data->usb3.preboot_support = cfg->usb3.preboot_support;
+	pei_data->usb3.xhci_streams = cfg->usb3.xhci_streams;
+}
+
 void perform_raminit(int s3resume)
 {
 	int cbmem_was_initted;
@@ -285,9 +370,24 @@ void perform_raminit(int s3resume)
 	if (!mainboard_should_reset_usb(s3resume))
 		enable_usb_bar();
 
+	memset(&pei_data, 0, sizeof(pei_data));
+	pei_data.pei_version = PEI_VERSION,
+
+	northbridge_fill_pei_data(&pei_data);
+	southbridge_fill_pei_data(&pei_data);
+	devicetree_fill_pei_data(&pei_data);
 	mainboard_fill_pei_data(&pei_data);
 
 	post_code(0x3a);
+
+	/* Fill after mainboard_fill_pei_data as it might provide spd_data */
+	pei_data.dimm_channel0_disabled =
+		(!pei_data.spd_addresses[0] && !pei_data.spd_data[0][0]) +
+		(!pei_data.spd_addresses[1] && !pei_data.spd_data[1][0]) * 2;
+
+	pei_data.dimm_channel1_disabled =
+		(!pei_data.spd_addresses[2] && !pei_data.spd_data[2][0]) +
+		(!pei_data.spd_addresses[3] && !pei_data.spd_data[3][0]) * 2;
 
 	/* Fix spd_data. MRC only uses spd_data[0] and ignores the other */
 	for (size_t i = 1; i < ARRAY_SIZE(pei_data.spd_data); i++) {

@@ -52,6 +52,72 @@ struct northbridge_intel_sandybridge_config {
 	 * Maximum PCI mmio size in MiB.
 	 */
 	u16 pci_mmio_size;
+
+	/* Data for RAM init */
+
+	/* DIMM SPD address. Use 8bit notation where BIT0 is always zero. */
+	u8 spd_addresses[4];
+
+	/* PEI data for RAM init and early silicon init */
+	u8 ts_addresses[4];
+
+	bool ec_present;
+	bool ddr3lv_support;
+
+	/* N mode functionality. Leave this setting at 0.
+	 * 0 Auto
+	 * 1 1N
+	 * 2 2N
+	 */
+	enum {
+		DDR_NMODE_AUTO = 0,
+		DDR_NMODE_1N,
+		DDR_NMODE_2N,
+	} nmode;
+
+	/* DDR refresh rate config. JEDEC Standard No.21-C Annex K allows
+	 * for DIMM SPD data to specify whether double-rate is required for
+	 * extended operating temperature range.
+	 * 0 Enable double rate based upon temperature thresholds
+	 * 1 Normal rate
+	 * 2 Always enable double rate
+	 */
+	enum {
+		DDR_REFRESH_RATE_TEMP_THRES = 0,
+		DDR_REFRESH_REATE_NORMAL,
+		DDR_REFRESH_RATE_DOUBLE,
+	} ddr_refresh_rate_config;
+
+	/*
+	 * USB Port Configuration:
+	 *  [0] = enable
+	 *  [1] = overcurrent pin
+	 *  [2] = length
+	 *
+	 * Ports 0-7 can be mapped to OC0-OC3
+	 * Ports 8-13 can be mapped to OC4-OC7
+	 *
+	 * Port Length
+	 *  MOBILE:
+	 *   < 0x050 = Setting 1 (back panel, 1-5in, lowest tx amplitude)
+	 *   < 0x140 = Setting 2 (back panel, 5-14in, highest tx amplitude)
+	 *  DESKTOP:
+	 *   < 0x080 = Setting 1 (front/back panel, <8in, lowest tx amplitude)
+	 *   < 0x130 = Setting 2 (back panel, 8-13in, higher tx amplitude)
+	 *   < 0x150 = Setting 3 (back panel, 13-15in, highest tx amplitude)
+	 */
+	u16 usb_port_config[16][3];
+
+	struct {
+		/* 0: Disable, 1: Enable, 2: Auto, 3: Smart Auto */
+		u8 mode			: 2;
+		/*  4 bit mask, 1: switchable, 0: not switchable */
+		u8 hs_port_switch_mask	: 4;
+		/* 0: No xHCI preOS driver, 1: xHCI preOS driver */
+		u8 preboot_support	: 1;
+		/* 0: Disable, 1: Enable */
+		u8 xhci_streams		: 1;
+	} usb3;
 };
 
 #endif /* NORTHBRIDGE_INTEL_SANDYBRIDGE_CHIP_H */

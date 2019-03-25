@@ -14,6 +14,11 @@ enum aspm_type {
 #define ASPM_LTR_L12_THRESHOLD_SCALE_OFFSET 29
 #define ASPM_LTR_L12_THRESHOLD_SCALE_MASK (0x7 << ASPM_LTR_L12_THRESHOLD_SCALE_OFFSET)
 
+/* Latency tolerance reporting, max non-snoop latency value 3.14ms */
+#define PCIE_LTR_MAX_NO_SNOOP_LATENCY_3146US 0x1003
+/* Latency tolerance reporting, max snoop latency value 3.14ms */
+#define PCIE_LTR_MAX_SNOOP_LATENCY_3146US 0x1003
+
 void pciexp_scan_bus(struct bus *bus, unsigned int min_devfn,
 			     unsigned int max_devfn);
 

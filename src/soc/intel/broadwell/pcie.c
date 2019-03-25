@@ -652,7 +652,9 @@ static void pch_pcie_enable(struct device *dev)
 static void pcie_set_L1_ss_max_latency(struct device *dev, unsigned int off)
 {
 	/* Set max snoop and non-snoop latency for Broadwell */
-	pci_write_config32(dev, off, 0x10031003);
+	pci_write_config32(dev, off,
+		PCIE_LTR_MAX_NO_SNOOP_LATENCY_3146US << 16 |
+		PCIE_LTR_MAX_SNOOP_LATENCY_3146US);
 }
 
 static struct pci_operations pcie_ops = {

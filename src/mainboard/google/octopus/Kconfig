@@ -51,7 +51,6 @@ config MAINBOARD_DIR
 config VARIANT_DIR
 	string
 	default "yorp" if BOARD_GOOGLE_YORP
-	default "bip" if BOARD_GOOGLE_BIP
 	default "phaser" if BOARD_GOOGLE_PHASER
 	default "fleex" if BOARD_GOOGLE_FLEEX
 	default "bobba" if BOARD_GOOGLE_BOBBA
@@ -72,7 +71,6 @@ config OVERRIDE_DEVICETREE
 config MAINBOARD_PART_NUMBER
 	string
 	default "Yorp" if BOARD_GOOGLE_YORP
-	default "Bip" if BOARD_GOOGLE_BIP
 	default "Phaser" if BOARD_GOOGLE_PHASER
 	default "Fleex" if BOARD_GOOGLE_FLEEX
 	default "Bobba" if BOARD_GOOGLE_BOBBA
@@ -90,7 +88,6 @@ config GBB_HWID
 	string
 	depends on CHROMEOS
 	default "YORP TEST 7755" if BOARD_GOOGLE_YORP
-	default "BIP TEST 5732" if BOARD_GOOGLE_BIP
 	default "PHASER TEST 7167" if BOARD_GOOGLE_PHASER
 	default "FLEEX TEST 7423" if BOARD_GOOGLE_FLEEX
 	default "BOBBA TEST 4516" if BOARD_GOOGLE_BOBBA
@@ -142,7 +139,6 @@ config DRAM_PART_IN_CBI_BOARD_ID_MIN
 	int
 	depends on DRAM_PART_NUM_IN_CBI && !DRAM_PART_NUM_ALWAYS_IN_CBI
 	default 255 if BOARD_GOOGLE_YORP
-	default 255 if BOARD_GOOGLE_BIP
 	default 2 if BOARD_GOOGLE_PHASER
 	default 2 if BOARD_GOOGLE_FLEEX
 	default 3 if BOARD_GOOGLE_BOBBA

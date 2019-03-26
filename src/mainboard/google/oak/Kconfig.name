@@ -11,7 +11,3 @@ config BOARD_GOOGLE_ELM
 config BOARD_GOOGLE_HANA
 	bool "->  Hana (Lenovo N23 Yoga Chromebook)"
 	select BOARD_GOOGLE_OAK_COMMON
-
-config BOARD_GOOGLE_ROWAN
-	bool "->  Rowan"
-	select BOARD_GOOGLE_OAK_COMMON

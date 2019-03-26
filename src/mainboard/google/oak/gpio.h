@@ -17,16 +17,10 @@
 #define __MAINBOARD_GOOGLE_OAK_GPIO_H__
 #include <soc/gpio.h>
 
-#if CONFIG(BOARD_GOOGLE_ROWAN)
-#define LID		GPIO(KPROW1)
-#define RAM_ID_1	GPIO(DSI_TE)
-#define RAM_ID_2	GPIO(RDP1_A)
-#else
 #define LID		((board_id() + CONFIG_BOARD_ID_ADJUSTMENT < 7) ? \
 			GPIO(EINT12) : GPIO(SPI_CK))
 #define RAM_ID_1	GPIO(RCN_A)
 #define RAM_ID_2	GPIO(RCP_A)
-#endif
 
 /* Board ID related GPIOS. */
 #define BOARD_ID_0	GPIO(RDN3_A)

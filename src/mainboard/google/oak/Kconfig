@@ -20,13 +20,12 @@ if BOARD_GOOGLE_OAK_COMMON
 
 config OTHERS_HAVE_TPM1
 	bool
-	default y if !BOARD_GOOGLE_ROWAN
+	default y
 	select MAINBOARD_HAS_I2C_TPM_GENERIC
 	select MAINBOARD_HAS_TPM1
 
 config OAK_HAS_TPM2
 	bool
-	default y if BOARD_GOOGLE_ROWAN
 	default n
 	select MAINBOARD_HAS_I2C_TPM_CR50
 	select MAINBOARD_HAS_TPM2
@@ -90,7 +89,6 @@ config MAINBOARD_PART_NUMBER
 	default "Oak" if BOARD_GOOGLE_OAK
 	default "Elm" if BOARD_GOOGLE_ELM
 	default "Hana" if BOARD_GOOGLE_HANA
-	default "Rowan" if BOARD_GOOGLE_ROWAN
 
 config GBB_HWID
 	string
@@ -98,7 +96,6 @@ config GBB_HWID
 	default "OAK TEST 6858" if BOARD_GOOGLE_OAK
 	default "ELM TEST 3839" if BOARD_GOOGLE_ELM
 	default "HANA TEST 5855" if BOARD_GOOGLE_HANA
-	default "ROWAN TEST 9387" if BOARD_GOOGLE_ROWAN
 
 # All Oak-derivatives count their board IDs as 0 being equivalent to Oak rev6.
 config BOARD_ID_ADJUSTMENT
@@ -106,6 +103,5 @@ config BOARD_ID_ADJUSTMENT
 	default 0 if BOARD_GOOGLE_OAK
 	default 7 if BOARD_GOOGLE_ELM
 	default 11 if BOARD_GOOGLE_HANA
-	default 15 if BOARD_GOOGLE_ROWAN
 
 endif # BOARD_GOOGLE_OAK

@@ -100,6 +100,7 @@ config PAYLOAD_FIT_SUPPORT
 	bool "FIT support"
 	default n
 	default y if PAYLOAD_LINUX && (ARCH_ARM || ARCH_ARM64)
+	depends on ARCH_ARM64
 	select FLATTENED_DEVICE_TREE
 	help
 	  Select this option if your payload is of type FIT.

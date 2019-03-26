@@ -326,18 +326,24 @@ static u32 ddr_reg_to_mhz(u32 speed)
 }
 #endif
 
-static u8 lsbpos(u8 val) //Forward
+// Return the position of the least significant set bit, 0-indexed.
+// 0 does not have a lsb, so return -1 for error.
+static int lsbpos(u8 val)
 {
-	u8 i;
-	for (i = 0; (i < 8) && ((val & (1 << i)) == 0); i++);
-	return i;
+	for (int i = 0; i < 8; i++)
+		if (val & (1 << i))
+			return i;
+	return -1;
 }
 
-static u8 msbpos(u8 val) //Reverse
+// Return the position of the most significant set bit, 0-indexed.
+// 0 does not have a msb, so return -1 for error.
+static int msbpos(u8 val)
 {
-	u8 i;
-	for (i = 7; (i >= 0) && ((val & (1 << i)) == 0); i--);
-	return i;
+	for (int i = 7; i >= 0; i--)
+		if (val & (1 << i))
+			return i;
+	return -1;
 }
 
 static void sdram_detect_smallest_params(struct sysinfo *s)
@@ -443,10 +449,14 @@ static void sdram_detect_ram_speed(struct sysinfo *s)
 		die("No common CAS among dimms\n");
 	}
 
+	// commoncas is nonzero, so these calls will not error
+	u8 msbp = (u8)msbpos(commoncas);
+	u8 lsbp = (u8)lsbpos(commoncas);
+
 	// Start with fastest common CAS
 	cas = 0;
-	highcas = msbpos(commoncas);
-	lowcas = max(lsbpos(commoncas), 5);
+	highcas = msbp;
+	lowcas = max(lsbp, 5);
 
 	while (cas == 0 && highcas >= lowcas) {
 		FOR_EACH_POPULATED_DIMM(s->dimms, i) {
@@ -484,8 +494,8 @@ static void sdram_detect_ram_speed(struct sysinfo *s)
 			die("Timings not supported by MCH\n");
 		}
 		cas = 0;
-		highcas = msbpos(commoncas);
-		lowcas = lsbpos(commoncas);
+		highcas = msbp;
+		lowcas = lsbp;
 		while (cas == 0 && highcas >= lowcas) {
 			FOR_EACH_POPULATED_DIMM(s->dimms, i) {
 				switch (freq) {

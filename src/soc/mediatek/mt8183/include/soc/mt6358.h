@@ -27,6 +27,7 @@ enum {
 	PMIC_CPSDSA4                  = 0x0a2e,
 	PMIC_VDRAM1_VOSEL_SLEEP       = 0x160a,
 	PMIC_SMPS_ANA_CON0            = 0x1808,
+	PMIC_VSIM2_ANA_CON0           = 0x1e30,
 };
 
 struct pmic_setting {
@@ -38,5 +39,6 @@ struct pmic_setting {
 
 void mt6358_init(void);
 void pmic_set_power_hold(bool enable);
+void pmic_set_vsim2_cali(unsigned int vsim2_mv);
 
 #endif /* __SOC_MEDIATEK_MT6358_H__ */

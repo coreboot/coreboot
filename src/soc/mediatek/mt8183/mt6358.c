@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <assert.h>
 #include <console/console.h>
 #include <soc/pmic_wrap.h>
 #include <soc/mt6358.h>
@@ -731,6 +732,46 @@ static struct pmic_setting lp_setting[] = {
 void pmic_set_power_hold(bool enable)
 {
 	pwrap_write_field(PMIC_PWRHOLD, (enable) ? 1 : 0, 0x1, 0);
+}
+
+void pmic_set_vsim2_cali(unsigned int vsim2_mv)
+{
+	u16 vsim2_reg, cali_mv;
+
+	cali_mv = vsim2_mv % 100;
+	assert(cali_mv % 10 == 0);
+
+	switch (vsim2_mv - cali_mv) {
+	case 1700:
+		vsim2_reg = 0x3;
+		break;
+
+	case 1800:
+		vsim2_reg = 0x4;
+		break;
+
+	case 2700:
+		vsim2_reg = 0x8;
+		break;
+
+	case 3000:
+		vsim2_reg = 0xb;
+		break;
+
+	case 3100:
+		vsim2_reg = 0xc;
+		break;
+
+	default:
+		assert(0);
+		return;
+	};
+
+	/* [11:8]=0x8, RG_VSIM2_VOSEL */
+	pwrap_write_field(PMIC_VSIM2_ANA_CON0, vsim2_reg, 0xF, 8);
+
+	/* [3:0], RG_VSIM2_VOCAL */
+	pwrap_write_field(PMIC_VSIM2_ANA_CON0, cali_mv / 10, 0xF, 0);
 }
 
 static void pmic_wdt_set(void)

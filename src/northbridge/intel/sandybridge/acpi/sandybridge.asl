@@ -15,7 +15,6 @@
  * GNU General Public License for more details.
  */
 
-#include "../sandybridge.h"
 #include "hostbridge.asl"
 #include "peg.asl"
 
@@ -27,12 +26,13 @@ Device (PDRC)
 
 	Name (PDRS, ResourceTemplate() {
 		Memory32Fixed(ReadWrite, 0xfed1c000, 0x00004000) // RCBA
-		Memory32Fixed(ReadWrite, DEFAULT_MCHBAR,   0x00008000)
-		Memory32Fixed(ReadWrite, DEFAULT_DMIBAR,   0x00001000)
-		Memory32Fixed(ReadWrite, DEFAULT_EPBAR,    0x00001000)
-		Memory32Fixed(ReadWrite, CONFIG_MMCONF_BASE_ADDRESS, 0x04000000)
+		// Filled by _CRS
+		Memory32Fixed(ReadWrite, 0, 0x00008000, MCHB)
+		Memory32Fixed(ReadWrite, 0, 0x00001000, DMIB)
+		Memory32Fixed(ReadWrite, 0, 0x00001000, EGPB)
+		Memory32Fixed(ReadWrite, 0, 0x04000000, PCIX)
 		Memory32Fixed(ReadWrite, 0xfed20000, 0x00020000) // Misc ICH
-		Memory32Fixed(ReadWrite, 0xfed40000, 0x00005000) // Misc ICH
+		Memory32Fixed(ReadWrite, 0xfed40000, 0x00005000) // TPM TIS
 		Memory32Fixed(ReadWrite, 0xfed45000, 0x0004b000) // Misc ICH
 
 #if CONFIG(CHROMEOS_RAMOOPS)
@@ -48,6 +48,21 @@ Device (PDRC)
 	// Current Resource Settings
 	Method (_CRS, 0, Serialized)
 	{
+		CreateDwordField (PDRS, ^MCHB._BAS, MBR0)
+		MBR0 = \_SB.PCI0.MCHC.MHBR << 15
+
+		CreateDwordField (PDRS, ^DMIB._BAS, DBR0)
+		DBR0 = \_SB.PCI0.MCHC.DMBR << 12
+
+		CreateDwordField (PDRS, ^EGPB._BAS, EBR0)
+		EBR0 = \_SB.PCI0.MCHC.EPBR << 12
+
+		CreateDwordField (PDRS, ^PCIX._BAS, XBR0)
+		XBR0 = \_SB.PCI0.MCHC.PXBR << 26
+
+		CreateDwordField (PDRS, ^PCIX._LEN, XSZ0)
+		XSZ0 = 0x10000000 << \_SB.PCI0.MCHC.PXSZ
+
 		Return(PDRS)
 	}
 }

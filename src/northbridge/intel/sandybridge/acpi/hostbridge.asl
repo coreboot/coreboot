@@ -31,24 +31,24 @@ Device (MCHC)
 		Offset (0x40),	// EPBAR
 		EPEN,	 1,	// Enable
 		,	11,	//
-		EPBR,	24,	// EPBAR
+		EPBR,	27,	// EPBAR
 
 		Offset (0x48),	// MCHBAR
 		MHEN,	 1,	// Enable
-		,	13,	//
-		MHBR,	22,	// MCHBAR
+		,	14,	//
+		MHBR,	24,	// MCHBAR
 		Offset (0x54),
 		DVEN,	32,
 		Offset (0x60),	// PCIe BAR
 		PXEN,	 1,	// Enable
 		PXSZ,	 2,	// BAR size
 		,	23,	//
-		PXBR,	10,	// PCIe BAR
+		PXBR,	13,	// PCIe BAR
 
 		Offset (0x68),	// DMIBAR
 		DMEN,	 1,	// Enable
 		,	11,	//
-		DMBR,	24,	// DMIBAR
+		DMBR,	27,	// DMIBAR
 
 		Offset (0x70),	// ME Base Address
 		MEBA,	 64,
@@ -103,7 +103,7 @@ Device (MCHC)
 	Name (CTCD, 1)		/* CTDP Down Select */
 	Name (CTCU, 2)		/* CTDP Up Select */
 
-	OperationRegion (MCHB, SystemMemory, DEFAULT_MCHBAR, 0x8000)
+	OperationRegion (MCHB, SystemMemory, \_SB.PCI0.MCHC.MHBR << 15, 0x8000)
 	Field (MCHB, DWordAcc, Lock, Preserve)
 	{
 		Offset (0x5930),

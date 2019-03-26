@@ -52,10 +52,6 @@ const char *smbios_mainboard_asset_tag(void);
 u8 smbios_mainboard_feature_flags(void);
 const char *smbios_mainboard_location_in_chassis(void);
 u8 smbios_mainboard_enclosure_type(void);
-u16 smbios_processor_core_thread_count(u16 level_type);
-#ifdef CONFIG_MAINBOARD_FAMILY
-const char *smbios_mainboard_family(void);
-#endif
 
 #define BIOS_CHARACTERISTICS_PCI_SUPPORTED	(1 << 7)
 #define BIOS_CHARACTERISTICS_PC_CARD		(1 << 8)
@@ -103,11 +99,6 @@ const char *smbios_mainboard_family(void);
 #define MEMORY_OPERATING_MODE_CAP_VOLATILE			(1 << 3)
 #define MEMORY_OPERATING_MODE_CAP_BYTE_ACCESS_PERSISTENT	(1 << 4)
 #define MEMORY_OPERATING_MODE_CAP_BLOCK_ACCESS_PERSISTENT	(1 << 5)
-
-#define PROC_THREAD_TYPE			0x1
-#define PROC_CORE_TYPE				0x2
-
-#define BYTE_LIMIT				255
 
 typedef enum {
 	MEMORY_BUS_WIDTH_8 = 0,
@@ -308,8 +299,6 @@ struct smbios_type2 {
 	u8 location_in_chassis;
 	u16 chassis_handle;
 	u8 board_type;
-	u8 num_cont_obj_handles;
-	u16 cont_obj_hanles[256];
 	u8 eos[2];
 } __packed;
 
@@ -401,9 +390,6 @@ struct smbios_type4 {
 	u8 thread_count;
 	u16 processor_characteristics;
 	u16 processor_family2;
-	u16 core_count2;
-	u16 core_enabled2;
-	u16 thread_count2;
 	u8 eos[2];
 } __packed;
 
@@ -414,11 +400,6 @@ struct smbios_type11 {
 	u8 count;
 	u8 eos[2];
 } __packed;
-
-typedef struct {
-	u8 type;
-	u8 format_descriptor;
-} log_type_descriptor;
 
 struct smbios_type15 {
 	u8 type;
@@ -490,17 +471,6 @@ struct smbios_type17 {
 	u16 minimum_voltage;
 	u16 maximum_voltage;
 	u16 configured_voltage;
-	u8 memory_technology;
-	u16 operating_mode_capability;
-	u8 fw_version;
-	u16 manufacturer_id;
-	u16 product_id;
-	u16 sub_ctrl_manufacturer_id;
-	u16 sub_ctrl_product_id;
-	u64 non_volatile_size;
-	u64 volatile_size;
-	u64 cache_size;
-	u64 logical_size;
 	u8 eos[2];
 } __packed;
 

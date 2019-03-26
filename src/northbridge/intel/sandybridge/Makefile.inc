@@ -29,6 +29,7 @@ romstage-y += common.c
 smm-$(CONFIG_HAVE_SMI_HANDLER) += common.c
 
 ifeq ($(CONFIG_USE_NATIVE_RAMINIT),y)
+romstage-y += early_dmi.c
 romstage-y += raminit.c
 romstage-y += raminit_common.c
 romstage-y += raminit_sandy.c

@@ -315,6 +315,7 @@ static void init_dram_ddr3(int min_tck, int s3resume)
 	}
 
 	early_pch_init_native();
+	early_init_dmi();
 	early_thermal_init();
 
 	/* try to find timings in MRC cache */

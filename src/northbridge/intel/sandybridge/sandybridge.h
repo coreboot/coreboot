@@ -220,6 +220,7 @@ void sandybridge_early_initialization(void);
 void sandybridge_init_iommu(void);
 void sandybridge_late_initialization(void);
 void northbridge_romstage_finalize(int s3resume);
+void early_init_dmi(void);
 
 #endif /* !__SMM__ */
 

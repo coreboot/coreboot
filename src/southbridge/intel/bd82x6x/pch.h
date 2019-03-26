@@ -77,6 +77,8 @@ void southbridge_rcba_config(void);
 void mainboard_rcba_config(void);
 void early_pch_init_native(void);
 void early_pch_init(void);
+void early_pch_init_native_dmi_pre(void);
+void early_pch_init_native_dmi_post(void);
 
 struct southbridge_usb_port
 {

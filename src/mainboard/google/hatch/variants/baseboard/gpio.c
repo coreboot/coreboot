@@ -33,8 +33,8 @@ static const struct pad_config gpio_table[] = {
 	/* A8  : EMR_GARAGE_DET */
 	PAD_CFG_GPI_GPIO_DRIVER(GPP_A8, NONE, DEEP),
 	/* A9  : ESPI_CLK */
-	/* A10 : PEN_RESET_ODL */
-	PAD_NC(GPP_A10, NONE),
+	/* A10 : FPMCU_PCH_BOOT1 */
+	PAD_CFG_GPO(GPP_A10, 0, DEEP),
 	/* A11 : PCH_SPI_FPMCU_CS_L */
 	PAD_CFG_NF(GPP_A11, NONE, DEEP, NF2),
 	/* A12 : FPMCU_RST_ODL */

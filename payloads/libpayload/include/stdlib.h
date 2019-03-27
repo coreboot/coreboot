@@ -186,6 +186,7 @@ static inline void *xmemalign_work(size_t align, size_t size, const char *file,
  * @{
  */
 long int strtol(const char *s, char **nptr, int base);
+long long int strtoll(const char *s, char **nptr, int base);
 unsigned long int strtoul(const char *s, char **nptr, int base);
 unsigned long long int strtoull(const char *s, char **nptr, int base);
 long atol(const char *nptr);

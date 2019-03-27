@@ -33,6 +33,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <inttypes.h>
+#include <limits.h>
 #include <errno.h>
 
 /**
@@ -419,59 +420,43 @@ static int _offset(char ch, int base)
  * @return A signed integer representation of the string
  */
 
-long int strtol(const char *ptr, char **endptr, int base)
+long long int strtoll(const char *orig_ptr, char **endptr, int base)
 {
-	int ret = 0;
-	int negative = 1;
-
-	if (endptr != NULL)
-		*endptr = (char *) ptr;
+	const char *ptr = orig_ptr;
+	int is_negative = 0;
 
 	/* Purge whitespace */
 
 	for( ; *ptr && isspace(*ptr); ptr++);
 
 	if (ptr[0] == '-') {
-		negative = -1;
+		is_negative = 1;
 		ptr++;
 	}
 
-	if (!*ptr)
-		return 0;
+	unsigned long long uval = strtoull(ptr, endptr, base);
 
-	/* Determine the base */
+	/* If the whole string is unparseable, endptr should point to start. */
+	if (endptr && *endptr == ptr)
+		*endptr = (char *)orig_ptr;
 
-	if (base == 0) {
-		if (ptr[0] == '0' && (ptr[1] == 'x' || ptr[1] == 'X'))
-			base = 16;
-		else if (ptr[0] == '0') {
-			base = 8;
-			ptr++;
-		}
-		else
-			base = 10;
-	}
+	if (uval > (unsigned long long)LLONG_MAX + !!is_negative)
+		uval = (unsigned long long)LLONG_MAX + !!is_negative;
 
-	/* Base 16 allows the 0x on front - so skip over it */
+	if (is_negative)
+		return -uval;
+	else
+		return uval;
+}
 
-	if (base == 16) {
-		if (ptr[0] == '0' && (ptr[1] == 'x' || ptr[1] == 'X'))
-			ptr += 2;
-	}
-
-	/* If the first character isn't valid, then don't
-	 * bother */
-
-	if (!*ptr || !_valid(*ptr, base))
-		return 0;
-
-	for( ; *ptr && _valid(*ptr, base); ptr++)
-		ret = (ret * base) + _offset(*ptr, base);
-
-	if (endptr != NULL)
-		*endptr = (char *) ptr;
-
-	return ret * negative;
+long int strtol(const char *ptr, char **endptr, int base)
+{
+	long long int val = strtoll(ptr, endptr, base);
+	if (val > LONG_MAX)
+		return LONG_MAX;
+	if (val < LONG_MIN)
+		return LONG_MIN;
+	return val;
 }
 
 long atol(const char *nptr)
@@ -534,7 +519,7 @@ unsigned long long int strtoull(const char *ptr, char **endptr, int base)
 unsigned long int strtoul(const char *ptr, char **endptr, int base)
 {
 	unsigned long long val = strtoull(ptr, endptr, base);
-	if (val > UINT32_MAX) return UINT32_MAX;
+	if (val > ULONG_MAX) return ULONG_MAX;
 	return val;
 }
 

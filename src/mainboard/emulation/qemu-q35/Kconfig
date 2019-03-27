@@ -54,4 +54,8 @@ config DCACHE_BSP_STACK_SIZE
 	hex
 	default 0x4000
 
+config FMDFILE
+	string
+	default "src/mainboard/$(CONFIG_MAINBOARD_DIR)/board.fmd"
+
 endif # BOARD_EMULATION_QEMU_X86_Q35

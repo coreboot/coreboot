@@ -1141,14 +1141,14 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 	memset(out, 0, sizeof(*out));
 
 	if (!edid) {
-		printk(BIOS_SPEW, "No EDID found\n");
+		printk(BIOS_ERR, "No EDID found\n");
 		return EDID_ABSENT;
 	}
 
 	dump_breakdown(edid);
 
 	if (memcmp(edid, "\x00\xFF\xFF\xFF\xFF\xFF\xFF\x00", 8)) {
-		printk(BIOS_SPEW, "No header found\n");
+		printk(BIOS_ERR, "No header found\n");
 		return EDID_ABSENT;
 	}
 

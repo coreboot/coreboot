@@ -172,7 +172,7 @@ static enum cb_err setup_fsp_stack_frame(FSPM_ARCH_UPD *arch_upd,
 	 * top and does not reinitialize stack pointer.
 	 */
 	if (CONFIG(FSP_USES_CB_STACK)) {
-		arch_upd->StackBase = (void *)_car_stack_end;
+		arch_upd->StackBase = (void *)_car_stack_start;
 		arch_upd->StackSize = CONFIG_DCACHE_BSP_STACK_SIZE;
 		return CB_SUCCESS;
 	}

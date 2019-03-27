@@ -1,0 +1,78 @@
+if BOARD_PROTECTLI_FW2B || BOARD_PROTECTLI_FW4B
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select BOARD_ROMSIZE_KB_8192
+	select CACHE_MRC_SETTINGS
+	select DISABLE_HPET
+	select HAVE_ACPI_RESUME
+	select HAVE_ACPI_TABLES
+	select PCIEXP_L1_SUB_STATE
+	select SEABIOS_ADD_SERCON_PORT_FILE if PAYLOAD_SEABIOS
+	select SOC_INTEL_BRASWELL
+	select SPI_FLASH_MACRONIX
+	select SUPERIO_ITE_IT8613E
+
+config MAINBOARD_DIR
+	string
+	default protectli/vault_bsw
+
+config VARIANT_DIR
+	string
+	default "fw2b" if BOARD_PROTECTLI_FW2B
+	default "fw4b" if BOARD_PROTECTLI_FW4B
+
+config OVERRIDE_DEVICETREE
+	string
+	default "variants/$(CONFIG_VARIANT_DIR)/overridetree.cb"
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "FW2B" if BOARD_PROTECTLI_FW2B
+	default "FW4B" if BOARD_PROTECTLI_FW4B
+
+config MAINBOARD_VENDOR
+	string
+	default "Protectli"
+
+config DIMM_MAX
+	int
+	default 1
+
+config DIMM_SPD_SIZE
+	int
+	default 256
+
+config MAX_CPUS
+	int
+	default 2 if BOARD_PROTECTLI_FW2B
+	default 4 if BOARD_PROTECTLI_FW4B
+
+config CBFS_SIZE
+	hex
+	default 0x500000
+
+config PXE_ROM_ID
+	string
+	default "8086,1539" if BOARD_PROTECTLI_FW2B
+	default "8086,157b" if BOARD_PROTECTLI_FW4B
+
+if !RUN_FSP_GOP
+config VGA_BIOS_FILE
+	string
+	default "3rdparty/blobs/mainboard/protectli/vault_bsw/vgabios.bin"
+	help
+	  The C0 version of the video bios gets computed from this name
+	  so that they can both be added.  Only the correct one for the
+	  system will be run.
+
+config VGA_BIOS_ID
+	string
+	default "8086,22b0"
+	help
+	  The VGA_BIOS_ID for the C0 version of the video bios is hardcoded
+	  in soc/intel/braswell/Makefile.inc as 8086,22b1
+
+endif #RUN_FSP_GOP
+
+endif # BOARD_PROTECTLI_FW2B

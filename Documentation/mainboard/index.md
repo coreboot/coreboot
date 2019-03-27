@@ -117,6 +117,10 @@ The boards in this section are not real mainboards, but emulators.
 
 - [PQ7-M107](portwell/pq7-m107.md)
 
+## Protectli
+
+- [FW2B / FW4B](protectli/fw2b_fw4b.md)
+
 ## Roda
 
 - [RK9 Flash Header](roda/rk9/flash_header.md)

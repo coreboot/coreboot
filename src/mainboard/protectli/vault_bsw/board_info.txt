@@ -1,0 +1,6 @@
+Vendor name: Protectli
+Board name: FW2B / FW4B
+Category: sbc
+ROM protocol: SPI
+ROM socketed: n
+Flashrom support: y

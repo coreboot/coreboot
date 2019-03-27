@@ -1,0 +1,16 @@
+if VENDOR_PROTECTLI
+
+choice
+	prompt "Mainboard model"
+
+source "src/mainboard/protectli/*/Kconfig.name"
+
+endchoice
+
+source "src/mainboard/protectli/*/Kconfig"
+
+config MAINBOARD_VENDOR
+	string "Mainboard Vendor"
+	default "Protectli"
+
+endif # VENDOR_PROTECTLI

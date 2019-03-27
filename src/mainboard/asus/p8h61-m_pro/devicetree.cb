@@ -109,6 +109,9 @@ chip northbridge/intel/sandybridge
 						irq 0xe5 = 0xff
 					end
 				end
+				chip drivers/pc80/tpm
+					device pnp 4e.0 on end		# TPM module
+				end
 			end
 			device pci 1f.2 on  end # SATA Controller 1
 			device pci 1f.3 on  end # SMBus

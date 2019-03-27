@@ -78,7 +78,8 @@ void chromeos_dsdt_generator(struct device *dev);
 
 enum {
 	CROS_GPIO_REC = 1, /* Recovery */
-	CROS_GPIO_DEV = 2, /* Developer */
+	CROS_GPIO_DEPRECATED_DEV = 2, /* Developer;
+				       * deprecated (chromium:942901) */
 	CROS_GPIO_WP = 3, /* Write Protect */
 	CROS_GPIO_PE = 4, /* Phase enforcement for final product */
 
@@ -111,15 +112,6 @@ struct cros_gpio {
 
 #define CROS_GPIO_REC_AH(num, dev) \
 	CROS_GPIO_REC_INITIALIZER(CROS_GPIO_ACTIVE_HIGH, num, dev)
-
-#define CROS_GPIO_DEV_INITIALIZER(pol, num, dev) \
-	CROS_GPIO_INITIALIZER(CROS_GPIO_DEV, pol, num, dev)
-
-#define CROS_GPIO_DEV_AL(num, dev) \
-	CROS_GPIO_DEV_INITIALIZER(CROS_GPIO_ACTIVE_LOW, num, dev)
-
-#define CROS_GPIO_DEV_AH(num, dev) \
-	CROS_GPIO_DEV_INITIALIZER(CROS_GPIO_ACTIVE_HIGH, num, dev)
 
 #define CROS_GPIO_WP_INITIALIZER(pol, num, dev) \
 	CROS_GPIO_INITIALIZER(CROS_GPIO_WP, pol, num, dev)

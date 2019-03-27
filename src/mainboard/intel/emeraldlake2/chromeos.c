@@ -62,7 +62,6 @@ int get_write_protect_state(void)
 
 static const struct cros_gpio cros_gpios[] = {
 	CROS_GPIO_REC_AL(22, CROS_GPIO_DEVICE_NAME),
-	CROS_GPIO_DEV_AH(57, CROS_GPIO_DEVICE_NAME),
 	CROS_GPIO_WP_AL(48, CROS_GPIO_DEVICE_NAME),
 };
 

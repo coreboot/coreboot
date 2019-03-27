@@ -83,7 +83,6 @@ int parrot_ec_running_ro(void)
 
 static const struct cros_gpio cros_gpios[] = {
 	CROS_GPIO_REC_AH(CROS_GPIO_VIRTUAL, CROS_GPIO_DEVICE_NAME),
-	CROS_GPIO_DEV_AH(CROS_GPIO_VIRTUAL, CROS_GPIO_DEVICE_NAME),
 	CROS_GPIO_WP_AL(70, CROS_GPIO_DEVICE_NAME),
 };
 

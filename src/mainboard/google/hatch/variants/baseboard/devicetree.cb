@@ -72,6 +72,7 @@ chip soc/intel/cannonlake
 	# Enable HPD for DDI ports B/C
 	register "DdiPortBHpd" = "1"
 	register "DdiPortCHpd" = "1"
+	register "tcc_offset" = "10"	# TCC of 90C
 
 	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC2)"	# Type-C Port 0
 	register "usb2_ports[1]" = "USB2_PORT_TYPE_C(OC2)"	# Type-C Port 1

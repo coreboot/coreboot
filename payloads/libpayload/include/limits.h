@@ -40,7 +40,20 @@
 # endif
 #endif
 
-#define UINT_MAX (unsigned int)0xffffffff
-#define INT_MAX (unsigned int)0x7fffffff
+#define USHRT_MAX	((unsigned short int)~0U)
+#define SHRT_MIN	((short int)(USHRT_MAX & ~(USHRT_MAX >> 1)))
+#define SHRT_MAX	((short int)(USHRT_MAX >> 1))
+
+#define UINT_MAX	((unsigned int)~0U)
+#define INT_MIN		((int)(UINT_MAX & ~(UINT_MAX >> 1)))
+#define INT_MAX		((int)(UINT_MAX >> 1))
+
+#define ULONG_MAX	((unsigned long int)~0UL)
+#define LONG_MIN	((long int)(ULONG_MAX & ~(ULONG_MAX >> 1)))
+#define LONG_MAX	((long int)(ULONG_MAX >> 1))
+
+#define ULLONG_MAX	((unsigned long long int)~0UL)
+#define LLONG_MIN	((long long int)(ULLONG_MAX & ~(ULLONG_MAX >> 1)))
+#define LLONG_MAX	((long long int)(ULLONG_MAX >> 1))
 
 #endif

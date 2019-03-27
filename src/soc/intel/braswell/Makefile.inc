@@ -14,6 +14,7 @@ romstage-y += iosf.c
 romstage-y += lpc_init.c
 romstage-y += memmap.c
 romstage-y += pmutil.c
+romstage-y += smbus.c
 romstage-y += tsc_freq.c
 
 postcar-y += tsc_freq.c

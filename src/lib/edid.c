@@ -1002,6 +1002,7 @@ parse_extension(struct edid *out, unsigned char *x, struct edid_context *c)
 		break;
 	case 0xFF:
 		printk(BIOS_SPEW, "Manufacturer-specific extension block\n");
+		break;
 	default:
 		printk(BIOS_SPEW, "Unknown extension block\n");
 		break;

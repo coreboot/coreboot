@@ -63,6 +63,7 @@ enum set_acpi_mode_cmd {
 };
 
 enum bios_progress_code {
+	BIOS_PROGRESS_BEFORE_MEMORY = 0x00,
 	BIOS_PROGRESS_MEMORY_INIT = 0x01,
 	BIOS_PROGRESS_VIDEO_INIT = 0x02,
 	BIOS_PROGRESS_LOGO_DISPLAYED = 0x03,

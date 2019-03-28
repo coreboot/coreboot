@@ -232,8 +232,8 @@ static const struct pad_config gpio_table[] = {
 
 	/* E0  : GPP_E0 ==> NC */
 	PAD_NC(GPP_E0, NONE),
-	/* E1  : SATAGP1 */
-	PAD_CFG_NF(GPP_E1, NONE, DEEP, NF2),
+	/* E1  : SATAPCIE1 */
+	PAD_CFG_NF(GPP_E1, NONE, DEEP, NF1),
 	/* E2  : GPP_E2 ==> NC */
 	PAD_NC(GPP_E2, NONE),
 	/* E3  : GPP_E3 ==> NC */

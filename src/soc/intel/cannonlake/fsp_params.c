@@ -340,6 +340,9 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 
 	/* Set TccActivationOffset */
 	tconfig->TccActivationOffset = config->tcc_offset;
+
+	/* Unlock all GPIO pads */
+	tconfig->PchUnlockGpioPads = config->PchUnlockGpioPads;
 }
 
 /* Mainboard GPIO Configuration */

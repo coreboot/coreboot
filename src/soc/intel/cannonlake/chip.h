@@ -407,6 +407,9 @@ struct soc_intel_cannonlake_config {
 	uint8_t DdiPortCDdc;
 	uint8_t DdiPortDDdc;
 	uint8_t DdiPortFDdc;
+
+	/* Unlock all GPIO Pads */
+	uint8_t PchUnlockGpioPads;
 };
 
 typedef struct soc_intel_cannonlake_config config_t;

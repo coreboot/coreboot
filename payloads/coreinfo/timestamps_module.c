@@ -203,8 +203,10 @@ static int timestamps_module_init(void)
 			SCREEN_X, LINES_SHOWN);
 
 	/* Sanity check, chars_count must be padded to full line */
-	if (chars_count % SCREEN_X != 0)
+	if (chars_count % SCREEN_X != 0) {
+		free(buffer);
 		return -2;
+	}
 
 	g_lines_count = chars_count / SCREEN_X;
 	g_max_cursor_line = MAX(g_lines_count - 1 - LINES_SHOWN, 0);

@@ -780,7 +780,7 @@ static int should_run_oprom(struct device *dev)
 	 */
 	should_run = display_init_required();
 
-	if (!should_run && CONFIG(CHROMEOS))
+	if (!should_run && CONFIG(VBOOT))
 		should_run = vboot_wants_oprom();
 
 	if (!should_run)

@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <assert.h>
 #include <bootmode.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
@@ -34,9 +35,13 @@ void gfx_set_init_done(int done)
 
 int display_init_required(void)
 {
-	/* For Chrome OS always honor vboot_handoff_skip_display_init(). */
-	if (CONFIG(CHROMEOS))
+	/* For vboot always honor vboot_handoff_skip_display_init(). */
+	if (CONFIG(VBOOT)) {
+		/* Must always select OPROM_MATTERS when using this function. */
+		if (!CONFIG(VBOOT_OPROM_MATTERS))
+			dead_code();
 		return !vboot_handoff_skip_display_init();
+	}
 
 	/* By default always initialize display. */
 	return 1;

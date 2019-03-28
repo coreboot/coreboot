@@ -411,8 +411,12 @@ const struct pad_config *__weak variant_gpio_table(size_t *num)
 	return gpio_table;
 }
 
-/* Default GPIO settings before entering sleep. */
+/*
+ * Default GPIO settings before entering sleep. Configure A12: FPMCU_RST_ODL
+ * as GPO before entering sleep.
+ */
 static const struct pad_config default_sleep_gpio_table[] = {
+	PAD_CFG_GPO(GPP_A12, 1, DEEP), /* FPMCU_RST_ODL */
 };
 
 /*
@@ -421,6 +425,7 @@ static const struct pad_config default_sleep_gpio_table[] = {
  * turn off EN_PP3300_WWAN.
  */
 static const struct pad_config s5_sleep_gpio_table[] = {
+	PAD_CFG_GPO(GPP_A12, 1, DEEP), /* FPMCU_RST_ODL */
 	PAD_CFG_GPO(GPP_A18, 0, DEEP), /* EN_PP3300_WWAN */
 };
 

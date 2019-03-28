@@ -274,17 +274,22 @@ Device (BAT0)
 
 	Method (_STA, 0, Serialized)
 	{
-		Return (ESTA (_UID))
+		Return (ESTA (^_UID))
 	}
 
 	Method (_BST, 0, Serialized)
 	{
-		Return (EBST (_UID, PBST))
+		Return (EBST (^_UID, PBST))
 	}
 
 	Method (_BIF, 0, Serialized)
 	{
-		Return (EBIF (_UID, PBIF))
+		Return (EBIF (^_UID, PBIF))
+	}
+
+	Method (_BIX, 0, Serialized)
+	{
+		Return (EBIX (^_UID, PBIX))
 	}
 }
 
@@ -353,5 +358,10 @@ Device (BAT1)
 	Method (_BIF, 0, Serialized)
 	{
 		Return (EBIF (^_UID, PBIF))
+	}
+
+	Method (_BIX, 0, Serialized)
+	{
+		Return (EBIX (^_UID, PBIX))
 	}
 }

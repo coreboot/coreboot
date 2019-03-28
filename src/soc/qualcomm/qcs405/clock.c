@@ -209,11 +209,38 @@ void clock_configure_uart(uint32_t hz)
 	clock_configure(uart_clk, uart_cfg, hz, ARRAY_SIZE(uart_cfg));
 }
 
-void clock_configure_spi(int blsp, uint32_t hz)
+void clock_configure_spi(int blsp, int qup, uint32_t hz)
 {
-	struct qcs405_clock *spi_clk = (blsp == 1) ?
-		(struct qcs405_clock *)&gcc->blsp1_qup4_spi_clk
-		: (struct qcs405_clock *)&gcc->blsp2_qup0_spi_clk;
+	struct qcs405_clock *spi_clk = 0;
+
+	if (blsp == 1) {
+		switch (qup) {
+		case 0:
+			spi_clk = (struct qcs405_clock *)
+					&gcc->blsp1_qup0_spi_clk;
+			break;
+		case 1:
+			spi_clk = (struct qcs405_clock *)
+					&gcc->blsp1_qup1_spi_clk;
+			break;
+		case 2:
+			spi_clk = (struct qcs405_clock *)
+					&gcc->blsp1_qup2_spi_clk;
+			break;
+		case 3:
+			spi_clk = (struct qcs405_clock *)
+					&gcc->blsp1_qup3_spi_clk;
+			break;
+		case 4:
+			spi_clk = (struct qcs405_clock *)
+					&gcc->blsp1_qup4_spi_clk;
+			break;
+		}
+	} else if (blsp == 2)
+		spi_clk = (struct qcs405_clock *)&gcc->blsp2_qup0_spi_clk;
+
+	else
+		printk(BIOS_ERR, "BLSP%d not supported\n", blsp);
 
 	clock_configure(spi_clk, spi_cfg, hz, ARRAY_SIZE(spi_cfg));
 }
@@ -228,38 +255,66 @@ void clock_disable_uart(void)
 	clock_disable(&gcc->blsp1_uart2_apps_cbcr);
 }
 
-void clock_enable_spi(int blsp)
+void clock_enable_spi(int blsp, int qup)
 {
-	(blsp == 1) ? clock_enable(&gcc->blsp1_qup4_spi_apps_cbcr)
-	: clock_enable(&gcc->blsp2_qup0_spi_apps_cbcr);
+	if (blsp == 1) {
+		switch (qup) {
+		case 0:
+			clock_enable(&gcc->blsp1_qup0_spi_apps_cbcr);
+			break;
+		case 1:
+			clock_enable(&gcc->blsp1_qup1_spi_apps_cbcr);
+			break;
+		case 2:
+			clock_enable(&gcc->blsp1_qup2_spi_apps_cbcr);
+			break;
+		case 3:
+			clock_enable(&gcc->blsp1_qup3_spi_apps_cbcr);
+			break;
+		case 4:
+			clock_enable(&gcc->blsp1_qup4_spi_apps_cbcr);
+			break;
+		}
+	} else if (blsp == 2)
+		clock_enable(&gcc->blsp2_qup0_spi_apps_cbcr);
+	else
+		printk(BIOS_ERR, "BLSP%d not supported\n", blsp);
 }
 
-void clock_disable_spi(int blsp)
+void clock_disable_spi(int blsp, int qup)
 {
-	(blsp == 1) ? clock_disable(&gcc->blsp1_qup4_spi_apps_cbcr)
-	: clock_disable(&gcc->blsp2_qup0_spi_apps_cbcr);
+	if (blsp == 1) {
+		switch (qup) {
+		case 0:
+			clock_enable(&gcc->blsp1_qup0_spi_apps_cbcr);
+			break;
+		case 1:
+			clock_enable(&gcc->blsp1_qup1_spi_apps_cbcr);
+			break;
+		case 2:
+			clock_enable(&gcc->blsp1_qup2_spi_apps_cbcr);
+			break;
+		case 3:
+			clock_enable(&gcc->blsp1_qup3_spi_apps_cbcr);
+			break;
+		case 4:
+			clock_enable(&gcc->blsp1_qup4_spi_apps_cbcr);
+			break;
+		}
+	} else if (blsp == 2)
+		clock_enable(&gcc->blsp2_qup0_spi_apps_cbcr);
+	else
+		printk(BIOS_ERR, "BLSP%d not supported\n", blsp);
+
 }
 
 void clock_init(void)
 {
-
 	clock_configure_gpll0();
-
-	clock_configure(&gcc->blsp1_uart2_apps_clk, uart_cfg, 1843200,
-			ARRAY_SIZE(uart_cfg));
-
-	clock_enable(&gcc->blsp1_uart2_apps_cbcr);
 	clock_enable_vote(&gcc->blsp1_ahb_cbcr,
 				&gcc->gcc_apcs_clock_branch_en_vote,
 				BLSP1_AHB_CLK_ENA);
 
-	clock_configure(&gcc->blsp1_qup4_spi_clk, spi_cfg, 1000000,
-			ARRAY_SIZE(spi_cfg));
-	clock_enable(&gcc->blsp1_qup4_spi_apps_cbcr);
-
-	clock_configure(&gcc->blsp2_qup0_spi_clk, spi_cfg, 50000000,
-			ARRAY_SIZE(spi_cfg));
-	clock_enable(&gcc->blsp2_qup0_spi_apps_cbcr);
 	clock_enable_vote(&gcc->blsp2_ahb_cbcr,
 				&gcc->gcc_apcs_clock_branch_en_vote,
 				BLSP2_AHB_CLK_ENA);

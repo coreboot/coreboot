@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <ec/google/wilco/romstage.h>
 #include <soc/cnl_memcfg_init.h>
 #include <soc/romstage.h>
 
@@ -48,6 +49,8 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 		.spd_smbus_address[0] = 0xa0,
 		.spd_smbus_address[2] = 0xa4
 	};
+
+	wilco_ec_romstage_init();
 
 	cannonlake_memcfg_init(&memupd->FspmConfig, &memcfg, &spd);
 }

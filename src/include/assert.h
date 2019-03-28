@@ -43,18 +43,22 @@
  * will generate a compiler error even if the scope it was called from is dead
  * code. This may be useful to double-check things like constants that are only
  * valid if a certain Kconfig option is set.
+ *
+ * The error message when this hits will look like this:
+ *
+ * ramstage/lib/bootmode.o: In function `display_init_required':
+ * bootmode.c:42: undefined reference to `dead_code_assertion_failed_at_line_42'
  */
-#define __dead_code(message, line) do { \
-	__attribute__((error(#message " in " __FILE__ ":" #line))) \
-	extern void dead_code_assertion_failed_##line(void); \
-	dead_code_assertion_failed_##line(); \
+#define __dead_code(line) do { \
+	extern void dead_code_assertion_failed_at_line_##line(void); \
+	dead_code_assertion_failed_at_line_##line(); \
 } while (0)
-#define _dead_code(message, line) __dead_code(message, line)
-#define dead_code(message) _dead_code(message, __LINE__)
+#define _dead_code(line) __dead_code(line)
+#define dead_code() _dead_code(__LINE__)
 
 /* This can be used in the context of an expression of type 'type'. */
-#define dead_code_t(type, message) ({ \
-	dead_code(message); \
+#define dead_code_t(type) ({ \
+	dead_code(); \
 	*(type *)(uintptr_t)0; \
 })
 

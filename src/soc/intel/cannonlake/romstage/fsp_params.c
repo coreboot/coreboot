@@ -15,10 +15,12 @@
 
 #include <assert.h>
 #include <chip.h>
+#include <cpu/x86/msr.h>
 #include <console/console.h>
 #include <fsp/util.h>
 #include <intelblocks/pmclib.h>
 #include <soc/iomap.h>
+#include <soc/msr.h>
 #include <soc/pci_devs.h>
 #include <soc/romstage.h>
 #include <vendorcode/google/chromeos/chromeos.h>
@@ -69,19 +71,10 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg, const config_t *config)
 	m_cfg->SkipMpInit = !CONFIG_USE_INTEL_FSP_MP_INIT;
 #endif
 
-	/* Disable CPU Flex Ratio and SaGv in recovery mode */
-	if (vboot_recovery_mode_enabled()) {
-		struct chipset_power_state *ps = pmc_get_power_state();
-
-		/*
-		 * Only disable when coming from S5 (cold reset) otherwise
-		 * the flex ratio may be locked and FSP will return an error.
-		 */
-		if (ps && ps->prev_sleep_state == ACPI_S5) {
-			m_cfg->CpuRatio = 0;
-			m_cfg->SaGv = 0;
-		}
-	}
+	/* Set CpuRatio to match existing MSR value */
+	msr_t flex_ratio;
+	flex_ratio = rdmsr(MSR_FLEX_RATIO);
+	m_cfg->CpuRatio = (flex_ratio.lo >> 8) & 0xff;
 
 	/* If ISH is enabled, enable ISH elements */
 	if (!dev)

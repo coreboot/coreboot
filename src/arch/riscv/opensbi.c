@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2018 Jonathan Neuschäfer
+ * Copyright (C) 2019 9elements Agency GmbH <patrick.rudolph@9elements.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,20 +13,29 @@
  * GNU General Public License for more details.
  */
 
-#ifndef ARCH_RISCV_INCLUDE_ARCH_BOOT_H
-#define ARCH_RISCV_INCLUDE_ARCH_BOOT_H
-
-#define RISCV_PAYLOAD_MODE_U 0
-#define RISCV_PAYLOAD_MODE_S 1
-#define RISCV_PAYLOAD_MODE_M 3
-
-struct prog;
-void run_payload(struct prog *prog, void *fdt, int payload_mode);
-void run_payload_opensbi(struct prog *prog, void *fdt, struct prog *opensbi, int payload_mode);
+#include <sbi/fw_dynamic.h>
+#include <arch/boot.h>
+/* DO NOT INLCUDE COREBOOT HEADERS HERE */
 
 void run_opensbi(const int hart_id,
-		 const void *opensbi,
 		 const void *fdt,
+		 const void *opensbi,
 		 const void *payload,
-		 const int payload_mode);
-#endif
+		 const int payload_mode)
+{
+	struct fw_dynamic_info info = {
+		.magic = FW_DYNAMIC_INFO_MAGIC_VALUE,
+		.version = FW_DYNAMIC_INFO_VERSION_MAX,
+		.next_mode = payload_mode,
+		.next_addr = (uintptr_t)payload,
+	};
+
+	csr_write(mepc, opensbi);
+	asm volatile (
+			"mv	a0, %0\n\t"
+			"mv	a1, %1\n\t"
+			"mv	a2, %2\n\t"
+			"mret" :
+			: "r"(hart_id), "r"(fdt), "r"(&info)
+			: "a0", "a1", "a2");
+}

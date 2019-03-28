@@ -20,6 +20,12 @@
 #include <arch/smp/smp.h>
 #include <mcall.h>
 #include <commonlib/cbfs_serialized.h>
+#include <console/console.h>
+
+struct arch_prog_run_args {
+	struct prog *prog;
+	struct prog *opensbi;
+};
 
 /*
  * A pointer to the Flattened Device Tree passed to coreboot by the boot ROM.
@@ -28,10 +34,10 @@
  * This pointer is only used in ramstage!
  */
 
-static void do_arch_prog_run(struct prog *prog)
+static void do_arch_prog_run(struct arch_prog_run_args *args)
 {
-	void (*doit)(int hart_id, void *fdt);
 	int hart_id;
+	struct prog *prog = args->prog;
 	void *fdt = prog_entry_arg(prog);
 
 	/*
@@ -48,17 +54,39 @@ static void do_arch_prog_run(struct prog *prog)
 		fdt = HLS()->fdt;
 
 	if (ENV_RAMSTAGE && prog_type(prog) == PROG_PAYLOAD) {
-		run_payload(prog, fdt, RISCV_PAYLOAD_MODE_S);
-		return;
+		if (CONFIG(RISCV_OPENSBI))
+			run_payload_opensbi(prog, fdt, args->opensbi, RISCV_PAYLOAD_MODE_S);
+		else
+			run_payload(prog, fdt, RISCV_PAYLOAD_MODE_S);
+	} else {
+		void (*doit)(int hart_id, void *fdt) = prog_entry(prog);
+
+		hart_id = HLS()->hart_id;
+
+		doit(hart_id, fdt);
 	}
 
-	doit = prog_entry(prog);
-	hart_id = HLS()->hart_id;
-
-	doit(hart_id, fdt);
+	die("Failed to run stage");
 }
 
 void arch_prog_run(struct prog *prog)
 {
-	smp_resume((void (*)(void *))do_arch_prog_run, prog);
+	struct arch_prog_run_args args = {};
+
+	args.prog = prog;
+
+	/* In case of OpenSBI we have to load it before resuming all HARTs */
+	if (ENV_RAMSTAGE && CONFIG(RISCV_OPENSBI)) {
+		struct prog sbi = PROG_INIT(PROG_OPENSBI, CONFIG_CBFS_PREFIX"/opensbi");
+
+		if (prog_locate(&sbi))
+			die("OpenSBI not found");
+
+		if (!selfload_check(&sbi, BM_MEM_OPENSBI))
+			die("OpenSBI load failed");
+
+		args.opensbi = &sbi;
+	}
+
+	smp_resume((void (*)(void *))do_arch_prog_run, &args);
 }

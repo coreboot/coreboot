@@ -174,4 +174,45 @@ LDFLAGS_ramstage += -m elf32lriscv
 endif #CONFIG_ARCH_RISCV_RV32
 
 endif #CONFIG_ARCH_RAMSTAGE_RISCV
+
+ifeq ($(CONFIG_RISCV_OPENSBI),y)
+
+OPENSBI_SOURCE := $(top)/3rdparty/opensbi
+OPENSBI_BUILD  := $(abspath $(obj)/3rdparty/opensbi)
+OPENSBI_TARGET := $(OPENSBI_BUILD)/platform/$(CONFIG_OPENSBI_PLATFORM)/firmware/fw_dynamic.elf
+OPENSBI := $(obj)/opensbi.elf
+
+$(OPENSBI_TARGET): $(obj)/config.h | $(OPENSBI_SOURCE)
+	printf "    MAKE       $(subst $(obj)/,,$(@))\n"
+	mkdir -p $(OPENSBI_BUILD)
+	$(MAKE) \
+		-C "$(OPENSBI_SOURCE)" \
+		CC="$(CC_ramstage)" \
+		LD="$(LD_ramstage)" \
+		OBJCOPY="$(OBJCOPY_ramstage)" \
+		AR="$(AR_ramstage)" \
+		PLATFORM=$(CONFIG_OPENSBI_PLATFORM) \
+		O="$(OPENSBI_BUILD)" \
+		FW_JUMP=y \
+		FW_DYNAMIC=y \
+		FW_PAYLOAD=n \
+		FW_PAYLOAD_OFFSET=0 \
+		FW_TEXT_START=$(CONFIG_OPENSBI_TEXT_START)
+
+$(OPENSBI): $(OPENSBI_TARGET)
+	cp $< $@
+
+OPENSBI_CBFS := $(CONFIG_CBFS_PREFIX)/opensbi
+$(OPENSBI_CBFS)-file := $(OPENSBI)
+$(OPENSBI_CBFS)-type := payload
+$(OPENSBI_CBFS)-compression := $(CBFS_COMPRESS_FLAG)
+cbfs-files-y += $(OPENSBI_CBFS)
+
+check-ramstage-overlap-files += $(OPENSBI_CBFS)
+
+CPPFLAGS_common += -I$(OPENSBI_SOURCE)/include
+ramstage-y += opensbi.c
+
+endif #CONFIG_RISCV_OPENSBI
+
 endif #CONFIG_ARCH_RISCV

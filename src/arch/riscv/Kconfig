@@ -41,6 +41,30 @@ config ARCH_RISCV_S
 	bool
 	default n
 
+config RISCV_HAS_OPENSBI
+	def_bool n
+
+config RISCV_OPENSBI
+	bool "Use OpenSBI to hand over control to payload"
+	depends on ARCH_RISCV_M && ARCH_RISCV_S
+	depends on RISCV_HAS_OPENSBI
+	default n
+	help
+	  Load OpenSBI after payload has been loaded and use it to
+	  provide the SBI and to handover control to payload.
+
+config OPENSBI_PLATFORM
+	string
+	depends on RISCV_HAS_OPENSBI
+	help
+	  The OpenSBI platform to build for.
+
+config OPENSBI_TEXT_START
+	hex
+	depends on RISCV_HAS_OPENSBI
+	help
+	  The linking address used to build opensbi.
+
 config ARCH_RISCV_U
 	# U (user) mode is for programs.
 	bool

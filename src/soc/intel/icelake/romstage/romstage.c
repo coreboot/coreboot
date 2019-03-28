@@ -31,8 +31,6 @@
 #include <string.h>
 #include <timestamp.h>
 
-static struct chipset_power_state power_state;
-
 #define FSP_SMBIOS_MEMORY_INFO_GUID	\
 {	\
 	0xd4, 0x71, 0x20, 0x9b, 0x54, 0xb0, 0x0c, 0x4e,	\
@@ -111,7 +109,7 @@ asmlinkage void car_stage_entry(void)
 	bool s3wake;
 	struct postcar_frame pcf;
 	uintptr_t top_of_ram;
-	struct chipset_power_state *ps = &power_state;
+	struct chipset_power_state *ps = pmc_get_power_state();
 
 	console_init();
 

@@ -588,11 +588,13 @@ static int smbios_write_type4(unsigned long *current, int handle)
 		}
 		t->core_count2 = leaf_b_cores / leaf_b_threads;
 		t->core_count = t->core_count2 > 0xff ? 0xff : t->core_count2;
-		t->thread_count2 = leaf_b_threads;
+		t->thread_count2 = leaf_b_cores;
+		t->thread_count = t->thread_count2 > 0xff ? 0xff : t->thread_count2;
 	} else {
 		t->core_count = (res.ebx >> 16) & 0xff;
 		t->core_count2 = t->core_count;
 		t->thread_count2 = t->core_count2;
+		t->thread_count = t->thread_count2;
 	}
 	/* Assume we enable all the cores always, capped only by MAX_CPUS */
 	t->core_enabled = MIN(t->core_count, CONFIG_MAX_CPUS);

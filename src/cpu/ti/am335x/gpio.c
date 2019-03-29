@@ -18,9 +18,10 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-static struct am335x_gpio_regs *gpio_regs_and_bit(unsigned gpio, uint32_t *bit)
+static struct am335x_gpio_regs *gpio_regs_and_bit(unsigned int gpio,
+						  uint32_t *bit)
 {
-	unsigned bank = gpio / AM335X_GPIO_BITS_PER_BANK;
+	unsigned int bank = gpio / AM335X_GPIO_BITS_PER_BANK;
 
 	if (bank >= ARRAY_SIZE(am335x_gpio_banks)) {
 		printk(BIOS_ERR, "Bad gpio index %d.\n", gpio);
@@ -38,7 +39,7 @@ void am335x_disable_gpio_irqs(void)
 		write32(&am335x_gpio_banks[i]->irqstatus_clr_0, 0xffffffff);
 }
 
-int gpio_direction_input(unsigned gpio)
+int gpio_direction_input(unsigned int gpio)
 {
 	uint32_t bit;
 	struct am335x_gpio_regs *regs = gpio_regs_and_bit(gpio, &bit);
@@ -49,7 +50,7 @@ int gpio_direction_input(unsigned gpio)
 	return 0;
 }
 
-int gpio_direction_output(unsigned gpio, int value)
+int gpio_direction_output(unsigned int gpio, int value)
 {
 	uint32_t bit;
 	struct am335x_gpio_regs *regs = gpio_regs_and_bit(gpio, &bit);
@@ -64,7 +65,7 @@ int gpio_direction_output(unsigned gpio, int value)
 	return 0;
 }
 
-int gpio_get_value(unsigned gpio)
+int gpio_get_value(unsigned int gpio)
 {
 	uint32_t bit;
 	struct am335x_gpio_regs *regs = gpio_regs_and_bit(gpio, &bit);
@@ -74,7 +75,7 @@ int gpio_get_value(unsigned gpio)
 	return (read32(&regs->datain) & bit) ? 1 : 0;
 }
 
-int gpio_set_value(unsigned gpio, int value)
+int gpio_set_value(unsigned int gpio, int value)
 {
 	uint32_t bit;
 	struct am335x_gpio_regs *regs = gpio_regs_and_bit(gpio, &bit);

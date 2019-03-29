@@ -15,12 +15,11 @@
 
 #include <device/pci_def.h>
 #include <device/device.h>
-
+#include <console/console.h>
 /* warning: Porting.h includes an open #pragma pack(1) */
 #include <Porting.h>
 #include <AGESA.h>
 #include <amdlib.h>
-
 #include <northbridge/amd/agesa/dimmSpd.h>
 
 /*-----------------------------------------------------------------------------

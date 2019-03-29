@@ -18,7 +18,7 @@
 #include <device/device.h>
 #include "hudson.h"
 #include <AGESA.h>
-
+#include <console/console.h>
 #include <northbridge/amd/agesa/state_machine.h>
 
 extern FCH_DATA_BLOCK InitEnvCfgDefault;

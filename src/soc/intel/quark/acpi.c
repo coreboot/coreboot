@@ -15,6 +15,7 @@
  * GNU General Public License for more details.
  */
 
+#include <console/console.h>
 #include <soc/acpi.h>
 #include <soc/ramstage.h>
 

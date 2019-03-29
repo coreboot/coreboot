@@ -15,17 +15,16 @@
 
 #include <Porting.h>
 #include <AGESA.h>
-
 #include <arch/io.h>
 #include <cbmem.h>
 #include <cf9_reset.h>
+#include <console/console.h>
 #include <device/device.h>
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
 #include <smp/node.h>
 #include <northbridge/amd/agesa/state_machine.h>
 #include <northbridge/amd/agesa/agesa_helper.h>
-
 #include <sb_cimx.h>
 
 void platform_BeforeInitReset(struct sysinfo *cb, AMD_RESET_PARAMS *Reset)

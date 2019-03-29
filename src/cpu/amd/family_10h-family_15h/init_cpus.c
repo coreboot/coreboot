@@ -14,6 +14,7 @@
  * GNU General Public License for more details.
  */
 
+#include <console/console.h>
 #include <cpu/amd/msr.h>
 #include <device/pci_ops.h>
 #include "init_cpus.h"

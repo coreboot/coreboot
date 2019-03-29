@@ -15,6 +15,7 @@
  */
 
 #include <cbfs.h>
+#include <console/console.h>
 #include <spd_bin.h>
 #include <string.h>
 

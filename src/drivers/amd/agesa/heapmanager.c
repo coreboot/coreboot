@@ -20,6 +20,7 @@
 #include <northbridge/amd/agesa/BiosCallOuts.h>
 
 #include <arch/acpi.h>
+#include <console/console.h>
 #include <string.h>
 
 /* BIOS_HEAP_START_ADDRESS is only for cold boots. */

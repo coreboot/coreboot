@@ -14,6 +14,8 @@
  * GNU General Public License for more details.
  */
 
+#include <console/console.h>
+
 #include "vx900.h"
 
 #ifdef __SIMPLE_DEVICE__

@@ -19,6 +19,7 @@
 #ifndef _DENVERTON_NS_HOB_MEM_H
 #define _DENVERTON_NS_HOB_MEM_H
 
+#include <console/console.h>
 #include <fsp/util.h>
 
 void soc_display_fsp_smbios_memory_info_hob(

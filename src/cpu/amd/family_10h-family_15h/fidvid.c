@@ -89,6 +89,7 @@ b.-  prep_fid_change(...)
 
  */
 
+#include <console/console.h>
 #include <cpu/amd/msr.h>
 #include <inttypes.h>
 #include <northbridge/amd/amdht/AsPsDefs.h>

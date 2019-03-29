@@ -34,8 +34,10 @@
  */
 
 #include <string.h>
+#include <console/console.h>
 #include <cpu/amd/msr.h>
 #include <device/pci_ops.h>
+
 #include "mct_d.h"
 
 static u8 ReconfigureDIMMspare_D(struct MCTStatStruc *pMCTstat,

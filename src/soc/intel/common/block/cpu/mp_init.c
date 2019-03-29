@@ -15,6 +15,7 @@
 
 #include <assert.h>
 #include <bootstate.h>
+#include <console/console.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/msr.h>

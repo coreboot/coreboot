@@ -13,7 +13,9 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
+
 #include <assert.h>
+#include <console/console.h>
 #include <intelblocks/gpio.h>
 #include <gpio.h>
 #include <intelblocks/itss.h>

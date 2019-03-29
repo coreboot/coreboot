@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <console/console.h>
 #include <device/pci_def.h>
 #include <device/device.h>
 #include <AGESA.h>

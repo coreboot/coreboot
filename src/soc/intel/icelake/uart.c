@@ -14,6 +14,7 @@
  */
 
 #include <assert.h>
+#include <console/console.h>
 #include <device/pci_def.h>
 #include <intelblocks/gpio.h>
 #include <intelblocks/lpss.h>

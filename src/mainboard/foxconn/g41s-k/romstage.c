@@ -16,6 +16,7 @@
  * GNU General Public License for more details.
  */
 
+#include <console/console.h>
 #include <cpu/x86/bist.h>
 #include <cpu/intel/romstage.h>
 #include <device/pci_ops.h>

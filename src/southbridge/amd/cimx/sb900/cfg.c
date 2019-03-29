@@ -13,11 +13,11 @@
  * GNU General Public License for more details.
  */
 
-
+#include <console/console.h>
 #include <string.h>
+
 #include "SbPlatform.h"
 #include "platform_cfg.h"
-
 
 /**
  * @brief South Bridge CIMx configuration

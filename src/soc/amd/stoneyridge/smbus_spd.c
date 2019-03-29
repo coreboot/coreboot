@@ -14,6 +14,7 @@
  */
 
 #include <amdblocks/agesawrapper.h>
+#include <console/console.h>
 #include <device/pci_def.h>
 #include <device/device.h>
 #include <soc/southbridge.h>

@@ -21,6 +21,7 @@
 #include <assert.h>
 #include <bootmem.h>
 #include <cbfs.h>
+#include <console/console.h>
 #include <program_loading.h>
 
 /*

@@ -15,7 +15,9 @@
  */
 
 #include <arch/io.h>
+#include <console/console.h>
 #include <device/pci_ops.h>
+
 #include "smbus.h"
 
 #define SMBUS_IO_BASE 0x1000

@@ -17,11 +17,12 @@
 
 #define __SIMPLE_DEVICE__
 
-#include "vx900.h"
-
 #include <device/pci.h>
 #include <device/pci_ops.h>
 #include <cbmem.h>
+#include <console/console.h>
+
+#include "vx900.h"
 
 #define MCU PCI_DEV(0, 0, 3)
 

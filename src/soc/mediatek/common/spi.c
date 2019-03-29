@@ -15,6 +15,7 @@
 
 #include <device/mmio.h>
 #include <assert.h>
+#include <console/console.h>
 #include <endian.h>
 #include <stdlib.h>
 #include <soc/pll.h>

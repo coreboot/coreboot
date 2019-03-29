@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <console/console.h>
 #include <device/pci_def.h>
 #include <device/device.h>
 
@@ -20,7 +21,6 @@
 #include <Porting.h>
 #include <AGESA.h>
 #include <amdlib.h>
-
 #include <northbridge/amd/pi/dimmSpd.h>
 
 /*-----------------------------------------------------------------------------

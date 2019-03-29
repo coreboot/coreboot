@@ -3,6 +3,8 @@
  * It should go away either there or here, depending what fits better.
  */
 
+#include <console/console.h>
+
 static void dump_spd_registers(const struct mem_controller *ctrl)
 {
 	int i;

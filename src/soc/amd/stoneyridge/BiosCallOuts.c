@@ -18,14 +18,15 @@
 #include <device/device.h>
 #include <device/pci_def.h>
 #include <amdblocks/BiosCallOuts.h>
+#include <console/console.h>
 #include <soc/southbridge.h>
 #include <soc/pci_devs.h>
 #include <stdlib.h>
-
 #include <amdblocks/agesawrapper.h>
 #include <amdblocks/dimm_spd.h>
-#include "chip.h"
 #include <amdblocks/car.h>
+
+#include "chip.h"
 
 void __weak platform_FchParams_reset(FCH_RESET_DATA_BLOCK *FchParams_reset) {}
 

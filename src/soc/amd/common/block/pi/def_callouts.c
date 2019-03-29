@@ -15,6 +15,7 @@
  */
 
 #include <cbfs.h>
+#include <console/console.h>
 #include <cpu/x86/lapic.h>
 #include <cpu/x86/mp.h>
 #include <timer.h>

@@ -14,6 +14,7 @@
  */
 
 #include <assert.h>
+#include <console/console.h>
 #include <soc/pmic_wrap.h>
 #include <soc/mt6358.h>
 

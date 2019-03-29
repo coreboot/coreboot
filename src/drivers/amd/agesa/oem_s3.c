@@ -17,6 +17,7 @@
 #include <spi_flash.h>
 #include <string.h>
 #include <cbmem.h>
+#include <console/console.h>
 #include <program_loading.h>
 #include <northbridge/amd/agesa/state_machine.h>
 #include <AGESA.h>

@@ -17,7 +17,6 @@
 #include <vm.h>
 #include <arch/boot.h>
 #include <arch/encoding.h>
-#include <console/console.h>
 #include <arch/smp/smp.h>
 #include <mcall.h>
 

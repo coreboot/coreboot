@@ -20,6 +20,7 @@
 #include <bootstate.h>
 #include <cbmem.h>
 #include <cf9_reset.h>
+#include <console/console.h>
 #include <cpu/intel/turbo.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/smm.h>

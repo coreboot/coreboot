@@ -18,6 +18,7 @@
 
 #include <arch/acpi.h>
 #include <arch/acpigen.h>
+#include <console/console.h>
 #include <device/mmio.h>
 #include <arch/smp/mpspec.h>
 #include <device/pci_ops.h>
@@ -34,6 +35,7 @@
 #include <soc/pci_devs.h>
 #include <soc/systemagent.h>
 #include <string.h>
+
 #include "chip.h"
 
 #define CSTATE_RES(address_space, width, offset, address)		\

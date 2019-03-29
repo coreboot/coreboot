@@ -171,6 +171,7 @@ config VBOOT_SAVE_RECOVERY_REASON_ON_REBOOT
 
 config VBOOT_OPROM_MATTERS
 	bool
+	default y if VGA_ROM_RUN
 	default n
 	help
 	  Set this option to indicate to vboot that this platform will skip its

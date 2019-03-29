@@ -65,6 +65,7 @@ config PCIEXP_L1_SUB_STATE
 	default y
 
 config VBOOT
+	select VBOOT_OPROM_MATTERS
 	select VBOOT_STARTS_IN_ROMSTAGE
 
 config BOOTBLOCK_CPU_INIT

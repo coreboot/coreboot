@@ -354,7 +354,6 @@ struct soc_intel_cannonlake_config {
 
 	/* Intel VT configuration */
 	uint8_t VtdDisable;
-	uint8_t VmxEnable;
 
 	/*
 	 * Acoustic Noise Mitigation

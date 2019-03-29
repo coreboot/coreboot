@@ -61,11 +61,8 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg, const config_t *config)
 	m_cfg->PcdDebugInterfaceFlags =
 				CONFIG(DRIVERS_UART_8250IO) ? 0x02 : 0x10;
 
-	/* Disable Vmx if Vt-d is already disabled */
-	if (config->VtdDisable)
-		m_cfg->VmxEnable = 0;
-	else
-		m_cfg->VmxEnable = config->VmxEnable;
+	/* Change VmxEnable UPD value according to ENABLE_VMX Kconfig */
+	m_cfg->VmxEnable = CONFIG(ENABLE_VMX);
 
 #if CONFIG(SOC_INTEL_COMMON_CANNONLAKE_BASE)
 	if (CONFIG(USE_INTEL_FSP_TO_CALL_COREBOOT_PUBLISH_MP_PPI))

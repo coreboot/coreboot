@@ -17,7 +17,6 @@
  * GNU General Public License for more details.
  */
 
-#include <assert.h>
 #include "bouncebuf.h"
 #include <commonlib/sd_mmc_ctrlr.h>
 #include <commonlib/sdhci.h>

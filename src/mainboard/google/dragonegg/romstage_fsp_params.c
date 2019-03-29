@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <assert.h>
 #include <baseboard/variants.h>
 #include <soc/romstage.h>
 

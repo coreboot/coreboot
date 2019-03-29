@@ -15,7 +15,6 @@
  * GNU General Public License for more details.
  */
 
-#include <assert.h>
 #include <arch/cpu.h>
 #include <bootstate.h>
 #include <console/console.h>

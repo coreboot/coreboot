@@ -12,7 +12,6 @@
  * GNU General Public License for more details.
  */
 
-#include <assert.h>
 #include <bootmode.h>
 #include <device/i2c_simple.h>
 #include <soc/i2c.h>

@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <assert.h>
 #include <chip.h>
 #include <cpu/x86/mtrr.h>
 #include <cbmem.h>

@@ -16,7 +16,6 @@
 #ifndef SOC_MEDIATEK_RTC_COMMON_H
 #define SOC_MEDIATEK_RTC_COMMON_H
 
-#include <assert.h>
 #include <bcd.h>
 #include <console/console.h>
 #include <rtc.h>

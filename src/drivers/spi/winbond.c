@@ -18,7 +18,6 @@
 #include <spi_flash.h>
 #include <spi-generic.h>
 #include <string.h>
-#include <assert.h>
 #include <delay.h>
 #include <lib.h>
 

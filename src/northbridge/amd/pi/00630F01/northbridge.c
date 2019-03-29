@@ -33,7 +33,6 @@
 #include <cpu/amd/msr.h>
 #include <cpu/amd/mtrr.h>
 #include <arch/acpigen.h>
-#include <assert.h>
 #include <northbridge/amd/pi/nb_common.h>
 #include <northbridge/amd/agesa/agesa_helper.h>
 #if CONFIG(BINARYPI_LEGACY_WRAPPER)

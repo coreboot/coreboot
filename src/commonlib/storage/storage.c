@@ -21,7 +21,6 @@
  * GNU General Public License for more details.
  */
 
-#include <assert.h>
 #include <commonlib/storage.h>
 #include "sd_mmc.h"
 #include "storage.h"

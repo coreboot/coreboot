@@ -18,7 +18,6 @@
 #ifndef LIBACPI_H
 #define LIBACPI_H
 
-#include <assert.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <arch/acpi.h>

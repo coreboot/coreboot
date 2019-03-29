@@ -22,7 +22,6 @@
 #include <device/pci.h>
 #include <soc/addressmap.h>
 #include <soc/ecam.h>
-#include <assert.h>
 
 /**
  * Get PCI BAR address from cavium specific extended capability.

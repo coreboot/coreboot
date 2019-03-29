@@ -20,7 +20,6 @@
 #include <soc/clock.h>
 #include <device/i2c.h>
 #include <device/i2c_simple.h>
-#include <assert.h>
 #include <delay.h>
 #include <device/mmio.h>
 #include <soc/addressmap.h>

@@ -21,6 +21,7 @@
 #include <console/console.h>
 #include <device/mmio.h>
 #include <arch/smp/mpspec.h>
+#include <assert.h>
 #include <device/pci_ops.h>
 #include <cbmem.h>
 #include <cpu/x86/smm.h>

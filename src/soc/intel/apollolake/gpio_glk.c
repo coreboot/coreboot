@@ -15,7 +15,6 @@
  * GNU General Public License for more details.
  */
 
-#include <assert.h>
 #include <intelblocks/gpio.h>
 #include <intelblocks/pcr.h>
 #include <soc/pcr_ids.h>

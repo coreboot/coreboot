@@ -17,7 +17,6 @@
 #include <device/device.h>
 #include <pc80/mc146818rtc.h>
 #include <smp/spinlock.h>
-#include <assert.h>
 
 #if CONFIG(PARALLEL_CPU_INIT)
 #error Intel hyper-threading requires serialized CPU init

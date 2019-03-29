@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <assert.h>
 #include <boot_device.h>
 #include <console/console.h>
 #include <soc/alternate_cbfs.h>

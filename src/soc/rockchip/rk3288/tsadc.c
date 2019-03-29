@@ -14,7 +14,6 @@
  */
 
 #include <device/mmio.h>
-#include <assert.h>
 #include <soc/clock.h>
 #include <soc/grf.h>
 #include <soc/pmu.h>

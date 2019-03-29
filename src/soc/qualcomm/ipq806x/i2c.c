@@ -27,7 +27,6 @@
  * SUCH DAMAGE.
  */
 
-#include <assert.h>
 #include <console/console.h>
 #include <device/i2c_simple.h>
 #include <stdlib.h>

@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <assert.h>
 #include <console/console.h>
 #include <soc/gpio.h>
 #include <soc/pinmux.h>

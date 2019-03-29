@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <assert.h>
 #include <base3.h>
 #include <console/console.h>
 #include <delay.h>

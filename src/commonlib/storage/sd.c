@@ -19,7 +19,6 @@
  * GNU General Public License for more details.
  */
 
-#include <assert.h>
 #include <commonlib/sd_mmc_ctrlr.h>
 #include <commonlib/storage.h>
 #include <delay.h>

@@ -14,7 +14,6 @@
  */
 
 #include <device/mmio.h>
-#include <assert.h>
 #include <boardid.h>
 #include <console/console.h>
 #include <soc/addressmap.h>

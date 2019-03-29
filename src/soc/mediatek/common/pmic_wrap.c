@@ -14,7 +14,6 @@
  */
 
 #include <device/mmio.h>
-#include <assert.h>
 #include <soc/pmic_wrap.h>
 #include <timer.h>
 

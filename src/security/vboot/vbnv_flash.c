@@ -14,7 +14,6 @@
  */
 
 #include <arch/early_variables.h>
-#include <assert.h>
 #include <commonlib/region.h>
 #include <console/console.h>
 #include <string.h>

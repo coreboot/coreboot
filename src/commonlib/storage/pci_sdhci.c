@@ -18,7 +18,6 @@
 #endif
 
 #include <arch/early_variables.h>
-#include <assert.h>
 #include <commonlib/sdhci.h>
 #include <device/pci.h>
 #include <device/pci_ops.h>

@@ -17,7 +17,6 @@
  * GNU General Public License for more details.
  */
 
-#include <assert.h>
 #include <commonlib/sdhci.h>
 #include <commonlib/storage.h>
 #include <console/console.h>

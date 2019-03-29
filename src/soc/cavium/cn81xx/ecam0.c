@@ -23,7 +23,6 @@
 #include <soc/addressmap.h>
 #include <soc/cavium/common/pci/chip.h>
 #include <soc/ecam.h>
-#include <assert.h>
 
 #define CAVM_PCCPF_XXX_VSEC_CTL 0x108
 #define CAVM_PCCPF_XXX_VSEC_SCTL 0x10c

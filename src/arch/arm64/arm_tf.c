@@ -18,7 +18,6 @@
 #include <arch/mmu.h>
 #include <arch/transition.h>
 #include <arm_tf.h>
-#include <assert.h>
 #include <bootmem.h>
 #include <cbfs.h>
 #include <console/console.h>

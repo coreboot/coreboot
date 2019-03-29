@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" "http://www.w3.org/TR/2001/PR-SVG-20010719/DTD/svg10.dtd">
+<svg width="55cm" height="28cm" viewBox="62 37 1088 559" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <g>
+    <rect style="fill: #ffffff" x="63.296" y="74.0258" width="1085.8" height="520.893"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #ffffff" x="63.296" y="74.0258" width="1085.8" height="520.893"/>
+  </g>
+  <line style="fill: none; fill-opacity:0; stroke-width: 4; stroke: #000000" x1="242.613" y1="107.463" x2="242.698" y2="492.591"/>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 4; stroke: #000000" x1="234.964" y1="477.053" x2="1135.15" y2="478.109"/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 4; stroke: #000000" points="1124.61,485.597 1139.62,478.114 1124.63,470.597 "/>
+  </g>
+  <text font-size="22.5778" style="fill: #000000;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="482.342" y="58.1574">
+    <tspan x="482.342" y="58.1574">Platform Initialization Firmware Phases</tspan>
+  </text>
+  <text font-size="16.9333" style="fill: #000000;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="98.4514" y="435.714">
+    <tspan x="98.4514" y="435.714">EDK II - stages</tspan>
+  </text>
+  <text font-size="12.8" style="fill: #000000;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="1073.49" y="499.998">
+    <tspan x="1073.49" y="499.998">time</tspan>
+  </text>
+  <text font-size="16.9333" style="fill: #000000;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="82.8266" y="330.476">
+    <tspan x="82.8266" y="330.476">coreboot - stages</tspan>
+  </text>
+  <g>
+    <rect style="fill: #faff94" x="250.501" y="404.247" width="130.432" height="69.1471"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #000000" x="250.501" y="404.247" width="130.432" height="69.1471"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:700" x="315.718" y="434.72">
+      <tspan x="315.718" y="434.72">Security</tspan>
+      <tspan x="315.718" y="450.72">(SEC)</tspan>
+    </text>
+  </g>
+  <g>
+    <rect style="fill: #faff94" x="383.033" y="404.781" width="282.702" height="69"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #000000" x="383.033" y="404.781" width="282.702" height="69"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:700" x="524.384" y="427.181">
+      <tspan x="524.384" y="427.181">Pre-EFI</tspan>
+      <tspan x="524.384" y="443.181">Initialization Environment</tspan>
+      <tspan x="524.384" y="459.181">(PEI)</tspan>
+    </text>
+  </g>
+  <g>
+    <rect style="fill: #faff94" x="668.027" y="405.317" width="269.244" height="69"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #000000" x="668.027" y="405.317" width="269.244" height="69"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:700" x="802.649" y="427.717">
+      <tspan x="802.649" y="427.717">Driver Execution</tspan>
+      <tspan x="802.649" y="443.717">Environment</tspan>
+      <tspan x="802.649" y="459.717">(DXE)</tspan>
+    </text>
+  </g>
+  <g>
+    <rect style="fill: #faff94" x="939.541" y="405.727" width="178.75" height="69"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #000000" x="939.541" y="405.727" width="178.75" height="69"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:700" x="1028.92" y="436.127">
+      <tspan x="1028.92" y="436.127">Boot Device Selection</tspan>
+      <tspan x="1028.92" y="452.127">(BDS)</tspan>
+    </text>
+  </g>
+  <g>
+    <rect style="fill: #90c9ff" x="254.747" y="291.309" width="125.314" height="69.1471"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #000000" x="254.747" y="291.309" width="125.314" height="69.1471"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:700" x="317.404" y="329.782">
+      <tspan x="317.404" y="329.782">bootblock</tspan>
+    </text>
+  </g>
+  <g>
+    <rect style="fill: #90c9ff" x="476.354" y="290.735" width="89.65" height="69.1471"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #000000" x="476.354" y="290.735" width="89.65" height="69.1471"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:700" x="521.179" y="329.209">
+      <tspan x="521.179" y="329.209">romstage</tspan>
+    </text>
+  </g>
+  <g>
+    <rect style="fill: #90c9ff" x="382.317" y="291.011" width="92.1" height="69.1471"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #000000" x="382.317" y="291.011" width="92.1" height="69.1471"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:700" x="428.367" y="321.485">
+      <tspan x="428.367" y="321.485">verstage</tspan>
+      <tspan x="428.367" y="337.485">(optional)</tspan>
+    </text>
+  </g>
+  <g>
+    <rect style="fill: #90c9ff" x="567.853" y="290.99" width="98.5152" height="69.1471"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #000000" x="567.853" y="290.99" width="98.5152" height="69.1471"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:700" x="617.11" y="321.464">
+      <tspan x="617.11" y="321.464">postcar</tspan>
+      <tspan x="617.11" y="337.464">(x86 only)</tspan>
+    </text>
+  </g>
+  <g>
+    <rect style="fill: #90c9ff" x="667.529" y="281.527" width="168.747" height="37"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #000000" x="667.529" y="281.527" width="168.747" height="37"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:700" x="751.903" y="303.927">
+      <tspan x="751.903" y="303.927">ramstage</tspan>
+    </text>
+  </g>
+  <g>
+    <rect style="fill: #90c9ff" x="667.84" y="321.487" width="167.519" height="53"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #000000" x="667.84" y="321.487" width="167.519" height="53"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:700" x="751.6" y="343.887">
+      <tspan x="751.6" y="343.887">SMM</tspan>
+      <tspan x="751.6" y="359.887">(x86 only)</tspan>
+    </text>
+  </g>
+  <g>
+    <rect style="fill: #90c9ff" x="941.841" y="283.151" width="171.98" height="69.1471"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #000000" x="941.841" y="283.151" width="171.98" height="69.1471"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:700" x="1027.83" y="321.624">
+      <tspan x="1027.83" y="321.624">payload</tspan>
+    </text>
+  </g>
+  <g>
+    <rect style="fill: #d8e5e5" x="253.112" y="209.178" width="82.7" height="27"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #000000" x="253.112" y="209.178" width="82.7" height="27"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:700" x="294.462" y="226.578">
+      <tspan x="294.462" y="226.578">Assembly</tspan>
+    </text>
+  </g>
+  <g>
+    <rect style="fill: #00c800" x="318.155" y="129.267" width="283.43" height="27"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #000000" x="318.155" y="129.267" width="283.43" height="27"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:700" x="459.87" y="146.667">
+      <tspan x="459.87" y="146.667">Cache-As-RAM</tspan>
+    </text>
+  </g>
+  <g>
+    <rect style="fill: #ff8484" x="506.676" y="159.67" width="599.421" height="27"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #000000" x="506.676" y="159.67" width="599.421" height="27"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:700" x="806.387" y="177.07">
+      <tspan x="806.387" y="177.07">DRAM</tspan>
+    </text>
+  </g>
+  <line style="fill: none; fill-opacity:0; stroke-width: 1; stroke-dasharray: 4; stroke: #000000" x1="175.046" y1="392.926" x2="1113.82" y2="391.893"/>
+  <text font-size="12.7998" style="fill: #000000;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="387.045" y="241.637">
+    <tspan x="387.045" y="241.637"></tspan>
+  </text>
+  <g>
+    <rect style="fill: #ffffff" x="337.438" y="209.383" width="618.831" height="27"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #000000" x="337.438" y="209.383" width="618.831" height="27"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:700" x="646.853" y="226.783">
+      <tspan x="646.853" y="226.783">C</tspan>
+    </text>
+  </g>
+  <g>
+    <rect style="fill: #f6c7c7" x="667.35" y="238.912" width="170.3" height="27"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #000000" x="667.35" y="238.912" width="170.3" height="27"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:700" x="752.5" y="256.312">
+      <tspan x="752.5" y="256.312">ADA SPARK (x86 only)</tspan>
+    </text>
+  </g>
+  <text font-size="16.9333" style="fill: #000000;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="84.2481" y="233.28">
+    <tspan x="84.2481" y="233.28">coreboot</tspan>
+    <tspan x="84.2481" y="254.446">source languages</tspan>
+  </text>
+  <text font-size="16.9333" style="fill: #000000;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="86.5008" y="153.786">
+    <tspan x="86.5008" y="153.786">code/heap</tspan>
+    <tspan x="86.5008" y="174.953">memory location </tspan>
+  </text>
+  <line style="fill: none; fill-opacity:0; stroke-width: 1; stroke-dasharray: 4; stroke: #000000" x1="175.483" y1="273.35" x2="1109.07" y2="273.582"/>
+  <line style="fill: none; fill-opacity:0; stroke-width: 1; stroke-dasharray: 4; stroke: #000000" x1="176.24" y1="192.463" x2="1109.66" y2="192.132"/>
+  <g>
+    <rect style="fill: #90c9ff" x="838.583" y="281.963" width="100.3" height="53"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #000000" x="838.583" y="281.963" width="100.3" height="53"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:700" x="888.733" y="304.363">
+      <tspan x="888.733" y="304.363">BL31</tspan>
+      <tspan x="888.733" y="320.363">(ARM only)</tspan>
+    </text>
+  </g>
+  <text font-size="12.7998" style="fill: #000000;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="209.772" y="508.772">
+    <tspan x="209.772" y="508.772">Power on</tspan>
+  </text>
+  <g>
+    <rect style="fill: #ffffff" x="941.939" y="210.26" width="22.4641" height="25.1384"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #ffffff" x="941.939" y="210.26" width="22.4641" height="25.1384"/>
+  </g>
+  <path style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #000000" d="M 955.029 209.941 C 967.678,210.1 946.349,230.772 955.598,237.021"/>
+</svg>

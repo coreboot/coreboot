@@ -1,5 +1,6 @@
 # Getting Started
 
+* [coreboot architecture](architecture.md)
 * [Build System](build_system.md)
 * [Submodules](submodules.md)
 * [Kconfig](kconfig.md)

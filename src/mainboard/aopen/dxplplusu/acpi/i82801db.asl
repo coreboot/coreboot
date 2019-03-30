@@ -85,10 +85,23 @@ Device (ICH0)
 	OperationRegion (ACPI, SystemIO, 0x0400, 0xC0)
 	Field (ACPI, ByteAcc, NoLock, Preserve)
 	{
-		Offset (0x00),       PS1L,8,  PS1H,8,   PE1L,8,   PE1H,8,
-		Offset (0x28),       GS0L,8,  GS0H,8,   GSPL,8,   GSPH,8,
-		Offset (0x2C),       GE0L,8,  GE0H,8,   GEPL,8,   GEPH,8,
-		Offset (0xB8),       GPLV,8
+		PS1L,	8,
+		PS1H,	8,
+		PE1L,	8,
+		PE1H,	8,
+
+		Offset (0x28),
+		GS0L,	8,
+		GS0H,	8,
+		GSPL,	8,
+		GSPH,	8,
+		GE0L,	8,
+		GE0H,	8,
+		GEPL,	8,
+		GEPH,	8,
+
+		Offset (0xB8),
+		GPLV,	8
 	}
 
 	Name (MSBF, ResourceTemplate ()

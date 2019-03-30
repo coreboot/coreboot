@@ -158,6 +158,47 @@ static inline unsigned int cpuid_edx(unsigned int op)
 #define CPUID_FEATURE_PAE (1 << 6)
 #define CPUID_FEATURE_PSE36 (1 << 17)
 
+// Intel leaf 0x4, AMD leaf 0x8000001d EAX
+
+#define CPUID_CACHE(x, res) \
+	(((res) >> CPUID_CACHE_##x##_SHIFT) & CPUID_CACHE_##x##_MASK)
+
+#define CPUID_CACHE_FULL_ASSOC_SHIFT 9
+#define CPUID_CACHE_FULL_ASSOC_MASK 0x1
+#define CPUID_CACHE_FULL_ASSOC(res) CPUID_CACHE(FULL_ASSOC, (res).eax)
+
+#define CPUID_CACHE_SELF_INIT_SHIFT 8
+#define CPUID_CACHE_SELF_INIT_MASK 0x1
+#define CPUID_CACHE_SELF_INIT(res) CPUID_CACHE(SELF_INIT, (res).eax)
+
+#define CPUID_CACHE_LEVEL_SHIFT 5
+#define CPUID_CACHE_LEVEL_MASK 0x7
+#define CPUID_CACHE_LEVEL(res) CPUID_CACHE(LEVEL, (res).eax)
+
+#define CPUID_CACHE_TYPE_SHIFT 0
+#define CPUID_CACHE_TYPE_MASK 0x1f
+#define CPUID_CACHE_TYPE(res) CPUID_CACHE(TYPE, (res).eax)
+
+// Intel leaf 0x4, AMD leaf 0x8000001d EBX
+
+#define CPUID_CACHE_WAYS_OF_ASSOC_SHIFT 22
+#define CPUID_CACHE_WAYS_OF_ASSOC_MASK 0x3ff
+#define CPUID_CACHE_WAYS_OF_ASSOC(res) CPUID_CACHE(WAYS_OF_ASSOC, (res).ebx)
+
+#define CPUID_CACHE_PHYS_LINE_SHIFT 12
+#define CPUID_CACHE_PHYS_LINE_MASK 0x3ff
+#define CPUID_CACHE_PHYS_LINE(res) CPUID_CACHE(PHYS_LINE, (res).ebx)
+
+#define CPUID_CACHE_COHER_LINE_SHIFT 0
+#define CPUID_CACHE_COHER_LINE_MASK 0xfff
+#define CPUID_CACHE_COHER_LINE(res) CPUID_CACHE(COHER_LINE, (res).ebx)
+
+// Intel leaf 0x4, AMD leaf 0x8000001d ECX
+
+#define CPUID_CACHE_NO_OF_SETS_SHIFT 0
+#define CPUID_CACHE_NO_OF_SETS_MASK 0xffffffff
+#define CPUID_CACHE_NO_OF_SETS(res) CPUID_CACHE(NO_OF_SETS, (res).ecx)
+
 int cpu_cpuid_extended_level(void);
 int cpu_have_cpuid(void);
 

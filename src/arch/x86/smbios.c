@@ -34,6 +34,14 @@
 #include <vendorcode/google/chromeos/gnvs.h>
 #endif
 
+#define update_max(len, max_len, stmt)		\
+	do {					\
+		int tmp = stmt;			\
+						\
+		max_len = MAX(max_len, tmp);	\
+		len += tmp;			\
+	} while (0)
+
 static u8 smbios_checksum(u8 *p, u32 length)
 {
 	u8 ret = 0;
@@ -602,6 +610,206 @@ static int smbios_write_type4(unsigned long *current, int handle)
 	return len;
 }
 
+/*
+ * Write SMBIOS type 7.
+ * Fill in some fields with constant values, as gathering the information
+ * from CPUID is impossible.
+ */
+static int
+smbios_write_type7(unsigned long *current,
+		   const int handle,
+		   const u8 level,
+		   const u8 sram_type,
+		   const enum smbios_cache_associativity associativity,
+		   const enum smbios_cache_type type,
+		   const size_t max_cache_size,
+		   const size_t cache_size)
+{
+	struct smbios_type7 *t = (struct smbios_type7 *)*current;
+	int len = sizeof(struct smbios_type7);
+	static unsigned int cnt = 0;
+	char buf[8];
+
+	memset(t, 0, sizeof(struct smbios_type7));
+	t->type = SMBIOS_CACHE_INFORMATION;
+	t->handle = handle;
+	t->length = len - 2;
+
+	snprintf(buf, sizeof(buf), "CACHE%x", cnt++);
+	t->socket_designation = smbios_add_string(t->eos, buf);
+
+	t->cache_configuration = SMBIOS_CACHE_CONF_LEVEL(level) |
+		SMBIOS_CACHE_CONF_LOCATION(0) | /* Internal */
+		SMBIOS_CACHE_CONF_ENABLED(1) | /* Enabled */
+		SMBIOS_CACHE_CONF_OPERATION_MODE(3); /* Unknown */
+
+	if (max_cache_size < (SMBIOS_CACHE_SIZE_MASK * KiB)) {
+		t->max_cache_size = max_cache_size / KiB;
+		t->max_cache_size2 = t->max_cache_size;
+
+		t->max_cache_size |= SMBIOS_CACHE_SIZE_UNIT_1KB;
+		t->max_cache_size2 |= SMBIOS_CACHE_SIZE2_UNIT_1KB;
+	} else {
+		if (cache_size < (SMBIOS_CACHE_SIZE_MASK * 64 * KiB))
+			t->max_cache_size = max_cache_size / (64 * KiB);
+		else
+			t->max_cache_size = SMBIOS_CACHE_SIZE_OVERFLOW;
+		t->max_cache_size2 = max_cache_size / (64 * KiB);
+
+		t->max_cache_size |= SMBIOS_CACHE_SIZE_UNIT_64KB;
+		t->max_cache_size2 |= SMBIOS_CACHE_SIZE2_UNIT_64KB;
+	}
+
+	if (cache_size < (SMBIOS_CACHE_SIZE_MASK * KiB)) {
+		t->installed_size = cache_size / KiB;
+		t->installed_size2 = t->installed_size;
+
+		t->installed_size |= SMBIOS_CACHE_SIZE_UNIT_1KB;
+		t->installed_size2 |= SMBIOS_CACHE_SIZE2_UNIT_1KB;
+	} else {
+		if (cache_size < (SMBIOS_CACHE_SIZE_MASK * 64 * KiB))
+			t->installed_size = cache_size / (64 * KiB);
+		else
+			t->installed_size = SMBIOS_CACHE_SIZE_OVERFLOW;
+		t->installed_size2 = cache_size / (64 * KiB);
+
+		t->installed_size |= SMBIOS_CACHE_SIZE_UNIT_64KB;
+		t->installed_size2 |= SMBIOS_CACHE_SIZE2_UNIT_64KB;
+	}
+
+	t->associativity = associativity;
+	t->supported_sram_type = sram_type;
+	t->current_sram_type = sram_type;
+	t->cache_speed = 0; /* Unknown */
+	t->error_correction_type = SMBIOS_CACHE_ERROR_CORRECTION_UNKNOWN;
+	t->system_cache_type = type;
+
+	len = t->length + smbios_string_table_len(t->eos);
+	*current += len;
+	return len;
+}
+
+/* Convert the associativity as integer to the SMBIOS enum if available */
+static enum smbios_cache_associativity
+smbios_cache_associativity(const u8 num)
+{
+	switch (num) {
+	case 1:
+		return SMBIOS_CACHE_ASSOCIATIVITY_DIRECT;
+	case 2:
+		return SMBIOS_CACHE_ASSOCIATIVITY_2WAY;
+	case 4:
+		return SMBIOS_CACHE_ASSOCIATIVITY_4WAY;
+	case 8:
+		return SMBIOS_CACHE_ASSOCIATIVITY_8WAY;
+	case 12:
+		return SMBIOS_CACHE_ASSOCIATIVITY_12WAY;
+	case 16:
+		return SMBIOS_CACHE_ASSOCIATIVITY_16WAY;
+	case 20:
+		return SMBIOS_CACHE_ASSOCIATIVITY_20WAY;
+	case 24:
+		return SMBIOS_CACHE_ASSOCIATIVITY_24WAY;
+	case 32:
+		return SMBIOS_CACHE_ASSOCIATIVITY_32WAY;
+	case 48:
+		return SMBIOS_CACHE_ASSOCIATIVITY_48WAY;
+	case 64:
+		return SMBIOS_CACHE_ASSOCIATIVITY_64WAY;
+	case 0xff:
+		return SMBIOS_CACHE_ASSOCIATIVITY_FULL;
+	default:
+		return SMBIOS_CACHE_ASSOCIATIVITY_UNKNOWN;
+	};
+}
+
+/*
+ * Parse the "Deterministic Cache Parameters" as provided by Intel in
+ * leaf 4 or AMD in extended leaf 0x8000001d.
+ *
+ * @param current Pointer to memory address to write the tables to
+ * @param handle Pointer to handle for the tables
+ * @param max_struct_size Pointer to maximum struct size
+ */
+static int smbios_write_type7_cache_parameters(unsigned long *current,
+					       int *handle,
+					       int *max_struct_size)
+{
+	struct cpuid_result res;
+	unsigned int cnt = 0;
+	int len = 0;
+	u32 leaf;
+
+	if (!cpu_have_cpuid())
+		return len;
+
+	if (cpu_is_intel()) {
+		res = cpuid(0);
+		if (res.eax < 4)
+			return len;
+		leaf = 4;
+	} else if (cpu_is_amd()) {
+		res = cpuid(0x80000000);
+		if (res.eax < 0x80000001)
+			return len;
+
+		res = cpuid(0x80000001);
+		if (!(res.ecx & (1 << 22)))
+			return len;
+
+		leaf = 0x8000001d;
+	} else {
+		printk(BIOS_DEBUG, "SMBIOS: Unknown CPU\n");
+		return len;
+	}
+
+	while (1) {
+		enum smbios_cache_associativity associativity;
+		enum smbios_cache_type type;
+
+		res = cpuid_ext(leaf, cnt++);
+
+		const u8 cache_type = CPUID_CACHE_TYPE(res);
+		const u8 level = CPUID_CACHE_LEVEL(res);
+		const size_t assoc = CPUID_CACHE_WAYS_OF_ASSOC(res) + 1;
+		const size_t partitions = CPUID_CACHE_PHYS_LINE(res) + 1;
+		const size_t cache_line_size = CPUID_CACHE_COHER_LINE(res) + 1;
+		const size_t number_of_sets = CPUID_CACHE_NO_OF_SETS(res) + 1;
+		const size_t cache_size = assoc * partitions * cache_line_size *
+					number_of_sets;
+
+		if (!cache_type)
+			/* No more caches in the system */
+			break;
+
+		switch (cache_type) {
+		case 1:
+			type = SMBIOS_CACHE_TYPE_DATA;
+			break;
+		case 2:
+			type = SMBIOS_CACHE_TYPE_INSTRUCTION;
+			break;
+		case 3:
+			type = SMBIOS_CACHE_TYPE_UNIFIED;
+			break;
+		default:
+			type = SMBIOS_CACHE_TYPE_UNKNOWN;
+			break;
+		}
+
+		if (CPUID_CACHE_FULL_ASSOC(res))
+			associativity = SMBIOS_CACHE_ASSOCIATIVITY_FULL;
+		else
+			associativity = smbios_cache_associativity(assoc);
+
+		update_max(len, *max_struct_size, smbios_write_type7(current,
+			*handle++, level, SMBIOS_CACHE_SRAM_TYPE_UNKNOWN,
+			associativity, type, cache_size, cache_size));
+	};
+
+	return len;
+}
+
 static int smbios_write_type11(unsigned long *current, int *handle)
 {
 	struct smbios_type11 *t = (struct smbios_type11 *)*current;
@@ -748,14 +956,6 @@ static int smbios_walk_device_tree(struct device *tree, int *handle,
 	return len;
 }
 
-#define update_max(len, max_len, stmt)		\
-	do {					\
-		int tmp = stmt;			\
-						\
-		max_len = MAX(max_len, tmp);	\
-		len += tmp;			\
-	} while (0)
-
 unsigned long smbios_write_tables(unsigned long current)
 {
 	struct smbios_entry *se;
@@ -783,6 +983,8 @@ unsigned long smbios_write_tables(unsigned long current)
 		handle++));
 	update_max(len, max_struct_size, smbios_write_type4(&current,
 		handle++));
+	len += smbios_write_type7_cache_parameters(&current, &handle,
+		&max_struct_size);
 	update_max(len, max_struct_size, smbios_write_type11(&current,
 		&handle));
 	if (CONFIG(ELOG))

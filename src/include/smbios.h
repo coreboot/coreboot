@@ -393,6 +393,93 @@ struct smbios_type4 {
 	u8 eos[2];
 } __packed;
 
+/* defines for supported_sram_type/current_sram_type */
+
+#define SMBIOS_CACHE_SRAM_TYPE_OTHER			(1 << 0)
+#define SMBIOS_CACHE_SRAM_TYPE_UNKNOWN			(1 << 1)
+#define SMBIOS_CACHE_SRAM_TYPE_NON_BURST		(1 << 2)
+#define SMBIOS_CACHE_SRAM_TYPE_BURST			(1 << 3)
+#define SMBIOS_CACHE_SRAM_TYPE_PIPELINE_BURST		(1 << 4)
+#define SMBIOS_CACHE_SRAM_TYPE_SYNCHRONOUS		(1 << 5)
+#define SMBIOS_CACHE_SRAM_TYPE_ASYNCHRONOUS		(1 << 6)
+
+/* enum for error_correction_type */
+
+enum smbios_cache_error_corr {
+	SMBIOS_CACHE_ERROR_CORRECTION_OTHER = 1,
+	SMBIOS_CACHE_ERROR_CORRECTION_UNKNOWN,
+	SMBIOS_CACHE_ERROR_CORRECTION_NONE,
+	SMBIOS_CACHE_ERROR_CORRECTION_PARITY,
+	SMBIOS_CACHE_ERROR_CORRECTION_SINGLE_BIT,
+	SMBIOS_CACHE_ERROR_CORRECTION_MULTI_BIT,
+};
+
+/* enum for system_cache_type */
+
+enum smbios_cache_type {
+	SMBIOS_CACHE_TYPE_OTHER = 1,
+	SMBIOS_CACHE_TYPE_UNKNOWN,
+	SMBIOS_CACHE_TYPE_INSTRUCTION,
+	SMBIOS_CACHE_TYPE_DATA,
+	SMBIOS_CACHE_TYPE_UNIFIED,
+};
+
+/* enum for associativity */
+
+enum smbios_cache_associativity {
+	SMBIOS_CACHE_ASSOCIATIVITY_OTHER = 1,
+	SMBIOS_CACHE_ASSOCIATIVITY_UNKNOWN,
+	SMBIOS_CACHE_ASSOCIATIVITY_DIRECT,
+	SMBIOS_CACHE_ASSOCIATIVITY_2WAY,
+	SMBIOS_CACHE_ASSOCIATIVITY_4WAY,
+	SMBIOS_CACHE_ASSOCIATIVITY_FULL,
+	SMBIOS_CACHE_ASSOCIATIVITY_8WAY,
+	SMBIOS_CACHE_ASSOCIATIVITY_16WAY,
+	SMBIOS_CACHE_ASSOCIATIVITY_12WAY,
+	SMBIOS_CACHE_ASSOCIATIVITY_24WAY,
+	SMBIOS_CACHE_ASSOCIATIVITY_32WAY,
+	SMBIOS_CACHE_ASSOCIATIVITY_48WAY,
+	SMBIOS_CACHE_ASSOCIATIVITY_64WAY,
+	SMBIOS_CACHE_ASSOCIATIVITY_20WAY,
+};
+
+/* defines for cache_configuration */
+
+#define SMBIOS_CACHE_CONF_LEVEL(x) ((((x) - 1) & 0x7) << 0)
+#define SMBIOS_CACHE_CONF_LOCATION(x) (((x) & 0x3) << 5)
+#define SMBIOS_CACHE_CONF_ENABLED(x) (((x) & 0x1) << 7)
+#define SMBIOS_CACHE_CONF_OPERATION_MODE(x) (((x) & 0x3) << 8)
+
+/* defines for max_cache_size and installed_size */
+
+#define SMBIOS_CACHE_SIZE_UNIT_1KB		(0 << 15)
+#define SMBIOS_CACHE_SIZE_UNIT_64KB		(1 << 15)
+#define SMBIOS_CACHE_SIZE_MASK			0x7fff
+#define SMBIOS_CACHE_SIZE_OVERFLOW		0xffff
+
+#define SMBIOS_CACHE_SIZE2_UNIT_1KB		(0 << 31)
+#define SMBIOS_CACHE_SIZE2_UNIT_64KB		(1UL << 31)
+#define SMBIOS_CACHE_SIZE2_MASK			0x7fffffff
+
+struct smbios_type7 {
+	u8 type;
+	u8 length;
+	u16 handle;
+	u8 socket_designation;
+	u16 cache_configuration;
+	u16 max_cache_size;
+	u16 installed_size;
+	u16 supported_sram_type;
+	u16 current_sram_type;
+	u8 cache_speed;
+	u8 error_correction_type;
+	u8 system_cache_type;
+	u8 associativity;
+	u32 max_cache_size2;
+	u32 installed_size2;
+	u8 eos[2];
+} __packed;
+
 struct smbios_type11 {
 	u8 type;
 	u8 length;

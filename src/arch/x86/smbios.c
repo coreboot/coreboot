@@ -730,10 +730,12 @@ smbios_cache_associativity(const u8 num)
  * @param current Pointer to memory address to write the tables to
  * @param handle Pointer to handle for the tables
  * @param max_struct_size Pointer to maximum struct size
+ * @param type4 Pointer to SMBIOS type 4 structure
  */
 static int smbios_write_type7_cache_parameters(unsigned long *current,
 					       int *handle,
-					       int *max_struct_size)
+					       int *max_struct_size,
+					       struct smbios_type4 *type4)
 {
 	struct cpuid_result res;
 	unsigned int cnt = 0;
@@ -802,9 +804,25 @@ static int smbios_write_type7_cache_parameters(unsigned long *current,
 		else
 			associativity = smbios_cache_associativity(assoc);
 
-		update_max(len, *max_struct_size, smbios_write_type7(current,
-			*handle++, level, SMBIOS_CACHE_SRAM_TYPE_UNKNOWN,
-			associativity, type, cache_size, cache_size));
+		const int h = (*handle)++;
+
+		update_max(len, *max_struct_size, smbios_write_type7(current, h,
+			   level, SMBIOS_CACHE_SRAM_TYPE_UNKNOWN, associativity,
+			   type, cache_size, cache_size));
+
+		if (type4) {
+			switch (level) {
+			case 1:
+				type4->l1_cache_handle = h;
+				break;
+			case 2:
+				type4->l2_cache_handle = h;
+				break;
+			case 3:
+				type4->l3_cache_handle = h;
+				break;
+			}
+		}
 	};
 
 	return len;
@@ -981,10 +999,12 @@ unsigned long smbios_write_tables(unsigned long current)
 	handle++;
 	update_max(len, max_struct_size, smbios_write_type3(&current,
 		handle++));
+
+	struct smbios_type4 *type4 = (struct smbios_type4 *)current;
 	update_max(len, max_struct_size, smbios_write_type4(&current,
 		handle++));
 	len += smbios_write_type7_cache_parameters(&current, &handle,
-		&max_struct_size);
+		&max_struct_size, type4);
 	update_max(len, max_struct_size, smbios_write_type11(&current,
 		&handle));
 	if (CONFIG(ELOG))

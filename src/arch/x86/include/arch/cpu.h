@@ -166,6 +166,16 @@ void smm_init_completion(void);
 void smm_lock(void);
 void smm_setup_structures(void *gnvs, void *tcg, void *smi1);
 
+static inline bool cpu_is_amd(void)
+{
+	return CONFIG(CPU_AMD_AGESA) || CONFIG(CPU_AMD_PI);
+}
+
+static inline bool cpu_is_intel(void)
+{
+	return CONFIG(CPU_INTEL_COMMON) || CONFIG(SOC_INTEL_COMMON);
+}
+
 #ifndef __SIMPLE_DEVICE__
 
 struct device;

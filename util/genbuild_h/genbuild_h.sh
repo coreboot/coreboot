@@ -27,9 +27,9 @@ if [ "${BUILD_TIMELESS}" = "1" ]; then
 	TIMESOURCE="fixed"
 	DATE=0
 elif [ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" = "true" ]; then
-	GITREV=$(LANG= git log -1 --format=format:%h)
+	GITREV=$(LANG= git log --no-show-signature -1 --format=format:%h)
 	TIMESOURCE=git
-	DATE=$(git log --pretty=format:%ct -1)
+	DATE=$(git log --no-show-signature --pretty=format:%ct -1)
 else
 	GITREV=Unknown
 	TIMESOURCE="date"

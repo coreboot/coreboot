@@ -73,6 +73,8 @@ chip soc/intel/cannonlake
 	register "DdiPortBHpd" = "1"
 	register "DdiPortCHpd" = "1"
 	register "tcc_offset" = "10"	# TCC of 90C
+	# Unlock GPIO pads
+	register "PchUnlockGpioPads" = "1"
 
 	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC2)"	# Type-C Port 0
 	register "usb2_ports[1]" = "USB2_PORT_TYPE_C(OC2)"	# Type-C Port 1

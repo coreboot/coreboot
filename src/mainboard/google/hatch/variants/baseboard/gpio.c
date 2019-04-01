@@ -241,7 +241,7 @@ static const struct pad_config gpio_table[] = {
 	/* E4  : M2_SSD_PE_WAKE_ODL */
 	PAD_CFG_GPI(GPP_E4, NONE, DEEP),
 	/* E5  : SATA_DEVSLP1 */
-	PAD_CFG_NF(GPP_E5, NONE, DEEP, NF1),
+	PAD_CFG_NF(GPP_E5, NONE, PLTRST, NF1),
 	/* E6  : M2_SSD_RST_L */
 	PAD_NC(GPP_E6, NONE),
 	/* E7  : GPP_E7 ==> NC */

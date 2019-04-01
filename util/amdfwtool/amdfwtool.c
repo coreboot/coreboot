@@ -81,13 +81,15 @@
 #define ERASE_ALIGNMENT 0x1000U
 #define TABLE_ALIGNMENT 0x1000U
 #define BLOB_ALIGNMENT 0x100U
+#define TABLE_ERASE_ALIGNMENT _MAX(TABLE_ALIGNMENT, ERASE_ALIGNMENT)
 #define BLOB_ERASE_ALIGNMENT _MAX(BLOB_ALIGNMENT, ERASE_ALIGNMENT)
 
 #define DEFAULT_SOFT_FUSE_CHAIN "0x1"
 
 #define EMBEDDED_FW_SIGNATURE 0x55aa55aa
-#define PSP_COOKIE 0x50535024	/* 'PSP$' */
-#define PSP2_COOKIE 0x50535032	/* 'PSP2' */
+#define PSP_COOKIE 0x50535024		/* 'PSP$' */
+#define PSPL2_COOKIE 0x324c5024		/* '2LP$' */
+#define PSP2_COOKIE 0x50535032		/* 'PSP2' */
 
 /*
  * Beginning with Family 15h Models 70h-7F, a.k.a Stoney Ridge, the PSP
@@ -176,6 +178,7 @@ static void usage(void)
 	printf("\nPSP options:\n");
 	printf("-A | --combo-capable           Place PSP directory pointer at Embedded Firmware\n");
 	printf("                               offset able to support combo directory\n");
+	printf("-M | --multilevel              Generate primary and secondary tables\n");
 	printf("-p | --pubkey <FILE>           Add pubkey\n");
 	printf("-b | --bootloader <FILE>       Add bootloader\n");
 	printf("-S | --subprogram <number>     Sets subprogram field for the next firmware\n");
@@ -213,36 +216,44 @@ typedef enum _amd_fw_type {
 	AMD_FW_PSP_SMU_FIRMWARE2 = 18,
 	AMD_PSP_FUSE_CHAIN = 11,
 	AMD_FW_PSP_SMUSCS = 95,
-
+	AMD_FW_L2_PTR = 0x40,
 	AMD_FW_IMC,
 	AMD_FW_GEC,
 	AMD_FW_XHCI,
 	AMD_FW_INVALID,
 } amd_fw_type;
 
+#define PSP_LVL1 0x1
+#define PSP_LVL2 0x2
+#define PSP_BOTH (PSP_LVL1 | PSP_LVL2)
 typedef struct _amd_fw_entry {
 	amd_fw_type type;
 	uint8_t subprog;
 	char *filename;
+	int level;
 	uint64_t other;
 } amd_fw_entry;
 
 static amd_fw_entry amd_psp_fw_table[] = {
-	{ .type = AMD_FW_PSP_PUBKEY },
-	{ .type = AMD_FW_PSP_BOOTLOADER },
-	{ .type = AMD_FW_PSP_SMU_FIRMWARE },
-	{ .type = AMD_FW_PSP_RECOVERY },
-	{ .type = AMD_FW_PSP_RTM_PUBKEY },
-	{ .type = AMD_FW_PSP_SECURED_OS },
-	{ .type = AMD_FW_PSP_NVRAM },
-	{ .type = AMD_FW_PSP_SECURED_DEBUG },
-	{ .type = AMD_FW_PSP_TRUSTLETS },
-	{ .type = AMD_FW_PSP_TRUSTLETKEY },
-	{ .type = AMD_FW_PSP_SMU_FIRMWARE, .subprog = 1 },
-	{ .type = AMD_FW_PSP_SMU_FIRMWARE2, .subprog = 1 },
-	{ .type = AMD_FW_PSP_SMU_FIRMWARE2 },
-	{ .type = AMD_FW_PSP_SMUSCS },
-	{ .type = AMD_PSP_FUSE_CHAIN },
+	{ .type = AMD_FW_PSP_PUBKEY, .level = PSP_BOTH },
+	{ .type = AMD_FW_PSP_BOOTLOADER, .level = PSP_BOTH },
+	{ .type = AMD_FW_PSP_SMU_FIRMWARE, .subprog = 0, .level = PSP_BOTH },
+	{ .type = AMD_FW_PSP_RECOVERY, .level = PSP_LVL1 },
+	{ .type = AMD_FW_PSP_RTM_PUBKEY, .level = PSP_BOTH },
+	{ .type = AMD_FW_PSP_SECURED_OS, .level = PSP_LVL2 },
+	{ .type = AMD_FW_PSP_NVRAM, .level = PSP_LVL2 },
+	{ .type = AMD_FW_PSP_SMU_FIRMWARE, .subprog = 2, .level = PSP_BOTH },
+	{ .type = AMD_FW_PSP_SECURED_DEBUG, .level = PSP_LVL2 },
+	{ .type = AMD_FW_PSP_TRUSTLETS, .level = PSP_LVL2 },
+	{ .type = AMD_FW_PSP_TRUSTLETKEY, .level = PSP_LVL2 },
+	{ .type = AMD_FW_PSP_SMU_FIRMWARE2, .subprog = 2, .level = PSP_BOTH },
+	{ .type = AMD_FW_PSP_SMU_FIRMWARE, .subprog = 1, .level = PSP_BOTH },
+	{ .type = AMD_FW_PSP_SMU_FIRMWARE2, .subprog = 1, .level = PSP_BOTH },
+	{ .type = AMD_FW_PSP_SMU_FIRMWARE2, .level = PSP_BOTH },
+	{ .type = AMD_FW_PSP_SMUSCS, .level = PSP_BOTH  },
+	{ .type = AMD_PSP_FUSE_CHAIN, .level = PSP_LVL2 },
+	{ .type = AMD_FW_PSP_SMU_FIRMWARE, .subprog = 1, .level = PSP_BOTH },
+	{ .type = AMD_FW_PSP_SMU_FIRMWARE2, .subprog = 1, .level = PSP_BOTH },
 	{ .type = AMD_FW_INVALID },
 };
 
@@ -319,11 +330,20 @@ typedef struct _context {
 #define BUFF_TO_RUN(ctx, ptr) RUN_OFFSET((ctx), ((char *)(ptr) - (ctx).rom))
 #define BUFF_ROOM(ctx) ((ctx).rom_size - (ctx).current)
 
-static void *new_psp_dir(context *ctx)
+static void *new_psp_dir(context *ctx, int multi)
 {
 	void *ptr;
 
-	ctx->current = ALIGN(ctx->current, TABLE_ALIGNMENT);
+	/*
+	 * Force both onto boundary when multi.  Primary table is after
+	 * updatable table, so alignment ensures primary can stay intact
+	 * if secondary is reprogrammed.
+	 */
+	if (multi)
+		ctx->current = ALIGN(ctx->current, TABLE_ERASE_ALIGNMENT);
+	else
+		ctx->current = ALIGN(ctx->current, TABLE_ALIGNMENT);
+
 	ptr = BUFF_CURRENT(*ctx);
 	ctx->current += sizeof(psp_directory_header)
 			+ MAX_PSP_ENTRIES * sizeof(psp_directory_entry);
@@ -343,9 +363,15 @@ static void *new_combo_dir(context *ctx)
 
 static void fill_dir_header(void *directory, uint32_t count, uint32_t cookie)
 {
-	if (cookie == PSP2_COOKIE) {
+	psp_combo_directory *cdir = directory;
+	psp_directory_table *dir = directory;
+
+	if (!count)
+		return;
+
+	switch (cookie) {
+	case PSP2_COOKIE:
 		/* caller is responsible for lookup mode */
-		psp_combo_directory *cdir = directory;
 		cdir->header.cookie = cookie;
 		cdir->header.num_entries = count;
 		cdir->header.reserved[0] = 0;
@@ -356,8 +382,9 @@ static void fill_dir_header(void *directory, uint32_t count, uint32_t cookie)
 					+ sizeof(cdir->header.num_entries)
 					+ sizeof(cdir->header.lookup)
 					+ 2 * sizeof(cdir->header.reserved[0]));
-	} else {
-		psp_directory_table *dir = directory;
+		break;
+	case PSP_COOKIE:
+	case PSPL2_COOKIE:
 		dir->header.cookie = cookie;
 		dir->header.num_entries = count;
 		dir->header.reserved = 0;
@@ -366,6 +393,7 @@ static void fill_dir_header(void *directory, uint32_t count, uint32_t cookie)
 					count * sizeof(psp_directory_entry)
 					+ sizeof(dir->header.num_entries)
 					+ sizeof(dir->header.reserved));
+		break;
 	}
 }
 
@@ -444,14 +472,34 @@ static void integrate_firmwares(context *ctx,
 
 static void integrate_psp_firmwares(context *ctx,
 					psp_directory_table *pspdir,
-					amd_fw_entry *fw_table)
+					psp_directory_table *pspdir2,
+					amd_fw_entry *fw_table,
+					uint32_t cookie)
 {
 	ssize_t bytes;
 	unsigned int i, count;
+	int level;
+
+	/* This function can create a primary table, a secondary table, or a
+	 * flattened table which contains all applicable types.  These if-else
+	 * statements infer what the caller intended.  If a 2nd-level cookie
+	 * is passed, clearly a 2nd-level table is intended.  However, a
+	 * 1st-level cookie may indicate level 1 or flattened.  If the caller
+	 * passes a pointer to a 2nd-level table, then assume not flat.
+	 */
+	if (cookie == PSPL2_COOKIE)
+		level = PSP_LVL2;
+	else if (pspdir2)
+		level = PSP_LVL1;
+	else
+		level = PSP_BOTH;
 
 	ctx->current = ALIGN(ctx->current, BLOB_ALIGNMENT);
 
 	for (i = 0, count = 0; fw_table[i].type != AMD_FW_INVALID; i++) {
+		if (!(fw_table[i].level & level))
+			continue;
+
 		if (fw_table[i].type == AMD_PSP_FUSE_CHAIN) {
 			pspdir->entries[count].type = fw_table[i].type;
 			pspdir->entries[count].subprog = fw_table[i].subprog;
@@ -506,16 +554,28 @@ static void integrate_psp_firmwares(context *ctx,
 		}
 	}
 
+	if (pspdir2) {
+		pspdir->entries[count].type = AMD_FW_L2_PTR;
+		pspdir->entries[count].subprog = 0;
+		pspdir->entries[count].rsvd = 0;
+		pspdir->entries[count].size = sizeof(pspdir2->header)
+					+ pspdir2->header.num_entries
+					* sizeof(psp_directory_entry);
+
+		pspdir->entries[count].addr = BUFF_TO_RUN(*ctx, pspdir2);
+		count++;
+	}
+
 	if (count > MAX_PSP_ENTRIES) {
 		printf("Error: PSP entries exceed max allowed items\n");
 		free(ctx->rom);
 		exit(1);
 	}
 
-	fill_dir_header(pspdir, count, PSP_COOKIE);
+	fill_dir_header(pspdir, count, cookie);
 }
 
-static const char *optstring  = "x:i:g:AS:p:b:s:r:k:c:n:d:t:u:w:m:T:o:f:l:h";
+static const char *optstring  = "x:i:g:AMS:p:b:s:r:k:c:n:d:t:u:w:m:T:o:f:l:h";
 
 static struct option long_options[] = {
 	{"xhci",             required_argument, 0, 'x' },
@@ -523,6 +583,7 @@ static struct option long_options[] = {
 	{"gec",              required_argument, 0, 'g' },
 	/* PSP */
 	{"combo-capable",          no_argument, 0, 'A' },
+	{"multilevel",             no_argument, 0, 'M' },
 	{"subprogram",       required_argument, 0, 'S' },
 	{"pubkey",           required_argument, 0, 'p' },
 	{"bootloader",       required_argument, 0, 'b' },
@@ -599,6 +660,7 @@ int main(int argc, char **argv)
 	uint32_t romsig_offset;
 	uint32_t rom_base_address;
 	uint8_t sub = 0;
+	int multi = 0;
 
 	while (1) {
 		int optindex = 0;
@@ -611,18 +673,21 @@ int main(int argc, char **argv)
 		switch (c) {
 		case 'x':
 			register_fw_filename(AMD_FW_XHCI, sub, optarg);
-			sub = 0; /* subprogram is N/A but clear anyway */
+			sub = 0;
 			break;
 		case 'i':
 			register_fw_filename(AMD_FW_IMC, sub, optarg);
-			sub = 0; /* subprogram is N/A but clear anyway */
+			sub = 0;
 			break;
 		case 'g':
 			register_fw_filename(AMD_FW_GEC, sub, optarg);
-			sub = 0; /* subprogram is N/A but clear anyway */
+			sub = 0;
 			break;
 		case 'A':
 			comboable = 1;
+			break;
+		case 'M':
+			multi = 1;
 			break;
 		case 'S':
 			sub = (uint8_t)strtoul(optarg, &tmp, 16);
@@ -788,8 +853,21 @@ int main(int argc, char **argv)
 
 	ctx.current = ALIGN(ctx.current, 0x10000U); /* todo: is necessary? */
 
-	pspdir = new_psp_dir(&ctx);
-	integrate_psp_firmwares(&ctx, pspdir, amd_psp_fw_table);
+	if (multi) {
+		/* Do 2nd PSP directory followed by 1st */
+		psp_directory_table *pspdir2 = new_psp_dir(&ctx, multi);
+		integrate_psp_firmwares(&ctx, pspdir2, 0,
+						amd_psp_fw_table, PSPL2_COOKIE);
+
+		pspdir = new_psp_dir(&ctx, multi);
+		integrate_psp_firmwares(&ctx, pspdir, pspdir2,
+						amd_psp_fw_table, PSP_COOKIE);
+	} else {
+		/* flat: PSP 1 cookie and no pointer to 2nd table */
+		pspdir = new_psp_dir(&ctx, multi);
+		integrate_psp_firmwares(&ctx, pspdir, 0,
+						amd_psp_fw_table, PSP_COOKIE);
+	}
 
 	if (comboable)
 		amd_romsig->comboable = BUFF_TO_RUN(ctx, pspdir);

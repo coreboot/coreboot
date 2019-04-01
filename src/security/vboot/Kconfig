@@ -192,12 +192,6 @@ config VBOOT_SOFT_REBOOT_WORKAROUND
 	bool
 	default n
 
-config VBOOT_PHYSICAL_REC_SWITCH
-	bool
-	default n
-	help
-	  Whether this platform has a physical recovery switch.
-
 config VBOOT_LID_SWITCH
 	bool
 	default n

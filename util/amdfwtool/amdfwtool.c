@@ -80,6 +80,8 @@
 #define TABLE_ALIGNMENT 0x1000U
 #define BLOB_ALIGNMENT 0x100U
 
+#define DEFAULT_SOFT_FUSE_CHAIN "0x1"
+
 #define EMBEDDED_FW_SIGNATURE 0x55aa55aa
 #define PSP_COOKIE 0x50535024	/* 'PSP$' */
 #define PSP2_COOKIE 0x50535032	/* 'PSP2' */
@@ -184,6 +186,7 @@ static void usage(void)
 	printf("-u | --trustletkey <FILE>      Add trustletkey\n");
 	printf("-w | --smufirmware2 <FILE>     Add smufirmware2\n");
 	printf("-m | --smuscs <FILE>           Add smuscs\n");
+	printf("-T | --soft-fuse <HEX_VAL>     Override default soft fuse values\n");
 	printf("\n-o | --output <filename>     output filename\n");
 	printf("-f | --flashsize <HEX_VAL>     ROM size in bytes\n");
 	printf("                               size must be larger than %dKB\n",
@@ -218,6 +221,7 @@ typedef struct _amd_fw_entry {
 	amd_fw_type type;
 	uint8_t subprog;
 	char *filename;
+	uint64_t other;
 } amd_fw_entry;
 
 static amd_fw_entry amd_psp_fw_table[] = {
@@ -450,7 +454,7 @@ static void integrate_psp_firmwares(context *ctx,
 			pspdir->entries[count].subprog = fw_table[i].subprog;
 			pspdir->entries[count].rsvd = 0;
 			pspdir->entries[count].size = 0xFFFFFFFF;
-			pspdir->entries[count].addr = 1;
+			pspdir->entries[count].addr = fw_table[i].other;
 			count++;
 		} else if (fw_table[i].filename != NULL) {
 			bytes = copy_blob(BUFF_CURRENT(*ctx),
@@ -483,7 +487,7 @@ static void integrate_psp_firmwares(context *ctx,
 	fill_dir_header(pspdir, count, PSP_COOKIE);
 }
 
-static const char *optstring  = "x:i:g:AS:p:b:s:r:k:c:n:d:t:u:w:m:o:f:l:h";
+static const char *optstring  = "x:i:g:AS:p:b:s:r:k:c:n:d:t:u:w:m:T:o:f:l:h";
 
 static struct option long_options[] = {
 	{"xhci",             required_argument, 0, 'x' },
@@ -504,6 +508,7 @@ static struct option long_options[] = {
 	{"trustletkey",      required_argument, 0, 'u' },
 	{"smufirmware2",     required_argument, 0, 'w' },
 	{"smuscs",           required_argument, 0, 'm' },
+	{"soft-fuse",        required_argument, 0, 'T' },
 	{"output",           required_argument, 0, 'o' },
 	{"flashsize",        required_argument, 0, 'f' },
 	{"location",         required_argument, 0, 'l' },
@@ -511,6 +516,19 @@ static struct option long_options[] = {
 
 	{NULL,               0,                 0,  0  }
 };
+
+static void register_fw_fuse(char *str)
+{
+	int i;
+
+	for (i = 0; i < sizeof(amd_psp_fw_table) / sizeof(amd_fw_entry); i++) {
+		if (amd_psp_fw_table[i].type != AMD_PSP_FUSE_CHAIN)
+			continue;
+
+		amd_psp_fw_table[i].other = strtoull(str, NULL, 16);
+		return;
+	}
+}
 
 static void register_fw_filename(amd_fw_type type, uint8_t sub, char filename[])
 {
@@ -543,6 +561,7 @@ int main(int argc, char **argv)
 	embedded_firmware *amd_romsig;
 	psp_directory_table *pspdir;
 	int comboable = 0;
+	int fuse_defined = 0;
 	int targetfd;
 	char *output = NULL;
 	context ctx = {
@@ -635,6 +654,11 @@ int main(int argc, char **argv)
 			register_fw_filename(AMD_FW_PSP_SMUSCS, sub, optarg);
 			sub = 0;
 			break;
+		case 'T':
+			register_fw_fuse(optarg);
+			fuse_defined = 1;
+			sub = 0;
+			break;
 		case 'o':
 			output = optarg;
 			break;
@@ -662,6 +686,9 @@ int main(int argc, char **argv)
 			break;
 		}
 	}
+
+	if (!fuse_defined)
+		register_fw_fuse(DEFAULT_SOFT_FUSE_CHAIN);
 
 	if (!output) {
 		printf("Error: Output value is not specified.\n\n");

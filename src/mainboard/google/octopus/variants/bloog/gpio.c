@@ -42,9 +42,6 @@ static const struct pad_config default_override_table[] = {
 	/* EN_PP3300_TOUCHSCREEN */
 	PAD_CFG_GPO_IOSSTATE_IOSTERM(GPIO_146, 0, DEEP, NONE, Tx0RxDCRx0,
 				     DISPUPD),
-
-	/* EN_PP3300_WLAN_L */
-	PAD_CFG_GPO(GPIO_178, 0, DEEP),
 };
 
 const struct pad_config *variant_override_gpio_table(size_t *num)

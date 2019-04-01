@@ -249,7 +249,8 @@ static const struct pad_config gpio_table[] = {
 	/* SCC COMMUNITY GPIOS */
 	PAD_NC(GPIO_176, UP_20K), /* SMB_ALERTB -- unused */
 	PAD_NC(GPIO_177, UP_20K), /* SMB_CLK -- unused */
-	PAD_CFG_GPO_IOSSTATE_IOSTERM(GPIO_178, 1, DEEP, NONE, Tx1RxDCRx0, DISPUPD), /* EN_PP3300_WLAN */
+	PAD_CFG_GPO_IOSSTATE_IOSTERM(GPIO_178, 0, DEEP, NONE, Tx0RxDCRx0, DISPUPD), /* EN_PP3300_WLAN_L */
+
 	PAD_NC(GPIO_179, NONE), /* SDCARD_CLK -- unused */
 	PAD_NC(GPIO_180, NONE), /* SDCARD_CMD -- unused */
 	PAD_NC(GPIO_181, UP_20K), /* SDCARD_D0 -- unused */

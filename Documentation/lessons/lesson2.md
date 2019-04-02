@@ -130,8 +130,9 @@ The first line of your commit message is your commit summary. This is a brief
 one-line description of what you changed in the files using the template
 below:
 
-<filepath>: Short description
+`<filepath>: Short description`
 *ex. cpu/amd/pi/00630F01: Fix checkpatch warnings and errors*
+
 **Note:** It is good practice to use present tense in your descriptions
 and do not punctuate your summary.
 
@@ -171,8 +172,9 @@ In the textbox labeled "Commit summary" provide a brief one-line
 description of what you changed in the files according to the template
 below:
 
-<filepath>: Short description
+`<filepath>: Short description`
 *ex. cpu/amd/pi/00630F01: Fix checkpatch warnings and errors*
+
 **Note:** It is good practice to use present tense in your descriptions
 and do not punctuate your short description.
 

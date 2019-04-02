@@ -318,7 +318,6 @@ struct soc_intel_skylake_config {
 		Display_Auto,
 		Display_Switchable,
 	} PrimaryDisplay;
-	u8 InternalGfx;
 	u8 ApertureSize;
 	u8 SkipExtGfxScan;
 	u8 ScanExtGfxForLegacyOpRom;

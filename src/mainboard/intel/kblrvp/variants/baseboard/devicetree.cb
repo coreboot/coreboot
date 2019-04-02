@@ -27,7 +27,6 @@ chip soc/intel/skylake
 	register "ScsEmmcEnabled" = "1"
 	register "ScsEmmcHs400Enabled" = "1"
 	register "ScsSdCardEnabled" = "2"
-	register "InternalGfx" = "1"
 	register "SkipExtGfxScan" = "1"
 	register "Device4Enable" = "1"
 	register "SaGv" = "SaGv_Enabled"

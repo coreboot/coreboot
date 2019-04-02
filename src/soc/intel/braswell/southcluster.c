@@ -28,6 +28,7 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
+#include <intelblocks/lpc_lib.h>
 #include <pc80/isa-dma.h>
 #include <pc80/i8254.h>
 #include <pc80/i8259.h>
@@ -41,17 +42,23 @@
 #include <soc/spi.h>
 #include <spi-generic.h>
 #include <stdint.h>
-#include <reg_script.h>
 
-static const struct reg_script ops[] = {
-	REG_MMIO_RMW32(ILB_BASE_ADDRESS + SCNT,
-		~SCNT_MODE, 0),	/* put LPC SERIRQ in Quiet Mode */
-	REG_SCRIPT_END
-};
-
-static void enable_serirq_quiet_mode(void)
+static void sc_set_serial_irqs_mode(struct device *dev, enum serirq_mode mode)
 {
-	reg_script_run(ops);
+	u8 *ilb_base = (u8 *)(pci_read_config32(dev, IBASE) & ~0xF);
+
+	switch (mode) {
+	case SERIRQ_CONTINUOUS:
+		break;
+	case SERIRQ_OFF:
+		write32(ilb_base + ILB_OIC, read32(ilb_base + ILB_OIC) &
+			~SIRQEN);
+		break;
+	case SERIRQ_QUIET:
+	default:
+		write8(ilb_base + SCNT, read8(ilb_base + SCNT) & ~SCNT_MODE);
+		break;
+	}
 }
 
 static inline void
@@ -84,6 +91,15 @@ static void sc_add_mmio_resources(struct device *dev)
 /* Default IO range claimed by the LPC device. The upper bound is exclusive. */
 #define LPC_DEFAULT_IO_RANGE_LOWER 0
 #define LPC_DEFAULT_IO_RANGE_UPPER 0x1000
+
+static void sc_enable_serial_irqs(struct device *dev)
+{
+	u8 *ilb_base = (u8 *)(pci_read_config32(dev, IBASE) & ~0xF);
+
+	printk(BIOS_SPEW, "Enable serial irq\n");
+	write32(ilb_base + ILB_OIC, read32(ilb_base + ILB_OIC) | SIRQEN);
+	write8(ilb_base + SCNT, read8(ilb_base + SCNT) | SCNT_MODE);
+}
 
 /*
  * Write PCI config space IRQ assignments.  PCI devices have the INT_LINE
@@ -285,6 +301,8 @@ static void sc_init(struct device *dev)
 
 	isa_dma_init();
 
+	sc_enable_serial_irqs(dev);
+
 	/* Set up the PIRQ PIC routing based on static config. */
 	for (i = 0; i < NUM_PIRQS; i++)
 		write8((void *)(pr_base + i*sizeof(ir->pic[i])),
@@ -320,6 +338,9 @@ static void sc_init(struct device *dev)
 
 	/* Initialize i8254 timers */
 	setup_i8254();
+
+	sc_set_serial_irqs_mode(dev, config->serirq_mode);
+
 }
 
 /*
@@ -630,7 +651,6 @@ static void finalize_chipset(void *unused)
 		write32(spi + LVSCC, cfg.lvscc | VCL);
 	}
 	spi_init();
-	enable_serirq_quiet_mode();
 
 	printk(BIOS_DEBUG, "Finalizing SMM.\n");
 	outb(APM_CNT_FINALIZE, APM_CNT);

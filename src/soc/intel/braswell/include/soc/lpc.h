@@ -31,6 +31,10 @@
 #define UART_CONT	0x80
 #define RCBA		0xf0
 
+/* iLB Memory Mapped IO */
+#define ILB_OIC		0x60
+#define  SIRQEN		(1 << 12)
+
 /* Memory Mapped IO in LPC bridge */
 #define SCNT		0x10
 #define SCNT_MODE	(1 << 7) /* When cleared, SERIRQ is in quiet mode */

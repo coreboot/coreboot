@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2013 Google Inc.
  * Copyright (C) 2015 Intel Corp.
+ * Copyright (C) 2019 Eltan B.V.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +25,7 @@
 
 #include <stdint.h>
 #include <fsp/util.h>
+#include <intelblocks/lpc_lib.h>
 #include <soc/pci_devs.h>
 
 #define SVID_CONFIG1		1
@@ -53,6 +55,8 @@ enum usb_comp_bg_value {
 struct soc_intel_braswell_config {
 	uint8_t enable_xdp_tap;
 	uint8_t clkreq_enable;
+
+	enum serirq_mode serirq_mode;
 
 	/* Disable SLP_X stretching after SUS power well loss. */
 	int disable_slp_x_stretch_sus_fail;

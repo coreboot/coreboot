@@ -49,18 +49,6 @@ chip soc/intel/apollolake
 	# Enable Vtd feature
 	register "enable_vtd" = "1"
 
-	# Intel Common SoC Config
-	#+-------------------+---------------------------+
-	#| Field             |  Value                    |
-	#+-------------------+---------------------------+
-	#| I2C0              | Proximity Sensor          |
-	#+-------------------+---------------------------+
-	register "common_soc_config" = "{
-		.i2c[0] = {
-			.speed = I2C_SPEED_STANDARD
-		},
-	}"
-
 	device domain 0 on
 		device pci 00.0 on  end	# - Host Bridge
 		device pci 00.1 off end	# - DPTF

@@ -10,6 +10,19 @@ chip soc/intel/cannonlake
 	register "HeciEnabled" = "1"
 	register "s0ix_enable" = "1"
 
+	# Enable eDP device
+	register "DdiPortEdp" = "1"
+	# Enable HPD for DDI ports B/C
+	register "DdiPortBHpd" = "1"
+	register "DdiPortCHpd" = "1"
+	register "DdiPortDHpd" = "1"
+	register "DdiPortFHpd" = "1"
+	# Enable DDC for DDI ports B/C
+	register "DdiPortBDdc" = "1"
+	register "DdiPortCDdc" = "1"
+	register "DdiPortDDdc" = "1"
+	register "DdiPortFDdc" = "1"
+
 	register "SerialIoDevMode" = "{
 		[PchSerialIoIndexI2C0]  = PchSerialIoPci,
 		[PchSerialIoIndexI2C1]  = PchSerialIoPci,

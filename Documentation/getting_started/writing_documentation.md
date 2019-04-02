@@ -106,5 +106,5 @@ you'll see the following warning:
 [guide]: http://www.sphinx-doc.org/en/stable/install.html
 [Sphinx]: http://www.sphinx-doc.org/en/master/
 [Markdown Guide]: https://www.markdownguide.org/
-[Gerrit Guidelines]: https://doc.coreboot.org/gerrit_guidelines.html
+[Gerrit Guidelines]: gerrit_guidelines.md
 [review.coreboot.org]: https://review.coreboot.org

@@ -131,7 +131,6 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI(PMU_SLP_S0_B, UP_20K, DEEP),
 	PAD_CFG_GPI(PMU_SLP_S3_B, UP_20K, DEEP),
 	PAD_CFG_GPI(PMU_SLP_S4_B, UP_20K, DEEP),
-	PAD_CFG_GPI(PMU_SUSCLK, DN_20K, DEEP),
 	PAD_CFG_GPI(PMU_WAKE_B, DN_20K, DEEP),
 	PAD_CFG_GPI(SUS_STAT_B, DN_20K, DEEP),
 	PAD_CFG_GPI(SUSPWRDNACK, DN_20K, DEEP),
@@ -380,6 +379,8 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_NF(GPIO_43, UP_20K, DEEP, NF1),		/* LPSS_UART1_TXD */
 	PAD_CFG_NF(GPIO_46, UP_20K, DEEP, NF1),		/* LPSS_UART2_RXD */
 	PAD_CFG_NF(GPIO_47, UP_20K, DEEP, NF1),		/* LPSS_UART2_TXD */
+
+	PAD_CFG_NF(PMU_SUSCLK, NONE, DEEP, NF1),/* 32,78 kHz used on SMARC */
 };
 
 const struct pad_config *variant_early_gpio_table(size_t *num)

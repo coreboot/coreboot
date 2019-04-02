@@ -46,6 +46,7 @@ chip soc/intel/skylake
 	register "ScsSdCardEnabled" = "0"
 	register "HeciEnabled" = "0"
 	register "SkipExtGfxScan" = "0"
+	register "PrimaryDisplay" = "Display_PEG"
 	register "Device4Enable" = "1"
 	register "SaGv" = "SaGv_Enabled"
 	register "PmTimerDisabled" = "0"

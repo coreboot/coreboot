@@ -85,7 +85,7 @@ config MAX_CPUS
 
 config OVERRIDE_DEVICETREE
 	string
-	default "variants/$(CONFIG_VARIANT_DIR)/overridetree.cb" if !BOARD_GOOGLE_HATCH_WHL
+	default "variants/$(CONFIG_VARIANT_DIR)/overridetree.cb"
 
 config TPM_TIS_ACPI_INTERRUPT
 	int

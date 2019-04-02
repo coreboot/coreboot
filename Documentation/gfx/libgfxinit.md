@@ -48,9 +48,9 @@ follows:
 
 * `lightup_ok`: returns whether the initialization succeeded `1` or
                 failed `0`. Currently, only the case that no display
-                could be found counts as failure. A failure at a la-
-                ter stage (e.g. failure to train a DP) is not propa-
-                gated.
+                could be found counts as failure. A failure at a
+                later stage (e.g. failure to train a DP) is not
+                propagated.
 
 GMA: Per Board Configuration
 ----------------------------

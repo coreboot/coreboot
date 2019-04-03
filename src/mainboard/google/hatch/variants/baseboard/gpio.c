@@ -99,8 +99,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_B17, NONE, DEEP, NF1),
 	/* B18 : H1_SLAVE_SPI_MOSI_R */
 	PAD_CFG_NF(GPP_B18, NONE, DEEP, NF1),
-	/* B19 : GPP_B19 ==> NC */
-	PAD_NC(GPP_B19, NONE),
+	/* B19 : Set to NF1 to match FSP setting it to NF1, i.e., GSPI1_CS0# */
+	PAD_CFG_NF(GPP_B19, NONE, DEEP, NF1),
 	/* B20 : PCH_SPI_FPMCU_CLK_R */
 	PAD_CFG_NF(GPP_B20, NONE, DEEP, NF1),
 	/* B21 : PCH_SPI_FPMCU_MISO */
@@ -311,15 +311,15 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_F23, NONE),
 
 	/* G0  : SD_CMD */
-	PAD_CFG_NF(GPP_G0, NONE, DEEP, NF1),
+	PAD_CFG_NF(GPP_G0, NATIVE, DEEP, NF1),
 	/* G1  : SD_DATA0 */
-	PAD_CFG_NF(GPP_G1, NONE, DEEP, NF1),
+	PAD_CFG_NF(GPP_G1, NATIVE, DEEP, NF1),
 	/* G2  : SD_DATA1 */
-	PAD_CFG_NF(GPP_G2, NONE, DEEP, NF1),
+	PAD_CFG_NF(GPP_G2, NATIVE, DEEP, NF1),
 	/* G3  : SD_DATA2 */
-	PAD_CFG_NF(GPP_G3, NONE, DEEP, NF1),
+	PAD_CFG_NF(GPP_G3, NATIVE, DEEP, NF1),
 	/* G4  : SD_DATA3 */
-	PAD_CFG_NF(GPP_G4, NONE, DEEP, NF1),
+	PAD_CFG_NF(GPP_G4, NATIVE, DEEP, NF1),
 	/* G5  : SD_CD# */
 	PAD_CFG_NF(GPP_G5, NONE, PLTRST, NF1),
 	/* G6  : SD_CLK */

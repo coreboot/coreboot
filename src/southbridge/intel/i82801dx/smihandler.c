@@ -490,7 +490,7 @@ static void southbridge_smi_tco(unsigned int node, smm_state_save_area_t *state_
 	} else if (tco_sts & (1 << 3)) { /* TIMEOUT */
 		/* Handle TCO timeout */
 		printk(BIOS_DEBUG, "TCO Timeout.\n");
-	} else if (!tco_sts) {
+	} else {
 		dump_tco_status(tco_sts);
 	}
 }

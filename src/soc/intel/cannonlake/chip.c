@@ -24,7 +24,6 @@
 #include <intelblocks/xdci.h>
 #include <romstage_handoff.h>
 #include <soc/intel/common/vbt.h>
-#include <soc/itss.h>
 #include <soc/pci_devs.h>
 #include <soc/ramstage.h>
 
@@ -168,18 +167,11 @@ void cnl_configure_pads(const struct pad_config *cfg, size_t num_pads)
 
 void soc_init_pre_device(void *chip_info)
 {
-	/* Snapshot the current GPIO IRQ polarities. FSP is setting a
-	 * default policy that doesn't honor boards' requirements. */
-	itss_snapshot_irq_polarities(GPIO_IRQ_START, GPIO_IRQ_END);
-
 	/* Perform silicon specific init. */
 	fsp_silicon_init(romstage_handoff_is_resume());
 
 	 /* Display FIRMWARE_VERSION_INFO_HOB */
 	fsp_display_fvi_version_hob();
-
-	/* Restore GPIO IRQ polarities back to previous settings. */
-	itss_restore_irq_polarities(GPIO_IRQ_START, GPIO_IRQ_END);
 
 	/* TODO(furquan): Get rid of this workaround once FSP is fixed. */
 	cnl_configure_pads(NULL, 0);

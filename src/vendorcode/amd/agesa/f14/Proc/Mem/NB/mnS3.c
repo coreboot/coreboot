@@ -792,6 +792,7 @@ MemNS3GetSetBitField (
         break;
       case AccessS3SaveWidth32:
         RegValue = *(UINT32 *) Value;
+	break;
       default:
         ASSERT (FALSE);
       }

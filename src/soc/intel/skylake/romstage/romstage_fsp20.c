@@ -354,6 +354,7 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 
 	/* Set primary graphic device */
 	soc_primary_gfx_config_params(m_cfg, config);
+	m_t_cfg->SkipExtGfxScan = config->SkipExtGfxScan;
 
 	mainboard_memory_init_params(mupd);
 }

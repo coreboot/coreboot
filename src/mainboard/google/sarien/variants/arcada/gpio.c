@@ -71,7 +71,7 @@ static const struct pad_config gpio_table[] = {
 /* SPKR */		PAD_CFG_NF(GPP_B14, NONE, DEEP, NF1),
 /* GSPI0_CS# */		PAD_NC(GPP_B15, NONE), /* PRIM_CORE_OPT_DIS (nostuff) */
 /* GSPI0_CLK */		PAD_CFG_GPI(GPP_B16, NONE, DEEP), /* ONE_DIMM# */
-/* GSPI0_MISO */	PAD_CFG_GPI(GPP_B17, NONE, DEEP), /* RTC_DET# */
+/* GSPI0_MISO */	PAD_NC(GPP_B17, NONE), /* RTC_DET# */
 /* GSPI0_MOSI */	PAD_NC(GPP_B18, NONE),
 /* GSPI1_CS# */		PAD_NC(GPP_B19, NONE), /* HDD_FALL_INT (nostuff) */
 /* GSPI1_CLK */		PAD_NC(GPP_B20, NONE), /* TPM_PIRQ# (nostuff) */
@@ -209,8 +209,8 @@ static const struct pad_config gpio_table[] = {
 /* I2C3_SCL */		PAD_NC(GPP_H7, NONE),
 /* I2C4_SDA */		PAD_CFG_NF(GPP_H8, NONE, DEEP, NF1), /* I2C_SDA_H1 */
 /* I2C4_SCL */		PAD_CFG_NF(GPP_H9, NONE, DEEP, NF1), /* I2C_SCL_H1 */
-/* I2C5_SDA */		PAD_CFG_NF(GPP_H10, NONE, DEEP, NF2), /* ISH_I2C2_SDA */
-/* I2C5_SCL */		PAD_CFG_NF(GPP_H11, NONE, DEEP, NF2), /* ISH_I2C2_SCL */
+/* I2C5_SDA */		PAD_NC(GPP_H10, NONE), /* ISH_I2C2_SDA */
+/* I2C5_SCL */		PAD_NC(GPP_H11, NONE), /* ISH_I2C2_SCL */
 /* M2_SKT2_CFG0 */	PAD_NC(GPP_H12, NONE),
 /* M2_SKT2_CFG1 */	PAD_NC(GPP_H13, NONE),
 /* M2_SKT2_CFG2 */	PAD_NC(GPP_H14, NONE),

@@ -22,18 +22,19 @@
  * The GPIO groups are accessed through register blocks called
  * communities.
  */
-#define GPP_A			0
-#define GPP_B			1
-#define GPP_G			2
-#define GROUP_SPI		3
-#define GPP_D			4
-#define GPP_F			5
-#define GPP_H			6
-#define GROUP_VGPIO		7
-#define GPD			9
-#define GROUP_AZA		0xA
-#define GROUP_CPU		0xB
-#define GPP_C			0xC
+#define GPP_A			0x0
+#define GPP_B			0x1
+#define GPP_G			0x2
+#define GROUP_SPI		0x3
+#define GPP_D			0x5
+#define GPP_F			0x6
+#define GPP_H			0x7
+#define GROUP_VGPIO0		0x8
+#define GROUP_VGPIO1		0x9
+#define GPD			0xA
+#define GROUP_AZA		0xB
+#define GROUP_CPU		0xC
+#define GPP_C			0x4
 #define GPP_E			0xD
 #define GROUP_JTAG		0xE
 #define GROUP_HVMOS		0xF

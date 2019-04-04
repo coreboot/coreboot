@@ -366,6 +366,22 @@ typedef struct dmar_atsr_entry {
 	u16 segment;
 } __packed dmar_atsr_entry_t;
 
+typedef struct dmar_rhsa_entry {
+	u16 type;
+	u16 length;
+	u32 reserved;
+	u64 base_address;
+	u32 proximity_domain;
+} __packed dmar_rhsa_entry_t;
+
+typedef struct dmar_andd_entry {
+	u16 type;
+	u16 length;
+	u8 reserved[3];
+	u8 device_number;
+	u8 device_name[];
+} __packed dmar_andd_entry_t;
+
 /* DMAR (DMA Remapping Reporting Structure) */
 typedef struct acpi_dmar {
 	struct acpi_table_header header;
@@ -850,6 +866,10 @@ unsigned long acpi_create_dmar_rmrr(unsigned long current, u16 segment,
 				    u64 bar, u64 limit);
 unsigned long acpi_create_dmar_atsr(unsigned long current, u8 flags,
 				    u16 segment);
+unsigned long acpi_create_dmar_rhsa(unsigned long current, u64 base_addr,
+				    u32 proximity_domain);
+unsigned long acpi_create_dmar_andd(unsigned long current, u8 device_number,
+				    const char *device_name);
 void acpi_dmar_drhd_fixup(unsigned long base, unsigned long current);
 void acpi_dmar_rmrr_fixup(unsigned long base, unsigned long current);
 void acpi_dmar_atsr_fixup(unsigned long base, unsigned long current);

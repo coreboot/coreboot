@@ -569,6 +569,33 @@ unsigned long acpi_create_dmar_atsr(unsigned long current, u8 flags,
 	return atsr->length;
 }
 
+unsigned long acpi_create_dmar_rhsa(unsigned long current, u64 base_addr,
+	u32 proximity_domain)
+{
+	dmar_rhsa_entry_t *rhsa = (dmar_rhsa_entry_t *)current;
+	memset(rhsa, 0, sizeof(*rhsa));
+	rhsa->type = DMAR_RHSA;
+	rhsa->length = sizeof(*rhsa);
+	rhsa->base_address = base_addr;
+	rhsa->proximity_domain = proximity_domain;
+
+	return rhsa->length;
+}
+
+unsigned long acpi_create_dmar_andd(unsigned long current, u8 device_number,
+	const char *device_name)
+{
+	dmar_andd_entry_t *andd = (dmar_andd_entry_t *)current;
+	int andd_len = sizeof(dmar_andd_entry_t) + strlen(device_name) + 1;
+	memset(andd, 0, andd_len);
+	andd->type = DMAR_ANDD;
+	andd->length = andd_len;
+	andd->device_number = device_number;
+	memcpy(&andd->device_name, device_name, strlen(device_name));
+
+	return andd->length;
+}
+
 void acpi_dmar_drhd_fixup(unsigned long base, unsigned long current)
 {
 	dmar_entry_t *drhd = (dmar_entry_t *)base;

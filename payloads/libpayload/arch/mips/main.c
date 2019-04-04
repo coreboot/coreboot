@@ -17,7 +17,7 @@
 #include <libpayload.h>
 
 /* The argc value to pass to main() */
-unsigned int main_argc;
+int main_argc;
 /* The argv value to pass to main() */
 char *main_argv[MAX_ARGC_COUNT];
 

@@ -31,7 +31,7 @@
 #include <libpayload.h>
 #include <arch/mmu.h>
 
-unsigned int main_argc;    /**< The argc value to pass to main() */
+int main_argc;    /**< The argc value to pass to main() */
 
 /** The argv value to pass to main() */
 char *main_argv[MAX_ARGC_COUNT];

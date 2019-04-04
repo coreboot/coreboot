@@ -30,6 +30,26 @@ typedef struct {
 #define TLMM_GPIO_IN_OUT_OFF	0x4
 #define TLMM_GPIO_ID_STATUS_OFF	0x10
 
+
+/* GPIO INTR CFG MASK */
+#define GPIO_INTR_DECT_CTL_MASK		0x3
+#define GPIO_INTR_RAW_STATUS_EN_MASK	0x1
+
+/* GPIO INTR CFG SHIFT */
+#define GPIO_INTR_DECT_CTL_SHIFT	2
+#define GPIO_INTR_RAW_STATUS_EN_SHIFT	4
+
+/* GPIO INTR STATUS MASK */
+#define GPIO_INTR_STATUS_MASK		0x1
+
+/* GPIO INTR RAW STATUS */
+#define GPIO_INTR_RAW_STATUS_ENABLE	1
+#define GPIO_INTR_RAW_STATUS_DISABLE	0
+
+/* GPIO INTR STATUS */
+#define GPIO_INTR_STATUS_ENABLE		1
+#define GPIO_INTR_STATUS_DISABLE	0
+
 /* GPIO TLMM: Direction */
 #define GPIO_INPUT	0
 #define GPIO_OUTPUT	1
@@ -304,12 +324,23 @@ enum {
 	PIN(119, EAST,	RES_1, RES_2, RES_3, RES_4, RES_5, RES_6, RES_7),
 };
 
+enum gpio_irq_type {
+	IRQ_TYPE_LEVEL = 0,
+	IRQ_TYPE_RISING_EDGE = 1,
+	IRQ_TYPE_FALLING_EDGE = 2,
+	IRQ_TYPE_DUAL_EDGE = 3,
+};
+
 struct tlmm_gpio {
 	uint32_t cfg;
 	uint32_t in_out;
+	uint32_t intr_cfg;
+	uint32_t intr_status;
 };
 
 void gpio_configure(gpio_t gpio, uint32_t func, uint32_t pull,
 				uint32_t drive_str, uint32_t enable);
+void gpio_input_irq(gpio_t gpio, enum gpio_irq_type type, uint32_t pull);
+int gpio_irq_status(gpio_t gpio);
 
 #endif // _SOC_QUALCOMM_QCS405_GPIO_H_

@@ -161,7 +161,7 @@ chip soc/intel/cannonlake
 	#| I2C4              | H1 TPM                    |
 	#+-------------------+---------------------------+
 
-	register "tcc_offset" = "5"
+	register "tcc_offset" = "10"
 
 	register "common_soc_config" = "{
 		.chipset_lockdown = CHIPSET_LOCKDOWN_COREBOOT,

@@ -17,12 +17,14 @@
 
 #include <assert.h>
 #include <cbmem.h>
-#include "chip.h"
+#include <console/console.h>
 #include <device/pci.h>
 #include <fsp/memmap.h>
 #include <intelblocks/smm.h>
 #include <soc/systemagent.h>
 #include <soc/pci_devs.h>
+
+#include "chip.h"
 
 void *cbmem_top(void)
 {

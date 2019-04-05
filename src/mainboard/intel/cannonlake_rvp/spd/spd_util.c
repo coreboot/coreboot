@@ -12,10 +12,11 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
+
 #include <arch/byteorder.h>
-#include <console/console.h>
 #include <stdint.h>
 #include <string.h>
+
 #include "spd.h"
 
 void mainboard_fill_dq_map_ch0(void *dq_map_ptr)

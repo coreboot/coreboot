@@ -14,6 +14,7 @@
  * GNU General Public License for more details.
  */
 
+#include <console/console.h>
 #include <device/mmio.h>
 #include <stdint.h>
 #include <soc/clocks.h>

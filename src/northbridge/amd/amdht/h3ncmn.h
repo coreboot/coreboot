@@ -19,8 +19,8 @@
 
 #include <inttypes.h>
 #include <device/pci.h>
-#include <console/console.h>
 #include <cpu/amd/msr.h>
+
 #include "comlib.h"
 #include "h3finit.h"
 #include "h3ffeat.h"

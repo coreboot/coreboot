@@ -17,6 +17,7 @@
  */
 
 #include <arch/io.h>
+#include <console/console.h>
 #include <reset.h>
 #include <southbridge/amd/common/reset.h>
 

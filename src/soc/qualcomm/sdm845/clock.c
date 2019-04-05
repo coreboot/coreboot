@@ -15,7 +15,6 @@
 
 #include <device/mmio.h>
 #include <types.h>
-#include <console/console.h>
 #include <commonlib/helpers.h>
 #include <assert.h>
 #include <soc/clock.h>

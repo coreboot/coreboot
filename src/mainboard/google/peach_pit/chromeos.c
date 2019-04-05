@@ -15,7 +15,6 @@
 
 #include <boot/coreboot_tables.h>
 #include <bootmode.h>
-#include <console/console.h>
 #include <ec/google/chromeec/ec.h>
 #include <ec/google/chromeec/ec_commands.h>
 #include <soc/cpu.h>

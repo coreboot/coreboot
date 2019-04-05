@@ -15,6 +15,7 @@
  */
 
 #include <assert.h>
+#include <console/console.h>
 #include <string.h>
 #include <stdlib.h>
 #include <boot_device.h>

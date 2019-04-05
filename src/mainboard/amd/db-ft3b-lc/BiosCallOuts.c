@@ -15,6 +15,7 @@
  */
 
 #include <AGESA.h>
+#include <console/console.h>
 #include <northbridge/amd/agesa/BiosCallOuts.h>
 #include <device/azalia.h>
 #include <FchPlatform.h>

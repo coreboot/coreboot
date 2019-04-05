@@ -53,7 +53,6 @@ typedef union _PCI_ADDR {
 	#define IMC_ENABLE_OVER_WRITE        0x01
 #endif
 
-#include <console/console.h>
 #include "AmdSbLib.h"
 #include "Amd.h"
 #include <SB800.h>

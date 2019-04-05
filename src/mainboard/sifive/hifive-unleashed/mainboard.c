@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  */
 
-#include <console/console.h>
+#include <device/device.h>
 #include <soc/sdram.h>
 #include <symbols.h>
 

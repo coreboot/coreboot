@@ -16,17 +16,15 @@
 
 #include <stdint.h>
 #include <string.h>
-
 #include <arch/acpi.h>
 #include <arch/cpu.h>
 #include <bootstate.h>
 #include <cbfs.h>
-
+#include <console/console.h>
 #include <northbridge/amd/agesa/state_machine.h>
 #include <northbridge/amd/agesa/agesa_helper.h>
 #include <northbridge/amd/agesa/BiosCallOuts.h>
 #include <amdlib.h>
-
 #include <AMD.h>
 
 #if CONFIG(CPU_AMD_AGESA_OPENSOURCE)

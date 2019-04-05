@@ -14,12 +14,10 @@
 
 #include <device/mmio.h>
 #include <types.h>
-#include <console/console.h>
 #include <delay.h>
 #include <timestamp.h>
 #include <commonlib/helpers.h>
 #include <string.h>
-
 #include <soc/clock.h>
 
 #define DIV(div) (div ? (2*div - 1) : 0)

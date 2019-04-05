@@ -12,7 +12,9 @@
  */
 
 #include <arch/io.h>
+#include <console/console.h>
 #include <device/pci_ops.h>
+
 #include "amd8111_smbus.h"
 
 #define SMBUS_IO_BASE 0x0f00

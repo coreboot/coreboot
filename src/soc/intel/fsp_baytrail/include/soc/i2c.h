@@ -16,7 +16,6 @@
 #ifndef __SOC_INTEL_FSP_BAYTRAIL_I2C_H__
 #define __SOC_INTEL_FSP_BAYTRAIL_I2C_H__
 
-#include <console/console.h>
 #include <device/pci_def.h>
 #include <stdlib.h>
 

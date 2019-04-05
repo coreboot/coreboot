@@ -12,12 +12,13 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
+
 #include <arch/byteorder.h>
-#include <console/console.h>
 #include <stdint.h>
 #include <string.h>
 #include <soc/pei_data.h>
 #include <soc/pei_wrapper.h>
+
 #include "../board_id.h"
 #include "spd.h"
 

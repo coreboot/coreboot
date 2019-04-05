@@ -15,15 +15,14 @@
  */
 
 #include <arch/io.h>
+#include <console/console.h>
 #include <device/pnp_type.h>
 #include <device/pci_ops.h>
-
 #include <northbridge/amd/agesa/state_machine.h>
 #include <southbridge/amd/common/amd_defs.h>
 #include <southbridge/amd/agesa/hudson/hudson.h>
 #include <southbridge/amd/agesa/hudson/smbus.h>
 #include <stdint.h>
-
 #include <superio/ite/common/ite.h>
 #include <superio/ite/it8728f/it8728f.h>
 #include <superio/nuvoton/common/nuvoton.h>

@@ -22,7 +22,6 @@
 #include <device/mmio.h>
 #include <bootblock_common.h>
 #include <console/uart.h>
-#include <console/console.h>
 #include <delay.h>
 #include <cpu/allwinner/a10/gpio.h>
 #include <cpu/allwinner/a10/clock.h>

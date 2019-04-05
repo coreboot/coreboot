@@ -14,8 +14,10 @@
  * GNU General Public License for more details.
  */
 
+#include <console/console.h>
 #include <cpu/x86/cr.h>
 #include <cpu/amd/msr.h>
+
 #include "mct_d.h"
 
 /******************************************************************************

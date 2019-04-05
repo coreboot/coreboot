@@ -16,7 +16,6 @@
 
 #include <device/mmio.h>
 #include <bootblock_common.h>
-#include <console/console.h>
 #include <delay.h>
 #include <soc/grf.h>
 #include <gpio.h>

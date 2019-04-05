@@ -17,6 +17,8 @@
 #define FSP_UTIL_H
 
 #include <chipset_fsp_util.h>
+#include <console/console.h>
+
 #include "fsp_values.h"
 
 #if CONFIG(ENABLE_MRC_CACHE)

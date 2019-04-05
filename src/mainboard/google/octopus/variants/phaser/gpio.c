@@ -19,7 +19,6 @@
 #include <gpio.h>
 #include <soc/gpio.h>
 #include <ec/google/chromeec/ec.h>
-#include <console/console.h>
 
 #define SKU_UNKNOWN            0xFFFFFFFF
 

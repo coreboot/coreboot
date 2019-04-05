@@ -16,6 +16,8 @@
 
 #include <x86emu/x86emu.h>
 #include <arch/interrupt.h>
+#include <console/console.h>
+
 #include "int15.h"
 
 static int active_lfp, pfit, display, panel_type;

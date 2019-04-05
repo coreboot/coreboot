@@ -15,8 +15,8 @@
 
 #include <arch/acpi.h>
 #include <baseboard/variants.h>
-#include <console/console.h>
 #include <delay.h>
+
 #include "gpio.h"
 
 #define TOUCH_DISABLE         GPP_C3

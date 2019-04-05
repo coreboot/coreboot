@@ -28,7 +28,6 @@
 
 #include <device/pci_ops.h>
 #include <device/pci.h>
-#include <console/console.h>
 
 u32 vx900_get_tolm(void);
 void vx900_set_chrome9hd_fb_size(u32 size_mb);

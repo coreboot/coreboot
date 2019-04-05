@@ -20,7 +20,6 @@
 #include <sbi.h>
 #include <vm.h>
 #include <console/uart.h>
-#include <console/console.h>
 #include <commonlib/helpers.h>
 
 static uintptr_t send_ipi(uintptr_t *pmask, intptr_t type)

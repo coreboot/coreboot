@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2014 Google Inc.
  * Copyright (C) 2015-2016 Intel Corporation
+ * Copyright (C) 2018 Eltan B.V.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -91,5 +92,6 @@ void soc_pre_ram_init(struct romstage_params *params);
 /* Update the SOC specific memory config param for mma. */
 void soc_update_memory_params_for_mma(MEMORY_INIT_UPD *memory_cfg,
 		struct mma_config_param *mma_cfg);
+void mainboard_after_memory_init(void);
 
 #endif /* _COMMON_ROMSTAGE_H_ */

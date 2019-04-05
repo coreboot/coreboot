@@ -125,6 +125,7 @@ void raminit(struct romstage_params *params)
 	timestamp_add_now(TS_FSP_MEMORY_INIT_START);
 	post_code(POST_FSP_MEMORY_INIT);
 	status = fsp_memory_init(&fsp_memory_init_params);
+	mainboard_after_memory_init();
 	post_code(0x37);
 	timestamp_add_now(TS_FSP_MEMORY_INIT_END);
 
@@ -319,6 +320,12 @@ __weak void soc_display_memory_init_params(
 __weak void soc_memory_init_params(
 	struct romstage_params *params,
 	MEMORY_INIT_UPD *upd)
+{
+	printk(BIOS_DEBUG, "WEAK: %s/%s called\n", __FILE__, __func__);
+}
+
+/* Initialize the SoC after MemoryInit */
+__weak void mainboard_after_memory_init(void)
 {
 	printk(BIOS_DEBUG, "WEAK: %s/%s called\n", __FILE__, __func__);
 }

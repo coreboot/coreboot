@@ -36,6 +36,7 @@ RUN \
 		git \
 		gnat \
 		graphviz \
+		libcrypto++-dev \
 		libfreetype6-dev \
 		libftdi-dev \
 		libftdi1-dev \
@@ -46,7 +47,7 @@ RUN \
 		libncurses5-dev \
 		libpci-dev \
 		libreadline-dev \
-		libssl1.0-dev \
+		libssl-dev \
 		libusb-1.0-0-dev \
 		libusb-dev \
 		libxml2-dev \

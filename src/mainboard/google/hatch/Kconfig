@@ -1,7 +1,6 @@
 
 config BOARD_GOOGLE_BASEBOARD_HATCH
 	def_bool n
-	select BOARD_ROMSIZE_KB_32768
 	select DRIVERS_GENERIC_GPIO_KEYS
 	select DRIVERS_GENERIC_MAX98357A
 	select DRIVERS_I2C_GENERIC
@@ -53,6 +52,11 @@ config DRIVER_TPM_SPI_BUS
 
 config UART_FOR_CONSOLE
 	default 0
+
+config FMDFILE
+	string
+	default "src/mainboard/$(CONFIG_MAINBOARD_DIR)/chromeos-16MiB.fmd" if BOARD_ROMSIZE_KB_16384
+	default "src/mainboard/$(CONFIG_MAINBOARD_DIR)/chromeos.fmd" if BOARD_ROMSIZE_KB_32768
 
 config GBB_HWID
 	string

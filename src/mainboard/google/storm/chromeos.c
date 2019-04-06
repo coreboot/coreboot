@@ -25,11 +25,8 @@
 #include <vendorcode/google/chromeos/chromeos.h>
 
 #define DEV_SW 15
-#define DEV_POL ACTIVE_LOW
 #define REC_SW 16
-#define REC_POL ACTIVE_LOW
 #define WP_SW  17
-#define WP_POL ACTIVE_LOW
 
 static int read_gpio(gpio_t gpio_num)
 {
@@ -43,7 +40,8 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 {
 	struct lb_gpio chromeos_gpios[] = {
 		{REC_SW, ACTIVE_LOW, read_gpio(REC_SW), "recovery"},
-		{WP_SW, ACTIVE_LOW, read_gpio(WP_SW), "write protect"},
+		{WP_SW, ACTIVE_LOW, !get_write_protect_state(),
+		 "write protect"},
 		{-1, ACTIVE_LOW, 1, "power"},
 		{-1, ACTIVE_LOW, 0, "lid"},
 	};
@@ -87,7 +85,7 @@ static enum switch_state get_switch_state(void)
 	if (saved_state != not_probed)
 		return saved_state;
 
-	sampled_value = read_gpio(REC_SW) ^ !REC_POL;
+	sampled_value = !read_gpio(REC_SW);
 
 	if (!sampled_value) {
 		saved_state = no_req;
@@ -101,7 +99,7 @@ static enum switch_state get_switch_state(void)
 	stopwatch_init_msecs_expire(&sw, WIPEOUT_MODE_DELAY_MS);
 
 	do {
-		sampled_value = read_gpio(REC_SW) ^ !REC_POL;
+		sampled_value = !read_gpio(REC_SW);
 		if (!sampled_value)
 			break;
 	} while (!stopwatch_expired(&sw));
@@ -111,7 +109,7 @@ static enum switch_state get_switch_state(void)
 		printk(BIOS_INFO, "wipeout requested, checking recovery\n");
 		stopwatch_init_msecs_expire(&sw, RECOVERY_MODE_EXTRA_DELAY_MS);
 		do {
-			sampled_value = read_gpio(REC_SW) ^ !REC_POL;
+			sampled_value = !read_gpio(REC_SW);
 			if (!sampled_value)
 				break;
 		} while (!stopwatch_expired(&sw));
@@ -143,5 +141,5 @@ int get_wipeout_mode_switch(void)
 
 int get_write_protect_state(void)
 {
-	return read_gpio(WP_SW) ^ !WP_POL;
+	return !read_gpio(WP_SW);
 }

@@ -27,7 +27,7 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	/* TBD(twarren@nvidia.com): Any analogs for these on Foster-FFD? */
 	struct lb_gpio chromeos_gpios[] = {
 		/* Write Protect: active low */
-		{-1, ACTIVE_LOW, get_write_protect_state(), "write protect"},
+		{-1, ACTIVE_LOW, !get_write_protect_state(), "write protect"},
 
 		/* Recovery: active high */
 		{-1, ACTIVE_HIGH, get_recovery_mode_switch(), "recovery"},

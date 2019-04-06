@@ -30,10 +30,10 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 {
 	struct lb_gpio chromeos_gpios[] = {
 		/* Write Protect: GPIO48 */
-		{48, ACTIVE_LOW, get_write_protect_state(), "write protect"},
+		{48, ACTIVE_LOW, !get_write_protect_state(), "write protect"},
 
 		/* Recovery: GPIO22 */
-		{22, ACTIVE_LOW, get_recovery_mode_switch(), "recovery"},
+		{22, ACTIVE_LOW, !get_recovery_mode_switch(), "recovery"},
 
 		/* Hard code the lid switch GPIO to open. */
 		{-1, ACTIVE_HIGH, 1, "lid"},

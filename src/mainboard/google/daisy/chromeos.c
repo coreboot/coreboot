@@ -27,7 +27,7 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 {
 	struct lb_gpio chromeos_gpios[] = {
 		/* Write Protect: active low (WP_GPIO) */
-		{EXYNOS5_GPD1, ACTIVE_LOW, gpio_get_value(GPIO_D16),
+		{EXYNOS5_GPD1, ACTIVE_LOW, !get_write_protect_state(),
 		 "write protect"},
 
 		/* Recovery: active low */

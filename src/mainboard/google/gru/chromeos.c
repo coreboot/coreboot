@@ -26,15 +26,14 @@ static const uint32_t wp_polarity = CONFIG(GRU_BASEBOARD_SCARLET) ?
 
 int get_write_protect_state(void)
 {
-	int raw = gpio_get(GPIO_WP);
-	return wp_polarity == ACTIVE_HIGH ? raw : !raw;
+	return gpio_get(GPIO_WP) ^ !wp_polarity;
 }
 
 void fill_lb_gpios(struct lb_gpios *gpios)
 {
 	struct lb_gpio chromeos_gpios[] = {
-		{GPIO_WP.raw, wp_polarity, gpio_get(GPIO_WP),
-		 "write protect"},
+		{GPIO_WP.raw, wp_polarity,
+		 get_write_protect_state() ^ !wp_polarity, "write protect"},
 		{-1, ACTIVE_HIGH, get_recovery_mode_switch(), "recovery"},
 #if CONFIG(GRU_BASEBOARD_SCARLET)
 		{GPIO_BACKLIGHT.raw, ACTIVE_HIGH, -1, "backlight"},

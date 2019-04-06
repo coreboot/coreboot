@@ -40,9 +40,10 @@ void setup_chromeos_gpios(void)
 void fill_lb_gpios(struct lb_gpios *gpios)
 {
 	struct lb_gpio chromeos_gpios[] = {
-		{GPIO_WP.raw, ACTIVE_LOW, gpio_get(GPIO_WP), "write protect"},
+		{GPIO_WP.raw, ACTIVE_LOW, !get_write_protect_state(),
+			"write protect"},
 		{GPIO_RECOVERY.raw, ACTIVE_LOW,
-			get_recovery_mode_switch(), "recovery"},
+			!get_recovery_mode_switch(), "recovery"},
 		{GPIO_LID.raw, ACTIVE_HIGH, -1, "lid"},
 		{GPIO_POWER.raw, ACTIVE_LOW, -1, "power"},
 		{GPIO_ECINRW.raw, ACTIVE_HIGH, -1, "EC in RW"},

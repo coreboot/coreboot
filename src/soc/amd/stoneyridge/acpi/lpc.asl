@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  */
 
-#if IS_ENABLED(MAINBOARD_HAS_SPEAKER)
+#if MAINBOARD_HAS_SPEAKER
 #define IO61_HID "PNP0800" /* AT style speaker */
 #else
 #define IO61_HID "PNP0C02" /* reserved resource */

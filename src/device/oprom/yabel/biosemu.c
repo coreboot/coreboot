@@ -53,6 +53,7 @@
 #include "compat/rtas.h"
 
 #if CONFIG(X86EMU_DEBUG_TIMINGS)
+#include <timer.h>
 struct mono_time zero;
 #endif
 

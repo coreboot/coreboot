@@ -16,7 +16,6 @@
 #include <types.h>
 #include <console/console.h>
 #include <delay.h>
-#include <timer.h>
 #include <timestamp.h>
 #include <commonlib/helpers.h>
 #include <string.h>

@@ -93,7 +93,7 @@ sub Main {
     check_used_symbols();
     check_for_ifdef();
     check_for_def();
-    check_is_enabled();
+    check_config_macro();
     check_selected_symbols();
 
     # Run checks based on the data that was found
@@ -213,27 +213,6 @@ sub check_for_ifdef {
             }
         }
     }
-
-    my @collected_is_enabled;
-    if ($dont_use_git_grep) {
-        @collected_is_enabled =
-            `grep -Irn -- "\\<IS_ENABLED[[:space:]]*(.*)" | grep -v '$exclude_dirs_and_files' | grep -v "kconfig.h"`;
-    }
-    else {
-        @collected_is_enabled =
-            `git grep -In -- "\\<IS_ENABLED[[:space:]]*(.*)" | grep -v '$exclude_dirs_and_files' | grep -v "kconfig.h"`;
-    }
-
-    while ( my $line = shift @collected_is_enabled ) {
-        if ($line !~ /CONFIG_/ && $line =~ /^([^:]+):(\d+):.+IS_ENABLED\s*\(\s*(\w+)/ ) {
-            my $file   = $1;
-            my $lineno = $2;
-            my $symbol = $3;
-            if ( ( exists $symbols{$symbol} ) ) {
-                show_error("IS_ENABLED missing CONFIG_ prefix on symbol '$symbol' at $file:$lineno.");
-            }
-        }
-    }
 }
 
 #-------------------------------------------------------------------------------
@@ -289,11 +268,15 @@ sub check_type {
 }
 
 #-------------------------------------------------------------------------------
-# check_is_enabled - The IS_ENABLED() and CONFIG() macros are only valid for
-# symbols of type bool. It would probably work on type hex or int if the value
-# was 0 or 1, but this seems like a bad plan.  Using it on strings is dead out.
+# check_config_macro - The CONFIG() macro is only valid for symbols of type
+# bool. It would probably work on type hex or int if the value was 0 or 1,
+# but this seems like a bad plan.  Using it on strings is dead out.
+#
+# The IS_ENABLED() macro is forbidden in coreboot now. Though, as long as
+# we keep its definition in libpayload for compatibility, we have to check
+# that it doesn't sneak back in.
 #-------------------------------------------------------------------------------
-sub check_is_enabled {
+sub check_config_macro {
     my @is_enabled_symbols = @collected_symbols;
 
     #sort through symbols found by grep and store them in a hash for easy access
@@ -322,31 +305,19 @@ sub check_is_enabled {
             my $lineno = $2;
             $line = $3;
             if ( ( $line !~ /(.*)IS_ENABLED\s*\(\s*CONFIG_(\w+)(.*)/ ) && ( $line !~ /(\/[\*\/])(.*)IS_ENABLED/ ) ) {
-                show_warning("# uninterpreted IS_ENABLED at $file:$lineno: $line");
+                show_error("# uninterpreted IS_ENABLED at $file:$lineno: $line");
                 next;
             }
             while ( $line =~ /(.*)IS_ENABLED\s*\(\s*CONFIG_(\w+)(.*)/ ) {
                 my $symbol = $2;
                 $line = $1 . $3;
-
-                #make sure that the type is bool
-                if ( exists $symbols{$symbol} ) {
-                    if ( $symbols{$symbol}{type} ne "bool" ) {
-                        show_error( "IS_ENABLED(CONFIG_$symbol) used at $file:$lineno."
-                              . "  IS_ENABLED is only valid for type 'bool', not '$symbols{$symbol}{type}'." );
-                    } else {
-                        show_warning("IS_ENABLED(CONFIG_$symbol) at $file:$lineno is deprecated. Use CONFIG($symbol) instead." );
-                    }
-                }
-                else {
-                    show_error("IS_ENABLED() used on unknown value CONFIG_$symbol at $file:$lineno.");
-                }
+                show_error("IS_ENABLED(CONFIG_$symbol) at $file:$lineno is deprecated. Use CONFIG($symbol) instead.");
             }
         } elsif ( $line =~ /^([^:]+):(\d+):\s*#\s*(?:el)?if\s+!?\s*\(?\s*CONFIG_(\w+)\)?(\s*==\s*1)?.*?$/ ) {
             my $file   = $1;
             my $lineno = $2;
             my $symbol = $3;
-            # If the type is bool, give a warning that IS_ENABLED should be used
+            # If the type is bool, give a warning that CONFIG() should be used
             if ( exists $symbols{$symbol} ) {
                 if ( $symbols{$symbol}{type} eq "bool" ) {
                     show_error( "#if CONFIG_$symbol used at $file:$lineno."
@@ -357,7 +328,7 @@ sub check_is_enabled {
             my $file   = $1;
             my $lineno = $2;
             my $symbol = $3;
-            # If the type is bool, give a warning that IS_ENABLED should be used
+            # If the type is bool, give a warning that CONFIG() should be used
             if ( exists $symbols{$symbol} ) {
                 if ( $symbols{$symbol}{type} eq "bool" ) {
                     show_error( "#if CONFIG_$symbol used at $file:$lineno."

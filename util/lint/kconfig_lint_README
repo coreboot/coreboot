@@ -49,9 +49,7 @@ Warnings in Kconfig files:
   globs are excluded from this check.
 
 Warnings in coreboot source files:
-- 'IS_ENABLED()' block that could not be interpreted.
 - Kconfig files that are not loaded by a 'source' keyword.
-- IS_ENABLED() used on a Kconfig (deprecated in favor of CONFIG())
 - Naked use of boolean CONFIG_XXX Kconfig in C that's not wrapped in CONFIG()
 
 Errors in Kconfig files:
@@ -96,8 +94,8 @@ Errors in coreboot source files:
   symbols.
 - '#ifdef' or '#if defined' used on bool, int, or hex - these are always
   defined in coreboot's version of Kconfig.
-- The CONFIG() and IS_ENABLED() macros is only valid for bool symbols.
-- CONFIG() or IS_ENABLED() used on unknown Kconfig, like an obsolete symbol.
-- The IS_ENABLED() macro is used on a symbol without the CONFIG_ prefix.
+- The CONFIG() macro is only valid for bool symbols.
+- CONFIG() used on unknown Kconfig, like an obsolete symbol.
+- The deprecated IS_ENABLED() macro is used.
 
 TODO: check for choice entries at the top level

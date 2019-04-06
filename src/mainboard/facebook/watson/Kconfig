@@ -41,4 +41,8 @@ config FMDFILE
 	string
 	default "src/mainboard/$(CONFIG_MAINBOARD_DIR)/board.fmd"
 
+config ENABLE_TURBO
+	bool "Enable turbo frequency"
+	default n
+
 endif # BOARD_FACEBOOK_WATSON

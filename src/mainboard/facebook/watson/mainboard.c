@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2007-2009 coresystems GmbH
  * Copyright (C) 2011 Google Inc.
+ * Copyright (C) Facebook, Inc. and its affiliates
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,6 +15,7 @@
  * GNU General Public License for more details.
  */
 
+#include <cpu/intel/turbo.h>
 #include <device/device.h>
 
 /*
@@ -25,6 +27,14 @@ static void mainboard_enable(struct device *dev)
 
 }
 
+static void mainboard_init(void *chip_info)
+{
+#if !IS_ENABLED(CONFIG_ENABLE_TURBO)
+	disable_turbo();
+#endif
+}
+
 struct chip_operations mainboard_ops = {
 	.enable_dev = mainboard_enable,
+	.init = mainboard_init,
 };

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="10cm" height="8cm" version="1.1" viewBox="265 -156 186 159" xmlns="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+ <metadata>
+  <rdf:RDF>
+   <cc:Work rdf:about="">
+    <dc:format>image/svg+xml</dc:format>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:title/>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <rect x="308" y="-152" width="49.1" height="30.5" fill="#fff"/>
+ <rect x="308" y="-152" width="49.1" height="30.5" fill="none" stroke="#000" stroke-width="2"/>
+ <text x="332.45999" y="-134.83099" fill="#000000" font-family="sans-serif" font-size="6.77px" text-anchor="middle"><tspan x="332.45999" y="-134.83099">IFD</tspan></text>
+ <rect x="308" y="-60.7" width="49.1" height="59.8" fill="#fff"/>
+ <text x="332.46002" y="-30.227913" fill="#000000" font-family="sans-serif" font-size="6.77px" text-anchor="middle"><tspan x="332.46002" y="-30.227913">BIOS</tspan></text>
+ <rect x="308" y="-60.7" width="49.1" height="59.8" fill="none" stroke="#000" stroke-width="2"/>
+ <rect x="308" y="-91.6" width="49.1" height="30.9" fill="#fff"/>
+ <rect x="308" y="-91.6" width="49.1" height="30.9" fill="none" stroke="#000" stroke-width="2"/>
+ <text x="332.45999" y="-74.099892" fill="#000000" font-family="sans-serif" font-size="6.77px" text-anchor="middle"><tspan x="332.45999" y="-74.099892">ME</tspan></text>
+ <rect x="308" y="-122" width="49.1" height="30.5" fill="#fff"/>
+ <rect x="308" y="-122" width="49.1" height="30.5" fill="none" stroke="#000" stroke-width="2"/>
+ <text x="332.45999" y="-104.3643" fill="#000000" font-family="sans-serif" font-size="6.77px" text-anchor="middle"><tspan x="332.45999" y="-104.3643">GBE</tspan></text>
+ <g font-family="sans-serif" font-size="6.77px">
+  <text x="265.96799" y="-149.20799"><tspan x="265.96799" y="-149.20799">0x000000</tspan></text>
+  <text x="266.362" y="-120.102"><tspan x="266.362" y="-120.102">0x001000</tspan></text>
+  <text x="266.16199" y="-88.897202"><tspan x="266.16199" y="-88.897202">0x003000</tspan></text>
+  <text x="266.14401" y="-59.324112"><tspan x="266.14401" y="-59.324112">0x200000</tspan></text>
+  <text x="266.32599" y="-1.1522589"><tspan x="266.32599" y="-1.1522589">0x400000</tspan></text>
+ </g>
+ <path d="m381-151c21 0-1.5 77.5 19.8 78.5" fill="none" stroke="#000"/>
+ <path d="m381-0.763c13.9 0 5.64-72 19.5-72" fill="none" stroke="#000"/>
+ <text x="406.12701" y="-68.513" fill="#000000" font-family="sans-serif" font-size="10.2px"><tspan x="406.12701" y="-68.513">Flash</tspan></text>
+</svg>

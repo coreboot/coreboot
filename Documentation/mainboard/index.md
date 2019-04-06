@@ -70,6 +70,10 @@ The boards in this section are not real mainboards, but emulators.
 - [T430 / T530 / X230 / W530 common](lenovo/xx30_series.md)
 - [T431s](lenovo/t431s.md)
 
+## MSI
+
+- [MS-7707](msi/ms7707/ms7707.md)
+
 ## SiFive
 
 - [SiFive HiFive Unleashed](sifive/hifive-unleashed.md)

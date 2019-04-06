@@ -17,7 +17,7 @@
 #ifndef _SERIALIO_H_
 #define _SERIALIO_H_
 
-#if IS_ENABLED(CONFIG_SOC_INTEL_COMETLAKE)
+#if CONFIG(SOC_INTEL_COMETLAKE)
 typedef enum {
 	PchSerialIoNotInitialized,
 	PchSerialIoDisabled,

@@ -64,7 +64,7 @@ static uint8_t get_param_value(const config_t *config, uint32_t dev_offset)
 	return PCH_SERIAL_IO_INDEX(config->SerialIoDevMode[dev_offset]);
 }
 
-#if IS_ENABLED(CONFIG_SOC_INTEL_COMETLAKE)
+#if CONFIG(SOC_INTEL_COMETLAKE)
 static void parse_devicetree_param(const config_t *config, FSP_S_CONFIG *params)
 {
 	uint32_t dev_offset = 0;
@@ -254,7 +254,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 
 	/* Enable CNVi Wifi if enabled in device tree */
 	dev = dev_find_slot(0, PCH_DEVFN_CNViWIFI);
-#if IS_ENABLED(CONFIG_SOC_INTEL_COMETLAKE)
+#if CONFIG(SOC_INTEL_COMETLAKE)
 	params->CnviMode = dev->enabled;
 #else
 	params->PchCnviMode = dev->enabled;

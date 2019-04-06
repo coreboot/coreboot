@@ -71,7 +71,7 @@ DECLARE_REGION(bl31)
  * (Does not necessarily mean that the memory is accessible.) */
 static inline int preram_symbols_available(void)
 {
-	return !IS_ENABLED(CONFIG_CACHE_AS_RAM) || ENV_CACHE_AS_RAM;
+	return !CONFIG(CACHE_AS_RAM) || ENV_CACHE_AS_RAM;
 }
 
 #endif /* __SYMBOLS_H */

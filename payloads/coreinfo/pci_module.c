@@ -103,14 +103,9 @@ static void show_config_space(WINDOW *win, int row, int col, int index)
 static int pci_module_redraw(WINDOW *win)
 {
 	unsigned int bus, slot, func;
-	int i, last;
+	int i;
 
 	print_module_title(win, "PCI Device List");
-
-	last = menu_first + MENU_VISIBLE;
-
-	if (last > devices_index)
-		last = devices_index;
 
 	for (i = 0; i < MENU_VISIBLE; i++) {
 		int item = menu_first + i;

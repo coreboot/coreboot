@@ -1165,8 +1165,6 @@ saved .config file. As always, a 'select' statement overrides any specified
 - coreboot has added the glob operator '*' for the 'source' keyword.
 - coreboot’s Kconfig always defines variables except for strings. In other
   Kconfig implementations, bools set to false/0/no are not defined.
-- IS_ENABLED() is ‘false’ for undefined variables and ‘0’ variables. In Linux
-  (where the macro comes from) it’s ‘true’ as soon as the variable is defined.
 - coreboot’s version of Kconfig adds the KCONFIG_STRICT environment variable to
   error out if there are any issues in the Kconfig files.  In the Linux kernel,
   Kconfig will generate a warning, but will still output an updated .config or

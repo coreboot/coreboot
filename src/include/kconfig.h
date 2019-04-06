@@ -17,7 +17,6 @@
 #define __config_enabled(arg1_or_junk) ___config_enabled(arg1_or_junk 1, 0, 0)
 #define ___config_enabled(__ignored, val, ...) val
 
-#define IS_ENABLED(option) config_enabled(option)	/* deprecated */
 #define CONFIG(option) config_enabled(CONFIG_##option)
 
 #endif

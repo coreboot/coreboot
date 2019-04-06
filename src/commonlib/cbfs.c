@@ -25,7 +25,7 @@
 #if !defined(LOG)
 #define LOG(x...) printk(BIOS_INFO, "CBFS: " x)
 #endif
-#if defined(IS_ENABLED)
+#if defined(CONFIG)
 
 #if CONFIG(DEBUG_CBFS)
 #define DEBUG(x...) printk(BIOS_SPEW, "CBFS: " x)

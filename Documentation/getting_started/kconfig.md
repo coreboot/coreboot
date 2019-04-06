@@ -1132,7 +1132,7 @@ the symbol is only inside of an if/endif block where the if expression evaluates
 as false, the symbol STILL gets defined in the config.h file (though not in the
 .config file).
 
-Use \#if IS_ENABLED(CONFIG_*) to be sure (it returns false for undefined symbols
+Use \#if CONFIG(SYMBOL) to be sure (it returns false for undefined symbols
 and defined-to-0 symbols alike).
 
 

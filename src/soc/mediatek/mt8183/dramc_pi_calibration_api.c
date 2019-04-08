@@ -32,7 +32,7 @@ enum {
 
 enum {
 	FIRST_DQ_DELAY = 0,
-	FIRST_DQS_DELAY = -10,
+	FIRST_DQS_DELAY = -16,
 	MAX_DQDLY_TAPS = 16,
 	MAX_RX_DQDLY_TAPS = 63,
 };

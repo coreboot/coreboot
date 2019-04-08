@@ -38,7 +38,7 @@
 
 struct layout_maps {
 	const char *country;
-	const unsigned short map[4][0x57];
+	const unsigned short map[4][0x59];
 };
 
 static struct layout_maps *map;
@@ -58,7 +58,8 @@ static struct layout_maps keyboard_layouts[] = {
 	 0x00, 0x20, 0x00, KEY_F(1), KEY_F(2), KEY_F(3), KEY_F(4), KEY_F(5),
 	 KEY_F(6), KEY_F(7), KEY_F(8), KEY_F(9), KEY_F(10), 0x00, 0x00, KEY_HOME,
 	 KEY_UP, KEY_NPAGE, 0x00, KEY_LEFT, 0x00, KEY_RIGHT, 0x00, KEY_END,
-	 KEY_DOWN, KEY_PPAGE, 0x00, KEY_DC, 0x00, 0x00, 0x00
+	 KEY_DOWN, KEY_PPAGE, 0x00, KEY_DC, 0x00, 0x00, 0x00, KEY_F(11),
+	 KEY_F(12),
 	 },
 	{ /* Shift */
 	 0x00, 0x1B, 0x21, 0x40, 0x23, 0x24, 0x25, 0x5E,
@@ -71,7 +72,8 @@ static struct layout_maps keyboard_layouts[] = {
 	 0x00, 0x20, 0x00, KEY_F(1), KEY_F(2), KEY_F(3), KEY_F(4), KEY_F(5),
 	 KEY_F(6), KEY_F(7), KEY_F(8), KEY_F(9), KEY_F(10), 0x00, 0x00, KEY_HOME,
 	 KEY_UP, KEY_NPAGE, 0x00, KEY_LEFT, 0x00, KEY_RIGHT, 0x00, KEY_END,
-	 KEY_DOWN, KEY_PPAGE, 0x00, KEY_DC, 0x00, 0x00, 0x00
+	 KEY_DOWN, KEY_PPAGE, 0x00, KEY_DC, 0x00, 0x00, 0x00, KEY_F(11),
+	 KEY_F(12),
 	 },
 	{ /* ALT */
 	 0x00, 0x1B, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36,
@@ -84,7 +86,8 @@ static struct layout_maps keyboard_layouts[] = {
 	 0x00, 0x20, 0x00, KEY_F(1), KEY_F(2), KEY_F(3), KEY_F(4), KEY_F(5),
 	 KEY_F(6), KEY_F(7), KEY_F(8), KEY_F(9), KEY_F(10), 0x00, 0x00, KEY_HOME,
 	 KEY_UP, KEY_NPAGE, 0x00, KEY_LEFT, 0x00, KEY_RIGHT, 0x00, KEY_END,
-	 KEY_DOWN, KEY_PPAGE, 0x00, KEY_DC, 0x00, 0x00, 0x00
+	 KEY_DOWN, KEY_PPAGE, 0x00, KEY_DC, 0x00, 0x00, 0x00, KEY_F(11),
+	 KEY_F(12),
 	 },
 	{ /* Shift-ALT */
 	 0x00, 0x1B, 0x21, 0x40, 0x23, 0x24, 0x25, 0x5E,
@@ -97,7 +100,8 @@ static struct layout_maps keyboard_layouts[] = {
 	 0x00, 0x20, 0x00, KEY_F(1), KEY_F(2), KEY_F(3), KEY_F(4), KEY_F(5),
 	 KEY_F(6), KEY_F(7), KEY_F(8), KEY_F(9), KEY_F(10), 0x00, 0x00, KEY_HOME,
 	 KEY_UP, KEY_NPAGE, 0x00, KEY_LEFT, 0x00, KEY_RIGHT, 0x00, KEY_END,
-	 KEY_DOWN, KEY_PPAGE, 0x00, KEY_DC, 0x00, 0x00, 0x00
+	 KEY_DOWN, KEY_PPAGE, 0x00, KEY_DC, 0x00, 0x00, 0x00, KEY_F(11),
+	 KEY_F(12),
 	 }
 }},
 #endif
@@ -114,7 +118,8 @@ static struct layout_maps keyboard_layouts[] = {
 	 0x00, 0x20, 0x00, KEY_F(1), KEY_F(2), KEY_F(3), KEY_F(4), KEY_F(5),
 	 KEY_F(6), KEY_F(7), KEY_F(8), KEY_F(9), KEY_F(10), 0x00, 0x00, KEY_HOME,
 	 KEY_UP, KEY_NPAGE, 0x00, KEY_LEFT, 0x00, KEY_RIGHT, 0x00, KEY_END,
-	 KEY_DOWN, KEY_PPAGE, 0x00, KEY_DC, 0x00, 0x00, 0x3C
+	 KEY_DOWN, KEY_PPAGE, 0x00, KEY_DC, 0x00, 0x00, 0x3C, KEY_F(11),
+	 KEY_F(12),
 	 },
 	{ /* Shift */
 	 0x00, 0x1B, 0x21, 0x22, 0xA7, 0x24, 0x25, 0x26,
@@ -127,7 +132,8 @@ static struct layout_maps keyboard_layouts[] = {
 	 0x00, 0x20, 0x00, KEY_F(1), KEY_F(2), KEY_F(3), KEY_F(4), KEY_F(5),
 	 KEY_F(6), KEY_F(7), KEY_F(8), KEY_F(9), KEY_F(10), 0x00, 0x00, KEY_HOME,
 	 KEY_UP, KEY_NPAGE, 0x00, KEY_LEFT, 0x00, KEY_RIGHT, 0x00, KEY_END,
-	 KEY_DOWN, KEY_PPAGE, 0x00, KEY_DC, 0x00, 0x00, 0x3E
+	 KEY_DOWN, KEY_PPAGE, 0x00, KEY_DC, 0x00, 0x00, 0x3E, KEY_F(11),
+	 KEY_F(12),
 	 },
 	{ /* ALT */
 	 0x00, 0x1B, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36,
@@ -140,7 +146,8 @@ static struct layout_maps keyboard_layouts[] = {
 	 0x00, 0x20, 0x00, KEY_F(1), KEY_F(2), KEY_F(3), KEY_F(4), KEY_F(5),
 	 KEY_F(6), KEY_F(7), KEY_F(8), KEY_F(9), KEY_F(10), 0x00, 0x00, KEY_HOME,
 	 KEY_UP, KEY_NPAGE, 0x00, KEY_LEFT, 0x00, KEY_RIGHT, 0x00, KEY_END,
-	 KEY_DOWN, KEY_PPAGE, 0x00, KEY_DC, 0x00, 0x00, 0x7C
+	 KEY_DOWN, KEY_PPAGE, 0x00, KEY_DC, 0x00, 0x00, 0x7C, KEY_F(11),
+	 KEY_F(12),
 	 },
 	{ /* Shift-ALT */
 	 /* copied from US */
@@ -154,7 +161,8 @@ static struct layout_maps keyboard_layouts[] = {
 	 0x00, 0x20, 0x00, KEY_F(1), KEY_F(2), KEY_F(3), KEY_F(4), KEY_F(5),
 	 KEY_F(6), KEY_F(7), KEY_F(8), KEY_F(9), KEY_F(10), 0x00, 0x00, KEY_HOME,
 	 KEY_UP, KEY_NPAGE, 0x00, KEY_LEFT, 0x00, KEY_RIGHT, 0x00, KEY_END,
-	 KEY_DOWN, KEY_PPAGE, 0x00, KEY_DC, 0x00, 0x00, 0x00
+	 KEY_DOWN, KEY_PPAGE, 0x00, KEY_DC, 0x00, 0x00, 0x00, KEY_F(11),
+	 KEY_F(12),
 	 }
 }},
 #endif
@@ -232,7 +240,7 @@ int keyboard_getchar(void)
 
 	ch = keyboard_get_scancode();
 
-	if (!(ch & 0x80) && ch < 0x57) {
+	if (!(ch & 0x80) && ch < 0x59) {
 		shift =
 		    (modifier & KB_MOD_SHIFT) ^ (modifier & KB_MOD_CAPSLOCK) ? 1 : 0;
 

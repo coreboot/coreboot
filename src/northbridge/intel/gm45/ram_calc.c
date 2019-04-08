@@ -39,7 +39,7 @@ u32 decode_igd_memory_size(const u32 gms)
 	static const u16 ggc2uma[] = { 0, 1, 4, 8, 16, 32, 48, 64, 128, 256,
 				       96, 160, 224, 352 };
 
-	if (gms > ARRAY_SIZE(ggc2uma))
+	if (gms >= ARRAY_SIZE(ggc2uma))
 		die("Bad Graphics Mode Select (GMS) setting.\n");
 
 	return ggc2uma[gms] << 10;

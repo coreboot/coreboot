@@ -1142,6 +1142,7 @@ static struct run get_longest_zero_run(int *seq, int sz)
 		ret.middle = sz / 2;
 		ret.start = 0;
 		ret.end = sz;
+		ret.length = sz;
 		ret.all = 1;
 		return ret;
 	}

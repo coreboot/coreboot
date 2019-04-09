@@ -19,7 +19,7 @@ USER root
 
 RUN apt-get -y update && \
 	apt-get -y install \
-	lua5.3 liblua5.3-dev openjdk-8-jre-headless openssh-server && \
+	lua5.3 liblua5.3-dev default-jre-headless openssh-server && \
 	apt-get clean
 
 # Because of the way that the variables are being replaced, docker's 'COPY'

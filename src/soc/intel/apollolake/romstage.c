@@ -197,10 +197,10 @@ void set_max_freq(void)
 	}
 
 	/* Enable burst mode */
-	cpu_enable_burst_mode();
+	cpu_burst_mode(true);
 
 	/* Enable speed step. */
-	cpu_enable_eist();
+	cpu_set_eist(true);
 
 	/* Set P-State ratio */
 	cpu_set_p_state_to_turbo_ratio();

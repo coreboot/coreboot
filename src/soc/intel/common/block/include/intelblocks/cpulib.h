@@ -97,24 +97,18 @@ enum {
 int cpu_get_burst_mode_state(void);
 
 /*
- * Enable Burst mode.
+ * Program CPU Burst mode
+ * true = Enable Burst mode.
+ * false = Disable Burst mode.
  */
-void cpu_enable_burst_mode(void);
+void cpu_burst_mode(bool burst_mode_status);
 
 /*
- * Disable Burst mode.
+ * Program Enhanced Intel Speed Step Technology
+ * true = Enable EIST.
+ * false = Disable EIST.
  */
-void cpu_disable_burst_mode(void);
-
-/*
- * Enable Intel Enhanced Speed Step Technology.
- */
-void cpu_enable_eist(void);
-
-/*
- * Disable Intel Enhanced Speed Step Technology.
- */
-void cpu_disable_eist(void);
+void cpu_set_eist(bool eist_status);
 
 /*
  * Set Bit 6 (ENABLE_IA_UNTRUSTED_MODE) of MSR 0x120

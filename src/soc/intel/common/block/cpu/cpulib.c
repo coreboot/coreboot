@@ -185,50 +185,36 @@ int cpu_get_burst_mode_state(void)
 }
 
 /*
- * Enable Burst mode.
+ * Program CPU Burst mode
+ * true = Enable Burst mode.
+ * false = Disable Burst mode.
  */
-void cpu_enable_burst_mode(void)
+void cpu_burst_mode(bool burst_mode_status)
 {
 	msr_t msr;
 
 	msr = rdmsr(IA32_MISC_ENABLE);
-	msr.hi &= ~BURST_MODE_DISABLE;
+	if (burst_mode_status)
+		msr.hi &= ~BURST_MODE_DISABLE;
+	else
+		msr.hi |= BURST_MODE_DISABLE;
 	wrmsr(IA32_MISC_ENABLE, msr);
 }
 
 /*
- * Disable Burst mode.
+ * Program Enhanced Intel Speed Step Technology
+ * true = Enable EIST.
+ * false = Disable EIST.
  */
-void cpu_disable_burst_mode(void)
+void cpu_set_eist(bool eist_status)
 {
 	msr_t msr;
 
 	msr = rdmsr(IA32_MISC_ENABLE);
-	msr.hi |= BURST_MODE_DISABLE;
-	wrmsr(IA32_MISC_ENABLE, msr);
-}
-
-/*
- * Enable Intel Enhanced Speed Step Technology.
- */
-void cpu_enable_eist(void)
-{
-	msr_t msr;
-
-	msr = rdmsr(IA32_MISC_ENABLE);
-	msr.lo |= (1 << 16);	/* Enhanced SpeedStep Enable */
-	wrmsr(IA32_MISC_ENABLE, msr);
-}
-
-/*
- * Disable Intel Enhanced Speed Step Technology.
- */
-void cpu_disable_eist(void)
-{
-	msr_t msr;
-
-	msr = rdmsr(IA32_MISC_ENABLE);
-	msr.lo &= ~(1 << 16);	/* Enhanced SpeedStep Disable */
+	if (eist_status)
+		msr.lo |= (1 << 16);
+	else
+		msr.lo &= ~(1 << 16);
 	wrmsr(IA32_MISC_ENABLE, msr);
 }
 

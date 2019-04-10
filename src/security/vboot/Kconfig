@@ -169,17 +169,15 @@ config VBOOT_SAVE_RECOVERY_REASON_ON_REBOOT
 	  reboots caused after vboot verification is run. e.g. reboots caused by
 	  FSP components on Intel platforms.
 
-config VBOOT_OPROM_MATTERS
+config VBOOT_MUST_REQUEST_DISPLAY
 	bool
 	default y if VGA_ROM_RUN
 	default n
 	help
 	  Set this option to indicate to vboot that this platform will skip its
 	  display initialization on a normal (non-recovery, non-developer) boot.
-	  Vboot calls this "oprom matters" because on x86 devices this
-	  traditionally meant that the video option ROM will not be loaded, but
-	  it works functionally the same for other platforms that can skip their
-	  native display initialization code instead.
+	  Unless display is specifically requested, the video option ROM is not
+	  loaded, and any other native display initialization code is not run.
 
 config VBOOT_HAS_REC_HASH_SPACE
 	bool

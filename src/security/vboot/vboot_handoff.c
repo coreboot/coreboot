@@ -61,30 +61,25 @@ static void fill_vboot_handoff(struct vboot_handoff *vboot_handoff,
 			vb_sd->flags |= VBSD_BOOT_REC_SWITCH_ON;
 		*oflags |= VB_INIT_OUT_ENABLE_RECOVERY;
 		*oflags |= VB_INIT_OUT_CLEAR_RAM;
-		*oflags |= VB_INIT_OUT_ENABLE_DISPLAY;
 		*oflags |= VB_INIT_OUT_ENABLE_USB_STORAGE;
 	}
 	if (vb2_sd->flags & VB2_SD_FLAG_DEV_MODE_ENABLED) {
 		*oflags |= VB_INIT_OUT_ENABLE_DEVELOPER;
 		*oflags |= VB_INIT_OUT_CLEAR_RAM;
-		*oflags |= VB_INIT_OUT_ENABLE_DISPLAY;
 		*oflags |= VB_INIT_OUT_ENABLE_USB_STORAGE;
 		vb_sd->flags |= VBSD_BOOT_DEV_SWITCH_ON;
 		vb_sd->flags |= VBSD_LF_DEV_SWITCH_ON;
 	}
-	/* TODO: Set these in depthcharge */
-	if (CONFIG(VBOOT_OPROM_MATTERS)) {
-		vb_sd->flags |= VBSD_OPROM_MATTERS;
-		/*
-		 * Inform vboot if the display was enabled by dev/rec
-		 * mode or was requested by vboot kernel phase.
-		 */
-		if ((*oflags & VB_INIT_OUT_ENABLE_DISPLAY) ||
-		    vboot_wants_oprom()) {
-			vb_sd->flags |= VBSD_OPROM_LOADED;
-			*oflags |= VB_INIT_OUT_ENABLE_DISPLAY;
-		}
+	/* Inform vboot if the display was requested by vboot kernel phase
+	   or enabled by dev/rec mode. */
+	if (vboot_wants_oprom() || vb2_sd->recovery_reason ||
+	    vb2_sd->flags & VB2_SD_FLAG_DEV_MODE_ENABLED) {
+		vboot_get_working_data()->flags |= VBOOT_WD_FLAG_DISPLAY_INIT;
+		vb_sd->flags |= VBSD_OPROM_LOADED;
 	}
+	/* TODO: Remove when depthcharge no longer reads this flag. */
+	if (CONFIG(VBOOT_MUST_REQUEST_DISPLAY))
+		vb_sd->flags |= VBSD_OPROM_MATTERS;
 
 	/* In vboot1, VBSD_FWB_TRIED is
 	 * set only if B is booted as explicitly requested. Therefore, if B is

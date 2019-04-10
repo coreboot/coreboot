@@ -34,10 +34,17 @@ struct selected_region {
  */
 struct vboot_working_data {
 	struct selected_region selected_region;
+	uint32_t flags;
 	/* offset of the buffer from the start of this struct */
-	uint32_t buffer_offset;
-	uint32_t buffer_size;
+	uint16_t buffer_offset;
+	uint16_t buffer_size;
 };
+
+/*
+ * Definitions for vboot_working_data.flags values.
+ */
+/* vboot requests display initialization from coreboot. */
+#define VBOOT_WD_FLAG_DISPLAY_INIT (1 << 0)
 
 /*
  * Source: security/vboot/common.c

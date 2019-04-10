@@ -22,10 +22,20 @@
 #define REGISTER(NAME) uint8_t NAME
 
 struct drivers_i2c_sx9310_config {
-	const char *desc;	/* Device Description */
-	unsigned int uid;	/* ACPI _UID */
-	enum i2c_speed speed;	/* Bus speed in Hz, default is I2C_SPEED_FAST */
-	struct acpi_irq irq;	/* Interrupt */
+	/* Device Description */
+	const char *desc;
+
+	/* ACPI _UID */
+	unsigned int uid;
+
+	/* Bus speed in Hz, default is I2C_SPEED_FAST */
+	enum i2c_speed speed;
+
+	/* Use GPIO-based interrupt instead of IO-APIC */
+	struct acpi_gpio irq_gpio;
+
+	/* IO-APIC interrupt */
+	struct acpi_irq irq;
 #include "registers.h"
 };
 

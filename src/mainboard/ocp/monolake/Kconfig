@@ -39,4 +39,8 @@ config FSP_PACKAGE_DEFAULT
 	bool "Configure defaults for the Intel FSP package"
 	default n
 
+config FMDFILE
+	string
+	default "src/mainboard/$(CONFIG_MAINBOARD_DIR)/board.fmd"
+
 endif # BOARD_OCP_MONOLAKE

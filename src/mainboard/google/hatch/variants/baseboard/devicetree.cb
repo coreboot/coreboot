@@ -47,6 +47,11 @@ chip soc/intel/cannonlake
 	# Unlock GPIO pads
 	register "PchUnlockGpioPads" = "1"
 
+	register "PchPmSlpS3MinAssert" = "2"  # 50ms
+	register "PchPmSlpS4MinAssert" = "1"  # 1s
+	register "PchPmSlpSusMinAssert" = "1" # 500ms
+	register "PchPmSlpAMinAssert" = "3"   # 2s
+
 	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC2)"	# Type-C Port 0
 	register "usb2_ports[1]" = "USB2_PORT_TYPE_C(OC2)"	# Type-C Port 1
 	register "usb2_ports[2]" = "USB2_PORT_SHORT(OC3)"	# Type-A Port 0

@@ -20,14 +20,14 @@
 
 static const struct pad_config gpio_table[] = {
 	/* A0  : SAR0_INT_ODL */
-	PAD_CFG_GPI_APIC(GPP_A0, NONE, PLTRST, LEVEL, NONE),
+	PAD_CFG_GPI_INT(GPP_A0, NONE, PLTRST, LEVEL),
 	/* A1  : ESPI_IO0 */
 	/* A2  : ESPI_IO1 */
 	/* A3  : ESPI_IO2 */
 	/* A4  : ESPI_IO3 */
 	/* A5  : ESPI_CS# */
 	/* A6  : SAR1_INT_ODL */
-	PAD_CFG_GPI_APIC(GPP_A6, NONE, PLTRST, LEVEL, NONE),
+	PAD_CFG_GPI_INT(GPP_A6, NONE, PLTRST, LEVEL),
 	/* A7  : PP3300_SOC_A */
 	PAD_NC(GPP_A7, NONE),
 	/* A8  : EMR_GARAGE_DET */

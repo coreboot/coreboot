@@ -344,11 +344,18 @@ chip soc/intel/skylake
 					irq 0x72 = 12     # Mouse
 				end
 				device pnp 2e.6   off end # CIR
-				device pnp 2e.7   off end # GPIO6..8
-				# WDT1, WDT_MEM, GPIO 0, GPIO 1
-				device pnp 2e.8   off end
-				# GPIO 2, GPIO 3, GPIO 4, GPIO 5
-				device pnp 2e.9   off end
+				device pnp 2e.7   off end # GPIO6
+				device pnp 2e.107 off end # GPIO7
+				device pnp 2e.207 off end # GPIO8
+				device pnp 2e.8   off end # WDT
+				device pnp 2e.108 off end # GPIO0
+				device pnp 2e.308 off end # GPIO base
+				device pnp 2e.408 off end # WDTMEM
+				device pnp 2e.708 off end # GPIO1
+				device pnp 2e.9   off end # GPIO2
+				device pnp 2e.109 off end # GPIO3
+				device pnp 2e.209 off end # GPIO4
+				device pnp 2e.309 off end # GPIO5
 				device pnp 2e.a   off end # ACPI
 				device pnp 2e.b   on      # HWM, LED
 					io  0x60 = 0x0290
@@ -359,7 +366,13 @@ chip soc/intel/skylake
 				device pnp 2e.e   off end # CIR wake-up
 				device pnp 2e.f   off end # GPIO PP/OD
 				device pnp 2e.14  off end # SVID, Port 80 UART
-				device pnp 2e.16  off end # Deep sleep
+				device pnp 2e.16  off end # DS5
+				device pnp 2e.116 off end # DS3
+				device pnp 2e.316 off end # PCHDSW
+				device pnp 2e.416 off end # DSWWOPT
+				device pnp 2e.516 off end # DS3OPT
+				device pnp 2e.616 off end # DSDSS
+				device pnp 2e.716 off end # DSPU
 			end     # superio/nuvoton/nct6791d
 			chip drivers/pc80/tpm
 				device pnp 4e.0 on end  # TPM module

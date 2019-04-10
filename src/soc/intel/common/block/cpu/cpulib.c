@@ -73,6 +73,13 @@ int cpu_config_tdp_levels(void)
 	return (platform_info.hi >> 1) & 3;
 }
 
+static void set_perf_control_msr(msr_t msr)
+{
+	wrmsr(IA32_PERF_CTL, msr);
+	printk(BIOS_DEBUG, "CPU: frequency set to %d MHz\n",
+	       ((msr.lo >> 8) & 0xff) * CONFIG_CPU_BCLK_MHZ);
+}
+
 /*
  * TURBO_RATIO_LIMIT MSR (0x1AD) Bits 31:0 indicates the
  * factory configured values for of 1-core, 2-core, 3-core
@@ -93,9 +100,7 @@ void cpu_set_p_state_to_turbo_ratio(void)
 	perf_ctl.lo = (msr.lo & 0xff) << 8;
 	perf_ctl.hi = 0;
 
-	wrmsr(IA32_PERF_CTL, perf_ctl);
-	printk(BIOS_DEBUG, "CPU: frequency set to %d MHz\n",
-	       ((perf_ctl.lo >> 8) & 0xff) * CONFIG_CPU_BCLK_MHZ);
+	set_perf_control_msr(perf_ctl);
 }
 
 /*
@@ -113,9 +118,7 @@ void cpu_set_p_state_to_nominal_tdp_ratio(void)
 	perf_ctl.lo = (msr.lo & 0xff) << 8;
 	perf_ctl.hi = 0;
 
-	wrmsr(IA32_PERF_CTL, perf_ctl);
-	printk(BIOS_DEBUG, "CPU: frequency set to %d MHz\n",
-		((perf_ctl.lo >> 8) & 0xff) * CONFIG_CPU_BCLK_MHZ);
+	set_perf_control_msr(perf_ctl);
 }
 
 /*
@@ -133,9 +136,7 @@ void cpu_set_p_state_to_max_non_turbo_ratio(void)
 	perf_ctl.lo = msr.lo & 0xff00;
 	perf_ctl.hi = 0;
 
-	wrmsr(IA32_PERF_CTL, perf_ctl);
-	printk(BIOS_DEBUG, "CPU: frequency set to %d MHz\n",
-		((perf_ctl.lo >> 8) & 0xff) * CONFIG_CPU_BCLK_MHZ);
+	set_perf_control_msr(perf_ctl);
 }
 
 /*
@@ -152,9 +153,8 @@ void cpu_set_p_state_to_min_clock_ratio(void)
 	min_ratio = cpu_get_min_ratio();
 	perf_ctl.lo = (min_ratio << 8) & 0xff00;
 	perf_ctl.hi = 0;
-	wrmsr(IA32_PERF_CTL, perf_ctl);
-	printk(BIOS_DEBUG, "CPU: frequency set to %u MHz\n",
-			    (min_ratio * CONFIG_CPU_BCLK_MHZ));
+
+	set_perf_control_msr(perf_ctl);
 }
 
 /*

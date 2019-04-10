@@ -22,9 +22,15 @@
 /* For CBI un-provisioned/corrupted Flapjack board. */
 #define FLAPJACK_UNDEF_SKU_ID 0
 
-static uint32_t get_index(unsigned int channel, uint32_t *cached_id)
-{
-	static const int voltages[] = {
+#define ADC_LEVELS 12
+
+enum {
+	LCM_ID_CHANNEL = 2,  /* ID of LCD Module on schematics. */
+	RAM_ID_CHANNEL = 3,
+	SKU_ID_CHANNEL = 4,
+};
+
+static const int ram_voltages[ADC_LEVELS] = {
 	/* ID : Voltage (unit: uV) */
 	/*  0 : */   74000,
 	/*  1 : */  212000,
@@ -38,27 +44,47 @@ static uint32_t get_index(unsigned int channel, uint32_t *cached_id)
 	/*  9 : */ 1137000,
 	/* 10 : */ 1240000,
 	/* 11 : */ 1343000,
-	/* 12 : */ 1457000,
-	/* 13 : */ 1576000,
-	/* 14 : */ 1684000,
-	/* 15 : */ 1800000,
-	};
+};
 
-	uint32_t id;
+static const int lcm_voltages[ADC_LEVELS] = {
+	/* ID : Voltage (unit: uV) */
+	/*  0 : */       0,
+	/*  1 : */  283000,
+	/*  2 : */  440000,
+	/*  3 : */  503000,
+	/*  4 : */  608000,
+	/*  5 : */  703000,
+	/*  6 : */  830000,
+	/*  7 : */  865000,
+	/*  8 : */  953000,
+	/*  9 : */ 1079000,
+	/* 10 : */ 1128000,
+	/* 11 : */ 1434000,
+};
 
-	if (*cached_id != BOARD_ID_INIT)
-		return *cached_id;
+static const int *adc_voltages[] = {
+	[LCM_ID_CHANNEL] = lcm_voltages,
+	[RAM_ID_CHANNEL] = ram_voltages,
+	[SKU_ID_CHANNEL] = ram_voltages, /* SKU ID is sharing RAM voltages. */
+};
 
+static uint32_t get_adc_index(unsigned int channel)
+{
 	int value = auxadc_get_voltage(channel);
+
+	assert(channel < ARRAY_SIZE(adc_voltages));
+	const int *voltages = adc_voltages[channel];
+	assert(voltages);
+
 	/* Find the closest voltage */
-	for (id = 0; id < ARRAY_SIZE(voltages) - 1; id++)
+	uint32_t id;
+	for (id = 0; id < ADC_LEVELS - 1; id++)
 		if (value < (voltages[id] + voltages[id + 1]) / 2)
 			break;
 
 	const int tolerance = 10000; /* 10,000 uV */
 	assert(ABS(value - voltages[id]) < tolerance);
 
-	*cached_id = id;
 	return id;
 }
 
@@ -68,26 +94,39 @@ uint32_t sku_id(void)
 {
 	static uint32_t cached_sku_id = BOARD_ID_INIT;
 
+	if (cached_sku_id != BOARD_ID_INIT)
+		return cached_sku_id;
+
 	/* On Flapjack, getting the SKU via CBI. */
 	if (CONFIG(BOARD_GOOGLE_FLAPJACK)) {
-		if (cached_sku_id == BOARD_ID_INIT &&
-		    google_chromeec_cbi_get_sku_id(&cached_sku_id))
+		if (google_chromeec_cbi_get_sku_id(&cached_sku_id))
 			cached_sku_id = FLAPJACK_UNDEF_SKU_ID;
 		return cached_sku_id;
 	}
 
-	/* Quirk for KUKUI: All P1/SKU0 had incorrectly set SKU=1. */
+	/* Quirk for Kukui: All Rev1/Sku0 had incorrectly set SKU_ID=1. */
 	if (CONFIG(BOARD_GOOGLE_KUKUI)) {
-		if (cached_sku_id == BOARD_ID_INIT && board_id() == 1) {
+		if (board_id() == 1) {
 			cached_sku_id = 0;
 			return cached_sku_id;
 		}
 	}
-	return get_index(4, &cached_sku_id);
+
+	/*
+	 * The SKU (later used for device tree matching) is combined from:
+	 * ADC2[4bit/H] = straps on LCD module (type of panel).
+	 * ADC4[4bit/L] = SKU ID from board straps.
+	 */
+	cached_sku_id = (get_adc_index(LCM_ID_CHANNEL) << 4 |
+			 get_adc_index(SKU_ID_CHANNEL));
+	return cached_sku_id;
 }
 
 uint32_t ram_code(void)
 {
 	static uint32_t cached_ram_code = BOARD_ID_INIT;
-	return get_index(3, &cached_ram_code);
+
+	if (cached_ram_code == BOARD_ID_INIT)
+		cached_ram_code = get_adc_index(RAM_ID_CHANNEL);
+	return cached_ram_code;
 }

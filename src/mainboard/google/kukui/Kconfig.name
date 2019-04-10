@@ -4,6 +4,10 @@ config BOARD_GOOGLE_KUKUI
 	bool "->  Kukui"
 	select BOARD_GOOGLE_KUKUI_COMMON
 
+config BOARD_GOOGLE_KRANE
+	bool "->  Krane"
+	select BOARD_GOOGLE_KUKUI_COMMON
+
 config BOARD_GOOGLE_FLAPJACK
 	bool "->  Flapjack"
 	select BOARD_GOOGLE_KUKUI_COMMON

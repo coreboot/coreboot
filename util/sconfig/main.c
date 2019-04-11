@@ -1316,6 +1316,11 @@ int main(int argc, char **argv)
 		override_devtree = argv[OVERRIDE_DEVICEFILE_ARG];
 		parse_devicetree(override_devtree, &override_root_bus);
 
+		if (!dev_has_children(&override_root_dev)) {
+			fprintf(stderr, "ERROR: Override tree needs at least one device!\n");
+			exit(1);
+		}
+
 		override_devicetree(&base_root_bus, &override_root_bus);
 	}
 

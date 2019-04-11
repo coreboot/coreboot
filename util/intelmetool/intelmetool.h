@@ -454,6 +454,7 @@ static inline void print_cap(const char *name, int state)
 #define PCI_DEVICE_ID_INTEL_LEWISBURG_IE1 0xA1F8 /* IE Lewisburg #1 */
 #define PCI_DEVICE_ID_INTEL_LEWISBURG_IE2 0xA1F9 /* IE Lewisburg #2 */
 #define PCI_DEVICE_ID_INTEL_LEWISBURG_IE3 0xA1FC /* IE Lewisburg #3 */
+#define PCI_DEVICE_ID_INTEL_CANNONLAKE 0xA360 /* Cannon Lake */
 
 #define PCI_DEV_HAS_SUPPORTED_ME(x) ( \
 	((x) ==  PCI_DEVICE_ID_INTEL_COUGARPOINT_1) || \
@@ -505,6 +506,7 @@ static inline void print_cap(const char *name, int state)
 	((x) ==  PCI_DEVICE_ID_INTEL_LEWISBURG_IE1) || \
 	((x) ==  PCI_DEVICE_ID_INTEL_LEWISBURG_IE2) || \
 	((x) ==  PCI_DEVICE_ID_INTEL_LEWISBURG_IE3) || \
+	((x) ==  PCI_DEVICE_ID_INTEL_CANNONLAKE) || \
 	0)
 
 #define BOOTGUARD_DISABLED 0x400000000

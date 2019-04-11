@@ -203,6 +203,19 @@ void smbios_fill_dimm_manufacturer_from_id(uint16_t mod_id,
 		}
 	}
 }
+/* this function will fill the corresponding locator */
+void __weak smbios_fill_dimm_locator(const struct dimm_info *dimm,
+	struct smbios_type17 *t)
+{
+	char locator[40];
+
+	snprintf(locator, sizeof(locator), "Channel-%d-DIMM-%d",
+		dimm->channel_num, dimm->dimm_num);
+	t->device_locator = smbios_add_string(t->eos, locator);
+
+	snprintf(locator, sizeof(locator), "BANK %d", dimm->bank_locator);
+	t->bank_locator = smbios_add_string(t->eos, locator);
+}
 
 static void trim_trailing_whitespace(char *buffer, size_t buffer_size)
 {
@@ -280,7 +293,6 @@ static int create_smbios_type17_for_dimm(struct dimm_info *dimm,
 					 unsigned long *current, int *handle)
 {
 	struct smbios_type17 *t = (struct smbios_type17 *)*current;
-	char locator[40];
 
 	memset(t, 0, sizeof(struct smbios_type17));
 	t->memory_type = dimm->ddr_type;
@@ -316,13 +328,7 @@ static int create_smbios_type17_for_dimm(struct dimm_info *dimm,
 
 	smbios_fill_dimm_manufacturer_from_id(dimm->mod_id, t);
 	smbios_fill_dimm_serial_number(dimm, t);
-
-	snprintf(locator, sizeof(locator), "Channel-%d-DIMM-%d",
-		dimm->channel_num, dimm->dimm_num);
-	t->device_locator = smbios_add_string(t->eos, locator);
-
-	snprintf(locator, sizeof(locator), "BANK %d", dimm->bank_locator);
-	t->bank_locator = smbios_add_string(t->eos, locator);
+	smbios_fill_dimm_locator(dimm, t);
 
 	/* put '\0' in the end of data */
 	dimm->module_part_number[DIMM_INFO_PART_NUMBER_SIZE - 1] = '\0';

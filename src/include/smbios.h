@@ -19,6 +19,7 @@
 #define SMBIOS_H
 
 #include <types.h>
+#include <memory_info.h>
 
 unsigned long smbios_write_tables(unsigned long start);
 int smbios_add_string(u8 *start, const char *str);
@@ -628,6 +629,8 @@ struct smbios_type127 {
 } __packed;
 
 void smbios_fill_dimm_manufacturer_from_id(uint16_t mod_id,
+	struct smbios_type17 *t);
+void smbios_fill_dimm_locator(const struct dimm_info *dimm,
 	struct smbios_type17 *t);
 
 smbios_board_type smbios_mainboard_board_type(void);

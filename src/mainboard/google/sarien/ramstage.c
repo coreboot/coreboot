@@ -14,10 +14,30 @@
  */
 
 #include <arch/acpi.h>
+#include <smbios.h>
 #include <soc/gpio.h>
 #include <soc/ramstage.h>
 #include <variant/gpio.h>
 #include <vendorcode/google/chromeos/chromeos.h>
+
+#if CONFIG(GENERATE_SMBIOS_TABLES)
+/* mainboard silk screen shows DIMM-A and DIMM-B */
+void smbios_fill_dimm_locator(const struct dimm_info *dimm,
+	struct smbios_type17 *t)
+{
+	switch (dimm->channel_num) {
+	case 0:
+		t->device_locator = smbios_add_string(t->eos, "DIMM-A");
+		break;
+	case 1:
+		t->device_locator = smbios_add_string(t->eos, "DIMM-B");
+		break;
+	default:
+		t->device_locator = smbios_add_string(t->eos, "UNKNOWN");
+		break;
+	}
+}
+#endif
 
 void mainboard_silicon_init_params(FSP_S_CONFIG *params)
 {

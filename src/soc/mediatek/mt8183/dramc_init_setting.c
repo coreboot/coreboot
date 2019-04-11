@@ -14,6 +14,7 @@
  */
 
 #include <device/mmio.h>
+#include <delay.h>
 #include <soc/emi.h>
 #include <soc/dramc_pi_api.h>
 #include <soc/dramc_register.h>
@@ -24,7 +25,7 @@ struct reg_init_value {
 	u32 value;
 };
 
-struct reg_init_value dramc_init_sequence[] = {
+static struct reg_init_value dramc_init_sequence[] = {
 	{&mt8183_infracfg->dramc_wbr, 0x00000000},
 	{&ch[0].ao.refctrl0, 0x20712000},
 	{&ch[1].ao.refctrl0, 0x20712000},
@@ -620,7 +621,52 @@ struct reg_init_value dramc_init_sequence[] = {
 	{&ch[1].phy.shu[0].rk[1].b[1].dq[1], 0x22000000},
 	{&ch[1].phy.shu[0].b[0].dll[1], 0x00022501},
 
-	/* dramc mode register init */
+	/* update the ac timing */
+	{&ch[0].ao.shu[0].actim[0], 0x06020c07},
+	{&ch[0].ao.shu[0].actim[1], 0x10080501},
+	{&ch[0].ao.shu[0].actim[2], 0x07070201},
+	{&ch[0].ao.shu[0].actim[3], 0x6164002c},
+	{&ch[0].ao.shu[0].actim[4], 0x22650077},
+	{&ch[0].ao.shu[0].actim[5], 0x0a000c0b},
+	{&ch[0].ao.shu[0].actim_xrt, 0x05030609},
+	{&ch[0].ao.shu[0].ac_time_05t, 0x000106e1},
+	{&ch[0].ao.catraining1, 0x0b000000},
+	{&ch[0].ao.shu[0].rk[0].dqsctl, 0x00000004},
+	{&ch[0].ao.shu[0].rk[1].dqsctl, 0x00000004},
+	{&ch[0].ao.shu[0].odtctrl, 0xc001004f},
+	{&ch[0].ao.shu[0].conf[1], 0x34000d0f},
+	{&ch[0].ao.shu[0].conf[2], 0x9007640f},
+	{&ch[0].ao.shu[0].scintv, 0x4e39eb36},
+	{&ch[0].ao.shu[0].ckectrl, 0x33210000},
+	{&ch[0].ao.ckectrl, 0x88d02440},
+	{&ch[0].ao.shu[0].rankctl, 0x64300003},
+	{&ch[0].ao.shu[0].rankctl, 0x64301203},
+	{&ch[1].ao.shu[0].actim[0], 0x06020c07},
+	{&ch[1].ao.shu[0].actim[1], 0x10080501},
+	{&ch[1].ao.shu[0].actim[2], 0x07070201},
+	{&ch[1].ao.shu[0].actim[3], 0x6164002c},
+	{&ch[1].ao.shu[0].actim[4], 0x22650077},
+	{&ch[1].ao.shu[0].actim[5], 0x0a000c0b},
+	{&ch[1].ao.shu[0].actim_xrt, 0x05030609},
+	{&ch[1].ao.shu[0].ac_time_05t, 0x000106e1},
+	{&ch[1].ao.catraining1, 0x0b000000},
+	{&ch[1].ao.shu[0].rk[0].dqsctl, 0x00000004},
+	{&ch[1].ao.shu[0].rk[1].dqsctl, 0x00000004},
+	{&ch[1].ao.shu[0].odtctrl, 0xc001004f},
+	{&ch[1].ao.shu[0].conf[1], 0x34000d0f},
+	{&ch[1].ao.shu[0].conf[2], 0x9007640f},
+	{&ch[1].ao.shu[0].scintv, 0x4e39eb36},
+	{&ch[1].ao.shu[0].ckectrl, 0x33210000},
+	{&ch[1].ao.ckectrl, 0x88d02440},
+	{&ch[1].ao.shu[0].rankctl, 0x64300003},
+	{&ch[1].ao.shu[0].rankctl, 0x64301203},
+	{&ch[0].ao.arbctl, 0x00000c80},
+	{&ch[0].ao.rstmask, 0x00000000},
+	{&ch[0].ao.arbctl, 0x00000c80},
+};
+
+static struct reg_init_value dramc_mode_reg_init_sequence[] = {
+	/* dramc power on sequence */
 	{&ch[0].phy.misc_ctrl1, 0x8100908c},
 	{&ch[1].phy.misc_ctrl1, 0x8100908c},
 	{&ch[0].ao.ckectrl, 0x88d02480},
@@ -632,6 +678,8 @@ struct reg_init_value dramc_init_sequence[] = {
 	{&ch[0].ao.ckectrl, 0x88d02440},
 	{&ch[1].ao.ckectrl, 0x88d02440},
 	{&ch[0].ao.mrs, 0x00000000},
+
+	/* CH0 dramc ZQ Calibration */
 	{&ch[0].ao.dramc_pd_ctrl, 0xc4000107},
 	{&ch[0].ao.ckectrl, 0x88d02440},
 	{&ch[0].ao.mrs, 0x00000000},
@@ -641,70 +689,104 @@ struct reg_init_value dramc_init_sequence[] = {
 	{&ch[0].ao.mrs, 0x00000000},
 	{&ch[0].ao.dramc_pd_ctrl, 0xc4000107},
 	{&ch[0].ao.ckectrl, 0x88d02440},
+
+	/* MR13 */
 	{&ch[0].ao.mrs, 0x00000d18},
 	{&ch[0].ao.spcmd, 0x00000001},
 	{&ch[0].ao.spcmd, 0x00000000},
 	{&ch[0].ao.ckectrl, 0x88d02440},
+
+	/* MR12 */
 	{&ch[0].ao.mrs, 0x00000c5d},
 	{&ch[0].ao.spcmd, 0x00000001},
 	{&ch[0].ao.spcmd, 0x00000000},
 	{&ch[0].ao.ckectrl, 0x88d02440},
+
+	/* MR1 */
 	{&ch[0].ao.mrs, 0x00000156},
 	{&ch[0].ao.spcmd, 0x00000001},
 	{&ch[0].ao.spcmd, 0x00000000},
 	{&ch[0].ao.ckectrl, 0x88d02440},
+
+	/* MR2 */
 	{&ch[0].ao.mrs, 0x0000020b},
 	{&ch[0].ao.spcmd, 0x00000001},
 	{&ch[0].ao.spcmd, 0x00000000},
 	{&ch[0].ao.ckectrl, 0x88d02440},
+
+	/* MR11 */
 	{&ch[0].ao.mrs, 0x00000b00},
 	{&ch[0].ao.spcmd, 0x00000001},
 	{&ch[0].ao.spcmd, 0x00000000},
 	{&ch[0].ao.ckectrl, 0x88d02440},
+
+	/* MR22 */
 	{&ch[0].ao.mrs, 0x00001638},
 	{&ch[0].ao.spcmd, 0x00000001},
 	{&ch[0].ao.spcmd, 0x00000000},
 	{&ch[0].ao.ckectrl, 0x88d02440},
+
+	/* MR14 */
 	{&ch[0].ao.mrs, 0x00000e5d},
 	{&ch[0].ao.spcmd, 0x00000001},
 	{&ch[0].ao.spcmd, 0x00000000},
 	{&ch[0].ao.ckectrl, 0x88d02440},
+
+	/* MR3 */
 	{&ch[0].ao.mrs, 0x00000330},
 	{&ch[0].ao.spcmd, 0x00000001},
 	{&ch[0].ao.spcmd, 0x00000000},
 	{&ch[0].ao.ckectrl, 0x88d02440},
+
+	/* MR13 */
 	{&ch[0].ao.mrs, 0x00000d58},
 	{&ch[0].ao.spcmd, 0x00000001},
 	{&ch[0].ao.spcmd, 0x00000000},
 	{&ch[0].ao.ckectrl, 0x88d02440},
+
+	/* MR12 */
 	{&ch[0].ao.mrs, 0x00000c5d},
 	{&ch[0].ao.spcmd, 0x00000001},
 	{&ch[0].ao.spcmd, 0x00000000},
 	{&ch[0].ao.ckectrl, 0x88d02440},
+
+	/* MR1 */
 	{&ch[0].ao.mrs, 0x00000156},
 	{&ch[0].ao.spcmd, 0x00000001},
 	{&ch[0].ao.spcmd, 0x00000000},
 	{&ch[0].ao.ckectrl, 0x88d02440},
+
+	/* MR2 */
 	{&ch[0].ao.mrs, 0x0000022d},
 	{&ch[0].ao.spcmd, 0x00000001},
 	{&ch[0].ao.spcmd, 0x00000000},
 	{&ch[0].ao.ckectrl, 0x88d02440},
+
+	/* MR11 */
 	{&ch[0].ao.mrs, 0x00000b23},
 	{&ch[0].ao.spcmd, 0x00000001},
 	{&ch[0].ao.spcmd, 0x00000000},
 	{&ch[0].ao.ckectrl, 0x88d02440},
+
+	/* MR22 */
 	{&ch[0].ao.mrs, 0x00001634},
 	{&ch[0].ao.spcmd, 0x00000001},
 	{&ch[0].ao.spcmd, 0x00000000},
 	{&ch[0].ao.ckectrl, 0x88d02440},
+
+	/* MR14 */
 	{&ch[0].ao.mrs, 0x00000e10},
 	{&ch[0].ao.spcmd, 0x00000001},
 	{&ch[0].ao.spcmd, 0x00000000},
 	{&ch[0].ao.ckectrl, 0x88d02440},
+
+	/* MR3 */
 	{&ch[0].ao.mrs, 0x00000330},
 	{&ch[0].ao.spcmd, 0x00000001},
 	{&ch[0].ao.spcmd, 0x00000000},
 	{&ch[0].ao.ckectrl, 0x88d02440},
+
+	/* dramc ZQ Calibration */
 	{&ch[0].ao.mrs, 0x01000330},
 	{&ch[0].ao.dramc_pd_ctrl, 0xc4000107},
 	{&ch[0].ao.ckectrl, 0x88d02440},
@@ -715,76 +797,112 @@ struct reg_init_value dramc_init_sequence[] = {
 	{&ch[0].ao.mrs, 0x01000330},
 	{&ch[0].ao.dramc_pd_ctrl, 0xc4000107},
 	{&ch[0].ao.ckectrl, 0x88d02440},
+
+	/* MR13 */
 	{&ch[0].ao.mrs, 0x01000d18},
 	{&ch[0].ao.spcmd, 0x00000001},
 	{&ch[0].ao.spcmd, 0x00000000},
 	{&ch[0].ao.ckectrl, 0x88d02440},
+
+	/* MR12 */
 	{&ch[0].ao.mrs, 0x01000c5d},
 	{&ch[0].ao.spcmd, 0x00000001},
 	{&ch[0].ao.spcmd, 0x00000000},
 	{&ch[0].ao.ckectrl, 0x88d02440},
+
+	/* MR1 */
 	{&ch[0].ao.mrs, 0x01000156},
 	{&ch[0].ao.spcmd, 0x00000001},
 	{&ch[0].ao.spcmd, 0x00000000},
 	{&ch[0].ao.ckectrl, 0x88d02440},
+
+	/* MR2 */
 	{&ch[0].ao.mrs, 0x0100020b},
 	{&ch[0].ao.spcmd, 0x00000001},
 	{&ch[0].ao.spcmd, 0x00000000},
 	{&ch[0].ao.ckectrl, 0x88d02440},
+
+	/* MR11 */
 	{&ch[0].ao.mrs, 0x01000b00},
 	{&ch[0].ao.spcmd, 0x00000001},
 	{&ch[0].ao.spcmd, 0x00000000},
 	{&ch[0].ao.ckectrl, 0x88d02440},
+
+	/* MR22 */
 	{&ch[0].ao.mrs, 0x01001638},
 	{&ch[0].ao.spcmd, 0x00000001},
 	{&ch[0].ao.spcmd, 0x00000000},
 	{&ch[0].ao.ckectrl, 0x88d02440},
+
+	/* MR14 */
 	{&ch[0].ao.mrs, 0x01000e5d},
 	{&ch[0].ao.spcmd, 0x00000001},
 	{&ch[0].ao.spcmd, 0x00000000},
 	{&ch[0].ao.ckectrl, 0x88d02440},
+
+	/* MR3 */
 	{&ch[0].ao.mrs, 0x01000330},
 	{&ch[0].ao.spcmd, 0x00000001},
 	{&ch[0].ao.spcmd, 0x00000000},
 	{&ch[0].ao.ckectrl, 0x88d02440},
+
+	/* MR13 */
 	{&ch[0].ao.mrs, 0x01000d58},
 	{&ch[0].ao.spcmd, 0x00000001},
 	{&ch[0].ao.spcmd, 0x00000000},
 	{&ch[0].ao.ckectrl, 0x88d02440},
+
+	/* MR12 */
 	{&ch[0].ao.mrs, 0x01000c5d},
 	{&ch[0].ao.spcmd, 0x00000001},
 	{&ch[0].ao.spcmd, 0x00000000},
 	{&ch[0].ao.ckectrl, 0x88d02440},
+
+	/* MR1 */
 	{&ch[0].ao.mrs, 0x01000156},
 	{&ch[0].ao.spcmd, 0x00000001},
 	{&ch[0].ao.spcmd, 0x00000000},
 	{&ch[0].ao.ckectrl, 0x88d02440},
+
+	/* MR2 */
 	{&ch[0].ao.mrs, 0x0100022d},
 	{&ch[0].ao.spcmd, 0x00000001},
 	{&ch[0].ao.spcmd, 0x00000000},
 	{&ch[0].ao.ckectrl, 0x88d02440},
+
+	/* MR11 */
 	{&ch[0].ao.mrs, 0x01000b23},
 	{&ch[0].ao.spcmd, 0x00000001},
 	{&ch[0].ao.spcmd, 0x00000000},
 	{&ch[0].ao.ckectrl, 0x88d02440},
+
+	/* MR22 */
 	{&ch[0].ao.mrs, 0x01001634},
 	{&ch[0].ao.spcmd, 0x00000001},
 	{&ch[0].ao.spcmd, 0x00000000},
 	{&ch[0].ao.ckectrl, 0x88d02440},
+
+	/* MR14 */
 	{&ch[0].ao.mrs, 0x01000e10},
 	{&ch[0].ao.spcmd, 0x00000001},
 	{&ch[0].ao.spcmd, 0x00000000},
 	{&ch[0].ao.ckectrl, 0x88d02440},
+
+	/* MR3 */
 	{&ch[0].ao.mrs, 0x01000330},
 	{&ch[0].ao.spcmd, 0x00000001},
 	{&ch[0].ao.spcmd, 0x00000000},
 	{&ch[0].ao.ckectrl, 0x88d02440},
+
+	/* MR13 */
 	{&ch[0].ao.mrs, 0x00000330},
 	{&ch[0].ao.ckectrl, 0x88d02440},
 	{&ch[0].ao.mrs, 0x00000dd8},
 	{&ch[0].ao.spcmd, 0x00000001},
 	{&ch[0].ao.spcmd, 0x00000000},
 	{&ch[0].ao.ckectrl, 0x88d02440},
+
+	/* MR13 */
 	{&ch[0].ao.mrs, 0x01000dd8},
 	{&ch[0].ao.ckectrl, 0x88d02440},
 	{&ch[0].ao.mrs, 0x01000dd8},
@@ -792,9 +910,12 @@ struct reg_init_value dramc_init_sequence[] = {
 	{&ch[0].ao.spcmd, 0x00000000},
 	{&ch[0].ao.ckectrl, 0x88d02440},
 	{&ch[0].ao.mrs, 0x01000dd8},
+
 	{&ch[0].ao.shu[0].hwset_mr13, 0x00d8000d},
 	{&ch[0].ao.shu[0].hwset_vrcg, 0x00d8000d},
 	{&ch[0].ao.shu[0].hwset_mr2, 0x002d0002},
+
+	/* CH1 dramc ZQ Calibration */
 	{&ch[1].ao.mrs, 0x00000000},
 	{&ch[1].ao.dramc_pd_ctrl, 0xc4000107},
 	{&ch[1].ao.ckectrl, 0x88d02440},
@@ -961,49 +1082,6 @@ struct reg_init_value dramc_init_sequence[] = {
 	{&ch[1].ao.shu[0].hwset_mr2, 0x002d0002},
 	{&ch[0].ao.mrs, 0x00000dd8},
 	{&ch[1].ao.mrs, 0x00000dd8},
-
-	/* update the ac timing */
-	{&ch[0].ao.shu[0].actim[0], 0x06020c07},
-	{&ch[0].ao.shu[0].actim[1], 0x10080501},
-	{&ch[0].ao.shu[0].actim[2], 0x07070201},
-	{&ch[0].ao.shu[0].actim[3], 0x6164002c},
-	{&ch[0].ao.shu[0].actim[4], 0x22650077},
-	{&ch[0].ao.shu[0].actim[5], 0x0a000c0b},
-	{&ch[0].ao.shu[0].actim_xrt, 0x05030609},
-	{&ch[0].ao.shu[0].ac_time_05t, 0x000106e1},
-	{&ch[0].ao.catraining1, 0x0b000000},
-	{&ch[0].ao.shu[0].rk[0].dqsctl, 0x00000004},
-	{&ch[0].ao.shu[0].rk[1].dqsctl, 0x00000004},
-	{&ch[0].ao.shu[0].odtctrl, 0xc001004f},
-	{&ch[0].ao.shu[0].conf[1], 0x34000d0f},
-	{&ch[0].ao.shu[0].conf[2], 0x9007640f},
-	{&ch[0].ao.shu[0].scintv, 0x4e39eb36},
-	{&ch[0].ao.shu[0].ckectrl, 0x33210000},
-	{&ch[0].ao.ckectrl, 0x88d02440},
-	{&ch[0].ao.shu[0].rankctl, 0x64300003},
-	{&ch[0].ao.shu[0].rankctl, 0x64301203},
-	{&ch[1].ao.shu[0].actim[0], 0x06020c07},
-	{&ch[1].ao.shu[0].actim[1], 0x10080501},
-	{&ch[1].ao.shu[0].actim[2], 0x07070201},
-	{&ch[1].ao.shu[0].actim[3], 0x6164002c},
-	{&ch[1].ao.shu[0].actim[4], 0x22650077},
-	{&ch[1].ao.shu[0].actim[5], 0x0a000c0b},
-	{&ch[1].ao.shu[0].actim_xrt, 0x05030609},
-	{&ch[1].ao.shu[0].ac_time_05t, 0x000106e1},
-	{&ch[1].ao.catraining1, 0x0b000000},
-	{&ch[1].ao.shu[0].rk[0].dqsctl, 0x00000004},
-	{&ch[1].ao.shu[0].rk[1].dqsctl, 0x00000004},
-	{&ch[1].ao.shu[0].odtctrl, 0xc001004f},
-	{&ch[1].ao.shu[0].conf[1], 0x34000d0f},
-	{&ch[1].ao.shu[0].conf[2], 0x9007640f},
-	{&ch[1].ao.shu[0].scintv, 0x4e39eb36},
-	{&ch[1].ao.shu[0].ckectrl, 0x33210000},
-	{&ch[1].ao.ckectrl, 0x88d02440},
-	{&ch[1].ao.shu[0].rankctl, 0x64300003},
-	{&ch[1].ao.shu[0].rankctl, 0x64301203},
-	{&ch[0].ao.arbctl, 0x00000c80},
-	{&ch[0].ao.rstmask, 0x00000000},
-	{&ch[0].ao.arbctl, 0x00000c80},
 };
 
 void dramc_init(void)
@@ -1011,4 +1089,10 @@ void dramc_init(void)
 	for (int i = 0; i < ARRAY_SIZE(dramc_init_sequence); i++)
 		write32(dramc_init_sequence[i].addr,
 			dramc_init_sequence[i].value);
+
+	for (int i = 0; i < ARRAY_SIZE(dramc_mode_reg_init_sequence); i++) {
+		write32(dramc_mode_reg_init_sequence[i].addr,
+			dramc_mode_reg_init_sequence[i].value);
+		udelay(2);
+	}
 }

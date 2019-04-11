@@ -135,6 +135,12 @@ int wilco_ec_get_lid_state(void)
 	return !!(pm.state[0] & EC_PM1_LID_OPEN);
 }
 
+int wilco_ec_get_board_id(uint8_t *id)
+{
+	return wilco_ec_mailbox(WILCO_EC_MSG_RAW, KB_BOARD_ID,
+				NULL, 0, id, sizeof(*id));
+}
+
 void wilco_ec_slp_en(void)
 {
 	/* EC does not respond to this command */

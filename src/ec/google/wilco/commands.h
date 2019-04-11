@@ -38,6 +38,8 @@ enum {
 	KB_EC_INFO = 0x38,
 	/* Set ACPI mode on or off */
 	KB_ACPI = 0x3a,
+	/* Board ID */
+	KB_BOARD_ID = 0x3d,
 	/* Change ACPI wake up source */
 	KB_ACPI_WAKEUP_CHANGE = 0x4a,
 	/* Manage the EC power button passthru to the host */
@@ -266,6 +268,17 @@ int wilco_ec_get_pm(struct ec_pm_event_state *pm, bool clear);
  * Returns -1 if the EC command failed
  */
 int wilco_ec_get_lid_state(void);
+
+/**
+ * wilco_ec_get_board_id
+ *
+ * Retrieve the board ID value from the EC.
+ * @id:		Pointer to variable to store the ID read from the EC.
+ *
+ * Returns number of bytes transferred from the EC
+ * Returns -1 if the EC command failed
+ */
+int wilco_ec_get_board_id(uint8_t *id);
 
 enum ec_wake_change {
 	WAKE_OFF = 0,

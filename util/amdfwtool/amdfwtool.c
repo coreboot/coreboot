@@ -77,8 +77,11 @@
 #define MIN_ROM_KB		256
 
 #define ALIGN(val, by) (((val) + (by) - 1) & ~((by) - 1))
+#define _MAX(A, B) (((A) > (B)) ? (A) : (B))
+#define ERASE_ALIGNMENT 0x1000U
 #define TABLE_ALIGNMENT 0x1000U
 #define BLOB_ALIGNMENT 0x100U
+#define BLOB_ERASE_ALIGNMENT _MAX(BLOB_ALIGNMENT, ERASE_ALIGNMENT)
 
 #define DEFAULT_SOFT_FUSE_CHAIN "0x1"
 
@@ -455,6 +458,31 @@ static void integrate_psp_firmwares(context *ctx,
 			pspdir->entries[count].rsvd = 0;
 			pspdir->entries[count].size = 0xFFFFFFFF;
 			pspdir->entries[count].addr = fw_table[i].other;
+			count++;
+		} else if (fw_table[i].type == AMD_FW_PSP_NVRAM) {
+			if (fw_table[i].filename == NULL)
+				continue;
+			/* TODO: Add a way to reserve for NVRAM without
+			 * requiring a filename.  This isn't a feature used
+			 * by coreboot systems, so priority is very low.
+			 */
+			ctx->current = ALIGN(ctx->current, ERASE_ALIGNMENT);
+			bytes = copy_blob(BUFF_CURRENT(*ctx),
+					fw_table[i].filename, BUFF_ROOM(*ctx));
+			if (bytes <= 0) {
+				free(ctx->rom);
+				exit(1);
+			}
+
+			pspdir->entries[count].type = fw_table[i].type;
+			pspdir->entries[count].subprog = fw_table[i].subprog;
+			pspdir->entries[count].rsvd = 0;
+			pspdir->entries[count].size = ALIGN(bytes,
+							ERASE_ALIGNMENT);
+			pspdir->entries[count].addr = RUN_CURRENT(*ctx);
+
+			ctx->current = ALIGN(ctx->current + bytes,
+							BLOB_ERASE_ALIGNMENT);
 			count++;
 		} else if (fw_table[i].filename != NULL) {
 			bytes = copy_blob(BUFF_CURRENT(*ctx),

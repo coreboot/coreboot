@@ -10,7 +10,7 @@ chip soc/intel/cannonlake
 		[PchSerialIoIndexSPI0] = PchSerialIoPci,
 		[PchSerialIoIndexSPI1] = PchSerialIoPci,
 		[PchSerialIoIndexSPI2] = PchSerialIoDisabled,
-		[PchSerialIoIndexUART0] = PchSerialIoPci,
+		[PchSerialIoIndexUART0] = PchSerialIoSkipInit,
 		[PchSerialIoIndexUART1] = PchSerialIoDisabled,
 		[PchSerialIoIndexUART2] = PchSerialIoDisabled,
 	}"

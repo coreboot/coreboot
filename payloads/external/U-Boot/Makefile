@@ -51,11 +51,11 @@ else
 	touch $(project_dir)/$(STABLE_COMMIT_ID)
 endif
 
-$(project_dir)/tag-$(TAG-y): fetch
+checkout: fetch
 	echo "    Checking out $(project_name) revision $(TAG-y)"
 	cd $(project_dir); git checkout master; git branch -D coreboot 2>/dev/null; git checkout -b coreboot $(TAG-y)
 
-config: $(project_dir)/$(TAG-y)
+config: checkout
 	rm -f $(project_config_file)
 ifneq ($(CONFIG_PAYLOAD_CONFIGFILE),)
 ifneq ("$(wildcard $(CONFIG_PAYLOAD_CONFIGFILE))","")
@@ -83,4 +83,4 @@ distclean:
 print-repo-info:
 	echo "$(project_git_repo) $(project_dir)"
 
-.PHONY: config build clean distclean fetch print-repo-info
+.PHONY: checkout config build clean distclean fetch print-repo-info

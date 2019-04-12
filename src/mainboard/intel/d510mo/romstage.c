@@ -28,8 +28,7 @@ void mb_enable_lpc(void)
 	/* Disable Serial IRQ */
 	pci_write_config8(PCI_DEV(0, 0x1f, 0), SERIRQ_CNTL, 0x00);
 	/* Decode range */
-	pci_write_config16(PCI_DEV(0, 0x1f, 0), LPC_IO_DEC,
-		pci_read_config16(PCI_DEV(0, 0x1f, 0), LPC_IO_DEC) | 0x0010);
+	pci_or_config16(PCI_DEV(0, 0x1f, 0), LPC_IO_DEC, 0x0010);
 	pci_write_config16(PCI_DEV(0, 0x1f, 0), LPC_EN, CNF1_LPC_EN
 			| CNF2_LPC_EN | KBC_LPC_EN | COMA_LPC_EN
 			| COMB_LPC_EN);

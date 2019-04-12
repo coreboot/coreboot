@@ -13,8 +13,8 @@
 ## GNU General Public License for more details.
 ##
 
-# 2016-1 tag
-STABLE_COMMIT_ID=fa85e826c16b9ce1ad302a57e9c4b24db0d8b930
+# 2019-4 tag
+STABLE_COMMIT_ID=3c99166441bf3ea325af2da83cfe65430b49c066
 
 TAG-$(CONFIG_UBOOT_MASTER)=origin/master
 TAG-$(CONFIG_UBOOT_STABLE)=$(STABLE_COMMIT_ID)

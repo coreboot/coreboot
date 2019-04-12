@@ -9,7 +9,7 @@ choice
 	default UBOOT_STABLE
 
 config UBOOT_STABLE
-	bool "v2016.1"
+	bool "v2019.4"
 	help
 	  Stable U-Boot version
 

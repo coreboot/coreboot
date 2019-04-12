@@ -266,8 +266,15 @@ static void vx900_set_resources(struct device *dev)
 	 * to be always mapped to the top of 1M, but this can be overcome with
 	 * some smart positive/subtractive resource decoding */
 	ram_resource(dev, idx++, 768, (tolmk - 768));
-	uma_memory_size = fbufk << 10;
-	uma_memory_base = tolmk << 10;
+
+	uma_memory_size = (uint64_t)fbufk << 10;
+	uma_memory_base = (uint64_t)tolmk << 10;
+
+	if (uma_memory_size > UINT32_MAX)
+		die("uma_memory_size %llu exceeds 32-bit address range\n", uma_memory_size);
+
+	if (uma_memory_base > UINT32_MAX)
+		die("uma_memory_base %llu exceeds 32-bit address range\n", uma_memory_base);
 
 	//uma_resource(dev, idx++, uma_memory_base>>10, uma_memory_size>>10);
 

@@ -68,14 +68,11 @@ static void fill_vboot_handoff(struct vboot_handoff *vboot_handoff,
 		vb_sd->flags |= VBSD_BOOT_DEV_SWITCH_ON;
 		vb_sd->flags |= VBSD_LF_DEV_SWITCH_ON;
 	}
-	/* Inform vboot if the display was requested by vboot kernel phase
-	   or enabled by dev/rec mode. */
+	/* TODO(chromium:948529): Remove these two flags after downstream
+	   vboot code longer reads them. */
 	if (vboot_wants_oprom() || vb2_sd->recovery_reason ||
-	    vb2_sd->flags & VB2_SD_FLAG_DEV_MODE_ENABLED) {
-		vboot_get_working_data()->flags |= VBOOT_WD_FLAG_DISPLAY_INIT;
+	    vb2_sd->flags & VB2_SD_FLAG_DEV_MODE_ENABLED)
 		vb_sd->flags |= VBSD_OPROM_LOADED;
-	}
-	/* TODO: Remove when depthcharge no longer reads this flag. */
 	if (CONFIG(VBOOT_MUST_REQUEST_DISPLAY))
 		vb_sd->flags |= VBSD_OPROM_MATTERS;
 

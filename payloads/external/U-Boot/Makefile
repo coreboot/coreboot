@@ -65,7 +65,7 @@ else
 	false
 endif
 else
-	cat $(project_dir)/configs/coreboot-x86_defconfig >> $(project_config_file)
+	cat $(project_dir)/configs/coreboot_defconfig >> $(project_config_file)
 endif
 
 	$(MAKE) -C $(project_dir) olddefconfig

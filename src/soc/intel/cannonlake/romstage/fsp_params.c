@@ -68,7 +68,10 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg, const config_t *config)
 		m_cfg->VmxEnable = config->VmxEnable;
 
 #if CONFIG(SOC_INTEL_COMMON_CANNONLAKE_BASE)
-	m_cfg->SkipMpInit = !CONFIG_USE_INTEL_FSP_MP_INIT;
+	if (CONFIG(USE_INTEL_FSP_TO_CALL_COREBOOT_PUBLISH_MP_PPI))
+		m_cfg->SkipMpInit = 0;
+	else
+		m_cfg->SkipMpInit = !CONFIG_USE_INTEL_FSP_MP_INIT;
 #endif
 
 	/* Set CpuRatio to match existing MSR value */

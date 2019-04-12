@@ -113,6 +113,7 @@ chip northbridge/intel/gm45
 			end # PCIe Port #3
 			device pci 1c.3 on
 				subsystemid 0x17aa 0x20f3 # Expresscard
+				smbios_slot_desc "7" "3" "ExpressCard Slot" "8"
 			end # PCIe Port #4
 			device pci 1c.4 off end # PCIe Port #5
 			device pci 1c.5 off end # PCIe Port #6

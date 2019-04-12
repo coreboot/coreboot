@@ -99,6 +99,7 @@ chip northbridge/intel/sandybridge
 			end # PCIe Port #2 Integrated Wireless LAN
 			device pci 1c.2 on
 				subsystemid 0x17aa 0x21fb
+				smbios_slot_desc "7" "3" "ExpressCard Slot" "8"
 			end # PCIe Port #3 ExpressCard
 			device pci 1c.3 off end # PCIe Port #4
 			device pci 1c.4 off end # PCIe Port #5

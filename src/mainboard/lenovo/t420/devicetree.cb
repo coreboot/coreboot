@@ -94,6 +94,7 @@ chip northbridge/intel/sandybridge
 			device pci 1c.2 off end # PCIe Port #3
 			device pci 1c.3 on
 				subsystemid 0x17aa 0x21ce
+				smbios_slot_desc "7" "3" "ExpressCard Slot" "8"
 			end # PCIe Port #4 ExpressCard
 			device pci 1c.4 on
 				subsystemid 0x17aa 0x21ce

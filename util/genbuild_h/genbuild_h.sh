@@ -22,14 +22,20 @@ export LANG=C
 export LC_ALL=C
 export TZ=UTC0
 
+# $1: format string
+get_git_head_data() {
+	LANG= git log --no-show-signature -1 --format="format:$1" 2>/dev/null || \
+	LANG= git log -1 --format="format:$1"
+}
+
 if [ "${BUILD_TIMELESS}" = "1" ]; then
 	GITREV=Timeless
 	TIMESOURCE="fixed"
 	DATE=0
 elif [ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" = "true" ]; then
-	GITREV=$(LANG= git log --no-show-signature -1 --format=format:%h)
+	GITREV=$(get_git_head_data %h)
 	TIMESOURCE=git
-	DATE=$(git log --no-show-signature --pretty=format:%ct -1)
+	DATE=$(get_git_head_data %ct)
 else
 	GITREV=Unknown
 	TIMESOURCE="date"

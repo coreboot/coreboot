@@ -23,6 +23,7 @@
 #include <soc/ramstage.h>
 #include <soc/intel/broadwell/chip.h>
 #include <soc/intel/common/acpi.h>
+#include <assert.h>
 
 /* Save wake source information for calculating ACPI _SWS values */
 int soc_fill_acpi_wake(uint32_t *pm1, uint32_t **gpe0)
@@ -30,6 +31,8 @@ int soc_fill_acpi_wake(uint32_t *pm1, uint32_t **gpe0)
 	struct chipset_power_state *ps = cbmem_find(CBMEM_ID_POWER_STATE);
 	static uint32_t gpe0_sts[GPE0_REG_MAX];
 	int i;
+
+	assert(ps != NULL);
 
 	*pm1 = ps->pm1_sts & ps->pm1_en;
 

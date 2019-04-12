@@ -14,6 +14,7 @@
  */
 
 #include "cbfs_sections.h"
+#include "common.h"
 
 #include <assert.h>
 #include <stdlib.h>
@@ -65,6 +66,10 @@ bool fmd_process_flag_cbfs(const struct flashmap_descriptor *node)
 		return false;
 
 	list_node = (struct descriptor_node *)malloc(sizeof(*list_node));
+	if (!list_node) {
+		ERROR("Cannot allocate CBFS flag node!\n");
+		return false;
+	}
 	list_node->val = node;
 	list_node->next = NULL;
 

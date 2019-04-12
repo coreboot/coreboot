@@ -833,6 +833,41 @@ static int smbios_write_type7_cache_parameters(unsigned long *current,
 
 	return len;
 }
+int smbios_write_type9(unsigned long *current, int *handle,
+			const char *name, const enum misc_slot_type type,
+			const enum slot_data_bus_bandwidth bandwidth,
+			const enum misc_slot_usage usage,
+			const enum misc_slot_length length,
+			u8 slot_char1, u8 slot_char2, u8 bus, u8 dev_func)
+{
+	struct smbios_type9 *t = (struct smbios_type9 *)*current;
+	int len = sizeof(struct smbios_type9);
+
+	memset(t, 0, sizeof(struct smbios_type9));
+	t->type = SMBIOS_SYSTEM_SLOTS;
+	t->handle = *handle;
+	t->length = len - 2;
+	if (name)
+		t->slot_designation = smbios_add_string(t->eos, name);
+	else
+		t->slot_designation = smbios_add_string(t->eos, "SLOT");
+	t->slot_type = type;
+	/* TODO add slot_id supoort, will be "_SUN" for ACPI devices */
+	t->slot_data_bus_width = bandwidth;
+	t->current_usage = usage;
+	t->slot_length = length;
+	t->slot_characteristics_1 = slot_char1;
+	t->slot_characteristics_2 = slot_char2;
+	t->segment_group_number = 0;
+	t->bus_number = bus;
+	t->device_function_number = dev_func;
+	t->data_bus_width = SlotDataBusWidthOther;
+
+	len = t->length + smbios_string_table_len(t->eos);
+	*current += len;
+	*handle += 1;
+	return len;
+}
 
 static int smbios_write_type11(unsigned long *current, int *handle)
 {

@@ -30,6 +30,7 @@ unexport KCONFIG_DEPENDENCIES
 unexport KCONFIG_SPLITCONFIG
 unexport KCONFIG_TRISTATE
 unexport KCONFIG_NEGATIVES
+unexport $(COREBOOT_EXPORTS)
 
 all: build
 

@@ -428,7 +428,7 @@ static const struct pad_config s5_sleep_gpio_table[] = {
 	PAD_CFG_GPO(GPP_A18, 0, DEEP), /* EN_PP3300_WWAN */
 };
 
-const struct pad_config * __weak variant_sleep_gpio_table(
+const struct pad_config *__weak variant_sleep_gpio_table(
 	u8 slp_typ, size_t *num)
 {
 	if (slp_typ == ACPI_S5) {

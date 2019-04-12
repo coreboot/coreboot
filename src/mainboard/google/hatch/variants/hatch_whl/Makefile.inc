@@ -18,3 +18,5 @@ SPD_SOURCES += empty_ddr4	# 0b010
 SPD_SOURCES += empty_ddr4	# 0b011
 SPD_SOURCES += empty_ddr4	# 0b100
 SPD_SOURCES += 8G_2666		# 0b101
+
+ramstage-y += gpio.c

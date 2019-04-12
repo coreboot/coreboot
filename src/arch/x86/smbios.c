@@ -999,6 +999,56 @@ static int smbios_write_type127(unsigned long *current, int handle)
 	return len;
 }
 
+/* Generate Type9 entries from devicetree */
+static int smbios_walk_device_tree_type9(struct device *dev, int *handle,
+					 unsigned long *current)
+{
+	enum misc_slot_usage usage;
+	enum slot_data_bus_bandwidth bandwidth;
+	enum misc_slot_type type;
+	enum misc_slot_length length;
+
+	if (dev->path.type != DEVICE_PATH_PCI)
+		return 0;
+
+	if (!dev->smbios_slot_type && !dev->smbios_slot_data_width &&
+	    !dev->smbios_slot_designation && !dev->smbios_slot_length)
+		return 0;
+
+	if (dev_is_active_bridge(dev))
+		usage = SlotUsageInUse;
+	else if (dev->enabled)
+		usage = SlotUsageAvailable;
+	else
+		usage = SlotUsageUnknown;
+
+	if (dev->smbios_slot_data_width)
+		bandwidth = dev->smbios_slot_data_width;
+	else
+		bandwidth = SlotDataBusWidthUnknown;
+
+	if (dev->smbios_slot_type)
+		type = dev->smbios_slot_type;
+	else
+		type = SlotTypeUnknown;
+
+	if (dev->smbios_slot_length)
+		length = dev->smbios_slot_length;
+	else
+		length = SlotLengthUnknown;
+
+	return smbios_write_type9(current, handle,
+				  dev->smbios_slot_designation,
+				  type,
+				  bandwidth,
+				  usage,
+				  length,
+				  1,
+				  0,
+				  dev->bus->secondary,
+				  dev->path.pci.devfn);
+}
+
 static int smbios_walk_device_tree(struct device *tree, int *handle,
 	unsigned long *current)
 {
@@ -1011,6 +1061,7 @@ static int smbios_walk_device_tree(struct device *tree, int *handle,
 				dev_name(dev));
 			len += dev->ops->get_smbios_data(dev, handle, current);
 		}
+		len += smbios_walk_device_tree_type9(dev, handle, current);
 	}
 	return len;
 }

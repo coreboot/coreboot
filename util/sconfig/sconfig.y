@@ -31,13 +31,13 @@ static struct chip_instance *cur_chip_instance;
 	int number;
 }
 
-%token CHIP DEVICE REGISTER BOOL HIDDEN BUS RESOURCE END EQUALS HEX STRING PCI PNP I2C APIC CPU_CLUSTER CPU DOMAIN IRQ DRQ IO NUMBER SUBSYSTEMID INHERIT IOAPIC_IRQ IOAPIC PCIINT GENERIC SPI USB MMIO
+%token CHIP DEVICE REGISTER BOOL HIDDEN BUS RESOURCE END EQUALS HEX STRING PCI PNP I2C APIC CPU_CLUSTER CPU DOMAIN IRQ DRQ SLOT_DESC IO NUMBER SUBSYSTEMID INHERIT IOAPIC_IRQ IOAPIC PCIINT GENERIC SPI USB MMIO
 %%
 devtree: { cur_parent = root_parent; } chip;
 
 chipchildren: chipchildren device | chipchildren chip | chipchildren registers | /* empty */ ;
 
-devicechildren: devicechildren device | devicechildren chip | devicechildren resource | devicechildren subsystemid | devicechildren ioapic_irq | /* empty */ ;
+devicechildren: devicechildren device | devicechildren chip | devicechildren resource | devicechildren subsystemid | devicechildren ioapic_irq | devicechildren smbios_slot_desc | /* empty */ ;
 
 chip: CHIP STRING /* == path */ {
 	$<chip_instance>$ = new_chip_instance($<string>2);
@@ -72,4 +72,14 @@ subsystemid: SUBSYSTEMID NUMBER NUMBER INHERIT
 
 ioapic_irq: IOAPIC_IRQ NUMBER PCIINT NUMBER
 	{ add_ioapic_info(cur_parent, strtol($<string>2, NULL, 16), $<string>3, strtol($<string>4, NULL, 16)); };
+
+smbios_slot_desc: SLOT_DESC STRING STRING STRING STRING
+	{ add_slot_desc(cur_parent, $<string>2, $<string>3, $<string>4, $<string>5); };
+
+smbios_slot_desc: SLOT_DESC STRING STRING STRING
+	{ add_slot_desc(cur_parent, $<string>2, $<string>3, $<string>4, NULL); };
+
+smbios_slot_desc: SLOT_DESC STRING STRING
+	{ add_slot_desc(cur_parent, $<string>2, $<string>3, NULL, NULL); };
+
 %%

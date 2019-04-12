@@ -622,6 +622,22 @@ void add_register(struct chip_instance *chip_instance, char *name, char *val)
 	}
 }
 
+void add_slot_desc(struct bus *bus, char *type, char *length, char *designation,
+		   char *data_width)
+{
+	struct device *dev = bus->dev;
+
+	if (dev->bustype != PCI && dev->bustype != DOMAIN) {
+		printf("ERROR: 'slot_type' only allowed for PCI devices\n");
+		exit(1);
+	}
+
+	dev->smbios_slot_type = type;
+	dev->smbios_slot_length = length;
+	dev->smbios_slot_data_width = data_width;
+	dev->smbios_slot_designation = designation;
+}
+
 void add_pci_subsystem_ids(struct bus *bus, int vendor, int device,
 			   int inherit)
 {
@@ -831,7 +847,30 @@ static void pass1(FILE *fil, struct device *ptr, struct device *next)
 		fprintf(fil, "\t.chip_info = &%s_info_%d,\n",
 			chip_ins->chip->name_underscore, chip_ins->id);
 	if (next)
-		fprintf(fil, "\t.next=&%s\n", next->name);
+		fprintf(fil, "\t.next=&%s,\n", next->name);
+	if (ptr->smbios_slot_type || ptr->smbios_slot_data_width ||
+	    ptr->smbios_slot_designation || ptr->smbios_slot_length) {
+		fprintf(fil, "#if !DEVTREE_EARLY\n");
+		fprintf(fil, "#if CONFIG(GENERATE_SMBIOS_TABLES)\n");
+	}
+	/* SMBIOS types start at 1, if zero it hasn't been set */
+	if (ptr->smbios_slot_type)
+		fprintf(fil, "\t.smbios_slot_type = %s,\n",
+			ptr->smbios_slot_type);
+	if (ptr->smbios_slot_data_width)
+		fprintf(fil, "\t.smbios_slot_data_width = %s,\n",
+			ptr->smbios_slot_data_width);
+	if (ptr->smbios_slot_designation)
+		fprintf(fil, "\t.smbios_slot_designation = \"%s\",\n",
+			ptr->smbios_slot_designation);
+	if (ptr->smbios_slot_length)
+		fprintf(fil, "\t.smbios_slot_length = %s,\n",
+			ptr->smbios_slot_length);
+	if (ptr->smbios_slot_type || ptr->smbios_slot_data_width ||
+	    ptr->smbios_slot_designation || ptr->smbios_slot_length) {
+		fprintf(fil, "#endif\n");
+		fprintf(fil, "#endif\n");
+	}
 	fprintf(fil, "};\n");
 
 	emit_resources(fil, ptr);

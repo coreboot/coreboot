@@ -1,8 +1,8 @@
-/* A Bison parser, made by GNU Bison 3.0.4.  */
+/* A Bison parser, made by GNU Bison 3.0.5.  */
 
 /* Bison interface for Yacc-like parsers in C
 
-   Copyright (C) 1984, 1989-1990, 2000-2015 Free Software Foundation, Inc.
+   Copyright (C) 1984, 1989-1990, 2000-2015, 2018 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -65,17 +65,18 @@ extern int yydebug;
     DOMAIN = 275,
     IRQ = 276,
     DRQ = 277,
-    IO = 278,
-    NUMBER = 279,
-    SUBSYSTEMID = 280,
-    INHERIT = 281,
-    IOAPIC_IRQ = 282,
-    IOAPIC = 283,
-    PCIINT = 284,
-    GENERIC = 285,
-    SPI = 286,
-    USB = 287,
-    MMIO = 288
+    SLOT_DESC = 278,
+    IO = 279,
+    NUMBER = 280,
+    SUBSYSTEMID = 281,
+    INHERIT = 282,
+    IOAPIC_IRQ = 283,
+    IOAPIC = 284,
+    PCIINT = 285,
+    GENERIC = 286,
+    SPI = 287,
+    USB = 288,
+    MMIO = 289
   };
 #endif
 

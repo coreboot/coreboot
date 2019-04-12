@@ -141,6 +141,12 @@ struct device {
 #if !DEVTREE_EARLY
 	struct chip_operations *chip_ops;
 	const char *name;
+#if CONFIG(GENERATE_SMBIOS_TABLES)
+	u8 smbios_slot_type;
+	u8 smbios_slot_data_width;
+	u8 smbios_slot_length;
+	const char *smbios_slot_designation;
+#endif
 #endif
 	DEVTREE_CONST void *chip_info;
 };

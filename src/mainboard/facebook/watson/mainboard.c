@@ -29,7 +29,7 @@ static void mainboard_enable(struct device *dev)
 
 static void mainboard_init(void *chip_info)
 {
-#if !IS_ENABLED(CONFIG_ENABLE_TURBO)
+#if !CONFIG(ENABLE_TURBO)
 	disable_turbo();
 #endif
 }

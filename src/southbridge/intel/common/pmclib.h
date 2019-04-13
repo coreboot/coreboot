@@ -18,7 +18,7 @@
 #define INTEL_COMMON_PMCLIB_H
 
 /*
- * Returns 1 if platform was in ACPI S3 power state and CONFIG(ACPI_RESUME)
+ * Returns 1 if platform was in ACPI S3 power state and CONFIG(HAVE_ACPI_RESUME)
  * is enabled else returns 0.
  */
 int southbridge_detect_s3_resume(void);

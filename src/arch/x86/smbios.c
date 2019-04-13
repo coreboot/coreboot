@@ -656,7 +656,7 @@ smbios_write_type7(unsigned long *current,
 		t->max_cache_size |= SMBIOS_CACHE_SIZE_UNIT_1KB;
 		t->max_cache_size2 |= SMBIOS_CACHE_SIZE2_UNIT_1KB;
 	} else {
-		if (cache_size < (SMBIOS_CACHE_SIZE_MASK * 64 * KiB))
+		if (max_cache_size < (SMBIOS_CACHE_SIZE_MASK * 64 * KiB))
 			t->max_cache_size = max_cache_size / (64 * KiB);
 		else
 			t->max_cache_size = SMBIOS_CACHE_SIZE_OVERFLOW;

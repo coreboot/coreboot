@@ -283,9 +283,6 @@ static void i82801ix_power_options(struct device *dev)
 				       will be constantly fired and OSPM must
 				       not know about it (ACPI spec says to
 				       ignore the bit). */
-	reg32 = inl(pmbase + 0x04); // PM1_CNT
-	reg32 &= ~(7 << 10);	// SLP_TYP
-	outl(reg32, pmbase + 0x04);
 
 	/* Set duty cycle for hardware throttling (defaults to 0x0: 50%). */
 	reg32 = inl(pmbase + 0x10);

@@ -27,6 +27,7 @@
 #include <northbridge/intel/gm45/gm45.h>
 #include <southbridge/intel/i82801ix/i82801ix.h>
 #include <southbridge/intel/common/gpio.h>
+#include <southbridge/intel/common/pmclib.h>
 #include <string.h>
 
 #define LPC_DEV PCI_DEV(0, 0x1f, 0)
@@ -82,19 +83,7 @@ void mainboard_romstage_entry(unsigned long bist)
 	DMIBAR16(0x204) &= ~(3 << 10);
 
 	/* Check for S3 resume. */
-	const u32 pm1_cnt = inl(DEFAULT_PMBASE + 0x04);
-	if (((pm1_cnt >> 10) & 7) == 5) {
-		if (acpi_s3_resume_allowed()) {
-			printk(BIOS_DEBUG, "Resume from S3 detected.\n");
-			s3resume = 1;
-			/* Clear SLP_TYPE. This will break stage2 but
-			 * we care for that when we get there.
-			 */
-			outl(pm1_cnt & ~(7 << 10), DEFAULT_PMBASE + 0x04);
-		} else {
-			printk(BIOS_DEBUG, "Resume from S3 detected, but disabled.\n");
-		}
-	}
+	s3resume = southbridge_detect_s3_resume();
 
 	/* RAM initialization */
 	enter_raminit_or_reset();

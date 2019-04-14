@@ -1,4 +1,5 @@
 bootblock-$(CONFIG_SOC_INTEL_COMMON_BLOCK_CAR) += car/cache_as_ram.S
+bootblock-$(CONFIG_SOC_INTEL_COMMON_BLOCK_CAR) += ../../../../../cpu/x86/early_reset.S
 bootblock-$(CONFIG_FSP_CAR)+= car/cache_as_ram_fsp.S
 bootblock-$(CONFIG_SOC_INTEL_COMMON_BLOCK_CPU) += cpulib.c
 

@@ -28,21 +28,8 @@ bootblock_pre_c_entry:
 
 	post_code(0x20)
 
-	/*
-	 * Use the MTRR default type MSR as a proxy for detecting INIT#.
-	 * Reset the system if any known bits are set in that MSR. That is
-	 * an indication of the CPU not being properly reset.
-	 */
-check_for_clean_reset:
-	mov	$MTRR_DEF_TYPE_MSR, %ecx
-	rdmsr
-	and	$(MTRR_DEF_TYPE_EN | MTRR_DEF_TYPE_FIX_EN), %eax
-	cmp	$0, %eax
-	jz	no_reset
-	/* perform warm reset */
-	movw	$0xcf9, %dx
-	movb	$0x06, %al
-	outb	%al, %dx
+	movl	$no_reset, %esp /* return address */
+	jmp	check_mtrr /* Check if CPU properly reset */
 
 no_reset:
 	post_code(0x21)

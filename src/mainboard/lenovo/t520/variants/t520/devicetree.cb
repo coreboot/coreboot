@@ -88,6 +88,8 @@ chip northbridge/intel/sandybridge
 			device pci 1c.6 off end # PCIe Port #7 USB 3.0 only W520
 			device pci 1c.7 off end # PCIe Port #8
 			device pci 1d.0 on end # USB2 EHCI #1
+			device pci 1e.0 off end # PCI-2-PCI bridge
+
 			device pci 1f.0 on #LPC bridge
 				chip ec/lenovo/pmh7
 					device pnp ff.1 on # dummy
@@ -167,6 +169,8 @@ chip northbridge/intel/sandybridge
 					device i2c 5f on end
 				end
 			end # SMBus
+			device pci 1f.5 off end # IDE controller
+			device pci 1f.6 off end # Thermal controller
 		end
 	end
 end

@@ -274,9 +274,10 @@ static void dcxo_init(void)
 	rtc_write(PMIC_RG_DCXO_CW16, 0x9855);
 
 	/* 26M enable control */
-	/* Enable clock buffer XO_SOC, XO_CEL */
-	rtc_write(PMIC_RG_DCXO_CW00, 0x4805);
+	/* Enable clock buffer XO_SOC */
+	rtc_write(PMIC_RG_DCXO_CW00, 0x4005);
 	rtc_write(PMIC_RG_DCXO_CW11, 0x8000);
+	rtc_write(PMIC_RG_DCXO_CW23, 0x0053);
 
 	/* Load thermal coefficient */
 	rtc_write(PMIC_RG_TOP_TMA_KEY, 0x9CA7);

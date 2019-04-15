@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" "http://www.w3.org/TR/2001/PR-SVG-20010719/DTD/svg10.dtd">
+<svg width="15cm" height="11cm" viewBox="520 311 299 204" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <g>
+    <rect style="fill: #ffffff" x="521.518" y="312.25" width="296.25" height="201.75"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #ffffff" x="521.518" y="312.25" width="296.25" height="201.75"/>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="689.333" y="321.667" width="72.375" height="173.833"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="689.333" y="321.667" width="72.375" height="173.833"/>
+    <text font-size="12.7998" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="725.521" y="412.483">
+      <tspan x="725.521" y="412.483"></tspan>
+    </text>
+  </g>
+  <path style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" d="M 603.917 320.833 C 593.071,320.833 601.631,407 590.785,407"/>
+  <path style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" d="M 601.667 493.833 C 590.821,493.833 600.131,407.75 589.285,407.75"/>
+  <text font-size="12.7998" style="fill: #000000;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="520.833" y="412">
+    <tspan x="520.833" y="412">bootblock</tspan>
+  </text>
+  <line style="fill: none; fill-opacity:0; stroke-width: 1; stroke-dasharray: 4; stroke: #000000" x1="686.167" y1="352" x2="781.167" y2="352"/>
+  <line style="fill: none; fill-opacity:0; stroke-width: 1; stroke-dasharray: 4; stroke: #000000" x1="685.8" y1="334.433" x2="780.8" y2="334.433"/>
+  <line style="fill: none; fill-opacity:0; stroke-width: 1; stroke-dasharray: 4; stroke: #000000" x1="682.8" y1="410.933" x2="777.8" y2="410.933"/>
+  <g>
+    <path style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #0000ff" d="M 652.833,345.667 A 30.938,30.938 0 0 0 647.806,407.306"/>
+    <polygon style="fill: #0000ff" points="650.775,407.521 646.813,409.595 647.775,407.577 646.738,405.596 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #0000ff" points="650.775,407.521 646.813,409.595 647.775,407.577 646.738,405.596 "/>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="694.75" y="367" width="60.2083" height="10.5"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #0000ff" x="694.75" y="367" width="60.2083" height="10.5"/>
+  </g>
+  <text font-size="5.64436" style="fill: #000000;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="653" y="323.333">
+    <tspan x="653" y="323.333">4 GiB </tspan>
+  </text>
+  <text font-size="5.64436" style="fill: #000000;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="651.967" y="336.017">
+    <tspan x="651.967" y="336.017">4 GiB - 10h </tspan>
+  </text>
+  <text font-size="5.64436" style="fill: #000000;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="653.633" y="410.183">
+    <tspan x="653.633" y="410.183">4 GiB - x </tspan>
+  </text>
+  <text font-size="5.64436" style="fill: #000000;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="650.967" y="353.183">
+    <tspan x="650.967" y="353.183">4 GiB - 40 h </tspan>
+  </text>
+  <line style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #0000ff" x1="652.458" y1="346" x2="685" y2="345.833"/>
+  <text font-size="7.90222" style="fill: #0000ff;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="707.958" y="348.25">
+    <tspan x="707.958" y="348.25">FIT Ptr</tspan>
+  </text>
+  <text font-size="7.90222" style="fill: #ff0000;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="692.933" y="330.55">
+    <tspan x="692.933" y="330.55">IA32 reset vec</tspan>
+  </text>
+  <g>
+    <rect style="fill: #ffffff" x="693.183" y="449.25" width="60.2083" height="41.5333"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #ff0000" x="693.183" y="449.25" width="60.2083" height="41.5333"/>
+  </g>
+  <g>
+    <path style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #ff0000" d="M 655.208,326.75 A 61.4124,61.4124 0 0 0 645.824,444.152"/>
+    <polygon style="fill: #ff0000" points="648.64,445.169 644.228,445.895 645.775,444.281 645.412,442.075 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #ff0000" points="648.64,445.169 644.228,445.895 645.775,444.281 645.412,442.075 "/>
+  </g>
+  <text font-size="5.64436" style="fill: #000000;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="653.683" y="449.95">
+    <tspan x="653.683" y="449.95">4 GiB - z </tspan>
+  </text>
+  <g>
+    <rect style="fill: #ffffff" x="693.683" y="432" width="60.2083" height="12"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #ff0000" x="693.683" y="432" width="60.2083" height="12"/>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="693.933" y="416.2" width="60.2083" height="12"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #00ff00" x="693.933" y="416.2" width="60.2083" height="12"/>
+  </g>
+  <text font-size="5.64436" style="fill: #000000;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="653.183" y="432.2">
+    <tspan x="653.183" y="432.2">4 GiB - y </tspan>
+  </text>
+  <text font-size="6.77333" style="fill: #ff0000;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="717.208" y="440">
+    <tspan x="717.208" y="440">ACM</tspan>
+  </text>
+  <text font-size="6.77333" style="fill: #ff0000;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="706.433" y="467">
+    <tspan x="706.433" y="467">BOOTBLOCK</tspan>
+    <tspan x="706.433" y="475.467">CODE</tspan>
+  </text>
+  <text font-size="6.77333" style="fill: #00ff00;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="714.183" y="424.25">
+    <tspan x="714.183" y="424.25">uCode</tspan>
+  </text>
+  <line style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #ff0000" x1="655.186" y1="327.119" x2="687.728" y2="326.953"/>
+  <g>
+    <rect style="fill: #ffffff" x="694.683" y="377.45" width="60.2083" height="10.5"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #0000ff" x="694.683" y="377.45" width="60.2083" height="10.5"/>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="694.75" y="387.95" width="60.2083" height="10.5"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #0000ff" x="694.75" y="387.95" width="60.2083" height="10.5"/>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="694.683" y="398.4" width="60.2083" height="10.5"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #0000ff" x="694.683" y="398.4" width="60.2083" height="10.5"/>
+  </g>
+  <text font-size="5.64444" style="fill: #0000ff;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="706.433" y="406.25">
+    <tspan x="706.433" y="406.25">FIT header</tspan>
+  </text>
+  <text font-size="5.64444" style="fill: #0000ff;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="703.933" y="394.95">
+    <tspan x="703.933" y="394.95">Type1 entry</tspan>
+  </text>
+  <text font-size="5.64444" style="fill: #0000ff;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="703.933" y="384.7">
+    <tspan x="703.933" y="384.7">Type2 entry</tspan>
+  </text>
+  <text font-size="5.64444" style="fill: #0000ff;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="703.683" y="373.95">
+    <tspan x="703.683" y="373.95">Type7 entry</tspan>
+  </text>
+  <g>
+    <path style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #90c9ff" d="M 769.4,417.215 A 13.2412,13.2412 0 0 0 763.208,391.5"/>
+    <polygon style="fill: #90c9ff" points="766.576,417.768 770.608,415.832 769.576,417.816 770.544,419.831 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #90c9ff" points="766.576,417.768 770.608,415.832 769.576,417.816 770.544,419.831 "/>
+  </g>
+  <g>
+    <path style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #90c9ff" d="M 770.292,433.842 A 27.5949,27.5949 0 0 0 763.458,381.5"/>
+    <polygon style="fill: #90c9ff" points="767.533,434.943 770.831,431.923 770.418,434.12 771.929,435.769 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #90c9ff" points="767.533,434.943 770.831,431.923 770.418,434.12 771.929,435.769 "/>
+  </g>
+  <g>
+    <path style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #90c9ff" d="M 772.011,446.947 A 41.791,41.791 0 0 0 763.458,372.5"/>
+    <polygon style="fill: #90c9ff" points="769.453,448.489 772.095,444.881 772.12,447.117 773.924,448.438 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #90c9ff" points="769.453,448.489 772.095,444.881 772.12,447.117 773.924,448.438 "/>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="691.268" y="493.5" width="68.5" height="4.25"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #ffffff" x="691.268" y="493.5" width="68.5" height="4.25"/>
+  </g>
+  <path style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" d="M 689.768 510.25 C 714.502,510.25 736.534,494.5 761.268,494.5"/>
+  <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x1="689.333" y1="495.5" x2="689.018" y2="509.25"/>
+  <line style="fill: none; fill-opacity:0; stroke-width: 1; stroke-dasharray: 4; stroke: #000000" x1="683.343" y1="430.9" x2="778.343" y2="430.9"/>
+  <line style="fill: none; fill-opacity:0; stroke-width: 1; stroke-dasharray: 4; stroke: #000000" x1="682.843" y1="447.4" x2="777.843" y2="447.4"/>
+</svg>

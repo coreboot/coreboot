@@ -8,3 +8,4 @@ This section contains documentation about coreboot on specific Intel SOCs.
 - [FSP](fsp/index.md)
 - [Ice Lake/9th Gen Core-i series](icelake/index.md)
 - [MP Initialization](mp_init/mp_init.md)
+- [Firmware Interface Table](fit.md)

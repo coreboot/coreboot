@@ -245,9 +245,12 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 
 	/* Enable xDCI controller if enabled in devicetree and allowed */
 	dev = dev_find_slot(0, PCH_DEVFN_USBOTG);
-	if (!xdci_can_enable())
-		dev->enabled = 0;
-	params->XdciEnable = dev->enabled;
+	if (dev) {
+		if (!xdci_can_enable())
+			dev->enabled = 0;
+		params->XdciEnable = dev->enabled;
+	} else
+		params->XdciEnable = 0;
 
 	/* Set Debug serial port */
 	params->SerialIoDebugUartNumber = CONFIG_UART_FOR_CONSOLE;
@@ -255,9 +258,15 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	/* Enable CNVi Wifi if enabled in device tree */
 	dev = dev_find_slot(0, PCH_DEVFN_CNViWIFI);
 #if CONFIG(SOC_INTEL_COMETLAKE)
-	params->CnviMode = dev->enabled;
+	if (dev)
+		params->CnviMode = dev->enabled;
+	else
+		params->CnviMode = 0;
 #else
-	params->PchCnviMode = dev->enabled;
+	if (dev)
+		params->PchCnviMode = dev->enabled;
+	else
+		params->PchCnviMode = 0;
 #endif
 	/* PCI Express */
 	for (i = 0; i < ARRAY_SIZE(config->PcieClkSrcUsage); i++) {

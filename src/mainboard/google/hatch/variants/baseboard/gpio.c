@@ -232,7 +232,7 @@ static const struct pad_config gpio_table[] = {
 
 	/* E0  : GPP_E0 ==> NC */
 	PAD_NC(GPP_E0, NONE),
-	/* E1  : SATAPCIE1 */
+	/* E1  : M2_SSD_PEDET */
 	PAD_CFG_NF(GPP_E1, NONE, DEEP, NF1),
 	/* E2  : GPP_E2 ==> NC */
 	PAD_NC(GPP_E2, NONE),
@@ -344,7 +344,6 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_G6, NONE, DEEP, NF1),
 	/* G7  : SD_WP => NC */
 	PAD_NC(GPP_G7, DN_20K),
-
 	/*
 	 * H0  : HP_INT_L
 	 * TODO Configure it back to invert mode, when
@@ -405,7 +404,7 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI_GPIO_DRIVER(vSD3_CD_B, NONE, DEEP),
 };
 
-const struct pad_config *__weak variant_gpio_table(size_t *num)
+const struct pad_config *base_gpio_table(size_t *num)
 {
 	*num = ARRAY_SIZE(gpio_table);
 	return gpio_table;
@@ -429,8 +428,8 @@ static const struct pad_config s5_sleep_gpio_table[] = {
 	PAD_CFG_GPO(GPP_A18, 0, DEEP), /* EN_PP3300_WWAN */
 };
 
-const struct pad_config * __weak
-variant_sleep_gpio_table(u8 slp_typ, size_t *num)
+const struct pad_config * __weak variant_sleep_gpio_table(
+	u8 slp_typ, size_t *num)
 {
 	if (slp_typ == ACPI_S5) {
 		*num = ARRAY_SIZE(s5_sleep_gpio_table);
@@ -470,10 +469,9 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_GPI(GPP_F21, NONE, PLTRST),
 	/* F22 : PCH_MEM_STRAP3 */
 	PAD_CFG_GPI(GPP_F22, NONE, PLTRST),
-
 };
 
-const struct pad_config *__weak variant_early_gpio_table(size_t *num)
+const struct pad_config *base_early_gpio_table(size_t *num)
 {
 	*num = ARRAY_SIZE(early_gpio_table);
 	return early_gpio_table;
@@ -488,4 +486,17 @@ const struct cros_gpio *__weak variant_cros_gpios(size_t *num)
 {
 	*num = ARRAY_SIZE(cros_gpios);
 	return cros_gpios;
+}
+
+/* Weak implementation of overrides */
+const struct pad_config *__weak override_gpio_table(size_t *num)
+{
+	*num = 0;
+	return NULL;
+}
+
+const struct pad_config *__weak override_early_gpio_table(size_t *num)
+{
+	*num = 0;
+	return NULL;
 }

@@ -21,10 +21,15 @@
 #include <stdint.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
-/* The next set of functions return the gpio table and fill in the number of
- * entries for each table. */
-const struct pad_config *variant_gpio_table(size_t *num);
-const struct pad_config *variant_early_gpio_table(size_t *num);
+/*
+ * The next set of functions return the gpio table and fill in the number of
+ * entries for each table.  The "base" GPIOs live in the "hatch" variant, and
+ * the overrides live with the specific board (kohaku, kled, etc.).
+*/
+const struct pad_config *base_gpio_table(size_t *num);
+const struct pad_config *base_early_gpio_table(size_t *num);
+const struct pad_config *override_gpio_table(size_t *num);
+const struct pad_config *override_early_gpio_table(size_t *num);
 
 /* Return memory SKU for the board. */
 int variant_memory_sku(void);

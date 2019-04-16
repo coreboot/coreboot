@@ -23,11 +23,18 @@
 
 void mainboard_silicon_init_params(FSP_S_CONFIG *params)
 {
-	const struct pad_config *gpio_table;
-	size_t num_gpios;
+	const struct pad_config *base_table;
+	const struct pad_config *override_table;
+	size_t base_gpios;
+	size_t override_gpios;
 
-	gpio_table = variant_gpio_table(&num_gpios);
-	cnl_configure_pads(gpio_table, num_gpios);
+	base_table = base_gpio_table(&base_gpios);
+	override_table = override_gpio_table(&override_gpios);
+
+	gpio_configure_pads_with_override(base_table,
+					base_gpios,
+					override_table,
+					override_gpios);
 }
 
 static void mainboard_enable(struct device *dev)

@@ -37,12 +37,4 @@ config USBDEBUG_HCD_INDEX
 	int
 	default 2
 
-config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
-	hex
-	default 0x17aa
-
-config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
-	hex
-	default 0x21fe
-
 endif # BOARD_LENOVO_X131E

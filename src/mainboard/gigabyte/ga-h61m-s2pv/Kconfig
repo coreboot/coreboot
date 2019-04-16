@@ -40,14 +40,6 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "GA-H61M-S2PV"
 
-config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
-	hex
-	default 0x5001
-
-config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
-	hex
-	default 0x1458
-
 config MAX_CPUS
 	int
 	default 8

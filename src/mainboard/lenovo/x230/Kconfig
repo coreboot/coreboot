@@ -55,12 +55,4 @@ config VGA_BIOS_ID
 	string
 	default "8086,0166"
 
-config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
-	hex
-	default 0x17aa
-
-config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
-	hex
-	default 0x21fa
-
 endif # BOARD_LENOVO_X230

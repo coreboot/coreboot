@@ -38,14 +38,6 @@ config VGA_BIOS_ID
 	string
 	default "8086,0166"
 
-config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
-	hex
-	default 0x21f3
-
-config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
-	hex
-	default 0x17aa
-
 config DRAM_RESET_GATE_GPIO
 	int
 	default 10

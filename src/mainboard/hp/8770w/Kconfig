@@ -41,14 +41,6 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "EliteBook 8770w"
 
-config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
-	hex
-	default 0x176c
-
-config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
-	hex
-	default 0x103c
-
 config MAX_CPUS
 	int
 	default 8

@@ -49,14 +49,6 @@ config VGA_BIOS_ID
 	string
 	default "8086,0116"
 
-config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
-	hex
-	default 0x162a
-
-config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
-	hex
-	default 0x103c
-
 config MAX_CPUS
 	int
 	default 8

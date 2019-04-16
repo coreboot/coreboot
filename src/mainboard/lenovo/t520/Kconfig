@@ -65,14 +65,6 @@ config VGA_BIOS_FILE
 	string
 	default "pci8086,0126.rom"
 
-config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
-	hex
-	default 0x17aa
-
-config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
-	hex
-	default 0x21cf
-
 config ONBOARD_VGA_IS_PRIMARY
 	bool
 	default y

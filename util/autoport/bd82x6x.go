@@ -181,12 +181,6 @@ func (b bd82x6x) Scan(ctx Context, addr PCIDevData) {
 	}
 	KconfigComment["DRAM_RESET_GATE_GPIO"] = "FIXME: check this"
 
-	/* Not strictly speaking correct. These subsys/subvendor referer to PCI devices.
-	   But most systems don't have any of those. But the config needs to be set
-	   nevertheless. So set it to southbridge subsys/subvendor.  */
-	KconfigHex["MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID"] = uint32(GetLE16(addr.ConfigDump[0x2c:0x2e]))
-	KconfigHex["MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID"] = uint32(GetLE16(addr.ConfigDump[0x2e:0x30]))
-
 	ich9GetFlashSize(ctx)
 
 	DSDTDefines = append(DSDTDefines,

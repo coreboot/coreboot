@@ -33,12 +33,4 @@ config C_ENV_BOOTBLOCK_SIZE
 	hex
 	default 0x4000
 
-config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
-	hex
-	default 0x0
-
-config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
-	hex
-	default 0x0
-
 endif # BOARD_AOPEN_DXPLPLUSU

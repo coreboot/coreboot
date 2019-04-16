@@ -43,12 +43,4 @@ config VGA_BIOS_ID
 	string
 	default "8086,0156"
 
-config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
-	hex
-	default 0x1ae0
-
-config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
-	hex
-	default 0xc000
-
 endif # BOARD_GOOGLE_STOUT

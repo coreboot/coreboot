@@ -37,14 +37,6 @@ config VGA_BIOS_ID
 	string
 	default "8086,0166"
 
-config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
-	hex
-	default 0x18f8
-
-config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
-	hex
-	default 0x103c
-
 config DRAM_RESET_GATE_GPIO # FIXME: check this
 	int
 	default 60

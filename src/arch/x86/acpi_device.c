@@ -377,7 +377,7 @@ void acpi_device_write_i2c(const struct acpi_i2c *i2c)
 	desc_length = acpi_device_write_zero_len();
 
 	/* Byte 3: Revision ID */
-	acpigen_emit_byte(ACPI_SERIAL_BUS_REVISION_ID);
+	acpigen_emit_byte(ACPI_I2C_SERIAL_BUS_REVISION_ID);
 
 	/* Byte 4: Resource Source Index is Reserved */
 	acpigen_emit_byte(0);
@@ -401,7 +401,7 @@ void acpi_device_write_i2c(const struct acpi_i2c *i2c)
 	acpigen_emit_word(i2c->mode_10bit);
 
 	/* Byte 9: Type Specific Revision ID */
-	acpigen_emit_byte(ACPI_SERIAL_BUS_REVISION_ID);
+	acpigen_emit_byte(ACPI_I2C_TYPE_SPECIFIC_REVISION_ID);
 
 	/* Byte 10-11: I2C Type Data Length */
 	type_length = acpi_device_write_zero_len();
@@ -435,7 +435,7 @@ void acpi_device_write_spi(const struct acpi_spi *spi)
 	desc_length = acpi_device_write_zero_len();
 
 	/* Byte 3: Revision ID */
-	acpigen_emit_byte(ACPI_SERIAL_BUS_REVISION_ID);
+	acpigen_emit_byte(ACPI_SPI_SERIAL_BUS_REVISION_ID);
 
 	/* Byte 4: Resource Source Index is Reserved */
 	acpigen_emit_byte(0);
@@ -464,7 +464,7 @@ void acpi_device_write_spi(const struct acpi_spi *spi)
 	acpigen_emit_word(flags);
 
 	/* Byte 9: Type Specific Revision ID */
-	acpigen_emit_byte(ACPI_SERIAL_BUS_REVISION_ID);
+	acpigen_emit_byte(ACPI_SPI_TYPE_SPECIFIC_REVISION_ID);
 
 	/* Byte 10-11: SPI Type Data Length */
 	type_length = acpi_device_write_zero_len();

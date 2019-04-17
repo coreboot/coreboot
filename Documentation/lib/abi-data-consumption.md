@@ -8,8 +8,9 @@ listed as consumable is subject to change without notice.
 ## Background and Usage
 
 coreboot passes information to downstream users using coreboot tables. These
-table definitions can be found in src/include/boot/coreboot_tables.h and
-payloads/libpayload/include/coreboot_tables.h respectively within coreboot
+table definitions can be found in
+`./src/commonlib/include/commonlib/coreboot_tables.h` and
+`./payloads/libpayload/include/coreboot_tables.h` respectively within coreboot
 and libpayload. One of the most vital and important pieces of information
 found within these tables is the memory map of the system indicating
 available and reserved memory.

@@ -1,29 +1,5 @@
 # Timestamps
 
-## Table of Contents
-
-Introduction
-- Transition from cache to cbmem
-
-Data structures used
-- cache_state
-- table
-- entries
-
-Function APIs
-- timestamp_init
-- timestamp_add
-- timestamp_add_now
-- timestamp_sync
-
-Use / Test Cases
-- Case 1: Timestamp Region Exists
-- Case 2: No timestamp region, fresh boot, cbmem_initialize called after timestamp_init
-- Case 3: No timestamp region, fresh boot, cbmem_initialize called before timestamp_init
-- Case 4: No timestamp region, resume, cbmem_initialize called after timestamp_init
-- Case 5: No timestamp region, resume, cbmem_initialize called before timestamp_init
-
-
 ## Introduction
 
 The aim of the timestamp library is to make it easier for different boards
@@ -64,7 +40,7 @@ After such a transition, timestamp_init() must not be run again.
 
 The main structure that maintains information about the timestamp cache is:
 
-```
+```c
 struct __packed timestamp_cache {
         uint16_t cache_state;
         struct timestamp_table table;
@@ -77,7 +53,7 @@ struct __packed timestamp_cache {
 The state of the cache is maintained by `cache_state` attribute which can
 be any one of the following:
 
-```
+```c
 enum {
         TIMESTAMP_CACHE_UNINITIALIZED = 0,
         TIMESTAMP_CACHE_INITIALIZED,
@@ -107,7 +83,7 @@ anymore. Thus, the cache state is set to `CACHE_NOT_NEEDED`, which allows
 This field is represented by a structure which provides overall
 information about the entries in the timestamp area:
 
-```
+```c
 struct timestamp_table {
         uint64_t        base_time;
         uint32_t        max_entries;
@@ -127,7 +103,7 @@ This field holds the details of each timestamp entry, upto a maximum
 of `MAX_TIMESTAMP_CACHE` which is defined as 16 entries. Each entry is
 defined by:
 
-```
+```c
 struct timestamp_entry {
         uint32_t        entry_id;
         uint64_t        entry_stamp;

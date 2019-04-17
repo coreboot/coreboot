@@ -22,6 +22,7 @@
 
 void setup_chromeos_gpios(void)
 {
+	gpio_input(GPIO_WP);
 	gpio_input_pullup(EC_IN_RW);
 	gpio_input_pullup(EC_IRQ);
 	gpio_input_pullup(CR50_IRQ);
@@ -31,6 +32,8 @@ void setup_chromeos_gpios(void)
 void fill_lb_gpios(struct lb_gpios *gpios)
 {
 	struct lb_gpio chromeos_gpios[] = {
+		{GPIO_WP.id, ACTIVE_LOW,
+		 !get_write_protect_state(), "write protect"},
 		{-1, ACTIVE_HIGH, get_recovery_mode_switch(), "recovery"},
 		{EC_IN_RW.id, ACTIVE_HIGH, -1, "EC in RW"},
 		{EC_IRQ.id, ACTIVE_LOW, -1, "EC interrupt"},
@@ -41,7 +44,7 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 
 int get_write_protect_state(void)
 {
-	return 0;
+	return !gpio_get(GPIO_WP);
 }
 
 int tis_plat_irq_status(void)

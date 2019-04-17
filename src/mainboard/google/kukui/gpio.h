@@ -18,6 +18,7 @@
 
 #include <soc/gpio.h>
 
+#define GPIO_WP		GPIO(PERIPHERAL_EN0)
 #define EC_IRQ		GPIO(PERIPHERAL_EN1)
 #define EC_IN_RW	GPIO(PERIPHERAL_EN14)
 #define CR50_IRQ	GPIO(PERIPHERAL_EN3)

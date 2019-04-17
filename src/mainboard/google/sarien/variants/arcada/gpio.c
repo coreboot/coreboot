@@ -104,7 +104,7 @@ static const struct pad_config gpio_table[] = {
 /* UART2_TXD */		PAD_CFG_NF(GPP_C21, NONE, DEEP, NF1), /* SERVORX_UART */
 /* UART2_RTS# */	PAD_NC(GPP_C22, NONE),
 /* UART2_CTS# */	PAD_CFG_GPI_APIC(GPP_C23, NONE, PLTRST,
-				 EDGE_SINGLE, INVERT), /* TS_INT# */
+				 LEVEL, NONE), /* TS_INT# */
 
 /* SPI1_CS# */		PAD_CFG_GPI_APIC(GPP_D0, NONE, PLTRST,
 				 EDGE_SINGLE, INVERT), /* MEDIACARD_IRQ# */

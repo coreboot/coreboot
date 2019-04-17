@@ -13,9 +13,9 @@
 ## GNU General Public License for more details.
 ##
 
-# 2017.3 - Last commit of March 2017
+# 2019.3 - Last commit of March 2019
 # When updating, change the name both here and in payloads/external/iPXE/Kconfig
-STABLE_COMMIT_ID=fd6d1f4660a37d75acba1c64e2e5f137307bbc31
+STABLE_COMMIT_ID=ebf2eaf515e46abd43bc798e7e4ba77bfe529218
 
 TAG-$(CONFIG_IPXE_MASTER)=origin/master
 TAG-$(CONFIG_IPXE_STABLE)=$(STABLE_COMMIT_ID)

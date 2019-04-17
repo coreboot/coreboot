@@ -69,7 +69,9 @@ struct qcs405_gcc {
 	u8 _res1[0x2000 - 0x1014];
 	u32 blsp1_qup1_bcr;
 	u32 blsp1_qup1_spi_apps_cbcr;
-	u8 _res2[0x2024 - 0x2008];
+	u32 blsp1_qup1_i2c_apps_cbcr;
+	struct qcs405_clock blsp1_qup1_i2c_clk;
+	u8 _res2[0x2024 - 0x2020];
 	struct qcs405_clock blsp1_qup1_spi_clk;
 	u8 _res3[0x3008-0x2038];
 	u32 blsp1_qup2_bcr;
@@ -179,10 +181,13 @@ void clock_reset_aop(void);
 int clock_configure_qspi(uint32_t hz);
 int clock_reset_bcr(void *bcr_addr, bool reset);
 void clock_configure_uart(uint32_t hz);
+void clock_configure_i2c(uint32_t hz);
 void clock_configure_spi(int blsp, int qup, uint32_t hz);
 void clock_enable_uart(void);
 void clock_disable_uart(void);
 void clock_enable_spi(int blsp, int qup);
 void clock_disable_spi(int blsp, int qup);
+void clock_enable_i2c(void);
+void clock_disable_i2c(void);
 
 #endif	// __SOC_QUALCOMM_QCS405_CLOCK_H__

@@ -246,6 +246,14 @@ void clock_configure_spi(int blsp, int qup, uint32_t hz)
 	clock_configure(spi_clk, spi_cfg, hz, ARRAY_SIZE(spi_cfg));
 }
 
+void clock_configure_i2c(uint32_t hz)
+{
+	struct qcs405_clock *i2c_clk =
+			(struct qcs405_clock *)&gcc->blsp1_qup1_i2c_clk;
+
+	clock_configure(i2c_clk, i2c_cfg, hz, ARRAY_SIZE(i2c_cfg));
+}
+
 void clock_enable_uart(void)
 {
 	clock_enable(&gcc->blsp1_uart2_apps_cbcr);
@@ -307,6 +315,16 @@ void clock_disable_spi(int blsp, int qup)
 	else
 		printk(BIOS_ERR, "BLSP%d not supported\n", blsp);
 
+}
+
+void clock_enable_i2c(void)
+{
+	clock_enable(&gcc->blsp1_qup1_i2c_apps_cbcr);
+}
+
+void clock_disable_i2c(void)
+{
+	clock_disable(&gcc->blsp1_qup1_i2c_apps_cbcr);
 }
 
 void clock_init(void)

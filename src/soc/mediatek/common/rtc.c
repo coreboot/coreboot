@@ -91,12 +91,15 @@ int rtc_xosc_write(u16 val)
 	u16 bbpu;
 
 	rtc_write(RTC_OSC32CON, RTC_OSC32CON_UNLOCK1);
-	udelay(200);
+	if (!rtc_busy_wait())
+		return 0;
 	rtc_write(RTC_OSC32CON, RTC_OSC32CON_UNLOCK2);
-	udelay(200);
+	if (!rtc_busy_wait())
+		return 0;
 
 	rtc_write(RTC_OSC32CON, val);
-	udelay(200);
+	if (!rtc_busy_wait())
+		return 0;
 
 	rtc_read(RTC_BBPU, &bbpu);
 	bbpu |= RTC_BBPU_KEY | RTC_BBPU_RELOAD;

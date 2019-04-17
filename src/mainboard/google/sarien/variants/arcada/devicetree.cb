@@ -28,6 +28,7 @@ chip soc/intel/cannonlake
 	register "PchPmSlpAMinAssert" = "4"   # 2s
 
 	register "speed_shift_enable" = "1"
+	register "psys_pmax" = "140"
 	register "s0ix_enable" = "1"
 	register "dptf_enable" = "1"
 	register "dmipwroptimize" = "1"

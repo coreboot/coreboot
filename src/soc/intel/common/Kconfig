@@ -68,4 +68,11 @@ config TPM_TIS_ACPI_INTERRUPT
 	  acpi_get_gpe() is used to provide interrupt status to TPM layer.
 	  This option specifies the GPE number.
 
+config SOC_INTEL_DEBUG_CONSENT
+	bool "Enable SOC debug interface"
+	default n
+	help
+	  Set this option to enable default debug interface of SoC such as DBC
+	  or DCI.
+
 endif # SOC_INTEL_COMMON

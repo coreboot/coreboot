@@ -927,9 +927,9 @@ static void set_sb_final_nvs(void)
 	gnvs->aoac.xhce = is_aoac_device_enabled(FCH_AOAC_D3_STATE_USB3);
 	/* Rely on these being in sync with devicetree */
 	sd = pcidev_path_on_root(SD_DEVFN);
-	gnvs->aoac.st_e = sd && sd->enabled ? 1 : 0;
+	gnvs->aoac.sd_e = sd && sd->enabled ? 1 : 0;
 	sata = pcidev_path_on_root(SATA_DEVFN);
-	gnvs->aoac.sd_e = sata && sata->enabled ? 1 : 0;
+	gnvs->aoac.st_e = sata && sata->enabled ? 1 : 0;
 	gnvs->aoac.espi = 1;
 
 	amdfw_rom = 0x20000 - (0x80000 << CONFIG_AMD_FWM_POSITION_INDEX);

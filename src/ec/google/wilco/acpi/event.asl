@@ -145,3 +145,10 @@ Method (_Q66, 0, Serialized)
 		ECQ4 (Local0)
 	}
 }
+
+/* UCSI SCI uses a unique event code */
+Method (_Q79, 0, Serialized)
+{
+	Printf ("EC _Q79 UCSI Event")
+	Notify (^UCSI, 0x80)
+}

@@ -143,3 +143,54 @@ Name (DWHY, Package () { 0x37, 0xff, WR })	/* DPTF: Write Hysteresis */
 Name (DWTQ, Package () { 0x38, 0xff, WR })	/* DPTF: Write Trip Query */
 Name (CSOS, Package () { 0xb8, 0xff, WR })	/* OS support for S0ix */
 Name (CSEX, Package () { 0xb9, 0xff, WR })	/* OS enter(1)/exit(0) S0ix */
+
+/*
+ * EC UCSI
+ */
+Name (UVR0, Package () { 0x80, 0xff, RD })	/* UCSI Version */
+Name (UVR1, Package () { 0x81, 0xff, RD })	/* UCSI Version */
+Name (UCI0, Package () { 0x84, 0xff, RD })	/* UCSI Change Indicator */
+Name (UCI1, Package () { 0x85, 0xff, RD })	/* UCSI Change Indicator */
+Name (UCI2, Package () { 0x86, 0xff, RD })	/* UCSI Change Indicator */
+Name (UCI3, Package () { 0x87, 0xff, RD })	/* UCSI Change Indicator */
+Name (UCL0, Package () { 0x88, 0xff, WR })	/* UCSI Control */
+Name (UCL1, Package () { 0x89, 0xff, WR })	/* UCSI Control */
+Name (UCL2, Package () { 0x8a, 0xff, WR })	/* UCSI Control */
+Name (UCL3, Package () { 0x8b, 0xff, WR })	/* UCSI Control */
+Name (UCL4, Package () { 0x8c, 0xff, WR })	/* UCSI Control */
+Name (UCL5, Package () { 0x8d, 0xff, WR })	/* UCSI Control */
+Name (UCL6, Package () { 0x8e, 0xff, WR })	/* UCSI Control */
+Name (UCL7, Package () { 0x8f, 0xff, WR })	/* UCSI Control */
+Name (UMI0, Package () { 0x90, 0xff, RD })	/* UCSI Message In */
+Name (UMI1, Package () { 0x91, 0xff, RD })	/* UCSI Message In */
+Name (UMI2, Package () { 0x92, 0xff, RD })	/* UCSI Message In */
+Name (UMI3, Package () { 0x93, 0xff, RD })	/* UCSI Message In */
+Name (UMI4, Package () { 0x94, 0xff, RD })	/* UCSI Message In */
+Name (UMI5, Package () { 0x95, 0xff, RD })	/* UCSI Message In */
+Name (UMI6, Package () { 0x96, 0xff, RD })	/* UCSI Message In */
+Name (UMI7, Package () { 0x97, 0xff, RD })	/* UCSI Message In */
+Name (UMI8, Package () { 0x98, 0xff, RD })	/* UCSI Message In */
+Name (UMI9, Package () { 0x99, 0xff, RD })	/* UCSI Message In */
+Name (UMIA, Package () { 0x9a, 0xff, RD })	/* UCSI Message In */
+Name (UMIB, Package () { 0x9b, 0xff, RD })	/* UCSI Message In */
+Name (UMIC, Package () { 0x9c, 0xff, RD })	/* UCSI Message In */
+Name (UMID, Package () { 0x9d, 0xff, RD })	/* UCSI Message In */
+Name (UMIE, Package () { 0x9e, 0xff, RD })	/* UCSI Message In */
+Name (UMIF, Package () { 0x9f, 0xff, RD })	/* UCSI Message In */
+Name (UMO0, Package () { 0xa0, 0xff, WR })	/* UCSI Message Out */
+Name (UMO1, Package () { 0xa1, 0xff, WR })	/* UCSI Message Out */
+Name (UMO2, Package () { 0xa2, 0xff, WR })	/* UCSI Message Out */
+Name (UMO3, Package () { 0xa3, 0xff, WR })	/* UCSI Message Out */
+Name (UMO4, Package () { 0xa4, 0xff, WR })	/* UCSI Message Out */
+Name (UMO5, Package () { 0xa5, 0xff, WR })	/* UCSI Message Out */
+Name (UMO6, Package () { 0xa6, 0xff, WR })	/* UCSI Message Out */
+Name (UMO7, Package () { 0xa7, 0xff, WR })	/* UCSI Message Out */
+Name (UMO8, Package () { 0xa8, 0xff, WR })	/* UCSI Message Out */
+Name (UMO9, Package () { 0xa9, 0xff, WR })	/* UCSI Message Out */
+Name (UMOA, Package () { 0xaa, 0xff, WR })	/* UCSI Message Out */
+Name (UMOB, Package () { 0xab, 0xff, WR })	/* UCSI Message Out */
+Name (UMOC, Package () { 0xac, 0xff, WR })	/* UCSI Message Out */
+Name (UMOD, Package () { 0xad, 0xff, WR })	/* UCSI Message Out */
+Name (UMOE, Package () { 0xae, 0xff, WR })	/* UCSI Message Out */
+Name (UMOF, Package () { 0xaf, 0xff, WR })	/* UCSI Message Out */
+Name (UCTL, Package () { 0xb0, 0xff, WR })	/* UCSI Control Register */

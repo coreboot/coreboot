@@ -57,6 +57,9 @@ Device (EC0)
 		If (\DPTE == One) {
 			W (DWST, Arg1)
 		}
+
+		/* Initialize UCSI */
+		^UCSI.INIT ()
 	}
 
 	/*
@@ -165,6 +168,7 @@ Device (EC0)
 	#include "lid.asl"
 	#include "platform.asl"
 	#include "vbtn.asl"
+	#include "ucsi.asl"
 #ifdef EC_ENABLE_DPTF
 	#include "dptf.asl"
 #endif

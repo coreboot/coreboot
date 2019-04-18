@@ -30,6 +30,7 @@ chip northbridge/intel/sandybridge
 	end
 	register "pci_mmio_size" = "2048"
 	device domain 0x0 on
+		subsystemid 0x1458 0x5000 inherit
 		device pci 00.0 on end	# Host bridge
 		device pci 01.0 on end	# PCIe Bridge for discrete graphics (PCIEX16)
 		device pci 02.0 on end	# Internal graphics VGA controller
@@ -57,7 +58,7 @@ chip northbridge/intel/sandybridge
 			device pci 1c.6 off end	# Unused PCIe Port
 			device pci 1c.7 off end	# Unused PCIe Port
 			device pci 1d.0 on  end	# USB2 EHCI #1
-			device pci 1e.0 on  end	# PCI bridge
+			device pci 1e.0 off end	# PCI bridge
 			device pci 1f.0 on	# LPC bridge
 				chip superio/ite/it8728f
 					device pnp 2e.0 off end		# Floppy, not routed.
@@ -84,13 +85,15 @@ chip northbridge/intel/sandybridge
 					device pnp 2e.6 on		# Mouse
 						irq 0x70 = 12
 					end
-					device pnp 2e.7 off		# GPIO
-						io 0x25 = 0x40
-						io 0x27 = 0x10
-						io 0x2c = 0x80
+					device pnp 2e.7 on		# GPIO
+						irq 0x25 = 0x40
+						irq 0x27 = 0x10
+						irq 0x2c = 0x80
+						io 0x60 = 0x0000
 						io 0x62 = 0x0a00
-						io 0xcb = 0x00
-						io 0xf1 = 0x40
+						io 0x64 = 0x0000
+						irq 0xcb = 0x00
+						irq 0xf1 = 0x40
 					end
 					device pnp 2e.a off end		# CIR, not routed.
 				end

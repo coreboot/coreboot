@@ -15,6 +15,7 @@
 
 #include <assert.h>
 #include <boardid.h>
+#include <console/console.h>
 #include <soc/auxadc.h>
 #include <ec/google/chromeec/ec.h>
 #include <stddef.h>
@@ -82,8 +83,13 @@ static uint32_t get_adc_index(unsigned int channel)
 		if (value < (voltages[id] + voltages[id + 1]) / 2)
 			break;
 
+	/* The last level is NC and may be larger than standard tolerance. */
 	const int tolerance = 10000; /* 10,000 uV */
-	assert(ABS(value - voltages[id]) < tolerance);
+	if (id < ADC_LEVELS - 1 && ABS(value - voltages[id]) > tolerance) {
+		printk(BIOS_ERR, "ADC channel %u value out of range: %d\n",
+		       channel, value);
+		assert(0);
+	}
 
 	return id;
 }

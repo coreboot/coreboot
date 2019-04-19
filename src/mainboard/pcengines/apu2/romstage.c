@@ -21,11 +21,8 @@
 #include <arch/cpu.h>
 #include <cpu/x86/lapic.h>
 #include <console/console.h>
-#include <timestamp.h>
 #include <cpu/amd/car.h>
 #include <northbridge/amd/agesa/state_machine.h>
-#include <northbridge/amd/pi/agesawrapper.h>
-#include <northbridge/amd/pi/agesawrapper_call.h>
 #include <cpu/x86/bist.h>
 #include <southbridge/amd/pi/hudson/hudson.h>
 #include <superio/nuvoton/common/nuvoton.h>
@@ -40,9 +37,11 @@
 
 static void early_lpc_init(void);
 
-void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
+void board_BeforeAgesa(struct sysinfo *cb)
 {
 	u32 val;
+	pci_devfn_t dev;
+	u32 data;
 
 	/*
 	 *  In Hudson RRG, PMIOxD2[5:4] is "Drive strength control for
@@ -52,85 +51,39 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	 *  the SoC BKDGs.  Without this setting, there is no serial
 	 *  output.
 	 */
-	outb(0xD2, 0xcd6);
+	outb(0xd2, 0xcd6);
 	outb(0x00, 0xcd7);
 
 	hudson_lpc_port80();
 
-	if (!cpu_init_detectedx && boot_cpu()) {
-		pci_devfn_t dev;
-		u32 data;
+	post_code(0x30);
+	early_lpc_init();
 
-		timestamp_init(timestamp_get());
-		timestamp_add_now(TS_START_ROMSTAGE);
+	hudson_clk_output_48Mhz();
+	post_code(0x31);
 
-		post_code(0x30);
-		early_lpc_init();
+	dev = PCI_DEV(0, 0x14, 3);
+	data = pci_read_config32(dev, LPC_IO_OR_MEM_DECODE_ENABLE);
+	/* enable 0x2e/0x4e IO decoding before configuring SuperIO */
+	pci_write_config32(dev, LPC_IO_OR_MEM_DECODE_ENABLE, data | 3);
 
-		hudson_clk_output_48Mhz();
-		post_code(0x31);
+	/* COM2 on apu5 is reserved so only COM1 should be supported */
+	if ((CONFIG_UART_FOR_CONSOLE == 1) &&
+		!CONFIG(BOARD_PCENGINES_APU5))
+		nuvoton_enable_serial(SERIAL2_DEV, CONFIG_TTYS0_BASE);
+	else if (CONFIG_UART_FOR_CONSOLE == 0)
+		nuvoton_enable_serial(SERIAL1_DEV, CONFIG_TTYS0_BASE);
 
-		dev = PCI_DEV(0, 0x14, 3);
-		data = pci_read_config32(dev, LPC_IO_OR_MEM_DECODE_ENABLE);
-		/* enable 0x2e/0x4e IO decoding before configuring SuperIO */
-		pci_write_config32(dev, LPC_IO_OR_MEM_DECODE_ENABLE, data | 3);
-
-		/* COM2 on apu5 is reserved so only COM1 should be supported */
-		if ((CONFIG_UART_FOR_CONSOLE == 1) &&
-			!CONFIG(BOARD_PCENGINES_APU5))
-			nuvoton_enable_serial(SERIAL2_DEV, CONFIG_TTYS0_BASE);
-		else if (CONFIG_UART_FOR_CONSOLE == 0)
-			nuvoton_enable_serial(SERIAL1_DEV, CONFIG_TTYS0_BASE);
-
-		console_init();
-	}
-
-	/* Halt if there was a built in self test failure */
-	post_code(0x34);
-	report_bist_failure(bist);
-
-	/* Load MPB */
-	val = cpuid_eax(1);
-	printk(BIOS_DEBUG, "BSP Family_Model: %08x\n", val);
-	printk(BIOS_DEBUG, "cpu_init_detectedx = %08lx\n", cpu_init_detectedx);
-
-	post_code(0x37);
-	AGESAWRAPPER(amdinitreset);
-
-	post_code(0x38);
-	printk(BIOS_DEBUG, "Got past avalon_early_setup\n");
-
-	post_code(0x39);
-	AGESAWRAPPER(amdinitearly);
 
 	/* Disable SVI2 controller to wait for command completion */
 	val = pci_read_config32(PCI_DEV(0, 0x18, 5), 0x12C);
-	if (val & (1 << 30)) {
-		printk(BIOS_DEBUG, "SVI2 Wait completion disabled\n");
-	} else {
-		printk(BIOS_DEBUG, "Disabling SVI2 Wait completion\n");
+	if (!(val & (1 << 30))) {
 		val |= (1 << 30);
 		pci_write_config32(PCI_DEV(0, 0x18, 5), 0x12C, val);
 	}
 
-	timestamp_add_now(TS_BEFORE_INITRAM);
-
-	post_code(0x40);
-	AGESAWRAPPER(amdinitpost);
-
-	/* FIXME: Detect if TSC frequency changed during raminit? */
-	timestamp_rescale_table(1, 4);
-
-	timestamp_add_now(TS_AFTER_INITRAM);
-}
-
-void agesa_postcar(struct sysinfo *cb)
-{
-	//PspMboxBiosCmdDramInfo();
-	post_code(0x41);
-	AGESAWRAPPER(amdinitenv);
-
-	outb(0xEA, 0xCD6);
+	/* Disable PCI-PCI bridge and release GPIO32/33 for other uses. */
+	outb(0xea, 0xcd6);
 	outb(0x1, 0xcd7);
 }
 

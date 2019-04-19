@@ -14,7 +14,7 @@
  */
 
 #include <AGESA.h>
-#include <northbridge/amd/pi/agesawrapper.h>
+#include <northbridge/amd/agesa/state_machine.h>
 
 
 static const PCIe_PORT_DESCRIPTOR PortList[] = {
@@ -76,25 +76,7 @@ static const PCIe_COMPLEX_DESCRIPTOR PcieComplex = {
 	.DdiLinkList  = NULL,
 };
 
-/*---------------------------------------------------------------------------------------*/
-/**
- *  OemCustomizeInitEarly
- *
- *  Description:
- *    This stub function will call the host environment through the binary block
- *    interface (call-out port) to provide a user hook opportunity
- *
- *  Parameters:
- *    @param[in]      *InitEarly
- *
- *    @retval         VOID
- *
- **/
-/*---------------------------------------------------------------------------------------*/
-VOID
-OemCustomizeInitEarly (
-	IN  OUT AMD_EARLY_PARAMS    *InitEarly
-	)
+void board_BeforeInitEarly(struct sysinfo *cb, AMD_EARLY_PARAMS *InitEarly)
 {
 	InitEarly->GnbConfig.PcieComplexList = &PcieComplex;
 	InitEarly->PlatformConfig.CStateMode = CStateModeC6;

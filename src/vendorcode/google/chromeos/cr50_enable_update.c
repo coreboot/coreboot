@@ -23,7 +23,7 @@
 #include <security/vboot/vboot_common.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
-#define C50_RESET_DELAY_MS 1000
+#define CR50_RESET_DELAY_MS 1000
 
 void __weak mainboard_prepare_cr50_reset(void) {}
 
@@ -31,12 +31,11 @@ void __weak mainboard_prepare_cr50_reset(void) {}
  * Check if the Cr50 TPM state requires a chip reset of the Cr50 device.
  *
  * Returns 0 if the Cr50 TPM state is good or if the TPM_MODE command is
- * unsupported.  Returns 1 if the Cr50 was reset.
+ * unsupported.  Returns 1 if the Cr50 requires a reset.
  */
-static int cr50_reset_if_needed(uint16_t timeout_ms)
+static int cr50_is_reset_needed(void)
 {
 	int ret;
-	int cr50_must_reset = 0;
 	uint8_t tpm_mode;
 
 	ret = tlcl_cr50_get_tpm_mode(&tpm_mode);
@@ -53,7 +52,7 @@ static int cr50_reset_if_needed(uint16_t timeout_ms)
 		 * Cr50 indicated a reboot is required to restore TPM
 		 * functionality.
 		 */
-		cr50_must_reset = 1;
+		return 1;
 	} else if (ret != TPM_SUCCESS)	{
 		/* TPM command failed, continue booting. */
 		printk(BIOS_ERR,
@@ -61,7 +60,8 @@ static int cr50_reset_if_needed(uint16_t timeout_ms)
 		return 0;
 	}
 
-	/* If the TPM mode is not enabled-tentative, then the TPM mode is locked
+	/*
+	 * If the TPM mode is not enabled-tentative, then the TPM mode is locked
 	 * and cannot be changed.  Perform a Cr50 reset because vboot may need
 	 * to disable TPM as part of booting an untrusted OS.
 	 *
@@ -72,30 +72,17 @@ static int cr50_reset_if_needed(uint16_t timeout_ms)
 		printk(BIOS_NOTICE,
 		       "NOTICE: Unexpected Cr50 TPM mode (%d). "
 		       "A Cr50 reset is required.\n", tpm_mode);
-		cr50_must_reset = 1;
+		return 1;
 	}
 
 	/* If TPM state is okay, no reset needed. */
-	if (!cr50_must_reset)
-		return 0;
-
-	ret = tlcl_cr50_immediate_reset(timeout_ms);
-
-	if (ret != TPM_SUCCESS) {
-		/* TPM command failed, continue booting. */
-		printk(BIOS_ERR,
-		       "ERROR: Attempt to reset CR50 failed: %x\n",
-		       ret);
-		return 0;
-	}
-
-	/* Cr50 is about to be reset, caller needs to prepare */
-	return 1;
+	return 0;
 }
 
 static void enable_update(void *unused)
 {
 	int ret;
+	int cr50_reset_reqd = 0;
 	uint8_t num_restored_headers;
 
 	/* Nothing to do on recovery mode. */
@@ -112,7 +99,7 @@ static void enable_update(void *unused)
 	}
 
 	/* Reboot in 1000 ms if necessary. */
-	ret = tlcl_cr50_enable_update(C50_RESET_DELAY_MS,
+	ret = tlcl_cr50_enable_update(CR50_RESET_DELAY_MS,
 				      &num_restored_headers);
 
 	if (ret != TPM_SUCCESS) {
@@ -134,9 +121,10 @@ static void enable_update(void *unused)
 		 */
 
 		/*
-		 * If the Cr50 was not reset, continue booting.
+		 * If the Cr50 doesn't requires a reset, continue booting.
 		 */
-		if (!cr50_reset_if_needed(C50_RESET_DELAY_MS))
+		cr50_reset_reqd = cr50_is_reset_needed();
+		if (!cr50_reset_reqd)
 			return;
 
 		printk(BIOS_INFO, "Waiting for CR50 reset to enable TPM.\n");
@@ -152,6 +140,27 @@ static void enable_update(void *unused)
 
 	/* clear current post code avoid chatty eventlog on subsequent boot*/
 	post_code(0);
+
+	/*
+	 * Older Cr50 firmware doesn't support the timeout parameter for the
+	 * immediate reset request, so the reset request must be sent after
+	 * the mainboard specific code runs.
+	 */
+	if (cr50_reset_reqd) {
+		ret = tlcl_cr50_immediate_reset(CR50_RESET_DELAY_MS);
+
+		if (ret != TPM_SUCCESS) {
+			/*
+			 * Reset request failed due to TPM error, continue
+			 * booting but the current boot will likely end up at
+			 * the recovery screen.
+			 */
+			printk(BIOS_ERR,
+			       "ERROR: Attempt to reset CR50 failed: %x\n",
+			       ret);
+			return;
+		}
+	}
 
 	if (CONFIG(POWER_OFF_ON_CR50_UPDATE))
 		poweroff();

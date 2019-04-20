@@ -14,6 +14,7 @@
  */
 
 #define CAM_EN GPP_B11 /* Active low */
+#define TS_PD GPP_E7
 
 /* Method called from LPIT prior to enter s0ix state */
 Method (MS0X, 1)
@@ -31,6 +32,9 @@ Method (MS0X, 1)
 Method (MPTS, 1)
 {
 	\_SB.PCI0.LPCB.EC0.PTS (Arg0)
+
+	/* Clear touch screen pd pin to avoid leakage */
+	\_SB.PCI0.CTXS (TS_PD)
 }
 
 /* Method called from _WAK prior to wakeup */

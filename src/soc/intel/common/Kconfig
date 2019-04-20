@@ -51,13 +51,6 @@ config SOC_INTEL_COMMON_ACPI
 	bool
 	default n
 
-config SOC_INTEL_COMMON_ACPI_EC_PTS_WAK
-	bool
-	default n
-	help
-	  Set this option to have the platform level _PTS/_WAK methods call
-	  methods provided by the Embedded Controller.
-
 config SOC_INTEL_COMMON_NHLT
 	bool
 	default n

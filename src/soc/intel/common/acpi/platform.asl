@@ -37,10 +37,6 @@ Method (_PTS, 1)
 {
 	Store (POST_OS_ENTER_PTS, DBG0)
 
-#if CONFIG(SOC_INTEL_COMMON_ACPI_EC_PTS_WAK)
-	/* Call EC _PTS handler */
-	\_SB.PCI0.LPCB.EC0.PTS (Arg0)
-#endif
 	If (CondRefOf (\_SB.MPTS))
 	{
 		\_SB.MPTS (Arg0)
@@ -57,11 +53,6 @@ Method (_WAK, 1)
 	{
 		\_SB.MWAK (Arg0)
 	}
-
-#if CONFIG(SOC_INTEL_COMMON_ACPI_EC_PTS_WAK)
-	/* Call EC _WAK handler */
-	\_SB.PCI0.LPCB.EC0.WAK (Arg0)
-#endif
 
 	Return (Package(){0,0})
 }

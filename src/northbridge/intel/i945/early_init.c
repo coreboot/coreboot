@@ -15,6 +15,7 @@
 
 #include <stdint.h>
 #include <stdlib.h>
+#include <cf9_reset.h>
 #include <console/console.h>
 #include <arch/io.h>
 #include <device/pci_ops.h>
@@ -518,8 +519,7 @@ static void i945_setup_dmi_rcrb(void)
 			reg32 &= ~(7 << 0);
 			reg32 |= (3 << 0);
 			DMIBAR32(0x224) = reg32;
-			outb(0x06, 0xcf9);
-			halt(); /* wait for reset */
+			system_reset();
 		}
 	}
 }

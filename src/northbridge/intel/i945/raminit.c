@@ -19,6 +19,7 @@
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
 #include <arch/io.h>
+#include <cf9_reset.h>
 #include <device/mmio.h>
 #include <device/device.h>
 #include <lib.h>
@@ -272,9 +273,7 @@ static void sdram_detect_errors(struct sys_info *sysinfo)
 
 		if (do_reset) {
 			printk(BIOS_DEBUG, "Reset required.\n");
-			outb(0x00, 0xcf9);
-			outb(0x0e, 0xcf9);
-			halt(); /* Wait for reset! */
+			full_reset();
 		}
 	}
 
@@ -303,9 +302,7 @@ static void sdram_detect_errors(struct sys_info *sysinfo)
 
 	if (do_reset) {
 		printk(BIOS_DEBUG, "Reset required.\n");
-		outb(0x00, 0xcf9);
-		outb(0x0e, 0xcf9);
-		halt(); /* Wait for reset! */
+		full_reset();
 	}
 }
 

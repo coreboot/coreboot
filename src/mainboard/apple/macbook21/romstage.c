@@ -19,6 +19,7 @@
 
 #include <stdint.h>
 #include <arch/io.h>
+#include <cf9_reset.h>
 #include <device/pci_ops.h>
 #include <device/pci_def.h>
 #include <cpu/intel/romstage.h>
@@ -245,8 +246,7 @@ void mainboard_romstage_entry(unsigned long bist)
 	if (MCHBAR16(SSKPD) == 0xCAFE) {
 		printk(BIOS_DEBUG,
 		       "Soft reset detected, rebooting properly.\n");
-		outb(0x6, 0xcf9);
-		halt();
+		system_reset();
 	}
 
 	/* Perform some early chipset initialization required

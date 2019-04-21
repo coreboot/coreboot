@@ -19,6 +19,7 @@
 #include <stdint.h>
 #include <halt.h>
 #include <arch/io.h>
+#include <cf9_reset.h>
 #include <device/pci_ops.h>
 #include <device/pci_def.h>
 #include <console/console.h>
@@ -53,8 +54,7 @@ void mainboard_rcba_config(void)
 		RCBA32(BUC) &= ~PCH_DISABLE_GBE;
 		/* Datasheet says clearing the bit requires a reset after */
 		printk(BIOS_DEBUG, "Enabled gigabit ethernet, reset once.\n");
-		outb(0xe, 0xcf9);
-		halt();
+		full_reset();
 	}
 #endif
 

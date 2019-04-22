@@ -27,7 +27,7 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 #*****************************************************************************
-ifeq ($(CONFIG_SOC_AMD_STONEYRIDGE_FP4)$(CONFIG_SOC_AMD_STONEYRIDGE_FT4),y)
+ifeq ($(CONFIG_SOC_AMD_PICASSO),y)
 
 subdirs-y += ../../../cpu/amd/mtrr/
 subdirs-y += ../../../cpu/x86/tsc
@@ -300,4 +300,4 @@ endif
 
 endif # ifeq ($(CONFIG_SOC_AMD_PSP_SELECTABLE_SMU_FW),y)
 
-endif # ($(CONFIG_SOC_AMD_STONEYRIDGE_FP4)$(CONFIG_SOC_AMD_STONEYRIDGE_FT4),y)
+endif # ($(CONFIG_SOC_AMD_PICASSO),y)

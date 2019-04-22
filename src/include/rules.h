@@ -271,7 +271,7 @@
 
 #if CONFIG(ARCH_X86)
 /* Indicates memory layout is determined with arch/x86/car.ld. */
-#define ENV_CACHE_AS_RAM		ENV_ROMSTAGE_OR_BEFORE
+#define ENV_CACHE_AS_RAM		(ENV_ROMSTAGE_OR_BEFORE && !CONFIG(RESET_VECTOR_IN_RAM))
 /* No .data sections with execute-in-place from ROM.  */
 #define ENV_STAGE_HAS_DATA_SECTION	!ENV_CACHE_AS_RAM
 /* No .bss sections for stage with CAR teardown. */

@@ -81,6 +81,13 @@ config AP_IN_SIPI_WAIT
 	default n
 	depends on ARCH_X86 && SMP
 
+config RESET_VECTOR_IN_RAM
+	bool
+	depends on ARCH_X86
+	help
+	  Select this option if the x86 soc implements custom code to handle the
+	  reset vector in RAM instead of the traditional 0xfffffff0 location.
+
 # Aligns 16bit entry code in bootblock so that hyper-threading CPUs
 # can boot AP CPUs to enable their shared caches.
 config SIPI_VECTOR_IN_ROM

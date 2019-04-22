@@ -21,6 +21,7 @@
 #include <intelblocks/chip.h>
 #include <drivers/i2c/designware/dw_i2c.h>
 #include <intelblocks/gspi.h>
+#include <smbios.h>
 #include <stdint.h>
 #include <soc/gpio.h>
 #include <soc/pch.h>

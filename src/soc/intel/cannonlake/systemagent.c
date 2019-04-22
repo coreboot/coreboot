@@ -33,8 +33,6 @@
  */
 void soc_add_fixed_mmio_resources(struct device *dev, int *index)
 {
-	const struct soc_intel_cannonlake_config *const config = dev->chip_info;
-
 	static const struct sa_mmio_descriptor soc_fixed_resources[] = {
 		{ PCIEXBAR, CONFIG_MMCONF_BASE_ADDRESS, CONFIG_SA_PCIEX_LENGTH,
 				"PCIEXBAR" },
@@ -63,10 +61,8 @@ void soc_add_fixed_mmio_resources(struct device *dev, int *index)
 	if ((pci_read_config32(dev, CAPID0_A) & VTD_DISABLE))
 		return;
 
-	if (!(config && config->VtdDisable)) {
-		sa_add_fixed_mmio_resources(dev, index, soc_vtd_resources,
+	sa_add_fixed_mmio_resources(dev, index, soc_vtd_resources,
 			ARRAY_SIZE(soc_vtd_resources));
-	}
 }
 
 /*

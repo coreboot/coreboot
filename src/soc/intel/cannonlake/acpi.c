@@ -304,13 +304,6 @@ static unsigned long soc_fill_dmar(unsigned long current)
 		current += acpi_create_dmar_ds_pci(current, 0, 2, 0);
 
 		acpi_dmar_drhd_fixup(tmp, current);
-
-		/* Add RMRR entry */
-		tmp = current;
-		current += acpi_create_dmar_rmrr(current, 0,
-			sa_get_gsm_base(), sa_get_tolud_base() - 1);
-		current += acpi_create_dmar_ds_pci(current, 0, 2, 0);
-		acpi_dmar_rmrr_fixup(tmp, current);
 	}
 
 	struct device *const ipu_dev = dev_find_slot(0, SA_DEVFN_IPU);
@@ -344,6 +337,13 @@ static unsigned long soc_fill_dmar(unsigned long current)
 		acpi_dmar_drhd_fixup(tmp, current);
 	}
 
+	/* Add RMRR entry */
+	const unsigned long tmp = current;
+	current += acpi_create_dmar_rmrr(current, 0,
+		sa_get_gsm_base(), sa_get_tolud_base() - 1);
+	current += acpi_create_dmar_ds_pci(current, 0, 2, 0);
+	acpi_dmar_rmrr_fixup(tmp, current);
+
 	return current;
 }
 
@@ -361,6 +361,7 @@ unsigned long sa_write_acpi_tables(struct device *dev, unsigned long current,
 
 	printk(BIOS_DEBUG, "ACPI:    * DMAR\n");
 	acpi_create_dmar(dmar, DMAR_INTR_REMAP, soc_fill_dmar);
+
 	current += dmar->header.length;
 	current = acpi_align_current(current);
 	acpi_add_table(rsdp, dmar);

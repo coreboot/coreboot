@@ -344,9 +344,6 @@ struct soc_intel_cannonlake_config {
 	/* Enable Pch iSCLK */
 	uint8_t pch_isclk;
 
-	/* Intel VT configuration */
-	uint8_t VtdDisable;
-
 	/*
 	 * Acoustic Noise Mitigation
 	 * 0b - Disable

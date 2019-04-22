@@ -101,6 +101,7 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	assert(dev != NULL);
 	const config_t *config = dev->chip_info;
 	FSP_M_CONFIG *m_cfg = &mupd->FspmConfig;
+	FSP_M_TEST_CONFIG *tconfig = &mupd->FspmTestConfig;
 
 	soc_memory_init_params(m_cfg, config);
 
@@ -113,6 +114,10 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	/* Set debug probe type */
 	m_cfg->PlatformDebugConsent =
 		CONFIG_SOC_INTEL_CANNONLAKE_DEBUG_CONSENT;
+
+	/* Configure VT-d */
+	tconfig->VtdDisable = 0;
+
 	mainboard_memory_init_params(mupd);
 }
 

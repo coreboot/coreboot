@@ -13,8 +13,8 @@
  * GNU General Public License for more details.
  */
 
-#ifndef __STONEYRIDGE_I2C_H__
-#define __STONEYRIDGE_I2C_H__
+#ifndef __PICASSO_I2C_H__
+#define __PICASSO_I2C_H__
 
 #include <soc/gpio.h>
 
@@ -46,4 +46,4 @@ struct soc_amd_i2c_save {
 
 void sb_reset_i2c_slaves(void);
 
-#endif /* __STONEYRIDGE_I2C_H__ */
+#endif /* __PICASSO_I2C_H__ */

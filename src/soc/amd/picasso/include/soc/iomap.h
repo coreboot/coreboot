@@ -14,8 +14,8 @@
  * GNU General Public License for more details.
  */
 
-#ifndef __SOC_STONEYRIDGE_IOMAP_H__
-#define __SOC_STONEYRIDGE_IOMAP_H__
+#ifndef __SOC_PICASSO_IOMAP_H__
+#define __SOC_PICASSO_IOMAP_H__
 
 /* MMIO Ranges */
 #define PSP_MAILBOX_BAR3_BASE		0xf0a00000
@@ -85,4 +85,4 @@
 #define BIOSRAM_UMA_SIZE		0xf4 /* 4 bytes */
 #define BIOSRAM_UMA_BASE		0xf8 /* 8 bytes */
 
-#endif /* __SOC_STONEYRIDGE_IOMAP_H__ */
+#endif /* __SOC_PICASSO_IOMAP_H__ */

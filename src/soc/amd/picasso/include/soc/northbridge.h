@@ -14,8 +14,8 @@
  * GNU General Public License for more details.
  */
 
-#ifndef __PI_STONEYRIDGE_NORTHBRIDGE_H__
-#define __PI_STONEYRIDGE_NORTHBRIDGE_H__
+#ifndef __PI_PICASSO_NORTHBRIDGE_H__
+#define __PI_PICASSO_NORTHBRIDGE_H__
 
 #include <device/device.h>
 #include <types.h>
@@ -130,4 +130,4 @@ void set_ap_entry_ptr(void *entry);
 void set_warm_reset_flag(void);
 int is_warm_reset(void);
 
-#endif /* __PI_STONEYRIDGE_NORTHBRIDGE_H__ */
+#endif /* __PI_PICASSO_NORTHBRIDGE_H__ */

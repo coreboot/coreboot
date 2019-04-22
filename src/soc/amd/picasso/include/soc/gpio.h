@@ -13,8 +13,8 @@
  * GNU General Public License for more details.
  */
 
-#ifndef __STONEYRIDGE_GPIO_H__
-#define __STONEYRIDGE_GPIO_H__
+#ifndef __PICASSO_GPIO_H__
+#define __PICASSO_GPIO_H__
 
 #define GPIO_DEVICE_NAME	"AMD0030"
 #define GPIO_DEVICE_DESC	"GPIO Controller"
@@ -305,4 +305,4 @@
 #define GPIO_2_EVENT GEVENT_8
 
 #endif /* __ACPI__ */
-#endif /* __STONEYRIDGE_GPIO_H__ */
+#endif /* __PICASSO_GPIO_H__ */

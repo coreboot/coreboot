@@ -14,8 +14,8 @@
  * GNU General Public License for more details.
  */
 
-#ifndef __STONEYRIDGE_H__
-#define __STONEYRIDGE_H__
+#ifndef __PICASSO_SB_H__
+#define __PICASSO_SB_H__
 
 #include <types.h>
 #include <device/device.h>
@@ -412,4 +412,4 @@ void i2c_soc_early_init(void);
 /* Initialize all the i2c buses that are not marked with early init. */
 void i2c_soc_init(void);
 
-#endif /* __STONEYRIDGE_H__ */
+#endif /* __PICASSO_SB_H__ */

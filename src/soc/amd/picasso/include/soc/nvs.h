@@ -21,8 +21,8 @@
  *
  */
 
-#ifndef __SOC_STONEYRIDGE_NVS_H__
-#define __SOC_STONEYRIDGE_NVS_H__
+#ifndef __SOC_PICASSO_NVS_H__
+#define __SOC_PICASSO_NVS_H__
 
 #include <commonlib/helpers.h>
 #include <stdint.h>
@@ -64,4 +64,4 @@ typedef struct global_nvs_t {
 } __packed global_nvs_t;
 check_member(global_nvs_t, chromeos, GNVS_CHROMEOS_ACPI_OFFSET);
 
-#endif /* __SOC_STONEYRIDGE_NVS_H__ */
+#endif /* __SOC_PICASSO_NVS_H__ */

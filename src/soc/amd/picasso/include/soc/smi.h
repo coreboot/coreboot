@@ -15,8 +15,8 @@
  * GNU General Public License for more details.
  */
 
-#ifndef __SOUTHBRIDGE_AMD_PI_STONEYRIDGE_SMI_H__
-#define __SOUTHBRIDGE_AMD_PI_STONEYRIDGE_SMI_H__
+#ifndef __SOUTHBRIDGE_AMD_PI_PICASSO_SMI_H__
+#define __SOUTHBRIDGE_AMD_PI_PICASSO_SMI_H__
 
 
 #define SMI_GEVENTS			24
@@ -239,4 +239,4 @@ void soc_route_sci(uint8_t event);
 void enable_smi_generation(void);
 #endif
 
-#endif /* __SOUTHBRIDGE_AMD_PI_STONEYRIDGE_SMI_H__ */
+#endif /* __SOUTHBRIDGE_AMD_PI_PICASSO_SMI_H__ */

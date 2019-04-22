@@ -13,8 +13,8 @@
  * GNU General Public License for more details.
  */
 
-#ifndef __STONEYRIDGE_SMBUS_H__
-#define __STONEYRIDGE_SMBUS_H__
+#ifndef __PICASSO_SMBUS_H__
+#define __PICASSO_SMBUS_H__
 
 #include <stdint.h>
 #include <soc/iomap.h>
@@ -32,4 +32,4 @@ int do_smbus_write_byte(u32 mmio, u8 device, u8 address, u8 val);
 int do_smbus_recv_byte(u32 mmio, u8 device);
 int do_smbus_send_byte(u32 mmio, u8 device, u8 val);
 
-#endif /* __STONEYRIDGE_SMBUS_H__ */
+#endif /* __PICASSO_SMBUS_H__ */

@@ -13,8 +13,8 @@
  * GNU General Public License for more details.
  */
 
-#ifndef __STONEYRIDGE_CPU_H__
-#define __STONEYRIDGE_CPU_H__
+#ifndef __PICASSO_CPU_H__
+#define __PICASSO_CPU_H__
 
 #include <device/device.h>
 
@@ -32,4 +32,4 @@
 void stoney_init_cpus(struct device *dev);
 void check_mca(void);
 
-#endif /* __STONEYRIDGE_CPU_H__ */
+#endif /* __PICASSO_CPU_H__ */

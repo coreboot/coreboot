@@ -15,8 +15,8 @@
  * GNU General Public License for more details.
  */
 
-#ifndef __SOC_STONEYRIDGE_ACPI_H__
-#define __SOC_STONEYRIDGE_ACPI_H__
+#ifndef __SOC_PICASSO_ACPI_H__
+#define __SOC_PICASSO_ACPI_H__
 
 #include <arch/acpi.h>
 
@@ -37,4 +37,4 @@ void southbridge_inject_dsdt(struct device *device);
 
 const char *soc_acpi_name(const struct device *dev);
 
-#endif /* __SOC_STONEYRIDGE_ACPI_H__ */
+#endif /* __SOC_PICASSO_ACPI_H__ */

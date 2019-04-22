@@ -13,9 +13,9 @@
  * GNU General Public License for more details.
  */
 
-#ifndef __STONEYRIDGE_ROMSTAGE_H__
-#define __STONEYRIDGE_ROMSTAGE_H__
+#ifndef __PICASSO_ROMSTAGE_H__
+#define __PICASSO_ROMSTAGE_H__
 
 void mainboard_romstage_entry(int s3_resume);
 
-#endif /* __STONEYRIDGE_ROMSTAGE_H__ */
+#endif /* __PICASSO_ROMSTAGE_H__ */

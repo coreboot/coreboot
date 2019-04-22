@@ -37,17 +37,12 @@ subdirs-y += ../../../cpu/x86/mtrr
 subdirs-y += ../../../cpu/x86/pae
 subdirs-y += ../../../cpu/x86/smm
 
-bootblock-$(CONFIG_STONEYRIDGE_UART) += uart.c
+# TODO: Make coreboot modifications so bootblock can be removed.  This soc
+#       also selects C_ENVIRONMENT_BOOTBLOCK to enforce certain codepaths
+#       in romstage.  As a result, the bootblock build also needs a
+#       dummy cache_as_ram.S
+bootblock-y += cache_as_ram.S
 bootblock-y += bootblock/bootblock.c
-bootblock-y += gpio.c
-bootblock-y += i2c.c
-bootblock-y += monotonic_timer.c
-bootblock-y += pmutil.c
-bootblock-y += reset.c
-bootblock-y += tsc_freq.c
-bootblock-y += southbridge.c
-bootblock-$(CONFIG_SPI_FLASH) += spi.c
-bootblock-$(CONFIG_HAVE_SMI_HANDLER) += smi_util.c
 
 romstage-y += i2c.c
 romstage-y += romstage.c

@@ -11,9 +11,10 @@
  * GNU General Public License for more details.
  */
 
-#include <bootblock_common.h>
-
-asmlinkage void bootblock_c_entry(uint64_t base_timestamp)
-{
-	/* This function is here for building/linking only */
-}
+/*
+ * TODO:  This is a dummy file for making bootblock build and link.  At some
+ *        point, this should be removed from picasso since bootblock is
+ *        ignored.
+ */
+.global bootblock_pre_c_entry
+bootblock_pre_c_entry:

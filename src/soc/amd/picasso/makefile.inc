@@ -38,35 +38,28 @@ subdirs-y += ../../../cpu/x86/pae
 subdirs-y += ../../../cpu/x86/smm
 
 bootblock-$(CONFIG_STONEYRIDGE_UART) += uart.c
-bootblock-y += BiosCallOuts.c
 bootblock-y += bootblock/bootblock.c
 bootblock-y += gpio.c
 bootblock-y += i2c.c
-bootblock-$(CONFIG_USBDEBUG) += enable_usbdebug.c
 bootblock-y += monotonic_timer.c
 bootblock-y += pmutil.c
 bootblock-y += reset.c
 bootblock-y += tsc_freq.c
 bootblock-y += southbridge.c
-bootblock-y += nb_util.c
 bootblock-$(CONFIG_SPI_FLASH) += spi.c
 bootblock-$(CONFIG_HAVE_SMI_HANDLER) += smi_util.c
 
-romstage-y += BiosCallOuts.c
 romstage-y += i2c.c
 romstage-y += romstage.c
-romstage-$(CONFIG_USBDEBUG) += enable_usbdebug.c
 romstage-y += gpio.c
 romstage-y += monotonic_timer.c
 romstage-y += pmutil.c
 romstage-y += reset.c
 romstage-y += smbus.c
-romstage-y += smbus_spd.c
 romstage-y += ramtop.c
 romstage-$(CONFIG_STONEYRIDGE_UART) += uart.c
 romstage-y += tsc_freq.c
 romstage-y += southbridge.c
-romstage-y += nb_util.c
 romstage-$(CONFIG_SPI_FLASH) += spi.c
 romstage-$(CONFIG_HAVE_SMI_HANDLER) += smi_util.c
 
@@ -77,22 +70,18 @@ verstage-y += pmutil.c
 verstage-y += reset.c
 verstage-$(CONFIG_STONEYRIDGE_UART) += uart.c
 verstage-y += tsc_freq.c
-verstage-y += nb_util.c
 verstage-$(CONFIG_SPI_FLASH) += spi.c
 
 postcar-y += monotonic_timer.c
 postcar-$(CONFIG_STONEYRIDGE_UART) += uart.c
 postcar-y += ramtop.c
-postcar-y += nb_util.c
 postcar-$(CONFIG_VBOOT_MEASURED_BOOT) += i2c.c
 postcar-y += tsc_freq.c
 
-ramstage-y += BiosCallOuts.c
 ramstage-y += i2c.c
 ramstage-y += chip.c
 ramstage-y += cpu.c
 ramstage-y += mca.c
-ramstage-$(CONFIG_USBDEBUG) += enable_usbdebug.c
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi.c
 ramstage-y += gpio.c
 ramstage-y += monotonic_timer.c
@@ -111,7 +100,6 @@ ramstage-y += usb.c
 ramstage-y += tsc_freq.c
 ramstage-$(CONFIG_SPI_FLASH) += spi.c
 ramstage-y += finalize.c
-ramstage-y += nb_util.c
 
 smm-y += monotonic_timer.c
 smm-y += smihandler.c
@@ -119,7 +107,6 @@ smm-y += smi_util.c
 smm-y += tsc_freq.c
 smm-$(CONFIG_DEBUG_SMI) += uart.c
 smm-$(CONFIG_SPI_FLASH) += spi.c
-smm-y += nb_util.c
 smm-y += gpio.c
 
 CPPFLAGS_common += -I$(src)/soc/amd/stoneyridge

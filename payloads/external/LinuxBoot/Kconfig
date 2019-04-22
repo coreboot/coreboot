@@ -123,7 +123,7 @@ config LINUXBOOT_KERNEL_CONFIGFILE
 
 	  Note: this can be a defconfig file or a complete .config file.
 
-choice LINUXBOOT_KERNEL_FORMAT
+choice
 	prompt "Kernel binary format"
 	default LINUXBOOT_KERNEL_BZIMAGE if LINUXBOOT_X86 || LINUXBOOT_X86_64
 	default LINUXBOOT_KERNEL_UIMAGE if LINUXBOOT_ARM64

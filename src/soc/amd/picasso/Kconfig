@@ -137,7 +137,7 @@ config VGA_BIOS_ID
 
 config VGA_BIOS_FILE
 	string
-	default "3rdparty/blobs/soc/amd/stoneyridge/VBIOS.bin"
+	default "3rdparty/blobs/soc/amd/picasso/VBIOS.bin"
 
 config S3_VGA_ROM_RUN
 	bool

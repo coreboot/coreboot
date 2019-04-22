@@ -109,9 +109,9 @@ smm-$(CONFIG_DEBUG_SMI) += uart.c
 smm-$(CONFIG_SPI_FLASH) += spi.c
 smm-y += gpio.c
 
-CPPFLAGS_common += -I$(src)/soc/amd/stoneyridge
-CPPFLAGS_common += -I$(src)/soc/amd/stoneyridge/include
-CPPFLAGS_common += -I$(src)/soc/amd/stoneyridge/acpi
+CPPFLAGS_common += -I$(src)/soc/amd/picasso
+CPPFLAGS_common += -I$(src)/soc/amd/picasso/include
+CPPFLAGS_common += -I$(src)/soc/amd/picasso/acpi
 
 # ROMSIG Normally At ROMBASE + 0x20000
 # Overridden by CONFIG_AMD_FWM_POSITION_INDEX

@@ -17,7 +17,7 @@
 
 /*
  * NOTE: The layout of the global_nvs_t structure below must match the layout
- * in soc/soc/amd/stoneyridge/acpi/globalnvs.asl !!!
+ * in soc/soc/amd/picasso/acpi/globalnvs.asl !!!
  *
  */
 

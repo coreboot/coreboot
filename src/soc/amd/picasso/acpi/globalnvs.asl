@@ -17,7 +17,7 @@
 
 /*
  * NOTE: The layout of the GNVS structure below must match the layout in
- * soc/amd/stoneyridge/include/soc/nvs.h !!!
+ * soc/amd/picasso/include/soc/nvs.h !!!
  *
  */
 

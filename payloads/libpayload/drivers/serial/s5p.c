@@ -84,7 +84,8 @@ static struct console_output_driver s5p_serial_output =
 static struct console_input_driver s5p_serial_input =
 {
 	.havekey = &serial_havechar,
-	.getchar = &serial_getchar
+	.getchar = &serial_getchar,
+	.input_type = CONSOLE_INPUT_TYPE_UART,
 };
 
 void serial_init(void)

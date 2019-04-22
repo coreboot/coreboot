@@ -296,7 +296,8 @@ int keyboard_set_layout(char *country)
 
 static struct console_input_driver cons = {
 	.havekey = keyboard_havechar,
-	.getchar = keyboard_getchar
+	.getchar = keyboard_getchar,
+	.input_type = CONSOLE_INPUT_TYPE_EC,
 };
 
 void keyboard_init(void)

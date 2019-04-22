@@ -560,6 +560,7 @@ void serial_console_init(void)
 
 	consin.havekey = serial_havechar;
 	consin.getchar = serial_getchar;
+	consin.input_type = CONSOLE_INPUT_TYPE_UART;
 
 	consout.putchar = serial_putchar;
 

@@ -98,7 +98,8 @@ static void serial_hardware_init(int speed, int word_bits,
 
 static struct console_input_driver consin = {
 	.havekey = &serial_havechar,
-	.getchar = &serial_getchar
+	.getchar = &serial_getchar,
+	.input_type = CONSOLE_INPUT_TYPE_UART,
 };
 
 static struct console_output_driver consout = {

@@ -350,6 +350,9 @@ int set_option_from_string(const struct nvram_accessor *nvram, struct cb_cmos_op
 typedef enum {
 	CONSOLE_INPUT_TYPE_UNKNOWN = 0,
 	CONSOLE_INPUT_TYPE_USB,
+	CONSOLE_INPUT_TYPE_EC,
+	CONSOLE_INPUT_TYPE_UART,
+	CONSOLE_INPUT_TYPE_GPIO,
 } console_input_type;
 
 void console_init(void);

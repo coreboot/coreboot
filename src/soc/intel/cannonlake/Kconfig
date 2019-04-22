@@ -27,8 +27,6 @@ config SOC_INTEL_WHISKEYLAKE
 	bool
 	default n
 	select SOC_INTEL_COMMON_CANNONLAKE_BASE
-	select FSP_PEIM_TO_PEIM_INTERFACE
-	select USE_INTEL_FSP_TO_CALL_COREBOOT_PUBLISH_MP_PPI
 	help
 	  Intel Whiskeylake support
 
@@ -36,12 +34,6 @@ config SOC_INTEL_COMETLAKE
 	bool
 	default n
 	select SOC_INTEL_COMMON_CANNONLAKE_BASE
-	# TODO:
-	# Delete FSP_PEIM_TO_PEIM_INTERFACE and
-	# USE_INTEL_FSP_TO_CALL_COREBOOT_PUBLISH_MP_PPI selection
-	# and select PLATFORM_USES_FSP2_1 once FSP support for CML is ready
-	select FSP_PEIM_TO_PEIM_INTERFACE
-	select USE_INTEL_FSP_TO_CALL_COREBOOT_PUBLISH_MP_PPI
 	help
 	  Intel Cometlake support
 

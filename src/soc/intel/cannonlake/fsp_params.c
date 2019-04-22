@@ -18,9 +18,7 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <fsp/api.h>
-#include <fsp/ppi/mp_service_ppi.h>
 #include <fsp/util.h>
-#include <intelblocks/mp_init.h>
 #include <intelblocks/xdci.h>
 #include <soc/intel/common/vbt.h>
 #include <soc/pci_devs.h>
@@ -143,9 +141,6 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	for (i = 0; i < ARRAY_SIZE(params->Usb3OverCurrentPin); i++) {
 		params->Usb3OverCurrentPin[i] = 0;
 	}
-
-	if (CONFIG(USE_INTEL_FSP_TO_CALL_COREBOOT_PUBLISH_MP_PPI))
-		params->CpuMpPpi = (uintptr_t) mp_fill_ppi_services_data();
 
 	mainboard_silicon_init_params(params);
 

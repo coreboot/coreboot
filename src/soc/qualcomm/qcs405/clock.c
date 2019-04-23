@@ -12,6 +12,7 @@
  * GNU General Public License for more details.
  */
 
+#include <console/console.h>
 #include <device/mmio.h>
 #include <types.h>
 #include <delay.h>

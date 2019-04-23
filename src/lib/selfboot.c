@@ -146,10 +146,10 @@ static int check_payload_segments(struct cbfs_payload_segment *cbfssegs,
 {
 	uint8_t *dest;
 	size_t memsz;
-	struct cbfs_payload_segment *first_segment, *seg, segment;
+	struct cbfs_payload_segment *seg, segment;
 	enum bootmem_type dest_type = *(enum bootmem_type *)args;
 
-	for (first_segment = seg = cbfssegs;; ++seg) {
+	for (seg = cbfssegs;; ++seg) {
 		printk(BIOS_DEBUG, "Checking segment from ROM address 0x%p\n", seg);
 		cbfs_decode_payload_segment(&segment, seg);
 		dest = (uint8_t *)(uintptr_t)segment.load_addr;

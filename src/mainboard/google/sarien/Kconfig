@@ -59,6 +59,10 @@ config TPM_TIS_ACPI_INTERRUPT
 	int
 	default 82  # GPE0_DW2_18 (GPP_D18)
 
+config POWER_OFF_ON_CR50_UPDATE
+	bool
+	default n
+
 config GBB_HWID
 	string
 	depends on CHROMEOS

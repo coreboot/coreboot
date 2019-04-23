@@ -56,7 +56,7 @@ smm-y += tsc_freq.c
 
 CPPFLAGS_common += -I$(src)/soc/intel/braswell/
 CPPFLAGS_common += -I$(src)/soc/intel/braswell/include
-CPPFLAGS_common += -I$(src)/vendorcode/intel/fsp/fsp1_1/braswell
+CPPFLAGS_common += -I$(call strip_quotes,$(CONFIG_FSP_HEADER_PATH))
 
 CPPFLAGS_common += -I3rdparty/blobs/mainboard/$(MAINBOARDDIR)
 

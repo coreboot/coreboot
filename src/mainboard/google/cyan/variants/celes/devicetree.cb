@@ -73,12 +73,6 @@ chip soc/intel/braswell
 	register "ISPEnable" = "0"		# Disable IUNIT
 	register "ISPPciDevConfig" = "3"
 	register "PcdSdDetectChk" = "0"		# Disable SD card detect
-	# Follow Intel recommendation to set BSW D-stepping PERPORTRXISET 2 (low strength)
-	register "D0Usb2Port0PerPortRXISet" = "2"
-	register "D0Usb2Port1PerPortRXISet" = "2"
-	register "D0Usb2Port2PerPortRXISet" = "2"
-	register "D0Usb2Port3PerPortRXISet" = "2"
-	register "D0Usb2Port4PerPortRXISet" = "2"
 
 	# LPE audio codec settings
 	register "lpe_codec_clk_src" = "LPE_CLK_SRC_XTAL" # 19.2MHz clock

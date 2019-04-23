@@ -18,6 +18,7 @@ romstage-y += romstage.c
 romstage-y += spd_util.c
 
 ramstage-y += gpio.c
+ramstage-y += ramstage.c
 
 SPD_BIN = $(obj)/spd.bin
 

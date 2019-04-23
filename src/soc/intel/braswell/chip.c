@@ -129,36 +129,26 @@ void soc_silicon_init_params(SILICON_INIT_UPD *params)
 	params->Usb2Port0PerPortTxiSet = config->Usb2Port0PerPortTxiSet;
 	params->Usb2Port0IUsbTxEmphasisEn = config->Usb2Port0IUsbTxEmphasisEn;
 	params->Usb2Port0PerPortTxPeHalf = config->Usb2Port0PerPortTxPeHalf;
-	if (config->D0Usb2Port0PerPortRXISet != 0)
-		params->D0Usb2Port0PerPortRXISet = config->D0Usb2Port0PerPortRXISet;
 
 	params->Usb2Port1PerPortPeTxiSet = config->Usb2Port1PerPortPeTxiSet;
 	params->Usb2Port1PerPortTxiSet = config->Usb2Port1PerPortTxiSet;
 	params->Usb2Port1IUsbTxEmphasisEn = config->Usb2Port1IUsbTxEmphasisEn;
 	params->Usb2Port1PerPortTxPeHalf = config->Usb2Port1PerPortTxPeHalf;
-	if (config->D0Usb2Port1PerPortRXISet != 0)
-		params->D0Usb2Port1PerPortRXISet = config->D0Usb2Port1PerPortRXISet;
 
 	params->Usb2Port2PerPortPeTxiSet = config->Usb2Port2PerPortPeTxiSet;
 	params->Usb2Port2PerPortTxiSet = config->Usb2Port2PerPortTxiSet;
 	params->Usb2Port2IUsbTxEmphasisEn = config->Usb2Port2IUsbTxEmphasisEn;
 	params->Usb2Port2PerPortTxPeHalf = config->Usb2Port2PerPortTxPeHalf;
-	if (config->D0Usb2Port2PerPortRXISet != 0)
-		params->D0Usb2Port2PerPortRXISet = config->D0Usb2Port2PerPortRXISet;
 
 	params->Usb2Port3PerPortPeTxiSet = config->Usb2Port3PerPortPeTxiSet;
 	params->Usb2Port3PerPortTxiSet = config->Usb2Port3PerPortTxiSet;
 	params->Usb2Port3IUsbTxEmphasisEn = config->Usb2Port3IUsbTxEmphasisEn;
 	params->Usb2Port3PerPortTxPeHalf = config->Usb2Port3PerPortTxPeHalf;
-	if (config->D0Usb2Port3PerPortRXISet != 0)
-		params->D0Usb2Port3PerPortRXISet = config->D0Usb2Port3PerPortRXISet;
 
 	params->Usb2Port4PerPortPeTxiSet = config->Usb2Port4PerPortPeTxiSet;
 	params->Usb2Port4PerPortTxiSet = config->Usb2Port4PerPortTxiSet;
 	params->Usb2Port4IUsbTxEmphasisEn = config->Usb2Port4IUsbTxEmphasisEn;
 	params->Usb2Port4PerPortTxPeHalf = config->Usb2Port4PerPortTxPeHalf;
-	if (config->D0Usb2Port4PerPortRXISet != 0)
-		params->D0Usb2Port4PerPortRXISet = config->D0Usb2Port4PerPortRXISet;
 
 	params->Usb3Lane0Ow2tapgen2deemph3p5 =
 		config->Usb3Lane0Ow2tapgen2deemph3p5;
@@ -266,9 +256,6 @@ void soc_display_silicon_init_params(const SILICON_INIT_UPD *old,
 	fsp_display_upd_value("Usb2Port0PerPortTxPeHalf", 1,
 		old->Usb2Port0PerPortTxPeHalf,
 		new->Usb2Port0PerPortTxPeHalf);
-	fsp_display_upd_value("D0Usb2Port0PerPortRXISet", 1,
-		old->D0Usb2Port0PerPortRXISet,
-		new->D0Usb2Port0PerPortRXISet);
 	fsp_display_upd_value("Usb2Port1PerPortPeTxiSet", 1,
 		old->Usb2Port1PerPortPeTxiSet,
 		new->Usb2Port1PerPortPeTxiSet);
@@ -281,9 +268,6 @@ void soc_display_silicon_init_params(const SILICON_INIT_UPD *old,
 	fsp_display_upd_value("Usb2Port1PerPortTxPeHalf", 1,
 		old->Usb2Port1PerPortTxPeHalf,
 		new->Usb2Port1PerPortTxPeHalf);
-	fsp_display_upd_value("D0Usb2Port1PerPortRXISet", 1,
-		old->D0Usb2Port1PerPortRXISet,
-		new->D0Usb2Port1PerPortRXISet);
 	fsp_display_upd_value("Usb2Port2PerPortPeTxiSet", 1,
 		old->Usb2Port2PerPortPeTxiSet,
 		new->Usb2Port2PerPortPeTxiSet);
@@ -296,9 +280,6 @@ void soc_display_silicon_init_params(const SILICON_INIT_UPD *old,
 	fsp_display_upd_value("Usb2Port2PerPortTxPeHalf", 1,
 		old->Usb2Port2PerPortTxPeHalf,
 		new->Usb2Port2PerPortTxPeHalf);
-	fsp_display_upd_value("D0Usb2Port2PerPortRXISet", 1,
-		old->D0Usb2Port2PerPortRXISet,
-		new->D0Usb2Port2PerPortRXISet);
 	fsp_display_upd_value("Usb2Port3PerPortPeTxiSet", 1,
 		old->Usb2Port3PerPortPeTxiSet,
 		new->Usb2Port3PerPortPeTxiSet);
@@ -311,9 +292,6 @@ void soc_display_silicon_init_params(const SILICON_INIT_UPD *old,
 	fsp_display_upd_value("Usb2Port3PerPortTxPeHalf", 1,
 		old->Usb2Port3PerPortTxPeHalf,
 		new->Usb2Port3PerPortTxPeHalf);
-	fsp_display_upd_value("D0Usb2Port3PerPortRXISet", 1,
-		old->D0Usb2Port3PerPortRXISet,
-		new->D0Usb2Port3PerPortRXISet);
 	fsp_display_upd_value("Usb2Port4PerPortPeTxiSet", 1,
 		old->Usb2Port4PerPortPeTxiSet,
 		new->Usb2Port4PerPortPeTxiSet);
@@ -326,9 +304,6 @@ void soc_display_silicon_init_params(const SILICON_INIT_UPD *old,
 	fsp_display_upd_value("Usb2Port4PerPortTxPeHalf", 1,
 		old->Usb2Port4PerPortTxPeHalf,
 		new->Usb2Port4PerPortTxPeHalf);
-	fsp_display_upd_value("D0Usb2Port4PerPortRXISet", 1,
-		old->D0Usb2Port4PerPortRXISet,
-		new->D0Usb2Port4PerPortRXISet);
 	fsp_display_upd_value("Usb3Lane0Ow2tapgen2deemph3p5", 1,
 		old->Usb3Lane0Ow2tapgen2deemph3p5,
 		new->Usb3Lane0Ow2tapgen2deemph3p5);

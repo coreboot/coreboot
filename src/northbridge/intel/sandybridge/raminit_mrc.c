@@ -33,6 +33,7 @@
 #include "pei_data.h"
 #include "sandybridge.h"
 #include <security/vboot/vboot_common.h>
+#include <southbridge/intel/bd82x6x/pch.h>
 
 /* Management Engine is in the southbridge */
 #include <southbridge/intel/bd82x6x/me.h>

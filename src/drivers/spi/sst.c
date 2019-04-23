@@ -187,7 +187,7 @@ sst_byte_write(const struct spi_flash *flash, u32 offset, const void *buf)
 static int sst_write_256(const struct spi_flash *flash, u32 offset, size_t len,
 			const void *buf)
 {
-	size_t actual, chunk_len, cmd_len;
+	size_t actual, chunk_len;
 	unsigned long byte_addr;
 	unsigned long page_size;
 	int ret = 0;
@@ -208,7 +208,6 @@ static int sst_write_256(const struct spi_flash *flash, u32 offset, size_t len,
 	if (ret)
 		goto done;
 
-	cmd_len = 4;
 	cmd[0] = CMD_SST_AAI_WP;
 	cmd[1] = offset >> 16;
 	cmd[2] = offset >> 8;

@@ -37,10 +37,10 @@ chip soc/intel/cannonlake
 	register "tdp_pl2_override" = "51"
 	register "Device4Enable" = "1"
 	register "AcousticNoiseMitigation" = "1"
-	register "SlowSlewRateForIa" = "0"
-	register "SlowSlewRateForGt" = "0"
+	register "SlowSlewRateForIa" = "2"
+	register "SlowSlewRateForGt" = "2"
 	register "SlowSlewRateForSa" = "0"
-	register "SlowSlewRateForFivr" = "0"
+	register "SlowSlewRateForFivr" = "2"
 	# Enable eDP device
 	register "DdiPortEdp" = "1"
 	# Enable HPD for DDI ports B/C

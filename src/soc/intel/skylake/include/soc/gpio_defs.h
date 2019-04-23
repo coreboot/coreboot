@@ -225,6 +225,8 @@
 #define  GPIO_DRIVER_IRQ_ROUTE_IRQ15   8
 #define HOSTSW_OWN_REG_0	0xd0
 #define PAD_CFG_BASE		0x400
+#define GPI_INT_STS_0		0x100
+#define GPI_INT_EN_0		0x120
 #define GPI_SMI_STS_0		0x180
 #define GPI_SMI_EN_0		0x1a0
 

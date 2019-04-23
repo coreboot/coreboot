@@ -282,6 +282,7 @@
  */
 #define HOSTSW_OWN_REG_0		0xB0
 
+#define GPI_INT_STS_0			0x100
 #define GPI_INT_EN_0			0x110
 
 #define GPI_SMI_STS_0			0x170

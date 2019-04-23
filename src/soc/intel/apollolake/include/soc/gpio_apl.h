@@ -49,6 +49,7 @@
 
 #define PAD_CFG_BASE			0x500
 
+#define GPI_INT_STS_0			0x100
 #define GPI_INT_EN_0			0x110
 
 #define GPI_SMI_STS_0			0x140

@@ -320,6 +320,8 @@
 #define  GPE_DW_SHIFT				8
 #define  GPE_DW_MASK				0xfff00
 #define HOSTSW_OWN_REG_0			0xc0
+#define GPI_INT_STS_0				0x100
+#define GPI_INT_EN_0				0x120
 #define GPI_SMI_STS_0				0x180
 #define GPI_SMI_EN_0				0x1A0
 #define PAD_CFG_BASE				0x600

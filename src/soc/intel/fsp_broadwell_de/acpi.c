@@ -433,7 +433,7 @@ static void generate_P_state_entries(int core, int cores_per_package)
 {
 	int ratio_min, ratio_max, ratio_step;
 	int coord_type, power_max, power_unit, num_entries;
-	int ratio, power, clock, clock_max;
+	int ratio, power, clock;
 	int turbo;
 	u32 control_status;
 	msr_t msr;
@@ -448,7 +448,6 @@ static void generate_P_state_entries(int core, int cores_per_package)
 	msr = rdmsr(MSR_PLATFORM_INFO);
 	ratio_min = (msr.hi >>  8) & 0xff;	// LFM
 	ratio_max = (msr.lo >>  8) & 0xff;	// HFM
-	clock_max = (ratio_max * 100);
 
 	/* Calculate CPU TDP in mW */
 	msr = rdmsr(MSR_PKG_POWER_SKU_UNIT);

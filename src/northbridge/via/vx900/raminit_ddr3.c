@@ -554,7 +554,6 @@ static u8 vx900_get_CWL(u8 CAS)
 static void vx900_dram_timing(ramctr_timing * ctrl)
 {
 	u8 reg8, val, tFAW, tRRD;
-	u32 val32;
 
 	/* Maximum supported DDR3 frequency is 533MHz (DDR3 1066) so make sure
 	 * we cap it if we have faster DIMMs.
@@ -569,8 +568,7 @@ static void vx900_dram_timing(ramctr_timing * ctrl)
 		ctrl->tCK = TCK_266MHZ;
 	}
 
-	val32 = (1000 << 8) / ctrl->tCK;
-	printram("Selected DRAM frequency: %u MHz\n", val32);
+	printram("Selected DRAM frequency: %u MHz\n", (1000 << 8) / ctrl->tCK);
 
 	/* Find CAS and CWL latencies */
 	val = DIV_ROUND_UP(ctrl->tAA, ctrl->tCK);

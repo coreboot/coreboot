@@ -1173,7 +1173,7 @@ static void sdram_dlltiming(struct sysinfo *s)
 
 static void sdram_rcomp(struct sysinfo *s)
 {
-	u8 i, j, reg8, f, rcompp, rcompn, srup, srun;
+	u8 i, j, reg8, rcompp, rcompn, srup, srun;
 	u16 reg16;
 	u32 reg32, rcomp1, rcomp2;
 
@@ -1263,10 +1263,8 @@ static void sdram_rcomp(struct sysinfo *s)
 	srun = 0;
 
 	if (s->selected_timings.mem_clock == MEM_CLOCK_667MHz) {
-		f = 0;
 		rcomp1 = 0x00050431;
 	} else {
-		f = 1;
 		rcomp1 = 0x00050542;
 	}
 	if (s->selected_timings.fsb_clock == FSB_CLOCK_667MHz) {
@@ -2125,30 +2123,24 @@ static void sdram_enhancedmode(struct sysinfo *s)
 	reg8 = pci_read_config8(PCI_DEV(0,0,0), 0xf0);
 	pci_write_config8(PCI_DEV(0,0,0), 0xf0, reg8 & ~1);
 
-	u32 nranks, curranksize, maxranksize, maxdra, dra;
-	u8 rankmismatch, dramismatch;
+	u32 nranks, curranksize, maxranksize, dra;
+	u8 rankmismatch;
 	static const u8 drbtab[10] = { 0x4, 0x2, 0x8, 0x4, 0x8, 0x4, 0x10, 0x8,
 				       0x20, 0x10 };
 
 	nranks = 0;
 	curranksize = 0;
 	maxranksize = 0;
-	maxdra = 0;
 	rankmismatch = 0;
-	dramismatch = 0;
 	FOR_EACH_POPULATED_RANK(s->dimms, ch, r) {
 		nranks++;
 		dra = (u8) ((MCHBAR32(0x208) >> (8*r)) & 0x7f);
 		curranksize = drbtab[dra];
 		if (maxranksize == 0) {
 			maxranksize = curranksize;
-			maxdra = dra;
 		}
 		if (curranksize != maxranksize) {
 			rankmismatch = 1;
-		}
-		if (dra != maxdra) {
-			dramismatch = 1;
 		}
 	}
 
@@ -2220,7 +2212,7 @@ static void sdram_periodic_rcomp(void)
 static void sdram_new_trd(struct sysinfo *s)
 {
 	u8 pidelay, i, j, k, cc, trd_perphase[5];
-	u8 bypass, freqgb, trd, reg8, txfifo, cas;
+	u8 bypass, freqgb, trd, reg8, txfifo;
 	u32 reg32, datadelay, tio, rcvendelay, maxrcvendelay;
 	u16 tmclk, thclk, buffertocore, postcalib;
 	static const u8 txfifo_lut[8] = { 0, 7, 6, 5, 2, 1, 4, 3 };
@@ -2236,7 +2228,6 @@ static void sdram_new_trd(struct sysinfo *s)
 
 	freqgb = 110;
 	buffertocore = 5000;
-	cas = s->selected_timings.CAS;
 	postcalib = (s->selected_timings.mem_clock == MEM_CLOCK_667MHz) ? 1250 : 500;
 	tmclk = (s->selected_timings.mem_clock == MEM_CLOCK_667MHz) ? 3000 : 2500;
 	tmclk = tmclk * 100 / freqgb;

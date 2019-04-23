@@ -282,16 +282,12 @@ int do_write_training(struct sysinfo *s)
 	u8 dq_lower[TOTAL_BYTELANES];
 	u8 dq_upper[TOTAL_BYTELANES];
 	struct dll_setting dq_setting[TOTAL_BYTELANES];
-	u8 dq_average;
-	u32 dq_absolute;
 
 	printk(BIOS_DEBUG, "Starting DQ write training\n");
 
 	FOR_EACH_POPULATED_CHANNEL(s->dimms, channel) {
 		printk(BIOS_DEBUG, "Doing DQ write training on CH%d\n", channel);
 
-		dq_average = 0;
-		dq_absolute = 0;
 		/* Start all lanes at DQS values */
 		FOR_EACH_BYTELANE(lane) {
 			dqset(channel, lane, &s->dqs_settings[channel][lane]);

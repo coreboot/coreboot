@@ -17,3 +17,8 @@ romstage-y += dimmSpd.c
 
 ramstage-y += northbridge.c
 ramstage-y += iommu.c
+
+ifneq ($(CONFIG_BINARYPI_LEGACY_WRAPPER), y)
+romstage-y += state_machine.c
+ramstage-y += state_machine.c
+endif

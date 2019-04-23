@@ -25,14 +25,39 @@ if PLATFORM_USES_FSP1_1
 
 comment "Intel FSP 1.1"
 
+config FSP_USE_REPO
+	bool "Use FSP binary from 3rdparty/fsp repo"
+	select HAVE_FSP_BIN
+	depends on SOC_INTEL_BRASWELL && !USE_GOOGLE_FSP
+	default y
+
 config HAVE_FSP_BIN
-	bool "Should the Intel FSP binary be added to the flash image"
+	bool "Add Intel FSP binary to flash image"
 	help
 	  Select this option to add an Intel FSP binary to
 	  the resulting coreboot image.
 
 	  Note: Without this binary, coreboot builds relying on the FSP
 	  will not boot
+
+config FSP_FILE
+	string
+	prompt "Intel FSP binary path and filename" if !FSP_USE_REPO
+	depends on HAVE_FSP_BIN
+	default "3rdparty/fsp/BraswellFspBinPkg/FspBin/BSWFSP.fd" if FSP_USE_REPO
+	default ""
+	help
+	  The path and filename of the Intel FSP binary for this platform.
+
+config FSP_LOC
+	hex "Intel FSP Binary location in CBFS"
+	default 0xfff6e000 if SOC_INTEL_BRASWELL && USE_GOOGLE_FSP
+	default 0xfff20000 if SOC_INTEL_BRASWELL
+	default 0xffee0000 if SOC_INTEL_SKYLAKE
+	help
+	  The location in CBFS that the FSP is located. This must match the
+	  value that is set in the FSP binary.  If the FSP needs to be moved,
+	  rebase the FSP with Intel's BCT (tool).
 
 config CPU_MICROCODE_CBFS_LEN
 	hex "Microcode update region length in bytes"
@@ -46,19 +71,6 @@ config CPU_MICROCODE_CBFS_LOC
 	help
 	  The location (base address) in CBFS that contains the microcode update
 	  binary.
-
-config FSP_FILE
-	string "Intel FSP binary path and filename"
-	help
-	  The path and filename of the Intel FSP binary for this platform.
-
-config FSP_LOC
-	hex "Intel FSP Binary location in CBFS"
-	default 0xffee0000
-	help
-	  The location in CBFS that the FSP is located. This must match the
-	  value that is set in the FSP binary.  If the FSP needs to be moved,
-	  rebase the FSP with Intel's BCT (tool).
 
 config DISPLAY_HOBS
 	bool "Display hand-off-blocks (HOBs)"

@@ -136,7 +136,7 @@ int spd_decode_ddr3(dimm_attr * dimm, spd_raw_data spd)
 	u8 reg8;
 	u32 mtb;		/* medium time base */
 	u32 ftb;		/* fine time base */
-	unsigned int val, param;
+	unsigned int val;
 
 	ret = SPD_STATUS_OK;
 
@@ -173,8 +173,7 @@ int spd_decode_ddr3(dimm_attr * dimm, spd_raw_data spd)
 		printram("  Invalid number of memory banks\n");
 		ret = SPD_STATUS_INVALID_FIELD;
 	}
-	param = 1 << (val + 3);
-	printram("  Banks              : %u\n", param);
+	printram("  Banks              : %u\n", 1 << (val + 3));
 	/* SDRAM capacity */
 	capacity_shift = reg8 & 0x0f;
 	if (capacity_shift > 0x06) {

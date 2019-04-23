@@ -523,7 +523,7 @@ static void HTMemMapInit_D(struct MCTStatStruc *pMCTstat,
 {
 	u8 Node;
 	u32 NextBase, BottomIO;
-	u8 _MemHoleRemap, DramHoleBase, DramHoleOffset;
+	u8 _MemHoleRemap, DramHoleBase;
 	u32 HoleSize, DramSelBaseAddr;
 
 	u32 val;
@@ -583,7 +583,6 @@ static void HTMemMapInit_D(struct MCTStatStruc *pMCTstat,
 					if ((DramSelBaseAddr > 0) && (DramSelBaseAddr < BottomIO))
 						base = DramSelBaseAddr;
 					val = ((base + HoleSize) >> (24-8)) & 0xFF;
-					DramHoleOffset = val;
 					val <<= 8; /* shl 16, rol 24 */
 					val |= DramHoleBase << 24;
 					val |= 1  << DramHoleValid;
@@ -972,7 +971,7 @@ static u8 AutoCycTiming_D(struct MCTStatStruc *pMCTstat,
 	u8 Twr, Trtp;
 	u8 Trp, Trrd, Trcd, Tras, Trc, Trfc[4], Rows;
 	u32 DramTimingLo, DramTimingHi;
-	u16 Tk10, Tk40;
+	u16 Tk40;
 	u8 Twtr;
 	u8 LDIMM;
 	u8 DDR2_1066;
@@ -1095,7 +1094,6 @@ static u8 AutoCycTiming_D(struct MCTStatStruc *pMCTstat,
 	if (byte == 5)
 		DDR2_1066 = 1;
 	Tk40 = Get_40Tk_D(byte);
-	Tk10 = Tk40 >> 2;
 
 	/* Notes:
 	 1. All secondary time values given in SPDs are in binary with units of ns.
@@ -1740,7 +1738,7 @@ static void SPDSetBanks_D(struct MCTStatStruc *pMCTstat,
 	 * and PCI 0:24N:2x60,64,68,6C config registers (CS Mask 0-3).
 	 */
 
-	u8 ChipSel, Rows, Cols, Ranks, Banks, DevWidth;
+	u8 ChipSel, Rows, Cols, Ranks, Banks;
 	u32 BankAddrReg, csMask;
 
 	u32 val;
@@ -1773,7 +1771,6 @@ static void SPDSetBanks_D(struct MCTStatStruc *pMCTstat,
 			Banks = mctRead_SPD(smbaddr, SPD_LBANKS);
 
 			byte = mctRead_SPD(smbaddr, SPD_DEVWIDTH);
-			DevWidth = byte & 0x7f; /* bits 0-6 = bank 0 width */
 
 			byte = mctRead_SPD(smbaddr, SPD_DMBANKS);
 			Ranks = (byte & 7) + 1;
@@ -1933,7 +1930,7 @@ static void StitchMemory_D(struct MCTStatStruc *pMCTstat,
 	u8 b = 0;
 	u32 nxtcsBase, curcsBase;
 	u8 p, q;
-	u32 Sizeq, BiggestBank;
+	u32 BiggestBank;
 	u8 _DSpareEn;
 
 	u16 word;
@@ -1989,7 +1986,6 @@ static void StitchMemory_D(struct MCTStatStruc *pMCTstat,
 					val >>= 19;
 					val++;
 					val <<= 19;
-					Sizeq = val;  //never used
 					if (val > BiggestBank) {
 						/*Bingo! possibly Map this chip-select next! */
 						BiggestBank = val;

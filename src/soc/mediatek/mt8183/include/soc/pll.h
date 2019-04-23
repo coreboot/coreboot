@@ -244,7 +244,7 @@ enum {
 
 /* PLL rate */
 enum {
-	ARMPLL_LL_HZ	= 1100 * MHz,
+	ARMPLL_LL_HZ	= 1989 * MHz,
 	ARMPLL_L_HZ	= 1200 * MHz,
 	CCIPLL_HZ	= 598 * 2 * MHz,
 	MAINPLL_HZ	= 1092 * MHz,

@@ -26,7 +26,7 @@ Scope (\_SB.PCI0.I2C5)
 		Name (_DDN, AUDIO_CODEC_DDN)
 		Name (_UID, 1)
 
-		Method(_CRS, 0x0, NotSerialized)
+		Method(_CRS, 0x0, Serialized)
 		{
 			Name(SBUF,ResourceTemplate ()
 			{

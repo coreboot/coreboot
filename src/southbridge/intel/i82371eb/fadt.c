@@ -33,11 +33,8 @@
 void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
 {
 	acpi_header_t *header = &(fadt->header);
-	struct device *dev;
 
 	/* Power management controller */
-	dev = dev_find_device(PCI_VENDOR_ID_INTEL,
-				PCI_DEVICE_ID_INTEL_82371AB_SMB_ACPI, 0);
 
 	memset((void *) fadt, 0, sizeof(acpi_fadt_t));
 	memcpy(header->signature, "FACP", 4);

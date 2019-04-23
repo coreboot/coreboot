@@ -16,12 +16,12 @@
 config TPM_CR50
 	bool
 	default y if MAINBOARD_HAS_I2C_TPM_CR50 || MAINBOARD_HAS_SPI_TPM_CR50
-	select POWER_OFF_ON_CR50_UPDATE if ARCH_X86
 
 if TPM_CR50
 
 config POWER_OFF_ON_CR50_UPDATE
 	bool
+	default y if ARCH_X86
 	help
 	  Power off machine while waiting for CR50 update to take effect.
 

@@ -23,6 +23,7 @@
 #define EC_IN_RW	GPIO(PERIPHERAL_EN14)
 #define CR50_IRQ	GPIO(PERIPHERAL_EN3)
 #define GPIO_RESET	GPIO(PERIPHERAL_EN8)
+#define GPIO_EN_SPK_AMP	GPIO(PERIPHERAL_EN12)
 
 void setup_chromeos_gpios(void);
 

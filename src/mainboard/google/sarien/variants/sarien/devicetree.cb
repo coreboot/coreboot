@@ -306,19 +306,6 @@ chip soc/intel/cannonlake
 		device pci 14.5 off end # SDCard
 		device pci 15.0 on
 			chip drivers/i2c/hid
-				register "generic.hid" = ""ACPI0C50""
-				register "generic.desc" = ""Touchscreen""
-				register "generic.irq" = "ACPI_IRQ_EDGE_LOW(GPP_C23_IRQ)"
-				register "generic.probed" = "1"
-				register "generic.enable_gpio" =
-							"ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_E7)"
-				register "generic.enable_delay_ms" = "5"
-				register "generic.enable_off_delay_ms" = "100"
-				register "generic.has_power_resource" = "1"
-				register "hid_desc_reg_offset" = "0x0"
-				device i2c 10 on end
-			end
-			chip drivers/i2c/hid
 				register "generic.hid" = ""ELAN900C""
 				register "generic.desc" = ""ELAN Touchscreen""
 				register "generic.irq" = "ACPI_IRQ_EDGE_LOW(GPP_C23_IRQ)"

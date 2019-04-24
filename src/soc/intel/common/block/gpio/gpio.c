@@ -62,6 +62,10 @@
 				((group) * sizeof(uint32_t)))
 #define GPI_SMI_EN_OFFSET(comm, group) ((comm)->gpi_smi_en_reg_0 +	\
 				((group) * sizeof(uint32_t)))
+#define GPI_IS_OFFSET(comm, group) ((comm)->gpi_int_sts_reg_0 +	\
+				((group) * sizeof(uint32_t)))
+#define GPI_IE_OFFSET(comm, group) ((comm)->gpi_int_en_reg_0 +	\
+				((group) * sizeof(uint32_t)))
 
 static inline size_t relative_pad_in_comm(const struct pad_community *comm,
 						gpio_t gpio)
@@ -581,4 +585,27 @@ uint32_t __weak soc_gpio_pad_config_fixup(const struct pad_config *cfg,
 						int dw_reg, uint32_t reg_val)
 {
 	return reg_val;
+}
+
+void gpi_clear_int_cfg(void)
+{
+	int i, group, num_groups;
+	uint32_t sts_value;
+	size_t gpio_communities;
+	const struct pad_community *comm;
+
+	comm = soc_gpio_get_community(&gpio_communities);
+	for (i = 0; i < gpio_communities; i++, comm++) {
+		num_groups = comm->num_gpi_regs;
+		for (group = 0; group < num_groups; group++) {
+			/* Clear the enable register */
+			pcr_write32(comm->port, GPI_IE_OFFSET(comm, group), 0);
+
+			/* Read and clear the set status register bits*/
+			sts_value = pcr_read32(comm->port,
+					GPI_IS_OFFSET(comm, group));
+			pcr_write32(comm->port,
+					GPI_IS_OFFSET(comm, group), sts_value);
+		}
+	}
 }

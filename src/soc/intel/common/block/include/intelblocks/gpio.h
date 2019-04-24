@@ -209,5 +209,11 @@ uint8_t gpio_get_pad_portid(const gpio_t pad);
 uint32_t soc_gpio_pad_config_fixup(const struct pad_config *cfg,
 						int dw_reg, uint32_t reg_val);
 
+/*
+ * Function to reset/clear the GPI Interrupt Enable & Status registers for
+ * all GPIO pad communities.
+ */
+void gpi_clear_int_cfg(void);
+
 #endif
 #endif /* _SOC_INTELBLOCKS_GPIO_H_ */

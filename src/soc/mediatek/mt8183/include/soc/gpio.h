@@ -19,6 +19,7 @@
 #include <soc/addressmap.h>
 #include <soc/gpio_common.h>
 #include <types.h>
+#include <soc/spi_common.h>
 
 enum {
 	MAX_GPIO_REG_BITS = 32,
@@ -617,5 +618,7 @@ check_member(gpio_regs, mode[22].val, 0x460);
 
 static struct gpio_regs *const mtk_gpio = (void *)(GPIO_BASE);
 void gpio_set_i2c_eh_rsel(void);
+void gpio_set_spi_driving(unsigned int bus, enum spi_pad_mask pad_select,
+			  unsigned int milliamps);
 
 #endif

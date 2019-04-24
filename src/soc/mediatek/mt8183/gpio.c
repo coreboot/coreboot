@@ -15,11 +15,15 @@
 
 #include <device/mmio.h>
 #include <gpio.h>
+#include <assert.h>
+#include <soc/spi.h>
 
 enum {
 	EN_OFFSET = 0x60,
 	SEL_OFFSET = 0x80,
 	EH_RSEL_OFFSET = 0xF0,
+	GPIO_DRV0_OFFSET = 0xA0,
+	GPIO_DRV1_OFFSET = 0XB0,
 };
 
 static void gpio_set_pull_pupd(gpio_t gpio, enum pull_enable enable,
@@ -127,4 +131,55 @@ void gpio_set_i2c_eh_rsel(void)
 	clrsetbits_le32((void *)IOCFG_LB_BASE + EH_RSEL_OFFSET,
 		I2C_EH_RSL_MASK(SCL5) | I2C_EH_RSL_MASK(SDA5),
 		I2C_EH_RSL_VAL(SCL5) | I2C_EH_RSL_VAL(SDA5));
+}
+
+void gpio_set_spi_driving(unsigned int bus, enum spi_pad_mask pad_select,
+			  unsigned int milliamps)
+{
+	void *reg = NULL;
+	unsigned int reg_val = milliamps / 2 - 1, offset = 0;
+
+	assert(bus < SPI_BUS_NUMBER);
+	assert(milliamps >= 2 && milliamps <= 16);
+	assert(pad_select <= SPI_PAD1_MASK);
+
+	switch (bus) {
+	case 0:
+		reg = (void *)(IOCFG_RB_BASE + GPIO_DRV1_OFFSET);
+		offset = 0;
+		break;
+	case 1:
+		if (pad_select == SPI_PAD0_MASK) {
+			reg = (void *)(IOCFG_LM_BASE + GPIO_DRV0_OFFSET);
+			offset = 0;
+		} else if (pad_select == SPI_PAD1_MASK) {
+			clrsetbits_le32((void *)IOCFG_RM_BASE +
+					GPIO_DRV0_OFFSET, 0xf | 0xf << 20,
+					reg_val | reg_val << 20);
+			clrsetbits_le32((void *)IOCFG_RM_BASE +
+					GPIO_DRV1_OFFSET, 0xf << 16,
+					reg_val << 16);
+			return;
+		}
+		break;
+	case 2:
+		clrsetbits_le32((void *)IOCFG_RM_BASE + GPIO_DRV0_OFFSET,
+				0xf << 8 | 0xf << 12,
+				reg_val << 8 | reg_val << 12);
+		return;
+	case 3:
+		reg = (void *)(IOCFG_LM_BASE + GPIO_DRV0_OFFSET);
+		offset = 16;
+		break;
+	case 4:
+		reg = (void *)(IOCFG_LM_BASE + GPIO_DRV0_OFFSET);
+		offset = 12;
+		break;
+	case 5:
+		reg = (void *)(IOCFG_LM_BASE + GPIO_DRV0_OFFSET);
+		offset = 8;
+		break;
+	}
+
+	clrsetbits_le32(reg, 0xf << offset, reg_val << offset);
 }

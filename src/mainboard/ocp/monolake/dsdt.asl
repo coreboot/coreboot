@@ -27,6 +27,9 @@ DefinitionBlock(
 {
 	#include "acpi/platform.asl"
 
+	Name (IDTP, 0x0CA2)
+	Name (ICDP, 0x0CA6)
+
 	Name(_S0, Package() { 0x00, 0x00, 0x00, 0x00 })
 	Name(_S5, Package() { 0x07, 0x00, 0x00, 0x00 })
 
@@ -287,6 +290,98 @@ DefinitionBlock(
 
 				Return (ARUN)
 			}
+		}
+	}
+
+	Scope (_SB.PCI0.LPC0)
+	{
+		Device (SPMI)
+		{
+			Name (_HID, EisaId ("IPI0001"))
+			Name (_STR, Unicode ("IPMI_KCS"))
+			Name (_UID, 0x00)
+			OperationRegion (IPST, SystemIO, ICDP, 0x01)
+			Field (IPST, ByteAcc, NoLock, Preserve)
+			{
+				STAS,		8
+			}
+			Method (_STA, 0, NotSerialized) {
+				Return (0x0f)
+			}
+			Name (ICRS, ResourceTemplate ()
+			{
+				IO (Decode16,
+					0x0000,
+					0x0000,
+					0x00,
+					0x00,
+					_Y01)
+				IO (Decode16,
+					0x0000,
+					0x0000,
+					0x00,
+					0x00,
+					_Y02)
+
+			})
+			Method (_CRS, 0, NotSerialized)
+			{
+				CreateWordField (ICRS, \_SB.PCI0.LPC0.SPMI._Y01._MIN, IPDB)
+				CreateWordField (ICRS, \_SB.PCI0.LPC0.SPMI._Y01._MAX, IPDH)
+				CreateByteField (ICRS, \_SB.PCI0.LPC0.SPMI._Y01._LEN, IPDL)
+				CreateWordField (ICRS, \_SB.PCI0.LPC0.SPMI._Y02._MIN, IPCB)
+				CreateWordField (ICRS, \_SB.PCI0.LPC0.SPMI._Y02._MAX, IPCH)
+				CreateByteField (ICRS, \_SB.PCI0.LPC0.SPMI._Y02._LEN, IPCL)
+
+				IPDB = IDTP
+				IPDH = IDTP
+				IPDL = 0x01
+
+				IPCB = ICDP
+				IPCH = ICDP
+				IPCL = 0x01
+
+				Return (ICRS)
+			}
+			Method (_IFT, 0, NotSerialized) {
+				Return (0x01)
+			}
+			Method(_SRV, 0, NotSerialized) {
+				Return (0x0200)
+			}
+		}
+
+		Device (SYSR)
+		{
+			Name (_HID, EisaId ("PNP0C02"))
+
+			Name (_CRS, ResourceTemplate ()  // _CRS: Current Resource Settings
+			{
+				IO (Decode16,
+					0x0CA2,
+					0x0CA2,
+					0x01,
+					0x01,
+				)
+				IO (Decode16,
+					0x0CA6,
+					0x0CA6,
+					0x01,
+					0x01,
+				)
+				IO (Decode16,
+					0x0CA8,
+					0x0CA8,
+					0x01,
+					0x01,
+				)
+				IO (Decode16,
+					0x0CAC,
+					0x0CAC,
+					0x01,
+					0x01,
+				)
+			})
 		}
 	}
 

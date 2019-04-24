@@ -20,6 +20,9 @@
 #include <cpu/x86/msr.h>
 #include <cf9_reset.h>
 #include <console/console.h>
+#include <device/pci_ops.h>
+#include <soc/pci_devs.h>
+#include <soc/lpc.h>
 
 /**
  * /brief mainboard call for setup that needs to be done before fsp init
@@ -49,7 +52,9 @@ void early_mainboard_romstage_entry(void)
  */
 void late_mainboard_romstage_entry(void)
 {
-
+	// IPMI through BIC
+	pci_write_config32(PCI_DEV(0, LPC_DEV, LPC_FUNC), LPC_GEN2_DEC,
+			   0x0c0ca1);
 }
 
 /**
@@ -57,5 +62,4 @@ void late_mainboard_romstage_entry(void)
  */
 void romstage_fsp_rt_buffer_callback(FSP_INIT_RT_BUFFER *FspRtBuffer)
 {
-
 }

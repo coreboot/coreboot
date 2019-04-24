@@ -122,3 +122,12 @@ void bootblock_soc_early_init(void)
 		paging_enable_for_car("pdpt", "pt");
 	}
 }
+
+void bootblock_soc_init(void)
+{
+	/*
+	 * Clear the GPI interrupt enable & status registers to avoid any
+	 * interrupt storm during the kernel bootup.
+	 */
+	gpi_clear_int_cfg();
+}

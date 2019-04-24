@@ -53,7 +53,7 @@ static void spi_sw_reset(struct mtk_spi_regs *regs)
 }
 
 void mtk_spi_init(unsigned int bus, enum spi_pad_mask pad_select,
-		  unsigned int speed_hz)
+		  unsigned int speed_hz, unsigned int tick_dly)
 {
 	u32 div, sck_ticks, cs_ticks;
 
@@ -73,7 +73,7 @@ void mtk_spi_init(unsigned int bus, enum spi_pad_mask pad_select,
 	printk(BIOS_DEBUG, "SPI%u(PAD%u) initialized at %u Hz\n",
 	       bus, pad_select, SPI_HZ / (sck_ticks * 2));
 
-	mtk_spi_set_timing(regs, sck_ticks, cs_ticks);
+	mtk_spi_set_timing(regs, sck_ticks, cs_ticks, tick_dly);
 
 	clrsetbits_le32(&regs->spi_cmd_reg,
 			(SPI_CMD_CPHA_EN | SPI_CMD_CPOL_EN |

@@ -49,5 +49,10 @@ enum {
 	SPI_CFG2_SCK_HIGH_SHIFT = 16,
 };
 
+enum {
+	SPI_CFG1_TICK_DLY_SHIFT = 29,
+	SPI_CFG1_TICK_DLY_MASK = 0x7 << SPI_CFG1_TICK_DLY_SHIFT,
+
+};
 
 #endif

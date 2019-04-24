@@ -43,4 +43,9 @@ enum {
 	SPI_CFG0_CS_SETUP_SHIFT = 24,
 };
 
+enum {
+	SPI_CFG1_TICK_DLY_SHIFT = 30,
+	SPI_CFG1_TICK_DLY_MASK = 0x3 << SPI_CFG1_TICK_DLY_SHIFT,
+};
+
 #endif

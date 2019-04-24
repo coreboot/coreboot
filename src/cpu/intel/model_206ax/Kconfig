@@ -25,14 +25,11 @@ config CPU_SPECIFIC_OPTIONS
 	select CPU_INTEL_COMMON
 	select CACHE_RELOCATED_RAMSTAGE_OUTSIDE_CBMEM
 	select PARALLEL_MP
+	select NO_FIXED_XIP_ROM_SIZE
 
 config BOOTBLOCK_CPU_INIT
 	string
 	default "cpu/intel/model_206ax/bootblock.c"
-
-config XIP_ROM_SIZE
-	hex
-	default 0x20000 if USE_NATIVE_RAMINIT
 
 config SMM_TSEG_SIZE
 	hex

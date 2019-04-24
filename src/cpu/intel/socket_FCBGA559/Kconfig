@@ -11,6 +11,7 @@ config SOCKET_SPECIFIC_OPTIONS
 	select MMX
 	select SSE
 	select CPU_HAS_L2_ENABLE_MSR
+	select NO_FIXED_XIP_ROM_SIZE
 
 config DCACHE_RAM_BASE
 	hex

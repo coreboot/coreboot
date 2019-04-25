@@ -13,11 +13,8 @@
  * GNU General Public License for more details.
  */
 
-/* This needs to be pulled in first so that the handoff code below and
- * peek into the vb2 data structures. Additionally, vboot doesn't currently
- * include what it uses in its own headers. Provide the types it's after.
- * TODO: fix this necessity. */
-#define NEED_VB20_INTERNALS
+#define NEED_VB20_INTERNALS  /* Peeking into vb2_shared_data */
+
 #include <stddef.h>
 #include <stdint.h>
 #include <vb2_api.h>

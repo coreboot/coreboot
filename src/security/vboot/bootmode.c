@@ -13,6 +13,8 @@
  * GNU General Public License for more details.
  */
 
+#define NEED_VB20_INTERNALS  /* Peeking into vb2_shared_data */
+
 #include <assert.h>
 #include <bootmode.h>
 #include <bootstate.h>

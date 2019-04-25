@@ -22,6 +22,7 @@
 #include <stdlib.h>
 #if CONFIG(VBOOT)
 #include <vb2_api.h>
+#include <vb2_sha.h>
 #include <assert.h>
 #endif
 

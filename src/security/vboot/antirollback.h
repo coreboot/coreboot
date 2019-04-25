@@ -37,6 +37,7 @@
 
 #include <types.h>
 #include <security/tpm/tspi.h>
+#include <vb2_sha.h>
 
 struct vb2_context;
 enum vb2_pcr_digest;

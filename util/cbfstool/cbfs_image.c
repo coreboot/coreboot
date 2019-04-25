@@ -22,6 +22,7 @@
 #include <string.h>
 #include <strings.h>
 #include <commonlib/endian.h>
+#include <vb2_sha.h>
 
 #include "common.h"
 #include "cbfs_image.h"

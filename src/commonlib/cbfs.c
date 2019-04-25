@@ -18,6 +18,7 @@
 #include <commonlib/endian.h>
 #include <commonlib/helpers.h>
 #include <string.h>
+#include <vb2_sha.h>
 
 #if !defined(ERROR)
 #define ERROR(x...) printk(BIOS_ERR, "CBFS: " x)

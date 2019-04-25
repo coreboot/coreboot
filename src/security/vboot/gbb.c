@@ -13,17 +13,19 @@
  * GNU General Public License for more details.
  */
 
+#define NEED_VB20_INTERNALS  /* Peeking into vb2_gbb_header */
+
 #include <commonlib/region.h>
 #include <console/console.h>
 #include <fmap.h>
-#include <gbb_header.h>
 #include <security/vboot/gbb.h>
 #include <string.h>
+#include <vb2_api.h>
 
 #define GBB_FMAP_REGION_NAME	"GBB"
 
 /* Copy of GBB header read from boot media. */
-static GoogleBinaryBlockHeader gbb_header;
+static struct vb2_gbb_header gbb_header;
 
 /*
  * Read "GBB" region from SPI flash to obtain GBB header and validate
@@ -45,13 +47,14 @@ static int gbb_init(void)
 		return 1;
 
 	if (rdev_readat(&gbb_rdev, &gbb_header, 0,
-			sizeof(GoogleBinaryBlockHeader)) !=
-	    sizeof(GoogleBinaryBlockHeader)) {
+			sizeof(struct vb2_gbb_header)) !=
+	    sizeof(struct vb2_gbb_header)) {
 		printk(BIOS_ERR, "%s: Failure to read GBB header!\n", __func__);
 		return 1;
 	}
 
-	if (memcmp(gbb_header.signature, GBB_SIGNATURE, GBB_SIGNATURE_SIZE)) {
+	if (memcmp(gbb_header.signature, VB2_GBB_SIGNATURE,
+		   VB2_GBB_SIGNATURE_SIZE)) {
 		printk(BIOS_ERR, "%s: Signature check failed!\n", __func__);
 		return 1;
 	}

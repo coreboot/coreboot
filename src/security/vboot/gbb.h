@@ -18,7 +18,7 @@
 
 #include <stdint.h>
 
-/* In order to use GBB_FLAG_* macros from vboot, include gbb_header.h. */
+/* In order to use VB2_GBB_FLAG_* macros from vboot, include vb2_api.h. */
 
 /*
  * Read flags field from GBB header.

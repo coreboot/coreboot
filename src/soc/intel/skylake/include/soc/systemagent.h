@@ -48,9 +48,17 @@
 
 bool soc_is_vtd_capable(void);
 
-static const struct sa_mmio_descriptor soc_vtd_resources[] = {
-	{ GFXVTBAR, GFXVT_BASE_ADDRESS, GFXVT_BASE_SIZE, "GFXVTBAR" },
-	{ VTVC0BAR, VTVC0_BASE_ADDRESS, VTVC0_BASE_SIZE, "VTVC0BAR" },
+static const struct sa_mmio_descriptor soc_gfxvt_mmio_descriptor = {
+	GFXVTBAR,
+	GFXVT_BASE_ADDRESS,
+	GFXVT_BASE_SIZE,
+	"GFXVTBAR"
 };
 
+static const struct sa_mmio_descriptor soc_vtvc0_mmio_descriptor = {
+	VTVC0BAR,
+	VTVC0_BASE_ADDRESS,
+	VTVC0_BASE_SIZE,
+	"VTVC0BAR"
+};
 #endif

@@ -26,11 +26,12 @@
 
 static void systemagent_vtd_init(void)
 {
-	const struct device *const dev = dev_find_slot(0, SA_DEVFN_ROOT);
+	const struct device *const root_dev = dev_find_slot(0, SA_DEVFN_ROOT);
+	const struct device *const igd_dev = dev_find_slot(0, SA_DEVFN_IGD);
 	const struct soc_intel_skylake_config *config = NULL;
 
-	if (dev)
-		config = dev->chip_info;
+	if (root_dev)
+		config = root_dev->chip_info;
 	if (config && config->ignore_vtd)
 		return;
 
@@ -39,7 +40,10 @@ static void systemagent_vtd_init(void)
 	if (!vtd_capable)
 		return;
 
-	sa_set_mch_bar(soc_vtd_resources, ARRAY_SIZE(soc_vtd_resources));
+	if (igd_dev && igd_dev->enabled)
+		sa_set_mch_bar(&soc_gfxvt_mmio_descriptor, 1);
+
+	sa_set_mch_bar(&soc_vtvc0_mmio_descriptor, 1);
 }
 
 void systemagent_early_init(void)

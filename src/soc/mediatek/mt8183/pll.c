@@ -356,4 +356,16 @@ void mt_pll_init(void)
 
 	/* enable [14] dramc_pll104m_ck */
 	setbits_le32(&mtk_topckgen->clk_misc_cfg_0, 1 << 14);
+
+	/* enable audio clock */
+	setbits_le32(&mtk_topckgen->clk_cfg_5_clr, 1 << 7);
+
+	/* enable intbus clock */
+	setbits_le32(&mtk_topckgen->clk_cfg_5_clr, 1 << 15);
+
+	/* enable infra clock */
+	setbits_le32(&mt8183_infracfg->module_sw_cg_1_clr, 1 << 25);
+
+	/* enable mtkaif 26m clock */
+	setbits_le32(&mt8183_infracfg->module_sw_cg_2_clr, 1 << 4);
 }

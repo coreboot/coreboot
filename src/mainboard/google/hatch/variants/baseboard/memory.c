@@ -20,16 +20,6 @@
 #include <string.h>
 
 static const struct cnl_mb_cfg baseboard_memcfg = {
-	/*
-	 * The dqs_map arrays map the ddr4 pins to the SoC pins
-	 * for both channels.
-	 *
-	 * the index = pin number on ddr4 part
-	 * the value = pin number on SoC
-	 */
-	.dqs_map[DDR_CH0] = { 0, 1, 4, 5, 2, 3, 6, 7 },
-	.dqs_map[DDR_CH1] = { 0, 1, 4, 5, 2, 3, 6, 7 },
-
 	/* Baseboard uses 121, 81 and 100 rcomp resistors */
 	.rcomp_resistor = { 121, 81, 100 },
 

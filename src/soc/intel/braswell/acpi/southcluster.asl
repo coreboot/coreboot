@@ -286,7 +286,4 @@ Scope (\_SB.PCI0)
 
 	/* SCC Devices */
 	#include "scc.asl"
-
-	/* LPE Device */
-	#include "lpe.asl"
 }

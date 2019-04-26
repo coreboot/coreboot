@@ -42,6 +42,7 @@ DefinitionBlock(
 #else
 			#include <acpi/dptf/cpu.asl>
 #endif
+			#include <acpi/lpe.asl>
 		}
 
 		/* Dynamic Platform Thermal Framework */

@@ -15,7 +15,6 @@
  * GNU General Public License for more details.
  */
 
-
 #include <arch/acpi.h>
 DefinitionBlock(
 	"dsdt.aml",
@@ -39,6 +38,7 @@ DefinitionBlock(
 		{
 			#include <acpi/southcluster.asl>
 			#include <acpi/dptf/cpu.asl>
+			#include <acpi/lpe.asl>
 		}
 
 		/* Dynamic Platform Thermal Framework */

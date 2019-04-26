@@ -369,3 +369,8 @@ void mt_pll_init(void)
 	/* enable mtkaif 26m clock */
 	setbits_le32(&mt8183_infracfg->module_sw_cg_2_clr, 1 << 4);
 }
+
+void mt_pll_raise_ca53_freq(u32 freq)
+{
+	pll_set_rate(&plls[APMIXED_ARMPLL_LL], freq);
+}

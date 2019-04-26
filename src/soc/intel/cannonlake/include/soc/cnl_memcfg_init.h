@@ -52,17 +52,19 @@ struct spd_info {
 /* Board-specific memory dq mapping information */
 struct cnl_mb_cfg {
 	/*
-	 * For each channel, there are 3 sets of DQ byte mappings,
+	 * For each channel, there are 6 sets of DQ byte mappings,
 	 * where each set has a package 0 and a package 1 value (package 0
 	 * represents the first 64-bit lpddr4 chip combination, and package 1
 	 * represents the second 64-bit lpddr4 chip combination).
 	 * The first three sets are for CLK, CMD, and CTL.
-	 * The fsp package actually expects 6 sets, but the last 3 sets are
-	 * not used in CNL, so we only define the three sets that are used
-	 * and let the meminit_lpddr4() routine take care of clearing the
+	 * The fsp package actually expects 6 sets, even though the last 3 sets
+	 * are not used in CNL.
+	 * We let the meminit_lpddr4() routine take care of clearing the
 	 * unused fields for the caller.
+	 * Note that dq_map is only used by LPDDR; it does not need to be
+	 * initialized for designs using DDR4.
 	 */
-	uint8_t dq_map[DDR_NUM_CHANNELS][3][DDR_NUM_PACKAGES];
+	uint8_t dq_map[DDR_NUM_CHANNELS][6][DDR_NUM_PACKAGES];
 
 	/*
 	 * DQS CPU<>DRAM map Ch0 and Ch1.  Each array entry represents a
@@ -70,6 +72,8 @@ struct cnl_mb_cfg {
 	 * the memory part.  The array index represents the dqs bit number
 	 * on the memory part, and the values in the array represent which
 	 * pin on the CPU that DRAM pin connects to.
+	 * dqs_map is only used by LPDDR; same comments apply as for dq_map
+	 * above.
 	 */
 	uint8_t dqs_map[DDR_NUM_CHANNELS][DQ_BITS_PER_DQS];
 

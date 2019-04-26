@@ -267,7 +267,14 @@ $(obj)/$(1).aml: $(src)/mainboard/$(MAINBOARDDIR)/$(1).asl $(obj)/config.h
 	@printf "    IASL       $$(subst $(top)/,,$$(@))\n"
 	$(CC_ramstage) -x assembler-with-cpp -E -MMD -MT $$(@) $$(CPPFLAGS_ramstage) -D__ACPI__ -P -include $(src)/include/kconfig.h -I$(obj) -I$(src) -I$(src)/include -I$(src)/arch/$(ARCHDIR-$(ARCH-ramstage-y))/include -I$(src)/mainboard/$(MAINBOARDDIR) $$< -o $(obj)/$(1).asl
 	cd $$(dir $$@); $(IASL) $(IGNORED_IASL_WARNINGS) -we -p $$(notdir $$@) $(1).asl
-	if [ -z "$$$$($(IASL) -d $$@ 2>&1 | grep 'ACPI Warning')" ]; then echo "    IASL       $$@ disassembled correctly."; true; else echo "Error: Could not correctly disassemble $$@"; $(IASL) -d $$@; false; fi
+	if ! $(IASL) -d $$@ 2>&1 | grep -Eq 'ACPI (Warning|Error)'; then	\
+		echo "    IASL       $$@ disassembled correctly.";		\
+		true;								\
+	else									\
+		echo "Error: Could not correctly disassemble $$@";		\
+		$(IASL) -d $$@;							\
+		false;								\
+	fi
 endef
 
 #######################################################################

@@ -18,6 +18,7 @@
 #include <console/console.h>
 #include <commonlib/region.h>
 #include <bootmode.h>
+#include <cf9_reset.h>
 #include <string.h>
 #include <arch/cpu.h>
 #include <arch/io.h>
@@ -312,9 +313,7 @@ static void init_dram_ddr3(int min_tck, int s3resume)
 	    && reg_5d10 && !s3resume) {
 		MCHBAR32(0x5d10) = 0;
 		/* Need reset.  */
-		outb(0x6, 0xcf9);
-
-		halt();
+		system_reset();
 	}
 
 	early_pch_init_native();
@@ -326,8 +325,7 @@ static void init_dram_ddr3(int min_tck, int s3resume)
 	if (cache_not_found || (region_device_sz(&rdev) < sizeof(ctrl))) {
 		if (s3resume) {
 			/* Failed S3 resume, reset to come up cleanly */
-			outb(0x6, 0xcf9);
-			halt();
+			system_reset();
 		}
 		ctrl_cached = NULL;
 	} else {
@@ -356,8 +354,7 @@ static void init_dram_ddr3(int min_tck, int s3resume)
 		if (err) {
 			if (s3resume) {
 				/* Failed S3 resume, reset to come up cleanly */
-				outb(0x6, 0xcf9);
-				halt();
+				system_reset();
 			}
 			/* no need to erase bad mrc cache here, it gets overwritten on
 			 * successful boot. */
@@ -430,8 +427,7 @@ static void init_dram_ddr3(int min_tck, int s3resume)
 		save_timings(&ctrl);
 	if (s3resume && !cbmem_was_inited) {
 		/* Failed S3 resume, reset to come up cleanly */
-		outb(0x6, 0xcf9);
-		halt();
+		system_reset();
 	}
 
 	if (!s3resume)

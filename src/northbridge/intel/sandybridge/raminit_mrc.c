@@ -16,6 +16,7 @@
 #include <console/console.h>
 #include <console/usb.h>
 #include <bootmode.h>
+#include <cf9_reset.h>
 #include <string.h>
 #include <arch/io.h>
 #include <device/pci_ops.h>
@@ -212,8 +213,7 @@ void sdram_initialize(struct pei_data *pei_data)
 	/* If MRC data is not found we cannot continue S3 resume. */
 	if (pei_data->boot_mode == 2 && !pei_data->mrc_input) {
 		printk(BIOS_DEBUG, "Giving up in sdram_initialize: No MRC data\n");
-		outb(0x6, 0xcf9);
-		halt();
+		system_reset();
 	}
 
 	/* Pass console handler in pei_data */
@@ -310,7 +310,6 @@ void perform_raminit(int s3resume)
 
 	if (s3resume && !cbmem_was_initted) {
 		/* Failed S3 resume, reset to come up cleanly */
-		outb(0x6, 0xcf9);
-		halt();
+		system_reset();
 	}
 }

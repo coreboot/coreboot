@@ -17,6 +17,7 @@
 #include <arch/io.h>
 #include <device/pci_ops.h>
 #include <cbmem.h>
+#include <cf9_reset.h>
 #include <console/console.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/mtrr.h>
@@ -654,13 +655,11 @@ void sdram_initialize(int boot_path, const u8 *spd_map)
 	if (cache_not_found || (region_device_sz(&rdev) < sizeof(s))) {
 		if (boot_path == BOOT_PATH_RESUME) {
 			/* Failed S3 resume, reset to come up cleanly */
-			outb(0x6, 0xcf9);
-			halt();
+			system_reset();
 		} else if (boot_path == BOOT_PATH_WARM_RESET) {
 			/* On warm reset some of dram calibrations fail
 			   and therefore requiring valid cached settings */
-			outb(0xe, 0xcf9);
-			halt();
+			full_reset();
 		}
 		ctrl_cached = NULL;
 	} else {
@@ -728,8 +727,7 @@ void sdram_initialize(int boot_path, const u8 *spd_map)
 					&s, sizeof(s));
 	if (s.boot_path == BOOT_PATH_RESUME && !cbmem_was_inited) {
 		/* Failed S3 resume, reset to come up cleanly */
-		outb(0x6, 0xcf9);
-		halt();
+		system_reset();
 	}
 
 	timestamp_add_now(TS_AFTER_INITRAM);

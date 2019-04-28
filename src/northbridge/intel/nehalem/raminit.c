@@ -22,6 +22,7 @@
 #include <device/pci_ops.h>
 #include <cpu/x86/msr.h>
 #include <cbmem.h>
+#include <cf9_reset.h>
 #include <arch/cbfs.h>
 #include <ip_checksum.h>
 #include <pc80/mc146818rtc.h>
@@ -3681,8 +3682,7 @@ void chipset_init(const int s3resume)
 	if ((x2ca8 & 1) || (x2ca8 == 8 && !s3resume)) {
 		printk(BIOS_DEBUG, "soft reset detected, rebooting properly\n");
 		MCHBAR8(0x2ca8) = 0;
-		outb(0x6, 0xcf9);
-		halt();
+		system_reset();
 	}
 #if 0
 	if (!s3resume) {
@@ -3907,8 +3907,7 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 
 			printk(BIOS_INFO,
 			       "Interrupted RAM init, reset required.\n");
-			outb(0x6, 0xcf9);
-			halt();
+			system_reset();
 		}
 	}
 
@@ -4346,8 +4345,7 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 			       "Couldn't find training data. Rebooting\n");
 			reg32 = inl(DEFAULT_PMBASE + 0x04);
 			outl(reg32 & ~(7 << 10), DEFAULT_PMBASE + 0x04);
-			outb(0xe, 0xcf9);
-			halt();
+			full_reset();
 		}
 		int tm;
 		info.training = *info.cached_training;
@@ -4788,7 +4786,6 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 		outl(reg32 & ~(7 << 10), DEFAULT_PMBASE + 0x04);
 
 		/* Failed S3 resume, reset to come up cleanly */
-		outb(0xe, 0xcf9);
-		halt();
+		full_reset();
 	}
 }

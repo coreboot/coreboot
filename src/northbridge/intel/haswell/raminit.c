@@ -19,6 +19,7 @@
 #include <cbmem.h>
 #include <arch/cbfs.h>
 #include <cbfs.h>
+#include <cf9_reset.h>
 #include <halt.h>
 #include <ip_checksum.h>
 #include <memory_info.h>
@@ -136,8 +137,7 @@ void sdram_initialize(struct pei_data *pei_data)
 		post_code(POST_RESUME_FAILURE);
 		printk(BIOS_DEBUG, "Giving up in sdram_initialize: "
 		       "No MRC data\n");
-		outb(0x6, 0xcf9);
-		halt();
+		system_reset();
 	}
 
 	/* Pass console handler in pei_data */

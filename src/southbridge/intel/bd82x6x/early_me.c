@@ -16,6 +16,7 @@
 
 #include <arch/io.h>
 #include <device/pci_ops.h>
+#include <cf9_reset.h>
 #include <console/console.h>
 #include <delay.h>
 #include <device/pci_def.h>
@@ -179,8 +180,7 @@ int intel_early_me_init_done(u8 status)
 			reg16 = pci_read_config16(PCI_DEV(0, 31, 0), 0xa2) & ~0x80;
 			pci_write_config16(PCI_DEV(0, 31, 0), 0xa2, reg16);
 			set_global_reset(0);
-			outb(0x6, 0xcf9);
-			halt();
+			system_reset();
 		}
 
 		if (((me_fws2 & 0x10) == 0x10) && (me_fws2 & 0x80) == 0x00) {

@@ -24,4 +24,5 @@ ramstage-y += boardid.c
 ramstage-y += chromeos.c
 ramstage-y += mainboard.c
 ramstage-y += memlayout.ld
+ramstage-$(CONFIG_BOARD_GOOGLE_KRANE) += panel_krane.c
 ramstage-y += reset.c

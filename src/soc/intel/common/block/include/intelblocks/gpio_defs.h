@@ -264,10 +264,16 @@
 			PAD_CFG0_TRIG_##trig | PAD_CFG0_RX_POL_NONE,	\
 		PAD_PULL(pull) | PAD_CFG1_GPIO_DRIVER | PAD_IOSSTATE(TxDRxE))
 
-/* No Connect configuration for unused pad.
- * NC should be GPI with Term as PU20K, PD20K, NONE depending upon default Term
+/*
+ * No Connect configuration for unused pad.
+ * Both TX and RX are disabled. RX disabling is done to avoid unnecessary
+ * setting of GPI_STS.
  */
-#define PAD_NC(pad, pull)	PAD_CFG_GPI(pad, pull, DEEP)
+#define PAD_NC(pad, pull)			\
+	_PAD_CFG_STRUCT(pad,					\
+		PAD_FUNC(GPIO) | PAD_RESET(DEEP) |		\
+		PAD_CFG0_TX_DISABLE | PAD_CFG0_RX_DISABLE,	\
+		PAD_PULL(pull) | PAD_IOSSTATE(TxDRxE))
 
 #if CONFIG(SOC_INTEL_COMMON_BLOCK_GPIO_LEGACY_MACROS)
 

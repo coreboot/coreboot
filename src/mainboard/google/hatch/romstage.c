@@ -16,23 +16,63 @@
 #include <baseboard/variants.h>
 #include <console/console.h>
 #include <ec/google/chromeec/ec.h>
+#include <gpio.h>
 #include <memory_info.h>
 #include <soc/cnl_memcfg_init.h>
 #include <soc/romstage.h>
 #include <string.h>
 
+/* Memory configuration board straps */
+#define GPIO_MEM_CONFIG_0	GPP_F20
+#define GPIO_MEM_CONFIG_1	GPP_F21
+#define GPIO_MEM_CONFIG_2	GPP_F11
+#define GPIO_MEM_CONFIG_3	GPP_F22
+
+/*
+ * GPIO_MEM_CH_SEL is set to 1 for single channel skus
+ * and 0 for dual channel skus.
+ */
+#define GPIO_MEM_CH_SEL		GPP_F2
+
+static int memory_sku(void)
+{
+	const gpio_t spd_gpios[] = {
+		GPIO_MEM_CONFIG_0,
+		GPIO_MEM_CONFIG_1,
+		GPIO_MEM_CONFIG_2,
+		GPIO_MEM_CONFIG_3,
+	};
+
+	return gpio_base2_value(spd_gpios, ARRAY_SIZE(spd_gpios));
+}
+
 void mainboard_memory_init_params(FSPM_UPD *memupd)
 {
 	struct cnl_mb_cfg memcfg;
-
-	const struct spd_info spd = {
-		.spd_by_index = true,
-		.spd_spec.spd_index = variant_memory_sku(),
-	};
+	int mem_sku;
+	int is_single_ch_mem;
 
 	variant_memory_params(&memcfg);
-	cannonlake_memcfg_init(&memupd->FspmConfig,
-			       &memcfg, &spd);
+	mem_sku = memory_sku();
+	/*
+	 * GPP_F2 is the MEM_CH_SEL gpio, which is set to 1 for single
+	 * channel skus and 0 for dual channel skus.
+	 */
+	is_single_ch_mem = gpio_get(GPIO_MEM_CH_SEL);
+
+	/*
+	 * spd[0]-spd[3] map to CH0D0, CH0D1, CH1D0, CH1D1 respectively.
+	 * Dual-DIMM memory is not used in hatch family, so we only
+	 * fill in spd_info for CH0D0 and CH1D0 here.
+	 */
+	memcfg.spd[0].read_type = READ_SPD_CBFS;
+	memcfg.spd[0].spd_spec.spd_index = mem_sku;
+	if (!is_single_ch_mem) {
+		memcfg.spd[2].read_type = READ_SPD_CBFS;
+		memcfg.spd[2].spd_spec.spd_index = mem_sku;
+	}
+
+	cannonlake_memcfg_init(&memupd->FspmConfig, &memcfg);
 }
 
 void mainboard_get_dram_part_num(const char **part_num, size_t *len)

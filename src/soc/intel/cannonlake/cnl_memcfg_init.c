@@ -20,7 +20,7 @@
 #include <string.h>
 
 static void meminit_memcfg(FSP_M_CONFIG *mem_cfg,
-			const struct cnl_mb_cfg *board_cfg)
+			   const struct cnl_mb_cfg *board_cfg)
 {
 	/*
 	 * DqByteMapChx expects 12 bytes of data, but the last 6 bytes
@@ -29,47 +29,58 @@ static void meminit_memcfg(FSP_M_CONFIG *mem_cfg,
 	 */
 	memset(&mem_cfg->DqByteMapCh0, 0, sizeof(mem_cfg->DqByteMapCh0));
 	memcpy(&mem_cfg->DqByteMapCh0, &board_cfg->dq_map[DDR_CH0],
-		sizeof(board_cfg->dq_map[DDR_CH0]));
+	       sizeof(board_cfg->dq_map[DDR_CH0]));
 
 	memset(&mem_cfg->DqByteMapCh1, 0, sizeof(mem_cfg->DqByteMapCh1));
 	memcpy(&mem_cfg->DqByteMapCh1, &board_cfg->dq_map[DDR_CH1],
-		sizeof(board_cfg->dq_map[DDR_CH1]));
+	       sizeof(board_cfg->dq_map[DDR_CH1]));
 
 	memcpy(&mem_cfg->DqsMapCpu2DramCh0, &board_cfg->dqs_map[DDR_CH0],
-		sizeof(board_cfg->dqs_map[DDR_CH0]));
+	       sizeof(board_cfg->dqs_map[DDR_CH0]));
 	memcpy(&mem_cfg->DqsMapCpu2DramCh1, &board_cfg->dqs_map[DDR_CH1],
-		sizeof(board_cfg->dqs_map[DDR_CH1]));
+	       sizeof(board_cfg->dqs_map[DDR_CH1]));
 
 	memcpy(&mem_cfg->RcompResistor, &board_cfg->rcomp_resistor,
-		sizeof(mem_cfg->RcompResistor));
+	       sizeof(mem_cfg->RcompResistor));
 
 	/* Early cannonlake requires rcomp targets to be 0 */
 	memcpy(&mem_cfg->RcompTarget, &board_cfg->rcomp_targets,
-		sizeof(mem_cfg->RcompTarget));
-}
-
-static void meminit_memcfg_spd(FSP_M_CONFIG *mem_cfg,
-			const struct cnl_mb_cfg *cnl_cfg,
-			size_t spd_data_len, uintptr_t spd_data_ptr)
-{
-	mem_cfg->MemorySpdDataLen = spd_data_len;
-
-	if (cnl_cfg->channel_empty[0] == 0)
-		mem_cfg->MemorySpdPtr00 = spd_data_ptr;
-
-	if (cnl_cfg->channel_empty[1] == 0)
-		mem_cfg->MemorySpdPtr10 = spd_data_ptr;
+	       sizeof(mem_cfg->RcompTarget));
 }
 
 /*
  * Initialize default memory settings using spd data contained in a buffer.
  */
-static void meminit_spd_data(FSP_M_CONFIG *mem_cfg,
-				const struct cnl_mb_cfg *cnl_cfg,
-				size_t spd_data_len, uintptr_t spd_data_ptr)
+static void meminit_spd_data(FSP_M_CONFIG *mem_cfg, uint8_t mem_slot,
+			     size_t spd_data_len, uintptr_t spd_data_ptr)
 {
-	assert(spd_data_ptr && spd_data_len);
-	meminit_memcfg_spd(mem_cfg, cnl_cfg, spd_data_len, spd_data_ptr);
+	static size_t last_set_spd_data_len = 0;
+
+	assert(spd_data_ptr != 0 && spd_data_len != 0);
+
+	if (last_set_spd_data_len != 0 &&
+	    last_set_spd_data_len != spd_data_len)
+		die("spd data length disparity among slots");
+
+	mem_cfg->MemorySpdDataLen = spd_data_len;
+	last_set_spd_data_len = spd_data_len;
+
+	switch (mem_slot) {
+	case 0:
+		mem_cfg->MemorySpdPtr00 = spd_data_ptr;
+		break;
+	case 1:
+		mem_cfg->MemorySpdPtr01 = spd_data_ptr;
+		break;
+	case 2:
+		mem_cfg->MemorySpdPtr10 = spd_data_ptr;
+		break;
+	case 3:
+		mem_cfg->MemorySpdPtr11 = spd_data_ptr;
+		break;
+	default:
+		die("nonexistent memory slot");
+	}
 }
 
 /*
@@ -78,13 +89,13 @@ static void meminit_spd_data(FSP_M_CONFIG *mem_cfg,
  * in spd/Makefile.inc.
  */
 static void meminit_cbfs_spd_index(FSP_M_CONFIG *mem_cfg,
-					const struct cnl_mb_cfg *cnl_cfg,
-					int spd_index)
+				   int spd_index, uint8_t mem_slot)
 {
 	size_t spd_data_len;
 	uintptr_t spd_data_ptr;
 	struct region_device spd_rdev;
 
+	assert(mem_slot < NUM_DIMM_SLOT);
 	printk(BIOS_DEBUG, "SPD INDEX = %d\n", spd_index);
 	if (get_spd_cbfs_rdev(&spd_rdev, spd_index) < 0)
 		die("spd.bin not found or incorrect index\n");
@@ -92,40 +103,42 @@ static void meminit_cbfs_spd_index(FSP_M_CONFIG *mem_cfg,
 	/* Memory leak is ok since we have memory mapped boot media */
 	assert(CONFIG(BOOT_DEVICE_MEMORY_MAPPED));
 	spd_data_ptr = (uintptr_t)rdev_mmap_full(&spd_rdev);
-	meminit_spd_data(mem_cfg, cnl_cfg, spd_data_len, spd_data_ptr);
+	meminit_spd_data(mem_cfg, mem_slot, spd_data_len, spd_data_ptr);
 }
 
 /* Initialize onboard memory configurations for CannonLake */
 void cannonlake_memcfg_init(FSP_M_CONFIG *mem_cfg,
-			const struct cnl_mb_cfg *cnl_cfg,
-			const struct spd_info *spd)
+			    const struct cnl_mb_cfg *cnl_cfg)
 {
-	bool OnModuleSpd = false;
+	const struct spd_info *spdi;
+
 	/* Early Command Training Enabled */
 	mem_cfg->ECT = cnl_cfg->ect;
 	mem_cfg->DqPinsInterleaved = cnl_cfg->dq_pins_interleaved;
 	mem_cfg->CaVrefConfig = cnl_cfg->vref_ca_config;
 
-	/* Spd pointer will only be used if all smbus slave address of memory
-	* sockets on the platform is empty */
-	for (int i = 0; i < ARRAY_SIZE(mem_cfg->SpdAddressTable); i++) {
-		if (spd->spd_smbus_address[i] != 0) {
-			mem_cfg->SpdAddressTable[i] = spd->spd_smbus_address[i];
-			OnModuleSpd = true;
+	for (int i = 0; i < NUM_DIMM_SLOT; i++) {
+		spdi = &(cnl_cfg->spd[i]);
+		switch (spdi->read_type) {
+		case NOT_EXISTING:
+			break;
+		case READ_SMBUS:
+			mem_cfg->SpdAddressTable[i] =
+				spdi->spd_spec.spd_smbus_address;
+			break;
+		case READ_SPD_CBFS:
+			meminit_cbfs_spd_index(mem_cfg,
+				spdi->spd_spec.spd_index, i);
+			break;
+		case READ_SPD_MEMPTR:
+			meminit_spd_data(mem_cfg, i,
+				spdi->spd_spec.spd_data_ptr_info.spd_data_len,
+				spdi->spd_spec.spd_data_ptr_info.spd_data_ptr);
+			break;
+		default:
+			die("no valid way to read mem info");
 		}
+
+		meminit_memcfg(mem_cfg, cnl_cfg);
 	}
-
-	if (!OnModuleSpd) {
-		if (spd->spd_by_index) {
-			meminit_cbfs_spd_index(mem_cfg, cnl_cfg,
-				spd->spd_spec.spd_index);
-		} else {
-			meminit_spd_data(mem_cfg, cnl_cfg,
-				spd->spd_spec.spd_data_ptr_info.spd_data_len,
-				spd->spd_spec.spd_data_ptr_info.spd_data_ptr);
-		}
-	}
-
-	meminit_memcfg(mem_cfg, cnl_cfg);
-
 }

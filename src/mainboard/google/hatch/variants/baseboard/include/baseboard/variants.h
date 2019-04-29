@@ -31,9 +31,6 @@ const struct pad_config *base_early_gpio_table(size_t *num);
 const struct pad_config *override_gpio_table(size_t *num);
 const struct pad_config *override_early_gpio_table(size_t *num);
 
-/* Return memory SKU for the board. */
-int variant_memory_sku(void);
-
 /* Return board specific memory configuration */
 void variant_memory_params(struct cnl_mb_cfg *bcfg);
 

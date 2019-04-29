@@ -20,13 +20,5 @@
 
 void mainboard_memory_init_params(FSPM_UPD *memupd)
 {
-	const struct spd_info spd = {
-		.spd_smbus_address[0] = 0xA0,
-		.spd_smbus_address[1] = 0xA2,
-		.spd_smbus_address[2] = 0xA4,
-		.spd_smbus_address[3] = 0xA6,
-	};
-
-	cannonlake_memcfg_init(&memupd->FspmConfig,
-				variant_memcfg_config(), &spd);
+	cannonlake_memcfg_init(&memupd->FspmConfig, variant_memcfg_config());
 }

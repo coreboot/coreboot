@@ -22,13 +22,6 @@
 
 #define GPIO_PCH_WP	        GPP_C20
 
-/* Memory configuration board straps */
-#define GPIO_MEM_CONFIG_0	GPP_F20
-#define GPIO_MEM_CONFIG_1	GPP_F21
-#define GPIO_MEM_CONFIG_2	GPP_F11
-#define GPIO_MEM_CONFIG_3	GPP_F22
-
-
 /* EC wake pin is LAN_WAKE# */
 #define GPE_EC_WAKE		GPE0_LAN_WAK
 

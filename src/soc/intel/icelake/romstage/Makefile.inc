@@ -14,6 +14,5 @@
 #
 
 romstage-y += fsp_params.c
-romstage-y += power_state.c
 romstage-y += romstage.c
 romstage-y += systemagent.c

@@ -19,11 +19,8 @@ config IRQ_SLOT_COUNT
 
 config VARIANT_DIR
 	string
-	default "librem13v2" if BOARD_PURISM_LIBREM13_V2
-	default "librem13v2" if BOARD_PURISM_LIBREM13_V3
-	default "librem15v3" if BOARD_PURISM_LIBREM15_V3
-	default "librem13v2" if BOARD_PURISM_LIBREM13_V4
-	default "librem15v3" if BOARD_PURISM_LIBREM15_V4
+	default "librem13v2" if BOARD_PURISM_LIBREM13_V2 || BOARD_PURISM_LIBREM13_V4
+	default "librem15v3" if BOARD_PURISM_LIBREM15_V3 || BOARD_PURISM_LIBREM15_V4
 
 config MAINBOARD_VENDOR
 	string
@@ -31,27 +28,15 @@ config MAINBOARD_VENDOR
 
 config MAINBOARD_FAMILY
 	string
-	default "Librem 13" if BOARD_PURISM_LIBREM13_V2
-	default "Librem 13" if BOARD_PURISM_LIBREM13_V3
-	default "Librem 15" if BOARD_PURISM_LIBREM15_V3
-	default "Librem 13" if BOARD_PURISM_LIBREM13_V4
-	default "Librem 15" if BOARD_PURISM_LIBREM15_V4
+	default "Librem 13" if BOARD_PURISM_LIBREM13_V2 || BOARD_PURISM_LIBREM13_V4
+	default "Librem 15" if BOARD_PURISM_LIBREM15_V3 || BOARD_PURISM_LIBREM15_V4
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "Librem 13 v2" if BOARD_PURISM_LIBREM13_V2
-	default "Librem 13 v2" if BOARD_PURISM_LIBREM13_V3
 	default "Librem 15 v3" if BOARD_PURISM_LIBREM15_V3
 	default "Librem 13 v4" if BOARD_PURISM_LIBREM13_V4
 	default "Librem 15 v4" if BOARD_PURISM_LIBREM15_V4
-
-config MAINBOARD_VERSION
-	string
-	default "2.0" if BOARD_PURISM_LIBREM13_V2
-	default "3.0" if BOARD_PURISM_LIBREM13_V3
-	default "3.0" if BOARD_PURISM_LIBREM15_V3
-	default "4.0" if BOARD_PURISM_LIBREM13_V4
-	default "4.0" if BOARD_PURISM_LIBREM15_V4
 
 config MAINBOARD_DIR
 	string
@@ -67,11 +52,8 @@ config MAX_CPUS
 
 config VGA_BIOS_ID
 	string
-	default "8086,1916" if BOARD_PURISM_LIBREM13_V2
-	default "8086,1916" if BOARD_PURISM_LIBREM13_V3
-	default "8086,1916" if BOARD_PURISM_LIBREM15_V3
-	default "8086,5916" if BOARD_PURISM_LIBREM13_V4
-	default "8086,5916" if BOARD_PURISM_LIBREM15_V4
+	default "8086,1916" if BOARD_PURISM_LIBREM13_V2 || BOARD_PURISM_LIBREM15_V3
+	default "8086,5916" if BOARD_PURISM_LIBREM13_V4 || BOARD_PURISM_LIBREM15_V4
 
 config DIMM_MAX
 	int
@@ -80,14 +62,6 @@ config DIMM_MAX
 config DIMM_SPD_SIZE
 	int
 	default 512
-
-config CPU_MICROCODE_CBFS_LEN
-	hex
-	default 0x18000
-
-config CPU_MICROCODE_CBFS_LOC
-	hex
-	default 0xFFE115A0
 
 config CBFS_SIZE
 	hex

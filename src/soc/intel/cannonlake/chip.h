@@ -400,6 +400,10 @@ struct soc_intel_cannonlake_config {
 
 	/* Unlock all GPIO Pads */
 	uint8_t PchUnlockGpioPads;
+
+	/* Enable GBE wakeup */
+	uint8_t LanWakeFromDeepSx;
+	uint8_t WolEnableOverride;
 };
 
 typedef struct soc_intel_cannonlake_config config_t;

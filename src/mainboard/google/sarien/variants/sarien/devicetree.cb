@@ -53,6 +53,9 @@ chip soc/intel/cannonlake
 	# Enable DDC for DDI port B
 	register "DdiPortBDdc" = "1"
 
+	register "LanWakeFromDeepSx" = "0"
+	register "WolEnableOverride" = "0"
+
 	# VR Settings Configuration for 4 Domains
 	#+----------------+-------+-------+-------+-------+
 	#| Domain/Setting |  SA   |  IA   | GTUS  |  GTS  |

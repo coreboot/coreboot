@@ -212,6 +212,10 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	params->DdiPortDDdc = config->DdiPortDDdc;
 	params->DdiPortFDdc = config->DdiPortFDdc;
 
+	/* WOL */
+	params->PchPmPcieWakeFromDeepSx = config->LanWakeFromDeepSx;
+	params->PchPmWolEnableOverride = config->WolEnableOverride;
+
 	/* S0ix */
 	params->PchPmSlpS0Enable = config->s0ix_enable;
 

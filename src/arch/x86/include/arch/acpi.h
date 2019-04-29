@@ -335,9 +335,9 @@ enum {
 };
 
 enum dmar_flags {
-	DMAR_INTR_REMAP			= 1,
-	DMAR_X2APIC_OPT_OUT		= 2,
-	DMA_CTRL_PLATFORM_OPT_IN_FLAG	= 3,
+	DMAR_INTR_REMAP			= 1 << 0,
+	DMAR_X2APIC_OPT_OUT		= 1 << 1,
+	DMA_CTRL_PLATFORM_OPT_IN_FLAG	= 1 << 2,
 };
 
 typedef struct dmar_entry {

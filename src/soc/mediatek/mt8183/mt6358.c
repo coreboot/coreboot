@@ -16,6 +16,7 @@
 #include <console/console.h>
 #include <soc/pmic_wrap.h>
 #include <soc/mt6358.h>
+#include <timer.h>
 
 static struct pmic_setting init_setting[] = {
 	/* [15:0]: TMA_KEY */
@@ -775,13 +776,18 @@ static void mt6358_lp_setting(void)
 
 void mt6358_init(void)
 {
+	struct stopwatch voltage_settled;
+
 	if (pwrap_init())
 		die("ERROR - Failed to initialize pmic wrap!");
 
 	pmic_set_power_hold(true);
 	pmic_wdt_set();
 	mt6358_init_setting();
+	stopwatch_init_usecs_expire(&voltage_settled, 200);
 	wk_sleep_voltage_by_ddr();
 	wk_power_down_seq();
 	mt6358_lp_setting();
+	while (!stopwatch_expired(&voltage_settled))
+		/* wait for voltages to settle */;
 }

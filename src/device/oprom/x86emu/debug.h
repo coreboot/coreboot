@@ -39,6 +39,8 @@
 #ifndef __X86EMU_DEBUG_H
 #define __X86EMU_DEBUG_H
 
+#include <console/console.h>
+
 /*---------------------- Macros and type definitions ----------------------*/
 
 /* printf is not available in coreboot... use printk */

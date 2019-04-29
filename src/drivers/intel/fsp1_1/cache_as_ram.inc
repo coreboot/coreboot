@@ -24,9 +24,8 @@
  * performs the final stage of initialization.
  */
 
-
-#define LHLT_DELAY	0x50000		/* I/O delay between post codes on failure */
-
+/* I/O delay between post codes on failure */
+#define LHLT_DELAY	0x50000
 	/*
 	 * Per FSP1.1 specs, following registers are preserved:
 	 * EBX, EDI, ESI, EBP, MM0, MM1
@@ -165,8 +164,8 @@ halt1:
 	 * 0x01 - FV signature, "_FVH" not present
 	 * 0x02 - FFS GUID not present
 	 * 0x03 - FSP INFO Header not found
-	 * 0x04 - ImageBase does not equal CONFIG_FSP_LOC - Is the FSP rebased to
-	 *        a different location, or does it need to be?
+	 * 0x04 - ImageBase does not equal CONFIG_FSP_LOC - Is the FSP rebased
+	 *	  to a different location, or does it need to be?
 	 * 0x05 - FSP INFO Header signature "FSPH" not found
 	 * 0x06 - FSP Image ID is not the expected ID.
 	 */
@@ -181,7 +180,8 @@ halt2:
 	 * 0x02 - FSP_INVALID_PARAMETER: Input parameters are invalid.
 	 * 0x03 - FSP_UNSUPPORTED: The FSP calling conditions were not met.
 	 * 0x07 - FSP_DEVICE_ERROR: Temp RAM initialization failed
-	 * 0x0E - FSP_NOT_FOUND: No valid microcode was found in the microcode region.
+	 * 0x0E - FSP_NOT_FOUND: No valid microcode was found in the microcode
+	 *	  region.
 	 * 0x14 - FSP_ALREADY_STARTED: Temp RAM initialization has been invoked
 	 */
 	movb	$0xBB, %ah
@@ -213,7 +213,7 @@ CAR_init_params:
 	.long	CONFIG_CPU_MICROCODE_CBFS_LOC		/* Microcode Location */
 	.long	CONFIG_CPU_MICROCODE_CBFS_LEN		/* Microcode Length */
 	.long	0xFFFFFFFF - CONFIG_ROM_SIZE + 1	/* Firmware Location */
-	.long	CONFIG_ROM_SIZE				/* Total Firmware Length */
+	.long	CONFIG_ROM_SIZE				/* Firmware Length */
 
 CAR_init_stack:
 	.long	CAR_init_done

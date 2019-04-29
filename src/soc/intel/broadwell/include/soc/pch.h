@@ -42,7 +42,6 @@ u16 pch_type(void);
 int pch_is_wpt(void);
 int pch_is_wpt_ulx(void);
 u32 pch_read_soft_strap(int id);
-void pch_log_state(void);
 void pch_disable_devfn(struct device *dev);
 
 #endif

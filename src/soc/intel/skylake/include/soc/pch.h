@@ -20,7 +20,6 @@
 
 #include <device/device.h>
 
-void pch_log_state(void);
 #if ENV_RAMSTAGE
 void pch_disable_devfn(struct device *dev);
 #endif

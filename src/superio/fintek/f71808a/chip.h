@@ -22,6 +22,13 @@
 
 struct superio_fintek_f71808a_config {
 
+	uint8_t hwm_vt1_boundary_1_temperature;
+	uint8_t hwm_vt1_boundary_2_temperature;
+	uint8_t hwm_vt1_boundary_3_temperature;
+	uint8_t hwm_vt1_boundary_4_temperature;
+	uint8_t hwm_fan1_boundary_hysteresis;
+	uint8_t hwm_domain1_en;
+
 	/* Multi function registers */
 	uint8_t multi_function_register_0;
 	uint8_t multi_function_register_1;

@@ -1,0 +1,2 @@
+config BOARD_MSI_MS7707
+	bool "MS-7707"

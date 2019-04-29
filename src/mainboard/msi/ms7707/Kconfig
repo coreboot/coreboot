@@ -1,0 +1,57 @@
+if BOARD_MSI_MS7707
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select ARCH_X86
+	select NORTHBRIDGE_INTEL_SANDYBRIDGE
+	select USE_NATIVE_RAMINIT
+	select SOUTHBRIDGE_INTEL_BD82X6X
+	select SUPERIO_FINTEK_F71808A
+	select BOARD_ROMSIZE_KB_4096
+	select HAVE_ACPI_TABLES
+	select HAVE_ACPI_RESUME
+	select MAINBOARD_USES_IFD_GBE_REGION
+	select NO_UART_ON_SUPERIO
+	select SERIRQ_CONTINUOUS_MODE
+
+config MAINBOARD_DIR
+	string
+	default msi/ms7707
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "MS-7707"
+
+config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
+	hex
+	default 0x7707
+
+config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
+	hex
+	default 0x1462
+
+config DRAM_RESET_GATE_GPIO
+	int
+	default 60
+
+config MAX_CPUS
+	int
+	default 8
+
+config USBDEBUG_HCD_INDEX # FIXME: check this
+	int
+	default 2
+
+config CBFS_SIZE
+	hex
+	default 0x200000
+
+config VGA_BIOS_FILE
+	string
+	default "3rdparty/blobs/mainboard/$(MAINBOARDDIR)/vgabios.bin"
+
+config VGA_BIOS_ID
+	string
+	default "8086,0102"
+
+endif

@@ -24,24 +24,24 @@
 void avoid_lpc_dma_deadlock(struct device *nb_dev, struct device *sb_dev)
 {
 	struct device *cpu_f0;
-	u8 reg;
+	u32 reg32;
 
 	cpu_f0 = pcidev_on_root(0x18, 0);
 	set_nbcfg_enable_bits(cpu_f0, 0x68, 3 << 21, 1 << 21);
 
-	reg = nbpcie_p_read_index(sb_dev, 0x10);
-	reg |= 0x100;		/* bit9=1 */
-	nbpcie_p_write_index(sb_dev, 0x10, reg);
+	reg32 = nbpcie_p_read_index(sb_dev, 0x10);
+	reg32 |= 0x100;		/* bit9=1 */
+	nbpcie_p_write_index(sb_dev, 0x10, reg32);
 
-	reg = nbpcie_p_read_index(nb_dev, 0x10);
-	reg |= 0x100;		/* bit9=1 */
-	nbpcie_p_write_index(nb_dev, 0x10, reg);
+	reg32 = nbpcie_p_read_index(nb_dev, 0x10);
+	reg32 |= 0x100;		/* bit9=1 */
+	nbpcie_p_write_index(nb_dev, 0x10, reg32);
 
 	/* Enable NP protocol over PCIE for memory-mapped writes targeting LPC
 	 * Set this bit to avoid a deadlock condition. */
-	reg = htiu_read_index(nb_dev, 0x6);
-	reg |= 0x1000000;	/* bit26 */
-	htiu_write_index(nb_dev, 0x6, reg);
+	reg32 = htiu_read_index(nb_dev, 0x6);
+	reg32 |= 0x1000000;	/* bit26 */
+	htiu_write_index(nb_dev, 0x6, reg32);
 }
 
 static void pcie_init(struct device *dev)

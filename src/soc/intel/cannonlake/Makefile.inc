@@ -43,6 +43,7 @@ ramstage-y += gspi.c
 ramstage-y += i2c.c
 ramstage-y += lockdown.c
 ramstage-y += lpc.c
+ramstage-y += me.c
 ramstage-y += memmap.c
 ramstage-y += nhlt.c
 ramstage-y += p2sb.c

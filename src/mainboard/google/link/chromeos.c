@@ -28,10 +28,6 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 		/* Write Protect: GPIO57 = PCH_SPI_WP_D */
 		{57, ACTIVE_HIGH, get_write_protect_state(), "write protect"},
 
-		/* Recovery: the "switch" comes from the EC */
-		/* -1 indicates that this is a pseudo GPIO */
-		{-1, ACTIVE_HIGH, get_recovery_mode_switch(), "recovery"},
-
 		/* Lid: the "switch" comes from the EC */
 		{-1, ACTIVE_HIGH, get_lid_switch(), "lid"},
 

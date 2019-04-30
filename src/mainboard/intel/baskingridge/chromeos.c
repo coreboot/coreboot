@@ -33,7 +33,7 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 		{0, ACTIVE_LOW, !get_write_protect_state(), "write protect"},
 
 		/* Recovery: GPIO69 - SV_DETECT - J8E3 (silkscreen: J8E2) */
-		{69, ACTIVE_HIGH, get_recovery_mode_switch(), "recovery"},
+		{69, ACTIVE_HIGH, get_recovery_mode_switch(), "presence"},
 
 		/* Hard code the lid switch GPIO to open. */
 		{-1, ACTIVE_HIGH, 1, "lid"},

@@ -40,9 +40,6 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 		{WP_GPIO, ACTIVE_LOW, !get_write_protect_state(),
 		 "write protect"},
 
-		/* Recovery: virtual GPIO active high */
-		{-1, ACTIVE_HIGH, get_recovery_mode_switch(), "recovery"},
-
 		/* lid switch value from EC */
 		{-1, ACTIVE_HIGH, get_lid_switch(), "lid"},
 

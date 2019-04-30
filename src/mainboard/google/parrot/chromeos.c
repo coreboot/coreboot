@@ -39,9 +39,6 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 		/* Write Protect: GPIO70 active high */
 		{70, ACTIVE_LOW, !get_write_protect_state(), "write protect"},
 
-		/* Recovery: Virtual GPIO in the EC (Servo GPIO68 active low) */
-		{-1, ACTIVE_HIGH, get_recovery_mode_switch(), "recovery"},
-
 		/* Lid switch GPIO active high (open). */
 		{15, ACTIVE_HIGH, get_lid_switch(), "lid"},
 

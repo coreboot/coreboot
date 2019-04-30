@@ -34,7 +34,6 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	struct lb_gpio chromeos_gpios[] = {
 		{GPIO_WP.raw, wp_polarity,
 		 get_write_protect_state() ^ !wp_polarity, "write protect"},
-		{-1, ACTIVE_HIGH, get_recovery_mode_switch(), "recovery"},
 #if CONFIG(GRU_BASEBOARD_SCARLET)
 		{GPIO_BACKLIGHT.raw, ACTIVE_HIGH, -1, "backlight"},
 #endif

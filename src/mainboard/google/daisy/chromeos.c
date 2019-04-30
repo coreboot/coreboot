@@ -29,9 +29,6 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 		{EXYNOS5_GPD1, ACTIVE_LOW, !get_write_protect_state(),
 		 "write protect"},
 
-		/* Recovery: active low */
-		{-1, ACTIVE_HIGH, get_recovery_mode_switch(), "recovery"},
-
 		/* Lid: active high (LID_GPIO) */
 		{EXYNOS5_GPX3, ACTIVE_HIGH, gpio_get_value(GPIO_X35), "lid"},
 

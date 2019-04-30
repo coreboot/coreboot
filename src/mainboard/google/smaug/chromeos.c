@@ -23,7 +23,6 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	struct lb_gpio chromeos_gpios[] = {
 		{WRITE_PROTECT_L, ACTIVE_LOW,
 			!get_write_protect_state(), "write protect"},
-		{-1, ACTIVE_HIGH, get_recovery_mode_switch(), "recovery"},
 		{POWER_BUTTON, ACTIVE_LOW, -1, "power"},
 		{EC_IN_RW, ACTIVE_HIGH, -1, "EC in RW"},
 		{AP_SYS_RESET_L, ACTIVE_LOW, -1, "reset"},

@@ -47,7 +47,7 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 
 		/* Recovery: GPIO42 = CHP3_REC_MODE# */
 		{GPIO_REC_MODE, ACTIVE_LOW, !get_recovery_mode_switch(),
-		 "recovery"},
+		 "presence"},
 
 		{100, ACTIVE_HIGH, lid & 1, "lid"},
 

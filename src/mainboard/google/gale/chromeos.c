@@ -68,8 +68,6 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 {
 	struct lb_gpio chromeos_gpios[] = {
 		{PP_SW, ACTIVE_LOW, read_gpio(PP_SW), "presence"},
-		{get_rec_sw_gpio_pin(), ACTIVE_LOW,
-			read_gpio(get_rec_sw_gpio_pin()), "recovery"},
 		{get_wp_status_gpio_pin(), ACTIVE_LOW,
 			!get_write_protect_state(), "write protect"},
 		{-1, ACTIVE_LOW, 1, "power"},

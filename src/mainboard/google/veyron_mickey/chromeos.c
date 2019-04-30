@@ -34,7 +34,7 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 		{GPIO_WP.raw, ACTIVE_LOW,
 			!get_write_protect_state(), "write protect"},
 		{GPIO_RECOVERY.raw, ACTIVE_LOW,
-			!get_recovery_mode_switch(), "recovery"},
+			!get_recovery_mode_switch(), "presence"},
 		{GPIO_RESET.raw, ACTIVE_HIGH, -1, "reset"},
 	};
 	lb_add_gpios(gpios, chromeos_gpios, ARRAY_SIZE(chromeos_gpios));

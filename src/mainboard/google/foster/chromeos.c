@@ -28,9 +28,6 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 		/* Write Protect: active low */
 		{-1, ACTIVE_LOW, !get_write_protect_state(), "write protect"},
 
-		/* Recovery: active high */
-		{-1, ACTIVE_HIGH, get_recovery_mode_switch(), "recovery"},
-
 		/* TODO: Power: active low / high depending on board id */
 		{GPIO(X5), ACTIVE_LOW, -1, "power"},
 

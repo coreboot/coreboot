@@ -41,7 +41,7 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 		/* Note for early development, we want to support both servo
 		 * and pushkey recovery buttons in firmware boot stages. */
 		{GPIO_RECOVERY_PUSHKEY.raw, ACTIVE_LOW,
-			!get_recovery_mode_switch(), "recovery"},
+			!get_recovery_mode_switch(), "presence"},
 		{GPIO_POWER.raw, ACTIVE_LOW, -1, "power"},
 		{GPIO_RESET.raw, ACTIVE_HIGH, -1, "reset"},
 	};

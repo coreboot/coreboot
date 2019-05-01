@@ -144,7 +144,7 @@ void pch_iobp_update(u32 address, u32 andvalue, u32 orvalue)
 }
 
 #ifndef __SMM__
-/* Set bit in Function Disble register to hide this device */
+/* Set bit in function disable register to hide this device */
 static void pch_hide_devfn(unsigned devfn)
 {
 	switch (devfn) {

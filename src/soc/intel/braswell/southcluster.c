@@ -347,7 +347,7 @@ static void sc_init(struct device *dev)
  * Common code for the south cluster devices.
  */
 
-/* Set bit in function disble register to hide this device. */
+/* Set bit in function disable register to hide this device. */
 static void sc_disable_devfn(struct device *dev)
 {
 	void *func_dis = (void *)(PMC_BASE_ADDRESS + FUNC_DIS);

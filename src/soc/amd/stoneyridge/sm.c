@@ -42,9 +42,9 @@ static u32 get_sm_mmio(struct device *dev)
 	pbus = get_pbus_smbus(dev);
 	res = find_resource(pbus->dev, 0x90);
 	if (res->base == SMB_BASE_ADDR)
-		return SMBUS_MMIO_BASE;
+		return ACPIMMIO_SMBUS_BASE;
 
-	return ASF_MMIO_BASE;
+	return ACPIMMIO_ASF_BASE;
 }
 
 static int lsmbus_recv_byte(struct device *dev)

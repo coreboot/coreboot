@@ -32,19 +32,29 @@
 #endif
 #define HPET_BASE_ADDRESS		0xfed00000
 
-/* Register blocks at fixed offsets from FED8_0000h and enabled in PMx04[1] */
+/* AcpiMmio blocks are at fixed offsets from FED8_0000h, enabled in PMx04[1] */
 #define AMD_SB_ACPI_MMIO_ADDR		0xfed80000
-#define APU_SMI_BASE			0xfed80200
-#define PM_MMIO_BASE			0xfed80300
-#define BIOSRAM_MMIO_BASE		0xfed80500
-#define ACPI_REG_MMIO_BASE		0xfed80800
-#define ASF_MMIO_BASE			0xfed80900
-#define SMBUS_MMIO_BASE			0xfed80a00
-#define GPIO_IOMUX_MMIO_BASE		0xfed80d00
-#define MISC_MMIO_BASE			0xfed80e00
-#define XHCI_ACPI_PM_MMIO_BASE		0xfed81c00
-#define GPIO_CONTROL_MMIO_BASE		0xfed81500
-#define AOAC_MMIO_BASE			0xfed81e00
+#define ACPIMMIO_SM_PCI_BASE		0xfed80000
+#define ACPIMMIO_SMI_BASE		0xfed80200
+#define ACPIMMIO_PMIO_BASE		0xfed80300
+#define ACPIMMIO_PMIO2_BASE		0xfed80400
+#define ACPIMMIO_BIOSRAM_BASE		0xfed80500
+#define ACPIMMIO_CMOSRAM_BASE		0xfed80600
+#define ACPIMMIO_CMOS_BASE		0xfed80700
+#define ACPIMMIO_ACPI_BASE		0xfed80800
+#define ACPIMMIO_ASF_BASE		0xfed80900
+#define ACPIMMIO_SMBUS_BASE		0xfed80a00
+#define ACPIMMIO_WDT_BASE		0xfed80b00
+#define ACPIMMIO_HPET_BASE		0xfed80c00
+#define ACPIMMIO_IOMUX_BASE		0xfed80d00
+#define ACPIMMIO_MISC_BASE		0xfed80e00
+#define ACPIMMIO_DPVGA_BASE		0xfed81400
+#define ACPIMMIO_GPIO0_BASE		0xfed81500
+#define ACPIMMIO_GPIO1_BASE		0xfed81600
+#define ACPIMMIO_GPIO2_BASE		0xfed81700
+#define ACPIMMIO_XHCIPM_BASE		0xfed81c00
+#define ACPIMMIO_ACDCTMR_BASE		0xfed81d00
+#define ACPIMMIO_AOAC_BASE		0xfed81e00
 
 #define APU_UART0_BASE			0xfedc6000
 #define APU_UART1_BASE			0xfedc8000

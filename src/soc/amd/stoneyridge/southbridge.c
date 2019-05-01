@@ -279,7 +279,7 @@ int sb_set_wideio_range(uint16_t start, uint16_t size)
 static void power_on_aoac_device(int aoac_device_control_register)
 {
 	uint8_t byte;
-	uint8_t *register_pointer = (uint8_t *)(uintptr_t)AOAC_MMIO_BASE
+	uint8_t *register_pointer = (uint8_t *)(uintptr_t)ACPIMMIO_AOAC_BASE
 			+ aoac_device_control_register;
 
 	/* Power on the UART and AMBA devices */
@@ -291,7 +291,7 @@ static void power_on_aoac_device(int aoac_device_control_register)
 static bool is_aoac_device_enabled(int aoac_device_status_register)
 {
 	uint8_t byte;
-	byte = read8((uint8_t *)(uintptr_t)AOAC_MMIO_BASE
+	byte = read8((uint8_t *)(uintptr_t)ACPIMMIO_AOAC_BASE
 			+ aoac_device_status_register);
 	byte &= (FCH_AOAC_PWR_RST_STATE | FCH_AOAC_RST_CLK_OK_STATE);
 	if (byte == (FCH_AOAC_PWR_RST_STATE | FCH_AOAC_RST_CLK_OK_STATE))
@@ -393,7 +393,7 @@ static void sb_enable_legacy_io(void)
 void sb_clk_output_48Mhz(u32 osc)
 {
 	u32 ctrl;
-	u32 *misc_clk_cntl_1_ptr = (u32 *)(uintptr_t)(MISC_MMIO_BASE
+	u32 *misc_clk_cntl_1_ptr = (u32 *)(uintptr_t)(ACPIMMIO_MISC_BASE
 				+ MISC_CLK_CNTL1);
 
 	/*
@@ -632,12 +632,12 @@ static void setup_misc(int *reboot)
 static void fch_smbus_init(void)
 {
 	pm_write8(SMB_ASF_IO_BASE, SMB_BASE_ADDR >> 8);
-	smbus_write8(SMBUS_MMIO_BASE, SMBTIMING, SMB_SPEED_400KHZ);
+	smbus_write8(ACPIMMIO_SMBUS_BASE, SMBTIMING, SMB_SPEED_400KHZ);
 	/* Clear all SMBUS status bits */
-	smbus_write8(SMBUS_MMIO_BASE, SMBHSTSTAT, SMBHST_STAT_CLEAR);
-	smbus_write8(SMBUS_MMIO_BASE, SMBSLVSTAT, SMBSLV_STAT_CLEAR);
-	smbus_write8(ASF_MMIO_BASE, SMBHSTSTAT, SMBHST_STAT_CLEAR);
-	smbus_write8(ASF_MMIO_BASE, SMBSLVSTAT, SMBSLV_STAT_CLEAR);
+	smbus_write8(ACPIMMIO_SMBUS_BASE, SMBHSTSTAT, SMBHST_STAT_CLEAR);
+	smbus_write8(ACPIMMIO_SMBUS_BASE, SMBSLVSTAT, SMBSLV_STAT_CLEAR);
+	smbus_write8(ACPIMMIO_ASF_BASE, SMBHSTSTAT, SMBHST_STAT_CLEAR);
+	smbus_write8(ACPIMMIO_ASF_BASE, SMBSLVSTAT, SMBSLV_STAT_CLEAR);
 }
 
 /* Before console init */

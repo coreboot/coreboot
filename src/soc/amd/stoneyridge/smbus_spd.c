@@ -46,7 +46,7 @@ static int readspd(uint8_t SmbusSlaveAddress, char *buffer, size_t count)
 	dev_addr = (SmbusSlaveAddress >> 1);
 
 	/* Read the first SPD byte */
-	error = do_smbus_read_byte(SMBUS_MMIO_BASE, dev_addr, 0);
+	error = do_smbus_read_byte(ACPIMMIO_SMBUS_BASE, dev_addr, 0);
 	if (error < 0) {
 		printk(BIOS_ERR, "-------------SPD READ ERROR-----------\n");
 		return error;
@@ -56,7 +56,7 @@ static int readspd(uint8_t SmbusSlaveAddress, char *buffer, size_t count)
 
 	/* Read the remaining SPD bytes using do_smbus_recv_byte for speed */
 	for (index = 1 ; index < count ; index++) {
-		error = do_smbus_recv_byte(SMBUS_MMIO_BASE, dev_addr);
+		error = do_smbus_recv_byte(ACPIMMIO_SMBUS_BASE, dev_addr);
 		if (error < 0) {
 			printk(BIOS_ERR, "-------------SPD READ ERROR-----------\n");
 			return error;

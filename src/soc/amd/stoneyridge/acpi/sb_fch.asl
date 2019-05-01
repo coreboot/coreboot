@@ -144,7 +144,7 @@ Device (MISC)
 	Name (_HID, "AMD0040")
 	Name (_UID, 0x3)
 	Name (_CRS, ResourceTemplate() {
-		Memory32Fixed(ReadWrite, MISC_MMIO_BASE, 0x100)
+		Memory32Fixed(ReadWrite, ACPIMMIO_MISC_BASE, 0x100)
 	})
 	Method (_STA, 0x0, NotSerialized)
 	{

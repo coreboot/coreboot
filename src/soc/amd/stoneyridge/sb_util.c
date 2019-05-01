@@ -20,112 +20,112 @@
 
 void pm_write8(u8 reg, u8 value)
 {
-	write8((void *)(PM_MMIO_BASE + reg), value);
+	write8((void *)(ACPIMMIO_PMIO_BASE + reg), value);
 }
 
 u8 pm_read8(u8 reg)
 {
-	return read8((void *)(PM_MMIO_BASE + reg));
+	return read8((void *)(ACPIMMIO_PMIO_BASE + reg));
 }
 
 void pm_write16(u8 reg, u16 value)
 {
-	write16((void *)(PM_MMIO_BASE + reg), value);
+	write16((void *)(ACPIMMIO_PMIO_BASE + reg), value);
 }
 
 u16 pm_read16(u8 reg)
 {
-	return read16((void *)(PM_MMIO_BASE + reg));
+	return read16((void *)(ACPIMMIO_PMIO_BASE + reg));
 }
 
 void misc_write32(u8 reg, u32 value)
 {
-	write32((void *)(MISC_MMIO_BASE + reg), value);
+	write32((void *)(ACPIMMIO_MISC_BASE + reg), value);
 }
 
 u32 misc_read32(u8 reg)
 {
-	return read32((void *)(MISC_MMIO_BASE + reg));
+	return read32((void *)(ACPIMMIO_MISC_BASE + reg));
 }
 
 void pm_write32(u8 reg, u32 value)
 {
-	write32((void *)(PM_MMIO_BASE + reg), value);
+	write32((void *)(ACPIMMIO_PMIO_BASE + reg), value);
 }
 
 u32 pm_read32(u8 reg)
 {
-	return read32((void *)(PM_MMIO_BASE + reg));
+	return read32((void *)(ACPIMMIO_PMIO_BASE + reg));
 }
 
 u8 acpi_read8(u8 reg)
 {
-	return read8((void *)(ACPI_REG_MMIO_BASE + reg));
+	return read8((void *)(ACPIMMIO_ACPI_BASE + reg));
 }
 
 u16 acpi_read16(u8 reg)
 {
-	return read16((void *)(ACPI_REG_MMIO_BASE + reg));
+	return read16((void *)(ACPIMMIO_ACPI_BASE + reg));
 }
 
 u32 acpi_read32(u8 reg)
 {
-	return read32((void *)(ACPI_REG_MMIO_BASE + reg));
+	return read32((void *)(ACPIMMIO_ACPI_BASE + reg));
 }
 
 void acpi_write8(u8 reg, u8 value)
 {
-	write8((void *)(ACPI_REG_MMIO_BASE + reg), value);
+	write8((void *)(ACPIMMIO_ACPI_BASE + reg), value);
 }
 
 void acpi_write16(u8 reg, u16 value)
 {
-	write16((void *)(ACPI_REG_MMIO_BASE + reg), value);
+	write16((void *)(ACPIMMIO_ACPI_BASE + reg), value);
 }
 
 void acpi_write32(u8 reg, u32 value)
 {
-	write32((void *)(ACPI_REG_MMIO_BASE + reg), value);
+	write32((void *)(ACPIMMIO_ACPI_BASE + reg), value);
 }
 
 void smi_write32(uint8_t offset, uint32_t value)
 {
-	write32((void *)(APU_SMI_BASE + offset), value);
+	write32((void *)(ACPIMMIO_SMI_BASE + offset), value);
 }
 
 uint32_t smi_read32(uint8_t offset)
 {
-	return read32((void *)(APU_SMI_BASE + offset));
+	return read32((void *)(ACPIMMIO_SMI_BASE + offset));
 }
 
 uint16_t smi_read16(uint8_t offset)
 {
-	return read16((void *)(APU_SMI_BASE + offset));
+	return read16((void *)(ACPIMMIO_SMI_BASE + offset));
 }
 
 void smi_write16(uint8_t offset, uint16_t value)
 {
-	write16((void *)(APU_SMI_BASE + offset), value);
+	write16((void *)(ACPIMMIO_SMI_BASE + offset), value);
 }
 
 uint8_t smi_read8(uint8_t offset)
 {
-	return read8((void *)(APU_SMI_BASE + offset));
+	return read8((void *)(ACPIMMIO_SMI_BASE + offset));
 }
 
 void smi_write8(uint8_t offset, uint8_t value)
 {
-	write8((void *)(APU_SMI_BASE + offset), value);
+	write8((void *)(ACPIMMIO_SMI_BASE + offset), value);
 }
 
 uint8_t biosram_read8(uint8_t offset)
 {
-	return read8((void *)(BIOSRAM_MMIO_BASE + offset));
+	return read8((void *)(ACPIMMIO_BIOSRAM_BASE + offset));
 }
 
 void biosram_write8(uint8_t offset, uint8_t value)
 {
-	write8((void *)(BIOSRAM_MMIO_BASE + offset), value);
+	write8((void *)(ACPIMMIO_BIOSRAM_BASE + offset), value);
 }
 
 /* BiosRam may only be accessed a byte at a time */
@@ -174,32 +174,32 @@ uint16_t pm_acpi_pm_evt_blk(void)
 
 void xhci_pm_write8(uint8_t reg, uint8_t value)
 {
-	write8((void *)(XHCI_ACPI_PM_MMIO_BASE + reg), value);
+	write8((void *)(ACPIMMIO_XHCIPM_BASE + reg), value);
 }
 
 uint8_t xhci_pm_read8(uint8_t reg)
 {
-	return read8((void *)(XHCI_ACPI_PM_MMIO_BASE + reg));
+	return read8((void *)(ACPIMMIO_XHCIPM_BASE + reg));
 }
 
 void xhci_pm_write16(uint8_t reg, uint16_t value)
 {
-	write16((void *)(XHCI_ACPI_PM_MMIO_BASE + reg), value);
+	write16((void *)(ACPIMMIO_XHCIPM_BASE + reg), value);
 }
 
 uint16_t xhci_pm_read16(uint8_t reg)
 {
-	return read16((void *)(XHCI_ACPI_PM_MMIO_BASE + reg));
+	return read16((void *)(ACPIMMIO_XHCIPM_BASE + reg));
 }
 
 void xhci_pm_write32(uint8_t reg, uint32_t value)
 {
-	write32((void *)(XHCI_ACPI_PM_MMIO_BASE + reg), value);
+	write32((void *)(ACPIMMIO_XHCIPM_BASE + reg), value);
 }
 
 uint32_t xhci_pm_read32(uint8_t reg)
 {
-	return read32((void *)(XHCI_ACPI_PM_MMIO_BASE + reg));
+	return read32((void *)(ACPIMMIO_XHCIPM_BASE + reg));
 }
 
 void smbus_write8(uint32_t mmio, uint8_t reg, uint8_t value)

@@ -35,7 +35,7 @@ Device (I2S)
 		Name (RBUF, ResourceTemplate () {
 			// Memory resource is for MISC FCH register set.
 			// It is needed for enabling the clock.
-			Memory32Fixed(ReadWrite, MISC_MMIO_BASE, 0x100)
+			Memory32Fixed(ReadWrite, ACPIMMIO_MISC_BASE, 0x100)
 		})
 
 		Return (RBUF)

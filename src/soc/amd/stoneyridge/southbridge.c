@@ -391,14 +391,12 @@ static void sb_enable_legacy_io(void)
 void sb_clk_output_48Mhz(u32 osc)
 {
 	u32 ctrl;
-	u32 *misc_clk_cntl_1_ptr = (u32 *)(uintptr_t)(ACPIMMIO_MISC_BASE
-				+ MISC_CLK_CNTL1);
 
 	/*
 	 * Clear the disable for OSCOUT1 (signal typically named XnnM_25M_48M)
 	 * or OSCOUT2 (USBCLK/25M_48M_OSC).  The frequency defaults to 48MHz.
 	 */
-	ctrl = read32(misc_clk_cntl_1_ptr);
+	ctrl = misc_read32(MISC_CLK_CNTL1);
 
 	switch (osc) {
 	case 1:
@@ -410,7 +408,7 @@ void sb_clk_output_48Mhz(u32 osc)
 	default:
 		return; /* do nothing if invalid */
 	}
-	write32(misc_clk_cntl_1_ptr, ctrl);
+	misc_write32(MISC_CLK_CNTL1, ctrl);
 }
 
 static uintptr_t sb_spibase(void)

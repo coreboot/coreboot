@@ -219,9 +219,29 @@ void smbus_write16(u8 reg, u16 value)
 
 /* misc read/write - access registers at 0xfed80e00 */
 
+u8 misc_read8(u8 reg)
+{
+	return read8((void *)(ACPIMMIO_MISC_BASE + reg));
+}
+
+u16 misc_read16(u8 reg)
+{
+	return read16((void *)(ACPIMMIO_MISC_BASE + reg));
+}
+
 u32 misc_read32(u8 reg)
 {
 	return read32((void *)(ACPIMMIO_MISC_BASE + reg));
+}
+
+void misc_write8(u8 reg, u8 value)
+{
+	write8((void *)(ACPIMMIO_MISC_BASE + reg), value);
+}
+
+void misc_write16(u8 reg, u16 value)
+{
+	write16((void *)(ACPIMMIO_MISC_BASE + reg), value);
 }
 
 void misc_write32(u8 reg, u32 value)

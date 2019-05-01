@@ -37,7 +37,6 @@ endif
 
 ramstage-y += rcba.c
 ramstage-y += me_status.c
-ramstage-y += watchdog.c
 ramstage-y += acpi.c
 
 ramstage-$(CONFIG_ELOG) += elog.c

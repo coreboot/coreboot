@@ -29,8 +29,6 @@ ramstage-y += ../common/pciehp.c
 
 ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/hda_verb.c
 
-ramstage-y += ../i82801gx/watchdog.c
-
 ifneq ($(CONFIG_SMM_TSEG),y)
 ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smi.c
 ramstage-$(CONFIG_HAVE_SMI_HANDLER) += ../../../cpu/x86/smm/smmrelocate.S

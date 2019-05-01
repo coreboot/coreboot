@@ -27,6 +27,8 @@ ramstage-$(CONFIG_SOUTHBRIDGE_INTEL_COMMON_SMBUS) += smbus.c
 
 romstage-$(CONFIG_SOUTHBRIDGE_INTEL_COMMON_PMCLIB) += pmclib.c
 
+ramstage-$(CONFIG_SOUTHBRIDGE_INTEL_COMMON_WATCHDOG) += watchdog.c
+
 ifeq ($(CONFIG_SOUTHBRIDGE_INTEL_COMMON),y)
 
 verstage-y += pmbase.c

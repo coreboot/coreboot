@@ -16,41 +16,44 @@
  */
 
 #include <console/console.h>
-#include <arch/io.h>
-#include <device/pci_ops.h>
 #include <device/device.h>
 #include <device/pci.h>
+#include <device/pci_def.h>
+#include <device/pci_ops.h>
+#include <southbridge/intel/common/pmbase.h>
+#include <southbridge/intel/common/tco.h>
 #include <watchdog.h>
 
-  //
-  //  Disable PCH Watchdog timer at SB_RCBA+0x3410
-  //
-  //  Mmio32((MmPci32(0, 0, 0x1F, 0, 0xF0) & ~BIT0), 0x3410) |= 0x20;
-  //
+/*
+ *  Disable ICH-NM10-PCH watchdog timer
+ */
 void watchdog_off(void)
 {
+	unsigned int value;
 	struct device *dev;
-	unsigned long value, base;
 
-	/* Turn off the ICH7 watchdog. */
+	/* Get LPC device. */
 	dev = pcidev_on_root(0x1f, 0);
 
-	/* Enable I/O space. */
-	value = pci_read_config16(dev, 0x04);
-	value |= (1 << 10);
-	pci_write_config16(dev, 0x04, value);
+	value = pci_read_config16(dev, PCI_COMMAND);
 
-	/* Get TCO base. */
-	base = (pci_read_config32(dev, 0x40) & 0x0fffe) + 0x60;
+	if (CONFIG(SOUTHBRIDGE_INTEL_FSP_RANGELEY)) {
+		/* Enable I/O space. */
+		value |= PCI_COMMAND_IO;
+	} else {
+		/* Disable interrupt. */
+		value |= PCI_COMMAND_INT_DISABLE;
+	}
+	pci_write_config16(dev, PCI_COMMAND, value);
 
 	/* Disable the watchdog timer. */
-	value = inw(base + 0x08);
-	value |= 1 << 11;
-	outw(value, base + 0x08);
+	value = read_pmbase16(PMBASE_TCO_OFFSET + TCO1_CNT);
+	value |= TCO_TMR_HLT;
+	write_pmbase16(PMBASE_TCO_OFFSET + TCO1_CNT, value);
 
 	/* Clear TCO timeout status. */
-	outw(0x0008, base + 0x04);
-	outw(0x0002, base + 0x06);
+	write_pmbase16(PMBASE_TCO_OFFSET + TCO1_STS, TCO1_TIMEOUT);
+	write_pmbase16(PMBASE_TCO_OFFSET + TCO2_STS, SECOND_TO_STS);
 
-	printk(BIOS_DEBUG, "PCH watchdog disabled\n");
+	printk(BIOS_DEBUG, "ICH-NM10-PCH: watchdog disabled\n");
 }

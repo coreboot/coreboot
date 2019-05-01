@@ -65,6 +65,10 @@ config INTEL_CHIPSET_LOCKDOWN
 	  and S3 resume (always done by coreboot). Select this to let coreboot
 	  to do this on normal boot path.
 
+config SOUTHBRIDGE_INTEL_COMMON_WATCHDOG
+	bool
+	depends on SOUTHBRIDGE_INTEL_COMMON
+
 if SOUTHBRIDGE_INTEL_COMMON_FINALIZE
 
 choice

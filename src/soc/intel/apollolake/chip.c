@@ -395,6 +395,12 @@ static void soc_init(void *data)
 	 * default policy that doesn't honor boards' requirements. */
 	itss_snapshot_irq_polarities(GPIO_IRQ_START, GPIO_IRQ_END);
 
+	/*
+	 * Clear the GPI interrupt status and enable registers. These
+	 * registers do not get reset to default state when booting from S5.
+	 */
+	gpi_clear_int_cfg();
+
 	fsp_silicon_init(romstage_handoff_is_resume());
 
 	/* Restore GPIO IRQ polarities back to previous settings. */

@@ -56,8 +56,10 @@ static int number(void (*tx_byte)(unsigned char byte, void *data),
 	int count = 0;
 #ifdef SUPPORT_64BIT_INTS
 	unsigned long long num = inum;
+	long long snum = num;
 #else
-	unsigned long num = (long)inum;
+	unsigned long num = (unsigned long)inum;
+	long snum = (long)num;
 
 	if (num != inum) {
 		/* Alert user to an incorrect result by printing #^!. */
@@ -76,9 +78,9 @@ static int number(void (*tx_byte)(unsigned char byte, void *data),
 	c = (type & ZEROPAD) ? '0' : ' ';
 	sign = 0;
 	if (type & SIGN) {
-		if ((signed long long)num < 0) {
+		if (snum < 0) {
 			sign = '-';
-			num = -num;
+			num = -snum;
 			size--;
 		} else if (type & PLUS) {
 			sign = '+';

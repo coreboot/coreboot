@@ -648,8 +648,8 @@ static int spi_ctrlr_setup(const struct spi_slave *slave)
 {
 	struct ipq_spi_slave *ds = NULL;
 	int i;
-	unsigned int bus = slave->bus;
-	unsigned int cs = slave->cs;
+	int bus = slave->bus;
+	int cs = slave->cs;
 
 	if ((bus < BLSP0_SPI) || (bus > BLSP1_SPI)
 		|| ((bus == BLSP0_SPI) && (cs > 2))

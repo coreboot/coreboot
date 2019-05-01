@@ -506,7 +506,6 @@ NbSmuReadEfuseField (
   UINT32  Address;
   UINT16  Shift;
   ASSERT (Length <= 32);
-  ASSERT (Chain <= 0xff);
   Shift = (Offset - (Offset & ~0x7));
   Address = 0xFE000000 | (Chain << 12) | (Offset >> 3);
   Value = NbSmuReadEfuse (Address, StdHeader);

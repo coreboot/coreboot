@@ -136,7 +136,7 @@ MemPGetMaxFreqSupported (
   UINT16 MaxFreqSupported;
   UINT16 *SpeedArray;
   UINT8 DDR3Voltage;
-  UINT8 CurrentVoltage;
+  INT8 CurrentVoltage;
   DIMM_TYPE DimmType;
   CPU_LOGICAL_ID LogicalCpuid;
   UINT8 PackageType;

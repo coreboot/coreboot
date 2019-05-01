@@ -478,8 +478,7 @@ qup_return_t qup_set_state(blsp_qup_id_t id, uint32_t state)
 	qup_return_t ret = QUP_ERR_UNDEFINED;
 	unsigned curr_state = read32(QUP_ADDR(id, QUP_STATE));
 
-	if ((state >= QUP_STATE_RESET && state <= QUP_STATE_PAUSE)
-		&& (curr_state & QUP_STATE_VALID_MASK)) {
+	if (state <= QUP_STATE_PAUSE && (curr_state & QUP_STATE_VALID_MASK)) {
 		/*
 		* For PAUSE_STATE to RESET_STATE transition,
 		* two writes of  10[binary]) are required for the

@@ -760,8 +760,8 @@ static int spi_ctrlr_setup(const struct spi_slave *slave)
 {
 	struct ipq_spi_slave *ds = NULL;
 	int i;
-	unsigned int bus = slave->bus;
-	unsigned int cs = slave->cs;
+	int bus = slave->bus;
+	int cs = slave->cs;
 
 	/*
 	 * IPQ GSBI (Generic Serial Bus Interface) supports SPI Flash

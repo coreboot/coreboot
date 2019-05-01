@@ -287,7 +287,7 @@ DmiF16KbGetVoltage (
   LibAmdMsrRead ((MSR_PSTATE_0 + NumberBoostStates), &MsrData, StdHeader);
   MaxVid = (UINT8) (((PSTATE_MSR *)&MsrData)->CpuVid);
 
-  if ((MaxVid >= 0xF8) && (MaxVid <= 0xFF)) {
+  if ((MaxVid >= 0xF8)) {
     Voltage = 0;
   } else {
     Voltage = (UINT8) ((155000L - (625 * MaxVid) + 5000) / 10000);

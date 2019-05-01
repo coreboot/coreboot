@@ -96,7 +96,7 @@ static void rockchip_spi_set_clk(struct rockchip_spi *regs, unsigned int hz)
 
 void rockchip_spi_init(unsigned int bus, unsigned int speed_hz)
 {
-	assert(bus >= 0 && bus < ARRAY_SIZE(rockchip_spi_slaves));
+	assert(bus < ARRAY_SIZE(rockchip_spi_slaves));
 	struct rockchip_spi *regs = rockchip_spi_slaves[bus].regs;
 	unsigned int ctrlr0 = 0;
 
@@ -134,13 +134,13 @@ void rockchip_spi_init(unsigned int bus, unsigned int speed_hz)
 
 void rockchip_spi_set_sample_delay(unsigned int bus, unsigned int delay_ns)
 {
-	assert(bus >= 0 && bus < ARRAY_SIZE(rockchip_spi_slaves));
+	assert(bus < ARRAY_SIZE(rockchip_spi_slaves));
 	struct rockchip_spi *regs = rockchip_spi_slaves[bus].regs;
 	unsigned int rsd;
 
 	/* Rxd Sample Delay */
 	rsd = DIV_ROUND_CLOSEST(delay_ns * (SPI_SRCCLK_HZ >> 8), 1*GHz >> 8);
-	assert(rsd >= 0 && rsd <= 3);
+	assert(rsd <= 3);
 	clrsetbits_le32(&regs->ctrlr0, SPI_RXDSD_MASK << SPI_RXDSD_OFFSET,
 			rsd << SPI_RXDSD_OFFSET);
 }

@@ -44,7 +44,7 @@ void mainboard_save_dimm_info(void)
 
 	if (!CONFIG(DRAM_PART_NUM_ALWAYS_IN_CBI)) {
 		/* Fall back on part numbers encoded in lp4cfg array. */
-		if (board_id() < CONFIG_DRAM_PART_IN_CBI_BOARD_ID_MIN) {
+		if ((int)board_id() < CONFIG_DRAM_PART_IN_CBI_BOARD_ID_MIN) {
 			save_dimm_info_by_sku_config();
 			return;
 		}

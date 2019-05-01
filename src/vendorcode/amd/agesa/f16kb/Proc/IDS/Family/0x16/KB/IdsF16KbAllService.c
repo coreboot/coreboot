@@ -63,6 +63,9 @@
 CODE_GROUP (G3_DXE)
 RDATA_GROUP (G3_DXE)
 
+/* Don't warn when checking header-defined ranges that may start at 0. */
+#pragma GCC diagnostic ignored "-Wtype-limits"
+
 #define FILECODE PROC_IDS_FAMILY_0X16_KB_IDSF16KBALLSERVICE_FILECODE
 
 /**

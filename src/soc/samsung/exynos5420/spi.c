@@ -206,7 +206,7 @@ static void spi_ctrlr_release_bus(const struct spi_slave *slave)
 
 static int spi_ctrlr_setup(const struct spi_slave *slave)
 {
-	ASSERT(slave->bus >= 0 && slave->bus < 3);
+	ASSERT(slave->bus < 3);
 	struct exynos_spi_slave *eslave;
 
 	eslave = to_exynos_spi(slave);

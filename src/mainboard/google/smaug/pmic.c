@@ -36,10 +36,6 @@ struct max77620_init_reg {
 	u8 delay;
 };
 
-static struct max77620_init_reg init_list[] = {
-	/* TODO */
-};
-
 static void pmic_write_reg(unsigned bus, uint8_t chip, uint8_t reg, uint8_t val,
 			   int delay)
 {
@@ -66,20 +62,8 @@ static inline void pmic_write_reg_77621(unsigned bus, uint8_t reg, uint8_t val,
 	pmic_write_reg(bus, MAX77621_CPU_I2C_ADDR, reg, val, delay);
 }
 
-static void pmic_slam_defaults(unsigned bus)
-{
-	int i;
-	for (i = 0; i < ARRAY_SIZE(init_list); i++) {
-		struct max77620_init_reg *reg = &init_list[i];
-		pmic_write_reg_77620(bus, reg->reg, reg->val, reg->delay);
-	}
-}
-
 void pmic_init(unsigned bus)
 {
-	/* Restore PMIC POR defaults, in case kernel changed 'em */
-	pmic_slam_defaults(bus);
-
 	/* MAX77620: Set SD0 to 1.0V - VDD_CORE */
 	pmic_write_reg_77620(bus, MAX77620_SD0_REG, 0x20, 1);
 	pmic_write_reg_77620(bus, MAX77620_VDVSSD0_REG, 0x20, 1);

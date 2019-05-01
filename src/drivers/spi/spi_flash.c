@@ -339,7 +339,7 @@ int spi_flash_generic_probe(const struct spi_slave *spi,
 	printk(BIOS_INFO, "Manufacturer: %02x\n", *idp);
 
 	/* search the table for matches in shift and id */
-	for (i = 0; i < ARRAY_SIZE(flashes); ++i)
+	for (i = 0; i < (int)ARRAY_SIZE(flashes); ++i)
 		if (flashes[i].shift == shift && flashes[i].idcode == *idp) {
 			/* we have a match, call probe */
 			if (flashes[i].probe(spi, idp, flash) == 0) {

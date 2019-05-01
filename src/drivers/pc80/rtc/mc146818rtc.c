@@ -39,6 +39,9 @@
 #define LB_CKS_LOC		0
 #endif
 
+/* Don't warn for checking >= LB_CKS_RANGE_START even though it may be 0. */
+#pragma GCC diagnostic ignored "-Wtype-limits"
+
 #include <smp/spinlock.h>
 
 #if (defined(__PRE_RAM__) &&	\

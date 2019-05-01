@@ -215,7 +215,37 @@ void smbus_write16(u8 reg, u16 value)
 
 /* hpet read/write - access registers at 0xfed80c00 - not currently used */
 
-/* iomux read/write - access registers at 0xfed80d00 - not currently used */
+/* iomux read/write - access registers at 0xfed80d00 */
+
+u8 iomux_read8(u8 reg)
+{
+	return read8((void *)(ACPIMMIO_IOMUX_BASE + reg));
+}
+
+u16 iomux_read16(u8 reg)
+{
+	return read16((void *)(ACPIMMIO_IOMUX_BASE + reg));
+}
+
+u32 iomux_read32(u8 reg)
+{
+	return read32((void *)(ACPIMMIO_IOMUX_BASE + reg));
+}
+
+void iomux_write8(u8 reg, u8 value)
+{
+	write8((void *)(ACPIMMIO_IOMUX_BASE + reg), value);
+}
+
+void iomux_write16(u8 reg, u16 value)
+{
+	write16((void *)(ACPIMMIO_IOMUX_BASE + reg), value);
+}
+
+void iomux_write32(u8 reg, u32 value)
+{
+	write32((void *)(ACPIMMIO_IOMUX_BASE + reg), value);
+}
 
 /* misc read/write - access registers at 0xfed80e00 */
 

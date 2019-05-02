@@ -14,6 +14,8 @@
  * GNU General Public License for more details.
  */
 
+External(\_SB.MS0X, MethodObj)
+
 scope(\_SB)
 {
 	Device(LPID) {
@@ -62,12 +64,20 @@ scope(\_SB)
 			 */
 			If(Arg2 == 5) {
 				\_SB.PCI0.LPCB.EC0.S0IX(1)
+				/* provide board level s0ix hook */
+				If (CondRefOf (\_SB.MS0X)) {
+					\_SB.MS0X(1)
+				}
 			}
 			/*
 			 * Function 6.
 			 */
 			If(Arg2 == 6) {
 				\_SB.PCI0.LPCB.EC0.S0IX(0)
+				/* provide board level s0ix hook */
+				If (CondRefOf (\_SB.MS0X)) {
+					\_SB.MS0X(0)
+				}
 			}
 		}
 		Return(Buffer(One) {0x00})

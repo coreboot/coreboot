@@ -44,6 +44,10 @@ void graphics_soc_init(struct device *dev);
 uintptr_t graphics_soc_write_acpi_opregion(struct device *device,
 		uintptr_t current, struct acpi_rsdp *rsdp);
 
+/* i915 controller info for ACPI backlight controls */
+const struct i915_gpu_controller_info *
+intel_igd_get_controller_info(struct device *device);
+
 /* Graphics MMIO register read/write APIs */
 uint32_t graphics_gtt_read(unsigned long reg);
 void graphics_gtt_write(unsigned long reg, uint32_t data);

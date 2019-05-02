@@ -271,6 +271,16 @@ void xhci_pm_write32(uint8_t reg, uint32_t value)
 
 /* aoac read/write - access registers at 0xfed81e00 - not currently used */
 
+u8 aoac_read8(u8 reg)
+{
+	return read8((void *)(ACPIMMIO_AOAC_BASE + reg));
+}
+
+void aoac_write8(u8 reg, u8 value)
+{
+	write8((void *)(ACPIMMIO_AOAC_BASE + reg), value);
+}
+
 uint16_t pm_acpi_pm_cnt_blk(void)
 {
 	return pm_read16(PM1_CNT_BLK);

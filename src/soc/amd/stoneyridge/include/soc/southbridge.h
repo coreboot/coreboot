@@ -533,6 +533,8 @@ uint8_t smbus_read8(uint8_t offset);
 uint16_t smbus_read16(uint8_t offset);
 void smbus_write8(uint8_t offset, uint8_t value);
 void smbus_write16(uint8_t offset, uint16_t value);
+uint8_t aoac_read8(uint8_t reg);
+void aoac_write8(uint8_t reg, uint8_t value);
 void bootblock_fch_early_init(void);
 void bootblock_fch_init(void);
 /**

@@ -279,20 +279,18 @@ int sb_set_wideio_range(uint16_t start, uint16_t size)
 static void power_on_aoac_device(int aoac_device_control_register)
 {
 	uint8_t byte;
-	uint8_t *register_pointer = (uint8_t *)(uintptr_t)ACPIMMIO_AOAC_BASE
-			+ aoac_device_control_register;
 
 	/* Power on the UART and AMBA devices */
-	byte = read8(register_pointer);
+	byte = aoac_read8(aoac_device_control_register);
 	byte |= FCH_AOAC_PWR_ON_DEV;
-	write8(register_pointer, byte);
+	aoac_write8(aoac_device_control_register, byte);
 }
 
 static bool is_aoac_device_enabled(int aoac_device_status_register)
 {
 	uint8_t byte;
-	byte = read8((uint8_t *)(uintptr_t)ACPIMMIO_AOAC_BASE
-			+ aoac_device_status_register);
+
+	byte = aoac_read8(aoac_device_status_register);
 	byte &= (FCH_AOAC_PWR_RST_STATE | FCH_AOAC_RST_CLK_OK_STATE);
 	if (byte == (FCH_AOAC_PWR_RST_STATE | FCH_AOAC_RST_CLK_OK_STATE))
 		return true;

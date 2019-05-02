@@ -1153,7 +1153,6 @@ config GENERIC_SPD_BIN
 config DIMM_MAX
 	int
 	default 4
-	depends on GENERIC_SPD_BIN
 	help
 	  Total number of memory DIMM slots available on motherboard.
 	  It is multiplication of number of channel to number of DIMMs per

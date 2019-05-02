@@ -16,13 +16,15 @@
  */
 
 #include <device/mmio.h>
+#include <device/device.h>
 #include <console/console.h>
 #include <delay.h>
 #include <gpio.h>
+#include <amdblocks/acpimmio.h>
 #include <soc/gpio.h>
 #include <soc/pci_devs.h>
-#include <soc/southbridge.h>
 #include <assert.h>
+#include "chip.h"
 
 static const struct soc_amd_event gpio_event_table[] = {
 	{ GPIO_1, GEVENT_19 },

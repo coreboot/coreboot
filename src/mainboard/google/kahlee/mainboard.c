@@ -27,6 +27,7 @@
 #include <soc/nvs.h>
 #include <soc/pci_devs.h>
 #include <soc/southbridge.h>
+#include <amdblocks/acpimmio.h>
 #include <variant/ec.h>
 #include <variant/thermal.h>
 #include <vendorcode/google/chromeos/chromeos.h>

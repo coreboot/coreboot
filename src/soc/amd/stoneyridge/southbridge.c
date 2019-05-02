@@ -27,6 +27,7 @@
 #include <amdblocks/amd_pci_util.h>
 #include <amdblocks/agesawrapper.h>
 #include <amdblocks/reset.h>
+#include <amdblocks/acpimmio.h>
 #include <soc/southbridge.h>
 #include <soc/smbus.h>
 #include <soc/smi.h>
@@ -359,16 +360,6 @@ void sb_lpc_decode(void)
 	pci_write_config32(SOC_LPC_DEV, LPC_IO_PORT_DECODE_ENABLE, tmp);
 }
 
-void sb_acpi_mmio_decode(void)
-{
-	uint8_t byte;
-
-	/* Enable ACPI MMIO range 0xfed80000 - 0xfed81fff */
-	byte = pm_io_read8(PM_ISA_CONTROL);
-	byte |= MMIO_EN;
-	pm_io_write8(PM_ISA_CONTROL, byte);
-}
-
 static void sb_enable_cf9_io(void)
 {
 	uint32_t reg = pm_read32(PM_DECODE_EN);
@@ -642,7 +633,7 @@ void bootblock_fch_early_init(void)
 	sb_lpc_early_setup();
 	sb_spibase();
 	sb_disable_4dw_burst(); /* Must be disabled on CZ(ST) */
-	sb_acpi_mmio_decode();
+	enable_acpimmio_decode();
 	fch_smbus_init();
 	sb_enable_cf9_io();
 	setup_spread_spectrum(&reboot);

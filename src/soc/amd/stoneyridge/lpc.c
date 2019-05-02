@@ -27,6 +27,7 @@
 #include <arch/ioapic.h>
 #include <pc80/i8254.h>
 #include <pc80/i8259.h>
+#include <amdblocks/acpimmio.h>
 #include <soc/acpi.h>
 #include <soc/pci_devs.h>
 #include <soc/southbridge.h>

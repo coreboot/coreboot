@@ -15,6 +15,7 @@
 
 #include <arch/acpi.h>
 #include <soc/southbridge.h>
+#include <amdblocks/acpimmio.h>
 #include <security/vboot/vboot_common.h>
 #include <security/vboot/vbnv.h>
 #include <pc80/mc146818rtc.h>

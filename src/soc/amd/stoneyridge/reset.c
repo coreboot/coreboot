@@ -20,6 +20,7 @@
 #include <soc/pci_devs.h>
 #include <device/pci_ops.h>
 #include <soc/southbridge.h>
+#include <amdblocks/acpimmio.h>
 #include <amdblocks/reset.h>
 
 void set_warm_reset_flag(void)

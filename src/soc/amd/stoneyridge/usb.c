@@ -22,7 +22,7 @@
 #include <soc/acpi.h>
 #include <soc/pci_devs.h>
 #include <soc/southbridge.h>
-
+#include <amdblocks/acpimmio.h>
 
 static void set_usb_over_current(struct device *dev)
 {

@@ -28,6 +28,7 @@
 #include <cbmem.h>
 #include <device/device.h>
 #include <device/pci.h>
+#include <amdblocks/acpimmio.h>
 #include <soc/acpi.h>
 #include <soc/pci_devs.h>
 #include <soc/southbridge.h>

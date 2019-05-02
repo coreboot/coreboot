@@ -16,6 +16,7 @@
 #include <arch/io.h>
 #include <stdint.h>
 #include <console/console.h>
+#include <amdblocks/acpimmio.h>
 #include <soc/smbus.h>
 #include <soc/southbridge.h>
 

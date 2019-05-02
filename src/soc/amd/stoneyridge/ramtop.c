@@ -25,7 +25,8 @@
 #include <stage_cache.h>
 #include <arch/bert_storage.h>
 #include <soc/northbridge.h>
-#include <soc/southbridge.h>
+#include <soc/iomap.h>
+#include <amdblocks/acpimmio.h>
 
 void backup_top_of_low_cacheable(uintptr_t ramtop)
 {

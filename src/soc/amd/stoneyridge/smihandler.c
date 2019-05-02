@@ -24,6 +24,7 @@
 #include <device/pci_def.h>
 #include <soc/smi.h>
 #include <soc/southbridge.h>
+#include <amdblocks/acpimmio.h>
 #include <elog.h>
 
 /* bits in smm_io_trap   */

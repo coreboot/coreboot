@@ -15,6 +15,7 @@
 
 #include <arch/acpi.h>
 #include <soc/southbridge.h>
+#include <amdblocks/acpimmio.h>
 #include <halt.h>
 
 void poweroff(void)

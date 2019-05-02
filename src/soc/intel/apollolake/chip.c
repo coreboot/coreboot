@@ -50,6 +50,7 @@
 #include <soc/systemagent.h>
 #include <spi-generic.h>
 #include <timer.h>
+#include <soc/ramstage.h>
 
 #include "chip.h"
 
@@ -762,6 +763,8 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *silupd)
 
 	/* Set VTD feature according to devicetree */
 	silconfig->VtdEnable = cfg->enable_vtd;
+
+	mainboard_silicon_init_params(silconfig);
 }
 
 struct chip_operations soc_intel_apollolake_ops = {
@@ -877,6 +880,12 @@ void platform_fsp_notify_status(enum fsp_notify_phase phase)
 static void spi_flash_init_cb(void *unused)
 {
 	fast_spi_init();
+}
+
+__weak
+void mainboard_silicon_init_params(FSP_S_CONFIG *silconfig)
+{
+	printk(BIOS_DEBUG, "WEAK: %s/%s called\n", __FILE__, __func__);
 }
 
 BOOT_STATE_INIT_ENTRY(BS_PRE_DEVICE, BS_ON_ENTRY, spi_flash_init_cb, NULL);

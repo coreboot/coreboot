@@ -68,6 +68,10 @@ If you are using SSH keys, select **ssh** from the tabs under "Project
 coreboot" and run the "clone with commit-msg hook" command that's provided.
 This should prompt you for your id_rsa passphrase, if you previously set one.
 
+**Note:** if the **ssh** option is not showing, check that you have a username
+set. Click the profile picture at the top right and select **User Settings**,
+then set your username in the **Profile** section.
+
 If you are using HTTP, instead, select **http** from the tabs under "Project coreboot"
 and run the command that appears
 

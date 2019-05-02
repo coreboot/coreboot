@@ -20,7 +20,7 @@
 #include <stdint.h>
 #include <commonlib/helpers.h>
 #include <drivers/i2c/designware/dw_i2c.h>
-#include <soc/gpio.h>
+#include <soc/i2c.h>
 #include <arch/acpi_device.h>
 
 #define MAX_NODES 1

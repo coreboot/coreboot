@@ -22,13 +22,13 @@
 #include <arch/acpi.h>
 #include <arch/interrupt.h>
 #include <boot/coreboot_tables.h>
-#include "onboard.h"
-#include "ec.h"
 #include <southbridge/intel/bd82x6x/pch.h>
-#include <smbios.h>
 #include <device/pci.h>
 #include <ec/quanta/it8518/ec.h>
 #include <vendorcode/google/chromeos/chromeos.h>
+
+#include "ec.h"
+#include "onboard.h"
 
 void mainboard_suspend_resume(void)
 {

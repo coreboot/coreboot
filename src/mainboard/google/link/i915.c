@@ -25,19 +25,18 @@
 #include <arch/io.h>
 #include <arch/interrupt.h>
 #include <boot/coreboot_tables.h>
-#include "onboard.h"
-#include "ec.h"
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <northbridge/intel/sandybridge/gma.h>
-#include <smbios.h>
 #include <device/pci.h>
 #include <ec/google/chromeec/ec.h>
-
 #include <cpu/x86/tsc.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/msr.h>
 #include <edid.h>
+
+#include "ec.h"
+#include "onboard.h"
 #include "i915io.h"
 
 enum {

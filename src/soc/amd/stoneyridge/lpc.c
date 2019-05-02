@@ -25,7 +25,6 @@
 #include <pc80/mc146818rtc.h>
 #include <pc80/isa-dma.h>
 #include <arch/ioapic.h>
-#include <arch/acpi.h>
 #include <pc80/i8254.h>
 #include <pc80/i8259.h>
 #include <soc/acpi.h>
@@ -324,18 +323,6 @@ static void lpc_enable_resources(struct device *dev)
 {
 	pci_dev_enable_resources(dev);
 	lpc_enable_childrens_resources(dev);
-}
-
-unsigned long acpi_fill_mcfg(unsigned long current)
-{
-
-	current += acpi_create_mcfg_mmconfig((acpi_mcfg_mmconfig_t *)current,
-					     CONFIG_MMCONF_BASE_ADDRESS,
-					     0,
-					     0,
-					     CONFIG_MMCONF_BUS_NUMBER);
-
-	return current;
 }
 
 static struct pci_operations lops_pci = {

@@ -29,7 +29,7 @@ void bootblock_mainboard_early_init(void)
 	mainboard_ec_init();
 
 	gpios = variant_early_gpio_table(&num_gpios);
-	sb_program_gpios(gpios, num_gpios);
+	program_gpios(gpios, num_gpios);
 }
 
 void bootblock_mainboard_init(void)

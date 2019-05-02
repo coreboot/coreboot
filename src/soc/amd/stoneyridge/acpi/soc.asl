@@ -28,4 +28,4 @@ Device(PCI0) {
 #include "sb_fch.asl"
 
 /* Add GPIO library */
-#include <gpio_lib.asl>
+#include <soc/amd/common/acpi/gpio_bank_lib.asl>

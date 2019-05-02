@@ -203,7 +203,7 @@ void sb_reset_i2c_slaves(void)
 	/* Save and reprogram I2C SCL pins */
 	for (i = 0; i < saved_pins_count; i++)
 		save_i2c_pin_registers(i2c_2_gpi[i].gpio, &save_table[i]);
-	sb_program_gpios(i2c_2_gpi, saved_pins_count);
+	program_gpios(i2c_2_gpi, saved_pins_count);
 
 	/*
 	 * Toggle SCL back and forth 9 times under 100KHz. A single read is

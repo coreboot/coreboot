@@ -34,7 +34,7 @@ void mainboard_romstage_entry(int s3_resume)
 	const struct soc_amd_gpio *gpios;
 
 	gpios = variant_romstage_gpio_table(&num_gpios);
-	sb_program_gpios(gpios, num_gpios);
+	program_gpios(gpios, num_gpios);
 
 	variant_romstage_entry(s3_resume);
 }

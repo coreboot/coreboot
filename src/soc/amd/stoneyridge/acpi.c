@@ -317,9 +317,9 @@ static void acpigen_soc_get_gpio_in_local5(uintptr_t addr)
 
 static int acpigen_soc_get_gpio_val(unsigned int gpio_num, uint32_t mask)
 {
-	if (gpio_num >= GPIO_TOTAL_PINS) {
+	if (gpio_num >= SOC_GPIO_TOTAL_PINS) {
 		printk(BIOS_WARNING, "Warning: Pin %d should be smaller than"
-					" %d\n", gpio_num, GPIO_TOTAL_PINS);
+					" %d\n", gpio_num, SOC_GPIO_TOTAL_PINS);
 		return -1;
 	}
 	uintptr_t addr = (uintptr_t) gpio_get_address(gpio_num);
@@ -347,9 +347,9 @@ static int acpigen_soc_get_gpio_val(unsigned int gpio_num, uint32_t mask)
 
 static int acpigen_soc_set_gpio_val(unsigned int gpio_num, uint32_t val)
 {
-	if (gpio_num >= GPIO_TOTAL_PINS) {
+	if (gpio_num >= SOC_GPIO_TOTAL_PINS) {
 		printk(BIOS_WARNING, "Warning: Pin %d should be smaller than"
-					" %d\n", gpio_num, GPIO_TOTAL_PINS);
+					" %d\n", gpio_num, SOC_GPIO_TOTAL_PINS);
 		return -1;
 	}
 	uintptr_t addr = (uintptr_t) gpio_get_address(gpio_num);

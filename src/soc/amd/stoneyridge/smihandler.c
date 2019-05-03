@@ -25,6 +25,7 @@
 #include <soc/smi.h>
 #include <soc/southbridge.h>
 #include <amdblocks/acpimmio.h>
+#include <amdblocks/acpi.h>
 #include <elog.h>
 
 /* bits in smm_io_trap   */
@@ -88,19 +89,14 @@ static void southbridge_smi_gsmi(void)
 
 static void sb_apmc_smi_handler(void)
 {
-	u32 reg32;
 	const uint8_t cmd = inb(pm_acpi_smi_cmd_port());
 
 	switch (cmd) {
 	case APM_CNT_ACPI_ENABLE:
-		reg32 = acpi_read32(MMIO_ACPI_PM1_CNT_BLK);
-		reg32 |= (1 << 0);	/* SCI_EN */
-		acpi_write32(MMIO_ACPI_PM1_CNT_BLK, reg32);
+		acpi_enable_sci();
 		break;
 	case APM_CNT_ACPI_DISABLE:
-		reg32 = acpi_read32(MMIO_ACPI_PM1_CNT_BLK);
-		reg32 &= ~(1 << 0);	/* clear SCI_EN */
-		acpi_write32(MMIO_ACPI_PM1_CNT_BLK, reg32);
+		acpi_disable_sci();
 		break;
 	case APM_CNT_ELOG_GSMI:
 		if (CONFIG(ELOG_GSMI))

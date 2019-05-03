@@ -21,6 +21,7 @@
 #include <console/console.h>
 #include <soc/southbridge.h>
 #include <amdblocks/s3_resume.h>
+#include <amdblocks/acpi.h>
 
 /* Training data versioning is not supported or tracked. */
 #define DEFAULT_MRC_VERSION 0

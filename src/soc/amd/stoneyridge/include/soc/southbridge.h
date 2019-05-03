@@ -103,15 +103,6 @@
 #define PM_USB_ENABLE			0xef
 #define   PM_USB_ALL_CONTROLLERS	0x7f
 
-/* ACPI MMIO registers 0xfed80800 */
-#define MMIO_ACPI_PM1_STS		0x00
-#define MMIO_ACPI_PM1_EN		0x02
-#define MMIO_ACPI_PM1_CNT_BLK		0x04
-#define MMIO_ACPI_CPU_CONTROL		0x0c
-#define MMIO_ACPI_GPE0_STS		0x14
-#define MMIO_ACPI_GPE0_EN		0x18
-#define MMIO_ACPI_PM_TMR_BLK		0x08
-
 /* SMBUS MMIO offsets 0xfed80a00 */
 #define SMBHSTSTAT			0x0
 #define   SMBHST_STAT_FAILED		0x10
@@ -415,11 +406,5 @@ void i2c_soc_early_init(void);
 
 /* Initialize all the i2c buses that are not marked with early init. */
 void i2c_soc_init(void);
-
-/*
- * If a system reset is about to be requested, modify the PM1 register so it
- * will never be misinterpreted as an S3 resume.
- */
-void set_pm1cnt_s5(void);
 
 #endif /* __STONEYRIDGE_H__ */

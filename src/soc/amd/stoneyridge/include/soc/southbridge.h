@@ -356,8 +356,6 @@ void southbridge_final(void *chip_info);
 void southbridge_init(void *chip_info);
 void sb_read_mode(u32 mode);
 void sb_set_spi100(u16 norm, u16 fast, u16 alt, u16 tpm);
-uint16_t pm_acpi_pm_cnt_blk(void);
-uint16_t pm_acpi_pm_evt_blk(void);
 void bootblock_fch_early_init(void);
 void bootblock_fch_init(void);
 /**

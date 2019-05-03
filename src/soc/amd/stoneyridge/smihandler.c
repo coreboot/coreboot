@@ -199,7 +199,7 @@ static void sb_slp_typ_handler(void)
 		 * An IO cycle is required to trigger the STPCLK/STPGNT
 		 * handshake when the Pm1 write is reissued.
 		 */
-		outw(pm1cnt | SLP_EN, pm_acpi_pm_cnt_blk());
+		outw(pm1cnt | SLP_EN, pm_read16(PM1_CNT_BLK));
 		hlt();
 	}
 }

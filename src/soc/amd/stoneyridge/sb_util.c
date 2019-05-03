@@ -29,11 +29,6 @@ uint16_t pm_acpi_pm_evt_blk(void)
 	return pm_read16(PM_EVT_BLK);
 }
 
-int acpi_get_sleep_type(void)
-{
-	return acpi_sleep_from_pm1(inw(pm_acpi_pm_cnt_blk()));
-}
-
 void save_uma_size(uint32_t size)
 {
 	biosram_write32(BIOSRAM_UMA_SIZE, size);

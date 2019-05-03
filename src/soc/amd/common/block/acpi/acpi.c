@@ -132,13 +132,17 @@ void acpi_clear_pm1_status(void)
 	print_pm1_status(pm1_sts);
 }
 
+int acpi_get_sleep_type(void)
+{
+	return acpi_sleep_from_pm1(acpi_read16(MMIO_ACPI_PM1_CNT_BLK));
+}
+
 int vboot_platform_is_resuming(void)
 {
 	if (!(acpi_read16(MMIO_ACPI_PM1_STS) & WAK_STS))
 		return 0;
 
-	uint16_t pm_cnt = acpi_read16(MMIO_ACPI_PM1_CNT_BLK);
-	return acpi_sleep_from_pm1(pm_cnt) == ACPI_S3;
+	return acpi_get_sleep_type() == ACPI_S3;
 }
 
 /* If a system reset is about to be requested, modify the PM1 register so it

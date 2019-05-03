@@ -1,2 +1,2 @@
-ramstage-y += halt.c
-smm-y += halt.c
+ramstage-$(CONFIG_SOC_AMD_COMMON_BLOCK_ACPI) += acpi.c
+smm-$(CONFIG_SOC_AMD_COMMON_BLOCK_ACPI) += acpi.c

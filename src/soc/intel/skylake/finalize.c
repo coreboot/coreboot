@@ -20,7 +20,6 @@
 #include <bootstate.h>
 #include <console/console.h>
 #include <console/post_codes.h>
-#include <cpu/x86/mp.h>
 #include <cpu/x86/smm.h>
 #include <device/pci.h>
 #include <intelblocks/cpulib.h>
@@ -141,9 +140,6 @@ static void soc_finalize(void *unused)
 	printk(BIOS_DEBUG, "Finalizing chipset.\n");
 
 	pch_finalize_script(dev);
-
-	printk(BIOS_DEBUG, "Clearing MCA.\n");
-	mp_run_on_all_cpus(mca_configure, NULL, 17 * USECS_PER_SEC);
 
 	soc_lockdown(dev);
 

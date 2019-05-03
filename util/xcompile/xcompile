@@ -185,8 +185,6 @@ detect_special_flags() {
 	testcc "$GCC"      "$CFLAGS_GCC -Wl,--build-id=none" &&
 		CFLAGS_GCC="$CFLAGS_GCC -Wl,--build-id=none"
 
-	testcc "$GCC"      "$CFLAGS_GCC -Wno-address-of-packed-member" &&
-		CFLAGS_GCC="$CFLAGS_GCC -Wno-address-of-packed-member"
 	case "$architecture" in
 	x86)
 		;;
@@ -221,7 +219,7 @@ SUBARCH_SUPPORTED+=${TSUPP-${TARCH}}
 GCC_CC_${TARCH}:=${GCC}
 GCC_CFLAGS_${TARCH}:=${CFLAGS_GCC}
 # Generally available for GCC's cc1:
-GCC_CFLAGS_${TARCH}+=-fno-delete-null-pointer-checks -Wlogical-op
+GCC_CFLAGS_${TARCH}+=-fno-delete-null-pointer-checks -Wlogical-op -Wno-address-of-packed-member
 GCC_ADAFLAGS_${TARCH}:=${CFLAGS_GCC}
 GCC_COMPILER_RT_${TARCH}:=${CC_RT_GCC}
 GCC_COMPILER_RT_FLAGS_${TARCH}:=${CC_RT_EXTRA_GCC}

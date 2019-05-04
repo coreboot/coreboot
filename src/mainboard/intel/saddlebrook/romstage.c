@@ -19,8 +19,6 @@
 #include <fsp/api.h>
 #include <string.h>
 #include <soc/gpio.h>
-#include <soc/pei_data.h>
-#include <soc/pei_wrapper.h>
 #include <soc/pm.h>
 #include <soc/romstage.h>
 #include "spd/spd.h"
@@ -38,8 +36,6 @@ void car_mainboard_pre_console_init(void)
 void mainboard_romstage_entry(struct romstage_params *params)
 {
 	post_code(0x31);
-	/* Fill out PEI DATA */
-	mainboard_fill_pei_data(params->pei_data);
 	romstage_common(params);
 }
 
@@ -67,18 +63,10 @@ void mainboard_memory_init_params(
 	* should be set in the FSP flash image and should not need to be
 	* changed.
 	*/
-	memcpy(memory_params->DqByteMapCh0, params->pei_data->dq_map[0],
-			sizeof(params->pei_data->dq_map[0]));
-	memcpy(memory_params->DqByteMapCh1, params->pei_data->dq_map[1],
-			sizeof(params->pei_data->dq_map[1]));
-	memcpy(memory_params->DqsMapCpu2DramCh0, params->pei_data->dqs_map[0],
-			sizeof(params->pei_data->dqs_map[0]));
-	memcpy(memory_params->DqsMapCpu2DramCh1, params->pei_data->dqs_map[1],
-			sizeof(params->pei_data->dqs_map[1]));
-	memcpy(memory_params->RcompResistor, params->pei_data->RcompResistor,
-			sizeof(params->pei_data->RcompResistor));
-	memcpy(memory_params->RcompTarget, params->pei_data->RcompTarget,
-			sizeof(params->pei_data->RcompTarget));
+	mainboard_fill_dq_map_data(&memory_params->DqByteMapCh0);
+	mainboard_fill_dqs_map_data(&memory_params->DqsMapCpu2DramCh0);
+	mainboard_fill_rcomp_res_data(&memory_params->RcompResistor);
+	mainboard_fill_rcomp_strength_data(&memory_params->RcompTarget);
 
 	/* update spd length*/
 	memory_params->MemorySpdDataLen = blk.len;

@@ -17,6 +17,5 @@
 subdirs-y += spd
 
 bootblock-y += bootblock.c
-romstage-y += pei_data.c
 
 ramstage-y += ramstage.c

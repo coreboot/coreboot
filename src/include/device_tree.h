@@ -33,7 +33,7 @@ struct fdt_header {
 	uint32_t reserve_map_offset;
 
 	uint32_t version;
-	uint32_t last_compatible_version;
+	uint32_t last_comp_version;
 
 	uint32_t boot_cpuid_phys;
 
@@ -42,6 +42,7 @@ struct fdt_header {
 };
 
 #define FDT_HEADER_MAGIC	0xd00dfeed
+#define FDT_SUPPORTED_VERSION	17
 #define FDT_TOKEN_BEGIN_NODE	1
 #define FDT_TOKEN_END_NODE	2
 #define FDT_TOKEN_PROPERTY	3

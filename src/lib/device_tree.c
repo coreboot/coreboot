@@ -220,6 +220,24 @@ struct device_tree *fdt_unflatten(const void *blob)
 	const struct fdt_header *header = (const struct fdt_header *)blob;
 	tree->header = header;
 
+	uint32_t magic = be32toh(header->magic);
+	uint32_t version = be32toh(header->version);
+	uint32_t last_comp_version = be32toh(header->last_comp_version);
+
+	if (magic != FDT_HEADER_MAGIC) {
+		printk(BIOS_DEBUG, "Invalid device tree magic %#.8x!\n", magic);
+		return NULL;
+	}
+	if (last_comp_version > FDT_SUPPORTED_VERSION) {
+		printk(BIOS_DEBUG, "Unsupported device tree version %u(>=%u)\n",
+		       version, last_comp_version);
+		return NULL;
+	}
+	if (version > FDT_SUPPORTED_VERSION)
+		printk(BIOS_DEBUG,
+		       "NOTE: FDT version %u too new, should add support!\n",
+		       version);
+
 	uint32_t struct_offset = be32toh(header->structure_offset);
 	uint32_t strings_offset = be32toh(header->strings_offset);
 	uint32_t reserve_offset = be32toh(header->reserve_map_offset);

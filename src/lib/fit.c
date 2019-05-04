@@ -423,19 +423,17 @@ static void fit_update_compat(const void *fdt_blob,
 
 struct fit_config_node *fit_load(void *fit)
 {
-	struct fdt_header *header = (struct fdt_header *)fit;
 	struct fit_image_node *image;
 	struct fit_config_node *config;
 	struct compat_string_entry *compat_node;
 
 	printk(BIOS_DEBUG, "FIT: Loading FIT from %p\n", fit);
 
-	if (be32toh(header->magic) != FDT_HEADER_MAGIC) {
-		printk(BIOS_ERR, "FIT: Bad header magic value 0x%08x.\n",
-		       be32toh(header->magic));
+	struct device_tree *tree = fdt_unflatten(fit);
+	if (!tree) {
+		printk(BIOS_ERR, "ERROR: Failed to unflatten FIT image!\n");
 		return NULL;
 	}
-	struct device_tree *tree = fdt_unflatten(fit);
 
 	const char *default_config_name = NULL;
 	struct fit_config_node *default_config = NULL;

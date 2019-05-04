@@ -343,13 +343,6 @@ __weak int mrc_cache_stash_data(int type, uint32_t version,
 	return -1;
 }
 
-/* Transition RAM from off or self-refresh to active */
-__weak void raminit(struct romstage_params *params)
-{
-	post_code(POST_MEM_PREINIT_PREP_START);
-	die("ERROR - No RAM initialization specified!\n");
-}
-
 /* Display the memory configuration */
 __weak void report_memory_config(void)
 {

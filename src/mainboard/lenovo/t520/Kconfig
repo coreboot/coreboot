@@ -27,6 +27,21 @@ config BOARD_LENOVO_BASEBOARD_T520
 
 if BOARD_LENOVO_BASEBOARD_T520
 
+config VBOOT
+	select VBOOT_VBNV_CMOS
+	select GBB_FLAG_DISABLE_LID_SHUTDOWN
+	select GBB_FLAG_DISABLE_PD_SOFTWARE_SYNC
+	select GBB_FLAG_DISABLE_EC_SOFTWARE_SYNC
+	select GBB_FLAG_DISABLE_FWMP
+	select HAS_RECOVERY_MRC_CACHE
+
+config VBOOT_SLOTS_RW_A
+	default y
+
+config VBOOT_VBNV_OFFSET
+	hex
+	default 0x2a
+
 config VARIANT_DIR
 	string
 	default "t520" if BOARD_LENOVO_T520
@@ -39,6 +54,11 @@ config MAINBOARD_DIR
 config DEVICETREE
 	string
 	default "variants/$(CONFIG_VARIANT_DIR)/devicetree.cb"
+
+config FMDFILE
+	string
+	default "src/mainboard/$(CONFIG_MAINBOARD_DIR)/vboot-rwa.fmd" if VBOOT
+	default "src/mainboard/$(CONFIG_MAINBOARD_DIR)/board.fmd"
 
 config MAINBOARD_PART_NUMBER
 	string

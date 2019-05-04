@@ -40,10 +40,23 @@ __weak uint8_t get_ramid(void)
 	return gpio_base2_value(spd_gpios, ARRAY_SIZE(spd_gpios));
 }
 
-static void *get_spd_pointer(char *spd_file_content, int total_spds, int *dual)
+static void *get_spd_pointer(int *dual)
 {
+	char *spd_file;
+	size_t spd_file_len;
+	int total_spds;
 	int ram_id = 0;
 	int spd_index = 0;
+
+	/* Find the SPD data in CBFS. */
+	spd_file = cbfs_boot_map_with_leak("spd.bin", CBFS_TYPE_SPD,
+		&spd_file_len);
+	if (!spd_file)
+		die("SPD data not found.");
+
+	if (spd_file_len < SPD_PAGE_LEN)
+		die("Missing SPD data.");
+	total_spds = spd_file_len / SPD_PAGE_LEN;
 
 	ram_id = get_ramid();
 	printk(BIOS_DEBUG, "ram_id=%d, total_spds: %d\n", ram_id, total_spds);
@@ -54,33 +67,20 @@ static void *get_spd_pointer(char *spd_file_content, int total_spds, int *dual)
 		return NULL;
 	}
 	/* Return the serial product data for the RAM */
-	return &spd_file_content[SPD_PAGE_LEN * spd_index];
+	return &spd_file[SPD_PAGE_LEN * spd_index];
 }
 
 /* Copy SPD data for on-board memory */
-void mainboard_fill_spd_data(struct pei_data *ps)
+void spd_memory_init_params(MEMORY_INIT_UPD *memory_params)
 {
-	char *spd_file;
-	size_t spd_file_len;
 	void *spd_content;
 	int dual_channel = 0;
-
-	/* Find the SPD data in CBFS. */
-	spd_file = cbfs_boot_map_with_leak("spd.bin", CBFS_TYPE_SPD,
-		&spd_file_len);
-	if (!spd_file)
-		die("SPD data not found.");
-
-	if (spd_file_len < SPD_PAGE_LEN)
-		die("Missing SPD data.");
 
 	/*
 	 * Both channels are always present in SPD data. Always use matched
 	 * DIMMs so use the same SPD data for each DIMM.
 	 */
-	spd_content = get_spd_pointer(spd_file,
-				      spd_file_len / SPD_PAGE_LEN,
-				      &dual_channel);
+	spd_content = get_spd_pointer(&dual_channel);
 	if (CONFIG(DISPLAY_SPD_DATA) && spd_content != NULL) {
 		printk(BIOS_DEBUG, "SPD Data:\n");
 		hexdump(spd_content, SPD_PAGE_LEN);
@@ -94,21 +94,27 @@ void mainboard_fill_spd_data(struct pei_data *ps)
 	 *              2=DimmDisabled
 	 */
 	if (spd_content != NULL) {
-		ps->spd_data_ch0 = spd_content;
-		ps->spd_ch0_config = 1;
+		memory_params->PcdMemChannel0Config = 1;
 		printk(BIOS_DEBUG, "Channel 0 DIMM soldered down\n");
 		if (dual_channel) {
 			printk(BIOS_DEBUG, "Channel 1 DIMM soldered down\n");
-			ps->spd_data_ch1 = spd_content;
-			ps->spd_ch1_config = 1;
+			memory_params->PcdMemChannel1Config = 1;
 		} else {
 			printk(BIOS_DEBUG, "Channel 1 DIMM not installed\n");
-			ps->spd_ch1_config = 2;
+			memory_params->PcdMemChannel1Config = 2;
 		}
+	}
+
+	/* Update SPD data */
+	if (CONFIG(BOARD_GOOGLE_CYAN)) {
+		memory_params->PcdMemoryTypeEnable = MEM_DDR3;
+		memory_params->PcdMemorySpdPtr = (uintptr_t)spd_content;
+	} else {
+		memory_params->PcdMemoryTypeEnable = MEM_LPDDR3;
 	}
 }
 
-static void set_dimm_info(uint8_t *spd, struct dimm_info *dimm)
+static void set_dimm_info(const uint8_t *spd, struct dimm_info *dimm)
 {
 	const int spd_capmb[8] = {  1,  2,  4,  8, 16, 32, 64,  0 };
 	const int spd_ranks[8] = {  1,  2,  3,  4, -1, -1, -1, -1 };
@@ -171,8 +177,14 @@ static void set_dimm_info(uint8_t *spd, struct dimm_info *dimm)
 
 void mainboard_save_dimm_info(struct romstage_params *params)
 {
+	const void *spd_content;
+	int dual_channel;
 	struct dimm_info *dimm;
 	struct memory_info *mem_info;
+
+	spd_content = get_spd_pointer(&dual_channel);
+	if (spd_content == NULL)
+		return;
 
 	/*
 	 * Allocate CBMEM area for DIMM information used to populate SMBIOS
@@ -186,13 +198,13 @@ void mainboard_save_dimm_info(struct romstage_params *params)
 
 	/* Describe the first channel memory */
 	dimm = &mem_info->dimm[0];
-	set_dimm_info(params->pei_data->spd_data_ch0, dimm);
+	set_dimm_info(spd_content, dimm);
 	mem_info->dimm_cnt = 1;
 
 	/* Describe the second channel memory */
-	if (params->pei_data->spd_ch1_config == 1) {
+	if (dual_channel) {
 		dimm = &mem_info->dimm[1];
-		set_dimm_info(params->pei_data->spd_data_ch1, dimm);
+		set_dimm_info(spd_content, dimm);
 		dimm->channel_num = 1;
 		mem_info->dimm_cnt = 2;
 	}

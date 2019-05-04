@@ -25,13 +25,11 @@
 #include <fsp/car.h>
 #include <fsp/util.h>
 #include <soc/intel/common/mma.h>
-#include <soc/pei_wrapper.h>
 #include <soc/pm.h>		/* chip_power_state */
 
 struct romstage_params {
 	uint32_t fsp_version;
 	struct chipset_power_state *power_state;
-	struct pei_data *pei_data;
 	void *chipset_context;
 
 	/* Fast boot and S3 resume MRC data */

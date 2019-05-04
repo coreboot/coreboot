@@ -41,9 +41,7 @@
 asmlinkage void *romstage_main(FSP_INFO_HEADER *fih)
 {
 	void *top_of_stack;
-	struct pei_data pei_data;
 	struct romstage_params params = {
-		.pei_data = &pei_data,
 		.chipset_context = fih,
 	};
 
@@ -54,8 +52,6 @@ asmlinkage void *romstage_main(FSP_INFO_HEADER *fih)
 	/* Load microcode before RAM init */
 	if (CONFIG(SUPPORT_CPU_UCODE_IN_CBFS))
 		intel_update_microcode_from_cbfs();
-
-	memset(&pei_data, 0, sizeof(pei_data));
 
 	/* Display parameters */
 	if (!CONFIG(NO_MMCONF_SUPPORT))

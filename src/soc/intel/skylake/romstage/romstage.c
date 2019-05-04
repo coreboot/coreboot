@@ -26,7 +26,6 @@
 #include <intelblocks/fast_spi.h>
 #include <intelblocks/pmclib.h>
 #include <soc/pci_devs.h>
-#include <soc/pei_wrapper.h>
 #include <soc/pm.h>
 #include <soc/pmc.h>
 #include <soc/serialio.h>
@@ -43,9 +42,6 @@ void soc_pre_ram_init(struct romstage_params *params)
 {
 	/* Program MCHBAR and DMIBAR */
 	systemagent_early_init();
-
-	/* Prepare to initialize memory */
-	soc_fill_pei_data(params->pei_data);
 
 	const struct device *const dev = pcidev_path_on_root(PCH_DEVFN_LPC);
 	const struct soc_intel_skylake_config *const config =

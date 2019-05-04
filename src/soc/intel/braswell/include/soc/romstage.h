@@ -20,14 +20,12 @@
 #include <stdint.h>
 #include <fsp/romstage.h>
 #include <fsp/util.h>
-#include <soc/pei_data.h>
 #include <soc/pm.h>
 
 void gfx_init(void);
 void tco_disable(void);
 void punit_init(void);
 int early_spi_read_wpsr(u8 *sr);
-void mainboard_fill_spd_data(struct pei_data *pei_data);
 void set_max_freq(void);
 
 /* romstage_common.c functions */

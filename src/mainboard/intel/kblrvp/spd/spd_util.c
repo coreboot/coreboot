@@ -16,8 +16,6 @@
 #include <arch/byteorder.h>
 #include <stdint.h>
 #include <string.h>
-#include <soc/pei_data.h>
-#include <soc/pei_wrapper.h>
 
 #include "../board_id.h"
 #include "spd.h"

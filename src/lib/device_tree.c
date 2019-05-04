@@ -66,6 +66,12 @@ int fdt_node_name(const void *blob, uint32_t offset, const char **name)
 	return ALIGN_UP(strlen((char *)ptr) + 1, sizeof(uint32_t)) + 4;
 }
 
+static int dt_prop_is_phandle(struct device_tree_property *prop)
+{
+	return !(strcmp("phandle", prop->prop.name) &&
+		 strcmp("linux,phandle", prop->prop.name));
+}
+
 
 
 /*
@@ -156,6 +162,7 @@ int fdt_skip_node(const void *blob, uint32_t start_offset)
  */
 
 static int fdt_unflatten_node(const void *blob, uint32_t start_offset,
+			      struct device_tree *tree,
 			      struct device_tree_node **new_node)
 {
 	struct list_node *last;
@@ -178,6 +185,12 @@ static int fdt_unflatten_node(const void *blob, uint32_t start_offset,
 		struct device_tree_property *prop = xzalloc(sizeof(*prop));
 		prop->prop = fprop;
 
+		if (dt_prop_is_phandle(prop)) {
+			node->phandle = be32dec(prop->prop.data);
+			if (node->phandle > tree->max_phandle)
+				tree->max_phandle = node->phandle;
+		}
+
 		list_insert_after(&prop->list_node, last);
 		last = &prop->list_node;
 
@@ -186,7 +199,7 @@ static int fdt_unflatten_node(const void *blob, uint32_t start_offset,
 
 	struct device_tree_node *child;
 	last = &node->children;
-	while ((size = fdt_unflatten_node(blob, offset, &child))) {
+	while ((size = fdt_unflatten_node(blob, offset, tree, &child))) {
 		list_insert_after(&child->list_node, last);
 		last = &child->list_node;
 
@@ -260,7 +273,7 @@ struct device_tree *fdt_unflatten(const void *blob)
 		offset += size;
 	}
 
-	fdt_unflatten_node(blob, struct_offset, &tree->root);
+	fdt_unflatten_node(blob, struct_offset, tree, &tree->root);
 
 	return tree;
 }
@@ -590,6 +603,26 @@ struct device_tree_node *dt_find_node_by_path(struct device_tree_node *parent,
 	return node;
 }
 
+struct device_tree_node *dt_find_node_by_phandle(struct device_tree_node *root,
+						 uint32_t phandle)
+{
+	if (!root)
+		return NULL;
+
+	if (root->phandle == phandle)
+		return root;
+
+	struct device_tree_node *node;
+	struct device_tree_node *result;
+	list_for_each(node, root->children, list_node) {
+		result = dt_find_node_by_phandle(node, phandle);
+		if (result)
+			return result;
+	}
+
+	return NULL;
+}
+
 /*
  * Check if given node is compatible.
  *
@@ -717,28 +750,6 @@ struct device_tree_node *dt_find_prop_value(struct device_tree_node *parent,
 			return found;
 	}
 	return NULL;
-}
-
-/**
- * Find the phandle of a node.
- *
- * @param node Pointer to node containing the phandle
- * @return Zero on error, the phandle on success
- */
-uint32_t dt_get_phandle(const struct device_tree_node *node)
-{
-	const uint32_t *phandle;
-	size_t len;
-
-	dt_find_bin_prop(node, "phandle", (const void **)&phandle, &len);
-	if (phandle != NULL && len == sizeof(*phandle))
-		return be32_to_cpu(*phandle);
-
-	dt_find_bin_prop(node, "linux,phandle", (const void **)&phandle, &len);
-	if (phandle != NULL && len == sizeof(*phandle))
-		return be32_to_cpu(*phandle);
-
-	return 0;
 }
 
 /*

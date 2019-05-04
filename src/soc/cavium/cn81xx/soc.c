@@ -234,7 +234,7 @@ static int dt_platform_fixup(struct device_tree_fixup *fixup,
 			continue;
 		}
 		/* Store the phandle */
-		phandle = dt_get_phandle(dt_node);
+		phandle = dt_node->phandle;
 		printk(BIOS_INFO, "%s: Removing node %s\n", __func__, path);
 		list_remove(&dt_node->list_node);
 

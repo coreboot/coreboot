@@ -41,7 +41,6 @@ typedef void ABI_X86(*tx_byte_func)(unsigned char byte);
 struct pei_data {
 	uint32_t pei_version;
 
-	int boot_mode;
 	int ec_present;
 
 	/* Console output function */

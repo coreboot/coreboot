@@ -44,9 +44,6 @@ struct pei_data {
 	uint8_t spd_ch0_config;
 	uint8_t spd_ch1_config;
 
-	/* System state information */
-	int boot_mode;
-
 	/* Fast boot and S3 resume MRC data */
 	int saved_data_size;
 	const void *saved_data;

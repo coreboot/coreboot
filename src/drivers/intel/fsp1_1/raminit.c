@@ -28,6 +28,7 @@
 
 void raminit(struct romstage_params *params)
 {
+	const bool s3wake = params->power_state->prev_sleep_state == ACPI_S3;
 	const EFI_GUID bootldr_tolum_guid = FSP_BOOTLOADER_TOLUM_HOB_GUID;
 	EFI_HOB_RESOURCE_DESCRIPTOR *cbmem_root;
 	FSP_INFO_HEADER *fsp_header;
@@ -81,7 +82,7 @@ void raminit(struct romstage_params *params)
 	/* Zero fill RT Buffer data and start populating fields. */
 	memset(&fsp_rt_common_buffer, 0, sizeof(fsp_rt_common_buffer));
 	pei_ptr = params->pei_data;
-	if (pei_ptr->boot_mode == ACPI_S3) {
+	if (s3wake) {
 		fsp_rt_common_buffer.BootMode = BOOT_ON_S3_RESUME;
 	} else if (pei_ptr->saved_data != NULL) {
 		fsp_rt_common_buffer.BootMode =
@@ -158,7 +159,7 @@ void raminit(struct romstage_params *params)
 
 	/* Migrate CAR data */
 	printk(BIOS_DEBUG, "0x%p: cbmem_top\n", cbmem_top());
-	if (pei_ptr->boot_mode != ACPI_S3) {
+	if (!s3wake) {
 		cbmem_initialize_empty_id_size(CBMEM_ID_FSP_RESERVED_MEMORY,
 			fsp_reserved_bytes);
 	} else if (cbmem_initialize_id_size(CBMEM_ID_FSP_RESERVED_MEMORY,

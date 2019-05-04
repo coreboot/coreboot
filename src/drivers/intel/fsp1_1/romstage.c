@@ -101,7 +101,6 @@ void romstage_common(struct romstage_params *params)
 	timestamp_add_now(TS_BEFORE_INITRAM);
 
 	pei_data = params->pei_data;
-	pei_data->boot_mode = params->power_state->prev_sleep_state;
 	s3wake = params->power_state->prev_sleep_state == ACPI_S3;
 
 	if (CONFIG(ELOG_BOOT_COUNT) && !s3wake)
@@ -129,7 +128,7 @@ void romstage_common(struct romstage_params *params)
 			params->pei_data->saved_data = rdev_mmap_full(&rdev);
 			/* Assume boot device is memory mapped. */
 			assert(CONFIG(BOOT_DEVICE_MEMORY_MAPPED));
-		} else if (params->pei_data->boot_mode == ACPI_S3) {
+		} else if (s3wake) {
 			/* Waking from S3 and no cache. */
 			printk(BIOS_DEBUG,
 			       "No MRC cache found in S3 resume path.\n");
@@ -149,7 +148,7 @@ void romstage_common(struct romstage_params *params)
 	if (CONFIG(CACHE_MRC_SETTINGS)) {
 		printk(BIOS_DEBUG, "MRC data at %p %d bytes\n",
 			pei_data->data_to_save, pei_data->data_to_save_size);
-		if ((params->pei_data->boot_mode != ACPI_S3)
+		if (!s3wake
 			&& (params->pei_data->data_to_save_size != 0)
 			&& (params->pei_data->data_to_save != NULL))
 			mrc_cache_stash_data(MRC_TRAINING_DATA,

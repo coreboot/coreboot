@@ -15,14 +15,14 @@
  */
 
 #include <baseboard/variant.h>
+#include <fsp/soc_binding.h>
 #include <gpio.h>
 #include <stdint.h>
 #include <string.h>
-#include <soc/pei_data.h>
-#include <soc/pei_wrapper.h>
 #include <variant/gpio.h>
 
-void mainboard_fill_pei_data(struct pei_data *pei_data)
+void variant_memory_init_params(
+		MEMORY_INIT_UPD *const memory_params, const int spd_index)
 {
 	/* DQ byte map */
 	const u8 dq_map[2][12] = {
@@ -41,12 +41,14 @@ void mainboard_fill_pei_data(struct pei_data *pei_data)
 	/* Rcomp target */
 	const u16 RcompTarget[5] = { 100, 40, 40, 23, 40 };
 
-	memcpy(pei_data->dq_map, dq_map, sizeof(dq_map));
-	memcpy(pei_data->dqs_map, dqs_map, sizeof(dqs_map));
-	memcpy(pei_data->RcompResistor, RcompResistor,
-		 sizeof(RcompResistor));
-	memcpy(pei_data->RcompTarget, RcompTarget,
-		 sizeof(RcompTarget));
+	memcpy(memory_params->DqByteMapCh0, dq_map,
+			sizeof(memory_params->DqByteMapCh0) * 2);
+	memcpy(memory_params->DqsMapCpu2DramCh0, dqs_map,
+			sizeof(memory_params->DqsMapCpu2DramCh0) * 2);
+	memcpy(memory_params->RcompResistor, RcompResistor,
+			sizeof(memory_params->RcompResistor));
+	memcpy(memory_params->RcompTarget, RcompTarget,
+			sizeof(memory_params->RcompTarget));
 }
 
 void mainboard_gpio_smi_sleep(void)

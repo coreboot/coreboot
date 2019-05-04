@@ -19,10 +19,11 @@
 #include <console/console.h>
 #include <gpio.h>
 #include <soc/gpio.h>
-#include <soc/pei_data.h>
 #include <soc/romstage.h>
 #include <string.h>
 #include <baseboard/variant.h>
+
+#include "spd_util.h"
 #include "spd.h"
 
 static void mainboard_print_spd_info(uint8_t spd[])
@@ -83,13 +84,11 @@ __weak int is_dual_channel(const int spd_index)
 }
 
 /* Copy SPD data for on-board memory */
-void mainboard_fill_spd_data(struct pei_data *pei_data)
+void spd_memory_init_params(MEMORY_INIT_UPD *const memory_params, int spd_index)
 {
-	char *spd_file;
+	uint8_t *spd_file;
 	size_t spd_file_len;
-	int spd_index;
 
-	spd_index = pei_data->mem_cfg_id;
 	printk(BIOS_INFO, "SPD index %d\n", spd_index);
 
 	/* Load SPD data from CBFS */
@@ -108,15 +107,15 @@ void mainboard_fill_spd_data(struct pei_data *pei_data)
 		spd_index = 1;
 	}
 
-	/* Assume same memory in both channels */
-	spd_index *= SPD_LEN;
-	memcpy(pei_data->spd_data[0][0], spd_file + spd_index, SPD_LEN);
-	if (is_dual_channel(spd_index))
-		memcpy(pei_data->spd_data[1][0], spd_file + spd_index, SPD_LEN);
-
+	const size_t spd_offset = spd_index * SPD_LEN;
 	/* Make sure a valid SPD was found */
-	if (pei_data->spd_data[0][0][0] == 0)
+	if (spd_file[spd_offset] == 0)
 		die("Invalid SPD data.");
 
-	mainboard_print_spd_info(pei_data->spd_data[0][0]);
+	/* Assume same memory in both channels */
+	memory_params->MemorySpdPtr00 = (uintptr_t)spd_file + spd_offset;
+	if (is_dual_channel(spd_index))
+		memory_params->MemorySpdPtr10 = memory_params->MemorySpdPtr00;
+
+	mainboard_print_spd_info(spd_file + spd_offset);
 }

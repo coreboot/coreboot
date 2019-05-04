@@ -17,12 +17,12 @@
 #include <stdint.h>
 #include <string.h>
 #include <baseboard/variant.h>
-#include <soc/pei_data.h>
-#include <soc/pei_wrapper.h>
+#include <fsp/soc_binding.h>
 
 #define K4E6E304EE_MEM_ID	0x3
 
-void mainboard_fill_pei_data(struct pei_data *pei_data)
+void variant_memory_init_params(
+		MEMORY_INIT_UPD *const memory_params, const int spd_index)
 {
 	/* DQ byte map */
 	const u8 dq_map[2][12] = {
@@ -47,15 +47,16 @@ void mainboard_fill_pei_data(struct pei_data *pei_data)
 	/* Default Rcomp Target assignment */
 	const u16 *targeted_rcomp = RcompTarget;
 
-	memcpy(pei_data->dq_map, dq_map, sizeof(dq_map));
-	memcpy(pei_data->dqs_map, dqs_map, sizeof(dqs_map));
-	memcpy(pei_data->RcompResistor, RcompResistor,
-		sizeof(RcompResistor));
-
 	/* Override Rcomp Target assignment for specific SKU(s) */
-	if (pei_data->mem_cfg_id == K4E6E304EE_MEM_ID)
+	if (spd_index == K4E6E304EE_MEM_ID)
 		targeted_rcomp = StrengthendRcompTarget;
 
-	memcpy(pei_data->RcompTarget, targeted_rcomp,
-		sizeof(pei_data->RcompTarget));
+	memcpy(memory_params->DqByteMapCh0, dq_map,
+			sizeof(memory_params->DqByteMapCh0) * 2);
+	memcpy(memory_params->DqsMapCpu2DramCh0, dqs_map,
+			sizeof(memory_params->DqsMapCpu2DramCh0) * 2);
+	memcpy(memory_params->RcompResistor, RcompResistor,
+			sizeof(memory_params->RcompResistor));
+	memcpy(memory_params->RcompTarget, targeted_rcomp,
+			sizeof(memory_params->RcompTarget));
 }

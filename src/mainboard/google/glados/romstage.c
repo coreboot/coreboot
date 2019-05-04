@@ -15,15 +15,15 @@
  * GNU General Public License for more details.
  */
 
-#include <string.h>
+#include <baseboard/variant.h>
 #include <ec/google/chromeec/ec.h>
 #include <gpio.h>
-#include <soc/pei_data.h>
-#include <soc/pei_wrapper.h>
 #include <soc/romstage.h>
-#include "spd/spd.h"
 #include <variant/ec.h>
 #include <variant/gpio.h>
+
+#include "spd/spd_util.h"
+#include "spd/spd.h"
 
 void mainboard_romstage_entry(struct romstage_params *params)
 {
@@ -32,18 +32,6 @@ void mainboard_romstage_entry(struct romstage_params *params)
 	if (params->power_state->prev_sleep_state != ACPI_S3)
 		google_chromeec_kbbacklight(25);
 #endif
-	/* Get SPD index */
-	gpio_t spd_gpios[] = {
-		GPIO_MEM_CONFIG_0,
-		GPIO_MEM_CONFIG_1,
-		GPIO_MEM_CONFIG_2,
-		GPIO_MEM_CONFIG_3,
-	};
-	params->pei_data->mem_cfg_id =
-			gpio_base2_value(spd_gpios, ARRAY_SIZE(spd_gpios));
-	/* Fill out PEI DATA */
-	mainboard_fill_pei_data(params->pei_data);
-	mainboard_fill_spd_data(params->pei_data);
 	/* Initialize memory */
 	romstage_common(params);
 }
@@ -51,26 +39,18 @@ void mainboard_romstage_entry(struct romstage_params *params)
 void mainboard_memory_init_params(struct romstage_params *params,
 				  MEMORY_INIT_UPD *memory_params)
 {
-	if (params->pei_data->spd_data[0][0][0] != 0) {
-		memory_params->MemorySpdPtr00 =
-				(UINT32)(params->pei_data->spd_data[0][0]);
-		memory_params->MemorySpdPtr10 =
-				(UINT32)(params->pei_data->spd_data[1][0]);
-	}
-	memcpy(memory_params->DqByteMapCh0, params->pei_data->dq_map[0],
-			sizeof(params->pei_data->dq_map[0]));
-	memcpy(memory_params->DqByteMapCh1, params->pei_data->dq_map[1],
-			sizeof(params->pei_data->dq_map[1]));
-	memcpy(memory_params->DqsMapCpu2DramCh0, params->pei_data->dqs_map[0],
-			sizeof(params->pei_data->dqs_map[0]));
-	memcpy(memory_params->DqsMapCpu2DramCh1, params->pei_data->dqs_map[1],
-			sizeof(params->pei_data->dqs_map[1]));
-	memcpy(memory_params->RcompResistor, params->pei_data->RcompResistor,
-			sizeof(params->pei_data->RcompResistor));
-	memcpy(memory_params->RcompTarget, params->pei_data->RcompTarget,
-			sizeof(params->pei_data->RcompTarget));
+	/* Get SPD index */
+	const gpio_t spd_gpios[] = {
+		GPIO_MEM_CONFIG_0,
+		GPIO_MEM_CONFIG_1,
+		GPIO_MEM_CONFIG_2,
+		GPIO_MEM_CONFIG_3,
+	};
+	const int spd_idx = gpio_base2_value(spd_gpios, ARRAY_SIZE(spd_gpios));
+
 	memory_params->MemorySpdDataLen = SPD_LEN;
 	memory_params->DqPinsInterleaved = FALSE;
-	if (CONFIG(BOARD_GOOGLE_CAROLINE))
-		memory_params->DdrFreqLimit = 1600;
+
+	spd_memory_init_params(memory_params, spd_idx);
+	variant_memory_init_params(memory_params, spd_idx);
 }

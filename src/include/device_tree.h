@@ -142,10 +142,10 @@ struct device_tree_node *dt_find_node(struct device_tree_node *parent, const cha
 			     u32 *addrcp, u32 *sizecp, int create);
 struct device_tree_node *dt_find_node_by_phandle(struct device_tree_node *root,
 						 uint32_t phandle);
-// Look up or create a node relative to a parent node, through its path
+// Look up or create a node in the tree, through its path
 // represented as a string of '/' separated node names.
-struct device_tree_node *dt_find_node_by_path(struct device_tree_node *parent, const char *path,
-				     u32 *addrcp, u32 *sizecp, int create);
+struct device_tree_node *dt_find_node_by_path(struct device_tree *tree,
+			const char *path, u32 *addrcp, u32 *sizecp, int create);
 // Look up a node relative to a parent node, through its compatible string.
 struct device_tree_node *dt_find_compat(struct device_tree_node *parent, const char *compatible);
 // Look up the next child of a parent node, through its compatible string. It

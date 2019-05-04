@@ -552,9 +552,9 @@ struct device_tree_node *dt_find_node(struct device_tree_node *parent,
 }
 
 /*
- * Find a node from a string device tree path, relative to a parent node.
+ * Find a node in the tree from a string device tree path.
  *
- * @param parent	The node from which to start the relative path lookup.
+ * @param tree		The device tree to search.
  * @param path          A string representing a path in the device tree, with
  *			nodes separated by '/'. Example: "soc/firmware/coreboot"
  * @param addrcp	Pointer that will be updated with any #address-cells
@@ -567,7 +567,7 @@ struct device_tree_node *dt_find_node(struct device_tree_node *parent,
  * It is the caller responsibility to provide the correct path string, namely
  * not starting or ending with a '/', and not having "//" anywhere in it.
  */
-struct device_tree_node *dt_find_node_by_path(struct device_tree_node *parent,
+struct device_tree_node *dt_find_node_by_path(struct device_tree *tree,
 					      const char *path, u32 *addrcp,
 					      u32 *sizecp, int create)
 {
@@ -595,7 +595,7 @@ struct device_tree_node *dt_find_node_by_path(struct device_tree_node *parent,
 
 	if (!next_slash) {
 		path_array[i] = NULL;
-		node = dt_find_node(parent, path_array,
+		node = dt_find_node(tree->root, path_array,
 				    addrcp, sizecp, create);
 	}
 
@@ -965,7 +965,7 @@ int dt_set_bin_prop_by_path(struct device_tree *tree, const char *path,
 
 	*prop_name++ = '\0'; /* Separate path from the property name. */
 
-	dt_node = dt_find_node_by_path(tree->root, path_copy, NULL,
+	dt_node = dt_find_node_by_path(tree, path_copy, NULL,
 				       NULL, create);
 
 	if (!dt_node) {
@@ -995,7 +995,7 @@ struct device_tree_node *dt_init_reserved_memory_node(struct device_tree *tree)
 	struct device_tree_node *reserved;
 	u32 addr = 0, size = 0;
 
-	reserved = dt_find_node_by_path(tree->root, "reserved-memory", &addr,
+	reserved = dt_find_node_by_path(tree, "reserved-memory", &addr,
 					&size, 1);
 	if (!reserved)
 		return NULL;

@@ -22,7 +22,7 @@ Device (AAHB)
 	Name (_UID, 0x0)
 	Name (_CRS, ResourceTemplate()
 	{
-		Memory32Fixed (ReadWrite, 0xFEDC0000, 0x2000)
+		Memory32Fixed (ReadWrite, ALINK_AHB_ADDRESS, 0x2000)
 	})
 
 	Method (_STA, 0x0, NotSerialized)

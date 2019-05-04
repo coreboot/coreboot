@@ -25,6 +25,8 @@
 /* AcpiMmio blocks are at fixed offsets from FED8_0000h, enabled in PMx04[1] */
 #include <amdblocks/acpimmio_map.h>
 
+#define ALINK_AHB_ADDRESS		0xfedc0000
+
 /* I2C fixed address */
 #define I2C_BASE_ADDRESS		0xfedc2000
 #define I2C_DEVICE_SIZE			0x00001000

@@ -27,7 +27,7 @@
 #include <fit.h>
 #include <boardid.h>
 #include <commonlib/cbfs_serialized.h>
-#include <commonlib/include/commonlib/stdlib.h>
+#include <commonlib/stdlib.h>
 
 static struct list_node image_nodes;
 static struct list_node config_nodes;

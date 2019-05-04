@@ -16,6 +16,7 @@
  */
 
 #include <assert.h>
+#include <commonlib/stdlib.h>
 #include <console/console.h>
 #include <device_tree.h>
 #include <endian.h>
@@ -153,24 +154,6 @@ int fdt_skip_node(const void *blob, uint32_t start_offset)
 /*
  * Functions to turn a flattened tree into an unflattened one.
  */
-static struct device_tree_node *alloc_node(void)
-{
-	struct device_tree_node *buf = malloc(sizeof(struct device_tree_node));
-	if (!buf)
-		return NULL;
-	memset(buf, 0, sizeof(*buf));
-	return buf;
-}
-
-static struct device_tree_property *alloc_prop(void)
-{
-	struct device_tree_property *buf =
-		malloc(sizeof(struct device_tree_property));
-	if (!buf)
-		return NULL;
-	memset(buf, 0, sizeof(*buf));
-	return buf;
-}
 
 static int fdt_unflatten_node(const void *blob, uint32_t start_offset,
 			      struct device_tree_node **new_node)
@@ -185,18 +168,14 @@ static int fdt_unflatten_node(const void *blob, uint32_t start_offset,
 		return 0;
 	offset += size;
 
-	struct device_tree_node *node = alloc_node();
+	struct device_tree_node *node = xzalloc(sizeof(*node));
 	*new_node = node;
-	if (!node)
-		return 0;
 	node->name = name;
 
 	struct fdt_property fprop;
 	last = &node->properties;
 	while ((size = fdt_next_property(blob, offset, &fprop))) {
-		struct device_tree_property *prop = alloc_prop();
-		if (!prop)
-			return 0;
+		struct device_tree_property *prop = xzalloc(sizeof(*prop));
 		prop->prop = fprop;
 
 		list_insert_after(&prop->list_node, last);
@@ -227,10 +206,7 @@ static int fdt_unflatten_map_entry(const void *blob, uint32_t offset,
 	if (!size)
 		return 0;
 
-	struct device_tree_reserve_map_entry *entry = malloc(sizeof(*entry));
-	if (!entry)
-		return 0;
-	memset(entry, 0, sizeof(*entry));
+	struct device_tree_reserve_map_entry *entry = xzalloc(sizeof(*entry));
 	*new = entry;
 	entry->start = start;
 	entry->size = size;
@@ -240,11 +216,8 @@ static int fdt_unflatten_map_entry(const void *blob, uint32_t offset,
 
 struct device_tree *fdt_unflatten(const void *blob)
 {
-	struct device_tree *tree = malloc(sizeof(*tree));
+	struct device_tree *tree = xzalloc(sizeof(*tree));
 	const struct fdt_header *header = (const struct fdt_header *)blob;
-	if (!tree)
-		return NULL;
-	memset(tree, 0, sizeof(*tree));
 	tree->header = header;
 
 	uint32_t struct_offset = be32toh(header->structure_offset);
@@ -534,7 +507,7 @@ struct device_tree_node *dt_find_node(struct device_tree_node *parent,
 		if (!create)
 			return NULL;
 
-		found = alloc_node();
+		found = malloc(sizeof(*found));
 		if (!found)
 			return NULL;
 		found->name = strdup(*path);
@@ -804,9 +777,7 @@ void dt_add_bin_prop(struct device_tree_node *node, const char *name,
 		}
 	}
 
-	prop = alloc_prop();
-	if (!prop)
-		return;
+	prop = xzalloc(sizeof(*prop));
 	list_insert_after(&prop->list_node, &node->properties);
 	prop->prop.name = name;
 	prop->prop.data = data;
@@ -878,9 +849,7 @@ void dt_add_string_prop(struct device_tree_node *node, const char *name,
  */
 void dt_add_u32_prop(struct device_tree_node *node, const char *name, u32 val)
 {
-	u32 *val_ptr = malloc(sizeof(val));
-	if (!val_ptr)
-		return;
+	u32 *val_ptr = xmalloc(sizeof(val));
 	*val_ptr = htobe32(val);
 	dt_add_bin_prop(node, name, val_ptr, sizeof(*val_ptr));
 }
@@ -894,9 +863,7 @@ void dt_add_u32_prop(struct device_tree_node *node, const char *name, u32 val)
  */
 void dt_add_u64_prop(struct device_tree_node *node, const char *name, u64 val)
 {
-	u64 *val_ptr = malloc(sizeof(val));
-	if (!val_ptr)
-		return;
+	u64 *val_ptr = xmalloc(sizeof(val));
 	*val_ptr = htobe64(val);
 	dt_add_bin_prop(node, name, val_ptr, sizeof(*val_ptr));
 }
@@ -916,9 +883,7 @@ void dt_add_reg_prop(struct device_tree_node *node, u64 *addrs, u64 *sizes,
 {
 	int i;
 	size_t length = (addr_cells + size_cells) * sizeof(u32) * count;
-	u8 *data = malloc(length);
-	if (!data)
-		return;
+	u8 *data = xmalloc(length);
 	u8 *cur = data;
 
 	for (i = 0; i < count; i++) {

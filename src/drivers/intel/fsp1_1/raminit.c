@@ -47,7 +47,6 @@ void raminit(struct romstage_params *params)
 	u32 *mrc_hob;
 	u32 fsp_reserved_bytes;
 	MEMORY_INIT_UPD *original_params;
-	struct pei_data *pei_ptr;
 	EFI_STATUS status;
 	VPD_DATA_REGION *vpd_ptr;
 	UPD_DATA_REGION *upd_ptr;
@@ -81,10 +80,9 @@ void raminit(struct romstage_params *params)
 
 	/* Zero fill RT Buffer data and start populating fields. */
 	memset(&fsp_rt_common_buffer, 0, sizeof(fsp_rt_common_buffer));
-	pei_ptr = params->pei_data;
 	if (s3wake) {
 		fsp_rt_common_buffer.BootMode = BOOT_ON_S3_RESUME;
-	} else if (pei_ptr->saved_data != NULL) {
+	} else if (params->saved_data != NULL) {
 		fsp_rt_common_buffer.BootMode =
 			BOOT_ASSUMING_NO_CONFIGURATION_CHANGES;
 	} else {
@@ -94,7 +92,7 @@ void raminit(struct romstage_params *params)
 	fsp_rt_common_buffer.BootLoaderTolumSize = cbmem_overhead_size();
 
 	/* Get any board specific changes */
-	fsp_memory_init_params.NvsBufferPtr = (void *)pei_ptr->saved_data;
+	fsp_memory_init_params.NvsBufferPtr = (void *)params->saved_data;
 	fsp_memory_init_params.RtBufferPtr = &fsp_rt_common_buffer;
 	fsp_memory_init_params.HobListPtr = &hob_list_ptr;
 
@@ -221,7 +219,7 @@ void raminit(struct romstage_params *params)
 	}
 	hob_ptr.Raw = get_next_guid_hob(&mrc_guid, hob_list_ptr);
 	if (hob_ptr.Raw == NULL) {
-		if (params->pei_data->saved_data == NULL) {
+		if (params->saved_data == NULL) {
 			printk(BIOS_ERR, "7.3: FSP_NON_VOLATILE_STORAGE_HOB missing!\n");
 			fsp_verification_failure = 1;
 		}
@@ -295,8 +293,8 @@ void raminit(struct romstage_params *params)
 			"Memory Configuration Data Hob not present\n");
 	else if (!vboot_recovery_mode_enabled()) {
 		/* Do not save MRC data in recovery path */
-		pei_ptr->data_to_save = GET_GUID_HOB_DATA(mrc_hob);
-		pei_ptr->data_to_save_size = ALIGN(
+		params->data_to_save = GET_GUID_HOB_DATA(mrc_hob);
+		params->data_to_save_size = ALIGN(
 			((u32)GET_HOB_LENGTH(mrc_hob)), 16);
 	}
 }

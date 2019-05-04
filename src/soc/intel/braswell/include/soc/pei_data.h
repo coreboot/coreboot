@@ -43,15 +43,6 @@ struct pei_data {
 	void *spd_data_ch1;
 	uint8_t spd_ch0_config;
 	uint8_t spd_ch1_config;
-
-	/* Fast boot and S3 resume MRC data */
-	int saved_data_size;
-	const void *saved_data;
-	int disable_saved_data;
-
-	/* New save data from MRC */
-	int data_to_save_size;
-	void *data_to_save;
 };
 
 typedef struct pei_data PEI_DATA;

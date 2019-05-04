@@ -80,16 +80,7 @@ struct pei_data {
 	uint8_t dqs_map[2][8];
 	uint16_t RcompResistor[3];
 	uint16_t RcompTarget[5];
-	/* Data read from flash and passed into MRC */
-	const void *saved_data;
-	int saved_data_size;
 
-	/* Disable use of saved data (can be set by mainboard) */
-	int disable_saved_data;
-
-	/* Data from MRC that should be saved to flash */
-	void *data_to_save;
-	int data_to_save_size;
 	int mem_cfg_id;
 } __packed;
 

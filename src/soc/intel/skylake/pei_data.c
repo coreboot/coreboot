@@ -33,16 +33,7 @@ static void ABI_X86 send_to_console(unsigned char b)
 
 void soc_fill_pei_data(struct pei_data *pei_data)
 {
-	const struct device *dev;
-	const struct soc_intel_skylake_config *config;
-
 	/* Set the parameters for MemoryInit */
-	dev = dev_find_slot(0, PCH_DEVFN_LPC);
-	config = dev->chip_info;
-
 	pei_data->pei_version = PEI_VERSION;
 	pei_data->tx_byte = &send_to_console;
-
-	/* Force a full memory train if RMT is enabled */
-	pei_data->disable_saved_data = config->Rmt;
 }

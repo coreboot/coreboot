@@ -46,6 +46,12 @@ void soc_pre_ram_init(struct romstage_params *params)
 
 	/* Prepare to initialize memory */
 	soc_fill_pei_data(params->pei_data);
+
+	const struct device *const dev = pcidev_path_on_root(PCH_DEVFN_LPC);
+	const struct soc_intel_skylake_config *const config =
+		dev ? dev->chip_info : NULL;
+	/* Force a full memory train if RMT is enabled */
+	params->disable_saved_data = config && config->Rmt;
 }
 
 /* UPD parameters to be initialized before MemoryInit */

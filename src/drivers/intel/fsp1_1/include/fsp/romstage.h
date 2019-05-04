@@ -18,6 +18,7 @@
 #ifndef _COMMON_ROMSTAGE_H_
 #define _COMMON_ROMSTAGE_H_
 
+#include <stddef.h>
 #include <stdint.h>
 #include <arch/cpu.h>
 #include <memory_info.h>
@@ -32,6 +33,15 @@ struct romstage_params {
 	struct chipset_power_state *power_state;
 	struct pei_data *pei_data;
 	void *chipset_context;
+
+	/* Fast boot and S3 resume MRC data */
+	size_t saved_data_size;
+	const void *saved_data;
+	bool disable_saved_data;
+
+	/* New save data from MRC */
+	size_t data_to_save_size;
+	const void *data_to_save;
 };
 
 /*

@@ -185,7 +185,7 @@ static int dt_platform_fixup(struct device_tree_fixup *fixup,
 	size_t i;
 
 	/* Set the sclk clock rate. */
-	dt_node = dt_find_node_by_path(tree, "soc@0/sclk", NULL, NULL, 0);
+	dt_node = dt_find_node_by_path(tree, "/soc@0/sclk", NULL, NULL, 0);
 	if (dt_node) {
 		const u32 freq = thunderx_get_io_clock();
 		printk(BIOS_INFO, "%s: Set SCLK to %u Hz\n", __func__, freq);
@@ -195,7 +195,7 @@ static int dt_platform_fixup(struct device_tree_fixup *fixup,
 		       __func__);
 
 	/* Set refclkuaa clock rate. */
-	dt_node = dt_find_node_by_path(tree, "soc@0/refclkuaa", NULL,
+	dt_node = dt_find_node_by_path(tree, "/soc@0/refclkuaa", NULL,
 				       NULL, 0);
 	if (dt_node) {
 		const u32 freq = uart_platform_refclk();
@@ -211,7 +211,7 @@ static int dt_platform_fixup(struct device_tree_fixup *fixup,
 		char path[32];
 		const uint64_t addr = UAAx_PF_BAR0(i);
 		/* Remove the node */
-		snprintf(path, sizeof(path), "soc@0/serial@%llx", addr);
+		snprintf(path, sizeof(path), "/soc@0/serial@%llx", addr);
 		dt_node = dt_find_node_by_path(tree, path, NULL, NULL, 0);
 		if (!dt_node || uart_is_enabled(i)) {
 			printk(BIOS_INFO, "%s: ignoring %s\n", __func__, path);
@@ -227,7 +227,7 @@ static int dt_platform_fixup(struct device_tree_fixup *fixup,
 		u32 phandle = 0;
 		const uint64_t addr = PEM_PEMX_PF_BAR0(i);
 		/* Remove the node */
-		snprintf(path, sizeof(path), "soc@0/pci@%llx", addr);
+		snprintf(path, sizeof(path), "/soc@0/pci@%llx", addr);
 		dt_node = dt_find_node_by_path(tree, path, NULL, NULL, 0);
 		if (!dt_node || bdk_pcie_is_running(0, i)) {
 			printk(BIOS_INFO, "%s: ignoring %s\n", __func__, path);
@@ -239,7 +239,7 @@ static int dt_platform_fixup(struct device_tree_fixup *fixup,
 		list_remove(&dt_node->list_node);
 
 		/* Remove phandle to non existing nodes */
-		snprintf(path, sizeof(path), "soc@0/smmu0@%llx", SMMU_PF_BAR0);
+		snprintf(path, sizeof(path), "/soc@0/smmu0@%llx", SMMU_PF_BAR0);
 		dt_node = dt_find_node_by_path(tree, path, NULL, NULL, 0);
 		if (!dt_node) {
 			printk(BIOS_ERR, "%s: SMMU entry not found\n",

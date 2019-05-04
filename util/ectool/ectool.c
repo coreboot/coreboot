@@ -22,7 +22,6 @@
 #include <sys/io.h>
 #endif
 #include <ec.h>
-#include <stdlib.h>
 
 #if defined __NetBSD__ || defined __OpenBSD__
 

@@ -16,8 +16,9 @@
 
 #include <arch/byteorder.h>
 #include <console/console.h>
-#include <soc/pei_data.h>
+#include <fsp/soc_binding.h>
 #include <soc/romstage.h>
+#include <stdint.h>
 #include <string.h>
 
 #include "spd.h"
@@ -73,20 +74,19 @@ static void mainboard_print_spd_info(uint8_t spd[])
 	}
 }
 
-/* Copy SPD data for on-board memory */
-void mainboard_fill_spd_data(struct pei_data *pei_data)
+/* Fill SPD pointers for on-board memory */
+void spd_memory_init_params(MEMORY_INIT_UPD *memory_params)
 {
 	uintptr_t spd_data;
 	spd_data = mainboard_get_spd_data();
 
-	memcpy(pei_data->spd_data[0][0], (void *)spd_data, SPD_LEN);
-
-	if (mainboard_has_dual_channel_mem())
-		memcpy(pei_data->spd_data[1][0], (void *)spd_data, SPD_LEN);
-
 	/* Make sure a valid SPD was found */
-	if (pei_data->spd_data[0][0][0] == 0)
+	if (*(uint8_t *)spd_data == 0)
 		die("Invalid SPD data.");
 
-	mainboard_print_spd_info(pei_data->spd_data[0][0]);
+	memory_params->MemorySpdPtr00 = spd_data;
+	if (mainboard_has_dual_channel_mem())
+		memory_params->MemorySpdPtr10 = spd_data;
+
+	mainboard_print_spd_info((uint8_t *)spd_data);
 }

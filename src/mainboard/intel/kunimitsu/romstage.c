@@ -15,20 +15,13 @@
  * GNU General Public License for more details.
  */
 
-#include <string.h>
 #include <gpio.h>
-#include <soc/pei_data.h>
-#include <soc/pei_wrapper.h>
 #include <soc/romstage.h>
 #include "gpio.h"
 #include "spd/spd.h"
 
 void mainboard_romstage_entry(struct romstage_params *params)
 {
-	params->pei_data->mem_cfg_id = get_spd_index();
-	/* Fill out PEI DATA */
-	mainboard_fill_pei_data(params->pei_data);
-	mainboard_fill_spd_data(params->pei_data);
 	/* Initialize memory */
 	romstage_common(params);
 }
@@ -36,24 +29,11 @@ void mainboard_romstage_entry(struct romstage_params *params)
 void mainboard_memory_init_params(struct romstage_params *params,
 				  MEMORY_INIT_UPD *memory_params)
 {
-	if (params->pei_data->spd_data[0][0][0] != 0) {
-		memory_params->MemorySpdPtr00 =
-				(UINT32)(params->pei_data->spd_data[0][0]);
-		memory_params->MemorySpdPtr10 =
-				(UINT32)(params->pei_data->spd_data[1][0]);
-	}
-	memcpy(memory_params->DqByteMapCh0, params->pei_data->dq_map[0],
-			sizeof(params->pei_data->dq_map[0]));
-	memcpy(memory_params->DqByteMapCh1, params->pei_data->dq_map[1],
-			sizeof(params->pei_data->dq_map[1]));
-	memcpy(memory_params->DqsMapCpu2DramCh0, params->pei_data->dqs_map[0],
-			sizeof(params->pei_data->dqs_map[0]));
-	memcpy(memory_params->DqsMapCpu2DramCh1, params->pei_data->dqs_map[1],
-			sizeof(params->pei_data->dqs_map[1]));
-	memcpy(memory_params->RcompResistor, params->pei_data->RcompResistor,
-			sizeof(params->pei_data->RcompResistor));
-	memcpy(memory_params->RcompTarget, params->pei_data->RcompTarget,
-			sizeof(params->pei_data->RcompTarget));
+	spd_memory_init_params(memory_params);
+	mainboard_fill_dq_map_data(&memory_params->DqByteMapCh0);
+	mainboard_fill_dqs_map_data(&memory_params->DqsMapCpu2DramCh0);
+	mainboard_fill_rcomp_res_data(&memory_params->RcompResistor);
+	mainboard_fill_rcomp_strength_data(&memory_params->RcompTarget);
 	memory_params->MemorySpdDataLen = SPD_LEN;
 	memory_params->DqPinsInterleaved = FALSE;
 }

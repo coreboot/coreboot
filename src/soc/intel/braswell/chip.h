@@ -32,9 +32,6 @@
 #define SVID_CONFIG3		3
 #define SVID_PMIC_CONFIG	8
 
-#define MEM_DDR3	0
-#define MEM_LPDDR3	1
-
 enum lpe_clk_src {
 	LPE_CLK_SRC_XTAL,
 	LPE_CLK_SRC_PLL,

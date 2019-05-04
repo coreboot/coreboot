@@ -34,4 +34,8 @@ void set_max_freq(void);
 void program_base_addresses(void);
 int chipset_prev_sleep_state(struct chipset_power_state *ps);
 
+/* Values for FSP's PcdMemoryTypeEnable */
+#define MEM_DDR3	0
+#define MEM_LPDDR3	1
+
 #endif /* _SOC_ROMSTAGE_H_ */

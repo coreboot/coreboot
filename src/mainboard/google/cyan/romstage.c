@@ -16,7 +16,6 @@
 
 #include <soc/romstage.h>
 #include <baseboard/variants.h>
-#include <chip.h>
 
 /* All FSP specific code goes in this block */
 void mainboard_romstage_entry(struct romstage_params *rp)

@@ -525,8 +525,14 @@ void xhci_pm_write16(uint8_t reg, uint16_t value);
 uint16_t xhci_pm_read16(uint8_t reg);
 void xhci_pm_write32(uint8_t reg, uint32_t value);
 uint32_t xhci_pm_read32(uint8_t reg);
-void smbus_write8(uint32_t mmio, uint8_t reg, uint8_t value);
-uint8_t smbus_read8(uint32_t mmio, uint8_t reg);
+uint8_t asf_read8(uint8_t offset);
+uint16_t asf_read16(uint8_t offset);
+void asf_write8(uint8_t offset, uint8_t value);
+void asf_write16(uint8_t offset, uint16_t value);
+uint8_t smbus_read8(uint8_t offset);
+uint16_t smbus_read16(uint8_t offset);
+void smbus_write8(uint8_t offset, uint8_t value);
+void smbus_write16(uint8_t offset, uint16_t value);
 void bootblock_fch_early_init(void);
 void bootblock_fch_init(void);
 /**

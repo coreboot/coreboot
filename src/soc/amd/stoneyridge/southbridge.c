@@ -632,12 +632,12 @@ static void setup_misc(int *reboot)
 static void fch_smbus_init(void)
 {
 	pm_write8(SMB_ASF_IO_BASE, SMB_BASE_ADDR >> 8);
-	smbus_write8(ACPIMMIO_SMBUS_BASE, SMBTIMING, SMB_SPEED_400KHZ);
+	smbus_write8(SMBTIMING, SMB_SPEED_400KHZ);
 	/* Clear all SMBUS status bits */
-	smbus_write8(ACPIMMIO_SMBUS_BASE, SMBHSTSTAT, SMBHST_STAT_CLEAR);
-	smbus_write8(ACPIMMIO_SMBUS_BASE, SMBSLVSTAT, SMBSLV_STAT_CLEAR);
-	smbus_write8(ACPIMMIO_ASF_BASE, SMBHSTSTAT, SMBHST_STAT_CLEAR);
-	smbus_write8(ACPIMMIO_ASF_BASE, SMBSLVSTAT, SMBSLV_STAT_CLEAR);
+	smbus_write8(SMBHSTSTAT, SMBHST_STAT_CLEAR);
+	smbus_write8(SMBSLVSTAT, SMBSLV_STAT_CLEAR);
+	asf_write8(SMBHSTSTAT, SMBHST_STAT_CLEAR);
+	asf_write8(SMBSLVSTAT, SMBSLV_STAT_CLEAR);
 }
 
 /* Before console init */

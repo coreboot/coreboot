@@ -167,16 +167,48 @@ void acpi_write32(u8 reg, u32 value)
 	write32((void *)(ACPIMMIO_ACPI_BASE + reg), value);
 }
 
-/* smbus read/write - access registers at 0xfed80a00 and ASF at 0xfed80900 */
+/* asf read/write - access registers at 0xfed80900 - not currently used */
 
-void smbus_write8(uint32_t mmio, uint8_t reg, uint8_t value)
+u8 asf_read8(u8 reg)
 {
-	write8((void *)(mmio + reg), value);
+	return read8((void *)(ACPIMMIO_ASF_BASE + reg));
 }
 
-uint8_t smbus_read8(uint32_t mmio, uint8_t reg)
+u16 asf_read16(u8 reg)
 {
-	return read8((void *)(mmio + reg));
+	return read16((void *)(ACPIMMIO_ASF_BASE + reg));
+}
+
+void asf_write8(u8 reg, u8 value)
+{
+	write8((void *)(ACPIMMIO_ASF_BASE + reg), value);
+}
+
+void asf_write16(u8 reg, u16 value)
+{
+	write16((void *)(ACPIMMIO_ASF_BASE + reg), value);
+}
+
+/* smbus read/write - access registers at 0xfed80a00 and ASF at 0xfed80900 */
+
+u8 smbus_read8(u8 reg)
+{
+	return read8((void *)(ACPIMMIO_SMBUS_BASE + reg));
+}
+
+u16 smbus_read16(u8 reg)
+{
+	return read16((void *)(ACPIMMIO_SMBUS_BASE + reg));
+}
+
+void smbus_write8(u8 reg, u8 value)
+{
+	write8((void *)(ACPIMMIO_SMBUS_BASE + reg), value);
+}
+
+void smbus_write16(u8 reg, u16 value)
+{
+	write16((void *)(ACPIMMIO_SMBUS_BASE + reg), value);
 }
 
 /* wdt read/write - access registers at 0xfed80b00 - not currently used */

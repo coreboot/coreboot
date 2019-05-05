@@ -22,14 +22,6 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "MS-7707"
 
-config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
-	hex
-	default 0x7707
-
-config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
-	hex
-	default 0x1462
-
 config DRAM_RESET_GATE_GPIO
 	int
 	default 60

@@ -15,6 +15,7 @@
  */
 
 #include <arch/io.h>
+#include <cf9_reset.h>
 #include <device/mmio.h>
 #include <device/pci_ops.h>
 #include <console/console.h>
@@ -1744,10 +1745,8 @@ static void sdram_checkreset(void)
 	}
 	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0xa2, pmcon2);
 	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0xa4, pmcon3);
-	if (reset) {
-		printk(BIOS_DEBUG, "Power cycle reset...\n");
-		outb(0xe, 0xcf9);
-	}
+	if (reset)
+		full_reset();
 }
 
 static void sdram_dradrb(struct sysinfo *s)

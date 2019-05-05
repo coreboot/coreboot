@@ -22,7 +22,6 @@
 #include <cpu/x86/cache.h>
 #include <cpu/x86/mtrr.h>
 #include <arch/cpu.h>
-#include <halt.h>
 #if CONFIG(SOUTHBRIDGE_INTEL_I82801GX)
 #include <southbridge/intel/i82801gx/i82801gx.h> /* smbus_read_byte */
 #else
@@ -624,9 +623,7 @@ static void checkreset_ddr2(int boot_path)
 		reg8 = pci_read_config8(PCI_DEV(0, 0, 0), 0xf0);
 		pci_write_config8(PCI_DEV(0, 0, 0), 0xf0, reg8 |  (1 << 2));
 
-		printk(BIOS_DEBUG, "Reset...\n");
-		outb(0xe, 0xcf9);
-		asm ("hlt");
+		full_reset();
 	}
 	pmcon2 |= 0x80;
 	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0xa2, pmcon2);

@@ -16,8 +16,9 @@
 
 #include <types.h>
 #include <arch/io.h>
+#include <cf9_reset.h>
 #include <device/pci_ops.h>
-#include <halt.h>
+
 #include "gm45.h"
 
 void gm45_early_reset(void/*const timings_t *const timings*/)
@@ -63,8 +64,5 @@ void gm45_early_reset(void/*const timings_t *const timings*/)
 	/* Normally, we would set this after successful raminit. */
 	MCHBAR32(DCC_MCHBAR) |= (1 << 19);
 
-	/* Perform system reset through CF9 interface. */
-	outb(0x02, 0xcf9); /* Set system reset bit. */
-	outb(0x06, 0xcf9); /* Set CPU reset bit, too. */
-	halt();
+	system_reset();
 }

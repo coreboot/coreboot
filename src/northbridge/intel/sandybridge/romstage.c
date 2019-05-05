@@ -18,6 +18,7 @@
 #include <stdint.h>
 #include <console/console.h>
 #include <arch/io.h>
+#include <cf9_reset.h>
 #include <device/pci_ops.h>
 #include <cpu/x86/lapic.h>
 #include <timestamp.h>
@@ -47,10 +48,8 @@ void mainboard_romstage_entry(unsigned long bist)
 {
 	int s3resume = 0;
 
-	if (MCHBAR16(SSKPD) == 0xCAFE) {
-		outb(0x6, 0xcf9);
-		halt ();
-	}
+	if (MCHBAR16(SSKPD) == 0xCAFE)
+		system_reset();
 
 	if (bist == 0)
 		enable_lapic();

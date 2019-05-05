@@ -21,7 +21,6 @@
 #include <device/pci_ops.h>
 #include <device/pci_def.h>
 #include <cbmem.h>
-#include <halt.h>
 #include <romstage_handoff.h>
 #include "i945.h"
 #include <pc80/mc146818rtc.h>

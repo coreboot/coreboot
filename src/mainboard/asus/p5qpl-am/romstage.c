@@ -24,7 +24,6 @@
 #include <cpu/intel/speedstep.h>
 #include <cpu/x86/bist.h>
 #include <cpu/x86/msr.h>
-#include <halt.h>
 #include <northbridge/intel/x4x/iomap.h>
 #include <northbridge/intel/x4x/x4x.h>
 #include <southbridge/intel/common/gpio.h>

@@ -20,7 +20,6 @@
 #include <arch/cbfs.h>
 #include <cbfs.h>
 #include <cf9_reset.h>
-#include <halt.h>
 #include <ip_checksum.h>
 #include <memory_info.h>
 #include <mrc_cache.h>

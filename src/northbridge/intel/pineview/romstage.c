@@ -23,7 +23,6 @@
 #include <device/pci_ops.h>
 #include <cbmem.h>
 #include <cf9_reset.h>
-#include <halt.h>
 #include <romstage_handoff.h>
 #include <southbridge/intel/i82801gx/i82801gx.h>
 #include <southbridge/intel/common/gpio.h>

@@ -26,7 +26,6 @@
 #include <pc80/mc146818rtc.h>
 #include <spd.h>
 #include <string.h>
-#include <halt.h>
 #include "raminit.h"
 #include "i945.h"
 #include "chip.h"

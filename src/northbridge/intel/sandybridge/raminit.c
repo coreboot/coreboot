@@ -25,7 +25,6 @@
 #include <device/mmio.h>
 #include <device/pci_ops.h>
 #include <cbmem.h>
-#include <halt.h>
 #include <timestamp.h>
 #include <mrc_cache.h>
 #include <southbridge/intel/bd82x6x/me.h>

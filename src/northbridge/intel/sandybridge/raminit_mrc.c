@@ -28,7 +28,6 @@
 #include <device/pci_def.h>
 #include <lib.h>
 #include <mrc_cache.h>
-#include <halt.h>
 #include <timestamp.h>
 #include "raminit.h"
 #include "pei_data.h"

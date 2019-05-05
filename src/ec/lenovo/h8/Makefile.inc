@@ -7,6 +7,12 @@ bootblock-y += sense.c
 postcar-y += sense.c
 smm-y += sense.c
 
+ramstage-$(CONFIG_VBOOT) += vboot.c
+verstage-$(CONFIG_VBOOT) += vboot.c
+romstage-$(CONFIG_VBOOT) += vboot.c
+bootblock-$(CONFIG_VBOOT) += vboot.c
+postcar-$(CONFIG_VBOOT) += vboot.c
+
 ifneq ($(filter y,$(CONFIG_H8_BEEP_ON_DEATH) $(CONFIG_H8_FLASH_LEDS_ON_DEATH)),)
 romstage-y += panic.c
 ramstage-y += panic.c

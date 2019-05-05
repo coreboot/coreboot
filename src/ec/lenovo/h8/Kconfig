@@ -32,6 +32,14 @@ config H8_HAS_BAT_TRESHOLDS_IMPL
 	bool
 	default n
 
+config H8_FN_KEY_AS_VBOOT_RECOVERY_SW
+	bool "Enable Fn-Key as VBOOT recovery switch"
+	depends on VBOOT
+	default n
+	help
+	  If VBOOT is enabled, press Fn-Key at power on to force a recovery mode
+	  boot instead of regular FW_MAIN_x boot.
+
 endif
 
 config H8_DOCK_EARLY_INIT

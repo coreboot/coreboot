@@ -329,11 +329,9 @@ void sb_lpc_port80(void)
 	u8 byte;
 
 	/* Enable LPC controller */
-	outb(PM_LPC_GATING, PM_INDEX);
-	byte = inb(PM_DATA);
+	byte = pm_io_read8(PM_LPC_GATING);
 	byte |= PM_LPC_ENABLE;
-	outb(PM_LPC_GATING, PM_INDEX);
-	outb(byte, PM_DATA);
+	pm_io_write8(PM_LPC_GATING, byte);
 
 	/* Enable port 80 LPC decode in pci function 3 configuration space. */
 	byte = pci_read_config8(SOC_LPC_DEV, LPC_IO_OR_MEM_DEC_EN_HIGH);
@@ -367,11 +365,9 @@ void sb_acpi_mmio_decode(void)
 	uint8_t byte;
 
 	/* Enable ACPI MMIO range 0xfed80000 - 0xfed81fff */
-	outb(PM_ISA_CONTROL, PM_INDEX);
-	byte = inb(PM_DATA);
+	byte = pm_io_read8(PM_ISA_CONTROL);
 	byte |= MMIO_EN;
-	outb(PM_ISA_CONTROL, PM_INDEX);
-	outb(byte, PM_DATA);
+	pm_io_write8(PM_ISA_CONTROL, byte);
 }
 
 static void sb_enable_cf9_io(void)

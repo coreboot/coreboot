@@ -26,10 +26,7 @@
 
 pci_devfn_t pci_ehci_dbg_dev(unsigned int hcd_idx)
 {
-	/* Enable all of the USB controllers */
-	outb(PM_USB_ENABLE, PM_INDEX);
-	outb(PM_USB_ALL_CONTROLLERS, PM_DATA);
-
+	pm_io_write8(PM_USB_ENABLE, PM_USB_ALL_CONTROLLERS);
 	return SOC_EHCI1_DEV;
 }
 

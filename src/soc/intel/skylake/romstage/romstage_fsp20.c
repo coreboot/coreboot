@@ -304,10 +304,6 @@ static void soc_primary_gfx_config_params(FSP_M_CONFIG *m_cfg,
 		 */
 		m_cfg->InternalGfx = 0;
 		m_cfg->IgdDvmt50PreAlloc = 0;
-		if (config->PrimaryDisplay == Display_iGFX)
-			m_cfg->PrimaryDisplay = Display_Auto;
-		else
-			m_cfg->PrimaryDisplay = config->PrimaryDisplay;
 	} else {
 		m_cfg->InternalGfx = 1;
 		/*
@@ -319,8 +315,8 @@ static void soc_primary_gfx_config_params(FSP_M_CONFIG *m_cfg,
 		 * a high resolution panel
 		 */
 		m_cfg->IgdDvmt50PreAlloc = 2;
-		m_cfg->PrimaryDisplay = config->PrimaryDisplay;
 	}
+	m_cfg->PrimaryDisplay = config->PrimaryDisplay;
 }
 
 void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)

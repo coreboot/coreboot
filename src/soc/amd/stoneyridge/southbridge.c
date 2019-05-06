@@ -397,27 +397,49 @@ void sb_clk_output_48Mhz(u32 osc)
 	misc_write32(MISC_CLK_CNTL1, ctrl);
 }
 
-static uintptr_t sb_spibase(void)
+static uintptr_t sb_get_spibase(void)
 {
-	u32 base, enables;
+	u32 base;
+
+	base = pci_read_config32(SOC_LPC_DEV, SPIROM_BASE_ADDRESS_REGISTER);
+	base = ALIGN_DOWN(base, SPI_BASE_ALIGNMENT);
+	return (uintptr_t)base;
+}
+
+static void sb_set_spibase(u32 base, u32 enable)
+{
+	u32 reg32;
+
+	/* only two types of CS# enables are allowed */
+	enable &= SPI_ROM_ENABLE | SPI_ROM_ALT_ENABLE;
+
+	reg32 = pci_read_config32(SOC_LPC_DEV, SPIROM_BASE_ADDRESS_REGISTER);
+
+	reg32 &= SPI_BASE_ALIGNMENT - 1; /* preserve only reserved, enables */
+	reg32 &= ~(SPI_ROM_ENABLE | SPI_ROM_ALT_ENABLE);
+	reg32 |= enable;
+	reg32 |= ALIGN_DOWN(base, SPI_BASE_ALIGNMENT);
+
+	pci_write_config32(SOC_LPC_DEV, SPIROM_BASE_ADDRESS_REGISTER, reg32);
+}
+
+static uintptr_t sb_init_spi_base(void)
+{
+	uintptr_t base;
 
 	/* Make sure the base address is predictable */
-	base = pci_read_config32(SOC_LPC_DEV, SPIROM_BASE_ADDRESS_REGISTER);
-	enables = base & SPI_PRESERVE_BITS;
-	base &= ~(SPI_PRESERVE_BITS | SPI_BASE_RESERVED);
+	base = sb_get_spibase();
 
-	if (!base) {
-		base = SPI_BASE_ADDRESS;
-		pci_write_config32(SOC_LPC_DEV, SPIROM_BASE_ADDRESS_REGISTER,
-					base | enables | SPI_ROM_ENABLE);
-		/* PCI_COMMAND_MEMORY is read-only and enabled. */
-	}
-	return (uintptr_t)base;
+	if (base)
+		return base;
+
+	sb_set_spibase(SPI_BASE_ADDRESS, SPI_ROM_ENABLE);
+	return SPI_BASE_ADDRESS;
 }
 
 void sb_set_spi100(u16 norm, u16 fast, u16 alt, u16 tpm)
 {
-	uintptr_t base = sb_spibase();
+	uintptr_t base = sb_init_spi_base();
 	write16((void *)(base + SPI100_SPEED_CONFIG),
 				(norm << SPI_NORM_SPEED_NEW_SH) |
 				(fast << SPI_FAST_SPEED_NEW_SH) |
@@ -428,7 +450,7 @@ void sb_set_spi100(u16 norm, u16 fast, u16 alt, u16 tpm)
 
 void sb_disable_4dw_burst(void)
 {
-	uintptr_t base = sb_spibase();
+	uintptr_t base = sb_init_spi_base();
 	write16((void *)(base + SPI100_HOST_PREF_CONFIG),
 			read16((void *)(base + SPI100_HOST_PREF_CONFIG))
 					& ~SPI_RD4DW_EN_HOST);
@@ -436,7 +458,7 @@ void sb_disable_4dw_burst(void)
 
 void sb_read_mode(u32 mode)
 {
-	uintptr_t base = sb_spibase();
+	uintptr_t base = sb_init_spi_base();
 	write32((void *)(base + SPI_CNTRL0),
 			(read32((void *)(base + SPI_CNTRL0))
 					& ~SPI_READ_MODE_MASK) | mode);
@@ -466,7 +488,7 @@ void sb_tpm_decode(void)
  * Enable FCH to decode TPM associated Memory and IO regions to SPI
  *
  * This should be used if TPM is connected to SPI bus.
- * Assumes SPI address space is already configured via a call to sb_spibase().
+ * Assumes SPI address space is already configured.
  */
 void sb_tpm_decode_spi(void)
 {
@@ -631,7 +653,7 @@ void bootblock_fch_early_init(void)
 	sb_lpc_port80();
 	sb_lpc_decode();
 	sb_lpc_early_setup();
-	sb_spibase();
+	sb_init_spi_base();
 	sb_disable_4dw_burst(); /* Must be disabled on CZ(ST) */
 	enable_acpimmio_decode();
 	fch_smbus_init();

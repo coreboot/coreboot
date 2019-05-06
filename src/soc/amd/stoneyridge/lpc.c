@@ -146,7 +146,7 @@ static void lpc_set_resources(struct device *dev)
 	/* Special case. The SpiRomEnable and other enables should STAY set. */
 	res = find_resource(dev, 2);
 	spi_enable_bits = pci_read_config32(dev, SPIROM_BASE_ADDRESS_REGISTER);
-	spi_enable_bits &= SPI_PRESERVE_BITS;
+	spi_enable_bits &= SPI_BASE_ALIGNMENT - 1;
 	pci_write_config32(dev, SPIROM_BASE_ADDRESS_REGISTER,
 			res->base | spi_enable_bits);
 

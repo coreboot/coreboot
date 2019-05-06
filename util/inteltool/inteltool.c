@@ -135,6 +135,8 @@ static const struct {
 	  "7th generation (Kaby Lake family) Core Processor (Mobile)" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_CORE_7TH_GEN_U_Q,
 	  "7th generation (Kaby Lake family) Core Processor (Mobile)" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_CORE_7TH_GEN_E3,
+	  "7th generation (Kaby Lake family) Core Processor Xeon E3-1200" },
 	/* Southbridges (LPC controllers) */
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_82371XX, "371AB/EB/MB" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ICH10, "ICH10" },

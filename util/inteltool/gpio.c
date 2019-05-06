@@ -1026,6 +1026,7 @@ int print_gpios(struct pci_dev *sb, int show_all, int show_diffs)
 		break;
 	case PCI_DEVICE_ID_INTEL_B150:
 	case PCI_DEVICE_ID_INTEL_CM236:
+	case PCI_DEVICE_ID_INTEL_C236:
 	case PCI_DEVICE_ID_INTEL_APL_LPC:
 	case PCI_DEVICE_ID_INTEL_DNV_LPC:
 	case PCI_DEVICE_ID_INTEL_SUNRISEPOINT_LP_PRE:

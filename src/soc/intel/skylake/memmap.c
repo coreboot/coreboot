@@ -170,13 +170,13 @@ static size_t get_prmrr_size(uintptr_t dram_base,
 }
 
 /* Calculate Intel Traditional Memory size based on GSM, DSM, TSEG and DPR. */
-static size_t calculate_traditional_mem_size(uintptr_t dram_base,
-		const struct device *dev)
+static size_t calculate_traditional_mem_size(uintptr_t dram_base)
 {
+	const struct device *igd_dev = pcidev_path_on_root(SA_DEVFN_IGD);
 	uintptr_t traditional_mem_base = dram_base;
 	size_t traditional_mem_size;
 
-	if (dev->enabled) {
+	if (igd_dev && igd_dev->enabled) {
 		/* Read BDSM from Host Bridge */
 		traditional_mem_base -= sa_get_dsm_size();
 
@@ -200,9 +200,9 @@ static size_t calculate_traditional_mem_size(uintptr_t dram_base,
  * Calculate Intel Reserved Memory size based on
  * PRMRR size, Trace Hub config and PTT selection.
  */
-static size_t calculate_reserved_mem_size(uintptr_t dram_base,
-		const struct device *dev)
+static size_t calculate_reserved_mem_size(uintptr_t dram_base)
 {
+	const struct device *dev = pcidev_path_on_root(SA_DEVFN_ROOT);
 	uintptr_t reserve_mem_base = dram_base;
 	size_t reserve_mem_size;
 	const struct soc_intel_skylake_config *config;
@@ -259,20 +259,15 @@ static size_t calculate_reserved_mem_size(uintptr_t dram_base,
 static uintptr_t calculate_dram_base(size_t *reserved_mem_size)
 {
 	uintptr_t dram_base;
-	const struct device *dev;
-
-	dev = dev_find_slot(0, PCI_DEVFN(SA_DEV_SLOT_IGD, 0));
-	if (!dev)
-		die("ERROR - IGD device not found!");
 
 	/* Read TOLUD from Host Bridge offset */
 	dram_base = sa_get_tolud_base();
 
 	/* Get Intel Traditional Memory Range Size */
-	dram_base -= calculate_traditional_mem_size(dram_base, dev);
+	dram_base -= calculate_traditional_mem_size(dram_base);
 
 	/* Get Intel Reserved Memory Range Size */
-	*reserved_mem_size = calculate_reserved_mem_size(dram_base, dev);
+	*reserved_mem_size = calculate_reserved_mem_size(dram_base);
 
 	dram_base -= *reserved_mem_size;
 

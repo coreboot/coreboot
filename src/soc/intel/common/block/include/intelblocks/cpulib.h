@@ -159,6 +159,6 @@ uint32_t cpu_get_power_max(void);
 uint32_t cpu_get_max_turbo_ratio(void);
 
 /* Configure Machine Check Architecture support */
-void mca_configure(void *unused);
+void mca_configure(void);
 
 #endif	/* SOC_INTEL_COMMON_BLOCK_CPULIB_H */

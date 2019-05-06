@@ -428,7 +428,7 @@ void soc_core_init(struct device *cpu)
 	/* TODO(adurbin): This should only be done on a cold boot. Also, some
 	 * of these banks are core vs package scope. For now every CPU clears
 	 * every bank. */
-	mca_configure(NULL);
+	mca_configure();
 
 	/* Enable the local CPU apics */
 	enable_lapic_tpr();

@@ -76,7 +76,7 @@ void soc_core_init(struct device *cpu)
 			  scope. For now every CPU clears every bank. */
 	if (CONFIG(SOC_INTEL_COMMON_BLOCK_SGX) ||
 	    acpi_get_sleep_type() == ACPI_S5)
-		mca_configure(NULL);
+		mca_configure();
 
 	/* Set core MSRs */
 	reg_script_run(core_msr_script);

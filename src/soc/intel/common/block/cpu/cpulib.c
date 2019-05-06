@@ -300,7 +300,7 @@ uint32_t cpu_get_max_turbo_ratio(void)
 	return msr.lo & 0xff;
 }
 
-void mca_configure(void *unused)
+void mca_configure(void)
 {
 	msr_t msr;
 	int i;

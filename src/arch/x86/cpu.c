@@ -337,3 +337,27 @@ void arch_bootstate_coreboot_exit(void)
 	/* APs are waiting for work. Last thing to do is park them. */
 	mp_park_aps();
 }
+
+/*
+ * Previously cpu_index() implementation assumes that cpu_index()
+ * function will always getting called from coreboot context
+ * (ESP stack pointer will always refer to coreboot).
+ *
+ * But with FSP_USES_MP_SERVICES_PPI implementation in coreboot this
+ * assumption might not be true, where FSP context (stack pointer refers
+ * to FSP) will request to get cpu_index().
+ *
+ * Hence new logic to use cpuid to fetch lapic id and matches with
+ * cpus_default_apic_id[] variable to return correct cpu_index().
+ */
+unsigned long cpu_index(void)
+{
+	int i;
+	int lapic_id = initial_lapicid();
+
+	for (i = 0; i < CONFIG_MAX_CPUS; i++) {
+		if (cpu_get_apic_id(i) == lapic_id)
+			return i;
+	}
+	return -1;
+}

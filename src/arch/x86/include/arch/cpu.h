@@ -261,13 +261,6 @@ static inline struct cpu_info *cpu_info(void)
 	);
 	return ci;
 }
-
-static inline unsigned long cpu_index(void)
-{
-	struct cpu_info *ci;
-	ci = cpu_info();
-	return ci->index;
-}
 #endif
 
 #ifndef __ROMCC__ // romcc is segfaulting in some cases
@@ -373,5 +366,19 @@ uint32_t cpu_get_feature_flags_ecx(void);
  * return value in EDX register
  */
 uint32_t cpu_get_feature_flags_edx(void);
+
+/*
+ * Previously cpu_index() implementation assumes that cpu_index()
+ * function will always getting called from coreboot context
+ * (ESP stack pointer will always refer to coreboot).
+ *
+ * But with FSP_USES_MP_SERVICES_PPI implementation in coreboot this
+ * assumption might not be true, where FSP context (stack pointer refers
+ * to FSP) will request to get cpu_index().
+ *
+ * Hence new logic to use cpuid to fetch lapic id and matches with
+ * cpus_default_apic_id[] variable to return correct cpu_index().
+ */
+unsigned long cpu_index(void);
 
 #endif /* ARCH_CPU_H */

@@ -319,6 +319,13 @@
 #define POST_JUMPING_TO_PAYLOAD			0xf3
 
 /**
+ * \brief Invalid or corrupt ROM
+ *
+ * Set if firmware failed to find or validate a resource that is stored in ROM.
+ */
+#define POST_INVALID_ROM			0xe0
+
+/**
  * \brief TPM failure
  *
  * An error with the TPM, either unexepcted state or communications failure.

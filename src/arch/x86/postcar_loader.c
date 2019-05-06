@@ -141,13 +141,16 @@ static void load_postcar_cbfs(struct prog *prog, struct postcar_frame *pcf)
 	};
 
 	if (prog_locate(prog))
-		die("Failed to locate after CAR program.\n");
+		die_with_post_code(POST_INVALID_ROM,
+				   "Failed to locate after CAR program.\n");
 	if (rmodule_stage_load(&rsl))
-		die("Failed to load after CAR program.\n");
+		die_with_post_code(POST_INVALID_ROM,
+				   "Failed to load after CAR program.\n");
 
 	/* Set the stack pointer within parameters of the program loaded. */
 	if (rsl.params == NULL)
-		die("No parameters found in after CAR program.\n");
+		die_with_post_code(POST_INVALID_ROM,
+				   "No parameters found in after CAR program.\n");
 
 	finalize_load(rsl.params, pcf->stack);
 

@@ -16,6 +16,7 @@ This is an (incomplete) list of POST codes emitted by coreboot v4.
 0x66 Devices have been enumerated
 0x88 Devices have been configured
 0x89 Devices have been enabled
+0xe0 Boot media (e.g. SPI ROM) is corrupt
 0xf8 Entry into elf boot
 0xf3 Jumping to payload
 

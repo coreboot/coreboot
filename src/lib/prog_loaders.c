@@ -69,7 +69,8 @@ void run_romstage(void)
 
 fail:
 	if (CONFIG(BOOTBLOCK_CONSOLE))
-		die("Couldn't load romstage.\n");
+		die_with_post_code(POST_INVALID_ROM,
+				   "Couldn't load romstage.\n");
 	halt();
 }
 
@@ -162,7 +163,7 @@ void run_ramstage(void)
 	prog_run(&ramstage);
 
 fail:
-	die("Ramstage was not loaded!\n");
+	die_with_post_code(POST_INVALID_ROM, "Ramstage was not loaded!\n");
 }
 
 #ifdef __RAMSTAGE__ // gc-sections should take care of this
@@ -195,13 +196,14 @@ void payload_load(void)
 			break;
 		} /* else fall-through */
 	default:
-		die("Unsupported payload type.\n");
+		die_with_post_code(POST_INVALID_ROM,
+				   "Unsupported payload type.\n");
 		break;
 	}
 
 out:
 	if (prog_entry(payload) == NULL)
-		die("Payload not loaded.\n");
+		die_with_post_code(POST_INVALID_ROM, "Payload not loaded.\n");
 }
 
 void payload_run(void)

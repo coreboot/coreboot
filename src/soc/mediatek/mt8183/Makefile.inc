@@ -54,6 +54,7 @@ ramstage-y += ../common/timer.c
 ramstage-y += ../common/uart.c
 ramstage-y += ../common/usb.c
 ramstage-y += ../common/wdt.c
+ramstage-y += md_ctrl.c
 
 CPPFLAGS_common += -Isrc/soc/mediatek/mt8183/include
 CPPFLAGS_common += -Isrc/soc/mediatek/common/include

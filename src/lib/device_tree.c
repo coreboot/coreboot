@@ -80,21 +80,36 @@ static int dt_prop_is_phandle(struct device_tree_property *prop)
 
 static void print_indent(int depth)
 {
-	while (depth--)
-		printk(BIOS_DEBUG, "  ");
+	printk(BIOS_DEBUG, "%*s", depth * 8, "");
 }
 
 static void print_property(const struct fdt_property *prop, int depth)
 {
+	int is_string = prop->size > 0 &&
+			((char *)prop->data)[prop->size - 1] == '\0';
+
+	if (is_string)
+		for (const char *c = prop->data; *c != '\0'; c++)
+			if (!isprint(*c))
+				is_string = 0;
+
 	print_indent(depth);
-	printk(BIOS_DEBUG, "prop \"%s\" (%d bytes).\n", prop->name, prop->size);
-	print_indent(depth + 1);
-	for (int i = 0; i < MIN(25, prop->size); i++) {
-		printk(BIOS_DEBUG, "%02x ", ((uint8_t *)prop->data)[i]);
+	if (is_string) {
+		printk(BIOS_DEBUG, "%s = \"%s\";\n",
+		       prop->name, (const char *)prop->data);
+	} else {
+		printk(BIOS_DEBUG, "%s = < ", prop->name);
+		for (int i = 0; i < MIN(128, prop->size); i += 4) {
+			uint32_t val = 0;
+			for (int j = 0; j < MIN(4, prop->size - i); j++)
+				val |= ((uint8_t *)prop->data)[i + j] <<
+					(24 - j * 8);
+			printk(BIOS_DEBUG, "%#.2x ", val);
+		}
+		if (prop->size > 128)
+			printk(BIOS_DEBUG, "...");
+		printk(BIOS_DEBUG, ">;\n");
 	}
-	if (prop->size > 25)
-		printk(BIOS_DEBUG, "...");
-	printk(BIOS_DEBUG, "\n");
 }
 
 static int print_flat_node(const void *blob, uint32_t start_offset, int depth)
@@ -109,7 +124,7 @@ static int print_flat_node(const void *blob, uint32_t start_offset, int depth)
 	offset += size;
 
 	print_indent(depth);
-	printk(BIOS_DEBUG, "name = %s\n", name);
+	printk(BIOS_DEBUG, "%s {\n", name);
 
 	struct fdt_property prop;
 	while ((size = fdt_next_property(blob, offset, &prop))) {
@@ -118,8 +133,13 @@ static int print_flat_node(const void *blob, uint32_t start_offset, int depth)
 		offset += size;
 	}
 
+	printk(BIOS_DEBUG, "\n");	// empty line between props and nodes
+
 	while ((size = print_flat_node(blob, offset, depth + 1)))
 		offset += size;
+
+	print_indent(depth);
+	printk(BIOS_DEBUG, "}\n");
 
 	return offset - start_offset + sizeof(uint32_t);
 }
@@ -458,15 +478,22 @@ void dt_flatten(const struct device_tree *tree, void *start_dest)
 static void print_node(const struct device_tree_node *node, int depth)
 {
 	print_indent(depth);
-	printk(BIOS_DEBUG, "name = %s\n", node->name);
+	if (depth == 0)		// root node has no name, print a starting slash
+		printk(BIOS_DEBUG, "/");
+	printk(BIOS_DEBUG, "%s {\n", node->name);
 
 	struct device_tree_property *prop;
 	list_for_each(prop, node->properties, list_node)
 		print_property(&prop->prop, depth + 1);
 
+	printk(BIOS_DEBUG, "\n");	// empty line between props and nodes
+
 	struct device_tree_node *child;
 	list_for_each(child, node->children, list_node)
 		print_node(child, depth + 1);
+
+	print_indent(depth);
+	printk(BIOS_DEBUG, "};\n");
 }
 
 void dt_print_node(const struct device_tree_node *node)

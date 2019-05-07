@@ -183,6 +183,11 @@ config MAX_ROOT_PORTS
 	default 24 if SOC_INTEL_CANNONLAKE_PCH_H
 	default 16
 
+config MAX_PCIE_CLOCKS
+	int
+	default 16 if SOC_INTEL_CANNONLAKE_PCH_H
+	default 6
+
 config SMM_TSEG_SIZE
 	hex
 	default 0x800000

@@ -168,10 +168,10 @@ struct soc_intel_cannonlake_config {
 	/* PCIe output clocks type to Pcie devices.
 	 * 0-23: PCH rootport, 0x70: LAN, 0x80: unspecified but in use,
 	 * 0xFF: not used */
-	uint8_t PcieClkSrcUsage[CONFIG_MAX_ROOT_PORTS];
+	uint8_t PcieClkSrcUsage[CONFIG_MAX_PCIE_CLOCKS];
 	/* PCIe ClkReq-to-ClkSrc mapping, number of clkreq signal assigned to
 	 * clksrc. */
-	uint8_t PcieClkSrcClkReq[CONFIG_MAX_ROOT_PORTS];
+	uint8_t PcieClkSrcClkReq[CONFIG_MAX_PCIE_CLOCKS];
 	/* PCIe LTR(Latency Tolerance Reporting) mechanism */
 	uint8_t PcieRpLtrEnable[CONFIG_MAX_ROOT_PORTS];
 	/* Enable/Disable HotPlug support for Root Port */

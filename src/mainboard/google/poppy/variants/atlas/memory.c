@@ -13,8 +13,11 @@
  * GNU General Public License for more details.
  */
 
+#include <assert.h>
 #include <baseboard/variants.h>
 
+#define SAMSUNG_C_DIE_2G	10
+#define SAMSUNG_C_DIE_4G	11
 /* DQ byte map */
 static const u8 dq_map[][12] = {
 	{ 0x0F, 0xF0, 0x00, 0xF0, 0x0F, 0xF0,
@@ -34,9 +37,12 @@ static const u16 rcomp_resistor[] = { 200, 81, 162 };
 
 /* Rcomp target */
 static const u16 rcomp_target[] = { 100, 40, 40, 23, 40 };
+static const u16 rcomp_target_samsung_c_die[] = { 100, 40, 35, 18, 40 };
 
 void variant_memory_params(struct memory_params *p)
 {
+	int spd_index;
+
 	p->type = MEMORY_LPDDR3;
 	p->dq_map = dq_map;
 	p->dq_map_size = sizeof(dq_map);
@@ -44,6 +50,11 @@ void variant_memory_params(struct memory_params *p)
 	p->dqs_map_size = sizeof(dqs_map);
 	p->rcomp_resistor = rcomp_resistor;
 	p->rcomp_resistor_size = sizeof(rcomp_resistor);
-	p->rcomp_target = rcomp_target;
+	spd_index = variant_memory_sku();
+	assert(spd_index >= 0);
+	if (spd_index == SAMSUNG_C_DIE_2G || spd_index == SAMSUNG_C_DIE_4G)
+		p->rcomp_target = rcomp_target_samsung_c_die;
+	else
+		p->rcomp_target = rcomp_target;
 	p->rcomp_target_size = sizeof(rcomp_target);
 }

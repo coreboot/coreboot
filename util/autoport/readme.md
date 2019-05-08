@@ -120,6 +120,7 @@ on the vendor firmware with just one module in channel 0, slot 0, and check the 
 the EEPROM has. Under Linux, you can use these commands to see what is on SMBus:
 
 	$ sudo modprobe i2c-dev
+	$ sudo modprobe i2c-i801
 	$ sudo i2cdetect -l
 	i2c-0	i2c		i915 gmbus ssc				I2C adapter
 	i2c-1	i2c		i915 gmbus vga				I2C adapter

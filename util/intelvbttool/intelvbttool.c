@@ -788,7 +788,20 @@ static void parse_vbt(const struct fileobject *fo,
 	}
 
 	/* Duplicate fo as caller is owner and remalloc frees the object */
-	*vbt = remalloc_fo(malloc_fo_sub(fo, 0), head->vbt_size);
+	struct fileobject *dupfo = malloc_fo_sub(fo, 0);
+	if (!dupfo) {
+		printerr("malloc failed\n");
+		return;
+	}
+
+	struct fileobject *newfo = remalloc_fo(dupfo, head->vbt_size);
+	if (!newfo) {
+		printerr("remalloc failed\n");
+		free_fo(dupfo);
+		return;
+	}
+
+	*vbt = newfo;
 }
 
 /* Option ROM checksum */

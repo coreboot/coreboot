@@ -180,6 +180,10 @@ void dt_find_bin_prop(const struct device_tree_node *node, const char *name,
 const char *dt_find_string_prop(const struct device_tree_node *node,
 				const char *name);
 
+/* Apply an overlay to a base device tree. Ownership of the overlay data passes
+   to the newly combined base tree -- do not free() or access it afterwards! */
+int dt_apply_overlay(struct device_tree *tree, struct device_tree *overlay);
+
 /*
  * Fixups to apply to a kernel's device tree before booting it.
  */

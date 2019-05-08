@@ -85,6 +85,32 @@
 #define setbits_8(addr, set) setbits_8(addr, 0, set)
 
 #ifndef __ROMCC__
+/* be16dec/be32dec/be64dec/le16dec/le32dec/le64dec family of functions. */
+#define DEFINE_ENDIAN_DEC(endian, width) \
+	static inline uint##width##_t endian##width##dec(const void *p) \
+	{ \
+		return endian##width##_to_cpu(*(uint##width##_t *)p); \
+	}
+DEFINE_ENDIAN_DEC(be, 16)
+DEFINE_ENDIAN_DEC(be, 32)
+DEFINE_ENDIAN_DEC(be, 64)
+DEFINE_ENDIAN_DEC(le, 16)
+DEFINE_ENDIAN_DEC(le, 32)
+DEFINE_ENDIAN_DEC(le, 64)
+
+/* be16enc/be32enc/be64enc/le16enc/le32enc/le64enc family of functions. */
+#define DEFINE_ENDIAN_ENC(endian, width) \
+	static inline void endian##width##enc(void *p, uint##width##_t u) \
+	{ \
+		*(uint##width##_t *)p = cpu_to_##endian##width(u); \
+	}
+DEFINE_ENDIAN_ENC(be, 16)
+DEFINE_ENDIAN_ENC(be, 32)
+DEFINE_ENDIAN_ENC(be, 64)
+DEFINE_ENDIAN_ENC(le, 16)
+DEFINE_ENDIAN_ENC(le, 32)
+DEFINE_ENDIAN_ENC(le, 64)
+
 /*
  * Portable (API) endian support that can be used in code that is shared
  * with userspace (man 3 endian) tools.

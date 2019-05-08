@@ -236,7 +236,7 @@ static int get_ifd_version_from_fcba(char *image, int size)
 	int read_freq;
 	const fcba_t *fcba = find_fcba(image, size);
 	const fdbar_t *fdb = find_fd(image, size);
-	if (!fcba) /* a valid fcba indicates a valid fdb */
+	if (!fcba || !fdb)
 		exit(EXIT_FAILURE);
 
 	chipset = guess_ich_chipset(fdb);

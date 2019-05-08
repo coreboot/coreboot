@@ -59,4 +59,26 @@ config BOOTMEDIA_LOCK_WHOLE_NO_ACCESS
 	  you won't be able to write to the whole flash chip using the
 	  internal controller any more.
 
+config BOOTMEDIA_LOCK_WPRO_VBOOT_RO
+	bool "Write-protect WP_RO FMAP region in boot medium"
+	depends on VBOOT
+	help
+	  Select this if you want to write-protect the WP_RO region as specified
+	  in the VBOOT FMAP. You will be able to write every region outside
+	  of WP_RO using the internal controller (eg. FW_MAIN_A/FW_MAIN_B).
+	  In case of BOOTMEDIA_LOCK_IN_VERSTAGE the locking will take place
+	  early, preventing locking of facilities used in ramstage, like the
+	  MRC cache. If not using BOOTMEDIA_LOCK_IN_VERSTAGE the chipset lockdown
+	  is either triggered by coreboot (when INTEL_CHIPSET_LOCKDOWN is set) or
+	  has to be triggered later (e.g. by the payload or the OS).
+
 endchoice
+
+config BOOTMEDIA_LOCK_IN_VERSTAGE
+	depends on BOOTMEDIA_LOCK_WPRO_VBOOT_RO
+	bool "Lock boot media down in verstage"
+	help
+	  Select this if you want to write-protect the WP_RO region as soon as
+	  possible. This option prevents using write protecting facilities in
+	  ramstage, like the MRC cache for example.
+	  Use this option if you don't trust code running after verstage.

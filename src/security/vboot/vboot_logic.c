@@ -14,6 +14,7 @@
 #include <string.h>
 #include <timestamp.h>
 #include <vb2_api.h>
+#include <boot_device.h>
 
 #include "antirollback.h"
 
@@ -295,6 +296,10 @@ void verstage_main(void)
 	vb2_error_t rv;
 
 	timestamp_add_now(TS_START_VBOOT);
+
+	/* Lockdown SPI flash controller if required */
+	if (CONFIG(BOOTMEDIA_LOCK_IN_VERSTAGE))
+		boot_device_security_lockdown();
 
 	/* Set up context and work buffer */
 	ctx = vboot_get_context();

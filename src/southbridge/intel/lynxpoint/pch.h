@@ -195,7 +195,6 @@ void southbridge_smm_enable_smi(void);
 void enable_smbus(void);
 void enable_usb_bar(void);
 int smbus_read_byte(unsigned device, unsigned address);
-int early_spi_read(u32 offset, u32 size, u8 *buffer);
 int early_pch_init(const void *gpio_map,
                    const struct rcba_config_instruction *rcba_config);
 void pch_enable_lpc(void);

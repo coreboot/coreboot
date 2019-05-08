@@ -37,7 +37,6 @@ ramstage-$(CONFIG_ELOG) += elog.c
 smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c me.c me_8.x.c pch.c
 
 romstage-y += early_smbus.c me_status.c
-romstage-y += early_spi.c
 romstage-y += early_rcba.c
 romstage-y += early_pch.c
 

@@ -70,7 +70,6 @@ void pch_iobp_update(u32 address, u32 andvalue, u32 orvalue);
 void enable_smbus(void);
 void enable_usb_bar(void);
 int smbus_read_byte(unsigned device, unsigned address);
-int early_spi_read(u32 offset, u32 size, u8 *buffer);
 void early_thermal_init(void);
 void southbridge_configure_default_intmap(void);
 void southbridge_rcba_config(void);

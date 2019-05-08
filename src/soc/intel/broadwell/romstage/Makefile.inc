@@ -6,6 +6,5 @@ romstage-y += raminit.c
 romstage-y += report_platform.c
 romstage-y += romstage.c
 romstage-y += smbus.c
-romstage-y += spi.c
 romstage-y += systemagent.c
 romstage-$(CONFIG_DRIVERS_UART_8250MEM) += uart.c

@@ -68,7 +68,6 @@ void soc_log_state(void);
 void enable_smbus(void);
 void enable_usb_bar(void);
 int smbus_read_byte(unsigned device, unsigned address);
-int early_spi_read(u32 offset, u32 size, u8 *buffer);
 void rangeley_sb_early_initialization(void);
 #endif
 #endif

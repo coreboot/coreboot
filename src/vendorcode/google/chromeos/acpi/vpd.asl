@@ -139,7 +139,7 @@ Device (VPD)
 			Local1 <<= 7
 			Local1 |= Local2 & 0x7f
 		}
-		If (!Local1) {
+		If (Local1 == Zero) {
 			Return (Zero)
 		}
 
@@ -162,7 +162,7 @@ Device (VPD)
 	 */
 	Method (VPDS, 0, Serialized)
 	{
-		Name (VPKV, Package () { Zero, Zero })
+		Name (VPKV, Package () { "", "" })
 
 		/* Read the VPD type and ensure it is a string */
 		If (^VPRB () != ^VPES) {
@@ -193,14 +193,14 @@ Device (VPD)
 		/* End address of VPD region */
 		^VEND = ^VPTR + DerefOf (Local0[1])
 
-		If (!^VPTR || !^VEND) {
+		If (^VPTR == Zero || ^VEND == Zero) {
 			Printf ("Unable to find VPD region")
 			Return (Zero)
 		}
 
 		/* Verify VPD info header and save size */
 		Local0 = VVPD (^VPTR)
-		If (!Local0) {
+		If (Local0 == Zero) {
 			Printf ("VPD region %o did not verify", Arg0)
 			Return (Zero)
 		}
@@ -213,7 +213,7 @@ Device (VPD)
 		While (Local1 != ToString (Arg1)) {
 			Local2 = VPDS ()
 			Local1 = DerefOf (Local2[0])
-			If (!Local1) {
+			If (Local1 == "") {
 				Printf ("VPD KEY %o not found", Arg1)
 				Return (Zero)
 			}

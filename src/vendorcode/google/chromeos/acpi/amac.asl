@@ -42,6 +42,7 @@ Scope (\_SB)
 		/* Get "dock_passthru" value from RW_VPD */
 		Local0 = \VPD.VPDF ("RW", "dock_passthru")
 
+		Local1 = Zero
 		Switch (ToString (Local0))
 		{
 			Case ("ethernet_mac0") {
@@ -55,7 +56,7 @@ Scope (\_SB)
 				Local1 = \VPD.VPDF ("RO", "dock_mac")
 			}
 		}
-		If (!Local1) {
+		If (Local1 == Zero) {
 			Return (Zero)
 		}
 		Printf ("MAC address returned from VPD: %o", Local1)

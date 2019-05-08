@@ -89,7 +89,6 @@ int smbus_block_write(unsigned int device, unsigned int cmd, u8 bytes,
 #define RTC_POWER_FAILED	(1 << 1)
 #define SLEEP_AFTER_POWER_FAIL	(1 << 0)
 
-#define PMBASE			0x40
 #define ACPI_CNTL		0x44
 #define   ACPI_EN		(1 << 7)
 #define BIOS_CNTL		0xDC

@@ -1028,8 +1028,10 @@ static int patch_vbios(struct fileobject *fo,
 	if (old_vbt) {
 		if (oh->vbt_offset + vbt_size(old_vbt) == fo->size) {
 			/* Located at the end of file - reduce file size */
-			if (fo->size < vbt_size(old_vbt))
+			if (fo->size < vbt_size(old_vbt)) {
+				free_fo(old_vbt);
 				return 1;
+			}
 			fo = remalloc_fo(fo, fo->size - vbt_size(old_vbt));
 			if (!fo) {
 				printerr("Failed to allocate memory\n");

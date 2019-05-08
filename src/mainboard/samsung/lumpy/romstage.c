@@ -197,7 +197,7 @@ void mainboard_fill_pei_data(struct pei_data *pei_data)
 		},
 	};
 	*pei_data = pei_data_template;
-	memcpy(pei_data->spd_data[0], locate_spd(), 256);
+	memcpy(pei_data->spd_data[2], locate_spd(), 256);
 }
 
 const struct southbridge_usb_port mainboard_usb_ports[] = {

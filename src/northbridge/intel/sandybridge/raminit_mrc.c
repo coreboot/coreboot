@@ -288,6 +288,19 @@ void perform_raminit(int s3resume)
 	mainboard_fill_pei_data(&pei_data);
 
 	post_code(0x3a);
+
+	/* Fix spd_data. MRC only uses spd_data[0] and ignores the other */
+	for (size_t i = 1; i < ARRAY_SIZE(pei_data.spd_data); i++) {
+		if (pei_data.spd_data[i][0] && !pei_data.spd_data[0][0]) {
+			memcpy(pei_data.spd_data[0], pei_data.spd_data[i],
+			       sizeof(pei_data.spd_data[0]));
+		} else if (pei_data.spd_data[i][0] && pei_data.spd_data[0][0]) {
+			if (memcmp(pei_data.spd_data[i], pei_data.spd_data[0],
+			    sizeof(pei_data.spd_data[0])) != 0)
+				die("Onboard SPDs must match each other");
+		}
+	}
+
 	pei_data.boot_mode = s3resume ? 2 : 0;
 	timestamp_add_now(TS_BEFORE_INITRAM);
 	sdram_initialize(&pei_data);

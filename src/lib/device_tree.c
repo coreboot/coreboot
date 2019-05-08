@@ -56,7 +56,7 @@ int fdt_next_property(const void *blob, uint32_t offset,
 int fdt_node_name(const void *blob, uint32_t offset, const char **name)
 {
 	uint8_t *ptr = ((uint8_t *)blob) + offset;
-	if (be32toh(*(uint32_t *)ptr) != FDT_TOKEN_BEGIN_NODE)
+	if (be32dec(ptr) != FDT_TOKEN_BEGIN_NODE)
 		return 0;
 
 	ptr += 4;
@@ -358,14 +358,14 @@ static void dt_flatten_prop(struct device_tree_property *prop,
 	uint8_t *dstruct = (uint8_t *)*struct_start;
 	uint8_t *dstrings = (uint8_t *)*strings_start;
 
-	*((uint32_t *)dstruct) = htobe32(FDT_TOKEN_PROPERTY);
+	be32enc(dstruct, FDT_TOKEN_PROPERTY);
 	dstruct += sizeof(uint32_t);
 
-	*((uint32_t *)dstruct) = htobe32(prop->prop.size);
+	be32enc(dstruct, prop->prop.size);
 	dstruct += sizeof(uint32_t);
 
 	uint32_t name_offset = (uintptr_t)dstrings - (uintptr_t)strings_base;
-	*((uint32_t *)dstruct) = htobe32(name_offset);
+	be32enc(dstruct, name_offset);
 	dstruct += sizeof(uint32_t);
 
 	strcpy((char *)dstrings, prop->prop.name);
@@ -385,7 +385,7 @@ static void dt_flatten_node(const struct device_tree_node *node,
 	uint8_t *dstruct = (uint8_t *)*struct_start;
 	uint8_t *dstrings = (uint8_t *)*strings_start;
 
-	*((uint32_t *)dstruct) = htobe32(FDT_TOKEN_BEGIN_NODE);
+	be32enc(dstruct, FDT_TOKEN_BEGIN_NODE);
 	dstruct += sizeof(uint32_t);
 
 	strcpy((char *)dstruct, node->name);
@@ -401,7 +401,7 @@ static void dt_flatten_node(const struct device_tree_node *node,
 		dt_flatten_node(child, (void **)&dstruct, strings_base,
 				(void **)&dstrings);
 
-	*((uint32_t *)dstruct) = htobe32(FDT_TOKEN_END_NODE);
+	be32enc(dstruct, FDT_TOKEN_END_NODE);
 	dstruct += sizeof(uint32_t);
 
 	*struct_start = dstruct;
@@ -489,9 +489,9 @@ void dt_read_cell_props(const struct device_tree_node *node, u32 *addrcp,
 	struct device_tree_property *prop;
 	list_for_each(prop, node->properties, list_node) {
 		if (addrcp && !strcmp("#address-cells", prop->prop.name))
-			*addrcp = be32toh(*(u32 *)prop->prop.data);
+			*addrcp = be32dec(prop->prop.data);
 		if (sizecp && !strcmp("#size-cells", prop->prop.name))
-			*sizecp = be32toh(*(u32 *)prop->prop.data);
+			*sizecp = be32dec(prop->prop.data);
 	}
 }
 

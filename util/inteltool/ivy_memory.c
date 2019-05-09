@@ -97,6 +97,11 @@ void ivybridge_dump_timings(const char *dump_spd_file)
 		rankmap[channel] = read_mchbar32(0xc14 + 0x100 * channel) >> 24;
 	}
 
+	if ((rankmap[0] == 0) && (rankmap[1] == 0)) {
+		fputs("Error: no memory channels found\n", stderr);
+		exit(1);
+	}
+
 	two_channels = rankmap[0] && rankmap[1];
 
 	mr0[0] = read_mchbar32(0x0004);
@@ -172,49 +177,52 @@ void ivybridge_dump_timings(const char *dump_spd_file)
 
 	printf(".reg_4004_b30 = { %d, %d },\n", reg_4004_b30[0],
 	       reg_4004_b30[1]);
+
+	channel = (rankmap[0] != 0) ? 0 : 1;
+
 	if (two_channels && tFAW[0] != tFAW[1])
 		printf("/* tFAW mismatch: %d, %d */\n", tFAW[0], tFAW[1]);
-	print_time("tFAW", tFAW[0], tCK);
+	print_time("tFAW", tFAW[channel], tCK);
 	if (two_channels && tWTR[0] != tWTR[1])
 		printf("/* tWTR mismatch: %d, %d */\n", tWTR[0], tWTR[1]);
-	print_time("tWTR", tWTR[0], tCK);
+	print_time("tWTR", tWTR[channel], tCK);
 	if (two_channels && tCKE[0] != tCKE[1])
 		printf("/* tCKE mismatch: %d, %d */\n", tCKE[0], tCKE[1]);
-	print_time("tCKE", tCKE[0], tCK);
+	print_time("tCKE", tCKE[channel], tCK);
 	if (two_channels && tRTP[0] != tRTP[1])
 		printf("/* tRTP mismatch: %d, %d */\n", tRTP[0], tRTP[1]);
-	print_time("tRTP", tRTP[0], tCK);
+	print_time("tRTP", tRTP[channel], tCK);
 	if (two_channels && tRRD[0] != tRRD[1])
 		printf("/* tRRD mismatch: %d, %d */\n", tRRD[0], tRRD[1]);
-	print_time("tRRD", tRRD[0], tCK);
+	print_time("tRRD", tRRD[channel], tCK);
 
 	if (two_channels && tRAS[0] != tRAS[1])
 		printf("/* tRAS mismatch: %d, %d */\n", tRAS[0], tRAS[1]);
-	print_time("tRAS", tRAS[0], tCK);
+	print_time("tRAS", tRAS[channel], tCK);
 
 	if (two_channels && tCWL[0] != tCWL[1])
 		printf("/* tCWL mismatch: %d, %d */\n", tCWL[0], tCWL[1]);
-	print_time("tCWL", tCWL[0], tCK);
+	print_time("tCWL", tCWL[channel], tCK);
 
 	if (two_channels && tRP[0] != tRP[1])
 		printf("/* tRP mismatch: %d, %d */\n", tRP[0], tRP[1]);
-	print_time("tRP", tRP[0], tCK);
+	print_time("tRP", tRP[channel], tCK);
 
 	if (two_channels && tRCD[0] != tRCD[1])
 		printf("/* tRCD mismatch: %d, %d */\n", tRCD[0], tRCD[1]);
-	print_time("tRCD", tRCD[0], tCK);
+	print_time("tRCD", tRCD[channel], tCK);
 
 	if (two_channels && tXPDLL[0] != tXPDLL[1])
 		printf("/* tXPDLL mismatch: %d, %d */\n", tXPDLL[0], tXPDLL[1]);
-	print_time("tXPDLL", tXPDLL[0], tCK);
+	print_time("tXPDLL", tXPDLL[channel], tCK);
 
 	if (two_channels && tXP[0] != tXP[1])
 		printf("/* tXP mismatch: %d, %d */\n", tXP[0], tXP[1]);
-	print_time("tXP", tXP[0], tCK);
+	print_time("tXP", tXP[channel], tCK);
 
 	if (two_channels && tAONPD[0] != tAONPD[1])
 		printf("/* tAONPD mismatch: %d, %d */\n", tAONPD[0], tAONPD[1]);
-	print_time("tAONPD", tAONPD[0], tCK);
+	print_time("tAONPD", tAONPD[channel], tCK);
 
 	reg = read_mchbar32(0x4298);
 	if (reg != read_mchbar32(0x4698) && two_channels)

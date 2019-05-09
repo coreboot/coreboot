@@ -65,7 +65,7 @@ int boot_device_rw_subregion(const struct region *sub,
  * by the region device.
  * Returns 0 on success, < 0 on error.
  */
-int boot_device_wp_region(struct region_device *rd,
+int boot_device_wp_region(const struct region_device *rd,
 				const enum bootdev_prot_type type);
 
 /*

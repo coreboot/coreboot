@@ -109,7 +109,7 @@ const struct spi_flash *boot_device_spi_flash(void)
 	return car_get_var_ptr(&sfg);
 }
 
-int boot_device_wp_region(struct region_device *rd,
+int boot_device_wp_region(const struct region_device *rd,
 			  const enum bootdev_prot_type type)
 {
 	uint32_t ctrlr_pr;

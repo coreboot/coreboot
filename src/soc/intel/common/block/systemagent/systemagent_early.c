@@ -24,7 +24,7 @@
 
 #include "systemagent_def.h"
 
-#if !ENV_RAMSTAGE
+#if ENV_BOOTBLOCK
 void bootblock_systemagent_early_init(void)
 {
 	uint32_t reg;

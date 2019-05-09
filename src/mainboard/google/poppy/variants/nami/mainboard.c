@@ -176,6 +176,56 @@ const char *smbios_mainboard_manufacturer(void)
 	return manuf;
 }
 
+const char *smbios_mainboard_product_name(void)
+{
+	uint32_t sku_id = variant_board_sku();
+	static char product[12];
+
+	switch (sku_id) {
+	case SKU_0_PANTHEON:
+	case SKU_1_PANTHEON:
+	case SKU_2_PANTHEON:
+	case SKU_3_PANTHEON:
+	case SKU_4_PANTHEON:
+		snprintf(product, sizeof(product), "Pantheon"); break;
+	case SKU_0_VAYNE:
+	case SKU_1_VAYNE:
+	case SKU_2_VAYNE:
+		snprintf(product, sizeof(product), "Vayne"); break;
+	case SKU_0_AKALI:
+	case SKU_1_AKALI:
+		snprintf(product, sizeof(product), "Akali"); break;
+	case SKU_0_AKALI360:
+	case SKU_1_AKALI360:
+		snprintf(product, sizeof(product), "Akali 360"); break;
+	case SKU_0_BARD:
+	case SKU_1_BARD:
+	case SKU_2_BARD:
+	case SKU_3_BARD:
+		snprintf(product, sizeof(product), "Bard"); break;
+	case SKU_0_EKKO:
+	case SKU_1_EKKO:
+	case SKU_2_EKKO:
+	case SKU_3_EKKO:
+		snprintf(product, sizeof(product), "Ekko"); break;
+	case SKU_0_SONA:
+	case SKU_1_SONA:
+		snprintf(product, sizeof(product), "Sona"); break;
+	case SKU_0_SYNDRA:
+	case SKU_1_SYNDRA:
+	case SKU_2_SYNDRA:
+	case SKU_3_SYNDRA:
+	case SKU_4_SYNDRA:
+	case SKU_5_SYNDRA:
+	case SKU_6_SYNDRA:
+	case SKU_7_SYNDRA:
+		snprintf(product, sizeof(product), "Syndra"); break;
+	default:
+		snprintf(product, sizeof(product), "Nami"); break;
+	}
+	return product;
+}
+
 const char *mainboard_vbt_filename(void)
 {
 	uint32_t sku_id = variant_board_sku();

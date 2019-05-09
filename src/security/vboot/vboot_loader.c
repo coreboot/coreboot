@@ -64,9 +64,11 @@ static int vboot_executed CAR_GLOBAL;
 
 int vboot_logic_executed(void)
 {
-	/* If we are in a stage that would load the verstage or execute the
-	   vboot logic directly, we store the answer in a global. */
-	if (verstage_should_load() || verification_should_run())
+	/* If we are in the stage that runs verification, or in the stage that
+	   both loads the verstage and is returned to from it afterwards, we
+	   need to check a global to see if verfication has run. */
+	if (verification_should_run() ||
+	    (verstage_should_load() && CONFIG(VBOOT_RETURN_FROM_VERSTAGE)))
 		return car_get_var(vboot_executed);
 
 	if (CONFIG(VBOOT_STARTS_IN_BOOTBLOCK)) {

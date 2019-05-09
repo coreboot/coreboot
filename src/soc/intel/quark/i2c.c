@@ -38,7 +38,8 @@ static void i2c_disable(I2C_REGS *regs)
 	while (status & IC_ENABLE_CONTROLLER) {
 		udelay(1);
 		if (--timeout == 0)
-			die("ERROR - I2C failed to disable!\n");
+			die_with_post_code(POST_HW_INIT_FAILURE,
+					   "ERROR - I2C failed to disable!\n");
 		status = regs->ic_enable_status;
 	}
 

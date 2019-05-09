@@ -58,7 +58,8 @@ uintptr_t graphics_get_memory_base(void)
 	 */
 	uintptr_t memory_base = graphics_get_bar(PCI_BASE_ADDRESS_2);
 	if (!memory_base)
-		die("GMADR is not programmed!");
+		die_with_post_code(POST_HW_INIT_FAILURE,
+				   "GMADR is not programmed!");
 
 	return memory_base;
 }
@@ -74,7 +75,8 @@ static uintptr_t graphics_get_gtt_base(void)
 	if (!gtt_base) {
 		gtt_base = graphics_get_bar(PCI_BASE_ADDRESS_0);
 		if (!gtt_base)
-			die("GTTMMADR is not programmed!");
+			die_with_post_code(POST_HW_INIT_FAILURE,
+					   "GTTMMADR is not programmed!");
 	}
 	return gtt_base;
 }

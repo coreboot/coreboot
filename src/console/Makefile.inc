@@ -9,6 +9,7 @@ endif
 
 smm-$(CONFIG_DEBUG_SMI) += init.c console.c vtxprintf.c printk.c
 smm-$(CONFIG_SMM_TSEG) += die.c
+smm-$(CONFIG_SMM_TSEG) += post.c
 
 verstage-y += init.c
 verstage-y += printk.c

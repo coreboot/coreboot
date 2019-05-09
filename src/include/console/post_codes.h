@@ -349,6 +349,13 @@
 #define POST_RAM_FAILURE			0xe3
 
 /**
+ * \brief Hardware initialization failure
+ *
+ * Set when a required hardware component was not found or is unsupported.
+ */
+#define POST_HW_INIT_FAILURE			0xe4
+
+/**
  * \brief TPM failure
  *
  * An error with the TPM, either unexepcted state or communications failure.

@@ -40,7 +40,8 @@ void *cbmem_top(void)
 	config = dev->chip_info;
 
 	if (!config)
-		die("Failed to get chip_info\n");
+		die_with_post_code(POST_HW_INIT_FAILURE,
+			"Failed to get chip_info\n");
 
 	/* FSP allocates 2x PRMRR Size Memory for alignment */
 	if (config->sgx_enable)

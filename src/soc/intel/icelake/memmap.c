@@ -220,7 +220,8 @@ static uintptr_t calculate_dram_base(size_t *reserved_mem_size)
 
 	dev = dev_find_slot(0, PCI_DEVFN(SA_DEV_SLOT_IGD, 0));
 	if (!dev)
-		die("ERROR - IGD device not found!");
+		die_with_post_code(POST_HW_INIT_FAILURE,
+				   "ERROR - IGD device not found!");
 
 	/* Read TOLUD from Host Bridge offset */
 	dram_base = sa_get_tolud_base();

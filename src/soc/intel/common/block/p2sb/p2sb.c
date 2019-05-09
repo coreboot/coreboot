@@ -36,7 +36,8 @@ static pci_devfn_t p2sb_get_device(void)
 	pci_devfn_t dev = PCI_DEV(0, PCI_SLOT(devfn), PCI_FUNC(devfn));
 
 	if (dev == PCI_DEV_INVALID)
-		die("PCH_DEV_P2SB not found!\n");
+		die_with_post_code(POST_HW_INIT_FAILURE,
+				   "PCH_DEV_P2SB not found!\n");
 
 	return dev;
 }
@@ -45,7 +46,8 @@ static struct device *p2sb_get_device(void)
 {
 	struct device *dev = PCH_DEV_P2SB;
 	if (!dev)
-		die("PCH_DEV_P2SB not found!\n");
+		die_with_post_code(POST_HW_INIT_FAILURE,
+				   "PCH_DEV_P2SB not found!\n");
 
 	return dev;
 }
@@ -99,7 +101,8 @@ void p2sb_unhide(void)
 
 	if (pci_read_config16(P2SB_GET_DEV, PCI_VENDOR_ID) !=
 			PCI_VENDOR_ID_INTEL)
-		die("Unable to unhide PCH_DEV_P2SB device !\n");
+		die_with_post_code(POST_HW_INIT_FAILURE,
+				   "Unable to unhide PCH_DEV_P2SB device !\n");
 }
 
 void p2sb_hide(void)
@@ -108,7 +111,8 @@ void p2sb_hide(void)
 
 	if (pci_read_config16(P2SB_GET_DEV, PCI_VENDOR_ID) !=
 			0xFFFF)
-		die("Unable to hide PCH_DEV_P2SB device !\n");
+		die_with_post_code(POST_HW_INIT_FAILURE,
+				   "Unable to hide PCH_DEV_P2SB device !\n");
 }
 
 static void p2sb_configure_endpoints(int epmask_id, uint32_t mask)

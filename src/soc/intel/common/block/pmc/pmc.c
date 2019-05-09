@@ -91,7 +91,8 @@ static void pch_pmc_read_resources(struct device *dev)
 	struct pmc_resource_config *config = &pmc_cfg;
 
 	if (pmc_soc_get_resources(config) < 0)
-		die("Unable to get PMC controller resource information!");
+		die_with_post_code(POST_HW_INIT_FAILURE,
+				   "Unable to get PMC controller resource information!");
 
 	/* Get the normal PCI resources of this device. */
 	pci_dev_read_resources(dev);

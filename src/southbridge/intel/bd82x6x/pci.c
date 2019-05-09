@@ -47,9 +47,6 @@ static void pci_init(struct device *dev)
 	reg8 |= (0x04 << 3);
 	pci_write_config8(dev, SMLT, reg8);
 
-	/* Will this improve throughput of bus masters? */
-	pci_write_config8(dev, PCI_MIN_GNT, 0x06);
-
 	/* Clear errors in status registers */
 	reg16 = pci_read_config16(dev, PSTS);
 	//reg16 |= 0xf900;

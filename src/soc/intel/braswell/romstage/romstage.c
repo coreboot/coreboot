@@ -29,7 +29,6 @@
 #include <elog.h>
 #include <mrc_cache.h>
 #include <string.h>
-#include <timestamp.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 #include <fsp/util.h>
 #include <soc/gpio.h>

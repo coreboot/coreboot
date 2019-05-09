@@ -105,9 +105,10 @@ struct pei_data
 	uint16_t usb_port_config[16][3];
 	/* See the usb3 struct above for details */
 	pch_usb3_controller_settings usb3;
-	/* SPD data array for onboard RAM. Specify address 0xf0,
-	 * 0xf1, 0xf2, 0xf3 to index one of the 4 slots in
-	 * spd_address for a given "DIMM".
+	/* SPD data array for onboard RAM.
+	 * spd_data [1..3] are ignored, instead the "dimm_channel{0,1}_disabled"
+	 * flag and the spd_addresses are used to determine which DIMMs should
+	 * use the SPD from spd_data[0].
 	 */
 	uint8_t spd_data[4][256];
 	tx_byte_func tx_byte;

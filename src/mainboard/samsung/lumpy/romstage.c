@@ -148,7 +148,6 @@ static const uint8_t *locate_spd(void)
 		die("SPD data not found.");
 	if (spd_file_len < (spd_index + 1) * 256)
 		die("Missing SPD data.");
-	// leave onboard dimm address at f0, and copy spd data there.
 	return spd_data[spd_index];
 }
 
@@ -198,7 +197,6 @@ void mainboard_fill_pei_data(struct pei_data *pei_data)
 		},
 	};
 	*pei_data = pei_data_template;
-	// leave onboard dimm address at f0, and copy spd data there.
 	memcpy(pei_data->spd_data[0], locate_spd(), 256);
 }
 

@@ -15,7 +15,6 @@
 
 #include <device/device.h>
 #include <bootblock_common.h>
-#include <timestamp.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 #include <soc/usb.h>
 

@@ -14,7 +14,6 @@
  */
 
 #include <bootblock_common.h>
-#include <timestamp.h>
 
 void bootblock_mainboard_init(void)
 {

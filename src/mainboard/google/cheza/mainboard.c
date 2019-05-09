@@ -16,7 +16,6 @@
 #include <device/device.h>
 #include <bootblock_common.h>
 #include <gpio.h>
-#include <timestamp.h>
 #include <soc/usb.h>
 
 static struct usb_board_data usb1_board_data = {

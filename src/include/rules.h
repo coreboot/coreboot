@@ -257,6 +257,10 @@
 
 #endif
 
+/* ENV_PAYLOAD_LOADER is set when you are in a stage that loads the payload.
+ * For now, that is the ramstage. */
+#define ENV_PAYLOAD_LOADER ENV_RAMSTAGE
+
 /**
  * For pre-DRAM stages and post-CAR always build with simple device model, ie.
  * PCI, PNP and CPU functions operate without use of devicetree. The reason

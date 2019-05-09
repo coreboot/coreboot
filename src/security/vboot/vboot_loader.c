@@ -36,55 +36,7 @@ _Static_assert(!CONFIG(VBOOT_RETURN_FROM_VERSTAGE) ||
 	       CONFIG(VBOOT_SEPARATE_VERSTAGE),
 	       "return from verstage only makes sense for separate verstages");
 
-/* The stage loading code is compiled and entered from multiple stages. The
- * helper functions below attempt to provide more clarity on when certain
- * code should be called. */
-
-static int verification_should_run(void)
-{
-	if (CONFIG(VBOOT_SEPARATE_VERSTAGE))
-		return ENV_VERSTAGE;
-	else if (CONFIG(VBOOT_STARTS_IN_ROMSTAGE))
-		return ENV_ROMSTAGE;
-	else if (CONFIG(VBOOT_STARTS_IN_BOOTBLOCK))
-		return ENV_BOOTBLOCK;
-	else
-		die("impossible!");
-}
-
-static int verstage_should_load(void)
-{
-	if (CONFIG(VBOOT_SEPARATE_VERSTAGE))
-		return ENV_BOOTBLOCK;
-	else
-		return 0;
-}
-
-static int vboot_executed CAR_GLOBAL;
-
-int vboot_logic_executed(void)
-{
-	/* If we are in the stage that runs verification, or in the stage that
-	   both loads the verstage and is returned to from it afterwards, we
-	   need to check a global to see if verfication has run. */
-	if (verification_should_run() ||
-	    (verstage_should_load() && CONFIG(VBOOT_RETURN_FROM_VERSTAGE)))
-		return car_get_var(vboot_executed);
-
-	if (CONFIG(VBOOT_STARTS_IN_BOOTBLOCK)) {
-		/* All other stages are "after the bootblock" */
-		return !ENV_BOOTBLOCK;
-	} else if (CONFIG(VBOOT_STARTS_IN_ROMSTAGE)) {
-		/* Post-RAM stages are "after the romstage" */
-#ifdef __PRE_RAM__
-		return 0;
-#else
-		return 1;
-#endif
-	} else {
-		die("impossible!");
-	}
-}
+int vboot_executed CAR_GLOBAL;
 
 static void vboot_prepare(void)
 {

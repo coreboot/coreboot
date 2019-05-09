@@ -19,6 +19,12 @@
 #include <arch/hlt.h>
 #include <console/console.h>
 
+/* TODO: Fix vendorcode headers to not define macros coreboot uses or to be more
+   properly isolated. */
+#ifdef ASSERT
+#undef ASSERT
+#endif
+
 /* GCC and CAR versions */
 #define ASSERT(x) {						\
 	if (!(x)) {						\

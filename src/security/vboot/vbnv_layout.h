@@ -31,7 +31,7 @@
 #define BOOT_OFFSET                  1
 #define BOOT_DEBUG_RESET_MODE           0x80
 #define BOOT_DISABLE_DEV_REQUEST        0x40
-#define BOOT_OPROM_NEEDED               0x20
+#define BOOT_DISPLAY_REQUEST            0x20
 #define BOOT_TRY_B_COUNT_MASK           0x0F
 
 #define RECOVERY_OFFSET              2

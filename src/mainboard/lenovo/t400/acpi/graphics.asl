@@ -63,9 +63,7 @@ Method (ATPX, 2, Serialized) {
 	})
 	CreateWordField (ATPR, 0x00, SIZE)
 	CreateWordField (ATPR, 0x02, VERS)
-	CreateDWordField (ATPR, 0x02, MASK)
 	CreateDWordField (ATPR, 0x04, FUNC)
-	CreateDWordField (ATPR, 0x06, FLAG)
 
 	/* Version request */
 	if (LEqual(Arg0, 0x0))

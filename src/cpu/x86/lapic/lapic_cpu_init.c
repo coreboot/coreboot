@@ -291,6 +291,7 @@ int start_cpu(struct device *cpu)
 	info = (struct cpu_info *)stack_top;
 	info->index = index;
 	info->cpu   = cpu;
+	cpu_add_map_entry(info->index);
 	thread_init_cpu_info_non_bsp(info);
 
 	/* Advertise the new stack and index to start_cpu */
@@ -549,6 +550,7 @@ void initialize_cpus(struct bus *cpu_bus)
 
 	/* Find the device structure for the boot CPU */
 	info->cpu = alloc_find_dev(cpu_bus, &cpu_path);
+	cpu_add_map_entry(info->index);
 
 	// why here? In case some day we can start core1 in amd_sibling_init
 	if (is_smp_boot())

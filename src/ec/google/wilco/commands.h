@@ -319,16 +319,14 @@ enum ec_acpi_wake_events {
 int wilco_ec_signed_fw(void);
 
 /**
- * wilco_ec_err_code
+ * wilco_ec_save_post_code
  *
- * Send an error code to the EC to indicate a failed boot.  The EC flashes the
- * platform LED amber and white to provide user indication of the failure type.
+ * Save this post code as the most recent progress step.  If the boot fails
+ * and calls die_notify() this post code will be used to send an error code
+ * to the EC indicating the failure.
  *
- * @err_code:		Error code to send to the EC
- *
- * Returns 0 if EC command was successful
- * Returns -1 if EC command failed
+ * @post_code: Post code to save
  */
-int wilco_ec_err_code(enum ec_err_code err_code);
+void wilco_ec_save_post_code(uint8_t post_code);
 
 #endif /* EC_GOOGLE_WILCO_COMMANDS_H */

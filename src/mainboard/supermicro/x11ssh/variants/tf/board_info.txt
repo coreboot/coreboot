@@ -1,0 +1,6 @@
+Vendor name: Supermicro
+Board name: X11SSH-TF
+Category: server
+ROM protocol: SPI
+ROM socketed: n
+Flashrom support: y

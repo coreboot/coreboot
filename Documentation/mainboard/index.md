@@ -111,6 +111,7 @@ The boards in this section are not real mainboards, but emulators.
 ## Supermicro
 
 - [X10SLM+-F](supermicro/x10slm-f.md)
+- [X11SSH-TF](supermicro/x11ssh-tf.md)
 
 ## UP
 

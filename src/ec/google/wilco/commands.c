@@ -181,3 +181,9 @@ int wilco_ec_signed_fw(void)
 		     CONFIG_EC_BASE_ACPI_DATA);
 	return !!ec_read(EC_RAM_SIGNED_FW);
 }
+
+int wilco_ec_err_code(enum ec_err_code err_code)
+{
+	return wilco_ec_mailbox(WILCO_EC_MSG_DEFAULT, KB_ERR_CODE,
+				&err_code, 1, NULL, 0);
+}

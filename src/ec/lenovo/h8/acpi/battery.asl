@@ -160,7 +160,7 @@ Method(BSTA, 4, NotSerialized)
 	Return (Arg1)
 }
 
-Method(BINF, 2, NotSerialized)
+Method(BINF, 2, Serialized)
 {
 	Acquire(ECLK, 0xffff)
 	^BPAG(Or(1, Arg1)) /* Battery 0 static information */

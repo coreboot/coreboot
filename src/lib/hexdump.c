@@ -14,11 +14,7 @@
 
 #include <console/console.h>
 #include <lib.h>
-
-static int isprint(int c)
-{
-	return (c >= 32 && c <= 126);
-}
+#include <string.h>
 
 void hexdump(const void *memory, size_t length)
 {

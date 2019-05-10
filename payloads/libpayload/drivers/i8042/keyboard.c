@@ -258,6 +258,7 @@ int keyboard_getchar(void)
 				/* vulcan nerve pinch */
 				if ((modifier & KB_MOD_ALT) && reset_handler)
 					reset_handler();
+				/* fallthrough */
 			default:
 				ret = 0;
 			}

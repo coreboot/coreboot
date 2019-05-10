@@ -21,6 +21,7 @@ This is an (incomplete) list of POST codes emitted by coreboot v4.
 0xe2 Vendor binary (e.g. FSP) generated a fatal error
 0xe3 RAM could not be initialized
 0xe4 Critical hardware component could not initialize
+0xe5 Video subsystem failed to initialize
 0xf8 Entry into elf boot
 0xf3 Jumping to payload
 

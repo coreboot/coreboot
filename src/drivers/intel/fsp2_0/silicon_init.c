@@ -18,6 +18,7 @@
 #include <fsp/api.h>
 #include <fsp/util.h>
 #include <program_loading.h>
+#include <soc/intel/common/vbt.h>
 #include <stage_cache.h>
 #include <string.h>
 #include <timestamp.h>
@@ -29,6 +30,7 @@ static void do_silicon_init(struct fsp_header *hdr)
 	FSPS_UPD *upd, *supd;
 	fsp_silicon_init_fn silicon_init;
 	uint32_t status;
+	uint8_t postcode;
 
 	supd = (FSPS_UPD *) (hdr->cfg_region_offset + hdr->image_base);
 
@@ -59,8 +61,18 @@ static void do_silicon_init(struct fsp_header *hdr)
 	/* Handle any errors returned by FspSiliconInit */
 	fsp_handle_reset(status);
 	if (status != FSP_SUCCESS) {
+		if (vbt_get()) {
+			/* Attempted to initialize graphics. Assume failure
+			 * is related to a video failure.
+			 */
+			postcode = POST_VIDEO_FAILURE;
+		} else {
+			/* Other silicon initialization failed */
+			postcode = POST_HW_INIT_FAILURE;
+		}
 		printk(BIOS_SPEW, "FspSiliconInit returned 0x%08x\n", status);
-		die("FspSiliconINit returned an error!\n");
+		die_with_post_code(postcode,
+			"FspSiliconINit returned an error!\n");
 	}
 }
 

@@ -356,6 +356,13 @@
 #define POST_HW_INIT_FAILURE			0xe4
 
 /**
+ * \brief Video failure
+ *
+ * Video subsystem failed to initialize.
+ */
+#define POST_VIDEO_FAILURE			0xe5
+
+/**
  * \brief TPM failure
  *
  * An error with the TPM, either unexepcted state or communications failure.

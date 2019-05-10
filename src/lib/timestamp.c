@@ -350,6 +350,7 @@ uint32_t get_us_since_boot(void)
 }
 
 ROMSTAGE_CBMEM_INIT_HOOK(timestamp_sync_cache_to_cbmem)
+POSTCAR_CBMEM_INIT_HOOK(timestamp_sync_cache_to_cbmem)
 RAMSTAGE_CBMEM_INIT_HOOK(timestamp_sync_cache_to_cbmem)
 
 /* Provide default timestamp implementation using monotonic timer. */

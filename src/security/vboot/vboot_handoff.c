@@ -68,13 +68,6 @@ static void fill_vboot_handoff(struct vboot_handoff *vboot_handoff,
 		vb_sd->flags |= VBSD_BOOT_DEV_SWITCH_ON;
 		vb_sd->flags |= VBSD_LF_DEV_SWITCH_ON;
 	}
-	/* TODO(chromium:948529): Remove these two flags after downstream
-	   vboot code longer reads them. */
-	if (vboot_wants_oprom() || vb2_sd->recovery_reason ||
-	    vb2_sd->flags & VB2_SD_FLAG_DEV_MODE_ENABLED)
-		vb_sd->flags |= VBSD_OPROM_LOADED;
-	if (CONFIG(VBOOT_MUST_REQUEST_DISPLAY))
-		vb_sd->flags |= VBSD_OPROM_MATTERS;
 
 	/* In vboot1, VBSD_FWB_TRIED is
 	 * set only if B is booted as explicitly requested. Therefore, if B is

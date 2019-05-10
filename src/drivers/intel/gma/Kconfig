@@ -86,21 +86,18 @@ config GFX_GMA_INTERNAL_IS_LVDS
 
 if GFX_GMA
 
-config GFX_GMA_CPU
+config GFX_GMA_DYN_CPU
+	def_bool y
+	help
+	  Activates runtime CPU detection in libgfxinit.
+
+config GFX_GMA_GENERATION
 	string
 	default "Broxton" if SOC_INTEL_APOLLOLAKE
 	default "Skylake" if SOC_INTEL_SKYLAKE
-	default "Broadwell" if SOC_INTEL_BROADWELL
-	default "Haswell" if NORTHBRIDGE_INTEL_HASWELL
-	default "Ivybridge" if NORTHBRIDGE_INTEL_IVYBRIDGE
-	default "Sandybridge" if NORTHBRIDGE_INTEL_SANDYBRIDGE
-	default "Ironlake" if NORTHBRIDGE_INTEL_NEHALEM
+	default "Haswell" if NORTHBRIDGE_INTEL_HASWELL || SOC_INTEL_BROADWELL
+	default "Ironlake" if NORTHBRIDGE_INTEL_NEHALEM || NORTHBRIDGE_INTEL_SANDYBRIDGE || NORTHBRIDGE_INTEL_IVYBRIDGE
 	default "G45" if NORTHBRIDGE_INTEL_GM45 || NORTHBRIDGE_INTEL_X4X
-
-config GFX_GMA_CPU_VARIANT
-	string
-	default "ULT" if (SOC_INTEL_SKYLAKE && !SKYLAKE_SOC_PCH_H) || SOC_INTEL_BROADWELL || NORTHBRIDGE_INTEL_HASWELL
-	default "Normal"
 
 config GFX_GMA_INTERNAL_PORT
 	string

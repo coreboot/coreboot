@@ -135,20 +135,8 @@ struct mp_flight_plan {
 static int global_num_aps;
 static struct mp_flight_plan mp_info;
 
-struct cpu_map {
-	struct device *dev;
-	/* Keep track of default apic ids for SMM. */
-	int default_apic_id;
-};
-
-/* Keep track of APIC and device structure for each CPU. */
-static struct cpu_map cpus[CONFIG_MAX_CPUS];
-
-static inline void add_cpu_map_entry(const struct cpu_info *info)
-{
-	cpus[info->index].dev = info->cpu;
-	cpus[info->index].default_apic_id = cpuid_ebx(1) >> 24;
-}
+/* Keep track of device structure for each CPU. */
+static struct device *cpus_dev[CONFIG_MAX_CPUS];
 
 static inline void barrier_wait(atomic_t *b)
 {
@@ -212,9 +200,9 @@ static void asmlinkage ap_init(unsigned int cpu)
 
 	info = cpu_info();
 	info->index = cpu;
-	info->cpu = cpus[cpu].dev;
+	info->cpu = cpus_dev[cpu];
 
-	add_cpu_map_entry(info);
+	cpu_add_map_entry(info->index);
 	thread_init_cpu_info_non_bsp(info);
 
 	/* Fix up APIC id with reality. */
@@ -411,7 +399,7 @@ static int allocate_cpu_devices(struct bus *cpu_bus, struct mp_params *p)
 			continue;
 		}
 		new->name = processor_name;
-		cpus[i].dev = new;
+		cpus_dev[i] = new;
 	}
 
 	return max_cpus;
@@ -589,7 +577,7 @@ static void init_bsp(struct bus *cpu_bus)
 		printk(BIOS_CRIT, "BSP index(%d) != 0!\n", info->index);
 
 	/* Track BSP in cpu_map structures. */
-	add_cpu_map_entry(info);
+	cpu_add_map_entry(info->index);
 }
 
 /*
@@ -665,15 +653,6 @@ static void mp_initialize_cpu(void)
 	/* Call back into driver infrastructure for the AP initialization.   */
 	struct cpu_info *info = cpu_info();
 	cpu_initialize(info->index);
-}
-
-/* Returns APIC id for coreboot CPU number or < 0 on failure. */
-int mp_get_apic_id(int logical_cpu)
-{
-	if (logical_cpu >= CONFIG_MAX_CPUS || logical_cpu < 0)
-		return -1;
-
-	return cpus[logical_cpu].default_apic_id;
 }
 
 void smm_initiate_relocation_parallel(void)
@@ -769,7 +748,7 @@ static void adjust_smm_apic_id_map(struct smm_loader_params *smm_params)
 	struct smm_runtime *runtime = smm_params->runtime;
 
 	for (i = 0; i < CONFIG_MAX_CPUS; i++)
-		runtime->apic_id_to_cpu[i] = mp_get_apic_id(i);
+		runtime->apic_id_to_cpu[i] = cpu_get_apic_id(i);
 }
 
 static int install_relocation_handler(int num_cpus, size_t save_state_size)

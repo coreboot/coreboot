@@ -53,6 +53,9 @@ smm-y += smihandler.c
 smm-y += spi.c
 smm-y += tsc_freq.c
 
+verstage-y += pmutil.c
+verstage-y += tsc_freq.c
+
 CPPFLAGS_common += -I$(src)/soc/intel/braswell/
 CPPFLAGS_common += -I$(src)/soc/intel/braswell/include
 CPPFLAGS_common += -I$(call strip_quotes,$(CONFIG_FSP_HEADER_PATH))

@@ -1,7 +1,6 @@
 package main
 
 type sandybridgemc struct {
-	variant string
 }
 
 func (i sandybridgemc) Scan(ctx Context, addr PCIDevData) {
@@ -106,7 +105,7 @@ func (i sandybridgemc) Scan(ctx Context, addr PCIDevData) {
 	PutPCIDev(addr, "Host bridge")
 
 	/* FIXME:XX some configs are unsupported.  */
-	KconfigBool["NORTHBRIDGE_INTEL_"+i.variant+"BRIDGE"] = true
+	KconfigBool["NORTHBRIDGE_INTEL_SANDYBRIDGE"] = true
 	KconfigBool["USE_NATIVE_RAMINIT"] = true
 	KconfigBool["INTEL_INT15"] = true
 	KconfigBool["HAVE_ACPI_TABLES"] = true
@@ -126,10 +125,10 @@ func (i sandybridgemc) Scan(ctx Context, addr PCIDevData) {
 }
 
 func init() {
-	RegisterPCI(0x8086, 0x0100, sandybridgemc{variant: "SANDY"})
-	RegisterPCI(0x8086, 0x0104, sandybridgemc{variant: "SANDY"})
-	RegisterPCI(0x8086, 0x0150, sandybridgemc{variant: "IVY"})
-	RegisterPCI(0x8086, 0x0154, sandybridgemc{variant: "IVY"})
+	RegisterPCI(0x8086, 0x0100, sandybridgemc{})
+	RegisterPCI(0x8086, 0x0104, sandybridgemc{})
+	RegisterPCI(0x8086, 0x0150, sandybridgemc{})
+	RegisterPCI(0x8086, 0x0154, sandybridgemc{})
 	for _, id := range []uint16{
 		0x0102, 0x0106, 0x010a,
 		0x0112, 0x0116, 0x0122, 0x0126,

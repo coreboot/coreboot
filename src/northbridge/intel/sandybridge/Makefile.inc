@@ -13,7 +13,7 @@
 # GNU General Public License for more details.
 #
 
-ifeq ($(CONFIG_NORTHBRIDGE_INTEL_SANDYBRIDGE)$(CONFIG_NORTHBRIDGE_INTEL_IVYBRIDGE),y)
+ifeq ($(CONFIG_NORTHBRIDGE_INTEL_SANDYBRIDGE),y)
 
 ramstage-y += ram_calc.c
 ramstage-y += northbridge.c

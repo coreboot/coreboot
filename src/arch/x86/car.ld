@@ -91,9 +91,7 @@
 	_car_global_end = .;
 	_car_relocatable_data_end = .;
 
-#if (CONFIG(NORTHBRIDGE_INTEL_SANDYBRIDGE) || \
-    CONFIG(NORTHBRIDGE_INTEL_IVYBRIDGE)) && \
-    !CONFIG(USE_NATIVE_RAMINIT)
+#if CONFIG(NORTHBRIDGE_INTEL_SANDYBRIDGE) && !CONFIG(USE_NATIVE_RAMINIT)
 	. = ABSOLUTE(0xff7e1000);
 	_mrc_pool = .;
 	. += 0x5000;

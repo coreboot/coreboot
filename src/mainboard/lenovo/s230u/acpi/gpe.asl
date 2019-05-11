@@ -16,15 +16,6 @@
 
 Scope (_GPE)
 {
-	Field(GPIO, ByteAcc, NoLock, Preserve)
-	{
-		Offset(0x2c),	// GPIO Invert
-		    ,   2,
-		GV02,   1,
-		    ,   1,
-		GV04,   1,
-	}
-
 	Name (PDET, Zero)
 	Method (PNOT, 2, Serialized) {
 		ShiftLeft (Arg0, Arg1, Local0)
@@ -39,10 +30,20 @@ Scope (_GPE)
 		}
 	}
 
+	Method (TINV, 2, Serialized) {
+		ShiftLeft (One, Arg1, Local0)
+		If (LEqual (Arg0, Zero)) {
+			Not (Local0, Local0)
+			And (GIV0, Local0, GIV0)
+		} Else {
+			Or (GIV0, Local0, GIV0)
+		}
+	}
+
 	/* Palm detect sensor 1 */
 	Method (_L12, 0, NotSerialized) {
 		// Invert trigger
-		Store(GP02, GV02)
+		TINV (GP02, 2)
 
 		PNOT (GP02, 0)
 	}
@@ -50,7 +51,7 @@ Scope (_GPE)
 	/* Palm detect sensor 2 */
 	Method (_L14, 0, NotSerialized) {
 		// Invert trigger
-		Store(GP04, GV04)
+		TINV (GP04, 4)
 
 		PNOT (GP04, 1)
 	}

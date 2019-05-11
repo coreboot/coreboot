@@ -257,9 +257,14 @@
 
 #endif
 
+#if CONFIG(RAMPAYLOAD)
+/* ENV_PAYLOAD_LOADER is set to ENV_POSTCAR when CONFIG_RAMPAYLOAD is enabled */
+#define ENV_PAYLOAD_LOADER ENV_POSTCAR
+#else
 /* ENV_PAYLOAD_LOADER is set when you are in a stage that loads the payload.
  * For now, that is the ramstage. */
 #define ENV_PAYLOAD_LOADER ENV_RAMSTAGE
+#endif
 
 /**
  * For pre-DRAM stages and post-CAR always build with simple device model, ie.

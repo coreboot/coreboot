@@ -175,10 +175,6 @@ void mainboard_romstage_entry(unsigned long bist)
 	int s3resume = 0;
 	const u8 spd_addrmap[4] = { 0x50, 0, 0x51, 0 };
 
-	timestamp_init(timestamp_get());
-
-	timestamp_add_now(TS_START_ROMSTAGE);
-
 	if (bist == 0)
 		enable_lapic();
 

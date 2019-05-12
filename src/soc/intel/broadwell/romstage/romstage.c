@@ -21,6 +21,7 @@
 #include <bootmode.h>
 #include <cbmem.h>
 #include <console/console.h>
+#include <cpu/intel/romstage.h>
 #include <cpu/x86/mtrr.h>
 #include <elog.h>
 #include <program_loading.h>
@@ -39,7 +40,7 @@
 /* platform_enter_postcar() determines the stack to use after
  * cache-as-ram is torn down as well as the MTRR settings to use,
  * and continues execution in postcar stage. */
-static void platform_enter_postcar(void)
+void platform_enter_postcar(void)
 {
 	struct postcar_frame pcf;
 	uintptr_t top_of_ram;
@@ -63,20 +64,14 @@ static void platform_enter_postcar(void)
 	run_postcar_phase(&pcf);
 }
 
-/* Entry from cache-as-ram.inc. */
-static void romstage_main(uint64_t tsc, uint32_t bist)
+/* Entry from cpu/intel/car/romstage.c. */
+void mainboard_romstage_entry(unsigned long bist)
 {
 	struct romstage_params rp = {
 		.bist = bist,
 	};
 
 	post_code(0x30);
-
-	/* Save initial timestamp from bootblock. */
-	timestamp_init(tsc);
-
-	/* Save romstage begin */
-	timestamp_add_now(TS_START_ROMSTAGE);
 
 	/* System Agent Early Initialization */
 	systemagent_early_init();
@@ -131,16 +126,6 @@ static void romstage_main(uint64_t tsc, uint32_t bist)
 	romstage_handoff_init(rp.power_state->prev_sleep_state == ACPI_S3);
 
 	mainboard_post_raminit(&rp);
-
-	platform_enter_postcar();
-}
-
-/* This wrapper enables easy transition towards C_ENVIRONMENT_BOOTBLOCK,
- * keeping changes in cache_as_ram.S easy to manage.
- */
-asmlinkage void bootblock_c_entry_bist(uint64_t base_timestamp, uint32_t bist)
-{
-	romstage_main(base_timestamp, bist);
 }
 
 void __weak mainboard_pre_console_init(void) {}

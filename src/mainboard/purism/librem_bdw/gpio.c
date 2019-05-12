@@ -13,12 +13,9 @@
  * GNU General Public License for more details.
  */
 
-#ifndef MAINBOARD_GPIO_H
-#define MAINBOARD_GPIO_H
-
 #include <soc/gpio.h>
 
-static const struct gpio_config mainboard_gpio_config[] = {
+const struct gpio_config mainboard_gpio_config[] = {
 	PCH_GPIO_INPUT,		/* 0 */
 	PCH_GPIO_INPUT,		/* 1 */
 	PCH_GPIO_INPUT,		/* 2 */
@@ -116,5 +113,3 @@ static const struct gpio_config mainboard_gpio_config[] = {
 	PCH_GPIO_INPUT,		/* 94 */
 	PCH_GPIO_END
 };
-
-#endif

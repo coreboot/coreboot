@@ -193,4 +193,6 @@ int gpio_is_native(int gpio_num);
  */
 unsigned int get_gpios(const int *gpio_num_array);
 
+extern const struct gpio_config mainboard_gpio_config[];
+
 #endif

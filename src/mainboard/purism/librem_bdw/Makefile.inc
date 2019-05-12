@@ -13,5 +13,6 @@
 ## GNU General Public License for more details.
 ##
 
+romstage-y += gpio.c
 romstage-y += variants/$(VARIANT_DIR)/pei_data.c
 ramstage-y += variants/$(VARIANT_DIR)/pei_data.c

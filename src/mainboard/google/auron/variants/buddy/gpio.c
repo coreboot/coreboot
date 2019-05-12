@@ -1,11 +1,12 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2015 Google Inc.
+ * Copyright (C) 2014 Google Inc.
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; version 2 of the License.
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; version 2 of
+ * the License.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -13,12 +14,9 @@
  * GNU General Public License for more details.
  */
 
-#ifndef RIKKU_GPIO_H
-#define RIKKU_GPIO_H
-
 #include <soc/gpio.h>
 
-static const struct gpio_config mainboard_gpio_config[] = {
+const struct gpio_config mainboard_gpio_config[] = {
 	PCH_GPIO_UNUSED,        /* 0: UNUSED */
 	PCH_GPIO_UNUSED,        /* 1: UNUSED */
 	PCH_GPIO_UNUSED,        /* 2: UNUSED */
@@ -32,8 +30,8 @@ static const struct gpio_config mainboard_gpio_config[] = {
 	PCH_GPIO_ACPI_SCI,      /* 10: WLAN_WAKE_L_Q */
 	PCH_GPIO_UNUSED,        /* 11: SMBALERT */
 	PCH_GPIO_INPUT_INVERT,  /* 12: RECOVERY_L */
-	PCH_GPIO_UNUSED,        /* 13: UNUSED */
-	PCH_GPIO_UNUSED,        /* 14: UNUSED */
+	PCH_GPIO_OUT_HIGH,      /* 13: BT_DISABLE_L */
+	PCH_GPIO_INPUT,         /* 14: EC_IN_RW */
 	PCH_GPIO_UNUSED,        /* 15: UNUSED (STRAP) */
 	PCH_GPIO_UNUSED,        /* 16: UNUSED */
 	PCH_GPIO_OUT_HIGH,      /* 17: PP3300_VP8_EN */
@@ -44,10 +42,10 @@ static const struct gpio_config mainboard_gpio_config[] = {
 	PCH_GPIO_NATIVE,        /* 22: NATIVE: CLK_PCIE_REQ4# */
 	PCH_GPIO_UNUSED,        /* 23: UNUSED */
 	PCH_GPIO_OUT_HIGH,      /* 24: WLAN_OFF_L */
-	PCH_GPIO_UNUSED,        /* 25: UNUSED */
+	PCH_GPIO_INPUT_INVERT,  /* 25: TOUCH_INT_L (WAKE) */
 	PCH_GPIO_OUT_HIGH,      /* 26: USB_CTL_1 */
 	PCH_GPIO_UNUSED,        /* 27: UNUSED */
-	PCH_GPIO_OUT_LOW,      /* 28: USB_ILIM_SEL */
+	PCH_GPIO_OUT_LOW,       /* 28: USB_ILIM_SEL */
 	PCH_GPIO_UNUSED,        /* 29: UNUSED */
 	PCH_GPIO_NATIVE,        /* 30: NATIVE: PCH_SUSPWRACK_L */
 	PCH_GPIO_NATIVE,        /* 31: NATIVE: PCH_ACPRESENT */
@@ -62,25 +60,25 @@ static const struct gpio_config mainboard_gpio_config[] = {
 	PCH_GPIO_NATIVE,        /* 40: NATIVE: USB_OC0# */
 	PCH_GPIO_NATIVE,        /* 41: NATIVE: USB_OC1# */
 	PCH_GPIO_NATIVE,        /* 42: NATIVE: USB_OC2# */
-	PCH_GPIO_NATIVE,        /* 43: NATIVE: USB_OC3# */
+	PCH_GPIO_UNUSED,        /* 43: UNUSED */
 	PCH_GPIO_UNUSED,        /* 44: UNUSED */
-	PCH_GPIO_OUT_HIGH,      /* 45: PP5000_CODEC_EN */
-	PCH_GPIO_OUT_HIGH,      /* 46: BT_DISABLE_L */
-	PCH_GPIO_OUT_HIGH,      /* 47: USB1_PWR_EN */
+	PCH_GPIO_OUT_HIGH,      /* 45: PP3300_CODEC_EN */
+	PCH_GPIO_UNUSED,        /* 46: UNUSED */
+	PCH_GPIO_UNUSED,        /* 47: UNUSED */
 	PCH_GPIO_UNUSED,        /* 48: UNUSED */
-	PCH_GPIO_OUT_HIGH,      /* 49: POWER_LED */
+	PCH_GPIO_UNUSED,        /* 49: UNUSED */
 	PCH_GPIO_OUT_HIGH,      /* 50: VP8_DISABLE_L */
 	PCH_GPIO_UNUSED,        /* 51: UNUSED */
 	PCH_GPIO_UNUSED,        /* 52: UNUSED */
-	PCH_GPIO_UNUSED,        /* 53: UNUSED */
-	PCH_GPIO_UNUSED,        /* 54: UNUSED */
+	PCH_GPIO_PIRQ_INVERT,   /* 53: CODEC_INT */
+	PCH_GPIO_PIRQ,          /* 54: TOUCH_INT_L_DX */
 	PCH_GPIO_UNUSED,        /* 55: UNUSED */
-	PCH_GPIO_OUT_HIGH,      /* 56: USB2_PWR_EN */
-	PCH_GPIO_OUT_HIGH,      /* 57: USB3_PWR_EN */
+	PCH_GPIO_OUT_HIGH,      /* 56: USB_CHARGE_EN */
+	PCH_GPIO_UNUSED,        /* 57: UNUSED */
 	PCH_GPIO_INPUT,         /* 58: PCH_SPI_WP_D */
 	PCH_GPIO_OUT_HIGH,      /* 59: PP3300_LAN_EN */
 	PCH_GPIO_NATIVE,        /* 60: NATIVE: SMB0ALERT# */
-	PCH_GPIO_UNUSED,        /* 61: UNUSED */
+	PCH_GPIO_NATIVE,        /* 61: SUS_STAT# */
 	PCH_GPIO_UNUSED,        /* 62: UNUSED */
 	PCH_GPIO_NATIVE,        /* 63: NATIVE: PCH_SLP_S5_L */
 	PCH_GPIO_UNUSED,        /* 64: UNUSED */
@@ -116,5 +114,3 @@ static const struct gpio_config mainboard_gpio_config[] = {
 	PCH_GPIO_UNUSED,        /* 94: UNUSED */
 	PCH_GPIO_END
 };
-
-#endif

@@ -23,7 +23,6 @@
 #include <soc/romstage.h>
 #include <ec/google/chromeec/ec.h>
 #include <mainboard/google/auron/ec.h>
-#include <variant/gpio.h>
 #include <variant/spd.h>
 
 static void mainboard_print_spd_info(uint8_t spd[])

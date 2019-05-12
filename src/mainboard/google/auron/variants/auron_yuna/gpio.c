@@ -3,10 +3,9 @@
  *
  * Copyright (C) 2014 Google Inc.
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; version 2 of
- * the License.
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -14,12 +13,9 @@
  * GNU General Public License for more details.
  */
 
-#ifndef BUDDY_GPIO_H
-#define BUDDY_GPIO_H
-
 #include <soc/gpio.h>
 
-static const struct gpio_config mainboard_gpio_config[] = {
+const struct gpio_config mainboard_gpio_config[] = {
 	PCH_GPIO_UNUSED,        /* 0: UNUSED */
 	PCH_GPIO_UNUSED,        /* 1: UNUSED */
 	PCH_GPIO_UNUSED,        /* 2: UNUSED */
@@ -28,31 +24,31 @@ static const struct gpio_config mainboard_gpio_config[] = {
 	PCH_GPIO_NATIVE,        /* 5: NATIVE: I2C0_SCL_GPIO5 */
 	PCH_GPIO_NATIVE,        /* 6: NATIVE: I2C1_SDA_GPIO6 */
 	PCH_GPIO_NATIVE,        /* 7: NATIVE: I2C1_SCL_GPIO7 */
-	PCH_GPIO_ACPI_SCI,      /* 8: LAN_WAKE_L_Q */
-	PCH_GPIO_OUT_HIGH,      /* 9: PP3300_WLAN_EN */
+	PCH_GPIO_ACPI_SCI,      /* 8: LTE_WAKE_L_Q */
+	PCH_GPIO_INPUT,         /* 9: RAM_ID1 */
 	PCH_GPIO_ACPI_SCI,      /* 10: WLAN_WAKE_L_Q */
-	PCH_GPIO_UNUSED,        /* 11: SMBALERT */
-	PCH_GPIO_INPUT_INVERT,  /* 12: RECOVERY_L */
-	PCH_GPIO_OUT_HIGH,      /* 13: BT_DISABLE_L */
+	PCH_GPIO_UNUSED,        /* 11: UNUSED */
+	PCH_GPIO_INPUT_INVERT,  /* 12: TRACKPAD_INT_L (WAKE) */
+	PCH_GPIO_INPUT,         /* 13: RAM_ID0 */
 	PCH_GPIO_INPUT,         /* 14: EC_IN_RW */
 	PCH_GPIO_UNUSED,        /* 15: UNUSED (STRAP) */
 	PCH_GPIO_UNUSED,        /* 16: UNUSED */
-	PCH_GPIO_OUT_HIGH,      /* 17: PP3300_VP8_EN */
-	PCH_GPIO_UNUSED,        /* 18: UNUSED */
+	PCH_GPIO_UNUSED,        /* 17: UNUSED */
+	PCH_GPIO_NATIVE,        /* 18: PCIE_CLKREQ_WLAN# */
 	PCH_GPIO_UNUSED,        /* 19: UNUSED */
-	PCH_GPIO_NATIVE,        /* 20: NATIVE: CLK_PCIE_REQ2# */
-	PCH_GPIO_NATIVE,        /* 21: NATIVE: CLK_PCIE_REQ3# */
-	PCH_GPIO_NATIVE,        /* 22: NATIVE: CLK_PCIE_REQ4# */
+	PCH_GPIO_UNUSED,        /* 20: UNUSED */
+	PCH_GPIO_UNUSED,        /* 21: UNUSED */
+	PCH_GPIO_UNUSED,        /* 22: UNUSED */
 	PCH_GPIO_UNUSED,        /* 23: UNUSED */
-	PCH_GPIO_OUT_HIGH,      /* 24: WLAN_OFF_L */
+	PCH_GPIO_UNUSED,        /* 24: UNUSED */
 	PCH_GPIO_INPUT_INVERT,  /* 25: TOUCH_INT_L (WAKE) */
-	PCH_GPIO_OUT_HIGH,      /* 26: USB_CTL_1 */
+	PCH_GPIO_UNUSED,        /* 26: UNUSED */
 	PCH_GPIO_UNUSED,        /* 27: UNUSED */
-	PCH_GPIO_OUT_LOW,       /* 28: USB_ILIM_SEL */
+	PCH_GPIO_UNUSED,        /* 28: UNUSED */
 	PCH_GPIO_UNUSED,        /* 29: UNUSED */
-	PCH_GPIO_NATIVE,        /* 30: NATIVE: PCH_SUSPWRACK_L */
-	PCH_GPIO_NATIVE,        /* 31: NATIVE: PCH_ACPRESENT */
-	PCH_GPIO_NATIVE,        /* 32: NATIVE: CLKRUN# */
+	PCH_GPIO_NATIVE,        /* 30: NATIVE: PCH_SUSWARN_L */
+	PCH_GPIO_NATIVE,        /* 31: NATIVE: ACPRESENT */
+	PCH_GPIO_NATIVE,        /* 32: NATIVE: LPC_CLKRUN_L */
 	PCH_GPIO_NATIVE,        /* 33: NATIVE: DEVSLP0 */
 	PCH_GPIO_ACPI_SMI,      /* 34: EC_SMI_L */
 	PCH_GPIO_ACPI_SMI,      /* 35: PCH_NMI_DBG_L (route in NMI_EN) */
@@ -61,27 +57,27 @@ static const struct gpio_config mainboard_gpio_config[] = {
 	PCH_GPIO_UNUSED,        /* 38: UNUSED */
 	PCH_GPIO_UNUSED,        /* 39: UNUSED */
 	PCH_GPIO_NATIVE,        /* 40: NATIVE: USB_OC0# */
-	PCH_GPIO_NATIVE,        /* 41: NATIVE: USB_OC1# */
+	PCH_GPIO_UNUSED,        /* 41: UNUSED */
 	PCH_GPIO_NATIVE,        /* 42: NATIVE: USB_OC2# */
 	PCH_GPIO_UNUSED,        /* 43: UNUSED */
-	PCH_GPIO_UNUSED,        /* 44: UNUSED */
+	PCH_GPIO_OUT_HIGH,      /* 44: PP3300_SSD_EN */
 	PCH_GPIO_OUT_HIGH,      /* 45: PP3300_CODEC_EN */
-	PCH_GPIO_UNUSED,        /* 46: UNUSED */
-	PCH_GPIO_UNUSED,        /* 47: UNUSED */
+	PCH_GPIO_OUT_HIGH,      /* 46: WLAN_DISABLE_L */
+	PCH_GPIO_INPUT,         /* 47: RAM_ID2 */
 	PCH_GPIO_UNUSED,        /* 48: UNUSED */
 	PCH_GPIO_UNUSED,        /* 49: UNUSED */
-	PCH_GPIO_OUT_HIGH,      /* 50: VP8_DISABLE_L */
-	PCH_GPIO_UNUSED,        /* 51: UNUSED */
-	PCH_GPIO_UNUSED,        /* 52: UNUSED */
-	PCH_GPIO_PIRQ_INVERT,   /* 53: CODEC_INT */
+	PCH_GPIO_UNUSED,        /* 50: UNUSED */
+	PCH_GPIO_INPUT,         /* 51: ALS_INT_L */
+	PCH_GPIO_INPUT,         /* 52: SIM_DET */
+	PCH_GPIO_PIRQ,          /* 53: TRACKPAD_INT_DX */
 	PCH_GPIO_PIRQ,          /* 54: TOUCH_INT_L_DX */
 	PCH_GPIO_UNUSED,        /* 55: UNUSED */
-	PCH_GPIO_OUT_HIGH,      /* 56: USB_CHARGE_EN */
-	PCH_GPIO_UNUSED,        /* 57: UNUSED */
+	PCH_GPIO_UNUSED,        /* 56: UNUSED */
+	PCH_GPIO_OUT_HIGH,      /* 57: PP3300_CCD_EN */
 	PCH_GPIO_INPUT,         /* 58: PCH_SPI_WP_D */
-	PCH_GPIO_OUT_HIGH,      /* 59: PP3300_LAN_EN */
-	PCH_GPIO_NATIVE,        /* 60: NATIVE: SMB0ALERT# */
-	PCH_GPIO_NATIVE,        /* 61: SUS_STAT# */
+	PCH_GPIO_OUT_HIGH,      /* 59: LTE_DISABLE_L */
+	PCH_GPIO_NATIVE,        /* 60: NATIVE: SML0ALERT */
+	PCH_GPIO_UNUSED,        /* 61: UNUSED */
 	PCH_GPIO_UNUSED,        /* 62: UNUSED */
 	PCH_GPIO_NATIVE,        /* 63: NATIVE: PCH_SLP_S5_L */
 	PCH_GPIO_UNUSED,        /* 64: UNUSED */
@@ -92,8 +88,8 @@ static const struct gpio_config mainboard_gpio_config[] = {
 	PCH_GPIO_UNUSED,        /* 69: UNUSED */
 	PCH_GPIO_UNUSED,        /* 70: UNUSED */
 	PCH_GPIO_NATIVE,        /* 71: NATIVE: MODPHY_EN */
-	PCH_GPIO_UNUSED,        /* 72: UNUSED */
-	PCH_GPIO_UNUSED,        /* 73: UNUSED */
+	PCH_GPIO_NATIVE,        /* 72: NATIVE: PCH_BATLOW# */
+	PCH_GPIO_NATIVE,        /* 73: NATIVE: SMB1ALERT# */
 	PCH_GPIO_NATIVE,        /* 74: NATIVE: SMB_ME1_DAT */
 	PCH_GPIO_NATIVE,        /* 75: NATIVE: SMB_ME1_CLK */
 	PCH_GPIO_UNUSED,        /* 76: UNUSED */
@@ -117,5 +113,3 @@ static const struct gpio_config mainboard_gpio_config[] = {
 	PCH_GPIO_UNUSED,        /* 94: UNUSED */
 	PCH_GPIO_END
 };
-
-#endif

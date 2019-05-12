@@ -14,18 +14,13 @@
  */
 
 #include <string.h>
-#include <soc/gpio.h>
 #include <soc/pei_data.h>
 #include <soc/pei_wrapper.h>
 #include <soc/romstage.h>
-#include "gpio.h"
 
 void mainboard_romstage_entry(struct romstage_params *rp)
 {
 	struct pei_data pei_data;
-
-	/* Initialize GPIOs */
-	init_gpios(mainboard_gpio_config);
 
 	/* Fill out PEI DATA */
 	memset(&pei_data, 0, sizeof(pei_data));

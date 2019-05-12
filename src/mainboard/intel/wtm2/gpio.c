@@ -13,12 +13,9 @@
  * GNU General Public License for more details.
  */
 
-#ifndef INTEL_WTM2_GPIO_H
-#define INTEL_WTM2_GPIO_H
-
 #include <soc/gpio.h>
 
-static const struct gpio_config mainboard_gpio_config[] = {
+const struct gpio_config mainboard_gpio_config[] = {
 	PCH_GPIO_NATIVE,        /* 0: LPSS_UART1_RXD */
 	PCH_GPIO_NATIVE,        /* 1: LPSS_UART1_TXD */
 	PCH_GPIO_NATIVE,        /* 2: LPSS_UART1_RTS_N_R */
@@ -116,5 +113,3 @@ static const struct gpio_config mainboard_gpio_config[] = {
 	PCH_GPIO_NATIVE,        /* 94: LPSS_UART0_CTS_N */
 	PCH_GPIO_END
 };
-
-#endif

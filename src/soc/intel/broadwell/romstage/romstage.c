@@ -27,6 +27,7 @@
 #include <romstage_handoff.h>
 #include <stage_cache.h>
 #include <timestamp.h>
+#include <soc/gpio.h>
 #include <soc/me.h>
 #include <soc/pei_data.h>
 #include <soc/pm.h>
@@ -99,6 +100,9 @@ static void romstage_main(uint64_t tsc, uint32_t bist)
 
 	/* Set CPU frequency to maximum */
 	set_max_freq();
+
+	/* Initialize GPIOs */
+	init_gpios(mainboard_gpio_config);
 
 	/* Call into mainboard. */
 	mainboard_romstage_entry(&rp);

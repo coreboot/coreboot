@@ -13,12 +13,9 @@
  * GNU General Public License for more details.
  */
 
-#ifndef TIDUS_GPIO_H
-#define TIDUS_GPIO_H
-
 #include <soc/gpio.h>
 
-static const struct gpio_config mainboard_gpio_config[] = {
+const struct gpio_config mainboard_gpio_config[] = {
 	PCH_GPIO_UNUSED,        /* 0: UNUSED */
 	PCH_GPIO_UNUSED,        /* 1: UNUSED */
 	PCH_GPIO_UNUSED,        /* 2: UNUSED */
@@ -116,5 +113,3 @@ static const struct gpio_config mainboard_gpio_config[] = {
 	PCH_GPIO_UNUSED,        /* 94: UNUSED */
 	PCH_GPIO_END
 };
-
-#endif

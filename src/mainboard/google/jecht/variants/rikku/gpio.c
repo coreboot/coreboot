@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2014 Google Inc.
+ * Copyright (C) 2015 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,12 +13,9 @@
  * GNU General Public License for more details.
  */
 
-#ifndef JECHT_GPIO_H
-#define JECHT_GPIO_H
-
 #include <soc/gpio.h>
 
-static const struct gpio_config mainboard_gpio_config[] = {
+const struct gpio_config mainboard_gpio_config[] = {
 	PCH_GPIO_UNUSED,        /* 0: UNUSED */
 	PCH_GPIO_UNUSED,        /* 1: UNUSED */
 	PCH_GPIO_UNUSED,        /* 2: UNUSED */
@@ -68,7 +65,7 @@ static const struct gpio_config mainboard_gpio_config[] = {
 	PCH_GPIO_OUT_HIGH,      /* 46: BT_DISABLE_L */
 	PCH_GPIO_OUT_HIGH,      /* 47: USB1_PWR_EN */
 	PCH_GPIO_UNUSED,        /* 48: UNUSED */
-	PCH_GPIO_UNUSED,        /* 49: UNUSED */
+	PCH_GPIO_OUT_HIGH,      /* 49: POWER_LED */
 	PCH_GPIO_OUT_HIGH,      /* 50: VP8_DISABLE_L */
 	PCH_GPIO_UNUSED,        /* 51: UNUSED */
 	PCH_GPIO_UNUSED,        /* 52: UNUSED */
@@ -116,5 +113,3 @@ static const struct gpio_config mainboard_gpio_config[] = {
 	PCH_GPIO_UNUSED,        /* 94: UNUSED */
 	PCH_GPIO_END
 };
-
-#endif

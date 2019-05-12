@@ -29,15 +29,11 @@ __weak void variant_romstage_entry(struct romstage_params *rp)
 
 void mainboard_romstage_entry(struct romstage_params *rp)
 {
-	struct pei_data pei_data;
-
 	post_code(0x32);
 
 	/* Fill out PEI DATA */
-	memset(&pei_data, 0, sizeof(pei_data));
-	mainboard_fill_pei_data(&pei_data);
-	mainboard_fill_spd_data(&pei_data);
-	rp->pei_data = &pei_data;
+	mainboard_fill_pei_data(&rp->pei_data);
+	mainboard_fill_spd_data(&rp->pei_data);
 
 	/* Call into the real romstage main with this board's attributes. */
 	romstage_common(rp);

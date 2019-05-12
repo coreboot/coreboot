@@ -68,7 +68,6 @@ static void romstage_main(uint64_t tsc, uint32_t bist)
 {
 	struct romstage_params rp = {
 		.bist = bist,
-		.pei_data = NULL,
 	};
 
 	post_code(0x30);
@@ -125,7 +124,7 @@ void romstage_common(struct romstage_params *params)
 
 	timestamp_add_now(TS_BEFORE_INITRAM);
 
-	params->pei_data->boot_mode = params->power_state->prev_sleep_state;
+	params->pei_data.boot_mode = params->power_state->prev_sleep_state;
 
 #if CONFIG(ELOG_BOOT_COUNT)
 	if (params->power_state->prev_sleep_state != ACPI_S3)
@@ -140,7 +139,7 @@ void romstage_common(struct romstage_params *params)
 			      &params->power_state->hsio_checksum);
 
 	/* Initialize RAM */
-	raminit(params->pei_data);
+	raminit(&params->pei_data);
 
 	timestamp_add_now(TS_AFTER_INITRAM);
 

@@ -20,12 +20,8 @@
 
 void mainboard_romstage_entry(struct romstage_params *rp)
 {
-	struct pei_data pei_data;
-
 	/* Fill out PEI DATA */
-	memset(&pei_data, 0, sizeof(pei_data));
-	mainboard_fill_pei_data(&pei_data);
-	rp->pei_data = &pei_data;
+	mainboard_fill_pei_data(&rp->pei_data);
 
 	/* Initialize memory */
 	romstage_common(rp);

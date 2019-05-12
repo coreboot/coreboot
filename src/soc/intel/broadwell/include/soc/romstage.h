@@ -18,13 +18,13 @@
 
 #include <stdint.h>
 #include <arch/cpu.h>
+#include <soc/pei_data.h>
 
 struct chipset_power_state;
-struct pei_data;
 struct romstage_params {
 	unsigned long bist;
 	struct chipset_power_state *power_state;
-	struct pei_data *pei_data;
+	struct pei_data pei_data;
 };
 
 void mainboard_romstage_entry(struct romstage_params *params);

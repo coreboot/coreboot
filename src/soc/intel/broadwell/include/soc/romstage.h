@@ -22,7 +22,6 @@
 
 struct chipset_power_state;
 struct romstage_params {
-	unsigned long bist;
 	struct chipset_power_state *power_state;
 	struct pei_data pei_data;
 };

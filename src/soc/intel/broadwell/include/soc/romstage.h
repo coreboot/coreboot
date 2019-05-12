@@ -27,8 +27,8 @@ struct romstage_params {
 	struct pei_data pei_data;
 };
 
-void mainboard_romstage_entry(struct romstage_params *params);
-void romstage_common(struct romstage_params *params);
+void mainboard_pre_raminit(struct romstage_params *params);
+void mainboard_post_raminit(struct romstage_params *params);
 
 void raminit(struct pei_data *pei_data);
 

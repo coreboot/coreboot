@@ -103,8 +103,34 @@ static void romstage_main(uint64_t tsc, uint32_t bist)
 	/* Initialize GPIOs */
 	init_gpios(mainboard_gpio_config);
 
-	/* Call into mainboard. */
-	mainboard_romstage_entry(&rp);
+	/* Fill in mainboard pei_date. */
+	mainboard_pre_raminit(&rp);
+
+	post_code(0x32);
+
+	timestamp_add_now(TS_BEFORE_INITRAM);
+
+	rp.pei_data.boot_mode = rp.power_state->prev_sleep_state;
+
+	if (CONFIG(ELOG_BOOT_COUNT)
+			&& rp.power_state->prev_sleep_state != ACPI_S3)
+		boot_count_increment();
+
+	/* Print ME state before MRC */
+	intel_me_status();
+
+	/* Save ME HSIO version */
+	intel_me_hsio_version(&rp.power_state->hsio_version,
+			      &rp.power_state->hsio_checksum);
+
+	/* Initialize RAM */
+	raminit(&rp.pei_data);
+
+	timestamp_add_now(TS_AFTER_INITRAM);
+
+	romstage_handoff_init(rp.power_state->prev_sleep_state == ACPI_S3);
+
+	mainboard_post_raminit(&rp);
 
 	platform_enter_postcar();
 }
@@ -115,35 +141,6 @@ static void romstage_main(uint64_t tsc, uint32_t bist)
 asmlinkage void bootblock_c_entry_bist(uint64_t base_timestamp, uint32_t bist)
 {
 	romstage_main(base_timestamp, bist);
-}
-
-/* Entry from the mainboard. */
-void romstage_common(struct romstage_params *params)
-{
-	post_code(0x32);
-
-	timestamp_add_now(TS_BEFORE_INITRAM);
-
-	params->pei_data.boot_mode = params->power_state->prev_sleep_state;
-
-#if CONFIG(ELOG_BOOT_COUNT)
-	if (params->power_state->prev_sleep_state != ACPI_S3)
-		boot_count_increment();
-#endif
-
-	/* Print ME state before MRC */
-	intel_me_status();
-
-	/* Save ME HSIO version */
-	intel_me_hsio_version(&params->power_state->hsio_version,
-			      &params->power_state->hsio_checksum);
-
-	/* Initialize RAM */
-	raminit(&params->pei_data);
-
-	timestamp_add_now(TS_AFTER_INITRAM);
-
-	romstage_handoff_init(params->power_state->prev_sleep_state == ACPI_S3);
 }
 
 void __weak mainboard_pre_console_init(void) {}

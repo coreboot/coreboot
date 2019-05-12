@@ -27,17 +27,15 @@
 #include "onboard.h"
 
 
-void mainboard_romstage_entry(struct romstage_params *rp)
+void mainboard_pre_raminit(struct romstage_params *rp)
 {
-	post_code(0x32);
-
 	/* Fill out PEI DATA */
 	mainboard_fill_pei_data(&rp->pei_data);
 	mainboard_fill_spd_data(&rp->pei_data);
+}
 
-	/* Call into the real romstage main with this board's attributes. */
-	romstage_common(rp);
-
+void mainboard_post_raminit(struct romstage_params *rp)
+{
 	if (CONFIG(CHROMEOS))
 		init_bootmode_straps();
 }

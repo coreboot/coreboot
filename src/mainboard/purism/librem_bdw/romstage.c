@@ -18,11 +18,12 @@
 #include <soc/pei_wrapper.h>
 #include <soc/romstage.h>
 
-void mainboard_romstage_entry(struct romstage_params *rp)
+void mainboard_pre_raminit(struct romstage_params *rp)
 {
 	/* Fill out PEI DATA */
 	mainboard_fill_pei_data(&rp->pei_data);
+}
 
-	/* Initialize memory */
-	romstage_common(rp);
+void mainboard_post_raminit(struct romstage_params *rp)
+{
 }

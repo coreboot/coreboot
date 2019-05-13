@@ -147,7 +147,6 @@ void uart_tx_flush(int idx)
 	uart8250_mem_tx_flush(base);
 }
 
-#if ENV_RAMSTAGE
 void uart_fill_lb(void *data)
 {
 	struct lb_serial serial;
@@ -166,4 +165,3 @@ void uart_fill_lb(void *data)
 
 	lb_add_console(LB_TAG_CONSOLE_SERIAL8250MEM, data);
 }
-#endif

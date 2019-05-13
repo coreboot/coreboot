@@ -44,7 +44,6 @@ void __weak mainboard_post(uint8_t value)
 
 DECLARE_SPIN_LOCK(cmos_post_lock)
 
-#if ENV_RAMSTAGE
 void cmos_post_log(void)
 {
 	u8 code = 0;
@@ -125,7 +124,6 @@ void post_log_clear(void)
 	post_log_extra(0);
 }
 #endif /* CONFIG_CMOS_POST_EXTRA */
-#endif /* ENV_RAMSTAGE */
 
 static void cmos_post_code(u8 value)
 {

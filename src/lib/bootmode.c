@@ -17,7 +17,6 @@
 #include <bootmode.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
-#if ENV_RAMSTAGE
 static int gfx_init_done = -1;
 
 int gfx_get_init_done(void)
@@ -31,7 +30,6 @@ void gfx_set_init_done(int done)
 {
 	gfx_init_done = done;
 }
-#endif
 
 int display_init_required(void)
 {

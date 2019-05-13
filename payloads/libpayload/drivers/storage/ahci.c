@@ -108,6 +108,9 @@ static int ahci_dev_init(hba_ctrl_t *const ctrl,
 
 	const int ncs = HBA_CAPS_DECODE_NCS(ctrl->caps);
 
+	if (ahci_cmdengine_stop(port))
+		return 1;
+
 	/* Allocate command list, one command table and received FIS. */
 	cmd_t *const cmdlist = memalign(1024, ncs * sizeof(cmd_t));
 	cmdtable_t *const cmdtable = memalign(128, sizeof(cmdtable_t));
@@ -121,12 +124,10 @@ static int ahci_dev_init(hba_ctrl_t *const ctrl,
 	memset((void *)rcvd_fis, '\0', sizeof(*rcvd_fis));
 
 	/* Set command list base and received FIS base. */
-	if (ahci_cmdengine_stop(port))
-		return 1;
 	port->cmdlist_base = virt_to_phys(cmdlist);
 	port->frameinfo_base = virt_to_phys(rcvd_fis);
 	if (ahci_cmdengine_start(port))
-		return 1;
+		goto _cleanup_ret;
 	/* Put port into active state. */
 	port->cmd_stat |= HBA_PxCMD_ICC_ACTIVE;
 
@@ -178,6 +179,8 @@ _cleanup_ret:
 	/* Clean up (not reached for initialized devices). */
 	if (dev)
 		free(dev);
+	/* Only free if stopping succeeds, since otherwise the controller may
+	   still use the resources for DMA. */
 	if (!ahci_cmdengine_stop(port)) {
 		port->cmdlist_base = 0;
 		port->frameinfo_base = 0;

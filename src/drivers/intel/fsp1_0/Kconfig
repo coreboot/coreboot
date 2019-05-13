@@ -88,10 +88,11 @@ config ENABLE_MRC_CACHE
 config MRC_CACHE_FMAP
 	bool "Use MRC Cache in FMAP"
 	depends on ENABLE_MRC_CACHE
+	select CACHE_MRC_SETTINGS
 	default n
 	help
 	  Use the region "RW_MRC_CACHE" in FMAP instead of "mrc.cache" in CBFS.
-	  You must define a region in your FMAP named "RW_MRC_CACHE".
+	  Your FMAP must contain a region named "RW_MRC_CACHE".
 
 config MRC_CACHE_SIZE
 	hex "Fast Boot Data Cache Size"

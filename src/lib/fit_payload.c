@@ -176,37 +176,34 @@ void fit_payload(struct prog *payload)
 
 	struct fit_config_node *config = fit_load(data);
 
-	if (!config || !config->kernel_node) {
+	if (!config) {
 		printk(BIOS_ERR, "ERROR: Could not load FIT\n");
 		rdev_munmap(prog_rdev(payload), data);
 		return;
 	}
 
-	if (config->fdt_node) {
-		dt = fdt_unflatten(config->fdt_node->data);
-		if (!dt) {
-			printk(BIOS_ERR,
-			       "ERROR: Failed to unflatten the FDT.\n");
-			rdev_munmap(prog_rdev(payload), data);
-			return;
-		}
-
-		dt_apply_fixups(dt);
-
-		/* Insert coreboot specific information */
-		add_cb_fdt_data(dt);
-
-		/* Update device_tree */
-#if defined(CONFIG_LINUX_COMMAND_LINE)
-		fit_update_chosen(dt, (char *)CONFIG_LINUX_COMMAND_LINE);
-#endif
-		fit_update_memory(dt);
+	dt = fdt_unflatten(config->fdt->data);
+	if (!dt) {
+		printk(BIOS_ERR, "ERROR: Failed to unflatten the FDT.\n");
+		rdev_munmap(prog_rdev(payload), data);
+		return;
 	}
 
+	dt_apply_fixups(dt);
+
+	/* Insert coreboot specific information */
+	add_cb_fdt_data(dt);
+
+	/* Update device_tree */
+#if defined(CONFIG_LINUX_COMMAND_LINE)
+	fit_update_chosen(dt, (char *)CONFIG_LINUX_COMMAND_LINE);
+#endif
+	fit_update_memory(dt);
+
 	/* Collect infos for fit_payload_arch */
-	kernel.size = config->kernel_node->size;
+	kernel.size = config->kernel->size;
 	fdt.size = dt ? dt_flat_size(dt) : 0;
-	initrd.size = config->ramdisk_node ? config->ramdisk_node->size : 0;
+	initrd.size = config->ramdisk ? config->ramdisk->size : 0;
 
 	/* Invoke arch specific payload placement and fixups */
 	if (!fit_payload_arch(payload, config, &kernel, &fdt, &initrd)) {
@@ -216,17 +213,15 @@ void fit_payload(struct prog *payload)
 		return;
 	}
 
-	/* Load the images to given position */
-	if (config->fdt_node) {
-		/* Update device_tree */
-		if (config->ramdisk_node)
-			fit_add_ramdisk(dt, (void *)initrd.offset, initrd.size);
+	/* Update ramdisk location in FDT */
+	if (config->ramdisk)
+		fit_add_ramdisk(dt, (void *)initrd.offset, initrd.size);
 
-		pack_fdt(&fdt, dt);
-	}
+	/* Repack FDT for handoff to kernel */
+	pack_fdt(&fdt, dt);
 
-	if (config->ramdisk_node &&
-	    extract(&initrd, config->ramdisk_node)) {
+	if (config->ramdisk &&
+	    extract(&initrd, config->ramdisk)) {
 		printk(BIOS_ERR, "ERROR: Failed to extract initrd\n");
 		prog_set_entry(payload, NULL, NULL);
 		rdev_munmap(prog_rdev(payload), data);
@@ -235,7 +230,7 @@ void fit_payload(struct prog *payload)
 
 	timestamp_add_now(TS_KERNEL_DECOMPRESSION);
 
-	if (extract(&kernel, config->kernel_node)) {
+	if (extract(&kernel, config->kernel)) {
 		printk(BIOS_ERR, "ERROR: Failed to extract kernel\n");
 		prog_set_entry(payload, NULL, NULL);
 		rdev_munmap(prog_rdev(payload), data);

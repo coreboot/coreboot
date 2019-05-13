@@ -85,6 +85,17 @@ static void fit_add_default_compat_strings(void)
 	fit_add_compat_string(compat_string);
 }
 
+static struct fit_image_node *find_image(const char *name)
+{
+	struct fit_image_node *image;
+	list_for_each(image, image_nodes, list_node) {
+		if (!strcmp(image->name, name))
+			return image;
+	}
+	printk(BIOS_ERR, "ERROR: Cannot find image node %s!\n", name);
+	return NULL;
+}
+
 static void image_node(struct device_tree_node *node)
 {
 	struct fit_image_node *image = xzalloc(sizeof(*image));
@@ -120,11 +131,11 @@ static void config_node(struct device_tree_node *node)
 	struct device_tree_property *prop;
 	list_for_each(prop, node->properties, list_node) {
 		if (!strcmp("kernel", prop->prop.name))
-			config->kernel = prop->prop.data;
+			config->kernel = find_image(prop->prop.data);
 		else if (!strcmp("fdt", prop->prop.name))
-			config->fdt = prop->prop.data;
+			config->fdt = find_image(prop->prop.data);
 		else if (!strcmp("ramdisk", prop->prop.name))
-			config->ramdisk = prop->prop.data;
+			config->ramdisk = find_image(prop->prop.data);
 	}
 
 	list_insert_after(&config->list_node, &config_nodes);
@@ -132,38 +143,20 @@ static void config_node(struct device_tree_node *node)
 
 static void fit_unpack(struct device_tree *tree, const char **default_config)
 {
-	assert(tree && tree->root);
+	struct device_tree_node *child;
+	struct device_tree_node *images = dt_find_node_by_path(tree, "/images",
+							       NULL, NULL, 0);
+	if (images)
+		list_for_each(child, images->children, list_node)
+			image_node(child);
 
-	struct device_tree_node *top;
-	list_for_each(top, tree->root->children, list_node) {
-		struct device_tree_node *child;
-		if (!strcmp("images", top->name)) {
-
-			list_for_each(child, top->children, list_node)
-				image_node(child);
-
-		} else if (!strcmp("configurations", top->name)) {
-			struct device_tree_property *prop;
-			list_for_each(prop, top->properties, list_node) {
-				if (!strcmp("default", prop->prop.name) &&
-						default_config)
-					*default_config = prop->prop.data;
-			}
-
-			list_for_each(child, top->children, list_node)
-				config_node(child);
-		}
+	struct device_tree_node *configs = dt_find_node_by_path(tree,
+		"/configurations", NULL, NULL, 0);
+	if (configs) {
+		*default_config = dt_find_string_prop(configs, "default");
+		list_for_each(child, configs->children, list_node)
+			config_node(child);
 	}
-}
-
-static struct fit_image_node *find_image(const char *name)
-{
-	struct fit_image_node *image;
-	list_for_each(image, image_nodes, list_node) {
-		if (!strcmp(image->name, name))
-			return image;
-	}
-	return NULL;
 }
 
 static int fdt_find_compat(const void *blob, uint32_t start_offset,
@@ -393,18 +386,27 @@ void fit_update_memory(struct device_tree *tree)
 
 /*
  * Finds a compat string and updates the compat position and rank.
- * @param fdt_blob Pointer to FDT
  * @param config The current config node to operate on
+ * @return 0 if compat updated, -1 if this FDT cannot be used.
  */
-static void fit_update_compat(const void *fdt_blob,
-			      struct fit_config_node *config)
+static int fit_update_compat(struct fit_config_node *config)
 {
+	if (config->fdt->compression != CBFS_COMPRESS_NONE) {
+		printk(BIOS_ERR,
+		       "FDT compression not yet supported, skipping %s.\n",
+		       config->name);
+		return -1;
+	}
+
+	void *fdt_blob = config->fdt->data;
 	struct compat_string_entry *compat_node;
 	const struct fdt_header *fdt_header =
 		(const struct fdt_header *)fdt_blob;
 	uint32_t fdt_offset = be32_to_cpu(fdt_header->structure_offset);
 	size_t i = 0;
 
+	config->compat_pos = -1;
+	config->compat_rank = -1;
 	if (!fdt_find_compat(fdt_blob, fdt_offset, &config->compat)) {
 		list_for_each(compat_node, compat_strings, list_node) {
 			int pos = fit_check_compat(&config->compat,
@@ -419,6 +421,8 @@ static void fit_update_compat(const void *fdt_blob,
 			i++;
 		}
 	}
+
+	return 0;
 }
 
 struct fit_config_node *fit_load(void *fit)
@@ -457,55 +461,41 @@ struct fit_config_node *fit_load(void *fit)
 	printk(BIOS_DEBUG, "\n");
 	/* Process and list the configs. */
 	list_for_each(config, config_nodes, list_node) {
-		if (config->kernel)
-			config->kernel_node = find_image(config->kernel);
-		if (config->fdt)
-			config->fdt_node = find_image(config->fdt);
-		if (config->ramdisk)
-			config->ramdisk_node = find_image(config->ramdisk);
+		if (!config->kernel) {
+			printk(BIOS_ERR,
+			       "ERROR: config %s has no kernel, skipping.\n",
+			       config->name);
+			continue;
+		}
+		if (!config->fdt) {
+			printk(BIOS_ERR,
+			       "ERROR: config %s has no FDT, skipping.\n",
+			       config->name);
+			continue;
+		}
 
-		if (config->ramdisk_node &&
-		    config->ramdisk_node->compression < 0) {
+		if (config->ramdisk &&
+		    config->ramdisk->compression < 0) {
 			printk(BIOS_WARNING, "WARN: Ramdisk is compressed with "
 			       "an unsupported algorithm, discarding config %s."
 			       "\n", config->name);
-			list_remove(&config->list_node);
 			continue;
 		}
 
-		if (!config->kernel_node ||
-		    (config->fdt && !config->fdt_node)) {
-			printk(BIOS_DEBUG, "FIT: Missing image, discarding "
-			       "config %s.\n", config->name);
-			list_remove(&config->list_node);
+		if (fit_update_compat(config))
 			continue;
-		}
 
-		if (config->fdt_node) {
-			if (config->fdt_node->compression !=
-			    CBFS_COMPRESS_NONE) {
-				printk(BIOS_DEBUG,
-				       "FIT: FDT compression not yet supported,"
-				       " skipping config %s.\n", config->name);
-				list_remove(&config->list_node);
-				continue;
-			}
-
-			config->compat_pos = -1;
-			config->compat_rank = -1;
-
-			fit_update_compat(config->fdt_node->data, config);
-		}
 		printk(BIOS_DEBUG, "FIT: config %s", config->name);
 		if (default_config_name &&
 		    !strcmp(config->name, default_config_name)) {
 			printk(BIOS_DEBUG, " (default)");
 			default_config = config;
 		}
-		if (config->fdt)
-			printk(BIOS_DEBUG, ", fdt %s", config->fdt);
+		printk(BIOS_DEBUG, ", kernel %s", config->kernel->name);
+		printk(BIOS_DEBUG, ", fdt %s", config->fdt->name);
 		if (config->ramdisk)
-			printk(BIOS_DEBUG, ", ramdisk %s", config->ramdisk);
+			printk(BIOS_DEBUG, ", ramdisk %s",
+			       config->ramdisk->name);
 		if (config->compat.name) {
 			printk(BIOS_DEBUG, ", compat");
 			int bytes = config->compat.size;

@@ -184,20 +184,14 @@ bool fit_payload_arch(struct prog *payload, struct fit_config_node *config,
 	bool place_anywhere;
 	void *arg = NULL;
 
-	if (!config->fdt || !fdt) {
-		printk(BIOS_CRIT, "CRIT: Providing a valid FDT is mandatory to "
-		       "boot an ARM64 kernel!\n");
-		return false;
-	}
-
-	if (!decompress_kernel_header(config->kernel_node)) {
+	if (!decompress_kernel_header(config->kernel)) {
 		printk(BIOS_CRIT, "CRIT: Payload doesn't look like an ARM64"
 		       " kernel Image.\n");
 		return false;
 	}
 
 	/* Update kernel size from image header, if possible */
-	kernel->size = get_kernel_size(config->kernel_node);
+	kernel->size = get_kernel_size(config->kernel);
 	printk(BIOS_DEBUG, "FIT: Using kernel size of 0x%zx bytes\n",
 	       kernel->size);
 

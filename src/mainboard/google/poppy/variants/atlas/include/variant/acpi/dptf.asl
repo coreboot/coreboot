@@ -49,9 +49,6 @@ Name (CHPS, Package () {
 })
 
 Name (DTRT, Package () {
-	/* CPU Throttle Effect on CPU */
-	Package () { \_SB.PCI0.B0D4, \_SB.PCI0.B0D4, 100, 50, 0, 0, 0, 0 },
-
 	/* CPU Throttle Effect on Ambient */
 	Package () { \_SB.PCI0.B0D4, \_SB.DPTF.TSR0, 100, 200, 0, 0, 0, 0 },
 

@@ -52,7 +52,7 @@ Method(BSTA, 4, NotSerialized)
 	Return (Arg1)
 }
 
-Method(BINF, 2, NotSerialized)
+Method(BINF, 2, Serialized)
 {
 	Acquire(ECLK, 0xffff)
 	Store(0, PAGE)

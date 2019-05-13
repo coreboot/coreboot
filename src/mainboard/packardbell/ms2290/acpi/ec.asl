@@ -101,7 +101,7 @@ Device(EC)
 		BAOE,	128,		/* Battery OEM info */
 	}
 
-	Method (_CRS, 0)
+	Method (_CRS, 0, Serialized)
 	{
 		Name (ECMD, ResourceTemplate()
 		{

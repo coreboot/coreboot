@@ -17,7 +17,6 @@
 
 #include <stdint.h>
 #include <console/console.h>
-#include <arch/io.h>
 #include <cf9_reset.h>
 #include <device/pci_ops.h>
 #include <cpu/x86/lapic.h>

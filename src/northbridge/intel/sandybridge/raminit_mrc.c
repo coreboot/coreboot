@@ -18,7 +18,6 @@
 #include <bootmode.h>
 #include <cf9_reset.h>
 #include <string.h>
-#include <arch/io.h>
 #include <device/pci_ops.h>
 #include <arch/cpu.h>
 #include <cbmem.h>

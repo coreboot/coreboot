@@ -14,7 +14,6 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/io.h>
 #include <cf9_reset.h>
 #include <device/mmio.h>
 #include <device/pci_ops.h>

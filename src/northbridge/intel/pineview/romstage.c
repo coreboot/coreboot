@@ -17,7 +17,6 @@
  * so this one is named with prefix mainboard.
  */
 
-#include <arch/io.h>
 #include <timestamp.h>
 #include <console/console.h>
 #include <device/pci_ops.h>

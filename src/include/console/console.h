@@ -43,6 +43,7 @@ void post_log_clear(void);
 /* this function is weak and can be overridden by a mainboard function. */
 void mainboard_post(u8 value);
 void __noreturn die(const char *msg);
+void __noreturn die_with_post_code(uint8_t value, const char *msg);
 
 /*
  * This function is weak and can be overridden to provide additional

@@ -36,4 +36,11 @@ void __noreturn die(const char *msg)
 	die_notify();
 	halt();
 }
+
+/* Report a fatal error with a post code */
+void __noreturn die_with_post_code(uint8_t value, const char *msg)
+{
+	post_code(value);
+	die(msg);
+}
 #endif

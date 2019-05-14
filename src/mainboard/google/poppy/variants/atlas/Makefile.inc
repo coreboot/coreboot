@@ -12,6 +12,8 @@ SPD_SOURCES += micron_dimm_MT52L256M32D1PF-107  # 0b1001
 SPD_SOURCES += samsung_dimm_K4E6E304EC-EGCF     # 0b1010
 SPD_SOURCES += samsung_dimm_K4EBE304EC-EGCF     # 0b1011
 SPD_SOURCES += nayna_dimm_NT6CL256T32CM-H1      # 0b1100
+SPD_SOURCES += samsung_dimm_K4E6E304ED-EGCG     # 0b1101
+SPD_SOURCES += samsung_dimm_K4EBE304ED-EGCG     # 0b1110
 
 bootblock-y += gpio.c
 

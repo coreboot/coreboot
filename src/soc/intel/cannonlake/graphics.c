@@ -15,12 +15,14 @@
  */
 
 #include <arch/acpi.h>
+#include <bootmode.h>
 #include <console/console.h>
 #include <fsp/util.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ops.h>
 #include <drivers/intel/gma/i915_reg.h>
+#include <drivers/intel/gma/libgfxinit.h>
 #include <drivers/intel/gma/opregion.h>
 #include <intelblocks/graphics.h>
 #include <types.h>
@@ -46,25 +48,31 @@ void graphics_soc_init(struct device *dev)
 		graphics_gtt_write(DDI_BUF_CTL_A, ddi_buf_ctl);
 	}
 
-	/*
-	 * GFX PEIM module inside FSP binary is taking care of graphics
-	 * initialization based on INTEL_GMA_ADD_VBT Kconfig
-	 * option and input VBT file. Hence no need to load/execute legacy VGA
-	 * OpROM in order to initialize GFX.
-	 *
-	 * In case of non-FSP solution, SoC need to select VGA_ROM_RUN
-	 * Kconfig to perform GFX initialization through VGA OpRom.
-	 */
-	if (CONFIG(INTEL_GMA_ADD_VBT))
-		return;
-
 	/* IGD needs to Bus Master */
 	uint32_t reg32 = pci_read_config32(dev, PCI_COMMAND);
 	reg32 |= PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY | PCI_COMMAND_IO;
 	pci_write_config32(dev, PCI_COMMAND, reg32);
 
-	/* Initialize PCI device, load/execute BIOS Option ROM */
-	pci_dev_init(dev);
+	/*
+	 * GFX PEIM module inside FSP binary is taking care of graphics
+	 * initialization based on RUN_FSP_GOP Kconfig option and input
+	 * VBT file.
+	 *
+	 * In case of non-FSP solution, SoC need to select another
+	 * Kconfig to perform GFX initialization.
+	 */
+	if (CONFIG(RUN_FSP_GOP)) {
+		/* nothing to do */
+	} else if (CONFIG(MAINBOARD_USE_LIBGFXINIT)) {
+		if (!acpi_is_wakeup_s3() && display_init_required()) {
+			int lightup_ok;
+			gma_gfxinit(&lightup_ok);
+			gfx_set_init_done(lightup_ok);
+		}
+	} else {
+		/* Initialize PCI device, load/execute BIOS Option ROM */
+		pci_dev_init(dev);
+	}
 }
 
 uintptr_t graphics_soc_write_acpi_opregion(struct device *device,

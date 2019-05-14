@@ -609,3 +609,21 @@ void gpi_clear_int_cfg(void)
 		}
 	}
 }
+
+/* The function performs GPIO Power Management programming. */
+void gpio_pm_configure(const uint8_t *misccfg_pm_values, size_t num)
+{
+	int i;
+	size_t gpio_communities;
+	uint8_t misccfg_pm_mask = MISCCFG_ENABLE_GPIO_PM_CONFIG;
+	const struct pad_community *comm;
+
+	comm = soc_gpio_get_community(&gpio_communities);
+	if (gpio_communities != num)
+		die("Incorrect GPIO community count!\n");
+
+	/* Program GPIO_MISCCFG */
+	for (i = 0; i < num; i++, comm++)
+		pcr_rmw8(comm->port, GPIO_MISCCFG,
+				misccfg_pm_mask, misccfg_pm_values[i]);
+}

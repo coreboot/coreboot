@@ -23,6 +23,23 @@
 #ifndef __ACPI__
 #include <types.h>
 
+/* GPIO community IOSF sideband clock gating */
+#define MISCCFG_GPSIDEDPCGEN	(1 << 5)
+/* GPIO community RCOMP clock gating */
+#define MISCCFG_GPRCOMPCDLCGEN	(1 << 4)
+/* GPIO community RTC clock gating */
+#define MISCCFG_GPRTCDLCGEN	(1 << 3)
+/* GFX controller clock gating */
+#define MISCCFG_GSXSLCGEN	(1 << 2)
+/* GPIO community partition clock gating */
+#define MISCCFG_GPDPCGEN	(1 << 1)
+/* GPIO community local clock gating */
+#define MISCCFG_GPDLCGEN	(1 << 0)
+/* Enable GPIO community power management configuration */
+#define MISCCFG_ENABLE_GPIO_PM_CONFIG (MISCCFG_GPSIDEDPCGEN | \
+	MISCCFG_GPRCOMPCDLCGEN | MISCCFG_GPRTCDLCGEN | MISCCFG_GSXSLCGEN \
+	| MISCCFG_GPDPCGEN | MISCCFG_GPDLCGEN)
+
 /*
  * GPIO numbers may not be contiguous and instead will have a different
  * starting pin number for each pad group.
@@ -214,6 +231,9 @@ uint32_t soc_gpio_pad_config_fixup(const struct pad_config *cfg,
  * all GPIO pad communities.
  */
 void gpi_clear_int_cfg(void);
+
+/* The function performs GPIO Power Management programming. */
+void gpio_pm_configure(const uint8_t *misccfg_pm_values, size_t num);
 
 #endif
 #endif /* _SOC_INTELBLOCKS_GPIO_H_ */

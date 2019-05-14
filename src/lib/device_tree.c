@@ -883,7 +883,7 @@ void dt_delete_prop(struct device_tree_node *node, const char *name)
  * @param size		The size of data in bytes.
  */
 void dt_add_bin_prop(struct device_tree_node *node, const char *name,
-		     const void *data, size_t size)
+		     void *data, size_t size)
 {
 	struct device_tree_property *prop;
 
@@ -955,7 +955,7 @@ void dt_find_bin_prop(const struct device_tree_node *node, const char *name,
 void dt_add_string_prop(struct device_tree_node *node, const char *name,
 			const char *str)
 {
-	dt_add_bin_prop(node, name, str, strlen(str) + 1);
+	dt_add_bin_prop(node, name, (char *)str, strlen(str) + 1);
 }
 
 /*

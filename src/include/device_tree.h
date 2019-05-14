@@ -52,7 +52,7 @@ struct fdt_header {
 struct fdt_property
 {
 	const char *name;
-	const void *data;
+	void *data;
 	uint32_t size;
 };
 
@@ -165,7 +165,7 @@ void dt_write_int(u8 *dest, u64 src, size_t length);
 void dt_delete_prop(struct device_tree_node *node, const char *name);
 // Add different kinds of properties to a node, or update existing ones.
 void dt_add_bin_prop(struct device_tree_node *node, const char *name,
-		     const void *data, size_t size);
+		     void *data, size_t size);
 void dt_add_string_prop(struct device_tree_node *node, const char *name,
 			const char *str);
 void dt_add_u32_prop(struct device_tree_node *node, const char *name, u32 val);

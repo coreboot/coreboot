@@ -149,7 +149,7 @@ static void dt_platform_fixup_mac(struct device_tree_node *node)
 		if (*localmac)
 			return;
 		if (used_mac < num_free_mac_addresses) {
-			const u64 genmac = next_free_mac_address + used_mac;
+			u64 genmac = next_free_mac_address + used_mac;
 			dt_add_bin_prop(node, name, &genmac, 6);
 			used_mac++;
 			return;

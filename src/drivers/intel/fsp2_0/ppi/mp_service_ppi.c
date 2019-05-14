@@ -45,6 +45,9 @@ static efi_return_status_t mp_get_processor_info(const
 	efi_uintn_t processor_number,
 	efi_processor_information *processor_info_buffer)
 {
+	if (cpu_index() < 0)
+		return FSP_DEVICE_ERROR;
+
 	if (processor_info_buffer == NULL)
 		return FSP_INVALID_PARAMETER;
 
@@ -68,6 +71,9 @@ static efi_return_status_t mp_startup_all_aps(const
 	efi_ap_procedure procedure, efi_boolean_t ignored3,
 	efi_uintn_t timeout_usec, void *argument)
 {
+	if (cpu_index() < 0)
+		return FSP_DEVICE_ERROR;
+
 	if (procedure == NULL)
 		return FSP_INVALID_PARAMETER;
 
@@ -85,6 +91,9 @@ static efi_return_status_t mp_startup_this_ap(const
 	efi_ap_procedure procedure, efi_uintn_t processor_number,
 	efi_uintn_t timeout_usec, void *argument)
 {
+	if (cpu_index() < 0)
+		return FSP_DEVICE_ERROR;
+
 	if (processor_number > get_cpu_count())
 		return FSP_NOT_FOUND;
 

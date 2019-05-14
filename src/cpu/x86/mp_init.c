@@ -870,10 +870,17 @@ static int run_ap_work(struct mp_callback *val, long expire_us)
 	int i;
 	int cpus_accepted;
 	struct stopwatch sw;
-	int cur_cpu = cpu_index();
+	int cur_cpu;
 
 	if (!CONFIG(PARALLEL_MP_AP_WORK)) {
 		printk(BIOS_ERR, "APs already parked. PARALLEL_MP_AP_WORK not selected.\n");
+		return -1;
+	}
+
+	cur_cpu = cpu_index();
+
+	if (cur_cpu < 0) {
+		printk(BIOS_ERR, "Invalid CPU index.\n");
 		return -1;
 	}
 
@@ -918,6 +925,12 @@ static void ap_wait_for_instruction(void)
 		return;
 
 	cur_cpu = cpu_index();
+
+	if (cur_cpu < 0) {
+		printk(BIOS_ERR, "Invalid CPU index.\n");
+		return;
+	}
+
 	per_cpu_slot = &ap_callbacks[cur_cpu];
 
 	while (1) {

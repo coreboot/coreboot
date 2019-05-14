@@ -379,6 +379,6 @@ uint32_t cpu_get_feature_flags_edx(void);
  * Hence new logic to use cpuid to fetch lapic id and matches with
  * cpus_default_apic_id[] variable to return correct cpu_index().
  */
-unsigned long cpu_index(void);
+int cpu_index(void);
 
 #endif /* ARCH_CPU_H */

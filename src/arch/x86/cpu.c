@@ -350,7 +350,7 @@ void arch_bootstate_coreboot_exit(void)
  * Hence new logic to use cpuid to fetch lapic id and matches with
  * cpus_default_apic_id[] variable to return correct cpu_index().
  */
-unsigned long cpu_index(void)
+int cpu_index(void)
 {
 	int i;
 	int lapic_id = initial_lapicid();

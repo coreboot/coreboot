@@ -502,7 +502,7 @@ void x86_exception(struct eregs *info)
 	}
 #else /* !CONFIG_GDB_STUB */
 #define MDUMP_SIZE 0x80
-	unsigned int logical_processor = 0;
+	int logical_processor = 0;
 
 #if ENV_RAMSTAGE
 	logical_processor = cpu_index();

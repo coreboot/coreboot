@@ -116,12 +116,12 @@ void *map_2M_page(unsigned long page)
 	static struct pg_table pgtbl[CONFIG_MAX_CPUS]
 		__attribute__((aligned(4096)));
 	static unsigned long mapped_window[CONFIG_MAX_CPUS];
-	unsigned long index;
+	int index;
 	unsigned long window;
 	void *result;
 	int i;
 	index = cpu_index();
-	if (index >= CONFIG_MAX_CPUS)
+	if (index < 0)
 		return MAPPING_ERROR;
 	window = page >> 10;
 	if (window != mapped_window[index]) {

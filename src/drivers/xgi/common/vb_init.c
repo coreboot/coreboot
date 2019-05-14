@@ -17,7 +17,7 @@
  * GNU General Public License for more details.
  */
 
-#include <delay.h>
+/* coreboot related includes come indirectly from xgi_coreboot.h */
 
 #include "xgi_coreboot.h"
 #include "vstruct.h"

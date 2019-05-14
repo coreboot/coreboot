@@ -14,8 +14,9 @@
  * GNU General Public License for more details.
  */
 
-#include "xgi_coreboot.h"
+/* coreboot related includes come indirectly from xgi_coreboot.h */
 
+#include "xgi_coreboot.h"
 #include "vgatypes.h"
 #include "vb_util.h"
 

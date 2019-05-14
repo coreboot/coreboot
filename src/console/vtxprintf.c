@@ -24,20 +24,6 @@
 #define SUPPORT_64BIT_INTS
 #endif
 
-/* haha, don't need ctype.c */
-#define isdigit(c)	((c) >= '0' && (c) <= '9')
-#define is_digit isdigit
-#define isxdigit(c)	(((c) >= '0' && (c) <= '9') || ((c) >= 'a' && (c) <= 'f') || ((c) >= 'A' && (c) <= 'F'))
-
-static int skip_atoi(const char **s)
-{
-	int i = 0;
-
-	while (is_digit(**s))
-		i = i*10 + *((*s)++) - '0';
-	return i;
-}
-
 #define ZEROPAD	1		/* pad with zero */
 #define SIGN	2		/* unsigned/signed long */
 #define PLUS	4		/* show plus */
@@ -175,8 +161,8 @@ repeat:
 
 		/* get field width */
 		field_width = -1;
-		if (is_digit(*fmt)) {
-			field_width = skip_atoi(&fmt);
+		if (isdigit(*fmt)) {
+			field_width = skip_atoi((char **)&fmt);
 		} else if (*fmt == '*') {
 			++fmt;
 			/* it's the next argument */
@@ -191,8 +177,8 @@ repeat:
 		precision = -1;
 		if (*fmt == '.') {
 			++fmt;
-			if (is_digit(*fmt)) {
-				precision = skip_atoi(&fmt);
+			if (isdigit(*fmt)) {
+				precision = skip_atoi((char **)&fmt);
 			} else if (*fmt == '*') {
 				++fmt;
 				/* it's the next argument */

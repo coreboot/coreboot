@@ -178,4 +178,19 @@ static inline int tolower(int c)
 		c -= 'A'-'a';
 	return c;
 }
+
+/*
+ * Parses an unsigned integer and moves the input pointer forward to the first
+ * character that's not a valid digit. s and *s must not be NULL. Result
+ * undefined if it overruns the return type size.
+ */
+static inline unsigned int skip_atoi(char **s)
+{
+	unsigned int i = 0;
+
+	while (isdigit(**s))
+		i = i*10 + *((*s)++) - '0';
+	return i;
+}
+
 #endif /* STRING_H */

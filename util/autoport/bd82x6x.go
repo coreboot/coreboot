@@ -302,7 +302,6 @@ func (b bd82x6x) Scan(ctx Context, addr PCIDevData) {
 #include <string.h>
 #include <timestamp.h>
 #include <arch/byteorder.h>
-#include <arch/io.h>
 #include <device/mmio.h>
 #include <device/pci_ops.h>
 #include <device/pnp_ops.h>

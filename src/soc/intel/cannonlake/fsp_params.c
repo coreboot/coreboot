@@ -119,6 +119,28 @@ static void ignore_gbe_ltr(void)
 	write8(pmcbase + LTR_IGN, reg8);
 }
 
+static void configure_gspi_cs(int idx, const config_t *config,
+			      uint8_t *polarity, uint8_t *enable,
+			      uint8_t *defaultcs)
+{
+	struct spi_cfg cfg;
+
+	/* If speed_mhz is set, infer that the port should be configured */
+	if (config->common_soc_config.gspi[idx].speed_mhz != 0) {
+		if (gspi_get_soc_spi_cfg(idx, &cfg) == 0) {
+			if (cfg.cs_polarity == SPI_POLARITY_LOW)
+				*polarity = 0;
+			else
+				*polarity = 1;
+
+			if (defaultcs != NULL)
+				*defaultcs = 0;
+			if (enable != NULL)
+				*enable = 1;
+		}
+	}
+}
+
 /* UPD parameters to be initialized before SiliconInit */
 void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 {
@@ -357,6 +379,27 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 
 	/* Unlock all GPIO pads */
 	tconfig->PchUnlockGpioPads = config->PchUnlockGpioPads;
+
+	/*
+	 * GSPI Chip Select parameters
+	 * The GSPI driver assumes that CS0 is the used chip-select line,
+	 * therefore only CS0 is configured below.
+	 */
+#if CONFIG(SOC_INTEL_COMETLAKE)
+	configure_gspi_cs(0, config, &params->SerialIoSpi0CsPolarity[0],
+			&params->SerialIoSpi0CsEnable[0],
+			&params->SerialIoSpiDefaultCsOutput[0]);
+	configure_gspi_cs(1, config, &params->SerialIoSpi1CsPolarity[0],
+			&params->SerialIoSpi1CsEnable[0],
+			&params->SerialIoSpiDefaultCsOutput[1]);
+	configure_gspi_cs(2, config, &params->SerialIoSpi2CsPolarity[0],
+			&params->SerialIoSpi2CsEnable[0],
+			&params->SerialIoSpiDefaultCsOutput[2]);
+#else
+	for (i = 0; i < CONFIG_SOC_INTEL_COMMON_BLOCK_GSPI_MAX; i++)
+		configure_gspi_cs(i, config,
+				&params->SerialIoSpiCsPolarity[0], NULL, NULL);
+#endif
 }
 
 /* Mainboard GPIO Configuration */

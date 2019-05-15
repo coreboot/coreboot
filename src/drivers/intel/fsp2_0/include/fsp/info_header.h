@@ -44,7 +44,6 @@ struct fsp_header {
 
 enum cb_err fsp_identify(struct fsp_header *hdr, const void *fsp_blob);
 
-#if ENV_RAMSTAGE
 /*
  * This is a FSP_INFO_HEADER that came from fsps.bin blob. It contains
  * both SiliconInit and Notify APIs. When SiliconInit is loaded the
@@ -52,6 +51,5 @@ enum cb_err fsp_identify(struct fsp_header *hdr, const void *fsp_blob);
  * header parsing again.
  */
 extern struct fsp_header fsps_hdr;
-#endif
 
 #endif /* _FSP2_0_INFO_HEADER_H_ */

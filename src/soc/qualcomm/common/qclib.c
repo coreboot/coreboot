@@ -129,7 +129,7 @@ void qclib_load_and_run(void)
 	memset(ddr_region, 0, sizeof(struct region));
 
 	/* output area, QCLib copies console log buffer out */
-	if (IS_ENABLED(CONFIG_CONSOLE_CBMEM))
+	if (CONFIG(CONSOLE_CBMEM))
 		qclib_add_if_table_entry(QCLIB_TE_QCLIB_LOG_BUFFER,
 				_qclib_serial_log,
 				REGION_SIZE(qclib_serial_log), 0);
@@ -152,11 +152,11 @@ void qclib_load_and_run(void)
 	}
 
 	/* Enable QCLib serial output, based on Kconfig */
-	if (IS_ENABLED(CONFIG_CONSOLE_SERIAL))
+	if (CONFIG(CONSOLE_SERIAL))
 		qclib_cb_if_table.global_attributes =
 			QCLIB_GA_ENABLE_UART_LOGGING;
 
-	if (IS_ENABLED(CONFIG_QC_SDI_ENABLE)) {
+	if (CONFIG(QC_SDI_ENABLE)) {
 		struct prog qcsdi =
 			PROG_INIT(PROG_REFCODE, CONFIG_CBFS_PREFIX "/qcsdi");
 

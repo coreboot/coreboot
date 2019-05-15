@@ -16,7 +16,6 @@
 #ifndef INIT_CPUS_H
 #define INIT_CPUS_H
 
-#include <stdlib.h>
 #include <cpu/x86/lapic.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/amd/msr.h>

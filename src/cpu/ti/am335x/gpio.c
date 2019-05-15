@@ -16,7 +16,6 @@
 #include <console/console.h>
 #include <cpu/ti/am335x/gpio.h>
 #include <stdint.h>
-#include <stdlib.h>
 
 static struct am335x_gpio_regs *gpio_regs_and_bit(unsigned int gpio,
 						  uint32_t *bit)

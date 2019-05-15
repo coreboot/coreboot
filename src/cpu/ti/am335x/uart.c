@@ -12,7 +12,6 @@
  * GNU General Public License for more details.
  */
 
-#include <stdlib.h>
 #include <types.h>
 #include <console/uart.h>
 #include <device/mmio.h>

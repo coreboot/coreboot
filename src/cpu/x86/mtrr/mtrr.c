@@ -22,7 +22,6 @@
  */
 
 #include <stddef.h>
-#include <stdlib.h>
 #include <string.h>
 #include <bootstate.h>
 #include <commonlib/helpers.h>

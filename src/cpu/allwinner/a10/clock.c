@@ -22,7 +22,6 @@
 #include <console/console.h>
 #include <delay.h>
 #include <lib.h>
-#include <stdlib.h>
 
 static struct a10_ccm *const ccm = (void *)A1X_CCM_BASE;
 

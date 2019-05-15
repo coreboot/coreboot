@@ -23,7 +23,7 @@
 #define BMC_KCS_BASE 0xca2
 #define INTERFACE_IS_IO 0x1
 
-#if IS_ENABLED(CONFIG_GENERATE_SMBIOS_TABLES)
+#if CONFIG(GENERATE_SMBIOS_TABLES)
 static int mainboard_smbios_data(struct device *dev, int *handle,
 				 unsigned long *current)
 {
@@ -50,7 +50,7 @@ static int mainboard_smbios_data(struct device *dev, int *handle,
  */
 static void mainboard_enable(struct device *dev)
 {
-#if IS_ENABLED(CONFIG_GENERATE_SMBIOS_TABLES)
+#if CONFIG(GENERATE_SMBIOS_TABLES)
 	dev->ops->get_smbios_data = mainboard_smbios_data;
 #endif
 

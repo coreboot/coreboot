@@ -22,7 +22,7 @@
 #include <device/pnp.h>
 #include <superio/conf_mode.h>
 #include <pc80/keyboard.h>
-#include <stdlib.h>
+
 #include "lpc47m10x.h"
 
 /**

@@ -16,7 +16,7 @@
 
 #include <device/device.h>
 #include <device/pnp.h>
-#include <stdlib.h>
+
 #include "pc87384.h"
 
 static struct device_operations ops = {

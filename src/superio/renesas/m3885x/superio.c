@@ -16,7 +16,6 @@
 #include <device/device.h>
 #include <device/pnp.h>
 #include <console/console.h>
-#include <stdlib.h>
 #include <pc80/keyboard.h>
 
 void m3885_configure_multikey(void);

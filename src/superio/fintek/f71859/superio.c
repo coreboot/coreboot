@@ -18,7 +18,6 @@
 #include <device/device.h>
 #include <device/pnp.h>
 #include <superio/conf_mode.h>
-#include <stdlib.h>
 #include "f71859.h"
 
 static void f71859_init(struct device *dev)

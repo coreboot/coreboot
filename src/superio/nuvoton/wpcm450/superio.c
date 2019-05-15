@@ -17,7 +17,7 @@
 #include <device/device.h>
 #include <device/pnp.h>
 #include <pc80/keyboard.h>
-#include <stdlib.h>
+
 #include "wpcm450.h"
 
 static void init(struct device *dev)

@@ -13,10 +13,10 @@
  * GNU General Public License for more details.
  */
 
-#include <stdlib.h>
 #include <device/device.h>
 #include <device/pnp.h>
 #include <pc80/keyboard.h>
+
 #include "sio10n268.h"
 
 static void init(struct device *dev)

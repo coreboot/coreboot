@@ -20,7 +20,7 @@
 #include <device/pnp.h>
 #include <superio/conf_mode.h>
 #include <pc80/keyboard.h>
-#include <stdlib.h>
+
 #include "w83977tf.h"
 
 static void w83977tf_init(struct device *dev)

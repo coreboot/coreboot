@@ -17,9 +17,9 @@
  * GNU General Public License for more details.
  */
 
-#include <stdlib.h>
 #include <console/console.h>
 #include <delay.h>
+#include <stddef.h>
 #include <superio/hwm5_conf.h>
 
 #include "env_ctrl.h"

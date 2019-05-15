@@ -24,7 +24,7 @@
 #include <console/console.h>
 #include <pc80/keyboard.h>
 #include <pc80/mc146818rtc.h>
-#include <stdlib.h>
+
 #include "w83627ehg.h"
 
 static void enable_hwm_smbus(struct device *dev)

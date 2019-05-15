@@ -16,7 +16,7 @@
 #include <arch/io.h>
 #include <device/pnp.h>
 #include <stdint.h>
-#include <stdlib.h>
+
 #include "lpc47n207.h"
 
 /*

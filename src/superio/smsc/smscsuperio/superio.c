@@ -35,7 +35,6 @@
 #include <superio/conf_mode.h>
 #include <console/console.h>
 #include <pc80/keyboard.h>
-#include <stdlib.h>
 
 /* The following Super I/O chips are currently supported by this driver: */
 #define LPC47M172	0x14

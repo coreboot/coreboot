@@ -16,7 +16,7 @@
 
 #include <device/device.h>
 #include <device/pnp.h>
-#include <stdlib.h>
+
 #include "pc87392.h"
 
 static void init(struct device *dev)

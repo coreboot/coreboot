@@ -17,7 +17,7 @@
 #include <device/pnp.h>
 #include <superio/conf_mode.h>
 #include <pc80/keyboard.h>
-#include <stdlib.h>
+
 #include "w83627dhg.h"
 
 static void w83627dhg_enable_UR2(struct device *dev)

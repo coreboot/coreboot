@@ -24,7 +24,7 @@
 #include <device/pnp.h>
 #include <console/console.h>
 #include <assert.h>
-#include <stdlib.h>
+
 #include "lpc47n217.h"
 
 /* Forward declarations */

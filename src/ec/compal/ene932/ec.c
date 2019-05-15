@@ -19,7 +19,6 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pnp.h>
-#include <stdlib.h>
 #include <arch/io.h>
 #include <delay.h>
 #include <pc80/keyboard.h>

@@ -18,7 +18,6 @@
 #include <device/device.h>
 #include <device/pnp.h>
 #include <ec/acpi/ec.h>
-#include <stdlib.h>
 #include <string.h>
 #include <smbios.h>
 #include <pc80/mc146818rtc.h>

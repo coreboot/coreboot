@@ -18,7 +18,6 @@
 #include <device/pnp.h>
 #include <pc80/keyboard.h>
 #include <ec/acpi/ec.h>
-#include <stdlib.h>
 #include <delay.h>
 
 #include "chip.h"

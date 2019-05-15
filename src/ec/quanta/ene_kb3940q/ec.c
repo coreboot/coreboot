@@ -22,7 +22,6 @@
 #include <device/pnp.h>
 #include <delay.h>
 #include <elog.h>
-#include <stdlib.h>
 #include <pc80/keyboard.h>
 
 #include "ec.h"

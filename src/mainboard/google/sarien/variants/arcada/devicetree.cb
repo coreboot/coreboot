@@ -26,6 +26,7 @@ chip soc/intel/cannonlake
 	register "PchPmSlpS4MinAssert" = "4"  # 4s
 	register "PchPmSlpSusMinAssert" = "4" # 4s
 	register "PchPmSlpAMinAssert" = "4"   # 2s
+	register "PchUnlockGpioPads" = "1"
 
 	register "speed_shift_enable" = "1"
 	register "psys_pmax" = "140"

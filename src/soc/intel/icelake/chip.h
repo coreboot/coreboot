@@ -18,6 +18,7 @@
 
 #include <intelblocks/chip.h>
 #include <drivers/i2c/designware/dw_i2c.h>
+#include <intelblocks/gpio.h>
 #include <intelblocks/gspi.h>
 #include <stdint.h>
 #include <soc/gpe.h>
@@ -263,6 +264,25 @@ struct soc_intel_icelake_config {
 		FORCE_ENABLE,
 		FORCE_DISABLE,
 	} CnviBtAudioOffload;
+
+	/*
+	 * Override GPIO PM configuration:
+	 * 0: Use FSP default GPIO PM program,
+	 * 1: coreboot to override GPIO PM program
+	 */
+	uint8_t gpio_override_pm;
+
+	/*
+	 * GPIO PM configuration: 0 to disable, 1 to enable power gating
+	 * Bit 6-7: Reserved
+	 * Bit 5: MISCCFG_GPSIDEDPCGEN
+	 * Bit 4: MISCCFG_GPRCOMPCDLCGEN
+	 * Bit 3: MISCCFG_GPRTCDLCGEN
+	 * Bit 2: MISCCFG_GSXLCGEN
+	 * Bit 1: MISCCFG_GPDPCGEN
+	 * Bit 0: MISCCFG_GPDLCGEN
+	 */
+	uint8_t gpio_pm[TOTAL_GPIO_COMM];
 };
 
 typedef struct soc_intel_icelake_config config_t;

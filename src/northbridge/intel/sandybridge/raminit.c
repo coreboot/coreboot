@@ -30,6 +30,7 @@
 #include <southbridge/intel/common/smbus.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <cpu/x86/msr.h>
+#include <types.h>
 
 #include "raminit_native.h"
 #include "raminit_common.h"

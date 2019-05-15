@@ -43,7 +43,9 @@
 #include <device/pci_ops.h>
 #include <arch/acpi.h>
 #include <string.h>
+#include <types.h>
 #include <device/dram/ddr3.h>
+
 #include "s3utils.h"
 #include "mct_d_gcc.h"
 #include "mct_d.h"

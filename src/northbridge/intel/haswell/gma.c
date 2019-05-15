@@ -31,6 +31,7 @@
 #include <southbridge/intel/lynxpoint/nvs.h>
 #include <stdlib.h>
 #include <string.h>
+#include <types.h>
 
 #include "chip.h"
 #include "haswell.h"

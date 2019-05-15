@@ -32,6 +32,7 @@
 #include <lib.h>
 #include <cbmem.h>
 #include <cpu/amd/model_10xxx_rev.h>
+#include <types.h>
 
 #include "amdfam10.h"
 

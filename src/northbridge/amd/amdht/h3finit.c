@@ -36,6 +36,7 @@
 #include <device/pci_def.h>
 #include <northbridge/amd/amdfam10/raminit.h>
 #include <northbridge/amd/amdfam10/amdfam10.h>
+#include <types.h>
 
 /*----------------------------------------------------------------------------
  *			DEFINITIONS AND MACROS

@@ -31,6 +31,7 @@
 #include <southbridge/intel/ibexpeak/nvs.h>
 #include <drivers/intel/gma/opregion.h>
 #include <cbmem.h>
+#include <types.h>
 
 #include "chip.h"
 #include "nehalem.h"

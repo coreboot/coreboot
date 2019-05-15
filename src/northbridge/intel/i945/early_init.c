@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <stdint.h>
 #include <stdlib.h>
 #include <cf9_reset.h>
 #include <console/console.h>
@@ -22,9 +21,11 @@
 #include <device/pci_def.h>
 #include <cbmem.h>
 #include <romstage_handoff.h>
-#include "i945.h"
 #include <pc80/mc146818rtc.h>
 #include <southbridge/intel/common/gpio.h>
+#include <types.h>
+
+#include "i945.h"
 
 int i945_silicon_revision(void)
 {

@@ -23,10 +23,7 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
-
 #include <drivers/intel/gma/i915_reg.h>
-#include "chip.h"
-#include "pineview.h"
 #include <drivers/intel/gma/intel_bios.h>
 #include <drivers/intel/gma/i915.h>
 #include <drivers/intel/gma/opregion.h>
@@ -34,6 +31,10 @@
 #include <cbmem.h>
 #include <pc80/vga.h>
 #include <pc80/vga_io.h>
+#include <types.h>
+
+#include "chip.h"
+#include "pineview.h"
 
 #define GTTSIZE		(512*1024)
 

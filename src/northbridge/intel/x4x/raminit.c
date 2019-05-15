@@ -32,6 +32,7 @@
 #include <device/dram/ddr3.h>
 #include <mrc_cache.h>
 #include <timestamp.h>
+#include <types.h>
 
 #include "iomap.h"
 #include "x4x.h"

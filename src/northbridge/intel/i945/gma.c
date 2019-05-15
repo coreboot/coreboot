@@ -33,6 +33,7 @@
 #include <commonlib/helpers.h>
 #include <cbmem.h>
 #include <southbridge/intel/i82801gx/nvs.h>
+#include <types.h>
 
 #include "i945.h"
 #include "chip.h"

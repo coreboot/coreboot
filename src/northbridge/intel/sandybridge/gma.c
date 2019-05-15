@@ -27,6 +27,7 @@
 #include <drivers/intel/gma/opregion.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <cbmem.h>
+#include <types.h>
 
 #include "chip.h"
 #include "sandybridge.h"

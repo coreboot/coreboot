@@ -14,7 +14,6 @@
  * GNU General Public License for more details.
  */
 
-#include <stdint.h>
 #include <stdlib.h>
 #include <console/console.h>
 #include <arch/io.h>
@@ -22,6 +21,8 @@
 #include <device/pci_def.h>
 #include <pc80/mc146818rtc.h>
 #include <romstage_handoff.h>
+#include <types.h>
+
 #include "sandybridge.h"
 
 static void sandybridge_setup_bars(void)

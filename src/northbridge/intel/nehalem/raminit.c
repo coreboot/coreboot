@@ -30,18 +30,18 @@
 #include <device/device.h>
 #include <halt.h>
 #include <spd.h>
-#include "raminit.h"
-#include "chip.h"
 #include <timestamp.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/intel/speedstep.h>
 #include <cpu/intel/turbo.h>
 #include <mrc_cache.h>
-
-#include "nehalem.h"
-
 #include <southbridge/intel/ibexpeak/me.h>
 #include <delay.h>
+#include <types.h>
+
+#include "chip.h"
+#include "nehalem.h"
+#include "raminit.h"
 
 #define NORTHBRIDGE PCI_DEV(0, 0, 0)
 #define SOUTHBRIDGE PCI_DEV(0, 0x1f, 0)

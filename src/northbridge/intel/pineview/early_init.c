@@ -14,7 +14,6 @@
  * GNU General Public License for more details.
  */
 
-#include <stdint.h>
 #include <stdlib.h>
 #include <console/console.h>
 #include <arch/io.h>
@@ -24,6 +23,7 @@
 #include <northbridge/intel/pineview/pineview.h>
 #include <northbridge/intel/pineview/chip.h>
 #include <pc80/mc146818rtc.h>
+#include <types.h>
 
 #define LPC PCI_DEV(0, 0x1f, 0)
 #define D0F0 PCI_DEV(0, 0, 0)

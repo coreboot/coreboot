@@ -25,6 +25,7 @@
 #include <device/pci_ops.h>
 #include <pc80/mc146818rtc.h>
 #include <cpu/amd/model_10xxx_rev.h>
+#include <types.h>
 
 #include "amdfam10.h"
 

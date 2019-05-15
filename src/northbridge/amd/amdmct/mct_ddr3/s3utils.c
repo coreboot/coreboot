@@ -30,6 +30,8 @@
 #include <spi_flash.h>
 #include <pc80/mc146818rtc.h>
 #include <inttypes.h>
+#include <types.h>
+
 #include "mct_d.h"
 #include "mct_d_gcc.h"
 

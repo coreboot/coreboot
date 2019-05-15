@@ -34,6 +34,7 @@
 #include <cpu/amd/amdfam10_sysconf.h>
 #include <cpu/amd/msr.h>
 #include <cpu/amd/family_10h-family_15h/ram_calc.h>
+#include <types.h>
 
 #if CONFIG(LOGICAL_CPUS)
 #include <cpu/amd/multicore.h>

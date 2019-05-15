@@ -19,6 +19,7 @@
 #include <arch/cpu.h>
 #include <cpu/amd/msr.h>
 #include <console/console.h>
+#include <types.h>
 
 #include "mcti.h"
 

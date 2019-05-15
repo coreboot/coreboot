@@ -399,4 +399,11 @@
 
 #define TOTAL_PADS		(GPD11 + 1)
 
+#define COMM_0		0
+#define COMM_1		1
+#define COMM_2		2
+#define COMM_3		3
+#define COMM_4		4
+#define TOTAL_GPIO_COMM	5
+
 #endif

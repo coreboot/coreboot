@@ -116,8 +116,11 @@ static struct timestamp_table *timestamp_alloc_cbmem_table(void)
  * based x86 platforms. */
 static int timestamp_should_run(void)
 {
-	/* Only check boot_cpu() in other stages than ramstage on x86. */
-	if ((!ENV_RAMSTAGE && CONFIG(ARCH_X86)) && !boot_cpu())
+	/*
+	 * Only check boot_cpu() in other stages than
+	 * ENV_PAYLOAD_LOADER on x86.
+	 */
+	if ((!ENV_PAYLOAD_LOADER && CONFIG(ARCH_X86)) && !boot_cpu())
 		return 0;
 
 	return 1;
@@ -302,8 +305,8 @@ static void timestamp_sync_cache_to_cbmem(int is_recovery)
 	if (ts_cbmem_table->base_time == 0)
 		ts_cbmem_table->base_time = ts_cache_table->base_time;
 
-	/* Seed the timestamp tick frequency in ramstage. */
-	if (ENV_RAMSTAGE)
+	/* Seed the timestamp tick frequency in ENV_PAYLOAD_LOADER. */
+	if (ENV_PAYLOAD_LOADER)
 		ts_cbmem_table->tick_freq_mhz = timestamp_tick_freq_mhz();
 
 	/* Cache no longer required. */

@@ -249,7 +249,7 @@ void fast_spi_cache_bios_region(void)
 	bios_size = ALIGN_UP(bios_size, alignment);
 	base = 4ULL*GiB - bios_size;
 
-	if (ENV_RAMSTAGE) {
+	if (ENV_PAYLOAD_LOADER) {
 		mtrr_use_temp_range(base, bios_size, type);
 	} else {
 		int mtrr = get_free_var_mtrr();

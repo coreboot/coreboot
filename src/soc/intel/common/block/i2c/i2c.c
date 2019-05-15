@@ -47,7 +47,7 @@ uintptr_t dw_i2c_get_soc_early_base(unsigned int bus)
 	return EARLY_I2C_BASE(bus);
 }
 
-#if !ENV_RAMSTAGE
+#if !ENV_PAYLOAD_LOADER
 static int lpss_i2c_early_init_bus(unsigned int bus)
 {
 	const struct dw_i2c_bus_config *config;

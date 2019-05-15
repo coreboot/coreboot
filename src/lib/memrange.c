@@ -47,7 +47,7 @@ static struct range_entry *alloc_range(struct memranges *ranges)
 		range_entry_unlink(&ranges->free_list, r);
 		return r;
 	}
-	if (ENV_RAMSTAGE)
+	if (ENV_PAYLOAD_LOADER)
 		return malloc(sizeof(struct range_entry));
 	return NULL;
 }

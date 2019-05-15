@@ -23,7 +23,7 @@ typedef unsigned int wint_t;
 
 /* The devicetree data structures are only mutable in ramstage. All other
    stages have a constant devicetree. */
-#if !ENV_RAMSTAGE
+#if !ENV_PAYLOAD_LOADER
 #define DEVTREE_EARLY 1
 #else
 #define DEVTREE_EARLY 0

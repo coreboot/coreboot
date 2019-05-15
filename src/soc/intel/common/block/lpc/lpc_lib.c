@@ -289,7 +289,7 @@ void pch_enable_lpc(void)
 	soc_get_gen_io_dec_range(dev, gen_io_dec);
 	lpc_set_gen_decode_range(gen_io_dec);
 	soc_setup_dmi_pcr_io_dec(gen_io_dec);
-	if (ENV_RAMSTAGE)
+	if (ENV_PAYLOAD_LOADER)
 		pch_lpc_interrupt_init();
 }
 

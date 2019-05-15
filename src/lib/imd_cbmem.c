@@ -307,7 +307,7 @@ void cbmem_get_region(void **baseptr, size_t *size)
 	imd_region_used(cbmem_get_imd(), baseptr, size);
 }
 
-#if ENV_RAMSTAGE || (CONFIG(EARLY_CBMEM_LIST) \
+#if ENV_PAYLOAD_LOADER || (CONFIG(EARLY_CBMEM_LIST) \
 	&& (ENV_POSTCAR || ENV_ROMSTAGE))
 /*
  * -fdata-sections doesn't work so well on read only strings. They all

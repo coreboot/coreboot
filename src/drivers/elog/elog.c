@@ -859,7 +859,7 @@ int elog_init(void)
 	       " shrink size %d\n", region_device_sz(&es->nv_dev),
 		es->full_threshold, es->shrink_size);
 
-	if (ENV_RAMSTAGE)
+	if (ENV_PAYLOAD_LOADER)
 		elog_add_boot_count();
 	return 0;
 }

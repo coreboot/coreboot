@@ -277,7 +277,7 @@
  * be built with simple device model.
  */
 
-#if (defined(__PRE_RAM__) || ENV_SMM || ENV_POSTCAR)
+#if (defined(__PRE_RAM__) || ENV_SMM || !ENV_PAYLOAD_LOADER)
 #define __SIMPLE_DEVICE__
 #endif
 

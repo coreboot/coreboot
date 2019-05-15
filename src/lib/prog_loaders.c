@@ -160,7 +160,7 @@ fail:
 	die_with_post_code(POST_INVALID_ROM, "Ramstage was not loaded!\n");
 }
 
-#ifdef __RAMSTAGE__ // gc-sections should take care of this
+#if ENV_PAYLOAD_LOADER // gc-sections should take care of this
 
 static struct prog global_payload =
 	PROG_INIT(PROG_PAYLOAD, CONFIG_CBFS_PREFIX "/payload");

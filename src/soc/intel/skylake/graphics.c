@@ -25,6 +25,7 @@
 #include <drivers/intel/gma/opregion.h>
 #include <soc/nvs.h>
 #include <soc/ramstage.h>
+#include <types.h>
 
 uintptr_t fsp_soc_get_igd_bar(void)
 {

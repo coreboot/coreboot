@@ -18,7 +18,7 @@
 
 #include <amdblocks/agesawrapper.h>
 #include <soc/pci_devs.h>
-#include <stdint.h>
+#include <types.h>
 
 /* Extra, Special Purpose Registers in the PSP PCI Config Space */
 

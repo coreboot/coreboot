@@ -19,6 +19,7 @@
 
 #include <inttypes.h>
 #include <soc/addressmap.h>
+#include <types.h>
 
 /*
  * The DMA engine operates on 4 bytes at a time, so make sure any data

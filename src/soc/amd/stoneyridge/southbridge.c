@@ -14,7 +14,6 @@
  */
 
 #include <console/console.h>
-
 #include <device/mmio.h>
 #include <bootstate.h>
 #include <cpu/x86/smm.h>
@@ -36,6 +35,7 @@
 #include <soc/pci_devs.h>
 #include <agesa_headers.h>
 #include <soc/nvs.h>
+#include <types.h>
 
 /*
  * Table of devices that need their AOAC registers enabled and waited

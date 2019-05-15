@@ -23,6 +23,7 @@
 #include <drivers/intel/gma/i915_reg.h>
 #include <drivers/intel/gma/opregion.h>
 #include <intelblocks/graphics.h>
+#include <types.h>
 
 uintptr_t fsp_soc_get_igd_bar(void)
 {

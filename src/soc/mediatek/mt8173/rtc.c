@@ -18,6 +18,7 @@
 #include <soc/rtc.h>
 #include <soc/mt6391.h>
 #include <soc/pmic_wrap.h>
+#include <types.h>
 
 #define RTC_GPIO_USER_MASK	  ((1 << 13) - (1 << 8))
 

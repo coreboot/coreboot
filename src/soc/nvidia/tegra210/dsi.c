@@ -12,9 +12,10 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
+
+#include <commonlib/helpers.h>
 #include <console/console.h>
 #include <device/mmio.h>
-#include <stdint.h>
 #include <stdlib.h>
 #include <delay.h>
 #include <timer.h>
@@ -24,14 +25,15 @@
 #include <edid.h>
 #include <soc/nvidia/tegra/types.h>
 #include <soc/nvidia/tegra/dc.h>
-#include "chip.h"
 #include <soc/display.h>
 #include <soc/mipi_dsi.h>
 #include <soc/mipi_display.h>
 #include <soc/tegra_dsi.h>
 #include <soc/mipi-phy.h>
+#include <types.h>
+
+#include "chip.h"
 #include "jdi_25x18_display/panel-jdi-lpm102a188a.h"
-#include <commonlib/helpers.h>
 
 struct tegra_mipi_device mipi_device_data[NUM_DSI];
 

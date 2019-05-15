@@ -34,6 +34,7 @@
 #define __IPQ860X_CLOCK_H_
 
 #include <soc/iomap.h>
+#include <types.h>
 
 /* UART clock @ 7.3728 MHz */
 #define UART_DM_CLK_RX_TX_BIT_RATE 0xCC

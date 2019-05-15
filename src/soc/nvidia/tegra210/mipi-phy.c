@@ -13,9 +13,7 @@
  * GNU General Public License for more details.
  */
 
-#include <stdint.h>
 #include <stdlib.h>
-
 #include <soc/addressmap.h>
 #include <soc/clock.h>
 #include <device/device.h>
@@ -25,6 +23,7 @@
 #include <soc/mipi_display.h>
 #include <soc/tegra_dsi.h>
 #include <soc/mipi-phy.h>
+#include <types.h>
 
 int mipi_dphy_set_timing(struct tegra_dsi *dsi)
 {

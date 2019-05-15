@@ -16,6 +16,7 @@
 #include <device/mmio.h>
 #include <assert.h>
 #include <soc/pll.h>
+#include <types.h>
 
 #define GENMASK(h, l) (BIT(h + 1) - BIT(l))
 

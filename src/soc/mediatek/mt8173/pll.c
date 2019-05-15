@@ -16,11 +16,10 @@
 #include <device/mmio.h>
 #include <assert.h>
 #include <delay.h>
-#include <stddef.h>
-
 #include <soc/addressmap.h>
 #include <soc/infracfg.h>
 #include <soc/pll.h>
+#include <types.h>
 
 enum mux_id {
 	TOP_AXI_SEL,

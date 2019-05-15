@@ -28,6 +28,7 @@
 #include <soc/pci_devs.h>
 #include <soc/ramstage.h>
 #include <cbmem.h>
+#include <types.h>
 
 #include "chip.h"
 

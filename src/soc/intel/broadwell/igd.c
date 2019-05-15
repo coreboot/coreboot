@@ -36,6 +36,7 @@
 #include <soc/intel/broadwell/chip.h>
 #include <security/vboot/vbnv.h>
 #include <soc/igd.h>
+#include <types.h>
 
 #define GT_RETRY		1000
 enum {

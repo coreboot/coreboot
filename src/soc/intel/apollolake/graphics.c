@@ -26,6 +26,7 @@
 #include <intelblocks/graphics.h>
 #include <drivers/intel/gma/opregion.h>
 #include <drivers/intel/gma/libgfxinit.h>
+#include <types.h>
 
 uintptr_t fsp_soc_get_igd_bar(void)
 {

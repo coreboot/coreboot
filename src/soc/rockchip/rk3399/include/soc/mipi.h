@@ -17,6 +17,7 @@
 #define __RK_MIPI_H
 
 #include <stdlib.h>
+#include <types.h>
 
 struct rk_mipi_regs {
 	u32 dsi_version;

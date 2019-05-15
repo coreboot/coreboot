@@ -797,7 +797,7 @@ static bool elog_do_add_boot_count(void)
 #endif
 }
 
-static void ramstage_elog_add_boot_count(void)
+static void elog_add_boot_count(void)
 {
 	if (elog_do_add_boot_count()) {
 		elog_add_event_dword(ELOG_TYPE_BOOT, boot_count_read());
@@ -860,7 +860,7 @@ int elog_init(void)
 		es->full_threshold, es->shrink_size);
 
 	if (ENV_RAMSTAGE)
-		ramstage_elog_add_boot_count();
+		elog_add_boot_count();
 	return 0;
 }
 

@@ -14,16 +14,16 @@
  */
 
 #include <console/console.h>
-
 #include <arch/io.h>
 #include <device/mmio.h>
 #include <arch/acpi.h>
-
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_def.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
+#include <types.h>
+
 #include "hudson.h"
 #include "smbus.h"
 #include "smi.h"

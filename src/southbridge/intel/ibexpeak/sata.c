@@ -21,9 +21,11 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include "pch.h"
 #include <pc80/mc146818rtc.h>
 #include <acpi/sata.h>
+#include <types.h>
+
+#include "pch.h"
 
 typedef struct southbridge_intel_ibexpeak_config config_t;
 

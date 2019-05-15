@@ -23,6 +23,8 @@
 #include <arch/io.h>
 #include <device/mmio.h>
 #include <option.h>
+#include <types.h>
+
 #include "sb700.h"
 
 static int sata_drive_detect(int portnum, uint16_t iobar)

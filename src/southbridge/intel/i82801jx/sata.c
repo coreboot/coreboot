@@ -22,8 +22,10 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include "i82801jx.h"
 #include <pc80/mc146818rtc.h>
+#include <types.h>
+
+#include "i82801jx.h"
 
 typedef struct southbridge_intel_i82801jx_config config_t;
 

@@ -21,6 +21,8 @@
 #include <device/pci_ehci.h>
 #include <device/mmio.h>
 #include <option.h>
+#include <types.h>
+
 #include "sb700.h"
 
 static struct pci_operations lops_pci = {

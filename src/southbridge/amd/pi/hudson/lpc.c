@@ -27,6 +27,8 @@
 #include <arch/acpi.h>
 #include <pc80/i8254.h>
 #include <pc80/i8259.h>
+#include <types.h>
+
 #include "hudson.h"
 #include "pci_devs.h"
 

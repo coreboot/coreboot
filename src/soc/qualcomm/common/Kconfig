@@ -1,5 +1,15 @@
 
+config SOC_QUALCOMM_COMMON
+	bool
+	default n
+	help
+	  Selected by platforms that use the common code.
+
+if SOC_QUALCOMM_COMMON
+
 config QC_SDI_ENABLE
 	bool
 	default n
 	prompt "Debug Build: enable SDI"
+
+endif

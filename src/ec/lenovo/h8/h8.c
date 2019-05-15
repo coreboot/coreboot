@@ -23,6 +23,7 @@
 #include <smbios.h>
 #include <pc80/mc146818rtc.h>
 #include <pc80/keyboard.h>
+#include <types.h>
 
 #include "h8.h"
 #include "chip.h"

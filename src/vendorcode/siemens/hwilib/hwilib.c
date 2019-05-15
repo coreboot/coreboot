@@ -18,8 +18,9 @@
 #include <console/console.h>
 #include <device/mmio.h>
 #include <arch/early_variables.h>
-#include "hwilib.h"
+#include <types.h>
 
+#include "hwilib.h"
 
 #define MAX_BLOCK_NUM		4
 #define LEN_HIB			0x1fd

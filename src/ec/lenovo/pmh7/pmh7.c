@@ -20,6 +20,7 @@
 #include <stdlib.h>
 #include <pc80/mc146818rtc.h>
 #include <delay.h>
+#include <types.h>
 
 #include "pmh7.h"
 #include "chip.h"

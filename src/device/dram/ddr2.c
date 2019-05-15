@@ -26,6 +26,7 @@
 #include <device/dram/ddr2.h>
 #include <lib.h>
 #include <string.h>
+#include <types.h>
 
 /*==============================================================================
  * = DDR2 SPD decoding helpers

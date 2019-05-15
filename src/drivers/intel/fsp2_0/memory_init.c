@@ -32,6 +32,7 @@
 #include <security/tpm/tspi.h>
 #include <vb2_api.h>
 #include <fsp/memory_init.h>
+#include <types.h>
 
 /* TPM MRC hash functionality depends on vboot starting before memory init. */
 _Static_assert(!CONFIG(FSP2_0_USES_TPM_MRC_HASH) ||

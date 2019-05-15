@@ -15,6 +15,8 @@
  * GNU General Public License for more details.
  */
 
+#include <types.h>
+
 enum {
 	BH720_PROTECT                   = 0xd0,
 	BH720_PROTECT_LOCK_OFF          = 0,

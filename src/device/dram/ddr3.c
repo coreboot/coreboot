@@ -27,6 +27,7 @@
 #include <memory_info.h>
 #include <cbmem.h>
 #include <smbios.h>
+#include <types.h>
 
 /*==============================================================================
  * = DDR3 SPD decoding helpers

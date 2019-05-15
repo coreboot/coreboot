@@ -22,6 +22,7 @@
 #include <stage_cache.h>
 #include <string.h>
 #include <timestamp.h>
+#include <types.h>
 
 struct fsp_header fsps_hdr;
 

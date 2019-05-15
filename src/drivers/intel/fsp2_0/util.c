@@ -16,6 +16,7 @@
 #include <console/console.h>
 #include <fsp/util.h>
 #include <string.h>
+#include <types.h>
 
 static bool looks_like_fsp_header(const uint8_t *raw_hdr)
 {

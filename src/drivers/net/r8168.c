@@ -33,6 +33,8 @@
 #include <device/pci_def.h>
 #include <delay.h>
 #include <fmap.h>
+#include <types.h>
+
 #include "chip.h"
 
 #define NIC_TIMEOUT		1000

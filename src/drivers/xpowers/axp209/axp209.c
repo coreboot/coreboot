@@ -8,12 +8,13 @@
  * Subject to the GNU GPL v2, or (at your option) any later version.
  */
 
-#include "axp209.h"
-#include "chip.h"
-
 #include <console/console.h>
 #include <device/device.h>
 #include <device/i2c_simple.h>
+#include <types.h>
+
+#include "axp209.h"
+#include "chip.h"
 
 /* Hide these definitions from the rest of the source, so keep them here */
 enum registers {

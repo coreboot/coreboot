@@ -19,6 +19,7 @@
 #include <fsp/api.h>
 #include <fsp/info_header.h>
 #include <memrange.h>
+#include <types.h>
 
 struct hob_header {
 	uint16_t type;

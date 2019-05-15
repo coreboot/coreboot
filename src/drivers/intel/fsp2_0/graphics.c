@@ -13,6 +13,7 @@
 #include <console/console.h>
 #include <fsp/util.h>
 #include <soc/intel/common/vbt.h>
+#include <types.h>
 
 enum pixel_format {
 	pixel_rgbx_8bpc = 0,

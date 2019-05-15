@@ -17,6 +17,8 @@
 #include <console/console.h>
 #include <cpu/amd/msr.h>
 #include <device/pci_ops.h>
+#include <types.h>
+
 #include "init_cpus.h"
 
 #if CONFIG(HAVE_OPTION_TABLE)

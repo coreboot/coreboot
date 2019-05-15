@@ -15,6 +15,8 @@
 
 #ifndef __TYPES_H
 #define __TYPES_H
+
+/* types.h is supposed to provide stdint and stddef defined in here: */
 #include <stdint.h>
 #include <stddef.h>
 

@@ -16,7 +16,6 @@
  */
 
 #include <console/console.h>
-#include <stdint.h>
 #include <option.h>
 #include <cpu/x86/msr.h>
 #include <cpu/amd/msr.h>
@@ -30,6 +29,7 @@
 #include <northbridge/amd/amdht/AsPsDefs.h>
 #include <northbridge/amd/amdmct/mct/mct.h>
 #include <northbridge/amd/amdmct/amddefs.h>
+#include <types.h>
 
 static inline uint8_t is_fam15h(void)
 {

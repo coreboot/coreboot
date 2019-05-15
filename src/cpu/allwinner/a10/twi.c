@@ -20,12 +20,13 @@
  * Largely based on the uboot-sunxi code.
  */
 
-#include "memmap.h"
-#include "twi.h"
-
 #include <device/mmio.h>
 #include <delay.h>
 #include <device/i2c_simple.h>
+#include <types.h>
+
+#include "memmap.h"
+#include "twi.h"
 
 #define TWI_BASE(n)			(A1X_TWI0_BASE + 0x400 * (n))
 

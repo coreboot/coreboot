@@ -20,7 +20,7 @@
 */
 
 #include "lzmadecode.h"
-#include <stdint.h>
+#include <types.h>
 
 #define kNumTopBits 24
 #define kTopValue ((UInt32)1 << kNumTopBits)

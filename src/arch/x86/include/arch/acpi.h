@@ -56,11 +56,11 @@
 #define OEM_ID			"COREv4"    /* Must be exactly 6 bytes long! */
 
 #if !defined(__ASSEMBLER__) && !defined(__ACPI__) && !defined(__ROMCC__)
-#include <stdint.h>
 #include <commonlib/helpers.h>
 #include <device/device.h>
 #include <uuid.h>
 #include <cper.h>
+#include <types.h>
 
 #define RSDP_SIG		"RSD PTR "  /* RSDT pointer signature */
 #define ASLC			"CORE"      /* Must be exactly 4 bytes long! */

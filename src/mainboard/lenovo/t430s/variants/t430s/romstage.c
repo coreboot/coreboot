@@ -22,6 +22,7 @@
 #include <northbridge/intel/sandybridge/raminit_native.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <ec/lenovo/pmh7/pmh7.h>
+#include <types.h>
 
 const struct southbridge_usb_port mainboard_usb_ports[] = {
 	{ 1, 0,  0 }, /* P0:, OC 0 */

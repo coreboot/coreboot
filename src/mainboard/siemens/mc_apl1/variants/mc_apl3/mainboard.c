@@ -28,6 +28,7 @@
 #include <timer.h>
 #include <timestamp.h>
 #include <baseboard/variants.h>
+#include <types.h>
 
 #define TX_DWORD3	0xa8c
 

@@ -31,7 +31,7 @@
 #include <device/device.h>
 #include <drivers/xpowers/axp209/axp209.h>
 #include <drivers/xpowers/axp209/chip.h>
-
+#include <types.h>
 
 #define GPB_TWI0_FUNC			2
 #define GPB_TWI0_PINS			((1 << 0) | (1 << 1))

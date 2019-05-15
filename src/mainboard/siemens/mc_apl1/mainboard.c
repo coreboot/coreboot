@@ -28,6 +28,7 @@
 #include <string.h>
 #include <timer.h>
 #include <baseboard/variants.h>
+#include <types.h>
 
 #define MAX_PATH_DEPTH		12
 #define MAX_NUM_MAPPINGS	10

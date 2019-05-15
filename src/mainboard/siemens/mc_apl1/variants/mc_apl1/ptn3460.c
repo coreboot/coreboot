@@ -16,6 +16,7 @@
 #include <console/console.h>
 #include <hwilib.h>
 #include <device/i2c_simple.h>
+#include <types.h>
 #include <variant/ptn3460.h>
 
 /**

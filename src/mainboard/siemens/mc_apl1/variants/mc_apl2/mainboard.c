@@ -24,6 +24,7 @@
 #include <timestamp.h>
 #include <baseboard/variants.h>
 #include <soc/pci_devs.h>
+#include <types.h>
 
 #define SD_CAP_BYP		0x810
 #define  SD_CAP_BYP_EN		0x5A

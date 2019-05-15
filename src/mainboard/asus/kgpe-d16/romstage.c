@@ -17,7 +17,6 @@
  * GNU General Public License for more details.
  */
 
-#include <stdint.h>
 #include <device/pci_def.h>
 #include <arch/io.h>
 #include <device/mmio.h>
@@ -45,6 +44,7 @@
 #include <cpu/amd/family_10h-family_15h/init_cpus.h>
 #include <arch/early_variables.h>
 #include <cbmem.h>
+#include <types.h>
 
 #include "cpu/amd/quadcore/quadcore.c"
 

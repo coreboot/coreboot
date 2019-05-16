@@ -326,6 +326,13 @@
 #define POST_INVALID_ROM			0xe0
 
 /**
+ * \brief Invalid or corrupt CBFS
+ *
+ * Set if firmware failed to find or validate a resource that is stored in CBFS.
+ */
+#define POST_INVALID_CBFS			0xe1
+
+/**
  * \brief TPM failure
  *
  * An error with the TPM, either unexepcted state or communications failure.

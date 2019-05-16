@@ -116,7 +116,8 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *fspm_upd, uint32_t version)
 	/* Locate the RMU data file in flash */
 	rmu_data = locate_rmu_file(&rmu_data_len);
 	if (!rmu_data)
-		die("Microcode file (rmu.bin) not found.");
+		die_with_post_code(POST_INVALID_CBFS,
+			"Microcode file (rmu.bin) not found.");
 
 	/* Locate the configuration data from devicetree.cb */
 	dev = pcidev_path_on_root(LPC_DEV_FUNC);

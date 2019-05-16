@@ -235,7 +235,8 @@ void sdram_initialize(struct pei_data *pei_data)
 			default:
 				printk(BIOS_ERR, "MRC returned %x.\n", rv);
 			}
-			die("Nonzero MRC return value.\n");
+			die_with_post_code(POST_INVALID_VENDOR_BINARY,
+					   "Nonzero MRC return value.\n");
 		}
 	} else {
 		die("UEFI PEI System Agent not found.\n");

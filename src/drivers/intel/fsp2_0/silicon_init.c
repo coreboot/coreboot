@@ -33,7 +33,8 @@ static void do_silicon_init(struct fsp_header *hdr)
 	supd = (FSPS_UPD *) (hdr->cfg_region_offset + hdr->image_base);
 
 	if (supd->FspUpdHeader.Signature != FSPS_UPD_SIGNATURE)
-		die("Invalid FSPS signature\n");
+		die_with_post_code(POST_INVALID_VENDOR_BINARY,
+			"Invalid FSPS signature\n");
 
 	upd = xmalloc(sizeof(FSPS_UPD));
 

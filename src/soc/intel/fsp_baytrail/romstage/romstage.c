@@ -208,7 +208,8 @@ void main(FSP_INFO_HEADER *fsp_info_header)
 	post_code(0x48);
 	printk(BIOS_DEBUG, "Starting the Intel FSP (early_init)\n");
 	fsp_early_init(fsp_info_header);
-	die("Uh Oh! fsp_early_init should not return here.\n");
+	die_with_post_code(POST_INVALID_VENDOR_BINARY,
+		"Uh Oh! fsp_early_init should not return here.\n");
 }
 
 /*******************************************************************************

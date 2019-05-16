@@ -195,9 +195,6 @@ void raminit(struct romstage_params *params)
 	}
 
 #if CONFIG(DISPLAY_HOBS)
-	if (hob_list_ptr == NULL)
-		die("ERROR - HOB pointer is NULL!\n");
-
 	/*
 	 * Verify that FSP is generating the required HOBs:
 	 *	7.1: FSP_BOOTLOADER_TEMP_MEMORY_HOB only produced for FSP 1.0
@@ -244,7 +241,10 @@ void raminit(struct romstage_params *params)
 			"ERROR - Missing one or more required FSP HOBs!\n");
 
 	/* Display the HOBs */
-	print_hob_type_structure(0, hob_list_ptr);
+	if (hob_list_ptr != NULL)
+		print_hob_type_structure(0, hob_list_ptr);
+	else
+		printk(BIOS_ERR, "ERROR - HOB pointer is NULL!\n");
 #endif
 
 	/* Get the address of the CBMEM region for the FSP reserved memory */
@@ -274,14 +274,16 @@ void raminit(struct romstage_params *params)
 			printk(BIOS_DEBUG,
 				"0x%08x: Chipset reserved bytes reported by FSP\n",
 				(unsigned int)delta_bytes);
-			die("Please verify the chipset reserved size\n");
+			die_with_post_code(POST_INVALID_VENDOR_BINARY,
+				"Please verify the chipset reserved size\n");
 		}
 #endif
 	}
 
 	/* Verify the FSP 1.1 HOB interface */
 	if (fsp_verification_failure)
-		die("ERROR - coreboot's requirements not met by FSP binary!\n");
+		die_with_post_code(POST_INVALID_VENDOR_BINARY,
+				   "ERROR - coreboot's requirements not met by FSP binary!\n");
 
 	/* Display the memory configuration */
 	report_memory_config();

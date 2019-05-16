@@ -333,6 +333,14 @@
 #define POST_INVALID_CBFS			0xe1
 
 /**
+ * \brief Vendor binary error
+ *
+ * Set if firmware failed to find or validate a vendor binary, or the binary
+ * generated a fatal error.
+ */
+#define POST_INVALID_VENDOR_BINARY		0xe2
+
+/**
  * \brief TPM failure
  *
  * An error with the TPM, either unexepcted state or communications failure.

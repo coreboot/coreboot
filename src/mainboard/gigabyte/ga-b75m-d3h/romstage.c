@@ -25,12 +25,6 @@
 #define SIO_GPIO PNP_DEV(SUPERIO_BASE, IT8728F_GPIO)
 #define SERIAL_DEV PNP_DEV(SUPERIO_BASE, 0x01)
 
-void mainboard_rcba_config(void)
-{
-	/* Enable HECI */
-	RCBA32(FD2) &= ~0x2;
-}
-
 void pch_enable_lpc(void)
 {
 	pci_write_config16(PCH_LPC_DEV, LPC_EN, KBC_LPC_EN |
@@ -40,7 +34,10 @@ void pch_enable_lpc(void)
 	pci_write_config16(PCH_LPC_DEV, LPC_IO_DEC, 0x10);
 
 	pci_write_config32(PCH_LPC_DEV, ETR3, 0x10000);
+}
 
+void mainboard_config_superio(void)
+{
 	/* Initialize SuperIO */
 	ite_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 
@@ -87,18 +84,20 @@ const struct southbridge_usb_port mainboard_usb_ports[] = {
 	{ 1, 5, 6 },
 };
 
-void mainboard_get_spd(spd_raw_data *spd, bool id_only)
-{
-	read_spd (&spd[0], 0x50, id_only);
-	read_spd (&spd[1], 0x51, id_only);
-	read_spd (&spd[2], 0x52, id_only);
-	read_spd (&spd[3], 0x53, id_only);
-}
-
 void mainboard_early_init(int s3resume)
 {
 }
 
-void mainboard_config_superio(void)
+void mainboard_get_spd(spd_raw_data *spd, bool id_only)
 {
+	read_spd(&spd[0], 0x50, id_only);
+	read_spd(&spd[1], 0x51, id_only);
+	read_spd(&spd[2], 0x52, id_only);
+	read_spd(&spd[3], 0x53, id_only);
+}
+
+void mainboard_rcba_config(void)
+{
+	/* Enable HECI */
+	RCBA32(FD2) &= ~0x2;
 }

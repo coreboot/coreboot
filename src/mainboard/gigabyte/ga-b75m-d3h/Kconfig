@@ -12,6 +12,7 @@ config BOARD_SPECIFIC_OPTIONS
 	select HAVE_OPTION_TABLE
 	select HAVE_CMOS_DEFAULT
 	select HAVE_ACPI_RESUME
+	select INTEL_GMA_HAVE_VBT
 	select INTEL_INT15
 	select SERIRQ_CONTINUOUS_MODE
 	select MAINBOARD_HAS_LIBGFXINIT
@@ -36,13 +37,5 @@ config MAINBOARD_PART_NUMBER
 config MAX_CPUS
 	int
 	default 8
-
-config VGA_BIOS_ID
-	string
-	default "8086,0162"
-
-config VGA_BIOS_FILE
-	string
-	default "pci8086,0162.rom"
 
 endif # BOARD_GIGABYTE_GA_B75M_D3H

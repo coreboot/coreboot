@@ -24,7 +24,9 @@ DefinitionBlock(
 	#include <southbridge/intel/bd82x6x/acpi/platform.asl>
 
 	// Some generic macros
+	#include "acpi/mainboard.asl"
 	#include "acpi/platform.asl"
+	#include "acpi/thermal.asl"
 	#include <cpu/intel/common/acpi/cpu.asl>
 	/* global NVS and variables. */
 	#include <southbridge/intel/bd82x6x/acpi/globalnvs.asl>

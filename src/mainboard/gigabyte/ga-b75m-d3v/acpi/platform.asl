@@ -17,7 +17,7 @@
  * entering a sleep state. The sleep state number is passed in Arg0
  */
 
-Method(_PTS,1)
+Method (_PTS, 1)
 {
 }
 
@@ -25,5 +25,5 @@ Method(_PTS,1)
 
 Method(_WAK,1)
 {
-	Return(Package(){0,0})
+	Return (Package () {0, 0})
 }

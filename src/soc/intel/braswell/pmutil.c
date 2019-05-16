@@ -16,9 +16,9 @@
 
 #include <arch/acpi.h>
 #include <arch/io.h>
+#include <assert.h>
 #include <device/mmio.h>
 #include <device/pci_ops.h>
-#include <cbmem.h>
 #include <console/console.h>
 #include <soc/iomap.h>
 #include <soc/lpc.h>
@@ -364,15 +364,14 @@ int rtc_failure(void)
 {
 	uint32_t gen_pmcon1;
 	int rtc_fail;
-	struct chipset_power_state *ps = cbmem_find(CBMEM_ID_POWER_STATE);
 
-	if (ps != NULL)
-		gen_pmcon1 = ps->gen_pmcon1;
-	else
-		gen_pmcon1 = read32((u32 *)(PMC_BASE_ADDRESS + GEN_PMCON1));
+	/* not usable in ramstage as GEN_PMCON1 gets reset */
+	if (ENV_RAMSTAGE)
+		dead_code();
+
+	gen_pmcon1 = read32((u32 *)(PMC_BASE_ADDRESS + GEN_PMCON1));
 
 	rtc_fail = !!(gen_pmcon1 & RPS);
-
 	if (rtc_fail)
 		printk(BIOS_DEBUG, "RTC failure.\n");
 

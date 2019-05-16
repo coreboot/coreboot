@@ -59,6 +59,7 @@ config VARIANT_DIR
 	default "casta" if BOARD_GOOGLE_CASTA
 	default "bloog" if BOARD_GOOGLE_BLOOG
 	default "octopus" if BOARD_GOOGLE_OCTOPUS
+	default "garg" if BOARD_GOOGLE_GARG
 
 config DEVICETREE
 	string
@@ -79,6 +80,7 @@ config MAINBOARD_PART_NUMBER
 	default "Casta" if BOARD_GOOGLE_CASTA
 	default "Bloog" if BOARD_GOOGLE_BLOOG
 	default "Octopus" if BOARD_GOOGLE_OCTOPUS
+	default "Garg" if BOARD_GOOGLE_GARG
 
 config MAINBOARD_FAMILY
 	string
@@ -96,6 +98,7 @@ config GBB_HWID
 	default "CASTA TEST 8105" if BOARD_GOOGLE_CASTA
 	default "BLOOG TEST 2509" if BOARD_GOOGLE_BLOOG
 	default "OCTOPUS TEST 6859" if BOARD_GOOGLE_OCTOPUS
+	default "GARG TEST 1337" if BOARD_GOOGLE_GARG
 
 config MAX_CPUS
 	int

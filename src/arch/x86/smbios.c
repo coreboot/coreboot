@@ -140,7 +140,7 @@ void smbios_fill_dimm_manufacturer_from_id(uint16_t mod_id,
 	struct smbios_type17 *t)
 {
 	switch (mod_id) {
-	case 0x2c80:
+	case 0x9b85:
 		t->manufacturer = smbios_add_string(t->eos,
 						    "Crucial");
 		break;
@@ -172,9 +172,9 @@ void smbios_fill_dimm_manufacturer_from_id(uint16_t mod_id,
 		t->manufacturer = smbios_add_string(t->eos,
 						    "Hynix/Hyundai");
 		break;
-	case 0xb502:
+	case 0x3486:
 		t->manufacturer = smbios_add_string(t->eos,
-						    "SuperTalent");
+						    "Super Talent");
 		break;
 	case 0xcd04:
 		t->manufacturer = smbios_add_string(t->eos,
@@ -188,7 +188,7 @@ void smbios_fill_dimm_manufacturer_from_id(uint16_t mod_id,
 		t->manufacturer = smbios_add_string(t->eos,
 						    "Elpida");
 		break;
-	case 0xff2c:
+	case 0x2c80:
 		t->manufacturer = smbios_add_string(t->eos,
 						    "Micron");
 		break;

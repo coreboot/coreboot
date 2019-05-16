@@ -88,11 +88,10 @@ static bool extract(struct region *region, struct fit_image_node *node)
 	}
 
 	if (!true_size) {
-		printk(BIOS_ERR, "ERROR: %s node failed!\n", comp_name);
+		printk(BIOS_ERR, "ERROR: %s decompression failed!\n",
+		       comp_name);
 		return true;
 	}
-
-	prog_segment_loaded(region->offset, true_size, 0);
 
 	return false;
 }

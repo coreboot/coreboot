@@ -136,6 +136,8 @@ static void config_node(struct device_tree_node *node)
 			config->fdt = find_image(prop->prop.data);
 		else if (!strcmp("ramdisk", prop->prop.name))
 			config->ramdisk = find_image(prop->prop.data);
+		else if (!strcmp("compatible", prop->prop.name))
+			config->compat = prop->prop;
 	}
 
 	list_insert_after(&config->list_node, &config_nodes);
@@ -391,35 +393,45 @@ void fit_update_memory(struct device_tree *tree)
  */
 static int fit_update_compat(struct fit_config_node *config)
 {
-	if (config->fdt->compression != CBFS_COMPRESS_NONE) {
-		printk(BIOS_ERR,
-		       "FDT compression not yet supported, skipping %s.\n",
-		       config->name);
-		return -1;
-	}
+	// If there was no "compatible" property in config node, this is a
+	// legacy FIT image. Must extract compat prop from FDT itself.
+	if (!config->compat.name) {
+		void *fdt_blob = config->fdt->data;
+		const struct fdt_header *fdt_header = fdt_blob;
+		uint32_t fdt_offset = be32_to_cpu(fdt_header->structure_offset);
 
-	void *fdt_blob = config->fdt->data;
-	struct compat_string_entry *compat_node;
-	const struct fdt_header *fdt_header =
-		(const struct fdt_header *)fdt_blob;
-	uint32_t fdt_offset = be32_to_cpu(fdt_header->structure_offset);
-	size_t i = 0;
+		if (config->fdt->compression != CBFS_COMPRESS_NONE) {
+			printk(BIOS_ERR,
+			       "ERROR: config %s has a compressed FDT without "
+			       "external compatible property, skipping.\n",
+			       config->name);
+			return -1;
+		}
+
+		if (fdt_find_compat(fdt_blob, fdt_offset, &config->compat)) {
+			printk(BIOS_ERR,
+			       "ERROR: Can't find compat string in FDT %s "
+			       "for config %s, skipping.\n",
+			       config->fdt->name, config->name);
+			return -1;
+		}
+	}
 
 	config->compat_pos = -1;
 	config->compat_rank = -1;
-	if (!fdt_find_compat(fdt_blob, fdt_offset, &config->compat)) {
-		list_for_each(compat_node, compat_strings, list_node) {
-			int pos = fit_check_compat(&config->compat,
-						   compat_node->compat_string);
-			if (pos >= 0) {
-				config->compat_pos = pos;
-				config->compat_rank = i;
-				config->compat_string =
-					compat_node->compat_string;
-				break;
-			}
-			i++;
+	size_t i = 0;
+	struct compat_string_entry *compat_node;
+	list_for_each(compat_node, compat_strings, list_node) {
+		int pos = fit_check_compat(&config->compat,
+					   compat_node->compat_string);
+		if (pos >= 0) {
+			config->compat_pos = pos;
+			config->compat_rank = i;
+			config->compat_string =
+				compat_node->compat_string;
+			break;
 		}
+		i++;
 	}
 
 	return 0;

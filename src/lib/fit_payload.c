@@ -96,6 +96,24 @@ static bool extract(struct region *region, struct fit_image_node *node)
 	return false;
 }
 
+static struct device_tree *unpack_fdt(struct fit_image_node *image_node)
+{
+	void *data = image_node->data;
+
+	if (image_node->compression != CBFS_COMPRESS_NONE) {
+		/* TODO: This is an ugly heuristic for how much the size will
+		   expand on decompression, fix once FIT images support storing
+		   the real uncompressed size. */
+		struct region r = { .offset = 0, .size = image_node->size * 5 };
+		data = malloc(r.size);
+		r.offset = (uintptr_t)data;
+		if (!data || extract(&r, image_node))
+			return NULL;
+	}
+
+	return fdt_unflatten(data);
+}
+
 /**
  * Add coreboot tables, CBMEM information and optional board specific strapping
  * IDs to the device tree loaded via FIT.
@@ -181,7 +199,7 @@ void fit_payload(struct prog *payload)
 		return;
 	}
 
-	dt = fdt_unflatten(config->fdt->data);
+	dt = unpack_fdt(config->fdt);
 	if (!dt) {
 		printk(BIOS_ERR, "ERROR: Failed to unflatten the FDT.\n");
 		rdev_munmap(prog_rdev(payload), data);

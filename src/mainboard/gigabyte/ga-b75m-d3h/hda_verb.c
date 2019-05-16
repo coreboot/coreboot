@@ -13,9 +13,7 @@
 
 #include <device/azalia_device.h>
 
-const u32 cim_verb_data[] = {
-	/* FIXME: Add configuration for sound */
-};
+#include <variant/hda_verb.h>
 
 const u32 pc_beep_verbs[] = {};
 

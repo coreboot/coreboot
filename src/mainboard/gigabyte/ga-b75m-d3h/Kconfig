@@ -1,4 +1,4 @@
-if BOARD_GIGABYTE_GA_B75M_D3H
+if BOARD_GIGABYTE_GA_B75M_D3H || BOARD_GIGABYTE_GA_B75M_D3V
 
 config BOARD_SPECIFIC_OPTIONS
 	def_bool y
@@ -30,12 +30,23 @@ config MAINBOARD_DIR
 	string
 	default gigabyte/ga-b75m-d3h
 
+config VARIANT_DIR
+	string
+	default "ga-b75m-d3h" if BOARD_GIGABYTE_GA_B75M_D3H
+	default "ga-b75m-d3v" if BOARD_GIGABYTE_GA_B75M_D3V
+
 config MAINBOARD_PART_NUMBER
 	string
-	default "GA-B75M-D3H"
+	default "GA-B75M-D3H" if BOARD_GIGABYTE_GA_B75M_D3H
+	default "GA-B75M-D3V" if BOARD_GIGABYTE_GA_B75M_D3V
 
 config MAX_CPUS
 	int
 	default 8
 
-endif # BOARD_GIGABYTE_GA_B75M_D3H
+# Override the default variant behavior, since the data.vbt is the same
+config INTEL_GMA_VBT_FILE
+	string
+	default "src/mainboard/$(MAINBOARDDIR)/data.vbt"
+
+endif # BOARD_GIGABYTE_GA_B75M*

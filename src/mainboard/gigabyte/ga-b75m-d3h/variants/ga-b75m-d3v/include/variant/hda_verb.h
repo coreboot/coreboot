@@ -11,7 +11,8 @@
  * GNU General Public License for more details.
  */
 
-#include <device/azalia_device.h>
+#ifndef GA_B75M_D3V_HDA_VERB_H
+#define GA_B75M_D3V_HDA_VERB_H
 
 const u32 cim_verb_data[] = {
 	/* coreboot specific header */
@@ -36,6 +37,4 @@ const u32 cim_verb_data[] = {
 	AZALIA_PIN_CFG(0, 0x1f, 0x411111f0)
 };
 
-const u32 pc_beep_verbs[] = {};
-
-AZALIA_ARRAY_SIZES;
+#endif

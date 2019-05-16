@@ -90,7 +90,7 @@ chip soc/intel/cannonlake
 			chip drivers/i2c/da7219
 				# TODO: these settings were copied from another board
 				# with the same chip. verify the settings
-				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPP_H0_IRQ)"
+				register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_BOTH(GPP_H0)"
 				register "btn_cfg" = "50"
 				register "mic_det_thr" = "500"
 				register "jack_ins_deb" = "20"

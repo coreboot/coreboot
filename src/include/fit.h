@@ -24,8 +24,7 @@
 #include <list.h>
 #include <program_loading.h>
 
-struct fit_image_node
-{
+struct fit_image_node {
 	const char *name;
 	void *data;
 	uint32_t size;
@@ -34,17 +33,22 @@ struct fit_image_node
 	struct list_node list_node;
 };
 
-struct fit_config_node
-{
+struct fit_config_node {
 	const char *name;
 	struct fit_image_node *kernel;
 	struct fit_image_node *fdt;
+	struct list_node overlays;
 	struct fit_image_node *ramdisk;
 	struct fdt_property compat;
 	int compat_rank;
 	int compat_pos;
 	const char *compat_string;
 
+	struct list_node list_node;
+};
+
+struct fit_overlay_chain {
+	struct fit_image_node *overlay;
 	struct list_node list_node;
 };
 

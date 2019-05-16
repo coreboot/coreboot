@@ -206,6 +206,15 @@ void fit_payload(struct prog *payload)
 		return;
 	}
 
+	struct fit_overlay_chain *chain;
+	list_for_each(chain, config->overlays, list_node) {
+		struct device_tree *overlay = unpack_fdt(chain->overlay);
+		if (!overlay || dt_apply_overlay(dt, overlay)) {
+			printk(BIOS_ERR, "ERROR: Failed to apply overlay %s!\n",
+			       chain->overlay->name);
+		}
+	}
+
 	dt_apply_fixups(dt);
 
 	/* Insert coreboot specific information */

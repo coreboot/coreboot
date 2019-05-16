@@ -96,6 +96,31 @@ static struct fit_image_node *find_image(const char *name)
 	return NULL;
 }
 
+static struct fit_image_node *find_image_with_overlays(const char *name,
+	int bytes, struct list_node *prev)
+{
+	struct fit_image_node *base = find_image(name);
+	if (!base)
+		return NULL;
+
+	int len = strnlen(name, bytes) + 1;
+	bytes -= len;
+	name += len;
+	while (bytes > 0) {
+		struct fit_overlay_chain *next = xzalloc(sizeof(*next));
+		next->overlay = find_image(name);
+		if (!next->overlay)
+			return NULL;
+		list_insert_after(&next->list_node, prev);
+		prev = &next->list_node;
+		len = strnlen(name, bytes) + 1;
+		bytes -= len;
+		name += len;
+	}
+
+	return base;
+}
+
 static void image_node(struct device_tree_node *node)
 {
 	struct fit_image_node *image = xzalloc(sizeof(*image));
@@ -133,7 +158,8 @@ static void config_node(struct device_tree_node *node)
 		if (!strcmp("kernel", prop->prop.name))
 			config->kernel = find_image(prop->prop.data);
 		else if (!strcmp("fdt", prop->prop.name))
-			config->fdt = find_image(prop->prop.data);
+			config->fdt = find_image_with_overlays(prop->prop.data,
+				prop->prop.size, &config->overlays);
 		else if (!strcmp("ramdisk", prop->prop.name))
 			config->ramdisk = find_image(prop->prop.data);
 		else if (!strcmp("compatible", prop->prop.name))
@@ -408,6 +434,14 @@ static int fit_update_compat(struct fit_config_node *config)
 			return -1;
 		}
 
+		// FDT overlays are not supported in legacy FIT images.
+		if (config->overlays.next) {
+			printk(BIOS_ERR,
+			       "ERROR: config %s has overlay but no compat!\n",
+			       config->name);
+			return -1;
+		}
+
 		if (fdt_find_compat(fdt_blob, fdt_offset, &config->compat)) {
 			printk(BIOS_ERR,
 			       "ERROR: Can't find compat string in FDT %s "
@@ -442,6 +476,7 @@ struct fit_config_node *fit_load(void *fit)
 	struct fit_image_node *image;
 	struct fit_config_node *config;
 	struct compat_string_entry *compat_node;
+	struct fit_overlay_chain *overlay_chain;
 
 	printk(BIOS_DEBUG, "FIT: Loading FIT from %p\n", fit);
 
@@ -505,6 +540,8 @@ struct fit_config_node *fit_load(void *fit)
 		}
 		printk(BIOS_DEBUG, ", kernel %s", config->kernel->name);
 		printk(BIOS_DEBUG, ", fdt %s", config->fdt->name);
+		list_for_each(overlay_chain, config->overlays, list_node)
+			printk(BIOS_DEBUG, " %s", overlay_chain->overlay->name);
 		if (config->ramdisk)
 			printk(BIOS_DEBUG, ", ramdisk %s",
 			       config->ramdisk->name);

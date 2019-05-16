@@ -19,6 +19,7 @@ This is an (incomplete) list of POST codes emitted by coreboot v4.
 0xe0 Boot media (e.g. SPI ROM) is corrupt
 0xe1 Resource stored within CBFS is corrupt
 0xe2 Vendor binary (e.g. FSP) generated a fatal error
+0xe3 RAM could not be initialized
 0xf8 Entry into elf boot
 0xf3 Jumping to payload
 

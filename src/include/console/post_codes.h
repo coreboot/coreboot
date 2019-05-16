@@ -341,6 +341,14 @@
 #define POST_INVALID_VENDOR_BINARY		0xe2
 
 /**
+ * \brief RAM failure
+ *
+ * Set if RAM could not be initialized.  This includes RAM is missing,
+ * unsupported RAM configuration, or RAM failure.
+ */
+#define POST_RAM_FAILURE			0xe3
+
+/**
  * \brief TPM failure
  *
  * An error with the TPM, either unexepcted state or communications failure.

@@ -130,7 +130,8 @@ void raminit(struct romstage_params *params)
 
 	printk(BIOS_DEBUG, "FspMemoryInit returned 0x%08x\n", status);
 	if (status != EFI_SUCCESS)
-		die("ERROR - FspMemoryInit failed to initialize memory!\n");
+		die_with_post_code(POST_RAM_FAILURE,
+			"ERROR - FspMemoryInit failed to initialize memory!\n");
 
 	/* Locate the FSP reserved memory area */
 	fsp_reserved_bytes = 0;

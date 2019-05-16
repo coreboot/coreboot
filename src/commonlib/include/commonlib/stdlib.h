@@ -38,11 +38,11 @@
 #if CONFIG(COREBOOT_BUILD)
 #include <console/console.h>
 #include <halt.h>
-#define printf(...)		printk(BIOS_ERR, __VA_ARGS__)
 #define HALT(x)			halt()
 #else
 #include <stdio.h>
-#define HALT(x)
+#define printk(level, ...)	printf(__VA_ARGS__)
+#define HALT(x)			abort()
 #endif
 
 static inline void *xmalloc_work(size_t size, const char *file,
@@ -50,7 +50,7 @@ static inline void *xmalloc_work(size_t size, const char *file,
 {
 	void *ret = malloc(size);
 	if (!ret && size) {
-		printf("%s/%s/line %d: Failed to malloc %zu bytes\n",
+		printk(BIOS_ERR, "%s/%s/line %d: Failed to malloc %zu bytes\n",
 			file, func, line, size);
 		while (1)
 			HALT(1);

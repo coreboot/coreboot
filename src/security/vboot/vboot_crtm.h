@@ -46,8 +46,7 @@
  */
 uint32_t vboot_init_crtm(void);
 
-#if (CONFIG(VBOOT_MEASURED_BOOT) && \
-!ENV_BOOTBLOCK && !ENV_DECOMPRESSOR && !ENV_SMM)
+#if CONFIG(VBOOT_MEASURED_BOOT)
 /*
  * Measures cbfs data via hook (cbfs)
  * fh is the cbfs file handle to measure

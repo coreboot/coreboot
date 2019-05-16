@@ -70,6 +70,7 @@ ramstage-y += vboot_common.c
 postcar-y += vboot_common.c
 
 ifeq ($(CONFIG_VBOOT_MEASURED_BOOT),y)
+bootblock-y += vboot_crtm.c
 verstage-y += vboot_crtm.c
 romstage-y += vboot_crtm.c
 ramstage-y += vboot_crtm.c

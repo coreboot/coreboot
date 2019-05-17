@@ -12601,7 +12601,9 @@ static struct type *struct_declarator(
 		}
 		type = new_type(TYPE_BITFIELD, type, 0);
 		type->elements = value->u.cval;
-	}
+	} else
+		type = clone_type(0, type);
+
 	return type;
 }
 
@@ -12656,7 +12658,6 @@ static struct type *struct_or_union_specifier(
 					done = 0;
 					eat(state, TOK_COMMA);
 				}
-				type = clone_type(0, type);
 				type->field_ident = fident;
 				if (*next) {
 					*next = new_type(type_join, *next, type);

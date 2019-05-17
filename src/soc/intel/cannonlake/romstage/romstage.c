@@ -111,6 +111,7 @@ static void save_dimm_info(void)
 				src_dimm->DimmId,
 				dram_part_num,
 				dram_part_num_len,
+				src_dimm->SpdSave + SPD_SAVE_OFFSET_SERIAL,
 				memory_info_hob->DataWidth);
 			index++;
 		}

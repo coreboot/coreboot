@@ -22,7 +22,7 @@
 void dimm_info_fill(struct dimm_info *dimm, u32 dimm_capacity, u8 ddr_type,
 		u32 frequency, u8 rank_per_dimm, u8 channel_id, u8 dimm_id,
 		const char *module_part_num, size_t module_part_number_size,
-		u16 data_width)
+		const u8 *module_serial_num, u16 data_width)
 {
 	dimm->dimm_size = dimm_capacity;
 	dimm->ddr_type = ddr_type;
@@ -34,6 +34,9 @@ void dimm_info_fill(struct dimm_info *dimm, u32 dimm_capacity, u8 ddr_type,
 			module_part_num,
 			min(sizeof(dimm->module_part_number),
 				module_part_number_size));
+	if (module_serial_num)
+		memcpy(dimm->serial, module_serial_num,
+		       DIMM_INFO_SERIAL_SIZE);
 	switch (data_width) {
 	case 8:
 		dimm->bus_width = MEMORY_BUS_WIDTH_8;

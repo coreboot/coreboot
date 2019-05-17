@@ -40,8 +40,8 @@ static void rangeley_setup_bars(void)
 	/* Disable the watchdog reboot and turn off the watchdog timer */
 	write8((void *)(DEFAULT_PBASE + PMC_CFG),
 	       read8((void *)(DEFAULT_PBASE + PMC_CFG)) | NO_REBOOT);	// disable reboot on timer trigger
-	outw(DEFAULT_ABASE + TCO1_CNT, inw(DEFAULT_ABASE + TCO1_CNT) |
-		TCO_TMR_HALT);	// disable watchdog timer
+	outw(inw(DEFAULT_ABASE + TCO1_CNT) | TCO_TMR_HALT,
+		DEFAULT_ABASE + TCO1_CNT);	// disable watchdog timer
 
 	printk(BIOS_DEBUG, " done.\n");
 

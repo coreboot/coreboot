@@ -50,7 +50,11 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg, const config_t *config)
 	m_cfg->PcieRpEnableMask = mask;
 	m_cfg->PrmrrSize = config->PrmrrSize;
 	m_cfg->EnableC6Dram = config->enable_c6dram;
+#if CONFIG(SOC_INTEL_COMETLAKE)
+	m_cfg->SerialIoUartDebugControllerNumber = CONFIG_UART_FOR_CONSOLE;
+#else
 	m_cfg->PcdSerialIoUartNumber = CONFIG_UART_FOR_CONSOLE;
+#endif
 	/*
 	 * PcdDebugInterfaceFlags
 	 * This config will allow coreboot to pass information to the FSP

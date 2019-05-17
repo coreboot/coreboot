@@ -167,6 +167,16 @@ chip soc/intel/icelake
 		},
 	}"
 
+	# GPIO PM programming
+	register "gpio_override_pm" = "1"
+
+	# GPIO community PM configuration
+	register "gpio_pm[COMM_0]" = "MISCCFG_ENABLE_GPIO_PM_CONFIG"
+	register "gpio_pm[COMM_1]" = "MISCCFG_GPSIDEDPCGEN | MISCCFG_GPRTCDLCGEN | MISCCFG_GSXSLCGEN | MISCCFG_GPDPCGEN | MISCCFG_GPDLCGEN"
+	register "gpio_pm[COMM_2]" = "MISCCFG_ENABLE_GPIO_PM_CONFIG"
+	register "gpio_pm[COMM_3]" = "MISCCFG_ENABLE_GPIO_PM_CONFIG"
+	register "gpio_pm[COMM_4]" = "MISCCFG_ENABLE_GPIO_PM_CONFIG"
+
 	device domain 0 on
 		device pci 00.0 on  end # Host Bridge
 		device pci 02.0 on  end # Integrated Graphics Device

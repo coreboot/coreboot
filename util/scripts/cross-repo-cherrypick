@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# rebase.sh - rebase helper script
+# cross-repo-cherrypick - rebase helper script
 #
 # Copyright 2015, 2017 Google Inc.
 #
@@ -22,8 +22,8 @@ BRANCH="origin/master"
 #  git remote add ...
 #  git checkout -b upstreaming
 #  git cherry-pick ...
-#  git rebase -i --exec util/gitconfig/rebase.sh master
-# Alternatively, you can run util/gitconfig/rebase.sh after every
+#  git rebase -i --exec util/scripts/cross-repo-cherrypick master
+# Alternatively, you can run util/scripts/cross-repo-cherrypick after every
 # individual cherry-pick.
 
 # use $0 --cros to add a stub BUG/BRANCH/TEST block

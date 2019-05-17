@@ -10782,6 +10782,15 @@ static struct triple *string_constant(struct compile_state *state)
 		} while(str < end);
 		type->elements = ptr - buf;
 	} while(peek(state) == TOK_LIT_STRING);
+
+	/* buf contains the allocated buffer for the string constant. However,
+	   if buf is NULL, then the string constant is empty, but we still
+	   need to allocate one byte for the null character. */
+	if (buf == NULL) {
+		buf = xmalloc(1, "string_constant");
+		ptr = buf;
+	}
+
 	*ptr = '\0';
 	type->elements += 1;
 	def = triple(state, OP_BLOBCONST, type, 0, 0);

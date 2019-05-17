@@ -364,10 +364,13 @@ void verstage_main(void)
 		vboot_reboot();
 	}
 
-	/* Is vboot declaring that display is available?  If so, we should mark
-	   it down, so that the mainboard/SoC knows to initialize display. */
+	/* Jot down some information from vboot which may be required later on
+	   in coreboot boot flow. */
 	if (ctx.flags & VB2_CONTEXT_DISPLAY_INIT)
+		/* Mainboard/SoC should initialize display. */
 		vboot_get_working_data()->flags |= VBOOT_WD_FLAG_DISPLAY_INIT;
+	if (ctx.flags & VB2_CONTEXT_DEVELOPER_MODE)
+		vboot_get_working_data()->flags |= VBOOT_WD_FLAG_DEVELOPER_MODE;
 
 	/* Determine which firmware slot to boot (based on NVRAM) */
 	printk(BIOS_INFO, "Phase 2\n");

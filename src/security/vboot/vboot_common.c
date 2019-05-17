@@ -88,11 +88,6 @@ static int vboot_get_handoff_flag(uint32_t flag)
 	return !!(vbho->out_flags & flag);
 }
 
-int vboot_handoff_check_developer_flag(void)
-{
-	return vboot_get_handoff_flag(VB_INIT_OUT_ENABLE_DEVELOPER);
-}
-
 int vboot_handoff_check_recovery_flag(void)
 {
 	return vboot_get_handoff_flag(VB_INIT_OUT_ENABLE_RECOVERY);

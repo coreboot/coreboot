@@ -47,6 +47,8 @@ struct vboot_working_data {
  */
 /* vboot requests display initialization from coreboot. */
 #define VBOOT_WD_FLAG_DISPLAY_INIT (1 << 0)
+/* vboot has selected developer mode. */
+#define VBOOT_WD_FLAG_DEVELOPER_MODE (1 << 1)
 
 /*
  * Source: security/vboot/common.c

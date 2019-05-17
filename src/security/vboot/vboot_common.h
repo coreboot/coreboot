@@ -62,7 +62,6 @@ int vboot_get_handoff_info(void **addr, uint32_t *size);
  * Returns value read for other fields
  */
 int vboot_handoff_check_recovery_flag(void);
-int vboot_handoff_check_developer_flag(void);
 int vboot_handoff_get_recovery_reason(void);
 
 /* ============================ VBOOT REBOOT ============================== */

@@ -14111,7 +14111,7 @@ static void compute_closure_variables(struct compile_state *state,
 	struct block *block;
 	struct triple *old_result, *first, *ins;
 	size_t count, idx;
-	unsigned long used_indices;
+	uint64_t used_indices;
 	int i, max_index;
 #define MAX_INDICES (sizeof(used_indices)*CHAR_BIT)
 #define ID_BITS(X) ((X) & (TRIPLE_FLAG_LOCAL -1))
@@ -14217,11 +14217,11 @@ static void compute_closure_variables(struct compile_state *state,
 		if (index >= MAX_INDICES) {
 			internal_error(state, ins, "index unexpectedly large");
 		}
-		if (used_indices & (1 << index)) {
+		if (used_indices & ((uint64_t)1 << index)) {
 			internal_error(state, ins, "index previously used?");
 		}
 		/* Remember which indices have been used */
-		used_indices |= (1 << index);
+		used_indices |= ((uint64_t)1 << index);
 		if (index > max_index) {
 			max_index = index;
 		}
@@ -14249,7 +14249,7 @@ static void compute_closure_variables(struct compile_state *state,
 		}
 		info[ID_BITS(ins->id)].index = index;
 		/* Remember which indices have been used */
-		used_indices |= (1 << index);
+		used_indices |= ((uint64_t)1 << index);
 		if (index > max_index) {
 			max_index = index;
 		}
@@ -14263,7 +14263,7 @@ static void compute_closure_variables(struct compile_state *state,
 	for(i = 0; i <= max_index; i++) {
 		struct triple *var;
 		var = 0;
-		if (used_indices & (1 << i)) {
+		if (used_indices & ((uint64_t)1 << i)) {
 			for(set = vars; set; set = set->next) {
 				int index;
 				index = info[ID_BITS(set->member->id)].index;

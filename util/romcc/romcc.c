@@ -11236,6 +11236,7 @@ static struct triple *relational_expr(struct compile_state *state)
 
 			arg_type = arithmetic_result(state, left, right);
 			sign = is_signed(arg_type);
+			xfree(arg_type);
 			op = -1;
 			switch(tok) {
 			case TOK_LESS:   op = sign? OP_SLESS : OP_ULESS; break;

@@ -59,6 +59,7 @@ static struct {
 	{ PCI_DEVICE_ID_INTEL_KBL_ID_H, "Kabylake-H" },
 	{ PCI_DEVICE_ID_INTEL_KBL_ID_S, "Kabylake-S" },
 	{ PCI_DEVICE_ID_INTEL_KBL_ID_DT, "Kabylake DT" },
+	{ PCI_DEVICE_ID_INTEL_KBL_ID_DT_2, "Kabylake DT 2" },
 };
 
 static struct {

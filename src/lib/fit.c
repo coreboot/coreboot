@@ -419,8 +419,8 @@ void fit_update_memory(struct device_tree *tree)
  */
 static int fit_update_compat(struct fit_config_node *config)
 {
-	// If there was no "compatible" property in config node, this is a
-	// legacy FIT image. Must extract compat prop from FDT itself.
+	/* If there was no "compatible" property in config node, this is a
+	   legacy FIT image. Must extract compat prop from FDT itself. */
 	if (!config->compat.name) {
 		void *fdt_blob = config->fdt->data;
 		const struct fdt_header *fdt_header = fdt_blob;
@@ -434,7 +434,7 @@ static int fit_update_compat(struct fit_config_node *config)
 			return -1;
 		}
 
-		// FDT overlays are not supported in legacy FIT images.
+		/* FDT overlays are not supported in legacy FIT images. */
 		if (config->overlays.next) {
 			printk(BIOS_ERR,
 			       "ERROR: config %s has overlay but no compat!\n",

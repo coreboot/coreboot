@@ -74,9 +74,9 @@ struct device_tree_node
 	const char *name;
 	uint32_t phandle;
 
-	// List of struct device_tree_property-s.
+	/* List of struct device_tree_property-s. */
 	struct list_node properties;
-	// List of struct device_tree_nodes.
+	/* List of struct device_tree_nodes. */
 	struct list_node children;
 
 	struct list_node list_node;
@@ -108,18 +108,18 @@ struct device_tree
  * which were consumed reading the requested value.
  */
 
-// Read the property, if any, at offset offset.
+/* Read the property, if any, at offset offset. */
 int fdt_next_property(const void *blob, uint32_t offset,
 		      struct fdt_property *prop);
-// Read the name of the node, if any, at offset offset.
+/* Read the name of the node, if any, at offset offset. */
 int fdt_node_name(const void *blob, uint32_t offset, const char **name);
 
 void fdt_print_node(const void *blob, uint32_t offset);
 int fdt_skip_node(const void *blob, uint32_t offset);
 
-// Read a flattened device tree into a heirarchical structure which refers to
-// the contents of the flattened tree in place. Modifying the flat tree
-// invalidates the unflattened one.
+/* Read a flattened device tree into a heirarchical structure which refers to
+   the contents of the flattened tree in place. Modifying the flat tree
+   invalidates the unflattened one. */
 struct device_tree *fdt_unflatten(const void *blob);
 
 
@@ -128,42 +128,42 @@ struct device_tree *fdt_unflatten(const void *blob);
  * Unflattened device tree functions.
  */
 
-// Figure out how big a device tree would be if it were flattened.
+/* Figure out how big a device tree would be if it were flattened. */
 uint32_t dt_flat_size(const struct device_tree *tree);
-// Flatten a device tree into the buffer pointed to by dest.
+/* Flatten a device tree into the buffer pointed to by dest. */
 void dt_flatten(const struct device_tree *tree, void *dest);
 void dt_print_node(const struct device_tree_node *node);
-// Read #address-cells and #size-cells properties from a node.
+/* Read #address-cells and #size-cells properties from a node. */
 void dt_read_cell_props(const struct device_tree_node *node, u32 *addrcp,
 			u32 *sizecp);
-// Look up or create a node relative to a parent node, through its path
-// represented as an array of strings.
+/* Look up or create a node relative to a parent node, through its path
+   represented as an array of strings. */
 struct device_tree_node *dt_find_node(struct device_tree_node *parent, const char **path,
 			     u32 *addrcp, u32 *sizecp, int create);
 struct device_tree_node *dt_find_node_by_phandle(struct device_tree_node *root,
 						 uint32_t phandle);
-// Look up or create a node in the tree, through its path
-// represented as a string of '/' separated node names.
+/* Look up or create a node in the tree, through its path
+   represented as a string of '/' separated node names. */
 struct device_tree_node *dt_find_node_by_path(struct device_tree *tree,
 			const char *path, u32 *addrcp, u32 *sizecp, int create);
-// Look up a node through an alias.
+/* Look up a node through an alias. */
 struct device_tree_node *dt_find_node_by_alias(struct device_tree *tree,
 					       const char *alias);
-// Look up a node relative to a parent node, through its compatible string.
+/* Look up a node relative to a parent node, through its compatible string. */
 struct device_tree_node *dt_find_compat(struct device_tree_node *parent, const char *compatible);
-// Look up the next child of a parent node, through its compatible string. It
-// uses child pointer as the marker to find next.
+/* Look up the next child of a parent node, through its compatible string. It
+   uses child pointer as the marker to find next. */
 struct device_tree_node *dt_find_next_compat_child(struct device_tree_node *parent,
 					  struct device_tree_node *child,
 					  const char *compat);
-// Look up a node relative to a parent node, through its property value.
+/* Look up a node relative to a parent node, through its property value. */
 struct device_tree_node *dt_find_prop_value(struct device_tree_node *parent, const char *name,
 				   void *data, size_t size);
-// Write src into *dest as a 'length'-byte big-endian integer.
+/* Write src into *dest as a 'length'-byte big-endian integer. */
 void dt_write_int(u8 *dest, u64 src, size_t length);
-// Delete a property
+/* Delete a property */
 void dt_delete_prop(struct device_tree_node *node, const char *name);
-// Add different kinds of properties to a node, or update existing ones.
+/* Add different kinds of properties to a node, or update existing ones. */
 void dt_add_bin_prop(struct device_tree_node *node, const char *name,
 		     void *data, size_t size);
 void dt_add_string_prop(struct device_tree_node *node, const char *name,

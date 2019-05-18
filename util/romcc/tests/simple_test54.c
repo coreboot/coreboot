@@ -569,7 +569,7 @@ static const struct mem_param *spd_set_memclk(void)
 	unsigned device;
 	uint32_t value;
 
-	static const int latency_indicies[] = { 26, 23, 9 };
+	static const int latency_indices[] = { 26, 23, 9 };
 	static const unsigned char min_cycle_times[] = {
 		[NBCAP_MEMCLK_200MHZ] = 0x50, /* 5ns */
 		[NBCAP_MEMCLK_166MHZ] = 0x60, /* 6ns */
@@ -637,7 +637,7 @@ static const struct mem_param *spd_set_memclk(void)
 				continue;
 			}
 			debug('D');
-			value = smbus_read_byte(device, latency_indicies[index]);
+			value = smbus_read_byte(device, latency_indices[index]);
 			if (value < 0) continue;
 
 			debug('E');
@@ -723,7 +723,7 @@ static const struct mem_param *spd_set_memclk(void)
 		}
 
 		/* Read the min_cycle_time for this latency */
-		value = smbus_read_byte(device, latency_indicies[index]);
+		value = smbus_read_byte(device, latency_indices[index]);
 
 		/* All is good if the selected clock speed
 		 * is what I need or slower.

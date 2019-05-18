@@ -1621,7 +1621,7 @@ static const struct mem_param *spd_set_memclk(const struct mem_controller *ctrl)
 	unsigned min_cycle_time, min_latency;
 	int i;
 	uint32_t value;
-	static const int latency_indicies[] = { 26, 23, 9 };
+	static const int latency_indices[] = { 26, 23, 9 };
 	static const unsigned char min_cycle_times[] = {
 		[0 ] = 0x50,
 		[1 ] = 0x60,
@@ -1651,7 +1651,7 @@ static const struct mem_param *spd_set_memclk(const struct mem_controller *ctrl)
 				(!(latencies & (1 << latency)))) {
 				continue;
 			}
-			value = spd_read_byte(ctrl->channel0[i], latency_indicies[index]);
+			value = spd_read_byte(ctrl->channel0[i], latency_indices[index]);
 			if (value < 0) {
 				continue;
 			}
@@ -1701,7 +1701,7 @@ static const struct mem_param *spd_set_memclk(const struct mem_controller *ctrl)
 		}
 
 
-		value = spd_read_byte(ctrl->channel0[i], latency_indicies[index]);
+		value = spd_read_byte(ctrl->channel0[i], latency_indices[index]);
 
 
 		if (value <= min_cycle_time) {

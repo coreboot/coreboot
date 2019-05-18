@@ -1,6 +1,6 @@
 static void spd_set_memclk(void)
 {
-	static const int indicies[] = { 26, 23, 9 };
+	static const int indices[] = { 26, 23, 9 };
 	int new_cycle_time, new_latency;
 	int index;
 	unsigned min_cycle_time, min_latency;
@@ -15,7 +15,7 @@ static void spd_set_memclk(void)
 	for(index = 0; index < 3; index++) {
 		unsigned long loops;
 		unsigned long address;
-		address = indicies[index];
+		address = indices[index];
 		loops = 1000000;
 		do {
 		} while(--loops);

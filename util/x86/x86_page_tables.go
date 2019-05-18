@@ -223,7 +223,7 @@ func (cw *cWriter) WritePageEntry(data interface{}) error {
 	return nil
 }
 
-// This map represents what the IA32_PAT MSR should be at runtime. The indicies
+// This map represents what the IA32_PAT MSR should be at runtime. The indices
 // are what the linux kernel uses. Reserved entries are not used.
 //  0    WB : _PAGE_CACHE_MODE_WB
 //  1    WC : _PAGE_CACHE_MODE_WC
@@ -523,11 +523,11 @@ func newAddrSpace(mergeFunc addrRangeMerge, metatdataBaseAddr uint64) *addressSp
 	return as
 }
 
-func (as *addressSpace) deleteEntries(indicies []int) {
+func (as *addressSpace) deleteEntries(indices []int) {
 	// deletions need to be processed in reverse order so as not
 	// delete the wrong entries
-	sort.Sort(sort.Reverse(sort.IntSlice(indicies)))
-	for _, i := range indicies {
+	sort.Sort(sort.Reverse(sort.IntSlice(indices)))
+	for _, i := range indices {
 		as.ranges = append(as.ranges[:i], as.ranges[i+1:]...)
 	}
 }

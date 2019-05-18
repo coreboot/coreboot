@@ -14111,9 +14111,9 @@ static void compute_closure_variables(struct compile_state *state,
 	struct block *block;
 	struct triple *old_result, *first, *ins;
 	size_t count, idx;
-	unsigned long used_indicies;
+	unsigned long used_indices;
 	int i, max_index;
-#define MAX_INDICIES (sizeof(used_indicies)*CHAR_BIT)
+#define MAX_INDICES (sizeof(used_indices)*CHAR_BIT)
 #define ID_BITS(X) ((X) & (TRIPLE_FLAG_LOCAL -1))
 	struct {
 		unsigned id;
@@ -14183,7 +14183,7 @@ static void compute_closure_variables(struct compile_state *state,
 	 *
 	 * To gurantee that stability I lookup the variables
 	 * to see where they have been used before and
-	 * I build my final list with the assigned indicies.
+	 * I build my final list with the assigned indices.
 	 */
 	vars = 0;
 	if (enclose_triple(old_result)) {
@@ -14202,8 +14202,8 @@ static void compute_closure_variables(struct compile_state *state,
 		ordered_triple_set(&vars, set->member);
 	}
 
-	/* Lookup the current indicies of the live varialbe */
-	used_indicies = 0;
+	/* Lookup the current indices of the live varialbe */
+	used_indices = 0;
 	max_index = -1;
 	for(set = vars; set ; set = set->next) {
 		struct triple *ins;
@@ -14214,14 +14214,14 @@ static void compute_closure_variables(struct compile_state *state,
 		if (index < 0) {
 			continue;
 		}
-		if (index >= MAX_INDICIES) {
+		if (index >= MAX_INDICES) {
 			internal_error(state, ins, "index unexpectedly large");
 		}
-		if (used_indicies & (1 << index)) {
+		if (used_indices & (1 << index)) {
 			internal_error(state, ins, "index previously used?");
 		}
-		/* Remember which indicies have been used */
-		used_indicies |= (1 << index);
+		/* Remember which indices have been used */
+		used_indices |= (1 << index);
 		if (index > max_index) {
 			max_index = index;
 		}
@@ -14239,31 +14239,31 @@ static void compute_closure_variables(struct compile_state *state,
 			continue;
 		}
 		/* Find the lowest unused index value */
-		for(index = 0; index < MAX_INDICIES; index++) {
-			if (!(used_indicies & ((uint64_t)1 << index))) {
+		for(index = 0; index < MAX_INDICES; index++) {
+			if (!(used_indices & ((uint64_t)1 << index))) {
 				break;
 			}
 		}
-		if (index == MAX_INDICIES) {
-			internal_error(state, ins, "no free indicies?");
+		if (index == MAX_INDICES) {
+			internal_error(state, ins, "no free indices?");
 		}
 		info[ID_BITS(ins->id)].index = index;
-		/* Remember which indicies have been used */
-		used_indicies |= (1 << index);
+		/* Remember which indices have been used */
+		used_indices |= (1 << index);
 		if (index > max_index) {
 			max_index = index;
 		}
 	}
 
 	/* Build the return list of variables with positions matching
-	 * their indicies.
+	 * their indices.
 	 */
 	*enclose = 0;
 	last_var = enclose;
 	for(i = 0; i <= max_index; i++) {
 		struct triple *var;
 		var = 0;
-		if (used_indicies & (1 << i)) {
+		if (used_indices & (1 << i)) {
 			for(set = vars; set; set = set->next) {
 				int index;
 				index = info[ID_BITS(set->member->id)].index;

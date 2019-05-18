@@ -463,7 +463,6 @@ static int fit_update_compat(struct fit_config_node *config)
 			config->compat_rank = i;
 			config->compat_string =
 				compat_node->compat_string;
-			break;
 		}
 		i++;
 	}

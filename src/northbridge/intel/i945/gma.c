@@ -858,6 +858,7 @@ static const unsigned short i945_gma_func0_ids[] = {
 };
 
 static const unsigned short i945_gma_func1_ids[] = {
+	0x2776, /* Desktop 82945G/GZ/GC */
 	0x27a6, /* Mobile 945GM/GMS/GME Express Integrated Graphics Controller */
 	0
 };

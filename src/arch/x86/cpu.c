@@ -113,6 +113,7 @@ static struct {
 	{ X86_VENDOR_TRANSMETA, "TransmetaCPU", },
 	{ X86_VENDOR_NSC,       "Geode by NSC", },
 	{ X86_VENDOR_SIS,       "SiS SiS SiS ", },
+	{ X86_VENDOR_HYGON,     "HygonGenuine", },
 };
 
 static const char *const x86_vendor_name[] = {
@@ -126,6 +127,7 @@ static const char *const x86_vendor_name[] = {
 	[X86_VENDOR_TRANSMETA] = "Transmeta",
 	[X86_VENDOR_NSC]       = "NSC",
 	[X86_VENDOR_SIS]       = "SiS",
+	[X86_VENDOR_HYGON]     = "Hygon",
 };
 
 static const char *cpu_vendor_name(int vendor)

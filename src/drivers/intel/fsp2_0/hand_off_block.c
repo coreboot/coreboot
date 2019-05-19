@@ -237,9 +237,9 @@ static void display_fsp_version_info_hob(const void *hob, size_t size)
 
 		/*  Don't show ingredient name and version if its all 0xFF */
 		if (fvi[index].Version.MajorVersion == 0xFF &&
-			fvi[index].Version.MajorVersion == 0xFF &&
-			fvi[index].Version.MajorVersion == 0xFF &&
-			fvi[index].Version.MajorVersion == 0xFF &&
+			fvi[index].Version.MinorVersion == 0xFF &&
+			fvi[index].Version.Revision == 0xFF &&
+			fvi[index].Version.BuildNumber == 0xFF &&
 			fvi[index].VersionStringIndex == 0) {
 			str_ptr = (char *)((uintptr_t)str_ptr + cnt +
 					sizeof(uint8_t));

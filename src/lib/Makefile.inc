@@ -118,7 +118,6 @@ ramstage-y += bootmem.c
 ramstage-y += fmap.c
 ramstage-y += memchr.c
 ramstage-y += memcmp.c
-ramstage-y += string.c
 ramstage-y += malloc.c
 smm-$(CONFIG_SMM_TSEG) += malloc.c
 ramstage-y += dimm_info_util.c
@@ -243,6 +242,14 @@ romstage-y += reset.c
 postcar-y += reset.c
 ramstage-y += reset.c
 smm-y += reset.c
+
+decompressor-y += string.c
+bootblock-y += string.c
+verstage-y += string.c
+romstage-y += string.c
+postcar-y += string.c
+ramstage-y += string.c
+smm-y += string.c
 
 postcar-y += bootmode.c
 postcar-y += boot_device.c

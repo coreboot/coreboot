@@ -25,33 +25,13 @@ int vsnprintf(char *buf, size_t size, const char *fmt, va_list args);
 #endif
 char *strdup(const char *s);
 char *strconcat(const char *s1, const char *s2);
-
-// simple string functions
-
-static inline size_t strnlen(const char *src, size_t max)
-{
-	size_t i = 0;
-	while ((*src++) && (i < max))
-		i++;
-	return i;
-}
-
-static inline size_t strlen(const char *src)
-{
-	size_t i = 0;
-	while (*src++)
-		i++;
-	return i;
-}
-
-static inline char *strchr(const char *s, int c)
-{
-	for (; *s; s++) {
-		if (*s == c)
-			return (char *) s;
-	}
-	return 0;
-}
+size_t strnlen(const char *src, size_t max);
+size_t strlen(const char *src);
+char *strchr(const char *s, int c);
+char *strncpy(char *to, const char *from, int count);
+char *strcpy(char *dst, const char *src);
+int strcmp(const char *s1, const char *s2);
+int strncmp(const char *s1, const char *s2, int maxlen);
 
 /**
  * Find a character in a string.
@@ -61,71 +41,14 @@ static inline char *strchr(const char *s, int c)
  * @return A pointer to the last occurrence of the character in the
  * string, or NULL if the character was not encountered within the string.
  */
-static inline char *strrchr(const char *s, int c)
-{
-	char *p = (char *)s + strlen(s);
+char *strrchr(const char *s, int c);
 
-	for (; p >= s; p--) {
-		if (*p == c)
-			return p;
-	}
-
-	return NULL;
-}
-
-static inline char *strncpy(char *to, const char *from, int count)
-{
-	register char *ret = to;
-	register char data;
-
-	while (count > 0) {
-		count--;
-		data = *from++;
-		*to++  = data;
-		if (data == '\0')
-			break;
-	}
-
-	while (count > 0) {
-		count--;
-		*to++ = '\0';
-	}
-	return ret;
-}
-
-static inline char *strcpy(char *dst, const char *src)
-{
-	char *ptr = dst;
-
-	while (*src)
-		*dst++ = *src++;
-	*dst = '\0';
-
-	return ptr;
-}
-
-static inline int strcmp(const char *s1, const char *s2)
-{
-	int r;
-
-	while ((r = (*s1 - *s2)) == 0 && *s1) {
-		s1++;
-		s2++;
-	}
-	return r;
-}
-
-static inline int strncmp(const char *s1, const char *s2, int maxlen)
-{
-	int i;
-
-	for (i = 0; i < maxlen; i++) {
-		if ((s1[i] != s2[i]) || (s1[i] == '\0'))
-			return s1[i] - s2[i];
-	}
-
-	return 0;
-}
+/*
+ * Parses an unsigned integer and moves the input pointer forward to the first
+ * character that's not a valid digit. s and *s must not be NULL. Result
+ * undefined if it overruns the return type size.
+ */
+unsigned int skip_atoi(char **s);
 
 static inline int isspace(int c)
 {
@@ -177,20 +100,6 @@ static inline int tolower(int c)
 	if (isupper(c))
 		c -= 'A'-'a';
 	return c;
-}
-
-/*
- * Parses an unsigned integer and moves the input pointer forward to the first
- * character that's not a valid digit. s and *s must not be NULL. Result
- * undefined if it overruns the return type size.
- */
-static inline unsigned int skip_atoi(char **s)
-{
-	unsigned int i = 0;
-
-	while (isdigit(**s))
-		i = i*10 + *((*s)++) - '0';
-	return i;
 }
 
 #endif /* STRING_H */

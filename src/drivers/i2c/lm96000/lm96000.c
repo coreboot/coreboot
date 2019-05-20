@@ -178,20 +178,21 @@ static void lm96000_configure_temp_zone(struct device *const dev,
 static void lm96000_init(struct device *const dev)
 {
 	const struct drivers_i2c_lm96000_config *const config = dev->chip_info;
-	unsigned int i, lm_config;
+	unsigned int i;
+	int lm_config;
 	struct stopwatch sw;
 
 	printk(BIOS_DEBUG, "lm96000: Initialization hardware monitoring.\n");
 
 	stopwatch_init_msecs_expire(&sw, 1000);
 	lm_config = lm96000_read(dev, LM96000_CONFIG);
-	while ((lm_config < 0 || !(lm_config & LM96000_READY))) {
+	while ((lm_config < 0 || !((unsigned int)lm_config & LM96000_READY))) {
 		mdelay(1);
 		lm_config = lm96000_read(dev, LM96000_CONFIG);
 		if (stopwatch_expired(&sw))
 			break;
 	}
-	if (lm_config < 0 || !(lm_config & LM96000_READY)) {
+	if (lm_config < 0 || !((unsigned int)lm_config & LM96000_READY)) {
 		printk(BIOS_INFO, "lm96000: Not ready after 1s.\n");
 		return;
 	}

@@ -389,8 +389,6 @@ static void set_sci_irq(void)
 
 static void soc_init(void *data)
 {
-	struct global_nvs_t *gnvs;
-
 	/* Snapshot the current GPIO IRQ polarities. FSP is setting a
 	 * default policy that doesn't honor boards' requirements. */
 	itss_snapshot_irq_polarities(GPIO_IRQ_START, GPIO_IRQ_END);
@@ -418,7 +416,7 @@ static void soc_init(void *data)
 	p2sb_unhide();
 
 	/* Allocate ACPI NVS in CBMEM */
-	gnvs = cbmem_add(CBMEM_ID_ACPI_GNVS, sizeof(*gnvs));
+	cbmem_add(CBMEM_ID_ACPI_GNVS, sizeof(struct global_nvs_t));
 
 	/* Set RAPL MSR for Package power limits*/
 	set_power_limits();

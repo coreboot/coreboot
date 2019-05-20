@@ -22160,6 +22160,7 @@ static unsigned arch_regcm_normalize(struct compile_state *state, unsigned regcm
 		}
 		if (class > LAST_REGC) {
 			result &= ~mask;
+			continue;
 		}
 		for(class2 = 0; class2 <= LAST_REGC; class2++) {
 			if ((regcm_bound[class2].first >= regcm_bound[class].first) &&

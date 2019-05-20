@@ -150,7 +150,6 @@ static void init_egress(void)
 static void init_dmi(void)
 {
 	u32 reg32;
-	u16 reg16;
 
 	/* Assume IGD present */
 
@@ -224,9 +223,11 @@ static void init_dmi(void)
 
 	/* ASPM on DMI link */
 	RCBA16(0x1a8) &= ~0x3;
-	reg16 = RCBA16(0x1a8);
+	/* FIXME: Do we need to read RCBA16(0x1a8)? */
+	RCBA16(0x1a8);
 	RCBA32(0x2010) = (RCBA32(0x2010) & ~(0x3 << 10)) | (1 << 10);
-	reg32 = RCBA32(0x2010);
+	/* FIXME: Do we need to read RCBA32(0x2010)? */
+	RCBA32(0x2010);
 
 	/* Set up VC1 max time */
 	RCBA32(0x1c) = (RCBA32(0x1c) & ~0x7f0000) | 0x120000;
@@ -240,7 +241,8 @@ static void init_dmi(void)
 	DMIBAR16(0x210) = (DMIBAR16(0x210) & ~(0xff7)) | 0x101;
 	DMIBAR32(0x88) &= ~0x3;
 	DMIBAR32(0x88) |= 0x3;
-	reg16 = DMIBAR16(0x88);
+	/* FIXME: Do we need to read RCBA16(0x88)? */
+	DMIBAR16(0x88);
 }
 
 static void x4x_prepare_resume(int s3resume)

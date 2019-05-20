@@ -119,9 +119,7 @@ static void early_graphics_setup(void)
 
 static void early_misc_setup(void)
 {
-	u32 reg32;
-
-	reg32 = MCHBAR32(0x30);
+	MCHBAR32(0x30);
 	MCHBAR32(0x30) = 0x21800;
 	DMIBAR32(0x2c) = 0x86000040;
 	pci_write_config32(PCI_DEV(0, 0x1e, 0), 0x18, 0x00020200);
@@ -129,9 +127,9 @@ static void early_misc_setup(void)
 
 	early_graphics_setup();
 
-	reg32 = MCHBAR32(0x40);
+	MCHBAR32(0x40);
 	MCHBAR32(0x40) = 0x0;
-	reg32 = MCHBAR32(0x40);
+	MCHBAR32(0x40);
 	MCHBAR32(0x40) = 0x8;
 
 	pci_write_config8(LPC, 0x8, 0x1d);

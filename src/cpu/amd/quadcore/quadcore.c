@@ -95,13 +95,13 @@ void real_start_other_core(uint32_t nodeid, uint32_t cores)
 		 */
 
 		/* Wait for the first core of each compute unit to start... */
-		uint32_t timeout;
 		for (i = 1; i < cores + 1; i++) {
 			if (!(i & 0x1)) {
 				uint32_t ap_apicid =
 				get_boot_apic_id(nodeid, i);
-				timeout = wait_cpu_state(ap_apicid,
-							F10_APSTATE_ASLEEP, F10_APSTATE_ASLEEP);
+				/* Timeout */
+				wait_cpu_state(ap_apicid, F10_APSTATE_ASLEEP,
+						F10_APSTATE_ASLEEP);
 			}
 		}
 

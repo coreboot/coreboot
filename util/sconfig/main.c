@@ -701,7 +701,7 @@ static void pass0(FILE *fil, struct device *ptr, struct device *next)
 		return;
 	}
 
-	fprintf(fil, "DEVTREE_CONST static struct device %s;\n", ptr->name);
+	fprintf(fil, "static DEVTREE_CONST struct device %s;\n", ptr->name);
 	if (ptr->res)
 		fprintf(fil, "DEVTREE_CONST struct resource %s_res[];\n",
 			ptr->name);

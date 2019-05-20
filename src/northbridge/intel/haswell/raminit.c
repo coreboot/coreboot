@@ -186,7 +186,7 @@ void sdram_initialize(struct pei_data *pei_data)
 
 void setup_sdram_meminfo(struct pei_data *pei_data)
 {
-	u32 addr_decoder_common, addr_decode_ch[2];
+	u32 addr_decode_ch[2];
 	struct memory_info* mem_info;
 	struct dimm_info *dimm;
 	int ddr_frequency;
@@ -199,7 +199,8 @@ void setup_sdram_meminfo(struct pei_data *pei_data)
 		die("Failed to add memory info to CBMEM.\n");
 	memset(mem_info, 0, sizeof(struct memory_info));
 
-	addr_decoder_common = MCHBAR32(0x5000);
+	/* FIXME: Do we need to read MCHBAR32(0x5000) ? */
+	MCHBAR32(0x5000);
 	addr_decode_ch[0] = MCHBAR32(0x5004);
 	addr_decode_ch[1] = MCHBAR32(0x5008);
 

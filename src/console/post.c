@@ -81,7 +81,7 @@ void cmos_post_log(void)
 	default:
 		printk(BIOS_WARNING, "POST: Unexpected post code "
 		       "in previous boot: 0x%02x\n", code);
-#if CONFIG(ELOG)
+#if CONFIG(ELOG) && (ENV_RAMSTAGE || CONFIG(ELOG_PRERAM))
 		elog_add_event_word(ELOG_TYPE_LAST_POST_CODE, code);
 #if CONFIG(CMOS_POST_EXTRA)
 		if (extra)

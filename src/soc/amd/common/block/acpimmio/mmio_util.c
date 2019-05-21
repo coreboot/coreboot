@@ -214,7 +214,7 @@ void acpi_write32(u8 reg, u32 value)
 	write32((void *)(ACPIMMIO_ACPI_BASE + reg), value);
 }
 
-/* asf read/write - access registers at 0xfed80900 - not currently used */
+/* asf read/write - access registers at 0xfed80900 */
 
 u8 asf_read8(u8 reg)
 {
@@ -236,7 +236,7 @@ void asf_write16(u8 reg, u16 value)
 	write16((void *)(ACPIMMIO_ASF_BASE + reg), value);
 }
 
-/* smbus read/write - access registers at 0xfed80a00 and ASF at 0xfed80900 */
+/* smbus read/write - access registers at 0xfed80a00 */
 
 u8 smbus_read8(u8 reg)
 {
@@ -364,9 +364,9 @@ void xhci_pm_write32(uint8_t reg, uint32_t value)
 	write32((void *)(ACPIMMIO_XHCIPM_BASE + reg), value);
 }
 
-/* acdc_tmr read/write - access registers at 0xfed81d00 */
+/* acdc_tmr read/write - access registers at 0xfed81d00 - not currently used */
 
-/* aoac read/write - access registers at 0xfed81e00 - not currently used */
+/* aoac read/write - access registers at 0xfed81e00 */
 
 u8 aoac_read8(u8 reg)
 {

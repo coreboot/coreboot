@@ -344,6 +344,14 @@ void verstage_main(void)
 	printk(BIOS_INFO, "Phase 1\n");
 	rv = vb2api_fw_phase1(&ctx);
 
+	/* Jot down some information from vboot which may be required later on
+	   in coreboot boot flow. */
+	if (ctx.flags & VB2_CONTEXT_DISPLAY_INIT)
+		/* Mainboard/SoC should initialize display. */
+		vboot_get_working_data()->flags |= VBOOT_WD_FLAG_DISPLAY_INIT;
+	if (ctx.flags & VB2_CONTEXT_DEVELOPER_MODE)
+		vboot_get_working_data()->flags |= VBOOT_WD_FLAG_DEVELOPER_MODE;
+
 	if (rv) {
 		/*
 		 * If vb2api_fw_phase1 fails, check for return value.
@@ -363,14 +371,6 @@ void verstage_main(void)
 		save_if_needed(&ctx);
 		vboot_reboot();
 	}
-
-	/* Jot down some information from vboot which may be required later on
-	   in coreboot boot flow. */
-	if (ctx.flags & VB2_CONTEXT_DISPLAY_INIT)
-		/* Mainboard/SoC should initialize display. */
-		vboot_get_working_data()->flags |= VBOOT_WD_FLAG_DISPLAY_INIT;
-	if (ctx.flags & VB2_CONTEXT_DEVELOPER_MODE)
-		vboot_get_working_data()->flags |= VBOOT_WD_FLAG_DEVELOPER_MODE;
 
 	/* Determine which firmware slot to boot (based on NVRAM) */
 	printk(BIOS_INFO, "Phase 2\n");

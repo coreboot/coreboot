@@ -44,7 +44,7 @@ int smbios_write_type38(unsigned long *current, int *handle,
 			const u8 irq);
 int smbios_write_type41(unsigned long *current, int *handle,
 			const char *name, u8 instance, u16 segment,
-			u8 bus, u8 device, u8 function);
+			u8 bus, u8 device, u8 function, u8 device_type);
 
 const char *smbios_system_manufacturer(void);
 const char *smbios_system_product_name(void);

@@ -962,7 +962,7 @@ int smbios_write_type38(unsigned long *current, int *handle,
 
 int smbios_write_type41(unsigned long *current, int *handle,
 			const char *name, u8 instance, u16 segment,
-			u8 bus, u8 device, u8 function)
+			u8 bus, u8 device, u8 function, u8 device_type)
 {
 	struct smbios_type41 *t = (struct smbios_type41 *)*current;
 	int len = sizeof(struct smbios_type41);
@@ -972,7 +972,7 @@ int smbios_write_type41(unsigned long *current, int *handle,
 	t->handle = *handle;
 	t->length = len - 2;
 	t->reference_designation = smbios_add_string(t->eos, name);
-	t->device_type = SMBIOS_DEVICE_TYPE_OTHER;
+	t->device_type = device_type;
 	t->device_status = 1;
 	t->device_type_instance = instance;
 	t->segment_group_number = segment;

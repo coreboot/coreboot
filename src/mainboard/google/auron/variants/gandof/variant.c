@@ -29,7 +29,8 @@ int variant_smbios_data(struct device *dev, int *handle, unsigned long *current)
 		BOARD_TRACKPAD_I2C_BUS,		/* segment */
 		BOARD_TRACKPAD_I2C_ADDR,	/* bus */
 		0,				/* device */
-		0);				/* function */
+		0,				/* function */
+		SMBIOS_DEVICE_TYPE_OTHER);	/* device type */
 
 	return len;
 }

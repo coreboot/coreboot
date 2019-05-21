@@ -57,7 +57,8 @@ static int parrot_onboard_smbios_data(struct device *dev, int *handle,
 			0,				/* segment */
 			BOARD_TRACKPAD_I2C_ADDR,	/* bus */
 			0,				/* device */
-			0);				/* function */
+			0,				/* function */
+			SMBIOS_DEVICE_TYPE_OTHER);	/* device type */
 	} else {
 		len += smbios_write_type41(
 			current, handle,
@@ -66,7 +67,8 @@ static int parrot_onboard_smbios_data(struct device *dev, int *handle,
 			0,				/* segment */
 			BOARD_TRACKPAD_I2C_ADDR,	/* bus */
 			0,				/* device */
-			0);				/* function */
+			0,				/* function */
+			SMBIOS_DEVICE_TYPE_OTHER);	/* device type */
 	}
 
 	return len;

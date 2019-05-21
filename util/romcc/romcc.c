@@ -20944,7 +20944,8 @@ static void scc_visit_phi(struct compile_state *state, struct scc_state *scc,
 			}
 		}
 		/* meet(const, const) = const or lattice low */
-		else if (!constants_equal(state, lnode->val, tmp->val)) {
+		else if (lnode->val != 0 &&
+				!constants_equal(state, lnode->val, tmp->val)) {
 			lnode->val = 0;
 		}
 

@@ -6228,6 +6228,8 @@ static size_t field_offset(struct compile_state *state,
 			size += size_of(state, member->left);
 			member = member->right;
 		}
+		if (member == NULL)
+			internal_error(state, 0, "Member is NULL");
 		size += needed_padding(state, member, size);
 	}
 	else if ((type->type & TYPE_MASK) == TYPE_UNION) {
@@ -6350,10 +6352,12 @@ static size_t index_offset(struct compile_state *state,
 			i++;
 			member = member->right;
 		}
-		size += needed_padding(state, member, size);
+		if (member == NULL)
+			internal_error(state, 0, "Member is NULL");
 		if (i != index) {
 			internal_error(state, 0, "Missing member index: %u", index);
 		}
+		size += needed_padding(state, member, size);
 	}
 	else if ((type->type & TYPE_MASK) == TYPE_JOIN) {
 		ulong_t i;
@@ -6402,6 +6406,8 @@ static size_t index_reg_offset(struct compile_state *state,
 			i++;
 			member = member->right;
 		}
+		if (member == NULL)
+			internal_error(state, 0, "Member is NULL");
 		if (i != index) {
 			internal_error(state, 0, "Missing member index: %u", index);
 		}
@@ -6640,6 +6646,8 @@ static struct type *reg_type(
 				offset += size;
 				member = member->right;
 			}
+			if (member == NULL)
+				internal_error(state, 0, "Member is NULL");
 			offset += reg_needed_padding(state, member, offset);
 			member = reg_type(state, member, reg_offset - offset);
 			break;

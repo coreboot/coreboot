@@ -166,6 +166,7 @@ postcar-y += imd.c
 postcar-y += romstage_handoff.c
 
 bootblock-y += hexdump.c
+postcar-y += hexdump.c
 ramstage-y += hexdump.c
 romstage-y += hexdump.c
 verstage-y += hexdump.c

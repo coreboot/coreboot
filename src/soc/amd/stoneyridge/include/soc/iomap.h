@@ -26,9 +26,9 @@
 #include <amdblocks/acpimmio_map.h>
 
 /* I2C fixed address */
-#define I2C_BASE_ADDRESS	0xfedc2000
-#define I2C_DEVICE_SIZE		0x00001000
-#define I2C_DEVICE_COUNT	4
+#define I2C_BASE_ADDRESS		0xfedc2000
+#define I2C_DEVICE_SIZE			0x00001000
+#define I2C_DEVICE_COUNT		4
 
 #if CONFIG(HPET_ADDRESS_OVERRIDE)
 #error HPET address override is not allowed and must be fixed at 0xfed00000

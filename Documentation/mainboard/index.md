@@ -90,6 +90,10 @@ The boards in this section are not real mainboards, but emulators.
 
 - [RK9 Flash Header](roda/rk9/flash_header.md)
 
+## PC Engines
+
+- [APU1](pcengines/apu1.md)
+
 ## SiFive
 
 - [SiFive HiFive Unleashed](sifive/hifive-unleashed.md)

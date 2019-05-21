@@ -30,6 +30,9 @@
 #include <memory_info.h>
 #include <spd.h>
 #include <cbmem.h>
+#include <device/pci_ids.h>
+#include <device/pci_def.h>
+#include <device/pci.h>
 #if CONFIG(CHROMEOS)
 #include <vendorcode/google/chromeos/gnvs.h>
 #endif
@@ -48,6 +51,41 @@ static u8 smbios_checksum(u8 *p, u32 length)
 	while (length--)
 		ret += *p++;
 	return -ret;
+}
+
+/* Get the device type 41 from the dev struct */
+static u8 smbios_get_device_type_from_dev(struct device *dev)
+{
+	u16 pci_basesubclass = (dev->class >> 8) & 0xFFFF;
+
+	switch (pci_basesubclass) {
+	case PCI_CLASS_NOT_DEFINED:
+		return SMBIOS_DEVICE_TYPE_OTHER;
+	case PCI_CLASS_DISPLAY_VGA:
+	case PCI_CLASS_DISPLAY_XGA:
+	case PCI_CLASS_DISPLAY_3D:
+	case PCI_CLASS_DISPLAY_OTHER:
+		return SMBIOS_DEVICE_TYPE_VIDEO;
+	case PCI_CLASS_STORAGE_SCSI:
+		return SMBIOS_DEVICE_TYPE_SCSI;
+	case PCI_CLASS_NETWORK_ETHERNET:
+		return SMBIOS_DEVICE_TYPE_ETHERNET;
+	case PCI_CLASS_NETWORK_TOKEN_RING:
+		return SMBIOS_DEVICE_TYPE_TOKEN_RING;
+	case PCI_CLASS_MULTIMEDIA_VIDEO:
+	case PCI_CLASS_MULTIMEDIA_AUDIO:
+	case PCI_CLASS_MULTIMEDIA_PHONE:
+	case PCI_CLASS_MULTIMEDIA_OTHER:
+		return SMBIOS_DEVICE_TYPE_SOUND;
+	case PCI_CLASS_STORAGE_ATA:
+		return SMBIOS_DEVICE_TYPE_PATA;
+	case PCI_CLASS_STORAGE_SATA:
+		return SMBIOS_DEVICE_TYPE_SATA;
+	case PCI_CLASS_STORAGE_SAS:
+		return SMBIOS_DEVICE_TYPE_SAS;
+	default:
+		return SMBIOS_DEVICE_TYPE_UNKNOWN;
+	}
 }
 
 
@@ -999,6 +1037,38 @@ static int smbios_write_type127(unsigned long *current, int handle)
 	return len;
 }
 
+/* Generate Type41 entries from devicetree */
+static int smbios_walk_device_tree_type41(struct device *dev, int *handle,
+					unsigned long *current)
+{
+	static u8 type41_inst_cnt[SMBIOS_DEVICE_TYPE_COUNT + 1] = {};
+
+	if (dev->path.type != DEVICE_PATH_PCI)
+		return 0;
+	if (!dev->on_mainboard)
+		return 0;
+
+	u8 device_type = smbios_get_device_type_from_dev(dev);
+
+	if (device_type == SMBIOS_DEVICE_TYPE_OTHER ||
+	    device_type == SMBIOS_DEVICE_TYPE_UNKNOWN)
+		return 0;
+
+	if (device_type > SMBIOS_DEVICE_TYPE_COUNT)
+		return 0;
+
+	const char *name = get_pci_subclass_name(dev);
+
+	return smbios_write_type41(current, handle,
+					name, // name
+					type41_inst_cnt[device_type]++, // inst
+					0, // segment
+					dev->bus->secondary, //bus
+					PCI_SLOT(dev->path.pci.devfn), // device
+					PCI_FUNC(dev->path.pci.devfn), // func
+					device_type);
+}
+
 /* Generate Type9 entries from devicetree */
 static int smbios_walk_device_tree_type9(struct device *dev, int *handle,
 					 unsigned long *current)
@@ -1062,6 +1132,7 @@ static int smbios_walk_device_tree(struct device *tree, int *handle,
 			len += dev->ops->get_smbios_data(dev, handle, current);
 		}
 		len += smbios_walk_device_tree_type9(dev, handle, current);
+		len += smbios_walk_device_tree_type41(dev, handle, current);
 	}
 	return len;
 }

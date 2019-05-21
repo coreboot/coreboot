@@ -756,6 +756,8 @@ typedef enum {
 	SMBIOS_DEVICE_TYPE_SAS,
 } smbios_onboard_device_type;
 
+#define SMBIOS_DEVICE_TYPE_COUNT 10
+
 struct smbios_type41 {
 	u8 type;
 	u8 length;

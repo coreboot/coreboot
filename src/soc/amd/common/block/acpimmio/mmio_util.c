@@ -69,34 +69,34 @@ void pm_io_write32(uint8_t reg, uint32_t value)
 
 /* smi read/write - access registers at 0xfed80200 */
 
-uint8_t smi_read8(uint8_t offset)
+uint8_t smi_read8(uint8_t reg)
 {
-	return read8((void *)(ACPIMMIO_SMI_BASE + offset));
+	return read8((void *)(ACPIMMIO_SMI_BASE + reg));
 }
 
-uint16_t smi_read16(uint8_t offset)
+uint16_t smi_read16(uint8_t reg)
 {
-	return read16((void *)(ACPIMMIO_SMI_BASE + offset));
+	return read16((void *)(ACPIMMIO_SMI_BASE + reg));
 }
 
-uint32_t smi_read32(uint8_t offset)
+uint32_t smi_read32(uint8_t reg)
 {
-	return read32((void *)(ACPIMMIO_SMI_BASE + offset));
+	return read32((void *)(ACPIMMIO_SMI_BASE + reg));
 }
 
-void smi_write8(uint8_t offset, uint8_t value)
+void smi_write8(uint8_t reg, uint8_t value)
 {
-	write8((void *)(ACPIMMIO_SMI_BASE + offset), value);
+	write8((void *)(ACPIMMIO_SMI_BASE + reg), value);
 }
 
-void smi_write16(uint8_t offset, uint16_t value)
+void smi_write16(uint8_t reg, uint16_t value)
 {
-	write16((void *)(ACPIMMIO_SMI_BASE + offset), value);
+	write16((void *)(ACPIMMIO_SMI_BASE + reg), value);
 }
 
-void smi_write32(uint8_t offset, uint32_t value)
+void smi_write32(uint8_t reg, uint32_t value)
 {
-	write32((void *)(ACPIMMIO_SMI_BASE + offset), value);
+	write32((void *)(ACPIMMIO_SMI_BASE + reg), value);
 }
 
 /* pm read/write - access registers at 0xfed80300 */
@@ -135,45 +135,45 @@ void pm_write32(u8 reg, u32 value)
 
 /* biosram read/write - access registers at 0xfed80500 */
 
-uint8_t biosram_read8(uint8_t offset)
+uint8_t biosram_read8(uint8_t reg)
 {
-	return read8((void *)(ACPIMMIO_BIOSRAM_BASE + offset));
+	return read8((void *)(ACPIMMIO_BIOSRAM_BASE + reg));
 }
 
-uint16_t biosram_read16(uint8_t offset) /* Must be 1 byte at a time */
+uint16_t biosram_read16(uint8_t reg) /* Must be 1 byte at a time */
 {
 	int i;
 	uint16_t value = 0;
 	for (i = sizeof(value) - 1 ; i >= 0 ; i--)
-		value = (value << 8) | biosram_read8(offset + i);
+		value = (value << 8) | biosram_read8(reg + i);
 	return value;
 }
 
-uint32_t biosram_read32(uint8_t offset)
+uint32_t biosram_read32(uint8_t reg)
 {
-	uint32_t value = biosram_read16(offset + sizeof(uint16_t)) << 16;
-	return value | biosram_read16(offset);
+	uint32_t value = biosram_read16(reg + sizeof(uint16_t)) << 16;
+	return value | biosram_read16(reg);
 }
 
-void biosram_write8(uint8_t offset, uint8_t value)
+void biosram_write8(uint8_t reg, uint8_t value)
 {
-	write8((void *)(ACPIMMIO_BIOSRAM_BASE + offset), value);
+	write8((void *)(ACPIMMIO_BIOSRAM_BASE + reg), value);
 }
 
-void biosram_write16(uint8_t offset, uint16_t value)
+void biosram_write16(uint8_t reg, uint16_t value)
 {
 	int i;
 	for (i = 0 ; i < sizeof(value) ; i++) {
-		biosram_write8(offset + i, value & 0xff);
+		biosram_write8(reg + i, value & 0xff);
 		value >>= 8;
 	}
 }
 
-void biosram_write32(uint8_t offset, uint32_t value)
+void biosram_write32(uint8_t reg, uint32_t value)
 {
 	int i;
 	for (i = 0 ; i < sizeof(value) ; i++) {
-		biosram_write8(offset + i, value & 0xff);
+		biosram_write8(reg + i, value & 0xff);
 		value >>= 8;
 	}
 }

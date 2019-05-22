@@ -2112,12 +2112,8 @@ static void sdram_post_jedec_initialization(struct sys_info *sysinfo)
 	if (sysinfo->interleaved) {
 
 		reg32 = MCHBAR32(DCC);
-#if CONFIG(CHANNEL_XOR_RANDOMIZATION)
 		reg32 &= ~(1 << 10);
 		reg32 |= (1 << 9);
-#else
-		reg32 &= ~(1 << 9);
-#endif
 		MCHBAR32(DCC) = reg32;
 	}
 

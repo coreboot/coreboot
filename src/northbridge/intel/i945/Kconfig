@@ -56,10 +56,6 @@ config I945_LVDS
 	  for the LVDS port. A linear framebuffer is only supported for
 	  LVDS.
 
-config CHANNEL_XOR_RANDOMIZATION
-	bool
-	default n
-
 config MMCONF_BASE_ADDRESS
 	hex
 	default 0xf0000000

@@ -37,13 +37,12 @@ static void aspeed_ast2050_set_resources(struct device *dev)
 
 static void aspeed_ast2050_init(struct device *dev)
 {
-	u8 ret;
 	struct drm_device drm_dev;
 
 	drm_dev.pdev = dev;
 
 	printk(BIOS_INFO, "ASpeed AST2050: initializing video device\n");
-	ret = ast_driver_load(&drm_dev, 0);
+	ast_driver_load(&drm_dev, 0);
 
 	/* Unlock extended configuration registers */
 	outb(0x80, 0x3d4); outb(0xa8, 0x3d5);

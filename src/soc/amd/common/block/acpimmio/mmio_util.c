@@ -142,11 +142,7 @@ uint8_t biosram_read8(uint8_t reg)
 
 uint16_t biosram_read16(uint8_t reg) /* Must be 1 byte at a time */
 {
-	int i;
-	uint16_t value = 0;
-	for (i = sizeof(value) - 1 ; i >= 0 ; i--)
-		value = (value << 8) | biosram_read8(reg + i);
-	return value;
+	return (biosram_read8(reg + sizeof(uint8_t)) << 8 | biosram_read8(reg));
 }
 
 uint32_t biosram_read32(uint8_t reg)
@@ -162,20 +158,16 @@ void biosram_write8(uint8_t reg, uint8_t value)
 
 void biosram_write16(uint8_t reg, uint16_t value)
 {
-	int i;
-	for (i = 0 ; i < sizeof(value) ; i++) {
-		biosram_write8(reg + i, value & 0xff);
-		value >>= 8;
-	}
+	biosram_write8(reg, value & 0xff);
+	value >>= 8;
+	biosram_write8(reg + sizeof(uint8_t), value & 0xff);
 }
 
 void biosram_write32(uint8_t reg, uint32_t value)
 {
-	int i;
-	for (i = 0 ; i < sizeof(value) ; i++) {
-		biosram_write8(reg + i, value & 0xff);
-		value >>= 8;
-	}
+	biosram_write16(reg, value & 0xffff);
+	value >>= 16;
+	biosram_write16(reg + sizeof(uint16_t), value & 0xffff);
 }
 
 /* cmosram read/write - access registers at 0xfed80600 - currently unused */

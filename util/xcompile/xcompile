@@ -227,33 +227,6 @@ GCC_CC_${TARCH}:=${GCC}
 GCC_CFLAGS_${TARCH}:=${CFLAGS_GCC}
 GCC_COMPILER_RT_${TARCH}:=${CC_RT_GCC}
 GCC_COMPILER_RT_FLAGS_${TARCH}:=${CC_RT_EXTRA_GCC}
-EOF
-
-# Generally the x86 should build for i686 -- no sse/mmx
-# instructions since SMM modules are compiled using these
-# flags. Note that this doesn't prevent a project using
-# xcompile to explicitly specify -mmsse, etc flags.
-# The Quark processor doesn't support the instructions
-# introduced with the Pentium 6 architecture, so allow it
-# to use i586 instead.
-if [ "${TARCH}" = "x86_64" ]; then
-cat <<EOF
-	GCC_CFLAGS_${TARCH} += -march=nocona -malign-data=abi
-EOF
-fi
-
-if [ "${TARCH}" = "x86_32" ]; then
-cat <<EOF
-
-ifneq (\$(CONFIG_USE_MARCH_586)\$(CONFIG_LP_USE_MARCH_586),)
-	GCC_CFLAGS_${TARCH} += -march=i586
-else
-	GCC_CFLAGS_${TARCH} += -march=i686
-endif
-EOF
-fi
-
-cat <<EOF
 
 # Clang
 CLANG_CC_${TARCH}:=${CLANG}
@@ -265,6 +238,7 @@ CLANG_CFLAGS_${TARCH}+=-Wno-shift-overflow -Wno-address-of-packed-member -Wno-in
 CLANG_COMPILER_RT_${TARCH}:=${CC_RT_CLANG}
 CLANG_COMPILER_RT_FLAGS_${TARCH}:=${CC_RT_EXTRA_CLANG}
 
+# GCC/Clang Common
 ifeq (\$(CONFIG_COMPILER_GCC)\$(CONFIG_LP_COMPILER_GCC),y)
 	CC_${TARCH}:=\$(GCC_CC_${TARCH})
 	CFLAGS_${TARCH}:=\$(GCC_CFLAGS_${TARCH})
@@ -276,6 +250,33 @@ else
 	COMPILER_RT_${TARCH}:=\$(CLANG_COMPILER_RT_${TARCH})
 	COMPILER_RT_FLAGS_${TARCH}:=\$(CLANG_COMPILER_RT_FLAGS_${TARCH})
 endif
+EOF
+
+# Generally the x86 should build for i686 -- no sse/mmx
+# instructions since SMM modules are compiled using these
+# flags. Note that this doesn't prevent a project using
+# xcompile to explicitly specify -mmsse, etc flags.
+# The Quark processor doesn't support the instructions
+# introduced with the Pentium 6 architecture, so allow it
+# to use i586 instead.
+if [ "${TARCH}" = "x86_64" ]; then
+cat <<EOF
+	CFLAGS_${TARCH} += -march=nocona -malign-data=abi
+EOF
+fi
+
+if [ "${TARCH}" = "x86_32" ]; then
+cat <<EOF
+
+ifneq (\$(CONFIG_USE_MARCH_586)\$(CONFIG_LP_USE_MARCH_586),)
+	CFLAGS_${TARCH} += -march=i586
+else
+	CFLAGS_${TARCH} += -march=i686
+endif
+EOF
+fi
+
+cat <<EOF
 
 CPP_${TARCH}:=${GCCPREFIX}cpp
 AS_${TARCH}:=${GCCPREFIX}as ${ASFLAGS}

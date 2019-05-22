@@ -41,7 +41,6 @@ static inline void barrier(void)
 
 static u8 sampledqs(u32 addr, u8 lane, u8 channel)
 {
-	volatile u32 strobe;
 	u32 sample_offset = 0x400 * channel + 0x561 + lane * 4;
 
 	/* Reset the DQS probe */
@@ -50,7 +49,8 @@ static u8 sampledqs(u32 addr, u8 lane, u8 channel)
 	MCHBAR8(RESET_CNTL(channel)) |= 0x2;
 	udelay(2);
 	barrier();
-	strobe = read32((u32 *)addr);
+	/* Read strobe */
+	read32((u32 *)addr);
 	barrier();
 	return (MCHBAR8(sample_offset) >> 6) & 1;
 }

@@ -63,6 +63,7 @@
 #define I8042_KBCMD_EN			0xf4
 #define I8042_KBCMD_DEFAULT_DIS		0xf5
 #define I8042_KBCMD_SET_DEFAULT		0xf6
+#define I8042_KBCMD_ACK			0xfa
 #define I8042_KBCMD_RESEND		0xfe
 #define I8042_KBCMD_RESET		0xff
 

@@ -317,6 +317,13 @@ void keyboard_init(void)
 	/* Enable first PS/2 port */
 	i8042_cmd(I8042_CMD_EN_KB);
 
+	/* Reset keyboard and self test (keyboard side) */
+	ret = keyboard_cmd(I8042_KBCMD_RESET);
+	if (ret != I8042_KBCMD_ACK) {
+		printf("ERROR: Keyboard reset failed ACK: 0x%x\n", ret);
+		return;
+	}
+
 	/* Set scancode set 1 */
 	ret = keyboard_cmd(I8042_KBCMD_SET_SCANCODE);
 	if (!ret && !CONFIG(LP_PC_KEYBOARD_IGNORE_INIT_FAILURE))

@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" "http://www.w3.org/TR/2001/PR-SVG-20010719/DTD/svg10.dtd">
+<svg width="38cm" height="18cm" viewBox="118 98 744 344" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <g>
+    <rect style="fill: #ffffff" x="620" y="100" width="180" height="60"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 3; stroke: #000000" x="620" y="100" width="180" height="60"/>
+  </g>
+  <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:700" x="710" y="134.425">
+    <tspan x="710" y="134.425">DEVICE_EXTENSION</tspan>
+  </text>
+  <g>
+    <rect style="fill: #ffffff" x="300" y="100" width="320" height="60"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 3; stroke: #000000" x="300" y="100" width="320" height="60"/>
+  </g>
+  <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:700" x="460" y="134.425">
+    <tspan x="460" y="134.425">BIOS</tspan>
+  </text>
+  <g>
+    <rect style="fill: #ffffff" x="240" y="100" width="60" height="60"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 3; stroke: #000000" x="240" y="100" width="60" height="60"/>
+  </g>
+  <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:700" x="270" y="134.425">
+    <tspan x="270" y="134.425">IFD</tspan>
+  </text>
+  <g>
+    <rect style="fill: #ffffff" x="200" y="240" width="80" height="60"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 3; stroke: #000000" x="200" y="240" width="80" height="60"/>
+  </g>
+  <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:700" x="240" y="274.425">
+    <tspan x="240" y="274.425">IFWI</tspan>
+  </text>
+  <g>
+    <path style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" d="M 200 240 C 200,160 460,220 460,169.736"/>
+    <polygon style="fill: #000000" points="460,162.236 465,172.236 460,169.736 455,172.236 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="460,162.236 465,172.236 460,169.736 455,172.236 "/>
+  </g>
+  <g>
+    <path style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" d="M 700 240 C 700,160 460,220 460,169.736"/>
+    <polygon style="fill: #000000" points="460,162.236 465,172.236 460,169.736 455,172.236 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="460,162.236 465,172.236 460,169.736 455,172.236 "/>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="800" y="100" width="60" height="60"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 3; stroke: #000000" x="800" y="100" width="60" height="60"/>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="320" y="380" width="60" height="60"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 3; stroke: #000000" x="320" y="380" width="60" height="60"/>
+  </g>
+  <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:700" x="350" y="414.425">
+    <tspan x="350" y="414.425">FMAP</tspan>
+  </text>
+  <g>
+    <rect style="fill: #ffffff" x="440" y="380" width="100" height="60"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 3; stroke: #000000" x="440" y="380" width="100" height="60"/>
+  </g>
+  <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:700" x="490" y="414.425">
+    <tspan x="490" y="414.425">CONSOLE</tspan>
+  </text>
+  <g>
+    <rect style="fill: #ffffff" x="540" y="380" width="160" height="60"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 3; stroke: #000000" x="540" y="380" width="160" height="60"/>
+  </g>
+  <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:700" x="620" y="414.425">
+    <tspan x="620" y="414.425">COREBOOT(CBFS)</tspan>
+  </text>
+  <g>
+    <rect style="fill: #ffffff" x="700" y="380" width="140" height="60"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 3; stroke: #000000" x="700" y="380" width="140" height="60"/>
+  </g>
+  <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:700" x="770" y="414.425">
+    <tspan x="770" y="414.425">BIOS_UNUSABLE</tspan>
+  </text>
+  <g>
+    <rect style="fill: #ffffff" x="380" y="380" width="60" height="60"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 3; stroke: #000000" x="380" y="380" width="60" height="60"/>
+  </g>
+  <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:700" x="410" y="414.425">
+    <tspan x="410" y="414.425">MRC</tspan>
+  </text>
+  <g>
+    <rect style="fill: #ffffff" x="280" y="240" width="420" height="60"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 3; stroke: #000000" x="280" y="240" width="420" height="60"/>
+  </g>
+  <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:700" x="490" y="274.425">
+    <tspan x="490" y="274.425">OBB</tspan>
+  </text>
+  <g>
+    <path style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" d="M 320 380 C 320,300 490,360 490,311"/>
+    <polygon style="fill: #000000" points="495,311 490,301 485,311 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="495,311 490,301 485,311 "/>
+  </g>
+  <g>
+    <path style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" d="M 840 380 C 840,300 490,360 490,311"/>
+    <polygon style="fill: #000000" points="495,311 490,301 485,311 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="495,311 490,301 485,311 "/>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="120" y="380" width="60" height="60"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 3; stroke: #000000" x="120" y="380" width="60" height="60"/>
+  </g>
+  <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:700" x="150" y="414.425">
+    <tspan x="150" y="414.425">TXE</tspan>
+  </text>
+  <g>
+    <rect style="fill: #ffffff" x="180" y="380" width="120" height="60"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 3; stroke: #000000" x="180" y="380" width="120" height="60"/>
+  </g>
+  <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:700" x="240" y="414.425">
+    <tspan x="240" y="414.425">BOOTBLOCK</tspan>
+  </text>
+  <g>
+    <path style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" d="M 300 380 C 300,320 240,360 240,311"/>
+    <polygon style="fill: #000000" points="245,311 240,301 235,311 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="245,311 240,301 235,311 "/>
+  </g>
+  <g>
+    <path style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" d="M 120 380 C 120,320 240,360 240,311"/>
+    <polygon style="fill: #000000" points="245,311 240,301 235,311 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="245,311 240,301 235,311 "/>
+  </g>
+</svg>

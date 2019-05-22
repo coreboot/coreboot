@@ -7,6 +7,12 @@
 ### Bottom
 ![][overview_bottom]
 
+* **Legend**
+	* [BLUE][header_cn16_link]: UART0 / USB connector
+	* [GREEN][header_gpio_link]: UART1 / GPIO header
+	* [RED][header_cn22_link]: SPI header
+	* YELLOW: Indicates pin 1
+
 ## Mainboard components
 ### Platform
 ```eval_rst
@@ -46,6 +52,79 @@
 +---------------------+------------+
 ```
 
+### Debugging
+#### UART0 (CN16)
+This connector is located on the **bottom** side (see [here][overview_bottom_link]).
+![][header_cn16]
+
+
+#### UART1 (GPIO header)
+The GPIO header is located on the **bottom** side (see [here][overview_bottom_link]).
+![][header_gpio]
+
+## Building and flashing coreboot
+### Using the SPI header
+The SPI header is located on the **bottom** side (see [here][overview_bottom_link]).
+![][header_cn22]
+
+### Preperations
+In order to build coreboot, it's neccessary to extract some files from the vendor firmware. Make sure that you have a fully working dump.
+```bash
+[upsquared]$ ls
+firmware_vendor.rom
+```
+
+```bash
+[upsquared]$ mkdir extracted && cd extracted
+[extracted]$ ifdtool -x ../firmware_vendor.rom 
+File ../firmware_vendor.rom is 16777216 bytes
+Peculiar firmware descriptor, assuming Ibex Peak compatibility.
+  Flash Region 0 (Flash Descriptor): 00000000 - 00000fff 
+  Flash Region 1 (BIOS): 00001000 - 00efefff 
+  Flash Region 2 (Intel ME): 07fff000 - 00000fff (unused)
+  Flash Region 3 (GbE): 07fff000 - 00000fff (unused)
+  Flash Region 4 (Platform Data): 07fff000 - 00000fff (unused)
+  Flash Region 5 (Reserved): 00eff000 - 00ffefff 
+  Flash Region 6 (Reserved): 07fff000 - 00000fff (unused)
+  Flash Region 7 (Reserved): 07fff000 - 00000fff (unused)
+  Flash Region 8 (EC): 07fff000 - 00000fff (unused)
+```
+
+```bash
+flashregion_0_flashdescriptor.bin
+flashregion_1_bios.bin
+flashregion_5_reserved.bin
+```
+
+### Clean up
+```bash
+[coreboot]$ make distclean
+```
+
+### Configuring
+```bash
+[coreboot]$ touch .config
+[coreboot]$ ./util/scripts/config --enable VENDOR_UP
+[coreboot]$ ./util/scripts/config --enable BOARD_UP_SQUARED
+[coreboot]$ ./util/scripts/config --enable NEED_IFWI
+[coreboot]$ ./util/scripts/config --enable HAVE_IFD_BIN
+[coreboot]$ ./util/scripts/config --set-str IFWI_FILE_NAME "<flashregion_1_bios.bin>"
+[coreboot]$ ./util/scripts/config --set-str IFD_BIN_PATH "<flashregion_0_flashdescriptor.bin>"
+[coreboot]$ make olddefconfig
+```
+
+### Building
+```bash
+[coreboot]$ make
+```
+
+Now you should have a working and ready to use coreboot build at `build/coreboot.rom`.
+
+### Flashing
+```bash
+[coreboot]$ flashrom -p <your_programmer> -w build/coreboot.rom
+```
+
 ## Board status
 ### Working
 - bootblock, romstage, ramstage
@@ -78,22 +157,13 @@
 - mini PCIe
 - flashing with flashrom internally using Linux
 
-## Building and flashing coreboot
-### Building
 
-```bash
-make distclean
-touch .config
-./util/scripts/config --enable VENDOR_UP
-./util/scripts/config --enable BOARD_UP_SQUARED
-./util/scripts/config --enable NEED_IFWI
-./util/scripts/config --enable HAVE_IFD_BIN
-./util/scripts/config --set-str IFWI_FILE_NAME "<path_to_your_bios_region>"
-./util/scripts/config --set-str IFD_BIN_PATH "<path_to_your_ifd_region>"
-make olddefconfig
-```
-
-### Flashing
-
+[header_cn16]: header_cn16_10pin_uart0.svg
+[header_cn16_link]: #uart0-cn16
+[header_cn22]: header_cn22_12pin_spi.svg
+[header_cn22_link]: #using-the-spi-header
+[header_gpio]: header_40pin_gpio_uart1.svg
+[header_gpio_link]: #uart1-gpio-header
 [overview_top]: top.jpg
 [overview_bottom]: bottom.jpg
+[overview_bottom_link]: #bottom

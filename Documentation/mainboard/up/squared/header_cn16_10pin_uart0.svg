@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" "http://www.w3.org/TR/2001/PR-SVG-20010719/DTD/svg10.dtd">
+<svg width="22cm" height="9cm" viewBox="416 112 425 163" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <g>
+    <rect style="fill: #ffffff" x="420" y="140" width="420" height="60"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="420" y="140" width="420" height="60"/>
+  </g>
+  <g>
+    <rect style="fill: #00ff00" x="440" y="160" width="20" height="20"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="440" y="160" width="20" height="20"/>
+  </g>
+  <g>
+    <rect style="fill: #00ff00" x="480" y="160" width="20" height="20"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="480" y="160" width="20" height="20"/>
+  </g>
+  <g>
+    <rect style="fill: #00ff00" x="520" y="160" width="20" height="20"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="520" y="160" width="20" height="20"/>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="560" y="160" width="20" height="20"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="560" y="160" width="20" height="20"/>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="600" y="160" width="20" height="20"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="600" y="160" width="20" height="20"/>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="640" y="160" width="20" height="20"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="640" y="160" width="20" height="20"/>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="680" y="160" width="20" height="20"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="680" y="160" width="20" height="20"/>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="720" y="160" width="20" height="20"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="720" y="160" width="20" height="20"/>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="760" y="160" width="20" height="20"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="760" y="160" width="20" height="20"/>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="800" y="160" width="20" height="20"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="800" y="160" width="20" height="20"/>
+  </g>
+  <g>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="820,140 820,149 "/>
+    <polygon style="fill: #000000" points="815,149 820,159 825,149 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="815,149 820,159 825,149 "/>
+  </g>
+  <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="810" y="174.425">
+    <tspan x="810" y="174.425">1</tspan>
+  </text>
+  <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="770" y="174.425">
+    <tspan x="770" y="174.425">2</tspan>
+  </text>
+  <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="650" y="174.425">
+    <tspan x="650" y="174.425">5</tspan>
+  </text>
+  <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="690" y="174.425">
+    <tspan x="690" y="174.425">4</tspan>
+  </text>
+  <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="730" y="174.425">
+    <tspan x="730" y="174.425">3</tspan>
+  </text>
+  <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="610" y="174.425">
+    <tspan x="610" y="174.425">6</tspan>
+  </text>
+  <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="490" y="174.425">
+    <tspan x="490" y="174.425">9</tspan>
+  </text>
+  <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="530" y="174.425">
+    <tspan x="530" y="174.425">8</tspan>
+  </text>
+  <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="570" y="174.425">
+    <tspan x="570" y="174.425">7</tspan>
+  </text>
+  <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="450" y="174.425">
+    <tspan x="450" y="174.425">10</tspan>
+  </text>
+  <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:700" x="520" y="264.425">
+    <tspan x="520" y="264.425">GND</tspan>
+  </text>
+  <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:700" x="480" y="236.425">
+    <tspan x="480" y="236.425">UART0</tspan>
+    <tspan x="480" y="252.425">RX</tspan>
+  </text>
+  <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:700" x="440" y="256.425">
+    <tspan x="440" y="256.425">UART0</tspan>
+    <tspan x="440" y="272.425">TX</tspan>
+  </text>
+  <g>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="440,240 440,191 "/>
+    <polygon style="fill: #000000" points="445,191 440,181 435,191 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="445,191 440,181 435,191 "/>
+  </g>
+  <g>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="480,220 480,191 "/>
+    <polygon style="fill: #000000" points="485,191 480,181 475,191 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="485,191 480,181 475,191 "/>
+  </g>
+  <g>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="520,240 520,191 "/>
+    <polygon style="fill: #000000" points="525,191 520,181 515,191 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="525,191 520,181 515,191 "/>
+  </g>
+  <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:700" x="640" y="124.425">
+    <tspan x="640" y="124.425">10 pin UART0/USB2 header (CN16)</tspan>
+  </text>
+</svg>

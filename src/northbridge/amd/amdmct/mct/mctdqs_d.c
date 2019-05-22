@@ -1192,8 +1192,6 @@ void mct_Write1LTestPattern_D(struct MCTStatStruc *pMCTstat,
 void mct_Read1LTestPattern_D(struct MCTStatStruc *pMCTstat,
 				struct DCTStatStruc *pDCTstat, u32 addr)
 {
-	u32 value;
-
 	/* BIOS issues the remaining (Ntrain - 2) reads after checking that
 	 * F2x11C[PrefDramTrainMode] is cleared. These reads must be to
 	 * consecutive cache lines (i.e., 64 bytes apart) and must not cross
@@ -1205,5 +1203,5 @@ void mct_Read1LTestPattern_D(struct MCTStatStruc *pMCTstat,
 	SetUpperFSbase(addr);
 
 	/* 1st move causes read fill (to exclusive or shared)*/
-	value = read32_fs(addr << 8);
+	read32_fs(addr << 8);
 }

@@ -41,7 +41,6 @@ wait_iobp(void)
 static u32
 read_iobp(u32 address)
 {
-	volatile u32 tmp;
 	u32 ret;
 
 	RCBA32(IOBPIRI) = address;
@@ -49,14 +48,13 @@ read_iobp(u32 address)
 	wait_iobp();
 	ret = RCBA32(IOBPD);
 	wait_iobp();
-	tmp = RCBA8(IOBPS); // call wait_iobp() instead here?
+	RCBA8(IOBPS); // call wait_iobp() instead here?
 	return ret;
 }
 
 static void
 write_iobp(u32 address, u32 val)
 {
-	volatile u32 tmp;
 	/* this function was probably pch_iobp_update with the andvalue
 	 * being 0. So either the IOBP read can be removed or this function
 	 * and the pch_iobp_update function in ramstage could be merged */
@@ -68,7 +66,7 @@ write_iobp(u32 address, u32 val)
 	wait_iobp();
 	RCBA16(IOBPS) = (RCBA16(IOBPS) & 0x1ff) | 0x600;
 
-	tmp = RCBA8(IOBPS); // call wait_iobp() instead here?
+	RCBA8(IOBPS); // call wait_iobp() instead here?
 }
 
 void early_pch_init_native_dmi_pre(void)
@@ -85,14 +83,12 @@ void early_pch_init_native_dmi_pre(void)
 
 void early_pch_init_native_dmi_post(void)
 {
-	volatile u32 tmp;
-
-	tmp = RCBA32(0x0050);	// !!! = 0x01200654
+	RCBA32(0x0050);	// !!! = 0x01200654
 	RCBA32(0x0050) = 0x01200654;
-	tmp = RCBA32(0x0050);	// !!! = 0x01200654
+	RCBA32(0x0050);	// !!! = 0x01200654
 	RCBA32(0x0050) = 0x012a0654;
-	tmp = RCBA32(0x0050);	// !!! = 0x012a0654
-	tmp = RCBA8(0x1114);	// !!! = 0x00
+	RCBA32(0x0050);	// !!! = 0x012a0654
+	RCBA8(0x1114);	// !!! = 0x00
 	RCBA8(0x1114) = 0x05;
 
 	/*
@@ -119,7 +115,7 @@ void early_pch_init_native_dmi_post(void)
 	 */
 	RCBA32(0x2020) = (1 << 31) | (1 << 24) | (0x11 << 1);
 	/* Read back register */
-	tmp = RCBA32(0x2020);
+	RCBA32(0x2020);
 
 	/* Virtual Channel private Resource Control Register.
 	 * Enable channel.
@@ -128,7 +124,7 @@ void early_pch_init_native_dmi_post(void)
 	 */
 	RCBA32(0x2030) = (1 << 31) | (2 << 24) | (0x22 << 1);
 	/* Read back register */
-	tmp = RCBA32(0x2030);
+	RCBA32(0x2030);
 
 	/* Virtual Channel ME Resource Control Register.
 	 * Enable channel.
@@ -140,7 +136,7 @@ void early_pch_init_native_dmi_post(void)
 	/* Lock Virtual Channel Resource control register. */
 	RCBA32(0x0050) |= 0x80000000;
 	/* Read back register */
-	tmp = RCBA32(0x0050);
+	RCBA32(0x0050);
 
 	/* Wait for virtual channels negotiation pending */
 	while (RCBA16(0x201a) & VCNEGPND)
@@ -156,24 +152,23 @@ void early_pch_init_native_dmi_post(void)
 void
 early_pch_init_native (void)
 {
-	volatile u32 tmp;
 	pci_write_config8 (SOUTHBRIDGE, 0xa6,
 			    pci_read_config8 (SOUTHBRIDGE, 0xa6) | 2);
 
 	RCBA32(0x2088) = 0x00109000;
-	tmp = RCBA32(0x20ac); // !!! = 0x00000000
+	RCBA32(0x20ac); // !!! = 0x00000000
 	RCBA32(0x20ac) = 0x40000000;
 	RCBA32(0x100c) = 0x01110000;
 	RCBA8(0x2340) = 0x1b;
-	tmp = RCBA32(0x2314); // !!! = 0x0a080000
+	RCBA32(0x2314); // !!! = 0x0a080000
 	RCBA32(0x2314) = 0x0a280000;
-	tmp = RCBA32(0x2310); // !!! = 0xc809605b
+	RCBA32(0x2310); // !!! = 0xc809605b
 	RCBA32(0x2310) = 0xa809605b;
 	RCBA32(0x2324) = 0x00854c74;
-	tmp = RCBA8(0x0400);  // !!! = 0x00
-	tmp = RCBA32(0x2310); // !!! = 0xa809605b
+	RCBA8(0x0400);  // !!! = 0x00
+	RCBA32(0x2310); // !!! = 0xa809605b
 	RCBA32(0x2310) = 0xa809605b;
-	tmp = RCBA32(0x2310); // !!! = 0xa809605b
+	RCBA32(0x2310); // !!! = 0xa809605b
 	RCBA32(0x2310) = 0xa809605b;
 
 	write_iobp(0xea007f62, 0x00590133);

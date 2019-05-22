@@ -1989,7 +1989,7 @@ static struct occurrence *new_occurrence(struct compile_state *state)
 		(last->line == line) &&
 		(last->function == function) &&
 		((last->filename == filename) ||
-			(strcmp(last->filename, filename) == 0)))
+		(filename != NULL && strcmp(last->filename, filename) == 0)))
 	{
 		get_occurrence(last);
 		return last;

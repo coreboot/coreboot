@@ -1452,9 +1452,8 @@ static void test_timC(ramctr_timing * ctrl, int channel, int slotrank)
 	int lane;
 
 	FOR_ALL_LANES {
-		volatile u32 tmp;
 		MCHBAR32(0x4340 + 0x400 * channel + 4 * lane) = 0;
-		tmp = MCHBAR32(0x4140 + 0x400 * channel + 4 * lane);
+		MCHBAR32(0x4140 + 0x400 * channel + 4 * lane);
 	}
 
 	wait_428c(channel);
@@ -2026,9 +2025,8 @@ int write_training(ramctr_timing * ctrl)
 	MCHBAR32_OR(0x5030, 8);
 
 	FOR_ALL_POPULATED_CHANNELS {
-		volatile u32 tmp;
 		MCHBAR32_AND(0x4020 + 0x400 * channel, ~0x00200000);
-		tmp = MCHBAR32(0x428c + 0x400 * channel);
+		MCHBAR32(0x428c + 0x400 * channel);
 		wait_428c(channel);
 
 		/* DRAM command ZQCS */
@@ -2373,9 +2371,8 @@ static int discover_edges_real(ramctr_timing *ctrl, int channel, int slotrank,
 		program_timings(ctrl, channel);
 
 		FOR_ALL_LANES {
-			volatile u32 tmp;
 			MCHBAR32(0x4340 + 0x400 * channel + 4 * lane) = 0;
-			tmp = MCHBAR32(0x400 * channel + 4 * lane + 0x4140);
+			MCHBAR32(0x400 * channel + 4 * lane + 0x4140);
 		}
 
 		wait_428c(channel);
@@ -2454,8 +2451,7 @@ int discover_edges(ramctr_timing *ctrl)
 		fill_pattern0(ctrl, channel, 0, 0);
 		MCHBAR32(0x4288 + (channel << 10)) = 0;
 		FOR_ALL_LANES {
-			volatile u32 tmp;
-			tmp = MCHBAR32(0x400 * channel + lane * 4 + 0x4140);
+			MCHBAR32(0x400 * channel + lane * 4 + 0x4140);
 		}
 
 		FOR_ALL_POPULATED_RANKS FOR_ALL_LANES {
@@ -2655,10 +2651,9 @@ static int discover_edges_write_real(ramctr_timing *ctrl, int channel,
 				program_timings(ctrl, channel);
 
 				FOR_ALL_LANES {
-					volatile u32 tmp;
 					MCHBAR32(0x4340 + 0x400 * channel +
 						4 * lane) = 0;
-					tmp = MCHBAR32(0x400 * channel +
+					MCHBAR32(0x400 * channel +
 						4 * lane + 0x4140);
 				}
 				wait_428c(channel);
@@ -2703,8 +2698,7 @@ static int discover_edges_write_real(ramctr_timing *ctrl, int channel,
 
 				wait_428c(channel);
 				FOR_ALL_LANES {
-					volatile u32 tmp;
-					tmp = MCHBAR32(0x4340 +
+					MCHBAR32(0x4340 +
 					       0x400 * channel + lane * 4);
 				}
 

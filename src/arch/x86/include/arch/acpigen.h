@@ -420,6 +420,12 @@ void acpigen_write_opregion(struct opregion *opreg);
  */
 void acpigen_write_field(const char *name, struct fieldlist *l, size_t count,
 			 uint8_t flags);
+/*
+ * Generate ACPI AML code for IndexField
+ * This function takes input index name, data name, fieldlist, count & flags.
+ */
+void acpigen_write_indexfield(const char *idx, const char *data,
+			      struct fieldlist *l, size_t count, uint8_t flags);
 
 int get_cst_entries(acpi_cstate_t **);
 

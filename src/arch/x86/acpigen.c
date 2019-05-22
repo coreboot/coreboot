@@ -514,6 +514,63 @@ void acpigen_write_field(const char *name, struct fieldlist *l, size_t count,
 	acpigen_pop_len();
 }
 
+/*
+ * Generate ACPI AML code for IndexField
+ * Arg0: region name
+ * Arg1: Pointer to struct fieldlist.
+ * Arg2: no. of entries in Arg1
+ * Arg3: flags which indicate filed access type, lock rule  & update rule.
+ * Example with fieldlist
+ * struct fieldlist l[] = {
+ *	FIELDLIST_OFFSET(0x84),
+ *	FIELDLIST_NAMESTR("PMCS", 2),
+ *	};
+ * acpigen_write_field("IDX", "DATA" l, ARRAY_SIZE(l), FIELD_ANYACC |
+ *						       FIELD_NOLOCK |
+ *						       FIELD_PRESERVE);
+ * Output:
+ * IndexField (IDX, DATA, AnyAcc, NoLock, Preserve)
+ *	{
+ *		Offset (0x84),
+ *		PMCS,   2
+ *	}
+ */
+void acpigen_write_indexfield(const char *idx, const char *data,
+			      struct fieldlist *l, size_t count, uint8_t flags)
+{
+	uint16_t i;
+	uint32_t current_bit_pos = 0;
+
+	/* FieldOp */
+	acpigen_emit_ext_op(INDEX_FIELD_OP);
+	/* Package Length */
+	acpigen_write_len_f();
+	/* NameString 4 chars only */
+	acpigen_emit_simple_namestring(idx);
+	/* NameString 4 chars only */
+	acpigen_emit_simple_namestring(data);
+	/* Field Flag */
+	acpigen_emit_byte(flags);
+
+	for (i = 0; i < count; i++) {
+		switch (l[i].type) {
+		case NAME_STRING:
+			acpigen_write_field_name(l[i].name, l[i].bits);
+			current_bit_pos += l[i].bits;
+			break;
+		case OFFSET:
+			acpigen_write_field_offset(l[i].bits, current_bit_pos);
+			current_bit_pos = l[i].bits;
+			break;
+		default:
+			printk(BIOS_ERR, "%s: Invalid field type 0x%X\n"
+				, __func__, l[i].type);
+			break;
+		}
+	}
+	acpigen_pop_len();
+}
+
 void acpigen_write_empty_PCT(void)
 {
 /*

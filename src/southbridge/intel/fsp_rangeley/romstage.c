@@ -90,7 +90,6 @@ void main(FSP_INFO_HEADER *fsp_info_header)
  * Memory is setup and the stack is set by the FSP.
  */
 void romstage_main_continue(EFI_STATUS status, void *hob_list_ptr) {
-	int cbmem_was_initted;
 	void *cbmem_hob_ptr;
 
 	timestamp_add_now(TS_AFTER_INITRAM);
@@ -113,7 +112,7 @@ void romstage_main_continue(EFI_STATUS status, void *hob_list_ptr) {
 	/* Decode E0000 and F0000 segment to DRAM */
 	sideband_write(B_UNIT, BMISC, sideband_read(B_UNIT, BMISC) | (1 << 1) | (1 << 0));
 
-	cbmem_was_initted = !cbmem_recovery(0);
+	cbmem_recovery(0);
 
 	/* Save the HOB pointer in CBMEM to be used in ramstage*/
 	cbmem_hob_ptr = cbmem_add(CBMEM_ID_HOB_POINTER, sizeof(*hob_list_ptr));

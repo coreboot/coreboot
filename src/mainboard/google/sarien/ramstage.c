@@ -15,6 +15,7 @@
 
 #include <arch/acpi.h>
 #include <drivers/vpd/vpd.h>
+#include <ec/google/wilco/commands.h>
 #include <smbios.h>
 #include <soc/gpio.h>
 #include <soc/ramstage.h>
@@ -67,6 +68,11 @@ void mainboard_silicon_init_params(FSP_S_CONFIG *params)
 
 	gpio_table = variant_gpio_table(&num_gpios);
 	cnl_configure_pads(gpio_table, num_gpios);
+}
+
+void mainboard_post(uint8_t value)
+{
+	wilco_ec_save_post_code(value);
 }
 
 static void mainboard_enable(struct device *dev)

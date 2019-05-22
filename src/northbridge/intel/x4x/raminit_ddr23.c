@@ -1317,7 +1317,6 @@ static u32 mirror_shift_bit(const u32 data, u8 bit)
 void send_jedec_cmd(const struct sysinfo *s, u8 r, u8 ch, u8 cmd, u32 val)
 {
 	u32 addr = test_address(ch, r);
-	volatile u32 rubbish;
 	u8 data8 = cmd;
 	u32 data32;
 
@@ -1337,7 +1336,7 @@ void send_jedec_cmd(const struct sysinfo *s, u8 r, u8 ch, u8 cmd, u32 val)
 	}
 	data32 <<= 3;
 
-	rubbish = read32((void *)((data32 | addr)));
+	read32((void *)((data32 | addr)));
 	udelay(10);
 	MCHBAR8_AND_OR(0x271, ~0x3e, NORMALOP_CMD);
 	MCHBAR8_AND_OR(0x671, ~0x3e, NORMALOP_CMD);

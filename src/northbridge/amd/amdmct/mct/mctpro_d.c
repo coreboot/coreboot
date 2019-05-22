@@ -280,7 +280,6 @@ void mct_BeforeDramInit_D(struct DCTStatStruc *pDCTstat, u32 dct)
 	u32 Speed;
 	u32 ch, ch_start, ch_end;
 	u32 index_reg;
-	u32 index;
 	u32 dev;
 	u32 val;
 
@@ -297,7 +296,7 @@ void mct_BeforeDramInit_D(struct DCTStatStruc *pDCTstat, u32 dct)
 				ch_end = dct+1;
 			}
 			dev = pDCTstat->dev_dct;
-			index = 0x0D00E001;
+
 			for (ch = ch_start; ch < ch_end; ch++) {
 				index_reg = 0x98 + 0x100 * ch;
 				val = Get_NB32_index(dev, index_reg, 0x0D00E001);

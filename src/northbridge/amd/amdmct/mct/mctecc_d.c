@@ -80,7 +80,6 @@ u8 ECCInit_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA)
 	u16 OB_ECCRedir;
 	u32 LDramECC;
 	u32 OF_ScrubCTL;
-	u16 OB_ChipKill;
 	u8 MemClrECC;
 
 	u32 dev;
@@ -96,7 +95,7 @@ u8 ECCInit_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA)
 
 	OB_ECCRedir =  mctGet_NVbits(NV_ECCRedir);	/* ECC Redirection */
 
-	OB_ChipKill = mctGet_NVbits(NV_ChipKill);	/* ECC Chip-kill mode */
+	mctGet_NVbits(NV_ChipKill);	/* ECC Chip-kill mode */
 
 	OF_ScrubCTL = 0;		/* Scrub CTL for Dcache, L2, and dram */
 	nvbits = mctGet_NVbits(NV_DCBKScrub);

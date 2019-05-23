@@ -326,13 +326,6 @@ __weak void report_memory_config(void)
 {
 }
 
-/* Choose top of stack and setup MTRRs */
-__weak void *setup_stack_and_mtrrs(void)
-{
-	die("ERROR - Must specify top of stack!\n");
-	return NULL;
-}
-
 /* SOC initialization after RAM is enabled */
 __weak void soc_after_ram_init(struct romstage_params *params)
 {

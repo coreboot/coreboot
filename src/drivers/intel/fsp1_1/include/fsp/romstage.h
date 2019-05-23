@@ -55,7 +55,6 @@ void romstage_common(struct romstage_params *params);
 asmlinkage void romstage_main(FSP_INFO_HEADER *fih);
 /* Initialize memory margin analysis settings. */
 void setup_mma(MEMORY_INIT_UPD *memory_upd);
-void *setup_stack_and_mtrrs(void);
 void soc_after_ram_init(struct romstage_params *params);
 void soc_display_memory_init_params(const MEMORY_INIT_UPD *old,
 	MEMORY_INIT_UPD *new);

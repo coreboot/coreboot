@@ -20,17 +20,6 @@
 #include <fsp/api.h>
 #include <stdint.h>
 
-/* cache-as-ram support for FSP 1.1. */
-struct cache_as_ram_params {
-	uint64_t tsc;
-	uint32_t bist;
-	FSP_INFO_HEADER *fih;
-	uintptr_t bootloader_car_start;
-	uintptr_t bootloader_car_end;
-};
-
-/* Entry points from the cache-as-ram assembly code. */
-asmlinkage void cache_as_ram_main(struct cache_as_ram_params *car_params);
 /* Per stage calls from the above two functions. The void * return from
  * cache_as_ram_stage_main() is the stack pointer to use in RAM after
  * exiting cache-as-ram mode. */

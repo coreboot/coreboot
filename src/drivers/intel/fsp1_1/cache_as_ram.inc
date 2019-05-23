@@ -31,11 +31,11 @@
 	 * EBX, EDI, ESI, EBP, MM0, MM1
 	 *
 	 * Shift values to release MM2.
-	 * mm0 -> edi:  BIST value
+	 * mm0 -> ebx:  BIST value
 	 * mm1 -> mm0:  low 32-bits of TSC value
 	 * mm2 -> mm1:  high 32-bits of TSC value
 	 */
-	movd	%mm0, %edi
+	movd	%mm0, %ebx
 	movd	%mm1, %eax
 	movd	%eax, %mm0
 	movd	%mm2, %eax
@@ -79,8 +79,8 @@ find_fsp_ret:
 	/*
 	 *       BIST value is zero
 	 * eax:  TempRamInitApi address
+	 * ebx:  BIST value
 	 * ebp:  FSP_INFO_HEADER address
-	 * edi:  BIST value
 	 * esi:  Not used
 	 * mm0:  low 32-bits of TSC value
 	 * mm1:  high 32-bits of TSC value
@@ -90,13 +90,12 @@ find_fsp_ret:
 	jmp	*%eax
 
 CAR_init_done:
-	addl	$4, %esp
 
 	/*
 	 * ebp:  FSP_INFO_HEADER address
+	 * ebx:  BIST value
 	 * ecx:  Temp RAM base
 	 * edx:  Temp RAM top
-	 * edi:  BIST value
 	 * mm0:  low 32-bits of TSC value
 	 * mm1:  high 32-bits of TSC value
 	 */
@@ -109,43 +108,42 @@ CAR_init_done:
 
 	/*
 	 * ebp:  FSP_INFO_HEADER address
+	 * ebx:  BIST value
 	 * ecx:  Temp RAM base
 	 * edx:  Temp RAM top
-	 * edi:  BIST value
 	 * esp:  Top of stack in temp RAM
 	 * mm0:  low 32-bits of TSC value
 	 * mm1:  high 32-bits of TSC value
 	 */
 
-	/* Create cache_as_ram_params on stack */
-	pushl	%edx	/* bootloader CAR end */
-	pushl	%ecx	/* bootloader CAR begin */
-	pushl	%ebp	/* FSP_INFO_HEADER */
-	pushl	%edi	/* bist */
-	movd	%mm1, %eax
-	pushl	%eax	/* tsc[63:32] */
-	movd	%mm0, %eax
-	pushl	%eax	/* tsc[31:0] */
-	pushl	%esp	/* pointer to cache_as_ram_params */
-
-	/* Save FSP_INFO_HEADER location in ebx */
-	mov	%ebp, %ebx
-
 	/* coreboot assumes stack/heap region will be zero */
 	cld
 	movl	%ecx, %edi
 	neg	%ecx
-	/* Only clear up to current stack value. */
-	add	%esp, %ecx
+	/* Clear up to Temp Ram top. */
+	add	%edx, %ecx
 	shrl	$2, %ecx
 	xorl	%eax, %eax
 	rep	stosl
 
+	/* Need to align stack to 16 bytes at call instruction. Account for
+	the pushes below. */
+	andl	$0xfffffff0, %esp
+	subl	$4, %esp
+
+	/* Push BIST and initial timestamp on the stack */
+	pushl	%ebx	/* bist */
+	movd	%mm1, %eax
+	pushl	%eax	/* tsc[63:32] */
+	movd	%mm0, %eax
+	pushl	%eax	/* tsc[31:0] */
+
 before_romstage:
 	post_code(0x2A)
 
-	/* Call cache_as_ram_main(struct cache_as_ram_params *) */
-	call	cache_as_ram_main
+	/* Call bootblock_c_entry_bist(uint64_t base_timestamp, uint32_t bist)
+	   in cpu/intel/car/romstage.c */
+	call	bootblock_c_entry_bist
 
 	movb	$0x69, %ah
 	jmp	.Lhlt

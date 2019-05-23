@@ -94,73 +94,24 @@ void platform_enter_postcar(void)
 	run_postcar_phase(&pcf);
 }
 
-/* This is the romstage C entry for platforms without
-   CONFIG_C_ENVIRONMENT_BOOTBLOCK */
-asmlinkage void cache_as_ram_main(struct cache_as_ram_params *car_params)
-{
-	int i;
-	const int num_guards = 4;
-	const u32 stack_guard = 0xdeadbeef;
-	u32 *stack_base;
-	u32 size;
-
-	/* Size of unallocated CAR. */
-	size = _car_region_end - _car_relocatable_data_end;
-	size = ALIGN_DOWN(size, 16);
-
-	stack_base = (u32 *)(_car_region_end - size);
-
-	for (i = 0; i < num_guards; i++)
-		stack_base[i] = stack_guard;
-
-	/* Initialize timestamp book keeping only once. */
-	timestamp_init(car_params->tsc);
-
-	/* Call into pre-console init code then initialize console. */
-	car_soc_pre_console_init();
-	car_mainboard_pre_console_init();
-	console_init();
-
-	printk(BIOS_DEBUG, "FSP TempRamInit successful\n");
-
-	printk(BIOS_SPEW, "bist: 0x%08x\n", car_params->bist);
-	printk(BIOS_SPEW, "tsc: 0x%016llx\n", car_params->tsc);
-
-	display_mtrrs();
-
-	if (car_params->bootloader_car_start != CONFIG_DCACHE_RAM_BASE
-	    || car_params->bootloader_car_end != (CONFIG_DCACHE_RAM_BASE
-						  + CONFIG_DCACHE_RAM_SIZE)) {
-		printk(BIOS_INFO, "CAR mismatch: %08x--%08x vs %08lx--%08lx\n",
-		       CONFIG_DCACHE_RAM_BASE,
-		       CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE,
-		       (long)car_params->bootloader_car_start,
-		       (long)car_params->bootloader_car_end);
-	}
-
-	car_soc_post_console_init();
-	car_mainboard_post_console_init();
-
-	cache_as_ram_stage_main(car_params->fih);
-
-	/* Check the stack. */
-	for (i = 0; i < num_guards; i++) {
-		if (stack_base[i] == stack_guard)
-			continue;
-		printk(BIOS_DEBUG, "Smashed stack detected in romstage!\n");
-	}
-
-	/* we don't return here */
-	platform_enter_postcar();
-}
-
-/* This is the entry for platforms with CONFIG_C_ENVIRONMENT_BOOTBLOCK
-   called from cpu/intel/car/romstage.c */
+/* This is the romstage entry called from cpu/intel/car/romstage.c */
 void mainboard_romstage_entry(unsigned long bist)
 {
 	/* Need to locate the current FSP_INFO_HEADER. The cache-as-ram
 	 * is still enabled. We can directly access work buffer here. */
 	struct prog fsp = PROG_INIT(PROG_REFCODE, "fsp.bin");
+
+	if (!CONFIG(C_ENVIRONMENT_BOOTBLOCK)) {
+		/* Call into pre-console init code then initialize console. */
+		car_soc_pre_console_init();
+		car_mainboard_pre_console_init();
+		console_init();
+
+		display_mtrrs();
+
+		car_soc_post_console_init();
+		car_mainboard_post_console_init();
+	}
 
 	if (prog_locate(&fsp))
 		die_with_post_code(POST_INVALID_CBFS, "Unable to locate fsp.bin");

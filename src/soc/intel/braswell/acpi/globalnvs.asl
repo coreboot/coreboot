@@ -31,7 +31,6 @@ OperationRegion (GNVS, SystemMemory, NVSA, 0x2000)
 Field (GNVS, ByteAcc, NoLock, Preserve)
 {
 	/* Miscellaneous */
-	Offset (0x00),
 	OSYS,	16,	/* 0x00 - Operating System */
 	SMIF,	 8,	/* 0x02 - SMI function */
 	PRM0,	 8,	/* 0x03 - SMI function parameter */
@@ -55,7 +54,6 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	CID1,	 16,	/* 0x1e - Wifi Domain Type */
 
 	/* Device Config */
-	Offset (0x20),
 	S5U0,	 8,	/* 0x20 - Enable USB0 in S5 */
 	S5U1,	 8,	/* 0x21 - Enable USB1 in S5 */
 	S3U0,	 8,	/* 0x22 - Enable USB0 in S3 */

@@ -219,7 +219,7 @@ static void lb_vboot_handoff(struct lb_header *header)
 		return;
 
 	vbho = (struct lb_range *)lb_new_record(header);
-	vbho->tag = LB_TAB_VBOOT_HANDOFF;
+	vbho->tag = LB_TAG_VBOOT_HANDOFF;
 	vbho->size = sizeof(*vbho);
 	vbho->range_start = (intptr_t)addr;
 	vbho->range_size = size;
@@ -231,7 +231,7 @@ static void lb_vboot_workbuf(struct lb_header *header)
 	struct vboot_working_data *wd = vboot_get_working_data();
 
 	vbwb = (struct lb_range *)lb_new_record(header);
-	vbwb->tag = LB_TAB_VBOOT_WORKBUF;
+	vbwb->tag = LB_TAG_VBOOT_WORKBUF;
 	vbwb->size = sizeof(*vbwb);
 	vbwb->range_start = (uintptr_t)wd + wd->buffer_offset;
 	vbwb->range_size = wd->buffer_size;

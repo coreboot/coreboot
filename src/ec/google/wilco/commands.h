@@ -80,7 +80,15 @@ enum ec_audio_mute {
 };
 
 enum ec_radio {
-	RADIO_WIFI = 0x02,
+	RADIO_WIFI = 0,
+	RADIO_WWAN,
+	RADIO_BT,
+};
+
+enum ec_radio_action {
+	RADIO_READ = 1,
+	RADIO_WRITE,
+	RADIO_TOGGLE,
 };
 
 enum ec_camera {

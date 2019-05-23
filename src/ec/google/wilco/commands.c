@@ -159,7 +159,7 @@ void wilco_ec_power_off(enum ec_power_off_reason reason)
 
 int wilco_ec_radio_control(enum ec_radio radio, uint8_t state)
 {
-	uint8_t radio_control[3] = { 0, radio, state };
+	uint8_t radio_control[3] = { radio, RADIO_WRITE, state };
 
 	return wilco_ec_mailbox(WILCO_EC_MSG_DEFAULT, KB_RADIO_CONTROL,
 				radio_control, ARRAY_SIZE(radio_control),

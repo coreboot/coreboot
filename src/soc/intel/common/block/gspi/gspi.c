@@ -434,9 +434,11 @@ static uint32_t gspi_get_clk_div(unsigned int gspi_bus)
 {
 	const uint32_t ref_clk_mhz =
 		CONFIG_SOC_INTEL_COMMON_BLOCK_GSPI_CLOCK_MHZ;
-	const uint32_t gspi_clk_mhz = gspi_get_bus_clk_mhz(gspi_bus);
+	uint32_t gspi_clk_mhz = gspi_get_bus_clk_mhz(gspi_bus);
 
-	assert(gspi_clk_mhz != 0);
+	if (!gspi_clk_mhz)
+		gspi_clk_mhz = 1;
+
 	assert(ref_clk_mhz != 0);
 	return (DIV_ROUND_UP(ref_clk_mhz, gspi_clk_mhz) - 1) & SSCR0_SCR_MASK;
 }

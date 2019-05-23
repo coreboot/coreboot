@@ -42,41 +42,6 @@ struct romstage_params {
 	const void *data_to_save;
 };
 
-/*
- * FSP Boot Flow:
- *   1.  src/cpu/x86/16bit/reset.inc
- *   2.  src/cpu/x86/16bit/entry.inc
- *   3.  other modules
- *   4.  src/drivers/intel/fsp1_1/cache_as_ram.inc
- *   5.  src/drivers/intel/fsp1_1/fsp_util.c/find_fsp
- *   6.  FSP binary/TempRamInit
- *   7.  src/drivers/intel/fsp1_1/cache_as_ram.inc - return
- *   8.  src/soc/intel/common/romstage.c/romstage_main
- *   9   src/soc/.../romstage/.../soc_pre_console_init
- *  10   src/console/console.c/console_init
- *  11   src/soc/.../romstage/.../soc_romstage_init
- *  12.  src/mainboard/.../romstage.c/mainboard_romstage_entry
- *  13.  src/soc/intel/common/romstage.c/romstage_common
- *  14   src/soc/.../romstage/.../soc_pre_raminit
- *  15.  FSP binary/MemoryInit
- *  16.  src/soc/intel/common/romstage.c/romstage_common - return
- *  17.  src/mainboard/.../romstage.c/mainboard_romstage_entry - return
- *  18.  src/soc/intel/common/romstage.c/romstage_main - return
- *  19.  src/soc/intel/common/stack.c/setup_stack_and_mtrrs
- *  20.  src/drivers/intel/fsp1_1/cache_as_ram.inc - return, cleanup
- *       after call to romstage_main
- *  21.  FSP binary/TempRamExit
- *  22.  src/soc/intel/common/romstage.c/romstage_after_car
- *  23.  FSP binary/SiliconInit
- *  24.  src/soc/intel/common/romstage.c/romstage_after_car - return
- *  25.  src/drivers/intel/fsp1_1/fsp_util.c/fsp_notify_boot_state_callback
- *  26.  src/drivers/intel/fsp1_1/fsp_util.c/fsp_notify
- *  27.  FSP binary/FspNotify
- *  28.  src/drivers/intel/fsp1_1/fsp_util.c/fsp_notify_boot_state_callback
- *  29.  src/drivers/intel/fsp1_1/fsp_util.c/fsp_notify
- *  30.  FSP binary/FspNotify
- */
-
 void mainboard_memory_init_params(struct romstage_params *params,
 	MEMORY_INIT_UPD *memory_params);
 void mainboard_romstage_entry(struct romstage_params *params);

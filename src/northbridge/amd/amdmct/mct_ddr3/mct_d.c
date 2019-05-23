@@ -3810,7 +3810,7 @@ static void HTMemMapInit_D(struct MCTStatStruc *pMCTstat,
 {
 	u8 Node;
 	u32 NextBase, BottomIO;
-	u8 _MemHoleRemap, DramHoleBase, DramHoleOffset;
+	u8 _MemHoleRemap, DramHoleBase;
 	u32 HoleSize, DramSelBaseAddr;
 
 	u32 val;
@@ -3869,7 +3869,6 @@ static void HTMemMapInit_D(struct MCTStatStruc *pMCTstat,
 					if ((DramSelBaseAddr > 0) && (DramSelBaseAddr < BottomIO))
 						base = DramSelBaseAddr;
 					val = ((base + HoleSize) >> (24-8)) & 0xFF;
-					DramHoleOffset = val;
 					val <<= 8; /* shl 16, rol 24 */
 					val |= DramHoleBase << 24;
 					val |= 1  << DramHoleValid;

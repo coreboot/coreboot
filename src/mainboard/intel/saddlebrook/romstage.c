@@ -33,12 +33,6 @@ void car_mainboard_pre_console_init(void)
 	nuvoton_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 }
 
-void mainboard_romstage_entry(struct romstage_params *params)
-{
-	post_code(0x31);
-	romstage_common(params);
-}
-
 void mainboard_memory_init_params(
 	struct romstage_params *params,
 	MEMORY_INIT_UPD *memory_params)

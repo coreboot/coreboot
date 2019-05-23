@@ -37,48 +37,7 @@
 #include <timestamp.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
-asmlinkage void romstage_main(FSP_INFO_HEADER *fih)
-{
-	struct romstage_params params = {
-		.chipset_context = fih,
-	};
-
-	post_code(0x30);
-
-	timestamp_add_now(TS_START_ROMSTAGE);
-
-	/* Load microcode before RAM init */
-	if (CONFIG(SUPPORT_CPU_UCODE_IN_CBFS))
-		intel_update_microcode_from_cbfs();
-
-	/* Display parameters */
-	if (!CONFIG(NO_MMCONF_SUPPORT))
-		printk(BIOS_SPEW, "CONFIG_MMCONF_BASE_ADDRESS: 0x%08x\n",
-			CONFIG_MMCONF_BASE_ADDRESS);
-	printk(BIOS_INFO, "Using FSP 1.1\n");
-
-	/* Display FSP banner */
-	print_fsp_info(fih);
-
-	/* Stash FSP version. */
-	params.fsp_version = fsp_version(fih);
-
-	/* Get power state */
-	params.power_state = fill_power_state();
-
-	/* Call into mainboard. */
-	mainboard_romstage_entry(&params);
-	soc_after_ram_init(&params);
-	post_code(0x38);
-}
-
-void cache_as_ram_stage_main(FSP_INFO_HEADER *fih)
-{
-	romstage_main(fih);
-}
-
-/* Entry from the mainboard. */
-void romstage_common(struct romstage_params *params)
+static void raminit_common(struct romstage_params *params)
 {
 	bool s3wake;
 	struct region_device rdev;
@@ -153,6 +112,47 @@ void romstage_common(struct romstage_params *params)
 		full_reset();
 }
 
+void cache_as_ram_stage_main(FSP_INFO_HEADER *fih)
+{
+	struct romstage_params params = {
+		.chipset_context = fih,
+	};
+
+	post_code(0x30);
+
+	timestamp_add_now(TS_START_ROMSTAGE);
+
+	/* Load microcode before RAM init */
+	if (CONFIG(SUPPORT_CPU_UCODE_IN_CBFS))
+		intel_update_microcode_from_cbfs();
+
+	/* Display parameters */
+	if (!CONFIG(NO_MMCONF_SUPPORT))
+		printk(BIOS_SPEW, "CONFIG_MMCONF_BASE_ADDRESS: 0x%08x\n",
+			CONFIG_MMCONF_BASE_ADDRESS);
+	printk(BIOS_INFO, "Using FSP 1.1\n");
+
+	/* Display FSP banner */
+	print_fsp_info(fih);
+
+	/* Stash FSP version. */
+	params.fsp_version = fsp_version(fih);
+
+	/* Get power state */
+	params.power_state = fill_power_state();
+
+	/* Board initialization before and after RAM is enabled */
+	mainboard_pre_raminit(&params);
+
+	post_code(0x31);
+
+	/* Initialize memory */
+	raminit_common(&params);
+
+	soc_after_ram_init(&params);
+	post_code(0x38);
+}
+
 /* Initialize the power state */
 __weak struct chipset_power_state *fill_power_state(void)
 {
@@ -160,13 +160,8 @@ __weak struct chipset_power_state *fill_power_state(void)
 }
 
 /* Board initialization before and after RAM is enabled */
-__weak void mainboard_romstage_entry(
-	struct romstage_params *params)
+__weak void mainboard_pre_raminit(struct romstage_params *params)
 {
-	post_code(0x31);
-
-	/* Initialize memory */
-	romstage_common(params);
 }
 
 /* Save the DIMM information for SMBIOS table 17 */

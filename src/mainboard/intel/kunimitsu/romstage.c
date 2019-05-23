@@ -20,12 +20,6 @@
 #include "gpio.h"
 #include "spd/spd.h"
 
-void mainboard_romstage_entry(struct romstage_params *params)
-{
-	/* Initialize memory */
-	romstage_common(params);
-}
-
 void mainboard_memory_init_params(struct romstage_params *params,
 				  MEMORY_INIT_UPD *memory_params)
 {

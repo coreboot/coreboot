@@ -44,15 +44,13 @@ struct romstage_params {
 
 void mainboard_memory_init_params(struct romstage_params *params,
 	MEMORY_INIT_UPD *memory_params);
-void mainboard_romstage_entry(struct romstage_params *params);
+void mainboard_pre_raminit(struct romstage_params *params);
 void mainboard_save_dimm_info(struct romstage_params *params);
 void mainboard_add_dimm_info(struct romstage_params *params,
 			     struct memory_info *mem_info,
 			     int channel, int dimm, int index);
 void raminit(struct romstage_params *params);
 void report_memory_config(void);
-void romstage_common(struct romstage_params *params);
-asmlinkage void romstage_main(FSP_INFO_HEADER *fih);
 /* Initialize memory margin analysis settings. */
 void setup_mma(MEMORY_INIT_UPD *memory_upd);
 void soc_after_ram_init(struct romstage_params *params);

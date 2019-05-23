@@ -19,13 +19,6 @@
 
 #include "spd/spd_util.h"
 
-/* All FSP specific code goes in this block */
-void mainboard_romstage_entry(struct romstage_params *rp)
-{
-	/* Call back into chipset code with platform values updated. */
-	romstage_common(rp);
-}
-
 void mainboard_memory_init_params(struct romstage_params *params,
 	MEMORY_INIT_UPD *memory_params)
 {

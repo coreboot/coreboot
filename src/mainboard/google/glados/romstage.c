@@ -25,15 +25,13 @@
 #include "spd/spd_util.h"
 #include "spd/spd.h"
 
-void mainboard_romstage_entry(struct romstage_params *params)
+void mainboard_pre_raminit(struct romstage_params *params)
 {
 #ifdef EC_ENABLE_KEYBOARD_BACKLIGHT
 	/* Turn on keyboard backlight to indicate we are booting */
 	if (params->power_state->prev_sleep_state != ACPI_S3)
 		google_chromeec_kbbacklight(25);
 #endif
-	/* Initialize memory */
-	romstage_common(params);
 }
 
 void mainboard_memory_init_params(struct romstage_params *params,

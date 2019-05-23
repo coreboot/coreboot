@@ -15,6 +15,7 @@
 
 #include <arch/symbols.h>
 #include <console/console.h>
+#include <cpu/intel/romstage.h>
 #include <cpu/x86/mtrr.h>
 #include <fsp/car.h>
 #include <fsp/util.h>
@@ -27,7 +28,7 @@
 /* platform_enter_postcar() determines the stack to use after
  * cache-as-ram is torn down as well as the MTRR settings to use,
  * and continues execution in postcar stage. */
-static void platform_enter_postcar(void)
+void platform_enter_postcar(void)
 {
 	struct postcar_frame pcf;
 	size_t alignment;
@@ -153,16 +154,14 @@ asmlinkage void cache_as_ram_main(struct cache_as_ram_params *car_params)
 	platform_enter_postcar();
 }
 
-/* This is the romstage C entry for platforms with
-   CONFIG_C_ENVIRONMENT_BOOTBLOCK */
-asmlinkage void romstage_c_entry(void)
+/* This is the entry for platforms with CONFIG_C_ENVIRONMENT_BOOTBLOCK
+   called from cpu/intel/car/romstage.c */
+void mainboard_romstage_entry(unsigned long bist)
 {
 	/* Need to locate the current FSP_INFO_HEADER. The cache-as-ram
 	 * is still enabled. We can directly access work buffer here. */
 	FSP_INFO_HEADER *fih;
 	struct prog fsp = PROG_INIT(PROG_REFCODE, "fsp.bin");
-
-	console_init();
 
 	if (prog_locate(&fsp)) {
 		fih = NULL;
@@ -174,9 +173,6 @@ asmlinkage void romstage_c_entry(void)
 	}
 
 	cache_as_ram_stage_main(fih);
-
-	/* we don't return here */
-	platform_enter_postcar();
 }
 
 void __weak car_mainboard_pre_console_init(void)

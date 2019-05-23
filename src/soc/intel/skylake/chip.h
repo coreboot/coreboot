@@ -34,6 +34,7 @@
 #include <soc/serialio.h>
 #include <soc/usb.h>
 #include <soc/vr_config.h>
+#include <smbios.h>
 
 #define MAX_PEG_PORTS	3
 

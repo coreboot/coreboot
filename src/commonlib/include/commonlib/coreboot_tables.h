@@ -385,7 +385,7 @@ struct mac_address {
 	uint8_t pad[2];		/* Pad it to 8 bytes to keep it simple. */
 };
 
-#define LB_TAG_MMC_INFO		0x0034
+#define LB_TAG_MMC_INFO		0x0035
 struct lb_mmc_info {
 	uint32_t tag;
 	uint32_t size;

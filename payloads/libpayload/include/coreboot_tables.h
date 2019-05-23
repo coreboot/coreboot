@@ -287,7 +287,7 @@ struct cb_macs {
 	struct mac_address mac_addrs[0];
 };
 
-#define CB_TAG_MMC_INFO		0x0034
+#define CB_TAG_MMC_INFO		0x0035
 struct cb_mmc_info {
 	uint32_t tag;
 	uint32_t size;

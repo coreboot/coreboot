@@ -44,6 +44,58 @@
  * table entries and be backwards compatible, but it is not required.
  */
 
+enum {
+	LB_TAG_UNUSED			= 0x0000,
+	LB_TAG_MEMORY			= 0x0001,
+	LB_TAG_HWRPB			= 0x0002,
+	LB_TAG_MAINBOARD		= 0x0003,
+	LB_TAG_VERSION			= 0x0004,
+	LB_TAG_EXTRA_VERSION		= 0x0005,
+	LB_TAG_BUILD			= 0x0006,
+	LB_TAG_COMPILE_TIME		= 0x0007,
+	LB_TAG_COMPILE_BY		= 0x0008,
+	LB_TAG_COMPILE_HOST		= 0x0009,
+	LB_TAG_COMPILE_DOMAIN		= 0x000a,
+	LB_TAG_COMPILER			= 0x000b,
+	LB_TAG_LINKER			= 0x000c,
+	LB_TAG_ASSEMBLER		= 0x000d,
+	LB_TAG_SERIAL			= 0x000f,
+	LB_TAG_CONSOLE			= 0x0010,
+	LB_TAG_FORWARD			= 0x0011,
+	LB_TAG_FRAMEBUFFER		= 0x0012,
+	LB_TAG_GPIO			= 0x0013,
+	LB_TAG_TIMESTAMPS		= 0x0016,
+	LB_TAG_CBMEM_CONSOLE		= 0x0017,
+	LB_TAG_MRC_CACHE		= 0x0018,
+	LB_TAG_VBNV			= 0x0019,
+	LB_TAG_VBOOT_HANDOFF		= 0x0020,
+	LB_TAG_X86_ROM_MTRR		= 0x0021,
+	LB_TAG_DMA			= 0x0022,
+	LB_TAG_RAM_OOPS			= 0x0023,
+	LB_TAG_ACPI_GNVS		= 0x0024,
+	LB_TAG_BOARD_ID			= 0x0025,
+	LB_TAG_VERSION_TIMESTAMP	= 0x0026,
+	LB_TAG_WIFI_CALIBRATION		= 0x0027,
+	LB_TAG_RAM_CODE			= 0x0028,
+	LB_TAG_SPI_FLASH		= 0x0029,
+	LB_TAG_SERIALNO			= 0x002a,
+	LB_TAG_MTC			= 0x002b,
+	LB_TAG_VPD			= 0x002c,
+	LB_TAG_SKU_ID			= 0x002d,
+	LB_TAG_BOOT_MEDIA_PARAMS	= 0x0030,
+	LB_TAG_CBMEM_ENTRY		= 0x0031,
+	LB_TAG_TSC_INFO			= 0x0032,
+	LB_TAG_MAC_ADDRS		= 0x0033,
+	LB_TAG_VBOOT_WORKBUF		= 0x0034,
+	LB_TAG_MMC_INFO			= 0x0035,
+	LB_TAG_TCPA_LOG			= 0x0036,
+	LB_TAG_CMOS_OPTION_TABLE	= 0x00c8,
+	LB_TAG_OPTION			= 0x00c9,
+	LB_TAG_OPTION_ENUM		= 0x00ca,
+	LB_TAG_OPTION_DEFAULTS		= 0x00cb,
+	LB_TAG_OPTION_CHECKSUM		= 0x00cc,
+};
+
 /* Since coreboot is usually compiled 32bit, gcc will align 64bit
  * types to 32bit boundaries. If the coreboot table is dumped on a
  * 64bit system, a uint64_t would be aligned to 64bit boundaries,
@@ -97,9 +149,6 @@ struct lb_record {
 	uint32_t size;		/* size of record (in bytes) */
 };
 
-#define LB_TAG_UNUSED		0x0000
-
-#define LB_TAG_MEMORY		0x0001
 
 struct lb_memory_range {
 	struct lb_uint64 start;
@@ -120,14 +169,12 @@ struct lb_memory {
 	struct lb_memory_range map[0];
 };
 
-#define LB_TAG_HWRPB		0x0002
 struct lb_hwrpb {
 	uint32_t tag;
 	uint32_t size;
 	uint64_t hwrpb;
 };
 
-#define LB_TAG_MAINBOARD	0x0003
 struct lb_mainboard {
 	uint32_t tag;
 	uint32_t size;
@@ -136,23 +183,12 @@ struct lb_mainboard {
 	uint8_t  strings[0];
 };
 
-#define LB_TAG_VERSION		0x0004
-#define LB_TAG_EXTRA_VERSION	0x0005
-#define LB_TAG_BUILD		0x0006
-#define LB_TAG_COMPILE_TIME	0x0007
-#define LB_TAG_COMPILE_BY	0x0008
-#define LB_TAG_COMPILE_HOST	0x0009
-#define LB_TAG_COMPILE_DOMAIN	0x000a
-#define LB_TAG_COMPILER		0x000b
-#define LB_TAG_LINKER		0x000c
-#define LB_TAG_ASSEMBLER	0x000d
 struct lb_string {
 	uint32_t tag;
 	uint32_t size;
 	uint8_t  string[0];
 };
 
-#define LB_TAG_VERSION_TIMESTAMP	0x0026
 struct lb_timestamp {
 	uint32_t tag;
 	uint32_t size;
@@ -162,7 +198,6 @@ struct lb_timestamp {
 
 /* 0xe is taken by v3 */
 
-#define LB_TAG_SERIAL		0x000f
 struct lb_serial {
 	uint32_t tag;
 	uint32_t size;
@@ -189,7 +224,6 @@ struct lb_serial {
 	uint32_t uart_pci_addr;
 };
 
-#define LB_TAG_CONSOLE		0x0010
 struct lb_console {
 	uint32_t tag;
 	uint32_t size;
@@ -204,7 +238,6 @@ struct lb_console {
 #define LB_TAG_CONSOLE_EHCI		5
 #define LB_TAG_CONSOLE_SERIAL8250MEM	6
 
-#define LB_TAG_FORWARD		0x0011
 struct lb_forward {
 	uint32_t tag;
 	uint32_t size;
@@ -250,7 +283,6 @@ struct lb_forward {
  * fields described above. It may, however, only implement a subset
  * of the possible color formats.
  */
-#define LB_TAG_FRAMEBUFFER	0x0012
 struct lb_framebuffer {
 	uint32_t tag;
 	uint32_t size;
@@ -270,7 +302,6 @@ struct lb_framebuffer {
 	uint8_t reserved_mask_size;
 };
 
-#define LB_TAG_GPIO	0x0013
 
 struct lb_gpio {
 	uint32_t port;
@@ -290,12 +321,6 @@ struct lb_gpios {
 	struct lb_gpio gpios[0];
 };
 
-#define LB_TAG_VBNV		0x0019
-#define LB_TAG_VBOOT_HANDOFF	0x0020
-#define LB_TAG_VBOOT_WORKBUF	0x0034
-#define LB_TAG_DMA		0x0022
-#define LB_TAG_RAM_OOPS		0x0023
-#define LB_TAG_MTC		0x002b
 struct lb_range {
 	uint32_t tag;
 	uint32_t size;
@@ -306,13 +331,6 @@ struct lb_range {
 
 void lb_ramoops(struct lb_header *header);
 
-#define LB_TAG_TIMESTAMPS	0x0016
-#define LB_TAG_CBMEM_CONSOLE	0x0017
-#define LB_TAG_MRC_CACHE	0x0018
-#define LB_TAG_ACPI_GNVS	0x0024
-#define LB_TAG_TCPA_LOG		0x0036
-#define LB_TAG_WIFI_CALIBRATION	0x0027
-#define LB_TAG_VPD		0x002c
 struct lb_cbmem_ref {
 	uint32_t tag;
 	uint32_t size;
@@ -320,7 +338,6 @@ struct lb_cbmem_ref {
 	uint64_t cbmem_addr;
 };
 
-#define LB_TAG_X86_ROM_MTRR	0x0021
 struct lb_x86_rom_mtrr {
 	uint32_t tag;
 	uint32_t size;
@@ -328,9 +345,6 @@ struct lb_x86_rom_mtrr {
 	uint32_t index;
 };
 
-#define LB_TAG_BOARD_ID		0x0025
-#define LB_TAG_RAM_CODE		0x0028
-#define LB_TAG_SKU_ID		0x002d
 
 struct lb_strapping_id {
 	uint32_t tag;
@@ -338,7 +352,6 @@ struct lb_strapping_id {
 	uint32_t id_code;
 };
 
-#define LB_TAG_SPI_FLASH	0x0029
 struct lb_spi_flash {
 	uint32_t tag;
 	uint32_t size;
@@ -347,7 +360,6 @@ struct lb_spi_flash {
 	uint32_t erase_cmd;
 };
 
-#define LB_TAG_BOOT_MEDIA_PARAMS 0x0030
 struct lb_boot_media_params {
 	uint32_t tag;
 	uint32_t size;
@@ -361,7 +373,6 @@ struct lb_boot_media_params {
 /*
  * There can be more than one of these records as there is one per cbmem entry.
  */
-#define LB_TAG_CBMEM_ENTRY 0x0031
 struct lb_cbmem_entry {
 	uint32_t tag;
 	uint32_t size;
@@ -371,7 +382,6 @@ struct lb_cbmem_entry {
 	uint32_t id;
 };
 
-#define LB_TAG_TSC_INFO 0x0032
 struct lb_tsc_info {
 	uint32_t tag;
 	uint32_t size;
@@ -379,13 +389,11 @@ struct lb_tsc_info {
 	uint32_t freq_khz;
 };
 
-#define LB_TAG_MAC_ADDRS	0x0033
 struct mac_address {
 	uint8_t mac_addr[6];
 	uint8_t pad[2];		/* Pad it to 8 bytes to keep it simple. */
 };
 
-#define LB_TAG_MMC_INFO		0x0035
 struct lb_mmc_info {
 	uint32_t tag;
 	uint32_t size;
@@ -407,11 +415,9 @@ struct lb_macs {
 	struct mac_address mac_addrs[0];
 };
 
-#define LB_TAG_SERIALNO		0x002a
 #define MAX_SERIALNO_LENGTH	32
 
 /* The following structures are for the cmos definitions table */
-#define LB_TAG_CMOS_OPTION_TABLE 200
 /* cmos header record */
 struct cmos_option_table {
 	uint32_t tag;               /* CMOS definitions table type */
@@ -426,7 +432,6 @@ struct cmos_option_table {
  * starts at the beginning of the byte and the length is
  * fills complete bytes.
  */
-#define LB_TAG_OPTION 201
 struct cmos_entries {
 	uint32_t tag;                /* entry type */
 	uint32_t size;               /* length of this record */
@@ -444,7 +449,6 @@ struct cmos_entries {
  * This record is variable length.  The text field may be
  * shorter than CMOS_MAX_TEXT_LENGTH.
  */
-#define LB_TAG_OPTION_ENUM 202
 struct cmos_enums {
 	uint32_t tag;		     /* enumeration type */
 	uint32_t size;		     /* length of this record */
@@ -458,7 +462,6 @@ struct cmos_enums {
 /* cmos defaults record
  * This record contains default settings for the cmos ram.
  */
-#define LB_TAG_OPTION_DEFAULTS 203
 struct cmos_defaults {
 	uint32_t tag;                /* default type */
 	uint32_t size;               /* length of this record */
@@ -468,7 +471,6 @@ struct cmos_defaults {
 	uint8_t default_set[CMOS_IMAGE_BUFFER_SIZE]; /* default settings */
 };
 
-#define LB_TAG_OPTION_CHECKSUM 204
 struct	cmos_checksum {
 	uint32_t tag;
 	uint32_t size;

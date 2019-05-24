@@ -26,7 +26,6 @@
 #include <intelblocks/tco.h>
 #include <reg_script.h>
 #include <spi-generic.h>
-#include <soc/me.h>
 #include <soc/p2sb.h>
 #include <soc/pci_devs.h>
 #include <soc/pcr_ids.h>
@@ -94,8 +93,6 @@ static void pch_finalize(void)
 static void soc_finalize(void *unused)
 {
 	printk(BIOS_DEBUG, "Finalizing chipset.\n");
-
-	dump_me_status();
 
 	pch_finalize();
 

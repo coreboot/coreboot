@@ -16,6 +16,6 @@
 #ifndef _CANNONLAKE_ME_H_
 #define _CANNONLAKE_ME_H_
 
-void dump_me_status(void);
+void dump_me_status(void *unused);
 
 #endif /* _CANNONLAKE_ME_H_ */

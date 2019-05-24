@@ -24,7 +24,7 @@ void do_lapic_init(void)
 	 * see the Intel mp1.4 spec, page A-3
 	 */
 
-	printk(BIOS_INFO, "Setting up local APIC...");
+	printk(BIOS_INFO, "Setting up local APIC...\n");
 
 	/* Enable the local APIC */
 	enable_lapic();

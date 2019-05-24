@@ -31,7 +31,7 @@ CONFIG_OVERRIDE_DEVICETREE:=$(call strip_quotes, $(CONFIG_OVERRIDE_DEVICETREE))
 # misleadingly named, this is the coreboot version
 ifeq ($(KERNELVERSION),)
 ifeq ($(BUILD_TIMELESS),1)
-KERNELVERSION := TIMELESS
+KERNELVERSION := -TIMELESS--LESSTIME-
 else
 KERNELVERSION := $(strip $(if $(GIT),\
 	$(shell git describe --dirty --always || git describe),\

@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/early_variables.h>
 #include <assert.h>
 #include <commonlib/helpers.h>
 #include <console/console.h>
@@ -71,7 +70,7 @@
 
 static struct cse_device {
 	uintptr_t sec_bar;
-} g_cse CAR_GLOBAL;
+} g_cse;
 
 /*
  * Initialize the device with provided temporary BAR. If BAR is 0 use a
@@ -80,7 +79,6 @@ static struct cse_device {
  */
 void heci_init(uintptr_t tempbar)
 {
-	struct cse_device *cse = car_get_var_ptr(&g_cse);
 #if defined(__SIMPLE_DEVICE__)
 	pci_devfn_t dev = PCH_DEV_CSE;
 #else
@@ -89,7 +87,7 @@ void heci_init(uintptr_t tempbar)
 	u8 pcireg;
 
 	/* Assume it is already initialized, nothing else to do */
-	if (cse->sec_bar)
+	if (g_cse.sec_bar)
 		return;
 
 	/* Use default pre-ram bar */
@@ -111,7 +109,7 @@ void heci_init(uintptr_t tempbar)
 	pcireg |= PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY;
 	pci_write_config8(dev, PCI_COMMAND, pcireg);
 
-	cse->sec_bar = tempbar;
+	g_cse.sec_bar = tempbar;
 }
 
 /* Get HECI BAR 0 from PCI configuration space */
@@ -130,20 +128,18 @@ static uint32_t get_cse_bar(void)
 
 static uint32_t read_bar(uint32_t offset)
 {
-	struct cse_device *cse = car_get_var_ptr(&g_cse);
 	/* Reach PCI config space to get BAR in case CAR global not available */
-	if (!cse->sec_bar)
-		cse->sec_bar = get_cse_bar();
-	return read32((void *)(cse->sec_bar + offset));
+	if (!g_cse.sec_bar)
+		g_cse.sec_bar = get_cse_bar();
+	return read32((void *)(g_cse.sec_bar + offset));
 }
 
 static void write_bar(uint32_t offset, uint32_t val)
 {
-	struct cse_device *cse = car_get_var_ptr(&g_cse);
 	/* Reach PCI config space to get BAR in case CAR global not available */
-	if (!cse->sec_bar)
-		cse->sec_bar = get_cse_bar();
-	return write32((void *)(cse->sec_bar + offset), val);
+	if (!g_cse.sec_bar)
+		g_cse.sec_bar = get_cse_bar();
+	return write32((void *)(g_cse.sec_bar + offset), val);
 }
 
 static uint32_t read_cse_csr(void)

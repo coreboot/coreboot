@@ -58,9 +58,6 @@ static void ck804_enable(struct device *dev)
 	u32 reg_old, reg;
 	u8 byte;
 
-	struct southbridge_nvidia_ck804_config *conf;
-	conf = dev->chip_info;
-
 	if (dev->device == 0x0000) {
 		vendorid = pci_read_config32(dev, PCI_VENDOR_ID);
 		deviceid = (vendorid >> 16) & 0xffff;

@@ -14,7 +14,6 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/early_variables.h>
 #include <device/mmio.h>
 #include <assert.h>
 #include <console/console.h>
@@ -262,15 +261,13 @@ static uint32_t gspi_get_bus_clk_mhz(unsigned int gspi_bus)
 	return cfg[gspi_bus].speed_mhz;
 }
 
-static uintptr_t gspi_base[CONFIG_SOC_INTEL_COMMON_BLOCK_GSPI_MAX] CAR_GLOBAL;
+static uintptr_t gspi_base[CONFIG_SOC_INTEL_COMMON_BLOCK_GSPI_MAX];
 static uintptr_t gspi_get_bus_base_addr(unsigned int gspi_bus)
 {
-	uintptr_t *base = car_get_var_ptr(gspi_base);
+	if (!gspi_base[gspi_bus])
+		gspi_base[gspi_bus] = gspi_calc_base_addr(gspi_bus);
 
-	if (!base[gspi_bus])
-		base[gspi_bus] = gspi_calc_base_addr(gspi_bus);
-
-	return base[gspi_bus];
+	return gspi_base[gspi_bus];
 }
 
 /* Parameters for GSPI controller operation. */

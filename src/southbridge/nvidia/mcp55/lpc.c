@@ -100,10 +100,9 @@ static void lpc_init(struct device *dev)
 	get_option(&on, "slow_cpu");
 	if (on) {
 		u16 pm10_bar;
-		u32 dword;
 		pm10_bar = (pci_read_config16(dev, 0x60) & 0xff00);
 		outl(((on << 1) + 0x10), (pm10_bar + 0x10));
-		dword = inl(pm10_bar + 0x10);
+		inl(pm10_bar + 0x10);
 		on = 8 - on;
 		printk(BIOS_DEBUG, "Throttling CPU %2d.%1.1d percent.\n",
 		       (on * 12) + (on >> 1), (on & 1) * 5);

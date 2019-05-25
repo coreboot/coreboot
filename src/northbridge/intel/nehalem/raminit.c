@@ -2235,26 +2235,11 @@ train_ram_at_178(struct raminfo *info, u8 channel, int slot, int rank,
 	u8 lower_usable[8];
 	u8 upper_usable[8];
 	unsigned short num_successfully_checked[8];
-	u8 secondary_total_rank;
 	u8 reg1b3;
+	int i;
 
-	if (info->populated_ranks_mask[1]) {
-		if (channel == 1)
-			secondary_total_rank =
-			    info->populated_ranks[1][0][0] +
-			    info->populated_ranks[1][0][1]
-			    + info->populated_ranks[1][1][0] +
-			    info->populated_ranks[1][1][1];
-		else
-			secondary_total_rank = 0;
-	} else
-		secondary_total_rank = total_rank;
-
-	{
-		int i;
-		for (i = 0; i < 8; i++)
-			state[i] = BEFORE_USABLE;
-	}
+	for (i = 0; i < 8; i++)
+		state[i] = BEFORE_USABLE;
 
 	if (!first_run) {
 		int is_all_ok = 1;
@@ -2270,7 +2255,6 @@ train_ram_at_178(struct raminfo *info, u8 channel, int slot, int rank,
 				is_all_ok = 0;
 			}
 		if (is_all_ok) {
-			int i;
 			for (i = 0; i < 8; i++)
 				state[i] = COMPLETE;
 		}
@@ -2336,7 +2320,6 @@ train_ram_at_178(struct raminfo *info, u8 channel, int slot, int rank,
 
 		do {
 			u8 failmask = 0;
-			int i;
 			for (i = 0; i < niter; i++) {
 				if (failmask == 0xFF)
 					break;
@@ -2437,7 +2420,6 @@ train_ram_at_178(struct raminfo *info, u8 channel, int slot, int rank,
 
 		do {
 			int failmask = 0;
-			int i;
 			for (i = 0; i < niter; i++) {
 				if (failmask == 0xFF)
 					break;

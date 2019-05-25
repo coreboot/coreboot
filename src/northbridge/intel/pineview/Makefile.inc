@@ -16,6 +16,7 @@
 
 ifeq ($(CONFIG_NORTHBRIDGE_INTEL_PINEVIEW),y)
 
+bootblock-y += ../../../cpu/x86/early_reset.S
 bootblock-y += bootblock.c
 
 ramstage-y += ram_calc.c

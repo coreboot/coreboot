@@ -14,7 +14,6 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/early_variables.h>
 #include <cbfs.h>
 #include <console/console.h>
 #include <fsp/util.h>

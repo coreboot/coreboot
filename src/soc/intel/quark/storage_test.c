@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/early_variables.h>
 #include <device/pci_ops.h>
 #include <assert.h>
 #include <cbmem.h>
@@ -29,13 +28,13 @@
 #include <string.h>
 
 #if CONFIG(STORAGE_LOG)
-struct log_entry log[LOG_ENTRIES] CAR_GLOBAL;
-uint8_t log_index CAR_GLOBAL;
-int log_full CAR_GLOBAL;
-long log_start_time CAR_GLOBAL;
+struct log_entry log[LOG_ENTRIES];
+uint8_t log_index;
+int log_full;
+long log_start_time;
 #endif
 
-static uint8_t drivers_storage[256] CAR_GLOBAL;
+static uint8_t drivers_storage[256];
 
 #define STORAGE_DEBUG  BIOS_DEBUG
 #define LOG_DEBUG  (CONFIG(STORAGE_LOG) ? STORAGE_DEBUG : BIOS_NEVER)
@@ -175,7 +174,7 @@ void storage_test(uint32_t bar, int full_initialization)
 	/* Get the structure addresses */
 	media = NULL;
 	if (ENV_ROMSTAGE)
-		media = car_get_var_ptr(drivers_storage);
+		media = (struct storage_media *)drivers_storage;
 	else
 		media = cbmem_find(CBMEM_ID_STORAGE_DATA);
 	sdhci_ctrlr = (void *)(((uintptr_t)(media + 1) + 0x7) & ~7);
@@ -255,7 +254,7 @@ static void copy_storage_structures(int is_recovery)
 	sdhci_ctrlr = (void *)(((uintptr_t)(media + 1) + 0x7) & ~7);
 
 	/* Migrate the data into CBMEM */
-	memcpy(media, car_get_var_ptr(drivers_storage), size);
+	memcpy(media, drivers_storage, size);
 	media->ctrlr = &sdhci_ctrlr->sd_mmc_ctrlr;
 }
 

@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/early_variables.h>
+#include <arch/symbols.h>
 #include <console/console.h>
 #include <cbmem.h>
 #include "../chip.h"
@@ -85,20 +85,19 @@ asmlinkage void car_stage_c_entry(void)
 	run_postcar_phase(&pcf);
 }
 
-static struct chipset_power_state power_state CAR_GLOBAL;
+static struct chipset_power_state power_state;
 
 struct chipset_power_state *get_power_state(void)
 {
-	return (struct chipset_power_state *)car_get_var_ptr(&power_state);
+	return &power_state;
 }
 
 int fill_power_state(void)
 {
-	struct chipset_power_state *ps = get_power_state();
-
-	ps->prev_sleep_state = 0;
-	printk(BIOS_SPEW, "prev_sleep_state %d\n", ps->prev_sleep_state);
-	return ps->prev_sleep_state;
+	power_state.prev_sleep_state = 0;
+	printk(BIOS_SPEW, "prev_sleep_state %d\n",
+	       power_state.prev_sleep_state);
+	return power_state.prev_sleep_state;
 }
 
 void platform_fsp_memory_init_params_cb(FSPM_UPD *fspm_upd, uint32_t version)

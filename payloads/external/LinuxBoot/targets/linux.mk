@@ -12,6 +12,7 @@
 ## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ## GNU General Public License for more details.
 ##
+SHELL := /bin/bash
 
 ARCH-$(CONFIG_LINUXBOOT_X86_64)=x86_64
 ARCH-$(CONFIG_LINUXBOOT_X86)=x86

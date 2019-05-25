@@ -209,15 +209,6 @@ static void amd_g34_fixup(struct bus *link, struct device *dev)
 			*/
 			f3xe8 = pci_read_config32(get_node_pci(nodeid, 3), 0xe8);
 			uint8_t internal_node_number = ((f3xe8 & 0xc0000000) >> 30);
-			uint8_t defective_link_number_1;
-			uint8_t defective_link_number_2;
-			if (is_fam15h()) {
-				defective_link_number_1 = 4;	/* Link 0 Sublink 1 */
-				defective_link_number_2 = 7;	/* Link 3 Sublink 1 */
-			} else {
-				defective_link_number_1 = 6;	/* Link 2 Sublink 1 */
-				defective_link_number_2 = 5;	/* Link 1 Sublink 1 */
-			}
 			if (internal_node_number == 0) {
 				/* Node 0 */
 				if (link->link_num == 6)	/* Link 2 Sublink 1 */
@@ -745,7 +736,6 @@ static void amdfam10_domain_read_resources(struct device *dev)
 			uint8_t node;
 			uint8_t interleaved;
 			int8_t range;
-			int8_t max_range;
 			uint8_t max_node;
 			uint64_t max_range_limit;
 			uint32_t dword;
@@ -756,7 +746,6 @@ static void amdfam10_domain_read_resources(struct device *dev)
 			/* Find highest DRAM range (DramLimitAddr) */
 			num_nodes = 0;
 			max_node = 0;
-			max_range = -1;
 			interleaved = 0;
 			max_range_limit = 0;
 			struct device *node_dev;
@@ -782,7 +771,6 @@ static void amdfam10_domain_read_resources(struct device *dev)
 					qword |= (((uint64_t)dword2) & 0xff) << 40;
 
 					if (qword > max_range_limit) {
-						max_range = range;
 						max_range_limit = qword;
 						max_node = dword & 0x7;
 					}
@@ -904,7 +892,6 @@ static void amdfam10_domain_set_resources(struct device *dev)
 	struct bus *link;
 #if CONFIG_HW_MEM_HOLE_SIZEK != 0
 	struct hw_mem_hole_info mem_hole;
-	u32 reset_memhole = 1;
 #endif
 
 	pci_tolm = 0xffffffffUL;
@@ -935,7 +922,6 @@ static void amdfam10_domain_set_resources(struct device *dev)
 	// Use hole_basek as mmio_basek, and we don't need to reset hole anymore
 	if ((mem_hole.node_id !=  -1) && (mmio_basek > mem_hole.hole_startk)) {
 		mmio_basek = mem_hole.hole_startk;
-		reset_memhole = 0;
 	}
 
 #endif
@@ -1542,7 +1528,6 @@ static void cpu_bus_scan(struct device *dev)
 		uint8_t rev_gte_d = 0;
 		uint8_t dual_node = 0;
 		uint32_t f3xe8;
-		uint32_t family;
 		uint32_t model;
 
 		busn = CONFIG_CBB;
@@ -1583,7 +1568,7 @@ static void cpu_bus_scan(struct device *dev)
 
 		f3xe8 = pci_read_config32(get_node_pci(0, 3), 0xe8);
 
-		family = model = cpuid_eax(0x80000001);
+		model = cpuid_eax(0x80000001);
 		model = ((model & 0xf0000) >> 12) | ((model & 0xf0) >> 4);
 
 		if (is_fam15h()) {
@@ -1691,17 +1676,14 @@ static void detect_and_enable_probe_filter(struct device *dev)
 
 	uint8_t fam15h = 0;
 	uint8_t rev_gte_d = 0;
-	unsigned nb_cfg_54;
-	uint32_t family;
 	uint32_t model;
 
-	family = model = cpuid_eax(0x80000001);
+	model = cpuid_eax(0x80000001);
 	model = ((model & 0xf0000) >> 12) | ((model & 0xf0) >> 4);
 
 	if (is_fam15h()) {
 		/* Family 15h or later */
 		fam15h = 1;
-		nb_cfg_54 = 1;
 	}
 
 	if ((model >= 0x8) || fam15h)
@@ -1862,19 +1844,10 @@ static void detect_and_enable_cache_partitioning(struct device *dev)
 		uint8_t cu_enabled;
 		uint8_t compute_unit_count = 0;
 
-		uint32_t f3xe8;
-		uint8_t dual_node = 0;
-
 		for (i = 0; i < sysconf.nodes; i++) {
 			struct device *f3x_dev = pcidev_on_root(0x18 + i, 3);
 			struct device *f4x_dev = pcidev_on_root(0x18 + i, 4);
 			struct device *f5x_dev = pcidev_on_root(0x18 + i, 5);
-
-			f3xe8 = pci_read_config32(f3x_dev, 0xe8);
-
-			/* Check for dual node capability */
-			if (f3xe8 & 0x20000000)
-				dual_node = 1;
 
 			/* Determine the number of active compute units on this node */
 			f5x80 = pci_read_config32(f5x_dev, 0x80);

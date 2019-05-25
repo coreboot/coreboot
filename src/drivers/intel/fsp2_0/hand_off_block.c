@@ -10,7 +10,6 @@
  * (at your option) any later version.
  */
 
-#include <arch/early_variables.h>
 #include <device/mmio.h>
 #include <cbmem.h>
 #include <commonlib/helpers.h>
@@ -100,7 +99,7 @@ struct hob_resource *fsp_hob_header_to_resource(const struct hob_header *hob)
  * Utilities for locating and identifying HOBs
  */
 
-static void *fsp_hob_list_ptr CAR_GLOBAL;
+static void *fsp_hob_list_ptr;
 
 static void save_hob_list(int is_recovery)
 {
@@ -122,14 +121,14 @@ const void *fsp_get_hob_list(void)
 	uint32_t *list_loc;
 
 	if (ENV_ROMSTAGE)
-		return (void *)car_get_var(fsp_hob_list_ptr);
+		return fsp_hob_list_ptr;
 	list_loc = cbmem_find(CBMEM_ID_FSP_RUNTIME);
 	return (list_loc) ? (void *)(uintptr_t)(*list_loc) : NULL;
 }
 
 void *fsp_get_hob_list_ptr(void)
 {
-	return car_get_var_ptr(&fsp_hob_list_ptr);
+	return &fsp_hob_list_ptr;
 }
 
 static const

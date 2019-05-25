@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/early_variables.h>
 #include <arch/io.h>
 #include <device/mmio.h>
 #include <cbmem.h>
@@ -27,7 +26,7 @@
 #include <timer.h>
 #include <security/vboot/vboot_common.h>
 
-static struct chipset_power_state power_state CAR_GLOBAL;
+static struct chipset_power_state power_state;
 
 struct chipset_power_state *pmc_get_power_state(void)
 {
@@ -38,7 +37,7 @@ struct chipset_power_state *pmc_get_power_state(void)
 
 	/* cbmem is online but ptr is not populated yet */
 	if (ptr == NULL && !(ENV_RAMSTAGE || ENV_POSTCAR))
-		return car_get_var_ptr(&power_state);
+		return &power_state;
 
 	return ptr;
 }
@@ -46,16 +45,14 @@ struct chipset_power_state *pmc_get_power_state(void)
 static void migrate_power_state(int is_recovery)
 {
 	struct chipset_power_state *ps_cbmem;
-	struct chipset_power_state *ps_car;
 
-	ps_car = car_get_var_ptr(&power_state);
 	ps_cbmem = cbmem_add(CBMEM_ID_POWER_STATE, sizeof(*ps_cbmem));
 
 	if (ps_cbmem == NULL) {
 		printk(BIOS_DEBUG, "Not adding power state to cbmem!\n");
 		return;
 	}
-	memcpy(ps_cbmem, ps_car, sizeof(*ps_cbmem));
+	memcpy(ps_cbmem, &power_state, sizeof(*ps_cbmem));
 }
 ROMSTAGE_CBMEM_INIT_HOOK(migrate_power_state)
 

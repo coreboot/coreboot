@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/early_variables.h>
 #include <device/mmio.h>
 #include <console/console.h>
 #include <fast_spi_def.h>

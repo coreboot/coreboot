@@ -14,7 +14,6 @@
  */
 
 #include <arch/acpi.h>
-#include <arch/early_variables.h>
 #include <cbmem.h>
 #include <commonlib/storage/sd_mmc.h>
 #include <commonlib/sd_mmc_ctrlr.h>

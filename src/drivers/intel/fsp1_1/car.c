@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/early_variables.h>
+#include <arch/symbols.h>
 #include <console/console.h>
 #include <cpu/x86/mtrr.h>
 #include <fsp/car.h>

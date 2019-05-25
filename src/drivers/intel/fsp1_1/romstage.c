@@ -18,7 +18,6 @@
 #include <stddef.h>
 #include <arch/acpi.h>
 #include <arch/cbfs.h>
-#include <arch/early_variables.h>
 #include <assert.h>
 #include <console/console.h>
 #include <cbmem.h>

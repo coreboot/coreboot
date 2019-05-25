@@ -31,7 +31,6 @@
 #include <timestamp.h>
 #include <arch/acpi.h>
 
-#include "arch/early_variables.h"
 #include <southbridge/intel/ibexpeak/pch.h>
 #include <northbridge/intel/nehalem/nehalem.h>
 

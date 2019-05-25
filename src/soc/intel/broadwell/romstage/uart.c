@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/early_variables.h>
 #include <device/pci_def.h>
 #include <reg_script.h>
 #include <stdint.h>

@@ -61,6 +61,7 @@ EXPAT_VERSION=2.2.7
 CLANG_VERSION=8.0.0
 MAKE_VERSION=4.2.1
 CMAKE_VERSION=3.15.0
+NASM_VERSION=2.14.02
 
 # GCC toolchain archive locations
 # These are sanitized by the jenkins toolchain test builder, so if
@@ -82,11 +83,13 @@ CRT_ARCHIVE="https://releases.llvm.org/${CLANG_VERSION}/compiler-rt-${CLANG_VERS
 CTE_ARCHIVE="https://releases.llvm.org/${CLANG_VERSION}/clang-tools-extra-${CLANG_VERSION}.src.tar.xz"
 MAKE_ARCHIVE="https://ftpmirror.gnu.org/make/make-${MAKE_VERSION}.tar.bz2"
 CMAKE_ARCHIVE="https://cmake.org/files/v3.15/cmake-${CMAKE_VERSION}.tar.gz"
+NASM_ARCHIVE="https://www.nasm.us/pub/nasm/releasebuilds/${NASM_VERSION}/nasm-${NASM_VERSION}.tar.bz2"
 
 ALL_ARCHIVES="$GMP_ARCHIVE $MPFR_ARCHIVE $MPC_ARCHIVE \
 	$GCC_ARCHIVE $BINUTILS_ARCHIVE $GDB_ARCHIVE $IASL_ARCHIVE \
 	$PYTHON_ARCHIVE $EXPAT_ARCHIVE $LLVM_ARCHIVE $CFE_ARCHIVE \
-	$CRT_ARCHIVE $CTE_ARCHIVE $MAKE_ARCHIVE $CMAKE_ARCHIVE"
+	$CRT_ARCHIVE $CTE_ARCHIVE $MAKE_ARCHIVE $CMAKE_ARCHIVE \
+	$NASM_ARCHIVE"
 
 # GCC toolchain directories
 GMP_DIR="gmp-${GMP_VERSION}"
@@ -107,6 +110,7 @@ CRT_DIR="compiler-rt-${CLANG_VERSION}.src"
 CTE_DIR="clang-tools-extra-${CLANG_VERSION}.src"
 MAKE_DIR="make-${MAKE_VERSION}"
 CMAKE_DIR="cmake-${CMAKE_VERSION}"
+NASM_DIR="nasm-${NASM_VERSION}"
 
 unset MAKELEVEL MAKEFLAGS
 
@@ -910,6 +914,17 @@ build_CMAKE() {
 	normalize_dirs
 }
 
+build_NASM() {
+	CC="$(hostcc host)" CXX="$(hostcxx host)" CFLAGS="$HOSTCFLAGS"
+	../${NASM_DIR}/configure --prefix="$TARGETDIR" \
+		|| touch .failed
+	# shellcheck disable=SC2086
+	$MAKE $JOBS || touch .failed
+	$MAKE install DESTDIR=$DESTDIR || touch .failed
+
+	normalize_dirs
+}
+
 print_supported() {
 	case "$PRINTSUPPORTED" in
 		AUTOCONF|autoconf)  printf "%s\n" "$GCC_AUTOCONF_VERSION";;
@@ -924,6 +939,7 @@ print_supported() {
 		MPFR|mpfr)  printf "%s\n" "$MPFR_VERSION";;
 		PYTHON|python)  printf "%s\n" "$PYTHON_VERSION";;
 		MAKE|make)  printf "%s\n" "$MAKE_VERSION";;
+		NASM|nasm) printf "%s\n" "${NASM_VERSION}";;
 		*) printf "Unknown tool %s\n" "$PRINTSUPPORTED";;
 	esac
 }
@@ -1044,8 +1060,12 @@ case "$PACKAGE" in
 		NAME="CMake"
 		PACKAGES=CMAKE
 		;;
+	NASM|nasm)
+		NAME="NASM"
+		PACKAGES=NASM
+		;;
 	*)
-		printf "${red}ERROR: Unsupported package $PACKAGE. (Supported packages are GCC, GDB, CLANG, IASL, MAKE)${NC}\n\n";
+		printf "${red}ERROR: Unsupported package $PACKAGE. (Supported packages are GCC, GDB, CLANG, IASL, MAKE, and NASM)${NC}\n\n";
 		exit 1
 		;;
 esac

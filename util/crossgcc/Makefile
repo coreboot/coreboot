@@ -10,12 +10,12 @@ DEST ?= $(CURDIR)/xgcc
 all all_with_gdb:
 	$(MAKE) build-i386 build-x64 build-arm build-mips \
 		build-riscv build-aarch64 build-ppc64 build-nds32le \
-		build_clang build_iasl build_make
+		build_clang build_iasl build_make build_nasm
 
 all_without_gdb:
 	$(MAKE) SKIP_GDB=1 build-i386 build-x64 build-arm build-mips \
 		build-riscv build-aarch64 build-ppc64 build-nds32le \
-		build_clang build_iasl build_make
+		build_clang build_iasl build_make build_nasm
 
 build_tools: build_gcc build_gdb
 
@@ -43,12 +43,15 @@ endif
 build_make:
 	bash ./buildgcc -P make $(if $(CPUS),-j $(CPUS))  $(if $(KEEP_SOURCES),-t) $(BUILDGCC_OPTIONS) -d $(DEST)
 
+build_nasm:
+	bash ./buildgcc -P nasm $(if $(CPUS),-j $(CPUS))  $(if $(KEEP_SOURCES),-t) $(BUILDGCC_OPTIONS) -d $(DEST)
+
 ###########################################################
 build-i386:
-	@$(MAKE) build_tools BUILD_PLATFORM=i386-elf
+	@$(MAKE) build_tools build_nasm BUILD_PLATFORM=i386-elf
 
 build-x64:
-	@$(MAKE) build_tools BUILD_PLATFORM=x86_64-elf
+	@$(MAKE) build_tools build_nasm BUILD_PLATFORM=x86_64-elf
 
 build-arm:
 	@$(MAKE) build_tools BUILD_PLATFORM=arm-eabi
@@ -86,5 +89,6 @@ distclean: clean
 .PHONY: build_gcc build_iasl build_gdb build_clang all all_with_gdb \
 	all_without_gdb build_tools build-i386 build-x64 build-arm  \
 	build-aarch64 build-mips build-riscv build-ppc64 build-nds32le \
+	build-nasm \
 	clean distclean clean_tempfiles
 .NOTPARALLEL:

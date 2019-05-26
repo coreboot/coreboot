@@ -34,7 +34,7 @@
 /* Haswell bus clock is fixed at 100MHz */
 #define HASWELL_BCLK			100
 
-#define CORE_THREAD_COUNT_MSR		0x35
+#define MSR_CORE_THREAD_COUNT		0x35
 #define MSR_FEATURE_CONFIG		0x13c
 #define MSR_FLEX_RATIO			0x194
 #define  FLEX_RATIO_LOCK		(1 << 20)

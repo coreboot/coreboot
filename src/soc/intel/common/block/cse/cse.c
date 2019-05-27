@@ -69,7 +69,7 @@
 #define MEI_HDR_CSE_ADDR	(((1 << 8) - 1) << MEI_HDR_CSE_ADDR_START)
 
 
-struct cse_device {
+static struct cse_device {
 	uintptr_t sec_bar;
 } g_cse CAR_GLOBAL;
 

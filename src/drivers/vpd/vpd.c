@@ -12,7 +12,7 @@
 #include <timestamp.h>
 
 #include "vpd.h"
-#include "lib_vpd.h"
+#include "vpd_decode.h"
 #include "vpd_tables.h"
 
 /* Currently we only support Google VPD 2.0, which has a fixed offset. */
@@ -160,27 +160,27 @@ static void cbmem_add_cros_vpd(int is_recovery)
 	}
 }
 
-static int vpd_gets_callback(const uint8_t *key, int32_t key_len,
-			       const uint8_t *value, int32_t value_len,
-			       void *arg)
+static int vpd_gets_callback(const uint8_t *key, uint32_t key_len,
+			     const uint8_t *value, uint32_t value_len,
+			     void *arg)
 {
 	struct vpd_gets_arg *result = (struct vpd_gets_arg *)arg;
 	if (key_len != result->key_len ||
 	    memcmp(key, result->key, key_len) != 0)
-		/* Returns VPD_OK to continue parsing. */
-		return VPD_OK;
+		/* Returns VPD_DECODE_OK to continue parsing. */
+		return VPD_DECODE_OK;
 
 	result->matched = 1;
 	result->value = value;
 	result->value_len = value_len;
-	/* Returns VPD_FAIL to stop parsing. */
-	return VPD_FAIL;
+	/* Returns VPD_DECODE_FAIL to stop parsing. */
+	return VPD_DECODE_FAIL;
 }
 
 const void *vpd_find(const char *key, int *size, enum vpd_region region)
 {
 	struct vpd_gets_arg arg = {0};
-	int consumed = 0;
+	uint32_t consumed = 0;
 	const struct vpd_cbmem *vpd;
 
 	vpd = cbmem_find(CBMEM_ID_VPD);
@@ -190,18 +190,21 @@ const void *vpd_find(const char *key, int *size, enum vpd_region region)
 	arg.key = (const uint8_t *)key;
 	arg.key_len = strlen(key);
 
-	if (region == VPD_ANY || region == VPD_RO)
-		while (VPD_OK == decodeVpdString(vpd->ro_size, vpd->blob,
-		       &consumed, vpd_gets_callback, &arg)) {
-		/* Iterate until found or no more entries. */
+	if (region == VPD_ANY || region == VPD_RO) {
+		while (vpd_decode_string(
+				vpd->ro_size, vpd->blob, &consumed,
+				vpd_gets_callback, &arg) == VPD_DECODE_OK) {
+			/* Iterate until found or no more entries. */
 		}
-
-	if (!arg.matched && region != VPD_RO)
-		while (VPD_OK == decodeVpdString(vpd->rw_size,
-		       vpd->blob + vpd->ro_size, &consumed,
-		       vpd_gets_callback, &arg)) {
-		/* Iterate until found or no more entries. */
+	}
+	if (!arg.matched && region != VPD_RO) {
+		while (vpd_decode_string(
+				vpd->rw_size, vpd->blob + vpd->ro_size,
+				&consumed, vpd_gets_callback,
+				&arg) == VPD_DECODE_OK) {
+			/* Iterate until found or no more entries. */
 		}
+	}
 
 	if (!arg.matched)
 		return NULL;

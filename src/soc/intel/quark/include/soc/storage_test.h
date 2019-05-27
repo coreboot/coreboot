@@ -48,9 +48,4 @@ struct log_entry {
 
 #define LOG_ENTRIES	256
 
-extern struct log_entry log[LOG_ENTRIES];
-extern uint8_t log_index;
-extern int log_full;
-extern long log_start_time;
-
 #endif /* __STORAGE_TEST_H__ */

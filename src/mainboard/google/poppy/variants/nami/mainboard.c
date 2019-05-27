@@ -238,6 +238,7 @@ void variant_devtree_update(void)
 	struct device *root = SA_DEV_ROOT;
 	config_t *cfg = root->chip_info;
 	uint8_t pl2_id = PL2_ID_DEFAULT;
+	struct device *spi_fpmcu = PCH_DEV_GSPI1;
 
 	switch (sku_id) {
 	case SKU_0_SONA:
@@ -260,6 +261,7 @@ void variant_devtree_update(void)
 	case SKU_3_PANTHEON:
 	case SKU_4_PANTHEON:
 		cfg->usb2_ports[5].enable = 0;
+		spi_fpmcu->enabled = 0;
 		break;
 	case SKU_0_BARD:
 	case SKU_1_BARD:

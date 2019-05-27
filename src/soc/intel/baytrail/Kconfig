@@ -168,4 +168,14 @@ config REFCODE_BLOB_FILE
 
 endif # HAVE_REFCODE_BLOB
 
+config VGA_BIOS_ID
+	string
+	depends on VGA_BIOS
+	default "8086,0f31"
+
+config VGA_BIOS_FILE
+	string
+	depends on VGA_BIOS
+	default "pci8086,0f31.rom"
+
 endif

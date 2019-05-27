@@ -71,5 +71,8 @@ config VGA_BIOS_FILE
 config INTEL_GMA_VBT_FILE
 	default "src/mainboard/$(MAINBOARDDIR)/data.vbt"
 
+config MAINBOARD_SMBIOS_MANUFACTURER
+	string
+	default "GOOGLE"
 
 endif # BOARD_GOOGLE_BASEBOARD_SLIPPY

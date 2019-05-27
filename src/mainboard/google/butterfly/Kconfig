@@ -44,4 +44,8 @@ config MAINBOARD_VENDOR
 	string
 	default "Hewlett-Packard"
 
+config MAINBOARD_SMBIOS_MANUFACTURER
+	string
+	default "GOOGLE"
+
 endif # BOARD_GOOGLE_BUTTERFLY

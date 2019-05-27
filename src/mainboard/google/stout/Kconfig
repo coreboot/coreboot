@@ -43,4 +43,8 @@ config VGA_BIOS_ID
 	string
 	default "8086,0156"
 
+config MAINBOARD_SMBIOS_MANUFACTURER
+	string
+	default "GOOGLE"
+
 endif # BOARD_GOOGLE_STOUT

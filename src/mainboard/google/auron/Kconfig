@@ -72,4 +72,8 @@ config VGA_BIOS_FILE
 	string
 	default "pci8086,0406.rom"
 
+config MAINBOARD_SMBIOS_MANUFACTURER
+	string
+	default "GOOGLE"
+
 endif

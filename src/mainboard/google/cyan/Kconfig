@@ -112,4 +112,8 @@ config CBFS_SIZE
 	hex
 	default 0x200000
 
+config MAINBOARD_SMBIOS_MANUFACTURER
+	string
+	default "GOOGLE"
+
 endif # BOARD_GOOGLE_BASEBOARD_CYAN

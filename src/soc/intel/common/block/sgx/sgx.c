@@ -100,8 +100,8 @@ void prmrr_core_configure(void)
 		return;
 	}
 
-	printk(BIOS_INFO, "SGX: prmrr_base = 0x%llx", prmrr_base.data64);
-	printk(BIOS_INFO, "SGX: prmrr_mask = 0x%llx", prmrr_mask.data64);
+	printk(BIOS_INFO, "SGX: prmrr_base = 0x%llx\n", prmrr_base.data64);
+	printk(BIOS_INFO, "SGX: prmrr_mask = 0x%llx\n", prmrr_mask.data64);
 
 	/* Program core PRMRR MSRs.
 	 * - Set cache writeback mem attrib in PRMRR base MSR

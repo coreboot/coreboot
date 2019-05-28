@@ -29,5 +29,10 @@ verstage-$(CONFIG_CHROMEOS) += chromeos.c
 
 ramstage-$(CONFIG_SOC_INTEL_COMMON_BLOCK_HDA_VERB) += hda_verb.c
 
+bootblock-$(CONFIG_EC_GOOGLE_WILCO) += ec.c
+ramstage-$(CONFIG_EC_GOOGLE_WILCO) += ec.c
+romstage-$(CONFIG_EC_GOOGLE_WILCO) += ec.c
+verstage-$(CONFIG_EC_GOOGLE_WILCO) += ec.c
+
 subdirs-y += variants/$(VARIANT_DIR)
 CPPFLAGS_common += -I$(src)/mainboard/$(MAINBOARDDIR)/variants/$(VARIANT_DIR)/include

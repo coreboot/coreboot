@@ -24,7 +24,10 @@
 #include <elog.h>
 #include <halt.h>
 #include <pc80/mc146818rtc.h>
+#include <cpu/intel/model_2065x/model_2065x.h>
+#include <southbridge/intel/common/finalize.h>
 #include <southbridge/intel/common/pmbase.h>
+#include <southbridge/intel/ibexpeak/me.h>
 #include "pch.h"
 
 #include "nvs.h"
@@ -182,4 +185,8 @@ void southbridge_update_gnvs(u8 apm_cnt, int *smm_done)
 
 void southbridge_finalize_all(void)
 {
+	intel_me_finalize_smm();
+	intel_pch_finalize_smm();
+	intel_nehalem_finalize_smm();
+	intel_model_2065x_finalize_smm();
 }

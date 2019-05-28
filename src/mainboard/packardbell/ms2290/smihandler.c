@@ -18,11 +18,8 @@
 #include <cpu/x86/smm.h>
 #include <device/pci_ops.h>
 #include <southbridge/intel/ibexpeak/nvs.h>
-#include <southbridge/intel/ibexpeak/me.h>
-#include <southbridge/intel/common/finalize.h>
 #include <southbridge/intel/common/pmutil.h>
 #include <northbridge/intel/nehalem/nehalem.h>
-#include <cpu/intel/model_2065x/model_2065x.h>
 #include <ec/acpi/ec.h>
 
 static void mainboard_smm_init(void)
@@ -54,26 +51,10 @@ void mainboard_smi_gpi(u32 gpi_sts)
 {
 }
 
-static int mainboard_finalized = 0;
-
 int mainboard_smi_apmc(u8 data)
 {
 	u8 tmp;
 	switch (data) {
-	case APM_CNT_FINALIZE:
-		printk(BIOS_DEBUG, "APMC: FINALIZE\n");
-		if (mainboard_finalized) {
-			printk(BIOS_DEBUG, "APMC#: Already finalized\n");
-			return 0;
-		}
-
-		intel_me_finalize_smm();
-		intel_pch_finalize_smm();
-		intel_nehalem_finalize_smm();
-		intel_model_2065x_finalize_smm();
-
-		mainboard_finalized = 1;
-		break;
 	case APM_CNT_ACPI_ENABLE:
 		tmp = pci_read_config8(PCI_DEV(0, 0x1f, 0), 0xbb);
 		tmp &= ~0x03;

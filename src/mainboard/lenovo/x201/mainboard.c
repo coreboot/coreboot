@@ -28,34 +28,6 @@
 #include <cpu/x86/lapic.h>
 #include <drivers/lenovo/lenovo.h>
 
-static void mainboard_init(struct device *dev)
-{
-	printk(BIOS_SPEW, "starting SPI configuration\n");
-
-	/* Configure SPI.  */
-	RCBA32(0x3800) = 0x07ff0500;
-	RCBA32(0x3804) = 0x3f046008;
-	RCBA32(0x3808) = 0x0058efc0;
-	RCBA32(0x384c) = 0x92000000;
-	RCBA32(0x3850) = 0x00000a0b;
-	RCBA32(0x3858) = 0x07ff0500;
-	RCBA32(0x385c) = 0x04ff0003;
-	RCBA32(0x3860) = 0x00020001;
-	RCBA32(0x3864) = 0x00000fff;
-	RCBA32(0x3874) = 0;
-	RCBA32(0x3890) = 0xf8400000;
-	RCBA32(0x3894) = 0x143b5006;
-	RCBA32(0x3898) = 0x05200302;
-	RCBA32(0x389c) = 0x0601209f;
-	RCBA32(0x38b0) = 0x00000004;
-	RCBA32(0x38b4) = 0x03040002;
-	RCBA32(0x38c8) = 0x00002005;
-	RCBA32(0x38c4) = 0x00802005;
-	RCBA32(0x3804) = 0x3f04e008;
-
-	printk(BIOS_SPEW, "SPI configured\n");
-}
-
 static void fill_ssdt(struct device *device)
 {
 	drivers_lenovo_serial_ports_ssdt_generate("\\_SB.PCI0.LPCB", 0);
@@ -65,7 +37,6 @@ static void mainboard_enable(struct device *dev)
 {
 	u16 pmbase;
 
-	dev->ops->init = mainboard_init;
 	dev->ops->acpi_fill_ssdt_generator = fill_ssdt;
 
 	pmbase = pci_read_config32(pcidev_on_root(0x1f, 0),

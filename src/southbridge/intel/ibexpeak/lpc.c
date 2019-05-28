@@ -38,6 +38,7 @@
 #include "nvs.h"
 #include <southbridge/intel/common/pciehp.h>
 #include <southbridge/intel/common/acpi_pirq_gen.h>
+#include <southbridge/intel/common/spi.h>
 
 #define NMI_OFF	0
 
@@ -785,6 +786,8 @@ static void southbridge_fill_ssdt(struct device *device)
 
 static void lpc_final(struct device *dev)
 {
+	spi_finalize_ops();
+
 	/* Call SMM finalize() handlers before resume */
 	if (CONFIG(HAVE_SMI_HANDLER)) {
 		if (CONFIG(INTEL_CHIPSET_LOCKDOWN) ||

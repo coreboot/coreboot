@@ -33,6 +33,7 @@
 #include <drivers/intel/gma/i915.h>
 #include <southbridge/intel/common/acpi_pirq_gen.h>
 #include <southbridge/intel/common/pmbase.h>
+#include <southbridge/intel/common/spi.h>
 
 #include "chip.h"
 #include "i82801gx.h"
@@ -621,11 +622,7 @@ static void lpc_final(struct device *dev)
 	if (!CONFIG(INTEL_CHIPSET_LOCKDOWN))
 		return;
 
-	SPIBAR16(PREOP) = SPI_OPPREFIX;
-	/* Set SPI opcode menu */
-	SPIBAR16(OPTYPE) = SPI_OPTYPE;
-	SPIBAR32(OPMENU) = SPI_OPMENU_LOWER;
-	SPIBAR32(OPMENU + 4) = SPI_OPMENU_UPPER;
+	spi_finalize_ops();
 
 	/* Lock SPIBAR */
 	SPIBAR16(0) = SPIBAR16(0) | (1 << 15);

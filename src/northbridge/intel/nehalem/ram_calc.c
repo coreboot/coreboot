@@ -35,7 +35,7 @@ static uintptr_t smm_region_start(void)
 
 u32 northbridge_get_tseg_base(void)
 {
-	return (u32)smm_region_start & ~1;
+	return (u32)smm_region_start();
 }
 
 void *cbmem_top(void)

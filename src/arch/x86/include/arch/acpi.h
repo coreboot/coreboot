@@ -129,6 +129,14 @@ typedef struct acpi_gen_regaddr {
 #define ACPI_ACCESS_SIZE_DWORD_ACCESS	3
 #define ACPI_ACCESS_SIZE_QWORD_ACCESS	4
 
+/* Common ACPI HIDs */
+#define ACPI_HID_FDC "PNP0700"
+#define ACPI_HID_KEYBOARD "PNP0303"
+#define ACPI_HID_MOUSE "PNP0F03"
+#define ACPI_HID_COM "PNP0501"
+#define ACPI_HID_LPT "PNP0400"
+#define ACPI_HID_PNP "PNP0C02"
+
 /* Generic ACPI header, provided by (almost) all tables */
 typedef struct acpi_table_header {
 	char signature[4];           /* ACPI signature (4 ASCII characters) */

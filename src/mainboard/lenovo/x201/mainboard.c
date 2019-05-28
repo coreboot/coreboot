@@ -35,22 +35,7 @@ static void fill_ssdt(struct device *device)
 
 static void mainboard_enable(struct device *dev)
 {
-	u16 pmbase;
-
 	dev->ops->acpi_fill_ssdt_generator = fill_ssdt;
-
-	pmbase = pci_read_config32(pcidev_on_root(0x1f, 0),
-				   PMBASE) & 0xff80;
-
-	printk(BIOS_SPEW, " ... pmbase = 0x%04x\n", pmbase);
-
-	outl(0, pmbase + SMI_EN);
-
-	enable_lapic();
-	pci_write_config32(pcidev_on_root(0x1f, 0), GPIO_BASE,
-			   DEFAULT_GPIOBASE | 1);
-	pci_write_config8(pcidev_on_root(0x1f, 0), GPIO_CNTL,
-			  0x10);
 
 	/* If we're resuming from suspend, blink suspend LED */
 	if (acpi_is_wakeup_s3())

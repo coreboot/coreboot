@@ -32,8 +32,6 @@
 
 static void mainboard_enable(struct device *dev)
 {
-	u16 pmbase;
-
 	int i;
 	const u8 dmp[256] = {
 		0x00, 0x20, 0x00, 0x00, 0x00, 0x02, 0x89, 0xe4, 0x30, 0x00, 0x40, 0x14, 0x00, 0x00, 0x00, 0x11,
@@ -56,19 +54,6 @@ static void mainboard_enable(struct device *dev)
 
 	for (i = 0; i < 256; i++)
 		ec_write (i, dmp[i]);
-
-	pmbase = pci_read_config32(pcidev_on_root(0x1f, 0),
-				   PMBASE) & 0xff80;
-
-	printk(BIOS_SPEW, " ... pmbase = 0x%04x\n", pmbase);
-
-	outl(0, pmbase + SMI_EN);
-
-	enable_lapic();
-	pci_write_config32(pcidev_on_root(0x1f, 0), GPIO_BASE,
-			   DEFAULT_GPIOBASE | 1);
-	pci_write_config8(pcidev_on_root(0x1f, 0), GPIO_CNTL,
-			  0x10);
 
 	install_intel_vga_int15_handler(GMA_INT15_ACTIVE_LFP_INT_LVDS, GMA_INT15_PANEL_FIT_DEFAULT, GMA_INT15_BOOT_DISPLAY_LFP, 2);
 

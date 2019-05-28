@@ -160,17 +160,14 @@ void mainboard_romstage_entry(unsigned long bist)
 {
 	/* Need to locate the current FSP_INFO_HEADER. The cache-as-ram
 	 * is still enabled. We can directly access work buffer here. */
-	FSP_INFO_HEADER *fih;
 	struct prog fsp = PROG_INIT(PROG_REFCODE, "fsp.bin");
 
-	if (prog_locate(&fsp)) {
-		fih = NULL;
-		printk(BIOS_ERR, "Unable to locate %s\n", prog_name(&fsp));
-	} else {
-		/* This leaks a mapping which this code assumes is benign as
-		 * the flash is memory mapped CPU's address space. */
-		fih = find_fsp((uintptr_t)rdev_mmap_full(prog_rdev(&fsp)));
-	}
+	if (prog_locate(&fsp))
+		die_with_post_code(POST_INVALID_CBFS, "Unable to locate fsp.bin");
+
+	/* This leaks a mapping which this code assumes is benign as
+	 * the flash is memory mapped CPU's address space. */
+	FSP_INFO_HEADER *fih = find_fsp((uintptr_t)rdev_mmap_full(prog_rdev(&fsp)));
 
 	cache_as_ram_stage_main(fih);
 }

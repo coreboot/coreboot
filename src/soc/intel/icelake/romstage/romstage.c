@@ -86,6 +86,8 @@ static void save_dimm_info(void)
 			if (src_dimm->Status != DIMM_PRESENT)
 				continue;
 
+			u8 memProfNum = memory_info_hob->MemoryProfile;
+
 			/* Populate the DIMM information */
 			dimm_info_fill(dest_dimm,
 				src_dimm->DimmCapacity,
@@ -97,7 +99,9 @@ static void save_dimm_info(void)
 				(const char *)src_dimm->ModulePartNum,
 				sizeof(src_dimm->ModulePartNum),
 				src_dimm->SpdSave + SPD_SAVE_OFFSET_SERIAL,
-				memory_info_hob->DataWidth);
+				memory_info_hob->DataWidth,
+				memory_info_hob->VddVoltage[memProfNum],
+				memory_info_hob->EccSupport);
 			index++;
 		}
 	}

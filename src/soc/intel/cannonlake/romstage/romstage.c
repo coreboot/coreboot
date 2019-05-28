@@ -101,6 +101,8 @@ static void save_dimm_info(void)
 			mainboard_get_dram_part_num(&dram_part_num,
 							&dram_part_num_len);
 
+			u8 memProfNum = memory_info_hob->MemoryProfile;
+
 			/* Populate the DIMM information */
 			dimm_info_fill(dest_dimm,
 				src_dimm->DimmCapacity,
@@ -112,7 +114,9 @@ static void save_dimm_info(void)
 				dram_part_num,
 				dram_part_num_len,
 				src_dimm->SpdSave + SPD_SAVE_OFFSET_SERIAL,
-				memory_info_hob->DataWidth);
+				memory_info_hob->DataWidth,
+				memory_info_hob->VddVoltage[memProfNum],
+				memory_info_hob->EccSupport);
 			index++;
 		}
 	}

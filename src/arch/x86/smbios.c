@@ -372,6 +372,11 @@ static int create_smbios_type17_for_dimm(struct dimm_info *dimm,
 	dimm->module_part_number[DIMM_INFO_PART_NUMBER_SIZE - 1] = '\0';
 	smbios_fill_dimm_part_number((char *)dimm->module_part_number, t);
 
+	/* Voltage Levels */
+	t->configured_voltage = dimm->vdd_voltage;
+	t->minimum_voltage = dimm->vdd_voltage;
+	t->maximum_voltage = dimm->vdd_voltage;
+
 	/* Synchronous = 1 */
 	t->type_detail = 0x0080;
 	/* no handle for error information */

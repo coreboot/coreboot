@@ -86,6 +86,10 @@ struct dimm_info {
 	 * See the smbios.h smbios_memory_bus_width enum.
 	 */
 	uint8_t bus_width;
+	/*
+	 * Voltage Level
+	 */
+	uint16_t vdd_voltage;
 } __packed;
 
 struct memory_info {

@@ -22,7 +22,8 @@
 void dimm_info_fill(struct dimm_info *dimm, u32 dimm_capacity, u8 ddr_type,
 		u32 frequency, u8 rank_per_dimm, u8 channel_id, u8 dimm_id,
 		const char *module_part_num, size_t module_part_number_size,
-		const u8 *module_serial_num, u16 data_width)
+		const u8 *module_serial_num, u16 data_width, u32 vdd_voltage,
+		bool ecc_support)
 {
 	dimm->dimm_size = dimm_capacity;
 	dimm->ddr_type = ddr_type;
@@ -30,6 +31,12 @@ void dimm_info_fill(struct dimm_info *dimm, u32 dimm_capacity, u8 ddr_type,
 	dimm->rank_per_dimm = rank_per_dimm;
 	dimm->channel_num = channel_id;
 	dimm->dimm_num = dimm_id;
+	if (vdd_voltage > 0xFFFF) {
+		dimm->vdd_voltage = 0xFFFF;
+	} else {
+		dimm->vdd_voltage = vdd_voltage;
+	}
+
 	strncpy((char *)dimm->module_part_number,
 			module_part_num,
 			min(sizeof(dimm->module_part_number),
@@ -57,4 +64,7 @@ void dimm_info_fill(struct dimm_info *dimm, u32 dimm_capacity, u8 ddr_type,
 		printk(BIOS_NOTICE, "Incorrect DIMM Data width: %u\n",
 		       (unsigned int)data_width);
 	}
+
+	if (ecc_support)
+		dimm->bus_width |= 0x8;
 }

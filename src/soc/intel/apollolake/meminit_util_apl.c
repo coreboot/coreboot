@@ -91,7 +91,9 @@ void save_lpddr4_dimm_info_part_num(const char *dram_part_num)
 				dram_part_num,
 				strlen(dram_part_num),
 				NULL, /* SPD not available */
-				memory_info_hob->DataWidth);
+				memory_info_hob->DataWidth,
+				0,
+				0);
 			index++;
 		}
 	}

@@ -331,7 +331,6 @@ static void commit_fixed_mtrrs(void)
 
 		desc = &fixed_mtrr_desc[i];
 		num_ranges = (desc->end - desc->begin) / desc->step;
-		ASSERT(num_ranges > 0);
 		for (j = 0; j < num_ranges; j += RANGES_PER_FIXED_MTRR) {
 			msr_index[msr_num] = desc->msr_index_base +
 				(j / RANGES_PER_FIXED_MTRR);
@@ -354,6 +353,9 @@ static void commit_fixed_mtrrs(void)
 			msr_num++;
 		}
 	}
+
+	/* Ensure that both arrays were fully initialized */
+	ASSERT(msr_num == NUM_FIXED_MTRRS)
 
 	for (i = 0; i < ARRAY_SIZE(fixed_msrs); i++)
 		printk(BIOS_DEBUG, "MTRR: Fixed MSR 0x%lx 0x%08x%08x\n",

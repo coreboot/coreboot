@@ -211,7 +211,6 @@ static const struct pad_config gpio_table[] = {
 /* I2C4_SCL */		PAD_CFG_NF(GPP_H9, NONE, DEEP, NF1), /* I2C_SCL_H1 */
 /* I2C5_SDA */		PAD_NC(GPP_H10, NONE), /* ISH_I2C2_SDA */
 /* I2C5_SCL */		PAD_NC(GPP_H11, NONE), /* ISH_I2C2_SCL */
-/* M2_SKT2_CFG1 */	PAD_CFG_GPO(GPP_H13, 1, DEEP), /* M.2 SSD D3 cold */
 /* M2_SKT2_CFG2 */	PAD_NC(GPP_H14, NONE),
 /* M2_SKT2_CFG3 */      PAD_CFG_GPO(GPP_H15, 1, DEEP), /* BT_RADIO_DIS# */
 /* DDPF_CTRLCLK */	PAD_NC(GPP_H16, NONE),
@@ -239,6 +238,7 @@ static const struct pad_config gpio_table[] = {
 
 /* Early pad configuration in bootblock */
 static const struct pad_config early_gpio_table[] = {
+/* M2_SKT2_CFG1 */	PAD_CFG_GPO(GPP_H13, 1, DEEP), /* M.2 SSD D3 cold */
 /* SSD RESET pin will stay low first */
 /* M2_SKT2_CFG0 */	PAD_CFG_GPO(GPP_H12, 0, DEEP), /* D3 cold RST */
 /* UART2_RXD */		PAD_CFG_NF(GPP_C20, NONE, DEEP, NF1), /* SERVOTX_UART */

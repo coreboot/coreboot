@@ -33,6 +33,8 @@ struct soc_intel_common_config {
 	int chipset_lockdown;
 	struct gspi_cfg gspi[CONFIG_SOC_INTEL_COMMON_BLOCK_GSPI_MAX];
 	struct dw_i2c_bus_config i2c[CONFIG_SOC_INTEL_I2C_DEV_MAX];
+	/* PCH Thermal Trip Temperature in deg C */
+	uint8_t pch_thermal_trip;
 };
 
 /* This function to retrieve soc config structure required by common code */

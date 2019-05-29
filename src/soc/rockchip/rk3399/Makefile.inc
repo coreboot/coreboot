@@ -76,7 +76,6 @@ ramstage-y += timer.c
 ramstage-$(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT) += ../common/vop.c
 ramstage-y += usb.c
 
-ramstage-y += bl31_plat_params.c
 BL31_MAKEARGS += PLAT=rk3399 M0_CROSS_COMPILE="$(CROSS_COMPILE_arm)"
 ################################################################################
 

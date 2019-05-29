@@ -19,6 +19,6 @@
 
 #include <atf/plat_params.h>
 
-void register_bl31_param(struct bl31_plat_param *param);
+void cn81xx_register_bl31_param(struct bl31_plat_param *param);
 
 #endif/* __BL31_PLAT_PARAMS_H__ */

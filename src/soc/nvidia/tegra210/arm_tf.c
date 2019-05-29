@@ -32,7 +32,7 @@ typedef struct bl31_plat_params {
 
 static bl31_plat_params_t t210_plat_params;
 
-void *soc_get_bl31_plat_params(bl31_params_t *params)
+void *soc_get_bl31_plat_params(void)
 {
 	uintptr_t tz_base_mib;
 	size_t tz_size_mib;

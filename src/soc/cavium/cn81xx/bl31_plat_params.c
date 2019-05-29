@@ -20,7 +20,7 @@
 
 static struct bl31_plat_param *plat_params;
 
-void register_bl31_param(struct bl31_plat_param *param)
+void cn81xx_register_bl31_param(struct bl31_plat_param *param)
 {
 	ASSERT(param);
 
@@ -28,7 +28,7 @@ void register_bl31_param(struct bl31_plat_param *param)
 	plat_params = param;
 }
 
-void *soc_get_bl31_plat_params(bl31_params_t *bl31_params)
+void *soc_get_bl31_plat_params(void)
 {
 	return plat_params;
 }

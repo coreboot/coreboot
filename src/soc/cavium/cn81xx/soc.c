@@ -354,7 +354,7 @@ static void soc_init_atf(void)
 	/* Point to devicetree in secure memory */
 	fdt_param.fdt_ptr = (uintptr_t)_sff8104;
 
-	register_bl31_param(&fdt_param.h);
+	cn81xx_register_bl31_param(&fdt_param.h);
 
 	static struct bl31_u64_param cbtable_param = {
 		.h = { .type = PARAM_COREBOOT_TABLE, },
@@ -362,7 +362,7 @@ static void soc_init_atf(void)
 	/* Point to coreboot tables */
 	cbtable_param.value = (uint64_t)cbmem_find(CBMEM_ID_CBTABLE);
 	if (cbtable_param.value)
-		register_bl31_param(&cbtable_param.h);
+		cn81xx_register_bl31_param(&cbtable_param.h);
 }
 
 static void soc_init(struct device *dev)

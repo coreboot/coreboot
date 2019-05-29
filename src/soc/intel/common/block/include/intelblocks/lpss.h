@@ -30,7 +30,4 @@ void lpss_clk_update(uintptr_t base, uint32_t clk_m_val, uint32_t clk_n_val);
 /* Check if controller is in reset. */
 bool lpss_is_controller_in_reset(uintptr_t base);
 
-/* Read LPSS CLK register */
-uint32_t lpss_clk_read(uintptr_t base);
-
 #endif	/* SOC_INTEL_COMMON_BLOCK_LPSS_H */

@@ -56,12 +56,12 @@ chip soc/intel/cannonlake
 	register "usb2_ports[1]" = "USB2_PORT_TYPE_C(OC2)"	# Type-C Port 1
 	register "usb2_ports[2]" = "USB2_PORT_SHORT(OC3)"	# Type-A Port 0
 	register "usb2_ports[3]" = "USB2_PORT_LONG(OC3)"	# Type-A Port 1
-	register "usb2_ports[4]" = "USB2_PORT_MID(OC_SKIP)"	# BT
+	register "usb2_ports[4]" = "USB2_PORT_EMPTY"
 	register "usb2_ports[5]" = "USB2_PORT_MID(OC_SKIP)"	# WWAN
 	register "usb2_ports[6]" = "USB2_PORT_LONG(OC_SKIP)"	# Camera
 	register "usb2_ports[7]" = "USB2_PORT_EMPTY"
 	register "usb2_ports[8]" = "USB2_PORT_EMPTY"
-	register "usb2_ports[9]" = "USB2_PORT_MID(OC_SKIP)"	# CnVi BT
+	register "usb2_ports[9]" = "USB2_PORT_MID(OC_SKIP)"	# BT
 
 	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC2)"	# Type-C Port 0
 	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC2)"	# Type-C Port 1
@@ -145,12 +145,6 @@ chip soc/intel/cannonlake
 						device usb 2.3 on end
 					end
 					chip drivers/usb/acpi
-						register "desc" = ""Discrete bluetooth""
-						register "type" = "UPC_TYPE_INTERNAL"
-						register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C14)"
-						device usb 2.4 on end
-					end
-					chip drivers/usb/acpi
 						register "desc" = ""WWAN""
 						register "type" = "UPC_TYPE_INTERNAL"
 						device usb 2.5 on end
@@ -161,7 +155,7 @@ chip soc/intel/cannonlake
 						device usb 2.6 on end
 					end
 					chip drivers/usb/acpi
-						register "desc" = ""Integrated CnVi bluetooth""
+						register "desc" = ""Bluetooth""
 						register "type" = "UPC_TYPE_INTERNAL"
 						register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C14)"
 						device usb 2.9 on end

@@ -32,7 +32,24 @@ chip soc/intel/cannonlake
 	# GPIO for SD card detect
 	register "sdcard_cd_gpio" = "vSD3_CD_B"
 
+	# USB configuration
+	register "usb2_ports[4]" = "USB2_PORT_MID(OC_SKIP)"	# Discrete BT
+
 	device domain 0 on
+		device pci 14.0 on
+			chip drivers/usb/acpi
+				register "desc" = ""Root Hub""
+				register "type" = "UPC_TYPE_HUB"
+				device usb 0.0 on
+					chip drivers/usb/acpi
+						register "desc" = ""Discrete bluetooth""
+						register "type" = "UPC_TYPE_INTERNAL"
+						register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C14)"
+						device usb 2.4 on end
+					end
+				end
+			end
+		end # USB xHCI
 		device pci 15.0 on
 			chip drivers/i2c/generic
 				register "hid" = ""ELAN0000""

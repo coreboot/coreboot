@@ -24,8 +24,10 @@ void mainboard_memory_init_params(struct romstage_params *params,
 				  MEMORY_INIT_UPD *memory_params)
 {
 	spd_memory_init_params(memory_params);
-	mainboard_fill_dq_map_data(&memory_params->DqByteMapCh0);
-	mainboard_fill_dqs_map_data(&memory_params->DqsMapCpu2DramCh0);
+	mainboard_fill_dq_map_data(&memory_params->DqByteMapCh0,
+				   &memory_params->DqByteMapCh1);
+	mainboard_fill_dqs_map_data(&memory_params->DqsMapCpu2DramCh0,
+				    &memory_params->DqsMapCpu2DramCh1);
 	mainboard_fill_rcomp_res_data(&memory_params->RcompResistor);
 	mainboard_fill_rcomp_strength_data(&memory_params->RcompTarget);
 	memory_params->MemorySpdDataLen = SPD_LEN;

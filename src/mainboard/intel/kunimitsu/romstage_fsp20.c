@@ -25,8 +25,10 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 	FSP_M_CONFIG *mem_cfg;
 	mem_cfg = &mupd->FspmConfig;
 
-	mainboard_fill_dq_map_data(&mem_cfg->DqByteMapCh0);
-	mainboard_fill_dqs_map_data(&mem_cfg->DqsMapCpu2DramCh0);
+	mainboard_fill_dq_map_data(&mem_cfg->DqByteMapCh0,
+				   &mem_cfg->DqByteMapCh1);
+	mainboard_fill_dqs_map_data(&mem_cfg->DqsMapCpu2DramCh0,
+				    &mem_cfg->DqsMapCpu2DramCh1);
 	mainboard_fill_rcomp_res_data(&mem_cfg->RcompResistor);
 	mainboard_fill_rcomp_strength_data(&mem_cfg->RcompTarget);
 

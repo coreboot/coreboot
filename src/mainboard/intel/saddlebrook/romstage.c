@@ -49,8 +49,10 @@ void mainboard_memory_init_params(
 	* should be set in the FSP flash image and should not need to be
 	* changed.
 	*/
-	mainboard_fill_dq_map_data(&memory_params->DqByteMapCh0);
-	mainboard_fill_dqs_map_data(&memory_params->DqsMapCpu2DramCh0);
+	mainboard_fill_dq_map_data(&memory_params->DqByteMapCh0,
+				   &memory_params->DqByteMapCh1);
+	mainboard_fill_dqs_map_data(&memory_params->DqsMapCpu2DramCh0,
+				    &memory_params->DqsMapCpu2DramCh1);
 	mainboard_fill_rcomp_res_data(&memory_params->RcompResistor);
 	mainboard_fill_rcomp_strength_data(&memory_params->RcompTarget);
 

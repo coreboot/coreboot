@@ -289,6 +289,11 @@ config CPU_BCLK_MHZ
 	int
 	default 100
 
+config CONSOLE_UART_BASE_ADDRESS
+	hex
+	default 0xfe030000
+	depends on INTEL_LPSS_UART_FOR_CONSOLE
+
 # Clock divider parameters for 115200 baud rate
 config SOC_INTEL_COMMON_LPSS_UART_CLK_M_VAL
 	hex

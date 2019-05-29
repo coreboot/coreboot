@@ -138,6 +138,11 @@ config SOC_INTEL_UART_DEV_MAX
 	int
 	default 3
 
+config CONSOLE_UART_BASE_ADDRESS
+	hex
+	default 0xfe032000
+	depends on INTEL_LPSS_UART_FOR_CONSOLE
+
 # Clock divider parameters for 115200 baud rate
 config SOC_INTEL_COMMON_LPSS_UART_CLK_M_VAL
 	hex

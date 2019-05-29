@@ -361,6 +361,11 @@ config CPU_BCLK_MHZ
 	int
 	default 100
 
+config CONSOLE_UART_BASE_ADDRESS
+	hex
+	default 0xddffc000
+	depends on INTEL_LPSS_UART_FOR_CONSOLE
+
 config APL_SKIP_SET_POWER_LIMITS
 	bool
 	default n

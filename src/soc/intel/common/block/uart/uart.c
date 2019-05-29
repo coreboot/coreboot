@@ -46,8 +46,9 @@ static void uart_lpss_init(uintptr_t baseaddr)
 #if CONFIG(DRIVERS_UART_8250MEM)
 uintptr_t uart_platform_base(int idx)
 {
-	/* return Base address for UART console index */
-	return UART_BASE_0_ADDR(idx);
+	if (idx == CONFIG_UART_FOR_CONSOLE)
+		return UART_BASE_0_ADDR(CONFIG_UART_FOR_CONSOLE);
+	return 0;
 }
 #endif
 

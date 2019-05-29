@@ -58,10 +58,14 @@ void variant_memory_init_params(
 	if (spd_index == K4E6E304EB_MEM_ID)
 		targeted_rcomp = StrengthendRcompTarget;
 
-	memcpy(params->DqByteMapCh0, dq_map,
-			sizeof(params->DqByteMapCh0) * 2);
-	memcpy(params->DqsMapCpu2DramCh0, dqs_map,
-			sizeof(params->DqsMapCpu2DramCh0) * 2);
+	memcpy(params->DqByteMapCh0, dq_map[0],
+			sizeof(params->DqByteMapCh0));
+	memcpy(params->DqByteMapCh1, dq_map[1],
+			sizeof(params->DqByteMapCh1));
+	memcpy(params->DqsMapCpu2DramCh0, dqs_map[0],
+			sizeof(params->DqsMapCpu2DramCh0));
+	memcpy(params->DqsMapCpu2DramCh1, dqs_map[1],
+			sizeof(params->DqsMapCpu2DramCh1));
 	memcpy(params->RcompResistor, RcompResistor,
 			sizeof(params->RcompResistor));
 	memcpy(params->RcompTarget, targeted_rcomp,

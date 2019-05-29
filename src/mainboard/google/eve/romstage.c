@@ -40,8 +40,10 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 	/* Rcomp target */
 	const u16 rcomp_target[] = { 100, 40, 40, 23, 40 };
 
-	memcpy(&mem_cfg->DqByteMapCh0, dq_map, sizeof(dq_map));
-	memcpy(&mem_cfg->DqsMapCpu2DramCh0, dqs_map, sizeof(dqs_map));
+	memcpy(&mem_cfg->DqByteMapCh0, dq_map[0], sizeof(dq_map[0]));
+	memcpy(&mem_cfg->DqByteMapCh1, dq_map[1], sizeof(dq_map[1]));
+	memcpy(&mem_cfg->DqsMapCpu2DramCh0, dqs_map[0], sizeof(dqs_map[0]));
+	memcpy(&mem_cfg->DqsMapCpu2DramCh1, dqs_map[1], sizeof(dqs_map[1]));
 	memcpy(&mem_cfg->RcompResistor, rcomp_resistor, sizeof(rcomp_resistor));
 	memcpy(&mem_cfg->RcompTarget, rcomp_target, sizeof(rcomp_target));
 

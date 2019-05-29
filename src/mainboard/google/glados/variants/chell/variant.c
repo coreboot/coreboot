@@ -41,10 +41,14 @@ void variant_memory_init_params(
 	/* Rcomp target */
 	const u16 RcompTarget[5] = { 100, 40, 40, 23, 40 };
 
-	memcpy(memory_params->DqByteMapCh0, dq_map,
-			sizeof(memory_params->DqByteMapCh0) * 2);
-	memcpy(memory_params->DqsMapCpu2DramCh0, dqs_map,
-			sizeof(memory_params->DqsMapCpu2DramCh0) * 2);
+	memcpy(memory_params->DqByteMapCh0, dq_map[0],
+			sizeof(memory_params->DqByteMapCh0));
+	memcpy(memory_params->DqByteMapCh1, dq_map[1],
+			sizeof(memory_params->DqByteMapCh1));
+	memcpy(memory_params->DqsMapCpu2DramCh0, dqs_map[0],
+			sizeof(memory_params->DqsMapCpu2DramCh0));
+	memcpy(memory_params->DqsMapCpu2DramCh1, dqs_map[1],
+			sizeof(memory_params->DqsMapCpu2DramCh1));
 	memcpy(memory_params->RcompResistor, RcompResistor,
 			sizeof(memory_params->RcompResistor));
 	memcpy(memory_params->RcompTarget, RcompTarget,

@@ -118,7 +118,6 @@ static int platform_i2c_read(uint32_t restart, uint8_t *rx_buffer, int length,
 	int bytes_transferred;
 	uint32_t cmd;
 	int fifo_bytes;
-	uint8_t junk;
 	I2C_REGS *regs;
 	uint32_t status;
 
@@ -129,7 +128,7 @@ static int platform_i2c_read(uint32_t restart, uint8_t *rx_buffer, int length,
 	/* Empty the FIFO */
 	status = regs->ic_status;
 	while (status & IC_STATUS_RFNE) {
-		junk = (uint8_t)regs->ic_data_cmd;
+		(void)regs->ic_data_cmd;
 		status = regs->ic_status;
 	}
 

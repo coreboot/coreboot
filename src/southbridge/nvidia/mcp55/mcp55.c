@@ -59,8 +59,6 @@ void mcp55_enable(struct device *dev)
 	u32 reg_old, reg;
 	u8 byte;
 	unsigned deviceid, vendorid, devfn;
-	struct southbridge_nvidia_mcp55_config *conf;
-	conf = dev->chip_info;
 	int i;
 
 	if (dev->device == 0x0000) {

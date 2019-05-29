@@ -15,19 +15,16 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/acpi_device.h>
-#include <arch/acpigen.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ops.h>
 #include <device/pci_ids.h>
 #include <elog.h>
-#include <sar.h>
 #include <smbios.h>
 #include <string.h>
-#include <wrdd.h>
 #include "chip.h"
+#include "drivers/wifi/generic_wifi.h"
 
 #define PMCS_DR 0xcc
 #define PME_STS (1 << 15)
@@ -65,194 +62,18 @@ static int smbios_write_wifi(struct device *dev, int *handle,
 }
 #endif
 
-__weak
-int get_wifi_sar_limits(struct wifi_sar_limits *sar_limits)
-{
-	return -1;
-}
-
 #if CONFIG(HAVE_ACPI_TABLES)
-static void emit_sar_acpi_structures(void)
-{
-	int i, j, package_size;
-	struct wifi_sar_limits sar_limits;
-	struct wifi_sar_delta_table *wgds;
-
-	/* Retrieve the sar limits data */
-	if (get_wifi_sar_limits(&sar_limits) < 0) {
-		printk(BIOS_ERR, "Error: failed from getting SAR limits!\n");
-		return;
-	}
-
-	/*
-	 * Name ("WRDS", Package () {
-	 *   Revision,
-	 *   Package () {
-	 *     Domain Type,	// 0x7:WiFi
-	 *     WiFi SAR BIOS,	// BIOS SAR Enable/disable
-	 *     SAR Table Set	// Set#1 of SAR Table (10 bytes)
-	 *   }
-	 * })
-	 */
-	acpigen_write_name("WRDS");
-	acpigen_write_package(2);
-	acpigen_write_dword(WRDS_REVISION);
-	/* Emit 'Domain Type' + 'WiFi SAR BIOS' + 10 bytes for Set#1 */
-	package_size = 1 + 1 + BYTES_PER_SAR_LIMIT;
-	acpigen_write_package(package_size);
-	acpigen_write_dword(WRDS_DOMAIN_TYPE_WIFI);
-	acpigen_write_dword(CONFIG(SAR_ENABLE));
-	for (i = 0; i < BYTES_PER_SAR_LIMIT; i++)
-		acpigen_write_byte(sar_limits.sar_limit[0][i]);
-	acpigen_pop_len();
-	acpigen_pop_len();
-
-	/*
-	 * Name ("EWRD", Package () {
-	 *   Revision,
-	 *   Package () {
-	 *     Domain Type,		// 0x7:WiFi
-	 *     Dynamic SAR Enable,	// Dynamic SAR Enable/disable
-	 *     Extended SAR sets,	// Number of optional SAR table sets
-	 *     SAR Table Set,		// Set#2 of SAR Table (10 bytes)
-	 *     SAR Table Set,		// Set#3 of SAR Table (10 bytes)
-	 *     SAR Table Set		// Set#4 of SAR Table (10 bytes)
-	 *   }
-	 * })
-	 */
-	acpigen_write_name("EWRD");
-	acpigen_write_package(2);
-	acpigen_write_dword(EWRD_REVISION);
-	/*
-	 * Emit 'Domain Type' + "Dynamic SAR Enable' + 'Extended SAR sets'
-	 * + number of bytes for Set#2 & 3 & 4
-	 */
-	package_size = 1 + 1 + 1 + (NUM_SAR_LIMITS - 1) * BYTES_PER_SAR_LIMIT;
-	acpigen_write_package(package_size);
-	acpigen_write_dword(EWRD_DOMAIN_TYPE_WIFI);
-	acpigen_write_dword(CONFIG(DSAR_ENABLE));
-	acpigen_write_dword(CONFIG_DSAR_SET_NUM);
-	for (i = 1; i < NUM_SAR_LIMITS; i++)
-		for (j = 0; j < BYTES_PER_SAR_LIMIT; j++)
-			acpigen_write_byte(sar_limits.sar_limit[i][j]);
-	acpigen_pop_len();
-	acpigen_pop_len();
-
-
-	if (!CONFIG(GEO_SAR_ENABLE))
-		return;
-
-	/*
-	 * Name ("WGDS", Package() {
-	 *  Revision,
-	 *  Package() {
-	 *   DomainType,                         // 0x7:WiFi
-	 *   WgdsWiFiSarDeltaGroup1PowerMax1,    // Group 1 FCC 2400 Max
-	 *   WgdsWiFiSarDeltaGroup1PowerChainA1, // Group 1 FCC 2400 A Offset
-	 *   WgdsWiFiSarDeltaGroup1PowerChainB1, // Group 1 FCC 2400 B Offset
-	 *   WgdsWiFiSarDeltaGroup1PowerMax2,    // Group 1 FCC 5200 Max
-	 *   WgdsWiFiSarDeltaGroup1PowerChainA2, // Group 1 FCC 5200 A Offset
-	 *   WgdsWiFiSarDeltaGroup1PowerChainB2, // Group 1 FCC 5200 B Offset
-	 *   WgdsWiFiSarDeltaGroup2PowerMax1,    // Group 2 EC Jap 2400 Max
-	 *   WgdsWiFiSarDeltaGroup2PowerChainA1, // Group 2 EC Jap 2400 A Offset
-	 *   WgdsWiFiSarDeltaGroup2PowerChainB1, // Group 2 EC Jap 2400 B Offset
-	 *   WgdsWiFiSarDeltaGroup2PowerMax2,    // Group 2 EC Jap 5200 Max
-	 *   WgdsWiFiSarDeltaGroup2PowerChainA2, // Group 2 EC Jap 5200 A Offset
-	 *   WgdsWiFiSarDeltaGroup2PowerChainB2, // Group 2 EC Jap 5200 B Offset
-	 *   WgdsWiFiSarDeltaGroup3PowerMax1,    // Group 3 ROW 2400 Max
-	 *   WgdsWiFiSarDeltaGroup3PowerChainA1, // Group 3 ROW 2400 A Offset
-	 *   WgdsWiFiSarDeltaGroup3PowerChainB1, // Group 3 ROW 2400 B Offset
-	 *   WgdsWiFiSarDeltaGroup3PowerMax2,    // Group 3 ROW 5200 Max
-	 *   WgdsWiFiSarDeltaGroup3PowerChainA2, // Group 3 ROW 5200 A Offset
-	 *   WgdsWiFiSarDeltaGroup3PowerChainB2, // Group 3 ROW 5200 B Offset
-	 *  }
-	 * })
-	 */
-
-	wgds = &sar_limits.wgds;
-	acpigen_write_name("WGDS");
-	acpigen_write_package(2);
-	acpigen_write_dword(wgds->version);
-	/* Emit 'Domain Type' +
-	 * Group specific delta of power (6 bytes * NUM_WGDS_SAR_GROUPS)
-	 */
-	package_size = sizeof(sar_limits.wgds.group) + 1;
-	acpigen_write_package(package_size);
-	acpigen_write_dword(WGDS_DOMAIN_TYPE_WIFI);
-	for (i = 0; i < SAR_NUM_WGDS_GROUPS; i++) {
-		acpigen_write_byte(wgds->group[i].power_max_2400mhz);
-		acpigen_write_byte(wgds->group[i].power_chain_a_2400mhz);
-		acpigen_write_byte(wgds->group[i].power_chain_b_2400mhz);
-		acpigen_write_byte(wgds->group[i].power_max_5200mhz);
-		acpigen_write_byte(wgds->group[i].power_chain_a_5200mhz);
-		acpigen_write_byte(wgds->group[i].power_chain_b_5200mhz);
-	}
-
-	acpigen_pop_len();
-	acpigen_pop_len();
-}
-
 static void intel_wifi_fill_ssdt(struct device *dev)
 {
 	struct drivers_intel_wifi_config *config = dev->chip_info;
-	const char *path = acpi_device_path(dev->bus->dev);
-	u32 address;
+	struct generic_wifi_config generic_config;
 
-	if (!path || !dev->enabled)
-		return;
-
-	/* Device */
-	acpigen_write_scope(path);
-	acpigen_write_device(acpi_device_name(dev));
-	acpigen_write_name_integer("_UID", 0);
-	if (dev->chip_ops)
-		acpigen_write_name_string("_DDN", dev->chip_ops->name);
-
-	/* Address */
-	address = PCI_SLOT(dev->path.pci.devfn) & 0xffff;
-	address <<= 16;
-	address |= PCI_FUNC(dev->path.pci.devfn) & 0xffff;
-	acpigen_write_name_dword("_ADR", address);
-
-	/* Wake capabilities */
-	if (config && config->wake)
-		acpigen_write_PRW(config->wake, 3);
-
-	/* Fill regulatory domain structure */
-	if (CONFIG(HAVE_REGULATORY_DOMAIN)) {
-		/*
-		 * Name ("WRDD", Package () {
-		 *   WRDD_REVISION, // Revision
-		 *   Package () {
-		 *     WRDD_DOMAIN_TYPE_WIFI,   // Domain Type, 7:WiFi
-		 *     wifi_regulatory_domain() // Country Identifier
-		 *   }
-		 * })
-		 */
-		acpigen_write_name("WRDD");
-		acpigen_write_package(2);
-		acpigen_write_integer(WRDD_REVISION);
-		acpigen_write_package(2);
-		acpigen_write_dword(WRDD_DOMAIN_TYPE_WIFI);
-		acpigen_write_dword(wifi_regulatory_domain());
-		acpigen_pop_len();
-		acpigen_pop_len();
+	if (config) {
+		generic_config.wake = config->wake;
+		/* By default, all intel wifi chips wake from S3 */
+		generic_config.maxsleep = 3;
 	}
-
-	/* Fill Wifi sar related ACPI structures */
-	if (CONFIG(USE_SAR))
-		emit_sar_acpi_structures();
-
-	acpigen_pop_len(); /* Device */
-	acpigen_pop_len(); /* Scope */
-
-	printk(BIOS_INFO, "%s.%s: %s %s\n", path, acpi_device_name(dev),
-	       dev->chip_ops ? dev->chip_ops->name : "", dev_path(dev));
-}
-
-static const char *intel_wifi_acpi_name(const struct device *dev)
-{
-	return "WIFI";
+	generic_wifi_fill_ssdt(dev, config ? &generic_config : NULL);
 }
 #endif
 
@@ -282,7 +103,7 @@ struct device_operations device_ops = {
 #endif
 	.ops_pci                  = &pci_ops,
 #if CONFIG(HAVE_ACPI_TABLES)
-	.acpi_name                = intel_wifi_acpi_name,
+	.acpi_name                = generic_wifi_acpi_name,
 	.acpi_fill_ssdt_generator = intel_wifi_fill_ssdt,
 #endif
 };

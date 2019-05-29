@@ -13,26 +13,11 @@
  * GNU General Public License for more details.
  */
 
-#ifndef _WIFI_CHIP_H_
-#define _WIFI_CHIP_H_
-
-/* WRDS Spec Revision */
-#define WRDS_REVISION 0x0
-
-/* EWRD Spec Revision */
-#define EWRD_REVISION 0x0
-
-/* WRDS Domain type */
-#define WRDS_DOMAIN_TYPE_WIFI 0x7
-
-/* EWRD Domain type */
-#define EWRD_DOMAIN_TYPE_WIFI 0x7
-
-/* WGDS Domain type */
-#define WGDS_DOMAIN_TYPE_WIFI 0x7
+#ifndef _INTEL_WIFI_CHIP_H_
+#define _INTEL_WIFI_CHIP_H_
 
 struct drivers_intel_wifi_config {
-	unsigned wake; /* Wake pin for ACPI _PRW */
+	unsigned int wake; /* Wake pin for ACPI _PRW */
 };
 
-#endif /* _WIFI_CHIP_H_ */
+#endif /* _INTEL_WIFI_CHIP_H_ */

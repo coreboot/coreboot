@@ -91,10 +91,4 @@ struct device *uart_get_device(void);
  */
 struct device *soc_uart_console_to_device(int uart_console);
 
-/*
- * Set UART to legacy mode
- * Put UART in byte access mode for 16550 compatibility
- */
-void soc_uart_set_legacy_mode(void);
-
 #endif	/* SOC_INTEL_COMMON_BLOCK_UART_H */

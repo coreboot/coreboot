@@ -139,10 +139,6 @@ void uart_bootblock_init(void)
 	uart_common_init(uart_get_device(),
 		UART_BASE(CONFIG_UART_FOR_CONSOLE));
 
-	if (!CONFIG(DRIVERS_UART_8250MEM_32))
-		/* Put UART in byte access mode for 16550 compatibility */
-		soc_uart_set_legacy_mode();
-
 	/* Configure the 2 pads per UART. */
 	uart_configure_gpio_pads();
 }

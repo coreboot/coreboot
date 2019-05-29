@@ -26,6 +26,7 @@
 #include <device/pci.h>
 #include <device/pci_ops.h>
 #include <soc/southbridge.h>
+#include <amdblocks/lpc.h>
 #include <soc/pci_devs.h>
 
 #define SPI_DEBUG_DRIVER CONFIG(DEBUG_SPI_FLASH)
@@ -103,11 +104,7 @@ static int execute_command(void)
 
 void spi_init(void)
 {
-	uintptr_t bar;
-
-	bar = pci_read_config32(SOC_LPC_DEV, SPIROM_BASE_ADDRESS_REGISTER);
-	bar = ALIGN_DOWN(bar, 64);
-	set_spibar(bar);
+	set_spibar(lpc_get_spibase());
 }
 
 static int spi_ctrlr_xfer(const struct spi_slave *slave, const void *dout,

@@ -17,6 +17,7 @@
 #include <bootblock_common.h>
 #include <soc/gpio.h>
 #include <soc/southbridge.h>
+#include <amdblocks/lpc.h>
 #include <variant/ec.h>
 #include <variant/gpio.h>
 
@@ -61,5 +62,5 @@ void bootblock_mainboard_init(void)
 	}
 
 	/* Setup TPM decode before verstage */
-	sb_tpm_decode_spi();
+	lpc_tpm_decode_spi();
 }

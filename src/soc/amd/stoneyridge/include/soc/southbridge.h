@@ -256,125 +256,9 @@
 #define GPE0_LIMIT			28
 #define TOTAL_BITS(a)			(8 * sizeof(a))
 
-/*
- * PCI Config Space Definitions
- */
-
-/* ISA Bridge D14F3 */
-#define LPC_PCI_CONTROL			0x40
-#define   LEGACY_DMA_EN			BIT(2)
-
-#define LPC_IO_PORT_DECODE_ENABLE	0x44
-#define   DECODE_ENABLE_PARALLEL_PORT0	BIT(0)
-#define   DECODE_ENABLE_PARALLEL_PORT1	BIT(1)
-#define   DECODE_ENABLE_PARALLEL_PORT2	BIT(2)
-#define   DECODE_ENABLE_PARALLEL_PORT3	BIT(3)
-#define   DECODE_ENABLE_PARALLEL_PORT4	BIT(4)
-#define   DECODE_ENABLE_PARALLEL_PORT5	BIT(5)
-#define   DECODE_ENABLE_SERIAL_PORT0	BIT(6)
-#define   DECODE_ENABLE_SERIAL_PORT1	BIT(7)
-#define   DECODE_ENABLE_SERIAL_PORT2	BIT(8)
-#define   DECODE_ENABLE_SERIAL_PORT3	BIT(9)
-#define   DECODE_ENABLE_SERIAL_PORT4	BIT(10)
-#define   DECODE_ENABLE_SERIAL_PORT5	BIT(11)
-#define   DECODE_ENABLE_SERIAL_PORT6	BIT(12)
-#define   DECODE_ENABLE_SERIAL_PORT7	BIT(13)
-#define   DECODE_ENABLE_AUDIO_PORT0	BIT(14)
-#define   DECODE_ENABLE_AUDIO_PORT1	BIT(15)
-#define   DECODE_ENABLE_AUDIO_PORT2	BIT(16)
-#define   DECODE_ENABLE_AUDIO_PORT3	BIT(17)
-#define   DECODE_ENABLE_MIDI_PORT0	BIT(18)
-#define   DECODE_ENABLE_MIDI_PORT1	BIT(19)
-#define   DECODE_ENABLE_MIDI_PORT2	BIT(20)
-#define   DECODE_ENABLE_MIDI_PORT3	BIT(21)
-#define   DECODE_ENABLE_MSS_PORT0	BIT(22)
-#define   DECODE_ENABLE_MSS_PORT1	BIT(23)
-#define   DECODE_ENABLE_MSS_PORT2	BIT(24)
-#define   DECODE_ENABLE_MSS_PORT3	BIT(25)
-#define   DECODE_ENABLE_FDC_PORT0	BIT(26)
-#define   DECODE_ENABLE_FDC_PORT1	BIT(27)
-#define   DECODE_ENABLE_GAME_PORT	BIT(28)
-#define   DECODE_ENABLE_KBC_PORT	BIT(29)
-#define   DECODE_ENABLE_ACPIUC_PORT	BIT(30)
-#define   DECODE_ENABLE_ADLIB_PORT	BIT(31)
-
-#define LPC_IO_OR_MEM_DECODE_ENABLE	0x48
-#define   LPC_WIDEIO2_ENABLE		BIT(25)
-#define   LPC_WIDEIO1_ENABLE		BIT(24)
-#define   DECODE_IO_PORT_ENABLE6	BIT(23)
-#define   DECODE_IO_PORT_ENABLE5	BIT(22)
-#define   DECODE_IO_PORT_ENABLE4	BIT(21)
-#define   DECODE_MEM_PORT_ENABLE1	BIT(20)
-#define   DECODE_IO_PORT_ENABLE3	BIT(19)
-#define   DECODE_IO_PORT_ENABLE2	BIT(18)
-#define   DECODE_IO_PORT_ENABLE1	BIT(17)
-#define   DECODE_IO_PORT_ENABLE0	BIT(16)
-#define   LPC_SYNC_TIMEOUT_COUNT_ENABLE	BIT(7)
-#define   LPC_DECODE_RTC_IO_ENABLE	BIT(6)
-#define   DECODE_MEM_PORT_ENABLE0	BIT(5)
-#define   LPC_WIDEIO0_ENABLE		BIT(2)
-#define   DECODE_ALTERNATE_SIO_ENABLE	BIT(1)
-#define   DECODE_SIO_ENABLE		BIT(0)
-#define   WIDEIO_RANGE_ERROR		-1
-#define   TOTAL_WIDEIO_PORTS		3
-
-/* Assuming word access to higher word (register 0x4a) */
-#define LPC_IO_OR_MEM_DEC_EN_HIGH	0x4a
-#define   LPC_WIDEIO2_ENABLE_H		BIT(9)
-#define   LPC_WIDEIO1_ENABLE_H		BIT(8)
-#define   DECODE_IO_PORT_ENABLE6_H	BIT(7)
-#define   DECODE_IO_PORT_ENABLE5_H	BIT(6)
-#define   DECODE_IO_PORT_ENABLE4_H	BIT(5)
-#define   DECODE_IO_PORT_ENABLE3_H	BIT(3)
-#define   DECODE_IO_PORT_ENABLE2_H	BIT(2)
-#define   DECODE_IO_PORT_ENABLE1_H	BIT(1)
-#define   DECODE_IO_PORT_ENABLE0_H	BIT(0)
-
-#define LPC_MEM_PORT1			0x4c
-#define LPC_MEM_PORT0			0x60
-
-/* Register 0x64 is 32-bit, composed by two 16-bit sub-registers.
-   For ease of access, each sub-register is declared separetely. */
-#define LPC_WIDEIO_GENERIC_PORT		0x64
-#define LPC_WIDEIO1_GENERIC_PORT	0x66
-#define ROM_ADDRESS_RANGE1_START	0x68
-#define ROM_ADDRESS_RANGE1_END		0x6a
-#define ROM_ADDRESS_RANGE2_START	0x6c
-#define ROM_ADDRESS_RANGE2_END		0x6e
-
-#define LPC_ALT_WIDEIO_RANGE_ENABLE	0x74
-#define   LPC_ALT_WIDEIO2_ENABLE	BIT(3)
-#define   LPC_ALT_WIDEIO1_ENABLE	BIT(2)
-#define   LPC_ALT_WIDEIO0_ENABLE	BIT(0)
-
-#define LPC_MISC_CONTROL_BITS		0x78
-#define   LPC_NOHOG			BIT(0)
-
-#define LPC_TRUSTED_PLATFORM_MODULE	0x7c
-#define   TPM_12_EN			BIT(0)
-#define   TPM_LEGACY_EN			BIT(2)
-
-#define LPC_WIDEIO2_GENERIC_PORT	0x90
-
-#define SPIROM_BASE_ADDRESS_REGISTER	0xa0
-#define   SPI_BASE_ALIGNMENT		BIT(6)
-#define   ROUTE_TPM_2_SPI		BIT(3)
-#define   SPI_ABORT_ENABLE		BIT(2)
-#define   SPI_ROM_ENABLE		BIT(1)
-#define   SPI_ROM_ALT_ENABLE		BIT(0)
-
-/* LPC register 0xb8 is DWORD, here there are definitions for byte
-   access. For example, bits 31-24 are accessed through byte access
-   at register 0xbb. */
-#define LPC_ROM_DMA_EC_HOST_CONTROL	0xb8
-#define   SPI_FROM_HOST_PREFETCH_EN	BIT(24)
-#define   SPI_FROM_USB_PREFETCH_EN	BIT(23)
-
-#define LPC_HOST_CONTROL		0xbb
-#define   PREFETCH_EN_SPI_FROM_HOST	BIT(0)
-#define   T_START_ENH			BIT(3)
-
 /* SPI Controller (base address in D14F3xA0) */
+#define SPI_BASE_ALIGNMENT		BIT(6)
+
 #define SPI_CNTRL0			0x00
 #define   SPI_BUSY			BIT(31)
 #define   SPI_READ_MODE_MASK		(BIT(30) | BIT(29) | BIT(18))
@@ -474,21 +358,13 @@ struct soc_power_reg {
 #define XHCI_FW_BOOTRAM_SIZE			0x8000
 
 void enable_aoac_devices(void);
-void sb_enable_rom(void);
 void sb_clk_output_48Mhz(u32 osc);
 void sb_disable_4dw_burst(void);
 void sb_enable(struct device *dev);
 void southbridge_final(void *chip_info);
 void southbridge_init(void *chip_info);
-void sb_lpc_port80(void);
-void sb_lpc_decode(void);
-void sb_pci_port80(void);
 void sb_read_mode(u32 mode);
 void sb_set_spi100(u16 norm, u16 fast, u16 alt, u16 tpm);
-void sb_tpm_decode(void);
-void sb_tpm_decode_spi(void);
-void lpc_wideio_512_window(uint16_t base);
-void lpc_wideio_16_window(uint16_t base);
 uint16_t pm_acpi_pm_cnt_blk(void);
 uint16_t pm_acpi_pm_evt_blk(void);
 void bootblock_fch_early_init(void);
@@ -525,33 +401,6 @@ uint32_t get_uma_size(void);
  * @return 64bit base address
  */
 uint64_t get_uma_base(void);
-/**
- * @brief Find the size of a particular wide IO
- *
- * @param index = index of desired wide IO
- *
- * @return size of desired wide IO
- */
-uint16_t sb_wideio_size(int index);
-/**
- * @brief Identify if any LPC wide IO is covering the IO range
- *
- * @param start = start of IO range
- * @param size = size of IO range
- *
- * @return Index of wide IO covering the range or error
- */
-int sb_find_wideio_range(uint16_t start, uint16_t size);
-/**
- * @brief Program a LPC wide IO to support an IO range
- *
- * @param start = start of range to be routed through wide IO
- * @param size = size of range to be routed through wide IO
- *
- * @return Index of wide IO register used or error
- */
-int sb_set_wideio_range(uint16_t start, uint16_t size);
-
 /*
  * Call the mainboard to get the USB Over Current Map. The mainboard
  * returns the map and 0 on Success or -1 on error or no map. There is

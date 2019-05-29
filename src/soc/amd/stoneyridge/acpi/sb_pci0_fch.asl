@@ -51,7 +51,7 @@ Device(SBUS) {
 /* 0:14.2 - I2S Audio */
 
 /* 0:14.3 - LPC */
-#include "lpc.asl"
+#include <soc/amd/common/acpi/lpc.asl>
 
 /* 0:14.7 - SD Controller */
 Device(SDCN) {

@@ -28,14 +28,20 @@
 #include <pc80/i8254.h>
 #include <pc80/i8259.h>
 #include <amdblocks/acpimmio.h>
+#include <amdblocks/lpc.h>
 #include <soc/acpi.h>
-#include <soc/pci_devs.h>
 #include <soc/southbridge.h>
 #include <soc/nvs.h>
+#include <soc/iomap.h>
+
+/* Most systems should have already enabled the bridge */
+void __weak soc_late_lpc_bridge_enable(void) { }
 
 static void lpc_init(struct device *dev)
 {
 	u8 byte;
+
+	soc_late_lpc_bridge_enable();
 
 	/* Initialize isa dma */
 	isa_dma_init();
@@ -64,8 +70,8 @@ static void lpc_init(struct device *dev)
 	pci_write_config8(dev, LPC_MISC_CONTROL_BITS, byte);
 
 	/*
-	 * Enable hand-instance of the pulse generator and SPI
-	 * controller prefetch of flash.
+	 * Enable hand-instance of the pulse generator and SPI prefetch from
+	 * host (earlier is recommended for boot speed).
 	 */
 	byte = pci_read_config8(dev, LPC_HOST_CONTROL);
 	byte |= PREFETCH_EN_SPI_FROM_HOST | T_START_ENH;
@@ -247,9 +253,9 @@ static void set_child_resource(struct device *dev, struct device *child,
 			break;
 		default:
 			rsize = 0;
-			wideio_index = sb_find_wideio_range(base, res->size);
+			wideio_index = lpc_find_wideio_range(base, res->size);
 			if (wideio_index != WIDEIO_RANGE_ERROR) {
-				rsize = sb_wideio_size(wideio_index);
+				rsize = lpc_wideio_size(wideio_index);
 				printk(BIOS_DEBUG, "Covered by wideIO");
 				printk(BIOS_DEBUG, " %d\n", wideio_index);
 			}
@@ -260,7 +266,7 @@ static void set_child_resource(struct device *dev, struct device *child,
 			*reg_x |= set_x;
 		/* check if we can fit resource in variable range */
 		} else {
-			wideio_index = sb_set_wideio_range(base, res->size);
+			wideio_index = lpc_set_wideio_range(base, res->size);
 			if (wideio_index != WIDEIO_RANGE_ERROR) {
 				/* preserve wide IO related bits. */
 				*reg_x = pci_read_config32(dev,

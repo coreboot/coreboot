@@ -17,39 +17,39 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
+#include <device/pci_def.h>
 #include <soc/southbridge.h>
 
-
-static void sata_init(struct device *dev)
+static void soc_enable_sata_features(struct device *dev)
 {
-	/**************************************
-	 * Configure the SATA port multiplier *
-	 **************************************/
-	#define BYTE_TO_DWORD_OFFSET(x) (x/4)
-	#define AHCI_BASE_ADDRESS_REG 0x24
-	#define MISC_CONTROL_REG 0x40
-	#define UNLOCK_BIT (1<<0)
-	#define SATA_CAPABILITIES_REG 0xfc
-	#define CFG_CAP_SPM (1<<12)
+	u8 *ahci_ptr;
+	u32 misc_ctl, cap_cfg;
 
-	u32 *ahci_ptr = (void *)(uintptr_t)ALIGN_DOWN(
-		pci_read_config32(dev, AHCI_BASE_ADDRESS_REG), 256);
 	u32 temp;
 
 	/* unlock the write-protect */
-	temp = pci_read_config32(dev, MISC_CONTROL_REG);
-	temp |= UNLOCK_BIT;
-	pci_write_config32(dev, MISC_CONTROL_REG, temp);
+	misc_ctl = pci_read_config32(dev, SATA_MISC_CONTROL_REG);
+	misc_ctl |= SATA_MISC_SUBCLASS_WREN;
+	pci_write_config32(dev, SATA_MISC_CONTROL_REG, misc_ctl);
 
 	/* set the SATA AHCI mode to allow port expanders */
-	*(ahci_ptr + BYTE_TO_DWORD_OFFSET(SATA_CAPABILITIES_REG))
-							|= CFG_CAP_SPM;
+	ahci_ptr = (u8 *)(uintptr_t)ALIGN_DOWN(
+		pci_read_config32(dev, PCI_BASE_ADDRESS_5), 256);
+
+	cap_cfg = read32(ahci_ptr + SATA_CAPABILITIES_REG);
+	cap_cfg |= SATA_CAPABILITY_SPM;
+	write32(ahci_ptr + SATA_CAPABILITIES_REG, cap_cfg);
 
 	/* lock the write-protect */
-	temp = pci_read_config32(dev, MISC_CONTROL_REG);
-	temp &= ~UNLOCK_BIT;
-	pci_write_config32(dev, MISC_CONTROL_REG, temp);
+	temp = pci_read_config32(dev, SATA_MISC_CONTROL_REG);
+	temp &= ~SATA_MISC_SUBCLASS_WREN;
+	pci_write_config32(dev, SATA_MISC_CONTROL_REG, temp);
 };
+
+static void sata_init(struct device *dev)
+{
+	soc_enable_sata_features(dev);
+}
 
 static struct pci_operations lops_pci = {
 	/* .set_subsystem = pci_dev_set_subsystem, */

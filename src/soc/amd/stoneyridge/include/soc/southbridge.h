@@ -247,6 +247,13 @@
 #define GPE0_LIMIT			28
 #define TOTAL_BITS(a)			(8 * sizeof(a))
 
+/* SATA Controller D11F0 */
+#define SATA_MISC_CONTROL_REG		0x40
+#define SATA_MISC_SUBCLASS_WREN		BIT(0)
+/* Register in AHCIBaseAddress (BAR5 at D11F0x24) */
+#define SATA_CAPABILITIES_REG		0xfc
+#define SATA_CAPABILITY_SPM		BIT(12)
+
 /* SPI Controller (base address in D14F3xA0) */
 #define SPI_BASE_ALIGNMENT		BIT(6)
 

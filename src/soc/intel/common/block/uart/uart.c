@@ -43,7 +43,7 @@ static void uart_lpss_init(uintptr_t baseaddr)
 			CONFIG_SOC_INTEL_COMMON_LPSS_UART_CLK_N_VAL);
 }
 
-#if CONFIG(DRIVERS_UART_8250MEM)
+#if CONFIG(INTEL_LPSS_UART_FOR_CONSOLE)
 uintptr_t uart_platform_base(int idx)
 {
 	if (idx == CONFIG_UART_FOR_CONSOLE)

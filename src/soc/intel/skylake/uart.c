@@ -24,10 +24,6 @@
 #include <soc/pci_devs.h>
 #include <soc/pcr_ids.h>
 
-/* Serial IO UART controller legacy mode */
-#define PCR_SERIAL_IO_GPPRVRW7		0x618
-#define PCR_SIO_PCH_LEGACY_UART(idx)	(1 << (idx))
-
 /* UART pad configuration. Support RXD and TXD for now. */
 const struct uart_gpio_pad_config uart_gpio_pads[] = {
 	{
@@ -54,17 +50,6 @@ const struct uart_gpio_pad_config uart_gpio_pads[] = {
 };
 
 const int uart_max_index = ARRAY_SIZE(uart_gpio_pads);
-
-void soc_uart_set_legacy_mode(void)
-{
-	pcr_write32(PID_SERIALIO, PCR_SERIAL_IO_GPPRVRW7,
-		PCR_SIO_PCH_LEGACY_UART(CONFIG_UART_FOR_CONSOLE));
-	/*
-	 * Dummy read after setting any of GPPRVRW7.
-	 * Required for UART 16550 8-bit Legacy mode to become active
-	 */
-	lpss_clk_read(UART_BASE(CONFIG_UART_FOR_CONSOLE));
-}
 
 struct device *soc_uart_console_to_device(int uart_console)
 {

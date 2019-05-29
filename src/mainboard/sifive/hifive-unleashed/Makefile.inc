@@ -12,12 +12,15 @@
 # GNU General Public License for more details.
 
 bootblock-y += memlayout.ld
+bootblock-y += media.c
 
 romstage-y += memlayout.ld
 romstage-y += romstage.c
+romstage-y += media.c
 
 ramstage-y += memlayout.ld
 ramstage-y += fixup_fdt.c
+ramstage-y += media.c
 
 
 DTB=$(obj)/hifive-unleashed.dtb

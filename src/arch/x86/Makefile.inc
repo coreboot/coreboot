@@ -193,7 +193,7 @@ verstage-$(CONFIG_VBOOT_SEPARATE_VERSTAGE) += gdt_init.S
 verstage-$(CONFIG_IDT_IN_EVERY_STAGE) += exception.c
 verstage-$(CONFIG_IDT_IN_EVERY_STAGE) += idt.S
 
-verstage-$(CONFIG_ARCH_RAMSTAGE_X86_32) += cpu_common.c
+verstage-y += cpu_common.c
 verstage-y += memset.c
 verstage-y += memcpy.c
 verstage-y += memmove.c
@@ -230,7 +230,7 @@ romstage-y += boot.c
 romstage-$(CONFIG_C_ENVIRONMENT_BOOTBLOCK) += gdt_init.S
 romstage-y += cbmem.c
 romstage-y += cbfs_and_run.c
-romstage-$(CONFIG_ARCH_RAMSTAGE_X86_32) += cpu_common.c
+romstage-y += cpu_common.c
 romstage-$(CONFIG_EARLY_EBDA_INIT) += ebda.c
 romstage-$(CONFIG_IDT_IN_EVERY_STAGE) += exception.c
 romstage-$(CONFIG_IDT_IN_EVERY_STAGE) += idt.S

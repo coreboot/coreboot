@@ -104,7 +104,7 @@ bootblock-$(CONFIG_ARCH_BOOTBLOCK_X86_32) += gcc.c
 verstage-$(CONFIG_ARCH_VERSTAGE_X86_32) += gcc.c
 romstage-$(CONFIG_ARCH_ROMSTAGE_X86_32) += gcc.c
 ramstage-$(CONFIG_ARCH_RAMSTAGE_X86_32) += gcc.c
-smm-$(CONFIG_ARCH_RAMSTAGE_X86_32) += gcc.c
+smm-y += gcc.c
 endif
 
 romstage-$(CONFIG_GENERIC_UDELAY) += timer.c
@@ -279,7 +279,7 @@ verstage-y += program.ld
 
 ifeq ($(CONFIG_RELOCATABLE_MODULES),y)
 ramstage-y += rmodule.c
-romstage-$(CONFIG_RELOCATABLE_RAMSTAGE) += rmodule.c
+romstage-y += rmodule.c
 
 RMODULE_LDFLAGS  := -z defs -Bsymbolic
 

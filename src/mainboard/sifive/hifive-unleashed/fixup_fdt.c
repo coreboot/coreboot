@@ -15,6 +15,7 @@
 
 #include <stdint.h>
 #include <string.h>
+#include <console/console.h>
 #include <soc/otp.h>
 #include <soc/sdram.h>
 #include <cbfs.h>
@@ -86,6 +87,11 @@ static void fixup_fdt(void *unused)
 	/* load flat dt from cbfs */
 	fdt_rom = cbfs_boot_map_with_leak("fallback/DTB", CBFS_TYPE_RAW, NULL);
 
+	if (fdt_rom == NULL) {
+		printk(BIOS_ERR, "Unable to load fallback/DTB from CBFS\n");
+		return;
+	}
+
 	/* Expand DT into a tree */
 	tree = fdt_unflatten(fdt_rom);
 
@@ -95,6 +101,12 @@ static void fixup_fdt(void *unused)
 
 	/* convert the tree to a flat dt */
 	void *dt = malloc(dt_flat_size(tree));
+
+	if (dt == NULL) {
+		printk(BIOS_ERR, "Unable to allocate memory for flat device tree\n");
+		return;
+	}
+
 	dt_flatten(tree, dt);
 
 	/* update HLS */

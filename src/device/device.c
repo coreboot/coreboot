@@ -340,6 +340,9 @@ static void compute_resources(struct bus *bus, struct resource *bridge,
 	resource_t base;
 	base = round(bridge->base, bridge->align);
 
+	if (!bus)
+		return;
+
 	printk(BIOS_SPEW,  "%s %s: base: %llx size: %llx align: %d gran: %d"
 	       " limit: %llx\n", dev_path(bus->dev), resource2str(bridge),
 	       base, bridge->size, bridge->align,
@@ -483,6 +486,9 @@ static void allocate_resources(struct bus *bus, struct resource *bridge,
 	struct resource *resource;
 	resource_t base;
 	base = bridge->base;
+
+	if (!bus)
+		return;
 
 	printk(BIOS_SPEW, "%s %s: base:%llx size:%llx align:%d gran:%d "
 	       "limit:%llx\n", dev_path(bus->dev),

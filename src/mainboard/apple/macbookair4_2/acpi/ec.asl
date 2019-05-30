@@ -1,9 +1,9 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-Device(EC)
-{
-	Name (_HID, EISAID("PNP0C09"))
-	Name (_UID, 0)
-	Name (_GPE, 23)
-/* FIXME: EC support */
-}
+#define LIDS_OFFSET 0x60
+#define HPAC_OFFSET 0x60
+#define WKLD_OFFSET 0x68
+
+#include <ec/apple/acpi/ec.asl>
+#include <ec/apple/acpi/ac.asl>
+#include <ec/apple/acpi/lid.asl>

@@ -28,7 +28,7 @@ Device(LID)
 {
 	Name(_HID, "PNP0C0D")
 
-	Method(_LId, 0, NotSerialized)
+	Method(_LID, 0, NotSerialized)
 	{
 		return (LIDS)
 	}

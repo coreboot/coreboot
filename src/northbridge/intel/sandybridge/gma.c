@@ -626,7 +626,7 @@ static void gma_func0_init(struct device *dev)
 	/* Init graphics power management */
 	gma_pm_init_pre_vbios(dev);
 
-	if (!CONFIG(MAINBOARD_DO_NATIVE_VGA_INIT))
+	if (!CONFIG(MAINBOARD_USE_LIBGFXINIT))
 		/* PCI Init, will run VBIOS */
 		pci_dev_init(dev);
 

@@ -1,2 +1,0 @@
-config BOARD_CUBIETECH_CUBIEBOARD
-	bool "Cubieboard"

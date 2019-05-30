@@ -16,12 +16,122 @@
 #ifndef SOC_MEDIATEK_MT8183_SPM_H
 #define SOC_MEDIATEK_MT8183_SPM_H
 
+#include <arch/barrier.h>
+#include <console/console.h>
 #include <soc/addressmap.h>
+#include <string.h>
+#include <stdint.h>
 #include <types.h>
 
-enum {
-	SPM_PROJECT_CODE = 0xb16
-};
+/* SPM READ/WRITE CFG */
+#define SPM_PROJECT_CODE                    0xb16
+#define SPM_REGWR_CFG_KEY                   (SPM_PROJECT_CODE << 16)
+
+/* POWERON_CONFIG_EN (0x10006000+0x000) */
+#define BCLK_CG_EN_LSB                      (1U << 0)       /* 1b */
+#define MD_BCLK_CG_EN_LSB                   (1U << 1)       /* 1b */
+#define PCM_IM_HOST_W_EN_LSB                (1U << 30)      /* 1b */
+#define PCM_IM_HOST_EN_LSB                  (1U << 31)      /* 1b */
+
+/* SPM_CLK_CON (0x10006000+0x00C) */
+#define SYSCLK0_EN_CTRL_LSB                 (1U << 0)       /* 2b */
+#define SYSCLK1_EN_CTRL_LSB                 (1U << 2)       /* 2b */
+#define SPM_LOCK_INFRA_DCM_LSB              (1U << 5)       /* 1b */
+#define EXT_SRCCLKEN_MASK                   (1U << 6)       /* 1b */
+#define CXO32K_REMOVE_EN_MD1_LSB            (1U << 9)       /* 1b */
+#define CLKSQ1_SEL_CTRL_LSB                 (1U << 12)      /* 1b */
+#define SRCLKEN0_EN_LSB                     (1U << 13)      /* 1b */
+
+/* PCM_CON0 (0x10006000+0x018) */
+#define PCM_KICK_L_LSB                      (1U << 0)       /* 1b */
+#define IM_KICK_L_LSB                       (1U << 1)       /* 1b */
+#define PCM_CK_EN_LSB                       (1U << 2)       /* 1b */
+#define EN_IM_SLEEP_DVS_LSB                 (1U << 3)       /* 1b */
+#define IM_AUTO_PDN_EN_LSB                  (1U << 4)       /* 1b */
+#define PCM_SW_RESET_LSB                    (1U << 15)      /* 1b */
+
+/* PCM_CON1 (0x10006000+0x01C) */
+#define IM_SLAVE_LSB                        (1U << 0)       /* 1b */
+#define IM_SLEEP_LSB                        (1U << 1)       /* 1b */
+#define MIF_APBEN_LSB                       (1U << 3)       /* 1b */
+#define IM_PDN_LSB                          (1U << 4)       /* 1b */
+#define PCM_TIMER_EN_LSB                    (1U << 5)       /* 1b */
+#define IM_NONRP_EN_LSB                     (1U << 6)       /* 1b */
+#define DIS_MIF_PROT_LSB                    (1U << 7)       /* 1b */
+#define PCM_WDT_EN_LSB                      (1U << 8)       /* 1b */
+#define PCM_WDT_WAKE_MODE_LSB               (1U << 9)       /* 1b */
+#define SPM_SRAM_SLEEP_B_LSB                (1U << 10)      /* 1b */
+#define SPM_SRAM_ISOINT_B_LSB               (1U << 11)      /* 1b */
+#define EVENT_LOCK_EN_LSB                   (1U << 12)      /* 1b */
+#define SRCCLKEN_FAST_RESP_LSB              (1U << 13)      /* 1b */
+#define SCP_APB_INTERNAL_EN_LSB             (1U << 14)      /* 1b */
+
+/* SPM_IRQ_MASK (0x10006000+0x0B4) */
+#define PCM_IRQ_ROOT_MASK_LSB               (1U << 3)       /* 1b */
+
+/* SPM_WAKEUP_EVENT_MASK (0x10006000+0x0C4) */
+#define WAKEUP_EVENT_MASK_B_BIT0            (1U << 0)       /* 1b */
+
+/* SPARE_SRC_REQ_MASK (0x10006000+0x6C0) */
+#define SPARE1_DDREN_MASK_B_LSB             (1U << 0)       /* 1b */
+
+/* SPM_PC_TRACE_CON (0x10006000+0x8C0) */
+#define SPM_PC_TRACE_OFFSET_LSB             (1U << 0)       /* 12b */
+#define SPM_PC_TRACE_OFFSET                 (1U << 3)       /* 1b */
+#define SPM_PC_TRACE_HW_EN_LSB              (1U << 16)      /* 1b */
+
+/* SPM_SPARE_ACK_MASK (0x10006000+0x6F4) */
+#define SPARE_ACK_MASK_B_BIT0               (1U << 0)       /* 1b */
+#define SPARE_ACK_MASK_B_BIT1               (1U << 1)       /* 1b */
+
+/**************************************
+ * Config and Parameter
+ **************************************/
+#define CONN_DDR_EN_DBC_LEN                 (0x00000154 << 20)
+#define IFR_SRAMROM_ROM_PDN                 (0x0000003f)
+#define IM_STATE                            (0x4 << 7)
+#define IM_STATE_MASK                       (0x7 << 7)
+#define MD_DDR_EN_0_DBC_LEN                 (0x00000154)
+#define MD_DDR_EN_1_DBC_LEN                 (0x00000154 << 10)
+#define PCM_FSM_STA_DEF                     (0x00108490)
+#define PCM_FSM_STA_MASK                    (0x7FFFFF)
+#define POWER_ON_VAL1_DEF                   (0x00015800)
+#define SPM_CORE_TIMEOUT                    (5000)
+#define SPM_MAS_PAUSE_MASK_B_VAL            (0xFFFFFFFF)
+#define SPM_MAS_PAUSE2_MASK_B_VAL           (0xFFFFFFFF)
+#define SPM_PCM_REG1_DATA_CHECK             (0x1)
+#define SPM_PCM_REG15_DATA_CHECK            (0x0)
+#define SPM_WAKEUP_EVENT_MASK_DEF           (0xF0F92218)
+#define SYSCLK1_EN_CTRL                     (0x3 << 2)
+#define SYSCLK1_SRC_MASK_B                  (0x10 << 23)
+
+/**************************************
+ * Define and Declare
+ **************************************/
+/* SPM_IRQ_MASK */
+#define ISRM_TWAM                           (1U << 2)
+#define ISRM_PCM_RETURN                     (1U << 3)
+#define ISRM_RET_IRQ_AUX                    (0x3FF00)
+#define ISRM_ALL_EXC_TWAM                   (ISRM_RET_IRQ_AUX)
+#define ISRM_ALL                            (ISRM_ALL_EXC_TWAM | ISRM_TWAM)
+
+/* SPM_IRQ_STA */
+#define ISRS_TWAM                           (1U << 2)
+#define ISRS_PCM_RETURN                     (1U << 3)
+#define ISRS_SW_INT0                        (1U << 4)
+#define ISRC_TWAM                           (ISRS_TWAM)
+#define ISRC_ALL_EXC_TWAM                   (ISRS_PCM_RETURN)
+#define ISRC_ALL                            (ISRC_ALL_EXC_TWAM | ISRC_TWAM)
+
+/* PCM_PWR_IO_EN */
+#define PCM_PWRIO_EN_R0                     (1U << 0)
+#define PCM_PWRIO_EN_R7                     (1U << 7)
+#define PCM_RF_SYNC_R0                      (1U << 16)
+#define PCM_RF_SYNC_R6                      (1U << 22)
+#define PCM_RF_SYNC_R7                      (1U << 23)
+
+/* SPM_SWINT */
+#define PCM_SW_INT_ALL                      (0x3FF)
 
 enum {
 	DISP_SRAM_PDN_MASK	= 0x1 << 8,
@@ -29,6 +139,8 @@ enum {
 	AUDIO_SRAM_PDN_MASK	= 0xf << 8,
 	AUDIO_SRAM_ACK_MASK	= 0xf << 12,
 };
+
+#define PCM_EVENT_VECTOR_NUM 16
 
 struct mtk_spm_regs {
 	u32 poweron_config_set;
@@ -47,22 +159,7 @@ struct mtk_spm_regs {
 	u32 pcm_wdt_val;
 	u32 pcm_im_host_rw_ptr;
 	u32 pcm_im_host_rw_dat;
-	u32 pcm_event_vector0;
-	u32 pcm_event_vector1;
-	u32 pcm_event_vector2;
-	u32 pcm_event_vector3;
-	u32 pcm_event_vector4;
-	u32 pcm_event_vector5;
-	u32 pcm_event_vector6;
-	u32 pcm_event_vector7;
-	u32 pcm_event_vector8;
-	u32 pcm_event_vector9;
-	u32 pcm_event_vector10;
-	u32 pcm_event_vector11;
-	u32 pcm_event_vector12;
-	u32 pcm_event_vector13;
-	u32 pcm_event_vector14;
-	u32 pcm_event_vector15;
+	u32 pcm_event_vector[PCM_EVENT_VECTOR_NUM];
 	u32 pcm_event_vector_en;
 	u32 reserved1[1];
 	u32 spm_sram_rsv_con;
@@ -472,37 +569,30 @@ struct mtk_spm_regs {
 	u32 spm_ack_chk_sta4;
 	u32 spm_ack_chk_latch4;
 };
-
-check_member(mtk_spm_regs, pcm_reg0_data, 0x0100);
-check_member(mtk_spm_regs, src_ddren_sta, 0x01e0);
-check_member(mtk_spm_regs, mcu_pwr_con, 0x0200);
-check_member(mtk_spm_regs, mp0_cputop_l2_pdn, 0x0240);
-check_member(mtk_spm_regs, cpu_ext_buck_iso, 0x0290);
-check_member(mtk_spm_regs, dummy1_pwr_con, 0x02b0);
-check_member(mtk_spm_regs, vde_pwr_con, 0x0300);
-check_member(mtk_spm_regs, ufs_sram_con, 0x036c);
-check_member(mtk_spm_regs, dummy_sram_con, 0x0380);
-check_member(mtk_spm_regs, md_ext_buck_iso_con, 0x0390);
-check_member(mtk_spm_regs, mbist_efuse_repair_ack_sta, 0x03d0);
-check_member(mtk_spm_regs, spm_dvfs_con, 0x0400);
-check_member(mtk_spm_regs, mp0_cpu0_wfi_en, 0x0530);
-check_member(mtk_spm_regs, root_cputop_addr, 0x0570);
-check_member(mtk_spm_regs, cpu_spare_con, 0x0580);
-check_member(mtk_spm_regs, spm2sw_mailbox_0, 0x05d0);
-check_member(mtk_spm_regs, spm_sw_rsv_18, 0x067c);
-check_member(mtk_spm_regs, dvfsrc_event_mask_con, 0x0690);
-check_member(mtk_spm_regs, spare_ack_sta, 0x06f0);
-check_member(mtk_spm_regs, spm_dvfs_con1, 0x0700);
-check_member(mtk_spm_regs, spm_dvfs_cmd0, 0x0710);
-check_member(mtk_spm_regs, wdt_latch_spare0_fix, 0x0780);
-check_member(mtk_spm_regs, pcm_wdt_latch_0, 0x0800);
-check_member(mtk_spm_regs, spm_pc_trace_con, 0x08c0);
-check_member(mtk_spm_regs, spm_ack_chk_con, 0x0900);
-check_member(mtk_spm_regs, spm_ack_chk_con2, 0x0920);
-check_member(mtk_spm_regs, spm_ack_chk_con3, 0x0940);
-check_member(mtk_spm_regs, spm_ack_chk_con4, 0x0960);
 check_member(mtk_spm_regs, spm_ack_chk_latch4, 0x0974);
 
 static struct mtk_spm_regs *const mtk_spm = (void *)SPM_BASE;
+
+enum dyna_load_pcm_index {
+	DYNA_LOAD_PCM_SUSPEND_LP4_3733 = 0,
+	DYNA_LOAD_PCM_SUSPEND_LP4_3200,
+	DYNA_LOAD_PCM_MAX,
+};
+
+struct pcm_desc {
+	u16 size;				/* binary array size */
+	u8 sess;				/* session number */
+	u8 replace;				/* replace mode */
+	u16 addr_2nd;				/* 2nd binary array size */
+	u16 reserved;				/* for 32bit alignment */
+	u32 vector[PCM_EVENT_VECTOR_NUM];	/* event vector config */
+};
+
+struct dyna_load_pcm {
+	u32 *buf;				/* binary array */
+	struct pcm_desc desc;
+};
+
+int spm_init(void);
 
 #endif  /* SOC_MEDIATEK_MT8183_SPM_H */

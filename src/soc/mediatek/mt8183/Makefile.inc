@@ -55,6 +55,7 @@ ramstage-y += ../common/pmic_wrap.c
 ramstage-y += ../common/rtc.c rtc.c
 ramstage-y += soc.c
 ramstage-$(CONFIG_SPI_FLASH) += ../common/spi.c spi.c
+ramstage-y += spm.c
 ramstage-y += sspm.c
 ramstage-y += ../common/timer.c
 ramstage-y += ../common/uart.c
@@ -62,8 +63,20 @@ ramstage-y += ../common/usb.c
 ramstage-y += ../common/wdt.c
 ramstage-y += md_ctrl.c
 
+MT8183_BLOB_DIR := 3rdparty/blobs/soc/mediatek/mt8183
+
+cbfs-files-y += pcm_allinone_lp4_3200.bin
+pcm_allinone_lp4_3200.bin-file := $(MT8183_BLOB_DIR)/pcm_allinone_lp4_3200.bin
+pcm_allinone_lp4_3200.bin-type := raw
+pcm_allinone_lp4_3200.bin-compression := $(CBFS_COMPRESS_FLAG)
+
+cbfs-files-y += pcm_allinone_lp4_3733.bin
+pcm_allinone_lp4_3733.bin-file := $(MT8183_BLOB_DIR)/pcm_allinone_lp4_3733.bin
+pcm_allinone_lp4_3733.bin-type := raw
+pcm_allinone_lp4_3733.bin-compression := $(CBFS_COMPRESS_FLAG)
+
 cbfs-files-y += sspm.bin
-sspm.bin-file := 3rdparty/blobs/soc/mediatek/mt8183/sspm.bin
+sspm.bin-file := $(MT8183_BLOB_DIR)/sspm.bin
 sspm.bin-type := raw
 sspm.bin-compression := $(CBFS_COMPRESS_FLAG)
 

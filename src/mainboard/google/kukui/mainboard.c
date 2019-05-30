@@ -28,6 +28,7 @@
 #include <soc/gpio.h>
 #include <soc/mmu_operations.h>
 #include <soc/mtcmos.h>
+#include <soc/spm.h>
 #include <soc/usb.h>
 #include <string.h>
 
@@ -201,6 +202,9 @@ static void mainboard_init(struct device *dev)
 	configure_emmc();
 	configure_usb();
 	configure_audio();
+	if (spm_init())
+		printk(BIOS_ERR,
+		       "SPM initialization failed, suspend/resume may fail.\n");
 
 	register_reset_to_bl31();
 }

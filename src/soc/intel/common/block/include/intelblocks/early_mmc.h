@@ -61,7 +61,7 @@ int soc_configure_mmc_gpios(void);
  */
 int soc_get_mmc_dll(struct mmc_dll_params *params);
 
-#if IS_ENABLED(CONFIG_SOC_INTEL_COMMON_EARLY_MMC_WAKE)
+#if CONFIG(SOC_INTEL_COMMON_EARLY_MMC_WAKE)
 /*
  * Initializes sdhci / mmc controller and sends CMD0, CMD1 to emmc card.
  * In case of success: It returns 0 and adds cbmem entry CBMEM_ID_MMC_STATUS

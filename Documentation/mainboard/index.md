@@ -86,6 +86,10 @@ The boards in this section are not real mainboards, but emulators.
 
 - [MS-7707](msi/ms7707/ms7707.md)
 
+## PC Engines
+
+- [APU2](pcengines/apu2.md)
+
 ## Roda
 
 - [RK9 Flash Header](roda/rk9/flash_header.md)

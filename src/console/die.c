@@ -30,17 +30,15 @@ __weak void die_notify(void)
 }
 
 /* Report a fatal error */
-void __noreturn die(const char *msg)
+void __noreturn die(const char *fmt, ...)
 {
-	printk(BIOS_EMERG, "%s", msg);
+	va_list args;
+
+	va_start(args, fmt);
+	vprintk(BIOS_EMERG, fmt, args);
+	va_end(args);
+
 	die_notify();
 	halt();
-}
-
-/* Report a fatal error with a post code */
-void __noreturn die_with_post_code(uint8_t value, const char *msg)
-{
-	post_code(value);
-	die(msg);
 }
 #endif

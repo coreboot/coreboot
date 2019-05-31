@@ -120,6 +120,9 @@ void mainboard_romstage_entry(unsigned long bist)
 	 * the flash is memory mapped CPU's address space. */
 	FSP_INFO_HEADER *fih = find_fsp((uintptr_t)rdev_mmap_full(prog_rdev(&fsp)));
 
+	if (!fih)
+		die("Invalid FSP header\n");
+
 	cache_as_ram_stage_main(fih);
 }
 

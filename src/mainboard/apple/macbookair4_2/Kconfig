@@ -33,7 +33,7 @@ config VGA_BIOS_ID
 
 config DRAM_RESET_GATE_GPIO
 	int
-	default 60
+	default 28
 
 config MAX_CPUS
 	int

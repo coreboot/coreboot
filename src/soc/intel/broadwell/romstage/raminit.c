@@ -122,6 +122,12 @@ void raminit(struct pei_data *pei_data)
 
 	printk(BIOS_DEBUG, "create cbmem for dimm information\n");
 	mem_info = cbmem_add(CBMEM_ID_MEMINFO, sizeof(struct memory_info));
+
+	if (!mem_info) {
+		printk(BIOS_ERR, "Error! Failed to add mem_info to cbmem\n");
+		return;
+	}
+
 	memset(mem_info, 0, sizeof(*mem_info));
 	/* Translate pei_memory_info struct data into memory_info struct */
 	mem_info->dimm_cnt = pei_data->meminfo.dimm_cnt;

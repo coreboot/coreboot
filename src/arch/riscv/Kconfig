@@ -24,8 +24,8 @@ config ARCH_RISCV_M
 	# one implementation that will not have it due
 	# to security concerns.
 	bool
-	default n if ARCH_RISCV_M_DISABLED
-	default y
+	default y if ARCH_RISCV && !ARCH_RISCV_M_DISABLED
+	default n
 
 config ARCH_RISCV_S
 	# S (supervisor) mode is for kernels. It is optional.

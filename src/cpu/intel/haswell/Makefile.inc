@@ -25,6 +25,7 @@ bootblock-y += ../car/non-evict/cache_as_ram.S
 bootblock-y += ../car/bootblock.c
 bootblock-y += ../../x86/early_reset.S
 bootblock-y += bootblock.c
+bootblock-y += tsc_freq.c
 
 postcar-y += ../car/non-evict/exit_car.S
 

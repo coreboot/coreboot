@@ -66,8 +66,12 @@ static void fill_ddr4_memory_params(struct memory_params *p)
 	p->type = MEMORY_DDR4;
 	p->use_sec_spd = 0;
 
+	int spd_index = variant_memory_sku();
+	if (spd_index == 0)
+		die("SPD index is 0\n");
+
 	/* Rcomp resistor values are different for SDP and DDP. */
-	if (ddp_bitmap & MEM_ID(variant_memory_sku())) {
+	if (ddp_bitmap & MEM_ID(spd_index)) {
 		p->rcomp_resistor = rcomp_resistor_ddp;
 		p->rcomp_resistor_size = sizeof(rcomp_resistor_ddp);
 	} else {

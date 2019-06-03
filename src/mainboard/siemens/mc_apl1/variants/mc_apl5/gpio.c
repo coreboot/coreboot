@@ -254,7 +254,7 @@ static const struct pad_config gpio_table[] = {
 	/* SIO_SPI_0 -- unused */
 	PAD_CFG_GPI(GPIO_104, DN_20K, DEEP),		/* GP_SSP_0_CLK */
 	PAD_CFG_GPI(GPIO_105, DN_20K, DEEP),		/* GP_SSP_0_FS0 */
-	PAD_CFG_GPI(GPIO_106, UP_20K, DEEP),		/* GP_SSP_0_FS1 */
+	PAD_CFG_NF(GPIO_106, NATIVE, DEEP, NF3),	/* FST_SPI_CS2_N */
 	PAD_CFG_GPI(GPIO_109, DN_20K, DEEP),		/* GP_SSP_0_RXD */
 	PAD_CFG_GPI(GPIO_110, DN_20K, DEEP),		/* GP_SSP_0_TXD */
 

@@ -497,8 +497,10 @@ static struct pmic_setting init_setting[] = {
 	{0x1B6C, 0x6, 0x6, 0},
 
 	/* Vproc11/Vproc12 to 1.05V */
+	/* [6:0]: RG_BUCK_VPROC11_VOSEL */
 	{0x13a6, 0x58, 0x7F, 0},
-	{0x140a, 0x58, 0x7F, 0},
+	/* [6:0]: RG_BUCK_VPROC12_VOSEL */
+	{0x1426, 0x58, 0x7F, 0},
 };
 
 static struct pmic_setting lp_setting[] = {

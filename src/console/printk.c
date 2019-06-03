@@ -45,7 +45,7 @@ static void wrap_putchar_cbmemc(unsigned char byte, void *data)
 	__cbmemc_tx_byte(byte);
 }
 
-int vprintk(int msg_level, const char *fmt, va_list args)
+int do_vprintk(int msg_level, const char *fmt, va_list args)
 {
 	int i, log_this;
 
@@ -91,7 +91,7 @@ int do_printk(int msg_level, const char *fmt, ...)
 	int i;
 
 	va_start(args, fmt);
-	i = vprintk(msg_level, fmt, args);
+	i = do_vprintk(msg_level, fmt, args);
 	va_end(args);
 
 	return i;

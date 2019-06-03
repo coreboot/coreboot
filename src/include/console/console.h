@@ -63,8 +63,8 @@ asmlinkage void console_init(void);
 int console_log_level(int msg_level);
 void do_putchar(unsigned char byte);
 
-#define printk(LEVEL, fmt, args...) \
-	do { do_printk(LEVEL, fmt, ##args); } while (0)
+#define printk(LEVEL, fmt, args...) do_printk(LEVEL, fmt, ##args)
+#define vprintk(LEVEL, fmt, args) do_vprintk(LEVEL, fmt, args)
 
 enum { CONSOLE_LOG_NONE = 0, CONSOLE_LOG_FAST, CONSOLE_LOG_ALL };
 
@@ -84,13 +84,14 @@ static inline int get_console_loglevel(void)
 static inline void console_init(void) {}
 static inline int console_log_level(int msg_level) { return 0; }
 static inline void printk(int LEVEL, const char *fmt, ...) {}
+static inline void vprintk(int LEVEL, const char *fmt, va_list args) {}
 static inline void do_putchar(unsigned char byte) {}
 #endif
 
-int vprintk(int msg_level, const char *fmt, va_list args);
-
 int do_printk(int msg_level, const char *fmt, ...)
 	__attribute__((format(printf, 2, 3)));
+
+int do_vprintk(int msg_level, const char *fmt, va_list args);
 
 #endif /* !__ROMCC__ */
 

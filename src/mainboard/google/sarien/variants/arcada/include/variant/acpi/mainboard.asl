@@ -40,8 +40,9 @@ Method (MPTS, 1)
 
 	/* Clear SSD EN adn RST pin to avoid leakage */
 	If (Arg0 == 5) {
-		\_SB.PCI0.CTXS (SSD_EN)
 		\_SB.PCI0.CTXS (SSD_RST)
+		Sleep(1)
+		\_SB.PCI0.CTXS (SSD_EN)
 	}
 }
 

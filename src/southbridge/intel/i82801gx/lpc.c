@@ -34,6 +34,7 @@
 #include <southbridge/intel/common/acpi_pirq_gen.h>
 #include <southbridge/intel/common/pmbase.h>
 
+#include "chip.h"
 #include "i82801gx.h"
 #include "nvs.h"
 

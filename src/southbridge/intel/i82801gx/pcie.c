@@ -19,6 +19,7 @@
 #include <device/pci.h>
 #include <device/pci_ops.h>
 #include <device/pci_ids.h>
+#include "chip.h"
 #include "i82801gx.h"
 
 /* Low Power variant has 6 root ports. */

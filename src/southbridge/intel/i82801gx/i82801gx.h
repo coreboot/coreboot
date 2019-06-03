@@ -36,7 +36,6 @@
 
 #if !defined(__ASSEMBLER__)
 #if !defined(__PRE_RAM__)
-#include "chip.h"
 #if !defined(__SIMPLE_DEVICE__)
 void i82801gx_enable(struct device *dev);
 #endif

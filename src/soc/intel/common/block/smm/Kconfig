@@ -23,3 +23,11 @@ config SOC_INTEL_COMMON_BLOCK_SMM_S5_DELAY_MS
 	  Time in milliseconds that SLP_SMI for S5 waits for before
 	  enabling sleep. This is required to avoid any race between
 	  SLP_SMI and PWRBTN SMI.
+
+config HECI_DISABLE_USING_SMM
+	bool
+	depends on SOC_INTEL_COMMON_BLOCK_SMM
+	default n
+	help
+	  HECI disable using SMM. Select this option to make HECI disable
+	  using SMM mode, independent of dedicated UPD to perform HECI disable.

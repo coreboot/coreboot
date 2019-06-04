@@ -86,7 +86,7 @@ void smihandler_soc_at_finalize(void)
 
 	config = dev->chip_info;
 
-	if (config->HeciEnabled == 0)
+	if (!config->HeciEnabled && CONFIG(HECI_DISABLE_USING_SMM))
 		pch_disable_heci();
 }
 

@@ -451,32 +451,6 @@ int acpi_sci_irq(void)
 	return sci_irq;
 }
 
-int rtc_failure(void)
-{
-	u8 reg8;
-	int rtc_failed;
-#if defined(__SIMPLE_DEVICE__)
-	pci_devfn_t dev =  PCH_DEV_LPC;
-#else
-	struct device *dev = PCH_DEV_LPC;
-#endif
-
-	reg8 = pci_read_config8(dev, GEN_PMCON_3);
-	rtc_failed = reg8 & RTC_BATTERY_DEAD;
-	if (rtc_failed) {
-		reg8 &= ~RTC_BATTERY_DEAD;
-		pci_write_config8(dev, GEN_PMCON_3, reg8);
-		printk(BIOS_DEBUG, "rtc_failed = 0x%x\n", rtc_failed);
-	}
-
-	return !!rtc_failed;
-}
-
-int vbnv_cmos_failed(void)
-{
-	return rtc_failure();
-}
-
 int vboot_platform_is_resuming(void)
 {
 	if (!(inw(ACPI_BASE_ADDRESS + PM1_STS) & WAK_STS))

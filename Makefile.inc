@@ -107,6 +107,10 @@ subdirs-y += util/checklist util/testing
 # Add source classes and their build options
 classes-y := ramstage romstage bootblock decompressor postcar smm smmstub cpu_microcode verstage
 
+# Add a special 'all' class to add sources to all stages
+$(call add-special-class,all)
+all-handler = $(foreach class,bootblock verstage romstage postcar ramstage,$(eval $(class)-y += $(2)))
+
 # Add dynamic classes for rmodules
 $(foreach supported_arch,$(ARCH_SUPPORTED), \
 	    $(eval $(call define_class,rmodules_$(supported_arch),$(supported_arch))))

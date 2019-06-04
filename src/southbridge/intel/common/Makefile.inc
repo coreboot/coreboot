@@ -16,11 +16,7 @@
 # CONFIG_HAVE_INTEL_FIRMWARE protects doing anything to the build.
 subdirs-y += firmware
 
-verstage-$(CONFIG_SOUTHBRIDGE_INTEL_COMMON_RESET) += reset.c
-bootblock-$(CONFIG_SOUTHBRIDGE_INTEL_COMMON_RESET) += reset.c
-romstage-$(CONFIG_SOUTHBRIDGE_INTEL_COMMON_RESET) += reset.c
-ramstage-$(CONFIG_SOUTHBRIDGE_INTEL_COMMON_RESET) += reset.c
-postcar-$(CONFIG_SOUTHBRIDGE_INTEL_COMMON_RESET) += reset.c
+all-$(CONFIG_SOUTHBRIDGE_INTEL_COMMON_RESET) += reset.c
 
 romstage-$(CONFIG_SOUTHBRIDGE_INTEL_COMMON_SMBUS) += smbus.c
 ramstage-$(CONFIG_SOUTHBRIDGE_INTEL_COMMON_SMBUS) += smbus.c
@@ -31,10 +27,7 @@ ramstage-$(CONFIG_SOUTHBRIDGE_INTEL_COMMON_WATCHDOG) += watchdog.c
 
 ifeq ($(CONFIG_SOUTHBRIDGE_INTEL_COMMON),y)
 
-verstage-y += pmbase.c
-romstage-y += pmbase.c
-ramstage-y += pmbase.c
-postcar-y += pmbase.c
+all-y += pmbase.c
 smm-y += pmbase.c
 
 bootblock-$(CONFIG_USBDEBUG) += usb_debug.c
@@ -45,10 +38,7 @@ romstage-$(CONFIG_SOUTHBRIDGE_INTEL_COMMON_GPIO) += gpio.c
 ramstage-$(CONFIG_SOUTHBRIDGE_INTEL_COMMON_GPIO) += gpio.c
 smm-$(CONFIG_SOUTHBRIDGE_INTEL_COMMON_GPIO) += gpio.c
 
-bootblock-$(CONFIG_SOUTHBRIDGE_INTEL_COMMON_SPI) += spi.c
-romstage-$(CONFIG_SOUTHBRIDGE_INTEL_COMMON_SPI) += spi.c
-postcar-$(CONFIG_SOUTHBRIDGE_INTEL_COMMON_SPI) += spi.c
-ramstage-$(CONFIG_SOUTHBRIDGE_INTEL_COMMON_SPI) += spi.c
+all-$(CONFIG_SOUTHBRIDGE_INTEL_COMMON_SPI) += spi.c
 ifeq ($(CONFIG_SPI_FLASH_SMM),y)
 smm-$(CONFIG_SOUTHBRIDGE_INTEL_COMMON_SPI) += spi.c
 endif
@@ -63,10 +53,6 @@ ramstage-$(CONFIG_SOUTHBRIDGE_INTEL_COMMON_ACPI_MADT) += madt.c
 
 smm-$(CONFIG_SOUTHBRIDGE_INTEL_COMMON_FINALIZE) += finalize.c
 
-verstage-y += rtc.c
-romstage-y += rtc.c
-ramstage-y += rtc.c
-postcar-y += rtc.c
-smm-y += rtc.c
+all-y += rtc.c
 
 endif

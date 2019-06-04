@@ -272,7 +272,7 @@ int agesa_execute_state(struct sysinfo *cb, AGESA_STRUCT_NAME func)
 
 	/* Must call the function buffer was allocated for.*/
 	AMD_CONFIG_PARAMS *StdHeader = aip.NewStructPtr;
-	ASSERT(StdHeader->Func == func);
+	ASSERT(StdHeader != NULL && StdHeader->Func == func);
 
 	if (CONFIG(AGESA_EXTRA_TIMESTAMPS) && task.ts_entry_id)
 		timestamp_add_now(task.ts_entry_id);

@@ -1,0 +1,34 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2013 Google Inc.
+## Copyright (C) 2015 Intel Corp.
+## Copyright (C) 2018-2019 Eltan B.V.
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; version 2 of the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+
+bootblock-$(CONFIG_C_ENVIRONMENT_BOOTBLOCK) += com_init.c
+
+ramstage-y += gpio.c
+ramstage-y += hda_verb.c
+ramstage-y += irqroute.c
+ramstage-$(CONFIG_FSP1_1_DISPLAY_LOGO) += logo.c
+ramstage-y += ramstage.c
+ramstage-y += w25q64.c
+
+cbfs-files-$(CONFIG_FSP1_1_DISPLAY_LOGO) += logo.bmp
+logo.bmp-file := $(call strip_quotes,$(CONFIG_FSP1_1_LOGO_FILE_NAME))
+logo.bmp-type := raw
+logo.bmp-compression := LZMA
+
+# Order of names in SPD_SOURCES is important!
+SPD_SOURCES  = SAMSUNG_K4B8G1646D-MYKO
+SPD_SOURCES += MICRON_MT41K512M16HA-125A

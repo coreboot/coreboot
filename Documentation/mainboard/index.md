@@ -30,6 +30,10 @@ The boards in this section are not real mainboards, but emulators.
 - [IceLake RVP](intel/icelake_rvp.md)
 - [KBLRVP11](intel/kblrvp11.md)
 
+## Facebook
+
+- [FBG-1701](facebook/fbg1701.md)
+
 ## Foxconn
 
 - [D41S](foxconn/d41s.md)

@@ -1,0 +1,2 @@
+config BOARD_FACEBOOK_FBG1701
+	bool "fbg1701"

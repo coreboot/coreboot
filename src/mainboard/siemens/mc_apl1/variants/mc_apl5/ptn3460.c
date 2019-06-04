@@ -76,7 +76,8 @@ int ptn3460_init(const char *hwi_block)
 		return (PTN_BUS_ERROR | status);
 	/* Set up configuration data according to the hwinfo block we get. */
 	cfg.dp_interface_ctrl = 0;
-	cfg.lvds_interface_ctrl1 = 0x00;
+	/* Drive LVDS clock for single mode on odd bus per default. */
+	cfg.lvds_interface_ctrl1 = 0x01;
 	if (disp_con == PF_DISPLCON_LVDS_DUAL)
 		/* Turn on dual LVDS lane and clock. */
 		cfg.lvds_interface_ctrl1 |= 0x0b;

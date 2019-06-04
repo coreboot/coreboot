@@ -826,6 +826,27 @@ void pmic_set_vcore_vol(unsigned int vcore_uv)
 	pwrap_write_field(PMIC_VCORE_VOSEL, vol_reg, 0x7F, 0);
 }
 
+unsigned int pmic_get_vdram1_vol(void)
+{
+	unsigned int vol_reg;
+
+	vol_reg = pwrap_read_field(PMIC_VDRAM1_DBG0, 0x7F, 0);
+	return 500000 + vol_reg * 12500;
+}
+
+void pmic_set_vdram1_vol(unsigned int vdram_uv)
+{
+	unsigned int vol_reg;
+
+	assert(vdram_uv >= 500000);
+	assert(vdram_uv <= 1300000);
+
+	vol_reg = (vdram_uv - 500000) / 12500;
+
+	pwrap_write_field(PMIC_VDRAM1_OP_EN, 1, 0x7F, 0);
+	pwrap_write_field(PMIC_VDRAM1_VOSEL, vol_reg, 0x7F, 0);
+}
+
 static void pmic_wdt_set(void)
 {
 	/* [5]=1, RG_WDTRSTB_DEB */

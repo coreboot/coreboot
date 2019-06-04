@@ -34,6 +34,10 @@ void graphics_soc_init(struct device *dev)
 {
 	uint32_t ddi_buf_ctl;
 
+	/* Skip IGD GT programming */
+	if (CONFIG(SKIP_GRAPHICS_ENABLING))
+		return;
+
 	/*
 	 * Enable DDI-A (eDP) 4-lane operation if the link is not up yet.
 	 * This will allow the kernel to use 4-lane eDP links properly

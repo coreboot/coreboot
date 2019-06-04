@@ -17,6 +17,9 @@ smm-$(CONFIG_HAVE_SMI_HANDLER) += finalize.c
 smm-$(CONFIG_HAVE_SMI_HANDLER) += tsc_freq.c
 
 ifneq ($(CONFIG_TSC_MONOTONIC_TIMER),y)
+bootblock-y += monotonic_timer.c
+romstage-y += monotonic_timer.c
+postcar-y += monotonic_timer.c
 ramstage-y += monotonic_timer.c
 smm-y += monotonic_timer.c
 endif

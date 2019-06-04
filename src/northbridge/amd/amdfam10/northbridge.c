@@ -779,7 +779,7 @@ static void amdfam10_domain_read_resources(struct device *dev)
 
 			/* Calculate CC6 storage area size */
 			if (interleaved)
-				qword = (0x1000000 * num_nodes);
+				qword = (uint64_t)0x1000000 * num_nodes;
 			else
 				qword = 0x1000000;
 

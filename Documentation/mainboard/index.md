@@ -54,6 +54,7 @@ The boards in this section are not real mainboards, but emulators.
 ## HP
 
 - [Compaq 8200 Elite SFF](hp/compaq_8200_sff.md)
+- [Z220 Workstation SFF](hp/z220_sff.md)
 
 ### EliteBook series
 

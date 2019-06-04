@@ -90,21 +90,13 @@ void mctGet_PS_Cfg_D(struct MCTStatStruc *pMCTstat,
 				valx &= 0xAA;
 				valx >>= 1;
 			}
-			if (mctGet_NVbits(NV_MAX_DIMMS) == 8) {
-				val &= valx;
-				if (val != 0) {
+			val &= valx;
+			if (val != 0) {
+				if (mctGet_NVbits(NV_MAX_DIMMS) == 8 ||
+						pDCTstat->Speed == 3) {
 					pDCTstat->CH_ADDR_TMG[dct] &= 0xFFFF00FF;
 					pDCTstat->CH_ADDR_TMG[dct] |= 0x00002F00;
 				}
-			} else {
-				val &= valx;
-				if (val != 0) {
-					if (pDCTstat->Speed == 3 || pDCTstat->Speed == 3) {
-						pDCTstat->CH_ADDR_TMG[dct] &= 0xFFFF00FF;
-						pDCTstat->CH_ADDR_TMG[dct] |= 0x00002F00;
-					}
-				}
-
 			}
 		}
 	}

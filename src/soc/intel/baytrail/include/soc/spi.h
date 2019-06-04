@@ -20,14 +20,7 @@
 
 /* These registers live behind SPI_BASE_ADDRESS. */
 #define HSFSTS				0x04
-#define FDATA0				0x10
 # define FLOCKDN			(0x1 << 15)
-#define SSFS				0x90
-# define CYCLE_DONE_STATUS		(0x1 << 2)
-# define FLASH_CYCLE_ERROR		(0x1 << 3)
-#define SSFC				0x91
-# define SPI_CYCLE_GO			(0x1 << 1)
-# define DATA_CYCLE			(0x1 << 14)
 #define PREOP				0x94
 #define OPTYPE				0x96
 #define OPMENU0				0x98

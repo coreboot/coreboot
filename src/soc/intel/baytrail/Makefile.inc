@@ -12,12 +12,10 @@ subdirs-y += ../../../cpu/intel/common
 romstage-y += iosf.c
 romstage-y += memmap.c
 romstage-y += pmutil.c
-romstage-y += spi.c
 romstage-y += tsc_freq.c
 
 postcar-y += iosf.c
 postcar-y += memmap.c
-postcar-y += spi.c
 postcar-y += tsc_freq.c
 
 ramstage-y += acpi.c
@@ -43,7 +41,6 @@ ramstage-y += scc.c
 ramstage-y += sd.c
 ramstage-y += smm.c
 ramstage-y += southcluster.c
-ramstage-y += spi.c
 ramstage-y += tsc_freq.c
 ramstage-y += xhci.c
 ramstage-$(CONFIG_ELOG) += elog.c
@@ -52,7 +49,6 @@ ramstage-$(CONFIG_HAVE_REFCODE_BLOB) += refcode.c
 smm-y += iosf.c
 smm-y += pmutil.c
 smm-y += smihandler.c
-smm-y += spi.c
 smm-y += tsc_freq.c
 
 # Remove as ramstage gets fleshed out

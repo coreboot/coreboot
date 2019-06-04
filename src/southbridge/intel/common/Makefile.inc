@@ -53,6 +53,6 @@ ramstage-$(CONFIG_SOUTHBRIDGE_INTEL_COMMON_ACPI_MADT) += madt.c
 
 smm-$(CONFIG_SOUTHBRIDGE_INTEL_COMMON_FINALIZE) += finalize.c
 
-all-y += rtc.c
+all-$(CONFIG_SOUTHBRIDGE_INTEL_COMMON_RTC) += rtc.c
 
 endif

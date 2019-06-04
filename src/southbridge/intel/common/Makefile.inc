@@ -27,8 +27,8 @@ ramstage-$(CONFIG_SOUTHBRIDGE_INTEL_COMMON_WATCHDOG) += watchdog.c
 
 ifeq ($(CONFIG_SOUTHBRIDGE_INTEL_COMMON),y)
 
-all-y += pmbase.c
-smm-y += pmbase.c
+all-$(CONFIG_SOUTHBRIDGE_INTEL_COMMON_PMBASE) += pmbase.c
+smm-$(CONFIG_SOUTHBRIDGE_INTEL_COMMON_PMBASE) += pmbase.c
 
 bootblock-$(CONFIG_USBDEBUG) += usb_debug.c
 romstage-$(CONFIG_USBDEBUG) += usb_debug.c

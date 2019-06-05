@@ -351,7 +351,6 @@ out:
 static const struct spi_flash_ops spi_flash_ops = {
 	.write = stmicro_write,
 	.erase = spi_flash_cmd_erase,
-	.read = spi_flash_cmd_read_fast,
 };
 
 int spi_flash_probe_stmicro(const struct spi_slave *spi, u8 *idcode,

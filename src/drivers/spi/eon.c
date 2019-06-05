@@ -292,7 +292,6 @@ static const struct spi_flash_ops spi_flash_ops = {
 	.write = eon_write,
 	.erase = spi_flash_cmd_erase,
 	.status = spi_flash_cmd_status,
-	.read = spi_flash_cmd_read_fast,
 };
 
 int spi_flash_probe_eon(const struct spi_slave *spi, u8 *idcode,

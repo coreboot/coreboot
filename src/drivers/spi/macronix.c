@@ -268,11 +268,6 @@ static const struct spi_flash_ops spi_flash_ops = {
 	.write = macronix_write,
 	.erase = spi_flash_cmd_erase,
 	.status = spi_flash_cmd_status,
-#if CONFIG(SPI_FLASH_NO_FAST_READ)
-	.read = spi_flash_cmd_read_slow,
-#else
-	.read = spi_flash_cmd_read_fast,
-#endif
 };
 
 int spi_flash_probe_macronix(const struct spi_slave *spi, u8 *idcode,

@@ -55,14 +55,12 @@ static const struct spi_flash_ops spi_flash_ops_write_ai = {
 	.write = sst_write_ai,
 	.erase = spi_flash_cmd_erase,
 	.status = spi_flash_cmd_status,
-	.read = spi_flash_cmd_read_fast,
 };
 
 static const struct spi_flash_ops spi_flash_ops_write_256 = {
 	.write = sst_write_256,
 	.erase = spi_flash_cmd_erase,
 	.status = spi_flash_cmd_status,
-	.read = spi_flash_cmd_read_fast,
 };
 
 #define SST_SECTOR_SIZE (4 * 1024)

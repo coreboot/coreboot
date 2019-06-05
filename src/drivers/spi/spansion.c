@@ -282,7 +282,6 @@ static int spansion_write(const struct spi_flash *flash, u32 offset, size_t len,
 static const struct spi_flash_ops spi_flash_ops = {
 	.write = spansion_write,
 	.erase = spi_flash_cmd_erase,
-	.read = spi_flash_cmd_read_slow,
 	.status = spi_flash_cmd_status,
 };
 

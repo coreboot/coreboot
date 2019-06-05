@@ -31,7 +31,7 @@ static void spi_flash_addr(u32 addr, u8 *cmd)
 static int do_spi_flash_cmd(const struct spi_slave *spi, const void *dout,
 			    size_t bytes_out, void *din, size_t bytes_in)
 {
-	int ret = 1;
+	int ret;
 	/*
 	 * SPI flash requires command-response kind of behavior. Thus, two
 	 * separate SPI vectors are required -- first to transmit dout and other
@@ -49,11 +49,11 @@ static int do_spi_flash_cmd(const struct spi_slave *spi, const void *dout,
 	if (!bytes_in)
 		count = 1;
 
-	if (spi_claim_bus(spi))
+	ret = spi_claim_bus(spi);
+	if (ret)
 		return ret;
 
-	if (spi_xfer_vector(spi, vectors, count) == 0)
-		ret = 0;
+	ret = spi_xfer_vector(spi, vectors, count);
 
 	spi_release_bus(spi);
 	return ret;
@@ -64,18 +64,6 @@ int spi_flash_cmd(const struct spi_slave *spi, u8 cmd, void *response, size_t le
 	int ret = do_spi_flash_cmd(spi, &cmd, sizeof(cmd), response, len);
 	if (ret)
 		printk(BIOS_WARNING, "SF: Failed to send command %02x: %d\n", cmd, ret);
-
-	return ret;
-}
-
-static int spi_flash_cmd_read(const struct spi_slave *spi, const u8 *cmd,
-			      size_t cmd_len, void *data, size_t data_len)
-{
-	int ret = do_spi_flash_cmd(spi, cmd, cmd_len, data, data_len);
-	if (ret) {
-		printk(BIOS_WARNING, "SF: Failed to send read command (%zu bytes): %d\n",
-				data_len, ret);
-	}
 
 	return ret;
 }
@@ -103,62 +91,44 @@ int spi_flash_cmd_write(const struct spi_slave *spi, const u8 *cmd,
 }
 #pragma GCC diagnostic pop
 
-static int spi_flash_cmd_read_array(const struct spi_slave *spi, u8 *cmd,
-				    size_t cmd_len, u32 offset,
-				    size_t len, void *data)
-{
-	spi_flash_addr(offset, cmd);
-	return spi_flash_cmd_read(spi, cmd, cmd_len, data, len);
-}
-
 /* Perform the read operation honoring spi controller fifo size, reissuing
  * the read command until the full request completed. */
-static int spi_flash_cmd_read_array_wrapped(const struct spi_slave *spi,
-				u8 *cmd, size_t cmd_len, u32 offset,
-				size_t len, void *buf)
+static int spi_flash_read_chunked(const struct spi_flash *flash, u32 offset,
+				  size_t len, void *buf)
 {
-	int ret;
-	size_t xfer_len;
+	u8 cmd[5];
+	int ret, cmd_len;
+	int (*do_cmd)(const struct spi_slave *spi, const void *din,
+		      size_t in_bytes, void *out, size_t out_bytes);
+
+	if (CONFIG(SPI_FLASH_NO_FAST_READ)) {
+		cmd_len = 4;
+		cmd[0] = CMD_READ_ARRAY_SLOW;
+		do_cmd = do_spi_flash_cmd;
+	} else {
+		cmd_len = 5;
+		cmd[0] = CMD_READ_ARRAY_FAST;
+		cmd[4] = 0;
+		do_cmd = do_spi_flash_cmd;
+	}
+
 	uint8_t *data = buf;
-
 	while (len) {
-		xfer_len = spi_crop_chunk(spi, cmd_len, len);
-
-		/* Perform the read. */
-		ret = spi_flash_cmd_read_array(spi, cmd, cmd_len,
-						offset, xfer_len, data);
-
-		if (ret)
+		size_t xfer_len = spi_crop_chunk(&flash->spi, cmd_len, len);
+		spi_flash_addr(offset, cmd);
+		ret = do_cmd(&flash->spi, cmd, cmd_len, data, xfer_len);
+		if (ret) {
+			printk(BIOS_WARNING,
+			       "SF: Failed to send read command %#.2x(%#x, %#zx): %d\n",
+			       cmd[0], offset, xfer_len, ret);
 			return ret;
-
+		}
 		offset += xfer_len;
 		data += xfer_len;
 		len -= xfer_len;
 	}
 
 	return 0;
-}
-
-int spi_flash_cmd_read_fast(const struct spi_flash *flash, u32 offset,
-			size_t len, void *data)
-{
-	u8 cmd[5];
-
-	cmd[0] = CMD_READ_ARRAY_FAST;
-	cmd[4] = 0x00;
-
-	return spi_flash_cmd_read_array_wrapped(&flash->spi, cmd, sizeof(cmd),
-					offset, len, data);
-}
-
-int spi_flash_cmd_read_slow(const struct spi_flash *flash, u32 offset,
-			size_t len, void *data)
-{
-	u8 cmd[4];
-
-	cmd[0] = CMD_READ_ARRAY_SLOW;
-	return spi_flash_cmd_read_array_wrapped(&flash->spi, cmd, sizeof(cmd),
-					offset, len, data);
 }
 
 int spi_flash_cmd_poll_bit(const struct spi_flash *flash, unsigned long timeout,
@@ -174,7 +144,7 @@ int spi_flash_cmd_poll_bit(const struct spi_flash *flash, unsigned long timeout,
 	mono_time_add_msecs(&end, timeout);
 
 	do {
-		ret = spi_flash_cmd_read(spi, &cmd, 1, &status, 1);
+		ret = do_spi_flash_cmd(spi, &cmd, 1, &status, 1);
 		if (ret)
 			return -1;
 		if ((status & poll_bit) == 0)
@@ -391,7 +361,10 @@ int spi_flash_probe(unsigned int bus, unsigned int cs, struct spi_flash *flash)
 int spi_flash_read(const struct spi_flash *flash, u32 offset, size_t len,
 		void *buf)
 {
-	return flash->ops->read(flash, offset, len, buf);
+	if (flash->ops->read)
+		return flash->ops->read(flash, offset, len, buf);
+
+	return spi_flash_read_chunked(flash, offset, len, buf);
 }
 
 int spi_flash_write(const struct spi_flash *flash, u32 offset, size_t len,

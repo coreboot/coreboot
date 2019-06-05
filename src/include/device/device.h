@@ -191,6 +191,7 @@ const char *bus_path(struct bus *bus);
 void dev_set_enabled(struct device *dev, int enable);
 void disable_children(struct bus *bus);
 bool dev_is_active_bridge(struct device *dev);
+void add_more_links(struct device *dev, unsigned total_links);
 
 /* Option ROM helper functions */
 void run_bios(struct device *dev, unsigned long addr);

@@ -654,6 +654,42 @@ bool dev_is_active_bridge(struct device *dev)
 	return 0;
 }
 
+void add_more_links(struct device *dev, unsigned total_links)
+{
+	struct bus *link, *last = NULL;
+	int link_num = -1;
+
+	for (link = dev->link_list; link; link = link->next) {
+		if (link_num < link->link_num)
+			link_num = link->link_num;
+		last = link;
+	}
+
+	if (last) {
+		int links = total_links - (link_num + 1);
+		if (links > 0) {
+			link = malloc(links*sizeof(*link));
+			if (!link)
+				die("Couldn't allocate more links!\n");
+			memset(link, 0, links*sizeof(*link));
+			last->next = link;
+		}
+	} else {
+		link = malloc(total_links*sizeof(*link));
+		memset(link, 0, total_links*sizeof(*link));
+		dev->link_list = link;
+	}
+
+	for (link_num = link_num + 1; link_num < total_links; link_num++) {
+		link->link_num = link_num;
+		link->dev = dev;
+		link->next = link + 1;
+		last = link;
+		link = link->next;
+	}
+	last->next = NULL;
+}
+
 static void resource_tree(const struct device *root, int debug_level, int depth)
 {
 	int i = 0;

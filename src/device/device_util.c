@@ -654,7 +654,13 @@ bool dev_is_active_bridge(struct device *dev)
 	return 0;
 }
 
-void add_more_links(struct device *dev, unsigned total_links)
+/**
+ * Ensure the device has a minimum number of bus links.
+ *
+ * @param dev The device to add links to.
+ * @param total_links The minimum number of links to have.
+ */
+void add_more_links(struct device *dev, unsigned int total_links)
 {
 	struct bus *link, *last = NULL;
 	int link_num = -1;
@@ -668,15 +674,20 @@ void add_more_links(struct device *dev, unsigned total_links)
 	if (last) {
 		int links = total_links - (link_num + 1);
 		if (links > 0) {
-			link = malloc(links*sizeof(*link));
+			link = malloc(links * sizeof(*link));
 			if (!link)
 				die("Couldn't allocate more links!\n");
-			memset(link, 0, links*sizeof(*link));
+			memset(link, 0, links * sizeof(*link));
 			last->next = link;
+		} else {
+			/* No more links to add */
+			return;
 		}
 	} else {
-		link = malloc(total_links*sizeof(*link));
-		memset(link, 0, total_links*sizeof(*link));
+		link = malloc(total_links * sizeof(*link));
+		if (!link)
+			die("Couldn't allocate more links!\n");
+		memset(link, 0, total_links * sizeof(*link));
 		dev->link_list = link;
 	}
 

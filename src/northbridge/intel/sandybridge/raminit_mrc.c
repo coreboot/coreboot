@@ -265,9 +265,31 @@ void sdram_initialize(struct pei_data *pei_data)
 	report_memory_config();
 }
 
-/* These are the location and structure of MRC_VAR data in CAR. */
+/* These are the location and structure of MRC_VAR data in CAR.
+   The CAR region looks like this:
+   +------------------+ -> DCACHE_RAM_BASE
+   |                  |
+   |                  |
+   |  COREBOOT STACK  |
+   |                  |
+   |                  |
+   +------------------+ -> DCACHE_RAM_BASE + DCACHE_RAM_SIZE
+   |                  |
+   |  MRC HEAP        |
+   |  size = 0x5000   |
+   |                  |
+   +------------------+
+   |                  |
+   |  MRC VAR         |
+   |  size = 0x4000   |
+   |                  |
+   +------------------+ -> DACHE_RAM_BASE + DACHE_RAM_SIZE
+                                 + DCACHE_RAM_MRC_VAR_SIZE
+
+ */
 #define DCACHE_RAM_MRC_VAR_BASE \
-	(CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE)
+	(CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE + \
+	 CONFIG_DCACHE_RAM_MRC_VAR_SIZE - 0x4000)
 
 struct mrc_var_data {
 	u32 acpi_timer_flag;

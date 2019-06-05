@@ -91,13 +91,6 @@
 	_car_global_end = .;
 	_car_relocatable_data_end = .;
 
-#if CONFIG(NORTHBRIDGE_INTEL_SANDYBRIDGE) && !CONFIG(USE_NATIVE_RAMINIT)
-	. = ABSOLUTE(0xff7e1000);
-	_mrc_pool = .;
-	. += 0x5000;
-	_emrc_pool = .;
-#endif
-
 #if !CONFIG(C_ENVIRONMENT_BOOTBLOCK)
 	_car_stack_start = .;
 	_car_stack_end = _car_region_end;

@@ -78,11 +78,12 @@ config MMCONF_BASE_ADDRESS
 	help
 	  The MRC blob requires it to be at 0xf0000000.
 
-if USE_NATIVE_RAMINIT
-
 config DCACHE_RAM_BASE
 	hex
 	default 0xfefe0000
+
+
+if USE_NATIVE_RAMINIT
 
 config DCACHE_RAM_SIZE
 	hex
@@ -96,17 +97,13 @@ endif # USE_NATIVE_RAMINIT
 
 if !USE_NATIVE_RAMINIT
 
-config DCACHE_RAM_BASE
-	hex
-	default 0xff7e0000
-
 config DCACHE_RAM_SIZE
 	hex
-	default 0x1c000
+	default 0x17000
 
 config DCACHE_RAM_MRC_VAR_SIZE
 	hex
-	default 0x4000
+	default 0x9000
 
 config MRC_FILE
 	string "Intel System Agent path and filename"

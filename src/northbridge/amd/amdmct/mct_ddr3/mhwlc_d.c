@@ -1213,13 +1213,6 @@ void procConfig(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat, ui
 						Seed_Fine = (SeedTotal[ByteLane] % 32) + 32;
 					}
 
-					if (Seed_Gross == 0)
-						Seed_PreGross = 0;
-					else if (Seed_Gross & 0x1)
-						Seed_PreGross = 1;
-					else
-						Seed_PreGross = 2;
-
 					/* The BKDG-recommended algorithm causes problems with registered DIMMs on some systems
 					 * due to the long register delays causing premature total delay wrap-around.
 					 * Attempt to work around this...

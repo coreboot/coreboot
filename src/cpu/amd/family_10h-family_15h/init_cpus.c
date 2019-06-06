@@ -504,10 +504,9 @@ u32 init_cpus(u32 cpu_init_detectedx, struct sys_info *sysinfo)
 		if (is_fam15h()) {
 			/* core 1 on node 0 is special; to avoid corrupting the
 			 * BSP do not alter MTRRs on that core */
+			fam15_bsp_core1_apicid = 1;
 			if (CONFIG(ENABLE_APIC_EXT_ID) && (CONFIG_APIC_ID_OFFSET > 0))
-				fam15_bsp_core1_apicid = CONFIG_APIC_ID_OFFSET + 1;
-			else
-				fam15_bsp_core1_apicid = 1;
+				fam15_bsp_core1_apicid += CONFIG_APIC_ID_OFFSET;
 
 			if (apicid == fam15_bsp_core1_apicid)
 				set_mtrrs = 0;

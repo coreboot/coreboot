@@ -56,4 +56,21 @@ void soc_xhci_init(struct device *dev);
  */
 const struct xhci_usb_info *soc_get_xhci_usb_info(void);
 
+/**
+ * usb_xhci_disable_unused() - Disable unused USB devices
+ * @ext_usb_xhci_en_cb: Callback function to be invoked, supplied by mainboard,
+ *			to identify the status of externally visible USB ports.
+ *			(Return true if port is present, false if port is absent)
+ *
+ * This function is used to disable unused USB devices/ports that are configured
+ * in the device tree. For the internal USB ports, the connect status of the port
+ * is probed from the XHCI controller block and the port is disabled if it is not
+ * connected. For the external USB ports, the mainboard provides the connect status
+ * of the concerned port depending on the variants and their SKUs. If the mainboard
+ * supplied callback function is NULL, then all the externally visible USB devices
+ * in the device tree are enabled.
+ */
+void usb_xhci_disable_unused(bool (*ext_usb_xhci_en_cb)(unsigned int port_type,
+							unsigned int port_id));
+
 #endif	/* SOC_INTEL_COMMON_BLOCK_XHCI_H */

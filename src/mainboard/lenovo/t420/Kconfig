@@ -75,8 +75,4 @@ config VGA_BIOS_ID
 	string
 	default "8086,0126"
 
-config ONBOARD_VGA_IS_PRIMARY
-	bool
-	default y
-
 endif # BOARD_LENOVO_T420

@@ -175,6 +175,7 @@ Contents:
 * [Native Graphics Initialization with libgfxinit](gfx/libgfxinit.md)
 * [Display panel-specific documentation](gfx/display-panel.md)
 * [Architecture-specific documentation](arch/index.md)
+* [Platform independend drivers documentation](drivers/index.md)
 * [Northbridge-specific documentation](northbridge/index.md)
 * [System on Chip-specific documentation](soc/index.md)
 * [Mainboard-specific documentation](mainboard/index.md)

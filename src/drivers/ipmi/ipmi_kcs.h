@@ -20,6 +20,10 @@
 #define IPMI_NETFN_BRIDGE 0x02
 #define IPMI_NETFN_SENSOREVENT 0x04
 #define IPMI_NETFN_APPLICATION 0x06
+#define  IPMI_BMC_GET_DEVICE_ID 0x01
+#define   IPMI_IPMI_VERSION_MINOR(x) ((x) >> 4)
+#define   IPMI_IPMI_VERSION_MAJOR(x) ((x) & 0xf)
+
 #define IPMI_NETFN_FIRMWARE 0x08
 #define IPMI_NETFN_STORAGE 0x0a
 #define IPMI_NETFN_TRANSPORT 0x0c
@@ -29,4 +33,24 @@
 extern int ipmi_kcs_message(int port, int netfn, int lun, int cmd,
 			    const unsigned char *inmsg, int inlen,
 			    unsigned char *outmsg, int outlen);
+
+struct ipmi_rsp {
+	uint8_t lun;
+	uint8_t cmd;
+	uint8_t completion_code;
+} __packed;
+
+/* Get Device ID */
+struct ipmi_devid_rsp {
+	struct ipmi_rsp resp;
+	uint8_t device_id;
+	uint8_t device_revision;
+	uint8_t fw_rev1;
+	uint8_t fw_rev2;
+	uint8_t ipmi_version;
+	uint8_t additional_device_support;
+	uint8_t manufacturer_id[3];
+	uint8_t product_id[2];
+} __packed;
+
 #endif

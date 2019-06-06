@@ -47,6 +47,17 @@ void variant_nhlt_init(struct nhlt *nhlt);
 /* Modify devictree settings during ramstage. */
 struct device;
 void variant_update_devtree(struct device *dev);
+/**
+ * variant_ext_usb_status() - Get status of externally visible USB ports
+ * @port_type: Type of USB port i.e. USB2/USB3
+ * @port_id: USB Port ID
+ *
+ * This function is supplied by the mainboard/variant to SoC's XHCI driver to
+ * identify the status of externally visible USB ports.
+ *
+ * Return: true if the port is present, false if the port is absent.
+ */
+bool variant_ext_usb_status(unsigned int port_type, unsigned int port_id);
 
 /* Get no touchscreen SKU ID. */
 bool no_touchscreen_sku(uint32_t sku_id);

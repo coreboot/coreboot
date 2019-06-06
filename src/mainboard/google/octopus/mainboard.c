@@ -16,12 +16,14 @@
 #include <arch/acpi.h>
 #include <baseboard/variants.h>
 #include <boardid.h>
+#include <bootstate.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
 #include <ec/google/chromeec/ec.h>
 #include <ec/ec.h>
+#include <intelblocks/xhci.h>
 #include <nhlt.h>
 #include <smbios.h>
 #include <soc/cpu.h>
@@ -199,3 +201,16 @@ const char *smbios_mainboard_manufacturer(void)
 
 	return manuf;
 }
+
+bool __weak variant_ext_usb_status(unsigned int port_type, unsigned int port_id)
+{
+	/* All externally visible USB ports are present */
+	return true;
+}
+
+static void disable_unused_devices(void *unused)
+{
+	usb_xhci_disable_unused(variant_ext_usb_status);
+}
+
+BOOT_STATE_INIT_ENTRY(BS_DEV_INIT, BS_ON_EXIT, disable_unused_devices, NULL);

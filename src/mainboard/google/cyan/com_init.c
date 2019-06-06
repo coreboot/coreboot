@@ -14,14 +14,14 @@
  * GNU General Public License for more details.
  */
 
+#include <bootblock_common.h>
 #include <device/mmio.h>
 #include <device/pci_ops.h>
 #include <soc/gpio.h>
 #include <soc/lpc.h>
 #include <soc/pci_devs.h>
-#include <soc/romstage.h>
 
-void car_mainboard_pre_console_init(void)
+void bootblock_mainboard_early_init(void)
 {
 	uint32_t reg;
 	uint32_t *pad_config_reg;

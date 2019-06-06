@@ -21,6 +21,7 @@ verstage-y += fsp_util.c
 verstage-$(CONFIG_SEPARATE_VERSTAGE) += verstage.c
 
 bootblock-y += bootblock.c
+bootblock-$(CONFIG_USE_GENERIC_FSP_CAR_INC) += cache_as_ram.S
 bootblock-y += fsp_util.c
 
 romstage-y += car.c
@@ -41,8 +42,6 @@ ramstage-$(CONFIG_INTEL_GMA_ADD_VBT) += vbt.c
 ramstage-$(CONFIG_MMA) += mma_core.c
 
 CPPFLAGS_common += -Isrc/drivers/intel/fsp1_1/include
-
-cpu_incs-$(CONFIG_USE_GENERIC_FSP_CAR_INC) += $(src)/drivers/intel/fsp1_1/cache_as_ram.inc
 
 postcar-y += stage_cache.c
 ifneq ($(CONFIG_SKIP_FSP_CAR),y)

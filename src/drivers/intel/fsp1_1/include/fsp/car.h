@@ -24,12 +24,4 @@
  * cache_as_ram_stage_main() is the stack pointer to use in RAM after
  * exiting cache-as-ram mode. */
 void cache_as_ram_stage_main(FSP_INFO_HEADER *fih);
-
-/* Mainboard and SoC initialization prior to console. */
-void car_mainboard_pre_console_init(void);
-void car_soc_pre_console_init(void);
-/* Mainboard and SoC initialization post console initialization. */
-void car_mainboard_post_console_init(void);
-void car_soc_post_console_init(void);
-
 #endif

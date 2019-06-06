@@ -9,9 +9,14 @@ subdirs-y += ../../../cpu/intel/microcode
 subdirs-y += ../../../cpu/intel/turbo
 subdirs-y += ../../../cpu/intel/common
 
+bootblock-y += gpio_support.c
+bootblock-y += bootblock/bootblock.c
+bootblock-y += lpc_init.c
+bootblock-y += pmutil.c
+bootblock-y += tsc_freq.c
+
 romstage-y += gpio_support.c
 romstage-y += iosf.c
-romstage-y += lpc_init.c
 romstage-y += memmap.c
 romstage-y += pmutil.c
 romstage-y += smbus.c

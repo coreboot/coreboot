@@ -101,18 +101,6 @@ void mainboard_romstage_entry(unsigned long bist)
 	 * is still enabled. We can directly access work buffer here. */
 	struct prog fsp = PROG_INIT(PROG_REFCODE, "fsp.bin");
 
-	if (!CONFIG(C_ENVIRONMENT_BOOTBLOCK)) {
-		/* Call into pre-console init code then initialize console. */
-		car_soc_pre_console_init();
-		car_mainboard_pre_console_init();
-		console_init();
-
-		display_mtrrs();
-
-		car_soc_post_console_init();
-		car_mainboard_post_console_init();
-	}
-
 	if (prog_locate(&fsp))
 		die_with_post_code(POST_INVALID_CBFS, "Unable to locate fsp.bin");
 
@@ -124,20 +112,4 @@ void mainboard_romstage_entry(unsigned long bist)
 		die("Invalid FSP header\n");
 
 	cache_as_ram_stage_main(fih);
-}
-
-void __weak car_mainboard_pre_console_init(void)
-{
-}
-
-void __weak car_soc_pre_console_init(void)
-{
-}
-
-void __weak car_mainboard_post_console_init(void)
-{
-}
-
-void __weak car_soc_post_console_init(void)
-{
 }

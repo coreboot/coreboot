@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2013 Google, Inc.
  * Copyright (C) 2015 Intel Corp.
+ * Copyright (C) 2018 Eltan B.V.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,37 +15,93 @@
  * GNU General Public License for more details.
  */
 
+#include <bootblock_common.h>
+#include <build.h>
+#include <console/console.h>
 #include <device/pci_ops.h>
-#include <cpu/x86/cache.h>
-#include <cpu/x86/msr.h>
-#include <cpu/x86/mtrr.h>
+#include <pc80/mc146818rtc.h>
+#include <soc/bootblock.h>
+#include <soc/gpio.h>
+#include <soc/iomap.h>
 #include <soc/iosf.h>
-#include <cpu/intel/microcode/microcode.c>
+#include <soc/lpc.h>
+#include <soc/pm.h>
+#include <soc/spi.h>
 
-static void set_var_mtrr(int reg, uint32_t base, uint32_t size, int type)
+asmlinkage void bootblock_c_entry(uint64_t base_timestamp)
 {
-	msr_t basem, maskm;
-	basem.lo = base | type;
-	basem.hi = 0;
-	wrmsr(MTRR_PHYS_BASE(reg), basem);
-	maskm.lo = ~(size - 1) | MTRR_PHYS_MASK_VALID;
-	maskm.hi = (1 << (CONFIG_CPU_ADDR_BITS - 32)) - 1;
-	wrmsr(MTRR_PHYS_MASK(reg), maskm);
+	/* Call lib/bootblock.c main */
+	bootblock_main_with_timestamp(base_timestamp, NULL, 0);
 }
 
-static void enable_rom_caching(void)
+static void program_base_addresses(void)
 {
-	msr_t msr;
+	uint32_t reg;
+	const uint32_t lpc_dev = PCI_DEV(0, LPC_DEV, LPC_FUNC);
 
-	disable_cache();
-	/* Why only top 4MiB ? */
-	set_var_mtrr(1, 0xffc00000, 4*1024*1024, MTRR_TYPE_WRPROT);
-	enable_cache();
+	/* Memory Mapped IO registers. */
+	reg = PMC_BASE_ADDRESS | 2;
+	pci_write_config32(lpc_dev, PBASE, reg);
+	reg = IO_BASE_ADDRESS | 2;
+	pci_write_config32(lpc_dev, IOBASE, reg);
+	reg = ILB_BASE_ADDRESS | 2;
+	pci_write_config32(lpc_dev, IBASE, reg);
+	reg = SPI_BASE_ADDRESS | 2;
+	pci_write_config32(lpc_dev, SBASE, reg);
+	reg = MPHY_BASE_ADDRESS | 2;
+	pci_write_config32(lpc_dev, MPBASE, reg);
+	reg = PUNIT_BASE_ADDRESS | 2;
+	pci_write_config32(lpc_dev, PUBASE, reg);
+	reg = RCBA_BASE_ADDRESS | 1;
+	pci_write_config32(lpc_dev, RCBA, reg);
 
-	/* Enable Variable MTRRs */
-	msr.hi = 0x00000000;
-	msr.lo = 0x00000800;
-	wrmsr(MTRR_DEF_TYPE_MSR, msr);
+	/* IO Port Registers. */
+	reg = ACPI_BASE_ADDRESS | 2;
+	pci_write_config32(lpc_dev, ABASE, reg);
+	reg = GPIO_BASE_ADDRESS | 2;
+	pci_write_config32(lpc_dev, GBASE, reg);
+}
+
+static void tco_disable(void)
+{
+	uint32_t reg;
+
+	reg = inl(ACPI_BASE_ADDRESS + TCO1_CNT);
+	reg |= TCO_TMR_HALT;
+	outl(reg, ACPI_BASE_ADDRESS + TCO1_CNT);
+}
+
+static void spi_init(void)
+{
+	void *scs = (void *)(SPI_BASE_ADDRESS + SCS);
+	void *bcr = (void *)(SPI_BASE_ADDRESS + BCR);
+	uint32_t reg;
+
+	/* Disable generating SMI when setting WPD bit. */
+	write32(scs, read32(scs) & ~SMIWPEN);
+	/*
+	 * Enable caching and prefetching in the SPI controller. Disable
+	 * the SMM-only BIOS write and set WPD bit.
+	 */
+	reg = (read32(bcr) & ~SRC_MASK) | SRC_CACHE_PREFETCH | BCR_WPD;
+	reg &= ~EISS;
+	write32(bcr, reg);
+}
+
+static void soc_rtc_init(void)
+{
+	int rtc_failed = rtc_failure();
+
+	if (rtc_failed) {
+		printk(BIOS_ERR,
+			"RTC Failure detected. Resetting date to %x/%x/%x%x\n",
+			COREBOOT_BUILD_MONTH_BCD,
+			COREBOOT_BUILD_DAY_BCD,
+			0x20,
+			COREBOOT_BUILD_YEAR_BCD);
+	}
+
+	cmos_init(rtc_failed);
 }
 
 static void setup_mmconfig(void)
@@ -67,12 +124,22 @@ static void setup_mmconfig(void)
 	pci_io_write_config32(IOSF_PCI_DEV, MCR_REG, reg);
 }
 
-static void bootblock_cpu_init(void)
+
+void bootblock_soc_early_init(void)
 {
 	/* Allow memory-mapped PCI config access. */
 	setup_mmconfig();
 
-	/* Load microcode before any caching. */
-	intel_update_microcode_from_cbfs();
-	enable_rom_caching();
+	/* Early chipset initialization */
+	program_base_addresses();
+	tco_disable();
+}
+void bootblock_soc_init(void)
+{
+	/* Continue chipset initialization */
+	soc_rtc_init();
+	set_max_freq();
+	spi_init();
+
+	lpc_init();
 }

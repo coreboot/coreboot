@@ -14,8 +14,9 @@
 ## GNU General Public License for more details.
 ##
 
+bootblock-$(CONFIG_ENABLE_BUILTIN_COM1) += com_init.c
+
 romstage-$(CONFIG_CHROMEOS) += chromeos.c
-romstage-$(CONFIG_ENABLE_BUILTIN_COM1) += com_init.c
 romstage-y += spd/spd.c
 
 ramstage-$(CONFIG_CHROMEOS) += chromeos.c

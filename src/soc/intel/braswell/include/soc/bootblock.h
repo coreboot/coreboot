@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2013 Google Inc.
- * Copyright (C) 2015 Intel Corp.
+ * Copyright (C) 2015-2016 Intel Corp.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,15 +14,9 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/io.h>
-#include <soc/iomap.h>
-#include <soc/romstage.h>
+#ifndef _SOC_BOOTBLOCK_H_
+#define _SOC_BOOTBLOCK_H_
 
-void tco_disable(void)
-{
-	uint32_t reg;
+void set_max_freq(void);
 
-	reg = inl(ACPI_BASE_ADDRESS + TCO1_CNT);
-	reg |= TCO_TMR_HALT;
-	outl(reg, ACPI_BASE_ADDRESS + TCO1_CNT);
-}
+#endif /* _SOC_BOOTBLOCK_H_ */

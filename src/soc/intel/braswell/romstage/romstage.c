@@ -19,90 +19,13 @@
 #include <stddef.h>
 #include <arch/io.h>
 #include <device/mmio.h>
-#include <device/pci_ops.h>
-#include <arch/cbfs.h>
-#include <cpu/x86/mtrr.h>
 #include <console/console.h>
-#include <device/device.h>
-#include <device/pci_def.h>
-#include <elog.h>
-#include <mrc_cache.h>
-#include <string.h>
-#include <vendorcode/google/chromeos/chromeos.h>
-#include <fsp/util.h>
-#include <soc/gpio.h>
 #include <soc/iomap.h>
 #include <soc/iosf.h>
-#include <soc/lpc.h>
-#include <soc/pci_devs.h>
 #include <soc/romstage.h>
-#include <soc/smm.h>
-#include <soc/spi.h>
-#include <build.h>
-#include <pc80/mc146818rtc.h>
 
 #include "../chip.h"
 
-void program_base_addresses(void)
-{
-	uint32_t reg;
-	const uint32_t lpc_dev = PCI_DEV(0, LPC_DEV, LPC_FUNC);
-
-	/* Memory Mapped IO registers. */
-	reg = PMC_BASE_ADDRESS | 2;
-	pci_write_config32(lpc_dev, PBASE, reg);
-	reg = IO_BASE_ADDRESS | 2;
-	pci_write_config32(lpc_dev, IOBASE, reg);
-	reg = ILB_BASE_ADDRESS | 2;
-	pci_write_config32(lpc_dev, IBASE, reg);
-	reg = SPI_BASE_ADDRESS | 2;
-	pci_write_config32(lpc_dev, SBASE, reg);
-	reg = MPHY_BASE_ADDRESS | 2;
-	pci_write_config32(lpc_dev, MPBASE, reg);
-	reg = PUNIT_BASE_ADDRESS | 2;
-	pci_write_config32(lpc_dev, PUBASE, reg);
-	reg = RCBA_BASE_ADDRESS | 1;
-	pci_write_config32(lpc_dev, RCBA, reg);
-
-	/* IO Port Registers. */
-	reg = ACPI_BASE_ADDRESS | 2;
-	pci_write_config32(lpc_dev, ABASE, reg);
-	reg = GPIO_BASE_ADDRESS | 2;
-	pci_write_config32(lpc_dev, GBASE, reg);
-}
-
-static void spi_init(void)
-{
-	void *scs = (void *)(SPI_BASE_ADDRESS + SCS);
-	void *bcr = (void *)(SPI_BASE_ADDRESS + BCR);
-	uint32_t reg;
-
-	/* Disable generating SMI when setting WPD bit. */
-	write32(scs, read32(scs) & ~SMIWPEN);
-	/*
-	 * Enable caching and prefetching in the SPI controller. Disable
-	 * the SMM-only BIOS write and set WPD bit.
-	 */
-	reg = (read32(bcr) & ~SRC_MASK) | SRC_CACHE_PREFETCH | BCR_WPD;
-	reg &= ~EISS;
-	write32(bcr, reg);
-}
-
-static void soc_rtc_init(void)
-{
-	int rtc_failed = rtc_failure();
-
-	if (rtc_failed) {
-		printk(BIOS_ERR,
-			"RTC Failure detected. Resetting date to %x/%x/%x%x\n",
-			COREBOOT_BUILD_MONTH_BCD,
-			COREBOOT_BUILD_DAY_BCD,
-			0x20,
-			COREBOOT_BUILD_YEAR_BCD);
-	}
-
-	cmos_init(rtc_failed);
-}
 
 static struct chipset_power_state power_state;
 
@@ -171,24 +94,6 @@ int chipset_prev_sleep_state(struct chipset_power_state *ps)
 	return prev_sleep_state;
 }
 
-/* SOC initialization before the console is enabled */
-void car_soc_pre_console_init(void)
-{
-	/* Early chipset initialization */
-	program_base_addresses();
-	tco_disable();
-}
-
-/* SOC initialization after console is enabled */
-void car_soc_post_console_init(void)
-{
-	/* Continue chipset initialization */
-	soc_rtc_init();
-	set_max_freq();
-	spi_init();
-
-	lpc_init();
-}
 
 /* SOC initialization after RAM is enabled */
 void soc_after_ram_init(struct romstage_params *params)

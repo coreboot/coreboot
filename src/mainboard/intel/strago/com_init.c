@@ -14,12 +14,12 @@
  * GNU General Public License for more details.
  */
 
+#include <bootblock_common.h>
 #include <device/mmio.h>
 #include <device/pci_ops.h>
 #include <soc/gpio.h>
 #include <soc/lpc.h>
 #include <soc/pci_devs.h>
-#include <soc/romstage.h>
 
 /*
  * return family number and internal pad number in that community
@@ -30,7 +30,7 @@
 
 	/* family number in high byte and inner pad number in lowest byte */
 
-void car_mainboard_pre_console_init(void)
+void bootblock_mainboard_early_init(void)
 {
 	uint32_t reg;
 	uint32_t *pad_config_reg;

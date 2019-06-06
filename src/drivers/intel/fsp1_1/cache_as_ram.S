@@ -5,6 +5,7 @@
  * Copyright (C) 2007-2008 coresystems GmbH
  * Copyright (C) 2013-2014 Sage Electronic Engineering, LLC.
  * Copyright (C) 2015 Intel Corp.
+ * Copyright (C) 2018-2019 Eltan B.V.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,6 +17,8 @@
  * GNU General Public License for more details.
  */
 
+#include <cpu/x86/post_code.h>
+
 /*
  * Replacement for cache_as_ram.inc when using the FSP binary.  This code
  * locates the FSP binary, initializes the cache as RAM and performs the
@@ -24,8 +27,10 @@
  * performs the final stage of initialization.
  */
 
-/* I/O delay between post codes on failure */
-#define LHLT_DELAY	0x50000
+#define LHLT_DELAY	0x50000	/* I/O delay between post codes on failure */
+
+.global	bootblock_pre_c_entry
+bootblock_pre_c_entry:
 	/*
 	 * Per FSP1.1 specs, following registers are preserved:
 	 * EBX, EDI, ESI, EBP, MM0, MM1
@@ -129,10 +134,9 @@ CAR_init_done:
 	/* Need to align stack to 16 bytes at call instruction. Account for
 	the pushes below. */
 	andl	$0xfffffff0, %esp
-	subl	$4, %esp
+	subl	$8, %esp
 
-	/* Push BIST and initial timestamp on the stack */
-	pushl	%ebx	/* bist */
+	/* Push initial timestamp on the stack */
 	movd	%mm1, %eax
 	pushl	%eax	/* tsc[63:32] */
 	movd	%mm0, %eax
@@ -141,12 +145,10 @@ CAR_init_done:
 before_romstage:
 	post_code(0x2A)
 
-	/* Call bootblock_c_entry_bist(uint64_t base_timestamp, uint32_t bist)
-	   in cpu/intel/car/romstage.c */
-	call	bootblock_c_entry_bist
+	/* Call bootblock_c_entry(uint64_t base_timestamp) */
+	call	bootblock_c_entry
 
-	movb	$0x69, %ah
-	jmp	.Lhlt
+	/* Never reached */
 
 halt1:
 	/*

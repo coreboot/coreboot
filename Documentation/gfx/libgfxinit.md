@@ -55,6 +55,9 @@ follows:
 GMA: Per Board Configuration
 ----------------------------
 
+In order to set up the display panel, see the
+[display panel-specific documentation](/gfx/display-panel.md).
+
 There are a few Kconfig symbols to consider. To indicate that a
 board can initialize graphics through *libgfxinit*:
 

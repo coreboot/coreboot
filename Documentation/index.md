@@ -173,6 +173,7 @@ Contents:
 * [Dealing with Untrusted Input in SMM](technotes/2017-02-dealing-with-untrusted-input-in-smm.md)
 * [GPIO toggling in ACPI AML](acpi/gpio.md)
 * [Native Graphics Initialization with libgfxinit](gfx/libgfxinit.md)
+* [Display panel-specific documentation](gfx/display-panel.md)
 * [Architecture-specific documentation](arch/index.md)
 * [Northbridge-specific documentation](northbridge/index.md)
 * [System on Chip-specific documentation](soc/index.md)

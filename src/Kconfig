@@ -277,10 +277,13 @@ config BOOTSPLASH_FILE
 	  The path and filename of the file to use as graphical bootsplash
 	  screen. The file format has to be jpg.
 
+config HAVE_RAMPAYLOAD
+	bool
+
 config RAMPAYLOAD
 	bool "Enable coreboot flow without executing ramstage"
 	default n
-	depends on ARCH_X86
+	depends on HAVE_RAMPAYLOAD
 	help
 	  If this option is enabled, coreboot flow will skip ramstage
 	  loading and execution of ramstage to load payload.

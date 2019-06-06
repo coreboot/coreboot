@@ -306,7 +306,7 @@ static void sm_init(struct device *dev)
 	}
 	byte = pci_read_config8(dev, 0xAE);
 	if (CONFIG(ENABLE_APIC_EXT_ID))
-	byte |= 1 << 4;
+		byte |= 1 << 4;
 	byte |= 1 << 5;	/* ACPI_DISABLE_TIMER_IRQ_ENHANCEMENT_FOR_8254_TIMER */
 	byte |= 1 << 6;	/* Enable arbiter between APIC and PIC interrupts */
 	pci_write_config8(dev, 0xAE, byte);

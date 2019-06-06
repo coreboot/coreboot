@@ -925,15 +925,24 @@ static void set_chipdensity(const char *filename, char *image, int size,
 	write_image(filename, image, size);
 }
 
+static int check_region(const frba_t *frba, unsigned int region_type)
+{
+	region_t region;
+
+	if (!frba)
+		return 0;
+
+	region = get_region(frba, region_type);
+	return !!((region.base < region.limit) && (region.size > 0));
+}
+
 static void lock_descriptor(const char *filename, char *image, int size)
 {
 	int wr_shift, rd_shift;
 	fmba_t *fmba = find_fmba(image, size);
+	const frba_t *frba = find_frba(image, size);
 	if (!fmba)
 		exit(EXIT_FAILURE);
-	/* TODO: Dynamically take Platform Data Region and GbE Region
-	 * into regard.
-	 */
 
 	if (ifd_version >= IFD_VERSION_2) {
 		wr_shift = FLMSTR_WR_SHIFT_V2;
@@ -969,36 +978,66 @@ static void lock_descriptor(const char *filename, char *image, int size)
 	case PLATFORM_CNL:
 	case PLATFORM_ICL:
 	case PLATFORM_SKLKBL:
-		/* CPU/BIOS can read descriptor, BIOS, EC and GbE. */
-		fmba->flmstr1 |= 0x10b << rd_shift;
-		/* CPU/BIOS can write BIOS and Gbe. */
-		fmba->flmstr1 |= 0xa << wr_shift;
-		/* ME can read descriptor, ME and GbE. */
-		fmba->flmstr2 |= 0xd << rd_shift;
+		/* CPU/BIOS can read descriptor and BIOS. */
+		fmba->flmstr1 |= (1 << REGION_DESC) << rd_shift;
+		fmba->flmstr1 |= (1 << REGION_BIOS) << rd_shift;
+		/* CPU/BIOS can write BIOS. */
+		fmba->flmstr1 |= (1 << REGION_BIOS) << wr_shift;
+		/* ME can read descriptor and ME. */
+		fmba->flmstr2 |= (1 << REGION_DESC) << rd_shift;
+		fmba->flmstr2 |= (1 << REGION_ME) << rd_shift;
 		/* ME can write ME. */
-		fmba->flmstr2 |= 0x4 << wr_shift;
-		/* GbE can read GbE and descriptor. */
-		fmba->flmstr3 |= 0x9 << rd_shift;
-		/* GbE can write GbE. */
-		fmba->flmstr3 |= 0x8 << wr_shift;
-		/* EC can read EC and descriptor. */
-		fmba->flmstr5 |= 0x101 << rd_shift;
-		/* EC can write EC region. */
-		fmba->flmstr5 |= 0x100 << wr_shift;
+		fmba->flmstr2 |= (1 << REGION_ME) << wr_shift;
+		if (check_region(frba, REGION_GBE)) {
+			/* BIOS can read/write GbE. */
+			fmba->flmstr1 |= (1 << REGION_GBE) << rd_shift;
+			fmba->flmstr1 |= (1 << REGION_GBE) << wr_shift;
+			/* ME can read GbE. */
+			fmba->flmstr2 |= (1 << REGION_GBE) << rd_shift;
+			/* GbE can read descriptor and read/write GbE.. */
+			fmba->flmstr3 |= (1 << REGION_DESC) << rd_shift;
+			fmba->flmstr3 |= (1 << REGION_GBE) << rd_shift;
+			fmba->flmstr3 |= (1 << REGION_GBE) << wr_shift;
+		}
+		if (check_region(frba, REGION_PDR)) {
+			/* BIOS can read/write PDR. */
+			fmba->flmstr1 |= (1 << REGION_PDR) << rd_shift;
+			fmba->flmstr1 |= (1 << REGION_PDR) << wr_shift;
+		}
+		if (check_region(frba, REGION_EC)) {
+			/* BIOS can read EC. */
+			fmba->flmstr1 |= (1 << REGION_EC) << rd_shift;
+			/* EC can read descriptor and read/write EC. */
+			fmba->flmstr5 |= (1 << REGION_DESC) << rd_shift;
+			fmba->flmstr5 |= (1 << REGION_EC) << rd_shift;
+			fmba->flmstr5 |= (1 << REGION_EC) << wr_shift;
+		}
 		break;
 	default:
-		/* CPU/BIOS can read descriptor, BIOS, and GbE. */
-		fmba->flmstr1 |= 0xb << rd_shift;
-		/* CPU/BIOS can write BIOS and GbE. */
-		fmba->flmstr1 |= 0xa << wr_shift;
-		/* ME can read descriptor, ME, and GbE. */
-		fmba->flmstr2 |= 0xd << rd_shift;
-		/* ME can write ME and GbE. */
-		fmba->flmstr2 |= 0xc << wr_shift;
-		/* GbE can write only GbE. */
-		fmba->flmstr3 |= 0x8 << rd_shift;
-		/* GbE can read only GbE. */
-		fmba->flmstr3 |= 0x8 << wr_shift;
+		/* CPU/BIOS can read descriptor and BIOS. */
+		fmba->flmstr1 |= (1 << REGION_DESC) << rd_shift;
+		fmba->flmstr1 |= (1 << REGION_BIOS) << rd_shift;
+		/* CPU/BIOS can write BIOS. */
+		fmba->flmstr1 |= (1 << REGION_BIOS) << wr_shift;
+		/* ME can read descriptor and ME. */
+		fmba->flmstr2 |= (1 << REGION_DESC) << rd_shift;
+		fmba->flmstr2 |= (1 << REGION_ME) << rd_shift;
+		/* ME can write ME. */
+		fmba->flmstr2 |= (1 << REGION_ME) << wr_shift;
+		if (check_region(frba, REGION_GBE)) {
+			/* BIOS can read GbE. */
+			fmba->flmstr1 |= (1 << REGION_GBE) << rd_shift;
+			/* BIOS can write GbE. */
+			fmba->flmstr1 |= (1 << REGION_GBE) << wr_shift;
+			/* ME can read GbE. */
+			fmba->flmstr2 |= (1 << REGION_GBE) << rd_shift;
+			/* ME can write GbE. */
+			fmba->flmstr2 |= (1 << REGION_GBE) << wr_shift;
+			/* GbE can write GbE. */
+			fmba->flmstr3 |= (1 << REGION_GBE) << rd_shift;
+			/* GbE can read GbE. */
+			fmba->flmstr3 |= (1 << REGION_GBE) << wr_shift;
+		}
 		break;
 	}
 

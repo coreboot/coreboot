@@ -3071,11 +3071,6 @@ void fam15EnableTrainingMode(struct MCTStatStruc *pMCTstat,
 		 */
 		uint8_t dimm_event_l_pin_support = 0;
 
-		if (pDCTstat->DIMMValidDCT[dct] == 0)
-			ddr_voltage_index = 1;
-		else
-			ddr_voltage_index = dct_ddr_voltage_index(pDCTstat, dct);
-
 		ddr_voltage_index = dct_ddr_voltage_index(pDCTstat, dct);
 		max_dimms_installable = mctGet_NVbits(NV_MAX_DIMMS_PER_CH);
 

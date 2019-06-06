@@ -22,6 +22,8 @@
 #include <console/console.h>
 #include <string.h>
 #include <pc80/keyboard.h>
+#include <superio/common/ssdt.h>
+#include <arch/acpi.h>
 #include "ast2400.h"
 
 static void ast2400_init(struct device *dev)
@@ -36,6 +38,32 @@ static void ast2400_init(struct device *dev)
 	}
 }
 
+#if CONFIG(HAVE_ACPI_TABLES)
+/* Provide ACPI HIDs for generic Super I/O SSDT */
+static const char *ast2400_acpi_hid(const struct device *dev)
+{
+	/* Sanity checks */
+	if (dev->path.type != DEVICE_PATH_PNP)
+		return NULL;
+	if (dev->path.pnp.port == 0)
+		return NULL;
+	if ((dev->path.pnp.device & 0xff) > AST2400_MAILBOX)
+		return NULL;
+
+	switch (dev->path.pnp.device & 0xff) {
+	case AST2400_SUART1: /* falltrough */
+	case AST2400_SUART2: /* falltrough */
+	case AST2400_SUART3: /* falltrough */
+	case AST2400_SUART4:
+		return ACPI_HID_COM;
+	case AST2400_KBC:
+		return ACPI_HID_KEYBOARD;
+	default:
+		return ACPI_HID_PNP;
+	}
+}
+#endif
+
 static struct device_operations ops = {
 	.read_resources = pnp_read_resources,
 	.set_resources = pnp_set_resources,
@@ -43,6 +71,11 @@ static struct device_operations ops = {
 	.enable = pnp_enable,
 	.init = ast2400_init,
 	.ops_pnp_mode = &pnp_conf_mode_a5a5_aa,
+#if CONFIG(HAVE_ACPI_TABLES)
+	.acpi_fill_ssdt_generator = superio_common_fill_ssdt_generator,
+	.acpi_name = superio_common_ldn_acpi_name,
+	.acpi_hid = ast2400_acpi_hid,
+#endif
 };
 
 static struct pnp_info pnp_dev_info[] = {

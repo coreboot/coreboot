@@ -172,7 +172,7 @@ static unsigned char keyboard_cmd(unsigned char cmd)
 {
 	i8042_write_data(cmd);
 
-	return i8042_wait_read_ps2() == I8042_KBCMD_ACK;
+	return i8042_wait_read_ps2() == 0xfa;
 }
 
 int keyboard_havechar(void)
@@ -317,42 +317,27 @@ void keyboard_init(void)
 	/* Enable first PS/2 port */
 	i8042_cmd(I8042_CMD_EN_KB);
 
-	/* Reset keyboard and self test (keyboard side) */
-	ret = keyboard_cmd(I8042_KBCMD_RESET);
-	if (!ret) {
-		printf("ERROR: Keyboard reset failed!\n");
-		return;
-	}
-
 	/* Set scancode set 1 */
 	ret = keyboard_cmd(I8042_KBCMD_SET_SCANCODE);
-	if (!ret && !CONFIG(LP_PC_KEYBOARD_IGNORE_INIT_FAILURE)) {
-		printf("ERROR: Keyboard set scancode failed!\n");
+	if (!ret && !CONFIG(LP_PC_KEYBOARD_IGNORE_INIT_FAILURE))
 		return;
-	}
 
 	ret = keyboard_cmd(I8042_SCANCODE_SET_1);
-	if (!ret && !CONFIG(LP_PC_KEYBOARD_IGNORE_INIT_FAILURE)) {
-		printf("ERROR: Keyboard scancode set#1 failed!\n");
+	if (!ret && !CONFIG(LP_PC_KEYBOARD_IGNORE_INIT_FAILURE))
 		return;
-	}
 
 	/*
 	 * Set default parameters.
 	 * Fix for broken QEMU ps/2 make scancodes.
 	 */
 	ret = keyboard_cmd(0xf6);
-	if (!ret) {
-		printf("ERROR: Keyboard set default params failed!\n");
+	if (!ret)
 		return;
-	}
 
 	/* Enable scanning */
 	ret = keyboard_cmd(I8042_KBCMD_EN);
-	if (!ret && !CONFIG(LP_PC_KEYBOARD_IGNORE_INIT_FAILURE)) {
-		printf("ERROR: Keyboard enable scanning failed!\n");
+	if (!ret && !CONFIG(LP_PC_KEYBOARD_IGNORE_INIT_FAILURE))
 		return;
-	}
 
 	console_add_input_driver(&cons);
 }

@@ -1593,7 +1593,8 @@ static void jedec_init(const timings_t *const timings,
 	int ch, r;
 	FOR_EACH_POPULATED_RANK(dimms, ch, r) {
 		/* We won't do this in dual-interleaved mode,
-		   so don't care about the offset. */
+		   so don't care about the offset.
+		   Mirrored ranks aren't taken into account here. */
 		const u32 rankaddr = raminit_get_rank_addr(ch, r);
 		printk(BIOS_DEBUG, "JEDEC init @0x%08x\n", rankaddr);
 		MCHBAR32(DCC_MCHBAR) = (MCHBAR32(DCC_MCHBAR) & ~DCC_SET_EREG_MASK) | DCC_SET_EREGx(2);

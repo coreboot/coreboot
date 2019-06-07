@@ -28,19 +28,20 @@
 ##
 
 # Sample libpayload Makefile.
-include ../.xcompile
 include ../.config
+include ../.xcompile
 
-ARCH-$(CONFIG_LP_ARCH_ARMV)    := arm
-ARCH-$(CONFIG_LP_ARCH_POWERPC) := powerpc
-ARCH-$(CONFIG_LP_ARCH_X86)     := i386
+ARCH-$(CONFIG_LP_ARCH_ARM)   := arm
+ARCH-$(CONFIG_LP_ARCH_X86)   := x86_32
+ARCH-$(CONFIG_LP_ARCH_ARM64) := arm64
+ARCH-$(CONFIG_LP_ARCH_MIPS)  := mips
 
 CC := $(CC_$(ARCH-y))
 AS := $(AS_$(ARCH-y))
 LIBPAYLOAD_DIR := ../install/libpayload
 XCC := CC="$(CC)" $(LIBPAYLOAD_DIR)/bin/lpgcc
 XAS := AS="$(AS)" $(LIBPAYLOAD_DIR)/bin/lpas
-CFLAGS := -Wall -Werror -Os
+CFLAGS := -fno-builtin -Wall -Werror -Os
 TARGET := hello
 OBJS := $(TARGET).o
 

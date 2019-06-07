@@ -22,11 +22,17 @@ Installation
 
  $ make
 
- $ sudo make install (optional, will install into /opt per default)
+ $ make install (optional, will install into ./install per default)
 
-As libpayload is for 32bit x86 systems only, you might have to install the
-32bit libgcc version, otherwise your payloads will fail to compile.
+On x86 systems, libpayload will always be 32-bit even if your host OS runs
+in 64-bit, so you might have to install the 32-bit libgcc version.
 On Debian systems you'd do 'apt-get install gcc-multilib' for example.
+
+Run 'make distclean' before switching boards. This command will remove
+your current .config file, so you need 'make menuconfig' again or
+'make defconfig' in order to set up configuration. Default configuration
+is based on 'configs/defconfig'. See the configs/ directory for examples
+of configuration.
 
 
 Usage

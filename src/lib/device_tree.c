@@ -259,11 +259,13 @@ struct device_tree *fdt_unflatten(const void *blob)
 
 	if (magic != FDT_HEADER_MAGIC) {
 		printk(BIOS_DEBUG, "Invalid device tree magic %#.8x!\n", magic);
+		free(tree);
 		return NULL;
 	}
 	if (last_comp_version > FDT_SUPPORTED_VERSION) {
 		printk(BIOS_DEBUG, "Unsupported device tree version %u(>=%u)\n",
 		       version, last_comp_version);
+		free(tree);
 		return NULL;
 	}
 	if (version > FDT_SUPPORTED_VERSION)

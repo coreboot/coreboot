@@ -146,10 +146,18 @@ static const struct device_name stmicro_devices[] = {
 	{0xffff}
 };
 
+static const struct device_name swtpm_devices[] = {
+#if CONFIG(TPM2)
+	{0x0001, "SwTPM 2.0" },
+#endif
+	{0xffff}
+};
+
 static const struct vendor_name vendor_names[] = {
 	{0x1114, "Atmel", atmel_devices},
 	{0x15d1, "Infineon", infineon_devices},
 	{0x1050, "Nuvoton", nuvoton_devices},
+	{0x1014, "TPM Emulator", swtpm_devices},
 	{0x104a, "ST Microelectronics", stmicro_devices},
 };
 

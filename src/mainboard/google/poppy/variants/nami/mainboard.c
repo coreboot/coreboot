@@ -215,7 +215,6 @@ const char *mainboard_vbt_filename(void)
 		return "vbt-bard.bin";
 	default:
 		return "vbt.bin";
-		break;
 	}
 }
 

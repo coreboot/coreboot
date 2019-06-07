@@ -277,11 +277,9 @@ void sdm845_release_bus(const struct spi_slave *slave)
 	cs_change(CS_DEASSERT);
 }
 
-int sdm845_xfer(const struct spi_slave *slave, const void *dout,
-		       size_t out_bytes, void *din, size_t in_bytes)
+static int xfer(enum qspi_mode mode, const void *dout, size_t out_bytes,
+		void *din, size_t in_bytes)
 {
-	enum qspi_mode mode = SDR_1BIT;
-
 	if ((out_bytes && !dout) || (in_bytes && !din) ||
 		(in_bytes && out_bytes)) {
 		return -1;
@@ -293,4 +291,16 @@ int sdm845_xfer(const struct spi_slave *slave, const void *dout,
 	flush_chain();
 
 	return 0;
+}
+
+int sdm845_xfer(const struct spi_slave *slave, const void *dout,
+		size_t out_bytes, void *din, size_t in_bytes)
+{
+	return xfer(SDR_1BIT, dout, out_bytes, din, in_bytes);
+}
+
+int sdm845_xfer_dual(const struct spi_slave *slave, const void *dout,
+		     size_t out_bytes, void *din, size_t in_bytes)
+{
+	return xfer(SDR_2BIT, dout, out_bytes, din, in_bytes);
 }

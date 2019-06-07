@@ -116,4 +116,6 @@ int sdm845_setup_bus(const struct spi_slave *slave);
 void sdm845_release_bus(const struct spi_slave *slave);
 int sdm845_xfer(const struct spi_slave *slave, const void *dout,
 		size_t out_bytes, void *din, size_t in_bytes);
+int sdm845_xfer_dual(const struct spi_slave *slave, const void *dout,
+		     size_t out_bytes, void *din, size_t in_bytes);
 #endif /* __SOC_QUALCOMM_SDM845_QSPI_H__ */

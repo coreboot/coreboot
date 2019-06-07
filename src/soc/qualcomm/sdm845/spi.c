@@ -21,6 +21,7 @@ static const struct spi_ctrlr spi_ctrlr = {
 	.claim_bus = sdm845_claim_bus,
 	.release_bus = sdm845_release_bus,
 	.xfer = sdm845_xfer,
+	.xfer_dual = sdm845_xfer_dual,
 	.max_xfer_size = QSPI_MAX_PACKET_COUNT,
 };
 

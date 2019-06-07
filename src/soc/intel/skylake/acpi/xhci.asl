@@ -129,97 +129,93 @@ Device (XHCI)
 
 	Method (_PS0, 0, Serialized)
 	{
-		If (LEqual (^DVID, 0xFFFF)) {
-			Return
-		}
-		If (LOr (LEqual (^XMEM, 0xFFFF), LEqual (^XMEM, 0x0000))) {
-			Return
-		}
+		If (!LEqual (^DVID, 0xFFFF)) {
+			If (!LOr (LEqual (^XMEM, 0xFFFF), LEqual (^XMEM, 0x0000))) {
 
-		/* Disable d3hot and SS link trunk clock gating */
-		Store(Zero, ^D3HE)
-		Store(Zero, ^STGE)
+				/* Disable d3hot and SS link trunk clock gating */
+				Store(Zero, ^D3HE)
+				Store(Zero, ^STGE)
 
-		/* If device is in D3, set back to D0 */
-		If (LEqual (^D0D3, 3)) {
-			Store (Zero, Local0)
-			Store (Local0, ^D0D3)
-			Store (^D0D3, Local0)
-		}
-
-		/* Disable USB2 PHY SUS Well Power Gating */
-		Store (Zero, ^UPSW)
-
-		/*
-		 * Apply USB2 PHPY Power Gating workaround if needed.
-		 */
-		If (^^PMC.UWAB) {
-			/* Write to MTPMC to have PMC disable power gating */
-			Store (1, ^^PMC.MPMC)
-
-			/* Wait for PCH_PM_STS.MSG_FULL_STS to be 0 */
-			Store (10, Local0)
-			While (^^PMC.PMFS) {
-				If (LNot (Local0)) {
-					Break
+				/* If device is in D3, set back to D0 */
+				If (LEqual (^D0D3, 3)) {
+					Store (Zero, Local0)
+					Store (Local0, ^D0D3)
+					Store (^D0D3, Local0)
 				}
-				Decrement (Local0)
-				Sleep (10)
+
+				/* Disable USB2 PHY SUS Well Power Gating */
+				Store (Zero, ^UPSW)
+
+				/*
+				* Apply USB2 PHPY Power Gating workaround if needed.
+				*/
+				If (^^PMC.UWAB) {
+					/* Write to MTPMC to have PMC disable power gating */
+					Store (1, ^^PMC.MPMC)
+
+					/* Wait for PCH_PM_STS.MSG_FULL_STS to be 0 */
+					Store (10, Local0)
+					While (^^PMC.PMFS) {
+						If (LNot (Local0)) {
+							Break
+						}
+						Decrement (Local0)
+						Sleep (10)
+					}
+				}
 			}
 		}
 	}
 
 	Method (_PS3, 0, Serialized)
 	{
-		If (LEqual (^DVID, 0xFFFF)) {
-			Return
-		}
-		If (LOr (LEqual (^XMEM, 0xFFFF), LEqual (^XMEM, 0x0000))) {
-			Return
-		}
+		If (!LEqual (^DVID, 0xFFFF)) {
+			If (!LOr (LEqual (^XMEM, 0xFFFF), LEqual (^XMEM, 0x0000))) {
 
-		/* Clear PME Status */
-		Store (1, ^PMES)
+				/* Clear PME Status */
+				Store (1, ^PMES)
 
-		/* Enable PME */
-		Store (1, ^PMEE)
+				/* Enable PME */
+				Store (1, ^PMEE)
 
-		/* If device is in D3, set back to D0 */
-		If (LEqual (^D0D3, 3)) {
-			Store (Zero, Local0)
-			Store (Local0, ^D0D3)
-			Store (^D0D3, Local0)
-		}
-
-		/* Enable USB2 PHY SUS Well Power Gating in D0/D0i2/D0i3/D3 */
-		Store (3, ^UPSW)
-
-		/* Enable d3hot and SS link trunk clock gating */
-		Store(One, ^D3HE)
-		Store(One, ^STGE)
-
-		/* Now put device in D3 */
-		Store (3, Local0)
-		Store (Local0, ^D0D3)
-		Store (^D0D3, Local0)
-
-		/*
-		 * Apply USB2 PHPY Power Gating workaround if needed.
-		 * This code assumes XDCI is disabled, if it is enabled
-		 * then this must also check if it is in D3 state too.
-		 */
-		If (^^PMC.UWAB) {
-			/* Write to MTPMC to have PMC enable power gating */
-			Store (3, ^^PMC.MPMC)
-
-			/* Wait for PCH_PM_STS.MSG_FULL_STS to be 0 */
-			Store (10, Local0)
-			While (^^PMC.PMFS) {
-				If (LNot (Local0)) {
-					Break
+				/* If device is in D3, set back to D0 */
+				If (LEqual (^D0D3, 3)) {
+					Store (Zero, Local0)
+					Store (Local0, ^D0D3)
+					Store (^D0D3, Local0)
 				}
-				Decrement (Local0)
-				Sleep (10)
+
+				/* Enable USB2 PHY SUS Well Power Gating in D0/D0i2/D0i3/D3 */
+				Store (3, ^UPSW)
+
+				/* Enable d3hot and SS link trunk clock gating */
+				Store(One, ^D3HE)
+				Store(One, ^STGE)
+
+				/* Now put device in D3 */
+				Store (3, Local0)
+				Store (Local0, ^D0D3)
+				Store (^D0D3, Local0)
+
+				/*
+				* Apply USB2 PHPY Power Gating workaround if needed.
+				* This code assumes XDCI is disabled, if it is enabled
+				* then this must also check if it is in D3 state too.
+				*/
+				If (^^PMC.UWAB) {
+					/* Write to MTPMC to have PMC enable power gating */
+					Store (3, ^^PMC.MPMC)
+
+					/* Wait for PCH_PM_STS.MSG_FULL_STS to be 0 */
+					Store (10, Local0)
+					While (^^PMC.PMFS) {
+						If (LNot (Local0)) {
+							Break
+						}
+						Decrement (Local0)
+						Sleep (10)
+					}
+				}
 			}
 		}
 	}

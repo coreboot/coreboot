@@ -125,6 +125,7 @@ enum {
  * setup:		Setup given SPI device bus.
  * xfer:		Perform one SPI transfer operation.
  * xfer_vector:	Vector of SPI transfer operations.
+ * xfer_dual:		(optional) Perform one SPI transfer in Dual SPI mode.
  * max_xfer_size:	Maximum transfer size supported by the controller
  *			(0 = invalid,
  *			 SPI_CTRLR_DEFAULT_MAX_XFER_SIZE = unlimited)
@@ -145,6 +146,8 @@ struct spi_ctrlr {
 		    size_t bytesout, void *din, size_t bytesin);
 	int (*xfer_vector)(const struct spi_slave *slave,
 			struct spi_op vectors[], size_t count);
+	int (*xfer_dual)(const struct spi_slave *slave, const void *dout,
+			 size_t bytesout, void *din, size_t bytesin);
 	uint32_t max_xfer_size;
 	uint32_t flags;
 	int (*flash_probe)(const struct spi_slave *slave,

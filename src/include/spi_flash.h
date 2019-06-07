@@ -90,6 +90,13 @@ struct spi_flash_ops {
 struct spi_flash {
 	struct spi_slave spi;
 	u8 vendor;
+	union {
+		u8 raw;
+		struct {
+			u8 dual_spi	: 1;
+			u8 _reserved	: 7;
+		};
+	} flags;
 	u16 model;
 	const char *name;
 	u32 size;

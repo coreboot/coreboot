@@ -23,6 +23,8 @@
 #define CMD_READ_ARRAY_FAST		0x0b
 #define CMD_READ_ARRAY_LEGACY		0xe8
 
+#define CMD_READ_FAST_DUAL_OUTPUT	0x3b
+
 #define CMD_READ_STATUS			0x05
 #define CMD_WRITE_ENABLE		0x06
 

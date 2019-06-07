@@ -41,7 +41,9 @@
 
 struct gigadevice_spi_flash_params {
 	uint16_t	id;
-	uint8_t		l2_page_size_shift;
+	uint8_t		dual_spi : 1;
+	uint8_t		_reserved_for_flags : 3;
+	uint8_t		l2_page_size_shift : 4;
 	uint8_t		pages_per_sector_shift : 4;
 	uint8_t		sectors_per_block_shift : 4;
 	uint8_t		nr_blocks_shift;
@@ -63,6 +65,7 @@ static const struct gigadevice_spi_flash_params gigadevice_spi_flash_table[] = {
 		.pages_per_sector_shift		= 4,
 		.sectors_per_block_shift	= 4,
 		.nr_blocks_shift		= 4,
+		.dual_spi			= 1,
 		.name				= "GD25Q80",
 	},					/* also GD25Q80B */
 	{
@@ -71,6 +74,7 @@ static const struct gigadevice_spi_flash_params gigadevice_spi_flash_table[] = {
 		.pages_per_sector_shift		= 4,
 		.sectors_per_block_shift	= 4,
 		.nr_blocks_shift		= 5,
+		.dual_spi			= 1,
 		.name				= "GD25Q16",
 	},					/* also GD25Q16B */
 	{
@@ -79,6 +83,7 @@ static const struct gigadevice_spi_flash_params gigadevice_spi_flash_table[] = {
 		.pages_per_sector_shift		= 4,
 		.sectors_per_block_shift	= 4,
 		.nr_blocks_shift		= 6,
+		.dual_spi			= 1,
 		.name				= "GD25Q32B",
 	},					/* also GD25Q32B */
 	{
@@ -87,6 +92,7 @@ static const struct gigadevice_spi_flash_params gigadevice_spi_flash_table[] = {
 		.pages_per_sector_shift		= 4,
 		.sectors_per_block_shift	= 4,
 		.nr_blocks_shift		= 7,
+		.dual_spi			= 1,
 		.name				= "GD25Q64",
 	},					/* also GD25Q64B, GD25B64C */
 	{
@@ -95,6 +101,7 @@ static const struct gigadevice_spi_flash_params gigadevice_spi_flash_table[] = {
 		.pages_per_sector_shift		= 4,
 		.sectors_per_block_shift	= 4,
 		.nr_blocks_shift		= 8,
+		.dual_spi			= 1,
 		.name				= "GD25Q128",
 	},					/* also GD25Q128B */
 	{
@@ -103,6 +110,7 @@ static const struct gigadevice_spi_flash_params gigadevice_spi_flash_table[] = {
 		.pages_per_sector_shift		= 4,
 		.sectors_per_block_shift	= 4,
 		.nr_blocks_shift		= 4,
+		.dual_spi			= 1,
 		.name				= "GD25VQ80C",
 	},
 	{
@@ -111,6 +119,7 @@ static const struct gigadevice_spi_flash_params gigadevice_spi_flash_table[] = {
 		.pages_per_sector_shift		= 4,
 		.sectors_per_block_shift	= 4,
 		.nr_blocks_shift		= 5,
+		.dual_spi			= 1,
 		.name				= "GD25VQ16C",
 	},
 	{
@@ -119,6 +128,7 @@ static const struct gigadevice_spi_flash_params gigadevice_spi_flash_table[] = {
 		.pages_per_sector_shift		= 4,
 		.sectors_per_block_shift	= 4,
 		.nr_blocks_shift		= 4,
+		.dual_spi			= 1,
 		.name				= "GD25LQ80",
 	},
 	{
@@ -127,6 +137,7 @@ static const struct gigadevice_spi_flash_params gigadevice_spi_flash_table[] = {
 		.pages_per_sector_shift		= 4,
 		.sectors_per_block_shift	= 4,
 		.nr_blocks_shift		= 5,
+		.dual_spi			= 1,
 		.name				= "GD25LQ16",
 	},
 	{
@@ -135,6 +146,7 @@ static const struct gigadevice_spi_flash_params gigadevice_spi_flash_table[] = {
 		.pages_per_sector_shift		= 4,
 		.sectors_per_block_shift	= 4,
 		.nr_blocks_shift		= 6,
+		.dual_spi			= 1,
 		.name				= "GD25LQ32",
 	},
 	{
@@ -143,6 +155,7 @@ static const struct gigadevice_spi_flash_params gigadevice_spi_flash_table[] = {
 		.pages_per_sector_shift		= 4,
 		.sectors_per_block_shift	= 4,
 		.nr_blocks_shift		= 7,
+		.dual_spi			= 1,
 		.name				= "GD25LQ64C",
 	},					/* also GD25LB64C */
 	{
@@ -151,6 +164,7 @@ static const struct gigadevice_spi_flash_params gigadevice_spi_flash_table[] = {
 		.pages_per_sector_shift		= 4,
 		.sectors_per_block_shift	= 4,
 		.nr_blocks_shift		= 8,
+		.dual_spi			= 1,
 		.name				= "GD25LQ128",
 	},
 };

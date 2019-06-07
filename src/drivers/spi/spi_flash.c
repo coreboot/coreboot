@@ -59,6 +59,34 @@ static int do_spi_flash_cmd(const struct spi_slave *spi, const void *dout,
 	return ret;
 }
 
+static int do_dual_read_cmd(const struct spi_slave *spi, const void *dout,
+			    size_t bytes_out, void *din, size_t bytes_in)
+{
+	int ret;
+
+	/*
+	 * spi_xfer_vector() will automatically fall back to .xfer() if
+	 * .xfer_vector() is unimplemented. So using vector API here is more
+	 * flexible, even though a controller that implements .xfer_vector()
+	 * and (the non-vector based) .xfer_dual() but not .xfer() would be
+	 * pretty odd.
+	 */
+	struct spi_op vector = { .dout = dout, .bytesout = bytes_out,
+				 .din = NULL, .bytesin = 0 };
+
+	ret = spi_claim_bus(spi);
+	if (ret)
+		return ret;
+
+	ret = spi_xfer_vector(spi, &vector, 1);
+
+	if (!ret)
+		ret = spi->ctrlr->xfer_dual(spi, NULL, 0, din, bytes_in);
+
+	spi_release_bus(spi);
+	return ret;
+}
+
 int spi_flash_cmd(const struct spi_slave *spi, u8 cmd, void *response, size_t len)
 {
 	int ret = do_spi_flash_cmd(spi, &cmd, sizeof(cmd), response, len);
@@ -105,6 +133,11 @@ static int spi_flash_read_chunked(const struct spi_flash *flash, u32 offset,
 		cmd_len = 4;
 		cmd[0] = CMD_READ_ARRAY_SLOW;
 		do_cmd = do_spi_flash_cmd;
+	} else if (flash->flags.dual_spi && flash->spi.ctrlr->xfer_dual) {
+		cmd_len = 5;
+		cmd[0] = CMD_READ_FAST_DUAL_OUTPUT;
+		cmd[4] = 0;
+		do_cmd = do_dual_read_cmd;
 	} else {
 		cmd_len = 5;
 		cmd[0] = CMD_READ_ARRAY_FAST;
@@ -347,8 +380,12 @@ int spi_flash_probe(unsigned int bus, unsigned int cs, struct spi_flash *flash)
 		return -1;
 	}
 
-	printk(BIOS_INFO, "SF: Detected %s with sector size 0x%x, total 0x%x\n",
-			flash->name, flash->sector_size, flash->size);
+	const char *mode_string = "";
+	if (flash->flags.dual_spi && spi.ctrlr->xfer_dual)
+		mode_string = " (Dual SPI mode)";
+	printk(BIOS_INFO,
+	       "SF: Detected %s with sector size 0x%x, total 0x%x%s\n",
+		flash->name, flash->sector_size, flash->size, mode_string);
 	if (bus == CONFIG_BOOT_DEVICE_SPI_FLASH_BUS
 			&& flash->size != CONFIG_ROM_SIZE) {
 		printk(BIOS_ERR, "SF size 0x%x does not correspond to"

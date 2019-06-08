@@ -1058,7 +1058,14 @@ ifneq ($(FIT_ENTRY),)
 FIT_OPTIONS += -q $(FIT_ENTRY)
 endif
 
-$(obj)/coreboot.rom: $(obj)/coreboot.pre $(objcbfs)/ramstage.elf $(CBFSTOOL) $$(INTERMEDIATE)
+ifeq ($(CONFIG_HAVE_RAMSTAGE),y)
+RAMSTAGE=$(objcbfs)/ramstage.elf
+else
+RAMSTAGE=
+endif
+
+$(obj)/coreboot.rom: $(obj)/coreboot.pre $(RAMSTAGE) $(CBFSTOOL) $$(INTERMEDIATE)
+
 	@printf "    CBFS       $(subst $(obj)/,,$(@))\n"
 # The full ROM may be larger than the CBFS part, so create an empty
 # file (filled with \377 = 0xff) and copy the CBFS image over it.
@@ -1128,8 +1135,8 @@ endif    # CONFIG_NO_FIXED_XIP_ROM_SIZE
 endif   # CONFIG_NO_XIP_EARLY_STAGES
 endif   # CONFIG_ARCH_ROMSTAGE_X86_32 / CONFIG_ARCH_ROMSTAGE_X86_64
 
-cbfs-files-y += $(CONFIG_CBFS_PREFIX)/ramstage
-$(CONFIG_CBFS_PREFIX)/ramstage-file := $(objcbfs)/ramstage.elf
+cbfs-files-$(CONFIG_HAVE_RAMSTAGE) += $(CONFIG_CBFS_PREFIX)/ramstage
+$(CONFIG_CBFS_PREFIX)/ramstage-file := $(RAMSTAGE)
 $(CONFIG_CBFS_PREFIX)/ramstage-type := stage
 $(CONFIG_CBFS_PREFIX)/ramstage-compression := $(CBFS_COMPRESS_FLAG)
 

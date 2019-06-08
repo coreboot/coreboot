@@ -17,23 +17,27 @@ SIPI_RMOD=$(SIPI_ELF).rmod
 SIPI_BIN=$(SIPI_ELF:.elf=)
 SIPI_DOTO=$(SIPI_ELF:.elf=.o)
 
-ifeq ($(CONFIG_PARALLEL_MP),y)
-ramstage-srcs += $(SIPI_BIN).manual
-endif
-rmodules_$(ARCH-ramstage-y)-$(CONFIG_PARALLEL_MP) += sipi_vector.S
-
-$(SIPI_DOTO): $(call src-to-obj,rmodules_$(ARCH-ramstage-y),src/cpu/x86/sipi_vector.S)
-	$(CC_rmodules_$(ARCH-ramstage-y)) $(CFLAGS_rmodules_$(ARCH-ramstage-y)) -nostdlib -r -o $@ $^
-
-ifeq ($(CONFIG_ARCH_RAMSTAGE_X86_32),y)
-$(eval $(call rmodule_link,$(SIPI_ELF), $(SIPI_DOTO), 0,x86_32))
+ifeq ($(CONFIG_HAVE_RAMSTAGE),y)
+TARGET_STAGE=ramstage
+else ifeq ($(CONFIG_RAMPAYLOAD),y)
+TARGET_STAGE=postcar
 else
-$(eval $(call rmodule_link,$(SIPI_ELF), $(SIPI_DOTO), 0,x86_64))
+$(error Halting the build due to unknown TARGET_STAGE select)
 endif
+
+ifeq ($(CONFIG_PARALLEL_MP),y)
+$(TARGET_STAGE)-srcs += $(SIPI_BIN).manual
+endif
+rmodules_$(ARCH-$(TARGET_STAGE)-y)-$(CONFIG_PARALLEL_MP) += sipi_vector.S
+
+$(SIPI_DOTO): $(call src-to-obj,rmodules_$(ARCH-$(TARGET_STAGE)-y),src/cpu/x86/sipi_vector.S)
+	$(CC_rmodules_$(ARCH-$(TARGET_STAGE)-y)) $(CFLAGS_rmodules_$(ARCH-$(TARGET_STAGE)-y)) -nostdlib -r -o $@ $^
+
+$(eval $(call rmodule_link,$(SIPI_ELF), $(SIPI_DOTO), 0,$(ARCH-$(TARGET_STAGE)-y)))
 
 $(SIPI_BIN): $(SIPI_RMOD)
-	$(OBJCOPY_ramstage) -O binary $< $@
+	$(OBJCOPY_$(TARGET_STAGE)) -O binary $< $@
 
-$(call src-to-obj,ramstage,$(SIPI_BIN).manual): $(SIPI_BIN)
+$(call src-to-obj,$(TARGET_STAGE),$(SIPI_BIN).manual): $(SIPI_BIN)
 	@printf "    OBJCOPY    $(subst $(obj)/,,$(@))\n"
-	cd $(dir $<); $(OBJCOPY_rmodules_$(ARCH-ramstage-y)) -I binary $(notdir $<) $(target-objcopy) $(abspath $@)
+	cd $(dir $<); $(OBJCOPY_rmodules_$(ARCH-$(TARGET_STAGE)-y)) -I binary $(notdir $<) $(target-objcopy) $(abspath $@)

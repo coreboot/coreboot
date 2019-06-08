@@ -31,6 +31,16 @@ ifneq ($(call strip_quotes,$(CONFIG_IFD_CHIPSET)),)
 IFDTOOL_USE_CHIPSET := -p $(CONFIG_IFD_CHIPSET)
 endif
 
+add_intel_firmware: $(call strip_quotes,$(CONFIG_IFD_BIN_PATH))
+ifeq ($(CONFIG_HAVE_ME_BIN),y)
+add_intel_firmware: $(call strip_quotes,$(CONFIG_ME_BIN_PATH))
+endif
+ifeq ($(CONFIG_HAVE_GBE_BIN),y)
+add_intel_firmware: $(call strip_quotes,$(CONFIG_GBE_BIN_PATH))
+endif
+ifeq ($(CONFIG_HAVE_EC_BIN),y)
+add_intel_firmware: $(call strip_quotes,$(CONFIG_EC_BIN_PATH))
+endif
 add_intel_firmware: $(obj)/coreboot.pre $(IFDTOOL)
 	printf "    DD         Adding Intel Firmware Descriptor\n"
 	dd if=$(IFD_BIN_PATH) \

@@ -65,13 +65,12 @@ static u32 get_mrc_cache_region(struct mrc_data_container **mrc_region_ptr)
 		}
 		*mrc_region_ptr = NULL;
 		return 0;
-	} else {
-		*mrc_region_ptr = cbfs_boot_map_with_leak("mrc.cache",
-							CBFS_TYPE_MRC_CACHE,
-							&region_size);
-
-		return region_size;
 	}
+	*mrc_region_ptr = cbfs_boot_map_with_leak("mrc.cache",
+						CBFS_TYPE_MRC_CACHE,
+						&region_size);
+
+	return region_size;
 }
 
 /*

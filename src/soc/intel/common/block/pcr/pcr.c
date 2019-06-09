@@ -394,10 +394,9 @@ int pcr_execute_sideband_msg(struct pcr_sbi_msg *msg, uint32_t *data,
 			break;
 		}
 		return 0;
-	} else {
-		printk(BIOS_ERR, "SBI Failure: Transaction Status = %x\n",
-				*response);
-		return -1;
 	}
+	printk(BIOS_ERR, "SBI Failure: Transaction Status = %x\n",
+			*response);
+	return -1;
 }
 #endif

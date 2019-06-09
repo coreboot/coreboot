@@ -188,11 +188,9 @@ static int google_chromeec_command_version(void)
 		return EC_HOST_CMD_FLAG_VERSION_3;
 	} else if (flags & EC_HOST_CMD_FLAG_LPC_ARGS_SUPPORTED) {
 		return EC_HOST_CMD_FLAG_LPC_ARGS_SUPPORTED;
-	} else {
-		printk(BIOS_ERR,
-		       "Chromium EC command version unsupported\n");
-		return -1;
 	}
+	printk(BIOS_ERR, "Chromium EC command version unsupported\n");
+	return -1;
 }
 
 static int google_chromeec_command_v3(struct chromeec_command *cec_command)

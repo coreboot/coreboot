@@ -166,10 +166,9 @@ static int kempld_i2c_process(struct kempld_i2c_data *const i2c)
 			if (!(msg->flags & I2C_M_NOSTART)) {
 				i2c->state = STATE_ADDR;
 				return 0;
-			} else {
-				i2c->state = (msg->flags & I2C_M_RD)
-					? STATE_READ : STATE_WRITE;
 			}
+			i2c->state = (msg->flags & I2C_M_RD)
+				? STATE_READ : STATE_WRITE;
 		} else {
 			i2c->state = STATE_DONE;
 			kempld_write8(KEMPLD_I2C_CMD, I2C_CMD_STOP);

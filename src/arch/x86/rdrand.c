@@ -75,7 +75,6 @@ int get_random_number_64(uint64_t *rand)
 #if ENV_X86_64
 		if (rdrand_64(rand))
 			return 0;
-		else
 #endif
 		if (rdrand_32(&rand_high) && rdrand_32(&rand_low)) {
 			*rand = ((uint64_t)rand_high << 32) |

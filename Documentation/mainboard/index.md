@@ -7,6 +7,7 @@ This section contains documentation about coreboot on specific mainboards.
 - [F2A85-M](asus/f2a85-m.md)
 - [P8H61-M LX](asus/p8h61-m_lx.md)
 - [P8H61-M Pro](asus/p8h61-m_pro.md)
+- [P8Z77-M Pro](asus/p8z77-m_pro.md)
 
 ## ASRock
 

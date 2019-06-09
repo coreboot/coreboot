@@ -70,8 +70,8 @@ uint8_t variant_board_sku(void)
 		if ((ch < '0') || (ch > '9')) {
 			vpd_sku_num = -1;
 			break;
-		} else
-			vpd_sku_num = vpd_sku_num * 10 + (ch - '0');
+		}
+		vpd_sku_num = vpd_sku_num * 10 + (ch - '0');
 	}
 
 	if (vpd_sku_num != -1)

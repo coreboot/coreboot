@@ -27,9 +27,9 @@ Considering these facts, there are 3 possible solutions to perform MP
 initialization from coreboot + FSP space.
 
 1. coreboot to perform complete MP initialization by its own. This includes
-BSP and AP programming of CPU features mostly non-restricted one. Preferred
-Kconfig is USE_COREBOOT_NATIVE_MP_INIT. SoCs like SKL, KBL, APL are okay to
-make use of same Kconfig option for MP initialization.
+BSP and AP programming of CPU features mostly non-restricted one. This is
+the default configuration. Most SoCs like SKL, KBL, APL are okay to make use
+of this MP initialization method.
 
 2. Alternatively, SoC users also can skip coreboot doing MP initialization
 and make use of FSP binary to perform same task. This can be achieved by using

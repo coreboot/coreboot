@@ -51,18 +51,10 @@ config INTEL_CAR_NEM_ENHANCED
 	  ENHANCED NEM guarantees that modified data is always
 	  kept in cache while clean data is replaced.
 
-menu "Multiple Processor (MP) Initialization Options"
-config USE_COREBOOT_NATIVE_MP_INIT
-	bool "Perform MP Initialization by coreboot"
-	default y if !PLATFORM_USES_FSP2_1
-	default n
-	help
-	  This option allows user to select native coreboot option to perform
-	  multiprocessor initialization.
-
 config USE_INTEL_FSP_MP_INIT
 	bool "Perform MP Initialization by FSP"
 	default n
+	depends on !USE_INTEL_FSP_TO_CALL_COREBOOT_PUBLISH_MP_PPI
 	help
 	  This option allows FSP to perform multiprocessor initialization.
 
@@ -71,9 +63,6 @@ config USE_INTEL_FSP_TO_CALL_COREBOOT_PUBLISH_MP_PPI
 	depends on FSP_USES_MP_SERVICES_PPI
 	default y if PLATFORM_USES_FSP2_1
 	default n
-	select USE_COREBOOT_NATIVE_MP_INIT
 	help
 	  This option allows FSP to make use of MP services PPI published by
 	  coreboot to perform multiprocessor initialization.
-
-endmenu # Multiple Processor (MP) Initialization Options

@@ -1434,14 +1434,17 @@ static void program_total_memory_map(struct raminfo *info)
 		memory_map[2] = TOUUD | 1;
 	quickpath_reserved = 0;
 
-	{
-		u32 t;
+	u32 t = pci_read_config32(PCI_DEV(QUICKPATH_BUS, 0, 1), 0x68);
 
-		gav(t = pci_read_config32(PCI_DEV(QUICKPATH_BUS, 0, 1), 0x68));
-		if (t & 0x800)
-			quickpath_reserved =
-			    (1 << find_lowest_bit_set32(t >> 20));
+	gav(t);
+
+	if (t & 0x800) {
+		u32 shift = t >> 20;
+		if (shift == 0)
+			die("Quickpath value is 0\n");
+		quickpath_reserved = (u32)1 << find_lowest_bit_set32(shift);
 	}
+
 	if (memory_remap)
 		TOUUD -= quickpath_reserved;
 

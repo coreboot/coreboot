@@ -116,7 +116,9 @@ static void save_dimm_info(void)
 				src_dimm->SpdSave + SPD_SAVE_OFFSET_SERIAL,
 				memory_info_hob->DataWidth,
 				memory_info_hob->VddVoltage[memProfNum],
-				memory_info_hob->EccSupport);
+				memory_info_hob->EccSupport,
+				src_dimm->MfgId,
+				src_dimm->SpdModuleType);
 			index++;
 		}
 	}

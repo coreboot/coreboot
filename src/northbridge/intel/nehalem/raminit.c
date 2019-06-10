@@ -1010,6 +1010,9 @@ static void compute_derived_timings(struct raminfo *info)
 			}
 		}
 
+		if (count == 0)
+			die("No memory ranks found for channel %u\n", channel);
+
 		info->avg4044[channel] = sum / count;
 		info->max4048[channel] = max_of_unk;
 	}

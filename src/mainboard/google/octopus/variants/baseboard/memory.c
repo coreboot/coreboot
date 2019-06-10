@@ -205,10 +205,7 @@ static const struct lpddr4_cfg cbi_lp4cfg = {
 
 const struct lpddr4_cfg *__weak variant_lpddr4_config(void)
 {
-	if (!CONFIG(DRAM_PART_NUM_IN_CBI))
-		return &non_cbi_lp4cfg;
-
-	if (!CONFIG(DRAM_PART_NUM_ALWAYS_IN_CBI)) {
+	if (CONFIG(DRAM_PART_NUM_NOT_ALWAYS_IN_CBI)) {
 		/* Fall back non cbi memory config. */
 		if ((int)board_id() < CONFIG_DRAM_PART_IN_CBI_BOARD_ID_MIN)
 			return &non_cbi_lp4cfg;

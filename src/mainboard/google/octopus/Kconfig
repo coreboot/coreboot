@@ -121,26 +121,18 @@ config TPM_TIS_ACPI_INTERRUPT
 	int
 	default 63 # GPE0_DW1_31 (GPIO_63)
 
-config DRAM_PART_NUM_IN_CBI
+config DRAM_PART_NUM_NOT_ALWAYS_IN_CBI
 	bool
-	default y if BOARD_GOOGLE_PHASER
-	default y if BOARD_GOOGLE_MEEP
-	default y if BOARD_GOOGLE_AMPTON
-	default y if BOARD_GOOGLE_FLEEX
 	default y if BOARD_GOOGLE_BOBBA
-	default y if BOARD_GOOGLE_CASTA
-	default y if BOARD_GOOGLE_BLOOG
-
-config DRAM_PART_NUM_ALWAYS_IN_CBI
-	bool
-	depends on DRAM_PART_NUM_IN_CBI
-	default y if BOARD_GOOGLE_AMPTON
-	default y if BOARD_GOOGLE_CASTA
-	default y if BOARD_GOOGLE_BLOOG
+	default y if BOARD_GOOGLE_FLEEX
+	default y if BOARD_GOOGLE_MEEP
+	default y if BOARD_GOOGLE_OCTOPUS
+	default y if BOARD_GOOGLE_PHASER
+	default y if BOARD_GOOGLE_YORP
 
 config DRAM_PART_IN_CBI_BOARD_ID_MIN
 	int
-	depends on DRAM_PART_NUM_IN_CBI && !DRAM_PART_NUM_ALWAYS_IN_CBI
+	depends on DRAM_PART_NUM_NOT_ALWAYS_IN_CBI
 	default 255 if BOARD_GOOGLE_YORP
 	default 2 if BOARD_GOOGLE_PHASER
 	default 2 if BOARD_GOOGLE_FLEEX

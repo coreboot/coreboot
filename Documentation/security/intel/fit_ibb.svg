@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" "http://www.w3.org/TR/2001/PR-SVG-20010719/DTD/svg10.dtd">
+<svg width="16cm" height="36cm" viewBox="522 318 306 714" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <g>
+    <rect style="fill: #ffffff" x="523.768" y="829.25" width="296.25" height="201.75"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #ffffff" x="523.768" y="829.25" width="296.25" height="201.75"/>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="689.334" y="321.666" width="72.375" height="269.168"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="689.334" y="321.666" width="72.375" height="269.168"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="725.522" y="460.15">
+      <tspan x="725.522" y="460.15"></tspan>
+    </text>
+  </g>
+  <line style="fill: none; fill-opacity:0; stroke-width: 1; stroke-dasharray: 4; stroke: #000000" x1="686.166" y1="352" x2="781.166" y2="352"/>
+  <line style="fill: none; fill-opacity:0; stroke-width: 1; stroke-dasharray: 4; stroke: #000000" x1="685.8" y1="334.434" x2="780.8" y2="334.434"/>
+  <line style="fill: none; fill-opacity:0; stroke-width: 1; stroke-dasharray: 4; stroke: #000000" x1="682.8" y1="410.934" x2="777.8" y2="410.934"/>
+  <g>
+    <path style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #0000ff" d="M 684.5,342.584 A 30.4704,30.4704 0 0 0 676.673,403.011"/>
+    <polygon style="fill: #0000ff" points="679.632,403.321 675.608,405.273 676.632,403.285 675.656,401.273 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #0000ff" points="679.632,403.321 675.608,405.273 676.632,403.285 675.656,401.273 "/>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="694.75" y="367" width="60.2083" height="10.5"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #0000ff" x="694.75" y="367" width="60.2083" height="10.5"/>
+  </g>
+  <text font-size="5.64444" style="fill: #000000;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="653" y="323.334">
+    <tspan x="653" y="323.334">4 GiB </tspan>
+  </text>
+  <text font-size="7.90222" style="fill: #0000ff;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="707.958" y="348.25">
+    <tspan x="707.958" y="348.25">FIT Ptr</tspan>
+  </text>
+  <text font-size="7.90222" style="fill: #ff0000;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="692.934" y="330.55">
+    <tspan x="692.934" y="330.55">IA32 reset vec</tspan>
+  </text>
+  <g>
+    <rect style="fill: #ffffff" x="694.684" y="415.25" width="60.2083" height="41.5333"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #ff0000" x="694.684" y="415.25" width="60.2083" height="41.5333"/>
+  </g>
+  <g>
+    <path style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #ff0000" d="M 654.458,327 A 65.5176,65.5176 0 0 0 675.175,449.031"/>
+    <polygon style="fill: #ff0000" points="678.138,449.469 673.953,451.045 675.154,449.159 674.366,447.066 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #ff0000" points="678.138,449.469 673.953,451.045 675.154,449.159 674.366,447.066 "/>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="694.934" y="462.5" width="60.2083" height="28.7474"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #ff0000" x="694.934" y="462.5" width="60.2083" height="28.7474"/>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="695.434" y="518.45" width="60.2083" height="12.134"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #00ff00" x="695.434" y="518.45" width="60.2083" height="12.134"/>
+  </g>
+  <text font-size="6.77333" style="fill: #ff0000;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="708.208" y="479.25">
+    <tspan x="708.208" y="479.25">BIOS ACM</tspan>
+  </text>
+  <text font-size="6.77333" style="fill: #ff0000;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="707.184" y="432.25">
+    <tspan x="707.184" y="432.25">BOOTBLOCK</tspan>
+    <tspan x="707.184" y="440.717">CODE</tspan>
+  </text>
+  <text font-size="6.77333" style="fill: #00ff00;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="714.934" y="527">
+    <tspan x="714.934" y="527">uCode</tspan>
+  </text>
+  <line style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #ff0000" x1="655.186" y1="327.12" x2="687.728" y2="326.952"/>
+  <g>
+    <rect style="fill: #ffffff" x="694.684" y="377.45" width="60.2083" height="10.5"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #0000ff" x="694.684" y="377.45" width="60.2083" height="10.5"/>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="694.75" y="387.95" width="60.2083" height="10.5"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #0000ff" x="694.75" y="387.95" width="60.2083" height="10.5"/>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="694.684" y="398.4" width="60.2083" height="10.5"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #0000ff" x="694.684" y="398.4" width="60.2083" height="10.5"/>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="691.018" y="588.75" width="68.5" height="4.25"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #ffffff" x="691.018" y="588.75" width="68.5" height="4.25"/>
+  </g>
+  <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x1="689.334" y1="590.834" x2="689.018" y2="509.25"/>
+  <line style="fill: none; fill-opacity:0; stroke-width: 1; stroke-dasharray: 4; stroke: #000000" x1="683.092" y1="493.9" x2="778.092" y2="493.9"/>
+  <line style="fill: none; fill-opacity:0; stroke-width: 1; stroke-dasharray: 4; stroke: #000000" x1="682.592" y1="459.4" x2="777.592" y2="459.4"/>
+  <g>
+    <rect style="fill: #ffffff" x="695.776" y="533.91" width="60.2083" height="12.134"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #00ff00" x="695.776" y="533.91" width="60.2083" height="12.134"/>
+  </g>
+  <text font-size="6.77333" style="fill: #00ff00;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="714.026" y="542.21">
+    <tspan x="714.026" y="542.21">uCode</tspan>
+  </text>
+  <g>
+    <rect style="fill: #ffffff" x="695.276" y="497.072" width="60.2083" height="15.675"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #ff0000" x="695.276" y="497.072" width="60.2083" height="15.675"/>
+  </g>
+  <text font-size="6.77333" style="fill: #ff0000;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="715.276" y="546.122">
+    <tspan x="715.276" y="546.122"></tspan>
+  </text>
+  <g>
+    <rect style="fill: #ffffff" x="695.776" y="551.072" width="60.2083" height="15.3485"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #ff0000" x="695.776" y="551.072" width="60.2083" height="15.3485"/>
+  </g>
+  <text font-size="6.77333" style="fill: #ff0000;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="705.1" y="506.148">
+    <tspan x="705.1" y="506.148">verstage</tspan>
+  </text>
+  <text font-size="6.77333" style="fill: #ff0000;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="719.35" y="561.32">
+    <tspan x="719.35" y="561.32">FSP</tspan>
+  </text>
+  <line style="fill: none; fill-opacity:0; stroke-width: 1; stroke-dasharray: 4; stroke: #000000" x1="682.1" y1="515.408" x2="777.1" y2="515.408"/>
+  <line style="fill: none; fill-opacity:0; stroke-width: 1; stroke-dasharray: 4; stroke: #000000" x1="682.85" y1="548.738" x2="777.85" y2="548.738"/>
+  <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #ff8484" x1="789.75" y1="322.584" x2="789.75" y2="458.408"/>
+  <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #ff8484" x1="789.5" y1="457.908" x2="783" y2="457.908"/>
+  <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #ff8484" x1="789.6" y1="322.508" x2="783.1" y2="322.508"/>
+  <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #ff8484" x1="789.75" y1="493.226" x2="790.1" y2="513.834"/>
+  <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #ff8484" x1="789.85" y1="513.334" x2="783.35" y2="513.334"/>
+  <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #ff8484" x1="790.2" y1="493.934" x2="783.7" y2="493.934"/>
+  <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #ff8484" x1="789.65" y1="549.094" x2="790" y2="569.7"/>
+  <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #ff8484" x1="789.75" y1="569.2" x2="783.25" y2="569.2"/>
+  <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #ff8484" x1="790.1" y1="549.8" x2="783.6" y2="549.8"/>
+  <g>
+    <path style="fill: none; fill-opacity:0; stroke-width: 2; stroke-dasharray: 2; stroke: #ff8484" d="M 753.708,392.75 A 49.3538,49.3538 0 0 0 783.042,393.053"/>
+    <polygon style="fill: #ffffff" points="784.252,395.824 787.724,391.442 782.136,391.293 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #ff8484" points="784.252,395.824 787.724,391.442 782.136,391.293 "/>
+  </g>
+  <g>
+    <path style="fill: none; fill-opacity:0; stroke-width: 2; stroke-dasharray: 2; stroke: #ff8484" d="M 796.338,500.253 A 63.4678,63.4678 0 0 0 754.892,382.7"/>
+    <polygon style="fill: #ffffff" points="795.536,498.321 791.972,502.627 797.555,502.895 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #ff8484" points="795.536,498.321 791.972,502.627 797.555,502.895 "/>
+  </g>
+  <g>
+    <path style="fill: none; fill-opacity:0; stroke-width: 2; stroke-dasharray: 2; stroke: #ff8484" d="M 795.51,554.953 A 86.6963,86.6963 0 0 0 754.892,403.65"/>
+    <polygon style="fill: #ffffff" points="794.249,553.15 791.641,558.095 797.162,557.214 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #ff8484" points="794.249,553.15 791.641,558.095 797.162,557.214 "/>
+  </g>
+  <text font-size="12.8" style="fill: #ff8484;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="792.75" y="458.584">
+    <tspan x="792.75" y="458.584">IBB</tspan>
+  </text>
+  <text font-size="12.8" style="fill: #ff8484;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="792" y="516.808">
+    <tspan x="792" y="516.808">IBB</tspan>
+  </text>
+  <text font-size="12.8" style="fill: #ff8484;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="791.75" y="571.384">
+    <tspan x="791.75" y="571.384">IBB</tspan>
+  </text>
+  <text font-size="6.77333" style="fill: #0000ff;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="713.25" y="394.834">
+    <tspan x="713.25" y="394.834">type 7</tspan>
+  </text>
+  <text font-size="6.77333" style="fill: #0000ff;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="713" y="384.958">
+    <tspan x="713" y="384.958">type 7</tspan>
+  </text>
+  <text font-size="6.77333" style="fill: #0000ff;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="713.25" y="405.458">
+    <tspan x="713.25" y="405.458">type 7</tspan>
+  </text>
+  <path style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" d="M 689.334 590.834 C 714.206,590.834 736.628,598.912 761.5,598.912"/>
+  <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x1="761.71" y1="590.834" x2="761.5" y2="599.412"/>
+</svg>

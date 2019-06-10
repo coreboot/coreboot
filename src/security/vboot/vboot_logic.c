@@ -364,8 +364,7 @@ void verstage_main(void)
 			printk(BIOS_INFO, "Recovery requested (%x)\n", rv);
 			save_if_needed(&ctx);
 			extend_pcrs(&ctx); /* ignore failures */
-			timestamp_add_now(TS_END_VBOOT);
-			return;
+			goto verstage_main_exit;
 		}
 
 		printk(BIOS_INFO, "Reboot requested (%x)\n", rv);
@@ -447,6 +446,8 @@ void verstage_main(void)
 
 	printk(BIOS_INFO, "Slot %c is selected\n", is_slot_a(&ctx) ? 'A' : 'B');
 	vboot_set_selected_region(region_device_region(&fw_main));
+
+ verstage_main_exit:
 	vboot_finalize_work_context(&ctx);
 	timestamp_add_now(TS_END_VBOOT);
 }

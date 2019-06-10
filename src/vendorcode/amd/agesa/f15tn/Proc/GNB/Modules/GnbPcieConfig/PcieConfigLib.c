@@ -205,7 +205,7 @@ PcieConfigGetNumberOfPhyLane (
   IN      PCIe_ENGINE_CONFIG             *Engine
   )
 {
-  if (Engine->EngineData.StartLane >= UNUSED_LANE_ID || Engine->EngineData.StartLane >= UNUSED_LANE_ID) {
+  if (Engine->EngineData.StartLane >= UNUSED_LANE_ID || Engine->EngineData.EndLane >= UNUSED_LANE_ID) {
     return 0;
   }
   if (Engine->EngineData.StartLane > Engine->EngineData.EndLane) {

@@ -127,9 +127,15 @@ and print its vendor, name, ID, revision, and config port.\n"
 
 #define EOT		-1		/* End Of Table */
 #define NOLDN		-2		/* NO LDN needed */
-#define NANA		-3		/* Not Available */
+#define NANA		-3		/* Not Available:
+					   Used for registers having externally controlled
+					   values that can change during runtime like
+					   GPIO input value registers. */
 #define RSVD		-4		/* Reserved */
-#define MISC		-5		/* Needs special comment in output */
+#define MISC		-5		/* Needs special comment in output:
+					   Used for registers depending on external pin straps
+					   configuring static, but board-specific settings like
+					   SIO base address or AMD/Intel power seqencing type. */
 #define MAXLDN		0x14		/* Biggest LDN */
 #define LDNSIZE		(MAXLDN + 3)	/* Biggest LDN + 0 + NOLDN + EOT */
 #define MAXNUMIDX	170		/* Maximum number of indices */

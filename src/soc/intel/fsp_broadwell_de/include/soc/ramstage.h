@@ -24,6 +24,8 @@
 void broadwell_de_init_pre_device(void);
 void broadwell_de_init_cpus(struct device *dev);
 void southcluster_enable_dev(struct device *dev);
+void broadwell_de_set_dpr(const uintptr_t addr, const size_t size);
+void broadwell_de_lock_dpr(void);
 
 extern struct pci_operations soc_pci_ops;
 

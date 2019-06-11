@@ -38,8 +38,6 @@
 
 static int spi_is_multichip(void);
 
-static int g_ichspi_lock = 0;
-
 struct ich7_spi_regs {
 	uint16_t spis;
 	uint16_t spic;
@@ -294,7 +292,6 @@ void spi_init(void)
 		cntlr->data = (uint8_t *)ich7_spi->spid;
 		cntlr->databytes = sizeof(ich7_spi->spid);
 		cntlr->status = (uint8_t *)&ich7_spi->spis;
-		g_ichspi_lock = readw_(&ich7_spi->spis) & HSFS_FLOCKDN;
 		cntlr->control = &ich7_spi->spic;
 		cntlr->bbar = &ich7_spi->bbar;
 		cntlr->preop = &ich7_spi->preop;
@@ -304,7 +301,6 @@ void spi_init(void)
 		ich9_spi = (struct ich9_spi_regs *)(rcrb + 0x3800);
 		cntlr->ich9_spi = ich9_spi;
 		hsfs = readw_(&ich9_spi->hsfs);
-		g_ichspi_lock = hsfs & HSFS_FLOCKDN;
 		cntlr->hsfs = hsfs;
 		cntlr->opmenu = ich9_spi->opmenu;
 		cntlr->menubytes = sizeof(ich9_spi->opmenu);
@@ -334,6 +330,16 @@ void spi_init(void)
 	/* Deassert SMM BIOS Write Protect Disable. */
 	bios_cntl &= ~(1 << 5);
 	pci_write_config8(dev, 0xdc, bios_cntl | 0x1);
+}
+
+static int spi_locked(void)
+{
+	struct ich_spi_controller *cntlr = &g_cntlr;
+	if (CONFIG(SOUTHBRIDGE_INTEL_I82801GX)) {
+		return !!(readw_(&cntlr->ich7_spi->spis) & HSFS_FLOCKDN);
+	} else {
+		return !!(readw_(&cntlr->ich9_spi->hsfs) | HSFS_FLOCKDN);
+	}
 }
 
 static void spi_init_cb(void *unused)
@@ -407,7 +413,7 @@ static int spi_setup_opcode(spi_transaction *trans)
 
 	trans->opcode = trans->out[0];
 	spi_use_out(trans, 1);
-	if (!g_ichspi_lock) {
+	if (!spi_locked()) {
 		/* The lock is off, so just use index 0. */
 		writeb_(trans->opcode, cntlr->opmenu);
 		optypes = readw_(cntlr->optype);
@@ -552,7 +558,7 @@ static int spi_ctrlr_xfer(const struct spi_slave *slave, const void *dout,
 		 * in order to prevent the Management Engine from
 		 * issuing a transaction between WREN and DATA.
 		 */
-		if (!g_ichspi_lock)
+		if (!spi_locked())
 			writew_(trans.opcode, cntlr->preop);
 		return 0;
 	}

@@ -1038,8 +1038,7 @@ static int spi_flash_protect(const struct spi_flash *flash,
 
 	/* Set the FPR register and verify it is protected */
 	write32(&fpr_base[fpr], reg);
-	reg = read32(&fpr_base[fpr]);
-	if (!(reg & protect_mask)) {
+	if (reg != read32(&fpr_base[fpr])) {
 		printk(BIOS_ERR, "ERROR: Unable to set SPI FPR %d\n", fpr);
 		return -1;
 	}

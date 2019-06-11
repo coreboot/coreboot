@@ -74,11 +74,6 @@ fail:
 	halt();
 }
 
-void __weak stage_cache_add(int stage_id,
-						const struct prog *stage) {}
-void __weak stage_cache_load_stage(int stage_id,
-							struct prog *stage) {}
-
 static void ramstage_cache_invalid(void)
 {
 	printk(BIOS_ERR, "ramstage cache invalid.\n");
@@ -155,8 +150,7 @@ void run_ramstage(void)
 	} else if (load_nonrelocatable_ramstage(&ramstage))
 		goto fail;
 
-	if (!CONFIG(NO_STAGE_CACHE))
-		stage_cache_add(STAGE_RAMSTAGE, &ramstage);
+	stage_cache_add(STAGE_RAMSTAGE, &ramstage);
 
 	timestamp_add_now(TS_END_COPYRAM);
 

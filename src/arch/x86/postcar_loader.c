@@ -154,8 +154,7 @@ static void load_postcar_cbfs(struct prog *prog, struct postcar_frame *pcf)
 
 	finalize_load(rsl.params, pcf->stack);
 
-	if (!CONFIG(NO_STAGE_CACHE))
-		stage_cache_add(STAGE_POSTCAR, prog);
+	stage_cache_add(STAGE_POSTCAR, prog);
 }
 
 void run_postcar_phase(struct postcar_frame *pcf)

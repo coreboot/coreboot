@@ -595,6 +595,8 @@ static void calculate_timings(struct raminfo *info)
 					info->
 					spd[channel][slot][CAS_LATENCY_TIME]);
 			}
+	if (cycletime > min_cycletime[0])
+		die("RAM init: Decoded SPD DRAM freq is slower than the controller minimum!");
 	for (clock_speed_index = 0; clock_speed_index < 3; clock_speed_index++) {
 		if (cycletime == min_cycletime[clock_speed_index])
 			break;

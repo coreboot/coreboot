@@ -41,8 +41,8 @@ u32 ddr_to_mhz(u32 speed)
 {
 	static const u16 mhz[] = { 0, 0, 667, 800, 1067, 1333 };
 
-	if (speed >= ARRAY_SIZE(mhz))
-		return 0;
+	if (speed <= 1 || speed >= ARRAY_SIZE(mhz))
+		die("RAM init: invalid memory speed %u\n", speed);
 
 	return mhz[speed];
 }

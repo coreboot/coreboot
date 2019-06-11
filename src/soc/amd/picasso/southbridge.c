@@ -77,7 +77,6 @@ static inline int sb_ide_enable(void)
 void SetFchResetParams(FCH_RESET_INTERFACE *params)
 {
 	const struct device *dev = pcidev_path_on_root(SATA_DEVFN);
-	params->Xhci0Enable = CONFIG(STONEYRIDGE_XHCI_ENABLE);
 	if (dev && dev->enabled) {
 		params->SataEnable = sb_sata_enable();
 		params->IdeEnable = sb_ide_enable();
@@ -579,10 +578,6 @@ void southbridge_init(void *chip_info)
 
 static void set_sb_final_nvs(void)
 {
-	uintptr_t amdfw_rom;
-	uintptr_t xhci_fw;
-	uintptr_t fwaddr;
-	size_t fwsize;
 	const struct device *sd, *sata;
 
 	struct global_nvs_t *gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
@@ -595,29 +590,12 @@ static void set_sb_final_nvs(void)
 	gnvs->aoac.ic3e = is_aoac_device_enabled(FCH_AOAC_D3_STATE_I2C3);
 	gnvs->aoac.ut0e = is_aoac_device_enabled(FCH_AOAC_D3_STATE_UART0);
 	gnvs->aoac.ut1e = is_aoac_device_enabled(FCH_AOAC_D3_STATE_UART1);
-	gnvs->aoac.ehce = is_aoac_device_enabled(FCH_AOAC_D3_STATE_USB2);
-	gnvs->aoac.xhce = is_aoac_device_enabled(FCH_AOAC_D3_STATE_USB3);
 	/* Rely on these being in sync with devicetree */
 	sd = pcidev_path_on_root(SD_DEVFN);
 	gnvs->aoac.sd_e = sd && sd->enabled ? 1 : 0;
 	sata = pcidev_path_on_root(SATA_DEVFN);
 	gnvs->aoac.st_e = sata && sata->enabled ? 1 : 0;
 	gnvs->aoac.espi = 1;
-
-	amdfw_rom = 0x20000 - (0x80000 << CONFIG_AMD_FWM_POSITION_INDEX);
-	xhci_fw = read32((void *)(amdfw_rom + XHCI_FW_SIG_OFFSET));
-
-	fwaddr = 2 + read16((void *)(xhci_fw + XHCI_FW_ADDR_OFFSET
-			+ XHCI_FW_BOOTRAM_SIZE));
-	fwsize = read16((void *)(xhci_fw + XHCI_FW_SIZE_OFFSET
-			+ XHCI_FW_BOOTRAM_SIZE));
-	gnvs->fw00 = 0;
-	gnvs->fw01 = ((32 * KiB) << 16) + 0;
-	gnvs->fw02 = fwaddr + XHCI_FW_BOOTRAM_SIZE;
-	gnvs->fw03 = fwsize << 16;
-
-	gnvs->eh10 = pci_read_config32(SOC_EHCI1_DEV, PCI_BASE_ADDRESS_0)
-			& ~PCI_BASE_ADDRESS_MEM_ATTR_MASK;
 }
 
 void southbridge_final(void *chip_info)

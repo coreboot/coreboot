@@ -178,31 +178,6 @@
 #define   OSCOUT1_CLK_OUTPUT_ENB	BIT(2)  /* 0 = Enabled, 1 = Disabled */
 #define   OSCOUT2_CLK_OUTPUT_ENB	BIT(7)  /* 0 = Enabled, 1 = Disabled */
 
-/* XHCI_PM Registers:  0xfed81c00 */
-#define XHCI_PM_INDIRECT_INDEX		0x48
-#define XHCI_PM_INDIRECT_DATA		0x4c
-#define   XHCI_OVER_CURRENT_CONTROL	0x30
-#define     USB_OC0			0
-#define     USB_OC1			1
-#define     USB_OC2			2
-#define     USB_OC3			3
-#define     USB_OC4			4
-#define     USB_OC5			5
-#define     USB_OC6			6
-#define     USB_OC7			7
-#define     USB_OC_DISABLE		0xf
-#define     USB_OC_DISABLE_ALL		0xffff
-#define     OC_PORT0_SHIFT		0
-#define     OC_PORT1_SHIFT		4
-#define     OC_PORT2_SHIFT		8
-#define     OC_PORT3_SHIFT		12
-
-#define EHCI_OVER_CURRENT_CONTROL	0x70
-#define EHCI_HUB_CONFIG4		0x90
-#define   DEBUG_PORT_SELECT_SHIFT	  16
-#define   DEBUG_PORT_ENABLE		  BIT(18)
-#define   DEBUG_PORT_MASK		(BIT(16) | BIT(17) | BIT(18))
-
 /* FCH AOAC Registers 0xfed81e00 */
 #define FCH_AOAC_D3_CONTROL_CLK_GEN	0x40
 #define FCH_AOAC_D3_CONTROL_I2C0	0x4a
@@ -212,8 +187,6 @@
 #define FCH_AOAC_D3_CONTROL_UART0	0x56
 #define FCH_AOAC_D3_CONTROL_UART1	0x58
 #define FCH_AOAC_D3_CONTROL_AMBA	0x62
-#define FCH_AOAC_D3_CONTROL_USB2	0x64
-#define FCH_AOAC_D3_CONTROL_USB3	0x6e
 /* Bit definitions for all FCH_AOAC_D3_CONTROL_* Registers */
 #define   FCH_AOAC_TARGET_DEVICE_STATE (BIT(0) + BIT(1))
 #define   FCH_AOAC_DEVICE_STATE		BIT(2)
@@ -231,8 +204,6 @@
 #define FCH_AOAC_D3_STATE_UART0		0x57
 #define FCH_AOAC_D3_STATE_UART1		0x59
 #define FCH_AOAC_D3_STATE_AMBA		0x63
-#define FCH_AOAC_D3_STATE_USB2		0x65
-#define FCH_AOAC_D3_STATE_USB3		0x6f
 /* Bit definitions for all FCH_AOAC_D3_STATE_* Registers */
 #define   FCH_AOAC_PWR_RST_STATE	BIT(0)
 #define   FCH_AOAC_RST_CLK_OK_STATE	BIT(1)
@@ -332,10 +303,7 @@ typedef struct aoac_devs {
 	unsigned int ut1e:1; /* 12: UART1 */
 	unsigned int :2;
 	unsigned int st_e:1; /* 15: SATA */
-	unsigned int :2;
-	unsigned int ehce:1; /* 18: EHCI */
-	unsigned int :4;
-	unsigned int xhce:1; /* 23: xHCI */
+	unsigned int :8;
 	unsigned int sd_e:1; /* 24: SDIO */
 	unsigned int :2;
 	unsigned int espi:1; /* 27: ESPI */
@@ -349,11 +317,6 @@ struct soc_power_reg {
 	uint32_t gpe0_en;
 	uint16_t wake_from;
 };
-
-#define XHCI_FW_SIG_OFFSET			0xc
-#define XHCI_FW_ADDR_OFFSET			0x6
-#define XHCI_FW_SIZE_OFFSET			0x8
-#define XHCI_FW_BOOTRAM_SIZE			0x8000
 
 void enable_aoac_devices(void);
 void sb_clk_output_48Mhz(u32 osc);
@@ -403,6 +366,7 @@ uint64_t get_uma_base(void);
  * a default weak function in usb.c if the mainboard doesn't have any
  * over current support.
  */
+#define     USB_OC_DISABLE_ALL		0xffff
 int mainboard_get_xhci_oc_map(uint16_t *usb_oc_map);
 int mainboard_get_ehci_oc_map(uint16_t *usb_oc_map);
 

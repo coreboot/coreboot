@@ -151,27 +151,6 @@ config EHCI_BAR
 	hex
 	default 0xfef00000
 
-config STONEYRIDGE_XHCI_ENABLE
-	bool "Enable Stoney Ridge XHCI Controller"
-	default y
-	help
-	  The XHCI controller must be enabled and the XHCI firmware
-	  must be added in order to have USB 3.0 support configured
-	  by coreboot. The OS will be responsible for enabling the XHCI
-	  controller if the XHCI firmware is available but the
-	  XHCI controller is not enabled by coreboot.
-
-config STONEYRIDGE_XHCI_FWM
-	bool "Add xhci firmware"
-	default y
-	help
-	  Add Stoney Ridge XHCI Firmware to support the onboard USB 3.0
-
-config STONEYRIDGE_XHCI_FWM_FILE
-	string "XHCI firmware path and filename"
-	default "3rdparty/blobs/soc/amd/stoneyridge/xhci.bin"
-	depends on STONEYRIDGE_XHCI_FWM
-
 config AMD_PUBKEY_FILE
 	string "AMD public Key"
 	default "3rdparty/blobs/soc/amd/picasso/PSP/AmdPubKeyST.bin"

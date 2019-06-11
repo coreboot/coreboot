@@ -29,17 +29,13 @@ static void set_usb_over_current(struct device *dev)
 	uint16_t map = USB_OC_DISABLE_ALL;
 
 	if (dev->path.pci.devfn == XHCI_DEVFN) {
-		if (mainboard_get_xhci_oc_map(&map) == 0) {
-			xhci_pm_write32(XHCI_PM_INDIRECT_INDEX,
-						XHCI_OVER_CURRENT_CONTROL);
-			xhci_pm_write16(XHCI_PM_INDIRECT_DATA, map);
-		}
+		if (mainboard_get_xhci_oc_map(&map) == 0)
+			; // TODO
 	}
 
-	if (dev->path.pci.devfn == EHCI1_DEVFN) {
+	if (dev->path.pci.devfn == EHCI1_DEVFN)
 		if (mainboard_get_ehci_oc_map(&map) == 0)
-			pci_write_config16(dev, EHCI_OVER_CURRENT_CONTROL, map);
-	}
+			; // TODO
 }
 
 int __weak mainboard_get_xhci_oc_map(uint16_t *map)

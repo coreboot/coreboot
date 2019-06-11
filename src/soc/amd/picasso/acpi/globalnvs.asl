@@ -58,19 +58,10 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	UT1E,	1,	//        UART1, 12
 	, 2,
 	ST_E,	1,	//        SATA, 15
-	, 2,
-	EHCE,	1,	//        EHCI, 18
-	, 4,
-	XHCE,	1,	//        XCHI, 23
+	, 8,
 	SD_E,	1,	//        SD, 24
 	, 2,
 	ESPI,	1,	//        ESPI, 27
-	, 4,
-	FW00,	16,	// 0x38 - xHCI FW ROM addr, boot RAM
-	FW02,	16,	// 0x3A - xHCI FW ROM addr, Instruction RAM
-	FW01,	32,	// 0x3C - xHCI FW RAM addr, boot RAM
-	FW03,	32,	// 0x40 - xHCI FW RAM addr, Instruction RAM
-	EH10,	32,	// 0x44 - EHCI BAR
 	/* ChromeOS stuff (0x100 -> 0xfff, size 0xeff) */
 	Offset (0x100),
 	#include <vendorcode/google/chromeos/acpi/gnvs.asl>

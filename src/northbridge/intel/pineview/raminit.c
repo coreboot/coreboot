@@ -498,28 +498,12 @@ static void sdram_detect_ram_speed(struct sysinfo *s)
 		lowcas = lsbp;
 		while (cas == 0 && highcas >= lowcas) {
 			FOR_EACH_POPULATED_DIMM(s->dimms, i) {
-				switch (freq) {
-				case MEM_CLOCK_800MHz:
-					if ((s->dimms[i].spd_data[9] > 0x25) ||
-					    (s->dimms[i].spd_data[10] > 0x40)) {
-						// CAS too fast, lower it
-						highcas--;
-						break;
-					} else {
-						cas = highcas;
-					}
-					break;
-				case MEM_CLOCK_667MHz:
-				default:
-					if ((s->dimms[i].spd_data[9] > 0x30) ||
-					    (s->dimms[i].spd_data[10] > 0x45)) {
-						// CAS too fast, lower it
-						highcas--;
-						break;
-					} else {
-						cas = highcas;
-					}
-					break;
+				if ((s->dimms[i].spd_data[9] > 0x30) ||
+				    (s->dimms[i].spd_data[10] > 0x45)) {
+					// CAS too fast, lower it
+					highcas--;
+				} else {
+					cas = highcas;
 				}
 			}
 		}

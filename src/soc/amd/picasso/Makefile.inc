@@ -176,7 +176,6 @@ endif
 add_opt_prefix=$(if $(call strip_quotes, $(1)), $(2) $(call strip_quotes, $(1)), )
 
 OPT_STONEYRIDGE_XHCI_FWM_FILE=$(call add_opt_prefix, $(CONFIG_STONEYRIDGE_XHCI_FWM_FILE), --xhci)
-OPT_STONEYRIDGE_GEC_FWM_FILE=$(call add_opt_prefix, $(CONFIG_STONEYRIDGE_GEC_FWM_FILEddd), --gec)
 
 OPT_AMD_PUBKEY_FILE=$(call add_opt_prefix, $(CONFIG_AMD_PUBKEY_FILE), --pubkey)
 OPT_PSPBTLDR_FILE=$(call add_opt_prefix, $(PSPBTLDR_FILE), --bootloader)
@@ -198,7 +197,6 @@ OPT_SMUFIRMWARE2_FN_FILE=$(call add_opt_prefix, $(SMUFIRMWARE2_FN_FILE), --subpr
 
 
 $(obj)/amdfw.rom:	$(call strip_quotes, $(CONFIG_STONEYRIDGE_XHCI_FWM_FILE)) \
-			$(call strip_quotes, $(CONFIG_STONEYRIDGE_GEC_FWM_FILE)) \
 			$(call strip_quotes, $(CONFIG_AMD_PUBKEY_FILE)) \
 			$(call strip_quotes, $(PUBSIGNEDKEY_FILE)) \
 			$(call strip_quotes, $(PSPBTLDR_FILE)) \
@@ -218,7 +216,6 @@ $(obj)/amdfw.rom:	$(call strip_quotes, $(CONFIG_STONEYRIDGE_XHCI_FWM_FILE)) \
 	@printf "    AMDFWTOOL  $(subst $(obj)/,,$(@))\n"
 	$(AMDFWTOOL) \
 		$(OPT_STONEYRIDGE_XHCI_FWM_FILE) \
-		$(OPT_STONEYRIDGE_GEC_FWM_FILE) \
 		$(OPT_AMD_PUBKEY_FILE) \
 		$(OPT_PSPBTLDR_FILE) \
 		$(OPT_SMUFWM_FILE) \

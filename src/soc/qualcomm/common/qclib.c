@@ -16,6 +16,7 @@
 #include <console/cbmem_console.h>
 #include <cbmem.h>
 #include <boardid.h>
+#include <string.h>
 #include <fmap.h>
 #include <assert.h>
 #include <arch/mmu.h>

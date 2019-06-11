@@ -983,7 +983,7 @@ IdsCheckPciExisit (
   _pciaddr = PciAddr;
   _pciaddr.Address.Register = 0;
   LibAmdPciRead (AccessWidth32, _pciaddr, &_pcidata, StdHeader);
-  if (_pcidata != 0xFFFFFFFF || _pcidata != 0) {
+  if (_pcidata != 0xFFFFFFFF && _pcidata != 0) {
     status = TRUE;
   }
   return status;

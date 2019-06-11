@@ -14,6 +14,7 @@
  */
 
 #include <console/console.h>
+#include <console/usb.h>
 #include <string.h>
 #include <cbmem.h>
 #include <arch/cbfs.h>
@@ -155,6 +156,11 @@ void sdram_initialize(struct pei_data *pei_data)
 		asm volatile (
 			      "call *%%ecx\n\t"
 			      :"=a" (rv) : "c" (entry), "a" (pei_data));
+
+		/* mrc.bin reconfigures USB, so reinit it to have debug */
+		if (CONFIG(USBDEBUG_IN_PRE_RAM))
+			usbdebug_hw_init(true);
+
 		if (rv) {
 			switch (rv) {
 			case -1:

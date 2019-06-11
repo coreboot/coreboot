@@ -185,9 +185,9 @@ config STONEYRIDGE_GEC_FWM_FILE
 
 config AMD_PUBKEY_FILE
 	string "AMD public Key"
-	default "3rdparty/blobs/soc/amd/stoneyridge/PSP/AmdPubKeyST.bin"
+	default "3rdparty/blobs/soc/amd/picasso/PSP/AmdPubKeyST.bin"
 
-config STONEYRIDGE_SATA_MODE
+config PICASSO_SATA_MODE
 	int "SATA Mode"
 	default 0
 	range 0 6
@@ -203,33 +203,33 @@ config STONEYRIDGE_SATA_MODE
 	  6: IDE to AHCI7804: ROM Required, and AMD driver required in the OS.
 
 comment "NATIVE"
-	depends on STONEYRIDGE_SATA_MODE = 0
+	depends on PICASSO_SATA_MODE = 0
 
 comment "AHCI"
-	depends on STONEYRIDGE_SATA_MODE = 2
+	depends on PICASSO_SATA_MODE = 2
 
 comment "LEGACY IDE"
-	depends on STONEYRIDGE_SATA_MODE = 3
+	depends on PICASSO_SATA_MODE = 3
 
 comment "IDE to AHCI"
-	depends on STONEYRIDGE_SATA_MODE = 4
+	depends on PICASSO_SATA_MODE = 4
 
 comment "AHCI7804"
-	depends on STONEYRIDGE_SATA_MODE = 5
+	depends on PICASSO_SATA_MODE = 5
 
 comment "IDE to AHCI7804"
-	depends on STONEYRIDGE_SATA_MODE = 6
+	depends on PICASSO_SATA_MODE = 6
 
-if STONEYRIDGE_SATA_MODE = 2 || STONEYRIDGE_SATA_MODE = 5
+if PICASSO_SATA_MODE = 2 || PICASSO_SATA_MODE = 5
 
 config AHCI_ROM_ID
 	string  "AHCI device PCI IDs"
-	default "1022,7801" if STONEYRIDGE_SATA_MODE = 2
-	default "1022,7804" if STONEYRIDGE_SATA_MODE = 5
+	default "1022,7801" if PICASSO_SATA_MODE = 2
+	default "1022,7804" if PICASSO_SATA_MODE = 5
 
-endif # STONEYRIDGE_SATA_MODE = 2 || STONEYRIDGE_SATA_MODE = 5
+endif # PICASSO_SATA_MODE = 2 || PICASSO_SATA_MODE = 5
 
-config STONEYRIDGE_LEGACY_FREE
+config PICASSO_LEGACY_FREE
 	bool "System is legacy free"
 	help
 	  Select y if there is no keyboard controller in the system.
@@ -242,22 +242,22 @@ config SERIRQ_CONTINUOUS_MODE
 	  Set this option to y for serial IRQ in continuous mode.
 	  Otherwise it is in quiet mode.
 
-config STONEYRIDGE_ACPI_IO_BASE
+config PICASSO_ACPI_IO_BASE
 	hex
 	default 0x400
 	help
 	  Base address for the ACPI registers.
 	  This value must match the hardcoded value of AGESA.
 
-config STONEYRIDGE_UART
-	bool "UART controller on Stoney Ridge"
+config PICASSO_UART
+	bool "UART controller on Picasso"
 	default n
 	select DRIVERS_UART_8250MEM
 	select DRIVERS_UART_8250MEM_32
 	select NO_UART_ON_SUPERIO
 	select UART_OVERRIDE_REFCLK
 	help
-	  There are two UART controllers in Stoney Ridge.
+	  There are two UART controllers in Picasso.
 	  The UART registers are memory-mapped. UART
 	  controller 0 registers range from FEDC_6000h
 	  to FEDC_6FFFh. UART controller 1 registers

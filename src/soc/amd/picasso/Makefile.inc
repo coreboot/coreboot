@@ -52,7 +52,7 @@ romstage-y += pmutil.c
 romstage-y += reset.c
 romstage-y += smbus.c
 romstage-y += ramtop.c
-romstage-$(CONFIG_STONEYRIDGE_UART) += uart.c
+romstage-$(CONFIG_PICASSO_UART) += uart.c
 romstage-y += tsc_freq.c
 romstage-y += southbridge.c
 romstage-$(CONFIG_SPI_FLASH) += spi.c
@@ -63,12 +63,12 @@ verstage-y += i2c.c
 verstage-y += monotonic_timer.c
 verstage-y += pmutil.c
 verstage-y += reset.c
-verstage-$(CONFIG_STONEYRIDGE_UART) += uart.c
+verstage-$(CONFIG_PICASSO_UART) += uart.c
 verstage-y += tsc_freq.c
 verstage-$(CONFIG_SPI_FLASH) += spi.c
 
 postcar-y += monotonic_timer.c
-postcar-$(CONFIG_STONEYRIDGE_UART) += uart.c
+postcar-$(CONFIG_PICASSO_UART) += uart.c
 postcar-y += ramtop.c
 postcar-$(CONFIG_VBOOT_MEASURED_BOOT) += i2c.c
 postcar-y += tsc_freq.c
@@ -90,7 +90,7 @@ ramstage-y += smbus.c
 ramstage-y += ramtop.c
 ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smi.c
 ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smi_util.c
-ramstage-$(CONFIG_STONEYRIDGE_UART) += uart.c
+ramstage-$(CONFIG_PICASSO_UART) += uart.c
 ramstage-y += usb.c
 ramstage-y += tsc_freq.c
 ramstage-$(CONFIG_SPI_FLASH) += spi.c
@@ -117,7 +117,7 @@ CPPFLAGS_common += -I$(src)/soc/amd/picasso/acpi
 # +-----------+
 #
 # EC ROM should be 64K aligned.
-STONEYRIDGE_FWM_POSITION=$(call int-add, \
+PICASSO_FWM_POSITION=$(call int-add, \
 	$(call int-subtract, 0xffffffff \
 	$(call int-shift-left, \
 	0x80000 $(CONFIG_AMD_FWM_POSITION_INDEX))) 0x20000 1)
@@ -247,7 +247,7 @@ $(obj)/amdfw.rom:	$(call strip_quotes, $(CONFIG_STONEYRIDGE_XHCI_FWM_FILE)) \
 		$(OPT_SMUSCS_FILE) \
 		--combo-capable \
 		--flashsize $(CONFIG_ROM_SIZE) \
-		--location $(shell printf "0x%x" $(STONEYRIDGE_FWM_POSITION)) \
+		--location $(shell printf "0x%x" $(PICASSO_FWM_POSITION)) \
 		--output	$@
 
 ifeq ($(CONFIG_AMDFW_OUTSIDE_CBFS),y)
@@ -255,23 +255,23 @@ PHONY+=add_amdfw
 INTERMEDIATE+=add_amdfw
 
 # Calculate firmware position inside the ROM
-STONEYRIDGE_FWM_ROM_POSITION=$(call int-add, \
+PICASSO_FWM_ROM_POSITION=$(call int-add, \
 	$(call int-subtract, $(CONFIG_ROM_SIZE) \
 	$(call int-shift-left, \
 	0x80000 $(CONFIG_AMD_FWM_POSITION_INDEX))) 0x20000)
 
 add_amdfw: $(obj)/coreboot.pre $(obj)/amdfw.rom
 	printf "    DD         Adding AMD Firmware at ROM offset 0x%x\n" \
-		"$(STONEYRIDGE_FWM_ROM_POSITION)"
+		"$(PICASSO_FWM_ROM_POSITION)"
 	dd if=$(obj)/amdfw.rom \
 		of=$(obj)/coreboot.pre conv=notrunc bs=1 \
-		seek=$(STONEYRIDGE_FWM_ROM_POSITION) >/dev/null 2>&1
+		seek=$(PICASSO_FWM_ROM_POSITION) >/dev/null 2>&1
 
 else # ifeq ($(CONFIG_AMDFW_OUTSIDE_CBFS),y)
 
 cbfs-files-y += apu/amdfw
 apu/amdfw-file := $(obj)/amdfw.rom
-apu/amdfw-position := $(STONEYRIDGE_FWM_POSITION)
+apu/amdfw-position := $(PICASSO_FWM_POSITION)
 apu/amdfw-type := raw
 
 endif # ifeq ($(CONFIG_AMDFW_OUTSIDE_CBFS),y)

@@ -27,9 +27,9 @@
 #define MAX_DRAM_CH 1
 #define MAX_DIMMS_PER_CH 2
 
-#define STONEY_I2C_DEV_MAX 4
+#define PICASSO_I2C_DEV_MAX 4
 
-struct soc_amd_stoneyridge_config {
+struct soc_amd_picasso_config {
 	u8 spd_addr_lookup[MAX_NODES][MAX_DRAM_CH][MAX_DIMMS_PER_CH];
 	enum {
 		DRAM_CONTENTS_KEEP,
@@ -59,7 +59,7 @@ struct soc_amd_stoneyridge_config {
 	 * register i2c_scl_reset = (GPIO_I2C0_SCL | GPIO_I2C3_SCL)
 	 */
 	u8 i2c_scl_reset;
-	struct dw_i2c_bus_config i2c[STONEY_I2C_DEV_MAX];
+	struct dw_i2c_bus_config i2c[PICASSO_I2C_DEV_MAX];
 	u8 stapm_percent;
 	u32 stapm_time_ms;
 	u32 stapm_power_mw;
@@ -74,7 +74,7 @@ struct soc_amd_stoneyridge_config {
 	u8 lvds_poseq_blon_to_varybl;
 };
 
-typedef struct soc_amd_stoneyridge_config config_t;
+typedef struct soc_amd_picasso_config config_t;
 
 extern struct device_operations pci_domain_ops;
 

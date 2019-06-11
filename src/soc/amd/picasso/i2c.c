@@ -46,7 +46,7 @@ uintptr_t dw_i2c_base_address(unsigned int bus)
 	return bus < I2C_DEVICE_COUNT ? i2c_bus_address[bus] : 0;
 }
 
-static const struct soc_amd_stoneyridge_config *get_soc_config(void)
+static const struct soc_amd_picasso_config *get_soc_config(void)
 {
 	const struct device *dev = pcidev_path_on_root(GNB_DEVFN);
 
@@ -61,7 +61,7 @@ static const struct soc_amd_stoneyridge_config *get_soc_config(void)
 
 const struct dw_i2c_bus_config *dw_i2c_get_soc_cfg(unsigned int bus)
 {
-	const struct soc_amd_stoneyridge_config *config;
+	const struct soc_amd_picasso_config *config;
 
 	if (bus >= ARRAY_SIZE(i2c_bus_address))
 		return NULL;
@@ -107,7 +107,7 @@ int dw_i2c_soc_dev_to_bus(struct device *dev)
 static void dw_i2c_soc_init(bool is_early_init)
 {
 	size_t i;
-	const struct soc_amd_stoneyridge_config *config;
+	const struct soc_amd_picasso_config *config;
 
 	config = get_soc_config();
 
@@ -135,7 +135,7 @@ void i2c_soc_init(void)
 	dw_i2c_soc_init(false);
 }
 
-struct device_operations stoneyridge_i2c_mmio_ops = {
+struct device_operations picasso_i2c_mmio_ops = {
 	/* TODO(teravest): Move I2C resource info here. */
 	.read_resources = DEVICE_NOOP,
 	.set_resources = DEVICE_NOOP,
@@ -188,7 +188,7 @@ static void restore_i2c_pin_registers(uint8_t gpio,
 /* Slaves to be reset are controlled by devicetree register i2c_scl_reset */
 void sb_reset_i2c_slaves(void)
 {
-	const struct soc_amd_stoneyridge_config *cfg;
+	const struct soc_amd_picasso_config *cfg;
 	const struct device *dev = pcidev_path_on_root(GNB_DEVFN);
 	struct soc_amd_i2c_save save_table[saved_pins_count];
 	uint8_t i, j, control;

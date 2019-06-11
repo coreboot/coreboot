@@ -75,7 +75,7 @@ void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
 {
 	acpi_header_t *header = &(fadt->header);
 
-	printk(BIOS_DEBUG, "pm_base: 0x%04x\n", STONEYRIDGE_ACPI_IO_BASE);
+	printk(BIOS_DEBUG, "pm_base: 0x%04x\n", PICASSO_ACPI_IO_BASE);
 
 	/* Prepare the header */
 	memset((void *)fadt, 0, sizeof(acpi_fadt_t));
@@ -241,7 +241,7 @@ void generate_cpu_entries(struct device *device)
 {
 	int cores, cpu;
 
-	/* Stoney Ridge is single node, just report # of cores */
+	/* Picasso is single node, just report # of cores */
 	cores = pci_read_config32(SOC_NB_DEV, NB_CAPABILITIES2) & CMP_CAP_MASK;
 	cores++; /* number of cores is CmpCap+1 */
 

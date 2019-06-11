@@ -29,7 +29,7 @@
 #define SOC_EARLY_VMTRR_CAR_HEAP 2
 #define SOC_EARLY_VMTRR_TEMPRAM 3
 
-void stoney_init_cpus(struct device *dev);
+void picasso_init_cpus(struct device *dev);
 void check_mca(void);
 
 #endif /* __PICASSO_CPU_H__ */

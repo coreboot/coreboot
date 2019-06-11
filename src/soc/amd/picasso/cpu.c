@@ -105,7 +105,7 @@ static const struct mp_ops mp_ops = {
 	.post_mp_init = enable_smi_generation,
 };
 
-void stoney_init_cpus(struct device *dev)
+void picasso_init_cpus(struct device *dev)
 {
 	/* Clear for take-off */
 	if (mp_init_with_smm(dev->link_list, &mp_ops) < 0)

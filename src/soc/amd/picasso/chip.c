@@ -32,14 +32,14 @@
 #include "chip.h"
 
 /* Supplied by i2c.c */
-extern struct device_operations stoneyridge_i2c_mmio_ops;
+extern struct device_operations picasso_i2c_mmio_ops;
 extern const char *i2c_acpi_name(const struct device *dev);
 
 struct device_operations cpu_bus_ops = {
 	.read_resources	  = DEVICE_NOOP,
 	.set_resources	  = DEVICE_NOOP,
 	.enable_resources = DEVICE_NOOP,
-	.init		  = stoney_init_cpus,
+	.init		  = picasso_init_cpus,
 	.acpi_fill_ssdt_generator = generate_cpu_entries,
 };
 
@@ -132,7 +132,7 @@ static void enable_dev(struct device *dev)
 		sb_enable(dev);
 	else if (dev->path.type == DEVICE_PATH_MMIO)
 		if (i2c_acpi_name(dev) != NULL)
-			dev->ops = &stoneyridge_i2c_mmio_ops;
+			dev->ops = &picasso_i2c_mmio_ops;
 }
 
 static void soc_init(void *chip_info)
@@ -147,8 +147,8 @@ static void soc_final(void *chip_info)
 	fam15_finalize(chip_info);
 }
 
-struct chip_operations soc_amd_stoneyridge_ops = {
-	CHIP_NAME("AMD StoneyRidge SOC")
+struct chip_operations soc_amd_picasso_ops = {
+	CHIP_NAME("AMD Picasso SOC")
 	.enable_dev = enable_dev,
 	.init = soc_init,
 	.final = soc_final

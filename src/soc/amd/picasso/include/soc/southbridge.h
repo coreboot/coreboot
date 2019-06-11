@@ -316,7 +316,7 @@
 #define   RST_CMD			BIT(2)
 #define   SYS_RST			BIT(1)
 
-struct stoneyridge_aoac {
+struct picasso_aoac {
 	int enable;
 	int status;
 };

@@ -44,7 +44,7 @@
  * waiting for each device to become available, a single delay will be
  * executed.
  */
-const static struct stoneyridge_aoac aoac_devs[] = {
+const static struct picasso_aoac aoac_devs[] = {
 	{ (FCH_AOAC_D3_CONTROL_UART0 + CONFIG_UART_FOR_CONSOLE * 2),
 		(FCH_AOAC_D3_STATE_UART0 + CONFIG_UART_FOR_CONSOLE * 2) },
 	{ FCH_AOAC_D3_CONTROL_AMBA, FCH_AOAC_D3_STATE_AMBA },
@@ -56,22 +56,22 @@ const static struct stoneyridge_aoac aoac_devs[] = {
 
 static int is_sata_config(void)
 {
-	return !((SataNativeIde == CONFIG_STONEYRIDGE_SATA_MODE)
-			|| (SataLegacyIde == CONFIG_STONEYRIDGE_SATA_MODE));
+	return !((SataNativeIde == CONFIG_PICASSO_SATA_MODE)
+			|| (SataLegacyIde == CONFIG_PICASSO_SATA_MODE));
 }
 
 static inline int sb_sata_enable(void)
 {
 	/* True if IDE or AHCI. */
-	return (SataNativeIde == CONFIG_STONEYRIDGE_SATA_MODE) ||
-		(SataAhci == CONFIG_STONEYRIDGE_SATA_MODE);
+	return (SataNativeIde == CONFIG_PICASSO_SATA_MODE) ||
+		(SataAhci == CONFIG_PICASSO_SATA_MODE);
 }
 
 static inline int sb_ide_enable(void)
 {
 	/* True if IDE or LEGACY IDE. */
-	return (SataNativeIde == CONFIG_STONEYRIDGE_SATA_MODE) ||
-		(SataLegacyIde == CONFIG_STONEYRIDGE_SATA_MODE);
+	return (SataNativeIde == CONFIG_PICASSO_SATA_MODE) ||
+		(SataLegacyIde == CONFIG_PICASSO_SATA_MODE);
 }
 
 void SetFchResetParams(FCH_RESET_INTERFACE *params)
@@ -91,11 +91,11 @@ void SetFchEnvParams(FCH_INTERFACE *params)
 {
 	const struct device *dev = pcidev_path_on_root(SATA_DEVFN);
 	params->AzaliaController = AzEnable;
-	params->SataClass = CONFIG_STONEYRIDGE_SATA_MODE;
+	params->SataClass = CONFIG_PICASSO_SATA_MODE;
 	if (dev && dev->enabled) {
 		params->SataEnable = is_sata_config();
 		params->IdeEnable = !params->SataEnable;
-		params->SataIdeMode = (CONFIG_STONEYRIDGE_SATA_MODE ==
+		params->SataIdeMode = (CONFIG_PICASSO_SATA_MODE ==
 					SataLegacyIde);
 	} else {
 		params->SataEnable = FALSE;
@@ -227,7 +227,7 @@ static void sb_lpc_decode(void)
 		| DECODE_ENABLE_ADLIB_PORT;
 
 	/* Decode SIOs at 2E/2F and 4E/4F */
-	if (CONFIG(STONEYRIDGE_LEGACY_FREE))
+	if (CONFIG(PICASSO_LEGACY_FREE))
 		tmp |= DECODE_ALTERNATE_SIO_ENABLE | DECODE_SIO_ENABLE;
 
 	lpc_enable_decode(tmp);

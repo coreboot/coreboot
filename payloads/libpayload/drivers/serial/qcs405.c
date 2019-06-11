@@ -547,8 +547,10 @@ void serial_console_init(void)
 
 	uart_board_param.uart_dm_base = (void *)(uintptr_t)sc_ptr->baseaddr;
 
-	/* TODO: We should rely on coreboot init. */
-	msm_boot_uart_dm_init(uart_board_param.uart_dm_base);
+	/* We should re-initialise uart rx as it gets reset in coreboot. */
+	write32(MSM_BOOT_UART_DM_IMR(uart_board_param.uart_dm_base),
+		MSM_BOOT_UART_DM_IMR_ENABLED);
+	msm_boot_uart_dm_init_rx_transfer(uart_board_param.uart_dm_base);
 
 	console_add_output_driver(&consout);
 	console_add_input_driver(&consin);

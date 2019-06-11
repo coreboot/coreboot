@@ -141,10 +141,8 @@ PSPNVRAM_FILE=$(top)/$(FIRMWARE_LOCATE)/PspNvram$(FIRMWARE_TYPE).bin
 ###8 - Check for SMU firmware named either *.sbin or *.csbin
 ###    TODO: Remove *.sbin section after the blobs repo is updated.
 SMUFWM_FILE=$(top)/$(FIRMWARE_LOCATE)/SmuFirmware_$(FIRMWARE_TYPE).csbin
-SMUFWM_FN_FILE=$(top)/$(FIRMWARE_LOCATE)/SmuFirmware_$(FIRMWARE_TYPE)_FN.csbin
 ifeq ("$(wildcard $(SMUFWM_FILE))","")
 SMUFWM_FILE=$(top)/$(FIRMWARE_LOCATE)/SmuFirmware$(FIRMWARE_TYPE).sbin
-SMUFWM_FN_FILE=$(top)/$(FIRMWARE_LOCATE)/SmuFirmware$(FIRMWARE_TYPE)_FN.sbin
 endif
 
 ###95
@@ -167,10 +165,8 @@ endif
 ###18- Check for SMU firmware2 named either *.sbin or *.csbin
 ###    TODO: Remove *.sbin section after the blobs repo is updated.
 SMUFIRMWARE2_FILE=$(top)/$(FIRMWARE_LOCATE)/SmuFirmware2_prod_$(FIRMWARE_TYPE).csbin
-SMUFIRMWARE2_FN_FILE=$(top)/$(FIRMWARE_LOCATE)/SmuFirmware2_prod_$(FIRMWARE_TYPE)_FN.csbin
 ifeq ("$(wildcard $(SMUFIRMWARE2_FILE))","")
 SMUFIRMWARE2_FILE=$(top)/$(FIRMWARE_LOCATE)/SmuFirmware2_prod_$(FIRMWARE_TYPE).sbin
-SMUFIRMWARE2_FN_FILE=$(top)/$(FIRMWARE_LOCATE)/SmuFirmware2_prod_$(FIRMWARE_TYPE)_FN.sbin
 endif
 
 add_opt_prefix=$(if $(call strip_quotes, $(1)), $(2) $(call strip_quotes, $(1)), )
@@ -189,10 +185,6 @@ OPT_TRUSTLETKEY_FILE=$(call add_opt_prefix, $(TRUSTLETKEY_FILE), --trustletkey)
 endif
 OPT_SMUFIRMWARE2_FILE=$(call add_opt_prefix, $(SMUFIRMWARE2_FILE), --smufirmware2)
 OPT_SMUSCS_FILE=$(call add_opt_prefix, $(SMUSCS_FILE), --smuscs)
-SUBPROG_FN_SMU_FW=1
-OPT_SMUFWM_FN_FILE=$(call add_opt_prefix, $(SMUFWM_FN_FILE), --subprogram $(SUBPROG_FN_SMU_FW) --smufirmware)
-OPT_SMUFIRMWARE2_FN_FILE=$(call add_opt_prefix, $(SMUFIRMWARE2_FN_FILE), --subprogram $(SUBPROG_FN_SMU_FW) --smufirmware2)
-
 
 $(obj)/amdfw.rom:	$(call strip_quotes, $(CONFIG_AMD_PUBKEY_FILE)) \
 			$(call strip_quotes, $(PUBSIGNEDKEY_FILE)) \
@@ -201,13 +193,11 @@ $(obj)/amdfw.rom:	$(call strip_quotes, $(CONFIG_AMD_PUBKEY_FILE)) \
 			$(call strip_quotes, $(PSPSCUREOS_FILE)) \
 			$(call strip_quotes, $(PSPNVRAM_FILE)) \
 			$(call strip_quotes, $(SMUFWM_FILE)) \
-			$(call strip_quotes, $(SMUFWM_FN_FILE)) \
 			$(call strip_quotes, $(SMUSCS_FILE)) \
 			$(call strip_quotes, $(PSPSECUREDEBUG_FILE)) \
 			$(call strip_quotes, $(PSPTRUSTLETS_FILE)) \
 			$(call strip_quotes, $(TRUSTLETKEY_FILE)) \
 			$(call strip_quotes, $(SMUFIRMWARE2_FILE)) \
-			$(call strip_quotes, $(SMUFIRMWARE2_FN_FILE)) \
 			$(AMDFWTOOL)
 	rm -f $@
 	@printf "    AMDFWTOOL  $(subst $(obj)/,,$(@))\n"
@@ -227,7 +217,6 @@ $(obj)/amdfw.rom:	$(call strip_quotes, $(CONFIG_AMD_PUBKEY_FILE)) \
 		$(OPT_AMD_PUBKEY_FILE) \
 		$(OPT_PSPBTLDR_FILE) \
 		$(OPT_SMUFWM_FILE) \
-		$(OPT_SMUFWM_FN_FILE) \
 		$(OPT_PSPRCVR_FILE) \
 		$(OPT_PUBSIGNEDKEY_FILE) \
 		$(OPT_PSPSCUREOS_FILE) \
@@ -236,7 +225,6 @@ $(obj)/amdfw.rom:	$(call strip_quotes, $(CONFIG_AMD_PUBKEY_FILE)) \
 		$(OPT_PSPTRUSTLETS_FILE) \
 		$(OPT_TRUSTLETKEY_FILE) \
 		$(OPT_SMUFIRMWARE2_FILE) \
-		$(OPT_SMUFIRMWARE2_FN_FILE) \
 		$(OPT_SMUSCS_FILE) \
 		--combo-capable \
 		--flashsize $(CONFIG_ROM_SIZE) \
@@ -273,18 +261,10 @@ ifeq ($(CONFIG_SOC_AMD_PSP_SELECTABLE_SMU_FW),y)
 
 cbfs-files-y += smu_fw
 cbfs-files-y += smu_fw2
-smu_fw-type := raw
-smu_fw2-type := raw
-
-ifeq ($(CONFIG_SOC_AMD_SMU_FANLESS),y)
-smu_fw-file := $(SMUFWM_FN_FILE)
-smu_fw2-file := $(SMUFIRMWARE2_FN_FILE)
-else ifeq ($(CONFIG_SOC_AMD_SMU_FANNED),y)
 smu_fw-file := $(SMUFWM_FILE)
+smu_fw-type := raw
 smu_fw2-file := $(SMUFIRMWARE2_FILE)
-else
-$(error "Proper SMU Firmware not selected")
-endif
+smu_fw2-type := raw
 
 endif # ifeq ($(CONFIG_SOC_AMD_PSP_SELECTABLE_SMU_FW),y)
 

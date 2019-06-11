@@ -1,4 +1,5 @@
 # Load all chipsets before common
+source "src/soc/amd/picasso/Kconfig"
 source "src/soc/amd/stoneyridge/Kconfig"
 
 # Load common defaults last

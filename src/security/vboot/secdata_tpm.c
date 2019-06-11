@@ -125,18 +125,6 @@ static uint32_t write_secdata(uint32_t index,
 }
 
 /*
- * This is derived from rollback_index.h of vboot_reference. see struct
- * RollbackSpaceKernel for details.
- */
-static const uint8_t secdata_kernel[] = {
-	0x02,
-	0x4C, 0x57, 0x52, 0x47,
-	0x00, 0x00, 0x00, 0x00,
-	0x00, 0x00, 0x00,
-	0xE8,
-};
-
-/*
  * This is used to initialize the TPM space for recovery hash after defining
  * it. Since there is no data available to calculate hash at the point where TPM
  * space is defined, initialize it to all 0s.
@@ -217,7 +205,7 @@ static uint32_t set_firmware_space(const void *firmware_blob)
 static uint32_t set_kernel_space(const void *kernel_blob)
 {
 	return set_space("kernel", KERNEL_NV_INDEX, kernel_blob,
-			 sizeof(secdata_kernel), rw_space_attributes, NULL, 0);
+			 VB2_SECDATAK_SIZE, rw_space_attributes, NULL, 0);
 }
 
 static uint32_t set_rec_hash_space(const uint8_t *data)
@@ -238,7 +226,7 @@ static uint32_t _factory_initialize_tpm(struct vb2_context *ctx)
 	 * indication that TPM factory initialization was successfully
 	 * completed.
 	 */
-	RETURN_ON_FAILURE(set_kernel_space(secdata_kernel));
+	RETURN_ON_FAILURE(set_kernel_space(ctx->secdatak));
 
 	if (CONFIG(VBOOT_HAS_REC_HASH_SPACE))
 		RETURN_ON_FAILURE(set_rec_hash_space(rec_hash_data));
@@ -342,16 +330,15 @@ static uint32_t _factory_initialize_tpm(struct vb2_context *ctx)
 	VBDEBUG("TPM: Clearing owner\n");
 	RETURN_ON_FAILURE(tpm_clear_and_reenable());
 
-	/* Define and initialize the kernel space */
+	/* Define and write secdatak kernel space. */
 	RETURN_ON_FAILURE(safe_define_space(KERNEL_NV_INDEX,
 					    TPM_NV_PER_PPWRITE,
-					    sizeof(secdata_kernel)));
+					    VB2_SECDATAK_SIZE));
 	RETURN_ON_FAILURE(write_secdata(KERNEL_NV_INDEX,
-					secdata_kernel,
-					sizeof(secdata_kernel)));
+					ctx->secdatak,
+					VB2_SECDATAK_SIZE));
 
-	/* Defines and sets vb2 secdata space */
-	vb2api_secdata_create(ctx);
+	/* Define and write secdata firmware space. */
 	RETURN_ON_FAILURE(safe_define_space(FIRMWARE_NV_INDEX,
 	                                    TPM_NV_PER_GLOBALLOCK |
 	                                    TPM_NV_PER_PPWRITE,
@@ -393,8 +380,9 @@ static uint32_t factory_initialize_tpm(struct vb2_context *ctx)
 {
 	uint32_t result;
 
-	/* Defines and sets vb2 secdata space */
+	/* Set initial values of secdata and secdatak spaces. */
 	vb2api_secdata_create(ctx);
+	vb2api_secdatak_create(ctx);
 
 	VBDEBUG("TPM: factory initialization\n");
 

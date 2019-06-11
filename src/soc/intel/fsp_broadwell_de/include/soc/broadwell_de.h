@@ -18,6 +18,9 @@
 #ifndef _SOC_BROADWELL_DE_H_
 #define _SOC_BROADWELL_DE_H_
 
+uintptr_t sa_get_tseg_base(void);
+size_t sa_get_tseg_size(void);
+
 #define VTBAR_OFFSET		0x180
 #define VTBAR_MASK		0xffffe000
 #define VTBAR_ENABLED		0x01

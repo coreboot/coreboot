@@ -1,0 +1,5 @@
+config BOARD_EMULATION_QEMU_AARCH64
+	bool "QEMU AArch64 (virt)"
+	help
+	  To execute, do:
+	  qemu-system-aarch64 -bios ./build/coreboot.rom -M virt,secure=on,virtualization=on -cpu cortex-a53 -nographic -m 8192M

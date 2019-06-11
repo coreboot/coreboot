@@ -1,0 +1,51 @@
+#
+# This file is part of the coreboot project.
+#
+# Copyright (C) 2019 Asami Doi <d0iasm.pub@gmail.com>.
+#
+# SPDX-License-Identifier: GPL-2.0-or-later
+
+# Emulation for QEMU 2.8 ARM Virtual Machine (alias of virt-2.8)
+# https://wiki.qemu.org/Documentation/Platforms/ARM
+
+if BOARD_EMULATION_QEMU_AARCH64
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select ARCH_BOOTBLOCK_ARMV8_64
+	select ARCH_VERSTAGE_ARMV8_64
+	select ARCH_ROMSTAGE_ARMV8_64
+	select ARCH_RAMSTAGE_ARMV8_64
+	select ARM64_USE_ARCH_TIMER
+	select BOARD_ROMSIZE_KB_4096
+	select BOOTBLOCK_CONSOLE
+	select BOOTBLOCK_CUSTOM
+	select BOOT_DEVICE_NOT_SPI_FLASH
+	select CONSOLE_SERIAL
+	select DRIVERS_UART_PL011
+	select HAVE_LINEAR_FRAMEBUFFER
+	select MAINBOARD_FORCE_NATIVE_VGA_INIT
+	select MAINBOARD_HAS_NATIVE_VGA_INIT
+	select MISSING_BOARD_RESET
+
+config MAINBOARD_DIR
+	string
+	default emulation/qemu-aarch64
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "QEMU AArch64"
+
+config MAX_CPUS
+	int
+	default 2
+
+config MAINBOARD_VENDOR
+	string
+	default "QEMU"
+
+config DRAM_SIZE_MB
+	int
+	default 1024
+
+endif #  BOARD_EMULATION_QEMU_AARCH64

@@ -181,10 +181,15 @@ uint32_t tlcl_lib_init(void)
 	if (done)
 		return VB2_SUCCESS;
 
-	if (tis_init())
+	if (tis_init()) {
+		printk(BIOS_ERR, "%s: tis_init returned error\n", __func__);
 		return VB2_ERROR_UNKNOWN;
-	if (tis_open())
+	}
+
+	if (tis_open()) {
+		printk(BIOS_ERR, "%s: tis_open returned error\n", __func__);
 		return VB2_ERROR_UNKNOWN;
+	}
 
 	car_set_var(tlcl_init_done, 1);
 

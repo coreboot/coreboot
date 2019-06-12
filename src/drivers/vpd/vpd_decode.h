@@ -30,28 +30,11 @@ typedef int vpd_decode_callback(
 		void *arg);
 
 /*
- * vpd_decode_len
- *
- * Given an encoded string, this function extracts the length of content
- * (either key or value). The *consumed will contain the number of bytes
- * consumed.
- *
- * The input_buf points to the first byte of the input buffer.
- *
- * The *consumed starts from 0, which is actually the next byte to be decoded.
- * It can be non-zero to be used in multiple calls.
- *
- * Returns VPD_DECODE_OK on success, otherwise VPD_DECODE_FAIL.
- */
-int vpd_decode_len(
-		const u32 max_len, const u8 *in, u32 *length, u32 *decoded_len);
-
-/*
  * vpd_decode_string
  *
  * Given the encoded string, this function invokes callback with extracted
- * (key, value). The *consumed will be plused the number of bytes consumed in
- * this function.
+ * (key, value). The *consumed will be incremented by the number of bytes
+ * consumed in this function.
  *
  * The input_buf points to the first byte of the input buffer.
  *

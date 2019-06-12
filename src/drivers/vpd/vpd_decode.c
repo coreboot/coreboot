@@ -8,7 +8,7 @@
  */
 #include "vpd_decode.h"
 
-int vpd_decode_len(
+static int vpd_decode_len(
 		const u32 max_len, const u8 *in, u32 *length, u32 *decoded_len)
 {
 	u8 more;
@@ -32,15 +32,36 @@ int vpd_decode_len(
 	return VPD_DECODE_OK;
 }
 
+static int vpd_decode_entry(
+		const u32 max_len, const u8 *input_buf, u32 *consumed,
+		const u8 **entry, u32 *entry_len)
+{
+	u32 decoded_len;
+
+	if (vpd_decode_len(max_len - *consumed, &input_buf[*consumed],
+			   entry_len, &decoded_len) != VPD_DECODE_OK)
+		return VPD_DECODE_FAIL;
+	if (max_len - *consumed < decoded_len)
+		return VPD_DECODE_FAIL;
+
+	*consumed += decoded_len;
+	*entry = input_buf + *consumed;
+
+	/* entry_len is untrusted data and must be checked again. */
+	if (max_len - *consumed < *entry_len)
+		return VPD_DECODE_FAIL;
+
+	*consumed += *entry_len;
+	return VPD_DECODE_OK;
+}
+
 int vpd_decode_string(
 		const u32 max_len, const u8 *input_buf, u32 *consumed,
 		vpd_decode_callback callback, void *callback_arg)
 {
 	int type;
-	int res;
 	u32 key_len;
 	u32 value_len;
-	u32 decoded_len;
 	const u8 *key;
 	const u8 *value;
 
@@ -55,29 +76,13 @@ int vpd_decode_string(
 	case VPD_TYPE_STRING:
 		(*consumed)++;
 
-		/* key */
-		res = vpd_decode_len(max_len - *consumed, &input_buf[*consumed],
-				     &key_len, &decoded_len);
-		/* key name cannot be empty, and must be followed by value. */
-		if (res != VPD_DECODE_OK || key_len < 1 ||
-		    *consumed + decoded_len + key_len >= max_len)
+		if (vpd_decode_entry(max_len, input_buf, consumed, &key,
+				     &key_len) != VPD_DECODE_OK)
 			return VPD_DECODE_FAIL;
 
-		*consumed += decoded_len;
-		key = &input_buf[*consumed];
-		*consumed += key_len;
-
-		/* value */
-		res = vpd_decode_len(max_len - *consumed, &input_buf[*consumed],
-				     &value_len, &decoded_len);
-		/* value can be empty (value_len = 0). */
-		if (res != VPD_DECODE_OK ||
-		    *consumed + decoded_len + value_len > max_len)
+		if (vpd_decode_entry(max_len, input_buf, consumed, &value,
+				     &value_len) != VPD_DECODE_OK)
 			return VPD_DECODE_FAIL;
-
-		*consumed += decoded_len;
-		value = &input_buf[*consumed];
-		*consumed += value_len;
 
 		if (type == VPD_TYPE_STRING)
 			return callback(key, key_len, value, value_len,

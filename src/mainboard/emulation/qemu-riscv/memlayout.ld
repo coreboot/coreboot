@@ -17,16 +17,23 @@
 #include <arch/header.ld>
 #include <mainboard/addressmap.h>
 
-//Stages start after CBFS in DRAM
+// Stages start after CBFS in DRAM
 #define STAGES_START (QEMU_VIRT_DRAM + CONFIG_ROM_SIZE)
 
 SECTIONS
 {
-	DRAM_START(QEMU_VIRT_DRAM)
+	// the virt target doesn't emulate flash and just puts the CBFS into DRAM.
+	// fake SRAM where CBFS resides. It's only done for better integration.
+	SRAM_START(QEMU_VIRT_DRAM)
 	BOOTBLOCK(QEMU_VIRT_DRAM, 64K)
 	// CBFS goes here
-	STACK(STAGES_START, 4K)
-	ROMSTAGE(STAGES_START + 64K, 128K)
-	PRERAM_CBMEM_CONSOLE(STAGES_START + 192K, 8K)
+	SRAM_END(STAGES_START)
+	DRAM_START(STAGES_START)
+
+#if ENV_ROMSTAGE
+	ROMSTAGE(STAGES_START, 128K)
+#endif
+	PRERAM_CBMEM_CONSOLE(STAGES_START + 128K, 8K)
 	RAMSTAGE(STAGES_START + 200K, 16M)
+	STACK(STAGES_START + 200K + 16M, 4K)
 }

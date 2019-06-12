@@ -61,12 +61,22 @@ void board_bh720(struct device *dev)
 	write32((void *)(sdbar + BH720_MEM_RW_ADR),
 		BH720_MEM_RW_WRITE | BH720_PCR_EMMC_SETTING);
 
-	/* Set Bayhub SD base CLK 50MHz: case#1 PCR 0x3E4[22] = 0 */
+	/* Set Base clock to 200MHz(PCR 0x304[31:16] = 0x2510) */
+	write32((void *)(sdbar + BH720_MEM_RW_ADR),
+		BH720_MEM_RW_READ | BH720_PCR_DrvStrength_PLL);
+	bh720_pcr_data = read32((void *)(sdbar + BH720_MEM_RW_DATA));
+	bh720_pcr_data &= 0x0000FFFF;
+	bh720_pcr_data |= 0x2510 << 16;
+	write32((void *)(sdbar + BH720_MEM_RW_DATA), bh720_pcr_data);
+	write32((void *)(sdbar + BH720_MEM_RW_ADR),
+		BH720_MEM_RW_WRITE | BH720_PCR_DrvStrength_PLL);
+
+	/* Use PLL Base clock PCR 0x3E4[22] = 1 */
 	write32((void *)(sdbar + BH720_MEM_RW_ADR),
 		BH720_MEM_RW_READ | BH720_PCR_CSR);
 	bh720_pcr_data = read32((void *)(sdbar + BH720_MEM_RW_DATA));
 	write32((void *)(sdbar + BH720_MEM_RW_DATA),
-		bh720_pcr_data & ~BH720_PCR_CSR_EMMC_MODE_SEL);
+		bh720_pcr_data | BH720_PCR_CSR_EMMC_MODE_SEL);
 	write32((void *)(sdbar + BH720_MEM_RW_ADR),
 		BH720_MEM_RW_WRITE | BH720_PCR_CSR);
 

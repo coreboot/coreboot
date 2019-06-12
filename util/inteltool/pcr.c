@@ -132,6 +132,7 @@ void pcr_init(struct pci_dev *const sb)
 	case PCI_DEVICE_ID_INTEL_QM370:
 	case PCI_DEVICE_ID_INTEL_HM370:
 	case PCI_DEVICE_ID_INTEL_CM246:
+	case PCI_DEVICE_ID_INTEL_CANNONPOINT_LP_U_PREM:
 	case PCI_DEVICE_ID_INTEL_ICELAKE_LP_U:
 		sbbar_phys = 0xfd000000;
 		use_p2sb = false;

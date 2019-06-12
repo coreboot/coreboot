@@ -25,6 +25,7 @@
 
 #include "gpio_names/apollolake.h"
 #include "gpio_names/cannonlake.h"
+#include "gpio_names/cannonlake_lp.h"
 #include "gpio_names/denverton.h"
 #include "gpio_names/icelake.h"
 #include "gpio_names/lewisburg.h"
@@ -149,6 +150,10 @@ const struct gpio_community *const *get_gpio_communities(struct pci_dev *const s
 	case PCI_DEVICE_ID_INTEL_APL_LPC:
 		*community_count = ARRAY_SIZE(apl_communities);
 		return apl_communities;
+	case PCI_DEVICE_ID_INTEL_CANNONPOINT_LP_U_PREM:
+		*community_count = ARRAY_SIZE(cannonlake_pch_lp_communities);
+		*pad_stepping = 16;
+		return cannonlake_pch_lp_communities;
 	case PCI_DEVICE_ID_INTEL_H310:
 	case PCI_DEVICE_ID_INTEL_H370:
 	case PCI_DEVICE_ID_INTEL_Z390:

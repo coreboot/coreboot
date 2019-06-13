@@ -15,6 +15,7 @@
 
 #include <arch/acpi_device.h>
 #include <arch/acpigen.h>
+#include <console/console.h>
 #include <device/i2c_simple.h>
 #include <device/device.h>
 #include <device/path.h>
@@ -74,6 +75,9 @@ static void i2c_sx9310_fill_ssdt(struct device *dev)
 
 	acpigen_pop_len(); /* Device */
 	acpigen_pop_len(); /* Scope */
+
+	printk(BIOS_INFO, "%s: %s at %s\n", acpi_device_path(dev),
+	       config->desc ? : dev->chip_ops->name, dev_path(dev));
 }
 
 #undef REGISTER

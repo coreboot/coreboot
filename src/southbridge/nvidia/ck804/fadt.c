@@ -33,13 +33,8 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 	/* Prepare the header */
 	memset((void *)fadt, 0, sizeof(acpi_fadt_t));
 	memcpy(header->signature, "FACP", 4);
-#ifdef LONG_FADT
-	header->length = 244;
+	header->length = sizeof(acpi_fadt_t);
 	header->revision = get_acpi_table_revision(FADT);
-#else
-	header->length = 0x74;
-	header->revision = 1;
-#endif
 	memcpy(header->oem_id, OEM_ID, 6);
 	memcpy(header->oem_table_id, ACPI_TABLE_CREATOR, 8);
 	memcpy(header->asl_compiler_id, ASLC, 4);

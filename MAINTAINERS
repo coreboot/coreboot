@@ -624,6 +624,12 @@ S:	Supported
 F:	*/memlayout.h
 F:	*.ld
 
+ELTAN VENDORCODE
+M:	Frans Hendriks <fhendriks@eltan.com>
+M:	Wim Vervoorn <wvervoorn@eltan.com>
+S:	Maintained
+F:	src/vendorcode/eltan
+
 MISSING: TIMERS / DELAYS
 
 MISSING: TIMESTAMPS

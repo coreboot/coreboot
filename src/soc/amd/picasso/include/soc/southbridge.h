@@ -277,11 +277,6 @@
 #define SPI100_HOST_PREF_CONFIG		0x2c
 #define   SPI_RD4DW_EN_HOST		BIT(15)
 
-/* Platform Security Processor D8F0 */
-#define PSP_MAILBOX_BAR			PCI_BASE_ADDRESS_4 /* BKDG: "BAR3" */
-#define PSP_BAR_ENABLES			0x48
-#define  PSP_MAILBOX_BAR_EN		0x10
-
 /* IO 0xcf9 - Reset control port*/
 #define   FULL_RST			BIT(3)
 #define   RST_CMD			BIT(2)

@@ -25,7 +25,6 @@
 #include <soc/northbridge.h>
 #include <soc/pci_devs.h>
 #include <soc/southbridge.h>
-#include <amdblocks/psp.h>
 #include <amdblocks/agesawrapper.h>
 #include <amdblocks/agesawrapper_call.h>
 
@@ -157,10 +156,6 @@ static void earliest_ramstage(void *unused)
 	int s3_resume = acpi_s3_resume_allowed() &&
 			romstage_handoff_is_resume();
 	if (!s3_resume) {
-		post_code(0x46);
-		if (CONFIG(SOC_AMD_PSP_SELECTABLE_SMU_FW))
-			psp_load_named_blob(MBOX_BIOS_CMD_SMU_FW2, "smu_fw2");
-
 		post_code(0x47);
 		do_agesawrapper(AMD_INIT_ENV, "amdinitenv");
 	} else {

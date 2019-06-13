@@ -95,13 +95,6 @@
 #define PCIE4_DEVFN		PCI_DEVFN(PCIE4_DEV, PCIE4_FUNC)
 #define SOC_PCIE4_DEV		_SOC_DEV(PCIE4_DEV, PCIE4_FUNC)
 
-/* Platform Security Processor */
-#define PSP_DEV			0x8
-#define PSP_FUNC		0
-#define PSP_DEVID		0x1578
-#define PSP_DEVFN		PCI_DEVFN(PSP_DEV, PSP_FUNC)
-#define SOC_PSP_DEV		_SOC_DEV(PSP_DEV, PSP_FUNC)
-
 /* HD Audio 1 */
 #define HDA1_DEV		0x9
 #define HDA1_FUNC		2

@@ -257,15 +257,11 @@ apu/amdfw-type := raw
 
 endif # ifeq ($(CONFIG_AMDFW_OUTSIDE_CBFS),y)
 
-ifeq ($(CONFIG_SOC_AMD_PSP_SELECTABLE_SMU_FW),y)
-
 cbfs-files-y += smu_fw
 cbfs-files-y += smu_fw2
 smu_fw-file := $(SMUFWM_FILE)
 smu_fw-type := raw
 smu_fw2-file := $(SMUFIRMWARE2_FILE)
 smu_fw2-type := raw
-
-endif # ifeq ($(CONFIG_SOC_AMD_PSP_SELECTABLE_SMU_FW),y)
 
 endif # ($(CONFIG_SOC_AMD_PICASSO),y)

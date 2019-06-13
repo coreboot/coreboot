@@ -355,11 +355,8 @@ static int ck804_early_setup_x(void)
 		}
 	}
 
-	printk(BIOS_DEBUG, "ck804_early_set_port(%d, %d, %d)\n", ck804_num, busn[0], io_base[0]);
 	ck804_early_set_port(ck804_num, busn, io_base);
-	printk(BIOS_DEBUG, "ck804_early_setup(%d, %d, %d)\n", ck804_num, busn[0], io_base[0]);
 	ck804_early_setup(ck804_num, busn, io_base);
-	printk(BIOS_DEBUG, "ck804_early_clear_port(%d, %d, %d)\n", ck804_num, busn[0], io_base[0]);
 	ck804_early_clear_port(ck804_num, busn, io_base);
 
 	return set_ht_link_ck804(4);

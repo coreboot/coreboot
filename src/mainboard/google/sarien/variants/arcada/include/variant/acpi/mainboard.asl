@@ -15,8 +15,6 @@
 
 #define CAM_EN GPP_B11 /* Active low */
 #define TS_PD GPP_E7
-#define SSD_EN GPP_H13
-#define SSD_RST GPP_H12
 
 /* Method called from LPIT prior to enter s0ix state */
 Method (MS0X, 1)
@@ -37,13 +35,6 @@ Method (MPTS, 1)
 
 	/* Clear touch screen pd pin to avoid leakage */
 	\_SB.PCI0.CTXS (TS_PD)
-
-	/* Clear SSD EN adn RST pin to avoid leakage */
-	If (Arg0 == 5) {
-		\_SB.PCI0.CTXS (SSD_RST)
-		Sleep(1)
-		\_SB.PCI0.CTXS (SSD_EN)
-	}
 }
 
 /* Method called from _WAK prior to wakeup */

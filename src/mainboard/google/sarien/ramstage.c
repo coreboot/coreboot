@@ -14,6 +14,7 @@
  */
 
 #include <arch/acpi.h>
+#include <boardid.h>
 #include <drivers/vpd/vpd.h>
 #include <smbios.h>
 #include <soc/gpio.h>
@@ -60,6 +61,13 @@ void smbios_fill_dimm_locator(const struct dimm_info *dimm,
 }
 #endif
 
+static const struct pad_config gpio_unused[] = {
+/* SUSWARN# */		PAD_NC(GPP_A13, NONE),
+/* SUSACK# */		PAD_NC(GPP_A15, NONE),
+/* M2_SKT2_CFG0 */	PAD_NC(GPP_H12, NONE),
+/* M2_SKT2_CFG1 */	PAD_NC(GPP_H13, NONE),
+};
+
 void mainboard_silicon_init_params(FSP_S_CONFIG *params)
 {
 	const struct pad_config *gpio_table;
@@ -67,6 +75,10 @@ void mainboard_silicon_init_params(FSP_S_CONFIG *params)
 
 	gpio_table = variant_gpio_table(&num_gpios);
 	cnl_configure_pads(gpio_table, num_gpios);
+
+	/* Disable unused pads for devices with board ID > 2 */
+	if (board_id() > 2)
+		gpio_configure_pads(gpio_unused, ARRAY_SIZE(gpio_unused));
 }
 
 static void mainboard_enable(struct device *dev)

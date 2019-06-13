@@ -33,15 +33,18 @@ __weak void graphics_soc_init(struct device *dev)
 	pci_dev_init(dev);
 }
 
-static uintptr_t graphics_get_bar(unsigned long index)
+static int is_graphics_disabled(struct device *dev)
 {
-	struct device *dev = SA_DEV_IGD;
-	struct resource *gm_res;
-	assert(dev != NULL);
-
 	/* Check if Graphics PCI device is disabled */
 	if (!dev || !dev->enabled)
-		return 0;
+		return 1;
+
+	return 0;
+}
+
+static uintptr_t graphics_get_bar(struct device *dev, unsigned long index)
+{
+	struct resource *gm_res;
 
 	gm_res = find_resource(dev, index);
 	if (!gm_res)
@@ -52,11 +55,16 @@ static uintptr_t graphics_get_bar(unsigned long index)
 
 uintptr_t graphics_get_memory_base(void)
 {
+	uintptr_t memory_base;
+	struct device *dev = SA_DEV_IGD;
+
+	if (is_graphics_disabled(dev))
+		return 0;
 	/*
 	 * GFX PCI config space offset 0x18 know as Graphics
 	 * Memory Range Address (GMADR)
 	 */
-	uintptr_t memory_base = graphics_get_bar(PCI_BASE_ADDRESS_2);
+	memory_base = graphics_get_bar(dev, PCI_BASE_ADDRESS_2);
 	if (!memory_base)
 		die_with_post_code(POST_HW_INIT_FAILURE,
 				   "GMADR is not programmed!");
@@ -66,14 +74,18 @@ uintptr_t graphics_get_memory_base(void)
 
 static uintptr_t graphics_get_gtt_base(void)
 {
+	static uintptr_t gtt_base;
+	struct device *dev = SA_DEV_IGD;
+
+	if (is_graphics_disabled(dev))
+		die("IGD is disabled!");
 	/*
 	 * GFX PCI config space offset 0x10 know as Graphics
 	 * Translation Table Memory Mapped Range Address
 	 * (GTTMMADR)
 	 */
-	static uintptr_t gtt_base;
 	if (!gtt_base) {
-		gtt_base = graphics_get_bar(PCI_BASE_ADDRESS_0);
+		gtt_base = graphics_get_bar(dev, PCI_BASE_ADDRESS_0);
 		if (!gtt_base)
 			die_with_post_code(POST_HW_INIT_FAILURE,
 					   "GTTMMADR is not programmed!");

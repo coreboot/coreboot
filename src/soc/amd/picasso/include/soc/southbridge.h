@@ -322,7 +322,7 @@ void sb_set_spi100(u16 norm, u16 fast, u16 alt, u16 tpm);
 void bootblock_fch_early_init(void);
 void bootblock_fch_init(void);
 /**
- * @brief Save the UMA bize returned by AGESA
+ * @brief Save the UMA bize
  *
  * @param size = in bytes
  *
@@ -330,7 +330,7 @@ void bootblock_fch_init(void);
  */
 void save_uma_size(uint32_t size);
 /**
- * @brief Save the UMA base address returned by AGESA
+ * @brief Save the UMA base address
  *
  * @param base = 64bit base address
  *

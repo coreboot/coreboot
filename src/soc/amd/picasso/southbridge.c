@@ -23,7 +23,6 @@
 #include <device/pci_ops.h>
 #include <cbmem.h>
 #include <amdblocks/amd_pci_util.h>
-#include <amdblocks/agesawrapper.h>
 #include <amdblocks/reset.h>
 #include <amdblocks/acpimmio.h>
 #include <amdblocks/lpc.h>
@@ -34,7 +33,6 @@
 #include <soc/amd_pci_int_defs.h>
 #include <delay.h>
 #include <soc/pci_devs.h>
-#include <agesa_headers.h>
 #include <soc/nvs.h>
 #include <types.h>
 
@@ -53,60 +51,6 @@ const static struct picasso_aoac aoac_devs[] = {
 	{ FCH_AOAC_D3_CONTROL_I2C2, FCH_AOAC_D3_STATE_I2C2 },
 	{ FCH_AOAC_D3_CONTROL_I2C3, FCH_AOAC_D3_STATE_I2C3 }
 };
-
-static int is_sata_config(void)
-{
-	return !((SataNativeIde == CONFIG_PICASSO_SATA_MODE)
-			|| (SataLegacyIde == CONFIG_PICASSO_SATA_MODE));
-}
-
-static inline int sb_sata_enable(void)
-{
-	/* True if IDE or AHCI. */
-	return (SataNativeIde == CONFIG_PICASSO_SATA_MODE) ||
-		(SataAhci == CONFIG_PICASSO_SATA_MODE);
-}
-
-static inline int sb_ide_enable(void)
-{
-	/* True if IDE or LEGACY IDE. */
-	return (SataNativeIde == CONFIG_PICASSO_SATA_MODE) ||
-		(SataLegacyIde == CONFIG_PICASSO_SATA_MODE);
-}
-
-void SetFchResetParams(FCH_RESET_INTERFACE *params)
-{
-	const struct device *dev = pcidev_path_on_root(SATA_DEVFN);
-	if (dev && dev->enabled) {
-		params->SataEnable = sb_sata_enable();
-		params->IdeEnable = sb_ide_enable();
-	} else {
-		params->SataEnable = FALSE;
-		params->IdeEnable = FALSE;
-	}
-}
-
-void SetFchEnvParams(FCH_INTERFACE *params)
-{
-	const struct device *dev = pcidev_path_on_root(SATA_DEVFN);
-	params->AzaliaController = AzEnable;
-	params->SataClass = CONFIG_PICASSO_SATA_MODE;
-	if (dev && dev->enabled) {
-		params->SataEnable = is_sata_config();
-		params->IdeEnable = !params->SataEnable;
-		params->SataIdeMode = (CONFIG_PICASSO_SATA_MODE ==
-					SataLegacyIde);
-	} else {
-		params->SataEnable = FALSE;
-		params->IdeEnable = FALSE;
-		params->SataIdeMode = FALSE;
-	}
-}
-
-void SetFchMidParams(FCH_INTERFACE *params)
-{
-	SetFchEnvParams(params);
-}
 
 /*
  * Table of APIC register index and associated IRQ name. Using IDX_XXX_NAME

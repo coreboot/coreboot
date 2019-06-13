@@ -110,6 +110,8 @@ enum {
 	SMM_SUBREGION_NUM,
 };
 
+void amd_initcpuio(void);
+
 /*
  * Fills in the arguments for the entire SMM region covered by chipset
  * protections. e.g. TSEG.

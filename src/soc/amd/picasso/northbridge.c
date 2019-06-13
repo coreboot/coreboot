@@ -27,9 +27,6 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <romstage_handoff.h>
-#include <amdblocks/agesawrapper.h>
-#include <amdblocks/agesawrapper_call.h>
-#include <agesa_headers.h>
 #include <soc/cpu.h>
 #include <soc/northbridge.h>
 #include <soc/southbridge.h>
@@ -188,26 +185,6 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 	return current;
 }
 
-static unsigned long acpi_fill_hest(acpi_hest_t *hest)
-{
-	void *addr, *current;
-
-	/* Skip the HEST header. */
-	current = (void *)(hest + 1);
-
-	addr = agesawrapper_getlateinitptr(PICK_WHEA_MCE);
-	if (addr != NULL)
-		current += acpi_create_hest_error_source(hest, current, 0,
-				(void *)((u32)addr + 2), *(uint16_t *)addr - 2);
-
-	addr = agesawrapper_getlateinitptr(PICK_WHEA_CMC);
-	if (addr != NULL)
-		current += acpi_create_hest_error_source(hest, current, 1,
-				(void *)((u32)addr + 2), *(uint16_t *)addr - 2);
-
-	return (unsigned long)current;
-}
-
 static void northbridge_fill_ssdt_generator(struct device *device)
 {
 	msr_t msr;
@@ -233,106 +210,7 @@ static unsigned long agesa_write_acpi_tables(struct device *device,
 					     unsigned long current,
 					     acpi_rsdp_t *rsdp)
 {
-	acpi_srat_t *srat;
-	acpi_slit_t *slit;
-	acpi_header_t *ssdt;
-	acpi_header_t *alib;
-	acpi_header_t *ivrs;
-	acpi_hest_t *hest;
-	acpi_bert_t *bert;
-
-	/* HEST */
-	current = ALIGN(current, 8);
-	hest = (acpi_hest_t *)current;
-	acpi_write_hest(hest, acpi_fill_hest);
-	acpi_add_table(rsdp, (void *)current);
-	current += hest->header.length;
-
-	/* BERT */
-	if (CONFIG(ACPI_BERT) && bert_errors_present()) {
-		/* Skip the table if no errors are present.  ACPI driver reports
-		 * a table with a 0-length region:
-		 *   BERT: [Firmware Bug]: table invalid.
-		 */
-		void *rgn;
-		size_t size;
-		bert_errors_region(&rgn, &size);
-		if (!rgn) {
-			printk(BIOS_ERR, "Error: Can't find BERT storage area\n");
-		} else {
-			current = ALIGN(current, 8);
-			bert = (acpi_bert_t *)current;
-			acpi_write_bert(bert, (uintptr_t)rgn, size);
-			acpi_add_table(rsdp, (void *)current);
-			current += bert->header.length;
-		}
-	}
-
-	current = ALIGN(current, 8);
-	printk(BIOS_DEBUG, "ACPI:    * IVRS at %lx\n", current);
-	ivrs = agesawrapper_getlateinitptr(PICK_IVRS);
-	if (ivrs != NULL) {
-		memcpy((void *)current, ivrs, ivrs->length);
-		ivrs = (acpi_header_t *)current;
-		current += ivrs->length;
-		acpi_add_table(rsdp, ivrs);
-	} else {
-		printk(BIOS_DEBUG, "  AGESA IVRS table NULL. Skipping.\n");
-	}
-
-	/* SRAT */
-	current = ALIGN(current, 8);
-	printk(BIOS_DEBUG, "ACPI:    * SRAT at %lx\n", current);
-	srat = (acpi_srat_t *)agesawrapper_getlateinitptr(PICK_SRAT);
-	if (srat != NULL) {
-		memcpy((void *)current, srat, srat->header.length);
-		srat = (acpi_srat_t *)current;
-		current += srat->header.length;
-		acpi_add_table(rsdp, srat);
-	} else {
-		printk(BIOS_DEBUG, "  AGESA SRAT table NULL. Skipping.\n");
-	}
-
-	/* SLIT */
-	current = ALIGN(current, 8);
-	printk(BIOS_DEBUG, "ACPI:   * SLIT at %lx\n", current);
-	slit = (acpi_slit_t *)agesawrapper_getlateinitptr(PICK_SLIT);
-	if (slit != NULL) {
-		memcpy((void *)current, slit, slit->header.length);
-		slit = (acpi_slit_t *)current;
-		current += slit->header.length;
-		acpi_add_table(rsdp, slit);
-	} else {
-		printk(BIOS_DEBUG, "  AGESA SLIT table NULL. Skipping.\n");
-	}
-
-	/* ALIB */
-	current = ALIGN(current, 16);
-	printk(BIOS_DEBUG, "ACPI:  * AGESA ALIB SSDT at %lx\n", current);
-	alib = (acpi_header_t *)agesawrapper_getlateinitptr(PICK_ALIB);
-	if (alib != NULL) {
-		memcpy((void *)current, alib, alib->length);
-		alib = (acpi_header_t *)current;
-		current += alib->length;
-		acpi_add_table(rsdp, (void *)alib);
-	} else {
-		printk(BIOS_DEBUG, "	AGESA ALIB SSDT table NULL."
-							" Skipping.\n");
-	}
-
-	current   = ALIGN(current, 16);
-	printk(BIOS_DEBUG, "ACPI:    * SSDT at %lx\n", current);
-	ssdt = (acpi_header_t *)agesawrapper_getlateinitptr(PICK_PSTATE);
-	if (ssdt != NULL) {
-		memcpy((void *)current, ssdt, ssdt->length);
-		ssdt = (acpi_header_t *)current;
-		current += ssdt->length;
-	} else {
-		printk(BIOS_DEBUG, "  AGESA PState table NULL. Skipping.\n");
-	}
-	acpi_add_table(rsdp, ssdt);
-
-	printk(BIOS_DEBUG, "ACPI:    * SSDT for PState at %lx\n", current);
+	/* TODO - different mechanism to collect this info for Family 17h */
 	return current;
 }
 
@@ -397,13 +275,6 @@ void fam15_finalize(void *chip_info)
 	value = pci_read_config32(SOC_HDA0_DEV, HDA_DEV_CTRL_STATUS);
 	value &= ~HDA_NO_SNOOP_EN;
 	pci_write_config32(SOC_HDA0_DEV, HDA_DEV_CTRL_STATUS, value);
-}
-
-void domain_enable_resources(struct device *dev)
-{
-	/* Must be called after PCI enumeration and resource allocation */
-	if (!romstage_handoff_is_resume())
-		do_agesawrapper(AMD_INIT_MID, "amdinitmid");
 }
 
 void domain_set_resources(struct device *dev)
@@ -473,20 +344,4 @@ u32 map_oprom_vendev(u32 vendev)
 				vendev, new_vendev);
 
 	return new_vendev;
-}
-
-__weak void set_board_env_params(GNB_ENV_CONFIGURATION *params) { }
-
-void SetNbEnvParams(GNB_ENV_CONFIGURATION *params)
-{
-	const struct device *dev = SOC_IOMMU_DEV;
-	params->IommuSupport = dev && dev->enabled;
-	set_board_env_params(params);
-}
-
-void SetNbMidParams(GNB_MID_CONFIGURATION *params)
-{
-	/* 0=Primary and decode all VGA resources, 1=Secondary - decode none */
-	params->iGpuVgaMode = 0;
-	params->GnbIoapicAddress = IO_APIC2_ADDR;
 }

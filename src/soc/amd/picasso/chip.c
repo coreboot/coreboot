@@ -25,9 +25,6 @@
 #include <soc/northbridge.h>
 #include <soc/pci_devs.h>
 #include <soc/southbridge.h>
-#include <amdblocks/agesawrapper.h>
-#include <amdblocks/agesawrapper_call.h>
-
 #include "chip.h"
 
 /* Supplied by i2c.c */
@@ -113,7 +110,6 @@ const char *soc_acpi_name(const struct device *dev)
 struct device_operations pci_domain_ops = {
 	.read_resources	  = pci_domain_read_resources,
 	.set_resources	  = domain_set_resources,
-	.enable_resources = domain_enable_resources,
 	.scan_bus	  = pci_domain_scan_bus,
 	.acpi_name	  = soc_acpi_name,
 };
@@ -141,7 +137,6 @@ static void soc_init(void *chip_info)
 static void soc_final(void *chip_info)
 {
 	southbridge_final(chip_info);
-	fam15_finalize(chip_info);
 }
 
 struct chip_operations soc_amd_picasso_ops = {
@@ -150,19 +145,3 @@ struct chip_operations soc_amd_picasso_ops = {
 	.init = soc_init,
 	.final = soc_final
 };
-
-static void earliest_ramstage(void *unused)
-{
-	int s3_resume = acpi_s3_resume_allowed() &&
-			romstage_handoff_is_resume();
-	if (!s3_resume) {
-		post_code(0x47);
-		do_agesawrapper(AMD_INIT_ENV, "amdinitenv");
-	} else {
-		/* Complete the initial system restoration */
-		post_code(0x46);
-		do_agesawrapper(AMD_S3LATE_RESTORE, "amds3laterestore");
-	}
-}
-
-BOOT_STATE_INIT_ENTRY(BS_PRE_DEVICE, BS_ON_ENTRY, earliest_ramstage, NULL);

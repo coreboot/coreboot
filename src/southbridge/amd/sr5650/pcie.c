@@ -59,11 +59,11 @@ static void PciePowerOffGppPorts(struct device *nb_dev, struct device *dev, u32 
 {
 	printk(BIOS_DEBUG, "PciePowerOffGppPorts() port %d\n", port);
 	u32 reg;
-	u16 state_save;
+	u32 state_save;
 	uint8_t i;
 	struct southbridge_amd_sr5650_config *cfg =
 		(struct southbridge_amd_sr5650_config *)nb_dev->chip_info;
-	u16 state = cfg->port_enable;
+	u32 state = cfg->port_enable;
 
 	if (!(AtiPcieCfg.Config & PCIE_DISABLE_HIDE_UNUSED_PORTS))
 		state &= AtiPcieCfg.PortDetect;

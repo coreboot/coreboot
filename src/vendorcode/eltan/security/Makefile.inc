@@ -1,6 +1,6 @@
 ## This file is part of the coreboot project.
 ##
-## Copyright (C) 2018 Eltan B.V.
+## Copyright (C) 2018-2019 Eltan B.V.
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -16,12 +16,9 @@ subdirs-y += lib
 subdirs-y += verified_boot
 subdirs-y += mboot
 
-ifeq ($(CONFIG_MBOOT), y)
+ifneq ($(filter y,$(CONFIG_VENDORCODE_ELTAN_VBOOT) $(CONFIG_VENDORCODE_ELTAN_MBOOT)),)
 CPPFLAGS_common += -I$(src)/vendorcode/eltan/security/mboot
 CPPFLAGS_common += -I$(src)/vendorcode/eltan/security/include
-endif
-
-ifeq ($(CONFIG_VERIFIED_BOOT), y)
 CPPFLAGS_common += -I$(src)/vendorcode/eltan/security/verified_boot
 endif
 

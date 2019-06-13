@@ -118,7 +118,7 @@ struct chip_operations mainboard_ops = {
 #define SKU_UNKNOWN		0xFFFFFFFF
 #define SKU_MAX			255
 
-static uint32_t get_board_sku(void)
+uint32_t get_board_sku(void)
 {
 	static uint32_t sku_id = SKU_UNKNOWN;
 

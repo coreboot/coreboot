@@ -360,41 +360,53 @@ const u8 pGpp111111[] = {0x0E, 0x0E, 0x0E, 0x0E, 0, 0x0E, 0x0E};
 static void gpp3a_cpl_buf_alloc(struct device *nb_dev, struct device *dev)
 {
 	u8 dev_index;
-	u8 *slave_cpl;
 	u8 value;
 	struct southbridge_amd_sr5650_config *cfg =
 	    (struct southbridge_amd_sr5650_config *)nb_dev->chip_info;
 
 	dev_index = dev->path.pci.devfn >> 3;
-	if (dev_index < 4 || dev_index > 0xa) {
+
+	if (dev_index < 4)
 		return;
-	}
+
+	dev_index -= 4;
 
 	switch (cfg->gpp3a_configuration) {
 	case 0x1: /* 4:2:0:0:0:0 */
-		slave_cpl = (u8 *)&pGpp420000;
+		if (dev_index >= ARRAY_SIZE(pGpp420000))
+			return;
+		value = pGpp420000[dev_index];
 		break;
 	case 0x2: /* 4:1:1:0:0:0 */
-		slave_cpl = (u8 *)&pGpp411000;
+		if (dev_index >= ARRAY_SIZE(pGpp411000))
+			return;
+		value = pGpp411000[dev_index];
 		break;
 	case 0xC: /* 2:2:2:0:0:0 */
-		slave_cpl = (u8 *)&pGpp222000;
+		if (dev_index >= ARRAY_SIZE(pGpp222000))
+			return;
+		value = pGpp222000[dev_index];
 		break;
 	case 0xA: /* 2:2:1:1:0:0 */
-		slave_cpl = (u8 *)&pGpp221100;
+		if (dev_index >= ARRAY_SIZE(pGpp221100))
+			return;
+		value = pGpp221100[dev_index];
 		break;
 	case 0x4: /* 2:1:1:1:1:0 */
-		slave_cpl = (u8 *)&pGpp211110;
+		if (dev_index >= ARRAY_SIZE(pGpp211110))
+			return;
+		value = pGpp211110[dev_index];
 		break;
 	case 0xB: /* 1:1:1:1:1:1 */
-		slave_cpl = (u8 *)&pGpp111111;
+		if (dev_index >= ARRAY_SIZE(pGpp111111))
+			return;
+		value = pGpp111111[dev_index];
 		break;
 	default:  /* shouldn't be here. */
 		printk(BIOS_WARNING, "buggy gpp3a_configuration\n");
 		return;
 	}
 
-	value = slave_cpl[dev_index - 4];
 	if (value != 0) {
 		set_pcie_enable_bits(dev, 0x10, 0x3f << 8, value << 8);
 		set_pcie_enable_bits(dev, 0x20, 1 << 11, 1 << 11);

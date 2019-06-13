@@ -32,6 +32,9 @@ char *strncpy(char *to, const char *from, int count);
 char *strcpy(char *dst, const char *src);
 int strcmp(const char *s1, const char *s2);
 int strncmp(const char *s1, const char *s2, int maxlen);
+int strspn(const char *str, const char *spn);
+int strcspn(const char *str, const char *spn);
+long atol(const char *str);
 
 /**
  * Find a character in a string.

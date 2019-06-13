@@ -132,3 +132,55 @@ unsigned int skip_atoi(char **s)
 		i = i*10 + *((*s)++) - '0';
 	return i;
 }
+
+int strspn(const char *str, const char *spn)
+{
+	int ret = 0;
+
+	while (*str != 0) {
+		const char *p;
+		for (p = spn; *str != *p; p++)
+			if (*p == '\0')
+				return ret;
+		ret++;
+		str++;
+	}
+	return ret;
+}
+
+int strcspn(const char *str, const char *spn)
+{
+	int ret = 0;
+
+	while (*str != 0) {
+		const char *p;
+		for (p = spn; *p != '\0'; p++)
+			if (*p == *str)
+				return ret;
+		ret++;
+		str++;
+	}
+	return ret;
+}
+
+long atol(const char *str)
+{
+	long ret = 0;
+	long sign = 1;
+
+	str += strspn(str, " \t\n\r\f\v");
+
+	if (*str == '+') {
+		sign = 1;
+		str++;
+	} else if (*str == '-') {
+		sign = -1;
+		str++;
+	}
+
+	while (isdigit(*str)) {
+		ret *= 10;
+		ret += *str++ - '0';
+	}
+	return ret * sign;
+}

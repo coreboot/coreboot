@@ -154,6 +154,12 @@ Device (EC0)
 		If (Arg0) {
 			Printf ("EC Enter S0ix")
 			W (CSEX, One)
+
+			/*
+			 * Read back from EC RAM after enabling S0ix
+			 * to prevent EC from aborting S0ix entry.
+			 */
+			R (EVT1)
 		} Else {
 			Printf ("EC Exit S0ix")
 			W (CSEX, Zero)

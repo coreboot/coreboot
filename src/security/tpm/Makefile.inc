@@ -36,8 +36,8 @@ romstage-y += tss/tcg-2.0/tss.c
 verstage-$(CONFIG_VBOOT) += tss/tcg-2.0/tss_marshaling.c
 verstage-$(CONFIG_VBOOT) += tss/tcg-2.0/tss.c
 
-postcar-$(CONFIG_VBOOT) += tss/tcg-2.0/tss_marshaling.c
-postcar-$(CONFIG_VBOOT) += tss/tcg-2.0/tss.c
+postcar-y += tss/tcg-2.0/tss_marshaling.c
+postcar-y += tss/tcg-2.0/tss.c
 
 ## TSPI
 

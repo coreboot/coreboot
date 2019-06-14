@@ -15,7 +15,7 @@ Payloads run from the ramstage are started in S mode, and trap delegation
 will have been done. These payloads rely on the SBI and can not replace it.
 
 ## Stage handoff protocol
-On entry to a stage or payload,
+On entry to a stage or payload (including SELF payloads),
 * all harts are running.
 * A0 is the hart ID.
 * A1 is the pointer to the Flattened Device Tree (FDT).

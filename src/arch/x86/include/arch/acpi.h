@@ -82,7 +82,7 @@ enum acpi_tables {
 	BERT, DBG2, DMAR, DSDT, FACS, FADT, HEST, HPET, IVRS, MADT, MCFG,
 	RSDP, RSDT, SLIT, SRAT, SSDT, TCPA, TPM2, XSDT, ECDT,
 	/* Additional proprietary tables used by coreboot */
-	VFCT, NHLT
+	VFCT, NHLT, SPMI
 };
 
 /* RSDP (Root System Description Pointer) */
@@ -782,6 +782,43 @@ enum acpi_upc_type {
 	UPC_TYPE_HUB
 };
 
+enum acpi_ipmi_interface_type {
+	IPMI_INTERFACE_RESERVED = 0,
+	IPMI_INTERFACE_KCS,
+	IPMI_INTERFACE_SMIC,
+	IPMI_INTERFACE_BT,
+	IPMI_INTERFACE_SSIF,
+};
+
+#define ACPI_IPMI_PCI_DEVICE_FLAG	(1 << 0)
+#define ACPI_IPMI_INT_TYPE_SCI		(1 << 0)
+#define ACPI_IPMI_INT_TYPE_APIC		(1 << 1)
+
+/* ACPI IPMI 2.0 */
+struct acpi_spmi {
+	struct acpi_table_header header;
+	u8 interface_type;
+	u8 reserved;
+	u16 specification_revision;
+	u8 interrupt_type;
+	u8 gpe;
+	u8 reserved2;
+	u8 pci_device_flag;
+
+	u32 global_system_interrupt;
+	acpi_addr_t base_address;
+	union {
+		struct {
+			u8 pci_segment_group;
+			u8 pci_bus;
+			u8 pci_device;
+			u8 pci_function;
+		};
+		u8 uid[4];
+	};
+	u8 reserved3;
+} __packed;
+
 unsigned long fw_cfg_acpi_tables(unsigned long start);
 
 /* These are implemented by the target port or north/southbridge. */
@@ -833,6 +870,15 @@ void acpi_create_vfct(struct device *device,
 		      unsigned long (*acpi_fill_vfct)(struct device *device,
 				struct acpi_vfct *vfct_struct,
 				unsigned long current));
+
+void acpi_create_ipmi(struct device *device,
+		      struct acpi_spmi *spmi,
+		      const u16 ipmi_revision,
+		      const acpi_addr_t *addr,
+		      const enum acpi_ipmi_interface_type type,
+		      const s8 gpe_interrupt,
+		      const u32 apic_interrupt,
+		      const u32 uid);
 
 void acpi_create_ivrs(acpi_ivrs_t *ivrs,
 		      unsigned long (*acpi_fill_ivrs)(acpi_ivrs_t *ivrs_struct,

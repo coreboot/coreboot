@@ -772,6 +772,57 @@ void acpi_create_vfct(struct device *device,
 	header->checksum = acpi_checksum((void *)vfct, header->length);
 }
 
+void acpi_create_ipmi(struct device *device,
+		      struct acpi_spmi *spmi,
+		      const u16 ipmi_revision,
+		      const acpi_addr_t *addr,
+		      const enum acpi_ipmi_interface_type type,
+		      const s8 gpe_interrupt,
+		      const u32 apic_interrupt,
+		      const u32 uid)
+{
+	acpi_header_t *header = &(spmi->header);
+	memset((void *)spmi, 0, sizeof(struct acpi_spmi));
+
+	/* Fill out header fields. */
+	memcpy(header->signature, "SPMI", 4);
+	memcpy(header->oem_id, OEM_ID, 6);
+	memcpy(header->oem_table_id, ACPI_TABLE_CREATOR, 8);
+	memcpy(header->asl_compiler_id, ASLC, 4);
+
+	header->asl_compiler_revision = asl_revision;
+	header->length = sizeof(struct acpi_spmi);
+	header->revision = get_acpi_table_revision(SPMI);
+
+	spmi->reserved = 1;
+
+	if (device->path.type == DEVICE_PATH_PCI) {
+		spmi->pci_device_flag = ACPI_IPMI_PCI_DEVICE_FLAG;
+		spmi->pci_bus = device->bus->secondary;
+		spmi->pci_device = device->path.pci.devfn >> 3;
+		spmi->pci_function = device->path.pci.devfn & 0x7;
+	} else if (type != IPMI_INTERFACE_SSIF) {
+		memcpy(spmi->uid, &uid, sizeof(spmi->uid));
+	}
+
+	spmi->base_address = *addr;
+	spmi->specification_revision = ipmi_revision;
+
+	spmi->interface_type = type;
+
+	if (gpe_interrupt >= 0 && gpe_interrupt < 32) {
+		spmi->gpe = gpe_interrupt;
+		spmi->interrupt_type |= ACPI_IPMI_INT_TYPE_SCI;
+	}
+	if (apic_interrupt > 0) {
+		spmi->global_system_interrupt = apic_interrupt;
+		spmi->interrupt_type |= ACPI_IPMI_INT_TYPE_APIC;
+	}
+
+	/* Calculate checksum. */
+	header->checksum = acpi_checksum((void *)spmi, header->length);
+}
+
 void acpi_create_ivrs(acpi_ivrs_t *ivrs,
 		      unsigned long (*acpi_fill_ivrs)(acpi_ivrs_t *ivrs_struct,
 		      unsigned long current))
@@ -1490,6 +1541,8 @@ int get_acpi_table_revision(enum acpi_tables table)
 		return 1;
 	case SLIT: /* ACPI 2.0 upto 6.3: 1 */
 		return 1;
+	case SPMI: /* IMPI 2.0 */
+		return 5;
 	case HPET: /* Currently 1. Table added in ACPI 2.0. */
 		return 1;
 	case VFCT: /* ACPI 2.0/3.0/4.0: 1 */

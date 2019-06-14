@@ -38,6 +38,10 @@ void early_mainboard_romstage_entry(void)
 	pci_write_config32(PCI_DEV(0x0, LPC_DEV, LPC_FUNC), LPC_GEN1_DEC,
 			   (0 << 16) | ALIGN_DOWN(SUPERIO_DEV, 4) | 1);
 
+	/* Decode IPMI KCS */
+	pci_write_config32(PCI_DEV(0x0, LPC_DEV, LPC_FUNC), LPC_GEN2_DEC,
+			   (0 << 16) | ALIGN_DOWN(0xca2, 4) | 1);
+
 	if (CONFIG(CONSOLE_SERIAL))
 		ite_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 

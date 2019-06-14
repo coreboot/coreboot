@@ -60,6 +60,9 @@ chip soc/intel/fsp_broadwell_de
 				device pnp 6e.18 off end
 				device pnp 6e.19 off end
 			end	#superio/ite/it8528e
+			chip drivers/ipmi
+				device pnp ca2.0 on end		# IPMI KCS
+			end
 		end # LPC Bridge
 		device pci 1f.2 on end # SATA Controller
 		device pci 1f.3 on end # SMBus Controller

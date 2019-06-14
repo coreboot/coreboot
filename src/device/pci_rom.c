@@ -56,9 +56,9 @@ struct rom_header *pci_rom_probe(struct device *dev)
 		printk(BIOS_DEBUG, "In CBFS, ROM address for %s = %p\n",
 		       dev_path(dev), rom_header);
 	} else if (!CONFIG(ON_DEVICE_ROM_LOAD)) {
-			printk(BIOS_DEBUG, "PCI Option ROM loading disabled "
-				"for %s\n", dev_path(dev));
-			return NULL;
+		printk(BIOS_DEBUG, "PCI Option ROM loading disabled for %s\n",
+		       dev_path(dev));
+		return NULL;
 	} else {
 		uintptr_t rom_address;
 

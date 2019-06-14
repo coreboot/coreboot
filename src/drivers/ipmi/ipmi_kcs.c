@@ -22,7 +22,7 @@
 
 #define IPMI_KCS_STATE(_x)	((_x) >> 6)
 
-#define IPMI_KCS_GET_STATUS_ABORT
+#define IPMI_KCS_GET_STATUS_ABORT 0x60
 #define IPMI_KCS_START_WRITE 0x61
 #define IPMI_KCS_END_WRITE 0x62
 #define IPMI_KCS_READ_BYTE 0x68
@@ -43,7 +43,7 @@
 static unsigned char ipmi_kcs_status(int port)
 {
 	unsigned char status = inb(IPMI_STAT(port));
-	printk(BIOS_DEBUG, "%s: 0x%02x\n", __func__, status);
+	printk(BIOS_SPEW, "%s: 0x%02x\n", __func__, status);
 	return status;
 }
 
@@ -77,7 +77,7 @@ static int ipmi_kcs_send_data_byte(int port, const unsigned char byte)
 {
 	unsigned char status;
 
-	printk(BIOS_DEBUG, "%s: %02x\n", __func__, byte);
+	printk(BIOS_SPEW, "%s: 0x%02x\n", __func__, byte);
 
 	outb(byte, IPMI_DATA(port));
 
@@ -100,7 +100,7 @@ static int ipmi_kcs_send_last_data_byte(int port, const unsigned char byte)
 {
 	unsigned char status;
 
-	printk(BIOS_DEBUG, "%s: %02x\n", __func__, byte);
+	printk(BIOS_SPEW, "%s: 0x%02x\n", __func__, byte);
 
 	if (wait_ibf_timeout(port))
 		return 1;
@@ -121,7 +121,7 @@ static int ipmi_kcs_send_last_data_byte(int port, const unsigned char byte)
 
 static int ipmi_kcs_send_cmd_byte(int port, const unsigned char byte)
 {
-	printk(BIOS_DEBUG, "%s: 0x%02x\n", __func__, byte);
+	printk(BIOS_SPEW, "%s: 0x%02x\n", __func__, byte);
 
 	if (wait_ibf_timeout(port))
 		return 1;
@@ -156,40 +156,53 @@ static int ipmi_kcs_send_message(int port, int netfn, int lun, int cmd,
 		return ret;
 	}
 
-	ret = ipmi_kcs_send_data_byte(port, cmd);
-	if (ret) {
-		printk(BIOS_ERR, "IPMI CMD failed\n");
-		return ret;
-	}
+	if (!len) {
+		ret = ipmi_kcs_send_cmd_byte(port, IPMI_KCS_END_WRITE);
+		if (ret) {
+			printk(BIOS_ERR, "IPMI END WRITE failed\n");
+			return ret;
+		}
 
-	while (len-- > 1) {
-		ret = ipmi_kcs_send_data_byte(port, *msg++);
+		ret = ipmi_kcs_send_last_data_byte(port, cmd);
+		if (ret) {
+			printk(BIOS_ERR, "IPMI BYTE WRITE failed\n");
+			return ret;
+		}
+	} else {
+		ret = ipmi_kcs_send_data_byte(port, cmd);
+		if (ret) {
+			printk(BIOS_ERR, "IPMI CMD failed\n");
+			return ret;
+		}
+
+		while (len > 1) {
+			ret = ipmi_kcs_send_data_byte(port, *msg++);
+			if (ret) {
+				printk(BIOS_ERR, "IPMI BYTE WRITE failed\n");
+				return ret;
+			}
+			len--;
+		}
+
+		ret = ipmi_kcs_send_cmd_byte(port, IPMI_KCS_END_WRITE);
+		if (ret) {
+			printk(BIOS_ERR, "IPMI END WRITE failed\n");
+			return ret;
+		}
+
+		ret = ipmi_kcs_send_last_data_byte(port, *msg);
 		if (ret) {
 			printk(BIOS_ERR, "IPMI BYTE WRITE failed\n");
 			return ret;
 		}
 	}
 
-	ret = ipmi_kcs_send_cmd_byte(port, IPMI_KCS_END_WRITE);
-	if (ret) {
-		printk(BIOS_ERR, "IPMI END WRITE failed\n");
-		return ret;
-	}
-
-	ret = ipmi_kcs_send_last_data_byte(port, *msg++);
-	if (ret) {
-		printk(BIOS_ERR, "IPMI BYTE WRITE failed\n");
-		return ret;
-	}
 	return 0;
 }
 
 static int ipmi_kcs_read_message(int port, unsigned char *msg, int len)
 {
 	int status, ret = 0;
-
-	if (!msg)
-		return 0;
 
 	if (wait_ibf_timeout(port))
 		return 1;
@@ -201,15 +214,18 @@ static int ipmi_kcs_read_message(int port, unsigned char *msg, int len)
 			return ret;
 
 		if (IPMI_KCS_STATE(status) != IPMI_KCS_STATE_READ) {
-			printk(BIOS_ERR, "%s: wrong state: 0x%02x\n", __func__, status);
+			printk(BIOS_ERR, "%s: wrong state: 0x%02x\n", __func__,
+			       status);
 			return -1;
 		}
 
 		if (wait_obf_timeout(port))
 			return -1;
 
-		*msg++ = inb(IPMI_DATA(port));
-		ret++;
+		if (msg && (ret < len)) {
+			*msg++ = inb(IPMI_DATA(port));
+			ret++;
+		}
 
 		if (wait_ibf_timeout(port))
 			return -1;

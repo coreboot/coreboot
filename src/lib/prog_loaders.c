@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright 2015 Google Inc.
+ * Copyright (C) 2018-2019 Eltan B.V.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,6 +39,9 @@ int prog_locate(struct prog *prog)
 {
 	struct cbfsf file;
 
+	if (prog_locate_hook(prog))
+		return -1;
+
 	cbfs_prepare_program_locate();
 
 	if (cbfs_boot_locate(&file, prog_name(prog), NULL))
@@ -73,6 +77,8 @@ fail:
 				   "Couldn't load romstage.\n");
 	halt();
 }
+
+int __weak prog_locate_hook(struct prog *prog) { return 0; }
 
 static void ramstage_cache_invalid(void)
 {

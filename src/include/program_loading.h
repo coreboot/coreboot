@@ -3,6 +3,7 @@
  *
  * Copyright 2015 Google Inc.
  * Copyright (C) 2014 Imagination Technologies
+ * Copyright (C) 2018 Eltan B.V.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -138,6 +139,12 @@ static inline void prog_set_entry(struct prog *prog, void *e, void *arg)
 
 /* Locate the identified program to run. Return 0 on success. < 0 on error. */
 int prog_locate(struct prog *prog);
+/* The prog_locate_hook() is called prior to CBFS traversal. The hook can be
+ * used to implement policy that allows or prohibits further progress through
+ * prog_locate(). The type and name field within struct prog are the only valid
+ * fields. A 0 return value allows further progress while a non-zero return
+ * value prohibits further progress */
+int prog_locate_hook(struct prog *prog);
 
 /* Run the program described by prog. */
 void prog_run(struct prog *prog);

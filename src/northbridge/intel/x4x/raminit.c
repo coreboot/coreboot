@@ -461,9 +461,9 @@ static void print_selected_timings(struct sysinfo *s)
 {
 	printk(BIOS_DEBUG, "Selected timings:\n");
 	printk(BIOS_DEBUG, "\tFSB:  %dMHz\n",
-		fsb2mhz(s->selected_timings.fsb_clk));
+		fsb_to_mhz(s->selected_timings.fsb_clk));
 	printk(BIOS_DEBUG, "\tDDR:  %dMHz\n",
-		ddr2mhz(s->selected_timings.mem_clk));
+		ddr_to_mhz(s->selected_timings.mem_clk));
 
 	printk(BIOS_DEBUG, "\tCAS:  %d\n", s->selected_timings.CAS);
 	printk(BIOS_DEBUG, "\ttRAS: %d\n", s->selected_timings.tRAS);

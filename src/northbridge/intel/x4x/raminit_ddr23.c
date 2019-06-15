@@ -32,12 +32,12 @@
 
 #define ME_UMA_SIZEMB 0
 
-u32 fsb2mhz(u32 speed)
+u32 fsb_to_mhz(u32 speed)
 {
 	return (speed * 267) + 800;
 }
 
-u32 ddr2mhz(u32 speed)
+u32 ddr_to_mhz(u32 speed)
 {
 	static const u16 mhz[] = { 0, 0, 667, 800, 1067, 1333 };
 
@@ -413,13 +413,13 @@ static void program_timings(struct sysinfo *s)
 
 	adjusted_cas = s->selected_timings.CAS - 3;
 
-	u16 fsb2ps[3] = {
+	u16 fsb_to_ps[3] = {
 		5000, // 800
 		3750, // 1067
 		3000  // 1333
 	};
 
-	u16 ddr2ps[6] = {
+	u16 ddr_to_ps[6] = {
 		5000, // 400
 		3750, // 533
 		3000, // 667
@@ -573,13 +573,13 @@ static void program_timings(struct sysinfo *s)
 
 		MCHBAR8_AND_OR(0x400*i + 0x246, ~0x1f, (reg8 << 2) | 1);
 
-		fsb = fsb2ps[s->selected_timings.fsb_clk];
-		ddr = ddr2ps[s->selected_timings.mem_clk];
+		fsb = fsb_to_ps[s->selected_timings.fsb_clk];
+		ddr = ddr_to_ps[s->selected_timings.mem_clk];
 		reg32 = (u32)((s->selected_timings.CAS + 7 + reg8) * ddr);
 		reg32 = (u32)((reg32 / fsb) << 8);
 		reg32 |= 0x0e000000;
-		if ((fsb2mhz(s->selected_timings.fsb_clk) /
-		     ddr2mhz(s->selected_timings.mem_clk)) > 2) {
+		if ((fsb_to_mhz(s->selected_timings.fsb_clk) /
+		     ddr_to_mhz(s->selected_timings.mem_clk)) > 2) {
 			reg32 |= 1 << 24;
 		}
 		MCHBAR32_AND_OR(0x400*i + 0x248, ~0x0f001f00, reg32);
@@ -671,7 +671,7 @@ static void program_timings(struct sysinfo *s)
 	if (s->spd_type == DDR3) {
 		MCHBAR8(0x114) = 0x42;
 		reg16 = (512 - MAX(5, s->selected_timings.tRFC + 10000
-					/ ddr2ps[s->selected_timings.mem_clk]))
+					/ ddr_to_ps[s->selected_timings.mem_clk]))
 					/ 2;
 		reg16 &= 0x1ff;
 		reg32 = (reg16 << 22) | (0x80 << 14) | (0xa << 9);

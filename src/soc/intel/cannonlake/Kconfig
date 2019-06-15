@@ -314,4 +314,12 @@ config SOC_INTEL_CANNONLAKE_DEBUG_CONSENT
 	  Setting non-zero value will allow to use DBC or DCI to debug SOC.
 	  PlatformDebugConsent in FspmUpd.h has the details.
 
+config USE_LEGACY_8254_TIMER
+	bool "Use Legacy 8254 Timer"
+	default y if PAYLOAD_SEABIOS
+	default n
+	help
+	  This sets the Enable8254ClockGating UPD, which according to the FSP Integration
+	  guide needs to be disabled in order to boot SeaBIOS, but should otherwise be enabled.
+
 endif

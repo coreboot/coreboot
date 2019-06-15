@@ -207,16 +207,6 @@ static void pch_misc_init(void)
 	outb(0x70, (1 << 7));
 };
 
-static void clock_gate_8254(const struct device *dev)
-{
-	const config_t *config = dev->chip_info;
-
-	if (!config->clock_gate_8254)
-		return;
-
-	itss_clock_gate_8254();
-}
-
 void lpc_soc_init(struct device *dev)
 {
 	/* Legacy initialization */
@@ -237,7 +227,6 @@ void lpc_soc_init(struct device *dev)
 	soc_pch_pirq_init(dev);
 	setup_i8259();
 	i8259_configure_irq_trigger(9, 1);
-	clock_gate_8254(dev);
 	soc_mirror_dmi_pcr_io_dec();
 }
 

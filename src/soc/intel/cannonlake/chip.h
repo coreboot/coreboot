@@ -246,8 +246,6 @@ struct soc_intel_cannonlake_config {
 	/* Enable/Disable EIST. 1b:Enabled, 0b:Disabled */
 	uint8_t eist_enable;
 
-	/* Statically clock gate 8254 PIT. */
-	uint8_t clock_gate_8254;
 	/* Enable C6 DRAM */
 	uint8_t enable_c6dram;
 	/*

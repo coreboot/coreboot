@@ -144,34 +144,40 @@ static int ipmi_kcs_send_message(int port, int netfn, int lun, int cmd,
 {
 	int ret;
 
-	if ((ret = ipmi_kcs_send_cmd_byte(port, IPMI_KCS_START_WRITE))) {
+	ret = ipmi_kcs_send_cmd_byte(port, IPMI_KCS_START_WRITE);
+	if (ret) {
 		printk(BIOS_ERR, "IPMI START WRITE failed\n");
 		return ret;
 	}
 
-	if ((ret = ipmi_kcs_send_data_byte(port, (netfn << 2) | (lun & 3)))) {
+	ret = ipmi_kcs_send_data_byte(port, (netfn << 2) | (lun & 3));
+	if (ret) {
 		printk(BIOS_ERR, "IPMI NETFN failed\n");
 		return ret;
 	}
 
-	if ((ret = ipmi_kcs_send_data_byte(port, cmd))) {
+	ret = ipmi_kcs_send_data_byte(port, cmd);
+	if (ret) {
 		printk(BIOS_ERR, "IPMI CMD failed\n");
 		return ret;
 	}
 
 	while (len-- > 1) {
-		if ((ret = ipmi_kcs_send_data_byte(port, *msg++))) {
+		ret = ipmi_kcs_send_data_byte(port, *msg++);
+		if (ret) {
 			printk(BIOS_ERR, "IPMI BYTE WRITE failed\n");
 			return ret;
 		}
 	}
 
-	if ((ret = ipmi_kcs_send_cmd_byte(port, IPMI_KCS_END_WRITE))) {
+	ret = ipmi_kcs_send_cmd_byte(port, IPMI_KCS_END_WRITE);
+	if (ret) {
 		printk(BIOS_ERR, "IPMI END WRITE failed\n");
 		return ret;
 	}
 
-	if ((ret = ipmi_kcs_send_last_data_byte(port, *msg++))) {
+	ret = ipmi_kcs_send_last_data_byte(port, *msg++);
+	if (ret) {
 		printk(BIOS_ERR, "IPMI BYTE WRITE failed\n");
 		return ret;
 	}

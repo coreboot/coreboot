@@ -16,7 +16,6 @@
 #include <stdint.h>
 #include <string.h>
 #include <cbfs.h>
-#include <arch/byteorder.h>
 #include <device/pci_ops.h>
 #include <device/pci_def.h>
 #include <console/console.h>

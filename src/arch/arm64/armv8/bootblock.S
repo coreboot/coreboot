@@ -19,7 +19,7 @@
 /* NOTE: When making changes to general ARM64 initialization, keep in mind that
  * there are other CPU entry points, using BOOTBLOCK_CUSTOM or entering the CPU
  * in a later stage (like Tegra). Changes should generally be put into
- * arm64_cpu_init so they can be shared between those instances. */
+ * arm64_init_cpu so they can be shared between those instances. */
 
 ENTRY(_start)
 	/* Initialize PSTATE, SCTLR and caches to clean state, set up stack. */

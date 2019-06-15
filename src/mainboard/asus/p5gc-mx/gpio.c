@@ -15,7 +15,7 @@
 
 #include <southbridge/intel/common/gpio.h>
 
-const struct pch_gpio_set1 pch_gpio_set1_mode = {
+static const struct pch_gpio_set1 pch_gpio_set1_mode = {
 	.gpio0 = GPIO_MODE_GPIO,
 	.gpio6 = GPIO_MODE_GPIO,
 	.gpio7 = GPIO_MODE_GPIO,
@@ -39,7 +39,7 @@ const struct pch_gpio_set1 pch_gpio_set1_mode = {
 	.gpio28 = GPIO_MODE_GPIO,
 };
 
-const struct pch_gpio_set1 pch_gpio_set1_direction = {
+static const struct pch_gpio_set1 pch_gpio_set1_direction = {
 	.gpio0  = GPIO_DIR_OUTPUT,
 	.gpio6  = GPIO_DIR_INPUT,
 	.gpio7  = GPIO_DIR_INPUT,
@@ -63,7 +63,7 @@ const struct pch_gpio_set1 pch_gpio_set1_direction = {
 	.gpio28 = GPIO_DIR_OUTPUT,
 };
 
-const struct pch_gpio_set1 pch_gpio_set1_level = {
+static const struct pch_gpio_set1 pch_gpio_set1_level = {
 	.gpio0  = GPIO_LEVEL_LOW,
 	.gpio11 = GPIO_LEVEL_HIGH,
 	.gpio16 = GPIO_LEVEL_LOW,
@@ -76,15 +76,15 @@ const struct pch_gpio_set1 pch_gpio_set1_level = {
 	.gpio28 = GPIO_LEVEL_LOW,
 };
 
-const struct pch_gpio_set1 pch_gpio_set1_blink = {
+static const struct pch_gpio_set1 pch_gpio_set1_blink = {
 };
 
-const struct pch_gpio_set1 pch_gpio_set1_invert = {
+static const struct pch_gpio_set1 pch_gpio_set1_invert = {
 	.gpio13 = GPIO_INVERT,
 	.gpio14 = GPIO_INVERT,
 };
 
-const struct pch_gpio_set2 pch_gpio_set2_mode = {
+static const struct pch_gpio_set2 pch_gpio_set2_mode = {
 	.gpio32 = GPIO_MODE_NATIVE,
 	.gpio33 = GPIO_MODE_NATIVE,
 	.gpio34 = GPIO_MODE_NATIVE,
@@ -95,7 +95,7 @@ const struct pch_gpio_set2 pch_gpio_set2_mode = {
 	.gpio39 = GPIO_MODE_NATIVE,
 };
 
-const struct pch_gpio_set2 pch_gpio_set2_direction = {
+static const struct pch_gpio_set2 pch_gpio_set2_direction = {
 	.gpio32 = GPIO_DIR_OUTPUT,
 	.gpio33 = GPIO_DIR_OUTPUT,
 	.gpio34 = GPIO_DIR_OUTPUT,
@@ -106,7 +106,7 @@ const struct pch_gpio_set2 pch_gpio_set2_direction = {
 	.gpio39 = GPIO_DIR_INPUT,
 };
 
-const struct pch_gpio_set2 pch_gpio_set2_level = {
+static const struct pch_gpio_set2 pch_gpio_set2_level = {
 	.gpio32 = GPIO_LEVEL_HIGH,
 	.gpio33 = GPIO_LEVEL_HIGH,
 	.gpio34 = GPIO_LEVEL_LOW,

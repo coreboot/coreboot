@@ -89,7 +89,7 @@ static const struct pch_gpio_set1 pch_gpio_set1_invert = {
 	.gpio29 = GPIO_NO_INVERT,
 };
 
-const struct pch_gpio_set1 pch_gpio_set1_reset = {
+static const struct pch_gpio_set1 pch_gpio_set1_reset = {
 	.gpio6 = GPIO_RESET_PWROK,
 	.gpio7 = GPIO_RESET_PWROK,
 	.gpio8 = GPIO_RESET_PWROK,
@@ -135,7 +135,7 @@ static const struct pch_gpio_set2 pch_gpio_set2_level = {
 	.gpio60 = GPIO_LEVEL_HIGH,
 };
 
-const struct pch_gpio_set2 pch_gpio_set2_reset = {
+static const struct pch_gpio_set2 pch_gpio_set2_reset = {
 	.gpio35 = GPIO_RESET_PWROK,
 	.gpio37 = GPIO_RESET_PWROK,
 	.gpio38 = GPIO_RESET_PWROK,
@@ -144,22 +144,22 @@ const struct pch_gpio_set2 pch_gpio_set2_reset = {
 	.gpio60 = GPIO_RESET_PWROK,
 };
 
-const struct pch_gpio_set3 pch_gpio_set3_mode = {
+static const struct pch_gpio_set3 pch_gpio_set3_mode = {
 	.gpio68 = GPIO_MODE_GPIO,
 	.gpio69 = GPIO_MODE_GPIO,
 	.gpio72 = GPIO_MODE_GPIO,
 };
 
-const struct pch_gpio_set3 pch_gpio_set3_direction = {
+static const struct pch_gpio_set3 pch_gpio_set3_direction = {
 	.gpio68 = GPIO_DIR_INPUT,
 	.gpio69 = GPIO_DIR_INPUT,
 	.gpio72 = GPIO_DIR_INPUT,
 };
 
-const struct pch_gpio_set3 pch_gpio_set3_level = {
+static const struct pch_gpio_set3 pch_gpio_set3_level = {
 };
 
-const struct pch_gpio_set3 pch_gpio_set3_reset = {
+static const struct pch_gpio_set3 pch_gpio_set3_reset = {
 	.gpio68 = GPIO_RESET_PWROK,
 	.gpio69 = GPIO_RESET_PWROK,
 	.gpio72 = GPIO_RESET_PWROK,

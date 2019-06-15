@@ -18,7 +18,7 @@
 
 #include <southbridge/intel/common/gpio.h>
 
-const struct pch_gpio_set1 pch_gpio_set1_mode = {
+static const struct pch_gpio_set1 pch_gpio_set1_mode = {
 	.gpio0  = GPIO_MODE_NONE,	/* NOT USED */
 	.gpio1  = GPIO_MODE_NONE,	/* NOT USED */
 	.gpio2  = GPIO_MODE_NATIVE,	/* NOT USED / PIRQE# */
@@ -53,7 +53,7 @@ const struct pch_gpio_set1 pch_gpio_set1_mode = {
 	.gpio31 = GPIO_MODE_NATIVE,	/* ACPRESENT */
 };
 
-const struct pch_gpio_set1 pch_gpio_set1_direction = {
+static const struct pch_gpio_set1 pch_gpio_set1_direction = {
 	.gpio0  = GPIO_DIR_INPUT,
 	.gpio1  = GPIO_DIR_INPUT,
 	.gpio2  = GPIO_DIR_INPUT,
@@ -88,7 +88,7 @@ const struct pch_gpio_set1 pch_gpio_set1_direction = {
 	.gpio31 = GPIO_DIR_INPUT,
 };
 
-const struct pch_gpio_set1 pch_gpio_set1_level = {
+static const struct pch_gpio_set1 pch_gpio_set1_level = {
 	.gpio0  = GPIO_LEVEL_LOW,
 	.gpio1  = GPIO_LEVEL_LOW,
 	.gpio2  = GPIO_LEVEL_LOW,
@@ -123,14 +123,14 @@ const struct pch_gpio_set1 pch_gpio_set1_level = {
 	.gpio31 = GPIO_LEVEL_LOW,
 };
 
-const struct pch_gpio_set1 pch_gpio_set1_invert = {
+static const struct pch_gpio_set1 pch_gpio_set1_invert = {
 	.gpio7 = GPIO_INVERT,
 	.gpio8 = GPIO_INVERT,
 	.gpio12 = GPIO_INVERT,
 	.gpio15 = GPIO_INVERT,
 };
 
-const struct pch_gpio_set2 pch_gpio_set2_mode = {
+static const struct pch_gpio_set2 pch_gpio_set2_mode = {
 	.gpio36 = GPIO_MODE_GPIO, /* W_DISABLE_L */
 	.gpio41 = GPIO_MODE_GPIO, /* SPD vector D0 */
 	.gpio42 = GPIO_MODE_GPIO, /* SPD vector D1 */
@@ -139,7 +139,7 @@ const struct pch_gpio_set2 pch_gpio_set2_mode = {
 	.gpio60 = GPIO_MODE_GPIO, /* DRAMRST_CNTRL_PCH */
 };
 
-const struct pch_gpio_set2 pch_gpio_set2_direction = {
+static const struct pch_gpio_set2 pch_gpio_set2_direction = {
 	.gpio32 = GPIO_DIR_INPUT,
 	.gpio33 = GPIO_DIR_INPUT,
 	.gpio34 = GPIO_DIR_INPUT,
@@ -174,7 +174,7 @@ const struct pch_gpio_set2 pch_gpio_set2_direction = {
 	.gpio63 = GPIO_DIR_INPUT,
 };
 
-const struct pch_gpio_set2 pch_gpio_set2_level = {
+static const struct pch_gpio_set2 pch_gpio_set2_level = {
 	.gpio32 = GPIO_LEVEL_LOW,
 	.gpio33 = GPIO_LEVEL_LOW,
 	.gpio34 = GPIO_LEVEL_LOW,
@@ -209,7 +209,7 @@ const struct pch_gpio_set2 pch_gpio_set2_level = {
 	.gpio63 = GPIO_LEVEL_LOW,
 };
 
-const struct pch_gpio_set3 pch_gpio_set3_mode = {
+static const struct pch_gpio_set3 pch_gpio_set3_mode = {
 	.gpio64 = GPIO_MODE_NONE,	/* NOT USED / CLK_FLEX0 */
 	.gpio65 = GPIO_MODE_NONE,	/* NOT USED / CLK_FLEX1 */
 	.gpio66 = GPIO_MODE_NONE,	/* NOT USED / CLK_FLEX2 */
@@ -224,7 +224,7 @@ const struct pch_gpio_set3 pch_gpio_set3_mode = {
 	.gpio75 = GPIO_MODE_NATIVE,	/* SML1DATA */
 };
 
-const struct pch_gpio_set3 pch_gpio_set3_direction = {
+static const struct pch_gpio_set3 pch_gpio_set3_direction = {
 	.gpio64 = GPIO_DIR_INPUT,
 	.gpio65 = GPIO_DIR_INPUT,
 	.gpio66 = GPIO_DIR_INPUT,
@@ -239,7 +239,7 @@ const struct pch_gpio_set3 pch_gpio_set3_direction = {
 	.gpio75 = GPIO_DIR_INPUT,
 };
 
-const struct pch_gpio_set3 pch_gpio_set3_level = {
+static const struct pch_gpio_set3 pch_gpio_set3_level = {
 	.gpio64 = GPIO_LEVEL_LOW,
 	.gpio65 = GPIO_LEVEL_LOW,
 	.gpio66 = GPIO_LEVEL_LOW,

@@ -22,7 +22,7 @@
  * GPIO SET 1 includes GPIO0 to GPIO31
  */
 
-const struct pch_gpio_set1 pch_gpio_set1_mode = {
+static const struct pch_gpio_set1 pch_gpio_set1_mode = {
 	.gpio0  = GPIO_MODE_GPIO,	/* CHP3_SERDBG */
 	.gpio1  = GPIO_MODE_GPIO,	/* SIO3_EXTSMI# */
 	.gpio2  = GPIO_MODE_NONE,
@@ -57,7 +57,7 @@ const struct pch_gpio_set1 pch_gpio_set1_mode = {
 	.gpio31 = GPIO_MODE_NATIVE,	/* ACPRESENT (pullup) */
 };
 
-const struct pch_gpio_set1 pch_gpio_set1_direction = {
+static const struct pch_gpio_set1 pch_gpio_set1_direction = {
 	.gpio0  = GPIO_DIR_OUTPUT,
 	.gpio1  = GPIO_DIR_INPUT,
 	.gpio2  = GPIO_DIR_INPUT,
@@ -92,7 +92,7 @@ const struct pch_gpio_set1 pch_gpio_set1_direction = {
 	.gpio31 = GPIO_DIR_INPUT,
 };
 
-const struct pch_gpio_set1 pch_gpio_set1_level = {
+static const struct pch_gpio_set1 pch_gpio_set1_level = {
 	.gpio0  = GPIO_LEVEL_LOW,
 	.gpio1  = GPIO_LEVEL_LOW,
 	.gpio2  = GPIO_LEVEL_LOW,
@@ -131,7 +131,7 @@ const struct pch_gpio_set1 pch_gpio_set1_level = {
  * GPIO SET 2 includes GPIO32 to GPIO63
  */
 
-const struct pch_gpio_set2 pch_gpio_set2_mode = {
+static const struct pch_gpio_set2 pch_gpio_set2_mode = {
 	.gpio32 = GPIO_MODE_NATIVE,	/* PCI3_CLKRUN# */
 	.gpio33 = GPIO_MODE_NONE,
 	.gpio34 = GPIO_MODE_NONE,
@@ -166,7 +166,7 @@ const struct pch_gpio_set2 pch_gpio_set2_mode = {
 	.gpio63 = GPIO_MODE_NATIVE,	/* CHP3_SLPS5# */
 };
 
-const struct pch_gpio_set2 pch_gpio_set2_direction = {
+static const struct pch_gpio_set2 pch_gpio_set2_direction = {
 	.gpio32 = GPIO_DIR_INPUT,
 	.gpio33 = GPIO_DIR_INPUT,
 	.gpio34 = GPIO_DIR_INPUT,
@@ -201,7 +201,7 @@ const struct pch_gpio_set2 pch_gpio_set2_direction = {
 	.gpio63 = GPIO_DIR_INPUT,
 };
 
-const struct pch_gpio_set2 pch_gpio_set2_level = {
+static const struct pch_gpio_set2 pch_gpio_set2_level = {
 	.gpio32 = GPIO_LEVEL_LOW,
 	.gpio33 = GPIO_LEVEL_LOW,
 	.gpio34 = GPIO_LEVEL_LOW,
@@ -240,7 +240,7 @@ const struct pch_gpio_set2 pch_gpio_set2_level = {
  * GPIO SET 3 includes GPIO64 to GPIO75
  */
 
-const struct pch_gpio_set3 pch_gpio_set3_mode = {
+static const struct pch_gpio_set3 pch_gpio_set3_mode = {
 	.gpio64 = GPIO_MODE_NATIVE,	/* CLK3_SIO48 */
 	.gpio65 = GPIO_MODE_NONE,
 	.gpio66 = GPIO_MODE_NONE,
@@ -255,7 +255,7 @@ const struct pch_gpio_set3 pch_gpio_set3_mode = {
 	.gpio75 = GPIO_MODE_NATIVE,	/* SIO3_THERM_SMDATA# */
 };
 
-const struct pch_gpio_set3 pch_gpio_set3_direction = {
+static const struct pch_gpio_set3 pch_gpio_set3_direction = {
 	.gpio64 = GPIO_DIR_INPUT,
 	.gpio65 = GPIO_DIR_INPUT,
 	.gpio66 = GPIO_DIR_INPUT,
@@ -270,7 +270,7 @@ const struct pch_gpio_set3 pch_gpio_set3_direction = {
 	.gpio75 = GPIO_DIR_INPUT,
 };
 
-const struct pch_gpio_set3 pch_gpio_set3_level = {
+static const struct pch_gpio_set3 pch_gpio_set3_level = {
 	.gpio64 = GPIO_LEVEL_LOW,
 	.gpio65 = GPIO_LEVEL_LOW,
 	.gpio66 = GPIO_LEVEL_LOW,

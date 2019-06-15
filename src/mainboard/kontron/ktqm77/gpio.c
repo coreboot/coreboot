@@ -23,7 +23,7 @@
  *       system with vendor supplied firmware.
  */
 
-const struct pch_gpio_set1 pch_gpio_set1_mode = {
+static const struct pch_gpio_set1 pch_gpio_set1_mode = {
 	.gpio0  = GPIO_MODE_GPIO,   /* Unknown Input */
 	.gpio1  = GPIO_MODE_GPIO,   /* Unknown Input */
 	.gpio2  = GPIO_MODE_GPIO,   /* Unknown Input */
@@ -59,7 +59,7 @@ const struct pch_gpio_set1 pch_gpio_set1_mode = {
 	.gpio31 = GPIO_MODE_NATIVE  /* Native - ACPRESENT */
 };
 
-const struct pch_gpio_set1 pch_gpio_set1_direction = {
+static const struct pch_gpio_set1 pch_gpio_set1_direction = {
 	.gpio0  = GPIO_DIR_INPUT,  /* Unknown Input */
 	.gpio1  = GPIO_DIR_INPUT,  /* Unknown Input */
 	.gpio2  = GPIO_DIR_INPUT,  /* Unknown Input */
@@ -94,7 +94,7 @@ const struct pch_gpio_set1 pch_gpio_set1_direction = {
 	.gpio31 = GPIO_DIR_INPUT,  /* Native */
 };
 
-const struct pch_gpio_set1 pch_gpio_set1_level = {
+static const struct pch_gpio_set1 pch_gpio_set1_level = {
 	.gpio0  = GPIO_LEVEL_LOW,  /* Unknown Input */
 	.gpio1  = GPIO_LEVEL_LOW,  /* Unknown Input */
 	.gpio2  = GPIO_LEVEL_LOW,  /* Unknown Input */
@@ -129,7 +129,7 @@ const struct pch_gpio_set1 pch_gpio_set1_level = {
 	.gpio31 = GPIO_LEVEL_LOW,  /* Native */
 };
 
-const struct pch_gpio_set2 pch_gpio_set2_mode = {
+static const struct pch_gpio_set2 pch_gpio_set2_mode = {
 	.gpio32 = GPIO_MODE_NATIVE, /* Native - CLKRUN# pin */
 	.gpio33 = GPIO_MODE_GPIO,   /* Unknown Output LOW */
 	.gpio34 = GPIO_MODE_GPIO,   /* Unknown Input */
@@ -164,7 +164,7 @@ const struct pch_gpio_set2 pch_gpio_set2_mode = {
 	.gpio63 = GPIO_MODE_NATIVE, /* Native - SLP_S5# */
 };
 
-const struct pch_gpio_set2 pch_gpio_set2_direction = {
+static const struct pch_gpio_set2 pch_gpio_set2_direction = {
 	.gpio32 = GPIO_DIR_INPUT,  /* Native */
 	.gpio33 = GPIO_DIR_OUTPUT, /* Unknown Output LOW */
 	.gpio34 = GPIO_DIR_INPUT,  /* Unknown Input */
@@ -199,7 +199,7 @@ const struct pch_gpio_set2 pch_gpio_set2_direction = {
 	.gpio63 = GPIO_DIR_INPUT,  /* Native */
 };
 
-const struct pch_gpio_set2 pch_gpio_set2_level = {
+static const struct pch_gpio_set2 pch_gpio_set2_level = {
 	.gpio32 = GPIO_LEVEL_LOW,  /* Native */
 	.gpio33 = GPIO_LEVEL_LOW,  /* Unknown Output LOW */
 	.gpio34 = GPIO_LEVEL_LOW,  /* Unknown Input */
@@ -234,7 +234,7 @@ const struct pch_gpio_set2 pch_gpio_set2_level = {
 	.gpio63 = GPIO_LEVEL_LOW,  /* Native */
 };
 
-const struct pch_gpio_set3 pch_gpio_set3_mode = {
+static const struct pch_gpio_set3 pch_gpio_set3_mode = {
 	.gpio64 = GPIO_MODE_GPIO,   /* Unknown Output LOW */
 	.gpio65 = GPIO_MODE_GPIO,   /* Unknown Output LOW */
 	.gpio66 = GPIO_MODE_GPIO,   /* Unknown Output LOW */
@@ -249,7 +249,7 @@ const struct pch_gpio_set3 pch_gpio_set3_mode = {
 	.gpio75 = GPIO_MODE_NATIVE, /* Native - SML1DATA */
 };
 
-const struct pch_gpio_set3 pch_gpio_set3_direction = {
+static const struct pch_gpio_set3 pch_gpio_set3_direction = {
 	.gpio64 = GPIO_DIR_OUTPUT, /* Unknown Output LOW */
 	.gpio65 = GPIO_DIR_OUTPUT, /* Unknown Output LOW */
 	.gpio66 = GPIO_DIR_OUTPUT, /* Unknown Output LOW */
@@ -264,7 +264,7 @@ const struct pch_gpio_set3 pch_gpio_set3_direction = {
 	.gpio75 = GPIO_DIR_INPUT,  /* Native */
 };
 
-const struct pch_gpio_set3 pch_gpio_set3_level = {
+static const struct pch_gpio_set3 pch_gpio_set3_level = {
 	.gpio64 = GPIO_LEVEL_LOW,  /* Unknown Output LOW */
 	.gpio65 = GPIO_LEVEL_LOW,  /* Unknown Output LOW */
 	.gpio66 = GPIO_LEVEL_LOW,  /* Unknown Output LOW */

@@ -13,7 +13,7 @@
 
 #include <southbridge/intel/common/gpio.h>
 
-const struct pch_gpio_set1 pch_gpio_set1_mode = {
+static const struct pch_gpio_set1 pch_gpio_set1_mode = {
 	.gpio1 = GPIO_MODE_GPIO,
 	.gpio2 = GPIO_MODE_GPIO,
 	.gpio3 = GPIO_MODE_GPIO,
@@ -35,7 +35,7 @@ const struct pch_gpio_set1 pch_gpio_set1_mode = {
 	.gpio28 = GPIO_MODE_GPIO,
 };
 
-const struct pch_gpio_set1 pch_gpio_set1_direction = {
+static const struct pch_gpio_set1 pch_gpio_set1_direction = {
 	.gpio1  = GPIO_DIR_INPUT,
 	.gpio2  = GPIO_DIR_INPUT,
 	.gpio3  = GPIO_DIR_INPUT,
@@ -57,7 +57,7 @@ const struct pch_gpio_set1 pch_gpio_set1_direction = {
 	.gpio28 = GPIO_DIR_OUTPUT,
 };
 
-const struct pch_gpio_set1 pch_gpio_set1_level = {
+static const struct pch_gpio_set1 pch_gpio_set1_level = {
 	.gpio9  = GPIO_LEVEL_HIGH,
 	.gpio19 = GPIO_LEVEL_HIGH,
 	.gpio20 = GPIO_LEVEL_HIGH,
@@ -66,15 +66,15 @@ const struct pch_gpio_set1 pch_gpio_set1_level = {
 	.gpio28 = GPIO_LEVEL_LOW,
 };
 
-const struct pch_gpio_set1 pch_gpio_set1_invert = {
+static const struct pch_gpio_set1 pch_gpio_set1_invert = {
 	.gpio1 = GPIO_INVERT,
 	.gpio8 = GPIO_INVERT,
 };
 
-const struct pch_gpio_set1 pch_gpio_set1_blink = {
+static const struct pch_gpio_set1 pch_gpio_set1_blink = {
 };
 
-const struct pch_gpio_set2 pch_gpio_set2_mode = {
+static const struct pch_gpio_set2 pch_gpio_set2_mode = {
 	.gpio33 = GPIO_MODE_GPIO,
 	.gpio34 = GPIO_MODE_GPIO,
 	.gpio36 = GPIO_MODE_GPIO,
@@ -89,7 +89,7 @@ const struct pch_gpio_set2 pch_gpio_set2_mode = {
 	.gpio57 = GPIO_MODE_GPIO,
 };
 
-const struct pch_gpio_set2 pch_gpio_set2_direction = {
+static const struct pch_gpio_set2 pch_gpio_set2_direction = {
 	.gpio33 = GPIO_DIR_OUTPUT,
 	.gpio34 = GPIO_DIR_OUTPUT,
 	.gpio36 = GPIO_DIR_INPUT,
@@ -104,7 +104,7 @@ const struct pch_gpio_set2 pch_gpio_set2_direction = {
 	.gpio57 = GPIO_DIR_INPUT,
 };
 
-const struct pch_gpio_set2 pch_gpio_set2_level = {
+static const struct pch_gpio_set2 pch_gpio_set2_level = {
 	.gpio33 = GPIO_LEVEL_HIGH,
 	.gpio34 = GPIO_LEVEL_LOW,
 	.gpio41 = GPIO_LEVEL_HIGH,

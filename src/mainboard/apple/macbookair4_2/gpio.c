@@ -12,7 +12,7 @@
  */
 
 #include <southbridge/intel/common/gpio.h>
-const struct pch_gpio_set1 pch_gpio_set1_mode = {
+static const struct pch_gpio_set1 pch_gpio_set1_mode = {
 	.gpio0 = GPIO_MODE_GPIO,
 	.gpio1 = GPIO_MODE_GPIO,
 	.gpio2 = GPIO_MODE_GPIO,
@@ -47,7 +47,7 @@ const struct pch_gpio_set1 pch_gpio_set1_mode = {
 	.gpio31 = GPIO_MODE_NATIVE,
 };
 
-const struct pch_gpio_set1 pch_gpio_set1_direction = {
+static const struct pch_gpio_set1 pch_gpio_set1_direction = {
 	.gpio0 = GPIO_DIR_INPUT,
 	.gpio1 = GPIO_DIR_INPUT,
 	.gpio2 = GPIO_DIR_INPUT,
@@ -82,7 +82,7 @@ const struct pch_gpio_set1 pch_gpio_set1_direction = {
 	.gpio31 = GPIO_DIR_INPUT,
 };
 
-const struct pch_gpio_set1 pch_gpio_set1_level = {
+static const struct pch_gpio_set1 pch_gpio_set1_level = {
 	.gpio0 = GPIO_LEVEL_HIGH,
 	.gpio1 = GPIO_LEVEL_HIGH,
 	.gpio2 = GPIO_LEVEL_HIGH,
@@ -117,7 +117,7 @@ const struct pch_gpio_set1 pch_gpio_set1_level = {
 	.gpio31 = GPIO_LEVEL_HIGH,
 };
 
-const struct pch_gpio_set1 pch_gpio_set1_reset = {
+static const struct pch_gpio_set1 pch_gpio_set1_reset = {
 	.gpio0 = GPIO_RESET_PWROK,
 	.gpio1 = GPIO_RESET_PWROK,
 	.gpio2 = GPIO_RESET_PWROK,
@@ -152,7 +152,7 @@ const struct pch_gpio_set1 pch_gpio_set1_reset = {
 	.gpio31 = GPIO_RESET_PWROK,
 };
 
-const struct pch_gpio_set1 pch_gpio_set1_invert = {
+static const struct pch_gpio_set1 pch_gpio_set1_invert = {
 	.gpio0 = GPIO_NO_INVERT,
 	.gpio1 = GPIO_INVERT,
 	.gpio2 = GPIO_NO_INVERT,
@@ -187,7 +187,7 @@ const struct pch_gpio_set1 pch_gpio_set1_invert = {
 	.gpio31 = GPIO_NO_INVERT,
 };
 
-const struct pch_gpio_set1 pch_gpio_set1_blink = {
+static const struct pch_gpio_set1 pch_gpio_set1_blink = {
 	.gpio0 = GPIO_NO_BLINK,
 	.gpio1 = GPIO_NO_BLINK,
 	.gpio2 = GPIO_NO_BLINK,
@@ -222,7 +222,7 @@ const struct pch_gpio_set1 pch_gpio_set1_blink = {
 	.gpio31 = GPIO_NO_BLINK,
 };
 
-const struct pch_gpio_set2 pch_gpio_set2_mode = {
+static const struct pch_gpio_set2 pch_gpio_set2_mode = {
 	.gpio32 = GPIO_MODE_NATIVE,
 	.gpio33 = GPIO_MODE_GPIO,
 	.gpio34 = GPIO_MODE_GPIO,
@@ -257,7 +257,7 @@ const struct pch_gpio_set2 pch_gpio_set2_mode = {
 	.gpio63 = GPIO_MODE_NATIVE,
 };
 
-const struct pch_gpio_set2 pch_gpio_set2_direction = {
+static const struct pch_gpio_set2 pch_gpio_set2_direction = {
 	.gpio32 = GPIO_DIR_OUTPUT,
 	.gpio33 = GPIO_DIR_OUTPUT,
 	.gpio34 = GPIO_DIR_OUTPUT,
@@ -292,7 +292,7 @@ const struct pch_gpio_set2 pch_gpio_set2_direction = {
 	.gpio63 = GPIO_DIR_OUTPUT,
 };
 
-const struct pch_gpio_set2 pch_gpio_set2_level = {
+static const struct pch_gpio_set2 pch_gpio_set2_level = {
 	.gpio32 = GPIO_LEVEL_LOW,
 	.gpio33 = GPIO_LEVEL_LOW,
 	.gpio34 = GPIO_LEVEL_HIGH,
@@ -327,7 +327,7 @@ const struct pch_gpio_set2 pch_gpio_set2_level = {
 	.gpio63 = GPIO_LEVEL_HIGH,
 };
 
-const struct pch_gpio_set2 pch_gpio_set2_reset = {
+static const struct pch_gpio_set2 pch_gpio_set2_reset = {
 	.gpio32 = GPIO_RESET_PWROK,
 	.gpio33 = GPIO_RESET_PWROK,
 	.gpio34 = GPIO_RESET_PWROK,
@@ -362,7 +362,7 @@ const struct pch_gpio_set2 pch_gpio_set2_reset = {
 	.gpio63 = GPIO_RESET_PWROK,
 };
 
-const struct pch_gpio_set3 pch_gpio_set3_mode = {
+static const struct pch_gpio_set3 pch_gpio_set3_mode = {
 	.gpio64 = GPIO_MODE_GPIO,
 	.gpio65 = GPIO_MODE_GPIO,
 	.gpio66 = GPIO_MODE_GPIO,
@@ -377,7 +377,7 @@ const struct pch_gpio_set3 pch_gpio_set3_mode = {
 	.gpio75 = GPIO_MODE_NATIVE,
 };
 
-const struct pch_gpio_set3 pch_gpio_set3_direction = {
+static const struct pch_gpio_set3 pch_gpio_set3_direction = {
 	.gpio64 = GPIO_DIR_INPUT,
 	.gpio65 = GPIO_DIR_INPUT,
 	.gpio66 = GPIO_DIR_INPUT,
@@ -392,7 +392,7 @@ const struct pch_gpio_set3 pch_gpio_set3_direction = {
 	.gpio75 = GPIO_DIR_INPUT,
 };
 
-const struct pch_gpio_set3 pch_gpio_set3_level = {
+static const struct pch_gpio_set3 pch_gpio_set3_level = {
 	.gpio64 = GPIO_LEVEL_LOW,
 	.gpio65 = GPIO_LEVEL_LOW,
 	.gpio66 = GPIO_LEVEL_LOW,
@@ -407,7 +407,7 @@ const struct pch_gpio_set3 pch_gpio_set3_level = {
 	.gpio75 = GPIO_LEVEL_HIGH,
 };
 
-const struct pch_gpio_set3 pch_gpio_set3_reset = {
+static const struct pch_gpio_set3 pch_gpio_set3_reset = {
 	.gpio64 = GPIO_RESET_PWROK,
 	.gpio65 = GPIO_RESET_PWROK,
 	.gpio66 = GPIO_RESET_PWROK,

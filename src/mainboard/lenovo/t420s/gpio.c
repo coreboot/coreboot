@@ -12,7 +12,7 @@
  */
 
 #include <southbridge/intel/common/gpio.h>
-const struct pch_gpio_set1 pch_gpio_set1_mode = {
+static const struct pch_gpio_set1 pch_gpio_set1_mode = {
 	.gpio0  = GPIO_MODE_GPIO,   // -USB30_SMIB - input
 	.gpio1  = GPIO_MODE_GPIO,   // -EC_SCI - input
 	.gpio2  = GPIO_MODE_GPIO,   // -LCD_PRESENCE - input
@@ -47,7 +47,7 @@ const struct pch_gpio_set1 pch_gpio_set1_mode = {
 	.gpio31 = GPIO_MODE_NATIVE, // ACPRESENT - input
 };
 
-const struct pch_gpio_set1 pch_gpio_set1_direction = {
+static const struct pch_gpio_set1 pch_gpio_set1_direction = {
 	.gpio0  = GPIO_DIR_INPUT,
 	.gpio1  = GPIO_DIR_INPUT,
 	.gpio2  = GPIO_DIR_INPUT,
@@ -82,7 +82,7 @@ const struct pch_gpio_set1 pch_gpio_set1_direction = {
 	.gpio31 = GPIO_DIR_INPUT
 };
 
-const struct pch_gpio_set1 pch_gpio_set1_level = {
+static const struct pch_gpio_set1 pch_gpio_set1_level = {
 	.gpio0  = GPIO_LEVEL_HIGH,
 	.gpio1  = GPIO_LEVEL_HIGH,
 	.gpio2  = GPIO_LEVEL_LOW,
@@ -117,17 +117,17 @@ const struct pch_gpio_set1 pch_gpio_set1_level = {
 	.gpio31 = GPIO_LEVEL_HIGH,
 };
 
-const struct pch_gpio_set1 pch_gpio_set1_invert = {
+static const struct pch_gpio_set1 pch_gpio_set1_invert = {
 	.gpio0 = GPIO_INVERT,
 	.gpio1 = GPIO_INVERT,
 	.gpio13 = GPIO_INVERT,
 };
 
-const struct pch_gpio_set1 pch_gpio_set1_blink = {
+static const struct pch_gpio_set1 pch_gpio_set1_blink = {
 	.gpio18 = GPIO_NO_BLINK,
 };
 
-const struct pch_gpio_set2 pch_gpio_set2_mode = {
+static const struct pch_gpio_set2 pch_gpio_set2_mode = {
 	.gpio32 = GPIO_MODE_NATIVE, // CLKRUN - output
 	.gpio33 = GPIO_MODE_GPIO,   // SATA_DOCK_DTCT - output to SATA4GP
 	.gpio34 = GPIO_MODE_GPIO,   // DGFX_VRM_ID - input - HIGH: 1GB / LOW: 2GB
@@ -162,7 +162,7 @@ const struct pch_gpio_set2 pch_gpio_set2_mode = {
 	.gpio63 = GPIO_MODE_NATIVE, // SLP_S5 - output
 };
 
-const struct pch_gpio_set2 pch_gpio_set2_direction = {
+static const struct pch_gpio_set2 pch_gpio_set2_direction = {
 	.gpio32 = GPIO_DIR_INPUT,
 	.gpio33 = GPIO_DIR_OUTPUT,
 	.gpio34 = GPIO_DIR_INPUT,
@@ -197,7 +197,7 @@ const struct pch_gpio_set2 pch_gpio_set2_direction = {
 	.gpio63 = GPIO_DIR_OUTPUT,
 };
 
-const struct pch_gpio_set2 pch_gpio_set2_level = {
+static const struct pch_gpio_set2 pch_gpio_set2_level = {
 	.gpio32 = GPIO_LEVEL_HIGH,
 	.gpio33 = GPIO_LEVEL_HIGH,
 	.gpio34 = GPIO_LEVEL_HIGH,
@@ -232,7 +232,7 @@ const struct pch_gpio_set2 pch_gpio_set2_level = {
 	.gpio63 = GPIO_LEVEL_HIGH,
 };
 
-const struct pch_gpio_set3 pch_gpio_set3_mode = {
+static const struct pch_gpio_set3 pch_gpio_set3_mode = {
 	.gpio64 = GPIO_MODE_NATIVE, // NC
 	.gpio65 = GPIO_MODE_NATIVE, // VIDEO_CLK_27M_NSS - output
 	.gpio66 = GPIO_MODE_NATIVE, // NC
@@ -247,7 +247,7 @@ const struct pch_gpio_set3 pch_gpio_set3_mode = {
 	.gpio75 = GPIO_MODE_NATIVE, // SML1DATA - EC_SDA2 - i/o
 };
 
-const struct pch_gpio_set3 pch_gpio_set3_direction = {
+static const struct pch_gpio_set3 pch_gpio_set3_direction = {
 	.gpio64 = GPIO_DIR_OUTPUT,
 	.gpio65 = GPIO_DIR_OUTPUT,
 	.gpio66 = GPIO_DIR_OUTPUT,
@@ -262,7 +262,7 @@ const struct pch_gpio_set3 pch_gpio_set3_direction = {
 	.gpio75 = GPIO_DIR_INPUT,
 };
 
-const struct pch_gpio_set3 pch_gpio_set3_level = {
+static const struct pch_gpio_set3 pch_gpio_set3_level = {
 	.gpio64 = GPIO_LEVEL_HIGH,
 	.gpio65 = GPIO_LEVEL_HIGH,
 	.gpio66 = GPIO_LEVEL_HIGH,

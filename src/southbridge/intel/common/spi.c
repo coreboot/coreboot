@@ -92,7 +92,10 @@ struct ich_spi_controller {
 	uint32_t flcomp;
 	uint32_t hsfs;
 
-	struct ich9_spi_regs *ich9_spi;
+	union {
+		struct ich9_spi_regs *ich9_spi;
+		struct ich7_spi_regs *ich7_spi;
+	};
 	uint8_t *opmenu;
 	int menubytes;
 	uint16_t *preop;
@@ -283,6 +286,7 @@ void spi_init(void)
 	rcrb = (uint8_t *)(rcba & 0xffffc000);
 	if (CONFIG(SOUTHBRIDGE_INTEL_I82801GX)) {
 		ich7_spi = (struct ich7_spi_regs *)(rcrb + 0x3020);
+		cntlr->ich7_spi = ich7_spi;
 		cntlr->opmenu = ich7_spi->opmenu;
 		cntlr->menubytes = sizeof(ich7_spi->opmenu);
 		cntlr->optype = &ich7_spi->optype;

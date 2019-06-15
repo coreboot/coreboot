@@ -11,8 +11,9 @@ chip soc/intel/fsp_broadwell_de
 			chip drivers/pc80/tpm
 				device pnp 0c31.0 on end
 			end
-			chip drivers/generic/generic		# BMC KCS
+			chip drivers/ipmi		# BMC KCS
 				device pnp ca2.0 on end
+				register "bmc_i2c_address" = "0x20"
 			end
 		end # LPC Bridge
 		device pci 1f.2 on end # SATA Controller

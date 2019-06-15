@@ -217,7 +217,7 @@ chip northbridge/amd/amdfam10/root_complex	# Root complex
 						chip drivers/pc80/tpm
 							device pnp 4e.0 on end		# TPM module
 						end
-						chip drivers/generic/generic		# BMC KCS
+						chip drivers/ipmi		# BMC KCS
 							device pnp ca2.0 on end
 						end
 					end

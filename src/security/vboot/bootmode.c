@@ -26,10 +26,6 @@
 
 static int vboot_get_recovery_reason_shared_data(void)
 {
-	/* Shared data does not exist for Ramstage and Post-CAR stage. */
-	if (ENV_RAMSTAGE || ENV_POSTCAR)
-		return 0;
-
 	struct vb2_shared_data *sd = vboot_get_shared_data();
 	assert(sd);
 	return sd->recovery_reason;
@@ -96,11 +92,10 @@ static int vboot_possibly_executed(void)
  * VB2_RECOVERY_RO_MANUAL.
  * 2. Checks if recovery request is present in VBNV and returns the code read
  * from it.
- * 3. Checks recovery request in handoff for stages post-cbmem.
- * 4. For non-CBMEM stages, check if vboot verification is done and look-up
- * selected region to identify if vboot_reference library has requested recovery
- * path. If yes, return the reason code from shared data.
- * 5. If nothing applies, return 0 indicating no recovery request.
+ * 3. Checks if vboot verification is done and looks up selected region
+ * to identify if vboot_reference library has requested recovery path.
+ * If yes, return the reason code from shared data.
+ * 4. If nothing applies, return 0 indicating no recovery request.
  */
 int vboot_check_recovery_request(void)
 {
@@ -115,19 +110,8 @@ int vboot_check_recovery_request(void)
 		return reason;
 
 	/*
-	 * Check recovery flag in vboot_handoff for stages post CBMEM coming
-	 * online. Since for some stages there is no way to know if cbmem has
-	 * already come online, try looking up handoff anyways. If it fails,
-	 * flow will fallback to looking up shared data.
-	 */
-	if (cbmem_possibly_online() &&
-	    ((reason = vboot_handoff_get_recovery_reason()) != 0))
-		return reason;
-
-	/*
-	 * For stages where CBMEM might not be online, identify if vboot
-	 * verification is already complete and no slot was selected
-	 * i.e. recovery path was requested.
+	 * Identify if vboot verification is already complete and no slot
+	 * was selected i.e. recovery path was requested.
 	 */
 	if (vboot_possibly_executed() && vboot_logic_executed() &&
 	    !vboot_is_slot_selected())

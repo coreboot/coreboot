@@ -93,19 +93,6 @@ int vboot_handoff_check_recovery_flag(void)
 	return vboot_get_handoff_flag(VB_INIT_OUT_ENABLE_RECOVERY);
 }
 
-int vboot_handoff_get_recovery_reason(void)
-{
-	struct vboot_handoff *vbho;
-	VbSharedDataHeader *sd;
-
-	if (vboot_get_handoff_info((void **)&vbho, NULL))
-		return 0;
-
-	sd = (VbSharedDataHeader *)vbho->shared_data;
-
-	return sd->recovery_reason;
-}
-
 /* ============================ VBOOT REBOOT ============================== */
 void __weak vboot_platform_prepare_reboot(void)
 {

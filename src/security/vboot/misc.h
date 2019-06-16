@@ -53,7 +53,7 @@ struct vboot_working_data {
 /*
  * Source: security/vboot/common.c
  */
-struct vboot_working_data * const vboot_get_working_data(void);
+struct vboot_working_data *vboot_get_working_data(void);
 void vboot_init_work_context(struct vb2_context *ctx);
 void vboot_finalize_work_context(struct vb2_context *ctx);
 struct vb2_shared_data *vboot_get_shared_data(void);

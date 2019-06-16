@@ -24,7 +24,7 @@
 #include <security/vboot/symbols.h>
 #include <security/vboot/vboot_common.h>
 
-struct vboot_working_data * const vboot_get_working_data(void)
+struct vboot_working_data *vboot_get_working_data(void)
 {
 	struct vboot_working_data *wd = NULL;
 

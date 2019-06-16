@@ -26,11 +26,6 @@ void pch_enable_lpc(void)
 	/* Enable TPM, EC, PS/2 Keyboard/Mouse */
 	pci_write_config16(PCH_LPC_DEV, LPC_EN,
 			   CNF2_LPC_EN | CNF1_LPC_EN | MC_LPC_EN | KBC_LPC_EN);
-
-	pci_write_config32(PCH_LPC_DEV, LPC_GEN1_DEC, 0x007c1611);
-	pci_write_config32(PCH_LPC_DEV, LPC_GEN2_DEC, 0x00040069);
-	pci_write_config32(PCH_LPC_DEV, LPC_GEN3_DEC, 0x000c0701);
-	pci_write_config32(PCH_LPC_DEV, LPC_GEN4_DEC, 0x000c06a1);
 }
 
 void mainboard_rcba_config(void)

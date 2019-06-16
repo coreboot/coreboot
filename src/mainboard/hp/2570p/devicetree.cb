@@ -46,6 +46,7 @@ chip northbridge/intel/sandybridge
 		chip southbridge/intel/bd82x6x # Intel Series 6 Cougar Point PCH
 			register "c2_latency" = "0x0065"
 			register "docking_supported" = "0"
+			# mailbox at 0x200/0x201 and PM1 at 0x220
 			register "gen1_dec" = "0x007c0201"
 			register "gen2_dec" = "0x000c0101"
 			register "gen3_dec" = "0x00fcfe01"

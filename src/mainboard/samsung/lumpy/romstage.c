@@ -43,9 +43,6 @@ void pch_enable_lpc(void)
 	pci_write_config16(PCH_LPC_DEV, LPC_EN, CNF1_LPC_EN | MC_LPC_EN |
 		KBC_LPC_EN | CNF2_LPC_EN | COMA_LPC_EN);
 
-	/* map full 256 bytes at 0x1600 to the LPC bus */
-	pci_write_config32(PCH_LPC_DEV, LPC_GEN1_DEC, 0xfc1601);
-
 	try_enabling_LPC47N207_uart();
 #else
 	/* Enable SuperIO + EC + KBC */

@@ -27,6 +27,7 @@
 #include <northbridge/intel/sandybridge/sandybridge.h>
 
 #include "pch.h"
+#include "chip.h"
 
 #define SOUTHBRIDGE PCI_DEV(0, 0x1f, 0)
 
@@ -258,9 +259,30 @@ static void pch_generic_setup(void)
 	write_pmbase16(TCO1_CNT, 1 << 11);	/* halt timer */
 }
 
+static void pch_enable_lpc_gen_decode(void)
+{
+	const struct device *dev = pcidev_on_root(0x1f, 0);
+	const struct southbridge_intel_bd82x6x_config *config = NULL;
+
+	/* Set up generic decode ranges */
+	if (!dev)
+		return;
+	if (dev->chip_info)
+		config = dev->chip_info;
+	if (!config)
+		return;
+
+	pci_write_config32(PCH_LPC_DEV, LPC_GEN1_DEC, config->gen1_dec);
+	pci_write_config32(PCH_LPC_DEV, LPC_GEN2_DEC, config->gen2_dec);
+	pci_write_config32(PCH_LPC_DEV, LPC_GEN3_DEC, config->gen3_dec);
+	pci_write_config32(PCH_LPC_DEV, LPC_GEN4_DEC, config->gen4_dec);
+}
+
 void early_pch_init(void)
 {
 	pch_enable_lpc();
+
+	pch_enable_lpc_gen_decode();
 
 	pch_enable_bars();
 

@@ -34,28 +34,12 @@
 
 void pch_enable_lpc(void)
 {
-	const struct device *lpc;
-	const struct southbridge_intel_bd82x6x_config *config = NULL;
-
-	lpc = pcidev_on_root(0x1f, 0);
-	if (!lpc)
-		return;
-	if (lpc->chip_info)
-		config = lpc->chip_info;
-	if (!config)
-		return;
-
 	/* Set COM1/COM2 decode range */
 	pci_write_config16(PCH_LPC_DEV, LPC_IO_DEC, 0x0010);
 
 	/* Enable PS/2 Keyboard/Mouse, EC areas and COM1 */
 	pci_write_config16(PCH_LPC_DEV, LPC_EN, KBC_LPC_EN | MC_LPC_EN | \
 			   GAMEL_LPC_EN | COMA_LPC_EN);
-
-	pci_write_config32(PCH_LPC_DEV, LPC_GEN1_DEC, config->gen1_dec);
-	pci_write_config32(PCH_LPC_DEV, LPC_GEN2_DEC, config->gen2_dec);
-	pci_write_config32(PCH_LPC_DEV, LPC_GEN3_DEC, config->gen3_dec);
-	pci_write_config32(PCH_LPC_DEV, LPC_GEN4_DEC, config->gen4_dec);
 }
 
 void mainboard_rcba_config(void)

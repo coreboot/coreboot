@@ -55,9 +55,6 @@ void pch_enable_lpc(void)
 	/* Enable TPM, EC, PS/2 Keyboard/Mouse */
 	pci_write_config16(PCH_LPC_DEV, LPC_EN,
 			   CNF2_LPC_EN | MC_LPC_EN | KBC_LPC_EN);
-
-	pci_write_config32(PCH_LPC_DEV, LPC_GEN1_DEC,
-			   (0x0c << 16) | EC_LENOVO_PMH7_BASE | 1);
 }
 
 void mainboard_rcba_config(void)

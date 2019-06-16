@@ -61,6 +61,7 @@ chip northbridge/intel/sandybridge
 			# EC range is 0xa00-0xa3f
 			register "gen1_dec" = "0x003c0a01"
 			register "gen2_dec" = "0x003c0b01"
+			register "gen3_dec" = "0x00fc1601"
 
 			register "c2_latency" = "1"
 			register "p_cnt_throttling_supported" = "0"

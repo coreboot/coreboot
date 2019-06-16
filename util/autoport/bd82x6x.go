@@ -28,7 +28,7 @@ func (b bd82x6x) writeGPIOSet(ctx Context, sb *os.File,
 	}
 
 	for i := uint(0); i < max; i++ {
-		if ((constraint>>i)&1 == 1) {
+		if (constraint>>i)&1 == 1 {
 			fmt.Fprintf(sb, "	.gpio%d = %s,\n",
 				(set-1)*32+i,
 				bits[partno][(val>>i)&1])
@@ -236,8 +236,8 @@ func (b bd82x6x) Scan(ctx Context, addr PCIDevData) {
 			"p_cnt_throttling_supported": (FormatBool(FADT[104] == 1 && FADT[105] == 3)),
 			"c2_latency":                 FormatHexLE16(FADT[96:98]),
 			"docking_supported":          (FormatBool((FADT[113] & (1 << 1)) != 0)),
-			"spi_uvscc": fmt.Sprintf("0x%x", inteltool.RCBA[0x38c8]),
-			"spi_lvscc": fmt.Sprintf("0x%x", inteltool.RCBA[0x38c4] &^ (1 << 23)),
+			"spi_uvscc":                  fmt.Sprintf("0x%x", inteltool.RCBA[0x38c8]),
+			"spi_lvscc":                  fmt.Sprintf("0x%x", inteltool.RCBA[0x38c4]&^(1<<23)),
 		},
 		PCISlots: []PCISlot{
 			PCISlot{PCIAddr: PCIAddr{Dev: 0x14, Func: 0}, writeEmpty: false, additionalComment: "USB 3.0 Controller"},
@@ -315,10 +315,6 @@ void pch_enable_lpc(void)
 {
 `)
 	RestorePCI16Simple(sb, addr, 0x82)
-	RestorePCI32Simple(sb, addr, 0x84)
-	RestorePCI32Simple(sb, addr, 0x88)
-	RestorePCI32Simple(sb, addr, 0x8c)
-	RestorePCI32Simple(sb, addr, 0x90)
 
 	RestorePCI16Simple(sb, addr, 0x80)
 

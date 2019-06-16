@@ -41,9 +41,6 @@ void pch_enable_lpc(void)
 	 */
 	pci_write_config16(PCH_LPC_DEV, LPC_EN, KBC_LPC_EN | MC_LPC_EN |
 			CNF1_LPC_EN | FDD_LPC_EN);
-
-	/* Stout EC Decode Range Port68/6C */
-	pci_write_config32(PCH_LPC_DEV, LPC_GEN1_DEC, (0x68 | 0x40001));
 }
 
 void mainboard_rcba_config(void)

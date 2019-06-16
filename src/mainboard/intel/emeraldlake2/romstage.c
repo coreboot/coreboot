@@ -39,12 +39,6 @@ void pch_enable_lpc(void)
 	u16 lpc_config = CNF1_LPC_EN | CNF2_LPC_EN | KBC_LPC_EN;
 	pci_write_config16(dev, LPC_EN, lpc_config);
 
-	/* Map 256 bytes at 0x1600 to the LPC bus. */
-	pci_write_config32(dev, LPC_GEN1_DEC, 0xfc1601);
-
-	/* Map a range for the runtime_port registers to the LPC bus. */
-	pci_write_config32(dev, LPC_GEN2_DEC, 0xc0181);
-
 	/* Enable COM1 */
 	if (sio1007_enable_uart_at(SIO_PORT)) {
 		pci_write_config16(dev, LPC_EN,

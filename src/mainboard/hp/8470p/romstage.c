@@ -33,8 +33,6 @@ void pch_enable_lpc(void)
 			CNF2_LPC_EN | CNF1_LPC_EN | MC_LPC_EN | KBC_LPC_EN |
 			LPT_LPC_EN | COMA_LPC_EN);
 	pci_write_config16(PCH_LPC_DEV, LPC_IO_DEC, 0x0010);
-	/* Enable mailbox at 0x200/0x201 and PM1 at 0x220 */
-	pci_write_config32(PCH_LPC_DEV, LPC_GEN1_DEC, 0x007c0201);
 }
 
 void mainboard_rcba_config(void)

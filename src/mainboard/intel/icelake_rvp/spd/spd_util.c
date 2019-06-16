@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/byteorder.h>
 #include <arch/cpu.h>
 #include <intelblocks/mp_init.h>
 #include <stdint.h>

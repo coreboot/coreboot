@@ -15,7 +15,6 @@
  */
 
 #include <stdint.h>
-#include <arch/byteorder.h>
 #include <device/pci_ops.h>
 #include <device/pci_def.h>
 #include <northbridge/intel/sandybridge/sandybridge.h>

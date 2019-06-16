@@ -14,7 +14,6 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/byteorder.h>
 #include <console/console.h>
 #include <fsp/soc_binding.h>
 #include <soc/romstage.h>

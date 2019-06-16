@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/byteorder.h>
 #include <console/console.h>
 #include <fsp/api.h>
 #include <soc/romstage.h>

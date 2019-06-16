@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/byteorder.h>
 #include <fsp/api.h>
 #include <gpio.h>
 #include "gpio.h"

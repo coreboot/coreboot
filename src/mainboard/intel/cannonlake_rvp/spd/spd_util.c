@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/byteorder.h>
 #include <stdint.h>
 #include <string.h>
 

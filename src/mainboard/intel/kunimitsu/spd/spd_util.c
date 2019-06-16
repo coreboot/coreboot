@@ -12,7 +12,6 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
-#include <arch/byteorder.h>
 #include <cbfs.h>
 #include <console/console.h>
 #include <stdint.h>

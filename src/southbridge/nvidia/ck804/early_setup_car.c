@@ -18,6 +18,7 @@
 
 #include <arch/io.h>
 #include <console/console.h>
+#include <device/pci_ops.h>
 #include <reset.h>
 #include <southbridge/amd/common/reset.h>
 

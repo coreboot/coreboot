@@ -14,6 +14,8 @@
  * GNU General Public License for more details.
  */
 
+#include <device/pci_ops.h>
+
 #include "early_vx900.h"
 
 static void vx900_cpu_bus_preram_setup(void)

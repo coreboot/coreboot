@@ -16,7 +16,6 @@
 #include <string.h>
 #include <bootmode.h>
 #include <boot/coreboot_tables.h>
-#include <device/pci_ops.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <southbridge/intel/lynxpoint/pch.h>

@@ -20,7 +20,6 @@
 #include <boot/coreboot_tables.h>
 #include <device/device.h>
 #include <device/pci_def.h>
-#include <device/pci_ops.h>
 #include <southbridge/intel/lynxpoint/pch.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 

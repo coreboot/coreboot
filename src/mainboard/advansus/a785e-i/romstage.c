@@ -17,7 +17,6 @@
 
 #include <stdint.h>
 #include <device/pci_def.h>
-#include <device/pci_ops.h>
 #include <cpu/x86/lapic.h>
 #include <console/console.h>
 #include <timestamp.h>

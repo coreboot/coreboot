@@ -15,7 +15,6 @@
 #include <bootstate.h>
 #include <device/device.h>
 #include <device/pci_def.h>
-#include <device/pci_ops.h>
 
 #include <northbridge/amd/pi/agesawrapper.h>
 #include <northbridge/amd/pi/agesawrapper_call.h>

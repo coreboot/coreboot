@@ -73,17 +73,6 @@ static void vboot_prepare(void)
 
 		car_set_var(vboot_executed, 1);
 	}
-
-	/*
-	 * Fill in vboot cbmem objects before moving to ramstage so all
-	 * downstream users have access to vboot results. This path only
-	 * applies to platforms employing VBOOT_STARTS_IN_ROMSTAGE because
-	 * cbmem comes online prior to vboot verification taking place. For
-	 * other platforms the vboot cbmem objects are initialized when
-	 * cbmem comes online.
-	 */
-	if (ENV_ROMSTAGE && CONFIG(VBOOT_STARTS_IN_ROMSTAGE))
-		vboot_fill_handoff();
 }
 
 static int vboot_locate(struct cbfs_props *props)

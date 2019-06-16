@@ -20,7 +20,6 @@
 #include <device/pci_ids.h>
 #include "pch.h"
 #include <device/mmio.h>
-#include <device/pci_ops.h>
 
 static void thermal_init(struct device *dev)
 {

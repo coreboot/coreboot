@@ -19,7 +19,6 @@
 #include <device/smbus.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <device/pci_ops.h>
 #include <southbridge/intel/common/smbus.h>
 #include "soc.h"
 

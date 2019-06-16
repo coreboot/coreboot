@@ -20,7 +20,6 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <device/pci_ops.h>
 #include "mcp55.h"
 
 static struct device_operations usb_ops = {

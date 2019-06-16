@@ -17,7 +17,6 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <device/pci_ops.h>
 #include "bcm5785.h"
 
 static void bcm5785_ide_read_resources(struct device *dev)

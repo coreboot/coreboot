@@ -15,7 +15,6 @@
  */
 
 #include <stdlib.h>
-#include <device/pci_ops.h>
 #include "nehalem.h"
 
 #define PCI_DEV_SNB PCI_DEV(0, 0, 0)

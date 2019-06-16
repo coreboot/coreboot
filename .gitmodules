@@ -29,3 +29,8 @@
 [submodule "opensbi"]
 	path = 3rdparty/opensbi
 	url = ../opensbi.git
+[submodule "intel-microcode"]
+	path = 3rdparty/intel-microcode
+	url = ../intel-microcode.git
+	update = none
+	ignore = dirty

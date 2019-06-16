@@ -29,16 +29,6 @@
 
 void pch_enable_lpc(void)
 {
-	/*
-	 * Enable SuperIO, TPM, Keyboard, LPT, COMA
-	 * (COMB can be equip on expansion header)
-	 */
-	pci_write_config16(PCH_LPC_DEV, LPC_EN,
-	    CNF2_LPC_EN |CNF1_LPC_EN | KBC_LPC_EN | LPT_LPC_EN |
-	    COMB_LPC_EN | COMA_LPC_EN);
-
-	/* COMA: 3F8h, COMB: 2F8h */
-	pci_write_config16(PCH_LPC_DEV, LPC_IO_DEC, 0x0010);
 }
 
 void mainboard_rcba_config(void)

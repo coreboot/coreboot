@@ -254,8 +254,22 @@ static void pch_generic_setup(void)
 	write_pmbase16(TCO1_CNT, 1 << 11);	/* halt timer */
 }
 
-static void pch_enable_lpc_gen_decode(void)
+static void pch_enable_lpc_decode(void)
 {
+	/*
+	 * Enable some common LPC IO ranges:
+	 * - 0x2e/0x2f, 0x4e/0x4f often SuperIO
+	 * - 0x60/0x64, 0x62/0x66 often KBC/EC
+	 * - 0x3f0-0x3f5/0x3f7 FDD
+	 * - 0x378-0x37f and 0x778-0x77f LPT
+	 * - 0x2f8-0x2ff COMB
+	 * - 0x3f8-0x3ff COMA
+	 */
+	pci_write_config16(PCH_LPC_DEV, LPC_IO_DEC, 0x0010);
+	pci_write_config16(PCH_LPC_DEV, LPC_EN, CNF2_LPC_EN | CNF1_LPC_EN
+		| MC_LPC_EN | KBC_LPC_EN | FDD_LPC_EN | LPT_LPC_EN
+		| COMB_LPC_EN | COMA_LPC_EN);
+
 	const struct device *dev = pcidev_on_root(0x1f, 0);
 	const struct southbridge_intel_bd82x6x_config *config = NULL;
 
@@ -275,9 +289,10 @@ static void pch_enable_lpc_gen_decode(void)
 
 void early_pch_init(void)
 {
-	pch_enable_lpc();
 
-	pch_enable_lpc_gen_decode();
+	pch_enable_lpc_decode();
+
+	pch_enable_lpc();
 
 	pch_enable_bars();
 

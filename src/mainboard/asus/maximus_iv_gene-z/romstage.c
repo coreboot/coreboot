@@ -42,7 +42,6 @@ const struct southbridge_usb_port mainboard_usb_ports[] = {
 
 void pch_enable_lpc(void)
 {
-	pci_or_config16(PCH_LPC_DEV, LPC_EN, CNF1_LPC_EN | KBC_LPC_EN);
 }
 
 void mainboard_rcba_config(void)

@@ -28,9 +28,6 @@
 
 void pch_enable_lpc(void)
 {
-	/* Parrot EC Decode Range Port60/64, Port62/66 */
-	/* Enable EC, PS/2 Keyboard/Mouse */
-	pci_write_config16(PCH_LPC_DEV, LPC_EN, KBC_LPC_EN | MC_LPC_EN);
 }
 
 void mainboard_rcba_config(void)

@@ -22,12 +22,6 @@
 
 void pch_enable_lpc(void)
 {
-	/*
-	 * CNF2 and CNF1 for Super I/O
-	 * MC and LPC (0x60,0x64,0x62,0x66) for KBC and EC
-	 */
-	pci_write_config16(PCH_LPC_DEV, LPC_EN,
-			CNF2_LPC_EN | CNF1_LPC_EN | MC_LPC_EN | KBC_LPC_EN);
 }
 
 void mainboard_rcba_config(void)

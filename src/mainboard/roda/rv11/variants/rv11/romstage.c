@@ -23,10 +23,6 @@
 
 void pch_enable_lpc(void)
 {
-	/* Enable KBC on 0x60/0x64 (KBC),
-		  EC on 0x62/0x66 (MC) */
-	pci_write_config16(PCH_LPC_DEV, LPC_EN,
-			   KBC_LPC_EN | MC_LPC_EN);
 }
 
 void mainboard_config_superio(void)

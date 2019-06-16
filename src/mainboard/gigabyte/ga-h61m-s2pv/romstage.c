@@ -25,12 +25,6 @@
 
 void pch_enable_lpc(void)
 {
-	pci_write_config16(PCH_LPC_DEV, LPC_EN, KBC_LPC_EN | CNF1_LPC_EN);
-
-	if (!CONFIG(NO_UART_ON_SUPERIO)) {
-		pci_or_config16(PCH_LPC_DEV, LPC_EN, COMA_LPC_EN);
-		pci_write_config16(PCH_LPC_DEV, LPC_IO_DEC, 0x10);
-	}
 }
 
 void mainboard_rcba_config(void)

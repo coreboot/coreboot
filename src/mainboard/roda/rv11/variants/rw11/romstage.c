@@ -27,14 +27,6 @@
 
 void pch_enable_lpc(void)
 {
-	/* COMA on 0x3f8, COMB on 0x2f8 */
-	pci_write_config16(PCH_LPC_DEV, LPC_IO_DEC, 0x0010);
-	/* Enable KBC on 0x60/0x64 (KBC),
-		  EC on 0x62/0x66 (MC),
-		  SIO on 0x2e/0x2f (CNF1) */
-	pci_write_config16(PCH_LPC_DEV, LPC_EN,
-			   CNF1_LPC_EN | MC_LPC_EN | KBC_LPC_EN |
-			   COMB_LPC_EN | COMA_LPC_EN);
 }
 
 void mainboard_config_superio(void)

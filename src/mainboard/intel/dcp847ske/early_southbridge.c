@@ -27,18 +27,8 @@
 #include "superio.h"
 #include "thermal.h"
 
-#if CONFIG(DISABLE_UART_ON_TESTPADS)
-#define DEBUG_UART_EN 0
-#else
-#define DEBUG_UART_EN COMA_LPC_EN
-#endif
-
 void pch_enable_lpc(void)
 {
-	pci_write_config16(PCI_DEV(0, 0x1f, 0), LPC_EN,
-			CNF2_LPC_EN | DEBUG_UART_EN);
-	/* Decode SuperIO 0x0a00 */
-	pci_write_config32(PCI_DEV(0, 0x1f, 0), LPC_GEN1_DEC, 0x00fc0a01);
 }
 
 void mainboard_rcba_config(void)

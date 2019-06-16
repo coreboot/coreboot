@@ -34,9 +34,6 @@
 
 void pch_enable_lpc(void)
 {
-	/* Set COM1/COM2 decode range */
-	pci_write_config16(PCH_LPC_DEV, LPC_IO_DEC, 0x0010);
-
 	/* Enable PS/2 Keyboard/Mouse, EC areas and COM1 */
 	pci_write_config16(PCH_LPC_DEV, LPC_EN, KBC_LPC_EN | MC_LPC_EN | \
 			   GAMEL_LPC_EN | COMA_LPC_EN);

@@ -21,12 +21,7 @@
 #include <soc/cnl_memcfg_init.h>
 #include <soc/romstage.h>
 #include <string.h>
-
-/* Memory configuration board straps */
-#define GPIO_MEM_CONFIG_0	GPP_F20
-#define GPIO_MEM_CONFIG_1	GPP_F21
-#define GPIO_MEM_CONFIG_2	GPP_F11
-#define GPIO_MEM_CONFIG_3	GPP_F22
+#include <variant/gpio.h>
 
 /*
  * GPIO_MEM_CH_SEL is set to 1 for single channel skus

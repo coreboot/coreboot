@@ -209,22 +209,6 @@ static void lb_vbnv(struct lb_header *header)
 }
 #endif /* CONFIG_CHROMEOS */
 
-static void lb_vboot_handoff(struct lb_header *header)
-{
-	void *addr;
-	uint32_t size;
-	struct lb_range *vbho;
-
-	if (vboot_get_handoff_info(&addr, &size))
-		return;
-
-	vbho = (struct lb_range *)lb_new_record(header);
-	vbho->tag = LB_TAG_VBOOT_HANDOFF;
-	vbho->size = sizeof(*vbho);
-	vbho->range_start = (intptr_t)addr;
-	vbho->range_size = size;
-}
-
 static void lb_vboot_workbuf(struct lb_header *header)
 {
 	struct lb_range *vbwb;
@@ -563,9 +547,6 @@ static uintptr_t write_coreboot_table(uintptr_t rom_table_end)
 #endif
 
 	if (CONFIG(VBOOT)) {
-		/* pass along the vboot_handoff address. */
-		lb_vboot_handoff(head);
-
 		/* pass along the vboot workbuf address. */
 		lb_vboot_workbuf(head);
 	}

@@ -51,30 +51,6 @@ int vboot_can_enable_udc(void)
 	return 0;
 }
 
-/* ========================== VBOOT HANDOFF APIs =========================== */
-int vboot_get_handoff_info(void **addr, uint32_t *size)
-{
-	/*
-	 * vboot_handoff is present only after cbmem comes online. If we are in
-	 * pre-ram stage, then bail out early.
-	 */
-	if (ENV_BOOTBLOCK ||
-	    (ENV_VERSTAGE && CONFIG(VBOOT_STARTS_IN_BOOTBLOCK)))
-		return -1;
-
-	struct vboot_handoff *vboot_handoff;
-	vboot_handoff = cbmem_find(CBMEM_ID_VBOOT_HANDOFF);
-
-	if (vboot_handoff == NULL)
-		return -1;
-
-	*addr = vboot_handoff;
-
-	if (size)
-		*size = sizeof(*vboot_handoff);
-	return 0;
-}
-
 /* ============================ VBOOT REBOOT ============================== */
 void __weak vboot_platform_prepare_reboot(void)
 {

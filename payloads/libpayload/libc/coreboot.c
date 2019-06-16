@@ -78,14 +78,6 @@ static void cb_parse_serial(void *ptr, struct sysinfo_t *info)
 	info->serial = ((struct cb_serial *)ptr);
 }
 
-static void cb_parse_vboot_handoff(unsigned char *ptr, struct sysinfo_t *info)
-{
-	struct lb_range *vbho = (struct lb_range *)ptr;
-
-	info->vboot_handoff = (void *)(uintptr_t)vbho->range_start;
-	info->vboot_handoff_size = vbho->range_size;
-}
-
 static void cb_parse_vboot_workbuf(unsigned char *ptr, struct sysinfo_t *info)
 {
 	struct lb_range *vbwb = (struct lb_range *)ptr;
@@ -366,9 +358,6 @@ int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 			break;
 		case CB_TAG_VBNV:
 			cb_parse_vbnv(ptr, info);
-			break;
-		case CB_TAG_VBOOT_HANDOFF:
-			cb_parse_vboot_handoff(ptr, info);
 			break;
 		case CB_TAG_VBOOT_WORKBUF:
 			cb_parse_vboot_workbuf(ptr, info);

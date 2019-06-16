@@ -32,27 +32,6 @@ int vboot_named_region_device_rw(const char *name, struct region_device *rdev);
  */
 int vboot_check_recovery_request(void);
 
-/* ========================== VBOOT HANDOFF APIs =========================== */
-/*
- * The vboot_handoff structure contains the data to be consumed by downstream
- * firmware after firmware selection has been completed. Namely it provides
- * vboot shared data as well as the flags from VbInit.
- */
-struct vboot_handoff {
-	uint32_t reserved0;  /* originally from VbInitParams */
-	uint32_t out_flags;
-	uint32_t selected_firmware;
-	char shared_data[VB_SHARED_DATA_MIN_SIZE];
-} __packed;
-
-/*
- * vboot_get_handoff_info returns pointer to the vboot_handoff structure if
- * available. vboot_handoff is available only after CBMEM comes online. If size
- * is not NULL, size of the vboot_handoff structure is returned in it.
- * Returns 0 on success and -1 on error.
- */
-int vboot_get_handoff_info(void **addr, uint32_t *size);
-
 /* ============================ VBOOT REBOOT ============================== */
 /*
  * vboot_reboot handles the reboot requests made by vboot_reference library. It

@@ -95,8 +95,6 @@ struct sysinfo_t {
 	struct cb_header *header;
 	struct cb_mainboard *mainboard;
 
-	void	*vboot_handoff;
-	u32	vboot_handoff_size;
 	void *vboot_workbuf;
 	uint32_t vboot_workbuf_size;
 

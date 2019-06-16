@@ -19,7 +19,6 @@
 #include <device/smbus.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <device/pci_ops.h>
 #include <soc/smbus.h>
 #include "smbuslib.h"
 

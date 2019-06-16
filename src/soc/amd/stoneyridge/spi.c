@@ -24,7 +24,6 @@
 #include <spi-generic.h>
 #include <device/device.h>
 #include <device/pci.h>
-#include <device/pci_ops.h>
 #include <soc/southbridge.h>
 #include <amdblocks/lpc.h>
 #include <soc/pci_devs.h>

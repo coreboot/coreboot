@@ -19,7 +19,6 @@
 
 #include <arch/cpu.h>
 #include <device/device.h>
-#include <device/pci_ops.h>
 #include <soc/QuarkNcSocId.h>
 
 #include "../../chip.h"

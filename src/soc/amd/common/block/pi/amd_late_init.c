@@ -19,7 +19,6 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci_def.h>
-#include <device/pci_ops.h>
 #include <dimm_info_util.h>
 #include <memory_info.h>
 #include <lib.h>

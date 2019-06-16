@@ -20,7 +20,6 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
-#include <device/pci_ops.h>
 #include <elog.h>
 #include <soc/iomap.h>
 #include <soc/pm.h>

@@ -19,7 +19,6 @@
 #include <device/azalia_device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <device/pci_ops.h>
 #include <soc/intel/common/hda_verb.h>
 #include <soc/ramstage.h>
 

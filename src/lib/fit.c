@@ -17,6 +17,7 @@
 
 #include <assert.h>
 #include <console/console.h>
+#include <ctype.h>
 #include <endian.h>
 #include <stdint.h>
 #include <bootmem.h>

@@ -44,6 +44,7 @@
 #include <libbdk-hal/bdk-config.h>
 #include <libbdk-hal/bdk-twsi.h>
 #include <assert.h>
+#include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
 

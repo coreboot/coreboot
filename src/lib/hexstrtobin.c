@@ -11,6 +11,7 @@
  * GNU General Public License for more details.
  */
 
+#include <ctype.h>
 #include <lib.h>
 #include <string.h>
 

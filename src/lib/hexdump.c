@@ -13,6 +13,7 @@
  */
 
 #include <console/console.h>
+#include <ctype.h>
 #include <lib.h>
 #include <string.h>
 

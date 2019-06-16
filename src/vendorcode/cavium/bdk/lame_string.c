@@ -11,6 +11,7 @@
  */
 
 #include <assert.h>
+#include <ctype.h>
 #include <string.h>
 #include <lame_string.h>
 

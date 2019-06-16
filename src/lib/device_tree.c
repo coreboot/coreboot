@@ -18,6 +18,7 @@
 #include <assert.h>
 #include <commonlib/stdlib.h>
 #include <console/console.h>
+#include <ctype.h>
 #include <device_tree.h>
 #include <endian.h>
 #include <stdint.h>

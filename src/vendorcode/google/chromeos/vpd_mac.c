@@ -15,6 +15,7 @@
 
 #include <boot/coreboot_tables.h>
 #include <console/console.h>
+#include <ctype.h>
 #include <string.h>
 
 #include <drivers/vpd/vpd.h>

@@ -75,24 +75,6 @@ int vboot_get_handoff_info(void **addr, uint32_t *size)
 	return 0;
 }
 
-static int vboot_get_handoff_flag(uint32_t flag)
-{
-	struct vboot_handoff *vbho;
-
-	/*
-	 * If vboot_handoff cannot be found, return default value of flag as 0.
-	 */
-	if (vboot_get_handoff_info((void **)&vbho, NULL))
-		return 0;
-
-	return !!(vbho->out_flags & flag);
-}
-
-int vboot_handoff_check_recovery_flag(void)
-{
-	return vboot_get_handoff_flag(VB_INIT_OUT_ENABLE_RECOVERY);
-}
-
 /* ============================ VBOOT REBOOT ============================== */
 void __weak vboot_platform_prepare_reboot(void)
 {

@@ -1,4 +1,4 @@
-ifeq ($(CONFIG_SOC_INTEL_CANNONLAKE),y)
+ifeq ($(CONFIG_SOC_INTEL_CANNONLAKE_BASE),y)
 
 subdirs-y += romstage
 subdirs-y += ../../../cpu/intel/microcode

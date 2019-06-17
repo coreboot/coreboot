@@ -81,15 +81,17 @@ postcar-y += spi.c
 postcar-y += i2c.c
 postcar-y += uart.c
 
-
-# Skylake D0
-cpu_microcode_bins += 3rdparty/blobs/cpu/intel/model_406ex/microcode.bin
+ifeq ($(CONFIG_SKYLAKE_SOC_PCH_H),y)
 # Skylake H Q0
 cpu_microcode_bins += 3rdparty/blobs/cpu/intel/model_506ex/microcode.bin
-# Kabylake H0, Y0
-cpu_microcode_bins += 3rdparty/blobs/cpu/intel/model_806ex/microcode.bin
 # Kabylake HB0
 cpu_microcode_bins += 3rdparty/blobs/cpu/intel/model_906ex/microcode.bin
+else
+# Skylake D0
+cpu_microcode_bins += 3rdparty/blobs/cpu/intel/model_406ex/microcode.bin
+# Kabylake H0, Y0
+cpu_microcode_bins += 3rdparty/blobs/cpu/intel/model_806ex/microcode.bin
+endif
 # Missing for Skylake C0 (0x406e2), Kabylake G0 (0x406e8), Kabylake HA0 (0x506e8)
 # since those are probably pre-release samples.
 

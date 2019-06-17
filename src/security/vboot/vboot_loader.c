@@ -41,7 +41,6 @@ static void vboot_prepare(void)
 		/* Note: this path is not used for VBOOT_RETURN_FROM_VERSTAGE */
 		verstage_main();
 		car_set_var(vboot_executed, 1);
-		vboot_save_recovery_reason_vbnv();
 	} else if (verstage_should_load()) {
 		struct cbfsf file;
 		struct prog verstage =

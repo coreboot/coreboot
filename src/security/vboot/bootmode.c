@@ -43,7 +43,7 @@ void vboot_save_recovery_reason_vbnv(void)
 	set_recovery_mode_into_vbnv(reason);
 }
 
-static void vb2_clear_recovery_reason_vbnv(void *unused)
+static void vboot_clear_recovery_reason_vbnv(void *unused)
 {
 	if (!CONFIG(VBOOT_SAVE_RECOVERY_REASON_ON_REBOOT))
 		return;
@@ -62,7 +62,7 @@ static void vb2_clear_recovery_reason_vbnv(void *unused)
  * only in FSP stages which run before BS_DEV_INIT.
  */
 BOOT_STATE_INIT_ENTRY(BS_DEV_INIT, BS_ON_EXIT,
-		      vb2_clear_recovery_reason_vbnv, NULL);
+		      vboot_clear_recovery_reason_vbnv, NULL);
 
 /*
  * Returns 1 if vboot is being used and currently in a stage which might have

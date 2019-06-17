@@ -474,6 +474,9 @@ void verstage_main(void)
 	if (ENV_ROMSTAGE && CONFIG(VBOOT_STARTS_IN_ROMSTAGE))
 		vboot_log_and_clear_recovery_mode_switch(0);
 
+	/* Save recovery reason in case of unexpected reboots on x86. */
+	vboot_save_recovery_reason_vbnv();
+
 	vboot_finalize_work_context(&ctx);
 	timestamp_add_now(TS_END_VBOOT);
 }

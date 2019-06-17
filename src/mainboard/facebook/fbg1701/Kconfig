@@ -78,14 +78,6 @@ config FSP1_1_DISPLAY_LOGO
 	bool
 	default n
 
-config BOOTBLOCK_LOC
-	hex
-	default 0xFFFF0000
-
-config BOOTBLOCK_SIZE
-	hex
-	default 0x10000
-
 config SPI_FLASH_INCLUDE_ALL_DRIVERS
 	bool
 	default n

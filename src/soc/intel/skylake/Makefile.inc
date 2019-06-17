@@ -108,6 +108,4 @@ endif
 # Currently used for microcode path.
 CPPFLAGS_common += -I3rdparty/blobs/mainboard/$(MAINBOARDDIR)
 
-ROMCCFLAGS := -mcpu=p4 -fno-simplify-phi -O2
-
 endif

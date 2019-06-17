@@ -193,9 +193,10 @@ ifneq ($(UPDATED_SUBMODULES),1)
 # try to fetch non-optional submodules if the source is under git
 forgetthis:=$(if $(GIT),$(shell git submodule update --init))
 ifeq ($(CONFIG_USE_BLOBS),y)
-# this is necessary because 3rdparty/blobs is update=none, and so is ignored
+# this is necessary because 3rdparty/{blobs,intel-microcode} is update=none, and so is ignored
 # unless explicitly requested and enabled through --checkout
 forgetthis:=$(if $(GIT),$(shell git submodule update --init --checkout 3rdparty/blobs))
+forgetthis:=$(if $(GIT),$(shell git submodule update --init --checkout 3rdparty/intel-microcode))
 ifeq ($(CONFIG_PLATFORM_USES_FSP1_0)$(CONFIG_PLATFORM_USES_FSP1_1)$(CONFIG_PLATFORM_USES_FSP2_0),y)
 # this is necessary because 3rdparty/fsp is update=none, and so is ignored
 # unless explicitly requested and enabled through --checkout

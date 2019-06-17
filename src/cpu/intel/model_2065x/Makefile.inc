@@ -23,7 +23,7 @@ romstage-y += stage_cache.c
 ramstage-y += stage_cache.c
 postcar-y += stage_cache.c
 
-cpu_microcode_bins += 3rdparty/blobs/cpu/intel/model_2065x/microcode.bin
+cpu_microcode_bins += $(wildcard 3rdparty/intel-microcode/intel-ucode/06-25-*)
 
 cpu_incs-y += $(src)/cpu/intel/car/non-evict/cache_as_ram.S
 postcar-y += ../car/non-evict/exit_car.S

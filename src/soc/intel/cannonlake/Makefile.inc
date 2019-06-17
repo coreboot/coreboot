@@ -90,10 +90,24 @@ smm-y += gpio.c
 verstage-y += gpio.c
 endif
 
-# Coffeelake U43e D0
-cpu_microcode_bins += 3rdparty/blobs/cpu/intel/model_806ex/microcode.bin
-# Coffeelake H/S/E3 B0 U0
-cpu_microcode_bins += 3rdparty/blobs/cpu/intel/model_906ex/microcode.bin
+ifeq ($(CONFIG_SOC_INTEL_CANNONLAKE),y)
+# Not yet in intel-microcode repo
+#cpu_microcode_bins += $(wildcard 3rdparty/intel-microcode/intel-ucode/06-66-*)
+else ifeq ($(CONFIG_SOC_INTEL_COFFEELAKE),y)
+ifeq ($(CONFIG_SOC_INTEL_CANNONLAKE_PCH_H),y)
+cpu_microcode_bins += 3rdparty/intel-microcode/intel-ucode/06-9e-0a
+cpu_microcode_bins += 3rdparty/intel-microcode/intel-ucode/06-9e-0b
+cpu_microcode_bins += 3rdparty/intel-microcode/intel-ucode/06-9e-0c
+cpu_microcode_bins += 3rdparty/intel-microcode/intel-ucode/06-9e-0d
+else
+cpu_microcode_bins += 3rdparty/intel-microcode/intel-ucode/06-8e-0a
+endif
+else ifeq ($(CONFIG_SOC_INTEL_WHISKEYLAKE),y)
+cpu_microcode_bins += 3rdparty/intel-microcode/intel-ucode/06-8e-0b
+cpu_microcode_bins += 3rdparty/intel-microcode/intel-ucode/06-8e-0c
+else ifeq ($(CONFIG_SOC_INTEL_COMETLAKE),y)
+# TODO
+endif
 
 CPPFLAGS_common += -I$(src)/soc/intel/cannonlake
 CPPFLAGS_common += -I$(src)/soc/intel/cannonlake/include

@@ -4,4 +4,4 @@ subdirs-y += ../common
 ramstage-$(CONFIG_PARALLEL_MP) += ../model_1067x/mp_init.c
 subdirs-$(CONFIG_SMM_TSEG) += ../smm/gen1
 
-cpu_microcode_bins += 3rdparty/blobs/cpu/intel/model_6fx/microcode.bin
+cpu_microcode_bins += $(wildcard 3rdparty/intel-microcode/intel-ucode/06-0f-*)

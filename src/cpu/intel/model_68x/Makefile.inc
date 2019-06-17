@@ -17,4 +17,4 @@
 ramstage-y += model_68x_init.c
 subdirs-y += ../../x86/name
 
-cpu_microcode_bins += 3rdparty/blobs/cpu/intel/model_68x/microcode.bin
+cpu_microcode_bins += $(wildcard 3rdparty/intel-microcode/intel-ucode/06-08-*)

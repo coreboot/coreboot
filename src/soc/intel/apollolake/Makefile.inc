@@ -177,10 +177,10 @@ $(RT5682_RENDER_CAPTURE)-type := raw
 
 ifeq ($(CONFIG_SOC_INTEL_GLK),y)
 # Gemini Lake B0 (706a1) only atm.
-cpu_microcode_bins += 3rdparty/blobs/cpu/intel/model_706ax/microcode.bin
+cpu_microcode_bins += $(wildcard 3rdparty/intel-microcode/intel-ucode/06-7a-*)
 else
 # Apollo Lake 506c2, B0 (506c9) and E0 (506ca) only atm.
-cpu_microcode_bins += 3rdparty/blobs/cpu/intel/model_506cx/microcode.bin
+cpu_microcode_bins += $(wildcard 3rdparty/intel-microcode/intel-ucode/06-5c-*)
 endif
 
 endif # if CONFIG_SOC_INTEL_APOLLOLAKE

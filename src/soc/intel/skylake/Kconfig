@@ -1,16 +1,20 @@
+config SOC_INTEL_COMMON_SKYLAKE_BASE
+	bool
+
 config SOC_INTEL_SKYLAKE
 	bool
+	select SOC_INTEL_COMMON_SKYLAKE_BASE
 	help
 	  Intel Skylake support
 
 config SOC_INTEL_KABYLAKE
 	bool
-	default n
-	select SOC_INTEL_SKYLAKE
+	select SOC_INTEL_COMMON_SKYLAKE_BASE
+	select MAINBOARD_USES_FSP2_0
 	help
 	  Intel Kabylake support
 
-if SOC_INTEL_SKYLAKE
+if SOC_INTEL_COMMON_SKYLAKE_BASE
 
 config CPU_SPECIFIC_OPTIONS
 	def_bool y

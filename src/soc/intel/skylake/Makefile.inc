@@ -1,4 +1,4 @@
-ifeq ($(CONFIG_SOC_INTEL_SKYLAKE),y)
+ifeq ($(CONFIG_SOC_INTEL_COMMON_SKYLAKE_BASE),y)
 
 subdirs-y += nhlt
 subdirs-y += romstage

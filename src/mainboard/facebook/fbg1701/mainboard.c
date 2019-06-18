@@ -17,8 +17,6 @@
  */
 
 #include <device/device.h>
-#include "onboard.h"
-#include "mainboard.h"
 
 /*
  * Declare the resources we are using

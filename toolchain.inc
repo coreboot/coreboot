@@ -131,7 +131,7 @@ OBJDUMP_$(1) := $(OBJDUMP_$(2))
 STRIP_$(1) := $(STRIP_$(2))
 READELF_$(1) := $(READELF_$(2))
 CFLAGS_$(1) = $$(CFLAGS_common) $$(CFLAGS_$(2))
-ADAFLAGS_$(1) = --RTS=$$(obj)/libgnat-$(2)/ $$(ADAFLAGS_common) $$(GCC_CFLAGS_$(2))
+ADAFLAGS_$(1) = --RTS=$$(obj)/libgnat-$(2)/ $$(ADAFLAGS_common) $$(GCC_ADAFLAGS_$(2))
 CPPFLAGS_$(1) = $$(CPPFLAGS_common) $$(CPPFLAGS_$(2)) -D__ARCH_$(2)__
 COMPILER_RT_$(1) := $$(COMPILER_RT_$(2))
 COMPILER_RT_FLAGS_$(1) := $$(COMPILER_RT_FLAGS_$(2))

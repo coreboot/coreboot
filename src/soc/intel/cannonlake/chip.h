@@ -111,7 +111,7 @@ struct soc_intel_cannonlake_config {
 	enum {
 		SaGv_Disabled,
 		SaGv_FixedLow,
-#if !CONFIG(SOC_INTEL_COMMON_CANNONLAKE_BASE)
+#if !CONFIG(SOC_INTEL_CANNONLAKE_ALTERNATE_HEADERS)
 		SaGv_FixedMid,
 #endif
 		SaGv_FixedHigh,

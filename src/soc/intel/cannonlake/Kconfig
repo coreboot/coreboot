@@ -3,7 +3,7 @@ config SOC_INTEL_CANNONLAKE
 	help
 	  Intel Cannonlake support
 
-config SOC_INTEL_COMMON_CANNONLAKE_BASE
+config SOC_INTEL_CANNONLAKE_ALTERNATE_HEADERS
 	bool
 	default n
 	select SOC_INTEL_CANNONLAKE
@@ -11,7 +11,7 @@ config SOC_INTEL_COMMON_CANNONLAKE_BASE
 	  Single Kconfig option to select common base Cannonlake support.
 	  This Kconfig will help to select majority of CNL SoC features.
 	  Major difference that exist today between
-	  SOC_INTEL_COMMON_CANNONLAKE_BASE and SOC_INTEL_CANNONLAKE Kconfig
+	  SOC_INTEL_CANNONLAKE_ALTERNATE_HEADERS and SOC_INTEL_CANNONLAKE Kconfig
 	  are in FSP Header Files. Hence this Kconfig might help to select
 	  required SoC support FSP headers. Any future Intel SoC would
 	  like to make use of CNL support might just select this Kconfig.
@@ -19,21 +19,21 @@ config SOC_INTEL_COMMON_CANNONLAKE_BASE
 config SOC_INTEL_COFFEELAKE
 	bool
 	default n
-	select SOC_INTEL_COMMON_CANNONLAKE_BASE
+	select SOC_INTEL_CANNONLAKE_ALTERNATE_HEADERS
 	help
 	  Intel Coffeelake support
 
 config SOC_INTEL_WHISKEYLAKE
 	bool
 	default n
-	select SOC_INTEL_COMMON_CANNONLAKE_BASE
+	select SOC_INTEL_CANNONLAKE_ALTERNATE_HEADERS
 	help
 	  Intel Whiskeylake support
 
 config SOC_INTEL_COMETLAKE
 	bool
 	default n
-	select SOC_INTEL_COMMON_CANNONLAKE_BASE
+	select SOC_INTEL_CANNONLAKE_ALTERNATE_HEADERS
 	help
 	  Intel Cometlake support
 

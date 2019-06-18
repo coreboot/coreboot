@@ -69,7 +69,7 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg, const config_t *config)
 	/* Change VmxEnable UPD value according to ENABLE_VMX Kconfig */
 	m_cfg->VmxEnable = CONFIG(ENABLE_VMX);
 
-#if CONFIG(SOC_INTEL_COMMON_CANNONLAKE_BASE)
+#if CONFIG(SOC_INTEL_CANNONLAKE_ALTERNATE_HEADERS)
 	m_cfg->SkipMpInit = !CONFIG_USE_INTEL_FSP_MP_INIT;
 #endif
 

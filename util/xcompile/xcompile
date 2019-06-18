@@ -162,7 +162,7 @@ testas() {
 		"elf32-i386" )
 			LDFLAGS="$LDFLAGS -melf_i386"
 			CFLAGS_GCC="$CFLAGS_GCC -Wl,-b,elf32-i386 -Wl,-melf_i386"
-			CFLAGS_CLANG="$CFLAGS_GCC -Wl,-b,elf32-i386 -Wl,-melf_i386"
+			CFLAGS_CLANG="$CFLAGS_CLANG -Wl,-b,elf32-i386 -Wl,-melf_i386"
 			;;
 	esac
 

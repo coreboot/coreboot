@@ -57,6 +57,7 @@ verstage-y += halt.c
 verstage-y += fmap.c
 verstage-y += libgcc.c
 verstage-y += memcmp.c
+verstage-y += string.c
 verstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 verstage-y += boot_device.c
 verstage-$(CONFIG_CONSOLE_CBMEM) += cbmem_console.c

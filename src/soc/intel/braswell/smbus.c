@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2017 Intel Corporation.
  * Copyright (C) 2019 3mdeb
+ * Copyright (C) 2019 Eltan B.V.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,6 +17,11 @@
 
 #include <device/early_smbus.h>
 #include <soc/iomap.h>
+#include <soc/pci_devs.h>
+#include <device/pci_def.h>
+#include <device/pci_type.h>
+#include <device/pci_ops.h>
+#include <soc/smbus.h>
 #include <southbridge/intel/common/smbus.h>
 
 u8 smbus_read_byte(u32 smbus_dev, u8 addr, u8 offset)
@@ -26,4 +32,30 @@ u8 smbus_read_byte(u32 smbus_dev, u8 addr, u8 offset)
 u8 smbus_write_byte(u32 smbus_dev, u8 addr, u8 offset, u8 value)
 {
 	return do_smbus_write_byte(SMBUS_BASE_ADDRESS, addr, offset, value);
+}
+
+int smbus_i2c_block_write(u8 addr, u8 bytes, u8 *buf)
+{
+#ifdef __SIMPLE_DEVICE__
+	pci_devfn_t dev = PCI_DEV(0, SMBUS_DEV, SMBUS_FUNC);
+#else
+	struct device *dev = pcidev_on_root(SMBUS_DEV, SMBUS_FUNC);
+#endif
+	u32 smbase;
+	u32 smb_ctrl_reg;
+	int status;
+
+	/* SMBus I/O BAR */
+	smbase = pci_read_config32(dev, PCI_BASE_ADDRESS_4) & 0xFFFFFFFE;
+
+	/* Enable I2C_EN bit in HOSTC register */
+	smb_ctrl_reg = pci_read_config32(dev, HOSTC);
+	pci_write_config32(dev, HOSTC, smb_ctrl_reg | HOSTC_I2C_EN);
+
+	status = do_i2c_block_write(smbase, addr, bytes, buf);
+
+	/* Restore I2C_EN bit */
+	pci_write_config32(dev, HOSTC, smb_ctrl_reg);
+
+	return status;
 }

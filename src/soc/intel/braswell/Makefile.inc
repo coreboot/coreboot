@@ -35,6 +35,7 @@ ramstage-$(CONFIG_ELOG) += elog.c
 ramstage-y += emmc.c
 ramstage-y += gpio.c
 ramstage-y += gfx.c
+ramstage-y += smbus.c
 
 ramstage-y += gpio_support.c
 ramstage-y += iosf.c

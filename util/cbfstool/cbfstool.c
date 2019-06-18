@@ -1045,6 +1045,8 @@ static int cbfs_layout(void)
 			qualifier = "read-only, ";
 		else if (region_is_modern_cbfs((const char *)current->name))
 			qualifier = "CBFS, ";
+		else if (current->flags & FMAP_AREA_PRESERVE)
+			qualifier = "preserve, ";
 		printf(" (%ssize %u, offset %u)\n", qualifier, current->size,
 				current->offset);
 

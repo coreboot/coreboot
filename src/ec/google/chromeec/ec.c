@@ -428,30 +428,19 @@ static void google_chromeec_log_device_events(uint64_t mask)
 
 void google_chromeec_log_events(uint64_t mask)
 {
-	u8 event;
-	uint64_t wake_mask;
-	bool restore_wake_mask = false;
+	uint64_t events;
+	int i;
 
 	if (!CONFIG(ELOG))
 		return;
 
-	/*
-	 * If the EC supports unified wake masks, then there is no need to set
-	 * wake mask before reading out the host events.
-	 */
-	if (google_chromeec_check_feature(EC_FEATURE_UNIFIED_WAKE_MASKS) != 1) {
-		wake_mask = google_chromeec_get_wake_mask();
-		google_chromeec_set_wake_mask(mask);
-		restore_wake_mask = true;
+	events = google_chromeec_get_events_b() & mask;
+	for (i = 0; i < sizeof(events) * 8; i++) {
+		if (EC_HOST_EVENT_MASK(i) & events)
+			elog_add_event_byte(ELOG_TYPE_EC_EVENT, i);
 	}
 
-	while ((event = google_chromeec_get_event()) != 0) {
-		if (EC_HOST_EVENT_MASK(event) & mask)
-			elog_add_event_byte(ELOG_TYPE_EC_EVENT, event);
-	}
-
-	if (restore_wake_mask)
-		google_chromeec_set_wake_mask(wake_mask);
+	google_chromeec_clear_events_b(events);
 }
 
 void google_chromeec_events_init(const struct google_chromeec_event_info *info,
@@ -466,10 +455,6 @@ void google_chromeec_events_init(const struct google_chromeec_event_info *info,
 
 		/* Disable SMI and wake events. */
 		google_chromeec_set_smi_mask(0);
-
-		/* Clear pending events. */
-		while (google_chromeec_get_event() != 0)
-			;
 
 		/* Restore SCI event mask. */
 		google_chromeec_set_sci_mask(info->sci_events);

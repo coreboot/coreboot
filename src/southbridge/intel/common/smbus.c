@@ -4,6 +4,7 @@
  * Copyright (C) 2005 Yinghai Lu <yinghailu@gmail.com>
  * Copyright (C) 2009 coresystems GmbH
  * Copyright (C) 2013 Vladimir Serbinenko
+ * Copyright (C) 2018-2019 Eltan B.V.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -408,5 +409,49 @@ int do_i2c_eeprom_read(unsigned int smbus_base, u8 device,
 	if (ret < bytes)
 		return SMBUS_ERROR;
 
+	return ret;
+}
+
+/*
+ * The caller is responsible of settings HOSTC I2C_EN bit prior to making this
+ * call!
+ */
+int do_i2c_block_write(unsigned int smbus_base, u8 device,
+			unsigned int bytes, u8 *buf)
+{
+	u8 cmd;
+	int ret;
+
+	if (!CONFIG(SOC_INTEL_BRASWELL))
+		return SMBUS_ERROR;
+
+	if (!bytes || (bytes > SMBUS_BLOCK_MAXLEN))
+		return SMBUS_ERROR;
+
+	/* Set up for a block data write. */
+	ret = setup_command(smbus_base, I801_BLOCK_DATA, XMIT_WRITE(device));
+	if (ret < 0)
+		return ret;
+
+	/*
+	 * In i2c mode SMBus controller sequence on bus will be:
+	 * <SMBXINTADD> <SMBHSTDAT1> <SMBBLKDAT> .. <SMBBLKDAT>
+	 * The SMBHSTCMD must be written also to ensure the SMBUs controller
+	 * will generate the i2c sequence.
+	*/
+	cmd = *buf++;
+	bytes--;
+	outb(cmd, smbus_base + SMBHSTCMD);
+	outb(cmd, smbus_base + SMBHSTDAT1);
+
+	/* Execute block transaction. */
+	ret = block_cmd_loop(smbus_base, buf, bytes, BLOCK_WRITE);
+	if (ret < 0)
+		return ret;
+
+	if (ret < bytes)
+		return SMBUS_ERROR;
+
+	ret++; /* 1st byte has been written using SMBHSTDAT1 */
 	return ret;
 }

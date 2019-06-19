@@ -43,4 +43,6 @@ int do_smbus_block_write(unsigned int smbus_base, u8 device,
 /* Only since ICH5 */
 int do_i2c_eeprom_read(unsigned int smbus_base, u8 device,
 		unsigned int offset, unsigned int bytes, u8 *buf);
+int do_i2c_block_write(unsigned int smbus_base, u8 device,
+			unsigned int bytes, u8 *buf);
 #endif

@@ -23,7 +23,20 @@ config SOC_AMD_STONEYRIDGE_FT4
 	help
 	  AMD Stoney Ridge FT4 support
 
-if SOC_AMD_STONEYRIDGE_FP4 || SOC_AMD_STONEYRIDGE_FT4
+config SOC_AMD_MERLINFALCON
+	bool
+	help
+	  AMD Merlin Falcon FP4 support
+
+config HAVE_MERLINFALCON_BINARIES
+	depends on SOC_AMD_MERLINFALCON
+	bool "Merlinfalcon binaries are present"
+	default n
+	help
+	  This config option will be removed once the binaries are merged
+	  to the blobs repo. See 33615.
+
+if SOC_AMD_STONEYRIDGE_FP4 || SOC_AMD_STONEYRIDGE_FT4 || SOC_AMD_MERLINFALCON
 
 config CPU_SPECIFIC_OPTIONS
 	def_bool y
@@ -68,7 +81,6 @@ config CPU_SPECIFIC_OPTIONS
 	select POSTCAR_CONSOLE
 	select SSE2
 	select RTC
-	select SOC_AMD_PSP_SELECTABLE_SMU_FW
 
 config VBOOT
 	select VBOOT_SEPARATE_VERSTAGE
@@ -133,6 +145,7 @@ config MMCONF_BUS_NUMBER
 
 config VGA_BIOS_ID
 	string
+	default "1002,9874" if SOC_AMD_MERLINFALCON
 	default "1002,98e4"
 	help
 	  The default VGA BIOS PCI vendor/device ID should be set to the
@@ -140,6 +153,7 @@ config VGA_BIOS_ID
 
 config VGA_BIOS_FILE
 	string
+	default "3rdparty/blobs/soc/amd/merlinfalcon/VBIOS.bin" if SOC_AMD_MERLINFALCON && HAVE_MERLINFALCON_BINARIES
 	default "3rdparty/blobs/soc/amd/stoneyridge/VBIOS.bin"
 
 config S3_VGA_ROM_RUN
@@ -188,6 +202,7 @@ config STONEYRIDGE_GEC_FWM_FILE
 
 config AMD_PUBKEY_FILE
 	string "AMD public Key"
+	default "3rdparty/blobs/soc/amd/merlinfalcon/PSP/AmdPubKeyCZ.bin" if SOC_AMD_MERLINFALCON && HAVE_MERLINFALCON_BINARIES
 	default "3rdparty/blobs/soc/amd/stoneyridge/PSP/AmdPubKeyST.bin"
 
 config STONEYRIDGE_SATA_MODE
@@ -306,6 +321,17 @@ config USE_PSPSECUREOS
 
 	  If unsure, answer 'y'
 
+config SOC_AMD_PSP_SELECTABLE_SMU_FW
+	bool
+	default n if SOC_AMD_MERLINFALCON
+	default y
+	help
+	  Some ST implementations allow storing SMU firmware into cbfs and
+	  calling the PSP to load the blobs at the proper time.
+
+	  Merlin Falcon does not support it. If you are using 00670F00 SOC,
+	  ask your AMD representative if it supports it or not.
+
 config SOC_AMD_SMU_FANLESS
 	bool
 	depends on SOC_AMD_PSP_SELECTABLE_SMU_FW
@@ -384,4 +410,4 @@ config MAINBOARD_POWER_RESTORE
 	  return to S0.  Otherwise the system will remain in S5 once power
 	  is restored.
 
-endif # SOC_AMD_STONEYRIDGE_FP4 || SOC_AMD_STONEYRIDGE_FT4
+endif # SOC_AMD_STONEYRIDGE_FP4 || SOC_AMD_STONEYRIDGE_FT4 || SOC_AMD_MERLINFALCON

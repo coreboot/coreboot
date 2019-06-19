@@ -47,6 +47,7 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "Kukui" if BOARD_GOOGLE_KUKUI
 	default "Krane" if BOARD_GOOGLE_KRANE
+	default "Kodama" if BOARD_GOOGLE_KODAMA
 	default "Flapjack" if BOARD_GOOGLE_FLAPJACK
 
 config DRIVER_TPM_SPI_BUS
@@ -66,6 +67,7 @@ config GBB_HWID
 	depends on CHROMEOS
 	default "KUKUI TEST 9847" if BOARD_GOOGLE_KUKUI
 	default "KRANE TEST 5417" if BOARD_GOOGLE_KRANE
+	default "KODAMA TEST 7122" if BOARD_GOOGLE_KODAMA
 	default "FLAPJACK TEST 4147" if BOARD_GOOGLE_FLAPJACK
 
 endif

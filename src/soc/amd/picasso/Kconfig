@@ -1,7 +1,7 @@
 ##
 ## This file is part of the coreboot project.
 ##
-## Copyright (C) 2017 Advanced Micro Devices, Inc.
+## Copyright (C) 2019 Advanced Micro Devices, Inc.
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -134,7 +134,7 @@ config EHCI_BAR
 
 config AMD_PUBKEY_FILE
 	string "AMD public Key"
-	default "3rdparty/blobs/soc/amd/picasso/PSP/AmdPubKeyST.bin"
+	default "3rdparty/blobs/soc/amd/picasso/PSP/AmdPubKeyRV.bin"
 
 config PICASSO_SATA_MODE
 	int "SATA Mode"
@@ -242,14 +242,24 @@ config ACPI_BERT
 	  ACPI Boot Error Record Table.  This option reserves an 8MB region
 	  for building the error structures.
 
-config USE_PSPSECUREOS
-	bool "Include PSP SecureOS blobs in AMD firmware"
-	default y
-	help
-	  Include the PspSecureOs, PspTrustlet and TrustletKey binaries
-	  in the amdfw section.
+config RO_REGION_ONLY
+	string
+	depends on CHROMEOS
+	default "apu/amdfw"
 
-	  If unsure, answer 'y'
+config DRIVERS_I2C_DESIGNWARE_CLOCK_MHZ
+	int
+	default 133
+
+config MAINBOARD_POWER_RESTORE
+	def_bool n
+	help
+	  This option determines what state to go to once power is restored
+	  after having been lost in S0.  Select this option to automatically
+	  return to S0.  Otherwise the system will remain in S5 once power
+	  is restored.
+
+menu "PSP Configuration Options"
 
 config AMDFW_OUTSIDE_CBFS
 	bool "The AMD firmware is outside CBFS"
@@ -292,21 +302,76 @@ comment "AMD Firmware Directory Table set to location for 8MB ROM"
 comment "AMD Firmware Directory Table set to location for 16MB ROM"
 	depends on AMD_FWM_POSITION_INDEX = 5
 
-config RO_REGION_ONLY
-	string
-	depends on CHROMEOS
-	default "apu/amdfw"
+config AMD_PUBKEY_FILE
+	string "AMD public Key"
+	default "3rdparty/blobs/soc/amd/picasso/PSP/AmdPubKeyRV.bin"
 
-config DRIVERS_I2C_DESIGNWARE_CLOCK_MHZ
-	int
-	default 133
-
-config MAINBOARD_POWER_RESTORE
-	def_bool n
+config PSP_APCB_FILE
+	string "APCB file"
 	help
-	  This option determines what state to go to once power is restored
-	  after having been lost in S0.  Select this option to automatically
-	  return to S0.  Otherwise the system will remain in S5 once power
-	  is restored.
+	  The name of the AGESA Parameter Customization Block.
+
+config PSP_APOB_DESTINATION
+	hex
+	default 0x9f00000
+	help
+	  Location in DRAM where the PSP will copy the AGESA PSP Output
+	  Block.
+
+config PSP_APOB_NV_ADDRESS
+	hex "Base address of APOB NV"
+	default 0xffa68000
+	help
+	  Location in flash where the PSP can find the S3 restore information.
+	  Place this on a boundary that the flash device can erase.
+	  TODO:  The above default value is arbitrary, but eventually coreboot's
+	  MRC cache base address should be used.
+
+config PSP_APOB_NV_SIZE
+	hex "Size of APOB NV to be reserved"
+	default 0x10000
+	help
+	  Size of the S3 restore information.  Make this a multiple of the
+	  size the flash device can erase.
+	  TODO:  The above default value is arbitrary, but eventually coreboot's
+	  MRC cache size should be used.
+
+config USE_PSPSCUREOS
+	bool "Include PSP SecureOS blobs in PSP build"
+	default y
+	help
+	  Include the PspSecureOs and PspTrustlet binaries in the PSP build.
+
+	  If unsure, answer 'y'
+
+config PSP_LOAD_MP2_FW
+	bool "Include MP2 blobs in PSP build"
+	default y
+	help
+	  Include the MP2 firmwares and configuration into the PSP build.
+
+	  If unsure, answer 'y'
+
+config PSP_LOAD_S0I3_FW
+	bool "Include S0I3 blob in PSP build"
+	help
+	  Select this item to include the S0i3 file into the PSP build.
+
+config HAVE_PSP_WHITELIST_FILE
+	bool "Include a debug whitelist file in PSP build"
+	default n
+	help
+	  Support secured unlock prior to reset using a whitelisted
+	  number?  This feature requires a signed whitelist image and
+	  bootloader from AMD.
+
+	  If unsure, answer 'n'
+
+config PSP_WHITELIST_FILE
+	string "Debug whitelist file name"
+	depends on HAVE_PSP_WHITELIST_FILE
+	default "3rdparty/blobs/soc/amd/picasso/PSP/wtl-rvn.sbin"
+
+endmenu
 
 endif # SOC_AMD_PICASSO

@@ -26,7 +26,6 @@
 #include "dock.h"
 #include <drivers/intel/gma/int15.h>
 #include <cpu/x86/lapic.h>
-#include <device/pci_ops.h>
 #include <drivers/lenovo/lenovo.h>
 
 static void mainboard_init(struct device *dev)

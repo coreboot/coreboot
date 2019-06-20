@@ -36,7 +36,7 @@ static unsigned long write_pirq_table(unsigned long rom_table_end)
 
 	/* This table must be between 0x0f0000 and 0x100000 */
 	rom_table_end = write_pirq_routing_table(rom_table_end);
-	rom_table_end = ALIGN(rom_table_end, 1024);
+	rom_table_end = ALIGN_UP(rom_table_end, 1024);
 
 	/* And add a high table version for those payloads that
 	 * want to live in the F segment
@@ -68,7 +68,7 @@ static unsigned long write_mptable(unsigned long rom_table_end)
 
 	/* The smp table must be in 0-1K, 639K-640K, or 960K-1M */
 	rom_table_end = write_smp_table(rom_table_end);
-	rom_table_end = ALIGN(rom_table_end, 1024);
+	rom_table_end = ALIGN_UP(rom_table_end, 1024);
 
 	high_table_pointer = (unsigned long)cbmem_add(CBMEM_ID_MPTABLE,
 		MAX_MP_TABLE_SIZE);
@@ -114,7 +114,7 @@ static unsigned long write_acpi_table(unsigned long rom_table_end)
 		unsigned long acpi_start = high_table_pointer;
 		unsigned long new_high_table_pointer;
 
-		rom_table_end = ALIGN(rom_table_end, 16);
+		rom_table_end = ALIGN_UP(rom_table_end, 16);
 		new_high_table_pointer = write_acpi_tables(high_table_pointer);
 		if (new_high_table_pointer > (high_table_pointer
 			+ MAX_ACPI_SIZE))
@@ -146,10 +146,10 @@ static unsigned long write_acpi_table(unsigned long rom_table_end)
 			printk(BIOS_ERR,
 				"ERROR: Didn't find RSDP in high table.\n");
 		}
-		rom_table_end = ALIGN(rom_table_end + sizeof(acpi_rsdp_t), 16);
+		rom_table_end = ALIGN_UP(rom_table_end + sizeof(acpi_rsdp_t), 16);
 	} else {
 		rom_table_end = write_acpi_tables(rom_table_end);
-		rom_table_end = ALIGN(rom_table_end, 1024);
+		rom_table_end = ALIGN_UP(rom_table_end, 1024);
 	}
 
 	return rom_table_end;
@@ -168,7 +168,7 @@ static unsigned long write_smbios_table(unsigned long rom_table_end)
 
 		new_high_table_pointer =
 			smbios_write_tables(high_table_pointer);
-		rom_table_end = ALIGN(rom_table_end, 16);
+		rom_table_end = ALIGN_UP(rom_table_end, 16);
 		memcpy((void *)rom_table_end, (void *)high_table_pointer,
 			sizeof(struct smbios_entry));
 		rom_table_end += sizeof(struct smbios_entry);
@@ -184,7 +184,7 @@ static unsigned long write_smbios_table(unsigned long rom_table_end)
 		new_rom_table_end = smbios_write_tables(rom_table_end);
 		printk(BIOS_DEBUG, "SMBIOS size %ld bytes\n", new_rom_table_end
 			- rom_table_end);
-		rom_table_end = ALIGN(new_rom_table_end, 16);
+		rom_table_end = ALIGN_UP(new_rom_table_end, 16);
 	}
 
 	return rom_table_end;

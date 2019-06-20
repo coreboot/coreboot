@@ -178,13 +178,38 @@
 #define   BP_X48M0_OUTPUT_EN		BIT(2) /* 1=En, unlike Hudson, Kern */
 #define   OSCOUT1_CLK_OUTPUT_ENB	BIT(2)  /* 0 = Enabled, 1 = Disabled */
 #define   OSCOUT2_CLK_OUTPUT_ENB	BIT(7)  /* 0 = Enabled, 1 = Disabled */
+#define MISC_I2C0_PAD_CTRL		0xd8
+#define MISC_I2C1_PAD_CTRL		0xdc
+#define MISC_I2C2_PAD_CTRL		0xe0
+#define MISC_I2C3_PAD_CTRL		0xe4
+#define   I2C_PAD_CTRL_NG_MASK		(BIT(0) + BIT(1) + BIT(2) + BIT(3))
+#define     I2C_PAD_CTRL_NG_NORMAL	0xc
+#define   I2C_PAD_CTRL_RX_SEL_MASK	(BIT(4) + BIT(5))
+#define     I2C_PAD_CTRL_RX_SHIFT	4
+#define     I2C_PAD_CTRL_RX_SEL_OFF	(0 << I2C_PAD_CTRL_RX_SHIFT)
+#define     I2C_PAD_CTRL_RX_SEL_3_3V	(1 << I2C_PAD_CTRL_RX_SHIFT)
+#define     I2C_PAD_CTRL_RX_SEL_1_8V	(3 << I2C_PAD_CTRL_RX_SHIFT)
+#define   I2C_PAD_CTRL_PULLDOWN_EN	BIT(6)
+#define   I2C_PAD_CTRL_FALLSLEW_MASK	(BIT(7) + BIT(8))
+#define     I2C_PAD_CTRL_FALLSLEW_SHIFT	7
+#define     I2C_PAD_CTRL_FALLSLEW_STD	(0 << I2C_PAD_CTRL_FALLSLEW_SHIFT)
+#define     I2C_PAD_CTRL_FALLSLEW_LOW	(1 << I2C_PAD_CTRL_FALLSLEW_SHIFT)
+#define   I2C_PAD_CTRL_FALLSLEW_EN	BIT(9)
+#define   I2C_PAD_CTRL_SPIKE_RC_EN	BIT(10)
+#define   I2C_PAD_CTRL_SPIKE_RC_SEL	BIT(11) /* 0 = 50ns, 1 = 20ns */
+#define   I2C_PAD_CTRL_CAP_DOWN		BIT(12)
+#define   I2C_PAD_CTRL_CAP_UP		BIT(13)
+#define   I2C_PAD_CTRL_RES_DOWN		BIT(14)
+#define   I2C_PAD_CTRL_RES_UP		BIT(15)
+#define   I2C_PAD_CTRL_BIOS_CRT_EN	BIT(16)
+#define   I2C_PAD_CTRL_SPARE0		BIT(17)
+#define   I2C_PAD_CTRL_SPARE1		BIT(18)
 
 /* FCH AOAC Registers 0xfed81e00 */
 #define FCH_AOAC_D3_CONTROL_CLK_GEN	0x40
-#define FCH_AOAC_D3_CONTROL_I2C0	0x4a
-#define FCH_AOAC_D3_CONTROL_I2C1	0x4c
 #define FCH_AOAC_D3_CONTROL_I2C2	0x4e
 #define FCH_AOAC_D3_CONTROL_I2C3	0x50
+#define FCH_AOAC_D3_CONTROL_I2C4	0x52
 #define FCH_AOAC_D3_CONTROL_UART0	0x56
 #define FCH_AOAC_D3_CONTROL_UART1	0x58
 #define FCH_AOAC_D3_CONTROL_AMBA	0x62
@@ -198,10 +223,9 @@
 #define   FCH_AOAC_IS_SW_CONTROL	BIT(7)
 
 #define FCH_AOAC_D3_STATE_CLK_GEN	0x41
-#define FCH_AOAC_D3_STATE_I2C0		0x4b
-#define FCH_AOAC_D3_STATE_I2C1		0x4d
 #define FCH_AOAC_D3_STATE_I2C2		0x4f
 #define FCH_AOAC_D3_STATE_I2C3		0x51
+#define FCH_AOAC_D3_STATE_I2C4		0x53
 #define FCH_AOAC_D3_STATE_UART0		0x57
 #define FCH_AOAC_D3_STATE_UART1		0x59
 #define FCH_AOAC_D3_STATE_AMBA		0x63
@@ -289,12 +313,11 @@ struct picasso_aoac {
 };
 
 typedef struct aoac_devs {
-	unsigned int :5;
-	unsigned int ic0e:1; /* 5: I2C0 */
-	unsigned int ic1e:1; /* 6: I2C1 */
+	unsigned int :7;
 	unsigned int ic2e:1; /* 7: I2C2 */
 	unsigned int ic3e:1; /* 8: I2C3 */
-	unsigned int :2;
+	unsigned int ic4e:1; /* 9: I2C4 */
+	unsigned int :1;
 	unsigned int ut0e:1; /* 11: UART0 */
 	unsigned int ut1e:1; /* 12: UART1 */
 	unsigned int :2;
@@ -369,5 +392,8 @@ void i2c_soc_early_init(void);
 
 /* Initialize all the i2c buses that are not marked with early init. */
 void i2c_soc_init(void);
+
+/* Allow the board to change the default I2C pad configuration */
+void mainboard_i2c_override(int bus, uint32_t *pad_settings);
 
 #endif /* __PICASSO_SB_H__ */

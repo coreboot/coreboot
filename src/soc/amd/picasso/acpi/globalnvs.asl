@@ -48,12 +48,11 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	TPSV,	8,	// 0x2F - Passive Threshold
 	TMAX,	8,	// 0x30 - CPU Tj_max
 	Offset (0x34),  // 0x34 - AOAC Device Enables
-	, 5,
-	IC0E,	1,	//        I2C0, 5
-	IC1E,	1,	//        I2C1, 6
+	, 7,
 	IC2E,	1,	//        I2C2, 7
 	IC3E,	1,	//        I2C3, 8
-	, 2,
+	IC4E,	1,	//        I2C4, 9
+	, 1,
 	UT0E,	1,	//        UART0, 11
 	UT1E,	1,	//        UART1, 12
 	, 2,

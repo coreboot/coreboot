@@ -25,25 +25,21 @@
 #include <soc/i2c.h>
 #include "chip.h"
 
-#define I2C_BUS_ADDRESS(x) (I2C_BASE_ADDRESS + I2C_DEVICE_SIZE * (x))
-#define I2CA_BASE_ADDRESS (I2C_BUS_ADDRESS(0))
-#define I2CB_BASE_ADDRESS (I2C_BUS_ADDRESS(1))
-#define I2CC_BASE_ADDRESS (I2C_BUS_ADDRESS(2))
-#define I2CD_BASE_ADDRESS (I2C_BUS_ADDRESS(3))
-
 /* Global to provide access to chip.c */
 const char *i2c_acpi_name(const struct device *dev);
 
 static const uintptr_t i2c_bus_address[] = {
-	I2CA_BASE_ADDRESS,
-	I2CB_BASE_ADDRESS,
-	I2CC_BASE_ADDRESS,
-	I2CD_BASE_ADDRESS,
+	APU_I2C2_BASE,
+	APU_I2C3_BASE,
+	APU_I2C4_BASE, /* slave device only */
 };
 
 uintptr_t dw_i2c_base_address(unsigned int bus)
 {
-	return bus < I2C_DEVICE_COUNT ? i2c_bus_address[bus] : 0;
+	if (bus < APU_I2C_MIN_BUS || bus > APU_I2C_MAX_BUS)
+		return 0;
+
+	return i2c_bus_address[bus - APU_I2C_MIN_BUS];
 }
 
 static const struct soc_amd_picasso_config *get_soc_config(void)
@@ -63,7 +59,7 @@ const struct dw_i2c_bus_config *dw_i2c_get_soc_cfg(unsigned int bus)
 {
 	const struct soc_amd_picasso_config *config;
 
-	if (bus >= ARRAY_SIZE(i2c_bus_address))
+	if (bus < APU_I2C_MIN_BUS || bus > APU_I2C_MAX_BUS)
 		return NULL;
 
 	config = get_soc_config();
@@ -76,14 +72,12 @@ const struct dw_i2c_bus_config *dw_i2c_get_soc_cfg(unsigned int bus)
 const char *i2c_acpi_name(const struct device *dev)
 {
 	switch (dev->path.mmio.addr) {
-	case I2CA_BASE_ADDRESS:
-		return "I2CA";
-	case I2CB_BASE_ADDRESS:
-		return "I2CB";
-	case I2CC_BASE_ADDRESS:
+	case APU_I2C2_BASE:
 		return "I2CC";
-	case I2CD_BASE_ADDRESS:
+	case APU_I2C3_BASE:
 		return "I2CD";
+	case APU_I2C4_BASE:
+		return "I2CE";
 	default:
 		return NULL;
 	}
@@ -92,22 +86,24 @@ const char *i2c_acpi_name(const struct device *dev)
 int dw_i2c_soc_dev_to_bus(struct device *dev)
 {
 	switch (dev->path.mmio.addr) {
-	case I2CA_BASE_ADDRESS:
-		return 0;
-	case I2CB_BASE_ADDRESS:
-		return 1;
-	case I2CC_BASE_ADDRESS:
+	case APU_I2C2_BASE:
 		return 2;
-	case I2CD_BASE_ADDRESS:
+	case APU_I2C3_BASE:
 		return 3;
+	case APU_I2C4_BASE:
+		return 4;
 	}
 	return -1;
 }
+
+__weak void mainboard_i2c_override(int bus, uint32_t *pad_settings) { }
 
 static void dw_i2c_soc_init(bool is_early_init)
 {
 	size_t i;
 	const struct soc_amd_picasso_config *config;
+	uint32_t pad_ctrl;
+	int misc_reg;
 
 	config = get_soc_config();
 
@@ -120,8 +116,28 @@ static void dw_i2c_soc_init(bool is_early_init)
 		if (cfg->early_init != is_early_init)
 			continue;
 
-		if (dw_i2c_init(i, cfg))
+		if (dw_i2c_init(i, cfg)) {
 			printk(BIOS_ERR, "Failed to init i2c bus %zd\n", i);
+			continue;
+		}
+
+		misc_reg = MISC_I2C0_PAD_CTRL + sizeof(uint32_t) * i;
+		pad_ctrl = misc_read32(misc_reg);
+
+		pad_ctrl &= ~I2C_PAD_CTRL_NG_MASK;
+		pad_ctrl |= I2C_PAD_CTRL_NG_NORMAL;
+
+		pad_ctrl &= ~I2C_PAD_CTRL_RX_SEL_MASK;
+		pad_ctrl |= I2C_PAD_CTRL_RX_SEL_3_3V;
+
+		pad_ctrl &= ~I2C_PAD_CTRL_FALLSLEW_MASK;
+		pad_ctrl |= cfg->speed == I2C_SPEED_STANDARD
+				? I2C_PAD_CTRL_FALLSLEW_STD
+				: I2C_PAD_CTRL_FALLSLEW_LOW;
+		pad_ctrl |= I2C_PAD_CTRL_FALLSLEW_EN;
+
+		mainboard_i2c_override(i, &pad_ctrl);
+		misc_write32(misc_reg, pad_ctrl);
 	}
 }
 
@@ -152,10 +168,9 @@ struct device_operations picasso_i2c_mmio_ops = {
  * conversion of all SCL pins to input with no pull.
  */
 static const struct soc_amd_gpio i2c_2_gpi[] = {
-	PAD_GPI(I2C0_SCL_PIN, PULL_NONE),
-	PAD_GPI(I2C1_SCL_PIN, PULL_NONE),
 	PAD_GPI(I2C2_SCL_PIN, PULL_NONE),
 	PAD_GPI(I2C3_SCL_PIN, PULL_NONE),
+	/* I2C4 is a slave device only */
 };
 #define saved_pins_count ARRAY_SIZE(i2c_2_gpi)
 
@@ -210,10 +225,6 @@ void sb_reset_i2c_slaves(void)
 	 * needed after the writes to force the posted write to complete.
 	 */
 	for (j = 0; j < 9; j++) {
-		if (control & GPIO_I2C0_SCL)
-			write32((uint32_t *)GPIO_I2C0_ADDRESS, GPIO_SCL_LOW);
-		if (control & GPIO_I2C1_SCL)
-			write32((uint32_t *)GPIO_I2C1_ADDRESS, GPIO_SCL_LOW);
 		if (control & GPIO_I2C2_SCL)
 			write32((uint32_t *)GPIO_I2C2_ADDRESS, GPIO_SCL_LOW);
 		if (control & GPIO_I2C3_SCL)
@@ -222,10 +233,6 @@ void sb_reset_i2c_slaves(void)
 		read32((uint32_t *)GPIO_I2C3_ADDRESS); /* Flush posted write */
 		udelay(4); /* 4usec gets 85KHz for 1 pin, 70KHz for 4 pins */
 
-		if (control & GPIO_I2C0_SCL)
-			write32((uint32_t *)GPIO_I2C0_ADDRESS, GPIO_SCL_HIGH);
-		if (control & GPIO_I2C1_SCL)
-			write32((uint32_t *)GPIO_I2C1_ADDRESS, GPIO_SCL_HIGH);
 		if (control & GPIO_I2C2_SCL)
 			write32((uint32_t *)GPIO_I2C2_ADDRESS, GPIO_SCL_HIGH);
 		if (control & GPIO_I2C3_SCL)

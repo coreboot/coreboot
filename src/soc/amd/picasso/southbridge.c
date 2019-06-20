@@ -46,10 +46,9 @@ const static struct picasso_aoac aoac_devs[] = {
 	{ (FCH_AOAC_D3_CONTROL_UART0 + CONFIG_UART_FOR_CONSOLE * 2),
 		(FCH_AOAC_D3_STATE_UART0 + CONFIG_UART_FOR_CONSOLE * 2) },
 	{ FCH_AOAC_D3_CONTROL_AMBA, FCH_AOAC_D3_STATE_AMBA },
-	{ FCH_AOAC_D3_CONTROL_I2C0, FCH_AOAC_D3_STATE_I2C0 },
-	{ FCH_AOAC_D3_CONTROL_I2C1, FCH_AOAC_D3_STATE_I2C1 },
 	{ FCH_AOAC_D3_CONTROL_I2C2, FCH_AOAC_D3_STATE_I2C2 },
-	{ FCH_AOAC_D3_CONTROL_I2C3, FCH_AOAC_D3_STATE_I2C3 }
+	{ FCH_AOAC_D3_CONTROL_I2C3, FCH_AOAC_D3_STATE_I2C3 },
+	{ FCH_AOAC_D3_CONTROL_I2C4, FCH_AOAC_D3_STATE_I2C4 }
 };
 
 /*
@@ -514,10 +513,9 @@ static void set_sb_final_nvs(void)
 	if (gnvs == NULL)
 		return;
 
-	gnvs->aoac.ic0e = is_aoac_device_enabled(FCH_AOAC_D3_STATE_I2C0);
-	gnvs->aoac.ic1e = is_aoac_device_enabled(FCH_AOAC_D3_STATE_I2C1);
 	gnvs->aoac.ic2e = is_aoac_device_enabled(FCH_AOAC_D3_STATE_I2C2);
 	gnvs->aoac.ic3e = is_aoac_device_enabled(FCH_AOAC_D3_STATE_I2C3);
+	gnvs->aoac.ic4e = is_aoac_device_enabled(FCH_AOAC_D3_STATE_I2C4);
 	gnvs->aoac.ut0e = is_aoac_device_enabled(FCH_AOAC_D3_STATE_UART0);
 	gnvs->aoac.ut1e = is_aoac_device_enabled(FCH_AOAC_D3_STATE_UART1);
 	/* Rely on these being in sync with devicetree */

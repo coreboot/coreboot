@@ -484,16 +484,6 @@ Method(FWAK,0, Serialized)  /* FCH _WAK */
 			FDDC(12, 3)
 		}
 	}
-	if(LEqual(\IC0E, zero)) {
-		if(LNotEqual(I0TD, 0x03)) {
-			FDDC(5, 3)
-		}
-	}
-	if(LEqual(\IC1E, zero)) {
-		if(LNotEqual(I1TD, 0x03)) {
-			FDDC(6, 3)
-		}
-	}
 	if(LEqual(\IC2E, zero)) {
 		if(LNotEqual(I2TD, 0x03)) {
 			FDDC(7, 3)

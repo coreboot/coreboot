@@ -190,26 +190,12 @@ static void sb_enable_legacy_io(void)
 	pm_write32(PM_DECODE_EN, reg | LEGACY_IO_EN);
 }
 
-void sb_clk_output_48Mhz(u32 osc)
+void sb_clk_output_48Mhz(void)
 {
 	u32 ctrl;
 
-	/*
-	 * Clear the disable for OSCOUT1 (signal typically named XnnM_25M_48M)
-	 * or OSCOUT2 (USBCLK/25M_48M_OSC).  The frequency defaults to 48MHz.
-	 */
 	ctrl = misc_read32(MISC_CLK_CNTL1);
-
-	switch (osc) {
-	case 1:
-		ctrl &= ~OSCOUT1_CLK_OUTPUT_ENB;
-		break;
-	case 2:
-		ctrl &= ~OSCOUT2_CLK_OUTPUT_ENB;
-		break;
-	default:
-		return; /* do nothing if invalid */
-	}
+	ctrl |= BP_X48M0_OUTPUT_EN;
 	misc_write32(MISC_CLK_CNTL1, ctrl);
 }
 

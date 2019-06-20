@@ -175,6 +175,7 @@
 #define   CG1PLL_LF_MODE_MASK		(0x1ff << CG1PLL_LF_MODE_SHIFT)
 #define MISC_CLK_CNTL1			0x40
 #define   CG1PLL_FBDIV_TEST		BIT(26)
+#define   BP_X48M0_OUTPUT_EN		BIT(2) /* 1=En, unlike Hudson, Kern */
 #define   OSCOUT1_CLK_OUTPUT_ENB	BIT(2)  /* 0 = Enabled, 1 = Disabled */
 #define   OSCOUT2_CLK_OUTPUT_ENB	BIT(7)  /* 0 = Enabled, 1 = Disabled */
 
@@ -312,7 +313,7 @@ struct soc_power_reg {
 };
 
 void enable_aoac_devices(void);
-void sb_clk_output_48Mhz(u32 osc);
+void sb_clk_output_48Mhz(void);
 void sb_disable_4dw_burst(void);
 void sb_enable(struct device *dev);
 void southbridge_final(void *chip_info);

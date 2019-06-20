@@ -46,7 +46,7 @@ static void move_gdt(int is_recovery)
 	newgdt = cbmem_find(CBMEM_ID_GDT);
 	num_gdt_bytes = (uintptr_t)&gdt_end - (uintptr_t)&gdt;
 	if (!newgdt) {
-		newgdt = cbmem_add(CBMEM_ID_GDT, ALIGN(num_gdt_bytes, 512));
+		newgdt = cbmem_add(CBMEM_ID_GDT, ALIGN_UP(num_gdt_bytes, 512));
 		if (!newgdt) {
 			printk(BIOS_ERR, "Error: Could not relocate GDT.\n");
 			return;

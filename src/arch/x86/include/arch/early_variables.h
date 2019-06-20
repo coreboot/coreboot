@@ -69,7 +69,7 @@ int car_active(void);
 static inline size_t car_data_size(void)
 {
 	size_t car_size = _car_relocatable_data_size;
-	return ALIGN(car_size, 64);
+	return ALIGN_UP(car_size, 64);
 }
 
 static inline size_t car_object_offset(void *ptr)

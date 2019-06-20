@@ -1150,12 +1150,12 @@ unsigned long smbios_write_tables(unsigned long current)
 	int max_struct_size = 0;
 	int handle = 0;
 
-	current = ALIGN(current, 16);
+	current = ALIGN_UP(current, 16);
 	printk(BIOS_DEBUG, "%s: %08lx\n", __func__, current);
 
 	se = (struct smbios_entry *)current;
 	current += sizeof(struct smbios_entry);
-	current = ALIGN(current, 16);
+	current = ALIGN_UP(current, 16);
 
 	tables = current;
 	update_max(len, max_struct_size, smbios_write_type0(&current,

@@ -97,11 +97,6 @@ static void fill_generic_section(cper_proc_generic_error_section_t *sec,
  * which is the best method to report MSR context.  As a result, add two
  * structures:  A "processor generic error" that is parsed, and an IA32/X64 one
  * to capture complete information.
- *
- * Future work may attempt to interpret the specific Family 15h error symptoms
- * found in the MCA registers.  This data could enhance the reporting of the
- * Processor Generic section and the failing error/check added to the
- * IA32/X64 section.
  */
 static void build_bert_mca_error(struct mca_bank *mci)
 {
@@ -161,6 +156,7 @@ static const char *const mca_bank_name[] = {
 	"Floating point unit"
 };
 
+/* Check the Legacy Machine Check Architecture registers */
 void check_mca(void)
 {
 	int i;
@@ -173,9 +169,6 @@ void check_mca(void)
 
 	if (is_warm_reset()) {
 		for (i = 0 ; i < num_banks ; i++) {
-			if (i == 3) /* Reserved in Family 15h */
-				continue;
-
 			mci.sts = rdmsr(IA32_MC0_STATUS + (i * 4));
 			if (mci.sts.hi || mci.sts.lo) {
 				int core = cpuid_ebx(1) >> 24;

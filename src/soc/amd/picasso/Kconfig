@@ -157,16 +157,46 @@ config PICASSO_UART
 	select NO_UART_ON_SUPERIO
 	select UART_OVERRIDE_REFCLK
 	help
-	  There are two UART controllers in Picasso.
-	  The UART registers are memory-mapped. UART
-	  controller 0 registers range from FEDC_6000h
-	  to FEDC_6FFFh. UART controller 1 registers
-	  range from FEDC_8000h to FEDC_8FFFh.
+	  There are four memory-mapped UARTs controllers in Picasso at:
+	  0: 0xfedc9000
+	  1: 0xfedca000
+	  2: 0xfedc3000
+	  3: 0xfedcf000
+
+choice PICASSO_UART_CLOCK_SOURCE
+	prompt "UART Frequency"
+	depends on PICASSO_UART
+	default PICASSO_UART_48MZ
+
+config PICASSO_UART_48MZ
+	bool "48 MHz clock"
+	help
+	  Select this option for the most compatibility.
+
+config PICASSO_UART_1_8MZ
+	bool "1.8432 MHz clock"
+	help
+	  Select this option if an old payload or Linux ttyS0 arguments
+	  require it.
+
+endchoice
+
+config PICASSO_UART_LEGACY
+	bool "Decode legacy I/O range"
+	depends on PICASSO_UART
+	help
+	  Assign I/O 3F8, 2F8, etc. to a Picasso UART.  Only a single UART may
+	  decode legacy addresses and this option enables the one used for the
+	  console.  A UART accessed with I/O does not allow all the features
+	  of MMIO.  The MMIO decode is still present when this option is used.
 
 config CONSOLE_UART_BASE_ADDRESS
-	depends on CONSOLE_SERIAL
+	depends on CONSOLE_SERIAL && PICASSO_UART
 	hex
-	default 0xfedc6000
+	default 0xfedc9000 if UART_FOR_CONSOLE = 0
+	default 0xfedca000 if UART_FOR_CONSOLE = 1
+	default 0xfedc3000 if UART_FOR_CONSOLE = 2
+	default 0xfedcf000 if UART_FOR_CONSOLE = 3
 
 config SMM_TSEG_SIZE
 	hex

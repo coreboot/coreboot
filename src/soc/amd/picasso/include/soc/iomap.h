@@ -28,6 +28,7 @@
  * any documentation but should be considered reserved through FED8_1FFFh.
  */
 #include <amdblocks/acpimmio_map.h>
+#define SUPPORTS_ACPIMMIO_SM_PCI_BASE	1 /* 0xfed80000 */
 #define SUPPORTS_ACPIMMIO_SMI_BASE	1 /* 0xfed80100 */
 #define SUPPORTS_ACPIMMIO_PMIO_BASE	1 /* 0xfed80300 */
 #define SUPPORTS_ACPIMMIO_BIOSRAM_BASE	1 /* 0xfed80500 */
@@ -60,8 +61,10 @@
 #endif
 #define HPET_BASE_ADDRESS		0xfed00000
 
-#define APU_UART0_BASE			0xfedc6000
-#define APU_UART1_BASE			0xfedc8000
+#define APU_UART0_BASE			0xfedc9000
+#define APU_UART1_BASE			0xfedca000
+#define APU_UART2_BASE			0xfedce000
+#define APU_UART3_BASE			0xfedcf000
 
 #define FLASH_BASE_ADDR			((0xffffffff - CONFIG_ROM_SIZE) + 1)
 

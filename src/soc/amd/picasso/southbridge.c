@@ -40,6 +40,8 @@
 #define FCH_AOAC_UART_FOR_CONSOLE \
 		(CONFIG_UART_FOR_CONSOLE == 0 ? FCH_AOAC_DEV_UART0 \
 		: CONFIG_UART_FOR_CONSOLE == 1 ? FCH_AOAC_DEV_UART1 \
+		: CONFIG_UART_FOR_CONSOLE == 2 ? FCH_AOAC_DEV_UART2 \
+		: CONFIG_UART_FOR_CONSOLE == 3 ? FCH_AOAC_DEV_UART3 \
 		: -1)
 #if FCH_AOAC_UART_FOR_CONSOLE == -1
 # error Unsupported UART_FOR_CONSOLE chosen
@@ -282,6 +284,8 @@ void fch_pre_init(void)
 	sb_enable_legacy_io();
 	enable_aoac_devices();
 	sb_reset_i2c_slaves();
+	if (CONFIG(PICASSO_UART))
+		set_uart_config(CONFIG_UART_FOR_CONSOLE);
 }
 
 static void print_num_status_bits(int num_bits, uint32_t status,
@@ -463,6 +467,8 @@ static void set_sb_final_nvs(void)
 	gnvs->aoac.ic4e = is_aoac_device_enabled(FCH_AOAC_DEV_I2C4);
 	gnvs->aoac.ut0e = is_aoac_device_enabled(FCH_AOAC_DEV_UART0);
 	gnvs->aoac.ut1e = is_aoac_device_enabled(FCH_AOAC_DEV_UART1);
+	gnvs->aoac.ut2e = is_aoac_device_enabled(FCH_AOAC_DEV_UART2);
+	gnvs->aoac.ut3e = is_aoac_device_enabled(FCH_AOAC_DEV_UART3);
 	gnvs->aoac.espi = 1;
 }
 

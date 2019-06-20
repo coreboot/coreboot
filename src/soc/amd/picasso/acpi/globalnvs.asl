@@ -55,7 +55,10 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	, 1,
 	UT0E,	1,	//        UART0, 11
 	UT1E,	1,	//        UART1, 12
-	, 14,
+	, 3,
+	UT2E,	1,	//        UART2, 16
+	, 9,
+	UT23,	1,	//        UART3, 26
 	ESPI,	1,	//        ESPI, 27
 	/* ChromeOS stuff (0x100 -> 0xfff, size 0xeff) */
 	Offset (0x100),

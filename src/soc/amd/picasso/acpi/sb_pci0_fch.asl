@@ -236,8 +236,22 @@ Field( SMIC, ByteAcc, NoLock, Preserve) {
 	offset (0x1e59), /* UART1 D3 State */
 	U1DS, 3,
 
+	offset (0x1e60), /* UART2 D3 Control */
+	U2TD, 2,
+	, 1,
+	U2PD, 1,
+	offset (0x1e61), /* UART2 D3 State */
+	U2DS, 3,
+
 	offset (0x1e71), /* SD D3 State */
 	SDDS, 3,
+
+	offset (0x1e74), /* UART3 D3 Control */
+	U3TD, 2,
+	, 1,
+	U3PD, 1,
+	offset (0x1e75), /* UART3 D3 State */
+	U3DS, 3,
 
 	offset (0x1e80), /* Shadow Register Request */
 	, 15,
@@ -375,6 +389,22 @@ Method(FDDC, 2, Serialized)
 					Store(U1DS, Local0)
 				}
 			}
+			Case(16) {
+				Store(0x00, U2TD)
+				Store(One, U2PD)
+				Store(U2DS, Local0)
+				while(LNotEqual(Local0,0x7)) {
+					Store(U2DS, Local0)
+				}
+			}
+			Case(26) {
+				Store(0x00, U3TD)
+				Store(One, U3PD)
+				Store(U3DS, Local0)
+				while(LNotEqual(Local0,0x7)) {
+					Store(U3DS, Local0)
+				}
+			}
 		}
 	} else {
 		/* put device into D3cold */
@@ -426,6 +456,22 @@ Method(FDDC, 2, Serialized)
 					Store(U1DS, Local0)
 				}
 				Store(0x03, U1TD)
+			}
+			Case(16) {
+				Store(Zero, U2PD)
+				Store(U2DS, Local0)
+				while(LNotEqual(Local0,0x0)) {
+					Store(U2DS, Local0)
+				}
+				Store(0x03, U2TD)
+			}
+			Case(26) {
+				Store(Zero, U3PD)
+				Store(U3DS, Local0)
+				while(LNotEqual(Local0,0x0)) {
+					Store(U3DS, Local0)
+				}
+				Store(0x03, U3TD)
 			}
 		}
 		if(LEqual(I1TD, 3)) {

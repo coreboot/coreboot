@@ -28,6 +28,14 @@
  *  - fixed addresses offset from 0xfed80000
  */
 
+/* SMBus controller registers:  0xfed80000 or D14F0 */
+#define SMB_UART_CONFIG			0xfc
+#define   SMB_UART3_1_8M		BIT(31) /* defaults are 0 = 48MHz */
+#define   SMB_UART2_1_8M		BIT(30)
+#define   SMB_UART1_1_8M		BIT(29)
+#define   SMB_UART0_1_8M		BIT(28)
+#define   SMB_UART_1_8M_SHIFT		28
+
 /* Power management registers:  0xfed80300 or index/data at IO 0xcd6/cd7 */
 #define PM_DECODE_EN			0x00
 #define   SMBUS_ASF_IO_EN		BIT(4)
@@ -209,6 +217,7 @@
 #define FCH_AOAC_DEV_UART1		12
 #define FCH_AOAC_DEV_UART2		16
 #define FCH_AOAC_DEV_AMBA		17
+#define FCH_AOAC_DEV_UART3		26
 #define FCH_AOAC_DEV_ESPI		27
 
 /* Bit definitions for Device D3 Control AOACx0000[40...7E] step 2 */
@@ -229,6 +238,11 @@
 #define   FCH_AOAC_CLK_OK_STATE		BIT(5)
 #define   FCH_AOAC_STAT0		BIT(6)
 #define   FCH_AOAC_STAT1		BIT(7)
+
+#define FCH_UART_LEGACY_DECODE		0xfedc0020
+#define   FCH_LEGACY_3F8_SH		3
+#define   FCH_LEGACY_2F8_SH		1
+#define   FCH_LEGACY_3E8_SH		2
 
 #define PM1_LIMIT			16
 #define GPE0_LIMIT			28
@@ -294,7 +308,10 @@ typedef struct aoac_devs {
 	unsigned int :1;
 	unsigned int ut0e:1; /* 11: UART0 */
 	unsigned int ut1e:1; /* 12: UART1 */
-	unsigned int :14;
+	unsigned int :3;
+	unsigned int ut2e:1; /* 16: UART2 */
+	unsigned int :9;
+	unsigned int ut3e:1; /* 26: UART3 */
 	unsigned int espi:1; /* 27: ESPI */
 	unsigned int :4;
 } __packed aoac_devs_t;
@@ -317,6 +334,7 @@ void sb_read_mode(u32 mode);
 void sb_set_spi100(u16 norm, u16 fast, u16 alt, u16 tpm);
 void fch_pre_init(void);
 void fch_early_init(void);
+void set_uart_config(int idx);
 /**
  * @brief Save the UMA bize
  *

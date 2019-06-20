@@ -321,7 +321,7 @@ static atomic_t *load_sipi_vector(struct mp_params *mp_params)
 	module_size = rmodule_memory_size(&sipi_mod);
 
 	/* Align to 4 bytes. */
-	module_size = ALIGN(module_size, 4);
+	module_size = ALIGN_UP(module_size, 4);
 
 	if (module_size > loc_size) {
 		printk(BIOS_CRIT, "SIPI module size (%d) > region size (%d).\n",

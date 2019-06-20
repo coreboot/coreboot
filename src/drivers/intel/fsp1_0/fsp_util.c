@@ -275,7 +275,7 @@ int save_mrc_data(void *hob_start)
 	printk(BIOS_DEBUG, "Memory Configure Data Hob at %p (size = 0x%x).\n",
 			(void *)mrc_hob_data, mrc_hob_size);
 
-	output_len = ALIGN(mrc_hob_size, 16);
+	output_len = ALIGN_UP(mrc_hob_size, 16);
 
 	/* Save the MRC S3/fast boot/ADR restore data to cbmem */
 	mrc_data = cbmem_add (CBMEM_ID_MRCDATA,

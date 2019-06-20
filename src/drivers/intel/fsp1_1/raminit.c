@@ -297,7 +297,7 @@ void raminit(struct romstage_params *params)
 	else if (!vboot_recovery_mode_enabled()) {
 		/* Do not save MRC data in recovery path */
 		params->data_to_save = GET_GUID_HOB_DATA(mrc_hob);
-		params->data_to_save_size = ALIGN(
+		params->data_to_save_size = ALIGN_UP(
 			((u32)GET_HOB_LENGTH(mrc_hob)), 16);
 	}
 }

@@ -864,7 +864,7 @@ unsigned long acpi_write_hpet(struct device *device, unsigned long current,
 
 	hpet = (acpi_hpet_t *) current;
 	current += sizeof(acpi_hpet_t);
-	current = ALIGN(current, 16);
+	current = ALIGN_UP(current, 16);
 	acpi_create_hpet(hpet);
 	acpi_add_table(rsdp, hpet);
 
@@ -1322,7 +1322,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	acpi_write_xsdt(xsdt, oem_id, oem_table_id);
 
 	printk(BIOS_DEBUG, "ACPI:    * FACS\n");
-	current = (ALIGN(current, 64));
+	current = ALIGN_UP(current, 64);
 	facs = (acpi_facs_t *) current;
 	current += sizeof(acpi_facs_t);
 	current = acpi_align_current(current);

@@ -1004,7 +1004,7 @@ static inline int acpi_is_wakeup_s4(void) { return 0; }
 
 static inline uintptr_t acpi_align_current(uintptr_t current)
 {
-	return ALIGN(current, 16);
+	return ALIGN_UP(current, 16);
 }
 
 /* ACPI table revisions should match the revision of the ACPI spec

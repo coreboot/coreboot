@@ -257,7 +257,7 @@ pci_rom_write_acpi_tables(struct device *device, unsigned long current,
 
 	/* AMD/ATI uses VFCT */
 	if (device->vendor == PCI_VENDOR_ID_ATI) {
-		current = ALIGN(current, 8);
+		current = ALIGN_UP(current, 8);
 		printk(BIOS_DEBUG, "ACPI:    * VFCT at %lx\n", current);
 		vfct = (struct acpi_vfct *)current;
 		acpi_create_vfct(device, vfct, pci_rom_acpi_fill_vfct);

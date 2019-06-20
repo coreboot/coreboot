@@ -17,6 +17,7 @@
 #include <device/mmio.h>
 #include <bootstate.h>
 #include <cpu/x86/smm.h>
+#include <cpu/x86/msr.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ops.h>
@@ -26,6 +27,7 @@
 #include <amdblocks/acpimmio.h>
 #include <amdblocks/lpc.h>
 #include <amdblocks/acpi.h>
+#include <soc/cpu.h>
 #include <soc/southbridge.h>
 #include <soc/smbus.h>
 #include <soc/smi.h>
@@ -54,6 +56,7 @@ const static int aoac_devs[] = {
 	FCH_AOAC_DEV_I2C2,
 	FCH_AOAC_DEV_I2C3,
 	FCH_AOAC_DEV_I2C4,
+	FCH_AOAC_DEV_ESPI,
 };
 
 /*
@@ -69,7 +72,7 @@ const static struct irq_idx_name irq_association[] = {
 	{ PIRQ_C,	"INTC#" },
 	{ PIRQ_D,	"INTD#" },
 	{ PIRQ_E,	"INTE#" },
-	{ PIRQ_F,	"INTF#" },
+	{ PIRQ_F,	"INTF#/GENINT2" },
 	{ PIRQ_G,	"INTG#" },
 	{ PIRQ_H,	"INTH#" },
 	{ PIRQ_MISC,	"Misc" },
@@ -83,14 +86,19 @@ const static struct irq_idx_name irq_association[] = {
 	{ PIRQ_SCI,	"SCI" },
 	{ PIRQ_SMBUS,	"SMBUS" },
 	{ PIRQ_ASF,	"ASF" },
-	{ PIRQ_HDA,	"HDA" },
-	{ PIRQ_FC,	"FC" },
 	{ PIRQ_PMON,	"PerMon" },
 	{ PIRQ_SD,	"SD" },
-	{ PIRQ_SDIO,	"SDIOt" },
-	{ PIRQ_EHCI,	"EHCI" },
-	{ PIRQ_XHCI,	"XHCI" },
+	{ PIRQ_SDIO,	"SDIO" },
+	{ PIRQ_CIR,	"CIR" },
+	{ PIRQ_GPIOA,	"GPIOa" },
+	{ PIRQ_GPIOB,	"GPIOb" },
+	{ PIRQ_GPIOC,	"GPIOc" },
 	{ PIRQ_SATA,	"SATA" },
+	{ PIRQ_EMMC,	"eMMC" },
+	{ PIRQ_GPP0,	"GPP0" },
+	{ PIRQ_GPP1,	"GPP1" },
+	{ PIRQ_GPP2,	"GPP2" },
+	{ PIRQ_GPP3,	"GPP3" },
 	{ PIRQ_GPIO,	"GPIO" },
 	{ PIRQ_I2C0,	"I2C0" },
 	{ PIRQ_I2C1,	"I2C1" },
@@ -98,6 +106,10 @@ const static struct irq_idx_name irq_association[] = {
 	{ PIRQ_I2C3,	"I2C3" },
 	{ PIRQ_UART0,	"UART0" },
 	{ PIRQ_UART1,	"UART1" },
+	{ PIRQ_I2C4,	"I2C4" },
+	{ PIRQ_I2C5,	"I2C5" },
+	{ PIRQ_UART2,	"UART2" },
+	{ PIRQ_UART3,	"UART3" },
 };
 
 const struct irq_idx_name *sb_get_apic_reg_association(size_t *size)
@@ -173,31 +185,6 @@ static void sb_enable_lpc(void)
 	pm_io_write8(PM_LPC_GATING, byte);
 }
 
-static void sb_lpc_decode(void)
-{
-	u32 tmp = 0;
-
-	/* Enable I/O decode to LPC bus */
-	tmp = DECODE_ENABLE_PARALLEL_PORT0 | DECODE_ENABLE_PARALLEL_PORT2
-		| DECODE_ENABLE_PARALLEL_PORT4 | DECODE_ENABLE_SERIAL_PORT0
-		| DECODE_ENABLE_SERIAL_PORT1 | DECODE_ENABLE_SERIAL_PORT2
-		| DECODE_ENABLE_SERIAL_PORT3 | DECODE_ENABLE_SERIAL_PORT4
-		| DECODE_ENABLE_SERIAL_PORT5 | DECODE_ENABLE_SERIAL_PORT6
-		| DECODE_ENABLE_SERIAL_PORT7 | DECODE_ENABLE_AUDIO_PORT0
-		| DECODE_ENABLE_AUDIO_PORT1 | DECODE_ENABLE_AUDIO_PORT2
-		| DECODE_ENABLE_AUDIO_PORT3 | DECODE_ENABLE_MSS_PORT2
-		| DECODE_ENABLE_MSS_PORT3 | DECODE_ENABLE_FDC_PORT0
-		| DECODE_ENABLE_FDC_PORT1 | DECODE_ENABLE_GAME_PORT
-		| DECODE_ENABLE_KBC_PORT | DECODE_ENABLE_ACPIUC_PORT
-		| DECODE_ENABLE_ADLIB_PORT;
-
-	/* Decode SIOs at 2E/2F and 4E/4F */
-	if (CONFIG(PICASSO_LEGACY_FREE))
-		tmp |= DECODE_ALTERNATE_SIO_ENABLE | DECODE_SIO_ENABLE;
-
-	lpc_enable_decode(tmp);
-}
-
 static void sb_enable_cf9_io(void)
 {
 	uint32_t reg = pm_read32(PM_DECODE_EN);
@@ -262,72 +249,6 @@ void sb_read_mode(u32 mode)
 					& ~SPI_READ_MODE_MASK) | mode);
 }
 
-static void setup_spread_spectrum(int *reboot)
-{
-	uint16_t rstcfg = pm_read16(PWR_RESET_CFG);
-
-	rstcfg &= ~TOGGLE_ALL_PWR_GOOD;
-	pm_write16(PWR_RESET_CFG, rstcfg);
-
-	uint32_t cntl1 = misc_read32(MISC_CLK_CNTL1);
-
-	if (cntl1 & CG1PLL_FBDIV_TEST) {
-		printk(BIOS_DEBUG, "Spread spectrum is ready\n");
-		misc_write32(MISC_CGPLL_CONFIG1,
-			     misc_read32(MISC_CGPLL_CONFIG1) |
-				     CG1PLL_SPREAD_SPECTRUM_ENABLE);
-
-		return;
-	}
-
-	printk(BIOS_DEBUG, "Setting up spread spectrum\n");
-
-	uint32_t cfg6 = misc_read32(MISC_CGPLL_CONFIG6);
-	cfg6 &= ~CG1PLL_LF_MODE_MASK;
-	cfg6 |= (0x0f8 << CG1PLL_LF_MODE_SHIFT) & CG1PLL_LF_MODE_MASK;
-	misc_write32(MISC_CGPLL_CONFIG6, cfg6);
-
-	uint32_t cfg3 = misc_read32(MISC_CGPLL_CONFIG3);
-	cfg3 &= ~CG1PLL_REFDIV_MASK;
-	cfg3 |= (0x003 << CG1PLL_REFDIV_SHIFT) & CG1PLL_REFDIV_MASK;
-	cfg3 &= ~CG1PLL_FBDIV_MASK;
-	cfg3 |= (0x04b << CG1PLL_FBDIV_SHIFT) & CG1PLL_FBDIV_MASK;
-	misc_write32(MISC_CGPLL_CONFIG3, cfg3);
-
-	uint32_t cfg5 = misc_read32(MISC_CGPLL_CONFIG5);
-	cfg5 &= ~SS_AMOUNT_NFRAC_SLIP_MASK;
-	cfg5 |= (0x2 << SS_AMOUNT_NFRAC_SLIP_SHIFT) & SS_AMOUNT_NFRAC_SLIP_MASK;
-	misc_write32(MISC_CGPLL_CONFIG5, cfg5);
-
-	uint32_t cfg4 = misc_read32(MISC_CGPLL_CONFIG4);
-	cfg4 &= ~SS_AMOUNT_DSFRAC_MASK;
-	cfg4 |= (0xd000 << SS_AMOUNT_DSFRAC_SHIFT) & SS_AMOUNT_DSFRAC_MASK;
-	cfg4 &= ~SS_STEP_SIZE_DSFRAC_MASK;
-	cfg4 |= (0x02d5 << SS_STEP_SIZE_DSFRAC_SHIFT)
-						& SS_STEP_SIZE_DSFRAC_MASK;
-	misc_write32(MISC_CGPLL_CONFIG4, cfg4);
-
-	rstcfg |= TOGGLE_ALL_PWR_GOOD;
-	pm_write16(PWR_RESET_CFG, rstcfg);
-
-	cntl1 |= CG1PLL_FBDIV_TEST;
-	misc_write32(MISC_CLK_CNTL1, cntl1);
-
-	*reboot = 1;
-}
-
-static void setup_misc(int *reboot)
-{
-	/* Undocumented register */
-	uint32_t reg = misc_read32(0x50);
-	if (!(reg & BIT(16))) {
-		reg |= BIT(16);
-
-		misc_write32(0x50, reg);
-		*reboot = 1;
-	}
-}
-
 static void fch_smbus_init(void)
 {
 	pm_write8(SMB_ASF_IO_BASE, SMB_BASE_ADDR >> 8);
@@ -340,28 +261,27 @@ static void fch_smbus_init(void)
 }
 
 /* Before console init */
-void bootblock_fch_early_init(void)
+void fch_pre_init(void)
 {
-	int reboot = 0;
-
-	lpc_enable_rom();
+	/* Turn on LPC in case the PSP didn't use it.  However, ensure all
+	 * decoding is cleared as the PSP may have enabled decode paths. */
 	sb_enable_lpc();
-	lpc_enable_port80();
-	sb_lpc_decode();
+	lpc_disable_decodes();
+
+	if (CONFIG(POST_IO) && (CONFIG_POST_IO_PORT == 0x80)
+					&& CONFIG(PICASSO_LPC_IOMUX))
+		lpc_enable_port80();
 	lpc_enable_spi_prefetch();
 	sb_init_spi_base();
-	sb_disable_4dw_burst(); /* Must be disabled on CZ(ST) */
+	sb_disable_4dw_burst();
+	sb_set_spi100(SPI_SPEED_33M, SPI_SPEED_33M,
+			SPI_SPEED_16M, SPI_SPEED_16M);
 	enable_acpimmio_decode();
 	fch_smbus_init();
 	sb_enable_cf9_io();
-	setup_spread_spectrum(&reboot);
-	setup_misc(&reboot);
-
-	if (reboot)
-		warm_reset();
-
 	sb_enable_legacy_io();
 	enable_aoac_devices();
+	sb_reset_i2c_slaves();
 }
 
 static void print_num_status_bits(int num_bits, uint32_t status,
@@ -417,9 +337,10 @@ static void sb_print_pmxc0_status(void)
 }
 
 /* After console init */
-void bootblock_fch_init(void)
+void fch_early_init(void)
 {
 	sb_print_pmxc0_status();
+	i2c_soc_early_init();
 }
 
 void sb_enable(struct device *dev)
@@ -430,6 +351,7 @@ void sb_enable(struct device *dev)
 static void sb_init_acpi_ports(void)
 {
 	u32 reg;
+	msr_t cst_addr;
 
 	/* We use some of these ports in SMM regardless of whether or not
 	 * ACPI tables are generated. Enable these ports indiscriminately.
@@ -439,8 +361,11 @@ static void sb_init_acpi_ports(void)
 	pm_write16(PM1_CNT_BLK, ACPI_PM1_CNT_BLK);
 	pm_write16(PM_TMR_BLK, ACPI_PM_TMR_BLK);
 	pm_write16(PM_GPE0_BLK, ACPI_GPE0_BLK);
+
 	/* CpuControl is in \_PR.CP00, 6 bytes */
-	pm_write16(PM_CPU_CTRL, ACPI_CPU_CONTROL);
+	cst_addr.hi = 0;
+	cst_addr.lo = ACPI_CPU_CONTROL;
+	wrmsr(CSTATE_BASE_REG, cst_addr);
 
 	if (CONFIG(HAVE_SMI_HANDLER)) {
 		/* APMC - SMI Command Port */
@@ -453,7 +378,6 @@ static void sb_init_acpi_ports(void)
 		 */
 		reg = pm_read32(PM_PCI_CTRL);
 		reg |= FORCE_SLPSTATE_RETRY;
-		reg &= ~FORCE_STPCLK_RETRY;
 		pm_write32(PM_PCI_CTRL, reg);
 
 		/* Disable SlpTyp feature */

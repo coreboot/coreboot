@@ -30,15 +30,14 @@
 
 /* Power management registers:  0xfed80300 or index/data at IO 0xcd6/cd7 */
 #define PM_DECODE_EN			0x00
+#define   SMBUS_ASF_IO_EN		BIT(4)
 #define   CF9_IO_EN			BIT(1)
 #define   LEGACY_IO_EN			BIT(0)
+#define SMB_ASF_IO_BASE			0x01 /* part of PM_DECODE_EN in PPR */
 #define PM_ISA_CONTROL			0x04
 #define   MMIO_EN			BIT(1)
 #define PM_PCI_CTRL			0x08
 #define   FORCE_SLPSTATE_RETRY		BIT(25)
-#define   FORCE_STPCLK_RETRY		BIT(24)
-
-#define SMB_ASF_IO_BASE			0x01 /* part of PM_DECODE_EN */
 
 #define PWR_RESET_CFG			0x10
 #define   TOGGLE_ALL_PWR_GOOD		BIT(1)
@@ -94,8 +93,6 @@
 #define PM_RST_CTRL1			0xbe
 #define   SLPTYPE_CONTROL_EN		BIT(5)
 #define PM_RST_STATUS			0xc0
-#define PM_PCIB_CFG			0xea
-#define   PM_GENINT_DISABLE		BIT(0)
 #define PM_LPC_GATING			0xec
 #define   PM_LPC_AB_NO_BYPASS_EN	BIT(2)
 #define   PM_LPC_A20_EN			BIT(1)
@@ -105,13 +102,13 @@
 
 /* SMBUS MMIO offsets 0xfed80a00 */
 #define SMBHSTSTAT			0x0
-#define   SMBHST_STAT_FAILED		0x10
-#define   SMBHST_STAT_COLLISION		0x08
-#define   SMBHST_STAT_ERROR		0x04
-#define   SMBHST_STAT_INTERRUPT		0x02
-#define   SMBHST_STAT_BUSY		0x01
+#define   SMBHST_STAT_FAILED		BIT(4)
+#define   SMBHST_STAT_COLLISION		BIT(3)
+#define   SMBHST_STAT_ERROR		BIT(2)
+#define   SMBHST_STAT_INTERRUPT		BIT(1)
+#define   SMBHST_STAT_BUSY		BIT(0)
 #define   SMBHST_STAT_CLEAR		0xff
-#define   SMBHST_STAT_NOERROR		0x02
+#define   SMBHST_STAT_NOERROR		BIT(1)
 #define   SMBHST_STAT_VAL_BITS		0x1f
 #define   SMBHST_STAT_ERROR_BITS	0x1c
 
@@ -149,32 +146,27 @@
 
 /* FCH MISC Registers 0xfed80e00 */
 #define GPP_CLK_CNTRL			0x00
-#define   GPP_CLK2_REQ_MAP_SHIFT	8
-#define   GPP_CLK2_REQ_MAP_MASK		(0xf << GPP_CLK2_REQ_MAP_SHIFT)
-#define   GPP_CLK2_REQ_MAP_CLK_REQ2	3
-#define   GPP_CLK0_REQ_MAP_SHIFT	0
-#define   GPP_CLK0_REQ_MAP_MASK		(0xf << GPP_CLK0_REQ_MAP_SHIFT)
-#define   GPP_CLK0_REQ_MAP_CLK_REQ0	1
+#define   GPP_CLK0_REQ_SHL		0
+#define   GPP_CLK1_REQ_SHL		2
+#define   GFX_CLK0_REQ_SHL		4
+#define   GPP_CLK2_REQ_SHL		6
+#define   GPP_CLK3_REQ_SHL		8
+#define   GFX_CLK1_REQ_SHL		10
+#define   GPP_CLK_REQ_MAP_MASK0		(3 << GPP_CLK0_REQ_SHL)
+#define   GPP_CLK_REQ_MAP_CLK0		(1 << GPP_CLK0_REQ_SHL)
+#define   GPP_CLK_REQ_MAP_MASK1		(3 << GPP_CLK1_REQ_SHL)
+#define   GPP_CLK_REQ_MAP_CLK1		(1 << GPP_CLK1_REQ_SHL)
+#define   GFX_CLK_REQ_MAP_MASK0		(3 << GFX_CLK0_REQ_SHL)
+#define   GFX_CLK_REQ_MAP_CLK0		(1 << GFX_CLK0_REQ_SHL)
+#define   GPP_CLK_REQ_MAP_MASK2		(3 << GPP_CLK2_REQ_SHL)
+#define   GPP_CLK_REQ_MAP_CLK2		(1 << GPP_CLK2_REQ_SHL)
+#define   GPP_CLK_REQ_MAP_MASK3		(3 << GPP_CLK3_REQ_SHL)
+#define   GPP_CLK_REQ_MAP_CLK3		(1 << GPP_CLK3_REQ_SHL)
+#define   GFX_CLK_REQ_MAP_MASK1		(3 << GPP_CLK1_REQ_SHL)
+#define   GFX_CLK_REQ_MAP_CLK1		(1 << GPP_CLK1_REQ_SHL)
 #define MISC_CGPLL_CONFIG1		0x08
 #define   CG1PLL_SPREAD_SPECTRUM_ENABLE	BIT(0)
-#define MISC_CGPLL_CONFIG3		0x10
-#define   CG1PLL_REFDIV_SHIFT		0
-#define   CG1PLL_REFDIV_MASK		(0x3ff << CG1PLL_REFDIV_SHIFT)
-#define   CG1PLL_FBDIV_SHIFT		10
-#define   CG1PLL_FBDIV_MASK		(0xfff << CG1PLL_FBDIV_SHIFT)
-#define MISC_CGPLL_CONFIG4		0x14
-#define   SS_STEP_SIZE_DSFRAC_SHIFT	0
-#define   SS_STEP_SIZE_DSFRAC_MASK	(0xffff << SS_STEP_SIZE_DSFRAC_SHIFT)
-#define   SS_AMOUNT_DSFRAC_SHIFT	16
-#define   SS_AMOUNT_DSFRAC_MASK		(0xffff << SS_AMOUNT_DSFRAC_SHIFT)
-#define MISC_CGPLL_CONFIG5		0x18
-#define   SS_AMOUNT_NFRAC_SLIP_SHIFT	8
-#define   SS_AMOUNT_NFRAC_SLIP_MASK	(0xf << SS_AMOUNT_NFRAC_SLIP_SHIFT)
-#define MISC_CGPLL_CONFIG6		0x1c
-#define   CG1PLL_LF_MODE_SHIFT		9
-#define   CG1PLL_LF_MODE_MASK		(0x1ff << CG1PLL_LF_MODE_SHIFT)
 #define MISC_CLK_CNTL1			0x40
-#define   CG1PLL_FBDIV_TEST		BIT(26)
 #define   BP_X48M0_OUTPUT_EN		BIT(2) /* 1=En, unlike Hudson, Kern */
 #define   OSCOUT1_CLK_OUTPUT_ENB	BIT(2)  /* 0 = Enabled, 1 = Disabled */
 #define   OSCOUT2_CLK_OUTPUT_ENB	BIT(7)  /* 0 = Enabled, 1 = Disabled */
@@ -215,7 +207,9 @@
 #define FCH_AOAC_DEV_I2C4		9
 #define FCH_AOAC_DEV_UART0		11
 #define FCH_AOAC_DEV_UART1		12
+#define FCH_AOAC_DEV_UART2		16
 #define FCH_AOAC_DEV_AMBA		17
+#define FCH_AOAC_DEV_ESPI		27
 
 /* Bit definitions for Device D3 Control AOACx0000[40...7E] step 2 */
 #define   FCH_AOAC_TARGET_DEVICE_STATE (BIT(0) + BIT(1))
@@ -323,8 +317,8 @@ void southbridge_final(void *chip_info);
 void southbridge_init(void *chip_info);
 void sb_read_mode(u32 mode);
 void sb_set_spi100(u16 norm, u16 fast, u16 alt, u16 tpm);
-void bootblock_fch_early_init(void);
-void bootblock_fch_init(void);
+void fch_pre_init(void);
+void fch_early_init(void);
 /**
  * @brief Save the UMA bize
  *

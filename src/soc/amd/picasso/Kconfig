@@ -178,12 +178,6 @@ config AHCI_ROM_ID
 
 endif # PICASSO_SATA_MODE = 2 || PICASSO_SATA_MODE = 5
 
-config PICASSO_LEGACY_FREE
-	bool "System is legacy free"
-	help
-	  Select y if there is no keyboard controller in the system.
-	  This sets a variable in ACPI.
-
 config SERIRQ_CONTINUOUS_MODE
 	bool
 	default n
@@ -250,6 +244,12 @@ config RO_REGION_ONLY
 config DRIVERS_I2C_DESIGNWARE_CLOCK_MHZ
 	int
 	default 133
+
+config PICASSO_LPC_IOMUX
+	bool
+	help
+	  Picasso's LPC bus signals are MUXed with some of the EMMC signals.
+	  Select this option if LPC signals are required.
 
 config MAINBOARD_POWER_RESTORE
 	def_bool n

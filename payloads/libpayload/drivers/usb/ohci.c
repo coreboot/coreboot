@@ -292,14 +292,13 @@ ohci_stop (hci_t *controller)
 	OHCI_INST (controller)->opreg->HcControl &= ~PeriodicListEnable;
 }
 
+#define OHCI_SLEEP_TIME_US	1000
+
 static int
 wait_for_ed(usbdev_t *dev, ed_t *head, int pages)
 {
 	/* wait for results */
-	/* TOTEST: how long to wait?
-	 *         give 2s per TD (2 pages) plus another 2s for now
-	 */
-	int timeout = pages*1000 + 2000;
+	int timeout = USB_MAX_PROCESSING_TIME_US / OHCI_SLEEP_TIME_US;
 	while (((head->head_pointer & ~3) != head->tail_pointer) &&
 		!(head->head_pointer & 1) &&
 		((((td_t*)phys_to_virt(head->head_pointer & ~3))->config
@@ -315,9 +314,9 @@ wait_for_ed(usbdev_t *dev, ed_t *head, int pages)
 			((td_t*)phys_to_virt(head->head_pointer & ~3))->next_td,
 			head->tail_pointer,
 			(((td_t*)phys_to_virt(head->head_pointer & ~3))->config & TD_CC_MASK) >> TD_CC_SHIFT);
-		mdelay(1);
+		udelay(OHCI_SLEEP_TIME_US);
 	}
-	if (timeout < 0)
+	if (timeout <= 0)
 		usb_debug("Error: ohci: endpoint "
 			"descriptor processing timed out.\n");
 	/* Clear the done queue. */

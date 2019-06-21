@@ -236,7 +236,7 @@ xhci_wait_for_command_aborted(xhci_t *const xhci, const trb_t *const address)
 	 * we don't get a response after 5s. Still, let the caller decide,
 	 * what to do then.
 	 */
-	unsigned long timeout_us = 5 * 1000 * 1000; /* 5s */
+	unsigned long timeout_us = USB_MAX_PROCESSING_TIME_US; /* 5s */
 	int cc = TIMEOUT;
 	/*
 	 * Expects two command completion events:
@@ -280,13 +280,7 @@ xhci_wait_for_command_done(xhci_t *const xhci,
 			   const trb_t *const address,
 			   const int clear_event)
 {
-	/*
-	 * The Address Device Command should take most time, as it has to
-	 * communicate with the USB device. Set address processing shouldn't
-	 * take longer than 50ms (at the slave). Let's take a timeout of
-	 * 100ms.
-	 */
-	unsigned long timeout_us = 100 * 1000; /* 100ms */
+	unsigned long timeout_us = USB_MAX_PROCESSING_TIME_US; /* 5s */
 	int cc = TIMEOUT;
 	while (xhci_wait_for_event_type(xhci, TRB_EV_CMD_CMPL, &timeout_us)) {
 		if ((xhci->er.cur->ptr_low == virt_to_phys(address)) &&
@@ -311,8 +305,8 @@ int
 xhci_wait_for_transfer(xhci_t *const xhci, const int slot_id, const int ep_id)
 {
 	xhci_spew("Waiting for transfer on ID %d EP %d\n", slot_id, ep_id);
-	/* 3s for all types of transfers */ /* TODO: test, wait longer? */
-	unsigned long timeout_us = 3 * 1000 * 1000;
+	/* 5s for all types of transfers */
+	unsigned long timeout_us = USB_MAX_PROCESSING_TIME_US;
 	int ret = TIMEOUT;
 	while (xhci_wait_for_event_type(xhci, TRB_EV_TRANSFER, &timeout_us)) {
 		if (TRB_GET(ID, xhci->er.cur) == slot_id &&

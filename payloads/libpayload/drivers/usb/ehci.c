@@ -247,6 +247,8 @@ static void free_qh_and_tds(ehci_qh_t *qh, qtd_t *cur)
 	free((void *)qh);
 }
 
+#define EHCI_SLEEP_TIME_US	50
+
 static int wait_for_tds(qtd_t *head)
 {
 	/* returns the amount of bytes *not* transmitted, or -1 for error */
@@ -256,18 +258,10 @@ static int wait_for_tds(qtd_t *head)
 		if (0) dump_td(virt_to_phys(cur));
 
 		/* wait for results */
-		/* how long to wait?
-		 * tested with some USB2.0 flash sticks:
-		 * TUR turn around took
-		 *   about 2.2s for the slowest (13fe:3800)
-		 *   max. 250ms for the others
-		 * slowest non-TUR turn around took about 1.3s
-		 * set to 3s to be safe as a failed TUR can be fatal
-		 */
-		int timeout = 60000; /* time out after 60000 * 50us == 3s */
+		int timeout = USB_MAX_PROCESSING_TIME_US / EHCI_SLEEP_TIME_US;
 		while ((cur->token & QTD_ACTIVE) && !(cur->token & QTD_HALTED)
 				&& timeout--)
-			udelay(50);
+			udelay(EHCI_SLEEP_TIME_US);
 		if (timeout < 0) {
 			usb_debug("Error: ehci: queue transfer "
 				"processing timed out.\n");

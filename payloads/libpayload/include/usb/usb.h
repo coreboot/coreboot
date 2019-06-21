@@ -71,6 +71,24 @@ typedef enum {
 /* SetAddress() recovery interval (USB 2.0 specification 9.2.6.3 */
 #define SET_ADDRESS_MDELAY 2
 
+/*
+ * USB sets an upper limit of 5 seconds for any transfer to be completed.
+ *
+ * Data originally from EHCI driver:
+ *	Tested with some USB2.0 flash sticks:
+ *	TUR turn around took  about 2.2s for the slowest (13fe:3800), maximum
+ *	of 250ms for the others.
+ *
+ * SET ADDRESS on xHCI controllers.
+ *	The USB specification indicates that devices must complete processing
+ *	of a SET ADDRESS request within 50 ms.  However, some hubs were found
+ *	to take more than 100 ms to complete a SET ADDRESS request on a
+ *	downstream port.
+ */
+#define USB_MAX_PROCESSING_TIME_US (5 * 1000 * 1000)
+
+#define USB_FULL_LOW_SPEED_FRAME_US 1000
+
 typedef struct {
 	unsigned char bDescLength;
 	unsigned char bDescriptorType;

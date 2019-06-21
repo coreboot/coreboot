@@ -14,6 +14,7 @@
 #include <arch/cpu.h>
 #include <cbmem.h>
 #include <console/console.h>
+#include <commonlib/helpers.h>
 #include <cpu/amd/mtrr.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/cache.h>

@@ -16,6 +16,7 @@
 
 #include <bootstate.h>
 #include <cbmem.h>
+#include <commonlib/helpers.h>
 #include <console/console.h>
 #include <console/streams.h>
 #include <fsp/util.h>

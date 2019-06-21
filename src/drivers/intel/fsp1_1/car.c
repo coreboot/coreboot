@@ -15,6 +15,7 @@
 
 #include <arch/symbols.h>
 #include <console/console.h>
+#include <commonlib/helpers.h>
 #include <cpu/intel/romstage.h>
 #include <cpu/x86/mtrr.h>
 #include <fsp/car.h>

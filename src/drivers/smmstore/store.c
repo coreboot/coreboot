@@ -16,6 +16,7 @@
 #include <boot_device.h>
 #include <cbfs.h>
 #include <fmap.h>
+#include <commonlib/helpers.h>
 #include <commonlib/region.h>
 #include <console/console.h>
 #include <smmstore.h>

@@ -20,6 +20,7 @@
 #include <string.h>
 #include <commonlib/compression.h>
 #include <commonlib/cbfs_serialized.h>
+#include <commonlib/helpers.h>
 #include <lib.h>
 #include <fit.h>
 #include <endian.h>

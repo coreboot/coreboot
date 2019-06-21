@@ -29,6 +29,7 @@
  */
 #include <stdlib.h>
 #include <arch/cpu.h>
+#include <commonlib/helpers.h>
 
 /* Return the CPU struct which is at the high memory address of the stack.
  */

@@ -30,6 +30,7 @@
 #include <memory_info.h>
 #include <spd.h>
 #include <cbmem.h>
+#include <commonlib/helpers.h>
 #include <device/pci_ids.h>
 #include <device/pci_def.h>
 #include <device/pci.h>

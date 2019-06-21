@@ -23,6 +23,7 @@
 #include <arch/pirq_routing.h>
 #include <arch/smp/mpspec.h>
 #include <arch/acpi.h>
+#include <commonlib/helpers.h>
 #include <string.h>
 #include <cbmem.h>
 #include <smbios.h>

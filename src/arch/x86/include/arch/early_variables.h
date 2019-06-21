@@ -17,6 +17,7 @@
 #define ARCH_EARLY_VARIABLES_H
 
 #include <arch/symbols.h>
+#include <commonlib/helpers.h>
 #include <stdlib.h>
 
 #if ENV_CACHE_AS_RAM && !CONFIG(NO_CAR_GLOBAL_MIGRATION)

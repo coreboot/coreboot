@@ -16,6 +16,7 @@
  */
 #include <console/console.h>
 #include <arch/pirq_routing.h>
+#include <commonlib/helpers.h>
 #include <string.h>
 #include <device/pci.h>
 

@@ -44,6 +44,7 @@
 #include <arch/acpigen.h>
 #include <device/pci.h>
 #include <cbmem.h>
+#include <commonlib/helpers.h>
 #include <cpu/x86/lapic_def.h>
 #include <cpu/cpu.h>
 #include <cbfs.h>

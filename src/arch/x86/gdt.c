@@ -16,6 +16,7 @@
 #include <types.h>
 #include <string.h>
 #include <cbmem.h>
+#include <commonlib/helpers.h>
 #include <console/console.h>
 #include <cpu/x86/gdt.h>
 

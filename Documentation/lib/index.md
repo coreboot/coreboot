@@ -6,6 +6,7 @@ information and libraries.
 ```{toctree}
 :maxdepth: 1
 
+coreboot Filesystem (CBFS) <cbfs.md>
 Flashmap and Flashmap Descriptor <flashmap.md>
 ABI data consumption <abi-data-consumption.md>
 Timestamps <timestamp.md>

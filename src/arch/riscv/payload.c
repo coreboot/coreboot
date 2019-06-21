@@ -6,6 +6,7 @@
 #include <arch/encoding.h>
 #include <arch/smp/atomic.h>
 #include <console/console.h>
+#include <mcall.h>
 #include <vm.h>
 
 /* Run OpenSBI and let OpenSBI hand over control to the payload */
@@ -47,6 +48,8 @@ void run_payload(struct prog *prog, void *fdt, int payload_mode)
 		write_csr(sie, 0);
 		/* disable MMU */
 		write_csr(satp, 0);
+		/* save stack to mscratch so trap_entry can use that as exception stack */
+		write_csr(mscratch, MACHINE_STACK_TOP());
 		break;
 	case RISCV_PAYLOAD_MODE_M:
 		status = INSERT_FIELD(status, MSTATUS_MPP, PRV_M);

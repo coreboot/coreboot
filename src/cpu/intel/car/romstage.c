@@ -16,6 +16,7 @@
 #include <cpu/intel/romstage.h>
 #include <cpu/x86/mtrr.h>
 #include <arch/symbols.h>
+#include <commonlib/helpers.h>
 #include <program_loading.h>
 #include <timestamp.h>
 

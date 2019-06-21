@@ -16,10 +16,12 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
+
 #include <string.h>
 #include <console/console.h>
 #include <arch/stages.h>
 #include <arch/early_variables.h>
+#include <commonlib/helpers.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/amd/mtrr.h>
 #include <cpu/amd/car.h>

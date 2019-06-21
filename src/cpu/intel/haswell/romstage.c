@@ -24,6 +24,7 @@
 #include <device/pci_def.h>
 #include <cpu/x86/lapic.h>
 #include <cbmem.h>
+#include <commonlib/helpers.h>
 #include <program_loading.h>
 #include <romstage_handoff.h>
 #include <vendorcode/google/chromeos/chromeos.h>

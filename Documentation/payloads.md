@@ -7,6 +7,12 @@ that we carry along in firmware storage, the _payload_.
 There is various software in that space that is either explicitly written as
 payload or can be made to work as one.
 
+## ELF
+
+Executable and linking format (ELF) compatible static linked binaries can be
+loaded as payload.
+ELF binaries are loaded through the [SELF] boot mechanism.
+
 ## SeaBIOS
 
 [SeaBIOS](https://www.seabios.org) is an open source implementation of
@@ -28,6 +34,8 @@ GRUB2 loading seabios from drive via command prompt is also possible:
     multiboot (usb0,msdos1)/seabios/bios.bin.elf
     module (usb0,msdos1)/seabios/vgabios.bin name=vgaroms/seavgabios.bin
     boot
+
+SeaBIOS is loaded through the [SELF] boot mechanism.
 
 ## edk2
 
@@ -52,6 +60,11 @@ availability of well-tested, battle-hardened drivers (as compared to
 firmware project drivers that often reinvent the wheel) and the ability to
 define boot policy with familiar tools, no matter if those are shell scripts
 or compiled userland programs written in C, Go or other programming languages.
+
+On x86 platforms Linux is loaded through the [SELF] boot mechanism, by adding a
+*trampoline code* at the start of the kernel.
+
+[SELF]: lib/cbfs.md#payloads
 
 ## Heads
 

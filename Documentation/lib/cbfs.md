@@ -1,371 +1,371 @@
-# coreboot CBFS Specification
-by Jordan Crouse <jordan@cosmicpenguin.net>
+# coreboot Filesystem (CBFS)
 
-**WARNING: This documentation is written against coreboot v1.**
-
-**TODO: Update this document ASAP**
-
-## Introduction
-
-This document describes the coreboot CBFS specification (from here
-referred to as CBFS). CBFS is a scheme for managing independent chunks
+The coreboot filesystem (CBFS) is a scheme for managing independent chunks
 of data in a system ROM. Though not a true filesystem, the style and
-concepts are similar.
+concepts are similar. It is a flat, append-oriented archive designed to
+be walked at any point in the boot process.
 
+This document is an overview of the on-flash format, how it is consumed
+at runtime, and of how `cbfstool` manipulates it.
+The authoritative description of the binary format is
+`src/commonlib/bsd/include/commonlib/bsd/cbfs_serialized.h`.
 
-## Architecture
+## Image layout
 
-The CBFS architecture looks like the following:
+Way back at the beginning of coreboot, ROM images were only defined by the CBFS.
+As images started to include additional binaries, the FMAP was adopted. FMAP
+holds information about the entire flash and CBFS holds the coreboot binaries.
+CBFS lives *inside* a FMAP region. A minimal image contains an `FMAP` region
+and a `COREBOOT` region holding the primary CBFS.
+See [Flashmap and Flashmap Descriptor](flashmap.md) for the region layout and
+the descriptor format.
 
-```
-/---------------\ <-- Start of ROM
-| /-----------\ | --|
-| | Header    | |   |
-| |-----------| |   |
-| | Name      | |   |-- Component
-| |-----------| |   |
-| |Data       | |   |
-| |..         | |   |
-| \-----------/ | --|
-|               |
-| /-----------\ |
-| | Header    | |
-| |-----------| |
-| | Name      | |
-| |-----------| |
-| |Data       | |
-| |..         | |
-| \-----------/ |
-|               |
-| ...           |
-| /-----------\ |
-| |           | |
-| | Bootblock | |
-| | --------- | |
-| | Reset     | | <- 0xFFFFFFF0
-| \-----------/ |
-\---------------/
-```
-
-The CBFS architecture consists of a binary associated with a physical
-ROM disk referred hereafter as the ROM. A number of independent of
-components, each with a  header prepended on to data are located within
-the ROM.  The components are nominally arranged sequentially, though they
-are aligned along a pre-defined boundary.
-
-The bootblock occupies the last 20k of the ROM.  Within
-the bootblock is a master header containing information about the ROM
-including the size, alignment of the components, and the offset of the
-start of the first CBFS component within the ROM.
-
-## Master Header
-
-The master header contains essential information about the ROM that is
-used by both the CBFS implementation within coreboot at runtime as well
-as host based utilities to create and manage the ROM.  The master header
-will be located somewhere within the bootblock (last 20k of the ROM).  A
-pointer to the location of the header will be located at offset
--4 from the end of the ROM.  This translates to address 0xFFFFFFFC on a
-normal x86 system.  The pointer will be to physical memory somewhere
-between - 0xFFFFB000 and 0xFFFFFFF0.  This makes it easier for coreboot
-to locate the header at run time.  Build time utilities will
-need to read the pointer and do the appropriate math to locate the header.
-
-The following is the structure of the master header:
-
-```c
-struct cbfs_header {
-        u32 magic;
-        u32 version;
-        u32 romsize;
-        u32 bootblocksize;
-        u32 align;
-        u32 offset;
-        u32 architecture;
-        u32 pad[1];
-} __packed;
+```text
+/------------------------\ <- start of flash
+| ...                    |
+|------------------------|
+| FMAP                   |   describes the region layout
+|------------------------|
+| COREBOOT               | --\
+|  /-------------------\ |   |
+|  | fallback/payload  | |   |
+|  |-------------------| |   |
+|  | fallback/ramstage | |   |
+|  |-------------------| |   |-- a CBFS instance
+|  | fallback/romstage | |   |
+|  |-------------------| |   |
+|  | ...               | |   |
+|  |-------------------| |   |
+|  | bootblock         | |   |
+|  \-------------------/ |   |
+|                        | --/
+\------------------------/ <- end of flash (0xFFFFFFFF on x86)
 ```
 
-The meaning of each member is as follows:
+The bootblock is a mandatory part of every image, but where it lives depends on
+the architecture. On x86 it is a CBFS file of type `bootblock`, placed at the
+highest flash address so that it covers the reset vector at `0xfffffff0`, which
+is why the diagram above draws it at the bottom. On other architectures it
+normally occupies its own `BOOTBLOCK` FMAP region and is not part of any CBFS.
+`BOOTBLOCK_IN_CBFS` selects between the two and defaults to the CBFS form on
+x86.
 
-`magic` is a 32 bit number that identifies the ROM as a CBFS type.  The
-magic
-number is 0x4F524243, which is 'ORBC' in ASCII.
+The above example shows a single `COREBOOT` CBFS instance, but a flash may hold
+several CBFS regions to support A/B or RO/RW update schemes.
+For example, Intel Top Swap redundancy pairs `COREBOOT`
+with a `COREBOOT_B` update slot. The instance the platform boots from is
+decided by a platform-specific mechanism, not by CBFS.
 
-`version` is a version number for CBFS header. cbfs_header structure may be
-different if version is not matched.
+## File format
 
-`romsize` is the size of the ROM in bytes.  coreboot will subtract 'size' from
-0xFFFFFFFF to locate the beginning of the ROM in memory.
+Every file starts with a metadata block, followed by the file data:
 
-`bootblocksize` is the size of bootblock reserved in firmware image.
+```text
+/------------\  <- start of file, 64 byte aligned
+| header     |
+|------------|  <- 'attributes_offset'
+| attributes |
+|------------|  <- 'offset'
+| data       |
+| ...        |
+\------------/  <- start + 'offset' + 'len'
+```
 
-`align` is the number of bytes that each component is aligned to within the
-ROM.  This is used to make sure that each component is aligned correctly
-with
-regards to the erase block sizes on the ROM - allowing one to replace a
-component at runtime without disturbing the others.
+The total size of the metadata block, that is header plus attributes,
+is capped by `CBFS_METADATA_MAX_SIZE` (256 bytes).
 
-`offset` is the offset of the first CBFS component (from the start of
-the ROM).  This is to allow for arbitrary space to be left at the beginning
-of the ROM for things like embedded controller firmware.
+**All CBFS metadata is stored big-endian on flash, regardless of the host or
+target architecture.** Fields must be byte-swapped as they are read. Only the
+metadata is byte-swapped, file data is opaque.
 
-`architecture` describes which architecture (x86, arm, ...) this CBFS is created
-for.
-
-## Bootblock
-The bootblock is a mandatory component in the ROM.  It is located in the
-last 20k of the ROM space, and contains, among other things, the location of the
-master header and the entry point for the loader firmware.  The bootblock
-does not have a component header attached to it.
-
-## Components
-
-CBFS components are placed in the ROM starting at 'offset' specified in
-the master header and ending at the bootblock.  Thus the total size
-available for components in the ROM is (ROM size - 20k - 'offset').
-Each CBFS component is to be aligned according to the 'align' value in the
-header.
-Thus, if a component of size 1052 is located at offset 0 with an 'align'
-value of 1024, the next component will be located at offset 2048.
-
-Each CBFS component will be indexed with a unique ASCII string name of
-unlimited size.
-
-Each CBFS component starts with a header:
+The header is:
 
 ```c
 struct cbfs_file {
-         char magic[8];
-         unsigned int len;
-         unsigned int type;
-         unsigned int checksum;
-         unsigned int offset;
-};
+	char magic[8];
+	uint32_t len;
+	uint32_t type;
+	uint32_t attributes_offset;
+	uint32_t offset;
+	char filename[];
+} __packed;
 ```
 
-`magic` is a magic value used to identify the header.  During runtime,
-coreboot will scan the ROM looking for this value.  The default magic is
-the string 'LARCHIVE'.
+`magic` identifies the header. It is always the string `LARCHIVE`.
 
-`len` is the length of the data, not including the size of the header and
-the size of the name.
+`len` is the length of the file data, excluding all metadata.
 
-`type` is a 32 bit number indicating the type of data that is attached.
-The data type is used in a number of ways, as detailed in the section
-below.
+`type` describes the content of the data, see [File types](#file-types).
 
-`checksum` is a 32bit checksum of the entire component, including the
-header and name.
+`attributes_offset` is the offset of the attributes from the start of the
+header, or 0 if the file has no attributes.
 
-`offset` is the start of the component data, based off the start of the
-header.
-The difference between the size of the header and offset is the size of the
-component name.
+`offset` is the offset of the file data from the start of the header
+(also the total size of the metadata).
 
-Immediately following the header will be the name of the component,
-which will null terminated and 16 byte aligned. The following picture shows the
-structure of the header:
+`filename` is an inline NUL-terminated string.
 
-```
-/--------\  <- start
-| Header |
-|--------|  <- sizeof(struct cbfs_file)
-| Name   |
-|--------|  <- 'offset'
-| Data   |
-| ...    |
-\--------/  <- start + 'offset' + 'len'
-```
+Files are aligned to `CBFS_ALIGNMENT`, which is fixed at 64 bytes.
 
-### Searching Algorithm
+### File attributes
 
-To locate a specific component in the ROM, one starts at the 'offset'
-specified in the CBFS master header.  For this example, the offset will
-be 0.
+CBFS header fields are the same for every file. Anything a particular file needs
+beyond them is carried as an attribute, an optional struct in the metadata.
+Compression, hashes, placement constraints and a stage's load
+address are all attributes.
 
-From that offset, the code should search for the magic string on the
-component, jumping 'align' bytes each time.  So, assuming that 'align' is
-16, the code will search for the string 'LARCHIVE' at offset 0, 16, 32, etc.
-If the offset ever exceeds the allowable range for CBFS components, then no
-component was found.
-
-Upon recognizing a component, the software then has to search for the
-specific name of the component.  This is accomplished by comparing the
-desired name with the string on the component located at
-`offset + sizeof(struct cbfs_file)`.  If the string matches, then the
-component has been located, otherwise the software should add
-`'offset' + 'len'` to the offset and resume the search for the magic value.
-
-### Data Types
-
-The 'type' member of struct cbfs_file is used to identify the content
-of the component data, and is used by coreboot and other
-run-time entities to make decisions about how to handle the data.
-
-There are three component types that are essential to coreboot, and so
-are defined here.
-
-#### Stages
-
-Stages are code loaded by coreboot during the boot process.  They are
-essential to a successful boot.   Stages are comprised of a single blob
-of binary data that is to be loaded into a particular location in memory
-and executed.   The uncompressed header contains information about how
-large the data is, and where it should be placed, and what additional memory
-needs to be cleared.
-
-Stages are assigned a component value of 0x10.  When coreboot sees this
-component type, it knows that it should pass the data to a sub-function
-that will process the stage.
-
-The following is the format of a stage component:
-
-```
-/--------\
-| Header |
-|--------|
-| Binary |
-| ..     |
-\--------/
-```
-
-The header is defined as:
+Attributes are packed back to back between `attributes_offset` (the end of the
+CBFS header) and `offset` (the data). Each begins with a common tag and length:
 
 ```c
-struct cbfs_stage {
-         unsigned int compression;
-         unsigned long long entry;
-         unsigned long long load;
-         unsigned int len;
-         unsigned int memlen;
-};
+struct cbfs_file_attribute {
+	uint32_t tag;
+	/* len covers the whole structure, incl. tag and len */
+	uint32_t len;
+	uint8_t data[];
+} __packed;
 ```
 
-`compression` is an integer defining how the data is compressed.  There
-are three compression types defined by this version of the standard:
-none (0x0), lzma (0x1), and nrv2b (0x02, deprecated), though additional
-types may be added assuming that coreboot understands how to handle the scheme.
+Every attribute size must be a multiple of `CBFS_ATTRIBUTE_ALIGN` (4). A parser
+that does not recognize a tag skips `len` bytes and continues, so new attributes
+can be added without breaking existing readers.
 
-`entry` is a 64 bit value indicating the location where  the program
-counter should jump following the loading of the stage. This should be
-an absolute physical memory address.
+| Tag | Structure | Purpose |
+| --- | --- | --- |
+| `COMPRESSION` | `cbfs_file_attr_compression` | Algorithm and decompressed size of the file data |
+| `HASH` | `cbfs_file_attr_hash` | `vb2_hash` over the file data, used by CBFS verification |
+| `STAGEHEADER` | `cbfs_file_attr_stageheader` | Load address, entry point and memory size of a stage |
+| `POSITION` | `cbfs_file_attr_position` | Pins the file to a fixed offset |
+| `ALIGNMENT` | `cbfs_file_attr_align` | Forces a stronger alignment than 64 bytes |
+| `IBB` | -- | Marks the file as part of the Initial Boot Block |
+| `PADDING` | -- | Reserves empty space, used to satisfy the above constraints |
 
-`load` is a 64 bit value indicating where the subsequent data should be
-loaded. This should be an absolute physical memory address.
+Compression is a property of the file, not of a particular file type, and covers
+the whole data area. The supported algorithms are none (0), LZMA (1), LZ4 (2)
+and Zstandard (3). Which of them a given stage can use depends on what the
+decompressor in the preceding coreboot stage has available.
 
-`len` is the length of the compressed data in the component.
+### Lookup
 
-`memlen` is the amount of memory that will be used by the component when
-it is loaded.
+CBFS has no index. Finding a file means walking the region from the start, as
+implemented by `cbfs_walk()` in `src/commonlib/bsd/cbfs_private.c`:
 
-The component data will start immediately following the header.
+1. Start at offset 0 of the CBFS region.
+2. Read 8 bytes and compare against `LARCHIVE`. If they do not match, advance by
+   `CBFS_ALIGNMENT` (64) and retry. Running past the end of the region means the
+   file is not present.
+3. On a match, read the rest of the metadata and range-check `len`,
+   `attributes_offset` and `offset` against the region size. A header that fails
+   validation is skipped.
+4. Compare `filename` against the name being looked up. On a match the data
+   begins at `offset` bytes into the file.
+5. Otherwise continue the search at `ALIGN_UP(file_start + offset + len, 64)`.
 
-When coreboot loads a stage, it will first zero the memory from 'load' to
-'memlen'.  It will then decompress the component data according to the
-specified scheme and place it in memory starting at 'load'.  Following that,
-it will jump execution to the address specified by 'entry'.
-Some components are designed to execute directly from the ROM - coreboot
-knows which components must do that and will act accordingly.
+Deleted files are not removed. Their type is set to `CBFS_TYPE_DELETED` (0) or
+`CBFS_TYPE_NULL` (0xffffffff) and the space they occupy stays in the walk as a
+hole. `cbfstool compact` merges those holes back together.
 
-#### Payloads
+Because rescanning flash in every stage is expensive, coreboot builds a metadata
+cache (`src/commonlib/bsd/cbfs_mcache.c`) during the first walk and passes it to
+later stages through CBMEM.
 
-Payloads are loaded by coreboot following the boot process.
+## File types
 
-Stages are assigned a component value of 0x20.  When coreboot sees this
-component type, it knows that it should pass the data to a sub-function
-that will process the payload.  Furthermore, other run time applications such
-as 'bayou' may easily index all available payloads
-on the system by searching for the payload type.
+`type` identifies what the data is, so that coreboot and host tools know how to
+handle it. The full list is `enum cbfs_type` in `cbfs_serialized.h`. The types
+seen in a typical image are:
 
+| Name | Value | Content |
+| --- | --- | --- |
+| `BOOTBLOCK` | 0x01 | The bootblock |
+| `CBFSHEADER` | 0x02 | Legacy master header |
+| `STAGE` | 0x11 | A coreboot stage |
+| `SELF` | 0x20 | A [SELF] payload |
+| `FIT_PAYLOAD` | 0x21 | A [FIT] payload |
+| `OPTIONROM` | 0x30 | A PCI option ROM |
+| `RAW` | 0x50 | Uninterpreted data |
+| `MICROCODE` | 0x53 | CPU microcode |
+| `INTEL_FIT` | 0x54 | Intel Firmware Interface Table |
+| `FSP` | 0x60 | Intel Firmware Support Package |
+| `AMDFW` | 0x80 | AMD firmware container |
+| `CMOS_DEFAULT` | 0xaa | Default CMOS contents |
+| `CMOS_LAYOUT` | 0x1aa | CMOS layout description |
 
-The following is the format of a stage component:
+Note that `FIT_PAYLOAD` (a flattened image tree) and `INTEL_FIT` (a table of
+pointers consumed by the Intel CPU microcode) are unrelated despite the shared
+acronym.
 
-```
-/-----------\
-| Header    |
-| Segment 1 |
-| Segment 2 |
-| ...       |
-|-----------|
-| Binary    |
-| ..        |
-\-----------/
-```
+### Stages
 
-The header is as follows:
+Stages are the pieces of coreboot itself: romstage, ramstage, and on some
+platforms a separate verstage. They are loaded and executed by the preceding
+stage.
+
+A stage is a flat binary plus a `STAGEHEADER` attribute:
 
 ```c
-struct cbfs_payload {
-         struct cbfs_payload_segment segments;
-}
+struct cbfs_file_attr_stageheader {
+	uint32_t tag;
+	uint32_t len;
+	uint64_t loadaddr;	/* Memory address to load the code to. */
+	uint32_t entry_offset;	/* Offset of entry point from loadaddr. */
+	uint32_t memlen;	/* Total length (including BSS) in memory. */
+} __packed;
 ```
 
-The header contains a number of segments corresponding to the segments
-that need to be loaded for the payload.
+`entry_offset` is relative to `loadaddr`, not an absolute address. `memlen`
+covers BSS, so it is generally larger than the decompressed data.
 
-The following is the structure of each segment header:
+To load a stage, coreboot decompresses the data to `loadaddr` according to the
+`COMPRESSION` attribute, zeroes the remainder up to `memlen`, and jumps to
+`loadaddr + entry_offset`. An uncompressed stage that is already at `loadaddr`
+on memory-mapped flash is executed in place, without being copied.
+
+Type 0x10 is `CBFS_TYPE_LEGACY_STAGE`, an older format that carried this
+information in a header prepended to the data instead of in an attribute.
+
+### Payloads
+
+A payload is the program coreboot hands control to at the end of the boot
+process. The native format is SimpleELF (SELF). Statically linked [ELF] binaries
+are converted to SELF by `cbfstool` at build time, which splits the payload into
+segments, each with its own loading address and compression (LZMA, LZ4, ZSTD or
+none).
+
+A SELF payload is a sequence of segment headers followed by the segment data:
 
 ```c
 struct cbfs_payload_segment {
-         unsigned int type;
-         unsigned int compression;
-         unsigned int offset;
-         unsigned long long load_addr;
-         unsigned int len;
-         unsigned int mem_len;
-};
+	uint32_t type;
+	uint32_t compression;
+	uint32_t offset;
+	uint64_t load_addr;
+	uint32_t len;
+	uint32_t mem_len;
+} __packed;
 ```
 
-`type` is the type of segment, one of the following:
+`type` is one of:
 
+| Name | Value | Meaning |
+| --- | --- | --- |
+| `PAYLOAD_SEGMENT_CODE` | 0x434F4445 | Executable code |
+| `PAYLOAD_SEGMENT_DATA` | 0x44415441 | Data |
+| `PAYLOAD_SEGMENT_BSS` | 0x42535320 | Memory to be zeroed |
+| `PAYLOAD_SEGMENT_ENTRY` | 0x454E5452 | Entry point of the payload |
+
+`compression` applies to this segment only. Unlike other file types, SELF
+payloads are compressed per segment rather than through the file-level
+`COMPRESSION` attribute.
+
+`offset` locates the segment data relative to the start of the file data,
+`load_addr` is where it goes in memory, `len` is its size in the file and
+`mem_len` its size in memory.
+
+A [FIT] payload (type 0x21) is supported on some architectures. It does not
+support whole-file compression, individual images inside the FIT carry their own.
+
+The SELF loader implementation is in `src/lib/selfboot.c`. It decompresses
+each segment and places it in memory. Every segment is checked against the
+bootmem map before anything is loaded, so it must target usable RAM; a
+payload overlapping the loading stage (*RAMSTAGE*) or any reserved region
+aborts the boot. SELF payloads are **never** relocatable and are always
+placed at the address they specify; if that address is unavailable, the
+system won't boot.
+
+The SELF loader is not limited to payloads. It is also used to load arm64
+*BL31*, RISC-V *OpenSBI* and vendor firmware blobs.
+
+#### Calling conventions
+
+The SELF payload is called with a pointer to the coreboot tables as first
+argument.
+
+**Note:** One exception is made on [RISC-V], which prepends the *HARTID* and
+a pointer to the *FDT*, so the coreboot tables arrive as third argument.
+
+### Raw files and everything else
+
+Most other types have no additional header. The data is exactly what was passed
+to `cbfstool add`, after optional compression. `RAW` is the catch-all for data a
+driver or payload reads by name, for example an SPD blob or a splash image.
+
+Option ROMs (0x30) similarly carry no extra header, just the ROM image.
+
+## Verification
+
+When `CBFS_VERIFICATION` is enabled, every file carries a `HASH` attribute
+covering its data, and coreboot checks it before using the file. The file
+metadata itself, including those hashes, is covered by a single metadata hash
+computed over the whole CBFS walk.
+
+That metadata hash is stored in a `struct metadata_hash_anchor` embedded in the
+uncompressed bootblock (`src/commonlib/bsd/include/commonlib/bsd/metadata_hash.h`),
+which also holds a hash of the FMAP. The bootblock is therefore the root of
+trust. Verifying it covers the FMAP and the whole read-only CBFS.
+
+Updatable CBFS instances cannot be covered by an anchor baked into the read-only
+bootblock, so their metadata hash is supplied by whatever verified the instance.
+See [verified boot](../security/vboot/index.md) for how that works in practice.
+
+## Legacy master header
+
+Pre-FMAP x86 images described their CBFS with a master header rather than a
+flash map. It records the image size, the offset of the first file and the file
+alignment, and is stored as a CBFS file of type `CBFSHEADER`. The last four
+bytes of the image hold its offset relative to the end of the image as a signed
+32-bit integer, so early code can locate it without parsing anything.
+
+New designs should not use this. It cannot describe more than one CBFS, and
+several `cbfstool` operations including `expand` and `truncate` refuse to work
+on such images. See `struct cbfs_header` in `cbfs_serialized.h` for the layout.
+
+## cbfstool
+
+`cbfstool` is the host utility for building and inspecting images. It is built
+as part of coreboot into `build/cbfstool`, and the build system uses it to
+assemble `coreboot.rom`.
+
+Unless `-r`/`--fmap-regions` says otherwise, commands operate on the `COREBOOT`
+region.
+
+| Command | Purpose |
+| --- | --- |
+| `create -M flashmap` | Create a new image from an FMAP descriptor |
+| `add` | Add a file, with `-t` type and optional `-c` compression |
+| `add-payload` | Convert an ELF to SELF and add it |
+| `add-stage` | Convert an ELF to a stage and add it |
+| `add-flat-binary` | Add a flat binary with an explicit load address and entry point |
+| `add-int` | Add a raw 64-bit integer |
+| `remove` | Mark a file deleted |
+| `print` | List the contents of a region |
+| `extract` | Write a file out, `-U` to skip decompression |
+| `layout` | List the FMAP regions of the image |
+| `read` / `write` | Copy a whole region out of or into the image |
+| `copy` | Duplicate a CBFS instance into another region |
+| `compact` | Merge the holes left by `remove` |
+| `expand` / `truncate` | Grow a CBFS to fill its region, or shrink it to its contents |
+
+A typical inspection looks like:
+
+```shell
+build/cbfstool build/coreboot.rom layout
+build/cbfstool build/coreboot.rom print -r COREBOOT
 ```
-+----------------------+-------------+---------------------------------------+
-|PAYLOAD_SEGMENT_CODE  |  0x45444F43 | The segment contains executable code  |
-+----------------------+-------------+---------------------------------------+
-|PAYLOAD_SEGMENT_DATA  |  0x41544144 | The segment contains data             |
-+----------------------+-------------+---------------------------------------+
-|PAYLOAD_SEGMENT_BSS   |  0x20535342 | The memory specified by the segment   |
-|                      |             | should be zeroed                      |
-+----------------------+-------------+---------------------------------------+
-|PAYLOAD_SEGMENT_PARAMS|  0x41524150 | The segment contains information for  |
-|                      |             | the payload                           |
-+----------------------+-------------+---------------------------------------+
-|PAYLOAD_SEGMENT_ENTRY |  0x52544E45 | The segment contains the entry point  |
-|                      |             | for the payload                       |
-+----------------------+-------------+---------------------------------------+
-```
 
-`compression` is the compression scheme for the segment.  Each segment can
-be independently compressed. There are three compression types defined by
-this version of the standard: none (0x0), lzma (0x1), and nrv2b
-(0x02, deprecated), though additional types may be added assuming that
-coreboot understands how to handle the scheme.
+Run `cbfstool -h` for the full option list, including the supported
+architectures and file type names.
 
-`offset` is the address of the data within the component, starting from
-the component header.
+### Adding files (at build time)
 
-`load_addr` is a 64 bit value indicating where the segment should be placed
-in memory.
+Calling `cbfstool add` by hand only modifies an image that has already been
+built. To have a file included in every build, add it to the `cbfs-files-y`
+make class, which the build system turns into the corresponding
+`cbfstool` invocation. The class and its `file`, `type`, `compression`,
+`position` and `align` options are described in
+[the coreboot build system](../getting_started/build_system.md).
 
-`len` is a 32 bit value indicating the size of the segment within the
-component.
-
-`mem_len` is the size of the data when it is placed into memory.
-
-The data will located immediately following the last segment.
-
-#### Option ROMS
-
-The third specified component type will be Option ROMs.  Option ROMS will
-have component type '0x30'.  They will have no additional header, the
-uncompressed binary data will be located in the data portion of the
-component.
-
-#### NULL
-
-There is a 4th component type ,defined as NULL (0xFFFFFFFF).  This is
-the "don't care" component type.  This can be used when the component
-type is not necessary (such as when the name of the component is unique.
-i.e. option_table).  It is recommended that all components be assigned a
-unique type, but NULL can be used when the type does not matter.
+[FIT]: payloads/fit.md
+[SELF]: #payloads
+[ELF]: https://en.wikipedia.org/wiki/Executable_and_Linkable_Format
+[RISC-V]: ../arch/riscv/index.md

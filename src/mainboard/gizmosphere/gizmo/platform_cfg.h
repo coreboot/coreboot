@@ -212,7 +212,7 @@
  */
 #define GEC_CONFIG			0
 
-const static CODECENTRY gizmo_codec_alc272[] =
+static const CODECENTRY gizmo_codec_alc272[] =
 {
 	/* NID, PinConfig */
 	{0x11, 0x411111F0},	/* S/PDIF-OUT2 unused */

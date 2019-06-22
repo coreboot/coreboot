@@ -29,7 +29,7 @@ static int create_tcpa_metadata(const struct region_device *rdev,
 {
 	int i;
 	struct region_device fmap;
-	const static char *fmap_cbfs_names[] = {
+	static const char *fmap_cbfs_names[] = {
 	"COREBOOT",
 	"FW_MAIN_A",
 	"FW_MAIN_B",

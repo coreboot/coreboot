@@ -133,7 +133,7 @@ static const uint8_t rec_hash_data[REC_HASH_NV_SIZE] = { };
  * i.e. those which should not be possible to delete or modify once
  * the RO exits, and the rest of the NVRAM spaces.
  */
-const static TPMA_NV ro_space_attributes = {
+static const TPMA_NV ro_space_attributes = {
 	.TPMA_NV_PPWRITE = 1,
 	.TPMA_NV_AUTHREAD = 1,
 	.TPMA_NV_PPREAD = 1,
@@ -142,7 +142,7 @@ const static TPMA_NV ro_space_attributes = {
 	.TPMA_NV_POLICY_DELETE = 1,
 };
 
-const static TPMA_NV rw_space_attributes = {
+static const TPMA_NV rw_space_attributes = {
 	.TPMA_NV_PPWRITE = 1,
 	.TPMA_NV_AUTHREAD = 1,
 	.TPMA_NV_PPREAD = 1,
@@ -153,7 +153,7 @@ const static TPMA_NV rw_space_attributes = {
  * This policy digest was obtained using TPM2_PolicyPCR
  * selecting only PCR_0 with a value of all zeros.
  */
-const static uint8_t pcr0_unchanged_policy[] = {
+static const uint8_t pcr0_unchanged_policy[] = {
 	0x09, 0x93, 0x3C, 0xCE, 0xEB, 0xB4, 0x41, 0x11, 0x18, 0x81, 0x1D,
 	0xD4, 0x47, 0x78, 0x80, 0x08, 0x88, 0x86, 0x62, 0x2D, 0xD7, 0x79,
 	0x94, 0x46, 0x62, 0x26, 0x68, 0x8E, 0xEE, 0xE6, 0x6A, 0xA1};

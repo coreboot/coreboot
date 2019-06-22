@@ -437,7 +437,7 @@ static void program_timings(struct sysinfo *s)
 		5200
 	};
 
-	const static u8 ddr3_turnaround_tab[3][6][4] = {
+	static const u8 ddr3_turnaround_tab[3][6][4] = {
 		{ /* DDR3 800 */
 			{0x9, 0x7, 0x7, 0x9},	/* CL = 5 */
 			{0x9, 0x7, 0x8, 0x8},	/* CL = 6 */
@@ -459,7 +459,7 @@ static void program_timings(struct sysinfo *s)
 	};
 
 	/* [DDR freq][0x26F & 1][pagemod] */
-	const static u8 ddr2_x252_tab[2][2][2] =  {
+	static const u8 ddr2_x252_tab[2][2][2] =  {
 		{ /* DDR2 667 */
 			{12, 16},
 			{14, 18}
@@ -470,7 +470,7 @@ static void program_timings(struct sysinfo *s)
 		}
 	};
 
-	const static u8 ddr3_x252_tab[3][2][2] =  {
+	static const u8 ddr3_x252_tab[3][2][2] =  {
 		{ /* DDR3 800 */
 			{16, 20},
 			{18, 22}

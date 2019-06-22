@@ -43,7 +43,7 @@
  * waiting for each device to become available, a single delay will be
  * executed.
  */
-const static struct stoneyridge_aoac aoac_devs[] = {
+static const struct stoneyridge_aoac aoac_devs[] = {
 	{ (FCH_AOAC_D3_CONTROL_UART0 + CONFIG_UART_FOR_CONSOLE * 2),
 		(FCH_AOAC_D3_STATE_UART0 + CONFIG_UART_FOR_CONSOLE * 2) },
 	{ FCH_AOAC_D3_CONTROL_AMBA, FCH_AOAC_D3_STATE_AMBA },
@@ -115,7 +115,7 @@ void SetFchMidParams(FCH_INTERFACE *params)
  * amd_pci_int_defs.h, just add the pair at the end of this table.
  * Order is not important.
  */
-const static struct irq_idx_name irq_association[] = {
+static const struct irq_idx_name irq_association[] = {
 	{ PIRQ_A,	"INTA#" },
 	{ PIRQ_B,	"INTB#" },
 	{ PIRQ_C,	"INTC#" },

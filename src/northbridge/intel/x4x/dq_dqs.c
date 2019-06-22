@@ -88,7 +88,7 @@ static void set_db(const struct sysinfo *s, struct dll_setting *dq_dqs_setting)
 	}
 }
 
-const static u8 max_tap[3] = {12, 10, 13};
+static const u8 max_tap[3] = {12, 10, 13};
 
 static int increment_dq_dqs(const struct sysinfo *s,
 			struct dll_setting *dq_dqs_setting)
@@ -540,7 +540,7 @@ static void set_rank_write_level(struct sysinfo *s, u8 channel, u8 config,
 	u32 emrs1;
 
 	/* Is shifted by bits 2 later so u8 can be used to reduce size */
-	const static u8 emrs1_lut[8][4][4]={ /* [Config][Leveling Rank][Rank] */
+	static const u8 emrs1_lut[8][4][4] = { /* [Config][Leveling Rank][Rank] */
 		{  /* Config 0: 2R2R */
 			{0x11, 0x00, 0x91, 0x00},
 			{0x00, 0x11, 0x91, 0x00},

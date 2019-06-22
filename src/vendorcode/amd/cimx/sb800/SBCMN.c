@@ -83,7 +83,7 @@ VOID sbUsbPhySetting (IN  UINT32 Value);
  * sbEarlyPostByteInitTable - PCI device registers initial during early POST.
  *
  */
-const static REG8MASK sbEarlyPostByteInitTable[] =
+static const REG8MASK sbEarlyPostByteInitTable[] =
 {
   // SMBUS Device (Bus 0, Dev 20, Func 0)
   {0x00, SMBUS_BUS_DEV_FUN, 0},
@@ -134,7 +134,7 @@ const static REG8MASK sbEarlyPostByteInitTable[] =
  * sbPmioEPostInitTable - Southbridge ACPI MMIO initial during POST.
  *
  */
-const static AcpiRegWrite sbPmioEPostInitTable[] =
+static const AcpiRegWrite sbPmioEPostInitTable[] =
 {
   // HPET workaround
   {PMIO_BASE >> 8,  SB_PMIOA_REG54 + 3, 0xFC, BIT0 + BIT1},
@@ -251,7 +251,7 @@ const static AcpiRegWrite sbPmioEPostInitTable[] =
  * abTblEntry800 - AB-Link Configuration Table for SB800
  *
  */
-const static ABTBLENTRY abTblEntry800[] =
+static const ABTBLENTRY abTblEntry800[] =
 {
   // RPR Enable downstream posted transactions to pass non-posted transactions.
   {ABCFG, SB_ABCFG_REG10090, BIT8 + BIT16, BIT8 + BIT16},
@@ -297,7 +297,7 @@ const static ABTBLENTRY abTblEntry800[] =
  * SbPcieOrderRule - AB-Link Configuration Table for ablink Post Pass Np Downstream/Upstream Feature
  *
  */
-const static ABTBLENTRY SbPcieOrderRule[] =
+static const ABTBLENTRY SbPcieOrderRule[] =
 {
 // abPostPassNpDownStreamTbl
   {ABCFG, SB_ABCFG_REG10060, BIT31, BIT31},

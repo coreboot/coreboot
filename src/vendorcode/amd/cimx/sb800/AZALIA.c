@@ -61,7 +61,7 @@ VOID configureAzaliaSetConfigD4Dword (IN CODECENTRY* tempAzaliaCodecEntryPtr, IN
  *
  *
  */
-const static CODECENTRY AzaliaCodecAlc882Table[] =
+static const CODECENTRY AzaliaCodecAlc882Table[] =
 {
   {0x14, 0x01014010},
   {0x15, 0x01011012},
@@ -84,7 +84,7 @@ const static CODECENTRY AzaliaCodecAlc882Table[] =
  *
  *
  */
-const static CODECENTRY AzaliaCodecAlc262Table[] =
+static const CODECENTRY AzaliaCodecAlc262Table[] =
 {
   {0x14, 0x01014010},
   {0x15, 0x411111F0},
@@ -106,7 +106,7 @@ const static CODECENTRY AzaliaCodecAlc262Table[] =
  *
  *
  */
-const static CODECENTRY AzaliaCodecAlc269Table[] =
+static const CODECENTRY AzaliaCodecAlc269Table[] =
 {
   {0x12, 0x99A30960},
   {0x14, 0x99130110},
@@ -129,7 +129,7 @@ const static CODECENTRY AzaliaCodecAlc269Table[] =
  *
  *
  */
-const static CODECENTRY AzaliaCodecAlc861Table[] =
+static const CODECENTRY AzaliaCodecAlc861Table[] =
 {
   {0x01, 0x8086C601},
   {0x0B, 0x01014110},
@@ -152,7 +152,7 @@ const static CODECENTRY AzaliaCodecAlc861Table[] =
  *
  *
  */
-const static CODECENTRY AzaliaCodecAlc889Table[] =
+static const CODECENTRY AzaliaCodecAlc889Table[] =
 {
   {0x11, 0x411111F0},
   {0x14, 0x01014010},
@@ -176,7 +176,7 @@ const static CODECENTRY AzaliaCodecAlc889Table[] =
  *
  *
  */
-const static CODECENTRY AzaliaCodecAd1984Table[] =
+static const CODECENTRY AzaliaCodecAd1984Table[] =
 {
   {0x11, 0x0221401F},
   {0x12, 0x90170110},
@@ -198,7 +198,7 @@ const static CODECENTRY AzaliaCodecAd1984Table[] =
  *
  *
  */
-const static CODECENTRY FrontPanelAzaliaCodecTableList[] =
+static const CODECENTRY FrontPanelAzaliaCodecTableList[] =
 {
   {0x19, 0x02A19040},
   {0x1b, 0x02214020},
@@ -211,7 +211,7 @@ const static CODECENTRY FrontPanelAzaliaCodecTableList[] =
  *
  *
  */
-const static CODECTBLLIST azaliaCodecTableList[] =
+static const CODECTBLLIST azaliaCodecTableList[] =
 {
   {0x010ec0880, (CODECENTRY*)&AzaliaCodecAlc882Table[0]},
   {0x010ec0882, (CODECENTRY*)&AzaliaCodecAlc882Table[0]},

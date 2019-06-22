@@ -18,8 +18,9 @@
 #define __SOC_PICASSO_IOMAP_H__
 
 /* MMIO Ranges */
+/* IO_APIC_ADDR defined in arch/x86	0xfec00000 */
 #define SPI_BASE_ADDRESS		0xfec10000
-#define IO_APIC2_ADDR			0xfec20000
+#define ESPI_BASE_ADDRESS		0xfec20000
 
 /*
  * AcpiMmio blocks are at fixed offsets from FED8_0000h and enabled in PMx04[1].

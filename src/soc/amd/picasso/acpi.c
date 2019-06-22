@@ -47,9 +47,6 @@ unsigned long acpi_fill_madt(unsigned long current)
 	current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *)current,
 			CONFIG_MAX_CPUS, IO_APIC_ADDR, 0);
 
-	current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *)current,
-			CONFIG_MAX_CPUS+1, IO_APIC2_ADDR, 24);
-
 	/* 0: mean bus 0--->ISA */
 	/* 0: PIC 0 */
 	/* 2: APIC 2 */

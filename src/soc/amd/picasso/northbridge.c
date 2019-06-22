@@ -66,20 +66,12 @@ static void set_mmio_addr_reg(u32 nodeid, u32 linkn, u32 reg, u32 index,
 
 static void read_resources(struct device *dev)
 {
-	struct resource *res;
-
 	/*
 	 * This MMCONF resource must be reserved in the PCI domain.
 	 * It is not honored by the coreboot resource allocator if it is in
 	 * the CPU_CLUSTER.
 	 */
 	mmconf_resource(dev, MMIO_CONF_BASE);
-
-	/* NB IOAPIC2 resource */
-	res = new_resource(dev, IO_APIC2_ADDR); /* IOAPIC2 */
-	res->base = IO_APIC2_ADDR;
-	res->size = 0x00001000;
-	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 }
 
 static void set_resource(struct device *dev, struct resource *res, u32 nodeid)
@@ -168,11 +160,6 @@ static void set_resources(struct device *dev)
 			assign_resources(bus);
 }
 
-static void northbridge_init(struct device *dev)
-{
-	setup_ioapic((u8 *)IO_APIC2_ADDR, CONFIG_MAX_CPUS+1);
-}
-
 unsigned long acpi_fill_mcfg(unsigned long current)
 {
 
@@ -218,7 +205,6 @@ static struct device_operations northbridge_operations = {
 	.read_resources	  = read_resources,
 	.set_resources	  = set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.init		  = northbridge_init,
 	.acpi_fill_ssdt_generator = northbridge_fill_ssdt_generator,
 	.write_acpi_tables = agesa_write_acpi_tables,
 	.enable		  = 0,
@@ -266,10 +252,6 @@ void amd_initcpuio(void)
 void fam15_finalize(void *chip_info)
 {
 	u32 value;
-
-	/* TODO: move IOAPIC code to dsdt.asl */
-	pci_write_config32(SOC_GNB_DEV, NB_IOAPIC_INDEX, 0);
-	pci_write_config32(SOC_GNB_DEV, NB_IOAPIC_DATA, 5);
 
 	/* disable No Snoop */
 	value = pci_read_config32(SOC_HDA0_DEV, HDA_DEV_CTRL_STATUS);

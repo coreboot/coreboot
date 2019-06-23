@@ -24,7 +24,7 @@
 #include <arch/io.h>
 #include <cpu/x86/lapic.h>
 #include <arch/ioapic.h>
-#include <stdlib.h>
+
 #include "sb700.h"
 #include "smbus.h"
 

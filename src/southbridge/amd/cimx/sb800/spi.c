@@ -12,8 +12,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
-#include <stdint.h>
-#include <stdlib.h>
+
 #include <device/mmio.h>
 #include <console/console.h>
 #include <spi_flash.h>
@@ -21,6 +20,7 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ops.h>
+#include <types.h>
 
 #include "SBPLATFORM.h"
 #include <vendorcode/amd/cimx/sb800/ECfan.h>

@@ -14,8 +14,6 @@
  * GNU General Public License for more details.
  */
 
-#include <stdint.h>
-#include <stdlib.h>
 #include <device/mmio.h>
 #include <console/console.h>
 #include <spi-generic.h>
@@ -23,6 +21,7 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ops.h>
+#include <types.h>
 
 #define AMD_SB_SPI_TX_LEN 8
 

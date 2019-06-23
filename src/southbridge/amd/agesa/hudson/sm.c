@@ -19,7 +19,7 @@
 #include <device/smbus.h>
 #include <cpu/x86/lapic.h>
 #include <arch/ioapic.h>
-#include <stdlib.h>
+
 #include "hudson.h"
 #include "smbus.c"
 

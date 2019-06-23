@@ -91,6 +91,7 @@ b.-  prep_fid_change(...)
 #include <device/pci_ops.h>
 #include <stdint.h>
 #include <northbridge/amd/amdht/AsPsDefs.h>
+#include <stdlib.h>
 
 static inline void print_debug_fv(const char *str, u32 val)
 {

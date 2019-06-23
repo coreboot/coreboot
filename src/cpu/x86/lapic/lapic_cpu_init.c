@@ -28,6 +28,7 @@
 #include <smp/spinlock.h>
 #include <cpu/cpu.h>
 #include <cpu/intel/speedstep.h>
+#include <stdlib.h>
 #include <thread.h>
 
 /* This is a lot more paranoid now, since Linux can NOT handle

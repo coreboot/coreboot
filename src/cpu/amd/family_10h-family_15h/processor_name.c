@@ -27,6 +27,8 @@
 #include <device/pci.h>
 #include <device/pnp.h>
 #include <device/pci_ops.h>
+#include <stdlib.h>
+#include <types.h>
 
 /* The maximum length of CPU names is 48 bytes, including the final NULL byte.
  * If you change these names your BIOS will _NOT_ pass the AMD validation and

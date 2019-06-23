@@ -11,13 +11,12 @@
  * GNU General Public License for more details.
  */
 
-#include <stdint.h>
-#include <stdlib.h>
 #include <string.h>
 #include <commonlib/helpers.h>
 #include <console/console.h>
 #include <bootmem.h>
 #include <program_loading.h>
+#include <types.h>
 
 void mirror_payload(struct prog *payload)
 {

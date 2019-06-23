@@ -21,12 +21,12 @@
 #include <spi_flash.h>
 #include <spi-generic.h>
 #include <stdint.h>
-#include <stdlib.h>
 #include <string.h>
 #include <symbols.h>
 #include <timer.h>
 #include <soc/symbols.h>
 #include <soc/flash_controller.h>
+#include <types.h>
 
 #define get_nth_byte(d, n)	((d >> (8 * n)) & 0xff)
 

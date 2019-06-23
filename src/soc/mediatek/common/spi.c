@@ -17,10 +17,10 @@
 #include <assert.h>
 #include <console/console.h>
 #include <endian.h>
-#include <stdlib.h>
 #include <soc/pll.h>
 #include <soc/spi.h>
 #include <timer.h>
+#include <types.h>
 
 #define MTK_SPI_DEBUG 0
 

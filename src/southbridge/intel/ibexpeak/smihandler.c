@@ -22,7 +22,6 @@
 #include <device/pci_def.h>
 #include <cpu/x86/smm.h>
 #include <cpu/intel/em64t101_save_state.h>
-#include <elog.h>
 #include <halt.h>
 #include <pc80/mc146818rtc.h>
 #include <cpu/intel/model_2065x/model_2065x.h>

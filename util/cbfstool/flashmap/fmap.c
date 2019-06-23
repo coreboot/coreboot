@@ -48,10 +48,9 @@
 #include <limits.h>
 #include <assert.h>
 
-#include <fmap.h>
-#include <valstr.h>
-
+#include "fmap.h"
 #include "kv_pair.h"
+#include "valstr.h"
 
 #define ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]))
 

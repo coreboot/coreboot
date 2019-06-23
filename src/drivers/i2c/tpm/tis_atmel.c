@@ -13,7 +13,6 @@
  */
 
 #include <arch/early_variables.h>
-#include <stdint.h>
 #include <assert.h>
 #include <commonlib/endian.h>
 #include <console/console.h>
@@ -22,7 +21,9 @@
 #include <endian.h>
 #include <lib.h>
 #include <security/tpm/tis.h>
+#include <stdlib.h>
 #include <timer.h>
+#include <types.h>
 
 #define RECV_TIMEOUT            (1 * 1000)  /* 1 second */
 #define XMIT_TIMEOUT            (1 * 1000)  /* 1 second */

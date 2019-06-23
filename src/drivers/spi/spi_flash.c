@@ -18,11 +18,11 @@
 #include <boot/coreboot_tables.h>
 #include <console/console.h>
 #include <cpu/x86/smm.h>
-#include <stdlib.h>
 #include <string.h>
 #include <spi-generic.h>
 #include <spi_flash.h>
 #include <timer.h>
+#include <types.h>
 
 #include "spi_flash_internal.h"
 

@@ -29,7 +29,6 @@
 
 #include <arch/early_variables.h>
 #include <commonlib/endian.h>
-#include <stdint.h>
 #include <string.h>
 #include <types.h>
 #include <delay.h>
@@ -38,6 +37,8 @@
 #include <endian.h>
 #include <timer.h>
 #include <security/tpm/tis.h>
+#include <stdlib.h>
+
 #include "tpm.h"
 
 #define CR50_MAX_BUFSIZE	63

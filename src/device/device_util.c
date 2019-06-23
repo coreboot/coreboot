@@ -16,6 +16,7 @@
 #include <device/path.h>
 #include <device/pci_def.h>
 #include <device/resource.h>
+#include <stdlib.h>
 #include <string.h>
 
 /**

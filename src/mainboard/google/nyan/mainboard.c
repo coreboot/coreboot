@@ -15,7 +15,6 @@
 
 #include <device/mmio.h>
 #include <device/device.h>
-#include <elog.h>
 #include <boot/coreboot_tables.h>
 #include <gpio.h>
 #include <soc/addressmap.h>

@@ -21,7 +21,6 @@
 #include <southbridge/intel/lynxpoint/me.h>
 #include <southbridge/intel/lynxpoint/nvs.h>
 #include <southbridge/intel/lynxpoint/pch.h>
-#include <elog.h>
 #include <superio/ite/it8772f/it8772f.h>
 
 #include "onboard.h"

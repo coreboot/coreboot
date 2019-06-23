@@ -22,8 +22,6 @@
 #include <device/device.h>
 #include <drivers/parade/ps8640/ps8640.h>
 #include <edid.h>
-
-#include <elog.h>
 #include <gpio.h>
 #include <soc/da9212.h>
 #include <soc/ddp.h>

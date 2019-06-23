@@ -40,8 +40,6 @@
  */
 
 #include <console/console.h>
-#include <stdint.h>
-#include <stdlib.h>
 #include <string.h>
 #include <soc/addressmap.h>
 #include <soc/clock.h>
@@ -51,6 +49,7 @@
 #include <soc/mipi_dsi.h>
 #include <soc/mipi_display.h>
 #include <soc/tegra_dsi.h>
+#include <types.h>
 
 struct mipi_dsi_device mipi_dsi_device_data[NUM_DSI] = {
 	{

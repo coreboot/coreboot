@@ -26,10 +26,9 @@
 #include <soc/spi.h>
 #include <spi-generic.h>
 #include <spi_flash.h>
-#include <stdint.h>
-#include <stdlib.h>
 #include <symbols.h>
 #include <timer.h>
+#include <types.h>
 
 #if defined(CONFIG_DEBUG_SPI) && CONFIG_DEBUG_SPI
 # define DEBUG_SPI(x,...)	printk(BIOS_DEBUG, "TEGRA_SPI: " x)

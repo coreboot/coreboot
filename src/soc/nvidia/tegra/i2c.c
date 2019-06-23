@@ -17,9 +17,10 @@
 #include <console/console.h>
 #include <delay.h>
 #include <device/i2c_simple.h>
-#include <stdlib.h>
 #include <string.h>
 #include <soc/addressmap.h>
+#include <stdint.h>
+
 #include "i2c.h"
 
 static void do_bus_clear(int bus)

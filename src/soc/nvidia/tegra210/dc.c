@@ -12,15 +12,16 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
+
 #include <console/console.h>
 #include <device/mmio.h>
 #include <stdint.h>
-#include <stdlib.h>
 #include <edid.h>
 #include <device/device.h>
 #include <soc/nvidia/tegra/dc.h>
-#include "chip.h"
 #include <soc/display.h>
+
+#include "chip.h"
 
 int dump = 0;
 unsigned long READL(void *p)

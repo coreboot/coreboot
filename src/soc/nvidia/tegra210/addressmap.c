@@ -21,9 +21,9 @@
 #include <soc/id.h>
 #include <soc/mc.h>
 #include <soc/sdram.h>
-#include <stdlib.h>
 #include <symbols.h>
 #include <soc/nvidia/tegra/types.h>
+#include <types.h>
 
 static uintptr_t tz_base_mib;
 static const size_t tz_size_mib = CONFIG_TRUSTZONE_CARVEOUT_SIZE_MB;

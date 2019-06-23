@@ -18,8 +18,8 @@
 #include <assert.h>
 #include <soc/addressmap.h>
 #include <soc/console_uart.h>
-#include <stdlib.h>
 #include <symbols.h>
+#include <types.h>
 
 typedef struct bl31_plat_params {
 	/* TZ memory size */

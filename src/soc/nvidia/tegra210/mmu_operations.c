@@ -17,9 +17,8 @@
 #include <assert.h>
 #include <soc/addressmap.h>
 #include <soc/mmu_operations.h>
-#include <stdlib.h>
-#include <stdint.h>
 #include <symbols.h>
+#include <types.h>
 
 static void tegra210_mmu_config(void)
 {

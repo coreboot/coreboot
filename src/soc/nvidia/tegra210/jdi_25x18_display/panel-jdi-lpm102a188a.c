@@ -12,18 +12,19 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
+
 #include <console/console.h>
 #include <stdint.h>
-#include <stdlib.h>
 #include <delay.h>
 #include <soc/addressmap.h>
 #include <soc/clock.h>
 #include <device/device.h>
 #include <soc/nvidia/tegra/types.h>
-#include "../chip.h"
 #include <soc/display.h>
 #include <soc/mipi_dsi.h>
 #include <soc/tegra_dsi.h>
+
+#include "../chip.h"
 #include "panel-jdi-lpm102a188a.h"
 
 struct panel_jdi jdi_data[NUM_DSI];

@@ -16,11 +16,11 @@
  * GNU General Public License for more details.
  *
  */
+
 #include <console/console.h>
 #include <device/device.h>
 #include <device/i2c_simple.h>
 #include <edid.h>
-#include <stdlib.h>
 #include <string.h>
 #include <delay.h>
 #include <soc/addressmap.h>
@@ -32,6 +32,8 @@
 #include <soc/nvidia/tegra/pwm.h>
 #include <soc/nvidia/tegra/displayport.h>
 #include <soc/sor.h>
+#include <types.h>
+
 #include "chip.h"
 
 #define DO_FAST_LINK_TRAINING	0

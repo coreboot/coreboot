@@ -19,7 +19,7 @@
 #include <gpio.h>
 #include <soc/iomap.h>
 #include <soc/spi.h>
-#include <stdlib.h>
+#include <types.h>
 
 #define SUCCESS		0
 

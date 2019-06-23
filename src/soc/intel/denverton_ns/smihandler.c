@@ -25,7 +25,6 @@
 #include <cpu/x86/smm.h>
 #include <cpu/intel/em64t100_save_state.h>
 #include <device/pci_def.h>
-#include <elog.h>
 #include <intelblocks/fast_spi.h>
 #include <spi-generic.h>
 #include <soc/iomap.h>

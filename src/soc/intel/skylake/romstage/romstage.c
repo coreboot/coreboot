@@ -21,7 +21,6 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_def.h>
-#include <elog.h>
 #include <intelblocks/fast_spi.h>
 #include <intelblocks/pmclib.h>
 #include <soc/pci_devs.h>

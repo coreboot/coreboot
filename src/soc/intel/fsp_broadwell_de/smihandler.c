@@ -21,7 +21,6 @@
 #include <device/pci_def.h>
 #include <cpu/x86/smm.h>
 #include <spi-generic.h>
-#include <elog.h>
 #include <soc/lpc.h>
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>

@@ -19,7 +19,6 @@
 #include <cbfs.h>
 #include <cbmem.h>
 #include <console/console.h>
-#include <elog.h>
 #include <fmap.h>
 #include <security/vboot/vbnv.h>
 #include <security/vboot/vboot_common.h>

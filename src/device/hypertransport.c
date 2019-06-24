@@ -291,7 +291,6 @@ static unsigned int do_hypertransport_scan_chain(struct bus *bus, unsigned min_d
 	prev.freq_cap_off = PCI_HT_CAP_HOST_FREQ_CAP;
 
 	/* If present, assign unitid to a hypertransport chain. */
-	last_unitid = min_unitid -1;
 	max_unitid = next_unitid = min_unitid;
 	do {
 		u8 pos;

@@ -42,7 +42,7 @@ At the moment *$n* is 4, which results in identity mapping the lower 4 GiB.
 * Fix compilation errors - *DONE*
 * Fix linker errors - *TODO*
 * Add x86_64 rmodule support - *DONE*
-* Add x86_64 exception handlers - *TODO*
+* Add x86_64 exception handlers - *DONE*
 * Setup page tables for long mode - *DONE*
 * Add assembly code for long mode - *DONE*
 * Add assembly code for postcar stage - *TODO*

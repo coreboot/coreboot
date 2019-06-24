@@ -109,6 +109,68 @@ vec19:
 
 .global int_hand
 int_hand:
+#ifdef __x86_64__
+	/* At this point, on x86-64, on the stack there is:
+	 *  0(%rsp) vector
+	 *  8(%rsp) error code
+	 * 16(%rsp) rip
+	 * 24(%rsp) cs
+	 * 32(%rsp) rflags
+	 * 40(%rsp) rsp
+	 * 48(%rsp) ss
+	 */
+	push	%r15
+	push	%r14
+	push	%r13
+	push	%r12
+	push	%r11
+	push	%r10
+	push	%r9
+	push	%r8
+
+	push	%rdi
+	push	%rsi
+	push	%rbp
+
+	push	%rbx
+	push	%rdx
+	push	%rcx
+	push	%rax
+
+	/* Pass pointer to struct as first argument */
+	mov	%rsp, %rdi
+
+	/* Back up stack pointer */
+	mov	%rsp, %rbp
+
+	/* Align stack to 16 bytes. */
+	and	$(~0xf), %rsp
+
+	call	x86_exception
+
+	/* Restore stack pointer from backup */
+	mov	%rbp, %rsp
+
+	pop	%rax
+	pop	%rcx
+	pop	%rdx
+	pop	%rbx
+
+	pop	%rbp
+	pop	%rsi
+	pop	%rdi
+
+	pop	%r8
+	pop	%r9
+	pop	%r10
+	pop	%r11
+	pop	%r12
+	pop	%r13
+	pop	%r14
+	pop	%r15
+
+	add	$16, %rsp /* pop of the vector and error code */
+#else
 	/* At this point, on x86-32, on the stack there is:
 	 *  0(%esp) vector
 	 *  4(%esp) error code
@@ -116,33 +178,6 @@ int_hand:
 	 * 12(%esp) cs
 	 * 16(%esp) eflags
 	 */
-#ifdef __x86_64__
-	push	%rdi
-	push	%rsi
-	push	%rbp
-	/* Original stack pointer */
-	lea	32(%rsp), %rbp
-	push	%rbp
-	push	%rbx
-	push	%rdx
-	push	%rcx
-	push	%rax
-
-	push	%rsp	/* Pointer to structure on the stack */
-	call	x86_exception
-	pop	%rax	/* Drop the pointer */
-
-	pop	%rax
-	pop	%rcx
-	pop	%rdx
-	pop	%rbx
-	pop	%rbp	/* Ignore saved %rsp value */
-	pop	%rbp
-	pop	%rsi
-	pop	%rdi
-
-	add	$8, %rsp /* pop of the vector and error code */
-#else
 	pushl	%edi
 	pushl	%esi
 	pushl	%ebp

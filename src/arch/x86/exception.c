@@ -489,12 +489,38 @@ void x86_exception(struct eregs *info)
 		put_packet(out_buffer);
 	}
 #else /* !CONFIG_GDB_STUB */
-#define MDUMP_SIZE 0x80
+
 	int logical_processor = 0;
 
 #if ENV_RAMSTAGE
 	logical_processor = cpu_index();
 #endif
+	u8 *code;
+#ifdef __x86_64__
+#define MDUMP_SIZE 0x100
+	printk(BIOS_EMERG,
+		"CPU Index %d - APIC %d Unexpected Exception:\n"
+		"%lld @ %02llx:%016llx - Halting\n"
+		"Code: %lld rflags: %016llx cr2: %016llx\n"
+		"rax: %016llx rbx: %016llx\n"
+		"rcx: %016llx rdx: %016llx\n"
+		"rdi: %016llx rsi: %016llx\n"
+		"rbp: %016llx rsp: %016llx\n"
+		"r08: %016llx r09: %016llx\n"
+		"r10: %016llx r11: %016llx\n"
+		"r12: %016llx r13: %016llx\n"
+		"r14: %016llx r15: %016llx\n",
+		logical_processor, (unsigned int)lapicid(),
+		info->vector, info->cs, info->rip,
+		info->error_code, info->rflags, read_cr2(),
+		info->rax, info->rbx, info->rcx, info->rdx,
+		info->rdi, info->rsi, info->rbp, info->rsp,
+		info->r8, info->r9, info->r10, info->r11,
+		info->r12, info->r13, info->r14, info->r15);
+	code = (u8 *)((uintptr_t)info->rip - (MDUMP_SIZE >> 2));
+#else
+#define MDUMP_SIZE 0x80
+
 	printk(BIOS_EMERG,
 		"CPU Index %d - APIC %d Unexpected Exception:"
 		"%d @ %02x:%08x - Halting\n"
@@ -506,7 +532,8 @@ void x86_exception(struct eregs *info)
 		info->error_code, info->eflags, read_cr2(),
 		info->eax, info->ebx, info->ecx, info->edx,
 		info->edi, info->esi, info->ebp, info->esp);
-	u8 *code = (u8 *)((uintptr_t)info->eip - (MDUMP_SIZE >> 1));
+	code = (u8 *)((uintptr_t)info->eip - (MDUMP_SIZE >> 1));
+#endif
 	/* Align to 8-byte boundary please, and print eight bytes per row.
 	 * This is done to make DRAM burst timing/reordering errors more
 	 * evident from the looking at the dump */

@@ -64,10 +64,6 @@ config VGA_BIOS_ID
 	string
 	default "8086,0106"
 
-config CACHE_MRC_SIZE_KB
-	int
-	default 512
-
 config BOOTBLOCK_NORTHBRIDGE_INIT
 	string
 	default "northbridge/intel/sandybridge/bootblock.c"

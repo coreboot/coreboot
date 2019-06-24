@@ -55,10 +55,6 @@ config MMCONF_BASE_ADDRESS
 	hex
 	default 0xf0000000
 
-config CACHE_MRC_SIZE_KB
-	int
-	default 512
-
 config DCACHE_RAM_BASE
 	hex
 	default 0xff7c0000

@@ -106,10 +106,6 @@ config VGA_BIOS_ID
 	string
 	default "8086,0406"
 
-config CACHE_MRC_SIZE_KB
-	int
-	default 512
-
 config DCACHE_RAM_BASE
 	hex
 	default 0xff7c0000

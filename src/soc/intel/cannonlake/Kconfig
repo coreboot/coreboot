@@ -29,6 +29,7 @@ config SOC_INTEL_COFFEELAKE
 config SOC_INTEL_WHISKEYLAKE
 	bool
 	select SOC_INTEL_CANNONLAKE_BASE
+	select FSP_USES_CB_STACK
 	help
 	  Intel Whiskeylake support
 

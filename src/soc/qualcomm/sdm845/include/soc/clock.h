@@ -30,9 +30,9 @@
 #define	QUPV3_WRAP0_CLK_ENA_S(idx)		(10 + idx)
 #define	QUPV3_WRAP1_CLK_ENA_S(idx)		(22 + idx)
 
-#define	GPLL0_EVEN_HZ				(300*Mhz)
-#define	GPLL0_MAIN_HZ				(600*Mhz)
-#define	QUP_WRAP_CORE_2X_19_2MHZ		(19200*Khz)
+#define	GPLL0_EVEN_HZ				(300*MHz)
+#define	GPLL0_MAIN_HZ				(600*MHz)
+#define	QUP_WRAP_CORE_2X_19_2MHZ		(19200*KHz)
 
 #define SRC_XO_19_2MHZ				0
 #define SRC_GPLL0_MAIN_600MHZ			1

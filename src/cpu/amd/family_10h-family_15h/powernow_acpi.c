@@ -259,8 +259,6 @@ void amd_generate_powernow(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 	else if (mctGetLogicalCPUID(0) & AMD_FAM15_ALL)
 		boost_count = (dtemp >> 2) & 0x7;
 
-	Pstate_num = 0;
-
 	/* See if the CPUID(0x80000007) returned EDX[7]==1b */
 	cpuid1 = cpuid(0x80000007);
 	if ((cpuid1.edx & 0x80) != 0x80) {

@@ -19,7 +19,7 @@ In order to add support for x86_64 the following assumptions were made:
 * x86 payloads are loaded below 4GiB in physical memory and are jumped
   to in *protected mode*
 
-## Assuptions for all stages using the reference implementation
+## Assumptions for all stages using the reference implementation
 * 0-4GiB are identity mapped using 2MiB-pages as WB
 * Memory above 4GiB isn't accessible
 * page tables reside in memory mapped ROM

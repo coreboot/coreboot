@@ -263,7 +263,6 @@ u8 PcieTrainPort(struct device *nb_dev, struct device *dev, u32 port)
 		gfx_gpp_sb_sel = PCIE_CORE_INDEX_GPP;
 		break;
 	default:
-		gfx_gpp_sb_sel = -1;
 		return 0;
 	}
 

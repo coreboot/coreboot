@@ -28,8 +28,8 @@ struct edp_data {
 	u8 data[6];
 } __packed;
 
-static const struct edp_data tc348860_table[] = {
-	/* set eDP bridge to eDP 1920 */
+static const struct edp_data b101uan01_table[] = {
+	/* set eDP bridge to 1200x1920 */
 	/* IO */
 	{ 6, 0x68, { 0x08, 0x00, 0x01, 0x00, 0x00, 0x00 } },
 	/* Boot */
@@ -173,7 +173,7 @@ static const struct edp_data tc348860_table[] = {
 };
 
 static const struct edp_data b101uan08_table[] = {
-	/* set eDP bridge to eDP 1920 */
+	/* set eDP bridge to 1200x1920 */
 	/* IO Voltage Setting */
 	{ 6, 0x68, { 0x08, 0x00, 0x01, 0x00, 0x00, 0x00 } },
 	/* Boot Settings */
@@ -333,7 +333,7 @@ static void mainboard_configure_edp_bridge(void)
 			CPLD_PCB_VERSION_BIT;
 	printk(BIOS_DEBUG, "CPLD version: %x\n", cpld_version);
 	if (cpld_version < 7)
-		edptable = tc348860_table;
+		edptable = b101uan01_table;
 	else
 		edptable = b101uan08_table;
 
@@ -341,7 +341,6 @@ static void mainboard_configure_edp_bridge(void)
 	outb(CPLD_CMD_RESET_DSI_BRIDGE_ACTIVE, CPLD_RESET_PORT);
 	outb(CPLD_CMD_RESET_DSI_BRIDGE_INACTIVE, CPLD_RESET_PORT);
 
-	/* set eDP bridge to eDP 1920 */
 	while (edptable->payload_length) {
 		loops = 5;
 		do {
@@ -360,7 +359,6 @@ static void mainboard_configure_edp_bridge(void)
 
 void mainboard_silicon_init_params(SILICON_INIT_UPD *params)
 {
-	/* Configure the eDP bridge to eDP 1920 */
 	mainboard_configure_edp_bridge();
 
 	if (CONFIG(FSP1_1_DISPLAY_LOGO)) {

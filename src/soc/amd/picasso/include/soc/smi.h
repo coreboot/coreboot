@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2017 Advanced Micro Devices, Inc.
+ * Copyright (C) 2017-2019 Advanced Micro Devices, Inc.
  * Copyright (C) 2014 Alexandru Gagniuc <mr.nuke.me@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -33,128 +33,125 @@
 # define SMI_SCI_MAP(X)			(SMI_SCI_MAP0 + (X))
 
 /* SMI source and status */
-#define SMITYPE_AGPIO65				0
-#define SMITYPE_AGPIO66				1
-#define SMITYPE_AGPIO3				2
-#define SMITYPE_LPCPME_AGPIO22			3
-#define SMITYPE_GPIO4				4
-#define SMITYPE_LPCPD_AGPIOG21			5
-#define SMITYPE_IRTX1_G15			6
-#define SMITYPE_AGPIO5_DEVSLP0			7
-#define SMITYPE_WAKE_AGPIO2			8
-#define SMITYPE_APIO68_SGPIOCLK			9
-#define SMITYPE_AGPIO6				10
-#define SMITYPE_GPIO7				11
-#define SMITYPE_USBOC0_TRST_AGPIO16		12
-#define SMITYPE_USB0C1_TDI_AGPIO17		13
-#define SMITYPE_USBOC2_TCK_AGPIO18		14
-#define SMITYPE_TDO_USB0C3_AGPIO24		15
-#define SMITYPE_ACPRES_USBOC4_IRRX0_AGPIO23	16
-/* 17 Reserved */
-#define SMITYPE_BLINK_AGPIO11_USBOC7		18
-#define SMITYPE_SYSRESET_AGPIO1			19
-#define SMITYPE_IRRX1_AGPIO15			20
-#define SMITYPE_IRTX0_USBOC5_AGPIO13		21
-#define SMITYPE_GPIO9_SERPORTRX			22
-#define SMITYPE_GPIO8_SEPORTTX			23
-#define GEVENT_MASK ((1 << SMITYPE_AGPIO65)				\
-			| (1 << SMITYPE_AGPIO66)			\
-			| (1 << SMITYPE_AGPIO3)				\
-			| (1 << SMITYPE_LPCPME_AGPIO22)			\
-			| (1 << SMITYPE_GPIO4)				\
-			| (1 << SMITYPE_LPCPD_AGPIOG21)			\
-			| (1 << SMITYPE_IRTX1_G15)			\
-			| (1 << SMITYPE_AGPIO5_DEVSLP0)			\
-			| (1 << SMITYPE_WAKE_AGPIO2)			\
-			| (1 << SMITYPE_APIO68_SGPIOCLK)		\
-			| (1 << SMITYPE_AGPIO6)				\
-			| (1 << SMITYPE_GPIO7)				\
-			| (1 << SMITYPE_USBOC0_TRST_AGPIO16)		\
-			| (1 << SMITYPE_USB0C1_TDI_AGPIO17)		\
-			| (1 << SMITYPE_USBOC2_TCK_AGPIO18)		\
-			| (1 << SMITYPE_TDO_USB0C3_AGPIO24)		\
-			| (1 << SMITYPE_ACPRES_USBOC4_IRRX0_AGPIO23)	\
-			| (1 << SMITYPE_BLINK_AGPIO11_USBOC7)		\
-			| (1 << SMITYPE_SYSRESET_AGPIO1)		\
-			| (1 << SMITYPE_IRRX1_AGPIO15)			\
-			| (1 << SMITYPE_IRTX0_USBOC5_AGPIO13)		\
-			| (1 << SMITYPE_GPIO9_SERPORTRX))
-#define SMITYPE_EHCI0_WAKE			24
-#define SMITYPE_EHCI1_WAKE			25
-#define SMITYPE_ESPI_SYS			26
-#define SMITYPE_ESPI_WAKE_PME			27
-/* 28-32 Reserved */
-#define SMITYPE_FCH_FAKE0			33
-#define SMITYPE_FCH_FAKE1			34
-#define SMITYPE_FCH_FAKE2			35
-/* 36 Reserved */
-#define SMITYPE_SATA_GEVENT0			37
-#define SMITYPE_SATA_GEVENT1			38
-#define SMITYPE_ACP_WAKE			39
-#define SMITYPE_ECG				40
-#define SMITYPE_GPIO_CTL			41
-#define SMITYPE_CIR_PME				42
-#define SMITYPE_ALT_HPET_ALARM			43
-#define SMITYPE_FAN_THERMAL			44
-#define SMITYPE_ASF_MASTER_SLAVE		45
-#define SMITYPE_I2S_WAKE			46
-#define SMITYPE_SMBUS0_MASTER			47
-#define SMITYPE_TWARN				48
-#define SMITYPE_TRAFFIC_MON			49
-#define SMITYPE_ILLB				50
-#define SMITYPE_PWRBUTTON_UP			51
-#define SMITYPE_PROCHOT				52
-#define SMITYPE_APU_HW				53
-#define SMITYPE_NB_SCI				54
-#define SMITYPE_RAS_SERR			55
-#define SMITYPE_XHC0_PME			56
-/* 57 Reserved */
-#define SMITYPE_ACDC_TIMER			58
-/* 59-62 Reserved */
-#define SMITYPE_TEMP_TSI			63
-#define SMITYPE_KB_RESET			64
-#define SMITYPE_SLP_TYP				65
-#define SMITYPE_AL2H_ACPI			66
-#define SMITYPE_AHCI				67
-/* 68-71 Reserved */
-#define SMITYPE_GBL_RLS				72
-#define SMITYPE_BIOS_RLS			73
-#define SMITYPE_PWRBUTTON_DOWN			74
-#define SMITYPE_SMI_CMD_PORT			75
-#define SMITYPE_USB_SMI				76
-#define SMITYPE_SERIRQ				77
-#define SMITYPE_SMBUS0_INTR			78
-#define SMITYPE_XHC_ERROR			80
-#define SMITYPE_INTRUDER			81
-#define SMITYPE_VBAT_LOW			82
-#define SMITYPE_PROTHOT				83
-#define SMITYPE_PCI_SERR			84
-#define SMITYPE_GPP_SERR			85
-/* 85-88 Reserved */
-#define SMITYPE_TMERTRIP			89
-#define SMITYPE_EMUL60_64			90
-#define SMITYPE_USB_FLR				91
-#define SMITYPE_SATA_FLR			92
-#define SMITYPE_AZ_FLR				93
-/* 94-132 Reserved */
-#define SMITYPE_FANIN0				133
-/* 134-137 Reserved */
-#define SMITYPE_FAKE0				138
-#define SMITYPE_FAKE1				139
-#define SMITYPE_FAKE2				140
-/* 141 Reserved */
-#define SMITYPE_SHORT_TIMER			142
-#define SMITYPE_LONG_TIMER			143
-#define SMITYPE_AB_SMI				144
-#define SMITYPE_SOFT_RESET			145
-/* 146-147 Reserved */
-#define SMITYPE_IOTRAP0				148
-/* 149-151 Reserved */
-#define SMITYPE_MEMTRAP0			152
+#define SMITYPE_G_GENINT1_L		0
+#define SMITYPE_G_GENINT2_L		1
+#define SMITYPE_G_AGPIO3		2
+#define SMITYPE_G_LPCPME		3
+#define SMITYPE_G_AGPIO4		4
+#define SMITYPE_G_LPCPD			5
+#define SMITYPE_G_SPKR			6
+#define SMITYPE_G_AGPIO5		7
+#define SMITYPE_G_WAKE_L		8
+#define SMITYPE_G_LPC_SMI_L		9
+#define SMITYPE_G_AGPIO6		10
+#define SMITYPE_G_AGPIO7		11
+#define SMITYPE_G_USBOC0_L		12
+#define SMITYPE_G_USBOC1_L		13
+#define SMITYPE_G_USBOC2_L		14
+#define SMITYPE_G_USBOC3_L		15
+#define SMITYPE_G_AGPIO23		16
+#define SMITYPE_G_ESPI_RESET_L		17
+#define SMITYPE_G_FANIN0		18
+#define SMITYPE_G_SYSRESET_L		19
+#define SMITYPE_G_AGPIO40		20
+#define SMITYPE_G_PWR_BTN_L		21
+#define SMITYPE_G_AGPIO9		22
+#define SMITYPE_G_AGPIO8		23
+#define GEVENT_MASK ((1 << SMITYPE_G_GENINT1_L)		\
+		   | (1 << SMITYPE_G_GENINT2_L)		\
+		   | (1 << SMITYPE_G_AGPIO3)		\
+		   | (1 << SMITYPE_G_LPCPME)		\
+		   | (1 << SMITYPE_G_AGPIO4)		\
+		   | (1 << SMITYPE_G_LPCPD)		\
+		   | (1 << SMITYPE_G_SPKR)		\
+		   | (1 << SMITYPE_G_AGPIO5)		\
+		   | (1 << SMITYPE_G_WAKE_L)		\
+		   | (1 << SMITYPE_G_LPC_SMI_L)		\
+		   | (1 << SMITYPE_G_AGPIO6)		\
+		   | (1 << SMITYPE_G_AGPIO7)		\
+		   | (1 << SMITYPE_G_USBOC0_L)		\
+		   | (1 << SMITYPE_G_USBOC1_L)		\
+		   | (1 << SMITYPE_G_USBOC2_L)		\
+		   | (1 << SMITYPE_G_USBOC3_L)		\
+		   | (1 << SMITYPE_G_AGPIO23)		\
+		   | (1 << SMITYPE_G_ESPI_RESET_L)	\
+		   | (1 << SMITYPE_G_FANIN0)		\
+		   | (1 << SMITYPE_G_SYSRESET_L)	\
+		   | (1 << SMITYPE_G_AGPIO40)		\
+		   | (1 << SMITYPE_G_PWR_BTN_L))
+#define SMITYPE_MP2_WAKE		24
+#define SMITYPE_MP2_GPIO0		25
+#define SMITYPE_ESPI_SYS		26
+#define SMITYPE_ESPI_WAKE_PME		27
+#define SMITYPE_MP2_GPIO1		28
+#define SMITYPE_GPP_PME			29
+#define SMITYPE_NB_GPP_HOT_PLUG		30
+/* 31 Reserved */
+#define SMITYPE_WAKE_L2			32
+/* 33 - 38 Reserved */
+#define SMITYPE_AZPME			39
+#define SMITYPE_USB_PD_I2C4		40
+#define SMITYPE_GPIO_CTL		41
+/* 42 Reserved */
+#define SMITYPE_ALT_HPET_ALARM		43
+#define SMITYPE_FAN_THERMAL		44
+#define SMITYPE_ASF_MASTER_SLAVE	45
+#define SMITYPE_I2S_WAKE		46
+#define SMITYPE_SMBUS0_MASTER		47
+#define SMITYPE_TWARN			48
+#define SMITYPE_TRAFFIC_MON		49
+#define SMITYPE_ILLB			50
+#define SMITYPE_PWRBUTTON_UP		51
+#define SMITYPE_PROCHOT			52
+#define SMITYPE_APU_HW			53
+#define SMITYPE_NB_SCI			54
+#define SMITYPE_RAS_SERR		55
+#define SMITYPE_XHC0_PME		56
+#define SMITYPE_XHC1_PME		57
+#define SMITYPE_ACDC_TIMER		58
+/* 59-63 Reserved */
+#define SMITYPE_KB_RESET		64
+#define SMITYPE_SLP_TYP			65
+#define SMITYPE_AL2H_ACPI		66
+#define SMITYPE_AHCI			67
+#define SMITYPE_NB_GPP_PME_PULSE	68
+#define SMITYPE_NB_GPP_HP_PULSE		69
+#define SMITYPE_USBPD_I2C_INT		70
+/* 71 Reserved */
+#define SMITYPE_GBL_RLS			72
+#define SMITYPE_BIOS_RLS		73
+#define SMITYPE_PWRBUTTON_DOWN		74
+#define SMITYPE_SMI_CMD_PORT		75
+#define SMITYPE_USB_SMI			76
+#define SMITYPE_SERIRQ			77
+#define SMITYPE_SMBUS0_INTR		78
+/* 79-80 Reserved */
+#define SMITYPE_INTRUDER		81
+#define SMITYPE_VBAT_LOW		82
+#define SMITYPE_PROTHOT			83
+#define SMITYPE_PCI_SERR		84
+#define SMITYPE_GPP_SERR		85
+/* 85-89 Reserved */
+#define SMITYPE_EMUL60_64		90
+/* 91-132 Reserved */
+#define SMITYPE_FANIN0			133
+/* 134-140 Reserved */
+#define SMITYPE_CF9_WRITE		141
+#define SMITYPE_SHORT_TIMER		142
+#define SMITYPE_LONG_TIMER		143
+#define SMITYPE_AB_SMI			144
+/* 145 Reserved */
+#define SMITYPE_ESPI_SMI		146
+/* 147 Reserved */
+#define SMITYPE_IOTRAP0			148
+#define SMITYPE_IOTRAP1			149
+#define SMITYPE_IOTRAP2			150
+#define SMITYPE_IOTRAP3			151
+#define SMITYPE_MEMTRAP0		152
 /* 153-155 Reserved */
-#define SMITYPE_CFGTRAP0			156
+#define SMITYPE_CFGTRAP0		156
 /* 157-159 Reserved */
-#define NUMBER_SMITYPES				160
+#define NUMBER_SMITYPES			160
 #define TYPE_TO_MASK(X)				(1 << (X) % 32)
 
 #define SMI_REG_SMISTS0			0x80

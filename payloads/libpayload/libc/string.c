@@ -249,7 +249,7 @@ char *strncat(char *d, const char *s, size_t n)
  * @param d The destination string.
  * @param s The source string.
  * @param n d will have at most n-1 characters (plus NUL) after invocation.
- * @return A pointer to the destination string.
+ * @return The total length of the concatenated string.
  */
 size_t strlcat(char *d, const char *s, size_t n)
 {
@@ -264,7 +264,7 @@ size_t strlcat(char *d, const char *s, size_t n)
 		p[i] = s[i];
 
 	p[i] = '\0';
-	return max;
+	return sl + dl;
 }
 
 /**

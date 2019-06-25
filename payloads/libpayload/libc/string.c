@@ -645,12 +645,11 @@ char *strerror(int errnum)
  * @param maxlen Maximum possible length of the string in code points
  * @return Newly allocated ASCII string
  */
-char *utf16le_to_ascii(uint16_t *utf16_string, int maxlen)
+char *utf16le_to_ascii(const uint16_t *utf16_string, size_t maxlen)
 {
 	char *ascii_string = xmalloc(maxlen + 1);  /* +1 for trailing \0 */
 	ascii_string[maxlen] = '\0';
-	int i;
-	for (i = 0; i < maxlen; i++) {
+	for (size_t i = 0; i < maxlen; i++) {
 		uint16_t wchar = utf16_string[i];
 		ascii_string[i] = wchar > 0x7f ? '?' : (char)wchar;
 	}

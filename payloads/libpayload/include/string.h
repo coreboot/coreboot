@@ -73,7 +73,7 @@ char *strerror(int errnum);
  * @defgroup string Unicode functions
  * @{
  */
-char *utf16le_to_ascii(uint16_t *utf16_string, int maxlen);
+char *utf16le_to_ascii(const uint16_t *utf16_string, size_t maxlen);
 /** @} */
 
 /**

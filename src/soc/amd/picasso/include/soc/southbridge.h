@@ -279,6 +279,9 @@
 #define   RST_CMD			BIT(2)
 #define   SYS_RST			BIT(1)
 
+/* IO 0xf0 NCP Error */
+#define   NCP_WARM_BOOT			BIT(7) /* Write-once */
+
 struct picasso_aoac {
 	int enable;
 	int status;

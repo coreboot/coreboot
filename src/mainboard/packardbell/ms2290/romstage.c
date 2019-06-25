@@ -28,6 +28,7 @@
 #include <timestamp.h>
 #include <arch/acpi.h>
 
+#include <southbridge/intel/common/gpio.h>
 #include <southbridge/intel/ibexpeak/pch.h>
 #include <northbridge/intel/nehalem/nehalem.h>
 
@@ -177,15 +178,8 @@ void mainboard_romstage_entry(void)
 	/* Enable GPIOs */
 	pci_write_config32(PCH_LPC_DEV, GPIO_BASE, DEFAULT_GPIOBASE | 1);
 	pci_write_config8(PCH_LPC_DEV, GPIO_CNTL, 0x10);
-	outl (0x796bd9c3, DEFAULT_GPIOBASE);
-	outl (0x86fec7c2, DEFAULT_GPIOBASE + 4);
-	outl (0xe4e8d7fe, DEFAULT_GPIOBASE + 0xc);
-	outl (0, DEFAULT_GPIOBASE + 0x18);
-	outl (0x00004182, DEFAULT_GPIOBASE + 0x2c);
-	outl (0x123360f8, DEFAULT_GPIOBASE + 0x30);
-	outl (0x1f47bfa8, DEFAULT_GPIOBASE + 0x34);
-	outl (0xfffe7fb6, DEFAULT_GPIOBASE + 0x38);
 
+	setup_pch_gpios(&mainboard_gpio_map);
 
 	/* This should probably go away. Until now it is required
 	 * and mainboard specific

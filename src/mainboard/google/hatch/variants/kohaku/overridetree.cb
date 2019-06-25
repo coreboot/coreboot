@@ -70,7 +70,7 @@ chip soc/intel/cannonlake
 				register "generic.irq" = "ACPI_IRQ_EDGE_LOW(GPP_D21_IRQ)"
 				register "generic.probed" = "1"
 				register "hid_desc_reg_offset" = "0x20"
-				device i2c 0x2c on end
+				device i2c 0x20 on end
 			end
 		end # I2C 0
 

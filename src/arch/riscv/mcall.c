@@ -25,24 +25,15 @@
  * MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
  */
 
-#include <arch/barrier.h>
-#include <arch/errno.h>
-#include <console/console.h>
 #include <mcall.h>
 #include <string.h>
 #include <vm.h>
 
-int mcalldebug; // set this interactively for copious debug.
-
 void hls_init(uint32_t hart_id, void *fdt)
 {
-	printk(BIOS_SPEW, "hart %d: HLS is %p\n", hart_id, HLS());
 	memset(HLS(), 0, sizeof(*HLS()));
 	HLS()->fdt = fdt;
 	HLS()->hart_id = hart_id;
 
 	mtime_init();
-
-	printk(BIOS_SPEW, "Time is %p and timecmp is %p\n",
-	       HLS()->time, HLS()->timecmp);
 }

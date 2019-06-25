@@ -170,11 +170,11 @@ void lpc_enable_childrens_resources(struct device *dev)
 	pci_write_config32(dev, 0x48, reg_x);
 	/* Set WideIO for as many IOs found (fall through is on purpose) */
 	switch (var_num) {
-	case 2:
+	case 3:
 		pci_write_config16(dev, 0x90, reg_var[2]);
-	case 1:
+	case 2:
 		pci_write_config16(dev, 0x66, reg_var[1]);
-	case 0:
+	case 1:
 		//pci_write_config16(dev, 0x64, reg_var[0]); //cause filo can not find sata
 		break;
 	}

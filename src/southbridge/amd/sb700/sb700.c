@@ -104,7 +104,7 @@ void sb7xx_51xx_enable(struct device *dev)
 {
 	struct device *sm_dev = NULL;
 	struct device *bus_dev = NULL;
-	int index = -1;
+	int index;
 	u32 deviceid;
 	u32 vendorid;
 
@@ -171,7 +171,6 @@ void sb7xx_51xx_enable(struct device *dev)
 		index = 8;
 		set_sm_enable_bits(sm_dev, 0xac, 1 << index,
 				   (dev->enabled ? 1 : 0) << index);
-		index += 32 * 3;
 		break;
 	case PCI_DEVFN(0x12, 0):
 	case PCI_DEVFN(0x12, 1):
@@ -179,7 +178,6 @@ void sb7xx_51xx_enable(struct device *dev)
 		index = dev->path.pci.devfn & 3;
 		set_sm_enable_bits(sm_dev, 0x68, 1 << index,
 				   (dev->enabled ? 1 : 0) << index);
-		index += 32 * 2;
 		break;
 	case PCI_DEVFN(0x13, 0):
 	case PCI_DEVFN(0x13, 1):
@@ -187,34 +185,27 @@ void sb7xx_51xx_enable(struct device *dev)
 		index = (dev->path.pci.devfn & 3) + 4;
 		set_sm_enable_bits(sm_dev, 0x68, 1 << index,
 				   (dev->enabled ? 1 : 0) << index);
-		index += 32 * 2;
 		break;
 	case PCI_DEVFN(0x14, 5):
 		index = 7;
 		set_sm_enable_bits(sm_dev, 0x68, 1 << index,
 				   (dev->enabled ? 1 : 0) << index);
-		index += 32 * 2;
 		break;
 	case PCI_DEVFN(0x14, 0):
-		index = 0;
 		break;
 	case PCI_DEVFN(0x14, 1):
-		index = 1;
 		break;
 	case PCI_DEVFN(0x14, 2):
 		index = 3;
 		set_pmio_enable_bits(sm_dev, 0x59, 1 << index,
 				     (dev->enabled ? 1 : 0) << index);
-		index += 32 * 4;
 		break;
 	case PCI_DEVFN(0x14, 3):
 		index = 20;
 		set_sm_enable_bits(sm_dev, 0x64, 1 << index,
 				   (dev->enabled ? 1 : 0) << index);
-		index += 32 * 1;
 		break;
 	case PCI_DEVFN(0x14, 4):
-		index = 4;
 		break;
 	default:
 		printk(BIOS_DEBUG, "unknown dev: %s deviceid=%4x\n", dev_path(dev),

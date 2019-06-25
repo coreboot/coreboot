@@ -228,7 +228,7 @@ void sb800_enable(struct device *dev)
 {
 	struct device *sm_dev = NULL;
 	struct device *bus_dev = NULL;
-	int index = -1;
+	int index;
 	u32 deviceid;
 	u32 vendorid;
 
@@ -295,9 +295,9 @@ void sb800_enable(struct device *dev)
 
 	switch (dev->path.pci.devfn - (devfn - (0x14 << 3))) {
 	case PCI_DEVFN(0x11, 0):
-		index = 8;
-		set_pmio_enable_bits(0xDA, 1 << 0,
-				     (dev->enabled ? 1 : 0) << 0);
+		index = 0;
+		set_pmio_enable_bits(0xDA, 1 << index,
+				     (dev->enabled ? 1 : 0) << index);
 		/* Set the device ID of SATA as 0x4390 to reduce the confusing. */
 		dword = pci_read_config32(dev, 0x40);
 		dword |= 1 << 0;
@@ -305,7 +305,6 @@ void sb800_enable(struct device *dev)
 		pci_write_config16(dev, 0x2, 0x4390);
 		dword &= ~1;
 		pci_write_config32(dev, 0x40, dword);//for (;;);
-		index += 32 * 3;
 		break;
 	case PCI_DEVFN(0x12, 0):
 	case PCI_DEVFN(0x12, 2):
@@ -318,15 +317,13 @@ void sb800_enable(struct device *dev)
 		index = (dev->path.pci.devfn & 0x3) / 2 + 2;
 		set_pmio_enable_bits(0xEF, 1 << index,
 				     (dev->enabled ? 1 : 0) << index);
-		index += 32 * 2;
 		break;
 	case PCI_DEVFN(0x14, 0):
-		index = 0;
 		break;
 	case PCI_DEVFN(0x14, 1):
-		index = 1;
-		set_pmio_enable_bits(0xDA, 1 << 3,
-				     (dev->enabled ? 0 : 1) << 3);
+		index = 3;
+		set_pmio_enable_bits(0xDA, 1 << index,
+				     (dev->enabled ? 0 : 1) << index);
 		break;
 	case PCI_DEVFN(0x14, 2):
 		index = 0;
@@ -337,7 +334,6 @@ void sb800_enable(struct device *dev)
 		index = 0;
 		set_pmio_enable_bits(0xEC, 1 << index,
 				     (dev->enabled ? 1 : 0) << index);
-		index += 32 * 1;
 		break;
 	case PCI_DEVFN(0x14, 4):
 		index = 0;
@@ -356,7 +352,6 @@ void sb800_enable(struct device *dev)
 		break;
 	case PCI_DEVFN(0x15, 0):
 		set_sb800_gpp(dev);
-		index = 4;
 		break;
 	case PCI_DEVFN(0x15, 1):
 	case PCI_DEVFN(0x15, 2):

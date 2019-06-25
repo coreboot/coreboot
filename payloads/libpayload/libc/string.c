@@ -91,9 +91,9 @@ size_t strlen(const char *str)
  */
 int strcasecmp(const char *s1, const char *s2)
 {
-	int i, res;
+	int res;
 
-	for (i = 0; 1; i++) {
+	for (size_t i = 0; 1; i++) {
 		res = tolower(s1[i]) - tolower(s2[i]);
 		if (res || (s1[i] == '\0'))
 			break;
@@ -112,10 +112,9 @@ int strcasecmp(const char *s1, const char *s2)
  */
 int strncasecmp(const char *s1, const char *s2, size_t maxlen)
 {
-	int i, res;
+	int res = 0;
 
-	res = 0;
-	for (i = 0; i < maxlen; i++) {
+	for (size_t i = 0; i < maxlen; i++) {
 		res = tolower(s1[i]) - tolower(s2[i]);
 		if (res || (s1[i] == '\0'))
 			break;
@@ -135,9 +134,9 @@ int strncasecmp(const char *s1, const char *s2, size_t maxlen)
  */
 int strcmp(const char *s1, const char *s2)
 {
-	int i, res;
+	int res;
 
-	for (i = 0; 1; i++) {
+	for (size_t i = 0; 1; i++) {
 		res = s1[i] - s2[i];
 		if (res || (s1[i] == '\0'))
 			break;
@@ -156,10 +155,9 @@ int strcmp(const char *s1, const char *s2)
  */
 int strncmp(const char *s1, const char *s2, size_t maxlen)
 {
-	int i, res;
+	int res = 0;
 
-	res = 0;
-	for (i = 0; i < maxlen; i++) {
+	for (size_t i = 0; i < maxlen; i++) {
 		res = s1[i] - s2[i];
 		if (res || (s1[i] == '\0'))
 			break;
@@ -179,10 +177,9 @@ int strncmp(const char *s1, const char *s2, size_t maxlen)
 char *strncpy(char *d, const char *s, size_t n)
 {
 	/* Use +1 to get the NUL terminator. */
-	int max = n > strlen(s) + 1 ? strlen(s) + 1 : n;
-	int i;
+	size_t max = n > strlen(s) + 1 ? strlen(s) + 1 : n;
 
-	for (i = 0; i < max; i++)
+	for (size_t i = 0; i < max; i++)
 		d[i] = (char)s[i];
 
 	return d;
@@ -210,13 +207,12 @@ char *strcpy(char *d, const char *s)
 char *strcat(char *d, const char *s)
 {
 	char *p = d + strlen(d);
-	int sl = strlen(s);
-	int i;
+	size_t sl = strlen(s);
 
-	for (i = 0; i < sl; i++)
+	for (size_t i = 0; i < sl; i++)
 		p[i] = s[i];
 
-	p[i] = '\0';
+	p[sl] = '\0';
 	return d;
 }
 
@@ -231,15 +227,13 @@ char *strcat(char *d, const char *s)
 char *strncat(char *d, const char *s, size_t n)
 {
 	char *p = d + strlen(d);
-	int sl = strlen(s);
-	int max = n > sl ? sl : n;
-	// int max = n > strlen(s) ? strlen(s) : n;
-	int i;
+	size_t sl = strlen(s);
+	size_t max = n > sl ? sl : n;
 
-	for (i = 0; i < max; i++)
+	for (size_t i = 0; i < max; i++)
 		p[i] = s[i];
 
-	p[i] = '\0';
+	p[max] = '\0';
 	return d;
 }
 
@@ -253,17 +247,19 @@ char *strncat(char *d, const char *s, size_t n)
  */
 size_t strlcat(char *d, const char *s, size_t n)
 {
-	int sl = strlen(s);
-	int dl = strlen(d);
+	size_t sl = strlen(s);
+	size_t dl = strlen(d);
+
+	if (n <= dl + 1)
+		return sl + dl;
 
 	char *p = d + dl;
-	int max = n > (sl + dl) ? sl : (n - dl - 1);
-	int i;
+	size_t max = n > (sl + dl) ? sl : (n - dl - 1);
 
-	for (i = 0; i < max; i++)
+	for (size_t i = 0; i < max; i++)
 		p[i] = s[i];
 
-	p[i] = '\0';
+	p[max] = '\0';
 	return sl + dl;
 }
 
@@ -316,7 +312,7 @@ char *strrchr(const char *s, int c)
  */
 char *strdup(const char *s)
 {
-	int n = strlen(s);
+	size_t n = strlen(s);
 	char *p = malloc(n + 1);
 
 	if (p != NULL) {
@@ -336,11 +332,13 @@ char *strdup(const char *s)
  */
 char *strstr(const char *h, const char *n)
 {
-	int hn = strlen(h);
-	int nn = strlen(n);
-	int i;
+	size_t hn = strlen(h);
+	size_t nn = strlen(n);
 
-	for (i = 0; i <= hn - nn; i++)
+	if (hn < nn)
+		return NULL;
+
+	for (size_t i = 0; i <= hn - nn; i++)
 		if (!memcmp(&h[i], n, nn))
 			return (char *)&h[i];
 
@@ -532,11 +530,11 @@ unsigned long int strtoul(const char *ptr, char **endptr, int base)
  */
 size_t strspn(const char *s, const char *a)
 {
-	int i, j;
-	int al = strlen(a);
+	size_t i;
+	size_t al = strlen(a);
 	for (i = 0; s[i] != 0; i++) {
 		int found = 0;
-		for (j = 0; j < al; j++) {
+		for (size_t j = 0; j < al; j++) {
 			if (s[i] == a[j]) {
 				found = 1;
 				break;
@@ -556,11 +554,11 @@ size_t strspn(const char *s, const char *a)
  */
 size_t strcspn(const char *s, const char *a)
 {
-	int i, j;
-	int al = strlen(a);
+	size_t i;
+	size_t al = strlen(a);
 	for (i = 0; s[i] != 0; i++) {
 		int found = 0;
-		for (j = 0; j < al; j++) {
+		for (size_t j = 0; j < al; j++) {
 			if (s[i] == a[j]) {
 				found = 1;
 				break;

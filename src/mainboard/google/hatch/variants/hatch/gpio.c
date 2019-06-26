@@ -19,11 +19,8 @@
 #include <commonlib/helpers.h>
 
 static const struct pad_config gpio_table[] = {
-	/* C13 : EC_PCH_INT_L
-	 * TODO Configure it back to invert mode, when
-	 * ITSS IPCx configuration is fixed in FSP.
-	 */
-	PAD_CFG_GPI_APIC(GPP_C13, UP_20K, PLTRST, LEVEL, NONE)};
+	/* C13 : EC_PCH_INT_L */
+	PAD_CFG_GPI_APIC(GPP_C13, UP_20K, PLTRST, LEVEL, INVERT)};
 
 const struct pad_config *override_gpio_table(size_t *num)
 {

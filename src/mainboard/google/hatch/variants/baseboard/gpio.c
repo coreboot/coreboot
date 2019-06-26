@@ -54,12 +54,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPO(GPP_A19, 1, DEEP),
 	/* A20 : WLAN_INT_L */
 	PAD_CFG_GPI_APIC(GPP_A20, NONE, PLTRST, LEVEL, INVERT),
-	/*
-	 * A21 : TRACKPAD_INT_ODL (wake)
-	 * TODO Combine into single gpio, when ITSS IPCx configuration
-	 * is fixed in FSP.
-	 */
-	PAD_CFG_GPI_SCI(GPP_A21, NONE, DEEP, EDGE_SINGLE, INVERT),
+	/* A21 : TRACKPAD_INT_ODL */
+	PAD_CFG_GPI_IRQ_WAKE(GPP_A21, NONE, DEEP, LEVEL, INVERT),
 	/* A22 : FPMCU_PCH_BOOT0 */
 	PAD_CFG_GPO(GPP_A22, 0, DEEP),
 	/* A23 : FPMCU_PCH_INT_ODL */
@@ -209,12 +205,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_D19, NONE, DEEP, NF1),
 	/* D20 : DMIC_DATA_0_SNDW4_DATA */
 	PAD_CFG_NF(GPP_D20, NONE, DEEP, NF1),
-	/*
-	 * D21 : TRACKPAD_INT_ODL
-	 * TODO Combine into single gpio with invert mode, when ITSS
-	 * IPCx configuration is fixed in FSP.
-	 */
-	PAD_CFG_GPI_APIC(GPP_D21, NONE, PLTRST, LEVEL, NONE),
+	/* D21 : GPP_D21 ==> NC */
+	PAD_NC(GPP_D21, NONE),
 	/* D22 : GPP_D22 ==> NC */
 	PAD_NC(GPP_D22, NONE),
 	/* D23 : SPP_MCLK */

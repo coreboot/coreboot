@@ -62,6 +62,9 @@ chip soc/intel/skylake
 	register "pirqg_routing" = "PCH_IRQ11"
 	register "pirqh_routing" = "PCH_IRQ11"
 
+	# Set LPC Serial IRQ mode
+	register "serirq_mode" = "SERIRQ_CONTINUOUS"
+
 	# Enabling SLP_S3#, SLP_S4#, SLP_SUS and SLP_A Stretch
 	# SLP_S3 Minimum Assertion Width. Values 0: 60us, 1: 1ms, 2: 50ms, 3: 2s
 	register "PmConfigSlpS3MinAssert" = "0x02"

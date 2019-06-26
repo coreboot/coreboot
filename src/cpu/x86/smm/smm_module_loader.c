@@ -185,7 +185,7 @@ static int smm_module_setup_stub(void *smbase, struct smm_loader_params *params,
 	void *stacks_top;
 	size_t size;
 	char *base;
-	int i;
+	size_t i;
 	struct smm_stub_params *stub_params;
 	struct rmodule smm_stub;
 

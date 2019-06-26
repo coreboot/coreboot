@@ -67,7 +67,7 @@ void sanitize_cmos(void)
 					CBFS_COMPONENT_CMOS_DEFAULT, &length);
 #endif
 		if (cmos_default) {
-			int i;
+			size_t i;
 			cmos_disable_rtc();
 			for (i = 14; i < MIN(128, length); i++)
 				cmos_write_inner(cmos_default[i], i);

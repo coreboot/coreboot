@@ -120,7 +120,7 @@ asmlinkage void soc_enable_mtrrs(void);
 /* fms: find most significant bit set, stolen from Linux Kernel Source. */
 static inline unsigned int fms(unsigned int x)
 {
-	int r;
+	unsigned int r;
 
 	__asm__("bsrl %1,%0\n\t"
 		"jnz 1f\n\t"
@@ -132,7 +132,7 @@ static inline unsigned int fms(unsigned int x)
 /* fls: find least significant bit set */
 static inline unsigned int fls(unsigned int x)
 {
-	int r;
+	unsigned int r;
 
 	__asm__("bsfl %1,%0\n\t"
 		"jnz 1f\n\t"

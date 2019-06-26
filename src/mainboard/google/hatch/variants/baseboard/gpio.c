@@ -181,8 +181,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_D7, NONE),
 	/* D8  : WWAN_CONFIG_3 */
 	PAD_NC(GPP_D8, NONE),
-	/* D9  : GPP_D9 ==> NC */
-	PAD_NC(GPP_D9, NONE),
+	/* D9  : GPP_D9 ==> EN_PP3300_DX_TOUCHSCREEN */
+	PAD_CFG_GPO(GPP_D9, 0, DEEP),
 	/* D10 : GPP_D10 ==> NC */
 	PAD_NC(GPP_D10, NONE),
 	/* D11 : GPP_D11 ==> NC */

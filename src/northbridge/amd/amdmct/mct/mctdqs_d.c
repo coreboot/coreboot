@@ -278,7 +278,7 @@ static void TrainDQSRdWrPos_D(struct MCTStatStruc *pMCTstat,
 	u8 dqsWrDelay_end;
 
 	u32 addr;
-	u32 cr4;
+	CRx_TYPE cr4;
 	u32 lo, hi;
 
 	print_debug_dqs("\nTrainDQSRdWrPos: Node_ID ", pDCTstat->Node_ID, 0);

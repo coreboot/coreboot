@@ -67,7 +67,7 @@ static inline void clflush(void *addr)
  */
 static __always_inline void enable_cache(void)
 {
-	unsigned long cr0;
+	CRx_TYPE cr0;
 	cr0 = read_cr0();
 	cr0 &= ~(CR0_CD | CR0_NW);
 	write_cr0(cr0);
@@ -76,7 +76,7 @@ static __always_inline void enable_cache(void)
 static __always_inline void disable_cache(void)
 {
 	/* Disable and write back the cache */
-	unsigned long cr0;
+	CRx_TYPE cr0;
 	cr0 = read_cr0();
 	cr0 |= CR0_CD;
 	wbinvd();

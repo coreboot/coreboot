@@ -22,6 +22,7 @@
 #include <arch/cpu.h>
 #include <inttypes.h>
 #include <console/console.h>
+#include <cpu/x86/cr.h>
 #include <string.h>
 #include <cpu/x86/msr.h>
 #include <cpu/amd/msr.h>
@@ -612,7 +613,7 @@ static void dqsTrainRcvrEn_SW_Fam10(struct MCTStatStruc *pMCTstat,
 	u32 index_reg;
 	u32 ch_start, ch_end, ch;
 	msr_t msr;
-	u32 cr4;
+	CRx_TYPE cr4;
 
 	uint32_t dword;
 	uint8_t dimm;
@@ -1186,7 +1187,7 @@ static void dqsTrainRcvrEn_SW_Fam15(struct MCTStatStruc *pMCTstat,
 	u32 index_reg;
 	u32 ch_start, ch_end, ch;
 	u32 msr;
-	u32 cr4;
+	CRx_TYPE cr4;
 	u32 lo, hi;
 
 	uint32_t dword;
@@ -1583,7 +1584,7 @@ void dqsTrainMaxRdLatency_SW_Fam15(struct MCTStatStruc *pMCTstat,
 	u32 index_reg;
 	u32 ch_start, ch_end;
 	u32 msr;
-	u32 cr4;
+	CRx_TYPE cr4;
 	u32 lo, hi;
 
 	uint32_t dword;

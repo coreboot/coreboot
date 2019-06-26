@@ -122,7 +122,7 @@ static void maxRdLatencyTrain_D(struct MCTStatStruc *pMCTstat,
 	u32 PatternBuffer[60];	// FIXME: why not 48 + 4
 	u32 Margin;
 	u32 addr;
-	u32 cr4;
+	CRx_TYPE cr4;
 	u32 lo, hi;
 
 	u8 valid;

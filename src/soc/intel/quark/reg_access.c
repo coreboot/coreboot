@@ -18,6 +18,7 @@
 #include <arch/io.h>
 #include <assert.h>
 #include <cpu/x86/mtrr.h>
+#include <cpu/x86/cr.h>
 #include <console/console.h>
 #include <delay.h>
 #include <device/pci_ops.h>

@@ -417,7 +417,7 @@ asmlinkage void secondary_cpu_init(unsigned int index)
 	 * Seems that CR4 was cleared when AP start via lapic_start_cpu()
 	 * Turn on CR4.OSFXSR and CR4.OSXMMEXCPT when SSE options enabled
 	 */
-	u32 cr4_val;
+	CRx_TYPE cr4_val;
 	cr4_val = read_cr4();
 	cr4_val |= (CR4_OSFXSR | CR4_OSXMMEXCPT);
 	write_cr4(cr4_val);

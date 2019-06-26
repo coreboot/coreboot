@@ -16,6 +16,7 @@
 
 #include <inttypes.h>
 #include <console/console.h>
+#include <cpu/x86/cr.h>
 #include <string.h>
 #include <arch/cpu.h>
 #include <cpu/amd/msr.h>
@@ -405,7 +406,7 @@ static void TrainDQSRdWrPos_D_Fam10(struct MCTStatStruc *pMCTstat,
 	u32 dev;
 	u32 addr;
 	u8 valid;
-	u32 cr4;
+	CRx_TYPE cr4;
 	u32 lo, hi;
 	u32 index_reg;
 	uint32_t TestAddr;
@@ -1617,7 +1618,7 @@ static void TrainDQSReceiverEnCyc_D_Fam15(struct MCTStatStruc *pMCTstat,
 	u8 _Wrap32Dis = 0, _SSE2 = 0;
 
 	u32 addr;
-	u32 cr4;
+	CRx_TYPE cr4;
 	u32 lo, hi;
 
 	uint8_t dct;

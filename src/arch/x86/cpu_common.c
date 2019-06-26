@@ -49,7 +49,7 @@ int cpu_have_cpuid(void)
 }
 #endif
 
-int cpu_cpuid_extended_level(void)
+unsigned int cpu_cpuid_extended_level(void)
 {
 	return cpuid_eax(0x80000000);
 }

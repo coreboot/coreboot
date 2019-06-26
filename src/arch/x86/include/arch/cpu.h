@@ -200,7 +200,7 @@ static inline unsigned int cpuid_edx(unsigned int op)
 #define CPUID_CACHE_NO_OF_SETS_MASK 0xffffffff
 #define CPUID_CACHE_NO_OF_SETS(res) CPUID_CACHE(NO_OF_SETS, (res).ecx)
 
-int cpu_cpuid_extended_level(void);
+unsigned int cpu_cpuid_extended_level(void);
 int cpu_have_cpuid(void);
 
 void smm_init(void);

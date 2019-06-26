@@ -25,7 +25,15 @@
 #include <superio/ite/it8623e/it8623e.h>
 
 #define ITE_CONFIG_REG_CC	0x02
+
+#if CONFIG_UART_FOR_CONSOLE == 0
+#define SERIAL_DEV		PNP_DEV(0x2e, IT8623E_SP1)
+#elif CONFIG_UART_FOR_CONSOLE == 1
 #define SERIAL_DEV		PNP_DEV(0x2e, IT8623E_SP2)
+#else
+#error "Invalid value for CONFIG_UART_FOR_CONSOLE"
+#endif
+
 #define GPIO_DEV		PNP_DEV(0x2e, IT8623E_GPIO)
 #define CLKIN_DEV		PNP_DEV(0x2e, IT8623E_GPIO)
 #define ENVC_DEV		PNP_DEV(0x2e, IT8623E_EC)

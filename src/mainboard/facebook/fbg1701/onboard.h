@@ -33,4 +33,14 @@
 #define CPLD_CMD_RESET_DSI_BRIDGE_ACTIVE 0x20
 #define CPLD_CMD_RESET_DSI_BRIDGE_INACTIVE 0x00
 
+/* Define the items to be measured or verified */
+#define FSP		(const char *)"fsp.bin"
+#define CMOS_LAYOUT	(const char *)"cmos_layout.bin"
+#define RAMSTAGE	(const char *)"fallback/ramstage"
+#define ROMSTAGE	(const char *)"fallback/romstage"
+#define PAYLOAD		(const char *)"fallback/payload"
+#define POSTCAR		(const char *)"fallback/postcar"
+#define OP_ROM_VBT	(const char *)"vbt.bin"
+#define MICROCODE	(const char *)"cpu_microcode_blob.bin"
+
 #endif

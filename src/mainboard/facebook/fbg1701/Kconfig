@@ -80,6 +80,10 @@ config FSP1_1_DISPLAY_LOGO
 	bool
 	default n
 
+config VENDORCODE_ELTAN_OEM_MANIFEST_LOC
+	hex "OEM Manifest working dflt"
+	default 0xFFFE9000
+
 config SPI_FLASH_INCLUDE_ALL_DRIVERS
 	bool
 	default n
@@ -95,5 +99,17 @@ config TPM_INIT
 config C_ENV_BOOTBLOCK_SIZE
 	hex "C Bootblock Size"
 	default 0x4000
+
+config VENDORCODE_ELTAN_VBOOT_SIGNED_MANIFEST
+	bool
+	default y
+
+config VENDORCODE_ELTAN_VBOOT_MANIFEST
+	string
+	default "mainboard/facebook/fbg1701/manifest.h"
+
+config VENDORCODE_ELTAN_VBOOT_KEY_LOCATION
+	hex "Key Location working dflt"
+	default 0xFFFF9C00
 
 endif # BOARD_FACEBOOK_FBG1701

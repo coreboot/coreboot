@@ -350,25 +350,26 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	fadt->x_gpe1_blk.addrh = 0x0;
 }
 
-static void generate_c_state_entries(int s0ix_enable, int max_cstate)
+static void write_c_state_entries(acpi_cstate_t *map, const int *set, size_t max_c_state)
 {
-
-	acpi_cstate_t map[max_cstate];
-	int *set;
-	int i;
-
-	if (s0ix_enable)
-		set = cstate_set_s0ix;
-	else
-		set = cstate_set_non_s0ix;
-
-	for (i = 0; i < max_cstate; i++) {
+	for (size_t i = 0; i < max_c_state; i++) {
 		memcpy(&map[i], &cstate_map[set[i]], sizeof(acpi_cstate_t));
 		map[i].ctype = i + 1;
 	}
 
 	/* Generate C-state tables */
-	acpigen_write_CST_package(map, ARRAY_SIZE(map));
+	acpigen_write_CST_package(map, max_c_state);
+}
+
+static void generate_c_state_entries(int s0ix_enable)
+{
+	if (s0ix_enable) {
+		acpi_cstate_t map[ARRAY_SIZE(cstate_set_s0ix)];
+		write_c_state_entries(map, cstate_set_s0ix, ARRAY_SIZE(map));
+	} else {
+		acpi_cstate_t map[ARRAY_SIZE(cstate_set_non_s0ix)];
+		write_c_state_entries(map, cstate_set_non_s0ix, ARRAY_SIZE(map));
+	}
 }
 
 static int calculate_power(int tdp, int p1_ratio, int ratio)
@@ -506,12 +507,6 @@ void generate_cpu_entries(struct device *device)
 	int numcpus = totalcores/cores_per_package;
 	config_t *config = config_of_path(SA_DEVFN_ROOT);
 	int is_s0ix_enable = config->s0ix_enable;
-	int max_c_state;
-
-	if (is_s0ix_enable)
-		max_c_state = ARRAY_SIZE(cstate_set_s0ix);
-	else
-		max_c_state = ARRAY_SIZE(cstate_set_non_s0ix);
 
 	printk(BIOS_DEBUG, "Found %d CPU(s) with %d core(s) each.\n",
 	       numcpus, cores_per_package);
@@ -534,8 +529,7 @@ void generate_cpu_entries(struct device *device)
 				cpu_id*cores_per_package+core_id,
 				pcontrol_blk, plen);
 			/* Generate C-state tables */
-			generate_c_state_entries(is_s0ix_enable,
-				max_c_state);
+			generate_c_state_entries(is_s0ix_enable);
 
 			if (config->eist_enable) {
 				/* Generate P-state tables */

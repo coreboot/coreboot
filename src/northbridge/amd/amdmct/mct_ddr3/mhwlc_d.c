@@ -15,6 +15,7 @@
  */
 
 #include <stdint.h>
+#include <assert.h>
 #include <console/console.h>
 #include <northbridge/amd/amdfam10/amdfam10.h>
 
@@ -30,6 +31,8 @@ void programODT(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat, ui
 void procConfig(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat, uint8_t dct, uint8_t dimm, uint8_t pass, uint8_t nibble);
 void setWLByteDelay(struct DCTStatStruc *pDCTstat, uint8_t dct, u8 ByteLane, u8 dimm, u8 targetAddr, uint8_t pass, uint8_t lane_count);
 void getWLByteDelay(struct DCTStatStruc *pDCTstat, uint8_t dct, u8 ByteLane, u8 dimm, uint8_t pass, uint8_t nibble, uint8_t lane_count);
+
+#define MAX_LANE_COUNT 9
 
 /*-----------------------------------------------------------------------------
  * uint8_t AgesaHwWlPhase1(SPDStruct *SPDData,MCTStruct *MCTData, DCTStruct *DCTData,
@@ -185,8 +188,10 @@ uint8_t AgesaHwWlPhase2(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCT
 
 	lane_count = get_available_lane_count(pMCTstat, pDCTstat);
 
+	assert(lane_count <= MAX_LANE_COUNT);
+
 	if (is_fam15h()) {
-		int32_t gross_diff[lane_count];
+		int32_t gross_diff[MAX_LANE_COUNT];
 		int32_t cgd = pDCTData->WLCriticalGrossDelayPrevPass;
 		uint8_t index = (uint8_t)(lane_count * dimm);
 
@@ -274,9 +279,11 @@ uint8_t AgesaHwWlPhase3(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCT
 
 	lane_count = get_available_lane_count(pMCTstat, pDCTstat);
 
+	assert(lane_count <= MAX_LANE_COUNT);
+
 	if (is_fam15h()) {
 		uint32_t dword;
-		int32_t gross_diff[lane_count];
+		int32_t gross_diff[MAX_LANE_COUNT];
 		int32_t cgd = pDCTData->WLCriticalGrossDelayPrevPass;
 		uint8_t index = (uint8_t)(lane_count * dimm);
 
@@ -1005,6 +1012,8 @@ void procConfig(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat, ui
 
 	lane_count = get_available_lane_count(pMCTstat, pDCTstat);
 
+	assert(lane_count <= MAX_LANE_COUNT);
+
 	if (is_fam15h()) {
 		/* MemClkFreq: 0x4: 333MHz; 0x6: 400MHz; 0xa: 533MHz; 0xe: 667MHz; 0x12: 800MHz; 0x16: 933MHz */
 		MemClkFreq = get_Bits(pDCTData, dct, pDCTData->NodeId,
@@ -1168,8 +1177,8 @@ void procConfig(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat, ui
 			/* From BKDG, Write Leveling Seed Value. */
 			if (is_fam15h()) {
 				uint32_t RegisterDelay;
-				int32_t SeedTotal[lane_count];
-				int32_t SeedTotalPreScaling[lane_count];
+				int32_t SeedTotal[MAX_LANE_COUNT];
+				int32_t SeedTotalPreScaling[MAX_LANE_COUNT];
 				uint32_t WrDqDqsEarly;
 				uint8_t AddrCmdPrelaunch = 0;		/* TODO: Fetch the correct value from RC2[0] */
 

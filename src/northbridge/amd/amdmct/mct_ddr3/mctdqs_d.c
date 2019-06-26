@@ -1252,11 +1252,15 @@ void write_dram_dqs_training_pattern_fam15(struct MCTStatStruc *pMCTstat,
 	stop_dram_dqs_training_pattern_fam15(pMCTstat, pDCTstat, dct, Receiver);
 }
 
+#define LANE_DIFF 1
+
 /* DQS Position Training
  * Algorithm detailed in the Fam15h BKDG Rev. 3.14 section 2.10.5.8.4
  */
 static uint8_t TrainDQSRdWrPos_D_Fam15(struct MCTStatStruc *pMCTstat,
-				struct DCTStatStruc *pDCTstat, uint8_t dct, uint8_t receiver_start, uint8_t receiver_end, uint8_t lane_start, uint8_t lane_end)
+				       struct DCTStatStruc *pDCTstat,
+				       uint8_t dct, uint8_t receiver_start,
+				       uint8_t receiver_end, uint8_t lane_start)
 {
 	uint8_t dimm;
 	uint8_t lane;
@@ -1276,7 +1280,8 @@ static uint8_t TrainDQSRdWrPos_D_Fam15(struct MCTStatStruc *pMCTstat,
 	uint16_t current_read_dqs_delay[MAX_BYTE_LANES];
 	uint16_t current_write_dqs_delay[MAX_BYTE_LANES];
 	uint8_t passing_dqs_delay_found[MAX_BYTE_LANES];
-	uint8_t dqs_results_array[2][(lane_end - lane_start)][32][48];		/* [rank][lane][write step][read step + 16] */
+	/* [rank][lane][write step][read step + 16] */
+	uint8_t dqs_results_array[2][LANE_DIFF][32][48];
 
 	uint8_t last_pos = 0;
 	uint8_t cur_count = 0;
@@ -1285,6 +1290,8 @@ static uint8_t TrainDQSRdWrPos_D_Fam15(struct MCTStatStruc *pMCTstat,
 
 	uint32_t index_reg = 0x98;
 	uint32_t dev = pDCTstat->dev_dct;
+
+	uint8_t lane_end = lane_start + LANE_DIFF;
 
 	uint8_t lane_count;
 	lane_count = get_available_lane_count(pMCTstat, pDCTstat);
@@ -1734,7 +1741,10 @@ static void TrainDQSReceiverEnCyc_D_Fam15(struct MCTStatStruc *pMCTstat,
 					Calc_SetMaxRdLatency_D_Fam15(pMCTstat, pDCTstat, dct, 0);
 
 					/* 2.10.5.8.3 (4 B) */
-					dqs_results_array[current_phy_phase_delay[lane]] = TrainDQSRdWrPos_D_Fam15(pMCTstat, pDCTstat, dct, Receiver, Receiver + 2, lane, lane + 1);
+					dqs_results_array[current_phy_phase_delay[lane]] =
+						TrainDQSRdWrPos_D_Fam15(pMCTstat, pDCTstat, dct,
+									Receiver, Receiver + 2,
+									lane);
 
 					if (dqs_results_array[current_phy_phase_delay[lane]])
 						lane_success_count++;
@@ -1790,7 +1800,9 @@ static void TrainDQSReceiverEnCyc_D_Fam15(struct MCTStatStruc *pMCTstat,
 
 						/* Update hardware registers with final values */
 						write_dqs_receiver_enable_control_registers(current_phy_phase_delay, dev, dct, dimm, index_reg);
-						TrainDQSRdWrPos_D_Fam15(pMCTstat, pDCTstat, dct, Receiver, Receiver + 2, lane, lane + 1);
+						TrainDQSRdWrPos_D_Fam15(pMCTstat, pDCTstat, dct,
+									Receiver, Receiver + 2,
+									lane);
 						break;
 					}
 					prev = dqs_results_array[current_phy_phase_delay[lane]];

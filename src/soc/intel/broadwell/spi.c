@@ -231,6 +231,8 @@ static void ich_set_bbar(uint32_t minaddr)
 	writel_(ichspi_bbar, cntlr.bbar);
 }
 
+#define MENU_BYTES member_size(struct ich9_spi_regs, opmenu)
+
 void spi_init(void)
 {
 	uint8_t *rcrb; /* Root Complex Register Block */
@@ -332,7 +334,7 @@ static void spi_setup_type(spi_transaction *trans)
 static int spi_setup_opcode(spi_transaction *trans)
 {
 	uint16_t optypes;
-	uint8_t opmenu[cntlr.menubytes];
+	uint8_t opmenu[MENU_BYTES];
 
 	trans->opcode = trans->out[0];
 	spi_use_out(trans, 1);
@@ -354,13 +356,12 @@ static int spi_setup_opcode(spi_transaction *trans)
 		return 0;
 
 	read_reg(cntlr.opmenu, opmenu, sizeof(opmenu));
-	for (opcode_index = 0; opcode_index < cntlr.menubytes;
-			opcode_index++) {
+	for (opcode_index = 0; opcode_index < ARRAY_SIZE(opmenu); opcode_index++) {
 		if (opmenu[opcode_index] == trans->opcode)
 			break;
 	}
 
-	if (opcode_index == cntlr.menubytes) {
+	if (opcode_index == ARRAY_SIZE(opmenu)) {
 		printk(BIOS_DEBUG, "ICH SPI: Opcode %x not found\n",
 			trans->opcode);
 		return -1;

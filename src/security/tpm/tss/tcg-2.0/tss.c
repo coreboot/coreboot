@@ -1,5 +1,6 @@
 /*
  * Copyright 2016 The Chromium OS Authors. All rights reserved.
+ * Copyright 2017-2019 Eltan B.V.
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file.
  */
@@ -364,5 +365,33 @@ uint32_t tlcl_disable_platform_hierarchy(void)
 	if (!response || response->hdr.tpm_code)
 		return TPM_E_INTERNAL_INCONSISTENCY;
 
+	return TPM_SUCCESS;
+}
+
+uint32_t tlcl_get_capability(TPM_CAP capability, uint32_t property,
+		uint32_t property_count,
+		TPMS_CAPABILITY_DATA *capability_data)
+{
+	struct tpm2_get_capability cmd;
+	struct tpm2_response *response;
+
+	cmd.capability = capability;
+	cmd.property = property;
+	cmd.propertyCount = property_count;
+
+	if (property_count > 1) {
+		printk(BIOS_ERR, "%s: property_count more than one not "
+		       "supported yet\n", __func__);
+		return TPM_E_IOERROR;
+	}
+
+	response = tpm_process_command(TPM2_GetCapability, &cmd);
+
+	if (!response) {
+		printk(BIOS_ERR, "%s: Command Failed\n", __func__);
+		return TPM_E_IOERROR;
+	}
+
+	memcpy(capability_data, &response->gc.cd, sizeof(TPMS_CAPABILITY_DATA));
 	return TPM_SUCCESS;
 }

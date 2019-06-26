@@ -1,4 +1,5 @@
 /* Copyright (c) 2013 The Chromium OS Authors. All rights reserved.
+ * Copyright (C) 2018-2019 Eltan B.V.
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file.
  */
@@ -64,6 +65,13 @@ uint32_t tlcl_get_permanent_flags(TPM_PERMANENT_FLAGS *pflags);
 uint32_t tlcl_define_space(uint32_t space_index, size_t space_size,
 			   const TPMA_NV nv_attributes,
 			   const uint8_t *nv_policy, size_t nv_policy_size);
+
+/*
+ * Issue TPM2_GetCapability command
+ */
+uint32_t tlcl_get_capability(TPM_CAP capability, uint32_t property,
+			     uint32_t property_count,
+			     TPMS_CAPABILITY_DATA *capability_data);
 
 /*
  * Makes tpm_process_command available for on top implementations of

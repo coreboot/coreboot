@@ -1,5 +1,6 @@
 /*
  * Copyright 2016 The Chromium OS Authors. All rights reserved.
+ * Copyright (c) 2018 Eltan B.V.
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file.
  */
@@ -12,6 +13,7 @@
 
 #include "tss_marshaling.h"
 #include <security/tpm/tss/vendor/cr50/cr50.h>
+#include <security/tpm/tss.h>
 
 static uint16_t tpm_tag CAR_GLOBAL;  /* Depends on the command type. */
 
@@ -419,6 +421,22 @@ static int unmarshal_get_capability(struct ibuf *ib,
 			pp = gcr->cd.data.tpmProperties.tpmProperty + i;
 			rc |= unmarshal_TPM_PT(ib, &pp->property);
 			rc |= ibuf_read_be32(ib, &pp->value);
+		}
+		break;
+	case TPM_CAP_PCRS:
+		if (ibuf_read_be32(ib, &gcr->cd.data.assignedPCR.count))
+			return -1;
+		if (gcr->cd.data.assignedPCR.count >
+		    ARRAY_SIZE(gcr->cd.data.assignedPCR.pcrSelections)) {
+			printk(BIOS_INFO, "%s:%s:%d - %d - too many properties\n",
+			       __FILE__, __func__, __LINE__,
+			      gcr->cd.data.assignedPCR.count);
+			return -1;
+		}
+		for (i = 0; i < gcr->cd.data.assignedPCR.count; i++) {
+			TPMS_PCR_SELECTION *pp =
+				&gcr->cd.data.assignedPCR.pcrSelections[i];
+			rc |= ibuf_read(ib, pp, sizeof(TPMS_PCR_SELECTION));
 		}
 		break;
 	default:

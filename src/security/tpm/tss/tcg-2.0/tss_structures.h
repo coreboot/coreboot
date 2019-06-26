@@ -22,6 +22,8 @@
 #define TPM2_RC_SUCCESS    0
 #define TPM2_RC_NV_DEFINED 0x14c
 
+#define HASH_COUNT 2 /* SHA-1 and SHA-256 are supported */
+
 /* Basic TPM2 types. */
 typedef uint16_t TPM_SU;
 typedef uint16_t TPM_ALG_ID;
@@ -144,7 +146,9 @@ struct tpm2_shutdown {
 };
 
 /* Various TPM capability types to use when querying the device. */
+/* Table 21 - TPM_CAP Constants */
 typedef uint32_t TPM_CAP;
+#define TPM_CAP_PCRS             ((TPM_CAP)0x00000005)
 #define TPM_CAP_TPM_PROPERTIES   ((TPM_CAP)0x00000006)
 
 typedef TPM_HANDLE TPMI_RH_NV_AUTH;
@@ -224,9 +228,29 @@ typedef struct {
 		      sizeof(TPMI_YES_NO) - sizeof(TPM_CAP) - sizeof(uint32_t))
 #define MAX_TPM_PROPERTIES  (MAX_CAP_DATA/sizeof(TPMS_TAGGED_PROPERTY))
 
+#define IMPLEMENTATION_PCR            24
+#define PLATFORM_PCR                  24
+
+#define PCR_SELECT_MIN                (ALIGN_UP(PLATFORM_PCR, 8)/8)
+#define PCR_SELECT_MAX                (ALIGN_UP(IMPLEMENTATION_PCR, 8)/8)
+
 /* Somewhat arbitrary, leave enough room for command wrappers. */
 #define MAX_NV_BUFFER_SIZE (TPM_BUFFER_SIZE - sizeof(struct tpm_header) - 50)
 
+/* Table 81 - TPMS_PCR_SELECTION Structure */
+typedef struct {
+	TPMI_ALG_HASH   hash;
+	uint8_t         sizeofSelect;
+	uint8_t         pcrSelect[PCR_SELECT_MAX];
+} __packed TPMS_PCR_SELECTION;
+
+/* Table 98 - TPML_PCR_SELECTION Structure */
+typedef struct {
+	uint32_t           count;
+	TPMS_PCR_SELECTION pcrSelections[HASH_COUNT];
+} __packed TPML_PCR_SELECTION;
+
+/* Table 100 - TPML_TAGGED_TPM_PROPERTY Structure */
 typedef struct {
 	uint32_t              count;
 	TPMS_TAGGED_PROPERTY  tpmProperty[MAX_TPM_PROPERTIES];
@@ -234,6 +258,7 @@ typedef struct {
 
 typedef union {
 	TPML_TAGGED_TPM_PROPERTY  tpmProperties;
+	TPML_PCR_SELECTION        assignedPCR;
 } TPMU_CAPABILITIES;
 
 typedef struct {

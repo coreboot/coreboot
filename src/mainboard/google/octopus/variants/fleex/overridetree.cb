@@ -61,6 +61,9 @@ chip soc/intel/apollolake
 			.speed_mhz = 1,
 			.early_init = 1,
 		},
+		.i2c[0] = {
+			.speed = I2C_SPEED_FAST,
+		},
 		.i2c[5] = {
 			.speed = I2C_SPEED_FAST,
 			.rise_time_ns = 104,
@@ -80,7 +83,20 @@ chip soc/intel/apollolake
 	}"
 
 	device domain 0 on
-		device pci 16.0 off  end	# - I2C 0
+		device pci 16.0 on
+			chip drivers/i2c/hid
+				register "generic.hid" = ""WCOM50C1""
+				register "generic.desc" = ""WCOM Digitizer""
+				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPIO_139_IRQ)"
+				register "generic.reset_gpio" =
+							"ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_140)"
+				register "generic.reset_delay_ms" = "20"
+				register "generic.has_power_resource" = "1"
+				register "generic.probed" = "1"
+				register "hid_desc_reg_offset" = "0x1"
+				device i2c 0x9 on end
+			end
+		end	# - I2C 0
 		device pci 16.1 off  end	# - I2C 1
 		device pci 17.1 on
 			chip drivers/i2c/da7219

@@ -30,7 +30,8 @@ static const struct pad_config default_override_table[] = {
 
 	PAD_NC(GPIO_138, UP_20K),
 	PAD_NC(GPIO_139, UP_20K),
-	PAD_NC(GPIO_140, UP_20K),
+	/* GPIO_140 -- PEN_RESET */
+	PAD_CFG_GPO_IOSSTATE_IOSTERM(GPIO_140, 0, DEEP, NONE, Tx1RxDCRx0, DISPUPD),
 	PAD_NC(GPIO_143, UP_20K),
 	PAD_NC(GPIO_144, UP_20K),
 	PAD_NC(GPIO_145, UP_20K),

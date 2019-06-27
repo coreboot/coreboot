@@ -3,7 +3,7 @@ XCOMPILE=$(LIBPAYLOAD_DIR)/libpayload.xcompile
 # build libpayload and put .config file in $(CURDIR) instead of ../libpayload
 # to avoid pollute the libpayload source directory and possible conflicts
 LPOPTS=obj="$(CURDIR)/build" DESTDIR="$(CURDIR)" DOTCONFIG="$(CURDIR)/.config"
-CFLAGS += -Wall -Werror -Os -ffreestanding -nostdinc -nostdlib
+CFLAGS += -Wall -Wvla -Werror -Os -ffreestanding -nostdinc -nostdlib
 ifeq ($(CONFIG_ARCH_X86),y)
 TARGETARCH = i386
 endif

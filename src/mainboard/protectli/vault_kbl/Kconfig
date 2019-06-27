@@ -1,0 +1,59 @@
+if BOARD_PROTECTLI_FW6
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select BOARD_ROMSIZE_KB_8192
+	select HAVE_ACPI_RESUME
+	select HAVE_ACPI_TABLES
+	select INTEL_GMA_HAVE_VBT
+	select MAINBOARD_HAS_LIBGFXINIT
+	select SEABIOS_ADD_SERCON_PORT_FILE if PAYLOAD_SEABIOS
+	select SOC_INTEL_KABYLAKE
+	select SPI_FLASH_MACRONIX
+	select SUPERIO_ITE_IT8772F
+
+config IRQ_SLOT_COUNT
+	int
+	default 18
+
+config MAINBOARD_DIR
+	string
+	default "protectli/vault_kbl"
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "FW6"
+
+config DIMM_MAX
+	int
+	default 2
+
+config DIMM_SPD_SIZE
+	int
+	default 512
+
+config MAX_CPUS
+	int
+	default 4
+
+config VGA_BIOS_ID
+	string
+	default "8086,5916" # 8086,5906 for FW6A
+
+config PXE_ROM_ID
+	string
+	default "8086,150c"
+
+config CBFS_SIZE
+	hex
+	default 0x600000
+
+config ADD_FSP_BINARIES
+	bool
+	default y
+
+config FSP_USE_REPO
+	bool
+	default y
+
+endif

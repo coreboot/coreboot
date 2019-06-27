@@ -1,0 +1,6 @@
+Vendor name: Protectli
+Board name: FW6A/FW6B/FW6C
+Category: sbc
+ROM protocol: SPI
+ROM socketed: n
+Flashrom support: y

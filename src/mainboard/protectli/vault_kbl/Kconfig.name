@@ -1,0 +1,2 @@
+config BOARD_PROTECTLI_FW6
+	bool "FW6"

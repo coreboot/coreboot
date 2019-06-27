@@ -120,6 +120,7 @@ The boards in this section are not real mainboards, but emulators.
 ## Protectli
 
 - [FW2B / FW4B](protectli/fw2b_fw4b.md)
+- [FW6A / FW6B / FW6C](protectli/fw6.md)
 
 ## Roda
 

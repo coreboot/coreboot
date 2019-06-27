@@ -521,7 +521,7 @@ static void timestamp_set_tick_freq(unsigned long table_tick_freq_mhz)
 	debug("Timestamp tick frequency: %ld MHz\n", tick_freq_mhz);
 }
 
-u64 arch_convert_raw_ts_entry(u64 ts)
+static u64 arch_convert_raw_ts_entry(u64 ts)
 {
 	return ts / tick_freq_mhz;
 }
@@ -569,7 +569,7 @@ static uint64_t timestamp_print_parseable_entry(uint32_t id, uint64_t stamp,
 	return step_time;
 }
 
-uint64_t timestamp_print_entry(uint32_t id, uint64_t stamp, uint64_t prev_stamp)
+static uint64_t timestamp_print_entry(uint32_t id, uint64_t stamp, uint64_t prev_stamp)
 {
 	const char *name;
 	uint64_t step_time;
@@ -868,7 +868,7 @@ static void dump_cbmem_hex(void)
 	hexdump(unpack_lb64(cbmem.start), unpack_lb64(cbmem.size));
 }
 
-void rawdump(uint64_t base, uint64_t size)
+static void rawdump(uint64_t base, uint64_t size)
 {
 	const uint8_t *m;
 	struct mapping dump_mapping;
@@ -929,7 +929,7 @@ struct cbmem_id_to_name {
 static const struct cbmem_id_to_name cbmem_ids[] = { CBMEM_ID_TO_NAME_TABLE };
 
 #define MAX_STAGEx 10
-void cbmem_print_entry(int n, uint32_t id, uint64_t base, uint64_t size)
+static void cbmem_print_entry(int n, uint32_t id, uint64_t base, uint64_t size)
 {
 	const char *name;
 	char stage_x[20];

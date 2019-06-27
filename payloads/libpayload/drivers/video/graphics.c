@@ -183,6 +183,10 @@ int draw_box(const struct rect *box, const struct rgb_color *rgb)
 	struct vector top_left;
 	struct vector size;
 	struct vector p, t;
+
+	if (cbgfx_init())
+		return CBGFX_ERROR_INIT;
+
 	const uint32_t color = calculate_color(rgb, 0);
 	const struct scale top_left_s = {
 		.x = { .n = box->offset.x, .d = CANVAS_SCALE, },
@@ -192,9 +196,6 @@ int draw_box(const struct rect *box, const struct rgb_color *rgb)
 		.x = { .n = box->size.x, .d = CANVAS_SCALE, },
 		.y = { .n = box->size.y, .d = CANVAS_SCALE, }
 	};
-
-	if (cbgfx_init())
-		return CBGFX_ERROR_INIT;
 
 	transform_vector(&top_left, &canvas.size, &top_left_s, &canvas.offset);
 	transform_vector(&size, &canvas.size, &size_s, &vzero);

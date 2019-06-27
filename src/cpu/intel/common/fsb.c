@@ -46,6 +46,7 @@ static int get_fsb(void)
 		case 0x3a: /* IvyBridge BCLK fixed at 100MHz */
 		case 0x3c: /* Haswell BCLK fixed at 100MHz */
 		case 0x45: /* Haswell-ULT BCLK fixed at 100MHz */
+		case 0x4d: /* Rangeley BCLK fixed at 100MHz */
 			ret = 100;
 			break;
 		}

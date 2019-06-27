@@ -1,5 +1,11 @@
 comment "Hatch"
 
+config BOARD_GOOGLE_AKEMI
+	bool "-> Akemi"
+	select BOARD_GOOGLE_BASEBOARD_HATCH
+	select BOARD_ROMSIZE_KB_16384
+	select SOC_INTEL_COMETLAKE
+
 config BOARD_GOOGLE_HATCH
 	bool "->  Hatch"
 	select BOARD_GOOGLE_BASEBOARD_HATCH

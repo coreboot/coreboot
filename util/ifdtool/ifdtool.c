@@ -1067,7 +1067,7 @@ static void unlock_descriptor(const char *filename, char *image, int size)
 }
 
 /* Set the AltMeDisable (or HAP for >= IFD_VERSION_2) */
-void fpsba_set_altmedisable(fpsba_t *fpsba, fmsba_t *fmsba, bool altmedisable)
+static void fpsba_set_altmedisable(fpsba_t *fpsba, fmsba_t *fmsba, bool altmedisable)
 {
 	if (ifd_version >= IFD_VERSION_2) {
 		printf("%sting the HAP bit to %s Intel ME...\n",
@@ -1107,7 +1107,7 @@ void fpsba_set_altmedisable(fpsba_t *fpsba, fmsba_t *fmsba, bool altmedisable)
 	}
 }
 
-void inject_region(const char *filename, char *image, int size,
+static void inject_region(const char *filename, char *image, int size,
 		   unsigned int region_type, const char *region_fname)
 {
 	frba_t *frba = find_frba(image, size);
@@ -1173,7 +1173,7 @@ void inject_region(const char *filename, char *image, int size,
 	write_image(filename, image, size);
 }
 
-unsigned int next_pow2(unsigned int x)
+static unsigned int next_pow2(unsigned int x)
 {
 	unsigned int y = 1;
 	if (x == 0)
@@ -1200,7 +1200,7 @@ static int regions_collide(const region_t *r1, const region_t *r2)
 	return !(r1->limit < r2->base || r1->base > r2->limit);
 }
 
-void new_layout(const char *filename, char *image, int size,
+static void new_layout(const char *filename, char *image, int size,
 		const char *layout_fname)
 {
 	FILE *romlayout;

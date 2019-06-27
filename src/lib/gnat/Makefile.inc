@@ -25,6 +25,7 @@ ADAFLAGS_libgnat-$(1) := \
 	-gnatpg \
 	-I$$(src)/lib/gnat/ \
 	$$(GCC_ADAFLAGS_$(1)) \
+	-Werror \
 
 libgnat-$(1)-y += a-unccon.ads
 libgnat-$(1)-y += ada.ads

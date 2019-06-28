@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2014-2016 Intel Corporation
- * Copyright (C) 2018 Eltan B.V.
+ * Copyright (C) 2018-2019 Eltan B.V.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,10 +52,7 @@ void raminit(struct romstage_params *params)
 	VPD_DATA_REGION *vpd_ptr;
 	UPD_DATA_REGION *upd_ptr;
 	int fsp_verification_failure = 0;
-#if CONFIG(DISPLAY_HOBS)
-	unsigned long int data;
 	EFI_PEI_HOB_POINTERS hob_ptr;
-#endif
 
 	/*
 	 * Find and copy the UPD region to the stack so the platform can modify
@@ -139,7 +136,7 @@ void raminit(struct romstage_params *params)
 	fsp_memory = get_next_resource_hob(&fsp_reserved_guid, hob_list_ptr);
 	if (fsp_memory == NULL) {
 		fsp_verification_failure = 1;
-		printk(BIOS_DEBUG,
+		printk(BIOS_ERR,
 			"7.2: FSP_RESERVED_MEMORY_RESOURCE_HOB missing!\n");
 	} else {
 		fsp_reserved_bytes = fsp_memory->ResourceLength;
@@ -190,64 +187,36 @@ void raminit(struct romstage_params *params)
 	if (memory_info_hob == NULL) {
 		printk(BIOS_ERR, "FSP_SMBIOS_MEMORY_INFO HOB missing!\n");
 		fsp_verification_failure = 1;
-	} else {
-		printk(BIOS_DEBUG,
-			"FSP_SMBIOS_MEMORY_INFO HOB: 0x%p\n",
-			memory_info_hob);
 	}
 
-#if CONFIG(DISPLAY_HOBS)
+	if (hob_list_ptr == NULL)
+		die_with_post_code(POST_RAM_FAILURE,
+			"ERROR - HOB pointer is NULL!\n");
+
 	/*
 	 * Verify that FSP is generating the required HOBs:
 	 *	7.1: FSP_BOOTLOADER_TEMP_MEMORY_HOB only produced for FSP 1.0
 	 *	7.2: FSP_RESERVED_MEMORY_RESOURCE_HOB verified above
 	 *	7.3: FSP_NON_VOLATILE_STORAGE_HOB only produced when
-	 *          new NVS data is generated, verified below
+	 *	     new NVS data is generated, verified below
 	 *	7.4: FSP_BOOTLOADER_TOLUM_HOB verified above
 	 *	7.5: EFI_PEI_GRAPHICS_INFO_HOB produced by SiliconInit
 	 *	FSP_SMBIOS_MEMORY_INFO HOB verified above
 	 */
-	if (cbmem_root != NULL) {
-		printk(BIOS_DEBUG,
-			"7.4: FSP_BOOTLOADER_TOLUM_HOB: 0x%p\n",
-			cbmem_root);
-		data = cbmem_root->PhysicalStart;
-		printk(BIOS_DEBUG, "    0x%016lx: PhysicalStart\n", data);
-		data = cbmem_root->ResourceLength;
-		printk(BIOS_DEBUG, "    0x%016lx: ResourceLength\n", data);
-	}
 	hob_ptr.Raw = get_next_guid_hob(&mrc_guid, hob_list_ptr);
-	if (hob_ptr.Raw == NULL) {
-		if (params->saved_data == NULL) {
-			printk(BIOS_ERR, "7.3: FSP_NON_VOLATILE_STORAGE_HOB missing!\n");
-			fsp_verification_failure = 1;
-		}
-	} else {
-		printk(BIOS_DEBUG,
-			"7.3: FSP_NON_VOLATILE_STORAGE_HOB: 0x%p\n",
-			hob_ptr.Raw);
-	}
-	if (fsp_memory != NULL) {
-		printk(BIOS_DEBUG,
-			"7.2: FSP_RESERVED_MEMORY_RESOURCE_HOB: 0x%p\n",
-			fsp_memory);
-		data = fsp_memory->PhysicalStart;
-		printk(BIOS_DEBUG, "    0x%016lx: PhysicalStart\n", data);
-		data = fsp_memory->ResourceLength;
-		printk(BIOS_DEBUG, "    0x%016lx: ResourceLength\n", data);
+	if ((hob_ptr.Raw == NULL) && (params->saved_data == NULL)) {
+		printk(BIOS_ERR, "7.3: FSP_NON_VOLATILE_STORAGE_HOB missing!\n");
+		fsp_verification_failure = 1;
 	}
 
 	/* Verify all the HOBs are present */
 	if (fsp_verification_failure)
-		printk(BIOS_DEBUG,
+		printk(BIOS_ERR,
 			"ERROR - Missing one or more required FSP HOBs!\n");
 
 	/* Display the HOBs */
-	if (hob_list_ptr != NULL)
+	if (CONFIG(DISPLAY_HOBS))
 		print_hob_type_structure(0, hob_list_ptr);
-	else
-		printk(BIOS_ERR, "ERROR - HOB pointer is NULL!\n");
-#endif
 
 	/* Get the address of the CBMEM region for the FSP reserved memory */
 	fsp_reserved_memory_area = cbmem_find(CBMEM_ID_FSP_RESERVED_MEMORY);
@@ -258,7 +227,7 @@ void raminit(struct romstage_params *params)
 	if ((fsp_memory != NULL) && (cbmem_root != NULL) &&
 		(cbmem_root->PhysicalStart <= fsp_memory->PhysicalStart)) {
 		fsp_verification_failure = 1;
-		printk(BIOS_DEBUG,
+		printk(BIOS_ERR,
 			"ERROR - FSP reserved memory above CBMEM root!\n");
 	}
 
@@ -267,13 +236,13 @@ void raminit(struct romstage_params *params)
 		(fsp_memory->PhysicalStart !=
 			(unsigned int)fsp_reserved_memory_area))) {
 		fsp_verification_failure = 1;
-		printk(BIOS_DEBUG, "ERROR - Reserving FSP memory area!\n");
+		printk(BIOS_ERR, "ERROR - Reserving FSP memory area!\n");
 #if CONFIG(HAVE_SMI_HANDLER)
 		if (cbmem_root != NULL) {
 			size_t delta_bytes = (unsigned int)smm_base
 				- cbmem_root->PhysicalStart
 				- cbmem_root->ResourceLength;
-			printk(BIOS_DEBUG,
+			printk(BIOS_ERR,
 				"0x%08x: Chipset reserved bytes reported by FSP\n",
 				(unsigned int)delta_bytes);
 			die_with_post_code(POST_INVALID_VENDOR_BINARY,
@@ -292,7 +261,7 @@ void raminit(struct romstage_params *params)
 
 	/* Locate the memory configuration data to speed up the next reboot */
 	mrc_hob = get_next_guid_hob(&mrc_guid, hob_list_ptr);
-	if (mrc_hob == NULL)
+	if ((mrc_hob == NULL) && CONFIG(DISPLAY_HOBS))
 		printk(BIOS_DEBUG,
 			"Memory Configuration Data Hob not present\n");
 	else if (!vboot_recovery_mode_enabled()) {

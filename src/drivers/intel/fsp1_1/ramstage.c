@@ -52,19 +52,16 @@ static void smm_memory_map(void)
 static void display_hob_info(FSP_INFO_HEADER *fsp_info_header)
 {
 	const EFI_GUID graphics_info_guid = EFI_PEI_GRAPHICS_INFO_HOB_GUID;
-	int missing_hob = 0;
 	void *hob_list_ptr = get_hob_list();
-
-	if (!CONFIG(DISPLAY_HOBS))
-		return;
 
 	/* Verify the HOBs */
 	if (hob_list_ptr == NULL) {
-		printk(BIOS_INFO, "ERROR - HOB pointer is NULL!\n");
+		printk(BIOS_ERR, "ERROR - HOB pointer is NULL!\n");
 		return;
 	}
 
-	print_hob_type_structure(0, hob_list_ptr);
+	if (CONFIG(DISPLAY_HOBS))
+		print_hob_type_structure(0, hob_list_ptr);
 
 	/*
 	 * Verify that FSP is generating the required HOBs:
@@ -77,14 +74,12 @@ static void display_hob_info(FSP_INFO_HEADER *fsp_info_header)
 	 *	FSP_SMBIOS_MEMORY_INFO HOB verified by raminit
 	 */
 	if ((fsp_info_header->ImageAttribute & GRAPHICS_SUPPORT_BIT) &&
-		!get_next_guid_hob(&graphics_info_guid, hob_list_ptr)) {
-		printk(BIOS_INFO, "7.5: EFI_PEI_GRAPHICS_INFO_HOB missing!\n");
-		missing_hob = 1;
-	}
-
-	if (missing_hob)
-		printk(BIOS_INFO,
+		!get_next_guid_hob(&graphics_info_guid, hob_list_ptr) &&
+		CONFIG(DISPLAY_HOBS)) {
+		printk(BIOS_ERR, "7.5: EFI_PEI_GRAPHICS_INFO_HOB missing!\n");
+		printk(BIOS_ERR,
 		       "ERROR - Missing one or more required FSP HOBs!\n");
+	}
 }
 
 void fsp_run_silicon_init(FSP_INFO_HEADER *fsp_info_header, int is_s3_wakeup)

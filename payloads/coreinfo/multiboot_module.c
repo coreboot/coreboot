@@ -32,7 +32,7 @@ static struct {
 
 static int tables_good = 0;
 
-int multiboot_module_redraw(WINDOW *win)
+static int multiboot_module_redraw(WINDOW *win)
 {
 	int row = 2;
 	int i;

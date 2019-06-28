@@ -37,7 +37,7 @@ static struct {
 
 static int tables_good = 0;
 
-int coreboot_module_redraw(WINDOW *win)
+static int coreboot_module_redraw(WINDOW *win)
 {
 	int row = 2;
 	int i;

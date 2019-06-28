@@ -27,8 +27,7 @@ struct coreinfo_module {
 	int (*handle) (int);
 };
 
-extern void docpuid(int, unsigned long *, unsigned long *, unsigned long *,
-		    unsigned long *);
+extern void docpuid(uint32_t idx, uint32_t *eax, uint32_t *ebx, uint32_t *ecx, uint32_t *edx);
 
 void print_module_title(WINDOW *win, const char *title);
 

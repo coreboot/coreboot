@@ -290,7 +290,7 @@ config HAVE_RAMPAYLOAD
 
 config RAMPAYLOAD
 	bool "Enable coreboot flow without executing ramstage"
-	default n
+	default y if ARCH_X86
 	depends on HAVE_RAMPAYLOAD
 	help
 	  If this option is enabled, coreboot flow will skip ramstage

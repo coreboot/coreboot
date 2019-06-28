@@ -238,8 +238,6 @@ void romstage_common(struct romstage_params *params)
 	romstage_handoff_init(prev_sleep_state == ACPI_S3);
 }
 
-#define ROMSTAGE_RAM_STACK_SIZE 0x5000
-
 /* setup_stack_and_mtrrs() determines the stack to use after
  * cache-as-ram is torn down as well as the MTRR settings to use. */
 static void platform_enter_postcar(void)
@@ -247,7 +245,7 @@ static void platform_enter_postcar(void)
 	struct postcar_frame pcf;
 	uintptr_t top_of_ram;
 
-	if (postcar_frame_init(&pcf, ROMSTAGE_RAM_STACK_SIZE))
+	if (postcar_frame_init(&pcf, 0))
 		die("Unable to initialize postcar frame.\n");
 	/* Cache the ROM as WP just below 4GiB. */
 	postcar_frame_add_romcache(&pcf, MTRR_TYPE_WRPROT);

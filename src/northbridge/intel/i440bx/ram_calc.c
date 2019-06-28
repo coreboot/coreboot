@@ -15,6 +15,7 @@
 
 #define __SIMPLE_DEVICE__
 
+#include <arch/cpu.h>
 #include <device/pci_ops.h>
 #include <cbmem.h>
 #include <console/console.h>
@@ -67,8 +68,6 @@ void *cbmem_top(void)
 	return (void *)tom;
 }
 
-#define ROMSTAGE_RAM_STACK_SIZE 0x5000
-
 /* platform_enter_postcar() determines the stack to use after
  * cache-as-ram is torn down as well as the MTRR settings to use,
  * and continues execution in postcar stage. */
@@ -77,7 +76,7 @@ void platform_enter_postcar(void)
 	struct postcar_frame pcf;
 	uintptr_t top_of_ram;
 
-	if (postcar_frame_init(&pcf, ROMSTAGE_RAM_STACK_SIZE))
+	if (postcar_frame_init(&pcf, 0))
 		die("Unable to initialize postcar frame.\n");
 
 	/* Cache the ROM as WP just below 4GiB. */

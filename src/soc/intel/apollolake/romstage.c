@@ -240,7 +240,7 @@ asmlinkage void car_stage_entry(void)
 	else
 		printk(BIOS_ERR, "Failed to determine variable data\n");
 
-	if (postcar_frame_init(&pcf, 1*KiB))
+	if (postcar_frame_init(&pcf, 0))
 		die("Unable to initialize postcar frame.\n");
 
 	mainboard_save_dimm_info();

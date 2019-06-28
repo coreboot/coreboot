@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/cpu.h>
 #include <cpu/x86/mtrr.h>
 #include <cbmem.h>
 #include <console/console.h>
@@ -146,7 +147,7 @@ asmlinkage void car_stage_entry(void)
 	pmc_set_disb();
 	if (!s3wake)
 		save_dimm_info();
-	if (postcar_frame_init(&pcf, 1 * KiB))
+	if (postcar_frame_init(&pcf, 0))
 		die("Unable to initialize postcar frame.\n");
 
 	/*

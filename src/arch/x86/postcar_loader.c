@@ -48,6 +48,15 @@ int postcar_frame_init(struct postcar_frame *pcf, size_t stack_size)
 {
 	void *stack;
 
+	/*
+	 * Use default postcar stack size of 4 KiB. This value should
+	 * not be decreased, because if mainboards use vboot, 1 KiB will
+	 * not be enough anymore.
+	 */
+
+	if (stack_size == 0)
+		stack_size = 4 * KiB;
+
 	stack = cbmem_add(CBMEM_ID_ROMSTAGE_RAM_STACK, stack_size);
 	if (stack == NULL) {
 		printk(BIOS_ERR, "Couldn't add %zd byte stack in cbmem.\n",

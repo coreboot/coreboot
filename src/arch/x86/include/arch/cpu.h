@@ -309,8 +309,9 @@ struct postcar_frame {
 };
 
 /*
- * Initialize postcar_frame object allocating stack size in cbmem
- * with the provided size. Returns 0 on success, < 0 on error.
+ * Initialize postcar_frame object allocating stack from cbmem,
+ * with stack_size == 0, default 4 KiB is allocated.
+ * Returns 0 on success, < 0 on error.
  */
 int postcar_frame_init(struct postcar_frame *pcf, size_t stack_size);
 

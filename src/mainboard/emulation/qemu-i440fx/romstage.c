@@ -14,6 +14,7 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/cpu.h>
 #include <stdint.h>
 #include <cbmem.h>
 #include <console/console.h>
@@ -31,11 +32,7 @@ asmlinkage void car_stage_entry(void)
 
 	timestamp_add_now(TS_START_ROMSTAGE);
 
-	/**
-	 * The LZMA decoder needs about 4 KiB stack.
-	 * Leave 1 KiB stack for general postcar code.
-	 */
-	if (postcar_frame_init(&pcf, 5 * KiB))
+	if (postcar_frame_init(&pcf, 0))
 		die("Unable to initialize postcar frame.\n");
 
 	/**

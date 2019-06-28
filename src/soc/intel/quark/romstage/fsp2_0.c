@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/cpu.h>
 #include <arch/symbols.h>
 #include <console/console.h>
 #include <cbmem.h>
@@ -61,7 +62,7 @@ asmlinkage void car_stage_c_entry(void)
 	/* Initialize the PCIe bridges */
 	pcie_init();
 
-	if (postcar_frame_init(&pcf, 1*KiB))
+	if (postcar_frame_init(&pcf, 0))
 		die("Unable to initialize postcar frame.\n");
 
 	/* Locate the top of RAM */

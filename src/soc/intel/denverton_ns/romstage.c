@@ -14,6 +14,7 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/cpu.h>
 #include <arch/io.h>
 #include <cbmem.h>
 #include <cf9_reset.h>
@@ -161,7 +162,7 @@ asmlinkage void car_stage_entry(void)
 	display_fsp_smbios_memory_info_hob();
 #endif
 
-	if (postcar_frame_init(&pcf, 1 * KiB))
+	if (postcar_frame_init(&pcf, 0))
 		die("Unable to initialize postcar frame.\n");
 
 	/*

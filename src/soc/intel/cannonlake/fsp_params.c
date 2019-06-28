@@ -285,6 +285,9 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 
 	/* Set Debug serial port */
 	params->SerialIoDebugUartNumber = CONFIG_UART_FOR_CONSOLE;
+#if !CONFIG(SOC_INTEL_COMETLAKE)
+	params->SerialIoEnableDebugUartAfterPost = CONFIG_INTEL_LPSS_UART_FOR_CONSOLE;
+#endif
 
 	/* Enable CNVi Wifi if enabled in device tree */
 	dev = pcidev_path_on_root(PCH_DEVFN_CNViWIFI);

@@ -195,7 +195,7 @@ static int parse_header(void *addr, int len)
 	/* Now, walk the tables. */
 	ptr += header->header_bytes;
 
-	for (i = 0; i < header->table_entries; i++) {
+	for (u32 j = 0; j < header->table_entries; j++) {
 		struct cb_record *rec = (struct cb_record *)ptr;
 
 		switch (rec->tag) {

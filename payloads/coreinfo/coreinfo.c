@@ -132,7 +132,7 @@ static void print_time_and_date(void)
 
 static void print_menu(void)
 {
-	int i, j;
+	int j;
 	char menu[80];
 	char *ptr = menu;
 
@@ -140,11 +140,11 @@ static void print_menu(void)
 	for (j = 0; j < SCREEN_X; j++)
 		waddch(menuwin, ' ');
 
-	for (i = 0; i < ARRAY_SIZE(categories); i++) {
+	for (size_t i = 0; i < ARRAY_SIZE(categories); i++) {
 		if (categories[i].count == 0)
 			continue;
 
-		ptr += sprintf(ptr, "F%d: %s ", i + 1, categories[i].name);
+		ptr += sprintf(ptr, "F%zu: %s ", i + 1, categories[i].name);
 	}
 
 	mvwprintw(menuwin, 1, 0, menu);
@@ -215,9 +215,9 @@ static void handle_category_key(struct coreinfo_cat *cat, int key)
 
 static void print_no_modules_selected(void)
 {
-	int height = getmaxy(stdscr), i;
+	int height = getmaxy(stdscr);
 
-	for (i = 0; i < ARRAY_SIZE(categories); i++)
+	for (size_t i = 0; i < ARRAY_SIZE(categories); i++)
 		if (categories[i].count > 0)
 			return;
 
@@ -227,9 +227,7 @@ static void print_no_modules_selected(void)
 
 static int first_nonempty_category(void)
 {
-	int i;
-
-	for (i = 0; i < ARRAY_SIZE(categories); i++)
+	for (size_t i = 0; i < ARRAY_SIZE(categories); i++)
 		if (categories[i].count > 0)
 			return i;
 	return 0;
@@ -268,7 +266,7 @@ static void loop(void)
 		if (key >= '1' && key <= '9')
 			ch = key - '1';
 
-		if (ch >= 0 && ch <= ARRAY_SIZE(categories)) {
+		if (ch >= 0 && (unsigned int)ch <= ARRAY_SIZE(categories)) {
 			if (ch == ARRAY_SIZE(categories))
 				continue;
 			if (categories[ch].count == 0)
@@ -289,7 +287,7 @@ static void loop(void)
 
 int main(void)
 {
-	int i, j;
+	int j;
 
 	if (CONFIG(LP_USB))
 		usb_initialize();
@@ -310,7 +308,7 @@ int main(void)
 
 	werase(modwin);
 
-	for (i = 0; i < ARRAY_SIZE(categories); i++) {
+	for (size_t i = 0; i < ARRAY_SIZE(categories); i++) {
 		for (j = 0; j < categories[i].count; j++)
 			categories[i].modules[j]->init();
 	}

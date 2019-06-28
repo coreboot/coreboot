@@ -29,9 +29,7 @@ static unsigned long tick_freq_mhz;
 
 static const char *timestamp_name(uint32_t id)
 {
-	int i;
-
-	for (i = 0; i < ARRAY_SIZE(timestamp_ids); i++) {
+	for (size_t i = 0; i < ARRAY_SIZE(timestamp_ids); i++) {
 		if (timestamp_ids[i].id == id)
 			return timestamp_ids[i].name;
 	}
@@ -184,7 +182,7 @@ static int timestamps_module_init(void)
 	prev_stamp = base_time;
 
 	total_time = 0;
-	for (int i = 0; i < n_entries; i++) {
+	for (u32 i = 0; i < n_entries; i++) {
 		uint64_t stamp;
 		const struct timestamp_entry *tse = &timestamps->entries[i];
 

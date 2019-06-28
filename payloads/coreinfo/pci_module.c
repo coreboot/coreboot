@@ -51,7 +51,7 @@ static void swap(struct pci_devices *a, struct pci_devices *b)
 
 static int partition(struct pci_devices *list, int len)
 {
-	int val = list[len / 2].device;
+	pcidev_t val = list[len / 2].device;
 	int index = 0;
 	int i;
 

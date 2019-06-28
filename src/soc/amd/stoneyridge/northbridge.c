@@ -347,10 +347,15 @@ static struct device_operations northbridge_operations = {
 	.ops_pci	  = 0,
 };
 
+static const unsigned short pci_device_ids[] = {
+	PCI_DEVICE_ID_AMD_15H_MODEL_606F_NB_HT,
+	PCI_DEVICE_ID_AMD_15H_MODEL_707F_NB_HT,
+	0 };
+
 static const struct pci_driver family15_northbridge __pci_driver = {
 	.ops	= &northbridge_operations,
 	.vendor = PCI_VENDOR_ID_AMD,
-	.device = PCI_DEVICE_ID_AMD_15H_MODEL_707F_NB_HT,
+	.devices = pci_device_ids,
 };
 
 /*
@@ -464,9 +469,13 @@ void domain_set_resources(struct device *dev)
 u32 map_oprom_vendev(u32 vendev)
 {
 	u32 new_vendev;
-	new_vendev =
-		((vendev >= 0x100298e0) && (vendev <= 0x100298ef)) ?
-				0x100298e0 : vendev;
+
+	if ((vendev >= 0x100298e0) && (vendev <= 0x100298ef))
+		new_vendev = 0x100298e0;
+	else if ((vendev >= 0x10029870) && (vendev <= 0x1002987f))
+		new_vendev = 0x10029870;
+	else
+		new_vendev = vendev;
 
 	if (vendev != new_vendev)
 		printk(BIOS_NOTICE, "Mapping PCI device %8x to %8x\n",

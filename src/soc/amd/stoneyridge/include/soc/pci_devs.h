@@ -39,17 +39,24 @@
 #define IOMMU_DEVFN		PCI_DEVFN(IOMMU_DEV, IOMMU_FUNC)
 #define SOC_IOMMU_DEV		_SOC_DEV(IOMMU_DEV, IOMMU_FUNC)
 
-/* Internal Graphics */
+/*
+ * Internal Graphics
+ * Device IDs subject to SKU/OPN variation
+ * GFX_DEVID for merlinfalcon		PCI_DEVICE_ID_AMD_15H_MODEL_606F_GFX
+ * GFX_DEVID for stoneyridge		PCI_DEVICE_ID_AMD_15H_MODEL_707F_GFX
+ */
 #define GFX_DEV			0x1
 #define GFX_FUNC		0
-#define GFX_DEVID		0x98e4 /* subject to SKU/OPN variation */
 #define GFX_DEVFN		PCI_DEVFN(GFX_DEV, GFX_FUNC)
 #define SOC_GFX_DEV		_SOC_DEV(GFX_DEV, GFX_FUNC)
 
-/* HD Audio 0 */
+/* HD Audio 0
+ * Device IDs
+ * HDA0_DEVID			PCI_DEVICE_ID_AMD_15H_MODEL_606F_HDA
+ * HDA0_DEVID			PCI_DEVICE_ID_AMD_15H_MODEL_707F_HDA
+ */
 #define HDA0_DEV		0x1
 #define HDA0_FUNC		1
-#define HDA0_DEVID		0x15b3
 #define HDA0_DEVFN		PCI_DEVFN(HDA0_DEV, HDA0_FUNC)
 #define SOC_HDA0_DEV		_SOC_DEV(HDA0_DEV, HDA0_FUNC)
 
@@ -109,45 +116,63 @@
 #define HDA1_DEVFN		PCI_DEVFN(HDA1_DEV, HDA1_FUNC)
 #define SOC_HDA1_DEV		_SOC_DEV(HDA1_DEV, HDA1_FUNC)
 
-/* HT Configuration */
+/* HT Configuration
+ * Device IDs
+ * HT_DEVID for merlinfalcon	PCI_DEVICE_ID_AMD_15H_MODEL_606F_NB_HT
+ * HT_DEVID for stoneyridge	PCI_DEVICE_ID_AMD_15H_MODEL_707F_NB_HT
+ */
 #define HT_DEV			0x18
 #define HT_FUNC			0
-#define HT_DEVID		0x15b0
 #define HT_DEVFN		PCI_DEVFN(HT_DEV, HT_FUNC)
 #define SOC_HT_DEV		_SOC_DEV(HT_DEV, HT_FUNC)
 
-/* Address Maps */
+/* Address Maps
+ * Device IDs
+ * ADDR_DEVID for merlinfalcon	0x1571
+ * ADDR_DEVID for stoneyridge	0x15b1
+ */
 #define ADDR_DEV		0x18
 #define ADDR_FUNC		1
-#define ADDR_DEVID		0x15b1
 #define ADDR_DEVFN		PCI_DEVFN(ADDR_DEV, ADDR_FUNC)
 #define SOC_ADDR_DEV		_SOC_DEV(ADDR_DEV, ADDR_FUNC)
 
-/* DRAM Configuration */
+/* DRAM Configuration
+ * Device IDs
+ * DCT_DEVID for merlinfalcon	0x1572
+ * DCT_DEVID for stoneyridge	0x15b2
+ */
 #define DCT_DEV			0x18
 #define DCT_FUNC		2
-#define DCT_DEVID		0x15b2
 #define DCT_DEVFN		PCI_DEVFN(DCT_DEV, DCT_FUNC)
 #define SOC_DCT_DEV		_SOC_DEV(DCT_DEV, DCT_FUNC)
 
-/* Misc. Configuration */
+/* Misc. Configuration
+ * Device IDs
+ * MISC_DEVID for merlinfalcon	0x1573
+ * MISC_DEVID for stoneyridge	0x15b3
+ */
 #define MISC_DEV		0x18
 #define MISC_FUNC		3
-#define MISC_DEVID		0x15b3
 #define MISC_DEVFN		PCI_DEVFN(MISC_DEV, MISC_FUNC)
 #define SOC_MISC_DEV		_SOC_DEV(MISC_DEV, MISC_FUNC)
 
-/* PM Configuration */
+/* PM Configuration
+ * Device IDs
+ * PM_DEVID for merlinfalcon	0x1574
+ * PM_DEVID for stoneyridge	0x15b4
+ */
 #define PM_DEV			0x18
 #define PM_FUNC			4
-#define PM_DEVID		0x15b4
 #define PM_DEVFN		PCI_DEVFN(PM_DEV, PM_FUNC)
 #define SOC_PM_DEV		_SOC_DEV(PM_DEV, PM_FUNC)
 
-/* Northbridge Configuration */
+/* Northbridge Configuration
+ * Device IDs
+ * NB_DEVID for merlinfalcon	0x1575
+ * NB_DEVID for stoneyridge	0x15b5
+ */
 #define NB_DEV			0x18
 #define NB_FUNC			5
-#define NB_DEVID		0x15b5
 #define NB_DEVFN		PCI_DEVFN(NB_DEV, NB_FUNC)
 #define SOC_NB_DEV		_SOC_DEV(NB_DEV, NB_FUNC)
 

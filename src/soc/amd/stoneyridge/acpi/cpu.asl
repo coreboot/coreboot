@@ -34,7 +34,15 @@ External (\_PR.P007, DeviceObj)
 /* Return a package containing enabled processor entries */
 Method (PPKG)
 {
-	If (LGreaterEqual (\PCNT, 2)) {
+	If (LGreaterEqual (\PCNT, 4)) {
+		Return (Package ()
+		{
+			\_PR.P000,
+			\_PR.P001,
+			\_PR.P002,
+			\_PR.P003
+		})
+	} ElseIf (LGreaterEqual (\PCNT, 2)) {
 		Return (Package ()
 		{
 			\_PR.P000,

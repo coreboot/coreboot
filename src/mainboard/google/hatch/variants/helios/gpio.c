@@ -88,7 +88,7 @@ static const struct pad_config gpio_table[] = {
 	/* H5  : I2C2_SCL ==> NC */
 	PAD_NC(GPP_H5, NONE),
 	/* H13 : M2_SKT2_CFG1 ==> SPKR_RST_L */
-	PAD_CFG_GPO(GPP_H13, 0, PLTRST),
+	PAD_CFG_GPO(GPP_H13, 1, DEEP),
 	/* H14 : M2_SKT2_CFG2 ==> TOUCHSCREEN_STOP_L */
 	PAD_CFG_GPO(GPP_H14, 0, PLTRST),
 	/* H19 : TIMESYNC[0] ==> MEM_STRAP_0 */

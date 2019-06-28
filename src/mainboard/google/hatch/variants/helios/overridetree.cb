@@ -124,6 +124,34 @@ chip soc/intel/cannonlake
 				register "property_list[0].integer" = "1"
 				device i2c 1a on end
 			end
+			chip drivers/i2c/generic
+				register "hid" = ""10EC1011""
+				register "desc" = ""RT1011 Tweeter Left Speaker Amp""
+				register "uid" = "0"
+				register "name" = ""TL""
+				device i2c 38 on end
+			end
+			chip drivers/i2c/generic
+				register "hid" = ""10EC1011""
+				register "desc" = ""RT1011 Tweeter Right Speaker Amp""
+				register "uid" = "1"
+				register "name" = ""TR""
+				device i2c 39 on end
+			end
+			chip drivers/i2c/generic
+				register "hid" = ""10EC1011""
+				register "desc" = ""RT1011 Woofer Left Speaker Amp""
+				register "uid" = "2"
+				register "name" = ""WL""
+				device i2c 3a on end
+			end
+			chip drivers/i2c/generic
+				register "hid" = ""10EC1011""
+				register "desc" = ""RT1011 Woofer Right Speaker Amp""
+				register "uid" = "3"
+				register "name" = ""WR""
+				device i2c 3b on end
+			end
 		end #I2C #4
 	end
 end

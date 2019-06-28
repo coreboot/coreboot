@@ -79,6 +79,9 @@ uint32_t tlcl_get_capability(TPM_CAP capability, uint32_t property,
  */
 void *tpm_process_command(TPM_CC command, void *command_body);
 
+/* Return digest size of hash algorithm */
+uint16_t tlcl_get_hash_size_from_algo(TPMI_ALG_HASH hash_algo);
+
 #endif
 
 /*****************************************************************************/

@@ -84,7 +84,7 @@ static int marshal_TPMT_HA(struct obuf *ob, TPMT_HA *tpmtha)
 
 	rc |= marshal_TPMI_ALG_HASH(ob, tpmtha->hashAlg);
 	rc |= obuf_write(ob, tpmtha->digest.sha256,
-			sizeof(tpmtha->digest.sha256));
+			 tlcl_get_hash_size_from_algo(tpmtha->hashAlg));
 
 	return rc;
 }

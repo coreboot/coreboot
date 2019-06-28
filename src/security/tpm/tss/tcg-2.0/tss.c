@@ -352,6 +352,38 @@ uint32_t tlcl_define_space(uint32_t space_index, size_t space_size,
 	}
 }
 
+uint16_t tlcl_get_hash_size_from_algo(TPMI_ALG_HASH hash_algo)
+{
+	uint16_t value;
+
+	switch (hash_algo) {
+	case TPM_ALG_ERROR:
+		value = 1;
+		break;
+	case TPM_ALG_SHA1:
+		value = SHA1_DIGEST_SIZE;
+		break;
+	case TPM_ALG_SHA256:
+		value = SHA256_DIGEST_SIZE;
+		break;
+	case TPM_ALG_SHA384:
+		value = SHA384_DIGEST_SIZE;
+		break;
+	case TPM_ALG_SHA512:
+		value = SHA512_DIGEST_SIZE;
+		break;
+	case TPM_ALG_SM3_256:
+		value = SM3_256_DIGEST_SIZE;
+		break;
+	default:
+		printk(BIOS_SPEW, "%s: unknown hash algorithm %d\n", __func__,
+		hash_algo);
+		value = 0;
+	};
+
+	return value;
+}
+
 uint32_t tlcl_disable_platform_hierarchy(void)
 {
 	struct tpm2_response *response;

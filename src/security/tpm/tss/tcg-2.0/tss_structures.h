@@ -38,12 +38,28 @@ typedef TPM_HANDLE TPMI_SH_AUTH_SESSION;
 typedef TPM_HANDLE TPM_RH;
 
 /* Some hardcoded algorithm values. */
-#define TPM_ALG_HMAC   ((TPM_ALG_ID)0x0005)
-#define TPM_ALG_NULL   ((TPM_ALG_ID)0x0010)
-#define TPM_ALG_SHA1   ((TPM_ALG_ID)0x0004)
-#define TPM_ALG_SHA256 ((TPM_ALG_ID)0x000b)
+/* Table 7 - TPM_ALG_ID Constants */
+#define TPM_ALG_ERROR   ((TPM_ALG_ID)0x0000)
+#define TPM_ALG_HMAC    ((TPM_ALG_ID)0x0005)
+#define TPM_ALG_NULL    ((TPM_ALG_ID)0x0010)
+#define TPM_ALG_SHA1    ((TPM_ALG_ID)0x0004)
+#define TPM_ALG_SHA256  ((TPM_ALG_ID)0x000b)
+#define TPM_ALG_SHA384  ((TPM_ALG_ID)0x000C)
+#define TPM_ALG_SHA512  ((TPM_ALG_ID)0x000D)
+#define TPM_ALG_SM3_256 ((TPM_ALG_ID)0x0012)
 
-#define SHA256_DIGEST_SIZE 32
+/* Annex A Algorithm Constants */
+
+/* Table 205 - Defines for SHA1 Hash Values */
+#define SHA1_DIGEST_SIZE    20
+/* Table 206 - Defines for SHA256 Hash Values */
+#define SHA256_DIGEST_SIZE  32
+/* Table 207 - Defines for SHA384 Hash Values */
+#define SHA384_DIGEST_SIZE  48
+/* Table 208 - Defines for SHA512 Hash Values */
+#define SHA512_DIGEST_SIZE  64
+/* Table 209 - Defines for SM3_256 Hash Values */
+#define SM3_256_DIGEST_SIZE 32
 
 /* Some hardcoded hierarchies. */
 #define TPM_RH_NULL         0x40000007

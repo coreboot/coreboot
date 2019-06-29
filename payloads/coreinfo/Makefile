@@ -83,7 +83,8 @@ OBJCOPY := $(OBJCOPY_$(ARCH-y))
 LPCC := CC="$(CC)" $(LIBPAYLOAD_OBJ)/bin/lpgcc
 LPAS := AS="$(AS)" $(LIBPAYLOAD_OBJ)/bin/lpas
 
-CFLAGS += -Wall -Wextra -Werror -Os -fno-builtin $(CFLAGS_$(ARCH-y)) $(INCLUDES)
+CFLAGS += -Wall -Wextra -Wmissing-prototypes -Werror
+CFLAGS += -Os -fno-builtin $(CFLAGS_$(ARCH-y)) $(INCLUDES)
 
 ifneq ($(strip $(HAVE_DOTCONFIG)),)
 include $(src)/.config

@@ -16,7 +16,6 @@
 #include <boardid.h>
 #include <gpio.h>
 #include <console/console.h>
-#include <stdlib.h>
 #include "gpio.h"
 
 static int board_id_value = -1;

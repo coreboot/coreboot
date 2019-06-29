@@ -15,7 +15,6 @@
  */
 
 #include <stdint.h>
-#include <stdlib.h>
 #include <arch/romstage.h>
 #include <cpu/intel/haswell/haswell.h>
 #include <northbridge/intel/haswell/haswell.h>

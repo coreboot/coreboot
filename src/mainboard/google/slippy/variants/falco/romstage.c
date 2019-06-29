@@ -14,8 +14,8 @@
  * GNU General Public License for more details.
  */
 
+#include <stddef.h>
 #include <stdint.h>
-#include <stdlib.h>
 #include <string.h>
 #include <cbfs.h>
 #include <console/console.h>

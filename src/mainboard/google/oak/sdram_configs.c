@@ -16,7 +16,6 @@
 #include <boardid.h>
 #include <console/console.h>
 #include <soc/emi.h>
-#include <stdlib.h>
 
 static const struct mt8173_sdram_params sdram_configs[] = {
 #include "sdram_inf/sdram-lpddr3-H9CCNNN8GTMLAR-2GB.inc"  /* ram_code = 0000 */

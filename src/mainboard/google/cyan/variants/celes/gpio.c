@@ -16,7 +16,6 @@
 
 #include <mainboard/google/cyan/irqroute.h>
 #include <soc/gpio.h>
-#include <stdlib.h>
 
 /* South East Community */
 static const struct soc_gpio_map gpse_gpio_map[] = {

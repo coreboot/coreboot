@@ -16,7 +16,6 @@
 #include <boardid.h>
 #include <console/console.h>
 #include <gpio.h>
-#include <stdlib.h>
 #include <soc/saradc.h>
 
 static const int id_readings[] = {

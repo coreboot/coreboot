@@ -20,7 +20,6 @@
 #include <soc/dmc.h>
 #include <soc/clk.h>
 #include <stddef.h>
-#include <stdlib.h>
 
 const struct mem_timings mem_timings[] = {
 	{

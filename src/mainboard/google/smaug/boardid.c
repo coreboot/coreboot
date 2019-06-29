@@ -15,7 +15,6 @@
 
 #include <boardid.h>
 #include <soc/sdram.h>
-#include <stdlib.h>
 
 #include "gpio.h"
 

@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <stdlib.h>
 #include <soc/gpio.h>
 #include <mainboard/google/rambi/irqroute.h>
 

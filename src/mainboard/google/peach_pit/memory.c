@@ -19,7 +19,6 @@
 #include <soc/gpio.h>
 #include <soc/setup.h>
 #include <stddef.h>
-#include <stdlib.h>
 
 const struct mem_timings mem_timings = {
 		.mem_manuf = MEM_MANUF_SAMSUNG,

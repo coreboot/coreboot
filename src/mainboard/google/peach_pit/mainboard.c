@@ -33,7 +33,6 @@
 #include <soc/dp.h>
 #include <soc/fimd.h>
 #include <soc/usb.h>
-#include <stdlib.h>
 #include <string.h>
 #include <symbols.h>
 #include <vbe.h>

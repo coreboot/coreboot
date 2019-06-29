@@ -33,7 +33,6 @@
 #include <soc/setup.h>
 #include <soc/trustzone.h>
 #include <soc/wakeup.h>
-#include <stdlib.h>
 #include <timestamp.h>
 #include <types.h>
 

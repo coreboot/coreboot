@@ -16,7 +16,6 @@
 #include <boardid.h>
 #include <gpio.h>
 #include <console/console.h>
-#include <stdlib.h>
 
 /*
  * Gale boards dedicate to the board ID three GPIOs in ternary mode: 64, 65

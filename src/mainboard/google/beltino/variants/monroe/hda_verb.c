@@ -16,8 +16,6 @@
 #ifndef HDA_VERB_H
 #define HDA_VERB_H
 
-#include <stdlib.h>
-
 #include <device/azalia_device.h>
 
 const u32 cim_verb_data[] = {

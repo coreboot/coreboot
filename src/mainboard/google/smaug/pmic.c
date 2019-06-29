@@ -20,7 +20,6 @@
 #include <device/i2c_simple.h>
 #include <reset.h>
 #include <stdint.h>
-#include <stdlib.h>
 
 #include "pmic.h"
 

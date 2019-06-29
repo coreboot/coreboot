@@ -16,7 +16,6 @@
 #include <boardid.h>
 #include <gpio.h>
 #include <console/console.h>
-#include <stdlib.h>
 
 /*
  * Storm boards dedicate to the board ID three GPIOs in tertiary mode: 29, 30

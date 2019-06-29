@@ -27,7 +27,6 @@
 #include <soc/grf.h>
 #include <soc/rk808.h>
 #include <soc/tsadc.h>
-#include <stdlib.h>
 #include <symbols.h>
 #include <timestamp.h>
 #include <types.h>

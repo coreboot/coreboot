@@ -77,6 +77,8 @@ struct rom_header *pci_rom_probe(struct device *dev)
 					   rom_address|PCI_ROM_ADDRESS_ENABLE);
 		}
 
+		rom_address &= PCI_ROM_ADDRESS_MASK;
+
 		printk(BIOS_DEBUG, "Option ROM address for %s = %lx\n",
 		       dev_path(dev), (unsigned long)rom_address);
 		rom_header = (struct rom_header *)rom_address;

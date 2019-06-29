@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+	"bytes"
 )
 
 func TryRunAndSave(output string, name string, arg []string) error {
@@ -74,6 +75,44 @@ func PromptUser(prompt string, opts []string) (match string, err error) {
 	return
 }
 
+func MakeHDALogs(outDir string, cardName string) {
+	SysDir := "/sys/class/sound/" + cardName + "/"
+	files, _ := ioutil.ReadDir(SysDir)
+	for _, f := range files {
+		if (strings.HasPrefix(f.Name(), "hw") || strings.HasPrefix(f.Name(), "hdaudio")) && f.IsDir() {
+			in, err := os.Open(SysDir + f.Name() + "/init_pin_configs")
+			defer in.Close()
+			if err != nil {
+				log.Fatal(err)
+			}
+			out, err := os.Create(outDir + "/pin_" + strings.Replace(f.Name(), "hdaudio", "hw", -1))
+			if err != nil {
+				log.Fatal(err)
+			}
+			defer out.Close()
+			io.Copy(out, in)
+		}
+	}
+
+	ProcDir := "/proc/asound/" + cardName + "/"
+	files, _ = ioutil.ReadDir(ProcDir)
+	for _, f := range files {
+		if strings.HasPrefix(f.Name(), "codec#") && !f.IsDir() {
+			in, err := os.Open(ProcDir + f.Name())
+			defer in.Close()
+			if err != nil {
+				log.Fatal(err)
+			}
+			out, err := os.Create(outDir + "/" + f.Name())
+			if err != nil {
+				log.Fatal(err)
+			}
+			defer out.Close()
+			io.Copy(out, in)
+		}
+	}
+}
+
 func MakeLogs(outDir string) {
 	os.MkdirAll(outDir, 0700)
 	RunAndSave(outDir+"/lspci.log", "lspci", "-nnvvvxxxx")
@@ -97,40 +136,23 @@ func MakeLogs(outDir string) {
 	RunAndSave(outDir+"/ectool.log", "../ectool/ectool", "-pd")
 	RunAndSave(outDir+"/superiotool.log", "../superiotool/superiotool", "-ade")
 
-	SysDir := "/sys/class/sound/card0/"
-	files, _ := ioutil.ReadDir(SysDir)
-	for _, f := range files {
-		if (strings.HasPrefix(f.Name(), "hw") || strings.HasPrefix(f.Name(), "hdaudio")) && f.IsDir() {
-			in, err := os.Open(SysDir + f.Name() + "/init_pin_configs")
-			defer in.Close()
-			if err != nil {
-				log.Fatal(err)
+	SysSound := "/sys/class/sound/"
+	card := ""
+	cards, _ := ioutil.ReadDir(SysSound)
+	for _, f := range cards {
+		if strings.HasPrefix(f.Name(), "card") {
+			cid, err := ioutil.ReadFile(SysSound + f.Name() + "/id")
+			if err == nil && bytes.Equal(cid, []byte("PCH\n")) {
+				fmt.Fprintln(os.Stderr, "PCH sound card is", f.Name())
+				card = f.Name()
 			}
-			out, err := os.Create(outDir + "/pin_" + strings.Replace(f.Name(), "hdaudio", "hw", -1))
-			if err != nil {
-				log.Fatal(err)
-			}
-			defer out.Close()
-			io.Copy(out, in)
 		}
 	}
 
-	ProcDir := "/proc/asound/card0/"
-	files, _ = ioutil.ReadDir(ProcDir)
-	for _, f := range files {
-		if strings.HasPrefix(f.Name(), "codec#") && !f.IsDir() {
-			in, err := os.Open(ProcDir + f.Name())
-			defer in.Close()
-			if err != nil {
-				log.Fatal(err)
-			}
-			out, err := os.Create(outDir + "/" + f.Name())
-			if err != nil {
-				log.Fatal(err)
-			}
-			defer out.Close()
-			io.Copy(out, in)
-		}
+	if card != "" {
+		MakeHDALogs(outDir, card)
+	} else {
+		fmt.Fprintln(os.Stderr, "HDAudio not found on PCH.")
 	}
 
 	for _, fname := range []string{"cpuinfo", "ioports"} {
@@ -154,7 +176,7 @@ func MakeLogs(outDir string) {
 	defer out.Close()
 
 	ClassInputDir := "/sys/class/input/"
-	files, _ = ioutil.ReadDir(ClassInputDir)
+	files, _ := ioutil.ReadDir(ClassInputDir)
 	for _, f := range files {
 		if strings.HasPrefix(f.Name(), "input") && !f.Mode().IsRegular() { /* Allow both dirs and symlinks.  */
 			in, err := os.Open(ClassInputDir + f.Name() + "/id/bustype")

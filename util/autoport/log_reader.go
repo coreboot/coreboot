@@ -251,6 +251,18 @@ func (l *LogDevReader) GetDMI() (ret DMIData) {
 }
 
 func (l *LogDevReader) GetAzaliaCodecs() (ret []AzaliaCodec) {
+	cardno := -1
+	for i := 0; i < 10; i++ {
+		pin, err := os.Open(l.InputDirectory + "/pin_hwC" + strconv.Itoa(i) + "D0")
+		if err == nil {
+			pin.Close()
+			cardno = i
+			break
+		}
+	}
+	if cardno == -1 {
+		return
+	}
 	for codecno := 0; codecno < 10; codecno++ {
 		cur := AzaliaCodec{CodecNo: codecno, PinConfig: map[int]uint32{}}
 		codec, err := os.Open(l.InputDirectory + "/codec#" + strconv.Itoa(codecno))
@@ -258,7 +270,8 @@ func (l *LogDevReader) GetAzaliaCodecs() (ret []AzaliaCodec) {
 			continue
 		}
 		defer codec.Close()
-		pin, err := os.Open(l.InputDirectory + "/pin_hwC0D" + strconv.Itoa(codecno))
+		pin, err := os.Open(l.InputDirectory + "/pin_hwC" + strconv.Itoa(cardno) +
+			"D" + strconv.Itoa(codecno))
 		if err != nil {
 			continue
 		}

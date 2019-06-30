@@ -592,11 +592,12 @@ void pci_dev_set_resources(struct device *dev)
 
 void pci_dev_enable_resources(struct device *dev)
 {
-	const struct pci_operations *ops;
+	const struct pci_operations *ops = NULL;
 	u16 command;
 
 	/* Set the subsystem vendor and device ID for mainboard devices. */
-	ops = ops_pci(dev);
+	if (dev->ops)
+		ops = dev->ops->ops_pci;
 	if (dev->on_mainboard && ops && ops->set_subsystem) {
 		if (CONFIG_SUBSYSTEM_VENDOR_ID)
 			dev->subsystem_vendor = CONFIG_SUBSYSTEM_VENDOR_ID;

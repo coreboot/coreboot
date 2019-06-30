@@ -137,8 +137,8 @@ struct device {
 	 */
 	DEVTREE_CONST struct bus *link_list;
 
-	struct device_operations *ops;
 #if !DEVTREE_EARLY
+	struct device_operations *ops;
 	struct chip_operations *chip_ops;
 	const char *name;
 #if CONFIG(GENERATE_SMBIOS_TABLES)

@@ -109,15 +109,6 @@ struct msix_entry *pci_msix_get_table(struct device *dev);
 #define PCI_IO_BRIDGE_ALIGN 4096
 #define PCI_MEM_BRIDGE_ALIGN (1024*1024)
 
-static inline const struct pci_operations *ops_pci(struct device *dev)
-{
-	const struct pci_operations *pops;
-	pops = 0;
-	if (dev && dev->ops)
-		pops = dev->ops->ops_pci;
-	return pops;
-}
-
 #define PCI_ID(VENDOR_ID, DEVICE_ID) \
 	((((DEVICE_ID) & 0xFFFF) << 16) | ((VENDOR_ID) & 0xFFFF))
 

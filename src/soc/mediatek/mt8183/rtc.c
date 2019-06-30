@@ -19,6 +19,7 @@
 #include <soc/rtc.h>
 #include <soc/mt6358.h>
 #include <soc/pmic_wrap.h>
+#include <timer.h>
 
 #define RTC_GPIO_USER_MASK	  ((1 << 13) - (1 << 8))
 
@@ -79,11 +80,145 @@ static int rtc_gpio_init(void)
 	return rtc_write_trigger();
 }
 
-/* set xosc mode */
+static u16 rtc_get_frequency_meter(u16 val, u16 measure_src, u16 window_size)
+{
+	u16 bbpu, osc32con;
+	u16 fqmtr_busy, fqmtr_data, fqmtr_rst, fqmtr_tcksel;
+	struct stopwatch sw;
+
+	if (val) {
+		rtc_read(RTC_BBPU, &bbpu);
+		rtc_write(RTC_BBPU, bbpu | RTC_BBPU_KEY | RTC_BBPU_RELOAD);
+		rtc_write_trigger();
+		rtc_read(RTC_OSC32CON, &osc32con);
+		rtc_xosc_write((osc32con & ~RTC_XOSCCALI_MASK) |
+				(val & RTC_XOSCCALI_MASK));
+	}
+
+	/* enable FQMTR clock */
+	pwrap_write_field(PMIC_RG_TOP_CKPDN_CON0_CLR, 1, 1,
+			  PMIC_RG_FQMTR_32K_CK_PDN_SHIFT);
+	pwrap_write_field(PMIC_RG_TOP_CKPDN_CON0_CLR, 1, 1,
+			  PMIC_RG_FQMTR_CK_PDN_SHIFT);
+
+	/* FQMTR reset */
+	pwrap_write_field(PMIC_RG_FQMTR_RST, 1, 1, PMIC_FQMTR_RST_SHIFT);
+	do {
+		rtc_read(PMIC_RG_FQMTR_DATA, &fqmtr_data);
+		rtc_read(PMIC_RG_FQMTR_CON0, &fqmtr_busy);
+	} while (fqmtr_data && (fqmtr_busy & PMIC_FQMTR_CON0_BUSY));
+	rtc_read(PMIC_RG_FQMTR_RST, &fqmtr_rst);
+	/* FQMTR normal */
+	pwrap_write_field(PMIC_RG_FQMTR_RST, 0, 1, PMIC_FQMTR_RST_SHIFT);
+
+	/* set frequency meter window value (0=1X32K(fixed clock)) */
+	rtc_write(PMIC_RG_FQMTR_WINSET, window_size);
+	/* enable 26M and set test clock source */
+	rtc_write(PMIC_RG_FQMTR_CON0, PMIC_FQMTR_CON0_DCXO26M_EN | measure_src);
+	/* enable 26M -> delay 100us -> enable FQMTR */
+	udelay(100);
+	rtc_read(PMIC_RG_FQMTR_CON0, &fqmtr_tcksel);
+	/* enable FQMTR */
+	rtc_write(PMIC_RG_FQMTR_CON0, fqmtr_tcksel | PMIC_FQMTR_CON0_FQMTR_EN);
+	udelay(100);
+
+	stopwatch_init_usecs_expire(&sw, FQMTR_TIMEOUT_US);
+	/* FQMTR read until ready */
+	do {
+		rtc_read(PMIC_RG_FQMTR_CON0, &fqmtr_busy);
+		if (stopwatch_expired(&sw)) {
+			rtc_info("get frequency time out !!\n");
+			return 0;
+		}
+	} while (fqmtr_busy & PMIC_FQMTR_CON0_BUSY);
+
+	/* read data should be closed to 26M/32k = 794 */
+	rtc_read(PMIC_RG_FQMTR_DATA, &fqmtr_data);
+
+	rtc_read(PMIC_RG_FQMTR_CON0, &fqmtr_tcksel);
+	/* disable FQMTR */
+	rtc_write(PMIC_RG_FQMTR_CON0, fqmtr_tcksel & ~PMIC_FQMTR_CON0_FQMTR_EN);
+	/* disable FQMTR -> delay 100us -> disable 26M */
+	udelay(100);
+	/* disable 26M */
+	rtc_read(PMIC_RG_FQMTR_CON0, &fqmtr_tcksel);
+	rtc_write(PMIC_RG_FQMTR_CON0,
+		  fqmtr_tcksel & ~PMIC_FQMTR_CON0_DCXO26M_EN);
+	rtc_info("input=0x%x, output=%d\n", val, fqmtr_data);
+
+	/* disable FQMTR clock */
+	pwrap_write_field(PMIC_RG_TOP_CKPDN_CON0_SET, 1, 1,
+			  PMIC_RG_FQMTR_32K_CK_PDN_SHIFT);
+	pwrap_write_field(PMIC_RG_TOP_CKPDN_CON0_SET, 1, 1,
+			  PMIC_RG_FQMTR_CK_PDN_SHIFT);
+
+	return fqmtr_data;
+}
+
+/* 32k clock calibration */
+static u16 rtc_eosc_cali(void)
+{
+	u16 middle, diff1, diff2, cksel;
+	u16 val = 0;
+	u16 left = RTC_XOSCCALI_START, right = RTC_XOSCCALI_END;
+
+	rtc_read(PMIC_RG_FQMTR_CKSEL, &cksel);
+	cksel &= ~PMIC_FQMTR_CKSEL_MASK;
+	/* select EOSC_32 as fixed clock */
+	rtc_write(PMIC_RG_FQMTR_CKSEL, cksel | PMIC_FQMTR_FIX_CLK_EOSC_32K);
+	rtc_read(PMIC_RG_FQMTR_CKSEL, &cksel);
+	rtc_info("PMIC_RG_FQMTR_CKSEL=0x%x\n", cksel);
+
+	while (left <= right) {
+		middle = (right + left) / 2;
+		if (middle == left)
+			break;
+
+		/* select 26M as target clock */
+		val = rtc_get_frequency_meter(middle, PMIC_FQMTR_CON0_FQM26M_CK, 0);
+
+		if ((val >= RTC_FQMTR_LOW_BASE) && (val <= RTC_FQMTR_HIGH_BASE))
+			break;
+		if (val > RTC_FQMTR_HIGH_BASE)
+			right = middle;
+		else
+			left = middle;
+	}
+
+	if ((val >= RTC_FQMTR_LOW_BASE) && (val <= RTC_FQMTR_HIGH_BASE))
+		return middle;
+
+	val = rtc_get_frequency_meter(left, PMIC_FQMTR_CON0_FQM26M_CK, 0);
+	if (val > RTC_FQMTR_LOW_BASE)
+		diff1 = val - RTC_FQMTR_LOW_BASE;
+	else
+		diff1 = RTC_FQMTR_LOW_BASE - val;
+
+	val = rtc_get_frequency_meter(right, PMIC_FQMTR_CON0_FQM26M_CK, 0);
+	if (val > RTC_FQMTR_LOW_BASE)
+		diff2 = val - RTC_FQMTR_LOW_BASE;
+	else
+		diff2 = RTC_FQMTR_LOW_BASE - val;
+
+	if (diff1 < diff2)
+		return left;
+	else
+		return right;
+}
+
 void rtc_osc_init(void)
 {
+	u16 osc32con;
+
 	/* enable 32K export */
 	rtc_gpio_init();
+
+	/* Calibrate eosc32 for powerdown clock */
+	rtc_read(RTC_OSC32CON, &osc32con);
+	osc32con &= ~RTC_XOSCCALI_MASK;
+	osc32con |= rtc_eosc_cali() & RTC_XOSCCALI_MASK;
+	rtc_xosc_write(osc32con);
+	rtc_info("EOSC32 cali val = 0x%x\n", osc32con);
 }
 
 /* enable lpd subroutine */
@@ -195,6 +330,8 @@ int rtc_init(u8 recover)
 		ret = -RTC_STATUS_WRITEIF_UNLOCK_FAIL;
 		goto err;
 	}
+
+	rtc_osc_init();
 
 	if (recover)
 		mdelay(20);

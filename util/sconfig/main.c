@@ -815,18 +815,6 @@ static void pass1(FILE *fil, struct device *ptr, struct device *next)
 		fprintf(fil, "\t.subsystem_vendor = 0x%04x,\n",
 			ptr->subsystem_vendor);
 
-	for (pin = 0; pin < 4; pin++) {
-		if (ptr->pci_irq_info[pin].ioapic_irq_pin > 0)
-			fprintf(fil,
-				"\t.pci_irq_info[%d].ioapic_irq_pin = %d,\n",
-				pin, ptr->pci_irq_info[pin].ioapic_irq_pin);
-
-		if (ptr->pci_irq_info[pin].ioapic_dst_id > 0)
-			fprintf(fil,
-				"\t.pci_irq_info[%d].ioapic_dst_id = %d,\n",
-				pin, ptr->pci_irq_info[pin].ioapic_dst_id);
-	}
-
 	if (ptr->subsystem_device > 0)
 		fprintf(fil, "\t.subsystem_device = 0x%04x,\n",
 			ptr->subsystem_device);
@@ -843,6 +831,17 @@ static void pass1(FILE *fil, struct device *ptr, struct device *next)
 	if (ptr->sibling)
 		fprintf(fil, "\t.sibling = &%s,\n", ptr->sibling->name);
 	fprintf(fil, "#if !DEVTREE_EARLY\n");
+	for (pin = 0; pin < 4; pin++) {
+		if (ptr->pci_irq_info[pin].ioapic_irq_pin > 0)
+			fprintf(fil,
+				"\t.pci_irq_info[%d].ioapic_irq_pin = %d,\n",
+				pin, ptr->pci_irq_info[pin].ioapic_irq_pin);
+
+		if (ptr->pci_irq_info[pin].ioapic_dst_id > 0)
+			fprintf(fil,
+				"\t.pci_irq_info[%d].ioapic_dst_id = %d,\n",
+				pin, ptr->pci_irq_info[pin].ioapic_dst_id);
+	}
 	fprintf(fil, "\t.chip_ops = &%s_ops,\n",
 		chip_ins->chip->name_underscore);
 	if (chip_ins == &mainboard_instance)

@@ -126,7 +126,6 @@ struct device {
 	unsigned int    on_mainboard : 1;
 	unsigned int    disable_pcie_aspm : 1;
 	unsigned int    hidden : 1;	/* set if we should hide from UI */
-	struct pci_irq_info pci_irq_info[4];
 	u8 command;
 
 	/* Base registers for this device. I/O, MEM and Expansion ROM */
@@ -138,6 +137,7 @@ struct device {
 	DEVTREE_CONST struct bus *link_list;
 
 #if !DEVTREE_EARLY
+	struct pci_irq_info pci_irq_info[4];
 	struct device_operations *ops;
 	struct chip_operations *chip_ops;
 	const char *name;

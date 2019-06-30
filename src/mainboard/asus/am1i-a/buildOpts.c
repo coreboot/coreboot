@@ -16,7 +16,6 @@
 #include <stdlib.h>
 #include <AGESA.h>
 
-#define INSTALL_FT3_SOCKET_SUPPORT           TRUE
 #define INSTALL_FAMILY_16_MODEL_0x_SUPPORT   TRUE
 
 #define INSTALL_G34_SOCKET_SUPPORT  FALSE
@@ -30,7 +29,7 @@
 #define INSTALL_FT1_SOCKET_SUPPORT  FALSE
 #define INSTALL_AM3_SOCKET_SUPPORT  FALSE
 #define INSTALL_FM2_SOCKET_SUPPORT  FALSE
-
+#define INSTALL_FT3_SOCKET_SUPPORT  TRUE
 
 #ifdef BLDOPT_REMOVE_FT3_SOCKET_SUPPORT
   #if BLDOPT_REMOVE_FT3_SOCKET_SUPPORT == TRUE
@@ -54,7 +53,7 @@
 #define BLDOPT_REMOVE_SRAT                     FALSE //TRUE
 #define BLDOPT_REMOVE_SLIT                     FALSE //TRUE
 #define BLDOPT_REMOVE_WHEA                     FALSE //TRUE
-#define	BLDOPT_REMOVE_CRAT			TRUE
+#define BLDOPT_REMOVE_CRAT                     TRUE
 #define BLDOPT_REMOVE_CDIT                     TRUE
 #define BLDOPT_REMOVE_DMI                      TRUE
 //#define BLDOPT_REMOVE_EARLY_SAMPLES            FALSE
@@ -74,28 +73,14 @@
 #define BLDCFG_PCI_MMIO_SIZE	CONFIG_MMCONF_BUS_NUMBER
 /* Build configuration values here.
  */
-#define BLDCFG_VRM_CURRENT_LIMIT                  15000
-#define BLDCFG_VRM_NB_CURRENT_LIMIT               13000
-#define BLDCFG_VRM_MAXIMUM_CURRENT_LIMIT          21000
-#define BLDCFG_VRM_SVI_OCP_LEVEL                  BLDCFG_VRM_MAXIMUM_CURRENT_LIMIT
-#define BLDCFG_VRM_NB_MAXIMUM_CURRENT_LIMIT       17000
-#define BLDCFG_VRM_NB_SVI_OCP_LEVEL               BLDCFG_VRM_NB_MAXIMUM_CURRENT_LIMIT
-#define BLDCFG_VRM_LOW_POWER_THRESHOLD            0
-#define BLDCFG_VRM_NB_LOW_POWER_THRESHOLD         0
-#define BLDCFG_VRM_SLEW_RATE                      10000
-#define BLDCFG_VRM_NB_SLEW_RATE                   BLDCFG_VRM_SLEW_RATE
-#define BLDCFG_VRM_HIGH_SPEED_ENABLE              TRUE
-
+#define BLDCFG_VRM_CURRENT_LIMIT                 15000
+#define BLDCFG_VRM_LOW_POWER_THRESHOLD           0
+#define BLDCFG_VRM_MAXIMUM_CURRENT_LIMIT         21000
+#define BLDCFG_VRM_SVI_OCP_LEVEL                 BLDCFG_VRM_MAXIMUM_CURRENT_LIMIT
 #define BLDCFG_PLAT_NUM_IO_APICS                 3
-#define BLDCFG_GNB_IOAPIC_ADDRESS		0xFEC20000
+#define BLDCFG_GNB_IOAPIC_ADDRESS                0xFEC20000
 #define BLDCFG_CORE_LEVELING_MODE                CORE_LEVEL_LOWEST
 #define BLDCFG_MEM_INIT_PSTATE                   0
-#define BLDCFG_PLATFORM_CSTATE_IO_BASE_ADDRESS    0x1770 // Specifies the IO addresses trapped by the
-                                                         // core for C-state entry requests. A value
-                                                         // of 0 in this field specifies that the core
-                                                         // does not trap any IO addresses for C-state entry.
-                                                         // Values greater than 0xFFF8 results in undefined behavior.
-#define BLDCFG_PLATFORM_CSTATE_OPDATA             0x1770
 
 #define BLDCFG_AMD_PLATFORM_TYPE                  AMD_PLATFORM_MOBILE
 
@@ -126,33 +111,51 @@
 #define BLDCFG_SCRUB_L3_RATE                      0
 #define BLDCFG_SCRUB_IC_RATE                      0
 #define BLDCFG_SCRUB_DC_RATE                      0
-#define BLDCFG_ECC_SYNC_FLOOD                     FALSE
 #define BLDCFG_ECC_SYMBOL_SIZE                    4
-#define BLDCFG_HEAP_DRAM_ADDRESS                  0xB0000ul
+#define BLDCFG_HEAP_DRAM_ADDRESS                  0xB0000
+#define BLDCFG_ECC_SYNC_FLOOD                     FALSE
+#define BLDCFG_VRM_HIGH_SPEED_ENABLE              TRUE
 #define BLDCFG_1GB_ALIGN                          FALSE
-#define BLDCFG_UMA_ALIGNMENT                      UMA_4MB_ALIGNED
-#define BLDCFG_UMA_ALLOCATION_MODE                UMA_AUTO
-#define BLDCFG_PLATFORM_CSTATE_MODE               CStateModeDisabled
-#define BLDCFG_IOMMU_SUPPORT                      FALSE
-#define OPTION_GFX_INIT_SVIEW                     FALSE
 //#define BLDCFG_PLATFORM_POWER_POLICY_MODE         BatteryLife
+#define BLDCFG_PLATFORM_CSTATE_IO_BASE_ADDRESS    0x1770 // Specifies the IO addresses trapped by the
+                                                         // core for C-state entry requests. A value
+                                                         // of 0 in this field specifies that the core
+                                                         // does not trap any IO addresses for C-state entry.
+                                                         // Values greater than 0xFFF8 results in undefined behavior.
+
+#define BLDCFG_PROCESSOR_SCOPE_NAME0              'P'
+#define BLDCFG_PROCESSOR_SCOPE_NAME1              '0'
+#define BLDCFG_PLATFORM_CSTATE_MODE               CStateModeDisabled
 
 //#define BLDCFG_CFG_LCD_BACK_LIGHT_CONTROL         OEM_LCD_BACK_LIGHT_CONTROL
 #define BLDCFG_CFG_ABM_SUPPORT                    TRUE
-
-#define BLDCFG_CFG_GNB_HD_AUDIO                   TRUE
-//#define BLDCFG_IGPU_SUBSYSTEM_ID            OEM_IGPU_SSID
-//#define BLDCFG_IGPU_HD_AUDIO_SUBSYSTEM_ID   OEM_IGPU_HD_AUDIO_SSID
-//#define BLFCFG_APU_PCIE_PORTS_SUBSYSTEM_ID  OEM_APU_PCIE_PORTS_SSID
 
 #ifdef PCIEX_BASE_ADDRESS
 #define BLDCFG_PCI_MMIO_BASE PCIEX_BASE_ADDRESS
 #define BLDCFG_PCI_MMIO_SIZE (PCIEX_LENGTH >> 20)
 #endif
 
-#define BLDCFG_PROCESSOR_SCOPE_NAME0              'P'
-#define BLDCFG_PROCESSOR_SCOPE_NAME1              '0'
+#define BLDCFG_PLATFORM_CSTATE_OPDATA             0x1770
+
+#define BLDCFG_VRM_NB_CURRENT_LIMIT               13000
+#define BLDCFG_VRM_NB_LOW_POWER_THRESHOLD         0
+#define BLDCFG_VRM_SLEW_RATE                      10000
+#define BLDCFG_VRM_NB_SLEW_RATE                   BLDCFG_VRM_SLEW_RATE
+#define BLDCFG_VRM_NB_MAXIMUM_CURRENT_LIMIT       17000
+#define BLDCFG_VRM_NB_SVI_OCP_LEVEL               BLDCFG_VRM_NB_MAXIMUM_CURRENT_LIMIT
+
+#define BLDCFG_UMA_ALIGNMENT                      UMA_4MB_ALIGNED
+#define BLDCFG_UMA_ALLOCATION_MODE                UMA_AUTO
+#define OPTION_GFX_INIT_SVIEW                     FALSE
+
 #define BLDCFG_PCIE_TRAINING_ALGORITHM           PcieTrainingDistributed
+
+#define BLDCFG_IOMMU_SUPPORT                      FALSE
+
+#define BLDCFG_CFG_GNB_HD_AUDIO               TRUE
+//#define BLDCFG_IGPU_SUBSYSTEM_ID            OEM_IGPU_SSID
+//#define BLDCFG_IGPU_HD_AUDIO_SUBSYSTEM_ID   OEM_IGPU_HD_AUDIO_SSID
+//#define BLFCFG_APU_PCIE_PORTS_SUBSYSTEM_ID  OEM_APU_PCIE_PORTS_SSID
 
 /*  Process the options...
  * This file include MUST occur AFTER the user option selection settings

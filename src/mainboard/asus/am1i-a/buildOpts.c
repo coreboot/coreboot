@@ -31,8 +31,10 @@
 #include <vendorcode/amd/agesa/f16kb/Proc/CPU/cpuEarlyInit.h>
 #include <vendorcode/amd/agesa/f16kb/Proc/CPU/cpuLateInit.h>
 
+/*  Select the CPU family.  */
 #define INSTALL_FAMILY_16_MODEL_0x_SUPPORT   TRUE
 
+/*  Select the CPU socket type.  */
 #define INSTALL_G34_SOCKET_SUPPORT  FALSE
 #define INSTALL_C32_SOCKET_SUPPORT  FALSE
 #define INSTALL_S1G3_SOCKET_SUPPORT FALSE
@@ -152,6 +154,10 @@
 
 #define BLDCFG_PLATFORM_CSTATE_OPDATA             0x1770
 
+/*
+ * Specify the default values for the VRM controlling the VDDNB plane.
+ * If not specified, the values used for the core VRM will be applied
+ */
 #define BLDCFG_VRM_NB_CURRENT_LIMIT               13000
 #define BLDCFG_VRM_NB_LOW_POWER_THRESHOLD         0
 #define BLDCFG_VRM_SLEW_RATE                      10000
@@ -331,4 +337,5 @@ GPIO_CONTROL   imba180_gpio[] = {
 #define DFLT_MEMORY_QUADRANK_TYPE       QUADRANK_UNBUFFERED
 #define DFLT_VRM_SLEW_RATE              (5000)
 
+/* AGESA nonsense: this header depends on the definitions above */
 #include <PlatformInstall.h>

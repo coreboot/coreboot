@@ -248,7 +248,12 @@ EOF
 		southbridge_nice="$(echo "$southbridge"|sed 's,_, ,g;s,INTEL,Intel®,g')"
 		superio="$(sed -n "/[[:space:]]*select SUPERIO_/ s,[[:space:]]*select SUPERIO_,,p" "$vendor_board_dir/Kconfig"|grep -v OVERRIDE_FANCTL)"
 		superio_nice="$(echo "$superio"|sed 's,_, ,g;s,WINBOND,Winbond™,g;s,ITE,ITE™,g;s,SMSC,SMSC®,g;s,NUVOTON,Nuvoton ,g')"
-		cpu="$(sed -n "/	select CPU_/ s,	select CPU_,,p" "$vendor_board_dir/Kconfig"|grep -v "AMD_AGESA_FAMILY"|grep -v CPU_MICROCODE_CBFS_NONE)"
+		cpu="$(sed -n \
+			-e "/	select CPU_/ s,	select CPU_,,p" \
+			-e "/	select SOC_/ s,	select SOC_,,p" \
+			"$vendor_board_dir/Kconfig" | \
+			grep -v "AMD_AGESA_FAMILY" | \
+			grep -v CPU_MICROCODE_CBFS_NONE)"
 		case "$cpu" in
 			ALLWINNER_A10)
 				cpu_nice="Allwinner A10"
@@ -302,12 +307,24 @@ EOF
 			AMD_SC520)
 				cpu_nice="AMD Élan™SC520";
 				socket_nice="—";;
+			AMD_STONEYRIDGE_FP4)
+				cpu_nice="AMD Stoney Ridge";
+				socket_nice="FP4 BGA";;
 			ARMLTD_CORTEX_A9)
 				cpu_nice="ARM Cortex A9";
 				socket_nice="?";;
 			DMP_VORTEX86EX)
 				cpu_nice="DMP VORTEX86EX";
 				socket_nice="?";;
+			MEDIATEK_MT8173)
+				cpu_nice="MediaTek MT8173";
+				socket_nice="—";;
+			NVIDIA_TEGRA124)
+				cpu_nice="NVIDIA Tegra 124";
+				socket_nice="—";;
+			NVIDIA_TEGRA210)
+				cpu_nice="NVIDIA Tegra 210";
+				socket_nice="—";;
 			SAMSUNG_EXYNOS5420)
 				cpu_nice="Samsung Exynos 5420";
 				socket_nice="?";;
@@ -317,6 +334,42 @@ EOF
 			TI_AM335X)
 				cpu_nice="TI AM335X";
 				socket_nice="?";;
+			IMGTEC_PISTACHIO)
+				cpu_nice="Imagination Technologies Pistachio";
+				socket_nice="—";;
+			INTEL_APOLLOLAKE)
+				cpu_nice="Intel® Apollo Lake";
+				socket_nice="—";;
+			INTEL_BAYTRAIL)
+				cpu_nice="Intel® Bay Trail";
+				socket_nice="—";;
+			INTEL_BRASWELL)
+				cpu_nice="Intel® Braswell";
+				socket_nice="—";;
+			INTEL_BROADWELL)
+				cpu_nice="Intel® Broadwell";
+				socket_nice="—";;
+			INTEL_DENVERTON_NS)
+				cpu_nice="Intel® Denverton-NS";
+				socket_nice="—";;
+			INTEL_FSP_BROADWELL_DE)
+				cpu_nice="Intel® Broadwell-DE";
+				socket_nice="—";;
+			INTEL_GLK)
+				cpu_nice="Intel® Gemini Lake";
+				socket_nice="—";;
+			INTEL_ICELAKE)
+				cpu_nice="Intel® Ice Lake";
+				socket_nice="—";;
+			INTEL_KABYLAKE)
+				cpu_nice="Intel® Kaby Lake";
+				socket_nice="—";;
+			INTEL_SANDYBRIDGE)
+				cpu_nice="Intel® Sandy Bridge";
+				socket_nice="—";;
+			INTEL_SKYLAKE)
+				cpu_nice="Intel® Skylake";
+				socket_nice="—";;
 			INTEL_SLOT_1)
 				cpu_nice="Intel® Pentium® II/III, Celeron®";
 				socket_nice="Slot 1";;
@@ -384,6 +437,24 @@ EOF
 			INTEL_SOCKET_MFCBGA479)
 				cpu_nice="Intel® Mobile Celeron"
 				socket_nice="Socket 479";;
+			INTEL_WHISKEYLAKE)
+				cpu_nice="Intel® Whiskey Lake";
+				socket_nice="—";;
+			QC_IPQ806X)
+				cpu_nice="Qualcomm IPQ806x";
+				socket_nice="—";;
+			QUALCOMM_QCS405)
+				cpu_nice="Qualcomm QCS405";
+				socket_nice="—";;
+			QUALCOMM_SDM845)
+				cpu_nice="Qualcomm SDM845";
+				socket_nice="—";;
+			ROCKCHIP_RK3288)
+				cpu_nice="Rockchip RK3288";
+				socket_nice="—";;
+			ROCKCHIP_RK3399)
+				cpu_nice="Rockchip RK3399";
+				socket_nice="—";;
 			VIA_C3)
 				cpu_nice="VIA C3™";
 				socket_nice="?"

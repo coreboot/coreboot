@@ -28,23 +28,24 @@ static void set_usb_over_current(struct device *dev)
 {
 	uint16_t map = USB_OC_DISABLE_ALL;
 
-	if (dev->path.pci.devfn == XHCI_DEVFN) {
-		if (mainboard_get_xhci_oc_map(&map) == 0)
+	if (dev->path.pci.devfn == XHCI0_DEVFN) {
+		if (mainboard_get_xhci0_oc_map(&map) == 0)
 			; // TODO
 	}
 
-	if (dev->path.pci.devfn == EHCI1_DEVFN)
-		if (mainboard_get_ehci_oc_map(&map) == 0)
+	if (dev->path.pci.devfn == XHCI1_DEVFN) {
+		if (mainboard_get_xhci1_oc_map(&map) == 0)
 			; // TODO
+	}
 }
 
-int __weak mainboard_get_xhci_oc_map(uint16_t *map)
+int __weak mainboard_get_xhci0_oc_map(uint16_t *map)
 {
 	printk(BIOS_DEBUG, "WEAK: %s/%s called\n", __FILE__, __func__);
 	return -1;
 }
 
-int __weak mainboard_get_ehci_oc_map(uint16_t *map)
+int __weak mainboard_get_xhci1_oc_map(uint16_t *map)
 {
 	printk(BIOS_DEBUG, "WEAK: %s/%s called\n", __FILE__, __func__);
 	return -1;

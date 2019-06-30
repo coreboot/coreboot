@@ -96,8 +96,6 @@ const char *soc_acpi_name(const struct device *dev)
 		return "PBR8";
 	case HDA1_DEVFN:
 		return "AZHD";
-	case EHCI1_DEVFN:
-		return "EHC0";
 	case LPC_DEVFN:
 		return "LPCB";
 	case SATA_DEVFN:
@@ -106,8 +104,10 @@ const char *soc_acpi_name(const struct device *dev)
 		return "SDCN";
 	case SMBUS_DEVFN:
 		return "SBUS";
-	case XHCI_DEVFN:
+	case XHCI0_DEVFN:
 		return "XHC0";
+	case XHCI1_DEVFN:
+		return "XHC1";
 	default:
 		return NULL;
 	}

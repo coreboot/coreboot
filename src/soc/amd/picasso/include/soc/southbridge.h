@@ -367,8 +367,8 @@ uint64_t get_uma_base(void);
  * over current support.
  */
 #define     USB_OC_DISABLE_ALL		0xffff
-int mainboard_get_xhci_oc_map(uint16_t *usb_oc_map);
-int mainboard_get_ehci_oc_map(uint16_t *usb_oc_map);
+int mainboard_get_xhci0_oc_map(uint16_t *usb_oc_map);
+int mainboard_get_xhci1_oc_map(uint16_t *usb_oc_map);
 
 /* Initialize all the i2c buses that are marked with early init. */
 void i2c_soc_early_init(void);

@@ -165,9 +165,11 @@
 #define BLDCFG_VRM_NB_MAXIMUM_CURRENT_LIMIT       17000
 #define BLDCFG_VRM_NB_SVI_OCP_LEVEL               BLDCFG_VRM_NB_MAXIMUM_CURRENT_LIMIT
 
+#if CONFIG(GFXUMA)
 #define BLDCFG_UMA_ALIGNMENT                      UMA_4MB_ALIGNED
 #define BLDCFG_UMA_ALLOCATION_MODE                UMA_AUTO
 #define OPTION_GFX_INIT_SVIEW                     FALSE
+#endif
 
 #define BLDCFG_PCIE_TRAINING_ALGORITHM           PcieTrainingDistributed
 

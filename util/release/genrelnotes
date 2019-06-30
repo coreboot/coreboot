@@ -291,7 +291,7 @@ log_versions "$(git log --pretty=%H \
 echo "" >> "$LOGFILE"
 
 ### SPECIFIC AREAS FOR RELEASE ###
-get_log_dedupe "cleanup" "" "spelling\|Use tabs\|transition away from device_t\|space [around\|before]\|code formatting\|commented code\|code cleanup\|capitalize\|unnecessary whitespace\|checkpatch"
+get_log_dedupe "cleanup" "" "spelling\|Use tabs\|transition away from device_t\|space [around\|before]\|code formatting\|commented code\|code cleanup\|capitalize\|unnecessary whitespace\|checkpatch\|remove unused\|remove.*not used"
 
 get_log_dedupe "Google Kahlee / AMD Gardenia" "src/mainboard/google/kahlee src/mainboard/amd/gardenia" "kahlee\|gardenia"
 get_log_dedupe "AMD Stoney Ridge" "src/soc/amd/stoneyridge" "stoney"
@@ -329,11 +329,16 @@ get_log_dedupe "Intel Sandybridge / Ivybridge" "src/southbridge/intel/bd82x6x sr
 get_log_dedupe "Intel Common" "src/soc/intel/common src/southbridge/intel/common src/northbridge/intel/common" ""
 get_log_dedupe "Amd Common" "src/soc/amd/common src/southbridge/amd/common" ""
 
+get_log_dedupe "Nvidia" "src/southbridge/nvidia" ""
+get_log_dedupe "Via" "src/northbridge/via src/southbridge/via" ""
+get_log_dedupe "Broadcom" "src/southbridge/broadcom" ""
+get_log_dedupe "Qualcomm" "src/soc/qualcomm" ""
+
 get_log_dedupe "Intel vendorcode / FSP" "src/drivers/intel/fsp* src/vendorcode/intel" ""
 get_log_dedupe "AMD vendorcode / AGESA / PI" "src/vendorcode/amd" ""
 get_log_dedupe "Google vendorcode" "src/vendorcode/google"
 
-get_log_dedupe "TPM" "src/drivers/i2c/tpm" "tpm"
+get_log_dedupe "TPM" "src/drivers/i2c/tpm src/security/tpm" "tpm"
 get_log_dedupe "Vboot" "src/vboot" "vboot"
 
 
@@ -394,6 +399,9 @@ get_log_dedupe "Build system" \
 	"Makefile Makefile.inc toolchain.inc src/Kconfig src/cpu/Makefile.inc"
 
 get_log_dedupe "Submodules" "3rdparty util/nvidia/cbootimage"
+
+get_log_dedupe "Maintainers" "MAINTAINERS" ""
+
 # Finally, get anything that was missed above
 get_log_dedupe "MISC" "."
 

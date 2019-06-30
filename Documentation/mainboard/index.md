@@ -91,6 +91,10 @@ The boards in this section are not real mainboards, but emulators.
 - [T430 / T530 / X230 / W530 common](lenovo/xx30_series.md)
 - [T431s](lenovo/t431s.md)
 
+### Haswell series
+
+- [T440p](lenovo/t440p.md)
+
 ## Portwell
 
 - [PQ7-M107](portwell/pq7-m107.md)

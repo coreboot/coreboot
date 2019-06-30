@@ -22,6 +22,11 @@
 #define SPI_BASE_ADDRESS		0xfec10000
 #define ESPI_BASE_ADDRESS		0xfec20000
 
+#if CONFIG(HPET_ADDRESS_OVERRIDE)
+#error HPET address override is not allowed and must be fixed at 0xfed00000
+#endif
+#define HPET_BASE_ADDRESS		0xfed00000
+
 /*
  * AcpiMmio blocks are at fixed offsets from FED8_0000h and enabled in PMx04[1].
  * All ranges not specified as supported below may, or may not, be listed in
@@ -44,27 +49,30 @@
 
 #define ALINK_AHB_ADDRESS		0xfedc0000
 
-/* I2C fixed address */
+/* Reserved				0xfecd1000-0xfedc3fff */
+
 #define APU_I2C2_BASE			0xfedc4000
 #define APU_I2C3_BASE			0xfedc5000
 #define APU_I2C4_BASE			0xfedc6000
-#define APU_I2C_MIN_BUS			2
-#define APU_I2C_MAX_BUS			4
-#define APU_I2C_BLOCK_SIZE		0x1000
-#define I2C_BASE_ADDRESS		APU_I2C2_BASE
-#define I2C_DEVICE_SIZE			0x00001000
-#define I2C_DEVICE_COUNT		3
+#define   APU_I2C_MIN_BUS		2
+#define   APU_I2C_MAX_BUS		4
+#define   APU_I2C_BLOCK_SIZE		0x1000
+#define   I2C_BASE_ADDRESS		APU_I2C2_BASE
+#define   I2C_DEVICE_SIZE		0x00001000
+#define   I2C_DEVICE_COUNT		3
 
-
-#if CONFIG(HPET_ADDRESS_OVERRIDE)
-#error HPET address override is not allowed and must be fixed at 0xfed00000
-#endif
-#define HPET_BASE_ADDRESS		0xfed00000
-
+#define APU_DMAC0_BASE			0xfedc7000
+#define APU_DMAC1_BASE			0xfedc8000
 #define APU_UART0_BASE			0xfedc9000
 #define APU_UART1_BASE			0xfedca000
+/* Reserved				0xfedcb000 */
+#define APU_DMAC2_BASE			0xfedcc000
+#define APU_DMAC3_BASE			0xfedcd000
 #define APU_UART2_BASE			0xfedce000
 #define APU_UART3_BASE			0xfedcf000
+/* Reserved				0xfedd0000-0xfedd4fff */
+#define APU_EMMC_BASE			0xfedd5000
+#define APU_EMMC_CONFIG_BASE		0xfedd5800
 
 #define FLASH_BASE_ADDR			((0xffffffff - CONFIG_ROM_SIZE) + 1)
 

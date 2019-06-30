@@ -12,16 +12,10 @@
  */
 
 #include <cbmem.h>
+#include <symbols.h>
+#include <ramdetect.h>
 
 void *cbmem_top(void)
 {
-	uintptr_t base;
-	size_t size;
-
-	/* Use dummy values until we can query the memory size again */
-	//query_mem(configstring(), &base, &size);
-	base = 0x80000000;
-	size = 128 * MiB;
-
-	return (void *)(base + size);
+	return _dram + (probe_ramsize((uintptr_t)_dram, CONFIG_DRAM_SIZE_MB) * MiB);
 }

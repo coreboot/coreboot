@@ -1,12 +1,9 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2016 Vladimir Serbinenko <phcoder@gmail.com>
- *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; version 2 or, at your option, any later
- * version of the License.
+ * the Free Software Foundation; version 2 of the License.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -14,10 +11,12 @@
  * GNU General Public License for more details.
  */
 
-#ifndef QEMU_ARMV7_MAINBOARD_H
-#define QEMU_ARMV7_MAINBOARD_H
-
-/* Returns RAM size in mebibytes.  */
-int probe_ramsize(void);
-
-#endif
+/*
+ * Probe an area if it's read/writable.
+ * Primary use case is the detection of DRAM amount on emulators.
+ *
+ * @param dram_start Physical address of DRAM start
+ * @param probe_size Maximum size in MiB to probe for
+ * @return The detected DRAM size in MiB
+ */
+size_t probe_ramsize(const uintptr_t dram_start, const size_t probe_size);

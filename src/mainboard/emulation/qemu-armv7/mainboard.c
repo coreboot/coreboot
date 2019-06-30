@@ -18,9 +18,10 @@
 #include <device/device.h>
 #include <cbmem.h>
 #include <halt.h>
-#include "mainboard.h"
 #include <edid.h>
 #include <device/mmio.h>
+#include <ramdetect.h>
+#include <symbols.h>
 
 static void init_gfx(void)
 {
@@ -57,7 +58,7 @@ static void mainboard_enable(struct device *dev)
 		halt();
 	}
 
-	discovered = probe_ramsize();
+	discovered = probe_ramsize((uintptr_t)_dram, CONFIG_DRAM_SIZE_MB);
 	printk(BIOS_DEBUG, "%d MiB of RAM discovered\n", discovered);
 	ram_resource(dev, 0, 0x60000000 >> 10, discovered << 10);
 	cbmem_recovery(0);

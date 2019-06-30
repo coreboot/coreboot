@@ -17,15 +17,19 @@
 #include <device/device.h>
 #include <cbmem.h>
 #include <symbols.h>
+#include <ramdetect.h>
 
 static void mainboard_enable(struct device *dev)
 {
+	size_t dram_mb_detected;
 
 	if (!dev) {
 		die("No dev0; die\n");
 	}
 
-	ram_resource(dev, 0, (uintptr_t)_dram / KiB, CONFIG_DRAM_SIZE_MB * KiB);
+	dram_mb_detected = probe_ramsize((uintptr_t)_dram, CONFIG_DRAM_SIZE_MB);
+	ram_resource(dev, 0, (uintptr_t)_dram / KiB, dram_mb_detected / KiB);
+
 	cbmem_recovery(0);
 }
 

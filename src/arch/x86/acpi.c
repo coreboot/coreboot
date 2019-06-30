@@ -763,10 +763,13 @@ void acpi_create_vfct(struct device *device,
 	memcpy(header->asl_compiler_id, ASLC, 4);
 
 	header->asl_compiler_revision = asl_revision;
-	header->length = sizeof(struct acpi_vfct);
 	header->revision = get_acpi_table_revision(VFCT);
 
 	current = acpi_fill_vfct(device, vfct, current);
+
+	/* If no BIOS image, return with header->length == 0. */
+	if (!vfct->VBIOSImageOffset)
+		return;
 
 	/* (Re)calculate length and checksum. */
 	header->length = current - (unsigned long)vfct;

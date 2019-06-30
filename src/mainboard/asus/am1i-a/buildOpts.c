@@ -14,7 +14,22 @@
  */
 
 #include <stdlib.h>
-#include <AGESA.h>
+
+#include <vendorcode/amd/agesa/f16kb/AGESA.h>
+
+/*  Include the files that instantiate the configuration definitions.  */
+#include <vendorcode/amd/agesa/f16kb/Include/AdvancedApi.h>
+#include <vendorcode/amd/agesa/f16kb/Include/GnbInterface.h>
+#include <vendorcode/amd/agesa/f16kb/Proc/CPU/cpuFamilyTranslation.h>
+#include <vendorcode/amd/agesa/f16kb/Proc/CPU/cpuRegisters.h>
+#include <vendorcode/amd/agesa/f16kb/Proc/CPU/Family/cpuFamRegisters.h>
+#include <vendorcode/amd/agesa/f16kb/Proc/CPU/Feature/cpuFeatures.h>
+#include <vendorcode/amd/agesa/f16kb/Proc/CPU/Table.h>
+#include <vendorcode/amd/agesa/f16kb/Proc/CPU/heapManager.h>
+/* AGESA nonesense: the next three headers depend on heapManager.h */
+#include <vendorcode/amd/agesa/f16kb/Proc/Common/CreateStruct.h>
+#include <vendorcode/amd/agesa/f16kb/Proc/CPU/cpuEarlyInit.h>
+#include <vendorcode/amd/agesa/f16kb/Proc/CPU/cpuLateInit.h>
 
 #define INSTALL_FAMILY_16_MODEL_0x_SUPPORT   TRUE
 
@@ -218,20 +233,6 @@ CONST AP_MTRR_SETTINGS ROMDATA KabiniApMtrrSettingsList[] =
 };
 
 #define BLDCFG_AP_MTRR_SETTINGS_LIST &KabiniApMtrrSettingsList
-
-
-/*  Include the files that instantiate the configuration definitions.  */
-#include "cpuRegisters.h"
-#include "cpuFamRegisters.h"
-#include "cpuFamilyTranslation.h"
-#include "AdvancedApi.h"
-#include "heapManager.h"
-#include "CreateStruct.h"
-#include "cpuFeatures.h"
-#include "Table.h"
-#include "cpuEarlyInit.h"
-#include "cpuLateInit.h"
-#include "GnbInterface.h"
 
                   // This is the delivery package title, "BrazosPI"
                   // This string MUST be exactly 8 characters long

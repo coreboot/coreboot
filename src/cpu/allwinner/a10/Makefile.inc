@@ -17,7 +17,6 @@ ramstage-y	+= bootblock_media.c
 ramstage-y	+= cbmem.c
 ramstage-y	+= clock.c
 ramstage-y	+= cpu.c
-ramstage-y	+= monotonic_timer.c
 ramstage-y	+= timer.c
 ramstage-y	+= twi.c
 

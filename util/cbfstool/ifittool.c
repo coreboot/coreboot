@@ -28,7 +28,7 @@
 /* Global variables */
 partitioned_file_t *image_file;
 
-static const char *optstring  = "H:j:f:r:d:t:n:s:caDvh?";
+static const char *optstring  = "H:j:f:r:d:t:n:s:cAaDvh?";
 static struct option long_options[] = {
 	{"file",           required_argument, 0, 'f' },
 	{"region",         required_argument, 0, 'r' },
@@ -230,7 +230,7 @@ int main(int argc, char *argv[])
 			}
 			break;
 		case 'j':
-			topswap_size = atoi(optarg);
+			topswap_size = strtol(optarg, NULL, 0);
 			if (!is_valid_topswap(topswap_size))
 				return 1;
 			break;

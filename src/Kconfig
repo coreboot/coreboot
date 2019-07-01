@@ -507,7 +507,7 @@ config NO_MONOTONIC_TIMER
 config HAVE_MONOTONIC_TIMER
 	bool
 	depends on !NO_MONOTONIC_TIMER
-	default y if !ARCH_X86
+	default y
 	help
 	 The board/chipset provides a monotonic timer.
 

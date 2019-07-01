@@ -39,7 +39,7 @@
 #define MSR_INTPEND			0xC0010055
 #define MMIO_CONF_BASE			0xC0010058
 #define  MMIO_RANGE_EN			(1 << 0)
-#define  MMIO_BUS_RANGE_SHIFT		(1 << 1)
+#define  MMIO_BUS_RANGE_SHIFT		2
 	/* P-state Current Limit Register */
 #define PS_LIM_REG			0xC0010061
 	 /* P-state Maximum Value shift position */

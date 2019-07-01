@@ -176,8 +176,6 @@ void run_ramstage(void);
 /* Determine where stack for ramstage loader is located. */
 enum { ROMSTAGE_STACK_CBMEM, ROMSTAGE_STACK_LOW_MEM };
 uintptr_t romstage_ram_stack_base(size_t size, int src);
-uintptr_t romstage_ram_stack_top(void);
-uintptr_t romstage_ram_stack_bottom(void);
 
 /* Backup OS memory to CBMEM_ID_RESUME on ACPI S3 resume path,
  * if ramstage overwrites low memory. */

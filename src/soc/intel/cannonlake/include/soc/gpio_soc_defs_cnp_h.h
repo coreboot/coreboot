@@ -22,18 +22,18 @@
  * communities.
  */
 
-#define GPP_A			0
-#define GPP_B			1
-#define GPP_C			2
-#define GPP_D			3
-#define GPP_G			4
-#define GPP_K			5
-#define GPP_H			6
-#define GPP_E			7
-#define GPP_F			8
-#define GPP_I			9
-#define GPP_J			0xA
-#define GPD			0xC
+#define GPP_A			0x0
+#define GPP_B			0x1
+#define GPP_C			0x2
+#define GPP_D			0x3
+#define GPP_G			0x4
+#define GPD			0x5
+#define GPP_E			0x6
+#define GPP_F			0x7
+#define GPP_H			0x8
+#define GPP_K			0x9
+#define GPP_I			0xA
+#define GPP_J			0xB
 #define GPIO_NUM_GROUPS		12
 #define GPIO_MAX_NUM_PER_GROUP	24
 

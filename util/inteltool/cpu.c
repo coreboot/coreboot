@@ -110,7 +110,7 @@ static msr_t rdmsr(int addr)
 
 static int open_and_seek(int cpu, unsigned long msr, int mode, int *fd)
 {
-	char dev[512];
+	char dev[32];
 	char temp_string[50];
 
 	snprintf(dev, sizeof(dev), "/dev/cpu/%d/msr", cpu);

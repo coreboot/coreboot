@@ -25,7 +25,7 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 		const struct soc_intel_icelake_config *config)
 {
 	unsigned int i;
-	const struct device *dev = pcidev_on_root(0, 0);
+	const struct device *dev;
 	uint32_t mask = 0;
 
 	/* Set IGD stolen size to 60MB. */
@@ -36,7 +36,9 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 	m_cfg->UserBd = BOARD_TYPE_ULT_ULX;
 	m_cfg->RMT = config->RMT;
 	m_cfg->SkipMbpHob = 1;
+
 	/* If Audio Codec is enabled, enable FSP UPD */
+	dev = pcidev_on_root(0x1f, 3);
 	if (!dev)
 		m_cfg->PchHdaEnable = 0;
 	else

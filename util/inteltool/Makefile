@@ -22,7 +22,7 @@ top ?= $(abspath ../..)
 CC      ?= gcc
 INSTALL ?= /usr/bin/env install
 PREFIX  ?= /usr/local
-CFLAGS  ?= -O2 -g -Wall -W
+CFLAGS  ?= -O2 -g -Wall -W -Wmissing-prototypes
 LDFLAGS += -lpci -lz
 
 CPPFLAGS += -I$(top)/src/commonlib/include

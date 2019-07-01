@@ -26,9 +26,6 @@
 _Static_assert(CONFIG(VBOOT_STARTS_IN_BOOTBLOCK) +
 	       CONFIG(VBOOT_STARTS_IN_ROMSTAGE) == 1,
 	       "vboot must either start in bootblock or romstage (not both!)");
-_Static_assert(CONFIG(VBOOT_STARTS_IN_BOOTBLOCK) ||
-	       !CONFIG(VBOOT_MIGRATE_WORKING_DATA),
-	       "no need to migrate working data after CBMEM is already up!");
 _Static_assert(!CONFIG(VBOOT_SEPARATE_VERSTAGE) ||
 	       CONFIG(VBOOT_STARTS_IN_BOOTBLOCK),
 	       "stand-alone verstage must start in (i.e. after) bootblock");

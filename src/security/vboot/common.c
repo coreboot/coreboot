@@ -117,13 +117,12 @@ int vboot_is_slot_selected(void)
 	return reg->size > 0;
 }
 
-#if CONFIG(VBOOT_MIGRATE_WORKING_DATA)
+#if CONFIG(VBOOT_STARTS_IN_BOOTBLOCK)
 /*
  * For platforms that do not employ VBOOT_STARTS_IN_ROMSTAGE, vboot
  * verification occurs before CBMEM is brought online, using pre-RAM.
  * In order to make vboot data structures available downstream, copy
- * vboot_working_data from SRAM/CAR into CBMEM on platforms where this
- * memory later becomes unavailable.
+ * vboot_working_data from SRAM/CAR into CBMEM.
  */
 static void vboot_migrate_cbmem(int unused)
 {
@@ -140,7 +139,7 @@ static void vboot_migrate_cbmem(int unused)
 	memcpy(wd_cbmem, wd_preram, cbmem_size);
 }
 ROMSTAGE_CBMEM_INIT_HOOK(vboot_migrate_cbmem)
-#elif CONFIG(VBOOT_STARTS_IN_ROMSTAGE)
+#else
 static void vboot_setup_cbmem(int unused)
 {
 	struct vboot_working_data *wd_cbmem =

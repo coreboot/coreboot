@@ -107,21 +107,6 @@ config VBOOT_STARTS_IN_ROMSTAGE
 	  memory initialization). This implies that vboot working data is
 	  allocated in CBMEM.
 
-config VBOOT_MIGRATE_WORKING_DATA
-	bool
-	default y if CACHE_AS_RAM
-	depends on !VBOOT_STARTS_IN_ROMSTAGE
-	help
-	  In order to make vboot data structures available downstream,
-	  migrate verified boot working data to CBMEM after CBMEM comes
-	  online, when VBOOT_STARTS_IN_BOOTBLOCK is employed.  This should
-	  always be enabled on x86 architectures to migrate data from CAR
-	  before losing access in ramstage, and should almost always be
-	  disabled in SRAM architectures, where access to SRAM is usually
-	  retained.  Any SRAM platform where the original location of the
-	  VBOOT_WORKBUF region becomes inaccessible in later stages should
-	  manually select this option.
-
 config VBOOT_MOCK_SECDATA
 	bool "Mock secdata for firmware verification"
 	default n

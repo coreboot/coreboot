@@ -76,7 +76,7 @@ extern const char prog_name[];
 extern const char prog_version[];
 
 int get_line_from_file(FILE * f, char line[], int line_buf_size);
-void out_of_memory(void);
+_Noreturn void out_of_memory(void);
 void usage(FILE * outfile);
 
 #endif				/* COMMON_H */

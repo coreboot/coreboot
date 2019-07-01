@@ -18,6 +18,8 @@
 #include <cpu/x86/tsc.h>
 #include <cpu/x86/msr.h>
 
+#define MSR_PLATFORM_INFO 0xce
+
 /**
  * Intel Rangeley CPUs always run the TSC at BCLK = 100MHz
  */

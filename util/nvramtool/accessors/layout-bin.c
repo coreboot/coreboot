@@ -89,7 +89,7 @@ void get_layout_from_cbfs_file(void)
 	process_layout();
 }
 
-int write_cmos_layout_bin(FILE *f)
+static int write_cmos_layout_bin(FILE *f)
 {
 	const cmos_entry_t *cmos_entry;
 	const cmos_enum_t *cmos_enum;

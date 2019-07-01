@@ -26,6 +26,8 @@
 
 #include <ctype.h>
 
+#include "layout-text.h"
+
 static int is_ident_nondigit(int c)
 {
 	int result;

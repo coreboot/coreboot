@@ -100,8 +100,6 @@ const char *soc_acpi_name(const struct device *dev)
 		return "LPCB";
 	case SATA_DEVFN:
 		return "STCR";
-	case SD_DEVFN:
-		return "SDCN";
 	case SMBUS_DEVFN:
 		return "SBUS";
 	case XHCI0_DEVFN:

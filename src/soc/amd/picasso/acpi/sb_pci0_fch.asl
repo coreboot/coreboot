@@ -53,21 +53,6 @@ Device(SBUS) {
 /* 0:14.3 - LPC */
 #include <soc/amd/common/acpi/lpc.asl>
 
-/* 0:14.7 - SD Controller */
-Device(SDCN) {
-	Name(_ADR, 0x00140007)
-
-	Method(_PS0) {
-		FDDC(24, 0)
-	}
-	Method(_PS3) {
-		FDDC(24, 3)
-	}
-	Method(_PSC) {
-		Return(SDTD)
-	}
-} /* end SDCN */
-
 Name(CRES, ResourceTemplate() {
 	/* Set the Bus number and Secondary Bus number for the PCI0 device
 	 * The Secondary bus range for PCI0 lets the system
@@ -272,15 +257,6 @@ Field( SMIC, ByteAcc, NoLock, Preserve) {
 	offset (0x1e6f), /* USB3 D3 State */
 	U3DS, 3,
 
-	offset (0x1e70), /* SD D3 Control */
-	SDTD, 2,
-	, 1,
-	SDPD, 1,
-	, 1,
-	, 1,
-	SDRT, 1,
-	SDSC, 1,
-
 	offset (0x1e71), /* SD D3 State */
 	SDDS, 3,
 
@@ -421,14 +397,6 @@ Method(FDDC, 2, Serialized)
 				}
 			}
 /* todo			Case(15) { STD0()} */ /* SATA */
-			Case(24) { /* SD */
-				Store(0x00, SDTD)
-				Store(One, SDPD)
-				Store(SDDS, Local0)
-				while(LNotEqual(Local0,0x7)) {
-					Store(SDDS, Local0)
-				}
-			}
 		}
 	} else {
 		/* put device into D3cold */
@@ -482,20 +450,6 @@ Method(FDDC, 2, Serialized)
 				Store(0x03, U1TD)
 			}
 /* todo			Case(15) { STD3()} */ /* SATA */
-			Case(24) { /* SD */
-				Store(Zero, SDPD)
-				Store(SDDS, Local0)
-				while(LNotEqual(Local0,0x0)) {
-					Store(SDDS, Local0)
-				}
-				Store(0x03, SDTD)
-			}
-		}
-		/* Turn off Power */
-		if(LEqual(I0TD, 3)) {
-			if(LEqual(SATD, 3)) {
-				if(LEqual(SDTD, 3)) { Store(Zero, PG1A) }
-			}
 		}
 		if(LEqual(I1TD, 3)) {
 			if(LEqual(I2TD, 3)) {

@@ -188,11 +188,4 @@
 #define LPC_DEVFN		PCI_DEVFN(PCU_DEV, LPC_FUNC)
 #define SOC_LPC_DEV		_SOC_DEV(PCU_DEV, LPC_FUNC)
 
-/* SD Controller */
-#define SD_DEV			0x14
-#define SD_FUNC			7
-#define SD_DEVID		0x7906
-#define SD_DEVFN		PCI_DEVFN(SD_DEV, SD_FUNC)
-#define SOC_SD_DEV		_SOC_DEV(SD_DEV, SD_FUNC)
-
 #endif /* __PI_PICASSO_PCI_DEVS_H__ */

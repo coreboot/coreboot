@@ -58,9 +58,7 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	UT1E,	1,	//        UART1, 12
 	, 2,
 	ST_E,	1,	//        SATA, 15
-	, 8,
-	SD_E,	1,	//        SD, 24
-	, 2,
+	, 11,
 	ESPI,	1,	//        ESPI, 27
 	/* ChromeOS stuff (0x100 -> 0xfff, size 0xeff) */
 	Offset (0x100),

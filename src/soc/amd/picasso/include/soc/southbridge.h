@@ -303,9 +303,7 @@ typedef struct aoac_devs {
 	unsigned int ut1e:1; /* 12: UART1 */
 	unsigned int :2;
 	unsigned int st_e:1; /* 15: SATA */
-	unsigned int :8;
-	unsigned int sd_e:1; /* 24: SDIO */
-	unsigned int :2;
+	unsigned int :11;
 	unsigned int espi:1; /* 27: ESPI */
 	unsigned int :4;
 } __packed aoac_devs_t;

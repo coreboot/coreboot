@@ -19,7 +19,7 @@ PROGRAM = nvramtool
 CC      = gcc
 INSTALL = /usr/bin/env install
 PREFIX  = /usr/local
-CFLAGS  = -O2 -g -Wall -W -I. -DCMOS_HAL=1
+CFLAGS  = -O2 -g -Wall -W -Wmissing-prototypes -I. -DCMOS_HAL=1
 #CFLAGS  = -Os -Wall
 
 CLI_OBJS = cli/nvramtool.o cli/opts.o

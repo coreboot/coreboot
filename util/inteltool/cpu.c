@@ -78,7 +78,7 @@ inline cpuid_result_t cpuid_ext(int op, unsigned int ecx)
 #ifndef __DARWIN__
 int msr_readerror = 0;
 
-msr_t rdmsr(int addr)
+static msr_t rdmsr(int addr)
 {
 	uint32_t buf[2];
 	msr_t msr = { 0xffffffff, 0xffffffff };
@@ -132,7 +132,7 @@ static int open_and_seek(int cpu, unsigned long msr, int mode, int *fd)
 	return 0;
 }
 
-msr_t rdmsr_from_cpu(int cpu, unsigned long addr)
+static msr_t rdmsr_from_cpu(int cpu, unsigned long addr)
 {
 	int fd;
 	msr_t msr = { 0xffffffff, 0xffffffff };
@@ -155,12 +155,12 @@ msr_t rdmsr_from_cpu(int cpu, unsigned long addr)
 	return msr;
 }
 
-int get_number_of_cpus(void)
+static int get_number_of_cpus(void)
 {
 	return sysconf(_SC_NPROCESSORS_ONLN);
 }
 
-int is_sgx_supported(int cpunum)
+static int is_sgx_supported(int cpunum)
 {
 	cpuid_result_t cpuid_regs;
 	msr_t msr;
@@ -172,14 +172,14 @@ int is_sgx_supported(int cpunum)
 	return ((cpuid_regs.ebx & SGX_SUPPORTED) && (msr.lo & PRMRR_SUPPORTED));
 }
 
-int is_sgx_enabled(int cpunum)
+static int is_sgx_enabled(int cpunum)
 {
 	msr_t data;
 	data = rdmsr_from_cpu(cpunum, IA32_FEATURE_CONTROL);
 	return (data.lo & SGX_GLOBAL_ENABLED);
 }
 
-int is_sgx_locked(int cpunum)
+static int is_sgx_locked(int cpunum)
 {
 	msr_t data;
 	data = rdmsr_from_cpu(cpunum, IA32_FEATURE_CONTROL);

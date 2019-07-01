@@ -443,7 +443,7 @@ void unmap_physical(void *virt_addr, size_t len)
 }
 #endif
 
-void print_version(void)
+static void print_version(void)
 {
 	printf("inteltool v%s -- ", INTELTOOL_VERSION);
 	printf("Copyright (C) 2008 coresystems GmbH\n\n");
@@ -457,7 +457,7 @@ void print_version(void)
     "GNU General Public License for more details.\n\n");
 }
 
-void print_usage(const char *name)
+static void print_usage(const char *name)
 {
 	printf("usage: %s [-vh?gGrpmedPMaAsfSRx]\n", name);
 	printf("\n"

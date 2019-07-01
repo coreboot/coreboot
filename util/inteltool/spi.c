@@ -79,7 +79,7 @@ static const io_register_t ich7_spi_bar_registers[] = {
 	{ 0x68, 4, "PBR2 Protected BIOS Range 2" },
 };
 
-int print_bioscntl(struct pci_dev *sb)
+static int print_bioscntl(struct pci_dev *sb)
 {
 	int i, size = 0;
 	unsigned char bios_cntl = 0xff;
@@ -207,7 +207,7 @@ int print_bioscntl(struct pci_dev *sb)
 	return 0;
 }
 
-int print_spibar(struct pci_dev *sb) {
+static int print_spibar(struct pci_dev *sb) {
 	int i, size = 0, rcba_size = 0x4000;
 	volatile uint8_t *rcba;
 	uint32_t rcba_phys;

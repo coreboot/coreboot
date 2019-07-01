@@ -11,12 +11,16 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/early_variables.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/msr.h>
 #include <cpu/intel/speedstep.h>
 #include <cpu/intel/fsb.h>
 #include <console/console.h>
 #include <commonlib/helpers.h>
+#include <delay.h>
+
+static u32 g_timer_fsb CAR_GLOBAL;
 
 static int get_fsb(void)
 {
@@ -67,16 +71,31 @@ static int get_fsb(void)
 	return ret;
 }
 
-int get_ia32_fsb(void)
+static int set_timer_fsb(void)
 {
-	int ret;
+	int ret = get_fsb();
 
-	ret = get_fsb();
+	if (ret > 0) {
+		car_set_var(g_timer_fsb, ret);
+		return 0;
+	}
 	if (ret == -1)
 		printk(BIOS_ERR, "FSB not found\n");
 	if (ret == -2)
 		printk(BIOS_ERR, "CPU not supported\n");
-	return ret;
+	return -1;
+}
+
+u32 get_timer_fsb(void)
+{
+	u32 fsb;
+
+	fsb = car_get_var(g_timer_fsb);
+	if (fsb > 0)
+		return fsb;
+
+	set_timer_fsb();
+	return car_get_var(g_timer_fsb);
 }
 
 /**
@@ -87,7 +106,7 @@ int get_ia32_fsb(void)
  */
 int get_ia32_fsb_x3(void)
 {
-	const int fsb = get_ia32_fsb();
+	const int fsb = get_timer_fsb();
 
 	if (fsb > 0)
 		return 100 * DIV_ROUND_CLOSEST(3 * fsb, 100);

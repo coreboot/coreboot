@@ -17,44 +17,8 @@
 #include <thread.h>
 #include <arch/cpu.h>
 #include <arch/early_variables.h>
-#include <cpu/intel/fsb.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/lapic.h>
-#include <cpu/intel/speedstep.h>
-
-/* NOTE: This code uses global variables, so it can not be used during
- * memory init.
- */
-
-#if CONFIG_UDELAY_LAPIC_FIXED_FSB != 0
-static inline u32 get_timer_fsb(void)
-{
-	return CONFIG_UDELAY_LAPIC_FIXED_FSB;
-}
-
-static int set_timer_fsb(void)
-{
-	return 0;
-}
-#else
-static u32 g_timer_fsb CAR_GLOBAL;
-
-static int set_timer_fsb(void)
-{
-	int ia32_fsb = get_ia32_fsb();
-
-	if (ia32_fsb > 0) {
-		car_set_var(g_timer_fsb, ia32_fsb);
-		return 0;
-	}
-	return -1;
-}
-
-static inline u32 get_timer_fsb(void)
-{
-	return car_get_var(g_timer_fsb);
-}
-#endif
 
 void init_timer(void)
 {
@@ -66,9 +30,6 @@ void init_timer(void)
 
 	/* Set the initial counter to 0xffffffff */
 	lapic_write(LAPIC_TMICT, 0xffffffff);
-
-	/* Set FSB frequency to a reasonable value */
-	set_timer_fsb();
 }
 
 void udelay(u32 usecs)

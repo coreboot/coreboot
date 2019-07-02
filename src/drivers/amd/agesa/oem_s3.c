@@ -18,7 +18,6 @@
 #include <string.h>
 #include <cbmem.h>
 #include <console/console.h>
-#include <program_loading.h>
 #include <northbridge/amd/agesa/state_machine.h>
 #include <AGESA.h>
 #include <northbridge/amd/agesa/agesa_helper.h>
@@ -121,8 +120,6 @@ AGESA_STATUS OemS3Save(AMD_S3_PARAMS *dataBlock)
 {
 	u32 MTRRStorageSize = 0;
 	uintptr_t pos, size;
-
-	romstage_ram_stack_base(HIGH_ROMSTAGE_STACK_SIZE, ROMSTAGE_STACK_CBMEM);
 
 	/* To be consumed in AmdInitResume. */
 	get_s3nv_data(S3DataTypeNonVolatile, &pos, &size);

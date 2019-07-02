@@ -194,10 +194,10 @@ static void pch_misc_init(void)
 
 	/* Setup NMI on errors, disable SERR */
 	reg8 = (inb(0x61)) & 0xf0;
-	outb(0x61, (reg8 | (1 << 2)));
+	outb((reg8 | (1 << 2)), 0x61);
 
 	/* Disable NMI sources */
-	outb(0x70, (1 << 7));
+	outb((1 << 7), 0x70);
 };
 
 static void clock_gate_8254(const struct device *dev)

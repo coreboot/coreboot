@@ -67,7 +67,7 @@ size_t bert_storage_remaining(void);
 /* Find if errors were added, a BERT region is present, and ACPI table needed */
 int bert_errors_present(void);
 
-/* Get the number of entries accociated with status */
+/* Get the number of entries associated with status */
 static inline size_t bert_entry_count(acpi_generic_error_status_t *status)
 {
 	return (status->block_status & GENERIC_ERR_STS_ENTRY_COUNT_MASK)

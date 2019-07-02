@@ -338,7 +338,7 @@ static int spi_locked(void)
 	if (CONFIG(SOUTHBRIDGE_INTEL_I82801GX)) {
 		return !!(readw_(&cntlr->ich7_spi->spis) & HSFS_FLOCKDN);
 	} else {
-		return !!(readw_(&cntlr->ich9_spi->hsfs) | HSFS_FLOCKDN);
+		return !!(readw_(&cntlr->ich9_spi->hsfs) & HSFS_FLOCKDN);
 	}
 }
 

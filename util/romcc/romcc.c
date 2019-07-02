@@ -19873,7 +19873,7 @@ static int color_graph(struct compile_state *state, struct reg_state *rstate)
 	else {
 		return 1;
 	}
-	cgdebug_printf(state, " %d\n", range - rstate->lr);
+	cgdebug_printf(state, " %td\n", range - rstate->lr);
 	range->group_prev = 0;
 	for(edge = range->edges; edge; edge = edge->next) {
 		struct live_range *node;
@@ -19891,7 +19891,7 @@ static int color_graph(struct compile_state *state, struct reg_state *rstate)
 			if (&node->group_next == rstate->high_tail) {
 				rstate->high_tail = node->group_prev;
 			}
-			cgdebug_printf(state, "Moving...%d to low\n", node - rstate->lr);
+			cgdebug_printf(state, "Moving...%td to low\n", node - rstate->lr);
 			node->group_prev  = rstate->low_tail;
 			node->group_next  = 0;
 			*rstate->low_tail = node;
@@ -19904,7 +19904,7 @@ static int color_graph(struct compile_state *state, struct reg_state *rstate)
 	}
 	colored = color_graph(state, rstate);
 	if (colored) {
-		cgdebug_printf(state, "Coloring %d @", range - rstate->lr);
+		cgdebug_printf(state, "Coloring %td @", range - rstate->lr);
 		cgdebug_loc(state, range->defs->def);
 		cgdebug_flush(state);
 		colored = select_free_color(state, rstate, range);
@@ -20198,7 +20198,7 @@ static void allocate_registers(struct compile_state *state)
 			 */
 			if ((range->degree < regc_max_size(state, range->classes)) ||
 				(range->color != REG_UNSET)) {
-				cgdebug_printf(state, "Lo: %5d degree %5d%s\n",
+				cgdebug_printf(state, "Lo: %5td degree %5d%s\n",
 					range - rstate.lr, range->degree,
 					(range->color != REG_UNSET) ? " (colored)": "");
 				*range->group_prev = range->group_next;
@@ -20215,7 +20215,7 @@ static void allocate_registers(struct compile_state *state)
 				next = point;
 			}
 			else {
-				cgdebug_printf(state, "hi: %5d degree %5d%s\n",
+				cgdebug_printf(state, "hi: %5td degree %5d%s\n",
 					range - rstate.lr, range->degree,
 					(range->color != REG_UNSET) ? " (colored)": "");
 			}

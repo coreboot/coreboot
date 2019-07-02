@@ -262,7 +262,8 @@ phdr_read(const struct buffer *in, struct parsed_elf *pelf,
 	 * per the ELF spec, You'd be surprised how many ELF
 	 * readers miss this little detail.
 	 */
-	buffer_splice(&b, in, ehdr->e_phoff, ehdr->e_phentsize * ehdr->e_phnum);
+	buffer_splice(&b, in, ehdr->e_phoff,
+		      (uint32_t)ehdr->e_phentsize * ehdr->e_phnum);
 	if (check_size(in, ehdr->e_phoff, buffer_size(&b), "program headers"))
 		return -1;
 
@@ -304,7 +305,8 @@ shdr_read(const struct buffer *in, struct parsed_elf *pelf,
 	 * per the ELF spec, You'd be surprised how many ELF
 	 * readers miss this little detail.
 	 */
-	buffer_splice(&b, in, ehdr->e_shoff, ehdr->e_shentsize * ehdr->e_shnum);
+	buffer_splice(&b, in, ehdr->e_shoff,
+		      (uint32_t)ehdr->e_shentsize * ehdr->e_shnum);
 	if (check_size(in, ehdr->e_shoff, buffer_size(&b), "section headers"))
 		return -1;
 
@@ -1180,8 +1182,8 @@ int elf_writer_serialize(struct elf_writer *ew, struct buffer *out)
 	ew->ehdr.e_shnum = ew->num_secs;
 	metadata_size = 0;
 	metadata_size += ew->ehdr.e_ehsize;
-	metadata_size += ew->ehdr.e_shnum * ew->ehdr.e_shentsize;
-	metadata_size += ew->ehdr.e_phnum * ew->ehdr.e_phentsize;
+	metadata_size += (Elf64_Xword)ew->ehdr.e_shnum * ew->ehdr.e_shentsize;
+	metadata_size += (Elf64_Xword)ew->ehdr.e_phnum * ew->ehdr.e_phentsize;
 	shstroffset = metadata_size;
 	/* Align up section header string size and metadata size to 4KiB */
 	metadata_size = ALIGN(metadata_size + shstrlen, 4096);
@@ -1200,11 +1202,11 @@ int elf_writer_serialize(struct elf_writer *ew, struct buffer *out)
 	 */
 	ew->ehdr.e_shoff = ew->ehdr.e_ehsize;
 	ew->ehdr.e_phoff = ew->ehdr.e_shoff +
-	                   ew->ehdr.e_shnum * ew->ehdr.e_shentsize;
+			   (Elf64_Off)ew->ehdr.e_shnum * ew->ehdr.e_shentsize;
 
 	buffer_splice(&metadata, out, 0, metadata_size);
 	buffer_splice(&phdrs, out, ew->ehdr.e_phoff,
-	              ew->ehdr.e_phnum * ew->ehdr.e_phentsize);
+		      (uint32_t)ew->ehdr.e_phnum * ew->ehdr.e_phentsize);
 	buffer_splice(&data, out, metadata_size, program_size);
 	/* Set up the section header string table contents. */
 	strtab = &ew->shstrtab_sec->content;

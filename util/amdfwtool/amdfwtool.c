@@ -566,11 +566,13 @@ static ssize_t copy_blob(void *dest, const char *src_file, size_t room)
 
 	if (fstat(fd, &fd_stat)) {
 		printf("fstat error: %s\n", strerror(errno));
+		close(fd);
 		return -2;
 	}
 
 	if (fd_stat.st_size > room) {
 		printf("Error: %s will not fit.  Exiting.\n", src_file);
+		close(fd);
 		return -3;
 	}
 

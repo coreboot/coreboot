@@ -148,7 +148,7 @@ const char *acpi_device_scope(struct device *dev)
 const char *acpi_device_path_join(struct device *dev, const char *name)
 {
 	static char buf[DEVICE_PATH_MAX] = {};
-	size_t len;
+	ssize_t len;
 
 	if (!dev)
 		return NULL;

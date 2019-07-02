@@ -197,8 +197,10 @@ partitioned_file_t *partitioned_file_reopen(const char *filename,
 	const struct fmap_area *fmap_fmap_entry =
 				fmap_find_area(file->fmap, SECTION_NAME_FMAP);
 
-	if (!fmap_fmap_entry)
+	if (!fmap_fmap_entry) {
+		partitioned_file_close(file);
 		return NULL;
+	}
 
 	if ((long)fmap_fmap_entry->offset != fmap_region_offset) {
 		ERROR("FMAP's '%s' section doesn't point back to FMAP start (did something corrupt this file?)\n",

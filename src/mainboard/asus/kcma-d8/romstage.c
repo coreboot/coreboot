@@ -51,7 +51,6 @@
 #define SERIAL_1_DEV PNP_DEV(0x2e, W83667HG_A_SP2)
 
 int spd_read_byte(unsigned int device, unsigned int address);
-extern struct sys_info sysinfo_car;
 
 inline int spd_read_byte(unsigned int device, unsigned int address)
 {
@@ -355,7 +354,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		: "=r" (esp)
 		);
 
-	struct sys_info *sysinfo = &sysinfo_car;
+	struct sys_info *sysinfo = get_sysinfo();
 
 	/* Limit the maximum HT speed to 2.6GHz to prevent lockups
 	 * due to HT CPU <--> CPU wiring not being validated to 3.2GHz

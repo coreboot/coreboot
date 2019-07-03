@@ -46,7 +46,6 @@
 #define SERIAL_DEV PNP_DEV(0x2e, F71859_SP1)
 
 int spd_read_byte(unsigned int device, unsigned int address);
-extern struct sys_info sysinfo_car;
 
 
 int spd_read_byte(u32 device, u32 address)
@@ -56,7 +55,7 @@ int spd_read_byte(u32 device, u32 address)
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
-	struct sys_info *sysinfo = &sysinfo_car;
+	struct sys_info *sysinfo = get_sysinfo();
 	static const u8 spd_addr[] = {RC00, DIMM0, DIMM2, 0, 0, DIMM1, DIMM3, 0, 0, };
 	u32 bsp_apicid = 0, val;
 	msr_t msr;

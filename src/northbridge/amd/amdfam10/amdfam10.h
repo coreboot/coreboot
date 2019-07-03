@@ -989,12 +989,6 @@ struct sys_info {
 	struct DCTStatStruc DCTstatA[NODE_NUMS];
 } __packed;
 
-
-/*
-#ifdef __PRE_RAM__
-extern struct sys_info sysinfo_car;
-#endif
-*/
 #ifndef __PRE_RAM__
 struct device *get_node_pci(u32 nodeid, u32 fn);
 #endif

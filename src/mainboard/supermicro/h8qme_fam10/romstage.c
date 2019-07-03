@@ -50,11 +50,10 @@
 #define SMBUS_SWITCH1 0x70
 #define SMBUS_SWITCH2 0x72
 
-void activate_spd_rom(const struct mem_controller *ctrl);
 int spd_read_byte(unsigned int device, unsigned int address);
 extern struct sys_info sysinfo_car;
 
-inline void activate_spd_rom(const struct mem_controller *ctrl)
+void activate_spd_rom(const struct mem_controller *ctrl)
 {
 	smbus_send_byte(SMBUS_SWITCH1, 5 & 0x0f);
 	smbus_send_byte(SMBUS_SWITCH2, (5 >> 4) & 0x0f);

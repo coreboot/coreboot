@@ -50,7 +50,6 @@
 #define SERIAL_0_DEV PNP_DEV(0x2e, W83667HG_A_SP1)
 #define SERIAL_1_DEV PNP_DEV(0x2e, W83667HG_A_SP2)
 
-void activate_spd_rom(const struct mem_controller *ctrl);
 int spd_read_byte(unsigned int device, unsigned int address);
 extern struct sys_info sysinfo_car;
 

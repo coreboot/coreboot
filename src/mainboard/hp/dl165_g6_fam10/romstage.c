@@ -52,11 +52,10 @@
 #define SERIAL_DEV PNP_DEV(0x2e, PILOT_SP1)
 #define RTC_DEV PNP_DEV(0x4e, PC87417_RTC)
 
-void activate_spd_rom(const struct mem_controller *ctrl);
 int spd_read_byte(unsigned int device, unsigned int address);
 extern struct sys_info sysinfo_car;
 
-inline void activate_spd_rom(const struct mem_controller *ctrl)
+void activate_spd_rom(const struct mem_controller *ctrl)
 {
 	u8 val;
 	outb(0x3d, 0x0cd6);

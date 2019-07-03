@@ -45,13 +45,9 @@
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
 #define CLK_DEV PNP_DEV(0x2e, W83627HF_SP1)
 
-void activate_spd_rom(const struct mem_controller *ctrl);
 int spd_read_byte(unsigned int device, unsigned int address);
 extern struct sys_info sysinfo_car;
 
-void activate_spd_rom(const struct mem_controller *ctrl)
-{
-}
 
 int spd_read_byte(u32 device, u32 address)
 {

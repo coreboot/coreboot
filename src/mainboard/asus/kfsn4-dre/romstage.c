@@ -53,7 +53,6 @@
 
 #define GPIO3_DEV PNP_DEV(0x2e, W83627THG_GPIO3)
 
-void activate_spd_rom(const struct mem_controller *ctrl);
 int spd_read_byte(unsigned int device, unsigned int address);
 extern struct sys_info sysinfo_car;
 
@@ -170,7 +169,8 @@ static const uint8_t spd_addr[] = {
 	RC01, DIMM0, DIMM2, DIMM4, DIMM6, DIMM1, DIMM3, DIMM5, DIMM7,
 };
 
-void activate_spd_rom(const struct mem_controller *ctrl) {
+void activate_spd_rom(const struct mem_controller *ctrl)
+{
 	printk(BIOS_DEBUG, "activate_spd_rom() for node %02x\n", ctrl->node_id);
 	if (ctrl->node_id == 0) {
 		printk(BIOS_DEBUG, "enable_spd_node0()\n");

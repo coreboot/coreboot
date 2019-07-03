@@ -46,11 +46,9 @@
 #define SERIAL_DEV PNP_DEV(0x2e, IT8712F_SP1)
 #define GPIO_DEV PNP_DEV(0x2e, IT8712F_GPIO)
 
-void activate_spd_rom(const struct mem_controller *ctrl);
 int spd_read_byte(unsigned int device, unsigned int address);
 extern struct sys_info sysinfo_car;
 
-void activate_spd_rom(const struct mem_controller *ctrl) { }
 
 int spd_read_byte(u32 device, u32 address)
 {

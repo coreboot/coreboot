@@ -24,6 +24,8 @@ struct sys_info;
 struct DCTStatStruc;
 struct MCTStatStruc;
 
+void activate_spd_rom(const struct mem_controller *ctrl);
+
 int mctRead_SPD(u32 smaddr, u32 reg);
 void mctSMBhub_Init(u32 node);
 void mctGet_DIMMAddr(struct DCTStatStruc *pDCTstat, u32 node);

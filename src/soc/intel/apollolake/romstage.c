@@ -100,7 +100,7 @@ static void soc_early_romstage_init(void)
 /* Thermal throttle activation offset */
 static void configure_thermal_target(void)
 {
-	const struct device *dev = dev_find_slot(0, SA_DEVFN_ROOT);
+	const struct device *dev = pcidev_path_on_root(SA_DEVFN_ROOT);
 	if (!dev) {
 		printk(BIOS_ERR, "Could not find SOC devicetree config\n");
 		return;
@@ -320,7 +320,7 @@ static void soc_memory_init_params(FSPM_UPD *mupd)
 {
 #if CONFIG(SOC_INTEL_GLK)
 	/* Only for GLK */
-	const struct device *dev = dev_find_slot(0, PCH_DEVFN_LPC);
+	const struct device *dev = pcidev_path_on_root(PCH_DEVFN_LPC);
 	assert(dev != NULL);
 	const config_t *config = dev->chip_info;
 	FSP_M_CONFIG *m_cfg = &mupd->FspmConfig;
@@ -350,7 +350,7 @@ static void soc_memory_init_params(FSPM_UPD *mupd)
 static void parse_devicetree_setting(FSPM_UPD *m_upd)
 {
 #if CONFIG(SOC_INTEL_GLK)
-	DEVTREE_CONST struct device *dev = dev_find_slot(0, PCH_DEVFN_NPK);
+	DEVTREE_CONST struct device *dev = pcidev_path_on_root(PCH_DEVFN_NPK);
 	if (!dev)
 		return;
 

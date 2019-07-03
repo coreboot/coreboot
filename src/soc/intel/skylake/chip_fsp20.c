@@ -102,7 +102,7 @@ static void pcie_update_device_tree(const struct pcie_entry *pcie_rp_group,
 
 	for (group = 0; group < pci_groups; group++) {
 		devfn0 = pcie_rp_group[group].devfn;
-		func0 = dev_find_slot(0, devfn0);
+		func0 = pcidev_path_on_root(devfn0);
 		if (func0 == NULL)
 			continue;
 
@@ -119,7 +119,7 @@ static void pcie_update_device_tree(const struct pcie_entry *pcie_rp_group,
 		 */
 		for (i = 1; i < pcie_rp_group[group].func_count;
 				i++, devfn += inc) {
-			struct device *dev = dev_find_slot(0, devfn);
+			struct device *dev = pcidev_path_on_root(devfn);
 			if (dev == NULL || !dev->enabled)
 				continue;
 
@@ -354,7 +354,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	}
 
 	/* If ISH is enabled, enable ISH elements */
-	dev = dev_find_slot(0, PCH_DEVFN_ISH);
+	dev = pcidev_path_on_root(PCH_DEVFN_ISH);
 	if (dev)
 		params->PchIshEnable = dev->enabled;
 	else
@@ -433,11 +433,11 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 		fill_vr_domain_config(params, i, &config->domain_vr_config[i]);
 
 	/* Show SPI controller if enabled in devicetree.cb */
-	dev = dev_find_slot(0, PCH_DEVFN_SPI);
+	dev = pcidev_path_on_root(PCH_DEVFN_SPI);
 	params->ShowSpiController = dev->enabled;
 
 	/* Enable xDCI controller if enabled in devicetree and allowed */
-	dev = dev_find_slot(0, PCH_DEVFN_USBOTG);
+	dev = pcidev_path_on_root(PCH_DEVFN_USBOTG);
 	if (!xdci_can_enable())
 		dev->enabled = 0;
 	params->XdciEnable = dev->enabled;

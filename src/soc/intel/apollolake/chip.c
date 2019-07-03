@@ -256,7 +256,7 @@ static void pcie_update_device_tree(unsigned int devfn0, int num_funcs)
 	int i;
 	unsigned int inc = PCI_DEVFN(0, 1);
 
-	func0 = dev_find_slot(0, devfn0);
+	func0 = pcidev_path_on_root(devfn0);
 	if (func0 == NULL)
 		return;
 
@@ -272,7 +272,7 @@ static void pcie_update_device_tree(unsigned int devfn0, int num_funcs)
 	 * as that port was move to func0.
 	 */
 	for (i = 1; i < num_funcs; i++, devfn += inc) {
-		struct device *dev = dev_find_slot(0, devfn);
+		struct device *dev = pcidev_path_on_root(devfn);
 		if (dev == NULL)
 			continue;
 
@@ -760,7 +760,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *silupd)
 		apl_fsp_silicon_init_params_cb(cfg, silconfig);
 
 	/* Enable xDCI controller if enabled in devicetree and allowed */
-	dev = dev_find_slot(0, PCH_DEVFN_XDCI);
+	dev = pcidev_path_on_root(PCH_DEVFN_XDCI);
 	if (!xdci_can_enable())
 		dev->enabled = 0;
 	silconfig->UsbOtg = dev->enabled;

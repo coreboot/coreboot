@@ -25,8 +25,8 @@
 #else
 #include <device/device.h>
 #include <device/pci_def.h>
-#define _SA_DEV(slot)		dev_find_slot(0, _SA_DEVFN(slot))
-#define _PCH_DEV(slot, func)	dev_find_slot(0, _PCH_DEVFN(slot, func))
+#define _SA_DEV(slot)		pcidev_path_on_root(_SA_DEVFN(slot))
+#define _PCH_DEV(slot, func)	pcidev_path_on_root(_PCH_DEVFN(slot, func))
 #endif
 
 /* System Agent Devices */

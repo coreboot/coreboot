@@ -149,7 +149,7 @@ void soc_get_gpi_gpe_configs(uint8_t *dw0, uint8_t *dw1, uint8_t *dw2)
 	DEVTREE_CONST struct soc_intel_apollolake_config *config;
 
 	/* Look up the device in devicetree */
-	DEVTREE_CONST struct device *dev = dev_find_slot(0, SA_DEVFN_ROOT);
+	DEVTREE_CONST struct device *dev = pcidev_path_on_root(SA_DEVFN_ROOT);
 	if (!dev || !dev->chip_info) {
 		printk(BIOS_ERR, "BUG! Could not find SOC devicetree config\n");
 		return;

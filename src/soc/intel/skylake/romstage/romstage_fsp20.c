@@ -301,7 +301,7 @@ static void soc_primary_gfx_config_params(FSP_M_CONFIG *m_cfg,
 {
 	const struct device *dev;
 
-	dev = dev_find_slot(0, SA_DEVFN_IGD);
+	dev = pcidev_path_on_root(SA_DEVFN_IGD);
 	if (!dev || !dev->enabled) {
 		/*
 		 * If iGPU is disabled or not defined in the devicetree.cb,
@@ -331,7 +331,7 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	FSP_M_CONFIG *m_cfg = &mupd->FspmConfig;
 	FSP_M_TEST_CONFIG *m_t_cfg = &mupd->FspmTestConfig;
 
-	dev = dev_find_slot(0, PCI_DEVFN(PCH_DEV_SLOT_LPC, 0));
+	dev = pcidev_on_root(PCH_DEV_SLOT_LPC, 0);
 	config = dev->chip_info;
 
 	soc_memory_init_params(m_cfg, config);

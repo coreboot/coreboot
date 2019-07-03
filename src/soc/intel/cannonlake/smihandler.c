@@ -78,7 +78,7 @@ static void pch_disable_heci(void)
 void smihandler_soc_at_finalize(void)
 {
 	const struct soc_intel_cannonlake_config *config;
-	const struct device *dev = dev_find_slot(0, PCH_DEVFN_CSE);
+	const struct device *dev = pcidev_path_on_root(PCH_DEVFN_CSE);
 
 	if (!dev || !dev->chip_info) {
 		printk(BIOS_ERR, "%s: Could not find SoC devicetree config!\n",

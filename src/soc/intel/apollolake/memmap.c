@@ -35,7 +35,7 @@ void *cbmem_top(void)
 	if (!CONFIG(SOC_INTEL_GLK))
 		return tolum;
 
-	dev = dev_find_slot(0, PCH_DEVFN_LPC);
+	dev = pcidev_path_on_root(PCH_DEVFN_LPC);
 	assert(dev != NULL);
 	config = dev->chip_info;
 

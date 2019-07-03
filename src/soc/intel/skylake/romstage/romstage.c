@@ -57,7 +57,7 @@ void soc_memory_init_params(struct romstage_params *params,
 	const struct soc_intel_skylake_config *config;
 
 	/* Set the parameters for MemoryInit */
-	dev = dev_find_slot(0, PCI_DEVFN(PCH_DEV_SLOT_LPC, 0));
+	dev = pcidev_on_root(PCH_DEV_SLOT_LPC, 0);
 	config = dev->chip_info;
 
 	/*

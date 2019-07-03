@@ -293,7 +293,7 @@ int acpigen_soc_clear_tx_gpio(unsigned int gpio_num)
 
 static unsigned long soc_fill_dmar(unsigned long current)
 {
-	struct device *const igfx_dev = dev_find_slot(0, SA_DEVFN_IGD);
+	struct device *const igfx_dev = pcidev_path_on_root(SA_DEVFN_IGD);
 	uint64_t gfxvtbar = MCHBAR64(GFXVTBAR) & VTBAR_MASK;
 	bool gfxvten = MCHBAR32(GFXVTBAR) & VTBAR_ENABLED;
 
@@ -306,7 +306,7 @@ static unsigned long soc_fill_dmar(unsigned long current)
 		acpi_dmar_drhd_fixup(tmp, current);
 	}
 
-	struct device *const ipu_dev = dev_find_slot(0, SA_DEVFN_IPU);
+	struct device *const ipu_dev = pcidev_path_on_root(SA_DEVFN_IPU);
 	uint64_t ipuvtbar = MCHBAR64(IPUVTBAR) & VTBAR_MASK;
 	bool ipuvten = MCHBAR32(IPUVTBAR) & VTBAR_ENABLED;
 

@@ -79,7 +79,7 @@ static void pch_enable_lpc(void)
 	const struct device *dev;
 	const config_t *config;
 
-	dev = dev_find_slot(0, PCI_DEVFN(PCH_DEV_SLOT_LPC, 0));
+	dev = pcidev_on_root(PCH_DEV_SLOT_LPC, 0);
 	if (!dev || !dev->chip_info)
 		return;
 	config = dev->chip_info;

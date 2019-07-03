@@ -27,8 +27,8 @@
 #if ENV_RAMSTAGE
 #include <device/device.h>
 #include <device/pci_def.h>
-#define _SA_DEV(slot) dev_find_slot(0, _SA_DEVFN(slot))
-#define _PCH_DEV(slot, func) dev_find_slot(0, _PCH_DEVFN(slot, func))
+#define _SA_DEV(slot) pcidev_path_on_root(_SA_DEVFN(slot))
+#define _PCH_DEV(slot, func) pcidev_path_on_root(_PCH_DEVFN(slot, func))
 #else
 #define _SA_DEV(slot) PCI_DEV(0, SA_DEV_SLOT_##slot, 0)
 #define _PCH_DEV(slot, func) PCI_DEV(0, PCH_DEV_SLOT_##slot, func)

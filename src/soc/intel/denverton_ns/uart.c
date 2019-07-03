@@ -76,7 +76,7 @@ static void hide_hsuarts(void)
 	   last one. */
 	for (i = DENVERTON_UARTS_TO_INI - 1; i >= 0; i--) {
 		struct device *uart_dev;
-		uart_dev = dev_find_slot(0, PCI_DEVFN(HSUART_DEV, i));
+		uart_dev = pcidev_on_root(HSUART_DEV, i);
 		if (uart_dev == NULL)
 			continue;
 		pci_or_config32(uart_dev, PCI_FUNC_RDCFG_HIDE, 1);

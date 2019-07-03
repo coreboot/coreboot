@@ -30,7 +30,7 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg, const config_t *config)
 {
 	unsigned int i;
 	uint32_t mask = 0;
-	const struct device *dev = dev_find_slot(0, PCH_DEVFN_ISH);
+	const struct device *dev = pcidev_path_on_root(PCH_DEVFN_ISH);
 
 	/* Set IGD stolen size to 64MB. */
 	m_cfg->IgdDvmt50PreAlloc = 2;
@@ -85,7 +85,7 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg, const config_t *config)
 		m_cfg->PchIshEnable = dev->enabled;
 
 	/* If HDA is enabled, enable HDA elements */
-	dev = dev_find_slot(0, PCH_DEVFN_HDA);
+	dev = pcidev_path_on_root(PCH_DEVFN_HDA);
 	if (!dev)
 		m_cfg->PchHdaEnable = 0;
 	else
@@ -100,8 +100,8 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg, const config_t *config)
 
 void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 {
-	const struct device *dev = dev_find_slot(0, PCH_DEVFN_LPC);
-	const struct device *smbus = dev_find_slot(0, PCH_DEVFN_SMBUS);
+	const struct device *dev = pcidev_path_on_root(PCH_DEVFN_LPC);
+	const struct device *smbus = pcidev_path_on_root(PCH_DEVFN_SMBUS);
 	assert(dev != NULL);
 	const config_t *config = dev->chip_info;
 	FSP_M_CONFIG *m_cfg = &mupd->FspmConfig;

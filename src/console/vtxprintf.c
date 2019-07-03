@@ -38,7 +38,7 @@ static int number(void (*tx_byte)(unsigned char byte, void *data),
 	void *data)
 {
 	char c, sign, tmp[66];
-	const char *digits = "0123456789abcdefghijklmnopqrstuvwxyz";
+	const char *digits = "0123456789abcdef";
 	int i;
 	int count = 0;
 #ifdef SUPPORT_64BIT_INTS
@@ -57,11 +57,9 @@ static int number(void (*tx_byte)(unsigned char byte, void *data),
 #endif
 
 	if (type & LARGE)
-		digits = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+		digits = "0123456789ABCDEF";
 	if (type & LEFT)
 		type &= ~ZEROPAD;
-	if (base < 2 || base > 36)
-		return 0;
 	c = (type & ZEROPAD) ? '0' : ' ';
 	sign = 0;
 	if (type & SIGN) {

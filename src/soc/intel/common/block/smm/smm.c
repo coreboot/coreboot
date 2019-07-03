@@ -18,10 +18,23 @@
 #include <bootstate.h>
 #include <console/console.h>
 #include <cpu/x86/smm.h>
+#include <fsp/memmap.h>
 #include <intelblocks/pmclib.h>
 #include <intelblocks/smm.h>
 #include <intelblocks/systemagent.h>
 #include <soc/pm.h>
+#include <stage_cache.h>
+
+#if !CONFIG(PLATFORM_USES_FSP1_1)
+void stage_cache_external_region(void **base, size_t *size)
+{
+	if (smm_subregion(SMM_SUBREGION_CACHE, base, size)) {
+		printk(BIOS_ERR, "ERROR: No cache SMM subregion.\n");
+		*base = NULL;
+		*size = 0;
+	}
+}
+#endif
 
 void smm_southbridge_clear_state(void)
 {

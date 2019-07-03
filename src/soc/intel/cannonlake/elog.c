@@ -24,18 +24,6 @@
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
 
-#define XHCI_USB2_PORT_STATUS_REG	0x480
-#define XHCI_USB3_PORT_STATUS_REG	0x580
-#define XHCI_USB2_PORT_NUM		14
-#define XHCI_USB3_PORT_NUM		10
-
-static const struct xhci_usb_info usb_info = {
-	.usb2_port_status_reg = XHCI_USB2_PORT_STATUS_REG,
-	.num_usb2_ports = XHCI_USB2_PORT_NUM,
-	.usb3_port_status_reg = XHCI_USB3_PORT_STATUS_REG,
-	.num_usb3_ports = XHCI_USB3_PORT_NUM,
-};
-
 static void pch_log_gpio_gpe(u32 gpe0_sts, u32 gpe0_en, int start)
 {
 	int i;
@@ -68,7 +56,7 @@ static void pch_log_wake_source(struct chipset_power_state *ps)
 
 	/* XHCI - "Power Management Event Bus 0" events include XHCI */
 	if (ps->gpe0_sts[GPE_STD] & PME_B0_STS)
-		pch_xhci_update_wake_event(&usb_info);
+		pch_xhci_update_wake_event(soc_get_xhci_usb_info());
 
 	/* SMBUS Wake */
 	if (ps->gpe0_sts[GPE_STD] & SMB_WAK_STS)

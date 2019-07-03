@@ -44,6 +44,7 @@ smm-y += smihandler.c
 smm-y += spi.c
 smm-y += uart.c
 smm-y += elog.c
+smm-y += xhci.c
 
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi.c
 ramstage-y += cpu.c
@@ -67,6 +68,7 @@ ramstage-y += pmc.c
 ramstage-y += reset.c
 ramstage-y += xdci.c
 ramstage-y += sd.c
+ramstage-y += xhci.c
 
 postcar-y += memmap.c
 postcar-y += mmap_boot.c

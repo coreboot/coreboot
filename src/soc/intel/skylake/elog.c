@@ -39,18 +39,6 @@ static void pch_log_gpio_gpe(u32 gpe0_sts, u32 gpe0_en, int start)
 	}
 }
 
-#define XHCI_USB2_PORT_STATUS_REG	0x480
-#define XHCI_USB3_PORT_STATUS_REG	0x540
-#define XHCI_USB2_PORT_NUM		10
-#define XHCI_USB3_PORT_NUM		6
-
-static const struct xhci_usb_info usb_info = {
-	.usb2_port_status_reg = XHCI_USB2_PORT_STATUS_REG,
-	.num_usb2_ports = XHCI_USB2_PORT_NUM,
-	.usb3_port_status_reg = XHCI_USB3_PORT_STATUS_REG,
-	.num_usb3_ports = XHCI_USB3_PORT_NUM,
-};
-
 struct pme_status_info {
 #ifdef __SIMPLE_DEVICE__
 	pci_devfn_t dev;
@@ -76,7 +64,7 @@ static void pch_log_add_elog_event(const struct pme_status_info *info,
 	 * USB2/3 ports.
 	 */
 	if ((info->dev == PCH_DEV_XHCI) &&
-			pch_xhci_update_wake_event(&usb_info))
+			pch_xhci_update_wake_event(soc_get_xhci_usb_info()))
 		return;
 
 	elog_add_event_wake(info->elog_event, 0);
@@ -124,7 +112,7 @@ static void pch_log_pme_internal_wake_source(void)
 	 * PME_STS_BIT in controller register.
 	 */
 	if (!dev_found)
-		dev_found = pch_xhci_update_wake_event(&usb_info);
+		dev_found = pch_xhci_update_wake_event(soc_get_xhci_usb_info());
 
 	if (!dev_found)
 		elog_add_event_wake(ELOG_WAKE_SOURCE_PME_INTERNAL, 0);

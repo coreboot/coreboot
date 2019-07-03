@@ -46,4 +46,14 @@ bool pch_xhci_update_wake_event(const struct xhci_usb_info *info);
 
 void soc_xhci_init(struct device *dev);
 
+/**
+ * soc_get_xhci_usb_info() - Get the information about USB2 & USB3 ports.
+ *
+ * This function is used to get USB ports and status register offset information
+ * within a XHCI controller.
+ *
+ * Return: USB ports and status register offset info for the SoC.
+ */
+const struct xhci_usb_info *soc_get_xhci_usb_info(void);
+
 #endif	/* SOC_INTEL_COMMON_BLOCK_XHCI_H */

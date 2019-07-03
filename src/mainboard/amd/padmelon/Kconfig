@@ -1,0 +1,65 @@
+#
+# This file is part of the coreboot project.
+#
+# Copyright (C) 2015-2018 Advanced Micro Devices, Inc.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; version 2 of the License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+
+if BOARD_AMD_PADMELON
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
+	select SOC_AMD_MERLINFALCON
+	select BOARD_ROMSIZE_KB_8192
+	select DRIVERS_I2C_GENERIC
+	select DRIVERS_PS2_KEYBOARD
+	select HAVE_ACPI_TABLES
+	select GFXUMA
+	select STONEYRIDGE_LEGACY_FREE
+	select ONBOARD_VGA_IS_PRIMARY
+	select BOOTBLOCK_CONSOLE
+	select SUPERIO_FINTEK_F81803A
+	select SUPERIO_FINTEK_COMMON_PRE_RAM
+	select SUPERIO_FINTEK_FAN_CONTROL
+	select SUPERIO_FINTEK_FAN_API_CALL
+	select VGA_BIOS
+	select AZALIA_PLUGIN_SUPPORT
+
+config MAINBOARD_DIR
+	string
+	default amd/padmelon
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "Padmelon"
+
+config HAVE_S3_SUPPORT
+	bool
+	default n
+
+config MAX_CPUS
+	int
+	default 4
+
+config IRQ_SLOT_COUNT
+	int
+	default 11
+
+config HWM_PORT
+	hex
+	default 0x0225
+	help
+	  HWM base address must be an odd address. Hardware monitor used
+	  addresses are HWM_PORT for index an HWM_PORT + 1 for data.
+	  If changed, make sure fan_init.c IO window setting. The HWM
+	  (Hardware Monitor) is used for fan control within padmelon.
+
+endif # BOARD_AMD_PADMELON

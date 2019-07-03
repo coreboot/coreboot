@@ -289,6 +289,7 @@ DEVTREE_CONST struct device *pcidev_path_behind(const struct bus *parent,
 		pci_devfn_t devfn);
 DEVTREE_CONST struct device *pcidev_path_on_root(pci_devfn_t devfn);
 DEVTREE_CONST struct device *pcidev_on_root(uint8_t dev, uint8_t fn);
+DEVTREE_CONST struct bus *pci_root_bus(void);
 
 void scan_smbus(struct device *bus);
 void scan_generic_bus(struct device *bus);

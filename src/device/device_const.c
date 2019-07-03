@@ -183,10 +183,24 @@ DEVTREE_CONST struct device *pcidev_path_behind(
 	return find_dev_path(parent, &path);
 }
 
-DEVTREE_CONST struct device *pcidev_path_on_root(pci_devfn_t devfn)
+DEVTREE_CONST struct bus *pci_root_bus(void)
 {
 	DEVTREE_CONST struct device *pci_domain;
+	MAYBE_STATIC DEVTREE_CONST struct bus *pci_root = NULL;
 
+	if (pci_root)
+		return pci_root;
+
+	pci_domain = dev_find_path(NULL, DEVICE_PATH_DOMAIN);
+	if (!pci_domain)
+		return NULL;
+
+	pci_root = pci_domain->link_list;
+	return pci_root;
+}
+
+DEVTREE_CONST struct device *pcidev_path_on_root(pci_devfn_t devfn)
+{
 	/* Work around pcidev_path_behind() below failing
 	 * due tue complicated devicetree with topology
 	 * being manipulated on-the-fly.
@@ -194,11 +208,7 @@ DEVTREE_CONST struct device *pcidev_path_on_root(pci_devfn_t devfn)
 	if (CONFIG(NORTHBRIDGE_AMD_AMDFAM10))
 		return dev_find_slot(0, devfn);
 
-	pci_domain = dev_find_path(NULL, DEVICE_PATH_DOMAIN);
-	if (!pci_domain)
-		return NULL;
-
-	return pcidev_path_behind(pci_domain->link_list, devfn);
+	return pcidev_path_behind(pci_root_bus(), devfn);
 }
 
 DEVTREE_CONST struct device *pcidev_on_root(uint8_t dev, uint8_t fn)

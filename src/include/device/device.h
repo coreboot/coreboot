@@ -306,7 +306,6 @@ DEVTREE_CONST struct bus *pci_root_bus(void);
  * devices in all_devices singly-linked list as well as the time
  * when this function is called (secondary reflecting topology).
  */
-DEVTREE_CONST struct device *dev_find_slot(unsigned int bus, unsigned int devfn);
 DEVTREE_CONST struct device *pcidev_path_on_root_debug(pci_devfn_t devfn, const char *func);
 
 /* Robust discovery of chip_info. */

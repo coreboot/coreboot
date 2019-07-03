@@ -34,7 +34,8 @@ DEVTREE_CONST struct device * DEVTREE_CONST all_devices = &dev_root;
  * @param devfn A device/function number.
  * @return Pointer to the device structure (if found), 0 otherwise.
  */
-DEVTREE_CONST struct device *dev_find_slot(unsigned int bus,
+
+static DEVTREE_CONST struct device *dev_find_slot(unsigned int bus,
 						unsigned int devfn)
 {
 	DEVTREE_CONST struct device *dev, *result;

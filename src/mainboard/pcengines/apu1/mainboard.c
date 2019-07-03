@@ -206,17 +206,23 @@ static void mainboard_enable(struct device *dev)
 const char *smbios_mainboard_serial_number(void)
 {
 	static char serial[10];
-	struct device *nic_dev;
+	struct device *dev;
 	uintptr_t bar18;
 	u32 mac_addr = 0;
 	int i;
 
-	nic_dev = dev_find_slot(1, PCI_DEVFN(0, 0));
-	if ((serial[0] != 0) || !nic_dev)
+	/* Already initialized. */
+	if (serial[0] != 0)
+		return serial;
+
+	dev = pcidev_on_root(4, 0);
+	if (dev)
+		dev = pcidev_path_behind(dev->link_list, PCI_DEVFN(0, 0));
+	if (!dev)
 		return serial;
 
 	/* Read in the last 3 bytes of NIC's MAC address. */
-	bar18 = pci_read_config32(nic_dev, 0x18);
+	bar18 = pci_read_config32(dev, 0x18);
 	bar18 &= 0xFFFFFC00;
 	for (i = 3; i < 6; i++) {
 		mac_addr <<= 8;

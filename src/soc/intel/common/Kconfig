@@ -68,4 +68,8 @@ config SOC_INTEL_DEBUG_CONSENT
 	  Set this option to enable default debug interface of SoC such as DBC
 	  or DCI.
 
+config SMM_MODULE_STACK_SIZE
+	hex
+	default 0x800
+
 endif # SOC_INTEL_COMMON

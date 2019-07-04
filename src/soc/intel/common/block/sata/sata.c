@@ -43,14 +43,14 @@ static void *sata_get_ahci_bar(struct device *dev)
 static void sata_final(struct device *dev)
 {
 	void *ahcibar = sata_get_ahci_bar(dev);
-	u32 port_impl, temp;
+	u8 port_impl, temp;
 
 	/* Set Bus Master */
 	temp = pci_read_config32(dev, PCI_COMMAND);
 	pci_write_config32(dev, PCI_COMMAND, temp | PCI_COMMAND_MASTER);
 
 	/* Read Ports Implemented (GHC_PI) */
-	port_impl = read32(ahcibar + SATA_ABAR_PORT_IMPLEMENTED);
+	port_impl = read8(ahcibar + SATA_ABAR_PORT_IMPLEMENTED);
 
 	if (CONFIG(SOC_AHCI_PORT_IMPLEMENTED_INVERT))
 		port_impl = ~port_impl;
@@ -58,9 +58,9 @@ static void sata_final(struct device *dev)
 	port_impl &= 0x07; /* bit 0-2 */
 
 	/* Port enable */
-	temp = pci_read_config32(dev, SATA_PCI_CFG_PORT_CTL_STS);
+	temp = pci_read_config8(dev, SATA_PCI_CFG_PORT_CTL_STS);
 	temp |= port_impl;
-	pci_write_config32(dev, SATA_PCI_CFG_PORT_CTL_STS, temp);
+	pci_write_config8(dev, SATA_PCI_CFG_PORT_CTL_STS, temp);
 }
 
 static struct device_operations sata_ops = {

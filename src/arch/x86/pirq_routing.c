@@ -20,10 +20,6 @@
 #include <string.h>
 #include <device/pci.h>
 
-void __weak pirq_assign_irqs(const unsigned char pirq[CONFIG_MAX_PIRQ_LINKS])
-{
-}
-
 static void check_pirq_routing_table(struct irq_routing_table *rt)
 {
 	uint8_t *addr = (uint8_t *)rt;
@@ -146,8 +142,11 @@ static void pirq_route_irqs(unsigned long addr)
 	/* Set PCI IRQs. */
 	for (i = 0; i < num_entries; i++) {
 
+		u8 bus = pirq_tbl->slots[i].bus;
+		u8 devfn = pirq_tbl->slots[i].devfn;
+
 		printk(BIOS_DEBUG, "PIRQ Entry %d Dev/Fn: %X Slot: %d\n", i,
-			pirq_tbl->slots[i].devfn >> 3, pirq_tbl->slots[i].slot);
+			devfn >> 3, pirq_tbl->slots[i].slot);
 
 		for (intx = 0; intx < MAX_INTX_ENTRIES; intx++) {
 
@@ -178,8 +177,7 @@ static void pirq_route_irqs(unsigned long addr)
 		}
 
 		/* Bus, device, slots IRQs for {A,B,C,D}. */
-		pci_assign_irqs(pirq_tbl->slots[i].bus,
-			pirq_tbl->slots[i].devfn >> 3, irq_slot);
+		pci_assign_irqs(bus, devfn >> 3, irq_slot);
 	}
 
 	for (i = 0; i < CONFIG_MAX_PIRQ_LINKS; i++)

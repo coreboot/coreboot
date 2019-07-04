@@ -329,3 +329,19 @@ config HAVE_CF9_RESET
 config HAVE_CF9_RESET_PREPARE
 	bool
 	depends on HAVE_CF9_RESET
+
+config PIRQ_ROUTE
+	bool
+	default n
+
+config MAX_PIRQ_LINKS
+	int
+	default 4
+	depends on PIRQ_ROUTE
+	help
+	  This variable specifies the number of PIRQ interrupt links which are
+	  routable. On most chipsets, this is 4, INTA through INTD. Some
+	  chipsets offer more than four links, commonly up to INTH. They may
+	  also have a separate link for ATA or IOAPIC interrupts. When the PIRQ
+	  table specifies links greater than 4, pirq_route_irqs will not
+	  function properly, unless this variable is correctly set.

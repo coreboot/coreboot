@@ -410,66 +410,69 @@ my_outl(X86EMU_pioAddr addr, u32 val)
 u32
 pci_cfg_read(X86EMU_pioAddr addr, u8 size)
 {
+	u32 port_cf8_val = 0;
 	u32 rval = 0xFFFFFFFF;
-	struct device * dev;
-	if ((addr >= 0xCFC) && ((addr + size) <= 0xD00)) {
-		// PCI Configuration Mechanism 1 step 1
-		// write to 0xCF8, sets bus, device, function and Config Space offset
-		// later read from 0xCFC-0xCFF returns the value...
-		u8 bus, devfn, offs;
-		u32 port_cf8_val = my_inl(0xCF8);
-		if ((port_cf8_val & 0x80000000) != 0) {
-			//highest bit enables config space mapping
-			bus = (port_cf8_val & 0x00FF0000) >> 16;
-			devfn = (port_cf8_val & 0x0000FF00) >> 8;
-			offs = (port_cf8_val & 0x000000FF);
-			offs += (addr - 0xCFC);	// if addr is not 0xcfc, the offset is moved accordingly
-			DEBUG_PRINTF_INTR("%s(): PCI Config Read from device: bus: %02x, devfn: %02x, offset: %02x\n",
-				__func__, bus, devfn, offs);
+	struct device *dev = NULL;
+	u8 bus, devfn, offs;
+
+	// PCI Configuration Mechanism 1 step 1
+	// write to 0xCF8, sets bus, device, function and Config Space offset
+	// later read from 0xCFC-0xCFF returns the value...
+	if ((addr >= 0xCFC) && ((addr + size) <= 0xD00))
+		port_cf8_val = my_inl(0xCF8);
+
+	if ((port_cf8_val & 0x80000000) == 0)
+		return rval;
+
+	//highest bit enables config space mapping
+	bus = (port_cf8_val & 0x00FF0000) >> 16;
+	devfn = (port_cf8_val & 0x0000FF00) >> 8;
+	offs = (port_cf8_val & 0x000000FF);
+	offs += (addr - 0xCFC);	// if addr is not 0xcfc, the offset is moved accordingly
+	DEBUG_PRINTF_INTR("%s(): PCI Config Read from device: bus: %02x, devfn: %02x, offset: %02x\n",
+		__func__, bus, devfn, offs);
 #if CONFIG(YABEL_PCI_ACCESS_OTHER_DEVICES)
-			dev = dev_find_slot(bus, devfn);
-			DEBUG_PRINTF_INTR("%s(): dev_find_slot() returned: %s\n",
-				__func__, dev_path(dev));
-			if (dev == 0) {
-				// fail accesses to non-existent devices...
+	dev = dev_find_slot(bus, devfn);
+	DEBUG_PRINTF_INTR("%s(): dev_find_slot() returned: %s\n",
+		__func__, dev_path(dev));
+	if (dev == 0) {
+		// fail accesses to non-existent devices...
 #else
-			dev = bios_device.dev;
-			if ((bus != bios_device.bus)
-			     || (devfn != bios_device.devfn)) {
-				// fail accesses to any device but ours...
+	dev = bios_device.dev;
+	if ((bus != bios_device.bus)
+	     || (devfn != bios_device.devfn)) {
+		// fail accesses to any device but ours...
 #endif
-				printf
-				    ("%s(): Config read access invalid device! bus: %02x (%02x), devfn: %02x (%02x), offs: %02x\n",
-				     __func__, bus, bios_device.bus, devfn,
-				     bios_device.devfn, offs);
-				SET_FLAG(F_CF);
-				HALT_SYS();
-				return 0;
-			} else {
+		printf
+		    ("%s(): Config read access invalid device! bus: %02x (%02x), devfn: %02x (%02x), offs: %02x\n",
+		     __func__, bus, bios_device.bus, devfn,
+		     bios_device.devfn, offs);
+		SET_FLAG(F_CF);
+		HALT_SYS();
+		return 0;
+	} else {
 #if CONFIG(PCI_OPTION_ROM_RUN_YABEL)
-				switch (size) {
-					case 1:
-						rval = pci_read_config8(dev, offs);
-						break;
-					case 2:
-						rval = pci_read_config16(dev, offs);
-						break;
-					case 4:
-						rval = pci_read_config32(dev, offs);
-						break;
-				}
-#else
-				rval =
-				    (u32) rtas_pci_config_read(bios_device.
-								    puid, size,
-								    bus, devfn,
-								    offs);
-#endif
-				DEBUG_PRINTF_IO
-				    ("%s(%04x) PCI Config Read @%02x, size: %d --> 0x%08x\n",
-				     __func__, addr, offs, size, rval);
-			}
+		switch (size) {
+		case 1:
+			rval = pci_read_config8(dev, offs);
+			break;
+		case 2:
+			rval = pci_read_config16(dev, offs);
+			break;
+		case 4:
+			rval = pci_read_config32(dev, offs);
+			break;
 		}
+#else
+		rval =
+		    (u32) rtas_pci_config_read(bios_device.
+						    puid, size,
+						    bus, devfn,
+						    offs);
+#endif
+		DEBUG_PRINTF_IO
+		    ("%s(%04x) PCI Config Read @%02x, size: %d --> 0x%08x\n",
+		     __func__, addr, offs, size, rval);
 	}
 	return rval;
 }
@@ -477,50 +480,54 @@ pci_cfg_read(X86EMU_pioAddr addr, u8 size)
 void
 pci_cfg_write(X86EMU_pioAddr addr, u32 val, u8 size)
 {
-	if ((addr >= 0xCFC) && ((addr + size) <= 0xD00)) {
-		// PCI Configuration Mechanism 1 step 1
-		// write to 0xCF8, sets bus, device, function and Config Space offset
-		// later write to 0xCFC-0xCFF sets the value...
-		u8 bus, devfn, offs;
-		u32 port_cf8_val = my_inl(0xCF8);
-		if ((port_cf8_val & 0x80000000) != 0) {
-			//highest bit enables config space mapping
-			bus = (port_cf8_val & 0x00FF0000) >> 16;
-			devfn = (port_cf8_val & 0x0000FF00) >> 8;
-			offs = (port_cf8_val & 0x000000FF);
-			offs += (addr - 0xCFC);	// if addr is not 0xcfc, the offset is moved accordingly
-			if ((bus != bios_device.bus)
-			    || (devfn != bios_device.devfn)) {
-				// fail accesses to any device but ours...
-				printf
-				    ("Config write access invalid! PCI device %x:%x.%x, offs: %x\n",
-				     bus, devfn >> 3, devfn & 7, offs);
+	u32 port_cf8_val = 0;
+	u8 bus, devfn, offs;
+
+	// PCI Configuration Mechanism 1 step 1
+	// write to 0xCF8, sets bus, device, function and Config Space offset
+	// later write to 0xCFC-0xCFF sets the value...
+
+	if ((addr >= 0xCFC) && ((addr + size) <= 0xD00))
+		port_cf8_val = my_inl(0xCF8);
+
+	if ((port_cf8_val & 0x80000000) == 0)
+		return;
+
+	//highest bit enables config space mapping
+	bus = (port_cf8_val & 0x00FF0000) >> 16;
+	devfn = (port_cf8_val & 0x0000FF00) >> 8;
+	offs = (port_cf8_val & 0x000000FF);
+	offs += (addr - 0xCFC);	// if addr is not 0xcfc, the offset is moved accordingly
+	if ((bus != bios_device.bus)
+	    || (devfn != bios_device.devfn)) {
+		// fail accesses to any device but ours...
+		printf
+		    ("Config write access invalid! PCI device %x:%x.%x, offs: %x\n",
+		     bus, devfn >> 3, devfn & 7, offs);
 #if !CONFIG(YABEL_PCI_FAKE_WRITING_OTHER_DEVICES_CONFIG)
-				HALT_SYS();
+		HALT_SYS();
 #endif
-			} else {
+	} else {
 #if CONFIG(PCI_OPTION_ROM_RUN_YABEL)
-				switch (size) {
-					case 1:
-						pci_write_config8(bios_device.dev, offs, val);
-						break;
-					case 2:
-						pci_write_config16(bios_device.dev, offs, val);
-						break;
-					case 4:
-						pci_write_config32(bios_device.dev, offs, val);
-						break;
-				}
-#else
-				rtas_pci_config_write(bios_device.puid,
-						      size, bus, devfn, offs,
-						      val);
-#endif
-				DEBUG_PRINTF_IO
-				    ("%s(%04x) PCI Config Write @%02x, size: %d <-- 0x%08x\n",
-				     __func__, addr, offs, size, val);
-			}
+		switch (size) {
+		case 1:
+			pci_write_config8(bios_device.dev, offs, val);
+			break;
+		case 2:
+			pci_write_config16(bios_device.dev, offs, val);
+			break;
+		case 4:
+			pci_write_config32(bios_device.dev, offs, val);
+			break;
 		}
+#else
+		rtas_pci_config_write(bios_device.puid,
+				      size, bus, devfn, offs,
+				      val);
+#endif
+		DEBUG_PRINTF_IO
+		    ("%s(%04x) PCI Config Write @%02x, size: %d <-- 0x%08x\n",
+		     __func__, addr, offs, size, val);
 	}
 }
 

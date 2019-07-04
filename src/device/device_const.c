@@ -183,6 +183,24 @@ DEVTREE_CONST struct device *pcidev_path_behind(
 	return find_dev_path(parent, &path);
 }
 
+DEVTREE_CONST struct device *pcidev_path_on_bus(unsigned int bus, pci_devfn_t devfn)
+{
+	DEVTREE_CONST struct bus *parent = pci_root_bus();
+	DEVTREE_CONST struct device *dev = parent->children;
+
+	/* FIXME: Write the loop with topology links. */
+	while (dev) {
+		if (dev->path.type != DEVICE_PATH_PCI) {
+			dev = dev->next;
+			continue;
+		}
+		if (dev->bus->secondary == bus)
+			return pcidev_path_behind(dev->bus, devfn);
+		dev = dev->next;
+	}
+	return NULL;
+}
+
 DEVTREE_CONST struct bus *pci_root_bus(void)
 {
 	DEVTREE_CONST struct device *pci_domain;

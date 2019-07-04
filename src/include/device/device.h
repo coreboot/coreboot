@@ -288,6 +288,7 @@ DEVTREE_CONST struct device *dev_bus_each_child(const struct bus *parent,
 DEVTREE_CONST struct device *pcidev_path_behind(const struct bus *parent,
 		pci_devfn_t devfn);
 DEVTREE_CONST struct device *pcidev_path_on_root(pci_devfn_t devfn);
+DEVTREE_CONST struct device *pcidev_path_on_bus(unsigned int bus, pci_devfn_t devfn);
 DEVTREE_CONST struct device *pcidev_on_root(uint8_t dev, uint8_t fn);
 DEVTREE_CONST struct bus *pci_root_bus(void);
 

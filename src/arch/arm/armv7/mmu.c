@@ -165,7 +165,7 @@ static pte_t *mmu_create_subtable(pte_t *pgd_entry)
 
 	/* We assume that *pgd_entry must already be a valid block mapping. */
 	uintptr_t start_addr = (uintptr_t)(*pgd_entry & BLOCK_MASK);
-	printk(BIOS_DEBUG, "Creating new subtable @%p for [%#.8x:%#.8lx)\n",
+	printk(BIOS_DEBUG, "Creating new subtable @%p for [%#.8lx:%#.8lx)\n",
 	       table, start_addr, start_addr + BLOCK_SIZE);
 
 	/* Initialize the new subtable with entries of the same attributes

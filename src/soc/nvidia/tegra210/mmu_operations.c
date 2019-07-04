@@ -23,7 +23,7 @@
 
 static void tegra210_mmu_config(void)
 {
-	uint64_t start,end;
+	uintptr_t start, end;
 	const unsigned long devmem = MA_DEV | MA_S | MA_RW;
 	const unsigned long cachedmem = MA_MEM | MA_NS | MA_RW;
 	const unsigned long secure_mem = MA_MEM | MA_S | MA_RW;

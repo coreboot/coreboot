@@ -34,7 +34,7 @@ all: tegra_lp0_resume.fw
 tegra_lp0_resume.elf: tegra_lp0_resume.ld tegra_lp0_resume.c
 	$(CC) -marm -march=armv4t -mno-unaligned-access -nostdlib -static \
 		-Os -fpie -Wl,--build-id=none -ggdb3 -T tegra_lp0_resume.ld \
-		-include ../../../../arch/arm/include/stdint.h \
+		-include ../../../../include/stdint.h \
 		-include ../../../../commonlib/include/commonlib/compiler.h \
 		-o $@ $(filter %.c,$+)
 

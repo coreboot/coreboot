@@ -435,8 +435,8 @@ pci_cfg_read(X86EMU_pioAddr addr, u8 size)
 	if ((bus == bios_device.bus) && (devfn == bios_device.devfn)) {
 		dev = bios_device.dev;
 	} else if (CONFIG(YABEL_PCI_ACCESS_OTHER_DEVICES)) {
-		dev = dev_find_slot(bus, devfn);
-		DEBUG_PRINTF_INTR("%s(): dev_find_slot() returned: %s\n",
+		dev = pcidev_path_on_bus(bus, devfn);
+		DEBUG_PRINTF_INTR("%s(): pcidev_path_on_bus() returned: %s\n",
 			__func__, dev_path(dev));
 	}
 

@@ -174,7 +174,7 @@ int int1a_handler(void)
 		devfn = X86_EBX & 0xff;
 		bus = X86_EBX >> 8;
 		reg = X86_EDI;
-		dev = dev_find_slot(bus, devfn);
+		dev = pcidev_path_on_bus(bus, devfn);
 		if (!dev) {
 			printk(BIOS_DEBUG, "0x%x: BAD DEVICE bus %d devfn 0x%x\n", func, bus, devfn);
 			// Or are we supposed to return PCIBIOS_NODEV?

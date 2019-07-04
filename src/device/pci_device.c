@@ -1499,27 +1499,24 @@ int get_pci_irq_pins(struct device *dev, struct device **parent_bdg)
  *
  * This function should be called for each PCI slot in your system.
  *
- * @param bus Pointer to the bus structure.
- * @param slot TODO
+ * @param dev Pointer to dev structure.
  * @param pIntAtoD An array of IRQ #s that are assigned to PINTA through PINTD
  *        of this slot. The particular IRQ #s that are passed in depend on the
  *        routing inside your southbridge and on your board.
  */
-void pci_assign_irqs(unsigned bus, unsigned slot,
-		     const unsigned char pIntAtoD[4])
+void pci_assign_irqs(struct device *dev, const unsigned char pIntAtoD[4])
 {
-	unsigned int funct;
-	struct device *pdev;
-	u8 line, irq;
+	u8 slot, line, irq;
 
-	/* Each slot may contain up to eight functions. */
-	for (funct = 0; funct < 8; funct++) {
-		pdev = dev_find_slot(bus, (slot << 3) + funct);
+	/* Each device may contain up to eight functions. */
+	slot = dev->path.pci.devfn >> 3;
 
-		if (!pdev)
-			continue;
+	for (; dev ; dev = dev->sibling) {
 
-		line = pci_read_config8(pdev, PCI_INTERRUPT_PIN);
+		if (dev->path.pci.devfn >> 3 != slot)
+			break;
+
+		line = pci_read_config8(dev, PCI_INTERRUPT_PIN);
 
 		/* PCI spec says all values except 1..4 are reserved. */
 		if ((line < 1) || (line > 4))
@@ -1527,11 +1524,9 @@ void pci_assign_irqs(unsigned bus, unsigned slot,
 
 		irq = pIntAtoD[line - 1];
 
-		printk(BIOS_DEBUG, "Assigning IRQ %d to %d:%x.%d\n",
-		       irq, bus, slot, funct);
+		printk(BIOS_DEBUG, "Assigning IRQ %d to %s\n", irq, dev_path(dev));
 
-		pci_write_config8(pdev, PCI_INTERRUPT_LINE,
-				  pIntAtoD[line - 1]);
+		pci_write_config8(dev, PCI_INTERRUPT_LINE, pIntAtoD[line - 1]);
 
 #ifdef PARANOID_IRQ_ASSIGNMENTS
 		irq = pci_read_config8(pdev, PCI_INTERRUPT_LINE);

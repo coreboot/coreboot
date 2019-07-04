@@ -98,8 +98,7 @@ unsigned int pci_match_simple_dev(struct device *dev, pci_devfn_t sdev);
 
 const char *pin_to_str(int pin);
 int get_pci_irq_pins(struct device *dev, struct device **parent_bdg);
-void pci_assign_irqs(unsigned int bus, unsigned int slot,
-		     const unsigned char pIntAtoD[4]);
+void pci_assign_irqs(struct device *dev, const unsigned char pIntAtoD[4]);
 const char *get_pci_class_name(struct device *dev);
 const char *get_pci_subclass_name(struct device *dev);
 

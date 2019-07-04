@@ -61,10 +61,10 @@ static void qemu_nb_init(struct device *dev)
 
 	/* setup IRQ routing for pci slots */
 	for (i = 0; i < 25; i++)
-		pci_assign_irqs(0, i, qemu_q35_irqs + (i % 4));
+		pci_assign_irqs(pcidev_on_root(i, 0), qemu_q35_irqs + (i % 4));
 	/* setup IRQ routing southbridge devices */
 	for (i = 25; i < 32; i++)
-		pci_assign_irqs(0, i, qemu_q35_irqs);
+		pci_assign_irqs(pcidev_on_root(i, 0), qemu_q35_irqs);
 }
 
 static void qemu_nb_read_resources(struct device *dev)

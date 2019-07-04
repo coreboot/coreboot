@@ -41,7 +41,7 @@ static void qemu_nb_init(struct device *dev)
 
 	/* setup IRQ routing */
 	for (i = 0; i < 32; i++)
-		pci_assign_irqs(0, i, qemu_i440fx_irqs + (i % 4));
+		pci_assign_irqs(pcidev_on_root(i, 0), qemu_i440fx_irqs + (i % 4));
 }
 
 static struct device_operations nb_operations = {

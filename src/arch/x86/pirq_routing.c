@@ -177,7 +177,7 @@ static void pirq_route_irqs(unsigned long addr)
 		}
 
 		/* Bus, device, slots IRQs for {A,B,C,D}. */
-		pci_assign_irqs(bus, devfn >> 3, irq_slot);
+		pci_assign_irqs(pcidev_path_on_bus(bus, devfn), irq_slot);
 	}
 
 	for (i = 0; i < CONFIG_MAX_PIRQ_LINKS; i++)

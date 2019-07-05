@@ -27,8 +27,6 @@ romstage-y += errata.c
 romstage-y += debug.c
 romstage-y += rcven.c
 
-smm-y += udelay.c
-
 postcar-y += memmap.c
 
 endif

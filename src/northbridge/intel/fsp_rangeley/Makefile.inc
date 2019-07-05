@@ -27,8 +27,6 @@ romstage-y += memmap.c
 romstage-y += ../../../arch/x86/walkcbfs.S
 romstage-y += port_access.c
 
-smm-y += udelay.c
-
 CPPFLAGS_common += -I$(src)/mainboard/$(MAINBOARDDIR)
 
 CPPFLAGS_common += -I$(src)/northbridge/intel/fsp_rangeley/

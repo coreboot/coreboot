@@ -35,8 +35,6 @@ ramstage-y += memmap.c
 ramstage-y += northbridge.c
 ramstage-y += gma.c
 
-smm-y += ../../../cpu/x86/lapic/apic_timer.c
-
 postcar-y += memmap.c
 
 endif

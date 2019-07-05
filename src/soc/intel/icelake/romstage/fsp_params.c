@@ -14,12 +14,12 @@
  */
 
 #include <assert.h>
-#include <chip.h>
 #include <console/console.h>
 #include <fsp/util.h>
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>
 #include <soc/romstage.h>
+#include <soc/soc_chip.h>
 
 static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 		const struct soc_intel_icelake_config *config)

@@ -30,10 +30,9 @@
 #include <soc/pcr_ids.h>
 #include <soc/pm.h>
 #include <soc/smbus.h>
+#include <soc/soc_chip.h>
 #include <soc/systemagent.h>
 #include <stdlib.h>
-
-#include "chip.h"
 
 #define CAMERA1_CLK		0x8000 /* Camera 1 Clock */
 #define CAMERA2_CLK		0x8080 /* Camera 2 Clock */

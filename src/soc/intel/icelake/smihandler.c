@@ -23,8 +23,7 @@
 #include <soc/pci_devs.h>
 #include <soc/pcr_ids.h>
 #include <soc/pm.h>
-
-#include "chip.h"
+#include <soc/soc_chip.h>
 
 #define CSME0_FBE	0xf
 #define CSME0_BAR	0x0

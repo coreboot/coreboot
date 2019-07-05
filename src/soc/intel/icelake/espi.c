@@ -29,8 +29,7 @@
 #include <soc/irq.h>
 #include <soc/pci_devs.h>
 #include <soc/pcr_ids.h>
-
-#include "chip.h"
+#include <soc/soc_chip.h>
 
 /*
 * As per the BWG, Chapter 5.9.1. "PCH BIOS component will reserve

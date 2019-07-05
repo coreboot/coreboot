@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <chip.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
@@ -23,6 +22,7 @@
 #include <soc/intel/common/vbt.h>
 #include <soc/pci_devs.h>
 #include <soc/ramstage.h>
+#include <soc/soc_chip.h>
 #include <string.h>
 #include <intelblocks/mp_init.h>
 #include <fsp/ppi/mp_service_ppi.h>

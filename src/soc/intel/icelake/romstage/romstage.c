@@ -27,10 +27,9 @@
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
 #include <soc/romstage.h>
+#include <soc/soc_chip.h>
 #include <string.h>
 #include <timestamp.h>
-
-#include "../chip.h"
 
 #define FSP_SMBIOS_MEMORY_INFO_GUID	\
 {	\

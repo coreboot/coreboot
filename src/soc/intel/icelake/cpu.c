@@ -31,8 +31,7 @@
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
 #include <soc/smm.h>
-
-#include "chip.h"
+#include <soc/soc_chip.h>
 
 static void soc_fsp_load(void)
 {

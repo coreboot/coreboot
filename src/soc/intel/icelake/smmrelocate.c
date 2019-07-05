@@ -31,8 +31,8 @@
 #include <soc/msr.h>
 #include <soc/pci_devs.h>
 #include <soc/smm.h>
+#include <soc/soc_chip.h>
 #include <soc/systemagent.h>
-#include "chip.h"
 
 /* This gets filled in and used during relocation. */
 static struct smm_relocation_params smm_reloc_params;

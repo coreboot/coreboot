@@ -27,11 +27,10 @@
 #include <soc/nvs.h>
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
+#include <soc/soc_chip.h>
 #include <string.h>
 #include <vendorcode/google/chromeos/gnvs.h>
 #include <wrdd.h>
-
-#include "chip.h"
 
 /*
  * List of supported C-states in this processor.

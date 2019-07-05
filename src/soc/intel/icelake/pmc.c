@@ -23,8 +23,7 @@
 #include <intelblocks/rtc.h>
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
-
-#include "chip.h"
+#include <soc/soc_chip.h>
 
 /*
  * Set which power state system will be after reapplying

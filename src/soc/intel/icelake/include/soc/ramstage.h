@@ -19,8 +19,7 @@
 #include <device/device.h>
 #include <fsp/api.h>
 #include <fsp/util.h>
-
-#include "../../chip.h"
+#include <soc/soc_chip.h>
 
 void mainboard_silicon_init_params(FSP_S_CONFIG *params);
 void soc_init_pre_device(void *chip_info);

@@ -42,7 +42,6 @@ ramstage-y += fsp_params.c
 ramstage-y += gpio.c
 ramstage-y += graphics.c
 ramstage-y += gspi.c
-ramstage-y += gpio.c
 ramstage-y += i2c.c
 ramstage-y += lockdown.c
 ramstage-y += memmap.c

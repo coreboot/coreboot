@@ -326,4 +326,8 @@ config USE_LEGACY_8254_TIMER
 	  This sets the Enable8254ClockGating UPD, which according to the FSP Integration
 	  guide needs to be disabled in order to boot SeaBIOS, but should otherwise be enabled.
 
+config PRERAM_CBMEM_CONSOLE_SIZE
+	hex
+	default 0xe00
+
 endif

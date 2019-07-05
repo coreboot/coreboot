@@ -24,8 +24,6 @@
  * linker script.
  */
 
-#include <arch/boot.h>
-#include <arch/encoding.h>
 #include <arch/stages.h>
 #include <arch/smp/smp.h>
 #include <rules.h>

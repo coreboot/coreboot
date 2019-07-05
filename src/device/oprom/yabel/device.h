@@ -85,7 +85,9 @@ typedef struct {
 	u8 devfn;
 #if CONFIG(PCI_OPTION_ROM_RUN_YABEL)
 	struct device* dev;
+	u64 puid; /* unused */
 #else
+	void *dev;
 	u64 puid;
 	phandle_t phandle;
 	ihandle_t ihandle;

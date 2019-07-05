@@ -343,7 +343,8 @@ handleInt1a(void)
 {
 	// function number in AX
 	u8 bus, devfn, offs;
-	struct device* dev;
+	struct device *dev = NULL;
+
 	switch (M.x86.R_AX) {
 	case 0xb101:
 		// Installation check
@@ -361,30 +362,28 @@ handleInt1a(void)
 		//
 		DEBUG_PRINTF_INTR("%s(): function: %x: PCI Find Device\n",
 				  __func__, M.x86.R_AX);
-		/* FixME: support SI != 0 */
-#if CONFIG(YABEL_PCI_ACCESS_OTHER_DEVICES)
-		dev = dev_find_device(M.x86.R_DX, M.x86.R_CX, 0);
-		if (dev != 0) {
-			DEBUG_PRINTF_INTR
-			    ("%s(): function %x: PCI Find Device --> 0x%04x\n",
-			     __func__, M.x86.R_AX, M.x86.R_BX);
 
-			M.x86.R_BH = dev->bus->secondary;
-			M.x86.R_BL = dev->path.pci.devfn;
-			M.x86.R_AH = 0x00; // return code: success
-			CLEAR_FLAG(F_CF);
-#else
+		/* FixME: support SI != 0 */
+
 		// only allow the device to find itself...
 		if ((M.x86.R_CX == bios_device.pci_device_id)
 		   && (M.x86.R_DX == bios_device.pci_vendor_id)
 		   // device index must be 0
 		   && (M.x86.R_SI == 0)) {
-			CLEAR_FLAG(F_CF);
-			M.x86.R_AH = 0x00;      // return code: success
+			dev = bios_device.dev;
 			M.x86.R_BH = bios_device.bus;
 			M.x86.R_BL = bios_device.devfn;
-#endif
-		} else {
+		} else if (CONFIG(YABEL_PCI_ACCESS_OTHER_DEVICES)) {
+			dev = dev_find_device(M.x86.R_DX, M.x86.R_CX, 0);
+			if (dev != NULL) {
+				M.x86.R_BH = dev->bus->secondary;
+				M.x86.R_BL = dev->path.pci.devfn;
+				DEBUG_PRINTF_INTR
+				    ("%s(): function %x: PCI Find Device --> 0x%04x\n",
+				     __func__, M.x86.R_AX, M.x86.R_BX);
+			}
+		}
+		if (dev == NULL) {
 			DEBUG_PRINTF_INTR
 			    ("%s(): function %x: invalid device/vendor/device index! (%04x/%04x/%02x expected: %04x/%04x/00)\n",
 			     __func__, M.x86.R_AX, M.x86.R_CX, M.x86.R_DX,
@@ -393,7 +392,10 @@ handleInt1a(void)
 
 			SET_FLAG(F_CF);
 			M.x86.R_AH = 0x86;	// return code: device not found
+			return;
 		}
+		CLEAR_FLAG(F_CF);
+		M.x86.R_AH = 0x00;      // return code: success
 		break;
 	case 0xb108:		//read configuration byte
 	case 0xb109:		//read configuration word
@@ -403,18 +405,16 @@ handleInt1a(void)
 		offs = M.x86.R_DI;
 		DEBUG_PRINTF_INTR("%s(): function: %x: PCI Config Read from device: bus: %02x, devfn: %02x, offset: %02x\n",
 				  __func__, M.x86.R_AX, bus, devfn, offs);
-#if CONFIG(YABEL_PCI_ACCESS_OTHER_DEVICES)
-		dev = dev_find_slot(bus, devfn);
-		DEBUG_PRINTF_INTR("%s(): function: %x: dev_find_slot() returned: %s\n",
+
+		if ((bus == bios_device.bus) && (devfn == bios_device.devfn)) {
+			dev = bios_device.dev;
+		} else if (CONFIG(YABEL_PCI_ACCESS_OTHER_DEVICES)) {
+			dev = dev_find_slot(bus, devfn);
+			DEBUG_PRINTF_INTR("%s(): function: %x: dev_find_slot() returned: %s\n",
 				  __func__, M.x86.R_AX, dev_path(dev));
-		if (dev == 0) {
-			// fail accesses to non-existent devices...
-#else
-		dev = bios_device.dev;
-		if ((bus != bios_device.bus)
-		     || (devfn != bios_device.devfn)) {
-			// fail accesses to any device but ours...
-#endif
+		}
+
+		if (dev == NULL) {
 			printf
 			    ("%s(): Config read access invalid device! bus: %02x (%02x), devfn: %02x (%02x), offs: %02x\n",
 			     __func__, bus, bios_device.bus, devfn,
@@ -423,57 +423,54 @@ handleInt1a(void)
 			M.x86.R_AH = 0x87;	//return code: bad pci register
 			HALT_SYS();
 			return;
-		} else {
-			switch (M.x86.R_AX) {
-			case 0xb108:
-				M.x86.R_CL =
-#if CONFIG(PCI_OPTION_ROM_RUN_YABEL)
-					pci_read_config8(dev, offs);
-#else
-				    (u8) rtas_pci_config_read(bios_device.
-								   puid, 1,
-								   bus, devfn,
-								   offs);
-#endif
-				DEBUG_PRINTF_INTR
-				    ("%s(): function %x: PCI Config Read @%02x --> 0x%02x\n",
-				     __func__, M.x86.R_AX, offs,
-				     M.x86.R_CL);
-				break;
-			case 0xb109:
-				M.x86.R_CX =
-#if CONFIG(PCI_OPTION_ROM_RUN_YABEL)
-					pci_read_config16(dev, offs);
-#else
-				    (u16) rtas_pci_config_read(bios_device.
-								    puid, 2,
-								    bus, devfn,
-								    offs);
-#endif
-				DEBUG_PRINTF_INTR
-				    ("%s(): function %x: PCI Config Read @%02x --> 0x%04x\n",
-				     __func__, M.x86.R_AX, offs,
-				     M.x86.R_CX);
-				break;
-			case 0xb10a:
-				M.x86.R_ECX =
-#if CONFIG(PCI_OPTION_ROM_RUN_YABEL)
-					pci_read_config32(dev, offs);
-#else
-				    (u32) rtas_pci_config_read(bios_device.
-								    puid, 4,
-								    bus, devfn,
-								    offs);
-#endif
-				DEBUG_PRINTF_INTR
-				    ("%s(): function %x: PCI Config Read @%02x --> 0x%08x\n",
-				     __func__, M.x86.R_AX, offs,
-				     M.x86.R_ECX);
-				break;
-			}
-			CLEAR_FLAG(F_CF);
-			M.x86.R_AH = 0x0;	// return code: success
 		}
+
+		switch (M.x86.R_AX) {
+		case 0xb108:
+			M.x86.R_CL =
+#if CONFIG(PCI_OPTION_ROM_RUN_YABEL)
+				pci_read_config8(dev, offs);
+#else
+			    (u8) rtas_pci_config_read(bios_device.puid, 1,
+							   bus, devfn,
+							   offs);
+#endif
+			DEBUG_PRINTF_INTR
+			    ("%s(): function %x: PCI Config Read @%02x --> 0x%02x\n",
+			     __func__, M.x86.R_AX, offs,
+			     M.x86.R_CL);
+			break;
+		case 0xb109:
+			M.x86.R_CX =
+#if CONFIG(PCI_OPTION_ROM_RUN_YABEL)
+				pci_read_config16(dev, offs);
+#else
+			    (u16) rtas_pci_config_read(bios_device.puid, 2,
+							    bus, devfn,
+							    offs);
+#endif
+			DEBUG_PRINTF_INTR
+			    ("%s(): function %x: PCI Config Read @%02x --> 0x%04x\n",
+			     __func__, M.x86.R_AX, offs,
+			     M.x86.R_CX);
+			break;
+		case 0xb10a:
+			M.x86.R_ECX =
+#if CONFIG(PCI_OPTION_ROM_RUN_YABEL)
+				pci_read_config32(dev, offs);
+#else
+			    (u32) rtas_pci_config_read(bios_device.puid, 4,
+							    bus, devfn,
+							    offs);
+#endif
+			DEBUG_PRINTF_INTR
+			    ("%s(): function %x: PCI Config Read @%02x --> 0x%08x\n",
+			     __func__, M.x86.R_AX, offs,
+			     M.x86.R_ECX);
+			break;
+		}
+		CLEAR_FLAG(F_CF);
+		M.x86.R_AH = 0x0;	// return code: success
 		break;
 	case 0xb10b:		//write configuration byte
 	case 0xb10c:		//write configuration word
@@ -481,9 +478,12 @@ handleInt1a(void)
 		bus = M.x86.R_BH;
 		devfn = M.x86.R_BL;
 		offs = M.x86.R_DI;
-		if ((bus != bios_device.bus)
-		    || (devfn != bios_device.devfn)) {
-			// fail accesses to any device but ours...
+
+		if ((bus == bios_device.bus) && (devfn == bios_device.devfn)) {
+			dev = bios_device.dev;
+		}
+
+		if (dev == NULL) {
 			printf
 			    ("%s(): Config read access invalid! bus: %x (%x), devfn: %x (%x), offs: %x\n",
 			     __func__, bus, bios_device.bus, devfn,
@@ -492,48 +492,48 @@ handleInt1a(void)
 			M.x86.R_AH = 0x87;	//return code: bad pci register
 			HALT_SYS();
 			return;
-		} else {
-			switch (M.x86.R_AX) {
-			case 0xb10b:
-#if CONFIG(PCI_OPTION_ROM_RUN_YABEL)
-					pci_write_config8(bios_device.dev, offs, M.x86.R_CL);
-#else
-				rtas_pci_config_write(bios_device.puid, 1, bus,
-						      devfn, offs, M.x86.R_CL);
-#endif
-				DEBUG_PRINTF_INTR
-				    ("%s(): function %x: PCI Config Write @%02x <-- 0x%02x\n",
-				     __func__, M.x86.R_AX, offs,
-				     M.x86.R_CL);
-				break;
-			case 0xb10c:
-#if CONFIG(PCI_OPTION_ROM_RUN_YABEL)
-					pci_write_config16(bios_device.dev, offs, M.x86.R_CX);
-#else
-				rtas_pci_config_write(bios_device.puid, 2, bus,
-						      devfn, offs, M.x86.R_CX);
-#endif
-				DEBUG_PRINTF_INTR
-				    ("%s(): function %x: PCI Config Write @%02x <-- 0x%04x\n",
-				     __func__, M.x86.R_AX, offs,
-				     M.x86.R_CX);
-				break;
-			case 0xb10d:
-#if CONFIG(PCI_OPTION_ROM_RUN_YABEL)
-					pci_write_config32(bios_device.dev, offs, M.x86.R_ECX);
-#else
-				rtas_pci_config_write(bios_device.puid, 4, bus,
-						      devfn, offs, M.x86.R_ECX);
-#endif
-				DEBUG_PRINTF_INTR
-				    ("%s(): function %x: PCI Config Write @%02x <-- 0x%08x\n",
-				     __func__, M.x86.R_AX, offs,
-				     M.x86.R_ECX);
-				break;
-			}
-			CLEAR_FLAG(F_CF);
-			M.x86.R_AH = 0x0;	// return code: success
 		}
+
+		switch (M.x86.R_AX) {
+		case 0xb10b:
+#if CONFIG(PCI_OPTION_ROM_RUN_YABEL)
+				pci_write_config8(dev, offs, M.x86.R_CL);
+#else
+			rtas_pci_config_write(bios_device.puid, 1, bus,
+					      devfn, offs, M.x86.R_CL);
+#endif
+			DEBUG_PRINTF_INTR
+			    ("%s(): function %x: PCI Config Write @%02x <-- 0x%02x\n",
+			     __func__, M.x86.R_AX, offs,
+			     M.x86.R_CL);
+			break;
+		case 0xb10c:
+#if CONFIG(PCI_OPTION_ROM_RUN_YABEL)
+				pci_write_config16(dev, offs, M.x86.R_CX);
+#else
+			rtas_pci_config_write(bios_device.puid, 2, bus,
+					      devfn, offs, M.x86.R_CX);
+#endif
+			DEBUG_PRINTF_INTR
+			    ("%s(): function %x: PCI Config Write @%02x <-- 0x%04x\n",
+			     __func__, M.x86.R_AX, offs,
+			     M.x86.R_CX);
+			break;
+		case 0xb10d:
+#if CONFIG(PCI_OPTION_ROM_RUN_YABEL)
+				pci_write_config32(dev, offs, M.x86.R_ECX);
+#else
+			rtas_pci_config_write(bios_device.puid, 4, bus,
+					      devfn, offs, M.x86.R_ECX);
+#endif
+			DEBUG_PRINTF_INTR
+			    ("%s(): function %x: PCI Config Write @%02x <-- 0x%08x\n",
+			     __func__, M.x86.R_AX, offs,
+			     M.x86.R_ECX);
+			break;
+		}
+		CLEAR_FLAG(F_CF);
+		M.x86.R_AH = 0x0;	// return code: success
 		break;
 	default:
 		printf("%s(): unknown function (%x) for int1a handler.\n",

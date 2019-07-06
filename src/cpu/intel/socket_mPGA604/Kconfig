@@ -9,6 +9,7 @@ config SOCKET_SPECIFIC_OPTIONS # dummy
 	select MMX
 	select SSE
 	select UDELAY_TSC
+	select TSC_MONOTONIC_TIMER
 	select SIPI_VECTOR_IN_ROM
 	select C_ENVIRONMENT_BOOTBLOCK
 

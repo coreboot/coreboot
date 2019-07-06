@@ -16,14 +16,6 @@ postcar-$(CONFIG_CACHE_RELOCATED_RAMSTAGE_OUTSIDE_CBMEM) += stage_cache.c
 smm-y += finalize.c
 smm-y += tsc_freq.c
 
-ifneq ($(CONFIG_TSC_MONOTONIC_TIMER),y)
-bootblock-y += monotonic_timer.c
-romstage-y += monotonic_timer.c
-postcar-y += monotonic_timer.c
-ramstage-y += monotonic_timer.c
-smm-y += monotonic_timer.c
-endif
-
 bootblock-y += ../car/non-evict/cache_as_ram.S
 bootblock-y += ../car/bootblock.c
 bootblock-y += ../../x86/early_reset.S

@@ -17,11 +17,6 @@ config PARALLEL_MP_AP_WORK
 	 Allow APs to do other work after initialization instead of going
 	 to sleep.
 
-config UDELAY_IO
-	bool
-	default y if !UDELAY_LAPIC && !UDELAY_TSC && !UDELAY_TIMER2 && !GENERIC_UDELAY
-	default n
-
 config UDELAY_LAPIC
 	bool
 	default n
@@ -53,11 +48,6 @@ config TSC_MONOTONIC_TIMER
 	select HAVE_MONOTONIC_TIMER
 	help
 	  Expose monotonic time using the TSC.
-
-# This option is used in code but never selected.
-config UDELAY_TIMER2
-	bool
-	default n
 
 config TSC_SYNC_LFENCE
 	bool

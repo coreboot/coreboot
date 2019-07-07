@@ -138,7 +138,6 @@ chip northbridge/intel/i945
 						io 0x66 = 0x1604
 					end
 
-
 					register "config0" = "0xa6"
 					register "config1" = "0x05"
 					register "config2" = "0xa0"

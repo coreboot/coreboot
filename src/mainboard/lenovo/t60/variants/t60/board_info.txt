@@ -1,7 +1,8 @@
-Board name: Z61t
+Vendor name: Lenovo
+Board name: ThinkPad T60/T60p
 Category: laptop
 ROM package: SOIC-8
 ROM protocol: SPI
 ROM socketed: n
-Flashrom support: n
+Flashrom support: y
 Release year: 2006

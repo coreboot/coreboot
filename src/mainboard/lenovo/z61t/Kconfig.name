@@ -1,2 +1,0 @@
-config BOARD_LENOVO_Z61T
-	bool "ThinkPad Z61t"

@@ -32,7 +32,7 @@
  * Set which power state system will be after reapplying
  * the power (from G3 State)
  */
-void pmc_set_afterg3(struct device *dev, int s5pwr)
+void pmc_set_afterg3(int s5pwr)
 {
 	uint8_t reg8;
 	uint8_t *pmcbase = pmc_mmio_regs();
@@ -60,7 +60,7 @@ void pmc_set_afterg3(struct device *dev, int s5pwr)
  */
 void pmc_soc_restore_power_failure(void)
 {
-	pmc_set_afterg3(PCH_DEV_PMC, CONFIG_MAINBOARD_POWER_FAILURE_STATE);
+	pmc_set_afterg3(CONFIG_MAINBOARD_POWER_FAILURE_STATE);
 }
 
 static void pm1_enable_pwrbtn_smi(void *unused)
@@ -119,7 +119,7 @@ static void config_deep_sx(uint32_t deepsx_config)
 	write32(pmcbase + DSX_CFG, reg);
 }
 
-static void pch_power_options(struct device *dev)
+static void pch_power_options(void)
 {
 	const char *state;
 
@@ -144,7 +144,7 @@ static void pch_power_options(struct device *dev)
 	default:
 		state = "undefined";
 	}
-	pmc_set_afterg3(dev, pwr_on);
+	pmc_set_afterg3(pwr_on);
 	printk(BIOS_INFO, "Set power %s after power failure.\n", state);
 
 	/* Set up GPE configuration. */
@@ -159,7 +159,7 @@ static void pmc_init(void *unused)
 	rtc_init();
 
 	/* Initialize power management */
-	pch_power_options(dev);
+	pch_power_options();
 
 	config_deep_s3(config->deep_s3_enable_ac, config->deep_s3_enable_dc);
 	config_deep_s5(config->deep_s5_enable_ac, config->deep_s5_enable_dc);

@@ -122,6 +122,6 @@ void mainboard_prepare_cr50_reset(void)
 {
 #if ENV_RAMSTAGE
 	/* Ensure system powers up after CR50 reset */
-	pmc_set_afterg3(PCH_DEV_PMC, MAINBOARD_POWER_STATE_ON);
+	pmc_set_afterg3(MAINBOARD_POWER_STATE_ON);
 #endif
 }

@@ -56,6 +56,7 @@ DECLARE_REGION(dma_coherent)
 DECLARE_REGION(soc_registers)
 DECLARE_REGION(framebuffer)
 DECLARE_REGION(pdpt)
+DECLARE_REGION(opensbi)
 DECLARE_REGION(bl31)
 
 /*

@@ -37,6 +37,7 @@ enum bootmem_type {
 	BM_MEM_NVS,		/* ACPI NVS Memory */
 	BM_MEM_UNUSABLE,	/* Unusable address space */
 	BM_MEM_VENDOR_RSVD,	/* Vendor Reserved */
+	BM_MEM_OPENSBI,		/* Risc-V OpenSBI */
 	BM_MEM_BL31,		/* Arm64 BL31 exectuable */
 	BM_MEM_TABLE,		/* Ram configuration tables are kept in */
 	/* Tags below this point are ignored for the OS table. */

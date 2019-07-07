@@ -59,6 +59,8 @@ static uint32_t bootmem_to_lb_tag(const enum bootmem_type tag)
 		return LB_MEM_UNUSABLE;
 	case BM_MEM_VENDOR_RSVD:
 		return LB_MEM_VENDOR_RSVD;
+	case BM_MEM_OPENSBI:
+		return LB_MEM_RESERVED;
 	case BM_MEM_BL31:
 		return LB_MEM_RESERVED;
 	case BM_MEM_TABLE:
@@ -147,6 +149,7 @@ static const struct range_strings type_strings[] = {
 	{ BM_MEM_UNUSABLE, "UNUSABLE" },
 	{ BM_MEM_VENDOR_RSVD, "VENDOR RESERVED" },
 	{ BM_MEM_BL31, "BL31" },
+	{ BM_MEM_OPENSBI, "OPENSBI" },
 	{ BM_MEM_TABLE, "CONFIGURATION TABLES" },
 	{ BM_MEM_RAMSTAGE, "RAMSTAGE" },
 	{ BM_MEM_PAYLOAD, "PAYLOAD" },

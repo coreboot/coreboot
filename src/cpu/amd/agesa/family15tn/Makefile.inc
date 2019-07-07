@@ -19,7 +19,7 @@ ramstage-y += fixme.c
 ramstage-y += chip_name.c
 ramstage-y += model_15_init.c
 
-smm-$(CONFIG_HAVE_SMI_HANDLER) += udelay.c
+smm-y += udelay.c
 
 subdirs-y += ../../mtrr
 subdirs-y += ../../smm

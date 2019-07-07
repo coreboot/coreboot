@@ -17,4 +17,4 @@ romstage-y += chromeos.c
 ramstage-y += chromeos.c
 verstage-$(CONFIG_VBOOT_SEPARATE_VERSTAGE) += chromeos.c
 
-smm-$(CONFIG_HAVE_SMI_HANDLER) += mainboard_smi.c
+smm-y += mainboard_smi.c

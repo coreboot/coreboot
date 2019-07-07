@@ -19,7 +19,7 @@ romstage-$(CONFIG_CHROMEOS) += chromeos.c
 ramstage-$(CONFIG_CHROMEOS) += chromeos.c
 bootblock-$(CONFIG_CHROMEOS) += chromeos.c
 
-smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c
+smm-y += smihandler.c
 
 romstage-y += variants/$(VARIANT_DIR)/pei_data.c
 ramstage-y += variants/$(VARIANT_DIR)/pei_data.c

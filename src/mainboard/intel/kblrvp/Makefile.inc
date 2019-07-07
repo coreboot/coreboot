@@ -33,7 +33,7 @@ ramstage-y += ramstage.c
 
 ramstage-y += hda_verb.c
 
-smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c
+smm-y += smihandler.c
 
 subdirs-y += variants/$(VARIANT_DIR)
 CPPFLAGS_common += -I$(src)/mainboard/$(MAINBOARDDIR)/variants/$(VARIANT_DIR)/include

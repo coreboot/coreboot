@@ -31,7 +31,7 @@ postcar-y += ramtop.c
 romstage-y += imc.c
 ramstage-y += imc.c
 
-smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c smi_util.c
+smm-y += smihandler.c smi_util.c
 ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smi.c smi_util.c
 
 # ROMSIG At ROMBASE + 0x20000:

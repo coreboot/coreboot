@@ -27,7 +27,7 @@ romstage-y += raminit.c
 romstage-y += early_init.c
 romstage-y += ../../../arch/x86/walkcbfs.S
 
-smm-$(CONFIG_HAVE_SMI_HANDLER) += finalize.c
+smm-y += finalize.c
 
 postcar-y += ram_calc.c
 

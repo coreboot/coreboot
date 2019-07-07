@@ -29,7 +29,7 @@ romstage-y += raminit.c
 romstage-y += early_init.c
 romstage-y += report_platform.c
 
-smm-$(CONFIG_HAVE_SMI_HANDLER) += finalize.c
+smm-y += finalize.c
 
 # We don't ship that, but booting without it is bound to fail
 cbfs-files-$(CONFIG_HAVE_MRC) += mrc.bin

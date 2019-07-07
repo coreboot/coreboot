@@ -29,7 +29,7 @@ ramstage-y += OemCustomize.c
 verstage-y += chromeos.c
 verstage-y += ec.c
 
-smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c
+smm-y += smihandler.c
 
 subdirs-y += variants/baseboard
 CPPFLAGS_common += -I$(src)/mainboard/$(MAINBOARDDIR)/variants/baseboard/include

@@ -10,7 +10,7 @@ ramstage-y += ec.c
 ramstage-y += mainboard.c
 
 verstage-$(CONFIG_CHROMEOS) += chromeos.c
-smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c
+smm-y += smihandler.c
 
 subdirs-y += variants/baseboard
 CPPFLAGS_common += -I$(src)/mainboard/$(MAINBOARDDIR)/variants/baseboard/include

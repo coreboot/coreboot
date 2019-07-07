@@ -27,7 +27,7 @@ romstage-y += romstage_fsp_params.c
 ramstage-$(CONFIG_CHROMEOS) += chromeos.c
 ramstage-y += mainboard.c
 
-smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c
+smm-y += smihandler.c
 subdirs-y += variants/baseboard
 CPPFLAGS_common += -I$(src)/mainboard/$(MAINBOARDDIR)/variants/baseboard/include
 

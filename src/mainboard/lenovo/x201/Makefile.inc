@@ -13,8 +13,8 @@
 ## GNU General Public License for more details.
 ##
 
-smm-$(CONFIG_HAVE_SMI_HANDLER) += dock.c
-smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c
+smm-y += dock.c
+smm-y += smihandler.c
 romstage-y += dock.c
 ramstage-y += dock.c
 romstage-y += gpio.c

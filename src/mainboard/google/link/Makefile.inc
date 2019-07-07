@@ -19,7 +19,7 @@ romstage-y += chromeos.c
 ramstage-y += chromeos.c
 ramstage-$(CONFIG_MAINBOARD_USE_LIBGFXINIT) += gma-mainboard.ads
 
-smm-$(CONFIG_HAVE_SMI_HANDLER) += mainboard_smi.c
+smm-y += mainboard_smi.c
 SPD_BIN = $(obj)/spd.bin
 
 # Order of names in SPD_SOURCES is important!

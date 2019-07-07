@@ -18,8 +18,8 @@ ramstage-y += ec.c
 romstage-y += chromeos.c
 ramstage-y += chromeos.c
 
-smm-$(CONFIG_HAVE_SMI_HANDLER) += mainboard_smi.c
-smm-$(CONFIG_HAVE_SMI_HANDLER) += ec.c
+smm-y += mainboard_smi.c
+smm-y += ec.c
 
 SRC_ROOT = $(src)/mainboard/google/stout
 romstage-y += gpio.c

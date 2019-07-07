@@ -24,7 +24,7 @@ ramstage-y += ec.c
 ramstage-y += irqroute.c
 ramstage-y += w25q64.c
 
-smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c
+smm-y += smihandler.c
 
 subdirs-y += variants/$(VARIANT_DIR)
 CPPFLAGS_common += -I$(src)/mainboard/$(MAINBOARDDIR)/variants/baseboard/include

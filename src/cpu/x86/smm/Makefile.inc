@@ -36,13 +36,16 @@ $(call src-to-obj,ramstage,$(obj)/cpu/x86/smm/smm.manual): $(obj)/smm/smm
 	@printf "    OBJCOPY    $(subst $(obj)/,,$(@))\n"
 	cd $(dir $<); $(OBJCOPY_smm) -I binary $(notdir $<) $(target-objcopy) $(abspath $@)
 
+ifeq ($(CONFIG_HAVE_SMI_HANDLER),y)
+ramstage-srcs += $(obj)/cpu/x86/smm/smm.manual
+endif
+
 ifeq ($(CONFIG_SMM_TSEG),y)
 
 smmstub-y += smm_stub.S
 
 smm-y += smm_module_handler.c
 
-ramstage-srcs += $(obj)/cpu/x86/smm/smm.manual
 ramstage-srcs += $(obj)/cpu/x86/smm/smmstub.manual
 
 # SMM Stub Module. The stub is used as a trampoline for relocation and normal
@@ -81,10 +84,6 @@ $(obj)/smm/smm: $(obj)/smm/smm.o $(src)/cpu/x86/smm/smm.ld
 	$(LD_smm) $(LDFLAGS_smm) -o $(obj)/smm/smm.elf -T $(src)/cpu/x86/smm/smm.ld $(obj)/smm/smm.o
 	$(NM_smm) -n $(obj)/smm/smm.elf | sort > $(obj)/smm/smm.map
 	$(OBJCOPY_smm) -O binary $(obj)/smm/smm.elf $@
-
-ifeq ($(CONFIG_HAVE_SMI_HANDLER),y)
-ramstage-srcs += $(obj)/cpu/x86/smm/smm.manual
-endif
 
 smm-y += smmhandler.S
 smm-y += smihandler.c

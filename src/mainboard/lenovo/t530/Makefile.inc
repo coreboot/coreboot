@@ -13,7 +13,7 @@
 ## GNU General Public License for more details.
 ##
 
-smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c
+smm-y += smihandler.c
 romstage-y += variants/$(VARIANT_DIR)/gpio.c
 romstage-y += variants/$(VARIANT_DIR)/romstage.c
 ramstage-$(CONFIG_MAINBOARD_USE_LIBGFXINIT) += gma-mainboard.ads

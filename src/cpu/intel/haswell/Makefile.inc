@@ -13,8 +13,8 @@ ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smmrelocate.c
 romstage-$(CONFIG_CACHE_RELOCATED_RAMSTAGE_OUTSIDE_CBMEM) += stage_cache.c
 postcar-$(CONFIG_CACHE_RELOCATED_RAMSTAGE_OUTSIDE_CBMEM) += stage_cache.c
 
-smm-$(CONFIG_HAVE_SMI_HANDLER) += finalize.c
-smm-$(CONFIG_HAVE_SMI_HANDLER) += tsc_freq.c
+smm-y += finalize.c
+smm-y += tsc_freq.c
 
 ifneq ($(CONFIG_TSC_MONOTONIC_TIMER),y)
 bootblock-y += monotonic_timer.c

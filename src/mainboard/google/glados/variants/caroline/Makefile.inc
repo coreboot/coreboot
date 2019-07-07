@@ -16,7 +16,7 @@
 
 romstage-y += variant.c
 ramstage-y += variant.c
-smm-$(CONFIG_HAVE_SMI_HANDLER) += variant.c
+smm-y += variant.c
 
 SPD_BIN = $(obj)/spd.bin
 

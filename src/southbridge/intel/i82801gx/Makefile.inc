@@ -32,7 +32,7 @@ ramstage-y += usb_ehci.c
 
 ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/hda_verb.c
 
-smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c
+smm-y += smihandler.c
 
 romstage-y += early_smbus.c
 

@@ -26,4 +26,4 @@ ramstage-y += mainboard.c
 ramstage-y += ramstage.c
 ramstage-$(CONFIG_EC_GOOGLE_CHROMEEC) += ec.c
 
-smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c
+smm-y += smihandler.c

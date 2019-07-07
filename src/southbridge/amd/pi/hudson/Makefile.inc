@@ -60,8 +60,8 @@ ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smi_util.c
 ramstage-$(CONFIG_HUDSON_UART) += uart.c
 ramstage-y += usb.c
 
-smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c
-smm-$(CONFIG_HAVE_SMI_HANDLER) += smi_util.c
+smm-y += smihandler.c
+smm-y += smi_util.c
 
 # ROMSIG At ROMBASE + 0x20000:
 # +-----------+---------------+----------------+------------+

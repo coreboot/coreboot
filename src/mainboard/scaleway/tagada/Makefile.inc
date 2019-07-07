@@ -26,6 +26,6 @@ bootblock-y += bmcinfo.c
 postcar-y += bmcinfo.c
 romstage-y += bmcinfo.c
 ramstage-y += bmcinfo.c
-smm-$(CONFIG_HAVE_SMI_HANDLER) += bmcinfo.c
+smm-y += bmcinfo.c
 
 CPPFLAGS_common += -Isrc/mainboard/$(MAINBOARDDIR)/

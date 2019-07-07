@@ -25,4 +25,4 @@ ramstage-y += irqroute.c
 ramstage-y += ramstage.c
 ramstage-y += w25q64.c
 
-smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c
+smm-y += smihandler.c

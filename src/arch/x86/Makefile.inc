@@ -404,8 +404,6 @@ smm-y += memmove.c
 smm-y += memset.c
 smm-$(CONFIG_X86_TOP4G_BOOTMEDIA_MAP) += mmap_boot.c
 
-ifeq ($(CONFIG_HAVE_SMI_HANDLER),y)
 ifneq ($(wildcard src/mainboard/$(MAINBOARDDIR)/smihandler.c),)
 smm-srcs += src/mainboard/$(MAINBOARDDIR)/smihandler.c
-endif
 endif

@@ -35,7 +35,7 @@ ramstage-y += ram_calc.c
 ramstage-y += northbridge.c
 ramstage-y += gma.c
 
-smm-$(CONFIG_HAVE_SMI_HANDLER) += ../../../cpu/x86/lapic/apic_timer.c
+smm-y += ../../../cpu/x86/lapic/apic_timer.c
 
 postcar-y += ram_calc.c
 

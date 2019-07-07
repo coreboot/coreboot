@@ -15,8 +15,8 @@
 
 bootblock-y += early_init.c
 
-smm-$(CONFIG_HAVE_SMI_HANDLER) += dock.c
-smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c
+smm-y += dock.c
+smm-y += smihandler.c
 ramstage-$(CONFIG_MAINBOARD_USE_LIBGFXINIT) += gma-mainboard.ads
 
 romstage-y += dock.c

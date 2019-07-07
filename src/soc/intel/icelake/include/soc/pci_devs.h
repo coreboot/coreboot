@@ -184,7 +184,19 @@
 #define  PCH_DEV_ESPI	_PCH_DEV(ESPI, 0)
 #define  PCH_DEV_LPC		PCH_DEV_ESPI
 #define  PCH_DEV_P2SB		_PCH_DEV(ESPI, 1)
+
+#if !ENV_RAMSTAGE
+/*
+ * PCH_DEV_PMC is intentionally not defined in RAMSTAGE since PMC device gets
+ * hidden from PCI bus after call to FSP-S. This leads to resource allocator
+ * dropping it from the root bus as unused device. All references to PCH_DEV_PMC
+ * would then return NULL and can go unnoticed if not handled properly. Since,
+ * this device does not have any special chip config associated with it, it is
+ * okay to not provide the definition for it in ramstage.
+ */
 #define  PCH_DEV_PMC		_PCH_DEV(ESPI, 2)
+#endif
+
 #define  PCH_DEV_HDA		_PCH_DEV(ESPI, 3)
 #define  PCH_DEV_SMBUS		_PCH_DEV(ESPI, 4)
 #define  PCH_DEV_SPI		_PCH_DEV(ESPI, 5)

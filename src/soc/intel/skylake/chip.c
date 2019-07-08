@@ -237,6 +237,9 @@ void soc_silicon_init_params(SILICON_INIT_UPD *params)
 	params->SlowSlewRateForSa = config->SlowSlewRateForSa;
 	params->FastPkgCRampDisable = config->FastPkgCRampDisable;
 
+	/* Legacy 8254 timer support */
+	params->Early8254ClockGatingEnable = !CONFIG_USE_LEGACY_8254_TIMER;
+
 	soc_irq_settings(params);
 }
 

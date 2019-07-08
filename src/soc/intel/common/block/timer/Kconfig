@@ -2,3 +2,13 @@ config SOC_INTEL_COMMON_BLOCK_TIMER
 	bool
 	help
 	  Intel Processor common TIMER support
+
+config USE_LEGACY_8254_TIMER
+	bool "Use Legacy 8254 Timer"
+	default y if PAYLOAD_SEABIOS || VGA_ROM_RUN
+	default n
+	help
+	  This sets the FSP UPD to enable Legacy 8254 clock gating. As per
+	  the FSP Integration guide Legacy 8254 timer clock gating UPD needs
+	  to be disabled in order to boot SeaBIOS or run OpRom,
+	  but should otherwise be enabled.

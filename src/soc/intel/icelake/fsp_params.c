@@ -124,6 +124,10 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	/* disable Legacy PME */
 	memset(params->PcieRpPmSci, 0, sizeof(params->PcieRpPmSci));
 
+	/* Legacy 8254 timer support */
+	params->Enable8254ClockGating = !CONFIG_USE_LEGACY_8254_TIMER;
+	params->Enable8254ClockGatingOnS3 = 1;
+
 	/* S0ix */
 	params->PchPmSlpS0Enable = config->s0ix_enable;
 

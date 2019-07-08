@@ -96,16 +96,6 @@ static const struct reg_script pch_misc_init_script[] = {
 	REG_SCRIPT_END
 };
 
-static void clock_gate_8254(struct device *dev)
-{
-	const config_t *config = dev->chip_info;
-
-	if (!config->clock_gate_8254)
-		return;
-
-	itss_clock_gate_8254();
-}
-
 void lpc_soc_init(struct device *dev)
 {
 	const config_t *const config = dev->chip_info;
@@ -125,5 +115,4 @@ void lpc_soc_init(struct device *dev)
 	soc_pch_pirq_init(dev);
 	setup_i8259();
 	i8259_configure_irq_trigger(9, 1);
-	clock_gate_8254(dev);
 }

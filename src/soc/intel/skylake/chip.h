@@ -513,9 +513,6 @@ struct soc_intel_skylake_config {
 	/* Enable/Disable host reads to PMC XRAM registers */
 	u8 PchPmPmcReadDisable;
 
-	/* Statically clock gate 8254 PIT. */
-	u8 clock_gate_8254;
-
 	/*
 	 * Use SD card detect GPIO with default config:
 	 * - Edge triggered

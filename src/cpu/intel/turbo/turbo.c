@@ -50,20 +50,14 @@ static const char *const turbo_state_desc[] = {
 };
 
 /*
- * Determine the current state of Turbo and cache it for later.
- * Turbo is a package level config so it does not need to be
- * enabled on every core.
+ * Try to update the global Turbo state.
  */
-int get_turbo_state(void)
+static int update_turbo_state(void)
 {
 	struct cpuid_result cpuid_regs;
 	int turbo_en, turbo_cap;
 	msr_t msr;
 	int turbo_state = get_global_turbo_state();
-
-	/* Return cached state if available */
-	if (turbo_state != TURBO_UNKNOWN)
-		return turbo_state;
 
 	cpuid_regs = cpuid(CPUID_LEAF_PM);
 	turbo_cap = !!(cpuid_regs.eax & PM_CAP_TURBO_MODE);
@@ -84,6 +78,22 @@ int get_turbo_state(void)
 
 	set_global_turbo_state(turbo_state);
 	printk(BIOS_INFO, "Turbo is %s\n", turbo_state_desc[turbo_state]);
+
+	return turbo_state;
+}
+
+/*
+ * Determine the current state of Turbo and cache it for later. Turbo is package
+ * level config so it does not need to be enabled on every core.
+ */
+int get_turbo_state(void)
+{
+	int turbo_state = get_global_turbo_state();
+
+	/* Return cached state if available */
+	if (turbo_state == TURBO_UNKNOWN)
+		turbo_state = update_turbo_state();
+
 	return turbo_state;
 }
 
@@ -102,8 +112,7 @@ void enable_turbo(void)
 		wrmsr(IA32_MISC_ENABLE, msr);
 
 		/* Update cached turbo state */
-		set_global_turbo_state(TURBO_ENABLED);
-		printk(BIOS_INFO, "Turbo has been enabled\n");
+		update_turbo_state();
 	}
 }
 
@@ -114,12 +123,14 @@ void disable_turbo(void)
 {
 	msr_t msr;
 
-	/* Set Turbo Disable bit in Misc Enables */
-	msr = rdmsr(IA32_MISC_ENABLE);
-	msr.hi |= H_MISC_DISABLE_TURBO;
-	wrmsr(IA32_MISC_ENABLE, msr);
+	/* Only possible if turbo is available and visible */
+	if (get_turbo_state() == TURBO_ENABLED) {
+		/* Set Turbo Disable bit in Misc Enables */
+		msr = rdmsr(IA32_MISC_ENABLE);
+		msr.hi |= H_MISC_DISABLE_TURBO;
+		wrmsr(IA32_MISC_ENABLE, msr);
 
-	/* Update cached turbo state */
-	set_global_turbo_state(TURBO_UNAVAILABLE);
-	printk(BIOS_INFO, "Turbo has been disabled\n");
+		/* Update cached turbo state */
+		update_turbo_state();
+	}
 }

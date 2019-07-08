@@ -171,7 +171,7 @@ void smm_init_completion(void)
 	restore_default_smm_area(default_smm_area);
 }
 
-void smm_lock(void)
+void aseg_smm_lock(void)
 {
 	/* LOCK the SMM memory window and enable normal SMM.
 	 * After running this function, only a full reset can

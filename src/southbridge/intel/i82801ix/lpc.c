@@ -366,7 +366,6 @@ static void enable_clock_gating(void)
 	RCBA32(0x38c0) |= 7;
 }
 
-#if CONFIG(HAVE_SMI_HANDLER)
 static void i82801ix_lock_smm(struct device *dev)
 {
 	if (!acpi_is_wakeup_s3()) {
@@ -387,9 +386,8 @@ static void i82801ix_lock_smm(struct device *dev)
 	 * userspace applications to deceive us:
 	 */
 	if (!CONFIG(PARALLEL_MP))
-		smm_lock();
+		aseg_smm_lock();
 }
-#endif
 
 static void lpc_init(struct device *dev)
 {
@@ -431,9 +429,8 @@ static void lpc_init(struct device *dev)
 	/* Interrupt 9 should be level triggered (SCI) */
 	i8259_configure_irq_trigger(9, 1);
 
-#if CONFIG(HAVE_SMI_HANDLER)
-	i82801ix_lock_smm(dev);
-#endif
+	if (CONFIG(HAVE_SMI_HANDLER))
+		i82801ix_lock_smm(dev);
 }
 
 static void i82801ix_lpc_read_resources(struct device *dev)

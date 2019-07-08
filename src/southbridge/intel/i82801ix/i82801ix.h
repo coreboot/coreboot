@@ -212,6 +212,8 @@ static inline int lpc_is_mobile(const u16 devid)
 }
 #define LPC_IS_MOBILE(dev) lpc_is_mobile(pci_read_config16(dev, PCI_DEVICE_ID))
 
+void aseg_smm_lock(void);
+
 #if defined(__PRE_RAM__)
 void enable_smbus(void);
 int smbus_read_byte(unsigned device, unsigned address);

@@ -159,14 +159,14 @@ wait_for_complete(endpoint_t *ep, uint32_t ch_num)
 	hcchar_t hcchar;
 	hctsiz_t hctsiz;
 	dwc2_reg_t *reg = DWC2_REG(ep->dev->controller);
-	int timeout = USB_MAX_PROCESSING_TIME_US / DWC_SLEEP_TIME_US;
+	int timeout = USB_MAX_PROCESSING_TIME_US / DWC2_SLEEP_TIME_US;
 
 	/*
 	 * TODO: We should take care of up to three times of transfer error
 	 * retry here, according to the USB 2.0 spec 4.5.2
 	 */
 	do {
-		udelay(DWC_SLEEP_TIME_US);
+		udelay(DWC2_SLEEP_TIME_US);
 		hcint.d32 = readl(&reg->host.hchn[ch_num].hcintn);
 		hctsiz.d32 = readl(&reg->host.hchn[ch_num].hctsizn);
 

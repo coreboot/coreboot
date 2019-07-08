@@ -36,6 +36,7 @@ config SOC_INTEL_COMETLAKE
 	bool
 	select SOC_INTEL_CANNONLAKE_BASE
 	select MICROCODE_BLOB_UNDISCLOSED
+	select FSP_USES_CB_STACK
 	help
 	  Intel Cometlake support
 
@@ -122,6 +123,7 @@ config DCACHE_RAM_SIZE
 
 config DCACHE_BSP_STACK_SIZE
 	hex
+	default 0x20000 if FSP_USES_CB_STACK
 	default 0x4000
 	help
 	  The amount of anticipated stack usage in CAR by bootblock and

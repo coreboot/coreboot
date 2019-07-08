@@ -29,7 +29,7 @@ static void per_core_finalize(void *unused)
 	if (hwcr.lo & SMM_LOCK) /* Skip if already locked, avoid GPF */
 		return;
 
-	if (CONFIG(SMM_TSEG)) {
+	if (CONFIG(HAVE_SMI_HANDLER)) {
 		mask = rdmsr(SMM_MASK_MSR);
 		mask.lo |= SMM_TSEG_VALID;
 		wrmsr(SMM_MASK_MSR, mask);

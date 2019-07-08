@@ -54,5 +54,6 @@ void smm_info(uintptr_t *perm_smbase, size_t *perm_smsize,
 		size_t *smm_save_state_size);
 void smm_initialize(void);
 void smm_relocate(void);
+void smm_lock(void);
 
 #endif

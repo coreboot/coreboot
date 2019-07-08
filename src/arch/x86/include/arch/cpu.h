@@ -203,9 +203,10 @@ static inline unsigned int cpuid_edx(unsigned int op)
 unsigned int cpu_cpuid_extended_level(void);
 int cpu_have_cpuid(void);
 
+/* Only with !PARALLEL_MP. */
 void smm_init(void);
 void smm_init_completion(void);
-void smm_lock(void);
+
 void smm_setup_structures(void *gnvs, void *tcg, void *smi1);
 
 static inline bool cpu_is_amd(void)

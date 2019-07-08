@@ -31,3 +31,4 @@ void southbridge_smm_clear_state(void);
 void smm_relocation_handler(int cpu, uintptr_t curr_smbase,
 			uintptr_t staggered_smbase);
 void smm_relocate(void);
+void smm_lock(void);

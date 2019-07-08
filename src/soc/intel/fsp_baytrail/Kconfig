@@ -33,7 +33,6 @@ config CPU_SPECIFIC_OPTIONS
 	select NO_RELOCATABLE_RAMSTAGE
 	select PARALLEL_MP
 	select REG_SCRIPT
-	select SMM_TSEG
 	select SMP
 	select SPI_FLASH
 	select SSE2

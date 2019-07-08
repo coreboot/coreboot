@@ -35,6 +35,7 @@ config CPU_SPECIFIC_OPTIONS
 	select TSC_SYNC_MFENCE
 	select LAPIC_MONOTONIC_TIMER
 	select CPU_INTEL_COMMON
+	select NO_SMM
 
 	# Microcode header files are delivered in FSP package
 	select USES_MICROCODE_HEADER_FILES if HAVE_FSP_BIN

@@ -65,7 +65,6 @@ config CPU_SPECIFIC_OPTIONS
 	select PARALLEL_MP
 	select PARALLEL_MP_AP_WORK
 	select HAVE_SMI_HANDLER
-	select SMM_TSEG
 	select POSTCAR_STAGE
 	select POSTCAR_CONSOLE
 	select SSE2

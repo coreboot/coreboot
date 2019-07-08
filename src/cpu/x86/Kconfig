@@ -93,18 +93,25 @@ config HAVE_SMI_HANDLER
 	default n
 	depends on (SMM_ASEG || SMM_TSEG)
 
-config SMM_ASEG
+config NO_SMM
 	bool
 	default n
 
-config SMM_TSEG
+config SMM_ASEG
 	bool
 	default n
+	depends on !NO_SMM
+
+config SMM_TSEG
+	bool
+	default y
+	depends on !(NO_SMM || SMM_ASEG)
+
+if SMM_TSEG
 
 config SMM_MODULE_HEAP_SIZE
 	hex
 	default 0x4000
-	depends on SMM_TSEG
 	help
 	  This option determines the size of the heap within the SMM handler
 	  modules.
@@ -112,7 +119,6 @@ config SMM_MODULE_HEAP_SIZE
 config SMM_MODULE_STACK_SIZE
 	hex
 	default 0x400
-	depends on SMM_TSEG
 	help
 	  This option determines the size of the stack within the SMM handler
 	  modules.
@@ -120,10 +126,11 @@ config SMM_MODULE_STACK_SIZE
 config SMM_STUB_STACK_SIZE
 	hex
 	default 0x400
-	depends on SMM_TSEG
 	help
 	  This option determines the size of the stack within the SMM handler
 	  modules.
+
+endif
 
 config SMM_LAPIC_REMAP_MITIGATION
 	bool

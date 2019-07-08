@@ -24,7 +24,6 @@ config CPU_SPECIFIC_OPTIONS
 	select PCIEXP_COMMON_CLOCK
 	select REG_SCRIPT
 	select RTC
-	select SMM_TSEG
 	select SMP
 	select SPI_FLASH
 	select SSE2

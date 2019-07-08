@@ -32,7 +32,6 @@
 #define SCALE_FREQ_SHFT			11
 
 struct sc7180_clock {
-	u32 cbcr;
 	u32 rcg_cmd;
 	u32 rcg_cfg;
 };
@@ -58,6 +57,7 @@ struct sc7180_dfsr_clock {
 };
 
 struct sc7180_qupv3_clock {
+	u32 cbcr;
 	struct sc7180_mnd_clock mnd_clk;
 	struct sc7180_dfsr_clock dfsr_clk;
 };
@@ -85,6 +85,7 @@ struct sc7180_gcc {
 	u32 qup_wrap0_s_ahb_cbcr;
 	u32 qup_wrap0_core_cbcr;
 	u32 qup_wrap0_core_cdivr;
+	u32 qup_wrap0_core_2x_cbcr;
 	struct sc7180_clock qup_wrap0_core_2x;
 	u8 _res2[0x17030 - 0x17020];
 	struct sc7180_qupv3_clock qup_wrap0_s[6];
@@ -102,6 +103,7 @@ struct sc7180_gcc {
 	u8 _res6[0x4b000 - 0x26004];
 	u32 qspi_bcr;
 	u32 qspi_cnoc_ahb_cbcr;
+	u32 qspi_core_cbcr;
 	struct sc7180_clock qspi_core;
 	u8 _res7[0x50000 - 0x4b014];
 	u32 usb3_phy_prim_bcr;
@@ -126,6 +128,33 @@ check_member(sc7180_gcc, apcs_clk_br_en1, 0x52008);
 struct sc7180_aoss {
 	u8 _res[0x5002c];
 	u32 aoss_cc_apcs_misc;
+};
+
+struct sc7180_disp_cc {
+	u8 _res0[0x2004];
+	u32 pclk0_cbcr;
+	u8 _res1[0x2028 - 0x2008];
+	u32 byte0_cbcr;
+	u32 byte0_intf_cbcr;
+	u8 _res2[0x2038 - 0x2030];
+	u32 esc0_cbcr;
+	u8 _res3[0x2098 - 0x203C];
+	struct sc7180_mnd_clock pclk0;
+	u8 _res4[0x2110 - 0x20AC];
+	struct sc7180_mnd_clock byte0;
+	u8 _res5[0x2148 - 0x2124];
+	struct sc7180_mnd_clock esc0;
+	u8 _res6[0x10000 - 0x215C];
+};
+check_member(sc7180_disp_cc, byte0_cbcr, 0x2028);
+check_member(sc7180_disp_cc, esc0_cbcr, 0x2038);
+
+enum mdss_clock {
+	MDSS_CLK_ESC0 = 0,
+	MDSS_CLK_PCLK0,
+	MDSS_CLK_BYTE0,
+	MDSS_CLK_BYTE0_INTF,
+	MDSS_CLK_COUNT
 };
 
 enum clk_ctl_gpll_user_ctl {
@@ -202,12 +231,6 @@ struct clock_config {
 	uint16_t d_2;
 };
 
-struct mdss_clock_config {
-	const char *clk_name;
-	uintptr_t rcgr;
-	uintptr_t cbcr;
-};
-
 /* CPU PLL */
 #define L_VAL_1516P8MHz		0x4F
 #define L_VAL_1209P6MHz		0x3F
@@ -265,6 +288,7 @@ static struct sc7180_gcc *const gcc = (void *)GCC_BASE;
 static struct sc7180_aoss *const aoss = (void *)AOSS_CC_BASE;
 static struct sc7180_apss_clock *const apss_silver = (void *)SILVER_PLL_BASE;
 static struct sc7180_apss_clock *const apss_l3 = (void *)L3_PLL_BASE;
+static struct sc7180_disp_cc *const mdss = (void *)DISP_CC_BASE;
 
 void clock_init(void);
 void clock_reset_aop(void);
@@ -273,5 +297,8 @@ int clock_reset_bcr(void *bcr_addr, bool reset);
 void clock_configure_qup(int qup, uint32_t hz);
 void clock_enable_qup(int qup);
 void clock_configure_dfsr(int qup);
+int mdss_clock_configure(enum mdss_clock clk_type, uint32_t source,
+			uint32_t half_divider, uint32_t m, uint32_t n, uint32_t d);
+int mdss_clock_enable(enum mdss_clock clk_type);
 
 #endif	// __SOC_QUALCOMM_SC7180_CLOCK_H__

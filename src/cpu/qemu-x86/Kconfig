@@ -22,3 +22,4 @@ config CPU_QEMU_X86
 	select SMP
 	select UDELAY_TSC
 	select C_ENVIRONMENT_BOOTBLOCK
+	select SMM_ASEG

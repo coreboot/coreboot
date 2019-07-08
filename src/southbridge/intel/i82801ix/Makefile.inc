@@ -29,7 +29,7 @@ ramstage-y += ../common/pciehp.c
 
 ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/hda_verb.c
 
-ifneq ($(CONFIG_SMM_TSEG),y)
+ifeq ($(CONFIG_SMM_ASEG),y)
 ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smi.c
 ramstage-$(CONFIG_HAVE_SMI_HANDLER) += ../../../cpu/x86/smm/smmrelocate.S
 endif

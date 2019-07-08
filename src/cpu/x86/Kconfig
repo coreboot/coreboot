@@ -88,6 +88,15 @@ config LOGICAL_CPUS
 	bool
 	default y
 
+config HAVE_SMI_HANDLER
+	bool
+	default n
+	depends on (SMM_ASEG || SMM_TSEG)
+
+config SMM_ASEG
+	bool
+	default n
+
 config SMM_TSEG
 	bool
 	default n

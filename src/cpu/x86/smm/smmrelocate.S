@@ -32,10 +32,9 @@
 // ADDR32() macro
 #include <arch/registers.h>
 
-#if CONFIG(SMM_TSEG)
-#error "Don't use this file with TSEG."
-
-#endif /* CONFIG_SMM_TSEG */
+#if !CONFIG(SMM_ASEG)
+#error "Only use this file with ASEG."
+#endif /* CONFIG_SMM_ASEG */
 
 #define LAPIC_ID 0xfee00020
 

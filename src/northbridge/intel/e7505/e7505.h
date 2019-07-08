@@ -42,6 +42,8 @@
 #define DRC		0x7C	/* DRAM Controller Mode register, 32 bit */
 #define DRDCTL		0x80	/* DRAM Read Timing Control register, 16 bit? (if similar to 855PM) */
 #define CKDIS		0x8C	/* Clock disable register, 8 bit */
+#define SMRAMC		0x9D
+#define ESMRAMC		0x9E
 #define APSIZE		0xB4
 #define TOLM		0xC4	/* Top of Low Memory register, 16 bit */
 #define REMAPBASE	0xC6	/* Remap Base Address register, 16 bit */

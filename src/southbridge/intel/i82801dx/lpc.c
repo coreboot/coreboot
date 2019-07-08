@@ -299,6 +299,12 @@ static void lpc_init(struct device *dev)
 
 	/* Initialize the High Precision Event Timers */
 	enable_hpet(dev);
+
+	/* Don't allow evil boot loaders, kernels, or
+	 * userspace applications to deceive us:
+	 */
+	if (CONFIG(HAVE_SMI_HANDLER))
+		aseg_smm_lock();
 }
 
 static void i82801dx_lpc_read_resources(struct device *dev)

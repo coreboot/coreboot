@@ -35,6 +35,14 @@ void *cbmem_top(void)
 	return (void *)tolm;
 }
 
+void northbridge_write_smram(u8 smram);
+
+void northbridge_write_smram(u8 smram)
+{
+	pci_devfn_t mch = PCI_DEV(0, 0, 0);
+	pci_write_config8(mch, SMRAMC, smram);
+}
+
 /* platform_enter_postcar() determines the stack to use after
  * cache-as-ram is torn down as well as the MTRR settings to use,
  * and continues execution in postcar stage. */

@@ -26,8 +26,10 @@
 #include <string.h>
 #include "i82801dx.h"
 
-/* I945 */
-#define SMRAM		0x90
+
+void northbridge_write_smram(u8 smram);
+
+/* For intel/e7505. */
 #define   D_OPEN	(1 << 6)
 #define   D_CLS		(1 << 5)
 #define   D_LCK		(1 << 4)
@@ -317,18 +319,10 @@ static void smm_relocate(void)
 
 static void smm_install(void)
 {
-	/* enable the SMM memory window */
-	pci_write_config8(pcidev_on_root(0, 0), SMRAM,
-				D_OPEN | G_SMRAME | C_BASE_SEG);
-
 	/* copy the real SMM handler */
 	memcpy((void *)0xa0000, _binary_smm_start,
 		_binary_smm_end - _binary_smm_start);
 	wbinvd();
-
-	/* close the SMM memory window and enable normal SMM */
-	pci_write_config8(pcidev_on_root(0, 0), SMRAM,
-			G_SMRAME | C_BASE_SEG);
 }
 
 void smm_init(void)
@@ -348,15 +342,14 @@ void smm_init_completion(void)
 	restore_default_smm_area(default_smm_area);
 }
 
-void smm_lock(void)
+void aseg_smm_lock(void)
 {
 	/* LOCK the SMM memory window and enable normal SMM.
 	 * After running this function, only a full reset can
 	 * make the SMM registers writable again.
 	 */
 	printk(BIOS_DEBUG, "Locking SMM.\n");
-	pci_write_config8(pcidev_on_root(0, 0), SMRAM,
-			D_LCK | G_SMRAME | C_BASE_SEG);
+	northbridge_write_smram(D_LCK | G_SMRAME | C_BASE_SEG);
 }
 
 void smm_setup_structures(void *gnvs, void *tcg, void *smi1)

@@ -18,6 +18,7 @@
 #include <device/pci.h>
 #include <fsp/api.h>
 #include <fsp/util.h>
+#include <intelblocks/lpss.h>
 #include <intelblocks/xdci.h>
 #include <intelpch/lockdown.h>
 #include <soc/intel/common/vbt.h>
@@ -445,4 +446,11 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 __weak void mainboard_silicon_init_params(FSP_S_CONFIG *params)
 {
 	printk(BIOS_DEBUG, "WEAK: %s/%s called\n", __FILE__, __func__);
+}
+
+/* Return list of SOC LPSS controllers */
+const pci_devfn_t *soc_lpss_controllers_list(size_t *size)
+{
+	*size = ARRAY_SIZE(serial_io_dev);
+	return serial_io_dev;
 }

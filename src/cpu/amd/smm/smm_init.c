@@ -70,11 +70,6 @@ void smm_init(void)
 	/* CPU MSR are set in CPU init */
 }
 
-void smm_lock(void)
-{
-	/* We lock SMM in CPU init */
-}
-
 void smm_init_completion(void)
 {
 }

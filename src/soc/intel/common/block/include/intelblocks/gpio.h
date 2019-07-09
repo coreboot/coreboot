@@ -20,9 +20,6 @@
 #include <soc/gpio.h>
 #include "gpio_defs.h"
 
-#ifndef __ACPI__
-#include <types.h>
-
 /* GPIO community IOSF sideband clock gating */
 #define MISCCFG_GPSIDEDPCGEN	(1 << 5)
 /* GPIO community RCOMP clock gating */
@@ -39,6 +36,9 @@
 #define MISCCFG_ENABLE_GPIO_PM_CONFIG (MISCCFG_GPSIDEDPCGEN | \
 	MISCCFG_GPRCOMPCDLCGEN | MISCCFG_GPRTCDLCGEN | MISCCFG_GSXSLCGEN \
 	| MISCCFG_GPDPCGEN | MISCCFG_GPDLCGEN)
+
+#ifndef __ACPI__
+#include <types.h>
 
 /*
  * GPIO numbers may not be contiguous and instead will have a different

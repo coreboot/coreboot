@@ -24,31 +24,11 @@
 #include <soc/southbridge.h>
 #include <amdblocks/acpimmio.h>
 
-static void set_usb_over_current(struct device *dev)
+static void picasso_usb_init(struct device *dev)
 {
-	uint16_t map = USB_OC_DISABLE_ALL;
+	/* USB overcurrent configuration is programmed inside the FSP */
 
-	if (dev->path.pci.devfn == XHCI0_DEVFN) {
-		if (mainboard_get_xhci0_oc_map(&map) == 0)
-			; // TODO
-	}
-
-	if (dev->path.pci.devfn == XHCI1_DEVFN) {
-		if (mainboard_get_xhci1_oc_map(&map) == 0)
-			; // TODO
-	}
-}
-
-int __weak mainboard_get_xhci0_oc_map(uint16_t *map)
-{
-	printk(BIOS_DEBUG, "WEAK: %s/%s called\n", __FILE__, __func__);
-	return -1;
-}
-
-int __weak mainboard_get_xhci1_oc_map(uint16_t *map)
-{
-	printk(BIOS_DEBUG, "WEAK: %s/%s called\n", __FILE__, __func__);
-	return -1;
+	printk(BIOS_DEBUG, "%s\n", __func__);
 }
 
 static struct pci_operations lops_pci = {
@@ -56,22 +36,18 @@ static struct pci_operations lops_pci = {
 };
 
 static struct device_operations usb_ops = {
-	.read_resources = pci_ehci_read_resources,
+	.read_resources = pci_dev_read_resources,
 	.set_resources = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.init = set_usb_over_current,
+	.init = picasso_usb_init,
 	.scan_bus = scan_static_bus,
 	.acpi_name = soc_acpi_name,
 	.ops_pci = &lops_pci,
 };
 
 static const unsigned short pci_device_ids[] = {
-	PCI_DEVICE_ID_AMD_SB900_USB_18_0,
-	PCI_DEVICE_ID_AMD_SB900_USB_18_2,
-	PCI_DEVICE_ID_AMD_SB900_USB_20_5,
-	PCI_DEVICE_ID_AMD_CZ_USB_0,
-	PCI_DEVICE_ID_AMD_CZ_USB_1,
-	PCI_DEVICE_ID_AMD_CZ_USB3_0,
+	PCI_DEVICE_ID_AMD_PCO_XHCI0,
+	PCI_DEVICE_ID_AMD_PCO_XHCI1,
 	0
 };
 

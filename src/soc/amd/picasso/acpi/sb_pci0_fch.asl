@@ -243,20 +243,6 @@ Field( SMIC, ByteAcc, NoLock, Preserve) {
 	offset (0x1e5f), /* SATA D3 State */
 	SADS, 3,
 
-	offset (0x1e64), /* USB2 D3 Control */
-	U2TD, 2,
-	, 1,
-	U2PD, 1,
-	offset (0x1e65), /* USB2 D3 State */
-	U2DS, 3,
-
-	offset (0x1e6e), /* USB3 D3 Control */
-	U3TD, 2,
-	, 1,
-	U3PD, 1,
-	offset (0x1e6f), /* USB3 D3 State */
-	U3DS, 3,
-
 	offset (0x1e71), /* SD D3 State */
 	SDDS, 3,
 
@@ -456,9 +442,7 @@ Method(FDDC, 2, Serialized)
 				if(LEqual(I3TD, 3)) {
 					if(LEqual(U0TD, 3)) {
 						if(LEqual(U1TD, 3)) {
-							if(LEqual(U2TD, 3)) {
-								Store(Zero, PG2_)
-							}
+							Store(Zero, PG2_)
 						}
 					}
 				}

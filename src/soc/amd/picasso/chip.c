@@ -49,19 +49,6 @@ const char *soc_acpi_name(const struct device *dev)
 		case 0:
 			/* Root Hub */
 			return "RHUB";
-		case 2:
-			/* USB2 ports */
-			switch (dev->path.usb.port_id) {
-			case 0: return "HS01";
-			case 1: return "HS02";
-			case 2: return "HS03";
-			case 3: return "HS04";
-			case 4: return "HS05";
-			case 5: return "HS06";
-			case 6: return "HS07";
-			case 7: return "HS08";
-			}
-			break;
 		case 3:
 			/* USB3 ports */
 			switch (dev->path.usb.port_id) {

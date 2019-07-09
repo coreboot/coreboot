@@ -357,15 +357,6 @@ uint32_t get_uma_size(void);
  * @return 64bit base address
  */
 uint64_t get_uma_base(void);
-/*
- * Call the mainboard to get the USB Over Current Map. The mainboard
- * returns the map and 0 on Success or -1 on error or no map. There is
- * a default weak function in usb.c if the mainboard doesn't have any
- * over current support.
- */
-#define     USB_OC_DISABLE_ALL		0xffff
-int mainboard_get_xhci0_oc_map(uint16_t *usb_oc_map);
-int mainboard_get_xhci1_oc_map(uint16_t *usb_oc_map);
 
 /* Initialize all the i2c buses that are marked with early init. */
 void i2c_soc_early_init(void);

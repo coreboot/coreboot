@@ -15,6 +15,7 @@
  */
 
 External(\_SB.MS0X, MethodObj)
+External(\_SB.PCI0.LPCB.EC0.S0IX, MethodObj)
 
 scope(\_SB)
 {
@@ -34,7 +35,7 @@ scope(\_SB)
 				)
 			}
 			/*
-			 * Function 1.
+			 * Function 1 - Get Device Constraints
 			 */
 			If(Arg2 == 1) {
 				Return(Package(5) {
@@ -42,7 +43,7 @@ scope(\_SB)
 				)
 			}
 			/*
-			 * Function 2.
+			 * Function 2 - Get Crash Dump Device
 			 */
 			If(Arg2 == 2) {
 				Return(Buffer(One) {
@@ -50,30 +51,38 @@ scope(\_SB)
 				)
 			}
 			/*
-			 * Function 3.
+			 * Function 3 - Display Off Notification
 			 */
 			If(Arg2 == 3) {
 			}
 			/*
-			 * Function 4.
+			 * Function 4 - Display On Notification
 			 */
 			If(Arg2 == 4) {
 			}
 			/*
-			 * Function 5.
+			 * Function 5 - Low Power S0 Entry Notification
 			 */
 			If(Arg2 == 5) {
-				\_SB.PCI0.LPCB.EC0.S0IX(1)
+				/* Inform the EC */
+				If (CondRefOf (\_SB.PCI0.LPCB.EC0.S0IX)) {
+					\_SB.PCI0.LPCB.EC0.S0IX(1)
+				}
+
 				/* provide board level s0ix hook */
 				If (CondRefOf (\_SB.MS0X)) {
 					\_SB.MS0X(1)
 				}
 			}
 			/*
-			 * Function 6.
+			 * Function 6 - Low Power S0 Exit Notification
 			 */
 			If(Arg2 == 6) {
-				\_SB.PCI0.LPCB.EC0.S0IX(0)
+				/* Inform the EC */
+				If (CondRefOf (\_SB.PCI0.LPCB.EC0.S0IX)) {
+					\_SB.PCI0.LPCB.EC0.S0IX(0)
+				}
+
 				/* provide board level s0ix hook */
 				If (CondRefOf (\_SB.MS0X)) {
 					\_SB.MS0X(0)

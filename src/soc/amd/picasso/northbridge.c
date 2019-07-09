@@ -310,20 +310,3 @@ void domain_set_resources(struct device *dev)
 
 	assign_resources(dev->link_list);
 }
-
-/*********************************************************************
- * Change the vendor / device IDs to match the generic VBIOS header. *
- *********************************************************************/
-u32 map_oprom_vendev(u32 vendev)
-{
-	u32 new_vendev;
-	new_vendev =
-		((vendev >= 0x100298e0) && (vendev <= 0x100298ef)) ?
-				0x100298e0 : vendev;
-
-	if (vendev != new_vendev)
-		printk(BIOS_NOTICE, "Mapping PCI device %8x to %8x\n",
-				vendev, new_vendev);
-
-	return new_vendev;
-}

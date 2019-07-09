@@ -42,7 +42,7 @@
 /* Internal Graphics */
 #define GFX_DEV			0x1
 #define GFX_FUNC		0
-#define GFX_DEVID		0x98e4 /* subject to SKU/OPN variation */
+#define GFX_DEVID		0x15d8
 #define GFX_DEVFN		PCI_DEVFN(GFX_DEV, GFX_FUNC)
 #define SOC_GFX_DEV		_SOC_DEV(GFX_DEV, GFX_FUNC)
 

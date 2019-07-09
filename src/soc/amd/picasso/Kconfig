@@ -111,14 +111,14 @@ config MMCONF_BUS_NUMBER
 
 config VGA_BIOS_ID
 	string
-	default "1002,98e4"
+	default "1002,15d8"
 	help
 	  The default VGA BIOS PCI vendor/device ID should be set to the
 	  result of the map_oprom_vendev() function in northbridge.c.
 
 config VGA_BIOS_FILE
 	string
-	default "3rdparty/blobs/soc/amd/picasso/VBIOS.bin"
+	default "3rdparty/blobs/soc/amd/picasso/PicassoGenericVbios.bin"
 
 config S3_VGA_ROM_RUN
 	bool

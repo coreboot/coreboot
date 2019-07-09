@@ -80,7 +80,7 @@ void lpc_open_pmio_window(uint16_t base, uint16_t size)
 		/* Each IO range register can only open a 256-byte window. */
 		window_size = MIN(size, LPC_LGIR_MAX_WINDOW_SIZE);
 
-		if (!window_size)
+		if (window_size <= 0)
 			return;
 
 		/* Window size must be a power of two for the AMASK to work. */

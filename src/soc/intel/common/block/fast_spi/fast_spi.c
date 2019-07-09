@@ -241,7 +241,7 @@ void fast_spi_cache_bios_region(void)
 	 * protection, so limit the cached bios region to be no more than 16MB.
 	 * */
 	bios_size = MIN(bios_size, 16 * MiB);
-	if (!bios_size)
+	if (bios_size <= 0)
 		return;
 
 	/* Round to power of two */

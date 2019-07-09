@@ -28,7 +28,6 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <spi_flash.h>
-
 #include <spi-generic.h>
 
 #include "spi.h"
@@ -727,7 +726,7 @@ static int ich_hwseq_erase(const struct spi_flash *flash, u32 offset,
 	u32 start, end, erase_size;
 	int ret;
 	uint16_t hsfc;
-	uint16_t timeout = 1000 * 60;
+	unsigned int timeout = 1000 * SPI_FLASH_SECTOR_ERASE_TIMEOUT;
 
 	erase_size = flash->sector_size;
 	if (offset % erase_size || len % erase_size) {

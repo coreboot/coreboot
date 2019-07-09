@@ -329,7 +329,7 @@ static const struct pad_config gpio_table[] = {
 	/*
 	 * H0  : HP_INT_L
 	 */
-	PAD_CFG_GPI_INT(GPP_H0, NONE, PLTRST, LEVEL),
+	PAD_CFG_GPI_INT(GPP_H0, NONE, PLTRST, EDGE_BOTH),
 	/* H1  : CNV_RF_RESET_L */
 	PAD_CFG_NF(GPP_H1, NONE, DEEP, NF3),
 	/* H2  : CNV_CLKREQ0 */

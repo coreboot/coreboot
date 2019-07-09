@@ -497,7 +497,7 @@ build_h_exports := BUILD_TIMELESS KERNELVERSION COREBOOT_EXTRA_VERSION
 # Report new `build.ht` as dependency if `build.h` differs.
 build_h_check := \
 	export $(foreach exp,$(build_h_exports),$(exp)="$($(exp))"); \
-	util/genbuild_h/genbuild_h.sh >$(build_h)t 2>/dev/null; \
+	util/genbuild_h/genbuild_h.sh .xcompile >$(build_h)t 2>/dev/null; \
 	cmp -s $(build_h)t $(build_h) >/dev/null 2>&1 || echo $(build_h)t
 
 $(build_h): $$(shell $$(build_h_check))

@@ -20,6 +20,7 @@
 #include <stdint.h>
 
 #include <soc/addressmap.h>
+#include <soc/pll.h>
 
 struct mtk_uart {
 	union {
@@ -84,7 +85,7 @@ static int mtk_uart_tst_byte(void);
 static void mtk_uart_init(void)
 {
 	/* Use a hardcoded divisor for now. */
-	const unsigned int uartclk = 26 * MHz;
+	const unsigned int uartclk = UART_HZ;
 	const unsigned int baudrate = get_uart_baudrate();
 	const uint8_t line_config = UART8250_LCR_WLS_8;  /* 8n1 */
 	unsigned int highspeed, quot, divisor, remainder;
@@ -177,6 +178,7 @@ void uart_fill_lb(void *data)
 	struct lb_serial serial;
 	serial.type = LB_SERIAL_TYPE_MEMORY_MAPPED;
 	serial.baseaddr = UART0_BASE;
+	serial.input_hertz = UART_HZ;
 	serial.baud = get_uart_baudrate();
 	serial.regwidth = 4;
 	lb_add_serial(&serial, data);

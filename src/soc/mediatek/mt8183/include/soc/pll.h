@@ -268,6 +268,7 @@ enum {
 /* top_mux rate */
 enum {
 	SPI_HZ		= MAINPLL_D5_D2_HZ,
+	UART_HZ		= CLK26M_HZ,
 };
 
 enum {

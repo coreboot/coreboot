@@ -32,6 +32,7 @@ void platform_romstage_main(void)
 	/* Adjust VSIM2 down to 2.7V because it is shared with IT6505. */
 	pmic_set_vsim2_cali(2700);
 	mt_pll_raise_ca53_freq(1989 * MHz);
+	pmic_init_scp_voltage();
 	rtc_boot();
 	mt_mem_init(get_sdram_config());
 	mtk_mmu_after_dram();

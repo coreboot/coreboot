@@ -731,9 +731,38 @@ static struct pmic_setting lp_setting[] = {
 	{0x1DA6, 0x0, 0x1, 3},
 };
 
+static struct pmic_setting scp_setting[] = {
+	/* scp voltage initialization */
+	/* [6:0]: RG_BUCK_VCORE_SSHUB_VOSEL */
+	{0x14A6, 0x20, 0x7F, 0},
+	/* [14:8]: RG_BUCK_VCORE_SSHUB_VOSEL_SLEEP */
+	{0x14A6, 0x20, 0x7F, 8},
+	/* [0:0]: RG_BUCK_VCORE_SSHUB_EN */
+	{0x14A4, 0x1, 0x1, 0},
+	/* [1:1]: RG_BUCK_VCORE_SSHUB_SLEEP_VOSEL_EN */
+	{0x14A4, 0x0, 0x1, 1},
+	/* [6:0]: RG_LDO_VSRAM_OTHERS_SSHUB_VOSEL */
+	{0x1BC6, 0x40, 0x7F, 0},
+	/* [14:8]: RG_LDO_VSRAM_OTHERS_SSHUB_VOSEL_SLEEP */
+	{0x1BC6, 0x40, 0x7F, 8},
+	/* [0:0]: RG_LDO_VSRAM_OTHERS_SSHUB_EN */
+	{0x1BC4, 0x1, 0x1, 0},
+	/* [1:1]: RG_LDO_VSRAM_OTHERS_SSHUB_SLEEP_VOSEL_EN */
+	{0x1BC4, 0x0, 0x1, 1},
+	/* [4:4]: RG_SRCVOLTEN_LP_EN */
+	{0x134, 0x1, 0x1, 4},
+};
 void pmic_set_power_hold(bool enable)
 {
 	pwrap_write_field(PMIC_PWRHOLD, (enable) ? 1 : 0, 0x1, 0);
+}
+
+void pmic_init_scp_voltage(void)
+{
+	for (size_t i = 0; i < ARRAY_SIZE(scp_setting); i++)
+		pwrap_write_field(
+			scp_setting[i].addr, scp_setting[i].val,
+			scp_setting[i].mask, scp_setting[i].shift);
 }
 
 void pmic_set_vsim2_cali(unsigned int vsim2_mv)

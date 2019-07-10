@@ -40,5 +40,6 @@ struct pmic_setting {
 void mt6358_init(void);
 void pmic_set_power_hold(bool enable);
 void pmic_set_vsim2_cali(unsigned int vsim2_mv);
+void pmic_init_scp_voltage(void);
 
 #endif /* __SOC_MEDIATEK_MT6358_H__ */

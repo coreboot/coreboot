@@ -331,6 +331,19 @@ static const struct pad_config early_gpio_table[] = {
 	 */
 	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_151, UP_20K, DEEP, NF2, HIZCRx1,
 				    ENPU), /* ESPI_IO1 */
+
+	/* GPIO_67 and GPIO_117 are in early_gpio_table and gpio_table. For variants
+	 * having LTE SKUs, these two GPIOs would be overridden to output high first
+	 * in the bootblock then be set to default state in gpio_table for non-LTE
+	 * SKUs and keep to output high for LTE SKUs in ramstage.
+	 */
+	PAD_CFG_GPO_IOSSTATE_IOSTERM(GPIO_67, 0, DEEP, NONE, TxLASTRxE, DISPUPD), /* UART2-CTS_B -- EN_PP3300_DX_LTE_SOC */
+	PAD_CFG_GPI_SCI_LOW(GPIO_117, NONE, DEEP, EDGE_SINGLE),/* PCIE_WAKE1_B -- LTE_WAKE_L */
+	/* GPIO_161 is in early_gpio_table and gpio_table because LTE SKU needs
+	 * to override this pin to output low then high respectively in two
+	 * stages.
+	 */
+	PAD_CFG_GPO_IOSSTATE_IOSTERM(GPIO_161, 1, DEEP, UP_20K, Tx1RxDCRx0, DISPUPD), /* AVS_I2S1_MCLK -- LTE_OFF_ODL */
 };
 
 const struct pad_config *__weak

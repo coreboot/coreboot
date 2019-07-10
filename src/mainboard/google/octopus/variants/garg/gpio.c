@@ -50,6 +50,28 @@ static const struct pad_config hdmi_override_table[] = {
 				     DISPUPD),
 
 	PAD_NC(GPIO_213, DN_20K),
+
+};
+
+static const struct pad_config lte_override_table[] = {
+	/* Default override table. */
+	PAD_NC(GPIO_104, UP_20K),
+
+	/* EN_PP3300_TOUCHSCREEN */
+	PAD_CFG_GPO_IOSSTATE_IOSTERM(GPIO_146, 0, DEEP, NONE, Tx0RxDCRx0,
+				     DISPUPD),
+
+	PAD_NC(GPIO_213, DN_20K),
+
+	/* Be specific to LTE SKU */
+	/* UART2-CTS_B -- EN_PP3300_DX_LTE_SOC */
+	PAD_CFG_GPO(GPIO_67, 1, PWROK),
+
+	/* PCIE_WAKE1_B -- FULL_CARD_POWER_OFF */
+	PAD_CFG_GPO(GPIO_117, 1, PWROK),
+
+	/* AVS_I2S1_MCLK -- PLT_RST_LTE_L */
+	PAD_CFG_GPO(GPIO_161, 1, DEEP),
 };
 
 const struct pad_config *variant_override_gpio_table(size_t *num)
@@ -61,8 +83,29 @@ const struct pad_config *variant_override_gpio_table(size_t *num)
 	case SKU_9_HDMI:
 		*num = ARRAY_SIZE(hdmi_override_table);
 		return hdmi_override_table;
+	case SKU_17_LTE:
+		*num = ARRAY_SIZE(lte_override_table);
+		return lte_override_table;
 	default:
 		*num = ARRAY_SIZE(default_override_table);
 		return default_override_table;
 	}
+}
+
+static const struct pad_config lte_early_override_table[] = {
+	/* UART2-CTS_B -- EN_PP3300_DX_LTE_SOC */
+	PAD_CFG_GPO(GPIO_67, 1, PWROK),
+
+	/* PCIE_WAKE1_B -- FULL_CARD_POWER_OFF */
+	PAD_CFG_GPO(GPIO_117, 1, PWROK),
+
+	/* AVS_I2S1_MCLK -- PLT_RST_LTE_L */
+	PAD_CFG_GPO(GPIO_161, 0, DEEP),
+};
+
+const struct pad_config *variant_early_override_gpio_table(size_t *num)
+{
+	*num = ARRAY_SIZE(lte_early_override_table);
+
+	return lte_early_override_table;
 }

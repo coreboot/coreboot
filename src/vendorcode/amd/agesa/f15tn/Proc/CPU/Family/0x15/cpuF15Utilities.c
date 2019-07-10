@@ -1035,7 +1035,7 @@ F15HtPhyOverrideDllCompensation (
     for (Sublink = 0; Sublink < 2; Sublink++) {
       CapabilitySet = StartingCapabilitySet;
       Link = 0;
-      DesiredLinkFeats.HtPhyLinkValue = ((Sublink == 0) ? HTPHY_LINKTYPE_SL0_HT3 : HTPHY_LINKTYPE_SL0_HT3);
+      DesiredLinkFeats.HtPhyLinkValue = ((Sublink == 0) ? HTPHY_LINKTYPE_SL0_HT3 : HTPHY_LINKTYPE_SL1_HT3);
       while (FamilySpecificServices->NextLinkHasHtPhyFeats (
                FamilySpecificServices,
                &CapabilitySet,

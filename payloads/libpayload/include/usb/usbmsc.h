@@ -34,12 +34,23 @@ typedef struct {
 	unsigned int numblocks;
 	endpoint_t *bulk_in;
 	endpoint_t *bulk_out;
-	u8 usbdisk_created;
+	u8 quirks		: 7;
+	u8 usbdisk_created	: 1;
 	s8 ready;
 	u8 lun;
 	u8 num_luns;
 	void *data; /* For use by consumers of libpayload. */
 } usbmsc_inst_t;
+
+/* Possible values for quirks field. */
+enum {
+	/* Don't check for LUNs (force assumption that there's only one LUN). */
+	USB_MSC_QUIRK_NO_LUNS	= 1 << 0,
+	/* Never do a BULK_ONLY reset, just continue. This means that the device
+	   cannot recover from phase errors and won't detach automatically for
+	   unrecoverable errors. Do not use unless you have to. */
+	USB_MSC_QUIRK_NO_RESET	= 1 << 1,
+};
 
 /* Possible values for ready field. */
 enum {
@@ -55,5 +66,9 @@ typedef enum { cbw_direction_data_in = 0x80, cbw_direction_data_out = 0
 
 int readwrite_blocks_512 (usbdev_t *dev, int start, int n, cbw_direction dir, u8 *buf);
 int readwrite_blocks (usbdev_t *dev, int start, int n, cbw_direction dir, u8 *buf);
+
+/* Force a device to enumerate as MSC, without checking class/protocol types.
+   It must still have a bulk endpoint pair and respond to MSC commands. */
+void usb_msc_force_init (usbdev_t *dev, u32 quirks);
 
 #endif

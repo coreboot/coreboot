@@ -986,7 +986,7 @@ config X86EMU_DEBUG_IO
 config X86EMU_DEBUG_TIMINGS
 	bool "Output timing information"
 	default n
-	depends on X86EMU_DEBUG && UDELAY_LAPIC && HAVE_MONOTONIC_TIMER
+	depends on X86EMU_DEBUG && HAVE_MONOTONIC_TIMER
 	help
 	  Print timing information needed by i915tool.
 

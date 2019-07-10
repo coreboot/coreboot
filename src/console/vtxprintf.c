@@ -107,7 +107,10 @@ static int number(void (*tx_byte)(unsigned char byte, void *data),
 			call_tx('0'), count++;
 		else if (base == 16) {
 			call_tx('0'), count++;
-			call_tx(digits[33]), count++;
+			if (type & LARGE)
+				call_tx('X'), count++;
+			else
+				call_tx('x'), count++;
 		}
 	}
 	if (!(type & LEFT)) {

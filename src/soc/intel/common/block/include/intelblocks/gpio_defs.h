@@ -134,6 +134,15 @@
 #define PAD_RESET(value)	PAD_CFG0_LOGICAL_RESET_##value
 #define PAD_PULL(value)		PAD_CFG1_PULL_##value
 
+/* Disable the input/output buffer of the pad */
+#define PAD_CFG0_BUF_NO_DISABLE		(0)
+#define PAD_CFG0_BUF_TX_DISABLE		PAD_CFG0_TX_DISABLE
+#define PAD_CFG0_BUF_RX_DISABLE		PAD_CFG0_RX_DISABLE
+#define PAD_CFG0_BUF_TX_RX_DISABLE \
+	(PAD_CFG0_TX_DISABLE | PAD_CFG0_RX_DISABLE)
+
+#define PAD_BUF(value)		PAD_CFG0_BUF_##value
+
 #if CONFIG(SOC_INTEL_COMMON_BLOCK_GPIO_IOSTANDBY)
 #define PAD_IOSSTATE(value)	PAD_CFG1_IOSSTATE_##value
 #define PAD_IOSTERM(value)	PAD_CFG1_IOSTERM_##value
@@ -179,6 +188,15 @@
 #define PAD_CFG_NF(pad, pull, rst, func) \
 	_PAD_CFG_STRUCT(pad, PAD_RESET(rst) | PAD_FUNC(func), PAD_PULL(pull) | \
 		PAD_IOSSTATE(TxLASTRxE))
+
+/*
+ * Set native function with RX Level/Edge configuration and disable
+ * input/output buffer if necessary
+ */
+#define PAD_CFG_NF_BUF_TRIG(pad, pull, rst, func, bufdis, trig) \
+	_PAD_CFG_STRUCT(pad, PAD_RESET(rst) | PAD_CFG0_TRIG_##trig | \
+		PAD_BUF(bufdis) | PAD_FUNC(func), \
+		PAD_PULL(pull) | PAD_IOSSTATE(TxLASTRxE))
 
 #if CONFIG(SOC_INTEL_COMMON_BLOCK_GPIO_PADCFG_PADTOL)
 /* Native 1.8V tolerant pad, only applies to some pads like I2C/I2S

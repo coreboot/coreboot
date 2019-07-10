@@ -4,3 +4,6 @@ comment "CHILI"
 
 config BOARD_SIEMENS_CHILI_BASE
 	bool "-> Base board"
+
+config BOARD_SIEMENS_CHILI_CHILI
+	bool "-> Chili (AiO)"

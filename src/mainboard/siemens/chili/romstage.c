@@ -38,5 +38,11 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 	memupd->FspmTestConfig.VtdDisable = !vtd;
 	get_option(&memupd->FspmConfig.HyperThreading, "hyper_threading");
 
+	variant_romstage_params(memupd);
+
 	mainboard_init();
+}
+
+__weak void variant_romstage_params(FSPM_UPD *const mupd)
+{
 }

@@ -6,7 +6,8 @@
 
 static void mainboard_dev_init(struct device *dev)
 {
-	const bool enable_usb = CONFIG(BOARD_SIEMENS_CHILI_BASE);
+	const bool enable_usb =
+		CONFIG(BOARD_SIEMENS_CHILI_BASE) || CONFIG(SIEMENS_CHILI_DEBUG_USB);
 	ec_enable_devices(enable_usb);
 }
 

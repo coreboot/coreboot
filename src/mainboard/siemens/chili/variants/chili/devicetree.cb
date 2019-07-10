@@ -1,0 +1,194 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+chip soc/intel/cannonlake
+	# FSP configuration
+	register "SaGv" = "SaGv_Enabled"
+	register "RMT" = "0"
+	register "speed_shift_enable" = "1"
+
+	register "PchHdaDspEnable" = "0"
+        register "PchHdaAudioLinkHda" = "1"
+
+	device cpu_cluster 0 on
+		device lapic 0 on end
+	end
+
+	device domain 0 on
+		device pci 00.0 on	end	# Host Bridge
+		device pci 01.0 off	end	# PCIe x16
+		device pci 01.1 off	end	# PCIe x8
+		device pci 01.2 off	end	# PCIe x4
+		device pci 02.0 on	end	# Integrated Graphics Device
+		device pci 04.0 on	end	# SA Thermal device
+		device pci 05.0 off	end	# Imaging Processing Unit
+		device pci 08.0 off	end	# Gaussian mixture model, Neural network accelerator
+		device pci 12.0 on	end	# Thermal Subsystem
+		device pci 12.5 off	end	# UFS SCS
+		device pci 12.6 off	end	# GSPI #2
+		device pci 13.0 off	end	# ISH
+		device pci 14.0 on		# USB xHCI
+			# USB2
+			register "usb2_ports[0]" = "USB2_PORT_MID(OC1)"		# Debug
+			register "usb2_ports[1]" = "USB2_PORT_MID(OC_SKIP)"	# ReinerSCT
+			register "usb2_ports[2]" = "USB2_PORT_MID(OC_SKIP)"	# ReinerSCT
+			# USB3
+			register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC1)"	# Debug
+		end
+		device pci 14.1 off	end	# USB xDCI (OTG)
+		device pci 14.2 on	end	# Shared SRAM
+		device pci 14.3 off	end	# CNVi Wifi
+		device pci 14.5 off	end	# SDCard
+		device pci 15.0 on		# I2C #0
+			chip drivers/secunet/dmi
+				device i2c 0x57 on end	# Serial EEPROM
+			end
+			chip drivers/i2c/lm96000
+				device i2c 0x2e on end
+				register "vin[0].low"	= " 1900 *  95/100"
+				register "vin[0].high"	= " 1900 * 105/100"
+				register "vin[1].low"	= " 1200 *  95/100"
+				register "vin[1].high"	= " 1200 * 105/100"
+				register "vin[2].low"	= " 3300 *  95/100"
+				register "vin[2].high"	= " 3300 * 105/100"
+				register "vin[3].low"	= " 5000 *  95/100"
+				register "vin[3].high"	= " 5000 * 105/100"
+				register "vin[4].low"	= "12000 *  95/100"
+				register "vin[4].high"	= "12000 * 105/100"
+
+				register "temp_in[0].low"	= "-25"
+				register "temp_in[0].high" 	= " 85"
+				register "temp_in[1].low"	= "-25"
+				register "temp_in[1].high" 	= " 85"
+				register "temp_in[2].low"	= "-25"
+				register "temp_in[2].high" 	= " 85"
+
+				register "fan[0]" = "{
+					.mode		= LM96000_FAN_HOTTEST_123,
+					.spinup		= LM96000_SPINUP_2000MS,
+					.freq		= LM96000_PWM_27_7KHZ,
+					.min_duty	= 23,
+				}"
+				register "fan[1]" = "{
+					.mode		= LM96000_FAN_HOTTEST_123,
+					.spinup		= LM96000_SPINUP_2000MS,
+					.freq		= LM96000_PWM_27_7KHZ,
+					.min_duty	= 23,
+				}"
+
+				register "zone[0]" = "{
+					.low_temp	= 54,
+					.target_temp	= 81,
+					.panic_temp	= 65,
+					.min_off	= LM96000_LOW_TEMP_MIN,
+					.hysteresis	= 3,
+				}"
+				register "zone[1]" = "{
+					.low_temp	= 54,
+					.target_temp	= 81,
+					.panic_temp	= 65,
+					.min_off	= LM96000_LOW_TEMP_MIN,
+					.hysteresis	= 3,
+				}"
+				register "zone[2]" = "{
+					.low_temp	= 54,
+					.target_temp	= 81,
+					.panic_temp	= 65,
+					.min_off	= LM96000_LOW_TEMP_MIN,
+					.hysteresis	= 3,
+				}"
+			end
+		end
+		device pci 15.1 off	end	# I2C #1
+		device pci 15.2 off	end	# I2C #2
+		device pci 15.3 off	end	# I2C #3
+		device pci 16.0 on		# Management Engine Interface 1
+			register "HeciEnabled" = "1"
+		end
+		device pci 16.1 off	end	# Management Engine Interface 2
+		device pci 16.2 off	end	# Management Engine IDE-R
+		device pci 16.3 off	end	# Management Engine KT Redirection
+		device pci 16.4 off	end	# Management Engine Interface 3
+		device pci 16.5 off	end	# Management Engine Interface 4
+		device pci 17.0 off	end	# SATA
+		device pci 19.0 off	end	# I2C #4
+		device pci 19.1 off	end	# I2C #5
+		device pci 19.2 off	end	# UART #2
+		device pci 1a.0 off	end	# eMMC
+		device pci 1c.0 off		# PCI Express Port 1
+			device pci 00.0 on end	# Debug (x1)
+			register "PcieRpEnable[0]" = "0"
+			register "PcieClkSrcUsage[2]" = "0"
+			register "PcieClkSrcClkReq[2]" = "2"
+		end
+		device pci 1c.1 off	end	# PCI Express Port 2
+		device pci 1c.2 off	end	# PCI Express Port 3
+		device pci 1c.3 off	end	# PCI Express Port 4
+		device pci 1c.4 on		# PCI Express Port 5
+			device pci 00.0 on end	# CORE (x1)
+			register "PcieRpEnable[4]" = "1"
+			register "PcieClkSrcUsage[4]" = "4"
+			register "PcieClkSrcClkReq[4]" = "4"
+			register "PcieRpSlotImplemented[4]" = "1"
+		end
+		device pci 1c.5 on		# PCI Express Port 6
+			device pci 00.0 on end	# i210 (x1)
+			register "PcieRpEnable[5]" = "1"
+			register "PcieClkSrcUsage[5]" = "5"
+			register "PcieClkSrcClkReq[5]" = "5"
+			register "PcieRpSlotImplemented[5]" = "0"
+		end
+		device pci 1c.6 on		# PCI Express Port 7
+			device pci 00.0	on end	# VL805 Front Rack/UIB (x1)
+			register "PcieRpEnable[6]" = "1"
+			register "PcieClkSrcUsage[1]" = "6"
+			register "PcieClkSrcClkReq[1]" = "1"
+			register "PcieRpSlotImplemented[6]" = "0"
+		end
+		device pci 1c.7 on		# PCI Express Port 8
+			device pci 00.0	on end	# VL805 Back MB (x1)
+			register "PcieRpEnable[7]" = "1"
+			register "PcieClkSrcUsage[0]" = "7"
+			register "PcieClkSrcClkReq[0]" = "0"
+			register "PcieRpSlotImplemented[7]" = "0"
+		end
+		device pci 1d.0 off	end	# PCI Express Port 9
+		device pci 1d.1 off	end	# PCI Express Port 10
+		device pci 1d.2 off	end	# PCI Express Port 11
+		device pci 1d.3 off	end	# PCI Express Port 12
+		device pci 1d.4 off	end	# PCI Express Port 13
+		device pci 1d.5 off	end	# PCI Express Port 14
+		device pci 1d.6 off	end	# PCI Express Port 15
+		device pci 1d.7 off	end	# PCI Express Port 16
+		device pci 1b.0 on		# PCI Express Port 17
+			device pci 00.0	on end	# NVMe (x4)
+			register "PcieRpEnable[16]" = "1"
+			register "PcieClkSrcUsage[7]" = "16"
+			register "PcieClkSrcClkReq[7]" = "7"
+			register "PcieRpSlotImplemented[16]" = "1"
+			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther" "2280" "SlotDataBusWidth4X"
+		end
+		device pci 1b.1 off	end	# PCI Express Port 18
+		device pci 1b.2 off	end	# PCI Express Port 19
+		device pci 1b.3 off	end	# PCI Express Port 20
+		device pci 1b.4 off	end	# PCI Express Port 21
+		device pci 1b.5 off	end	# PCI Express Port 22
+		device pci 1b.6 off	end	# PCI Express Port 23
+		device pci 1b.7 off	end	# PCI Express Port 24
+		device pci 1e.0 on	end	# UART #0
+		device pci 1e.1 off	end	# UART #1
+		device pci 1e.2 off	end	# GSPI #0
+		device pci 1e.3 off	end	# GSPI #1
+		device pci 1f.0 on		# LPC Interface
+			chip drivers/pc80/tpm
+				device pnp 0c31.0 on end
+			end
+		end
+		device pci 1f.1 hidden	end	# P2SB
+		device pci 1f.2 hidden	end	# Power Management Controller
+		device pci 1f.3 on	end	# Intel HDA
+		device pci 1f.4 on	end	# SMBus
+		device pci 1f.5 on	end	# PCH SPI
+		device pci 1f.6 off	end	# GbE
+		device pci 1f.7 off	end	# TraceHub
+	end
+end

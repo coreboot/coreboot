@@ -3196,17 +3196,6 @@
 /* Intel EMMC device Ids */
 #define PCI_DEVICE_ID_INTEL_SKL_EMMC		0x9d2b
 
-/* Intel PCH Ids */
-#define PCH_CNL_LP_M_SUPER			0x9d80
-#define PCH_CNL_LP_M_SUPER_UNLOCK		0x9d81
-#define PCH_CNL_LP_M_SUPER_LOCK			0x9d82
-#define PCH_CNL_LP_Y_PREMIUM			0x9d83
-#define PCH_CNL_LP_U_PREMIUM			0x9d84
-#define PCH_CNL_LP_U_BASE			0x9d85
-#define PCH_CNL_H_DT_SUPER			0xa280
-#define PCH_CNP_H_MOBILE_Q370			0xa306
-#define PCH_CNP_H_MOBILE_QM370			0xa30c
-
 /* Intel WIFI Ids */
 #define PCI_DEVICE_ID_1000_SERIES_WIFI		0x0084
 #define PCI_DEVICE_ID_6005_SERIES_WIFI		0x0085

@@ -47,7 +47,7 @@ static int smi_obtain_lock(void)
 	return (ret == SMI_UNLOCKED);
 }
 
-void smi_release_lock(void)
+static void smi_release_lock(void)
 {
 	asm volatile (
 		"movb %1, %%al\n"

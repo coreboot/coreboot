@@ -501,10 +501,6 @@ void mainboard_smi_gpi(u32 gpi_sts);
 int  mainboard_smi_apmc(u8 data);
 void mainboard_smi_sleep(u8 slp_typ);
 
-#if !CONFIG(SMM_TSEG)
-void smi_release_lock(void);
-#endif
-
 /* This is the SMM handler. */
 extern unsigned char _binary_smm_start[];
 extern unsigned char _binary_smm_end[];

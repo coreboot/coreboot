@@ -41,6 +41,9 @@ DefinitionBlock(
 			#include <soc/intel/cannonlake/acpi/northbridge.asl>
 			#include <soc/intel/cannonlake/acpi/southbridge.asl>
 		}
+
+		/* Mainboard hooks */
+		#include "mainboard.asl"
 	}
 
 #if CONFIG(CHROMEOS)

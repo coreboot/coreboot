@@ -16,6 +16,7 @@
 #include <soc/gpio_defs.h>
 #include <soc/irq.h>
 #include <soc/pcr_ids.h>
+#include <intelblocks/gpio.h>
 #include "gpio_op.asl"
 
 Device (GPIO)
@@ -106,4 +107,53 @@ Method (GADD, 1, NotSerialized)
 	Store (PCRB (Local0), Local2)
 	Add (Local2, PAD_CFG_BASE, Local2)
 	Return (Add (Local2, Multiply (Local1, 16)))
+}
+
+/*
+ * Return PCR Port ID of GPIO Communities
+ *
+ * Arg0: GPIO Community (0-4)
+ */
+Method (GPID, 1, Serialized)
+{
+	Switch (ToInteger (Arg0))
+	{
+		Case (0) {
+			Store (PID_GPIOCOM0, Local0)
+		}
+		Case (1) {
+			Store (PID_GPIOCOM1, Local0)
+		}
+		Case (2) {
+			Store (PID_GPIOCOM2, Local0)
+		}
+		Case (3) {
+			Store (PID_GPIOCOM3, Local0)
+		}
+		Case (4) {
+			Store (PID_GPIOCOM4, Local0)
+		}
+		Default {
+			Return (0)
+		}
+	}
+
+	Return (Local0)
+}
+
+/*
+ * Configure GPIO Power Management bits
+ *
+ * Arg0: GPIO community (0-4)
+ * Arg1: PM bits in MISCCFG
+ */
+Method (CGPM, 2, Serialized)
+{
+	Store (GPID (Arg0), Local0)
+	If (LNotEqual (Local0, 0)) {
+		/* Mask off current PM bits */
+		PCRA (Local0, GPIO_MISCCFG, Not (MISCCFG_ENABLE_GPIO_PM_CONFIG))
+		/* Mask in requested bits */
+		PCRO (Local0, GPIO_MISCCFG, And (Arg1, MISCCFG_ENABLE_GPIO_PM_CONFIG))
+	}
 }

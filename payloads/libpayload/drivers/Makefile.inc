@@ -77,6 +77,7 @@ libc-y += video/graphics.c
 libc-$(CONFIG_LP_STORAGE) += storage/storage.c
 libc-$(CONFIG_LP_STORAGE_AHCI) += storage/ahci.c
 libc-$(CONFIG_LP_STORAGE_AHCI) += storage/ahci_common.c
+libc-$(CONFIG_LP_STORAGE_NVME) += storage/nvme.c
 ifeq ($(CONFIG_LP_STORAGE_ATA),y)
 libc-$(CONFIG_LP_STORAGE_ATA) += storage/ata.c
 libc-$(CONFIG_LP_STORAGE_ATA) += storage/ahci_ata.c

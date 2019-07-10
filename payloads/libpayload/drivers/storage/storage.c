@@ -29,6 +29,7 @@
 #include <libpayload.h>
 #include <pci/pci.h>
 #include <storage/ahci.h>
+#include <storage/nvme.h>
 #include <storage/storage.h>
 
 static storage_dev_t **devices = NULL;
@@ -114,6 +115,11 @@ void storage_initialize(void)
 #if CONFIG(LP_STORAGE_AHCI)
 		case PCI_CLASS_STORAGE_AHCI:
 			ahci_initialize(dev);
+			break;
+#endif
+#if CONFIG(LP_STORAGE_NVME)
+		case PCI_CLASS_STORAGE_NVME:
+			nvme_initialize(dev);
 			break;
 #endif
 		default:

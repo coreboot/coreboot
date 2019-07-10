@@ -42,6 +42,7 @@ typedef enum {
 	PORT_TYPE_IDE	= (1 << 0),
 	PORT_TYPE_SATA	= (1 << 1),
 	PORT_TYPE_USB	= (1 << 2),
+	PORT_TYPE_NVME	= (1 << 3),
 } storage_port_t;
 
 typedef enum {

@@ -64,6 +64,11 @@ static inline __attribute__((always_inline)) uint32_t read32(const volatile void
 	return *((volatile uint32_t *)(addr));
 }
 
+static inline __attribute__((always_inline)) uint64_t read64(const volatile void *addr)
+{
+	return *((volatile uint64_t *)(addr));
+}
+
 static inline __attribute__((always_inline)) void write8(volatile void *addr, uint8_t value)
 {
 	*((volatile uint8_t *)(addr)) = value;
@@ -77,6 +82,11 @@ static inline __attribute__((always_inline)) void write16(volatile void *addr, u
 static inline __attribute__((always_inline)) void write32(volatile void *addr, uint32_t value)
 {
 	*((volatile uint32_t *)(addr)) = value;
+}
+
+static inline __attribute__((always_inline)) void write64(volatile void *addr, uint64_t value)
+{
+	*((volatile uint64_t *)(addr)) = value;
 }
 
 static inline unsigned int inl(int port)

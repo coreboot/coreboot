@@ -44,7 +44,7 @@ chip soc/intel/apollolake
 	register "emmc_rx_cmd_data_cntl2" = "0x10008"
 
 	# 0:HS400(Default), 1:HS200, 2:DDR50
-	register "emmc_host_max_speed" = "2"
+	register "emmc_host_max_speed" = "1"
 
 	# Intel Common SoC Config
 	#+-------------------+---------------------------+

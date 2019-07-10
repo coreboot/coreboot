@@ -228,7 +228,7 @@ void fit_payload(struct prog *payload)
 
 	/* Collect infos for fit_payload_arch */
 	kernel.size = config->kernel->size;
-	fdt.size = dt ? dt_flat_size(dt) : 0;
+	fdt.size = dt_flat_size(dt);
 	initrd.size = config->ramdisk ? config->ramdisk->size : 0;
 
 	/* Invoke arch specific payload placement and fixups */

@@ -79,13 +79,13 @@ config TTYS0_BASE
 	  Map the COM port number to the respective I/O port.
 
 comment "Serial port base address = 0x3f8"
-depends on UART_FOR_CONSOLE = 0
+depends on DRIVERS_UART_8250IO && UART_FOR_CONSOLE = 0
 comment "Serial port base address = 0x2f8"
-depends on UART_FOR_CONSOLE = 1
+depends on DRIVERS_UART_8250IO && UART_FOR_CONSOLE = 1
 comment "Serial port base address = 0x3e8"
-depends on UART_FOR_CONSOLE = 2
+depends on DRIVERS_UART_8250IO && UART_FOR_CONSOLE = 2
 comment "Serial port base address = 0x2e8"
-depends on UART_FOR_CONSOLE = 3
+depends on DRIVERS_UART_8250IO && UART_FOR_CONSOLE = 3
 
 config UART_OVERRIDE_BAUDRATE
 	boolean

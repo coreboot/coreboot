@@ -15,6 +15,8 @@
  */
 
 #include <ctype.h>
+/* stat.h needs to be included before commonlib/helpers.h to avoid errors.*/
+#include <sys/stat.h>
 #include <commonlib/helpers.h>
 #include "sconfig.h"
 #include "sconfig.tab.h"

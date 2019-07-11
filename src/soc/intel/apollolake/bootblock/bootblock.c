@@ -35,7 +35,6 @@
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
 #include <spi-generic.h>
-#include <timestamp.h>
 
 static const struct pad_config tpm_spi_configs[] = {
 #if CONFIG(SOC_INTEL_GLK)

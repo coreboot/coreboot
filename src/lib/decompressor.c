@@ -19,6 +19,7 @@
 #include <delay.h>
 #include <program_loading.h>
 #include <symbols.h>
+#include <timestamp.h>
 
 extern u8 compressed_bootblock[];
 asm (

@@ -22,7 +22,6 @@
 #include <soc/bootblock.h>
 #include <soc/iomap.h>
 #include <spi-generic.h>
-#include <timestamp.h>
 #include <console/console.h>
 
 const FSPT_UPD temp_ram_init_params = {

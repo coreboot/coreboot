@@ -23,7 +23,6 @@
 #include <fsp/util.h>
 #include <fsp/memmap.h>
 #include <program_loading.h>
-#include <timestamp.h>
 
 /* platform_enter_postcar() determines the stack to use after
  * cache-as-ram is torn down as well as the MTRR settings to use,

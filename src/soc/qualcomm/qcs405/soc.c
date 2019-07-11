@@ -15,7 +15,6 @@
 
 #include <symbols.h>
 #include <device/device.h>
-#include <timestamp.h>
 #include <soc/mmu.h>
 #include <soc/symbols.h>
 

@@ -21,6 +21,7 @@
 #include <pc80/mc146818rtc.h>
 #include <program_loading.h>
 #include <symbols.h>
+#include <timestamp.h>
 
 DECLARE_OPTIONAL_REGION(timestamp);
 

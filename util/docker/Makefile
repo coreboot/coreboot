@@ -110,11 +110,11 @@ docker-run-local: test-docker $(DOCKER_CCACHE)
 
 docker-build-coreboot: docker-run-local
 docker-build-coreboot: override DOCKER_RUN_LOCAL := \
-	make clean && make $(BUILD_CMD); rm -f .xcompile
+	make clean && make $(BUILD_CMD)
 
 docker-abuild: docker-run-local
 docker-abuild: override DOCKER_RUN_LOCAL := \
-	make clean && util/abuild/abuild $(ABUILD_ARGS); rm -f .xcompile
+	make clean && util/abuild/abuild $(ABUILD_ARGS)
 
 docker-what-jenkins-does: docker-run-local
 docker-what-jenkins-does: override DOCKER_RUN_LOCAL := \

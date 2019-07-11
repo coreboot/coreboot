@@ -1,6 +1,8 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
--include ../../../../../.xcompile
+xcompile ?= ../../../../../build/xcompile
+-include $(xcompile)
+
 GCC_PREFIX?=$(CROSS_COMPILE_arm)
 
 CC = $(GCC_PREFIX)gcc

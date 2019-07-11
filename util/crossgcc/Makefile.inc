@@ -65,7 +65,5 @@ jenkins-build-toolchain:
 	$(MAKE) crossgcc clang KEEP_SOURCES=1 BUILDGCC_OPTIONS='$(BUILDGCC_OPTIONS)'
 	#TODO: Re-enable gdb build after the builders can build it again.
 	#$(MAKE) crosstools clang KEEP_SOURCES=1 BUILDGCC_OPTIONS='$(BUILDGCC_OPTIONS)'
-	rm -f .xcompile
 	PATH=$(if $(DEST),$(DEST)/bin,$(top)/util/crossgcc/xgcc/bin):$$PATH; $(MAKE) what-jenkins-does
-	-cat .xcompile
 	PATH=$(if $(DEST),$(DEST)/bin,$(top)/util/crossgcc/xgcc/bin):$$PATH; $(MAKE) test-toolchain

@@ -354,7 +354,6 @@ function compile_target
 	eval "$BUILDPREFIX" "$MAKE" "$verboseopt" DOTCONFIG="${build_dir}/config.build" obj="${build_dir}" objutil="$TARGET/sharedutils" BUILD_TIMELESS=$TIMELESS \
 		&> "${build_dir}/make.log" ; \
 		MAKE_FAILED=$?
-	cp "${ROOT}/.xcompile" "${build_dir}/xcompile.build"
 	cd "${build_dir}" || return $?
 
 	etime=$(perl -e 'print time();' 2>/dev/null || date +%s)
@@ -466,10 +465,10 @@ function build_config
 
 	missing_arches="$($MAKE --no-print-directory -f - \
 		REQUIRED_ARCHES="$required_arches" <<'EOF'
-include .xcompile
+include $(xcompile)
 .PHONY: missing_arches
 missing_arches:
-	$(if $(XCOMPILE_COMPLETE),,$(error .xcompile is invalid.))
+	$(if $(XCOMPILE_COMPLETE),,$(error $(xcompile) is invalid.))
 	@echo $(foreach arch,$(REQUIRED_ARCHES),$(if $(filter $(arch),$(SUBARCH_SUPPORTED)),,$(arch)))
 EOF
 )"
@@ -767,7 +766,9 @@ if ! mkdir -p "$TARGET"; then
 	exit 1
 fi
 
-$MAKE -C"${ROOT}" UPDATED_SUBMODULES=1 .xcompile || exit 1
+# Generate a single xcompile for all boards
+export xcompile="${TARGET}/xcompile"
+$MAKE -C"${ROOT}" UPDATED_SUBMODULES=1 "${xcompile}" || exit 1
 
 customizing=$(echo "$customizing" | cut -c3-)
 if [ "$customizing" = "" ]; then

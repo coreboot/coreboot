@@ -130,6 +130,7 @@ junit.xml:
 	echo '<?xml version="1.0" encoding="utf-8"?><testsuite>' > $@.tmp
 	for i in $(filter-out %.old,$(wildcard configs/*)); do \
 		$(MAKE) clean; \
+		echo "Building libpayload for $$i"; \
 		cp "$$i" junit_config; \
 		$(MAKE) olddefconfig DOTCONFIG=junit_config V=$(V) Q=$(Q) 2>/dev/null >/dev/null; \
 		echo "<testcase classname='libpayload' name='$$i'>" >> $@.tmp; \
@@ -146,6 +147,7 @@ junit.xml:
 		echo "</testcase>" >> $@.tmp; \
 	done
 	echo "</testsuite>" >> $@.tmp
+	echo "libpayload build complete, test results in $@"
 	mv $@.tmp $@
 
 test-configs:

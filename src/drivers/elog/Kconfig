@@ -42,10 +42,8 @@ config ELOG_PRERAM
 	help
 	  This option will enable event logging from the preram stage.
 
-endif
-
 config ELOG_GSMI
-	depends on ELOG && SMM_TSEG
+	depends on HAVE_SMI_HANDLER
 	bool "SMI interface to write and clear event log"
 	select SPI_FLASH_SMM if BOOT_DEVICE_SPI_FLASH_RW_NOMMAP
 	default n
@@ -55,7 +53,6 @@ config ELOG_GSMI
 	  kernel reset/shutdown messages to the event log.
 
 config ELOG_BOOT_COUNT
-	depends on ELOG
 	bool "Maintain a monotonic boot number in CMOS"
 	default n
 	help
@@ -64,9 +61,11 @@ config ELOG_BOOT_COUNT
 	  counter will be logged as part of the System Boot event.
 
 config ELOG_BOOT_COUNT_CMOS_OFFSET
-	depends on ELOG && ELOG_BOOT_COUNT && !USE_OPTION_TABLE
+	depends on ELOG_BOOT_COUNT && !USE_OPTION_TABLE
 	int "Offset in CMOS to store the boot count"
 	default 0
 	help
 	  This value must be greater than 16 bytes so as not to interfere
 	  with the standard RTC region.  Requires 8 bytes.
+
+endif

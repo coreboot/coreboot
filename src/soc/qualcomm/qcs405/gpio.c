@@ -15,7 +15,6 @@
 
 #include <device/mmio.h>
 #include <types.h>
-#include <delay.h>
 #include <gpio.h>
 
 void gpio_configure(gpio_t gpio, uint32_t func, uint32_t pull,

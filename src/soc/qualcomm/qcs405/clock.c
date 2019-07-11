@@ -15,7 +15,6 @@
 #include <console/console.h>
 #include <device/mmio.h>
 #include <types.h>
-#include <delay.h>
 #include <commonlib/helpers.h>
 #include <soc/clock.h>
 

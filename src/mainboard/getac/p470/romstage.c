@@ -17,6 +17,7 @@
 #include <stdint.h>
 #include <arch/io.h>
 #include <cf9_reset.h>
+#include <delay.h>
 #include <device/pnp_ops.h>
 #include <device/pci_ops.h>
 #include <device/pci_def.h>

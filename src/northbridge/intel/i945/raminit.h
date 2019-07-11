@@ -68,5 +68,4 @@ struct sys_info {
 void receive_enable_adjust(struct sys_info *sysinfo);
 void sdram_initialize(int boot_path, const u8 *sdram_addresses);
 int fixup_i945_errata(void);
-void udelay(u32 us);
 #endif				/* RAMINIT_H */

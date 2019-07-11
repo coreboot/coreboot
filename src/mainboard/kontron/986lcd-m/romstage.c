@@ -17,6 +17,7 @@
 
 #include <stdint.h>
 #include <cf9_reset.h>
+#include <delay.h>
 #include <console/console.h>
 #include <cpu/intel/romstage.h>
 #include <cpu/x86/bist.h>

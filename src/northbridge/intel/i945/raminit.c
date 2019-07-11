@@ -16,6 +16,7 @@
 
 #include <console/console.h>
 #include <cpu/x86/cache.h>
+#include <delay.h>
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
 #include <cf9_reset.h>

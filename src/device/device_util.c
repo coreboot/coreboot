@@ -145,7 +145,7 @@ u32 dev_path_encode(const struct device *dev)
 		ret |= dev->path.spi.cs;
 		break;
 	case DEVICE_PATH_USB:
-		ret |= dev->path.usb.port_type << 8 || dev->path.usb.port_id;
+		ret |= dev->path.usb.port_type << 8 | dev->path.usb.port_id;
 		break;
 	case DEVICE_PATH_NONE:
 	case DEVICE_PATH_MMIO:  /* don't care */

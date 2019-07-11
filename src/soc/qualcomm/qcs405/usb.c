@@ -14,7 +14,6 @@
  */
 
 #include <device/mmio.h>
-#include <lib.h>
 #include <stdlib.h>
 #include <console/console.h>
 #include <delay.h>

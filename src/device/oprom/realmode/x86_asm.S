@@ -43,6 +43,10 @@ __idt_handler_size:
 	.globl __realmode_code
 __realmode_code:
 
+/* Realmode function return. */
+__realmode_ret = RELOCATED(.)
+	.long 0
+
 /* Realmode IDT pointer structure. */
 __realmode_idt = RELOCATED(.)
 	.word 1023	/* 16 bit limit */
@@ -167,6 +171,13 @@ __lcall_instr = RELOCATED(.)
 	.word 0x0000, 0x0000
 	/* ************************************ */
 
+	/*
+	 * Here is end of real mode call and time to go back to protected mode.
+	 * Before that its better to store current eax into some memory address
+	 * so that context persist in protected mode too.
+	*/
+	mov	%eax, __realmode_ret
+
 	/* If we got here, we are just about done.
 	 * Need to get back to protected mode.
 	 */
@@ -196,7 +207,8 @@ __lcall_instr = RELOCATED(.)
 	popa
 
 	/* and exit */
-	// TODO return AX from OPROM call
+	/* return AX from OPROM call */
+	mov	__realmode_ret, %eax
 	ret
 
 	.globl __realmode_interrupt
@@ -291,6 +303,13 @@ __realmode_interrupt:
 __intXX_instr = RELOCATED(.)
 	.byte 0xcd, 0x00 /* This becomes intXX */
 
+	/*
+	 * Here is end of real mode call and time to go back to protected mode.
+	 * Before that its better to store current eax into some memory address
+	 * so that context persist in protected mode too.
+	*/
+	mov	%eax, __realmode_ret
+
 	/* Ok, the job is done, now go back to protected mode coreboot */
 	movl	%cr0, %eax
 	orl	$PE, %eax
@@ -314,6 +333,8 @@ __intXX_instr = RELOCATED(.)
 	movl	__stack, %esp
 	popf
 	popa
+	/* return AX from OPROM call */
+	mov	__realmode_ret, %eax
 	ret
 
 /* This is the 16-bit interrupt entry point called by the IDT stub code.

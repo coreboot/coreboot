@@ -15,8 +15,11 @@
 
 #include <baseboard/variants.h>
 #include <baseboard/gpio.h>
+#include <boardid.h>
+#include <gpio.h>
 #include <soc/cnl_memcfg_init.h>
 #include <string.h>
+#include <variant/gpio.h>
 
 static const struct cnl_mb_cfg baseboard_memcfg = {
 	/*
@@ -65,4 +68,35 @@ static const struct cnl_mb_cfg baseboard_memcfg = {
 void variant_memory_params(struct cnl_mb_cfg *bcfg)
 {
 	memcpy(bcfg, &baseboard_memcfg, sizeof(baseboard_memcfg));
+}
+
+int variant_memory_sku(void)
+{
+	const gpio_t spd_gpios[] = {
+		GPIO_MEM_CONFIG_0,
+		GPIO_MEM_CONFIG_1,
+		GPIO_MEM_CONFIG_2,
+		GPIO_MEM_CONFIG_3,
+	};
+
+	int val = gpio_base2_value(spd_gpios, ARRAY_SIZE(spd_gpios));
+
+	if ((board_id() != 0) && (board_id() != BOARD_ID_UNKNOWN))
+		return val;
+
+	/*
+	 * For boards with id 0 or unknown, memory straps 3 and 4 are
+	 * incorrectly stuffed in hardware. This is a workaround for these
+	 * boards to override memory strap 3 to 0 and 4 to 1.
+	 */
+	switch (val) {
+	case 3:
+		val = 0;
+		break;
+	case 4:
+		val = 1;
+		break;
+	}
+
+	return val;
 }

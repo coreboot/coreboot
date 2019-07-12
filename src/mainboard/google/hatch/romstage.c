@@ -29,7 +29,7 @@
  */
 #define GPIO_MEM_CH_SEL		GPP_F2
 
-static int memory_sku(void)
+int __weak variant_memory_sku(void)
 {
 	const gpio_t spd_gpios[] = {
 		GPIO_MEM_CONFIG_0,
@@ -48,7 +48,7 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 	int is_single_ch_mem;
 
 	variant_memory_params(&memcfg);
-	mem_sku = memory_sku();
+	mem_sku = variant_memory_sku();
 	/*
 	 * GPP_F2 is the MEM_CH_SEL gpio, which is set to 1 for single
 	 * channel skus and 0 for dual channel skus.

@@ -205,4 +205,15 @@ config FSP_FD_PATH
 	depends on FSP_USE_REPO
 	default "3rdparty/fsp/IceLakeFspBinPkg/Fsp.fd"
 
+config ENABLE_DISPLAY_OVER_EXT_PCIE_GFX
+	bool "Enable display over external PCIE GFX card"
+	select ALWAYS_LOAD_OPROM
+	help
+	  It's possible to bring display through external graphics card over PCIE
+	  in coreboot. This option enables graphics initialization with external
+	  graphics card.
+
+	  Selected by mainboard that runs OpRom to perform display
+	  initialization over attached PCIe GFX card.
+
 endif

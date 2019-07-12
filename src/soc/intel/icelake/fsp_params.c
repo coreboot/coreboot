@@ -80,9 +80,20 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 
 	mainboard_silicon_init_params(params);
 
-	params->PeiGraphicsPeimInit = 1;
-	params->GtFreqMax = 2;
-	params->CdClock = 3;
+	dev = pcidev_path_on_root(SA_DEVFN_IGD);
+
+	if (!dev || !dev->enabled) {
+		/*
+		 * Skip IGD initialization in FSP in case device is disabled
+		 * in the devicetree.cb.
+		 */
+		params->PeiGraphicsPeimInit = 0;
+	} else {
+		params->PeiGraphicsPeimInit = 1;
+		params->GtFreqMax = 2;
+		params->CdClock = 3;
+	}
+
 	/* Unlock upper 8 bytes of RTC RAM */
 	params->PchLockDownRtcMemoryLock = 0;
 

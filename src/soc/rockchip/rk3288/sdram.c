@@ -908,6 +908,7 @@ static void move_to_access_state(u32 chnum)
 			while ((read32(&ddr_pctl_regs->stat) & PCTL_STAT_MSK)
 				!= CONF)
 				;
+			/* fall through - enter config next to get to access state */
 		case CONF:
 			write32(&ddr_pctl_regs->sctl, GO_STATE);
 			while ((read32(&ddr_pctl_regs->stat) & PCTL_STAT_MSK)

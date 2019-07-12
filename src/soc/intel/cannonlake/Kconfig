@@ -269,8 +269,7 @@ config MB_HAS_ACTIVE_HIGH_SD_PWR_ENABLE
 
 choice
 	prompt "Cache-as-ram implementation"
-	default USE_CANNONLAKE_CAR_NEM_ENHANCED if MAINBOARD_HAS_CHROMEOS
-	default USE_CANNONLAKE_FSP_CAR
+	default USE_CANNONLAKE_CAR_NEM_ENHANCED
 	help
 	  This option allows you to select how cache-as-ram (CAR) is set up.
 

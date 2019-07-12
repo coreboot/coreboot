@@ -172,8 +172,7 @@ config CBFS_SIZE
 
 choice
 	prompt "Cache-as-ram implementation"
-	default USE_ICELAKE_CAR_NEM_ENHANCED if MAINBOARD_HAS_CHROMEOS
-	default USE_ICELAKE_FSP_CAR
+	default USE_ICELAKE_CAR_NEM_ENHANCED
 	help
 	  This option allows you to select how cache-as-ram (CAR) is set up.
 

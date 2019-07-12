@@ -23,9 +23,6 @@
 #include <device/pci_ops.h>
 #include <version.h>
 
-#if CONFIG(HAVE_SMI_HANDLER)
-#include <cpu/x86/smm.h>
-#endif
 
 /**
  * Fill in the FADT with generic values that can be overridden later.

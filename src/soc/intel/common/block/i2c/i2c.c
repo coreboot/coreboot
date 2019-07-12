@@ -87,6 +87,9 @@ static int lpss_i2c_early_init_bus(unsigned int bus)
 	/* Take device out of reset */
 	lpss_reset_release(base);
 
+	/* Ensure controller is in D0 state */
+	lpss_set_power_state(tree_dev, STATE_D0);
+
 	/* Initialize the controller */
 	if (dw_i2c_init(bus, config) < 0) {
 		printk(BIOS_ERR, "I2C%u failed to initialize\n", bus);
@@ -161,6 +164,9 @@ static void dw_i2c_device_init(struct device *dev)
 	base_address = dw_i2c_base_address(bus);
 	if (!base_address)
 		return;
+
+	/* Ensure controller is in D0 state */
+	lpss_set_power_state(dev, STATE_D0);
 
 	/* Take device out of reset if its not done before */
 	if (lpss_is_controller_in_reset(base_address))

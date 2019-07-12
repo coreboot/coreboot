@@ -96,9 +96,11 @@ const struct reg_script pch_finalize_script[] = {
 
 static void broadwell_finalize(void *unused)
 {
+	struct device *sa_dev = pcidev_path_on_root(SA_DEVFN_ROOT);
+
 	printk(BIOS_DEBUG, "Finalizing chipset.\n");
 
-	reg_script_run_on_dev(SA_DEV_ROOT, system_agent_finalize_script);
+	reg_script_run_on_dev(sa_dev, system_agent_finalize_script);
 	reg_script_run_on_dev(PCH_DEV_LPC, pch_finalize_script);
 
 	/* Lock */

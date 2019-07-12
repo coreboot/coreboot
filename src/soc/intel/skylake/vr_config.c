@@ -174,17 +174,19 @@ static uint16_t get_dev_id(struct device *dev)
 
 static int get_kbl_sku(void)
 {
+	struct device *sa_dev = pcidev_path_on_root(SA_DEVFN_ROOT);
 	static int sku = -1;
 	uint16_t id;
 
 	if (sku != -1)
 		return sku;
 
-	id = get_dev_id(SA_DEV_ROOT);
+	id = get_dev_id(sa_dev);
 	if (id == PCI_DEVICE_ID_INTEL_KBL_U_R)
 		sku = KBL_R_SKU;
 	else if (id == PCI_DEVICE_ID_INTEL_KBL_ID_Y) {
-		id = get_dev_id(SA_DEV_IGD);
+		struct device *igd_dev = pcidev_path_on_root(SA_DEVFN_IGD);
+		id = get_dev_id(igd_dev);
 		if (id == PCI_DEVICE_ID_INTEL_AML_GT2_ULX)
 			sku = AML_Y_SKU;
 		else

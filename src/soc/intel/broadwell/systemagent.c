@@ -32,19 +32,22 @@
 
 u8 systemagent_revision(void)
 {
-	return pci_read_config8(SA_DEV_ROOT, PCI_REVISION_ID);
+	struct device *sa_dev = pcidev_path_on_root(SA_DEVFN_ROOT);
+	return pci_read_config8(sa_dev, PCI_REVISION_ID);
 }
 
 uintptr_t sa_get_tolud_base(void)
 {
+	struct device *sa_dev = pcidev_path_on_root(SA_DEVFN_ROOT);
 	/* Bit 0 is lock bit, not part of address */
-	return pci_read_config32(SA_DEV_ROOT, TOLUD) & ~1;
+	return pci_read_config32(sa_dev, TOLUD) & ~1;
 }
 
 uintptr_t sa_get_gsm_base(void)
 {
+	struct device *sa_dev = pcidev_path_on_root(SA_DEVFN_ROOT);
 	/* Bit 0 is lock bit, not part of address */
-	return pci_read_config32(SA_DEV_ROOT, BGSM) & ~1;
+	return pci_read_config32(sa_dev, BGSM) & ~1;
 }
 
 static int get_pcie_bar(struct device *dev, unsigned int index, u32 *base,
@@ -291,6 +294,7 @@ static void mc_add_dram_resources(struct device *dev, int *resource_cnt)
 	uint64_t mc_values[NUM_MAP_ENTRIES];
 	unsigned long dpr_size = 0;
 	u32 dpr_reg;
+	struct device *sa_dev = pcidev_path_on_root(SA_DEVFN_ROOT);
 
 	/* Read in the MAP registers and report their values. */
 	mc_read_map_entries(dev, &mc_values[0]);
@@ -302,7 +306,7 @@ static void mc_add_dram_resources(struct device *dev, int *resource_cnt)
 	 * the DPR register reports the TOP of the region, which is the same
 	 * as TSEG base.  The region size is reported in MiB in bits 11:4.
 	 */
-	dpr_reg = pci_read_config32(SA_DEV_ROOT, DPR);
+	dpr_reg = pci_read_config32(sa_dev, DPR);
 	if (dpr_reg & DPR_EPM) {
 		dpr_size = (dpr_reg & DPR_SIZE_MASK) << 16;
 		printk(BIOS_INFO, "DPR SIZE: 0x%lx\n", dpr_size);

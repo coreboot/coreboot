@@ -21,16 +21,13 @@
 /* All these devices live on bus 0 with the associated device and function */
 
 
-#define _SA_DEVFN(slot) PCI_DEVFN(SA_DEV_SLOT_##slot, 0)
 #define _PCH_DEVFN(slot, func) PCI_DEVFN(PCH_DEV_SLOT_##slot, func)
 
-#if ENV_RAMSTAGE
+#if !defined(__SIMPLE_DEVICE__)
 #include <device/device.h>
 #include <device/pci_def.h>
-#define _SA_DEV(slot) pcidev_path_on_root_debug(_SA_DEVFN(slot), __func__)
 #define _PCH_DEV(slot, func) pcidev_path_on_root_debug(_PCH_DEVFN(slot, func), __func__)
 #else
-#define _SA_DEV(slot) PCI_DEV(0, SA_DEV_SLOT_##slot, 0)
 #define _PCH_DEV(slot, func) PCI_DEV(0, PCH_DEV_SLOT_##slot, func)
 #endif
 
@@ -191,8 +188,8 @@
 
 /* TODO - New added */
 #define SA_DEV_SLOT_ROOT 0x00
-#define SA_DEVFN_ROOT _SA_DEVFN(ROOT)
-#define SA_DEV_ROOT _SA_DEV(ROOT)
+#define  SA_DEVFN_ROOT	PCI_DEVFN(SA_DEV_SLOT_ROOT, 0)
+#define  SA_DEV_ROOT	PCI_DEV(0, SA_DEV_SLOT_ROOT, 0)
 
 #define PCH_DEV_SLOT_LPC 0x1f
 #define PCH_DEVFN_LPC _PCH_DEVFN(LPC, 0)

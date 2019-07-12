@@ -16,32 +16,29 @@
 #ifndef _BROADWELL_PCI_DEVS_H_
 #define _BROADWELL_PCI_DEVS_H_
 
-#define _SA_DEVFN(slot)		PCI_DEVFN(SA_DEV_SLOT_ ## slot, 0)
 #define _PCH_DEVFN(slot, func)	PCI_DEVFN(PCH_DEV_SLOT_ ## slot, func)
 
 #if defined(__SIMPLE_DEVICE__)
-#define _SA_DEV(slot)		PCI_DEV(0, SA_DEV_SLOT_ ## slot, 0)
 #define _PCH_DEV(slot, func)	PCI_DEV(0, PCH_DEV_SLOT_ ## slot, func)
 #else
 #include <device/device.h>
 #include <device/pci_def.h>
-#define _SA_DEV(slot)		pcidev_path_on_root_debug(_SA_DEVFN(slot), __func__)
 #define _PCH_DEV(slot, func)	pcidev_path_on_root_debug(_PCH_DEVFN(slot, func), __func__)
 #endif
 
 /* System Agent Devices */
 
 #define SA_DEV_SLOT_ROOT	0x00
-#define  SA_DEVFN_ROOT		_SA_DEVFN(ROOT)
-#define  SA_DEV_ROOT		_SA_DEV(ROOT)
+#define  SA_DEVFN_ROOT		PCI_DEVFN(SA_DEV_SLOT_ROOT, 0)
+#define  SA_DEV_ROOT		PCI_DEV(0, SA_DEV_SLOT_ROOT, 0)
 
 #define SA_DEV_SLOT_IGD		0x02
-#define  SA_DEVFN_IGD		_SA_DEVFN(IGD)
-#define  SA_DEV_IGD		_SA_DEV(IGD)
+#define  SA_DEVFN_IGD		PCI_DEVFN(SA_DEV_SLOT_IGD, 0)
+#define  SA_DEV_IGD		PCI_DEV(0, SA_DEV_SLOT_IGD, 0)
 
 #define SA_DEV_SLOT_MINIHD	0x03
-#define  SA_DEVFN_MINIHD	_SA_DEVFN(MINIHD)
-#define  SA_DEV_MINIHD		_SA_DEV(MINIHD)
+#define  SA_DEVFN_MINIHD	PCI_DEVFN(SA_DEV_SLOT_MINIHD, 0)
+#define  SA_DEV_MINIHD		PCI_DEV(0, SA_DEV_SLOT_MINIHD, 0)
 
 /* PCH Devices */
 

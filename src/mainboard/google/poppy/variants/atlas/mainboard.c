@@ -25,8 +25,10 @@
 
 static uint32_t get_pl2(void)
 {
+	struct device *igd_dev = pcidev_path_on_root(SA_DEVFN_IGD);
 	uint16_t id;
-	id = pci_read_config16(SA_DEV_IGD, PCI_DEVICE_ID);
+
+	id = pci_read_config16(igd_dev, PCI_DEVICE_ID);
 	/* Assume we only have KLB-Y and AML-Y SKUs */
 	if (id == PCI_DEVICE_ID_INTEL_KBL_GT2_SULXM)
 		return PL2_KBL;

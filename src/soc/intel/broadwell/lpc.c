@@ -365,6 +365,7 @@ static void pch_cg_init(struct device *dev)
 {
 	u32 reg32;
 	u16 reg16;
+	struct device *igd_dev = pcidev_path_on_root(SA_DEVFN_IGD);
 
 	/* DMI */
 	RCBA32_OR(0x2234, 0xf);
@@ -388,7 +389,7 @@ static void pch_cg_init(struct device *dev)
 	RCBA32_AND_OR(0x2614, ~0x64ff0000, 0x0a206500);
 
 	/* Check for 0:2.0@0x08 >= 0x0b */
-	if (pch_is_wpt() || pci_read_config8(SA_DEV_IGD, 0x8) >= 0x0b)
+	if (pch_is_wpt() || pci_read_config8(igd_dev, 0x8) >= 0x0b)
 		RCBA32_OR(0x2614, (1 << 26));
 
 	RCBA32_OR(0x900, 0x0000031f);

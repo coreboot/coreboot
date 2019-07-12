@@ -56,7 +56,7 @@ static uintptr_t graphics_get_bar(struct device *dev, unsigned long index)
 uintptr_t graphics_get_memory_base(void)
 {
 	uintptr_t memory_base;
-	struct device *dev = SA_DEV_IGD;
+	struct device *dev = pcidev_path_on_root(SA_DEVFN_IGD);
 
 	if (is_graphics_disabled(dev))
 		return 0;
@@ -75,7 +75,7 @@ uintptr_t graphics_get_memory_base(void)
 static uintptr_t graphics_get_gtt_base(void)
 {
 	static uintptr_t gtt_base;
-	struct device *dev = SA_DEV_IGD;
+	struct device *dev = pcidev_path_on_root(SA_DEVFN_IGD);
 
 	if (is_graphics_disabled(dev))
 		die("IGD is disabled!");

@@ -38,7 +38,7 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 	m_cfg->SkipMbpHob = 1;
 
 	/* If Audio Codec is enabled, enable FSP UPD */
-	dev = pcidev_on_root(0x1f, 3);
+	dev = pcidev_path_on_root(PCH_DEVFN_HDA);
 	if (!dev)
 		m_cfg->PchHdaEnable = 0;
 	else

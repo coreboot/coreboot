@@ -386,11 +386,11 @@ static void generate_T_state_entries(int core, int cores_per_package)
 
 static void generate_C_state_entries(void)
 {
-	struct device *dev = SA_DEV_ROOT;
-	config_t *config = dev->chip_info;
 	acpi_cstate_t map[3];
 	int *set;
 	int i;
+
+	config_t *config = config_of_path(SA_DEVFN_ROOT);
 
 	if (config->s0ix_enable)
 		set = cstate_set_s0ix;

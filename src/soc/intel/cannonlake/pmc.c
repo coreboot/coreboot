@@ -153,8 +153,7 @@ static void pch_power_options(void)
 
 static void pmc_init(void *unused)
 {
-	struct device *dev = SA_DEV_ROOT;
-	config_t *config = dev->chip_info;
+	config_t *config = config_of_path(SA_DEVFN_ROOT);
 
 	rtc_init();
 

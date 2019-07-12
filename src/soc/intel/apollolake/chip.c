@@ -295,23 +295,17 @@ static void pcie_override_devicetree_after_silicon_init(void)
 static void set_power_limits(void)
 {
 	static struct soc_intel_apollolake_config *cfg;
-	struct device *dev = SA_DEV_ROOT;
 	msr_t rapl_msr_reg, limit;
 	uint32_t power_unit;
 	uint32_t tdp, min_power, max_power;
 	uint32_t pl2_val;
 
+	cfg = config_of_path(SA_DEVFN_ROOT);
+
 	if (CONFIG(APL_SKIP_SET_POWER_LIMITS)) {
 		printk(BIOS_INFO, "Skip the RAPL settings.\n");
 		return;
 	}
-
-	if (!dev || !dev->chip_info) {
-		printk(BIOS_ERR, "BUG! Could not find SOC devicetree config\n");
-		return;
-	}
-
-	cfg = dev->chip_info;
 
 	/* Get units */
 	rapl_msr_reg = rdmsr(MSR_PKG_POWER_SKU_UNIT);
@@ -368,15 +362,9 @@ static void set_power_limits(void)
 static void set_sci_irq(void)
 {
 	static struct soc_intel_apollolake_config *cfg;
-	struct device *dev = SA_DEV_ROOT;
 	uint32_t scis;
 
-	if (!dev || !dev->chip_info) {
-		printk(BIOS_ERR, "BUG! Could not find SOC devicetree config\n");
-		return;
-	}
-
-	cfg = dev->chip_info;
+	cfg = config_of_path(SA_DEVFN_ROOT);
 
 	/* Change only if a device tree entry exists. */
 	if (cfg->sci_irq) {
@@ -550,7 +538,7 @@ static void disable_dev(struct device *dev, FSP_S_CONFIG *silconfig)
 
 static void parse_devicetree(FSP_S_CONFIG *silconfig)
 {
-	struct device *dev = SA_DEV_ROOT;
+	struct device *dev = pcidev_path_on_root(SA_DEVFN_ROOT);
 
 	if (!dev) {
 		printk(BIOS_ERR, "Could not find root device\n");
@@ -679,20 +667,15 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *silupd)
 {
 	FSP_S_CONFIG *silconfig = &silupd->FspsConfig;
 	static struct soc_intel_apollolake_config *cfg;
+	struct device *dev;
 
 	/* Load VBT before devicetree-specific config. */
 	silconfig->GraphicsConfigPtr = (uintptr_t)vbt_get();
 
-	struct device *dev = SA_DEV_ROOT;
-
-	if (!dev || !dev->chip_info) {
-		printk(BIOS_ERR, "BUG! Could not find SOC devicetree config\n");
-		return;
-	}
+	dev = pcidev_path_on_root(SA_DEVFN_ROOT);
+	cfg = config_of(dev);
 
 	mainboard_devtree_update(dev);
-
-	cfg = dev->chip_info;
 
 	/* Parse device tree and disable unused device*/
 	parse_devicetree(silconfig);

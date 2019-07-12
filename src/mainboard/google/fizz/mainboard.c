@@ -221,8 +221,7 @@ static unsigned long mainboard_write_acpi_tables(
 
 static void mainboard_enable(struct device *dev)
 {
-	struct device *root = SA_DEV_ROOT;
-	config_t *conf = root->chip_info;
+	config_t *conf = config_of_path(SA_DEVFN_ROOT);
 
 	mainboard_set_power_limits(conf);
 

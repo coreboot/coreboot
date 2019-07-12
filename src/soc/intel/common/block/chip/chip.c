@@ -21,13 +21,8 @@ const struct soc_intel_common_config *chip_get_common_soc_structure(void)
 {
 	const struct soc_intel_common_config *soc_config;
 	const config_t *config;
-	int devfn = SA_DEVFN_ROOT;
-	const struct device *dev = pcidev_path_on_root(devfn);
 
-	if (!dev || !dev->chip_info)
-		die("Could not find SA_DEV_ROOT devicetree config!\n");
-
-	config = dev->chip_info;
+	config = config_of_path(SA_DEVFN_ROOT);
 	soc_config = &config->common_soc_config;
 
 	return soc_config;

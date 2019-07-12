@@ -37,8 +37,10 @@ static void pnp_settings(void *unused)
 	int index;
 	size_t arrsize;
 	const struct pnpconfig *pnpconfigarr;
-	struct device *dev = SA_DEV_ROOT;
-	struct soc_intel_apollolake_config *config = dev->chip_info;
+	struct soc_intel_apollolake_config *config;
+
+	config = config_of_path(SA_DEVFN_ROOT);
+
 	switch (config->pnp_settings) {
 	case PNP_PERF:
 		pnpconfigarr = perf;

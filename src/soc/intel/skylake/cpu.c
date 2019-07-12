@@ -116,8 +116,8 @@ void set_power_limits(u8 power_limit_1_time)
 	unsigned int power_unit;
 	unsigned int tdp, min_power, max_power, max_time, tdp_pl2, tdp_pl1;
 	u8 power_limit_1_val;
-	struct device *dev = SA_DEV_ROOT;
-	config_t *conf = dev->chip_info;
+
+	config_t *conf = config_of_path(SA_DEVFN_ROOT);
 
 	if (power_limit_1_time > ARRAY_SIZE(power_limit_time_sec_to_msr))
 		power_limit_1_time = 28;
@@ -240,13 +240,13 @@ void set_power_limits(u8 power_limit_1_time)
 
 static void configure_thermal_target(void)
 {
-	struct device *dev = SA_DEV_ROOT;
-	config_t *conf = dev->chip_info;
+	config_t *conf = config_of_path(SA_DEVFN_ROOT);
 	msr_t msr;
+
 
 	/* Set TCC activation offset if supported */
 	msr = rdmsr(MSR_PLATFORM_INFO);
-	if ((msr.lo & (1 << 30)) && conf && conf->tcc_offset) {
+	if ((msr.lo & (1 << 30)) && conf->tcc_offset) {
 		msr = rdmsr(MSR_TEMPERATURE_TARGET);
 		msr.lo &= ~(0xf << 24); /* Bits 27:24 */
 		msr.lo |= (conf->tcc_offset & 0xf) << 24;
@@ -260,9 +260,9 @@ static void configure_thermal_target(void)
 
 static void configure_isst(void)
 {
-	struct device *dev = SA_DEV_ROOT;
-	config_t *conf = dev->chip_info;
+	config_t *conf = config_of_path(SA_DEVFN_ROOT);
 	msr_t msr;
+
 
 	if (conf->speed_shift_enable) {
 		/*
@@ -286,21 +286,19 @@ static void configure_isst(void)
 
 static void configure_misc(void)
 {
-	struct device *dev = SA_DEV_ROOT;
-	if (!dev) {
-		printk(BIOS_ERR, "SA_DEV_ROOT device not found!\n");
-		return;
-	}
-	config_t *conf = dev->chip_info;
+	config_t *conf = config_of_path(SA_DEVFN_ROOT);
 	msr_t msr;
+
 
 	msr = rdmsr(IA32_MISC_ENABLE);
 	msr.lo |= (1 << 0);	/* Fast String enable */
 	msr.lo |= (1 << 3);	/* TM1/TM2/EMTTM enable */
+
 	if (conf->eist_enable)
 		msr.lo |= (1 << 16);	/* Enhanced SpeedStep Enable */
 	else
 		msr.lo &= ~(1 << 16);	/* Enhanced SpeedStep Disable */
+
 	wrmsr(IA32_MISC_ENABLE, msr);
 
 	/* Disable Thermal interrupts */
@@ -558,19 +556,7 @@ void cpu_lock_sgx_memory(void)
 
 int soc_fill_sgx_param(struct sgx_param *sgx_param)
 {
-	struct device *dev = SA_DEV_ROOT;
-	config_t *conf;
-
-	if (!dev) {
-		printk(BIOS_ERR, "Failed to get root dev for checking SGX param\n");
-		return -1;
-	}
-
-	conf = dev->chip_info;
-	if (!conf) {
-		printk(BIOS_ERR, "Failed to get chip_info for SGX param\n");
-		return -1;
-	}
+	config_t *conf = config_of_path(SA_DEVFN_ROOT);
 
 	sgx_param->enable = conf->sgx_enable;
 	return 0;

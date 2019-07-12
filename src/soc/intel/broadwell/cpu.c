@@ -195,8 +195,7 @@ static int pcode_mailbox_write(u32 command, u32 data)
 
 static void initialize_vr_config(void)
 {
-	struct device *dev = SA_DEV_ROOT;
-	config_t *conf = dev->chip_info;
+	config_t *conf = config_of_path(SA_DEVFN_ROOT);
 	msr_t msr;
 
 	printk(BIOS_DEBUG, "Initializing VR config.\n");
@@ -450,9 +449,9 @@ static void configure_c_states(void)
 
 static void configure_thermal_target(void)
 {
-	struct device *dev = SA_DEV_ROOT;
-	config_t *conf = dev->chip_info;
+	config_t *conf = config_of_path(SA_DEVFN_ROOT);
 	msr_t msr;
+
 
 	/* Set TCC activation offset if supported */
 	msr = rdmsr(MSR_PLATFORM_INFO);

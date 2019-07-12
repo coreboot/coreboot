@@ -144,8 +144,9 @@ acpi_cstate_t *soc_get_cstate_map(size_t *entries)
 				ARRAY_SIZE(cstate_set_non_s0ix))];
 	int *set;
 	int i;
-	struct device *dev = SA_DEV_ROOT;
-	config_t *config = dev->chip_info;
+
+	config_t *config = config_of_path(SA_DEVFN_ROOT);
+
 	int is_s0ix_enable = config->s0ix_enable;
 
 	if (is_s0ix_enable) {
@@ -165,18 +166,18 @@ acpi_cstate_t *soc_get_cstate_map(size_t *entries)
 
 void soc_power_states_generation(int core_id, int cores_per_package)
 {
-	struct device *dev = SA_DEV_ROOT;
-	config_t *config = dev->chip_info;
+	config_t *config = config_of_path(SA_DEVFN_ROOT);
+
+	/* Generate P-state tables */
 	if (config->eist_enable)
-		/* Generate P-state tables */
 		generate_p_state_entries(core_id, cores_per_package);
 }
 
 void soc_fill_fadt(acpi_fadt_t *fadt)
 {
 	const uint16_t pmbase = ACPI_BASE_ADDRESS;
-	const struct device *dev = PCH_DEV_LPC;
-	const struct soc_intel_cannonlake_config *config = dev->chip_info;
+	const struct soc_intel_cannonlake_config *config;
+	config = config_of_path(PCH_DEVFN_LPC);
 
 	if (!config->PmTimerDisabled) {
 		fadt->pm_tmr_blk = pmbase + PM1_TMR;
@@ -200,8 +201,8 @@ uint32_t soc_read_sci_irq_select(void)
 
 void acpi_create_gnvs(struct global_nvs_t *gnvs)
 {
-	const struct device *dev = PCH_DEV_LPC;
-	const struct soc_intel_cannonlake_config *config = dev->chip_info;
+	const struct soc_intel_cannonlake_config *config;
+	config = config_of_path(PCH_DEVFN_LPC);
 
 	/* Set unknown wake source */
 	gnvs->pm1i = -1;

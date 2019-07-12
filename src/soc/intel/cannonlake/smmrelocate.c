@@ -256,7 +256,7 @@ static void setup_ied_area(struct smm_relocation_params *params)
 void smm_info(uintptr_t *perm_smbase, size_t *perm_smsize,
 				size_t *smm_save_state_size)
 {
-	struct device *dev = SA_DEV_ROOT;
+	struct device *dev = pcidev_path_on_root(SA_DEVFN_ROOT);
 
 	printk(BIOS_DEBUG, "Setting up SMI for CPU\n");
 

@@ -233,15 +233,11 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	FSP_S_CONFIG *params = &supd->FspsConfig;
 	FSP_S_TEST_CONFIG *tconfig = &supd->FspsTestConfig;
 	static struct soc_intel_skylake_config *config;
+	struct device *dev;
 	uintptr_t vbt_data = (uintptr_t)vbt_get();
 	int i;
 
-	struct device *dev = SA_DEV_ROOT;
-	if (!dev || !dev->chip_info) {
-		printk(BIOS_ERR, "BUG! Could not find SOC devicetree config\n");
-		return;
-	}
-	config = dev->chip_info;
+	config = config_of_path(SA_DEVFN_ROOT);
 
 	mainboard_silicon_init_params(params);
 	/* Set PsysPmax if it is available from DT */

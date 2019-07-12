@@ -174,8 +174,7 @@ static int get_cores_per_package(void)
 
 static void acpi_create_gnvs(global_nvs_t *gnvs)
 {
-	const struct device *dev = pcidev_path_on_root(PCH_DEVFN_LPC);
-	const struct soc_intel_skylake_config *config = dev->chip_info;
+	const struct soc_intel_skylake_config *config = config_of_path(PCH_DEVFN_LPC);
 
 	/* Set unknown wake source */
 	gnvs->pm1i = -1;
@@ -234,9 +233,8 @@ unsigned long acpi_fill_madt(unsigned long current)
 
 void acpi_fill_fadt(acpi_fadt_t *fadt)
 {
-	const struct device *dev = SA_DEV_ROOT;
-	const config_t *config = dev ? dev->chip_info : NULL;
 	const uint16_t pmbase = ACPI_BASE_ADDRESS;
+	config_t *config = config_of_path(SA_DEVFN_ROOT);
 
 	/* Use ACPI 3.0 revision */
 	fadt->header.revision = get_acpi_table_revision(FADT);
@@ -284,7 +282,7 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 			ACPI_FADT_RESET_REGISTER | ACPI_FADT_SEALED_CASE |
 			ACPI_FADT_S4_RTC_WAKE | ACPI_FADT_PLATFORM_CLOCK;
 
-	if (config && config->s0ix_enable)
+	if (config->s0ix_enable)
 		fadt->flags |= ACPI_FADT_LOW_PWR_IDLE_S0;
 
 	fadt->reset_reg.space_id = 1;
@@ -506,8 +504,7 @@ void generate_cpu_entries(struct device *device)
 	int totalcores = dev_count_cpu();
 	int cores_per_package = get_cores_per_package();
 	int numcpus = totalcores/cores_per_package;
-	struct device *dev = SA_DEV_ROOT;
-	config_t *config = dev->chip_info;
+	config_t *config = config_of_path(SA_DEVFN_ROOT);
 	int is_s0ix_enable = config->s0ix_enable;
 	int max_c_state;
 
@@ -519,7 +516,7 @@ void generate_cpu_entries(struct device *device)
 	printk(BIOS_DEBUG, "Found %d CPU(s) with %d core(s) each.\n",
 	       numcpus, cores_per_package);
 
-	if (config && config->eist_enable && config->speed_shift_enable) {
+	if (config->eist_enable && config->speed_shift_enable) {
 		struct cppc_config cppc_config;
 		cpu_init_cppc_config(&cppc_config, 2 /* version 2 */);
 		acpigen_write_CPPC_package(&cppc_config);
@@ -619,11 +616,11 @@ unsigned long northbridge_write_acpi_tables(struct device *const dev,
 					    unsigned long current,
 					    struct acpi_rsdp *const rsdp)
 {
-	const struct soc_intel_skylake_config *const config = dev->chip_info;
+	const struct soc_intel_skylake_config *const config = config_of(dev);
 	acpi_dmar_t *const dmar = (acpi_dmar_t *)current;
 
 	/* Create DMAR table only if we have VT-d capability. */
-	if ((config && config->ignore_vtd) || !soc_is_vtd_capable())
+	if (config->ignore_vtd || !soc_is_vtd_capable())
 		return current;
 
 	printk(BIOS_DEBUG, "ACPI:    * DMAR\n");
@@ -695,8 +692,7 @@ void southbridge_inject_dsdt(struct device *device)
 /* Save wake source information for calculating ACPI _SWS values */
 int soc_fill_acpi_wake(uint32_t *pm1, uint32_t **gpe0)
 {
-	const struct device *dev = pcidev_path_on_root(PCH_DEVFN_LPC);
-	const struct soc_intel_skylake_config *config = dev->chip_info;
+	const struct soc_intel_skylake_config *config = config_of_path(PCH_DEVFN_LPC);
 	struct chipset_power_state *ps;
 	static uint32_t gpe0_sts[GPE0_REG_MAX];
 	uint32_t pm1_en;

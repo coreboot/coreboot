@@ -105,8 +105,8 @@ void set_power_limits(u8 power_limit_1_time)
 	unsigned int power_unit;
 	unsigned int tdp, min_power, max_power, max_time, tdp_pl2, tdp_pl1;
 	u8 power_limit_1_val;
-	struct device *dev = SA_DEV_ROOT;
-	config_t *conf = dev->chip_info;
+
+	config_t *conf = config_of_path(SA_DEVFN_ROOT);
 
 	if (power_limit_1_time > ARRAY_SIZE(power_limit_time_sec_to_msr))
 		power_limit_1_time = 28;
@@ -234,11 +234,10 @@ static void soc_fsp_load(void)
 
 static void configure_isst(void)
 {
-	struct device *dev = SA_DEV_ROOT;
-	config_t *conf = dev->chip_info;
+	config_t *conf = config_of_path(SA_DEVFN_ROOT);
 	msr_t msr;
 
-	if (conf && conf->speed_shift_enable) {
+	if (conf->speed_shift_enable) {
 		/*
 		 * Kernel driver checks CPUID.06h:EAX[Bit 7] to determine if HWP
 		 * is supported or not. coreboot needs to configure MSR 0x1AA
@@ -260,12 +259,7 @@ static void configure_isst(void)
 
 static void configure_misc(void)
 {
-	struct device *dev = SA_DEV_ROOT;
-	if (!dev) {
-		printk(BIOS_ERR, "SA_DEV_ROOT device not found!\n");
-		return;
-	}
-	config_t *conf = dev->chip_info;
+	config_t *conf = config_of_path(SA_DEVFN_ROOT);
 	msr_t msr;
 
 	msr = rdmsr(IA32_MISC_ENABLE);
@@ -367,8 +361,7 @@ static void configure_c_states(void)
 
 static void configure_thermal_target(void)
 {
-	struct device *dev = SA_DEV_ROOT;
-	config_t *conf = dev->chip_info;
+	config_t *conf = config_of_path(SA_DEVFN_ROOT);
 	msr_t msr;
 
 	/* Set TCC activation offset if supported */

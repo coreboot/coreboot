@@ -90,7 +90,7 @@ acpi_cstate_t *soc_get_cstate_map(size_t *entries)
 void acpi_create_gnvs(struct global_nvs_t *gnvs)
 {
 	struct soc_intel_apollolake_config *cfg;
-	struct device *dev = SA_DEV_ROOT;
+	cfg = config_of_path(SA_DEVFN_ROOT);
 
 	/* Clear out GNVS. */
 	memset(gnvs, 0, sizeof(*gnvs));
@@ -109,12 +109,6 @@ void acpi_create_gnvs(struct global_nvs_t *gnvs)
 
 	/* CPU core count */
 	gnvs->pcnt = dev_count_cpu();
-
-	if (!dev || !dev->chip_info) {
-		printk(BIOS_ERR, "BUG! Could not find SOC devicetree config\n");
-		return;
-	}
-	cfg = dev->chip_info;
 
 	/* Enable DPTF based on mainboard configuration */
 	gnvs->dpte = cfg->dptf_enable;
@@ -158,7 +152,7 @@ int soc_madt_sci_irq_polarity(int sci)
 void soc_fill_fadt(acpi_fadt_t *fadt)
 {
 	const struct soc_intel_apollolake_config *cfg;
-	struct device *dev = SA_DEV_ROOT;
+	cfg = config_of_path(SA_DEVFN_ROOT);
 
 	fadt->pm_tmr_blk = ACPI_BASE_ADDRESS + PM1_TMR;
 
@@ -174,13 +168,8 @@ void soc_fill_fadt(acpi_fadt_t *fadt)
 	fadt->x_pm_tmr_blk.bit_width = fadt->pm_tmr_len * 8;
 	fadt->x_pm_tmr_blk.addrl = ACPI_BASE_ADDRESS + PM1_TMR;
 
-	if (!dev || !dev->chip_info) {
-		printk(BIOS_ERR, "BUG! Could not find SOC devicetree config\n");
-		return;
-	}
-	cfg = dev->chip_info;
 
-	if(cfg->lpss_s0ix_enable)
+	if (cfg->lpss_s0ix_enable)
 		fadt->flags |= ACPI_FADT_LOW_PWR_IDLE_S0;
 }
 

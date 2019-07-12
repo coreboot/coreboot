@@ -29,13 +29,8 @@
 
 static void parse_devicetree(FSP_S_CONFIG *params)
 {
-	struct device *dev = pcidev_on_root(0, 0);
-	if (!dev) {
-		printk(BIOS_ERR, "Could not find root device\n");
-		return;
-	}
-
-	const struct soc_intel_icelake_config *config = dev->chip_info;
+	const struct soc_intel_icelake_config *config;
+	config = config_of_path(SA_DEVFN_ROOT);
 
 	for (int i = 0; i < CONFIG_SOC_INTEL_I2C_DEV_MAX; i++)
 		params->SerialIoI2cMode[i] = config->SerialIoI2cMode[i];
@@ -55,8 +50,10 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 {
 	int i;
 	FSP_S_CONFIG *params = &supd->FspsConfig;
-	struct device *dev = SA_DEV_ROOT;
-	config_t *config = dev->chip_info;
+
+	struct device *dev;
+	struct soc_intel_icelake_config *config;
+	config = config_of_path(SA_DEVFN_ROOT);
 
 	/* Parse device tree and enable/disable devices */
 	parse_devicetree(params);

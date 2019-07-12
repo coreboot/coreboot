@@ -97,13 +97,7 @@ static void parse_devicetree_param(const config_t *config, FSP_S_CONFIG *params)
 
 static void parse_devicetree(FSP_S_CONFIG *params)
 {
-	struct device *dev = SA_DEV_ROOT;
-	if (!dev) {
-		printk(BIOS_ERR, "Could not find root device\n");
-		return;
-	}
-
-	const config_t *config = dev->chip_info;
+	const config_t *config = config_of_path(SA_DEVFN_ROOT);
 
 	parse_devicetree_param(config, params);
 }
@@ -147,8 +141,9 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	int i;
 	FSP_S_CONFIG *params = &supd->FspsConfig;
 	FSP_S_TEST_CONFIG *tconfig = &supd->FspsTestConfig;
-	struct device *dev = SA_DEV_ROOT;
-	config_t *config = dev->chip_info;
+	struct device *dev;
+
+	config_t *config = config_of_path(SA_DEVFN_ROOT);
 
 	/* Parse device tree and enable/disable devices */
 	parse_devicetree(params);

@@ -41,10 +41,10 @@ const char *smbios_system_sku(void)
 void variant_devtree_update(void)
 {
 	uint32_t sku_id = variant_board_sku();
-	struct device *root = SA_DEV_ROOT;
-	config_t *cfg = root->chip_info;
 	uint16_t abase;
 	uint32_t val32;
+
+	config_t *cfg = config_of_path(SA_DEVFN_ROOT);
 
 	switch (sku_id) {
 	case SKU_0_NAUTILUS:

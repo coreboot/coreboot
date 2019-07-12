@@ -100,17 +100,8 @@ static void soc_early_romstage_init(void)
 /* Thermal throttle activation offset */
 static void configure_thermal_target(void)
 {
-	const struct device *dev = pcidev_path_on_root(SA_DEVFN_ROOT);
-	if (!dev) {
-		printk(BIOS_ERR, "Could not find SOC devicetree config\n");
-		return;
-	}
-	const config_t *conf = dev->chip_info;
-	if (!dev->chip_info) {
-		printk(BIOS_ERR, "Could not find chip info\n");
-		return;
-	}
 	msr_t msr;
+	const config_t *conf = config_of_path(SA_DEVFN_ROOT);
 
 	if (!conf->tcc_offset)
 		return;

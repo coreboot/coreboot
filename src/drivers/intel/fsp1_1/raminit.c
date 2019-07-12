@@ -53,6 +53,8 @@ void raminit(struct romstage_params *params)
 	UPD_DATA_REGION *upd_ptr;
 	int fsp_verification_failure = 0;
 	EFI_PEI_HOB_POINTERS hob_ptr;
+	char *smm_base;
+	size_t smm_size;
 
 	/*
 	 * Find and copy the UPD region to the stack so the platform can modify
@@ -145,14 +147,11 @@ void raminit(struct romstage_params *params)
 	}
 
 	/* Display SMM area */
-#if CONFIG(HAVE_SMI_HANDLER)
-	char *smm_base;
-	size_t smm_size;
-
-	smm_region((void **)&smm_base, &smm_size);
-	printk(BIOS_DEBUG, "0x%08x: smm_size\n", (unsigned int)smm_size);
-	printk(BIOS_DEBUG, "0x%p: smm_base\n", smm_base);
-#endif
+	if (CONFIG(HAVE_SMI_HANDLER)) {
+		smm_region((void **)&smm_base, &smm_size);
+		printk(BIOS_DEBUG, "0x%08x: smm_size\n", (unsigned int)smm_size);
+		printk(BIOS_DEBUG, "0x%p: smm_base\n", smm_base);
+	}
 
 	/* Migrate CAR data */
 	printk(BIOS_DEBUG, "0x%p: cbmem_top\n", cbmem_top());
@@ -237,8 +236,8 @@ void raminit(struct romstage_params *params)
 			(unsigned int)fsp_reserved_memory_area))) {
 		fsp_verification_failure = 1;
 		printk(BIOS_ERR, "ERROR - Reserving FSP memory area!\n");
-#if CONFIG(HAVE_SMI_HANDLER)
-		if (cbmem_root != NULL) {
+
+		if (CONFIG(HAVE_SMI_HANDLER) && cbmem_root != NULL) {
 			size_t delta_bytes = (unsigned int)smm_base
 				- cbmem_root->PhysicalStart
 				- cbmem_root->ResourceLength;
@@ -248,7 +247,6 @@ void raminit(struct romstage_params *params)
 			die_with_post_code(POST_INVALID_VENDOR_BINARY,
 				"Please verify the chipset reserved size\n");
 		}
-#endif
 	}
 
 	/* Verify the FSP 1.1 HOB interface */

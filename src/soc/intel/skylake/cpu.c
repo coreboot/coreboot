@@ -487,9 +487,8 @@ static void post_mp_init(void)
 	smm_southbridge_enable(GBL_EN);
 
 	/* Lock down the SMRAM space. */
-#if CONFIG(HAVE_SMI_HANDLER)
-	smm_lock();
-#endif
+	if (CONFIG(HAVE_SMI_HANDLER))
+		smm_lock();
 
 	mp_run_on_all_cpus(vmx_configure, NULL, 2 * USECS_PER_MSEC);
 

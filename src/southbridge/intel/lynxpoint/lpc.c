@@ -491,8 +491,7 @@ static void enable_lp_clock_gating(struct device *dev)
 
 static void pch_set_acpi_mode(void)
 {
-#if CONFIG(HAVE_SMI_HANDLER)
-	if (!acpi_is_wakeup_s3()) {
+	if (CONFIG(HAVE_SMI_HANDLER) && !acpi_is_wakeup_s3()) {
 #if ENABLE_ACPI_MODE_IN_COREBOOT
 		printk(BIOS_DEBUG, "Enabling ACPI via APMC:\n");
 		outb(APM_CNT_ACPI_ENABLE, APM_CNT);
@@ -503,7 +502,6 @@ static void pch_set_acpi_mode(void)
 		printk(BIOS_DEBUG, "done.\n");
 #endif
 	}
-#endif /* CONFIG_HAVE_SMI_HANDLER */
 }
 
 static void pch_disable_smm_only_flashing(struct device *dev)

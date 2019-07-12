@@ -141,12 +141,9 @@ asmlinkage void car_stage_entry(void)
 
 	struct postcar_frame pcf;
 	uintptr_t top_of_ram;
-
-#if CONFIG(HAVE_SMI_HANDLER)
 	void *smm_base;
 	size_t smm_size;
 	uintptr_t tseg_base;
-#endif
 
 	console_init();
 
@@ -177,7 +174,6 @@ asmlinkage void car_stage_entry(void)
 	/* Cache the memory-mapped boot media. */
 	postcar_frame_add_romcache(&pcf, MTRR_TYPE_WRPROT);
 
-#if CONFIG(HAVE_SMI_HANDLER)
 	/*
 	 * Cache the TSEG region at the top of ram. This region is
 	 * not restricted to SMM mode until SMM has been relocated.
@@ -185,10 +181,11 @@ asmlinkage void car_stage_entry(void)
 	 * when relocating the SMM handler as well as using the TSEG
 	 * region for other purposes.
 	 */
-	smm_region(&smm_base, &smm_size);
-	tseg_base = (uintptr_t)smm_base;
-	postcar_frame_add_mtrr(&pcf, tseg_base, smm_size, MTRR_TYPE_WRBACK);
-#endif
+	if (CONFIG(HAVE_SMI_HANDLER)) {
+		smm_region(&smm_base, &smm_size);
+		tseg_base = (uintptr_t)smm_base;
+		postcar_frame_add_mtrr(&pcf, tseg_base, smm_size, MTRR_TYPE_WRBACK);
+	}
 
 	run_postcar_phase(&pcf);
 }

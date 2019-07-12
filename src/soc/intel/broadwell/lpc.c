@@ -428,13 +428,11 @@ static void pch_cg_init(struct device *dev)
 
 static void pch_set_acpi_mode(void)
 {
-#if CONFIG(HAVE_SMI_HANDLER)
-	if (!acpi_is_wakeup_s3()) {
+	if (CONFIG(HAVE_SMI_HANDLER) && !acpi_is_wakeup_s3()) {
 		printk(BIOS_DEBUG, "Disabling ACPI via APMC:\n");
 		outb(APM_CNT_ACPI_DISABLE, APM_CNT);
 		printk(BIOS_DEBUG, "done.\n");
 	}
-#endif /* CONFIG_HAVE_SMI_HANDLER */
 }
 
 static void lpc_init(struct device *dev)

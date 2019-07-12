@@ -19,7 +19,10 @@
 #include <halt.h>
 #include <program_loading.h>
 
-void main(void)
+/* called from assembly in bootblock.S */
+void mips_main(void);
+
+void mips_main(void)
 {
 	bootblock_cpu_init();
 

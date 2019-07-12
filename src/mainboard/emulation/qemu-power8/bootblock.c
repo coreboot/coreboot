@@ -17,10 +17,12 @@
 #include <console/console.h>
 #include <program_loading.h>
 
+void qemu_power8_main(void);
+
 /* The qemu part of all this is very, very non-hardware like.
  * So it gets its own bootblock.
  */
-void main(void)
+void qemu_power8_main(void)
 {
 	if (CONFIG(BOOTBLOCK_CONSOLE)) {
 		console_init();

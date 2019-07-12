@@ -31,6 +31,9 @@
 #define ODMDATA_OFFSET_IN_BCT	0x508
 #define TEGRA_SRAM_MAX		(TEGRA_SRAM_BASE + TEGRA_SRAM_SIZE)
 
+/* called from assembly in bootblock_asm.S */
+void tegra210_main(void);
+
 static void save_odmdata(void)
 {
 	struct tegra_pmc_regs *pmc = (struct tegra_pmc_regs*)TEGRA_PMC_BASE;
@@ -155,7 +158,7 @@ static void mbist_workaround(void)
 	}
 }
 
-void main(void)
+void tegra210_main(void)
 {
 	// enable JTAG at the earliest stage
 	enable_jtag();

@@ -33,7 +33,7 @@ _start:
 	addi	$t0, $t0, 4
 
 	/* Run main */
-	b	main
+	b	mips_main
 
 	/*
 	 * Should never return from main. Make sure there is no branch in the

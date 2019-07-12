@@ -66,5 +66,5 @@ call_bootblock:
 	 * Thumb. However, "b" will not and GCC may attempt to create a
 	 * wrapper which is currently broken.
 	 */
-	bl	main
+	bl	tegra124_main
 ENDPROC(_start)

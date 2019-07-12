@@ -32,10 +32,7 @@ decompressor-y += memcmp.c
 decompressor-y += prog_ops.c
 decompressor-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 
-ifneq ($(CONFIG_BOOTBLOCK_CUSTOM),y)
 bootblock-y += bootblock.c
-endif
-
 bootblock-y += prog_loaders.c
 bootblock-y += prog_ops.c
 bootblock-y += cbfs.c

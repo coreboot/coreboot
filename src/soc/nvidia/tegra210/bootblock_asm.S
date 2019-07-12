@@ -37,5 +37,5 @@ ENTRY(_start)
 	 */
 	msr	cpsr_cxf, #0xdf
 
-	stack_init stack_top=_estack stack_bottom=_stack seed=1 func=main
+	stack_init stack_top=_estack stack_bottom=_stack seed=1 func=tegra210_main
 ENDPROC(_start)

@@ -16,7 +16,7 @@
 
 #include <assert.h>
 #include <bootmode.h>
-#include <vendorcode/google/chromeos/chromeos.h>
+#include <security/vboot/misc.h>
 
 static int gfx_init_done = -1;
 

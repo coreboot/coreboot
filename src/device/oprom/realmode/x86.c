@@ -36,6 +36,16 @@
 
 #include "x86.h"
 
+typedef struct {
+	char signature[4];
+	u16 version;
+	u8 *oem_string_ptr;
+	u32 capabilities;
+	u32 video_mode_ptr;
+	u16 total_memory;
+	char reserved[236];
+} __packed vbe_info_block;
+
 /* The following symbols cannot be used directly. They need to be fixed up
  * to point to the correct address location after the code has been copied
  * to REALMODE_BASE. Absolute symbols are not used because those symbols are
@@ -221,6 +231,44 @@ static int vbe_mode_info_valid(void)
 	return mode_info_valid;
 }
 
+static int vbe_check_for_failure(int ah);
+
+static void vbe_get_ctrl_info(vbe_info_block *info)
+{
+	char *buffer = PTR_TO_REAL_MODE(__realmode_buffer);
+	u16 buffer_seg = (((unsigned long)buffer) >> 4) & 0xff00;
+	u16 buffer_adr = ((unsigned long)buffer) & 0xffff;
+	X86_EAX = realmode_interrupt(0x10, VESA_GET_INFO, 0x0000, 0x0000,
+			0x0000, buffer_seg, buffer_adr);
+	/* If the VBE function completed successfully, 0x0 is returned in AH */
+	if (X86_AH)
+		die("\nError: In %s function\n", __func__);
+	memcpy(info, buffer, sizeof(vbe_info_block));
+}
+
+static void vbe_oprom_list_supported_mode(uint16_t *video_mode_ptr)
+{
+	uint16_t mode;
+	printk(BIOS_DEBUG, "Supported Video Mode list for OpRom:\n");
+	do {
+		mode = *video_mode_ptr++;
+		if (mode != 0xffff)
+			printk(BIOS_DEBUG, "%x\n", mode);
+	} while (mode != 0xffff);
+}
+
+static void vbe_oprom_supported_mode_list(void)
+{
+	uint16_t segment, offset;
+	vbe_info_block info;
+
+	vbe_get_ctrl_info(&info);
+
+	offset = info.video_mode_ptr;
+	segment = info.video_mode_ptr >> 16;
+
+	vbe_oprom_list_supported_mode((uint16_t *)((segment << 4) + offset));
+}
 /*
  * EAX register is used to indicate the completion status upon return from
  * VBE function in real mode.
@@ -255,6 +303,7 @@ static int vbe_check_for_failure(int ah)
 	default:
 		printk(BIOS_DEBUG, "VBE: Unsupported video mode %x!\n",
 			CONFIG_FRAMEBUFFER_VESA_MODE);
+		vbe_oprom_supported_mode_list();
 		status = -1;
 		break;
 	}

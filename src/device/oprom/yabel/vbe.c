@@ -59,6 +59,18 @@
 
 #include <vbe.h>
 
+// these structs only store a subset of the VBE defined fields
+// only those needed.
+typedef struct {
+	char signature[4];
+	u16 version;
+	u8 *oem_string_ptr;
+	u32 capabilities;
+	u16 video_mode_list[256];	// lets hope we never have more than
+					// 256 video modes...
+	u16 total_memory;
+} vbe_info_t;
+
 // pointer to VBEInfoBuffer, set by vbe_prepare
 u8 *vbe_info_buffer = 0;
 

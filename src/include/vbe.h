@@ -34,18 +34,6 @@ typedef struct {
 	u8 color_depth;
 } __packed screen_info_input_t;
 
-// these structs only store a subset of the VBE defined fields
-// only those needed.
-typedef struct {
-	char signature[4];
-	u16 version;
-	u8 *oem_string_ptr;
-	u32 capabilities;
-	u16 video_mode_list[256];	// lets hope we never have more than
-					// 256 video modes...
-	u16 total_memory;
-} vbe_info_t;
-
 typedef struct {
 	u16 mode_attributes; // 00
 	u8 win_a_attributes; // 02

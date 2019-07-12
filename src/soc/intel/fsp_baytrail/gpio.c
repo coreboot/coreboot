@@ -192,6 +192,10 @@ static void setup_gpio_route(const struct soc_gpio_map *sus,
 	uint32_t route_reg = 0;
 	int i;
 
+	/* FIXME: SCI interrupts should be routed regardlessy. */
+	if (!CONFIG(HAVE_SMI_HANDLER))
+		return;
+
 	for (i = 0; i < 8; i++) {
 		/* SMI takes precedence and wake_en implies SCI. */
 		if (sus[i].smi) {
@@ -207,9 +211,7 @@ static void setup_gpio_route(const struct soc_gpio_map *sus,
 		}
 	}
 
-#if CONFIG(HAVE_SMI_HANDLER)
 	southcluster_smm_save_gpio_route(route_reg);
-#endif
 }
 
 static void setup_dirqs(const u8 dirq[GPIO_MAX_DIRQS],

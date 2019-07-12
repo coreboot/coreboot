@@ -16,7 +16,14 @@
 #ifndef SOC_INTEL_COMMON_BLOCK_LPSS_H
 #define SOC_INTEL_COMMON_BLOCK_LPSS_H
 
+#include <device/device.h>
 #include <stdint.h>
+
+/* D0 and D3 enable config */
+enum lpss_pwr_state {
+	STATE_D0 = 0,
+	STATE_D3 = 3
+};
 
 /* Gets controller out of reset */
 void lpss_reset_release(uintptr_t base);
@@ -29,5 +36,8 @@ void lpss_clk_update(uintptr_t base, uint32_t clk_m_val, uint32_t clk_n_val);
 
 /* Check if controller is in reset. */
 bool lpss_is_controller_in_reset(uintptr_t base);
+
+/* Set controller power state to D0 or D3*/
+void lpss_set_power_state(const struct device *dev, enum lpss_pwr_state state);
 
 #endif	/* SOC_INTEL_COMMON_BLOCK_LPSS_H */

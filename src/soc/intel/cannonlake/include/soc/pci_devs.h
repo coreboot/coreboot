@@ -24,8 +24,8 @@
 
 #if !defined(__SIMPLE_DEVICE__)
 #include <device/device.h>
-#define _SA_DEV(slot)		pcidev_path_on_root(_SA_DEVFN(slot))
-#define _PCH_DEV(slot, func)	pcidev_path_on_root(_PCH_DEVFN(slot, func))
+#define _SA_DEV(slot)		pcidev_path_on_root_debug(_SA_DEVFN(slot), __func__)
+#define _PCH_DEV(slot, func)	pcidev_path_on_root_debug(_PCH_DEVFN(slot, func), __func__)
 #else
 #define _SA_DEV(slot)		PCI_DEV(0, SA_DEV_SLOT_ ## slot, 0)
 #define _PCH_DEV(slot, func)	PCI_DEV(0, PCH_DEV_SLOT_ ## slot, func)

@@ -275,8 +275,6 @@ void mmconf_resource(struct device *dev, unsigned long index);
 void tolm_test(void *gp, struct device *dev, struct resource *new);
 u32 find_pci_tolm(struct bus *bus);
 
-DEVTREE_CONST struct device *dev_find_slot(unsigned int bus,
-						unsigned int devfn);
 DEVTREE_CONST struct device *dev_find_next_pci_device(
 				DEVTREE_CONST struct device *previous_dev);
 DEVTREE_CONST struct device *dev_find_slot_on_smbus(unsigned int bus,
@@ -291,6 +289,10 @@ DEVTREE_CONST struct device *pcidev_path_on_root(pci_devfn_t devfn);
 DEVTREE_CONST struct device *pcidev_path_on_bus(unsigned int bus, pci_devfn_t devfn);
 DEVTREE_CONST struct device *pcidev_on_root(uint8_t dev, uint8_t fn);
 DEVTREE_CONST struct bus *pci_root_bus(void);
+
+/* To be deprecated, avoid using. */
+DEVTREE_CONST struct device *dev_find_slot(unsigned int bus, unsigned int devfn);
+DEVTREE_CONST struct device *pcidev_path_on_root_debug(pci_devfn_t devfn, const char *func);
 
 void scan_smbus(struct device *bus);
 void scan_generic_bus(struct device *bus);

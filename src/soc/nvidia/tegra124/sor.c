@@ -844,6 +844,7 @@ void tegra_dc_sor_set_voltage_swing(struct tegra_dc_sor_data *sor)
 		break;
 	case SOR_LINK_SPEED_G5_4:
 		printk(BIOS_WARNING, "T124 does not support 5.4G link clock.\n");
+		return;
 	default:
 		printk(BIOS_WARNING, "Invalid sor link bandwidth: %d\n",
 			sor->link_cfg->link_bw);

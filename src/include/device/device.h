@@ -294,6 +294,30 @@ DEVTREE_CONST struct bus *pci_root_bus(void);
 DEVTREE_CONST struct device *dev_find_slot(unsigned int bus, unsigned int devfn);
 DEVTREE_CONST struct device *pcidev_path_on_root_debug(pci_devfn_t devfn, const char *func);
 
+/* Robust discovery of chip_info. */
+void devtree_bug(const char *func, pci_devfn_t devfn);
+void __noreturn devtree_die(void);
+
+static inline DEVTREE_CONST void *config_of(const struct device *dev)
+{
+	if (dev && dev->chip_info)
+		return dev->chip_info;
+
+	devtree_die();
+}
+
+static inline DEVTREE_CONST void *config_of_path(pci_devfn_t devfn)
+{
+	const struct device *dev = pcidev_path_on_root(devfn);
+	if (dev)
+		return config_of(dev);
+
+	devtree_bug(__func__, devfn);
+
+	dev = dev_find_slot(0, devfn);
+	return config_of(dev);
+}
+
 void scan_smbus(struct device *bus);
 void scan_generic_bus(struct device *bus);
 void scan_static_bus(struct device *bus);

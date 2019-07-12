@@ -751,10 +751,8 @@ static void move_to_config_state(struct rk3288_ddr_publ_regs *ddr_publ_regs,
 			while ((read32(&ddr_publ_regs->pgsr) & PGSR_DLDONE)
 				!= PGSR_DLDONE)
 				;
-			/* if at low power state,need wakeup first,
-			 * and then enter the config
-			 * so here no break.
-			 */
+			/* if at low power state, need wakeup first, then enter the config */
+			/* fall through */
 		case ACCESS:
 		case INIT_MEM:
 			write32(&ddr_pctl_regs->sctl, CFG_STATE);

@@ -227,25 +227,25 @@ SaveDeviceContext (
     switch (Device.CommonDeviceHeader->Type) {
     case DEV_TYPE_PCI_PRE_ESR:
       SavePciDevice (StdHeader, Device.PciDevice, CallPoint, &OrMask);
-      // Fall through to advance the pointer after saving context
+      // fall through - advance the pointer after saving context
     case DEV_TYPE_PCI:
       Device.PciDevice++;
       break;
     case DEV_TYPE_CPCI_PRE_ESR:
       SaveConditionalPciDevice (StdHeader, Device.CPciDevice, CallPoint, &OrMask);
-      // Fall through to advance the pointer after saving context
+      // fall through - advance the pointer after saving context
     case DEV_TYPE_CPCI:
       Device.CPciDevice++;
       break;
     case DEV_TYPE_MSR_PRE_ESR:
       SaveMsrDevice (StdHeader, Device.MsrDevice, CallPoint, (UINT64 **) &OrMask);
-      // Fall through to advance the pointer after saving context
+      // fall through - advance the pointer after saving context
     case DEV_TYPE_MSR:
       Device.MsrDevice++;
       break;
     case DEV_TYPE_CMSR_PRE_ESR:
       SaveConditionalMsrDevice (StdHeader, Device.CMsrDevice, CallPoint, (UINT64 **) &OrMask);
-      // Fall through to advance the pointer after saving context
+      // fall through - advance the pointer after saving context
     case DEV_TYPE_CMSR:
       Device.CMsrDevice++;
       break;
@@ -258,25 +258,25 @@ SaveDeviceContext (
     switch (Device.CommonDeviceHeader->Type) {
     case DEV_TYPE_PCI:
       SavePciDevice (StdHeader, Device.PciDevice, CallPoint, &OrMask);
-      // Fall through to advance the pointer after saving context
+      // fall through - advance the pointer after saving context
     case DEV_TYPE_PCI_PRE_ESR:
       Device.PciDevice++;
       break;
     case DEV_TYPE_CPCI:
       SaveConditionalPciDevice (StdHeader, Device.CPciDevice, CallPoint, &OrMask);
-      // Fall through to advance the pointer after saving context
+      // fall through - advance the pointer after saving context
     case DEV_TYPE_CPCI_PRE_ESR:
       Device.CPciDevice++;
       break;
     case DEV_TYPE_MSR:
       SaveMsrDevice (StdHeader, Device.MsrDevice, CallPoint, (UINT64 **) &OrMask);
-      // Fall through to advance the pointer after saving context
+      // fall through - advance the pointer after saving context
     case DEV_TYPE_MSR_PRE_ESR:
       Device.MsrDevice++;
       break;
     case DEV_TYPE_CMSR:
       SaveConditionalMsrDevice (StdHeader, Device.CMsrDevice, CallPoint, (UINT64 **) &OrMask);
-      // Fall through to advance the pointer after saving context
+      // fall through - advance the pointer after saving context
     case DEV_TYPE_CMSR_PRE_ESR:
       Device.CMsrDevice++;
       break;
@@ -673,25 +673,25 @@ RestorePreESRContext (
     switch (Device.CommonDeviceHeader->Type) {
     case DEV_TYPE_PCI_PRE_ESR:
       RestorePciDevice (StdHeader, Device.PciDevice, CallPoint, OrMaskPtr);
-      // Fall through to advance the pointer after restoring context
+      // fall through - advance the pointer after restoring context
     case DEV_TYPE_PCI:
       Device.PciDevice++;
       break;
     case DEV_TYPE_CPCI_PRE_ESR:
       RestoreConditionalPciDevice (StdHeader, Device.CPciDevice, CallPoint, OrMaskPtr);
-      // Fall through to advance the pointer after restoring context
+      // fall through - advance the pointer after restoring context
     case DEV_TYPE_CPCI:
       Device.CPciDevice++;
       break;
     case DEV_TYPE_MSR_PRE_ESR:
       RestoreMsrDevice (StdHeader, Device.MsrDevice, CallPoint, (UINT64 **) OrMaskPtr);
-      // Fall through to advance the pointer after restoring context
+      // fall through - advance the pointer after restoring context
     case DEV_TYPE_MSR:
       Device.MsrDevice++;
       break;
     case DEV_TYPE_CMSR_PRE_ESR:
       RestoreConditionalMsrDevice (StdHeader, Device.CMsrDevice, CallPoint, (UINT64 **) OrMaskPtr);
-      // Fall through to advance the pointer after restoring context
+      // fall through - advance the pointer after restoring context
     case DEV_TYPE_CMSR:
       Device.CMsrDevice++;
       break;
@@ -733,25 +733,25 @@ RestorePostESRContext (
     switch (Device.CommonDeviceHeader->Type) {
     case DEV_TYPE_PCI:
       RestorePciDevice (StdHeader, Device.PciDevice, CallPoint, &OrMaskPtr);
-      // Fall through to advance the pointer after restoring context
+      // fall through - advance the pointer after restoring context
     case DEV_TYPE_PCI_PRE_ESR:
       Device.PciDevice++;
       break;
     case DEV_TYPE_CPCI:
       RestoreConditionalPciDevice (StdHeader, Device.CPciDevice, CallPoint, &OrMaskPtr);
-      // Fall through to advance the pointer after restoring context
+      // fall through - advance the pointer after restoring context
     case DEV_TYPE_CPCI_PRE_ESR:
       Device.CPciDevice++;
       break;
     case DEV_TYPE_MSR:
       RestoreMsrDevice (StdHeader, Device.MsrDevice, CallPoint, (UINT64 **) &OrMaskPtr);
-      // Fall through to advance the pointer after restoring context
+      // fall through - advance the pointer after restoring context
     case DEV_TYPE_MSR_PRE_ESR:
       Device.MsrDevice++;
       break;
     case DEV_TYPE_CMSR:
       RestoreConditionalMsrDevice (StdHeader, Device.CMsrDevice, CallPoint, (UINT64 **) &OrMaskPtr);
-      // Fall through to advance the pointer after restoring context
+      // fall through - advance the pointer after restoring context
     case DEV_TYPE_CMSR_PRE_ESR:
       Device.CMsrDevice++;
       break;

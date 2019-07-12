@@ -237,6 +237,7 @@ static int tegra_dc_sor_power_dplanes(struct tegra_dc_sor_data *sor,
 			/* fall through */
 		case 2:
 			reg_val |= NV_SOR_DP_PADCTL_PD_TXD_1_NO;
+			/* fall through */
 		case 1:
 			reg_val |= NV_SOR_DP_PADCTL_PD_TXD_0_NO;
 			break;

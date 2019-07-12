@@ -271,6 +271,7 @@ repeat:
 
 		case 'X':
 			flags |= LARGE;
+			/* fall through */
 		case 'x':
 			base = 16;
 			break;

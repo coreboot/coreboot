@@ -242,9 +242,11 @@ F16KbSetDownCoreRegister (
   case CORE_LEVEL_COMPUTE_UNIT_THREE:
     TempVar32_a = TempVar32_a << 1;
     CoresPerComputeUnit++;
+    // fall through
   case CORE_LEVEL_COMPUTE_UNIT_TWO:
     TempVar32_a = TempVar32_a << 1;
     CoresPerComputeUnit++;
+    // fall through
   case CORE_LEVEL_COMPUTE_UNIT:
     TempVar32_a = (TempVar32_a << 1) - 1;
     TempVar32_a = FOUR_CORE_COMPUTE_UNIT_BITMAP & (~TempVar32_a);

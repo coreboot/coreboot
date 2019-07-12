@@ -372,9 +372,7 @@ AmdIdsDebugPrintWorker (
       case 'X':
         Flags |= PREFIX_ZERO;
         Width = sizeof (UINT64) * 2;
-        //
-        // break skipped on purpose
-        //
+	// fall through
       case 'x':
         if ((Flags & LONG_TYPE) == LONG_TYPE) {
           Value = VA_ARG (Marker, UINT64);

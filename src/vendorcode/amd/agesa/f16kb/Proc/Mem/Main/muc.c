@@ -211,8 +211,7 @@ MemUFillTrainPattern (
       break;
     case TestPatternJD256B:
       k >>= 1;
-      // break is not being used here because TestPatternJD256B also need
-      // to run TestPatternJD256A sequence.
+      // fall through - TestPatternJD256B also need to run TestPatternJD256A sequence
     case TestPatternJD256A:
       k >>= 3;
       ASSERT (k < sizeof (PatternJD_256));
@@ -220,8 +219,7 @@ MemUFillTrainPattern (
       break;
     case TestPatternJD1B:
       k >>= 1;
-      // break is not being used here because TestPatternJD1B also need
-      // to run TestPatternJD1A sequence.
+      // fall through - TestPatternJD1B also need to run TestPatternJD1A sequence
     case TestPatternJD1A:
       k >>= 3;
       i = (UINT8) (k >> 3);

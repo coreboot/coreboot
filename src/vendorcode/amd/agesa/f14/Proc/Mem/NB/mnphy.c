@@ -695,8 +695,7 @@ MemNcmnGetSetTrainDlyNb (
     } else if (Rank) {
       Index += 0x60;
     }
-    // break is not being used here because AccessRdDqsDly and AccessWrDatDly also need
-    // to run AccessPhRecDly sequence.
+    // fall through - AccessRdDqsDly and AccessWrDatDly also need to run AccessPhRecDly sequence
   case AccessPhRecDly:
     Index += (Byte / 4);
     Offset = 8 * (Byte % 4);
@@ -822,8 +821,7 @@ MemNcmnGetSetTrainDlyClientNb (
   case AccessRdDqsDly:
   case AccessWrDatDly:
     Index += (Dimm * 0x100);
-    // break is not being used here because AccessRdDqsDly and AccessWrDatDly also need
-    // to run AccessPhRecDly sequence.
+    // fall through - AccessRdDqsDly and AccessWrDatDly also need to run AccessPhRecDly sequence
   case AccessPhRecDly:
     Index += (Byte / 4);
     Offset = 8 * (Byte % 4);

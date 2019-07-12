@@ -117,21 +117,24 @@ void hudson_enable(struct device *dev)
 	case PCI_DEVFN(0x12, 0):
 		if (dev->enabled == 0)
 			hudson_disable_usb(USB_EN_DEVFN_12_0);
-	case PCI_DEVFN(0x12, 2):	/* Fall through */
+		/* fall through */
+	case PCI_DEVFN(0x12, 2):
 		if (dev->enabled == 0)
 			hudson_disable_usb(USB_EN_DEVFN_12_2);
 		break;
 	case PCI_DEVFN(0x13, 0):
 		if (dev->enabled == 0)
 			hudson_disable_usb(USB_EN_DEVFN_13_0);
-	case PCI_DEVFN(0x13, 2):	/* Fall through */
+		/* fall through */
+	case PCI_DEVFN(0x13, 2):
 		if (dev->enabled == 0)
 			hudson_disable_usb(USB_EN_DEVFN_13_2);
 		break;
 	case PCI_DEVFN(0x16, 0):
 		if (dev->enabled == 0)
 			hudson_disable_usb(USB_EN_DEVFN_16_0);
-	case PCI_DEVFN(0x16, 2):	/* Fall through */
+		/* fall through */
+	case PCI_DEVFN(0x16, 2):
 		if (dev->enabled == 0)
 			hudson_disable_usb(USB_EN_DEVFN_16_2);
 		break;

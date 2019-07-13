@@ -175,14 +175,7 @@ uintptr_t soc_read_pmc_base(void)
 void soc_get_gpi_gpe_configs(uint8_t *dw0, uint8_t *dw1, uint8_t *dw2)
 {
 	DEVTREE_CONST struct soc_intel_cannonlake_config *config;
-
-	/* Look up the device in devicetree */
-	DEVTREE_CONST struct device *dev = pcidev_path_on_root(PCH_DEVFN_PMC);
-	if (!dev || !dev->chip_info) {
-		printk(BIOS_ERR, "BUG! Could not find SOC devicetree config\n");
-		return;
-	}
-	config = dev->chip_info;
+	config = config_of_path(SA_DEVFN_ROOT);
 
 	/* Assign to out variable */
 	*dw0 = config->gpe0_dw0;

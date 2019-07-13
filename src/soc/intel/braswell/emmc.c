@@ -33,7 +33,7 @@ static const struct reg_script emmc_ops[] = {
 
 static void emmc_init(struct device *dev)
 {
-	struct soc_intel_braswell_config *config = dev->chip_info;
+	struct soc_intel_braswell_config *config = config_of(dev);
 
 	printk(BIOS_SPEW, "%s/%s (%s)\n",
 			__FILE__, __func__, dev_name(dev));

@@ -135,10 +135,8 @@ static void root_port_init_config(struct device *dev)
 		root_port_config_update_gbe_port();
 
 		pci_update_config8(dev, 0xe2, ~(3 << 4), (3 << 4));
-		if (dev->chip_info != NULL) {
-			config_t *config = dev->chip_info;
-			rpc.coalesce = config->pcie_port_coalesce;
-		}
+		config_t *config = config_of(dev);
+		rpc.coalesce = config->pcie_port_coalesce;
 	}
 
 	rp = root_port_number(dev);
@@ -449,7 +447,7 @@ static void pcie_add_0x0202000_iobp(u32 reg)
 
 static void pch_pcie_early(struct device *dev)
 {
-	config_t *config = dev->chip_info;
+	config_t *config = config_of(dev);
 	int do_aspm = 0;
 	int rp = root_port_number(dev);
 
@@ -481,7 +479,7 @@ static void pch_pcie_early(struct device *dev)
 	}
 
 	/* Allow ASPM to be forced on in devicetree */
-	if (config && (config->pcie_port_force_aspm & (1 << (rp - 1))))
+	if ((config->pcie_port_force_aspm & (1 << (rp - 1))))
 		do_aspm = 1;
 
 	printk(BIOS_DEBUG, "PCIe Root Port %d ASPM is %sabled\n",

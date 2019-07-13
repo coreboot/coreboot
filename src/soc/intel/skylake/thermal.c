@@ -66,7 +66,7 @@ static uint16_t pch_get_ltt_value(struct device *dev)
 	uint16_t ltt_value;
 	uint16_t trip_temp = DEFAULT_TRIP_TEMP;
 
-	config = dev->chip_info;
+	config = config_of(dev);
 
 	if (config->pch_trip_temp)
 		trip_temp = config->pch_trip_temp;

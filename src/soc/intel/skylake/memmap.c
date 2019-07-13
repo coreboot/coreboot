@@ -207,7 +207,7 @@ static size_t calculate_reserved_mem_size(uintptr_t dram_base)
 	size_t reserve_mem_size;
 	const struct soc_intel_skylake_config *config;
 
-	config = dev->chip_info;
+	config = config_of(dev);
 
 	/* Get PRMRR size */
 	reserve_mem_base -= get_prmrr_size(reserve_mem_base, config);

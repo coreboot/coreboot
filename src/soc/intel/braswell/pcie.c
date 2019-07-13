@@ -141,13 +141,13 @@ static void pcie_enable(struct device *dev)
 	printk(BIOS_SPEW, "%s/%s (%s)\n",
 			__FILE__, __func__, dev_name(dev));
 	if (is_first_port(dev)) {
-		struct soc_intel_braswell_config *config = dev->chip_info;
+		struct soc_intel_braswell_config *config = config_of(dev);
 		uint32_t reg = pci_read_config32(dev, PHYCTL2_IOSFBCTL);
 		pll_en_off = !!(reg & PLL_OFF_EN);
 
 		strpfusecfg = pci_read_config32(dev, STRPFUSECFG);
 
-		if (config && config->pcie_wake_enable)
+		if (config->pcie_wake_enable)
 			southcluster_smm_save_param(
 				SMM_SAVE_PARAM_PCIE_WAKE_ENABLE, 1);
 	}

@@ -94,7 +94,7 @@ static void set_slp_s3_assertion_width(int width_usecs)
 
 void pmc_soc_init(struct device *dev)
 {
-	const struct soc_intel_apollolake_config *cfg = dev->chip_info;
+	const struct soc_intel_apollolake_config *cfg = config_of(dev);
 
 	/* Set up GPE configuration */
 	pmc_gpe_init();

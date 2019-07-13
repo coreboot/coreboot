@@ -124,7 +124,7 @@ void soc_memory_init_params(struct romstage_params *params,
 		return;
 	}
 
-	config = dev->chip_info;
+	config = config_of(dev);
 	printk(BIOS_DEBUG, "Updating UPD values for MemoryInit\n");
 	upd->PcdMrcInitTsegSize = CONFIG(HAVE_SMI_HANDLER) ?
 		config->PcdMrcInitTsegSize : 0;

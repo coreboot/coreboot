@@ -108,11 +108,11 @@ static void byt_pcie_init(struct device *dev)
 	reg_script_run_on_dev(dev, init_script);
 
 	if (is_first_port(dev)) {
-		struct soc_intel_baytrail_config *config = dev->chip_info;
+		struct soc_intel_baytrail_config *config = config_of(dev);
 		uint32_t reg = pci_read_config32(dev, RPPGEN);
 		reg |= SRDLCGEN | SRDBCGEN;
 
-		if (config && config->clkreq_enable)
+		if (config->clkreq_enable)
 			reg |= LCLKREQEN | BBCLKREQEN;
 
 		pci_write_config32(dev, RPPGEN, reg);
@@ -208,13 +208,13 @@ static void check_device_present(struct device *dev)
 static void byt_pcie_enable(struct device *dev)
 {
 	if (is_first_port(dev)) {
-		struct soc_intel_baytrail_config *config = dev->chip_info;
+		struct soc_intel_baytrail_config *config = config_of(dev);
 		uint32_t reg = pci_read_config32(dev, PHYCTL2_IOSFBCTL);
 		pll_en_off = !!(reg & PLL_OFF_EN);
 
 		strpfusecfg = pci_read_config32(dev, STRPFUSECFG);
 
-		if (config && config->pcie_wake_enable)
+		if (config->pcie_wake_enable)
 			southcluster_smm_save_param(
 				SMM_SAVE_PARAM_PCIE_WAKE_ENABLE, 1);
 	}

@@ -286,7 +286,7 @@ static void sc_init(struct device *dev)
 	const unsigned long ilb_base = ILB_BASE_ADDRESS;
 	void *gen_pmcon1 = (void *)(PMC_BASE_ADDRESS + GEN_PMCON1);
 	const struct soc_irq_route *ir = &global_soc_irq_route;
-	struct soc_intel_braswell_config *config = dev->chip_info;
+	struct soc_intel_braswell_config *config = config_of(dev);
 
 	printk(BIOS_SPEW, "%s/%s (%s)\n",
 			__FILE__, __func__, dev_name(dev));

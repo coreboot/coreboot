@@ -177,7 +177,7 @@ static void sc_init(struct device *dev)
 	u32 *gen_pmcon1 = (u32 *)(PMC_BASE_ADDRESS + GEN_PMCON1);
 	u32 *actl = (u32 *)(ILB_BASE_ADDRESS + ACTL);
 	const struct baytrail_irq_route *ir = &global_baytrail_irq_route;
-	struct soc_intel_baytrail_config *config = dev->chip_info;
+	struct soc_intel_baytrail_config *config = config_of(dev);
 
 	/* Set up the PIRQ PIC routing based on static config. */
 	for (i = 0; i < NUM_PIRQS; i++) {

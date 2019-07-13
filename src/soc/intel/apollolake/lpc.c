@@ -91,12 +91,7 @@ void lpc_configure_pads(void)
 void lpc_soc_init(struct device *dev)
 {
 	const struct soc_intel_apollolake_config *cfg;
-
-	cfg = dev->chip_info;
-	if (!cfg) {
-		printk(BIOS_ERR, "BUG! Could not find SOC devicetree config\n");
-		return;
-	}
+	cfg = config_of(dev);
 
 	/* Set LPC Serial IRQ mode */
 	lpc_set_serirq_mode(cfg->serirq_mode);

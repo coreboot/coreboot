@@ -326,13 +326,11 @@ static void soc_primary_gfx_config_params(FSP_M_CONFIG *m_cfg,
 
 void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 {
-	const struct device *dev;
 	const struct soc_intel_skylake_config *config;
 	FSP_M_CONFIG *m_cfg = &mupd->FspmConfig;
 	FSP_M_TEST_CONFIG *m_t_cfg = &mupd->FspmTestConfig;
 
-	dev = pcidev_on_root(PCH_DEV_SLOT_LPC, 0);
-	config = dev->chip_info;
+	config = config_of_path(PCH_DEVFN_LPC);
 
 	soc_memory_init_params(m_cfg, config);
 	soc_peg_init_params(m_cfg, m_t_cfg, config);

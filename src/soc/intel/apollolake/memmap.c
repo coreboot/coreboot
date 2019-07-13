@@ -28,20 +28,13 @@
 
 void *cbmem_top(void)
 {
-	const struct device *dev;
 	const config_t *config;
 	void *tolum = (void *)sa_get_tseg_base();
 
 	if (!CONFIG(SOC_INTEL_GLK))
 		return tolum;
 
-	dev = pcidev_path_on_root(PCH_DEVFN_LPC);
-	assert(dev != NULL);
-	config = dev->chip_info;
-
-	if (!config)
-		die_with_post_code(POST_HW_INIT_FAILURE,
-			"Failed to get chip_info\n");
+	config = config_of_path(PCH_DEVFN_LPC);
 
 	/* FSP allocates 2x PRMRR Size Memory for alignment */
 	if (config->sgx_enable)

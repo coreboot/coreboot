@@ -47,8 +47,7 @@ void punit_init(void)
 	rid = pci_read_config8(IOSF_PCI_DEV, REVID);
 	dev = pcidev_on_root(SOC_DEV, SOC_FUNC);
 
-	if (dev)
-		cfg = dev->chip_info;
+	cfg = config_of(dev);
 
 	reg = iosf_punit_read(SB_BIOS_CONFIG);
 	/* Write bits 17:16 of SB_BIOS_CONFIG in the PUNIT. */

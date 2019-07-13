@@ -36,7 +36,7 @@ uintptr_t fsp_soc_get_igd_bar(void)
 
 static void graphics_setup_panel(struct device *dev)
 {
-	struct soc_intel_skylake_config *conf = dev->chip_info;
+	struct soc_intel_skylake_config *conf = config_of(dev);
 	struct resource *mmio_res;
 	uint8_t *base;
 	u32 reg32;

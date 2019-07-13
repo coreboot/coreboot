@@ -270,7 +270,7 @@ static void pch_lpc_interrupt_init(void)
 	const struct device *dev;
 
 	dev = pcidev_on_root(PCH_DEV_SLOT_LPC, 0);
-	if (!dev || !dev->chip_info)
+	if (!dev)
 		return;
 
 	soc_pch_pirq_init(dev);
@@ -283,7 +283,7 @@ void pch_enable_lpc(void)
 	uint32_t gen_io_dec[LPC_NUM_GENERIC_IO_RANGES];
 
 	dev = pcidev_on_root(PCH_DEV_SLOT_LPC, 0);
-	if (!dev || !dev->chip_info)
+	if (!dev)
 		return;
 
 	soc_get_gen_io_dec_range(dev, gen_io_dec);

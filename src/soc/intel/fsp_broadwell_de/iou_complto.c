@@ -22,7 +22,7 @@
 
 static void iou_init(struct device *dev)
 {
-	const config_t *config = dev->chip_info;
+	const config_t *config = config_of(dev);
 	u16 devctl2;
 
 	/* pcie completion timeout

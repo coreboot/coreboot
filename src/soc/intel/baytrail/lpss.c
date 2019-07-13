@@ -148,7 +148,7 @@ static void i2c_disable_resets(struct device *dev)
 
 static void lpss_init(struct device *dev)
 {
-	struct soc_intel_baytrail_config *config = dev->chip_info;
+	struct soc_intel_baytrail_config *config = config_of(dev);
 	int iosf_reg, nvs_index;
 
 	dev_ctl_reg(dev, &iosf_reg, &nvs_index);

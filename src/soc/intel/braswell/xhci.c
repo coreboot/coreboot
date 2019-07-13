@@ -33,9 +33,9 @@
 
 static void xhci_init(struct device *dev)
 {
-	struct soc_intel_braswell_config *config = dev->chip_info;
+	struct soc_intel_braswell_config *config = config_of(dev);
 
-	if (config && config->usb_comp_bg) {
+	if (config->usb_comp_bg) {
 		struct reg_script ops[] = {
 			REG_IOSF_WRITE(IOSF_PORT_USBPHY, USBPHY_COMPBG,
 				config->usb_comp_bg),

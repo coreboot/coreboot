@@ -36,17 +36,12 @@ static inline void sir_write(struct device *dev, int idx, u32 value)
 
 static void sata_init(struct device *dev)
 {
-	config_t *config = dev->chip_info;
+	config_t *config = config_of(dev);
 	u32 reg32;
 	u16 reg16;
 	u8  reg8;
 
 	printk(BIOS_DEBUG, "SATA: Initializing...\n");
-
-	if (config == NULL) {
-		printk(BIOS_ERR, "SATA: ERROR: Device not in devicetree.cb!\n");
-		return;
-	}
 
 	if (!config->sata_ahci) {
 		/* Set legacy or native decoding mode */
@@ -158,14 +153,12 @@ static void sata_init(struct device *dev)
 
 static void sata_enable(struct device *dev)
 {
-	config_t *config = dev->chip_info;
+	config_t *config = config_of(dev);
 	u8  reg8;
 	u16 reg16;
 	u32 reg32;
 
 	southcluster_enable_dev(dev);
-	if (!config)
-		return;
 
 	/* Port mapping -- mask off SPD + SMS + SC bits, then re-set */
 	reg16 = pci_read_config16(dev, 0x90);

@@ -90,7 +90,7 @@ static void pch_pirq_init(struct device *dev)
 {
 	struct device *irq_dev;
 	/* Get the chip configuration */
-	config_t *config = dev->chip_info;
+	config_t *config = config_of(dev);
 
 	/* Initialize PIRQ Routings */
 	write8((void *)PCH_PCR_ADDRESS(PID_ITSS, PCR_ITSS_PIRQA_ROUT),

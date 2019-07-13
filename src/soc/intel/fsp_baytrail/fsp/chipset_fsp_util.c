@@ -87,7 +87,7 @@ static void ConfigureDefaultUpdData(FSP_INFO_HEADER *FspInfo, UPD_DATA_REGION *U
 	printk(FSP_INFO_LEVEL, "Configure Default UPD Data\n");
 
 	dev = pcidev_path_on_root(SOC_DEV_FUNC);
-	config = dev->chip_info;
+	config = config_of(dev);
 
 	/* Set up default verb tables - Just HDMI audio */
 	UpdData->AzaliaConfigPtr = (UINT32)&mAzaliaConfig;

@@ -313,7 +313,7 @@ static void set_backlight_pwm(struct device *dev, uint32_t bklt_reg, int req_hz)
 
 static void gfx_panel_setup(struct device *dev)
 {
-	struct soc_intel_baytrail_config *config = dev->chip_info;
+	struct soc_intel_baytrail_config *config = config_of(dev);
 	struct reg_script gfx_pipea_init[] = {
 		/* CONTROL */
 		REG_RES_WRITE32(PCI_BASE_ADDRESS_0, PIPEA_REG(PP_CONTROL),

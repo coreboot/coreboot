@@ -33,13 +33,10 @@
 
 static void sd_init(struct device *dev)
 {
-	struct soc_intel_braswell_config *config = dev->chip_info;
+	struct soc_intel_braswell_config *config = config_of(dev);
 
 	printk(BIOS_SPEW, "%s/%s (%s)\n",
 			__FILE__, __func__, dev_name(dev));
-
-	if (config == NULL)
-		return;
 
 	if (config->sdcard_cap_low != 0 || config->sdcard_cap_high != 0) {
 		printk(BIOS_DEBUG, "Overriding SD Card controller caps.\n");

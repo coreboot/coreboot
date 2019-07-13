@@ -197,7 +197,7 @@ static void xhci_route_all(struct device *dev)
 
 static void xhci_init(struct device *dev)
 {
-	struct soc_intel_baytrail_config *config = dev->chip_info;
+	struct soc_intel_baytrail_config *config = config_of(dev);
 	struct reg_script xhci_hc_init[] = {
 		/* Initialize clock gating */
 		REG_SCRIPT_NEXT(xhci_clock_gating_script),

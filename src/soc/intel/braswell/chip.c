@@ -96,7 +96,7 @@ void soc_silicon_init_params(SILICON_INIT_UPD *params)
 		return;
 	}
 
-	config = dev->chip_info;
+	config = config_of(dev);
 
 	/* Set the parameters for SiliconInit */
 	printk(BIOS_DEBUG, "Updating UPD values for SiliconInit\n");

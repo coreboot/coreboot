@@ -76,10 +76,10 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 
 void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 {
-	const struct device *dev = pcidev_on_root(0, 0);
-	assert(dev != NULL);
-	const struct soc_intel_icelake_config *config = dev->chip_info;
+	const struct soc_intel_icelake_config *config;
 	FSP_M_CONFIG *m_cfg = &mupd->FspmConfig;
+
+	config = config_of_path(SA_DEVFN_ROOT);
 
 	soc_memory_init_params(m_cfg, config);
 

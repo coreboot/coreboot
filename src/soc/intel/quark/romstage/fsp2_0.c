@@ -104,7 +104,6 @@ int fill_power_state(void)
 void platform_fsp_memory_init_params_cb(FSPM_UPD *fspm_upd, uint32_t version)
 {
 	FSPM_ARCH_UPD *aupd;
-	const struct device *dev;
 	const struct soc_intel_quark_config *config;
 	void *rmu_data;
 	size_t rmu_data_len;
@@ -120,10 +119,7 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *fspm_upd, uint32_t version)
 			"Microcode file (rmu.bin) not found.");
 
 	/* Locate the configuration data from devicetree.cb */
-	dev = pcidev_path_on_root(LPC_DEV_FUNC);
-	if (!dev)
-		die("ERROR - LPC device not found!");
-	config = dev->chip_info;
+	config = config_of_path(LPC_DEV_FUNC);
 
 	/* Update the architectural UPD values. */
 	aupd = &fspm_upd->FspmArchUpd;

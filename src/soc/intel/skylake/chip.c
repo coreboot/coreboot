@@ -93,7 +93,7 @@ struct chip_operations soc_intel_skylake_ops = {
 void soc_silicon_init_params(SILICON_INIT_UPD *params)
 {
 	struct device *dev = pcidev_path_on_root(PCH_DEVFN_LPC);
-	const struct soc_intel_skylake_config *config = dev->chip_info;
+	const struct soc_intel_skylake_config *config = config_of(dev);
 	int i;
 
 	memcpy(params->SerialIoDevMode, config->SerialIoDevMode,

@@ -39,26 +39,26 @@
 /* SOC initialization before RAM is enabled */
 void soc_pre_ram_init(struct romstage_params *params)
 {
+	const struct soc_intel_skylake_config *config;
+
 	/* Program MCHBAR and DMIBAR */
 	systemagent_early_init();
 
-	const struct device *const dev = pcidev_path_on_root(PCH_DEVFN_LPC);
-	const struct soc_intel_skylake_config *const config =
-		dev ? dev->chip_info : NULL;
+	config = config_of_path(PCH_DEVFN_LPC);
+
 	/* Force a full memory train if RMT is enabled */
-	params->disable_saved_data = config && config->Rmt;
+	params->disable_saved_data = config->Rmt;
 }
 
 /* UPD parameters to be initialized before MemoryInit */
 void soc_memory_init_params(struct romstage_params *params,
 			    MEMORY_INIT_UPD *upd)
 {
-	const struct device *dev;
 	const struct soc_intel_skylake_config *config;
 
 	/* Set the parameters for MemoryInit */
-	dev = pcidev_on_root(PCH_DEV_SLOT_LPC, 0);
-	config = dev->chip_info;
+
+	config = config_of_path(PCH_DEVFN_LPC);
 
 	/*
 	 * Set IGD stolen size to 64MB.  The FBC hardware for skylake does not

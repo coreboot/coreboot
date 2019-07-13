@@ -170,7 +170,7 @@ static void serialio_init_once(int acpi_mode)
 
 static void serialio_init(struct device *dev)
 {
-	config_t *config = dev->chip_info;
+	config_t *config = config_of(dev);
 	struct resource *bar0, *bar1;
 	int sio_index = -1;
 	u32 reg32;

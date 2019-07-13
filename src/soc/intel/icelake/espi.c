@@ -48,7 +48,7 @@ const struct lpc_mmio_range *soc_get_fixed_mmio_ranges()
 
 void soc_get_gen_io_dec_range(const struct device *dev, uint32_t *gen_io_dec)
 {
-	const config_t *config = dev->chip_info;
+	const config_t *config = config_of(dev);
 
 	gen_io_dec[0] = config->gen1_dec;
 	gen_io_dec[1] = config->gen2_dec;

@@ -34,15 +34,7 @@ static void sata_init(struct device *dev)
 	u16 reg16;
 	u32 abar;
 
-	/* Get the chip configuration */
-	config_t *config = dev->chip_info;
-
 	printk(BIOS_DEBUG, "SATA: Initializing...\n");
-
-	if (config == NULL) {
-		printk(BIOS_ERR, "SATA: ERROR: Device not in devicetree.cb!\n");
-		return;
-	}
 
 	/* SATA configuration is handled by the FSP */
 

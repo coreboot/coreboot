@@ -69,7 +69,7 @@ static void pch_enable_ioapic(struct device *dev)
 
 void soc_get_gen_io_dec_range(const struct device *dev, uint32_t *gen_io_dec)
 {
-	const config_t *config = dev->chip_info;
+	const config_t *config = config_of(dev);
 
 	gen_io_dec[0] = config->gen1_dec;
 	gen_io_dec[1] = config->gen2_dec;
@@ -98,7 +98,7 @@ static const struct reg_script pch_misc_init_script[] = {
 
 void lpc_soc_init(struct device *dev)
 {
-	const config_t *const config = dev->chip_info;
+	const config_t *const config = config_of(dev);
 
 	/* Legacy initialization */
 	isa_dma_init();

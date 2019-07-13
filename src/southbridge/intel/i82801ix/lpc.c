@@ -366,7 +366,7 @@ static void enable_clock_gating(void)
 	RCBA32(0x38c0) |= 7;
 }
 
-static void i82801ix_lock_smm(struct device *dev)
+static void i82801ix_set_acpi_mode(struct device *dev)
 {
 	if (!acpi_is_wakeup_s3()) {
 #if ENABLE_ACPI_MODE_IN_COREBOOT
@@ -382,11 +382,6 @@ static void i82801ix_lock_smm(struct device *dev)
 		printk(BIOS_DEBUG, "S3 wakeup, enabling ACPI via APMC\n");
 		outb(APM_CNT_ACPI_ENABLE, APM_CNT);
 	}
-	/* Don't allow evil boot loaders, kernels, or
-	 * userspace applications to deceive us:
-	 */
-	if (!CONFIG(PARALLEL_MP))
-		aseg_smm_lock();
 }
 
 static void lpc_init(struct device *dev)
@@ -430,7 +425,13 @@ static void lpc_init(struct device *dev)
 	i8259_configure_irq_trigger(9, 1);
 
 	if (CONFIG(HAVE_SMI_HANDLER))
-		i82801ix_lock_smm(dev);
+		i82801ix_set_acpi_mode(dev);
+
+	/* Don't allow evil boot loaders, kernels, or
+	 * userspace applications to deceive us:
+	 */
+	if (CONFIG(HAVE_SMI_HANDLER) && CONFIG(SMM_ASEG))
+		aseg_smm_lock();
 }
 
 static void i82801ix_lpc_read_resources(struct device *dev)

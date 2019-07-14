@@ -16,7 +16,7 @@ CPPFLAGS += -I$(top)/src/arch/x86/include
 
 
 OBJS = inteltool.o pcr.o cpu.o gpio.o gpio_groups.o rootcmplx.o powermgt.o \
-       memory.o pcie.o amb.o ivy_memory.o spi.o gfx.o ahci.o lpc.o
+       memory.o pcie.o amb.o ivy_memory.o spi.o gfx.o ahci.o lpc.o iobp.o
 
 OS_ARCH	= $(shell uname)
 ifeq ($(OS_ARCH), Darwin)

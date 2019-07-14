@@ -139,6 +139,8 @@ int print_rcba(struct pci_dev *sb)
 			printf("0x%04x: 0x%08x\n", i, read32(rcba + i));
 	}
 
+	print_iobp(sb, rcba);
+
 	unmap_physical((void *)rcba, size);
 	return 0;
 }

@@ -1657,7 +1657,6 @@ static void sdram_program_graphics_frequency(struct sys_info *sysinfo)
 	printk(BIOS_DEBUG, "Voltage: %s ", (voltage == VOLTAGE_1_05)?"1.05V":"1.5V");
 
 	/* Gate graphics hardware for frequency change */
-	reg8 = pci_read_config16(PCI_DEV(0, 2, 0), GCFC + 1);
 	reg8 = (1<<3) | (1<<1); /* disable crclk, gate cdclk */
 	pci_write_config8(PCI_DEV(0, 2, 0), GCFC + 1, reg8);
 

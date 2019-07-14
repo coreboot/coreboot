@@ -50,16 +50,6 @@ enum {
 };
 
 enum {
-	TX_DQ_DQS_MOVE_DQ_ONLY = 0,
-	TX_DQ_DQS_MOVE_DQM_ONLY,
-	TX_DQ_DQS_MOVE_DQ_DQM
-};
-
-enum {
-	MAX_CA_FINE_TUNE_DELAY = 63,
-	MAX_CS_FINE_TUNE_DELAY = 63,
-	MAX_CLK_FINE_TUNE_DELAY = 31,
-	CATRAINING_NUM = 6,
 	PASS_RANGE_NA = 0x7fff
 };
 
@@ -76,10 +66,8 @@ enum {
 
 enum {
 	DQS_GW_COARSE_STEP = 1,
-	DQS_GW_FINE_START = 0,
 	DQS_GW_FINE_END = 32,
 	DQS_GW_FINE_STEP = 4,
-	DQS_GW_FREQ_DIV = 4,
 	RX_DQS_CTL_LOOP = 8,
 	RX_DLY_DQSIENSTB_LOOP = 32
 };
@@ -102,10 +90,6 @@ enum {
 	DQ_DIV_MASK = BIT(DQ_DIV_SHIFT) - 1,
 	OEN_SHIFT = 16,
 
-	DQS_DELAY_2T = 3,
-	DQS_DELAY_0P5T = 4,
-	DQS_DELAY = ((DQS_DELAY_2T << DQ_DIV_SHIFT) + DQS_DELAY_0P5T) << 5,
-
 	SELPH_DQS0 = _SELPH_DQS_BITS(0x3, 0x3),
 	SELPH_DQS1 = _SELPH_DQS_BITS(0x4, 0x1),
 	SELPH_DQS0_1600 = _SELPH_DQS_BITS(0x2, 0x1),
@@ -124,9 +108,10 @@ u8 get_freq_fsq(u8 freq_group);
 void dramc_init(const struct sdram_params *params, u8 freq_group);
 void dramc_sw_impedance_save_reg(u8 freq_group);
 void dramc_sw_impedance_cal(const struct sdram_params *params, u8 term_option);
-void dramc_apply_config_before_calibration(void);
+void dramc_apply_config_before_calibration(u8 freq_group);
 void dramc_apply_config_after_calibration(void);
-void dramc_calibrate_all_channels(const struct sdram_params *params);
+void dramc_calibrate_all_channels(const struct sdram_params *pams,
+	u8 freq_group);
 void dramc_hw_gating_onoff(u8 chn, bool onoff);
 void dramc_enable_phy_dcm(bool bEn);
 void dramc_mode_reg_write(u8 chn, u8 mr_idx, u8 value);

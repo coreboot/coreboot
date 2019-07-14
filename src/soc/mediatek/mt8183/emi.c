@@ -19,6 +19,17 @@
 #include <soc/dramc_pi_api.h>
 #include <soc/dramc_register.h>
 
+#define LP4X_HIGH_FREQ		LP4X_DDR3200
+#define LP4X_MIDDLE_FREQ	LP4X_DDR2400
+#define LP4X_LOW_FREQ		LP4X_DDR1600
+
+u32 frequency_table[LP4X_DDRFREQ_MAX] = {
+	[LP4X_DDR1600] = 1600,
+	[LP4X_DDR2400] = 2400,
+	[LP4X_DDR3200] = 3200,
+	[LP4X_DDR3600] = 3600,
+};
+
 struct emi_regs *emi_regs = (void *)EMI_BASE;
 const u8 phy_mapping[CHANNEL_MAX][16] = {
 	[CHANNEL_A] = {
@@ -30,6 +41,12 @@ const u8 phy_mapping[CHANNEL_MAX][16] = {
 		0, 1, 5, 6, 3, 7, 4, 2,
 		9, 8, 12, 15, 11, 14, 13, 10
 	}
+};
+
+struct optimize_ac_time {
+	u8 rfc;
+	u8 rfc_05t;
+	u16 tx_ref_cnt;
 };
 
 void dramc_set_broadcast(u32 onoff)
@@ -268,15 +285,29 @@ static void dramc_init_pre_settings(void)
 	setbits_le32(&ch[0].phy.misc_ctrl1, 0x1 << 31);
 }
 
-static void dramc_ac_timing_optimize(void)
+static void dramc_ac_timing_optimize(u8 freq_group)
 {
+	struct optimize_ac_time rf_cab_opt[LP4X_DDRFREQ_MAX] = {
+		[LP4X_DDR1600] = {.rfc = 44, .rfc_05t = 0, .tx_ref_cnt = 62},
+		[LP4X_DDR2400] = {.rfc = 44, .rfc_05t = 0, .tx_ref_cnt = 62},
+		[LP4X_DDR3200] = {.rfc = 100, .rfc_05t = 0, .tx_ref_cnt = 119},
+		[LP4X_DDR3600] = {.rfc = 118, .rfc_05t = 1, .tx_ref_cnt = 138},
+	};
+
 	for (size_t chn = 0; chn < CHANNEL_MAX; chn++) {
 		clrsetbits_le32(&ch[chn].ao.shu[0].actim[3],
-			0xff << 16, 0x64 << 16);
-		clrbits_le32(&ch[chn].ao.shu[0].ac_time_05t, 0x1 << 2);
+			0xff << 16, rf_cab_opt[freq_group].rfc << 16);
+		clrbits_le32(&ch[chn].ao.shu[0].ac_time_05t,
+			rf_cab_opt[freq_group].rfc_05t << 2);
 		clrsetbits_le32(&ch[chn].ao.shu[0].actim[4],
-			0x3ff << 0, 0x77 << 0);
+			0x3ff << 0, rf_cab_opt[freq_group].tx_ref_cnt << 0);
 	}
+}
+
+static void dfs_init_for_calibration(const struct sdram_params *params, u8 freq_group)
+{
+	dramc_init(params, freq_group);
+	dramc_apply_config_before_calibration(freq_group);
 }
 
 static void init_dram(const struct sdram_params *params, u8 freq_group)
@@ -289,7 +320,7 @@ static void init_dram(const struct sdram_params *params, u8 freq_group)
 	dramc_sw_impedance_cal(params, ODT_OFF);
 	dramc_sw_impedance_cal(params, ODT_ON);
 
-	dramc_init(params, freq_group);
+	dfs_init_for_calibration(params, freq_group);
 	emi_init2(params);
 }
 
@@ -302,17 +333,25 @@ void enable_emi_dcm(void)
 		clrbits_le32(&ch[chn].emi.chn_conb, 0xff << 24);
 }
 
-static void do_calib(const struct sdram_params *params)
+static void do_calib(const struct sdram_params *params, u8 freq_group)
 {
-	dramc_apply_config_before_calibration();
-	dramc_calibrate_all_channels(params);
-	dramc_ac_timing_optimize();
+	dramc_show("Start K freq group:%d\n", frequency_table[freq_group]);
+	dramc_calibrate_all_channels(params, freq_group);
+	dramc_ac_timing_optimize(freq_group);
+	dramc_show("%s K freq group:%d finish!\n", __func__, frequency_table[freq_group]);
+}
+
+static void after_calib(void)
+{
 	dramc_apply_config_after_calibration();
 	dramc_runtime_config();
 }
 
 void mt_set_emi(const struct sdram_params *params)
 {
-	init_dram(params, LP4X_DDR3200);
-	do_calib(params);
+	u32 current_freq = LP4X_HIGH_FREQ;
+
+	init_dram(params, current_freq);
+	do_calib(params, current_freq);
+	after_calib();
 }

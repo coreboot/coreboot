@@ -148,6 +148,12 @@ void pch_iobp_update(u32 address, u32 andvalue, u32 orvalue)
 static void pch_hide_devfn(unsigned devfn)
 {
 	switch (devfn) {
+	case PCI_DEVFN(20, 0): /* xHCI */
+		if (pch_silicon_type() == PCH_TYPE_PPT) {
+			/* on CPT this bit is reserved */
+			RCBA32_OR(FD, PCH_DISABLE_XHCI);
+		}
+		break;
 	case PCI_DEVFN(22, 0): /* MEI #1 */
 		RCBA32_OR(FD2, PCH_DISABLE_MEI1);
 		break;

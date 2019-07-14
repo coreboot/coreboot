@@ -114,7 +114,7 @@ static void pch_pcie_pm_early(struct device *dev)
 	/* Adjust ASPM L1 exit latency */
 	reg32 = pci_read_config32(dev, 0x4c);
 	reg32 &= ~((1 << 17) | (1 << 16) | (1 << 15));
-	if (RCBA32(0x2320) & (1 << 16)) {
+	if (RCBA32(CIR9) & (1 << 16)) {
 		/* If RCBA+2320[15]=1 set ASPM L1 to 8-16us */
 		reg32 |= (1 << 17);
 	} else {

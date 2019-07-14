@@ -269,9 +269,9 @@ static void pch_power_options(struct device *dev)
 	outl(reg32, pmbase + 0x04);
 
 	/* Clear magic status bits to prevent unexpected wake */
-	reg32 = RCBA32(0x3310);
+	reg32 = RCBA32(PRSTS);
 	reg32 |= (1 << 4)|(1 << 5)|(1 << 0);
-	RCBA32(0x3310) = reg32;
+	RCBA32(PRSTS) = reg32;
 
 	reg32 = RCBA32(0x3f02);
 	reg32 &= ~0xf;
@@ -283,40 +283,40 @@ static void cpt_pm_init(struct device *dev)
 {
 	printk(BIOS_DEBUG, "CougarPoint PM init\n");
 	pci_write_config8(dev, 0xa9, 0x47);
-	RCBA32_AND_OR(0x2238, ~0UL, (1 << 6)|(1 << 0));
-	RCBA32_AND_OR(0x228c, ~0UL, (1 << 0));
-	RCBA16_AND_OR(0x1100, ~0UL, (1 << 13)|(1 << 14));
-	RCBA16_AND_OR(0x0900, ~0UL, (1 << 14));
-	RCBA32(0x2304) = 0xc0388400;
-	RCBA32_AND_OR(0x2314, ~0UL, (1 << 5)|(1 << 18));
-	RCBA32_AND_OR(0x2320, ~0UL, (1 << 15)|(1 << 1));
-	RCBA32_AND_OR(0x3314, ~0x1f, 0xf);
-	RCBA32(0x3318) = 0x050f0000;
-	RCBA32(0x3324) = 0x04000000;
-	RCBA32_AND_OR(0x3340, ~0UL, 0xfffff);
-	RCBA32_AND_OR(0x3344, ~0UL, (1 << 1));
-	RCBA32(0x3360) = 0x0001c000;
-	RCBA32(0x3368) = 0x00061100;
-	RCBA32(0x3378) = 0x7f8fdfff;
-	RCBA32(0x337c) = 0x000003fc;
-	RCBA32(0x3388) = 0x00001000;
-	RCBA32(0x3390) = 0x0001c000;
-	RCBA32(0x33a0) = 0x00000800;
-	RCBA32(0x33b0) = 0x00001000;
-	RCBA32(0x33c0) = 0x00093900;
-	RCBA32(0x33cc) = 0x24653002;
-	RCBA32(0x33d0) = 0x062108fe;
-	RCBA32_AND_OR(0x33d4, 0xf000f000, 0x00670060);
-	RCBA32(0x3a28) = 0x01010000;
-	RCBA32(0x3a2c) = 0x01010404;
-	RCBA32(0x3a80) = 0x01041041;
-	RCBA32_AND_OR(0x3a84, ~0x0000ffff, 0x00001001);
-	RCBA32_AND_OR(0x3a84, ~0UL, (1 << 24)); /* SATA 2/3 disabled */
-	RCBA32_AND_OR(0x3a88, ~0UL, (1 << 0));  /* SATA 4/5 disabled */
-	RCBA32(0x3a6c) = 0x00000001;
+	RCBA32_AND_OR(CIR30, ~0UL, (1 << 6)|(1 << 0));
+	RCBA32_AND_OR(CIR5, ~0UL, (1 << 0));
+	RCBA16_AND_OR(CIR3, ~0UL, (1 << 13)|(1 << 14));
+	RCBA16_AND_OR(CIR2, ~0UL, (1 << 14));
+	RCBA32(DMC) = 0xc0388400;
+	RCBA32_AND_OR(CIR6, ~0UL, (1 << 5)|(1 << 18));
+	RCBA32_AND_OR(CIR9, ~0UL, (1 << 15)|(1 << 1));
+	RCBA32_AND_OR(CIR7, ~0x1f, 0xf);
+	RCBA32(PM_CFG) = 0x050f0000;
+	RCBA32(CIR8) = 0x04000000;
+	RCBA32_AND_OR(CIR10, ~0UL, 0xfffff);
+	RCBA32_AND_OR(CIR11, ~0UL, (1 << 1));
+	RCBA32(CIR12) = 0x0001c000;
+	RCBA32(CIR14) = 0x00061100;
+	RCBA32(CIR15) = 0x7f8fdfff;
+	RCBA32(CIR13) = 0x000003fc;
+	RCBA32(CIR16) = 0x00001000;
+	RCBA32(CIR18) = 0x0001c000;
+	RCBA32(CIR17) = 0x00000800;
+	RCBA32(CIR23) = 0x00001000;
+	RCBA32(CIR19) = 0x00093900;
+	RCBA32(CIR20) = 0x24653002;
+	RCBA32(CIR21) = 0x062108fe;
+	RCBA32_AND_OR(CIR22, 0xf000f000, 0x00670060);
+	RCBA32(CIR24) = 0x01010000;
+	RCBA32(CIR25) = 0x01010404;
+	RCBA32(CIR27) = 0x01041041;
+	RCBA32_AND_OR(CIR28, ~0x0000ffff, 0x00001001);
+	RCBA32_AND_OR(CIR28, ~0UL, (1 << 24)); /* SATA 2/3 disabled */
+	RCBA32_AND_OR(CIR29, ~0UL, (1 << 0));  /* SATA 4/5 disabled */
+	RCBA32(CIR26) = 0x00000001;
 	RCBA32_AND_OR(0x2344, 0x00ffff00, 0xff00000c);
 	RCBA32_AND_OR(0x80c, ~(0xff << 20), 0x11 << 20);
-	RCBA32(0x33c8) = 0;
+	RCBA32(PMSYNC_CFG) = 0;
 	RCBA32_AND_OR(0x21b0, ~0UL, 0xf);
 }
 
@@ -325,41 +325,41 @@ static void ppt_pm_init(struct device *dev)
 {
 	printk(BIOS_DEBUG, "PantherPoint PM init\n");
 	pci_write_config8(dev, 0xa9, 0x47);
-	RCBA32_AND_OR(0x2238, ~0UL, (1 << 0));
-	RCBA32_AND_OR(0x228c, ~0UL, (1 << 0));
-	RCBA16_AND_OR(0x1100, ~0UL, (1 << 13)|(1 << 14));
-	RCBA16_AND_OR(0x0900, ~0UL, (1 << 14));
-	RCBA32(0x2304) = 0xc03b8400;
-	RCBA32_AND_OR(0x2314, ~0UL, (1 << 5)|(1 << 18));
-	RCBA32_AND_OR(0x2320, ~0UL, (1 << 15)|(1 << 1));
-	RCBA32_AND_OR(0x3314, ~0x1f, 0xf);
-	RCBA32(0x3318) = 0x054f0000;
-	RCBA32(0x3324) = 0x04000000;
-	RCBA32_AND_OR(0x3340, ~0UL, 0xfffff);
-	RCBA32_AND_OR(0x3344, ~0UL, (1 << 1)|(1 << 0));
-	RCBA32(0x3360) = 0x0001c000;
-	RCBA32(0x3368) = 0x00061100;
-	RCBA32(0x3378) = 0x7f8fdfff;
-	RCBA32(0x337c) = 0x000003fd;
-	RCBA32(0x3388) = 0x00001000;
-	RCBA32(0x3390) = 0x0001c000;
-	RCBA32(0x33a0) = 0x00000800;
-	RCBA32(0x33b0) = 0x00001000;
-	RCBA32(0x33c0) = 0x00093900;
-	RCBA32(0x33cc) = 0x24653002;
-	RCBA32(0x33d0) = 0x067388fe;
-	RCBA32_AND_OR(0x33d4, 0xf000f000, 0x00670060);
-	RCBA32(0x3a28) = 0x01010000;
-	RCBA32(0x3a2c) = 0x01010404;
-	RCBA32(0x3a80) = 0x01040000;
-	RCBA32_AND_OR(0x3a84, ~0x0000ffff, 0x00001001);
-	RCBA32_AND_OR(0x3a84, ~0UL, (1 << 24)); /* SATA 2/3 disabled */
-	RCBA32_AND_OR(0x3a88, ~0UL, (1 << 0));  /* SATA 4/5 disabled */
-	RCBA32(0x3a6c) = 0x00000001;
+	RCBA32_AND_OR(CIR30, ~0UL, (1 << 0));
+	RCBA32_AND_OR(CIR5, ~0UL, (1 << 0));
+	RCBA16_AND_OR(CIR3, ~0UL, (1 << 13)|(1 << 14));
+	RCBA16_AND_OR(CIR2, ~0UL, (1 << 14));
+	RCBA32(DMC) = 0xc03b8400;
+	RCBA32_AND_OR(CIR6, ~0UL, (1 << 5)|(1 << 18));
+	RCBA32_AND_OR(CIR9, ~0UL, (1 << 15)|(1 << 1));
+	RCBA32_AND_OR(CIR7, ~0x1f, 0xf);
+	RCBA32(PM_CFG) = 0x054f0000;
+	RCBA32(CIR8) = 0x04000000;
+	RCBA32_AND_OR(CIR10, ~0UL, 0xfffff);
+	RCBA32_AND_OR(CIR11, ~0UL, (1 << 1)|(1 << 0));
+	RCBA32(CIR12) = 0x0001c000;
+	RCBA32(CIR14) = 0x00061100;
+	RCBA32(CIR15) = 0x7f8fdfff;
+	RCBA32(CIR13) = 0x000003fd;
+	RCBA32(CIR16) = 0x00001000;
+	RCBA32(CIR18) = 0x0001c000;
+	RCBA32(CIR17) = 0x00000800;
+	RCBA32(CIR23) = 0x00001000;
+	RCBA32(CIR19) = 0x00093900;
+	RCBA32(CIR20) = 0x24653002;
+	RCBA32(CIR21) = 0x067388fe;
+	RCBA32_AND_OR(CIR22, 0xf000f000, 0x00670060);
+	RCBA32(CIR24) = 0x01010000;
+	RCBA32(CIR25) = 0x01010404;
+	RCBA32(CIR27) = 0x01040000;
+	RCBA32_AND_OR(CIR28, ~0x0000ffff, 0x00001001);
+	RCBA32_AND_OR(CIR28, ~0UL, (1 << 24)); /* SATA 2/3 disabled */
+	RCBA32_AND_OR(CIR29, ~0UL, (1 << 0));  /* SATA 4/5 disabled */
+	RCBA32(CIR26) = 0x00000001;
 	RCBA32_AND_OR(0x2344, 0x00ffff00, 0xff00000c);
 	RCBA32_AND_OR(0x80c, ~(0xff << 20), 0x11 << 20);
 	RCBA32_AND_OR(0x33a4, ~0UL, (1 << 0));
-	RCBA32(0x33c8) = 0;
+	RCBA32(PMSYNC_CFG) = 0;
 	RCBA32_AND_OR(0x21b0, ~0UL, 0xf);
 }
 
@@ -385,7 +385,7 @@ static void enable_clock_gating(struct device *dev)
 	u32 reg32;
 	u16 reg16;
 
-	RCBA32_AND_OR(0x2234, ~0UL, 0xf);
+	RCBA32_AND_OR(DMIC, ~0UL, 0xf);
 
 	reg16 = pci_read_config16(dev, GEN_PMCON_1);
 	reg16 |= (1 << 2) | (1 << 11);
@@ -453,9 +453,9 @@ static void pch_fixups(struct device *dev)
 	/*
 	 * Enable DMI ASPM in the PCH
 	 */
-	RCBA32_AND_OR(0x2304, ~(1 << 10), 0);
-	RCBA32_OR(0x21a4, (1 << 11)|(1 << 10));
-	RCBA32_OR(0x21a8, 0x3);
+	RCBA32_AND_OR(DMC, ~(1 << 10), 0);
+	RCBA32_OR(LCAP, (1 << 11)|(1 << 10));
+	RCBA32_OR(LCTL, 0x3);
 }
 
 static void pch_decode_init(struct device *dev)

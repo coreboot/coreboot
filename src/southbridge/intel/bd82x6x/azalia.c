@@ -242,11 +242,11 @@ static void azalia_init(struct device *dev)
 	base = res2mmio(res, 0, 0);
 	printk(BIOS_DEBUG, "Azalia: base = %08x\n", (u32)base);
 
-	if (RCBA32(0x2030) & (1 << 31)) {
+	if (RCBA32(CIR31) & (1 << 31)) {
 		reg32 = pci_read_config32(dev, 0x120);
 		reg32 &= 0xf8ffff01;
 		reg32 |= (1 << 24); // 2 << 24 for server
-		reg32 |= RCBA32(0x2030) & 0xfe;
+		reg32 |= RCBA32(CIR31) & 0xfe;
 		pci_write_config32(dev, 0x120, reg32);
 
 		reg16 = pci_read_config16(dev, 0x78);

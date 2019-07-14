@@ -72,24 +72,24 @@ write_iobp(u32 address, u32 val)
 void early_pch_init_native_dmi_pre(void)
 {
 	/* Link Capabilities Register */
-	RCBA32(0x21a4) = (RCBA32(0x21a4) & ~0x3fc00) |
+	RCBA32(LCAP) = (RCBA32(LCAP) & ~0x3fc00) |
 			 (3 << 10) | // L0s and L1 entry supported
 			 (2 << 12) | // L0s 128 ns to less than 256 ns
 			 (2 << 15);  // L1 2 us to less than 4 us
 
 	RCBA32(0x2340) = (RCBA32(0x2340) & ~0xff0000) | (0x3a << 16);
-	RCBA8(0x21b0) = (RCBA8(0x21b0) & ~0xf) | 2;
+	RCBA8(DLCTL2) = (RCBA8(DLCTL2) & ~0xf) | 2;
 }
 
 void early_pch_init_native_dmi_post(void)
 {
-	RCBA32(0x0050);	// !!! = 0x01200654
-	RCBA32(0x0050) = 0x01200654;
-	RCBA32(0x0050);	// !!! = 0x01200654
-	RCBA32(0x0050) = 0x012a0654;
-	RCBA32(0x0050);	// !!! = 0x012a0654
-	RCBA8(0x1114);	// !!! = 0x00
-	RCBA8(0x1114) = 0x05;
+	RCBA32(CIR0);	// !!! = 0x01200654
+	RCBA32(CIR0) = 0x01200654;
+	RCBA32(CIR0);	// !!! = 0x01200654
+	RCBA32(CIR0) = 0x012a0654;
+	RCBA32(CIR0);	// !!! = 0x012a0654
+	RCBA8(UPDCR);	// !!! = 0x00
+	RCBA8(UPDCR) = 0x05;
 
 	/*
 	 * Virtual Channel resources must match settings in DMIBAR!
@@ -106,42 +106,42 @@ void early_pch_init_native_dmi_post(void)
 	 * Map TC0 and TC3 and TC4 to VC0.
 	 */
 
-	RCBA32(0x2014) = (1 << 31) | (0 << 24) | (0x0c << 1) | 1;
+	RCBA32(V0CTL) = (1 << 31) | (0 << 24) | (0x0c << 1) | 1;
 
 	/* Virtual Channel 1 Resource Control Register.
 	 * Enable channel.
 	 * Set Virtual Channel Identifier.
 	 * Map TC1 and TC5 to VC1.
 	 */
-	RCBA32(0x2020) = (1 << 31) | (1 << 24) | (0x11 << 1);
+	RCBA32(V1CTL) = (1 << 31) | (1 << 24) | (0x11 << 1);
 	/* Read back register */
-	RCBA32(0x2020);
+	RCBA32(V1CTL);
 
 	/* Virtual Channel private Resource Control Register.
 	 * Enable channel.
 	 * Set Virtual Channel Identifier.
 	 * Map TC2 and TC6 to VCp.
 	 */
-	RCBA32(0x2030) = (1 << 31) | (2 << 24) | (0x22 << 1);
+	RCBA32(CIR31) = (1 << 31) | (2 << 24) | (0x22 << 1);
 	/* Read back register */
-	RCBA32(0x2030);
+	RCBA32(CIR31);
 
 	/* Virtual Channel ME Resource Control Register.
 	 * Enable channel.
 	 * Set Virtual Channel Identifier.
 	 * Map TC7 to VCm.
 	 */
-	RCBA32(0x2040) = (1 << 31) | (7 << 24) | (0x40 << 1);
+	RCBA32(CIR32) = (1 << 31) | (7 << 24) | (0x40 << 1);
 
 	/* Lock Virtual Channel Resource control register. */
-	RCBA32(0x0050) |= 0x80000000;
+	RCBA32(CIR0) |= TCLOCKDN;
 	/* Read back register */
-	RCBA32(0x0050);
+	RCBA32(CIR0);
 
 	/* Wait for virtual channels negotiation pending */
-	while (RCBA16(0x201a) & VCNEGPND)
+	while (RCBA16(V0STS) & VCNEGPND)
 		;
-	while (RCBA16(0x2026) & VCNEGPND)
+	while (RCBA16(V1STS) & VCNEGPND)
 		;
 	while (RCBA16(0x2036) & VCNEGPND)
 		;
@@ -155,17 +155,17 @@ early_pch_init_native (void)
 	pci_write_config8 (SOUTHBRIDGE, 0xa6,
 			    pci_read_config8 (SOUTHBRIDGE, 0xa6) | 2);
 
-	RCBA32(0x2088) = 0x00109000;
-	RCBA32(0x20ac); // !!! = 0x00000000
-	RCBA32(0x20ac) = 0x40000000;
+	RCBA32(CIR1) = 0x00109000;
+	RCBA32(REC); // !!! = 0x00000000
+	RCBA32(REC) = 0x40000000;
 	RCBA32(0x100c) = 0x01110000;
 	RCBA8(0x2340) = 0x1b;
-	RCBA32(0x2314); // !!! = 0x0a080000
-	RCBA32(0x2314) = 0x0a280000;
+	RCBA32(CIR6); // !!! = 0x0a080000
+	RCBA32(CIR6) = 0x0a280000;
 	RCBA32(0x2310); // !!! = 0xc809605b
 	RCBA32(0x2310) = 0xa809605b;
-	RCBA32(0x2324) = 0x00854c74;
-	RCBA8(0x0400);  // !!! = 0x00
+	RCBA32(DMC2) = 0x00854c74;
+	RCBA8(RPC);  // !!! = 0x00
 	RCBA32(0x2310); // !!! = 0xa809605b
 	RCBA32(0x2310) = 0xa809605b;
 	RCBA32(0x2310); // !!! = 0xa809605b

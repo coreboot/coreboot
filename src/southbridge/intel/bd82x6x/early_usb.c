@@ -39,7 +39,7 @@ void early_usb_init(const struct southbridge_usb_port *portmap)
 	write_pmbase16(UPRWC, read_pmbase16(UPRWC) | UPRWC_WR_EN);
 
 	for (i = 0; i < 14; i++)
-		RCBA32(0x3500 + 4 * i) = currents[portmap[i].current];
+		RCBA32(USBIR0 + 4 * i) = currents[portmap[i].current];
 	for (i = 0; i < 10; i++)
 		RCBA32(0x3538 + 4 * i) = 0;
 

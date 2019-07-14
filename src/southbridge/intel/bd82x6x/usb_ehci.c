@@ -28,9 +28,9 @@ static void usb_ehci_init(struct device *dev)
 	u32 reg32;
 
 	/* Disable Wake on Disconnect in RMH */
-	reg32 = RCBA32(0x35b0);
+	reg32 = RCBA32(RMHWKCTL);
 	reg32 |= 0x22;
-	RCBA32(0x35b0) = reg32;
+	RCBA32(RMHWKCTL) = reg32;
 
 	printk(BIOS_DEBUG, "EHCI: Setting up controller.. ");
 

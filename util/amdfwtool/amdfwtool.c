@@ -211,7 +211,7 @@ static void usage(void)
 	printf("-H | --apob-nv-size <HEX_VAL>  Size of S3 resume data\n");
 	printf("-y | --pmu-inst <FILE>         Add PMU firmware instruction portion\n");
 	printf("-G | --pmu-data <FILE>         Add PMU firmware data portion\n");
-	printf("-u | --ucode <FILE>            Add microcode patch\n");
+	printf("-O | --ucode <FILE>            Add microcode patch\n");
 	printf("-X | --mp2-config <FILE>       Add MP2 configuration\n");
 	printf("-V | --bios-bin <FILE>         Add compressed image; auto source address\n");
 	printf("-e | --bios-bin-src <HEX_VAL>  Address in flash of source if -V not used\n");
@@ -493,6 +493,7 @@ static void *new_psp_dir(context *ctx, int multi)
 	return ptr;
 }
 
+#if PSP_COMBO
 static void *new_combo_dir(context *ctx)
 {
 	void *ptr;
@@ -503,6 +504,7 @@ static void *new_combo_dir(context *ctx)
 			+ MAX_COMBO_ENTRIES * sizeof(psp_combo_entry);
 	return ptr;
 }
+#endif
 
 static void fill_dir_header(void *directory, uint32_t count, uint32_t cookie)
 {
@@ -800,7 +802,7 @@ static void integrate_bios_firmwares(context *ctx,
 					uint32_t cookie)
 {
 	ssize_t bytes;
-	unsigned int i, j, count;
+	unsigned int i, count;
 	int level;
 
 	/* This function can create a primary table, a secondary table, or a
@@ -1090,7 +1092,7 @@ static void register_bdt_data(amd_bios_type type, int sub, int ins, char name[])
 	}
 }
 
-static void register_fw_addr(amd_fw_type type, char *src_str,
+static void register_fw_addr(amd_bios_type type, char *src_str,
 					char *dst_str, char *size_str)
 {
 	int i;

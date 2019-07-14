@@ -40,7 +40,7 @@ static void codecs_init(u8 *base, u32 codec_mask)
 
 static void mb_hda_codec_init(void *unused)
 {
-	static struct soc_intel_skylake_config *config;
+	struct soc_intel_skylake_config *config;
 	u8 *base;
 	struct resource *res;
 	u32 codec_mask;

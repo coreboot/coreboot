@@ -232,7 +232,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 {
 	FSP_S_CONFIG *params = &supd->FspsConfig;
 	FSP_S_TEST_CONFIG *tconfig = &supd->FspsTestConfig;
-	static struct soc_intel_skylake_config *config;
+	struct soc_intel_skylake_config *config;
 	struct device *dev;
 	uintptr_t vbt_data = (uintptr_t)vbt_get();
 	int i;

@@ -294,7 +294,7 @@ static void pcie_override_devicetree_after_silicon_init(void)
 /* Configure package power limits */
 static void set_power_limits(void)
 {
-	static struct soc_intel_apollolake_config *cfg;
+	struct soc_intel_apollolake_config *cfg;
 	msr_t rapl_msr_reg, limit;
 	uint32_t power_unit;
 	uint32_t tdp, min_power, max_power;
@@ -361,7 +361,7 @@ static void set_power_limits(void)
 /* Overwrites the SCI IRQ if another IRQ number is given by device tree. */
 static void set_sci_irq(void)
 {
-	static struct soc_intel_apollolake_config *cfg;
+	struct soc_intel_apollolake_config *cfg;
 	uint32_t scis;
 
 	cfg = config_of_path(SA_DEVFN_ROOT);
@@ -666,7 +666,7 @@ void __weak mainboard_devtree_update(struct device *dev)
 void platform_fsp_silicon_init_params_cb(FSPS_UPD *silupd)
 {
 	FSP_S_CONFIG *silconfig = &silupd->FspsConfig;
-	static struct soc_intel_apollolake_config *cfg;
+	struct soc_intel_apollolake_config *cfg;
 	struct device *dev;
 
 	/* Load VBT before devicetree-specific config. */

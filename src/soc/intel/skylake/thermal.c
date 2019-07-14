@@ -62,7 +62,7 @@ static void pch_thermal_set_bar(struct device *dev, uintptr_t tempbar)
 /* PCH Low Temp Threshold (LTT) */
 static uint16_t pch_get_ltt_value(struct device *dev)
 {
-	static struct soc_intel_skylake_config *config;
+	struct soc_intel_skylake_config *config;
 	uint16_t ltt_value;
 	uint16_t trip_temp = DEFAULT_TRIP_TEMP;
 

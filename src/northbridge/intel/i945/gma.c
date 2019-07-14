@@ -703,9 +703,8 @@ static void gma_func0_init(struct device *dev)
 	pci_write_config32(dev, PCI_COMMAND, reg32 | PCI_COMMAND_MASTER
 		 | PCI_COMMAND_IO | PCI_COMMAND_MEMORY);
 
-	int vga_disable = (pci_read_config16(dev, GGC) & 2) >> 1;
-
 	if (CONFIG(MAINBOARD_DO_NATIVE_VGA_INIT)) {
+		int vga_disable = (pci_read_config16(dev, GGC) & 2) >> 1;
 		if (acpi_is_wakeup_s3()) {
 			printk(BIOS_INFO,
 				"Skipping native VGA initialization when resuming from ACPI S3.\n");

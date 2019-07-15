@@ -1,4 +1,6 @@
-t60,magi-5|magi-7|austin-3
+t60,magi (dGPU) | lisa (iGPU)
+z61m,BW2
+z61t,BV2
 t400,malibu-3
 t400s,shinai
 t410,nozomi-1
@@ -16,13 +18,18 @@ w510,kendo-1 workstation
 w520,kendo-3 workstation
 w530,kendo-4 workstation
 w700,n-note
+w701,n-note 3.0 (nico-3)
 x1_carbon_gen1,genesis-1
 x60,ks note
 x61,ks note-3
 x200,mocha-1
+x200s,pecan-1
+x200t,caramel-1
 x201,mocha-3
 x220,dasher-1
+x220t,comet-1
 x230,dasher-2
+x230t,comet-2
 x230s,rogue-1
 x240,rogue-2
 x300,kodachi

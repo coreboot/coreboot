@@ -15,3 +15,7 @@ config BOARD_GOOGLE_KODAMA
 config BOARD_GOOGLE_FLAPJACK
 	bool "->  Flapjack"
 	select BOARD_GOOGLE_KUKUI_COMMON
+
+config BOARD_GOOGLE_JACUZZI
+	bool "->  Jacuzzi"
+	select BOARD_GOOGLE_KUKUI_COMMON

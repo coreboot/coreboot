@@ -51,4 +51,7 @@ void variant_update_devtree(struct device *dev);
 /* Get no touchscreen SKU ID. */
 bool no_touchscreen_sku(uint32_t sku_id);
 
+/* allow each variants to customize smi sleep flow. */
+void variant_smi_sleep(u8 slp_typ);
+
 #endif /* BASEBOARD_VARIANTS_H */

@@ -21,6 +21,7 @@
 #include <device/pci_ops.h>
 #include <cbmem.h>
 #include <console/console.h>
+#include <lib.h>
 
 #include "vx900.h"
 
@@ -78,12 +79,16 @@ void vx900_set_chrome9hd_fb_size(u32 size_mb)
 		size_mb = max_size_mb;
 	}
 
-	/* Now round the framebuffer size to the closest power of 2 */
-	u8 fb_pow = 0;
-	while (size_mb >> fb_pow)
-		fb_pow++;
-	fb_pow--;
-	size_mb = (1 << fb_pow);
+	/* Now round down the framebuffer size to the closest power of 2 */
+	if (size_mb == 0)
+		die("Framebuffer size is 0\n");
+
+	int fb_pow = log2(size_mb);
+
+	size_mb = 1U << fb_pow;
+
+	if (size_mb < CHROME_9_HD_MIN_FB_SIZE || size_mb > CHROME_9_HD_MAX_FB_SIZE)
+		die("Framebuffer size %u is out of range\n", size_mb);
 
 	pci_update_config8(MCU, 0xa1, ~(7 << 4), (fb_pow - 2) << 4);
 }

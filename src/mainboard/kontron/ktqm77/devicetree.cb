@@ -40,7 +40,6 @@ chip northbridge/intel/sandybridge
 			register "pcie_port_coalesce" = "0"
 
 			register "c2_latency" = "101"  # c2 not supported
-			register "p_cnt_throttling_supported" = "1"
 
 			register "xhci_switchable_ports"	= "0x0f"
 			register "superspeed_capable_ports"	= "0x0f"

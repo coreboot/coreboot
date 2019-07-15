@@ -34,7 +34,6 @@ chip northbridge/intel/sandybridge
 			register "c2_latency" = "0x0065"
 			register "docking_supported" = "0"
 			register "gen1_dec" = "0x000c0291"		# HWM
-			register "p_cnt_throttling_supported" = "0"
 			register "pcie_hotplug_map" = "{ 0, 0, 0, 0, 0, 0, 0, 0 }"
 			register "sata_interface_speed_support" = "0x3"
 			register "sata_port_map" = "0x33"

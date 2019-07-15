@@ -21,7 +21,6 @@ chip northbridge/intel/sandybridge
 			register "docking_supported" = "0"
 			register "gen1_dec" = "0x000c0291"
 			register "gen2_dec" = "0x000c0a01"
-			register "p_cnt_throttling_supported" = "1"
 			register "pcie_port_coalesce" = "1"
 			register "sata_interface_speed_support" = "0x3"
 			register "sata_port_map" = "0x33"

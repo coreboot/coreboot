@@ -48,7 +48,6 @@ chip northbridge/intel/sandybridge
 			register "sata_port_map" = "0x3"
 
 			register "c2_latency" = "1"
-			register "p_cnt_throttling_supported" = "0"
 
 			register "gen1_dec" = "0x00fc1601"
 			# SuperIO range is 0x700-0x73f

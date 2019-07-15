@@ -39,7 +39,6 @@ chip northbridge/intel/sandybridge
 			register "sata_interface_speed_support" = "0x3"
 
 			register "pcie_port_coalesce" = "0"
-			register "p_cnt_throttling_supported" = "0"
 			register "docking_supported" = "0"
 			register "c2_latency" = "0x0065"
 

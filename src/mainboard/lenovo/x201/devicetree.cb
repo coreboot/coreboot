@@ -68,7 +68,6 @@ chip northbridge/intel/nehalem
 			register "gen3_dec" = "0x1c1681"
 			register "gen4_dec" = "0x040069"
 
-			register "p_cnt_throttling_supported" = "1"
 			register "c2_latency" = "1"
 			register "docking_supported" = "1"
 

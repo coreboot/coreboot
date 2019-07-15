@@ -1,0 +1,100 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2013-2014 Sage Electronic Engineering, LLC.
+## Copyright (C) 2018-2019 Eltan B.V.
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; version 2 of the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+
+if BOARD_PORTWELL_M107
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select BOARD_ROMSIZE_KB_8192
+	select HAVE_ACPI_TABLES
+	select HAVE_OPTION_TABLE
+	select SOC_INTEL_BRASWELL
+	select PCIEXP_L1_SUB_STATE
+	select HAVE_FSP_BIN
+	select CACHE_MRC_SETTINGS
+	select DISABLE_HPET
+	select GENERIC_SPD_BIN
+
+choice
+	prompt "Onboard memory manufacturer"
+	default ONBOARD_MEM_MICRON
+
+config ONBOARD_MEM_SAMSUNG
+	bool "Samsung"
+	help
+	  Samsung K4B8G1646D memory
+
+config ONBOARD_MEM_MICRON
+	bool "Micron"
+	help
+	  Micron MT41K512M16HA memory
+endchoice
+
+config MAINBOARD_DIR
+	string
+	default portwell/m107
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "PQ7-M107"
+
+config CBFS_SIZE
+	hex
+	default 0x00800000
+
+config CPU_MICROCODE_CBFS_LEN
+	hex
+	default 0x10C00
+	help
+	  This should be updated when the microcode patch changes.
+
+config CPU_MICROCODE_CBFS_LOC
+	hex
+	default 0xFFFE9400
+
+config MRC_SETTINGS_CACHE_SIZE
+	hex
+	default 0x08000
+
+config FSP_LOC
+	hex
+	default 0xfff9c000
+
+config BOOTBLOCK_LOC
+	hex
+	default 0xFFFF0000
+
+config BOOTBLOCK_SIZE
+	hex
+	default 0x10000
+
+config SPI_FLASH_INCLUDE_ALL_DRIVERS
+	bool
+	default n
+
+config SPI_FLASH_WINBOND
+	bool
+	default y
+
+config C_ENV_BOOTBLOCK_SIZE
+	hex "C Bootblock Size"
+	default 0x4000
+
+config DRIVERS_INTEL_WIFI
+	bool
+	default n
+
+endif # BOARD_PORTWELL_M107

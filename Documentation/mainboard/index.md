@@ -69,6 +69,10 @@ The boards in this section are not real mainboards, but emulators.
 - [T4xx common](lenovo/t4xx_series.md)
 - [X2xx common](lenovo/x2xx_series.md)
 
+## Portwell
+
+- [PQ7-M107](portwell/pq7-m107.md)
+
 ### Sandy Bridge series
 
 - [T420](lenovo/t420.md)

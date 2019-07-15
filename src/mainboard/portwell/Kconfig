@@ -1,0 +1,16 @@
+if VENDOR_PORTWELL
+
+choice
+	prompt "Mainboard model"
+
+source "src/mainboard/portwell/*/Kconfig.name"
+
+endchoice
+
+source "src/mainboard/portwell/*/Kconfig"
+
+config MAINBOARD_VENDOR
+	string
+	default "Portwell"
+
+endif # VENDOR_PORTWELL

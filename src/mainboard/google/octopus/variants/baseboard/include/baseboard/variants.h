@@ -26,6 +26,7 @@
 const struct pad_config *variant_base_gpio_table(size_t *num);
 const struct pad_config *variant_override_gpio_table(size_t *num);
 const struct pad_config *variant_early_gpio_table(size_t *num);
+const struct pad_config *variant_early_override_gpio_table(size_t *num);
 const struct pad_config *variant_sleep_gpio_table(size_t *num, int slp_typ);
 
 /* Baseboard default swizzle. Can be reused if swizzle is same. */

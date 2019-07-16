@@ -8,7 +8,6 @@
 #include <romstage_handoff.h>
 #include <soc/acpi.h>
 #include <soc/cpu.h>
-#include <soc/northbridge.h>
 #include <soc/pci_devs.h>
 #include <soc/southbridge.h>
 #include "chip.h"

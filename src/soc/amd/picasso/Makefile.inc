@@ -48,7 +48,6 @@ ramstage-y += mca.c
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi.c
 ramstage-y += gpio.c
 ramstage-y += southbridge.c
-ramstage-y += northbridge.c
 ramstage-y += pmutil.c
 ramstage-y += acp.c
 ramstage-y += sata.c

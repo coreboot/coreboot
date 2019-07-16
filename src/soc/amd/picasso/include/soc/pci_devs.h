@@ -89,48 +89,6 @@
 #define HDA1_DEVFN		PCI_DEVFN(HDA1_DEV, HDA1_FUNC)
 #define SOC_HDA1_DEV		_SOC_DEV(HDA1_DEV, HDA1_FUNC)
 
-/* HT Configuration */
-#define HT_DEV			0x18
-#define HT_FUNC			0
-#define HT_DEVID		0x15b0
-#define HT_DEVFN		PCI_DEVFN(HT_DEV, HT_FUNC)
-#define SOC_HT_DEV		_SOC_DEV(HT_DEV, HT_FUNC)
-
-/* Address Maps */
-#define ADDR_DEV		0x18
-#define ADDR_FUNC		1
-#define ADDR_DEVID		0x15b1
-#define ADDR_DEVFN		PCI_DEVFN(ADDR_DEV, ADDR_FUNC)
-#define SOC_ADDR_DEV		_SOC_DEV(ADDR_DEV, ADDR_FUNC)
-
-/* DRAM Configuration */
-#define DCT_DEV			0x18
-#define DCT_FUNC		2
-#define DCT_DEVID		0x15b2
-#define DCT_DEVFN		PCI_DEVFN(DCT_DEV, DCT_FUNC)
-#define SOC_DCT_DEV		_SOC_DEV(DCT_DEV, DCT_FUNC)
-
-/* Misc. Configuration */
-#define MISC_DEV		0x18
-#define MISC_FUNC		3
-#define MISC_DEVID		0x15b3
-#define MISC_DEVFN		PCI_DEVFN(MISC_DEV, MISC_FUNC)
-#define SOC_MISC_DEV		_SOC_DEV(MISC_DEV, MISC_FUNC)
-
-/* PM Configuration */
-#define PM_DEV			0x18
-#define PM_FUNC			4
-#define PM_DEVID		0x15b4
-#define PM_DEVFN		PCI_DEVFN(PM_DEV, PM_FUNC)
-#define SOC_PM_DEV		_SOC_DEV(PM_DEV, PM_FUNC)
-
-/* Northbridge Configuration */
-#define NB_DEV			0x18
-#define NB_FUNC			5
-#define NB_DEVID		0x15b5
-#define NB_DEVFN		PCI_DEVFN(NB_DEV, NB_FUNC)
-#define SOC_NB_DEV		_SOC_DEV(NB_DEV, NB_FUNC)
-
 /* USB 3.1 */
 #define XHCI0_DEV		0x0
 #define XHCI0_FUNC		3

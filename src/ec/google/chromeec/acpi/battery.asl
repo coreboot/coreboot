@@ -194,7 +194,7 @@ Method (BBST, 4, Serialized)
 	Store (Local1, Index (Arg1, 0))
 
 	// Notify if battery state has changed since last time
-	If (LNotEqual (Local1, Arg2)) {
+	If (LNotEqual (Local1, DeRefOf (Arg2))) {
 		Store (Local1, Arg2)
 		If (LEqual(Arg0, 0)) {
 			Notify (BAT0, 0x80)
@@ -326,7 +326,7 @@ Device (BAT0)
 
 	Method (_BST, 0, Serialized)
 	{
-		Return (BBST (0, PBST, BSTP, BFWK))
+		Return (BBST (0, PBST, RefOf (BSTP), BFWK))
 	}
 }
 
@@ -416,7 +416,7 @@ Device (BAT1)
 
 	Method (_BST, 0, Serialized)
 	{
-		Return (BBST (1, PBST, BSTP, BFWK))
+		Return (BBST (1, PBST, RefOf (BSTP), BFWK))
 	}
 }
 #endif

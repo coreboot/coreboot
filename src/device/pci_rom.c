@@ -192,7 +192,7 @@ static struct rom_header *check_initialized(struct device *dev)
 		return NULL;
 
 	rom_data = (struct pci_data *)((u8 *)run_rom
-			+ read_le32(&run_rom->data));
+			+ read_le16(&run_rom->data));
 
 	if (read_le32(&rom_data->signature) == PCI_DATA_HDR
 			&& read_le16(&rom_data->device) == dev->device

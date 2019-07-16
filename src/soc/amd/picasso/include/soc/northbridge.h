@@ -73,10 +73,6 @@
 #define D18F1_VGAEN		0xf4
 # define VGA_ADDR_ENABLE	(1 << 0)
 
-/* D18F5 */
-#define NB_CAPABILITIES2	0x84
-#define   CMP_CAP_MASK		0xff
-
 void amd_initcpuio(void);
 
 void domain_enable_resources(struct device *dev);

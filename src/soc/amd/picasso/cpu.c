@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2015-2016 Intel Corp.
- * Copyright (C) 2017 Advanced Micro Devices, Inc.
+ * Copyright (C) 2017-2019 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,10 +54,9 @@ static void pre_mp_init(void)
 	x86_mtrr_check();
 }
 
-static int get_cpu_count(void)
+int get_cpu_count(void)
 {
-	return (pci_read_config16(SOC_HT_DEV, D18F0_CPU_CNT) & CPU_CNT_MASK)
-									+ 1;
+	return 1 + (cpuid_ecx(0x80000008) & 0xff);
 }
 
 static void get_smm_info(uintptr_t *perm_smbase, size_t *perm_smsize,
@@ -118,22 +117,22 @@ void picasso_init_cpus(struct device *dev)
 	set_warm_reset_flag();
 }
 
-static void model_15_init(struct device *dev)
+static void model_17_init(struct device *dev)
 {
 	check_mca();
 	setup_lapic();
 }
 
 static struct device_operations cpu_dev_ops = {
-	.init = model_15_init,
+	.init = model_17_init,
 };
 
 static struct cpu_device_id cpu_table[] = {
-	{ X86_VENDOR_AMD, 0x670f00 },
+	{ X86_VENDOR_AMD, 0x810f81 },
 	{ 0, 0 },
 };
 
-static const struct cpu_driver model_15 __cpu_driver = {
+static const struct cpu_driver model_17 __cpu_driver = {
 	.ops      = &cpu_dev_ops,
 	.id_table = cpu_table,
 };

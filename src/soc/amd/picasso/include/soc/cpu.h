@@ -22,6 +22,7 @@
 #define SOC_EARLY_VMTRR_TEMPRAM 2
 
 void picasso_init_cpus(struct device *dev);
+int get_cpu_count(void);
 void check_mca(void);
 
 #endif /* __PICASSO_CPU_H__ */

@@ -44,6 +44,7 @@ ramstage-y += i2c.c
 ramstage-y += chip.c
 ramstage-y += cpu.c
 ramstage-y += data_fabric_util.c
+ramstage-y += root_complex.c
 ramstage-y += mca.c
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi.c
 ramstage-y += gpio.c

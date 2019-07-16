@@ -254,9 +254,6 @@
 #define SATA_CAPABILITIES_REG		0xfc
 #define SATA_CAPABILITY_SPM		BIT(12)
 
-/* SPI Controller (base address in D14F3xA0) */
-#define SPI_BASE_ALIGNMENT		BIT(6)
-
 #define SPI_CNTRL0			0x00
 #define   SPI_BUSY			BIT(31)
 #define   SPI_READ_MODE_MASK		(BIT(30) | BIT(29) | BIT(18))

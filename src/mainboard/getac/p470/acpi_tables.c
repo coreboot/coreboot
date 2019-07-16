@@ -70,7 +70,7 @@ static long acpi_create_ecdt(acpi_ecdt_t * ecdt)
 
 	ecdt->gpe_bit = 23; // SCI interrupt within GPEx_STS
 
-	strncpy((char *)ecdt->ec_id, ec_id, strlen(ec_id));
+	memcpy(ecdt->ec_id, ec_id, sizeof(ec_id));
 
 	header->checksum =
 	    acpi_checksum((void *) ecdt, ecdt_len);

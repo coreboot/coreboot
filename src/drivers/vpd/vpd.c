@@ -4,6 +4,8 @@
  * found in the LICENSE file.
  */
 
+#include <arch/early_variables.h>
+#include <assert.h>
 #include <console/console.h>
 #include <cbmem.h>
 #include <fmap.h>
@@ -15,13 +17,6 @@
 #include "vpd_decode.h"
 #include "vpd_tables.h"
 
-/* Currently we only support Google VPD 2.0, which has a fixed offset. */
-enum {
-	GOOGLE_VPD_2_0_OFFSET = 0x600,
-	CROSVPD_CBMEM_MAGIC = 0x43524f53,
-	CROSVPD_CBMEM_VERSION = 0x0001,
-};
-
 struct vpd_gets_arg {
 	const uint8_t *key;
 	const uint8_t *value;
@@ -29,18 +24,12 @@ struct vpd_gets_arg {
 	int matched;
 };
 
-struct vpd_cbmem {
-	uint32_t magic;
-	uint32_t version;
-	uint32_t ro_size;
-	uint32_t rw_size;
-	uint8_t blob[0];
-	/* The blob contains both RO and RW data. It starts with RO (0 ..
-	 * ro_size) and then RW (ro_size .. ro_size+rw_size).
-	 */
-};
+struct vpd_blob g_vpd_blob CAR_GLOBAL = {0};
 
-/* returns the size of data in a VPD 2.0 formatted fmap region, or 0 */
+/*
+ * returns the size of data in a VPD 2.0 formatted fmap region, or 0.
+ * Also sets *base as the region's base address.
+ */
 static int32_t get_vpd_size(const char *fmap_name, int32_t *base)
 {
 	struct google_vpd_info info;
@@ -86,34 +75,26 @@ static int32_t get_vpd_size(const char *fmap_name, int32_t *base)
 	return size;
 }
 
-static void cbmem_add_cros_vpd(int is_recovery)
+static void vpd_get_blob(void)
 {
+	int32_t ro_vpd_base = 0;
+	int32_t rw_vpd_base = 0;
+	int32_t ro_vpd_size = get_vpd_size("RO_VPD", &ro_vpd_base);
+	int32_t rw_vpd_size = get_vpd_size("RW_VPD", &rw_vpd_base);
+
+	/* Return if no VPD at all */
+	if (ro_vpd_size == 0 && rw_vpd_size == 0)
+		return;
+
+	struct vpd_blob *blob = car_get_var_ptr(&g_vpd_blob);
+	if (!blob)
+		return;
+	blob->ro_base = NULL;
+	blob->ro_size = 0;
+	blob->rw_base = NULL;
+	blob->rw_size = 0;
+
 	struct region_device vpd;
-	struct vpd_cbmem *cbmem;
-	int32_t ro_vpd_base = 0, rw_vpd_base = 0;
-	int32_t ro_vpd_size, rw_vpd_size;
-
-	timestamp_add_now(TS_START_COPYVPD);
-
-	ro_vpd_size = get_vpd_size("RO_VPD", &ro_vpd_base);
-	rw_vpd_size = get_vpd_size("RW_VPD", &rw_vpd_base);
-
-	/* no VPD at all? nothing to do then */
-	if ((ro_vpd_size == 0) && (rw_vpd_size == 0))
-		return;
-
-	cbmem = cbmem_add(CBMEM_ID_VPD, sizeof(*cbmem) + ro_vpd_size +
-		rw_vpd_size);
-	if (!cbmem) {
-		printk(BIOS_ERR, "%s: Failed to allocate CBMEM (%u+%u).\n",
-			__func__, ro_vpd_size, rw_vpd_size);
-		return;
-	}
-
-	cbmem->magic = CROSVPD_CBMEM_MAGIC;
-	cbmem->version = CROSVPD_CBMEM_VERSION;
-	cbmem->ro_size = 0;
-	cbmem->rw_size = 0;
 
 	if (ro_vpd_size) {
 		if (fmap_locate_area_as_rdev("RO_VPD", &vpd)) {
@@ -124,20 +105,10 @@ static void cbmem_add_cros_vpd(int is_recovery)
 		}
 		rdev_chain(&vpd, &vpd, GOOGLE_VPD_2_0_OFFSET,
 			region_device_sz(&vpd) - GOOGLE_VPD_2_0_OFFSET);
-
-
-		if (rdev_readat(&vpd, cbmem->blob, ro_vpd_base, ro_vpd_size) ==
-			ro_vpd_size) {
-			cbmem->ro_size = ro_vpd_size;
-		} else {
-			printk(BIOS_ERR,
-				"%s: Reading RO_VPD FMAP section failed.\n",
-				__func__);
-			ro_vpd_size = 0;
-		}
-		timestamp_add_now(TS_END_COPYVPD_RO);
+		blob->ro_base = (uint8_t *)(rdev_mmap_full(&vpd) +
+			sizeof(struct google_vpd_info));
+		blob->ro_size = ro_vpd_size;
 	}
-
 	if (rw_vpd_size) {
 		if (fmap_locate_area_as_rdev("RW_VPD", &vpd)) {
 			/* shouldn't happen, but let's be extra defensive */
@@ -147,17 +118,23 @@ static void cbmem_add_cros_vpd(int is_recovery)
 		}
 		rdev_chain(&vpd, &vpd, GOOGLE_VPD_2_0_OFFSET,
 			region_device_sz(&vpd) - GOOGLE_VPD_2_0_OFFSET);
-
-		if (rdev_readat(&vpd, cbmem->blob + ro_vpd_size, rw_vpd_base,
-			rw_vpd_size) == rw_vpd_size) {
-			cbmem->rw_size = rw_vpd_size;
-		} else {
-			printk(BIOS_ERR,
-				"%s: Reading RW_VPD FMAP section failed.\n",
-				__func__);
-		}
-		timestamp_add_now(TS_END_COPYVPD_RW);
+		blob->rw_base = (uint8_t *)(rdev_mmap_full(&vpd) +
+			sizeof(struct google_vpd_info));
+		blob->rw_size = rw_vpd_size;
 	}
+	blob->initialized = true;
+}
+
+const struct vpd_blob *vpd_load_blob(void)
+{
+	struct vpd_blob *blob = NULL;
+
+	blob = car_get_var_ptr(&g_vpd_blob);
+
+	if (blob && blob->initialized == false)
+		vpd_get_blob();
+
+	return blob;
 }
 
 static int vpd_gets_callback(const uint8_t *key, uint32_t key_len,
@@ -179,30 +156,29 @@ static int vpd_gets_callback(const uint8_t *key, uint32_t key_len,
 
 const void *vpd_find(const char *key, int *size, enum vpd_region region)
 {
+	struct vpd_blob blob = {0};
+
+	vpd_get_buffers(&blob);
+	if (blob.ro_size == 0 && blob.rw_size == 0)
+		return NULL;
+
 	struct vpd_gets_arg arg = {0};
 	uint32_t consumed = 0;
-	const struct vpd_cbmem *vpd;
-
-	vpd = cbmem_find(CBMEM_ID_VPD);
-	if (!vpd || !vpd->ro_size)
-		return NULL;
 
 	arg.key = (const uint8_t *)key;
 	arg.key_len = strlen(key);
 
-	if (region == VPD_ANY || region == VPD_RO) {
-		while (vpd_decode_string(
-				vpd->ro_size, vpd->blob, &consumed,
-				vpd_gets_callback, &arg) == VPD_DECODE_OK) {
-			/* Iterate until found or no more entries. */
+	if ((region == VPD_ANY || region == VPD_RO) && blob.ro_size != 0) {
+		while (vpd_decode_string(blob.ro_size, blob.ro_base,
+			&consumed, vpd_gets_callback, &arg) == VPD_DECODE_OK) {
+		/* Iterate until found or no more entries. */
 		}
 	}
-	if (!arg.matched && region != VPD_RO) {
-		while (vpd_decode_string(
-				vpd->rw_size, vpd->blob + vpd->ro_size,
-				&consumed, vpd_gets_callback,
-				&arg) == VPD_DECODE_OK) {
-			/* Iterate until found or no more entries. */
+
+	if ((!arg.matched && region != VPD_RO) && blob.rw_size != 0) {
+		while (vpd_decode_string(blob.rw_size, blob.rw_base,
+			&consumed, vpd_gets_callback, &arg) == VPD_DECODE_OK) {
+		/* Iterate until found or no more entries. */
 		}
 	}
 
@@ -223,14 +199,40 @@ char *vpd_gets(const char *key, char *buffer, int size, enum vpd_region region)
 	if (!string_address)
 		return NULL;
 
-	if (size > (string_size + 1)) {
-		memcpy(buffer, string_address, string_size);
-		buffer[string_size] = '\0';
-	} else {
-		memcpy(buffer, string_address, size - 1);
-		buffer[size - 1] = '\0';
-	}
+	assert(size > 0);
+	int copy_size = MIN(size - 1, string_size);
+	memcpy(buffer, string_address, copy_size);
+	buffer[copy_size] = '\0';
 	return buffer;
 }
 
-RAMSTAGE_CBMEM_INIT_HOOK(cbmem_add_cros_vpd)
+/*
+ * Find value of boolean type vpd key.
+ *
+ * During the process, necessary checking is done, such as making
+ * sure the value length is 1, and value is either '1' or '0'.
+ */
+bool vpd_get_bool(const char *key, enum vpd_region region, uint8_t *val)
+{
+	int size;
+	const char *value;
+
+	value = vpd_find(key, &size, region);
+	if (!value) {
+		printk(BIOS_CRIT, "problem returning from vpd_find.\n");
+		return false;
+	}
+
+	if (size != 1)
+		return false;
+
+	/* Make sure the value is either '1' or '0' */
+	if (*value == '1') {
+		*val = 1;
+		return true;
+	} else if (*value == '0') {
+		*val = 0;
+		return true;
+	} else
+		return false;
+}

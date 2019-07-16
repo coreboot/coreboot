@@ -16,6 +16,7 @@
 #include <security/tpm/tis.h>
 #include <arch/acpigen.h>
 #include <device/device.h>
+#include <drivers/intel/ptt/ptt.h>
 
 #include "tpm.h"
 #include "chip.h"
@@ -47,6 +48,14 @@ int tis_open(void)
 	if (car_get_var(tpm_is_open)) {
 		printk(BIOS_ERR, "%s called twice.\n", __func__);
 		return -1;
+	}
+
+	if (CONFIG(HAVE_INTEL_PTT)) {
+		if (!ptt_active()) {
+			printk(BIOS_ERR, "%s: Intel PTT is not active.\n", __func__);
+			return -1;
+		}
+		printk(BIOS_DEBUG, "%s: Intel PTT is active.\n", __func__);
 	}
 
 	return 0;

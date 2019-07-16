@@ -229,7 +229,7 @@ const char *dev_path(const struct device *dev)
 				 dev->path.usb.port_type, dev->path.usb.port_id);
 			break;
 		case DEVICE_PATH_MMIO:
-			snprintf(buffer, sizeof(buffer), "MMIO: %08x",
+			snprintf(buffer, sizeof(buffer), "MMIO: %08lx",
 				 dev->path.mmio.addr);
 			break;
 		default:

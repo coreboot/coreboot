@@ -1,0 +1,5 @@
+config HAVE_INTEL_PTT
+	bool
+	default n
+	help
+		Activate if your platform has Intel Platform Trust Technology like Intel iTPM and you want to use it.

@@ -13,9 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#undef FILECODE
-#define FILECODE 0xCCCC
-
 #include "comlib.h"
 #include "AsPsDefs.h"
 #include "AsPsNb.h"

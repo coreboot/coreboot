@@ -36,7 +36,6 @@
 #endif
 
 /* Debugging Options */
-#define AMD_DEBUG 1
 //#define AMD_DEBUG_ERROR_STOP 1
 
 /*----------------------------------------------------------------------------
@@ -45,8 +44,6 @@
  *----------------------------------------------------------------------------
  */
 
-#undef FILECODE
-#define FILECODE 0xFF01
 #include "comlib.h"
 #include "h3gtopo.h"
 #include "h3finit.h"

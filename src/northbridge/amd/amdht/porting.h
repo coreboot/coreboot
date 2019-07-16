@@ -71,7 +71,6 @@ void CALLCONV AmdMemWrite(uint8 MemSize, uint64 *Address, uint32 *Value);
 void CALLCONV AmdPCIRead(SBDFO loc, uint32 *Value);
 void CALLCONV AmdPCIWrite(SBDFO loc, uint32 *Value);
 void CALLCONV AmdCPUIDRead(uint32 Address, uint32 Regs[4]);
-void CALLCONV ErrorStop(uint32 Value);
 
 #define BYTESIZE 1
 #define WORDSIZE 2

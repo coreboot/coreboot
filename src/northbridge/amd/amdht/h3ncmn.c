@@ -21,8 +21,6 @@
  *----------------------------------------------------------------------------
  */
 
-#undef FILECODE
-#define FILECODE 0xF002
 #include "h3ncmn.h"
 #include "h3finit.h"
 #include "h3ffeat.h"

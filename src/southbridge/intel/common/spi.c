@@ -726,7 +726,7 @@ static int ich_hwseq_erase(const struct spi_flash *flash, u32 offset,
 	u32 start, end, erase_size;
 	int ret;
 	uint16_t hsfc;
-	unsigned int timeout = 1000 * SPI_FLASH_SECTOR_ERASE_TIMEOUT;
+	unsigned int timeout = 1000 * SPI_FLASH_SECTOR_ERASE_TIMEOUT_MS;
 
 	erase_size = flash->sector_size;
 	if (offset % erase_size || len % erase_size) {

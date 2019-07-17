@@ -232,7 +232,8 @@ int spi_flash_cmd_erase(const struct spi_flash *flash, u32 offset, size_t len)
 		if (ret)
 			goto out;
 
-		ret = spi_flash_cmd_wait_ready(flash, SPI_FLASH_PAGE_ERASE_TIMEOUT);
+		ret = spi_flash_cmd_wait_ready(flash,
+				SPI_FLASH_PAGE_ERASE_TIMEOUT_MS);
 		if (ret)
 			goto out;
 	}

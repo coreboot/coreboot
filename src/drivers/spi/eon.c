@@ -270,7 +270,8 @@ static int eon_write(const struct spi_flash *flash,
 			goto out;
 		}
 
-		ret = spi_flash_cmd_wait_ready(flash, SPI_FLASH_PROG_TIMEOUT);
+		ret = spi_flash_cmd_wait_ready(flash,
+				SPI_FLASH_PROG_TIMEOUT_MS);
 		if (ret) {
 			printk(BIOS_WARNING, "SF: EON Page Program timeout\n");
 			goto out;

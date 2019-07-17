@@ -179,7 +179,7 @@ sst_byte_write(const struct spi_flash *flash, u32 offset, const void *buf)
 	if (ret)
 		return ret;
 
-	return spi_flash_cmd_wait_ready(flash, SPI_FLASH_PROG_TIMEOUT);
+	return spi_flash_cmd_wait_ready(flash, SPI_FLASH_PROG_TIMEOUT_MS);
 }
 
 static int sst_write_256(const struct spi_flash *flash, u32 offset, size_t len,
@@ -239,7 +239,8 @@ static int sst_write_256(const struct spi_flash *flash, u32 offset, size_t len,
 			break;
 		}
 
-		ret = spi_flash_cmd_wait_ready(flash, SPI_FLASH_PROG_TIMEOUT);
+		ret = spi_flash_cmd_wait_ready(flash,
+				SPI_FLASH_PROG_TIMEOUT_MS);
 		if (ret)
 			break;
 
@@ -294,7 +295,8 @@ static int sst_write_ai(const struct spi_flash *flash, u32 offset, size_t len,
 			break;
 		}
 
-		ret = spi_flash_cmd_wait_ready(flash, SPI_FLASH_PROG_TIMEOUT);
+		ret = spi_flash_cmd_wait_ready(flash,
+				SPI_FLASH_PROG_TIMEOUT_MS);
 		if (ret)
 			break;
 

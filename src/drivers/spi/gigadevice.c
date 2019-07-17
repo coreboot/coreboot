@@ -212,7 +212,8 @@ static int gigadevice_write(const struct spi_flash *flash, u32 offset,
 			goto out;
 		}
 
-		ret = spi_flash_cmd_wait_ready(flash, SPI_FLASH_PROG_TIMEOUT);
+		ret = spi_flash_cmd_wait_ready(flash,
+				SPI_FLASH_PROG_TIMEOUT_MS);
 		if (ret)
 			goto out;
 

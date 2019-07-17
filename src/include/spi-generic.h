@@ -20,10 +20,9 @@
  * is a problem (and well your system already is broken), so err on the side
  * of caution in case we're dealing with slower SPI buses and/or processors.
  */
-#define CONF_SYS_HZ 100
-#define SPI_FLASH_PROG_TIMEOUT		(2 * CONF_SYS_HZ)
-#define SPI_FLASH_PAGE_ERASE_TIMEOUT	(5 * CONF_SYS_HZ)
-#define SPI_FLASH_SECTOR_ERASE_TIMEOUT	(10 * CONF_SYS_HZ)
+#define SPI_FLASH_PROG_TIMEOUT_MS		200
+#define SPI_FLASH_PAGE_ERASE_TIMEOUT_MS		500
+#define SPI_FLASH_SECTOR_ERASE_TIMEOUT_MS	1000
 
 #include <commonlib/region.h>
 #include <stdint.h>

@@ -137,7 +137,8 @@ static int atmel_write(const struct spi_flash *flash, u32 offset, size_t len,
 			goto out;
 		}
 
-		ret = spi_flash_cmd_wait_ready(flash, SPI_FLASH_PROG_TIMEOUT);
+		ret = spi_flash_cmd_wait_ready(flash,
+				SPI_FLASH_PROG_TIMEOUT_MS);
 		if (ret)
 			goto out;
 

@@ -382,6 +382,9 @@ static const struct pad_config gpio_table[] = {
 
 	/* SD card detect VGPIO */
 	PAD_CFG_GPI_GPIO_DRIVER(vSD3_CD_B, NONE, DEEP),
+
+	/* CNV_WCEN  : Disable Wireless Charging */
+	PAD_CFG_GPO(CNV_WCEN, 0, DEEP),
 };
 
 const struct pad_config *base_gpio_table(size_t *num)

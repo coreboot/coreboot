@@ -42,7 +42,6 @@ static void usb_init(struct device *dev)
 	/* RPR 7.4 Enable the USB controller to get reset by any software that generate a PCIRst# condition */
 	byte = pm_ioread(0xF0);
 	byte |= (1 << 2);
-	byte |= 3 << 8;		/* rpr 7.5 */
 	pm_iowrite(0xF0, byte);
 
 	/* RPR 7.9 Disable OHCI MSI Capability. */

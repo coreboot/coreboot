@@ -47,12 +47,12 @@ static const struct pad_config gpio_table[] = {
 
 	/* SDIO -- unused */
 	PAD_CFG_GPI(GPIO_166, DN_20K, DEEP),		/* SDIO_CLK */
-	PAD_CFG_GPI(GPIO_167, NONE, DEEP),		/* SDIO_D0 */
+	PAD_CFG_GPI(GPIO_167, DN_20K, DEEP),		/* SDIO_D0 */
 	/* Configure SDIO to enable power gating. */
 	PAD_CFG_NF(GPIO_168, UP_20K, DEEP, NF1),	/* SDIO_D1 */
-	PAD_CFG_GPI(GPIO_169, NONE, DEEP),		/* SDIO_D2 */
-	PAD_CFG_GPI(GPIO_170, NONE, DEEP),		/* SDIO_D3 */
-	PAD_CFG_GPI(GPIO_171, NONE, DEEP),		/* SDIO_CMD */
+	PAD_CFG_GPI(GPIO_169, DN_20K, DEEP),		/* SDIO_D2 */
+	PAD_CFG_GPI(GPIO_170, DN_20K, DEEP),		/* SDIO_D3 */
+	PAD_CFG_GPI(GPIO_171, DN_20K, DEEP),		/* SDIO_CMD */
 
 	/* SDCARD */
 	/* Pull down clock by 20K. */
@@ -135,7 +135,7 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI(OSC_CLK_OUT_4, DN_20K, DEEP),
 
 	/* PMU Signals */
-	PAD_CFG_GPI(PMU_AC_PRESENT, NONE, DEEP),	/* PMU_AC_PRESENT */
+	PAD_CFG_GPI(PMU_AC_PRESENT, DN_20K, DEEP),	/* PMU_AC_PRESENT */
 	PAD_CFG_NF(PMU_BATLOW_B, UP_20K, DEEP, NF1),	/* PMU_BATLOW_N */
 	PAD_CFG_NF(PMU_PLTRST_B, NONE, DEEP, NF1),	/* PMU_PLTRST_N */
 	PAD_CFG_NF(PMU_PWRBTN_B, NONE, DEEP, NF1),	/* PMU_PWRBTN_N */
@@ -173,7 +173,7 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI(GPIO_198, DN_20K, DEEP),		/* PNL1_BKLTCTL */
 
 	/* DDI[0:1]_HPD -- unused */
-	PAD_CFG_GPI(GPIO_199, NONE, DEEP),		/* XHPD_DP */
+	PAD_CFG_GPI(GPIO_199, DN_20K, DEEP),		/* XHPD_DP */
 	PAD_CFG_GPI(GPIO_200, DN_20K, DEEP),		/* unused */
 
 	/* MDSI signals -- unused */
@@ -193,7 +193,7 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI(PMC_SPI_CLK, DN_20K, DEEP),
 
 	/* PMIC Signals unused signals related to an old PMIC interface. */
-	PAD_CFG_GPO(PMIC_PWRGOOD, 1, DEEP),		/* PMIC_PWRGOOD */
+	PAD_CFG_NF(PMIC_PWRGOOD, UP_20K, DEEP, NF1),	/* PMIC_PWRGOOD */
 	PAD_CFG_GPI(PMIC_RESET_B, DN_20K, DEEP),	/* PMIC_RESET_B */
 	PAD_CFG_TERM_GPO(GPIO_213, 0, DN_20K, DEEP),	/* NFC_OUT_RESERVE */
 	PAD_CFG_TERM_GPO(GPIO_214, 0, DN_20K, DEEP),	/* NFC_EN */

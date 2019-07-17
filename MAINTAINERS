@@ -674,6 +674,14 @@ MISSING: SPI
 #	Owners: Patrick, Philipp
 #	Backups:
 
+CODE OF CONDUCT
+M:	Stefan Reinauer <stefan.reinauer@coreboot.org>
+M:	Patrick Georgi <patrick@coreboot.org>
+M:	Ronald Minnich <rminnich@coreboot.org>
+M:	Martin Roth <martin@coreboot.org>
+S:	Maintained
+F:	Documentation/community/code_of_conduct.md
+
 # Wiki
 #	Owners: Stefan, Patrick
 #	Backups:

@@ -84,10 +84,10 @@ immediately.
 If a community member engages in unacceptable behavior, the community
 organizers may take any action they deem appropriate, up to and including
 a temporary ban or permanent expulsion from the community without warning
-(and without refund in the case of a paid event). Community organizers
-can be part of the arbitration team, or organizers of events and online
-communities.
+(and without refund in the case of a paid event).
 
+Community organizers can be members of the arbitration team, or organizers
+of events and online communities.
 
 ## Addressing Grievances
 

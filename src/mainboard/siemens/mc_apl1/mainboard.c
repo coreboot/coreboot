@@ -83,6 +83,10 @@
 #define SPI_REG_OPMENU_L	0xa8
 #define SPI_REG_OPMENU_H	0xac
 
+#define SD_CAP_BYP		0x810
+#define  SD_CAP_BYP_EN		0x5A
+#define SD_CAP_BYP_REG1		0x814
+
 /** \brief This function can decide if a given MAC address is valid or not.
  *         Currently, addresses filled with 0xff or 0x00 are not valid.
  * @param  mac  Buffer to the MAC address to check
@@ -265,6 +269,21 @@ static void mainboard_final(void *chip_info)
 			((SPI_OPTYPE << 16) | SPI_OPPREFIX));
 	write32((spi_base + SPI_REG_OPMENU_L), SPI_OPMENU_LOWER);
 	write32((spi_base + SPI_REG_OPMENU_H), SPI_OPMENU_UPPER);
+
+	/* Set SD-Card speed to HS mode only. */
+	dev = pcidev_path_on_root(PCH_DEVFN_SDCARD);
+	if (dev) {
+		uint32_t reg;
+		struct resource *res = find_resource(dev, PCI_BASE_ADDRESS_0);
+		if (!res)
+			return;
+
+		write32(res2mmio(res, SD_CAP_BYP, 0), SD_CAP_BYP_EN);
+		reg = read32(res2mmio(res, SD_CAP_BYP_REG1, 0));
+		/* Disable all UHS-I SD-Card speed modes, keep only HS mode. */
+		reg &= ~0x2000f800;
+		write32(res2mmio(res, SD_CAP_BYP_REG1, 0), reg);
+	}
 }
 
 /* The following function performs board specific things. */

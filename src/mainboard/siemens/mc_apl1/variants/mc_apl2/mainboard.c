@@ -26,10 +26,6 @@
 #include <soc/pci_devs.h>
 #include <types.h>
 
-#define SD_CAP_BYP		0x810
-#define  SD_CAP_BYP_EN		0x5A
-#define SD_CAP_BYP_REG1		0x814
-
 void variant_mainboard_final(void)
 {
 	struct device *dev;
@@ -41,21 +37,6 @@ void variant_mainboard_final(void)
 		cmd = pci_read_config16(dev, PCI_COMMAND);
 		cmd |= PCI_COMMAND_MASTER;
 		pci_write_config16(dev, PCI_COMMAND, cmd);
-	}
-
-	/* Reduce SD-Card speed to DDR50 because of PCB constraints. */
-	dev = pcidev_path_on_root(PCH_DEVFN_SDCARD);
-	if (dev) {
-		uint32_t reg;
-		struct resource *res = find_resource(dev, PCI_BASE_ADDRESS_0);
-		if (!res)
-			return;
-
-		write32(res2mmio(res, SD_CAP_BYP, 0), SD_CAP_BYP_EN);
-		reg = read32(res2mmio(res, SD_CAP_BYP_REG1, 0));
-		/* Disable HS400 and SDR104, keep SDR50 and DDR50 modes. */
-		reg &= ~0x20005800;
-		write32(res2mmio(res, SD_CAP_BYP_REG1, 0), reg);
 	}
 }
 

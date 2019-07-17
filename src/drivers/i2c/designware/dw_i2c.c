@@ -817,14 +817,9 @@ void dw_i2c_acpi_fill_ssdt(struct device *dev)
 	const struct dw_i2c_bus_config *bcfg;
 	uintptr_t dw_i2c_addr;
 	struct dw_i2c_speed_config sgen;
-	enum i2c_speed speeds[DW_I2C_SPEED_CONFIG_COUNT] = {
-		I2C_SPEED_STANDARD,
-		I2C_SPEED_FAST,
-		I2C_SPEED_FAST_PLUS,
-		I2C_SPEED_HIGH,
-	};
-	int i, bus;
+	int bus;
 	const char *path;
+	unsigned int speed;
 
 	if (!dev->enabled)
 		return;
@@ -847,20 +842,15 @@ void dw_i2c_acpi_fill_ssdt(struct device *dev)
 	if (!path)
 		return;
 
-	acpigen_write_scope(path);
+	/* Ensure a default speed is available */
+	speed = (bcfg->speed == 0) ? I2C_SPEED_FAST : bcfg->speed;
 
 	/* Report timing values for the OS driver */
-	for (i = 0; i < DW_I2C_SPEED_CONFIG_COUNT; i++) {
-		/* Generate speed config. */
-		if (dw_i2c_gen_speed_config(dw_i2c_addr, speeds[i], bcfg,
-						&sgen) < 0)
-			continue;
-
-		/* Generate ACPI based on selected speed config */
+	if (dw_i2c_gen_speed_config(dw_i2c_addr, speed, bcfg, &sgen) >= 0) {
+		acpigen_write_scope(path);
 		dw_i2c_acpi_write_speed_config(&sgen);
+		acpigen_pop_len();
 	}
-
-	acpigen_pop_len();
 }
 
 static int dw_i2c_dev_transfer(struct device *dev,

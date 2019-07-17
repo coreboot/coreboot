@@ -22,8 +22,9 @@ Refrain from insulting anyone or the group they belong to. Remember that
 people might be sensitive to other things than you are.
 
 Most of our community members are not native English speakers, thus
-misunderstandings can (and do) happen. Always assume that others are
-friendly and may have picked less-than-stellar wording by accident.
+misunderstandings can (and do) happen. Assume that others are friendly
+and may have picked less-than-stellar wording by accident as long as
+you possibly can.
 
 If you have a grievance due to conduct in this community, we want to hear
 about it so we can handle the situation. Please contact our arbitration

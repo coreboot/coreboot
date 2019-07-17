@@ -491,11 +491,6 @@ static void add_ivrs_device_entries(struct device *parent, struct device *dev,
 	unsigned int header_type;
 	unsigned int is_pcie;
 
-	if (!root_level) {
-		root_level = malloc(sizeof(int8_t));
-		*root_level = -1;
-	}
-
 	if (dev->path.type == DEVICE_PATH_PCI) {
 
 		if ((dev->bus->secondary == 0x0) &&
@@ -536,8 +531,6 @@ static void add_ivrs_device_entries(struct device *parent, struct device *dev,
 		     sibling->sibling)
 			add_ivrs_device_entries(dev, sibling, depth + 1, depth,
 						root_level, current, length);
-
-	free(root_level);
 }
 
 unsigned long acpi_fill_ivrs_ioapic(acpi_ivrs_t *ivrs, unsigned long current)
@@ -643,7 +636,8 @@ static unsigned long acpi_fill_ivrs(acpi_ivrs_t *ivrs, unsigned long current)
 	current += 8;
 
 	/* Describe PCI devices */
-	add_ivrs_device_entries(NULL, all_devices, 0, -1, NULL, &current,
+	int8_t root_level = -1;
+	add_ivrs_device_entries(NULL, all_devices, 0, -1, &root_level, &current,
 				&ivrs->ivhd.length);
 
 	/* Describe IOAPICs */

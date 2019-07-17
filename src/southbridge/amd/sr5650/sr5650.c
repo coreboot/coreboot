@@ -725,13 +725,6 @@ static void add_ivrs_device_entries(struct device *parent, struct device *dev,
 	struct device *sibling;
 	struct bus *link;
 
-	if (!root_level) {
-		root_level = malloc(sizeof(int8_t));
-		if (root_level == NULL)
-			die("Error: Could not allocate a byte!\n");
-		*root_level = -1;
-	}
-
 	if ((dev->path.type == DEVICE_PATH_PCI) &&
 		(dev->bus->secondary == 0x0) && (dev->path.pci.devfn == 0x0))
 		*root_level = depth;
@@ -798,9 +791,6 @@ static void add_ivrs_device_entries(struct device *parent, struct device *dev,
 			sibling = sibling->sibling)
 			add_ivrs_device_entries(dev, sibling, depth + 1,
 				depth, root_level, current, length);
-
-	if (depth == 0)
-		free(root_level);
 }
 
 unsigned long acpi_fill_mcfg(unsigned long current)
@@ -879,7 +869,8 @@ static unsigned long acpi_fill_ivrs(acpi_ivrs_t *ivrs, unsigned long current)
 	current += 8;
 
 	/* Describe PCI devices */
-	add_ivrs_device_entries(NULL, all_devices, 0, -1, NULL, &current,
+	int8_t root_level = -1;
+	add_ivrs_device_entries(NULL, all_devices, 0, -1, &root_level, &current,
 			&ivrs->ivhd.length);
 
 	/* Describe IOAPICs */

@@ -155,8 +155,8 @@ static const struct soc_gpio_map gpscore_gpio_map[] = {
 	GPIO_NC,				/* GPIO_S0_SC[089] - No Connect */
 	GPIO_FUNC1,				/* GPIO_S0_SC[090] - EXP_I2C_SDA */
 	GPIO_FUNC1,				/* GPIO_S0_SC[091] - EXP_I2C_SCL */
-	GPIO_FUNC1,		                /* GPIO_S0_SC[092] - 0R GND? */
-	GPIO_FUNC1,                             /* GPIO_S0_SC[093] - 0R GND? */
+	GPIO_FUNC1,				/* GPIO_S0_SC[092] - 0R GND? */
+	GPIO_FUNC1,				/* GPIO_S0_SC[093] - 0R GND? */
 	GPIO_FUNC1,				/* GPIO_S0_SC[094] - SOC_PWM0 */
 	GPIO_FUNC1,				/* GPIO_S0_SC[095] - SOC_PWM1 */
 	GPIO_NC,				/* GPIO_S0_SC[096] - No Connect */
@@ -200,7 +200,7 @@ static const struct soc_gpio_map gpssus_gpio_map[] = {
 	GPIO_FUNC(0, PULL_DISABLE, 10K),	/* GPIO_S5[27] - SW450-1 */
 	GPIO_FUNC(0, PULL_DISABLE, 10K),	/* GPIO_S5[28] - SW450-2 */
 	GPIO_FUNC(0, PULL_DISABLE, 10K),	/* GPIO_S5[29] - SW450-3 */
-	GPIO_FUNC(0, PULL_DISABLE, 10K),        /* GPIO_S5[30] - SW450-4 */
+	GPIO_FUNC(0, PULL_DISABLE, 10K),	/* GPIO_S5[30] - SW450-4 */
 	GPIO_NC,				/* GPIO_S5[31] - No Connect */
 	GPIO_NC,				/* GPIO_S5[32] - No Connect */
 	GPIO_NC,				/* GPIO_S5[33] - No Connect */

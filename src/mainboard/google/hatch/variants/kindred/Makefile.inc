@@ -21,3 +21,4 @@ SPD_SOURCES += 16G_2666   # 0b101
 
 bootblock-y += gpio.c
 ramstage-y += gpio.c
+ramstage-y += variant.c

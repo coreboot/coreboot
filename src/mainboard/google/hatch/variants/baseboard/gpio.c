@@ -324,8 +324,12 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_G5, NONE, PLTRST, NF1),
 	/* G6  : SD_CLK */
 	PAD_CFG_NF(GPP_G6, NONE, DEEP, NF1),
-	/* G7  : SD_WP => NC */
-	PAD_NC(GPP_G7, NONE),
+	/* G7  : SD_WP
+	 * As per schematics SD host controller SD_WP pin is not connected to
+	 * uSD card connector. In order to overcome gpio default state, ensures
+	 * to configure gpio pin as NF1 with internal 20K pull down.
+	 */
+	PAD_CFG_NF(GPP_G7, DN_20K, DEEP, NF1),
 	/*
 	 * H0  : HP_INT_L
 	 */

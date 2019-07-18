@@ -236,8 +236,11 @@ int fmap_print(const struct fmap *fmap)
 
 		/* Print descriptive strings for flags rather than the field */
 		flags = fmap->areas[i].flags;
-		if ((str = fmap_flags_to_string(flags)) == NULL)
+		str = fmap_flags_to_string(flags);
+		if (str == NULL) {
+			kv_pair_free(pair);
 			return -1;
+		}
 		kv_pair_fmt(pair, "area_flags", "%s", str);
 		free(str);
 
@@ -509,7 +512,8 @@ fmap_find_area_test_exit:
 
 static int fmap_flags_to_string_test(void)
 {
-	char *str, *my_str;
+	char *str = NULL;
+	char *my_str = NULL;
 	unsigned int i;
 	uint16_t flags;
 
@@ -555,11 +559,11 @@ static int fmap_flags_to_string_test(void)
 		printf("FAILURE: bad result from fmap_flags_to_string\n");
 		goto fmap_flags_to_string_test_exit;
 	}
-	free(my_str);
-	free(str);
 
 	status = pass;
 fmap_flags_to_string_test_exit:
+	free(str);
+	free(my_str);
 	return status;
 
 }

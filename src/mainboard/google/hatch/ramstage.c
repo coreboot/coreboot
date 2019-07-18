@@ -28,6 +28,7 @@ void mainboard_silicon_init_params(FSP_S_CONFIG *params)
 	size_t base_gpios;
 	size_t override_gpios;
 
+	variant_devtree_update();
 	base_table = base_gpio_table(&base_gpios);
 	override_table = override_gpio_table(&override_gpios);
 
@@ -35,6 +36,11 @@ void mainboard_silicon_init_params(FSP_S_CONFIG *params)
 					base_gpios,
 					override_table,
 					override_gpios);
+}
+
+void __weak variant_devtree_update(void)
+{
+	/* Override dev tree settings per board */
 }
 
 static void mainboard_enable(struct device *dev)

@@ -227,25 +227,29 @@
 /* General purpose output, no pullup/down. */
 #define PAD_CFG_GPO(pad, val, rst)	\
 	_PAD_CFG_STRUCT(pad,		\
-		PAD_FUNC(GPIO) | PAD_RESET(rst) | PAD_CFG0_RX_DISABLE | !!val, \
+		PAD_FUNC(GPIO) | PAD_RESET(rst) | \
+		PAD_CFG0_TRIG_OFF | PAD_CFG0_RX_DISABLE | !!val, \
 		PAD_PULL(NONE) | PAD_IOSSTATE(TxLASTRxE))
 
 /* General purpose output, with termination specified */
 #define PAD_CFG_TERM_GPO(pad, val, pull, rst)	\
 	_PAD_CFG_STRUCT(pad,		\
-		PAD_FUNC(GPIO) | PAD_RESET(rst) | PAD_CFG0_RX_DISABLE | !!val, \
+		PAD_FUNC(GPIO) | PAD_RESET(rst) | \
+		PAD_CFG0_TRIG_OFF | PAD_CFG0_RX_DISABLE | !!val, \
 		PAD_PULL(pull) | PAD_IOSSTATE(TxLASTRxE))
 
 /* General purpose output, no pullup/down. */
 #define PAD_CFG_GPO_GPIO_DRIVER(pad, val, rst, pull)	\
 	_PAD_CFG_STRUCT(pad,		\
-		PAD_FUNC(GPIO) | PAD_RESET(rst) | PAD_CFG0_RX_DISABLE | !!val, \
+		PAD_FUNC(GPIO) | PAD_RESET(rst) | \
+		PAD_CFG0_TRIG_OFF | PAD_CFG0_RX_DISABLE | !!val, \
 		PAD_PULL(pull) | PAD_IOSSTATE(TxLASTRxE) | PAD_CFG1_GPIO_DRIVER)
 
 /* General purpose output. */
 #define PAD_CFG_GPO_IOSSTATE_IOSTERM(pad, val, rst, pull, iosstate, ioterm)	\
 	_PAD_CFG_STRUCT(pad,		\
-		PAD_FUNC(GPIO) | PAD_RESET(rst) | PAD_CFG0_RX_DISABLE | !!val, \
+		PAD_FUNC(GPIO) | PAD_RESET(rst) | \
+		PAD_CFG0_TRIG_OFF | PAD_CFG0_RX_DISABLE | !!val, \
 		PAD_PULL(pull) | PAD_IOSSTATE(iosstate) | PAD_IOSTERM(ioterm))
 
 /* General purpose input */

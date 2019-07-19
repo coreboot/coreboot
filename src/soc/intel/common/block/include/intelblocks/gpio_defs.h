@@ -289,11 +289,11 @@
 /*
  * No Connect configuration for unused pad.
  * Both TX and RX are disabled. RX disabling is done to avoid unnecessary
- * setting of GPI_STS.
+ * setting of GPI_STS. RX Level/Edge Trig Configuration set to disable
  */
 #define PAD_NC(pad, pull)			\
 	_PAD_CFG_STRUCT(pad,					\
-		PAD_FUNC(GPIO) | PAD_RESET(DEEP) |		\
+		PAD_FUNC(GPIO) | PAD_RESET(DEEP) | PAD_CFG0_TRIG_OFF |	\
 		PAD_CFG0_TX_DISABLE | PAD_CFG0_RX_DISABLE,	\
 		PAD_PULL(pull) | PAD_IOSSTATE(TxDRxE))
 

@@ -285,6 +285,7 @@ struct uart_params_t {
 static struct console_input_driver consin = {
 	.havekey = serial_havechar,
 	.getchar = serial_getchar,
+	.input_type = CONSOLE_INPUT_TYPE_UART,
 };
 
 static struct console_output_driver consout = {

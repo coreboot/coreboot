@@ -63,7 +63,6 @@ config GBB_HWID
 	string
 	depends on CHROMEOS
 	default "HATCH TEST 1823" if BOARD_GOOGLE_HATCH
-	default "HATCH_WHL TEST 2374" if BOARD_GOOGLE_HATCH_WHL
 	default "HELIOS TEST 0878" if BOARD_GOOGLE_HELIOS
 	default "KINDRED TEST 2636" if BOARD_GOOGLE_KINDRED
 	default "KOHAKU TEST 1953" if BOARD_GOOGLE_KOHAKU
@@ -79,7 +78,6 @@ config MAINBOARD_FAMILY
 config MAINBOARD_PART_NUMBER
 	string
 	default "Hatch" if BOARD_GOOGLE_HATCH
-	default "Hatch_whl" if BOARD_GOOGLE_HATCH_WHL
 	default "Helios" if BOARD_GOOGLE_HELIOS
 	default "Kindred" if BOARD_GOOGLE_KINDRED
 	default "Kohaku" if BOARD_GOOGLE_KOHAKU
@@ -103,7 +101,6 @@ config TPM_TIS_ACPI_INTERRUPT
 config VARIANT_DIR
 	string
 	default "hatch" if BOARD_GOOGLE_HATCH
-	default "hatch_whl" if BOARD_GOOGLE_HATCH_WHL
 	default "helios" if BOARD_GOOGLE_HELIOS
 	default "kindred" if BOARD_GOOGLE_KINDRED
 	default "kohaku" if BOARD_GOOGLE_KOHAKU

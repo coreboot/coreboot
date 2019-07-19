@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <baseboard/variants.h>
 #include <boardid.h>
 #include <console/console.h>
 #include <ec/google/chromeec/ec.h>
@@ -23,7 +24,7 @@
 #define SKU_UNKNOWN		0xFFFFFFFF
 #define SKU_MAX			255
 
-static uint32_t get_board_sku(void)
+uint32_t get_board_sku(void)
 {
 	static uint32_t sku_id = SKU_UNKNOWN;
 

@@ -585,6 +585,7 @@ static int printf_core(const char *fmt, struct printf_spec *ps, va_list ap)
 			/* Integer values */
 			case 'P':	/* pointer */
 				flags |= __PRINTF_FLAG_BIGCHARS;
+				/* fall through */
 			case 'p':
 				flags |= __PRINTF_FLAG_PREFIX;
 				base = 16;
@@ -599,10 +600,12 @@ static int printf_core(const char *fmt, struct printf_spec *ps, va_list ap)
 			case 'd':
 			case 'i':
 				flags |= __PRINTF_FLAG_SIGNED;
+				break;
 			case 'u':
 				break;
 			case 'X':
 				flags |= __PRINTF_FLAG_BIGCHARS;
+				/* fall through */
 			case 'x':
 				base = 16;
 				break;

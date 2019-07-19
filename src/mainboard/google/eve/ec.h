@@ -45,10 +45,11 @@
 	(EC_HOST_EVENT_MASK(EC_HOST_EVENT_LID_OPEN) |\
 	 EC_HOST_EVENT_MASK(EC_HOST_EVENT_POWER_BUTTON))
 
-/* EC can wake from S3 with lid or power button or key press */
+/* EC can wake from S3 with lid or power button or key press or MKBP */
 #define MAINBOARD_EC_S3_WAKE_EVENTS \
 	(MAINBOARD_EC_S5_WAKE_EVENTS |\
 	 EC_HOST_EVENT_MASK(EC_HOST_EVENT_DEVICE) |\
+	 EC_HOST_EVENT_MASK(EC_HOST_EVENT_MKBP)   |\
 	 EC_HOST_EVENT_MASK(EC_HOST_EVENT_KEY_PRESSED))
 
 /* Log EC wake events plus EC shutdown events */

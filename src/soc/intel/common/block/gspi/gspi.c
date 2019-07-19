@@ -23,6 +23,7 @@
 #include <device/pci_ops.h>
 #include <intelblocks/chip.h>
 #include <intelblocks/gspi.h>
+#include <intelblocks/lpss.h>
 #include <intelblocks/spi.h>
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>
@@ -446,8 +447,19 @@ static uint32_t gspi_get_clk_div(unsigned int gspi_bus)
 static int gspi_ctrlr_setup(const struct spi_slave *dev)
 {
 	struct spi_cfg cfg;
+	int devfn;
 	uint32_t cs_ctrl, sscr0, sscr1, clocks, sitf, sirf, pol;
 	struct gspi_ctrlr_params params, *p = &params;
+	const struct device *device;
+
+	devfn = gspi_soc_bus_to_devfn(dev->bus);
+	if (devfn < 0) {
+		printk(BIOS_ERR, "%s: No GSPI controller found on SPI bus %u.\n",
+			__func__, dev->bus);
+		return -1;
+	}
+
+	device = pcidev_path_on_root(devfn);
 
 	/* Only chip select 0 is supported. */
 	if (dev->cs != 0) {
@@ -465,6 +477,9 @@ static int gspi_ctrlr_setup(const struct spi_slave *dev)
 			__func__, p->gspi_bus);
 		return -1;
 	}
+
+	/* Ensure controller is in D0 state */
+	lpss_set_power_state(device, STATE_D0);
 
 	/* Take controller out of reset, keeping DMA in reset. */
 	gspi_write_mmio_reg(p, RESETS, CTRLR_ACTIVE | DMA_RESET);

@@ -26,7 +26,7 @@
 
 #include "chip.h"
 
-static const int serial_io_dev[] = {
+static const pci_devfn_t serial_io_dev[] = {
 	PCH_DEVFN_I2C0,
 	PCH_DEVFN_I2C1,
 	PCH_DEVFN_I2C2,

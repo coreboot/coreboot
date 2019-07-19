@@ -64,6 +64,7 @@ config VARIANT_DIR
 	default "careena" if BOARD_GOOGLE_CAREENA
 	default "grunt" if BOARD_GOOGLE_GRUNT
 	default "liara" if BOARD_GOOGLE_LIARA
+	default "treeya" if BOARD_GOOGLE_TREEYA
 
 config MAINBOARD_PART_NUMBER
 	string
@@ -116,6 +117,7 @@ config GBB_HWID
 	default "CAREENA TEST 8777" if BOARD_GOOGLE_CAREENA
 	default "GRUNT TEST 8296" if BOARD_GOOGLE_GRUNT
 	default "LIARA TEST 0464" if BOARD_GOOGLE_LIARA
+	default "TREEYA TEST 0307" if BOARD_GOOGLE_TREEYA
 
 config AMD_FWM_POSITION_INDEX
 	int

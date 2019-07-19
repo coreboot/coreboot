@@ -470,6 +470,8 @@ const struct pad_config *variant_sku_gpio_table(size_t *num)
 	case SKU_1_BARD:
 	case SKU_2_BARD:
 	case SKU_3_BARD:
+	case SKU_4_BARD:
+	case SKU_5_BARD:
 		*num = ARRAY_SIZE(fpmcu_gpio_table);
 		board_gpio_tables = fpmcu_gpio_table;
 		break;

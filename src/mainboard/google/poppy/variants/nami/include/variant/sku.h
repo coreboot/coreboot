@@ -48,6 +48,7 @@
 #define SKU_1_BARD     0x1009CE3
 #define SKU_2_BARD     0x1019CE1
 #define SKU_3_BARD     0X1009CE1
-
+#define SKU_4_BARD     0X1009CE0
+#define SKU_5_BARD     0X1009CE2
 
 #endif /* __MAINBOARD_SKU_H__ */

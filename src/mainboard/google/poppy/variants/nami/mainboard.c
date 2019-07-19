@@ -212,6 +212,8 @@ const char *mainboard_vbt_filename(void)
 	case SKU_1_BARD:
 	case SKU_2_BARD:
 	case SKU_3_BARD:
+	case SKU_4_BARD:
+	case SKU_5_BARD:
 		return "vbt-bard.bin";
 	default:
 		return "vbt.bin";
@@ -267,6 +269,8 @@ void variant_devtree_update(void)
 	case SKU_1_BARD:
 	case SKU_2_BARD:
 	case SKU_3_BARD:
+	case SKU_4_BARD:
+	case SKU_5_BARD:
 	case SKU_0_EKKO:
 	case SKU_1_EKKO:
 	case SKU_2_EKKO:

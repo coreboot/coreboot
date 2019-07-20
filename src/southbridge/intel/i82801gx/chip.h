@@ -68,7 +68,6 @@ struct southbridge_intel_i82801gx_config {
 	uint16_t alt_gp_smi_en;
 
 	/* IDE configuration */
-	uint32_t ide_legacy_combined;
 	uint32_t ide_enable_primary;
 	uint32_t ide_enable_secondary;
 	enum sata_mode sata_mode;

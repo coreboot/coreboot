@@ -50,7 +50,6 @@ chip northbridge/intel/i945
 
 			register "gpe0_en" = "0"
 
-			register "ide_legacy_combined" = "0x0"
 			register "ide_enable_primary" = "0x1"
 			register "ide_enable_secondary" = "0x0"
 

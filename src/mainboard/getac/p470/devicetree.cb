@@ -54,7 +54,7 @@ chip northbridge/intel/i945
 			register "gpe0_en" = "0x00800106"
 			register "alt_gp_smi_en" = "0x0100"
 
-                        register "ide_legacy_combined" = "0x1"
+                        register "sata_mode" = "SATA_MODE_IDE_LEGACY_COMBINED"
                         register "ide_enable_primary" = "0x1"
                         register "ide_enable_secondary" = "0x0"
 

@@ -1,5 +1,5 @@
 config PAYLOAD_TIANOCORE
-	bool "Tianocore coreboot payload package"
+	bool "Tianocore payload"
 	depends on ARCH_X86
 	help
 	  Select this option if you want to build a coreboot image

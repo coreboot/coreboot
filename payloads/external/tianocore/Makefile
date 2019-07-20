@@ -22,9 +22,19 @@ project_git_repo=https://github.com/mrchromebox/edk2
 project_git_branch=coreboot_fb
 upstream_git_repo=https://github.com/tianocore/edk2
 
+ifeq ($(CONFIG_TIANOCORE_UEFIPAYLOAD),y)
+bootloader=UefiPayloadPkg
+build_flavor=-D BOOTLOADER=COREBOOT -D PCIE_BASE=$(CONFIG_MMCONF_BASE_ADDRESS)
+TAG=upstream/master
+else
+bootloader=CorebootPayloadPkg
 # STABLE revision is MrChromebox's coreboot framebuffer (coreboot_fb) branch
-TAG-$(CONFIG_TIANOCORE_STABLE)=origin/$(project_git_branch)
-TAG-$(CONFIG_TIANOCORE_REVISION)=$(CONFIG_TIANOCORE_REVISION_ID)
+TAG=origin/$(project_git_branch)
+endif
+
+ifneq ($(CONFIG_TIANOCORE_REVISION_ID),)
+TAG=$(CONFIG_TIANOCORE_REVISION_ID)
+endif
 
 export EDK_TOOLS_PATH=$(project_dir)/BaseTools
 
@@ -39,9 +49,9 @@ TIMER=-DUSE_HPET_TIMER
 endif
 
 ifeq ($(CONFIG_TIANOCORE_TARGET_IA32), y)
-	BUILD_STR=-a IA32 -t COREBOOT -p CorebootPayloadPkg/CorebootPayloadPkgIa32.dsc -b $(BUILD_TYPE) $(TIMER)
+	BUILD_STR=-a IA32 -t COREBOOT -p $(bootloader)/$(bootloader)Ia32.dsc -b $(BUILD_TYPE) $(TIMER) $(build_flavor)
 else
-	BUILD_STR=-a IA32 -a X64 -t COREBOOT -p CorebootPayloadPkg/CorebootPayloadPkgIa32X64.dsc -b $(BUILD_TYPE) $(TIMER)
+	BUILD_STR=-a IA32 -a X64 -t COREBOOT -p $(bootloader)/$(bootloader)Ia32X64.dsc -b $(BUILD_TYPE) $(TIMER) $(build_flavor)
 endif
 
 all: clean build
@@ -56,13 +66,13 @@ update: $(project_dir)
 	cd  $(project_dir); \
 		echo "    Fetching new commits from the $(project_name) repo"; \
 		git fetch --multiple origin upstream 2>/dev/null; \
-		if ! git rev-parse --verify -q $(TAG-y) >/dev/null; then \
-			echo "    $(TAG-y) is not a valid git reference"; \
+		if ! git rev-parse --verify -q $(TAG) >/dev/null; then \
+			echo "    $(TAG) is not a valid git reference"; \
 			exit 1; \
 		fi; \
 		if git describe --all --dirty | grep -qv dirty; then \
-			echo "    Checking out $(project_name) revision $(TAG-y)"; \
-			git checkout --detach $(TAG-y); \
+			echo "    Checking out $(project_name) revision $(TAG)"; \
+			git checkout --detach $(TAG); \
 		else \
 			echo "    Working directory not clean; will not overwrite"; \
 		fi
@@ -80,7 +90,7 @@ checktools:
 
 build: update checktools
 	unset CC; $(MAKE) -C $(project_dir)/BaseTools
-	echo " build $(project_name) $(TAG-y)"
+	echo " build $(project_name) $(TAG)"
 	if [ -n $(CONFIG_TIANOCORE_BOOTSPLASH_FILE) ]; then \
 		echo "    Copying custom bootsplash image"; \
 		case "$(CONFIG_TIANOCORE_BOOTSPLASH_FILE)" in \
@@ -99,7 +109,7 @@ build: update checktools
 			cat ../tools_def.txt >> $(project_dir)/Conf/tools_def.txt; \
 		fi; \
 		build $(BUILD_STR); \
-		mv $(project_dir)/Build/CorebootPayloadPkg*/*/FV/UEFIPAYLOAD.fd $(project_dir)/Build/UEFIPAYLOAD.fd; \
+		mv $(project_dir)/Build/$(bootloader)*/*/FV/UEFIPAYLOAD.fd $(project_dir)/Build/UEFIPAYLOAD.fd; \
 		git checkout CorebootPayloadPkg/Logo/Logo.bmp > /dev/null 2>&1 || true
 
 clean:

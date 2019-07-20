@@ -7,38 +7,32 @@ config PAYLOAD_FILE
 	  The result of a corebootPkg build
 
 choice
-	prompt "Tianocore version"
-	default TIANOCORE_STABLE
+	prompt "Tianocore payload"
+	default TIANOCORE_COREBOOTPAYLOAD
 	help
-	  Select which version of Tianocore to build (default is to build stable)
-	  stable: MrChromebox's customized version of Tianocore which works on most
+	  Select which type of payload Tianocore will build (default is CorebootPayload)
+	  CorebootPayload: MrChromebox's customized version of Tianocore which works on most
 	  (all?) x86_64 devices
-	  revision: use specific commit or branch to build Tianocore (specified by user)
+	  UEFIPayload: Use upstream Tianocore payload from https://github.com/tianocore/edk2
 
-config TIANOCORE_STABLE
-	bool "stable"
+config TIANOCORE_COREBOOTPAYLOAD
+	bool "CorebootPayload"
 	help
 	  Select this option to build using MrChromebox's custom Tianocore tree
 	  i.e. a version of Tianocore that builds without any errors and just works.
 
-config TIANOCORE_REVISION
-	bool "git revision"
+config TIANOCORE_UEFIPAYLOAD
+	bool "UEFIPayload"
 	help
-	  Select this option if you have a specific commit or branch
-	  that you want to use from either MrChromebox's tree or upstream
-	  EDK2 from which to build Tianocore.
-
-	  You will be able to specify the name of a branch or a commit id
-	  later.
+	  Select this option if you want to use upstream EDK2 to build Tianocore.
 
 endchoice
 
 config TIANOCORE_REVISION_ID
 	string "Insert a commit's SHA-1 or a branch name"
-	depends on TIANOCORE_REVISION
-	default "upstream/master"
 	help
-	   The commit's SHA-1 or branch name of the revision to use.
+	   The commit's SHA-1 or branch name of the revision to use. Choose "upstream/master"
+	   for master branch of Tianocore release on github.
 
 choice
 	prompt "Target architecture"
@@ -89,7 +83,7 @@ config TIANOCORE_USE_8254_TIMER
 
 config TIANOCORE_BOOTSPLASH_IMAGE
 	bool "Use a custom bootsplash image"
-	depends on TIANOCORE_STABLE
+	depends on TIANOCORE_COREBOOTPAYLOAD
 	help
 	  Select this option if you have a bootsplash image that you would
 	  like to be used. If this option is not selected, the default
@@ -98,6 +92,7 @@ config TIANOCORE_BOOTSPLASH_IMAGE
 config TIANOCORE_BOOTSPLASH_FILE
 	string "Tianocore Bootsplash path and filename"
 	depends on TIANOCORE_BOOTSPLASH_IMAGE
+	depends on TIANOCORE_COREBOOTPAYLOAD
 	default "bootsplash.bmp"
 	help
 	  The path and filename of the file to use as graphical bootsplash

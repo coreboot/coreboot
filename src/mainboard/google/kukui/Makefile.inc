@@ -25,4 +25,5 @@ ramstage-y += chromeos.c
 ramstage-y += mainboard.c
 ramstage-y += memlayout.ld
 ramstage-$(CONFIG_BOARD_GOOGLE_KRANE) += panel_krane.c
+ramstage-$(CONFIG_BOARD_GOOGLE_KUKUI) += panel_kukui.c
 ramstage-y += reset.c

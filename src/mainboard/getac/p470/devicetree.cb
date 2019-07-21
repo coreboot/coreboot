@@ -19,21 +19,21 @@ chip northbridge/intel/i945
 	register "gfx.ndid" = "2"
 	register "gfx.did" = "{ 0x80000100, 0x80000410, 0x80000320, 0x80000410, 0x00000005 }"
 
-        device cpu_cluster 0 on
-                chip cpu/intel/socket_m
-                        device lapic 0 on end
-                end
-        end
+	device cpu_cluster 0 on
+		chip cpu/intel/socket_m
+			device lapic 0 on end
+		end
+	end
 
 	register "pci_mmio_size" = "768"
 
-        device domain 0 on
-                device pci 00.0 on end # host bridge
+	device domain 0 on
+		device pci 00.0 on end # host bridge
 		device pci 01.0 off end # i945 PCIe root port
 		device pci 02.0 on end # vga controller
 		device pci 02.1 on end # display controller
 
-                chip southbridge/intel/i82801gx
+		chip southbridge/intel/i82801gx
 			register "pirqa_routing" = "0x0a"
 			register "pirqb_routing" = "0x0a"
 			register "pirqc_routing" = "0x0a"
@@ -54,9 +54,9 @@ chip northbridge/intel/i945
 			register "gpe0_en" = "0x00800106"
 			register "alt_gp_smi_en" = "0x0100"
 
-                        register "sata_mode" = "SATA_MODE_IDE_LEGACY_COMBINED"
-                        register "ide_enable_primary" = "0x1"
-                        register "ide_enable_secondary" = "0x0"
+			register "sata_mode" = "SATA_MODE_IDE_LEGACY_COMBINED"
+			register "ide_enable_primary" = "0x1"
+			register "ide_enable_secondary" = "0x0"
 
 			register "c3_latency" = "85"
 			register "docking_supported" = "1"
@@ -81,8 +81,8 @@ chip northbridge/intel/i945
 			end # PCI bridge
 			device pci 1e.2 off end # AC'97 Audio
 			device pci 1e.3 off end # AC'97 Modem
-                        device pci 1f.0 on # LPC bridge
-                                chip superio/smsc/fdc37n972
+			device pci 1f.0 on # LPC bridge
+				chip superio/smsc/fdc37n972
 					device pnp 2e.0 off		# Floppy
 					end
 					device pnp 2e.1 off		# ACPI PM
@@ -93,11 +93,11 @@ chip northbridge/intel/i945
 						irq 0x70 = 5
 					end
 					device pnp 2e.4 on		# COM1
-                                                 io 0x60 = 0x3f8
-                                                irq 0x70 = 4
+						 io 0x60 = 0x3f8
+						irq 0x70 = 4
 					end
-                                        device pnp 2e.5 off
-                                        end
+					device pnp 2e.5 off
+					end
 					#device pnp 2e.6 on		# RTC
 					#	 io 0x60 = 0x70
 					#	 io 0x62 = 0x74
@@ -109,19 +109,19 @@ chip northbridge/intel/i945
 					end
 					#device pnp 2e.9 on		# Mailbox
 					#end
-                                end
-                                chip superio/smsc/sio10n268
-                                        device pnp 4e.0 off		# Floppy
+				end
+				chip superio/smsc/sio10n268
+					device pnp 4e.0 off		# Floppy
 					end
 					device pnp 4e.1 off		# Parport
 					end
 					#device pnp 4e.2 on		# COM3
-					#         io 0x60 = 0x3e8
-					#        irq 0x70 = 6
+					#	 io 0x60 = 0x3e8
+					#	irq 0x70 = 6
 					#end
 					#device pnp 4e.3 on		# COM4
-					#         io 0x60 = 0x2e8
-					#        irq 0x70 = 6
+					#	 io 0x60 = 0x2e8
+					#	irq 0x70 = 6
 					#end
 					device pnp 4e.5 on		# Keyboard
 						io 0x60 = 0x60
@@ -139,12 +139,12 @@ chip northbridge/intel/i945
 					end
 					chip ec/acpi
 					end
-                                end
+				end
 
-                        end
+			end
 			device pci 1f.1 off end  # IDE
-                        device pci 1f.2 on end  # SATA
-                        device pci 1f.3 on end  # SMBus
-                end
-        end
+			device pci 1f.2 on end  # SATA
+			device pci 1f.3 on end  # SMBus
+		end
+	end
 end

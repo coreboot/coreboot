@@ -21,6 +21,7 @@ chip soc/intel/cannonlake
 	#+-------------------+---------------------------+
 	#| Field	     |	Value			 |
 	#+-------------------+---------------------------+
+	#| GSPI1             | FP MCU                    |
 	#| I2C0		     | Trackpad			 |
 	#| I2C1		     | Touchscreen		 |
 	#| I2C4		     | Audio			 |
@@ -153,5 +154,15 @@ chip soc/intel/cannonlake
 				device i2c 3b on end
 			end
 		end #I2C #4
+		device pci 1e.3 on
+			chip drivers/spi/acpi
+				register "name" = ""CRFP""
+				register "hid" = "ACPI_DT_NAMESPACE_HID"
+				register "uid" = "1"
+				register "compat_string" = ""google,cros-ec-spi""
+				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPP_A23_IRQ)"
+				device spi 1 on end
+			end # FPMCU
+		end # GSPI #1
 	end
 end

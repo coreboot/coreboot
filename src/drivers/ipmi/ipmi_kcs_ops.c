@@ -32,6 +32,7 @@
 #endif
 #include <version.h>
 #include <delay.h>
+#include <timer.h>
 #include "ipmi_kcs.h"
 #include "chip.h"
 
@@ -62,12 +63,37 @@ static void ipmi_kcs_init(struct device *dev)
 {
 	struct ipmi_devid_rsp rsp;
 	uint32_t man_id = 0, prod_id = 0;
+	struct drivers_ipmi_config *conf = NULL;
 
 	if (!dev->enabled)
 		return;
 
+	printk(BIOS_DEBUG, "IPMI: PNP KCS 0x%x\n", dev->path.pnp.port);
+
+	if (dev->chip_info)
+		conf = dev->chip_info;
+
 	/* Get IPMI version for ACPI and SMBIOS */
+	if (conf && conf->wait_for_bmc && conf->bmc_boot_timeout) {
+		struct stopwatch sw;
+		stopwatch_init_msecs_expire(&sw, conf->bmc_boot_timeout * 1000);
+		printk(BIOS_DEBUG, "IPMI: Waiting for BMC...\n");
+
+		while (!stopwatch_expired(&sw)) {
+			if (inb(dev->path.pnp.port) != 0xff)
+				break;
+			mdelay(100);
+		}
+		if (stopwatch_expired(&sw)) {
+			printk(BIOS_INFO, "IPMI: Waiting for BMC timed out\n");
+			/* Don't write tables if communication failed */
+			dev->enabled = 0;
+			return;
+		}
+	}
+
 	if (!ipmi_get_device_id(dev, &rsp)) {
+		/* Queried the IPMI revision from BMC */
 		ipmi_revision_minor = IPMI_IPMI_VERSION_MINOR(rsp.ipmi_version);
 		ipmi_revision_major = IPMI_IPMI_VERSION_MAJOR(rsp.ipmi_version);
 

@@ -218,14 +218,23 @@ wrap_cbw (cbw_t *cbw, int datalen, cbw_direction dir, const u8 *cmd,
 static int
 get_csw (endpoint_t *ep, csw_t *csw)
 {
-	if (ep->dev->controller->bulk (ep, sizeof (csw_t), (u8 *) csw, 1) < 0) {
+	hci_t *ctrlr = ep->dev->controller;
+	int ret = ctrlr->bulk (ep, sizeof (csw_t), (u8 *) csw, 1);
+
+	/* Some broken sticks send a zero-length packet at the end of their data
+	   transfer which would show up here. Skip it to get the actual CSW. */
+	if (ret == 0)
+		ret = ctrlr->bulk (ep, sizeof (csw_t), (u8 *) csw, 1);
+
+	if (ret < 0) {
 		clear_stall (ep);
-		if (ep->dev->controller->bulk
-				(ep, sizeof (csw_t), (u8 *) csw, 1) < 0) {
+		if (ctrlr->bulk (ep, sizeof (csw_t), (u8 *) csw, 1) < 0) {
 			return reset_transport (ep->dev);
 		}
 	}
-	if (csw->dCSWTag != tag) {
+	if (ret != sizeof(csw_t) || csw->dCSWTag != tag ||
+	    csw->dCSWSignature != csw_signature) {
+		usb_debug ("MSC: received malformed CSW\n");
 		return reset_transport (ep->dev);
 	}
 	return MSC_COMMAND_OK;

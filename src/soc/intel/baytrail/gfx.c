@@ -320,13 +320,13 @@ static void gfx_panel_setup(struct device *dev)
 				PP_CONTROL_UNLOCK | PP_CONTROL_EDP_FORCE_VDD),
 		/* POWER ON */
 		REG_RES_WRITE32(PCI_BASE_ADDRESS_0, PIPEA_REG(PP_ON_DELAYS),
-				(config->gpu_pipea_port_select << 30 |
-				 config->gpu_pipea_power_on_delay << 16 |
-				 config->gpu_pipea_light_on_delay)),
+				((u32)config->gpu_pipea_port_select << 30 |
+				 (u32)config->gpu_pipea_power_on_delay << 16 |
+				 (u32)config->gpu_pipea_light_on_delay)),
 		/* POWER OFF */
 		REG_RES_WRITE32(PCI_BASE_ADDRESS_0, PIPEA_REG(PP_OFF_DELAYS),
-				(config->gpu_pipea_power_off_delay << 16 |
-				 config->gpu_pipea_light_off_delay)),
+				((u32)config->gpu_pipea_power_off_delay << 16 |
+				 (u32)config->gpu_pipea_light_off_delay)),
 		/* DIVISOR */
 		REG_RES_RMW32(PCI_BASE_ADDRESS_0, PIPEA_REG(PP_DIVISOR),
 			      ~0x1f, config->gpu_pipea_power_cycle_delay),
@@ -338,13 +338,13 @@ static void gfx_panel_setup(struct device *dev)
 				PP_CONTROL_UNLOCK | PP_CONTROL_EDP_FORCE_VDD),
 		/* POWER ON */
 		REG_RES_WRITE32(PCI_BASE_ADDRESS_0, PIPEB_REG(PP_ON_DELAYS),
-				(config->gpu_pipeb_port_select << 30 |
-				 config->gpu_pipeb_power_on_delay << 16 |
-				 config->gpu_pipeb_light_on_delay)),
+				((u32)config->gpu_pipeb_port_select << 30 |
+				 (u32)config->gpu_pipeb_power_on_delay << 16 |
+				 (u32)config->gpu_pipeb_light_on_delay)),
 		/* POWER OFF */
 		REG_RES_WRITE32(PCI_BASE_ADDRESS_0, PIPEB_REG(PP_OFF_DELAYS),
-				(config->gpu_pipeb_power_off_delay << 16 |
-				 config->gpu_pipeb_light_off_delay)),
+				((u32)config->gpu_pipeb_power_off_delay << 16 |
+				 (u32)config->gpu_pipeb_light_off_delay)),
 		/* DIVISOR */
 		REG_RES_RMW32(PCI_BASE_ADDRESS_0, PIPEB_REG(PP_DIVISOR),
 			      ~0x1f, config->gpu_pipeb_power_cycle_delay),

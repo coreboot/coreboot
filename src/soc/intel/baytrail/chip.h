@@ -69,7 +69,7 @@ struct soc_intel_baytrail_config {
 	/* Allow PCIe devices to wake system from suspend. */
 	int pcie_wake_enable;
 
-	int gpu_pipea_port_select;	/* Port select: 1=DP_B 2=DP_C */
+	uint8_t gpu_pipea_port_select;	/* Port select: 1=DP_B 2=DP_C */
 	uint16_t gpu_pipea_power_on_delay;
 	uint16_t gpu_pipea_light_on_delay;
 	uint16_t gpu_pipea_power_off_delay;
@@ -77,7 +77,7 @@ struct soc_intel_baytrail_config {
 	uint16_t gpu_pipea_power_cycle_delay;
 	int gpu_pipea_pwm_freq_hz;
 
-	int gpu_pipeb_port_select;	/* Port select: 1=DP_B 2=DP_C */
+	uint8_t gpu_pipeb_port_select;	/* Port select: 1=DP_B 2=DP_C */
 	uint16_t gpu_pipeb_power_on_delay;
 	uint16_t gpu_pipeb_light_on_delay;
 	uint16_t gpu_pipeb_power_off_delay;

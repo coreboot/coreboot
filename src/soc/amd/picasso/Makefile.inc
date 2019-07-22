@@ -37,13 +37,6 @@ subdirs-y += ../../../cpu/x86/mtrr
 subdirs-y += ../../../cpu/x86/pae
 subdirs-y += ../../../cpu/x86/smm
 
-# TODO: Make coreboot modifications so bootblock can be removed.  This soc
-#       also selects C_ENVIRONMENT_BOOTBLOCK to enforce certain codepaths
-#       in romstage.  As a result, the bootblock build also needs a
-#       dummy cache_as_ram.S
-bootblock-y += cache_as_ram.S
-bootblock-y += bootblock/bootblock.c
-
 romstage-y += i2c.c
 romstage-y += romstage.c
 romstage-y += gpio.c

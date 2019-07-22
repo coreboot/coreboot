@@ -72,6 +72,10 @@ config UDELAY_LAPIC_FIXED_FSB
 	int
 	default 200
 
+config HAVE_BOOTBLOCK
+	bool
+	default n
+
 # TODO: Sync these with definitions in PI vendorcode.
 # DCACHE_RAM_BASE must equal BSP_STACK_BASE_ADDR.
 # DCACHE_RAM_SIZE must equal BSP_STACK_SIZE.

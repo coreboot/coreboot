@@ -705,6 +705,11 @@ $(objcbfs)/bootblock.raw.bin: $(objcbfs)/bootblock.raw.elf
 	@printf "    OBJCOPY    $(notdir $(@))\n"
 	$(OBJCOPY_bootblock) -O binary $< $@
 
+ifneq ($(CONFIG_HAVE_BOOTBLOCK),y)
+$(objcbfs)/bootblock.bin:
+	dd if=/dev/zero of=$@ bs=64 count=1
+endif
+
 $(objcbfs)/%.bin: $(objcbfs)/%.raw.bin
 	cp $< $@
 

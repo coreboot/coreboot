@@ -76,6 +76,7 @@ options so we can remove the options and the code they disable:
 
 * C\_ENVIRONMENT\_BOOTBLOCK
 * NO\_CAR\_GLOBAL\_MIGRATION
+* RELOCATABLE\_RAMSTAGE
 
 These only affect x86. If your platform only works without them, please
 look into fixing that.

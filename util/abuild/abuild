@@ -746,13 +746,18 @@ if [ -z "$TARGET" ] || [ "$TARGET" = "/" ]; then
 	exit 1
 fi
 
+if ! mkdir -p "$TARGET"; then
+	echo "Unable to create build directory"
+	exit 1
+fi
+
 customizing=$(echo "$customizing" | cut -c3-)
 if [ "$customizing" = "" ]; then
 	customizing="default configuration"
 fi
 
-FAILED_BOARDS="${TARGET}/failed_boards"
-PASSED_BOARDS="${TARGET}/passing_boards"
+FAILED_BOARDS="$(realpath ${TARGET}/failed_boards)"
+PASSED_BOARDS="$(realpath ${TARGET}/passing_boards)"
 
 if [ "$recursive" = "false" ]; then
 	rm -f "$FAILED_BOARDS" "$PASSED_BOARDS"

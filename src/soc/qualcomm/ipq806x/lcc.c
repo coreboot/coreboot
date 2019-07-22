@@ -287,29 +287,21 @@ static int lcc_enable_mi2s(Ipq806xLccClocks *bus)
 
 int audio_clock_config(unsigned frequency)
 {
-	Ipq806xLccClocks *bus = malloc(sizeof(*bus));
+	Ipq806xLccClocks bus = {
+		.gcc_apcs_regs = (void *)(MSM_GCC_BASE + GCC_PLL_APCS_REG),
+		.lcc_pll0_regs = (void *)(MSM_LPASS_LCC_BASE + LCC_PLL0_MODE_REG),
+		.lcc_ahbix_regs = (void *)(MSM_LPASS_LCC_BASE + LCC_AHBIX_NS_REG),
+		.lcc_mi2s_regs = (void *)(MSM_LPASS_LCC_BASE + LCC_MI2S_NS_REG),
+		.lcc_pll_regs = (void *)(MSM_LPASS_LCC_BASE + LCC_PLL_PCLK_REG),
+	};
 
-	if (!bus) {
-		printk(BIOS_ERR, "%s: failed to allocate bus structure\n",
-		       __func__);
+	if (lcc_init_enable_pll0(&bus))
 		return 1;
-	}
-
-	bus->gcc_apcs_regs = (void *)(MSM_GCC_BASE + GCC_PLL_APCS_REG);
-	bus->lcc_pll0_regs = (void *)(MSM_LPASS_LCC_BASE + LCC_PLL0_MODE_REG);
-	bus->lcc_ahbix_regs = (void *)(MSM_LPASS_LCC_BASE + LCC_AHBIX_NS_REG);
-	bus->lcc_mi2s_regs = (void *)(MSM_LPASS_LCC_BASE + LCC_MI2S_NS_REG);
-	bus->lcc_pll_regs = (void *)(MSM_LPASS_LCC_BASE + LCC_PLL_PCLK_REG);
-
-
-	if (lcc_init_enable_pll0(bus))
+	if (lcc_init_enable_ahbix(&bus))
 		return 1;
-	if (lcc_init_enable_ahbix(bus))
+	if (lcc_init_mi2s(&bus, frequency))
 		return 1;
-	if (lcc_init_mi2s(bus, frequency))
-		return 1;
-
-	if (lcc_enable_mi2s(bus))
+	if (lcc_enable_mi2s(&bus))
 		return 1;
 
 	return 0;

@@ -1,0 +1,2 @@
+config BOARD_RAZER_BLADE_STEALTH_KBL
+	bool "Razer Blade Stealth KabyLake (2016)"

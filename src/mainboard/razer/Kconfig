@@ -1,0 +1,17 @@
+
+if VENDOR_RAZER
+
+choice
+	prompt "Mainboard model"
+
+source "src/mainboard/razer/*/Kconfig.name"
+
+endchoice
+
+source "src/mainboard/razer/*/Kconfig"
+
+config MAINBOARD_VENDOR
+	string "Mainboard Vendor"
+	default "RAZER"
+
+endif

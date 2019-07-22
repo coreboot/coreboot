@@ -58,8 +58,8 @@ printf "%s-%s\n" "$VERSION_NAME"  "$(git log --pretty=%H|head -1)" > .coreboot-v
 tstamp=$(git log --pretty=format:%ci -1)
 cd ..
 
-tar --sort=name --mtime="$tstamp" --owner=coreboot:1000 --group=coreboot:1000 --exclude=*/.git --exclude=*/.gitignore --exclude="coreboot-${VERSION_NAME}/3rdparty/blobs" --exclude="coreboot-${VERSION_NAME}/3rdparty/fsp" -cvf - "coreboot-${VERSION_NAME}" |xz -9 > "coreboot-${VERSION_NAME}.tar.xz"
-tar --sort=name --mtime="$tstamp" --owner=coreboot:1000 --group=coreboot:1000 --exclude=*/.git --exclude=*/.gitignore -cvf - "coreboot-${VERSION_NAME}/3rdparty/blobs" "coreboot-${VERSION_NAME}/3rdparty/fsp" |xz -9 > "coreboot-blobs-${VERSION_NAME}.tar.xz"
+tar --sort=name --mtime="$tstamp" --owner=coreboot:1000 --group=coreboot:1000 --exclude=*/.git --exclude=*/.gitignore --exclude="coreboot-${VERSION_NAME}/3rdparty/blobs" --exclude="coreboot-${VERSION_NAME}/3rdparty/fsp" --exclude="coreboot-${VERSION_NAME}/3rdparty/intel-microcode" -cvf - "coreboot-${VERSION_NAME}" |xz -9 > "coreboot-${VERSION_NAME}.tar.xz"
+tar --sort=name --mtime="$tstamp" --owner=coreboot:1000 --group=coreboot:1000 --exclude=*/.git --exclude=*/.gitignore -cvf - "coreboot-${VERSION_NAME}/3rdparty/blobs" "coreboot-${VERSION_NAME}/3rdparty/fsp" "coreboot-${VERSION_NAME}/3rdparty/intel-microcode" |xz -9 > "coreboot-blobs-${VERSION_NAME}.tar.xz"
 
 if [ -n "${GPG_KEY_ID}" ]; then
 	gpg --armor --local-user "$GPG_KEY_ID" --output "coreboot-${VERSION_NAME}.tar.xz.sig" --detach-sig "coreboot-${VERSION_NAME}.tar.xz"

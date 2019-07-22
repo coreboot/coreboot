@@ -255,6 +255,7 @@ menu "Display"
 config FRAMEBUFFER_SET_VESA_MODE
 	prompt "Set framebuffer graphics resolution"
 	bool
+	default y if CHROMEOS
 	depends on PCI_OPTION_ROM_RUN_YABEL || PCI_OPTION_ROM_RUN_REALMODE
 	select HAVE_VBE_LINEAR_FRAMEBUFFER
 	help
@@ -407,6 +408,8 @@ endif # FRAMEBUFFER_SET_VESA_MODE
 
 choice
 	prompt "Framebuffer mode"
+	default VBE_LINEAR_FRAMEBUFFER if HAVE_VBE_LINEAR_FRAMEBUFFER && CHROMEOS
+	default GENERIC_LINEAR_FRAMEBUFFER if HAVE_LINEAR_FRAMEBUFFER && CHROMEOS
 	default VGA_TEXT_FRAMEBUFFER
 
 config VGA_TEXT_FRAMEBUFFER

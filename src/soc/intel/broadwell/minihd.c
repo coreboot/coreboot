@@ -64,7 +64,8 @@ static const u32 minihd_verb_table[] = {
 static void minihd_init(struct device *dev)
 {
 	struct resource *res;
-	u8 *base, reg32;
+	u8 *base;
+	u32 reg32;
 	int codec_mask, i;
 
 	/* Find base address */

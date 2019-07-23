@@ -68,6 +68,7 @@ be more frequent than was needed, so we scaled it back to twice a year.
 - [ ] Announce that the release tag is done on IRC
 - [ ] Update release notes with actual commit id, push to repo
 - [ ] Upload release files to web server
+- [ ] Upload crossgcc sources to web server
 - [ ] Update download page to point to files, push to repo
 - [ ] Write and publish blog post with release notes.
 - [ ] Update the topic in the irc channel that the release is done.
@@ -194,6 +195,22 @@ https://www.coreboot.org/releases/
 The downloads page is the official place to download the releases from, and it needs to be updated with links to the new release tarballs and .sig files. It can be found at https://review.coreboot.org/cgit/homepage.git/tree/downloads.html
 
 Here is an example commit to change it: https://review.coreboot.org/#/c/19515/
+
+## Upload crossgcc sources
+Sometimes the source files for older revisions of
+crossgcc disappear. To deal with that we maintain a mirror at
+https://www.coreboot.org/releases/crossgcc-sources/ where we host the
+sources used by the crossgcc scripts that are part of coreboot releases.
+
+Run
+
+````
+% util/crossgcc/buildgcc -u
+````
+
+This will output the set of URLs that the script uses to download the
+sources. Download them yourself and copy them into the crossgcc-sources
+directory on the server.
 
 ## After the release is complete
 Post the release notes on https://blogs.coreboot.org

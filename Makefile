@@ -124,7 +124,7 @@ ifneq ($(MAKECMDGOALS),)
 ifneq ($(filter %config %clean cross% clang iasl gnumake lint% help% what-jenkins-does,$(MAKECMDGOALS)),)
 NOCOMPILE:=1
 endif
-ifeq ($(MAKECMDGOALS), %clean)
+ifneq ($(filter %clean lint% help% what-jenkins-does,$(MAKECMDGOALS)),)
 NOMKDIR:=1
 endif
 endif

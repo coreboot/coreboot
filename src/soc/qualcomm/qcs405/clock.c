@@ -235,12 +235,16 @@ void clock_configure_spi(int blsp, int qup, uint32_t hz)
 			spi_clk = (struct qcs405_clock *)
 					&gcc->blsp1_qup4_spi_clk;
 			break;
+		default:
+			printk(BIOS_ERR, "Invalid QUP %d\n", qup);
+			return;
 		}
-	} else if (blsp == 2)
+	} else if (blsp == 2) {
 		spi_clk = (struct qcs405_clock *)&gcc->blsp2_qup0_spi_clk;
-
-	else
-		printk(BIOS_ERR, "BLSP%d not supported\n", blsp);
+	} else {
+		printk(BIOS_ERR, "BLSP %d not supported\n", blsp);
+		return;
+	}
 
 	clock_configure(spi_clk, spi_cfg, hz, ARRAY_SIZE(spi_cfg));
 }

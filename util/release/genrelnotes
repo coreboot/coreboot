@@ -202,12 +202,12 @@ show_diff () {
 	local new
 	local old
 
-	new="$(comm -13 <(echo "$2") <(echo "$3"))"
+	new="$(comm -13 <(echo "$2") <(echo "$3") | sed 's/^/* /')"
 	if [ -n "$new" ]; then
 		printf "Added %s $1:\n-------------------\n%s\n\n" \
 			"$(echo "$new" | wc -l)" "$new"  >> "$LOGFILE"
 	fi
-	old="$(comm -23 <(echo "$2") <(echo "$3"))"
+	old="$(comm -23 <(echo "$2") <(echo "$3") | sed 's/^/* /')"
 	if [ -n "$old" ]; then
 		printf "Removed %s $1:\n-------------------\n%s\n\n" \
 			"$(echo "$old" | wc -l)" "$old"  >> "$LOGFILE"

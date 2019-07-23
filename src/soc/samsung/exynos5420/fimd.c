@@ -317,9 +317,10 @@ static void exynos5_set_system_display(void)
 void exynos_fimd_lcd_init(vidinfo_t *vid)
 {
 	unsigned int cfg = 0, rgb_mode;
-	unsigned int offset;
+	struct exynos_fb *fimd;
 
-	offset = exynos_fimd_get_base_offset();
+	fimd = (void *)(FIMD_CTRL_ADDR + EXYNOS5_LCD_IF_BASE_OFFSET);
+
 	printk(BIOS_SPEW, "%s\n", __func__);
 	exynos5_set_system_display();
 
@@ -349,19 +350,19 @@ void exynos_fimd_lcd_init(vidinfo_t *vid)
 		if (!vid->vl_dp)
 			cfg |= EXYNOS_VIDCON1_IVDEN_INVERT;
 
-		lwritel(cfg, &FIMD_CTRL->vidcon1 + offset);
+		lwritel(cfg, &fimd->vidcon1);
 
 		/* set timing */
 		cfg = EXYNOS_VIDTCON0_VFPD(vid->vl_vfpd - 1);
 		cfg |= EXYNOS_VIDTCON0_VBPD(vid->vl_vbpd - 1);
 		cfg |= EXYNOS_VIDTCON0_VSPW(vid->vl_vspw - 1);
-		lwritel(cfg, &FIMD_CTRL->vidtcon0 + offset);
+		lwritel(cfg, &fimd->vidtcon0);
 
 		cfg = EXYNOS_VIDTCON1_HFPD(vid->vl_hfpd - 1);
 		cfg |= EXYNOS_VIDTCON1_HBPD(vid->vl_hbpd - 1);
 		cfg |= EXYNOS_VIDTCON1_HSPW(vid->vl_hspw - 1);
 
-		lwritel(cfg, &FIMD_CTRL->vidtcon1 + offset);
+		lwritel(cfg, &fimd->vidtcon1);
 
 		/* set lcd size */
 		cfg = EXYNOS_VIDTCON2_HOZVAL(vid->vl_col - 1) |
@@ -369,7 +370,7 @@ void exynos_fimd_lcd_init(vidinfo_t *vid)
 			EXYNOS_VIDTCON2_HOZVAL_E(vid->vl_col - 1) |
 			EXYNOS_VIDTCON2_LINEVAL_E(vid->vl_row - 1);
 
-		lwritel(cfg, &FIMD_CTRL->vidtcon2 + offset);
+		lwritel(cfg, &fimd->vidtcon2);
 	}
 
 	/* set display mode */

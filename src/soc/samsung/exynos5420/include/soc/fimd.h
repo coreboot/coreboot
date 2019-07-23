@@ -136,7 +136,8 @@ check_member(exynos5_disp_ctrl, trigcon, 0x1a4);
 #define OSD_RIGHTBOTX_F_OFFSET		11
 #define OSD_RIGHTBOTY_F_OFFSET		0
 
-#define FIMD_CTRL ((struct exynos_fb *)0x14400000)
+#define FIMD_CTRL_ADDR			0x14400000
+#define FIMD_CTRL			((struct exynos_fb *)FIMD_CTRL_ADDR)
 
 /* from u-boot fb.h. It needs to be merged with these dp structs maybe. */
 enum {

@@ -884,11 +884,6 @@ struct exynos_fb {
 /* LCD IF register offset */
 #define EXYNOS5_LCD_IF_BASE_OFFSET			0x20000
 
-static inline u32 exynos_fimd_get_base_offset(void)
-{
-	return EXYNOS5_LCD_IF_BASE_OFFSET/4;
-}
-
 /*
  *  Register offsets
 */

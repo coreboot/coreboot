@@ -26,10 +26,13 @@ config VBOOT
 
 if VBOOT
 
+comment "Anti-Rollback Protection disabled because mocking secdata is enabled."
+	depends on VBOOT_MOCK_SECDATA
+
 config VBOOT_MEASURED_BOOT
 	bool "Enable Measured Boot"
 	default n
-	depends on !VBOOT_MOCK_SECDATA
+	depends on TPM1 || TPM2
 	depends on !VBOOT_RETURN_FROM_VERSTAGE
 	help
 	  Enables measured boot mode in vboot (experimental)

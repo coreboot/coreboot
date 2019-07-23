@@ -1,5 +1,6 @@
 config HAVE_INTEL_PTT
 	bool
 	default n
+	select VBOOT_MOCK_SECDATA if VBOOT
 	help
 		Activate if your platform has Intel Platform Trust Technology like Intel iTPM and you want to use it.

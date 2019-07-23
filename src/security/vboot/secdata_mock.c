@@ -43,12 +43,6 @@ int vb2ex_tpm_clear_owner(struct vb2_context *ctx)
 	return VB2_SUCCESS;
 }
 
-uint32_t vboot_extend_pcr(struct vb2_context *ctx, int pcr,
-			enum vb2_pcr_digest which_digest)
-{
-	return VB2_SUCCESS;
-}
-
 uint32_t antirollback_read_space_firmware(struct vb2_context *ctx)
 {
 	vb2api_secdata_create(ctx);
@@ -60,7 +54,7 @@ uint32_t antirollback_write_space_firmware(struct vb2_context *ctx)
 	return VB2_SUCCESS;
 }
 
-uint32_t antirollback_lock_space_firmware()
+uint32_t antirollback_lock_space_firmware(void)
 {
 	return VB2_SUCCESS;
 }

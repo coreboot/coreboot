@@ -88,6 +88,11 @@ else
 verstage-y += secdata_tpm.c
 romstage-$(CONFIG_VBOOT_SEPARATE_VERSTAGE) += secdata_tpm.c
 endif
+
+ifneq ($(CONFIG_TPM1)$(CONFIG_TPM2),)
+verstage-y += tpm_common.c
+endif
+
 romstage-y += vboot_logic.c
 romstage-y += common.c
 

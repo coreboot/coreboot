@@ -769,7 +769,7 @@ static ssize_t tegra_dsi_host_transfer(struct mipi_dsi_host *host,
 	tegra_dsi_writel(dsi, value, DSI_WR_DATA);
 
 	/* write payload (if any) */
-	if (msg->tx_len > 2) {
+	if (tx && msg->tx_len > 2) {
 		for (j = 2; j < msg->tx_len; j += 4) {
 			value = 0;
 

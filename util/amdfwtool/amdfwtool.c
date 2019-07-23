@@ -148,17 +148,15 @@ static uint32_t fletcher32(const void *data, int length)
 	c0 = 0xFFFF;
 	c1 = 0xFFFF;
 
-	for (index = 0; index < length; index++) {
-		/*
-		* Ignore the contents of the checksum field.
-		*/
+	while (length) {
+		index = length >= 359 ? 359 : length;
+		length -= index;
+	do {
 		c0 += *(pptr++);
 		c1 += c0;
-		if ((index % 360) == 0) {
-			/* Sums[0,1] mod 64K + overflow */
-			c0 = (c0 & 0xFFFF) + (c0 >> 16);
-			c1 = (c1 & 0xFFFF) + (c1 >> 16);
-		}
+	} while (--index);
+		c0 = (c0 & 0xFFFF) + (c0 >> 16);
+		c1 = (c1 & 0xFFFF) + (c1 >> 16);
 	}
 
 	/* Sums[0,1] mod 64K + overflow */

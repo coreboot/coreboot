@@ -20,7 +20,7 @@ ramstage-y += memlayout.ld
 ramstage-y += fixup_fdt.c
 
 
-DTB=build/hifive-unleashed.dtb
+DTB=$(obj)/hifive-unleashed.dtb
 DTS=src/mainboard/sifive/hifive-unleashed/hifive-unleashed.dts
 $(DTB): $(DTS)
 	dtc -I dts -O dtb -o $(DTB) $(DTS)

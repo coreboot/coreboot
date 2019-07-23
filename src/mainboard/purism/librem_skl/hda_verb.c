@@ -1,8 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2017 Intel Corporation
- * (Written by Naresh G Solanki <naresh.solanki@intel.com> for Intel Corp.)
+ * Copyright (C) 2019 Purism SPC.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -14,70 +13,60 @@
  * GNU General Public License for more details.
  */
 
-#include <bootstate.h>
-#include <chip.h>
-#include <console/console.h>
 #include <device/azalia_device.h>
-#include <soc/intel/common/hda_verb.h>
-#include <soc/pci_devs.h>
 
-#include "hda_verb.h"
+const u32 cim_verb_data[] = {
+	/* coreboot specific header */
+	0x10ec0269,	/* Codec Vendor / Device ID: Realtek ALC269 */
+	0x19910269,	/* Subsystem ID */
+	0x0000000c,	/* Number of jacks (NID entries) */
 
-static void codecs_init(u8 *base, u32 codec_mask)
-{
-	int i;
+	0x0017ff00,	/* Function Reset */
+	0x0017ff00,	/* Double Function Reset */
+	0x0017ff00,
+	0x0017ff00,
 
-	/* Can support up to 4 codecs */
-	for (i = 3; i >= 0; i--) {
-		if (codec_mask & (1 << i))
-			hda_codec_init(base, i, cim_verb_data_size,
-					cim_verb_data);
-	}
+	/* Bits 31:28 - Codec Address */
+	/* Bits 27:20 - NID */
+	/* Bits 19:8 - Verb ID */
+	/* Bits 7:0  - Payload */
 
-	if (pc_beep_verbs_size)
-		hda_codec_write(base, pc_beep_verbs_size, pc_beep_verbs);
-}
+	/* NID 0x01, HDA Codec Subsystem ID Verb Table: 0x19910269 */
+	AZALIA_SUBVENDOR(0x0, 0x19910269),
 
-static void mb_hda_codec_init(void *unused)
-{
-	struct soc_intel_skylake_config *config;
-	u8 *base;
-	struct resource *res;
-	u32 codec_mask;
-	struct device *dev;
+	/* Pin Widget Verb Table */
 
-	dev = SA_DEV_ROOT;
-	/* Check if HDA is enabled, else return */
-	if (dev == NULL || dev->chip_info == NULL)
-		return;
+	/* Pin Complex (NID 0x12) */
+	AZALIA_PIN_CFG(0x0, 0x12, 0x40000000),
 
-	config = dev->chip_info;
+	/* Pin Complex (NID 0x14) */
+	AZALIA_PIN_CFG(0x0, 0x14, 0x90170110),
 
-	/*
-	 * IoBufferOwnership 0:HD-A Link, 1:Shared HD-A Link and I2S Port,
-	 * 3:I2S Ports. In HDA mode where codec need to be programmed with
-	 * verb table
-	 */
-	if (config->IoBufferOwnership == 3)
-		return;
+	/* Pin Complex (NID 0x15) */
+	AZALIA_PIN_CFG(0x0, 0x15, 0x04214020),
 
-	/* Find base address */
-	dev = pcidev_path_on_root(PCH_DEVFN_HDA);
-	if (dev == NULL)
-		return;
-	res = find_resource(dev, PCI_BASE_ADDRESS_0);
-	if (!res)
-		return;
+	/* Pin Complex (NID 0x17) */
+	AZALIA_PIN_CFG(0x0, 0x17, 0x411111f0),
 
-	base = res2mmio(res, 0, 0);
-	printk(BIOS_DEBUG, "HDA: base = %p\n", base);
+	/* Pin Complex (NID 0x18) */
+	AZALIA_PIN_CFG(0x0, 0x18, 0x04a19040),
 
-	codec_mask = hda_codec_detect(base);
+	/* Pin Complex (NID 0x19) */
+	AZALIA_PIN_CFG(0x0, 0x19, 0x90a70130),
 
-	if (codec_mask) {
-		printk(BIOS_DEBUG, "HDA: codec_mask = %02x\n", codec_mask);
-		codecs_init(base, codec_mask);
-	}
-}
+	/* Pin Complex (NID 0x1A) */
+	AZALIA_PIN_CFG(0x0, 0x1A, 0x411111f0),
 
-BOOT_STATE_INIT_ENTRY(BS_POST_DEVICE, BS_ON_EXIT, mb_hda_codec_init, NULL);
+	/* Pin Complex (NID 0x1B) */
+	AZALIA_PIN_CFG(0x0, 0x1B, 0x411111f0),
+
+	/* Pin Complex (NID 0x1D) */
+	AZALIA_PIN_CFG(0x0, 0x1D, 0x40548505),
+
+	/* Pin Complex (NID 0x1E) */
+	AZALIA_PIN_CFG(0x0, 0x1E, 0x411111f0),
+};
+
+const u32 pc_beep_verbs[] = {};
+
+AZALIA_ARRAY_SIZES;

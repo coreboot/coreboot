@@ -380,8 +380,8 @@ static int tegra_dsi_configure(struct tegra_dsi *dsi, unsigned int pipe,
 		}
 
 		tegra_dsi_writel(dsi, 0, DSI_PKT_LEN_0_1);
-		tegra_dsi_writel(dsi, bytes << 16, DSI_PKT_LEN_2_3);
-		tegra_dsi_writel(dsi, bytes << 16, DSI_PKT_LEN_4_5);
+		tegra_dsi_writel(dsi, (u32)bytes << 16, DSI_PKT_LEN_2_3);
+		tegra_dsi_writel(dsi, (u32)bytes << 16, DSI_PKT_LEN_4_5);
 		tegra_dsi_writel(dsi, 0, DSI_PKT_LEN_6_7);
 
 		value = MIPI_DCS_WRITE_MEMORY_START << 8 |

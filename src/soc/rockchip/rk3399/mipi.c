@@ -305,7 +305,7 @@ static int rk_mipi_dsi_get_lane_bps(struct rk_mipi_dsi *dsi,
 		       dsi->format);
 		return bpp;
 	}
-	pclk = edid->mode.pixel_clock * MSECS_PER_SEC;
+	pclk = (u64)edid->mode.pixel_clock * MSECS_PER_SEC;
 
 	/* take 1 / 0.8, since mbps must bigger than bandwidth of RGB */
 	target_bps = pclk / panel_data->lanes * bpp / 8 * 10;

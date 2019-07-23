@@ -51,6 +51,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_D8, NONE),
 	/* D10 : ISH_SPI_CLK ==> EN_PP3300_PP1800_FP */
 	PAD_CFG_GPO(GPP_D10, 0, DEEP),
+	/* D16 : USI_INT_L */
+	PAD_CFG_GPI_APIC(GPP_D16, NONE, PLTRST, LEVEL, INVERT),
 	/* D21 : SPI1_IO2 ==> NC */
 	PAD_NC(GPP_D21, NONE),
 	/* F0  : GPP_F0 ==> NC */
@@ -90,7 +92,7 @@ static const struct pad_config gpio_table[] = {
 	/* H13 : M2_SKT2_CFG1 ==> SPKR_RST_L */
 	PAD_CFG_GPO(GPP_H13, 1, DEEP),
 	/* H14 : M2_SKT2_CFG2 ==> TOUCHSCREEN_STOP_L */
-	PAD_CFG_GPO(GPP_H14, 0, PLTRST),
+	PAD_CFG_GPO(GPP_H14, 1, PLTRST),
 	/* H19 : TIMESYNC[0] ==> MEM_STRAP_0 */
 	PAD_CFG_GPI(GPP_H19, NONE, PLTRST),
 	/* H22 : MEM_STRAP_1 */

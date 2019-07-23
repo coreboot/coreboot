@@ -16,6 +16,7 @@
 #include <console/console.h>
 #include <string.h>
 #include <bootmode.h>
+#include <boot/coreboot_tables.h>
 #include <device/pci_ops.h>
 #include <device/device.h>
 #include <device/pci.h>
@@ -26,14 +27,10 @@
 #include <vendorcode/google/chromeos/chromeos.h>
 #include "ec.h"
 
-
-#if ENV_RAMSTAGE
-#include <boot/coreboot_tables.h>
-
 void fill_lb_gpios(struct lb_gpios *gpios)
 {
-	struct device *dev = pcidev_on_root(0x1f, 0);
-	u16 gen_pmcon_1 = pci_read_config32(dev, GEN_PMCON_1);
+	pci_devfn_t dev = PCI_DEV(0, 0x1f, 0);
+	u16 gen_pmcon_1 = pci_s_read_config32(dev, GEN_PMCON_1);
 
 	struct lb_gpio chromeos_gpios[] = {
 		/* Write Protect: GPIO70 active high */
@@ -51,7 +48,6 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	};
 	lb_add_gpios(gpios, chromeos_gpios, ARRAY_SIZE(chromeos_gpios));
 }
-#endif
 
 int get_lid_switch(void)
 {

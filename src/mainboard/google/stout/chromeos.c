@@ -15,6 +15,7 @@
 
 #include <string.h>
 #include <bootmode.h>
+#include <boot/coreboot_tables.h>
 #include <device/pci_ops.h>
 #include <console/console.h>
 #include <device/device.h>
@@ -25,9 +26,6 @@
 #include <vendorcode/google/chromeos/chromeos.h>
 #include "ec.h"
 #include <ec/quanta/it8518/ec.h>
-
-#if ENV_RAMSTAGE
-#include <boot/coreboot_tables.h>
 
 void fill_lb_gpios(struct lb_gpios *gpios)
 {
@@ -51,7 +49,6 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	};
 	lb_add_gpios(gpios, chromeos_gpios, ARRAY_SIZE(chromeos_gpios));
 }
-#endif
 
 int get_write_protect_state(void)
 {
@@ -74,16 +71,14 @@ int get_lid_switch(void)
  */
 int get_recovery_mode_switch(void)
 {
-#ifdef __PRE_RAM__
-	pci_devfn_t dev = PCI_DEV(0, 0x1f, 0);
-#else
+#ifndef __PRE_RAM__
 	static int ec_in_rec_mode = 0;
 	static int ec_rec_flag_good = 0;
-	struct device *dev = pcidev_on_root(0x1f, 0);
 #endif
+	pci_devfn_t dev = PCI_DEV(0, 0x1f, 0);
+	u8 reg8 = pci_s_read_config8(dev, GEN_PMCON_3);
 
 	u8 ec_status = ec_read(EC_STATUS_REG);
-	u8 reg8 = pci_read_config8(dev, GEN_PMCON_3);
 
 	printk(BIOS_SPEW,"%s:  EC status:%#x   RTC_BAT: %x\n",
 			__func__, ec_status, reg8 & RTC_BATTERY_DEAD);

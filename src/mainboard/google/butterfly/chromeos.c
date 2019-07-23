@@ -16,6 +16,7 @@
 #include <console/console.h>
 #include <string.h>
 #include <bootmode.h>
+#include <boot/coreboot_tables.h>
 #include <device/pci_ops.h>
 #include <device/device.h>
 #include <device/pci.h>
@@ -29,9 +30,6 @@
 #define WP_GPIO		6
 #define DEVMODE_GPIO	54
 #define FORCE_RECOVERY_MODE	0
-
-#if ENV_RAMSTAGE
-#include <boot/coreboot_tables.h>
 
 void fill_lb_gpios(struct lb_gpios *gpios)
 {
@@ -53,7 +51,6 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	};
 	lb_add_gpios(gpios, chromeos_gpios, ARRAY_SIZE(chromeos_gpios));
 }
-#endif
 
 int get_write_protect_state(void)
 {

@@ -14,6 +14,7 @@
  * GNU General Public License for more details.
  */
 
+#include <boot/coreboot_tables.h>
 #include <device/mmio.h>
 #include <gpio.h>
 #include <soc/gpio.h>
@@ -24,9 +25,6 @@
 #define WP_STATUS_PAD_CFG1	0x483C
 
 #define WP_GPIO			GP_E_22
-
-#if ENV_RAMSTAGE
-#include <boot/coreboot_tables.h>
 
 #define ACTIVE_LOW	0
 #define ACTIVE_HIGH	1
@@ -41,7 +39,6 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	};
 	lb_add_gpios(gpios, chromeos_gpios, ARRAY_SIZE(chromeos_gpios));
 }
-#endif /* ENV_RAMSTAGE */
 
 int get_write_protect_state(void)
 {

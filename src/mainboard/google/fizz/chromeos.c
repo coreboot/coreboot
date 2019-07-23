@@ -13,15 +13,13 @@
  * GNU General Public License for more details.
  */
 
+#include <boot/coreboot_tables.h>
 #include <gpio.h>
 #include <baseboard/variants.h>
 #include <soc/gpio.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
 #include <variant/gpio.h>
-
-#if ENV_RAMSTAGE
-#include <boot/coreboot_tables.h>
 
 void fill_lb_gpios(struct lb_gpios *gpios)
 {
@@ -35,7 +33,6 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	};
 	lb_add_gpios(gpios, chromeos_gpios, ARRAY_SIZE(chromeos_gpios));
 }
-#endif /* ENV_RAMSTAGE */
 
 int get_write_protect_state(void)
 {

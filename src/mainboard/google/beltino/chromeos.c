@@ -15,6 +15,7 @@
 
 #include <device/pci_ops.h>
 #include <bootmode.h>
+#include <boot/coreboot_tables.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <southbridge/intel/lynxpoint/pch.h>
@@ -26,9 +27,6 @@
 
 #define FLAG_SPI_WP	0
 #define FLAG_REC_MODE	1
-
-#if ENV_RAMSTAGE
-#include <boot/coreboot_tables.h>
 
 void fill_lb_gpios(struct lb_gpios *gpios)
 {
@@ -43,36 +41,23 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	};
 	lb_add_gpios(gpios, chromeos_gpios, ARRAY_SIZE(chromeos_gpios));
 }
-#endif
 
 int get_write_protect_state(void)
 {
-#ifdef __SIMPLE_DEVICE__
 	pci_devfn_t dev = PCI_DEV(0, 0x1f, 2);
-#else
-	struct device *dev = pcidev_on_root(0x1f, 2);
-#endif
-	return (pci_read_config32(dev, SATA_SP) >> FLAG_SPI_WP) & 1;
+	return (pci_s_read_config32(dev, SATA_SP) >> FLAG_SPI_WP) & 1;
 }
 
 int get_recovery_mode_switch(void)
 {
-#ifdef __SIMPLE_DEVICE__
 	pci_devfn_t dev = PCI_DEV(0, 0x1f, 2);
-#else
-	struct device *dev = pcidev_on_root(0x1f, 2);
-#endif
-	return (pci_read_config32(dev, SATA_SP) >> FLAG_REC_MODE) & 1;
+	return (pci_s_read_config32(dev, SATA_SP) >> FLAG_REC_MODE) & 1;
 }
 
 void init_bootmode_straps(void)
 {
 	u32 flags = 0;
-#ifdef __SIMPLE_DEVICE__
 	pci_devfn_t dev = PCI_DEV(0, 0x1f, 2);
-#else
-	struct device *dev = pcidev_on_root(0x1f, 2);
-#endif
 
 	/* Write Protect: GPIO58 = GPIO_SPI_WP, active high */
 	if (get_gpio(GPIO_SPI_WP))
@@ -84,7 +69,7 @@ void init_bootmode_straps(void)
 
 	/* Developer: Virtual */
 
-	pci_write_config32(dev, SATA_SP, flags);
+	pci_s_write_config32(dev, SATA_SP, flags);
 }
 
 static const struct cros_gpio cros_gpios[] = {

@@ -24,6 +24,7 @@
 #include <intelblocks/lpc_lib.h>
 #include <intelblocks/pcr.h>
 #include <intelblocks/tco.h>
+#include <intelblocks/thermal.h>
 #include <reg_script.h>
 #include <spi-generic.h>
 #include <soc/p2sb.h>
@@ -62,6 +63,16 @@ static void pch_finalize(void)
 	uint8_t reg8;
 
 	tco_lockdown();
+
+	/*
+	 * Set low maximum temp threshold value used for dynamic thermal sensor
+	 * shutdown consideration.
+	 *
+	 * If Dynamic Thermal Shutdown is enabled then PMC logic shuts down the
+	 * thermal sensor when CPU is in a C-state and DTS Temp <= LTT.
+	 */
+	pch_thermal_configuration();
+
 	/*
 	 * Disable ACPI PM timer based on dt policy
 	 *

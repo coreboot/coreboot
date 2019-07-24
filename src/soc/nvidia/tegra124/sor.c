@@ -348,10 +348,10 @@ static void tegra_dc_sor_io_set_dpd(struct tegra_dc_sor_data *sor, int up)
 	}
 
 	reg_val = READL(pmc_base + APBDEV_PMC_IO_DPD2_REQ);
-	reg_val &= ~(APBDEV_PMC_IO_DPD2_REQ_LVDS_ON ||
+	reg_val &= ~(APBDEV_PMC_IO_DPD2_REQ_LVDS_ON |
 		APBDEV_PMC_IO_DPD2_REQ_CODE_DEFAULT_MASK);
 
-	reg_val = up ? APBDEV_PMC_IO_DPD2_REQ_LVDS_ON |
+	reg_val |= up ? APBDEV_PMC_IO_DPD2_REQ_LVDS_ON |
 		APBDEV_PMC_IO_DPD2_REQ_CODE_DPD_OFF :
 		APBDEV_PMC_IO_DPD2_REQ_LVDS_OFF |
 		APBDEV_PMC_IO_DPD2_REQ_CODE_DPD_ON;

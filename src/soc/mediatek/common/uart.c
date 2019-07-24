@@ -177,9 +177,10 @@ void uart_fill_lb(void *data)
 	struct lb_serial serial;
 	serial.type = LB_SERIAL_TYPE_MEMORY_MAPPED;
 	serial.baseaddr = UART0_BASE;
-	serial.input_hertz = UART_HZ;
 	serial.baud = get_uart_baudrate();
 	serial.regwidth = 4;
+	serial.input_hertz = UART_HZ;
+	serial.uart_pci_addr = CONFIG_UART_PCI_ADDR;
 	lb_add_serial(&serial, data);
 
 	lb_add_console(LB_TAG_CONSOLE_SERIAL8250MEM, data);

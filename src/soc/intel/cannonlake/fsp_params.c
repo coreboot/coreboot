@@ -19,6 +19,7 @@
 #include <fsp/api.h>
 #include <fsp/util.h>
 #include <intelblocks/xdci.h>
+#include <intelpch/lockdown.h>
 #include <soc/intel/common/vbt.h>
 #include <soc/pci_devs.h>
 #include <soc/ramstage.h>
@@ -402,6 +403,39 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 		configure_gspi_cs(i, config,
 				&params->SerialIoSpiCsPolarity[0], NULL, NULL);
 #endif
+
+	/* Chipset Lockdown */
+	if (get_lockdown_config() == CHIPSET_LOCKDOWN_COREBOOT) {
+		tconfig->PchLockDownGlobalSmi = 0;
+		tconfig->PchLockDownBiosInterface = 0;
+		params->PchLockDownBiosLock = 0;
+		params->PchLockDownRtcMemoryLock = 0;
+		/*
+		 * TODO: Disable SpiFlashCfgLockDown config after FSP provides
+		 * dedicated UPD
+		 *
+		 * Skip SPI Flash Lockdown from inside FSP.
+		 * Making this config "0" means FSP won't set the FLOCKDN bit
+		 * of SPIBAR + 0x04 (i.e., Bit 15 of BIOS_HSFSTS_CTL).
+		 * So, it becomes coreboot's responsibility to set this bit
+		 * before end of POST for security concerns.
+		 */
+		// params->SpiFlashCfgLockDown = 0;
+	} else {
+		tconfig->PchLockDownGlobalSmi = 1;
+		tconfig->PchLockDownBiosInterface = 1;
+		params->PchLockDownBiosLock = 1;
+		params->PchLockDownRtcMemoryLock = 1;
+		/*
+		 * TODO: Enable SpiFlashCfgLockDown config after FSP provides
+		 * dedicated UPD
+		 *
+		 * Enable SPI Flash Lockdown from inside FSP.
+		 * Making this config "1" means FSP will set the FLOCKDN bit
+		 * of SPIBAR + 0x04 (i.e., Bit 15 of BIOS_HSFSTS_CTL).
+		 */
+		// params->SpiFlashCfgLockDown = 1;
+	}
 }
 
 /* Mainboard GPIO Configuration */

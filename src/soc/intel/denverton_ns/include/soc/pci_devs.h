@@ -189,7 +189,9 @@
 /* TODO - New added */
 #define SA_DEV_SLOT_ROOT 0x00
 #define  SA_DEVFN_ROOT	PCI_DEVFN(SA_DEV_SLOT_ROOT, 0)
+#if defined(__SIMPLE_DEVICE__)
 #define  SA_DEV_ROOT	PCI_DEV(0, SA_DEV_SLOT_ROOT, 0)
+#endif
 
 #define PCH_DEV_SLOT_LPC 0x1f
 #define PCH_DEVFN_LPC _PCH_DEVFN(LPC, 0)

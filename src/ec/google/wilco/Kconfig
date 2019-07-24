@@ -6,6 +6,8 @@ config EC_GOOGLE_WILCO
 	help
 	  Google Wilco Embedded Controller interface.
 
+if EC_GOOGLE_WILCO
+
 config EC_BASE_ACPI_DATA
 	hex
 	default 0x930
@@ -46,3 +48,5 @@ config EC_BASE_PACKET
 	  mailbox interface data region.  This data buffer is used along
 	  with the host command and data registers to drive the EC
 	  mailbox interface.  This is also the MEC EMI base address.
+
+endif # EC_GOOGLE_WILCO

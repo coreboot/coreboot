@@ -17,12 +17,14 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <soc/intel/fsp_broadwell_de/chip.h>
+#include <soc/pci_devs.h>
 
 #define DEVCTL2 0xb8
 
 static void iou_init(struct device *dev)
 {
-	const config_t *config = config_of(dev);
+	/* Use config from device always present in static devicetree. */
+	const config_t *config = config_of_path(SOC_DEV_FUNC);
 	u16 devctl2;
 
 	/* pcie completion timeout

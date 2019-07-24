@@ -300,10 +300,7 @@ payloads/external/LinuxBoot/linuxboot/initramfs_u-root.cpio: linuxboot
 
 payloads/external/Yabits/uefi/build/uefi.elf yabits:
 	$(MAKE) -C payloads/external/Yabits all \
-		CC="$(CC_x86_32)" \
-		LD="$(LD_x86_32)" \
-		OBJCOPY="$(OBJCOPY_x86_32)" \
-		AS="$(AS_x86_32)" \
+		XGCCPATH="$(XGCCPATH)" \
 		CONFIG_YABITS_REVISION=$(CONFIG_YABITS_REVISION) \
 		CONFIG_YABITS_REVISION_ID=$(CONFIG_YABITS_REVISION_ID) \
 		CONFIG_YABITS_MASTER=$(CONFIG_YABITS_MASTER) \

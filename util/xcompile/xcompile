@@ -98,6 +98,7 @@ fi
 
 cat <<EOF
 # platform agnostic and host tools
+XGCCPATH:=${XGCCPATH}
 IASL:=${IASL}
 HOSTCC?=${HOSTCC}
 CPUS?=${CORES}

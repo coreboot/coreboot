@@ -102,4 +102,10 @@ typedef struct {
 void vbe_set_graphics(void);
 void vbe_textmode_console(void);
 
+/**
+ * Returns the mode_info struct from the vbe context,
+ * if initialized. NULL on invalid mode_infos.
+ */
+const vbe_mode_info_t *vbe_mode_info(void);
+
 #endif // VBE_H

@@ -18,14 +18,12 @@
 #include <arch/interrupt.h>
 #include <arch/registers.h>
 #include <boot/coreboot_tables.h>
-#include <cbfs.h>
 #include <console/console.h>
 #include <cpu/amd/lxdef.h>
 #include <cpu/amd/vr.h>
 #include <delay.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <lib/jpeg.h>
 #include <pc80/i8259.h>
 #include <pc80/i8254.h>
 #include <string.h>
@@ -223,12 +221,19 @@ static void setup_realmode_idt(void)
 }
 
 #if CONFIG(FRAMEBUFFER_SET_VESA_MODE)
-vbe_mode_info_t mode_info;
+static vbe_mode_info_t mode_info;
 static int mode_info_valid;
 
 static int vbe_mode_info_valid(void)
 {
 	return mode_info_valid;
+}
+
+const vbe_mode_info_t *vbe_mode_info(void)
+{
+	if (!mode_info_valid || !mode_info.vesa.phys_base_ptr)
+		return NULL;
+	return &mode_info;
 }
 
 static int vbe_check_for_failure(int ah);
@@ -353,6 +358,7 @@ void vbe_set_graphics(void)
 		le16_to_cpu(mode_info.vesa.x_resolution),
 		le16_to_cpu(mode_info.vesa.y_resolution),
 		mode_info.vesa.bits_per_pixel);
+
 	printk(BIOS_DEBUG, "VBE: framebuffer: %p\n", framebuffer);
 	if (!framebuffer) {
 		printk(BIOS_DEBUG, "VBE: Mode does not support linear "
@@ -361,19 +367,6 @@ void vbe_set_graphics(void)
 	}
 
 	vbe_set_mode(&mode_info);
-#if CONFIG(BOOTSPLASH)
-	struct jpeg_decdata *decdata;
-	unsigned char *jpeg = cbfs_boot_map_with_leak("bootsplash.jpg",
-							CBFS_TYPE_BOOTSPLASH,
-							NULL);
-	if (!jpeg) {
-		printk(BIOS_DEBUG, "VBE: No bootsplash found.\n");
-		return;
-	}
-	decdata = malloc(sizeof(*decdata));
-	int ret = 0;
-	ret = jpeg_decode(jpeg, framebuffer, 1024, 768, 16, decdata);
-#endif
 }
 
 void vbe_textmode_console(void)

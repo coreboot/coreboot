@@ -34,9 +34,6 @@
 
 #include <string.h>
 #include <types.h>
-#if CONFIG(FRAMEBUFFER_SET_VESA_MODE)
-#include <boot/coreboot_tables.h>
-#endif
 
 #include <endian.h>
 
@@ -52,10 +49,7 @@
 #include "interrupt.h"
 #include "device.h"
 
-#include <cbfs.h>
-
 #include <delay.h>
-#include "../../src/lib/jpeg.h"
 
 #include <vbe.h>
 
@@ -717,7 +711,14 @@ vbe_get_info(void)
 }
 #endif
 
-vbe_mode_info_t mode_info;
+static vbe_mode_info_t mode_info;
+
+const vbe_mode_info_t *vbe_mode_info(void)
+{
+	if (!mode_info_valid || !mode_info.vesa.phys_base_ptr)
+		return NULL;
+	return &mode_info;
+}
 
 void vbe_set_graphics(void)
 {
@@ -745,34 +746,6 @@ void vbe_set_graphics(void)
 	mode_info.video_mode = (1 << 14) | CONFIG_FRAMEBUFFER_VESA_MODE;
 	vbe_get_mode_info(&mode_info);
 	vbe_set_mode(&mode_info);
-
-#if CONFIG(BOOTSPLASH)
-	unsigned char *framebuffer =
-		(unsigned char *) le32_to_cpu(mode_info.vesa.phys_base_ptr);
-	DEBUG_PRINTF_VBE("FRAMEBUFFER: 0x%p\n", framebuffer);
-
-	struct jpeg_decdata *decdata;
-
-	/* Switching Intel IGD to 1MB video memory will break this. Who
-	 * cares. */
-	// int imagesize = 1024*768*2;
-
-	unsigned char *jpeg = cbfs_boot_map_with_leak("bootsplash.jpg",
-							CBFS_TYPE_BOOTSPLASH,
-							NULL);
-	if (!jpeg) {
-		DEBUG_PRINTF_VBE("Could not find bootsplash.jpg\n");
-		return;
-	}
-	DEBUG_PRINTF_VBE("Splash at %p ...\n", jpeg);
-	dump(jpeg, 64);
-
-	decdata = malloc(sizeof(*decdata));
-	int ret = 0;
-	DEBUG_PRINTF_VBE("Decompressing boot splash screen...\n");
-	ret = jpeg_decode(jpeg, framebuffer, 1024, 768, 16, decdata);
-	DEBUG_PRINTF_VBE("returns %x\n", ret);
-#endif
 }
 
 int fill_lb_framebuffer(struct lb_framebuffer *framebuffer)

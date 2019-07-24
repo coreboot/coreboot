@@ -51,6 +51,11 @@ static bool extract(struct region *region, struct fit_image_node *node)
 	const char *comp_name;
 	size_t true_size = 0;
 
+	if (node->size == 0) {
+		printk(BIOS_ERR, "ERROR: The %s size is 0\n", node->name);
+		return true;
+	}
+
 	switch (node->compression) {
 	case CBFS_COMPRESS_NONE:
 		comp_name = "Relocating uncompressed";

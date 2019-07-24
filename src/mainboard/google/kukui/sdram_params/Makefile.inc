@@ -1,4 +1,5 @@
 sdram-params :=
+sdram-params += sdram-lpddr4x-K4UBE3D4AA-MGCL-4GB
 sdram-params += sdram-lpddr4x-H9HCNNNCPMALHR-4GB
 sdram-params += sdram-lpddr4x-MT53E1G32D4NQ-4GB
 sdram-params += sdram-lpddr4x-KMDH6001DA-B422-4GB

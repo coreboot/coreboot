@@ -384,8 +384,14 @@ static void configure_thermal_target(void)
  */
 static void enable_pm_timer_emulation(void)
 {
-	/* ACPI PM timer emulation */
+	const struct soc_intel_cannonlake_config *config;
 	msr_t msr;
+
+	config = config_of_path(SA_DEVFN_ROOT);
+
+	/* Enable PM timer emulation only if ACPI PM timer is disabled */
+	if (!config->PmTimerDisabled)
+		return;
 	/*
 	 * The derived frequency is calculated as follows:
 	 *    (CTC_FREQ * msr[63:32]) >> 32 = target frequency.

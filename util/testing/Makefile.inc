@@ -83,6 +83,7 @@ lint lint-stable lint-extended:
 ABUILD_OPTIONS=-B -J -c $(CPUS) -z -p $(JENKINS_PAYLOAD)
 ABUILD_OPTIONS+=$(if $(V),-v,)
 ABUILD_OPTIONS+=$(if $(JENKINS_NOCCACHE),,-y)
+ABUILD_OPTIONS+=$(JENKINS_ABUILD_OPT)
 
 what-jenkins-does:
 	util/lint/lint lint-stable --junit

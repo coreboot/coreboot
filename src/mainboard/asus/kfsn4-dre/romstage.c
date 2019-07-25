@@ -132,8 +132,10 @@ static void ck804_control(const unsigned int *values, u32 size,
 		}
 	}
 
-	if (ck804_num < 1)
+	if (ck804_num < 1) {
 		printk(BIOS_WARNING, "CK804 not found at device base unit id %02x!\n", bus_unit_id);
+		return;
+	}
 
 	ck804_early_set_port(ck804_num, busn, io_base);
 

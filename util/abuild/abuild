@@ -677,6 +677,9 @@ while true ; do
 			SCANBUILD_ARGS=${SCANBUILD_ARGS:-'-k'}
 			configoptions="${configoptions}CONFIG_FATAL_ASSERTS=y\n"
 			;;
+		--asserts)	shift
+			configoptions="${configoptions}CONFIG_FATAL_ASSERTS=y\n"
+			;;
 		-y|--ccache)    shift
 			customizing="${customizing}, ccache"
 			configoptions="${configoptions}CONFIG_CCACHE=y\n"

@@ -16,6 +16,7 @@
 #include <string.h>
 #include <soc/romstage.h>
 #include <soc/gpio_apl.h>
+#include <soc/meminit.h>
 #include <fsp/api.h>
 #include <FspmUpd.h>
 #include <console/console.h>
@@ -28,6 +29,39 @@
  *  - GPIO_215: 0xe0
  */
 static const uint8_t memory_skuid_pads[] = { GPIO_214, GPIO_215 };
+
+static const struct lpddr4_sku skus[] = {
+	/* Samsung 280 K4F8E304HB-MGCJ 8Gb dual-ch */
+	[0] = {
+		.speed = LP4_SPEED_2400,
+		.ch0_rank_density = LP4_8Gb_DENSITY,
+		.ch1_rank_density = 0,
+		.ch0_dual_rank = 0,
+		.ch1_dual_rank = 0,
+		.part_num = "K4F8E304HB-MGCJ",
+	},
+	[1] = {
+		.speed = LP4_SPEED_2400,
+		.ch0_rank_density = LP4_8Gb_DENSITY,
+		.ch1_rank_density = LP4_8Gb_DENSITY,
+		.ch0_dual_rank = 0,
+		.ch1_dual_rank = 0,
+		.part_num = "K4F8E304HB-MGCJ",
+	},
+	[2] = {
+		.speed = LP4_SPEED_2400,
+		.ch0_rank_density = LP4_16Gb_DENSITY,
+		.ch1_rank_density = LP4_16Gb_DENSITY,
+		.ch0_dual_rank = 1,
+		.ch1_dual_rank = 1,
+		.part_num = "K4F6E304HB-MGCJ",
+	},
+};
+
+static const struct lpddr4_cfg lp4cfg = {
+	.skus = skus,
+	.num_skus = ARRAY_SIZE(skus),
+};
 
 static const uint8_t ch0_bit_swizzling[] = {
 	0x0D, 0x0A, 0x08, 0x0B, 0x0C, 0x0F, 0x0E, 0x09,
@@ -156,4 +190,9 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 			sizeof(ch2_bit_swizzling));
 	memcpy(config->Ch3_Bit_swizzling, &ch3_bit_swizzling,
 			sizeof(ch3_bit_swizzling));
+}
+
+void mainboard_save_dimm_info(void)
+{
+	save_lpddr4_dimm_info(&lp4cfg, get_memory_skuid());
 }

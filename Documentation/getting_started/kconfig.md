@@ -73,9 +73,6 @@ These variables are typically set in the makefiles or on the make command line.
 These variables were added to Kconfig specifically for coreboot and are not
 included in the Linux version.
 
-- COREBOOT_BUILD_DIR=path for temporary files.   This is used by coreboot’s
-  abuild tool.
-
 - KCONFIG_STRICT=value. Define to enable warnings as errors.   This is enabled
   in coreboot, and should not be changed.
 

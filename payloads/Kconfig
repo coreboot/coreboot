@@ -40,20 +40,11 @@ config PAYLOAD_FIT
 	  You will be able to specify the location and file name of the
 	  payload image later.
 
-config PAYLOAD_BAYOU
-	bool "Bayou"
-	depends on ARCH_X86
-	help
-	  Select this option if you want to set bayou as your primary
-	  payload.
-
 source "payloads/external/*/Kconfig.name"
 
 endchoice
 
 source "payloads/external/*/Kconfig"
-
-source "payloads/bayou/Kconfig"
 
 config PAYLOAD_FILE
 	string "Payload path and filename"

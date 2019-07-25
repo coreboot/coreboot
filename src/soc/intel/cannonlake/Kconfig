@@ -318,4 +318,8 @@ config PRERAM_CBMEM_CONSOLE_SIZE
 	hex
 	default 0xe00
 
+config INTEL_TXT_BIOSACM_ALIGNMENT
+	hex
+	default 0x40000 # 256KB
+
 endif

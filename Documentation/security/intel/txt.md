@@ -90,11 +90,11 @@ correct state. If it's not the SINIT ACM will reset the platform.
 
 ## For developers
 ### Configuring Intel TXT in Kconfig
-Enable ``TEE_INTEL_TXT`` and set the following:
+Enable ``INTEL_TXT`` and set the following:
 
-``TEE_INTEL_TXT_BIOSACM_FILE`` to the path of the BIOS ACM provided by Intel
+``INTEL_TXT_BIOSACM_FILE`` to the path of the BIOS ACM provided by Intel
 
-``TEE_INTEL_TXT_SINITACM_FILE`` to the path of the SINIT ACM provided by Intel
+``INTEL_TXT_SINITACM_FILE`` to the path of the SINIT ACM provided by Intel
 ### Print TXT status as early as possible
 Add platform code to print the TXT status as early as possible, as the register
 is cleared on cold reset.

@@ -1,0 +1,54 @@
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2019 9elements Agency GmbH
+## Copyright (C) 2019 Facebook Inc.
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; version 2 of the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+
+config INTEL_TXT
+	bool "Intel TXT support"
+	default n
+	select MRC_SETTINGS_PROTECT if CACHE_MRC_SETTINGS
+	select ENABLE_VMX if CPU_INTEL_COMMON
+	select AP_IN_SIPI_WAIT
+	depends on (TPM1 || TPM2)
+	depends on CPU_INTEL_FIRMWARE_INTERFACE_TABLE
+	depends on PLATFORM_HAS_DRAM_CLEAR
+	depends on SOC_INTEL_FSP_BROADWELL_DE || SOC_INTEL_COMMON_BLOCK_SA
+
+if INTEL_TXT
+
+config INTEL_TXT_BIOSACM_FILE
+	string "BIOS ACM file"
+	default "3rdparty/blobs/soc/intel/fsp_broadwell_de/biosacm.bin" if SOC_INTEL_FSP_BROADWELL_DE
+	default "3rdparty/blobs/soc/intel/skylake/biosacm.bin" if SOC_INTEL_COMMON_SKYLAKE_BASE
+	help
+	  Intel TXT BIOS ACM file. This file can be obtained by privileged
+	  access to Intel resources. Or for some platforms found inside the
+	  blob repository.
+
+config INTEL_TXT_SINITACM_FILE
+	string "SINIT ACM file"
+	default "3rdparty/blobs/soc/intel/fsp_broadwell_de/sinitacm.bin" if SOC_INTEL_FSP_BROADWELL_DE
+	default "3rdparty/blobs/soc/intel/skylake/sinitacm.bin" if SOC_INTEL_COMMON_SKYLAKE_BASE
+	help
+	  Intel TXT SINIT ACM file. This file can be obtained by privileged
+	  access to Intel resources. Or for some platforms found inside the
+	  blob repository.
+
+config INTEL_TXT_BIOSACM_ALIGNMENT
+	hex
+	default 0x20000 # 128KB
+	help
+	  Exceptions are Ivy- and Sandy Bridge with 64KB and Purely with 256KB
+	  alignment size. Please overwrite it SoC specific.
+
+endif

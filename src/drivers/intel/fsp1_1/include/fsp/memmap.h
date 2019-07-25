@@ -18,13 +18,6 @@
 
 #include <types.h>
 
-/*
- * mmap_region_granularity must to return a size which is a positive non-zero
- * integer multiple of the SMM size when SMM is in use.  When not using SMM,
- * this value should be set to 8 MiB.
- */
-size_t mmap_region_granularity(void);
-
 /* Fills in the arguments for the entire SMM region covered by chipset
  * protections. e.g. TSEG. */
 void smm_region(void **start, size_t *size);

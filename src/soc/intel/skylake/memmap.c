@@ -30,17 +30,6 @@
 
 #include "chip.h"
 
-size_t mmap_region_granularity(void)
-{
-	if (CONFIG(HAVE_SMI_HANDLER))
-		/* Align to TSEG size when SMM is in use */
-		if (CONFIG_SMM_TSEG_SIZE != 0)
-			return CONFIG_SMM_TSEG_SIZE;
-
-	/* Make it 8MiB by default. */
-	return 8*MiB;
-}
-
 void smm_region(void **start, size_t *size)
 {
 	*start = (void *)sa_get_tseg_base();

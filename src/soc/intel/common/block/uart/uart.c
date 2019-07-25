@@ -65,15 +65,13 @@ static int uart_get_valid_index(void)
 	return UART_CONSOLE_INVALID_INDEX;
 }
 
-void uart_common_init(struct device *device, uintptr_t baseaddr)
+void uart_common_init(const struct device *device, uintptr_t baseaddr)
 {
 #if defined(__SIMPLE_DEVICE__)
-	pci_devfn_t dev = (pci_devfn_t)(uintptr_t)device;
+	pci_devfn_t dev = PCI_BDF(device);
 #else
-	struct device *dev = device;
+	const struct device *dev = device;
 #endif
-	if (!dev)
-		return;
 
 	/* Set UART base address */
 	pci_write_config32(dev, PCI_BASE_ADDRESS_0, baseaddr);
@@ -84,7 +82,7 @@ void uart_common_init(struct device *device, uintptr_t baseaddr)
 	uart_lpss_init(baseaddr);
 }
 
-struct device *uart_get_device(void)
+const struct device *uart_get_device(void)
 {
 	/*
 	 * This function will get called even if INTEL_LPSS_UART_FOR_CONSOLE
@@ -105,14 +103,16 @@ struct device *uart_get_device(void)
 bool uart_is_controller_initialized(void)
 {
 	uintptr_t base;
+	const struct device *dev_uart = uart_get_device();
+
+	if (!dev_uart)
+		return false;
 
 #if defined(__SIMPLE_DEVICE__)
-	pci_devfn_t dev = (pci_devfn_t)(uintptr_t)uart_get_device();
+	pci_devfn_t dev = PCI_BDF(dev_uart);
 #else
-	struct device *dev = uart_get_device();
+	const struct device *dev = dev_uart;
 #endif
-	if (!dev)
-		return false;
 
 	base = pci_read_config32(dev, PCI_BASE_ADDRESS_0) & ~0xFFF;
 	if (!base)
@@ -136,8 +136,15 @@ static void uart_configure_gpio_pads(void)
 
 void uart_bootblock_init(void)
 {
+	const struct device *dev_uart;
+
+	dev_uart = uart_get_device();
+
+	if (!dev_uart)
+		return;
+
 	/* Program UART BAR0, command, reset and clock register */
-	uart_common_init(uart_get_device(), CONFIG_CONSOLE_UART_BASE_ADDRESS);
+	uart_common_init(dev_uart, CONFIG_CONSOLE_UART_BASE_ADDRESS);
 
 	/* Configure the 2 pads per UART. */
 	uart_configure_gpio_pads();

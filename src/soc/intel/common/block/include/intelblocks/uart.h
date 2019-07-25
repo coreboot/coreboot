@@ -40,7 +40,7 @@ struct uart_gpio_pad_config {
  * Common routine to initialize UART controller PCI config space, take it out of
  * reset and configure M/N dividers.
  */
-void uart_common_init(struct device *dev, uintptr_t baseaddr);
+void uart_common_init(const struct device *dev, uintptr_t baseaddr);
 
 /*
  * Check if UART debug controller is initialized
@@ -72,7 +72,7 @@ void uart_bootblock_init(void);
  * Pointer to device structure = If device has a UART debug controller.
  * NULL = otherwise
  */
-struct device *uart_get_device(void);
+const struct device *uart_get_device(void);
 
 /**************************** SoC callbacks ***********************************/
 
@@ -89,6 +89,6 @@ struct device *uart_get_device(void);
  * Pointer to device structure = If device has a UART debug controller.
  * NULL = otherwise
  */
-struct device *soc_uart_console_to_device(int uart_console);
+DEVTREE_CONST struct device *soc_uart_console_to_device(int uart_console);
 
 #endif	/* SOC_INTEL_COMMON_BLOCK_UART_H */

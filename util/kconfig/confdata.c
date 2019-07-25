@@ -769,7 +769,7 @@ int conf_write(const char *name)
 	FILE *out;
 	struct symbol *sym;
 	struct menu *menu;
-	const char *basename;
+	const char *basename = NULL;
 	const char *str;
 	char dirname[PATH_MAX+1], tmpname[PATH_MAX+1], newname[PATH_MAX+1];
 	char *env;
@@ -777,13 +777,20 @@ int conf_write(const char *name)
 	dirname[0] = 0;
 	if (name && name[0]) {
 		struct stat st;
-		char *slash;
 
 		if (!stat(name, &st) && S_ISDIR(st.st_mode)) {
 			strcpy(dirname, name);
 			strcat(dirname, "/");
 			basename = conf_get_configname();
-		} else if ((slash = strrchr(name, '/'))) {
+		}
+	} else {
+		name = conf_get_configname();
+	}
+
+	if (!basename) {
+		char *slash = strrchr(name, '/');
+
+		if (slash) {
 			int size = slash - name + 1;
 			memcpy(dirname, name, size);
 			dirname[size] = 0;
@@ -791,10 +798,10 @@ int conf_write(const char *name)
 				basename = slash + 1;
 			else
 				basename = conf_get_configname();
-		} else
+		} else {
 			basename = name;
-	} else
-		basename = conf_get_configname();
+		}
+	}
 
 	sprintf(newname, "%s%s", dirname, basename);
 	env = getenv("KCONFIG_OVERWRITECONFIG");

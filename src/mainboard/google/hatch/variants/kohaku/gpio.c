@@ -24,7 +24,7 @@ static const struct pad_config gpio_table[] = {
 	/* A6  : SERIRQ ==> NC */
 	PAD_NC(GPP_A6, NONE),
 	/* A10 : PEN_RESET_ODL */
-	PAD_CFG_GPO(GPP_A10, 0, DEEP),
+	PAD_CFG_GPO(GPP_A10, 1, DEEP),
 	/* A17 : PIRQA# ==> NC */
 	PAD_NC(GPP_A17, NONE),
 	/* A18 : ISH_GP0 ==> NC */
@@ -39,15 +39,9 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_B8, NONE),
 	/* C1  : SMBDATA: NC  */
 	PAD_NC(GPP_C1, NONE),
-	/*
-	 * C12 : EMR_GARAGE_INT
-	 * The same signal is routed to both A8 and C12.  Currently C12
-	 * is the interrupt source, and A8 is the wake source.
-	 * Hoping that GPP_A8 can be used for both interrupt (SCI) and wake
-	 * (GPIO). Keeping as GPI for now.
-	*/
-	PAD_CFG_GPI_SCI(GPP_C12, NONE, DEEP, EDGE_SINGLE, INVERT),
-	/* C15 : EN_PP3300_TSP_DIG_DX */
+	/* C7  : PEN_IRQ_OD_L */
+	PAD_CFG_GPI_APIC(GPP_C7, NONE, PLTRST, LEVEL, INVERT),
+	/* C15 : EN_PP3300_DIG_DX */
 	PAD_CFG_GPO(GPP_C15, 0, DEEP),
 	/* C23 : UART2_CTS# ==> NC */
 	PAD_NC(GPP_C23, NONE),
@@ -69,6 +63,10 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_G5, NONE),
 	/* G6 : GPP_G6 ==> NC  */
 	PAD_NC(GPP_G6, NONE),
+	/* H4  : PCH_I2C_PEN_SDA */
+	PAD_CFG_NF(GPP_H4, NONE, DEEP, NF1),
+	/* H5  : PCH_I2C_PEN_SCL */
+	PAD_CFG_NF(GPP_H5, NONE, DEEP, NF1),
 };
 
 const struct pad_config *override_gpio_table(size_t *num)

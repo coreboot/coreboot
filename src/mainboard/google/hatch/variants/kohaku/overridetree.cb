@@ -86,11 +86,25 @@ chip soc/intel/cannonlake
 				register "generic.hid" = ""WCOM50C1""
 				register "generic.desc" = ""WCOM Digitizer""
 				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_C7_IRQ)"
-				register "generic.reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_A10)"
-				register "generic.reset_delay_ms" = "1"
+				register "generic.enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_C15)"
+				# TODO: We can't use GPP_A10 as reset_gpio due to its voltage level,
+				#       so we need to reassign it or remove it.
+				#register "generic.reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_A10)"
+				#register "generic.reset_delay_ms" = "1"
 				register "generic.has_power_resource" = "1"
 				register "hid_desc_reg_offset" = "0x1"
 				device i2c 0x09 on end
+			end
+			chip drivers/generic/gpio_keys
+				register "name" = ""PENH""
+				register "gpio" = "ACPI_GPIO_INPUT_ACTIVE_LOW(GPP_A8)"
+				register "key.wake" = "GPE0_DW0_08"
+				register "key.wakeup_event_action" = "EV_ACT_DEASSERTED"
+				register "key.dev_name" = ""EJCT""
+				register "key.linux_code" = "SW_PEN_INSERTED"
+				register "key.linux_input_type" = "EV_SW"
+				register "key.label" = ""pen_eject""
+				device generic 0 on end
 			end
 		end # I2C #2
 		device pci 19.0 on

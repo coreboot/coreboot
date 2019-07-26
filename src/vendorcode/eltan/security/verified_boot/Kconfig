@@ -1,0 +1,63 @@
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2018-2019 Eltan B.V.
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; version 2 of the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+
+menu "Verified Boot (verified_boot)"
+
+config VENDORCODE_ELTAN_VBOOT
+	bool "Enable Verified Boot"
+	depends on !VBOOT
+	default n
+
+config VENDORCODE_ELTAN_VBOOT_SIGNED_MANIFEST
+	bool "Enable Signed Manifest"
+	depends on VENDORCODE_ELTAN_VBOOT
+	default n
+
+config VENDORCODE_ELTAN_VBOOT_USE_SHA512
+	bool "SHA512 hashes"
+	depends on VENDORCODE_ELTAN_VBOOT
+	default n
+	help
+	  Use SHA512 for the vboot operations, this applies to the digest in
+	  the manifest and the manifest digest.
+
+config VENDORCODE_ELTAN_OEM_MANIFEST_LOC
+	hex "Manifest Location"
+	default 0xFFFFF840
+
+config VENDORCODE_ELTAN_VBOOT_MANIFEST
+	string "Verified boot manifest file"
+	default "mainboard/$(MAINBOARD_DIR)/manifest.h"
+
+config VENDORCODE_ELTAN_OEM_MANIFEST_ITEMS
+	int "Manifest Items"
+	default 11 if POSTCAR_STAGE
+	default 10
+
+config VENDORCODE_ELTAN_OEM_MANIFEST_ITEM_SIZE
+	int
+	default 64 if VENDORCODE_ELTAN_VBOOT_USE_SHA512
+	default 32
+
+config VENDORCODE_ELTAN_VBOOT_KEY_LOCATION
+	hex "Verified boot Key Location"
+	depends on VENDORCODE_ELTAN_VBOOT_SIGNED_MANIFEST
+	default 0xFFFFF500
+
+config VENDORCODE_ELTAN_VBOOT_KEY_SIZE
+	int
+	default 554 if VENDORCODE_ELTAN_VBOOT_USE_SHA512
+	default 520
+
+endmenu # Verified Boot (verified_boot)

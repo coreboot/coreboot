@@ -476,6 +476,8 @@ static void fc_lock_configure(void *unused)
 
 static void post_mp_init(void)
 {
+	int ret = 0;
+
 	/* Set Max Ratio */
 	cpu_set_max_ratio();
 
@@ -489,11 +491,14 @@ static void post_mp_init(void)
 	if (CONFIG(HAVE_SMI_HANDLER))
 		smm_lock();
 
-	mp_run_on_all_cpus(vmx_configure, NULL, 2 * USECS_PER_MSEC);
+	ret |= mp_run_on_all_cpus(vmx_configure, NULL, 2 * USECS_PER_MSEC);
 
-	mp_run_on_all_cpus(sgx_configure, NULL, 14 * USECS_PER_MSEC);
+	ret |= mp_run_on_all_cpus(sgx_configure, NULL, 14 * USECS_PER_MSEC);
 
-	mp_run_on_all_cpus(fc_lock_configure, NULL, 2 * USECS_PER_MSEC);
+	ret |= mp_run_on_all_cpus(fc_lock_configure, NULL, 2 * USECS_PER_MSEC);
+
+	if (ret)
+		printk(BIOS_CRIT, "CRITICAL ERROR: MP post init failed\n");
 }
 
 static const struct mp_ops mp_ops = {

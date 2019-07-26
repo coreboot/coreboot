@@ -161,17 +161,13 @@ extern int  __bdk_dram_retry_failure2(int burst, uint64_t address1, uint64_t dat
 
 static inline void __bdk_dram_write64(uint64_t address, uint64_t data)
 {
-    /* The DRAM code doesn't use the normal bdk_phys_to_ptr() because of the
-       NULL check in it. This greatly slows down the memory tests */
-    volatile uint64_t *ptr = (void*)address;
+    volatile uint64_t *ptr = bdk_phys_to_ptr(address);
     *ptr = data;
 }
 
 static inline uint64_t __bdk_dram_read64(uint64_t address)
 {
-    /* The DRAM code doesn't use the normal bdk_phys_to_ptr() because of the
-       NULL check in it. This greatly slows down the memory tests */
-    volatile uint64_t *ptr = (void*)address;
+    volatile uint64_t *ptr = bdk_phys_to_ptr(address);
     return *ptr;
 }
 

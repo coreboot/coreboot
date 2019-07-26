@@ -79,10 +79,7 @@ static void bdk_dram_clear_mem(bdk_node_t node)
             write to the cache line isn't good enough because partial LMC
             writes may be enabled */
          ddr_print("N%d: Rewriting DRAM: start 0 length 0x%llx\n", node, skip);
-         volatile uint64_t *ptr = bdk_phys_to_ptr(bdk_numa_get_address(node, 8));
-         /* The above pointer got address 8 to avoid NULL pointer checking
-            in bdk_phys_to_ptr(). Correct it here */
-         ptr--;
+         volatile uint64_t *ptr = bdk_phys_to_ptr(bdk_numa_get_address(node, 0));
          uint64_t *end = bdk_phys_to_ptr(bdk_numa_get_address(node, skip));
          while (ptr < end)
          {

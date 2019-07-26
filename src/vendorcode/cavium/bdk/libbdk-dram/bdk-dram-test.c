@@ -101,9 +101,7 @@ static uint64_t dram_test_thread_size;
 void __bdk_dram_flush_to_mem(uint64_t address)
 {
     BDK_MB;
-    /* The DRAM code doesn't use the normal bdk_phys_to_ptr() because of the
-       NULL check in it. This greatly slows down the memory tests */
-    char *ptr = (void*)address;
+    char *ptr = bdk_phys_to_ptr(address);
     BDK_CACHE_WBI_L2(ptr);
 }
 
@@ -116,10 +114,8 @@ void __bdk_dram_flush_to_mem(uint64_t address)
  */
 void __bdk_dram_flush_to_mem_range(uint64_t area, uint64_t max_address)
 {
-    /* The DRAM code doesn't use the normal bdk_phys_to_ptr() because of the
-       NULL check in it. This greatly slows down the memory tests */
-    char *ptr = (void*)area;
-    char *end = (void*)max_address;
+    char *ptr = bdk_phys_to_ptr(area);
+    char *end = bdk_phys_to_ptr(max_address);
     BDK_MB;
     while (ptr < end)
     {

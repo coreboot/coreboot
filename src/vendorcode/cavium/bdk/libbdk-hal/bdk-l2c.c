@@ -141,7 +141,7 @@ int bdk_l2c_unlock_mem_region(bdk_node_t node, uint64_t start, uint64_t len)
     len += start & BDK_CACHE_LINE_MASK;
     start &= ~BDK_CACHE_LINE_MASK;
     len = (len + BDK_CACHE_LINE_MASK) & ~BDK_CACHE_LINE_MASK;
-    void *ptr = (start) ? bdk_phys_to_ptr(start) : NULL;
+    void *ptr = bdk_phys_to_ptr(start);
 
     while (len > 0)
     {

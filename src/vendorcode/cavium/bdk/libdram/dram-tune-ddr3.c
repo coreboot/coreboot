@@ -655,7 +655,7 @@ auto_set_dll_offset(bdk_node_t node, int dll_offset_mode,
 
         // run the test(s)
         // only 1 call should be enough, let the bursts, etc, control the load...
-        tot_errors = run_dram_tuning_threads(node, num_lmcs, bytemask);
+        run_dram_tuning_threads(node, num_lmcs, bytemask);
 
         for (lmc = 0; lmc < num_lmcs; lmc++) {
             // record stop cycle CSRs here for utilization measure

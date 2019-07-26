@@ -1141,6 +1141,11 @@ int initialize_ddr_clock(bdk_node_t node,
 			override_pll_settings = 1;
 		    }
 
+		    if (best_en_idx >= ARRAY_SIZE(_en)) {
+			error_print("ERROR: best_en_idx %u exceeds _en array size\n", best_en_idx);
+			return -1;
+		    }
+
 		    if (override_pll_settings) {
 			best_pll_MHz = ddr_ref_hertz * (best_clkf+1) / (best_clkr+1) / 1000000;
 			best_calculated_ddr_hertz = ddr_ref_hertz * (best_clkf + 1) / ((best_clkr + 1) * (_en[best_en_idx]));

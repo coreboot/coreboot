@@ -362,9 +362,12 @@ int bdk_qlm_eye_display(bdk_node_t node, int qlm, int qlm_lane, int format, cons
             bdk_error("Failed to allocate space for eye\n");
             return -1;
         }
-        if (bdk_qlm_eye_capture(node, qlm, qlm_lane, eye_data))
-            return -1;
+        if (bdk_qlm_eye_capture(node, qlm, qlm_lane, eye_data)) {
+	    free(eye_data);
+	    return -1;
+	}
         eye = eye_data;
+	need_free = 1;
     }
 
     /* Calculate the max eye width */

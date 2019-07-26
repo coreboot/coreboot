@@ -491,11 +491,11 @@ static void post_mp_init(void)
 	if (CONFIG(HAVE_SMI_HANDLER))
 		smm_lock();
 
-	ret |= mp_run_on_all_cpus(vmx_configure, NULL, 2 * USECS_PER_MSEC);
+	ret |= mp_run_on_all_cpus(vmx_configure, NULL);
 
-	ret |= mp_run_on_all_cpus(sgx_configure, NULL, 14 * USECS_PER_MSEC);
+	ret |= mp_run_on_all_cpus(sgx_configure, NULL);
 
-	ret |= mp_run_on_all_cpus(fc_lock_configure, NULL, 2 * USECS_PER_MSEC);
+	ret |= mp_run_on_all_cpus(fc_lock_configure, NULL);
 
 	if (ret)
 		printk(BIOS_CRIT, "CRITICAL ERROR: MP post init failed\n");

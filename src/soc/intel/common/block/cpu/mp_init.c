@@ -159,7 +159,7 @@ static void post_cpus_init(void *unused)
 	if (CONFIG(USE_INTEL_FSP_MP_INIT))
 		return;
 
-	if (mp_run_on_all_cpus(&wrapper_x86_setup_mtrrs, NULL, 1000) < 0)
+	if (mp_run_on_all_cpus(&wrapper_x86_setup_mtrrs, NULL) < 0)
 		printk(BIOS_ERR, "MTRR programming failure\n");
 
 	x86_mtrr_check();

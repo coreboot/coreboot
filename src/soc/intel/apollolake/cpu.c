@@ -256,7 +256,7 @@ static void post_mp_init(void)
 	smm_southbridge_enable(PWRBTN_EN | GBL_EN);
 
 	if (CONFIG(SOC_INTEL_COMMON_BLOCK_SGX))
-		mp_run_on_all_cpus(sgx_configure, NULL, 2000);
+		mp_run_on_all_cpus(sgx_configure, NULL);
 }
 
 static const struct mp_ops mp_ops = {

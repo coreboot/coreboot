@@ -44,7 +44,7 @@ static void finalize_cores(void)
 	int r;
 	printk(BIOS_SPEW, "Lock SMM configuration\n");
 
-	r = mp_run_on_all_cpus(per_core_finalize, NULL, 10 * USECS_PER_MSEC);
+	r = mp_run_on_all_cpus(per_core_finalize, NULL);
 	if (r)
 		printk(BIOS_WARNING, "Failed to finalize all cores\n");
 }

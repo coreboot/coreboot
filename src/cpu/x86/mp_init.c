@@ -964,12 +964,13 @@ int mp_run_on_aps(void (*func)(void *), void *arg, int logical_cpu_num,
 	return run_ap_work(&lcb, expire_us);
 }
 
-int mp_run_on_all_cpus(void (*func)(void *), void *arg, long expire_us)
+int mp_run_on_all_cpus(void (*func)(void *), void *arg)
 {
 	/* Run on BSP first. */
 	func(arg);
 
-	return mp_run_on_aps(func, arg, MP_RUN_ON_ALL_CPUS, expire_us);
+	/* For up to 1 second for AP to finish previous work. */
+	return mp_run_on_aps(func, arg, MP_RUN_ON_ALL_CPUS, 1000 * USECS_PER_MSEC);
 }
 
 int mp_park_aps(void)
@@ -981,7 +982,7 @@ int mp_park_aps(void)
 	stopwatch_init(&sw);
 
 	ret = mp_run_on_aps(park_this_cpu, NULL, MP_RUN_ON_ALL_CPUS,
-				250 * USECS_PER_MSEC);
+				1000 * USECS_PER_MSEC);
 
 	duration_msecs = stopwatch_duration_msecs(&sw);
 

@@ -1081,7 +1081,7 @@ void spi_finalize_ops(void)
 		optype |= (spi_config.ops[i].type & 3) << (i * 2);
 		writeb_(spi_config.ops[i].op, &cntlr->opmenu[i]);
 	}
-	writew_(optype, &cntlr->optype);
+	writew_(optype, cntlr->optype);
 }
 
 __weak void intel_southbridge_override_spi(struct intel_swseq_spi_config *spi_config)

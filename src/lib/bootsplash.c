@@ -25,7 +25,6 @@ void set_vesa_bootsplash(void)
 {
 	const vbe_mode_info_t *mode_info = vbe_mode_info();
 	if (mode_info != NULL) {
-		printk(BIOS_INFO, "Setting up bootsplash\n");
 		unsigned int x_resolution = le16_to_cpu(mode_info->vesa.x_resolution);
 		unsigned int y_resolution = le16_to_cpu(mode_info->vesa.y_resolution);
 		unsigned int fb_resolution = mode_info->vesa.bits_per_pixel;
@@ -42,6 +41,8 @@ void set_vesa_bootsplash(void)
 void set_bootsplash(unsigned char *framebuffer, unsigned int x_resolution,
 		    unsigned int y_resolution, unsigned int fb_resolution)
 {
+	printk(BIOS_INFO, "Setting up bootsplash in %dx%d@%d\n", x_resolution, y_resolution,
+	       fb_resolution);
 	struct jpeg_decdata *decdata;
 	unsigned char *jpeg =
 		cbfs_boot_map_with_leak("bootsplash.jpg", CBFS_TYPE_BOOTSPLASH, NULL);
@@ -49,6 +50,11 @@ void set_bootsplash(unsigned char *framebuffer, unsigned int x_resolution,
 		printk(BIOS_ERR, "Could not find bootsplash.jpg\n");
 		return;
 	}
+
+	int image_width, image_height;
+	jpeg_fetch_size(jpeg, &image_width, &image_height);
+
+	printk(BIOS_DEBUG, "Bootsplash image resolution: %dx%d\n", image_width, image_height);
 
 	decdata = malloc(sizeof(*decdata));
 	int ret = jpeg_decode(jpeg, framebuffer, x_resolution, y_resolution, fb_resolution,

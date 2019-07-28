@@ -28,7 +28,7 @@ static void mainboard_enable(struct device *dev)
 	}
 
 	dram_mb_detected = probe_ramsize((uintptr_t)_dram, CONFIG_DRAM_SIZE_MB);
-	ram_resource(dev, 0, (uintptr_t)_dram / KiB, dram_mb_detected / KiB);
+	ram_resource(dev, 0, (uintptr_t)_dram / KiB, dram_mb_detected * MiB / KiB);
 
 	cbmem_recovery(0);
 }

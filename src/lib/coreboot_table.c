@@ -31,6 +31,7 @@
 #include <cbfs.h>
 #include <cbmem.h>
 #include <bootmem.h>
+#include <bootsplash.h>
 #include <spi_flash.h>
 #include <security/vboot/misc.h>
 #include <security/vboot/vbnv_layout.h>
@@ -144,6 +145,14 @@ static void lb_framebuffer(struct lb_header *header)
 	memcpy(framebuffer, &fb, sizeof(*framebuffer));
 	framebuffer->tag = LB_TAG_FRAMEBUFFER;
 	framebuffer->size = sizeof(*framebuffer);
+
+	if (CONFIG(BOOTSPLASH)) {
+		uint8_t *fb_ptr = (uint8_t *)(uintptr_t)framebuffer->physical_address;
+		unsigned int width = framebuffer->x_resolution;
+		unsigned int height = framebuffer->y_resolution;
+		unsigned int depth = framebuffer->bits_per_pixel;
+		set_bootsplash(fb_ptr, width, height, depth);
+	}
 }
 
 void lb_add_gpios(struct lb_gpios *gpios, const struct lb_gpio *gpio_table,

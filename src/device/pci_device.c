@@ -34,7 +34,6 @@
 #include <arch/acpi.h>
 #include <device/pci_ops.h>
 #include <bootmode.h>
-#include <bootsplash.h>
 #include <console/console.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -766,9 +765,6 @@ void pci_dev_init(struct device *dev)
 	gfx_set_init_done(1);
 	printk(BIOS_DEBUG, "VGA Option ROM was run\n");
 	timestamp_add_now(TS_OPROM_END);
-
-	if (CONFIG(BOOTSPLASH))
-		set_vesa_bootsplash();
 }
 
 /** Default device operation for PCI devices */

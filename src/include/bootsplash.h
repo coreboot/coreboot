@@ -19,12 +19,6 @@
 #include <types.h>
 
 /**
- * Wraps bootsplash setup for vesa
- */
-void set_vesa_bootsplash(void);
-
-
-/**
  * Sets up the framebuffer with the bootsplash.jpg from cbfs.
  * Returns 0 on success
  * CB_ERR on cbfs errors

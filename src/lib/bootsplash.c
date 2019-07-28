@@ -21,22 +21,6 @@
 
 #include "jpeg.h"
 
-void set_vesa_bootsplash(void)
-{
-	const vbe_mode_info_t *mode_info = vbe_mode_info();
-	if (mode_info != NULL) {
-		unsigned int x_resolution = le16_to_cpu(mode_info->vesa.x_resolution);
-		unsigned int y_resolution = le16_to_cpu(mode_info->vesa.y_resolution);
-		unsigned int fb_resolution = mode_info->vesa.bits_per_pixel;
-		unsigned char *framebuffer =
-			(unsigned char *)le32_to_cpu(mode_info->vesa.phys_base_ptr);
-
-		set_bootsplash(framebuffer, x_resolution, y_resolution, fb_resolution);
-	} else {
-		printk(BIOS_ERR, "VBE modeinfo invalid\n");
-	}
-}
-
 
 void set_bootsplash(unsigned char *framebuffer, unsigned int x_resolution,
 		    unsigned int y_resolution, unsigned int fb_resolution)

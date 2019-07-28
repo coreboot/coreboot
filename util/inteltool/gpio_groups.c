@@ -1772,6 +1772,7 @@ void print_gpio_groups(struct pci_dev *const sb)
 	size_t pad_stepping = 8;
 
 	switch (sb->device_id) {
+	case PCI_DEVICE_ID_INTEL_H110:
 	case PCI_DEVICE_ID_INTEL_B150:
 	case PCI_DEVICE_ID_INTEL_CM236:
 	case PCI_DEVICE_ID_INTEL_C236:

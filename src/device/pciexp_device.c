@@ -764,6 +764,80 @@ static void pciexp_sync_max_payload_size(struct bus *bus, unsigned int max_paylo
 	}
 }
 
+/*
+ * Check if this is an SR-IOV capable device and add resources for all VF bars
+ *
+ * @param dev Pointer to the dev structure.
+ */
+void pciexp_dev_read_resources(struct device *dev)
+{
+	unsigned long sriovpos;
+	u16 numvfs, i;
+
+	sriovpos = pci_find_capability(dev, PCI_CAP_ID_PCIE);
+	if (!sriovpos)
+		return;
+
+	sriovpos = pciexp_find_extended_cap(dev, PCIE_EXT_CAP_SRIOV_ID, PCIE_EXT_CAP_OFFSET);
+	if (!sriovpos)
+		return;
+
+	numvfs = pci_read_config16(dev, sriovpos + PCIE_EXT_CAP_SRIOV_TOTAL_VFS);
+	printk(BIOS_DEBUG, "%s: supports %d SR-IOV VFs\n", dev_path(dev), numvfs);
+
+	/* The spec allows this to be 0 for some reason.  Nothing to do. */
+	if (numvfs == 0)
+		return;
+
+	for (int off = 0; off < 6; off++) {
+		unsigned long res_ix = sriovpos + PCIE_EXT_CAP_SRIOV_VF_BAR0 + off * 4;
+		struct resource *resource;
+
+		resource = pci_get_resource(dev, res_ix);
+
+		/* VF BARs aren't necessarily contiguous, skip the unused ones */
+		if (resource->size == 0)
+			continue;
+
+		printk(BIOS_DEBUG, "%s: found %dbit SR-IOV BAR, size 0x%llx @ index %lx\n",
+			dev_path(dev), (resource->flags & IORESOURCE_PCI64) ? 64 : 32,
+			resource->size,	resource->index);
+
+		if (resource->flags & IORESOURCE_PCI64)
+			off++;
+
+		/*
+		 * SR-IOV BARs break the resource allocator assumption for PCI
+		 * dev resources that size = gran = alignment.
+		 *
+		 * alignment = gran = pci_get_resource() result, but...
+		 * size is pci_get_resource()->size * numvfs, and there's no
+		 * power of two guarantee on size either since numvfs is just
+		 * an integer.
+		 *
+		 * Rather than add code to handle this as a special case in the
+		 * resource allocator, just round up the size.  In practice
+		 * MaxVfs tends to be 2^n or 2^n - 1, so the holes produced
+		 * should only be the size of a single VF BAR
+		 */
+		for (i = 1; i < numvfs; i <<= 1) {
+			resource->size <<= 1;
+			resource->align += 1;
+			resource->gran += 1;
+		}
+
+		if (resource->size >= 16 * MiB)
+			resource->flags |= IORESOURCE_ABOVE_4G;
+
+		if ((i != numvfs) && ((i-1) != numvfs)) {
+			printk(BIOS_DEBUG, "%s: VFs != 2^n or VFs != (2^n)-1, wasting MMIO space...\n",
+				dev_path(dev));
+		}
+	}
+
+	compact_resources(dev);
+}
+
 void pciexp_scan_bus(struct bus *bus, unsigned int min_devfn,
 			     unsigned int max_devfn)
 {

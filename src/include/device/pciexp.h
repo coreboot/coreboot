@@ -22,6 +22,8 @@ enum aspm_type {
 /* Latency tolerance reporting, max snoop latency value 3.14ms */
 #define PCIE_LTR_MAX_SNOOP_LATENCY_3146US 0x1003
 
+void pciexp_dev_read_resources(struct device *dev);
+
 void pciexp_scan_bus(struct bus *bus, unsigned int min_devfn,
 			     unsigned int max_devfn);
 

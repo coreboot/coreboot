@@ -543,6 +543,11 @@ void pci_dev_read_resources(struct device *dev)
 {
 	pci_read_bases(dev, 6);
 	pci_get_rom_resource(dev, PCI_ROM_ADDRESS);
+
+#if CONFIG(PCIEXP_PLUGIN_SUPPORT)
+	/* Check for SR-IOV BARs if we have PCIe support */
+	pciexp_dev_read_resources(dev);
+#endif
 }
 
 void pci_bus_read_resources(struct device *dev)

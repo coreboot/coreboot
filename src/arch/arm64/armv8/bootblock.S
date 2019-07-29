@@ -1,7 +1,5 @@
 /*
- * Early initialization code for aarch64 (a.k.a. armv8)
- *
- * Copyright 2015 Google Inc.
+ * This file is part of the coreboot project.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -12,6 +10,8 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+ *
+ * Early initialization code for aarch64 (a.k.a. armv8)
  */
 
 #include <arch/asm.h>

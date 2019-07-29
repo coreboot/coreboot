@@ -1,4 +1,6 @@
 /*
+ * This file is part of the coreboot project.
+ *
  * Copyright (c) 2013-2014, ARM Limited and Contributors. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without

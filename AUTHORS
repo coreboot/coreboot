@@ -8,26 +8,33 @@
 # To see a list of contributors: git log --pretty=format:%an | sort | uniq
 # For patches adding or removing a name: git log -i -S "NAME" --source --all
 
+Alex Züpke
 Alexander Couzens
 Alexandru Gagniuc
-Alex Züpke
+ARM Limited and Contributors
 coresystems GmbH
 DENX Software Engineering
 Eric Biederman
+Facebook, Inc.
 Free Software Foundation, Inc.
 Gary Jennejohn
 Google LLC
 Kshitij
 Marius Gröger
 MontaVista Software, Inc.
+Nick Barker
 Per Odlund
+Raptor Engineering
 Richard Woodruff
 Ronald G. Minnich
 Russell King
+Siemens AG
 Steve Magnani
+SUSE LINUX AG
 Syed Mohammed Khasim
 Texas Instruments
 The Linux Foundation
+Timothy Pearson
 Wolfgang Denk
 
 
@@ -35,3 +42,4 @@ Wolfgang Denk
 # Directories transferred
 src/acpi
 src/arch/arm
+src/arch/arm64

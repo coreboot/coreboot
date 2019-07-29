@@ -630,11 +630,6 @@ void pci_dev_enable_resources(struct device *dev)
 	pci_write_config16(dev, PCI_COMMAND, command);
 }
 
-void __noreturn pcidev_die(void)
-{
-	die("PCI: dev is NULL!\n");
-}
-
 void pci_bus_enable_resources(struct device *dev)
 {
 	u16 ctrl;

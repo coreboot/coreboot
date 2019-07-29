@@ -14,6 +14,7 @@
 #define __SIMPLE_DEVICE__
 
 #include <stdint.h>
+#include <console/console.h>
 #include <device/pci.h>
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
@@ -84,4 +85,9 @@ u16 pci_s_find_next_capability(pci_devfn_t dev, u16 cap, u16 last)
 u16 pci_s_find_capability(pci_devfn_t dev, u16 cap)
 {
 	return pci_s_find_next_capability(dev, cap, 0);
+}
+
+void __noreturn pcidev_die(void)
+{
+	die("PCI: dev is NULL!\n");
 }

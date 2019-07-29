@@ -23,22 +23,7 @@
 #include <device/pci_type.h>
 #include <arch/pci_ops.h>
 
-#ifdef __SIMPLE_DEVICE__
-
-/* Avoid name collisions as different stages have different signature
- * for these functions. The _s_ stands for simple, fundamental IO or
- * MMIO variant.
- */
-#define pci_read_config8 pci_s_read_config8
-#define pci_read_config16 pci_s_read_config16
-#define pci_read_config32 pci_s_read_config32
-#define pci_write_config8 pci_s_write_config8
-#define pci_write_config16 pci_s_write_config16
-#define pci_write_config32 pci_s_write_config32
-#else
-
-#include <device/pci.h>
-
+#ifndef __ROMCC__
 void __noreturn pcidev_die(void);
 
 static __always_inline pci_devfn_t pcidev_bdf(const struct device *dev)
@@ -52,6 +37,21 @@ static __always_inline pci_devfn_t pcidev_assert(const struct device *dev)
 		pcidev_die();
 	return pcidev_bdf(dev);
 }
+#endif
+
+#ifdef __SIMPLE_DEVICE__
+
+/* Avoid name collisions as different stages have different signature
+ * for these functions. The _s_ stands for simple, fundamental IO or
+ * MMIO variant.
+ */
+#define pci_read_config8 pci_s_read_config8
+#define pci_read_config16 pci_s_read_config16
+#define pci_read_config32 pci_s_read_config32
+#define pci_write_config8 pci_s_write_config8
+#define pci_write_config16 pci_s_write_config16
+#define pci_write_config32 pci_s_write_config32
+#else
 
 static __always_inline
 u8 pci_read_config8(const struct device *dev, u16 reg)

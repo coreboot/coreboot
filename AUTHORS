@@ -19,6 +19,7 @@ Facebook, Inc.
 Free Software Foundation, Inc.
 Gary Jennejohn
 Google LLC
+Imagination Technologies
 Kshitij
 Marius Gröger
 MontaVista Software, Inc.
@@ -43,3 +44,4 @@ Wolfgang Denk
 src/acpi
 src/arch/arm
 src/arch/arm64
+src/arch/mips

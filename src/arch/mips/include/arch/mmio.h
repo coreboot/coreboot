@@ -1,12 +1,6 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2014 Imagination Technologies
- *
- * Based on arch/armv7/include/arch/io.h:
- *   Copyright 2013 Google Inc.
- *   Copyright (C) 1996-2000 Russell King
- *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; version 2 of the License.

@@ -52,6 +52,8 @@ chip soc/intel/cannonlake
 	# putting it under register "common_soc_config" in overridetree.cb file.
 	register "common_soc_config.pch_thermal_trip" = "77"
 
+	register "PmTimerDisabled" = "1"
+
 	# VR Settings Configuration for 4 Domains
 	#+----------------+-------+-------+-------+-------+
 	#| Domain/Setting |  SA   |  IA   | GTUS  |  GTS  |

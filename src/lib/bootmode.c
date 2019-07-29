@@ -2,7 +2,6 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2011 The ChromiumOS Authors.  All rights reserved.
- * Copyright (C) 2019 Intel Corporation.  All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,7 +33,8 @@ void gfx_set_init_done(int done)
 
 int display_init_required(void)
 {
-	if (CONFIG(VBOOT_MAY_SKIP_DISPLAY_INIT)) {
+	/* For vboot, always honor VBOOT_WD_FLAG_DISPLAY_INIT. */
+	if (CONFIG(VBOOT)) {
 		/* Must always select MUST_REQUEST_DISPLAY when using this
 		   function. */
 		if (!CONFIG(VBOOT_MUST_REQUEST_DISPLAY))

@@ -154,21 +154,10 @@ config VBOOT_SAVE_RECOVERY_REASON_ON_REBOOT
 	  reboots caused after vboot verification is run. e.g. reboots caused by
 	  FSP components on Intel platforms.
 
-config VBOOT_MAY_SKIP_DISPLAY_INIT
-	bool "Skip display initialization in normal mode"
-	default y if CHROMEOS
-	default n
-	help
-	  Set this option to indicate that coreboot should skip display
-	  initialization on a normal (non-recovery, non-developer) boot.
-	  This is useful for platforms that do not support firmware
-	  user-interface in normal mode.
-
 config VBOOT_MUST_REQUEST_DISPLAY
 	bool
 	default y if VGA_ROM_RUN
 	default n
-	depends on VBOOT_MAY_SKIP_DISPLAY_INIT
 	help
 	  Set this option to indicate to vboot that this platform will skip its
 	  display initialization on a normal (non-recovery, non-developer) boot.

@@ -1,7 +1,5 @@
 /*
- * (C) Copyright 2010
- * Texas Instruments, <www.ti.com>
- * Aneesh V <aneesh@ti.com>
+ * This file is part of the coreboot project.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as

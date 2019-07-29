@@ -1,9 +1,5 @@
 /*
- *  arch/arm/asmlib.h
- *
- *  Adapted from Linux arch/arm/include/assembler.h
- *
- *  Copyright (C) 1996-2000 Russell King
+ * This file is part of the coreboot project.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -16,6 +12,8 @@
  *
  *  This file contains arm architecture specific defines
  *  for the different processors.
+ *
+ *  Adapted from Linux arch/arm/include/assembler.h
  *
  *  Do not include any C declarations in this file - it is included by
  *  assembler source.

@@ -1,4 +1,6 @@
 /*
+ * This file is part of the coreboot project.
+ *
  * Copyright 2010, Google Inc.
  * All rights reserved.
  *

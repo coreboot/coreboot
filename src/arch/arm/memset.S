@@ -1,7 +1,5 @@
 /*
- *  linux/arch/arm/lib/memset.S
- *
- *  Copyright (C) 1995-2000 Russell King
+ * This file is part of the coreboot project.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -12,7 +10,9 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- *  ASM optimised string functions
+ * Based on linux/arch/arm/lib/memset.S
+ *
+ * ASM optimised string functions
  */
 
 #include <arch/asm.h>

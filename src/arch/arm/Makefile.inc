@@ -2,11 +2,6 @@
 ##
 ## This file is part of the coreboot project.
 ##
-## Copyright (C) 2012-2013 The ChromiumOS Authors
-## Copyright (C) 2012 Alexandru Gagniuc <mr.nuke.me@gmail.com>
-## Copyright (C) 2009-2010 coresystems GmbH
-## Copyright (C) 2009 Ronald G. Minnich
-##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
 ## the Free Software Foundation; version 2 of the License.

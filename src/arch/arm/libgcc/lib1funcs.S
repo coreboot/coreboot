@@ -1,12 +1,5 @@
 /*
- * linux/arch/arm/lib/lib1funcs.S: Optimized ARM division routines
- *
- * Author: Nicolas Pitre <nico@fluxnic.net>
- *   - contributed to gcc-3.4 on Sep 30, 2003
- *   - adapted for the Linux kernel on Oct 2, 2003
- */
-
-/* Copyright 1995, 1996, 1998, 1999, 2000, 2003 Free Software Foundation, Inc.
+This file is part of the coreboot project.
 
 This file is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the
@@ -27,6 +20,10 @@ WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 General Public License for more details.
 */
+
+/*
+ * linux/arch/arm/lib/lib1funcs.S: Optimized ARM division routines
+ */
 
 
 #if defined __GNUC__

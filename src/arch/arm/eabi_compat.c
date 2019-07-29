@@ -1,7 +1,5 @@
 /*
- * Utility functions needed for (some) EABI conformant tool chains.
- *
- * (C) Copyright 2009 Wolfgang Denk <wd@denx.de>
+ * This file is part of the coreboot project.
  *
  * This program is Free Software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -12,6 +10,8 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+ *
+ * Utility functions needed for (some) EABI conformant tool chains.
  */
 
 #include <stdint.h>

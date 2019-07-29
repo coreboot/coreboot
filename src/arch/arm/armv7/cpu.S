@@ -1,7 +1,5 @@
 /*
- * Optimized assembly for low-level CPU operations on ARMv7 processors.
- *
- * Cache flushing code based off sys/arch/arm/arm/cpufunc_asm_armv7.S in NetBSD
+ * This file is part of the coreboot project.
  *
  * Copyright (c) 2010 Per Odlund <per.odlund@armagedon.se>
  * Copyright (c) 2014 Google Inc.
@@ -28,6 +26,10 @@
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
+ *
+ * Optimized assembly for low-level CPU operations on ARMv7 processors.
+ *
+ * Cache flushing code based off sys/arch/arm/arm/cpufunc_asm_armv7.S in NetBSD
  */
 
 #include <arch/asm.h>

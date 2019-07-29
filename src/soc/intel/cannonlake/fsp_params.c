@@ -367,6 +367,9 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	params->PchPwrOptEnable = config->dmipwroptimize;
 	params->SataPwrOptEnable = config->satapwroptimize;
 
+	/* Disable PCH ACPI timer */
+	params->EnableTcoTimer = !config->PmTimerDisabled;
+
 	/* Apply minimum assertion width settings if non-zero */
 	if (config->PchPmSlpS3MinAssert)
 		params->PchPmSlpS3MinAssert = config->PchPmSlpS3MinAssert;

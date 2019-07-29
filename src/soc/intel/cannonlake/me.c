@@ -298,5 +298,4 @@ void dump_me_status(void *unused)
 		hfsts6.fields.txt_support ? "YES" : "NO");
 }
 
-BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_LOAD, BS_ON_ENTRY, dump_me_status, NULL);
 BOOT_STATE_INIT_ENTRY(BS_OS_RESUME_CHECK, BS_ON_EXIT, dump_me_status, NULL);

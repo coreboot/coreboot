@@ -22,4 +22,13 @@ config VBOOT
 	select VBOOT_MUST_REQUEST_DISPLAY
 	select VBOOT_STARTS_IN_BOOTBLOCK
 
+config SC7180_QSPI
+	bool
+	default y if COMMON_CBFS_SPI_WRAPPER
+	prompt "Build Flash Using SPI-NOR"
+
+config BOOT_DEVICE_SPI_FLASH_BUS
+	int
+	default 16
+
 endif

@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2018, The Linux Foundation.  All rights reserved.
+ * Copyright (C) 2019, The Linux Foundation.  All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -15,12 +15,19 @@
 
 #include <spi-generic.h>
 #include <spi_flash.h>
+#include <soc/qspi.h>
 
-static const struct spi_ctrlr spi_ctrlr;
+static const struct spi_ctrlr qspi_ctrlr = {
+	.claim_bus = sc7180_claim_bus,
+	.release_bus = sc7180_release_bus,
+	.xfer = sc7180_xfer,
+	.xfer_dual = sc7180_xfer_dual,
+	.max_xfer_size = QSPI_MAX_PACKET_COUNT,
+};
 
 const struct spi_ctrlr_buses spi_ctrlr_bus_map[] = {
 	{
-		.ctrlr = &spi_ctrlr,
+		.ctrlr = &qspi_ctrlr,
 		.bus_start = CONFIG_BOOT_DEVICE_SPI_FLASH_BUS,
 		.bus_end = CONFIG_BOOT_DEVICE_SPI_FLASH_BUS,
 	},

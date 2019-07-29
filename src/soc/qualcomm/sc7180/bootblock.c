@@ -16,9 +16,11 @@
 #include <bootblock_common.h>
 #include <soc/clock.h>
 #include <soc/mmu.h>
+#include <soc/qspi.h>
 
 void bootblock_soc_init(void)
 {
 	sc7180_mmu_init();
 	clock_init();
+	quadspi_init(25 * MHz);
 }

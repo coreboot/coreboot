@@ -62,9 +62,11 @@ struct resource {
 struct device;
 struct bus;
 extern void compact_resources(struct device *dev);
-extern struct resource *probe_resource(struct device *dev, unsigned int index);
+extern struct resource *probe_resource(const struct device *dev,
+				       unsigned int index);
 extern struct resource *new_resource(struct device *dev, unsigned int index);
-extern struct resource *find_resource(struct device *dev, unsigned int index);
+extern struct resource *find_resource(const struct device *dev,
+				      unsigned int index);
 extern resource_t resource_end(struct resource *resource);
 extern resource_t resource_max(struct resource *resource);
 extern void report_resource_stored(struct device *dev,

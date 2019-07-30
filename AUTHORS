@@ -25,7 +25,7 @@ Marius Gröger
 MontaVista Software, Inc.
 Nick Barker
 Per Odlund
-Raptor Engineering
+Raptor Engineering, LLC.
 Richard Woodruff
 Ronald G. Minnich
 Russell King
@@ -45,3 +45,5 @@ src/acpi
 src/arch/arm
 src/arch/arm64
 src/arch/mips
+src/arch/ppc64
+

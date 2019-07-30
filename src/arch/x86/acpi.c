@@ -946,7 +946,7 @@ void acpi_create_dbg2(acpi_dbg2_header_t *dbg2,
 }
 
 unsigned long acpi_write_dbg2_pci_uart(acpi_rsdp_t *rsdp, unsigned long current,
-				       struct device *dev, uint8_t access_size)
+				const struct device *dev, uint8_t access_size)
 {
 	acpi_dbg2_header_t *dbg2 = (acpi_dbg2_header_t *)current;
 	struct resource *res;

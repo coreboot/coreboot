@@ -901,7 +901,7 @@ void acpi_create_dbg2(acpi_dbg2_header_t *dbg2_header,
 		      const char *device_path);
 
 unsigned long acpi_write_dbg2_pci_uart(acpi_rsdp_t *rsdp, unsigned long current,
-				       struct device *dev, uint8_t access_size);
+				const struct device *dev, uint8_t access_size);
 void acpi_create_dmar(acpi_dmar_t *dmar, enum dmar_flags flags,
 		      unsigned long (*acpi_fill_dmar)(unsigned long));
 unsigned long acpi_create_dmar_drhd(unsigned long current, u8 flags,

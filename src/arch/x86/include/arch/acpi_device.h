@@ -62,10 +62,10 @@ struct acpi_dp {
 #define ACPI_DT_NAMESPACE_HID		"PRP0001"
 
 struct device;
-const char *acpi_device_name(struct device *dev);
-const char *acpi_device_path(struct device *dev);
-const char *acpi_device_scope(struct device *dev);
-const char *acpi_device_path_join(struct device *dev, const char *name);
+const char *acpi_device_name(const struct device *dev);
+const char *acpi_device_path(const struct device *dev);
+const char *acpi_device_scope(const struct device *dev);
+const char *acpi_device_path_join(const struct device *dev, const char *name);
 int acpi_device_status(const struct device *dev);
 
 /*

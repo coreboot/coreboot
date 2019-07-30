@@ -53,9 +53,9 @@ static void acpi_device_fill_len(void *ptr)
 }
 
 /* Locate and return the ACPI name for this device */
-const char *acpi_device_name(struct device *dev)
+const char *acpi_device_name(const struct device *dev)
 {
-	struct device *pdev = dev;
+	const struct device *pdev = dev;
 	const char *name = NULL;
 
 	if (!dev)
@@ -82,7 +82,7 @@ const char *acpi_device_name(struct device *dev)
 }
 
 /* Recursive function to find the root device and print a path from there */
-static ssize_t acpi_device_path_fill(struct device *dev, char *buf,
+static ssize_t acpi_device_path_fill(const struct device *dev, char *buf,
 				     size_t buf_len, size_t cur)
 {
 	const char *name = acpi_device_name(dev);
@@ -117,7 +117,7 @@ static ssize_t acpi_device_path_fill(struct device *dev, char *buf,
  * Warning: just as with dev_path() this uses a static buffer
  * so should not be called mulitple times in one statement
  */
-const char *acpi_device_path(struct device *dev)
+const char *acpi_device_path(const struct device *dev)
 {
 	static char buf[DEVICE_PATH_MAX] = {};
 
@@ -131,7 +131,7 @@ const char *acpi_device_path(struct device *dev)
 }
 
 /* Return the path of the parent device as the ACPI Scope for this device */
-const char *acpi_device_scope(struct device *dev)
+const char *acpi_device_scope(const struct device *dev)
 {
 	static char buf[DEVICE_PATH_MAX] = {};
 
@@ -145,7 +145,7 @@ const char *acpi_device_scope(struct device *dev)
 }
 
 /* Concatentate the device path and provided name suffix */
-const char *acpi_device_path_join(struct device *dev, const char *name)
+const char *acpi_device_path_join(const struct device *dev, const char *name)
 {
 	static char buf[DEVICE_PATH_MAX] = {};
 	ssize_t len;

@@ -1,4 +1,4 @@
-# Platform indenpendend drivers documentation
+# Platform independent drivers documentation
 
 The drivers can be found in `src/drivers`. They are intended for onboard
 and plugin devices, significantly reducing integration complexity and

@@ -40,6 +40,10 @@ config H8_FN_KEY_AS_VBOOT_RECOVERY_SW
 	  If VBOOT is enabled, press Fn-Key at power on to force a recovery mode
 	  boot instead of regular FW_MAIN_x boot.
 
+config H8_HAS_PRIMARY_FN_KEYS
+	bool
+	default n
+
 endif
 
 config H8_DOCK_EARLY_INIT

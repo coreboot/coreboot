@@ -46,9 +46,7 @@ ReadMEM (
     *((UINT8*)Value) = *((UINT8*) ((UINTN)Address));
     break;
   case AccWidthUint16:
-    //*((UINT16*)Value) = *((UINT16*) ((UINTN)Address)); //gcc break strict-aliasing rules
-    *((UINT8*)Value) = *((UINT8*) ((UINTN)Address));
-    *((UINT8*)Value + 1) = *((UINT8*)((UINTN)Address) + 1);
+    *((UINT16*)Value) = *((UINT16*) ((UINTN)Address));
     break;
   case AccWidthUint32:
     *((UINT32*)Value) = *((UINT32*) ((UINTN)Address));
@@ -69,9 +67,7 @@ WriteMEM (
     *((UINT8*) ((UINTN)Address)) = *((UINT8*)Value);
     break;
   case AccWidthUint16:
-    //*((UINT16*) ((UINTN)Address)) = *((UINT16*)Value); //gcc break strict-aliasing rules
-    *((UINT8*)((UINTN)Address)) = *((UINT8*)Value);
-    *((UINT8*)((UINTN)Address) + 1) = *((UINT8*)Value + 1);
+    *((UINT16*) ((UINTN)Address)) = *((UINT16*)Value);
     break;
   case AccWidthUint32:
     *((UINT32*) ((UINTN)Address)) = *((UINT32*)Value);

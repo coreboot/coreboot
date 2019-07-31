@@ -58,16 +58,6 @@ fixes not found in the stock firmware, and offer much broader OS compatibility
 microcode, as well as firmware updates for the device's embedded controller
 (EC). This firmware "takes the training wheels off" your ChromeOS device :)
 
-### John Lewis
-
-[John Lewis](https://johnlewis.ie/custom-chromebook-firmware) also provides
-replacement firmware for ChromeOS devices, for the express purpose of
-running Linux on Chromebooks. John Lewis' firmware supports a much smaller
-set of devices, and uses SeaBIOS as the payload to support Legacy BIOS booting.
-His firmware images are significantly older, and not actively maintained or
-supported, but worth a look if you need Legacy Boot support and is not
-available via Mr Chromebox's firmware.
-
 ### Heads
 
 [Heads](http://osresearch.net) is an open source custom firmware and OS

@@ -336,7 +336,6 @@ int main(int argc, char *argv[])
 	case ADD_REGI_OP:
 	{
 		struct buffer region;
-		addr = 0;
 
 		if (partitioned_file_read_region(&region, image_file, name)) {
 			addr = -convert_to_from_top_aligned(&region, 0);

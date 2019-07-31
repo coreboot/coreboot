@@ -500,6 +500,11 @@ smbios_board_type __weak smbios_mainboard_board_type(void)
 	return SMBIOS_BOARD_TYPE_UNKNOWN;
 }
 
+u8 __weak smbios_mainboard_enclosure_type(void)
+{
+	return CONFIG_SMBIOS_ENCLOSURE_TYPE;
+}
+
 const char *__weak smbios_system_serial_number(void)
 {
 	return smbios_mainboard_serial_number();
@@ -620,7 +625,7 @@ static int smbios_write_type3(unsigned long *current, int handle)
 	t->bootup_state = SMBIOS_STATE_SAFE;
 	t->power_supply_state = SMBIOS_STATE_SAFE;
 	t->thermal_state = SMBIOS_STATE_SAFE;
-	t->_type = CONFIG_SMBIOS_ENCLOSURE_TYPE;
+	t->_type = smbios_mainboard_enclosure_type();
 	t->security_status = SMBIOS_STATE_SAFE;
 	len = t->length + smbios_string_table_len(t->eos);
 	*current += len;

@@ -55,11 +55,11 @@ void vb2ex_printf(const char *func, const char *fmt, ...)
 	return;
 }
 
-int vb2ex_read_resource(struct vb2_context *ctx,
-			enum vb2_resource_index index,
-			uint32_t offset,
-			void *buf,
-			uint32_t size)
+vb2_error_t vb2ex_read_resource(struct vb2_context *ctx,
+				enum vb2_resource_index index,
+				uint32_t offset,
+				void *buf,
+				uint32_t size)
 {
 	struct region_device rdev;
 	const char *name;
@@ -88,19 +88,21 @@ int vb2ex_read_resource(struct vb2_context *ctx,
 }
 
 /* No-op stubs that can be overridden by SoCs with hardware crypto support. */
-__weak int vb2ex_hwcrypto_digest_init(enum vb2_hash_algorithm hash_alg,
-				      uint32_t data_size)
+__weak vb2_error_t vb2ex_hwcrypto_digest_init(enum vb2_hash_algorithm hash_alg,
+					      uint32_t data_size)
 {
 	return VB2_ERROR_EX_HWCRYPTO_UNSUPPORTED;
 }
 
-__weak int vb2ex_hwcrypto_digest_extend(const uint8_t *buf, uint32_t size)
+__weak vb2_error_t vb2ex_hwcrypto_digest_extend(const uint8_t *buf,
+						uint32_t size)
 {
 	BUG(); /* Should never get called if init() returned an error. */
 	return VB2_ERROR_UNKNOWN;
 }
 
-__weak int vb2ex_hwcrypto_digest_finalize(uint8_t *digest, uint32_t digest_size)
+__weak vb2_error_t vb2ex_hwcrypto_digest_finalize(uint8_t *digest,
+						  uint32_t digest_size)
 {
 	BUG(); /* Should never get called if init() returned an error. */
 	return VB2_ERROR_UNKNOWN;
@@ -169,7 +171,8 @@ static int handle_digest_result(void *slot_hash, size_t slot_hash_sz)
 	return 0;
 }
 
-static int hash_body(struct vb2_context *ctx, struct region_device *fw_main)
+static vb2_error_t hash_body(struct vb2_context *ctx,
+			     struct region_device *fw_main)
 {
 	uint64_t load_ts;
 	uint32_t expected_size;
@@ -178,7 +181,7 @@ static int hash_body(struct vb2_context *ctx, struct region_device *fw_main)
 	const size_t hash_digest_sz = sizeof(hash_digest);
 	size_t block_size = sizeof(block);
 	size_t offset;
-	int rv;
+	vb2_error_t rv;
 
 	/* Clear the full digest so that any hash digests less than the
 	 * max have trailing zeros. */
@@ -313,7 +316,7 @@ void verstage_main(void)
 {
 	struct vb2_context ctx;
 	struct region_device fw_main;
-	int rv;
+	vb2_error_t rv;
 
 	timestamp_add_now(TS_START_VBOOT);
 

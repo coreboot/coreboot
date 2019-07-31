@@ -474,7 +474,7 @@ uint32_t antirollback_write_space_rec_hash(const uint8_t *data, uint32_t size)
 	return write_secdata(REC_HASH_NV_INDEX, data, size);
 }
 
-int vb2ex_tpm_clear_owner(struct vb2_context *ctx)
+vb2_error_t vb2ex_tpm_clear_owner(struct vb2_context *ctx)
 {
 	uint32_t rv;
 	printk(BIOS_INFO, "Clearing TPM owner\n");

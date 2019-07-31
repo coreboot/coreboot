@@ -17,8 +17,8 @@
 uint32_t vboot_setup_tpm(struct vb2_context *ctx);
 
 /* vboot_extend_pcr function for vb2 context */
-uint32_t vboot_extend_pcr(struct vb2_context *ctx, int pcr,
-			  enum vb2_pcr_digest which_digest);
+vb2_error_t vboot_extend_pcr(struct vb2_context *ctx, int pcr,
+			     enum vb2_pcr_digest which_digest);
 
 #else
 

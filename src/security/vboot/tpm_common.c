@@ -30,12 +30,12 @@ uint32_t vboot_setup_tpm(struct vb2_context *ctx)
 	return result;
 }
 
-uint32_t vboot_extend_pcr(struct vb2_context *ctx, int pcr,
-			  enum vb2_pcr_digest which_digest)
+vb2_error_t vboot_extend_pcr(struct vb2_context *ctx, int pcr,
+			     enum vb2_pcr_digest which_digest)
 {
 	uint8_t buffer[VB2_PCR_DIGEST_RECOMMENDED_SIZE];
 	uint32_t size = sizeof(buffer);
-	int rv;
+	vb2_error_t rv;
 
 	rv = vb2api_get_pcr_digest(ctx, which_digest, buffer, &size);
 	if (rv != VB2_SUCCESS)

@@ -38,38 +38,39 @@
 
 #include "antirollback.h"
 
-int vb2ex_tpm_clear_owner(struct vb2_context *ctx)
+vb2_error_t vb2ex_tpm_clear_owner(struct vb2_context *ctx)
 {
 	return VB2_SUCCESS;
 }
 
-uint32_t antirollback_read_space_firmware(struct vb2_context *ctx)
+vb2_error_t antirollback_read_space_firmware(struct vb2_context *ctx)
 {
 	vb2api_secdata_create(ctx);
 	return VB2_SUCCESS;
 }
 
-uint32_t antirollback_write_space_firmware(struct vb2_context *ctx)
+vb2_error_t antirollback_write_space_firmware(struct vb2_context *ctx)
 {
 	return VB2_SUCCESS;
 }
 
-uint32_t antirollback_lock_space_firmware(void)
+vb2_error_t antirollback_lock_space_firmware(void)
 {
 	return VB2_SUCCESS;
 }
 
-uint32_t antirollback_lock_space_rec_hash(void)
+vb2_error_t antirollback_lock_space_rec_hash(void)
 {
 	return VB2_SUCCESS;
 }
 
-uint32_t antirollback_read_space_rec_hash(uint8_t *data, uint32_t size)
+vb2_error_t antirollback_read_space_rec_hash(uint8_t *data, uint32_t size)
 {
 	return VB2_SUCCESS;
 }
 
-uint32_t antirollback_write_space_rec_hash(const uint8_t *data, uint32_t size)
+vb2_error_t antirollback_write_space_rec_hash(const uint8_t *data,
+					      uint32_t size)
 {
 	return VB2_SUCCESS;
 }

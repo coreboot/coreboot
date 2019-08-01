@@ -38,15 +38,20 @@ enum {
 void stage_cache_add(int stage_id, const struct prog *stage);
 /* Load the cached stage at given location returning the stage entry point. */
 void stage_cache_load_stage(int stage_id, struct prog *stage);
-#else /* CONFIG_NO_STAGE_CACHE */
-static inline void stage_cache_add(int stage_id, const struct prog *stage) {}
-static inline void stage_cache_load_stage(int stage_id, struct prog *stage) {}
-#endif
-
 /* Cache non-specific data or code. */
 void stage_cache_add_raw(int stage_id, const void *base, const size_t size);
 /* Get a pointer to cached raw data and its size. */
 void stage_cache_get_raw(int stage_id, void **base, size_t *size);
+
+#else /* CONFIG_NO_STAGE_CACHE */
+
+static inline void stage_cache_add(int stage_id, const struct prog *stage) {}
+static inline void stage_cache_load_stage(int stage_id, struct prog *stage) {}
+static inline void stage_cache_add_raw(int stage_id, const void *base, const size_t size) {}
+static inline void stage_cache_get_raw(int stage_id, void **base, size_t *size) {}
+
+#endif
+
 /* Fill in parameters for the external stage cache, if utilized. */
 void stage_cache_external_region(void **base, size_t *size);
 

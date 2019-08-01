@@ -17,7 +17,10 @@
 #define __MAINBOARD_SKU_H__
 
 enum {
-
+	SKU_4_VORTININJA = 4, /* Stylus + rear camera */
+	SKU_5_VORTININJA = 5, /* Stylus + no rear camera */
+	SKU_6_VORTININJA = 6, /* no Stylus + rear camera */
+	SKU_7_VORTININJA = 7, /* no Stylus + no rear camera */
 	SKU_33_DORP = 33, /* HDMI */
 	SKU_34_DORP = 34, /* HDMI+Kblight */
 	SKU_35_DORP = 35, /* HDMI+TS */

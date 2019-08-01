@@ -17,6 +17,23 @@
 #include <drivers/intel/gma/opregion.h>
 #include <baseboard/variants.h>
 #include <variant/sku.h>
+#include <sar.h>
+
+const char *get_wifi_sar_cbfs_filename(void)
+{
+	const char *filename = NULL;
+	uint32_t sku_id = get_board_sku();
+
+	switch (sku_id) {
+	case SKU_4_VORTININJA:
+	case SKU_5_VORTININJA:
+	case SKU_6_VORTININJA:
+	case SKU_7_VORTININJA:
+		filename = "wifi_sar-vortininja.hex";
+		break;
+	}
+	return filename;
+}
 
 const char *mainboard_vbt_filename(void)
 {

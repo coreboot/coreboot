@@ -67,6 +67,6 @@ enum spd_status {
 	SPD_STATUS_INVALID_FIELD,
 };
 
-u16 ddr3_crc16(const u8 *ptr, int n_crc);
+u16 ddr_crc16(const u8 *ptr, int n_crc);
 
 #endif /* DEVICE_DRAM_COMMON_H */

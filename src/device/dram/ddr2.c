@@ -93,7 +93,7 @@ u16 spd_ddr2_calc_unique_crc(const u8 *spd, int len)
 	for (i = 93; i <= 98; i++)
 		id_bytes[j++] = spd[i];
 
-	return ddr3_crc16(id_bytes, 15);
+	return ddr_crc16(id_bytes, 15);
 }
 
 /**

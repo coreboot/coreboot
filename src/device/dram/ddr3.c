@@ -23,6 +23,7 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <device/dram/ddr3.h>
+#include <device/dram/common.h>
 #include <string.h>
 #include <memory_info.h>
 #include <cbmem.h>
@@ -50,24 +51,6 @@ int spd_dimm_is_registered_ddr3(enum spd_dimm_type type)
 	return 0;
 }
 
-u16 ddr3_crc16(const u8 *ptr, int n_crc)
-{
-	int i;
-	u16 crc = 0;
-
-	while (--n_crc >= 0) {
-		crc = crc ^ ((int)*ptr++ << 8);
-		for (i = 0; i < 8; ++i)
-			if (crc & 0x8000) {
-				crc = (crc << 1) ^ 0x1021;
-			} else {
-				crc = crc << 1;
-			}
-	}
-
-	return crc;
-}
-
 /**
  * \brief Calculate the CRC of a DDR3 SPD
  *
@@ -91,7 +74,7 @@ u16 spd_ddr3_calc_crc(u8 *spd, int len)
 		/* Not enough bytes available to get the CRC */
 		return 0;
 
-	return ddr3_crc16(spd, n_crc);
+	return ddr_crc16(spd, n_crc);
 }
 
 /**
@@ -108,7 +91,7 @@ u16 spd_ddr3_calc_unique_crc(u8 *spd, int len)
 		/* Not enough bytes available to get the CRC */
 		return 0;
 
-	return ddr3_crc16(&spd[117], 11);
+	return ddr_crc16(&spd[117], 11);
 }
 
 /**

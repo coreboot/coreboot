@@ -131,4 +131,9 @@
 
 #define IMC_DEV			PCI_DEV(QPI_BUS, IMC_DEV0, IMC_FUNC0)
 
+#define PCU1_DEV		30
+#define PCU1_FUNC		01
+#define UBOX_DEV		16
+#define UBOX_FUNC		7
+
 #endif /* _SOC_PCI_DEVS_H_ */

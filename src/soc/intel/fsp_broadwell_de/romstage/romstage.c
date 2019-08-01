@@ -29,6 +29,7 @@
 #include <pc80/mc146818rtc.h>
 #include <soc/iomap.h>
 #include <soc/lpc.h>
+#include <soc/memory.h>
 #include <soc/pci_devs.h>
 #include <soc/romstage.h>
 #include <soc/gpio.h>
@@ -164,6 +165,9 @@ void romstage_main_continue(EFI_STATUS status, void *hob_list_ptr)
 	if (cbmem_hob_ptr == NULL)
 		die("Could not allocate cbmem for HOB pointer");
 	*(u32 *)cbmem_hob_ptr = (u32)hob_list_ptr;
+
+	if (!CONFIG(FSP_MEMORY_DOWN))
+		save_dimm_info();
 
 	/* Load the ramstage. */
 	post_code(0x4e);

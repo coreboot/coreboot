@@ -14,6 +14,7 @@ subdirs-y += ../../../lib/fsp
 romstage-y += gpio.c
 romstage-y += memmap.c
 romstage-y += tsc_freq.c
+romstage-y += smbus-imc.c
 
 postcar-y += tsc_freq.c
 

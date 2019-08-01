@@ -1,0 +1,28 @@
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2018-2019 Eltan B.V.
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; version 2 of the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+
+menu "Measured Boot (mboot)"
+
+config VENDORCODE_ELTAN_MBOOT
+	bool "Measure firmware with mboot."
+	default n
+	help
+	  Enabling MBOOT will use mboot to measure the components of the firmware
+	  (stages, payload, etc).
+
+config VENDORCODE_ELTAN_CRTM_VERSION_STRING
+	string "default CRTM version"
+	default "default CRTM version"
+
+endmenu # Measured Boot (mboot)

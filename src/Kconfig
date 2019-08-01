@@ -250,12 +250,28 @@ config RELOCATABLE_RAMSTAGE
 	 wake. When selecting this option the romstage is responsible for
 	 determing a stack location to use for loading the ramstage.
 
-config CACHE_RELOCATED_RAMSTAGE_OUTSIDE_CBMEM
-	depends on RELOCATABLE_RAMSTAGE
+config TSEG_STAGE_CACHE
 	bool
+	default y
+	depends on !NO_STAGE_CACHE && SMM_TSEG
 	help
-	 The relocated ramstage is saved in an area specified by the
-	 by the board and/or chipset.
+	  The option enables stage cache support for platform. Platform
+	  can stash copies of postcar, ramstage and raw runtime data
+	  inside SMM TSEG, to be restored on S3 resume path.
+
+config CBMEM_STAGE_CACHE
+	bool "Cache stages in CBMEM"
+	depends on !NO_STAGE_CACHE && !TSEG_STAGE_CACHE
+	help
+	  The option enables stage cache support for platform. Platform
+	  can stash copies of postcar, ramstage and raw runtime data
+	  inside CBMEM.
+
+	  While the approach is faster than reloading stages from boot media
+	  it is also a possible attack scenario via which OS can possibly
+	  circumvent SMM locks and SPI write protections.
+
+	  If unsure, select 'N'
 
 config UPDATE_IMAGE
 	bool "Update existing coreboot.rom image"
@@ -1143,7 +1159,7 @@ config RELOCATABLE_MODULES
 
 config NO_STAGE_CACHE
 	bool
-	default y if !HAVE_ACPI_RESUME
+	default y if !HAVE_ACPI_RESUME || !RELOCATABLE_RAMSTAGE
 	help
 	  Do not save any component in stage cache for resume path. On resume,
 	  all components would be read back from CBFS again.

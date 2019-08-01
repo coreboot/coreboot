@@ -32,8 +32,7 @@ enum {
 	STAGE_S3_DATA,
 };
 
-#if CONFIG(CACHE_RELOCATED_RAMSTAGE_OUTSIDE_CBMEM) \
-		|| CONFIG(RELOCATABLE_RAMSTAGE)
+#if CONFIG(TSEG_STAGE_CACHE) || CONFIG(CBMEM_STAGE_CACHE)
 /* Cache the loaded stage provided according to the parameters. */
 void stage_cache_add(int stage_id, const struct prog *stage);
 /* Load the cached stage at given location returning the stage entry point. */

@@ -176,16 +176,13 @@ verstage-$(CONFIG_REG_SCRIPT) += reg_script.c
 romstage-$(CONFIG_REG_SCRIPT) += reg_script.c
 ramstage-$(CONFIG_REG_SCRIPT) += reg_script.c
 
-ifeq ($(CONFIG_CACHE_RELOCATED_RAMSTAGE_OUTSIDE_CBMEM),y)
-ramstage-y += ext_stage_cache.c
-romstage-y += ext_stage_cache.c
-postcar-y += ext_stage_cache.c
-else
-ramstage-$(CONFIG_RELOCATABLE_RAMSTAGE) += cbmem_stage_cache.c
-romstage-$(CONFIG_RELOCATABLE_RAMSTAGE) += cbmem_stage_cache.c
-postcar-$(CONFIG_RELOCATABLE_RAMSTAGE) += cbmem_stage_cache.c
-endif
+ramstage-$(CONFIG_TSEG_STAGE_CACHE) += ext_stage_cache.c
+romstage-$(CONFIG_TSEG_STAGE_CACHE) += ext_stage_cache.c
+postcar-$(CONFIG_TSEG_STAGE_CACHE) += ext_stage_cache.c
 
+ramstage-$(CONFIG_CBMEM_STAGE_CACHE) += cbmem_stage_cache.c
+romstage-$(CONFIG_CBMEM_STAGE_CACHE) += cbmem_stage_cache.c
+postcar-$(CONFIG_CBMEM_STAGE_CACHE) += cbmem_stage_cache.c
 
 romstage-y += boot_device.c
 ramstage-y += boot_device.c

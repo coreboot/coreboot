@@ -29,12 +29,24 @@ chip soc/intel/cannonlake
 	register "common_soc_config" = "{
 		.i2c[0] = {
 			.speed = I2C_SPEED_FAST,
+			.rise_time_ns = 50,
+			.fall_time_ns = 15,
+		        .data_hold_time_ns = 330,
 		},
 		.i2c[1] = {
 			.speed = I2C_SPEED_FAST,
+			.rise_time_ns = 60,
+			.fall_time_ns = 25,
+		},
+		.i2c[3] = {
+			.speed = I2C_SPEED_FAST,
+			.rise_time_ns = 150,
+			.fall_time_ns = 150,
 		},
 		.i2c[4] = {
 			.speed = I2C_SPEED_FAST,
+			.rise_time_ns = 120,
+			.fall_time_ns = 120,
 		},
 		.gspi[0] = {
 		       .speed_mhz = 1,

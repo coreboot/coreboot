@@ -219,6 +219,7 @@ chip soc/intel/skylake
 	#| I2C1              | Trackpad                  |
 	#| I2C2              | Pen                       |
 	#| I2C3              | Audio                     |
+	#| pch_thermal_trip  | PCH Trip Temperature      |
 	#+-------------------+---------------------------+
 	register "common_soc_config" = "{
 		.chipset_lockdown = CHIPSET_LOCKDOWN_COREBOOT,
@@ -263,6 +264,7 @@ chip soc/intel/skylake
 				.sda_hold = 36,
 			},
 		},
+		.pch_thermal_trip = 75,
 	}"
 
 	# Must leave UART0 enabled or SD/eMMC will not work as PCI
@@ -284,9 +286,6 @@ chip soc/intel/skylake
 
 	register "tcc_offset" = "3"     # TCC of 97C
 	register "psys_pmax" = "101"
-
-	# PCH Trip Temperature in degree C
-	register "pch_trip_temp" = "75"
 
 	device cpu_cluster 0 on
 		device lapic 0 on end

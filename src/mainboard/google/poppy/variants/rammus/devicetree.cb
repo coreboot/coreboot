@@ -172,6 +172,7 @@ chip soc/intel/skylake
 	#| I2C0              | Touchscreen               |
 	#| I2C1              | Trackpad                  |
 	#| I2C5              | Audio                     |
+	#| pch_thermal_trip  | PCH Trip Temperature      |
 	#+-------------------+---------------------------+
 	register "common_soc_config" = "{
 		.chipset_lockdown = CHIPSET_LOCKDOWN_COREBOOT,
@@ -207,6 +208,7 @@ chip soc/intel/skylake
 			.speed_mhz = 1,
 			.early_init = 1,
 		},
+		.pch_thermal_trip = 75,
 	}"
 
 	# Touchscreen
@@ -241,9 +243,6 @@ chip soc/intel/skylake
 
 	# Use default SD card detect GPIO configuration
 	register "sdcard_cd_gpio_default" = "GPP_E15"
-
-	# PCH Trip Temperature in degree C
-	register "pch_trip_temp" = "75"
 
 	device cpu_cluster 0 on
 		device lapic 0 on end

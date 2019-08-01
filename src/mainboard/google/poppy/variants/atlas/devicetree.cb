@@ -64,7 +64,6 @@ chip soc/intel/skylake
 	register "tdp_pl2_override" = "15"
 	register "psys_pmax" = "45"
 	register "tcc_offset" = "10"
-	register "pch_trip_temp" = "75"
 
 	register "pirqa_routing" = "PCH_IRQ11"
 	register "pirqb_routing" = "PCH_IRQ10"
@@ -182,6 +181,7 @@ chip soc/intel/skylake
 	#| I2C2              | Trackpad                  |
 	#| I2C3              | Camera                    |
 	#| I2C4              | Audio                     |
+	#| pch_thermal_trip  | PCH Trip Temperature      |
 	#+-------------------+---------------------------+
 	register "common_soc_config" = "{
 		.chipset_lockdown = CHIPSET_LOCKDOWN_COREBOOT,
@@ -217,6 +217,7 @@ chip soc/intel/skylake
 			.speed_mhz = 1,
 			.early_init = 1,
 		},
+		.pch_thermal_trip = 75,
 	}"
 	# Touchscreen
 	register "i2c_voltage[0]" = "I2C_VOLTAGE_3V3"

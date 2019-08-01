@@ -64,7 +64,6 @@ ramstage-y += sd.c
 ramstage-y += smmrelocate.c
 ramstage-y += spi.c
 ramstage-y += systemagent.c
-ramstage-y += thermal.c
 ramstage-y += uart.c
 ramstage-y += vr_config.c
 ramstage-y += xhci.c

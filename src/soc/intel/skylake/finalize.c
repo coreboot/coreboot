@@ -26,6 +26,7 @@
 #include <intelblocks/lpc_lib.h>
 #include <intelblocks/p2sb.h>
 #include <intelblocks/pcr.h>
+#include <intelblocks/thermal.h>
 #include <reg_script.h>
 #include <spi-generic.h>
 #include <soc/me.h>
@@ -35,7 +36,6 @@
 #include <soc/pm.h>
 #include <soc/smbus.h>
 #include <soc/systemagent.h>
-#include <soc/thermal.h>
 #include <stdlib.h>
 #include <timer.h>
 

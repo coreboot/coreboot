@@ -11,8 +11,8 @@
  * GNU General Public License for more details.
  */
 
-#ifndef __ARM_TF_H__
-#define __ARM_TF_H__
+#ifndef __BL31_H__
+#define __BL31_H__
 
 #include <types.h>
 
@@ -20,9 +20,9 @@
 #include <arm_tf_temp.h>
 
 /* Load and enter BL31, set it up to exit to payload according to arguments. */
-void arm_tf_run_bl31(u64 payload_entry, u64 payload_arg0, u64 payload_spsr);
+void run_bl31(u64 payload_entry, u64 payload_arg0, u64 payload_spsr);
 
 /* Return platform-specific bl31_plat_params. May update bl31_params. */
 void *soc_get_bl31_plat_params(bl31_params_t *bl31_params);
 
-#endif /* __ARM_TF_H__ */
+#endif /* __BL31_H__ */

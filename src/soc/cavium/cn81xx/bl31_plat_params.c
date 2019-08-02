@@ -14,8 +14,8 @@
  *
  */
 
-#include <arm_tf.h>
 #include <assert.h>
+#include <bl31.h>
 #include <soc/bl31_plat_params.h>
 
 static struct bl31_plat_param *plat_params;

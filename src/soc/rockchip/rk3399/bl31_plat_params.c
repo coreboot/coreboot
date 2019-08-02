@@ -14,7 +14,7 @@
  *
  */
 
-#include <arm_tf.h>
+#include <bl31.h>
 #include <cbmem.h>
 #include <soc/bl31_plat_params.h>
 

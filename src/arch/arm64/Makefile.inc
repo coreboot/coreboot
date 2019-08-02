@@ -131,7 +131,7 @@ ramstage-$(CONFIG_ARM64_USE_ARCH_TIMER) += arch_timer.c
 ramstage-y += memset.S
 ramstage-y += memcpy.S
 ramstage-y += memmove.S
-ramstage-$(CONFIG_ARM64_USE_ARM_TRUSTED_FIRMWARE) += arm_tf.c
+ramstage-$(CONFIG_ARM64_USE_ARM_TRUSTED_FIRMWARE) += bl31.c
 ramstage-y += transition.c transition_asm.S
 ramstage-$(CONFIG_PAYLOAD_FIT_SUPPORT) += fit_payload.c
 

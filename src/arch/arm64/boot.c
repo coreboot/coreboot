@@ -15,7 +15,7 @@
 #include <arch/lib_helpers.h>
 #include <arch/stages.h>
 #include <arch/transition.h>
-#include <arm_tf.h>
+#include <bl31.h>
 #include <program_loading.h>
 
 static void run_payload(struct prog *prog)
@@ -28,7 +28,7 @@ static void run_payload(struct prog *prog)
 	u64 payload_spsr = get_eret_el(EL2, SPSR_USE_L);
 
 	if (CONFIG(ARM64_USE_ARM_TRUSTED_FIRMWARE))
-		arm_tf_run_bl31((u64)doit, (u64)arg, payload_spsr);
+		run_bl31((u64)doit, (u64)arg, payload_spsr);
 	else
 		transition_to_el2(doit, arg, payload_spsr);
 }

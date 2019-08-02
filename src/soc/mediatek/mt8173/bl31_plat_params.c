@@ -12,7 +12,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
-#include <arm_tf.h>
+#include <bl31.h>
 
 void *soc_get_bl31_plat_params(bl31_params_t *bl31_params)
 {

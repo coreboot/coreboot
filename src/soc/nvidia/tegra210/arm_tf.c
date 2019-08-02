@@ -14,8 +14,8 @@
  */
 
 #include <arch/cache.h>
-#include <arm_tf.h>
 #include <assert.h>
+#include <bl31.h>
 #include <soc/addressmap.h>
 #include <soc/console_uart.h>
 #include <symbols.h>

@@ -122,9 +122,6 @@ typedef struct {
 #define IVB_STEP_K0	(BASE_REV_IVB + 5)
 #define IVB_STEP_D0	(BASE_REV_IVB + 6)
 
-/* Intel Enhanced Debug region must be 4MB */
-#define IED_SIZE	0x400000
-
 /* Northbridge BARs */
 #ifndef __ACPI__
 #define DEFAULT_MCHBAR		((u8 *)0xfed10000)	/* 16 KB */

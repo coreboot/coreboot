@@ -444,28 +444,6 @@ static void northbridge_init(struct device *dev)
 	MCHBAR32(0x5500) = 0x00100001;
 }
 
-static u32 northbridge_get_base_reg(struct device *dev, int reg)
-{
-	u32 value;
-
-	value = pci_read_config32(dev, reg);
-	/* Base registers are at 1MiB granularity. */
-	value &= ~((1 << 20) - 1);
-	return value;
-}
-
-u32 northbridge_get_tseg_base(void)
-{
-	struct device *dev = pcidev_on_root(0, 0);
-
-	return northbridge_get_base_reg(dev, TSEG);
-}
-
-u32 northbridge_get_tseg_size(void)
-{
-	return CONFIG_SMM_TSEG_SIZE;
-}
-
 void northbridge_write_smram(u8 smram)
 {
 	pci_write_config8(pcidev_on_root(0, 0), SMRAM, smram);

@@ -20,16 +20,11 @@
 #include <cbmem.h>
 #include <console/console.h>
 #include <cpu/intel/romstage.h>
+#include <cpu/intel/smm/gen1/smi.h>
 #include <cpu/x86/mtrr.h>
 #include <program_loading.h>
+#include <stage_cache.h>
 #include "sandybridge.h"
-
-#if (CONFIG_SMM_TSEG_SIZE < 0x800000)
-# error "CONFIG_SMM_TSEG_SIZE must at least be 8MiB"
-#endif
-#if ((CONFIG_SMM_TSEG_SIZE & (CONFIG_SMM_TSEG_SIZE - 1)) != 0)
-# error "CONFIG_SMM_TSEG_SIZE is not a power of 2"
-#endif
 
 static uintptr_t smm_region_start(void)
 {
@@ -41,6 +36,25 @@ static uintptr_t smm_region_start(void)
 void *cbmem_top(void)
 {
 	return (void *) smm_region_start();
+}
+
+u32 northbridge_get_tseg_base(void)
+{
+	return ALIGN_DOWN(smm_region_start(), 1*MiB);
+}
+
+u32 northbridge_get_tseg_size(void)
+{
+	return CONFIG_SMM_TSEG_SIZE;
+}
+
+void stage_cache_external_region(void **base, size_t *size)
+{
+	/* The stage cache lives at the end of TSEG region.
+	 * The top of RAM is defined to be the TSEG base address. */
+	*size = CONFIG_SMM_RESERVED_SIZE;
+	*base = (void *)((uintptr_t)northbridge_get_tseg_base() + northbridge_get_tseg_size()
+			- CONFIG_IED_REGION_SIZE - CONFIG_SMM_RESERVED_SIZE);
 }
 
 /* platform_enter_postcar() determines the stack to use after

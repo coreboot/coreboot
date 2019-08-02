@@ -316,7 +316,7 @@ chip soc/intel/cannonlake
 				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_C23_IRQ)"
 				register "generic.probed" = "1"
 				register "generic.reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_E7)"
-				register "generic.reset_delay_ms" = "20"
+				register "generic.reset_delay_ms" = "120"
 				register "generic.enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_B21)"
 				register "generic.enable_delay_ms" = "55"
 				register "generic.has_power_resource" = "1"

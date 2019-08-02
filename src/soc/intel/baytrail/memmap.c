@@ -14,6 +14,7 @@
  */
 
 #include <cbmem.h>
+#include <stage_cache.h>
 #include <soc/iosf.h>
 #include <soc/smm.h>
 
@@ -25,4 +26,17 @@ uintptr_t smm_region_start(void)
 void *cbmem_top(void)
 {
 	return (void *) smm_region_start();
+}
+
+void stage_cache_external_region(void **base, size_t *size)
+{
+	char *smm_base;
+	/* 1MiB cache size */
+	const long cache_size = CONFIG_SMM_RESERVED_SIZE;
+
+	/* Ramstage cache lives in TSEG region which is the definition of
+	 * cbmem_top(). */
+	smm_base = cbmem_top();
+	*size = cache_size;
+	*base = &smm_base[smm_region_size() - cache_size];
 }

@@ -26,6 +26,7 @@
 #include <cpu/x86/mtrr.h>
 #include <cbmem.h>
 #include <program_loading.h>
+#include <stage_cache.h>
 #include <cpu/intel/smm/gen1/smi.h>
 #include "gm45.h"
 
@@ -121,6 +122,17 @@ void *cbmem_top(void)
 {
 	uintptr_t top_of_ram = ALIGN_DOWN(northbridge_get_tseg_base(), 4*MiB);
 	return (void *) top_of_ram;
+}
+
+void stage_cache_external_region(void **base, size_t *size)
+{
+	/*
+	 * The ramstage cache lives in the TSEG region at RESERVED_SMM_OFFSET.
+	 * The top of RAM is defined to be the TSEG base address.
+	 */
+	*size = CONFIG_SMM_RESERVED_SIZE;
+	*base = (void *)(northbridge_get_tseg_base()
+			 + CONFIG_SMM_RESERVED_SIZE);
 }
 
 /* platform_enter_postcar() determines the stack to use after

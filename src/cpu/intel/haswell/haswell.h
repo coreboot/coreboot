@@ -118,15 +118,9 @@
 /* Data is passed through bits 31:0 of the data register. */
 #define BIOS_MAILBOX_DATA			0x5da0
 
-/* Region of SMM space is reserved for multipurpose use. It falls below
- * the IED region and above the SMM handler. */
-#define RESERVED_SMM_SIZE CONFIG_SMM_RESERVED_SIZE
-#define RESERVED_SMM_OFFSET \
-	(CONFIG_SMM_TSEG_SIZE - CONFIG_IED_REGION_SIZE - RESERVED_SMM_SIZE)
-
 /* Sanity check config options. */
-#if (CONFIG_SMM_TSEG_SIZE <= (CONFIG_IED_REGION_SIZE + RESERVED_SMM_SIZE))
-# error "CONFIG_SMM_TSEG_SIZE <= (CONFIG_IED_REGION_SIZE + RESERVED_SMM_SIZE)"
+#if (CONFIG_SMM_TSEG_SIZE <= (CONFIG_IED_REGION_SIZE + CONFIG_SMM_RESERVED_SIZE))
+# error "CONFIG_SMM_TSEG_SIZE <= (CONFIG_IED_REGION_SIZE + CONFIG_SMM_RESERVED_SIZE)"
 #endif
 #if (CONFIG_SMM_TSEG_SIZE < 0x800000)
 # error "CONFIG_SMM_TSEG_SIZE must at least be 8MiB"

@@ -23,9 +23,8 @@
 #define PCH_SATA0_DEV PCI_DEV(0, SATA_DEV, SATA_FUNC)
 #define PCH_SATA1_DEV PCI_DEV(0, SATA2_DEV, SATA2_FUNC)
 
-#define SATA_MAP 0x90
-#define SATA_MAP_AHCI (0 << 6)
-#define SATA_MAP_RAID (1 << 6)
-#define SATA_PSC 0x92
+#define SATAGC 0x9c
+#define SATAGC_AHCI (0 << 16)
+#define SATAGC_RAID (1 << 16)
 
 #endif //_DENVERTON_NS_SATA_H

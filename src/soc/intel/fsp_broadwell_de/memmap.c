@@ -17,6 +17,7 @@
 #define __SIMPLE_DEVICE__
 
 #include <cbmem.h>
+#include <cpu/x86/smm.h>
 #include <drivers/intel/fsp1_0/fsp_util.h>
 #include <soc/broadwell_de.h>
 #include <soc/pci_devs.h>
@@ -50,4 +51,10 @@ size_t sa_get_tseg_size(void)
 
 	/* Subtract base to get the size */
 	return ret - sa_get_tseg_base();
+}
+
+void smm_region(uintptr_t *start, size_t *size)
+{
+	*start = sa_get_tseg_base();
+	*size = sa_get_tseg_size();
 }

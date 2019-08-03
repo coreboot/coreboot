@@ -192,22 +192,10 @@ void smm_relocation_handler(int cpu, uintptr_t curr_smbase,
 		write_prmrr(relo_params);
 }
 
-static u32 northbridge_get_base_reg(pci_devfn_t dev, int reg)
+static void fill_in_relocation_params(struct smm_relocation_params *params)
 {
-	u32 value;
-
-	value = pci_read_config32(dev, reg);
-	/* Base registers are at 1MiB granularity. */
-	value &= ~((1 << 20) - 1);
-	return value;
-}
-
-static void fill_in_relocation_params(pci_devfn_t dev,
-				      struct smm_relocation_params *params)
-{
-	u32 tseg_size;
-	u32 tseg_base;
-	u32 tseg_limit;
+	uintptr_t tseg_base;
+	size_t tseg_size;
 	u32 prmrr_base;
 	u32 prmrr_size;
 	int phys_bits;
@@ -227,24 +215,16 @@ static void fill_in_relocation_params(pci_devfn_t dev,
 	 * The result is that BASE[19:0] is effectively 00000h and LIMIT is
 	 * effectively FFFFFh.
 	 */
-	tseg_base = northbridge_get_base_reg(dev, TSEG_BASE);
-	tseg_limit = northbridge_get_base_reg(dev, TSEG_LIMIT) + 1 * MiB;
-	tseg_size = tseg_limit - tseg_base;
 
-	params->smram_base = tseg_base;
-	params->smram_size = 4 << 20;
-	params->ied_base = tseg_base + params->smram_size;
-	params->ied_size = tseg_size - params->smram_size;
-
-	/* Adjust available SMM handler memory size. */
-	params->smram_size -= CONFIG_SMM_RESERVED_SIZE;
+	smm_region(&tseg_base, &tseg_size);
 
 	/* SMRR has 32-bits of valid address aligned to 4KiB. */
-	params->smrr_base.lo = (params->smram_base & rmask) | MTRR_TYPE_WRBACK;
+	params->smrr_base.lo = (tseg_base & rmask) | MTRR_TYPE_WRBACK;
 	params->smrr_base.hi = 0;
-	params->smrr_mask.lo = (~(tseg_size - 1) & rmask) |
-					MTRR_PHYS_MASK_VALID;
+	params->smrr_mask.lo = (~(tseg_size - 1) & rmask) | MTRR_PHYS_MASK_VALID;
 	params->smrr_mask.hi = 0;
+
+	smm_subregion(SMM_SUBREGION_CHIPSET, &params->ied_base, &params->ied_size);
 
 	/* The PRMRR is at IEDBASE + 2MiB */
 	prmrr_base = (params->ied_base + (2 << 20)) & rmask;
@@ -281,16 +261,14 @@ static void setup_ied_area(struct smm_relocation_params *params)
 void smm_info(uintptr_t *perm_smbase, size_t *perm_smsize,
 				size_t *smm_save_state_size)
 {
-	pci_devfn_t dev = PCI_DEV(BUS0, VTD_DEV, VTD_FUNC);
-
 	printk(BIOS_DEBUG, "Setting up SMI for CPU\n");
 
-	fill_in_relocation_params(dev, &smm_reloc_params);
+	fill_in_relocation_params(&smm_reloc_params);
+
+	smm_subregion(SMM_SUBREGION_HANDLER, perm_smbase, perm_smsize);
 
 	setup_ied_area(&smm_reloc_params);
 
-	*perm_smbase = smm_reloc_params.smram_base;
-	*perm_smsize = smm_reloc_params.smram_size;
 	*smm_save_state_size = sizeof(em64t101_smm_state_save_area_t);
 }
 

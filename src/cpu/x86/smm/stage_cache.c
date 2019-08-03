@@ -1,8 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2013 Google Inc.
- * Copyright (C) 2015 Intel Corp.
+ * Copyright 2013 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,8 +16,14 @@
 #include <console/console.h>
 #include <cpu/x86/smm.h>
 #include <stage_cache.h>
+#include <types.h>
 
-void stage_cache_external_region(void **base, size_t *size)
+int __weak smm_subregion(int sub, void **base, size_t *size)
+{
+	return -1;
+}
+
+void __weak stage_cache_external_region(void **base, size_t *size)
 {
 	if (smm_subregion(SMM_SUBREGION_CACHE, base, size)) {
 		printk(BIOS_ERR, "ERROR: No cache SMM subregion.\n");

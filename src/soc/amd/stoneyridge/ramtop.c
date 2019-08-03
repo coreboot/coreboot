@@ -23,7 +23,6 @@
 #include <cpu/amd/msr.h>
 #include <cpu/amd/mtrr.h>
 #include <cbmem.h>
-#include <stage_cache.h>
 #include <arch/bert_storage.h>
 #include <soc/northbridge.h>
 #include <soc/iomap.h>
@@ -80,15 +79,6 @@ static uintptr_t smm_region_start(void)
 static size_t smm_region_size(void)
 {
 	return CONFIG_SMM_TSEG_SIZE;
-}
-
-void stage_cache_external_region(void **base, size_t *size)
-{
-	if (smm_subregion(SMM_SUBREGION_CACHE, base, size)) {
-		printk(BIOS_ERR, "ERROR: No cache SMM subregion.\n");
-		*base = NULL;
-		*size = 0;
-	}
 }
 
 void smm_region(void **start, size_t *size)

@@ -29,7 +29,6 @@ romstage-y += fsp_util.c
 romstage-y += hob.c
 romstage-y += raminit.c
 romstage-y += romstage.c
-romstage-y += stage_cache.c
 romstage-$(CONFIG_MMA) += mma_core.c
 
 ramstage-$(CONFIG_RUN_FSP_GOP) += fsp_gop.c
@@ -37,13 +36,11 @@ ramstage-y += fsp_relocate.c
 ramstage-y += fsp_util.c
 ramstage-y += hob.c
 ramstage-y += ramstage.c
-ramstage-y += stage_cache.c
 ramstage-$(CONFIG_INTEL_GMA_ADD_VBT) += vbt.c
 ramstage-$(CONFIG_MMA) += mma_core.c
 
 CPPFLAGS_common += -Isrc/drivers/intel/fsp1_1/include
 
-postcar-y += stage_cache.c
 ifneq ($(CONFIG_SKIP_FSP_CAR),y)
 postcar-y += temp_ram_exit.c
 postcar-y += exit_car.S

@@ -44,7 +44,7 @@ romstage-y += monotonic_timer.c
 romstage-y += pmutil.c
 romstage-y += reset.c
 romstage-y += smbus.c
-romstage-y += ramtop.c
+romstage-y += memmap.c
 romstage-$(CONFIG_PICASSO_UART) += uart.c
 romstage-y += tsc_freq.c
 romstage-y += southbridge.c
@@ -62,7 +62,7 @@ verstage-$(CONFIG_SPI_FLASH) += spi.c
 
 postcar-y += monotonic_timer.c
 postcar-$(CONFIG_PICASSO_UART) += uart.c
-postcar-y += ramtop.c
+postcar-y += memmap.c
 postcar-$(CONFIG_VBOOT_MEASURED_BOOT) += i2c.c
 postcar-y += tsc_freq.c
 
@@ -80,7 +80,7 @@ ramstage-y += reset.c
 ramstage-y += sata.c
 ramstage-y += sm.c
 ramstage-y += smbus.c
-ramstage-y += ramtop.c
+ramstage-y += memmap.c
 ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smi.c
 ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smi_util.c
 ramstage-$(CONFIG_PICASSO_UART) += uart.c

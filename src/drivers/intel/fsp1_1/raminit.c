@@ -259,7 +259,7 @@ void raminit(struct romstage_params *params)
 
 	/* Locate the memory configuration data to speed up the next reboot */
 	mrc_hob = get_next_guid_hob(&mrc_guid, hob_list_ptr);
-	if ((mrc_hob == NULL) && CONFIG(DISPLAY_HOBS))
+	if (mrc_hob == NULL)
 		printk(BIOS_DEBUG,
 			"Memory Configuration Data Hob not present\n");
 	else if (!vboot_recovery_mode_enabled()) {

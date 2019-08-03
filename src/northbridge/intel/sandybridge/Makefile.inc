@@ -15,14 +15,14 @@
 
 ifeq ($(CONFIG_NORTHBRIDGE_INTEL_SANDYBRIDGE),y)
 
-ramstage-y += ram_calc.c
+ramstage-y += memmap.c
 ramstage-y += northbridge.c
 ramstage-y += pcie.c
 ramstage-y += gma.c
 
 ramstage-y += acpi.c
 
-romstage-y += ram_calc.c
+romstage-y += memmap.c
 
 ramstage-y += common.c
 romstage-y += common.c
@@ -48,6 +48,6 @@ romstage-y += ../../../arch/x86/walkcbfs.S
 
 smm-y += finalize.c
 
-postcar-y += ram_calc.c
+postcar-y += memmap.c
 
 endif

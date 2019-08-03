@@ -15,20 +15,20 @@
 
 ifeq ($(CONFIG_NORTHBRIDGE_INTEL_NEHALEM),y)
 
-ramstage-y += ram_calc.c
+ramstage-y += memmap.c
 ramstage-y += northbridge.c
 ramstage-y += smi.c
 ramstage-y += gma.c
 
 ramstage-y += acpi.c
 
-romstage-y += ram_calc.c
+romstage-y += memmap.c
 romstage-y += raminit.c
 romstage-y += early_init.c
 romstage-y += ../../../arch/x86/walkcbfs.S
 
 smm-y += finalize.c
 
-postcar-y += ram_calc.c
+postcar-y += memmap.c
 
 endif

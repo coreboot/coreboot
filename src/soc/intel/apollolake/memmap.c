@@ -43,6 +43,12 @@ void *cbmem_top(void)
 	return tolum;
 }
 
+void smm_region(void **start, size_t *size)
+{
+	*start = (void *)sa_get_tseg_base();
+	*size = sa_get_tseg_size();
+}
+
 int smm_subregion(int sub, void **start, size_t *size)
 {
 	uintptr_t sub_base;
@@ -50,7 +56,7 @@ int smm_subregion(int sub, void **start, size_t *size)
 	void *smm_base;
 	const size_t cache_size = CONFIG_SMM_RESERVED_SIZE;
 
-	smm_region_info(&smm_base, &sub_size);
+	smm_region(&smm_base, &sub_size);
 	sub_base = (uintptr_t)smm_base;
 
 	assert(sub_size > CONFIG_SMM_RESERVED_SIZE);

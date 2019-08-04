@@ -104,9 +104,3 @@ void smm_setup_structures(void *gnvs, void *tcg, void *smi1)
 		  "d" (APM_CNT)
 	);
 }
-
-void smm_region_info(void **start, size_t *size)
-{
-	*start = (void *)sa_get_tseg_base();
-	*size = sa_get_tseg_size();
-}

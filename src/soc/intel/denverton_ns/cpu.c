@@ -21,6 +21,7 @@
 #include <cpu/x86/mp.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
+#include <cpu/x86/smm.h>
 #include <cpu/intel/turbo.h>
 #include <device/device.h>
 #include <device/pci.h>

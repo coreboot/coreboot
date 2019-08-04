@@ -583,4 +583,26 @@ int smm_load_module(void *smram, size_t size, struct smm_loader_params *params);
 void *backup_default_smm_area(void);
 void restore_default_smm_area(void *smm_save_area);
 
+/*
+ * Fills in the arguments for the entire SMM region covered by chipset
+ * protections. e.g. TSEG.
+ */
+void smm_region(void **start, size_t *size);
+void smm_region_info(void **start, size_t *size);
+
+enum {
+	/* SMM handler area. */
+	SMM_SUBREGION_HANDLER,
+	/* SMM cache region. */
+	SMM_SUBREGION_CACHE,
+	/* Chipset specific area. */
+	SMM_SUBREGION_CHIPSET,
+	/* Total sub regions supported. */
+	SMM_SUBREGION_NUM,
+};
+
+/* Fills in the start and size for the requested SMM subregion. Returns
+ * 0 on success, < 0 on failure. */
+int smm_subregion(int sub, void **start, size_t *size);
+
 #endif /* CPU_X86_SMM_H */

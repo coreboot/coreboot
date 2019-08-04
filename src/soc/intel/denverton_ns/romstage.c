@@ -20,6 +20,7 @@
 #include <cf9_reset.h>
 #include <console/console.h>
 #include <cpu/x86/mtrr.h>
+#include <cpu/x86/smm.h>
 #include <device/pci_ops.h>
 #include <soc/fiamux.h>
 #include <device/mmio.h>
@@ -29,7 +30,6 @@
 #include <soc/pmc.h>
 #include <soc/romstage.h>
 #include <soc/smbus.h>
-#include <soc/smm.h>
 #include <soc/soc_util.h>
 #include <soc/hob_mem.h>
 

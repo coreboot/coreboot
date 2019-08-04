@@ -19,7 +19,7 @@
 #include <cf9_reset.h>
 #include <commonlib/helpers.h>
 #include <console/console.h>
-#include <fsp/memmap.h>
+#include <cpu/x86/smm.h>
 #include <fsp/romstage.h>
 #include <fsp/util.h>
 #include <lib.h> /* hexdump */

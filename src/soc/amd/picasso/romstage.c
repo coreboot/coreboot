@@ -19,6 +19,7 @@
 #include <arch/acpi.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
+#include <cpu/x86/smm.h>
 #include <cpu/amd/mtrr.h>
 #include <cbmem.h>
 #include <commonlib/helpers.h>

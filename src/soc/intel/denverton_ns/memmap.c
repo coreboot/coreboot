@@ -16,12 +16,12 @@
 
 #include <cbmem.h>
 #include <assert.h>
+#include <cpu/x86/smm.h>
 #include <device/device.h>
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
 #include <soc/pci_devs.h>
 #include <soc/systemagent.h>
-#include <soc/smm.h>
 #include <lib.h>
 
 /* Returns base of requested region encoded in the system agent. */

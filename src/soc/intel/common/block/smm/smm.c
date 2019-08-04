@@ -18,7 +18,6 @@
 #include <bootstate.h>
 #include <console/console.h>
 #include <cpu/x86/smm.h>
-#include <fsp/memmap.h>
 #include <intelblocks/pmclib.h>
 #include <intelblocks/smm.h>
 #include <intelblocks/systemagent.h>

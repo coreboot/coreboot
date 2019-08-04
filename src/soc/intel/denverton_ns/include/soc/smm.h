@@ -24,25 +24,6 @@ struct smm_relocation_attrs {
 	uint32_t smrr_mask;
 };
 
-/* Fills in the arguments for the entire SMM region covered by chipset
- * protections. e.g. TSEG. */
-void smm_region(void **start, size_t *size);
-
-enum {
-	/* SMM handler area. */
-	SMM_SUBREGION_HANDLER,
-	/* SMM cache region. */
-	SMM_SUBREGION_CACHE,
-	/* Chipset specific area. */
-	SMM_SUBREGION_CHIPSET,
-	/* Total sub regions supported. */
-	SMM_SUBREGION_NUM,
-};
-
-/* Fills in the start and size for the requested SMM subregion. Returns
- * 0 on success, < 0 on failure. */
-int smm_subregion(int sub, void **start, size_t *size);
-
 #if !defined(__PRE_RAM__) && !defined(__SMM___)
 #include <stdint.h>
 void southcluster_smm_clear_state(void);

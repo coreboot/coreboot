@@ -27,10 +27,10 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/pae.h>
 #include <delay.h>
+#include <cpu/x86/smm.h>
 #include <device/pci_def.h>
 #include <device/resource.h>
 #include <fsp/api.h>
-#include <fsp/memmap.h>
 #include <fsp/util.h>
 #include <intelblocks/cpulib.h>
 #include <intelblocks/lpc_lib.h>

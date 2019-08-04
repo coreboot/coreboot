@@ -15,7 +15,7 @@
  */
 
 #include <cbmem.h>
-#include <fsp/memmap.h>
+#include <cpu/x86/smm.h>
 #include <soc/iosf.h>
 #include <soc/smm.h>
 

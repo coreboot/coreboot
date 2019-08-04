@@ -18,11 +18,11 @@
 #include <assert.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/msr.h>
+#include <cpu/x86/smm.h>
 #include <cbmem.h>
 #include <console/console.h>
 #include <device/pci_def.h>
 #include <fsp/util.h>
-#include <fsp/memmap.h>
 #include <intelblocks/pmclib.h>
 #include <memory_info.h>
 #include <smbios.h>

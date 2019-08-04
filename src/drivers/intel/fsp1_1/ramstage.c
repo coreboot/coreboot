@@ -17,7 +17,7 @@
 #include <bootmode.h>
 #include <arch/acpi.h>
 #include <console/console.h>
-#include <fsp/memmap.h>
+#include <cpu/x86/smm.h>
 #include <fsp/ramstage.h>
 #include <fsp/util.h>
 #include <lib.h>

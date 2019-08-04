@@ -19,7 +19,7 @@
 
 #include <stdint.h>
 #include <cpu/x86/msr.h>
-#include <fsp/memmap.h>
+#include <cpu/x86/smm.h>
 #include <intelblocks/smihandler.h>
 #include <soc/gpio.h>
 

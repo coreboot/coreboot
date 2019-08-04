@@ -130,10 +130,6 @@ config ENABLE_BUILTIN_COM1
 	  configure the pads and enable it. This serial port can be used for
 	  the debug console.
 
-config IED_REGION_SIZE
-	hex
-	default 0x400000
-
 config DISABLE_HPET
 	bool "Disable the HPET device"
 	default n

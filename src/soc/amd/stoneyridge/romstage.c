@@ -176,7 +176,7 @@ asmlinkage void car_stage_entry(void)
 	 * when relocating the SMM handler as well as using the TSEG
 	 * region for other purposes.
 	 */
-	smm_region_info(&smm_base, &smm_size);
+	smm_region(&smm_base, &smm_size);
 	tseg_base = (uintptr_t)smm_base;
 	postcar_frame_add_mtrr(&pcf, tseg_base, smm_size, MTRR_TYPE_WRBACK);
 

@@ -69,7 +69,7 @@ static void get_smm_info(uintptr_t *perm_smbase, size_t *perm_smsize,
 	size_t handler_size;
 
 	/* Initialize global tracking state. */
-	smm_region_info(&smm_base, &smm_size);
+	smm_region(&smm_base, &smm_size);
 	smm_subregion(SMM_SUBREGION_HANDLER, &handler_base, &handler_size);
 
 	relo_attrs.smbase = (uint32_t)smm_base;

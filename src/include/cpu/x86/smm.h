@@ -588,7 +588,6 @@ void restore_default_smm_area(void *smm_save_area);
  * protections. e.g. TSEG.
  */
 void smm_region(void **start, size_t *size);
-void smm_region_info(void **start, size_t *size);
 
 enum {
 	/* SMM handler area. */

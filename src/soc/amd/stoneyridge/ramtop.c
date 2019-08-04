@@ -91,7 +91,7 @@ void stage_cache_external_region(void **base, size_t *size)
 	}
 }
 
-void smm_region_info(void **start, size_t *size)
+void smm_region(void **start, size_t *size)
 {
 	*start = (void *)smm_region_start();
 	*size = smm_region_size();

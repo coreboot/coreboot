@@ -21,9 +21,6 @@
 #include <soc/ddp.h>
 #include <types.h>
 
-#define RDMA_FIFO_PSEUDO_SIZE(bytes)            (((bytes) / 16) << 16)
-#define RDMA_OUTPUT_VALID_FIFO_THRESHOLD(bytes) ((bytes) / 16)
-
 static void disp_config_main_path_connection(void)
 {
 	write32(&mmsys_cfg->disp_ovl0_mout_en, OVL0_MOUT_EN_COLOR0);
@@ -42,52 +39,6 @@ static void disp_config_main_path_mutex(void)
 	write32(&disp_mutex->mutex[0].en, BIT(0));
 }
 
-static void ovl_set_roi(u32 width, u32 height, u32 color)
-{
-	write32(&disp_ovl[0]->roi_size, height << 16 | width);
-	write32(&disp_ovl[0]->roi_bgclr, color);
-}
-
-static void ovl_layer_enable(void)
-{
-	write32(&disp_ovl[0]->rdma[0].ctrl, BIT(0));
-	write32(&disp_ovl[0]->rdma[0].mem_gmc_setting, RDMA_MEM_GMC);
-
-	setbits_le32(&disp_ovl[0]->src_con, BIT(0));
-}
-
-static void rdma_start(void)
-{
-	setbits_le32(&disp_rdma[0]->global_con, RDMA_ENGINE_EN);
-}
-
-static void rdma_config(u32 width, u32 height, u32 pixel_clk)
-{
-	u32 threshold;
-	u32 reg;
-
-	/* Config width */
-	clrsetbits_le32(&disp_rdma[0]->size_con_0, 0x1FFF, width);
-
-	/* Config height */
-	clrsetbits_le32(&disp_rdma[0]->size_con_1, 0xFFFFF, height);
-
-	/*
-	 * Enable FIFO underflow since DSI and DPI can't be blocked. Keep the
-	 * FIFO pseudo size reset default of 8 KiB. Set the output threshold to
-	 * 6 microseconds with 7/6 overhead to account for blanking, and with a
-	 * pixel depth of 4 bytes:
-	 */
-
-	threshold = pixel_clk * 4 * 7 / 1000;
-
-	reg = RDMA_FIFO_UNDERFLOW_EN |
-	      RDMA_FIFO_PSEUDO_SIZE(8 * KiB) |
-	      RDMA_OUTPUT_VALID_FIFO_THRESHOLD(threshold);
-
-	write32(&disp_rdma[0]->fifo_con, reg);
-}
-
 static void od_start(u32 width, u32 height)
 {
 	write32(&disp_od->size, width << 16 | height);
@@ -96,49 +47,14 @@ static void od_start(u32 width, u32 height)
 	write32(&disp_od->en, 1);
 }
 
-static void ufoe_start(u32 width, u32 height)
-{
-	write32(&disp_ufoe->start, UFO_BYPASS);
-}
-
-static void color_start(u32 width, u32 height)
-{
-	write32(&disp_color[0]->width, width);
-	write32(&disp_color[0]->height, height);
-	write32(&disp_color[0]->cfg_main, COLOR_BYPASS_ALL | COLOR_SEQ_SEL);
-	write32(&disp_color[0]->start, BIT(0));
-}
-
-static void ovl_layer_config(u32 fmt, u32 bpp, u32 width, u32 height)
-{
-	write32(&disp_ovl[0]->layer[0].con, fmt << 12);
-	write32(&disp_ovl[0]->layer[0].src_size, height << 16 | width);
-	write32(&disp_ovl[0]->layer[0].pitch, (width * bpp) & 0xFFFF);
-
-	ovl_layer_enable();
-}
-
 static void main_disp_path_setup(u32 width, u32 height, u32 pixel_clk)
 {
-	/* Setup OVL */
-	ovl_set_roi(width, height, 0);
-
-	/* Setup RDMA0 */
-	rdma_config(width, height, pixel_clk);
-
-	/* Setup OD */
+	ovl_set_roi(0, width, height, 0);
+	rdma_config(width, height, pixel_clk, 8 * KiB);
 	od_start(width, height);
-
-	/* Setup UFOE */
-	ufoe_start(width, height);
-
-	/* Setup Color */
+	write32(&disp_ufoe->start, UFO_BYPASS);
 	color_start(width, height);
-
-	/* Setup main path connection */
 	disp_config_main_path_connection();
-
-	/* Setup main path mutex */
 	disp_config_main_path_mutex();
 }
 
@@ -171,6 +87,5 @@ void mtk_ddp_mode_set(const struct edid *edid)
 			     edid->mode.pixel_clock);
 
 	rdma_start();
-
 	ovl_layer_config(fmt, bpp, edid->mode.ha, edid->mode.va);
 }

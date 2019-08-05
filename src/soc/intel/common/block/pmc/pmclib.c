@@ -21,7 +21,9 @@
 #include <intelblocks/pmclib.h>
 #include <intelblocks/gpio.h>
 #include <intelblocks/tco.h>
+#include <pc80/mc146818rtc.h>
 #include <soc/pm.h>
+#include <stdint.h>
 #include <string.h>
 #include <timer.h>
 #include <security/vboot/vboot_common.h>
@@ -570,8 +572,10 @@ void pmc_gpe_init(void)
 
 void pmc_set_power_failure_state(const bool target_on)
 {
-	const int state = CONFIG_MAINBOARD_POWER_FAILURE_STATE;
 	bool on;
+
+	uint8_t state = CONFIG_MAINBOARD_POWER_FAILURE_STATE;
+	get_option(&state, "power_on_after_fail");
 
 	switch (state) {
 	case MAINBOARD_POWER_STATE_OFF:

@@ -482,6 +482,9 @@ static int start_aps(struct bus *cpu_bus, int ap_count, atomic_t *num_aps)
 	/* Wait for CPUs to check in up to 200 us. */
 	wait_for_aps(num_aps, ap_count, 200 /* us */, 15 /* us */);
 
+	if (CONFIG(X86_AMD_INIT_SIPI))
+		return 0;
+
 	/* Send 2nd SIPI */
 	if ((lapic_read(LAPIC_ICR) & LAPIC_ICR_BUSY)) {
 		printk(BIOS_DEBUG, "Waiting for ICR not to be busy...");

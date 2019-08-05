@@ -29,6 +29,7 @@
 #include <intelblocks/uart.h>
 #include <smmstore.h>
 #include <soc/nvs.h>
+#include <soc/pci_devs.h>
 #include <soc/pm.h>
 #include <soc/gpio.h>
 #include <soc/iomap.h>
@@ -221,7 +222,7 @@ void smihandler_southbridge_sleep(
 		/* Disable all GPE */
 		pmc_disable_all_gpe();
 		/* Set which state system will be after power reapplied */
-		pmc_soc_restore_power_failure();
+		pmc_set_power_failure_state(false);
 		/* also iterates over all bridges on bus 0 */
 		busmaster_disable_on_bus(0);
 

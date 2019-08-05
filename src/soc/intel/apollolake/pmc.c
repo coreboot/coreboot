@@ -105,11 +105,6 @@ void pmc_soc_set_afterg3_en(const bool on)
 	write32(gen_pmcon1, reg32);
 }
 
-void pmc_soc_restore_power_failure(void)
-{
-	pmc_set_power_failure_state(false);
-}
-
 void pmc_soc_init(struct device *dev)
 {
 	const struct soc_intel_apollolake_config *cfg = config_of(dev);

@@ -79,18 +79,6 @@ __weak uint32_t soc_get_smi_status(uint32_t generic_sts)
 	return generic_sts;
 }
 
-/*
- * Set PMC register to know which state system should be after
- * power reapplied
- */
-__weak void pmc_soc_restore_power_failure(void)
-{
-	/*
-	 * SoC code should set PMC config register in order to set
-	 * MAINBOARD_POWER_ON bit as per EDS.
-	 */
-}
-
 int acpi_get_sleep_type(void)
 {
 	struct chipset_power_state *ps;

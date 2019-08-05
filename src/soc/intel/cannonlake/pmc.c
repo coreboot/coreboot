@@ -45,11 +45,6 @@ void pmc_soc_set_afterg3_en(const bool on)
 	write8(pmcbase + GEN_PMCON_A, reg8);
 }
 
-void pmc_soc_restore_power_failure(void)
-{
-	pmc_set_power_failure_state(false);
-}
-
 static void pm1_enable_pwrbtn_smi(void *unused)
 {
 	/*

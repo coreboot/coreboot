@@ -127,12 +127,6 @@ void pmc_clear_all_gpe_status(void);
 void pmc_clear_prsts(void);
 
 /*
- * Set PMC register to know which state system should be after
- * power reapplied
- */
-void pmc_soc_restore_power_failure(void);
-
-/*
  * Enable or disable global reset. If global reset is enabled, hard reset and
  * soft reset will trigger global reset, where both host and TXE are reset.
  * This is cleared on cold boot, hard reset, soft reset and Sx.

@@ -68,11 +68,6 @@ void pmc_soc_set_afterg3_en(const bool on)
 	pci_write_config8(dev, GEN_PMCON_B, reg8);
 }
 
-void pmc_soc_restore_power_failure(void)
-{
-	pmc_set_power_failure_state(false);
-}
-
 #if ENV_RAMSTAGE
 /* Fill up PMC resource structure */
 int pmc_soc_get_resources(struct pmc_resource_config *cfg)

@@ -34,13 +34,12 @@
 /*
  * MP and SMM loading initialization.
  */
-struct smm_relocation_attrs {
-	uint32_t smbase;
-	uint32_t tseg_base;
-	uint32_t tseg_mask;
+struct smm_relocation_params {
+	msr_t tseg_base;
+	msr_t tseg_mask;
 };
 
-static struct smm_relocation_attrs relo_attrs;
+static struct smm_relocation_params smm_reloc_params;
 
 /*
  * Do essential initialization tasks before APs can be fired up -
@@ -60,40 +59,41 @@ int get_cpu_count(void)
 	return 1 + (cpuid_ecx(0x80000008) & 0xff);
 }
 
+static void fill_in_relocation_params(struct smm_relocation_params *params)
+{
+	uintptr_t tseg_base;
+	size_t tseg_size;
+
+	smm_region(&tseg_base, &tseg_size);
+
+	params->tseg_base.lo = ALIGN_DOWN(tseg_base, 128 * KiB);
+	params->tseg_base.hi = 0;
+	params->tseg_mask.lo = ALIGN_DOWN(~(tseg_size - 1), 128 * KiB);
+	params->tseg_mask.hi = ((1 << (cpu_phys_address_size() - 32)) - 1);
+
+	params->tseg_mask.lo |= SMM_TSEG_WB;
+}
+
 static void get_smm_info(uintptr_t *perm_smbase, size_t *perm_smsize,
 				size_t *smm_save_state_size)
 {
-	uintptr_t smm_base;
-	size_t smm_size;
-	uintptr_t handler_base;
-	size_t handler_size;
+	printk(BIOS_DEBUG, "Setting up SMI for CPU\n");
 
-	/* Initialize global tracking state. */
-	smm_region(&smm_base, &smm_size);
-	smm_subregion(SMM_SUBREGION_HANDLER, &handler_base, &handler_size);
+	fill_in_relocation_params(&smm_reloc_params);
 
-	relo_attrs.smbase = smm_base;
-	relo_attrs.tseg_base = relo_attrs.smbase;
-	relo_attrs.tseg_mask = ALIGN_DOWN(~(smm_size - 1), 128 * KiB);
-	relo_attrs.tseg_mask |= SMM_TSEG_WB;
-
-	*perm_smbase = handler_base;
-	*perm_smsize = handler_size;
+	smm_subregion(SMM_SUBREGION_HANDLER, perm_smbase, perm_smsize);
 	*smm_save_state_size = sizeof(amd64_smm_state_save_area_t);
 }
 
 static void relocation_handler(int cpu, uintptr_t curr_smbase,
 				uintptr_t staggered_smbase)
 {
-	msr_t tseg_base, tseg_mask;
+	struct smm_relocation_params *relo_params = &smm_reloc_params;
 	amd64_smm_state_save_area_t *smm_state;
 
-	tseg_base.lo = relo_attrs.tseg_base;
-	tseg_base.hi = 0;
-	wrmsr(SMM_ADDR_MSR, tseg_base);
-	tseg_mask.lo = relo_attrs.tseg_mask;
-	tseg_mask.hi = ((1 << (cpu_phys_address_size() - 32)) - 1);
-	wrmsr(SMM_MASK_MSR, tseg_mask);
+	wrmsr(SMM_ADDR_MSR, relo_params->tseg_base);
+	wrmsr(SMM_MASK_MSR, relo_params->tseg_mask);
+
 	smm_state = (void *)(SMM_AMD64_SAVE_STATE_OFFSET + curr_smbase);
 	smm_state->smbase = staggered_smbase;
 }

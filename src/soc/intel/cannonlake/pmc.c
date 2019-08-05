@@ -32,35 +32,22 @@
  * Set which power state system will be after reapplying
  * the power (from G3 State)
  */
-void pmc_set_afterg3(int s5pwr)
+void pmc_soc_set_afterg3_en(const bool on)
 {
 	uint8_t reg8;
-	uint8_t *pmcbase = pmc_mmio_regs();
+	uint8_t *const pmcbase = pmc_mmio_regs();
 
 	reg8 = read8(pmcbase + GEN_PMCON_A);
-
-	switch (s5pwr) {
-	case MAINBOARD_POWER_STATE_OFF:
-		reg8 |= 1;
-		break;
-	case MAINBOARD_POWER_STATE_ON:
-		reg8 &= ~1;
-		break;
-	case MAINBOARD_POWER_STATE_PREVIOUS:
-	default:
-		break;
-	}
-
+	if (on)
+		reg8 &= ~SLEEP_AFTER_POWER_FAIL;
+	else
+		reg8 |= SLEEP_AFTER_POWER_FAIL;
 	write8(pmcbase + GEN_PMCON_A, reg8);
 }
 
-/*
- * Set PMC register to know which state system should be after
- * power reapplied
- */
 void pmc_soc_restore_power_failure(void)
 {
-	pmc_set_afterg3(CONFIG_MAINBOARD_POWER_FAILURE_STATE);
+	pmc_set_power_failure_state(false);
 }
 
 static void pm1_enable_pwrbtn_smi(void *unused)
@@ -119,46 +106,14 @@ static void config_deep_sx(uint32_t deepsx_config)
 	write32(pmcbase + DSX_CFG, reg);
 }
 
-static void pch_power_options(void)
-{
-	const char *state;
-
-	const int pwr_on = CONFIG_MAINBOARD_POWER_FAILURE_STATE;
-
-	/*
-	 * Which state do we want to goto after g3 (power restored)?
-	 * 0 == S5 Soft Off
-	 * 1 == S0 Full On
-	 * 2 == Keep Previous State
-	 */
-	switch (pwr_on) {
-	case MAINBOARD_POWER_STATE_OFF:
-		state = "off";
-		break;
-	case MAINBOARD_POWER_STATE_ON:
-		state = "on";
-		break;
-	case MAINBOARD_POWER_STATE_PREVIOUS:
-		state = "state keep";
-		break;
-	default:
-		state = "undefined";
-	}
-	pmc_set_afterg3(pwr_on);
-	printk(BIOS_INFO, "Set power %s after power failure.\n", state);
-
-	/* Set up GPE configuration. */
-	pmc_gpe_init();
-}
-
 static void pmc_init(void *unused)
 {
-	config_t *config = config_of_path(SA_DEVFN_ROOT);
+	const config_t *config = config_of_path(SA_DEVFN_ROOT);
 
 	rtc_init();
 
-	/* Initialize power management */
-	pch_power_options();
+	pmc_set_power_failure_state(true);
+	pmc_gpe_init();
 
 	config_deep_s3(config->deep_s3_enable_ac, config->deep_s3_enable_dc);
 	config_deep_s5(config->deep_s5_enable_ac, config->deep_s5_enable_dc);

@@ -120,7 +120,7 @@ Method (IRQM, 1, Serialized) {
 
 	Switch (ToInteger (Arg0)) {
 		/* PCIe Root Port 1 */
-		Case (Package() { 1 }) {
+		Case (Package() { 9 }) {
 			If (PICM) {
 				Return (IQAA)
 			} Else {
@@ -129,7 +129,7 @@ Method (IRQM, 1, Serialized) {
 		}
 
 		/* PCIe Root Port 2 */
-		Case (Package() { 2 }) {
+		Case (Package() { 10 }) {
 			If (PICM) {
 				Return (IQBA)
 			} Else {
@@ -138,7 +138,7 @@ Method (IRQM, 1, Serialized) {
 		}
 
 		/* PCIe Root Port 3 */
-		Case (Package() { 3 }) {
+		Case (Package() { 11 }) {
 			If (PICM) {
 				Return (IQCA)
 			} Else {
@@ -147,7 +147,7 @@ Method (IRQM, 1, Serialized) {
 		}
 
 		/* PCIe Root Port 4 */
-		Case (Package() { 4 }) {
+		Case (Package() { 12 }) {
 			If (PICM) {
 				Return (IQDA)
 			} Else {
@@ -156,7 +156,7 @@ Method (IRQM, 1, Serialized) {
 		}
 
 		/* PCIe Root Port 5 */
-		Case (Package() { 5 }) {
+		Case (Package() { 14 }) {
 			If (PICM) {
 				Return (IQEA)
 			} Else {
@@ -165,7 +165,7 @@ Method (IRQM, 1, Serialized) {
 		}
 
 		/* PCIe Root Port 6 */
-		Case (Package() { 6 }) {
+		Case (Package() { 15 }) {
 			If (PICM) {
 				Return (IQFA)
 			} Else {
@@ -174,7 +174,7 @@ Method (IRQM, 1, Serialized) {
 		}
 
 		/* PCIe Root Port 7 */
-		Case (Package() { 7 }) {
+		Case (Package() { 16 }) {
 			If (PICM) {
 				Return (IQGA)
 			} Else {
@@ -183,7 +183,7 @@ Method (IRQM, 1, Serialized) {
 		}
 
 		/* PCIe Root Port 8 */
-		Case (Package() { 8 }) {
+		Case (Package() { 17 }) {
 			If (PICM) {
 				Return (IQHA)
 			} Else {

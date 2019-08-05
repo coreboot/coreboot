@@ -75,8 +75,10 @@ static int ast_detect_chip(struct drm_device *dev, bool *need_post)
 	} else {
 		pci_read_config_dword(ast->dev->pdev, 0x08, &data);
 		uint8_t revision = data & 0xff;
-
-		if (revision >= 0x30) {
+		if (revision >= 0x40) {
+			ast->chip = AST2500;
+			DRM_INFO("AST 2500 detected\n");
+		} else if (revision >= 0x30) {
 			ast->chip = AST2400;
 			DRM_INFO("AST 2400 detected\n");
 		} else if (revision >= 0x20) {
@@ -150,6 +152,8 @@ static int ast_detect_chip(struct drm_device *dev, bool *need_post)
 			if (ast->chip == AST2300 && data == 0x0) /* ast1300 */
 				ast->support_wide_screen = true;
 			if (ast->chip == AST2400 && data == 0x100) /* ast1400 */
+				ast->support_wide_screen = true;
+			if (ast->chip == AST2500 && data == 0x100) /* ast2510 */
 				ast->support_wide_screen = true;
 		}
 		break;
@@ -241,7 +245,23 @@ static int ast_get_dram_info(struct drm_device *dev)
 	else
 		ast->dram_bus_width = 32;
 
-	if (ast->chip == AST2300 || ast->chip == AST2400) {
+	if (ast->chip == AST2500) {
+		switch (data & 0x03) {
+		case 0:
+			ast->dram_type = AST_DRAM_1Gx16;
+			break;
+		default:
+		case 1:
+			ast->dram_type = AST_DRAM_2Gx16;
+			break;
+		case 2:
+			ast->dram_type = AST_DRAM_4Gx16;
+			break;
+		case 3:
+			ast->dram_type = AST_DRAM_8Gx16;
+			break;
+		}
+	} else if (ast->chip == AST2300 || ast->chip == AST2400) {
 		switch (data & 0x03) {
 		case 0:
 			ast->dram_type = AST_DRAM_512Mx16;

@@ -147,7 +147,7 @@ bool ast_backup_fw(struct drm_device *dev, u8 *addr, u32 size)
 	return false;
 }
 
-bool ast_launch_m68k(struct drm_device *dev)
+static bool ast_launch_m68k(struct drm_device *dev)
 {
 	struct ast_private *ast = dev->dev_private;
 	u32 i, data, len = 0;
@@ -161,7 +161,10 @@ bool ast_launch_m68k(struct drm_device *dev)
 		if (ast->dp501_fw_addr) {
 			fw_addr = ast->dp501_fw_addr;
 			len = 32*1024;
-		} else if (ast->dp501_fw) {
+		} else {
+			if (!ast->dp501_fw)
+				return false;
+
 			fw_addr = (u8 *)ast->dp501_fw->data;
 			len = ast->dp501_fw->size;
 		}
@@ -226,11 +229,7 @@ u8 ast_get_dp501_max_clk(struct drm_device *dev)
 
 	/* Read Link Capability */
 	offset  = 0xf014;
-	data = ast_mindwm(ast, boot_address + offset);
-	linkcap[0] = (data & 0xff000000) >> 24;
-	linkcap[1] = (data & 0x00ff0000) >> 16;
-	linkcap[2] = (data & 0x0000ff00) >> 8;
-	linkcap[3] = (data & 0x000000ff);
+	*(u32 *)linkcap = ast_mindwm(ast, boot_address + offset);
 	if (linkcap[2] == 0) {
 		linkrate = linkcap[0];
 		linklanes = linkcap[1];

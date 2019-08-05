@@ -130,6 +130,8 @@ int smm_subregion(int sub, uintptr_t *start, size_t *size)
 		clear_tvalid();
 		break;
 	default:
+		*start = 0;
+		*size = 0;
 		return -1;
 	}
 

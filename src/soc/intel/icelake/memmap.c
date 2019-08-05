@@ -70,6 +70,8 @@ int smm_subregion(int sub, uintptr_t *start, size_t *size)
 		sub_size = ied_size;
 		break;
 	default:
+		*start = 0;
+		*size = 0;
 		return -1;
 	}
 

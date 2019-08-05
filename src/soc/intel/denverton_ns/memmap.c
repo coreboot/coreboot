@@ -70,21 +70,19 @@ static inline size_t smm_region_size(void)
 	return system_agent_region_base(TOLUD) - smm_region_start();
 }
 
-void smm_region(void **start, size_t *size)
+void smm_region(uintptr_t *start, size_t *size)
 {
-	*start = (void *)smm_region_start();
+	*start = smm_region_start();
 	*size = smm_region_size();
 }
 
-int smm_subregion(int sub, void **start, size_t *size)
+int smm_subregion(int sub, uintptr_t *start, size_t *size)
 {
 	uintptr_t sub_base;
 	size_t sub_size;
 	const size_t cache_size = CONFIG_SMM_RESERVED_SIZE;
 
-	sub_base = smm_region_start();
-	sub_size = smm_region_size();
-
+	smm_region(&sub_base, &sub_size);
 	assert(sub_size > CONFIG_SMM_RESERVED_SIZE);
 
 	switch (sub) {
@@ -101,8 +99,7 @@ int smm_subregion(int sub, void **start, size_t *size)
 		return -1;
 	}
 
-	*start = (void *)sub_base;
+	*start = sub_base;
 	*size = sub_size;
-
 	return 0;
 }

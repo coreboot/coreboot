@@ -87,7 +87,7 @@ static void nc_read_resources(struct device *dev)
 	unsigned long mmconf;
 	unsigned long bmbound_k;
 	unsigned long bmbound_hi;
-	void *smm_base;
+	uintptr_t smm_base;
 	size_t smm_size;
 	unsigned long tseg_base_k;
 	unsigned long tseg_top_k;
@@ -102,7 +102,7 @@ static void nc_read_resources(struct device *dev)
 
 	/* Determine TSEG data */
 	smm_region(&smm_base, &smm_size);
-	tseg_base_k = RES_IN_KIB((unsigned long) smm_base);
+	tseg_base_k = RES_IN_KIB(smm_base);
 	tseg_top_k = tseg_base_k + RES_IN_KIB(smm_size);
 
 	/* Determine the base of the FSP reserved memory */

@@ -202,10 +202,9 @@ asmlinkage void car_stage_entry(void)
 	uintptr_t top_of_ram;
 	bool s3wake;
 	struct chipset_power_state *ps = pmc_get_power_state();
-	void *smm_base;
+	uintptr_t smm_base;
 	size_t smm_size, var_size;
 	const void *new_var_data;
-	uintptr_t tseg_base;
 
 	timestamp_add_now(TS_START_ROMSTAGE);
 
@@ -258,8 +257,7 @@ asmlinkage void car_stage_entry(void)
 	* region for other purposes.
 	*/
 	smm_region(&smm_base, &smm_size);
-	tseg_base = (uintptr_t)smm_base;
-	postcar_frame_add_mtrr(&pcf, tseg_base, smm_size, MTRR_TYPE_WRBACK);
+	postcar_frame_add_mtrr(&pcf, smm_base, smm_size, MTRR_TYPE_WRBACK);
 
 	run_postcar_phase(&pcf);
 }

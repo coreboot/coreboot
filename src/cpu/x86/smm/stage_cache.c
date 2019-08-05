@@ -18,14 +18,14 @@
 #include <stage_cache.h>
 #include <types.h>
 
-int __weak smm_subregion(int sub, void **base, size_t *size)
+int __weak smm_subregion(int sub, uintptr_t *base, size_t *size)
 {
 	return -1;
 }
 
 void __weak stage_cache_external_region(void **base, size_t *size)
 {
-	if (smm_subregion(SMM_SUBREGION_CACHE, base, size)) {
+	if (smm_subregion(SMM_SUBREGION_CACHE, (uintptr_t *)base, size)) {
 		printk(BIOS_ERR, "ERROR: No cache SMM subregion.\n");
 		*base = NULL;
 		*size = 0;

@@ -587,7 +587,7 @@ void restore_default_smm_area(void *smm_save_area);
  * Fills in the arguments for the entire SMM region covered by chipset
  * protections. e.g. TSEG.
  */
-void smm_region(void **start, size_t *size);
+void smm_region(uintptr_t *start, size_t *size);
 
 enum {
 	/* SMM handler area. */
@@ -602,6 +602,6 @@ enum {
 
 /* Fills in the start and size for the requested SMM subregion. Returns
  * 0 on success, < 0 on failure. */
-int smm_subregion(int sub, void **start, size_t *size);
+int smm_subregion(int sub, uintptr_t *start, size_t *size);
 
 #endif /* CPU_X86_SMM_H */

@@ -141,9 +141,8 @@ asmlinkage void car_stage_entry(void)
 
 	struct postcar_frame pcf;
 	uintptr_t top_of_ram;
-	void *smm_base;
+	uintptr_t smm_base;
 	size_t smm_size;
-	uintptr_t tseg_base;
 
 	console_init();
 
@@ -183,8 +182,7 @@ asmlinkage void car_stage_entry(void)
 	 */
 	if (CONFIG(HAVE_SMI_HANDLER)) {
 		smm_region(&smm_base, &smm_size);
-		tseg_base = (uintptr_t)smm_base;
-		postcar_frame_add_mtrr(&pcf, tseg_base, smm_size, MTRR_TYPE_WRBACK);
+		postcar_frame_add_mtrr(&pcf, smm_base, smm_size, MTRR_TYPE_WRBACK);
 	}
 
 	run_postcar_phase(&pcf);

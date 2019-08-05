@@ -33,19 +33,19 @@ __weak void soc_after_silicon_init(void)
 /* Display SMM memory map */
 static void smm_memory_map(void)
 {
-	void *base;
+	uintptr_t base;
 	size_t size;
 	int i;
 
 	printk(BIOS_SPEW, "SMM Memory Map\n");
 
 	smm_region(&base, &size);
-	printk(BIOS_SPEW, "SMRAM       : %p 0x%zx\n", base, size);
+	printk(BIOS_SPEW, "SMRAM       : 0x%zx 0x%zx\n", base, size);
 
 	for (i = 0; i < SMM_SUBREGION_NUM; i++) {
 		if (smm_subregion(i, &base, &size))
 			continue;
-		printk(BIOS_SPEW, " Subregion %d: %p 0x%zx\n", i, base, size);
+		printk(BIOS_SPEW, " Subregion %d: 0x%zx 0x%zx\n", i, base, size);
 	}
 }
 

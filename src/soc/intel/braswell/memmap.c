@@ -28,9 +28,9 @@ static size_t smm_region_size(void)
 	return smm_size;
 }
 
-void smm_region(void **start, size_t *size)
+void smm_region(uintptr_t *start, size_t *size)
 {
-	*start = (void *)((iosf_bunit_read(BUNIT_SMRRL) & 0xFFFF) << 20);
+	*start = (iosf_bunit_read(BUNIT_SMRRL) & 0xFFFF) << 20;
 	*size = smm_region_size();
 }
 
@@ -43,15 +43,13 @@ void smm_region(void **start, size_t *size)
  *     |         (TSEG)          |
  *     +-------------------------+ BUNIT_SMRRL
  */
-int smm_subregion(int sub, void **start, size_t *size)
+int smm_subregion(int sub, uintptr_t *start, size_t *size)
 {
 	uintptr_t sub_base;
-	void *sub_ptr;
 	size_t sub_size;
 	const size_t cache_size = CONFIG_SMM_RESERVED_SIZE;
 
-	smm_region(&sub_ptr, &sub_size);
-	sub_base = (uintptr_t)sub_ptr;
+	smm_region(&sub_base, &sub_size);
 
 	switch (sub) {
 	case SMM_SUBREGION_HANDLER:
@@ -67,15 +65,14 @@ int smm_subregion(int sub, void **start, size_t *size)
 		return -1;
 	}
 
-	*start = (void *)sub_base;
+	*start = sub_base;
 	*size = sub_size;
-
 	return 0;
 }
 
 void *cbmem_top(void)
 {
-	char *smm_base;
+	uintptr_t smm_base;
 	size_t smm_size;
 
 	/*
@@ -106,6 +103,6 @@ void *cbmem_top(void)
 	 *     +-------------------------+
 	*/
 
-	smm_region((void **)&smm_base, &smm_size);
+	smm_region(&smm_base, &smm_size);
 	return (void *)smm_base;
 }

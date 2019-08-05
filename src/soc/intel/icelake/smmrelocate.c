@@ -172,11 +172,7 @@ void smm_relocation_handler(int cpu, uintptr_t curr_smbase,
 
 static void fill_in_relocation_params(struct smm_relocation_params *params)
 {
-	void *handler_base;
-	size_t handler_size;
-	void *ied_base;
-	size_t ied_size;
-	void *tseg_base;
+	uintptr_t tseg_base;
 	size_t tseg_size;
 	u32 emrr_base;
 	u32 emrr_size;
@@ -191,14 +187,8 @@ static void fill_in_relocation_params(struct smm_relocation_params *params)
 	phys_bits = cpu_phys_address_size();
 
 	smm_region(&tseg_base, &tseg_size);
-	smm_subregion(SMM_SUBREGION_HANDLER, &handler_base, &handler_size);
-	smm_subregion(SMM_SUBREGION_CHIPSET, &ied_base, &ied_size);
-
-	params->smram_size = handler_size;
-	params->smram_base = (uintptr_t)handler_base;
-
-	params->ied_base = (uintptr_t)ied_base;
-	params->ied_size = ied_size;
+	smm_subregion(SMM_SUBREGION_HANDLER, &params->smram_base, &params->smram_size);
+	smm_subregion(SMM_SUBREGION_CHIPSET, &params->ied_base, &params->ied_size);
 
 	/* SMRR has 32-bits of valid address aligned to 4KiB. */
 	params->smrr_base.lo = (params->smram_base & rmask) | MTRR_TYPE_WRBACK;
@@ -241,8 +231,8 @@ static void setup_ied_area(struct smm_relocation_params *params)
 
 	ied_base = (void *)params->ied_base;
 
-	printk(BIOS_DEBUG, "IED base = 0x%08x\n", params->ied_base);
-	printk(BIOS_DEBUG, "IED size = 0x%08x\n", params->ied_size);
+	printk(BIOS_DEBUG, "IED base = 0x%08x\n", (u32)params->ied_base);
+	printk(BIOS_DEBUG, "IED size = 0x%08x\n", (u32)params->ied_size);
 
 	/* Place IED header at IEDBASE. */
 	memcpy(ied_base, &ied, sizeof(ied));

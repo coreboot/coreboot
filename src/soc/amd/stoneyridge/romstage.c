@@ -84,9 +84,8 @@ asmlinkage void car_stage_entry(void)
 {
 	struct postcar_frame pcf;
 	uintptr_t top_of_ram;
-	void *smm_base;
+	uintptr_t smm_base;
 	size_t smm_size;
-	uintptr_t tseg_base;
 	msr_t base, mask;
 	msr_t mtrr_cap = rdmsr(MTRR_CAP_MSR);
 	int vmtrrs = mtrr_cap.lo & MTRR_CAP_VCNT;
@@ -177,8 +176,7 @@ asmlinkage void car_stage_entry(void)
 	 * region for other purposes.
 	 */
 	smm_region(&smm_base, &smm_size);
-	tseg_base = (uintptr_t)smm_base;
-	postcar_frame_add_mtrr(&pcf, tseg_base, smm_size, MTRR_TYPE_WRBACK);
+	postcar_frame_add_mtrr(&pcf, smm_base, smm_size, MTRR_TYPE_WRBACK);
 
 	post_code(0x45);
 	run_postcar_phase(&pcf);

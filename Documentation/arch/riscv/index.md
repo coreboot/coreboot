@@ -23,8 +23,20 @@ On entry to a stage or payload (including SELF payloads),
 ## Additional payload handoff requirements
 The location of cbmem should be placed in a node in the FDT.
 
+## OpenSBI
+In case the payload doesn't install it's own SBI, like the [RISCV-PK] does,
+[OpenSBI] can be used instead.
+It's loaded into RAM after coreboot has finished loading the payload.
+coreboot then will jump to OpenSBI providing a pointer to the real payload,
+which OpenSBI will jump to once the SBI is installed.
+
+Besides providing SBI it also sets protected memory regions and provides
+a platform independent console.
+
+The OpenSBI code is always run in M mode.
+
 ## Trap delegation
-Traps are delegated in the ramstage.
+Traps are delegated to the payload.
 
 ## SMP within a stage
 At the beginning of each stage, all harts save 0 are spinning in a loop on
@@ -44,3 +56,6 @@ The hart blocks until fn is non-null, and then calls it.  If fn returns, we
 will panic if possible, but behavior is largely undefined.
 
 Only hart 0 runs through most of the code in each stage.
+
+[RISCV-PK]: https://github.com/riscv/riscv-pk
+[OpenSBI]: https://github.com/riscv/opensbi

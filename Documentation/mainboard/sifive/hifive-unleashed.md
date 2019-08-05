@@ -17,7 +17,6 @@ The following things are still missing from this coreboot port:
 - Provide serial number to payload (e.g. in device tree)
 - Implement instruction emulation
 - Support for booting Linux on RISC-V
-- Add support to run OpenSBI payload in m-mode
 - SMP support in trap handler
 
 ## Configuration

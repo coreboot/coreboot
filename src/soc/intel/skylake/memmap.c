@@ -37,53 +37,6 @@ void smm_region(uintptr_t *start, size_t *size)
 	*size = sa_get_tseg_size();
 }
 
-/*
- *        Subregions within SMM
- *     +-------------------------+ BGSM
- *     |          IED            | IED_REGION_SIZE
- *     +-------------------------+
- *     |  External Stage Cache   | SMM_RESERVED_SIZE
- *     +-------------------------+
- *     |      code and data      |
- *     |         (TSEG)          |
- *     +-------------------------+ TSEG
- */
-int smm_subregion(int sub, uintptr_t *start, size_t *size)
-{
-	uintptr_t sub_base;
-	size_t sub_size;
-	const size_t ied_size = CONFIG_IED_REGION_SIZE;
-	const size_t cache_size = CONFIG_SMM_RESERVED_SIZE;
-
-	smm_region(&sub_base, &sub_size);
-
-	switch (sub) {
-	case SMM_SUBREGION_HANDLER:
-		/* Handler starts at the base of TSEG. */
-		sub_size -= ied_size;
-		sub_size -= cache_size;
-		break;
-	case SMM_SUBREGION_CACHE:
-		/* External cache is in the middle of TSEG. */
-		sub_base += sub_size - (ied_size + cache_size);
-		sub_size = cache_size;
-		break;
-	case SMM_SUBREGION_CHIPSET:
-		/* IED is at the top. */
-		sub_base += sub_size - ied_size;
-		sub_size = ied_size;
-		break;
-	default:
-		*start = 0;
-		*size = 0;
-		return -1;
-	}
-
-	*start = sub_base;
-	*size = sub_size;
-	return 0;
-}
-
 static bool is_ptt_enable(void)
 {
 	if ((read32((void *)PTT_TXT_BASE_ADDRESS) & PTT_PRESENT) ==

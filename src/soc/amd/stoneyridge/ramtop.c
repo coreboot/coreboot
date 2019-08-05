@@ -81,12 +81,6 @@ static size_t smm_region_size(void)
 	return CONFIG_SMM_TSEG_SIZE;
 }
 
-void smm_region(uintptr_t *start, size_t *size)
-{
-	*start = smm_region_start();
-	*size = smm_region_size();
-}
-
 /*
  * For data stored in TSEG, ensure TValid is clear so R/W access can reach
  * the DRAM when not in SMM.
@@ -109,38 +103,15 @@ static void clear_tvalid(void)
 	wrmsr(SMM_MASK_MSR, mask);
 }
 
-int smm_subregion(int sub, uintptr_t *start, size_t *size)
+void smm_region(uintptr_t *start, size_t *size)
 {
 	static int once;
-	uintptr_t sub_base;
-	size_t sub_size;
-	const size_t cache_size = CONFIG_SMM_RESERVED_SIZE;
 
-	smm_region(&sub_base, &sub_size);
-	assert(sub_size > CONFIG_SMM_RESERVED_SIZE);
+	*start = smm_region_start();
+	*size = smm_region_size();
 
 	if (!once) {
 		clear_tvalid();
 		once = 1;
 	}
-
-	switch (sub) {
-	case SMM_SUBREGION_HANDLER:
-		/* Handler starts at the base of TSEG. */
-		sub_size -= cache_size;
-		break;
-	case SMM_SUBREGION_CACHE:
-		/* External cache is in the middle of TSEG. */
-		sub_base += sub_size - cache_size;
-		sub_size = cache_size;
-		break;
-	default:
-		*start = 0;
-		*size = 0;
-		return -1;
-	}
-
-	*start = sub_base;
-	*size = sub_size;
-	return 0;
 }

@@ -42,9 +42,9 @@ endif
 
 ifeq ($(CONFIG_SMM_TSEG),y)
 
-ramstage-y += stage_cache.c
-romstage-y += stage_cache.c
-postcar-y += stage_cache.c
+ramstage-y += tseg_region.c
+romstage-y += tseg_region.c
+postcar-y += tseg_region.c
 
 smmstub-y += smm_stub.S
 

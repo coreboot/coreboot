@@ -48,32 +48,3 @@ void smm_region(uintptr_t *start, size_t *size)
 	*start = sa_get_tseg_base();
 	*size = sa_get_tseg_size();
 }
-
-int smm_subregion(int sub, uintptr_t *start, size_t *size)
-{
-	uintptr_t sub_base;
-	size_t sub_size;
-	const size_t cache_size = CONFIG_SMM_RESERVED_SIZE;
-
-	smm_region(&sub_base, &sub_size);
-
-	switch (sub) {
-	case SMM_SUBREGION_HANDLER:
-		/* Handler starts at the base of TSEG. */
-		sub_size -= cache_size;
-		break;
-	case SMM_SUBREGION_CACHE:
-		/* External cache is in the middle of TSEG. */
-		sub_base += sub_size - cache_size;
-		sub_size = cache_size;
-		break;
-	default:
-		*start = 0;
-		*size = 0;
-		return -1;
-	}
-
-	*start = sub_base;
-	*size = sub_size;
-	return 0;
-}

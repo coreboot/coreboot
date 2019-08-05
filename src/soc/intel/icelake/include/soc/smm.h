@@ -28,8 +28,6 @@ struct ied_header {
 } __packed;
 
 struct smm_relocation_params {
-	uintptr_t smram_base;
-	size_t smram_size;
 	uintptr_t ied_base;
 	size_t ied_size;
 	msr_t smrr_base;

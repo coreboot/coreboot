@@ -187,7 +187,6 @@ static void fill_in_relocation_params(struct smm_relocation_params *params)
 	phys_bits = cpu_phys_address_size();
 
 	smm_region(&tseg_base, &tseg_size);
-	smm_subregion(SMM_SUBREGION_HANDLER, &params->smram_base, &params->smram_size);
 	smm_subregion(SMM_SUBREGION_CHIPSET, &params->ied_base, &params->ied_size);
 
 	/* SMRR has 32-bits of valid address aligned to 4KiB. */
@@ -247,11 +246,11 @@ void smm_info(uintptr_t *perm_smbase, size_t *perm_smsize,
 
 	fill_in_relocation_params(&smm_reloc_params);
 
+	smm_subregion(SMM_SUBREGION_HANDLER, perm_smbase, perm_smsize);
+
 	if (smm_reloc_params.ied_size)
 		setup_ied_area(&smm_reloc_params);
 
-	*perm_smbase = smm_reloc_params.smram_base;
-	*perm_smsize = smm_reloc_params.smram_size;
 	*smm_save_state_size = sizeof(em64t101_smm_state_save_area_t);
 }
 

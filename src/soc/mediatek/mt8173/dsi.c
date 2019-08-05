@@ -17,77 +17,8 @@
 #include <console/console.h>
 #include <delay.h>
 #include <soc/addressmap.h>
-#include <soc/i2c.h>
-#include <soc/gpio.h>
 #include <soc/dsi.h>
-#include <soc/ddp.h>
 #include <timer.h>
-
-static bool dual_dsi_mode;
-
-static void mipi_write32(void *a, uint32_t v)
-{
-	void *a1 = a + (MIPI_TX1_BASE - MIPI_TX0_BASE);
-	write32(a, v);
-	if (dual_dsi_mode)
-		write32(a1, v);
-}
-
-static void mipi_clrsetbits_le32(void *a, uint32_t m, uint32_t v)
-{
-	void *a1 = a + (MIPI_TX1_BASE - MIPI_TX0_BASE);
-	clrsetbits_le32(a, m, v);
-	if (dual_dsi_mode)
-		clrsetbits_le32(a1, m, v);
-}
-
-static void mipi_clrbits_le32(void *a, uint32_t m)
-{
-	void *a1 = a + (MIPI_TX1_BASE - MIPI_TX0_BASE);
-	clrbits_le32(a, m);
-	if (dual_dsi_mode)
-		clrbits_le32(a1, m);
-}
-
-static void mipi_setbits_le32(void *a, uint32_t m)
-{
-	void *a1 = a + (MIPI_TX1_BASE - MIPI_TX0_BASE);
-	setbits_le32(a, m);
-	if (dual_dsi_mode)
-		setbits_le32(a1, m);
-}
-
-static void dsi_write32(void *a, uint32_t v)
-{
-	void *a1 = a + (DSI1_BASE - DSI0_BASE);
-	write32(a, v);
-	if (dual_dsi_mode)
-		write32(a1, v);
-}
-
-static void dsi_clrsetbits_le32(void *a, uint32_t m, uint32_t v)
-{
-	void *a1 = a + (DSI1_BASE - DSI0_BASE);
-	clrsetbits_le32(a, m, v);
-	if (dual_dsi_mode)
-		clrsetbits_le32(a1, m, v);
-}
-
-static void dsi_clrbits_le32(void *a, uint32_t m)
-{
-	void *a1 = a + (DSI1_BASE - DSI0_BASE);
-	clrbits_le32(a, m);
-	if (dual_dsi_mode)
-		clrbits_le32(a1, m);
-}
-
-static void dsi_setbits_le32(void *a, uint32_t m)
-{
-	void *a1 = a + (DSI1_BASE - DSI0_BASE);
-	setbits_le32(a, m);
-	if (dual_dsi_mode)
-		setbits_le32(a1, m);
-}
 
 static int mtk_dsi_phy_clk_setting(u32 format, u32 lanes,
 				   const struct edid *edid)
@@ -108,19 +39,19 @@ static int mtk_dsi_phy_clk_setting(u32 format, u32 lanes,
 	reg = (reg & (~RG_DSI_V12_SEL)) | (4 << 5);
 	reg |= RG_DSI_BG_CKEN;
 	reg |= RG_DSI_BG_CORE_EN;
-	mipi_write32(&mipi_tx0->dsi_bg_con, reg);
+	write32(&mipi_tx0->dsi_bg_con, reg);
 	udelay(30);
 
-	mipi_clrsetbits_le32(&mipi_tx0->dsi_top_con, RG_DSI_LNT_IMP_CAL_CODE,
+	clrsetbits_le32(&mipi_tx0->dsi_top_con, RG_DSI_LNT_IMP_CAL_CODE,
 			8 << 4 | RG_DSI_LNT_HS_BIAS_EN);
 
-	mipi_setbits_le32(&mipi_tx0->dsi_con,
+	setbits_le32(&mipi_tx0->dsi_con,
 		     RG_DSI0_CKG_LDOOUT_EN | RG_DSI0_LDOCORE_EN);
 
-	mipi_clrsetbits_le32(&mipi_tx0->dsi_pll_pwr, RG_DSI_MPPLL_SDM_ISO_EN,
+	clrsetbits_le32(&mipi_tx0->dsi_pll_pwr, RG_DSI_MPPLL_SDM_ISO_EN,
 			RG_DSI_MPPLL_SDM_PWR_ON);
 
-	mipi_clrbits_le32(&mipi_tx0->dsi_pll_con0, RG_DSI0_MPPLL_PLL_EN);
+	clrbits_le32(&mipi_tx0->dsi_pll_con0, RG_DSI0_MPPLL_PLL_EN);
 
 	switch (format) {
 	case MIPI_DSI_FMT_RGB565:
@@ -146,8 +77,6 @@ static int mtk_dsi_phy_clk_setting(u32 format, u32 lanes,
 	data_rate = edid->mode.pixel_clock * 102 * bit_per_pixel /
 			 (lanes * 1000 * 100);
 	mipi_tx_rate = data_rate;
-	if (dual_dsi_mode)
-		data_rate /= 2;
 
 	if (data_rate > 500) {
 		txdiv0 = 0;
@@ -171,7 +100,7 @@ static int mtk_dsi_phy_clk_setting(u32 format, u32 lanes,
 		return -1;
 	}
 
-	mipi_clrsetbits_le32(&mipi_tx0->dsi_pll_con0,
+	clrsetbits_le32(&mipi_tx0->dsi_pll_con0,
 			RG_DSI0_MPPLL_TXDIV1 | RG_DSI0_MPPLL_TXDIV0 |
 			RG_DSI0_MPPLL_PREDIV, txdiv1 << 5 | txdiv0 << 3);
 
@@ -185,21 +114,21 @@ static int mtk_dsi_phy_clk_setting(u32 format, u32 lanes,
 	 */
 	pcw = (u64)(data_rate * (1 << txdiv0) * (1 << txdiv1)) << 24;
 	pcw /= 13;
-	mipi_write32(&mipi_tx0->dsi_pll_con2, pcw);
+	write32(&mipi_tx0->dsi_pll_con2, pcw);
 
-	mipi_setbits_le32(&mipi_tx0->dsi_pll_con1, RG_DSI0_MPPLL_SDM_FRA_EN);
+	setbits_le32(&mipi_tx0->dsi_pll_con1, RG_DSI0_MPPLL_SDM_FRA_EN);
 
-	mipi_setbits_le32(&mipi_tx0->dsi_clock_lane, LDOOUT_EN);
+	setbits_le32(&mipi_tx0->dsi_clock_lane, LDOOUT_EN);
 
 	for (i = 0; i < lanes; i++)
-		mipi_setbits_le32(&mipi_tx0->dsi_data_lane[i], LDOOUT_EN);
+		setbits_le32(&mipi_tx0->dsi_data_lane[i], LDOOUT_EN);
 
-	mipi_setbits_le32(&mipi_tx0->dsi_pll_con0, RG_DSI0_MPPLL_PLL_EN);
+	setbits_le32(&mipi_tx0->dsi_pll_con0, RG_DSI0_MPPLL_PLL_EN);
 
 	udelay(40);
 
-	mipi_clrbits_le32(&mipi_tx0->dsi_pll_con1, RG_DSI0_MPPLL_SDM_SSC_EN);
-	mipi_clrbits_le32(&mipi_tx0->dsi_top_con, RG_DSI_PAD_TIE_LOW_EN);
+	clrbits_le32(&mipi_tx0->dsi_pll_con1, RG_DSI0_MPPLL_SDM_SSC_EN);
+	clrbits_le32(&mipi_tx0->dsi_top_con, RG_DSI_PAD_TIE_LOW_EN);
 
 	return mipi_tx_rate;
 }
@@ -222,26 +151,26 @@ static void mtk_dsi_phy_timconfig(u32 data_rate)
 		  DIV_ROUND_UP(80 + 52 * ui, cycle_time) << 8 |
 		  DIV_ROUND_UP(0x40, cycle_time);
 
-	dsi_write32(&dsi0->dsi_phy_timecon0, timcon0);
-	dsi_write32(&dsi0->dsi_phy_timecon1, timcon1);
-	dsi_write32(&dsi0->dsi_phy_timecon2, timcon2);
-	dsi_write32(&dsi0->dsi_phy_timecon3, timcon3);
+	write32(&dsi0->dsi_phy_timecon0, timcon0);
+	write32(&dsi0->dsi_phy_timecon1, timcon1);
+	write32(&dsi0->dsi_phy_timecon2, timcon2);
+	write32(&dsi0->dsi_phy_timecon3, timcon3);
 }
 
 static void mtk_dsi_reset(void)
 {
-	dsi_setbits_le32(&dsi0->dsi_con_ctrl, 3);
-	dsi_clrbits_le32(&dsi0->dsi_con_ctrl, 1);
+	setbits_le32(&dsi0->dsi_con_ctrl, 3);
+	clrbits_le32(&dsi0->dsi_con_ctrl, 1);
 }
 
 static void mtk_dsi_clk_hs_mode_enable(void)
 {
-	dsi_setbits_le32(&dsi0->dsi_phy_lccon, LC_HS_TX_EN);
+	setbits_le32(&dsi0->dsi_phy_lccon, LC_HS_TX_EN);
 }
 
 static void mtk_dsi_clk_hs_mode_disable(void)
 {
-	dsi_clrbits_le32(&dsi0->dsi_phy_lccon, LC_HS_TX_EN);
+	clrbits_le32(&dsi0->dsi_phy_lccon, LC_HS_TX_EN);
 }
 
 static void mtk_dsi_set_mode(u32 mode_flags)
@@ -258,7 +187,7 @@ static void mtk_dsi_set_mode(u32 mode_flags)
 			tmp_reg1 = SYNC_PULSE_MODE;
 	}
 
-	dsi_write32(&dsi0->dsi_mode_ctrl, tmp_reg1);
+	write32(&dsi0->dsi_mode_ctrl, tmp_reg1);
 }
 
 static void mtk_dsi_rxtx_control(u32 mode_flags, u32 lanes)
@@ -284,7 +213,7 @@ static void mtk_dsi_rxtx_control(u32 mode_flags, u32 lanes)
 	tmp_reg |= (mode_flags & MIPI_DSI_CLOCK_NON_CONTINUOUS) << 6;
 	tmp_reg |= (mode_flags & MIPI_DSI_MODE_EOT_PACKET) >> 3;
 
-	dsi_write32(&dsi0->dsi_txrx_ctrl, tmp_reg);
+	write32(&dsi0->dsi_txrx_ctrl, tmp_reg);
 }
 
 static void mtk_dsi_config_vdo_timing(u32 mode_flags, u32 format,
@@ -308,10 +237,10 @@ static void mtk_dsi_config_vdo_timing(u32 mode_flags, u32 format,
 		   edid->mode.vborder;
 	vfp_byte = edid->mode.vso - edid->mode.vborder;
 
-	dsi_write32(&dsi0->dsi_vsa_nl, edid->mode.vspw);
-	dsi_write32(&dsi0->dsi_vbp_nl, vbp_byte);
-	dsi_write32(&dsi0->dsi_vfp_nl, vfp_byte);
-	dsi_write32(&dsi0->dsi_vact_nl, edid->mode.va);
+	write32(&dsi0->dsi_vsa_nl, edid->mode.vspw);
+	write32(&dsi0->dsi_vbp_nl, vbp_byte);
+	write32(&dsi0->dsi_vfp_nl, vfp_byte);
+	write32(&dsi0->dsi_vact_nl, edid->mode.va);
 
 	if (mode_flags & MIPI_DSI_MODE_VIDEO_SYNC_PULSE)
 		hbp_byte = (edid->mode.hbl - edid->mode.hso - edid->mode.hspw -
@@ -323,9 +252,9 @@ static void mtk_dsi_config_vdo_timing(u32 mode_flags, u32 format,
 	hsync_active_byte = edid->mode.hspw * bpp - 10;
 	hfp_byte = (edid->mode.hso - edid->mode.hborder) * bpp - 12;
 
-	dsi_write32(&dsi0->dsi_hsa_wc, hsync_active_byte);
-	dsi_write32(&dsi0->dsi_hbp_wc, hbp_byte);
-	dsi_write32(&dsi0->dsi_hfp_wc, hfp_byte);
+	write32(&dsi0->dsi_hsa_wc, hsync_active_byte);
+	write32(&dsi0->dsi_hbp_wc, hbp_byte);
+	write32(&dsi0->dsi_hfp_wc, hfp_byte);
 
 	switch (format) {
 	case MIPI_DSI_FMT_RGB888:
@@ -346,59 +275,21 @@ static void mtk_dsi_config_vdo_timing(u32 mode_flags, u32 format,
 	}
 
 	hactive = edid->mode.ha;
-	if (dual_dsi_mode)
-		hactive /= 2;
 	packet_fmt |= (hactive * bpp) & DSI_PS_WC;
 
-	dsi_write32(&dsi0->dsi_psctrl, packet_fmt);
+	write32(&dsi0->dsi_psctrl, packet_fmt);
 }
 
 static void mtk_dsi_start(void)
 {
-	dsi_write32(&dsi0->dsi_start, 0);
+	write32(&dsi0->dsi_start, 0);
 	/* Only start master DSI */
 	write32(&dsi0->dsi_start, 1);
 }
 
-static void mtk_dsi_tx_cmd_type0(u8 cmd)
-{
-	struct stopwatch sw;
-	u32 cmdq0;
-	u32 intsta_0, intsta_1;
-
-	cmdq0 = (MIPI_DSI_DCS_SHORT_WRITE << 8) | SHORT_PACKET | (cmd << 16);
-
-	dsi_write32(&dsi0->dsi_cmdq0, cmdq0);
-	dsi_clrsetbits_le32(&dsi0->dsi_cmdq_size, CMDQ_SIZE, 1);
-	dsi_write32(&dsi0->dsi_intsta, 0);
-
-	dsi_write32(&dsi0->dsi_start, 1);
-
-	stopwatch_init_usecs_expire(&sw, 400);
-	do {
-		intsta_0 = read32(&dsi0->dsi_intsta);
-		intsta_1 = read32(&dsi1->dsi_intsta);
-		if ((intsta_0 & CMD_DONE_INT_FLAG) &&
-		    (intsta_1 & CMD_DONE_INT_FLAG))
-			break;
-		udelay(4);
-	} while (!stopwatch_expired(&sw));
-
-	if (!(intsta_0 & CMD_DONE_INT_FLAG))
-		printk(BIOS_ERR, "DSI0 DONE INT Timeout\n");
-
-	if (!(intsta_1 & CMD_DONE_INT_FLAG))
-		printk(BIOS_ERR, "DSI1 DONE INT Timeout\n");
-
-	dsi_write32(&dsi0->dsi_start, 0);
-}
-
-int mtk_dsi_init(u32 mode_flags, u32 format, u32 lanes, bool dual,
-		 const struct edid *edid)
+int mtk_dsi_init(u32 mode_flags, u32 format, u32 lanes, const struct edid *edid)
 {
 	int data_rate;
-
-	dual_dsi_mode = dual;
 
 	data_rate = mtk_dsi_phy_clk_setting(format, lanes, edid);
 
@@ -413,21 +304,6 @@ int mtk_dsi_init(u32 mode_flags, u32 format, u32 lanes, bool dual,
 	mtk_dsi_set_mode(mode_flags);
 	mtk_dsi_clk_hs_mode_enable();
 
-	if (dual_dsi_mode) {
-		dsi_write32(&dsi0->dsi_start, 0);
-		/* Disable dual_dsi when in CMD_MODE */
-		dsi_write32(&dsi0->dsi_con_ctrl, DSI_EN);
-
-		dsi_write32(&dsi0->dsi_mode_ctrl, CMD_MODE);
-
-		mtk_dsi_tx_cmd_type0(MIPI_DCS_EXIT_SLEEP_MODE);
-		mtk_dsi_tx_cmd_type0(MIPI_DCS_SET_DISPLAY_ON);
-
-		dsi_write32(&dsi0->dsi_con_ctrl, DSI_EN | DSI_DUAL);
-
-		dsi_write32(&dsi0->dsi_mode_ctrl, BURST_MODE);
-	}
-
 	mtk_dsi_start();
 
 	return 0;
@@ -438,7 +314,7 @@ void mtk_dsi_pin_drv_ctrl(void)
 	struct stopwatch sw;
 	uint32_t pwr_ack;
 
-	mipi_setbits_le32(&lvds_tx1->vopll_ctl3, RG_DA_LVDSTX_PWR_ON);
+	setbits_le32(&lvds_tx1->vopll_ctl3, RG_DA_LVDSTX_PWR_ON);
 
 	stopwatch_init_usecs_expire(&sw, 1000);
 
@@ -448,10 +324,7 @@ void mtk_dsi_pin_drv_ctrl(void)
 			return;
 		}
 		pwr_ack = read32(&lvds_tx1->vopll_ctl3) & RG_AD_LVDSTX_PWR_ACK;
-		if (dual_dsi_mode)
-			pwr_ack &= read32(&lvds_tx2->vopll_ctl3) &
-					RG_AD_LVDSTX_PWR_ACK;
 	} while (pwr_ack == 0);
 
-	mipi_clrbits_le32(&lvds_tx1->vopll_ctl3, RG_DA_LVDS_ISO_EN);
+	clrbits_le32(&lvds_tx1->vopll_ctl3, RG_DA_LVDS_ISO_EN);
 }

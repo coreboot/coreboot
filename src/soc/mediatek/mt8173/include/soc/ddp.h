@@ -407,12 +407,6 @@ enum {
 	UFO_LR = BIT(3) | BIT(0),
 };
 
-struct disp_split_regs {
-	u32 start;
-};
-
-static struct disp_split_regs *const disp_split = (void *)DISP_SPLIT1_BASE;
-
 struct disp_color_regs {
 	u8 reserved0[1024];
 	u32 cfg_main;
@@ -452,7 +446,7 @@ enum OVL_INPUT_FORMAT {
 	OVL_INFMT_ABGR8888 = OVL_INFMT_ARGB8888 + OVL_COLOR_BASE,
 };
 
-void mtk_ddp_init(bool dual_dsi_mode);
-void mtk_ddp_mode_set(const struct edid *edid, bool dual_dsi_mode);
+void mtk_ddp_init(void);
+void mtk_ddp_mode_set(const struct edid *edid);
 
 #endif

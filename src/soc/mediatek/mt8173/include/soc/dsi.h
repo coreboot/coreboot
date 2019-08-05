@@ -443,7 +443,7 @@ enum {
 };
 
 int mtk_dsi_init(u32 mode_flags, enum mipi_dsi_pixel_format format, u32 lanes,
-		 bool dual_dsi_mode, const struct edid *edid);
+		 const struct edid *edid);
 void mtk_dsi_pin_drv_ctrl(void);
 
 #endif

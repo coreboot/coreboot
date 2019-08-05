@@ -226,25 +226,21 @@ static void display_startup(void)
 	struct edid edid;
 	int ret;
 	u32 mipi_dsi_flags;
-	bool dual_dsi_mode;
 
 	if (read_edid_from_ps8640(&edid) < 0)
 		return;
 
-	dual_dsi_mode = false;
 	mipi_dsi_flags = MIPI_DSI_MODE_VIDEO | MIPI_DSI_MODE_VIDEO_SYNC_PULSE;
 	edid_set_framebuffer_bits_per_pixel(&edid, 32, 0);
 
-	mtk_ddp_init(dual_dsi_mode);
-	ret = mtk_dsi_init(mipi_dsi_flags, MIPI_DSI_FMT_RGB888, 4,
-			   dual_dsi_mode, &edid);
+	mtk_ddp_init();
+	ret = mtk_dsi_init(mipi_dsi_flags, MIPI_DSI_FMT_RGB888, 4, &edid);
 	if (ret < 0) {
 		printk(BIOS_ERR, "dsi init fail\n");
 		return;
 	}
 
-	mtk_ddp_mode_set(&edid, dual_dsi_mode);
-
+	mtk_ddp_mode_set(&edid);
 	set_vbe_mode_info_valid(&edid, (uintptr_t)0);
 }
 

@@ -118,7 +118,52 @@ Method (IRQM, 1, Serialized) {
 		Package() { 0x0000ffff, 2, \_SB.PCI0.LPCB.LNKF, 0 },
 		Package() { 0x0000ffff, 3, \_SB.PCI0.LPCB.LNKG, 0 } })
 
+	/* Interrupt Map INTA->INTC, INTB->INTB, INTC->INTC, INTD->INTD */
+	Name (IQIA, Package() {
+		Package() { 0x0000ffff, 0, 0, 18 },
+		Package() { 0x0000ffff, 1, 0, 17 },
+		Package() { 0x0000ffff, 2, 0, 18 },
+		Package() { 0x0000ffff, 3, 0, 19 } })
+	Name (IQIP, Package() {
+		Package() { 0x0000ffff, 0, \_SB.PCI0.LPCB.LNKC, 0 },
+		Package() { 0x0000ffff, 1, \_SB.PCI0.LPCB.LNKB, 0 },
+		Package() { 0x0000ffff, 2, \_SB.PCI0.LPCB.LNKC, 0 },
+		Package() { 0x0000ffff, 3, \_SB.PCI0.LPCB.LNKD, 0 } })
+
+	/* Interrupt Map INTA->INTA, INTB->INTB, INTC->INTC, INTD->INTD */
+	Name (IQJA, Package() {
+		Package() { 0x0000ffff, 0, 0, 23 },
+		Package() { 0x0000ffff, 1, 0, 20 },
+		Package() { 0x0000ffff, 2, 0, 21 },
+		Package() { 0x0000ffff, 3, 0, 22 } })
+	Name (IQJP, Package() {
+		Package() { 0x0000ffff, 0, \_SB.PCI0.LPCB.LNKA, 0 },
+		Package() { 0x0000ffff, 1, \_SB.PCI0.LPCB.LNKB, 0 },
+		Package() { 0x0000ffff, 2, \_SB.PCI0.LPCB.LNKC, 0 },
+		Package() { 0x0000ffff, 3, \_SB.PCI0.LPCB.LNKD, 0 } })
+
+	/* Interrupt Map INTA->INTB, INTB->INTB, INTC->INTC, INTD->INTD */
+	Name (IQKA, Package() {
+		Package() { 0x0000ffff, 0, 0, 17 },
+		Package() { 0x0000ffff, 1, 0, 17 },
+		Package() { 0x0000ffff, 2, 0, 18 },
+		Package() { 0x0000ffff, 3, 0, 19 } })
+	Name (IQKP, Package() {
+		Package() { 0x0000ffff, 0, \_SB.PCI0.LPCB.LNKB, 0 },
+		Package() { 0x0000ffff, 1, \_SB.PCI0.LPCB.LNKB, 0 },
+		Package() { 0x0000ffff, 2, \_SB.PCI0.LPCB.LNKC, 0 },
+		Package() { 0x0000ffff, 3, \_SB.PCI0.LPCB.LNKD, 0 } })
+
 	Switch (ToInteger (Arg0)) {
+		/* Virtual Root Port 2 - QAT */
+		Case (Package() { 6 }) {
+			If (PICM) {
+				Return (IQIA)
+			} Else {
+				Return (IQIP)
+			}
+		}
+
 		/* PCIe Root Port 1 */
 		Case (Package() { 9 }) {
 			If (PICM) {
@@ -188,6 +233,24 @@ Method (IRQM, 1, Serialized) {
 				Return (IQHA)
 			} Else {
 				Return (IQHP)
+			}
+		}
+
+		/* Virtual Root Port 0 - LAN 0 */
+		Case (Package() { 22 }) {
+			If (PICM) {
+				Return (IQJA)
+			} Else {
+				Return (IQJP)
+			}
+		}
+
+		/* Virtual Root Port 1 - LAN 1 */
+		Case (Package() { 23 }) {
+			If (PICM) {
+				Return (IQKA)
+			} Else {
+				Return (IQKP)
 			}
 		}
 

@@ -62,11 +62,21 @@ Scope(\)
 // Virtual root port 0
 Device (VRP0) {
 	Name   (_ADR, 0x00160000)
+
+	Method (_PRT)
+	{
+		Return (IRQM (22))
+	}
 }
 
 // Virtual root port 1
 Device (VRP1) {
 	Name   (_ADR, 0x00170000)
+
+	Method (_PRT)
+	{
+		Return (IRQM (23))
+	}
 }
 
 // ME HECI

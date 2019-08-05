@@ -167,4 +167,9 @@ Device (RCEC) {
 // Virtual root port 2
 Device (VRP2) {
 	Name   (_ADR, 0x00060000)
+
+	Method (_PRT)
+	{
+		Return (IRQM (6))
+	}
 }

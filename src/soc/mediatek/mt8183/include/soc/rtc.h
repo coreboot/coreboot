@@ -147,6 +147,7 @@ enum {
 /* PMIC DCXO Register Definition */
 enum {
 	PMIC_RG_DCXO_CW00 = 0x0788,
+	PMIC_RG_DCXO_CW00_CLR = 0x078C,
 	PMIC_RG_DCXO_CW02 = 0x0790,
 	PMIC_RG_DCXO_CW07 = 0x079A,
 	PMIC_RG_DCXO_CW09 = 0x079E,
@@ -218,5 +219,6 @@ void rtc_bbpu_power_on(void);
 void rtc_osc_init(void);
 int rtc_init(u8 recover);
 void rtc_boot(void);
+void mt6358_dcxo_disable_unused(void);
 
 #endif /* SOC_MEDIATEK_MT8183_RTC_H */

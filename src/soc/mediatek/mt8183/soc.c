@@ -17,6 +17,7 @@
 #include <soc/emi.h>
 #include <soc/md_ctrl.h>
 #include <soc/mmu_operations.h>
+#include <soc/rtc.h>
 #include <soc/sspm.h>
 #include <symbols.h>
 
@@ -29,6 +30,7 @@ static void soc_init(struct device *dev)
 {
 	mtk_mmu_disable_l2c_sram();
 	mtk_md_early_init();
+	mt6358_dcxo_disable_unused();
 	sspm_init();
 }
 

@@ -411,10 +411,9 @@ static void dcxo_init(void)
 	rtc_write(PMIC_RG_DCXO_CW16, 0x9855);
 
 	/* 26M enable control */
-	/* Enable clock buffer XO_SOC */
-	rtc_write(PMIC_RG_DCXO_CW00, 0x4005);
+	/* Enable clock buffer XO_SOC, XO_CEL */
+	rtc_write(PMIC_RG_DCXO_CW00, 0x4805);
 	rtc_write(PMIC_RG_DCXO_CW11, 0x8000);
-	rtc_write(PMIC_RG_DCXO_CW23, 0x0053);
 
 	/* Load thermal coefficient */
 	rtc_write(PMIC_RG_TOP_TMA_KEY, 0x9CA7);
@@ -430,6 +429,14 @@ static void dcxo_init(void)
 	udelay(100);
 	rtc_write(PMIC_RG_DCXO_CW09, 0x408F);
 	mdelay(5);
+}
+
+void mt6358_dcxo_disable_unused(void)
+{
+	/* Disable clock buffer XO_CEL */
+	rtc_write(PMIC_RG_DCXO_CW00_CLR, 0x0800);
+	/* Mask bblpm */
+	rtc_write(PMIC_RG_DCXO_CW23, 0x0053);
 }
 
 /* the rtc boot flow entry */

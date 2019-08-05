@@ -579,3 +579,30 @@ void pmc_gpe_init(void)
 	/* Set the routes in the GPIO communities as well. */
 	gpio_route_gpe(dw0, dw1, dw2);
 }
+
+void pmc_set_power_failure_state(const bool target_on)
+{
+	const int state = CONFIG_MAINBOARD_POWER_FAILURE_STATE;
+	bool on;
+
+	switch (state) {
+	case MAINBOARD_POWER_STATE_OFF:
+		printk(BIOS_INFO, "Set power off after power failure.\n");
+		on = false;
+		break;
+	case MAINBOARD_POWER_STATE_ON:
+		printk(BIOS_INFO, "Set power on after power failure.\n");
+		on = true;
+		break;
+	case MAINBOARD_POWER_STATE_PREVIOUS:
+		printk(BIOS_INFO, "Keep power state after power failure.\n");
+		on = target_on;
+		break;
+	default:
+		printk(BIOS_WARNING, "WARNING: Unknown power-failure state: %d\n", state);
+		on = false;
+		break;
+	}
+
+	pmc_soc_set_afterg3_en(on);
+}

@@ -16,6 +16,7 @@
 #ifndef SOC_INTEL_COMMON_BLOCK_PMCLIB_H
 #define SOC_INTEL_COMMON_BLOCK_PMCLIB_H
 
+#include <device/pci_type.h>
 #include <stdint.h>
 
 /* Forward declare the power state struct here */
@@ -213,5 +214,21 @@ enum {
 	MAINBOARD_POWER_STATE_ON,
 	MAINBOARD_POWER_STATE_PREVIOUS,
 };
+
+/*
+ * Implemented by SoC code to set PMC register to know which state
+ * system should go into after power is reapplied.
+ */
+void pmc_soc_set_afterg3_en(bool on);
+/*
+ * Configure power state to go into when power is reapplied.
+ *
+ * To be called by SoC code once during boot and will be called by
+ * the "sleep" SMI handler when going into S5.
+ *
+ * `target_on` signifies that we are currently powering on, so that
+ * MAINBOARD_POWER_STATE_PREVIOUS can be handled accordingly.
+ */
+void pmc_set_power_failure_state(bool target_on);
 
 #endif /* SOC_INTEL_COMMON_BLOCK_PMCLIB_H */

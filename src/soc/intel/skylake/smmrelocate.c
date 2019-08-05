@@ -201,10 +201,9 @@ static void fill_in_relocation_params(struct smm_relocation_params *params)
 	smm_subregion(SMM_SUBREGION_CHIPSET, &params->ied_base, &params->ied_size);
 
 	/* SMRR has 32-bits of valid address aligned to 4KiB. */
-	params->smrr_base.lo = (params->smram_base & rmask) | MTRR_TYPE_WRBACK;
+	params->smrr_base.lo = (tseg_base & rmask) | MTRR_TYPE_WRBACK;
 	params->smrr_base.hi = 0;
-	params->smrr_mask.lo = (~(tseg_size - 1) & rmask)
-		| MTRR_PHYS_MASK_VALID;
+	params->smrr_mask.lo = (~(tseg_size - 1) & rmask) | MTRR_PHYS_MASK_VALID;
 	params->smrr_mask.hi = 0;
 
 	/* The EMRR and UNCORE_EMRR are at IEDBASE + 2MiB */

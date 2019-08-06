@@ -1,0 +1,131 @@
+;============================================================================
+;##
+;## This file is part of the coreboot project.
+;##
+;## Copyright (C) 2019, The Linux Foundation.  All rights reserved.
+;##
+;## This program is free software; you can redistribute it and/or modify
+;## it under the terms of the GNU General Public License version 2 and
+;## only version 2 as published by the Free Software Foundation.
+;##
+;## This program is distributed in the hope that it will be useful,
+;## but WITHOUT ANY WARRANTY; without even the implied warranty of
+;## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;## GNU General Public License for more details.
+;##
+;============================================================================
+;  Name:
+;    debug_chroot_trogdor.cmm
+;
+;  Description:
+;     Debug coreboot trogdor front-end (in chroot environment)
+;============================================================================
+
+;============================================================================
+;  CMM script variables
+;============================================================================
+
+LOCAL &TargetPkg
+
+GLOBAL  &BBEntryAddr		// Bootblock   Entry
+GLOBAL  &BBExitAddr		// Bootblock   Exit to Xbl-Sec
+GLOBAL  &VEREntryAddr		// Verstage    Entry
+GLOBAL  &ROMEntryAddr		// Romstage    Entry
+GLOBAL  &QCLEntryAddr		// QCLstage    Entry
+GLOBAL  &RAMEntryAddr		// Ramstage    Entry
+GLOBAL  &BL31EntryAddr		// BL31        Entry
+GLOBAL  &DCEntryAddr		// Depthcharge Entry
+
+GLOBAL &PreRamConsoleAddr
+GLOBAL &RamConsoleAddr
+GLOBAL &PreRamCbfsCache
+GLOBAL &VBoot2Work
+GLOBAL &Stack
+GLOBAL &Ttb
+GLOBAL &Timestamp
+GLOBAL &CbmemTop
+GLOBAL &PostRamCbfsCache
+
+GLOBAL &CBTablePtr
+
+;============================================================================
+
+;---------------------------------------------------
+; Entry point
+;---------------------------------------------------
+ENTRY &ImageName &RegAddress
+
+  // Later these can be parameterized
+  &TargetPkg="trogdorPkg"
+
+  // These settings come from .../src/soc/qualcomm/sc7180/include/soc/memlayout.ld
+  &BBEntryAddr=0x14815000
+  &VEREntryAddr=0x14680000
+  &ROMEntryAddr=0x14680000
+  &QCLEntryAddr=0x1486c950
+  &RAMEntryAddr=0xA0800000
+  &BL31EntryAddr=0x80C00000
+  &DCEntryAddr=0xF1000000
+  &KernelEntryAddr=0xD0000000
+
+  &PreRamConsoleAddr=0x14830800
+  &VBoot2Work=0x1484B000
+  &Stack=0x14847000
+  &Ttb=0x14839000
+  &Timestamp=0x14838800
+  &PreRamCbfsCache=0x1481F000
+  &CbmemTop=0x280000000
+  &PostRamCbfsCache=0x9F800000
+  // End of memlayout.ld settings
+
+  // Common commands irrespective of &Mode
+  PATH
+  &CwDir=os.pwd()
+  PATH + &CwDir
+
+  // position at top of coreboot tree
+  // find depth count for source loading
+  cd ..\..\..\..\..\..\..\chroot\build\trogdor\tmp\portage\sys-boot\coreboot-9999\work\coreboot-9999
+  &srcpath=os.pwd()
+
+
+;---------------------------------------------------
+; Setup area and log
+;---------------------------------------------------
+  area.clear
+  area.reset
+  area.create CB_Logs 1000. 8192.
+  area.select CB_Logs
+
+  area.view CB_Logs
+
+  PRINT %String "Source Path:     &srcpath"
+
+  symbol.sourcepath.setbasedir &srcpath\src
+
+  // Make parsing simple, upper-case parameters
+  &ImageName=STRING.UPR("&ImageName")
+  if (STR.CP("&ImageName","0X*"))
+  (
+    &RegAddress=&ImageName
+    &ImageName=""
+  )
+  &RegAddress=STRING.UPR("&RegAddress")
+
+  PRINT %String "ImageName:   &ImageName"
+  PRINT %String "RegAddress:  &RegAddress"
+
+  sys.d
+  sys.up
+  b.d
+  y.reset
+
+  if (STR.CP("&RegAddress","0X*"))
+    D.S EZAXI:&RegAddress %LE %Long 0x80000000
+
+  go &BBEntryAddr
+  wait !run()
+
+  DO debug_chroot_common.cmm &TargetPkg &srcpath &xblsrcpath &ImageName
+
+  enddo

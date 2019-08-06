@@ -15,10 +15,10 @@
 ;##
 ;============================================================================
 ;  Name:
-;    debug_cb_common.cmm
+;    debug_chroot_common.cmm
 ;
 ;  Description:
-;     Debug coreboot Environment
+;     Debug chroot coreboot Environment
 ;============================================================================
 
 ;============================================================================
@@ -73,7 +73,7 @@ ENTRY &TargetPkg &srcpath &xblsrcpath &ImageName
     &DCStage=STRING.CP("&ImageName","*DC*")
   )
 
-  PRINT %String "Debug Script: debug_cb_common.cmm"
+  PRINT %String "Debug Script: debug_chroot_common.cmm"
   PRINT %String "Images to debug: &ImageName"
   PRINT %String "RAMLoad Requested: &RAMLoad"
   PRINT %String "BootBlock   Entry Addr: &BBEntryAddr"
@@ -99,11 +99,11 @@ ENTRY &TargetPkg &srcpath &xblsrcpath &ImageName
 
   if &BBStage
   (
-    &imgpath="build\cbfs\fallback\bootblock.raw.elf"
+    &imgpath="build-trogdor\cbfs\fallback\bootblock.raw.elf"
     if (&RAMLoad)
-      d.load.elf &imgpath /strippart "coreboot" /sourcepath &srcpath
+      d.load.elf &imgpath /strippart 9 /sourcepath &srcpath
     else
-      d.load.elf &imgpath /strippart "coreboot" /sourcepath &srcpath /nocode
+      d.load.elf &imgpath /strippart 9 /sourcepath &srcpath /nocode
 
     d.l
 
@@ -117,11 +117,11 @@ ENTRY &TargetPkg &srcpath &xblsrcpath &ImageName
 
   if &VERStage
   (
-    &imgpath="build\cbfs\fallback\verstage.elf"
+    &imgpath="build-trogdor\cbfs\fallback\verstage.elf"
     if (&RAMLoad)
-      d.load.elf &imgpath /strippart "coreboot" /sourcepath &srcpath /noclear
+      d.load.elf &imgpath /strippart 9 /sourcepath &srcpath /noclear
     else
-      d.load.elf &imgpath /strippart "coreboot" /sourcepath &srcpath /nocode /noclear
+      d.load.elf &imgpath /strippart 9 /sourcepath &srcpath /nocode /noclear
 
     print %String "Now the control is in VERStage, press enter after debugging to go to next stage"
     print %String "Press enter to go to next stage"
@@ -133,11 +133,11 @@ ENTRY &TargetPkg &srcpath &xblsrcpath &ImageName
 
   if &ROMStage
   (
-    &imgpath="build\cbfs\fallback\romstage.elf"
+    &imgpath="build-trogdor\cbfs\fallback\romstage.elf"
     if (&RAMLoad)
-      d.load.elf &imgpath /strippart "coreboot" /sourcepath &srcpath
+      d.load.elf &imgpath /strippart 9 /sourcepath &srcpath
     else
-      d.load.elf &imgpath /strippart "coreboot" /sourcepath &srcpath /nocode
+      d.load.elf &imgpath /strippart 9 /sourcepath &srcpath /nocode
 
     print %String "Now the control is in ROMStage, press enter after debugging to go to next stage"
     print %String "Press enter to go to next stage"
@@ -172,11 +172,12 @@ ENTRY &TargetPkg &srcpath &xblsrcpath &ImageName
 
   if &RAMStage
   (
-    &imgpath="build\cbfs\fallback\ramstage.elf"
+    &imgpath="build-trogdor\cbfs\fallback\ramstage.elf"
     if (&RAMLoad)
-      d.load.elf &imgpath /strippart "coreboot" /sourcepath &srcpath
+      d.load.elf &imgpath /strippart 9 /sourcepath &srcpath
     else
-      d.load.elf &imgpath /strippart "coreboot" /sourcepath &srcpath /nocode
+      d.load.elf &imgpath /strippart 9 /sourcepath &srcpath /nocode
+
     print %String "Now the control is in RAMStage, press enter after debugging to go to next stage"
     print %String "Press enter to go to next stage"
     enter
@@ -191,18 +192,19 @@ ENTRY &TargetPkg &srcpath &xblsrcpath &ImageName
 
   if &DCStage
   (
-    &imgpath="payloads\external\depthcharge\depthcharge\build\depthcharge.elf"
-    symbol.sourcepath.setbasedir &srcpath\payloads
-    y.spath.srd payloads\external\depthcharge\depthcharge\src
+    &srcpath="..\..\..\depthcharge-9999\work\depthcharge-9999\src"
+    &imgpath="..\..\..\depthcharge-9999\work\depthcharge-9999\trogdor\depthcharge.elf"
+    symbol.sourcepath.setbasedir &srcpath
     if (&RAMLoad)
-      d.load.elf &imgpath /strippart "payloads" /sourcepath &srcpath
+      d.load.elf &imgpath /strippart 9 /sourcepath &srcpath
     else
-      d.load.elf &imgpath /strippart "payloads" /sourcepath &srcpath /nocode
+      d.load.elf &imgpath /strippart 9 /sourcepath &srcpath /nocode
+
     print %String "Now the control is in depthcharge, end of script"
     d.l
     ;b.s main
     ;Execute this command in T32 if you start debugging vboot code, e.g. vboot_select_and_load_kernel()
-    ;y.spath.srd 3rdparty\vboot\firmware
+    ;y.spath.sbd 3rdparty\vboot\firmware
   )
 
   enddo

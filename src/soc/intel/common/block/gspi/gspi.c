@@ -452,15 +452,6 @@ static int gspi_ctrlr_setup(const struct spi_slave *dev)
 	struct gspi_ctrlr_params params, *p = &params;
 	const struct device *device;
 
-	devfn = gspi_soc_bus_to_devfn(dev->bus);
-	if (devfn < 0) {
-		printk(BIOS_ERR, "%s: No GSPI controller found on SPI bus %u.\n",
-			__func__, dev->bus);
-		return -1;
-	}
-
-	device = pcidev_path_on_root(devfn);
-
 	/* Only chip select 0 is supported. */
 	if (dev->cs != 0) {
 		printk(BIOS_ERR, "%s: Invalid CS value: cs=%u.\n", __func__,
@@ -477,6 +468,13 @@ static int gspi_ctrlr_setup(const struct spi_slave *dev)
 			__func__, p->gspi_bus);
 		return -1;
 	}
+
+	devfn = gspi_soc_bus_to_devfn(p->gspi_bus);
+	/*
+	 * devfn is already validated as part of gspi_ctrlr_params_init.
+	 * No need to revalidate it again.
+	 */
+	device = pcidev_path_on_root(devfn);
 
 	/* Ensure controller is in D0 state */
 	lpss_set_power_state(device, STATE_D0);

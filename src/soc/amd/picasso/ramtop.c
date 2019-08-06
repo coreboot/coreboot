@@ -111,12 +111,18 @@ static void clear_tvalid(void)
 
 int smm_subregion(int sub, uintptr_t *start, size_t *size)
 {
+	static int once;
 	uintptr_t sub_base;
 	size_t sub_size;
 	const size_t cache_size = CONFIG_SMM_RESERVED_SIZE;
 
 	smm_region(&sub_base, &sub_size);
 	assert(sub_size > CONFIG_SMM_RESERVED_SIZE);
+
+	if (!once) {
+		clear_tvalid();
+		once = 1;
+	}
 
 	switch (sub) {
 	case SMM_SUBREGION_HANDLER:
@@ -127,7 +133,6 @@ int smm_subregion(int sub, uintptr_t *start, size_t *size)
 		/* External cache is in the middle of TSEG. */
 		sub_base += sub_size - cache_size;
 		sub_size = cache_size;
-		clear_tvalid();
 		break;
 	default:
 		*start = 0;

@@ -17,6 +17,7 @@
 #define EDID_H
 
 #include <stdint.h>
+#include "commonlib/coreboot_tables.h"
 
 enum edid_modes {
 	EDID_MODE_640x480_60Hz,
@@ -107,6 +108,7 @@ int decode_edid(unsigned char *edid, int size, struct edid *out);
 void edid_set_framebuffer_bits_per_pixel(struct edid *edid, int fb_bpp,
 					 int row_byte_alignment);
 void set_vbe_mode_info_valid(const struct edid *edid, uintptr_t fb_addr);
+void set_vbe_framebuffer_orientation(enum lb_fb_orientation orientation);
 int set_display_mode(struct edid *edid, enum edid_modes mode);
 
 #endif /* EDID_H */

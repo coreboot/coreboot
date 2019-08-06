@@ -81,6 +81,11 @@ void set_vbe_mode_info_valid(const struct edid *edid, uintptr_t fb_addr)
 	fb_valid = 1;
 }
 
+void set_vbe_framebuffer_orientation(enum lb_fb_orientation orientation)
+{
+	edid_fb.orientation = orientation;
+}
+
 int fill_lb_framebuffer(struct lb_framebuffer *framebuffer)
 {
 	if (!fb_valid)

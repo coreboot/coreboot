@@ -129,8 +129,30 @@ static inline void set_pixel(struct vector *coord, uint32_t color)
 {
 	const int bpp = fbinfo->bits_per_pixel;
 	const int bpl = fbinfo->bytes_per_line;
+	struct vector rcoord;
 	int i;
-	uint8_t * const pixel = fbaddr + coord->y * bpl + coord->x * bpp / 8;
+
+	switch (fbinfo->orientation) {
+	case CB_FB_ORIENTATION_NORMAL:
+	default:
+		rcoord.x = coord->x;
+		rcoord.y = coord->y;
+		break;
+	case CB_FB_ORIENTATION_BOTTOM_UP:
+		rcoord.x = screen.size.width - 1 - coord->x;
+		rcoord.y = screen.size.height - 1 - coord->y;
+		break;
+	case CB_FB_ORIENTATION_LEFT_UP:
+		rcoord.x = coord->y;
+		rcoord.y = screen.size.width - 1 - coord->x;
+		break;
+	case CB_FB_ORIENTATION_RIGHT_UP:
+		rcoord.x = screen.size.height - 1 - coord->y;
+		rcoord.y = coord->x;
+		break;
+	}
+
+	uint8_t * const pixel = fbaddr + rcoord.y * bpl + rcoord.x * bpp / 8;
 	for (i = 0; i < bpp / 8; i++)
 		pixel[i] = (color >> (i * 8));
 }
@@ -152,8 +174,17 @@ static int cbgfx_init(void)
 	if (!fbaddr)
 		return CBGFX_ERROR_FRAMEBUFFER_ADDR;
 
-	screen.size.width = fbinfo->x_resolution;
-	screen.size.height = fbinfo->y_resolution;
+	switch (fbinfo->orientation) {
+	default: /* Normal or rotated 180 degrees. */
+		screen.size.width = fbinfo->x_resolution;
+		screen.size.height = fbinfo->y_resolution;
+		break;
+	case CB_FB_ORIENTATION_LEFT_UP: /* 90 degree rotation. */
+	case CB_FB_ORIENTATION_RIGHT_UP:
+		screen.size.width = fbinfo->y_resolution;
+		screen.size.height = fbinfo->x_resolution;
+		break;
+	}
 	screen.offset.x = 0;
 	screen.offset.y = 0;
 
@@ -242,7 +273,7 @@ int clear_screen(const struct rgb_color *rgb)
 	 * We assume that for 32bpp the high byte gets ignored anyway. */
 	if ((((color >> 8) & 0xff) == (color & 0xff)) && (bpp == 16 ||
 	    (((color >> 16) & 0xff) == (color & 0xff)))) {
-		memset(fbaddr, color & 0xff, screen.size.height * bpl);
+		memset(fbaddr, color & 0xff, fbinfo->y_resolution * bpl);
 	} else {
 		for (p.y = 0; p.y < screen.size.height; p.y++)
 			for (p.x = 0; p.x < screen.size.width; p.x++)

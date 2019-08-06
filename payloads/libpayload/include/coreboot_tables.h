@@ -189,6 +189,14 @@ struct cb_forward {
 	u64 forward;
 };
 
+/* Panel orientation, matches drm_connector.h in the Linux kernel. */
+enum cb_fb_orientation {
+	CB_FB_ORIENTATION_NORMAL = 0,
+	CB_FB_ORIENTATION_BOTTOM_UP = 1,
+	CB_FB_ORIENTATION_LEFT_UP = 2,
+	CB_FB_ORIENTATION_RIGHT_UP = 3,
+};
+
 struct cb_framebuffer {
 	u32 tag;
 	u32 size;
@@ -206,6 +214,7 @@ struct cb_framebuffer {
 	u8 blue_mask_size;
 	u8 reserved_mask_pos;
 	u8 reserved_mask_size;
+	u8 orientation;
 };
 
 #define CB_GPIO_ACTIVE_LOW 0

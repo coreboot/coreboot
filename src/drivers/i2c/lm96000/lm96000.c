@@ -156,9 +156,9 @@ static void lm96000_configure_temp_zone(struct device *const dev,
 		{ 2, 3, 3, 4, 5, 7, 8, 10, 13, 16, 20, 27, 32, 40, 53, 80 };
 	unsigned int i;
 
-	/* find longest range that starts from 25°C */
+	/* find longest range that starts from `low_temp` */
 	for (i = ARRAY_SIZE(temp_range) - 1; i > 0; --i) {
-		if (temp_range[i] + 25 <= config->target_temp)
+		if (config->low_temp + temp_range[i] <= config->target_temp)
 			break;
 	}
 
@@ -170,9 +170,16 @@ static void lm96000_configure_temp_zone(struct device *const dev,
 		      : 0);
 	lm96000_write(dev, LM96000_ZONE_TEMP_PANIC(zone),
 		      config->panic_temp ? config->panic_temp : 100);
+	lm96000_update(dev, LM96000_ZONE_SMOOTH(zone),
+		       LM96000_ZONE_SMOOTH_MASK(zone),
+		       LM96000_ZONE_SMOOTH_EN(zone) | 0); /* 0: 35s */
 	lm96000_update(dev, LM96000_FAN_MIN_OFF,
 		       LM96000_FAN_MIN(zone),
 		       config->min_off ? LM96000_FAN_MIN(zone) : 0);
+	lm96000_update(dev, LM96000_ZONE_HYSTERESIS(zone),
+		       LM96000_ZONE_HYST_MASK(zone),
+		       config->hysteresis << LM96000_ZONE_HYST_SHIFT(zone)
+			& LM96000_ZONE_HYST_MASK(zone));
 }
 
 static void lm96000_init(struct device *const dev)

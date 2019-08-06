@@ -93,6 +93,7 @@ struct lm96000_fan_config {
 };
 
 struct lm96000_temp_zone {
+	u8 low_temp;	/* temperature for min. duty cycle (in °C) */
 	u8 target_temp;	/* temperature for 100% duty cycle (in °C) */
 	u8 panic_temp;	/* temperature for 100% duty cycle on all fans */
 
@@ -100,9 +101,12 @@ struct lm96000_temp_zone {
 	   with. (Datasheet clearly states the opposite, that this
 	   is tied to each PWM output so YMMV.) */
 	enum {
-		LM96000_LOW_TEMP_OFF = 0, /* turn fan off below low temp. */
-		LM96000_LOW_TEMP_MIN = 1, /* keep PWM at mininum duty cycle */
+		/* turn fan off below `low_temp - hysteresis` */
+		LM96000_LOW_TEMP_OFF = 0,
+		/* keep PWM at mininum duty cycle */
+		LM96000_LOW_TEMP_MIN = 1,
 	} min_off;
+	u8 hysteresis;
 };
 
 /* Implements only those parts currently used by coreboot mainboards. */

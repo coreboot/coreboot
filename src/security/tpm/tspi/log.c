@@ -22,6 +22,7 @@
 #include <security/vboot/symbols.h>
 #include <cbmem.h>
 #include <bootstate.h>
+#include <vb2_sha.h>
 
 static struct tcpa_table *tcpa_cbmem_init(void)
 {

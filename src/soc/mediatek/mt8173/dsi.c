@@ -20,12 +20,12 @@
 #include <soc/dsi.h>
 #include <timer.h>
 
-int mtk_dsi_phy_clk_setting(u32 format, u32 lanes, const struct edid *edid)
+int mtk_dsi_phy_clk_setting(u32 bits_per_pixel, u32 lanes,
+			    const struct edid *edid)
 {
 	u32 txdiv0, txdiv1;
 	u64 pcw;
 	u32 reg;
-	u32 bit_per_pixel;
 	int i, data_rate, mipi_tx_rate;
 
 	reg = read32(&mipi_tx0->dsi_bg_con);
@@ -52,29 +52,14 @@ int mtk_dsi_phy_clk_setting(u32 format, u32 lanes, const struct edid *edid)
 
 	clrbits_le32(&mipi_tx0->dsi_pll_con0, RG_DSI0_MPPLL_PLL_EN);
 
-	switch (format) {
-	case MIPI_DSI_FMT_RGB565:
-		bit_per_pixel = 16;
-		break;
-	case MIPI_DSI_FMT_RGB666:
-	case MIPI_DSI_FMT_RGB666_PACKED:
-		bit_per_pixel = 18;
-		break;
-	case MIPI_DSI_FMT_RGB888:
-	default:
-		bit_per_pixel = 24;
-		break;
-	}
-
 	/**
-	 * data_rate = (pixel_clock / 1000) * bit_per_pixel * mipi_ratio / lane_num
+	 * data_rate = pixel_clock / 1000 * bits_per_pixel * mipi_ratio / lanes
 	 * pixel_clock unit is Khz, data_rata unit is MHz, so need divide 1000.
 	 * mipi_ratio is mipi clk coefficient for balance the pixel clk in mipi.
 	 * we set mipi_ratio is 1.02.
-	 * lane_num
 	 */
-	data_rate = edid->mode.pixel_clock * 102 * bit_per_pixel /
-			 (lanes * 1000 * 100);
+	data_rate = edid->mode.pixel_clock * 102 * bits_per_pixel /
+			(lanes * 1000 * 100);
 	mipi_tx_rate = data_rate;
 
 	if (data_rate > 500) {
@@ -93,9 +78,11 @@ int mtk_dsi_phy_clk_setting(u32 format, u32 lanes, const struct edid *edid)
 		txdiv0 = 2;
 		txdiv1 = 2;
 	} else {
-		printk(BIOS_ERR, "data rate (%u) must be >=50. Please check "
-		       "pixel clock (%u), bpp (%u), and number of lanes (%u)\n",
-		       data_rate, edid->mode.pixel_clock, bit_per_pixel, lanes);
+		printk(BIOS_ERR, "data rate (%u) must be >=50. "
+		       "Please check pixel clock (%u), bits per pixel (%u), "
+		       "and number of lanes (%u)\n",
+		       data_rate, edid->mode.pixel_clock, bits_per_pixel,
+		       lanes);
 		return -1;
 	}
 

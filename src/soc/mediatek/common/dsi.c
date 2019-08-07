@@ -21,6 +21,22 @@
 #include <soc/dsi.h>
 #include <timer.h>
 
+static unsigned int mtk_dsi_get_bits_per_pixel(u32 format)
+{
+	switch (format) {
+	case MIPI_DSI_FMT_RGB565:
+		return 16;
+	case MIPI_DSI_FMT_RGB666:
+	case MIPI_DSI_FMT_RGB666_PACKED:
+		return 18;
+	case MIPI_DSI_FMT_RGB888:
+		return 24;
+	}
+	printk(BIOS_WARNING, "%s: WARN: Unknown format %d, assuming 24 bpp\n",
+	       __func__, format);
+	return 24;
+}
+
 static void mtk_dsi_phy_timconfig(u32 data_rate)
 {
 	u32 timcon0, timcon1, timcon2, timcon3;
@@ -106,15 +122,11 @@ static void mtk_dsi_config_vdo_timing(u32 mode_flags, u32 format,
 	u32 hfp_byte;
 	u32 vbp_byte;
 	u32 vfp_byte;
-	u32 bpp;
+	u32 bytes_per_pixel;
 	u32 packet_fmt;
 	u32 hactive;
 
-	if (format == MIPI_DSI_FMT_RGB565)
-		bpp = 2;
-	else
-		bpp = 3;
-
+	bytes_per_pixel = DIV_ROUND_UP(mtk_dsi_get_bits_per_pixel(format), 8);
 	vbp_byte = edid->mode.vbl - edid->mode.vso - edid->mode.vspw -
 		   edid->mode.vborder;
 	vfp_byte = edid->mode.vso - edid->mode.vborder;
@@ -126,13 +138,13 @@ static void mtk_dsi_config_vdo_timing(u32 mode_flags, u32 format,
 
 	if (mode_flags & MIPI_DSI_MODE_VIDEO_SYNC_PULSE)
 		hbp_byte = (edid->mode.hbl - edid->mode.hso - edid->mode.hspw -
-			    edid->mode.hborder) * bpp - 10;
+			    edid->mode.hborder) * bytes_per_pixel - 10;
 	else
 		hbp_byte = (edid->mode.hbl - edid->mode.hso -
-			    edid->mode.hborder) * bpp - 10;
+			    edid->mode.hborder) * bytes_per_pixel - 10;
 
-	hsync_active_byte = edid->mode.hspw * bpp - 10;
-	hfp_byte = (edid->mode.hso - edid->mode.hborder) * bpp - 12;
+	hsync_active_byte = edid->mode.hspw * bytes_per_pixel - 10;
+	hfp_byte = (edid->mode.hso - edid->mode.hborder) * bytes_per_pixel - 12;
 
 	write32(&dsi0->dsi_hsa_wc, hsync_active_byte);
 	write32(&dsi0->dsi_hbp_wc, hbp_byte);
@@ -157,7 +169,7 @@ static void mtk_dsi_config_vdo_timing(u32 mode_flags, u32 format,
 	}
 
 	hactive = edid->mode.ha;
-	packet_fmt |= (hactive * bpp) & DSI_PS_WC;
+	packet_fmt |= (hactive * bytes_per_pixel) & DSI_PS_WC;
 
 	write32(&dsi0->dsi_psctrl, packet_fmt);
 }
@@ -172,8 +184,9 @@ static void mtk_dsi_start(void)
 int mtk_dsi_init(u32 mode_flags, u32 format, u32 lanes, const struct edid *edid)
 {
 	int data_rate;
+	u32 bits_per_pixel = mtk_dsi_get_bits_per_pixel(format);
 
-	data_rate = mtk_dsi_phy_clk_setting(format, lanes, edid);
+	data_rate = mtk_dsi_phy_clk_setting(bits_per_pixel, lanes, edid);
 
 	if (data_rate < 0)
 		return -1;

@@ -303,7 +303,8 @@ enum {
 /* Functions that each SOC should provide. */
 void mtk_dsi_reset(void);
 /* mtk_dsi_phy_clk_setting should return the data rate in Mbps. */
-int mtk_dsi_phy_clk_setting(u32 format, u32 lanes, const struct edid *edid);
+int mtk_dsi_phy_clk_setting(u32 bits_per_pixel, u32 lanes,
+			    const struct edid *edid);
 
 /* Public API provided in common/dsi.c */
 int mtk_dsi_init(u32 mode_flags, u32 format, u32 lanes,

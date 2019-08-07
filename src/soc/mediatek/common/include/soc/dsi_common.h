@@ -350,9 +350,9 @@ struct mtk_phy_timing {
 #define LCM_DCS_CMD 3
 
 struct lcm_init_command {
-	u16 cmd;
-	u16 len;
-	u8 data[8];
+	u8 cmd;
+	u8 len;
+	u8 data[];
 };
 
 /* Functions that each SOC should provide. */
@@ -365,6 +365,6 @@ void mtk_dsi_override_phy_timing(struct mtk_phy_timing *timing);
 /* Public API provided in common/dsi.c */
 int mtk_dsi_bpp_from_format(u32 format);
 int mtk_dsi_init(u32 mode_flags, u32 format, u32 lanes, const struct edid *edid,
-		 const struct lcm_init_command *init_commands);
+		 const u8 *init_commands);
 
 #endif /* SOC_MEDIATEK_DSI_COMMON_H */

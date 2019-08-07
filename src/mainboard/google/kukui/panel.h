@@ -23,27 +23,28 @@ struct panel_description {
 	struct edid edid;  /* edid info of this panel */
 	enum lb_fb_orientation orientation;  /* panel orientation */
 	void (*power_on)(void);  /* Callback to turn on panel */
-	struct lcm_init_command init[]; /* table of init commands */
+	u8 init[]; /* a packed array of lcm_init_command */
 };
 
 /* Returns the panel description from given ID. */
 extern struct panel_description *get_panel_description(int panel_id);
 
-#define INIT_DCS_CMD(...) { \
-	.cmd = LCM_DCS_CMD, \
-	.len = sizeof((u8[]){__VA_ARGS__}), \
-	.data = {__VA_ARGS__} }
+#define INIT_DCS_CMD(...) \
+	LCM_DCS_CMD, \
+	sizeof((u8[]){__VA_ARGS__}), \
+	__VA_ARGS__
 
-#define INIT_GENERIC_CMD(...) { \
-	.cmd = LCM_GENERIC_CMD, \
-	.len = sizeof((u8[]){__VA_ARGS__}), \
-	.data = {__VA_ARGS__} }
+#define INIT_GENERIC_CMD(...) \
+	LCM_GENERIC_CMD, \
+	sizeof((u8[]){__VA_ARGS__}), \
+	__VA_ARGS__
 
-#define INIT_DELAY_CMD(delay) { \
-	.cmd = LCM_DELAY_CMD,\
-	.len = delay, }
+#define INIT_DELAY_CMD(delay) \
+	LCM_DELAY_CMD, \
+	delay
 
-#define INIT_END_CMD { .cmd = LCM_END_CMD, }
+#define INIT_END_CMD \
+	LCM_END_CMD
 
 /* GPIO names */
 #define GPIO_LCM_RST_1V8		GPIO(LCM_RST)		/* 45 */

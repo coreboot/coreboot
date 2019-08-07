@@ -116,7 +116,6 @@ chip northbridge/intel/i945
 					end
 					register "scr" = "0x0844d070"
 					register "mrr" = "0x01d01002"
-
 				end
 			end
 			device pci 1e.2 off end # AC'97 Audio
@@ -159,10 +158,6 @@ chip northbridge/intel/i945
 					register "eventb_enable" = "0xff"
 					register "eventc_enable" = "0x3c"
 					register "eventd_enable" = "0xff"
-
-					register "has_bdc_detection" = "1"
-					register "bdc_gpio_num" = "7"
-					register "bdc_gpio_lvl" = "0"
 				end
 				chip superio/nsc/pc87382
 					device pnp 164e.2 on # IR
@@ -209,21 +204,12 @@ chip northbridge/intel/i945
 					end
 				end
 			end
-			device pci 1f.1 on # IDE
-				subsystemid 0x17aa 0x200c
-			end
 			device pci 1f.2 on # SATA
 				subsystemid 0x17aa 0x200d
 			end
 			device pci 1f.3 on # SMBUS
 				subsystemid 0x17aa 0x200f
 				chip drivers/i2c/ck505
-					register "mask" = "{ 0xff, 0xff, 0xff,
-						 0xff, 0xff, 0xff, 0xff, 0xff,
-						 0xff, 0xff, 0xff, 0xff }"
-					register "regs" = "{ 0x2e, 0xf7, 0x3c,
-						 0x20, 0x01, 0x00, 0x1b, 0x01,
-						 0x54, 0xff, 0xff, 0x07 }"
 					device i2c 69 on end
 				end
 				# eeprom, 8 virtual devices, same chip

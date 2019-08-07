@@ -33,9 +33,9 @@ config VARIANT_DIR
 	default "t60" if BOARD_LENOVO_T60
 	default "z61t" if BOARD_LENOVO_Z61T
 
-config DEVICETREE
+config OVERRIDE_DEVICETREE
 	string
-	default "variants/$(CONFIG_VARIANT_DIR)/devicetree.cb"
+	default "variants/$(CONFIG_VARIANT_DIR)/overridetree.cb"
 
 config MAINBOARD_PART_NUMBER
 	string

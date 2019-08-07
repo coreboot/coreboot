@@ -248,6 +248,12 @@ static void mtk_dsi_config_vdo_timing(u32 mode_flags, u32 format, u32 lanes,
 	write32(&dsi0->dsi_psctrl,
 		PIXEL_STREAM_CUSTOM_HEADER << DSI_PSCON_CUSTOM_HEADER_SHIFT |
 		packet_fmt);
+
+	/* Older systems like MT8173 do not support size_con. */
+	if (MTK_DSI_HAVE_SIZE_CON)
+		write32(&dsi0->dsi_size_con,
+			edid->mode.va << DSI_SIZE_CON_HEIGHT_SHIFT |
+			hactive << DSI_SIZE_CON_WIDTH_SHIFT);
 }
 
 static void mtk_dsi_start(void)

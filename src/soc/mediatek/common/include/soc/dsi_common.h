@@ -67,7 +67,11 @@ struct dsi_regs {
 	u32 dsi_vbp_nl;
 	u32 dsi_vfp_nl;
 	u32 dsi_vact_nl;
-	u8 reserved1[32];
+	u32 dsi_lfr_con;  /* Available since MT8183 */
+	u32 dsi_lfr_sta;  /* Available since MT8183 */
+	u32 dsi_size_con;  /* Available since MT8183 */
+	u32 dsi_vfp_early_stop;  /* Available since MT8183 */
+	u32 reserved1[4];
 	u32 dsi_hsa_wc;
 	u32 dsi_hbp_wc;
 	u32 dsi_hfp_wc;
@@ -84,7 +88,9 @@ struct dsi_regs {
 	u32 dsi_phy_timecon3;
 	u8 reserved4[16];
 	u32 dsi_vm_cmd_con;
-	u8 reserved5[204];
+	u8 reserved5[92];
+	u32 dsi_force_commit;  /* Available since MT8183 */
+	u8 reserved6[108];
 	u32 dsi_cmdq[128];
 };
 static struct dsi_regs *const dsi0 = (void *)DSI0_BASE;
@@ -92,6 +98,7 @@ static struct dsi_regs *const dsi0 = (void *)DSI0_BASE;
 check_member(dsi_regs, dsi_phy_lccon, 0x104);
 check_member(dsi_regs, dsi_phy_timecon3, 0x11c);
 check_member(dsi_regs, dsi_vm_cmd_con, 0x130);
+check_member(dsi_regs, dsi_force_commit, 0x190);
 check_member(dsi_regs, dsi_cmdq, 0x200);
 
 /* DSI_INTSTA */
@@ -132,6 +139,12 @@ enum {
 	PACKED_PS_24BIT_RGB888 = (3 << 16),
 
 	DSI_PSCON_CUSTOM_HEADER_SHIFT = 26,
+};
+
+/* DSI_SIZE_CON */
+enum {
+	DSI_SIZE_CON_HEIGHT_SHIFT = 16,
+	DSI_SIZE_CON_WIDTH_SHIFT = 0,
 };
 
 /* DSI_CMDQ_SIZE */
@@ -194,6 +207,12 @@ enum {
 	DATA_ID        = (0xff << 8),
 	DATA_0         = (0xff << 16),
 	DATA_1         = (0xff << 24),
+};
+
+/* DSI_FORCE_COMMIT */
+enum {
+	DSI_FORCE_COMMIT_USE_MMSYS = BIT(0),
+	DSI_FORCE_COMMIT_ALWAYS = BIT(1),
 };
 
 /* MIPI DSI Processor-to-Peripheral transaction types */

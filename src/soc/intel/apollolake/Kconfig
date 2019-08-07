@@ -155,10 +155,6 @@ config DCACHE_BSP_STACK_SIZE
 	  The amount of anticipated stack usage in CAR by bootblock and
 	  other stages.
 
-config CPU_ADDR_BITS
-	int
-	default 39
-
 config SOC_INTEL_COMMON_BLOCK_GSPI_CLOCK_MHZ
 	int
 	default 100

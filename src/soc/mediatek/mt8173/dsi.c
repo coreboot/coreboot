@@ -122,6 +122,8 @@ void mtk_dsi_override_phy_timing(struct mtk_phy_timing *timing)
 
 	timing->da_hs_sync = 0;
 	timing->clk_hs_exit = 2 * lpx;
+
+	timing->d_phy = 12;
 }
 
 void mtk_dsi_pin_drv_ctrl(void)

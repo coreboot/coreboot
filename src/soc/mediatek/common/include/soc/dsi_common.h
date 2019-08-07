@@ -129,7 +129,9 @@ enum {
 	PACKED_PS_16BIT_RGB565 = (0 << 16),
 	LOOSELY_PS_18BIT_RGB666 = (1 << 16),
 	PACKED_PS_18BIT_RGB666 = (2 << 16),
-	PACKED_PS_24BIT_RGB888 = (3 << 16)
+	PACKED_PS_24BIT_RGB888 = (3 << 16),
+
+	DSI_PSCON_CUSTOM_HEADER_SHIFT = 26,
 };
 
 /* DSI_CMDQ_SIZE */
@@ -318,6 +320,8 @@ struct mtk_phy_timing {
 	u8 clk_hs_prepare;
 	u8 clk_hs_post;
 	u8 clk_hs_exit;
+
+	u32 d_phy;
 };
 
 /* Functions that each SOC should provide. */

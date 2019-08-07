@@ -170,8 +170,9 @@ static void mtk_dsi_rxtx_control(u32 mode_flags, u32 lanes)
 	write32(&dsi0->dsi_txrx_ctrl, tmp_reg);
 }
 
-static void mtk_dsi_config_vdo_timing(u32 mode_flags, u32 format,
-				      const struct edid *edid)
+static void mtk_dsi_config_vdo_timing(u32 mode_flags, u32 format, u32 lanes,
+				      const struct edid *edid,
+				      const struct mtk_phy_timing *phy_timing)
 {
 	u32 hsync_active_byte;
 	u32 hbp_byte;
@@ -181,6 +182,7 @@ static void mtk_dsi_config_vdo_timing(u32 mode_flags, u32 format,
 	u32 bytes_per_pixel;
 	u32 packet_fmt;
 	u32 hactive;
+	u32 data_phy_cycles;
 
 	bytes_per_pixel = DIV_ROUND_UP(mtk_dsi_get_bits_per_pixel(format), 8);
 	vbp_byte = edid->mode.vbl - edid->mode.vso - edid->mode.vspw -
@@ -192,15 +194,30 @@ static void mtk_dsi_config_vdo_timing(u32 mode_flags, u32 format,
 	write32(&dsi0->dsi_vfp_nl, vfp_byte);
 	write32(&dsi0->dsi_vact_nl, edid->mode.va);
 
+	unsigned int hspw = 0;
 	if (mode_flags & MIPI_DSI_MODE_VIDEO_SYNC_PULSE)
-		hbp_byte = (edid->mode.hbl - edid->mode.hso - edid->mode.hspw -
-			    edid->mode.hborder) * bytes_per_pixel - 10;
-	else
-		hbp_byte = (edid->mode.hbl - edid->mode.hso -
-			    edid->mode.hborder) * bytes_per_pixel - 10;
+		hspw = edid->mode.hspw;
 
+	hbp_byte = (edid->mode.hbl - edid->mode.hso - hspw - edid->mode.hborder)
+			* bytes_per_pixel - 10;
 	hsync_active_byte = edid->mode.hspw * bytes_per_pixel - 10;
-	hfp_byte = (edid->mode.hso - edid->mode.hborder) * bytes_per_pixel - 12;
+	hfp_byte = (edid->mode.hso - edid->mode.hborder) * bytes_per_pixel;
+
+	data_phy_cycles = phy_timing->lpx + phy_timing->da_hs_prepare +
+		phy_timing->da_hs_zero + phy_timing->da_hs_exit + 2;
+
+	u32 delta = 12;
+	if (mode_flags & MIPI_DSI_MODE_VIDEO_BURST)
+		delta += 6;
+
+	u32 d_phy = phy_timing->d_phy;
+	if (d_phy == 0)
+		d_phy = data_phy_cycles * lanes + delta;
+	if (hfp_byte > d_phy)
+		hfp_byte -= d_phy;
+	else
+		printk(BIOS_ERR, "HFP is not greater than d-phy, FPS < 60Hz "
+		       "and the panel may not work properly.\n");
 
 	write32(&dsi0->dsi_hsa_wc, hsync_active_byte);
 	write32(&dsi0->dsi_hbp_wc, hbp_byte);
@@ -227,7 +244,9 @@ static void mtk_dsi_config_vdo_timing(u32 mode_flags, u32 format,
 	hactive = edid->mode.ha;
 	packet_fmt |= (hactive * bytes_per_pixel) & DSI_PS_WC;
 
-	write32(&dsi0->dsi_psctrl, packet_fmt);
+	write32(&dsi0->dsi_psctrl,
+		PIXEL_STREAM_CUSTOM_HEADER << DSI_PSCON_CUSTOM_HEADER_SHIFT |
+		packet_fmt);
 }
 
 static void mtk_dsi_start(void)
@@ -252,7 +271,7 @@ int mtk_dsi_init(u32 mode_flags, u32 format, u32 lanes, const struct edid *edid)
 	mtk_dsi_phy_timing(data_rate, &phy_timing);
 	mtk_dsi_rxtx_control(mode_flags, lanes);
 	mtk_dsi_clk_hs_mode_disable();
-	mtk_dsi_config_vdo_timing(mode_flags, format, edid);
+	mtk_dsi_config_vdo_timing(mode_flags, format, lanes, edid, &phy_timing);
 	mtk_dsi_set_mode(mode_flags);
 	mtk_dsi_clk_hs_mode_enable();
 

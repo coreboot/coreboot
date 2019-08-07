@@ -19,6 +19,7 @@
 #include <delay.h>
 #include <edid.h>
 #include <soc/dsi.h>
+#include <string.h>
 #include <timer.h>
 
 static unsigned int mtk_dsi_get_bits_per_pixel(u32 format)
@@ -64,23 +65,51 @@ static int mtk_dsi_get_data_rate(u32 bits_per_pixel, u32 lanes,
 	return data_rate;
 }
 
-static void mtk_dsi_phy_timconfig(u32 data_rate)
+__weak void mtk_dsi_override_phy_timing(struct mtk_phy_timing *timing)
 {
-	u32 timcon0, timcon1, timcon2, timcon3;
-	u32 cycle_time, ui, lpx;
+	/* Do nothing. */
+}
+
+static void mtk_dsi_phy_timing(int data_rate, struct mtk_phy_timing *phy_timing)
+{
+	u32 cycle_time, ui;
 
 	ui = 1000 / data_rate + 0x01;
 	cycle_time = 8000 / data_rate + 0x01;
-	lpx = 5;
 
-	timcon0 = (8 << 24) | (0xa << 16) | (0x6 << 8) | lpx;
-	timcon1 = (7 << 24) | (5 * lpx << 16) | ((3 * lpx) / 2) << 8 |
-		  (4 * lpx);
-	timcon2 = ((DIV_ROUND_UP(0x64, cycle_time) + 0xa) << 24) |
-		  (DIV_ROUND_UP(0x150, cycle_time) << 16);
-	timcon3 = (2 * lpx) << 16 |
-		  DIV_ROUND_UP(80 + 52 * ui, cycle_time) << 8 |
-		  DIV_ROUND_UP(0x40, cycle_time);
+	memset(phy_timing, 0, sizeof(*phy_timing));
+
+	phy_timing->lpx = DIV_ROUND_UP(60, cycle_time);
+	phy_timing->da_hs_prepare = DIV_ROUND_UP((40 + 5 * ui), cycle_time);
+	phy_timing->da_hs_zero = DIV_ROUND_UP((110 + 6 * ui), cycle_time);
+	phy_timing->da_hs_trail = DIV_ROUND_UP(((4 * ui) + 80), cycle_time);
+
+	phy_timing->ta_go = 4U * phy_timing->lpx;
+	phy_timing->ta_sure = 3U * phy_timing->lpx / 2U;
+	phy_timing->ta_get = 5U * phy_timing->lpx;
+	phy_timing->da_hs_exit = 2U * phy_timing->lpx;
+
+	phy_timing->da_hs_sync = 1;
+	phy_timing->clk_hs_zero = DIV_ROUND_UP(0x150U, cycle_time);
+	phy_timing->clk_hs_trail = DIV_ROUND_UP(0x64U, cycle_time) + 0xaU;
+
+	phy_timing->clk_hs_prepare = DIV_ROUND_UP(0x40U, cycle_time);
+	phy_timing->clk_hs_post = DIV_ROUND_UP(80U + 52U * ui, cycle_time);
+	phy_timing->clk_hs_exit = 2U * phy_timing->lpx;
+
+	/* Allow board-specific tuning. */
+	mtk_dsi_override_phy_timing(phy_timing);
+
+	u32 timcon0, timcon1, timcon2, timcon3;
+
+	timcon0 = phy_timing->lpx | phy_timing->da_hs_prepare << 8 |
+		  phy_timing->da_hs_zero << 16 | phy_timing->da_hs_trail << 24;
+	timcon1 = phy_timing->ta_go | phy_timing->ta_sure << 8 |
+		  phy_timing->ta_get << 16 | phy_timing->da_hs_exit << 24;
+	timcon2 = phy_timing->da_hs_sync << 8 | phy_timing->clk_hs_zero << 16 |
+		  phy_timing->clk_hs_trail << 24;
+	timcon3 = phy_timing->clk_hs_prepare | phy_timing->clk_hs_post << 8 |
+		  phy_timing->clk_hs_exit << 16;
 
 	write32(&dsi0->dsi_phy_timecon0, timcon0);
 	write32(&dsi0->dsi_phy_timecon1, timcon1);
@@ -219,7 +248,8 @@ int mtk_dsi_init(u32 mode_flags, u32 format, u32 lanes, const struct edid *edid)
 
 	mtk_dsi_configure_mipi_tx(data_rate, lanes);
 	mtk_dsi_reset();
-	mtk_dsi_phy_timconfig(data_rate);
+	struct mtk_phy_timing phy_timing;
+	mtk_dsi_phy_timing(data_rate, &phy_timing);
 	mtk_dsi_rxtx_control(mode_flags, lanes);
 	mtk_dsi_clk_hs_mode_disable();
 	mtk_dsi_config_vdo_timing(mode_flags, format, edid);

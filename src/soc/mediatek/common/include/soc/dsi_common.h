@@ -300,9 +300,32 @@ enum {
 	MIPI_DCS_READ_DDB_CONTINUE	= 0xA8,
 };
 
+struct mtk_phy_timing {
+	u8 lpx;
+	u8 da_hs_prepare;
+	u8 da_hs_zero;
+	u8 da_hs_trail;
+
+	u8 ta_go;
+	u8 ta_sure;
+	u8 ta_get;
+	u8 da_hs_exit;
+
+	u8 da_hs_sync;
+	u8 clk_hs_zero;
+	u8 clk_hs_trail;
+
+	u8 clk_hs_prepare;
+	u8 clk_hs_post;
+	u8 clk_hs_exit;
+};
+
 /* Functions that each SOC should provide. */
 void mtk_dsi_reset(void);
 void mtk_dsi_configure_mipi_tx(int data_rate, u32 lanes);
+
+/* Functions as weak no-ops that can be overridden. */
+void mtk_dsi_override_phy_timing(struct mtk_phy_timing *timing);
 
 /* Public API provided in common/dsi.c */
 int mtk_dsi_init(u32 mode_flags, u32 format, u32 lanes,

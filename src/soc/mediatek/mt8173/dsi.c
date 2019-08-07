@@ -107,6 +107,23 @@ void mtk_dsi_reset(void)
 	clrbits_le32(&dsi0->dsi_con_ctrl, 1);
 }
 
+void mtk_dsi_override_phy_timing(struct mtk_phy_timing *timing)
+{
+	int lpx = 5;
+	timing->lpx = lpx;
+	timing->da_hs_prepare = 6;
+	timing->da_hs_zero = 10;
+	timing->da_hs_trail = 8;
+
+	timing->ta_go = 4 * lpx;
+	timing->ta_sure = 3 * lpx / 2;
+	timing->ta_get = 5 * lpx;
+	timing->da_hs_exit = 7;
+
+	timing->da_hs_sync = 0;
+	timing->clk_hs_exit = 2 * lpx;
+}
+
 void mtk_dsi_pin_drv_ctrl(void)
 {
 	struct stopwatch sw;

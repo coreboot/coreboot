@@ -41,6 +41,7 @@
 #
 # when       who     what, where, why
 # --------   ---     ---------------------------------------------------------
+# 05/21/18   rissha  Added support for extended MBNV6 and Add support for hashing elf segments with SHA384
 # 03/22/18   thiru   Added support for extended MBNV5.
 # 06/06/13   yliong  CR 497042: Signed and encrypted image is corrupted. MRC features.
 # 03/18/13   dhaval  Add support for hashing elf segments with SHA256 and
@@ -64,23 +65,21 @@ import hashlib
 #----------------------------------------------------------------------------
 # GLOBAL VARIABLES BEGIN
 #----------------------------------------------------------------------------
-PAD_BYTE_1                = 255             # Padding byte 1s
-PAD_BYTE_0                = 0               # Padding byte 0s
-SHA256_SIGNATURE_SIZE     = 256             # Support SHA256
-MAX_NUM_ROOT_CERTS        = 4               # Maximum number of OEM root certificates
-MI_BOOT_IMG_HDR_SIZE      = 40              # sizeof(mi_boot_image_header_type)
-MI_BOOT_SBL_HDR_SIZE      = 80              # sizeof(sbl_header)
-BOOT_HEADER_LENGTH        = 20              # Boot Header Number of Elements
-SBL_HEADER_LENGTH         = 20              # SBL Header Number of Elements
-FLASH_PARTI_VERSION       = 3               # Flash Partition Version Number
-MAX_PHDR_COUNT            = 100             # Maximum allowable program headers
-CERT_CHAIN_ONEROOT_MAXSIZE = 6*1024          # Default Cert Chain Max Size for one root
-VIRTUAL_BLOCK_SIZE        = 131072          # Virtual block size for MCs insertion in SBL1 if ENABLE_VIRTUAL_BLK ON
-MAGIC_COOKIE_LENGTH       = 12              # Length of magic Cookie inserted per VIRTUAL_BLOCK_SIZE
-MIN_IMAGE_SIZE_WITH_PAD   = 256*1024        # Minimum image size for sbl1 Nand based OTA feature
+PAD_BYTE_1                  = 255           # Padding byte 1s
+PAD_BYTE_0                  = 0             # Padding byte 0s
+SHA256_SIGNATURE_SIZE       = 256           # Support SHA256
+MAX_NUM_ROOT_CERTS          = 4             # Maximum number of OEM root certificates
+MI_BOOT_SBL_HDR_SIZE        = 80            # sizeof(sbl_header)
+BOOT_HEADER_LENGTH          = 20            # Boot Header Number of Elements
+SBL_HEADER_LENGTH           = 20            # SBL Header Number of Elements
+MAX_PHDR_COUNT              = 100           # Maximum allowable program headers
+CERT_CHAIN_ONEROOT_MAXSIZE  = 6*1024        # Default Cert Chain Max Size for one root
+VIRTUAL_BLOCK_SIZE          = 131072        # Virtual block size for MCs insertion in SBL1 if ENABLE_VIRTUAL_BLK ON
+MAGIC_COOKIE_LENGTH         = 12            # Length of magic Cookie inserted per VIRTUAL_BLOCK_SIZE
+MIN_IMAGE_SIZE_WITH_PAD     = 256*1024      # Minimum image size for sbl1 Nand based OTA feature
 
-SBL_AARCH64               = 0xF             # Indicate that SBL is a Aarch64 image
-SBL_AARCH32               = 0x0             # Indicate that SBL is a Aarch32 image
+SBL_AARCH64                 = 0xF           # Indicate that SBL is a Aarch64 image
+SBL_AARCH32                 = 0x0           # Indicate that SBL is a Aarch32 image
 
 # Magic numbers filled in for boot headers
 FLASH_CODE_WORD                       = 0x844BDCD1
@@ -150,7 +149,6 @@ values.
 MI_PBT_FLAGS_MASK = 0x0FF00000
 
 # Helper defines to help parse ELF program headers
-MI_PROG_BOOT_DIGEST_SIZE              = 20
 MI_PBT_FLAG_SEGMENT_TYPE_MASK         = 0x07000000
 MI_PBT_FLAG_SEGMENT_TYPE_SHIFT        = 0x18
 MI_PBT_FLAG_PAGE_MODE_MASK            = 0x00100000
@@ -528,7 +526,7 @@ class SegmentInfo:
 class Boot_Hdr:
    def __init__(self, init_val):
       self.image_id = ImageType.NONE_IMG
-      self.flash_parti_ver = FLASH_PARTI_VERSION
+      self.flash_parti_ver = 3
       self.image_src = init_val
       self.image_dest_ptr = init_val
       self.image_size = init_val
@@ -573,6 +571,10 @@ class Boot_Hdr:
                 self.reserved_2,
                 self.reserved_3 ]
 
+      if self.flash_parti_ver >= 6:
+        values.insert(10, self.metadata_size_qti)
+        values.insert(11, self.metadata_size)
+
       if self.image_dest_ptr >= 0x100000000:
         values[3] = 0xFFFFFFFF
 
@@ -584,8 +586,12 @@ class Boot_Hdr:
 
       # Write 10 entries(40B) or 20 entries(80B) of boot header
       if write_full_hdr is False:
-         s = struct.Struct('I'* 10)
-         values = values[:10]
+         if self.flash_parti_ver >= 6:
+            s = struct.Struct('I'* 12)
+            values = values[:12]
+         else:
+            s = struct.Struct('I'* 10)
+            values = values[:10]
       else:
          s = struct.Struct('I' * self.getLength())
 
@@ -904,7 +910,6 @@ def image_header(env, gen_dict,
                       code_file_name,
                       output_file_name,
                       secure_type,
-                      is_ext_mbn_v5,
                       header_format = 'reg',
                       requires_preamble = False,
                       preamble_file_name = None,
@@ -912,7 +917,8 @@ def image_header(env, gen_dict,
                       write_full_hdr = False,
                       in_code_size = None,
                       cert_chain_size_in = CERT_CHAIN_ONEROOT_MAXSIZE,
-                      num_of_pages = None):
+                      num_of_pages = None,
+                      header_version = None):
 
    # Preliminary checks
    if (requires_preamble is True) and (preamble_file_name is None):
@@ -945,9 +951,12 @@ def image_header(env, gen_dict,
       cert_chain_size = 0
       image_size = code_size
 
+   if header_version:
+      assert header_version in [3, 5, 6], 'Not a valid MBN header version'
+
    # For ELF or hashed images, image destination will be determined from an ELF input file
    if gen_dict['IMAGE_KEY_MBN_TYPE'] == 'elf':
-      image_dest = get_hash_address(elf_file_name) + MI_BOOT_IMG_HDR_SIZE
+      image_dest = get_hash_address(elf_file_name) + (header_size(header_version))
    elif gen_dict['IMAGE_KEY_MBN_TYPE'] == 'bin':
       image_dest = gen_dict['IMAGE_KEY_IMAGE_DEST']
       image_source = gen_dict['IMAGE_KEY_IMAGE_SOURCE']
@@ -991,12 +1000,15 @@ def image_header(env, gen_dict,
       boot_header.sig_size = signature_size
       boot_header.cert_chain_ptr = image_dest + code_size + signature_size
       boot_header.cert_chain_size = cert_chain_size
+      boot_header.flash_parti_ver = header_version  # version
 
-      if is_ext_mbn_v5 == True:
-      	# If platform image integrity check is enabled
-	boot_header.flash_parti_ver = 5   # version
-	boot_header.image_src = 0         # sig_size_qc
-	boot_header.image_dest_ptr = 0    # cert_chain_size_qc
+      if header_version >= 5:
+         boot_header.image_src = 0                            # sig_size_qc
+         boot_header.image_dest_ptr = 0                       # cert_chain_size_qc
+
+      if header_version >= 6:
+         boot_header.metadata_size_qti = 0                    # qti_metadata size
+         boot_header.metadata_size = 0                        # oem_metadata size
 
       # If preamble is required, output the preamble file and update the boot_header
       if requires_preamble is True:
@@ -1021,12 +1033,22 @@ def pboot_gen_elf(env, elf_in_file_name,
                        last_phys_addr = None,
                        append_xml_hdr = False,
                        is_sha256_algo = True,
-                       cert_chain_size_in = CERT_CHAIN_ONEROOT_MAXSIZE):
-   global MI_PROG_BOOT_DIGEST_SIZE
-   if (is_sha256_algo is True):
-      MI_PROG_BOOT_DIGEST_SIZE = 32
+                       cert_chain_size_in = CERT_CHAIN_ONEROOT_MAXSIZE,
+                       header_version = None):
+   sha_algo = 'SHA1'
+   if is_sha256_algo:
+       sha_algo = 'SHA256'
+
+   if header_version >= 6:
+       sha_algo = 'SHA384'
+   image_header_size = header_size(header_version)
+
+   if (sha_algo == 'SHA384'):
+      mi_prog_boot_digest_size = 48
+   elif sha_algo == 'SHA256':
+      mi_prog_boot_digest_size = 32
    else:
-      MI_PROG_BOOT_DIGEST_SIZE = 20
+      mi_prog_boot_digest_size = 20
 
    # Open Files
    elf_in_fp = OPEN(elf_in_file_name, "rb")
@@ -1052,7 +1074,7 @@ def pboot_gen_elf(env, elf_in_file_name,
       elf_header_size = ELF32_HDR_SIZE
       is_elf64 = False
 
-   hash = '\0' * MI_PROG_BOOT_DIGEST_SIZE
+   hash = '\0' * mi_prog_boot_digest_size
    phdr_start = 0
    bytes_to_pad = 0
    hash_seg_end = 0
@@ -1071,12 +1093,12 @@ def pboot_gen_elf(env, elf_in_file_name,
       elf_header.e_phnum += 2
 
       # Create an empty hash entry for PHDR_TYPE
-      hash_out_fp.write('\0' * MI_PROG_BOOT_DIGEST_SIZE)
-      hashtable_size += MI_PROG_BOOT_DIGEST_SIZE
+      hash_out_fp.write('\0' * mi_prog_boot_digest_size)
+      hashtable_size += mi_prog_boot_digest_size
 
       # Create an empty hash entry for the hash segment itself
-      hash_out_fp.write('\0' * MI_PROG_BOOT_DIGEST_SIZE)
-      hashtable_size += MI_PROG_BOOT_DIGEST_SIZE
+      hash_out_fp.write('\0' * mi_prog_boot_digest_size)
+      hashtable_size += mi_prog_boot_digest_size
 
    # Begin hash table generation
    for i in range(num_phdrs):
@@ -1110,14 +1132,14 @@ def pboot_gen_elf(env, elf_in_file_name,
             fbuf = elf_in_fp.read(hash_size)
 
             if MI_PBT_CHECK_FLAG_TYPE(curr_phdr.p_flags) is True:
-               hash = generate_hash(fbuf, is_sha256_algo)
+               hash = generate_hash(fbuf, sha_algo)
             else:
-               hash = '\0' * MI_PROG_BOOT_DIGEST_SIZE
+               hash = '\0' * mi_prog_boot_digest_size
 
             # Write hash to file
             hash_out_fp.write(hash)
 
-            hashtable_size += MI_PROG_BOOT_DIGEST_SIZE
+            hashtable_size += mi_prog_boot_digest_size
             seg_offset += ELF_BLOCK_ALIGN
 
       # Copy the hash entry for all that are PAGED segments and those that are not the PHDR type. This is for
@@ -1129,14 +1151,14 @@ def pboot_gen_elf(env, elf_in_file_name,
          file_buff = elf_in_fp.read(data_len)
 
          if (MI_PBT_CHECK_FLAG_TYPE(curr_phdr.p_flags) is True) and (data_len > 0):
-            hash = generate_hash(file_buff, is_sha256_algo)
+            hash = generate_hash(file_buff, sha_algo)
          else:
-            hash = '\0' *  MI_PROG_BOOT_DIGEST_SIZE
+            hash = '\0' *  mi_prog_boot_digest_size
 
          # Write hash to file
          hash_out_fp.write(hash)
 
-         hashtable_size += MI_PROG_BOOT_DIGEST_SIZE
+         hashtable_size += mi_prog_boot_digest_size
    # End hash table generation
 
    # Generate the rest of the ELF output file if specified
@@ -1151,7 +1173,7 @@ def pboot_gen_elf(env, elf_in_file_name,
 
      # Initialize the hash table program header
      [hash_Phdr, pad_hash_segment, hash_tbl_end_addr, hash_tbl_offset] = \
-          initialize_hash_phdr(elf_in_file_name, hashtable_size, MI_BOOT_IMG_HDR_SIZE, ELF_BLOCK_ALIGN, is_elf64)
+            initialize_hash_phdr(elf_in_file_name, hashtable_size, image_header_size, ELF_BLOCK_ALIGN, is_elf64)
 
      # Check if hash segment max size parameter was passed
      if (hash_seg_max_size is not None):
@@ -1252,7 +1274,7 @@ def pboot_gen_elf(env, elf_in_file_name,
      # Read the program header and compute hash
      proghdr_buff = elf_out_fp.read(elf_header.e_phnum * phdr_size)
 
-     hash = generate_hash(elfhdr_buff + proghdr_buff, is_sha256_algo)
+     hash = generate_hash(elfhdr_buff + proghdr_buff, sha_algo)
 
      # Write hash to file as first hash table entry
      hash_out_fp.seek(0)
@@ -1592,7 +1614,7 @@ def generate_code_hash(env, elf_in_file_name):
          page = page + elf_in_fp.read(bytes_in_page - len(page))
       if (len(page) < DP_PAGE_SIZE):
          page = page + (struct.pack('b', 0) * (DP_PAGE_SIZE - len(page)))
-      hashes = hashes + [generate_hash(page, True)]
+      hashes = hashes + [generate_hash(page, 'SHA256')]
       bytes_left -= bytes_in_page
 
    # And write them to the hash segment
@@ -2101,9 +2123,20 @@ def file_copy_offset(in_fp, in_off, out_fp, out_off, num_bytes):
 #----------------------------------------------------------------------------
 # sha1/sha256 hash routine wrapper
 #----------------------------------------------------------------------------
-def generate_hash(in_buf, is_sha256_algo):
+def header_size(header_version):
+    if header_version >= 6:
+        return 48
+    else:
+        return 40
+
+#----------------------------------------------------------------------------
+# sha1/sha256 hash routine wrapper
+#----------------------------------------------------------------------------
+def generate_hash(in_buf, sha_algo):
    # Initialize a SHA1 object from the Python hash library
-   if (is_sha256_algo is True):
+   if sha_algo == 'SHA384':
+      m = hashlib.sha384()
+   elif sha_algo == 'SHA256':
       m = hashlib.sha256()
    else:
       m = hashlib.sha1()

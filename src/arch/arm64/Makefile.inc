@@ -107,6 +107,7 @@ romstage-$(CONFIG_ARM64_USE_ARCH_TIMER) += arch_timer.c
 romstage-y += memset.S
 romstage-y += memcpy.S
 romstage-y += memmove.S
+romstage-y += ramdetect.c
 romstage-y += romstage.c
 romstage-y += transition.c transition_asm.S
 
@@ -131,6 +132,7 @@ ramstage-y += div0.c
 ramstage-y += eabi_compat.c
 ramstage-y += boot.c
 ramstage-y += tables.c
+ramstage-y += ramdetect.c
 ramstage-$(CONFIG_ARM64_USE_ARCH_TIMER) += arch_timer.c
 ramstage-y += memset.S
 ramstage-y += memcpy.S

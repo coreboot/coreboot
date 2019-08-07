@@ -11,6 +11,12 @@
  * GNU General Public License for more details.
  */
 
+
+/*
+ * Used in probe_ramsize(). This is a weak function and it's overridden for
+ * ARMv8. Return 1 when DRAM exists at the address, otherwise return 0.
+ */
+int probe_mb(const uintptr_t dram_start, const uintptr_t size);
 /*
  * Probe an area if it's read/writable.
  * Primary use case is the detection of DRAM amount on emulators.

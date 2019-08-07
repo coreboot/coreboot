@@ -19,7 +19,7 @@
 
 #define OVERLAP(a, b, s, e) ((b) > (s) && (a) < (e))
 
-static int probe_mb(const uintptr_t dram_start, const uintptr_t size)
+int __weak probe_mb(const uintptr_t dram_start, const uintptr_t size)
 {
 	uintptr_t addr = dram_start + (size * MiB) - sizeof(uint32_t);
 	static const uint32_t patterns[] = {

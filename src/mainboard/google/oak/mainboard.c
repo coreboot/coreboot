@@ -234,7 +234,7 @@ static void display_startup(void)
 	edid_set_framebuffer_bits_per_pixel(&edid, 32, 0);
 
 	mtk_ddp_init();
-	ret = mtk_dsi_init(mipi_dsi_flags, MIPI_DSI_FMT_RGB888, 4, &edid);
+	ret = mtk_dsi_init(mipi_dsi_flags, MIPI_DSI_FMT_RGB888, 4, &edid, NULL);
 	if (ret < 0) {
 		printk(BIOS_ERR, "dsi init fail\n");
 		return;

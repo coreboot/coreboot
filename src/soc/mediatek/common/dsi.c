@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <assert.h>
 #include <device/mmio.h>
 #include <console/console.h>
 #include <device/mmio.h>
@@ -256,7 +257,124 @@ static void mtk_dsi_start(void)
 	write32(&dsi0->dsi_start, 1);
 }
 
-int mtk_dsi_init(u32 mode_flags, u32 format, u32 lanes, const struct edid *edid)
+static bool mtk_dsi_is_read_command(u32 type)
+{
+	switch (type) {
+	case MIPI_DSI_GENERIC_READ_REQUEST_0_PARAM:
+	case MIPI_DSI_GENERIC_READ_REQUEST_1_PARAM:
+	case MIPI_DSI_GENERIC_READ_REQUEST_2_PARAM:
+	case MIPI_DSI_DCS_READ:
+		return true;
+	}
+	return false;
+}
+
+static void mtk_dsi_cmdq(const u8 *data, u8 len, u32 type)
+{
+	const u8 *tx_buf = data;
+	u32 config;
+	int i, j;
+
+	if (!wait_ms(20, !(read32(&dsi0->dsi_intsta) & DSI_BUSY))) {
+		printk(BIOS_ERR, "%s: cannot get DSI ready for sending commands"
+		       " after 20ms and the panel may not work properly.\n",
+		       __func__);
+		return;
+	}
+	write32(&dsi0->dsi_intsta, 0);
+
+	if (mtk_dsi_is_read_command(type))
+		config = BTA;
+	else
+		config = (len > 2) ? LONG_PACKET : SHORT_PACKET;
+
+	if (len <= 2) {
+		uint32_t val = (type << 8) | config;
+		for (i = 0; i < len; i++)
+			val |= tx_buf[i] << (i + 2) * 8;
+		write32(&dsi0->dsi_cmdq[0], val);
+		write32(&dsi0->dsi_cmdq_size, 1);
+	} else {
+		/* TODO(hungte) Replace by buffer_to_fifo32_prefix */
+		write32(&dsi0->dsi_cmdq[0], (len << 16) | (type << 8) | config);
+		for (i = 0; i < len; i += 4) {
+			uint32_t val = 0;
+			for (j = 0; j < MIN(len - i, 4); j++)
+				val |= tx_buf[i + j] << j * 8;
+			write32(&dsi0->dsi_cmdq[i / 4 + 1], val);
+		}
+		write32(&dsi0->dsi_cmdq_size, 1 + DIV_ROUND_UP(len, 4));
+	}
+
+	mtk_dsi_start();
+
+	if (!wait_us(400, read32(&dsi0->dsi_intsta) & CMD_DONE_INT_FLAG)) {
+		printk(BIOS_ERR, "%s: failed sending DSI command, "
+		       "panel may not work.\n", __func__);
+		return;
+	}
+}
+
+static void mtk_dsi_send_init_commands(const struct lcm_init_command *init)
+{
+	if (!init)
+		return;
+
+	for (; init->cmd != LCM_END_CMD; init++) {
+		u32 cmd = init->cmd, len = init->len;
+		u32 type;
+
+		switch (cmd) {
+		case LCM_DELAY_CMD:
+			mdelay(len);
+			continue;
+
+		case LCM_DCS_CMD:
+			switch (len) {
+			case 0:
+				return;
+			case 1:
+				type = MIPI_DSI_DCS_SHORT_WRITE;
+				break;
+			case 2:
+				type = MIPI_DSI_DCS_SHORT_WRITE_PARAM;
+				break;
+			default:
+				type = MIPI_DSI_DCS_LONG_WRITE;
+				break;
+			}
+			break;
+
+		case LCM_GENERIC_CMD:
+			switch (len) {
+			case 0:
+				type = MIPI_DSI_GENERIC_SHORT_WRITE_0_PARAM;
+				break;
+			case 1:
+				type = MIPI_DSI_GENERIC_SHORT_WRITE_1_PARAM;
+				break;
+			case 2:
+				type = MIPI_DSI_GENERIC_SHORT_WRITE_2_PARAM;
+				break;
+			default:
+				type = MIPI_DSI_GENERIC_LONG_WRITE;
+				break;
+			}
+			break;
+
+		default:
+			printk(BIOS_ERR, "%s: Unknown cmd: %d, "
+			       "abort panel initialization.\n", __func__, cmd);
+			return;
+
+		}
+		assert(len <= sizeof(init->data));
+		mtk_dsi_cmdq(init->data, len, type);
+	}
+}
+
+int mtk_dsi_init(u32 mode_flags, u32 format, u32 lanes, const struct edid *edid,
+		 const struct lcm_init_command *init_commands)
 {
 	int data_rate;
 	u32 bits_per_pixel = mtk_dsi_get_bits_per_pixel(format);
@@ -272,9 +390,9 @@ int mtk_dsi_init(u32 mode_flags, u32 format, u32 lanes, const struct edid *edid)
 	mtk_dsi_rxtx_control(mode_flags, lanes);
 	mtk_dsi_clk_hs_mode_disable();
 	mtk_dsi_config_vdo_timing(mode_flags, format, lanes, edid, &phy_timing);
-	mtk_dsi_set_mode(mode_flags);
 	mtk_dsi_clk_hs_mode_enable();
-
+	mtk_dsi_send_init_commands(init_commands);
+	mtk_dsi_set_mode(mode_flags);
 	mtk_dsi_start();
 
 	return 0;

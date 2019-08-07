@@ -85,14 +85,14 @@ struct dsi_regs {
 	u8 reserved4[16];
 	u32 dsi_vm_cmd_con;
 	u8 reserved5[204];
-	u32 dsi_cmdq0;
+	u32 dsi_cmdq[128];
 };
 static struct dsi_regs *const dsi0 = (void *)DSI0_BASE;
 
 check_member(dsi_regs, dsi_phy_lccon, 0x104);
 check_member(dsi_regs, dsi_phy_timecon3, 0x11c);
 check_member(dsi_regs, dsi_vm_cmd_con, 0x130);
-check_member(dsi_regs, dsi_cmdq0, 0x200);
+check_member(dsi_regs, dsi_cmdq, 0x200);
 
 /* DSI_INTSTA */
 enum {
@@ -324,6 +324,18 @@ struct mtk_phy_timing {
 	u32 d_phy;
 };
 
+/* Definitions for cmd in lcm_init_command */
+#define LCM_END_CMD 0
+#define LCM_DELAY_CMD 1
+#define LCM_GENERIC_CMD 2
+#define LCM_DCS_CMD 3
+
+struct lcm_init_command {
+	u16 cmd;
+	u16 len;
+	u8 data[8];
+};
+
 /* Functions that each SOC should provide. */
 void mtk_dsi_reset(void);
 void mtk_dsi_configure_mipi_tx(int data_rate, u32 lanes);
@@ -332,7 +344,8 @@ void mtk_dsi_configure_mipi_tx(int data_rate, u32 lanes);
 void mtk_dsi_override_phy_timing(struct mtk_phy_timing *timing);
 
 /* Public API provided in common/dsi.c */
-int mtk_dsi_init(u32 mode_flags, u32 format, u32 lanes,
-		 const struct edid *edid);
+int mtk_dsi_bpp_from_format(u32 format);
+int mtk_dsi_init(u32 mode_flags, u32 format, u32 lanes, const struct edid *edid,
+		 const struct lcm_init_command *init_commands);
 
 #endif /* SOC_MEDIATEK_DSI_COMMON_H */

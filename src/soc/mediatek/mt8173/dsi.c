@@ -13,20 +13,19 @@
  * GNU General Public License for more details.
  */
 
+#include <assert.h>
 #include <device/mmio.h>
 #include <console/console.h>
 #include <delay.h>
-#include <edid.h>
 #include <soc/dsi.h>
 #include <timer.h>
 
-int mtk_dsi_phy_clk_setting(u32 bits_per_pixel, u32 lanes,
-			    const struct edid *edid)
+void mtk_dsi_configure_mipi_tx(int data_rate, u32 lanes)
 {
 	u32 txdiv0, txdiv1;
 	u64 pcw;
 	u32 reg;
-	int i, data_rate, mipi_tx_rate;
+	int i;
 
 	reg = read32(&mipi_tx0->dsi_bg_con);
 
@@ -52,16 +51,6 @@ int mtk_dsi_phy_clk_setting(u32 bits_per_pixel, u32 lanes,
 
 	clrbits_le32(&mipi_tx0->dsi_pll_con0, RG_DSI0_MPPLL_PLL_EN);
 
-	/**
-	 * data_rate = pixel_clock / 1000 * bits_per_pixel * mipi_ratio / lanes
-	 * pixel_clock unit is Khz, data_rata unit is MHz, so need divide 1000.
-	 * mipi_ratio is mipi clk coefficient for balance the pixel clk in mipi.
-	 * we set mipi_ratio is 1.02.
-	 */
-	data_rate = edid->mode.pixel_clock * 102 * bits_per_pixel /
-			(lanes * 1000 * 100);
-	mipi_tx_rate = data_rate;
-
 	if (data_rate > 500) {
 		txdiv0 = 0;
 		txdiv1 = 0;
@@ -74,16 +63,11 @@ int mtk_dsi_phy_clk_setting(u32 bits_per_pixel, u32 lanes,
 	} else if (data_rate >= 62) {
 		txdiv0 = 2;
 		txdiv1 = 1;
-	} else if (data_rate >= 50) {
+	} else {
+		/* MIN = 50 */
+		assert(data_rate >= MTK_DSI_DATA_RATE_MIN_MHZ);
 		txdiv0 = 2;
 		txdiv1 = 2;
-	} else {
-		printk(BIOS_ERR, "data rate (%u) must be >=50. "
-		       "Please check pixel clock (%u), bits per pixel (%u), "
-		       "and number of lanes (%u)\n",
-		       data_rate, edid->mode.pixel_clock, bits_per_pixel,
-		       lanes);
-		return -1;
 	}
 
 	clrsetbits_le32(&mipi_tx0->dsi_pll_con0,
@@ -115,8 +99,6 @@ int mtk_dsi_phy_clk_setting(u32 bits_per_pixel, u32 lanes,
 
 	clrbits_le32(&mipi_tx0->dsi_pll_con1, RG_DSI0_MPPLL_SDM_SSC_EN);
 	clrbits_le32(&mipi_tx0->dsi_top_con, RG_DSI_PAD_TIE_LOW_EN);
-
-	return mipi_tx_rate;
 }
 
 void mtk_dsi_reset(void)

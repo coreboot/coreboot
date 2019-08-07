@@ -18,6 +18,11 @@
 
 #include <soc/dsi_common.h>
 
+/* DSI features */
+#define MTK_DSI_MIPI_RATIO_NUMERATOR 102
+#define MTK_DSI_MIPI_RATIO_DENOMINATOR 100
+#define MTK_DSI_DATA_RATE_MIN_MHZ 50
+
 /* MIPITX is SOC specific and cannot live in common. */
 
 /* MIPITX_REG */

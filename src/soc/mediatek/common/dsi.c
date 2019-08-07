@@ -37,6 +37,33 @@ static unsigned int mtk_dsi_get_bits_per_pixel(u32 format)
 	return 24;
 }
 
+static int mtk_dsi_get_data_rate(u32 bits_per_pixel, u32 lanes,
+				 const struct edid *edid)
+{
+	/* data_rate = pixel_clock * bits_per_pixel * mipi_ratio / lanes
+	 * Note pixel_clock comes in kHz and returned data_rate is in Mbps.
+	 * mipi_ratio is the clk coefficient to balance the pixel clk in MIPI
+	 * for older platforms which do not have complete implementation in HFP.
+	 * Newer platforms should just set that to 1.0 (100 / 100).
+	 */
+	int data_rate = (u64)edid->mode.pixel_clock * bits_per_pixel *
+			MTK_DSI_MIPI_RATIO_NUMERATOR /
+			(1000 * lanes * MTK_DSI_MIPI_RATIO_DENOMINATOR);
+	printk(BIOS_INFO, "DSI data_rate: %d Mbps\n", data_rate);
+
+	if (data_rate < MTK_DSI_DATA_RATE_MIN_MHZ) {
+		printk(BIOS_ERR, "data rate (%dMbps) must be >=%dMbps. "
+		       "Please check the pixel clock (%u), bits per pixel(%u), "
+		       "mipi_ratio (%d%%) and number of lanes (%d)\n",
+		       data_rate, MTK_DSI_DATA_RATE_MIN_MHZ,
+		       edid->mode.pixel_clock, bits_per_pixel,
+		       (100 * MTK_DSI_MIPI_RATIO_NUMERATOR /
+			MTK_DSI_MIPI_RATIO_DENOMINATOR), lanes);
+		return -1;
+	}
+	return data_rate;
+}
+
 static void mtk_dsi_phy_timconfig(u32 data_rate)
 {
 	u32 timcon0, timcon1, timcon2, timcon3;
@@ -186,11 +213,11 @@ int mtk_dsi_init(u32 mode_flags, u32 format, u32 lanes, const struct edid *edid)
 	int data_rate;
 	u32 bits_per_pixel = mtk_dsi_get_bits_per_pixel(format);
 
-	data_rate = mtk_dsi_phy_clk_setting(bits_per_pixel, lanes, edid);
-
+	data_rate = mtk_dsi_get_data_rate(bits_per_pixel, lanes, edid);
 	if (data_rate < 0)
 		return -1;
 
+	mtk_dsi_configure_mipi_tx(data_rate, lanes);
 	mtk_dsi_reset();
 	mtk_dsi_phy_timconfig(data_rate);
 	mtk_dsi_rxtx_control(mode_flags, lanes);

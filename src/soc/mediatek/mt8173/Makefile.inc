@@ -83,7 +83,7 @@ ramstage-y += ../common/rtc.c rtc.c
 ramstage-y += ../common/usb.c usb.c
 
 ramstage-y += ../common/ddp.c ddp.c
-ramstage-y += dsi.c
+ramstage-y += ../common/dsi.c dsi.c
 
 ramstage-$(CONFIG_ARM64_USE_ARM_TRUSTED_FIRMWARE) += bl31_plat_params.c
 

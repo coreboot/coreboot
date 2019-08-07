@@ -11,6 +11,7 @@
  * GNU General Public License for more details.
  */
 
+#include <cpu/cpu.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/msr.h>
@@ -51,6 +52,6 @@ void set_var_mtrr(
 	basem.hi = 0;
 	wrmsr(MTRR_PHYS_BASE(reg), basem);
 	maskm.lo = ~(size - 1) | MTRR_PHYS_MASK_VALID;
-	maskm.hi = (1 << (CONFIG_CPU_ADDR_BITS - 32)) - 1;
+	maskm.hi = (1 << (cpu_phys_address_size() - 32)) - 1;
 	wrmsr(MTRR_PHYS_MASK(reg), maskm);
 }

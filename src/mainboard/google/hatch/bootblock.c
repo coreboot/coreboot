@@ -19,18 +19,11 @@
 
 static void early_config_gpio(void)
 {
-	const struct pad_config *base_early_table;
-	const struct pad_config *override_early_table;
-	size_t base_gpios;
-	size_t override_gpios;
+	const struct pad_config *variant_early_table;
+	size_t variant_gpios;
 
-	base_early_table = base_early_gpio_table(&base_gpios);
-	override_early_table = override_early_gpio_table(&override_gpios);
-
-	gpio_configure_pads_with_override(base_early_table,
-					base_gpios,
-					override_early_table,
-					override_gpios);
+	variant_early_table = variant_early_gpio_table(&variant_gpios);
+	gpio_configure_pads(variant_early_table, variant_gpios);
 }
 
 void bootblock_mainboard_init(void)

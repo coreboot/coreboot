@@ -426,48 +426,6 @@ const struct pad_config *__weak variant_sleep_gpio_table(
 	return default_sleep_gpio_table;
 }
 
-/* GPIOs needed prior to ramstage. */
-static const struct pad_config early_gpio_table[] = {
-	/* A12 : FPMCU_RST_ODL */
-	PAD_CFG_GPO(GPP_A12, 0, DEEP),
-	/* B15 : H1_SLAVE_SPI_CS_L */
-	PAD_CFG_NF(GPP_B15, NONE, DEEP, NF1),
-	/* B16 : H1_SLAVE_SPI_CLK */
-	PAD_CFG_NF(GPP_B16, NONE, DEEP, NF1),
-	/* B17 : H1_SLAVE_SPI_MISO_R */
-	PAD_CFG_NF(GPP_B17, NONE, DEEP, NF1),
-	/* B18 : H1_SLAVE_SPI_MOSI_R */
-	PAD_CFG_NF(GPP_B18, NONE, DEEP, NF1),
-	/* C14 : BT_DISABLE_L */
-	PAD_CFG_GPO(GPP_C14, 0, DEEP),
-	/* PCH_WP_OD */
-	PAD_CFG_GPI(GPP_C20, NONE, DEEP),
-	/* C21 : H1_PCH_INT_ODL */
-	PAD_CFG_GPI_APIC(GPP_C21, NONE, PLTRST, LEVEL, INVERT),
-	/* C23 : WLAN_PE_RST# */
-	PAD_CFG_GPO(GPP_C23, 1, DEEP),
-	/* E1  : M2_SSD_PEDET */
-	PAD_CFG_NF(GPP_E1, NONE, DEEP, NF1),
-	/* E5  : SATA_DEVSLP1 */
-	PAD_CFG_NF(GPP_E5, NONE, PLTRST, NF1),
-	/* F2  : MEM_CH_SEL */
-	PAD_CFG_GPI(GPP_F2, NONE, PLTRST),
-	/* F11 : PCH_MEM_STRAP2 */
-	PAD_CFG_GPI(GPP_F11, NONE, PLTRST),
-	/* F20 : PCH_MEM_STRAP0 */
-	PAD_CFG_GPI(GPP_F20, NONE, PLTRST),
-	/* F21 : PCH_MEM_STRAP1 */
-	PAD_CFG_GPI(GPP_F21, NONE, PLTRST),
-	/* F22 : PCH_MEM_STRAP3 */
-	PAD_CFG_GPI(GPP_F22, NONE, PLTRST),
-};
-
-const struct pad_config *base_early_gpio_table(size_t *num)
-{
-	*num = ARRAY_SIZE(early_gpio_table);
-	return early_gpio_table;
-}
-
 static const struct cros_gpio cros_gpios[] = {
 	CROS_GPIO_REC_AL(CROS_GPIO_VIRTUAL, CROS_GPIO_DEVICE_NAME),
 	CROS_GPIO_WP_AH(GPIO_PCH_WP, CROS_GPIO_DEVICE_NAME),
@@ -481,12 +439,6 @@ const struct cros_gpio *__weak variant_cros_gpios(size_t *num)
 
 /* Weak implementation of overrides */
 const struct pad_config *__weak override_gpio_table(size_t *num)
-{
-	*num = 0;
-	return NULL;
-}
-
-const struct pad_config *__weak override_early_gpio_table(size_t *num)
 {
 	*num = 0;
 	return NULL;

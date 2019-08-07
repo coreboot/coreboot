@@ -23,13 +23,11 @@
 
 /*
  * The next set of functions return the gpio table and fill in the number of
- * entries for each table.  The "base" GPIOs live in the "hatch" variant, and
+ * entries for each table.  The "base" GPIOs live in the "baseboard" variant, and
  * the overrides live with the specific board (kohaku, kled, etc.).
 */
 const struct pad_config *base_gpio_table(size_t *num);
-const struct pad_config *base_early_gpio_table(size_t *num);
 const struct pad_config *override_gpio_table(size_t *num);
-const struct pad_config *override_early_gpio_table(size_t *num);
 
 /* Return board specific memory configuration */
 void variant_memory_params(struct cnl_mb_cfg *bcfg);
@@ -39,6 +37,9 @@ int variant_memory_sku(void);
 
 /* Return variant specific gpio pads to be configured during sleep */
 const struct pad_config *variant_sleep_gpio_table(u8 slp_typ, size_t *num);
+
+/* Return GPIO pads that need to be configured before ramstage */
+const struct pad_config *variant_early_gpio_table(size_t *num);
 
 /* Return ChromeOS gpio table and fill in number of entries. */
 const struct cros_gpio *variant_cros_gpios(size_t *num);

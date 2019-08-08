@@ -108,6 +108,7 @@ void smihandler_southbridge_monitor(
 			/* Trapped write data */
 			data = pcr_read32(PID_PSTH, PCR_PSTH_TRPD);
 			data &= mask;
+			printk(BIOS_DEBUG, "  iotrap read data = 0x%08x\n", data);
 		}
 	}
 

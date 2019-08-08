@@ -335,8 +335,7 @@ void verstage_main(void)
 	 * check the return value here because vb2api_fw_phase1 will catch
 	 * invalid secdata and tell us what to do (=reboot). */
 	timestamp_add_now(TS_START_TPMINIT);
-	rv = vboot_setup_tpm(&ctx);
-	if (rv)
+	if (vboot_setup_tpm(&ctx) == TPM_SUCCESS)
 		antirollback_read_space_firmware(&ctx);
 	timestamp_add_now(TS_END_TPMINIT);
 

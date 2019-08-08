@@ -22,6 +22,7 @@
 #include <console/console.h>
 #include <cbmem.h>
 #include <cpu/x86/mtrr.h>
+#include <cpu/x86/smm.h>
 #if CONFIG(EC_GOOGLE_CHROMEEC)
 #include <ec/google/chromeec/ec.h>
 #endif
@@ -145,6 +146,9 @@ static void romstage_main(uint64_t tsc, uint32_t bist)
 
 	/* Call into mainboard. */
 	mainboard_romstage_entry(&rp);
+
+	if (CONFIG(SMM_TSEG))
+		smm_list_regions();
 
 	prepare_and_run_postcar(&early_mtrrs);
 	/* We do not return here. */

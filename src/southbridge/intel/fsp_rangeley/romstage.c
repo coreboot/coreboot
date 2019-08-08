@@ -31,6 +31,7 @@
 #include "southbridge/intel/fsp_rangeley/gpio.h"
 #include "southbridge/intel/fsp_rangeley/romstage.h"
 #include <cpu/x86/msr.h>
+#include <cpu/x86/smm.h>
 #include "gpio.h"
 
 void main(FSP_INFO_HEADER *fsp_info_header)
@@ -121,9 +122,11 @@ void romstage_main_continue(EFI_STATUS status, void *hob_list_ptr) {
 	*(u32*)cbmem_hob_ptr = (u32)hob_list_ptr;
 	post_code(0x4e);
 
-	post_code(0x4f);
+	if (CONFIG(SMM_TSEG))
+		smm_list_regions();
 
 	/* Load the ramstage. */
+	post_code(0x4f);
 	run_ramstage();
 	while (1);
 }

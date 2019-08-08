@@ -15,6 +15,7 @@
 #include <console/console.h>
 #include <cpu/intel/romstage.h>
 #include <cpu/x86/mtrr.h>
+#include <cpu/x86/smm.h>
 #include <arch/symbols.h>
 #include <commonlib/helpers.h>
 #include <program_loading.h>
@@ -68,6 +69,9 @@ static void romstage_main(unsigned long bist)
 			continue;
 		printk(BIOS_DEBUG, "Smashed stack detected in romstage!\n");
 	}
+
+	if (CONFIG(SMM_TSEG))
+		smm_list_regions();
 
 	prepare_and_run_postcar(&early_mtrrs);
 	/* We do not return here. */

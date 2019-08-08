@@ -22,6 +22,7 @@
 #include <console/console.h>
 #include <console/usb.h>
 #include <cpu/x86/mtrr.h>
+#include <cpu/x86/smm.h>
 #include <program_loading.h>
 #include <timestamp.h>
 #include <version.h>
@@ -168,6 +169,9 @@ void romstage_main_continue(EFI_STATUS status, void *hob_list_ptr)
 
 	if (!CONFIG(FSP_MEMORY_DOWN))
 		save_dimm_info();
+
+	if (CONFIG(SMM_TSEG))
+		smm_list_regions();
 
 	/* Load the ramstage. */
 	post_code(0x4e);

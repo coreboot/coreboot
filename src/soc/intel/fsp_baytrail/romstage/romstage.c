@@ -24,6 +24,7 @@
 #include <console/usb.h>
 #include <cbmem.h>
 #include <cpu/x86/mtrr.h>
+#include <cpu/x86/smm.h>
 #include <program_loading.h>
 #include <romstage_handoff.h>
 #include <timestamp.h>
@@ -255,9 +256,11 @@ void romstage_main_continue(EFI_STATUS status, void *hob_list_ptr)
 
 	romstage_handoff_init(prev_sleep_state == ACPI_S3);
 
-	post_code(0x4f);
+	if (CONFIG(SMM_TSEG))
+		smm_list_regions();
 
 	/* Load the ramstage. */
+	post_code(0x4f);
 	run_ramstage();
 	while (1);
 }

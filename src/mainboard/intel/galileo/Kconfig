@@ -94,7 +94,6 @@ config FSP_DEBUG_ALL
 # Enable display and verification for coreboot build tests
 	select DISPLAY_HOBS
 	select DISPLAY_MTRRS
-	select DISPLAY_SMM_MEMORY_MAP
 	select DISPLAY_UPD_DATA
 	select DISPLAY_ESRAM_LAYOUT
 	select DISPLAY_FSP_CALLS_AND_STATUS

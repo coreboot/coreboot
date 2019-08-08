@@ -30,25 +30,6 @@ __weak void soc_after_silicon_init(void)
 {
 }
 
-/* Display SMM memory map */
-static void smm_memory_map(void)
-{
-	uintptr_t base;
-	size_t size;
-	int i;
-
-	printk(BIOS_SPEW, "SMM Memory Map\n");
-
-	smm_region(&base, &size);
-	printk(BIOS_SPEW, "SMRAM       : 0x%zx 0x%zx\n", base, size);
-
-	for (i = 0; i < SMM_SUBREGION_NUM; i++) {
-		if (smm_subregion(i, &base, &size))
-			continue;
-		printk(BIOS_SPEW, " Subregion %d: 0x%zx 0x%zx\n", i, base, size);
-	}
-}
-
 static void display_hob_info(FSP_INFO_HEADER *fsp_info_header)
 {
 	const EFI_GUID graphics_info_guid = EFI_PEI_GRAPHICS_INFO_HOB_GUID;
@@ -147,9 +128,6 @@ void fsp_run_silicon_init(FSP_INFO_HEADER *fsp_info_header, int is_s3_wakeup)
 
 static void fsp_cache_save(struct prog *fsp)
 {
-	if (CONFIG(DISPLAY_SMM_MEMORY_MAP))
-		smm_memory_map();
-
 	if (CONFIG(NO_STAGE_CACHE))
 		return;
 

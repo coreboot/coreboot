@@ -15,10 +15,6 @@ source "src/soc/intel/common/pch/Kconfig"
 comment "Intel SoC Common coreboot stages"
 source "src/soc/intel/common/basecode/Kconfig"
 
-config DISPLAY_SMM_MEMORY_MAP
-	bool "SMM: Display the SMM memory map"
-	default n
-
 config SOC_INTEL_COMMON_RESET
 	bool
 	default n

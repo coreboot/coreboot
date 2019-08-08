@@ -152,6 +152,9 @@ asmlinkage void car_stage_entry(void)
 	if (romstage_handoff_init(s3_resume))
 		printk(BIOS_ERR, "Failed to set romstage handoff data\n");
 
+	if (CONFIG(SMM_TSEG))
+		smm_list_regions();
+
 	post_code(0x44);
 	if (postcar_frame_init(&pcf, 0))
 		die("Unable to initialize postcar frame.\n");

@@ -160,4 +160,7 @@ enum {
  * 0 on success, < 0 on failure. */
 int smm_subregion(int sub, uintptr_t *start, size_t *size);
 
+/* Print the SMM memory layout on console. */
+void smm_list_regions(void);
+
 #endif /* CPU_X86_SMM_H */

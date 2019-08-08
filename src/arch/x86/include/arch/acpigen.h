@@ -411,6 +411,21 @@ void acpigen_write_rom(void *bios, const size_t length);
  */
 void acpigen_write_opregion(struct opregion *opreg);
 /*
+ * Generate ACPI AML code for Mutex
+ * This function takes mutex name and initial value.
+ */
+void acpigen_write_mutex(const char *name, const uint8_t flags);
+/*
+ * Generate ACPI AML code for Acquire
+ * This function takes mutex name and privilege value.
+ */
+void acpigen_write_acquire(const char *name, const uint16_t val);
+/*
+ * Generate ACPI AML code for Release
+ * This function takes mutex name.
+ */
+void acpigen_write_release(const char *name);
+/*
  * Generate ACPI AML code for Field
  * This function takes input region name, fieldlist, count & flags.
  */

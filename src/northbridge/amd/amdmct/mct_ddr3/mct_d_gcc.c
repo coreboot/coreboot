@@ -15,7 +15,7 @@
  */
 
 #include "mct_d_gcc.h"
-#include <inttypes.h>
+#include <stdint.h>
 #include <arch/cpu.h>
 
 void _WRMSR(u32 addr, u32 lo, u32 hi)

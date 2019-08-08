@@ -16,7 +16,7 @@
 #ifndef AMDFAM10_PCI_H
 #define AMDFAM10_PCI_H
 
-#include <inttypes.h>
+#include <stdint.h>
 #include <device/pci_type.h>
 #include <device/pci_def.h>
 

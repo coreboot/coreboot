@@ -18,7 +18,7 @@
 #ifndef __NVIDIA_TEGRA124_DMA_H__
 #define __NVIDIA_TEGRA124_DMA_H__
 
-#include <inttypes.h>
+#include <stdint.h>
 #include <soc/addressmap.h>
 
 /*

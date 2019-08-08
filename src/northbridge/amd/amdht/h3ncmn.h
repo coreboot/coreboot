@@ -17,7 +17,7 @@
 #ifndef H3NCMN_H
 #define H3NCMN_H
 
-#include <inttypes.h>
+#include <stdint.h>
 #include <device/pci.h>
 #include <cpu/amd/msr.h>
 

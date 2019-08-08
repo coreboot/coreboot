@@ -18,7 +18,7 @@
 
 #include <northbridge/amd/amdfam10/raminit.h>
 #include <northbridge/amd/amdfam10/amdfam10.h>
-#include <inttypes.h>
+#include <stdint.h>
 #include "h3finit.h"
 
 void amd_ht_fixup(struct sys_info *sysinfo);

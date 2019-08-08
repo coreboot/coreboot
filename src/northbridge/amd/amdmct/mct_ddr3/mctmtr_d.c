@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  */
 
-#include <inttypes.h>
+#include <stdint.h>
 #include <console/console.h>
 #include <cpu/amd/mtrr.h>
 #include <cpu/x86/mtrr.h>

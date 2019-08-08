@@ -92,7 +92,7 @@ b.-  prep_fid_change(...)
 #include <console/console.h>
 #include <cpu/amd/msr.h>
 #include <device/pci_ops.h>
-#include <inttypes.h>
+#include <stdint.h>
 #include <northbridge/amd/amdht/AsPsDefs.h>
 
 static inline void print_debug_fv(const char *str, u32 val)

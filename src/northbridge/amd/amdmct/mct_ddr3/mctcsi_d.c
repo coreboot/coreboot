@@ -20,7 +20,7 @@
  * ;page size), and subtract 8.
  */
 
-#include <inttypes.h>
+#include <stdint.h>
 #include "mct_d.h"
 #include "mct_d_gcc.h"
 #include <console/console.h>

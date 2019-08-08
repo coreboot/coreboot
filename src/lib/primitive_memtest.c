@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  */
 
-#include <inttypes.h>
+#include <stdint.h>
 #include <lib.h>
 #include <console/console.h>
 

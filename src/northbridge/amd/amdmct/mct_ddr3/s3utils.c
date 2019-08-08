@@ -29,7 +29,7 @@
 #include <spi-generic.h>
 #include <spi_flash.h>
 #include <pc80/mc146818rtc.h>
-#include <inttypes.h>
+#include <stdint.h>
 #include <types.h>
 
 #include "mct_d.h"

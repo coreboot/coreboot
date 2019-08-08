@@ -18,7 +18,7 @@
 #ifndef MCTI_H
 #define MCTI_H
 
-#include <inttypes.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <pc80/mc146818rtc.h>
 

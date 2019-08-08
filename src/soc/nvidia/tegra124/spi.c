@@ -20,7 +20,7 @@
 #include <boot_device.h>
 #include <console/console.h>
 #include <delay.h>
-#include <inttypes.h>
+#include <stdint.h>
 #include <soc/addressmap.h>
 #include <soc/dma.h>
 #include <soc/spi.h>

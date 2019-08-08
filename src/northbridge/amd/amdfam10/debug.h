@@ -16,7 +16,7 @@
 #ifndef AMDFAM10_DEBUG_H
 #define AMDFAM10_DEBUG_H
 
-#include <inttypes.h>
+#include <stdint.h>
 #include "pci.h"
 
 void print_debug_addr(const char *str, void *val);

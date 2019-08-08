@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  */
 
-#include <inttypes.h>
+#include <stdint.h>
 #include <console/console.h>
 #include <northbridge/amd/amdfam10/amdfam10.h>
 

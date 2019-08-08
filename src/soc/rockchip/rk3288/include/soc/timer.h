@@ -16,7 +16,7 @@
 #ifndef __SOC_ROCKCHIP_RK3288_TIMER_H__
 #define __SOC_ROCKCHIP_RK3288_TIMER_H__
 
-#include <inttypes.h>
+#include <stdint.h>
 #include <soc/addressmap.h>
 #include <soc/clock.h>
 #include <timer.h>

@@ -15,7 +15,7 @@
  */
 
 #include <arch/cpu.h>
-#include <inttypes.h>
+#include <stdint.h>
 #include <console/console.h>
 #include <device/pci_ops.h>
 

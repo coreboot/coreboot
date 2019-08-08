@@ -20,7 +20,7 @@
 ******************************************************************************/
 
 #include <arch/cpu.h>
-#include <inttypes.h>
+#include <stdint.h>
 #include <console/console.h>
 #include <cpu/x86/cr.h>
 #include <string.h>

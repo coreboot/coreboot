@@ -15,7 +15,7 @@
  */
 
 #include <arch/io.h>
-#include <inttypes.h>
+#include <stdint.h>
 #include <console/console.h>
 #include <device/pci_ops.h>
 #include <northbridge/amd/amdfam10/raminit.h>

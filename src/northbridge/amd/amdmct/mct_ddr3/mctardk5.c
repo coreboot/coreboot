@@ -17,7 +17,7 @@
 /* AM3/ASB2/C32/G34 DDR3 */
 
 #include <arch/cpu.h>
-#include <inttypes.h>
+#include <stdint.h>
 #include "mct_d.h"
 #include "mct_d_gcc.h"
 

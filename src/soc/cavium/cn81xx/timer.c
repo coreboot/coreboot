@@ -20,7 +20,6 @@
 #include <device/mmio.h>
 #include <arch/lib_helpers.h>
 #include <console/console.h>
-#include <inttypes.h>
 #include <soc/clock.h>
 #include <soc/timer.h>
 #include <stdint.h>

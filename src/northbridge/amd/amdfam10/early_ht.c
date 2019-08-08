@@ -14,7 +14,7 @@
  */
 
 #include "early_ht.h"
-#include <inttypes.h>
+#include <stdint.h>
 #include <device/pci_ops.h>
 #include <device/pci_def.h>
 

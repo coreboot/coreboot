@@ -18,7 +18,7 @@
  * Description: Max Read Latency Training feature for DDR 3 MCT
  */
 
-#include <inttypes.h>
+#include <stdint.h>
 #include <console/console.h>
 #include <cpu/amd/msr.h>
 #include <cpu/x86/cr.h>

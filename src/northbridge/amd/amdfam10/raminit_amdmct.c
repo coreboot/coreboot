@@ -15,7 +15,7 @@
  * GNU General Public License for more details.
  */
 
-#include <inttypes.h>
+#include <stdint.h>
 #include <arch/acpi.h>
 #include <arch/cpu.h>
 #include <device/pci.h>

@@ -22,7 +22,7 @@
 
 #define DQS_TRAIN_DEBUG 0
 
-#include <inttypes.h>
+#include <stdint.h>
 #include <northbridge/amd/amdfam10/debug.h>
 #include <northbridge/amd/amdfam10/raminit.h>
 

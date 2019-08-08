@@ -17,7 +17,7 @@
 /* This file contains functions for common utility functions */
 
 #include <arch/cpu.h>
-#include <inttypes.h>
+#include <stdint.h>
 
 #include "mct_d.h"
 #include "mct_d_gcc.h"

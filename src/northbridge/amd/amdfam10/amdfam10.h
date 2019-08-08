@@ -17,7 +17,7 @@
 #ifndef AMDFAM10_H
 #define AMDFAM10_H
 
-#include <inttypes.h>
+#include <stdint.h>
 #include <device/device.h>
 #include "early_ht.h"
 

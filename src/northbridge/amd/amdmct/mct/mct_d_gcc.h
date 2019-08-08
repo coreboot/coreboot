@@ -16,7 +16,7 @@
 #ifndef MCT_D_GCC_H
 #define MCT_D_GCC_H
 
-#include <inttypes.h>
+#include <stdint.h>
 
 void _WRMSR(u32 addr, u32 lo, u32 hi);
 void _RDMSR(u32 addr, u32 *lo, u32 *hi);

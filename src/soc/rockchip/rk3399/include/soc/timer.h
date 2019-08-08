@@ -16,7 +16,7 @@
 #ifndef __SOC_ROCKCHIP_RK3399_TIMER_H__
 #define __SOC_ROCKCHIP_RK3399_TIMER_H__
 
-#include <inttypes.h>
+#include <stdint.h>
 #include <soc/addressmap.h>
 #include <timer.h>
 

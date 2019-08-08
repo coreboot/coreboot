@@ -16,7 +16,7 @@
 #include <console/console.h>
 #include <fsp/api.h>
 #include <fsp/util.h>
-#include <inttypes.h>
+#include <stdint.h>
 #include <string.h>
 
 #define HOB_HEADER_LEN		8

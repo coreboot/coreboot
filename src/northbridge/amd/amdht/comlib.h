@@ -17,7 +17,7 @@
 #define COMLIB_H
 
 #include <assert.h>
-#include <inttypes.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include "porting.h"
 

@@ -39,7 +39,7 @@
 * ARISING OUT OF USE OR PERFORMANCE OF THE SOFTWARE LIES WITH YOU.
 ***********************license end**************************************/
 
-#include <inttypes.h>
+#include <stdint.h>
 #include <bdk-devicetree.h>
 
 /**

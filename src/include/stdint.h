@@ -110,10 +110,4 @@ typedef _Bool   bool;
 #define true    1
 #define false   0
 
-/* TODO: move into inttypes.h */
-#ifndef __ROMCC__
-#define PRIu64  "llu"
-#define PRIxPTR "lx"
-#endif
-
 #endif /* STDINT_H */

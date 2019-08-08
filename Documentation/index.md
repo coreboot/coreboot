@@ -169,7 +169,6 @@ Contents:
 * [coreboot at conferences](community/conferences.md)
 * [Payloads](payloads.md)
 * [Distributions](distributions.md)
-* [Intel IFD Binary Extraction](Binary_Extraction.md)
 * [Dealing with Untrusted Input in SMM](technotes/2017-02-dealing-with-untrusted-input-in-smm.md)
 * [GPIO toggling in ACPI AML](acpi/gpio.md)
 * [Adding devices to a device tree](acpi/devicetree.md)

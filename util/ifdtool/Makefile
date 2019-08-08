@@ -18,10 +18,16 @@ PROGRAM = ifdtool
 CC      = gcc
 INSTALL = /usr/bin/env install
 PREFIX  = /usr/local
-CFLAGS  = -O2 -g -Wall -Wextra -Wmissing-prototypes -Werror -I../../src/commonlib/include
+CFLAGS  = -O2 -g -Wall -Wextra -Wmissing-prototypes -Werror
+CFLAGS += -I../../src/commonlib/include
+CFLAGS += -I../cbfstool/flashmap
+CFLAGS += -include ../../src/commonlib/include/commonlib/compiler.h
 LDFLAGS =
 
 OBJS = ifdtool.o
+OBJS += fmap.o
+OBJS += kv_pair.o
+OBJS += valstr.o
 
 all: dep $(PROGRAM)
 
@@ -36,6 +42,9 @@ dep:
 	@$(CC) $(CFLAGS) -MM *.c > .dependencies
 
 %.o: %.c
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+%.o: ../cbfstool/flashmap/%.c
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 install: $(PROGRAM)

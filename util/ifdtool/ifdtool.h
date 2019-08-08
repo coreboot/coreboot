@@ -165,4 +165,5 @@ struct region_name {
 	const char *pretty;
 	const char *terse;
 	const char *filename;
+	const char *fmapname;
 };

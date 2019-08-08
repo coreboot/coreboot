@@ -286,25 +286,27 @@ static void dump_spi_regs(struct tegra_spi_channel *spi)
 
 static void dump_dma_regs(struct apb_dma_channel *dma)
 {
-	printk(BIOS_INFO, "DMA regs:\n"
-			"\tahb_ptr: 0x%08x\n"
-			"\tapb_ptr: 0x%08x\n"
-			"\tahb_seq: 0x%08x\n"
-			"\tapb_seq: 0x%08x\n"
-			"\tcsr: 0x%08x\n"
-			"\tcsre: 0x%08x\n"
-			"\twcount: 0x%08x\n"
-			"\tdma_byte_sta: 0x%08x\n"
-			"\tword_transfer: 0x%08x\n",
-			read32(&dma->regs->ahb_ptr),
-			read32(&dma->regs->apb_ptr),
-			read32(&dma->regs->ahb_seq),
-			read32(&dma->regs->apb_seq),
-			read32(&dma->regs->csr),
-			read32(&dma->regs->csre),
-			read32(&dma->regs->wcount),
-			read32(&dma->regs->dma_byte_sta),
-			read32(&dma->regs->word_transfer));
+	if (dma) {
+		printk(BIOS_INFO, "DMA regs:\n"
+		       "\tahb_ptr: 0x%08x\n"
+		       "\tapb_ptr: 0x%08x\n"
+		       "\tahb_seq: 0x%08x\n"
+		       "\tapb_seq: 0x%08x\n"
+		       "\tcsr: 0x%08x\n"
+		       "\tcsre: 0x%08x\n"
+		       "\twcount: 0x%08x\n"
+		       "\tdma_byte_sta: 0x%08x\n"
+		       "\tword_transfer: 0x%08x\n",
+		       read32(&dma->regs->ahb_ptr),
+		       read32(&dma->regs->apb_ptr),
+		       read32(&dma->regs->ahb_seq),
+		       read32(&dma->regs->apb_seq),
+		       read32(&dma->regs->csr),
+		       read32(&dma->regs->csre),
+		       read32(&dma->regs->wcount),
+		       read32(&dma->regs->dma_byte_sta),
+		       read32(&dma->regs->word_transfer));
+	}
 }
 
 static inline unsigned int spi_byte_count(struct tegra_spi_channel *spi)
@@ -574,9 +576,9 @@ static int tegra_spi_dma_finish(struct tegra_spi_channel *spi)
 
 	struct apb_dma * const apb_dma = (struct apb_dma *)TEGRA_APB_DMA_BASE;
 
-	todo = read32(&spi->dma_in->regs->wcount);
-
 	if (spi->dma_in) {
+		todo = read32(&spi->dma_in->regs->wcount);
+
 		while ((read32(&spi->dma_in->regs->dma_byte_sta) < todo) ||
 				dma_busy(spi->dma_in))
 			;
@@ -589,6 +591,8 @@ static int tegra_spi_dma_finish(struct tegra_spi_channel *spi)
 	}
 
 	if (spi->dma_out) {
+		todo = read32(&spi->dma_out->regs->wcount);
+
 		while ((read32(&spi->dma_out->regs->dma_byte_sta) < todo) ||
 				dma_busy(spi->dma_out))
 			;

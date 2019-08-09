@@ -22,6 +22,21 @@
 
 #define DCACHE_RAM_ROMSTAGE_STACK_SIZE 0x2000
 
+static struct postcar_frame early_mtrrs;
+
+/* prepare_and_run_postcar() determines the stack to use after
+ * cache-as-ram is torn down as well as the MTRR settings to use. */
+static void prepare_and_run_postcar(struct postcar_frame *pcf)
+{
+	if (postcar_frame_init(pcf, 0))
+		die("Unable to initialize postcar frame.\n");
+
+	fill_postcar_frame(pcf);
+
+	run_postcar_phase(pcf);
+	/* We do not return here. */
+}
+
 static void romstage_main(unsigned long bist)
 {
 	int i;
@@ -52,7 +67,8 @@ static void romstage_main(unsigned long bist)
 		printk(BIOS_DEBUG, "Smashed stack detected in romstage!\n");
 	}
 
-	platform_enter_postcar();
+	prepare_and_run_postcar(&early_mtrrs);
+	/* We do not return here. */
 }
 
 #if !CONFIG(C_ENVIRONMENT_BOOTBLOCK)

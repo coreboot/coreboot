@@ -24,30 +24,23 @@
 #include <fsp/util.h>
 #include <program_loading.h>
 
-/* platform_enter_postcar() determines the stack to use after
- * cache-as-ram is torn down as well as the MTRR settings to use,
- * and continues execution in postcar stage. */
-void platform_enter_postcar(void)
+void fill_postcar_frame(struct postcar_frame *pcf)
 {
-	struct postcar_frame pcf;
 	uintptr_t top_of_ram;
 
-	if (postcar_frame_init(&pcf, 0))
-		die("Unable to initialize postcar frame.\n");
 	/* Cache the ROM as WP just below 4GiB. */
-	postcar_frame_add_mtrr(&pcf, CACHE_ROM_BASE, CACHE_ROM_SIZE,
+	postcar_frame_add_mtrr(pcf, CACHE_ROM_BASE, CACHE_ROM_SIZE,
 			       MTRR_TYPE_WRPROT);
 
 	/* Cache RAM as WB from 0 -> CACHE_TMP_RAMTOP. */
-	postcar_frame_add_mtrr(&pcf, 0, CACHE_TMP_RAMTOP, MTRR_TYPE_WRBACK);
+	postcar_frame_add_mtrr(pcf, 0, CACHE_TMP_RAMTOP, MTRR_TYPE_WRBACK);
 
 	/* Cache at least 8 MiB below the top of ram, and at most 8 MiB
 	 * above top of the ram. This satisfies MTRR alignment requirement
 	 * with different TSEG size configurations. */
 	top_of_ram = ALIGN_DOWN((uintptr_t)cbmem_top(), 8*MiB);
-	postcar_frame_add_mtrr(&pcf, top_of_ram - 8*MiB, 16*MiB, MTRR_TYPE_WRBACK);
+	postcar_frame_add_mtrr(pcf, top_of_ram - 8*MiB, 16*MiB, MTRR_TYPE_WRBACK);
 
-	run_postcar_phase(&pcf);
 }
 
 /* This is the romstage entry called from cpu/intel/car/romstage.c */

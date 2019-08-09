@@ -150,33 +150,23 @@ void stage_cache_external_region(void **base, size_t *size)
 		+ northbridge_get_tseg_size() - CONFIG_SMM_RESERVED_SIZE);
 }
 
-/* platform_enter_postcar() determines the stack to use after
- * cache-as-ram is torn down as well as the MTRR settings to use,
- * and continues execution in postcar stage. */
-void platform_enter_postcar(void)
+void fill_postcar_frame(struct postcar_frame *pcf)
 {
-	struct postcar_frame pcf;
 	uintptr_t top_of_ram;
 
-	if (postcar_frame_init(&pcf, 0))
-		die("Unable to initialize postcar frame.\n");
 
 	/* Cache the ROM as WP just below 4GiB. */
-	postcar_frame_add_romcache(&pcf, MTRR_TYPE_WRPROT);
+	postcar_frame_add_romcache(pcf, MTRR_TYPE_WRPROT);
 
 	/* Cache RAM as WB from 0 -> CACHE_TMP_RAMTOP. */
-	postcar_frame_add_mtrr(&pcf, 0, CACHE_TMP_RAMTOP, MTRR_TYPE_WRBACK);
+	postcar_frame_add_mtrr(pcf, 0, CACHE_TMP_RAMTOP, MTRR_TYPE_WRBACK);
 
 	/* Cache 8 MiB region below the top of ram and 2 MiB above top of
 	 * ram to cover both cbmem as the TSEG region.
 	 */
 	top_of_ram = (uintptr_t)cbmem_top();
-	postcar_frame_add_mtrr(&pcf, top_of_ram - 8*MiB, 8*MiB,
+	postcar_frame_add_mtrr(pcf, top_of_ram - 8*MiB, 8*MiB,
 			MTRR_TYPE_WRBACK);
-	postcar_frame_add_mtrr(&pcf, northbridge_get_tseg_base(),
+	postcar_frame_add_mtrr(pcf, northbridge_get_tseg_base(),
 			       northbridge_get_tseg_size(), MTRR_TYPE_WRBACK);
-
-	run_postcar_phase(&pcf);
-
-	/* We do not return here. */
 }

@@ -49,7 +49,22 @@
  * Because we can't use global variables the stack is used for allocations --
  * thus the need to call back and forth. */
 
-static void platform_enter_postcar(void);
+static struct postcar_frame early_mtrrs;
+
+static void fill_postcar_frame(struct postcar_frame *pcf);
+
+/* prepare_and_run_postcar() determines the stack to use after
+ * cache-as-ram is torn down as well as the MTRR settings to use. */
+static void prepare_and_run_postcar(struct postcar_frame *pcf)
+{
+	if (postcar_frame_init(pcf, 0))
+		die("Unable to initialize postcar frame.\n");
+
+	fill_postcar_frame(pcf);
+
+	run_postcar_phase(pcf);
+	/* We do not return here. */
+}
 
 static void program_base_addresses(void)
 {
@@ -129,9 +144,8 @@ static void romstage_main(uint64_t tsc, uint32_t bist)
 	/* Call into mainboard. */
 	mainboard_romstage_entry(&rp);
 
-	platform_enter_postcar();
-
-	/* We don't return here */
+	prepare_and_run_postcar(&early_mtrrs);
+	/* We do not return here. */
 }
 
 /* This wrapper enables easy transition towards C_ENVIRONMENT_BOOTBLOCK,
@@ -238,28 +252,21 @@ void romstage_common(struct romstage_params *params)
 	romstage_handoff_init(prev_sleep_state == ACPI_S3);
 }
 
-/* setup_stack_and_mtrrs() determines the stack to use after
- * cache-as-ram is torn down as well as the MTRR settings to use. */
-static void platform_enter_postcar(void)
+static void fill_postcar_frame(struct postcar_frame *pcf)
 {
-	struct postcar_frame pcf;
 	uintptr_t top_of_ram;
 
-	if (postcar_frame_init(&pcf, 0))
-		die("Unable to initialize postcar frame.\n");
 	/* Cache the ROM as WP just below 4GiB. */
-	postcar_frame_add_romcache(&pcf, MTRR_TYPE_WRPROT);
+	postcar_frame_add_romcache(pcf, MTRR_TYPE_WRPROT);
 
 	/* Cache RAM as WB from 0 -> CACHE_TMP_RAMTOP. */
-	postcar_frame_add_mtrr(&pcf, 0, CACHE_TMP_RAMTOP, MTRR_TYPE_WRBACK);
+	postcar_frame_add_mtrr(pcf, 0, CACHE_TMP_RAMTOP, MTRR_TYPE_WRBACK);
 
 	/* Cache at least 8 MiB below the top of ram, and at most 8 MiB
 	 * above top of the ram. This satisfies MTRR alignment requirement
 	 * with different TSEG size configurations.
 	 */
 	top_of_ram = ALIGN_DOWN((uintptr_t)cbmem_top(), 8*MiB);
-	postcar_frame_add_mtrr(&pcf, top_of_ram - 8*MiB, 16*MiB,
+	postcar_frame_add_mtrr(pcf, top_of_ram - 8*MiB, 16*MiB,
 			       MTRR_TYPE_WRBACK);
-
-	run_postcar_phase(&pcf);
 }

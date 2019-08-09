@@ -45,6 +45,11 @@ add_intel_firmware: $(obj)/coreboot.pre $(IFDTOOL)
 	printf "    DD         Adding Intel Firmware Descriptor\n"
 	dd if=$(IFD_BIN_PATH) \
 		of=$(obj)/coreboot.pre conv=notrunc >/dev/null 2>&1
+ifeq ($(CONFIG_VALIDATE_INTEL_DESCRIPTOR),y)
+	$(objutil)/ifdtool/ifdtool \
+		$(IFDTOOL_USE_CHIPSET) \
+		-t $(obj)/coreboot.pre
+endif
 ifeq ($(CONFIG_HAVE_ME_BIN),y)
 	printf "    IFDTOOL    me.bin -> coreboot.pre\n"
 	$(objutil)/ifdtool/ifdtool \

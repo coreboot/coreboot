@@ -221,23 +221,11 @@ static int do_xfer(struct rockchip_spi *regs, bool use_16bit, const void *dout,
 		 * sychronizing with the SPI clock which is pretty slow.
 		 */
 		if (*bytes_in && !(sr & SR_RF_EMPT)) {
-			int fifo = read32(&regs->rxflr) & RXFLR_LEVEL_MASK;
-			int val;
-
-			if (use_16bit)
-				xferred = fifo * 2;
-			else
-				xferred = fifo;
+			int w = use_16bit ? 2 : 1;
+			xferred = (read32(&regs->rxflr) & RXFLR_LEVEL_MASK) * w;
+			buffer_from_fifo32(in_buf, xferred, &regs->rxdr, 0, w);
 			*bytes_in -= xferred;
-			while (fifo-- > 0) {
-				val = read32(&regs->rxdr);
-				if (use_16bit) {
-					*in_buf++ = val & 0xff;
-					*in_buf++ = (val >> 8) & 0xff;
-				} else {
-					*in_buf++ = val & 0xff;
-				}
-			}
+			in_buf += xferred;
 		}
 
 		min_xfer -= xferred;

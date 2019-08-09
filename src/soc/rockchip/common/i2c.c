@@ -128,25 +128,21 @@ static int i2c_read(struct rk_i2c_regs *reg_addr, struct i2c_msg segment)
 	uint8_t *data = segment.buf;
 	int timeout = I2C_TIMEOUT_US;
 	unsigned int bytes_remaining = segment.len;
-	unsigned int bytes_transferred = 0;
-	unsigned int words_transferred = 0;
-	unsigned int rxdata = 0;
 	unsigned int con = 0;
-	unsigned int i, j;
 
 	write32(&reg_addr->i2c_mrxaddr, I2C_8BIT | segment.slave << 1 | 1);
 	write32(&reg_addr->i2c_mrxraddr, 0);
 	con = I2C_MODE_TRX | I2C_EN | I2C_ACT2NAK;
 	while (bytes_remaining) {
-		bytes_transferred = MIN(bytes_remaining, 32);
-		bytes_remaining -= bytes_transferred;
+		size_t size = MIN(bytes_remaining, 32);
+		bytes_remaining -= size;
 		if (!bytes_remaining)
 			con |= I2C_EN | I2C_NAK;
-		words_transferred = ALIGN_UP(bytes_transferred, 4) / 4;
 
+		i2c_info("I2C Read::%zu bytes\n", size);
 		write32(&reg_addr->i2c_ipd, I2C_CLEANI);
 		write32(&reg_addr->i2c_con, con);
-		write32(&reg_addr->i2c_mrxcnt, bytes_transferred);
+		write32(&reg_addr->i2c_mrxcnt, size);
 
 		timeout = I2C_TIMEOUT_US;
 		while (timeout--) {
@@ -166,15 +162,8 @@ static int i2c_read(struct rk_i2c_regs *reg_addr, struct i2c_msg segment)
 			return I2C_TIMEOUT;
 		}
 
-		for (i = 0; i < words_transferred; i++) {
-			rxdata = read32(&reg_addr->rxdata[i]);
-			i2c_info("I2c Read::RXDATA[%d] = 0x%x\n", i, rxdata);
-			for (j = 0; j < 4; j++) {
-				if ((i * 4 + j) == bytes_transferred)
-					break;
-				*data++ = (rxdata >> (j * 8)) & 0xff;
-			}
-		}
+		buffer_from_fifo32(data, size, &reg_addr->rxdata, 4, 4);
+		data += size;
 		con = I2C_MODE_RX | I2C_EN | I2C_ACT2NAK;
 	}
 	return res;
@@ -186,32 +175,22 @@ static int i2c_write(struct rk_i2c_regs *reg_addr, struct i2c_msg segment)
 	uint8_t *data = segment.buf;
 	int timeout = I2C_TIMEOUT_US;
 	int bytes_remaining = segment.len + 1;
-	int bytes_transferred = 0;
-	int words_transferred = 0;
-	unsigned int i;
-	unsigned int j = 1;
-	u32 txdata = 0;
 
-	txdata |= (segment.slave << 1);
+	/* Prepend one byte for the slave address to the transfer. */
+	u32 prefix = segment.slave << 1;
+	int prefsz = 1;
+
 	while (bytes_remaining) {
-		bytes_transferred = MIN(bytes_remaining, 32);
-		words_transferred = ALIGN_UP(bytes_transferred, 4) / 4;
-		for (i = 0; i < words_transferred; i++) {
-			do {
-				if ((i * 4 + j) == bytes_transferred)
-					break;
-				txdata |= (*data++) << (j * 8);
-			} while (++j < 4);
-			write32(&reg_addr->txdata[i], txdata);
-			j = 0;
-			i2c_info("I2c Write::TXDATA[%d] = 0x%x\n", i, txdata);
-			txdata = 0;
-		}
+		size_t size = MIN(bytes_remaining, 32);
+		buffer_to_fifo32_prefix(data, prefix, prefsz, size,
+					&reg_addr->txdata, 4, 4);
+		data += size - prefsz;
 
+		i2c_info("I2C Write::%zu bytes\n", size);
 		write32(&reg_addr->i2c_ipd, I2C_CLEANI);
 		write32(&reg_addr->i2c_con,
 			I2C_EN | I2C_MODE_TX | I2C_ACT2NAK);
-		write32(&reg_addr->i2c_mtxcnt, bytes_transferred);
+		write32(&reg_addr->i2c_mtxcnt, size);
 
 		timeout = I2C_TIMEOUT_US;
 		while (timeout--) {
@@ -232,7 +211,9 @@ static int i2c_write(struct rk_i2c_regs *reg_addr, struct i2c_msg segment)
 			return I2C_TIMEOUT;
 		}
 
-		bytes_remaining -= bytes_transferred;
+		bytes_remaining -= size;
+		prefsz = 0;
+		prefix = 0;
 	}
 	return res;
 }

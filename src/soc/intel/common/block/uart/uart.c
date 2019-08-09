@@ -33,8 +33,11 @@
 extern const struct uart_gpio_pad_config uart_gpio_pads[];
 extern const int uart_max_index;
 
-static void uart_lpss_init(uintptr_t baseaddr)
+static void uart_lpss_init(const struct device *dev, uintptr_t baseaddr)
 {
+	/* Ensure controller is in D0 state */
+	lpss_set_power_state(dev, STATE_D0);
+
 	/* Take UART out of reset */
 	lpss_reset_release(baseaddr);
 
@@ -79,7 +82,7 @@ void uart_common_init(const struct device *device, uintptr_t baseaddr)
 	/* Enable memory access and bus master */
 	pci_write_config32(dev, PCI_COMMAND, UART_PCI_ENABLE);
 
-	uart_lpss_init(baseaddr);
+	uart_lpss_init(device, baseaddr);
 }
 
 const struct device *uart_get_device(void)
@@ -231,7 +234,7 @@ static void uart_common_enable_resources(struct device *dev)
 
 		base = pci_read_config32(dev, PCI_BASE_ADDRESS_0) & ~0xFFF;
 		if (base)
-			uart_lpss_init(base);
+			uart_lpss_init(dev, base);
 	}
 }
 

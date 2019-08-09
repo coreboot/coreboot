@@ -41,7 +41,7 @@
  */
 #define CAN_USE_GLOBALS \
 	(!CONFIG(ARCH_X86) || ENV_RAMSTAGE || ENV_POSTCAR || \
-	 CONFIG(NO_CAR_GLOBAL_MIGRATION))
+	 !CONFIG(CAR_GLOBAL_MIGRATION))
 
 static inline struct imd *cbmem_get_imd(void)
 {

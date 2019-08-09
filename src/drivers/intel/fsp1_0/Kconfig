@@ -16,6 +16,7 @@
 config PLATFORM_USES_FSP1_0
 	bool
 	default n
+	select CAR_GLOBAL_MIGRATION
 	help
 	  Selected for Intel processors/platform combinations that use the
 	  Intel Firmware Support Package (FSP) 1.0 for initialization.

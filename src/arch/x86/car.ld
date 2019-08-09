@@ -76,7 +76,7 @@
 	 * cbmem console. This is useful for clearing this area on a per-stage
 	 * basis when more than one stage uses cache-as-ram for CAR_GLOBALs. */
 	_car_global_start = .;
-#if CONFIG(NO_CAR_GLOBAL_MIGRATION)
+#if !CONFIG(CAR_GLOBAL_MIGRATION)
 	/* Allow global unitialized variables when CAR_GLOBALs are not used. */
 	*(.bss)
 	*(.bss.*)
@@ -84,7 +84,7 @@
 	*(.sbss.*)
 #else
 	/* .car.global_data objects only around when
-	 * !CONFIG_NO_CAR_GLOBAL_MIGRATION is employed. */
+	 * CONFIG_CAR_GLOBAL_MIGRATION is employed. */
 	*(.car.global_data);
 #endif
 	. = ALIGN(ARCH_POINTER_ALIGN_SIZE);
@@ -107,7 +107,7 @@
 .illegal_globals . : {
 	*(EXCLUDE_FILE ("*/libagesa.*.a:" "*/romstage*/buildOpts.o" "*/romstage*/agesawrapper.o" "*/vendorcode/amd/agesa/*" "*/vendorcode/amd/cimx/*") .data)
 		*(EXCLUDE_FILE ("*/libagesa.*.a:" "*/romstage*/buildOpts.o" "*/romstage*/agesawrapper.o" "*/vendorcode/amd/agesa/*" "*/vendorcode/amd/cimx/*") .data.*)
-#if !CONFIG(NO_CAR_GLOBAL_MIGRATION)
+#if CONFIG(CAR_GLOBAL_MIGRATION)
 	*(.bss)
 	*(.bss.*)
 	*(.sbss)

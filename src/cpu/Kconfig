@@ -10,12 +10,12 @@ config CACHE_AS_RAM
 	bool
 	default y
 
-config NO_CAR_GLOBAL_MIGRATION
+config CAR_GLOBAL_MIGRATION
 	bool
 	default n
 	depends on CACHE_AS_RAM
 	help
-	  This option is selected if there is no need to migrate CAR globals.
+	  This option is selected if there is need to migrate CAR globals.
 	  All stages which use CAR globals can directly access the variables
 	  from their linked addresses.
 

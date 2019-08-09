@@ -20,7 +20,7 @@
 #include <commonlib/helpers.h>
 #include <stdlib.h>
 
-#if ENV_CACHE_AS_RAM && !CONFIG(NO_CAR_GLOBAL_MIGRATION)
+#if ENV_CACHE_AS_RAM && CONFIG(CAR_GLOBAL_MIGRATION)
 asm(".section .car.global_data,\"w\",@nobits");
 asm(".previous");
 #ifdef __clang__
@@ -83,8 +83,8 @@ static inline size_t car_object_offset(void *ptr)
 /*
  * We might end up here if:
  * 1. ENV_CACHE_AS_RAM is not set for the stage or
- * 2. ENV_CACHE_AS_RAM is set for the stage but CONFIG_NO_CAR_GLOBAL_MIGRATION
- * is also set. In this case, there is no need to migrate CAR global
+ * 2. ENV_CACHE_AS_RAM is set for the stage but CONFIG_CAR_GLOBAL_MIGRATION
+ * is not set. In this case, there is no need to migrate CAR global
  * variables. But, since we might still be running out of CAR, car_active needs
  * to return 1 if ENV_CACHE_AS_RAM is set.
  */
@@ -101,6 +101,6 @@ static inline int car_active(void) { return 0; }
 #define car_get_var(var) (var)
 #define car_sync_var(var) (var)
 #define car_set_var(var, val)	(var) = (val)
-#endif /* ENV_CACHE_AS_RAM && !CONFIG(NO_CAR_GLOBAL_MIGRATION) */
+#endif /* ENV_CACHE_AS_RAM && CONFIG(CAR_GLOBAL_MIGRATION) */
 
 #endif /* ARCH_EARLY_VARIABLES_H */

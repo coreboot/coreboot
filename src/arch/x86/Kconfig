@@ -222,8 +222,9 @@ config VERSTAGE_ADDR
 # Use the post CAR infrastructure for tearing down cache-as-ram
 # from a program loaded in RAM and subsequently loading ramstage.
 config POSTCAR_STAGE
-	def_bool n
-	select NO_CAR_GLOBAL_MIGRATION
+	def_bool y
+	depends on ARCH_X86
+	depends on !CAR_GLOBAL_MIGRATION
 
 config VERSTAGE_DEBUG_SPINLOOP
 	bool

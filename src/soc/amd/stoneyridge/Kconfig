@@ -76,7 +76,6 @@ config CPU_SPECIFIC_OPTIONS
 	select PARALLEL_MP
 	select PARALLEL_MP_AP_WORK
 	select HAVE_SMI_HANDLER
-	select POSTCAR_STAGE
 	select SSE2
 	select RTC
 

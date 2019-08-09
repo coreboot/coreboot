@@ -26,7 +26,7 @@ static const struct pad_config gpio_table[] = {
 	/* A10 : PEN_RESET_ODL */
 	PAD_CFG_GPO(GPP_A10, 1, DEEP),
 	/* A16 : EMR_GARAGE_DET (notification) */
-	PAD_CFG_GPI_APIC(GPP_A16, NONE, PLTRST, LEVEL, NONE),
+	PAD_CFG_GPI_GPIO_DRIVER(GPP_A16, NONE, PLTRST),
 	/* A17 : PIRQA# ==> NC */
 	PAD_NC(GPP_A17, NONE),
 	/* A18 : ISH_GP0 ==> NC */

@@ -28,6 +28,7 @@ struct drivers_i2c_generic_config {
 	const char *desc;	/* Device Description */
 	unsigned uid;		/* ACPI _UID */
 	enum i2c_speed speed;	/* Bus speed in Hz, default is I2C_SPEED_FAST */
+	const char *compat_string;	/* Compatible string for _HID=PRP0001 */
 	unsigned wake;		/* Wake GPE */
 	struct acpi_irq irq;	/* Interrupt */
 

@@ -62,6 +62,8 @@ static void prepare_and_run_postcar(struct postcar_frame *pcf)
 
 	fill_postcar_frame(pcf);
 
+	postcar_frame_common_mtrrs(pcf);
+
 	run_postcar_phase(pcf);
 	/* We do not return here. */
 }
@@ -255,12 +257,6 @@ void romstage_common(struct romstage_params *params)
 static void fill_postcar_frame(struct postcar_frame *pcf)
 {
 	uintptr_t top_of_ram;
-
-	/* Cache the ROM as WP just below 4GiB. */
-	postcar_frame_add_romcache(pcf, MTRR_TYPE_WRPROT);
-
-	/* Cache RAM as WB from 0 -> CACHE_TMP_RAMTOP. */
-	postcar_frame_add_mtrr(pcf, 0, CACHE_TMP_RAMTOP, MTRR_TYPE_WRBACK);
 
 	/* Cache at least 8 MiB below the top of ram, and at most 8 MiB
 	 * above top of the ram. This satisfies MTRR alignment requirement

@@ -120,6 +120,18 @@ void postcar_frame_add_romcache(struct postcar_frame *pcf, int type)
 	postcar_frame_add_mtrr(pcf, CACHE_ROM_BASE, CACHE_ROM_SIZE, type);
 }
 
+void postcar_frame_common_mtrrs(struct postcar_frame *pcf)
+{
+	if (pcf->skip_common_mtrr)
+		return;
+
+	/* Cache RAM as WB from 0 -> CACHE_TMP_RAMTOP. */
+	postcar_frame_add_mtrr(pcf, 0, CACHE_TMP_RAMTOP, MTRR_TYPE_WRBACK);
+
+	/* Cache the ROM as WP just below 4GiB. */
+	postcar_frame_add_romcache(pcf, MTRR_TYPE_WRPROT);
+}
+
 void *postcar_commit_mtrrs(struct postcar_frame *pcf)
 {
 	/*

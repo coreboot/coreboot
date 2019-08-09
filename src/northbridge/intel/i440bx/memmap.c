@@ -72,13 +72,6 @@ void fill_postcar_frame(struct postcar_frame *pcf)
 {
 	uintptr_t top_of_ram;
 
-
-	/* Cache the ROM as WP just below 4GiB. */
-	postcar_frame_add_romcache(pcf, MTRR_TYPE_WRPROT);
-
-	/* Cache RAM as WB from 0 -> CACHE_TMP_RAMTOP. */
-	postcar_frame_add_mtrr(pcf, 0, CACHE_TMP_RAMTOP, MTRR_TYPE_WRBACK);
-
 	/* Cache CBMEM region as WB. */
 	top_of_ram = (uintptr_t)cbmem_top();
 	postcar_frame_add_mtrr(pcf, top_of_ram - 8*MiB, 8*MiB,

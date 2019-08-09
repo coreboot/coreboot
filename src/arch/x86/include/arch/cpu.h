@@ -302,6 +302,7 @@ struct postcar_frame {
 	uint32_t upper_mask;
 	int max_var_mtrrs;
 	int num_var_mtrrs;
+	int skip_common_mtrr;
 };
 
 /*
@@ -321,6 +322,11 @@ void postcar_frame_add_mtrr(struct postcar_frame *pcf,
  * Add variable MTRR covering the memory-mapped ROM with given MTRR type.
  */
 void postcar_frame_add_romcache(struct postcar_frame *pcf, int type);
+
+/*
+ * Add a common MTRR setup most platforms will have as a subset.
+ */
+void postcar_frame_common_mtrrs(struct postcar_frame *pcf);
 
 /*
  * Push used MTRR and Max MTRRs on to the stack

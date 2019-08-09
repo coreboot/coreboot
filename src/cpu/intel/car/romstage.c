@@ -33,6 +33,8 @@ static void prepare_and_run_postcar(struct postcar_frame *pcf)
 
 	fill_postcar_frame(pcf);
 
+	postcar_frame_common_mtrrs(pcf);
+
 	run_postcar_phase(pcf);
 	/* We do not return here. */
 }

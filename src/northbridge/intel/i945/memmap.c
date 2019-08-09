@@ -104,13 +104,6 @@ void fill_postcar_frame(struct postcar_frame *pcf)
 {
 	uintptr_t top_of_ram;
 
-
-	/* Cache the ROM as WP just below 4GiB. */
-	postcar_frame_add_romcache(pcf, MTRR_TYPE_WRPROT);
-
-	/* Cache RAM as WB from 0 -> CACHE_TMP_RAMTOP. */
-	postcar_frame_add_mtrr(pcf, 0, CACHE_TMP_RAMTOP, MTRR_TYPE_WRBACK);
-
 	/* Cache 8 MiB region below the top of ram and 2 MiB above top of
 	 * ram to cover both cbmem as the TSEG region.
 	 */

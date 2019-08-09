@@ -54,6 +54,8 @@ void fill_postcar_frame(struct postcar_frame *pcf)
 	 * operations when source is left as UC.
 	 */
 
+	pcf->skip_common_mtrr = 1;
+
 	/* Cache RAM as WB from 0 -> CACHE_TMP_RAMTOP. */
 	postcar_frame_add_mtrr(pcf, 0, CACHE_TMP_RAMTOP, MTRR_TYPE_WRBACK);
 

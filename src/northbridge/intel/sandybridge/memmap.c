@@ -61,13 +61,6 @@ void fill_postcar_frame(struct postcar_frame *pcf)
 {
 	uintptr_t top_of_ram;
 
-
-	/* Cache the ROM as WP just below 4GiB. */
-	postcar_frame_add_romcache(pcf, MTRR_TYPE_WRPROT);
-
-	/* Cache RAM as WB from 0 -> CACHE_TMP_RAMTOP. */
-	postcar_frame_add_mtrr(pcf, 0, CACHE_TMP_RAMTOP, MTRR_TYPE_WRBACK);
-
 	top_of_ram = (uintptr_t)cbmem_top();
 	/* Cache 8MiB below the top of ram. On sandybridge systems the top of
 	 * ram under 4GiB is the start of the TSEG region. It is required to

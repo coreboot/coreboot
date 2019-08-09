@@ -1,8 +1,4 @@
-ifeq ($(CONFIG_ARCH_ROMSTAGE_X86_32)$(CONFIG_ARCH_ROMSTAGE_X86_64),y)
-ifeq ($(CONFIG_CAR_GLOBAL_MIGRATION),y)
-romstage-$(CONFIG_CACHE_AS_RAM) += car.c
-endif
-endif
+romstage-$(CONFIG_CAR_GLOBAL_MIGRATION) += car.c
 
 subdirs-y += pae
 subdirs-$(CONFIG_PARALLEL_MP) += name

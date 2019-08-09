@@ -284,7 +284,7 @@
 /* x86 specific. Indicates that the current stage is running with cache-as-ram
  * enabled from the beginning of the stage in C code. */
 #if defined(__PRE_RAM__)
-#define ENV_CACHE_AS_RAM CONFIG(CACHE_AS_RAM)
+#define ENV_CACHE_AS_RAM CONFIG(ARCH_X86)
 #else
 #define ENV_CACHE_AS_RAM 0
 #endif

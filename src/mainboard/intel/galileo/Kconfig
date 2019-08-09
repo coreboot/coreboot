@@ -100,7 +100,6 @@ config FSP_DEBUG_ALL
 	select DISPLAY_ESRAM_LAYOUT
 	select DISPLAY_FSP_CALLS_AND_STATUS
 	select DISPLAY_FSP_HEADER
-	select POSTCAR_CONSOLE
 	select VERIFY_HOBS
 	help
 	  Turn on debug support to display HOBS, MTRRS, SMM_MEMORY_MAP, UPD_DATA

@@ -13,7 +13,7 @@ config BOOTBLOCK_CONSOLE
 config POSTCAR_CONSOLE
 	bool "Enable console output during postcar."
 	depends on POSTCAR_STAGE
-	default n
+	default y
 	help
 	  Use console during the postcar if supported
 

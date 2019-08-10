@@ -268,7 +268,7 @@ static void busmaster_disable_on_bus(int bus)
 }
 
 
-static void southbridge_smi_sleep(unsigned int node, smm_state_save_area_t *state_save)
+static void southbridge_smi_sleep(void)
 {
 	u8 reg8;
 	u32 reg32;
@@ -341,7 +341,7 @@ static void southbridge_smi_sleep(unsigned int node, smm_state_save_area_t *stat
 	}
 }
 
-static void southbridge_smi_apmc(unsigned int node, smm_state_save_area_t *state_save)
+static void southbridge_smi_apmc(void)
 {
 	u32 pmctrl;
 	u8 reg8;
@@ -403,7 +403,7 @@ static void southbridge_smi_apmc(unsigned int node, smm_state_save_area_t *state
 	}
 }
 
-static void southbridge_smi_pm1(unsigned int node, smm_state_save_area_t *state_save)
+static void southbridge_smi_pm1(void)
 {
 	u16 pm1_sts;
 
@@ -421,7 +421,7 @@ static void southbridge_smi_pm1(unsigned int node, smm_state_save_area_t *state_
 	}
 }
 
-static void southbridge_smi_gpe0(unsigned int node, smm_state_save_area_t *state_save)
+static void southbridge_smi_gpe0(void)
 {
 	u32 gpe0_sts;
 
@@ -429,7 +429,7 @@ static void southbridge_smi_gpe0(unsigned int node, smm_state_save_area_t *state
 	dump_gpe0_status(gpe0_sts);
 }
 
-static void southbridge_smi_gpi(unsigned int node, smm_state_save_area_t *state_save)
+static void southbridge_smi_gpi(void)
 {
 	u16 reg16;
 	reg16 = inw(pmbase + ALT_GP_SMI_STS);
@@ -443,7 +443,7 @@ static void southbridge_smi_gpi(unsigned int node, smm_state_save_area_t *state_
 		printk(BIOS_DEBUG, "GPI (mask %04x)\n",reg16);
 }
 
-static void southbridge_smi_mc(unsigned int node, smm_state_save_area_t *state_save)
+static void southbridge_smi_mc(void)
 {
 	u32 reg32;
 
@@ -458,7 +458,7 @@ static void southbridge_smi_mc(unsigned int node, smm_state_save_area_t *state_s
 
 
 
-static void southbridge_smi_tco(unsigned int node, smm_state_save_area_t *state_save)
+static void southbridge_smi_tco(void)
 {
 	u32 tco_sts;
 
@@ -495,7 +495,7 @@ static void southbridge_smi_tco(unsigned int node, smm_state_save_area_t *state_
 	}
 }
 
-static void southbridge_smi_periodic(unsigned int node, smm_state_save_area_t *state_save)
+static void southbridge_smi_periodic(void)
 {
 	u32 reg32;
 
@@ -508,7 +508,7 @@ static void southbridge_smi_periodic(unsigned int node, smm_state_save_area_t *s
 	printk(BIOS_DEBUG, "Periodic SMI.\n");
 }
 
-static void southbridge_smi_monitor(unsigned int node, smm_state_save_area_t *state_save)
+static void southbridge_smi_monitor(void)
 {
 #define IOTRAP(x) (trap_sts & (1 << x))
 #if 0
@@ -564,8 +564,7 @@ static void southbridge_smi_monitor(unsigned int node, smm_state_save_area_t *st
 #undef IOTRAP
 }
 
-typedef void (*smi_handler_t)(unsigned int node,
-		smm_state_save_area_t *state_save);
+typedef void (*smi_handler_t)(void);
 
 smi_handler_t southbridge_smi[32] = {
 	NULL,			  //  [0] reserved
@@ -627,9 +626,9 @@ void southbridge_smi_handler(unsigned int node, smm_state_save_area_t *state_sav
 	/* Call SMI sub handler for each of the status bits */
 	for (i = 0; i < 31; i++) {
 		if (smi_sts & (1 << i)) {
-			if (southbridge_smi[i])
-				southbridge_smi[i](node, state_save);
-			else {
+			if (southbridge_smi[i]) {
+				southbridge_smi[i]();
+			} else {
 				printk(BIOS_DEBUG, "SMI_STS[%d] occurred, but no "
 						"handler available.\n", i);
 				dump = 1;

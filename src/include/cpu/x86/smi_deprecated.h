@@ -37,12 +37,6 @@ typedef struct {
 	};
 } smm_state_save_area_t;
 
-#if !CONFIG(SMM_TSEG)
-void cpu_smi_handler(unsigned int node, smm_state_save_area_t *state_save);
-void northbridge_smi_handler(unsigned int node, smm_state_save_area_t *state_save);
-void southbridge_smi_handler(unsigned int node, smm_state_save_area_t *state_save);
-#endif
-
 #if CONFIG(PARALLEL_MP) || !CONFIG(HAVE_SMI_HANDLER)
 /* Empty stubs for platforms without SMI handlers. */
 static inline void smm_init(void) { }

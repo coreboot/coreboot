@@ -194,9 +194,7 @@ void smi_handler(u32 smm_revision)
 	}
 
 	/* Call chipset specific SMI handlers. */
-	cpu_smi_handler(node, &state_save);
-	northbridge_smi_handler(node, &state_save);
-	southbridge_smi_handler(node, &state_save);
+	southbridge_smi_handler();
 
 	smi_restore_pci_address();
 
@@ -211,12 +209,7 @@ void smi_handler(u32 smm_revision)
  * weak relocations w/o a symbol have a 0 address which is where the modules
  * are linked at. */
 int __weak mainboard_io_trap_handler(int smif) { return 0; }
-void __weak cpu_smi_handler(unsigned int node,
-	smm_state_save_area_t *state_save) {}
-void __weak northbridge_smi_handler(unsigned int node,
-	smm_state_save_area_t *state_save) {}
-void __weak southbridge_smi_handler(unsigned int node,
-	smm_state_save_area_t *state_save) {}
+void __weak southbridge_smi_handler(void) {}
 void __weak mainboard_smi_gpi(u32 gpi_sts) {}
 int __weak mainboard_smi_apmc(u8 data) { return 0; }
 void __weak mainboard_smi_sleep(u8 slp_typ) {}

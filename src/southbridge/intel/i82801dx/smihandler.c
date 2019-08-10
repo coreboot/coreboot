@@ -20,7 +20,6 @@
 #include <console/console.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/smm.h>
-#include <cpu/x86/smi_deprecated.h>
 #include <device/pci_def.h>
 #include "i82801dx.h"
 
@@ -604,10 +603,8 @@ smi_handler_t southbridge_smi[32] = {
 
 /**
  * @brief Interrupt handler for SMI#
- * @param node
- * @param state_save
  */
-void southbridge_smi_handler(unsigned int node, smm_state_save_area_t *state_save)
+void southbridge_smi_handler(void)
 {
 	int i, dump = 0;
 	u32 smi_sts;
@@ -640,5 +637,4 @@ void southbridge_smi_handler(unsigned int node, smm_state_save_area_t *state_sav
 	if (dump) {
 		dump_smi_status(smi_sts);
 	}
-
 }

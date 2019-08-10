@@ -47,11 +47,9 @@ int mainboard_io_trap_handler(int smif);
 
 void southbridge_smi_set_eos(void);
 
-#if CONFIG(SMM_TSEG)
 void cpu_smi_handler(void);
 void northbridge_smi_handler(void);
 void southbridge_smi_handler(void);
-#endif
 
 void smm_setup_structures(void *gnvs, void *tcg, void *smi1);
 

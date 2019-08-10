@@ -23,7 +23,6 @@
 #include <device/pci_def.h>
 #include <cpu/x86/smm.h>
 #include <cpu/intel/em64t101_save_state.h>
-#include <cpu/x86/smi_deprecated.h>
 #include <elog.h>
 #include <halt.h>
 #include <pc80/mc146818rtc.h>
@@ -477,14 +476,8 @@ static smi_handler_t southbridge_smi[32] = {
 
 /**
  * @brief Interrupt handler for SMI#
- * @param node
- * @param state_save
  */
-#if CONFIG(SMM_TSEG)
 void southbridge_smi_handler(void)
-#else
-void cpu_smi_handler(unsigned int node, smm_state_save_area_t *state_save)
-#endif
 {
 	int i, dump = 0;
 	u32 smi_sts;

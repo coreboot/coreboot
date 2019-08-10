@@ -23,6 +23,7 @@
 #include <device/pci_ops.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/smm.h>
+#include <cpu/x86/smi_deprecated.h>
 #include <string.h>
 #include "i82801dx.h"
 

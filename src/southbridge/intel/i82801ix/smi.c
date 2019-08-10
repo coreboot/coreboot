@@ -24,6 +24,7 @@
 #include <arch/acpi.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/smm.h>
+#include <cpu/x86/smi_deprecated.h>
 #include <string.h>
 #include <southbridge/intel/common/pmutil.h>
 #include "i82801ix.h"

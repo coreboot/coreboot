@@ -19,6 +19,7 @@
  */
 
 #include <console/console.h>
+#include <cpu/x86/smm.h>
 #include <amdblocks/acpimmio.h>
 #include <soc/southbridge.h>
 #include <soc/smi.h>

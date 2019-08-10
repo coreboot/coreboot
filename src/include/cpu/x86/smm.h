@@ -41,9 +41,6 @@
 #define APM_CNT_ELOG_GSMI	0xef
 #define APM_STS		0xb3
 
-/* SMI handler function prototypes */
-void smi_handler(u32 smm_revision);
-
 void io_trap_handler(int smif);
 int southbridge_io_trap_handler(int smif);
 int mainboard_io_trap_handler(int smif);
@@ -55,6 +52,8 @@ void cpu_smi_handler(void);
 void northbridge_smi_handler(void);
 void southbridge_smi_handler(void);
 #endif
+
+void smm_setup_structures(void *gnvs, void *tcg, void *smi1);
 
 void mainboard_smi_gpi(u32 gpi_sts);
 int  mainboard_smi_apmc(u8 data);

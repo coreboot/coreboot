@@ -28,6 +28,7 @@
 #include <arch/ioapic.h>
 #include <arch/acpi.h>
 #include <arch/cpu.h>
+#include <cpu/x86/smm.h>
 #include <elog.h>
 #include <string.h>
 #include <cbmem.h>

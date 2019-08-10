@@ -18,9 +18,10 @@
  * Utilities for SMM setup
  */
 
-#include "smi.h"
-
 #include <console/console.h>
+#include <cpu/x86/smm.h>
+
+#include "smi.h"
 
 void smm_setup_structures(void *gnvs, void *tcg, void *smi1)
 {

@@ -24,6 +24,7 @@
 #include <program_loading.h>
 #include <romstage_handoff.h>
 #include <symbols.h>
+#include <cpu/x86/smm.h>
 
 #if ENV_RAMSTAGE || ENV_POSTCAR
 

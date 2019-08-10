@@ -21,6 +21,7 @@
 #include <cpu/x86/cr.h>
 #include <cpu/x86/gdt.h>
 #include <cpu/x86/lapic.h>
+#include <cpu/x86/smi_deprecated.h>
 #include <arch/acpi.h>
 #include <delay.h>
 #include <halt.h>
@@ -590,14 +591,3 @@ void initialize_cpus(struct bus *cpu_bus)
 	if (is_smp_boot())
 		recover_lowest_1M();
 }
-
-#if !CONFIG(HAVE_SMI_HANDLER)
-/* Empty stubs for platforms without SMI handlers. */
-void smm_init(void)
-{
-}
-
-void smm_init_completion(void)
-{
-}
-#endif

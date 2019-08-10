@@ -21,6 +21,7 @@
 #include <cpu/amd/msr.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/smm.h>
+#include <cpu/x86/smi_deprecated.h>
 #include <string.h>
 
 void smm_init(void)

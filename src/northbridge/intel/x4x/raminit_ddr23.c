@@ -2156,6 +2156,15 @@ void do_raminit(struct sysinfo *s, int fast_boot)
 		MCHBAR32_OR(0x400*ch + 0x268, 0xc0000000);
 	}
 
+	// Dummy reads
+	if (s->boot_path == BOOT_PATH_NORMAL) {
+		FOR_EACH_POPULATED_RANK(s->dimms, ch, r) {
+			for (bank = 0; bank < 4; bank++)
+				read32((u32 *)(test_address(ch, r) | 0x800000 | (bank << 12)));
+		}
+	}
+	printk(BIOS_DEBUG, "Done dummy reads\n");
+
 	// Receive enable
 	sdram_program_receive_enable(s, fast_boot);
 	printk(BIOS_DEBUG, "Done rcven\n");
@@ -2170,28 +2179,6 @@ void do_raminit(struct sysinfo *s, int fast_boot)
 	MCHBAR8_OR(0x5dc, 0x80);
 	MCHBAR8_AND(0x5dc, ~0x80);
 	MCHBAR8_OR(0x5dc, 0x80);
-
-	// Dummy writes / reads
-	if (s->boot_path == BOOT_PATH_NORMAL) {
-		volatile u32 data;
-		FOR_EACH_POPULATED_RANK(s->dimms, ch, r) {
-			for (bank = 0; bank < 4; bank++) {
-				reg32 = test_address(ch, r) |
-					(bank << 12);
-				write32((u32 *)reg32, 0xffffffff);
-				data = read32((u32 *)reg32);
-				printk(BIOS_DEBUG, "Wrote ones,");
-				printk(BIOS_DEBUG, "  Read: [0x%08x]=0x%08x\n",
-					reg32, data);
-				write32((u32 *)reg32, 0x00000000);
-				data = read32((u32 *)reg32);
-				printk(BIOS_DEBUG, "Wrote zeros,");
-				printk(BIOS_DEBUG, " Read: [0x%08x]=0x%08x\n",
-					reg32, data);
-			}
-		}
-	}
-	printk(BIOS_DEBUG, "Done dummy reads\n");
 
 	// XXX tRD
 

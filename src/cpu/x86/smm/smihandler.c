@@ -18,6 +18,7 @@
 #include <console/console.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/smm.h>
+#include <cpu/x86/smi_deprecated.h>
 
 #if CONFIG(SPI_FLASH_SMM)
 #include <spi-generic.h>

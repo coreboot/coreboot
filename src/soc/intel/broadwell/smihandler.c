@@ -23,6 +23,7 @@
 #include <cpu/x86/cache.h>
 #include <device/pci_def.h>
 #include <cpu/x86/smm.h>
+#include <cpu/intel/em64t101_save_state.h>
 #include <spi-generic.h>
 #include <elog.h>
 #include <halt.h>

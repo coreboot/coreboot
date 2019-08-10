@@ -18,6 +18,7 @@
 #define INTEL_COMMON_PMUTIL_H
 
 #include <cpu/x86/smm.h>
+#include <cpu/intel/em64t101_save_state.h>
 
 #define D31F0_PMBASE		0x40
 #define D31F0_GEN_PMCON_1	0xa0

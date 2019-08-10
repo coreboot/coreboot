@@ -23,6 +23,7 @@
 #include <cpu/x86/mp.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/smm.h>
+#include <cpu/intel/em64t101_save_state.h>
 #include <console/console.h>
 #include <device/pci_ops.h>
 #include <soc/lpc.h>

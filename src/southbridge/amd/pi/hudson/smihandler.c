@@ -20,6 +20,7 @@
 
 #include <arch/io.h>
 #include <cpu/x86/smm.h>
+#include <cpu/x86/smi_deprecated.h>
 
 #include "hudson.h"
 #include "smi.h"

@@ -30,6 +30,7 @@
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/smm.h>
+#include <cpu/intel/em64t100_save_state.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <fsp/api.h>

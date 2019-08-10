@@ -15,6 +15,7 @@
  */
 
 #include <cpu/x86/smm.h>
+#include <cpu/intel/em64t100_save_state.h>
 #include <intelblocks/smihandler.h>
 #include <soc/gpio.h>
 #include <soc/iomap.h>

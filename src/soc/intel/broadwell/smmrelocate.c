@@ -24,6 +24,7 @@
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/smm.h>
+#include <cpu/intel/em64t101_save_state.h>
 #include <console/console.h>
 #include <soc/cpu.h>
 #include <soc/msr.h>

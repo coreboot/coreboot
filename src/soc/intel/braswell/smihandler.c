@@ -21,6 +21,7 @@
 #include <console/console.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/smm.h>
+#include <cpu/intel/em64t100_save_state.h>
 #include <device/pci_def.h>
 #include <elog.h>
 #include <soc/nvs.h>

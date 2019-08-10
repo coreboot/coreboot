@@ -36,9 +36,9 @@
 #define IPMI_KCS_STATE_WRITE 0x02
 #define IPMI_KCS_STATE_ERROR 0x03
 
-#define IPMI_CMD(_x) ((_x) + 1)
+#define IPMI_CMD(_x) ((_x) + CONFIG_IPMI_KCS_REGISTER_SPACING)
 #define IPMI_DATA(_x) ((_x))
-#define IPMI_STAT(_x) ((_x) + 1)
+#define IPMI_STAT(_x) ((_x) + CONFIG_IPMI_KCS_REGISTER_SPACING)
 
 static unsigned char ipmi_kcs_status(int port)
 {

@@ -1,3 +1,10 @@
 config IPMI_KCS
 	bool
 	default n
+
+config IPMI_KCS_REGISTER_SPACING
+	int
+	default 1
+	depends on IPMI_KCS
+	help
+	  KCS status and command register IO port address spacing

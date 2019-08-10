@@ -365,7 +365,7 @@ find_llc_subleaf:
 	jnz	find_llc_subleaf
 
 	/*
-	 * Set MSR 0xC91 IA32_L3_MASK_! = 0xE/0xFE/0xFFE/0xFFFE
+	 * Set MSR 0xC91 IA32_L3_MASK_1 = 0xE/0xFE/0xFFE/0xFFFE
 	 * for 4/8/16 way of LLC
 	*/
 	shr	$22, %ebx

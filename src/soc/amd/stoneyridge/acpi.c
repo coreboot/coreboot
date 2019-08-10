@@ -79,7 +79,7 @@ void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
 	fadt->preferred_pm_profile = FADT_PM_PROFILE;
 	fadt->sci_int = 9;		/* IRQ 09 - ACPI SCI */
 
-	if (CONFIG(HAVE_SMI_HANDLER)) {
+	if (permanent_smi_handler()) {
 		fadt->smi_cmd = APM_CNT;
 		fadt->acpi_enable = APM_CNT_ACPI_ENABLE;
 		fadt->acpi_disable = APM_CNT_ACPI_DISABLE;

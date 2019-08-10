@@ -340,7 +340,7 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	fadt->sci_int = acpi_sci_irq();
 
 	/* TODO: enabled SMM mode switch when SMM handlers are set up. */
-	if (0 && CONFIG(HAVE_SMI_HANDLER)) {
+	if (0 && permanent_smi_handler()) {
 		fadt->smi_cmd = APM_CNT;
 		fadt->acpi_enable = APM_CNT_ACPI_ENABLE;
 		fadt->acpi_disable = APM_CNT_ACPI_DISABLE;

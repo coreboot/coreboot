@@ -49,7 +49,7 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 	fadt->preferred_pm_profile = FADT_PM_PROFILE;
 	fadt->sci_int = 9;		/* HUDSON - IRQ 09 - ACPI SCI */
 
-	if (CONFIG(HAVE_SMI_HANDLER)) {
+	if (permanent_smi_handler()) {
 		fadt->smi_cmd = ACPI_SMI_CTL_PORT;
 		fadt->acpi_enable = ACPI_SMI_CMD_ENABLE;
 		fadt->acpi_disable = ACPI_SMI_CMD_DISABLE;

@@ -133,7 +133,7 @@ void acpi_fill_in_fadt(acpi_fadt_t *fadt)
 
 	fadt->sci_int = acpi_sci_irq();
 
-	if (CONFIG(HAVE_SMI_HANDLER)) {
+	if (permanent_smi_handler()) {
 		fadt->smi_cmd = APM_CNT;
 		fadt->acpi_enable = APM_CNT_ACPI_ENABLE;
 		fadt->acpi_disable = APM_CNT_ACPI_DISABLE;

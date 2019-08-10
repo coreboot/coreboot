@@ -36,7 +36,7 @@ void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
 	fadt->preferred_pm_profile = 0; /* unspecified */
 	fadt->sci_int = 9;
 
-	if (CONFIG(HAVE_SMI_HANDLER)) {
+	if (permanent_smi_handler()) {
 		/* TODO: SMI handler is not implemented. */
 		fadt->smi_cmd = 0x00;
 	}

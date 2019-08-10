@@ -43,7 +43,7 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 	fadt->preferred_pm_profile = PM_MOBILE;
 	fadt->sci_int = 0x9;
 
-	if (CONFIG(HAVE_SMI_HANDLER)) {
+	if (permanent_smi_handler()) {
 		/* Do not advertise SMI even if installed. */
 		fadt->smi_cmd = 0;
 		fadt->acpi_enable = 0;

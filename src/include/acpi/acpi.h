@@ -1019,6 +1019,13 @@ int acpi_get_sleep_type(void);
 /* Read and clear GPE status */
 int acpi_get_gpe(int gpe);
 
+/* Once we enter payload, is SMI handler installed and capable of
+   responding to APM_CNT Advanced Power Management Control commands. */
+static inline int permanent_smi_handler(void)
+{
+	return CONFIG(HAVE_SMI_HANDLER);
+}
+
 static inline int acpi_s3_resume_allowed(void)
 {
 	return CONFIG(HAVE_ACPI_RESUME);

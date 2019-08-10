@@ -148,7 +148,7 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 
 	fadt->x_gpe1_blk.space_id = 1;
 
-	if (CONFIG(HAVE_SMI_HANDLER)) {
+	if (permanent_smi_handler()) {
 		fadt->smi_cmd = APM_CNT;
 		fadt->acpi_enable = APM_CNT_ACPI_ENABLE;
 		fadt->acpi_disable = APM_CNT_ACPI_DISABLE;

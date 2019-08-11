@@ -111,7 +111,7 @@ typedef struct {
 	int		txt_enabled;
 	int		cores;
 	gmch_gfx_t	gfx_type;
-	int		max_ddr2_mhz;
+	int		max_ddr2_mt;
 	int		max_ddr3_mt;
 	fsb_clock_t	max_fsb;
 	int		max_fsb_mhz;

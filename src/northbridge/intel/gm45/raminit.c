@@ -57,8 +57,8 @@ void get_gmch_info(sysinfo_t *sysinfo)
 		printk(BIOS_SPEW, "AMT enabled\n");
 	}
 
-	sysinfo->max_ddr2_mhz = (capid & (1<<(53-32)))?667:800;
-	printk(BIOS_SPEW, "capable of DDR2 of %d MHz or lower\n", sysinfo->max_ddr2_mhz);
+	sysinfo->max_ddr2_mt = (capid & (1<<(53-32)))?667:800;
+	printk(BIOS_SPEW, "capable of DDR2 of %d MHz or lower\n", sysinfo->max_ddr2_mt);
 
 	if (!(capid & (1<<(48-32)))) {
 		printk(BIOS_SPEW, "VT-d enabled\n");
@@ -224,6 +224,58 @@ static int test_dimm(sysinfo_t *const sysinfo,
 }
 
 /* This function dies if dimm is unsuitable for the chipset. */
+static void verify_ddr2_dimm(sysinfo_t *const sysinfo, int dimm)
+{
+	if (!test_dimm(sysinfo, dimm, 20, 0x04, 0x04))
+		die("Chipset only supports SO-DIMM\n");
+
+	if (!test_dimm(sysinfo, dimm,  6, 0xff, 0x40) ||
+	    !test_dimm(sysinfo, dimm, 11, 0xff, 0x00))
+		die("Chipset doesn't support ECC RAM\n");
+
+	if (!test_dimm(sysinfo, dimm,  5, 0x07, 0) &&
+	    !test_dimm(sysinfo, dimm,  5, 0x07, 1))
+		die("Chipset wants single or dual ranked DIMMs\n");
+
+	/*
+	 * Generally supports:
+	 *   x8/x16
+	 *   4 or 8 banks
+	 *   10 column address bits
+	 *   13, 14 or 15 (x8 only) row address bits
+	 *
+	 * FIXME: There seems to be an exception for 256Gb x16 chips. Not
+	 *        covered by the numbers above (9 column address bits?).
+	 */
+	if (!test_dimm(sysinfo, dimm, 13, 0xff, 8) &&
+	    !test_dimm(sysinfo, dimm, 13, 0xff, 16))
+		die("Chipset requires x8 or x16 width\n");
+
+	if (!test_dimm(sysinfo, dimm, 17, 0xff, 4) &&
+	    !test_dimm(sysinfo, dimm, 17, 0xff, 8))
+		die("Chipset requires 4 or 8 banks\n");
+
+	if (!test_dimm(sysinfo, dimm,  4, 0xff, 10))
+		die("Chipset requires 10 column address bits\n");
+
+	if (!test_dimm(sysinfo, dimm, 3, 0xff, 13) &&
+	    !test_dimm(sysinfo, dimm, 3, 0xff, 14) &&
+	    !(test_dimm(sysinfo, dimm, 3, 0xff, 15) &&
+	      test_dimm(sysinfo, dimm, 13, 0xff, 8)))
+		die("Chipset requires 13, 14 or 15 (with x8) row address bits");
+}
+
+/* For every detected DIMM, test if it's suitable for the chipset. */
+static void verify_ddr2(sysinfo_t *const sysinfo, int mask)
+{
+	int cur;
+	for (cur = 0; mask; mask >>= 1, ++cur) {
+		if (mask & 1)
+			verify_ddr2_dimm(sysinfo, cur);
+	}
+}
+
+/* This function dies if dimm is unsuitable for the chipset. */
 static void verify_ddr3_dimm(sysinfo_t *const sysinfo, int dimm)
 {
 	if (!test_dimm(sysinfo, dimm, 3, 15, 3))
@@ -281,7 +333,7 @@ static void verify_ddr3(sysinfo_t *const sysinfo, int mask)
 
 typedef struct {
 	int dimm_mask;
-	struct {
+	struct spd_dimminfo {
 		unsigned int rows;
 		unsigned int cols;
 		unsigned int chip_capacity;
@@ -299,6 +351,105 @@ typedef struct {
 		unsigned int raw_card;
 	} channel[2];
 } spdinfo_t;
+/**
+ * \brief Decode SPD tck cycle time
+ *
+ * Decodes a raw SPD data from a DDR2 DIMM.
+ * Returns cycle time in 1/256th ns.
+ */
+static unsigned int spd_decode_tck_time(u8 c)
+{
+	u8 high, low;
+
+	high = c >> 4;
+
+	switch (c & 0xf) {
+	case 0xa:
+		low = 25;
+		break;
+	case 0xb:
+		low = 33;
+		break;
+	case 0xc:
+		low = 66;
+		break;
+	case 0xd:
+		low = 75;
+		break;
+	case 0xe:
+	case 0xf:
+		die("Invalid tck setting. lower nibble is 0x%x\n", c & 0xf);
+	default:
+		low = (c & 0xf) * 10;
+	}
+
+	return ((high * 100 + low) << 8) / 100;
+}
+static void collect_ddr2_dimm(struct spd_dimminfo *const di, const int smb_addr)
+{
+	static const int tCK_offsets[] = { 9, 23, 25 };
+
+	di->rows = smbus_read_byte(smb_addr, 3);
+	di->cols = smbus_read_byte(smb_addr, 4);
+	di->banks = smbus_read_byte(smb_addr, 17);
+	di->width = smbus_read_byte(smb_addr, 13) / 8;	/* in bytes */
+
+	/* 0: 256Mb .. 3: 2Gb */
+	di->chip_capacity =
+		di->rows + di->cols
+		+ (di->width == 1 ? 3 : 4)	/* 1B: 2^3 bits, 2B: 2^4 bits */
+		+ (di->banks == 4 ? 2 : 3)	/* 4 banks: 2^2, 8 banks: 2^3 */
+		- 28;
+
+	di->page_size = di->width * (1 << di->cols);	/* in bytes */
+
+	di->ranks = (smbus_read_byte(smb_addr, 5) & 7) + 1;
+
+	di->cas_latencies = smbus_read_byte(smb_addr, 18);
+	/* assuming tCKmin for the highest CAS is the absolute minimum */
+	di->tCKmin = spd_decode_tck_time(smbus_read_byte(smb_addr, 9));
+
+	/* try to reconstruct tAAmin from available data (I hate DDR2 SPDs) */
+	unsigned int i;
+	unsigned int cas = 7;
+	di->tAAmin = UINT32_MAX; /* we don't have UINT_MAX? */
+	for (i = 0; i < ARRAY_SIZE(tCK_offsets); ++i, --cas) {
+		for (; cas > 1; --cas)
+			if (di->cas_latencies & (1 << cas))
+				break;
+		if (cas <= 1)
+			break;
+
+		const unsigned int tCK_enc =
+			smbus_read_byte(smb_addr, tCK_offsets[i]);
+		const unsigned int tAA = spd_decode_tck_time(tCK_enc) * cas;
+		if (tAA < di->tAAmin)
+			di->tAAmin = tAA;
+	}
+
+	/* convert to 1/256ns */
+	di->tRAS = smbus_read_byte(smb_addr, 30) << 8;	/* given in ns */
+	di->tRP  = smbus_read_byte(smb_addr, 27) << 6;	/* given in 1/4ns */
+	di->tRCD = smbus_read_byte(smb_addr, 29) << 6;	/* given in 1/4ns */
+	di->tWR  = smbus_read_byte(smb_addr, 36) << 6;	/* given in 1/4ns */
+
+	di->raw_card = 0;	/* Use same path as for DDR3 type A. */
+}
+/*
+ * This function collects RAM characteristics from SPD, assuming that RAM
+ * is generally within chipset's requirements, since verify_ddr2() passed.
+ */
+static void collect_ddr2(sysinfo_t *const sysinfo, spdinfo_t *const config)
+{
+	int cur;
+	for (cur = 0; cur < 2; ++cur) {
+		if (config->dimm_mask & (1 << (2 * cur))) {
+			collect_ddr2_dimm(&config->channel[cur],
+					  sysinfo->spd_map[2 * cur]);
+		}
+	}
+}
+
 /*
  * This function collects RAM characteristics from SPD, assuming that RAM
  * is generally within chipset's requirements, since verify_ddr3() passed.
@@ -325,18 +476,18 @@ static void collect_ddr3(sysinfo_t *const sysinfo, spdinfo_t *const config)
 			config->channel[cur].cas_latencies =
 				((smbus_read_byte(smb_addr, 15) << 8) | smbus_read_byte(smb_addr, 14))
 				<< 4; /* so bit x is CAS x */
-			config->channel[cur].tAAmin = smbus_read_byte(smb_addr, 16); /* in MTB */
-			config->channel[cur].tCKmin = smbus_read_byte(smb_addr, 12); /* in MTB */
+			config->channel[cur].tAAmin = smbus_read_byte(smb_addr, 16) * 32; /* convert from MTB to 1/256 ns */
+			config->channel[cur].tCKmin = smbus_read_byte(smb_addr, 12) * 32; /* convert from MTB to 1/256 ns */
 
 			config->channel[cur].width = smbus_read_byte(smb_addr, 7) & 7;
 			config->channel[cur].page_size = config->channel[cur].width *
 								(1 << config->channel[cur].cols); /* in Bytes */
 
 			tmp = smbus_read_byte(smb_addr, 21);
-			config->channel[cur].tRAS = smbus_read_byte(smb_addr, 22) | ((tmp & 0xf) << 8);
-			config->channel[cur].tRP = smbus_read_byte(smb_addr, 20);
-			config->channel[cur].tRCD = smbus_read_byte(smb_addr, 18);
-			config->channel[cur].tWR = smbus_read_byte(smb_addr, 17);
+			config->channel[cur].tRAS = (smbus_read_byte(smb_addr, 22) | ((tmp & 0xf) << 8)) * 32;
+			config->channel[cur].tRP = smbus_read_byte(smb_addr, 20) * 32;
+			config->channel[cur].tRCD = smbus_read_byte(smb_addr, 18) * 32;
+			config->channel[cur].tWR = smbus_read_byte(smb_addr, 17) * 32;
 
 			config->channel[cur].raw_card = smbus_read_byte(smb_addr, 62) & 0x1f;
 		}
@@ -418,10 +569,13 @@ static unsigned int find_common_clock_cas(sysinfo_t *const sysinfo,
 		case FSB_CLOCK_667MHz:	fsb_mhz =  667; break;
 	}
 
-	unsigned int clock = 8000 / tCKmin;
-	if ((clock > sysinfo->max_ddr3_mt / 2) || (clock > fsb_mhz / 2)) {
-		int new_clock = MIN(sysinfo->max_ddr3_mt / 2, fsb_mhz / 2);
-		printk(BIOS_SPEW, "DIMMs support %d MHz, but chipset only runs at up to %d. Limiting...\n",
+	unsigned int clock = 256000 / tCKmin;
+	const unsigned int max_ddr_clock = (sysinfo->spd_type == DDR2)
+					   ? sysinfo->max_ddr2_mt / 2
+					   : sysinfo->max_ddr3_mt / 2;
+	if ((clock > max_ddr_clock) || (clock > fsb_mhz / 2)) {
+		int new_clock = MIN(max_ddr_clock, fsb_mhz / 2);
+		printk(BIOS_INFO, "DIMMs support %d MHz, but chipset only runs at up to %d. Limiting...\n",
 			clock, new_clock);
 		clock = new_clock;
 	}
@@ -433,13 +587,13 @@ static unsigned int find_common_clock_cas(sysinfo_t *const sysinfo,
 	while (1) {
 		if (!clock)
 			die("Couldn't find compatible clock / CAS settings.\n");
-		tCKproposed = 8000 / clock;
+		tCKproposed = 256000 / clock;
 		CAS = DIV_ROUND_UP(tAAmin, tCKproposed);
 		printk(BIOS_SPEW, "Trying CAS %u, tCK %u.\n", CAS, tCKproposed);
 		for (; CAS <= DDR3_MAX_CAS; ++CAS)
 			if (cas_latencies & (1 << CAS))
 				break;
-		if ((CAS <= DDR3_MAX_CAS) && (CAS * tCKproposed < 160)) {
+		if ((CAS <= DDR3_MAX_CAS) && (CAS * tCKproposed < 32 * 160)) {
 			/* Found good CAS. */
 			printk(BIOS_SPEW, "Found compatible clock / CAS pair: %u / %u.\n", clock, CAS);
 			break;
@@ -533,7 +687,9 @@ static void calculate_derived_timings(sysinfo_t *const sysinfo,
 
 	/* Refresh rate is fixed. */
 	unsigned int tWL;
-	if (sysinfo->selected_timings.mem_clock == MEM_CLOCK_1067MT) {
+	if (sysinfo->spd_type == DDR2) {
+		tWL = sysinfo->selected_timings.CAS - 1;
+	} else if (sysinfo->selected_timings.mem_clock == MEM_CLOCK_1067MT) {
 		tWL = 6;
 	} else {
 		tWL = 5;
@@ -594,7 +750,8 @@ static void collect_dimm_config(sysinfo_t *const sysinfo)
 	printk(BIOS_SPEW, "DDR mask %x, DDR %d\n", spdinfo.dimm_mask, sysinfo->spd_type);
 
 	if (sysinfo->spd_type == DDR2) {
-		die("DDR2 not supported at this time.\n");
+		verify_ddr2(sysinfo, spdinfo.dimm_mask);
+		collect_ddr2(sysinfo, &spdinfo);
 	} else if (sysinfo->spd_type == DDR3) {
 		verify_ddr3(sysinfo, spdinfo.dimm_mask);
 		collect_ddr3(sysinfo, &spdinfo);
@@ -621,7 +778,7 @@ static void collect_dimm_config(sysinfo_t *const sysinfo)
 				spdinfo.channel[i].width, spdinfo.channel[i].page_size,
 				spdinfo.channel[i].banks, spdinfo.channel[i].ranks,
 				spdinfo.channel[i].tAAmin, spdinfo.channel[i].tCKmin,
-				8000 / spdinfo.channel[i].tCKmin, spdinfo.channel[i].cas_latencies);
+				256000 / spdinfo.channel[i].tCKmin, spdinfo.channel[i].cas_latencies);
 		}
 	}
 
@@ -660,6 +817,9 @@ static void collect_dimm_config(sysinfo_t *const sysinfo)
 		sysinfo->selected_timings.channel_mode = CHANNEL_MODE_DUAL_INTERLEAVED;
 	else
 		sysinfo->selected_timings.channel_mode = CHANNEL_MODE_SINGLE;
+
+	if (sysinfo->spd_type == DDR2)
+		die("DDR2 support not complete yet\n");
 }
 
 static void reset_on_bad_warmboot(void)
@@ -825,6 +985,7 @@ static void configure_dram_control_mode(const timings_t *const timings, const di
 			cxdrc |= CxDRC0_RANKEN(r);
 		cxdrc = (cxdrc & ~CxDRC0_RMS_MASK) |
 				/* Always 7.8us for DDR3: */
+				/* FIXME DDR2: SPD+12? */
 				CxDRC0_RMS_78US;
 		mchbar_write32(mchbar, cxdrc);
 
@@ -992,6 +1153,7 @@ static void dram_program_timings(const timings_t *const timings)
 		mchbar_write32(CxDRT5_MCHBAR(i), reg);
 
 		reg = mchbar_read32(CxDRT6_MCHBAR(i));
+		/* FIXME DDR2: SPD+12? */
 		reg = (reg & ~(0xffff << 16)) | (0x066a << 16); /* always 7.8us refresh rate for DDR3 */
 		reg |= (1 <<  2);
 		mchbar_write32(CxDRT6_MCHBAR(i), reg);

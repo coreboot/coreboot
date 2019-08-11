@@ -19,10 +19,32 @@
 #include <cpu/x86/cache.h>
 #include <cpu/x86/smm.h>
 #include <cpu/x86/smi_deprecated.h>
+#include <cpu/amd/amd64_save_state.h>
+#include <cpu/intel/em64t_save_state.h>
+#include <cpu/intel/em64t100_save_state.h>
+#include <cpu/intel/em64t101_save_state.h>
+#include <cpu/x86/legacy_save_state.h>
 
 #if CONFIG(SPI_FLASH_SMM)
 #include <spi-generic.h>
 #endif
+
+typedef enum {
+	AMD64,
+	EM64T,
+	EM64T101,
+	LEGACY
+} save_state_type_t;
+
+typedef struct {
+	save_state_type_t type;
+	union {
+	amd64_smm_state_save_area_t *amd64_state_save;
+	em64t_smm_state_save_area_t *em64t_state_save;
+	em64t101_smm_state_save_area_t *em64t101_state_save;
+	legacy_smm_state_save_area_t *legacy_state_save;
+	};
+} smm_state_save_area_t;
 
 static int do_driver_init = 1;
 

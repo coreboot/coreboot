@@ -27,10 +27,10 @@ struct smm_relocation_params {
 	u32 ied_size;
 	msr_t smrr_base;
 	msr_t smrr_mask;
-	msr_t emrr_base;
-	msr_t emrr_mask;
-	msr_t uncore_emrr_base;
-	msr_t uncore_emrr_mask;
+	msr_t prmrr_base;
+	msr_t prmrr_mask;
+	msr_t uncore_prmrr_base;
+	msr_t uncore_prmrr_mask;
 	/* The smm_save_state_in_msrs field indicates if SMM save state
 	 * locations live in MSRs. This indicates to the CPUs how to adjust
 	 * the SMMBASE and IEDBASE */

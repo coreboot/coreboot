@@ -44,22 +44,22 @@ static inline void write_smrr(struct smm_relocation_params *relo_params)
 	wrmsr(IA32_SMRR_PHYS_MASK, relo_params->smrr_mask);
 }
 
-static inline void write_emrr(struct smm_relocation_params *relo_params)
+static inline void write_prmrr(struct smm_relocation_params *relo_params)
 {
-	printk(BIOS_DEBUG, "Writing EMRR. base = 0x%08x, mask=0x%08x\n",
-	       relo_params->emrr_base.lo, relo_params->emrr_mask.lo);
-	wrmsr(MSR_PRMRR_PHYS_BASE, relo_params->emrr_base);
-	wrmsr(MSR_PRMRR_PHYS_MASK, relo_params->emrr_mask);
+	printk(BIOS_DEBUG, "Writing PRMRR. base = 0x%08x, mask=0x%08x\n",
+	       relo_params->prmrr_base.lo, relo_params->prmrr_mask.lo);
+	wrmsr(MSR_PRMRR_PHYS_BASE, relo_params->prmrr_base);
+	wrmsr(MSR_PRMRR_PHYS_MASK, relo_params->prmrr_mask);
 }
 
-static inline void write_uncore_emrr(struct smm_relocation_params *relo_params)
+static inline void write_uncore_prmrr(struct smm_relocation_params *relo_params)
 {
 	printk(BIOS_DEBUG,
-	       "Writing UNCORE_EMRR. base = 0x%08x, mask=0x%08x\n",
-	       relo_params->uncore_emrr_base.lo,
-	       relo_params->uncore_emrr_mask.lo);
-	wrmsr(MSR_UNCORE_PRMRR_PHYS_BASE, relo_params->uncore_emrr_base);
-	wrmsr(MSR_UNCORE_PRMRR_PHYS_MASK, relo_params->uncore_emrr_mask);
+	       "Writing UNCORE_PRMRR. base = 0x%08x, mask=0x%08x\n",
+	       relo_params->uncore_prmrr_base.lo,
+	       relo_params->uncore_prmrr_mask.lo);
+	wrmsr(MSR_UNCORE_PRMRR_PHYS_BASE, relo_params->uncore_prmrr_base);
+	wrmsr(MSR_UNCORE_PRMRR_PHYS_MASK, relo_params->uncore_prmrr_mask);
 }
 
 static void update_save_state(int cpu, uintptr_t curr_smbase,
@@ -167,17 +167,17 @@ void smm_relocation_handler(int cpu, uintptr_t curr_smbase,
 	/* Make appropriate changes to the save state map. */
 	update_save_state(cpu, curr_smbase, staggered_smbase, relo_params);
 
-	/* Write EMRR and SMRR MSRs based on indicated support. */
+	/* Write PRMRR and SMRR MSRs based on indicated support. */
 	mtrr_cap = rdmsr(MTRR_CAP_MSR);
 	if (mtrr_cap.lo & SMRR_SUPPORTED)
 		write_smrr(relo_params);
 
-	if (mtrr_cap.lo & EMRR_SUPPORTED) {
-		write_emrr(relo_params);
-		/* UNCORE_EMRR msrs are package level. Therefore, only
+	if (mtrr_cap.lo & PRMRR_SUPPORTED) {
+		write_prmrr(relo_params);
+		/* UNCORE_PRMRR msrs are package level. Therefore, only
 		 * configure these MSRs on the BSP. */
 		if (cpu == 0)
-			write_uncore_emrr(relo_params);
+			write_uncore_prmrr(relo_params);
 	}
 }
 
@@ -197,8 +197,8 @@ static void fill_in_relocation_params(struct device *dev,
 	u32 tseg_size;
 	u32 tsegmb;
 	u32 bgsm;
-	u32 emrr_base;
-	u32 emrr_size;
+	u32 prmrr_base;
+	u32 prmrr_size;
 	int phys_bits;
 	/* All range registers are aligned to 4KiB */
 	const u32 rmask = ~((1 << 12) - 1);
@@ -230,24 +230,24 @@ static void fill_in_relocation_params(struct device *dev,
 		| MTRR_PHYS_MASK_VALID;
 	params->smrr_mask.hi = 0;
 
-	/* The EMRR and UNCORE_EMRR are at IEDBASE + 2MiB */
-	emrr_base = (params->ied_base + (2 << 20)) & rmask;
-	emrr_size = params->ied_size - (2 << 20);
+	/* The PRMRR and UNCORE_PRMRR are at IEDBASE + 2MiB */
+	prmrr_base = (params->ied_base + (2 << 20)) & rmask;
+	prmrr_size = params->ied_size - (2 << 20);
 
-	/* EMRR has 46 bits of valid address aligned to 4KiB. It's dependent
+	/* PRMRR has 46 bits of valid address aligned to 4KiB. It's dependent
 	 * on the number of physical address bits supported. */
-	params->emrr_base.lo = emrr_base | MTRR_TYPE_WRBACK;
-	params->emrr_base.hi = 0;
-	params->emrr_mask.lo = (~(emrr_size - 1) & rmask)
+	params->prmrr_base.lo = prmrr_base | MTRR_TYPE_WRBACK;
+	params->prmrr_base.hi = 0;
+	params->prmrr_mask.lo = (~(prmrr_size - 1) & rmask)
 		| MTRR_PHYS_MASK_VALID;
-	params->emrr_mask.hi = (1 << (phys_bits - 32)) - 1;
+	params->prmrr_mask.hi = (1 << (phys_bits - 32)) - 1;
 
-	/* UNCORE_EMRR has 39 bits of valid address aligned to 4KiB. */
-	params->uncore_emrr_base.lo = emrr_base;
-	params->uncore_emrr_base.hi = 0;
-	params->uncore_emrr_mask.lo = (~(emrr_size - 1) & rmask) |
+	/* UNCORE_PRMRR has 39 bits of valid address aligned to 4KiB. */
+	params->uncore_prmrr_base.lo = prmrr_base;
+	params->uncore_prmrr_base.hi = 0;
+	params->uncore_prmrr_mask.lo = (~(prmrr_size - 1) & rmask) |
 					MTRR_PHYS_MASK_VALID;
-	params->uncore_emrr_mask.hi = (1 << (39 - 32)) - 1;
+	params->uncore_prmrr_mask.hi = (1 << (39 - 32)) - 1;
 }
 
 static void setup_ied_area(struct smm_relocation_params *params)

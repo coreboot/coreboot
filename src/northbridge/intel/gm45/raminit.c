@@ -1799,7 +1799,8 @@ void raminit(sysinfo_t *const sysinfo, const int s3resume)
 
 
 	/* Perform ZQ calibration for DDR3. */
-	ddr3_calibrate_zq();
+	if (sysinfo->spd_type == DDR3)
+		ddr3_calibrate_zq();
 
 	/* Perform receive-enable calibration. */
 	raminit_receive_enable_calibration(timings, dimms);

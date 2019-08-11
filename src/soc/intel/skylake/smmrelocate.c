@@ -46,16 +46,6 @@ static inline void write_smrr(struct smm_relocation_params *relo_params)
 	wrmsr(IA32_SMRR_PHYS_MASK, relo_params->smrr_mask);
 }
 
-static inline void write_uncore_emrr(struct smm_relocation_params *relo_params)
-{
-	printk(BIOS_DEBUG,
-	       "Writing UNCORE_EMRR. base = 0x%08x, mask=0x%08x\n",
-	       relo_params->uncore_emrr_base.lo,
-	       relo_params->uncore_emrr_mask.lo);
-	wrmsr(MSR_UNCORE_PRMRR_PHYS_BASE, relo_params->uncore_emrr_base);
-	wrmsr(MSR_UNCORE_PRMRR_PHYS_MASK, relo_params->uncore_emrr_mask);
-}
-
 static void update_save_state(int cpu, uintptr_t curr_smbase,
 				uintptr_t staggered_smbase,
 				struct smm_relocation_params *relo_params)
@@ -175,7 +165,7 @@ void smm_relocation_handler(int cpu, uintptr_t curr_smbase,
 	/* Make appropriate changes to the save state map. */
 	update_save_state(cpu, curr_smbase, staggered_smbase, relo_params);
 
-	/* Write EMRR and SMRR MSRs based on indicated support. */
+	/* Write SMRR MSRs based on indicated support. */
 	mtrr_cap = rdmsr(MTRR_CAP_MSR);
 	if (mtrr_cap.lo & SMRR_SUPPORTED)
 		write_smrr(relo_params);
@@ -185,17 +175,8 @@ static void fill_in_relocation_params(struct smm_relocation_params *params)
 {
 	uintptr_t tseg_base;
 	size_t tseg_size;
-	u32 emrr_base;
-	u32 emrr_size;
-	int phys_bits;
 	/* All range registers are aligned to 4KiB */
 	const u32 rmask = ~((1 << 12) - 1);
-
-	/*
-	 * Some of the range registers are dependent on the number of physical
-	 * address bits supported.
-	 */
-	phys_bits = cpuid_eax(0x80000008) & 0xff;
 
 	smm_region(&tseg_base, &tseg_size);
 	smm_subregion(SMM_SUBREGION_CHIPSET, &params->ied_base, &params->ied_size);
@@ -205,27 +186,6 @@ static void fill_in_relocation_params(struct smm_relocation_params *params)
 	params->smrr_base.hi = 0;
 	params->smrr_mask.lo = (~(tseg_size - 1) & rmask) | MTRR_PHYS_MASK_VALID;
 	params->smrr_mask.hi = 0;
-
-	/* The EMRR and UNCORE_EMRR are at IEDBASE + 2MiB */
-	emrr_base = (params->ied_base + (2 << 20)) & rmask;
-	emrr_size = params->ied_size - (2 << 20);
-
-	/*
-	 * EMRR has 46 bits of valid address aligned to 4KiB. It's dependent
-	 * on the number of physical address bits supported.
-	 */
-	params->emrr_base.lo = emrr_base | MTRR_TYPE_WRBACK;
-	params->emrr_base.hi = 0;
-	params->emrr_mask.lo = (~(emrr_size - 1) & rmask)
-		| MTRR_PHYS_MASK_VALID;
-	params->emrr_mask.hi = (1 << (phys_bits - 32)) - 1;
-
-	/* UNCORE_EMRR has 39 bits of valid address aligned to 4KiB. */
-	params->uncore_emrr_base.lo = emrr_base;
-	params->uncore_emrr_base.hi = 0;
-	params->uncore_emrr_mask.lo = (~(emrr_size - 1) & rmask) |
-					MTRR_PHYS_MASK_VALID;
-	params->uncore_emrr_mask.hi = (1 << (39 - 32)) - 1;
 }
 
 static void setup_ied_area(struct smm_relocation_params *params)

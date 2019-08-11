@@ -243,6 +243,7 @@ enum {
 #define DCC_CMD_SHIFT		16
 #define DCC_CMD_MASK		(7 << DCC_CMD_SHIFT)
 #define DCC_CMD_NOP		(1 << DCC_CMD_SHIFT)
+#define DCC_CMD_ABP		(2 << DCC_CMD_SHIFT)
 				/* For mode register mr0: */
 #define DCC_SET_MREG		(3 << DCC_CMD_SHIFT)
 				/* For extended mode registers mr1 to mr3: */
@@ -252,6 +253,7 @@ enum {
 #define DCC_SET_EREGx(x)	((DCC_SET_EREG |			     \
 					(((x) - 1) << DCC_SET_EREG_SHIFT)) & \
 				 DCC_SET_EREG_MASK)
+#define DCC_CMD_CBR		(6 << DCC_CMD_SHIFT)
 
 /* Per channel DRAM Row Attribute registers (32-bit) */
 #define CxDRA_MCHBAR(x)		(0x1208 + ((x) * 0x0100))

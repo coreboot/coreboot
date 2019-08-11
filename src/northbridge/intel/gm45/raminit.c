@@ -1697,28 +1697,19 @@ static void memory_io_init(const mem_clock_t ddr3clock,
 	ddr3_read_io_init(ddr3clock, dimms, sff);
 }
 
-static void jedec_init(const timings_t *const timings,
-		       const dimminfo_t *const dimms)
+static void jedec_command(const uintptr_t rankaddr, const u32 cmd, const u32 val)
+{
+	mchbar_clrsetbits32(DCC_MCHBAR, DCC_SET_EREG_MASK, cmd);
+	read32p(rankaddr | val);
+}
+
+static void jedec_init_ddr3(const timings_t *const timings,
+			    const dimminfo_t *const dimms)
 {
 	if ((timings->tWR < 5) || (timings->tWR > 12))
 		die("tWR value unsupported in Jedec initialization.\n");
 
-	/* Pre-jedec settings */
-	mchbar_setbits32(0x40, 1 << 1);
-	mchbar_setbits32(0x230, 3 << 1);
-	mchbar_setbits32(0x238, 3 << 24);
-	mchbar_setbits32(0x23c, 3 << 24);
 
-	/* Normal write pointer operation */
-	mchbar_setbits32(0x14f0, 1 << 9);
-	mchbar_setbits32(0x15f0, 1 << 9);
-
-	mchbar_clrsetbits32(DCC_MCHBAR, DCC_CMD_MASK, DCC_CMD_NOP);
-
-	pci_and_config8(PCI_DEV(0, 0, 0), 0xf0, ~(1 << 2));
-
-	pci_or_config8(PCI_DEV(0, 0, 0), 0xf0, 1 << 2);
-	udelay(2);
 
 				  /* 5  6  7  8  9 10 11 12 */
 	static const u8 wr_lut[] = { 1, 2, 3, 4, 5, 5, 6, 6 };
@@ -1736,18 +1727,82 @@ static void jedec_init(const timings_t *const timings,
 		/* We won't do this in dual-interleaved mode,
 		   so don't care about the offset.
 		   Mirrored ranks aren't taken into account here. */
-		const u32 rankaddr = raminit_get_rank_addr(ch, r);
-		printk(BIOS_DEBUG, "JEDEC init @0x%08x\n", rankaddr);
-		mchbar_clrsetbits32(DCC_MCHBAR, DCC_SET_EREG_MASK, DCC_SET_EREGx(2));
-		read32p(rankaddr | WL);
-		mchbar_clrsetbits32(DCC_MCHBAR, DCC_SET_EREG_MASK, DCC_SET_EREGx(3));
-		read32p(rankaddr);
-		mchbar_clrsetbits32(DCC_MCHBAR, DCC_SET_EREG_MASK, DCC_SET_EREGx(1));
-		read32p(rankaddr | ODT_120OHMS | ODS_34OHMS);
-		mchbar_clrsetbits32(DCC_MCHBAR, DCC_CMD_MASK, DCC_SET_MREG);
-		read32p(rankaddr | WR | DLL1 | CAS | INTERLEAVED);
-		mchbar_clrsetbits32(DCC_MCHBAR, DCC_CMD_MASK, DCC_SET_MREG);
-		read32p(rankaddr | WR | CAS | INTERLEAVED);
+		const uintptr_t rankaddr = raminit_get_rank_addr(ch, r);
+		printk(BIOS_DEBUG, "JEDEC init @0x%08x\n", (u32)rankaddr);
+
+		jedec_command(rankaddr, DCC_SET_EREGx(2), WL);
+		jedec_command(rankaddr, DCC_SET_EREGx(3), 0);
+		jedec_command(rankaddr, DCC_SET_EREGx(1), ODT_120OHMS | ODS_34OHMS);
+		jedec_command(rankaddr, DCC_SET_MREG, WR | DLL1 | CAS | INTERLEAVED);
+		jedec_command(rankaddr, DCC_SET_MREG, WR | CAS | INTERLEAVED);
+	}
+}
+
+static void jedec_init_ddr2(const timings_t *const timings,
+			    const dimminfo_t *const dimms)
+{
+	/* All bit offsets are off by 3 (2^3 bytes bus width). */
+
+	/* Mode Register (MR) settings */
+	const int WR = ((timings->tWR - 1) & 7) << 12;
+	const int DLLreset = 1 << 11;
+	const int CAS = (timings->CAS & 7) << 7;
+	const int BTinterleaved = 1 << 6;
+	const int BL8 = 3 << 3;
+
+	/* Extended Mode Register 1 (EMR1) */
+	const int OCDdefault = 7 << 10;
+	const int ODT_150OHMS = 1 << 9 | 0 << 5;
+
+	int ch, r;
+	FOR_EACH_POPULATED_RANK(dimms, ch, r) {
+		/* We won't do this in dual-interleaved mode,
+		   so don't care about the offset.
+		   Mirrored ranks aren't taken into account here. */
+		const uintptr_t rankaddr = raminit_get_rank_addr(ch, r);
+		printk(BIOS_DEBUG, "JEDEC init @0x%08x\n", (u32)rankaddr);
+
+		jedec_command(rankaddr, DCC_CMD_ABP, 0);
+		jedec_command(rankaddr, DCC_SET_EREGx(2), 0);
+		jedec_command(rankaddr, DCC_SET_EREGx(3), 0);
+		jedec_command(rankaddr, DCC_SET_EREGx(1), ODT_150OHMS);
+		jedec_command(rankaddr, DCC_SET_MREG, WR | DLLreset | CAS | BTinterleaved | BL8);
+		jedec_command(rankaddr, DCC_CMD_ABP, 0);
+		jedec_command(rankaddr, DCC_CMD_CBR, 0);
+		udelay(1);
+		read32((void *)(rankaddr));
+
+		jedec_command(rankaddr, DCC_SET_MREG, WR | CAS | BTinterleaved | BL8);
+		jedec_command(rankaddr, DCC_SET_EREGx(1), OCDdefault | ODT_150OHMS);
+		jedec_command(rankaddr, DCC_SET_EREGx(1), ODT_150OHMS);
+	}
+}
+
+static void jedec_init(const int spd_type,
+		       const timings_t *const timings,
+		       const dimminfo_t *const dimms)
+{
+	/* Pre-jedec settings */
+	mchbar_setbits32(0x40, 1 << 1);
+	mchbar_setbits32(0x230, 3 << 1);
+	mchbar_setbits32(0x238, 3 << 24);
+	mchbar_setbits32(0x23c, 3 << 24);
+
+	/* Normal write pointer operation */
+	mchbar_setbits32(0x14f0, 1 << 9);
+	mchbar_setbits32(0x15f0, 1 << 9);
+
+	mchbar_clrsetbits32(DCC_MCHBAR, DCC_CMD_MASK, DCC_CMD_NOP);
+
+	pci_and_config8(PCI_DEV(0, 0, 0), 0xf0, ~(1 << 2));
+
+	pci_or_config8(PCI_DEV(0, 0, 0), 0xf0, 1 << 2);
+	udelay(2);
+
+	if (spd_type == DDR2) {
+		jedec_init_ddr2(timings, dimms);
+	} else if (spd_type == DDR3) {
+		jedec_init_ddr3(timings, dimms);
 	}
 }
 
@@ -1920,7 +1975,7 @@ void raminit(sysinfo_t *const sysinfo, const int s3resume)
 	prejedec_memory_map(dimms, timings->channel_mode);
 	if (!s3resume)
 		/* Perform JEDEC initialization of DIMMS. */
-		jedec_init(timings, dimms);
+		jedec_init(sysinfo->spd_type, timings, dimms);
 	/* Some programming steps after JEDEC initialization. */
 	post_jedec_sequence(sysinfo->cores);
 

@@ -1498,6 +1498,7 @@ static void ddr3_select_clock_mux(const mem_clock_t ddr3clock,
 					 ((( clk1067 && !cardF[ch])?3:2) << 11) | mixed);
 	}
 }
+
 static void ddr3_write_io_init(const mem_clock_t ddr3clock,
 			       const dimminfo_t *const dimms,
 			       const stepping_t stepping,
@@ -1564,9 +1565,10 @@ static void ddr3_write_io_init(const mem_clock_t ddr3clock,
 	mchbar_write32(0x1590, 0x00e70067);
 	mchbar_write32(0x1594, 0x000d8000);
 }
-static void ddr3_read_io_init(const mem_clock_t ddr3clock,
-			      const dimminfo_t *const dimms,
-			      const int sff)
+
+static void ddr_read_io_init(const mem_clock_t ddr_clock,
+			     const dimminfo_t *const dimms,
+			     const int sff)
 {
 	int ch;
 
@@ -1577,7 +1579,7 @@ static void ddr3_read_io_init(const mem_clock_t ddr3clock,
 			tmp = mchbar_read32(addr);
 			tmp &= ~((3 << 25) | (1 << 8) | (7 << 16) | (0xf << 20) | (1 << 27));
 			tmp |= (1 << 27);
-			switch (ddr3clock) {
+			switch (ddr_clock) {
 				case MEM_CLOCK_667MT:
 					tmp |= (1 << 16) | (4 << 20);
 					break;
@@ -1598,10 +1600,10 @@ static void ddr3_read_io_init(const mem_clock_t ddr3clock,
 	}
 }
 
-static void memory_io_init(const mem_clock_t ddr3clock,
-			   const dimminfo_t *const dimms,
-			   const stepping_t stepping,
-			   const int sff)
+static void ddr3_memory_io_init(const mem_clock_t ddr3clock,
+				const dimminfo_t *const dimms,
+				const stepping_t stepping,
+				const int sff)
 {
 	u32 tmp;
 
@@ -1694,7 +1696,114 @@ static void memory_io_init(const mem_clock_t ddr3clock,
 
 	ddr3_write_io_init(ddr3clock, dimms, stepping, sff);
 
-	ddr3_read_io_init(ddr3clock, dimms, sff);
+	ddr_read_io_init(ddr3clock, dimms, sff);
+}
+
+static void ddr2_select_clock_mux(const dimminfo_t *const dimms)
+{
+	int ch;
+	unsigned int o;
+	FOR_EACH_POPULATED_CHANNEL(dimms, ch) {
+		const unsigned int b = 0x14b0 + (ch * 0x0100);
+		for (o = 0; o < 0x20; o += 4)
+			mchbar_clrbits32(b + o, 7 << 11);
+	}
+}
+
+static void ddr2_write_io_init(const dimminfo_t *const dimms)
+{
+	int s;
+
+	mchbar_clrsetbits32(CxWRTy_MCHBAR(0, 0), 0xf7bff71f, 0x008b0008);
+
+	for (s = 1; s < 4; ++s) {
+		mchbar_clrsetbits32(CxWRTy_MCHBAR(0, s), 0xf7bff71f, 0x00800000);
+	}
+
+	mchbar_clrsetbits32(0x1490, 0xf7fff77f, 0x00800000);
+	mchbar_clrsetbits32(0x1494, 0xf71f8000, 0x00040000);
+
+	mchbar_clrsetbits32(CxWRTy_MCHBAR(1, 0), 0xf7bff71f, 0x00890008);
+
+	for (s = 1; s < 4; ++s) {
+		mchbar_clrsetbits32(CxWRTy_MCHBAR(1, s), 0xf7bff71f, 0x00890000);
+	}
+
+	mchbar_clrsetbits32(0x1590, 0xf7fff77f, 0x00800000);
+	mchbar_clrsetbits32(0x1594, 0xf71f8000, 0x00040000);
+}
+
+static void ddr2_memory_io_init(const mem_clock_t ddr2clock,
+				const dimminfo_t *const dimms,
+				const stepping_t stepping,
+				const int sff)
+{
+	u32 tmp;
+	u32 tmp2;
+
+	if (stepping < STEPPING_B1)
+		die("Stepping <B1 unsupported in DDR2 memory i/o initialization.\n");
+	if (sff)
+		die("SFF platform unsupported in DDR2 memory i/o initialization.\n");
+
+	tmp = mchbar_read32(0x140c);
+	tmp &= ~(0xff | (1<<11) | (0xf<<28));
+	tmp |= (1<<0) | (1<<12) | (1<<16) | (1<<18) | (1<<27);
+	mchbar_write32(0x140c, tmp);
+
+	tmp = mchbar_read32(0x1440);
+	tmp &= ~(1<<5);
+	tmp |= (1<<0) | (1<<2) | (1<<3) | (1<<4) | (1<<6);
+	mchbar_write32(0x1440, tmp);
+
+	tmp = mchbar_read32(0x1414);
+	tmp &= ~((1<<20) | (7<<11) | (0xf << 24) | (0xf << 16));
+	tmp |= (3<<11);
+	tmp2 = mchbar_read32(0x142c);
+	tmp2 &= ~((0xf << 8) | (0x7 << 20) | 0xf);
+	tmp2 |= (0x3 << 20);
+	switch (ddr2clock) {
+	case MEM_CLOCK_667MT:
+		tmp |= (2 << 24) | (10 << 16);
+		tmp2 |= (2 << 8) | 0xc;
+		break;
+	case MEM_CLOCK_800MT:
+		tmp |= (3 << 24) | (7 << 16);
+		tmp2 |= (3 << 8) | 0xa;
+		break;
+	default:
+		die("Wrong clock");
+	}
+	mchbar_write32(0x1414, tmp);
+	mchbar_write32(0x142c, tmp2);
+
+	mchbar_clrbits32(0x1418, (1<<3) | (1<<11) | (1<<19) | (1<<27));
+	mchbar_clrbits32(0x141c, (1<<3) | (1<<11) | (1<<19) | (1<<27));
+
+	tmp = mchbar_read32(0x400);
+	tmp &= ~((3 << 4) | (3 << 16) | (3 << 30));
+	tmp |= (2 << 4) | (2 << 16);
+	mchbar_write32(0x400, tmp);
+
+	mchbar_clrbits32(0x404, 0xf << 20);
+
+	mchbar_clrbits32(0x40c, 1 << 6);
+
+	tmp = mchbar_read32(0x410);
+	tmp &= ~(0xf << 28);
+	tmp |= 2 << 28;
+	mchbar_write32(0x410, tmp);
+
+	tmp = mchbar_read32(0x41c);
+	tmp &= ~((7<<0) | (7<<4));
+	tmp |= (1<<0) | (1<<3) | (1<<4) | (1<<7);
+	mchbar_write32(0x41c, tmp);
+
+	ddr2_select_clock_mux(dimms);
+
+	ddr2_write_io_init(dimms);
+
+	ddr_read_io_init(ddr2clock, dimms, sff);
 }
 
 static void jedec_command(const uintptr_t rankaddr, const u32 cmd, const u32 val)
@@ -1967,8 +2076,13 @@ void raminit(sysinfo_t *const sysinfo, const int s3resume)
 	/* Program egress VC1 timings. */
 	vc1_program_timings(timings->fsb_clock);
 	/* Perform system-memory i/o initialization. */
-	memory_io_init(timings->mem_clock, dimms,
-		       sysinfo->stepping, sysinfo->sff);
+	if (sysinfo->spd_type == DDR2) {
+		ddr2_memory_io_init(timings->mem_clock, dimms,
+				    sysinfo->stepping, sysinfo->sff);
+	} else {
+		ddr3_memory_io_init(timings->mem_clock, dimms,
+				    sysinfo->stepping, sysinfo->sff);
+	}
 
 	/* Initialize memory map with dummy values of 128MB per rank with a
 	   page size of 4KB. This makes the JEDEC initialization code easier. */

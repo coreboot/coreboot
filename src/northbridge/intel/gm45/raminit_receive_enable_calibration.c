@@ -185,7 +185,8 @@ static void find_preamble(const int channel, const int group,
 	}
 }
 
-static void receive_enable_calibration(const timings_t *const timings,
+static void receive_enable_calibration(const int ddr_type,
+				       const timings_t *const timings,
 				       const dimminfo_t *const dimms)
 {
 	/* Override group to byte-lane mapping for raw card type F DIMMS. */
@@ -200,7 +201,8 @@ static void receive_enable_calibration(const timings_t *const timings,
 	};
 
 	const unsigned int t_bound =
-		(timings->mem_clock == MEM_CLOCK_1067MT) ? 9 : 12;
+		(timings->mem_clock == MEM_CLOCK_1067MT) ? 9
+		: (ddr_type == DDR3) ? 12 : 15;
 	const unsigned int p_bound =
 		(timings->mem_clock == MEM_CLOCK_1067MT) ? 8 : 1;
 
@@ -259,7 +261,8 @@ static void receive_enable_calibration(const timings_t *const timings,
 	}
 }
 
-void raminit_receive_enable_calibration(const timings_t *const timings,
+void raminit_receive_enable_calibration(const int ddr_type,
+					const timings_t *const timings,
 					const dimminfo_t *const dimms)
 {
 	int ch;
@@ -284,7 +287,7 @@ void raminit_receive_enable_calibration(const timings_t *const timings,
 	mchbar_clrsetbits32(0x14f0, 3 << 9, 1 << 9);
 	mchbar_clrsetbits32(0x15f0, 3 << 9, 1 << 9);
 
-	receive_enable_calibration(timings, dimms);
+	receive_enable_calibration(ddr_type, timings, dimms);
 
 	mchbar_clrbits32(0x12a4, 1 << 31);
 	mchbar_clrbits32(0x13a4, 1 << 31);

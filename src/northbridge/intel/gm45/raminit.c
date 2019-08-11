@@ -349,6 +349,7 @@ typedef struct {
 		unsigned int tWR;
 		unsigned int page_size;
 		unsigned int raw_card;
+		unsigned int refresh;
 	} channel[2];
 } spdinfo_t;
 /**
@@ -434,6 +435,7 @@ static void collect_ddr2_dimm(struct spd_dimminfo *const di, const int smb_addr)
 	di->tWR  = smbus_read_byte(smb_addr, 36) << 6;	/* given in 1/4ns */
 
 	di->raw_card = 0;	/* Use same path as for DDR3 type A. */
+	di->refresh = smbus_read_byte(smb_addr, 12);
 }
 /*
  * This function collects RAM characteristics from SPD, assuming that RAM
@@ -490,6 +492,7 @@ static void collect_ddr3(sysinfo_t *const sysinfo, spdinfo_t *const config)
 			config->channel[cur].tWR = smbus_read_byte(smb_addr, 17) * 32;
 
 			config->channel[cur].raw_card = smbus_read_byte(smb_addr, 62) & 0x1f;
+			config->channel[cur].refresh = REFRESH_7_8;
 		}
 		cur++;
 		mask >>= 2;
@@ -785,6 +788,7 @@ static void collect_dimm_config(sysinfo_t *const sysinfo)
 	FOR_EACH_CHANNEL(i) {
 		sysinfo->dimms[i].card_type =
 			(spdinfo.dimm_mask & (1 << (i * 2))) ? spdinfo.channel[i].raw_card + 0xa : 0;
+		sysinfo->dimms[i].refresh = spdinfo.channel[i].refresh;
 	}
 
 	/* Find common memory clock and CAS. */
@@ -817,9 +821,6 @@ static void collect_dimm_config(sysinfo_t *const sysinfo)
 		sysinfo->selected_timings.channel_mode = CHANNEL_MODE_DUAL_INTERLEAVED;
 	else
 		sysinfo->selected_timings.channel_mode = CHANNEL_MODE_SINGLE;
-
-	if (sysinfo->spd_type == DDR2)
-		die("DDR2 support not complete yet\n");
 }
 
 static void reset_on_bad_warmboot(void)
@@ -983,10 +984,10 @@ static void configure_dram_control_mode(const timings_t *const timings, const di
 		cxdrc &= ~CxDRC0_RANKEN_MASK;
 		FOR_EACH_POPULATED_RANK_IN_CHANNEL(dimms, ch, r)
 			cxdrc |= CxDRC0_RANKEN(r);
-		cxdrc = (cxdrc & ~CxDRC0_RMS_MASK) |
-				/* Always 7.8us for DDR3: */
-				/* FIXME DDR2: SPD+12? */
-				CxDRC0_RMS_78US;
+		if (dimms[ch].refresh == REFRESH_3_9)
+			cxdrc = (cxdrc & ~CxDRC0_RMS_MASK) | CxDRC0_RMS_39US;
+		else
+			cxdrc = (cxdrc & ~CxDRC0_RMS_MASK) | CxDRC0_RMS_78US;
 		mchbar_write32(mchbar, cxdrc);
 
 		mchbar = CxDRC1_MCHBAR(ch);
@@ -1009,30 +1010,41 @@ static void configure_dram_control_mode(const timings_t *const timings, const di
 	}
 }
 
-static void rcomp_initialization(const stepping_t stepping, const int sff)
+static void rcomp_initialization(const int spd_type, const stepping_t stepping, const int sff)
 {
 	/* Program RCOMP codes. */
 	if (sff)
 		die("SFF platform unsupported in RCOMP initialization.\n");
-	/* Values are for DDR3. */
-	mchbar_clrbits8(0x6ac, 0x0f);
-	mchbar_write8(0x6b0,   0x55);
-	mchbar_clrbits8(0x6ec, 0x0f);
-	mchbar_write8(0x6f0,   0x66);
-	mchbar_clrbits8(0x72c, 0x0f);
-	mchbar_write8(0x730,   0x66);
-	mchbar_clrbits8(0x76c, 0x0f);
-	mchbar_write8(0x770,   0x66);
-	mchbar_clrbits8(0x7ac, 0x0f);
-	mchbar_write8(0x7b0,   0x66);
-	mchbar_clrbits8(0x7ec, 0x0f);
-	mchbar_write8(0x7f0,   0x66);
-	mchbar_clrbits8(0x86c, 0x0f);
-	mchbar_write8(0x870,   0x55);
-	mchbar_clrbits8(0x8ac, 0x0f);
-	mchbar_write8(0x8b0,   0x66);
-	/* ODT multiplier bits. */
-	mchbar_clrsetbits32(0x04d0, 7 << 3 | 7 << 0, 2 << 3 | 2 << 0);
+
+	if (spd_type == DDR2) {
+		unsigned int o;
+		for (o = 0; o <= 0x200; o += 0x40) {
+			mchbar_clrsetbits8(0x6ac + o, 0x0f, 0x0a);
+			mchbar_write8(0x6b0 + o, 0x55);
+		}
+		/* ODT multiplier bits. */
+		mchbar_clrsetbits32(0x04d0, 7 << 3 | 7 << 0, 1 << 3 | 1 << 0);
+	} else {
+		/* Values are for DDR3. */
+		mchbar_clrbits8(0x6ac, 0x0f);
+		mchbar_write8(0x6b0,   0x55);
+		mchbar_clrbits8(0x6ec, 0x0f);
+		mchbar_write8(0x6f0,   0x66);
+		mchbar_clrbits8(0x72c, 0x0f);
+		mchbar_write8(0x730,   0x66);
+		mchbar_clrbits8(0x76c, 0x0f);
+		mchbar_write8(0x770,   0x66);
+		mchbar_clrbits8(0x7ac, 0x0f);
+		mchbar_write8(0x7b0,   0x66);
+		mchbar_clrbits8(0x7ec, 0x0f);
+		mchbar_write8(0x7f0,   0x66);
+		mchbar_clrbits8(0x86c, 0x0f);
+		mchbar_write8(0x870,   0x55);
+		mchbar_clrbits8(0x8ac, 0x0f);
+		mchbar_write8(0x8b0,   0x66);
+		/* ODT multiplier bits. */
+		mchbar_clrsetbits32(0x04d0, 7 << 3 | 7 << 0, 2 << 3 | 2 << 0);
+	}
 
 	/* Perform RCOMP calibration for DDR3. */
 	raminit_rcomp_calibration(stepping);
@@ -1057,44 +1069,64 @@ static void rcomp_initialization(const stepping_t stepping, const int sff)
 	mchbar_setbits32(0x400, 1 << 1);
 }
 
-static void dram_powerup(const int resume)
+static void dram_powerup(const int spd_type, const int stepping, const int resume)
 {
+	u32 tmp;
+
 	udelay(200);
-	mchbar_clrsetbits32(CLKCFG_MCHBAR, 1 << 3, 3 << 21);
-	if (!resume) {
+	tmp = mchbar_read32(CLKCFG_MCHBAR);
+	tmp &= ~(3 << 21 | 1 << 3);
+	if (spd_type == DDR2 && stepping < STEPPING_B0)
+		tmp |= 2 << 21 | 1 << 3;
+	else
+		tmp |= 3 << 21;
+	mchbar_write32(CLKCFG_MCHBAR, tmp);
+
+	if (spd_type == DDR3 && !resume) {
 		mchbar_setbits32(0x1434, 1 << 10);
 		udelay(1);
 	}
 	mchbar_setbits32(0x1434, 1 << 6);
-	if (!resume) {
+	if (spd_type == DDR3 && !resume) {
 		udelay(1);
 		mchbar_setbits32(0x1434, 1 << 9);
 		mchbar_clrbits32(0x1434, 1 << 10);
 		udelay(500);
 	}
 }
-static void dram_program_timings(const timings_t *const timings)
+
+static void dram_program_timings(const int spd_type, const timings_t *const timings)
 {
 	/* Values are for DDR3. */
 	const int burst_length = 8;
-	const int tWTR = 4, tRTP = 1;
+	const int tWTR = (spd_type == DDR2) ? 3 : 4, tRTP = 1;
 	int i;
 
 	FOR_EACH_CHANNEL(i) {
 		u32 reg = mchbar_read32(CxDRT0_MCHBAR(i));
 		const int btb_wtp = timings->tWL + burst_length/2 + timings->tWR;
-		const int btb_wtr = timings->tWL + burst_length/2 + tWTR;
+		const int btb_wtr =
+			((spd_type == DDR2) ? timings->CAS - 1 : timings->tWL)
+			+ burst_length/2 + tWTR;
 		reg = (reg & ~(CxDRT0_BtB_WtP_MASK  | CxDRT0_BtB_WtR_MASK)) |
 			((btb_wtp << CxDRT0_BtB_WtP_SHIFT) & CxDRT0_BtB_WtP_MASK) |
 			((btb_wtr << CxDRT0_BtB_WtR_SHIFT) & CxDRT0_BtB_WtR_MASK);
-		if (timings->mem_clock != MEM_CLOCK_1067MT) {
+		if (spd_type == DDR2) {
+			reg = (reg & ~(0x7 << 15)) | (2 << 15);
+			if (timings->mem_clock == MEM_CLOCK_667MT)
+				reg = (reg & ~(0xf << 10)) | (2 << 10);
+			else
+				reg = (reg & ~(0xf << 10)) | (3 << 10);
+			reg = (reg & ~(0x7 <<  5)) | (3 << 5);
+		} else if (timings->mem_clock != MEM_CLOCK_1067MT) {
 			reg = (reg & ~(0x7 << 15)) | ((9 - timings->CAS) << 15);
 			reg = (reg & ~(0xf << 10)) | ((timings->CAS - 3) << 10);
+			reg = (reg & ~(0x7 <<  5)) | (3 << 5);
 		} else {
 			reg = (reg & ~(0x7 << 15)) | ((10 - timings->CAS) << 15);
 			reg = (reg & ~(0xf << 10)) | ((timings->CAS - 4) << 10);
+			reg = (reg & ~(0x7 <<  5)) | (3 << 5);
 		}
-		reg = (reg & ~(0x7 << 5)) | (3 << 5);
 		reg = (reg & ~(0x7 << 0)) | (1 << 0);
 		mchbar_write32(CxDRT0_MCHBAR(i), reg);
 
@@ -1108,7 +1140,10 @@ static void dram_program_timings(const timings_t *const timings)
 
 		reg = mchbar_read32(CxDRT2_MCHBAR(i));
 		reg = (reg & ~(0x1f << 17)) | ((timings->tFAW & 0x1f) << 17);
-		if (timings->mem_clock != MEM_CLOCK_1067MT) {
+		if (spd_type == DDR2) {
+			reg = (reg & ~(0x7 << 12)) | (0x1 << 12);
+			reg = (reg & ~(0xf <<  6)) | (0x1 <<  6);
+		} else if (timings->mem_clock != MEM_CLOCK_1067MT) {
 			reg = (reg & ~(0x7 << 12)) | (0x2 << 12);
 			reg = (reg & ~(0xf <<  6)) | (0x9 <<  6);
 		} else {
@@ -1119,7 +1154,10 @@ static void dram_program_timings(const timings_t *const timings)
 		mchbar_write32(CxDRT2_MCHBAR(i), reg);
 
 		reg = mchbar_read32(CxDRT3_MCHBAR(i));
-		reg |= 0x3 << 28;
+		if (spd_type == DDR2)
+			reg &= ~(0x3 << 28);
+		else
+			reg |=  (0x3 << 28);
 		reg = (reg & ~(0x03 << 26));
 		reg = (reg & ~(0x07 << 23)) | (((timings->CAS - 3) & 0x07) << 23);
 		reg = (reg & ~(0xff << 13)) | ((timings->tRFC & 0xff) << 13);
@@ -1146,16 +1184,26 @@ static void dram_program_timings(const timings_t *const timings)
 		if (timings->mem_clock == MEM_CLOCK_1067MT)
 			reg = (reg & ~(0xf << 28)) | (0x8 << 28);
 		reg = (reg & ~(0x00f << 22)) | ((burst_length/2 + timings->CAS + 2) << 22);
-		reg = (reg & ~(0x3ff << 12)) | (0x190 << 12);
+		if (spd_type == DDR2) {
+			if (timings->mem_clock == MEM_CLOCK_667MT)
+				reg = (reg & ~(0x1ff << 12)) | (0x21 << 12);
+			else
+				reg = (reg & ~(0x1ff << 12)) | (0x28 << 12);
+		} else {
+			reg = (reg & ~(0x1ff << 12)) | (0x190 << 12);
+		}
 		reg = (reg & ~(0x00f <<  4)) | ((timings->CAS - 2) << 4);
 		reg = (reg & ~(0x003 <<  2)) | (0x001 <<  2);
 		reg = (reg & ~(0x003 <<  0));
 		mchbar_write32(CxDRT5_MCHBAR(i), reg);
 
 		reg = mchbar_read32(CxDRT6_MCHBAR(i));
-		/* FIXME DDR2: SPD+12? */
-		reg = (reg & ~(0xffff << 16)) | (0x066a << 16); /* always 7.8us refresh rate for DDR3 */
-		reg |= (1 <<  2);
+		if (spd_type == DDR2) {
+			reg &= ~(1 << 2);
+		} else {
+			reg = (reg & ~(0xffff << 16)) | (0x066a << 16); /* always 7.8us refresh rate for DDR3 */
+			reg |= (1 << 2);
+		}
 		mchbar_write32(CxDRT6_MCHBAR(i), reg);
 	}
 }
@@ -1180,9 +1228,8 @@ static void dram_program_banks(const dimminfo_t *const dimms)
 	}
 }
 
-static void odt_setup(const timings_t *const timings, const int sff)
+static void ddr3_odt_setup(const timings_t *const timings, const int sff)
 {
-	/* Values are for DDR3. */
 	int ch;
 
 	FOR_EACH_CHANNEL(ch) {
@@ -1220,6 +1267,45 @@ static void odt_setup(const timings_t *const timings, const int sff)
 			reg = (reg & ~0x7) | 0x5;
 			break;
 		}
+		mchbar_write32(CxODT_LOW(ch), reg);
+	}
+}
+
+static void ddr2_odt_setup(const timings_t *const timings, const int sff)
+{
+	int ch;
+
+	FOR_EACH_CHANNEL(ch) {
+		u32 reg = mchbar_read32(CxODT_HIGH(ch));
+		if (sff && (timings->mem_clock == MEM_CLOCK_667MT))
+			reg &= ~(0x3 << (61 - 32));
+		else
+			reg |= 0x3 << (61 - 32);
+		reg = (reg & ~(0x3 << (52 - 32))) | (1 << (52 - 32));
+		reg = (reg & ~(0x7 << (48 - 32))) | ((timings->CAS - 2) << (48 - 32));
+		reg = (reg & ~(0xf << (44 - 32))) | (8 << (44 - 32));
+		reg = (reg & ~(0xf << (40 - 32))) | (7 << (40 - 32));
+		if (timings->mem_clock == MEM_CLOCK_667MT) {
+			reg = (reg & ~(0xf << (36 - 32))) | (4 << (36 - 32));
+			reg = (reg & ~(0xf << (32 - 32))) | (4 << (32 - 32));
+		} else {
+			reg = (reg & ~(0xf << (36 - 32))) | (5 << (36 - 32));
+			reg = (reg & ~(0xf << (32 - 32))) | (5 << (32 - 32));
+		}
+		mchbar_write32(CxODT_HIGH(ch), reg);
+
+		reg = mchbar_read32(CxODT_LOW(ch));
+		if (timings->mem_clock == MEM_CLOCK_667MT)
+			reg = (reg & ~(0x7 << 28)) | (2 << 28);
+		else
+			reg = (reg & ~(0x7 << 28)) | (3 << 28);
+		reg = (reg & ~(0x3 << 22)) | (1 << 22);
+		if (timings->mem_clock == MEM_CLOCK_667MT)
+			reg = (reg & ~(0x7 << 12)) | ((timings->tWL - 1) << 12);
+		else
+			reg = (reg & ~(0x7 << 12)) | ((timings->tWL - 2) << 12);
+		reg = (reg & ~(0x7 <<  4)) | ((timings->tWL - 1) <<  4);
+		reg = (reg & ~(0x7 <<  0));
 		mchbar_write32(CxODT_LOW(ch), reg);
 	}
 }
@@ -2055,12 +2141,12 @@ void raminit(sysinfo_t *const sysinfo, const int s3resume)
 	configure_dram_control_mode(timings, dimms);
 
 	/* Initialize RCOMP. */
-	rcomp_initialization(sysinfo->stepping, sysinfo->sff);
+	rcomp_initialization(sysinfo->spd_type, sysinfo->stepping, sysinfo->sff);
 
 	/* Power-up DRAM. */
-	dram_powerup(s3resume);
+	dram_powerup(sysinfo->spd_type, sysinfo->stepping, s3resume);
 	/* Program DRAM timings. */
-	dram_program_timings(timings);
+	dram_program_timings(sysinfo->spd_type, timings);
 	/* Program number of banks. */
 	dram_program_banks(dimms);
 	/* Enable DRAM clock pairs for populated DIMMs. */
@@ -2068,7 +2154,10 @@ void raminit(sysinfo_t *const sysinfo, const int s3resume)
 		mchbar_setbits32(CxDCLKDIS_MCHBAR(ch), CxDCLKDIS_ENABLE);
 
 	/* Enable On-Die Termination. */
-	odt_setup(timings, sysinfo->sff);
+	if (sysinfo->spd_type == DDR2)
+		ddr2_odt_setup(timings, sysinfo->sff);
+	else
+		ddr3_odt_setup(timings, sysinfo->sff);
 	/* Miscellaneous settings. */
 	misc_settings(timings, sysinfo->stepping);
 	/* Program clock crossing registers. */
@@ -2107,7 +2196,7 @@ void raminit(sysinfo_t *const sysinfo, const int s3resume)
 		ddr3_calibrate_zq();
 
 	/* Perform receive-enable calibration. */
-	raminit_receive_enable_calibration(timings, dimms);
+	raminit_receive_enable_calibration(sysinfo->spd_type, timings, dimms);
 	/* Lend clock values from receive-enable calibration. */
 	mchbar_clrsetbits32(CxDRT5_MCHBAR(0), 0xf0,
 		(((mchbar_read32(CxDRT3_MCHBAR(0)) >> 7) - 1) & 0xf) << 4);

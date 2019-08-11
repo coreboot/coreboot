@@ -76,6 +76,15 @@ typedef enum { /* as in DDR3 spd */
 	CHIP_CAP_16G	= 6,
 } chip_capacity_t;
 
+typedef enum { /* as in DDR2 spd */
+	REFRESH_15_625	= 0,
+	REFRESH_3_9	= 1,
+	REFRESH_7_8	= 2,
+	REFRESH_31_25	= 3,
+	REFRESH_62_5	= 4,
+	REFRESH_125	= 5,
+} refresh_rate_t;
+
 typedef struct {
 	unsigned int	CAS;
 	fsb_clock_t	fsb_clock;
@@ -97,6 +106,7 @@ typedef struct {
 				      0xa - 0xf: raw card type A - F */
 	chip_width_t	chip_width;
 	chip_capacity_t	chip_capacity;
+	refresh_rate_t	refresh;
 	unsigned int	page_size; /* of whole DIMM in Bytes (4096 or 8192) */
 	unsigned int	banks;
 	unsigned int	ranks;
@@ -411,7 +421,7 @@ u32 raminit_get_rank_addr(unsigned int channel, unsigned int rank);
 
 void raminit_rcomp_calibration(stepping_t stepping);
 void raminit_reset_readwrite_pointers(void);
-void raminit_receive_enable_calibration(const timings_t *, const dimminfo_t *);
+void raminit_receive_enable_calibration(int ddr_type, const timings_t *, const dimminfo_t *);
 void raminit_write_training(const mem_clock_t, const dimminfo_t *, int s3resume);
 void raminit_read_training(const dimminfo_t *, int s3resume);
 

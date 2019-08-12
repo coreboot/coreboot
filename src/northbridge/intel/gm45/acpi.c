@@ -69,9 +69,11 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 
 static unsigned long acpi_fill_dmar(unsigned long current)
 {
-	int me_active = (pcidev_on_root(3, 0) != NULL) &&
-		(pci_read_config8(pcidev_on_root(3, 0), PCI_CLASS_REVISION) !=
-									 0xff);
+	const struct device *dev;
+
+	dev = pcidev_on_root(3, 0);
+	int me_active = dev && dev->enabled;
+
 	int stepping = pci_read_config8(pcidev_on_root(0, 0),
 							   PCI_CLASS_REVISION);
 

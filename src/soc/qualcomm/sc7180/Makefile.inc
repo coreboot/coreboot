@@ -40,6 +40,7 @@ ramstage-y += gpio.c
 ramstage-$(CONFIG_DRIVERS_UART) += uart_bitbang.c
 ramstage-y += clock.c
 ramstage-$(CONFIG_SC7180_QSPI) += qspi.c
+ramstage-y += aop_load_reset.c
 
 ################################################################################
 

@@ -32,3 +32,8 @@ void sc7180_mmu_init(void)
 
 	mmu_enable();
 }
+
+void soc_mmu_dram_config_post_dram_init(void)
+{
+	mmu_config_range((void *)_aop, REGION_SIZE(aop), CACHED_RAM);
+}

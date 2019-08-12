@@ -24,8 +24,16 @@
 #define BSRAM_START(addr) SYMBOL(bsram, addr)
 #define BSRAM_END(addr) SYMBOL(ebsram, addr)
 
+/* AOP : 0x0B000000 - 0x0B100000 */
+#define AOPSRAM_START(addr) SYMBOL(aopsram, addr)
+#define AOPSRAM_END(addr) SYMBOL(eaopsram, addr)
+
 SECTIONS
 {
+	AOPSRAM_START(0x0B000000)
+	REGION(aop, 0x0B000000, 0x100000, 4096)
+	AOPSRAM_END(0x0B100000)
+
 	SSRAM_START(0x14680000)
 	OVERLAP_VERSTAGE_ROMSTAGE(0x14680000, 100K)
 	REGION(qcsdi, 0x14699000, 52K, 4K)
@@ -52,6 +60,7 @@ SECTIONS
 
 	DRAM_START(0x80000000)
 	/* Various hardware/software subsystems make use of this area */
+	REGION(dram_aop,  0x80800000, 0x040000, 0x1000)
 	REGION(dram_soc,  0x80900000, 0x300000, 0x1000)
 	BL31(0x80C00000, 0x1A800000)
 	POSTRAM_CBFS_CACHE(0x9F800000, 16M)

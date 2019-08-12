@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2018-2019, The Linux Foundation.  All rights reserved.
+ * Copyright (C) 2019, The Linux Foundation.  All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -13,18 +13,9 @@
  * GNU General Public License for more details.
  */
 
-#ifndef _SOC_QUALCOMM_SC7180_SYMBOLS_H_
-#define _SOC_QUALCOMM_SC7180_SYMBOLS_H_
+#ifndef _SOC_QUALCOMM_SC7180_AOP_H__
+#define _SOC_QUALCOMM_SC7180_AOP_H__
 
-#include <symbols.h>
+void aop_fw_load_reset(void);
 
-DECLARE_REGION(ssram)
-DECLARE_REGION(bsram)
-DECLARE_REGION(dram_aop)
-DECLARE_REGION(dram_soc)
-DECLARE_REGION(dcb)
-DECLARE_REGION(pmic)
-DECLARE_REGION(limits_cfg)
-DECLARE_REGION(aop)
-
-#endif /* _SOC_QUALCOMM_SC7180_SYMBOLS_H_ */
+#endif  // _SOC_QUALCOMM_SC7180_AOP_H__

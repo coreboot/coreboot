@@ -78,27 +78,32 @@ bool cpu_has_alternative_smrr(void)
 	}
 }
 
+static void write_smrr_alt(struct smm_relocation_params *relo_params)
+{
+	msr_t msr;
+	msr = rdmsr(IA32_FEATURE_CONTROL);
+	/* SMRR enabled and feature locked */
+	if (!((msr.lo & SMRR_ENABLE)
+			&& (msr.lo & FEATURE_CONTROL_LOCK_BIT))) {
+		printk(BIOS_WARNING,
+			"SMRR not enabled, skip writing SMRR...\n");
+		return;
+	}
+
+	printk(BIOS_DEBUG, "Writing SMRR. base = 0x%08x, mask=0x%08x\n",
+	       relo_params->smrr_base.lo, relo_params->smrr_mask.lo);
+
+	wrmsr(MSR_SMRR_PHYS_BASE, relo_params->smrr_base);
+	wrmsr(MSR_SMRR_PHYS_MASK, relo_params->smrr_mask);
+}
+
 static void write_smrr(struct smm_relocation_params *relo_params)
 {
 	printk(BIOS_DEBUG, "Writing SMRR. base = 0x%08x, mask=0x%08x\n",
 	       relo_params->smrr_base.lo, relo_params->smrr_mask.lo);
 
-	if (cpu_has_alternative_smrr()) {
-		msr_t msr;
-		msr = rdmsr(IA32_FEATURE_CONTROL);
-		/* SMRR enabled and feature locked */
-		if (!((msr.lo & SMRR_ENABLE)
-				&& (msr.lo & FEATURE_CONTROL_LOCK_BIT))) {
-			printk(BIOS_WARNING,
-				"SMRR not enabled, skip writing SMRR...\n");
-			return;
-		}
-		wrmsr(MSR_SMRR_PHYS_BASE, relo_params->smrr_base);
-		wrmsr(MSR_SMRR_PHYS_MASK, relo_params->smrr_mask);
-	} else {
-		wrmsr(IA32_SMRR_PHYS_BASE, relo_params->smrr_base);
-		wrmsr(IA32_SMRR_PHYS_MASK, relo_params->smrr_mask);
-	}
+	wrmsr(IA32_SMRR_PHYS_BASE, relo_params->smrr_base);
+	wrmsr(IA32_SMRR_PHYS_MASK, relo_params->smrr_mask);
 }
 
 static void fill_in_relocation_params(struct smm_relocation_params *params)
@@ -235,7 +240,12 @@ void smm_relocation_handler(int cpu, uintptr_t curr_smbase,
 
 	/* Write EMRR and SMRR MSRs based on indicated support. */
 	mtrr_cap = rdmsr(MTRR_CAP_MSR);
-	if (mtrr_cap.lo & SMRR_SUPPORTED && relo_params->smrr_mask.lo != 0)
+	if (!(mtrr_cap.lo & SMRR_SUPPORTED && relo_params->smrr_mask.lo != 0))
+		return;
+
+	if (cpu_has_alternative_smrr())
+		write_smrr_alt(relo_params);
+	else
 		write_smrr(relo_params);
 }
 

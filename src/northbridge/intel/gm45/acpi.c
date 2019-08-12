@@ -74,6 +74,9 @@ static unsigned long acpi_fill_dmar(unsigned long current)
 	dev = pcidev_on_root(3, 0);
 	int me_active = dev && dev->enabled;
 
+	dev = pcidev_on_root(2, 0);
+	int igd_active = dev && dev->enabled;
+
 	int stepping = pci_read_config8(pcidev_on_root(0, 0),
 							   PCI_CLASS_REVISION);
 
@@ -82,7 +85,7 @@ static unsigned long acpi_fill_dmar(unsigned long current)
 	current += acpi_create_dmar_ds_pci(current, 0, 0x1b, 0);
 	acpi_dmar_drhd_fixup(tmp, current);
 
-	if (stepping != STEPPING_B2) {
+	if (stepping != STEPPING_B2 && igd_active) {
 		tmp = current;
 		current += acpi_create_dmar_drhd(current, 0, 0, IOMMU_BASE2);
 		current += acpi_create_dmar_ds_pci(current, 0, 0x2, 0);

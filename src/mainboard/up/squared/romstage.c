@@ -15,10 +15,19 @@
 
 #include <string.h>
 #include <soc/romstage.h>
+#include <soc/gpio_apl.h>
 #include <fsp/api.h>
 #include <FspmUpd.h>
 #include <console/console.h>
+#include <gpio.h>
 #include "gpio.h"
+
+/*
+ * Offsets:
+ *  - GPIO_214: 0xd8
+ *  - GPIO_215: 0xe0
+ */
+static const uint8_t memory_skuid_pads[] = { GPIO_214, GPIO_215 };
 
 static const uint8_t ch0_bit_swizzling[] = {
 	0x0D, 0x0A, 0x08, 0x0B, 0x0C, 0x0F, 0x0E, 0x09,
@@ -48,49 +57,103 @@ static const uint8_t ch3_bit_swizzling[] = {
 	0x19, 0x1F, 0x1D, 0x1B, 0x1E, 0x18, 0x1C, 0x1A
 };
 
+/*
+ *  GPIO215  GPIO214  Memory size
+ *     0        0       2 GiB
+ *     0        1       4 GiB
+ *     1        0       8 GiB
+ *     1        1       Reserved
+ */
+static uint8_t get_memory_skuid(void)
+{
+	uint8_t memory_skuid = 0;
+
+	for (uint8_t i = 0; i < ARRAY_SIZE(memory_skuid_pads); i++) {
+		uint8_t rx_state = gpio_get(memory_skuid_pads[i]);
+		memory_skuid |= rx_state << i;
+	}
+	return memory_skuid;
+}
 
 void mainboard_memory_init_params(FSPM_UPD *memupd)
 {
 	printk(BIOS_DEBUG, "MAINBOARD: %s/%s called\n", __FILE__, __func__);
 
+	FSP_M_CONFIG *config = &memupd->FspmConfig;
+
 	gpio_configure_pads(gpio_table, ARRAY_SIZE(gpio_table));
 
-	memupd->FspmConfig.Package = 0x1;			// 0x0
-	memupd->FspmConfig.Profile = 0xB;			// 0x19
-	memupd->FspmConfig.MemoryDown = 0x1;			// 0x0
-	memupd->FspmConfig.DDR3LPageSize = 0x0;			// 0x1
-	memupd->FspmConfig.DIMM0SPDAddress = 0x0;		// 0xa0
-	memupd->FspmConfig.DIMM1SPDAddress = 0x0;		// 0xa4
-	memupd->FspmConfig.RmtCheckRun = 0x3;			// 0x0
-	memupd->FspmConfig.RmtMarginCheckScaleHighThreshold = 0xC8;	// 0x0
-	memupd->FspmConfig.EnhancePort8xhDecoding = 0x0;	// 0x1
-	memupd->FspmConfig.NpkEn = 0x0;				// 0x3
-	memupd->FspmConfig.PrimaryVideoAdaptor = 0x2;		// 0x0
+	uint8_t memory_skuid = get_memory_skuid();
+	printk(BIOS_DEBUG, "MAINBOARD: Found memory SKU ID: 0x%02x\n", memory_skuid);
 
-	memupd->FspmConfig.Ch0_RankEnable = 0x1;		// 0x0
-	memupd->FspmConfig.Ch0_DeviceWidth = 0x1;		// 0x0
-	memupd->FspmConfig.Ch0_DramDensity = 0x2;		// 0x0
-	memupd->FspmConfig.Ch0_Option = 0x3;			// 0x0
-	memupd->FspmConfig.Ch1_RankEnable = 0x1;		// 0x0
-	memupd->FspmConfig.Ch1_DeviceWidth = 0x1;		// 0x0
-	memupd->FspmConfig.Ch1_DramDensity = 0x2;		// 0x0
-	memupd->FspmConfig.Ch1_Option = 0x3;			// 0x0
-	memupd->FspmConfig.Ch2_RankEnable = 0x1;		// 0x0
-	memupd->FspmConfig.Ch2_DeviceWidth = 0x1;		// 0x0
-	memupd->FspmConfig.Ch2_DramDensity = 0x2;		// 0x0
-	memupd->FspmConfig.Ch2_Option = 0x3;			// 0x0
-	memupd->FspmConfig.Ch3_RankEnable = 0x1;		// 0x0
-	memupd->FspmConfig.Ch3_DeviceWidth = 0x1;		// 0x0
-	memupd->FspmConfig.Ch3_DramDensity = 0x2;		// 0x0
-	memupd->FspmConfig.Ch3_Option = 0x3;			// 0x0
-	memupd->FspmConfig.StartTimerTickerOfPfetAssert = 0x4E20;	// 0x0
+	switch (memory_skuid) {
+	case 0: /* 2GB */
+		config->DualRankSupportEnable = 0;
+		config->Ch0_RankEnable        = 1;
+		config->Ch0_DramDensity       = 2;
+		config->Ch1_RankEnable        = 1;
+		config->Ch1_DramDensity       = 2;
+		config->Ch2_RankEnable        = 0;
+		config->Ch3_RankEnable        = 0;
+		printk(BIOS_INFO, "MAINBOARD: Found supported memory: 2GB\n");
+		break;
+	case 1: /* 4GB */
+		config->DualRankSupportEnable = 1;
+		config->Ch0_RankEnable        = 1;
+		config->Ch0_DramDensity       = 2;
+		config->Ch1_RankEnable        = 1;
+		config->Ch1_DramDensity       = 2;
+		config->Ch2_RankEnable        = 1;
+		config->Ch2_DramDensity       = 2;
+		config->Ch3_RankEnable        = 1;
+		config->Ch3_DramDensity       = 2;
+		printk(BIOS_INFO, "MAINBOARD: Found supported memory: 4GB\n");
+		break;
+	case 2: /* 8GB */
+		config->DualRankSupportEnable = 1;
+		config->Ch0_RankEnable        = 3;
+		config->Ch0_DramDensity       = 2;
+		config->Ch1_RankEnable        = 3;
+		config->Ch1_DramDensity       = 2;
+		config->Ch2_RankEnable        = 3;
+		config->Ch2_DramDensity       = 2;
+		config->Ch3_RankEnable        = 3;
+		config->Ch3_DramDensity       = 2;
+		printk(BIOS_INFO, "MAINBOARD: Found supported memory: 8GB\n");
+		break;
+	default:
+		printk(BIOS_INFO, "MAINBOARD: No supported memory found!\n");
+		break;
+	}
 
-	memcpy(memupd->FspmConfig.Ch0_Bit_swizzling, &ch0_bit_swizzling,
+	config->Package = 0x1;			// 0x0
+	config->Profile = 0xB;			// 0x19
+	config->MemoryDown = 0x1;		// 0x0
+	config->DDR3LPageSize = 0x0;		// 0x1
+	config->DIMM0SPDAddress = 0x0;		// 0xa0
+	config->DIMM1SPDAddress = 0x0;		// 0xa4
+	config->RmtCheckRun = 0x3;		// 0x0
+	config->RmtMarginCheckScaleHighThreshold = 0xC8;	// 0x0
+	config->EnhancePort8xhDecoding = 0x0;	// 0x1
+	config->NpkEn = 0x0;			// 0x3
+	config->PrimaryVideoAdaptor = 0x2;	// 0x0
+
+	config->Ch0_DeviceWidth = 0x1;		// 0x0
+	config->Ch0_Option = 0x3;		// 0x0
+	config->Ch1_DeviceWidth = 0x1;		// 0x0
+	config->Ch1_Option = 0x3;		// 0x0
+	config->Ch2_DeviceWidth = 0x1;		// 0x0
+	config->Ch2_Option = 0x3;		// 0x0
+	config->Ch3_DeviceWidth = 0x1;		// 0x0
+	config->Ch3_Option = 0x3;		// 0x0
+	config->StartTimerTickerOfPfetAssert = 0x4E20;	// 0x0
+
+	memcpy(config->Ch0_Bit_swizzling, &ch0_bit_swizzling,
 			sizeof(ch0_bit_swizzling));
-	memcpy(memupd->FspmConfig.Ch1_Bit_swizzling, &ch1_bit_swizzling,
+	memcpy(config->Ch1_Bit_swizzling, &ch1_bit_swizzling,
 			sizeof(ch1_bit_swizzling));
-	memcpy(memupd->FspmConfig.Ch2_Bit_swizzling, &ch2_bit_swizzling,
+	memcpy(config->Ch2_Bit_swizzling, &ch2_bit_swizzling,
 			sizeof(ch2_bit_swizzling));
-	memcpy(memupd->FspmConfig.Ch3_Bit_swizzling, &ch3_bit_swizzling,
+	memcpy(config->Ch3_Bit_swizzling, &ch3_bit_swizzling,
 			sizeof(ch3_bit_swizzling));
 }

@@ -53,3 +53,8 @@ verstage-y += i2c.c
 romstage-y += i2c.c
 ramstage-y += i2c.c
 ramstage-y += i2c_bus.c
+
+bootblock-y += mmio.c
+verstage-y += mmio.c
+romstage-y += mmio.c
+ramstage-y += mmio.c

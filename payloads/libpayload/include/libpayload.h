@@ -446,6 +446,25 @@ static inline int __ffs(u32 x) { return log2(x & (u32)(-(s32)x)); }
 
 
 /**
+ * @defgroup mmio MMIO helper functions
+ * @{
+ */
+#if !CONFIG(LP_ARCH_MIPS)
+void buffer_from_fifo32(void *buffer, size_t size, void *fifo,
+			int fifo_stride, int fifo_width);
+void buffer_to_fifo32_prefix(void *buffer, u32 prefix, int prefsz, size_t size,
+			     void *fifo, int fifo_stride, int fifo_width);
+static inline void buffer_to_fifo32(void *buffer, size_t size, void *fifo,
+				    int fifo_stride, int fifo_width)
+{
+	buffer_to_fifo32_prefix(buffer, size, 0, 0, fifo,
+				fifo_stride, fifo_width);
+}
+#endif
+/** @} */
+
+
+/**
  * @defgroup hash Hashing functions
  * @{
  */

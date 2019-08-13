@@ -159,7 +159,7 @@ static int pch_check_decode_enable(void)
 
 void pch_early_iorange_init(void)
 {
-	uint16_t io_enables = LPC_IOE_SUPERIO_2E_2F | LPC_IOE_KBC_60_64 |
+	uint16_t io_enables = LPC_IOE_EC_4E_4F | LPC_IOE_SUPERIO_2E_2F | LPC_IOE_KBC_60_64 |
 		LPC_IOE_EC_62_66 | LPC_IOE_LGE_200;
 
 	/* IO Decode Range */

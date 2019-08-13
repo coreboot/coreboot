@@ -14,3 +14,4 @@
 ##
 
 ramstage-y += irqroute.c
+ramstage-y += ipmi.c

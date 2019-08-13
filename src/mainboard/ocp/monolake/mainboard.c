@@ -19,6 +19,9 @@
 #if CONFIG(VGA_ROM_RUN)
 #include <x86emu/x86emu.h>
 #endif
+#include <pc80/mc146818rtc.h>
+#include <cf9_reset.h>
+#include "ipmi.h"
 
 #define BMC_KCS_BASE 0xca2
 #define INTERFACE_IS_IO 0x1
@@ -57,9 +60,18 @@ static void mainboard_enable(struct device *dev)
 	/* Enable access to the BMC IPMI via KCS */
 	struct device *lpc_sio_dev = dev_find_slot_pnp(BMC_KCS_BASE, 0);
 	struct resource *res = new_resource(lpc_sio_dev, BMC_KCS_BASE);
+	ipmi_oem_rsp_t rsp;
 	res->base = BMC_KCS_BASE;
 	res->size = 1;
 	res->flags = IORESOURCE_IO | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+
+	if (is_ipmi_clear_cmos_set(&rsp)) {
+		/* TODO: Should also try to restore CMOS to cmos.default
+		 * if USE_OPTION_TABLE is set */
+		cmos_init(1);
+		clear_ipmi_flags(&rsp);
+		system_reset();
+	}
 }
 
 struct chip_operations mainboard_ops = {

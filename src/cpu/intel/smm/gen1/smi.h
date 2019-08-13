@@ -13,8 +13,6 @@
 
 #include <device/device.h>
 
-void bsp_init_and_start_aps(struct bus *cpu_bus);
-
 /* These helpers are for performing SMM relocation. */
 void southbridge_smm_init(void);
 u32 northbridge_get_tseg_base(void);

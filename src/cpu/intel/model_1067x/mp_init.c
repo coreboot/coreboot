@@ -21,6 +21,7 @@
 #include <cpu/intel/microcode.h>
 #include <cpu/intel/smm/gen1/smi.h>
 #include <cpu/intel/common/common.h>
+#include <device/device.h>
 
 /* Parallel MP initialization support. */
 static const void *microcode_patch;
@@ -110,7 +111,7 @@ static const struct mp_ops mp_ops = {
 	.post_mp_init = post_mp_init,
 };
 
-void bsp_init_and_start_aps(struct bus *cpu_bus)
+void mp_init_cpus(struct bus *cpu_bus)
 {
 	microcode_patch = intel_microcode_find();
 

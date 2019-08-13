@@ -161,8 +161,6 @@ void smm_info(uintptr_t *perm_smbase, size_t *perm_smsize,
 void smm_initialize(void);
 void smm_relocate(void);
 void smm_lock(void);
-struct bus;
-void bsp_init_and_start_aps(struct bus *cpu_bus);
 /* Determine if HyperThreading is disabled. The variable is not valid until
  * setup_ap_init() has been called. */
 #endif

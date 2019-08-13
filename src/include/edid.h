@@ -95,6 +95,7 @@ struct edid {
 
 	int hdmi_monitor_detected;
 	char ascii_string[EDID_ASCII_STRING_LENGTH + 1];
+	char manufacturer_name[3 + 1];
 };
 
 enum edid_status {

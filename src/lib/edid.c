@@ -72,7 +72,6 @@ struct edid_context {
 /* Stuff that isn't used anywhere but is nice to pretty-print while
    we're decoding everything else. */
 static struct {
-	char manuf_name[4];
 	unsigned int model;
 	unsigned int serial;
 	unsigned int year;
@@ -94,20 +93,20 @@ static struct {
 
 static struct edid tmp_edid;
 
-static char *manufacturer_name(unsigned char *x)
+static int manufacturer_name(unsigned char *x, char *output)
 {
-	extra_info.manuf_name[0] = ((x[0] & 0x7C) >> 2) + '@';
-	extra_info.manuf_name[1] = ((x[0] & 0x03) << 3) + ((x[1] & 0xE0) >> 5)
-		+ '@';
-	extra_info.manuf_name[2] = (x[1] & 0x1F) + '@';
-	extra_info.manuf_name[3] = 0;
+	output[0] = ((x[0] & 0x7C) >> 2) + '@';
+	output[1] = ((x[0] & 0x03) << 3) + ((x[1] & 0xE0) >> 5) + '@';
+	output[2] = (x[1] & 0x1F) + '@';
+	output[3] = 0;
 
-	if (isupper(extra_info.manuf_name[0]) &&
-	    isupper(extra_info.manuf_name[1]) &&
-	    isupper(extra_info.manuf_name[2]))
-		return extra_info.manuf_name;
+	if (isupper(output[0]) &&
+	    isupper(output[1]) &&
+	    isupper(output[2]))
+		return 1;
 
-	return NULL;
+	memset(output, 0, 4);
+	return 0;
 }
 
 static int
@@ -1154,7 +1153,7 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 		return EDID_ABSENT;
 	}
 
-	if (manufacturer_name(edid + 0x08))
+	if (manufacturer_name(edid + 0x08, out->manufacturer_name))
 		c.manufacturer_name_well_formed = 1;
 
 	extra_info.model = (unsigned short)(edid[0x0A] + (edid[0x0B] << 8));
@@ -1162,7 +1161,7 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 				     + (edid[0x0E] << 16) + (edid[0x0F] << 24));
 
 	printk(BIOS_SPEW, "Manufacturer: %s Model %x Serial Number %u\n",
-	       extra_info.manuf_name,
+	       out->manufacturer_name,
 	       (unsigned short)(edid[0x0A] + (edid[0x0B] << 8)),
 	       (unsigned int)(edid[0x0C] + (edid[0x0D] << 8)
 			      + (edid[0x0E] << 16) + (edid[0x0F] << 24)));

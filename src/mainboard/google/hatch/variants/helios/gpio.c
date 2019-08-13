@@ -125,6 +125,8 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_NF(GPP_B17, NONE, DEEP, NF1),
 	/* B18 : H1_SLAVE_SPI_MOSI_R */
 	PAD_CFG_NF(GPP_B18, NONE, DEEP, NF1),
+	/* C11 : GPP_C11 ==> EN_FP_RAILS */
+	PAD_CFG_GPO(GPP_C11, 1, DEEP),
 	/* C14 : BT_DISABLE_L */
 	PAD_CFG_GPO(GPP_C14, 0, DEEP),
 	/* PCH_WP_OD */

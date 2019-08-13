@@ -17,7 +17,7 @@
 #include <ec/google/chromeec/ec.h>
 #include <ec/google/chromeec/smm.h>
 #include <elog.h>
-#include <soc/smm.h>
+#include <intelblocks/smihandler.h>
 #include <variant/ec.h>
 
 void mainboard_smi_espi_handler(void)

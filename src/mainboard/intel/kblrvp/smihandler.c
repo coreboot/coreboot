@@ -21,7 +21,7 @@
 #include <soc/iomap.h>
 #include <soc/nvs.h>
 #include <soc/pm.h>
-#include <soc/smm.h>
+#include <intelblocks/smihandler.h>
 #include "ec.h"
 #include <variant/gpio.h>
 

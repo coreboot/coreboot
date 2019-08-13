@@ -16,7 +16,7 @@
 #include <cpu/x86/smm.h>
 #include <ec/google/chromeec/smm.h>
 #include <gpio.h>
-#include <soc/smm.h>
+#include <intelblocks/smihandler.h>
 #include "ec.h"
 #include "gpio.h"
 

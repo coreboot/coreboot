@@ -19,7 +19,7 @@
 #include <elog.h>
 #include <gpio.h>
 #include <soc/gpio.h>
-#include <soc/smm.h>
+#include <intelblocks/smihandler.h>
 
 #include <baseboard/variants.h>
 #include <variant/gpio.h>

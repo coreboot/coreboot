@@ -44,9 +44,6 @@ struct smm_relocation_params {
 	int smm_save_state_in_msrs;
 };
 
-/* Mainboard handler for eSPI SMIs */
-void mainboard_smi_espi_handler(void);
-
 void smm_relocation_handler(int cpu, uintptr_t curr_smbase,
 				uintptr_t staggered_smbase);
 void smm_info(uintptr_t *perm_smbase, size_t *perm_smsize,

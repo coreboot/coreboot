@@ -15,7 +15,7 @@
 
 #include <cpu/x86/smm.h>
 #include <ec/google/wilco/smm.h>
-#include <soc/smm.h>
+#include <intelblocks/smihandler.h>
 #include <variant/ec.h>
 
 void mainboard_smi_espi_handler(void)

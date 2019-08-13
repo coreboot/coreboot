@@ -18,6 +18,7 @@
 static struct panel_description AUO_KD101N80_45NA = {
 	.edid = {
 		.ascii_string = "KD101N80-45NA",
+		.manufacturer_name = "AUO",
 		.panel_bits_per_color = 8,
 		.panel_bits_per_pixel = 24,
 		.mode = {
@@ -45,6 +46,7 @@ static struct panel_description AUO_KD101N80_45NA = {
 static struct panel_description BOE_TV101WUM_NL6 = {
 	.edid = {
 		.ascii_string = "TV101WUM-NL6",
+		.manufacturer_name = "BOE",
 		.panel_bits_per_color = 8,
 		.panel_bits_per_pixel = 24,
 		.mode = {

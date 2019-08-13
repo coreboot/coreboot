@@ -108,8 +108,9 @@ static struct panel_description *get_active_panel(void)
 	const char *name = panel->edid.ascii_string;
 	if (name[0] == '\0')
 		name = "unknown name";
-	printk(BIOS_INFO, "%s: Found ID %d: '%s' %s\n", __func__,
-	       panel_id, name, mode_name ?  mode_name : "(unknown mode)");
+	printk(BIOS_INFO, "%s: Found ID %d: '%s %s' %s\n", __func__,
+	       panel_id, panel->edid.manufacturer_name, name,
+	       mode_name ?  mode_name : "(unknown mode)");
 	return panel;
 }
 

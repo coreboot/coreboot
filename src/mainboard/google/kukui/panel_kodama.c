@@ -18,6 +18,7 @@
 static struct panel_description BOE_TV101WUM_N53 = {
 	.edid = {
 		.ascii_string = "TV101WUM-N53",
+		.manufacturer_name = "BOE",
 		.panel_bits_per_color = 8,
 		.panel_bits_per_pixel = 24,
 		.mode = {

@@ -39,7 +39,8 @@ static void power_on_ssd2858(void)
 static struct panel_description P097PFG_SSD2858 = {
 	.power_on = power_on_ssd2858,
 	.edid = {
-		.ascii_string = "CMN P097PFG",
+		.ascii_string = "P097PFG",
+		.manufacturer_name = "CMN",
 		.panel_bits_per_color = 8,
 		.panel_bits_per_pixel = 24,
 		.mode = {

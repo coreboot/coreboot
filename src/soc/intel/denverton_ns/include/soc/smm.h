@@ -28,7 +28,6 @@ struct smm_relocation_attrs {
 #include <stdint.h>
 void southcluster_smm_clear_state(void);
 void southcluster_smm_enable_smi(void);
-void southcluster_smm_save_gpio_route(uint32_t route);
 #endif
 
 #endif /* _DENVERTON_NS_SMM_H_ */

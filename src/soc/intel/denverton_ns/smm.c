@@ -27,12 +27,6 @@
 #include <soc/pm.h>
 #include <soc/smm.h>
 
-/* Save the gpio route register. The settings are committed from
- * southcluster_smm_enable_smi(). */
-static uint32_t gpio_route;
-
-void southcluster_smm_save_gpio_route(uint32_t route) { gpio_route = route; }
-
 void southcluster_smm_clear_state(void)
 {
 	uint32_t smi_en;

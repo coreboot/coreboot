@@ -31,11 +31,11 @@
 #include <cpu/x86/cache.h>
 #include <cpu/x86/name.h>
 #include <cpu/x86/smm.h>
+#include <cpu/intel/smm_reloc.h>
 #include <intelblocks/cpulib.h>
 #include <intelblocks/fast_spi.h>
 #include <intelblocks/mp_init.h>
 #include <intelblocks/sgx.h>
-#include <intelblocks/smm.h>
 #include <soc/cpu.h>
 #include <soc/msr.h>
 #include <soc/pci_devs.h>

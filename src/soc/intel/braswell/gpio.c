@@ -176,7 +176,7 @@ static void setup_gpio_route(const struct soc_gpio_map *sw_gpios,
 	route_reg, alt_gpio_smi, gpe0a_en);
 #endif
 	/* Save as an smm param */
-	southcluster_smm_save_param(SMM_SAVE_PARAM_GPIO_ROUTE, route_reg);
+	smm_southcluster_save_param(SMM_SAVE_PARAM_GPIO_ROUTE, route_reg);
 }
 
 

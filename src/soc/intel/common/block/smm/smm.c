@@ -18,8 +18,8 @@
 #include <bootstate.h>
 #include <console/console.h>
 #include <cpu/x86/smm.h>
+#include <cpu/intel/smm_reloc.h>
 #include <intelblocks/pmclib.h>
-#include <intelblocks/smm.h>
 #include <intelblocks/systemagent.h>
 #include <soc/pm.h>
 

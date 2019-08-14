@@ -19,6 +19,7 @@
 #include <console/console.h>
 #include <cpu/cpu.h>
 #include <cpu/intel/microcode.h>
+#include <cpu/intel/smm_reloc.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/lapic.h>
 #include <cpu/x86/mp.h>
@@ -99,7 +100,7 @@ static void post_mp_init(void)
 	set_max_ratio();
 	/* Now that all APs have been relocated as well as the BSP let SMIs
 	   start flowing. */
-	southbridge_smm_enable_smi();
+	smm_southbridge_enable_smi();
 
 	/* Set SMI lock bits. */
 	smm_lock();

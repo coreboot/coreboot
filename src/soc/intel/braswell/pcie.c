@@ -148,7 +148,7 @@ static void pcie_enable(struct device *dev)
 		strpfusecfg = pci_read_config32(dev, STRPFUSECFG);
 
 		if (config->pcie_wake_enable)
-			southcluster_smm_save_param(
+			smm_southcluster_save_param(
 				SMM_SAVE_PARAM_PCIE_WAKE_ENABLE, 1);
 	}
 

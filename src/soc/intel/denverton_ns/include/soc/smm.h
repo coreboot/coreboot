@@ -24,10 +24,4 @@ struct smm_relocation_attrs {
 	uint32_t smrr_mask;
 };
 
-#if !defined(__PRE_RAM__) && !defined(__SMM___)
-#include <stdint.h>
-void southcluster_smm_clear_state(void);
-void southcluster_smm_enable_smi(void);
-#endif
-
 #endif /* _DENVERTON_NS_SMM_H_ */

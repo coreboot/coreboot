@@ -22,6 +22,7 @@
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/smm.h>
+#include <cpu/intel/smm_reloc.h>
 #include <cpu/intel/em64t100_save_state.h>
 #include <cpu/intel/turbo.h>
 #include <device/device.h>
@@ -254,7 +255,7 @@ static void post_mp_init(void)
 	 * Now that all APs have been relocated as well as the BSP let SMIs
 	 * start flowing.
 	 */
-	southcluster_smm_enable_smi();
+	smm_southbridge_enable_smi();
 }
 
 /*
@@ -268,7 +269,7 @@ static const struct mp_ops mp_ops = {
 	.pre_mp_init = pre_mp_init,
 	.get_cpu_count = get_cpu_count,
 	.get_smm_info = get_smm_info,
-	.pre_mp_smm_init = southcluster_smm_clear_state,
+	.pre_mp_smm_init = smm_southbridge_clear_state,
 	.relocation_handler = relocation_handler,
 	.post_mp_init = post_mp_init,
 };

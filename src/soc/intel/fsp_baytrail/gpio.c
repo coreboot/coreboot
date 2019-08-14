@@ -19,7 +19,6 @@
 #include <console/console.h>
 #include <soc/gpio.h>
 #include <soc/pmc.h>
-#include <soc/smm.h>
 
 /*
  * GPIO-to-Pad LUTs
@@ -211,7 +210,7 @@ static void setup_gpio_route(const struct soc_gpio_map *sus,
 		}
 	}
 
-	southcluster_smm_save_gpio_route(route_reg);
+	smm_southcluster_save_gpio_route(route_reg);
 }
 
 static void setup_dirqs(const u8 dirq[GPIO_MAX_DIRQS],

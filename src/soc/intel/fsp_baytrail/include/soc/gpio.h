@@ -349,6 +349,7 @@ struct gpio_bank {
 	const u8 gpio_f1_range_end;
 };
 
+void smm_southcluster_save_gpio_route(uint32_t route);
 void setup_soc_gpios(struct soc_gpio_config *config);
 /* This function is weak and can be overridden by a mainboard function. */
 struct soc_gpio_config* mainboard_get_gpios(void);

@@ -17,7 +17,9 @@
 #include <console/console.h>
 #include <cpu/cpu.h>
 #include <cpu/intel/common/common.h>
+#include <cpu/intel/em64t100_save_state.h>
 #include <cpu/intel/microcode.h>
+#include <cpu/intel/smm_reloc.h>
 #include <cpu/intel/turbo.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/lapic.h>
@@ -25,7 +27,6 @@
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/smm.h>
-#include <cpu/intel/em64t100_save_state.h>
 #include <reg_script.h>
 
 #include <soc/iosf.h>
@@ -198,10 +199,10 @@ static const struct mp_ops mp_ops = {
 	.get_cpu_count = get_cpu_count,
 	.get_smm_info = get_smm_info,
 	.get_microcode_info = get_microcode_info,
-	.pre_mp_smm_init = southcluster_smm_clear_state,
+	.pre_mp_smm_init = smm_southbridge_clear_state,
 	.per_cpu_smm_trigger = per_cpu_smm_trigger,
 	.relocation_handler = relocation_handler,
-	.post_mp_init = southcluster_smm_enable_smi,
+	.post_mp_init = smm_southbridge_enable_smi,
 };
 
 void baytrail_init_cpus(struct device *dev)

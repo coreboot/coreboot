@@ -54,24 +54,4 @@ static inline int smm_region_size(void)
 	return CONFIG_SMM_TSEG_SIZE;
 }
 
-void smm_relocation_handler(int cpu, uintptr_t curr_smbase,
-				uintptr_t staggered_smbase);
-void smm_info(uintptr_t *perm_smbase, size_t *perm_smsize,
-		size_t *smm_save_state_size);
-void smm_initialize(void);
-void smm_relocate(void);
-void smm_lock(void);
-
-/* These helpers are for performing SMM relocation. */
-void southbridge_trigger_smi(void);
-void southbridge_clear_smi_status(void);
-
-/*
- * The initialization of the southbridge is split into 2 components. One is
- * for clearing the state in the SMM registers. The other is for enabling
- * SMIs. They are split so that other work between the 2 actions.
- */
-void southbridge_smm_clear_state(void);
-void southbridge_smm_enable_smi(void);
-
 #endif

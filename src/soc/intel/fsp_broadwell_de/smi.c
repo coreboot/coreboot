@@ -16,12 +16,13 @@
  */
 
 #include <console/console.h>
+#include <cpu/intel/smm_reloc.h>
 #include <arch/io.h>
 #include <soc/iomap.h>
 #include <soc/lpc.h>
 #include <soc/smm.h>
 
-void southbridge_smm_clear_state(void)
+void smm_southbridge_clear_state(void)
 {
 	u32 smi_en;
 
@@ -41,7 +42,9 @@ void southbridge_smm_clear_state(void)
 	clear_pm1_status();
 }
 
-void southbridge_smm_enable_smi(void)
+static void southbridge_clear_smi_status(void);
+
+void smm_southbridge_enable_smi(void)
 {
 	printk(BIOS_DEBUG, "Enabling SMIs.\n");
 
@@ -54,7 +57,7 @@ void southbridge_smm_enable_smi(void)
 	enable_smi(EOS | GBL_SMI_EN);
 }
 
-void southbridge_trigger_smi(void)
+static void  __unused southbridge_trigger_smi(void)
 {
 	/*
 	 * There are several methods of raising a controlled SMI# via
@@ -74,7 +77,7 @@ void southbridge_trigger_smi(void)
 	outb(0x00, 0xb2);
 }
 
-void southbridge_clear_smi_status(void)
+static void southbridge_clear_smi_status(void)
 {
 	/* Clear SMI status */
 	clear_smi_status();

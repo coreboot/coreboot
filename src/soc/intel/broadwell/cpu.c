@@ -24,6 +24,7 @@
 #include <cpu/x86/lapic.h>
 #include <cpu/x86/mp.h>
 #include <cpu/intel/microcode.h>
+#include <cpu/intel/smm_reloc.h>
 #include <cpu/intel/speedstep.h>
 #include <cpu/intel/turbo.h>
 #include <cpu/x86/cache.h>
@@ -651,7 +652,7 @@ static void post_mp_init(void)
 
 	/* Now that all APs have been relocated as well as the BSP let SMIs
 	 * start flowing. */
-	southbridge_smm_enable_smi();
+	smm_southbridge_enable_smi();
 
 	/* Lock down the SMRAM space. */
 	smm_lock();

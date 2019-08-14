@@ -19,6 +19,7 @@
 #include <device/mmio.h>
 #include <console/console.h>
 #include <cpu/x86/smm.h>
+#include <cpu/intel/smm_reloc.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <soc/iomap.h>
@@ -28,12 +29,12 @@
 /* Save settings which will be committed in SMI functions. */
 static uint32_t smm_save_params[SMM_SAVE_PARAM_COUNT];
 
-void southcluster_smm_save_param(int param, uint32_t data)
+void smm_southcluster_save_param(int param, uint32_t data)
 {
 	smm_save_params[param] = data;
 }
 
-void southcluster_smm_clear_state(void)
+void smm_southbridge_clear_state(void)
 {
 	uint32_t smi_en;
 
@@ -58,7 +59,7 @@ void southcluster_smm_clear_state(void)
 	clear_pmc_status();
 }
 
-static void southcluster_smm_route_gpios(void)
+static void smm_southcluster_route_gpios(void)
 {
 	void *gpio_rout = (void *)(PMC_BASE_ADDRESS + GPIO_ROUT);
 	const unsigned short alt_gpio_smi = ACPI_BASE_ADDRESS + ALT_GPIO_SMI;
@@ -82,7 +83,7 @@ static void southcluster_smm_route_gpios(void)
 	outl(alt_gpio_reg, alt_gpio_smi);
 }
 
-void southcluster_smm_enable_smi(void)
+void smm_southbridge_enable_smi(void)
 {
 	uint16_t pm1_events = PWRBTN_EN | GBL_EN;
 
@@ -93,7 +94,7 @@ void southcluster_smm_enable_smi(void)
 	disable_gpe(PME_B0_EN);
 
 	/* Set up the GPIO route. */
-	southcluster_smm_route_gpios();
+	smm_southcluster_route_gpios();
 
 	/*
 	 * Enable SMI generation:

@@ -17,7 +17,6 @@
 #include <types.h>
 
 /* These helpers are for performing SMM relocation. */
-void southbridge_smm_init(void);
 u32 northbridge_get_tseg_base(void);
 u32 northbridge_get_tseg_size(void);
 void northbridge_write_smram(u8 smram);
@@ -25,8 +24,12 @@ void northbridge_write_smram(u8 smram);
 void smm_lock(void);
 void smm_relocate(void);
 
-/* parallel MP helper functions */
-void southbridge_smm_clear_state(void);
+/* The initialization of the southbridge is split into 2 components. One is
+ * for clearing the state in the SMM registers. The other is for enabling
+ * SMIs. They are split so that other work between the 2 actions. */
+void smm_southbridge_clear_state(void);
+void smm_southbridge_enable_smi(void);
+void smm_southbridge_enable(uint16_t pm1_events);
 
 /* To be removed. */
 void smm_initialize(void);

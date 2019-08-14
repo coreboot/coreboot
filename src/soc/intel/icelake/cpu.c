@@ -19,12 +19,12 @@
 #include <cpu/x86/lapic.h>
 #include <cpu/x86/mp.h>
 #include <cpu/x86/msr.h>
+#include <cpu/intel/smm_reloc.h>
 #include <cpu/intel/turbo.h>
 #include <fsp/api.h>
 #include <intelblocks/cpulib.h>
 #include <intelblocks/mp_init.h>
 #include <intelblocks/msr.h>
-#include <intelblocks/smm.h>
 #include <romstage_handoff.h>
 #include <soc/cpu.h>
 #include <soc/msr.h>

@@ -42,6 +42,7 @@
 #include "chip.h"
 #include "nehalem.h"
 #include "raminit.h"
+#include "raminit_tables.h"
 
 #define NORTHBRIDGE PCI_DEV(0, 0, 0)
 #define SOUTHBRIDGE PCI_DEV(0, 0x1f, 0)
@@ -356,8 +357,6 @@ const int cached_config = 0;
 #define NUM_RANKS 2
 #define RANK_SHIFT 28
 #define CHANNEL_SHIFT 10
-
-#include "raminit_tables.c"
 
 static void seq9(struct raminfo *info, int channel, int slot, int rank)
 {

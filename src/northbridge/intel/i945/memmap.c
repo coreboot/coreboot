@@ -22,10 +22,10 @@
 #include "i945.h"
 #include <console/console.h>
 #include <cpu/x86/mtrr.h>
+#include <cpu/x86/smm.h>
 #include <program_loading.h>
 #include <cpu/intel/smm_reloc.h>
 #include <stdint.h>
-#include <stage_cache.h>
 
 /* Decodes TSEG region size to bytes. */
 u32 decode_tseg_size(const u8 esmramc)
@@ -45,7 +45,7 @@ u32 decode_tseg_size(const u8 esmramc)
 	}
 }
 
-u32 northbridge_get_tseg_base(void)
+static uintptr_t northbridge_get_tseg_base(void)
 {
 	uintptr_t tom;
 
@@ -60,7 +60,7 @@ u32 northbridge_get_tseg_base(void)
 	return tom;
 }
 
-u32 northbridge_get_tseg_size(void)
+static size_t northbridge_get_tseg_size(void)
 {
 	const u8 esmramc = pci_read_config8(PCI_DEV(0, 0, 0), ESMRAMC);
 	return decode_tseg_size(esmramc);
@@ -89,14 +89,10 @@ u32 decode_igd_memory_size(const u32 gms)
 	return ggc2uma[gms] << 10;
 }
 
-void stage_cache_external_region(void **base, size_t *size)
+void smm_region(uintptr_t *start, size_t *size)
 {
-	/* The stage cache lives at the end of the TSEG region.
-	 * The top of RAM is defined to be the TSEG base address.
-	 */
-	*size = CONFIG_SMM_RESERVED_SIZE;
-	*base = (void *)((uintptr_t)northbridge_get_tseg_base()
-		+ northbridge_get_tseg_size() - CONFIG_SMM_RESERVED_SIZE);
+	*start = northbridge_get_tseg_base();
+	*size = northbridge_get_tseg_size();
 }
 
 void fill_postcar_frame(struct postcar_frame *pcf)

@@ -21,8 +21,8 @@
 #include <cbmem.h>
 #include <console/console.h>
 #include <cpu/x86/mtrr.h>
+#include <cpu/x86/smm.h>
 #include <program_loading.h>
-#include <stage_cache.h>
 #include <cpu/intel/smm_reloc.h>
 #include "nehalem.h"
 
@@ -33,12 +33,12 @@ static uintptr_t smm_region_start(void)
 	return tom;
 }
 
-u32 northbridge_get_tseg_base(void)
+static uintptr_t northbridge_get_tseg_base(void)
 {
-	return (u32)smm_region_start();
+	return smm_region_start();
 }
 
-u32 northbridge_get_tseg_size(void)
+static size_t northbridge_get_tseg_size(void)
 {
 	return CONFIG_SMM_TSEG_SIZE;
 }
@@ -48,13 +48,10 @@ void *cbmem_top(void)
 	return (void *) smm_region_start();
 }
 
-void stage_cache_external_region(void **base, size_t *size)
+void smm_region(uintptr_t *start, size_t *size)
 {
-	/* The stage cache lives at the end of TSEG region.
-	 * The top of RAM is defined to be the TSEG base address. */
-	*size = CONFIG_SMM_RESERVED_SIZE;
-	*base = (void *)((uintptr_t)northbridge_get_tseg_base() +
-			northbridge_get_tseg_size() - CONFIG_SMM_RESERVED_SIZE);
+	*start = northbridge_get_tseg_base();
+	*size = northbridge_get_tseg_size();
 }
 
 void fill_postcar_frame(struct postcar_frame *pcf)

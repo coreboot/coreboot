@@ -43,10 +43,8 @@
 
 
 struct smm_relocation_params {
-	u32 smram_base;
-	u32 smram_size;
-	u32 ied_base;
-	u32 ied_size;
+	uintptr_t ied_base;
+	size_t ied_size;
 	msr_t smrr_base;
 	msr_t smrr_mask;
 };
@@ -103,50 +101,31 @@ static void write_smrr(struct smm_relocation_params *relo_params)
 
 static void fill_in_relocation_params(struct smm_relocation_params *params)
 {
+	uintptr_t tseg_base;
+	size_t tseg_size;
+
 	/* All range registers are aligned to 4KiB */
 	const u32 rmask = ~((1 << 12) - 1);
 
-	const u32 tsegmb = northbridge_get_tseg_base();
-	/* TSEG base is usually aligned down (to 8MiB). So we can't
-	   derive the TSEG size from the distance to GTT but use the
-	   configuration value instead. */
-	const u32 tseg_size = northbridge_get_tseg_size();
+	smm_region(&tseg_base, &tseg_size);
 
-	params->smram_base = tsegmb;
-	params->smram_size = tseg_size;
-	if (CONFIG_IED_REGION_SIZE != 0) {
-		ASSERT(params->smram_size > CONFIG_IED_REGION_SIZE);
-		params->smram_size -= CONFIG_IED_REGION_SIZE;
-		params->ied_base = tsegmb + tseg_size - CONFIG_IED_REGION_SIZE;
-		params->ied_size = CONFIG_IED_REGION_SIZE;
-	}
-
-	/* Adjust available SMM handler memory size. */
-	if (CONFIG(TSEG_STAGE_CACHE)) {
-		ASSERT(params->smram_size > CONFIG_SMM_RESERVED_SIZE);
-		params->smram_size -= CONFIG_SMM_RESERVED_SIZE;
-	}
-
-	if (IS_ALIGNED(tsegmb, tseg_size)) {
-		/* SMRR has 32-bits of valid address aligned to 4KiB. */
-		struct cpuinfo_x86 c;
-
-		/* On model_6fx and model_1067x bits [0:11] on smrr_base
-		   are reserved */
-		get_fms(&c, cpuid_eax(1));
-		if (cpu_has_alternative_smrr())
-			params->smrr_base.lo = (params->smram_base & rmask);
-		else
-			params->smrr_base.lo = (params->smram_base & rmask)
-				| MTRR_TYPE_WRBACK;
-		params->smrr_base.hi = 0;
-		params->smrr_mask.lo = (~(tseg_size - 1) & rmask)
-			| MTRR_PHYS_MASK_VALID;
-		params->smrr_mask.hi = 0;
-	} else {
+	if (!IS_ALIGNED(tseg_base, tseg_size)) {
 		printk(BIOS_WARNING,
 		       "TSEG base not aligned with TSEG SIZE! Not setting SMRR\n");
+		return;
 	}
+
+	/* SMRR has 32-bits of valid address aligned to 4KiB. */
+	params->smrr_base.lo = (tseg_base & rmask) | MTRR_TYPE_WRBACK;
+	params->smrr_base.hi = 0;
+	params->smrr_mask.lo = (~(tseg_size - 1) & rmask) | MTRR_PHYS_MASK_VALID;
+	params->smrr_mask.hi = 0;
+
+	/* On model_6fx and model_1067x bits [0:11] on smrr_base are reserved */
+	if (cpu_has_alternative_smrr())
+		params->smrr_base.lo &= ~rmask;
+
+	smm_subregion(SMM_SUBREGION_CHIPSET, &params->ied_base, &params->ied_size);
 }
 
 static void setup_ied_area(struct smm_relocation_params *params)
@@ -186,11 +165,11 @@ void smm_info(uintptr_t *perm_smbase, size_t *perm_smsize,
 
 	fill_in_relocation_params(&smm_reloc_params);
 
-	if (CONFIG_IED_REGION_SIZE != 0)
+	smm_subregion(SMM_SUBREGION_HANDLER, perm_smbase, perm_smsize);
+
+	if (smm_reloc_params.ied_size)
 		setup_ied_area(&smm_reloc_params);
 
-	*perm_smbase = smm_reloc_params.smram_base;
-	*perm_smsize = smm_reloc_params.smram_size;
 	*smm_save_state_size = sizeof(em64t101_smm_state_save_area_t);
 }
 
@@ -221,7 +200,7 @@ void smm_relocation_handler(int cpu, uintptr_t curr_smbase,
 	printk(BIOS_DEBUG, "In relocation handler: cpu %d\n", cpu);
 
 	/* Make appropriate changes to the save state map. */
-	if (CONFIG_IED_REGION_SIZE != 0)
+	if (relo_params->ied_size)
 		printk(BIOS_DEBUG, "New SMBASE=0x%08x IEDBASE=0x%08x\n",
 		       smbase, iedbase);
 	else
@@ -235,7 +214,7 @@ void smm_relocation_handler(int cpu, uintptr_t curr_smbase,
 
 	/* Write EMRR and SMRR MSRs based on indicated support. */
 	mtrr_cap = rdmsr(MTRR_CAP_MSR);
-	if (!(mtrr_cap.lo & SMRR_SUPPORTED && relo_params->smrr_mask.lo != 0))
+	if (!(mtrr_cap.lo & SMRR_SUPPORTED))
 		return;
 
 	if (cpu_has_alternative_smrr())

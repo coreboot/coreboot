@@ -23,8 +23,6 @@ struct ied_header {
 } __packed;
 
 /* These helpers are for performing SMM relocation. */
-u32 northbridge_get_tseg_base(void);
-u32 northbridge_get_tseg_size(void);
 void northbridge_write_smram(u8 smram);
 
 void smm_lock(void);

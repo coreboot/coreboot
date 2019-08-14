@@ -68,6 +68,7 @@ struct vr_config {
 };
 
 #define VR_CFG_AMP(i) ((i) * 4)
+#define VR_CFG_MOHMS(i) (uint16_t)((i) * 100)
 
 #if CONFIG(PLATFORM_USES_FSP1_1)
 /* VrConfig Settings for 5 domains

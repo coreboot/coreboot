@@ -220,6 +220,81 @@ static uint16_t get_sku_icc_max(int domain)
 	return 0;
 }
 
+#if CONFIG(PLATFORM_USES_FSP2_0)
+static uint16_t get_sku_ac_dc_loadline(const int domain)
+{
+	static uint16_t mch_id = 0, igd_id = 0;
+	if (!mch_id) {
+		struct device *dev = pcidev_path_on_root(SA_DEVFN_ROOT);
+		mch_id = pci_read_config16(dev, PCI_DEVICE_ID);
+	}
+	if (!igd_id) {
+		struct device *dev = pcidev_path_on_root(SA_DEVFN_IGD);
+		if (dev)
+			igd_id = pci_read_config16(dev, PCI_DEVICE_ID);
+		else
+			igd_id = 0xffff;
+	}
+
+	switch (mch_id) {
+	case PCI_DEVICE_ID_INTEL_KBL_ID_S: /* fallthrough */
+	case PCI_DEVICE_ID_INTEL_KBL_ID_DT: /* fallthrough */
+	case PCI_DEVICE_ID_INTEL_KBL_ID_DT_2: {
+		static const uint16_t loadline[NUM_VR_DOMAINS] = {
+			VR_CFG_MOHMS(0), /* Not specified */
+			VR_CFG_MOHMS(2.1),
+			VR_CFG_MOHMS(3.1),
+			VR_CFG_MOHMS(3.1),
+		};
+
+		return loadline[domain];
+	}
+	case PCI_DEVICE_ID_INTEL_KBL_ID_H: {
+		static const uint16_t loadline[NUM_VR_DOMAINS] = {
+			VR_CFG_MOHMS(10),
+			VR_CFG_MOHMS(1.8),
+			VR_CFG_MOHMS(2.65),
+			VR_CFG_MOHMS(2.65),
+		};
+
+		return loadline[domain];
+	}
+	case PCI_DEVICE_ID_INTEL_KBL_ID_Y: {
+		uint16_t loadline[NUM_VR_DOMAINS] = {
+			VR_CFG_MOHMS(18),
+			VR_CFG_MOHMS(5.9),
+			VR_CFG_MOHMS(5.7),
+			VR_CFG_MOHMS(5.7),
+		};
+
+		if (igd_id == PCI_DEVICE_ID_INTEL_AML_GT2_ULX)
+			loadline[VR_IA_CORE] = VR_CFG_MOHMS(4);
+
+		return loadline[domain];
+	}
+	case PCI_DEVICE_ID_INTEL_KBL_U_R: /* fallthrough */
+	case PCI_DEVICE_ID_INTEL_KBL_ID_U: {
+		uint16_t loadline[NUM_VR_DOMAINS] = {
+			VR_CFG_MOHMS(10.3),
+			VR_CFG_MOHMS(2.4),
+			VR_CFG_MOHMS(3.1),
+			VR_CFG_MOHMS(3.1),
+		};
+
+		if (igd_id == PCI_DEVICE_ID_INTEL_SPT_LP_U_PREMIUM_HDCP22) {
+			loadline[VR_GT_UNSLICED] = VR_CFG_MOHMS(6);
+			loadline[VR_GT_SLICED] = VR_CFG_MOHMS(6);
+		}
+
+		return loadline[domain];
+	}
+	default:
+		printk(BIOS_ERR, "ERROR: Unknown MCH in VR-config\n");
+	}
+	return 0;
+}
+#endif
+
 void fill_vr_domain_config(void *params,
 		int domain, const struct vr_config *chip_cfg)
 {
@@ -251,7 +326,13 @@ void fill_vr_domain_config(void *params,
 	vr_params->VrVoltageLimit[domain] = cfg->voltage_limit;
 
 #if CONFIG(PLATFORM_USES_FSP2_0)
-	vr_params->AcLoadline[domain] = cfg->ac_loadline;
-	vr_params->DcLoadline[domain] = cfg->dc_loadline;
+	if (cfg->ac_loadline)
+		vr_params->AcLoadline[domain] = cfg->ac_loadline;
+	else
+		vr_params->AcLoadline[domain] = get_sku_ac_dc_loadline(domain);
+	if (cfg->dc_loadline)
+		vr_params->DcLoadline[domain] = cfg->dc_loadline;
+	else
+		vr_params->DcLoadline[domain] = get_sku_ac_dc_loadline(domain);
 #endif
 }

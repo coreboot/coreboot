@@ -361,8 +361,6 @@ static const struct pad_config sleep_gpio_table[] = {
 static const struct pad_config sleep_s5_gpio_table[] = {
 	/* BT_DISABLE_L */
 	PAD_CFG_GPO_IOSSTATE_IOSTERM(GPIO_109, 0, DEEP, NONE, Tx0RxDCRx1, SAME),
-	/* WLAN_DISABLE_L */
-	PAD_CFG_GPO_IOSSTATE_IOSTERM(GPIO_116, 0, DEEP, NONE, Tx0RxDCRx1, SAME),
 };
 
 const struct pad_config *__weak

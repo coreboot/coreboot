@@ -20,17 +20,6 @@
 #include <soc/ramstage.h>
 #include <soc/vr_config.h>
 
-#define KBLY_ICCMAX_SA					VR_CFG_AMP(4.1)
-#define KBLY_ICCMAX_CORE				VR_CFG_AMP(24)
-#define AMLY_ICCMAX_CORE				VR_CFG_AMP(28)
-#define KBLY_ICCMAX_GTS_GTUS			VR_CFG_AMP(24)
-#define KBLR_ICCMAX_SA_U42				VR_CFG_AMP(6)
-#define KBLU_ICCMAX_SA_U22				VR_CFG_AMP(4.5)
-#define KBLR_ICCMAX_CORE_U42			VR_CFG_AMP(64)
-#define KBLU_ICCMAX_CORE_U22_PREMIUM	VR_CFG_AMP(32)
-#define KBLU_ICCMAX_CORE_U22_BASE		VR_CFG_AMP(29)
-#define KBLUR_ICCMAX_GTS_GTUS			VR_CFG_AMP(31)
-
 enum kbl_sku {
 	KBL_Y_SKU,
 	KBL_R_SKU,
@@ -61,42 +50,42 @@ static const struct {
 }sku_icc_max_mapping[] = {
 	[KBL_Y_SKU] = {
 		.icc_max = {
-			KBLY_ICCMAX_SA,
-			KBLY_ICCMAX_CORE,
-			KBLY_ICCMAX_GTS_GTUS,
-			KBLY_ICCMAX_GTS_GTUS
+			VR_CFG_AMP(4.1),
+			VR_CFG_AMP(24),
+			VR_CFG_AMP(24),
+			VR_CFG_AMP(24),
 		}
 	},
 	[KBL_R_SKU] = {
 		.icc_max = {
-			KBLR_ICCMAX_SA_U42,
-			KBLR_ICCMAX_CORE_U42,
-			KBLUR_ICCMAX_GTS_GTUS,
-			KBLUR_ICCMAX_GTS_GTUS
+			VR_CFG_AMP(6),
+			VR_CFG_AMP(64),
+			VR_CFG_AMP(31),
+			VR_CFG_AMP(31),
 		}
 	},
 	[KBL_U_BASE_SKU] = {
 		.icc_max = {
-			KBLU_ICCMAX_SA_U22,
-			KBLU_ICCMAX_CORE_U22_BASE,
-			KBLUR_ICCMAX_GTS_GTUS,
-			KBLUR_ICCMAX_GTS_GTUS
+			VR_CFG_AMP(4.5),
+			VR_CFG_AMP(29),
+			VR_CFG_AMP(31),
+			VR_CFG_AMP(31),
 		}
 	},
 	[KBL_U_PREMIUM_SKU] = {
 		.icc_max = {
-			KBLU_ICCMAX_SA_U22,
-			KBLU_ICCMAX_CORE_U22_PREMIUM,
-			KBLUR_ICCMAX_GTS_GTUS,
-			KBLUR_ICCMAX_GTS_GTUS
+			VR_CFG_AMP(4.5),
+			VR_CFG_AMP(32),
+			VR_CFG_AMP(31),
+			VR_CFG_AMP(31),
 		}
 	},
 	[AML_Y_SKU] = {
 		.icc_max = {
-			KBLY_ICCMAX_SA,
-			AMLY_ICCMAX_CORE,
-			KBLY_ICCMAX_GTS_GTUS,
-			KBLY_ICCMAX_GTS_GTUS
+			VR_CFG_AMP(4.1),
+			VR_CFG_AMP(28),
+			VR_CFG_AMP(24),
+			VR_CFG_AMP(24),
 		}
 	},
 };

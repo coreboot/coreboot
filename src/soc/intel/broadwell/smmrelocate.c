@@ -30,37 +30,8 @@
 #include <soc/cpu.h>
 #include <soc/msr.h>
 #include <soc/pci_devs.h>
-#include <soc/smm.h>
 #include <soc/systemagent.h>
 
-/* This gets filled in and used during relocation. */
-static struct smm_relocation_params smm_reloc_params;
-
-static inline void write_smrr(struct smm_relocation_params *relo_params)
-{
-	printk(BIOS_DEBUG, "Writing SMRR. base = 0x%08x, mask=0x%08x\n",
-	       relo_params->smrr_base.lo, relo_params->smrr_mask.lo);
-	wrmsr(IA32_SMRR_PHYS_BASE, relo_params->smrr_base);
-	wrmsr(IA32_SMRR_PHYS_MASK, relo_params->smrr_mask);
-}
-
-static inline void write_prmrr(struct smm_relocation_params *relo_params)
-{
-	printk(BIOS_DEBUG, "Writing PRMRR. base = 0x%08x, mask=0x%08x\n",
-	       relo_params->prmrr_base.lo, relo_params->prmrr_mask.lo);
-	wrmsr(MSR_PRMRR_PHYS_BASE, relo_params->prmrr_base);
-	wrmsr(MSR_PRMRR_PHYS_MASK, relo_params->prmrr_mask);
-}
-
-static inline void write_uncore_prmrr(struct smm_relocation_params *relo_params)
-{
-	printk(BIOS_DEBUG,
-	       "Writing UNCORE_PRMRR. base = 0x%08x, mask=0x%08x\n",
-	       relo_params->uncore_prmrr_base.lo,
-	       relo_params->uncore_prmrr_mask.lo);
-	wrmsr(MSR_UNCORE_PRMRR_PHYS_BASE, relo_params->uncore_prmrr_base);
-	wrmsr(MSR_UNCORE_PRMRR_PHYS_MASK, relo_params->uncore_prmrr_mask);
-}
 
 static void update_save_state(int cpu, uintptr_t curr_smbase,
 				uintptr_t staggered_smbase,

@@ -39,17 +39,6 @@
 #define  C_BASE_SEG	((0 << 2) | (1 << 1) | (0 << 0))
 
 
-
-struct smm_relocation_params {
-	uintptr_t ied_base;
-	size_t ied_size;
-	msr_t smrr_base;
-	msr_t smrr_mask;
-};
-
-/* This gets filled in and used during relocation. */
-static struct smm_relocation_params smm_reloc_params;
-
 /* On model_6fx, model_1067x and model_106cx SMRR functions slightly
    differently. The MSR are at different location from the rest
    and need to be explicitly enabled in IA32_FEATURE_CONTROL MSR. */
@@ -86,15 +75,6 @@ static void write_smrr_alt(struct smm_relocation_params *relo_params)
 
 	wrmsr(MSR_SMRR_PHYS_BASE, relo_params->smrr_base);
 	wrmsr(MSR_SMRR_PHYS_MASK, relo_params->smrr_mask);
-}
-
-static void write_smrr(struct smm_relocation_params *relo_params)
-{
-	printk(BIOS_DEBUG, "Writing SMRR. base = 0x%08x, mask=0x%08x\n",
-	       relo_params->smrr_base.lo, relo_params->smrr_mask.lo);
-
-	wrmsr(IA32_SMRR_PHYS_BASE, relo_params->smrr_base);
-	wrmsr(IA32_SMRR_PHYS_MASK, relo_params->smrr_mask);
 }
 
 static void fill_in_relocation_params(struct smm_relocation_params *params)

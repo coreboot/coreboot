@@ -22,7 +22,6 @@
 #include <cpu/intel/microcode.h>
 #include <cpu/intel/smm_reloc.h>
 #include <cpu/intel/turbo.h>
-#include <cpu/intel/smm_reloc.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/lapic.h>
 #include <cpu/x86/mp.h>
@@ -34,7 +33,6 @@
 #include <soc/msr.h>
 #include <soc/pattrs.h>
 #include <soc/ramstage.h>
-#include <soc/smm.h>
 #include <stdlib.h>
 
 /* Core level MSRs */
@@ -97,13 +95,6 @@ static const struct cpu_driver driver __cpu_driver = {
 /*
  * MP and SMM loading initialization.
  */
-
-struct smm_relocation_params {
-	msr_t smrr_base;
-	msr_t smrr_mask;
-};
-
-static struct smm_relocation_params smm_reloc_params;
 
 /* Package level MSRs */
 static const struct reg_script package_msr_script[] = {

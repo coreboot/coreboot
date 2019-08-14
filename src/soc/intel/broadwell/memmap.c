@@ -21,7 +21,6 @@
 #include <device/pci_ops.h>
 #include <soc/pci_devs.h>
 #include <soc/systemagent.h>
-#include <soc/smm.h>
 #include <stdint.h>
 
 static uintptr_t dpr_region_start(void)

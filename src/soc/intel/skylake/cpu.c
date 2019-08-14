@@ -41,7 +41,6 @@
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
 #include <soc/ramstage.h>
-#include <soc/smm.h>
 #include <soc/systemagent.h>
 #include <timer.h>
 

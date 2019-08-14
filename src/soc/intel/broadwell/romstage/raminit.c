@@ -33,7 +33,6 @@
 #include <soc/pei_wrapper.h>
 #include <soc/pm.h>
 #include <soc/romstage.h>
-#include <soc/smm.h>
 #include <soc/systemagent.h>
 
 /*

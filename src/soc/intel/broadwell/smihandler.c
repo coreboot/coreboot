@@ -33,7 +33,6 @@
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
 #include <soc/rcba.h>
-#include <soc/smm.h>
 #include <soc/xhci.h>
 #include <drivers/intel/gma/i915_reg.h>
 

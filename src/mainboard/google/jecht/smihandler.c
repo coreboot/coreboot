@@ -18,7 +18,6 @@
 #include <console/console.h>
 #include <cpu/x86/smm.h>
 #include <soc/pm.h>
-#include <soc/smm.h>
 #include <ec/google/chromeec/ec.h>
 #include <soc/gpio.h>
 #include <soc/iomap.h>

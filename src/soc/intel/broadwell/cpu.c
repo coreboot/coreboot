@@ -36,7 +36,6 @@
 #include <soc/pci_devs.h>
 #include <soc/ramstage.h>
 #include <soc/rcba.h>
-#include <soc/smm.h>
 #include <soc/systemagent.h>
 #include <soc/intel/broadwell/chip.h>
 #include <cpu/intel/common/common.h>

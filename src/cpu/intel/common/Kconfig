@@ -26,3 +26,7 @@ config CPU_INTEL_COMMON_HYPERTHREADING
 	bool
 
 endif
+
+config CPU_INTEL_COMMON_SMM
+	bool
+	default y if CPU_INTEL_COMMON

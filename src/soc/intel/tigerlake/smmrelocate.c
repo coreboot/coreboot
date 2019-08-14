@@ -30,7 +30,6 @@
 #include <soc/cpu.h>
 #include <soc/msr.h>
 #include <soc/pci_devs.h>
-#include <soc/smm.h>
 #include <soc/soc_chip.h>
 #include <soc/systemagent.h>
 

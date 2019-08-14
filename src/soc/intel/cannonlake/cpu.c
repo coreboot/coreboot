@@ -28,7 +28,6 @@
 #include <soc/msr.h>
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
-#include <soc/smm.h>
 #include <soc/systemagent.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/intel/microcode.h>

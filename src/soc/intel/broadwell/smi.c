@@ -24,7 +24,6 @@
 #include <soc/iomap.h>
 #include <soc/pch.h>
 #include <soc/pm.h>
-#include <soc/smm.h>
 
 void smm_southbridge_clear_state(void)
 {

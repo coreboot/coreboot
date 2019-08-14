@@ -29,7 +29,6 @@
 #include <soc/pmc.h>
 #include <soc/acpi.h>
 #include <soc/iomap.h>
-#include <soc/smm.h>
 
 /* Copy the default UPD region and settings to a buffer for modification */
 static void GetUpdDefaultFromFsp (FSP_INFO_HEADER *FspInfo, UPD_DATA_REGION   *UpdData)
@@ -115,7 +114,7 @@ static void ConfigureDefaultUpdData(FSP_INFO_HEADER *FspInfo, UPD_DATA_REGION *U
 	else if ((config->PcdeMMCBootMode != EMMC_USE_DEFAULT))
 		UpdData->PcdeMMCBootMode = config->PcdeMMCBootMode - EMMC_DISABLED;
 
-	UpdData->PcdMrcInitTsegSize = smm_region_size() >> 20;
+	UpdData->PcdMrcInitTsegSize = CONFIG_SMM_TSEG_SIZE >> 20;
 
 	printk(FSP_INFO_LEVEL, "GTT Size:\t\t%d MB\n", UpdData->PcdGttSize);
 	printk(FSP_INFO_LEVEL, "Tseg Size:\t\t%d MB\n", UpdData->PcdMrcInitTsegSize);

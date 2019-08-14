@@ -21,6 +21,7 @@
 #include <cpu/intel/microcode.h>
 #include <cpu/intel/smm_reloc.h>
 #include <cpu/intel/turbo.h>
+#include <cpu/intel/smm_reloc.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/lapic.h>
 #include <cpu/x86/mp.h>
@@ -85,13 +86,12 @@ static const struct cpu_driver driver __cpu_driver = {
  * MP and SMM loading initialization.
  */
 
-struct smm_relocation_attrs {
-	uint32_t smbase;
-	uint32_t smrr_base;
-	uint32_t smrr_mask;
+struct smm_relocation_params {
+	msr_t smrr_base;
+	msr_t smrr_mask;
 };
 
-static struct smm_relocation_attrs relo_attrs;
+static struct smm_relocation_params smm_reloc_params;
 
 static void pre_mp_init(void)
 {
@@ -108,20 +108,32 @@ static int get_cpu_count(void)
 	return pattrs->num_cpus;
 }
 
-static void get_smm_info(uintptr_t *perm_smbase, size_t *perm_smsize,
-				size_t *smm_save_state_size)
+static void fill_in_relocation_params(struct smm_relocation_params *params)
 {
+	uintptr_t tseg_base;
+	size_t tseg_size;
+
 	/* All range registers are aligned to 4KiB */
-	const uint32_t rmask = ~((1 << 12) - 1);
+	const u32 rmask = ~(4 * KiB - 1);
 
-	/* Initialize global tracking state. */
-	relo_attrs.smbase = (uint32_t)smm_region_start();
-	relo_attrs.smrr_base = relo_attrs.smbase | MTRR_TYPE_WRBACK;
-	relo_attrs.smrr_mask = ~(smm_region_size() - 1) & rmask;
-	relo_attrs.smrr_mask |= MTRR_PHYS_MASK_VALID;
+	smm_region(&tseg_base, &tseg_size);
 
-	*perm_smbase = relo_attrs.smbase;
-	*perm_smsize = smm_region_size() - CONFIG_SMM_RESERVED_SIZE;
+	/* SMRR has 32-bits of valid address aligned to 4KiB. */
+	params->smrr_base.lo = (tseg_base & rmask) | MTRR_TYPE_WRBACK;
+	params->smrr_base.hi = 0;
+	params->smrr_mask.lo = (~(tseg_size - 1) & rmask) | MTRR_PHYS_MASK_VALID;
+	params->smrr_mask.hi = 0;
+}
+
+static void get_smm_info(uintptr_t *perm_smbase, size_t *perm_smsize,
+			 size_t *smm_save_state_size)
+{
+	printk(BIOS_DEBUG, "Setting up SMI for CPU\n");
+
+	fill_in_relocation_params(&smm_reloc_params);
+
+	smm_subregion(SMM_SUBREGION_HANDLER, perm_smbase, perm_smsize);
+
 	*smm_save_state_size = sizeof(em64t100_smm_state_save_area_t);
 }
 
@@ -136,16 +148,12 @@ static void get_microcode_info(const void **microcode, int *parallel)
 static void relocation_handler(int cpu, uintptr_t curr_smbase,
 				uintptr_t staggered_smbase)
 {
-	msr_t smrr;
+	struct smm_relocation_params *relo_params = &smm_reloc_params;
 	em64t100_smm_state_save_area_t *smm_state;
 
 	/* Set up SMRR. */
-	smrr.lo = relo_attrs.smrr_base;
-	smrr.hi = 0;
-	wrmsr(IA32_SMRR_PHYS_BASE, smrr);
-	smrr.lo = relo_attrs.smrr_mask;
-	smrr.hi = 0;
-	wrmsr(IA32_SMRR_PHYS_MASK, smrr);
+	wrmsr(IA32_SMRR_PHYS_BASE, relo_params->smrr_base);
+	wrmsr(IA32_SMRR_PHYS_MASK, relo_params->smrr_mask);
 
 	smm_state = (void *)(SMM_EM64T100_SAVE_STATE_OFFSET + curr_smbase);
 	smm_state->smbase = staggered_smbase;

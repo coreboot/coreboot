@@ -15,13 +15,19 @@
  */
 
 #include <cbmem.h>
+#include <cpu/x86/smm.h>
 #include <soc/iosf.h>
-#include <soc/smm.h>
 #include <drivers/intel/fsp1_0/fsp_util.h>
+#include <types.h>
 
-uintptr_t smm_region_start(void)
+static uintptr_t smm_region_start(void)
 {
-	return (iosf_bunit_read(BUNIT_SMRRL) << 20);
+	return (iosf_bunit_read(BUNIT_SMRRL) & 0xFFFF) << 20;
+}
+
+static size_t smm_region_size(void)
+{
+	return CONFIG_SMM_TSEG_SIZE;
 }
 
 /** @brief get the top of usable low memory from the FSP's HOB list
@@ -37,4 +43,10 @@ uintptr_t smm_region_start(void)
 void *cbmem_top(void)
 {
 	return find_fsp_reserved_mem(*(void **)CBMEM_FSP_HOB_PTR);
+}
+
+void smm_region(uintptr_t *start, size_t *size)
+{
+	*start = smm_region_start();
+	*size = smm_region_size();
 }

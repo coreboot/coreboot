@@ -14,13 +14,17 @@
  */
 
 #include <cbmem.h>
-#include <stage_cache.h>
+#include <cpu/x86/smm.h>
 #include <soc/iosf.h>
-#include <soc/smm.h>
 
-uintptr_t smm_region_start(void)
+static uintptr_t smm_region_start(void)
 {
 	return (iosf_bunit_read(BUNIT_SMRRL) << 20);
+}
+
+static size_t smm_region_size(void)
+{
+	return CONFIG_SMM_TSEG_SIZE;
 }
 
 void *cbmem_top(void)
@@ -28,15 +32,8 @@ void *cbmem_top(void)
 	return (void *) smm_region_start();
 }
 
-void stage_cache_external_region(void **base, size_t *size)
+void smm_region(uintptr_t *start, size_t *size)
 {
-	char *smm_base;
-	/* 1MiB cache size */
-	const long cache_size = CONFIG_SMM_RESERVED_SIZE;
-
-	/* Ramstage cache lives in TSEG region which is the definition of
-	 * cbmem_top(). */
-	smm_base = cbmem_top();
-	*size = cache_size;
-	*base = &smm_base[smm_region_size() - cache_size];
+	*start = (iosf_bunit_read(BUNIT_SMRRL) & 0xFFFF) << 20;
+	*size = smm_region_size();
 }

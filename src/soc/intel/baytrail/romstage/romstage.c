@@ -30,7 +30,6 @@
 #include <elog.h>
 #include <program_loading.h>
 #include <romstage_handoff.h>
-#include <stage_cache.h>
 #include <string.h>
 #include <timestamp.h>
 #include <vendorcode/google/chromeos/chromeos.h>
@@ -41,7 +40,6 @@
 #include <soc/pci_devs.h>
 #include <soc/pmc.h>
 #include <soc/romstage.h>
-#include <soc/smm.h>
 #include <soc/spi.h>
 
 static void program_base_addresses(void)

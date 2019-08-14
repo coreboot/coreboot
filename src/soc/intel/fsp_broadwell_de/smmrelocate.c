@@ -27,7 +27,6 @@
 #include <cpu/intel/smm_reloc.h>
 #include <console/console.h>
 #include <device/pci_ops.h>
-#include <soc/lpc.h>
 #include <soc/msr.h>
 #include <soc/pci_devs.h>
 #include <soc/smm.h>
@@ -304,17 +303,4 @@ void smm_relocate(void)
 		smm_initiate_relocation_parallel();
 	else if (!boot_cpu())
 		smm_initiate_relocation();
-}
-
-void smm_lock(void)
-{
-	pci_devfn_t dev = PCI_DEV(BUS0, LPC_DEV, LPC_FUNC);
-	uint16_t smi_lock;
-
-	/* There is no register to lock SMRAM region on Broadwell-DE.
-	   Use this function to lock the SMI control bits. */
-	printk(BIOS_DEBUG, "Locking SMM.\n");
-	smi_lock = pci_read_config16(dev, GEN_PMCON_1);
-	smi_lock |= (SMI_LOCK | SMI_LOCK_GP6 | SMI_LOCK_GP22);
-	pci_write_config16(dev, GEN_PMCON_1, smi_lock);
 }

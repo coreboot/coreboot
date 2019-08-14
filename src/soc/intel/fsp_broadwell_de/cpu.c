@@ -25,8 +25,12 @@
 #include <cpu/x86/mp.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
+#include <device/device.h>
+#include <device/pci_ops.h>
+#include <soc/lpc.h>
 #include <soc/msr.h>
 #include <soc/pattrs.h>
+#include <soc/pci_devs.h>
 #include <soc/ramstage.h>
 #include <soc/smm.h>
 
@@ -94,6 +98,19 @@ static void set_max_ratio(void)
 	wrmsr(IA32_PERF_CTL, perf_ctl);
 }
 
+static void alt_smm_lock(void)
+{
+	struct device *dev = pcidev_on_root(LPC_DEV, LPC_FUNC);
+	uint16_t smi_lock;
+
+	/* There is no register to lock SMRAM region on Broadwell-DE.
+	   Use this function to lock the SMI control bits. */
+	printk(BIOS_DEBUG, "Locking SMM.\n");
+	smi_lock = pci_read_config16(dev, GEN_PMCON_1);
+	smi_lock |= (SMI_LOCK | SMI_LOCK_GP6 | SMI_LOCK_GP22);
+	pci_write_config16(dev, GEN_PMCON_1, smi_lock);
+}
+
 static void post_mp_init(void)
 {
 	/* Set Max Ratio */
@@ -103,7 +120,7 @@ static void post_mp_init(void)
 	smm_southbridge_enable_smi();
 
 	/* Set SMI lock bits. */
-	smm_lock();
+	alt_smm_lock();
 }
 
 static const struct mp_ops mp_ops = {

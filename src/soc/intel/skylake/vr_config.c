@@ -20,6 +20,7 @@
 #include <soc/ramstage.h>
 #include <soc/vr_config.h>
 #include <console/console.h>
+#include <intelblocks/cpulib.h>
 
 /* Default values for domain configuration. PSI3 and PSI4 are disabled. */
 static const struct vr_config default_configs[NUM_VR_DOMAINS] = {
@@ -89,6 +90,8 @@ static const struct vr_config default_configs[NUM_VR_DOMAINS] = {
 
 static uint16_t get_sku_icc_max(int domain)
 {
+	const uint16_t tdp = cpu_get_power_max();
+
 	static uint16_t mch_id = 0, igd_id = 0, lpc_id = 0;
 	if (!mch_id) {
 		struct device *dev = pcidev_path_on_root(SA_DEVFN_ROOT);
@@ -96,7 +99,10 @@ static uint16_t get_sku_icc_max(int domain)
 	}
 	if (!igd_id) {
 		struct device *dev = pcidev_path_on_root(SA_DEVFN_IGD);
-		igd_id = pci_read_config16(dev, PCI_DEVICE_ID);
+		if (dev)
+			igd_id = pci_read_config16(dev, PCI_DEVICE_ID);
+		else
+			igd_id = 0xffff;
 	}
 	if (!lpc_id) {
 		struct device *dev = pcidev_path_on_root(PCH_DEVFN_LPC);
@@ -104,23 +110,75 @@ static uint16_t get_sku_icc_max(int domain)
 	}
 
 	/*
-	* Iccmax table from Doc #559100 Section 7.2 DC Specifications, the
-	* Iccmax is the same among KBL-Y but KBL-U/R.
-	* Addendum for AML-Y #594883, IccMax for IA core is 28A.
-	* +----------------+-------------+---------------+------+-----+
-	* | Domain/Setting |  SA         |  IA           | GTUS | GTS |
-	* +----------------+-------------+---------------+------+-----+
-	* | IccMax(KBL-U/R)| 6A(U42)     | 64A(U42)      | 31A  | 31A |
-	* |                | 4.5A(Others)| 29A(P/C)      loadline|      |     |
-	* |                |             | 32A(i3/i5)    |      |     |
-	* +----------------+-------------+---------------+------+-----+
-	* | IccMax(KBL-Y)  | 4.1A        | 24A           | 24A  | 24A |
-	* +----------------+-------------+---------------+------+-----+
-	* | IccMax(AML-Y)  | 4.1A        | 28A           | 24A  | 24A |
-	* +----------------+-------------+---------------+------+-----+
-	*/
+	 * Iccmax table from Doc #559100 Section 7.2 DC Specifications, the
+	 * Iccmax is the same among KBL-Y but KBL-U/R.
+	 * Addendum for AML-Y #594883, IccMax for IA core is 28A.
+	 * KBL-S #335195, KBL-H #335190
+	 * +----------------+-------------+---------------+------+-----+
+	 * | Domain/Setting |  SA         |  IA           | GTUS | GTS |
+	 * +----------------+-------------+---------------+------+-----+
+	 * | IccMax(KBL-S)  | 11.1A       | 100A          | 45A  | 45A |
+	 * |                |             | ...           |      |     |
+	 * |                |             | 40A           |      |     |
+	 * +----------------+-------------+---------------+------+-----+
+	 * | IccMax(KBL-H)  | 11.1A(45W)  | 68A           | 55A  | 55A |
+	 * |                | 6.6A(Others)| 60A           |      |     |
+	 * +----------------+-------------+---------------+------+-----+
+	 * | IccMax(KBL-U/R)| 6A(U42)     | 64A(U42)      | 31A  | 31A |
+	 * |                | 4.5A(Others)| 29A(P/C)      |      |     |
+	 * |                |             | 32A(i3/i5)    |      |     |
+	 * +----------------+-------------+---------------+------+-----+
+	 * | IccMax(KBL-Y)  | 4.1A        | 24A           | 24A  | 24A |
+	 * +----------------+-------------+---------------+------+-----+
+	 * | IccMax(AML-Y)  | 4.1A        | 28A           | 24A  | 24A |
+	 * +----------------+-------------+---------------+------+-----+
+	 */
 
 	switch (mch_id) {
+	case PCI_DEVICE_ID_INTEL_KBL_ID_S: {
+		uint16_t icc_max[NUM_VR_DOMAINS] = {
+			VR_CFG_AMP(11.1),
+			VR_CFG_AMP(40),
+			VR_CFG_AMP(45),
+			VR_CFG_AMP(45),
+		};
+		if (tdp >= 54)
+			icc_max[VR_IA_CORE] = VR_CFG_AMP(58);
+		else if (tdp >= 51)
+			icc_max[VR_IA_CORE] = VR_CFG_AMP(45);
+
+		return icc_max[domain];
+
+	}
+	case PCI_DEVICE_ID_INTEL_KBL_ID_DT_2: /* fallthrough */
+	case PCI_DEVICE_ID_INTEL_KBL_ID_DT: {
+		uint16_t icc_max[NUM_VR_DOMAINS] = {
+			VR_CFG_AMP(11.1),
+			VR_CFG_AMP(66),
+			VR_CFG_AMP(55),
+			VR_CFG_AMP(55),
+		};
+		if (tdp >= 91)
+			icc_max[VR_IA_CORE] = VR_CFG_AMP(100);
+		else if (tdp >= 65)
+			icc_max[VR_IA_CORE] = VR_CFG_AMP(79);
+
+		return icc_max[domain];
+	}
+	case PCI_DEVICE_ID_INTEL_KBL_ID_H: {
+		uint16_t icc_max[NUM_VR_DOMAINS] = {
+			VR_CFG_AMP(6.6),
+			VR_CFG_AMP(60),
+			VR_CFG_AMP(55),
+			VR_CFG_AMP(55),
+		};
+		if (tdp >= 45) {
+			icc_max[VR_SYSTEM_AGENT] = VR_CFG_AMP(11.1);
+			icc_max[VR_IA_CORE] = VR_CFG_AMP(68);
+		}
+
+		return icc_max[domain];
+	}
 	case PCI_DEVICE_ID_INTEL_KBL_U_R: {
 		static const uint16_t icc_max[NUM_VR_DOMAINS] = {
 			VR_CFG_AMP(6),

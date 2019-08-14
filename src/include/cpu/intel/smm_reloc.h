@@ -11,7 +11,10 @@
  * GNU General Public License for more details.
  */
 
-#include <device/device.h>
+#ifndef __INTEL_SMM_RELOC_H__
+#define __INTEL_SMM_RELOC_H__
+
+#include <types.h>
 
 /* These helpers are for performing SMM relocation. */
 void southbridge_smm_init(void);
@@ -19,14 +22,17 @@ u32 northbridge_get_tseg_base(void);
 u32 northbridge_get_tseg_size(void);
 void northbridge_write_smram(u8 smram);
 
-bool cpu_has_alternative_smrr(void);
+void smm_lock(void);
+void smm_relocate(void);
 
 /* parallel MP helper functions */
-void smm_info(uintptr_t *perm_smbase, size_t *perm_smsize,
-		size_t *smm_save_state_size);
-void smm_initialize(void);
 void southbridge_smm_clear_state(void);
-void smm_relocation_handler(int cpu, uintptr_t curr_smbase,
-			uintptr_t staggered_smbase);
-void smm_relocate(void);
-void smm_lock(void);
+
+/* To be removed. */
+void smm_initialize(void);
+void smm_info(uintptr_t *perm_smbase, size_t *perm_smsize, size_t *smm_save_state_size);
+void smm_relocation_handler(int cpu, uintptr_t curr_smbase, uintptr_t staggered_smbase);
+
+bool cpu_has_alternative_smrr(void);
+
+#endif

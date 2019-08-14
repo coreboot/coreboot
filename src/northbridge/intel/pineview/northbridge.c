@@ -25,7 +25,7 @@
 #include <boot/tables.h>
 #include <arch/acpi.h>
 #include <northbridge/intel/pineview/pineview.h>
-#include <cpu/intel/smm/gen1/smi.h>
+#include <cpu/intel/smm_reloc.h>
 
 /* Reserve everything between A segment and 1MB:
  *

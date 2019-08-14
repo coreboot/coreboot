@@ -28,7 +28,7 @@
 #include <cpu/x86/mtrr.h>
 #include <northbridge/intel/x4x/x4x.h>
 #include <program_loading.h>
-#include <cpu/intel/smm/gen1/smi.h>
+#include <cpu/intel/smm_reloc.h>
 #include <stage_cache.h>
 
 /** Decodes used Graphics Mode Select (GMS) to kilobytes. */

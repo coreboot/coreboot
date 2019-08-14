@@ -28,7 +28,7 @@
 #include <cpu/cpu.h>
 #include "chip.h"
 #include "sandybridge.h"
-#include <cpu/intel/smm/gen1/smi.h>
+#include <cpu/intel/smm_reloc.h>
 
 static int bridge_revision_id = -1;
 

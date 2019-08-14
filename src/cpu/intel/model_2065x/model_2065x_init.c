@@ -31,7 +31,7 @@
 #include <cpu/x86/name.h>
 #include "model_2065x.h"
 #include "chip.h"
-#include <cpu/intel/smm/gen1/smi.h>
+#include <cpu/intel/smm_reloc.h>
 #include <cpu/intel/common/common.h>
 
 /*

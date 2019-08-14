@@ -24,7 +24,7 @@
 #include <cpu/x86/mtrr.h>
 #include <program_loading.h>
 #include <stage_cache.h>
-#include <cpu/intel/smm/gen1/smi.h>
+#include <cpu/intel/smm_reloc.h>
 #include "nehalem.h"
 
 static uintptr_t smm_region_start(void)

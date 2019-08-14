@@ -21,7 +21,7 @@
 #include <arch/io.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/smm.h>
-#include <cpu/intel/smm/gen1/smi.h>
+#include <cpu/intel/smm_reloc.h>
 #include <southbridge/intel/common/pmbase.h>
 #include <southbridge/intel/common/pmutil.h>
 

@@ -27,7 +27,7 @@
 #include <northbridge/intel/x4x/iomap.h>
 #include <northbridge/intel/x4x/chip.h>
 #include <northbridge/intel/x4x/x4x.h>
-#include <cpu/intel/smm/gen1/smi.h>
+#include <cpu/intel/smm_reloc.h>
 
 static const int legacy_hole_base_k = 0xa0000 / 1024;
 

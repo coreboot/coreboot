@@ -23,7 +23,7 @@
 #include <stdlib.h>
 #include <cpu/cpu.h>
 #include <arch/acpi.h>
-#include <cpu/intel/smm/gen1/smi.h>
+#include <cpu/intel/smm_reloc.h>
 #include "i945.h"
 
 static int get_pcie_bar(u32 *base)

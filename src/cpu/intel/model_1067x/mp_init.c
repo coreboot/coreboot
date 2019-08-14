@@ -19,7 +19,7 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/mp.h>
 #include <cpu/intel/microcode.h>
-#include <cpu/intel/smm/gen1/smi.h>
+#include <cpu/intel/smm_reloc.h>
 #include <cpu/intel/common/common.h>
 #include <device/device.h>
 

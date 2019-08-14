@@ -32,7 +32,7 @@
 #include <pc80/mc146818rtc.h>
 #include "model_206ax.h"
 #include "chip.h"
-#include <cpu/intel/smm/gen1/smi.h>
+#include <cpu/intel/smm_reloc.h>
 #include <cpu/intel/common/common.h>
 
 /*

@@ -19,7 +19,7 @@
 #include <device/pci_ops.h>
 #include "nehalem.h"
 
-#include <cpu/intel/smm/gen1/smi.h>
+#include <cpu/intel/smm_reloc.h>
 
 void northbridge_write_smram(u8 smram)
 {

@@ -27,7 +27,7 @@
 #include <cbmem.h>
 #include <program_loading.h>
 #include <stage_cache.h>
-#include <cpu/intel/smm/gen1/smi.h>
+#include <cpu/intel/smm_reloc.h>
 #include "gm45.h"
 
 /*

@@ -208,12 +208,6 @@
 #ifndef __ASSEMBLER__
 static inline void barrier(void) { asm("" ::: "memory"); }
 
-struct ied_header {
-	char signature[10];
-	u32 size;
-	u8 reserved[34];
-} __packed;
-
 #ifdef __SMM__
 void intel_northbridge_haswell_finalize_smm(void);
 #else /* !__SMM__ */

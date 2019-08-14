@@ -23,11 +23,6 @@
 #include <intelblocks/smihandler.h>
 #include <soc/gpio.h>
 
-struct ied_header {
-	char signature[10];
-	u32 size;
-	u8 reserved[34];
-} __packed;
 
 struct smm_relocation_params {
 	uintptr_t ied_base;

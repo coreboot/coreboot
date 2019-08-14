@@ -16,6 +16,12 @@
 
 #include <types.h>
 
+struct ied_header {
+	char signature[10];
+	u32 size;
+	u8 reserved[34];
+} __packed;
+
 /* These helpers are for performing SMM relocation. */
 u32 northbridge_get_tseg_base(void);
 u32 northbridge_get_tseg_size(void);

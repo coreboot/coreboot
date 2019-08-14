@@ -19,11 +19,6 @@
 #include <stdint.h>
 #include <cpu/x86/msr.h>
 
-struct ied_header {
-	char signature[10];
-	u32 size;
-	u8 reserved[34];
-} __packed;
 
 struct smm_relocation_params {
 	u32 smram_base;

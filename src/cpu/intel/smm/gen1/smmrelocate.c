@@ -40,11 +40,6 @@
 #define  G_SMRAME	(1 << 3)
 #define  C_BASE_SEG	((0 << 2) | (1 << 1) | (0 << 0))
 
-struct ied_header {
-	char signature[10];
-	u32 size;
-	u8 reserved[34];
-} __packed;
 
 
 struct smm_relocation_params {

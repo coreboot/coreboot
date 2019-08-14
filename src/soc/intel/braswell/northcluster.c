@@ -28,7 +28,6 @@
 #include <soc/iosf.h>
 #include <soc/pci_devs.h>
 #include <soc/ramstage.h>
-#include <soc/smm.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 #include <stddef.h>
 

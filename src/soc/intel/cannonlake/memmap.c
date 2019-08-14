@@ -24,7 +24,6 @@
 #include <intelblocks/ebda.h>
 #include <intelblocks/systemagent.h>
 #include <soc/pci_devs.h>
-#include <soc/smm.h>
 #include <soc/systemagent.h>
 #include <stdlib.h>
 

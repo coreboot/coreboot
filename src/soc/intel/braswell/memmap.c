@@ -17,7 +17,6 @@
 #include <cbmem.h>
 #include <cpu/x86/smm.h>
 #include <soc/iosf.h>
-#include <soc/smm.h>
 
 static size_t smm_region_size(void)
 {

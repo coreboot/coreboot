@@ -20,7 +20,6 @@
 #include <console/console.h>
 #include <cpu/x86/smm.h>
 #include <device/pci.h>
-#include <intelblocks/smm.h>
 #include <soc/systemagent.h>
 #include <soc/pci_devs.h>
 

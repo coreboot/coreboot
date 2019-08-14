@@ -36,7 +36,6 @@
 #include <intelblocks/lpc_lib.h>
 #include <intelblocks/msr.h>
 #include <intelblocks/pmclib.h>
-#include <intelblocks/smm.h>
 #include <intelblocks/systemagent.h>
 #include <mrc_cache.h>
 #include <soc/cpu.h>

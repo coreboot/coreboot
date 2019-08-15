@@ -48,10 +48,8 @@
 #define PRMRR_SUPPORTED (1 << 12)
 
 struct smm_relocation_params {
-	u32 smram_base;
-	u32 smram_size;
-	u32 ied_base;
-	u32 ied_size;
+	uintptr_t ied_base;
+	size_t ied_size;
 	msr_t smrr_base;
 	msr_t smrr_mask;
 	msr_t prmrr_base;
@@ -212,22 +210,11 @@ void smm_relocation_handler(int cpu, uintptr_t curr_smbase,
 	}
 }
 
-static u32 northbridge_get_base_reg(struct device *dev, int reg)
+static void fill_in_relocation_params(struct smm_relocation_params *params)
 {
-	u32 value;
+	uintptr_t tseg_base;
+	size_t tseg_size;
 
-	value = pci_read_config32(dev, reg);
-	/* Base registers are at 1MiB granularity. */
-	value &= ~((1 << 20) - 1);
-	return value;
-}
-
-static void fill_in_relocation_params(struct device *dev,
-				      struct smm_relocation_params *params)
-{
-	u32 tseg_size;
-	u32 tsegmb;
-	u32 bgsm;
 	u32 prmrr_base;
 	u32 prmrr_size;
 	int phys_bits;
@@ -242,24 +229,15 @@ static void fill_in_relocation_params(struct device *dev,
 	 * SMRAM range as well as the IED range. However, the SMRAM available
 	 * to the handler is 4MiB since the IEDRAM lives TSEGMB + 4MiB.
 	 */
-	tsegmb = northbridge_get_base_reg(dev, TSEG);
-	bgsm = northbridge_get_base_reg(dev, BGSM);
-	tseg_size = bgsm - tsegmb;
-
-	params->smram_base = tsegmb;
-	params->smram_size = 4 << 20;
-	params->ied_base = tsegmb + params->smram_size;
-	params->ied_size = tseg_size - params->smram_size;
-
-	/* Adjust available SMM handler memory size. */
-	params->smram_size -= CONFIG_SMM_RESERVED_SIZE;
+	smm_region(&tseg_base, &tseg_size);
 
 	/* SMRR has 32-bits of valid address aligned to 4KiB. */
-	params->smrr_base.lo = (params->smram_base & rmask) | MTRR_TYPE_WRBACK;
+	params->smrr_base.lo = (tseg_base & rmask) | MTRR_TYPE_WRBACK;
 	params->smrr_base.hi = 0;
-	params->smrr_mask.lo = (~(tseg_size - 1) & rmask)
-		| MTRR_PHYS_MASK_VALID;
+	params->smrr_mask.lo = (~(tseg_size - 1) & rmask) | MTRR_PHYS_MASK_VALID;
 	params->smrr_mask.hi = 0;
+
+	smm_subregion(SMM_SUBREGION_CHIPSET, &params->ied_base, &params->ied_size);
 
 	/* The PRMRR and UNCORE_PRMRR are at IEDBASE + 2MiB */
 	prmrr_base = (params->ied_base + (2 << 20)) & rmask;
@@ -310,16 +288,14 @@ static void setup_ied_area(struct smm_relocation_params *params)
 void smm_info(uintptr_t *perm_smbase, size_t *perm_smsize,
 				size_t *smm_save_state_size)
 {
-	struct device *dev = pcidev_on_root(0, 0);
-
 	printk(BIOS_DEBUG, "Setting up SMI for CPU\n");
 
-	fill_in_relocation_params(dev, &smm_reloc_params);
+	fill_in_relocation_params(&smm_reloc_params);
+
+	smm_subregion(SMM_SUBREGION_HANDLER, perm_smbase, perm_smsize);
 
 	setup_ied_area(&smm_reloc_params);
 
-	*perm_smbase = smm_reloc_params.smram_base;
-	*perm_smsize = smm_reloc_params.smram_size;
 	*smm_save_state_size = sizeof(em64t101_smm_state_save_area_t);
 }
 

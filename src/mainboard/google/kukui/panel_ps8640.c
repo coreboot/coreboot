@@ -43,16 +43,18 @@ static void dummy_power_on(void)
 	 */
 }
 
-static struct panel_description ps8640_panel = {
-	.power_on = dummy_power_on,
+static struct panel_serializable_data ps8640_data = {
 	.orientation = LB_FB_ORIENTATION_NORMAL,
 	.init = { INIT_END_CMD },
 };
 
+static struct panel_description ps8640_panel = {
+	.s = &ps8640_data,
+	.power_on = dummy_power_on,
+};
+
 struct panel_description *get_panel_description(int panel_id)
 {
-	static char mode_name[64];
-
 	/* To read panel EDID, we have to first power on PS8640. */
 	power_on_ps8640();
 
@@ -60,14 +62,10 @@ struct panel_description *get_panel_description(int panel_id)
 	mtk_i2c_bus_init(i2c_bus);
 
 	ps8640_init(i2c_bus, i2c_addr);
-	struct edid *edid = &ps8640_panel.edid;
+	struct edid *edid = &ps8640_data.edid;
 	if (ps8640_get_edid(i2c_bus, i2c_addr, edid)) {
 		printk(BIOS_ERR, "Can't get panel's edid\n");
 		return NULL;
 	}
-	/* TODO(hungte) Move this to ps8640_get_edid */
-	snprintf(mode_name, sizeof(mode_name), "%dx%d@%dHz", edid->x_resolution,
-		 edid->y_resolution, edid->mode.refresh);
-	ps8640_panel.edid.mode.name = mode_name;
 	return &ps8640_panel;
 }

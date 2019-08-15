@@ -19,15 +19,28 @@
 #include <edid.h>
 #include <soc/dsi.h>
 
-struct panel_description {
+/*
+ * The data that to be serialized and put into CBFS.
+ * Note some fields, for example edid.mode.name, were actually pointers and
+ * cannot be really serialized.
+ */
+struct panel_serializable_data {
 	struct edid edid;  /* edid info of this panel */
-	enum lb_fb_orientation orientation;  /* panel orientation */
+	enum lb_fb_orientation orientation;  /* Panel orientation */
+	u8 init[]; /* A packed array of lcm_init_command */
+};
+
+struct panel_description {
+	const char *name;  /* Panel name for constructing CBFS file name */
+	struct panel_serializable_data *s;
 	void (*power_on)(void);  /* Callback to turn on panel */
-	u8 init[]; /* a packed array of lcm_init_command */
 };
 
 /* Returns the panel description from given ID. */
-extern struct panel_description *get_panel_description(int panel_id);
+struct panel_description *get_panel_description(int panel_id);
+
+/* Loads panel serializable data from CBFS. */
+struct panel_description *get_panel_from_cbfs(struct panel_description *desc);
 
 #define INIT_DCS_CMD(...) \
 	LCM_DCS_CMD, \

@@ -13,8 +13,10 @@
  * GNU General Public License for more details.
  */
 
+#include <assert.h>
 #include <boardid.h>
 #include <bootmode.h>
+#include <cbfs.h>
 #include <console/console.h>
 #include <delay.h>
 #include <device/device.h>
@@ -26,6 +28,7 @@
 #include <soc/mmu_operations.h>
 #include <soc/mtcmos.h>
 #include <soc/usb.h>
+#include <string.h>
 
 #include "panel.h"
 
@@ -93,6 +96,31 @@ static void power_on_panel(struct panel_description *panel)
 	mdelay(6);
 }
 
+struct panel_description *get_panel_from_cbfs(struct panel_description *desc)
+{
+	/* The CBFS name will be panel-{MANUFACTURER}-${PANEL_NAME},
+	 * where MANUFACTURER is 3 characters and PANEL_NAME is usually
+	 * 13 characters.
+	 */
+	char cbfs_name[64];
+	static union {
+		u8 raw[4 * 1024];  /* Most panels only need < 2K. */
+		struct panel_serializable_data s;
+	} buffer;
+
+	if (!desc->name)
+		return NULL;
+
+	snprintf(cbfs_name, sizeof(cbfs_name), "panel-%s", desc->name);
+	if (cbfs_boot_load_file(cbfs_name, buffer.raw, sizeof(buffer),
+				CBFS_TYPE_STRUCT))
+		desc->s = &buffer.s;
+	else
+		printk(BIOS_ERR, "Missing %s in CBFS.\n", cbfs_name);
+
+	return desc->s ? desc : NULL;
+}
+
 static struct panel_description *get_active_panel(void)
 {
 	/* TODO(hungte) Create a dedicated panel_id() in board_id.c */
@@ -104,13 +132,15 @@ static struct panel_description *get_active_panel(void)
 		       __func__, panel_id);
 		return NULL;
 	}
-	const char *mode_name = panel->edid.mode.name;
-	const char *name = panel->edid.ascii_string;
+	assert(panel->s);
+
+	const struct edid *edid = &panel->s->edid;
+	const char *name = edid->ascii_string;
 	if (name[0] == '\0')
 		name = "unknown name";
-	printk(BIOS_INFO, "%s: Found ID %d: '%s %s' %s\n", __func__,
-	       panel_id, panel->edid.manufacturer_name, name,
-	       mode_name ?  mode_name : "(unknown mode)");
+	printk(BIOS_INFO, "%s: Found ID %d: '%s %s' %dx%d@%dHz\n", __func__,
+	       panel_id, edid->manufacturer_name, name, edid->mode.ha,
+	       edid->mode.va, edid->mode.refresh);
 	return panel;
 }
 
@@ -125,20 +155,20 @@ static bool configure_display(void)
 	configure_panel_backlight();
 	power_on_panel(panel);
 
-	struct edid *edid = &panel->edid;
+	struct edid *edid = &panel->s->edid;
 	edid_set_framebuffer_bits_per_pixel(edid, 32, 0);
 	mtk_ddp_init();
 	u32 mipi_dsi_flags = (MIPI_DSI_MODE_VIDEO |
 			      MIPI_DSI_MODE_VIDEO_SYNC_PULSE |
 			      MIPI_DSI_MODE_LPM);
 	if (mtk_dsi_init(mipi_dsi_flags, MIPI_DSI_FMT_RGB888, 4, edid,
-			 panel->init) < 0) {
+			 panel->s->init) < 0) {
 		printk(BIOS_ERR, "%s: Failed in DSI init.\n", __func__);
 		return false;
 	}
 	mtk_ddp_mode_set(edid);
 	set_vbe_mode_info_valid(edid, 0);
-	set_vbe_framebuffer_orientation(panel->orientation);
+	set_vbe_framebuffer_orientation(panel->s->orientation);
 	return true;
 }
 

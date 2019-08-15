@@ -72,11 +72,15 @@ config MAINBOARD_DIR
 
 config MAINBOARD_FAMILY
 	string
-	default "Google_Drallion"
+	default "Google_Arcada_cml" if BOARD_GOOGLE_ARCADA_CML
+	default "Google_Sarien_cml" if BOARD_GOOGLE_SARIEN_CML
+	default "Google_Drallion" if BOARD_GOOGLE_DRALLION
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "Drallion"
+	default "Arcada_cml" if BOARD_GOOGLE_ARCADA_CML
+	default "Sarien_cml" if BOARD_GOOGLE_SARIEN_CML
+	default "Drallion" if BOARD_GOOGLE_DRALLION
 
 config MAINBOARD_VENDOR
 	string
@@ -92,7 +96,9 @@ config UART_FOR_CONSOLE
 
 config VARIANT_DIR
 	string
-	default "drallion"
+	default "arcada_cml" if BOARD_GOOGLE_ARCADA_CML
+	default "sarien_cml" if BOARD_GOOGLE_SARIEN_CML
+	default "drallion" if BOARD_GOOGLE_DRALLION
 
 config DEVICETREE
 	string

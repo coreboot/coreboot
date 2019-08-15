@@ -73,11 +73,11 @@ const char *i2c_acpi_name(const struct device *dev)
 {
 	switch (dev->path.mmio.addr) {
 	case APU_I2C2_BASE:
-		return "I2CC";
+		return "I2C2";
 	case APU_I2C3_BASE:
-		return "I2CD";
+		return "I2C3";
 	case APU_I2C4_BASE:
-		return "I2CE";
+		return "I2C4";
 	default:
 		return NULL;
 	}

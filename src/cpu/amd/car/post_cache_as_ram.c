@@ -131,9 +131,9 @@ asmlinkage void *post_cache_as_ram(void)
 	 * boundary during romstage execution
 	 */
 	volatile uint32_t *lower_stack_boundary;
-	lower_stack_boundary =
-	(void *)((CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE)
-	- CONFIG_DCACHE_BSP_STACK_SIZE);
+	lower_stack_boundary = (void *)((CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE) -
+					CONFIG_DCACHE_BSP_TOP_STACK_SIZE);
+
 	if ((*lower_stack_boundary) != 0xdeadbeef)
 		printk(BIOS_WARNING, "BSP overran lower stack boundary.  Undefined behaviour may result!\n");
 

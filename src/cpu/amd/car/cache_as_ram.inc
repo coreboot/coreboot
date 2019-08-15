@@ -22,8 +22,8 @@
 
 #define CacheSize		CONFIG_DCACHE_RAM_SIZE
 #define CacheBase		CONFIG_DCACHE_RAM_BASE
-#define CacheSizeBSPStack	CONFIG_DCACHE_BSP_STACK_SIZE
-#define CacheSizeBSPSlush	CONFIG_DCACHE_BSP_STACK_SLUSH
+#define CacheSizeBSPStack	CONFIG_DCACHE_BSP_TOP_STACK_SIZE
+#define CacheSizeBSPSlush	CONFIG_DCACHE_BSP_TOP_STACK_SLUSH
 
 /* For CAR with Fam10h. */
 #define CacheSizeAPStack	CONFIG_DCACHE_AP_STACK_SIZE

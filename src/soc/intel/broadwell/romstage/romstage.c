@@ -25,7 +25,6 @@
 #include <elog.h>
 #include <program_loading.h>
 #include <romstage_handoff.h>
-#include <stage_cache.h>
 #include <timestamp.h>
 #include <soc/gpio.h>
 #include <soc/me.h>

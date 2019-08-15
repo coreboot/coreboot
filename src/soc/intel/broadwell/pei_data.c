@@ -38,7 +38,7 @@ void broadwell_fill_pei_data(struct pei_data *pei_data)
 	pei_data->gttbar = EARLY_GTT_BAR;
 	pei_data->pmbase = ACPI_BASE_ADDRESS;
 	pei_data->gpiobase = GPIO_BASE_ADDRESS;
-	pei_data->tseg_size = smm_region_size();
+	pei_data->tseg_size = CONFIG_SMM_TSEG_SIZE;
 	pei_data->temp_mmio_base = EARLY_TEMP_MMIO;
 	pei_data->tx_byte = &send_to_console;
 	pei_data->ddr_refresh_2x = 1;

@@ -15,10 +15,10 @@
  */
 
 #include <arch/cpu.h>
+#include <arch/romstage.h>
 #include <stdint.h>
 #include <cbmem.h>
 #include <console/console.h>
-#include <cpu/intel/romstage.h>
 #include <timestamp.h>
 #include <southbridge/intel/i82801ix/i82801ix.h>
 #include <program_loading.h>

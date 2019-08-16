@@ -20,7 +20,7 @@
 #include <cbmem.h>
 #include <commonlib/helpers.h>
 #include <stdint.h>
-#include <arch/cpu.h>
+#include <arch/romstage.h>
 #include <device/pci_ops.h>
 #include <device/pci_def.h>
 #include <console/console.h>

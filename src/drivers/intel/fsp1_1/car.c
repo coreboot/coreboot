@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/romstage.h>
 #include <arch/symbols.h>
 #include <cbmem.h>
 #include <console/console.h>

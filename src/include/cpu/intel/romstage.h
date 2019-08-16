@@ -1,7 +1,7 @@
 #ifndef _CPU_INTEL_ROMSTAGE_H
 #define _CPU_INTEL_ROMSTAGE_H
 
-#include <arch/cpu.h>
+#include <arch/romstage.h>
 
 void mainboard_romstage_entry(void);
 

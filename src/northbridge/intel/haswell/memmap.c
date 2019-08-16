@@ -16,7 +16,7 @@
 // Use simple device model for this file even in ramstage
 #define __SIMPLE_DEVICE__
 
-#include <arch/cpu.h>
+#include <arch/romstage.h>
 #include <console/console.h>
 #include <cpu/x86/mtrr.h>
 #include <device/pci_ops.h>

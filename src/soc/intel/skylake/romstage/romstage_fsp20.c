@@ -14,6 +14,7 @@
  */
 
 #include <arch/cpu.h>
+#include <arch/romstage.h>
 #include <arch/symbols.h>
 #include <assert.h>
 #include <cpu/x86/mtrr.h>

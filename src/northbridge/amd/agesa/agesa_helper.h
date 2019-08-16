@@ -17,7 +17,7 @@
 #define _AGESA_HELPER_H_
 
 #include <stddef.h>
-#include <arch/cpu.h>
+#include <arch/romstage.h>
 
 enum {
 	PICK_DMI,       /* DMI Interface */

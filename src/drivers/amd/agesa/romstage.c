@@ -15,6 +15,7 @@
 
 #include <arch/acpi.h>
 #include <arch/cpu.h>
+#include <arch/romstage.h>
 #include <cbmem.h>
 #include <cpu/amd/car.h>
 #include <cpu/x86/bist.h>

@@ -17,6 +17,7 @@
  */
 
 #include <arch/cpu.h>
+#include <arch/romstage.h>
 #include <device/pci_ops.h>
 #include <arch/symbols.h>
 #include <assert.h>

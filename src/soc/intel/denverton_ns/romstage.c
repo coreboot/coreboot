@@ -15,6 +15,7 @@
  */
 
 #include <arch/cpu.h>
+#include <arch/romstage.h>
 #include <arch/io.h>
 #include <cbmem.h>
 #include <cf9_reset.h>

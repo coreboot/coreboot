@@ -14,6 +14,7 @@
  */
 
 #include <arch/cpu.h>
+#include <arch/romstage.h>
 #include <cpu/x86/mtrr.h>
 #include <cbmem.h>
 #include <console/console.h>

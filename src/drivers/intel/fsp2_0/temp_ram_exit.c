@@ -9,7 +9,7 @@
  * (at your option) any later version.
  */
 
-#include <arch/cpu.h>
+#include <arch/romstage.h>
 #include <console/console.h>
 #include <fsp/api.h>
 #include <fsp/util.h>

@@ -186,6 +186,8 @@ struct soc_intel_cannonlake_config {
 	uint8_t EmmcHs400RxStrobeDll1;
 	/* 0-78: number of active delay for TX data, unit is 125 psec */
 	uint8_t EmmcHs400TxDataDll;
+	/* Enable/disable SD card write protect pin configuration on CML */
+	uint8_t ScsSdCardWpPinEnabled;
 
 	/* Integrated Sensor */
 	uint8_t PchIshEnable;

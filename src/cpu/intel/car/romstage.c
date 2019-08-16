@@ -61,7 +61,7 @@ static void romstage_main(unsigned long bist)
 	for (i = 0; i < num_guards; i++)
 		stack_base[i] = stack_guard;
 
-	mainboard_romstage_entry(bist);
+	mainboard_romstage_entry();
 
 	/* Check the stack. */
 	for (i = 0; i < num_guards; i++) {

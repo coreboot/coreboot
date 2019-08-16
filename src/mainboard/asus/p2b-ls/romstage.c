@@ -18,7 +18,6 @@
 #include <console/console.h>
 #include <southbridge/intel/i82371eb/i82371eb.h>
 #include <northbridge/intel/i440bx/raminit.h>
-#include <cpu/x86/bist.h>
 #include <cpu/intel/romstage.h>
 #include <superio/winbond/common/winbond.h>
 /* FIXME: The ASUS P2B-LS has a Winbond W83977EF, actually. */
@@ -32,11 +31,10 @@ int spd_read_byte(unsigned int device, unsigned int address)
 	return smbus_read_byte(device, address);
 }
 
-void mainboard_romstage_entry(unsigned long bist)
+void mainboard_romstage_entry(void)
 {
 	winbond_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	console_init();
-	report_bist_failure(bist);
 
 	enable_smbus();
 	sdram_initialize();

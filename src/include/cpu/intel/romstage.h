@@ -3,7 +3,7 @@
 
 #include <arch/cpu.h>
 
-void mainboard_romstage_entry(unsigned long bist);
+void mainboard_romstage_entry(void);
 
 /* fill_postcar_frame() is called after raminit completes and right before
  * calling run_postcar_phase(). Implementation should call postcar_frame_add_mtrr()

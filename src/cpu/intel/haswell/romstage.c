@@ -33,13 +33,9 @@ void romstage_common(const struct romstage_params *params)
 	int boot_mode;
 	int wake_from_s3;
 
-	if (params->bist == 0)
-		enable_lapic();
+	enable_lapic();
 
 	wake_from_s3 = early_pch_init(params->gpio_map, params->rcba_config);
-
-	/* Halt if there was a built in self test failure */
-	report_bist_failure(params->bist);
 
 	/* Perform some early chipset initialization required
 	 * before RAM initialization can work

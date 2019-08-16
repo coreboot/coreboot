@@ -18,7 +18,7 @@
 #include "variant.h"
 
 
-void mainboard_romstage_entry(unsigned long bist)
+void mainboard_romstage_entry(void)
 {
-    variant_romstage_entry(bist);
+	variant_romstage_entry();
 }

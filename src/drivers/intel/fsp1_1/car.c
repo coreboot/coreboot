@@ -37,7 +37,7 @@ void fill_postcar_frame(struct postcar_frame *pcf)
 }
 
 /* This is the romstage entry called from cpu/intel/car/romstage.c */
-void mainboard_romstage_entry(unsigned long bist)
+void mainboard_romstage_entry(void)
 {
 	/* Need to locate the current FSP_INFO_HEADER. The cache-as-ram
 	 * is still enabled. We can directly access work buffer here. */

@@ -25,7 +25,6 @@
 #include <soc/mrc_wrapper.h>
 
 struct romstage_params {
-	unsigned long bist;
 	struct mrc_params *mrc_params;
 };
 

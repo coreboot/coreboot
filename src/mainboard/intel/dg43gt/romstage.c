@@ -20,7 +20,6 @@
 #include <southbridge/intel/common/gpio.h>
 #include <southbridge/intel/common/pmclib.h>
 #include <northbridge/intel/x4x/x4x.h>
-#include <cpu/x86/bist.h>
 #include <cpu/intel/romstage.h>
 #include <superio/winbond/w83627dhg/w83627dhg.h>
 #include <superio/winbond/common/winbond.h>
@@ -68,7 +67,7 @@ static void ich10_enable_lpc(void)
 	pci_write_config32(LPC_DEV, D31F0_GEN3_DEC, 0);
 }
 
-void mainboard_romstage_entry(unsigned long bist)
+void mainboard_romstage_entry(void)
 {
 	const u8 spd_addrmap[4] = { 0x50, 0x51, 0x52, 0x53 };
 	u8 boot_path = 0;
@@ -81,7 +80,6 @@ void mainboard_romstage_entry(unsigned long bist)
 
 	console_init();
 
-	report_bist_failure(bist);
 	enable_smbus();
 
 	x4x_early_init();

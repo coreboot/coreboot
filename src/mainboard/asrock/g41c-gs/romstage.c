@@ -19,7 +19,6 @@
 #include <device/pci_ops.h>
 #include <console/console.h>
 #include <cpu/intel/romstage.h>
-#include <cpu/x86/bist.h>
 #include <northbridge/intel/x4x/iomap.h>
 #include <northbridge/intel/x4x/x4x.h>
 #include <southbridge/intel/common/gpio.h>
@@ -82,7 +81,7 @@ static void ich7_enable_lpc(void)
 	pci_write_config32(PCI_DEV(0, 0x1f, 0), GEN1_DEC, 0x000c0291);
 }
 
-void mainboard_romstage_entry(unsigned long bist)
+void mainboard_romstage_entry(void)
 {
 	//                          ch0      ch1
 	const u8 spd_addrmap[4] = { 0x50, 0, 0x52, 0 };
@@ -95,7 +94,6 @@ void mainboard_romstage_entry(unsigned long bist)
 
 	console_init();
 
-	report_bist_failure(bist);
 	enable_smbus();
 
 	x4x_early_init();

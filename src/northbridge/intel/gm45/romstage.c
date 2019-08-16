@@ -21,7 +21,6 @@
 #include <device/pci_ops.h>
 #include <arch/acpi.h>
 #include <cpu/x86/lapic.h>
-#include <cpu/x86/bist.h>
 #include <cpu/intel/romstage.h>
 #include <northbridge/intel/gm45/gm45.h>
 #include <southbridge/intel/i82801ix/i82801ix.h>
@@ -47,7 +46,7 @@ void __weak mb_post_raminit_setup(void)
 /* Platform has no romstage entry point under mainboard directory,
  * so this one is named with prefix mainboard.
  */
-void mainboard_romstage_entry(unsigned long bist)
+void mainboard_romstage_entry(void)
 {
 	sysinfo_t sysinfo;
 	int s3resume = 0;
@@ -57,8 +56,7 @@ void mainboard_romstage_entry(unsigned long bist)
 	/* basic northbridge setup, including MMCONF BAR */
 	gm45_early_init();
 
-	if (bist == 0)
-		enable_lapic();
+	enable_lapic();
 
 	/* First, run everything needed for console output. */
 	i82801ix_early_init();
@@ -69,7 +67,6 @@ void mainboard_romstage_entry(unsigned long bist)
 	mb_setup_superio();
 
 	console_init();
-	report_bist_failure(bist);
 
 	reg16 = pci_read_config16(LPC_DEV, D31F0_GEN_PMCON_3);
 	pci_write_config16(LPC_DEV, D31F0_GEN_PMCON_3, reg16);

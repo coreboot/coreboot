@@ -24,7 +24,6 @@
 #include <superio/winbond/common/winbond.h>
 #include <superio/winbond/w83627dhg/w83627dhg.h>
 #include <console/console.h>
-#include <cpu/x86/bist.h>
 #include <cpu/intel/romstage.h>
 #include <northbridge/intel/i945/i945.h>
 #include <northbridge/intel/i945/raminit.h>
@@ -173,14 +172,13 @@ static void early_ich7_init(void)
 	RCBA32(0x2034) = reg32;
 }
 
-void mainboard_romstage_entry(unsigned long bist)
+void mainboard_romstage_entry(void)
 {
 	int s3resume = 0, boot_mode = 0;
 
 	u8 c_bsel = msr_get_fsb();
 
-	if (bist == 0)
-		enable_lapic();
+	enable_lapic();
 
 	ich7_enable_lpc();
 
@@ -188,9 +186,6 @@ void mainboard_romstage_entry(unsigned long bist)
 
 	/* Set up the console */
 	console_init();
-
-	/* Halt if there was a built in self test failure */
-	report_bist_failure(bist);
 
 	if (MCHBAR16(SSKPD) == 0xCAFE) {
 		printk(BIOS_DEBUG, "soft reset detected.\n");

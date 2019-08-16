@@ -105,7 +105,7 @@ static void copy_spd(struct pei_data *peid)
 	}
 }
 
-void variant_romstage_entry(unsigned long bist)
+void variant_romstage_entry(void)
 {
 	struct pei_data pei_data = {
 		.pei_version = PEI_VERSION,
@@ -167,7 +167,6 @@ void variant_romstage_entry(unsigned long bist)
 		.pei_data = &pei_data,
 		.gpio_map = &mainboard_gpio_map,
 		.rcba_config = &rcba_config[0],
-		.bist = bist,
 		.copy_spd = copy_spd,
 	};
 

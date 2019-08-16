@@ -49,7 +49,7 @@ void fill_postcar_frame(struct postcar_frame *pcf)
 }
 
 /* Entry from cpu/intel/car/romstage.c. */
-void mainboard_romstage_entry(unsigned long bist)
+void mainboard_romstage_entry(void)
 {
 	struct romstage_params rp = { 0 };
 

@@ -141,7 +141,6 @@ struct romstage_params {
 	struct pei_data *pei_data;
 	const void *gpio_map;
 	const struct rcba_config_instruction *rcba_config;
-	unsigned long bist;
 	void (*copy_spd)(struct pei_data *);
 };
 void romstage_common(const struct romstage_params *params);

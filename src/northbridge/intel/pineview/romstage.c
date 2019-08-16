@@ -27,7 +27,6 @@
 #include <southbridge/intel/common/gpio.h>
 #include <southbridge/intel/common/pmclib.h>
 #include <cpu/intel/romstage.h>
-#include <cpu/x86/bist.h>
 #include <cpu/x86/lapic.h>
 #include "raminit.h"
 #include "pineview.h"
@@ -48,23 +47,19 @@ __weak void mb_pirq_setup(void)
 
 #define LPC_DEV PCI_DEV(0x0, 0x1f, 0x0)
 
-void mainboard_romstage_entry(unsigned long bist)
+void mainboard_romstage_entry(void)
 {
 	u8 spd_addrmap[4] = {};
 	int boot_path, cbmem_was_initted;
 	int s3resume = 0;
 
-	if (bist == 0)
-		enable_lapic();
+	enable_lapic();
 
 	/* Enable GPIOs */
 	pci_write_config32(LPC_DEV, GPIO_BASE, DEFAULT_GPIOBASE | 1);
 	pci_write_config8(LPC_DEV, GPIO_CNTL, 0x10);
 
 	setup_pch_gpios(&mainboard_gpio_map);
-
-	/* Halt if there was a built in self test failure */
-	report_bist_failure(bist);
 
 	enable_smbus();
 

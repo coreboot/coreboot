@@ -22,7 +22,6 @@
 #include <cpu/x86/lapic.h>
 #include <timestamp.h>
 #include "sandybridge.h"
-#include <cpu/x86/bist.h>
 #include <cpu/intel/romstage.h>
 #include <device/pci_def.h>
 #include <device/device.h>
@@ -44,15 +43,14 @@ static void early_pch_reset_pmcon(void)
 /* Platform has no romstage entry point under mainboard directory,
  * so this one is named with prefix mainboard.
  */
-void mainboard_romstage_entry(unsigned long bist)
+void mainboard_romstage_entry(void)
 {
 	int s3resume = 0;
 
 	if (MCHBAR16(SSKPD) == 0xCAFE)
 		system_reset();
 
-	if (bist == 0)
-		enable_lapic();
+	enable_lapic();
 
 	/* Init LPC, GPIO, BARs, disable watchdog ... */
 	early_pch_init();
@@ -67,9 +65,6 @@ void mainboard_romstage_entry(unsigned long bist)
 
 	/* Initialize console device(s) */
 	console_init();
-
-	/* Halt if there was a built in self test failure */
-	report_bist_failure(bist);
 
 	/* Perform some early chipset initialization required
 	 * before RAM initialization can work

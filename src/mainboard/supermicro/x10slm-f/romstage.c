@@ -38,7 +38,7 @@ static const struct rcba_config_instruction rcba_config[] = {
 	RCBA_END_CONFIG,
 };
 
-void mainboard_romstage_entry(unsigned long bist)
+void mainboard_romstage_entry(void)
 {
 	struct pei_data pei_data = {
 		.pei_version = PEI_VERSION,
@@ -92,7 +92,6 @@ void mainboard_romstage_entry(unsigned long bist)
 		.pei_data = &pei_data,
 		.gpio_map = &mainboard_gpio_map,
 		.rcba_config = rcba_config,
-		.bist = bist,
 	};
 
 	romstage_common(&romstage_params);

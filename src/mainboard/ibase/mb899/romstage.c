@@ -19,7 +19,6 @@
 #include <device/pci_ops.h>
 #include <console/console.h>
 #include <cpu/intel/romstage.h>
-#include <cpu/x86/bist.h>
 #include <cpu/x86/lapic.h>
 #include <device/pci_def.h>
 #include <device/pnp_def.h>
@@ -197,21 +196,17 @@ static void early_ich7_init(void)
 	RCBA32(0x2034) = reg32;
 }
 
-void mainboard_romstage_entry(unsigned long bist)
+void mainboard_romstage_entry(void)
 {
 	int s3resume = 0;
 
-	if (bist == 0)
-		enable_lapic();
+	enable_lapic();
 
 	ich7_enable_lpc();
 	early_superio_config_w83627ehg();
 
 	/* Set up the console */
 	console_init();
-
-	/* Halt if there was a built in self test failure */
-	report_bist_failure(bist);
 
 	if (MCHBAR16(SSKPD) == 0xCAFE) {
 		printk(BIOS_DEBUG, "soft reset detected, rebooting properly\n");

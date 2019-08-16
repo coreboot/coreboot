@@ -26,7 +26,7 @@ int spd_read_byte(unsigned int device, unsigned int address)
 	return smbus_read_byte(device, address);
 }
 
-void mainboard_romstage_entry(unsigned long bist)
+void mainboard_romstage_entry(void)
 {
 	static const struct mem_controller memctrl[] = {
 		{

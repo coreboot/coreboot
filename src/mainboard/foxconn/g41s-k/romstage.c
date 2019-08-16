@@ -17,7 +17,6 @@
  */
 
 #include <console/console.h>
-#include <cpu/x86/bist.h>
 #include <cpu/intel/romstage.h>
 #include <device/pci_ops.h>
 #include <northbridge/intel/x4x/iomap.h>
@@ -81,7 +80,7 @@ static void ich7_enable_lpc(void)
 	pci_write_config32(LPC_DEV, GEN1_DEC, 0x003c0a01);
 }
 
-void mainboard_romstage_entry(unsigned long bist)
+void mainboard_romstage_entry(void)
 {
 	//                          ch0      ch1
 #if CONFIG(BOARD_FOXCONN_G41S_K)
@@ -101,7 +100,6 @@ void mainboard_romstage_entry(unsigned long bist)
 
 	console_init();
 
-	report_bist_failure(bist);
 	enable_smbus();
 
 	x4x_early_init();

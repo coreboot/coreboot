@@ -18,7 +18,6 @@
 #include <delay.h>
 #include <console/console.h>
 #include <cpu/intel/romstage.h>
-#include <cpu/x86/bist.h>
 #include <cpu/x86/lapic.h>
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
@@ -241,12 +240,11 @@ static void early_ich7_init(void)
 	RCBA32(0x2034) = reg32;
 }
 
-void mainboard_romstage_entry(unsigned long bist)
+void mainboard_romstage_entry(void)
 {
 	int s3resume = 0;
 
-	if (bist == 0)
-		enable_lapic();
+	enable_lapic();
 
 	/* Force PCIRST# */
 	pci_write_config16(PCI_DEV(0, 0x1e, 0), BCTRL, SBR);
@@ -258,9 +256,6 @@ void mainboard_romstage_entry(unsigned long bist)
 
 	/* Set up the console */
 	console_init();
-
-	/* Halt if there was a built in self test failure */
-	report_bist_failure(bist);
 
 	if (MCHBAR16(SSKPD) == 0xCAFE) {
 		printk(BIOS_DEBUG, "soft reset detected, rebooting properly\n");

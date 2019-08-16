@@ -20,7 +20,6 @@
 #include <southbridge/intel/common/gpio.h>
 #include <southbridge/intel/common/pmclib.h>
 #include <northbridge/intel/x4x/x4x.h>
-#include <cpu/x86/bist.h>
 #include <cpu/intel/romstage.h>
 #include <device/pci_ops.h>
 #include <superio/smsc/smscsuperio/smscsuperio.h>
@@ -60,7 +59,7 @@ static void ich7_enable_lpc(void)
 	pci_write_config32(LPC_DEV, GEN1_DEC, 0x00fc0a01);
 }
 
-void mainboard_romstage_entry(unsigned long bist)
+void mainboard_romstage_entry(void)
 {
 	//                          ch0      ch1
 	const u8 spd_addrmap[4] = { 0x50, 0, 0x52, 0 };
@@ -74,7 +73,6 @@ void mainboard_romstage_entry(unsigned long bist)
 
 	console_init();
 
-	report_bist_failure(bist);
 	enable_smbus();
 
 	x4x_early_init();

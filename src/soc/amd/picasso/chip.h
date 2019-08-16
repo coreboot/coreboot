@@ -36,6 +36,14 @@ struct soc_amd_picasso_config {
 	 */
 	u8 i2c_scl_reset;
 	struct dw_i2c_bus_config i2c[PICASSO_I2C_DEV_MAX];
+	enum {
+		I2S_PINS_MAX_HDA = 0,	/* HDA w/reset  3xSDI, SW w/Data0 */
+		I2S_PINS_MAX_MHDA = 1,	/* HDA no reset 3xSDI, SW w/Data0-1 */
+		I2S_PINS_MIN_HDA = 2,	/* HDA w/reset  1xSDI, SW w/Data0-2 */
+		I2S_PINS_MIN_MHDA = 3,	/* HDA no reset 1xSDI, SW w/Data0-3 */
+		I2S_PINS_I2S_TDM = 4,
+		I2S_PINS_UNCONF = 7,	/* All pads will be input mode */
+	} acp_pin_cfg;
 };
 
 typedef struct soc_amd_picasso_config config_t;

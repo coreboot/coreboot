@@ -73,6 +73,9 @@
 #define D18F1_VGAEN		0xf4
 # define VGA_ADDR_ENABLE	(1 << 0)
 
+/* Bus A D0F5 - Audio Processor */
+#define ACP_I2S_PIN_CONFIG	0x1400	/* HDA, Soundwire, I2S */
+
 void amd_initcpuio(void);
 
 void domain_enable_resources(struct device *dev);

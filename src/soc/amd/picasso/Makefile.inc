@@ -72,6 +72,7 @@ ramstage-y += southbridge.c
 ramstage-y += northbridge.c
 ramstage-y += pmutil.c
 ramstage-y += reset.c
+ramstage-y += acp.c
 ramstage-y += sata.c
 ramstage-y += sm.c
 ramstage-y += smbus.c

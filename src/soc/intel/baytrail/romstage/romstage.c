@@ -44,16 +44,6 @@
 #include <soc/smm.h>
 #include <soc/spi.h>
 
-/* The cache-as-ram assembly file calls romstage_main() after setting up
- * cache-as-ram.  romstage_main() will then call the mainboards's
- * mainboard_romstage_entry() function. That function then calls
- * romstage_common() below. The reason for the back and forth is to provide
- * common entry point from cache-as-ram while still allowing for code sharing.
- * Because we can't use global variables the stack is used for allocations --
- * thus the need to call back and forth. */
-
-static struct postcar_frame early_mtrrs;
-
 static void program_base_addresses(void)
 {
 	uint32_t reg;
@@ -97,54 +87,6 @@ static void spi_init(void)
 	reg = (read32(bcr) & ~SRC_MASK) | SRC_CACHE_PREFETCH | BCR_WPD;
 	reg &= ~EISS;
 	write32(bcr, reg);
-}
-
-/* Entry from cache-as-ram.inc. */
-static void romstage_main(uint64_t tsc)
-{
-	struct romstage_params rp = {
-		.mrc_params = NULL,
-	};
-
-	/* Save initial timestamp from bootblock. */
-	timestamp_init(tsc);
-
-	/* Save romstage begin */
-	timestamp_add_now(TS_START_ROMSTAGE);
-
-	program_base_addresses();
-
-	tco_disable();
-
-	if (CONFIG(ENABLE_BUILTIN_COM1))
-		byt_config_com1_and_enable();
-
-	console_init();
-
-	spi_init();
-
-	set_max_freq();
-
-	punit_init();
-
-	gfx_init();
-
-	/* Call into mainboard. */
-	mainboard_romstage_entry_rp(&rp);
-
-	if (CONFIG(SMM_TSEG))
-		smm_list_regions();
-
-	prepare_and_run_postcar(&early_mtrrs);
-	/* We do not return here. */
-}
-
-/* This wrapper enables easy transition towards C_ENVIRONMENT_BOOTBLOCK,
- * keeping changes in cache_as_ram.S easy to manage.
- */
-asmlinkage void bootblock_c_entry_bist(uint64_t base_timestamp, uint32_t bist)
-{
-	romstage_main(base_timestamp);
 }
 
 static struct chipset_power_state power_state;
@@ -216,6 +158,56 @@ static int chipset_prev_sleep_state(struct chipset_power_state *ps)
 	return prev_sleep_state;
 }
 
+/* The cache-as-ram assembly file calls romstage_main() after setting up
+ * cache-as-ram.  romstage_main() will then call the mainboards's
+ * mainboard_romstage_entry() function. That function then calls
+ * romstage_common() below. The reason for the back and forth is to provide
+ * common entry point from cache-as-ram while still allowing for code sharing.
+ * Because we can't use global variables the stack is used for allocations --
+ * thus the need to call back and forth. */
+
+static struct postcar_frame early_mtrrs;
+
+/* Entry from cache-as-ram.inc. */
+static void romstage_main(uint64_t tsc)
+{
+	struct romstage_params rp = {
+		.mrc_params = NULL,
+	};
+
+	/* Save initial timestamp from bootblock. */
+	timestamp_init(tsc);
+
+	/* Save romstage begin */
+	timestamp_add_now(TS_START_ROMSTAGE);
+
+	program_base_addresses();
+
+	tco_disable();
+
+	if (CONFIG(ENABLE_BUILTIN_COM1))
+		byt_config_com1_and_enable();
+
+	console_init();
+
+	spi_init();
+
+	set_max_freq();
+
+	punit_init();
+
+	gfx_init();
+
+	/* Call into mainboard. */
+	mainboard_romstage_entry_rp(&rp);
+
+	if (CONFIG(SMM_TSEG))
+		smm_list_regions();
+
+	prepare_and_run_postcar(&early_mtrrs);
+	/* We do not return here. */
+}
+
 /* Entry from the mainboard. */
 void romstage_common(struct romstage_params *params)
 {
@@ -241,6 +233,14 @@ void romstage_common(struct romstage_params *params)
 	timestamp_add_now(TS_AFTER_INITRAM);
 
 	romstage_handoff_init(prev_sleep_state == ACPI_S3);
+}
+
+/* This wrapper enables easy transition towards C_ENVIRONMENT_BOOTBLOCK,
+ * keeping changes in cache_as_ram.S easy to manage.
+ */
+asmlinkage void bootblock_c_entry_bist(uint64_t base_timestamp, uint32_t bist)
+{
+	romstage_main(base_timestamp);
 }
 
 void fill_postcar_frame(struct postcar_frame *pcf)

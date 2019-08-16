@@ -16,7 +16,6 @@
 #include <arch/romstage.h>
 #include <arch/symbols.h>
 #include <assert.h>
-#include <cpu/x86/mtrr.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/smm.h>
 #include <cbmem.h>
@@ -152,34 +151,6 @@ void mainboard_romstage_entry(void)
 	pmc_set_disb();
 	if (!s3wake)
 		save_dimm_info();
-}
-
-void fill_postcar_frame(struct postcar_frame *pcf)
-{
-	uintptr_t top_of_ram;
-	uintptr_t smm_base;
-	size_t smm_size;
-
-	/*
-	 * We need to make sure ramstage will be run cached. At this
-	 * point exact location of ramstage in cbmem is not known.
-	 * Instruct postcar to cache 16 megs under cbmem top which is
-	 * a safe bet to cover ramstage.
-	 */
-	top_of_ram = (uintptr_t) cbmem_top();
-	printk(BIOS_DEBUG, "top_of_ram = 0x%lx\n", top_of_ram);
-	top_of_ram -= 16*MiB;
-	postcar_frame_add_mtrr(pcf, top_of_ram, 16*MiB, MTRR_TYPE_WRBACK);
-
-	/*
-	 * Cache the TSEG region at the top of ram. This region is
-	 * not restricted to SMM mode until SMM has been relocated.
-	 * By setting the region to cacheable it provides faster access
-	 * when relocating the SMM handler as well as using the TSEG
-	 * region for other purposes.
-	 */
-	smm_region(&smm_base, &smm_size);
-	postcar_frame_add_mtrr(pcf, smm_base, smm_size, MTRR_TYPE_WRBACK);
 }
 
 static void cpu_flex_override(FSP_M_CONFIG *m_cfg)

@@ -56,12 +56,10 @@ ARCHDIR-x86_64	:= x86
 ARCHDIR-arm	:= arm
 ARCHDIR-arm64	:= arm64
 ARCHDIR-riscv	:= riscv
-ARCHDIR-mips	:= mips
 ARCHDIR-ppc64	:= ppc64
 
 CFLAGS_arm	+=
 CFLAGS_arm64	+= -mgeneral-regs-only
-CFLAGS_mips	+= -mips32r2 -G 0 -mno-abicalls -fno-pic
 CFLAGS_riscv	+=
 CFLAGS_x86_32	+=
 CFLAGS_x86_64	+= -mcmodel=large -mno-red-zone
@@ -83,7 +81,6 @@ CFLAGS_ppc64	+=
 ifeq ($(CONFIG_COMPILER_GCC),y)
 CFLAGS_arm	+= -Wstack-usage=1536
 CFLAGS_arm64	+= -Wstack-usage=1536
-CFLAGS_mips	+= -Wstack-usage=1536
 CFLAGS_riscv	+= -Wstack-usage=1536
 CFLAGS_ppc64	+= -Wstack-usage=1536
 endif

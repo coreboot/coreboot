@@ -64,7 +64,7 @@ across architectures.
 ### Mentors
 * Timothy Pearson <tpearson@raptorengineering.com>
 
-## Support QEMU AArch64 or MIPS
+## Support QEMU AArch64
 Having QEMU support for the architectures coreboot can boot helps with
 some (limited) compatibility testing: While QEMU generally doesn't need
 much hardware init, any CPU state changes in the boot flow will likely
@@ -105,7 +105,7 @@ would help to ensure code quality and make the runtime code more robust.
 ### Mentors
 * Werner Zeh <werner.zeh@gmx.net>
 
-## Port payloads to ARM, AArch64, MIPS or RISC-V
+## Port payloads to ARM, AArch64 or RISC-V
 While we have a rather big set of payloads for x86 based platforms, all other
 architectures are rather limited. Improve the situation by porting a payload
 to one of the platforms, for example GRUB2, U-Boot (the UI part), Tianocore,

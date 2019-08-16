@@ -8,12 +8,12 @@ DEST ?= $(CURDIR)/xgcc
 # Example: BUILDGCC_OPTIONS=-c to remove temporary files before build
 
 all all_with_gdb:
-	$(MAKE) build-i386 build-x64 build-arm build-mips \
+	$(MAKE) build-i386 build-x64 build-arm \
 		build-riscv build-aarch64 build-ppc64 build-nds32le \
 		build_clang build_iasl build_make build_nasm
 
 all_without_gdb:
-	$(MAKE) SKIP_GDB=1 build-i386 build-x64 build-arm build-mips \
+	$(MAKE) SKIP_GDB=1 build-i386 build-x64 build-arm \
 		build-riscv build-aarch64 build-ppc64 build-nds32le \
 		build_clang build_iasl build_make build_nasm
 
@@ -59,9 +59,6 @@ build-arm:
 build-aarch64:
 	@$(MAKE) build_tools BUILD_PLATFORM=aarch64-elf
 
-build-mips:
-	@$(MAKE) build_tools BUILD_PLATFORM=mipsel-elf
-
 build-riscv:
 	# GDB is currently not supported on RISC-V
 	@$(MAKE) build_gcc BUILD_PLATFORM=riscv-elf
@@ -88,7 +85,6 @@ distclean: clean
 
 .PHONY: build_gcc build_iasl build_gdb build_clang all all_with_gdb \
 	all_without_gdb build_tools build-i386 build-x64 build-arm  \
-	build-aarch64 build-mips build-riscv build-ppc64 build-nds32le \
-	build-nasm \
+	build-aarch64 build-riscv build-ppc64 build-nds32le build-nasm \
 	clean distclean clean_tempfiles
 .NOTPARALLEL:

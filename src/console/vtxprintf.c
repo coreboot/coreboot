@@ -20,10 +20,6 @@
 
 #define call_tx(x) tx_byte(x, data)
 
-#if !CONFIG(ARCH_MIPS)
-#define SUPPORT_64BIT_INTS
-#endif
-
 #define ZEROPAD	1		/* pad with zero */
 #define SIGN	2		/* unsigned/signed long */
 #define PLUS	4		/* show plus */

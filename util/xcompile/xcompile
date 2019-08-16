@@ -195,14 +195,6 @@ detect_special_flags() {
 		  "$LDFLAGS --fix-cortex-a53-843419" && \
 		  LDFLAGS_ARM64_A53_ERRATUM_843419+=" --fix-cortex-a53-843419"
 		;;
-	mipsel)
-		testcc "$GCC" "$CFLAGS_GCC -mno-abicalls -fno-pic" && \
-		  CFLAGS_GCC+=" -mno-abicalls -fno-pic"
-
-		# Enforce little endian mode.
-		testcc "$GCC" "$CFLAGS_GCC -EL" && \
-		  CFLAGS_GCC+=" -EL"
-		;;
 	esac
 }
 
@@ -314,7 +306,7 @@ EOF
 }
 
 # Architecture definitions
-SUPPORTED_ARCHITECTURES="arm arm64 mipsel riscv x64 x86 ppc64"
+SUPPORTED_ARCHITECTURES="arm arm64 riscv x64 x86 ppc64"
 
 # TARCH: local name for the architecture
 # (used as CC_${TARCH} in the build system)
@@ -365,16 +357,6 @@ arch_config_x86() {
 	TWIDTH="32"
 	TABI="elf"
 	CC_RT_EXTRA_GCC="--wrap __divdi3 --wrap __udivdi3 --wrap __moddi3 --wrap __umoddi3"
-}
-
-arch_config_mipsel() {
-	TARCH="mips"
-	TBFDARCHS="tradlittlemips littlemips"
-	TCLIST="mipsel"
-	TWIDTH="32"
-	TSUPP="mips mipsel"
-	TABI="elf"
-	TENDIAN="EL"
 }
 
 arch_config_ppc64() {

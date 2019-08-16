@@ -80,12 +80,6 @@ if [ "$CONFIG_LP_ARCH_ARM64" = "y" ]; then
   _ARCHEXTRA=""
   _ARCH=arm64
 fi
-if [ "$CONFIG_LP_ARCH_MIPS" = "y" ]; then
-  _ARCHINCDIR=$_INCDIR/mips
-  _ARCHLIBDIR=$_LIBDIR/mips
-  _ARCHEXTRA=""
-  _ARCH=mips
-fi
 if [ "$CONFIG_LP_ARCH_X86" = "y" ]; then
   _ARCHINCDIR=$_INCDIR/x86
   _ARCHLIBDIR=$_LIBDIR/x86
@@ -170,9 +164,7 @@ if [ $DOLINK -eq 0 ]; then
 
     $DEFAULT_CC $CMDLINE $_CFLAGS
 else
-    if [ -z "${CONFIG_LP_ARCH_MIPS}" ]; then
-        _LIBGCC=`$DEFAULT_CC $_ARCHEXTRA -print-libgcc-file-name`
-    fi
+    _LIBGCC=`$DEFAULT_CC $_ARCHEXTRA -print-libgcc-file-name`
     if [ -f $_ARCHLIBDIR/head.o ]; then
 	    HEAD_O=$_ARCHLIBDIR/head.o
     elif [ -f $BASE/../build/head.o ]; then

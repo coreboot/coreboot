@@ -114,11 +114,6 @@ config ARCH_ARM64
         help
           Support the ARM64 architecture
 
-config ARCH_MIPS
-	bool "MIPS"
-	help
-	  Support the MIPS architecture
-
 endchoice
 
 config MULTIBOOT
@@ -147,12 +142,11 @@ config BASE_ADDRESS
 	hex "Base address"
 	default 0x04000000 if ARCH_ARM
 	default 0x80100000 if ARCH_ARM64
-	default 0x00000000 if ARCH_MIPS
 	default 0x00100000 if ARCH_X86
 	help
 	  This is the base address for the payload.
 
-	  If unsure, set to 0x00100000 on x86, 0x00000000 on MIPS,
+	  If unsure, set to 0x00100000 on x86,
 	  0x04000000 on ARM or 0x80100000 on ARM64.
 
 endmenu
@@ -452,5 +446,4 @@ config IO_ADDRESS_SPACE
 
 source "arch/arm/Kconfig"
 source "arch/arm64/Kconfig"
-source "arch/mips/Kconfig"
 source "arch/x86/Kconfig"

@@ -7,7 +7,6 @@ known working:
   i386-elf
   x86_64-elf
   powerpc-elf
-  mipsel-elf
   arm-elf
   armv7a-eabi
   aarch64-elf

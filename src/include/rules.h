@@ -173,7 +173,6 @@
 #define ENV_ARMV7 0
 #endif
 #define ENV_ARMV8 0
-#define ENV_MIPS 0
 #define ENV_RISCV 0
 #define ENV_X86 0
 #define ENV_X86_32 0
@@ -189,19 +188,6 @@
 #else
 #define ENV_ARMV8 0
 #endif
-#define ENV_MIPS 0
-#define ENV_RISCV 0
-#define ENV_X86 0
-#define ENV_X86_32 0
-#define ENV_X86_64 0
-
-#elif defined(__ARCH_mips__)
-#define ENV_ARM 0
-#define ENV_ARM64 0
-#define ENV_ARMV4 0
-#define ENV_ARMV7 0
-#define ENV_ARMV8 0
-#define ENV_MIPS 1
 #define ENV_RISCV 0
 #define ENV_X86 0
 #define ENV_X86_32 0
@@ -213,7 +199,6 @@
 #define ENV_ARMV4 0
 #define ENV_ARMV7 0
 #define ENV_ARMV8 0
-#define ENV_MIPS 0
 #define ENV_RISCV 1
 #define ENV_X86 0
 #define ENV_X86_32 0
@@ -225,7 +210,6 @@
 #define ENV_ARMV4 0
 #define ENV_ARMV7 0
 #define ENV_ARMV8 0
-#define ENV_MIPS 0
 #define ENV_RISCV 0
 #define ENV_X86 1
 #define ENV_X86_32 1
@@ -237,7 +221,6 @@
 #define ENV_ARMV4 0
 #define ENV_ARMV7 0
 #define ENV_ARMV8 0
-#define ENV_MIPS 0
 #define ENV_RISCV 0
 #define ENV_X86 1
 #define ENV_X86_32 0
@@ -249,7 +232,6 @@
 #define ENV_ARMV4 0
 #define ENV_ARMV7 0
 #define ENV_ARMV8 0
-#define ENV_MIPS 0
 #define ENV_RISCV 0
 #define ENV_X86 0
 #define ENV_X86_32 0

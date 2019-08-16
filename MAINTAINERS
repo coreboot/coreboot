@@ -477,12 +477,6 @@ F:	util/arm_boot_tools/
 F:	util/exynos/
 F:	util/ipqheader/
 
-MIPS ARCHITECTURE
-F:	src/arch/mips/
-F:	src/cpu/mips/
-F:	src/soc/imgtec/
-F:	util/bimgtool/
-
 X86 ARCHITECTURE
 F:	src/arch/x86/
 F:	src/cpu/x86/

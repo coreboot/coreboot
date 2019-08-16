@@ -334,9 +334,6 @@ EOF
 			TI_AM335X)
 				cpu_nice="TI AM335X";
 				socket_nice="?";;
-			IMGTEC_PISTACHIO)
-				cpu_nice="Imagination Technologies Pistachio";
-				socket_nice="—";;
 			INTEL_APOLLOLAKE)
 				cpu_nice="Intel® Apollo Lake";
 				socket_nice="—";;

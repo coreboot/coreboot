@@ -4,7 +4,6 @@
 subdirs-y += allwinner
 subdirs-y += amd
 subdirs-y += armltd
-subdirs-y += imgtec
 subdirs-y += intel
 subdirs-y += ti
 subdirs-y += via

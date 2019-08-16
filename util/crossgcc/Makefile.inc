@@ -13,7 +13,7 @@
 ## GNU General Public License for more details.
 ##
 
-TOOLCHAIN_ARCHES := i386 x64 arm aarch64 mips riscv ppc64 nds32le
+TOOLCHAIN_ARCHES := i386 x64 arm aarch64 riscv ppc64 nds32le
 
 help_toolchain help::
 	@echo  '*** Toolchain targets ***'
@@ -39,9 +39,9 @@ crossgcc: clean-for-update
 	$(MAKE) -C util/crossgcc all_without_gdb SKIP_CLANG=1
 
 .PHONY: crossgcc crossgcc-i386 crossgcc-x64 crossgcc-arm crossgcc-aarch64 \
-	crossgcc-mips crossgcc-riscv crossgcc-power8 crossgcc-clean iasl \
+	crossgcc-riscv crossgcc-power8 crossgcc-clean iasl \
 	clang crosstools-i386 crosstools-x64 crosstools-arm \
-	crosstools-aarch64 crosstools-mips crosstools-riscv crosstools-power8 \
+	crosstools-aarch64 crosstools-riscv crosstools-power8 \
 	jenkins-build-toolchain gnumake nasm
 
 $(foreach arch,$(TOOLCHAIN_ARCHES),crossgcc-$(arch)): clean-for-update

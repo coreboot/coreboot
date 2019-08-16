@@ -604,7 +604,7 @@ myhelp()
 	printf "                                  (defaults to $TARGETARCH)\n"
 	printf "    [-S|--scripting]              build scripting support for GDB\n\n"
 	printf "Platforms for GCC & GDB:\n"
-	printf "    x86_64 i386-elf i386-mingw32 mipsel-elf riscv-elf arm aarch64\n"
+	printf "    x86_64 i386-elf i386-mingw32 riscv-elf arm aarch64\n"
 	printf "    powerpc64le-linux-gnu nds32le-elf\n\n"
 }
 
@@ -1018,7 +1018,6 @@ case "$TARGETARCH" in
 	x86_64*)		TARGETARCH=x86_64-elf;;
 	i386-elf)		;;
 	i386-mingw32)		;;
-	mipsel-elf)		;;
 	riscv-elf)		TARGETARCH=riscv64-elf;;
 	powerpc64*-linux*)	;;
 	i386*)			TARGETARCH=i386-elf;;

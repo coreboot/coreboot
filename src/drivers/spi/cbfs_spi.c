@@ -53,7 +53,7 @@ static ssize_t spi_readat(const struct region_device *rd, void *b,
 		u64 speed;	/* KiB/s */
 		int bps;	/* Bits per second */
 
-		speed = size * 1000 / usecs;
+		speed = size * (u64)1000 / usecs;
 		bps = speed * 8;
 
 		printk(BIOS_DEBUG, "read SPI %#zx %#zx: %ld us, %lld KB/s, %d.%03d Mbps\n",

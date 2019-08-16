@@ -33,7 +33,6 @@ export KERNELVERSION      := 0.2.0
 
 ARCHDIR-$(CONFIG_LP_ARCH_ARM)     := arm
 ARCHDIR-$(CONFIG_LP_ARCH_ARM64)   := arm64
-ARCHDIR-$(CONFIG_LP_ARCH_MIPS)    := mips
 ARCHDIR-$(CONFIG_LP_ARCH_X86)     := x86
 DESTDIR ?= install
 

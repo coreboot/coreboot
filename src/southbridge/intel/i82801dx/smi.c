@@ -235,7 +235,7 @@ static void smi_set_eos(void)
 extern uint8_t smm_relocation_start, smm_relocation_end;
 static void *default_smm_area = NULL;
 
-static void smm_relocate(void)
+static void aseg_smm_relocate(void)
 {
 	u32 smi_en;
 	u16 pm1_en;
@@ -318,7 +318,7 @@ static void smm_relocate(void)
 	outb(0x00, 0xb2);
 }
 
-static void smm_install(void)
+static void aseg_smm_install(void)
 {
 	/* copy the real SMM handler */
 	memcpy((void *)0xa0000, _binary_smm_start,
@@ -329,10 +329,10 @@ static void smm_install(void)
 void smm_init(void)
 {
 	/* Put SMM code to 0xa0000 */
-	smm_install();
+	aseg_smm_install();
 
 	/* Put relocation code to 0x38000 and relocate SMBASE */
-	smm_relocate();
+	aseg_smm_relocate();
 
 	/* We're done. Make sure SMIs can happen! */
 	smi_set_eos();

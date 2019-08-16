@@ -45,7 +45,7 @@ static u16 pmbase = DEFAULT_PMBASE;
 extern uint8_t smm_relocation_start, smm_relocation_end;
 static void *default_smm_area = NULL;
 
-static void smm_relocate(void)
+static void aseg_smm_relocate(void)
 {
 	u32 smi_en;
 	u16 pm1_en;
@@ -126,7 +126,7 @@ static void smm_relocate(void)
 
 static int smm_handler_copied = 0;
 
-static void smm_install(void)
+static void aseg_smm_install(void)
 {
 	/* The first CPU running this gets to copy the SMM handler. But not all
 	 * of them.
@@ -158,10 +158,10 @@ static void smm_install(void)
 void smm_init(void)
 {
 	/* Put SMM code to 0xa0000 */
-	smm_install();
+	aseg_smm_install();
 
 	/* Put relocation code to 0x38000 and relocate SMBASE */
-	smm_relocate();
+	aseg_smm_relocate();
 
 	/* We're done. Make sure SMIs can happen! */
 	smi_set_eos();

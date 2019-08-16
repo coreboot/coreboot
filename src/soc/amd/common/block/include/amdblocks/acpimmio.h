@@ -21,6 +21,9 @@
 #include <stdint.h>
 /* iomap.h must indicate if the device uses a block, optional if unused. */
 #include <soc/iomap.h>
+#ifndef SUPPORTS_ACPIMMIO_SM_PCI_BASE
+  #define SUPPORTS_ACPIMMIO_SM_PCI_BASE		0
+#endif
 #ifndef SUPPORTS_ACPIMMIO_SMI_BASE
   #define SUPPORTS_ACPIMMIO_SMI_BASE		0
 #endif
@@ -161,6 +164,14 @@
 
 /* Enable the AcpiMmio range at 0xfed80000 */
 void enable_acpimmio_decode(void);
+
+/* Access SMBus PCI registers at 0xfed80000 */
+uint8_t sm_pci_read8(uint8_t reg);
+uint16_t sm_pci_read16(uint8_t reg);
+uint32_t sm_pci_read32(uint8_t reg);
+void sm_pci_write8(uint8_t reg, uint8_t value);
+void sm_pci_write16(uint8_t reg, uint16_t value);
+void sm_pci_write32(uint8_t reg, uint32_t value);
 
 /* Access PM registers using IO cycles */
 uint8_t pm_io_read8(uint8_t reg);

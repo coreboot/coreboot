@@ -65,7 +65,39 @@ void pm_io_write32(uint8_t reg, uint32_t value)
 	pm_io_write16(reg + sizeof(uint16_t), value & 0xffff);
 }
 
-/* smbus pci read/write - access registers at 0xfed80000 - currently unused */
+#if SUPPORTS_ACPIMMIO_SM_PCI_BASE
+/* smbus pci read/write - access registers at 0xfed80000 */
+
+u8 sm_pci_read8(u8 reg)
+{
+	return read8((void *)(ACPIMMIO_SM_PCI_BASE + reg));
+}
+
+u16 sm_pci_read16(u8 reg)
+{
+	return read16((void *)(ACPIMMIO_SM_PCI_BASE + reg));
+}
+
+u32 sm_pci_read32(u8 reg)
+{
+	return read32((void *)(ACPIMMIO_SM_PCI_BASE + reg));
+}
+
+void sm_pci_write8(u8 reg, u8 value)
+{
+	write8((void *)(ACPIMMIO_SM_PCI_BASE + reg), value);
+}
+
+void sm_pci_write16(u8 reg, u16 value)
+{
+	write16((void *)(ACPIMMIO_SM_PCI_BASE + reg), value);
+}
+
+void sm_pci_write32(u8 reg, u32 value)
+{
+	write32((void *)(ACPIMMIO_SM_PCI_BASE + reg), value);
+}
+#endif
 
 #if SUPPORTS_ACPIMMIO_SMI_BASE
 /* smi read/write - access registers at 0xfed80200 */

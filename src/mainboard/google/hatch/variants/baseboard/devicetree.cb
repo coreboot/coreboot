@@ -46,6 +46,8 @@ chip soc/intel/cannonlake
 	register "tcc_offset" = "10"	# TCC of 90C
 	# Unlock GPIO pads
 	register "PchUnlockGpioPads" = "1"
+	# SD card WP pin confguration
+	register "ScsSdCardWpPinEnabled" = "0"
 
 	# NOTE: if any variant wants to override this value, use the same format
 	# as register "common_soc_config.pch_thermal_trip" = "value", instead of

@@ -146,7 +146,7 @@ static void romstage_main(uint64_t tsc)
 	gfx_init();
 
 	/* Call into mainboard. */
-	mainboard_romstage_entry(&rp);
+	mainboard_romstage_entry_rp(&rp);
 
 	if (CONFIG(SMM_TSEG))
 		smm_list_regions();

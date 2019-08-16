@@ -28,7 +28,7 @@ void __weak variant_romstage_entry(int s3_resume)
 	/* By default, don't do anything */
 }
 
-void mainboard_romstage_entry(int s3_resume)
+void mainboard_romstage_entry_s3(int s3_resume)
 {
 	size_t num_gpios;
 	const struct soc_amd_gpio *gpios;

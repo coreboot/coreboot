@@ -28,7 +28,7 @@ struct romstage_params {
 	struct mrc_params *mrc_params;
 };
 
-void mainboard_romstage_entry(struct romstage_params *params);
+void mainboard_romstage_entry_rp(struct romstage_params *params);
 void romstage_common(struct romstage_params *params);
 
 void raminit(struct mrc_params *mp, int prev_sleep_state);

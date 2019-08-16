@@ -37,7 +37,7 @@
 
 #include "chip.h"
 
-void __weak mainboard_romstage_entry(int s3_resume)
+void __weak mainboard_romstage_entry_s3(int s3_resume)
 {
 	/* By default, don't do anything */
 }
@@ -97,7 +97,7 @@ asmlinkage void car_stage_entry(void)
 	if (CONFIG(SOC_AMD_PSP_SELECTABLE_SMU_FW))
 		load_smu_fw1();
 
-	mainboard_romstage_entry(s3_resume);
+	mainboard_romstage_entry_s3(s3_resume);
 
 	bsp_agesa_call();
 

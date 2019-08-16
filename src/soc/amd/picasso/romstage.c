@@ -34,7 +34,7 @@
 
 #include "chip.h"
 
-void __weak mainboard_romstage_entry(int s3_resume)
+void __weak mainboard_romstage_entry_s3(int s3_resume)
 {
 	/* By default, don't do anything */
 }
@@ -49,7 +49,7 @@ asmlinkage void car_stage_entry(void)
 
 	console_init();
 
-	mainboard_romstage_entry(s3_resume);
+	mainboard_romstage_entry_s3(s3_resume);
 
 	if (!s3_resume) {
 		post_code(0x40);

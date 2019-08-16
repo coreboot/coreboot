@@ -55,7 +55,7 @@ static void *get_spd_pointer(char *spd_file_content, int total_spds, int *dual)
 	return &spd_file_content[SPD_SIZE * ram_id];
 }
 
-void mainboard_romstage_entry(struct romstage_params *rp)
+void mainboard_romstage_entry_rp(struct romstage_params *rp)
 {
 	void *spd_content;
 	int dual_channel = 0;

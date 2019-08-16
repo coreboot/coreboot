@@ -27,10 +27,10 @@ int region_is_subregion(const struct region *p, const struct region *c)
 	if (region_offset(c) < region_offset(p))
 		return 0;
 
-	if (region_sz(c) > region_sz(p))
+	if (region_end(c) > region_end(p))
 		return 0;
 
-	if (region_end(c) > region_end(p))
+	if (region_end(c) < region_offset(c))
 		return 0;
 
 	return 1;

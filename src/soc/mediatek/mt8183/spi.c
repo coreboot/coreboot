@@ -24,21 +24,27 @@
 struct mtk_spi_bus spi_bus[SPI_BUS_NUMBER] = {
 	{
 		.regs = (void *)SPI0_BASE,
+		.cs_gpio = GPIO(SPI_CSB),
 	},
 	{
 		.regs = (void *)SPI1_BASE,
+		.cs_gpio = GPIO(SPI1_CSB),
 	},
 	{
 		.regs = (void *)SPI2_BASE,
+		.cs_gpio = GPIO(EINT0),
 	},
 	{
 		.regs = (void *)SPI3_BASE,
+		.cs_gpio = GPIO(DPI_D9),
 	},
 	{
 		.regs = (void *)SPI4_BASE,
+		.cs_gpio = GPIO(DPI_D5),
 	},
 	{
 		.regs = (void *)SPI5_BASE,
+		.cs_gpio = GPIO(DPI_D1),
 	}
 };
 
@@ -48,41 +54,42 @@ struct pad_func {
 };
 
 #define PAD_FUNC(name, func) {PAD_##name##_ID, PAD_##name##_FUNC_##func}
+#define PAD_FUNC_GPIO(name) {PAD_##name##_ID, 0}
 
 static const struct pad_func pad0_funcs[SPI_BUS_NUMBER][4] = {
 	{
 		PAD_FUNC(SPI_MI, SPI0_MI),
-		PAD_FUNC(SPI_CSB, SPI0_CSB),
+		PAD_FUNC_GPIO(SPI_CSB),
 		PAD_FUNC(SPI_MO, SPI0_MO),
 		PAD_FUNC(SPI_CLK, SPI0_CLK),
 	},
 	{
 		PAD_FUNC(SPI1_MI, SPI1_A_MI),
-		PAD_FUNC(SPI1_CSB, SPI1_A_CSB),
+		PAD_FUNC_GPIO(SPI1_CSB),
 		PAD_FUNC(SPI1_MO, SPI1_A_MO),
 		PAD_FUNC(SPI1_CLK, SPI1_A_CLK),
 	},
 	{
 		PAD_FUNC(KPCOL1, SPI2_MI),
-		PAD_FUNC(EINT0, SPI2_CSB),
+		PAD_FUNC_GPIO(EINT0),
 		PAD_FUNC(EINT1, SPI2_MO),
 		PAD_FUNC(EINT2, SPI2_CLK),
 	},
 	{
 		PAD_FUNC(DPI_D8, SPI3_MI),
-		PAD_FUNC(DPI_D9, SPI3_CSB),
+		PAD_FUNC_GPIO(DPI_D9),
 		PAD_FUNC(DPI_D10, SPI3_MO),
 		PAD_FUNC(DPI_D11, SPI3_CLK),
 	},
 	{
 		PAD_FUNC(DPI_D4, SPI4_MI),
-		PAD_FUNC(DPI_D5, SPI4_CSB),
+		PAD_FUNC_GPIO(DPI_D5),
 		PAD_FUNC(DPI_D6, SPI4_MO),
 		PAD_FUNC(DPI_D7, SPI4_CLK),
 	},
 	{
 		PAD_FUNC(DPI_D0, SPI5_MI),
-		PAD_FUNC(DPI_D1, SPI5_CSB),
+		PAD_FUNC_GPIO(DPI_D1),
 		PAD_FUNC(DPI_D2, SPI5_MO),
 		PAD_FUNC(DPI_D3, SPI5_CLK),
 	}
@@ -90,7 +97,7 @@ static const struct pad_func pad0_funcs[SPI_BUS_NUMBER][4] = {
 
 static const struct pad_func bus1_pad1_funcs[4] = {
 	PAD_FUNC(EINT7, SPI1_B_MI),
-	PAD_FUNC(EINT8, SPI1_B_CSB),
+	PAD_FUNC_GPIO(EINT8),
 	PAD_FUNC(EINT9, SPI1_B_MO),
 	PAD_FUNC(EINT10, SPI1_B_CLK),
 };

@@ -16,6 +16,7 @@
 #ifndef MTK_COMMON_SPI_H
 #define MTK_COMMON_SPI_H
 
+#include <soc/gpio_base.h>
 #include <spi-generic.h>
 
 enum {
@@ -77,6 +78,7 @@ struct mtk_spi_bus {
 	struct mtk_spi_regs *regs;
 	int initialized;
 	int state;
+	gpio_t cs_gpio;
 };
 
 extern const struct spi_ctrlr spi_ctrlr;

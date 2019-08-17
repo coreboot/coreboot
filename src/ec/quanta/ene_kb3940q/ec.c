@@ -14,8 +14,6 @@
  * GNU General Public License for more details.
  */
 
-#ifndef __PRE_RAM__
-
 #include <arch/io.h>
 #include <console/console.h>
 #include <device/device.h>
@@ -125,7 +123,6 @@ void ec_mem_write(u8 addr, u8 data)
 	return;
 }
 
-#ifndef __SMM__
 static void ene_kb3940q_log_events(void)
 {
 #if CONFIG(ELOG)
@@ -165,5 +162,3 @@ struct chip_operations ec_quanta_ene_kb3940q_ops = {
 	CHIP_NAME("QUANTA EnE KB3940Q EC")
 	.enable_dev = enable_dev
 };
-#endif /* ! __SMM__ */
-#endif /* ! __PRE_RAM__ */

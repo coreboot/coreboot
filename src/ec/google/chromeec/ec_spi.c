@@ -115,10 +115,8 @@ int google_chromeec_command(struct chromeec_command *cec_command)
 	return crosec_command_proto(cec_command, crosec_spi_io, &slave);
 }
 
-#ifndef __PRE_RAM__
 u8 google_chromeec_get_event(void)
 {
 	printk(BIOS_ERR, "%s: Not supported.\n", __func__);
 	return 0;
 }
-#endif

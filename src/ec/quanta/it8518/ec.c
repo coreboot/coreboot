@@ -124,7 +124,6 @@ void ec_write(u16 addr, u8 data)
 	ec_write_ib(data);
 }
 
-#ifndef __PRE_RAM__
 
 u8 ec_it8518_get_event(void)
 {
@@ -149,7 +148,6 @@ void ec_it8518_enable_wake_events(void)
 	ec_write(EC_WAKE_SRC_ENABLE, reg8 | EC_LID_WAKE_ENABLE);
 }
 
-#ifndef __SMM__
 static void it8518_init(struct device *dev)
 {
 	if (!dev->enabled)
@@ -178,5 +176,3 @@ struct chip_operations ec_quanta_it8518_ops = {
 	CHIP_NAME("QUANTA IT8518 EC")
 	.enable_dev = enable_dev
 };
-#endif /* ! __SMM__ */
-#endif /* ! __PRE_RAM__ */

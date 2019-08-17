@@ -115,10 +115,9 @@ void ec_set_ports(u16 cmd_reg, u16 data_reg)
 	ec_data_reg = data_reg;
 }
 
-#if !defined(__PRE_RAM__) && !defined(__SMM__)
 static void mec1308_enable(struct device *dev)
 {
-	struct ec_smsc_mec1308_config *conf = dev->chip_info;
+	DEVTREE_CONST struct ec_smsc_mec1308_config *conf = dev->chip_info;
 
 	if (conf->mailbox_port) {
 		ec_cmd_reg = conf->mailbox_port;
@@ -130,4 +129,3 @@ struct chip_operations ec_smsc_mec1308_ops = {
 	CHIP_NAME("SMSC MEC1308 EC Mailbox Interface")
 	.enable_dev = mec1308_enable
 };
-#endif

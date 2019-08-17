@@ -172,8 +172,6 @@ void ec_set_ports(u16 cmd_reg, u16 data_reg)
 
 #endif
 
-#if !defined(__SMM__) && !defined(__PRE_RAM__)
 struct chip_operations ec_acpi_ops = {
 	CHIP_NAME("ACPI Embedded Controller")
 };
-#endif

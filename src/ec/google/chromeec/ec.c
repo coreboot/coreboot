@@ -719,8 +719,6 @@ retry:
 	return cec_cmd.cmd_code;
 }
 
-#ifndef __PRE_RAM__
-
 int google_chromeec_i2c_xfer(uint8_t chip, uint8_t addr, int alen,
 			     uint8_t *buffer, int len, int is_read)
 {
@@ -1108,8 +1106,6 @@ int google_ec_running_ro(void)
 {
 	return (ec_image_type == EC_IMAGE_RO);
 }
-
-#endif /* ! __PRE_RAM__ */
 
 /**
  * Check if EC/TCPM is in an alternate mode or not.

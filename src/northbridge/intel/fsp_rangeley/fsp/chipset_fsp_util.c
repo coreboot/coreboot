@@ -26,12 +26,6 @@
 #include <fspbootmode.h>
 #include "../chip.h"
 
-#ifdef __PRE_RAM__
-#include <southbridge/intel/fsp_rangeley/romstage.h>
-#endif
-
-#ifdef __PRE_RAM__
-
 /* Copy the default UPD region and settings to a buffer for modification */
 static void GetUpdDefaultFromFsp
 	(FSP_INFO_HEADER *FspInfo, UPD_DATA_REGION *UpdData)
@@ -96,9 +90,9 @@ static void ConfigureDefaultUpdData(UPD_DATA_REGION *UpdData)
 	if (config->MrcRmtCpgcNumBursts) {
 		UpdData->PcdMrcRmtCpgcNumBursts = config->MrcRmtCpgcNumBursts;
 	}
-#if CONFIG(ENABLE_FSP_FAST_BOOT)
-	UpdData->PcdFastboot = UPD_ENABLE;
-#endif
+	if (CONFIG(ENABLE_FSP_FAST_BOOT))
+		UpdData->PcdFastboot = UPD_ENABLE;
+
 	/*
 	 * Loop through all the SOC devices in the devicetree
 	 *  enabling and disabling them as requested.
@@ -164,5 +158,3 @@ void chipset_fsp_early_init(FSP_INIT_PARAMS *pFspInitParams,
 
 	return;
 }
-
-#endif	/* __PRE_RAM__ */

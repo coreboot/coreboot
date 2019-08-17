@@ -29,6 +29,7 @@
 #include <cpu/x86/smm.h>
 #include <reg_script.h>
 
+#include <soc/baytrail.h>
 #include <soc/msr.h>
 #include <soc/pattrs.h>
 #include <soc/ramstage.h>

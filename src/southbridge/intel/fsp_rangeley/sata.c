@@ -21,6 +21,7 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
+#include "chip.h"
 #include "soc.h"
 
 typedef struct southbridge_intel_fsp_rangeley_config config_t;

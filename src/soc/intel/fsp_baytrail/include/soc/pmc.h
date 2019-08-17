@@ -283,6 +283,8 @@ void enable_gpe(uint32_t mask);
 void disable_gpe(uint32_t mask);
 void disable_all_gpe(void);
 
+uint32_t chipset_prev_sleep_state(uint32_t clear);
+
 #if CONFIG(ELOG)
 void southcluster_log_state(void);
 #else

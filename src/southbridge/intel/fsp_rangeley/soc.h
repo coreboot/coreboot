@@ -47,29 +47,26 @@
 #ifndef __ACPI__
 #define DEBUG_PERIODIC_SMIS 0
 
-#if defined(__SMM__) && !defined(__ASSEMBLER__)
 void intel_soc_finalize_smm(void);
+
+#if !defined(__ROMCC__)
+#include <device/device.h>
+void soc_enable(struct device *dev);
+void acpi_fill_in_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt);
 #endif
 
-#if !defined(__ASSEMBLER__) && !defined(__ROMCC__)
-#if !defined(__PRE_RAM__) && !defined(__SMM__)
-#include "chip.h"
 int soc_silicon_revision(void);
 int soc_silicon_type(void);
 int soc_silicon_supported(int type, int rev);
-void soc_enable(struct device *dev);
 
-void acpi_fill_in_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt);
 
-#if CONFIG(ELOG)
 void soc_log_state(void);
-#endif
-#else
 void enable_smbus(void);
 void enable_usb_bar(void);
-int smbus_read_byte(unsigned device, unsigned address);
 void rangeley_sb_early_initialization(void);
-#endif
+
+#if ENV_ROMSTAGE
+int smbus_read_byte(unsigned int device, unsigned int address);
 #endif
 
 #define MAINBOARD_POWER_OFF	0

@@ -47,13 +47,6 @@ unsigned long tsc_freq_mhz(void)
 	return (bclk_khz * ((platform_info.lo >> 8) & 0xff)) / 1000;
 }
 
-#if !defined(__SMM__)
-#if !defined(__PRE_RAM__)
-#include <soc/ramstage.h>
-#else
-#include <soc/romstage.h>
-#endif
-
 void set_max_freq(void)
 {
 	msr_t perf_ctl;
@@ -76,5 +69,3 @@ void set_max_freq(void)
 
 	wrmsr(IA32_PERF_CTL, perf_ctl);
 }
-
-#endif /* __SMM__ */

@@ -17,31 +17,18 @@
 #ifndef _BAYTRAIL_ROMSTAGE_H_
 #define _BAYTRAIL_ROMSTAGE_H_
 
-#if !defined(__PRE_RAM__)
-#error "Don't include romstage.h from a ramstage compilation unit!"
-#endif
-
-void report_platform_info(void);
-
 #include <stdint.h>
 #include <drivers/intel/fsp1_0/fsp_util.h>
 
 void main(FSP_INFO_HEADER *fsp_info_header);
-uint32_t chipset_prev_sleep_state(uint32_t clear);
 
 #define NUM_ROMSTAGE_TS 4
 
 void tco_disable(void);
 void punit_init(void);
-void set_max_freq(void);
 void early_mainboard_romstage_entry(void);
 void late_mainboard_romstage_entry(void);
 void get_func_disables(uint32_t *mask, uint32_t *mask2);
-
-#if CONFIG(ENABLE_BUILTIN_COM1)
 void byt_config_com1_and_enable(void);
-#else
-static inline void byt_config_com1_and_enable(void) { }
-#endif
 
 #endif /* _BAYTRAIL_ROMSTAGE_H_ */

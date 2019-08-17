@@ -33,6 +33,7 @@
 #include <string.h>
 #include <cbmem.h>
 #include <arch/acpigen.h>
+#include "chip.h"
 #include "soc.h"
 #include "irq.h"
 #include "nvs.h"

@@ -17,7 +17,7 @@
 #include <console/console.h>
 #include <device/pci_ops.h>
 #include <soc/iosf.h>
-#include <soc/romstage.h>
+#include <soc/baytrail.h>
 #include <cpu/x86/msr.h>
 #include <soc/msr.h>
 #include <cpu/x86/name.h>

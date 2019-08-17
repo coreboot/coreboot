@@ -22,6 +22,7 @@
 #include <arch/io.h>
 #include <device/pci_ops.h>
 #include <version.h>
+#include "chip.h"
 
 
 /**

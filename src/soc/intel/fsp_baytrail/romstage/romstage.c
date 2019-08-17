@@ -167,7 +167,8 @@ void main(FSP_INFO_HEADER *fsp_info_header)
 	tco_disable();
 
 	post_code(0x42);
-	byt_config_com1_and_enable();
+	if (CONFIG(ENABLE_BUILTIN_COM1))
+		byt_config_com1_and_enable();
 
 	post_code(0x43);
 	console_init();

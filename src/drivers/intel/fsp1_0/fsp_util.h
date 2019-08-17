@@ -21,10 +21,7 @@
 
 #include "fsp_values.h"
 
-#if CONFIG(ENABLE_MRC_CACHE)
-int save_mrc_data(void *hob_start);
 void *find_and_set_fastboot_cache(void);
-#endif
 
 volatile u8 *find_fsp(void);
 void fsp_early_init(FSP_INFO_HEADER *fsp_info);
@@ -65,7 +62,6 @@ void printguid(EFI_GUID *guid);
 #define EFI_HOB_TYPE_HANDOFF		0x0001
 #define EFI_HOB_TYPE_MEMORY_POOL	0x0007
 
-#if CONFIG(ENABLE_MRC_CACHE)
 #define MRC_DATA_ALIGN			0x1000
 #define MRC_DATA_SIGNATURE		(('M'<<0)|('R'<<8)|('C'<<16)|('D'<<24))
 
@@ -79,11 +75,7 @@ struct mrc_data_container {
 
 struct mrc_data_container *find_current_mrc_cache(void);
 
-#if !defined(__PRE_RAM__)
 void update_mrc_cache(void *unused);
-#endif
-
-#endif
 
 /* The offset in bytes from the start of the info structure */
 #define FSP_IMAGE_SIG_LOC				0
@@ -99,9 +91,7 @@ void update_mrc_cache(void *unused);
 #define ERROR_INFO_HEAD_SIG_MISMATCH		5
 #define ERROR_FSP_SIG_MISMATCH			6
 
-#ifndef __PRE_RAM__
 extern void *FspHobListPtr;
-#endif
 
 #define UPD_DEFAULT_CHECK(member) \
 	if (config->member != UPD_DEFAULT) { \

@@ -35,12 +35,6 @@ void raminit(struct mrc_params *mp, int prev_sleep_state);
 void gfx_init(void);
 void tco_disable(void);
 void punit_init(void);
-void set_max_freq(void);
-
-#if CONFIG(ENABLE_BUILTIN_COM1)
 void byt_config_com1_and_enable(void);
-#else
-static inline void byt_config_com1_and_enable(void) { }
-#endif
 
 #endif /* _BAYTRAIL_ROMSTAGE_H_ */

@@ -116,10 +116,6 @@ static struct mrc_data_container *find_current_mrc_cache_local
 	return mrc_cache;
 }
 
-/* SPI code needs malloc/free.
- * Also unknown if writing flash from XIP-flash code is a good idea
- */
-#if !defined(__PRE_RAM__)
 /* find the first empty block in the MRC cache area.
  * If there's none, return NULL.
  *
@@ -220,8 +216,6 @@ void update_mrc_cache(void *unused)
 	spi_flash_write(&flash, to_flash_offset(cache),
 			current->mrc_data_size + sizeof(*current), current);
 }
-
-#endif	/* !defined(__PRE_RAM__) */
 
 void *find_and_set_fastboot_cache(void)
 {

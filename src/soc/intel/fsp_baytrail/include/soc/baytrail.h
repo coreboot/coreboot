@@ -35,23 +35,24 @@
 #else
 #define DEFAULT_RCBA		0xfed1c000
 #endif
-/* Everything below this line is ignored in the DSDT */
-#ifndef __ACPI__
 
 /* Device 0:0.0 PCI configuration space (Host Bridge) */
+#define SKPAD 0xFC
 
 /* SOC types */
 #define SOC_TYPE_BAYTRAIL	0x0F1C
 
+/* Everything below this line is ignored in the DSDT */
+#ifndef __ACPI__
 #ifndef __ASSEMBLER__
-static inline void barrier(void) { asm("" ::: "memory"); }
+#include <device/device.h>
 
-#define SKPAD 0xFC
+static inline void barrier(void) { asm("" ::: "memory"); }
 
 int bridge_silicon_revision(void);
 void rangeley_early_initialization(void);
+void set_max_freq(void);
 
-#ifndef __PRE_RAM__
 /* soc.c */
 int soc_silicon_revision(void);
 int soc_silicon_type(void);
@@ -60,8 +61,7 @@ void soc_enable(struct device *dev);
 
 void report_platform_info(void);
 
-#endif	/* __PRE_RAM__ */
 #endif	/* __ASSEMBLER__ */
-
 #endif	/* __ACPI__ */
+
 #endif

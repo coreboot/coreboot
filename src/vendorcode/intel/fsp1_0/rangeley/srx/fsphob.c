@@ -43,9 +43,7 @@ are permitted provided that the following conditions are met:
 //
 // Pointer to the HOB should be initialized with the output of FSP INIT PARAMS
 //
-#ifndef __PRE_RAM__
 extern volatile void *FspHobListPtr;
-#endif
 
 /**
   Reads a 64-bit value from memory that may be unaligned.
@@ -116,12 +114,8 @@ GetHobList (
   VOID
   )
 {
-#ifndef __PRE_RAM__
   ASSERT (FspHobListPtr != NULL);
   return ((VOID *)FspHobListPtr);
-#else
-  return ((VOID *)NULL);
-#endif
 }
 
 /**

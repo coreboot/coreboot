@@ -17,10 +17,6 @@
 #ifndef _RANGELEY_ROMSTAGE_H_
 #define _RANGELEY_ROMSTAGE_H_
 
-#if !defined(__PRE_RAM__)
-#error "Don't include romstage.h from a ramstage compilation unit!"
-#endif
-
 #include <stdint.h>
 #include <drivers/intel/fsp1_0/fsp_util.h>
 

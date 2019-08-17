@@ -31,12 +31,6 @@
 #include <soc/iomap.h>
 #include <soc/smm.h>
 
-#ifdef __PRE_RAM__
-#include <soc/romstage.h>
-#endif
-
-#ifdef __PRE_RAM__
-
 /* Copy the default UPD region and settings to a buffer for modification */
 static void GetUpdDefaultFromFsp (FSP_INFO_HEADER *FspInfo, UPD_DATA_REGION   *UpdData)
 {
@@ -307,10 +301,9 @@ void chipset_fsp_early_init(FSP_INIT_PARAMS *pFspInitParams,
 	ConfigureDefaultUpdData(fsp_ptr, pFspRtBuffer->Common.UpdDataRgnPtr);
 	pFspInitParams->NvsBufferPtr = NULL;
 
-#if CONFIG(ENABLE_MRC_CACHE)
 	/* Find the fastboot cache that was saved in the ROM */
-	pFspInitParams->NvsBufferPtr = find_and_set_fastboot_cache();
-#endif
+	if (CONFIG(ENABLE_MRC_CACHE))
+		pFspInitParams->NvsBufferPtr = find_and_set_fastboot_cache();
 
 	if (prev_sleep_state == ACPI_S3) {
 		/* S3 resume */
@@ -335,5 +328,3 @@ void chipset_fsp_early_init(FSP_INIT_PARAMS *pFspInitParams,
 
 	return;
 }
-
-#endif	/* __PRE_RAM__ */

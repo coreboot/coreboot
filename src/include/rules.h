@@ -266,9 +266,12 @@
 #define ENV_PAYLOAD_LOADER ENV_RAMSTAGE
 #endif
 
+#define ENV_ROMSTAGE_OR_BEFORE \
+	(ENV_DECOMPRESSOR || ENV_BOOTBLOCK || ENV_VERSTAGE || ENV_ROMSTAGE)
+
 #if CONFIG(ARCH_X86)
-/* Indicates memory layout is determined by arch/x86/car.ld. */
-#define ENV_CACHE_AS_RAM		(ENV_BOOTBLOCK || ENV_ROMSTAGE || ENV_VERSTAGE)
+/* Indicates memory layout is determined with arch/x86/car.ld. */
+#define ENV_CACHE_AS_RAM		ENV_ROMSTAGE_OR_BEFORE
 /* No .data sections with execute-in-place from ROM.  */
 #define ENV_STAGE_HAS_DATA_SECTION	!ENV_CACHE_AS_RAM
 /* No .bss sections with execute-in-place from ROM.  */
@@ -294,7 +297,7 @@
  * be built with simple device model.
  */
 
-#if (defined(__PRE_RAM__) || ENV_SMM || !ENV_PAYLOAD_LOADER)
+#if !ENV_RAMSTAGE
 #define __SIMPLE_DEVICE__
 #endif
 

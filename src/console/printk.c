@@ -49,8 +49,7 @@ int do_vprintk(int msg_level, const char *fmt, va_list args)
 {
 	int i, log_this;
 
-	if (CONFIG(SQUELCH_EARLY_SMP) && ENV_CACHE_AS_RAM &&
-		!boot_cpu())
+	if (CONFIG(SQUELCH_EARLY_SMP) && ENV_ROMSTAGE_OR_BEFORE && !boot_cpu())
 		return 0;
 
 	log_this = console_log_level(msg_level);

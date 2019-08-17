@@ -16,7 +16,7 @@
 #include <stdint.h>
 #include <cbmem.h>
 #include <console/console.h>
-#include <cpu/intel/romstage.h>
+#include <arch/romstage.h>
 
 #include <southbridge/intel/i82801dx/i82801dx.h>
 #include <northbridge/intel/e7505/raminit.h>

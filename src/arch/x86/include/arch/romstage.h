@@ -18,6 +18,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+void mainboard_romstage_entry(void);
+
 /*
  * Support setting up a stack frame consisting of MTRR information
  * for use in bootstrapping the caching attributes after cache-as-ram
@@ -60,6 +62,20 @@ void postcar_frame_common_mtrrs(struct postcar_frame *pcf);
  * and return pointer to stack top.
  */
 void *postcar_commit_mtrrs(struct postcar_frame *pcf);
+
+/*
+ * fill_postcar_frame() is called after raminit completes and right before
+ * calling run_postcar_phase(). Implementation should call postcar_frame_add_mtrr()
+ * to tag memory ranges as cacheable to speed up execution of postcar and
+ * early ramstage.
+ */
+void fill_postcar_frame(struct postcar_frame *pcf);
+
+/*
+ * prepare_and_run_postcar() determines the stack to use after
+ * cache-as-ram is torn down as well as the MTRR settings to use.
+ */
+void prepare_and_run_postcar(struct postcar_frame *pcf);
 
 /*
  * Load and run a program that takes control of execution that

@@ -18,7 +18,7 @@
 #include <console/console.h>
 #include <southbridge/intel/i82371eb/i82371eb.h>
 #include <northbridge/intel/i440bx/raminit.h>
-#include <cpu/intel/romstage.h>
+#include <arch/romstage.h>
 #include <superio/winbond/common/winbond.h>
 /* FIXME: The ASUS P2B-LS has a Winbond W83977EF, actually. */
 #include <superio/winbond/w83977tf/w83977tf.h>

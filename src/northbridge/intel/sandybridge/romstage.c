@@ -22,7 +22,7 @@
 #include <cpu/x86/lapic.h>
 #include <timestamp.h>
 #include "sandybridge.h"
-#include <cpu/intel/romstage.h>
+#include <arch/romstage.h>
 #include <device/pci_def.h>
 #include <device/device.h>
 #include <northbridge/intel/sandybridge/chip.h>

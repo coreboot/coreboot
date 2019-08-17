@@ -24,7 +24,6 @@
 #include <device/pci_ops.h>
 #include <device/pci_def.h>
 #include <console/console.h>
-#include <cpu/intel/romstage.h>
 #include <cpu/x86/mtrr.h>
 #include <northbridge/intel/x4x/x4x.h>
 #include <program_loading.h>

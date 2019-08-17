@@ -18,7 +18,7 @@
 #include <console/console.h>
 #include <southbridge/intel/i82371eb/i82371eb.h>
 #include <northbridge/intel/i440bx/raminit.h>
-#include <cpu/intel/romstage.h>
+#include <arch/romstage.h>
 #include <superio/winbond/common/winbond.h>
 #include <superio/winbond/w83977tf/w83977tf.h>
 #include <cbmem.h>

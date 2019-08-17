@@ -18,7 +18,7 @@
 #include <device/pnp_ops.h>
 #include <device/pci_ops.h>
 #include <console/console.h>
-#include <cpu/intel/romstage.h>
+#include <arch/romstage.h>
 #include <northbridge/intel/x4x/iomap.h>
 #include <northbridge/intel/x4x/x4x.h>
 #include <southbridge/intel/common/gpio.h>

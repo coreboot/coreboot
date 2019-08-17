@@ -18,10 +18,10 @@
 
 #include <arch/romstage.h>
 #include <console/console.h>
+#include <commonlib/helpers.h>
 #include <cpu/x86/mtrr.h>
 #include <device/pci_ops.h>
 #include <cbmem.h>
-#include <cpu/intel/romstage.h>
 #include <stage_cache.h>
 #include "haswell.h"
 

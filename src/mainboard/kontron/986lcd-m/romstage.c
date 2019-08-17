@@ -17,7 +17,7 @@
 #include <cf9_reset.h>
 #include <delay.h>
 #include <console/console.h>
-#include <cpu/intel/romstage.h>
+#include <arch/romstage.h>
 #include <cpu/x86/lapic.h>
 #include <device/pci_def.h>
 #include <device/pci_ops.h>

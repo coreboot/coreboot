@@ -20,7 +20,7 @@
 #include <southbridge/intel/common/gpio.h>
 #include <southbridge/intel/common/pmclib.h>
 #include <northbridge/intel/x4x/x4x.h>
-#include <cpu/intel/romstage.h>
+#include <arch/romstage.h>
 #include <device/pci_ops.h>
 #include <superio/smsc/smscsuperio/smscsuperio.h>
 #include <northbridge/intel/x4x/iomap.h>

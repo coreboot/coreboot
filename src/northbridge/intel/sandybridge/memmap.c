@@ -19,7 +19,6 @@
 #include <device/pci_ops.h>
 #include <cbmem.h>
 #include <console/console.h>
-#include <cpu/intel/romstage.h>
 #include <cpu/intel/smm_reloc.h>
 #include <cpu/x86/mtrr.h>
 #include <program_loading.h>

@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  */
 
-#include <cpu/intel/romstage.h>
+#include <arch/romstage.h>
 #include "variant.h"
 
 

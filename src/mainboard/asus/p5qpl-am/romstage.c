@@ -19,7 +19,7 @@
 #include <device/pnp_ops.h>
 #include <device/pci_ops.h>
 #include <console/console.h>
-#include <cpu/intel/romstage.h>
+#include <arch/romstage.h>
 #include <cpu/intel/speedstep.h>
 #include <cpu/x86/msr.h>
 #include <northbridge/intel/x4x/iomap.h>

@@ -16,7 +16,7 @@
  */
 
 #include <stdint.h>
-#include <cpu/intel/romstage.h>
+#include <arch/romstage.h>
 #include <cpu/intel/haswell/haswell.h>
 #include <device/pnp_ops.h>
 #include <northbridge/intel/haswell/haswell.h>

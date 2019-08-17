@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/cpu.h>
 #include <arch/romstage.h>
 #include <arch/symbols.h>
 #include <assert.h>
@@ -140,14 +139,10 @@ static void save_dimm_info(void)
 	printk(BIOS_DEBUG, "%d DIMMs found\n", mem_info->dimm_cnt);
 }
 
-asmlinkage void car_stage_entry(void)
+void mainboard_romstage_entry(void)
 {
 	bool s3wake;
-	struct postcar_frame pcf;
-	uintptr_t top_of_ram;
 	struct chipset_power_state *ps;
-
-	console_init();
 
 	/* Program MCHBAR, DMIBAR, GDXBAR and EDRAMBAR */
 	systemagent_early_init();
@@ -159,8 +154,13 @@ asmlinkage void car_stage_entry(void)
 	pmc_set_disb();
 	if (!s3wake)
 		save_dimm_info();
-	if (postcar_frame_init(&pcf, 0))
-		die("Unable to initialize postcar frame.\n");
+}
+
+void fill_postcar_frame(struct postcar_frame *pcf)
+{
+	uintptr_t top_of_ram;
+	uintptr_t smm_base;
+	size_t smm_size;
 
 	/*
 	 * We need to make sure ramstage will be run cached. At this
@@ -171,28 +171,17 @@ asmlinkage void car_stage_entry(void)
 	top_of_ram = (uintptr_t) cbmem_top();
 	printk(BIOS_DEBUG, "top_of_ram = 0x%lx\n", top_of_ram);
 	top_of_ram -= 16*MiB;
-	postcar_frame_add_mtrr(&pcf, top_of_ram, 16*MiB, MTRR_TYPE_WRBACK);
+	postcar_frame_add_mtrr(pcf, top_of_ram, 16*MiB, MTRR_TYPE_WRBACK);
 
-	if (CONFIG(HAVE_SMI_HANDLER)) {
-		uintptr_t smm_base;
-		size_t smm_size;
-
-		/*
-		 * Cache the TSEG region at the top of ram. This region is
-		 * not restricted to SMM mode until SMM has been relocated.
-		 * By setting the region to cacheable it provides faster access
-		 * when relocating the SMM handler as well as using the TSEG
-		 * region for other purposes.
-		 */
-		smm_region(&smm_base, &smm_size);
-		postcar_frame_add_mtrr(&pcf, smm_base, smm_size,
-					MTRR_TYPE_WRBACK);
-	}
-
-	/* Cache the ROM as WP just below 4GiB. */
-	postcar_frame_add_romcache(&pcf, MTRR_TYPE_WRPROT);
-
-	run_postcar_phase(&pcf);
+	/*
+	 * Cache the TSEG region at the top of ram. This region is
+	 * not restricted to SMM mode until SMM has been relocated.
+	 * By setting the region to cacheable it provides faster access
+	 * when relocating the SMM handler as well as using the TSEG
+	 * region for other purposes.
+	 */
+	smm_region(&smm_base, &smm_size);
+	postcar_frame_add_mtrr(pcf, smm_base, smm_size, MTRR_TYPE_WRBACK);
 }
 
 static void cpu_flex_override(FSP_M_CONFIG *m_cfg)

@@ -18,7 +18,6 @@
 #include <cbmem.h>
 #include <console/console.h>
 #include <commonlib/helpers.h>
-#include <cpu/intel/romstage.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/smm.h>
 #include <fsp/car.h>

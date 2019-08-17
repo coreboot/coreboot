@@ -54,23 +54,6 @@
 
 static struct postcar_frame early_mtrrs;
 
-static void fill_postcar_frame(struct postcar_frame *pcf);
-
-/* prepare_and_run_postcar() determines the stack to use after
- * cache-as-ram is torn down as well as the MTRR settings to use. */
-static void prepare_and_run_postcar(struct postcar_frame *pcf)
-{
-	if (postcar_frame_init(pcf, 0))
-		die("Unable to initialize postcar frame.\n");
-
-	fill_postcar_frame(pcf);
-
-	postcar_frame_common_mtrrs(pcf);
-
-	run_postcar_phase(pcf);
-	/* We do not return here. */
-}
-
 static void program_base_addresses(void)
 {
 	uint32_t reg;
@@ -260,7 +243,7 @@ void romstage_common(struct romstage_params *params)
 	romstage_handoff_init(prev_sleep_state == ACPI_S3);
 }
 
-static void fill_postcar_frame(struct postcar_frame *pcf)
+void fill_postcar_frame(struct postcar_frame *pcf)
 {
 	uintptr_t top_of_ram;
 

@@ -21,7 +21,7 @@
 #include <device/pci_ops.h>
 #include <arch/acpi.h>
 #include <cpu/x86/lapic.h>
-#include <cpu/intel/romstage.h>
+#include <arch/romstage.h>
 #include <northbridge/intel/gm45/gm45.h>
 #include <southbridge/intel/i82801ix/i82801ix.h>
 #include <southbridge/intel/common/gpio.h>

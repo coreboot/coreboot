@@ -18,7 +18,7 @@
 #include <device/pnp_ops.h>
 #include <device/pci_ops.h>
 #include <console/console.h>
-#include <cpu/intel/romstage.h>
+#include <arch/romstage.h>
 #include <cpu/x86/lapic.h>
 #include <device/pci_def.h>
 #include <device/pnp_def.h>

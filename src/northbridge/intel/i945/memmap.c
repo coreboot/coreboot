@@ -21,7 +21,6 @@
 #include <cbmem.h>
 #include "i945.h"
 #include <console/console.h>
-#include <cpu/intel/romstage.h>
 #include <cpu/x86/mtrr.h>
 #include <program_loading.h>
 #include <cpu/intel/smm_reloc.h>

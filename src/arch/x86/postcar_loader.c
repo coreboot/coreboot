@@ -132,6 +132,21 @@ void postcar_frame_common_mtrrs(struct postcar_frame *pcf)
 	postcar_frame_add_romcache(pcf, MTRR_TYPE_WRPROT);
 }
 
+/* prepare_and_run_postcar() determines the stack to use after
+ * cache-as-ram is torn down as well as the MTRR settings to use. */
+void prepare_and_run_postcar(struct postcar_frame *pcf)
+{
+	if (postcar_frame_init(pcf, 0))
+		die("Unable to initialize postcar frame.\n");
+
+	fill_postcar_frame(pcf);
+
+	postcar_frame_common_mtrrs(pcf);
+
+	run_postcar_phase(pcf);
+	/* We do not return here. */
+}
+
 void *postcar_commit_mtrrs(struct postcar_frame *pcf)
 {
 	/*

@@ -26,7 +26,7 @@
 #include <southbridge/intel/i82801gx/i82801gx.h>
 #include <southbridge/intel/common/gpio.h>
 #include <southbridge/intel/common/pmclib.h>
-#include <cpu/intel/romstage.h>
+#include <arch/romstage.h>
 #include <cpu/x86/lapic.h>
 #include "raminit.h"
 #include "pineview.h"

@@ -16,7 +16,7 @@
  */
 
 #include <cpu/intel/haswell/haswell.h>
-#include <cpu/intel/romstage.h>
+#include <arch/romstage.h>
 #include <northbridge/intel/haswell/haswell.h>
 #include <northbridge/intel/haswell/pei_data.h>
 #include <southbridge/intel/common/gpio.h>

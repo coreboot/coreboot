@@ -19,7 +19,7 @@
 #include <cf9_reset.h>
 #include <device/pci_ops.h>
 #include <device/pci_def.h>
-#include <cpu/intel/romstage.h>
+#include <arch/romstage.h>
 #include <cpu/x86/lapic.h>
 #include <console/console.h>
 #include <northbridge/intel/i945/i945.h>

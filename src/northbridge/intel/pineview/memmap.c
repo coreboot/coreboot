@@ -24,7 +24,6 @@
 #include <cbmem.h>
 #include <northbridge/intel/pineview/pineview.h>
 #include <cpu/x86/mtrr.h>
-#include <cpu/intel/romstage.h>
 #include <cpu/intel/smm_reloc.h>
 #include <stdint.h>
 #include <stage_cache.h>

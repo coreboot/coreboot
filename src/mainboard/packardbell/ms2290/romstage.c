@@ -23,7 +23,7 @@
 #include <cpu/x86/lapic.h>
 #include <romstage_handoff.h>
 #include <console/console.h>
-#include <cpu/intel/romstage.h>
+#include <arch/romstage.h>
 #include <ec/acpi/ec.h>
 #include <timestamp.h>
 #include <arch/acpi.h>

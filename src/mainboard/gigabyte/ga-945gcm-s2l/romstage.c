@@ -21,7 +21,7 @@
 #include <superio/ite/it8718f/it8718f.h>
 #include <superio/ite/common/ite.h>
 #include <console/console.h>
-#include <cpu/intel/romstage.h>
+#include <arch/romstage.h>
 #include <northbridge/intel/i945/i945.h>
 #include <northbridge/intel/i945/raminit.h>
 #include <southbridge/intel/i82801gx/i82801gx.h>

@@ -16,7 +16,6 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/cpu.h>
 #include <arch/romstage.h>
 #include <device/pci_ops.h>
 #include <arch/symbols.h>
@@ -193,19 +192,14 @@ void set_max_freq(void)
 	cpu_set_p_state_to_turbo_ratio();
 }
 
-asmlinkage void car_stage_entry(void)
+void mainboard_romstage_entry(void)
 {
-	struct postcar_frame pcf;
-	uintptr_t top_of_ram;
 	bool s3wake;
+	size_t var_size;
 	struct chipset_power_state *ps = pmc_get_power_state();
-	uintptr_t smm_base;
-	size_t smm_size, var_size;
 	const void *new_var_data;
 
 	timestamp_add_now(TS_START_ROMSTAGE);
-
-	console_init();
 
 	soc_early_romstage_init();
 
@@ -227,10 +221,14 @@ asmlinkage void car_stage_entry(void)
 	else
 		printk(BIOS_ERR, "Failed to determine variable data\n");
 
-	if (postcar_frame_init(&pcf, 0))
-		die("Unable to initialize postcar frame.\n");
-
 	mainboard_save_dimm_info();
+}
+
+void fill_postcar_frame(struct postcar_frame *pcf)
+{
+	uintptr_t top_of_ram;
+	uintptr_t smm_base;
+	size_t smm_size;
 
 	/*
 	 * We need to make sure ramstage will be run cached. At this point exact
@@ -240,11 +238,8 @@ asmlinkage void car_stage_entry(void)
 	top_of_ram = (uintptr_t) cbmem_top();
 	/* cbmem_top() needs to be at least 16 MiB aligned */
 	assert(ALIGN_DOWN(top_of_ram, 16*MiB) == top_of_ram);
-	postcar_frame_add_mtrr(&pcf, top_of_ram - 16*MiB, 16*MiB,
+	postcar_frame_add_mtrr(pcf, top_of_ram - 16*MiB, 16*MiB,
 		MTRR_TYPE_WRBACK);
-
-	/* Cache the memory-mapped boot media. */
-	postcar_frame_add_romcache(&pcf, MTRR_TYPE_WRPROT);
 
 	/*
 	* Cache the TSEG region at the top of ram. This region is
@@ -254,9 +249,7 @@ asmlinkage void car_stage_entry(void)
 	* region for other purposes.
 	*/
 	smm_region(&smm_base, &smm_size);
-	postcar_frame_add_mtrr(&pcf, smm_base, smm_size, MTRR_TYPE_WRBACK);
-
-	run_postcar_phase(&pcf);
+	postcar_frame_add_mtrr(pcf, smm_base, smm_size, MTRR_TYPE_WRBACK);
 }
 
 static void fill_console_params(FSPM_UPD *mupd)

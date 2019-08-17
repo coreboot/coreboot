@@ -14,14 +14,12 @@
  */
 
 #include <bootmode.h>
+#include <boot/coreboot_tables.h>
 #include <soc/gpio.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
 /* The WP status pin lives on GPIO_SSUS_6 which is pad 36 in the SUS well. */
 #define WP_STATUS_PAD	36
-
-#ifndef __PRE_RAM__
-#include <boot/coreboot_tables.h>
 
 void fill_lb_gpios(struct lb_gpios *gpios)
 {
@@ -33,7 +31,6 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	};
 	lb_add_gpios(gpios, chromeos_gpios, ARRAY_SIZE(chromeos_gpios));
 }
-#endif
 
 int get_write_protect_state(void)
 {

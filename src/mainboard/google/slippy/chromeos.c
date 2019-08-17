@@ -14,12 +14,10 @@
  */
 
 #include <bootmode.h>
+#include <boot/coreboot_tables.h>
 #include <southbridge/intel/lynxpoint/pch.h>
 #include <southbridge/intel/common/gpio.h>
 #include <vendorcode/google/chromeos/chromeos.h>
-
-#ifndef __PRE_RAM__
-#include <boot/coreboot_tables.h>
 
 void fill_lb_gpios(struct lb_gpios *gpios)
 {
@@ -31,7 +29,6 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	};
 	lb_add_gpios(gpios, chromeos_gpios, ARRAY_SIZE(chromeos_gpios));
 }
-#endif
 
 int get_write_protect_state(void)
 {

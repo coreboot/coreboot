@@ -14,6 +14,7 @@
  */
 
 #include <bootmode.h>
+#include <boot/coreboot_tables.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <soc/gpio.h>
@@ -21,9 +22,6 @@
 
 /* Compile-time settings for recovery mode. */
 #define REC_MODE_SETTING 0
-
-#ifndef __PRE_RAM__
-#include <boot/coreboot_tables.h>
 
 void fill_lb_gpios(struct lb_gpios *gpios)
 {
@@ -35,7 +33,6 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	};
 	lb_add_gpios(gpios, chromeos_gpios, ARRAY_SIZE(chromeos_gpios));
 }
-#endif
 
 int get_recovery_mode_switch(void)
 {

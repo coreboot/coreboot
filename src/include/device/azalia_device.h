@@ -19,7 +19,6 @@
 #include <types.h>
 #include <arch/acpi.h>
 #include <device/mmio.h>
-#include <arch/interrupt.h>
 #include <device/device.h>
 
 void azalia_audio_init(struct device *dev);

@@ -21,7 +21,6 @@
 #include <device/pci_ops.h>
 #include <drivers/intel/gma/int15.h>
 #include <arch/acpi.h>
-#include <arch/interrupt.h>
 #include <boot/coreboot_tables.h>
 #include <ec/smsc/mec1308/ec.h>
 #include "ec.h"

@@ -17,7 +17,6 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <arch/io.h>
-#include <arch/interrupt.h>
 #include <drivers/intel/gma/int15.h>
 #include <ec/acpi/ec.h>
 

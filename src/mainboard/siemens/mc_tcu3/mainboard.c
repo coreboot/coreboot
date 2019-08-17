@@ -22,7 +22,6 @@
 #if CONFIG(VGA_ROM_RUN)
 #include <x86emu/x86emu.h>
 #endif
-#include <arch/interrupt.h>
 #include <boot/coreboot_tables.h>
 #include <hwilib.h>
 #include <i210.h>

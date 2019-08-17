@@ -25,7 +25,6 @@
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <ec/acpi/ec.h>
 #include <drivers/intel/gma/int15.h>
-#include <arch/interrupt.h>
 #include <pc80/keyboard.h>
 #include <cpu/x86/lapic.h>
 #include <device/pci.h>

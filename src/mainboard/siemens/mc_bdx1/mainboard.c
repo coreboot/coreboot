@@ -27,7 +27,6 @@
 #include <x86emu/x86emu.h>
 #endif
 #include <device/mmio.h>
-#include <arch/interrupt.h>
 #include <boot/coreboot_tables.h>
 #include <hwilib.h>
 #include <i210.h>

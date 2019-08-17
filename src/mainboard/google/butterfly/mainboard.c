@@ -24,7 +24,6 @@
 #include <fmap.h>
 #include <arch/acpi.h>
 #include <arch/io.h>
-#include <arch/interrupt.h>
 #include <boot/coreboot_tables.h>
 #include "onboard.h"
 #include "ec.h"

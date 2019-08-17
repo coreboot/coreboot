@@ -66,18 +66,17 @@ int get_recovery_mode_switch(void)
 {
 	int ec_rec_mode = 0;
 
-#if FORCE_RECOVERY_MODE
-	printk(BIOS_DEBUG,"FORCING RECOVERY MODE.\n");
-	return 1;
-#endif
-
-
-#ifndef __PRE_RAM__
-	if (ec_mem_read(EC_CODE_STATE) == EC_COS_EC_RO) {
-		ec_rec_mode = 1;
+	if (FORCE_RECOVERY_MODE) {
+		printk(BIOS_DEBUG, "FORCING RECOVERY MODE.\n");
+		return 1;
 	}
-	printk(BIOS_DEBUG,"RECOVERY MODE FROM EC: %x\n", ec_rec_mode);
-#endif
+
+	if (ENV_RAMSTAGE) {
+		if (ec_mem_read(EC_CODE_STATE) == EC_COS_EC_RO)
+			ec_rec_mode = 1;
+
+		printk(BIOS_DEBUG, "RECOVERY MODE FROM EC: %x\n", ec_rec_mode);
+	}
 
 	return ec_rec_mode;
 }

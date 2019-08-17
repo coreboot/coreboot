@@ -399,24 +399,9 @@ void google_chromeec_ioport_range(uint16_t *out_base, size_t *out_size)
 	*out_size = size;
 }
 
-#ifdef __PRE_RAM__
-
 int google_chromeec_command(struct chromeec_command *cec_command)
 {
-	switch (google_chromeec_command_version()) {
-	case EC_HOST_CMD_FLAG_VERSION_3:
-		return google_chromeec_command_v3(cec_command);
-	case EC_HOST_CMD_FLAG_LPC_ARGS_SUPPORTED:
-		return google_chromeec_command_v1(cec_command);
-	}
-	return -1;
-}
-
-#else /* !__PRE_RAM__ */
-
-int google_chromeec_command(struct chromeec_command *cec_command)
-{
-	static int command_version = 0;
+	MAYBE_STATIC int command_version = 0;
 
 	if (command_version <= 0)
 		command_version = google_chromeec_command_version();
@@ -430,6 +415,7 @@ int google_chromeec_command(struct chromeec_command *cec_command)
 	return -1;
 }
 
+#ifndef __PRE_RAM__
 #ifndef __SMM__
 static void lpc_ec_init(struct device *dev)
 {

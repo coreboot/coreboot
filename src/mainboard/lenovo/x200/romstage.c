@@ -14,8 +14,6 @@
  * GNU General Public License for more details.
  */
 
-// __PRE_RAM__ means: use "unsigned" for device, not a struct.
-
 #include <device/pci_ops.h>
 #include <southbridge/intel/common/gpio.h>
 #include <southbridge/intel/i82801ix/i82801ix.h>

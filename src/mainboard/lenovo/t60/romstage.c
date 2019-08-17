@@ -15,8 +15,6 @@
  * GNU General Public License for more details.
  */
 
-// __PRE_RAM__ means: use "unsigned" for device, not a struct.
-
 #include <stdint.h>
 #include <cf9_reset.h>
 #include <delay.h>

@@ -283,7 +283,6 @@ uint8_t uart_rx_byte(int idx)
 	return byte;
 }
 
-#ifndef __PRE_RAM__
 /* TODO: Implement function */
 void uart_fill_lb(void *data)
 {
@@ -297,4 +296,3 @@ void uart_fill_lb(void *data)
 	lb_add_serial(&serial, data);
 	lb_add_console(LB_TAG_CONSOLE_SERIAL8250MEM, data);
 }
-#endif

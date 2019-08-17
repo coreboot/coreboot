@@ -17,11 +17,9 @@
 #define __ARCH_CPU_H__
 
 #include <arch/encoding.h>
+#include <device/device.h>
 
 #define asmlinkage
-
-#if !defined(__PRE_RAM__)
-#include <device/device.h>
 
 struct cpu_driver {
 	struct device_operations *ops;
@@ -43,8 +41,6 @@ struct cpuinfo_riscv {
 	uint8_t    riscv_vendor;     /* CPU vendor */
 	uint8_t    riscv_model;
 };
-
-#endif
 
 static inline int supports_extension(char ext)
 {

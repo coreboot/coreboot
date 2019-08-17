@@ -17,11 +17,9 @@
 #define __ARCH_CPU_H__
 
 #include <stdint.h>
+#include <device/device.h>
 
 #define asmlinkage
-
-#if !defined(__PRE_RAM__)
-#include <device/device.h>
 
 struct cpu_driver {
 	struct device_operations *ops;
@@ -33,8 +31,6 @@ struct cpuinfo_arm {
 	uint8_t    arm_vendor;     /* CPU vendor */
 	uint8_t    arm_model;
 };
-
-#endif
 
 /* Primitives for CPU and MP cores. */
 

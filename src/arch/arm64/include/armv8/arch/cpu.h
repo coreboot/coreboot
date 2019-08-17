@@ -20,9 +20,6 @@
 
 static inline unsigned int smp_processor_id(void) { return 0; }
 
-
-#if !defined(__PRE_RAM__)
 struct cpu_driver { };
-#endif
 
 #endif /* __ARCH_CPU_H__ */

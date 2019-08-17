@@ -113,9 +113,7 @@ unsigned int uart_input_clock_divider(void)
 	return 1;
 }
 
-#ifndef __PRE_RAM__
 void uart_fill_lb(void *data)
 {
 	/* TODO */
 }
-#endif

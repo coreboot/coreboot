@@ -16,10 +16,9 @@
 #ifndef __ARCH_CPU_H__
 #define __ARCH_CPU_H__
 
-#define asmlinkage
-
-#if !defined(__PRE_RAM__)
 #include <device/device.h>
+
+#define asmlinkage
 
 struct cpu_driver {
 	struct device_operations *ops;
@@ -42,7 +41,6 @@ struct cpuinfo_ppc64 {
 	uint8_t    ppc64_model;
 };
 
-#endif
-
 struct cpu_info *cpu_info(void);
+
 #endif /* __ARCH_CPU_H__ */

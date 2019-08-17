@@ -515,9 +515,7 @@ struct tegra_dc_mode {
 unsigned long READL(void *p);
 void WRITEL(unsigned long value, void *p);
 
-#ifndef __PRE_RAM__
 void display_startup(struct device *dev);
-#endif
 void dp_init(void *_config);
 void dp_enable(void *_dp);
 unsigned int fb_base_mb(void);

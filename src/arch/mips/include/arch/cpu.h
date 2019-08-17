@@ -16,11 +16,9 @@
 #ifndef __MIPS_ARCH_CPU_H
 #define __MIPS_ARCH_CPU_H
 
-#define asmlinkage
-
-#ifndef __PRE_RAM__
-
 #include <device/device.h>
+
+#define asmlinkage
 
 struct cpu_driver {
 	struct device_operations *ops;
@@ -34,7 +32,6 @@ struct cpu_info {
 	unsigned long index;
 };
 
-#endif /* !__PRE_RAM__ */
 
 /***************************************************************************
  * The following section was copied from arch/mips/include/asm/mipsregs.h in

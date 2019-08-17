@@ -398,9 +398,7 @@ uint8_t uart_rx_byte(int idx)
 	return byte;
 }
 
-#ifndef __PRE_RAM__
 /* TODO: Implement fuction */
 void uart_fill_lb(void *data)
 {
 }
-#endif

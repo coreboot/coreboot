@@ -57,8 +57,6 @@ static void *load_ipq_blob(const char *file_name)
 	return blob_mbn + 1;
 }
 
-#ifdef __PRE_RAM__
-
 #define DDR_VERSION() ((const char *)0x2a03f600)
 #define MAX_DDR_VERSION_SIZE 48
 
@@ -88,8 +86,6 @@ int initialize_dram(void)
 
 	return 0;
 }
-
-#else  /* __PRE_RAM__ */
 
 void start_tzbsp(void)
 {
@@ -152,4 +148,3 @@ void start_rpm(void)
 	       (rpm_version >> 16) & 0xff,
 	       rpm_version & 0xffff);
 }
-#endif  /* !__PRE_RAM__ */

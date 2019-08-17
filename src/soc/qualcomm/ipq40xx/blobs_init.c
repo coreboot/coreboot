@@ -58,8 +58,6 @@ static void *load_ipq_blob(const char *file_name)
 	return blob_mbn;
 }
 
-#ifdef __PRE_RAM__
-
 #define DDR_VERSION() ((const char *)"private build")
 #define MAX_DDR_VERSION_SIZE 48
 
@@ -120,7 +118,6 @@ int initialize_dram(void)
 	return 0;
 }
 
-#else  /* __PRE_RAM__ */
 void start_tzbsp(void)
 {
 	void *tzbsp = load_ipq_blob(CONFIG_TZ_MBN);
@@ -133,4 +130,3 @@ void start_tzbsp(void)
 	tz_init_wrapper(0, 0, tzbsp);
 
 }
-#endif  /* !__PRE_RAM__ */

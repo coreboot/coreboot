@@ -1170,9 +1170,16 @@ static void emit_chip_headers(FILE *fil, struct chip *chip)
 
 	chip = tmp;
 	while (chip) {
-		fprintf(fil,
-			"__attribute__((weak)) struct chip_operations %s_ops = {};\n",
-			chip->name_underscore);
+		/* A lot of cpus do not define chip_operations at all, and the ones
+		   that do only initialise .name. */
+		if (strstr(chip->name_underscore, "cpu_") == chip->name_underscore) {
+			fprintf(fil,
+				"__attribute__((weak)) struct chip_operations %s_ops = {};\n",
+				chip->name_underscore);
+		} else {
+			fprintf(fil, "extern struct chip_operations %s_ops;\n",
+				chip->name_underscore);
+		}
 		chip = chip->next;
 	}
 	fprintf(fil, "#endif\n");

@@ -71,10 +71,12 @@ int get_lid_switch(void)
  */
 int get_recovery_mode_switch(void)
 {
-#ifndef __PRE_RAM__
-	static int ec_in_rec_mode = 0;
-	static int ec_rec_flag_good = 0;
-#endif
+	MAYBE_STATIC int ec_in_rec_mode = 0;
+	MAYBE_STATIC int ec_rec_flag_good = 0;
+
+	if (ec_rec_flag_good)
+		return ec_in_rec_mode;
+
 	pci_devfn_t dev = PCI_DEV(0, 0x1f, 0);
 	u8 reg8 = pci_s_read_config8(dev, GEN_PMCON_3);
 
@@ -83,17 +85,10 @@ int get_recovery_mode_switch(void)
 	printk(BIOS_SPEW,"%s:  EC status:%#x   RTC_BAT: %x\n",
 			__func__, ec_status, reg8 & RTC_BATTERY_DEAD);
 
-#ifdef __PRE_RAM__
-	return (((reg8 & RTC_BATTERY_DEAD) != 0) &&
-	         ((ec_status & 0x3) == EC_IN_RECOVERY_MODE));
-#else
-	if (!ec_rec_flag_good) {
-		ec_in_rec_mode = (((reg8 & RTC_BATTERY_DEAD) != 0) &&
-		                     ((ec_status & 0x3) == EC_IN_RECOVERY_MODE));
-		ec_rec_flag_good = 1;
-	}
+	ec_in_rec_mode = (((reg8 & RTC_BATTERY_DEAD) != 0) &&
+				((ec_status & 0x3) == EC_IN_RECOVERY_MODE));
+	ec_rec_flag_good = 1;
 	return ec_in_rec_mode;
-#endif
 }
 
 static const struct cros_gpio cros_gpios[] = {

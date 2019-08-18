@@ -88,7 +88,7 @@ asmlinkage void bootblock_c_entry(uint64_t base_timestamp)
 	}
 
 	/* TSC cannot be relied upon. Override the TSC value passed in. */
-	bootblock_main_with_timestamp(timestamp_get(), NULL, 0);
+	bootblock_main_with_basetime(timestamp_get());
 }
 
 void bootblock_soc_early_init(void)

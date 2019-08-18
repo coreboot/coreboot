@@ -44,7 +44,7 @@ const FSPT_UPD temp_ram_init_params = {
 asmlinkage void bootblock_c_entry(uint64_t base_timestamp)
 {
 	/* Call lib/bootblock.c main */
-	bootblock_main_with_timestamp(base_timestamp, NULL, 0);
+	bootblock_main_with_basetime(base_timestamp);
 }
 
 void bootblock_soc_early_init(void)

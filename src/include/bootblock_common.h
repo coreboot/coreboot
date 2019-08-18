@@ -38,16 +38,7 @@ void bootblock_soc_init(void);
 asmlinkage void bootblock_c_entry(uint64_t base_timestamp);
 asmlinkage void bootblock_c_entry_bist(uint64_t base_timestamp, uint32_t bist);
 
-/*
- * This is a the same as the bootblock main(), with the difference that it does
- * not collect a timestamp. Instead it accepts the initial timestamp and
- * possibly additional timestamp entries as arguments. This can be used in cases
- * where earlier stamps are available. Note that this function is designed to be
- * entered from C code. This function assumes that the timer has already been
- * initialized, so it does not call init_timer().
- */
-asmlinkage void bootblock_main_with_timestamp(uint64_t base_timestamp,
-	struct timestamp_entry *timestamps, size_t num_timestamps);
+void bootblock_main_with_basetime(uint64_t base_timestamp);
 
 /* This is the argument structure passed from decompressor to bootblock. */
 struct bootblock_arg {

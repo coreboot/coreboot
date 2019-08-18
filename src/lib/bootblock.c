@@ -30,7 +30,15 @@ __weak void bootblock_soc_early_init(void) { /* do nothing */ }
 __weak void bootblock_soc_init(void) { /* do nothing */ }
 __weak void bootblock_mainboard_init(void) { /* do nothing */ }
 
-asmlinkage void bootblock_main_with_timestamp(uint64_t base_timestamp,
+/*
+ * This is a the same as the bootblock main(), with the difference that it does
+ * not collect a timestamp. Instead it accepts the initial timestamp and
+ * possibly additional timestamp entries as arguments. This can be used in cases
+ * where earlier stamps are available. Note that this function is designed to be
+ * entered from C code. This function assumes that the timer has already been
+ * initialized, so it does not call init_timer().
+ */
+static void bootblock_main_with_timestamp(uint64_t base_timestamp,
 	struct timestamp_entry *timestamps, size_t num_timestamps)
 {
 	/* Initialize timestamps if we have TIMESTAMP region in memlayout.ld. */
@@ -58,6 +66,11 @@ asmlinkage void bootblock_main_with_timestamp(uint64_t base_timestamp,
 	bootblock_mainboard_init();
 
 	run_romstage();
+}
+
+void bootblock_main_with_basetime(uint64_t base_timestamp)
+{
+	bootblock_main_with_timestamp(base_timestamp, NULL, 0);
 }
 
 void main(void)

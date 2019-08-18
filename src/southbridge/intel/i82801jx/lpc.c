@@ -31,6 +31,7 @@
 #include <arch/smp/mpspec.h>
 #include <cbmem.h>
 #include <string.h>
+#include "chip.h"
 #include "i82801jx.h"
 #include "nvs.h"
 #include <southbridge/intel/common/pciehp.h>

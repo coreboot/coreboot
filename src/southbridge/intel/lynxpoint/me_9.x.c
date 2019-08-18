@@ -35,6 +35,7 @@
 #include <elog.h>
 #include <halt.h>
 
+#include "chip.h"
 #include "me.h"
 #include "pch.h"
 

@@ -14,9 +14,6 @@
  * GNU General Public License for more details.
  */
 
-// Make sure no stage 2 code is included:
-#define __PRE_RAM__
-
 // FIXME: Is this piece of code southbridge specific, or
 // can it be cleaned up so this include is not required?
 // It's needed right now because we get our DEFAULT_PMBASE from

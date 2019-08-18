@@ -117,6 +117,5 @@ struct southbridge_intel_lynxpoint_config {
 	bool docking_supported;
 };
 
-extern struct chip_operations southbridge_intel_lynxpoint_ops;
 
 #endif				/* SOUTHBRIDGE_INTEL_LYNXPOINT_CHIP_H */

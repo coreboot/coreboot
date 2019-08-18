@@ -26,6 +26,7 @@
 #include <pc80/isa-dma.h>
 #include <arch/io.h>
 #include <arch/ioapic.h>
+#include "chip.h"
 #include "i82801dx.h"
 
 #define NMI_OFF 0

@@ -24,6 +24,7 @@
 #include <acpi/sata.h>
 #include <types.h>
 
+#include "chip.h"
 #include "pch.h"
 
 typedef struct southbridge_intel_bd82x6x_config config_t;

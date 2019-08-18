@@ -30,6 +30,7 @@
 #include <arch/acpigen.h>
 #include <cbmem.h>
 #include <string.h>
+#include "chip.h"
 #include "i82801ix.h"
 #include "nvs.h"
 #include <southbridge/intel/common/pciehp.h>

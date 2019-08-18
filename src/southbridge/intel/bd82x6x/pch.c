@@ -24,8 +24,10 @@
 #include <device/pci.h>
 #endif
 #include <device/pci_ops.h>
-#include "pch.h"
 #include <string.h>
+
+#include "chip.h"
+#include "pch.h"
 
 int pch_silicon_revision(void)
 {

@@ -25,6 +25,7 @@
 #include <pc80/mc146818rtc.h>
 #include <types.h>
 
+#include "chip.h"
 #include "i82801ix.h"
 
 typedef struct southbridge_intel_i82801ix_config config_t;

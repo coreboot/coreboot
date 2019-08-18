@@ -30,6 +30,7 @@
 #include <cpu/x86/smm.h>
 #include <cbmem.h>
 #include <string.h>
+#include "chip.h"
 #include "nvs.h"
 #include "pch.h"
 #include <arch/acpigen.h>

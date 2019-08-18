@@ -26,6 +26,7 @@
 #include <device/pci_ids.h>
 #include <device/smbus.h>
 #include <southbridge/intel/common/smbus.h>
+#include "chip.h"
 #include "i82371eb.h"
 
 static void pwrmgt_enable(struct device *dev)

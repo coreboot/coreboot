@@ -26,6 +26,7 @@
 #include <southbridge/intel/common/gpio.h>
 #include <stddef.h>
 #include <stdint.h>
+#include "chip.h"
 
 #define MAX_NUM_ROOT_PORTS 8
 

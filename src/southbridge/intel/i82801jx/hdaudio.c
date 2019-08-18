@@ -23,6 +23,7 @@
 #include <device/mmio.h>
 #include <delay.h>
 #include <device/azalia_device.h>
+#include "chip.h"
 #include "i82801jx.h"
 
 #define HDA_ICII_REG 0x68

@@ -326,17 +326,13 @@ typedef enum {
 /* Defined in me_status.c for both romstage and ramstage */
 void intel_me_status(struct me_hfs *hfs, struct me_hfs2 *hfs2);
 
-#ifdef __PRE_RAM__
 void intel_early_me_status(void);
 int intel_early_me_init(void);
 int intel_early_me_uma_size(void);
 int intel_early_me_init_done(u8 status);
-#endif
 
-#ifdef __SMM__
 void intel_me_finalize_smm(void);
 void intel_me8_finalize_smm(void);
-#endif
 
 /*
  * ME to BIOS Payload Datastructures and definitions. The ordering of the

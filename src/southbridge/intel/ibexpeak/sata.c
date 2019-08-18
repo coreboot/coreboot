@@ -25,6 +25,7 @@
 #include <acpi/sata.h>
 #include <types.h>
 
+#include "chip.h"
 #include "pch.h"
 
 typedef struct southbridge_intel_ibexpeak_config config_t;

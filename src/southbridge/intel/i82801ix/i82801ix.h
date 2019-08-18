@@ -18,12 +18,6 @@
 #ifndef SOUTHBRIDGE_INTEL_I82801GX_I82801IX_H
 #define SOUTHBRIDGE_INTEL_I82801GX_I82801IX_H
 
-#ifndef __ACPI__
-#ifndef __ASSEMBLER__
-#include "chip.h"
-#endif
-#endif
-
 #define DEFAULT_TBAR		((u8 *)0xfed1b000)
 
 #include <southbridge/intel/common/rcba.h>
@@ -214,12 +208,13 @@ static inline int lpc_is_mobile(const u16 devid)
 
 void aseg_smm_lock(void);
 
-#if defined(__PRE_RAM__)
 void enable_smbus(void);
-int smbus_read_byte(unsigned device, unsigned address);
 void i82801ix_early_init(void);
 void i82801ix_dmi_setup(void);
 void i82801ix_dmi_poll_vc1(void);
+
+#if ENV_ROMSTAGE
+int smbus_read_byte(unsigned device, unsigned address);
 #endif
 
 #endif

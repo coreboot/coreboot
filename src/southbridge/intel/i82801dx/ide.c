@@ -19,6 +19,7 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
+#include "chip.h"
 #include "i82801dx.h"
 
 typedef struct southbridge_intel_i82801dx_config config_t;

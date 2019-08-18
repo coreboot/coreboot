@@ -22,6 +22,7 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <console/console.h>
+#include "chip.h"
 #include "i82801ix.h"
 
 typedef struct southbridge_intel_i82801ix_config config_t;

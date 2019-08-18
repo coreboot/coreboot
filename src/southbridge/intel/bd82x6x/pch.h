@@ -56,20 +56,19 @@
 #ifndef __ACPI__
 #define DEBUG_PERIODIC_SMIS 0
 
-#if !defined(__ASSEMBLER__)
-#if !defined(__PRE_RAM__)
-#if !defined(__SIMPLE_DEVICE__)
-#include "chip.h"
-void pch_enable(struct device *dev);
-#endif
+
 int pch_silicon_revision(void);
 int pch_silicon_type(void);
 int pch_silicon_supported(int type, int rev);
 void pch_iobp_update(u32 address, u32 andvalue, u32 orvalue);
-#else /* __PRE_RAM__ */
+
 void enable_smbus(void);
 void enable_usb_bar(void);
+
+#if ENV_ROMSTAGE
 int smbus_read_byte(unsigned device, unsigned address);
+#endif
+
 void early_thermal_init(void);
 void southbridge_configure_default_intmap(void);
 void southbridge_rcba_config(void);
@@ -87,14 +86,11 @@ struct southbridge_usb_port
 };
 
 #ifndef __ROMCC__
+void pch_enable(struct device *dev);
 extern const struct southbridge_usb_port mainboard_usb_ports[14];
 #endif
 
-void
-early_usb_init (const struct southbridge_usb_port *portmap);
-
-#endif
-#endif
+void early_usb_init(const struct southbridge_usb_port *portmap);
 
 /* PM I/O Space */
 #define UPRWC			0x3c

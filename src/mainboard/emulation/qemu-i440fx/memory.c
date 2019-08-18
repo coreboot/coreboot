@@ -15,6 +15,7 @@
 
 #include <cbmem.h>
 #include <arch/io.h>
+#include <arch/romstage.h>
 #include "memory.h"
 #include "fw_cfg.h"
 
@@ -60,4 +61,9 @@ void *cbmem_top(void)
 		top = (uintptr_t)qemu_get_memory_size() * 1024;
 
 	return (void *)top;
+}
+
+/* Nothing to do, MTRRs are no-op on QEMU. */
+void fill_postcar_frame(struct postcar_frame *pcf)
+{
 }

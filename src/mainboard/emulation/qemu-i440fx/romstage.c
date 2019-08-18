@@ -14,31 +14,10 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/cpu.h>
 #include <arch/romstage.h>
-#include <stdint.h>
 #include <cbmem.h>
-#include <console/console.h>
-#include <timestamp.h>
-#include <program_loading.h>
 
-asmlinkage void car_stage_entry(void)
+void mainboard_romstage_entry(void)
 {
-	struct postcar_frame pcf;
-
-	console_init();
-
 	cbmem_recovery(0);
-
-	timestamp_add_now(TS_START_ROMSTAGE);
-
-	if (postcar_frame_init(&pcf, 0))
-		die("Unable to initialize postcar frame.\n");
-
-	/**
-	 * Run postcar to tear down CAR and load relocatable ramstage.
-	 * There's no CAR on qemu, but for educational purposes and
-	 * testing the postcar stage is used on qemu, too.
-	 */
-	run_postcar_phase(&pcf);
 }

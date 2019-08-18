@@ -14,14 +14,10 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/cpu.h>
 #include <arch/romstage.h>
-#include <stdint.h>
 #include <cbmem.h>
 #include <console/console.h>
-#include <timestamp.h>
 #include <southbridge/intel/i82801ix/i82801ix.h>
-#include <program_loading.h>
 #include <device/pci_ops.h>
 
 #define D0F0_PCIEXBAR_LO 0x60
@@ -35,26 +31,11 @@ static void mainboard_machine_check(void)
 		die("You must run qemu for machine Q35 (-M q35)");
 }
 
-asmlinkage void car_stage_entry(void)
+void mainboard_romstage_entry(void)
 {
-	struct postcar_frame pcf;
 	i82801ix_early_init();
-	console_init();
 
 	mainboard_machine_check();
 
 	cbmem_recovery(0);
-
-	timestamp_add_now(TS_START_ROMSTAGE);
-
-	if (postcar_frame_init(&pcf, 0))
-		die("Unable to initialize postcar frame.\n");
-
-	/**
-	 * Run postcar to tear down CAR and load relocatable ramstage.
-	 * There's no CAR on qemu, but for educational purposes and
-	 * testing the postcar stage is used on qemu, too.
-	 */
-
-	run_postcar_phase(&pcf);
 }

@@ -16,7 +16,6 @@
 
 #include <stdint.h>
 #include <stdlib.h>
-#include <arch/early_variables.h>
 #include <console/console.h>
 #include <console/uart.h>
 
@@ -52,15 +51,12 @@ enum biosBmcInfoValidFlag_e {
 	BMCINFO_VALID_NEED_WARN,
 	BMCINFO_VALID,
 };
-
-static enum biosBmcInfoValidFlag_e CAR_GLOBAL biosBmcInfoValidFlag;
-
 static bool bmcinfo_is_valid(size_t minsize)
 {
+	static enum biosBmcInfoValidFlag_e biosBmcInfoValidFlag;
 	const biosBmcInfo_t *bmc_info = BMC_INFO;
-	int flag = car_get_var(biosBmcInfoValidFlag);
-	if (flag == BMCINFO_UNTESTED) {
-		flag = BMCINFO_INVALID;
+	if (biosBmcInfoValidFlag == BMCINFO_UNTESTED) {
+		biosBmcInfoValidFlag = BMCINFO_INVALID;
 		if ((bmc_info->magic0 == BIOSBMCINFO_MAGIC0)
 		 && (bmc_info->magic1 == BIOSBMCINFO_MAGIC1)
 		 && (bmc_info->length >= offsetof(biosBmcInfo_t, hwRev))
@@ -73,20 +69,17 @@ static bool bmcinfo_is_valid(size_t minsize)
 			if (bmc_info->chksum == chksum) {
 				if (bmc_info->length >= offsetof(biosBmcInfo_t,
 							endMarker))
-					flag = BMCINFO_VALID;
+					biosBmcInfoValidFlag = BMCINFO_VALID;
 				else
-					flag = BMCINFO_VALID_NEED_WARN;
+					biosBmcInfoValidFlag = BMCINFO_VALID_NEED_WARN;
 			}
 		}
-		car_set_var(biosBmcInfoValidFlag, flag);
 	}
-#if !defined(__PRE_RAM__)
-	if (flag == BMCINFO_INVALID) {
+	if (ENV_RAMSTAGE && biosBmcInfoValidFlag == BMCINFO_INVALID) {
 		int length = offsetof(biosBmcInfo_t, endMarker);
 		printk(BIOS_CRIT, "WARNING bmcInfo struct"
 				"is not available please update your BMC.\n");
-		flag = BMCINFO_INVALID_WARNED;
-		car_set_var(biosBmcInfoValidFlag, flag);
+		biosBmcInfoValidFlag = BMCINFO_INVALID_WARNED;
 		printk(BIOS_CRIT, "bmcInfo magic = \"%x-%x\"\n",
 				bmc_info->magic0, bmc_info->magic1);
 		printk(BIOS_CRIT, "bmcInfo length = %d expected = %d\"\n",
@@ -99,15 +92,13 @@ static bool bmcinfo_is_valid(size_t minsize)
 		printk(BIOS_CRIT, "bmcInfo chksum = 0x%x expected = 0x%x\"\n",
 				bmc_info->chksum, chksum);
 	}
-	if (flag == BMCINFO_VALID_NEED_WARN) {
+	if (ENV_RAMSTAGE && biosBmcInfoValidFlag == BMCINFO_VALID_NEED_WARN) {
 		printk(BIOS_CRIT, "WARNING bmcInfo struct"
 				" is incomplete please update your BMC.\n");
 
-		flag = BMCINFO_VALID;
-		car_set_var(biosBmcInfoValidFlag, flag);
+		biosBmcInfoValidFlag = BMCINFO_VALID;
 	}
-#endif
-	if (flag < BMCINFO_VALID_NEED_WARN)
+	if (biosBmcInfoValidFlag < BMCINFO_VALID_NEED_WARN)
 		return false;
 	return (bmc_info->length >= minsize);
 }

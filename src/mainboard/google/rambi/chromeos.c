@@ -41,9 +41,8 @@ int get_write_protect_state(void)
 	 * there is a 10K pullup. Disable the internal pull in romstage so that
 	 * there isn't any ambiguity in the reading.
 	 */
-#if defined(__PRE_RAM__)
-	ssus_disable_internal_pull(WP_STATUS_PAD);
-#endif
+	if (ENV_ROMSTAGE)
+		ssus_disable_internal_pull(WP_STATUS_PAD);
 
 	/* WP is enabled when the pin is reading high. */
 	return ssus_get_gpio(WP_STATUS_PAD);

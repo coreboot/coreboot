@@ -13,8 +13,6 @@
  * GNU General Public License for more details.
  */
 
-extern struct chip_operations cpu_intel_haswell_ops;
-
 /* Magic value used to locate this chip in the device tree */
 #define SPEEDSTEP_APIC_MAGIC 0xACAC
 

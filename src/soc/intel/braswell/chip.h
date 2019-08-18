@@ -171,6 +171,4 @@ struct soc_intel_braswell_config {
 	UINT8  I2C6Frequency;
 };
 
-extern struct chip_operations soc_intel_braswell_ops;
-
 #endif /* _SOC_CHIP_H_ */

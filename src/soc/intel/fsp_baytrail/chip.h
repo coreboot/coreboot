@@ -353,5 +353,4 @@ struct soc_intel_fsp_baytrail_config {
 
 };
 
-extern struct chip_operations soc_intel_fsp_baytrail_ops;
 #endif /* _FSP_BAYTRAIL_CHIP_H_ */

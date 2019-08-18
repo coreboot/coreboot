@@ -45,6 +45,4 @@ struct northbridge_intel_haswell_config {
 	struct i915_gpu_controller_info gfx;
 };
 
-extern struct chip_operations northbridge_intel_haswell_ops;
-
 #endif /* NORTHBRIDGE_INTEL_HASWELL_CHIP_H */

@@ -113,6 +113,4 @@ struct soc_intel_quark_config {
 	uint8_t  SmmTsegSize;   /* SMM size in MiB */
 };
 
-extern struct chip_operations soc_ops;
-
 #endif

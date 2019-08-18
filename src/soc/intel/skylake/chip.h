@@ -591,6 +591,4 @@ struct soc_intel_skylake_config {
 
 typedef struct soc_intel_skylake_config config_t;
 
-extern struct chip_operations soc_ops;
-
 #endif

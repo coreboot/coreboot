@@ -16,11 +16,6 @@
 #ifndef _EC_RODA_IT8518_CHIP_H
 #define _EC_RODA_IT8518_CHIP_H
 
-#include <device/device.h>
-
-struct chip_operations;
-extern struct chip_operations ec_roda_it8518_ops;
-
 struct ec_roda_it8518_config {
 	u8 cpuhot_limit;	/* temperature in °C which asserts PROCHOT# */
 };

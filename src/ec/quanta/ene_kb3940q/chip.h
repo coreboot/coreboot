@@ -17,11 +17,6 @@
 #ifndef _EC_QUANTA_ENE_KB3940Q_CHIP_H
 #define _EC_QUANTA_ENE_KB3940Q_CHIP_H
 
-#include <device/device.h>
-
-struct chip_operations;
-extern struct chip_operations ec_quanta_ene_kb3940q_ops;
-
 struct ec_quanta_ene_kb3940q_config {
 };
 

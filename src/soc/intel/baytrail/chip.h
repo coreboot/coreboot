@@ -87,5 +87,4 @@ struct soc_intel_baytrail_config {
 	int disable_ddr_2x_refresh_rate;
 };
 
-extern struct chip_operations soc_intel_baytrail_ops;
 #endif /* _BAYTRAIL_CHIP_H_ */

@@ -29,5 +29,4 @@ struct soc_intel_fsp_broadwell_de_config {
 
 typedef struct soc_intel_fsp_broadwell_de_config config_t;
 
-extern struct chip_operations soc_intel_fsp_broadwell_de_ops;
 #endif /* _SOC_CHIP_H_ */

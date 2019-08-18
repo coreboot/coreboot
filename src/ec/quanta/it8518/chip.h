@@ -17,11 +17,6 @@
 #ifndef _EC_QUANTA_IT8518_CHIP_H
 #define _EC_QUANTA_IT8518_CHIP_H
 
-#include <device/device.h>
-
-struct chip_operations;
-extern struct chip_operations ec_quanta_it8518_ops;
-
 struct ec_quanta_it8518_config {
 };
 

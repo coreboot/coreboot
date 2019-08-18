@@ -16,9 +16,6 @@
 #ifndef EC_GOOGLE_CHROMEEC_CHIP_H
 #define EC_GOOGLE_CHROMEEC_CHIP_H
 
-#include <device/device.h>
-
-extern struct chip_operations ec_google_chromeec_ops;
 
 struct ec_google_chromeec_config {
 };

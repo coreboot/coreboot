@@ -164,6 +164,4 @@ struct soc_intel_broadwell_config {
 
 typedef struct soc_intel_broadwell_config config_t;
 
-extern struct chip_operations soc_ops;
-
 #endif

@@ -16,10 +16,6 @@
 #ifndef EC_GOOGLE_WILCO_CHIP_H
 #define EC_GOOGLE_WILCO_CHIP_H
 
-#include <device/device.h>
-
-extern struct chip_operations ec_google_wilco_ops;
-
 struct ec_google_wilco_config {
 };
 

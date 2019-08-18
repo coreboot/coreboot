@@ -72,8 +72,6 @@ struct soc_intel_denverton_ns_config {
 	uint32_t ipc3;
 };
 
-extern struct chip_operations soc_intel_denverton_ns_ops;
-
 typedef struct soc_intel_denverton_ns_config config_t;
 
 #endif /* SOC_INTEL_FSP_DENVERTON_NS_CHIP_H */

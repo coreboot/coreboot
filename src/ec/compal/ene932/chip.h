@@ -17,11 +17,6 @@
 #ifndef _EC_COMPAL_ENE932_CHIP_H
 #define _EC_COMPAL_ENE932_CHIP_H
 
-#include <device/device.h>
-
-struct chip_operations;
-extern struct chip_operations ec_compal_ene932_ops;
-
 struct ec_compal_ene932_config {
 };
 

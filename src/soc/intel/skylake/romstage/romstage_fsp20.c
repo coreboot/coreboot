@@ -32,7 +32,6 @@
 #include <soc/pm.h>
 #include <soc/romstage.h>
 #include <string.h>
-#include <timestamp.h>
 #include <security/vboot/vboot_common.h>
 
 #include "../chip.h"
@@ -148,7 +147,6 @@ void mainboard_romstage_entry(void)
 	systemagent_early_init();
 
 	ps = pmc_get_power_state();
-	timestamp_add_now(TS_START_ROMSTAGE);
 	s3wake = pmc_fill_power_state(ps) == ACPI_S3;
 	fsp_memory_init(s3wake);
 	pmc_set_disb();

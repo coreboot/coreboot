@@ -87,6 +87,8 @@ asmlinkage void bootblock_c_entry_bist(uint64_t base_timestamp, uint32_t bist)
 
 asmlinkage void car_stage_entry(void)
 {
+	timestamp_add_now(TS_START_ROMSTAGE);
+
 	/* Assumes the hardware was set up during the bootblock */
 	console_init();
 

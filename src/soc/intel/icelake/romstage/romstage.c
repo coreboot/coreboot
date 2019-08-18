@@ -29,7 +29,6 @@
 #include <soc/romstage.h>
 #include <soc/soc_chip.h>
 #include <string.h>
-#include <timestamp.h>
 
 #define FSP_SMBIOS_MEMORY_INFO_GUID	\
 {	\
@@ -121,7 +120,6 @@ void mainboard_romstage_entry(void)
 	/* initialize Heci interface */
 	heci_init(HECI1_BASE_ADDRESS);
 
-	timestamp_add_now(TS_START_ROMSTAGE);
 	s3wake = pmc_fill_power_state(ps) == ACPI_S3;
 	fsp_memory_init(s3wake);
 	pmc_set_disb();

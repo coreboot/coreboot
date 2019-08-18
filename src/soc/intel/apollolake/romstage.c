@@ -47,7 +47,6 @@
 #include <soc/systemagent.h>
 #include <spi_flash.h>
 #include <timer.h>
-#include <timestamp.h>
 #include "chip.h"
 
 static const uint8_t hob_variable_guid[16] = {
@@ -198,8 +197,6 @@ void mainboard_romstage_entry(void)
 	size_t var_size;
 	struct chipset_power_state *ps = pmc_get_power_state();
 	const void *new_var_data;
-
-	timestamp_add_now(TS_START_ROMSTAGE);
 
 	soc_early_romstage_init();
 

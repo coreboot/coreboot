@@ -28,7 +28,6 @@
 #include <soc/pm.h>
 #include <soc/romstage.h>
 #include <string.h>
-#include <timestamp.h>
 
 #include "../chip.h"
 
@@ -137,7 +136,6 @@ void mainboard_romstage_entry(void)
 	/* initialize Heci interface */
 	heci_init(HECI1_BASE_ADDRESS);
 
-	timestamp_add_now(TS_START_ROMSTAGE);
 	s3wake = pmc_fill_power_state(ps) == ACPI_S3;
 	fsp_memory_init(s3wake);
 	pmc_set_disb();

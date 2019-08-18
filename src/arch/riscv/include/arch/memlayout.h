@@ -20,7 +20,7 @@
 
 #define STACK(addr, size) REGION(stack, addr, size, 4096)
 
-#if defined(__PRE_RAM__)
+#if ENV_ROMSTAGE_OR_BEFORE
 	#define CAR_STACK(addr, size) \
 		REGION(car_stack, addr, size, 4K) \
 		ALIAS_REGION(car_stack, stack)

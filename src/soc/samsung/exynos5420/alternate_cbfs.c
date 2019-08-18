@@ -36,12 +36,14 @@
  * should contain all available stages/payloads/etc. It is loaded when this
  * function is called a second time at the end of the romstage, and copied to
  * the romstage/ramstage CBFS cache in DRAM. It will reside there for the
- * rest of the firmware's lifetime and all subsequent stages (which will not
- * have __PRE_RAM__ defined) can just directly reference it there.
+ * rest of the firmware's lifetime and all subsequent stages can just directly
+ * reference it there.
  */
 static int usb_cbfs_open(void)
 {
-#ifdef __PRE_RAM__
+	if (!ENV_ROMSTAGE_OR_BEFORE)
+		return 0;
+
 	static int first_run = 1;
 	int (*irom_load_usb)(void) = *irom_load_image_from_usb_ptr;
 
@@ -65,7 +67,6 @@ static int usb_cbfs_open(void)
 	printk(BIOS_DEBUG, "USB A-A transfer successful, CBFS image should now"
 		" be at %p\n", _cbfs_cache);
 	first_run = 0;
-#endif
 	return 0;
 }
 
@@ -79,7 +80,9 @@ static int usb_cbfs_open(void)
  */
 static int sdmmc_cbfs_open(void)
 {
-#ifdef __PRE_RAM__
+	if (!ENV_ROMSTAGE_OR_BEFORE)
+		return 0;
+
 	/*
 	 * In the bootblock, we just copy the small part that fits in the buffer
 	 * and hope that it's enough (since the romstage is currently always the
@@ -107,7 +110,6 @@ static int sdmmc_cbfs_open(void)
 	printk(BIOS_DEBUG, "SDMMC read successful, CBFS image should now be"
 		" at %p\n", _cbfs_cache);
 	first_run = 0;
-#endif
 	return 0;
 }
 

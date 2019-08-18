@@ -91,9 +91,6 @@ static void soc_early_romstage_init(void)
 	/* Enable decoding for HPET. Needed for FSP global pointer storage */
 	pci_write_config8(PCH_DEV_P2SB, P2SB_HPTC, P2SB_HPTC_ADDRESS_SELECT_0 |
 						P2SB_HPTC_ADDRESS_ENABLE);
-
-	if (CONFIG(DRIVERS_UART_8250IO))
-		lpc_io_setup_comm_a_b();
 }
 
 /* Thermal throttle activation offset */
@@ -207,9 +204,9 @@ asmlinkage void car_stage_entry(void)
 
 	timestamp_add_now(TS_START_ROMSTAGE);
 
-	soc_early_romstage_init();
-
 	console_init();
+
+	soc_early_romstage_init();
 
 	s3wake = pmc_fill_power_state(ps) == ACPI_S3;
 	fsp_memory_init(s3wake);

@@ -21,6 +21,7 @@
 #include <device/pci_ops.h>
 #include <intelblocks/cpulib.h>
 #include <intelblocks/fast_spi.h>
+#include <intelblocks/lpc_lib.h>
 #include <intelblocks/p2sb.h>
 #include <intelblocks/pcr.h>
 #include <intelblocks/rtc.h>
@@ -96,6 +97,8 @@ void bootblock_soc_early_init(void)
 	/* Prepare UART for serial console. */
 	if (CONFIG(INTEL_LPSS_UART_FOR_CONSOLE))
 		uart_bootblock_init();
+	if (CONFIG(DRIVERS_UART_8250IO))
+		lpc_io_setup_comm_a_b();
 
 	if (CONFIG(TPM_ON_FAST_SPI))
 		tpm_enable();

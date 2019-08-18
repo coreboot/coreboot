@@ -30,7 +30,7 @@
 
 static struct postcar_frame early_mtrrs;
 
-asmlinkage void car_stage_c_entry(void)
+asmlinkage void car_stage_entry(void)
 {
 	bool s3wake;
 

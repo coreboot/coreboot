@@ -14,7 +14,6 @@
 #
 
 romstage-y += car.c
-romstage-y += car_stage_entry.S
 ifeq ($(CONFIG_PLATFORM_USES_FSP2_0),y)
 romstage-$(CONFIG_DISPLAY_UPD_DATA) += debug.c
 romstage-$(CONFIG_PLATFORM_USES_FSP2_0) += fsp2_0.c

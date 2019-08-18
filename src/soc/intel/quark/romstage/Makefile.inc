@@ -22,5 +22,6 @@ romstage-y += mtrr.c
 romstage-y += pcie.c
 romstage-y += report_platform.c
 romstage-y += romstage.c
+romstage-y += ../../../../cpu/intel/car/romstage.c
 
 postcar-y += mtrr.c

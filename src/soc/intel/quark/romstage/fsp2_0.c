@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/cpu.h>
 #include <arch/romstage.h>
 #include <arch/symbols.h>
 #include <console/console.h>
@@ -28,9 +27,7 @@
 #include <soc/reg_access.h>
 #include <soc/storage_test.h>
 
-static struct postcar_frame early_mtrrs;
-
-asmlinkage void car_stage_entry(void)
+void mainboard_romstage_entry(void)
 {
 	bool s3wake;
 
@@ -61,9 +58,6 @@ asmlinkage void car_stage_entry(void)
 
 	/* Initialize the PCIe bridges */
 	pcie_init();
-
-	prepare_and_run_postcar(&early_mtrrs);
-	/* We do not return here. */
 }
 
 static struct chipset_power_state power_state;

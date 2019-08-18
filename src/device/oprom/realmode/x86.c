@@ -19,8 +19,6 @@
 #include <arch/registers.h>
 #include <boot/coreboot_tables.h>
 #include <console/console.h>
-#include <cpu/amd/lxdef.h>
-#include <cpu/amd/vr.h>
 #include <delay.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>

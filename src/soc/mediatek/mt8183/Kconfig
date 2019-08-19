@@ -23,6 +23,13 @@ config DEBUG_DRAM
 	help
 	  This option enables additional DRAM related debug messages.
 
+config MT8183_DRAM_EMCP
+	bool
+	default n
+	help
+	  The eMCP platform should select this option to run at different DRAM
+	  frequencies.
+
 config MEMORY_TEST
 	bool
 	default y

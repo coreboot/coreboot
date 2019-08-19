@@ -37,17 +37,6 @@
 /* Don't warn for checking >= LB_CKS_RANGE_START even though it may be 0. */
 #pragma GCC diagnostic ignored "-Wtype-limits"
 
-#include <smp/spinlock.h>
-
-#if (defined(__PRE_RAM__) &&	\
-CONFIG(HAVE_ROMSTAGE_NVRAM_CBFS_SPINLOCK))
-	#define LOCK_NVRAM_CBFS_SPINLOCK() spin_lock(romstage_nvram_cbfs_lock())
-	#define UNLOCK_NVRAM_CBFS_SPINLOCK() spin_unlock(romstage_nvram_cbfs_lock())
-#else
-	#define LOCK_NVRAM_CBFS_SPINLOCK() { }
-	#define UNLOCK_NVRAM_CBFS_SPINLOCK() { }
-#endif
-
 static void cmos_reset_date(void)
 {
 	/* Now setup a default date equals to the build date */
@@ -274,13 +263,10 @@ enum cb_err get_option(void *dest, const char *name)
 	if (!CONFIG(USE_OPTION_TABLE))
 		return CB_CMOS_OTABLE_DISABLED;
 
-	LOCK_NVRAM_CBFS_SPINLOCK();
-
 	/* Figure out how long name is */
 	namelen = strnlen(name, CMOS_MAX_NAME_LENGTH);
 
 	if (locate_cmos_layout(&rdev) != CB_SUCCESS) {
-		UNLOCK_NVRAM_CBFS_SPINLOCK();
 		return CB_CMOS_LAYOUT_NOT_FOUND;
 	}
 	ct = rdev_mmap_full(&rdev);
@@ -288,7 +274,6 @@ enum cb_err get_option(void *dest, const char *name)
 		printk(BIOS_ERR, "RTC: cmos_layout.bin could not be mapped. "
 		       "Options are disabled\n");
 
-		UNLOCK_NVRAM_CBFS_SPINLOCK();
 		return CB_CMOS_LAYOUT_NOT_FOUND;
 	}
 
@@ -304,22 +289,18 @@ enum cb_err get_option(void *dest, const char *name)
 	if (!found) {
 		printk(BIOS_DEBUG, "No CMOS option '%s'.\n", name);
 		rdev_munmap(&rdev, ct);
-		UNLOCK_NVRAM_CBFS_SPINLOCK();
 		return CB_CMOS_OPTION_NOT_FOUND;
 	}
 
 	if (!cmos_checksum_valid(LB_CKS_RANGE_START, LB_CKS_RANGE_END, LB_CKS_LOC)) {
 		rdev_munmap(&rdev, ct);
-		UNLOCK_NVRAM_CBFS_SPINLOCK();
 		return CB_CMOS_CHECKSUM_INVALID;
 	}
 	if (get_cmos_value(ce->bit, ce->length, dest) != CB_SUCCESS) {
 		rdev_munmap(&rdev, ct);
-		UNLOCK_NVRAM_CBFS_SPINLOCK();
 		return CB_CMOS_ACCESS_ERROR;
 	}
 	rdev_munmap(&rdev, ct);
-	UNLOCK_NVRAM_CBFS_SPINLOCK();
 	return CB_SUCCESS;
 }
 
@@ -392,7 +373,6 @@ enum cb_err set_option(const char *name, void *value)
 	namelen = strnlen(name, CMOS_MAX_NAME_LENGTH);
 
 	if (locate_cmos_layout(&rdev) != CB_SUCCESS) {
-		UNLOCK_NVRAM_CBFS_SPINLOCK();
 		return CB_CMOS_LAYOUT_NOT_FOUND;
 	}
 	ct = rdev_mmap_full(&rdev);
@@ -400,7 +380,6 @@ enum cb_err set_option(const char *name, void *value)
 		printk(BIOS_ERR, "RTC: cmos_layout.bin could not be mapped. "
 		       "Options are disabled\n");
 
-		UNLOCK_NVRAM_CBFS_SPINLOCK();
 		return CB_CMOS_LAYOUT_NOT_FOUND;
 	}
 

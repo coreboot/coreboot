@@ -19,9 +19,17 @@
 #include <soc/dramc_pi_api.h>
 #include <soc/dramc_register.h>
 
-#define LP4X_HIGH_FREQ		LP4X_DDR3200
-#define LP4X_MIDDLE_FREQ	LP4X_DDR2400
-#define LP4X_LOW_FREQ		LP4X_DDR1600
+static const u8 freq_shuffle[DRAM_DFS_SHUFFLE_MAX] = {
+	[DRAM_DFS_SHUFFLE_1] = LP4X_DDR3200,
+	[DRAM_DFS_SHUFFLE_2] = LP4X_DDR2400,
+	[DRAM_DFS_SHUFFLE_3] = LP4X_DDR1600,
+};
+
+static const u8 freq_shuffle_emcp[DRAM_DFS_SHUFFLE_MAX] = {
+	[DRAM_DFS_SHUFFLE_1] = LP4X_DDR3600,
+	[DRAM_DFS_SHUFFLE_2] = LP4X_DDR3200,
+	[DRAM_DFS_SHUFFLE_3] = LP4X_DDR1600,
+};
 
 u32 frequency_table[LP4X_DDRFREQ_MAX] = {
 	[LP4X_DDR1600] = 1600,
@@ -349,9 +357,16 @@ static void after_calib(void)
 
 void mt_set_emi(const struct sdram_params *params)
 {
-	u32 current_freq = LP4X_HIGH_FREQ;
+	const u8 *freq_tbl;
+	u8 current_freqsel;
 
-	init_dram(params, current_freq);
-	do_calib(params, current_freq);
+	if (CONFIG(MT8183_DRAM_EMCP))
+		freq_tbl = freq_shuffle_emcp;
+	else
+		freq_tbl = freq_shuffle;
+	current_freqsel = freq_tbl[DRAM_DFS_SHUFFLE_1];
+
+	init_dram(params, current_freqsel);
+	do_calib(params, current_freqsel);
 	after_calib();
 }

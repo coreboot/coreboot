@@ -23,9 +23,7 @@
 #include <trace.h>
 #include <timer.h>
 
-#if (!defined(__PRE_RAM__) && CONFIG(HAVE_ROMSTAGE_CONSOLE_SPINLOCK)) || !CONFIG(HAVE_ROMSTAGE_CONSOLE_SPINLOCK)
 DECLARE_SPIN_LOCK(console_lock)
-#endif
 
 #define TRACK_CONSOLE_TIME (CONFIG(HAVE_MONOTONIC_TIMER) && \
 	(ENV_RAMSTAGE || !CONFIG(CAR_GLOBAL_MIGRATION)))
@@ -95,13 +93,7 @@ int do_vprintk(int msg_level, const char *fmt, va_list args)
 		return 0;
 
 	DISABLE_TRACE;
-#ifdef __PRE_RAM__
-#if CONFIG(HAVE_ROMSTAGE_CONSOLE_SPINLOCK)
-	spin_lock(romstage_console_lock());
-#endif
-#else
 	spin_lock(&console_lock);
-#endif
 
 	console_time_run();
 
@@ -114,13 +106,7 @@ int do_vprintk(int msg_level, const char *fmt, va_list args)
 
 	console_time_stop();
 
-#ifdef __PRE_RAM__
-#if CONFIG(HAVE_ROMSTAGE_CONSOLE_SPINLOCK)
-	spin_unlock(romstage_console_lock());
-#endif
-#else
 	spin_unlock(&console_lock);
-#endif
 	ENABLE_TRACE;
 
 	return i;

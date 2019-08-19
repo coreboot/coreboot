@@ -527,22 +527,6 @@ config RESUME_PATH_SAME_AS_BOOT
 	  same path as a regular boot. e.g. an x86 system runs from the
 	  reset vector at 0xfffffff0 on both resume and warm/cold boot.
 
-config HAVE_ROMSTAGE_CONSOLE_SPINLOCK
-	bool
-	default n
-
-config HAVE_ROMSTAGE_NVRAM_CBFS_SPINLOCK
-	bool
-	default n
-	help
-	  This should be enabled on certain plaforms, such as the AMD
-	  SR565x, that cannot handle concurrent CBFS accesses from
-	  multiple APs during early startup.
-
-config HAVE_ROMSTAGE_MICROCODE_CBFS_SPINLOCK
-	bool
-	default n
-
 config NO_MONOTONIC_TIMER
 	def_bool n
 

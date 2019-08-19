@@ -14,11 +14,6 @@
 #ifndef ARCH_SMP_SPINLOCK_H
 #define ARCH_SMP_SPINLOCK_H
 
-#if !defined(__PRE_RAM__) \
-	|| CONFIG(HAVE_ROMSTAGE_CONSOLE_SPINLOCK)	\
-	|| CONFIG(HAVE_ROMSTAGE_NVRAM_CBFS_SPINLOCK)	\
-	|| CONFIG(HAVE_ROMSTAGE_MICROCODE_CBFS_SPINLOCK)
-
 /*
  * Your basic SMP spinlocks, allowing only a single CPU anywhere
  */
@@ -27,23 +22,14 @@ typedef struct {
 	volatile unsigned int lock;
 } spinlock_t;
 
-#ifdef __PRE_RAM__
-spinlock_t *romstage_console_lock(void);
-void initialize_romstage_console_lock(void);
-spinlock_t *romstage_nvram_cbfs_lock(void);
-void initialize_romstage_nvram_cbfs_lock(void);
-spinlock_t *romstage_microcode_cbfs_lock(void);
-void initialize_romstage_microcode_cbfs_lock(void);
-#endif
-
 #define SPIN_LOCK_UNLOCKED { 1 }
 
-#ifndef __PRE_RAM__
+#define STAGE_HAS_SPINLOCKS !ENV_ROMSTAGE_OR_BEFORE
+
+#if STAGE_HAS_SPINLOCKS
+
 #define DECLARE_SPIN_LOCK(x)	\
 	static spinlock_t x = SPIN_LOCK_UNLOCKED;
-#else
-#define DECLARE_SPIN_LOCK(x)
-#endif
 
 /*
  * Simple spin lock operations.  There are two variants, one clears IRQ's
@@ -93,7 +79,7 @@ static __always_inline void cpu_relax(void)
 	__asm__ __volatile__("rep;nop" : : : "memory");
 }
 
-#else /* !__PRE_RAM__ */
+#else
 
 #define DECLARE_SPIN_LOCK(x)
 #define barrier()		do {} while (0)
@@ -103,6 +89,6 @@ static __always_inline void cpu_relax(void)
 #define spin_unlock(lock)	do {} while (0)
 #define cpu_relax()		do {} while (0)
 
-#endif /* !__PRE_RAM__ */
+#endif
 
 #endif /* ARCH_SMP_SPINLOCK_H */

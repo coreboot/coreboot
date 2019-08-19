@@ -22,8 +22,6 @@
 #include "amd_pci_int_defs.h"
 #include "amd_pci_int_types.h"
 
-#ifndef __PRE_RAM__
-
 const struct pirq_struct * pirq_data_ptr = NULL;
 u32 pirq_data_size = 0;
 const u8 *intr_data_ptr = NULL;
@@ -195,4 +193,3 @@ void write_pci_cfg_irqs(void)
 	}	/* for (dev = all_devices) */
 	printk(BIOS_DEBUG, "PCI_CFG IRQ: Finished writing PCI config space IRQ assignments\n");
 }
-#endif /* __PRE_RAM__ */

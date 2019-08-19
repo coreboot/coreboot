@@ -52,11 +52,7 @@ static struct dram_base_mask_t get_dram_base_mask(u32 nodeid)
 {
 	struct device *dev;
 	struct dram_base_mask_t d;
-#if defined(__PRE_RAM__)
-	dev = PCI_DEV(0, DEV_CDB, 1);
-#else
 	dev = __f1_dev[0];
-#endif	// defined(__PRE_RAM__)
 
 	u32 temp;
 	temp = pci_read_config32(dev, 0x44); //[39:24] at [31:16]

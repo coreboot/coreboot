@@ -16,10 +16,10 @@
 #ifndef _SB800_FAN_H_
 #define _SB800_FAN_H_
 
-#ifndef __PRE_RAM__
+#include <device/device.h>
+
 void init_sb800_IMC_fans(struct device *dev);
 void init_sb800_MANUAL_fans(struct device *dev);
-#endif
 
 /* Fan Register Definitions */
 #define FAN_0_OFFSET				0x00

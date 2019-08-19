@@ -130,9 +130,11 @@ static AGESA_STATUS Fch_Oem_config(UINT32 Func, UINTN FchData, VOID *ConfigPtr)
 
 static AGESA_STATUS board_ReadSpd_from_cbfs(UINT32 Func, UINTN Data, VOID *ConfigPtr)
 {
-	AGESA_STATUS Status = AGESA_UNSUPPORTED;
-#ifdef __PRE_RAM__
 	AGESA_READ_SPD_PARAMS	*info = ConfigPtr;
+
+	if (!ENV_ROMSTAGE)
+		return AGESA_UNSUPPORTED;
+
 	u8 index = get_spd_offset();
 
 	if (info->MemChannelId > 0)
@@ -146,7 +148,5 @@ static AGESA_STATUS board_ReadSpd_from_cbfs(UINT32 Func, UINTN Data, VOID *Confi
 	if (read_ddr3_spd_from_cbfs((u8*)info->Buffer, index) < 0)
 		die("No SPD data\n");
 
-	Status = AGESA_SUCCESS;
-#endif
-	return Status;
+	return AGESA_SUCCESS;
 }

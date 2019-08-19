@@ -169,14 +169,11 @@ static inline int hudson_ide_enable(void)
 	return (CONFIG_HUDSON_SATA_MODE == 0) || (CONFIG_HUDSON_SATA_MODE == 3);
 }
 
-#ifndef __SMM__
-
 void pm_write8(u8 reg, u8 value);
 u8 pm_read8(u8 reg);
 void pm_write16(u8 reg, u16 value);
 u16 pm_read16(u16 reg);
 
-#ifdef __PRE_RAM__
 void hudson_lpc_port80(void);
 void hudson_lpc_decode(void);
 void hudson_pci_port80(void);
@@ -190,15 +187,9 @@ void lpc_wideio_16_window(uint16_t base);
 void hudson_tpm_decode_spi(void);
 int s3_save_nvram_early(u32 dword, int size, int  nvram_pos);
 int s3_load_nvram_early(int size, u32 *old_dword, int nvram_pos);
-#if CONFIG(HUDSON_UART)
 void configure_hudson_uart(void);
-#endif
 
-#else
 void hudson_enable(struct device *dev);
 void s3_resume_init_data(void *FchParams);
-
-#endif /* __PRE_RAM__ */
-#endif /* __SMM__ */
 
 #endif /* HUDSON_H */

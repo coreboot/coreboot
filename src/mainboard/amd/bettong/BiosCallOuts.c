@@ -117,9 +117,11 @@ AGESA_STATUS Fch_Oem_config(UINT32 Func, UINTN FchData, VOID *ConfigPtr)
 
 static AGESA_STATUS board_ReadSpd(UINT32 Func, UINTN Data, VOID *ConfigPtr)
 {
-#ifdef __PRE_RAM__
-	int spdAddress;
 	AGESA_READ_SPD_PARAMS *info = ConfigPtr;
+	int spdAddress;
+
+	if (!ENV_ROMSTAGE)
+		return AGESA_UNSUPPORTED;
 
 	DEVTREE_CONST struct device *dev = pcidev_on_root(0x18, 2);
 
@@ -154,6 +156,6 @@ static AGESA_STATUS board_ReadSpd(UINT32 Func, UINTN Data, VOID *ConfigPtr)
 	int err = hudson_readSpd(spdAddress, (void *) info->Buffer, 128);
 	if (err)
 		return AGESA_ERROR;
-#endif
+
 	return AGESA_SUCCESS;
 }

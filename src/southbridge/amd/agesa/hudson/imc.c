@@ -54,7 +54,6 @@ void imc_reg_init(void)
 #endif
 }
 
-#ifndef __PRE_RAM__
 void enable_imc_thermal_zone(void)
 {
 	AMD_CONFIG_PARAMS StdHeader;
@@ -83,4 +82,3 @@ void enable_imc_thermal_zone(void)
 	WriteECmsg(MSG_SYS_TO_IMC, AccessWidth8, &FunNum, &StdHeader);     // function number
 	WaitForEcLDN9MailboxCmdAck(&StdHeader);
 }
-#endif

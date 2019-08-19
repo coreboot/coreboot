@@ -243,15 +243,13 @@ void sb900_cimx_config(AMDSBCFG *sb_config)
 	sb_config->PciClks								= SB_PCI_CLOCK_RESERVED;
 	sb_config->hwm.hwmEnable						= 0x0;
 
-#ifndef __PRE_RAM__
 	/* ramstage cimx config here */
-	if (!sb_config->StdHeader.CALLBACK.CalloutPtr) {
+	if (ENV_RAMSTAGE && !sb_config->StdHeader.CALLBACK.CalloutPtr) {
 		sb_config->StdHeader.CALLBACK.CalloutPtr = sb900_callout_entry;
 	}
 
 	//sb_config->
-#endif //!__PRE_RAM__
-    printk(BIOS_INFO, "SB900 - Cfg.c - sb900_cimx_config - End.\n");
+	printk(BIOS_INFO, "SB900 - Cfg.c - sb900_cimx_config - End.\n");
 }
 
 void SbPowerOnInit_Config(AMDSBCFG *sb_config)

@@ -23,8 +23,6 @@
 #define PCI_INTR_INDEX	0xc00
 #define PCI_INTR_DATA	0xc01
 
-#ifndef __PRE_RAM__
-
 struct pirq_struct {
 	u8 devfn;
 	u8 PIN[4];	/* PINA/B/C/D are index 0/1/2/3 */
@@ -39,6 +37,5 @@ u8 read_pci_int_idx(u8 index, int mode);
 void write_pci_int_idx(u8 index, int mode, u8 data);
 void write_pci_cfg_irqs(void);
 void write_pci_int_table (void);
-#endif /* __PRE_RAM */
 
 #endif /* AMD_PCI_UTIL_H */

@@ -2,7 +2,7 @@
 #define AGESA_ENTRY_CFG_H
 
 
-#if defined(__PRE_RAM__)
+#if ENV_ROMSTAGE
 
 #define AGESA_ENTRY_INIT_RESET		TRUE
 #define AGESA_ENTRY_INIT_EARLY		TRUE

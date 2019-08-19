@@ -191,10 +191,11 @@ void board_FCH_InitEnv(struct sysinfo *cb_NA, FCH_DATA_BLOCK *FchParams_env)
 
 static AGESA_STATUS board_ReadSpd_from_cbfs(UINT32 Func, UINTN Data, VOID *ConfigPtr)
 {
-	AGESA_STATUS Status = AGESA_UNSUPPORTED;
-#ifdef __PRE_RAM__
 	AGESA_READ_SPD_PARAMS *info = ConfigPtr;
 	u8 index;
+
+	if (!ENV_ROMSTAGE)
+		return AGESA_UNSUPPORTED;
 
 	if (CONFIG(BAP_E20_DDR3_1066))
 		index = 1;
@@ -212,7 +213,5 @@ static AGESA_STATUS board_ReadSpd_from_cbfs(UINT32 Func, UINTN Data, VOID *Confi
 	if (read_ddr3_spd_from_cbfs((u8 *)info->Buffer, index) < 0)
 		die("No SPD data\n");
 
-	Status = AGESA_SUCCESS;
-#endif
-	return Status;
+	return AGESA_SUCCESS;
 }

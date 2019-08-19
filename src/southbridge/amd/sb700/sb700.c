@@ -22,6 +22,7 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include "sb700.h"
+#include "chip.h"
 
 static struct device *find_sm_dev(struct device *dev, u32 devfn)
 {

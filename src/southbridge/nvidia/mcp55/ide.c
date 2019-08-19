@@ -22,6 +22,8 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
+
+#include "chip.h"
 #include "mcp55.h"
 
 static void ide_init(struct device *dev)

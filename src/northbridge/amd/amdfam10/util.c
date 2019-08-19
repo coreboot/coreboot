@@ -21,11 +21,10 @@
  * It can be called after RAM is set up by including amdfam10.h and enabling the
  * compilation of this file in src/northbridge/amd/amdfam10/Makefile.inc.
  */
-#ifndef __PRE_RAM__
 #include <console/console.h>
 #include <device/pci.h>
 #include <device/pci_ops.h>
-#endif
+
 #include "amdfam10.h"
 
 /* Function 1 */

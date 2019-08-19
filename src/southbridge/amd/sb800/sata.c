@@ -22,6 +22,7 @@
 #include <arch/io.h>
 #include <device/mmio.h>
 #include "sb800.h"
+#include "chip.h"
 
 static int sata_drive_detect(int portnum, u16 iobar)
 {

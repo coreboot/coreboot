@@ -23,6 +23,7 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 
+#include "chip.h"
 #include "mcp55.h"
 
 static void sata_init(struct device *dev)

@@ -23,6 +23,7 @@
 #include <device/pci_ops.h>
 #include "sb800.h"
 #include "smbus.h"
+#include "chip.h"
 
 static struct device *find_sm_dev(struct device *dev, u32 devfn)
 {

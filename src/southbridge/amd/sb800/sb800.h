@@ -17,7 +17,8 @@
 #ifndef SB800_H
 #define SB800_H
 
-#include "chip.h"
+#include <types.h>
+#include <device/device.h>
 
 /* Power management index/data registers */
 #define BIOSRAM_INDEX	0xcd4
@@ -42,15 +43,11 @@ u8 pm_ioread(u8 reg);
 void pm2_iowrite(u8 reg, u8 value);
 u8 pm2_ioread(u8 reg);
 
-#ifndef __SIMPLE_DEVICE__
 void set_sm_enable_bits(struct device *sm_dev, u32 reg_pos, u32 mask, u32 val);
-#endif
 
 #define REV_SB800_A11	0x11
 #define REV_SB800_A12	0x12
 
-
-#ifdef __PRE_RAM__
 void sb800_lpc_port80(void);
 void sb800_pci_port80(void);
 void sb800_clk_output_48Mhz(void);
@@ -58,8 +55,6 @@ void sb800_clk_output_48Mhz(void);
 int s3_save_nvram_early(u32 dword, int size, int  nvram_pos);
 int s3_load_nvram_early(int size, u32 *old_dword, int nvram_pos);
 
-#else
 void sb800_enable(struct device *dev);
-#endif
 
 #endif /* SB800_H */

@@ -68,7 +68,7 @@ uint64_t get_cc6_memory_size()
 	if (is_fam15h()) {
 		enable_cc6 = 0;
 
-#ifdef __PRE_RAM__
+#ifdef __SIMPLE_DEVICE__
 		if (pci_read_config32(PCI_DEV(0, 0x18, 2), 0x118) & (0x1 << 18))
 			enable_cc6 = 1;
 #else

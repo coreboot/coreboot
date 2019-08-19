@@ -49,7 +49,9 @@ static int smbus_wait_until_done(unsigned smbus_io_base)
 	return -3;
 }
 
-#ifndef __PRE_RAM__
+
+/* Platform has severe issues placing non-inlined functions in headers. */
+#if ENV_RAMSTAGE
 static int do_smbus_recv_byte(unsigned smbus_io_base, unsigned device)
 {
 	unsigned char global_status_register, byte;
@@ -114,7 +116,7 @@ static int do_smbus_send_byte(unsigned smbus_io_base, unsigned device,
 
 	return 0;
 }
-#endif
+#endif /* ENV_RAMSTAGE */
 
 static int do_smbus_read_byte(unsigned smbus_io_base, unsigned device,
 			      unsigned address)

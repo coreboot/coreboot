@@ -24,13 +24,17 @@
 #define MCP55_DEVN_BASE CONFIG_HT_CHAIN_UNITID_BASE
 #endif
 
-#ifndef __PRE_RAM__
-#include "chip.h"
+#ifndef __ROMCC__
+#include <device/device.h>
 void mcp55_enable(struct device *dev);
 extern struct pci_operations mcp55_pci_ops;
-#else
+#endif
+
 void enable_fid_change_on_sb(unsigned sbbusn, unsigned sbdn);
 void enable_smbus(void);
+
+/* Concflict declarations with <device/smbus.h>. */
+#if !ENV_RAMSTAGE
 int smbus_recv_byte(unsigned device);
 int smbus_send_byte(unsigned device, unsigned char val);
 int smbus_read_byte(unsigned device, unsigned address);
@@ -40,6 +44,6 @@ int smbusx_send_byte(unsigned smb_index, unsigned device, unsigned char val);
 int smbusx_read_byte(unsigned smb_index, unsigned device, unsigned address);
 int smbusx_write_byte(unsigned smb_index, unsigned device, unsigned address,
 		unsigned char val);
-#endif
+#endif /* !ENV_RAMSTAGE */
 
 #endif

@@ -922,12 +922,10 @@ that are corresponding to 0x01, 0x02, 0x03, 0x05, 0x06, 0x07
 
 #include "nums.h"
 
-#ifdef __PRE_RAM__
 #if NODE_NUMS == 64
 	 #define NODE_PCI(x, fn) ((x < 32)?(PCI_DEV(CONFIG_CBB,(CONFIG_CDB+x),fn)):(PCI_DEV((CONFIG_CBB-1),(CONFIG_CDB+x-32),fn)))
 #else
 	 #define NODE_PCI(x, fn) PCI_DEV(CONFIG_CBB,(CONFIG_CDB+x),fn)
-#endif
 #endif
 
 /* Include wrapper for MCT (works for DDR2 or DDR3) */
@@ -989,11 +987,8 @@ struct sys_info {
 	struct DCTStatStruc DCTstatA[NODE_NUMS];
 } __packed;
 
-#ifndef __PRE_RAM__
 struct device *get_node_pci(u32 nodeid, u32 fn);
-#endif
 
-#ifdef __PRE_RAM__
 void showallroutes(int level, pci_devfn_t dev);
 
 void setup_resource_map_offset(const u32 *register_values, u32 max, u32
@@ -1016,8 +1011,6 @@ void distinguish_cpu_resets(u8 nodeid);
 u32 get_sblk(void);
 u8 get_sbbusn(u8 sblk);
 void set_bios_reset(void);
-
-#endif
 
 #include "northbridge/amd/amdht/porting.h"
 BOOL AMD_CB_ManualBUIDSwapList(u8 Node, u8 Link, const u8 **List);

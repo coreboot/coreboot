@@ -21,7 +21,7 @@
 #include <device/mmio.h>
 #include <delay.h>
 #include "amd8111.h"
-
+#include "chip.h"
 
 #define CMD3		0x54
 

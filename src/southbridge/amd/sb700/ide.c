@@ -22,6 +22,7 @@
 #include <types.h>
 
 #include "sb700.h"
+#include "chip.h"
 
 static void ide_init(struct device *dev)
 {

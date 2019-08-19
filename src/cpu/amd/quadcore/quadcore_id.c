@@ -17,11 +17,9 @@
 
 
 #include <arch/cpu.h>
+#include <cpu/amd/msr.h>
 #include <cpu/amd/multicore.h>
 #include <device/pci_ops.h>
-#ifdef __PRE_RAM__
-#include <cpu/amd/msr.h>
-#endif
 
 //called by bus_cpu_scan too
 u32 read_nb_cfg_54(void)
@@ -48,7 +46,7 @@ struct node_core_id get_node_core_id(u32 nb_cfg_54)
 	uint32_t family;
 	uint32_t model;
 
-#ifdef __PRE_RAM__
+#ifdef __SIMPLE_DEVICE__
 	f3xe8 = pci_read_config32(NODE_PCI(0, 3), 0xe8);
 #else
 	f3xe8 = pci_read_config32(get_node_pci(0, 3), 0xe8);
@@ -115,7 +113,7 @@ struct node_core_id get_node_core_id(u32 nb_cfg_54)
 		uint32_t f5x84;
 		uint8_t core_count;
 
-#ifdef __PRE_RAM__
+#ifdef __SIMPLE_DEVICE__
 		f5x84 = pci_read_config32(NODE_PCI(0, 5), 0x84);
 #else
 		f5x84 = pci_read_config32(get_node_pci(0, 5), 0x84);

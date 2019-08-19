@@ -25,6 +25,8 @@
 #include <device/pci_ops.h>
 #include <device/mmio.h>
 #include <delay.h>
+
+#include "chip.h"
 #include "mcp55.h"
 
 static int phy_read(u8 *base, unsigned phy_addr, unsigned phy_reg)

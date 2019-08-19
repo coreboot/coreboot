@@ -14,15 +14,14 @@
  * GNU General Public License for more details.
  */
 
-#include <console/console.h>
-
 #include <arch/cpu.h>
+#include <console/console.h>
+#include <device/pci_ops.h>
+#include <device/pci_def.h>
 #include "raminit.h"
 #include <northbridge/amd/amdmct/amddefs.h>
 
-#ifndef __PRE_RAM__
-#include <include/device/pci_ops.h>
-#include <include/device/pci_def.h>
+#ifndef __SIMPLE_DEVICE__
 u32 Get_NB32(u32 dev, u32 reg)
 {
 	return pci_read_config32(pcidev_path_on_root(PCI_DEV2DEVFN(dev)), reg);

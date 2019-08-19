@@ -17,7 +17,8 @@
 #ifndef SB700_H
 #define SB700_H
 
-#include "chip.h"
+#include <types.h>
+#include <device/device.h>
 
 /* Power management index/data registers */
 #define BIOSRAM_INDEX	0xcd4
@@ -37,14 +38,12 @@
 #define ACPI_CPU_CONTROL	(SB700_ACPI_IO_BASE + 0x08) /* 6 bytes */
 #define ACPI_CPU_P_LVL2		(ACPI_CPU_CONTROL + 0x4)    /* 1 byte */
 
-extern void pm_iowrite(u8 reg, u8 value);
-extern u8 pm_ioread(u8 reg);
-extern void pm2_iowrite(u8 reg, u8 value);
-extern u8 pm2_ioread(u8 reg);
-#ifndef __SIMPLE_DEVICE__
-extern void set_sm_enable_bits(struct device *sm_dev, u32 reg_pos, u32 mask,
-			       u32 val);
-#endif
+void pm_iowrite(u8 reg, u8 value);
+u8 pm_ioread(u8 reg);
+void pm2_iowrite(u8 reg, u8 value);
+u8 pm2_ioread(u8 reg);
+
+void set_sm_enable_bits(struct device *sm_dev, u32 reg_pos, u32 mask, u32 val);
 
 #define REV_SB700_A11	0x11
 #define REV_SB700_A12	0x12
@@ -58,11 +57,7 @@ extern void set_sm_enable_bits(struct device *sm_dev, u32 reg_pos, u32 mask,
  * The differentiate is 0x28, isn't it? */
 #define get_sb700_revision(sm_dev)	(pci_read_config8((sm_dev), 0x08) - 0x28)
 
-#ifndef __SIMPLE_DEVICE__
-void sb7xx_51xx_enable(struct device *dev);
-#endif
 
-#ifdef __PRE_RAM__
 void sb7xx_51xx_lpc_port80(void);
 void sb7xx_51xx_pci_port80(void);
 void sb7xx_51xx_lpc_init(void);
@@ -71,14 +66,12 @@ void sb7xx_51xx_disable_wideio(u8 wio_index);
 void sb7xx_51xx_early_setup(void);
 void sb7xx_51xx_before_pci_init(void);
 uint16_t sb7xx_51xx_decode_last_reset(void);
-#else
-#include <device/pci.h>
-#include <device/pci_ops.h>
+
+
 /* allow override in mainboard.c */
 void sb7xx_51xx_setup_sata_phys(struct device *dev);
 void sb7xx_51xx_setup_sata_port_indication(void *sata_bar5);
-
-#endif
+void sb7xx_51xx_enable(struct device *dev);
 
 void set_lpc_sticky_ctl(bool enable);
 
@@ -86,4 +79,5 @@ int s3_save_nvram_early(u32 dword, int size, int  nvram_pos);
 int s3_load_nvram_early(int size, u32 *old_dword, int nvram_pos);
 
 void enable_fid_change_on_sb(u32 sbbusn, u32 sbdn);
+
 #endif /* SB700_H */

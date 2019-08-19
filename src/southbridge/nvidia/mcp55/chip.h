@@ -18,8 +18,6 @@
 #ifndef SOUTHBRIDGE_NVIDIA_MCP55_CHIP_H
 #define SOUTHBRIDGE_NVIDIA_MCP55_CHIP_H
 
-#include <device/device.h>
-
 struct southbridge_nvidia_mcp55_config
 {
 	unsigned int ide0_enable : 1;

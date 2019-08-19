@@ -20,11 +20,21 @@
 #include <soc/dramc_register.h>
 #include <soc/dramc_pi_api.h>
 
+static u32 impedance[2][4];
+
+u8 get_freq_fsq(u8 freq)
+{
+	if (freq == LP4X_DDR1600 || freq == LP4X_DDR2400)
+		return FSP_0;
+	else
+		return FSP_1;
+}
+
 static void dramc_sw_imp_cal_vref_sel(u8 term_option, u8 impcal_stage)
 {
 	u8 vref_sel = 0;
 
-	if (term_option == 1)
+	if (term_option == ODT_ON)
 		vref_sel = IMP_LP4X_TERM_VREF_SEL;
 	else {
 		switch (impcal_stage) {
@@ -43,14 +53,114 @@ static void dramc_sw_imp_cal_vref_sel(u8 term_option, u8 impcal_stage)
 	clrsetbits_le32(&ch[0].phy.shu[0].ca_cmd[11], 0x3f << 8, vref_sel << 8);
 }
 
-void dramc_sw_impedance(const struct sdram_params *params)
+void dramc_sw_impedance_cal(const struct sdram_params *params, u8 term)
 {
-	u8 term = 0, ca_term = ODT_OFF, dq_term = ODT_ON;
+	u32 broadcast_bak, impcal_bak, imp_cal_result;
+	u32 DRVP_result = 0xff, ODTN_result = 0xff, DRVN_result = 0x9;
+
+	broadcast_bak = dramc_get_broadcast();
+	dramc_set_broadcast(DRAMC_BROADCAST_OFF);
+
+	clrbits_le32(&ch[0].phy.misc_spm_ctrl1, 0xf << 0);
+	write32(&ch[0].phy.misc_spm_ctrl2, 0x0);
+	write32(&ch[0].phy.misc_spm_ctrl0, 0x0);
+	clrbits_le32(&ch[0].ao.impcal, 0x1 << 31);
+
+	impcal_bak = read32(&ch[0].ao.impcal);
+	dramc_sw_imp_cal_vref_sel(term, IMPCAL_STAGE_DRVP);
+	clrbits_le32(&ch[0].phy.misc_imp_ctrl1, 0x1 << 6);
+	clrsetbits_le32(&ch[0].ao.impcal, 0x1 << 21, 0x3 << 24);
+	clrsetbits_le32(&ch[0].phy.misc_imp_ctrl0, 0x7 << 4, 0x3 << 4);
+	udelay(1);
+
+	dramc_show("K DRVP\n");
+	setbits_le32(&ch[0].ao.impcal, 0x1 << 23);
+	setbits_le32(&ch[0].ao.impcal, 0x1 << 22);
+	clrbits_le32(&ch[0].ao.impcal, 0x1 << 21);
+	clrbits_le32(&ch[0].ao.shu[0].impcal1, 0x1f << 4 | 0x1f << 11);
+	clrsetbits_le32(&ch[0].phy.shu[0].ca_cmd[11], 0xff << 0, 0x3);
+
+	for (u8 impx_drv = 0; impx_drv < 32; impx_drv++) {
+		impx_drv = (impx_drv == 16) ? 29 : impx_drv;
+
+		clrsetbits_le32(&ch[0].ao.shu[0].impcal1,
+				0x1f << 4, impx_drv << 4);
+		udelay(1);
+		imp_cal_result = (read32(&ch[0].phy_nao.misc_phy_rgs_cmd) >>
+				  24) & 0x1;
+		dramc_show("1. OCD DRVP=%d CALOUT=%d\n",
+			   impx_drv, imp_cal_result);
+
+		if (imp_cal_result == 1 && DRVP_result == 0xff) {
+			DRVP_result = impx_drv;
+			dramc_show("1. OCD DRVP calibration OK! DRVP=%d\n",
+				   DRVP_result);
+			break;
+		}
+	}
+
+	dramc_show("K ODTN\n");
+	dramc_sw_imp_cal_vref_sel(term, IMPCAL_STAGE_DRVN);
+	clrbits_le32(&ch[0].ao.impcal, 0x1 << 22);
+	if (term == ODT_ON)
+		setbits_le32(&ch[0].ao.impcal, 0x1 << 21);
+	clrsetbits_le32(&ch[0].ao.shu[0].impcal1, 0x1f << 4 | 0x1f << 11,
+		DRVP_result << 4 | 0x1f << 11);
+	clrsetbits_le32(&ch[0].phy.shu[0].ca_cmd[11], 0xff << 0, 0x3);
+
+	for (u8 impx_drv = 0; impx_drv < 32; impx_drv++) {
+		impx_drv = (impx_drv == 16) ? 29 : impx_drv;
+
+		clrsetbits_le32(&ch[0].ao.shu[0].impcal1,
+				0x1f << 11, impx_drv << 11);
+		udelay(1);
+		imp_cal_result = (read32(&ch[0].phy_nao.misc_phy_rgs_cmd) >>
+				  24) & 0x1;
+		dramc_show("3. OCD ODTN=%d CALOUT=%d\n",
+			   impx_drv, imp_cal_result);
+
+		if (imp_cal_result == 0 && ODTN_result == 0xff) {
+			ODTN_result = impx_drv;
+			dramc_show("3. OCD ODTN calibration OK! ODTN=%d\n",
+				   ODTN_result);
+			break;
+		}
+	}
+
+	write32(&ch[0].ao.impcal, impcal_bak);
+
+	dramc_show("term:%d, DRVP=%d, DRVN=%d, ODTN=%d\n",
+		   term, DRVP_result, DRVN_result, ODTN_result);
+	if (term == ODT_OFF) {
+		impedance[term][0] = DRVP_result;
+		impedance[term][1] = ODTN_result;
+		impedance[term][2] = 0;
+		impedance[term][3] = 15;
+	} else {
+		impedance[term][0] = (DRVP_result <= 3) ?
+			(DRVP_result * 3) : DRVP_result;
+		impedance[term][1] = (DRVN_result <= 3) ?
+			(DRVN_result * 3) : DRVN_result;
+		impedance[term][2] = 0;
+		impedance[term][3] =  (ODTN_result <= 3) ?
+			(ODTN_result * 3) : ODTN_result;
+	}
+	dramc_sw_imp_cal_vref_sel(term, IMPCAL_STAGE_TRACKING);
+
+	dramc_set_broadcast(broadcast_bak);
+}
+
+void dramc_sw_impedance_save_reg(u8 freq_group)
+{
+	u8 ca_term = ODT_OFF, dq_term = ODT_ON;
 	u32 sw_impedance[2][4] = {0};
 
-	for (term = 0; term < 2; term++)
+	if (get_freq_fsq(freq_group) == FSP_0)
+		dq_term = ODT_OFF;
+
+	for (u8 term = 0; term < 2; term++)
 		for (u8 i = 0; i < 4; i++)
-			sw_impedance[term][i] = params->impedance[term][i];
+			sw_impedance[term][i] = impedance[term][i];
 
 	sw_impedance[ODT_OFF][2] = sw_impedance[ODT_ON][2];
 	sw_impedance[ODT_OFF][3] = sw_impedance[ODT_ON][3];

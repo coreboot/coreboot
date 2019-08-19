@@ -33,6 +33,14 @@ struct sdram_params {
 	u16 delay_cell_unit;
 };
 
+enum {
+	LP4X_DDR1600,
+	LP4X_DDR2400,
+	LP4X_DDR3200,
+	LP4X_DDR3600,
+	LP4X_DDRFREQ_MAX,
+};
+
 extern const u8 phy_mapping[CHANNEL_MAX][16];
 
 int complex_mem_test(u8 *start, unsigned int len);

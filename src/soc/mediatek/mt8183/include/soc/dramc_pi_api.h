@@ -85,14 +85,17 @@ enum {
 };
 
 enum {
-	SAVE_VALUE,
-	RESTORE_VALUE
+	DLL_MASTER = 0,
+	DLL_SLAVE,
 };
 
 struct reg_value {
 	u32 *addr;
 	u32 value;
 };
+
+#define _SELPH_DQS_BITS(l, h) ((l << 0) | (l << 4) | (l << 8) | (l << 12) | \
+			       (h << 16) | (h << 20) | (h << 24) | (h << 28))
 
 enum {
 	DQ_DIV_SHIFT = 3,
@@ -103,30 +106,30 @@ enum {
 	DQS_DELAY_0P5T = 4,
 	DQS_DELAY = ((DQS_DELAY_2T << DQ_DIV_SHIFT) + DQS_DELAY_0P5T) << 5,
 
-	DQS_OEN_DELAY_2T = 3,
-	DQS_OEN_DELAY_0P5T = 1,
-
-	SELPH_DQS0 = (DQS_DELAY_2T << 0) | (DQS_DELAY_2T << 4) |
-		     (DQS_DELAY_2T << 8) | (DQS_DELAY_2T << 12) |
-		     (DQS_OEN_DELAY_2T << 16) | (DQS_OEN_DELAY_2T << 20) |
-		     (DQS_OEN_DELAY_2T << 24) | (DQS_OEN_DELAY_2T << 28),
-
-	SELPH_DQS1 = (DQS_DELAY_0P5T << 0) | (DQS_DELAY_0P5T << 4) |
-		     (DQS_DELAY_0P5T << 8) | (DQS_DELAY_0P5T << 12) |
-		     (DQS_OEN_DELAY_0P5T << 16) | (DQS_OEN_DELAY_0P5T << 20) |
-		     (DQS_OEN_DELAY_0P5T << 24) | (DQS_OEN_DELAY_0P5T << 28)
+	SELPH_DQS0 = _SELPH_DQS_BITS(0x3, 0x3),
+	SELPH_DQS1 = _SELPH_DQS_BITS(0x4, 0x1),
+	SELPH_DQS0_1600 = _SELPH_DQS_BITS(0x2, 0x1),
+	SELPH_DQS1_1600 = _SELPH_DQS_BITS(0x1, 0x6),
+	SELPH_DQS0_2400 = _SELPH_DQS_BITS(0x3, 0x2),
+	SELPH_DQS1_2400 = _SELPH_DQS_BITS(0x1, 0x6),
+	SELPH_DQS0_3600 = _SELPH_DQS_BITS(0x4, 0x3),
+	SELPH_DQS1_3600 = _SELPH_DQS_BITS(0x1, 0x6),
 };
 
 void dramc_get_rank_size(u64 *dram_rank_size);
 void dramc_runtime_config(void);
 void dramc_set_broadcast(u32 onoff);
 u32 dramc_get_broadcast(void);
-void dramc_init(void);
-void dramc_sw_impedance(const struct sdram_params *params);
+u8 get_freq_fsq(u8 freq_group);
+void dramc_init(const struct sdram_params *params, u8 freq_group);
+void dramc_sw_impedance_save_reg(u8 freq_group);
+void dramc_sw_impedance_cal(const struct sdram_params *params, u8 term_option);
 void dramc_apply_config_before_calibration(void);
 void dramc_apply_config_after_calibration(void);
 void dramc_calibrate_all_channels(const struct sdram_params *params);
 void dramc_hw_gating_onoff(u8 chn, bool onoff);
 void dramc_enable_phy_dcm(bool bEn);
+void dramc_mode_reg_write(u8 chn, u8 mr_idx, u8 value);
+void dramc_cke_fix_onoff(u8 chn, bool fix_on, bool fix_off);
 
 #endif /* _DRAMC_PI_API_MT8183_H */

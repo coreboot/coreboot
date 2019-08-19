@@ -13,1086 +13,1710 @@
  * GNU General Public License for more details.
  */
 
+#include <console/console.h>
 #include <device/mmio.h>
 #include <delay.h>
 #include <soc/emi.h>
 #include <soc/dramc_pi_api.h>
 #include <soc/dramc_register.h>
 #include <soc/infracfg.h>
+#include <string.h>
+#include <timer.h>
 
-struct reg_init_value {
-	u32 *addr;
-	u32 value;
+enum {
+	CKE_FIXOFF = 0,
+	CKE_FIXON,
+	CKE_DYNAMIC
 };
 
-static struct reg_init_value dramc_init_sequence[] = {
-	{&mt8183_infracfg->dramc_wbr, 0x00000000},
-	{&ch[0].ao.refctrl0, 0x20712000},
-	{&ch[1].ao.refctrl0, 0x20712000},
-	{&ch[0].ao.ckectrl, 0x00100480},
-	{&ch[1].ao.ckectrl, 0x00100480},
-	{&ch[0].phy.ckmux_sel, 0x00000003},
-	{&ch[1].phy.ckmux_sel, 0x00000003},
-	{&mt8183_infracfg->dramc_wbr, 0x0000001f},
-	{&ch[0].phy.misc_cg_ctrl0, 0x00000101},
-	{&ch[0].phy.misc_ctrl0, 0x38010000},
-	{&ch[0].phy.misc_spm_ctrl1, 0x00000000},
-	{&ch[0].phy.misc_spm_ctrl2, 0x00000000},
-	{&ch[0].phy.misc_spm_ctrl0, 0x00000000},
-	{&ch[0].phy.misc_cg_ctrl2, 0x006003bf},
-	{&ch[0].phy.misc_cg_ctrl4, 0x333f3f00},
-	{&ch[0].phy.shu[0].pll[1], 0x0000001f},
-	{&ch[0].phy.shu[0].b[0].dq[7], 0x00000010},
-	{&ch[0].phy.shu[0].b[1].dq[7], 0x00000000},
-	{&ch[0].phy.shu[0].pll[4], 0xe57800ff},
-	{&ch[0].phy.shu[0].pll[6], 0xe57800ff},
-	{&ch[0].phy.shu[0].pll[14], 0x00000000},
-	{&ch[0].phy.shu[0].pll20, 0x00000000},
-	{&ch[0].phy.ca_cmd[2], 0x00000000},
-	{&ch[0].phy.b[0].dq[2], 0x00000000},
-	{&ch[0].phy.b[1].dq[2], 0x00000000},
-	{&ch[0].phy.b[0].dq[9], 0x10000000},
-	{&ch[0].phy.b[1].dq[9], 0x10000000},
-	{&ch[0].phy.ca_cmd[10], 0x00000000},
-	{&ch[0].phy.b0_rxdvs[0], 0x10000022},
-	{&ch[0].phy.b1_rxdvs[0], 0x10000022},
-	{&ch[0].phy.b0_rxdvs[0], 0x10000222},
-	{&ch[0].phy.b1_rxdvs[0], 0x10000222},
-	{&ch[0].phy.r[0].b[0].rxdvs[2], 0x20000000},
-	{&ch[0].phy.r[1].b[0].rxdvs[2], 0x20000000},
-	{&ch[0].phy.shu[0].b[0].dq[5], 0x0030000e},
-	{&ch[0].phy.r[0].b[0].rxdvs[1], 0x00020002},
-	{&ch[0].phy.r[0].b[0].rxdvs[2], 0xb0800000},
-	{&ch[0].phy.r[1].b[0].rxdvs[1], 0x00020002},
-	{&ch[0].phy.r[1].b[0].rxdvs[2], 0xb0800000},
-	{&ch[0].phy.r[0].b[1].rxdvs[2], 0x20000000},
-	{&ch[0].phy.r[1].b[1].rxdvs[2], 0x20000000},
-	{&ch[0].phy.shu[0].b[1].dq[5], 0x0030000e},
-	{&ch[0].phy.r[0].b[1].rxdvs[1], 0x00020002},
-	{&ch[0].phy.r[0].b[1].rxdvs[2], 0xb0800000},
-	{&ch[0].phy.r[1].b[1].rxdvs[1], 0x00020002},
-	{&ch[0].phy.r[1].b[1].rxdvs[2], 0xb0800000},
-	{&ch[0].phy.b0_rxdvs[0], 0x00000222},
-	{&ch[0].phy.b1_rxdvs[0], 0x00000222},
-	{&ch[0].phy.b[0].dq[9], 0x10000001},
-	{&ch[0].phy.shu[0].rk[0].b[0].dq[7], 0x001f1f00},
-	{&ch[0].phy.shu[0].rk[1].b[0].dq[7], 0x001f1f00},
-	{&ch[0].phy.b[0].dq[4], 0x00001010},
-	{&ch[0].phy.b[0].dq[5], 0x00110e10},
-	{&ch[0].phy.b[0].dq[6], 0x010310c0},
-	{&ch[0].phy.b[0].dq[5], 0x02110e00},
-	{&ch[0].phy.b[1].dq[9], 0x10000001},
-	{&ch[0].phy.shu[0].rk[0].b[1].dq[7], 0x001f1f00},
-	{&ch[0].phy.shu[0].rk[1].b[1].dq[7], 0x001f1f00},
-	{&ch[0].phy.b[1].dq[4], 0x00001010},
-	{&ch[0].phy.b[1].dq[5], 0x00110e10},
-	{&ch[0].phy.b[1].dq[6], 0x010310c0},
-	{&ch[0].phy.b[1].dq[5], 0x02110e00},
-	{&ch[0].phy.ca_cmd[3], 0x0000008c},
-	{&ch[0].phy.ca_cmd[6], 0x00020000},
-	{&ch[0].phy.pll3, 0x00000011},
-	{&ch[0].phy.b[0].dq[3], 0x00000008},
-	{&ch[0].phy.b[1].dq[3], 0x00000008},
-	{&ch[0].phy.shu[0].pll[8], 0x00040000},
-	{&ch[0].phy.shu[0].pll[9], 0x00000000},
-	{&ch[0].phy.shu[0].pll[11], 0x00000000},
-	{&ch[0].phy.shu[0].pll[10], 0x00040000},
-	{&ch[0].phy.pll4, 0x000c0000},
-	{&ch[0].phy.shu[0].pll[0], 0x00000003},
-	{&ch[0].phy.ca_dll_fine_tune[1], 0x00200000},
-	{&ch[0].phy.b[0].dq[3], 0x0000040e},
-	{&ch[0].phy.b[1].dq[3], 0x0000040e},
-	{&mt8183_infracfg->dramc_wbr, 0x00000000},
-	{&ch[0].phy.shu[0].ca_dll[0], 0x00666009},
-	{&ch[1].phy.shu[0].ca_dll[0], 0x00666009},
-	{&mt8183_infracfg->dramc_wbr, 0x0000001f},
-	{&ch[0].phy.shu[0].b[0].dll[0], 0xc0778608},
-	{&ch[0].phy.shu[0].b[1].dll[0], 0xc0778608},
-	{&ch[0].phy.shu[0].ca_cmd[5], 0x00000000},
-	{&ch[0].phy.shu[0].ca_cmd[0], 0x00104010},
-	{&mt8183_infracfg->dramc_wbr, 0x00000000},
-	{&ch[0].phy.shu[0].ca_cmd[6], 0x000000c0},
-	{&ch[1].phy.shu[0].ca_cmd[6], 0x00000040},
-	{&mt8183_infracfg->dramc_wbr, 0x0000001f},
-	{&ch[0].phy.shu[0].b[0].dq[6], 0x00000040},
-	{&ch[0].phy.shu[0].b[1].dq[6], 0x00000040},
-	{&mt8183_infracfg->dramc_wbr, 0x00000000},
-	{&ch[0].phy.misc_shu_opt, 0x00050909},
-	{&ch[1].phy.misc_shu_opt, 0x00090909},
-	{&ch[0].phy.shu[0].ca_dll[1], 0x00090004},
-	{&ch[1].phy.shu[0].ca_dll[1], 0x00090001},
-	{&mt8183_infracfg->dramc_wbr, 0x0000001f},
-	{&ch[0].phy.shu[0].b[0].dll[1], 0x00000001},
-	{&ch[0].phy.shu[0].b[1].dll[1], 0x00000001},
-	{&ch[0].phy.pll2, 0x00000000},
-	{&ch[0].phy.misc_cg_ctrl0, 0x0000000f},
-	{&mt8183_infracfg->dramc_wbr, 0x00000000},
-	{&ch[0].phy.shu[0].ca_cmd[6], 0x000604c0},
-	{&ch[1].phy.shu[0].ca_cmd[6], 0x00060440},
-	{&ch[0].phy.shu[0].ca_dll[1], 0x0004e104},
-	{&ch[0].phy.shu[0].b[0].dq[6], 0x00060440},
-	{&ch[0].phy.shu[0].b[0].dll[1], 0x00022401},
-	{&ch[0].phy.shu[0].b[1].dq[6], 0x00060440},
-	{&ch[0].phy.shu[0].b[1].dll[1], 0x00022401},
-	{&ch[1].phy.shu[0].ca_dll[1], 0x0004e101},
-	{&ch[1].phy.shu[0].b[0].dq[6], 0x00060440},
-	{&ch[1].phy.shu[0].b[0].dll[1], 0x00022401},
-	{&ch[1].phy.shu[0].b[1].dq[6], 0x00060440},
-	{&ch[1].phy.shu[0].b[1].dll[1], 0x00022401},
-	{&ch[0].phy.shu[0].pll[4], 0xe5780000},
-	{&ch[0].phy.shu[0].pll[6], 0xe5780000},
-	{&ch[0].phy.misc_shu_opt, 0x00050909},
-	{&ch[0].phy.ckmux_sel, 0x00000003},
-	{&ch[0].phy.shu[0].ca_cmd[0], 0x00144010},
-	{&ch[0].ao.dvfsdll, 0x00000000},
-	{&ch[0].phy.shu[0].ca_dll[0], 0x00698619},
-	{&ch[0].phy.shu[0].ca_dll[1], 0x0004e104},
-	{&ch[0].phy.shu[0].ca_cmd[6], 0x000604c0},
-	{&ch[0].phy.b[0].dq[7], 0x00000055},
-	{&ch[0].phy.b[1].dq[7], 0x00000055},
-	{&ch[0].phy.ca_cmd[7], 0x00000055},
-	{&ch[0].phy.ca_cmd[2], 0x00200000},
-	{&ch[0].phy.misc_cg_ctrl0, 0x0000000f},
-	{&ch[0].phy.shu[0].b[0].dq[6], 0x00060440},
-	{&ch[0].phy.shu[0].b[1].dq[6], 0x00060440},
-	{&ch[0].phy.shu[0].ca_cmd[6], 0x000604c0},
-	{&ch[0].phy.pll4, 0x000c0000},
-	{&ch[0].phy.pll1, 0x00000000},
-	{&ch[0].phy.pll2, 0x00000000},
-	{&ch[0].phy.ca_dll_fine_tune[2], 0x00000000},
-	{&ch[0].phy.b[0].dll_fine_tune[2], 0x00000000},
-	{&ch[0].phy.b[1].dll_fine_tune[2], 0x00000000},
-	{&ch[0].phy.b[0].dll_fine_tune[2], 0x880aec00},
-	{&ch[0].phy.b[1].dll_fine_tune[2], 0x880aec00},
-	{&ch[0].phy.ca_dll_fine_tune[2], 0x880bac00},
-	{&ch[0].phy.ca_dll_fine_tune[0], 0x00000000},
-	{&ch[0].phy.b[0].dll_fine_tune[0], 0x00000000},
-	{&ch[0].phy.b[1].dll_fine_tune[0], 0x00000000},
-	{&ch[0].phy.shu[0].pll[8], 0x00040000},
-	{&ch[0].phy.shu[0].pll[10], 0x00040000},
-	{&ch[0].phy.shu[0].pll[5], 0x7b000002},
-	{&ch[0].phy.shu[0].pll[7], 0x7b000002},
-	{&ch[0].phy.ca_dll_fine_tune[0], 0x00000002},
-	{&ch[0].phy.b[0].dll_fine_tune[0], 0x00000002},
-	{&ch[0].phy.b[1].dll_fine_tune[0], 0x00000002},
-	{&ch[0].phy.ca_dll_fine_tune[1], 0x00200000},
-	{&ch[0].phy.b[0].dll_fine_tune[1], 0x00000000},
-	{&ch[0].phy.b[1].dll_fine_tune[1], 0x00000000},
-	{&ch[0].phy.shu[0].b[0].dq[6], 0x02860440},
-	{&ch[0].phy.shu[0].b[1].dq[6], 0x02860440},
-	{&ch[0].phy.shu[0].ca_cmd[6], 0x028604c0},
-	{&ch[0].phy.ca_dll_fine_tune[0], 0x0000000a},
-	{&ch[0].phy.b[0].dll_fine_tune[0], 0x0000000a},
-	{&ch[0].phy.b[1].dll_fine_tune[0], 0x0000000a},
-	{&ch[0].phy.pll1, 0x80000000},
-	{&ch[0].phy.pll2, 0x80000000},
-	{&ch[0].phy.pll4, 0x004d0000},
-	{&ch[0].phy.shu[0].b[0].dq[6], 0x06860440},
-	{&ch[0].phy.shu[0].b[1].dq[6], 0x06860440},
-	{&ch[0].phy.shu[0].ca_cmd[6], 0x068604c0},
-	{&ch[0].phy.ca_dll_fine_tune[3], 0x000ba000},
-	{&ch[0].phy.b[0].dll_fine_tune[3], 0x0002e800},
-	{&ch[0].phy.b[1].dll_fine_tune[3], 0x0002e800},
-	{&ch[0].phy.ca_dll_fine_tune[2], 0x00000800},
-	{&ch[0].phy.b[0].dll_fine_tune[2], 0x00000800},
-	{&ch[0].phy.b[1].dll_fine_tune[2], 0x00000800},
-	{&ch[0].phy.ca_dll_fine_tune[2], 0x00000800},
-	{&ch[0].phy.b[0].dll_fine_tune[2], 0x00000000},
-	{&ch[0].phy.b[1].dll_fine_tune[2], 0x00000000},
-	{&ch[0].phy.misc_cg_ctrl0, 0x0000001f},
-	{&ch[0].phy.ca_dll_fine_tune[2], 0x00000801},
-	{&ch[0].phy.b[0].dll_fine_tune[2], 0x00000001},
-	{&ch[0].phy.b[1].dll_fine_tune[2], 0x00000001},
-	{&ch[0].phy.ca_cmd[2], 0x00000000},
-	{&ch[0].phy.b[0].dq[7], 0x00000040},
-	{&ch[0].phy.b[1].dq[7], 0x00000040},
-	{&ch[0].phy.ca_cmd[7], 0x00000040},
-	{&ch[0].ao.ckectrl, 0x00100400},
-	{&ch[1].ao.ckectrl, 0x00100400},
-	{&ch[0].phy.shu[0].pll[5], 0x7b000003},
-	{&ch[0].phy.shu[0].pll[7], 0x7b000003},
-	{&ch[0].phy.shu[0].pll[14], 0x00000002},
-	{&ch[0].phy.shu[0].pll20, 0x00000002},
-	{&ch[0].phy.shu[0].pll[14], 0x02080002},
-	{&ch[0].phy.shu[0].pll20, 0x02080002},
-	{&ch[0].phy.shu[0].pll[15], 0x0c030000},
-	{&ch[0].phy.shu[0].pll21, 0x0c030000},
-	{&ch[1].phy.shu[0].pll[4], 0x00000000},
-	{&ch[1].phy.shu[0].pll[6], 0x00000000},
-	{&ch[1].phy.misc_shu_opt, 0x00090909},
-	{&ch[1].phy.ckmux_sel, 0x00000003},
-	{&ch[1].phy.shu[0].ca_cmd[0], 0x00144010},
-	{&ch[1].ao.dvfsdll, 0x00000000},
-	{&ch[1].phy.shu[0].ca_dll[0], 0xc0778609},
-	{&ch[1].phy.shu[0].ca_dll[1], 0x0004e101},
-	{&ch[1].phy.shu[0].ca_cmd[6], 0x00060440},
-	{&ch[1].phy.b[0].dq[7], 0x00000055},
-	{&ch[1].phy.b[1].dq[7], 0x00000055},
-	{&ch[1].phy.ca_cmd[7], 0x00000055},
-	{&ch[1].phy.ca_cmd[2], 0x00200000},
-	{&ch[1].phy.misc_cg_ctrl0, 0x0000000f},
-	{&ch[1].phy.shu[0].b[0].dq[6], 0x00060440},
-	{&ch[1].phy.shu[0].b[1].dq[6], 0x00060440},
-	{&ch[1].phy.shu[0].ca_cmd[6], 0x00060440},
-	{&ch[1].phy.pll4, 0x00000000},
-	{&ch[1].phy.pll1, 0x00000000},
-	{&ch[1].phy.pll2, 0x00000000},
-	{&ch[1].phy.ca_dll_fine_tune[2], 0x00000000},
-	{&ch[1].phy.b[0].dll_fine_tune[2], 0x00000000},
-	{&ch[1].phy.b[1].dll_fine_tune[2], 0x00000000},
-	{&ch[1].phy.b[0].dll_fine_tune[2], 0x880aec00},
-	{&ch[1].phy.b[1].dll_fine_tune[2], 0x880aec00},
-	{&ch[1].phy.ca_dll_fine_tune[2], 0x880bac00},
-	{&ch[1].phy.ca_dll_fine_tune[0], 0x00000000},
-	{&ch[1].phy.b[0].dll_fine_tune[0], 0x00000000},
-	{&ch[1].phy.b[1].dll_fine_tune[0], 0x00000000},
-	{&ch[1].phy.shu[0].pll[8], 0x00040000},
-	{&ch[1].phy.shu[0].pll[10], 0x00040000},
-	{&ch[1].phy.shu[0].pll[5], 0x7b000000},
-	{&ch[1].phy.shu[0].pll[7], 0x7b000000},
-	{&ch[1].phy.ca_dll_fine_tune[0], 0x00000002},
-	{&ch[1].phy.b[0].dll_fine_tune[0], 0x00000002},
-	{&ch[1].phy.b[1].dll_fine_tune[0], 0x00000002},
-	{&ch[1].phy.ca_dll_fine_tune[1], 0x00200000},
-	{&ch[1].phy.b[0].dll_fine_tune[1], 0x00000000},
-	{&ch[1].phy.b[1].dll_fine_tune[1], 0x00000000},
-	{&ch[1].phy.shu[0].b[0].dq[6], 0x02860440},
-	{&ch[1].phy.shu[0].b[1].dq[6], 0x02860440},
-	{&ch[1].phy.shu[0].ca_cmd[6], 0x02860440},
-	{&ch[1].phy.ca_dll_fine_tune[0], 0x0000000a},
-	{&ch[1].phy.b[0].dll_fine_tune[0], 0x0000000a},
-	{&ch[1].phy.b[1].dll_fine_tune[0], 0x0000000a},
-	{&ch[1].phy.pll1, 0x80000000},
-	{&ch[1].phy.pll2, 0x80000000},
-	{&ch[1].phy.pll4, 0x00410000},
-	{&ch[1].phy.shu[0].b[0].dq[6], 0x06860440},
-	{&ch[1].phy.shu[0].b[1].dq[6], 0x06860440},
-	{&ch[1].phy.shu[0].ca_cmd[6], 0x06860440},
-	{&ch[1].phy.ca_dll_fine_tune[3], 0x0003a000},
-	{&ch[1].phy.b[0].dll_fine_tune[3], 0x0002e800},
-	{&ch[1].phy.b[1].dll_fine_tune[3], 0x0002e800},
-	{&ch[1].phy.ca_dll_fine_tune[2], 0x00000800},
-	{&ch[1].phy.b[0].dll_fine_tune[2], 0x00000800},
-	{&ch[1].phy.b[1].dll_fine_tune[2], 0x00000800},
-	{&ch[1].phy.ca_dll_fine_tune[2], 0x00000800},
-	{&ch[1].phy.b[0].dll_fine_tune[2], 0x00000000},
-	{&ch[1].phy.b[1].dll_fine_tune[2], 0x00000000},
-	{&ch[1].phy.misc_cg_ctrl0, 0x0000001f},
-	{&ch[1].phy.ca_dll_fine_tune[2], 0x00000801},
-	{&ch[1].phy.b[0].dll_fine_tune[2], 0x00000001},
-	{&ch[1].phy.b[1].dll_fine_tune[2], 0x00000001},
-	{&ch[1].phy.ca_cmd[2], 0x00000000},
-	{&ch[1].phy.b[0].dq[7], 0x00000040},
-	{&ch[1].phy.b[1].dq[7], 0x00000040},
-	{&ch[1].phy.ca_cmd[7], 0x00000040},
-	{&ch[0].ao.ckectrl, 0x00100400},
-	{&ch[1].ao.ckectrl, 0x00100400},
-	{&ch[1].phy.shu[0].pll[5], 0x00000001},
-	{&ch[1].phy.shu[0].pll[7], 0x00000001},
-	{&ch[1].phy.shu[0].pll[14], 0x00000002},
-	{&ch[1].phy.shu[0].pll20, 0x00000002},
-	{&ch[1].phy.shu[0].pll[14], 0x02080000},
-	{&ch[1].phy.shu[0].pll20, 0x02080000},
-	{&ch[1].phy.shu[0].pll[15], 0x0c030000},
-	{&ch[1].phy.shu[0].pll21, 0x0c030000},
-	{&mt8183_infracfg->dramc_wbr, 0x0000001f},
-	{&ch[0].ao.drsctrl, 0x20080000},
-	{&ch[0].ao.ckectrl, 0x08100400},
-	{&ch[0].ao.dramctrl, 0x30822201},
-	{&ch[0].ao.spcmdctrl, 0x200007d2},
-	{&ch[0].phy.b[0].dq[9], 0x10000011},
-	{&ch[0].phy.b[1].dq[9], 0x10000011},
-	{&ch[0].ao.shu[0].rk[1].dqsien, 0x0f0f0f0f},
-	{&ch[0].ao.stbcal1, 0x00014310},
-	{&ch[0].ao.shu[0].dqsg_retry, 0x80200608},
-	{&ch[0].ao.shu[0].drving[0], 0x14a5294a},
-	{&ch[0].ao.shu[0].drving[1], 0x14a5294a},
-	{&ch[0].ao.shu[0].drving[2], 0x14a5294a},
-	{&ch[0].ao.shu[0].drving[3], 0x14a5294a},
-	{&ch[0].ao.shuctrl2, 0x0001d00a},
-	{&ch[0].ao.dvfsdll, 0x00000001},
-	{&ch[0].ao.ddrconf0, 0x04109000},
-	{&ch[0].ao.stbcal2, 0x70000010},
-	{&ch[0].ao.stbcal2, 0x50000010},
-	{&ch[0].ao.clkar, 0x020c0000},
-	{&ch[0].phy.b[0].dq[9], 0x10100011},
-	{&ch[0].phy.b[1].dq[9], 0x10100011},
-	{&ch[0].phy.ca_cmd[10], 0x00000000},
-	{&ch[0].phy.misc_ctrl0, 0xb901020f},
-	{&ch[0].phy.misc_ctrl1, 0x8100908c},
-	{&ch[1].phy.misc_ctrl1, 0x8100908c},
-	{&ch[0].phy.b0_rxdvs[0], 0x01000222},
-	{&ch[0].phy.b1_rxdvs[0], 0x01000222},
-	{&ch[0].phy.ca_rxdvs0, 0x00000000},
-	{&ch[0].phy.ca_cmd[7], 0x00000000},
-	{&ch[0].phy.b[0].dq[7], 0x00000000},
-	{&ch[0].phy.b[1].dq[7], 0x00000000},
-	{&ch[0].ao.shu[0].conf[0], 0xa10810bf},
-	{&ch[0].ao.shu[0].odtctrl, 0xc0010003},
-	{&ch[0].phy.shu[0].b[0].dq[7], 0x00008010},
-	{&ch[0].phy.shu[0].b[1].dq[7], 0x00008000},
-	{&ch[0].ao.refctrl0, 0x25712000},
-	{&ch[0].ao.shu[0].selph_ca1, 0x00000000},
-	{&ch[0].ao.shu[0].selph_ca2, 0x00070000},
-	{&ch[0].ao.shu[0].selph_ca3, 0x00000000},
-	{&ch[0].ao.shu[0].selph_ca4, 0x00000000},
-	{&ch[0].ao.shu[0].selph_ca5, 0x11111011},
-	{&ch[0].ao.shu[0].selph_dqs0, 0x33333333},
-	{&ch[0].ao.shu[0].selph_dqs1, 0x11114444},
-	{&ch[0].ao.shu[0].rk[0].selph_dq[0], 0x33333333},
-	{&ch[0].ao.shu[0].rk[0].selph_dq[1], 0x33333333},
-	{&ch[0].ao.shu[0].rk[0].selph_dq[2], 0x11113333},
-	{&ch[0].ao.shu[0].rk[0].selph_dq[3], 0x11113333},
-	{&ch[0].ao.shu[0].rk[1].selph_dq[0], 0x33333333},
-	{&ch[0].ao.shu[0].rk[1].selph_dq[1], 0x33333333},
-	{&ch[0].ao.shu[0].rk[1].selph_dq[2], 0x11113333},
-	{&ch[0].ao.shu[0].rk[1].selph_dq[3], 0x11113333},
-	{&ch[0].phy.shu[0].rk[0].b[0].dq[7], 0x001a1a00},
-	{&ch[0].phy.shu[0].rk[1].b[0].dq[7], 0x00141400},
-	{&ch[0].phy.shu[0].rk[0].b[1].dq[7], 0x001a1a00},
-	{&ch[0].phy.shu[0].rk[1].b[1].dq[7], 0x00141400},
-	{&ch[0].phy.b[0].dq[9], 0x10100031},
-	{&ch[0].phy.b[0].dq[6], 0x010350c0},
-	{&ch[0].phy.b[1].dq[9], 0x10100031},
-	{&ch[0].phy.b[1].dq[6], 0x010350c0},
-	{&ch[0].ao.stbcal, 0xf0100000},
-	{&ch[0].ao.srefctrl, 0x08400000},
-	{&ch[0].ao.shu[0].ckectrl, 0x33210000},
-	{&ch[0].ao.shu[0].pipe, 0xc0000000},
-	{&ch[0].ao.ckectrl, 0x88102400},
-	{&ch[0].ao.rkcfg, 0x00731004},
-	{&ch[0].ao.shu[0].conf[2], 0x9007000f},
-	{&ch[0].ao.spcmdctrl, 0x240007d2},
-	{&ch[0].ao.shuctrl1, 0x00000040},
-	{&ch[0].ao.shuctrl, 0x0001c110},
-	{&ch[0].ao.refctrl1, 0x30000700},
-	{&ch[0].ao.refratre_filter, 0x6543b321},
-	{&ch[0].ao.dramctrl, 0x30822001},
-	{&ch[0].ao.misctl0, 0x81080000},
-	{&ch[0].ao.perfctl0, 0x00024f13},
-	{&ch[0].ao.arbctl, 0x00000080},
-	{&ch[0].ao.padctrl, 0x00000009},
-	{&ch[0].ao.dramc_pd_ctrl, 0x80000106},
-	{&ch[0].ao.clkctrl, 0x3000000c},
-	{&ch[0].ao.refctrl0, 0x25714001},
-	{&ch[0].ao.shu[0].rankctl, 0x64400000},
-	{&ch[0].ao.shu[0].rk[0].dqsien, 0x00001919},
-	{&ch[0].ao.shu[0].rk[1].dqsien, 0x00001b1b},
-	{&ch[0].ao.dramctrl, 0x308a2001},
-	{&ch[0].ao.zqcs, 0x00000a56},
-	{&ch[0].ao.shu[0].conf[3], 0x00ff0000},
-	{&ch[0].ao.refctrl0, 0x65714001},
-	{&ch[0].ao.srefctrl, 0x48400000},
-	{&ch[0].ao.mpc_option, 0x00020000},
-	{&ch[0].ao.dramc_pd_ctrl, 0xc0000106},
-	{&ch[0].ao.dramc_pd_ctrl, 0xc0000107},
-	{&ch[0].ao.eyescan, 0x00010000},
-	{&ch[0].ao.stbcal1, 0x00014f10},
-	{&ch[0].ao.test2_3, 0x12000480},
-	{&ch[0].ao.rstmask, 0x57000000},
-	{&ch[0].ao.rstmask, 0x17000000},
-	{&ch[0].ao.hw_mrr_fun, 0x00000068},
-	{&ch[0].ao.perfctl0, 0x000a4f13},
-	{&ch[0].ao.rstmask, 0x07000000},
-	{&ch[0].ao.rkcfg, 0x00731804},
-	{&ch[0].ao.spcmdctrl, 0x340007d2},
-	{&ch[0].ao.eyescan, 0x00010004},
-	{&ch[0].ao.dramctrl, 0x308a2000},
-	{&ch[0].ao.mpc_option, 0x00020000},
-	{&ch[0].ao.shu[0].wodt, 0xa0000000},
-	{&ch[0].phy.shu[0].b[0].dq[7], 0x00008090},
-	{&ch[0].phy.shu[0].b[1].dq[7], 0x00008080},
-	{&ch[0].ao.shu[0].rankctl, 0x64400000},
-	{&ch[0].ao.shu[0].rk[0].selph_dq[0], 0x33333322},
-	{&ch[0].ao.shu[0].rk[0].selph_dq[1], 0x33333322},
-	{&ch[0].ao.shu[0].rk[1].selph_dq[0], 0x33333322},
-	{&ch[0].ao.shu[0].rk[1].selph_dq[1], 0x33333322},
-	{&ch[0].ao.stbcal1, 0x00034f10},
-	{&ch[0].ao.stbcal1, 0x00014f10},
-	{&ch[0].ao.stbcal, 0xfc100001},
-	{&ch[0].ao.stbcal1, 0x00014f50},
-	{&ch[0].ao.shu[0].dqsg, 0x02009800},
-	{&ch[0].phy.misc_ctrl0, 0xb9010200},
-	{&ch[0].ao.shu[0].stbcal, 0x00000100},
-	{&ch[0].ao.stbcal, 0xfc120001},
-	{&ch[0].phy.shu[0].b[0].dq[7], 0x00008090},
-	{&ch[0].phy.shu[0].b[1].dq[7], 0x00008080},
-	{&ch[0].ao.shu[0].stbcal, 0x00000110},
-	{&ch[0].ao.shu[0].stbcal, 0x00000112},
-	{&ch[0].ao.refctrl1, 0x30000721},
-	{&ch[0].ao.dqsoscr, 0x098e0080},
-	{&ch[0].ao.rstmask, 0x00000000},
-	{&ch[0].ao.rkcfg, 0x00731814},
-	{&ch[0].ao.shu[0].rankctl, 0x64300000},
-	{&ch[0].ao.shu[0].wodt, 0x20000000},
-	{&ch[0].ao.shu[0].rk[0].fine_tune, 0x1a1a1a1a},
-	{&ch[0].ao.shu[0].rk[1].fine_tune, 0x14141414},
-	{&ch[0].ao.shu[0].rk[0].selph_dq[2], 0x33333333},
-	{&ch[0].ao.shu[0].rk[0].selph_dq[3], 0x33333333},
-	{&ch[0].ao.shu[0].rk[1].selph_dq[2], 0x33333333},
-	{&ch[0].ao.shu[0].rk[1].selph_dq[3], 0x33333333},
-	{&ch[0].ao.shu[0].dqsg_retry, 0x8120050c},
-	{&ch[0].phy.shu[0].b[0].dq[7], 0x00008090},
-	{&ch[0].phy.shu[0].b[1].dq[7], 0x00008080},
-	{&ch[0].ao.shu[0].dqs2dq_tx, 0x00000000},
-	{&ch[0].ao.shu[0].odtctrl, 0xc0010003},
-	{&ch[0].phy.shu[0].b[0].dq[7], 0x00008090},
-	{&ch[0].phy.shu[0].b[1].dq[7], 0x00008080},
-	{&ch[0].phy.r[0].b[0].rxdvs[2], 0x20000000},
-	{&ch[0].phy.r[1].b[0].rxdvs[2], 0x20000000},
-	{&ch[0].phy.r[0].b[1].rxdvs[2], 0x20000000},
-	{&ch[0].phy.r[1].b[1].rxdvs[2], 0x20000000},
-	{&ch[0].phy.shu[0].ca_cmd[7], 0x00000000},
-	{&ch[0].phy.ca_cmd[3], 0x0000048c},
-	{&ch[0].phy.ca_cmd[10], 0x00000020},
-	{&ch[0].phy.ca_cmd[6], 0x00024000},
-	{&ch[0].phy.b[0].dq[3], 0x000004ee},
-	{&ch[0].phy.b[1].dq[3], 0x000004ee},
-	{&ch[0].phy.ca_cmd[3], 0x000004ac},
-	{&ch[0].phy.b[0].dq[3], 0x000004ec},
-	{&ch[0].phy.b[1].dq[3], 0x000004ec},
-	{&ch[0].phy.b[0].dq[5], 0x82110e00},
-	{&ch[0].phy.b[1].dq[5], 0x82110e00},
-	{&ch[0].phy.ca_cmd[5], 0x80000808},
-	{&ch[0].phy.ca_cmd[6], 0x00034000},
-	{&ch[0].phy.misc_imp_ctrl0, 0x00000020},
-	{&ch[0].phy.b[0].dq[6], 0x010352c0},
-	{&ch[0].phy.b[1].dq[6], 0x010352c0},
-	{&ch[0].phy.ca_cmd[6], 0x00034200},
-	{&ch[0].phy.b[0].dq[6], 0x010352c1},
-	{&ch[0].phy.b[1].dq[6], 0x010352c1},
-	{&ch[0].phy.ca_cmd[6], 0x00034201},
-	{&ch[0].phy.ca_cmd[6], 0x00034241},
-	{&ch[0].phy.b[0].dq[6], 0x010352c9},
-	{&ch[0].phy.b[1].dq[6], 0x010352c9},
-	{&ch[0].phy.ca_cmd[6], 0x00034249},
-	{&ch[0].phy.b[0].dq[6], 0x010352e9},
-	{&ch[0].phy.b[1].dq[6], 0x010352e9},
-	{&ch[0].phy.ca_cmd[6], 0x00034269},
-	{&ch[0].phy.shu[0].b[0].dq[5], 0x0030000e},
-	{&ch[0].phy.b[0].dq[5], 0x82110e00},
-	{&ch[0].phy.shu[0].b[1].dq[5], 0x0030000e},
-	{&ch[0].phy.b[1].dq[5], 0x82110e00},
-	{&ch[0].phy.b[0].dq[8], 0x00000007},
-	{&ch[0].phy.b[1].dq[8], 0x00000007},
-	{&ch[0].phy.ca_cmd[9], 0x00010007},
-	{&ch[0].ao.stbcal1, 0x00014f70},
-	{&ch[0].ao.stbcal, 0xfc120001},
-	{&ch[0].phy.b[0].dq[6], 0x010392e9},
-	{&ch[0].phy.b[0].dq[9], 0x10100031},
-	{&ch[0].phy.b[0].dq[9], 0x10100020},
-	{&ch[0].phy.b[0].dq[9], 0x10100031},
-	{&ch[0].phy.b[1].dq[6], 0x010392e9},
-	{&ch[0].phy.b[1].dq[9], 0x10100031},
-	{&ch[0].phy.b[1].dq[9], 0x10100020},
-	{&ch[0].phy.b[1].dq[9], 0x10100031},
-	{&ch[1].phy.b[0].dq[8], 0x00000007},
-	{&ch[1].phy.b[1].dq[8], 0x00000007},
-	{&ch[1].phy.ca_cmd[9], 0x00010007},
-	{&ch[1].ao.stbcal1, 0x00014f70},
-	{&ch[1].ao.stbcal, 0xfc120001},
-	{&ch[1].phy.b[0].dq[6], 0x010392e9},
-	{&ch[1].phy.b[0].dq[9], 0x10100031},
-	{&ch[1].phy.b[0].dq[9], 0x10100020},
-	{&ch[1].phy.b[0].dq[9], 0x10100031},
-	{&ch[1].phy.b[1].dq[6], 0x010392e9},
-	{&ch[1].phy.b[1].dq[9], 0x10100031},
-	{&ch[1].phy.b[1].dq[9], 0x10100020},
-	{&ch[1].phy.b[1].dq[9], 0x10100031},
-	{&ch[0].phy.ca_cmd[8], 0x00080a0a},
-	{&ch[0].phy.ca_cmd[8], 0x00080a0a},
-	{&ch[0].ao.shu[0].misc, 0x0000f132},
-	{&ch[0].ao.shu[0].dqsg, 0x02a19800},
-	{&ch[0].phy.shu[0].b[0].dq[5], 0x0030000e},
-	{&ch[0].phy.shu[0].b[1].dq[5], 0x0030000e},
-	{&ch[0].phy.shu[0].ca_cmd[5], 0x00000000},
-	{&mt8183_infracfg->dramc_wbr, 0x00000000},
-	{&ch[0].phy.shu[0].b[0].dq[6], 0x06860440},
-	{&ch[0].phy.shu[0].b[1].dq[6], 0x06860440},
-	{&ch[0].phy.shu[0].ca_cmd[6], 0x068604c0},
-	{&ch[1].phy.shu[0].b[0].dq[6], 0x06860440},
-	{&ch[1].phy.shu[0].b[1].dq[6], 0x06860440},
-	{&ch[1].phy.shu[0].ca_cmd[6], 0x06860440},
-	{&mt8183_infracfg->dramc_wbr, 0x0000001f},
-	{&ch[0].ao.shu[0].impcal1, 0x81080004},
-	{&ch[0].ao.srefctrl, 0x4840f000},
-	{&ch[0].ao.pre_tdqsck[0], 0x00020000},
-	{&ch[0].ao.shu[0].misc, 0x0000f132},
-	{&ch[0].phy.shu[0].b[0].dq[8], 0xffc07fff},
-	{&ch[0].phy.shu[0].b[1].dq[8], 0xffc07fff},
-	{&ch[0].phy.shu[0].ca_cmd[8], 0xffc07fff},
-	{&ch[0].phy.misc_ctrl3, 0x15351135},
-	{&ch[0].phy.shu[0].b[0].dq[7], 0x00008090},
-	{&ch[0].phy.shu[0].b[1].dq[7], 0x00008080},
-	{&ch[0].ao.clkar, 0x020cffff},
-	{&ch[0].ao.shu[0].dqsg_retry, 0x8120050c},
-	{&ch[0].ao.write_lev, 0x00080000},
-	{&ch[0].ao.dummy_rd, 0x01000000},
-	{&ch[0].ao.stbcal2, 0x50000010},
-	{&ch[0].ao.eyescan, 0x00010704},
-	{&ch[0].ao.shu[0].odtctrl, 0xc001000f},
-	{&ch[0].phy.shu[0].b[0].dll[0], 0xc0778609},
-	{&ch[0].phy.shu[0].b[1].dll[0], 0xc0778609},
-	{&ch[0].phy.ca_dll_fine_tune[1], 0x00200000},
-	{&ch[0].ao.perfctl0, 0x040acf13},
-	{&ch[0].ao.srefctrl, 0x4840f000},
-	{&ch[0].ao.shuctrl1, 0x0000001a},
-	{&ch[0].phy.b[0].dq[6], 0x010392e9},
-	{&ch[0].phy.b[1].dq[6], 0x010392e9},
-	{&ch[0].phy.ca_cmd[6], 0x000352e9},
-	{&ch[0].ao.stbcal2, 0x50010010},
-	{&ch[0].phy.shu[0].b[0].dq[7], 0x13008090},
-	{&ch[0].phy.shu[0].b[1].dq[7], 0x13008080},
-	{&ch[0].ao.shu[0].rodtenstb, 0x00000000},
-	{&ch[0].ao.shu[0].dqsg, 0x02a19800},
-	{&ch[0].ao.shu[0].rk[0].dqscal, 0x00000000},
-	{&ch[0].ao.shu[0].rk[1].dqscal, 0x00000000},
-	{&ch[0].ao.shu[0].stbcal, 0x00000112},
-	{&ch[1].ao.shu[0].dqsg, 0x02a19800},
-	{&ch[1].ao.shu[0].rk[0].dqscal, 0x00000000},
-	{&ch[1].ao.shu[0].rk[1].dqscal, 0x00000000},
-	{&ch[1].ao.shu[0].stbcal, 0x00000112},
-	{&ch[0].phy.b[0].dq[9], 0x10100431},
-	{&ch[0].phy.b[1].dq[9], 0x10100431},
-	{&ch[0].phy.ca_cmd[10], 0x00000020},
-	{&ch[0].phy.shu[0].b[0].dq[8], 0xffc07fff},
-	{&ch[0].phy.shu[0].b[1].dq[8], 0xffc07fff},
-	{&ch[0].phy.shu[0].b[0].dll[1], 0x00022401},
-	{&ch[0].phy.shu[0].b[1].dll[1], 0x00022401},
-	{&ch[0].ao.shu[0].odtctrl, 0xc001000f},
-	{&ch[0].phy.shu[0].b[0].dq[7], 0x13008090},
-	{&ch[0].phy.shu[0].b[1].dq[7], 0x13008080},
-	{&ch[0].ao.drsctrl, 0x20080000},
-	{&ch[0].ao.refctrl0, 0x75714001},
-	{&ch[0].ao.zqcs, 0x00080a56},
-	{&ch[0].ao.dummy_rd, 0x0d000000},
-	{&ch[0].ao.shuctrl2, 0x0001d10a},
-	{&ch[0].ao.shuctrl3, 0x0b80000d},
-	{&ch[0].phy.misc_ctrl3, 0x1d351135},
-	{&ch[0].phy.b[0].dll_fine_tune[1], 0x00300000},
-	{&ch[0].phy.b[1].dll_fine_tune[1], 0x00300000},
-	{&ch[0].phy.ca_dll_fine_tune[1], 0x00300000},
-	{&ch[0].phy.misc_ctrl0, 0xb1010200},
-	{&ch[0].phy.misc_rxdvs[2], 0x00000101},
-	{&ch[0].ao.clkctrl, 0x3000008c},
-	{&ch[0].ao.refctrl1, 0x300007a1},
-	{&ch[0].ao.shuctrl, 0x0c01c1d0},
-	{&ch[0].ao.shuctrl2, 0x8001dd0a},
-	{&ch[0].ao.stbcal2, 0x50010000},
-	{&ch[0].ao.pre_tdqsck[0], 0x00020000},
-	{&ch[0].ao.ckectrl, 0x88502400},
-	{&ch[0].phy.ca_tx_mck, 0xa94011c0},
-	{&ch[0].ao.ckectrl, 0x88d02400},
-	{&ch[0].ao.shu[0].rodtenstb, 0x00000000},
-	{&ch[0].ao.test2_4, 0x0080110d},
-	{&ch[0].ao.shu[0].conf[3], 0x00ff0005},
-	{&ch[0].ao.refctrl0, 0x75774001},
-	{&ch[0].ao.shuctrl2, 0x8301dd0a},
-	{&ch[0].ao.refctrl0, 0x75774001},
-	{&ch[0].ao.dramctrl, 0x348a2000},
-	{&ch[0].ao.dummy_rd, 0x0d426810},
-	{&ch[0].ao.test2_4, 0x4080110d},
-	{&ch[0].ao.dramctrl, 0x348a2000},
-	{&mt8183_infracfg->dramc_wbr, 0x00000000},
-	{&ch[0].ao.shuctrl, 0x0c03c1d0},
-	{&ch[0].ao.shuctrl2, 0x8301dd0a},
-	{&ch[1].ao.shuctrl, 0x0c01c1f0},
-	{&ch[1].ao.shuctrl2, 0x8301cd0a},
-
-	/* dramc duty calibration */
-	{&ch[0].phy.shu[0].rk[0].ca_cmd[1], 0x00000000},
-	{&ch[0].phy.shu[0].rk[0].ca_cmd[0], 0x00000000},
-	{&ch[0].phy.shu[0].rk[1].ca_cmd[1], 0x00000000},
-	{&ch[0].phy.shu[0].rk[1].ca_cmd[0], 0x00000000},
-	{&ch[0].phy.shu[0].ca_cmd[3], 0x00000400},
-	{&ch[0].phy.shu[0].rk[0].b[0].dq[1], 0x00110000},
-	{&ch[0].phy.shu[0].rk[0].b[1].dq[1], 0x00110000},
-	{&ch[0].phy.shu[0].rk[1].b[0].dq[1], 0x00110000},
-	{&ch[0].phy.shu[0].rk[1].b[1].dq[1], 0x00110000},
-	{&ch[0].phy.shu[0].b[0].dll[1], 0x00022601},
-	{&ch[1].phy.shu[0].rk[0].ca_cmd[1], 0x00000000},
-	{&ch[1].phy.shu[0].rk[0].ca_cmd[0], 0x00000000},
-	{&ch[1].phy.shu[0].rk[1].ca_cmd[1], 0x00000000},
-	{&ch[1].phy.shu[0].rk[1].ca_cmd[0], 0x00000000},
-	{&ch[1].phy.shu[0].ca_cmd[3], 0x00000400},
-	{&ch[1].phy.shu[0].rk[0].b[0].dq[1], 0x22000000},
-	{&ch[1].phy.shu[0].rk[0].b[1].dq[1], 0x22000000},
-	{&ch[1].phy.shu[0].rk[1].b[0].dq[1], 0x22000000},
-	{&ch[1].phy.shu[0].rk[1].b[1].dq[1], 0x22000000},
-	{&ch[1].phy.shu[0].b[0].dll[1], 0x00022501},
-
-	/* update the ac timing */
-	{&ch[0].ao.shu[0].actim[0], 0x06020c07},
-	{&ch[0].ao.shu[0].actim[1], 0x10080501},
-	{&ch[0].ao.shu[0].actim[2], 0x07070201},
-	{&ch[0].ao.shu[0].actim[3], 0x6164002c},
-	{&ch[0].ao.shu[0].actim[4], 0x22650077},
-	{&ch[0].ao.shu[0].actim[5], 0x0a000c0b},
-	{&ch[0].ao.shu[0].actim_xrt, 0x05030609},
-	{&ch[0].ao.shu[0].ac_time_05t, 0x000106e1},
-	{&ch[0].ao.catraining1, 0x0b000000},
-	{&ch[0].ao.shu[0].rk[0].dqsctl, 0x00000004},
-	{&ch[0].ao.shu[0].rk[1].dqsctl, 0x00000004},
-	{&ch[0].ao.shu[0].odtctrl, 0xc001004f},
-	{&ch[0].ao.shu[0].conf[1], 0x34000d0f},
-	{&ch[0].ao.shu[0].conf[2], 0x9007640f},
-	{&ch[0].ao.shu[0].scintv, 0x4e39eb36},
-	{&ch[0].ao.shu[0].ckectrl, 0x33210000},
-	{&ch[0].ao.ckectrl, 0x88d02440},
-	{&ch[0].ao.shu[0].rankctl, 0x64300003},
-	{&ch[0].ao.shu[0].rankctl, 0x64301203},
-	{&ch[1].ao.shu[0].actim[0], 0x06020c07},
-	{&ch[1].ao.shu[0].actim[1], 0x10080501},
-	{&ch[1].ao.shu[0].actim[2], 0x07070201},
-	{&ch[1].ao.shu[0].actim[3], 0x6164002c},
-	{&ch[1].ao.shu[0].actim[4], 0x22650077},
-	{&ch[1].ao.shu[0].actim[5], 0x0a000c0b},
-	{&ch[1].ao.shu[0].actim_xrt, 0x05030609},
-	{&ch[1].ao.shu[0].ac_time_05t, 0x000106e1},
-	{&ch[1].ao.catraining1, 0x0b000000},
-	{&ch[1].ao.shu[0].rk[0].dqsctl, 0x00000004},
-	{&ch[1].ao.shu[0].rk[1].dqsctl, 0x00000004},
-	{&ch[1].ao.shu[0].odtctrl, 0xc001004f},
-	{&ch[1].ao.shu[0].conf[1], 0x34000d0f},
-	{&ch[1].ao.shu[0].conf[2], 0x9007640f},
-	{&ch[1].ao.shu[0].scintv, 0x4e39eb36},
-	{&ch[1].ao.shu[0].ckectrl, 0x33210000},
-	{&ch[1].ao.ckectrl, 0x88d02440},
-	{&ch[1].ao.shu[0].rankctl, 0x64300003},
-	{&ch[1].ao.shu[0].rankctl, 0x64301203},
-	{&ch[0].ao.arbctl, 0x00000c80},
-	{&ch[0].ao.rstmask, 0x00000000},
-	{&ch[0].ao.arbctl, 0x00000c80},
-};
-
-static struct reg_init_value dramc_mode_reg_init_sequence[] = {
-	/* dramc power on sequence */
-	{&ch[0].phy.misc_ctrl1, 0x8100908c},
-	{&ch[1].phy.misc_ctrl1, 0x8100908c},
-	{&ch[0].ao.ckectrl, 0x88d02480},
-	{&ch[1].ao.ckectrl, 0x88d02480},
-	{&ch[0].phy.misc_ctrl1, 0x8100b08c},
-	{&ch[1].phy.misc_ctrl1, 0x8100b08c},
-	{&ch[0].ao.dramc_pd_ctrl, 0xc4000107},
-	{&ch[1].ao.dramc_pd_ctrl, 0xc4000107},
-	{&ch[0].ao.ckectrl, 0x88d02440},
-	{&ch[1].ao.ckectrl, 0x88d02440},
-	{&ch[0].ao.mrs, 0x00000000},
-
-	/* CH0 dramc ZQ Calibration */
-	{&ch[0].ao.dramc_pd_ctrl, 0xc4000107},
-	{&ch[0].ao.ckectrl, 0x88d02440},
-	{&ch[0].ao.mrs, 0x00000000},
-	{&ch[0].ao.mpc_option, 0x00020000},
-	{&ch[0].ao.spcmd, 0x00000040},
-	{&ch[0].ao.spcmd, 0x00000000},
-	{&ch[0].ao.mrs, 0x00000000},
-	{&ch[0].ao.dramc_pd_ctrl, 0xc4000107},
-	{&ch[0].ao.ckectrl, 0x88d02440},
-
-	/* MR13 */
-	{&ch[0].ao.mrs, 0x00000d18},
-	{&ch[0].ao.spcmd, 0x00000001},
-	{&ch[0].ao.spcmd, 0x00000000},
-	{&ch[0].ao.ckectrl, 0x88d02440},
-
-	/* MR12 */
-	{&ch[0].ao.mrs, 0x00000c5d},
-	{&ch[0].ao.spcmd, 0x00000001},
-	{&ch[0].ao.spcmd, 0x00000000},
-	{&ch[0].ao.ckectrl, 0x88d02440},
-
-	/* MR1 */
-	{&ch[0].ao.mrs, 0x00000156},
-	{&ch[0].ao.spcmd, 0x00000001},
-	{&ch[0].ao.spcmd, 0x00000000},
-	{&ch[0].ao.ckectrl, 0x88d02440},
-
-	/* MR2 */
-	{&ch[0].ao.mrs, 0x0000020b},
-	{&ch[0].ao.spcmd, 0x00000001},
-	{&ch[0].ao.spcmd, 0x00000000},
-	{&ch[0].ao.ckectrl, 0x88d02440},
-
-	/* MR11 */
-	{&ch[0].ao.mrs, 0x00000b00},
-	{&ch[0].ao.spcmd, 0x00000001},
-	{&ch[0].ao.spcmd, 0x00000000},
-	{&ch[0].ao.ckectrl, 0x88d02440},
-
-	/* MR22 */
-	{&ch[0].ao.mrs, 0x00001638},
-	{&ch[0].ao.spcmd, 0x00000001},
-	{&ch[0].ao.spcmd, 0x00000000},
-	{&ch[0].ao.ckectrl, 0x88d02440},
-
-	/* MR14 */
-	{&ch[0].ao.mrs, 0x00000e5d},
-	{&ch[0].ao.spcmd, 0x00000001},
-	{&ch[0].ao.spcmd, 0x00000000},
-	{&ch[0].ao.ckectrl, 0x88d02440},
-
-	/* MR3 */
-	{&ch[0].ao.mrs, 0x00000330},
-	{&ch[0].ao.spcmd, 0x00000001},
-	{&ch[0].ao.spcmd, 0x00000000},
-	{&ch[0].ao.ckectrl, 0x88d02440},
-
-	/* MR13 */
-	{&ch[0].ao.mrs, 0x00000d58},
-	{&ch[0].ao.spcmd, 0x00000001},
-	{&ch[0].ao.spcmd, 0x00000000},
-	{&ch[0].ao.ckectrl, 0x88d02440},
-
-	/* MR12 */
-	{&ch[0].ao.mrs, 0x00000c5d},
-	{&ch[0].ao.spcmd, 0x00000001},
-	{&ch[0].ao.spcmd, 0x00000000},
-	{&ch[0].ao.ckectrl, 0x88d02440},
-
-	/* MR1 */
-	{&ch[0].ao.mrs, 0x00000156},
-	{&ch[0].ao.spcmd, 0x00000001},
-	{&ch[0].ao.spcmd, 0x00000000},
-	{&ch[0].ao.ckectrl, 0x88d02440},
-
-	/* MR2 */
-	{&ch[0].ao.mrs, 0x0000022d},
-	{&ch[0].ao.spcmd, 0x00000001},
-	{&ch[0].ao.spcmd, 0x00000000},
-	{&ch[0].ao.ckectrl, 0x88d02440},
-
-	/* MR11 */
-	{&ch[0].ao.mrs, 0x00000b23},
-	{&ch[0].ao.spcmd, 0x00000001},
-	{&ch[0].ao.spcmd, 0x00000000},
-	{&ch[0].ao.ckectrl, 0x88d02440},
-
-	/* MR22 */
-	{&ch[0].ao.mrs, 0x00001634},
-	{&ch[0].ao.spcmd, 0x00000001},
-	{&ch[0].ao.spcmd, 0x00000000},
-	{&ch[0].ao.ckectrl, 0x88d02440},
-
-	/* MR14 */
-	{&ch[0].ao.mrs, 0x00000e10},
-	{&ch[0].ao.spcmd, 0x00000001},
-	{&ch[0].ao.spcmd, 0x00000000},
-	{&ch[0].ao.ckectrl, 0x88d02440},
-
-	/* MR3 */
-	{&ch[0].ao.mrs, 0x00000330},
-	{&ch[0].ao.spcmd, 0x00000001},
-	{&ch[0].ao.spcmd, 0x00000000},
-	{&ch[0].ao.ckectrl, 0x88d02440},
-
-	/* dramc ZQ Calibration */
-	{&ch[0].ao.mrs, 0x01000330},
-	{&ch[0].ao.dramc_pd_ctrl, 0xc4000107},
-	{&ch[0].ao.ckectrl, 0x88d02440},
-	{&ch[0].ao.mrs, 0x11000330},
-	{&ch[0].ao.mpc_option, 0x00020000},
-	{&ch[0].ao.spcmd, 0x00000040},
-	{&ch[0].ao.spcmd, 0x00000000},
-	{&ch[0].ao.mrs, 0x01000330},
-	{&ch[0].ao.dramc_pd_ctrl, 0xc4000107},
-	{&ch[0].ao.ckectrl, 0x88d02440},
-
-	/* MR13 */
-	{&ch[0].ao.mrs, 0x01000d18},
-	{&ch[0].ao.spcmd, 0x00000001},
-	{&ch[0].ao.spcmd, 0x00000000},
-	{&ch[0].ao.ckectrl, 0x88d02440},
-
-	/* MR12 */
-	{&ch[0].ao.mrs, 0x01000c5d},
-	{&ch[0].ao.spcmd, 0x00000001},
-	{&ch[0].ao.spcmd, 0x00000000},
-	{&ch[0].ao.ckectrl, 0x88d02440},
-
-	/* MR1 */
-	{&ch[0].ao.mrs, 0x01000156},
-	{&ch[0].ao.spcmd, 0x00000001},
-	{&ch[0].ao.spcmd, 0x00000000},
-	{&ch[0].ao.ckectrl, 0x88d02440},
-
-	/* MR2 */
-	{&ch[0].ao.mrs, 0x0100020b},
-	{&ch[0].ao.spcmd, 0x00000001},
-	{&ch[0].ao.spcmd, 0x00000000},
-	{&ch[0].ao.ckectrl, 0x88d02440},
-
-	/* MR11 */
-	{&ch[0].ao.mrs, 0x01000b00},
-	{&ch[0].ao.spcmd, 0x00000001},
-	{&ch[0].ao.spcmd, 0x00000000},
-	{&ch[0].ao.ckectrl, 0x88d02440},
-
-	/* MR22 */
-	{&ch[0].ao.mrs, 0x01001638},
-	{&ch[0].ao.spcmd, 0x00000001},
-	{&ch[0].ao.spcmd, 0x00000000},
-	{&ch[0].ao.ckectrl, 0x88d02440},
-
-	/* MR14 */
-	{&ch[0].ao.mrs, 0x01000e5d},
-	{&ch[0].ao.spcmd, 0x00000001},
-	{&ch[0].ao.spcmd, 0x00000000},
-	{&ch[0].ao.ckectrl, 0x88d02440},
-
-	/* MR3 */
-	{&ch[0].ao.mrs, 0x01000330},
-	{&ch[0].ao.spcmd, 0x00000001},
-	{&ch[0].ao.spcmd, 0x00000000},
-	{&ch[0].ao.ckectrl, 0x88d02440},
-
-	/* MR13 */
-	{&ch[0].ao.mrs, 0x01000d58},
-	{&ch[0].ao.spcmd, 0x00000001},
-	{&ch[0].ao.spcmd, 0x00000000},
-	{&ch[0].ao.ckectrl, 0x88d02440},
-
-	/* MR12 */
-	{&ch[0].ao.mrs, 0x01000c5d},
-	{&ch[0].ao.spcmd, 0x00000001},
-	{&ch[0].ao.spcmd, 0x00000000},
-	{&ch[0].ao.ckectrl, 0x88d02440},
-
-	/* MR1 */
-	{&ch[0].ao.mrs, 0x01000156},
-	{&ch[0].ao.spcmd, 0x00000001},
-	{&ch[0].ao.spcmd, 0x00000000},
-	{&ch[0].ao.ckectrl, 0x88d02440},
-
-	/* MR2 */
-	{&ch[0].ao.mrs, 0x0100022d},
-	{&ch[0].ao.spcmd, 0x00000001},
-	{&ch[0].ao.spcmd, 0x00000000},
-	{&ch[0].ao.ckectrl, 0x88d02440},
-
-	/* MR11 */
-	{&ch[0].ao.mrs, 0x01000b23},
-	{&ch[0].ao.spcmd, 0x00000001},
-	{&ch[0].ao.spcmd, 0x00000000},
-	{&ch[0].ao.ckectrl, 0x88d02440},
-
-	/* MR22 */
-	{&ch[0].ao.mrs, 0x01001634},
-	{&ch[0].ao.spcmd, 0x00000001},
-	{&ch[0].ao.spcmd, 0x00000000},
-	{&ch[0].ao.ckectrl, 0x88d02440},
-
-	/* MR14 */
-	{&ch[0].ao.mrs, 0x01000e10},
-	{&ch[0].ao.spcmd, 0x00000001},
-	{&ch[0].ao.spcmd, 0x00000000},
-	{&ch[0].ao.ckectrl, 0x88d02440},
-
-	/* MR3 */
-	{&ch[0].ao.mrs, 0x01000330},
-	{&ch[0].ao.spcmd, 0x00000001},
-	{&ch[0].ao.spcmd, 0x00000000},
-	{&ch[0].ao.ckectrl, 0x88d02440},
-
-	/* MR13 */
-	{&ch[0].ao.mrs, 0x00000330},
-	{&ch[0].ao.ckectrl, 0x88d02440},
-	{&ch[0].ao.mrs, 0x00000dd8},
-	{&ch[0].ao.spcmd, 0x00000001},
-	{&ch[0].ao.spcmd, 0x00000000},
-	{&ch[0].ao.ckectrl, 0x88d02440},
-
-	/* MR13 */
-	{&ch[0].ao.mrs, 0x01000dd8},
-	{&ch[0].ao.ckectrl, 0x88d02440},
-	{&ch[0].ao.mrs, 0x01000dd8},
-	{&ch[0].ao.spcmd, 0x00000001},
-	{&ch[0].ao.spcmd, 0x00000000},
-	{&ch[0].ao.ckectrl, 0x88d02440},
-	{&ch[0].ao.mrs, 0x01000dd8},
-
-	{&ch[0].ao.shu[0].hwset_mr13, 0x00d8000d},
-	{&ch[0].ao.shu[0].hwset_vrcg, 0x00d8000d},
-	{&ch[0].ao.shu[0].hwset_mr2, 0x002d0002},
-
-	/* CH1 dramc ZQ Calibration */
-	{&ch[1].ao.mrs, 0x00000000},
-	{&ch[1].ao.dramc_pd_ctrl, 0xc4000107},
-	{&ch[1].ao.ckectrl, 0x88d02440},
-	{&ch[1].ao.mrs, 0x00000000},
-	{&ch[1].ao.mpc_option, 0x00020000},
-	{&ch[1].ao.spcmd, 0x00000040},
-	{&ch[1].ao.spcmd, 0x00000000},
-	{&ch[1].ao.mrs, 0x00000000},
-	{&ch[1].ao.dramc_pd_ctrl, 0xc4000107},
-	{&ch[1].ao.ckectrl, 0x88d02440},
-	{&ch[1].ao.mrs, 0x00000d18},
-	{&ch[1].ao.spcmd, 0x00000001},
-	{&ch[1].ao.spcmd, 0x00000000},
-	{&ch[1].ao.ckectrl, 0x88d02440},
-	{&ch[1].ao.mrs, 0x00000c5d},
-	{&ch[1].ao.spcmd, 0x00000001},
-	{&ch[1].ao.spcmd, 0x00000000},
-	{&ch[1].ao.ckectrl, 0x88d02440},
-	{&ch[1].ao.mrs, 0x00000156},
-	{&ch[1].ao.spcmd, 0x00000001},
-	{&ch[1].ao.spcmd, 0x00000000},
-	{&ch[1].ao.ckectrl, 0x88d02440},
-	{&ch[1].ao.mrs, 0x0000020b},
-	{&ch[1].ao.spcmd, 0x00000001},
-	{&ch[1].ao.spcmd, 0x00000000},
-	{&ch[1].ao.ckectrl, 0x88d02440},
-	{&ch[1].ao.mrs, 0x00000b00},
-	{&ch[1].ao.spcmd, 0x00000001},
-	{&ch[1].ao.spcmd, 0x00000000},
-	{&ch[1].ao.ckectrl, 0x88d02440},
-	{&ch[1].ao.mrs, 0x00001638},
-	{&ch[1].ao.spcmd, 0x00000001},
-	{&ch[1].ao.spcmd, 0x00000000},
-	{&ch[1].ao.ckectrl, 0x88d02440},
-	{&ch[1].ao.mrs, 0x00000e5d},
-	{&ch[1].ao.spcmd, 0x00000001},
-	{&ch[1].ao.spcmd, 0x00000000},
-	{&ch[1].ao.ckectrl, 0x88d02440},
-	{&ch[1].ao.mrs, 0x00000330},
-	{&ch[1].ao.spcmd, 0x00000001},
-	{&ch[1].ao.spcmd, 0x00000000},
-	{&ch[1].ao.ckectrl, 0x88d02440},
-	{&ch[1].ao.mrs, 0x00000d58},
-	{&ch[1].ao.spcmd, 0x00000001},
-	{&ch[1].ao.spcmd, 0x00000000},
-	{&ch[1].ao.ckectrl, 0x88d02440},
-	{&ch[1].ao.mrs, 0x00000c5d},
-	{&ch[1].ao.spcmd, 0x00000001},
-	{&ch[1].ao.spcmd, 0x00000000},
-	{&ch[1].ao.ckectrl, 0x88d02440},
-	{&ch[1].ao.mrs, 0x00000156},
-	{&ch[1].ao.spcmd, 0x00000001},
-	{&ch[1].ao.spcmd, 0x00000000},
-	{&ch[1].ao.ckectrl, 0x88d02440},
-	{&ch[1].ao.mrs, 0x0000022d},
-	{&ch[1].ao.spcmd, 0x00000001},
-	{&ch[1].ao.spcmd, 0x00000000},
-	{&ch[1].ao.ckectrl, 0x88d02440},
-	{&ch[1].ao.mrs, 0x00000b23},
-	{&ch[1].ao.spcmd, 0x00000001},
-	{&ch[1].ao.spcmd, 0x00000000},
-	{&ch[1].ao.ckectrl, 0x88d02440},
-	{&ch[1].ao.mrs, 0x00001634},
-	{&ch[1].ao.spcmd, 0x00000001},
-	{&ch[1].ao.spcmd, 0x00000000},
-	{&ch[1].ao.ckectrl, 0x88d02440},
-	{&ch[1].ao.mrs, 0x00000e10},
-	{&ch[1].ao.spcmd, 0x00000001},
-	{&ch[1].ao.spcmd, 0x00000000},
-	{&ch[1].ao.ckectrl, 0x88d02440},
-	{&ch[1].ao.mrs, 0x00000330},
-	{&ch[1].ao.spcmd, 0x00000001},
-	{&ch[1].ao.spcmd, 0x00000000},
-	{&ch[1].ao.ckectrl, 0x88d02440},
-	{&ch[1].ao.mrs, 0x01000330},
-	{&ch[1].ao.dramc_pd_ctrl, 0xc4000107},
-	{&ch[1].ao.ckectrl, 0x88d02440},
-	{&ch[1].ao.mrs, 0x11000330},
-	{&ch[1].ao.mpc_option, 0x00020000},
-	{&ch[1].ao.spcmd, 0x00000040},
-	{&ch[1].ao.spcmd, 0x00000000},
-	{&ch[1].ao.mrs, 0x01000330},
-	{&ch[1].ao.dramc_pd_ctrl, 0xc4000107},
-	{&ch[1].ao.ckectrl, 0x88d02440},
-	{&ch[1].ao.mrs, 0x01000d18},
-	{&ch[1].ao.spcmd, 0x00000001},
-	{&ch[1].ao.spcmd, 0x00000000},
-	{&ch[1].ao.ckectrl, 0x88d02440},
-	{&ch[1].ao.mrs, 0x01000c5d},
-	{&ch[1].ao.spcmd, 0x00000001},
-	{&ch[1].ao.spcmd, 0x00000000},
-	{&ch[1].ao.ckectrl, 0x88d02440},
-	{&ch[1].ao.mrs, 0x01000156},
-	{&ch[1].ao.spcmd, 0x00000001},
-	{&ch[1].ao.spcmd, 0x00000000},
-	{&ch[1].ao.ckectrl, 0x88d02440},
-	{&ch[1].ao.mrs, 0x0100020b},
-	{&ch[1].ao.spcmd, 0x00000001},
-	{&ch[1].ao.spcmd, 0x00000000},
-	{&ch[1].ao.ckectrl, 0x88d02440},
-	{&ch[1].ao.mrs, 0x01000b00},
-	{&ch[1].ao.spcmd, 0x00000001},
-	{&ch[1].ao.spcmd, 0x00000000},
-	{&ch[1].ao.ckectrl, 0x88d02440},
-	{&ch[1].ao.mrs, 0x01001638},
-	{&ch[1].ao.spcmd, 0x00000001},
-	{&ch[1].ao.spcmd, 0x00000000},
-	{&ch[1].ao.ckectrl, 0x88d02440},
-	{&ch[1].ao.mrs, 0x01000e5d},
-	{&ch[1].ao.spcmd, 0x00000001},
-	{&ch[1].ao.spcmd, 0x00000000},
-	{&ch[1].ao.ckectrl, 0x88d02440},
-	{&ch[1].ao.mrs, 0x01000330},
-	{&ch[1].ao.spcmd, 0x00000001},
-	{&ch[1].ao.spcmd, 0x00000000},
-	{&ch[1].ao.ckectrl, 0x88d02440},
-	{&ch[1].ao.mrs, 0x01000d58},
-	{&ch[1].ao.spcmd, 0x00000001},
-	{&ch[1].ao.spcmd, 0x00000000},
-	{&ch[1].ao.ckectrl, 0x88d02440},
-	{&ch[1].ao.mrs, 0x01000c5d},
-	{&ch[1].ao.spcmd, 0x00000001},
-	{&ch[1].ao.spcmd, 0x00000000},
-	{&ch[1].ao.ckectrl, 0x88d02440},
-	{&ch[1].ao.mrs, 0x01000156},
-	{&ch[1].ao.spcmd, 0x00000001},
-	{&ch[1].ao.spcmd, 0x00000000},
-	{&ch[1].ao.ckectrl, 0x88d02440},
-	{&ch[1].ao.mrs, 0x0100022d},
-	{&ch[1].ao.spcmd, 0x00000001},
-	{&ch[1].ao.spcmd, 0x00000000},
-	{&ch[1].ao.ckectrl, 0x88d02440},
-	{&ch[1].ao.mrs, 0x01000b23},
-	{&ch[1].ao.spcmd, 0x00000001},
-	{&ch[1].ao.spcmd, 0x00000000},
-	{&ch[1].ao.ckectrl, 0x88d02440},
-	{&ch[1].ao.mrs, 0x01001634},
-	{&ch[1].ao.spcmd, 0x00000001},
-	{&ch[1].ao.spcmd, 0x00000000},
-	{&ch[1].ao.ckectrl, 0x88d02440},
-	{&ch[1].ao.mrs, 0x01000e10},
-	{&ch[1].ao.spcmd, 0x00000001},
-	{&ch[1].ao.spcmd, 0x00000000},
-	{&ch[1].ao.ckectrl, 0x88d02440},
-	{&ch[1].ao.mrs, 0x01000330},
-	{&ch[1].ao.spcmd, 0x00000001},
-	{&ch[1].ao.spcmd, 0x00000000},
-	{&ch[1].ao.ckectrl, 0x88d02440},
-	{&ch[1].ao.mrs, 0x00000330},
-	{&ch[1].ao.ckectrl, 0x88d02440},
-	{&ch[1].ao.mrs, 0x00000dd8},
-	{&ch[1].ao.spcmd, 0x00000001},
-	{&ch[1].ao.spcmd, 0x00000000},
-	{&ch[1].ao.ckectrl, 0x88d02440},
-	{&ch[1].ao.mrs, 0x01000dd8},
-	{&ch[1].ao.ckectrl, 0x88d02440},
-	{&ch[1].ao.mrs, 0x01000dd8},
-	{&ch[1].ao.spcmd, 0x00000001},
-	{&ch[1].ao.spcmd, 0x00000000},
-	{&ch[1].ao.ckectrl, 0x88d02440},
-	{&ch[1].ao.mrs, 0x01000dd8},
-	{&ch[1].ao.shu[0].hwset_mr13, 0x00d8000d},
-	{&ch[1].ao.shu[0].hwset_vrcg, 0x00d8000d},
-	{&ch[1].ao.shu[0].hwset_mr2, 0x002d0002},
-	{&ch[0].ao.mrs, 0x00000dd8},
-	{&ch[1].ao.mrs, 0x00000dd8},
-};
-
-void dramc_init(void)
+static void cke_fix_onoff(int option, u8 chn)
 {
-	for (int i = 0; i < ARRAY_SIZE(dramc_init_sequence); i++)
-		write32(dramc_init_sequence[i].addr,
-			dramc_init_sequence[i].value);
+	u8 on = 0, off = 0;
 
-	for (int i = 0; i < ARRAY_SIZE(dramc_mode_reg_init_sequence); i++) {
-		write32(dramc_mode_reg_init_sequence[i].addr,
-			dramc_mode_reg_init_sequence[i].value);
-		udelay(2);
+	/* if CKE is dynamic, set both CKE fix On and Off as 0 */
+	if (option != CKE_DYNAMIC) {
+		on = option;
+		off = (1 - option);
 	}
+
+	clrsetbits_le32(&ch[chn].ao.ckectrl,
+		(0x1 << 6) | (0x1 << 7), (on << 6) | (off << 7));
+}
+
+static void ddr_phy_pll_setting(u8 chn, u8 freq_group)
+{
+	u8 cap_sel, mid_cap_sel;
+	u8 vth_sel = 0x2;
+	u8 ca_dll_mode[2];
+	u32 sdm_pcw, delta;
+
+	switch (freq_group) {
+	case LP4X_DDR1600:
+		mid_cap_sel = 0x0;
+		cap_sel = 0x3;
+		sdm_pcw = 0x7b00;
+		delta = 0;
+		break;
+	case LP4X_DDR2400:
+		mid_cap_sel = 0x3;
+		cap_sel = 0x0;
+		sdm_pcw = 0x5c00;
+		delta = 0;
+		break;
+	case LP4X_DDR3200:
+		mid_cap_sel = 0x2;
+		cap_sel = 0x0;
+		sdm_pcw = 0x7b00;
+		delta = 0xC03;
+		break;
+	case LP4X_DDR3600:
+		mid_cap_sel = 0x1;
+		cap_sel = 0x0;
+		sdm_pcw = 0x8a00;
+		delta = 0xD96;
+		break;
+	default:
+		die("Invalid DDR frequency group %u\n", freq_group);
+		return;
+	}
+
+	if (freq_group == LP4X_DDR1600)
+		ca_dll_mode[CHANNEL_A] = DLL_SLAVE;
+	else
+		ca_dll_mode[CHANNEL_A] = DLL_MASTER;
+	ca_dll_mode[CHANNEL_B] = DLL_SLAVE;
+
+	clrbits_le32(&ch[chn].phy.shu[0].pll[4], 0xFFFF);
+	clrbits_le32(&ch[chn].phy.shu[0].pll[6], 0xFFFF);
+	setbits_le32(&ch[chn].phy.misc_shu_opt, (chn + 1) << 18);
+	clrsetbits_le32(&ch[chn].phy.ckmux_sel, 0x3 << 18 | 0x3 << 16, 0x0);
+	clrsetbits_le32(&ch[chn].phy.shu[0].ca_cmd[0], 0x3 << 18, 0x1 << 18);
+
+	if (ca_dll_mode[chn] == DLL_SLAVE)
+		clrsetbits_le32(&ch[chn].ao.dvfsdll, 0x1 << 1, 0x1 << 1);
+	else
+		clrsetbits_le32(&ch[chn].ao.dvfsdll, 0x1 << 1, 0x0 << 1);
+
+	bool is_master = (ca_dll_mode[chn] == DLL_MASTER);
+	u8 phdet_out = is_master ? 0x0 : 0x1;
+	u8 phdet_in = is_master ? 0x0 : 0x1;
+	u8 gain = is_master ? 0x6 : 0x7;
+	u8 idle_cnt = is_master ? 0x9 : 0x7;
+	u8 fast_psjp = is_master ? 0x1 : 0x0;
+
+	clrsetbits_le32(&ch[chn].phy.shu[0].ca_dll[0],
+		(0x1 << 31) | (0x1 << 30) | (0xf << 20) | (0xf << 16) |
+		(0xf << 12) | (0x1 << 10) | (0x1 << 9) | (0x1 << 4),
+		(phdet_out << 31) | (phdet_in << 30) |
+		(gain << 20) | (idle_cnt << 16) |
+		(0x8 << 12) |
+		(0x1 << 10) | (0x1 << 9) | (fast_psjp << 4));
+
+	u8 pd_ck_sel = is_master ? 0x1 : 0x0;
+	u8 fastpj_ck_sel = is_master ? 0x0 : 0x1;
+
+	clrsetbits_le32(&ch[chn].phy.shu[0].ca_dll[1],
+		(0x1 << 2) | (0x1 << 0),
+		(pd_ck_sel << 2) | (fastpj_ck_sel << 0));
+
+	clrsetbits_le32(&ch[chn].phy.shu[0].ca_cmd[6],
+		0x1 << 7,
+		(is_master ? 0x1 : 0x0) << 7);
+
+	struct reg_value regs_bak[] = {
+		{&ch[chn].phy.b[0].dq[7]},
+		{&ch[chn].phy.b[1].dq[7]},
+		{&ch[chn].phy.ca_cmd[7]},
+	};
+
+	for (size_t i = 0; i < ARRAY_SIZE(regs_bak); i++)
+		regs_bak[i].value = read32(regs_bak[i].addr);
+
+	for (size_t b = 0; b < 2; b++) {
+		setbits_le32(&ch[chn].phy.b[b].dq[7],
+			0x1 << 6 | 0x1 << 4 | 0x1 << 2 | 0x1 << 0);
+	}
+	setbits_le32(&ch[chn].phy.ca_cmd[7], 0x1 << 6 | 0x1 << 4 | 0x1 << 2 | 0x1 << 0);
+	setbits_le32(&ch[chn].phy.ca_cmd[2], 0x1 << 21);
+
+	/* 26M */
+	clrsetbits_le32(&ch[chn].phy.misc_cg_ctrl0, 0x3 << 4, 0x0 << 4);
+
+	/* MID FINE_TUNE */
+	clrbits_le32(&ch[chn].phy.shu[0].b[0].dq[6], (0x1 << 26) | (0x1 << 27));
+	clrbits_le32(&ch[chn].phy.shu[0].b[1].dq[6], (0x1 << 26) | (0x1 << 27));
+	clrbits_le32(&ch[chn].phy.shu[0].ca_cmd[6], (0x1 << 26) | (0x1 << 27));
+	clrbits_le32(&ch[chn].phy.pll4, (0x1 << 16) | (0x1 << 22));
+
+	/* PLL */
+	clrbits_le32(&ch[chn].phy.pll1, 0x1 << 31);
+	clrbits_le32(&ch[chn].phy.pll2, 0x1 << 31);
+
+	/* DLL */
+	clrbits_le32(&ch[chn].phy.ca_dll_fine_tune[2], 0x1 << 0);
+	clrbits_le32(&ch[chn].phy.b[0].dll_fine_tune[2], 0x1 << 0);
+	clrbits_le32(&ch[chn].phy.b[1].dll_fine_tune[2], 0x1 << 0);
+	setbits_le32(&ch[chn].phy.b[0].dll_fine_tune[2],
+		(0x1 << 10) | (0x1 << 11) | (0x1 << 13) | (0x1 << 14) |
+		(0x1 << 15) | (0x1 << 17) | (0x1 << 19) | (0x1 << 27) | (0x1 << 31));
+	setbits_le32(&ch[chn].phy.b[1].dll_fine_tune[2],
+		(0x1 << 10) | (0x1 << 11) | (0x1 << 13) | (0x1 << 14) |
+		(0x1 << 15) | (0x1 << 17) | (0x1 << 19) | (0x1 << 27) | (0x1 << 31));
+	setbits_le32(&ch[chn].phy.ca_dll_fine_tune[2],
+		(0x1 << 10) | (0x1 << 11) | (0x1 << 13) | (0x1 << 15) |
+		(0x1 << 16) | (0x1 << 17) | (0x1 << 19) | (0x1 << 27) | (0x1 << 31));
+
+	/* RESETB */
+	clrbits_le32(&ch[chn].phy.ca_dll_fine_tune[0], 0x1 << 3);
+	clrbits_le32(&ch[chn].phy.b[0].dll_fine_tune[0], 0x1 << 3);
+	clrbits_le32(&ch[chn].phy.b[1].dll_fine_tune[0], 0x1 << 3);
+
+	udelay(1);
+
+	/* MPLL 52M */
+	clrsetbits_le32(&ch[chn].phy.shu[0].pll[8],
+		(0x7 << 0) | (0x3 << 18), (0x0 << 0) | (0x1 << 18));
+	clrsetbits_le32(&ch[chn].phy.shu[0].pll[10],
+		(0x7 << 0) | (0x3 << 18), (0x0 << 0) | (0x1 << 18));
+	clrsetbits_le32(&ch[chn].phy.shu[0].pll[5],
+		(0xffff << 16) | 0x1 << 0, sdm_pcw << 16);
+	clrsetbits_le32(&ch[chn].phy.shu[0].pll[7],
+		(0xffff << 16) | 0x1 << 0, sdm_pcw << 16);
+
+	setbits_le32(&ch[chn].phy.ca_dll_fine_tune[0], 0x1 << 1);
+	setbits_le32(&ch[chn].phy.b[0].dll_fine_tune[0], 0x1 << 1);
+	setbits_le32(&ch[chn].phy.b[1].dll_fine_tune[0], 0x1 << 1);
+
+	clrbits_le32(&ch[chn].phy.ca_dll_fine_tune[1], 0x1 << 11);
+	clrbits_le32(&ch[chn].phy.b[0].dll_fine_tune[1], 0x1 << 19);
+	clrbits_le32(&ch[chn].phy.b[1].dll_fine_tune[1], 0x1 << 19);
+
+	clrsetbits_le32(&ch[chn].phy.shu[0].b[0].dq[6],
+		(0x3 << 22) | (0x3 << 24) | (0x3 << 28),
+		(mid_cap_sel << 22) | (vth_sel << 24) | (cap_sel << 28));
+	clrsetbits_le32(&ch[chn].phy.shu[0].b[1].dq[6],
+		(0x3 << 22) | (0x3 << 24) | (0x3 << 28),
+		(mid_cap_sel << 22) | (vth_sel << 24) | (cap_sel << 28));
+	clrsetbits_le32(&ch[chn].phy.shu[0].ca_cmd[6],
+		(0x3 << 22) | (0x3 << 24) | (0x3 << 28),
+		(mid_cap_sel << 22) | (vth_sel << 24) | (cap_sel << 28));
+
+	/* RESETB */
+	setbits_le32(&ch[chn].phy.ca_dll_fine_tune[0], 0x1 << 3);
+	setbits_le32(&ch[chn].phy.b[0].dll_fine_tune[0], 0x1 << 3);
+	setbits_le32(&ch[chn].phy.b[1].dll_fine_tune[0], 0x1 << 3);
+	udelay(1);
+
+	/* PLL EN */
+	setbits_le32(&ch[chn].phy.pll1, 0x1 << 31);
+	setbits_le32(&ch[chn].phy.pll2, 0x1 << 31);
+	udelay(100);
+
+	/* MIDPI Init 1 */
+	setbits_le32(&ch[chn].phy.pll4, (0x1 << 16) | (0x1 << 22));
+	udelay(1);
+
+	/* MIDPI Init 2 */
+	u8 midpi_en;
+	u8 midpi_ckdiv4_en;
+
+	if (freq_group > LP4X_DDR1600) {
+		midpi_en = 0x1;
+		midpi_ckdiv4_en = 0x0;
+	} else {
+		midpi_en = 0x0;
+		midpi_ckdiv4_en = 0x1;
+	}
+
+	u32 dq6_clear = (0x1 << 26) | (0x1 << 27);
+	u32 dq6_set = (midpi_en << 26) | (midpi_ckdiv4_en << 27);
+
+	clrsetbits_le32(&ch[chn].phy.shu[0].b[0].dq[6], dq6_clear, dq6_set);
+	clrsetbits_le32(&ch[chn].phy.shu[0].b[1].dq[6], dq6_clear, dq6_set);
+	clrsetbits_le32(&ch[chn].phy.shu[0].ca_cmd[6], dq6_clear, dq6_set);
+
+	udelay(1);
+	clrsetbits_le32(&ch[chn].phy.ca_dll_fine_tune[3], 0x1 << 19,
+		(0x1 << 13) | (0x1 << 15) | (0x1 << 16) | (0x1 << 17) |
+		((chn ? 0 : 1) << 19));
+	setbits_le32(&ch[chn].phy.b[0].dll_fine_tune[3],
+		(0x1 << 11) | (0x1 << 13) | (0x1 << 14) | (0x1 << 15) |
+		(0x1 << 17));
+	setbits_le32(&ch[chn].phy.b[1].dll_fine_tune[3],
+		(0x1 << 11) | (0x1 << 13) | (0x1 << 14) | (0x1 << 15) |
+		(0x1 << 17));
+	clrbits_le32(&ch[chn].phy.ca_dll_fine_tune[2],
+		(0x1 << 10) | (0x1 << 13) |
+		(0x1 << 15) | (0x1 << 16) | (0x1 << 17) |
+		(0x1 << 19) | (0x1 << 27) | (0x1 << 31));
+
+	clrbits_le32(&ch[chn].phy.b[0].dll_fine_tune[2],
+		(0x1 << 10) | (0x1 << 13) | (0x1 << 14) |
+		(0x1 << 15)  | (0x1 << 17) |
+		(0x1 << 19) | (0x1 << 27) | (0x1 << 31));
+	clrbits_le32(&ch[chn].phy.b[1].dll_fine_tune[2],
+		(0x1 << 10) | (0x1 << 13) |
+		(0x1 << 14) | (0x1 << 15) | (0x1 << 17) |
+		(0x1 << 19) | (0x1 << 27) | (0x1 << 31));
+
+	setbits_le32(&ch[chn].phy.ca_dll_fine_tune[2], 0x1 << 11);
+	clrbits_le32(&ch[chn].phy.b[0].dll_fine_tune[2], 0x1 << 11);
+	clrbits_le32(&ch[chn].phy.b[1].dll_fine_tune[2], 0x1 << 11);
+	udelay(2);
+
+	setbits_le32(&ch[chn].phy.misc_cg_ctrl0, 0x1 << 4);
+	udelay(1);
+
+	/* DLL */
+	setbits_le32(&ch[chn].phy.ca_dll_fine_tune[2], 0x1 << 0);
+	udelay(1);
+	setbits_le32(&ch[chn].phy.b[0].dll_fine_tune[2], 0x1 << 0);
+	setbits_le32(&ch[chn].phy.b[1].dll_fine_tune[2], 0x1 << 0);
+	udelay(1);
+
+	clrbits_le32(&ch[chn].phy.ca_cmd[2], 0x1 << 21);
+	for (size_t i = 0; i < ARRAY_SIZE(regs_bak); i++)
+		write32(regs_bak[i].addr, regs_bak[i].value);
+
+	cke_fix_onoff(CKE_DYNAMIC, CHANNEL_A);
+	cke_fix_onoff(CKE_DYNAMIC, CHANNEL_B);
+
+	if (freq_group == LP4X_DDR3200 || freq_group == LP4X_DDR3600) {
+		setbits_le32(&ch[chn].phy.shu[0].pll[5], 0x1 << 0);
+		setbits_le32(&ch[chn].phy.shu[0].pll[7], 0x1 << 0);
+		setbits_le32(&ch[chn].phy.shu[0].pll[14], 0x1 << 1);
+		setbits_le32(&ch[chn].phy.shu[0].pll20, 0x1 << 1);
+		clrsetbits_le32(&ch[chn].phy.shu[0].pll[14],
+				0xffff << 16, 0x0208 << 16);
+		clrsetbits_le32(&ch[chn].phy.shu[0].pll20,
+				0xffff << 16, 0x0208 << 16);
+		clrsetbits_le32(&ch[chn].phy.shu[0].pll[15],
+				0xffffffff << 0, delta << 16);
+		clrsetbits_le32(&ch[chn].phy.shu[0].pll21,
+				0xffffffff << 0, delta << 16);
+	}
+}
+
+static void dramc_gating_mode(u8 mode)
+{
+	u8 vref_sel = 0, burst = 0;
+
+	if (mode) {
+		vref_sel = 2;
+		burst = 1;
+	}
+
+	for (u8 b = 0; b < 2; b++) {
+		clrsetbits_le32(&ch[0].phy.b[b].dq[6], 0x3 << 14, vref_sel << 14);
+		setbits_le32(&ch[0].phy.b[b].dq[9], 0x1 << 5);
+	}
+
+	clrsetbits_le32(&ch[0].ao.stbcal1, 0x1 << 5, burst << 5);
+	setbits_le32(&ch[0].ao.stbcal, 0x1 << 30);
+
+	for (u8 b = 0; b < 2; b++) {
+		clrbits_le32(&ch[0].phy.b[b].dq[9], (0x1 << 4) | (0x1 << 0));
+		udelay(1);
+		setbits_le32(&ch[0].phy.b[b].dq[9], (0x1 << 4) | (0x1 << 0));
+	}
+}
+
+static void update_initial_settings(u8 freq_group)
+{
+	u8 chn = 0, operate_fsp = get_freq_fsq(freq_group);
+	u16 rx_vref = 0x16;
+
+	if (operate_fsp == FSP_1)
+		rx_vref = 0xb;
+
+	if (operate_fsp == FSP_1) {
+		setbits_le32(&ch[0].ao.shu[0].odtctrl, 0x1 << 0);
+		setbits_le32(&ch[0].phy.shu[0].b[0].dq[7], 0x1 << 15);
+		setbits_le32(&ch[0].phy.shu[0].b[1].dq[7], 0x1 << 15);
+	} else {
+		clrbits_le32(&ch[0].ao.shu[0].odtctrl, 0x1 << 0);
+		clrbits_le32(&ch[0].phy.shu[0].b[0].dq[7], 0x1 << 15);
+		clrbits_le32(&ch[0].phy.shu[0].b[1].dq[7], 0x1 << 15);
+	}
+
+	for (size_t b = 0; b < 2; b++)
+		for (size_t r = 0; r < 2; r++)
+			clrbits_le32(&ch[0].phy.r[r].b[b].rxdvs[2],
+				 (0x1 << 23) | (0x1 << 28) | (0x3 << 30));
+	clrbits_le32(&ch[0].phy.shu[0].ca_cmd[7], 0xf << 0);
+
+	setbits_le32(&ch[0].phy.ca_cmd[3], 0x1 << 10);
+	setbits_le32(&ch[0].phy.ca_cmd[10], 0x1 << 5);
+	clrsetbits_le32(&ch[0].phy.ca_cmd[6], 0x3 << 14, 0x1 << 14);
+	setbits_le32(&ch[0].phy.b[0].dq[3], 0x7 << 5);
+	setbits_le32(&ch[0].phy.b[1].dq[3], 0x7 << 5);
+	setbits_le32(&ch[0].phy.ca_cmd[3], (0x1 << 5) | (0x1 << 7));
+	clrbits_le32(&ch[0].phy.b[0].dq[3], 0x1 << 1);
+	clrbits_le32(&ch[0].phy.b[1].dq[3], 0x1 << 1);
+	setbits_le32(&ch[0].phy.b[0].dq[5], 0x1 << 31);
+	setbits_le32(&ch[0].phy.b[1].dq[5], 0x1 << 31);
+	setbits_le32(&ch[0].phy.ca_cmd[5], 0x1 << 31);
+
+	clrsetbits_le32(&ch[0].phy.ca_cmd[6], 0xf << 16, 0x3 << 16);
+	clrsetbits_le32(&ch[0].phy.misc_imp_ctrl0, (0x1 << 5) | (0x1 << 6),
+		(0x1 << 5) | (0x0 << 6));
+	setbits_le32(&ch[0].phy.b[0].dq[6], 0x1 << 9);
+	setbits_le32(&ch[0].phy.b[1].dq[6], 0x1 << 9);
+	setbits_le32(&ch[0].phy.ca_cmd[6], 0x1 << 9);
+	clrsetbits_le32(&ch[0].phy.b[0].dq[6], 0x3 << 0, 0x1 << 0);
+	clrsetbits_le32(&ch[0].phy.b[1].dq[6], 0x1 << 0, 0x1 << 0);
+	clrsetbits_le32(&ch[0].phy.ca_cmd[6], 0x3 << 0, 0x1 << 0);
+
+	setbits_le32(&ch[0].phy.ca_cmd[6], 0x1 << 6);
+	setbits_le32(&ch[0].phy.b[0].dq[6], 0x1 << 3);
+	setbits_le32(&ch[0].phy.b[1].dq[6], 0x1 << 3);
+	setbits_le32(&ch[0].phy.ca_cmd[6], 0x1 << 3);
+	setbits_le32(&ch[0].phy.b[0].dq[6], 0x1 << 5);
+	setbits_le32(&ch[0].phy.b[1].dq[6], 0x1 << 5);
+	setbits_le32(&ch[0].phy.ca_cmd[6], 0x1 << 5);
+
+	for (u8 b = 0; b < 2; b++) {
+		clrsetbits_le32(&ch[0].phy.shu[0].b[b].dq[5], 0x3f << 0, rx_vref << 0);
+		clrsetbits_le32(&ch[0].phy.b[b].dq[5], 0x3f << 8, rx_vref << 8);
+	}
+
+	for (chn = 0; chn < CHANNEL_MAX; chn++) {
+		setbits_le32(&ch[chn].phy.b[0].dq[8], (0x1 << 0) | (0x1 << 1) | (0x1 << 2));
+		setbits_le32(&ch[chn].phy.b[1].dq[8], (0x1 << 0) | (0x1 << 1) | (0x1 << 2));
+		setbits_le32(&ch[chn].phy.ca_cmd[9], (0x1 << 0) | (0x1 << 1) | (0x1 << 2));
+	}
+	dramc_gating_mode(1);
+
+	setbits_le32(&ch[0].phy.ca_cmd[8], 0x1 << 19);
+	clrbits_le32(&ch[0].phy.ca_cmd[8], 0x1 << 18);
+	clrsetbits_le32(&ch[0].ao.shu[0].misc, 0xf << 0, 0x2 << 0);
+	clrsetbits_le32(&ch[0].ao.shu[0].dqsg, (0x3f << 20) | (0x1 << 16),
+		(0x2a << 20) | (0x1 << 16));
+
+	clrbits_le32(&ch[0].phy.shu[0].b[0].dq[5], 0x3f << 8);
+	clrbits_le32(&ch[0].phy.shu[0].b[1].dq[5], 0x3f << 8);
+	clrbits_le32(&ch[0].phy.shu[0].ca_cmd[5], 0x3f << 8);
+
+	dramc_set_broadcast(DRAMC_BROADCAST_OFF);
+	for (chn = 0; chn < CHANNEL_MAX; chn++) {
+		clrbits_le32(&ch[chn].phy.shu[0].b[0].dq[6], 0x3f << 0);
+		clrbits_le32(&ch[chn].phy.shu[0].b[1].dq[6], 0x3f << 0);
+		clrbits_le32(&ch[chn].phy.shu[0].ca_cmd[6], 0x3f << 0);
+	}
+	dramc_set_broadcast(DRAMC_BROADCAST_ON);
+
+	/* IMP Tracking Init Settings */
+	clrsetbits_le32(&ch[0].ao.shu[0].impcal1,
+		(0x7 << 0) | (0x7 << 17) | (0xff << 20) | (0xf << 28),
+		(0x4 << 0) | (0x4 << 17) | (0x10 << 20) | (0x8 << 28));
+
+	setbits_le32(&ch[0].ao.srefctrl, 0xf << 12);
+	setbits_le32(&ch[0].ao.pre_tdqsck[0], 0x1 << 17);
+	setbits_le32(&ch[0].ao.shu[0].misc, 0xf << 12);
+	clrsetbits_le32(&ch[0].phy.shu[0].b[0].dq[8],
+		(0xffff << 0) | (0x1 << 15) | (0x3ff << 22),
+		(0x7fff << 0) | (0x0 << 15) | (0x3ff << 22));
+	clrsetbits_le32(&ch[0].phy.shu[0].b[1].dq[8],
+		(0xffff << 0) | (0x1 << 15) | (0x3ff << 22),
+		(0x7fff << 0) | (0x0 << 15) | (0x3ff << 22));
+	clrsetbits_le32(&ch[0].phy.shu[0].ca_cmd[8],
+		(0xffff << 0) | (0x1 << 15) | (0x3ff << 22),
+		(0x7fff << 0) | (0x0 << 15) | (0x3ff << 22));
+	setbits_le32(&ch[0].phy.misc_ctrl3, 0x1 << 26);
+	clrbits_le32(&ch[0].phy.shu[0].b[0].dq[7], (0xf << 8) | (0x1 << 12) | (0x1 << 13));
+	clrbits_le32(&ch[0].phy.shu[0].b[1].dq[7], (0xf << 8) | (0x1 << 12) | (0x1 << 13));
+	clrsetbits_le32(&ch[0].ao.clkar, (0xffff << 0) | (0x1 << 15),
+		(0x7fff << 0) | (0x1 << 15));
+
+	clrbits_le32(&ch[0].ao.shu[0].dqsg_retry, 0x1 << 29);
+	clrbits_le32(&ch[0].ao.write_lev, 0x1 << 2);
+	setbits_le32(&ch[0].ao.dummy_rd, 0x1 << 24);
+	clrbits_le32(&ch[0].ao.stbcal2, (0x1 << 0) | (0x1 << 1));
+	setbits_le32(&ch[0].ao.eyescan, (0x1 << 8) | (0x1 << 9) | (0x1 << 10));
+	setbits_le32(&ch[0].ao.shu[0].odtctrl, (0x1 << 2) | (0x1 << 3));
+
+	setbits_le32(&ch[0].phy.shu[0].b[0].dll[0], 0x1 << 0);
+	setbits_le32(&ch[0].phy.shu[0].b[1].dll[0], 0x1 << 0);
+	setbits_le32(&ch[0].phy.ca_dll_fine_tune[1], 0x1 << 21);
+
+	setbits_le32(&ch[0].ao.perfctl0, (0x1 << 15) | (0x1 << 19) | (0x1 << 26));
+	setbits_le32(&ch[0].ao.srefctrl, 0x1 << 22);
+	clrsetbits_le32(&ch[0].ao.shuctrl1, 0xff << 0, 0x1a << 0);
+	setbits_le32(&ch[0].phy.b[0].dq[6], (0x1 << 7) | (0x1 << 12));
+	setbits_le32(&ch[0].phy.b[1].dq[6], (0x1 << 7) | (0x1 << 12));
+	setbits_le32(&ch[0].phy.ca_cmd[6], (0x1 << 7) | (0x1 << 12));
+	setbits_le32(&ch[0].ao.stbcal2, 0x1 << 16);
+	clrsetbits_le32(&ch[0].phy.shu[0].b[0].dq[7],
+		(0x7 << 29) | (0x1 << 28) | (0x7 << 25) | (0x1 << 24),
+		(0x0 << 29) | (0x1 << 28) | (0x1 << 25) | (0x1 << 24));
+	clrsetbits_le32(&ch[0].phy.shu[0].b[1].dq[7],
+		(0x7 << 29) | (0x1 << 28) | (0x7 << 25) | (0x1 << 24),
+		(0x0 << 29) | (0x1 << 28) | (0x1 << 25) | (0x1 << 24));
+
+	/* Disable RODT tracking */
+	clrbits_le32(&ch[0].ao.shu[0].rodtenstb, 0x1 << 0);
+
+	/* Rx Gating tracking settings */
+	clrsetbits_le32(&ch[0].ao.shu[0].dqsg,
+		(0x1 << 11) | (0xf << 12), (0x1 << 11) | (0x9 << 12));
+	clrbits_le32(&ch[0].ao.shu[0].rk[0].dqscal, (0x1 << 7) | (0x1 << 15));
+	clrbits_le32(&ch[0].ao.shu[0].rk[1].dqscal, (0x1 << 7) | (0x1 << 15));
+	clrsetbits_le32(&ch[0].ao.shu[0].stbcal,
+		(0x7 << 4) | (0x1 << 8), (0x1 << 4) | (0x1 << 8));
+
+	clrsetbits_le32(&ch[0].phy.b[0].dq[9], 0xff << 8, 0x4 << 8);
+	clrsetbits_le32(&ch[0].phy.b[1].dq[9], 0xff << 8, 0x4 << 8);
+	clrbits_le32(&ch[0].phy.ca_cmd[10], 0xff << 8);
+
+	setbits_le32(&ch[0].phy.shu[0].b[0].dq[8], 0x1 << 24);
+	setbits_le32(&ch[0].phy.shu[0].b[1].dq[8], 0x1 << 24);
+
+	/* Enable WDQS */
+	clrsetbits_le32(&ch[0].phy.shu[0].b[0].dll[1],
+		(0x1 << 10) | (0x1 << 16) | (0x1 << 17),
+		(0x1 << 10) | (!operate_fsp << 16) | (0x1 << 17));
+	clrsetbits_le32(&ch[0].phy.shu[0].b[1].dll[1],
+		(0x1 << 10) | (0x1 << 16) | (0x1 << 17),
+		(0x1 << 10) | (!operate_fsp << 16) | (0x1 << 17));
+	setbits_le32(&ch[0].ao.shu[0].odtctrl, (0x1 << 0) | (0x1 << 30) | (0x1 << 31));
+	setbits_le32(&ch[0].phy.shu[0].b[0].dq[7], 0x1 << 15);
+	setbits_le32(&ch[0].phy.shu[0].b[1].dq[7], 0x1 << 15);
+	setbits_le32(&ch[0].ao.drsctrl, 0x1 << 19);
+	setbits_le32(&ch[0].ao.refctrl0, 0x1 << 28);
+	setbits_le32(&ch[0].ao.zqcs, 0x1 << 19);
+	setbits_le32(&ch[0].ao.dummy_rd, 0x3 << 26);
+	setbits_le32(&ch[0].ao.shuctrl2, 0x1 << 8);
+	clrsetbits_le32(&ch[0].ao.shuctrl3, 0xff << 24, 0xb << 24);
+	setbits_le32(&ch[0].phy.misc_ctrl3, 0x1 << 27);
+	setbits_le32(&ch[0].phy.b[0].dll_fine_tune[1], 0x3 << 20);
+	setbits_le32(&ch[0].phy.b[1].dll_fine_tune[1], 0x3 << 20);
+	setbits_le32(&ch[0].phy.ca_dll_fine_tune[1], 0x1 << 20);
+	clrbits_le32(&ch[0].phy.misc_ctrl0, 0x1 << 27);
+	setbits_le32(&ch[0].phy.misc_rxdvs[2], 0x1 << 8);
+	setbits_le32(&ch[0].ao.clkctrl, 0x1 << 7);
+	setbits_le32(&ch[0].ao.refctrl1, 0x1 << 7);
+	clrsetbits_le32(&ch[0].ao.shuctrl, (0x1 << 2) | (0x3 << 6) | (0x3 << 26),
+		(0x0 << 2) | (0x3 << 6) | (0x3 << 26));
+	setbits_le32(&ch[0].ao.shuctrl2, (0x1 << 31) | (0x3 << 10));
+	clrbits_le32(&ch[0].ao.stbcal2, 0xf << 4);
+	clrbits_le32(&ch[0].ao.pre_tdqsck[0], 0x3 << 19);
+
+	setbits_le32(&ch[0].ao.ckectrl, 0x1 << 22);
+	clrsetbits_le32(&ch[0].phy.ca_tx_mck, (0x1 << 31) | (0x1f << 21) | (0x1f << 26),
+		(0x1 << 31) | (0xa << 21) | (0xa << 26));
+
+	setbits_le32(&ch[0].ao.ckectrl, 0x1 << 23);
+
+	/* Gating error problem happened in M17
+	 * has been solved by setting this RG as 0 */
+	clrbits_le32(&ch[0].ao.shu[0].rodtenstb, 0x1 << 31);
+
+}
+
+static void dramc_power_on_sequence(void)
+{
+	for (size_t chn = 0; chn < CHANNEL_MAX; chn++)
+		clrbits_le32(&ch[chn].phy.misc_ctrl1, 0x1 << 13);
+
+	dramc_cke_fix_onoff(CHANNEL_A, false, true);
+	dramc_cke_fix_onoff(CHANNEL_B, false, true);
+
+	udelay(200);
+	for (size_t chn = 0; chn < CHANNEL_MAX; chn++)
+		setbits_le32(&ch[chn].phy.misc_ctrl1, 0x1 << 13);
+
+	for (size_t chn = 0; chn < CHANNEL_MAX; chn++)
+		setbits_le32(&ch[chn].ao.dramc_pd_ctrl, 0x1 << 26);
+
+	udelay(2000);
+	dramc_cke_fix_onoff(CHANNEL_A, true, false);
+	dramc_cke_fix_onoff(CHANNEL_B, true, false);
+	udelay(2);
+}
+
+static void ddr_phy_reserved_rg_setting(u8 freq_group)
+{
+	u32 hyst_sel = 0, midpi_cap_sel = 0, lp3_sel = 0;
+
+	if (get_freq_fsq(freq_group) == FSP_0) {
+		hyst_sel = 1;
+		midpi_cap_sel = 1;
+	}
+
+	if (freq_group == LP4X_DDR1600)
+		lp3_sel = 1;
+
+	/* fine tune */
+	for (u8 chn = 0; chn < CHANNEL_MAX; chn++)
+		clrsetbits_le32(&ch[chn].phy.shu[0].ca_cmd[6], 0xFFFF << 6,
+			(0x1 << 6) | ((!chn) << 7) | (hyst_sel << 8) |
+			(midpi_cap_sel << 9) | (0x1 << 10) | (0x3 << 17) | (lp3_sel << 20));
+
+	for (u8 chn = 0; chn < CHANNEL_MAX; chn++) {
+		clrsetbits_le32(&ch[chn].phy.shu[0].ca_dll[1],
+			(0xf << 9) | (0x1f << 16) | (0x7ff << 21),
+			(0x1 << 8) | (0x7 << 13) | (0x4 << 16));
+
+		for (u8 b = 0; b < 2; b++) {
+			clrsetbits_le32(&ch[chn].phy.shu[0].b[b].dq[6],
+				(0x1f << 6) | (0x3f << 11) | (0x7 << 19),
+				(0x1 << 6) | (hyst_sel << 8) | (midpi_cap_sel << 9)
+				| (0x1 << 10)  | (0x3 << 17) | (lp3_sel << 20));
+
+			clrsetbits_le32(&ch[chn].phy.shu[0].b[b].dll[1],
+				(0x3 << 8) | (0x3 << 11) | (0x7 << 14) | (0x3fff << 18),
+				(0x1 << 10) | (0x1 << 13) | (0x1 << 17));
+		}
+	}
+}
+
+static void dramc_duty_set_clk_delay(u8 chn, s8 clkDelay)
+{
+	u8 dly, dlyb, revb0, revb1;
+
+	dly = (clkDelay < 0) ? -clkDelay : 0;
+	dlyb = (clkDelay < 0) ? 0 : clkDelay;
+	revb0 = dly ? 1 : 0;
+	revb1 = dlyb ? 1 : 0;
+
+	for (u8 r = 0; r < RANK_MAX; r++) {
+		clrsetbits_le32(&ch[chn].phy.shu[0].rk[r].ca_cmd[1],
+			(0xf << 24) | (0xf << 28), (dly << 24) | (dly << 28));
+		clrsetbits_le32(&ch[chn].phy.shu[0].rk[r].ca_cmd[0],
+			(0xf << 24) | (0xf << 28), (dlyb << 24) | (dlyb << 28));
+	}
+	clrsetbits_le32(&ch[chn].phy.shu[0].ca_cmd[3],
+		(0x3 << 8), (revb0 << 8) | (revb1 << 9));
+}
+
+static void dramc_duty_set_dqs_delay(u8 chn, const s8 *s_dqsDelay)
+{
+	u8 dly, dlyb, revb0, revb1;
+	s8 dqsDelay;
+
+	for (u8 r = 0; r < RANK_MAX; r++)
+		for (u8 dqs = 0; dqs < DQS_NUMBER; dqs++) {
+			dqsDelay = s_dqsDelay[dqs];
+
+			dly = (dqsDelay < 0) ? -dqsDelay : 0;
+			dlyb = (dqsDelay < 0) ? 0 : dqsDelay;
+			revb0 = dly ? 1 : 0;
+			revb1 = dlyb ? 1 : 0;
+			clrsetbits_le32(&ch[chn].phy.shu[0].rk[r].b[dqs].dq[1],
+				(0xf << 24) | (0xf << 28) | (0xf << 16) | (0xf << 20),
+				(dly << 24) | (dly << 28) | (dlyb << 16) | (dlyb << 20));
+		}
+	clrsetbits_le32(&ch[chn].phy.shu[0].b[0].dll[1],
+		0x3 << 8, (revb0 << 8) | (revb1 << 9));
+}
+
+static void dramc_duty_calibration(const struct sdram_params *params, u8 freq_group)
+{
+	s8 clkDelay[CHANNEL_MAX] = {0x0};
+	s8 dqsDelay[CHANNEL_MAX][DQS_NUMBER] = {0x0};
+
+	switch (freq_group) {
+	case LP4X_DDR1600:
+		clkDelay[CHANNEL_A] = 2;
+		clkDelay[CHANNEL_B] = 1;
+		dqsDelay[CHANNEL_A][0] = 0;
+		dqsDelay[CHANNEL_A][1] = 0;
+		dqsDelay[CHANNEL_B][0] = -1;
+		dqsDelay[CHANNEL_B][1] = 0;
+		break;
+	case LP4X_DDR2400:
+		clkDelay[CHANNEL_A] = clkDelay[CHANNEL_B] = 0;
+		dqsDelay[CHANNEL_A][0] = 0;
+		dqsDelay[CHANNEL_A][1] = -2;
+		dqsDelay[CHANNEL_B][0] = 0;
+		dqsDelay[CHANNEL_B][1] = -2;
+		break;
+	case LP4X_DDR3200:
+		clkDelay[CHANNEL_A] = clkDelay[CHANNEL_B] = 1;
+		dqsDelay[CHANNEL_A][0] = 1;
+		dqsDelay[CHANNEL_A][1] = -2;
+		dqsDelay[CHANNEL_B][0] = 1;
+		dqsDelay[CHANNEL_B][1] = -2;
+		break;
+	case LP4X_DDR3600:
+		clkDelay[CHANNEL_A] = 2;
+		clkDelay[CHANNEL_B] = 1;
+		dqsDelay[CHANNEL_A][0] = 0;
+		dqsDelay[CHANNEL_A][1] = 0;
+		dqsDelay[CHANNEL_B][0] = -1;
+		dqsDelay[CHANNEL_B][1] = 0;
+		break;
+	default:
+		die("Invalid DDR frequency group %u\n", freq_group);
+		return;
+	}
+
+	for (u8 chn = 0; chn < CHANNEL_MAX; chn++) {
+		dramc_duty_set_clk_delay(chn, clkDelay[chn]);
+		dramc_duty_set_dqs_delay(chn, dqsDelay[chn]);
+	}
+}
+
+static u8 dramc_zq_calibration(u8 chn, u8 rank)
+{
+	const u32 TIMEOUT_US = 100;
+
+	struct reg_value regs_bak[] = {
+		{&ch[chn].ao.mrs, 0x0},
+		{&ch[chn].ao.dramc_pd_ctrl, 0x0},
+		{&ch[chn].ao.ckectrl, 0x0},
+	};
+
+	for (size_t i = 0; i < ARRAY_SIZE(regs_bak); i++)
+		regs_bak[i].value = read32(regs_bak[i].addr);
+
+	setbits_le32(&ch[chn].ao.dramc_pd_ctrl, 0x1 << 26);
+	dramc_cke_fix_onoff(chn, true, false);
+
+	clrsetbits_le32(&ch[chn].ao.mrs, MRS_MRSRK_MASK, rank << MRS_MRSRK_SHIFT);
+	setbits_le32(&ch[chn].ao.mpc_option, 0x1 << MPC_OPTION_MPCRKEN_SHIFT);
+	setbits_le32(&ch[chn].ao.spcmd, 0x1 << SPCMD_ZQCEN_SHIFT);
+
+	if (!wait_us(TIMEOUT_US, read32(&ch[chn].nao.spcmdresp) & 0x1 << 4)) {
+		dramc_dbg("ZQCAL Start fail (time out)\n");
+		return 1;
+	}
+
+	clrbits_le32(&ch[chn].ao.spcmd, 0x1 << SPCMD_ZQCEN_SHIFT);
+
+	udelay(1);
+	setbits_le32(&ch[chn].ao.spcmd, 0x1 << SPCMD_ZQLATEN_SHIFT);
+
+	if (!wait_us(TIMEOUT_US, read32(&ch[chn].nao.spcmdresp) & 0x1 << 6)) {
+		dramc_dbg("ZQCAL Latch fail (time out)\n");
+		return 1;
+	}
+
+	clrbits_le32(&ch[chn].ao.spcmd, 0x1 << SPCMD_ZQLATEN_SHIFT);
+	udelay(1);
+	for (size_t i = 0; i < ARRAY_SIZE(regs_bak); i++)
+		write32(regs_bak[i].addr, regs_bak[i].value);
+
+	return 0;
+}
+
+u8 MR01Value[FSP_MAX] = {0x26, 0x56};
+u8 MR13Value = (1 << 4) | (1 << 3);
+static void dramc_mode_reg_init(u8 freq_group)
+{
+	u8 MR02Value[FSP_MAX] = {0x12, 0x12};
+	u8 MR03Value = 0x30;
+	u8 MR11Value[FSP_MAX] = {0x0, 0x23};
+	u8 MR12Value[CHANNEL_MAX][RANK_MAX][FSP_MAX] = {
+		{{0x5d, 0x5d}, {0x5d, 0x5d} }, {{0x5d, 0x5d}, {0x5d, 0x5d} },
+	};
+	u8 MR14Value[CHANNEL_MAX][RANK_MAX][FSP_MAX] = {
+		{{0x5d, 0x10}, {0x5d, 0x10} }, {{0x5d, 0x10}, {0x5d, 0x10} },
+	};
+
+	u8 MR22Value[FSP_MAX] = {0x38, 0x34};
+
+	MR01Value[FSP_0] &= 0x8F;
+	MR01Value[FSP_1] &= 0x8F;
+
+	if (freq_group == LP4X_DDR1600) {
+		MR02Value[0] = 0x12;
+		MR02Value[1] = 0x00;
+
+		MR01Value[FSP_0] |= (0x5 << 4);
+		MR01Value[FSP_1] |= (0x5 << 4);
+	} else if (freq_group == LP4X_DDR2400) {
+		MR02Value[0] = 0x24;
+		MR02Value[1] = 0x2d;
+
+		MR01Value[FSP_0] |= (0x5 << 4);
+		MR01Value[FSP_1] |= (0x5 << 4);
+	} else if (freq_group == LP4X_DDR3200) {
+		MR02Value[0] = 0x12;
+		MR02Value[1] = 0x2d;
+
+		MR01Value[FSP_0] |= (0x5 << 4);
+		MR01Value[FSP_1] |= (0x5 << 4);
+	} else if (freq_group == LP4X_DDR3600) {
+		MR02Value[0] = 0x1A;
+		MR02Value[1] = 0x36;
+
+		MR01Value[FSP_0] |= (0x6 << 4);
+		MR01Value[FSP_1] |= (0x6 << 4);
+	}
+
+	u8 operate_fsp = get_freq_fsq(freq_group);
+	dramc_dbg("%s operate_fsp:%d, freq:%d\n", __func__, operate_fsp, freq_group);
+
+	u8 chn, rank;
+	u32 broadcast_bak = dramc_get_broadcast();
+	dramc_set_broadcast(DRAMC_BROADCAST_OFF);
+	dramc_power_on_sequence();
+
+	for (chn = 0; chn < CHANNEL_MAX; chn++) {
+		for (rank = 0; rank < 2; rank++) {
+			clrsetbits_le32(&ch[chn].ao.mrs, 0x3 << 24, rank << 24);
+
+			dramc_zq_calibration(chn, rank);
+
+			for (uint32_t fsp = FSP_0; fsp < FSP_MAX; fsp++) {
+				dramc_dbg("chn:%d,rank:%d,fsp%d\n", chn, rank, fsp);
+
+				if (fsp == FSP_0)
+					MR13Value = (1 << 4) | (1 << 3);
+				else
+					MR13Value |= 0x40;
+				dramc_mode_reg_write(chn, 0xd, MR13Value);
+				dramc_mode_reg_write(chn, 0xc,
+					MR12Value[chn][rank][fsp]);
+				dramc_mode_reg_write(chn, 0x1, MR01Value[fsp]);
+				dramc_mode_reg_write(chn, 0x2, MR02Value[fsp]);
+				dramc_mode_reg_write(chn, 0xb, MR11Value[fsp]);
+
+				dramc_mode_reg_write(chn, 0x16, MR22Value[fsp]);
+				dramc_mode_reg_write(chn, 0xe,
+					MR14Value[chn][rank][fsp]);
+
+				/* MR3 set write-DBI and read-DBI */
+				dramc_mode_reg_write(chn, 0x3, MR03Value);
+			}
+
+			if (operate_fsp == FSP_0)
+				MR13Value &= 0x3f;
+			else
+				MR13Value |= 0xc0;
+			dramc_mode_reg_write(chn, 0xd, MR13Value);
+		}
+
+		clrsetbits_le32(&ch[chn].ao.shu[0].hwset_mr13,
+			(0x1fff << 0) | (0xff << 16),
+			(13 << 0) | ((MR13Value | (0x1 << 3)) << 16));
+		clrsetbits_le32(&ch[chn].ao.shu[0].hwset_vrcg,
+			(0x1fff << 0) | (0xff << 16),
+			(13 << 0) | ((MR13Value | (0x1 << 3)) << 16));
+		clrsetbits_le32(&ch[chn].ao.shu[0].hwset_mr2,
+			(0x1fff << 0) | (0xff << 16),
+			(2 << 0) | (MR02Value[operate_fsp] << 16));
+	}
+
+	clrsetbits_le32(&ch[0].ao.mrs, 0x3 << 24, RANK_0 << 24);
+	clrsetbits_le32(&ch[1].ao.mrs, 0x3 << 24, RANK_0 << 24);
+	dramc_set_broadcast(broadcast_bak);
+}
+
+static void auto_refresh_cke_off(void)
+{
+	u32 broadcast_bak = dramc_get_broadcast();
+	dramc_set_broadcast(DRAMC_BROADCAST_OFF);
+
+	for (u8 chn = 0; chn < CHANNEL_MAX; chn++)
+		setbits_le32(&ch[chn].ao.refctrl0, 0x1 << 29);
+
+	udelay(3);
+	cke_fix_onoff(CKE_FIXOFF, CHANNEL_A);
+	cke_fix_onoff(CKE_FIXOFF, CHANNEL_B);
+
+	dramc_set_broadcast(broadcast_bak);
+}
+
+static void dramc_setting_DDR1600(void)
+{
+	clrsetbits_le32(&ch[0].ao.shu[0].rankctl,
+		(0xf << 20) | (0xf << 24) | (0xf << 28),
+		(0x0 << 20) | (0x0 << 24) | (0x2 << 28));
+	clrbits_le32(&ch[0].ao.shu[0].ckectrl, 0x3 << 24);
+	clrbits_le32(&ch[0].ao.shu[0].odtctrl, (0x1 << 0) | (0x3 << 30));
+
+	clrbits_le32(&ch[0].phy.shu[0].b[0].dq[7], 0x1 << 15);
+	clrbits_le32(&ch[0].phy.shu[0].b[1].dq[7], 0x1 << 15);
+
+	clrsetbits_le32(&ch[0].ao.shu[0].selph_dqs0, 0x77777777, SELPH_DQS0_1600);
+	clrsetbits_le32(&ch[0].ao.shu[0].selph_dqs1, 0x77777777, SELPH_DQS1_1600);
+	clrsetbits_le32(&ch[0].ao.shu[0].wodt, (0x1 << 29) | (0x1 << 31),
+		(0x0 << 29) | (0x1 << 31));
+	clrsetbits_le32(&ch[0].ao.shu[0].dqs2dq_tx, 0x1f << 0, 0x4 << 0);
+
+	for (size_t rank = 0; rank < 2; rank++) {
+		int value = ((rank == 0) ? 0x1a : 0x1e);
+		clrbits_le32(&ch[0].ao.shu[0].rk[rank].dqsien, (0x7f << 0) | (0x7f << 8));
+		clrsetbits_le32(&ch[0].ao.shu[0].rk[rank].fine_tune,
+			(0x3f << 0) | (0x3f << 8) | (0x3f << 16) | (0x3f << 24),
+			(value << 0) | (value << 8) | (value << 16) | (value << 24));
+
+		clrsetbits_le32(&ch[0].ao.shu[0].rk[rank].selph_dq[0],
+			(0x7 << 8) | (0x7 << 12) |
+			(0x7 << 16) | (0x7 << 20) | (0x7 << 24) | (0x7 << 28),
+			(0x2 << 8) | (0x2 << 12) |
+			(0x1 << 16) | (0x1 << 20) | (0x1 << 24) | (0x1 << 28));
+		clrsetbits_le32(&ch[0].ao.shu[0].rk[rank].selph_dq[1],
+			(0x7 << 8) | (0x7 << 12) |
+			(0x7 << 16) | (0x7 << 20) | (0x7 << 24)	| (0x7 << 28),
+			(0x2 << 8) | (0x2 << 12) |
+			(0x1 << 16) | (0x1 << 20) | (0x1 << 24) | (0x1 << 28));
+		clrsetbits_le32(&ch[0].ao.shu[0].rk[rank].selph_dq[2],
+			0x77777777,
+			(0x1 << 0) | (0x1 << 4) | (0x1 << 8) | (0x1 << 12) |
+			(0x7 << 16) | (0x7 << 20) | (0x7 << 24) | (0x7 << 28));
+		clrsetbits_le32(&ch[0].ao.shu[0].rk[rank].selph_dq[3],
+			0x77777777,
+			(0x1 << 0) | (0x1 << 4) | (0x1 << 8) | (0x1 << 12) |
+			(0x7 << 16) | (0x7 << 20) | (0x7 << 24) | (0x7 << 28));
+	}
+
+	clrsetbits_le32(&ch[0].ao.shu[0].dqsg_retry, (0x1 << 2) | (0xf << 8),
+		(0x0 << 2) | (0x3 << 8));
+	clrsetbits_le32(&ch[0].phy.b[0].dq[5], 0x7 << 20, 0x4 << 20);
+
+	clrsetbits_le32(&ch[0].phy.b[0].dq[7], (0x3 << 4) | (0x1 << 7) | (0x1 << 13),
+			(0x2 << 4) | (0x0 << 7) | (0x0 << 13));
+	clrsetbits_le32(&ch[0].phy.b[1].dq[5], 0x7 << 20, 0x4 << 20);
+	clrbits_le32(&ch[0].phy.b[0].dq[7], (0x1 << 7) | (0x1 << 13));
+
+	for (size_t r = 0; r < 2; r++) {
+		int value = ((r == 0) ? 0x1a : 0x26);
+		for (size_t b = 0; b < 2; b++)
+			clrsetbits_le32(&ch[0].phy.shu[0].rk[r].b[b].dq[7],
+				(0x3f << 8) | (0x3f << 16),
+				(value << 8) | (value << 16));
+	}
+}
+
+static void dramc_setting_DDR2400(void)
+{
+	clrsetbits_le32(&ch[0].ao.shu[0].rankctl,
+		(0xf << 20) | (0xf << 24) | (0xf << 28),
+		(0x2 << 20) | (0x2 << 24) | (0x4 << 28));
+	clrsetbits_le32(&ch[0].ao.shu[0].ckectrl, 0x3 << 24, 0x3 << 24);
+	setbits_le32(&ch[0].ao.shu[0].odtctrl, (0x1 << 0) | (0x1 << 30) | (0x1 << 31));
+
+	setbits_le32(&ch[0].phy.shu[0].b[0].dq[7], 0x1 << 15);
+	setbits_le32(&ch[0].phy.shu[0].b[1].dq[7], 0x1 << 15);
+
+	clrsetbits_le32(&ch[0].ao.shu[0].selph_dqs0, 0x77777777, SELPH_DQS0_2400);
+	clrsetbits_le32(&ch[0].ao.shu[0].selph_dqs1, 0x77777777, SELPH_DQS1_2400);
+	clrsetbits_le32(&ch[0].ao.shu[0].wodt,
+		(0x1 << 29) | (0x1 << 31), (0x1 << 29) | (0x0 << 31));
+	clrsetbits_le32(&ch[0].ao.shu[0].dqs2dq_tx, 0x1f << 0, 0x7 << 0);
+
+	for (size_t rank = 0; rank < 2; rank++) {
+		int value = ((rank == 0) ? 0x19 : 0x1f);
+		clrsetbits_le32(&ch[0].ao.shu[0].rk[rank].dqsien,
+			(0x7f << 0) | (0x7f << 8), (value << 0) | (value  << 8));
+		clrsetbits_le32(&ch[0].ao.shu[0].rk[rank].fine_tune,
+			(0x3f << 0) | (0x3f << 8) | (0x3f << 16) | (0x3f << 24),
+			(0x14 << 0) | (0x14 << 8) | (0x14 << 16) | (0x14 << 24));
+
+		clrsetbits_le32(&ch[0].ao.shu[0].rk[rank].selph_dq[0],
+			(0x7 << 8) | (0x7 << 12) |
+			(0x7 << 16) | (0x7 << 20) | (0x7 << 24) | (0x7 << 28),
+			(0x3 << 8) | (0x3 << 12) |
+			(0x3 << 16) | (0x3 << 20) | (0x3 << 24) | (0x3 << 28));
+		clrsetbits_le32(&ch[0].ao.shu[0].rk[rank].selph_dq[1],
+			(0x7 << 8) | (0x7 << 12) |
+			(0x7 << 16) | (0x7 << 20) | (0x7 << 24) | (0x7 << 28),
+			(0x3 << 8) | (0x3 << 12) |
+			(0x3 << 16) | (0x3 << 20) | (0x3 << 24) | (0x3 << 28));
+		clrsetbits_le32(&ch[0].ao.shu[0].rk[rank].selph_dq[2],
+			0x77777777,
+			(0x2 << 0) | (0x2 << 4) | (0x2 << 8) | (0x2 << 12) |
+			(0x0 << 16) | (0x0 << 20) | (0x0 << 24) | (0x0 << 28));
+		clrsetbits_le32(&ch[0].ao.shu[0].rk[rank].selph_dq[3],
+			0x77777777,
+			(0x2 << 0) | (0x2 << 4) | (0x2 << 8) | (0x2 << 12) |
+			(0x0 << 16) | (0x0 << 20) | (0x0 << 24) | (0x0 << 28));
+	}
+
+	clrsetbits_le32(&ch[0].ao.shu[0].dqsg_retry,
+		(0x1 << 2) | (0xf << 8), (0x1 << 2) | (0x4 << 8));
+	clrsetbits_le32(&ch[0].phy.b[0].dq[5], 0x7 << 20, 0x3 << 20);
+	clrsetbits_le32(&ch[0].phy.b[0].dq[7], (0x3 << 4) | (0x1 << 7) | (0x1 << 13),
+		(0x1 << 4) | (0x1 << 7) | (0x1 << 13));
+	clrsetbits_le32(&ch[0].phy.b[1].dq[5], 0x7 << 20, 0x3 << 20);
+	clrsetbits_le32(&ch[0].phy.b[0].dq[7],
+		(0x1 << 7) | (0x1 << 13), (0x1 << 7) | (0x1 << 13));
+
+	for (size_t r = 0; r < 2; r++) {
+		for (size_t b = 0; b < 2; b++)
+			clrsetbits_le32(&ch[0].phy.shu[0].rk[r].b[b].dq[7],
+				(0x3f << 8) | (0x3f << 16), (0x14 << 8) | (0x14 << 16));
+	}
+}
+
+static void dramc_setting_DDR3600(void)
+{
+	clrsetbits_le32(&ch[0].ao.shu[0].selph_dqs0, 0x77777777, SELPH_DQS0_3600);
+	clrsetbits_le32(&ch[0].ao.shu[0].selph_dqs1, 0x77777777, SELPH_DQS1_3600);
+}
+
+static void dramc_setting(const struct sdram_params *params, u8 freq_group)
+{
+	u8 chn;
+
+	auto_refresh_cke_off();
+	dramc_set_broadcast(DRAMC_BROADCAST_OFF);
+
+	for (chn = 0; chn < CHANNEL_MAX; chn++)
+		setbits_le32(&ch[chn].phy.ckmux_sel, (0x1 << 0) | (0x1 << 1));
+
+	dramc_set_broadcast(DRAMC_BROADCAST_ON);
+
+	setbits_le32(&ch[0].phy.misc_cg_ctrl0, 0x1 << 0);
+
+	/* 26M */
+	clrbits_le32(&ch[0].phy.misc_cg_ctrl0, 0x3 << 4);
+	clrbits_le32(&ch[0].phy.misc_ctrl0, 0x1 << 17);
+
+	clrbits_le32(&ch[0].phy.misc_spm_ctrl1, 0xf << 0);
+	write32(&ch[0].phy.misc_spm_ctrl2, 0x0);
+	write32(&ch[0].phy.misc_spm_ctrl0, 0x0);
+	write32(&ch[0].phy.misc_cg_ctrl2, 0x6003bf);
+	write32(&ch[0].phy.misc_cg_ctrl4, 0x333f3f00);
+	setbits_le32(&ch[0].phy.shu[0].pll[1], (0x1 << 4) | (0x7 << 1));
+	clrsetbits_le32(&ch[0].phy.shu[0].b[0].dq[7], 0x3f << 0, 0x10 << 0);
+	clrbits_le32(&ch[0].phy.shu[0].b[1].dq[7], 0x0f << 0);
+
+	for (size_t b = 0; b <= 2; b += 2)
+		clrsetbits_le32(&ch[0].phy.shu[0].pll[4 + b],
+			 (0x3 << 18) | (0x3 << 24) | (0x3 << 26),
+			 (0x2 << 18) | (0x1 << 24) | (0x1 << 26));
+
+	clrbits_le32(&ch[0].phy.shu[0].pll[14], 0x1 << 1);
+	clrbits_le32(&ch[0].phy.shu[0].pll20, 0x1 << 1);
+	clrbits_le32(&ch[0].phy.ca_cmd[2], (0x3 << 16) | (0x3 << 20));
+	for (size_t b = 0; b < 2; b++)
+		clrbits_le32(&ch[0].phy.b[b].dq[2], (0x3 << 16) | (0x3 << 20));
+	for (size_t b = 0; b < 2; b++)
+		clrsetbits_le32(&ch[0].phy.b[b].dq[9], 0x7 << 28, 0x1 << 28);
+	clrbits_le32(&ch[0].phy.ca_cmd[10], 0x7 << 28);
+
+	setbits_le32(&ch[0].phy.b0_rxdvs[0], 0x1 << 28);
+	setbits_le32(&ch[0].phy.b1_rxdvs[0], 0x1 << 28);
+	setbits_le32(&ch[0].phy.b0_rxdvs[0], 0x1 << 9);
+	setbits_le32(&ch[0].phy.b1_rxdvs[0], 0x1 << 9);
+
+	for (size_t b = 0; b < 2; b++) {
+		for (size_t r = 0; r < 2; r++)
+			setbits_le32(&ch[0].phy.r[r].b[b].rxdvs[2], 0x1 << 29);
+		clrsetbits_le32(&ch[0].phy.shu[0].b[b].dq[5], 0x7 << 20, 0x3 << 20);
+
+		for (size_t r = 0; r < 2; r++) {
+			clrsetbits_le32(&ch[0].phy.r[r].b[b].rxdvs[1],
+				(0xffff << 0) | (0xffff << 16), (0x2 << 0) | (0x2 << 16));
+			clrsetbits_le32(&ch[0].phy.r[r].b[b].rxdvs[2],
+				(0x1 << 23) | (0x1 << 28) | (0x3 << 30),
+				(0x1 << 23) | (0x1 << 28) | (0x2 << 30));
+		}
+	}
+
+	clrbits_le32(&ch[0].phy.b0_rxdvs[0], 0x1 << 28);
+	clrbits_le32(&ch[0].phy.b1_rxdvs[0], 0x1 << 28);
+
+	for (size_t b = 0; b < 2; b++) {
+		setbits_le32(&ch[0].phy.b[b].dq[9], 0x1 << 0);
+		for (size_t r = 0; r < 2; r++)
+			clrsetbits_le32(&ch[0].phy.shu[0].rk[r].b[b].dq[7],
+				(0x3f << 8) | (0x3f << 16), (0x1f << 8) | (0x1f << 16));
+
+		clrsetbits_le32(&ch[0].phy.b[b].dq[4],
+			(0x7f << 0) | (0x7f << 8), (0x10 << 0) | (0x10 << 8));
+		clrsetbits_le32(&ch[0].phy.b[b].dq[5],
+			(0xff << 0) | (0x3f << 8) | (0x1 << 16) | (0xf << 20) | (0x1 << 24),
+			(0x10 << 0) | (0xe << 8) | (0x1 << 16) | (0x1 << 20) | (0x0 << 24));
+		clrsetbits_le32(&ch[0].phy.b[b].dq[6],
+			(0x1 << 4) | (0x1 << 7) | (0x1 << 12) | (0x3 << 14) |
+			(0xf << 16) | (0x1 << 24),
+			(0x0 << 4) | (0x1 << 7) | (0x1 << 12) | (0x0 << 14) |
+			(0x3 << 16) | (0x1 << 24));
+		clrsetbits_le32(&ch[0].phy.b[b].dq[5],
+			(0xff << 0) | (0x1 << 25), (0x0 << 0) | (0x1 << 25));
+	}
+
+	setbits_le32(&ch[0].phy.ca_cmd[3], (0x3 << 2) | (0x1 << 7));
+	clrsetbits_le32(&ch[0].phy.ca_cmd[6], (0x1 << 6) | (0x3 << 14) | (0x1 << 16),
+		(0x0 << 6) | (0x0 << 14) | (0x0 << 16));
+
+	clrbits_le32(&ch[0].phy.pll3, 0x1 < 0);
+	setbits_le32(&ch[0].phy.b[0].dq[3], 0x1 << 3);
+	setbits_le32(&ch[0].phy.b[1].dq[3], 0x1 << 3);
+
+	udelay(1);
+	clrsetbits_le32(&ch[0].phy.shu[0].pll[8],
+		(0x7 << 0) | (0x3 << 18), (0x0 << 0) | (0x1 << 18));
+
+	udelay(1);
+	clrbits_le32(&ch[0].phy.shu[0].pll[9],
+		 (0x3 << 8) | (0x1 << 12) | (0x3 << 14) | (0x1 << 16));
+	clrbits_le32(&ch[0].phy.shu[0].pll[11],
+		 (0x3 << 8) | (0x1 << 12) | (0x3 << 14) | (0x1 << 16));
+	udelay(1);
+
+	clrsetbits_le32(&ch[0].phy.shu[0].pll[10],
+		(0x7 << 0) | (0x3 << 18), (0x0 << 0) | (0x1 << 18));
+	udelay(1);
+
+	/* PLL EN */
+	/* MID FINE_TUNE Init 1 */
+	clrsetbits_le32(&ch[0].phy.pll4, (0x3 << 18) | (0x1 << 21), 0x3 << 18);
+
+	udelay(1);
+	clrsetbits_le32(&ch[0].phy.shu[0].pll[0], 0xffff << 0, 0x3 << 0);
+
+	udelay(1);
+	setbits_le32(&ch[0].phy.ca_dll_fine_tune[1], 0x1 << 21);
+
+	for (size_t b = 0; b < 2; b++)
+		setbits_le32(&ch[0].phy.b[b].dq[3], (0x3 << 1) | (0x1 << 10));
+
+	dramc_set_broadcast(DRAMC_BROADCAST_OFF);
+	setbits_le32(&ch[0].phy.shu[0].ca_dll[0], 0x1 << 0);
+	setbits_le32(&ch[1].phy.shu[0].ca_dll[0], 0x1 << 0);
+	dramc_set_broadcast(DRAMC_BROADCAST_ON);
+
+	for (size_t b = 0; b < 2; b++)
+		clrsetbits_le32(&ch[0].phy.shu[0].b[b].dll[0],
+			(0x1 << 4) | (0x3 << 9) | (0xf << 12) |
+			(0xf << 16) | (0xf << 20) | (0x1 << 30),
+			(0x0 << 4) | (0x3 << 9) | (0x8 << 12) |
+			(0x7 << 16) | (0x7 << 20) | (0x1 << 30));
+
+	clrbits_le32(&ch[0].phy.shu[0].ca_cmd[5], 0x3f << 0);
+	clrsetbits_le32(&ch[0].phy.shu[0].ca_cmd[0],
+		(0x1 << 4) | (0x7 << 12) | (0x1 << 20),
+		(0x1 << 4) | (0x4 << 12) | (0x1 << 20));
+
+	dramc_set_broadcast(DRAMC_BROADCAST_OFF);
+	clrsetbits_le32(&ch[0].phy.shu[0].ca_cmd[6], 0xffff << 6, 0x3 << 6);
+	clrsetbits_le32(&ch[1].phy.shu[0].ca_cmd[6], 0xffff << 6, 0x1 << 6);
+	dramc_set_broadcast(DRAMC_BROADCAST_ON);
+
+	for (size_t b = 0; b < 2; b++)
+		clrsetbits_le32(&ch[0].phy.shu[0].b[b].dq[6], 0xffff << 6, 0x1 << 6);
+
+	dramc_set_broadcast(DRAMC_BROADCAST_OFF);
+	for (size_t chan = 0; chan < 2; chan++)
+		clrsetbits_le32(&ch[chan].phy.misc_shu_opt,
+			(0x1 << 0) | (0x3 << 2) | (0x1 << 8) |
+			(0x3 << 10) | (0x1 << 16) | (0x3 << 18),
+			(0x1 << 0) | (0x2 << 2) | (0x1 << 8) |
+			(0x2 << 10) | (0x1 << 16) | ((0x1+chan) << 18));
+
+	udelay(9);
+	clrsetbits_le32(&ch[0].phy.shu[0].ca_dll[1], (0x1 << 0) | (0x1 << 2), 0x1 << 2);
+	clrsetbits_le32(&ch[1].phy.shu[0].ca_dll[1], (0x1 << 0) | (0x1 << 2), 0x1 << 0);
+	dramc_set_broadcast(DRAMC_BROADCAST_ON);
+
+	for (size_t b = 0; b < 2; b++) {
+		clrsetbits_le32(&ch[0].phy.shu[0].b[b].dll[1],
+			(0x1 << 0) | (0x1 << 2), (0x1 << 0) | (0x0 << 2));
+	}
+	udelay(1);
+
+	clrbits_le32(&ch[0].phy.pll2, 0x1 << 31);
+	clrsetbits_le32(&ch[0].phy.misc_cg_ctrl0, 0xffffffff, 0xF);
+	udelay(1);
+
+	dramc_set_broadcast(DRAMC_BROADCAST_OFF);
+	ddr_phy_reserved_rg_setting(freq_group);
+	for (chn = 0; chn < CHANNEL_MAX; chn++)
+		ddr_phy_pll_setting(chn, freq_group);
+
+	dramc_set_broadcast(DRAMC_BROADCAST_ON);
+	setbits_le32(&ch[0].ao.drsctrl, 0x1 << 29);
+
+	/* Set Run time MRR CKE fix to 1 in tMRRI old mode
+	 * to avoid no ACK from precharge all */
+	setbits_le32(&ch[0].ao.ckectrl, 0x1 << 27);
+	clrsetbits_le32(&ch[0].ao.dramctrl,
+		(0x1 << 15) | (0x1 << 17) | (0x1 << 23),
+		(0x0 << 15) | (0x1 << 17) | (0x1 << 23));
+	setbits_le32(&ch[0].ao.spcmdctrl, (0x1 << 1) | (0x1 << 8) | (0x1 << 9) | (0x1 << 10));
+	setbits_le32(&ch[0].phy.b[0].dq[9], 0x1 << 4);
+	setbits_le32(&ch[0].phy.b[1].dq[9], 0x1 << 4);
+
+	clrsetbits_le32(&ch[0].ao.shu[0].rk[1].dqsien,
+		(0x7f << 0) | (0x7f << 8) | (0x7f << 16) | (0x7f << 24),
+		(0xf << 0) | (0xf << 8) | (0xf << 16) | (0xf << 24));
+	clrsetbits_le32(&ch[0].ao.stbcal1,
+		(0x1 << 4) | (0x1 << 8) | (0x1 << 12), (0x1 << 4) | (0x1 << 8));
+	clrsetbits_le32(&ch[0].ao.shu[0].dqsg_retry,
+		(0x1 << 3) | (0xf << 8) | (0x1 << 21) | (0x1 << 31),
+		(0x1 << 3) | (0x6 << 8) | (0x1 << 21) | (0x1 << 31));
+
+	for (size_t i = 0; i < 4; i++) {
+		clrsetbits_le32(&ch[0].ao.shu[0].drving[i],
+			(0x1f << 0) | (0x1f << 5) | (0x1f << 10) |
+			(0x1f << 15) | (0x1f << 20) | (0x1f << 25),
+			(0xa << 0) | (0xa << 5) | (0xa << 10) |
+			(0xa << 15) | (0xa << 20) | (0xa << 25));
+	}
+
+	clrsetbits_le32(&ch[0].ao.shuctrl2,
+		(0x3f << 0) | (0x1 << 12) | (0x1 << 14) |
+		(0x1 << 15) | (0xff << 16) | (0x1 << 24),
+		(0xa << 0) | (0x1 << 12) | (0x1 << 14) |
+		(0x1 << 15) | (0x1 << 16) | (0x0 << 24));
+	setbits_le32(&ch[0].ao.dvfsdll, 0x1 << 0);
+	setbits_le32(&ch[0].ao.ddrconf0,
+		(0x1 << 12) | (0x1 << 15) | (0x1 << 20) | (0x1 << 26));
+	setbits_le32(&ch[0].ao.stbcal2, (0x1 << 4) | (0x7 << 28));
+	clrbits_le32(&ch[0].ao.stbcal2, 0x1 << 29);
+	setbits_le32(&ch[0].ao.clkar, 0x1 << 19);
+
+	for (size_t b = 0; b < 2; b++)
+		clrsetbits_le32(&ch[0].phy.b[b].dq[9], 0x7 << 20, 0x1 << 20);
+	clrsetbits_le32(&ch[0].phy.ca_cmd[10], 0x7 << 20, 0x0 << 20);
+	setbits_le32(&ch[0].phy.misc_ctrl0,
+		(0xf << 0) | (0x1 << 9) | (0x1 << 24) | (0x1 << 31));
+
+	for (chn = 0; chn < CHANNEL_MAX; chn++)
+		setbits_le32(&ch[chn].phy.misc_ctrl1,
+			 (0x1 << 2) | (0x1 << 3) | (0x1 << 15) | (0x1 << 24));
+	clrsetbits_le32(&ch[0].phy.b0_rxdvs[0], 0x1 << 24, 0x1 << 24);
+	clrsetbits_le32(&ch[0].phy.b1_rxdvs[0], 0x1 << 24, 0x1 << 24);
+	clrsetbits_le32(&ch[0].phy.ca_rxdvs0, 0x1 << 24, 0x0 << 24);
+	clrbits_le32(&ch[0].phy.ca_cmd[7], (0x1 << 4) | (0x1 << 6));
+	clrbits_le32(&ch[0].phy.b[0].dq[7], 0x1 << 6);
+	clrbits_le32(&ch[0].phy.b[1].dq[7], 0x1 << 6);
+
+	clrsetbits_le32(&ch[0].ao.shu[0].conf[0],
+		(0x3f << 0) | (0x1 << 7) | (0xf << 12) | (0x1 << 24) |
+		(0x1 << 29) | (0x3 << 30),
+		(0x3f << 0) | (0x1 << 7) | (0x1 << 12) | (0x1 << 24) |
+		(0x1 << 29) | (0x2 << 30));
+	clrsetbits_le32(&ch[0].ao.shu[0].odtctrl,
+		(0x1 << 0) | (0x1 << 1) | (0x7f << 16) | (0x1 << 30) | (0x1 << 31),
+		(0x1 << 0) | (0x1 << 1) | (0x1 << 16) | (0x1 << 30) | (0x1 << 31));
+	setbits_le32(&ch[0].phy.shu[0].b[0].dq[7], 0x1 << 15);
+	setbits_le32(&ch[0].phy.shu[0].b[1].dq[7], 0x1 << 15);
+
+	clrsetbits_le32(&ch[0].ao.refctrl0, 0xf << 24, 0x5 << 24);
+	clrbits_le32(&ch[0].ao.shu[0].selph_ca1,
+		 (0x7 << 0) | (0x7 << 4) | (0x7 << 8) | (0x7 << 12) |
+		 (0x7 << 16) | (0x7 << 20) | (0x7 << 24) | (0x7 << 28));
+	clrsetbits_le32(&ch[0].ao.shu[0].selph_ca2,
+		 (0x7 << 0) | (0x7 << 4) | (0x7 << 8) | (0x7 << 16) | (0x7 << 24),
+		 (0x0 << 0) | (0x0 << 4) | (0x0 << 8) | (0x7 << 16) | (0x0 << 24));
+	clrbits_le32(&ch[0].ao.shu[0].selph_ca3,
+		 (0x7 << 0) | (0x7 << 4) | (0x7 << 8) | (0x7 << 12) |
+		 (0x7 << 16) | (0x7 << 20) | (0x7 << 24) | (0x7 << 28));
+	clrbits_le32(&ch[0].ao.shu[0].selph_ca4,
+		 (0x7 << 0) | (0x7 << 4) | (0x7 << 8) | (0x7 << 12)  |
+		 (0x7 << 16) | (0x7 << 20) | (0x7 << 24) | (0x7 << 28));
+	clrbits_le32(&ch[0].ao.shu[0].selph_ca5, 0x7 << 8);
+	clrsetbits_le32(&ch[0].ao.shu[0].selph_dqs0, 0x77777777, SELPH_DQS0);
+	clrsetbits_le32(&ch[0].ao.shu[0].selph_dqs1, 0x77777777, SELPH_DQS1);
+
+	for (size_t rank = 0; rank < 2; rank++) {
+		clrsetbits_le32(&ch[0].ao.shu[0].rk[rank].selph_dq[0],
+			0x77777777,
+			(0x3 << 0) | (0x3 << 4) | (0x3 << 8) | (0x3 << 12) |
+			(0x3 << 16) | (0x3 << 20) | (0x3 << 24) | (0x3 << 28));
+		clrsetbits_le32(&ch[0].ao.shu[0].rk[rank].selph_dq[1],
+			0x77777777,
+			(0x3 << 0) | (0x3 << 4) | (0x3 << 8) | (0x3 << 12) |
+			(0x3 << 16) | (0x3 << 20) | (0x3 << 24) | (0x3 << 28));
+		clrsetbits_le32(&ch[0].ao.shu[0].rk[rank].selph_dq[2],
+			0x77777777,
+			(0x6 << 0) | (0x6 << 4) | (0x6 << 8) | (0x6 << 12) |
+			(0x2 << 16) | (0x2 << 20) | (0x2 << 24) | (0x2 << 28));
+		clrsetbits_le32(&ch[0].ao.shu[0].rk[rank].selph_dq[3],
+			0x77777777,
+			(0x6 << 0) | (0x6 << 4) | (0x6 << 8) | (0x6 << 12) |
+			(0x2 << 16) | (0x2 << 20) | (0x2 << 24) | (0x2 << 28));
+	}
+
+	for (int b = 0; b < 2; b++) {
+		clrsetbits_le32(&ch[0].phy.shu[0].rk[0].b[b].dq[7],
+			(0x3f << 8) | (0x3f << 16), (0x1a << 8) | (0x1a << 16));
+		clrsetbits_le32(&ch[0].phy.shu[0].rk[1].b[b].dq[7],
+			(0x3f << 8) | (0x3f << 16), (0x14 << 8) | (0x14 << 16));
+	}
+	udelay(1);
+
+	for (size_t b = 0; b < 2; b++) {
+		setbits_le32(&ch[0].phy.b[b].dq[9], 0x1 << 5);
+		clrsetbits_le32(&ch[0].phy.b[b].dq[6], 0x3 << 14, 0x1 << 14);
+	}
+	setbits_le32(&ch[0].ao.stbcal, 0x1 << 31);
+	clrsetbits_le32(&ch[0].ao.srefctrl, (0xf << 24) | (0x1 << 30), 0x8 << 24);
+	clrsetbits_le32(&ch[0].ao.shu[0].ckectrl,
+		(0x3 << 24) | (0x3 << 28), (0x3 << 24) | (0x3 << 28));
+	setbits_le32(&ch[0].ao.shu[0].pipe, (0x1 << 30) | (0x1 << 31));
+	setbits_le32(&ch[0].ao.ckectrl, (0x1 << 13) | (0x1 << 31));
+	setbits_le32(&ch[0].ao.rkcfg, 0x1 << 2);
+	clrsetbits_le32(&ch[0].ao.shu[0].conf[2],
+		(0x7 << 16) | (0x1 << 28), (0x7 << 16) | (0x1 << 28));
+	clrsetbits_le32(&ch[0].ao.spcmdctrl, 0x1 << 26, 0x1 << 26);
+	clrsetbits_le32(&ch[0].ao.shuctrl1, 0xff << 0, 0x40 << 0);
+
+	setbits_le32(&ch[0].ao.shuctrl, 0x1 << 16);
+	clrbits_le32(&ch[0].ao.refctrl1, (0x1 << 1) | (0x1 << 2) | (0x1 << 3) | (0x1 << 6));
+	clrsetbits_le32(&ch[0].ao.refratre_filter, (0x1 << 15) | (0x1 << 23),
+		(0x1 << 15) | (0x0 << 23));
+	clrbits_le32(&ch[0].ao.dramctrl, 0x1 << 9);
+	setbits_le32(&ch[0].ao.misctl0, (0x1 << 19) | (0x1 << 24) | (0x1 << 31));
+	setbits_le32(&ch[0].ao.perfctl0,
+		(0x1 << 0) | (0x1 << 1) | (0x1 << 4) | (0x1 << 8) |
+		(0x1 << 9) | (0x1 << 10) | (0x1 << 11) | (0x1 << 14) | (0x1 << 17));
+	clrsetbits_le32(&ch[0].ao.arbctl, 0xff << 0, 0x80 << 0);
+	clrsetbits_le32(&ch[0].ao.padctrl, (0x3 << 0) | (0x1 << 3), (0x1 << 0) | (0x1 << 3));
+	setbits_le32(&ch[0].ao.dramc_pd_ctrl, 0x1 << 8);
+	setbits_le32(&ch[0].ao.clkctrl, 0x1 << 29);
+	clrsetbits_le32(&ch[0].ao.refctrl0, (0x1 << 0) | (0x7 << 12), (0x1 << 0) | (0x4 << 12));
+	clrsetbits_le32(&ch[0].ao.shu[0].rankctl, (0xf << 20) | (0xf << 24) | (0xf << 28),
+		(0x4 << 20) | (0x4 << 24) | (0x6 << 28));
+	udelay(2);
+
+	clrsetbits_le32(&ch[0].ao.shu[0].rk[0].dqsien,
+		(0x7f << 0) | (0x7f << 8), (0x19 << 0) | (0x19 << 8));
+	clrsetbits_le32(&ch[0].ao.shu[0].rk[1].dqsien,
+		(0x7f << 0) | (0x7f << 8) | (0x7f << 16) | (0x7f << 24),
+		(0x1b << 0) | (0x1b << 8) | (0x0 << 16) | (0x0 << 24));
+
+	setbits_le32(&ch[0].ao.dramctrl, 0x1 << 19);
+	clrsetbits_le32(&ch[0].ao.zqcs, 0xff << 0, 0x56 << 0);
+	udelay(1);
+
+	clrsetbits_le32(&ch[0].ao.shu[0].conf[3], 0x1ff << 16, 0xff << 16);
+	setbits_le32(&ch[0].ao.refctrl0, 0x1 << 30);
+	setbits_le32(&ch[0].ao.srefctrl, 0x1 << 30);
+	setbits_le32(&ch[0].ao.mpc_option, 0x1 << 17);
+	setbits_le32(&ch[0].ao.dramc_pd_ctrl, 0x1 << 30);
+	setbits_le32(&ch[0].ao.dramc_pd_ctrl, 0x1 << 0);
+	clrsetbits_le32(&ch[0].ao.eyescan, (0x1 << 1) | (0xf << 16), (0x0 << 1) | (0x1 << 16));
+	setbits_le32(&ch[0].ao.stbcal1, (0x1 << 10) | (0x1 << 11));
+	clrsetbits_le32(&ch[0].ao.test2_3,
+		(0x1 << 7) | (0x7 << 8) | (0x1 << 28),
+		(0x1 << 7) | (0x4 << 8) | (0x1 << 28));
+	clrbits_le32(&ch[0].ao.rstmask, 0x1 << 29);
+	clrbits_le32(&ch[0].ao.rstmask, 0x1 << 30);
+
+	udelay(1);
+	clrsetbits_le32(&ch[0].ao.hw_mrr_fun, (0xf << 0) | (0xf << 4), (0x8 << 0) | (0x6 << 4));
+
+	clrsetbits_le32(&ch[0].ao.perfctl0,
+		(0x1 << 18) | (0x1 << 19), (0x0 << 18) | (0x1 << 19));
+	clrbits_le32(&ch[0].ao.rstmask, 0x1 << 28);
+	setbits_le32(&ch[0].ao.rkcfg, 0x1 << 11);
+	setbits_le32(&ch[0].ao.spcmdctrl, 0x1 << 28);
+	setbits_le32(&ch[0].ao.eyescan, 0x1 << 2);
+
+	clrbits_le32(&ch[0].ao.dramctrl, 0x1 << 0);
+	setbits_le32(&ch[0].ao.mpc_option, 0x1 << 17);
+	setbits_le32(&ch[0].ao.shu[0].wodt, 0x1 << 29);
+	setbits_le32(&ch[0].phy.shu[0].b[0].dq[7], 0x1 << 7);
+	setbits_le32(&ch[0].phy.shu[0].b[1].dq[7], 0x1 << 7);
+	clrsetbits_le32(&ch[0].ao.shu[0].rankctl, 0xf << 20, 0x4 << 20);
+
+	for (size_t r = 0; r < 2; r++) {
+		clrsetbits_le32(&ch[0].ao.shu[0].rk[r].selph_dq[0],
+			(0x7 << 0) | (0x7 << 4), (0x2 << 0) | (0x2 << 4));
+		clrsetbits_le32(&ch[0].ao.shu[0].rk[r].selph_dq[1],
+			(0x7 << 0) | (0x7 << 4), (0x2 << 0) | (0x2 << 4));
+	}
+	udelay(5);
+
+	clrsetbits_le32(&ch[0].ao.stbcal1, 0xffff << 16, 0x3 << 16);
+	clrsetbits_le32(&ch[0].ao.stbcal1, 0xffff << 16, 0x1 << 16);
+	clrsetbits_le32(&ch[0].ao.stbcal,
+		(0x1 << 0) | (0x1 << 22) | (0x1 << 24) | (0x1 << 26) | (0x1 << 27),
+		(0x1 << 0) | (0x0 << 22) | (0x0 << 24) | (0x1 << 26) | (0x1 << 27));
+	setbits_le32(&ch[0].ao.stbcal1, 0x1 << 6);
+	clrsetbits_le32(&ch[0].ao.shu[0].dqsg,
+		(0x1 << 11) | (0xf << 12), (0x1 << 11) | (0x9 << 12));
+	clrbits_le32(&ch[0].phy.misc_ctrl0, 0xf << 0);
+	setbits_le32(&ch[0].ao.shu[0].stbcal, 0x1 << 8);
+	setbits_le32(&ch[0].ao.stbcal, 0x1 << 17);
+	clrbits_le32(&ch[0].phy.shu[0].b[0].dq[7], 0x1 << 14);
+	clrbits_le32(&ch[0].phy.shu[0].b[1].dq[7], 0x1 << 14);
+	clrsetbits_le32(&ch[0].ao.shu[0].stbcal, 0x7 << 4, 0x1 << 4);
+
+	if (freq_group == LP4X_DDR1600)
+		clrsetbits_le32(&ch[0].ao.shu[0].stbcal, 0x3 << 0,  (0x0 << 0));
+	else
+		clrsetbits_le32(&ch[0].ao.shu[0].stbcal, 0x3 << 0, 0x2 << 0);
+	setbits_le32(&ch[0].ao.refctrl1, (0x1 << 0) | (0x1 << 5));
+	setbits_le32(&ch[0].ao.dqsoscr, (0x1 << 23) | (0x1 << 27));
+	clrbits_le32(&ch[0].ao.rstmask, (0x1 << 24) | (0x1 << 25) | (0x1 << 26));
+	clrsetbits_le32(&ch[0].ao.rkcfg, 0x7 << 4, 0x1 << 4);
+	udelay(12);
+
+	clrsetbits_le32(&ch[0].ao.shu[0].rankctl,
+		(0xf << 24) | (0xf << 28), (0x4 << 24) | 0x6 << 28);
+	clrbits_le32(&ch[0].ao.shu[0].wodt, 0x1 << 31);
+	clrsetbits_le32(&ch[0].ao.shu[0].rk[0].fine_tune,
+		(0x3f << 0) | (0x3f << 8) | (0x3f << 16) | (0x3f << 24),
+		(0x1a << 0) | (0x1a << 8) | (0x1a << 16) | (0x1a << 24));
+	clrsetbits_le32(&ch[0].ao.shu[0].rk[1].fine_tune,
+		(0x3f << 0) | (0x3f << 8) | (0x3f << 16) | (0x3f << 24),
+		(0x14 << 0) | (0x14 << 8) | (0x14 << 16) | (0x14 << 24));
+	for (u8 rank = 0; rank < 2; rank++) {
+		clrsetbits_le32(&ch[0].ao.shu[0].rk[rank].selph_dq[2],
+			(0x7 << 16) | (0x7 << 20) | (0x7 << 24) | (0x7 << 28),
+			(0x4 << 16) | (0x4 << 20) | (0x4 << 24) | (0x4 << 28));
+		clrsetbits_le32(&ch[0].ao.shu[0].rk[rank].selph_dq[3],
+			(0x7 << 16) | (0x7 << 20) | (0x7 << 24) | (0x7 << 28),
+			(0x4 << 16) | (0x4 << 20) | (0x4 << 24) | (0x4 << 28));
+	}
+	clrsetbits_le32(&ch[0].ao.shu[0].dqsg_retry,
+		(0x1 << 2) | (0xf << 8) | (0x1 << 14) | (0x3 << 24),
+		(0x1 << 2) | (0x5 << 8) | (0x0 << 14) | (0x1 << 24));
+	setbits_le32(&ch[0].phy.shu[0].b[0].dq[7], (0x1 << 12) | (0x1 << 13));
+	setbits_le32(&ch[0].phy.shu[0].b[1].dq[7], (0x1 << 12) | (0x1 << 13));
+	clrbits_le32(&ch[0].ao.shu[0].dqs2dq_tx, 0x1f << 0);
+
+	switch (freq_group) {
+	case LP4X_DDR1600:
+		dramc_setting_DDR1600();
+		break;
+	case LP4X_DDR2400:
+		dramc_setting_DDR2400();
+		break;
+	case LP4X_DDR3200:
+		/* Do nothing */
+		break;
+	case LP4X_DDR3600:
+		dramc_setting_DDR3600();
+		break;
+	default:
+		die("Invalid DDR frequency group %u\n", freq_group);
+		return;
+	break;
+	}
+
+	update_initial_settings(freq_group);
+	dramc_sw_impedance_save_reg(freq_group);
+
+	clrbits_le32(&ch[0].ao.test2_4, 0x1 << 17);
+	clrsetbits_le32(&ch[0].ao.shu[0].conf[3], 0x1ff << 0, 0x5 << 0);
+	udelay(1);
+
+	setbits_le32(&ch[0].ao.refctrl0, (0x1 << 17) | (0x1 << 18));
+	setbits_le32(&ch[0].ao.shuctrl2, (0x1 << 24) | (0x1 << 25));
+	setbits_le32(&ch[0].ao.refctrl0, 0x1 << 29);
+	setbits_le32(&ch[0].ao.dramctrl, 0x1 << 26);
+	clrsetbits_le32(&ch[0].ao.dummy_rd,
+		(0x1 << 4) | (0x1 << 11) | (0x1 << 13) |
+		(0x1 << 14) | (0x3 << 16) | (0x1 << 22),
+		(0x1 << 4) | (0x1 << 11) | (0x1 << 13) |
+		(0x1 << 14) | (0x2 << 16) | (0x1 << 22));
+	clrsetbits_le32(&ch[0].ao.test2_4, 0x7 << 28, 0x4 << 28);
+	clrbits_le32(&ch[0].ao.dramctrl, 0x1 << 0);
+	udelay(1);
+
+	dramc_set_broadcast(DRAMC_BROADCAST_OFF);
+	clrsetbits_le32(&ch[0].ao.shuctrl, (0x1 << 5) | (0x1 << 17), (0x0 << 5) | (0x1 << 17));
+	setbits_le32(&ch[0].ao.shuctrl2, 0x1 << 12);
+	clrsetbits_le32(&ch[1].ao.shuctrl, (0x1 << 5) | (0x1 << 17), (0x1 << 5) | (0x0 << 17));
+	clrbits_le32(&ch[1].ao.shuctrl2, 0x1 << 12);
+}
+
+struct ac_time {
+	u8 dqsinctl;
+	u8 datlat;
+	u8 trcd;
+	u8 trrd;
+	u8 twr;
+	u8 twtr;
+	u8 trc;
+	u8 tras;
+	u8 trp;
+	u8 trpab;
+	u8 tfaw;
+	u8 trtw_odt_on;
+	u8 trtp;
+	u8 txp;
+	u8 refcnt;
+	u8 trfc;
+	u8 trfcpb;
+	u8 tzqcs;
+	u8 refcnt_fr_clk;
+	u8 txrefcnt;
+	u8 tmrr2w_odt_on;
+	u8 twtpd;
+	u8 trtpd;
+	u8 xrtw2w;
+	u8 xrtw2r;
+	u8 xrtr2w;
+	u8 xrtr2r;
+	u8 twtr_05T;
+	u8 trtw_odt_on_05T;
+	u8 twtpd_05T;
+	u8 trtpd_05T;
+	u8 tfaw_05T;
+	u8 trrd_05T;
+	u8 twr_05T;
+	u8 tras_05T;
+	u8 trpab_05T;
+	u8 trp_05T;
+	u8 trcd_05T;
+	u8 trtp_05T;
+	u8 txp_05T;
+	u8 trfc_05T;
+	u8 trfcpb_05T;
+	u8 trc_05T;
+	u8 r_dmcatrain_intv;
+	u8 r_dmmrw_intv;
+	u8 r_dmfspchg_prdcnt;
+	u8 ckeprd;
+	u8 ckelckcnt;
+	u8 zqlat2;
+};
+
+static const struct ac_time ac_timing_tbl[LP4X_DDRFREQ_MAX] = {
+	/* LP4x-1600, 800MHz, RDBI_OFF, normal mode */
+	[LP4X_DDR1600] = {
+		.tras = 0,	.tras_05T = 0,
+		.trp = 2,	.trp_05T = 0,
+		.trpab = 0,	.trpab_05T = 1,
+		.trc = 4,	.trc_05T = 0,
+		.trfc = 44,	.trfc_05T = 0,
+		.trfcpb = 16,	.trfcpb_05T = 0,
+		.txp = 0,	.txp_05T = 0,
+		.trtp = 1,	.trtp_05T = 1,
+		.trcd = 3,	.trcd_05T = 0,
+		.twr = 7,	.twr_05T = 1,
+		.twtr = 4,	.twtr_05T = 1,
+		.trrd = 0,	.trrd_05T = 0,
+		.tfaw = 0,	.tfaw_05T = 0,
+		.trtw_odt_on = 4,	.trtw_odt_on_05T = 0,
+		.refcnt = 48,
+		.refcnt_fr_clk = 101,
+		.txrefcnt = 62,
+		.tzqcs = 16,
+		.xrtw2w = 5,
+		.xrtw2r = 3,
+		.xrtr2w = 3,
+		.xrtr2r = 8,
+		.r_dmcatrain_intv = 8,
+		.r_dmmrw_intv = 0xf,
+		.r_dmfspchg_prdcnt = 50,
+		.trtpd = 6,	.trtpd_05T = 0,
+		.twtpd = 6,	.twtpd_05T = 0,
+		.tmrr2w_odt_on = 5,
+		.ckeprd = 1,
+		.ckelckcnt = 0,
+		.zqlat2 = 6,
+		.dqsinctl = 1,	 .datlat = 10,
+	},
+	/* LP4x-2400, 1200MHz, RDBI_OFF, normal mode */
+	[LP4X_DDR2400] = {
+		.tras = 4,	.tras_05T = 1,
+		.trp = 3,	.trp_05T = 1,
+		.trpab = 1,	.trpab_05T = 0,
+		.trc = 10,	.trc_05T = 0,
+		.trfc = 72,	.trfc_05T = 0,
+		.trfcpb = 30,	.trfcpb_05T = 0,
+		.txp = 0,	.txp_05T = 1,
+		.trtp = 1,	.trtp_05T = 0,
+		.trcd = 4,	.trcd_05T = 1,
+		.twr = 10,	.twr_05T = 1,
+		.twtr = 6,	.twtr_05T = 1,
+		.trrd = 1,	.trrd_05T = 0,
+		.tfaw = 3,	.tfaw_05T = 0,
+		.trtw_odt_on = 7,	.trtw_odt_on_05T = 0,
+		.refcnt = 73,
+		.refcnt_fr_clk = 101,
+		.txrefcnt = 91,
+		.tzqcs = 25,
+		.xrtw2w = 5,
+		.xrtw2r = 3,
+		.xrtr2w = 6,
+		.xrtr2r = 8,
+		.r_dmcatrain_intv = 9,
+		.r_dmmrw_intv = 0xf,
+		.r_dmfspchg_prdcnt = 75,
+		.trtpd = 9,	.trtpd_05T = 0,
+		.twtpd = 9,	.twtpd_05T = 0,
+		.tmrr2w_odt_on = 8,
+		.ckeprd = 2,
+		.ckelckcnt = 0,
+		.zqlat2 = 9,
+		.dqsinctl = 3,	 .datlat = 13,
+	},
+	/* LP4x-3200, 1600MHz, RDBI_OFF, normal mode */
+	[LP4X_DDR3200] = {
+		.tras = 8,	.tras_05T = 1,
+		.trp = 5,	.trp_05T = 1,
+		.trpab = 1,	.trpab_05T = 0,
+		.trc = 16,	.trc_05T = 1,
+		.trfc = 100,	.trfc_05T = 0,
+		.trfcpb = 44,	.trfcpb_05T = 0,
+		.txp = 1,	.txp_05T = 0,
+		.trtp = 2,	.trtp_05T = 1,
+		.trcd = 6,	.trcd_05T = 1,
+		.twr = 12,	.twr_05T = 1,
+		.twtr = 7,	.twtr_05T = 0,
+		.trrd = 2,	.trrd_05T = 0,
+		.tfaw = 7,	.tfaw_05T = 0,
+		.trtw_odt_on = 7,	.trtw_odt_on_05T = 0,
+		.refcnt = 97,
+		.refcnt_fr_clk = 101,
+		.txrefcnt = 119,
+		.tzqcs = 34,
+		.xrtw2w = 5,
+		.xrtw2r = 3,
+		.xrtr2w = 6,
+		.xrtr2r = 9,
+		.r_dmcatrain_intv = 11,
+		.r_dmmrw_intv = 0xf,
+		.r_dmfspchg_prdcnt = 100,
+		.trtpd = 11,	.trtpd_05T = 0,
+		.twtpd = 12,	.twtpd_05T = 1,
+		.tmrr2w_odt_on = 10,
+		.ckeprd = 2,
+		.ckelckcnt = 0,
+		.zqlat2 = 12,
+		.dqsinctl = 4,	 .datlat = 15,
+	},
+	/* LP4x-3600, 1800MHz, RDBI_OFF, normal mode */
+	[LP4X_DDR3600] = {
+		.tras = 11,	.tras_05T = 1,
+		.trp = 6,	.trp_05T = 1,
+		.trpab = 1,	.trpab_05T = 1,
+		.trc = 20,	.trc_05T = 1,
+		.trfc = 118,	.trfc_05T = 1,
+		.trfcpb = 53,	.trfcpb_05T = 1,
+		.txp = 1,	.txp_05T = 1,
+		.trtp = 2,	.trtp_05T = 0,
+		.trcd = 7,	.trcd_05T = 1,
+		.twr = 14,	.twr_05T = 1,
+		.twtr = 8,	.twtr_05T = 0,
+		.trrd = 3,	.trrd_05T = 0,
+		.tfaw = 10,	.tfaw_05T = 0,
+		.trtw_odt_on = 8,	.trtw_odt_on_05T = 0,
+		.refcnt = 113,
+		.refcnt_fr_clk = 101,
+		.txrefcnt = 138,
+		.tzqcs = 40,
+		.xrtw2w = 5,
+		.xrtw2r = 3,
+		.xrtr2w = 7,
+		.xrtr2r = 9,
+		.r_dmcatrain_intv = 13,
+		.r_dmmrw_intv = 0xf,
+		.r_dmfspchg_prdcnt = 117,
+		.trtpd = 12,	.trtpd_05T = 0,
+		.twtpd = 13,	.twtpd_05T = 0,
+		.tmrr2w_odt_on = 11,
+		.ckeprd = 3,
+		.ckelckcnt = 0,
+		.zqlat2 = 14,
+		.dqsinctl = 6,	 .datlat = 18,
+	},
+};
+
+static void ddr_update_ac_timing(u8 freq_group)
+{
+	struct ac_time ac_t;
+	u32 temp, r2w_odt_onoff = ODT_ON;
+	u8 new_datlat;
+	u8 root = 0, tx_rank_inctl = 0, tx_dly = 0;
+	u8 trtw = 0, trtw_05t = 0, tmrr2w = 0;
+
+	memcpy(&ac_t, &ac_timing_tbl[freq_group], sizeof(struct ac_time));
+	new_datlat = ac_timing_tbl[freq_group].datlat - 2;
+
+	if (freq_group == LP4X_DDR1600) {
+		root = 0; tx_rank_inctl = 0; tx_dly = 1;
+	} else {
+		root = (freq_group == LP4X_DDR3600) ? 1 : 0;
+		tx_rank_inctl = 1; tx_dly = 2;
+	}
+
+	if (r2w_odt_onoff == ODT_ON) {
+		trtw = ac_t.trtw_odt_on;
+		trtw_05t = ac_t.trtw_odt_on_05T;
+		tmrr2w = ac_t.tmrr2w_odt_on;
+	}
+
+	for (u8 chn = 0; chn < CHANNEL_MAX; chn++) {
+		clrsetbits_le32(&ch[chn].ao.shu[0].actim[0],
+			(0xf << 24) | (0x7 << 16) | (0x1f << 8) | (0xf << 0),
+			(ac_t.trcd << 24) | (ac_t.trrd << 16) |
+			(ac_t.twr << 8) | (ac_t.twtr << 0));
+		clrsetbits_le32(&ch[chn].ao.shu[0].actim[1],
+			(0x1f << 24) | (0xf << 16) | (0xf << 8) | (0x7 << 0),
+			(ac_t.trc << 24) | (ac_t.tras << 16) |
+			(ac_t.trp << 8) | (ac_t.trpab << 0));
+		clrsetbits_le32(&ch[chn].ao.shu[0].actim[2],
+			(0x1f << 24) | (0xf << 16) | (0x7 << 8) | (0x7 << 0),
+			(ac_t.tfaw << 24) | (trtw << 16) |
+			(ac_t.trtp << 8) | (ac_t.txp << 0));
+		clrsetbits_le32(&ch[chn].ao.shu[0].actim[3],
+			(0xff << 16) | (0xff << 24) | (0xff << 0),
+			(ac_t.trfc << 16) | (ac_t.refcnt << 24) | (ac_t.trfcpb << 0));
+		clrsetbits_le32(&ch[chn].ao.shu[0].actim[4],
+			(0xff << 24) | (0xff << 16) | (0x3ff << 0),
+			(ac_t.tzqcs << 24) | (ac_t.refcnt_fr_clk << 16) |
+			(ac_t.txrefcnt << 0));
+		clrsetbits_le32(&ch[chn].ao.shu[0].actim[5],
+			(0xf << 24) | (0x1f << 8) | (0x1f << 0),
+			(tmrr2w << 24) | (ac_t.twtpd << 8) | (ac_t.trtpd << 0));
+		clrsetbits_le32(&ch[chn].ao.shu[0].actim_xrt,
+			(0xf << 24) | (0x7 << 16) | (0xf << 8) | (0x1f << 0),
+			(ac_t.xrtw2w << 24) | (ac_t.xrtw2r << 16) |
+			(ac_t.xrtr2w << 8) | (ac_t.xrtr2r << 0));
+		clrsetbits_le32(&ch[chn].ao.shu[0].ac_time_05t,
+			(0x1 << 25) | (0x0 << 24) | (0x1 << 16) | (0x0 << 15) |
+			(0x1 << 13) | (0x1 << 12) | (0x1 << 10) | (0x1 << 9) |
+			(0x1 << 8) | (0x1 << 7) | (0x1 << 6) | (0x1 << 5) |
+			(0x1 << 4) | (0x1 << 2) | (0x1 << 1) | (0x1 << 0),
+			(ac_t.twtr_05T << 25) | (trtw_05t << 24) |
+			(ac_t.twtpd_05T << 16) | (ac_t.trtpd_05T << 15) |
+			(ac_t.tfaw_05T << 13) | (ac_t.trrd_05T << 12) |
+			(ac_t.twr_05T << 10) | (ac_t.tras_05T << 9) |
+			(ac_t.trpab_05T << 8) | (ac_t.trp_05T << 7) |
+			(ac_t.trcd_05T << 6) | (ac_t.trtp_05T << 5) |
+			(ac_t.txp_05T << 4) | (ac_t.trfc_05T << 2) |
+			(ac_t.trfcpb_05T << 1) | (ac_t.trc_05T << 0));
+		clrsetbits_le32(&ch[chn].ao.catraining1, (0xff << 24) | (0xf << 20),
+			(ac_t.r_dmcatrain_intv << 24) | (0x0 << 20));
+
+		/* DQSINCTL related */
+		clrsetbits_le32(&ch[chn].ao.shu[0].rk[0].dqsctl, 0xf << 0,
+			ac_t.dqsinctl << 0);
+		clrsetbits_le32(&ch[chn].ao.shu[0].rk[1].dqsctl, 0xf << 0,
+			ac_t.dqsinctl << 0);
+		clrsetbits_le32(&ch[chn].ao.shu[0].odtctrl, 0xf << 4,
+			ac_t.dqsinctl << 4);
+
+		/* DATLAT related, tREFBW */
+		clrsetbits_le32(&ch[chn].ao.shu[0].conf[1],
+			(0x1f << 0) | (0x1f << 8) | (0x1f << 26) | (0x3ff << 16),
+			(ac_t.datlat << 0) | (new_datlat << 8) |
+			(new_datlat << 26) | (0x0 << 16));
+		clrsetbits_le32(&ch[chn].ao.shu[0].conf[2],
+			(0xff << 8), ac_t.r_dmfspchg_prdcnt << 8);
+		clrsetbits_le32(&ch[chn].ao.shu[0].scintv, (0x1f << 13) | (0x1f << 6),
+			(ac_t.r_dmmrw_intv << 13) | (ac_t.zqlat2 << 6));
+
+		/* CKEPRD - CKE pulse width */
+		clrsetbits_le32(&ch[chn].ao.shu[0].ckectrl, 0x7 << 20, ac_t.ckeprd << 20);
+
+		/* CKELCKCNT: Valid clock requirement after CKE input low */
+		clrsetbits_le32(&ch[chn].ao.ckectrl, 0x7 << 24, ac_t.ckelckcnt << 24);
+
+		temp = ((read32(&ch[chn].ao.shu[0].rankctl) & 0x00f00000) >> 20) & 0xf;
+		clrsetbits_le32(&ch[chn].ao.shu[0].rankctl, 0xf << 0, temp << 0);
+
+		clrsetbits_le32(&ch[chn].ao.shu[0].rankctl,
+			(0xf << 16) | (0xf << 12) | (0xf << 8),
+			(root << 16) | (tx_rank_inctl << 12) | (tx_dly << 8));
+	}
+
+	u8 dram_cbt_mode = 0;
+	clrsetbits_le32(&ch[0].ao.arbctl, 0x7 << 10, 0x3 << 10);
+	clrsetbits_le32(&ch[0].ao.rstmask, 0x3 << 13, dram_cbt_mode);
+	clrsetbits_le32(&ch[0].ao.arbctl, 0x1 << 13, dram_cbt_mode);
+}
+
+void dramc_init(const struct sdram_params *params, u8 freq_group)
+{
+	dramc_setting(params, freq_group);
+
+	dramc_duty_calibration(params, freq_group);
+
+	dramc_mode_reg_init(freq_group);
+	ddr_update_ac_timing(freq_group);
 }

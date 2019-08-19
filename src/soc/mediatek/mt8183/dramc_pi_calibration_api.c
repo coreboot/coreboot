@@ -102,13 +102,13 @@ static void dramc_auto_refresh_switch(u8 chn, bool option)
 	}
 }
 
-static void dramc_cke_fix_onoff(u8 chn, bool fix_on, bool fix_off)
+void dramc_cke_fix_onoff(u8 chn, bool fix_on, bool fix_off)
 {
 	clrsetbits_le32(&ch[chn].ao.ckectrl, (0x1 << 6) | (0x1 << 7),
 			((fix_on ? 1 : 0) << 6) | ((fix_off ? 1 : 0) << 7));
 }
 
-static void dramc_mode_reg_write(u8 chn, u8 mr_idx, u8 value)
+void dramc_mode_reg_write(u8 chn, u8 mr_idx, u8 value)
 {
 	u32 ckectrl_bak = read32(&ch[chn].ao.ckectrl);
 

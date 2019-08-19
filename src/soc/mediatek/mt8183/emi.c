@@ -279,16 +279,17 @@ static void dramc_ac_timing_optimize(void)
 	}
 }
 
-static void init_dram(const struct sdram_params *params)
+static void init_dram(const struct sdram_params *params, u8 freq_group)
 {
 	global_option_init(params);
 	emi_init(params);
 
 	dramc_set_broadcast(DRAMC_BROADCAST_ON);
 	dramc_init_pre_settings();
-	dramc_sw_impedance(params);
+	dramc_sw_impedance_cal(params, ODT_OFF);
+	dramc_sw_impedance_cal(params, ODT_ON);
 
-	dramc_init();
+	dramc_init(params, freq_group);
 	emi_init2(params);
 }
 
@@ -312,6 +313,6 @@ static void do_calib(const struct sdram_params *params)
 
 void mt_set_emi(const struct sdram_params *params)
 {
-	init_dram(params);
+	init_dram(params, LP4X_DDR3200);
 	do_calib(params);
 }

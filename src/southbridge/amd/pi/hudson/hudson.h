@@ -19,7 +19,6 @@
 
 #include <types.h>
 #include <device/device.h>
-#include "chip.h"
 
 /* Offsets from ACPI_MMIO_BASE
  * This is defined by AGESA, but we don't include AGESA headers to avoid

@@ -18,18 +18,19 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 
+#include "chip.h"
 #include "hudson.h"
 
 static void sd_init(struct device *dev)
 {
-	u32 stepping;
+	struct southbridge_amd_agesa_hudson_config *sd_chip = dev->chip_info;
+	u32 stepping = pci_read_config32(pcidev_on_root(0x18, 3), 0xFC);
+	u8 sd_mode = 0;
 
-	stepping = pci_read_config32(pcidev_on_root(0x18, 3), 0xFC);
+	if (sd_chip)
+		sd_mode = sd_chip->sd_mode;
 
-	struct southbridge_amd_agesa_hudson_config *sd_chip =
-		(struct southbridge_amd_agesa_hudson_config *)(dev->chip_info);
-
-	if (sd_chip->sd_mode == 3) {	/* SD 3.0 mode */
+	if (sd_mode == 3) {	/* SD 3.0 mode */
 		pci_write_config32(dev, 0xA4, 0x31FEC8B2);
 		pci_write_config32(dev, 0xA8, 0x00002503);
 		pci_write_config32(dev, 0xB0, 0x02180C19);

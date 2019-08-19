@@ -18,7 +18,6 @@
 #define HUDSON_H
 
 #include <device/device.h>
-#include "chip.h"
 
 /* Power management index/data registers */
 #define BIOSRAM_INDEX	0xcd4

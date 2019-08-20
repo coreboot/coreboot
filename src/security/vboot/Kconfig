@@ -286,10 +286,6 @@ config GBB_FLAG_DISABLE_LID_SHUTDOWN
 	bool "Disable shutdown on closed lid"
 	default n
 
-config GBB_FLAG_FORCE_DEV_BOOT_FASTBOOT_FULL_CAP
-	bool "Allow fastboot even if dev_boot_fastboot_full_cap=0"
-	default n
-
 config GBB_FLAG_FORCE_MANUAL_RECOVERY
 	bool "Always assume manual recovery in recovery mode"
 	default n

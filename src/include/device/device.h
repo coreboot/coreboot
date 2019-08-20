@@ -62,6 +62,8 @@ struct device_operations {
 	void (*acpi_fill_ssdt_generator)(struct device *dev);
 	void (*acpi_inject_dsdt_generator)(struct device *dev);
 	const char *(*acpi_name)(const struct device *dev);
+	/* Returns the optional _HID (Hardware ID) */
+	const char *(*acpi_hid)(const struct device *dev);
 #endif
 	const struct pci_operations *ops_pci;
 	const struct i2c_bus_operations *ops_i2c_bus;

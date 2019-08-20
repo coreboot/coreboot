@@ -63,6 +63,7 @@ struct acpi_dp {
 
 struct device;
 const char *acpi_device_name(const struct device *dev);
+const char *acpi_device_hid(const struct device *dev);
 const char *acpi_device_path(const struct device *dev);
 const char *acpi_device_scope(const struct device *dev);
 const char *acpi_device_path_join(const struct device *dev, const char *name);

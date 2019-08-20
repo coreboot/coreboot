@@ -81,6 +81,24 @@ const char *acpi_device_name(const struct device *dev)
 	return NULL;
 }
 
+/* Locate and return the ACPI _HID (Hardware ID) for this device */
+const char *acpi_device_hid(const struct device *dev)
+{
+	if (!dev)
+		return NULL;
+
+	/* Check for device specific handler */
+	if (dev->ops->acpi_hid)
+		return dev->ops->acpi_hid(dev);
+
+	/*
+	 * Don't walk up the tree to find any parent that can identify this device, as
+	 * PNP devices are hard to identify.
+	 */
+
+	return NULL;
+}
+
 /* Recursive function to find the root device and print a path from there */
 static ssize_t acpi_device_path_fill(const struct device *dev, char *buf,
 				     size_t buf_len, size_t cur)

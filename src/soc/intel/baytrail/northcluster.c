@@ -64,7 +64,7 @@
 
 uint32_t nc_read_top_of_low_memory(void)
 {
-	MAYBE_STATIC uint32_t tolm = 0;
+	MAYBE_STATIC_BSS uint32_t tolm = 0;
 
 	if (tolm)
 		return tolm;

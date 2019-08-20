@@ -128,7 +128,7 @@ static int timestamp_should_run(void)
 
 static struct timestamp_table *timestamp_table_get(void)
 {
-	MAYBE_STATIC struct timestamp_table *ts_table = NULL;
+	MAYBE_STATIC_BSS struct timestamp_table *ts_table = NULL;
 	struct timestamp_cache *ts_cache;
 
 	if (ts_table != NULL)

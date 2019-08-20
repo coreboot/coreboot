@@ -26,7 +26,7 @@ size_t ulzman(const void *src, size_t srcn, void *dst, size_t dstn)
 	int res;
 	CLzmaDecoderState state;
 	SizeT mallocneeds;
-	MAYBE_STATIC unsigned char scratchpad[15980];
+	MAYBE_STATIC_BSS unsigned char scratchpad[15980];
 	const unsigned char *cp;
 
 	memcpy(properties, src, LZMA_PROPERTIES_SIZE);

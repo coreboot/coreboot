@@ -35,11 +35,16 @@ typedef unsigned int wint_t;
 #define DEVTREE_CONST
 #endif
 
-/* Work around non-writable data segment in execute-in-place romstage on x86. */
-#if defined(__PRE_RAM__) && CONFIG(ARCH_X86)
-#define MAYBE_STATIC
+#if ENV_STAGE_HAS_DATA_SECTION
+#define MAYBE_STATIC_NONZERO static
 #else
-#define MAYBE_STATIC static
+#define MAYBE_STATIC_NONZERO
+#endif
+
+#if ENV_STAGE_HAS_BSS_SECTION
+#define MAYBE_STATIC_BSS static
+#else
+#define MAYBE_STATIC_BSS
 #endif
 
 #ifndef __ROMCC__

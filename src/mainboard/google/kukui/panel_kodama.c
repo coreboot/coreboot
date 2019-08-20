@@ -16,6 +16,7 @@
 #include "panel.h"
 
 static struct panel_description kodama_panels[] = {
+	[1] = { .name = "AUO_B101UAN08_3", },
 	[2] = { .name = "BOE_TV101WUM_N53", },
 };
 

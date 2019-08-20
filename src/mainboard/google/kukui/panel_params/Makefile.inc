@@ -1,6 +1,7 @@
 panel-params-y :=
 panel-params-$(CONFIG_BOARD_GOOGLE_KRANE) += panel-AUO_KD101N80_45NA
 panel-params-$(CONFIG_BOARD_GOOGLE_KRANE) += panel-BOE_TV101WUM_NL6
+panel-params-$(CONFIG_BOARD_GOOGLE_KODAMA) += panel-AUO_B101UAN08_3
 panel-params-$(CONFIG_BOARD_GOOGLE_KODAMA) += panel-BOE_TV101WUM_N53
 panel-params-$(CONFIG_BOARD_GOOGLE_KUKUI) += panel-CMN_P097PFG_SSD2858
 panel-params-$(CONFIG_BOARD_GOOGLE_FLAPJACK) += panel-AUO_NT51021D8P

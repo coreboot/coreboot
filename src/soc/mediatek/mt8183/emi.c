@@ -19,6 +19,7 @@
 #include <soc/dramc_register.h>
 #include <soc/emi.h>
 #include <soc/infracfg.h>
+#include <soc/mt6358.h>
 
 static const u8 freq_shuffle[DRAM_DFS_SHUFFLE_MAX] = {
 	[DRAM_DFS_SHUFFLE_1] = LP4X_DDR3200,
@@ -37,6 +38,13 @@ u32 frequency_table[LP4X_DDRFREQ_MAX] = {
 	[LP4X_DDR2400] = 2400,
 	[LP4X_DDR3200] = 3200,
 	[LP4X_DDR3600] = 3600,
+};
+
+static const u32 vcore_lp4x[LP4X_DDRFREQ_MAX] = {
+	[LP4X_DDR1600] = 725000,
+	[LP4X_DDR2400] = 725000,
+	[LP4X_DDR3200] = 762500,
+	[LP4X_DDR3600] = 800000,
 };
 
 struct emi_regs *emi_regs = (void *)EMI_BASE;
@@ -178,6 +186,24 @@ static void global_option_init(const struct sdram_params *params)
 {
 	set_rank_info_to_conf(params);
 	set_MRR_pinmux_mapping();
+}
+
+static void set_vcore_voltage(u8 freq_group)
+{
+	const u32 vcore = vcore_lp4x[freq_group];
+	dramc_dbg("Set DRAM voltage (freq %d): vcore = %u\n",
+		  frequency_table[freq_group], vcore);
+	pmic_set_vcore_vol(vcore);
+}
+
+static void set_vdram1_vddq_voltage(void)
+{
+	const u32 vdram1 = 1125000;
+	const u32 vddq = 600000;
+	dramc_dbg("Set DRAM voltage: vdram1 = %u, vddq = %u\n",
+		  vdram1, vddq);
+	pmic_set_vdram1_vol(vdram1);
+	pmic_set_vddq_vol(vddq);
 }
 
 static void emi_esl_setting1(void)
@@ -373,6 +399,8 @@ int mt_set_emi(const struct dramc_param *dparam)
 	current_freqsel = freq_tbl[shuffle];
 	params = &dparam->freq_params[shuffle];
 
+	set_vcore_voltage(current_freqsel);
+	set_vdram1_vddq_voltage();
 	init_dram(params, current_freqsel);
 	if (do_calib(params, current_freqsel) != 0)
 		return -1;

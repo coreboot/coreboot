@@ -89,9 +89,10 @@ chip soc/intel/skylake
 	#| Psi4Enable     | 1     | 1     | 1           | 1           | 1     |
 	#| ImonSlope      | 0     | 0     | 0           | 0           | 0     |
 	#| ImonOffset     | 0     | 0     | 0           | 0           | 0     |
-	#| IccMax         | 7A    | 34A   | 34A         | 35A         | 35A   |
+	#| IccMax*        | 0     | 0     | 0           | 0           | 0     |
 	#| VrVoltageLimit | 1.52V | 1.52V | 1.52V       | 1.52V       | 1.52V |
 	#+----------------+-------+-------+-------------+-------------+-------+
+	# * - is set automatically for the KBL-S/KBL-DT CPUs in the vr_config.c
 	register "domain_vr_config[VR_SYSTEM_AGENT]" = "{
 		.vr_config_enable = 1, \
 		.psi1threshold = 0x50, \
@@ -102,7 +103,7 @@ chip soc/intel/skylake
 		.imon_slope = 0x0, \
 		.imon_offset = 0x0, \
 		.icc_max = 0x0, \
-		.voltage_limit = 0x0 \
+		.voltage_limit = 1520 \
 	}"
 
 	register "domain_vr_config[VR_IA_CORE]" = "{
@@ -115,7 +116,7 @@ chip soc/intel/skylake
 		.imon_slope = 0x0, \
 		.imon_offset = 0x0, \
 		.icc_max = 0x0, \
-		.voltage_limit = 0x0 \
+		.voltage_limit = 1520 \
 	}"
 
 	register "domain_vr_config[VR_GT_UNSLICED]" = "{
@@ -128,7 +129,7 @@ chip soc/intel/skylake
 		.imon_slope = 0x0, \
 		.imon_offset = 0x0, \
 		.icc_max = 0x0 ,\
-		.voltage_limit = 0x0 \
+		.voltage_limit = 1520 \
 	}"
 
 	register "domain_vr_config[VR_GT_SLICED]" = "{
@@ -141,7 +142,7 @@ chip soc/intel/skylake
 		.imon_slope = 0x0, \
 		.imon_offset = 0x0, \
 		.icc_max = 0x0, \
-		.voltage_limit = 0x0 \
+		.voltage_limit = 1520 \
 	}"
 
 	register "EnableLan" = "0"

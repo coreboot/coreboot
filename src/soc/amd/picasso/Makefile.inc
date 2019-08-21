@@ -47,7 +47,6 @@ romstage-y += memmap.c
 romstage-$(CONFIG_PICASSO_UART) += uart.c
 romstage-y += tsc_freq.c
 romstage-y += southbridge.c
-romstage-$(CONFIG_SPI_FLASH) += spi.c
 romstage-$(CONFIG_HAVE_SMI_HANDLER) += smi_util.c
 
 verstage-y += gpio.c
@@ -56,7 +55,6 @@ verstage-y += pmutil.c
 verstage-y += reset.c
 verstage-$(CONFIG_PICASSO_UART) += uart.c
 verstage-y += tsc_freq.c
-verstage-$(CONFIG_SPI_FLASH) += spi.c
 
 postcar-y += monotonic_timer.c
 postcar-$(CONFIG_PICASSO_UART) += uart.c
@@ -83,14 +81,12 @@ ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smi_util.c
 ramstage-$(CONFIG_PICASSO_UART) += uart.c
 ramstage-y += usb.c
 ramstage-y += tsc_freq.c
-ramstage-$(CONFIG_SPI_FLASH) += spi.c
 ramstage-y += finalize.c
 
 smm-y += smihandler.c
 smm-y += smi_util.c
 smm-y += tsc_freq.c
 smm-$(CONFIG_DEBUG_SMI) += uart.c
-smm-$(CONFIG_SPI_FLASH) += spi.c
 smm-y += gpio.c
 
 CPPFLAGS_common += -I$(src)/soc/amd/picasso

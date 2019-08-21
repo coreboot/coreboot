@@ -146,8 +146,6 @@ chip soc/intel/skylake
 	}"
 
 	register "EnableLan" = "0"
-	register "i2c_voltage[4]" = "I2C_VOLTAGE_1V8"  # I2C4 is 1.8V
-
 	register "PmTimerDisabled" = "0"
 
 	# USB

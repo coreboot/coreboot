@@ -95,9 +95,9 @@ chip soc/intel/skylake
 	# * - is set automatically for the KBL-S/KBL-DT CPUs in the vr_config.c
 	register "domain_vr_config[VR_SYSTEM_AGENT]" = "{
 		.vr_config_enable = 1, \
-		.psi1threshold = 0x50, \
-		.psi2threshold = 0x10, \
-		.psi3threshold = 0x4, \
+		.psi1threshold = VR_CFG_AMP(20), \
+		.psi2threshold = VR_CFG_AMP(4), \
+		.psi3threshold = VR_CFG_AMP(1), \
 		.psi3enable = 1, \
 		.psi4enable = 1, \
 		.imon_slope = 0x0, \
@@ -108,9 +108,9 @@ chip soc/intel/skylake
 
 	register "domain_vr_config[VR_IA_CORE]" = "{
 		.vr_config_enable = 1, \
-		.psi1threshold = 0x50, \
-		.psi2threshold = 0x14, \
-		.psi3threshold = 0x4, \
+		.psi1threshold = VR_CFG_AMP(20), \
+		.psi2threshold = VR_CFG_AMP(5), \
+		.psi3threshold = VR_CFG_AMP(1), \
 		.psi3enable = 1, \
 		.psi4enable = 1, \
 		.imon_slope = 0x0, \
@@ -121,9 +121,9 @@ chip soc/intel/skylake
 
 	register "domain_vr_config[VR_GT_UNSLICED]" = "{
 		.vr_config_enable = 1, \
-		.psi1threshold = 0x50, \
-		.psi2threshold = 0x14, \
-		.psi3threshold = 0x4, \
+		.psi1threshold = VR_CFG_AMP(20), \
+		.psi2threshold = VR_CFG_AMP(5), \
+		.psi3threshold = VR_CFG_AMP(1), \
 		.psi3enable = 1, \
 		.psi4enable = 1, \
 		.imon_slope = 0x0, \
@@ -134,9 +134,9 @@ chip soc/intel/skylake
 
 	register "domain_vr_config[VR_GT_SLICED]" = "{
 		.vr_config_enable = 1, \
-		.psi1threshold = 0x50, \
-		.psi2threshold = 0x14, \
-		.psi3threshold = 0x4, \
+		.psi1threshold = VR_CFG_AMP(20), \
+		.psi2threshold = VR_CFG_AMP(5), \
+		.psi3threshold = VR_CFG_AMP(1), \
 		.psi3enable = 1, \
 		.psi4enable = 1, \
 		.imon_slope = 0x0, \

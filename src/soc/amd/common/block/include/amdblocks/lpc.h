@@ -90,6 +90,14 @@
 #define   DECODE_IO_PORT_ENABLE0_H	BIT(0)
 
 #define LPC_MEM_PORT1			0x4c
+#define ROM_PROTECT_RANGE0		0x50
+#define   ROM_BASE_MASK			0xfffff000		/* bits 31-12 */
+#define   ROM_RANGE_WP			BIT(10)
+#define   ROM_RANGE_RP			BIT(9)
+#define   RANGE_UNIT			BIT(8)
+#define   RANGE_ADDR_MASK		0x000000ff		/* Range defined by bits 7-0 */
+#define ROM_PROTECT_RANGE_REG(n)	(ROM_PROTECT_RANGE0 + (4 * n))
+#define MAX_ROM_PROTECT_RANGES		4
 #define LPC_MEM_PORT0			0x60
 
 /* Register 0x64 is 32-bit, composed by two 16-bit sub-registers.

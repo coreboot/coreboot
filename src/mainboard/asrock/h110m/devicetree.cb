@@ -182,11 +182,13 @@ chip soc/intel/skylake
 		[1]     = 1, \
 		[2]     = 1, \
 		[3]     = 1, \
-		[4]     = 1, \
-		[5]     = 1, \
-		[6]     = 1, \
-		[7]     = 1, \
+		[4]     = 0, \
+		[5]     = 0, \
+		[6]     = 0, \
+		[7]     = 0, \
 	}"
+	# SATA4 and SATA5 are located in the lower right corner
+	# of the board, but there is no connector for this
 
 	# PCH UART, SPI, I2C
 	register "SerialIoDevMode" = "{ \

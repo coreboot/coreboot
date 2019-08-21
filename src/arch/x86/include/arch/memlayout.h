@@ -16,13 +16,6 @@
 #ifndef __ARCH_MEMLAYOUT_H
 #define __ARCH_MEMLAYOUT_H
 
-
-#if ENV_BOOTBLOCK || ENV_ROMSTAGE || ENV_VERSTAGE
-/* No .data or .bss sections. Cache as RAM is handled separately. */
-#define ARCH_STAGE_HAS_DATA_SECTION 0
-#define ARCH_STAGE_HAS_BSS_SECTION 0
-#endif
-
 #if (CONFIG_RAMTOP == 0)
 # error "CONFIG_RAMTOP not configured"
 #endif

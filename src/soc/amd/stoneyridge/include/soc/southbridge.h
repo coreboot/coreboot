@@ -265,22 +265,10 @@
 #define   SPI_READ_MODE_QUAD144		(BIT(30) |           BIT(18))
 #define   SPI_READ_MODE_NORMAL66	(BIT(30) | BIT(29)          )
 #define   SPI_READ_MODE_FAST		(BIT(30) | BIT(29) | BIT(18))
+#define   SPI_ACCESS_MAC_ROM_EN		BIT(22)
 #define   SPI_FIFO_PTR_CLR		BIT(20)
 #define   SPI_ARB_ENABLE		BIT(19)
 #define   EXEC_OPCODE			BIT(16)
-#define SPI_CNTRL1			0x0c
-#define SPI_CMD_CODE			0x45
-#define SPI_CMD_TRIGGER			0x47
-#define   SPI_CMD_TRIGGER_EXECUTE	BIT(7)
-#define SPI_TX_BYTE_COUNT		0x48
-#define SPI_RX_BYTE_COUNT		0x4b
-#define SPI_STATUS			0x4c
-#define   SPI_DONE_BYTE_COUNT_SHIFT	0
-#define   SPI_DONE_BYTE_COUNT_MASK	0xff
-#define   SPI_FIFO_WR_PTR_SHIFT		8
-#define   SPI_FIFO_WR_PTR_MASK		0x7f
-#define   SPI_FIFO_RD_PTR_SHIFT		16
-#define   SPI_FIFO_RD_PTR_MASK		0x7f
 #define SPI_FIFO			0x80
 #define   SPI_FIFO_DEPTH		(0xc7 - SPI_FIFO)
 

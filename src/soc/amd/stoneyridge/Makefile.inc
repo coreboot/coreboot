@@ -49,7 +49,6 @@ bootblock-y += reset.c
 bootblock-y += tsc_freq.c
 bootblock-y += southbridge.c
 bootblock-y += nb_util.c
-bootblock-$(CONFIG_SPI_FLASH) += spi.c
 bootblock-$(CONFIG_HAVE_SMI_HANDLER) += smi_util.c
 
 romstage-y += BiosCallOuts.c
@@ -67,7 +66,6 @@ romstage-$(CONFIG_STONEYRIDGE_UART) += uart.c
 romstage-y += tsc_freq.c
 romstage-y += southbridge.c
 romstage-y += nb_util.c
-romstage-$(CONFIG_SPI_FLASH) += spi.c
 romstage-$(CONFIG_HAVE_SMI_HANDLER) += smi_util.c
 
 verstage-y += gpio.c
@@ -78,7 +76,6 @@ verstage-y += reset.c
 verstage-$(CONFIG_STONEYRIDGE_UART) += uart.c
 verstage-y += tsc_freq.c
 verstage-y += nb_util.c
-verstage-$(CONFIG_SPI_FLASH) += spi.c
 
 postcar-y += monotonic_timer.c
 postcar-$(CONFIG_STONEYRIDGE_UART) += uart.c
@@ -109,7 +106,6 @@ ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smi_util.c
 ramstage-$(CONFIG_STONEYRIDGE_UART) += uart.c
 ramstage-y += usb.c
 ramstage-y += tsc_freq.c
-ramstage-$(CONFIG_SPI_FLASH) += spi.c
 ramstage-y += finalize.c
 ramstage-y += nb_util.c
 
@@ -118,7 +114,6 @@ smm-y += smihandler.c
 smm-y += smi_util.c
 smm-y += tsc_freq.c
 smm-$(CONFIG_DEBUG_SMI) += uart.c
-smm-$(CONFIG_SPI_FLASH) += spi.c
 smm-y += nb_util.c
 smm-y += gpio.c
 

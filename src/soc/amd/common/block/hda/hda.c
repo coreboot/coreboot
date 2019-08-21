@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2010 Advanced Micro Devices, Inc.
+ * Copyright (C) 2010-2019 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,6 +16,8 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
+#include <device/pci_ops.h>
+#include <device/azalia_device.h>
 
 static const unsigned short pci_device_ids[] = {
 	PCI_DEVICE_ID_AMD_SB900_HDA,
@@ -36,7 +38,8 @@ static struct device_operations hda_audio_ops = {
 };
 
 static const struct pci_driver hdaaudio_driver __pci_driver = {
-	.ops = &hda_audio_ops,
+	.ops = CONFIG(AZALIA_PLUGIN_SUPPORT) ?
+			&default_azalia_audio_ops : &hda_audio_ops,
 	.vendor = PCI_VENDOR_ID_AMD,
 	.devices = pci_device_ids,
 };

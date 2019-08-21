@@ -190,13 +190,13 @@ chip soc/intel/skylake
 
 	# PCH UART, SPI, I2C
 	register "SerialIoDevMode" = "{ \
-		[PchSerialIoIndexI2C0]  = PchSerialIoPci, \
-		[PchSerialIoIndexI2C1]  = PchSerialIoPci, \
+		[PchSerialIoIndexI2C0]  = PchSerialIoDisabled, \
+		[PchSerialIoIndexI2C1]  = PchSerialIoDisabled, \
 		[PchSerialIoIndexI2C2]  = PchSerialIoDisabled, \
 		[PchSerialIoIndexI2C3]  = PchSerialIoDisabled, \
 		[PchSerialIoIndexI2C4]  = PchSerialIoDisabled, \
 		[PchSerialIoIndexI2C5]  = PchSerialIoDisabled, \
-		[PchSerialIoIndexSpi0]  = PchSerialIoPci, \
+		[PchSerialIoIndexSpi0]  = PchSerialIoDisabled, \
 		[PchSerialIoIndexSpi1]  = PchSerialIoDisabled, \
 		[PchSerialIoIndexUart0] = PchSerialIoDisabled, \
 		[PchSerialIoIndexUart1] = PchSerialIoDisabled, \

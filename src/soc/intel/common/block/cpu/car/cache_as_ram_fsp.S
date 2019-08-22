@@ -89,11 +89,11 @@ CAR_init_done:
 	/* Setup bootblock stack */
 	mov	%edx, %esp
 
-	/* clear CAR_GLOBAL area as it is not shared */
+	/* clear .bss section as it is not shared */
 	cld
 	xor	%eax, %eax
-	movl	$(_car_global_end), %ecx
-	movl	$(_car_global_start), %edi
+	movl	$(_ebss), %ecx
+	movl	$(_bss), %edi
 	sub	%edi, %ecx
 	shrl	$2, %ecx
 	rep	stosl

@@ -20,6 +20,15 @@
 
 #if ENV_ROMSTAGE && CONFIG(CAR_GLOBAL_MIGRATION)
 
+/*
+ * The _car_global_[start|end]symbols cover CAR data which is relocatable
+ * once memory comes online. Variables with CAR_GLOBAL decoration
+ * reside within this region.
+ */
+extern char _car_global_start[];
+extern char _car_global_end[];
+#define _car_global_size (_car_global_end - _car_global_start)
+
 asm(".section .car.global_data,\"w\",@nobits");
 asm(".previous");
 #ifdef __clang__

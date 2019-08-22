@@ -24,8 +24,8 @@ extern char _car_region_end[];
 #define _car_region_size (_car_region_end - _car_region_start)
 
 /*
- * This is the stack used under CONFIG_C_ENVIRONMENT_BOOTBLOCK for
- * all stages that execute when cache-as-ram is up.
+ * This is the stack area used for all stages that execute when cache-as-ram
+ * is up. Area is not cleared in between stages.
  */
 extern char _car_stack_start[];
 extern char _car_stack_end[];
@@ -37,14 +37,5 @@ extern char _car_ehci_dbg_info_start[];
 extern char _car_ehci_dbg_info_end[];
 #define _car_ehci_dbg_info_size \
 	(_car_ehci_dbg_info_end - _car_ehci_dbg_info_start)
-
-/*
- * The _car_global_[start|end]symbols cover CAR data which is relocatable
- * once memory comes online. Variables with CAR_GLOBAL decoration
- * reside within this region.
- */
-extern char _car_global_start[];
-extern char _car_global_end[];
-#define _car_global_size (_car_global_end - _car_global_start)
 
 #endif

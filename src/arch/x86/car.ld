@@ -64,11 +64,13 @@
         . += 80;
         _car_ehci_dbg_info_end = .;
 
-	/* _car_global_start and _car_global_end provide symbols to per-stage
+	/* _bss and _ebss provide symbols to per-stage
 	 * variables that are not shared like the timestamp and the pre-ram
 	 * cbmem console. This is useful for clearing this area on a per-stage
 	 * basis when more than one stage uses cache-as-ram for CAR_GLOBALs. */
-	_car_global_start = .;
+
+	. = ALIGN(ARCH_POINTER_ALIGN_SIZE);
+	_bss = .;
 #if ENV_STAGE_HAS_BSS_SECTION
 	/* Allow global uninitialized variables for stages without CAR teardown. */
 	*(.bss)
@@ -76,10 +78,12 @@
 	*(.sbss)
 	*(.sbss.*)
 #else
+	_car_global_start = .;
 	*(.car.global_data);
+	_car_global_end = .;
 #endif
 	. = ALIGN(ARCH_POINTER_ALIGN_SIZE);
-	_car_global_end = .;
+	_ebss = .;
 	_car_unallocated_start = .;
 
 #if !CONFIG(C_ENVIRONMENT_BOOTBLOCK)

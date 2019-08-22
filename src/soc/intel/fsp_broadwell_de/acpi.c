@@ -566,3 +566,14 @@ unsigned long acpi_madt_irq_overrides(unsigned long current)
 
 	return current;
 }
+
+unsigned long southcluster_write_acpi_tables(struct device *device,
+						 unsigned long current,
+						 acpi_rsdp_t *rsdp)
+{
+	current = acpi_write_hpet(device, current, rsdp);
+	current = acpi_align_current(current);
+
+	printk(BIOS_DEBUG, "current = %lx\n", current);
+	return current;
+}

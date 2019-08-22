@@ -32,7 +32,7 @@
 #include <soc/lpc.h>
 #include <soc/pci_devs.h>
 #include <soc/ramstage.h>
-
+#include <soc/acpi.h>
 #include "chip.h"
 
 typedef struct soc_intel_fsp_broadwell_de_config config_t;
@@ -277,6 +277,7 @@ static struct device_operations device_ops = {
 	.read_resources   = sc_read_resources,
 	.set_resources    = pci_dev_set_resources,
 	.enable_resources = NULL,
+	.write_acpi_tables = southcluster_write_acpi_tables,
 	.init             = sc_init,
 	.enable           = southcluster_enable_dev,
 	.scan_bus         = scan_lpc_bus,

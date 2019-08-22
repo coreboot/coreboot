@@ -27,5 +27,7 @@ uint16_t get_pmbase(void);
 unsigned long vtd_write_acpi_tables(struct device *const dev,
 				    unsigned long current,
 				    struct acpi_rsdp *const rsdp);
-
+unsigned long southcluster_write_acpi_tables(struct device *device,
+					     unsigned long start,
+					     acpi_rsdp_t *rsdp);
 #endif /* _SOC_ACPI_H_ */

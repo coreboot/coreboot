@@ -159,9 +159,9 @@
 		STR(vboot2 work buffer size must be equivalent to \
 			VB2_FIRMWARE_WORKBUF_RECOMMENDED_SIZE! (sz)));
 
-#define VBOOT2_TPM_LOG(addr, size) \
-	REGION(vboot2_tpm_log, addr, size, 16) \
-	_ = ASSERT(size >= 2K, "vboot2 tpm log buffer must be at least 2K!");
+#define TPM_TCPA_LOG(addr, size) \
+	REGION(tpm_tcpa_log, addr, size, 16) \
+	_ = ASSERT(size >= 2K, "tpm tcpa log buffer must be at least 2K!");
 
 #if ENV_VERSTAGE
 	#define VERSTAGE(addr, sz) \

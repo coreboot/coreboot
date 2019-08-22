@@ -34,8 +34,11 @@ DECLARE_REGION(preram_cbfs_cache)
 DECLARE_REGION(postram_cbfs_cache)
 DECLARE_REGION(cbfs_cache)
 DECLARE_REGION(fmap_cache)
-DECLARE_REGION(payload)
+DECLARE_REGION(tpm_tcpa_log)
 
+/* Regions for execution units. */
+
+DECLARE_REGION(payload)
 /* "program" always refers to the current execution unit. */
 DECLARE_REGION(program)
 /* _<stage>_size is always the maximum amount allocated in memlayout, whereas

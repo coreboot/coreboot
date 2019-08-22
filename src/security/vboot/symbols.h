@@ -19,6 +19,4 @@
 
 DECLARE_REGION(vboot2_work)
 
-DECLARE_REGION(vboot2_tpm_log)
-
 #endif /* __VBOOT_SYMBOLS_H__ */

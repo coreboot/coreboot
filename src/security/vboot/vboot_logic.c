@@ -17,13 +17,13 @@
 #include <bootmode.h>
 #include <cbmem.h>
 #include <fmap.h>
+#include <security/tpm/tspi/crtm.h>
+#include <security/vboot/misc.h>
+#include <security/vboot/vbnv.h>
+#include <security/vboot/tpm_common.h>
 #include <string.h>
 #include <timestamp.h>
 #include <vb2_api.h>
-#include <security/vboot/misc.h>
-#include <security/vboot/vbnv.h>
-#include <security/vboot/vboot_crtm.h>
-#include <security/vboot/tpm_common.h>
 
 #include "antirollback.h"
 
@@ -282,14 +282,6 @@ void verstage_main(void)
 	if (vboot_setup_tpm(ctx) == TPM_SUCCESS)
 		antirollback_read_space_firmware(ctx);
 	timestamp_add_now(TS_END_TPMINIT);
-
-	/* Enable measured boot mode */
-	if (CONFIG(VBOOT_MEASURED_BOOT) &&
-		!(ctx->flags & VB2_CONTEXT_S3_RESUME)) {
-		if (vboot_init_crtm() != VB2_SUCCESS)
-			die_with_post_code(POST_INVALID_ROM,
-				"Initializing measured boot mode failed!");
-	}
 
 	if (get_recovery_mode_switch()) {
 		ctx->flags |= VB2_CONTEXT_FORCE_RECOVERY_MODE;

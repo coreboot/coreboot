@@ -13,19 +13,19 @@
  */
 
 #include <assert.h>
-#include <console/console.h>
-#include <string.h>
-#include <stdlib.h>
 #include <boot_device.h>
 #include <cbfs.h>
 #include <commonlib/bsd/compression.h>
+#include <console/console.h>
 #include <endian.h>
+#include <fmap.h>
 #include <lib.h>
+#include <security/tpm/tspi/crtm.h>
+#include <security/vboot/vboot_common.h>
+#include <stdlib.h>
+#include <string.h>
 #include <symbols.h>
 #include <timestamp.h>
-#include <fmap.h>
-#include <security/vboot/vboot_crtm.h>
-#include <security/vboot/vboot_common.h>
 
 #define ERROR(x...) printk(BIOS_ERR, "CBFS: " x)
 #define LOG(x...) printk(BIOS_INFO, "CBFS: " x)
@@ -60,7 +60,7 @@ int cbfs_boot_locate(struct cbfsf *fh, const char *name, uint32_t *type)
 	}
 
 	if (!ret)
-		if (vboot_measure_cbfs_hook(fh, name))
+		if (tspi_measure_cbfs_hook(fh, name))
 			return -1;
 
 	return ret;

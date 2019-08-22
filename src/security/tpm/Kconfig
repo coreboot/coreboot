@@ -100,4 +100,21 @@ config TPM_STARTUP_IGNORE_POSTINIT
 	  or VBOOT on the Intel Arrandale processor, which issues a
 	  CPU-only reset during the romstage.
 
+config TPM_MEASURED_BOOT
+	bool "Enable Measured Boot"
+	default n
+	select VBOOT_LIB
+	depends on TPM1 || TPM2
+	depends on !VBOOT_RETURN_FROM_VERSTAGE
+	help
+	  Enables measured boot (experimental)
+
+config TPM_MEASURED_BOOT_RUNTIME_DATA
+	string "Runtime data whitelist"
+	default ""
+	depends on TPM_MEASURED_BOOT
+	help
+	  Runtime data whitelist of cbfs filenames. Needs to be a
+	  comma separated list
+
 endmenu # Trusted Platform Module (tpm)

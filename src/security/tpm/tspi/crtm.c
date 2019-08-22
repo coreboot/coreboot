@@ -15,12 +15,11 @@
 #include <console/console.h>
 #include <fmap.h>
 #include <cbfs.h>
-#include <security/vboot/vboot_crtm.h>
-#include <security/vboot/misc.h>
+#include "crtm.h"
 #include <string.h>
 
 /*
- * This functions sets the TCPA log namespace
+ * This function sets the TCPA log namespace
  * for the cbfs file (region) lookup.
  */
 static int create_tcpa_metadata(const struct region_device *rdev,
@@ -28,11 +27,12 @@ static int create_tcpa_metadata(const struct region_device *rdev,
 {
 	int i;
 	struct region_device fmap;
-	static const char *fmap_cbfs_names[] = {
-	"COREBOOT",
-	"FW_MAIN_A",
-	"FW_MAIN_B",
-	"RW_LEGACY"};
+	static const char *const fmap_cbfs_names[] = {
+		"COREBOOT",
+		"FW_MAIN_A",
+		"FW_MAIN_B",
+		"RW_LEGACY"
+	};
 
 	for (i = 0; i < ARRAY_SIZE(fmap_cbfs_names); i++) {
 		if (fmap_locate_area_as_rdev(fmap_cbfs_names[i], &fmap) == 0) {
@@ -49,17 +49,27 @@ static int create_tcpa_metadata(const struct region_device *rdev,
 	return -1;
 }
 
-uint32_t vboot_init_crtm(void)
+static int tcpa_log_initialized;
+static inline int tcpa_log_available(void)
+{
+	if (ENV_BOOTBLOCK)
+		return tcpa_log_initialized;
+
+	return 1;
+}
+
+uint32_t tspi_init_crtm(void)
 {
 	struct prog bootblock = PROG_INIT(PROG_BOOTBLOCK, "bootblock");
-	struct prog verstage =
-		PROG_INIT(PROG_VERSTAGE, CONFIG_CBFS_PREFIX "/verstage");
-	struct prog romstage =
-		PROG_INIT(PROG_ROMSTAGE, CONFIG_CBFS_PREFIX "/romstage");
-	char tcpa_metadata[TCPA_PCR_HASH_NAME];
 
-	/* Initialize TCPE PRERAM log. */
-	tcpa_preram_log_clear();
+	/* Initialize TCPA PRERAM log. */
+	if (!tcpa_log_available()) {
+		tcpa_preram_log_clear();
+		tcpa_log_initialized = 1;
+	} else {
+		printk(BIOS_WARNING, "TSPI: CRTM already initialized!\n");
+		return VB2_SUCCESS;
+	}
 
 	/* measure bootblock from RO */
 	struct cbfsf bootblock_data;
@@ -71,66 +81,13 @@ uint32_t vboot_init_crtm(void)
 			return VB2_ERROR_UNKNOWN;
 	} else {
 		if (cbfs_boot_locate(&bootblock_data,
-			prog_name(&bootblock), NULL) == 0) {
-			cbfs_file_data(prog_rdev(&bootblock), &bootblock_data);
-
-			if (create_tcpa_metadata(prog_rdev(&bootblock),
-				prog_name(&bootblock), tcpa_metadata) < 0)
-				return VB2_ERROR_UNKNOWN;
-
-			if (tpm_measure_region(prog_rdev(&bootblock),
-					TPM_CRTM_PCR,
-					tcpa_metadata))
-				return VB2_ERROR_UNKNOWN;
-		} else {
+			prog_name(&bootblock), NULL)) {
+			/*
+			 * measurement is done in
+			 * tspi_measure_cbfs_hook()
+			 */
 			printk(BIOS_INFO,
-			       "VBOOT: Couldn't measure bootblock into CRTM!\n");
-			return VB2_ERROR_UNKNOWN;
-		}
-	}
-
-	if (CONFIG(VBOOT_STARTS_IN_ROMSTAGE)) {
-		struct cbfsf romstage_data;
-		/* measure romstage from RO */
-		if (cbfs_boot_locate(&romstage_data,
-			prog_name(&romstage), NULL) == 0) {
-			cbfs_file_data(prog_rdev(&romstage), &romstage_data);
-
-			if (create_tcpa_metadata(prog_rdev(&romstage),
-				prog_name(&romstage), tcpa_metadata) < 0)
-				return VB2_ERROR_UNKNOWN;
-
-			if (tpm_measure_region(prog_rdev(&romstage),
-				TPM_CRTM_PCR,
-				tcpa_metadata))
-				return VB2_ERROR_UNKNOWN;
-		} else {
-			printk(BIOS_INFO,
-			       "VBOOT: Couldn't measure %s into CRTM!\n",
-			       CONFIG_CBFS_PREFIX "/romstage");
-			return VB2_ERROR_UNKNOWN;
-		}
-	}
-
-	if (CONFIG(VBOOT_SEPARATE_VERSTAGE)) {
-		struct cbfsf verstage_data;
-		/* measure verstage from RO */
-		if (cbfs_boot_locate(&verstage_data,
-			prog_name(&verstage), NULL) == 0) {
-			cbfs_file_data(prog_rdev(&verstage), &verstage_data);
-
-			if (create_tcpa_metadata(prog_rdev(&verstage),
-				prog_name(&verstage), tcpa_metadata) < 0)
-				return VB2_ERROR_UNKNOWN;
-
-			if (tpm_measure_region(prog_rdev(&verstage),
-				TPM_CRTM_PCR,
-				tcpa_metadata))
-				return VB2_ERROR_UNKNOWN;
-		} else {
-			printk(BIOS_INFO,
-			       "VBOOT: Couldn't measure %s into CRTM!\n",
-			       CONFIG_CBFS_PREFIX "/verstage");
+			       "TSPI: Couldn't measure bootblock into CRTM!\n");
 			return VB2_ERROR_UNKNOWN;
 		}
 	}
@@ -140,8 +97,8 @@ uint32_t vboot_init_crtm(void)
 
 static bool is_runtime_data(const char *name)
 {
-	const char *whitelist = CONFIG_VBOOT_MEASURED_BOOT_RUNTIME_DATA;
-	size_t whitelist_len = sizeof(CONFIG_VBOOT_MEASURED_BOOT_RUNTIME_DATA) - 1;
+	const char *whitelist = CONFIG_TPM_MEASURED_BOOT_RUNTIME_DATA;
+	size_t whitelist_len = sizeof(CONFIG_TPM_MEASURED_BOOT_RUNTIME_DATA) - 1;
 	size_t name_len = strlen(name);
 	int i;
 
@@ -156,15 +113,21 @@ static bool is_runtime_data(const char *name)
 	return false;
 }
 
-uint32_t vboot_measure_cbfs_hook(struct cbfsf *fh, const char *name)
+uint32_t tspi_measure_cbfs_hook(struct cbfsf *fh, const char *name)
 {
 	uint32_t pcr_index;
 	uint32_t cbfs_type;
 	struct region_device rdev;
 	char tcpa_metadata[TCPA_PCR_HASH_NAME];
 
-	if (!vboot_logic_executed())
-		return 0;
+	if (!tcpa_log_available()) {
+		if (tspi_init_crtm() != VB2_SUCCESS) {
+			printk(BIOS_WARNING,
+			       "Initializing CRTM failed!");
+			return 0;
+		}
+		printk(BIOS_DEBUG, "CRTM initialized.");
+	}
 
 	cbfsf_file_type(fh, &cbfs_type);
 	cbfs_file_data(&rdev, fh);
@@ -191,4 +154,44 @@ uint32_t vboot_measure_cbfs_hook(struct cbfsf *fh, const char *name)
 		return VB2_ERROR_UNKNOWN;
 
 	return tpm_measure_region(&rdev, pcr_index, tcpa_metadata);
+}
+
+int tspi_measure_cache_to_pcr(void)
+{
+	int i;
+	enum vb2_hash_algorithm hash_alg;
+	struct tcpa_table *tclt = tcpa_log_init();
+
+	if (!tclt) {
+		printk(BIOS_WARNING, "TCPA: Log non-existent!\n");
+		return VB2_ERROR_UNKNOWN;
+	}
+	if (CONFIG(TPM1)) {
+		hash_alg = VB2_HASH_SHA1;
+	} else { /* CONFIG_TPM2 */
+		hash_alg = VB2_HASH_SHA256;
+	}
+
+
+	printk(BIOS_DEBUG, "TPM: Write digests cached in TCPA log to PCR\n");
+	for (i = 0; i < tclt->num_entries; i++) {
+		struct tcpa_entry *tce = &tclt->entries[i];
+		if (tce) {
+			printk(BIOS_DEBUG, "TPM: Write digest for"
+			       " %s into PCR %d\n",
+			       tce->name, tce->pcr);
+			int result = tlcl_extend(tce->pcr,
+						 tce->digest,
+						 NULL);
+			if (result != TPM_SUCCESS) {
+				printk(BIOS_ERR, "TPM: Writing digest"
+				       " of %s into PCR failed with error"
+				       " %d\n",
+				       tce->name, result);
+				return VB2_ERROR_UNKNOWN;
+			}
+		}
+	}
+
+	return VB2_SUCCESS;
 }

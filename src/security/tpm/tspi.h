@@ -24,6 +24,12 @@
 #define HASH_DATA_CHUNK_SIZE 1024
 
 /**
+ * Get the pointer to the single instance of global
+ * tcpa log data, and initialize it when necessary
+ */
+struct tcpa_table *tcpa_log_init(void);
+
+/**
  * Clears the pre-RAM tcpa log data and initializes
  * any content with default values
  */
@@ -46,6 +52,7 @@ void tcpa_log_add_table_entry(const char *name, const uint32_t pcr,
  * Dump TCPA log entries on console
  */
 void tcpa_log_dump(void *unused);
+
 
 /**
  * Ask vboot for a digest and extend a TPM PCR with it.

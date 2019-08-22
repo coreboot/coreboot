@@ -12,8 +12,8 @@
  * GNU General Public License for more details.
  */
 
-#ifndef __SECURITY_VBOOT_CRTM_H__
-#define __SECURITY_VBOOT_CRTM_H__
+#ifndef __SECURITY_TSPI_CRTM_H__
+#define __SECURITY_TSPI_CRTM_H__
 
 #include <commonlib/cbfs.h>
 #include <program_loading.h>
@@ -43,18 +43,23 @@
  * Takes the current vboot context as parameter for s3 checks.
  * returns on success VB2_SUCCESS, else a vboot error.
  */
-uint32_t vboot_init_crtm(void);
+uint32_t tspi_init_crtm(void);
 
-#if CONFIG(VBOOT_MEASURED_BOOT)
+/**
+ * Measure digests cached in TCPA log entries into PCRs
+ */
+int tspi_measure_cache_to_pcr(void);
+
+#if CONFIG(TPM_MEASURED_BOOT)
 /*
  * Measures cbfs data via hook (cbfs)
  * fh is the cbfs file handle to measure
  * return 0 if successful, else an error
  */
-uint32_t vboot_measure_cbfs_hook(struct cbfsf *fh, const char *name);
+uint32_t tspi_measure_cbfs_hook(struct cbfsf *fh, const char *name);
 
 #else
-#define vboot_measure_cbfs_hook(fh, name) 0
+#define tspi_measure_cbfs_hook(fh, name) 0
 #endif
 
-#endif /* __VBOOT_VBOOT_CRTM_H__ */
+#endif /* __SECURITY_TSPI_CRTM_H__ */

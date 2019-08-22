@@ -407,7 +407,7 @@ void fsp_memory_init(bool s3wake)
 	/* Build up memory map of romstage address space including CAR. */
 	memranges_init_empty(&memmap, &freeranges[0], ARRAY_SIZE(freeranges));
 	memranges_insert(&memmap, (uintptr_t)_car_region_start,
-		_car_relocatable_data_end - _car_region_start, 0);
+		_car_unallocated_start - _car_region_start, 0);
 	memranges_insert(&memmap, (uintptr_t)_program, REGION_SIZE(program), 0);
 
 	if (!CONFIG(FSP_M_XIP))

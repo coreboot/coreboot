@@ -64,8 +64,6 @@
         . += 80;
         _car_ehci_dbg_info_end = .;
 
-	_car_relocatable_data_start = .;
-
 	/* _car_global_start and _car_global_end provide symbols to per-stage
 	 * variables that are not shared like the timestamp and the pre-ram
 	 * cbmem console. This is useful for clearing this area on a per-stage
@@ -78,13 +76,11 @@
 	*(.sbss)
 	*(.sbss.*)
 #else
-	/* .car.global_data objects only around when
-	 * CONFIG_CAR_GLOBAL_MIGRATION is employed. */
 	*(.car.global_data);
 #endif
 	. = ALIGN(ARCH_POINTER_ALIGN_SIZE);
 	_car_global_end = .;
-	_car_relocatable_data_end = .;
+	_car_unallocated_start = .;
 
 #if !CONFIG(C_ENVIRONMENT_BOOTBLOCK)
 	_car_stack_start = .;

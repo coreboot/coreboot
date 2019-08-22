@@ -115,7 +115,7 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *fspm_upd, uint32_t version)
 			aupd->StackBase);
 		printk(BIOS_SPEW, "|                   |\n");
 		printk(BIOS_SPEW, "+-------------------+ 0x%p\n",
-			_car_relocatable_data_end);
+			_car_global_end);
 		printk(BIOS_SPEW, "| coreboot data     |\n");
 		printk(BIOS_SPEW, "+-------------------+ 0x%p\n",
 			_car_stack_end);

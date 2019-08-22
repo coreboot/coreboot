@@ -52,13 +52,13 @@ void car_set_reloc_ptr(void *var, void *val);
 
 static inline size_t car_data_size(void)
 {
-	size_t car_size = _car_relocatable_data_size;
-	return ALIGN_UP(car_size, 64);
+	size_t car_size = _car_global_size;
+	return ALIGN(car_size, 64);
 }
 
 static inline size_t car_object_offset(void *ptr)
 {
-	return (char *)ptr - &_car_relocatable_data_start[0];
+	return (char *)ptr - &_car_global_start[0];
 }
 
 #else

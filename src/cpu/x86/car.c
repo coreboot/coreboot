@@ -44,8 +44,8 @@ void *car_get_var_ptr(void *var)
 {
 	char *migrated_base = NULL;
 	int offset;
-	void *_car_start = _car_relocatable_data_start;
-	void *_car_end = _car_relocatable_data_end;
+	void *_car_start = _car_global_start;
+	void *_car_end = _car_global_end;
 
 	/* If the cache-as-ram has not been migrated return the pointer
 	 * passed in. */
@@ -127,7 +127,7 @@ static void do_car_migrate_variables(void)
 		return;
 	}
 
-	memcpy(migrated_base, _car_relocatable_data_start, car_size);
+	memcpy(migrated_base, _car_global_start, car_size);
 
 	/* Mark that the data has been moved. */
 	car_migrated = ~0;

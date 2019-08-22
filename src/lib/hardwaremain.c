@@ -451,8 +451,9 @@ void main(void)
 	/* console_init() MUST PRECEDE ALL printk()! Additionally, ensure
 	 * it is the very first thing done in ramstage.*/
 	console_init();
-
 	post_code(POST_CONSOLE_READY);
+
+	exception_init();
 
 	/*
 	 * CBMEM needs to be recovered because timestamps, ACPI, etc rely on
@@ -470,8 +471,6 @@ void main(void)
 #if CONFIG(HAVE_ACPI_RESUME)
 	acpi_is_wakeup();
 #endif
-
-	exception_init();
 	threads_initialize();
 
 	/* Schedule the static boot state entries. */

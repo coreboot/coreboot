@@ -363,7 +363,7 @@ static int read_from_cbfs(const char *name, void *buf, size_t size)
 
 int paging_enable_for_car(const char *pdpt_name, const char *pt_name)
 {
-	if (!ENV_CACHE_AS_RAM)
+	if (!preram_symbols_available())
 		return -1;
 
 	if (read_from_cbfs(pdpt_name, _pdpt, REGION_SIZE(pdpt))) {
@@ -383,7 +383,7 @@ int paging_enable_for_car(const char *pdpt_name, const char *pt_name)
 
 static void *get_pdpt_addr(void)
 {
-	if (ENV_CACHE_AS_RAM)
+	if (preram_symbols_available())
 		return _pdpt;
 	return (void *)(uintptr_t)read_cr3();
 }

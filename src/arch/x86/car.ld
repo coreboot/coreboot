@@ -76,8 +76,8 @@
 	 * cbmem console. This is useful for clearing this area on a per-stage
 	 * basis when more than one stage uses cache-as-ram for CAR_GLOBALs. */
 	_car_global_start = .;
-#if !CONFIG(CAR_GLOBAL_MIGRATION)
-	/* Allow global unitialized variables when CAR_GLOBALs are not used. */
+#if ENV_STAGE_HAS_BSS_SECTION
+	/* Allow global uninitialized variables for stages without CAR teardown. */
 	*(.bss)
 	*(.bss.*)
 	*(.sbss)

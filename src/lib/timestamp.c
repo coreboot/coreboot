@@ -31,7 +31,6 @@
 #define MAX_BSS_TIMESTAMP_CACHE 16
 
 struct __packed timestamp_cache {
-	uint32_t cache_state;
 	struct timestamp_table table;
 	/* The struct timestamp_table has a 0 length array as its last field.
 	 * The  following 'entries' array serves as the storage space for the
@@ -41,28 +40,23 @@ struct __packed timestamp_cache {
 
 DECLARE_OPTIONAL_REGION(timestamp);
 
-#if defined(__PRE_RAM__)
+#if ENV_ROMSTAGE_OR_BEFORE
 #define USE_TIMESTAMP_REGION (REGION_SIZE(timestamp) > 0)
 #else
 #define USE_TIMESTAMP_REGION 0
 #endif
 
-/* The cache location will sit in BSS when in ramstage/postcar. */
-#define TIMESTAMP_CACHE_IN_BSS (ENV_RAMSTAGE || ENV_POSTCAR)
-
-#define HAS_CBMEM (ENV_ROMSTAGE || ENV_RAMSTAGE || ENV_POSTCAR)
+/* Currently we never store timestamp cache in .bss. */
+#define TIMESTAMP_CACHE_IN_BSS 0
 
 /*
- * Storage of cache entries during ramstage/postcar prior to cbmem coming
- * online.
+ * Storage of cache entries prior to cbmem coming online.
  */
 static struct timestamp_cache timestamp_cache;
 
-enum {
-	TIMESTAMP_CACHE_UNINITIALIZED = 0,
-	TIMESTAMP_CACHE_INITIALIZED,
-	TIMESTAMP_CACHE_NOT_NEEDED,
-};
+/* This points to the active timestamp_table and can change within a stage.
+   as CBMEM comes available. */
+static struct timestamp_table *glob_ts_table CAR_GLOBAL;
 
 static void timestamp_cache_init(struct timestamp_cache *ts_cache,
 				 uint64_t base)
@@ -70,7 +64,6 @@ static void timestamp_cache_init(struct timestamp_cache *ts_cache,
 	ts_cache->table.num_entries = 0;
 	ts_cache->table.max_entries = MAX_BSS_TIMESTAMP_CACHE;
 	ts_cache->table.base_time = base;
-	ts_cache->cache_state = TIMESTAMP_CACHE_INITIALIZED;
 
 	if (USE_TIMESTAMP_REGION)
 		ts_cache->table.max_entries = (REGION_SIZE(timestamp) -
@@ -87,7 +80,7 @@ static struct timestamp_cache *timestamp_cache_get(void)
 	} else if (USE_TIMESTAMP_REGION) {
 		if (REGION_SIZE(timestamp) < sizeof(*ts_cache))
 			BUG();
-		ts_cache = car_get_var_ptr((void *)_timestamp);
+		ts_cache = (void *)_timestamp;
 	}
 
 	return ts_cache;
@@ -128,31 +121,24 @@ static int timestamp_should_run(void)
 
 static struct timestamp_table *timestamp_table_get(void)
 {
-	MAYBE_STATIC_BSS struct timestamp_table *ts_table = NULL;
+	struct timestamp_table *ts_table;
 	struct timestamp_cache *ts_cache;
 
-	if (ts_table != NULL)
+	ts_table = car_get_ptr(glob_ts_table);
+	if (ts_table)
 		return ts_table;
 
 	ts_cache = timestamp_cache_get();
+	if (ts_cache)
+		ts_table = &ts_cache->table;
 
-	if (ts_cache == NULL) {
-		if (HAS_CBMEM)
-			ts_table = cbmem_find(CBMEM_ID_TIMESTAMP);
-		return ts_table;
-	}
-
-	/* Cache is required. */
-	if (ts_cache->cache_state != TIMESTAMP_CACHE_NOT_NEEDED)
-		return &ts_cache->table;
-
-	/* Cache shouldn't be used but there's no backing store. */
-	if (!HAS_CBMEM)
-		return NULL;
-
-	ts_table = cbmem_find(CBMEM_ID_TIMESTAMP);
-
+	car_set_ptr(glob_ts_table, ts_table);
 	return ts_table;
+}
+
+static void timestamp_table_set(struct timestamp_table *ts)
+{
+	car_set_ptr(glob_ts_table, ts);
 }
 
 static const char *timestamp_name(enum timestamp_id id)
@@ -212,6 +198,8 @@ void timestamp_init(uint64_t base)
 {
 	struct timestamp_cache *ts_cache;
 
+	assert(ENV_ROMSTAGE_OR_BEFORE);
+
 	if (!timestamp_should_run())
 		return;
 
@@ -222,35 +210,18 @@ void timestamp_init(uint64_t base)
 		return;
 	}
 
-	/* Timestamps could have already been recovered.
-	 * In those circumstances honor the cache which sits in BSS
-	 * as it has already been initialized. */
-	if (TIMESTAMP_CACHE_IN_BSS &&
-	    ts_cache->cache_state != TIMESTAMP_CACHE_UNINITIALIZED)
-		return;
-
 	timestamp_cache_init(ts_cache, base);
+	timestamp_table_set(&ts_cache->table);
 }
 
 static void timestamp_sync_cache_to_cbmem(int is_recovery)
 {
 	uint32_t i;
-	struct timestamp_cache *ts_cache;
 	struct timestamp_table *ts_cache_table;
-	struct timestamp_table *ts_cbmem_table = NULL;
+	struct timestamp_table *ts_cbmem_table;
 
 	if (!timestamp_should_run())
 		return;
-
-	ts_cache = timestamp_cache_get();
-
-	/* No timestamp cache found */
-	if (ts_cache == NULL) {
-		printk(BIOS_ERR, "ERROR: No timestamp cache found\n");
-		return;
-	}
-
-	ts_cache_table = &ts_cache->table;
 
 	/* cbmem is being recovered. */
 	if (is_recovery) {
@@ -270,6 +241,19 @@ static void timestamp_sync_cache_to_cbmem(int is_recovery)
 
 	if (ts_cbmem_table == NULL) {
 		printk(BIOS_ERR, "ERROR: No timestamp table allocated\n");
+		timestamp_table_set(NULL);
+		return;
+	}
+
+	/* Seed the timestamp tick frequency in ENV_PAYLOAD_LOADER. */
+	if (ENV_PAYLOAD_LOADER)
+		ts_cbmem_table->tick_freq_mhz = timestamp_tick_freq_mhz();
+
+	ts_cache_table = timestamp_table_get();
+	if (!ts_cache_table) {
+		if (ENV_ROMSTAGE)
+			printk(BIOS_ERR, "ERROR: No timestamp cache found\n");
+		timestamp_table_set(ts_cbmem_table);
 		return;
 	}
 
@@ -294,6 +278,7 @@ static void timestamp_sync_cache_to_cbmem(int is_recovery)
 	 * If timestamps only get initialized in ramstage, the base_time from
 	 * timestamp_init() will get ignored and all timestamps will be 0-based.
 	 */
+
 	for (i = 0; i < ts_cache_table->num_entries; i++) {
 		struct timestamp_entry *tse = &ts_cache_table->entries[i];
 		timestamp_add_table_entry(ts_cbmem_table, tse->entry_id,
@@ -304,13 +289,9 @@ static void timestamp_sync_cache_to_cbmem(int is_recovery)
 	if (ts_cbmem_table->base_time == 0)
 		ts_cbmem_table->base_time = ts_cache_table->base_time;
 
-	/* Seed the timestamp tick frequency in ENV_PAYLOAD_LOADER. */
-	if (ENV_PAYLOAD_LOADER)
-		ts_cbmem_table->tick_freq_mhz = timestamp_tick_freq_mhz();
-
 	/* Cache no longer required. */
+	timestamp_table_set(ts_cbmem_table);
 	ts_cache_table->num_entries = 0;
-	ts_cache->cache_state = TIMESTAMP_CACHE_NOT_NEEDED;
 }
 
 void timestamp_rescale_table(uint16_t N, uint16_t M)

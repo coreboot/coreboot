@@ -56,17 +56,16 @@
 	. += 32;
 	_epdpt = .;
 #endif
-	_car_relocatable_data_start = .;
-	/* The timestamp implementation relies on this storage to be around
-	 * after migration. One of the fields indicates not to use it as the
-	 * backing store once cbmem comes online. Therefore, this data needs
-	 * to reside in the migrated area (between _car_relocatable_data_start
-	 * and _car_relocatable_data_end). */
+
 	TIMESTAMP(., 0x200)
+
+	_car_relocatable_data_start = .;
+
 	_car_ehci_dbg_info_start = .;
 	/* Reserve sizeof(struct ehci_dbg_info). */
         . += 80;
         _car_ehci_dbg_info_end = .;
+
 	/* _car_global_start and _car_global_end provide symbols to per-stage
 	 * variables that are not shared like the timestamp and the pre-ram
 	 * cbmem console. This is useful for clearing this area on a per-stage

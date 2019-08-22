@@ -17,6 +17,7 @@
 #include <cpu/cpu.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
+#include <cpu/x86/smm.h>
 #include <program_loading.h>
 #include <rmodule.h>
 #include <romstage_handoff.h>
@@ -185,6 +186,23 @@ static void load_postcar_cbfs(struct prog *prog, struct postcar_frame *pcf)
 	finalize_load(rsl.params, pcf->stack);
 
 	stage_cache_add(STAGE_POSTCAR, prog);
+}
+
+/*
+ * Cache the TSEG region at the top of ram. This region is
+ * not restricted to SMM mode until SMM has been relocated.
+ * By setting the region to cacheable it provides faster access
+ * when relocating the SMM handler as well as using the TSEG
+ * region for other purposes.
+ */
+void postcar_enable_tseg_cache(struct postcar_frame *pcf)
+{
+	uintptr_t smm_base;
+	size_t smm_size;
+
+	smm_region(&smm_base, &smm_size);
+	postcar_frame_add_mtrr(pcf, smm_base, smm_size,
+				MTRR_TYPE_WRBACK);
 }
 
 void run_postcar_phase(struct postcar_frame *pcf)

@@ -88,4 +88,13 @@ void run_postcar_phase(struct postcar_frame *pcf);
  */
 void late_car_teardown(void);
 
+/*
+ * Cache the TSEG region at the top of ram. This region is
+ * not restricted to SMM mode until SMM has been relocated.
+ * By setting the region to cacheable it provides faster access
+ * when relocating the SMM handler as well as using the TSEG
+ * region for other purposes.
+ */
+void postcar_enable_tseg_cache(struct postcar_frame *pcf);
+
 #endif /* __ARCH_ROMSTAGE_H__ */

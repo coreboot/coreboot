@@ -267,7 +267,7 @@ _free_ic_return:
 static int
 xhci_finish_hub_config(usbdev_t *const dev, inputctx_t *const ic)
 {
-	int type = dev->speed == SUPER_SPEED ? 0x2a : 0x29; /* similar enough */
+	int type = is_usb_speed_ss(dev->speed) ? 0x2a : 0x29; /* similar enough */
 	hub_descriptor_t desc;
 
 	if (get_descriptor(dev, gen_bmRequestType(device_to_host, class_type,

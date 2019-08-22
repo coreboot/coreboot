@@ -96,8 +96,8 @@ usb_hub_port_speed(usbdev_t *const dev, const int port)
 	int ret = get_status (dev, port, DR_PORT, sizeof(buf), buf);
 	if (ret >= 0 && (buf[0] & PORT_ENABLE)) {
 		/* SuperSpeed hubs can only have SuperSpeed devices. */
-		if (dev->speed == SUPER_SPEED)
-			return SUPER_SPEED;
+		if (is_usb_speed_ss(dev->speed))
+			return dev->speed;
 
 		/*[bit] 10  9  (USB 2.0 port status word)
 		 *      0   0  full speed
@@ -176,7 +176,7 @@ usb_hub_port_initialize(usbdev_t *const dev, const int port)
 void
 usb_hub_init(usbdev_t *const dev)
 {
-	int type = dev->speed == SUPER_SPEED ? 0x2a : 0x29; /* similar enough */
+	int type = is_usb_speed_ss(dev->speed) ? 0x2a : 0x29; /* similar enough */
 	hub_descriptor_t desc;	/* won't fit the whole thing, we don't care */
 	if (get_descriptor(dev, gen_bmRequestType(device_to_host, class_type,
 		dev_recp), type, 0, &desc, sizeof(desc)) != sizeof(desc)) {
@@ -185,7 +185,7 @@ usb_hub_init(usbdev_t *const dev)
 		return;
 	}
 
-	if (dev->speed == SUPER_SPEED)
+	if (is_usb_speed_ss(dev->speed))
 		usb_hub_set_hub_depth(dev);
 	if (generic_hub_init(dev, desc.bNbrPorts, &usb_hub_ops) < 0)
 		return;

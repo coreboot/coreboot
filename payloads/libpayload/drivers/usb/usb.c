@@ -265,6 +265,8 @@ usb_decode_mps0(usb_speed speed, u8 bMaxPacketSize0)
 		}
 		return bMaxPacketSize0;
 	case SUPER_SPEED:
+	/* Intentional fallthrough */
+	case SUPER_SPEED_PLUS:
 		if (bMaxPacketSize0 != 9) {
 			usb_debug("Invalid MPS0: 0x%02x\n", bMaxPacketSize0);
 			bMaxPacketSize0 = 9;
@@ -284,6 +286,8 @@ int speed_to_default_mps(usb_speed speed)
 	case HIGH_SPEED:
 		return 64;
 	case SUPER_SPEED:
+	/* Intentional fallthrough */
+	case SUPER_SPEED_PLUS:
 	default:
 		return 512;
 	}
@@ -319,6 +323,8 @@ usb_decode_interval(usb_speed speed, const endpoint_type type, const unsigned ch
 			return LOG2(bInterval);
 		}
 	case SUPER_SPEED:
+	/* Intentional fallthrough */
+	case SUPER_SPEED_PLUS:
 		switch (type) {
 		case ISOCHRONOUS: case INTERRUPT:
 			return bInterval - 1;
@@ -657,7 +663,7 @@ usb_detach_device(hci_t *controller, int devno)
 int
 usb_attach_device(hci_t *controller, int hubaddress, int port, usb_speed speed)
 {
-	static const char* speeds[] = { "full", "low", "high", "super" };
+	static const char *speeds[] = { "full", "low", "high", "super", "ultra" };
 	usb_debug ("%sspeed device\n", (speed < sizeof(speeds) / sizeof(char*))
 		? speeds[speed] : "invalid value - no");
 	int newdev = set_address (controller, speed, port, hubaddress);
@@ -690,6 +696,14 @@ usb_generic_init (usbdev_t *dev)
 		usb_debug("Detaching device not used by payload\n");
 		usb_detach_device(dev->controller, dev->address);
 	}
+}
+
+/*
+ * returns the speed is above SUPER_SPEED or not
+ */
+_Bool is_usb_speed_ss(usb_speed speed)
+{
+	return (speed == SUPER_SPEED || speed == SUPER_SPEED_PLUS);
 }
 
 /*

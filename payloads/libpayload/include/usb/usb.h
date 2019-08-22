@@ -210,6 +210,7 @@ typedef enum {
 	LOW_SPEED = 1,
 	HIGH_SPEED = 2,
 	SUPER_SPEED = 3,
+	SUPER_SPEED_PLUS = 4,
 } usb_speed;
 
 struct usbdev {
@@ -293,6 +294,7 @@ int get_descriptor (usbdev_t *dev, int rtype, int descType, int descIdx,
 int set_configuration (usbdev_t *dev);
 int clear_feature (usbdev_t *dev, int endp, int feature, int rtype);
 int clear_stall (endpoint_t *ep);
+_Bool is_usb_speed_ss(usb_speed speed);
 
 void usb_nop_init (usbdev_t *dev);
 void usb_hub_init (usbdev_t *dev);

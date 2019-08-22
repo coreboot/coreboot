@@ -7,7 +7,7 @@ as a payload for QEMU/AArch64.
 ```bash
 qemu-system-aarch64 -bios ./build/coreboot.rom \
     -M virt,secure=on,virtualization=on -cpu cortex-a53 \
-    -nographic -m 8912M
+    -nographic -m 8192M
 ```
 
 - The default CPU in QEMU for AArch64 is a cortex-a15 which is 32-bit
@@ -17,6 +17,7 @@ have the right to access EL3/EL2 registers. You need to enable EL3/EL2
 via `-machine secure=on,virtualization=on`.
 - You need to specify the size of memory more than 544 MiB because 512
 MiB is reserved for the kernel.
+- The maximum size of memory is 255GiB (-m 261120).
 
 ## Building coreboot with an arbitrary FIT payload
 There are 3 steps to make coreboot.rom for QEMU/AArch64. If you select
@@ -30,7 +31,7 @@ You can get the DTB from QEMU with the following command.
 ```
 $ qemu-system-aarch64 \
     -M virt,dumpdtb=virt.dtb,secure=on,virtualization=on \
-    -cpu cortex-a53 -nographic -m 2048M
+    -cpu cortex-a53 -nographic -m 8192M
 ```
 
 ### 2. Build a FIT image with a DTB

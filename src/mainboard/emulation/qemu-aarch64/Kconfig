@@ -46,6 +46,6 @@ config MAINBOARD_VENDOR
 
 config DRAM_SIZE_MB
 	int
-	default 1024
+	default 261120 # The maximum dram size is 255GiB.
 
 endif #  BOARD_EMULATION_QEMU_AARCH64

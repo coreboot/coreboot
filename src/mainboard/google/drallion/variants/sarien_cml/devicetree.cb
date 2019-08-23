@@ -56,6 +56,10 @@ chip soc/intel/cannonlake
 	register "LanWakeFromDeepSx" = "0"
 	register "WolEnableOverride" = "0"
 
+	# Disable iDisplay codec enumeration
+	register "PchHdaIDispCodecDisconnect" = "1"
+	register "PchHdaAudioLinkHda" = "1"
+
 	# VR Settings Configuration for 4 Domains
 	#+----------------+-------+-------+-------+-------+
 	#| Domain/Setting |  SA   |  IA   | GTUS  |  GTS  |

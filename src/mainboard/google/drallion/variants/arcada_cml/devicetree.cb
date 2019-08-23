@@ -50,6 +50,10 @@ chip soc/intel/cannonlake
 	# Enable DDC for DDI port B
 	register "DdiPortBDdc" = "1"
 
+	# Disable iDisplay codec enumeration
+	register "PchHdaIDispCodecDisconnect" = "1"
+	register "PchHdaAudioLinkHda" = "1"
+
 	# VR Settings Configuration for 4 Domains
 	#+----------------+-------+-------+-------+-------+
 	#| Domain/Setting |  SA   |  IA   | GTUS  |  GTS  |

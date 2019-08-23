@@ -76,6 +76,10 @@ static void phy_index_power_on(int index)
 	/* Set USB 2.0 slew rate value */
 	clrsetbits_le32(&phy->u2phy.usbphyacr5,
 		PA5_RG_U2_HSTX_SRCTRL, PA5_RG_U2_HSTX_SRCTRL_VAL(4));
+
+	/* Set USB 2.0 disconnect threshold */
+	clrsetbits_le32(&phy->u2phy.usbphyacr6,
+		PA6_RG_U2_DISCTH, PA6_RG_U2_DISCTH_VAL(15));
 }
 
 static void u3phy_power_on(void)

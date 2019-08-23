@@ -70,6 +70,8 @@ struct ssusb_ippc_regs {
 #define PA6_RG_U2_ISO_EN			(0x1 << 31)
 #define PA6_RG_U2_BC11_SW_EN		(0x1 << 23)
 #define PA6_RG_U2_OTG_VBUSCMP_EN	(0x1 << 20)
+#define PA6_RG_U2_DISCTH		(0xf << 4)
+#define PA6_RG_U2_DISCTH_VAL(x)		((0xf & (x)) << 4)
 #define PA6_RG_U2_SQTH			(0xf << 0)
 #define PA6_RG_U2_SQTH_VAL(x)		((0xf & (x)) << 0)
 

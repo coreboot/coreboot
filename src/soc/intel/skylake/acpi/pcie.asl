@@ -69,7 +69,7 @@ Method (IRQM, 1, Serialized) {
 
 	Switch (ToInteger (Arg0))
 	{
-		Case (Package () { 1, 5, 9 }) {
+		Case (Package () { 1, 5, 9, 13 }) {
 			If (PICM) {
 				Return (IQAA)
 			} Else {
@@ -77,7 +77,7 @@ Method (IRQM, 1, Serialized) {
 			}
 		}
 
-		Case (Package () { 2, 6, 10 }) {
+		Case (Package () { 2, 6, 10, 14 }) {
 			If (PICM) {
 				Return (IQBA)
 			} Else {
@@ -85,7 +85,7 @@ Method (IRQM, 1, Serialized) {
 			}
 		}
 
-		Case (Package () { 3, 7, 11 }) {
+		Case (Package () { 3, 7, 11, 15 }) {
 			If (PICM) {
 				Return (IQCA)
 			} Else {
@@ -93,7 +93,7 @@ Method (IRQM, 1, Serialized) {
 			}
 		}
 
-		Case (Package () { 4, 8, 12 }) {
+		Case (Package () { 4, 8, 12, 16 }) {
 			If (PICM) {
 				Return (IQDA)
 			} Else {
@@ -301,6 +301,74 @@ Device (RP11)
 Device (RP12)
 {
 	Name (_ADR, 0x001D0003)
+
+	OperationRegion (RPCS, PCI_Config, 0x4c, 4)
+	Field (RPCS, AnyAcc, NoLock, Preserve)
+	{
+		, 24,
+		RPPN, 8,	/* Root Port Number */
+	}
+
+	Method (_PRT)
+	{
+		Return (IRQM (RPPN))
+	}
+}
+
+Device (RP13)
+{
+	Name (_ADR, 0x001D0004)
+
+	OperationRegion (RPCS, PCI_Config, 0x4c, 4)
+	Field (RPCS, AnyAcc, NoLock, Preserve)
+	{
+		, 24,
+		RPPN, 8,	/* Root Port Number */
+	}
+
+	Method (_PRT)
+	{
+		Return (IRQM (RPPN))
+	}
+}
+
+Device (RP14)
+{
+	Name (_ADR, 0x001D0005)
+
+	OperationRegion (RPCS, PCI_Config, 0x4c, 4)
+	Field (RPCS, AnyAcc, NoLock, Preserve)
+	{
+		, 24,
+		RPPN, 8,	/* Root Port Number */
+	}
+
+	Method (_PRT)
+	{
+		Return (IRQM (RPPN))
+	}
+}
+
+Device (RP15)
+{
+	Name (_ADR, 0x001D0006)
+
+	OperationRegion (RPCS, PCI_Config, 0x4c, 4)
+	Field (RPCS, AnyAcc, NoLock, Preserve)
+	{
+		, 24,
+		RPPN, 8,	/* Root Port Number */
+	}
+
+	Method (_PRT)
+	{
+		Return (IRQM (RPPN))
+	}
+}
+
+Device (RP16)
+{
+	Name (_ADR, 0x001D0007)
 
 	OperationRegion (RPCS, PCI_Config, 0x4c, 4)
 	Field (RPCS, AnyAcc, NoLock, Preserve)

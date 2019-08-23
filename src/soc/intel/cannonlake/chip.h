@@ -154,6 +154,7 @@ struct soc_intel_cannonlake_config {
 
 	/* Enable/Disable HD Audio Link. Muxed with SSP0/SSP1/SNDW1 */
 	uint8_t PchHdaAudioLinkHda;
+	uint8_t PchHdaIDispCodecDisconnect;
 	uint8_t PchHdaAudioLinkDmic0;
 	uint8_t PchHdaAudioLinkDmic1;
 	uint8_t PchHdaAudioLinkSsp0;

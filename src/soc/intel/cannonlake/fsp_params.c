@@ -205,6 +205,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 
 	/* Audio */
 	params->PchHdaDspEnable = config->PchHdaDspEnable;
+	params->PchHdaIDispCodecDisconnect = config->PchHdaIDispCodecDisconnect;
 	params->PchHdaAudioLinkHda = config->PchHdaAudioLinkHda;
 	params->PchHdaAudioLinkDmic0 = config->PchHdaAudioLinkDmic0;
 	params->PchHdaAudioLinkDmic1 = config->PchHdaAudioLinkDmic1;

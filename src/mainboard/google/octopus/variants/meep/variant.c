@@ -25,10 +25,10 @@ const char *get_wifi_sar_cbfs_filename(void)
 	uint32_t sku_id = get_board_sku();
 
 	switch (sku_id) {
-	case SKU_4_VORTININJA:
-	case SKU_5_VORTININJA:
-	case SKU_6_VORTININJA:
-	case SKU_7_VORTININJA:
+	case SKU_49_VORTININJA:
+	case SKU_50_VORTININJA:
+	case SKU_51_VORTININJA:
+	case SKU_52_VORTININJA:
 		filename = "wifi_sar-vortininja.hex";
 		break;
 	}

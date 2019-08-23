@@ -40,7 +40,7 @@ CFLAGS_common += -I3rdparty/vboot/firmware/lib21/include
 
 ifneq ($(filter y,$(CONFIG_VENDORCODE_ELTAN_VBOOT) $(CONFIG_VENDORCODE_ELTAN_MBOOT)),)
 
-bootblock-$(CONFIG_C_ENVIRONMENT_BOOTBLOCK) += cb_sha.c
+bootblock-y += cb_sha.c
 bootblock-y += ../../../../security/vboot/vboot_logic.c
 $(eval $(call vendor-security-lib,bootblock))
 bootblock-srcs  += $(obj)/external/ven_sec_lib-bootblock/vboot_fw21.a

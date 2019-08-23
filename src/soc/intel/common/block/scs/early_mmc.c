@@ -21,17 +21,10 @@
 #include <compiler.h>
 #include <console/console.h>
 #include <device/pci.h>
-#include <intelblocks/early_mmc.h>
+#include <intelblocks/mmc.h>
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>
 #include <string.h>
-
-#define EMMC_TX_CMD_CNTL_OFFSET			0x820
-#define EMMC_TX_DATA_CNTL1_OFFSET		0x824
-#define EMMC_TX_DATA_CNTL2_OFFSET		0x828
-#define EMMC_RX_CMD_DATA_CNTL1_OFFSET		0x82C
-#define EMMC_RX_STROBE_CNTL_OFFSET		0x830
-#define EMMC_RX_CMD_DATA_CNTL2_OFFSET		0x834
 
 void soc_sd_mmc_controller_quirks(struct sd_mmc_ctrlr *ctrlr)
 {
@@ -60,32 +53,6 @@ static void disable_mmc_controller_bar(void)
 	pci_write_config32(PCH_DEV_EMMC, PCI_BASE_ADDRESS_0, 0);
 	pci_write_config32(PCH_DEV_EMMC, PCI_COMMAND,
 				~(PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY));
-}
-
-static int set_mmc_dll(void *ioaddr)
-{
-	struct mmc_dll_params dll_params;
-
-	if (soc_get_mmc_dll(&dll_params) < 0) {
-		printk(BIOS_ERR,
-			"MMC early init: failed to get mmc DLL parameters\n");
-		return -1;
-	}
-
-	write32(ioaddr + EMMC_TX_DATA_CNTL1_OFFSET,
-		dll_params.emmc_tx_data_cntl1);
-	write32(ioaddr + EMMC_TX_DATA_CNTL2_OFFSET,
-		dll_params.emmc_tx_data_cntl2);
-	write32(ioaddr + EMMC_RX_CMD_DATA_CNTL1_OFFSET,
-		dll_params.emmc_rx_cmd_data_cntl1);
-	write32(ioaddr + EMMC_RX_CMD_DATA_CNTL2_OFFSET,
-		dll_params.emmc_rx_cmd_data_cntl2);
-	write32(ioaddr + EMMC_RX_STROBE_CNTL_OFFSET,
-		dll_params.emmc_rx_strobe_cntl);
-	write32(ioaddr + EMMC_TX_CMD_CNTL_OFFSET,
-		dll_params.emmc_tx_cmd_cntl);
-
-	return 0;
 }
 
 static void set_early_mmc_wake_status(int32_t status)

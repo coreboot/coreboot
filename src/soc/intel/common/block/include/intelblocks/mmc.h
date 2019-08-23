@@ -13,16 +13,10 @@
  * GNU General Public License for more details.
  */
 
-#ifndef SOC_INTEL_COMMON_BLOCK_EARLY_MMC_H
-#define SOC_INTEL_COMMON_BLOCK_EARLY_MMC_H
+#ifndef SOC_INTEL_COMMON_BLOCK_MMC_H
+#define SOC_INTEL_COMMON_BLOCK_MMC_H
 
 #include <stdint.h>
-
-/*
- * Following should be defined in soc/iomap.h
- * PRERAM_MMC_BASE_ADDRESS - Provide an address to setup emmc controller's
-			     PCI BAR.
- */
 
 /*
  * Structure for the following delay registers
@@ -60,8 +54,27 @@ int soc_configure_mmc_gpios(void);
  * returns 0, if able to get register settings; otherwise returns -1
  */
 int soc_get_mmc_dll(struct mmc_dll_params *params);
+/*
+ * Set mmc delay register settings.
+ * bar: eMMC controller MMIO base address.
+ * returns 0, if able to set register settings; otherwise returns -1
+ */
+int set_mmc_dll(void *bar);
+
+#define EMMC_TX_CMD_CNTL_OFFSET			0x820
+#define EMMC_TX_DATA_CNTL1_OFFSET		0x824
+#define EMMC_TX_DATA_CNTL2_OFFSET		0x828
+#define EMMC_RX_CMD_DATA_CNTL1_OFFSET		0x82C
+#define EMMC_RX_STROBE_CNTL_OFFSET		0x830
+#define EMMC_RX_CMD_DATA_CNTL2_OFFSET		0x834
 
 #if CONFIG(SOC_INTEL_COMMON_EARLY_MMC_WAKE)
+/*
+ * Following should be defined in soc/iomap.h
+ * PRERAM_MMC_BASE_ADDRESS - Provide an address to setup emmc controller's
+			PCI BAR.
+ */
+
 /*
  * Initializes sdhci / mmc controller and sends CMD0, CMD1 to emmc card.
  * In case of success: It returns 0 and adds cbmem entry CBMEM_ID_MMC_STATUS
@@ -77,4 +90,4 @@ static inline int early_mmc_wake_hw(void)
 	return -1;
 }
 #endif /* CONFIG_SOC_INTEL_COMMON_EARLY_MMC_WAKE */
-#endif /* SOC_INTEL_COMMON_BLOCK_EARLY_MMC_H */
+#endif /* SOC_INTEL_COMMON_BLOCK_MMC_H */

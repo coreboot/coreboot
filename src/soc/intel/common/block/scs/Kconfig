@@ -12,3 +12,10 @@ config SOC_INTEL_COMMON_EARLY_MMC_WAKE
 	help
 	  Send CMD1 early in romstage to improve boot time. It requires emmc
 	  DLL tuning parameters to be added to devicetree.cb
+
+config SOC_INTEL_COMMON_MMC_OVERRIDE
+	bool
+	default n
+	help
+	  Override the MMC settings after FSP-S.
+	  It should be used only when there is no FSP UPDs for certain setting.

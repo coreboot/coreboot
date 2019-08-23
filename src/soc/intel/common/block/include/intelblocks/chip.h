@@ -18,6 +18,7 @@
 
 #include <intelblocks/gspi.h>
 #include <drivers/i2c/designware/dw_i2c.h>
+#include <intelblocks/mmc.h>
 
 enum {
 	CHIPSET_LOCKDOWN_FSP = 0, /* FSP handles locking per UPDs */
@@ -35,6 +36,7 @@ struct soc_intel_common_config {
 	struct dw_i2c_bus_config i2c[CONFIG_SOC_INTEL_I2C_DEV_MAX];
 	/* PCH Thermal Trip Temperature in deg C */
 	uint8_t pch_thermal_trip;
+	struct mmc_dll_params emmc_dll;
 };
 
 /* This function to retrieve soc config structure required by common code */

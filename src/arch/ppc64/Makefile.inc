@@ -77,7 +77,6 @@ ifeq ($(CONFIG_ARCH_RAMSTAGE_PPC64),y)
 
 ramstage-y += rom_media.c
 ramstage-y += stages.c
-ramstage-y += misc.c
 ramstage-y += boot.c
 ramstage-y += tables.c
 ramstage-y += \

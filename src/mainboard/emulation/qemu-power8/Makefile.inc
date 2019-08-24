@@ -17,6 +17,7 @@ bootblock-y += uart.c
 romstage-y += cbmem.c
 ramstage-y += cbmem.c
 romstage-y += romstage.c
+ramstage-y += timer.c
 romstage-y += uart.c
 ramstage-y += uart.c
 

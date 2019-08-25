@@ -38,3 +38,7 @@ static const struct pci_driver soc_cavium_uart __pci_driver = {
 	.vendor = PCI_VENDOR_CAVIUM,
 	.device = PCI_DEVICE_ID_CAVIUM_THUNDERX_UART,
 };
+
+struct chip_operations soc_cavium_common_pci_ops = {
+	CHIP_NAME("Cavium ThunderX UART")
+};

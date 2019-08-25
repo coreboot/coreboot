@@ -111,12 +111,6 @@ static const struct pci_driver ti_pci7620_driver __pci_driver = {
 	.device = 0xac8d,
 };
 
-static void ti_pci7420_enable_dev(struct device *dev)
-{
-	/* Nothing here yet */
-}
-
 struct chip_operations southbridge_ti_pci7420_ops = {
 	CHIP_NAME("Texas Instruments PCI7420/7620 Cardbus Controller")
-	.enable_dev    = ti_pci7420_enable_dev,
 };

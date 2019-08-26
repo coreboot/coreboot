@@ -36,14 +36,7 @@ chip northbridge/amd/agesa/family14/root_complex
 			device pci 12.2 on end # EHCI USB 0-4
 			device pci 13.0 on end # OHCI USB 5-9
 			device pci 13.2 on end # EHCI USB 5-9
-			device pci 14.0 on # SM
-				chip drivers/generic/generic #dimm 0-0-0
-					device i2c 50 on end
-				end
-				chip drivers/generic/generic #dimm 0-0-1
-					device i2c 51 off end
-				end
-			end # SM
+			device pci 14.0 on end # SM
 			device pci 14.1 off end # IDE	0x439c
 			device pci 14.2 on end # HDA	0x4383
 			device pci 14.3 on # LPC		0x439d

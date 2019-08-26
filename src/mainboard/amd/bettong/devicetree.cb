@@ -42,14 +42,7 @@ chip northbridge/amd/pi/00660F01/root_complex
 			device pci 10.0 on  end # USB
 			device pci 11.0 on  end # SATA
 			device pci 12.0 on  end # USB
-			device pci 14.0 on      # SM
-				chip drivers/generic/generic #dimm 0-0-0
-					device i2c 50 on end
-				end
-				chip drivers/generic/generic #dimm 0-0-1
-					device i2c 51 on end
-				end
-			end # SM
+			device pci 14.0 on  end # SM
 			#device pci 14.2 on  end # HDA	0x4383
 			device pci 14.3 on  end # LPC	0x439d
 			device pci 14.7 on  end # SD

@@ -44,14 +44,7 @@ chip northbridge/amd/agesa/family15tn/root_complex
 			device pci 12.2 on  end # FCH USB EHCI Controller
 			device pci 13.0 on  end # FCH USB OHCI Controller
 			device pci 13.2 on  end # FCH USB EHCI Controller
-			device pci 14.0 on      # SMBUS
-				chip drivers/generic/generic #dimm 0
-					device i2c 50 on end # 7-bit SPD address
-				end
-				chip drivers/generic/generic #dimm 1
-					device i2c 51 on end # 7-bit SPD address
-				end
-			end # SM
+			device pci 14.0 on  end # SMBUS
 			device pci 14.2 on  end # FCH Azalia Controller
 			device pci 14.3 on      # FCH LPC Bridge [1022:780e]
 				chip ec/compal/ene932

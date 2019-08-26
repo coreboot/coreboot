@@ -43,14 +43,7 @@ chip northbridge/amd/agesa/family15tn/root_complex
 			device pci 12.2 on  end # USB
 			device pci 13.0 on  end # USB
 			device pci 13.2 on  end # USB
-			device pci 14.0 on      # SMBUS
-				chip drivers/generic/generic #dimm 0
-					device i2c 50 on end # 7-bit SPD address
-				end
-				chip drivers/generic/generic #dimm 1
-					device i2c 51 on end # 7-bit SPD address
-				end
-			end # SM
+			device pci 14.0 on  end # SMBUS
 			device pci 14.1 on  end # IDE	0x439c
 			device pci 14.2 on  end # HDA	0x4383
 			device pci 14.3 on      # LPC	0x439d

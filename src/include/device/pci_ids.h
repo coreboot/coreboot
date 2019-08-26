@@ -3224,6 +3224,7 @@
 
 /* Intel EMMC device Ids */
 #define PCI_DEVICE_ID_INTEL_SKL_EMMC		0x9d2b
+#define PCI_DEVICE_ID_INTEL_CMP_EMMC		0x02c4
 
 /* Intel WIFI Ids */
 #define PCI_DEVICE_ID_1000_SERIES_WIFI		0x0084

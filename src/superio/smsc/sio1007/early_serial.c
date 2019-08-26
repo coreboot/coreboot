@@ -15,7 +15,7 @@
 
 #include <stdint.h>
 #include <arch/io.h>
-#include "chip.h"
+#include "sio1007.h"
 
 void sio1007_setreg(u16 lpc_port, u8 reg, u8 value, u8 mask)
 {

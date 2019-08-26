@@ -19,7 +19,7 @@
 #include <device/pci_ops.h>
 #include <device/pci_def.h>
 #include <cpu/x86/lapic.h>
-#include <superio/smsc/sio1007/chip.h>
+#include <superio/smsc/sio1007/sio1007.h>
 #include <northbridge/intel/sandybridge/sandybridge.h>
 #include <northbridge/intel/sandybridge/raminit.h>
 #include <northbridge/intel/sandybridge/raminit_native.h>

@@ -17,7 +17,7 @@
 #include <arch/io.h>
 #include <device/pci_ops.h>
 #include <northbridge/intel/sandybridge/raminit_native.h>
-#include <superio/smsc/sio1007/chip.h>
+#include <superio/smsc/sio1007/sio1007.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 
 #define SIO_PORT 0x164e

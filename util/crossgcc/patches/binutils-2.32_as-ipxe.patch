@@ -1,0 +1,36 @@
+From 6984bd861cc595e56d26ea033851d9174e855129 Mon Sep 17 00:00:00 2001
+From: Himanshu Sahdev aka CunningLearner <sahdev.himan@gmail.com>
+Date: Mon, 26 Aug 2019 16:57:13 +0530
+Subject: [PATCH] as: facilitate tests based on /dev/null
+
+Signed-off-by: Himanshu Sahdev <himanshusah@hcl.com>
+
+---
+ gas/as.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/gas/as.c b/gas/as.c
+index 728811bc..78b4802c 100644
+--- a/gas/as.c
++++ b/gas/as.c
+@@ -1203,7 +1203,7 @@ main (int argc, char ** argv)
+ {
+   char ** argv_orig = argv;
+   struct stat sob;
+-
++  const char *dev_null_file="/dev/null";
+   int macro_strip_at;
+ 
+   start_time = get_run_time ();
+@@ -1252,7 +1252,7 @@ main (int argc, char ** argv)
+      so that switches like --hash-size can be honored.  */
+   parse_args (&argc, &argv);
+ 
+-  if (argc > 1 && stat (out_file_name, &sob) == 0)
++  if (argc > 1 && stat (out_file_name, &sob) == 0 && strcmp(out_file_name,dev_null_file)!=0)
+     {
+       int i;
+ 
+-- 
+2.17.1
+

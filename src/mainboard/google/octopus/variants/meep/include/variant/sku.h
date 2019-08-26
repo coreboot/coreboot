@@ -17,6 +17,9 @@
 #define __MAINBOARD_SKU_H__
 
 enum {
+	SKU_1_MEEP = 1,
+	SKU_2_MEEP = 2,
+	SKU_3_MEEP = 3,
 	SKU_33_DORP = 33, /* HDMI */
 	SKU_34_DORP = 34, /* HDMI+Kblight */
 	SKU_35_DORP = 35, /* HDMI+TS */

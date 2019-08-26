@@ -25,6 +25,11 @@ const char *get_wifi_sar_cbfs_filename(void)
 	uint32_t sku_id = get_board_sku();
 
 	switch (sku_id) {
+	case SKU_1_MEEP:
+	case SKU_2_MEEP:
+	case SKU_3_MEEP:
+		filename = "wifi_sar-meep.hex";
+		break;
 	case SKU_49_VORTININJA:
 	case SKU_50_VORTININJA:
 	case SKU_51_VORTININJA:

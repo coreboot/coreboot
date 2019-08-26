@@ -29,6 +29,9 @@ const char *get_wifi_sar_cbfs_filename(void)
 	if (sku_id == SKU_UNKNOWN)
 		return NULL;
 
+	if (sku_id == 33 || sku_id == 34 || sku_id == 35 || sku_id == 36)
+		filename = "wifi_sar-bloog.hex";
+
 	if (sku_id == 49 || sku_id == 50 || sku_id == 51 || sku_id == 52)
 		filename = "wifi_sar-blooguard.hex";
 

@@ -16,7 +16,6 @@
 #include <arch/cache.h>
 #include <cbfs.h>
 #include <console/console.h>
-#include <timestamp.h>
 #include <soc/mmu.h>
 #include <soc/aop.h>
 #include <soc/clock.h>

@@ -47,6 +47,17 @@ config EC_GOOGLE_CHROMEEC_I2C_PROTO3
 	help
 	  Use only proto3 for i2c EC communication.
 
+config EC_GOOGLE_CHROMEEC_ESPI
+	depends on EC_GOOGLE_CHROMEEC && ARCH_X86  # Needs Plug-and-play.
+	def_bool n
+	select EC_GOOGLE_CHROMEEC_LPC
+	help
+	  Google Chrome EC via eSPI bus.
+
+	  The EC communication code is the same between eSPI and LPC, so
+	  this option simply enables the LPC EC code.  The eSPI device
+	  still needs to correctly configure the bus transactions.
+
 config EC_GOOGLE_CHROMEEC_LPC
 	depends on EC_GOOGLE_CHROMEEC && ARCH_X86  # Needs Plug-and-play.
 	def_bool y

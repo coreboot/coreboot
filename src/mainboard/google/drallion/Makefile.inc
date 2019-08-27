@@ -36,3 +36,5 @@ verstage-y += ec.c
 
 subdirs-y += variants/$(VARIANT_DIR)
 CPPFLAGS_common += -I$(src)/mainboard/$(MAINBOARDDIR)/variants/$(VARIANT_DIR)/include
+
+subdirs-y += spd

@@ -214,6 +214,8 @@ const char *mainboard_vbt_filename(void)
 	case SKU_3_BARD:
 	case SKU_4_BARD:
 	case SKU_5_BARD:
+	case SKU_6_BARD:
+	case SKU_7_BARD:
 		return "vbt-bard.bin";
 	default:
 		return "vbt.bin";
@@ -271,10 +273,16 @@ void variant_devtree_update(void)
 	case SKU_3_BARD:
 	case SKU_4_BARD:
 	case SKU_5_BARD:
+	case SKU_6_BARD:
+	case SKU_7_BARD:
 	case SKU_0_EKKO:
 	case SKU_1_EKKO:
 	case SKU_2_EKKO:
 	case SKU_3_EKKO:
+	case SKU_4_EKKO:
+	case SKU_5_EKKO:
+	case SKU_6_EKKO:
+	case SKU_7_EKKO:
 		pl2_id = PL2_ID_BARD_EKKO;
 		cfg->usb2_ports[5].enable = 0;
 		cfg->usb2_ports[7].enable = 0;

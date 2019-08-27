@@ -24,7 +24,7 @@ ramstage-y += media.c
 
 
 DTB=$(obj)/hifive-unleashed.dtb
-DTS=src/mainboard/sifive/hifive-unleashed/hifive-unleashed.dts
+DTS=src/mainboard/sifive/hifive-unleashed/hifive-unleashed-a00.dts
 $(DTB): $(DTS)
 	dtc -I dts -O dtb -o $(DTB) $(DTS)
 

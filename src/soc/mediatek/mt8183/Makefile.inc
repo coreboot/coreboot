@@ -81,6 +81,14 @@ sspm.bin-file := $(MT8183_BLOB_DIR)/sspm.bin
 sspm.bin-type := raw
 sspm.bin-compression := $(CBFS_COMPRESS_FLAG)
 
+DRAM_CBFS := $(CONFIG_CBFS_PREFIX)/dram
+$(DRAM_CBFS)-file := $(MT8183_BLOB_DIR)/dram.elf
+$(DRAM_CBFS)-type := stage
+$(DRAM_CBFS)-compression := none
+ifneq ($(wildcard $($(DRAM_CBFS)-file)),)
+	cbfs-files-y += $(DRAM_CBFS)
+endif
+
 BL31_MAKEARGS += PLAT=mt8183
 
 CPPFLAGS_common += -Isrc/soc/mediatek/mt8183/include

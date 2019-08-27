@@ -71,6 +71,8 @@ struct sdram_params {
 	u16 delay_cell_unit;
 };
 
+struct dramc_param_ops;
+
 enum {
 	LP4X_DDR1600,
 	LP4X_DDR2400,
@@ -86,6 +88,6 @@ size_t sdram_size(void);
 const struct sdram_params *get_sdram_config(void);
 void enable_emi_dcm(void);
 void mt_set_emi(const struct sdram_params *freq_params);
-void mt_mem_init(const struct sdram_params *freq_params);
+void mt_mem_init(struct dramc_param_ops *dparam_ops);
 
 #endif /* SOC_MEDIATEK_MT8183_EMI_H */

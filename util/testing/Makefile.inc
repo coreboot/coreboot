@@ -80,7 +80,7 @@ CPUS?=4
 lint lint-stable lint-extended:
 	util/lint/lint $@
 
-ABUILD_OPTIONS=-B -J -c $(CPUS) -p $(JENKINS_PAYLOAD)
+ABUILD_OPTIONS=-B -J -c $(CPUS) -Z -p $(JENKINS_PAYLOAD)
 ABUILD_OPTIONS+=$(if $(V),-v,)
 ABUILD_OPTIONS+=$(if $(JENKINS_NOCCACHE),,-y)
 ABUILD_OPTIONS+=$(JENKINS_ABUILD_OPT)
@@ -93,8 +93,6 @@ what-jenkins-does:
 	util/lint/lint lint-extended --junit
 	util/abuild/abuild -o $(COREBOOT_BUILD_DIR)/chromeos $(ABUILD_OPTIONS) -x -X $(top)/abuild-chromeos.xml
 	util/abuild/abuild -o $(COREBOOT_BUILD_DIR)/default $(ABUILD_OPTIONS)
-	-find $(COREBOOT_BUILD_DIR)/{regular,chromeos}/[A-Z]*/* \! \( -name coreboot.rom -o -name config.h -o -name config.build \) -type f -exec rm {} +
-	-find $(COREBOOT_BUILD_DIR)/{regular,chromeos}/[A-Z]*/* -type d -exec rmdir -p {} + 2>/dev/null
 	$(foreach tool, $(TOOLLIST), $(MAKE) CPUS=$(CPUS) V=$(V) Q=$(Q) BLD_DIR="util/$(tool)" BLD="$(tool)" MFLAGS= MAKEFLAGS= MAKETARGET= junit.xml; )
 	unset COREBOOT_BUILD_DIR;$(MAKE) CPUS=$(CPUS) V=$(V) Q=$(Q) BLD_DIR=payloads/nvramcui BLD=nvramcui MFLAGS= MAKEFLAGS= MAKETARGET=all junit.xml
 	unset COREBOOT_BUILD_DIR;$(MAKE) CPUS=$(CPUS) V=$(V) Q=$(Q) BLD_DIR=payloads/coreinfo BLD=coreinfo MFLAGS= MAKEFLAGS= MAKETARGET=defaultbuild junit.xml

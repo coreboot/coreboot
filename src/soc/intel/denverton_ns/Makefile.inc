@@ -36,6 +36,7 @@ postcar-$(CONFIG_DRIVERS_UART_8250MEM) += uart_debug.c
 
 romstage-y += memmap.c
 romstage-y += reset.c
+romstage-y += ../../../cpu/intel/car/romstage.c
 romstage-y += romstage.c
 romstage-y += tsc_freq.c
 romstage-y += gpio_dnv.c

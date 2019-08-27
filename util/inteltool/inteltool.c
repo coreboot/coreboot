@@ -128,6 +128,8 @@ static const struct {
 	  "6th generation (Skylake-S family) Core Processor (Desktop)" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_CORE_6TH_GEN_D2,
 	  "6th generation (Skylake-S family) Core Processor (Desktop)" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_CORE_6TH_GEN_E,
+	  "6th generation (Skylake family) Core Processor Xeon E (Server)" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_BAYTRAIL, "Bay Trail" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_CORE_7TH_GEN_U,
 	  "7th generation (Kaby Lake family) Core Processor (Mobile)" },

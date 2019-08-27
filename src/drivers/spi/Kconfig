@@ -28,6 +28,13 @@ config SPI_FLASH
 	  Select this option if your chipset driver needs to store certain
 	  data in the SPI flash.
 
+config SPI_SDCARD
+	bool
+	default n
+	help
+	  Select this option if your chipset driver needs to store certain
+	  data in the SPI sdcard.
+
 if SPI_FLASH
 
 # Keep at 0 because lots of boards assume this default.

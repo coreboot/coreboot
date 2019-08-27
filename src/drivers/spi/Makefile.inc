@@ -15,6 +15,7 @@ $(1)-y += spi-generic.c
 $(1)-y += bitbang.c
 $(1)-$(CONFIG_COMMON_CBFS_SPI_WRAPPER) += cbfs_spi.c
 $(1)-$(CONFIG_SPI_FLASH) += spi_flash.c
+$(1)-$(CONFIG_SPI_SDCARD) += spi_sdcard.c
 $(1)-$(CONFIG_BOOT_DEVICE_SPI_FLASH_RW_NOMMAP$(2)) += boot_device_rw_nommap.c
 $(1)-$(CONFIG_CONSOLE_SPI_FLASH) += flashconsole.c
 $(1)-$(CONFIG_SPI_FLASH_ADESTO) += adesto.c

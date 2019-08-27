@@ -61,6 +61,25 @@ static uint8_t spi_rx(volatile struct spi_ctrl *spictrl)
 	return (uint8_t) out;
 }
 
+static int spi_claim_bus_(const struct spi_slave *slave)
+{
+	struct spi_ctrl *spictrl = spictrls[slave->bus];
+	spi_reg_csmode csmode;
+	csmode.raw_bits = 0;
+	csmode.mode = FU540_SPI_CSMODE_HOLD;
+	write32(&spictrl->csmode.raw_bits, csmode.raw_bits);
+	return 0;
+}
+
+static void spi_release_bus_(const struct spi_slave *slave)
+{
+	struct spi_ctrl *spictrl = spictrls[slave->bus];
+	spi_reg_csmode csmode;
+	csmode.raw_bits = 0;
+	csmode.mode = FU540_SPI_CSMODE_OFF;
+	write32(&spictrl->csmode.raw_bits, csmode.raw_bits);
+}
+
 static int spi_xfer_(const struct spi_slave *slave,
 		const void *dout, size_t bytesout,
 		void *din, size_t bytesin)
@@ -126,6 +145,8 @@ static int spi_setup_(const struct spi_slave *slave)
 	sckmode.pol = FU540_SPI_POL_LEADING;
 	write32(&spictrl->sckmode.raw_bits, sckmode.raw_bits);
 
+	write32(&spictrl->csdef, 0xffffffff);
+
 	csmode.raw_bits = 0;
 	csmode.mode = FU540_SPI_CSMODE_AUTO;
 	write32(&spictrl->csmode.raw_bits, csmode.raw_bits);
@@ -133,7 +154,7 @@ static int spi_setup_(const struct spi_slave *slave)
 	fmt.raw_bits = 0;
 	fmt.proto = FU540_SPI_PROTO_S;
 	fmt.endian = FU540_SPI_ENDIAN_BIG;
-	fmt.dir = 1;
+	fmt.dir = 0;
 	fmt.len = 8;
 	write32(&spictrl->fmt.raw_bits, fmt.raw_bits);
 
@@ -143,6 +164,8 @@ static int spi_setup_(const struct spi_slave *slave)
 struct spi_ctrlr fu540_spi_ctrlr = {
 	.xfer  = spi_xfer_,
 	.setup = spi_setup_,
+	.claim_bus = spi_claim_bus_,
+	.release_bus = spi_release_bus_,
 };
 
 const struct spi_ctrlr_buses spi_ctrlr_bus_map[] = {
@@ -187,6 +210,8 @@ int fu540_spi_setup(unsigned int bus, unsigned int cs,
 	sckmode.pol = config->pol;
 	write32(&spictrl->sckmode.raw_bits, sckmode.raw_bits);
 
+	write32(&spictrl->csdef, 0xffffffff);
+
 	csmode.raw_bits = 0;
 	csmode.mode = FU540_SPI_CSMODE_AUTO;
 	write32(&spictrl->csmode.raw_bits, csmode.raw_bits);
@@ -194,7 +219,7 @@ int fu540_spi_setup(unsigned int bus, unsigned int cs,
 	fmt.raw_bits = 0;
 	fmt.proto = config->protocol;
 	fmt.endian = config->endianness;
-	fmt.dir = 1;
+	fmt.dir = 0;
 	fmt.len = config->bits_per_frame;
 	write32(&spictrl->fmt.raw_bits, fmt.raw_bits);
 

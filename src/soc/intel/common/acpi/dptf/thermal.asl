@@ -155,6 +155,51 @@ Device (TSR0)
 	{
 		\_SB.PCI0.LPCB.EC0.PATD (TMPI)
 	}
+
+#ifdef DPTF_ENABLE_FAN_CONTROL
+#ifdef DPTF_TSR0_ACTIVE_AC0
+	Method (_AC0)
+	{
+		Return (\_SB.DPTF.CTOK (DPTF_TSR0_ACTIVE_AC0))
+	}
+#endif
+#ifdef DPTF_TSR0_ACTIVE_AC1
+	Method (_AC1)
+	{
+		Return (\_SB.DPTF.CTOK (DPTF_TSR0_ACTIVE_AC1))
+	}
+#endif
+#ifdef DPTF_TSR0_ACTIVE_AC2
+	Method (_AC2)
+	{
+		Return (\_SB.DPTF.CTOK (DPTF_TSR0_ACTIVE_AC2))
+	}
+#endif
+#ifdef DPTF_TSR0_ACTIVE_AC3
+	Method (_AC3)
+	{
+		Return (\_SB.DPTF.CTOK (DPTF_TSR0_ACTIVE_AC3))
+	}
+#endif
+#ifdef DPTF_TSR0_ACTIVE_AC4
+	Method (_AC4)
+	{
+		Return (\_SB.DPTF.CTOK (DPTF_TSR0_ACTIVE_AC4))
+	}
+#endif
+#ifdef DPTF_TSR0_ACTIVE_AC5
+	Method (_AC5)
+	{
+		Return (\_SB.DPTF.CTOK (DPTF_TSR0_ACTIVE_AC5))
+	}
+#endif
+#ifdef DPTF_TSR0_ACTIVE_AC6
+	Method (_AC6)
+	{
+		Return (\_SB.DPTF.CTOK (DPTF_TSR0_ACTIVE_AC6))
+	}
+#endif
+#endif
 }
 #endif
 
@@ -219,6 +264,51 @@ Device (TSR1)
 	{
 		\_SB.PCI0.LPCB.EC0.PATD (TMPI)
 	}
+
+#ifdef DPTF_ENABLE_FAN_CONTROL
+#ifdef DPTF_TSR1_ACTIVE_AC0
+	Method (_AC0)
+	{
+		Return (\_SB.DPTF.CTOK (DPTF_TSR1_ACTIVE_AC0))
+	}
+#endif
+#ifdef DPTF_TSR1_ACTIVE_AC1
+	Method (_AC1)
+	{
+		Return (\_SB.DPTF.CTOK (DPTF_TSR1_ACTIVE_AC1))
+	}
+#endif
+#ifdef DPTF_TSR1_ACTIVE_AC2
+	Method (_AC2)
+	{
+		Return (\_SB.DPTF.CTOK (DPTF_TSR1_ACTIVE_AC2))
+	}
+#endif
+#ifdef DPTF_TSR1_ACTIVE_AC3
+	Method (_AC3)
+	{
+		Return (\_SB.DPTF.CTOK (DPTF_TSR1_ACTIVE_AC3))
+	}
+#endif
+#ifdef DPTF_TSR1_ACTIVE_AC4
+	Method (_AC4)
+	{
+		Return (\_SB.DPTF.CTOK (DPTF_TSR1_ACTIVE_AC4))
+	}
+#endif
+#ifdef DPTF_TSR1_ACTIVE_AC5
+	Method (_AC5)
+	{
+		Return (\_SB.DPTF.CTOK (DPTF_TSR1_ACTIVE_AC5))
+	}
+#endif
+#ifdef DPTF_TSR1_ACTIVE_AC6
+	Method (_AC6)
+	{
+		Return (\_SB.DPTF.CTOK (DPTF_TSR1_ACTIVE_AC6))
+	}
+#endif
+#endif
 }
 #endif
 
@@ -283,6 +373,51 @@ Device (TSR2)
 	{
 		\_SB.PCI0.LPCB.EC0.PATD (TMPI)
 	}
+
+#ifdef DPTF_ENABLE_FAN_CONTROL
+#ifdef DPTF_TSR2_ACTIVE_AC0
+	Method (_AC0)
+	{
+		Return (\_SB.DPTF.CTOK (DPTF_TSR2_ACTIVE_AC0))
+	}
+#endif
+#ifdef DPTF_TSR2_ACTIVE_AC1
+	Method (_AC1)
+	{
+		Return (\_SB.DPTF.CTOK (DPTF_TSR2_ACTIVE_AC1))
+	}
+#endif
+#ifdef DPTF_TSR2_ACTIVE_AC2
+	Method (_AC2)
+	{
+		Return (\_SB.DPTF.CTOK (DPTF_TSR2_ACTIVE_AC2))
+	}
+#endif
+#ifdef DPTF_TSR2_ACTIVE_AC3
+	Method (_AC3)
+	{
+		Return (\_SB.DPTF.CTOK (DPTF_TSR2_ACTIVE_AC3))
+	}
+#endif
+#ifdef DPTF_TSR2_ACTIVE_AC4
+	Method (_AC4)
+	{
+		Return (\_SB.DPTF.CTOK (DPTF_TSR2_ACTIVE_AC4))
+	}
+#endif
+#ifdef DPTF_TSR2_ACTIVE_AC5
+	Method (_AC5)
+	{
+		Return (\_SB.DPTF.CTOK (DPTF_TSR2_ACTIVE_AC5))
+	}
+#endif
+#ifdef DPTF_TSR2_ACTIVE_AC6
+	Method (_AC6)
+	{
+		Return (\_SB.DPTF.CTOK (DPTF_TSR2_ACTIVE_AC6))
+	}
+#endif
+#endif
 }
 #endif
 
@@ -347,5 +482,50 @@ Device (TSR3)
 	{
 		\_SB.PCI0.LPCB.EC0.PATD (TMPI)
 	}
+
+#ifdef DPTF_ENABLE_FAN_CONTROL
+#ifdef DPTF_TSR3_ACTIVE_AC0
+	Method (_AC0)
+	{
+		Return (\_SB.DPTF.CTOK (DPTF_TSR3_ACTIVE_AC0))
+	}
+#endif
+#ifdef DPTF_TSR3_ACTIVE_AC1
+	Method (_AC1)
+	{
+		Return (\_SB.DPTF.CTOK (DPTF_TSR3_ACTIVE_AC1))
+	}
+#endif
+#ifdef DPTF_TSR3_ACTIVE_AC2
+	Method (_AC2)
+	{
+		Return (\_SB.DPTF.CTOK (DPTF_TSR3_ACTIVE_AC2))
+	}
+#endif
+#ifdef DPTF_TSR3_ACTIVE_AC3
+	Method (_AC3)
+	{
+		Return (\_SB.DPTF.CTOK (DPTF_TSR3_ACTIVE_AC3))
+	}
+#endif
+#ifdef DPTF_TSR3_ACTIVE_AC4
+	Method (_AC4)
+	{
+		Return (\_SB.DPTF.CTOK (DPTF_TSR3_ACTIVE_AC4))
+	}
+#endif
+#ifdef DPTF_TSR3_ACTIVE_AC5
+	Method (_AC5)
+	{
+		Return (\_SB.DPTF.CTOK (DPTF_TSR3_ACTIVE_AC5))
+	}
+#endif
+#ifdef DPTF_TSR3_ACTIVE_AC6
+	Method (_AC6)
+	{
+		Return (\_SB.DPTF.CTOK (DPTF_TSR3_ACTIVE_AC6))
+	}
+#endif
+#endif
 }
 #endif

@@ -60,9 +60,7 @@ debug_spinloop:
 #endif
 	call	car_stage_entry
 
-/* This is here for linking purposes. */
-.weak car_stage_entry
-car_stage_entry:
+	/* Expect to never return. */
 1:
 	jmp	1b
 

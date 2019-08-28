@@ -398,6 +398,10 @@ function compile_target
 	if [ "$clean_work" = "true" ]; then
 		rm -rf "${build_dir}"
 	fi
+	if [ "$clean_objs" = "true" ]; then
+		find ${build_dir} \! \( -name coreboot.rom -o -name config.h -o -name config.build -o -name make.log \) -type f -exec rm {} +
+		find ${build_dir} -type d -exec rmdir -p {} + 2>/dev/null
+	fi
 	return $MAKE_FAILED
 }
 
@@ -595,6 +599,7 @@ Options:\n"
                                   (defaults to $XMLFILE)
     [-y|--ccache]                 Use ccache
     [-z|--clean]                  Remove build results when finished
+    [-Z|--clean-somewhat]         Remove build but keep coreboot.rom + config
 
     [-V|--version]                Print version number and exit
     [-h|--help]                   Print this help and exit
@@ -641,12 +646,12 @@ getoptbrand="$(getopt -V)"
 # shellcheck disable=SC2086
 if [ "${getoptbrand:0:6}" == "getopt" ]; then
 	# Detected GNU getopt that supports long options.
-	args=$(getopt -l version,verbose,quiet,help,all,target:,board-variant:,payloads:,cpus:,silent,junit,config,loglevel:,remove,prefix:,update,scan-build,ccache,blobs,clang,any-toolchain,clean,outdir:,chromeos,xmlfile:,kconfig:,dir:,root:,recursive,checksum:,timeless,exitcode,asserts -o Vvqhat:b:p:c:sJCl:rP:uyBLAzo:xX:K:d:R:Ie -- "$@") || exit 1
+	args=$(getopt -l version,verbose,quiet,help,all,target:,board-variant:,payloads:,cpus:,silent,junit,config,loglevel:,remove,prefix:,update,scan-build,ccache,blobs,clang,any-toolchain,clean,clean-somewhat,outdir:,chromeos,xmlfile:,kconfig:,dir:,root:,recursive,checksum:,timeless,exitcode,asserts -o Vvqhat:b:p:c:sJCl:rP:uyBLAzZo:xX:K:d:R:Ie -- "$@") || exit 1
 	eval set -- $args
 	retval=$?
 else
 	# Detected non-GNU getopt
-	args=$(getopt Vvqhat:b:p:c:sJCl:rP:uyBLAzo:xX:K:d:R:Ie "$@")
+	args=$(getopt Vvqhat:b:p:c:sJCl:rP:uyBLAZzo:xX:K:d:R:Ie "$@")
 	set -- $args
 	retval=$?
 fi
@@ -658,6 +663,7 @@ fi
 
 chromeos=false
 clean_work=false
+clean_objs=false
 verboseopt='V=0'
 customizing=""
 configoptions=""
@@ -729,6 +735,10 @@ while true ; do
 		-z|--clean)	shift
 			customizing="${customizing}, clean"
 			clean_work=true
+			;;
+		-Z|--clean-somewhat)	shift
+			customizing="${customizing}, clean-somewhat"
+			clean_objs=true
 			;;
 		-o|--outdir)	shift
 			TARGET=$1; shift

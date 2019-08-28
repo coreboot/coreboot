@@ -58,12 +58,6 @@ void postcar_frame_add_romcache(struct postcar_frame *pcf, int type);
 void postcar_frame_common_mtrrs(struct postcar_frame *pcf);
 
 /*
- * Push used MTRR and Max MTRRs on to the stack
- * and return pointer to stack top.
- */
-void *postcar_commit_mtrrs(struct postcar_frame *pcf);
-
-/*
  * fill_postcar_frame() is called after raminit completes and right before
  * calling run_postcar_phase(). Implementation should call postcar_frame_add_mtrr()
  * to tag memory ranges as cacheable to speed up execution of postcar and

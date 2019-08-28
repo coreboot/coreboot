@@ -147,7 +147,7 @@ void prepare_and_run_postcar(struct postcar_frame *pcf)
 	/* We do not return here. */
 }
 
-void *postcar_commit_mtrrs(struct postcar_frame *pcf)
+static void postcar_commit_mtrrs(struct postcar_frame *pcf)
 {
 	/*
 	 * Place the number of used variable MTRRs on stack then max number
@@ -155,7 +155,6 @@ void *postcar_commit_mtrrs(struct postcar_frame *pcf)
 	 */
 	stack_push(pcf, pcf->num_var_mtrrs);
 	stack_push(pcf, pcf->max_var_mtrrs);
-	return (void *) pcf->stack;
 }
 
 static void finalize_load(uintptr_t *stack_top_ptr, uintptr_t stack_top)

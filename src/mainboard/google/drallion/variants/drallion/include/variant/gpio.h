@@ -25,6 +25,13 @@
 /* Recovery mode */
 #define GPIO_REC_MODE		GPP_E8
 
+/* Memory configuration board straps */
+#define GPIO_MEM_CONFIG_0	GPP_F12
+#define GPIO_MEM_CONFIG_1	GPP_F13
+#define GPIO_MEM_CONFIG_2	GPP_F14
+#define GPIO_MEM_CONFIG_3	GPP_F15
+#define GPIO_MEM_CONFIG_4	GPP_F16
+
 const struct pad_config *variant_gpio_table(size_t *num);
 const struct pad_config *variant_early_gpio_table(size_t *num);
 

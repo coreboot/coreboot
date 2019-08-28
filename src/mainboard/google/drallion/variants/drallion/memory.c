@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright 2018 Google LLC
+ * Copyright 2019 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,16 +13,19 @@
  * GNU General Public License for more details.
  */
 
-#ifndef VARIANT_H
-#define VARIANT_H
+#include <variant/variant.h>
+#include <gpio.h>
+#include <variant/gpio.h>
 
-/* Need to update for Drallion with right SKU IDs*/
-#define VARIANT_SKU_ID			2
-#define VARIANT_SKU_NAME		"sku2"
-#define VARIANT_SKU_ID_SIGNED_EC	4
-#define VARIANT_SKU_NAME_SIGNED_EC	"sku4"
+int variant_memory_sku(void)
+{
+	gpio_t spd_gpios[] = {
+		GPIO_MEM_CONFIG_0,
+		GPIO_MEM_CONFIG_1,
+		GPIO_MEM_CONFIG_2,
+		GPIO_MEM_CONFIG_3,
+		GPIO_MEM_CONFIG_4,
+	};
 
-/* Return memory SKU for the variant */
-int variant_memory_sku(void);
-
-#endif
+	return gpio_base2_value(spd_gpios, ARRAY_SIZE(spd_gpios));
+}

@@ -58,11 +58,18 @@ static const struct cnl_mb_cfg memcfg = {
 	.vref_ca_config = 2,
 };
 
+const struct cnl_mb_cfg * __weak get_variant_memory_cfg(struct cnl_mb_cfg *mem_cfg)
+{
+	return &memcfg;
+}
+
 void mainboard_memory_init_params(FSPM_UPD *memupd)
 {
+	struct cnl_mb_cfg board_memcfg;
+
 	variant_mainboard_post_init_params(memupd);
 
 	wilco_ec_romstage_init();
 
-	cannonlake_memcfg_init(&memupd->FspmConfig, &memcfg);
+	cannonlake_memcfg_init(&memupd->FspmConfig, get_variant_memory_cfg(&board_memcfg));
 }

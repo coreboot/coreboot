@@ -41,6 +41,7 @@ _start:
 	movl	$(_car_global_end), %ecx
 	movl	$(_car_global_start), %edi
 	sub	%edi, %ecx
+	shrl	$2, %ecx
 	rep	stosl
 
 #if ((ENV_VERSTAGE && CONFIG(VERSTAGE_DEBUG_SPINLOOP)) \

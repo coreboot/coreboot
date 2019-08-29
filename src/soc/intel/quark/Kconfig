@@ -38,6 +38,7 @@ config CPU_SPECIFIC_OPTIONS
 	select UDELAY_TSC
 	select UNCOMPRESSED_RAMSTAGE
 	select USE_MARCH_586
+	select NO_SMM
 
 #####
 # Debug serial output

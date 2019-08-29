@@ -83,6 +83,16 @@ enum vr_domain {
 	VR_GT_SLICED,
 	NUM_VR_DOMAINS
 };
+
+#define VR_CFG_ALL_DOMAINS_ICC(sa, ia, gt_unsl, gt_sl)	\
+	{							\
+		[VR_SYSTEM_AGENT] = VR_CFG_AMP(sa),		\
+		[VR_IA_CORE]      = VR_CFG_AMP(ia),		\
+		[VR_RING]         = VR_CFG_AMP(0),		\
+		[VR_GT_UNSLICED]  = VR_CFG_AMP(gt_unsl),	\
+		[VR_GT_SLICED]    = VR_CFG_AMP(gt_sl),		\
+	}
+
 #else
 /* VrConfig Settings for 4 domains
  * 0 = System Agent, 1 = IA Core,
@@ -95,7 +105,25 @@ enum vr_domain {
 	VR_GT_SLICED,
 	NUM_VR_DOMAINS
 };
+
+#define VR_CFG_ALL_DOMAINS_ICC(sa, ia, gt_unsl, gt_sl)	\
+	{							\
+		[VR_SYSTEM_AGENT] = VR_CFG_AMP(sa),		\
+		[VR_IA_CORE]      = VR_CFG_AMP(ia),		\
+		[VR_GT_UNSLICED]  = VR_CFG_AMP(gt_unsl),	\
+		[VR_GT_SLICED]    = VR_CFG_AMP(gt_sl),		\
+	}
+
 #endif
+
+#define VR_CFG_ALL_DOMAINS_LOADLINE(sa, ia, gt_unsl, gt_sl)	\
+	{							\
+		[VR_SYSTEM_AGENT] = VR_CFG_MOHMS(sa),		\
+		[VR_IA_CORE]      = VR_CFG_MOHMS(ia),		\
+		[VR_GT_UNSLICED]  = VR_CFG_MOHMS(gt_unsl),	\
+		[VR_GT_SLICED]    = VR_CFG_MOHMS(gt_sl),	\
+	}
+
 
 void fill_vr_domain_config(void *params,
 			int domain, const struct vr_config *cfg);

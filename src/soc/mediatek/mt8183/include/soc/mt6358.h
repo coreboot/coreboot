@@ -25,6 +25,9 @@ enum {
 	PMIC_TOP_TMA_KEY              = 0x03a8,
 	PMIC_PWRHOLD                  = 0x0a08,
 	PMIC_CPSDSA4                  = 0x0a2e,
+	PMIC_VCORE_OP_EN              = 0x1490,
+	PMIC_VCORE_DBG0               = 0x149e,
+	PMIC_VCORE_VOSEL              = 0x14aa,
 	PMIC_VDRAM1_VOSEL_SLEEP       = 0x160a,
 	PMIC_SMPS_ANA_CON0            = 0x1808,
 	PMIC_VSIM2_ANA_CON0           = 0x1e30,
@@ -41,5 +44,7 @@ void mt6358_init(void);
 void pmic_set_power_hold(bool enable);
 void pmic_set_vsim2_cali(unsigned int vsim2_mv);
 void pmic_init_scp_voltage(void);
+unsigned int pmic_get_vcore_vol(void);
+void pmic_set_vcore_vol(unsigned int vcore_uv);
 
 #endif /* __SOC_MEDIATEK_MT6358_H__ */

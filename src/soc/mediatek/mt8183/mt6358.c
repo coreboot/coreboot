@@ -805,6 +805,27 @@ void pmic_set_vsim2_cali(unsigned int vsim2_mv)
 	pwrap_write_field(PMIC_VSIM2_ANA_CON0, cali_mv / 10, 0xF, 0);
 }
 
+unsigned int pmic_get_vcore_vol(void)
+{
+	unsigned int vol_reg;
+
+	vol_reg = pwrap_read_field(PMIC_VCORE_DBG0, 0x7F, 0);
+	return 500000 + vol_reg * 6250;
+}
+
+void pmic_set_vcore_vol(unsigned int vcore_uv)
+{
+	unsigned int vol_reg;
+
+	assert(vcore_uv >= 500000);
+	assert(vcore_uv <= 1100000);
+
+	vol_reg = (vcore_uv - 500000) / 6250;
+
+	pwrap_write_field(PMIC_VCORE_OP_EN, 1, 0x7F, 0);
+	pwrap_write_field(PMIC_VCORE_VOSEL, vol_reg, 0x7F, 0);
+}
+
 static void pmic_wdt_set(void)
 {
 	/* [5]=1, RG_WDTRSTB_DEB */

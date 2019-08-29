@@ -30,7 +30,7 @@ choice
 config GLK_CHROME_EC
 	bool "Chrome EC"
 	select EC_GOOGLE_CHROMEEC
-	select EC_GOOGLE_CHROMEEC_LPC
+	select EC_GOOGLE_CHROMEEC_ESPI
 
 config GLK_INTEL_EC
 	bool "Intel EC"

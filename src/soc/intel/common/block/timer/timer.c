@@ -14,11 +14,13 @@
  */
 
 #include <arch/cpu.h>
-#include <arch/intel-family.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/tsc.h>
 #include <intelblocks/msr.h>
+
+/* Goldmont Microserver */
+#define CPU_MODEL_INTEL_ATOM_DENVERTON 0x5F
 
 static int get_processor_model(void)
 {
@@ -29,8 +31,31 @@ static int get_processor_model(void)
 	return c.x86_model;
 }
 
+static unsigned int get_max_cpuid_func(void)
+{
+	return cpuid_eax(0);
+}
+
+static unsigned long get_hardcoded_crystal_freq(void)
+{
+	unsigned int core_crystal_nominal_freq_khz;
+
+	/*
+	 * Denverton SoCs don't report crystal clock, and also don't support
+	 * CPUID.0x16, so hardcode the 25MHz crystal clock.
+	 */
+	switch (get_processor_model()) {
+	case CPU_MODEL_INTEL_ATOM_DENVERTON:
+		core_crystal_nominal_freq_khz = 25000;
+		break;
+	}
+
+	return core_crystal_nominal_freq_khz;
+}
+
 /*
- * Nominal TSC frequency = "core crystal clock frequency" * EBX/EAX
+ * Nominal TSC frequency = "core crystal clock frequency" *
+ *                               CPUID_15h.EBX/CPUID_15h.EAX
  *
  * Time Stamp Counter
  * CPUID Initial EAX value = 0x15
@@ -42,41 +67,61 @@ static int get_processor_model(void)
  * core crystal clock in Hz.
  * EDX Bit 31-0 : Reserved = 0
  *
- * Refer to Intel SDM Jan 2019 Vol 3B Section 18.7.3
  */
-unsigned long tsc_freq_mhz(void)
+static unsigned long calculate_tsc_freq_from_core_crystal(void)
 {
 	unsigned int core_crystal_nominal_freq_khz;
-	struct cpuid_result cpuidr;
+	struct cpuid_result cpuidr_15h;
 
-	/* CPUID 15H TSC/Crystal ratio, plus optionally Crystal Hz */
-	cpuidr = cpuid(0x15);
-
-	if (!cpuidr.ebx || !cpuidr.eax)
+	if (get_max_cpuid_func() < 0x15)
 		return 0;
 
-	core_crystal_nominal_freq_khz = cpuidr.ecx / 1000;
+	/* CPUID 15H TSC/Crystal ratio, plus optionally Crystal Hz */
+	cpuidr_15h = cpuid(0x15);
 
-	if (!core_crystal_nominal_freq_khz) {
-		switch (get_processor_model()) {
-		case CPU_MODEL_INTEL_SKYLAKE_MOBILE:
-		case CPU_MODEL_INTEL_SKYLAKE_DESKTOP:
-		case CPU_MODEL_INTEL_KABYLAKE_MOBILE:
-		case CPU_MODEL_INTEL_KABYLAKE_DESKTOP:
-		case CPU_MODEL_INTEL_CANNONLAKE_MOBILE:
-		case CPU_MODEL_INTEL_ICELAKE_MOBILE:
-			core_crystal_nominal_freq_khz = 24000;
-			break;
-		case CPU_MODEL_INTEL_ATOM_DENVERTON:
-			core_crystal_nominal_freq_khz = 25000;
-			break;
-		case CPU_MODEL_INTEL_ATOM_GOLDMONT:
-		case CPU_MODEL_INTEL_ATOM_GEMINI_LAKE:
-			core_crystal_nominal_freq_khz = 19200;
-			break;
-		}
-	}
+	if (!cpuidr_15h.ebx || !cpuidr_15h.eax)
+		return 0;
 
-	return (core_crystal_nominal_freq_khz * cpuidr.ebx / cpuidr.eax) /
-			1000;
+	core_crystal_nominal_freq_khz = cpuidr_15h.ecx / 1000;
+
+	if (!core_crystal_nominal_freq_khz)
+		core_crystal_nominal_freq_khz = get_hardcoded_crystal_freq();
+
+	return (core_crystal_nominal_freq_khz * cpuidr_15h.ebx /
+			cpuidr_15h.eax) / 1000;
+}
+
+/*
+ * Processor Frequency Information
+ * CPUID Initial EAX value = 0x16
+ * EAX Bit 31-0 : An unsigned integer which has the processor base frequency
+ * information
+ * EBX Bit 31-0 : An unsigned integer which has maximum frequency information
+ * ECX Bit 31-0 : An unsigned integer which has bus frequency information
+ * EDX Bit 31-0 : Reserved = 0
+ *
+ * Refer to Intel SDM Jan 2019 Vol 3B Section 18.7.3
+ */
+static unsigned long get_freq_from_cpuid16h(void)
+{
+	if (get_max_cpuid_func() < 0x16)
+		return 0;
+
+	return cpuid_eax(0x16);
+}
+
+unsigned long tsc_freq_mhz(void)
+{
+	unsigned long tsc_freq;
+
+	tsc_freq = calculate_tsc_freq_from_core_crystal();
+
+	if (tsc_freq)
+		return tsc_freq;
+
+	/*
+	 * Some Intel SoCs like Skylake, Kabylake and Cometlake don't report
+	 * the crystal clock, in that case return bus frequency using CPUID.16h
+	 */
+	return get_freq_from_cpuid16h();
 }

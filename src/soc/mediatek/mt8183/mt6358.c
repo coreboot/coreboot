@@ -15,6 +15,7 @@
 
 #include <assert.h>
 #include <console/console.h>
+#include <delay.h>
 #include <soc/pmic_wrap.h>
 #include <soc/mt6358.h>
 #include <timer.h>
@@ -752,6 +753,55 @@ static struct pmic_setting scp_setting[] = {
 	/* [4:4]: RG_SRCVOLTEN_LP_EN */
 	{0x134, 0x1, 0x1, 4},
 };
+
+static const int vddq_votrim[] = {
+	0, -10000, -20000, -30000, -40000, -50000, -60000, -70000,
+	80000, 70000, 60000, 50000, 40000, 30000, 20000, 10000,
+};
+
+static unsigned int pmic_read_efuse(int i)
+{
+	unsigned int efuse_data = 0;
+
+	/* 1. Enable efuse ctrl engine clock */
+	pwrap_write_field(PMIC_TOP_CKHWEN_CON0_CLR, 0x1, 0x1, 2);
+	pwrap_write_field(PMIC_TOP_CKPDN_CON0_CLR, 0x1, 0x1, 4);
+
+	/* 2. */
+	pwrap_write_field(PMIC_OTP_CON11, 0x1, 0x1, 0);
+
+	/* 3. Set row to read */
+	pwrap_write_field(PMIC_OTP_CON0, i * 2, 0xFF, 0);
+
+	/* 4. Toggle RG_OTP_RD_TRIG */
+	if (pwrap_read_field(PMIC_OTP_CON8, 0x1, 0) == 0)
+		pwrap_write_field(PMIC_OTP_CON8, 0x1, 0x1, 0);
+	else
+		pwrap_write_field(PMIC_OTP_CON8, 0, 0x1, 0);
+
+	/* 5. Polling RG_OTP_RD_BUSY = 0 */
+	udelay(300);
+	while (pwrap_read_field(PMIC_OTP_CON13, 0x1, 0) == 1)
+		;
+
+	/* 6. Read RG_OTP_DOUT_SW */
+	udelay(100);
+	efuse_data = pwrap_read_field(PMIC_OTP_CON12, 0xFFFF, 0);
+
+	/* 7. Disable efuse ctrl engine clock */
+	pwrap_write_field(PMIC_TOP_CKHWEN_CON0_SET, 0x1, 0x1, 2);
+	pwrap_write_field(PMIC_TOP_CKPDN_CON0_SET, 0x1, 0x1, 4);
+
+	return efuse_data;
+}
+
+static int pmic_get_efuse_votrim(void)
+{
+	const unsigned int cali_efuse = pmic_read_efuse(104) & 0xF;
+	assert(cali_efuse < sizeof(vddq_votrim));
+	return vddq_votrim[cali_efuse];
+}
+
 void pmic_set_power_hold(bool enable)
 {
 	pwrap_write_field(PMIC_PWRHOLD, (enable) ? 1 : 0, 0x1, 0);
@@ -845,6 +895,51 @@ void pmic_set_vdram1_vol(unsigned int vdram_uv)
 
 	pwrap_write_field(PMIC_VDRAM1_OP_EN, 1, 0x7F, 0);
 	pwrap_write_field(PMIC_VDRAM1_VOSEL, vol_reg, 0x7F, 0);
+}
+
+unsigned int pmic_get_vddq_vol(void)
+{
+	int efuse_votrim;
+	unsigned int cali_trim;
+
+	if (!pwrap_read_field(PMIC_VDDQ_OP_EN, 0x1, 15))
+		return 0;
+
+	efuse_votrim = pmic_get_efuse_votrim();
+	cali_trim = pwrap_read_field(PMIC_VDDQ_ELR_0, 0xF, 0);
+	assert(cali_trim < sizeof(vddq_votrim));
+	return 600 * 1000 - efuse_votrim + vddq_votrim[cali_trim];
+}
+
+void pmic_set_vddq_vol(unsigned int vddq_uv)
+{
+	int target_mv, dram2_ori_mv, cali_offset_uv, cali_trim;
+
+	assert(vddq_uv >= 530000);
+	assert(vddq_uv <= 680000);
+
+	/* Round down to multiple of 10 */
+	target_mv = (vddq_uv / 1000) / 10 * 10;
+
+	dram2_ori_mv = 600 - pmic_get_efuse_votrim() / 1000;
+	cali_offset_uv = 1000 * (target_mv - dram2_ori_mv);
+
+	if (cali_offset_uv >= 80000)
+		cali_trim = 8;
+	else if (cali_offset_uv <= -70000)
+		cali_trim = 7;
+	else {
+		cali_trim = 0;
+		while (cali_trim < sizeof(vddq_votrim) &&
+		       vddq_votrim[cali_trim] != cali_offset_uv)
+			++cali_trim;
+		assert(cali_trim < sizeof(vddq_votrim));
+	}
+
+	pwrap_write_field(PMIC_TOP_TMA_KEY, 0x9CA7, 0xFFFF, 0);
+	pwrap_write_field(PMIC_VDDQ_ELR_0, cali_trim, 0xF, 0);
+	pwrap_write_field(PMIC_TOP_TMA_KEY, 0, 0xFFFF, 0);
+	udelay(1);
 }
 
 static void pmic_wdt_set(void)

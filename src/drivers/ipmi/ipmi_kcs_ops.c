@@ -128,7 +128,23 @@ ipmi_write_acpi_tables(struct device *dev, unsigned long current,
 		.space_id = ACPI_ADDRESS_SPACE_IO,
 		.access_size = ACPI_ACCESS_SIZE_BYTE_ACCESS,
 		.addrl = dev->path.pnp.port,
+		.bit_width = 8,
 	};
+
+	switch (CONFIG_IPMI_KCS_REGISTER_SPACING) {
+	case 4:
+		addr.bit_offset = 32;
+		break;
+	case 16:
+		addr.bit_offset = 128;
+		break;
+	default:
+		printk(BIOS_ERR, "IPMI: Unsupported register spacing for SPMI\n");
+		/* fall through */
+	case 1:
+		addr.bit_offset = 8;
+		break;
+	}
 
 	current = ALIGN_UP(current, 8);
 	printk(BIOS_DEBUG, "ACPI:    * SPMI at %lx\n", current);
@@ -183,7 +199,9 @@ static void ipmi_ssdt(struct device *dev)
 	acpigen_write_STA(0xf);
 	acpigen_write_name("_CRS");
 	acpigen_write_resourcetemplate_header();
-	acpigen_write_io16(dev->path.pnp.port, dev->path.pnp.port, 1, 2, 1);
+	acpigen_write_io16(dev->path.pnp.port, dev->path.pnp.port, 1, 1, 1);
+	acpigen_write_io16(dev->path.pnp.port + CONFIG_IPMI_KCS_REGISTER_SPACING,
+			   dev->path.pnp.port + CONFIG_IPMI_KCS_REGISTER_SPACING, 1, 1, 1);
 
 	if (conf) {
 		// FIXME: is that correct?
@@ -214,6 +232,8 @@ static int ipmi_smbios_data(struct device *dev, int *handle,
 	struct drivers_ipmi_config *conf = NULL;
 	u8 nv_storage = 0xff;
 	u8 i2c_address = 0;
+	u8 register_spacing;
+
 	int len = 0;
 
 	if (dev->chip_info)
@@ -225,6 +245,21 @@ static int ipmi_smbios_data(struct device *dev, int *handle,
 		i2c_address = conf->bmc_i2c_address;
 	}
 
+	switch (CONFIG_IPMI_KCS_REGISTER_SPACING) {
+	case 4:
+		register_spacing = 1 << 6;
+		break;
+	case 16:
+		register_spacing = 2 << 6;
+		break;
+	default:
+		printk(BIOS_ERR, "IPMI: Unsupported register spacing for SMBIOS\n");
+		/* fall through */
+	case 1:
+		register_spacing = 0 << 6;
+		break;
+	}
+
 	// add IPMI Device Information
 	len += smbios_write_type38(
 		current, handle,
@@ -233,7 +268,7 @@ static int ipmi_smbios_data(struct device *dev, int *handle,
 		i2c_address, // I2C address
 		nv_storage, // NV storage
 		dev->path.pnp.port | 1, // IO interface
-		0,
+		register_spacing,
 		0); // no IRQ
 
 	return len;

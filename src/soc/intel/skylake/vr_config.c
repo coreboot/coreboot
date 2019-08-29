@@ -117,12 +117,12 @@ static uint16_t get_sku_icc_max(int domain)
 	 * +----------------+-------------+---------------+------+-----+
 	 * | Domain/Setting |  SA         |  IA           | GTUS | GTS |
 	 * +----------------+-------------+---------------+------+-----+
-	 * | IccMax(KBL-S)  | 11.1A       | 100A          | 45A  | 45A |
-	 * |                |             | ...           |      |     |
-	 * |                |             | 40A           |      |     |
+	 * | IccMax(KBL-S)  | 11.1A       | 100A          | 48A  | 48A |
+	 * |                |             | ...           | 45A  | 45A |
+	 * |                |             | 40A           | 35A  | 35A |
 	 * +----------------+-------------+---------------+------+-----+
-	 * | IccMax(KBL-H)  | 11.1A(45W)  | 68A           | 55A  | 55A |
-	 * |                | 6.6A(Others)| 60A           |      |     |
+	 * | IccMax(KBL-H)  | 11.1A (45W) | 68A           | 55A  | 55A |
+	 * |                | 6.6A  (18W) | 60A           |      |     |
 	 * +----------------+-------------+---------------+------+-----+
 	 * | IccMax(KBL-U/R)| 6A(U42)     | 64A(U42)      | 31A  | 31A |
 	 * |                | 4.5A(Others)| 29A(P/C)      |      |     |
@@ -139,8 +139,8 @@ static uint16_t get_sku_icc_max(int domain)
 		uint16_t icc_max[NUM_VR_DOMAINS] = {
 			VR_CFG_AMP(11.1),
 			VR_CFG_AMP(40),
-			VR_CFG_AMP(45),
-			VR_CFG_AMP(45),
+			VR_CFG_AMP(48),
+			VR_CFG_AMP(48),
 		};
 		if (tdp >= 54)
 			icc_max[VR_IA_CORE] = VR_CFG_AMP(58);
@@ -155,13 +155,17 @@ static uint16_t get_sku_icc_max(int domain)
 		uint16_t icc_max[NUM_VR_DOMAINS] = {
 			VR_CFG_AMP(11.1),
 			VR_CFG_AMP(66),
-			VR_CFG_AMP(55),
-			VR_CFG_AMP(55),
+			VR_CFG_AMP(45),
+			VR_CFG_AMP(45),
 		};
 		if (tdp >= 91)
 			icc_max[VR_IA_CORE] = VR_CFG_AMP(100);
 		else if (tdp >= 65)
 			icc_max[VR_IA_CORE] = VR_CFG_AMP(79);
+		else if (tdp >= 35) {
+			icc_max[VR_GT_UNSLICED] = VR_CFG_AMP(35);
+			icc_max[VR_GT_SLICED] = VR_CFG_AMP(35);
+		}
 
 		return icc_max[domain];
 	}

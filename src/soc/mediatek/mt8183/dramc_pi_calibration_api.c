@@ -1378,7 +1378,7 @@ static bool dramc_calc_best_dly(u8 bit,
 
 static void dramc_set_dqdqs_dly(u8 chn, u8 rank, enum CAL_TYPE type, s32 dly)
 {
-	if ((type == RX_WIN_RD_DQC) || (type == RX_WIN_TEST_ENG))
+	if (type == RX_WIN_RD_DQC || type == RX_WIN_TEST_ENG)
 		dramc_set_rx_dly(chn, rank, dly);
 	else
 		dramc_set_tx_dly_factor(chn, rank, type, dly);
@@ -1553,7 +1553,7 @@ static u8 dramc_window_perbit_cal(u8 chn, u8 rank,
 	dramc_dbg("[channel %d] [rank %d] type:%d, vref_enable:%d\n",
 		  chn, rank, type, vref_scan_enable);
 
-	if ((type == TX_WIN_DQ_ONLY) || (type == TX_WIN_DQ_DQM)) {
+	if (type == TX_WIN_DQ_ONLY || type == TX_WIN_DQ_DQM) {
 		for (size_t i = 0; i < 2; i++) {
 			write32(&ch[chn].phy.shu[0].rk[rank].b[i].dq[0], 0);
 			clrbits_le32(&ch[chn].phy.shu[0].rk[rank].b[i].dq[1],
@@ -1592,7 +1592,7 @@ static u8 dramc_window_perbit_cal(u8 chn, u8 rank,
 		if (vref_scan_enable)
 			dramc_set_vref(chn, rank, type, vref_dly.vref);
 
-		if ((type == RX_WIN_RD_DQC) || (type == RX_WIN_TEST_ENG)) {
+		if (type == RX_WIN_RD_DQC || type == RX_WIN_TEST_ENG) {
 			dramc_set_rx_dly_factor(chn, rank,
 				RX_DQM, FIRST_DQ_DELAY);
 			dramc_set_rx_dly_factor(chn, rank,
@@ -1666,7 +1666,7 @@ static u8 dramc_window_perbit_cal(u8 chn, u8 rank,
 	if (vref_scan_enable)
 		dramc_set_vref(chn, rank, type, vref_dly.vref);
 
-	if ((type == RX_WIN_RD_DQC) || (type == RX_WIN_TEST_ENG))
+	if (type == RX_WIN_RD_DQC || type == RX_WIN_TEST_ENG)
 		dramc_set_rx_best_dly(chn, rank, vref_dly.perbit_dly);
 	else
 		dramc_set_tx_best_dly(chn, rank, vref_dly.perbit_dly,

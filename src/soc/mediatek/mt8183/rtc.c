@@ -177,7 +177,7 @@ static u16 rtc_eosc_cali(void)
 		/* select 26M as target clock */
 		val = rtc_get_frequency_meter(middle, PMIC_FQMTR_CON0_FQM26M_CK, 0);
 
-		if ((val >= RTC_FQMTR_LOW_BASE) && (val <= RTC_FQMTR_HIGH_BASE))
+		if (val >= RTC_FQMTR_LOW_BASE && val <= RTC_FQMTR_HIGH_BASE)
 			break;
 		if (val > RTC_FQMTR_HIGH_BASE)
 			right = middle;
@@ -185,7 +185,7 @@ static u16 rtc_eosc_cali(void)
 			left = middle;
 	}
 
-	if ((val >= RTC_FQMTR_LOW_BASE) && (val <= RTC_FQMTR_HIGH_BASE))
+	if (val >= RTC_FQMTR_LOW_BASE && val <= RTC_FQMTR_HIGH_BASE)
 		return middle;
 
 	val = rtc_get_frequency_meter(left, PMIC_FQMTR_CON0_FQM26M_CK, 0);

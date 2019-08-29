@@ -63,7 +63,7 @@ void dramc_sw_impedance(const struct sdram_params *params)
 		(sw_impedance[dq_term][0] << 5) |
 		(sw_impedance[dq_term][1] << 0));
 	clrsetbits_le32(&ch[0].ao.shu[0].drving[1],
-		(0x1f << 25)|(0x1f << 20) | (1 << 31),
+		(0x1f << 25) | (0x1f << 20) | (1 << 31),
 		(sw_impedance[dq_term][0] << 25) |
 		(sw_impedance[dq_term][1] << 20) | (!dq_term << 31));
 	clrsetbits_le32(&ch[0].ao.shu[0].drving[2], (0x1f << 5) | (0x1f << 0),

@@ -33,7 +33,7 @@ OBJCOPY:=$(LINUXBOOT_CROSS_COMPILE)objcopy
 ifeq ($(CONFIG_LINUXBOOT_KERNEL_CUSTOM),y)
 	kernel_version:=$(CONFIG_LINUXBOOT_KERNEL_CUSTOM_VERSION)
 else
-	kernel_version:=$(shell curl -s -k https://www.kernel.org/feeds/kdist.xml | \
+	kernel_version:=$(shell curl -sS -k https://www.kernel.org/feeds/kdist.xml | \
 		sed -n -e 's@.*<guid isPermaLink="false">\(.*\)</guid>.*@\1@p' | \
 		awk -F ',' '/$(TAG-y)/{ print $$3 }' | \
 		head -n 1)
@@ -67,7 +67,7 @@ ifneq ($(shell [[ -d "$(kernel_dir)" && -f "$(kernel_dir)/$(decompress_flag)" ]]
 	if [[ ! -f $(tarball_dir)/$(kernel_tarball).xz && ! -f $(tarball_dir)/$(kernel_tarball).xz ]]; then \
 	echo "    WWW        $(kernel_tarball).xz"; \
 	cd $(tarball_dir); \
-	curl -OLs "$(kernel_mirror_path)/$(kernel_tarball).xz"; \
+	curl -OLSs "$(kernel_mirror_path)/$(kernel_tarball).xz"; \
 	cd $(pwd); \
 	fi
 endif

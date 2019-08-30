@@ -458,6 +458,22 @@ int heci_receive(void *buff, size_t *maxlen)
 	return 0;
 }
 
+int heci_send_receive(const void *snd_msg, size_t snd_sz, void *rcv_msg, size_t *rcv_sz)
+{
+	if (!heci_send(snd_msg, snd_sz, BIOS_HOST_ADDR, HECI_MKHI_ADDR)) {
+		printk(BIOS_ERR, "HECI: send Failed\n");
+		return 0;
+	}
+
+	if (rcv_msg != NULL) {
+		if (!heci_receive(rcv_msg, rcv_sz)) {
+			printk(BIOS_ERR, "HECI: receive Failed\n");
+			return 0;
+		}
+	}
+	return 1;
+}
+
 /*
  * Attempt to reset the device. This is useful when host and ME are out
  * of sync during transmission or ME didn't understand the message.

@@ -37,6 +37,14 @@ int heci_receive(void *buff, size_t *maxlen);
  */
 int
 heci_send(const void *msg, size_t len, uint8_t host_addr, uint8_t cse_addr);
+
+/*
+ * Sends snd_msg of size snd_sz, and reads message into buffer pointed by
+ * rcv_msg of size rcv_sz
+ * Returns 0 on failure a 1 on success.
+ */
+int heci_send_receive(const void *snd_msg, size_t snd_sz, void *rcv_msg, size_t *rcv_sz);
+
 /*
  * Attempt device reset. This is useful and perhaps only thing left to do when
  * CPU and CSE are out of sync or CSE fails to respond.

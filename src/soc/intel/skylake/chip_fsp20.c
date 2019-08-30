@@ -441,6 +441,10 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 		dev->enabled = 0;
 	params->XdciEnable = dev->enabled;
 
+	/* Enable or disable Gaussian Mixture Model in devicetree */
+	dev = pcidev_path_on_root(SA_DEVFN_GMM);
+	params->GmmEnable = dev ? dev->enabled : 0;
+
 	/*
 	 * Send VR specific mailbox commands:
 	 * 000b - no VR specific command sent

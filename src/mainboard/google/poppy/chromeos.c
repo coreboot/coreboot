@@ -32,6 +32,9 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 		{-1, ACTIVE_HIGH, gfx_get_init_done(), "oprom"},
 		{GPIO_EC_IN_RW, ACTIVE_HIGH, gpio_get(GPIO_EC_IN_RW),
 		 "EC in RW"},
+#ifdef EC_SYNC_GPIO
+		{EC_SYNC_GPIO, ACTIVE_LOW, gpio_get(EC_SYNC_GPIO), "EC sync gpio"},
+#endif
 	};
 	lb_add_gpios(gpios, chromeos_gpios, ARRAY_SIZE(chromeos_gpios));
 }

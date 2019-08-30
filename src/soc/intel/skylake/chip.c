@@ -153,10 +153,7 @@ void soc_silicon_init_params(SILICON_INIT_UPD *params)
 
 	/* Enable ISH if device is on */
 	dev = pcidev_path_on_root(PCH_DEVFN_ISH);
-	if (dev)
-		params->IshEnable = dev->enabled;
-	else
-		params->IshEnable = 0;
+	params->IshEnable = dev ? dev->enabled : 0;
 
 	params->EnableAzalia = config->EnableAzalia;
 	params->IoBufferOwnership = config->IoBufferOwnership;
@@ -210,23 +207,24 @@ void soc_silicon_init_params(SILICON_INIT_UPD *params)
 	 * do the changes and then lock it back in coreboot
 	 *
 	 */
-	if (config->HeciEnabled == 0)
-		params->PsfUnlock = 1;
-	else
-		params->PsfUnlock = 0;
+	params->PsfUnlock = !config->HeciEnabled;
 
 	for (i = 0; i < ARRAY_SIZE(config->domain_vr_config); i++)
 		fill_vr_domain_config(params, i, &config->domain_vr_config[i]);
 
 	/* Show SPI controller if enabled in devicetree.cb */
 	dev = pcidev_path_on_root(PCH_DEVFN_SPI);
-	params->ShowSpiController = dev->enabled;
+	params->ShowSpiController = dev ? dev->enabled : 0;
 
 	/* Enable xDCI controller if enabled in devicetree and allowed */
 	dev = pcidev_path_on_root(PCH_DEVFN_USBOTG);
-	if (!xdci_can_enable())
-		dev->enabled = 0;
-	params->XdciEnable = dev->enabled;
+	if (dev) {
+		if (!xdci_can_enable())
+			dev->enabled = 0;
+		params->XdciEnable = dev->enabled;
+	} else {
+		params->XdciEnable = 0;
+	}
 
 	params->SendVrMbxCmd = config->SendVrMbxCmd;
 

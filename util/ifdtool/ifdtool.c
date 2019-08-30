@@ -217,6 +217,7 @@ static int is_platform_ifd_2(void)
 		PLATFORM_CNL,
 		PLATFORM_ICL,
 		PLATFORM_TGL,
+		PLATFORM_JSL,
 	};
 	unsigned int i;
 
@@ -1637,6 +1638,8 @@ int main(int argc, char *argv[])
 				platform = PLATFORM_GLK;
 			} else if (!strcmp(optarg, "icl")) {
 				platform = PLATFORM_ICL;
+			} else if (!strcmp(optarg, "jsl")) {
+                                platform = PLATFORM_JSL;
 			} else if (!strcmp(optarg, "sklkbl")) {
 				platform = PLATFORM_SKLKBL;
 			} else if (!strcmp(optarg, "tgl")) {

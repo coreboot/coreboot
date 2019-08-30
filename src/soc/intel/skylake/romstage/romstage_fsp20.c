@@ -30,6 +30,7 @@
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
 #include <soc/romstage.h>
+#include <soc/systemagent.h>
 #include <string.h>
 #include <security/vboot/vboot_common.h>
 
@@ -247,9 +248,9 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 
 	if (!config->ignore_vtd) {
 		m_cfg->PchHpetBdfValid = 1;
-		m_cfg->PchHpetBusNumber = 250;
-		m_cfg->PchHpetDeviceNumber = 15;
-		m_cfg->PchHpetFunctionNumber = 0;
+		m_cfg->PchHpetBusNumber = V_P2SB_HBDF_BUS;
+		m_cfg->PchHpetDeviceNumber = V_P2SB_HBDF_DEV;
+		m_cfg->PchHpetFunctionNumber = V_P2SB_HBDF_FUN;
 	}
 }
 

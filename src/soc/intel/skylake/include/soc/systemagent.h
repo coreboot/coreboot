@@ -61,4 +61,14 @@ static const struct sa_mmio_descriptor soc_vtvc0_mmio_descriptor = {
 	VTVC0_BASE_SIZE,
 	"VTVC0BAR"
 };
+
+/* Hardcoded default values for PCI Bus:Dev.Fun for IOAPIC and HPET */
+#define V_P2SB_IBDF_BUS	250
+#define V_P2SB_IBDF_DEV	31
+#define V_P2SB_IBDF_FUN	0
+
+#define V_P2SB_HBDF_BUS	250
+#define V_P2SB_HBDF_DEV	15
+#define V_P2SB_HBDF_FUN	0
+
 #endif

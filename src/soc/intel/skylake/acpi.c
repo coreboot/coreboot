@@ -30,7 +30,6 @@
 #include <ec/google/chromeec/ec.h>
 #include <intelblocks/cpulib.h>
 #include <intelblocks/lpc_lib.h>
-#include <intelblocks/p2sb.h>
 #include <intelblocks/sgx.h>
 #include <intelblocks/uart.h>
 #include <intelblocks/systemagent.h>
@@ -39,7 +38,6 @@
 #include <soc/cpu.h>
 #include <soc/iomap.h>
 #include <soc/msr.h>
-#include <soc/p2sb.h>
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
 #include <soc/ramstage.h>
@@ -575,30 +573,20 @@ static unsigned long acpi_fill_dmar(unsigned long current)
 		acpi_dmar_rmrr_fixup(tmp, current);
 	}
 
-	struct device *const p2sb_dev = pcidev_path_on_root(PCH_DEVFN_P2SB);
 	const u32 vtvc0bar = MCHBAR32(VTVC0BAR) & ~0xfff;
 	const bool vtvc0en = MCHBAR32(VTVC0BAR) & 1;
 
 	/* General VTBAR has to be set and in 32-bit space. */
-	if (p2sb_dev && vtvc0bar && vtvc0en && !MCHBAR32(VTVC0BAR + 4)) {
+	if (vtvc0bar && vtvc0en && !MCHBAR32(VTVC0BAR + 4)) {
 		const unsigned long tmp = current;
 
-		/* P2SB may already be hidden. There's no clear rule, when. */
-		const u8 p2sb_hidden =
-			pci_read_config8(p2sb_dev, PCH_P2SB_E0 + 1);
-		pci_write_config8(p2sb_dev, PCH_P2SB_E0 + 1, 0);
+		current += acpi_create_dmar_drhd(current, DRHD_INCLUDE_PCI_ALL, 0, vtvc0bar);
 
-		const u16 ibdf = pci_read_config16(p2sb_dev, PCH_P2SB_IBDF);
-		const u16 hbdf = pci_read_config16(p2sb_dev, PCH_P2SB_HBDF);
+		current += acpi_create_dmar_ds_ioapic(current, 2, V_P2SB_IBDF_BUS,
+						      V_P2SB_IBDF_DEV, V_P2SB_IBDF_FUN);
 
-		pci_write_config8(p2sb_dev, PCH_P2SB_E0 + 1, p2sb_hidden);
-
-		current += acpi_create_dmar_drhd(current,
-				DRHD_INCLUDE_PCI_ALL, 0, vtvc0bar);
-		current += acpi_create_dmar_ds_ioapic(current,
-				2, ibdf >> 8, PCI_SLOT(ibdf), PCI_FUNC(ibdf));
-		current += acpi_create_dmar_ds_msi_hpet(current,
-				0, hbdf >> 8, PCI_SLOT(hbdf), PCI_FUNC(hbdf));
+		current += acpi_create_dmar_ds_msi_hpet(current, 0, V_P2SB_HBDF_BUS,
+							V_P2SB_HBDF_DEV, V_P2SB_HBDF_FUN);
 
 		acpi_dmar_drhd_fixup(tmp, current);
 	}

@@ -490,9 +490,9 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 		tconfig->VtdDisable = 0;
 
 		params->PchIoApicBdfValid = 1;
-		params->PchIoApicBusNumber = 250;
-		params->PchIoApicDeviceNumber = 31;
-		params->PchIoApicFunctionNumber = 0;
+		params->PchIoApicBusNumber = V_P2SB_IBDF_BUS;
+		params->PchIoApicDeviceNumber = V_P2SB_IBDF_DEV;
+		params->PchIoApicFunctionNumber = V_P2SB_IBDF_FUN;
 	}
 
 	soc_irq_settings(params);

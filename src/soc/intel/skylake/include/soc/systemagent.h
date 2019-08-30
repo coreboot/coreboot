@@ -66,9 +66,11 @@ static const struct sa_mmio_descriptor soc_vtvc0_mmio_descriptor = {
 #define V_P2SB_IBDF_BUS	250
 #define V_P2SB_IBDF_DEV	31
 #define V_P2SB_IBDF_FUN	0
+#define V_DEFAULT_IBDF	((V_P2SB_IBDF_BUS << 8) | PCI_DEVFN(V_P2SB_IBDF_DEV, V_P2SB_IBDF_FUN))
 
 #define V_P2SB_HBDF_BUS	250
 #define V_P2SB_HBDF_DEV	15
 #define V_P2SB_HBDF_FUN	0
+#define V_DEFAULT_HBDF	((V_P2SB_HBDF_BUS << 8) | PCI_DEVFN(V_P2SB_HBDF_DEV, V_P2SB_HBDF_FUN))
 
 #endif

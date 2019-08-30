@@ -391,17 +391,15 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	/* Set TccActivationOffset */
 	tconfig->TccActivationOffset = config->tcc_offset;
 
+	/* Already handled in coreboot code, so tell FSP to ignore UPDs */
+	params->PchIoApicBdfValid = 0;
+
 	/* Enable VT-d and X2APIC */
 	if (!config->ignore_vtd && soc_is_vtd_capable()) {
 		params->VtdBaseAddress[0] = GFXVT_BASE_ADDRESS;
 		params->VtdBaseAddress[1] = VTVC0_BASE_ADDRESS;
 		params->X2ApicOptOut = 0;
 		tconfig->VtdDisable = 0;
-
-		params->PchIoApicBdfValid = 1;
-		params->PchIoApicBusNumber = V_P2SB_IBDF_BUS;
-		params->PchIoApicDeviceNumber = V_P2SB_IBDF_DEV;
-		params->PchIoApicFunctionNumber = V_P2SB_IBDF_FUN;
 	}
 
 	dev = pcidev_path_on_root(SA_DEVFN_IGD);

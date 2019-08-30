@@ -248,12 +248,9 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 
 	cpu_flex_override(m_cfg);
 
-	if (!config->ignore_vtd) {
-		m_cfg->PchHpetBdfValid = 1;
-		m_cfg->PchHpetBusNumber = V_P2SB_HBDF_BUS;
-		m_cfg->PchHpetDeviceNumber = V_P2SB_HBDF_DEV;
-		m_cfg->PchHpetFunctionNumber = V_P2SB_HBDF_FUN;
-	}
+	/* HPET BDF already handled in coreboot code, so tell FSP to ignore UPDs */
+	m_cfg->PchHpetBdfValid = 0;
+
 	m_cfg->HyperThreading = CONFIG(FSP_HYPERTHREADING);
 }
 

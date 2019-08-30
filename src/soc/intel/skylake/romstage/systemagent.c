@@ -19,6 +19,7 @@
 #include <device/pci_ops.h>
 #include <intelblocks/systemagent.h>
 #include <soc/iomap.h>
+#include <soc/p2sb.h>
 #include <soc/pci_devs.h>
 #include <soc/romstage.h>
 #include <soc/systemagent.h>
@@ -37,6 +38,10 @@ static void systemagent_vtd_init(void)
 		!(pci_read_config32(SA_DEV_ROOT, CAPID0_A) & VTD_DISABLE);
 	if (!vtd_capable)
 		return;
+
+	/* Configure P2SB VT-d originators (HPET and IOAPIC) */
+	pci_write_config16(PCH_DEV_P2SB, PCH_P2SB_HBDF, V_DEFAULT_HBDF);
+	pci_write_config16(PCH_DEV_P2SB, PCH_P2SB_IBDF, V_DEFAULT_IBDF);
 
 	if (igd_dev && igd_dev->enabled)
 		sa_set_mch_bar(&soc_gfxvt_mmio_descriptor, 1);

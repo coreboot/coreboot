@@ -612,6 +612,22 @@ static void dramc_duty_set_dqs_delay(u8 chn, const s8 *s_dqsDelay)
 
 static void dramc_duty_calibration(const struct sdram_params *params, u8 freq_group)
 {
+	switch (params->source) {
+	case DRAMC_PARAM_SOURCE_SDRAM_CONFIG:
+		break;
+	case DRAMC_PARAM_SOURCE_FLASH:
+		dramc_dbg("bypass duty calibration\n");
+
+		for (u8 chn = 0; chn < CHANNEL_MAX; chn++) {
+			dramc_duty_set_clk_delay(chn, params->duty_clk_delay[chn]);
+			dramc_duty_set_dqs_delay(chn, params->duty_dqs_delay[chn]);
+		}
+		return;
+	default:
+		die("Invalid DRAM param source %u\n", params->source);
+		return;
+	}
+
 	s8 clkDelay[CHANNEL_MAX] = {0x0};
 	s8 dqsDelay[CHANNEL_MAX][DQS_NUMBER] = {0x0};
 

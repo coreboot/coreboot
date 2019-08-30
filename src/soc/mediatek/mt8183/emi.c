@@ -343,10 +343,10 @@ void enable_emi_dcm(void)
 
 static void do_calib(const struct sdram_params *params, u8 freq_group)
 {
-	dramc_show("Start K freq group:%d\n", frequency_table[freq_group]);
+	dramc_show("Start K, current clock is:%d\n", params->frequency);
 	dramc_calibrate_all_channels(params, freq_group);
 	dramc_ac_timing_optimize(freq_group);
-	dramc_show("%s K freq group:%d finish!\n", __func__, frequency_table[freq_group]);
+	dramc_show("K finish with clock:%d\n", params->frequency);
 }
 
 static void after_calib(void)
@@ -355,18 +355,23 @@ static void after_calib(void)
 	dramc_runtime_config();
 }
 
-void mt_set_emi(const struct sdram_params *params)
+void mt_set_emi(const struct sdram_params *freq_params)
 {
 	const u8 *freq_tbl;
+	const int shuffle = DRAM_DFS_SHUFFLE_1;
 	u8 current_freqsel;
+	const struct sdram_params *params;
 
 	if (CONFIG(MT8183_DRAM_EMCP))
 		freq_tbl = freq_shuffle_emcp;
 	else
 		freq_tbl = freq_shuffle;
-	current_freqsel = freq_tbl[DRAM_DFS_SHUFFLE_1];
+
+	current_freqsel = freq_tbl[shuffle];
+	params = &freq_params[shuffle];
 
 	init_dram(params, current_freqsel);
 	do_calib(params, current_freqsel);
+
 	after_calib();
 }

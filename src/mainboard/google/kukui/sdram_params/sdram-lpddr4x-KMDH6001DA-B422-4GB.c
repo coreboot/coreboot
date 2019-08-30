@@ -16,6 +16,8 @@
 #include <soc/emi.h>
 
 struct sdram_params params = {
+	.source = DRAMC_PARAM_SOURCE_SDRAM_CONFIG,
+	.frequency = 1600,
 	.wr_level = {
 		[CHANNEL_A] = { {0x21, 0x21}, {0x20, 0x20} },
 		[CHANNEL_B] = { {0x1E, 0x1F}, {0x1D, 0x1E} }

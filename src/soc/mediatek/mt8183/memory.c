@@ -19,12 +19,12 @@
 #include <soc/emi.h>
 #include <symbols.h>
 
-void mt_mem_init(const struct sdram_params *params)
+void mt_mem_init(const struct sdram_params *freq_params)
 {
 	u64 rank_size[RANK_MAX];
 
 	/* memory calibration */
-	mt_set_emi(params);
+	mt_set_emi(freq_params);
 
 	if (CONFIG(MEMORY_TEST)) {
 		size_t r;

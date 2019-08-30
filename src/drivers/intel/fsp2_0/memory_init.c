@@ -225,7 +225,7 @@ static enum cb_err fsp_fill_common_arch_params(FSPM_ARCH_UPD *arch_upd,
 			arch_upd->BootMode = FSP_BOOT_WITH_FULL_CONFIGURATION;
 	}
 
-	printk(BIOS_SPEW, "bootmode is set to :%d\n", arch_upd->BootMode);
+	printk(BIOS_SPEW, "bootmode is set to: %d\n", arch_upd->BootMode);
 
 	return CB_SUCCESS;
 }

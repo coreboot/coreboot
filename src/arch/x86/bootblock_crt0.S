@@ -1,14 +1,5 @@
 /*
- * This is the modern bootblock. It is used by platforms which select
- * C_ENVIRONMENT_BOOTBLOCK, and it prepares the system for C environment runtime
- * setup. The actual setup is done by hardware-specific code.
- *
- * It provides a bootflow similar to other architectures, and thus is considered
- * to be the modern approach.
- *
  * This file is part of the coreboot project.
- *
- * Copyright (C) 2015 Alexandru Gagniuc <mr.nuke.me@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +10,14 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+ *
+ * This is the modern bootblock. It is used by platforms which select
+ * C_ENVIRONMENT_BOOTBLOCK, and it prepares the system for C environment runtime
+ * setup. The actual setup is done by hardware-specific code.
+ *
+ * It provides a bootflow similar to other architectures, and thus is considered
+ * to be the modern approach.
+ *
  */
 
 #include <cpu/x86/cr.h>

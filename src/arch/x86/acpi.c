@@ -1,22 +1,6 @@
 /*
  * This file is part of the coreboot project.
  *
- * coreboot ACPI Table support
- * written by Stefan Reinauer <stepan@openbios.org>
- *
- * Copyright (C) 2004 SUSE LINUX AG
- * Copyright (C) 2005-2009 coresystems GmbH
- * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>,
- * Raptor Engineering
- * Copyright (C) 2016-2019 Siemens AG
- *
- * ACPI FADT, FACS, and DSDT table support added by
- * Nick Barker <nick.barker9@btinternet.com>, and those portions
- * Copyright (C) 2004 Nick Barker
- *
- * Copyright (C) 2005 ADVANCED MICRO DEVICES, INC. All Rights Reserved.
- * 2005.9 yhlu add SRAT table generation
- *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; version 2 of the License.
@@ -25,6 +9,8 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+ *
+ * coreboot ACPI Table support
  */
 
 /*

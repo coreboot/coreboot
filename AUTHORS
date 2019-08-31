@@ -8,6 +8,8 @@
 # To see a list of contributors: git log --pretty=format:%an | sort | uniq
 # For patches adding or removing a name: git log -i -S "NAME" --source --all
 
+9elements Agency GmbH
+Advanced Micro Devices, Inc
 Alex Züpke
 Alexander Couzens
 Alexandru Gagniuc
@@ -20,18 +22,26 @@ Free Software Foundation, Inc.
 Gary Jennejohn
 Google LLC
 Imagination Technologies
+Intel Corporation
 Kshitij
+Libra Li
 Marius Gröger
 MontaVista Software, Inc.
 Nick Barker
+Patrick Georgi
+Patrick Rudolph
 Per Odlund
 Raptor Engineering, LLC.
 Richard Woodruff
 Ronald G. Minnich
+Rudolf Marek
 Russell King
+Sage Electronic Engineering, LLC
 Siemens AG
+Stefan Reinauer
 Steve Magnani
 SUSE LINUX AG
+Sven Schnelle
 Syed Mohammed Khasim
 Texas Instruments
 The Linux Foundation
@@ -46,4 +56,4 @@ src/arch/arm
 src/arch/arm64
 src/arch/mips
 src/arch/ppc64
-
+src/arch/x86

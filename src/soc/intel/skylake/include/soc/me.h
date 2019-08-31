@@ -173,19 +173,7 @@ union me_hfs6 {
 
 #define MKHI_GEN_GROUP_ID	0xff
 
-/* Reset Request  */
-#define MKHI_GLOBAL_RESET	0x0b
-
 #define MKHI_GET_FW_VERSION	0x02
-
-#define GR_ORIGIN_BIOS_MEM_INIT	0x01
-#define GR_ORIGIN_BIOS_POST	0x02
-#define GR_ORIGIN_MEBX	0x03
-
-#define GLOBAL_RST_TYPE	0x01
-
-#define BIOS_HOST_ADD	0x00
-#define HECI_MKHI_ADD	0x07
 
 void intel_me_status(void);
 int send_global_reset(void);

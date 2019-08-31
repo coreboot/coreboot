@@ -69,10 +69,25 @@
 
 #define HECI_OP_MODE_SEC_OVERRIDE 5
 
+/* Global Reset Command ID */
+#define MKHI_GLOBAL_RESET_REQ	0xb
+#define MKHI_GROUP_ID_CBM	0
+
+/* RST Origin */
+#define GR_ORIGIN_BIOS_POST	2
+
 static struct cse_device {
 	uintptr_t sec_bar;
 } g_cse;
 
+/* HECI Message Header */
+struct mkhi_hdr {
+	uint8_t group_id;
+	uint8_t command:7;
+	uint8_t is_resp:1;
+	uint8_t rsvd;
+	uint8_t result;
+} __packed;
 /*
  * Initialize the device with provided temporary BAR. If BAR is 0 use a
  * default. This is intended for pre-mem usage only where BARs haven't been
@@ -556,6 +571,52 @@ bool is_cse_enabled(void)
 uint32_t me_read_config32(int offset)
 {
 	return pci_read_config32(PCH_DEV_CSE, offset);
+}
+
+/*
+ * Sends GLOBAL_RESET_REQ cmd to CSE.The reset type can be GLOBAL_RESET/
+ * HOST_RESET_ONLY/CSE_RESET_ONLY.
+ */
+int send_heci_reset_req_message(uint8_t rst_type)
+{
+	int status;
+	struct mkhi_hdr reply;
+	struct reset_message {
+		struct mkhi_hdr hdr;
+		uint8_t req_origin;
+		uint8_t reset_type;
+	} __packed;
+	struct reset_message msg = {
+		.hdr = {
+			.group_id = MKHI_GROUP_ID_CBM,
+			.command = MKHI_GLOBAL_RESET_REQ,
+		},
+		.req_origin = GR_ORIGIN_BIOS_POST,
+		.reset_type = rst_type
+	};
+	size_t reply_size;
+
+	if (!((rst_type == GLOBAL_RESET) ||
+		(rst_type == HOST_RESET_ONLY) || (rst_type == CSE_RESET_ONLY)))
+		return -1;
+
+	heci_reset();
+
+	reply_size = sizeof(reply);
+	memset(&reply, 0, reply_size);
+
+	printk(BIOS_DEBUG, "HECI: Global Reset(Type:%d) Command\n", rst_type);
+	if (rst_type == CSE_RESET_ONLY)
+		status = heci_send_receive(&msg, sizeof(msg), NULL, 0);
+	else
+		status = heci_send_receive(&msg, sizeof(msg), &reply,
+						&reply_size);
+
+	if (status != 1)
+		return -1;
+
+	printk(BIOS_DEBUG, "HECI: Global Reset success!\n");
+	return 0;
 }
 
 #if ENV_RAMSTAGE

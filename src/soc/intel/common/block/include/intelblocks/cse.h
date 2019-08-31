@@ -106,7 +106,19 @@ void set_host_ready(void);
  */
 uint8_t wait_cse_sec_override_mode(void);
 
+/*
+ * Sends GLOBAL_RESET_REQ cmd to CSE.The reset type can be
+ * GLOBAL_RESET/HOST_RESET_ONLY/CSE_RESET_ONLY.
+ * Returns -1 on failure a 0 on success.
+ */
+int send_heci_reset_req_message(uint8_t rst_type);
+
 #define BIOS_HOST_ADDR							0x00
 #define HECI_MKHI_ADDR							0x07
+
+/* Command GLOBAL_RESET_REQ Reset Types */
+#define GLOBAL_RESET       1
+#define HOST_RESET_ONLY    2
+#define CSE_RESET_ONLY     3
 
 #endif // SOC_INTEL_COMMON_MSR_H

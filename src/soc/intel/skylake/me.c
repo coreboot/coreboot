@@ -257,8 +257,8 @@ static void print_me_version(void *unused)
 	 */
 	heci_reset();
 
-	if (!heci_send(&fw_ver_msg, sizeof(fw_ver_msg), BIOS_HOST_ADD,
-		       HECI_MKHI_ADD))
+	if (!heci_send(&fw_ver_msg, sizeof(fw_ver_msg), BIOS_HOST_ADDR,
+		       HECI_MKHI_ADDR))
 		goto failed;
 
 	if (!heci_receive(&resp, &resp_size))
@@ -437,50 +437,6 @@ void intel_me_status(void)
 	}
 }
 
-static int send_heci_reset_message(void)
-{
-	int status;
-	struct reset_reply {
-		u8 group_id;
-		u8 command;
-		u8 reserved;
-		u8 result;
-	} __packed reply;
-	struct reset_message {
-		u8 group_id;
-		u8 cmd;
-		u8 reserved;
-		u8 result;
-		u8 req_origin;
-		u8 reset_type;
-	} __packed;
-	struct reset_message msg = {
-		.cmd = MKHI_GLOBAL_RESET,
-		.req_origin = GR_ORIGIN_BIOS_POST,
-		.reset_type = GLOBAL_RST_TYPE
-	};
-	size_t reply_size;
-
-	heci_reset();
-
-	status = heci_send(&msg, sizeof(msg), BIOS_HOST_ADD, HECI_MKHI_ADD);
-	if (!status)
-		return -1;
-
-	reply_size = sizeof(reply);
-	memset(&reply, 0, reply_size);
-	status = heci_receive(&reply, &reply_size);
-	if (!status)
-		return -1;
-	/* get reply result from HECI MSG  */
-	if (reply.result) {
-		printk(BIOS_DEBUG, "%s: Exit with Failure\n", __func__);
-		return -1;
-	}
-	printk(BIOS_DEBUG, "%s: Exit with Success\n",  __func__);
-	return 0;
-}
-
 int send_global_reset(void)
 {
 	int status = -1;
@@ -495,7 +451,7 @@ int send_global_reset(void)
 		goto ret;
 
 	/* ME should be in Normal Mode for this command */
-	status = send_heci_reset_message();
+	status = send_heci_reset_req_message(GLOBAL_RESET);
 ret:
 	return status;
 }

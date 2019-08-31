@@ -29,6 +29,7 @@ Jordan Crouse
 Kshitij
 Lei Wen
 Libra Li
+Linus Torvalds
 Marek Vasut
 Marius Gröger
 Marvell Semiconductor Inc
@@ -44,6 +45,7 @@ Ronald G. Minnich
 Rudolf Marek
 Russell King
 Sage Electronic Engineering, LLC
+secunet Security Networks AG
 Siemens AG
 Stefan Reinauer
 Steve Magnani
@@ -61,3 +63,4 @@ Wolfgang Denk
 src/acpi
 src/arch
 src/commonlib
+src/console

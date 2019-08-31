@@ -15,7 +15,9 @@ Alexander Couzens
 Alexandru Gagniuc
 Andy Fleming
 ARM Limited and Contributors
+Carl-Daniel Hailfinger
 coresystems GmbH
+Damien Zammit
 DENX Software Engineering
 Eric Biederman
 Facebook, Inc.
@@ -27,9 +29,11 @@ Imagination Technologies
 Intel Corporation
 Jordan Crouse
 Kshitij
+Kyösti Mälkki
 Lei Wen
 Libra Li
 Linus Torvalds
+Marc Jones
 Marek Vasut
 Marius Gröger
 Marvell Semiconductor Inc
@@ -38,7 +42,9 @@ Nicholas Sielicki
 Nick Barker
 Patrick Georgi
 Patrick Rudolph
+PC Engines GmbH
 Per Odlund
+Peter Stuge
 Raptor Engineering, LLC.
 Richard Woodruff
 Ronald G. Minnich
@@ -64,3 +70,4 @@ src/acpi
 src/arch
 src/commonlib
 src/console
+src/cpu/amd

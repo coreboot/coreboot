@@ -1,12 +1,6 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>,
- *	 Raptor Engineering
- * Copyright (C) 2012 Google LLC
- * 2005.6 by yhlu
- * 2006.3 yhlu add copy data from CAR to ram
- *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; version 2 of the License.

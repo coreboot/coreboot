@@ -1,11 +1,6 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2007 Advanced Micro Devices, Inc.
- * Copyright (C) 2008 Peter Stuge
- * Copyright (C) 2010 Marc Jones <marcj303@gmail.com>
- * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
- *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; version 2 of the License.

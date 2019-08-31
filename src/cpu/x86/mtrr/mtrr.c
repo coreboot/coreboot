@@ -1,10 +1,5 @@
 /*
- * mtrr.c: setting MTRR to decent values for cache initialization on P6
- *
- * Derived from intel_set_mtrr in intel_subr.c and mtrr.c in linux kernel
- *
- * Copyright 2000 Silicon Integrated System Corporation
- * Copyright 2013 Google Inc.
+ * This file is part of the coreboot project.
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -16,6 +11,8 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU General Public License for more details.
  *
+ * mtrr.c: setting MTRR to decent values for cache initialization on P6
+ * Derived from intel_set_mtrr in intel_subr.c and mtrr.c in linux kernel
  *
  * Reference: Intel Architecture Software Developer's Manual, Volume 3: System
  * Programming

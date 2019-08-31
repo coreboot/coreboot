@@ -22,13 +22,16 @@ Damien Zammit
 Denis Dowling
 DENX Software Engineering
 Eric Biederman
+Eswar Nallusamy
 Facebook, Inc.
 Free Software Foundation, Inc.
 Freescale Semiconductor, Inc
 Gary Jennejohn
+Gerd Hoffmann
 Google LLC
 Imagination Technologies
 Intel Corporation
+Jason Zhao
 Jordan Crouse
 Joseph Smith
 Keith Hui
@@ -57,6 +60,7 @@ Russell King
 Sage Electronic Engineering, LLC
 secunet Security Networks AG
 Siemens AG
+Silicon Integrated System Corporation
 Stefan Reinauer
 Steve Magnani
 SUSE LINUX AG
@@ -67,7 +71,9 @@ The Linux Foundation
 Timothy Pearson
 Tyan Computer Corp.
 Uwe Hermann
+VIA Technologies, Inc
 Wolfgang Denk
+Yinghai Lu
 
 
 
@@ -76,5 +82,4 @@ src/acpi
 src/arch
 src/commonlib
 src/console
-src/cpu/amd
-src/cpu/intel
+src/cpu

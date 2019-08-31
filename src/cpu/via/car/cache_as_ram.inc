@@ -1,16 +1,6 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2000,2007 Ronald G. Minnich <rminnich@gmail.com>
- * Copyright (C) 2005 Eswar Nallusamy, LANL
- * Copyright (C) 2005 Tyan
- * (Written by Yinghai Lu <yhlu@tyan.com> for Tyan)
- * Copyright (C) 2007 coresystems GmbH
- * (Written by Stefan Reinauer <stepan@coresystems.de> for coresystems GmbH)
- * Copyright (C) 2007,2008 Carl-Daniel Hailfinger
- * Copyright (C) 2008 VIA Technologies, Inc.
- * (Written by Jason Zhao <jasonzhao@viatech.com.cn> for VIA)
- *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; version 2 of the License.

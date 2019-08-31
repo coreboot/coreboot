@@ -1,12 +1,5 @@
 /*
- * Copyright 2008, Freescale Semiconductor, Inc
- * Andy Fleming
- *
- * Copyright 2013 Google Inc.  All rights reserved.
- * Copyright 2017 Intel Corporation
- *
- * Secure Digital (SD) card specific support code
- * This code is controller independent
+ * This file is part of the coreboot project.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -17,6 +10,9 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+ *
+ * Secure Digital (SD) card specific support code
+ * This code is controller independent
  */
 
 #include <commonlib/sd_mmc_ctrlr.h>

@@ -13,20 +13,27 @@ Advanced Micro Devices, Inc
 Alex Züpke
 Alexander Couzens
 Alexandru Gagniuc
+Andy Fleming
 ARM Limited and Contributors
 coresystems GmbH
 DENX Software Engineering
 Eric Biederman
 Facebook, Inc.
 Free Software Foundation, Inc.
+Freescale Semiconductor, Inc
 Gary Jennejohn
 Google LLC
 Imagination Technologies
 Intel Corporation
+Jordan Crouse
 Kshitij
+Lei Wen
 Libra Li
+Marek Vasut
 Marius Gröger
+Marvell Semiconductor Inc
 MontaVista Software, Inc.
+Nicholas Sielicki
 Nick Barker
 Patrick Georgi
 Patrick Rudolph
@@ -52,8 +59,5 @@ Wolfgang Denk
 
 # Directories transferred
 src/acpi
-src/arch/arm
-src/arch/arm64
-src/arch/mips
-src/arch/ppc64
-src/arch/x86
+src/arch
+src/commonlib

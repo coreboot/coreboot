@@ -1,10 +1,5 @@
 /*
- * Copyright 2011, Marvell Semiconductor Inc.
- * Lei Wen <leiwen@marvell.com>
- *
- * Copyright 2017 Intel Corporation
- *
- * Controller independent definitions
+ * This file is part of the coreboot project.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -15,6 +10,8 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+ *
+ * Controller independent definitions
  */
 #ifndef __COMMONLIB_SD_MMC_CTRLR_H__
 #define __COMMONLIB_SD_MMC_CTRLR_H__

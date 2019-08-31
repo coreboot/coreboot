@@ -1,14 +1,5 @@
 /*
- * Copyright 2008, Freescale Semiconductor, Inc
- * Andy Fleming
- *
- * Copyright 2013 Google Inc.  All rights reserved.
- * Copyright 2017 Intel Corporation
- *
- * MultiMediaCard (MMC), eMMC and Secure Digital (SD) common code which
- * transitions the card from the standby state to the transfer state.  The
- * common code supports read operations, erase and write operations are in
- * a separate modules.  This code is controller independent.
+ * This file is part of the coreboot project.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -19,6 +10,11 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+ *
+ * MultiMediaCard (MMC), eMMC and Secure Digital (SD) common code which
+ * transitions the card from the standby state to the transfer state.  The
+ * common code supports read operations, erase and write operations are in
+ * a separate modules.  This code is controller independent.
  */
 
 #include <commonlib/storage.h>

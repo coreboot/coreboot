@@ -113,6 +113,20 @@ uint8_t wait_cse_sec_override_mode(void);
  */
 int send_heci_reset_req_message(uint8_t rst_type);
 
+/*
+ * Send HMRFPO_ENABLE command.
+ * returns 0 on failure and 1 on success.
+ */
+int send_hmrfpo_enable_msg(void);
+
+/*
+ * Send HMRFPO_GET_STATUS command.
+ * returns -1 on failure and 0 (DISABLED)/ 1 (LOCKED)/ 2 (ENABLED)
+ * on success.
+ */
+int send_hmrfpo_get_status_msg(void);
+
+
 #define BIOS_HOST_ADDR							0x00
 #define HECI_MKHI_ADDR							0x07
 
@@ -120,5 +134,10 @@ int send_heci_reset_req_message(uint8_t rst_type);
 #define GLOBAL_RESET       1
 #define HOST_RESET_ONLY    2
 #define CSE_RESET_ONLY     3
+
+/*HMRFPO Status types */
+#define MKHI_HMRFPO_DISABLED	0
+#define MKHI_HMRFPO_LOCKED	1
+#define MKHI_HMRFPO_ENABLED	2
 
 #endif // SOC_INTEL_COMMON_MSR_H

@@ -76,6 +76,16 @@
 /* RST Origin */
 #define GR_ORIGIN_BIOS_POST	2
 
+#define MKHI_HMRFPO_GROUP_ID	5
+
+/* HMRFPO Command Ids */
+#define MKHI_HMRFPO_ENABLE	1
+#define MKHI_HMRFPO_GET_STATUS	3
+
+#define ME_HFS_CWS_NORMAL	5
+#define ME_HFS_MODE_NORMAL	0
+#define ME_HFS_TEMP_DISABLE	3
+
 static struct cse_device {
 	uintptr_t sec_bar;
 } g_cse;
@@ -617,6 +627,106 @@ int send_heci_reset_req_message(uint8_t rst_type)
 
 	printk(BIOS_DEBUG, "HECI: Global Reset success!\n");
 	return 0;
+}
+
+/* Sends HMRFPO Enable command to CSE */
+int send_hmrfpo_enable_msg(void)
+{
+	struct hmrfpo_enable_msg {
+		struct mkhi_hdr hdr;
+		uint32_t nonce[2];
+	} __packed;
+
+	/* HMRFPO Enable message */
+	struct hmrfpo_enable_msg msg = {
+		.hdr = {
+			.group_id = MKHI_HMRFPO_GROUP_ID,
+			.command = MKHI_HMRFPO_ENABLE,
+		},
+		.nonce = {0},
+	};
+
+	/* HMRFPO Enable response */
+	struct hmrfpo_enable_resp {
+		struct mkhi_hdr hdr;
+		uint32_t fct_base;
+		uint32_t fct_limit;
+		uint8_t status;
+		uint8_t padding[3];
+	} __packed;
+
+	struct hmrfpo_enable_resp resp;
+	size_t resp_size = sizeof(struct hmrfpo_enable_resp);
+	union me_hfsts1 hfs1;
+
+	printk(BIOS_DEBUG, "HECI: Send HMRFPO Enable Command\n");
+	hfs1.data = me_read_config32(PCI_ME_HFSTS1);
+	/*
+	 * This command can be run only if:
+	 * - Working state is normal and
+	 * - Operation mode is normal or temporary disable mode.
+	 */
+	if (hfs1.fields.working_state != ME_HFS_CWS_NORMAL ||
+		(hfs1.fields.operation_mode != ME_HFS_MODE_NORMAL &&
+		hfs1.fields.operation_mode != ME_HFS_TEMP_DISABLE)) {
+		printk(BIOS_ERR, "HECI: ME not in required Mode\n");
+		goto failed;
+	}
+
+	if (!heci_send_receive(&msg, sizeof(struct hmrfpo_enable_msg),
+				&resp, &resp_size))
+		goto failed;
+
+	if (resp.hdr.result) {
+		printk(BIOS_ERR, "HECI: Resp Failed:%d\n", resp.hdr.result);
+		goto failed;
+	}
+	return 1;
+
+failed:
+	return 0;
+}
+
+/*
+ * Sends HMRFPO Get Status command to CSE to get the HMRFPO status.
+ * The status can be DISABLES/LOCKED/ENABLED
+ */
+int send_hmrfpo_get_status_msg(void)
+{
+	struct hmrfpo_get_status_msg {
+		struct mkhi_hdr hdr;
+	} __packed;
+
+	struct hmrfpo_get_status_resp {
+		struct mkhi_hdr hdr;
+		uint8_t status;
+		uint8_t padding[3];
+	} __packed;
+
+	struct hmrfpo_get_status_msg msg = {
+		.hdr = {
+			.group_id = MKHI_HMRFPO_GROUP_ID,
+			.command = MKHI_HMRFPO_GET_STATUS,
+		},
+	};
+	struct hmrfpo_get_status_resp resp;
+	size_t resp_size = sizeof(struct hmrfpo_get_status_resp);
+
+	printk(BIOS_INFO, "HECI: Sending Get HMRFPO Status Command\n");
+
+	if (!heci_send_receive(&msg, sizeof(struct hmrfpo_get_status_msg),
+				&resp, &resp_size)) {
+		printk(BIOS_ERR, "HECI: HMRFPO send/receive fail\n");
+		return -1;
+	}
+
+	if (resp.hdr.result) {
+		printk(BIOS_ERR, "HECI: HMRFPO Resp Failed:%d\n",
+				resp.hdr.result);
+		return -1;
+	}
+
+	return resp.status;
 }
 
 #if ENV_RAMSTAGE

@@ -67,6 +67,7 @@
 #define MEI_HDR_CSE_ADDR_START	0
 #define MEI_HDR_CSE_ADDR	(((1 << 8) - 1) << MEI_HDR_CSE_ADDR_START)
 
+#define HECI_OP_MODE_SEC_OVERRIDE 5
 
 static struct cse_device {
 	uintptr_t sec_bar;
@@ -237,6 +238,43 @@ static int cse_ready(void)
 	uint32_t csr;
 	csr = read_cse_csr();
 	return csr & CSR_READY;
+}
+
+/*
+ * Checks if CSE is in SEC_OVERRIDE operation mode. This is the mode where
+ * CSE will allow reflashing of CSE region.
+ */
+static uint8_t check_cse_sec_override_mode(void)
+{
+	union me_hfsts1 hfs1;
+	hfs1.data = me_read_config32(PCI_ME_HFSTS1);
+	if (hfs1.fields.operation_mode == HECI_OP_MODE_SEC_OVERRIDE)
+		return 1;
+	return 0;
+}
+
+/* Makes the host ready to communicate with CSE */
+void set_host_ready(void)
+{
+	uint32_t csr;
+	csr = read_host_csr();
+	csr &= ~CSR_RESET;
+	csr |= (CSR_IG | CSR_READY);
+	write_host_csr(csr);
+}
+
+/* Polls for ME state 'HECI_OP_MODE_SEC_OVERRIDE' for 15 seconds */
+uint8_t wait_cse_sec_override_mode(void)
+{
+	struct stopwatch sw;
+	stopwatch_init_msecs_expire(&sw, HECI_DELAY_READY);
+	while (!check_cse_sec_override_mode()) {
+		udelay(HECI_DELAY);
+		if (stopwatch_expired(&sw))
+			return 0;
+	}
+
+	return 1;
 }
 
 static int wait_heci_ready(void)
@@ -484,17 +522,12 @@ int heci_reset(void)
 
 	/* Send reset request */
 	csr = read_host_csr();
-	csr |= CSR_RESET;
-	csr |= CSR_IG;
+	csr |= (CSR_RESET | CSR_IG);
 	write_host_csr(csr);
 
 	if (wait_heci_ready()) {
 		/* Device is back on its imaginary feet, clear reset */
-		csr = read_host_csr();
-		csr &= ~CSR_RESET;
-		csr |= CSR_IG;
-		csr |= CSR_READY;
-		write_host_csr(csr);
+		set_host_ready();
 		return 1;
 	}
 

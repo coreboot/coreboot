@@ -29,6 +29,30 @@ enum {
 	PCI_ME_HFSTS6 = 0x6C,
 };
 
+/* ME Host Firmware Status register 1 */
+union me_hfsts1 {
+	u32 data;
+	struct {
+		u32 working_state: 4;
+		u32 mfg_mode: 1;
+		u32 fpt_bad: 1;
+		u32 operation_state: 3;
+		u32 fw_init_complete: 1;
+		u32 ft_bup_ld_flr: 1;
+		u32 update_in_progress: 1;
+		u32 error_code: 4;
+		u32 operation_mode: 4;
+		u32 reset_count: 4;
+		u32 boot_options_present: 1;
+		u32 reserved1: 1;
+		u32 bist_test_state: 1;
+		u32 bist_reset_request: 1;
+		u32 current_power_source: 2;
+		u32 d3_support_valid: 1;
+		u32 d0i3_support_valid: 1;
+	} __packed fields;
+};
+
 /* set up device for use in early boot enviroument with temp bar */
 void heci_init(uintptr_t bar);
 /*
@@ -71,6 +95,16 @@ uint32_t me_read_config32(int offset);
  * Return true if device present and config space enabled, else return false.
  */
 bool is_cse_enabled(void);
+
+
+/* Makes the host ready to communicate with CSE*/
+void set_host_ready(void);
+
+/*
+ * Polls for ME state 'HECI_OP_MODE_SEC_OVERRIDE' for 15 seconds.
+ * Returns 0 on failure a 1 on success.
+ */
+uint8_t wait_cse_sec_override_mode(void);
 
 #define BIOS_HOST_ADDR							0x00
 #define HECI_MKHI_ADDR							0x07

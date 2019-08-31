@@ -32,30 +32,6 @@ enum {
 	ME_WSTATE_NORMAL	= 0x05,
 };
 
-/* Host Firmware Status Register 1 */
-union hfsts1 {
-	uint32_t raw;
-	struct {
-		uint32_t working_state		: 4;
-		uint32_t mfg_mode		: 1;
-		uint32_t fpt_bad		: 1;
-		uint32_t operation_state	: 3;
-		uint32_t fw_init_complete	: 1;
-		uint32_t ft_bup_ld_flr		: 1;
-		uint32_t fw_upd_in_progress	: 1;
-		uint32_t error_code		: 4;
-		uint32_t operation_mode		: 4;
-		uint32_t reset_count		: 4;
-		uint32_t boot_options		: 1;
-		uint32_t rsvd0			: 1;
-		uint32_t bist_state		: 1;
-		uint32_t bist_reset_req		: 1;
-		uint32_t power_source		: 2;
-		uint32_t reserved1		: 1;
-		uint32_t d0i3_support_valid	: 1;
-	} __packed fields;
-};
-
 /* Host Firmware Status Register 2 */
 union hfsts2 {
 	uint32_t raw;
@@ -174,7 +150,7 @@ static void print_me_version(void *unused)
 		struct version fitc;
 	} __packed;
 
-	union hfsts1 hfsts1;
+	union me_hfsts1 hfsts1;
 	const struct mkhi_hdr fw_ver_msg = {
 		.group_id = MKHI_GEN_GROUP_ID,
 		.command = MKHI_GET_FW_VERSION,
@@ -189,7 +165,7 @@ static void print_me_version(void *unused)
 	if (!is_cse_enabled())
 		return;
 
-	hfsts1.raw = me_read_config32(PCI_ME_HFSTS1);
+	hfsts1.data = me_read_config32(PCI_ME_HFSTS1);
 
 	/*
 	 * Prerequisites:
@@ -225,7 +201,7 @@ BOOT_STATE_INIT_ENTRY(BS_DEV_ENABLE, BS_ON_EXIT, print_me_version, NULL);
 
 void dump_me_status(void *unused)
 {
-	union hfsts1 hfsts1;
+	union me_hfsts1 hfsts1;
 	union hfsts2 hfsts2;
 	union hfsts3 hfsts3;
 	union hfsts4 hfsts4;
@@ -235,7 +211,7 @@ void dump_me_status(void *unused)
 	if (!is_cse_enabled())
 		return;
 
-	hfsts1.raw = me_read_config32(PCI_ME_HFSTS1);
+	hfsts1.data = me_read_config32(PCI_ME_HFSTS1);
 	hfsts2.raw = me_read_config32(PCI_ME_HFSTS2);
 	hfsts3.raw = me_read_config32(PCI_ME_HFSTS3);
 	hfsts4.raw = me_read_config32(PCI_ME_HFSTS4);
@@ -243,7 +219,7 @@ void dump_me_status(void *unused)
 	hfsts6.raw = me_read_config32(PCI_ME_HFSTS6);
 
 	printk(BIOS_DEBUG, "ME: HFSTS1                  : 0x%08X\n",
-		hfsts1.raw);
+		hfsts1.data);
 	printk(BIOS_DEBUG, "ME: HFSTS2                  : 0x%08X\n",
 		hfsts2.raw);
 	printk(BIOS_DEBUG, "ME: HFSTS3                  : 0x%08X\n",
@@ -264,9 +240,9 @@ void dump_me_status(void *unused)
 	printk(BIOS_DEBUG, "ME: Firmware Init Complete  : %s\n",
 		hfsts1.fields.fw_init_complete ? "YES" : "NO");
 	printk(BIOS_DEBUG, "ME: Boot Options Present    : %s\n",
-		hfsts1.fields.boot_options ? "YES" : "NO");
+		hfsts1.fields.boot_options_present ? "YES" : "NO");
 	printk(BIOS_DEBUG, "ME: Update In Progress      : %s\n",
-		hfsts1.fields.fw_upd_in_progress ? "YES" : "NO");
+		hfsts1.fields.update_in_progress ? "YES" : "NO");
 	printk(BIOS_DEBUG, "ME: D0i3 Support            : %s\n",
 		hfsts1.fields.d0i3_support_valid ? "YES" : "NO");
 	printk(BIOS_DEBUG, "ME: Low Power State Enabled : %s\n",

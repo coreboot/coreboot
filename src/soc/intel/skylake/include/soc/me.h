@@ -47,30 +47,6 @@
 #define  ME_HFS_POWER_SOURCE_AC 1
 #define  ME_HFS_POWER_SOURCE_DC 2
 
-union me_hfs {
-	u32 data;
-	struct {
-	u32 working_state: 4;
-	u32 mfg_mode: 1;
-	u32 fpt_bad: 1;
-	u32 operation_state: 3;
-	u32 fw_init_complete: 1;
-	u32 ft_bup_ld_flr: 1;
-	u32 update_in_progress: 1;
-	u32 error_code: 4;
-	u32 operation_mode: 4;
-	u32 reset_count: 4;
-	u32 boot_options_present: 1;
-	u32 reserved1: 1;
-	u32 bist_test_state: 1;
-	u32 bist_reset_request: 1;
-	u32 current_power_source: 2;
-	u32 d3_support_valid: 1;
-	u32 d0i3_support_valid: 1;
-	} __packed fields;
-};
-
-#define PCI_ME_HFSTS2		0x48
 /* Infrastructure Progress Values */
 #define  ME_HFS2_PHASE_ROM		0
 #define  ME_HFS2_PHASE_UKERNEL		2

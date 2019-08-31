@@ -32,16 +32,6 @@ enum {
 	ME_WSTATE_NORMAL	= 0x05,
 };
 
-/* HFSTS register offsets in PCI config space */
-enum {
-	PCI_ME_HFSTS1 = 0x40,
-	PCI_ME_HFSTS2 = 0x48,
-	PCI_ME_HFSTS3 = 0x60,
-	PCI_ME_HFSTS4 = 0x64,
-	PCI_ME_HFSTS5 = 0x68,
-	PCI_ME_HFSTS6 = 0x6C,
-};
-
 /* Host Firmware Status Register 1 */
 union hfsts1 {
 	uint32_t raw;
@@ -155,11 +145,6 @@ union hfsts6 {
 	} __packed fields;
 };
 
-static uint32_t me_read_config32(int offset)
-{
-	return pci_read_config32(PCH_DEV_CSE, offset);
-}
-
 /*
  * From reading the documentation, this should work for both WHL and CML
  * platforms.  Also, calling this function from dump_me_status() does not
@@ -199,6 +184,9 @@ static void print_me_version(void *unused)
 
 	/* Ignore if UART debugging is disabled */
 	if (!CONFIG(CONSOLE_SERIAL))
+		return;
+
+	if (!is_cse_enabled())
 		return;
 
 	hfsts1.raw = me_read_config32(PCI_ME_HFSTS1);
@@ -243,6 +231,9 @@ void dump_me_status(void *unused)
 	union hfsts4 hfsts4;
 	union hfsts5 hfsts5;
 	union hfsts6 hfsts6;
+
+	if (!is_cse_enabled())
+		return;
 
 	hfsts1.raw = me_read_config32(PCI_ME_HFSTS1);
 	hfsts2.raw = me_read_config32(PCI_ME_HFSTS2);

@@ -19,6 +19,16 @@
 
 #include <stdint.h>
 
+/* HFSTS register offsets in PCI config space */
+enum {
+	PCI_ME_HFSTS1 = 0x40,
+	PCI_ME_HFSTS2 = 0x48,
+	PCI_ME_HFSTS3 = 0x60,
+	PCI_ME_HFSTS4 = 0x64,
+	PCI_ME_HFSTS5 = 0x68,
+	PCI_ME_HFSTS6 = 0x6C,
+};
+
 /* set up device for use in early boot enviroument with temp bar */
 void heci_init(uintptr_t bar);
 /*
@@ -51,6 +61,16 @@ int heci_send_receive(const void *snd_msg, size_t snd_sz, void *rcv_msg, size_t 
  * Returns 0 on failure a 1 on success.
  */
 int heci_reset(void);
+
+/* Reads config value from a specified offset in the CSE PCI Config space. */
+uint32_t me_read_config32(int offset);
+
+/*
+ * Check if the CSE device is enabled in device tree. Also check if the device
+ * is visible on the PCI bus by reading config space.
+ * Return true if device present and config space enabled, else return false.
+ */
+bool is_cse_enabled(void);
 
 #define BIOS_HOST_ADDR							0x00
 #define HECI_MKHI_ADDR							0x07

@@ -26,10 +26,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-static inline u32 me_read_config32(int offset)
-{
-	return pci_read_config32(PCH_DEV_CSE, offset);
-}
 
 /* HFSTS1[3:0] Current Working State Values */
 static const char *const me_cws_values[] = {
@@ -242,6 +238,9 @@ static void print_me_version(void *unused)
 	if (!CONFIG(CONSOLE_SERIAL))
 		return;
 
+	if (!is_cse_enabled())
+		return;
+
 	hfs.data = me_read_config32(PCI_ME_HFSTS1);
 	/*
 	 * This command can be run only if:
@@ -287,6 +286,9 @@ void intel_me_status(void)
 	union me_hfs2 hfs2;
 	union me_hfs3 hfs3;
 	union me_hfs6 hfs6;
+
+	if (!is_cse_enabled())
+		return;
 
 	hfs.data = me_read_config32(PCI_ME_HFSTS1);
 	hfs2.data = me_read_config32(PCI_ME_HFSTS2);
@@ -483,6 +485,9 @@ int send_global_reset(void)
 {
 	int status = -1;
 	union me_hfs hfs;
+
+	if (!is_cse_enabled())
+		goto ret;
 
 	/* Check ME operating mode */
 	hfs.data = me_read_config32(PCI_ME_HFSTS1);

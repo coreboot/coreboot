@@ -28,12 +28,6 @@
 #include <device/pci_ops.h>
 #include <stdint.h>
 
-#define PCI_ME_HFSTS1	0x40
-#define PCI_ME_HFSTS2	0x48
-#define PCI_ME_HFSTS3	0x60
-#define PCI_ME_HFSTS4	0x64
-#define PCI_ME_HFSTS5	0x68
-#define PCI_ME_HFSTS6	0x6c
 
 #define MKHI_GROUP_ID_MCA			0x0a
 #define READ_FILE				0x02
@@ -188,7 +182,9 @@ static void fpf_blown(void *unused)
 
 static uint32_t dump_status(int index, int reg_addr)
 {
-	uint32_t reg = pci_read_config32(PCH_DEV_CSE, reg_addr);
+	uint32_t reg;
+
+	reg = me_read_config32(reg_addr);
 
 	printk(BIOS_DEBUG, "CSE FWSTS%d: 0x%08x\n", index, reg);
 
@@ -255,6 +251,9 @@ static void dump_cse_version(void *unused)
 static void dump_cse_state(void)
 {
 	uint32_t fwsts1;
+
+	if (!is_cse_enabled())
+		return;
 
 	fwsts1 = dump_status(1, PCI_ME_HFSTS1);
 	dump_status(2, PCI_ME_HFSTS2);

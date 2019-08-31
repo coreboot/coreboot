@@ -503,6 +503,28 @@ int heci_reset(void)
 	return 0;
 }
 
+bool is_cse_enabled(void)
+{
+	const struct device *cse_dev = pcidev_path_on_root(PCH_DEVFN_CSE);
+
+	if (!cse_dev || !cse_dev->enabled) {
+		printk(BIOS_WARNING, "HECI: No CSE device\n");
+		return false;
+	}
+
+	if (pci_read_config16(PCH_DEV_CSE, PCI_VENDOR_ID) == 0xFFFF) {
+		printk(BIOS_WARNING, "HECI: CSE device is hidden\n");
+		return false;
+	}
+
+	return true;
+}
+
+uint32_t me_read_config32(int offset)
+{
+	return pci_read_config32(PCH_DEV_CSE, offset);
+}
+
 #if ENV_RAMSTAGE
 
 static void update_sec_bar(struct device *dev)

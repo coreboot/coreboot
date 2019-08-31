@@ -21,7 +21,6 @@
 /*
  * Management Engine PCI registers
  */
-#define PCI_ME_HFSTS1		0x40
 #define  ME_HFS_CWS_RESET	0
 #define  ME_HFS_CWS_INIT	1
 #define  ME_HFS_CWS_REC		2
@@ -169,7 +168,6 @@ union me_hfs2 {
 	} __packed fields;
 };
 
-#define PCI_ME_HFSTS3			0x60
 #define  ME_HFS3_FW_SKU_CONSUMER	0x2
 #define  ME_HFS3_FW_SKU_CORPORATE	0x3
 
@@ -186,9 +184,6 @@ union me_hfs3 {
 	} __packed fields;
 };
 
-#define PCI_ME_HFSTS4			0x64
-#define PCI_ME_HFSTS5			0x68
-#define PCI_ME_HFSTS6			0x6c
 #define ME_HFS6_FPF_NOT_COMMITTED	0x0
 #define ME_HFS6_FPF_ERROR		0x2
 

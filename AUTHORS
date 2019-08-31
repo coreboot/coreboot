@@ -15,9 +15,11 @@ Alexander Couzens
 Alexandru Gagniuc
 Andy Fleming
 ARM Limited and Contributors
+Arthur Heymans
 Carl-Daniel Hailfinger
 coresystems GmbH
 Damien Zammit
+Denis Dowling
 DENX Software Engineering
 Eric Biederman
 Facebook, Inc.
@@ -28,6 +30,8 @@ Google LLC
 Imagination Technologies
 Intel Corporation
 Jordan Crouse
+Joseph Smith
+Keith Hui
 Kshitij
 Kyösti Mälkki
 Lei Wen
@@ -61,6 +65,8 @@ Syed Mohammed Khasim
 Texas Instruments
 The Linux Foundation
 Timothy Pearson
+Tyan Computer Corp.
+Uwe Hermann
 Wolfgang Denk
 
 
@@ -71,3 +77,4 @@ src/arch
 src/commonlib
 src/console
 src/cpu/amd
+src/cpu/intel

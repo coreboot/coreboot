@@ -283,6 +283,10 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	       sizeof(params->SataPortsEnable));
 	memcpy(params->SataPortsDevSlp, config->SataPortsDevSlp,
 	       sizeof(params->SataPortsDevSlp));
+	memcpy(params->SataPortsHotPlug, config->SataPortsHotPlug,
+	       sizeof(params->SataPortsHotPlug));
+	memcpy(params->SataPortsSpinUp, config->SataPortsSpinUp,
+	       sizeof(params->SataPortsSpinUp));
 	memcpy(params->PcieRpClkReqSupport, config->PcieRpClkReqSupport,
 	       sizeof(params->PcieRpClkReqSupport));
 	memcpy(params->PcieRpClkReqNumber, config->PcieRpClkReqNumber,
@@ -369,6 +373,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	tconfig->PchLockDownGlobalSmi = config->LockDownConfigGlobalSmi;
 	tconfig->PchLockDownRtcLock = config->LockDownConfigRtcLock;
 	tconfig->PowerLimit4 = config->PowerLimit4;
+	tconfig->SataTestMode = config->SataTestMode;
 	/*
 	 * To disable HECI, the Psf needs to be left unlocked
 	 * by FSP till end of post sequence. Based on the devicetree

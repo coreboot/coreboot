@@ -200,6 +200,8 @@ struct soc_intel_skylake_config {
 	u8 SataSalpSupport;
 	u8 SataPortsEnable[8];
 	u8 SataPortsDevSlp[8];
+	u8 SataPortsSpinUp[8];
+	u8 SataPortsHotPlug[8];
 	u8 SataSpeedLimit;
 
 	/* Audio related */
@@ -587,6 +589,9 @@ struct soc_intel_skylake_config {
 
 	/* Enable/Disable Sata power optimization */
 	u8 SataPwrOptEnable;
+
+	/* Enable/Disable Sata test mode */
+	u8 SataTestMode;
 };
 
 typedef struct soc_intel_skylake_config config_t;

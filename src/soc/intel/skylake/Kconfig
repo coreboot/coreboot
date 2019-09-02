@@ -78,6 +78,11 @@ config CPU_SPECIFIC_OPTIONS
 	select TSC_SYNC_MFENCE
 	select UDELAY_TSC
 
+config FSP_HYPERTHREADING
+	bool "Enable Hyper-Threading"
+	depends on MAINBOARD_USES_FSP2_0
+	default y
+
 config CPU_INTEL_NUM_FIT_ENTRIES
 	int
 	default 10

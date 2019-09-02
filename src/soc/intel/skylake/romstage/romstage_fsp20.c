@@ -252,6 +252,7 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 		m_cfg->PchHpetDeviceNumber = V_P2SB_HBDF_DEV;
 		m_cfg->PchHpetFunctionNumber = V_P2SB_HBDF_FUN;
 	}
+	m_cfg->HyperThreading = CONFIG(FSP_HYPERTHREADING);
 }
 
 static void soc_primary_gfx_config_params(FSP_M_CONFIG *m_cfg,

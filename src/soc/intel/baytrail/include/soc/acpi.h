@@ -19,7 +19,6 @@
 #include <arch/acpi.h>
 #include <soc/nvs.h>
 
-void acpi_create_intel_hpet(acpi_hpet_t * hpet);
 void acpi_fill_in_fadt(acpi_fadt_t *fadt);
 unsigned long acpi_madt_irq_overrides(unsigned long current);
 void acpi_init_gnvs(global_nvs_t *gnvs);

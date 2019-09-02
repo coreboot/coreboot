@@ -20,7 +20,6 @@
 
 #include <arch/acpi.h>
 
-void acpi_create_intel_hpet(acpi_hpet_t *hpet);
 void acpi_fill_in_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt);
 unsigned long acpi_madt_irq_overrides(unsigned long current);
 uint16_t get_pmbase(void);

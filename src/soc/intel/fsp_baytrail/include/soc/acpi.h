@@ -21,7 +21,6 @@
 #include <soc/nvs.h>
 #include <device/device.h>
 
-void acpi_create_intel_hpet(acpi_hpet_t * hpet);
 void acpi_create_serialio_ssdt(acpi_header_t *ssdt);
 void acpi_fill_in_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt);
 unsigned long acpi_madt_irq_overrides(unsigned long current);

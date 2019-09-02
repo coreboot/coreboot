@@ -21,7 +21,6 @@
 #include <arch/acpi.h>
 #include <soc/nvs.h>
 
-void acpi_create_intel_hpet(acpi_hpet_t *hpet);
 void acpi_create_serialio_ssdt(acpi_header_t *ssdt);
 unsigned long acpi_madt_irq_overrides(unsigned long current);
 void acpi_init_gnvs(global_nvs_t *gnvs);

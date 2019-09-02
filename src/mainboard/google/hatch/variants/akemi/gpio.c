@@ -19,6 +19,148 @@
 #include <commonlib/helpers.h>
 #include <console/console.h>
 
+static const struct pad_config ssd_sku_gpio_table[] = {
+	/* A0  : NC */
+	PAD_NC(GPP_A0, NONE),
+	/* A6  : NC */
+	PAD_NC(GPP_A6, NONE),
+	/* A8  : NC */
+	PAD_NC(GPP_A8, NONE),
+	/* A10 : NC */
+	PAD_NC(GPP_A10, NONE),
+	/* A11 : NC */
+	PAD_NC(GPP_A11, NONE),
+	/* A12 : NC */
+	PAD_NC(GPP_A12, NONE),
+	/* A18 : NC */
+	PAD_NC(GPP_A18, NONE),
+	/* A19 : NC */
+	PAD_NC(GPP_A19, NONE),
+	/* A22 : NC */
+	PAD_NC(GPP_A22, NONE),
+	/* A23 : NC */
+	PAD_NC(GPP_A23, NONE),
+	/* B20 : NC */
+	PAD_NC(GPP_B20, NONE),
+	/* B21 : NC */
+	PAD_NC(GPP_B21, NONE),
+	/* B22 : NC */
+	PAD_NC(GPP_B22, NONE),
+	/* C11 : NC */
+	PAD_NC(GPP_C11, NONE),
+	/* C15 : NC */
+	PAD_NC(GPP_C15, NONE),
+	/* F1  : NC */
+	PAD_NC(GPP_F1, NONE),
+	/* F3  : MEM_STRAP_3 */
+	PAD_CFG_GPI(GPP_F3, NONE, PLTRST),
+	/* F10 : MEM_STRAP_2 */
+	PAD_CFG_GPI(GPP_F10, NONE, PLTRST),
+	/* F11 : NC */
+	PAD_NC(GPP_F11, NONE),
+	/* F12 : NC */
+	PAD_NC(GPP_F12, NONE),
+	/* F13 : NC */
+	PAD_NC(GPP_F13, NONE),
+	/* F14 : NC */
+	PAD_NC(GPP_F14, NONE),
+	/* F15 : NC */
+	PAD_NC(GPP_F15, NONE),
+	/* F16 : NC */
+	PAD_NC(GPP_F16, NONE),
+	/* F17 : NC */
+	PAD_NC(GPP_F17, NONE),
+	/* F18 : NC */
+	PAD_NC(GPP_F18, NONE),
+	/* F19 : NC */
+	PAD_NC(GPP_F19, NONE),
+	/* F20 : NC */
+	PAD_NC(GPP_F20, NONE),
+	/* F21 : NC */
+	PAD_NC(GPP_F21, NONE),
+	/* F22 : NC */
+	PAD_NC(GPP_F22, NONE),
+	/* H6  : NC */
+	PAD_NC(GPP_H6, NONE),
+	/* H7  : NC */
+	PAD_NC(GPP_H7, NONE),
+	/* H19 : MEM_STRAP_0 */
+	PAD_CFG_GPI(GPP_H19, NONE, PLTRST),
+	/* H22 : MEM_STRAP_1 */
+	PAD_CFG_GPI(GPP_H22, NONE, PLTRST),
+};
+
+static const struct pad_config emmc_sku_gpio_table[] = {
+	/* A0  : NC */
+	PAD_NC(GPP_A0, NONE),
+	/* A6  : NC */
+	PAD_NC(GPP_A6, NONE),
+	/* A8  : NC */
+	PAD_NC(GPP_A8, NONE),
+	/* A10 : NC */
+	PAD_NC(GPP_A10, NONE),
+	/* A11 : NC */
+	PAD_NC(GPP_A11, NONE),
+	/* A12 : NC */
+	PAD_NC(GPP_A12, NONE),
+	/* A18 : NC */
+	PAD_NC(GPP_A18, NONE),
+	/* A19 : NC */
+	PAD_NC(GPP_A19, NONE),
+	/* A22 : NC */
+	PAD_NC(GPP_A22, NONE),
+	/* A23 : NC */
+	PAD_NC(GPP_A23, NONE),
+	/* B20 : NC */
+	PAD_NC(GPP_B20, NONE),
+	/* B21 : NC */
+	PAD_NC(GPP_B21, NONE),
+	/* B22 : NC */
+	PAD_NC(GPP_B22, NONE),
+	/* C11 : NC */
+	PAD_NC(GPP_C11, NONE),
+	/* C15 : NC */
+	PAD_NC(GPP_C15, NONE),
+	/* F1  : NC */
+	PAD_NC(GPP_F1, NONE),
+	/* F3  : MEM_STRAP_3 */
+	PAD_CFG_GPI(GPP_F3, NONE, PLTRST),
+	/* F10 : MEM_STRAP_2 */
+	PAD_CFG_GPI(GPP_F10, NONE, PLTRST),
+	/* F11 : EMMC_CMD ==> EMMC_CMD */
+	PAD_CFG_NF(GPP_F11, NONE, DEEP, NF1),
+	/* F12 : EMMC_DATA0 ==> EMMC_DAT0 */
+	PAD_CFG_NF(GPP_F12, NONE, DEEP, NF1),
+	/* F13 : EMMC_DATA1 ==> EMMC_DAT1 */
+	PAD_CFG_NF(GPP_F13, NONE, DEEP, NF1),
+	/* F14 : EMMC_DATA2 ==> EMMC_DAT2 */
+	PAD_CFG_NF(GPP_F14, NONE, DEEP, NF1),
+	/* F15 : EMMC_DATA3 ==> EMMC_DAT3 */
+	PAD_CFG_NF(GPP_F15, NONE, DEEP, NF1),
+	/* F16 : EMMC_DATA4 ==> EMMC_DAT4 */
+	PAD_CFG_NF(GPP_F16, NONE, DEEP, NF1),
+	/* F17 : EMMC_DATA5 ==> EMMC_DAT5 */
+	PAD_CFG_NF(GPP_F17, NONE, DEEP, NF1),
+	/* F18 : EMMC_DATA6 ==> EMMC_DAT6 */
+	PAD_CFG_NF(GPP_F18, NONE, DEEP, NF1),
+	/* F19 : EMMC_DATA7 ==> EMMC_DAT7 */
+	PAD_CFG_NF(GPP_F19, NONE, DEEP, NF1),
+	/* F20 : EMMC_RCLK ==> EMMC_RCLK */
+	PAD_CFG_NF(GPP_F20, NONE, DEEP, NF1),
+	/* F21 : EMMC_CLK ==> EMMC_CLK */
+	PAD_CFG_NF(GPP_F21, NONE, DEEP, NF1),
+	/* F22 : EMMC_RESET# ==> EMMC_RST_L */
+	PAD_CFG_NF(GPP_F22, NONE, DEEP, NF1),
+	/* H6  : NC */
+	PAD_NC(GPP_H6, NONE),
+	/* H7  : NC */
+	PAD_NC(GPP_H7, NONE),
+	/* H19 : MEM_STRAP_0 */
+	PAD_CFG_GPI(GPP_H19, NONE, PLTRST),
+	/* H22 : MEM_STRAP_1 */
+	PAD_CFG_GPI(GPP_H22, NONE, PLTRST),
+};
+
 static const struct pad_config gpio_table[] = {
 	/* A0  : NC */
 	PAD_NC(GPP_A0, NONE),
@@ -92,6 +234,17 @@ static const struct pad_config gpio_table[] = {
 
 const struct pad_config *override_gpio_table(size_t *num)
 {
+	uint32_t sku_id = get_board_sku();
+	/* For SSD SKU */
+	if (sku_id == 2) {
+		*num = ARRAY_SIZE(ssd_sku_gpio_table);
+		return ssd_sku_gpio_table;
+	}
+	/* For eMMC SKU */
+	if (sku_id == 1) {
+		*num = ARRAY_SIZE(emmc_sku_gpio_table);
+		return emmc_sku_gpio_table;
+	}
 	*num = ARRAY_SIZE(gpio_table);
 	return gpio_table;
 }
@@ -128,30 +281,6 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_NF(GPP_E5, NONE, PLTRST, NF1),
 	/* F2  : MEM_CH_SEL */
 	PAD_CFG_GPI(GPP_F2, NONE, PLTRST),
-	/* F11 : EMMC_CMD ==> EMMC_CMD */
-	PAD_CFG_NF(GPP_F11, NONE, DEEP, NF1),
-	/* F12 : EMMC_DATA0 ==> EMMC_DAT0 */
-	PAD_CFG_NF(GPP_F12, NONE, DEEP, NF1),
-	/* F13 : EMMC_DATA1 ==> EMMC_DAT1 */
-	PAD_CFG_NF(GPP_F13, NONE, DEEP, NF1),
-	/* F14 : EMMC_DATA2 ==> EMMC_DAT2 */
-	PAD_CFG_NF(GPP_F14, NONE, DEEP, NF1),
-	/* F15 : EMMC_DATA3 ==> EMMC_DAT3 */
-	PAD_CFG_NF(GPP_F15, NONE, DEEP, NF1),
-	/* F16 : EMMC_DATA4 ==> EMMC_DAT4 */
-	PAD_CFG_NF(GPP_F16, NONE, DEEP, NF1),
-	/* F17 : EMMC_DATA5 ==> EMMC_DAT5 */
-	PAD_CFG_NF(GPP_F17, NONE, DEEP, NF1),
-	/* F18 : EMMC_DATA6 ==> EMMC_DAT6 */
-	PAD_CFG_NF(GPP_F18, NONE, DEEP, NF1),
-	/* F19 : EMMC_DATA7 ==> EMMC_DAT7 */
-	PAD_CFG_NF(GPP_F19, NONE, DEEP, NF1),
-	/* F20 : EMMC_RCLK ==> EMMC_RCLK */
-	PAD_CFG_NF(GPP_F20, NONE, DEEP, NF1),
-	/* F21 : EMMC_CLK ==> EMMC_CLK */
-	PAD_CFG_NF(GPP_F21, NONE, DEEP, NF1),
-	/* F22 : EMMC_RESET# ==> EMMC_RST_L */
-	PAD_CFG_NF(GPP_F22, NONE, DEEP, NF1),
 };
 
 const struct pad_config *variant_early_gpio_table(size_t *num)

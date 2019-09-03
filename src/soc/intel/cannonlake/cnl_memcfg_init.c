@@ -81,6 +81,7 @@ static void meminit_spd_data(FSP_M_CONFIG *mem_cfg, uint8_t mem_slot,
 	default:
 		die("nonexistent memory slot");
 	}
+	printk(BIOS_INFO, "memory slot: %d configuration done.\n", mem_slot);
 }
 
 /*
@@ -112,6 +113,7 @@ static void meminit_cbfs_spd_index(FSP_M_CONFIG *mem_cfg,
 
 		spd_data_ptr = (uintptr_t)rdev_mmap_full(&spd_rdev);
 		last_spd_index = spd_index;
+		print_spd_info((unsigned char *)spd_data_ptr);
 	}
 
 	meminit_spd_data(mem_cfg, mem_slot, spd_data_len, spd_data_ptr);

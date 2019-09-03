@@ -28,6 +28,19 @@
 #include <stdint.h>
 #include <stddef.h>
 
+/* SPI vendor IDs */
+#define VENDOR_ID_ADESTO			0x1f
+#define VENDOR_ID_AMIC				0x37
+#define VENDOR_ID_ATMEL				0x1f
+#define VENDOR_ID_EON				0x1c
+#define VENDOR_ID_GIGADEVICE			0xc8
+#define VENDOR_ID_MACRONIX			0xc2
+#define VENDOR_ID_SPANSION			0x01
+#define VENDOR_ID_SST				0xbf
+#define VENDOR_ID_STMICRO			0x20
+#define VENDOR_ID_STMICRO_FF			0xff
+#define VENDOR_ID_WINBOND			0xef
+
 /* Controller-specific definitions: */
 
 struct spi_ctrlr;

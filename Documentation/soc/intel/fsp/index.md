@@ -45,6 +45,8 @@ those are fixed. If possible a workaround is described here as well.
 
 * [FSP Specification 2.0](https://www.intel.com/content/dam/www/public/us/en/documents/technical-specifications/fsp-architecture-spec-v2.pdf)
 
+* [FSP Specification 2.1](https://cdrdv2.intel.com/v1/dl/getContent/611786)
+
 ## Additional Features in FSP 2.1 specification
 
 - [PPI](ppi/ppi.md)

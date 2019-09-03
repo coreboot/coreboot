@@ -38,7 +38,7 @@ static unsigned int get_max_cpuid_func(void)
 
 static unsigned long get_hardcoded_crystal_freq(void)
 {
-	unsigned int core_crystal_nominal_freq_khz;
+	unsigned long core_crystal_nominal_freq_khz = 0;
 
 	/*
 	 * Denverton SoCs don't report crystal clock, and also don't support
@@ -70,7 +70,7 @@ static unsigned long get_hardcoded_crystal_freq(void)
  */
 static unsigned long calculate_tsc_freq_from_core_crystal(void)
 {
-	unsigned int core_crystal_nominal_freq_khz;
+	unsigned long core_crystal_nominal_freq_khz;
 	struct cpuid_result cpuidr_15h;
 
 	if (get_max_cpuid_func() < 0x15)

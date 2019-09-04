@@ -28,6 +28,10 @@
 /* Sensor detection pin */
 #define SENSOR_DET_360		GPP_H5
 
+/* DDR channel enable pin */
+#define DDR_CH0_EN		GPP_F1
+#define DDR_CH1_EN		GPP_F2
+
 /* Memory configuration board straps */
 #define GPIO_MEM_CONFIG_0	GPP_F12
 #define GPIO_MEM_CONFIG_1	GPP_F13

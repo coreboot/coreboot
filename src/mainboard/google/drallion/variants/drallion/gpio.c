@@ -286,4 +286,11 @@ void variant_mainboard_post_init_params(FSPM_UPD *mupd)
 	FSP_M_CONFIG *fsp_m_cfg = &mupd->FspmConfig;
 	if (fsp_m_cfg->PchIshEnable)
 		fsp_m_cfg->PchIshEnable = is_ish_device_enabled();
+
+	/*
+	 * Disable memory channel by HW strap pin, HW default is enable
+	 * 0: Enable both DIMMs, 3: Disable both DIMMs
+	 */
+	mupd->FspmConfig.DisableDimmChannel0 = gpio_get(DDR_CH0_EN) ? 0 : 3;
+	mupd->FspmConfig.DisableDimmChannel1 = gpio_get(DDR_CH1_EN) ? 0 : 3;
 }

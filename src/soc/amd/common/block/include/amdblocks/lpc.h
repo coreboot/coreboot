@@ -75,6 +75,8 @@
 #define   LPC_WIDEIO0_ENABLE		BIT(2)
 #define   DECODE_ALTERNATE_SIO_ENABLE	BIT(1)
 #define   DECODE_SIO_ENABLE		BIT(0)
+#define     LPC_SELECT_SIO_4E4F		1
+#define     LPC_SELECT_SIO_2E2F		0
 #define   WIDEIO_RANGE_ERROR		-1
 
 /* Assuming word access to higher word (register 0x4a) */
@@ -151,6 +153,8 @@ void soc_late_lpc_bridge_enable(void);
 void lpc_enable_port80(void);
 void lpc_enable_pci_port80(void);
 void lpc_enable_decode(uint32_t decodes);
+/* addr = index/data to enable:  LPC_SELECT_SIO_2E2F or LPC_SELECT_SIO_4E4F */
+void lpc_enable_sio_decode(const bool addr);
 uintptr_t lpc_spibase(void);
 void lpc_tpm_decode(void);
 void lpc_tpm_decode_spi(void);

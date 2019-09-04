@@ -165,6 +165,18 @@ void lpc_enable_pci_port80(void)
 	pci_write_config8(_LPCB_DEV, LPC_IO_OR_MEM_DEC_EN_HIGH, byte);
 }
 
+void lpc_enable_sio_decode(const bool addr)
+{
+	uint32_t decodes;
+	uint32_t enable;
+
+	decodes = pci_read_config32(_LPCB_DEV, LPC_IO_OR_MEM_DECODE_ENABLE);
+	enable = addr == LPC_SELECT_SIO_2E2F ?
+			DECODE_SIO_ENABLE : DECODE_ALTERNATE_SIO_ENABLE;
+	decodes |= enable;
+	pci_write_config32(_LPCB_DEV, LPC_IO_OR_MEM_DECODE_ENABLE, decodes);
+}
+
 void lpc_enable_decode(uint32_t decodes)
 {
 	pci_write_config32(_LPCB_DEV, LPC_IO_PORT_DECODE_ENABLE, decodes);

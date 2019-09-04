@@ -68,6 +68,7 @@
 #define   DECODE_IO_PORT_ENABLE2	BIT(18)
 #define   DECODE_IO_PORT_ENABLE1	BIT(17)
 #define   DECODE_IO_PORT_ENABLE0	BIT(16)
+#define   LPC_SYNC_TIMEOUT_COUNT_MASK	(0xff << 8)
 #define   LPC_SYNC_TIMEOUT_COUNT_ENABLE	BIT(7)
 #define   LPC_DECODE_RTC_IO_ENABLE	BIT(6)
 #define   DECODE_MEM_PORT_ENABLE0	BIT(5)
@@ -134,6 +135,9 @@
 #define   PREFETCH_EN_SPI_FROM_HOST	BIT(0)
 #define   T_START_ENH			BIT(3)
 
+/* Clear all decoding to the LPC bus and erase any range registers associated
+ * with the enable bits. */
+void lpc_disable_decodes(void);
 /* LPC is typically enabled very early, but this function is last opportunity */
 void soc_late_lpc_bridge_enable(void);
 void lpc_enable_port80(void);

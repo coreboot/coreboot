@@ -170,6 +170,25 @@ void lpc_enable_decode(uint32_t decodes)
 	pci_write_config32(_LPCB_DEV, LPC_IO_PORT_DECODE_ENABLE, decodes);
 }
 
+/*
+ * Clear all decoding to the LPC bus and erase any range registers associated
+ * with the enable bits.
+ */
+void lpc_disable_decodes(void)
+{
+	uint32_t reg;
+
+	lpc_enable_decode(0);
+	reg = pci_read_config32(_LPCB_DEV, LPC_IO_OR_MEM_DECODE_ENABLE);
+	reg &= LPC_SYNC_TIMEOUT_COUNT_MASK | LPC_SYNC_TIMEOUT_COUNT_ENABLE;
+	pci_write_config32(_LPCB_DEV, LPC_IO_OR_MEM_DECODE_ENABLE, reg);
+
+	/* D14F3x48 enables ranges configured in additional registers */
+	pci_write_config32(_LPCB_DEV, LPC_MEM_PORT1, 0);
+	pci_write_config32(_LPCB_DEV, LPC_MEM_PORT0, 0);
+	pci_write_config32(_LPCB_DEV, LPC_WIDEIO2_GENERIC_PORT, 0);
+}
+
 uintptr_t lpc_spibase(void)
 {
 	u32 base, enables;

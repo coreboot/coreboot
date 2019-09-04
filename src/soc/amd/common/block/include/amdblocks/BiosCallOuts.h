@@ -18,6 +18,7 @@
 #define __CALLOUTS_AMD_AGESA_H__
 
 #include <amdblocks/agesawrapper.h>
+#include <stdint.h>
 
 #define BIOS_HEAP_SIZE			0x30000
 #define BSP_STACK_BASE_ADDR		0x30000

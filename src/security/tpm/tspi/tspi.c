@@ -4,6 +4,7 @@
  * Copyright (c) 2013 The Chromium OS Authors. All rights reserved.
  * Copyright 2017 Facebook Inc.
  * Copyright 2018 Siemens AG
+ * Copyright 2019 Eltan B.V.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +21,7 @@
 #include <security/tpm/tspi.h>
 #include <security/tpm/tss.h>
 #include <stdlib.h>
+#include <string.h>
 #if CONFIG(VBOOT)
 #include <vb2_api.h>
 #include <vb2_sha.h>
@@ -209,7 +211,28 @@ uint32_t tpm_extend_pcr(int pcr, enum vb2_hash_algorithm digest_algo,
 	if (!digest)
 		return TPM_E_IOERROR;
 
+#if CONFIG(TPM2)
+	TPML_DIGEST_VALUES tpml_digests;
+
+	tpml_digests.count = 1;
+	switch (digest_algo) {
+	case VB2_HASH_SHA1:
+		tpml_digests.digests[0].hashAlg = TPM_ALG_SHA1;
+		memcpy(tpml_digests.digests[0].digest.sha1,
+		       digest, sizeof(TPMU_HA));
+		break;
+	case VB2_HASH_SHA256:
+		tpml_digests.digests[0].hashAlg = TPM_ALG_SHA256;
+		memcpy(tpml_digests.digests[0].digest.sha256,
+		       digest, sizeof(TPMU_HA));
+		break;
+	default:
+		return TPM_E_IOERROR;
+	}
+	result = tlcl_extend(pcr, (uint8_t *)&tpml_digests, NULL);
+#else
 	result = tlcl_extend(pcr, digest, NULL);
+#endif
 	if (result != TPM_SUCCESS)
 		return result;
 

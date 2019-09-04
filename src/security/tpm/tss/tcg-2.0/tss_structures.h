@@ -97,6 +97,12 @@ struct tpm_header {
    space is defined by the lower 16 bits. */
 #define TPM_CC_VENDOR_BIT_MASK 0x20000000
 
+/* Table 15 - TPM_RC Constants (Actions) */
+#define RC_FMT1                (TPM_RC)(0x080)
+#define TPM_RC_HASH            (TPM_RC)(RC_FMT1 + 0x003)
+#define TPM_RC_P               (TPM_RC)(0x040)
+#define TPM_RC_N_MASK          (TPM_RC)(0xF00)
+
 /* Startup values. */
 #define TPM_SU_CLEAR 0
 #define TPM_SU_STATE 1
@@ -311,12 +317,13 @@ typedef union {
 	TPM2B b;
 } TPM2B_MAX_NV_BUFFER;
 
-/*
- * This is a union, but as of now we support just one digest - sha256, so
- * there is just one element.
- */
+/* Table 66 - TPMU_HA Union */
 typedef union {
-	uint8_t  sha256[SHA256_DIGEST_SIZE];
+	uint8_t sha1[SHA1_DIGEST_SIZE];
+	uint8_t sha256[SHA256_DIGEST_SIZE];
+	uint8_t sm3_256[SM3_256_DIGEST_SIZE];
+	uint8_t sha384[SHA384_DIGEST_SIZE];
+	uint8_t sha512[SHA512_DIGEST_SIZE];
 } TPMU_HA;
 
 typedef struct {
@@ -324,9 +331,10 @@ typedef struct {
 	TPMU_HA        digest;
 } TPMT_HA;
 
+/* Table 96 -- TPML_DIGEST_VALUES Structure <I/O> */
 typedef struct {
 	uint32_t   count;
-	TPMT_HA  digests[1];  /* Limit max number of hashes to 1. */
+	TPMT_HA digests[HASH_COUNT];
 } TPML_DIGEST_VALUES;
 
 struct nv_read_response {

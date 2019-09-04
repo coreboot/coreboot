@@ -83,9 +83,30 @@ static int marshal_TPMT_HA(struct obuf *ob, TPMT_HA *tpmtha)
 	int rc = 0;
 
 	rc |= marshal_TPMI_ALG_HASH(ob, tpmtha->hashAlg);
-	rc |= obuf_write(ob, tpmtha->digest.sha256,
+	switch (tpmtha->hashAlg) {
+	case TPM_ALG_SHA1:
+		rc |= obuf_write(ob, tpmtha->digest.sha1,
 			 tlcl_get_hash_size_from_algo(tpmtha->hashAlg));
-
+		break;
+	case TPM_ALG_SHA256:
+		rc |= obuf_write(ob, tpmtha->digest.sha256,
+			 tlcl_get_hash_size_from_algo(tpmtha->hashAlg));
+		break;
+	case TPM_ALG_SM3_256:
+		rc |= obuf_write(ob, tpmtha->digest.sm3_256,
+			 tlcl_get_hash_size_from_algo(tpmtha->hashAlg));
+		break;
+	case TPM_ALG_SHA384:
+		rc |= obuf_write(ob, tpmtha->digest.sha384,
+			 tlcl_get_hash_size_from_algo(tpmtha->hashAlg));
+		break;
+	case TPM_ALG_SHA512:
+		rc |= obuf_write(ob, tpmtha->digest.sha512,
+			 tlcl_get_hash_size_from_algo(tpmtha->hashAlg));
+		break;
+	default:
+		rc = -1;
+	}
 	return rc;
 }
 

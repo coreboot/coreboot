@@ -18,6 +18,7 @@
 #ifndef __AMDBLOCKS_ACPIMMIO_H__
 #define __AMDBLOCKS_ACPIMMIO_H__
 
+#include <stdint.h>
 /* iomap.h must indicate if the device uses a block, optional if unused. */
 #include <soc/iomap.h>
 #ifndef SUPPORTS_ACPIMMIO_SMI_BASE

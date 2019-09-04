@@ -17,6 +17,7 @@
 #define __AMDBLOCKS_LPC_H__
 
 #include <types.h>
+#include <stdint.h>
 
 /* PCI registers for D14F3 */
 #define LPC_PCI_CONTROL			0x40

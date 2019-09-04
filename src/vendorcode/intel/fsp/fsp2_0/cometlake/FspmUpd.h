@@ -1464,11 +1464,96 @@ typedef struct {
 **/
   UINT8                       SerialIoUartDebugDataBits;
 
-/** Offset 0x0457 - ReservedPchPreMem
+/** Offset 0x0457 - Enable HD Audio DSP
+  Enable/disable HD Audio DSP feature.
+  $EN_DIS
+**/
+  UINT8                       PchHdaDspEnable;
+
+/** Offset 0x0458 - VC Type
+  Virtual Channel Type Select: 0: VC0, 1: VC1.
+  0: VC0, 1: VC1
+**/
+  UINT8                       PchHdaVcType;
+
+/** Offset 0x0459 - Universal Audio Architecture compliance for DSP enabled system
+  0: Not-UAA Compliant (Intel SST driver supported only), 1: UAA Compliant (HDA Inbox
+  driver or SST driver supported).
+  $EN_DIS
+**/
+  UINT8                       PchHdaDspUaaCompliance;
+
+/** Offset 0x045A - Enable HD Audio Link
+  Enable/disable HD Audio Link. Muxed with SSP0/SSP1/SNDW1.
+  $EN_DIS
+**/
+  UINT8                       PchHdaAudioLinkHda;
+
+/** Offset 0x045B - Enable HD Audio DMIC0 Link
+  Deprecated.
+  $EN_DIS
+**/
+  UINT8                       PchHdaAudioLinkDmic0;
+
+/** Offset 0x045C - Enable HD Audio DMIC1 Link
+  Deprecated.
+  $EN_DIS
+**/
+  UINT8                       PchHdaAudioLinkDmic1;
+
+/** Offset 0x045D - Enable HD Audio SSP0 Link
+  Enable/disable HD Audio SSP0/I2S link. Muxed with HDA.
+  $EN_DIS
+**/
+  UINT8                       PchHdaAudioLinkSsp0;
+
+/** Offset 0x045E - Enable HD Audio SSP1 Link
+  Enable/disable HD Audio SSP1/I2S link. Muxed with HDA/SNDW2.
+  $EN_DIS
+**/
+  UINT8                       PchHdaAudioLinkSsp1;
+
+/** Offset 0x045F - Enable HD Audio SSP2 Link
+  Enable/disable HD Audio SSP2/I2S link.
+  $EN_DIS
+**/
+  UINT8                       PchHdaAudioLinkSsp2;
+
+/** Offset 0x0460 - Enable HD Audio SoundWire#1 Link
+  Enable/disable HD Audio SNDW1 link. Muxed with HDA.
+  $EN_DIS
+**/
+  UINT8                       PchHdaAudioLinkSndw1;
+
+/** Offset 0x0461 - Enable HD Audio SoundWire#2 Link
+  Enable/disable HD Audio SNDW2 link. Muxed with SSP1.
+  $EN_DIS
+**/
+  UINT8                       PchHdaAudioLinkSndw2;
+
+/** Offset 0x0462 - Enable HD Audio SoundWire#3 Link
+  Enable/disable HD Audio SNDW3 link. Muxed with DMIC1.
+  $EN_DIS
+**/
+  UINT8                       PchHdaAudioLinkSndw3;
+
+/** Offset 0x0463 - Enable HD Audio SoundWire#4 Link
+  Enable/disable HD Audio SNDW4 link. Muxed with DMIC0.
+  $EN_DIS
+**/
+  UINT8                       PchHdaAudioLinkSndw4;
+
+/** Offset 0x0464 - Soundwire Clock Buffer GPIO RCOMP Setting
+  0: non-ACT - 50 Ohm driver impedance, 1: ACT - 8 Ohm driver impedance.
+  $EN_DIS
+**/
+  UINT8                       PchHdaSndwBufferRcomp;
+
+/** Offset 0x0465 - ReservedPchPreMem
   Reserved for Pch Pre-Mem
   $EN_DIS
 **/
-  UINT8                       ReservedPchPreMem[16];
+  UINT8                       ReservedPchPreMem[2];
 
 /** Offset 0x0467 - ISA Serial Base selection
   Select ISA Serial Base address. Default is 0x3F8.
@@ -2284,7 +2369,7 @@ typedef struct {
   Error, Warnings & Info, 4:Load, Error, Warnings, Info & Event, 5:Load, Error, Warnings,
   Info & Verbose.
   0:Disable, 1:Error Only, 2:Error and Warnings, 3:Load Error Warnings and Info, 4:Load
-  Error Warnings and Info, 5:Load Error Warnings Info and Verbose
+  Error Warnings and Info & Event, 5:Load Error Warnings Info and Verbose
 **/
   UINT8                       PcdSerialDebugLevel;
 
@@ -2390,13 +2475,27 @@ typedef struct {
 **/
   UINT8                       Ddr4SkipRefreshEn;
 
-/** Offset 0x0510
+/** Offset 0x0510 - SerialDebugMrcLevel
+  MRC Serial Debug Message Level. 0:Disable, 1:Error Only, 2:Error & Warnings, 3:Load,
+  Error, Warnings & Info, 4:Load, Error, Warnings, Info & Event, 5:Load, Error, Warnings,
+  Info & Verbose.
+  0:Disable, 1:Error Only, 2:Error and Warnings, 3:Load Error Warnings and Info, 4:Load
+  Error Warnings and Info & Event, 5:Load Error Warnings Info and Verbose
+**/
+  UINT8                       SerialDebugMrcLevel;
+
+/** Offset 0x0511 - Enable HD Audio Sndw Link IO Control
+  deprecated
+**/
+  UINT8                       PchHdaSndwLinkIoControlEnabled[4];
+
+/** Offset 0x0515
 **/
   UINT8                       UnusedUpdSpace8[2];
 
-/** Offset 0x0512
+/** Offset 0x0517
 **/
-  UINT8                       ReservedFspmUpd[6];
+  UINT8                       ReservedFspmUpd[1];
 } FSP_M_CONFIG;
 
 /** Fsp M Test Configuration

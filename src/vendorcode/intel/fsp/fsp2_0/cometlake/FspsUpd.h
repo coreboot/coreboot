@@ -1319,8 +1319,8 @@ typedef struct {
   UINT8                       PmcModPhySusPgEnable;
 
 /** Offset 0x036F - SlpS0WithGbeSupport
-  Enable/Disable SLP_S0 with GBE Support. Default is 0 when paired with WHL V0 stepping
-  CPU and 1 for all other CPUs. 0: Disable, 1: Enable
+  Enable/Disable SLP_S0 with GBE Support. Default is 0 for PCH-LP, WHL V0 Stepping
+  CPU and 1 for PCH-H Series. 0: Disable, 1: Enable
   $EN_DIS
 **/
   UINT8                       SlpS0WithGbeSupport;
@@ -2053,23 +2053,23 @@ typedef struct {
   UINT8                       PchScsEmmcHs400TuningRequired;
 
 /** Offset 0x06A0 - Set HS400 Tuning Data Valid
-  Set if HS400 Tuning Data Valid.
+  Deprecated
   $EN_DIS
 **/
   UINT8                       PchScsEmmcHs400DllDataValid;
 
 /** Offset 0x06A1 - Rx Strobe Delay Control
-  Rx Strobe Delay Control - Rx Strobe Delay DLL 1 (HS400 Mode).
+  Deprecated
 **/
   UINT8                       PchScsEmmcHs400RxStrobeDll1;
 
 /** Offset 0x06A2 - Tx Data Delay Control
-  Tx Data Delay Control 1 - Tx Data Delay (HS400 Mode).
+  Deprecated
 **/
   UINT8                       PchScsEmmcHs400TxDataDll;
 
 /** Offset 0x06A3 - I/O Driver Strength
-  Deprecated.
+  Deprecated
   0:33 Ohm, 1:40 Ohm, 2:50 Ohm
 **/
   UINT8                       PchScsEmmcHs400DriverStrength;
@@ -2440,11 +2440,30 @@ typedef struct {
 **/
   UINT8                       ScsSdCardWpPinEnabled;
 
-/** Offset 0x074F - ReservedPchPostMem
+/** Offset 0x074F - Set SATA DEVSLP GPIO Reset Config
+  Set SATA DEVSLP GPIO Reset Config per port. 0x00 - GpioResetDefault, 0x01 - GpioResumeReset,
+  0x03 - GpioHostDeepReset, 0x05 - GpioPlatformReset, 0x07 - GpioDswReset. One byte
+  for each port, byte0 for port0, byte1 for port1, and so on.
+**/
+  UINT8                       SataPortsDevSlpResetConfig[8];
+
+/** Offset 0x0757 - Flash Configuration Lock Down
+  Enable/disable flash lock down. If platform decides to skip this programming, it
+  must lock SPI flash register DLOCK, FLOCKDN, and WRSDIS before end of post.
+  $EN_DIS
+**/
+  UINT8                       SpiFlashCfgLockDown;
+
+/** Offset 0x0758 - Enable HD Audio Sndw Link IO Control
+  0:Disabled, 1:Enabled. Enables IO Control to Sndw link if it is Enabled
+**/
+  UINT8                       PchHdaSndwLinkIoControlEnabled[4];
+
+/** Offset 0x075C - ReservedPchPostMem
   Reserved for Pch Post-Mem
   $EN_DIS
 **/
-  UINT8                       ReservedPchPostMem[16];
+  UINT8                       ReservedPchPostMem[3];
 
 /** Offset 0x075F
 **/
@@ -3326,11 +3345,51 @@ typedef struct {
 **/
   UINT8                       C3StateUnDemotion;
 
-/** Offset 0x08BF - ReservedCpuPostMemTest
+/** Offset 0x08BF - Ratio Limit Num Core 0
+  Ratio Limit Num Core0: This register defines the active core ranges for each frequency point
+**/
+  UINT8                       RatioLimitNumCore0;
+
+/** Offset 0x08C0 - Ratio Limit Num Core 1
+  Ratio Limit Num Core1: This register defines the active core ranges for each frequency point
+**/
+  UINT8                       RatioLimitNumCore1;
+
+/** Offset 0x08C1 - Ratio Limit Num Core 2
+  Ratio Limit Num Core2: This register defines the active core ranges for each frequency point
+**/
+  UINT8                       RatioLimitNumCore2;
+
+/** Offset 0x08C2 - Ratio Limit Core 3
+  Ratio Limit Num Core3: This register defines the active core ranges for each frequency point
+**/
+  UINT8                       RatioLimitNumCore3;
+
+/** Offset 0x08C3 - Ratio Limit Num Core 4
+  Ratio Limit Num Core4: This register defines the active core ranges for each frequency point
+**/
+  UINT8                       RatioLimitNumCore4;
+
+/** Offset 0x08C4 - Ratio Limit Num Core 5
+  Ratio Limit Num Core5: This register defines the active core ranges for each frequency point
+**/
+  UINT8                       RatioLimitNumCore5;
+
+/** Offset 0x08C5 - Ratio Limit Num Core 6
+  Ratio Limit Num Core6: This register defines the active core ranges for each frequency point
+**/
+  UINT8                       RatioLimitNumCore6;
+
+/** Offset 0x08C6 - Ratio Limit Num Core 7
+  Ratio Limit Num Core7: This register defines the active core ranges for each frequency point
+**/
+  UINT8                       RatioLimitNumCore7;
+
+/** Offset 0x08C7 - ReservedCpuPostMemTest
   Reserved for CPU Post-Mem Test
   $EN_DIS
 **/
-  UINT8                       ReservedCpuPostMemTest[19];
+  UINT8                       ReservedCpuPostMemTest[11];
 
 /** Offset 0x08D2 - SgxSinitDataFromTpm
   SgxSinitDataFromTpm default values
@@ -3338,8 +3397,7 @@ typedef struct {
   UINT8                       SgxSinitDataFromTpm;
 
 /** Offset 0x08D3 - End of Post message
-  Test, Send End of Post message. Disable(0x0): Disable EOP message, Send in PEI(0x1):
-  EOP send in PEI, Send in DXE(0x2)(Default): EOP send in PEI
+  Deprecated
   0:Disable, 1:Send in PEI, 2:Send in DXE, 3:Reserved
 **/
   UINT8                       EndOfPostMessage;
@@ -3488,11 +3546,82 @@ typedef struct {
 **/
   UINT8                       MctpBroadcastCycle;
 
-/** Offset 0x0A8A
+/** Offset 0x0A8A - Use DLL values from policy
+  Set if FSP should use HS400 DLL values from policy
+  $EN_DIS
 **/
-  UINT8                       UnusedUpdSpace29[2];
+  UINT8                       EmmcUseCustomDlls;
 
-/** Offset 0x0A8C
+/** Offset 0x0A8B
+**/
+  UINT8                       UnusedUpdSpace29;
+
+/** Offset 0x0A8C - Emmc Tx CMD Delay control register value
+  Please see Tx CMD Delay Control register definition for help
+**/
+  UINT32                      EmmcTxCmdDelayRegValue;
+
+/** Offset 0x0A90 - Emmc Tx DATA Delay control 1 register value
+  Please see Tx DATA Delay control 1 register definition for help
+**/
+  UINT32                      EmmcTxDataDelay1RegValue;
+
+/** Offset 0x0A94 - Emmc Tx DATA Delay control 2 register value
+  Please see Tx DATA Delay control 2 register definition for help
+**/
+  UINT32                      EmmcTxDataDelay2RegValue;
+
+/** Offset 0x0A98 - Emmc Rx CMD + DATA Delay control 1 register value
+  Please see Rx CMD + DATA Delay control 1 register definition for help
+**/
+  UINT32                      EmmcRxCmdDataDelay1RegValue;
+
+/** Offset 0x0A9C - Emmc Rx CMD + DATA Delay control 2 register value
+  Please see Rx CMD + DATA Delay control 2 register definition for help
+**/
+  UINT32                      EmmcRxCmdDataDelay2RegValue;
+
+/** Offset 0x0AA0 - Emmc Rx Strobe Delay control register value
+  Please see Rx Strobe Delay control register definition for help
+**/
+  UINT32                      EmmcRxStrobeDelayRegValue;
+
+/** Offset 0x0AA4 - Use tuned DLL values from policy
+  Set if FSP should use HS400 DLL values from policy
+  $EN_DIS
+**/
+  UINT8                       SdCardUseCustomDlls;
+
+/** Offset 0x0AA5
+**/
+  UINT8                       UnusedUpdSpace30[3];
+
+/** Offset 0x0AA8 - SdCard Tx CMD Delay control register value
+  Please see Tx CMD Delay Control register definition for help
+**/
+  UINT32                      SdCardTxCmdDelayRegValue;
+
+/** Offset 0x0AAC - SdCard Tx DATA Delay control 1 register value
+  Please see Tx DATA Delay control 1 register definition for help
+**/
+  UINT32                      SdCardTxDataDelay1RegValue;
+
+/** Offset 0x0AB0 - SdCard Tx DATA Delay control 2 register value
+  Please see Tx DATA Delay control 2 register definition for help
+**/
+  UINT32                      SdCardTxDataDelay2RegValue;
+
+/** Offset 0x0AB4 - SdCard Rx CMD + DATA Delay control 1 register value
+  Please see Rx CMD + DATA Delay control 1 register definition for help
+**/
+  UINT32                      SdCardRxCmdDataDelay1RegValue;
+
+/** Offset 0x0AB8 - SdCard Rx CMD + DATA Delay control 2 register value
+  Please see Rx CMD + DATA Delay control 2 register definition for help
+**/
+  UINT32                      SdCardRxCmdDataDelay2RegValue;
+
+/** Offset 0x0ABC
 **/
   UINT8                       ReservedFspsTestUpd[12];
 } FSP_S_TEST_CONFIG;
@@ -3513,11 +3642,11 @@ typedef struct {
 **/
   FSP_S_TEST_CONFIG           FspsTestConfig;
 
-/** Offset 0x0A98
+/** Offset 0x0AC8
 **/
-  UINT8                       UnusedUpdSpace30[6];
+  UINT8                       UnusedUpdSpace31[6];
 
-/** Offset 0x0A9E
+/** Offset 0x0ACE
 **/
   UINT16                      UpdTerminator;
 } FSPS_UPD;

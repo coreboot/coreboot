@@ -16,8 +16,31 @@
 #include <console/console.h>
 #include <hwilib.h>
 #include <device/i2c_simple.h>
+#include <device/pci_ops.h>
+#include <soc/pci_devs.h>
 #include <types.h>
 #include <variant/ptn3460.h>
+
+static void igd_disable(void)
+{
+	struct device *root_dev = pcidev_path_on_root(SA_DEVFN_ROOT);
+	uint8_t deven;
+	uint16_t ggc;
+
+	/* GMCH Graphics Control Register */
+	ggc = pci_read_config16(root_dev, 0x50);
+	/* Set size of Graphics Translation Table Memory (GGMS) [7:6]
+	 * to 0 and select 0 MB for Graphics Memory (GMS) [15:8]. */
+	ggc &= ~(0xffc0);
+	/* Disable IGD VGA (IVD). */
+	ggc |= 0x2;
+	pci_write_config16(root_dev, 0x50, ggc);
+	/* Device Enable Register */
+	deven = pci_read_config8(root_dev, 0x54);
+	/* Disable IGD device (D2F0EN). */
+	deven &= ~(0x10);
+	pci_write_config8(root_dev, 0x54, deven);
+}
 
 /**
  * This function sets up the DP2LVDS-converter to be used with the appropriate
@@ -42,6 +65,8 @@ int ptn3460_init(const char *hwi_block)
 	/* Get all needed information from hwinfo block. */
 	if (hwilib_get_field(Edid, edid_data, sizeof(edid_data)) !=
 			sizeof(edid_data)) {
+		/* Disable IGD to avoid panel failures. */
+		igd_disable();
 		printk(BIOS_ERR, "LCD: No EDID data available in %s\n",
 				hwi_block);
 		return 1;

@@ -214,46 +214,14 @@ void timestamp_init(uint64_t base)
 	timestamp_table_set(&ts_cache->table);
 }
 
-static void timestamp_sync_cache_to_cbmem(int is_recovery)
+static void timestamp_sync_cache_to_cbmem(struct timestamp_table *ts_cbmem_table)
 {
 	uint32_t i;
 	struct timestamp_table *ts_cache_table;
-	struct timestamp_table *ts_cbmem_table;
-
-	if (!timestamp_should_run())
-		return;
-
-	/* cbmem is being recovered. */
-	if (is_recovery) {
-		/* x86 resume path expects timestamps to be reset. */
-		if (CONFIG(ARCH_ROMSTAGE_X86_32) && ENV_ROMSTAGE)
-			ts_cbmem_table = timestamp_alloc_cbmem_table();
-		else {
-			/* Find existing table in cbmem. */
-			ts_cbmem_table = cbmem_find(CBMEM_ID_TIMESTAMP);
-			/* No existing timestamp table. */
-			if (ts_cbmem_table == NULL)
-				ts_cbmem_table = timestamp_alloc_cbmem_table();
-		}
-	} else
-		/* First time sync. Add new table. */
-		ts_cbmem_table = timestamp_alloc_cbmem_table();
-
-	if (ts_cbmem_table == NULL) {
-		printk(BIOS_ERR, "ERROR: No timestamp table allocated\n");
-		timestamp_table_set(NULL);
-		return;
-	}
-
-	/* Seed the timestamp tick frequency in ENV_PAYLOAD_LOADER. */
-	if (ENV_PAYLOAD_LOADER)
-		ts_cbmem_table->tick_freq_mhz = timestamp_tick_freq_mhz();
 
 	ts_cache_table = timestamp_table_get();
 	if (!ts_cache_table) {
-		if (ENV_ROMSTAGE)
-			printk(BIOS_ERR, "ERROR: No timestamp cache found\n");
-		timestamp_table_set(ts_cbmem_table);
+		printk(BIOS_ERR, "ERROR: No timestamp cache found\n");
 		return;
 	}
 
@@ -290,8 +258,46 @@ static void timestamp_sync_cache_to_cbmem(int is_recovery)
 		ts_cbmem_table->base_time = ts_cache_table->base_time;
 
 	/* Cache no longer required. */
-	timestamp_table_set(ts_cbmem_table);
 	ts_cache_table->num_entries = 0;
+}
+
+static void timestamp_reinit(int is_recovery)
+{
+	struct timestamp_table *ts_cbmem_table;
+
+	if (!timestamp_should_run())
+		return;
+
+	/* cbmem is being recovered. */
+	if (is_recovery) {
+		/* x86 resume path expects timestamps to be reset. */
+		if (CONFIG(ARCH_ROMSTAGE_X86_32) && ENV_ROMSTAGE)
+			ts_cbmem_table = timestamp_alloc_cbmem_table();
+		else {
+			/* Find existing table in cbmem. */
+			ts_cbmem_table = cbmem_find(CBMEM_ID_TIMESTAMP);
+			/* No existing timestamp table. */
+			if (ts_cbmem_table == NULL)
+				ts_cbmem_table = timestamp_alloc_cbmem_table();
+		}
+	} else
+		/* First time sync. Add new table. */
+		ts_cbmem_table = timestamp_alloc_cbmem_table();
+
+	if (ts_cbmem_table == NULL) {
+		printk(BIOS_ERR, "ERROR: No timestamp table allocated\n");
+		timestamp_table_set(NULL);
+		return;
+	}
+
+	if (ENV_ROMSTAGE)
+		timestamp_sync_cache_to_cbmem(ts_cbmem_table);
+
+	/* Seed the timestamp tick frequency in ENV_PAYLOAD_LOADER. */
+	if (ENV_PAYLOAD_LOADER)
+		ts_cbmem_table->tick_freq_mhz = timestamp_tick_freq_mhz();
+
+	timestamp_table_set(ts_cbmem_table);
 }
 
 void timestamp_rescale_table(uint16_t N, uint16_t M)
@@ -335,9 +341,9 @@ uint32_t get_us_since_boot(void)
 	return (timestamp_get() - ts->base_time) / ts->tick_freq_mhz;
 }
 
-ROMSTAGE_CBMEM_INIT_HOOK(timestamp_sync_cache_to_cbmem)
-POSTCAR_CBMEM_INIT_HOOK(timestamp_sync_cache_to_cbmem)
-RAMSTAGE_CBMEM_INIT_HOOK(timestamp_sync_cache_to_cbmem)
+ROMSTAGE_CBMEM_INIT_HOOK(timestamp_reinit)
+POSTCAR_CBMEM_INIT_HOOK(timestamp_reinit)
+RAMSTAGE_CBMEM_INIT_HOOK(timestamp_reinit)
 
 /* Provide default timestamp implementation using monotonic timer. */
 uint64_t  __weak timestamp_get(void)

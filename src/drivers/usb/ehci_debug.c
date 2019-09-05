@@ -67,7 +67,7 @@ static struct ehci_debug_info * glob_dbg_info_p CAR_GLOBAL;
 
 static inline struct ehci_debug_info *dbgp_ehci_info(void)
 {
-	if (car_get_var(glob_dbg_info_p) == NULL) {
+	if (car_get_ptr(glob_dbg_info_p) == NULL) {
 		struct ehci_debug_info *info;
 		if (ENV_BOOTBLOCK || ENV_VERSTAGE || ENV_ROMSTAGE) {
 			/* The message likely does not show if we hit this. */
@@ -77,9 +77,9 @@ static inline struct ehci_debug_info *dbgp_ehci_info(void)
 		} else {
 			info = &glob_dbg_info;
 		}
-		car_set_var(glob_dbg_info_p, info);
+		car_set_ptr(glob_dbg_info_p, info);
 	}
-	return car_get_var(glob_dbg_info_p);
+	return car_get_ptr(glob_dbg_info_p);
 }
 
 static int dbgp_wait_until_complete(struct ehci_dbg_port *ehci_debug)
@@ -716,7 +716,7 @@ static void migrate_ehci_debug(int is_recovery)
 		if (dbg_info_cbmem == NULL)
 			return;
 		memcpy(dbg_info_cbmem, dbg_info, sizeof(*dbg_info));
-		car_set_var(glob_dbg_info_p, dbg_info_cbmem);
+		car_set_ptr(glob_dbg_info_p, dbg_info_cbmem);
 		return;
 	}
 
@@ -724,7 +724,7 @@ static void migrate_ehci_debug(int is_recovery)
 		/* Use state in CBMEM. */
 		dbg_info_cbmem = cbmem_find(CBMEM_ID_EHCI_DEBUG);
 		if (dbg_info_cbmem)
-			car_set_var(glob_dbg_info_p, dbg_info_cbmem);
+			car_set_ptr(glob_dbg_info_p, dbg_info_cbmem);
 	}
 
 	rv = usbdebug_hw_init(false);

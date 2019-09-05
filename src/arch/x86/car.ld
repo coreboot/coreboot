@@ -59,12 +59,12 @@
 
 	TIMESTAMP(., 0x200)
 
-	_car_relocatable_data_start = .;
-
 	_car_ehci_dbg_info_start = .;
 	/* Reserve sizeof(struct ehci_dbg_info). */
         . += 80;
         _car_ehci_dbg_info_end = .;
+
+	_car_relocatable_data_start = .;
 
 	/* _car_global_start and _car_global_end provide symbols to per-stage
 	 * variables that are not shared like the timestamp and the pre-ram

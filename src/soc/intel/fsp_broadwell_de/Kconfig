@@ -77,10 +77,6 @@ config INTEGRATED_UART
 	help
 	  Use Broadwell-DE Integrated UART ports @3F8h and 2F8h.
 
-config CONSOLE_CBMEM
-	bool "Send console output to a CBMEM buffer"
-	default n
-
 config SERIRQ_CONTINUOUS_MODE
 	bool
 	default n

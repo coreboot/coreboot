@@ -139,7 +139,7 @@ static struct pnp_info pnp_dev_info[] = {
 	{ NULL, LPC47B397_SP2, PNP_IO0 | PNP_IRQ0, 0x07f8, },
 	{ NULL, LPC47B397_KBC, PNP_IO0 | PNP_IO1 | PNP_IRQ0 | PNP_IRQ1,
 		0x07ff, 0x07ff, },
-	{ NULL_hwm, LPC47B397_HWM,  PNP_IO0, 0x07f0, },
+	{ &ops_hwm, LPC47B397_HWM,  PNP_IO0, 0x07f0, },
 	{ NULL, LPC47B397_RT,  PNP_IO0, 0x0780, },
 };
 

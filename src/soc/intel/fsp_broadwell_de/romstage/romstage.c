@@ -104,6 +104,10 @@ static void enable_integrated_uart(uint8_t port)
 void *asmlinkage main(FSP_INFO_HEADER *fsp_info_header)
 {
 	post_code(0x40);
+
+	timestamp_init(get_initial_timestamp());
+	timestamp_add_now(TS_START_ROMSTAGE);
+
 	if (!CONFIG(INTEGRATED_UART)) {
 	/* Enable decoding of I/O locations for Super I/O devices */
 		pci_write_config16(PCI_DEV(0x0, LPC_DEV, LPC_FUNC),
@@ -122,6 +126,8 @@ void *asmlinkage main(FSP_INFO_HEADER *fsp_info_header)
 	console_init();
 	init_rtc();
 	setup_gpio_io_address();
+
+	timestamp_add_now(TS_BEFORE_INITRAM);
 
 	/*
 	 * Call early init to initialize memory and chipset. This function returns
@@ -144,7 +150,6 @@ void romstage_main_continue(EFI_STATUS status, void *hob_list_ptr)
 	void *cbmem_hob_ptr;
 
 	post_code(0x4a);
-	timestamp_init(get_initial_timestamp());
 	timestamp_add_now(TS_AFTER_INITRAM);
 	printk(BIOS_DEBUG, "%s status: %x  hob_list_ptr: %x\n",
 		__func__, (u32) status, (u32) hob_list_ptr);

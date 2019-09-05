@@ -18,7 +18,6 @@
 #include <arch/io.h>
 #include <halt.h>
 
-#include <cpu/intel/microcode/microcode.c>
 #include "haswell.h"
 
 #include <southbridge/intel/lynxpoint/pch.h>

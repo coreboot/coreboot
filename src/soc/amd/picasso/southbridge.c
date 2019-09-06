@@ -36,19 +36,25 @@
 #include <soc/nvs.h>
 #include <types.h>
 
+#define FCH_AOAC_UART_FOR_CONSOLE \
+		(CONFIG_UART_FOR_CONSOLE == 0 ? FCH_AOAC_DEV_UART0 \
+		: CONFIG_UART_FOR_CONSOLE == 1 ? FCH_AOAC_DEV_UART1 \
+		: -1)
+#if FCH_AOAC_UART_FOR_CONSOLE == -1
+# error Unsupported UART_FOR_CONSOLE chosen
+#endif
+
 /*
  * Table of devices that need their AOAC registers enabled and waited
  * upon (usually about .55 milliseconds). Instead of individual delays
  * waiting for each device to become available, a single delay will be
- * executed.
+ * executed.  The console UART is handled separately from this table.
  */
-const static struct picasso_aoac aoac_devs[] = {
-	{ (FCH_AOAC_D3_CONTROL_UART0 + CONFIG_UART_FOR_CONSOLE * 2),
-		(FCH_AOAC_D3_STATE_UART0 + CONFIG_UART_FOR_CONSOLE * 2) },
-	{ FCH_AOAC_D3_CONTROL_AMBA, FCH_AOAC_D3_STATE_AMBA },
-	{ FCH_AOAC_D3_CONTROL_I2C2, FCH_AOAC_D3_STATE_I2C2 },
-	{ FCH_AOAC_D3_CONTROL_I2C3, FCH_AOAC_D3_STATE_I2C3 },
-	{ FCH_AOAC_D3_CONTROL_I2C4, FCH_AOAC_D3_STATE_I2C4 }
+const static int aoac_devs[] = {
+	FCH_AOAC_DEV_AMBA,
+	FCH_AOAC_DEV_I2C2,
+	FCH_AOAC_DEV_I2C3,
+	FCH_AOAC_DEV_I2C4,
 };
 
 /*
@@ -101,26 +107,42 @@ const struct irq_idx_name *sb_get_apic_reg_association(size_t *size)
 	return irq_association;
 }
 
-static void power_on_aoac_device(int aoac_device_control_register)
+static void power_on_aoac_device(int dev)
 {
 	uint8_t byte;
 
 	/* Power on the UART and AMBA devices */
-	byte = aoac_read8(aoac_device_control_register);
+	byte = aoac_read8(AOAC_DEV_D3_CTL(dev));
 	byte |= FCH_AOAC_PWR_ON_DEV;
-	aoac_write8(aoac_device_control_register, byte);
+	aoac_write8(AOAC_DEV_D3_CTL(dev), byte);
 }
 
-static bool is_aoac_device_enabled(int aoac_device_status_register)
+static bool is_aoac_device_enabled(int dev)
 {
 	uint8_t byte;
 
-	byte = aoac_read8(aoac_device_status_register);
+	byte = aoac_read8(AOAC_DEV_D3_STATE(dev));
 	byte &= (FCH_AOAC_PWR_RST_STATE | FCH_AOAC_RST_CLK_OK_STATE);
 	if (byte == (FCH_AOAC_PWR_RST_STATE | FCH_AOAC_RST_CLK_OK_STATE))
 		return true;
 	else
 		return false;
+}
+
+static void enable_aoac_console_uart(void)
+{
+	if (!CONFIG(PICASSO_UART))
+		return;
+
+	power_on_aoac_device(FCH_AOAC_UART_FOR_CONSOLE);
+}
+
+static bool is_aoac_console_uart_enabled(void)
+{
+	if (!CONFIG(PICASSO_UART))
+		return true;
+
+	return is_aoac_device_enabled(FCH_AOAC_UART_FOR_CONSOLE);
 }
 
 void enable_aoac_devices(void)
@@ -129,14 +151,16 @@ void enable_aoac_devices(void)
 	int i;
 
 	for (i = 0; i < ARRAY_SIZE(aoac_devs); i++)
-		power_on_aoac_device(aoac_devs[i].enable);
+		power_on_aoac_device(aoac_devs[i]);
+	enable_aoac_console_uart();
 
 	/* Wait for AOAC devices to indicate power and clock OK */
 	do {
 		udelay(100);
 		status = true;
 		for (i = 0; i < ARRAY_SIZE(aoac_devs); i++)
-			status &= is_aoac_device_enabled(aoac_devs[i].status);
+			status &= is_aoac_device_enabled(aoac_devs[i]);
+		status &= is_aoac_console_uart_enabled();
 	} while (!status);
 }
 
@@ -513,11 +537,11 @@ static void set_sb_final_nvs(void)
 	if (gnvs == NULL)
 		return;
 
-	gnvs->aoac.ic2e = is_aoac_device_enabled(FCH_AOAC_D3_STATE_I2C2);
-	gnvs->aoac.ic3e = is_aoac_device_enabled(FCH_AOAC_D3_STATE_I2C3);
-	gnvs->aoac.ic4e = is_aoac_device_enabled(FCH_AOAC_D3_STATE_I2C4);
-	gnvs->aoac.ut0e = is_aoac_device_enabled(FCH_AOAC_D3_STATE_UART0);
-	gnvs->aoac.ut1e = is_aoac_device_enabled(FCH_AOAC_D3_STATE_UART1);
+	gnvs->aoac.ic2e = is_aoac_device_enabled(FCH_AOAC_DEV_I2C2);
+	gnvs->aoac.ic3e = is_aoac_device_enabled(FCH_AOAC_DEV_I2C3);
+	gnvs->aoac.ic4e = is_aoac_device_enabled(FCH_AOAC_DEV_I2C4);
+	gnvs->aoac.ut0e = is_aoac_device_enabled(FCH_AOAC_DEV_UART0);
+	gnvs->aoac.ut1e = is_aoac_device_enabled(FCH_AOAC_DEV_UART1);
 	/* Rely on these being in sync with devicetree */
 	sata = pcidev_path_on_root(SATA_DEVFN);
 	gnvs->aoac.st_e = sata && sata->enabled ? 1 : 0;

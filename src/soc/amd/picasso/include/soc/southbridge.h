@@ -206,14 +206,18 @@
 #define   I2C_PAD_CTRL_SPARE1		BIT(18)
 
 /* FCH AOAC Registers 0xfed81e00 */
-#define FCH_AOAC_D3_CONTROL_CLK_GEN	0x40
-#define FCH_AOAC_D3_CONTROL_I2C2	0x4e
-#define FCH_AOAC_D3_CONTROL_I2C3	0x50
-#define FCH_AOAC_D3_CONTROL_I2C4	0x52
-#define FCH_AOAC_D3_CONTROL_UART0	0x56
-#define FCH_AOAC_D3_CONTROL_UART1	0x58
-#define FCH_AOAC_D3_CONTROL_AMBA	0x62
-/* Bit definitions for all FCH_AOAC_D3_CONTROL_* Registers */
+#define AOAC_DEV_D3_CTL(device)		(0x40 + device * 2)
+#define AOAC_DEV_D3_STATE(device)	(AOAC_DEV_D3_CTL(device) + 1)
+
+#define FCH_AOAC_DEV_CLK_GEN		0
+#define FCH_AOAC_DEV_I2C2		7
+#define FCH_AOAC_DEV_I2C3		8
+#define FCH_AOAC_DEV_I2C4		9
+#define FCH_AOAC_DEV_UART0		11
+#define FCH_AOAC_DEV_UART1		12
+#define FCH_AOAC_DEV_AMBA		17
+
+/* Bit definitions for Device D3 Control AOACx0000[40...7E] step 2 */
 #define   FCH_AOAC_TARGET_DEVICE_STATE (BIT(0) + BIT(1))
 #define   FCH_AOAC_DEVICE_STATE		BIT(2)
 #define   FCH_AOAC_PWR_ON_DEV		BIT(3)
@@ -222,14 +226,7 @@
 #define   FCH_AOAC_SW_RST_B		BIT(6)
 #define   FCH_AOAC_IS_SW_CONTROL	BIT(7)
 
-#define FCH_AOAC_D3_STATE_CLK_GEN	0x41
-#define FCH_AOAC_D3_STATE_I2C2		0x4f
-#define FCH_AOAC_D3_STATE_I2C3		0x51
-#define FCH_AOAC_D3_STATE_I2C4		0x53
-#define FCH_AOAC_D3_STATE_UART0		0x57
-#define FCH_AOAC_D3_STATE_UART1		0x59
-#define FCH_AOAC_D3_STATE_AMBA		0x63
-/* Bit definitions for all FCH_AOAC_D3_STATE_* Registers */
+/* Bit definitions for Device D3 State AOACx0000[41...7f] step 2 */
 #define   FCH_AOAC_PWR_RST_STATE	BIT(0)
 #define   FCH_AOAC_RST_CLK_OK_STATE	BIT(1)
 #define   FCH_AOAC_RST_B_STATE		BIT(2)
@@ -306,11 +303,6 @@
 
 /* IO 0xf0 NCP Error */
 #define   NCP_WARM_BOOT			BIT(7) /* Write-once */
-
-struct picasso_aoac {
-	int enable;
-	int status;
-};
 
 typedef struct aoac_devs {
 	unsigned int :7;

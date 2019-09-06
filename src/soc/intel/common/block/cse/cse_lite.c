@@ -1,14 +1,29 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 #include <bootstate.h>
 #include <console/console.h>
-#include <soc/intel/common/reset.h>
+#include <boot_device.h>
+#include <cbfs.h>
+#include <commonlib/cbfs.h>
+#include <commonlib/region.h>
+#include <fmap.h>
 #include <intelblocks/cse.h>
+#include <lib.h>
 #include <security/vboot/vboot_common.h>
 #include <security/vboot/misc.h>
 #include <vb2_api.h>
+#include <soc/intel/common/reset.h>
+
+/* CSE RW version size reserved in the CSE CBFS RW binary */
+#define CSE_RW_VERSION_SZ	16
 
 /* Converts bp index to boot partition string */
 #define GET_BP_STR(bp_index) (bp_index ? "RW" : "RO")
+
+/* CSE RW boot partition signature */
+#define CSE_RW_SIGNATURE	0x000055aa
+
+/* CSE RW boot partition signature size */
+#define CSE_RW_SIGN_SIZE	sizeof(uint32_t)
 
 /*
  * CSE Firmware supports 3 boot partitions. For CSE Lite SKU, only 2 boot partitions are
@@ -22,10 +37,10 @@
 
 /* CSE Lite SKU's valid bootable partition identifiers */
 enum boot_partition_id {
-	/* RO(BP1) contains recovery/minimal boot FW */
+	/* RO(BP1) contains recovery/minimal boot firmware */
 	RO = 0,
 
-	/* RW(BP2) contains fully functional CSE Firmware */
+	/* RW(BP2) contains fully functional CSE firmware */
 	RW = 1
 };
 
@@ -162,6 +177,49 @@ static const struct cse_bp_entry *cse_get_bp_entry(enum boot_partition_id bp,
 	return &cse_bp_info->bp_entries[bp];
 }
 
+static void cse_get_bp_entry_range(const struct cse_bp_info *cse_bp_info,
+	enum boot_partition_id bp, uint32_t *start_offset, uint32_t *end_offset)
+{
+	const struct cse_bp_entry *cse_bp;
+
+	cse_bp = cse_get_bp_entry(bp, cse_bp_info);
+
+	if (start_offset)
+		*start_offset = cse_bp->start_offset;
+
+	if (end_offset)
+		*end_offset = cse_bp->end_offset;
+
+}
+
+static const struct fw_version *cse_get_bp_entry_version(enum boot_partition_id bp,
+	const struct cse_bp_info *bp_info)
+{
+	const struct cse_bp_entry *cse_bp;
+
+	cse_bp = cse_get_bp_entry(bp, bp_info);
+	return &cse_bp->fw_ver;
+}
+
+static const struct fw_version *cse_get_rw_version(const struct cse_bp_info *cse_bp_info)
+{
+	return cse_get_bp_entry_version(RW, cse_bp_info);
+}
+
+static bool cse_is_rw_bp_status_valid(const struct cse_bp_info *cse_bp_info)
+{
+	const struct cse_bp_entry *rw_bp;
+
+	rw_bp = cse_get_bp_entry(RW, cse_bp_info);
+
+	if (rw_bp->status == BP_STATUS_PARTITION_NOT_PRESENT ||
+			rw_bp->status == BP_STATUS_GENERAL_FAILURE) {
+		printk(BIOS_ERR, "cse_lite: RW BP (status:%u) is not valid\n", rw_bp->status);
+		return false;
+	}
+	return true;
+}
+
 static void cse_print_boot_partition_info(const struct cse_bp_info *cse_bp_info)
 {
 	const struct cse_bp_entry *cse_bp;
@@ -196,6 +254,9 @@ static void cse_print_boot_partition_info(const struct cse_bp_info *cse_bp_info)
  *	- When CSE boots from RW partition (COM: Normal and CWS: Normal)
  *	- When CSE boots from RO partition (COM: Soft Temp Disable and CWS: Normal)
  *	- After HMRFPO_ENABLE command is issued to CSE (COM: SECOVER_MEI_MSG and CWS: Normal)
+ * The prerequisite check should be handled in cse_get_bp_info() and
+ * cse_set_next_boot_partition() since the CSE's current operation mode is changed between these
+ * cmd handler calls.
  */
 static bool cse_is_bp_cmd_info_possible(void)
 {
@@ -294,40 +355,259 @@ static bool cse_set_next_boot_partition(enum boot_partition_id bp)
 	return true;
 }
 
-static bool cse_boot_to_rw(const struct cse_bp_info *cse_bp_info)
+/* Set the CSE's next boot partition and issues system reset */
+static bool cse_set_and_boot_from_next_bp(enum boot_partition_id bp)
 {
-	if (cse_get_current_bp(cse_bp_info) == RW)
-		return true;
-
-	if (!cse_set_next_boot_partition(RW))
+	if (!cse_set_next_boot_partition(bp))
 		return false;
 
 	do_global_reset();
 
-	die("cse_lite: Failed to reset system\n");
+	die("cse_lite: Failed to reset the system\n");
 
 	/* Control never reaches here */
 	return false;
 }
 
-static bool cse_is_rw_status_valid(const struct cse_bp_info *cse_bp_info)
+static bool cse_boot_to_rw(const struct cse_bp_info *cse_bp_info)
 {
-	const struct cse_bp_entry *rw_bp;
+	if (cse_get_current_bp(cse_bp_info) == RW)
+		return true;
 
-	/* RW(BP2) alone represents RW partition */
-	rw_bp = cse_get_bp_entry(RW, cse_bp_info);
+	return cse_set_and_boot_from_next_bp(RW);
+}
 
-	if (rw_bp->status == BP_STATUS_PARTITION_NOT_PRESENT ||
-			rw_bp->status == BP_STATUS_GENERAL_FAILURE) {
-		printk(BIOS_ERR, "cse_lite: RW BP (status:%u) is not valid\n", rw_bp->status);
+static bool cse_boot_to_ro(const struct cse_bp_info *cse_bp_info)
+{
+	if (cse_get_current_bp(cse_bp_info) == RO)
+		return true;
+
+	return cse_set_and_boot_from_next_bp(RO);
+}
+
+static bool cse_get_rw_rdev(struct region_device *rdev)
+{
+	if (fmap_locate_area_as_rdev_rw(CONFIG_SOC_INTEL_CSE_FMAP_NAME, rdev) < 0) {
+		printk(BIOS_ERR, "cse_lite: Failed to locate %s in FMAP\n",
+			CONFIG_SOC_INTEL_CSE_FMAP_NAME);
+		return false;
+	}
+
+	return true;
+}
+
+static bool cse_get_cbfs_rdev(struct region_device *source_rdev)
+{
+	struct cbfsf file_desc;
+
+	if (cbfs_boot_locate(&file_desc, CONFIG_SOC_INTEL_CSE_RW_CBFS_NAME, NULL) < 0)
+		return false;
+
+	cbfs_file_data(source_rdev, &file_desc);
+	return true;
+}
+
+static bool cse_is_rw_bp_sign_valid(const struct region_device *target_rdev)
+{
+	uint32_t cse_bp_sign;
+
+	if (rdev_readat(target_rdev, &cse_bp_sign, 0, CSE_RW_SIGN_SIZE) != CSE_RW_SIGN_SIZE) {
+		printk(BIOS_ERR, "cse_lite: Failed to read RW boot partition signature\n");
+		return false;
+	}
+
+	return cse_bp_sign == CSE_RW_SIGNATURE;
+}
+
+static bool cse_get_target_rdev(const struct cse_bp_info *cse_bp_info,
+		struct region_device *target_rdev)
+{
+	struct region_device cse_region_rdev;
+	size_t size;
+	uint32_t start_offset;
+	uint32_t end_offset;
+
+	if (!cse_get_rw_rdev(&cse_region_rdev))
+		return false;
+
+	cse_get_bp_entry_range(cse_bp_info, RW, &start_offset, &end_offset);
+	size = end_offset + 1 - start_offset;
+
+	if (rdev_chain(target_rdev, &cse_region_rdev, start_offset, size))
+		return false;
+
+	printk(BIOS_DEBUG, "cse_lite: CSE RW partition: offset = 0x%x, size = 0x%x\n",
+			(uint32_t)start_offset, (uint32_t) size);
+
+	return true;
+}
+
+static bool cse_get_cbfs_rw_version(const struct region_device *source_rdev,
+		void *cse_cbfs_rw_ver)
+{
+
+	if (rdev_readat(source_rdev, (void *) cse_cbfs_rw_ver, 0, sizeof(struct fw_version))
+			!= sizeof(struct fw_version)) {
+		printk(BIOS_ERR, "cse_lite: Failed to read CSE CBFW RW version\n");
 		return false;
 	}
 	return true;
 }
 
-static bool cse_is_rw_info_valid(struct cse_bp_info *cse_bp_info)
+/*
+ * Compare versions of CSE CBFS RW and CSE RW partition
+ * If ver_cmp_status = 0, no update is required
+ * If ver_cmp_status < 0, coreboot downgrades CSE RW region
+ * If ver_cmp_status > 0, coreboot upgrades CSE RW region
+ */
+static int cse_check_version_mismatch(const struct cse_bp_info *cse_bp_info,
+	const struct region_device *source_rdev)
 {
-	return cse_is_rw_status_valid(cse_bp_info);
+	struct fw_version cse_cbfs_rw_ver;
+	const struct fw_version *cse_rw_ver;
+
+	if (!cse_get_cbfs_rw_version(source_rdev, &cse_cbfs_rw_ver))
+		return false;
+
+	printk(BIOS_DEBUG, "cse_lite: CSE CBFS RW version : %d.%d.%d.%d\n",
+			cse_cbfs_rw_ver.major,
+			cse_cbfs_rw_ver.minor,
+			cse_cbfs_rw_ver.hotfix,
+			cse_cbfs_rw_ver.build);
+
+	cse_rw_ver = cse_get_rw_version(cse_bp_info);
+
+	if (cse_cbfs_rw_ver.major != cse_rw_ver->major)
+		return cse_cbfs_rw_ver.major - cse_rw_ver->major;
+	else if (cse_cbfs_rw_ver.minor != cse_rw_ver->minor)
+		return cse_cbfs_rw_ver.minor - cse_rw_ver->minor;
+	else if (cse_cbfs_rw_ver.hotfix != cse_rw_ver->hotfix)
+		return cse_cbfs_rw_ver.hotfix - cse_rw_ver->hotfix;
+	else
+		return cse_cbfs_rw_ver.build - cse_rw_ver->build;
+}
+
+static bool cse_erase_rw_region(const struct region_device *target_rdev)
+{
+
+	if (rdev_eraseat(target_rdev, 0, region_device_sz(target_rdev)) < 0) {
+		printk(BIOS_ERR, "cse_lite: CSE RW partition could not be erased\n");
+		return false;
+	}
+	return true;
+}
+
+static bool cse_copy_rw(const struct region_device *target_rdev, const void *buf, size_t offset,
+		size_t size)
+{
+	if (rdev_writeat(target_rdev, buf, offset, size) < 0) {
+		printk(BIOS_ERR, "cse_lite: Failed to update CSE firmware\n");
+		return false;
+	}
+
+	return true;
+}
+
+static bool cse_is_rw_version_latest(const struct cse_bp_info *cse_bp_info,
+		const struct region_device *source_rdev)
+{
+	return !cse_check_version_mismatch(cse_bp_info, source_rdev);
+}
+
+static bool cse_is_update_required(const struct cse_bp_info *cse_bp_info,
+		const struct region_device *source_rdev, struct region_device *target_rdev)
+{
+	return (!cse_is_rw_bp_sign_valid(target_rdev) ||
+			!cse_is_rw_version_latest(cse_bp_info, source_rdev));
+}
+
+static bool cse_write_rw_region(const struct region_device *target_rdev,
+		const struct region_device *source_rdev)
+{
+	void *cse_cbfs_rw = rdev_mmap(source_rdev, CSE_RW_VERSION_SZ,
+			region_device_sz(source_rdev) - CSE_RW_VERSION_SZ);
+
+	/* Points to CSE CBFS RW image after boot partition signature */
+	uint8_t *cse_cbfs_rw_wo_sign = (uint8_t *)cse_cbfs_rw + CSE_RW_SIGN_SIZE;
+
+	/* Size of CSE CBFS RW image without boot partition signature */
+	uint32_t cse_cbfs_rw_wo_sign_sz = region_device_sz(source_rdev) -
+		(CSE_RW_VERSION_SZ + CSE_RW_SIGN_SIZE);
+
+	/* Update except CSE RW signature */
+	if (!cse_copy_rw(target_rdev, cse_cbfs_rw_wo_sign, CSE_RW_SIGN_SIZE,
+				cse_cbfs_rw_wo_sign_sz))
+		goto exit_rw_update;
+
+	/* Update CSE RW signature to indicate update is complete */
+	if (!cse_copy_rw(target_rdev, (void *)cse_cbfs_rw, 0, CSE_RW_SIGN_SIZE))
+		goto exit_rw_update;
+
+	rdev_munmap(source_rdev, cse_cbfs_rw_wo_sign);
+	return true;
+
+exit_rw_update:
+	rdev_munmap(source_rdev, cse_cbfs_rw_wo_sign);
+	return false;
+}
+
+static bool cse_update_rw(const struct cse_bp_info *cse_bp_info,
+		const struct region_device *source_rdev, struct region_device *target_rdev)
+{
+	if (!cse_erase_rw_region(target_rdev))
+		return false;
+
+	if (!cse_write_rw_region(target_rdev, source_rdev))
+		return false;
+
+	printk(BIOS_INFO, "cse_lite: CSE RW Update Successful\n");
+	return true;
+}
+
+static bool cse_prep_for_rw_update(const struct cse_bp_info *cse_bp_info)
+{
+	/*
+	 * To set CSE's operation mode to HMRFPO mode:
+	 * 1. Ensure CSE to boot from RO(BP1)
+	 * 2. Send HMRFPO_ENABLE command to CSE
+	 */
+	if (!cse_boot_to_ro(cse_bp_info))
+		return false;
+
+	return cse_hmrfpo_enable();
+}
+
+static uint8_t cse_trigger_fw_update(const struct cse_bp_info *cse_bp_info,
+		const struct region_device *source_rdev, struct region_device *target_rdev)
+{
+	if (!cse_prep_for_rw_update(cse_bp_info))
+		return CSE_LITE_SKU_COMMUNICATION_ERROR;
+
+	if (!cse_update_rw(cse_bp_info, source_rdev, target_rdev))
+		return CSE_LITE_SKU_FW_UPDATE_ERROR;
+
+	return 0;
+}
+
+static uint8_t cse_fw_update(const struct cse_bp_info *cse_bp_info,
+		const struct region_device *source_rdev)
+{
+	struct region_device target_rdev;
+
+	if (!cse_get_target_rdev(cse_bp_info, &target_rdev)) {
+		printk(BIOS_ERR, "cse_lite: Failed to get CSE RW Partition\n");
+		return CSE_LITE_SKU_RW_ACCESS_ERROR;
+	}
+
+	if (cse_is_update_required(cse_bp_info, source_rdev, &target_rdev)) {
+		printk(BIOS_DEBUG, "cse_lite: CSE RW update is initiated\n");
+		return cse_trigger_fw_update(cse_bp_info, source_rdev, &target_rdev);
+	}
+
+	if (!cse_is_rw_bp_status_valid(cse_bp_info))
+		return CSE_LITE_SKU_RW_JUMP_ERROR;
+
+	return 0;
 }
 
 void cse_fw_sync(void *unused)
@@ -350,9 +630,13 @@ void cse_fw_sync(void *unused)
 		cse_trigger_recovery(CSE_LITE_SKU_COMMUNICATION_ERROR);
 	}
 
-	if (!cse_is_rw_info_valid(&cse_bp_info.bp_info)) {
-		printk(BIOS_ERR, "cse_lite: CSE RW partition is not valid\n");
-		cse_trigger_recovery(CSE_LITE_SKU_RW_JUMP_ERROR);
+	/* If RW blob is present in CBFS, then trigger CSE firmware update */
+	uint8_t rv;
+	struct region_device source_rdev;
+	if (cse_get_cbfs_rdev(&source_rdev)) {
+		rv = cse_fw_update(&cse_bp_info.bp_info, &source_rdev);
+		if (rv)
+			cse_trigger_recovery(rv);
 	}
 
 	if (!cse_boot_to_rw(&cse_bp_info.bp_info)) {

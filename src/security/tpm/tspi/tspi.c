@@ -219,12 +219,12 @@ uint32_t tpm_extend_pcr(int pcr, enum vb2_hash_algorithm digest_algo,
 	case VB2_HASH_SHA1:
 		tpml_digests.digests[0].hashAlg = TPM_ALG_SHA1;
 		memcpy(tpml_digests.digests[0].digest.sha1,
-		       digest, sizeof(TPMU_HA));
+		       digest, SHA1_DIGEST_SIZE);
 		break;
 	case VB2_HASH_SHA256:
 		tpml_digests.digests[0].hashAlg = TPM_ALG_SHA256;
 		memcpy(tpml_digests.digests[0].digest.sha256,
-		       digest, sizeof(TPMU_HA));
+		       digest, SHA256_DIGEST_SIZE);
 		break;
 	default:
 		return TPM_E_IOERROR;

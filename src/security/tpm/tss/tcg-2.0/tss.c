@@ -148,27 +148,27 @@ uint32_t tlcl_extend(int pcr_num, const uint8_t *in_digest,
 		case TPM_ALG_SHA1:
 			memcpy(pcr_ext_cmd.digests.digests[i].digest.sha1,
 			       tpml_digests->digests[i].digest.sha1,
-			       sizeof(TPMU_HA));
+			       SHA1_DIGEST_SIZE);
 			break;
 		case TPM_ALG_SHA256:
 			memcpy(pcr_ext_cmd.digests.digests[i].digest.sha256,
 			       tpml_digests->digests[i].digest.sha256,
-			       sizeof(TPMU_HA));
+			       SHA256_DIGEST_SIZE);
 			break;
 		case TPM_ALG_SHA384:
 			memcpy(pcr_ext_cmd.digests.digests[i].digest.sha384,
 			       tpml_digests->digests[i].digest.sha384,
-			       sizeof(TPMU_HA));
+			       SHA384_DIGEST_SIZE);
 			break;
 		case TPM_ALG_SHA512:
 			memcpy(pcr_ext_cmd.digests.digests[i].digest.sha512,
 			       tpml_digests->digests[i].digest.sha512,
-			       sizeof(TPMU_HA));
+			       SHA512_DIGEST_SIZE);
 			break;
 		case TPM_ALG_SM3_256:
 			memcpy(pcr_ext_cmd.digests.digests[i].digest.sm3_256,
 			       tpml_digests->digests[i].digest.sm3_256,
-			       sizeof(TPMU_HA));
+			       SM3_256_DIGEST_SIZE);
 			break;
 		}
 	}

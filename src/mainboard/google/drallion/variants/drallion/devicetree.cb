@@ -131,29 +131,22 @@ chip soc/intel/cannonlake
 	}"
 
 	# Intel Common SoC Config
-	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC_SKIP)"	# Left Type-C Port
-	register "usb2_ports[1]" = "USB2_PORT_LONG(OC0)"	# Left Type-A Port
-	register "usb2_ports[2]" = "USB2_PORT_LONG(OC1)"	# Right Type-A Port
-	register "usb2_ports[3]" = "USB2_PORT_EMPTY"
-	register "usb2_ports[4]" = "USB2_PORT_EMPTY"
+	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC_SKIP)"	# Left Type-C Port 1
+	register "usb2_ports[1]" = "USB2_PORT_TYPE_C(OC_SKIP)"	# Left Type-C Port 2
+	register "usb2_ports[2]" = "USB2_PORT_LONG(OC0)"	# Right Type-A Port 1
+	register "usb2_ports[3]" = "USB2_PORT_LONG(OC1)"	# Right Type-A Port 2
+	register "usb2_ports[4]" = "USB2_PORT_MID(OC_SKIP)"	# WWAN
 	register "usb2_ports[5]" = "USB2_PORT_LONG(OC_SKIP)"	# Camera
-	register "usb2_ports[6]" = "{
-		.enable        = 1, \
-		.ocpin         = OC_SKIP, \
-		.tx_bias       = USB2_BIAS_0MV, \
-		.tx_emp_enable = USB2_DE_EMP_ON_PRE_EMP_ON, \
-		.pre_emp_bias  = USB2_BIAS_28P15MV, \
-		.pre_emp_bit   = USB2_HALF_BIT_PRE_EMP, \
-		}"	# WWAN
-	register "usb2_ports[7]" = "USB2_PORT_MID(OC_SKIP)"	# USH
-	register "usb2_ports[8]" = "USB2_PORT_MID(OC_SKIP)"	# Fingerprint
+	register "usb2_ports[6]" = "USB2_PORT_EMPTY"
+	register "usb2_ports[7]" = "USB2_PORT_EMPTY"
+	register "usb2_ports[8]" = "USB2_PORT_EMPTY"
 	register "usb2_ports[9]" = "USB2_PORT_MID(OC_SKIP)"	# Bluetooth
 
 	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# Left Type-C Port
-	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC0)"	# Left Type-A Port
-	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC1)"	# Right Type-A Port
-	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# WWAN
-	register "usb3_ports[4]" = "USB3_PORT_EMPTY"
+	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# Left Type-C Port 2
+	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC0)"	# Right Type-A Port 1
+	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC1)"	# Right Type-A Port 2
+	register "usb3_ports[4]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# WWAN
 	register "usb3_ports[5]" = "USB3_PORT_EMPTY"
 
 	# Intel Common SoC Config
@@ -253,8 +246,8 @@ chip soc/intel/cannonlake
 						device usb 2.0 on end
 					end
 					chip drivers/usb/acpi
-						register "desc" = ""Left Type-A Port""
-						register "type" = "UPC_TYPE_A"
+						register "desc" = ""Left Type-C Port""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
 						register "group" = "ACPI_PLD_GROUP(1, 2)"
 						device usb 2.1 on end
 					end
@@ -265,24 +258,20 @@ chip soc/intel/cannonlake
 						device usb 2.2 on end
 					end
 					chip drivers/usb/acpi
-						register "desc" = ""Camera""
-						register "type" = "UPC_TYPE_INTERNAL"
-						device usb 2.5 on end
+						register "desc" = ""Right Type-A Port""
+						register "type" = "UPC_TYPE_A"
+						register "group" = "ACPI_PLD_GROUP(2, 2)"
+						device usb 2.3 on end
 					end
 					chip drivers/usb/acpi
 						register "desc" = ""WWAN""
 						register "type" = "UPC_TYPE_INTERNAL"
-						device usb 2.6 on end
+						device usb 2.4 on end
 					end
 					chip drivers/usb/acpi
-						register "desc" = ""USH""
+						register "desc" = ""Camera""
 						register "type" = "UPC_TYPE_INTERNAL"
-						device usb 2.7 on end
-					end
-					chip drivers/usb/acpi
-						register "desc" = ""Fingerprint""
-						register "type" = "UPC_TYPE_INTERNAL"
-						device usb 2.8 on end
+						device usb 2.5 on end
 					end
 					chip drivers/usb/acpi
 						register "desc" = ""Bluetooth""
@@ -297,21 +286,27 @@ chip soc/intel/cannonlake
 						device usb 3.0 on end
 					end
 					chip drivers/usb/acpi
-						register "desc" = ""Left Type-A Port""
+						register "desc" = ""Right Type-A Port""
 						register "type" = "UPC_TYPE_USB3_A"
-						register "group" = "ACPI_PLD_GROUP(1, 2)"
+						register "group" = "ACPI_PLD_GROUP(2, 1)"
 						device usb 3.1 on end
 					end
 					chip drivers/usb/acpi
 						register "desc" = ""Right Type-A Port""
 						register "type" = "UPC_TYPE_USB3_A"
-						register "group" = "ACPI_PLD_GROUP(2, 1)"
+						register "group" = "ACPI_PLD_GROUP(2, 2)"
 						device usb 3.2 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""Left Type-C Port""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "group" = "ACPI_PLD_GROUP(1, 2)"
+						device usb 3.3 on end
 					end
 					chip drivers/usb/acpi
 						register "desc" = ""WWAN""
 						register "type" = "UPC_TYPE_INTERNAL"
-						device usb 3.3 on end
+						device usb 3.4 on end
 					end
 				end
 			end

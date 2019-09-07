@@ -5,6 +5,7 @@ $(objutil)/futility/build/futility/futility:
 	unset CFLAGS LDFLAGS; $(MAKE) -C $(VBOOT_SOURCE) \
 		BUILD=$(abspath $@/../..) \
 		CC="$(HOSTCC)" \
+		$(if $(HOSTPKGCONFIG), PKG_CONFIG="$(HOSTPKGCONFIG)") \
 		V=$(V) \
 		$(abspath $@)
 

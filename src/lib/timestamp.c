@@ -58,25 +58,25 @@ static struct timestamp_cache timestamp_cache;
    as CBMEM comes available. */
 static struct timestamp_table *glob_ts_table CAR_GLOBAL;
 
-static void timestamp_cache_init(struct timestamp_cache *ts_cache,
+static void timestamp_cache_init(struct timestamp_table *ts_cache,
 				 uint64_t base)
 {
-	ts_cache->table.num_entries = 0;
-	ts_cache->table.max_entries = MAX_BSS_TIMESTAMP_CACHE;
-	ts_cache->table.base_time = base;
+	ts_cache->num_entries = 0;
+	ts_cache->max_entries = MAX_BSS_TIMESTAMP_CACHE;
+	ts_cache->base_time = base;
 
 	if (USE_TIMESTAMP_REGION)
-		ts_cache->table.max_entries = (REGION_SIZE(timestamp) -
-			offsetof(struct timestamp_cache, entries))
+		ts_cache->max_entries = (REGION_SIZE(timestamp) -
+			offsetof(struct timestamp_table, entries))
 			/ sizeof(struct timestamp_entry);
 }
 
-static struct timestamp_cache *timestamp_cache_get(void)
+static struct timestamp_table *timestamp_cache_get(void)
 {
-	struct timestamp_cache *ts_cache = NULL;
+	struct timestamp_table *ts_cache = NULL;
 
 	if (TIMESTAMP_CACHE_IN_BSS) {
-		ts_cache = &timestamp_cache;
+		ts_cache = &timestamp_cache.table;
 	} else if (USE_TIMESTAMP_REGION) {
 		if (REGION_SIZE(timestamp) < sizeof(*ts_cache))
 			BUG();
@@ -122,17 +122,14 @@ static int timestamp_should_run(void)
 static struct timestamp_table *timestamp_table_get(void)
 {
 	struct timestamp_table *ts_table;
-	struct timestamp_cache *ts_cache;
 
 	ts_table = car_get_ptr(glob_ts_table);
 	if (ts_table)
 		return ts_table;
 
-	ts_cache = timestamp_cache_get();
-	if (ts_cache)
-		ts_table = &ts_cache->table;
-
+	ts_table = timestamp_cache_get();
 	car_set_ptr(glob_ts_table, ts_table);
+
 	return ts_table;
 }
 
@@ -196,7 +193,7 @@ void timestamp_add_now(enum timestamp_id id)
 
 void timestamp_init(uint64_t base)
 {
-	struct timestamp_cache *ts_cache;
+	struct timestamp_table *ts_cache;
 
 	assert(ENV_ROMSTAGE_OR_BEFORE);
 
@@ -211,7 +208,7 @@ void timestamp_init(uint64_t base)
 	}
 
 	timestamp_cache_init(ts_cache, base);
-	timestamp_table_set(&ts_cache->table);
+	timestamp_table_set(ts_cache);
 }
 
 static void timestamp_sync_cache_to_cbmem(struct timestamp_table *ts_cbmem_table)

@@ -47,11 +47,10 @@ bootblock_protected_mode_entry:
 	/* MMX registers required here */
 
 	/* BIST result in eax */
-	movl	%eax, %ebx
+	movd	%eax, %mm0
 
 	/* Get an early timestamp */
 	rdtsc
-	movd	%ebx, %mm0
 	movd	%eax, %mm1
 	movd	%edx, %mm2
 #endif

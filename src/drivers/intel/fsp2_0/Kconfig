@@ -154,8 +154,12 @@ config FSP_USES_CB_STACK
 
 config FSP_TEMP_RAM_SIZE
 	hex
-	default 0x10000
 	depends on FSP_USES_CB_STACK
+	help
+	  The amount of anticipated heap usage in CAR by FSP to setup HOB.
+	  This configuration is applicable for FSP specification using shared
+	  stack with coreboot/bootloader.
+	  Sync this value with Platform FSP integration guide recommendation.
 
 config VERIFY_HOBS
 	bool "Verify the FSP hand-off-blocks"

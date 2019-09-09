@@ -50,7 +50,7 @@ static struct {
 	{ PCI_DEVICE_ID_INTEL_SKL_ID_U, "Skylake-U" },
 	{ PCI_DEVICE_ID_INTEL_SKL_ID_Y, "Skylake-Y" },
 	{ PCI_DEVICE_ID_INTEL_SKL_ID_ULX, "Skylake-ULX" },
-	{ PCI_DEVICE_ID_INTEL_SKL_ID_H, "Skylake-H" },
+	{ PCI_DEVICE_ID_INTEL_SKL_ID_H_4, "Skylake-H (4 Core)" },
 	{ PCI_DEVICE_ID_INTEL_SKL_ID_H_EM, "Skylake-H Embedded" },
 	{ PCI_DEVICE_ID_INTEL_SKL_ID_H_2, "Skylake-H (2 Core)" },
 	{ PCI_DEVICE_ID_INTEL_SKL_ID_S_2, "Skylake-S (2 Core)" },

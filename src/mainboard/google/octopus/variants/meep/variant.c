@@ -28,6 +28,7 @@ const char *get_wifi_sar_cbfs_filename(void)
 	case SKU_1_MEEP:
 	case SKU_2_MEEP:
 	case SKU_3_MEEP:
+	case SKU_4_MEEP:
 		filename = "wifi_sar-meep.hex";
 		break;
 	case SKU_49_VORTININJA:

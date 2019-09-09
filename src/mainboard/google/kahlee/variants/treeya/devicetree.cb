@@ -35,22 +35,22 @@ chip soc/amd/stoneyridge
 	register "i2c[1]" = "{
 		.early_init = 1,
 		.speed = I2C_SPEED_FAST,
-		.rise_time_ns = 62,
+		.rise_time_ns = 3,
 		.fall_time_ns = 2,
 	}"
 
 	# Enable I2C2 for trackpad, pen at 400kHz
 	register "i2c[2]" = "{
 		.speed = I2C_SPEED_FAST,
-		.rise_time_ns = 170,
-		.fall_time_ns = 91,
+		.rise_time_ns = 3,
+		.fall_time_ns = 2,
 	}"
 
 	# Enable I2C3 for touchscreen at 400kHz
 	register "i2c[3]" = "{
 		.speed = I2C_SPEED_FAST,
-		.rise_time_ns = 84,
-		.fall_time_ns = 50,
+		.rise_time_ns = 16,
+		.fall_time_ns = 8,
 	}"
 
 	register "i2c_scl_reset" = "GPIO_I2C0_SCL | GPIO_I2C1_SCL | \

@@ -16,6 +16,9 @@
 #include <ec/google/wilco/romstage.h>
 #include <soc/cnl_memcfg_init.h>
 #include <soc/romstage.h>
+#include <baseboard/variants.h>
+
+void __weak variant_mainboard_post_init_params(FSPM_UPD *mupd) {}
 
 static const struct cnl_mb_cfg memcfg = {
 	/* Access memory info through SMBUS. */
@@ -57,6 +60,8 @@ static const struct cnl_mb_cfg memcfg = {
 
 void mainboard_memory_init_params(FSPM_UPD *memupd)
 {
+	variant_mainboard_post_init_params(memupd);
+
 	wilco_ec_romstage_init();
 
 	cannonlake_memcfg_init(&memupd->FspmConfig, &memcfg);

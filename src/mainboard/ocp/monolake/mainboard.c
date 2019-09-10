@@ -17,6 +17,8 @@
 #include <device/device.h>
 #include <pc80/mc146818rtc.h>
 #include <cf9_reset.h>
+#include <smbios.h>
+#include <string.h>
 #include "ipmi.h"
 
 /*
@@ -39,3 +41,17 @@ static void mainboard_enable(struct device *dev)
 struct chip_operations mainboard_ops = {
 	.enable_dev = mainboard_enable,
 };
+
+void smbios_fill_dimm_locator(const struct dimm_info *dimm, struct smbios_type17 *t)
+{
+
+	char locator[64] = {0};
+
+	snprintf(locator, sizeof(locator), "DIMM_%c%u", 'A' + dimm->channel_num,
+		 dimm->dimm_num);
+	t->device_locator = smbios_add_string(t->eos, locator);
+
+	snprintf(locator, sizeof(locator), "_Node0_Channel%d_Dimm%d", dimm->channel_num,
+		 dimm->dimm_num);
+	t->bank_locator = smbios_add_string(t->eos, locator);
+}

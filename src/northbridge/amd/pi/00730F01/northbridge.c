@@ -37,6 +37,8 @@
 #include <northbridge/amd/agesa/agesa_helper.h>
 
 #define MAX_NODE_NUMS MAX_NODES
+#define PCIE_CAP_AER		BIT(5)
+#define PCIE_CAP_ACS		BIT(6)
 
 typedef struct dram_base_mask {
 	u32 base; //[47:27] at [28:8]
@@ -776,6 +778,35 @@ static void fam16_finalize(void *chip_info)
 	dev = pcidev_on_root(0, 0); /* clear IoapicSbFeatureEn */
 	pci_write_config32(dev, 0xF8, 0);
 	pci_write_config32(dev, 0xFC, 5); /* TODO: move it to dsdt.asl */
+
+	/*
+	 * Currently it is impossible to enable ACS with AGESA by setting the
+	 * correct bit for AmdInitMid phase. AGESA code path does not call the
+	 * right function that enables these functionalities. Disabled ACS
+	 * result in multiple PCIe devices to be assigned to the same IOMMU
+	 * group. Without IOMMU group separation the devices cannot be passed
+	 * through independently.
+	 */
+
+	/* Select GPP link core IO Link Strap Control register 0xB0 */
+	pci_write_config32(dev, 0xE0, 0x014000B0);
+	value = pci_read_config32(dev, 0xE4);
+
+	/* Enable AER (bit 5) and ACS (bit 6 undocumented) */
+	value |= PCIE_CAP_AER | PCIE_CAP_ACS;
+	pci_write_config32(dev, 0xE4, value);
+
+	/* Select GPP link core Wrapper register 0x00 (undocumented) */
+	pci_write_config32(dev, 0xE0, 0x01300000);
+	value = pci_read_config32(dev, 0xE4);
+
+	/*
+	 * Enable ACS capabilities straps including sub-items. From lspci it
+	 * looks like these bits enable: Source Validation and Translation
+	 * Blocking
+	 */
+	value |= (BIT(24) | BIT(25) | BIT(26));
+	pci_write_config32(dev, 0xE4, value);
 
 	/* disable No Snoop */
 	dev = pcidev_on_root(1, 1);

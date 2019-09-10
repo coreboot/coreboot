@@ -44,8 +44,6 @@ asmlinkage void car_stage_entry(void)
 {
 	struct postcar_frame pcf;
 	uintptr_t top_of_ram;
-	uintptr_t smm_base;
-	size_t smm_size;
 	int s3_resume = acpi_s3_resume_allowed() && acpi_is_wakeup_s3();
 
 	console_init();
@@ -87,15 +85,8 @@ asmlinkage void car_stage_entry(void)
 	/* Cache the memory-mapped boot media. */
 	postcar_frame_add_romcache(&pcf, MTRR_TYPE_WRPROT);
 
-	/*
-	 * Cache the TSEG region at the top of ram. This region is
-	 * not restricted to SMM mode until SMM has been relocated.
-	 * By setting the region to cacheable it provides faster access
-	 * when relocating the SMM handler as well as using the TSEG
-	 * region for other purposes.
-	 */
-	smm_region(&smm_base, &smm_size);
-	postcar_frame_add_mtrr(&pcf, smm_base, smm_size, MTRR_TYPE_WRBACK);
+	/* Cache the TSEG region */
+	postcar_enable_tseg_cache(&pcf);
 
 	post_code(0x45);
 	run_postcar_phase(&pcf);

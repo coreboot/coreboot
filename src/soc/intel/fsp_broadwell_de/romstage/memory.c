@@ -54,7 +54,7 @@ void save_dimm_info(void)
 			dimm_attr dimm = {0};
 			u8 *spd_data = blk.spd_array[index];
 			if (spd_decode_ddr4(&dimm, spd_data) == SPD_STATUS_OK)
-				spd_add_smbios17_ddr4(channel, index, dclk_mhz, &dimm);
+				spd_add_smbios17_ddr4(channel, slot, dclk_mhz, &dimm);
 			index++;
 		}
 	}

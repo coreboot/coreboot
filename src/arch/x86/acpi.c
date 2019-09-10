@@ -37,6 +37,8 @@
 #include <version.h>
 #include <commonlib/sort.h>
 
+static acpi_rsdp_t *valid_rsdp(acpi_rsdp_t *rsdp);
+
 u8 acpi_checksum(u8 *table, u32 length)
 {
 	u8 ret = 0;
@@ -1260,9 +1262,51 @@ unsigned long write_acpi_tables(unsigned long start)
 	/* Align ACPI tables to 16byte */
 	current = acpi_align_current(current);
 
+	/* Special case for qemu */
 	fw = fw_cfg_acpi_tables(current);
-	if (fw)
+	if (fw) {
+		rsdp = NULL;
+		/* Find RSDP. */
+		for (void *p = (void *)current; p < (void *)fw; p += 16) {
+			if (valid_rsdp((acpi_rsdp_t *)p)) {
+				rsdp = p;
+				break;
+			}
+		}
+		if (!rsdp)
+			return fw;
+
+		/* Add BOOT0000 for Linux google firmware driver */
+		printk(BIOS_DEBUG, "ACPI:     * SSDT\n");
+		ssdt = (acpi_header_t *)fw;
+		current = (unsigned long)ssdt + sizeof(acpi_header_t);
+
+		memset((void *)ssdt, 0, sizeof(acpi_header_t));
+
+		memcpy(&ssdt->signature, "SSDT", 4);
+		ssdt->revision = get_acpi_table_revision(SSDT);
+		memcpy(&ssdt->oem_id, OEM_ID, 6);
+		memcpy(&ssdt->oem_table_id, oem_table_id, 8);
+		ssdt->oem_revision = 42;
+		memcpy(&ssdt->asl_compiler_id, ASLC, 4);
+		ssdt->asl_compiler_revision = asl_revision;
+		ssdt->length = sizeof(acpi_header_t);
+
+		acpigen_set_current((char *) current);
+
+		/* Write object to declare coreboot tables */
+		acpi_ssdt_write_cbtable();
+
+		/* (Re)calculate length and checksum. */
+		ssdt->length = current - (unsigned long)ssdt;
+		ssdt->checksum = acpi_checksum((void *)ssdt, ssdt->length);
+
+		acpi_create_ssdt_generator(ssdt, ACPI_TABLE_CREATOR);
+
+		acpi_add_table(rsdp, ssdt);
+
 		return fw;
+	}
 
 	dsdt_file = cbfs_boot_map_with_leak(
 				     CONFIG_CBFS_PREFIX "/dsdt.aml",

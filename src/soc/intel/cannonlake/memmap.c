@@ -280,4 +280,7 @@ void fill_postcar_frame(struct postcar_frame *pcf)
 	printk(BIOS_DEBUG, "top_of_ram = 0x%lx\n", top_of_ram);
 	top_of_ram -= 16*MiB;
 	postcar_frame_add_mtrr(pcf, top_of_ram, 16*MiB, MTRR_TYPE_WRBACK);
+
+	/* Cache the TSEG region */
+	postcar_enable_tseg_cache(pcf);
 }

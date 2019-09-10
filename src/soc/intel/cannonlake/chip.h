@@ -136,9 +136,19 @@ struct soc_intel_cannonlake_config {
 		Sata_AHCI,
 		Sata_RAID,
 	} SataMode;
+
+	/* SATA devslp pad reset configuration */
+	enum {
+		SataDevSlpResumeReset = 1,
+		SataDevSlpHostDeepReset = 3,
+		SataDevSlpPlatformReset = 5,
+		SataDevSlpDswReset = 7
+	} SataDevSlpRstConfig;
+
 	uint8_t SataSalpSupport;
 	uint8_t SataPortsEnable[8];
 	uint8_t SataPortsDevSlp[8];
+	uint8_t SataPortsDevSlpResetConfig[8];
 
 	/* Enable/Disable SLP_S0 with GBE Support. 0: disable, 1: enable */
 	uint8_t SlpS0WithGbeSupport;

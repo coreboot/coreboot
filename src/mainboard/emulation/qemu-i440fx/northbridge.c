@@ -72,7 +72,7 @@ static void cpu_pci_domain_read_resources(struct device *dev)
 		for (i = 0; i < f.size / sizeof(*list); i++) {
 			switch (list[i].type) {
 			case 1: /* RAM */
-				printk(BIOS_DEBUG, "QEMU: e820/ram: 0x%08llx +0x%08llx\n",
+				printk(BIOS_DEBUG, "QEMU: e820/ram: 0x%08llx + 0x%08llx\n",
 				       list[i].address, list[i].length);
 				if (list[i].address == 0) {
 					tomk = list[i].length / 1024;

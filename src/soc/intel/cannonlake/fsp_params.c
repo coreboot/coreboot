@@ -377,7 +377,6 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	params->FastPkgCRampDisableFivr = config->FastPkgCRampDisableFivr;
 
 	/* Power Optimizer */
-	params->PchPwrOptEnable = config->dmipwroptimize;
 	params->SataPwrOptEnable = config->satapwroptimize;
 
 	/* Disable PCH ACPI timer */

@@ -387,9 +387,6 @@ struct soc_intel_cannonlake_config {
 	uint8_t SlowSlewRateForSa;
 	uint8_t SlowSlewRateForFivr;
 
-	/* DMI Power Optimizer */
-	uint8_t dmipwroptimize;
-
 	/* SATA Power Optimizer */
 	uint8_t satapwroptimize;
 

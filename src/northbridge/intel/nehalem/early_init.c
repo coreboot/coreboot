@@ -73,22 +73,7 @@ static void nehalem_setup_bars(void)
 	pci_write_config8(PCI_DEV(0xff, 0x00, 1), QPD0F1_PAM(5), 0x33);
 	pci_write_config8(PCI_DEV(0xff, 0x00, 1), QPD0F1_PAM(6), 0x33);
 
-#if CONFIG(ELOG_BOOT_COUNT)
-	/* Increment Boot Counter for non-S3 resume */
-	if ((inw(DEFAULT_PMBASE + PM1_STS) & WAK_STS) &&
-	    ((inl(DEFAULT_PMBASE + PM1_CNT) >> 10) & 7) != SLP_TYP_S3)
-		boot_count_increment();
-#endif
-
 	printk(BIOS_DEBUG, " done.\n");
-
-#if CONFIG(ELOG_BOOT_COUNT)
-	/* Increment Boot Counter except when resuming from S3 */
-	if ((inw(DEFAULT_PMBASE + PM1_STS) & WAK_STS) &&
-	    ((inl(DEFAULT_PMBASE + PM1_CNT) >> 10) & 7) == SLP_TYP_S3)
-		return;
-	boot_count_increment();
-#endif
 }
 
 static void early_cpu_init (void)
@@ -134,6 +119,7 @@ void nehalem_early_initialization(int chipset_type)
 {
 	u32 capid0_a;
 	u8 reg8;
+	int s3_resume;
 
 	/* Device ID Override Enable should be done very early */
 	capid0_a = pci_read_config32(PCI_DEV(0, 0, 0), 0xe4);
@@ -150,6 +136,12 @@ void nehalem_early_initialization(int chipset_type)
 	/* Setup all BARs required for early PCIe and raminit */
 	nehalem_setup_bars();
 
+	s3_resume = (inw(DEFAULT_PMBASE + PM1_STS) & WAK_STS) &&
+	    (((inl(DEFAULT_PMBASE + PM1_CNT) >> 10) & 7) == SLP_TYP_S3);
+
+	if (CONFIG(ELOG_BOOT_COUNT) && !s3_resume)
+		boot_count_increment();
+
 	/* Device Enable */
 	pci_write_config32(PCI_DEV(0, 0, 0), D0F0_DEVEN,
 			   DEVEN_IGD | DEVEN_PEG10 | DEVEN_HOST);
@@ -161,7 +153,7 @@ void nehalem_early_initialization(int chipset_type)
 			   PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY);
 
 	/* Magic for S3 resume. Must be done early.  */
-	if (((inl(DEFAULT_PMBASE + PM1_CNT) >> 10) & 7) == SLP_TYP_S3) {
+	if (s3_resume) {
 		MCHBAR32 (0x1e8) = (MCHBAR32(0x1e8) & ~1) | 6;
 		MCHBAR32 (0x1e8) = (MCHBAR32(0x1e8) & ~3) | 4;
 	}

@@ -39,9 +39,17 @@ static void do_silicon_init(struct fsp_header *hdr)
 		die_with_post_code(POST_INVALID_VENDOR_BINARY,
 			"Invalid FSPS signature\n");
 
-	upd = xmalloc(sizeof(FSPS_UPD));
+	/* Disallow invalid config regions.  Default settings are likely bad
+	 * choices for coreboot, and different sized UPD from what the region
+	 * allows is potentially a build problem.
+	 */
+	if (!hdr->cfg_region_size || hdr->cfg_region_size != sizeof(FSPS_UPD))
+		die_with_post_code(POST_INVALID_VENDOR_BINARY,
+			"Invalid FSPS UPD region\n");
 
-	memcpy(upd, supd, sizeof(FSPS_UPD));
+	upd = xmalloc(hdr->cfg_region_size);
+
+	memcpy(upd, supd, hdr->cfg_region_size);
 
 	/* Give SoC/mainboard a chance to populate entries */
 	platform_fsp_silicon_init_params_cb(upd);

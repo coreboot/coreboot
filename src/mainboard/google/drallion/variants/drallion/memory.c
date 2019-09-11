@@ -17,6 +17,14 @@
 #include <gpio.h>
 #include <variant/gpio.h>
 
+/* Use spd_index array to save mem_id */
+static const int spd_index[32] = {
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	4, 3, 6, 1, 0, 0, 0, 0,
+	5, 0, 7, 2, 0, 0, 0, 0
+	};
+
 int variant_memory_sku(void)
 {
 	gpio_t spd_gpios[] = {
@@ -27,5 +35,5 @@ int variant_memory_sku(void)
 		GPIO_MEM_CONFIG_4,
 	};
 
-	return gpio_base2_value(spd_gpios, ARRAY_SIZE(spd_gpios));
+	return spd_index[gpio_base2_value(spd_gpios, ARRAY_SIZE(spd_gpios))];
 }

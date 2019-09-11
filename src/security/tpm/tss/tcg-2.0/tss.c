@@ -127,68 +127,24 @@ uint32_t tlcl_assert_physical_presence(void)
 }
 
 /*
- * The caller will provide the digest in a 32 byte buffer
+ * The caller will provide the digest in a 32 byte buffer, let's consider it a
+ * sha256 digest.
  */
 uint32_t tlcl_extend(int pcr_num, const uint8_t *in_digest,
 		     uint8_t *out_digest)
 {
 	struct tpm2_pcr_extend_cmd pcr_ext_cmd;
 	struct tpm2_response *response;
-	int i;
-	TPML_DIGEST_VALUES *tpml_digests;
 
 	pcr_ext_cmd.pcrHandle = HR_PCR + pcr_num;
-	tpml_digests = (TPML_DIGEST_VALUES *)in_digest;
-	pcr_ext_cmd.digests.count = tpml_digests->count;
-
-	for (i = 0; i < tpml_digests->count ; i++) {
-		pcr_ext_cmd.digests.digests[i].hashAlg =
-			tpml_digests->digests[i].hashAlg;
-		switch (tpml_digests->digests[i].hashAlg) {
-		case TPM_ALG_SHA1:
-			memcpy(pcr_ext_cmd.digests.digests[i].digest.sha1,
-			       tpml_digests->digests[i].digest.sha1,
-			       SHA1_DIGEST_SIZE);
-			break;
-		case TPM_ALG_SHA256:
-			memcpy(pcr_ext_cmd.digests.digests[i].digest.sha256,
-			       tpml_digests->digests[i].digest.sha256,
-			       SHA256_DIGEST_SIZE);
-			break;
-		case TPM_ALG_SHA384:
-			memcpy(pcr_ext_cmd.digests.digests[i].digest.sha384,
-			       tpml_digests->digests[i].digest.sha384,
-			       SHA384_DIGEST_SIZE);
-			break;
-		case TPM_ALG_SHA512:
-			memcpy(pcr_ext_cmd.digests.digests[i].digest.sha512,
-			       tpml_digests->digests[i].digest.sha512,
-			       SHA512_DIGEST_SIZE);
-			break;
-		case TPM_ALG_SM3_256:
-			memcpy(pcr_ext_cmd.digests.digests[i].digest.sm3_256,
-			       tpml_digests->digests[i].digest.sm3_256,
-			       SM3_256_DIGEST_SIZE);
-			break;
-		}
-	}
+	pcr_ext_cmd.digests.count = 1;
+	pcr_ext_cmd.digests.digests[0].hashAlg = TPM_ALG_SHA256;
+	memcpy(pcr_ext_cmd.digests.digests[0].digest.sha256, in_digest,
+	       sizeof(pcr_ext_cmd.digests.digests[0].digest.sha256));
 
 	response = tpm_process_command(TPM2_PCR_Extend, &pcr_ext_cmd);
 
-	/*
-	 * Check if we are invalidating the pcrs, ignore the error if this is
-	 * the case
-	 */
-	if ((tpml_digests->count == 1) &&
-	    (tpml_digests->digests[0].hashAlg == TPM_ALG_ERROR) &&
-	    response && (response->hdr.tpm_code & ~TPM_RC_N_MASK) ==
-	      (TPM_RC_P | TPM_RC_HASH)) {
-		printk(BIOS_SPEW, "%s: TPM_RC_HASH returned this is"
-		       " expected\n", __func__);
-		return TPM_SUCCESS;
-	}
-
-	printk(BIOS_INFO, "%s: response is 0x%x\n",
+	printk(BIOS_INFO, "%s: response is %x\n",
 	       __func__, response ? response->hdr.tpm_code : -1);
 	if (!response || response->hdr.tpm_code)
 		return TPM_E_IOERROR;

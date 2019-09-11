@@ -27,10 +27,19 @@
 #ifndef _BROADWELL_UBOX_H_
 #define _BROADWELL_UBOX_H_
 
+#include <device/pci_ops.h>
+#include <soc/pci_devs.h>
+#include <soc/vtd.h>
+
 #define UBOX_UART_ENABLE		0xf8
 #define   UBOX_UART_ENABLE_PORT0	(1u << 0)
 #define   UBOX_UART_ENABLE_PORT1	(1u << 1)
 
 #define UBOX_SC_RESET_STATUS		0xc8
 #define   UBOX_SC_BYPASS		(1u << 3)
+
+#define UBOX_DEVHIDE0			0xb0
+
+void iio_hide(const uint8_t devno, const uint8_t funcno);
+
 #endif

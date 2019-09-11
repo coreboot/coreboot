@@ -124,10 +124,7 @@ int early_pch_init(const void *gpio_map,
 
 	wake_from_s3 = southbridge_detect_s3_resume();
 
-#if CONFIG(ELOG_BOOT_COUNT)
-	if (!wake_from_s3)
-		boot_count_increment();
-#endif
+	elog_boot_notify(wake_from_s3);
 
 	/* Report if we are waking from s3. */
 	return wake_from_s3;

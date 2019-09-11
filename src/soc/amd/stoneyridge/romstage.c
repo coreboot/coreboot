@@ -97,6 +97,7 @@ asmlinkage void car_stage_entry(void)
 		load_smu_fw1();
 
 	mainboard_romstage_entry_s3(s3_resume);
+	elog_boot_notify(s3_resume);
 
 	bsp_agesa_call();
 
@@ -132,8 +133,6 @@ asmlinkage void car_stage_entry(void)
 		msr_t sys_cfg = rdmsr(SYSCFG_MSR);
 		sys_cfg.lo &= ~SYSCFG_MSR_TOM2WB;
 		wrmsr(SYSCFG_MSR, sys_cfg);
-		if (CONFIG(ELOG_BOOT_COUNT))
-			boot_count_increment();
 	} else {
 		printk(BIOS_INFO, "S3 detected\n");
 		post_code(0x60);

@@ -139,8 +139,7 @@ void nehalem_early_initialization(int chipset_type)
 	s3_resume = (inw(DEFAULT_PMBASE + PM1_STS) & WAK_STS) &&
 	    (((inl(DEFAULT_PMBASE + PM1_CNT) >> 10) & 7) == SLP_TYP_S3);
 
-	if (CONFIG(ELOG_BOOT_COUNT) && !s3_resume)
-		boot_count_increment();
+	elog_boot_notify(s3_resume);
 
 	/* Device Enable */
 	pci_write_config32(PCI_DEV(0, 0, 0), D0F0_DEVEN,

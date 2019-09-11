@@ -74,8 +74,7 @@ void mainboard_romstage_entry(void)
 
 	s3resume = southbridge_detect_s3_resume();
 
-	if (CONFIG(ELOG_BOOT_COUNT) && !s3resume)
-		boot_count_increment();
+	elog_boot_notify(s3resume);
 
 	post_code(0x38);
 

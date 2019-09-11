@@ -48,8 +48,7 @@ static void raminit_common(struct romstage_params *params)
 
 	s3wake = params->power_state->prev_sleep_state == ACPI_S3;
 
-	if (CONFIG(ELOG_BOOT_COUNT) && !s3wake)
-		boot_count_increment();
+	elog_boot_notify(s3wake);
 
 	/* Perform remaining SOC initialization */
 	soc_pre_ram_init(params);

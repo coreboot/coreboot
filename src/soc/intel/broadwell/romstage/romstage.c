@@ -62,6 +62,8 @@ void mainboard_romstage_entry(void)
 	/* Get power state */
 	rp.power_state = fill_power_state();
 
+	elog_boot_notify(rp.power_state->prev_sleep_state == ACPI_S3);
+
 	/* Print useful platform information */
 	report_platform_info();
 
@@ -79,10 +81,6 @@ void mainboard_romstage_entry(void)
 	timestamp_add_now(TS_BEFORE_INITRAM);
 
 	rp.pei_data.boot_mode = rp.power_state->prev_sleep_state;
-
-	if (CONFIG(ELOG_BOOT_COUNT)
-			&& rp.power_state->prev_sleep_state != ACPI_S3)
-		boot_count_increment();
 
 	/* Print ME state before MRC */
 	intel_me_status();

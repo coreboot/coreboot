@@ -185,10 +185,7 @@ void mainboard_romstage_entry(void)
 
 	printk(BIOS_DEBUG, "prev_sleep_state = S%d\n", prev_sleep_state);
 
-#if CONFIG(ELOG_BOOT_COUNT)
-	if (prev_sleep_state != ACPI_S3)
-		boot_count_increment();
-#endif
+	elog_boot_notify(prev_sleep_state == ACPI_S3);
 
 	/* Initialize RAM */
 	raminit(&mp, prev_sleep_state);

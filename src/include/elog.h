@@ -274,6 +274,12 @@ static inline u32 boot_count_read(void)
 #endif
 u32 boot_count_increment(void);
 
+static inline void elog_boot_notify(int s3_resume)
+{
+	if (CONFIG(ELOG_BOOT_COUNT) && !s3_resume)
+		boot_count_increment();
+}
+
 /*
  * Callback from GSMI handler to allow platform to log any wake source
  * information.

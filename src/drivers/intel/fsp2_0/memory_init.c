@@ -392,8 +392,7 @@ void fsp_memory_init(bool s3wake)
 	struct memranges memmap;
 	struct range_entry freeranges[2];
 
-	if (CONFIG(ELOG_BOOT_COUNT) && !s3wake)
-		boot_count_increment();
+	elog_boot_notify(s3wake);
 
 	if (cbfs_boot_locate(&file_desc, name, NULL)) {
 		printk(BIOS_CRIT, "Could not locate %s in CBFS\n", name);

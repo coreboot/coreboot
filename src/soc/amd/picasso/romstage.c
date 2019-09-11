@@ -49,12 +49,10 @@ asmlinkage void car_stage_entry(void)
 	console_init();
 
 	mainboard_romstage_entry_s3(s3_resume);
+	elog_boot_notify(s3_resume);
 
 	if (!s3_resume) {
 		post_code(0x40);
-
-		if (CONFIG(ELOG_BOOT_COUNT))
-			boot_count_increment();
 	} else {
 		printk(BIOS_INFO, "S3 detected\n");
 		post_code(0x60);

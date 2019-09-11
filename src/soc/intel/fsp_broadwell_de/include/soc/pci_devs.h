@@ -32,6 +32,7 @@
 #define VTD_FUNC                0
 #define VTD_DEVID               0x6f28
 #define VTD_DEV_FUNC PCI_DEVFN(VTD_DEV, VTD_FUNC)
+#define VTD_PCI_DEV  PCI_DEV(BUS0, VTD_DEV, VTD_FUNC)
 
 #define LPC_DEV                 31
 #define LPC_FUNC                0

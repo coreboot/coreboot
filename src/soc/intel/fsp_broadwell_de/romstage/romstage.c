@@ -61,24 +61,18 @@ static void setup_gpio_io_address(void)
 
 static void enable_integrated_uart(uint8_t port)
 {
-	uint32_t reg32, busno1 = 0, ubox_uart_en = 0, dfx1 = 0;
-	pci_devfn_t vtd_dev, ubox_dev;
-
-	vtd_dev = PCI_DEV(BUS0, VTD_DEV, VTD_FUNC);
-
-	/* Figure out what bus number is assigned for CPUBUSNO(1) */
-	reg32 = pci_mmio_read_config32(vtd_dev, VTD_CPUBUSNO);
-	busno1 = (reg32 >> VTD_CPUBUSNO_BUS1_SHIFT) & VTD_CPUBUSNO_BUS1_MASK;
+	uint32_t ubox_uart_en = 0, dfx1 = 0;
+	pci_devfn_t ubox_dev;
 
 	/* UBOX sits on CPUBUSNO(1) */
-	ubox_dev = PCI_DEV(busno1, UBOX_DEV, UBOX_FUNC);
+	ubox_dev = PCI_DEV(get_busno1(), UBOX_DEV, UBOX_FUNC);
 	uint32_t reset_sts = pci_mmio_read_config32(ubox_dev, UBOX_SC_RESET_STATUS);
 
 	/* In case we are in bypass mode do nothing */
 	if (reset_sts & UBOX_SC_BYPASS)
 		return;
 
-	dfx1 = pci_mmio_read_config32(vtd_dev, VTD_DFX1);
+	dfx1 = pci_mmio_read_config32(VTD_PCI_DEV, VTD_DFX1);
 	ubox_uart_en = pci_mmio_read_config32(ubox_dev, UBOX_UART_ENABLE);
 
 	switch (port) {
@@ -96,7 +90,7 @@ static void enable_integrated_uart(uint8_t port)
 	}
 
 	/* Disable decoding and enable the port we want */
-	pci_mmio_write_config32(vtd_dev, VTD_DFX1, dfx1);
+	pci_mmio_write_config32(VTD_PCI_DEV, VTD_DFX1, dfx1);
 	pci_mmio_write_config32(ubox_dev, UBOX_UART_ENABLE, ubox_uart_en);
 }
 

@@ -392,8 +392,6 @@ void fsp_memory_init(bool s3wake)
 	struct memranges memmap;
 	struct range_entry freeranges[2];
 
-	timestamp_add_now(TS_BEFORE_INITRAM);
-
 	if (CONFIG(ELOG_BOOT_COUNT) && !s3wake)
 		boot_count_increment();
 
@@ -420,6 +418,8 @@ void fsp_memory_init(bool s3wake)
 
 	/* Signal that FSP component has been loaded. */
 	prog_segment_loaded(hdr.image_base, hdr.image_size, SEG_FINAL);
+
+	timestamp_add_now(TS_BEFORE_INITRAM);
 
 	do_fsp_memory_init(&hdr, s3wake, &memmap);
 

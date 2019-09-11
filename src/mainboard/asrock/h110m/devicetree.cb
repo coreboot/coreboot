@@ -33,6 +33,9 @@ chip soc/intel/skylake
 	register "gpe0_dw1" = "GPP_D"
 	register "gpe0_dw2" = "GPP_E"
 
+	# Set @0x280-0x2ff I/O Range for SuperIO HWM
+	register "gen1_dec" = "0x007c0281"
+
 	# Enable "Intel Speed Shift Technology"
 	register "speed_shift_enable" = "1"
 

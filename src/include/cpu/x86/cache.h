@@ -84,9 +84,7 @@ static __always_inline void disable_cache(void)
 	wbinvd();
 }
 
-#if !defined(__PRE_RAM__)
 void x86_enable_cache(void);
-#endif
 
 #endif /* !__ASSEMBLER__ */
 #endif /* CPU_X86_CACHE */

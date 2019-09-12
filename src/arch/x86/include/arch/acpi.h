@@ -974,7 +974,7 @@ static inline int acpi_s3_resume_allowed(void)
 
 #if CONFIG(HAVE_ACPI_RESUME)
 
-#ifdef __PRE_RAM__
+#if ENV_ROMSTAGE_OR_BEFORE
 static inline int acpi_is_wakeup_s3(void)
 {
 	return (acpi_get_sleep_type() == ACPI_S3);

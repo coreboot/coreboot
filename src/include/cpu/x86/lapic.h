@@ -58,8 +58,6 @@ static __always_inline void stop_this_cpu(void)
 void stop_this_cpu(void);
 #endif
 
-#if !defined(__PRE_RAM__)
-
 #define xchg(ptr, v) ((__typeof__(*(ptr)))__xchg((unsigned long)(v), (ptr), \
 	sizeof(*(ptr))))
 
@@ -131,7 +129,5 @@ static inline void setup_lapic(void)
 
 struct device;
 int start_cpu(struct device *cpu);
-
-#endif /* !__PRE_RAM__ */
 
 #endif /* CPU_X86_LAPIC_H */

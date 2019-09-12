@@ -100,7 +100,6 @@ static void cmos_set_checksum(int range_start, int range_end, int cks_loc)
 #define RTC_CONTROL_DEFAULT (RTC_24H)
 #define RTC_FREQ_SELECT_DEFAULT (RTC_REF_CLCK_32KHZ | RTC_RATE_1024HZ)
 
-#ifndef __SMM__
 static bool __cmos_init(bool invalid)
 {
 	bool cmos_invalid;
@@ -109,16 +108,14 @@ static bool __cmos_init(bool invalid)
 	size_t i;
 	uint8_t x;
 
-#ifndef __PRE_RAM__
 	/*
 	 * Avoid clearing pending interrupts and resetting the RTC control
 	 * register in the resume path because the Linux kernel relies on
 	 * this to know if it should restart the RTC timer queue if the wake
 	 * was due to the RTC alarm.
 	 */
-	if (acpi_is_wakeup_s3())
+	if (ENV_RAMSTAGE && acpi_is_wakeup_s3())
 		return false;
-#endif /* __PRE_RAM__ */
 
 	printk(BIOS_DEBUG, "RTC Init\n");
 
@@ -200,13 +197,14 @@ static void cmos_init_vbnv(bool invalid)
 
 void cmos_init(bool invalid)
 {
+	if (ENV_SMM)
+		return;
+
 	if (CONFIG(VBOOT_VBNV_CMOS))
 		cmos_init_vbnv(invalid);
 	else
 		__cmos_init(invalid);
 }
-#endif	/* __SMM__ */
-
 
 /*
  * This routine returns the value of the requested bits.

@@ -117,11 +117,7 @@ static inline int vboot_logic_executed(void)
 		return !ENV_BOOTBLOCK;
 	} else if (CONFIG(VBOOT_STARTS_IN_ROMSTAGE)) {
 		/* Post-RAM stages are "after the romstage" */
-#ifdef __PRE_RAM__
-		return 0;
-#else
-		return 1;
-#endif
+		return !ENV_ROMSTAGE_OR_BEFORE;
 	} else {
 		dead_code();
 	}

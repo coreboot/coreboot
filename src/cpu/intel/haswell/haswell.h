@@ -130,9 +130,6 @@
 # error "CONFIG_IED_REGION_SIZE is not a power of 2"
 #endif
 
-#if !defined(__ROMCC__) // FIXME romcc should handle below constructs
-
-#if defined(__PRE_RAM__)
 struct pei_data;
 struct rcba_config_instruction;
 struct romstage_params {
@@ -142,24 +139,17 @@ struct romstage_params {
 	void (*copy_spd)(struct pei_data *);
 };
 void romstage_common(const struct romstage_params *params);
-#endif
 
-#ifdef __SMM__
 /* Lock MSRs */
 void intel_cpu_haswell_finalize_smm(void);
-#else
+
 /* Configure power limits for turbo mode */
 void set_power_limits(u8 power_limit_1_time);
 int cpu_config_tdp_levels(void);
-/* Determine if HyperThreading is disabled. The variable is not valid until
- * setup_ap_init() has been called. */
-#endif
 
 /* CPU identification */
 int haswell_family_model(void);
 int haswell_stepping(void);
 int haswell_is_ult(void);
-
-#endif
 
 #endif

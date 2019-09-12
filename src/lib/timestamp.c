@@ -265,21 +265,14 @@ static void timestamp_reinit(int is_recovery)
 	if (!timestamp_should_run())
 		return;
 
-	/* cbmem is being recovered. */
-	if (is_recovery) {
-		/* x86 resume path expects timestamps to be reset. */
-		if (CONFIG(ARCH_ROMSTAGE_X86_32) && ENV_ROMSTAGE)
-			ts_cbmem_table = timestamp_alloc_cbmem_table();
-		else {
-			/* Find existing table in cbmem. */
-			ts_cbmem_table = cbmem_find(CBMEM_ID_TIMESTAMP);
-			/* No existing timestamp table. */
-			if (ts_cbmem_table == NULL)
-				ts_cbmem_table = timestamp_alloc_cbmem_table();
-		}
-	} else
-		/* First time sync. Add new table. */
+	/* First time into romstage we make a clean new table. For platforms that travel
+	   through this path on resume, ARCH_X86 S3, timestamps are also reset. */
+	if (ENV_ROMSTAGE) {
 		ts_cbmem_table = timestamp_alloc_cbmem_table();
+	} else {
+		/* Find existing table in cbmem. */
+		ts_cbmem_table = cbmem_find(CBMEM_ID_TIMESTAMP);
+	}
 
 	if (ts_cbmem_table == NULL) {
 		printk(BIOS_ERR, "ERROR: No timestamp table allocated\n");

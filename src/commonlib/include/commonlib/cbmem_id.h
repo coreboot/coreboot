@@ -76,6 +76,7 @@
 #define CBMEM_ID_ROM1		0x524f4d31
 #define CBMEM_ID_ROM2		0x524f4d32
 #define CBMEM_ID_ROM3		0x524f4d33
+#define CBMEM_ID_FMAP		0x464d4150
 
 #define CBMEM_ID_TO_NAME_TABLE				 \
 	{ CBMEM_ID_ACPI,		"ACPI       " }, \
@@ -134,5 +135,6 @@
 	{ CBMEM_ID_ROM0,		"VGA ROM #0 "}, \
 	{ CBMEM_ID_ROM1,		"VGA ROM #1 "}, \
 	{ CBMEM_ID_ROM2,		"VGA ROM #2 "}, \
-	{ CBMEM_ID_ROM3,		"VGA ROM #3 "},
+	{ CBMEM_ID_ROM3,		"VGA ROM #3 "}, \
+	{ CBMEM_ID_FMAP,		"FMAP       "},
 #endif /* _CBMEM_ID_H_ */

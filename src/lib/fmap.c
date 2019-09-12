@@ -20,6 +20,7 @@
 #include <commonlib/fmap_serialized.h>
 #include <stddef.h>
 #include <string.h>
+#include <cbmem.h>
 
 #include "fmap_config.h"
 
@@ -28,6 +29,7 @@
  */
 
 static int fmap_print_once CAR_GLOBAL;
+static struct mem_region_device fmap_cache CAR_GLOBAL;
 
 int find_fmap_directory(struct region_device *fmrd)
 {
@@ -35,6 +37,16 @@ int find_fmap_directory(struct region_device *fmrd)
 	struct fmap *fmap;
 	size_t fmap_size;
 	size_t offset = FMAP_OFFSET;
+
+	if (cbmem_possibly_online() && !ENV_SMM) {
+		/* Try FMAP cache first */
+		const struct mem_region_device *cache;
+
+		cache = car_get_var_ptr(&fmap_cache);
+		if (region_device_sz(&cache->rdev))
+			return rdev_chain(fmrd, &cache->rdev, 0,
+					  region_device_sz(&cache->rdev));
+	}
 
 	boot_device_init();
 	boot = boot_device_ro();
@@ -195,3 +207,53 @@ ssize_t fmap_overwrite_area(const char *name, const void *buffer, size_t size)
 		return -1;
 	return rdev_writeat(&rdev, buffer, 0, size);
 }
+
+static void fmap_register_cache(int unused)
+{
+	const struct cbmem_entry *e;
+	struct mem_region_device *mdev;
+
+	mdev = car_get_var_ptr(&fmap_cache);
+
+	/* Find the FMAP cache installed by previous stage */
+	e = cbmem_entry_find(CBMEM_ID_FMAP);
+	/* Don't set fmap_cache so that find_fmap_directory will use regular path */
+	if (!e)
+		return;
+
+	mem_region_device_ro_init(mdev, cbmem_entry_start(e), cbmem_entry_size(e));
+}
+
+/*
+ * The main reason to copy the FMAP into CBMEM is to make it available to the
+ * OS on every architecture. As side effect use the CBMEM copy as cache.
+ */
+static void fmap_setup_cache(int unused)
+{
+	struct region_device fmrd;
+
+	if (find_fmap_directory(&fmrd))
+		return;
+
+	/* Reloads the FMAP even on ACPI S3 resume */
+	const size_t s = region_device_sz(&fmrd);
+	struct fmap *fmap = cbmem_add(CBMEM_ID_FMAP, s);
+	if (!fmap) {
+		printk(BIOS_ERR, "ERROR: Failed to allocate CBMEM\n");
+		return;
+	}
+
+	const ssize_t ret = rdev_readat(&fmrd, fmap, 0, s);
+	if (ret != s) {
+		printk(BIOS_ERR, "ERROR: Failed to read FMAP into CBMEM\n");
+		cbmem_entry_remove(cbmem_entry_find(CBMEM_ID_FMAP));
+		return;
+	}
+
+	/* Finally advertise the cache for the current stage */
+	fmap_register_cache(unused);
+}
+
+ROMSTAGE_CBMEM_INIT_HOOK(fmap_setup_cache)
+RAMSTAGE_CBMEM_INIT_HOOK(fmap_register_cache)
+POSTCAR_CBMEM_INIT_HOOK(fmap_register_cache)

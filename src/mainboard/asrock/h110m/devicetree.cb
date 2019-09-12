@@ -353,18 +353,39 @@ chip soc/intel/skylake
 					irq 0x72 = 12     # Mouse
 				end
 				device pnp 2e.6   off end # CIR
-				device pnp 2e.7   off end # GPIO6
-				device pnp 2e.107 off end # GPIO7
-				device pnp 2e.207 off end # GPIO8
+				device pnp 2e.7   on      # GPIO6
+					irq 0xf6 = 0xff
+					irq 0xf7 = 0xff
+					irq 0xf8 = 0xff
+				end
+				device pnp 2e.107 on      # GPIO7
+					irq 0xe0 = 0x7f
+					irq 0xe1 = 0x0d
+				end
+				device pnp 2e.207 on      # GPIO8
+					irq 0xe6 = 0xff
+					irq 0xe7 = 0xff
+					irq 0xed = 0xff
+				end
 				device pnp 2e.8   off end # WDT
-				device pnp 2e.108 off end # GPIO0
+				device pnp 2e.108 on  end # GPIO0
 				device pnp 2e.308 off end # GPIO base
 				device pnp 2e.408 off end # WDTMEM
-				device pnp 2e.708 off end # GPIO1
-				device pnp 2e.9   off end # GPIO2
-				device pnp 2e.109 off end # GPIO3
-				device pnp 2e.209 off end # GPIO4
-				device pnp 2e.309 off end # GPIO5
+				device pnp 2e.708 on  end # GPIO1
+				device pnp 2e.9   on  end # GPIO2
+				device pnp 2e.109 on      # GPIO3
+					irq 0xe4 = 0x7b
+					irq 0xe5 = 0x02
+					irq 0xea = 0x04
+				end
+				device pnp 2e.209 on      # GPIO4
+					irq 0xf0 = 0x7f
+					irq 0xf1 = 0x80
+				end
+				device pnp 2e.309 on      # GPIO5
+					irq 0xf4 = 0xdf
+					irq 0xf5 = 0xd5
+				end
 				device pnp 2e.a   on
 					# Power RAM in S3 and let the PCH
 					# handle power failure actions

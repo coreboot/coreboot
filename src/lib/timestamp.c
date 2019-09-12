@@ -27,34 +27,9 @@
 
 #define MAX_TIMESTAMPS 192
 
-/* When changing this number, adjust TIMESTAMP() size ASSERT() in memlayout.h */
-#define MAX_BSS_TIMESTAMP_CACHE 16
-
-struct __packed timestamp_cache {
-	struct timestamp_table table;
-	/* The struct timestamp_table has a 0 length array as its last field.
-	 * The  following 'entries' array serves as the storage space for the
-	 * cache when allocated in the BSS. */
-	struct timestamp_entry entries[MAX_BSS_TIMESTAMP_CACHE];
-};
-
 DECLARE_OPTIONAL_REGION(timestamp);
 
-#if ENV_ROMSTAGE_OR_BEFORE
-#define USE_TIMESTAMP_REGION (REGION_SIZE(timestamp) > 0)
-#else
-#define USE_TIMESTAMP_REGION 0
-#endif
-
-/* Currently we never store timestamp cache in .bss. */
-#define TIMESTAMP_CACHE_IN_BSS 0
-
-/*
- * Storage of cache entries prior to cbmem coming online.
- */
-static struct timestamp_cache timestamp_cache;
-
-/* This points to the active timestamp_table and can change within a stage.
+/* This points to the active timestamp_table and can change within a stage
    as CBMEM comes available. */
 static struct timestamp_table *glob_ts_table CAR_GLOBAL;
 
@@ -62,24 +37,22 @@ static void timestamp_cache_init(struct timestamp_table *ts_cache,
 				 uint64_t base)
 {
 	ts_cache->num_entries = 0;
-	ts_cache->max_entries = MAX_BSS_TIMESTAMP_CACHE;
 	ts_cache->base_time = base;
-
-	if (USE_TIMESTAMP_REGION)
-		ts_cache->max_entries = (REGION_SIZE(timestamp) -
-			offsetof(struct timestamp_table, entries))
-			/ sizeof(struct timestamp_entry);
+	ts_cache->max_entries = (REGION_SIZE(timestamp) -
+		offsetof(struct timestamp_table, entries))
+		/ sizeof(struct timestamp_entry);
 }
 
 static struct timestamp_table *timestamp_cache_get(void)
 {
 	struct timestamp_table *ts_cache = NULL;
 
-	if (TIMESTAMP_CACHE_IN_BSS) {
-		ts_cache = &timestamp_cache.table;
-	} else if (USE_TIMESTAMP_REGION) {
-		if (REGION_SIZE(timestamp) < sizeof(*ts_cache))
-			BUG();
+	if (!ENV_ROMSTAGE_OR_BEFORE)
+		return NULL;
+
+	if (REGION_SIZE(timestamp) < sizeof(*ts_cache)) {
+		BUG();
+	} else {
 		ts_cache = (void *)_timestamp;
 	}
 

@@ -31,7 +31,10 @@ void main(void)
 
 	console_init();
 
-	/* Recover cbmem so infrastruture using it is functional. */
+	/*
+	 * CBMEM needs to be recovered because timestamps rely on
+	 * the cbmem infrastructure being around. Explicitly recover it.
+	 */
 	cbmem_initialize();
 
 	timestamp_add_now(TS_START_POSTCAR);

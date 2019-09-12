@@ -28,8 +28,9 @@
  */
 void timestamp_init(uint64_t base);
 /*
- * Add a new timestamp. Depending on cbmem is available or not, this timestamp
- * will be stored to cbmem / timestamp cache.
+ * Add a new timestamp. For ENV_ROMSTAGE_OR_BEFORE, this timestamp will be stored
+ * inside REGION(timestamp) before cbmem comes online. For later stages, timestamps
+ * added before cbmem_[recovery|initialize] calls will be lost.
  */
 void timestamp_add(enum timestamp_id id, uint64_t ts_time);
 /* Calls timestamp_add with current timestamp. */

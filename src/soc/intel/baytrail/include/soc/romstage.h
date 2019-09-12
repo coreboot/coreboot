@@ -16,10 +16,6 @@
 #ifndef _BAYTRAIL_ROMSTAGE_H_
 #define _BAYTRAIL_ROMSTAGE_H_
 
-#if !defined(__PRE_RAM__)
-#error "Don't include romstage.h from a ramstage compilation unit!"
-#endif
-
 #include <stdint.h>
 #include <arch/cpu.h>
 #include <soc/mrc_wrapper.h>

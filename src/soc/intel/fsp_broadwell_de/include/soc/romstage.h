@@ -17,10 +17,6 @@
 #ifndef _SOC_ROMSTAGE_H_
 #define _SOC_ROMSTAGE_H_
 
-#if !defined(__PRE_RAM__)
-#error "Don't include romstage.h from a ramstage compilation unit!"
-#endif
-
 #include <stdint.h>
 #include <fsp.h>
 

@@ -18,10 +18,6 @@
 #ifndef _QUARK_ROMSTAGE_H_
 #define _QUARK_ROMSTAGE_H_
 
-#if !defined(__PRE_RAM__)
-#error "Don't include romstage.h from a ramstage compilation unit!"
-#endif
-
 #include <soc/car.h>
 #include <soc/reg_access.h>
 

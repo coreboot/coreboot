@@ -60,12 +60,6 @@ int acpi_is_wakeup_s4(void)
 	acpi_handoff_wakeup();
 	return (acpi_slp_type == ACPI_S4);
 }
-
-void acpi_fail_wakeup(void)
-{
-	if (acpi_slp_type == ACPI_S3 || acpi_slp_type == ACPI_S2)
-		acpi_slp_type = ACPI_S0;
-}
 #endif /* ENV_RAMSTAGE */
 
 #define WAKEUP_BASE 0x600

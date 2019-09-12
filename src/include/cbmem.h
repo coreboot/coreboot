@@ -106,7 +106,6 @@ void *cbmem_find(u32 id);
 /* Indicate to each hook if cbmem is being recovered or not. */
 typedef void (* const cbmem_init_hook_t)(int is_recovery);
 void cbmem_run_init_hooks(int is_recovery);
-void cbmem_fail_resume(void);
 
 /* Ramstage only functions. */
 /* Add the cbmem memory used to the memory map at boot. */

@@ -32,7 +32,3 @@ void cbmem_run_init_hooks(int is_recovery)
 		init_hook_ptr++;
 	}
 }
-
-void __weak cbmem_fail_resume(void)
-{
-}

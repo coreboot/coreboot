@@ -67,11 +67,20 @@ enum fw_cfg_enum {
 
 #define FW_CFG_INVALID          0xffff
 
+/* width in bytes of fw_cfg control register */
+#define FW_CFG_CTL_SIZE         0x02
+
+/* fw_cfg "file name" is up to 56 characters (including terminating nul) */
+#define FW_CFG_MAX_FILE_PATH    56
+
+/* size in bytes of fw_cfg signature */
+#define FW_CFG_SIG_SIZE         4
+
 typedef struct FWCfgFile {
     uint32_t  size;        /* file size */
     uint16_t  select;      /* write this to 0x510 to read it */
     uint16_t  reserved;
-    char      name[56];
+    char      name[FW_CFG_MAX_FILE_PATH];
 } FWCfgFile;
 
 typedef struct FWCfgFiles {
@@ -95,5 +104,27 @@ typedef struct FwCfgSmbios {
 	uint8_t  tabletype;
 	uint16_t fieldoffset;
 } FwCfgSmbios;
+
+/* FW_CFG_ID bits */
+#define FW_CFG_VERSION          0x01
+#define FW_CFG_VERSION_DMA      0x02
+
+/* FW_CFG_DMA_CONTROL bits */
+#define FW_CFG_DMA_CTL_ERROR    0x01
+#define FW_CFG_DMA_CTL_READ     0x02
+#define FW_CFG_DMA_CTL_SKIP     0x04
+#define FW_CFG_DMA_CTL_SELECT   0x08
+#define FW_CFG_DMA_CTL_WRITE    0x10
+
+#define FW_CFG_DMA_SIGNATURE    0x51454d5520434647ULL /* "QEMU CFG" */
+
+/* Control as first field allows for different structures selected by this
+ * field, which might be useful in the future
+ */
+typedef struct FwCfgDmaAccess {
+	uint32_t control;
+	uint32_t length;
+	uint64_t address;
+} FwCfgDmaAccess;
 
 #endif /* FW_CFG_IF_H */

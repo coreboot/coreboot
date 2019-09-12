@@ -327,12 +327,22 @@ chip soc/intel/skylake
 			subsystemid 0x1849 0x1a43
 			chip superio/nuvoton/nct6791d
 				device pnp 2e.0   off end # Floppy
-				device pnp 2e.1   on      # Parallel
-					# global
-					irq 0x1c = 0x10
+				device pnp 2e.1   on
+					# Global Control Registers
+					# Device IRQ Polarity
+					irq 0x13 = 0x00
+					irq 0x14 = 0x00
+					# Global Option
+					irq 0x24 = 0xfb
 					irq 0x27 = 0x10
-					irq 0x2a = 0x64
-					# parallel port
+					# Multi Function
+					irq 0x1a = 0xb0
+					irq 0x1b = 0xe6
+					irq 0x2a = 0x04
+					irq 0x2c = 0x40
+					irq 0x2d = 0x03
+
+					# Parallel Port
 					io  0x60 = 0x0378
 					irq 0x70 = 7
 					drq 0x74 = 4      # No DMA

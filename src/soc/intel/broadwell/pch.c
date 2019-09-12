@@ -73,7 +73,7 @@ u32 pch_read_soft_strap(int id)
 	return SPIBAR32(SPIBAR_FDOD);
 }
 
-#ifndef __PRE_RAM__
+#ifndef __SIMPLE_DEVICE__
 
 /* Put device in D3Hot Power State */
 static void pch_enable_d3hot(struct device *dev)

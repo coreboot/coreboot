@@ -16,7 +16,6 @@
 bootblock-y += bootblock.c
 
 ramstage-y += ramstage.c
-ramstage-y += sku.c
 
 romstage-y += romstage.c
 

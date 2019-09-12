@@ -13,27 +13,23 @@
  * GNU General Public License for more details.
  */
 
-#ifndef VARIANT_H
-#define VARIANT_H
+#include <boardid.h>
+#include <ec/google/wilco/commands.h>
+#include <smbios.h>
+#include <variant/variant.h>
 
-/* Need to update for Drallion with right SKU IDs*/
-typedef struct {
-	int id;
-	const char *name;
-} sku_info;
+uint32_t sku_id(void)
+{
+	if (wilco_ec_signed_fw())
+		return VARIANT_SKU_ID_SIGNED_EC;
+	else
+		return VARIANT_SKU_ID;
+}
 
-const static sku_info skus[] = {
-	// Drallion 360
-	{ .id = 1, .name = "sku1" },
-	// Drallion
-	{ .id = 2, .name = "sku2" },
-	// Drallion 360 signed
-	{ .id = 3, .name = "sku3" },
-	// Drallion signed
-	{ .id = 4, .name = "sku4" },
-};
-
-/* Return memory SKU for the variant */
-int variant_memory_sku(void);
-
-#endif
+const char *smbios_system_sku(void)
+{
+	if (wilco_ec_signed_fw())
+		return VARIANT_SKU_NAME_SIGNED_EC;
+	else
+		return VARIANT_SKU_NAME;
+}

@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright 2018 Google LLC
+ * Copyright 2019 Google LLC
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,27 +13,24 @@
  * GNU General Public License for more details.
  */
 
-#ifndef VARIANT_H
-#define VARIANT_H
+#include <boardid.h>
+#include <ec/google/wilco/commands.h>
+#include <smbios.h>
+#include <variant/variant.h>
+#include <gpio.h>
+#include <variant/gpio.h>
 
-/* Need to update for Drallion with right SKU IDs*/
-typedef struct {
-	int id;
-	const char *name;
-} sku_info;
+static const uint32_t get_sku_index(void)
+{
+	return (gpio_get(SENSOR_DET_360) | (wilco_ec_signed_fw() << 1));
+}
 
-const static sku_info skus[] = {
-	// Drallion 360
-	{ .id = 1, .name = "sku1" },
-	// Drallion
-	{ .id = 2, .name = "sku2" },
-	// Drallion 360 signed
-	{ .id = 3, .name = "sku3" },
-	// Drallion signed
-	{ .id = 4, .name = "sku4" },
-};
+uint32_t sku_id(void)
+{
+	return skus[get_sku_index()].id;
+}
 
-/* Return memory SKU for the variant */
-int variant_memory_sku(void);
-
-#endif
+const char *smbios_system_sku(void)
+{
+	return skus[get_sku_index()].name;
+}

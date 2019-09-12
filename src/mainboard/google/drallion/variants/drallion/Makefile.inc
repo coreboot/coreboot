@@ -29,3 +29,5 @@ romstage-y += gpio.c
 verstage-y += gpio.c
 
 romstage-y += memory.c
+
+ramstage-y += sku.c

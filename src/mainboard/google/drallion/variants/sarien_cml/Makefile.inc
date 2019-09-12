@@ -20,3 +20,5 @@ bootblock-y += gpio.c
 ramstage-y += gpio.c
 romstage-y += gpio.c
 verstage-y += gpio.c
+
+ramstage-y += sku.c

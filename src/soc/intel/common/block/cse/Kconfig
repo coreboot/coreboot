@@ -12,3 +12,10 @@ config SOC_INTEL_COMMON_BLOCK_HECI_DISABLE_IN_SMM
 	help
 	  Use this config to include common CSE block to make HECI function
 	  disable in SMM mode
+
+config SOC_INTEL_CSE_CUSTOM_SKU
+	bool
+	default n
+	depends on CHROMEOS
+	help
+	 Enables CSE Custom SKU

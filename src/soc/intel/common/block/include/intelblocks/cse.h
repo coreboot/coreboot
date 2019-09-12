@@ -23,6 +23,7 @@
 #define MKHI_GROUP_ID_CBM	0x0
 #define MKHI_GROUP_ID_HMRFPO	0x5
 #define MKHI_GROUP_ID_GEN	0xff
+#define MKHI_GROUP_ID_BUP_COMMON	0xf0
 
 /* Global Reset Command ID */
 #define MKHI_CBM_GLOBAL_RESET_REQ	0xb
@@ -36,6 +37,10 @@
 
 /* Get Firmware Version Command Id */
 #define MKHI_GEN_GET_FW_VERSION	0x2
+
+/* Boot partition info and set boot partition info command ids */
+#define MKHI_BUP_COMMON_GET_BOOT_PARTITION_INFO	0x1c
+#define MKHI_BUP_COMMON_SET_BOOT_PARTITION_INFO	0x1d
 
 /* ME Current Working States */
 #define ME_HFS1_CWS_NORMAL	0x5
@@ -219,4 +224,13 @@ bool cse_is_hfs3_fw_sku_custom(void);
  * Returns 0 on failure and 1 on success.
  */
 uint8_t cse_wait_com_soft_temp_disable(void);
+
+/*
+ * The CSE Custom SKU supports notion of RO and RW boot partitions. The function will set
+ * CSE's boot partition as per Chrome OS boot modes. In normal mode, the function allows CSE to
+ * boot from RW and triggers recovery mode if CSE fails to jump to RW.
+ * In software triggered recovery mode, the function allows CSE to boot from whatever is
+ * currently selected partition.
+ */
+void cse_fw_sync(void *unused);
 #endif // SOC_INTEL_COMMON_CSE_H

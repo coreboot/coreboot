@@ -29,6 +29,8 @@ tarball_dir:=$(project_dir)/tarball
 decompress_flag=.done
 
 OBJCOPY:=$(LINUXBOOT_CROSS_COMPILE)objcopy
+KERNEL_MAKE_FLAGS = \
+	ARCH=$(ARCH-y)
 
 ifeq ($(CONFIG_LINUXBOOT_KERNEL_CUSTOM),y)
 	kernel_version:=$(CONFIG_LINUXBOOT_KERNEL_CUSTOM_VERSION)
@@ -90,15 +92,15 @@ ifeq ($(CONFIG_LINUXBOOT_KERNEL_CUSTOM_CONFIG),y)
 else
 	cp $(ARCH-y)/defconfig $(kernel_dir)/.config
 endif
-	$(MAKE) -C $(kernel_dir) olddefconfig ARCH=$(ARCH-y)
+	$(MAKE) -C $(kernel_dir) $(KERNEL_MAKE_FLAGS) olddefconfig
 
 build: $(kernel_dir)/.config
 	@echo "    MAKE       Linux $(kernel_version)"
 ifeq ($(CONFIG_LINUXBOOT_KERNEL_BZIMAGE),y)
-	$(MAKE) -C $(kernel_dir) CROSS_COMPILE=$(LINUXBOOT_CROSS_COMPILE) ARCH=$(ARCH-y) bzImage
+	$(MAKE) -C $(kernel_dir) $(KERNEL_MAKE_FLAGS) CROSS_COMPILE=$(LINUXBOOT_CROSS_COMPILE) bzImage
 else
 ifeq ($(CONFIG_LINUXBOOT_KERNEL_UIMAGE),y)
-	$(MAKE) -C $(kernel_dir) CROSS_COMPILE=$(LINUXBOOT_CROSS_COMPILE) ARCH=$(ARCH-y) vmlinux
+	$(MAKE) -C $(kernel_dir) $(KERNEL_MAKE_FLAGS) CROSS_COMPILE=$(LINUXBOOT_CROSS_COMPILE) vmlinux
 endif
 endif
 

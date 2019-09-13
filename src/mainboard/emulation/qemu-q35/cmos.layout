@@ -7,6 +7,10 @@ entries
 400          1       e       1        power_on_after_fail
 412          4       e       6        debug_level
 456          1       e       1        ECC_memory
+
+# VBOOT
+464        128       r        0        vbnv
+
 1008         16      h       0        check_sum
 
 enumerations
@@ -25,4 +29,4 @@ enumerations
 
 checksums
 
-checksum 392 1007 1008
+checksum 392 463 1008

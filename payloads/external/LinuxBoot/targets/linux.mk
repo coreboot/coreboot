@@ -18,7 +18,11 @@ decompress_flag=.done
 
 OBJCOPY:=$(LINUXBOOT_CROSS_COMPILE)objcopy
 KERNEL_MAKE_FLAGS = \
-	ARCH=$(ARCH-y)
+	ARCH=$(ARCH-y) \
+	KBUILD_BUILD_USER="coreboot" \
+	KBUILD_BUILD_HOST="reproducible" \
+	KBUILD_BUILD_TIMESTAMP="$(shell perl -e 'print scalar gmtime($(SOURCE_DATE_EPOCH))')" \
+	KBUILD_BUILD_VERSION="0"
 
 ifeq ($(CONFIG_LINUXBOOT_KERNEL_CUSTOM),y)
 	kernel_version:=$(CONFIG_LINUXBOOT_KERNEL_CUSTOM_VERSION)

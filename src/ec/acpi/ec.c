@@ -18,19 +18,11 @@
 #include <device/device.h>
 #include <arch/io.h>
 #include <delay.h>
+#include <stdint.h>
 #include "ec.h"
 
-#ifdef __PRE_RAM__
-
-static const int ec_cmd_reg = EC_SC;
-static const int ec_data_reg = EC_DATA;
-
-#else
-
-static int ec_cmd_reg = EC_SC;
-static int ec_data_reg = EC_DATA;
-
-#endif
+static u16 ec_cmd_reg = EC_SC;
+static u16 ec_data_reg = EC_DATA;
 
 int send_ec_command(u8 command)
 {
@@ -162,15 +154,14 @@ void ec_clr_bit(u8 addr, u8 bit)
 	ec_write(addr, ec_read(addr) &  ~(1 << bit));
 }
 
-#ifndef __PRE_RAM__
-
 void ec_set_ports(u16 cmd_reg, u16 data_reg)
 {
+	if (!ENV_STAGE_HAS_DATA_SECTION)
+		return;
+
 	ec_cmd_reg = cmd_reg;
 	ec_data_reg = data_reg;
 }
-
-#endif
 
 struct chip_operations ec_acpi_ops = {
 	CHIP_NAME("ACPI Embedded Controller")

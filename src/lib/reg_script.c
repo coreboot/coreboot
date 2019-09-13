@@ -36,7 +36,8 @@
 #endif
 
 #define POLL_DELAY 100 /* 100us */
-#if defined(__PRE_RAM__)
+
+#ifdef __SIMPLE_DEVICE__
 #define EMPTY_DEV 0
 #else
 #define EMPTY_DEV NULL
@@ -68,7 +69,7 @@ reg_script_get_step(struct reg_script_context *ctx)
 
 static struct resource *reg_script_get_resource(struct reg_script_context *ctx)
 {
-#if defined(__PRE_RAM__)
+#ifdef __SIMPLE_DEVICE__
 	return NULL;
 #else
 	struct resource *res;

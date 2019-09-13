@@ -51,16 +51,11 @@ _Static_assert(CONFIG_CONSOLE_CBMEM_BUFFER_SIZE <= MAX_SIZE,
 
 static struct cbmem_console *cbmem_console_p CAR_GLOBAL;
 
-#ifdef __PRE_RAM__
 /*
  * While running from ROM, before DRAM is initialized, some area in cache as
  * RAM space is used for the console buffer storage. The size and location of
  * the area are defined by the linker script with _(e)preram_cbmem_console.
- */
-
-#else
-
-/*
+ *
  * When running from RAM, some console output is generated before CBMEM is
  * reinitialized. This static buffer is used to store that output temporarily,
  * to be concatenated with the CBMEM console buffer contents accumulated
@@ -69,7 +64,6 @@ static struct cbmem_console *cbmem_console_p CAR_GLOBAL;
 
 #define STATIC_CONSOLE_SIZE 1024
 static u8 static_console[STATIC_CONSOLE_SIZE];
-#endif
 
 static struct cbmem_console *current_console(void)
 {
@@ -107,14 +101,13 @@ static void init_console_ptr(void *storage, u32 total_space)
 
 void cbmemc_init(void)
 {
-#ifdef __PRE_RAM__
-	/* Pre-RAM environments use special buffer placed by linker script. */
-	init_console_ptr(_preram_cbmem_console,
-			 REGION_SIZE(preram_cbmem_console));
-#else
-	/* Post-RAM uses static (BSS) buffer before CBMEM is reinitialized. */
-	init_console_ptr(static_console, sizeof(static_console));
-#endif
+	if (ENV_ROMSTAGE_OR_BEFORE) {
+		/* Pre-RAM environments use special buffer placed by linker script. */
+		init_console_ptr(_preram_cbmem_console, REGION_SIZE(preram_cbmem_console));
+	} else {
+		/* Post-RAM uses static (BSS) buffer before CBMEM is reinitialized. */
+		init_console_ptr(static_console, sizeof(static_console));
+	}
 }
 
 void cbmemc_tx_byte(unsigned char data)

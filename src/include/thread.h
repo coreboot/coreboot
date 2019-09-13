@@ -20,7 +20,7 @@
 #include <bootstate.h>
 #include <arch/cpu.h>
 
-#if CONFIG(COOP_MULTITASKING) && !defined(__SMM__) && !defined(__PRE_RAM__)
+#if ENV_RAMSTAGE && CONFIG(COOP_MULTITASKING)
 
 struct thread {
 	int id;

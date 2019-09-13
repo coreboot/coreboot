@@ -31,7 +31,6 @@ pci_devfn_t pci_ehci_dbg_dev(unsigned int hcd_idx);
 u8 *pci_ehci_base_regs(pci_devfn_t dev);
 void pci_ehci_dbg_set_port(pci_devfn_t dev, unsigned int port);
 
-#ifndef __PRE_RAM__
 #if !CONFIG(USBDEBUG)
 #define pci_ehci_read_resources pci_dev_read_resources
 #else
@@ -45,7 +44,6 @@ void pci_ehci_dbg_set_port(pci_devfn_t dev, unsigned int port);
  */
 struct device;
 void pci_ehci_read_resources(struct device *dev);
-#endif
 #endif
 
 #endif /* _PCI_EHCI_H_ */

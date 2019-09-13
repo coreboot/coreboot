@@ -108,7 +108,7 @@
 	*(.sdata);
 	*(.sdata.*);
 
-#ifdef __PRE_RAM__
+#if ENV_ROMSTAGE_OR_BEFORE
 	PROVIDE(_preram_cbmem_console = .);
 	PROVIDE(_epreram_cbmem_console = _preram_cbmem_console);
 #elif ENV_RAMSTAGE

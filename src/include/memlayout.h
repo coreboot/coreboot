@@ -73,7 +73,7 @@
 	ALIAS_REGION(cbfs_cache, preram_cbfs_cache) \
 	ALIAS_REGION(cbfs_cache, postram_cbfs_cache)
 
-#if defined(__PRE_RAM__)
+#if ENV_ROMSTAGE_OR_BEFORE
 	#define PRERAM_CBFS_CACHE(addr, size) \
 		REGION(preram_cbfs_cache, addr, size, 4) \
 		ALIAS_REGION(preram_cbfs_cache, cbfs_cache)

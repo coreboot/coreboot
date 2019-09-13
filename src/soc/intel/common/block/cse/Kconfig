@@ -31,3 +31,9 @@ config SOC_INTEL_CSE_RW_CBFS_NAME
 	default "me_rw"
 	help
 	 CBFS entry name for Intel CSE CBFS RW blob
+
+config SOC_INTEL_CSE_RW_FILE
+	string "Intel CSE CBFS RW path and filename"
+	default ""
+	help
+	 Intel CSE CBFS RW blob path and file name

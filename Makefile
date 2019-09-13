@@ -42,6 +42,12 @@ absobj := $(abspath $(obj))
 COREBOOT_EXPORTS := COREBOOT_EXPORTS
 COREBOOT_EXPORTS += top src srck obj objutil objk
 
+# reproducible builds
+LANG:=C
+LC_ALL:=C
+TZ:=UTC0
+COREBOOT_EXPORTS += LANG LC_ALL TZ
+
 DOTCONFIG ?= $(top)/.config
 KCONFIG_CONFIG = $(DOTCONFIG)
 KCONFIG_AUTOADS := $(obj)/cb-config.ads

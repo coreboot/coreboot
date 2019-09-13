@@ -113,30 +113,6 @@ static inline void lapic_write_atomic(unsigned long reg, unsigned long v)
 # define lapic_write_around(x, y) lapic_write_atomic((x), (y))
 #endif
 
-static inline int lapic_remote_read(int apicid, int reg, unsigned long *pvalue)
-{
-	int timeout;
-	unsigned long status;
-	int result;
-	lapic_wait_icr_idle();
-	lapic_write_around(LAPIC_ICR2, SET_LAPIC_DEST_FIELD(apicid));
-	lapic_write_around(LAPIC_ICR, LAPIC_DM_REMRD | (reg >> 4));
-	timeout = 0;
-	do {
-#if 0
-		udelay(100);
-#endif
-		status = lapic_read(LAPIC_ICR) & LAPIC_ICR_RR_MASK;
-	} while (status == LAPIC_ICR_RR_INPROG && timeout++ < 1000);
-
-	result = -1;
-	if (status == LAPIC_ICR_RR_VALID) {
-		*pvalue = lapic_read(LAPIC_RRR);
-		result = 0;
-	}
-	return result;
-}
-
 void do_lapic_init(void);
 
 /* See if I need to initialize the local APIC */

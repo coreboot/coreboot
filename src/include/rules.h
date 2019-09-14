@@ -267,7 +267,8 @@
 #endif
 
 #define ENV_ROMSTAGE_OR_BEFORE \
-	(ENV_DECOMPRESSOR || ENV_BOOTBLOCK || ENV_VERSTAGE || ENV_ROMSTAGE)
+	(ENV_DECOMPRESSOR || ENV_BOOTBLOCK || ENV_ROMSTAGE || \
+	(ENV_VERSTAGE && CONFIG(VBOOT_STARTS_IN_BOOTBLOCK)))
 
 #if CONFIG(ARCH_X86)
 /* Indicates memory layout is determined with arch/x86/car.ld. */

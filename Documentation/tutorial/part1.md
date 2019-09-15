@@ -1,5 +1,5 @@
-coreboot Lesson 1: Starting from scratch
-========================================
+Tutorial, part 1: Starting from scratch
+===========================================
 
 From a fresh Ubuntu 16.04 or 18.04 install, here are all the steps required for
 a very basic build:

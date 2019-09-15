@@ -12,7 +12,7 @@ Please see :doc:`../../northbridge/intel/haswell/mrc.bin`.
 
 ```eval_rst
 If you haven't already, build the coreboot toolchain as described in
-:doc:`../../lessons/lesson1`.
+:doc:`../../tutorial/part1`.
 ```
 
 A fully working image should be possible so long as you have the

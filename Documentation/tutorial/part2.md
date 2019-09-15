@@ -1,4 +1,4 @@
-# coreboot Lesson 2: Submitting a patch to coreboot.org
+# Tutorial, part 2: Submitting a patch to coreboot.org
 
 ## Part 1: Setting up an account at coreboot.org
 

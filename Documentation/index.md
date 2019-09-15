@@ -161,7 +161,7 @@ for example OpenBSD, is probably the closest cousin of our approach.
 Contents:
 
 * [Getting Started](getting_started/index.md)
-* [Rookie Guide](lessons/index.md)
+* [Tutorial](tutorial/index.md)
 * [Coding Style](coding_style.md)
 * [Project Ideas](contributing/project_ideas.md)
 * [Code of Conduct](community/code_of_conduct.md)

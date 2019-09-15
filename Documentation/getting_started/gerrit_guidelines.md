@@ -46,11 +46,11 @@ clarification, see the Developer's Certificate of Origin in the coreboot
 * Let non-trivial patches sit in a review state for at least 24 hours
 before submission. Remember that there are coreboot developers in timezones
 all over the world, and everyone should have a chance to contribute.
-Trivial patches would be things like whitespace changes or spelling fixes.
-In general, small changes that don’t impact the final binary output. The
+Trivial patches would be things like whitespace changes or spelling fixes,
+in general those that don’t impact the final binary output. The
 24-hour period would start at submission, and would be restarted at any
 update which significantly changes any part of the patch. Patches can be
-'Fast-tracked' and submitted in under this 24 hour with the agreement of at
+'Fast-tracked' and submitted in under 24 hours with the agreement of at
 least 3 +2 votes.
 
 * Do not +2 patches that you authored or own, even for something as trivial

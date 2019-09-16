@@ -52,4 +52,8 @@ config MRC_CACHE_SIZE
 	hex
 	default 0x10000
 
+config MMCONF_BASE_ADDRESS
+	hex
+	default 0xe0000000
+
 endif

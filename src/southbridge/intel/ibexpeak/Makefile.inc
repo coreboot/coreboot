@@ -37,7 +37,10 @@ ramstage-y += madt.c
 
 smm-y += smihandler.c me.c ../bd82x6x/me_8.x.c ../bd82x6x/pch.c
 
-romstage-y += ../bd82x6x/early_usb.c early_smbus.c ../bd82x6x/early_me.c ../bd82x6x/me_status.c ../common/gpio.c early_thermal.c
+romstage-y += early_smbus.c
+romstage-y +=../bd82x6x/early_me.c
+romstage-y +=../bd82x6x/me_status.c
+romstage-y += early_thermal.c
 romstage-y += ../bd82x6x/early_rcba.c
 
 endif

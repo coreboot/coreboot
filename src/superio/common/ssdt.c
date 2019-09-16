@@ -127,11 +127,11 @@ static void ldn_gen_resources_use(struct device *dev)
 		if (!res || !res->base || !res->size)
 			continue;
 
-		snprintf(name, sizeof(name), "IO%XB", i);
+		snprintf(name, sizeof(name), "IO%zXB", i);
 		name[4] = '\0';
 		acpigen_write_name_integer(name, res->base);
 
-		snprintf(name, sizeof(name), "IO%XS", i);
+		snprintf(name, sizeof(name), "IO%zXS", i);
 		name[4] = '\0';
 		acpigen_write_name_integer(name, res->size);
 	}

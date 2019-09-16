@@ -30,6 +30,9 @@
 ## SUCH DAMAGE.
 ##
 
+ifneq ($(words $(CURDIR)),1)
+    $(error Error: Path to the main directory cannot contain spaces)
+endif
 top := $(CURDIR)
 src := src
 srck := $(top)/util/kconfig

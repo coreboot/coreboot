@@ -9,7 +9,7 @@
 # For patches adding or removing a name: git log -i -S "NAME" --source --all
 
 9elements Agency GmbH
-Advanced Micro Devices, Inc
+Advanced Micro Devices, Inc.
 Alex Züpke
 Alexander Couzens
 Alexandru Gagniuc
@@ -19,16 +19,24 @@ Arthur Heymans
 Carl-Daniel Hailfinger
 coresystems GmbH
 Damien Zammit
+David Hendricks
+David Mosberger-Tang
 Denis Dowling
 DENX Software Engineering
+DMP Electronics Inc.
+Drew Eckhardt
+Egbert Eich
 Eric Biederman
 Eswar Nallusamy
 Facebook, Inc.
+Felix Held
+Frederic Potter
 Free Software Foundation, Inc.
-Freescale Semiconductor, Inc
+Freescale Semiconductor, Inc.
 Gary Jennejohn
 Gerd Hoffmann
 Google LLC
+Greg Watson
 Imagination Technologies
 Intel Corporation
 Jason Zhao
@@ -38,26 +46,33 @@ Keith Hui
 Kshitij
 Kyösti Mälkki
 Lei Wen
+Li-Ta Lo
 Libra Li
 Linus Torvalds
+Linux Networx, Inc.
 Marc Jones
 Marek Vasut
 Marius Gröger
-Marvell Semiconductor Inc
+Martin Mares
+Marvell Semiconductor Inc.
+MediaTek Inc.
 MontaVista Software, Inc.
+Myles Watson
 Nicholas Sielicki
 Nick Barker
+Nico Huber
 Patrick Georgi
 Patrick Rudolph
 PC Engines GmbH
 Per Odlund
 Peter Stuge
-Raptor Engineering, LLC.
+Raptor Engineering, LLC
 Richard Woodruff
 Ronald G. Minnich
 Rudolf Marek
 Russell King
 Sage Electronic Engineering, LLC
+SciTech Software, Inc.
 secunet Security Networks AG
 Siemens AG
 Silicon Integrated System Corporation
@@ -83,3 +98,4 @@ src/arch
 src/commonlib
 src/console
 src/cpu
+src/device

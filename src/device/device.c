@@ -1,20 +1,6 @@
 /*
  * This file is part of the coreboot project.
  *
- * It was originally based on the Linux kernel (arch/i386/kernel/pci-pc.c).
- *
- * Modifications are:
- * Copyright (C) 2003 Eric Biederman <ebiederm@xmission.com>
- * Copyright (C) 2003-2004 Linux Networx
- * (Written by Eric Biederman <ebiederman@lnxi.com> for Linux Networx)
- * Copyright (C) 2003 Ronald G. Minnich <rminnich@gmail.com>
- * Copyright (C) 2004-2005 Li-Ta Lo <ollie@lanl.gov>
- * Copyright (C) 2005-2006 Tyan
- * (Written by Yinghai Lu <yhlu@tyan.com> for Tyan)
- * Copyright (C) 2005-2006 Stefan Reinauer <stepan@openbios.org>
- * Copyright (C) 2009 Myles Watson <mylesgw@gmail.com>
- * Copyright (c) 1999--2000 Martin Mares <mj@suse.cz>
- *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; version 2 of the License.
@@ -26,16 +12,7 @@
  */
 
 /*
- * Lots of mods by Ron Minnich <rminnich@lanl.gov>, with
- * the final architecture guidance from Tom Merritt <tjm@codegen.com>.
- *
- * In particular, we changed from the one-pass original version to
- * Tom's recommended multiple-pass version. I wasn't sure about doing
- * it with multiple passes, until I actually started doing it and saw
- * the wisdom of Tom's recommendations...
- *
- * Lots of cleanups by Eric Biederman to handle bridges, and to
- * handle resource allocation for non-PCI devices.
+ * Originally based on the Linux kernel (arch/i386/kernel/pci-pc.c).
  */
 
 #include <console/console.h>

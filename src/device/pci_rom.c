@@ -1,12 +1,6 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2005 Li-Ta Lo <ollie@lanl.gov>
- * Copyright (C) 2005 Tyan
- * (Written by Yinghai Lu <yhlu@tyan.com> for Tyan)
- * Copyright (C) 2005 Ronald G. Minnich <rminnich@gmail.com>
- * Copyright (C) 2005-2007 Stefan Reinauer <stepan@openbios.org>
- *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; version 2 of the License.

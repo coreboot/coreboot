@@ -67,6 +67,7 @@ int smbus_block_write(unsigned device, unsigned cmd, u8 bytes, const u8 *buf);
 
 void early_thermal_init(void);
 void southbridge_configure_default_intmap(void);
+void pch_setup_cir(int chipset_type);
 
 #ifndef __ROMCC__
 #include <device/device.h>
@@ -99,6 +100,9 @@ void pch_enable(struct device *dev);
 #define ETR3			0xac
 #define  ETR3_CWORWRE		(1 << 18)
 #define  ETR3_CF9GR		(1 << 20)
+
+#define CIR4			0xa9
+#define PMIR			0xac
 
 /* GEN_PMCON_3 bits */
 #define RTC_BATTERY_DEAD	(1 << 2)
@@ -349,6 +353,21 @@ void pch_enable(struct device *dev);
 #define SOFT_RESET_DATA 0x38f8
 
 #define PRSTS		0x3310
+#define CIR6		0x2024
+#define CIR7		0x3314
+#define CIR8		0x3324
+#define CIR9		0x3330
+#define CIR10		0x3340
+#define CIR13		0x3350
+#define CIR14		0x3368
+#define CIR15		0x3378
+#define CIR16		0x3388
+#define CIR17		0x33a0
+#define CIR18		0x33a8
+#define CIR19		0x33c0
+#define CIR20		0x33cc
+#define CIR21		0x33d0
+#define CIR22		0x33d4
 
 #define DIR_ROUTE(x,a,b,c,d) \
   RCBA32(x) = (((d) << DIR_IDR) | ((c) << DIR_ICR) | \

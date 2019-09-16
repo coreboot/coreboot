@@ -61,21 +61,6 @@ static void rcba_config(void)
 	southbridge_configure_default_intmap();
 
 	static const u32 rcba_dump3[] = {
-		/* 3310 */ 0x02060100, 0x0000000f, 0x01020000, 0x80000000,
-		/* 3320 */ 0x00000000, 0x04000000, 0x00000000, 0x00000000,
-		/* 3330 */ 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-		/* 3340 */ 0x000fffff, 0x00000000, 0x00000000, 0x00000000,
-		/* 3350 */ 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-		/* 3360 */ 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-		/* 3370 */ 0x00000000, 0x00000000, 0x7f8fdfff, 0x00000000,
-		/* 3380 */ 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-		/* 3390 */ 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-		/* 33a0 */ 0x00003900, 0x00000000, 0x00000000, 0x00000000,
-		/* 33b0 */ 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-		/* 33c0 */ 0x00010000, 0x00000000, 0x00000000, 0x0001004b,
-		/* 33d0 */ 0x06000008, 0x00010000, 0x00000000, 0x00000000,
-		/* 33e0 */ 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-		/* 33f0 */ 0x00000000, 0x00000000, 0x00000000, 0x00000000,
 		/* 3400 */ 0x0000001c, 0x00000080, 0x00000000, 0x00000000,
 		/* 3410 */ 0x00000c61, 0x00000000, 0x16fc1fe1, 0xbf4f001f,
 		/* 3420 */ 0x00000000, 0x00060010, 0x0000001d, 0x00000000,
@@ -131,8 +116,8 @@ static void rcba_config(void)
 	unsigned i;
 
 	for (i = 0; i < sizeof(rcba_dump3) / 4; i++) {
-		RCBA32(4 * i + 0x3310) = rcba_dump3[i];
-		(void)RCBA32(4 * i + 0x3310);
+		RCBA32(4 * i + 0x3400) = rcba_dump3[i];
+		(void)RCBA32(4 * i + 0x3400);
 	}
 }
 
@@ -180,6 +165,8 @@ void mainboard_romstage_entry(void)
 	pci_write_config8(PCH_LPC_DEV, GPIO_CNTL, 0x10);
 
 	setup_pch_gpios(&mainboard_gpio_map);
+
+	pch_setup_cir(NEHALEM_MOBILE);
 
 	/* This should probably go away. Until now it is required
 	 * and mainboard specific

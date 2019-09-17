@@ -236,13 +236,6 @@ Field( SMIC, ByteAcc, NoLock, Preserve) {
 	offset (0x1e59), /* UART1 D3 State */
 	U1DS, 3,
 
-	offset (0x1e5e), /* SATA D3 Control */
-	SATD, 2,
-	, 1,
-	SAPD, 1,
-	offset (0x1e5f), /* SATA D3 State */
-	SADS, 3,
-
 	offset (0x1e71), /* SD D3 State */
 	SDDS, 3,
 
@@ -315,7 +308,7 @@ Field(FCFG, DwordAcc, NoLock, Preserve)
 /*
  * Arg0:device:
  *  5=I2C0, 6=I2C1, 7=I2C2, 8=I2C3, 11=UART0, 12=UART1,
- *  15=SATA, 18=EHCI, 23=xHCI, 24=SD
+ *  18=EHCI, 23=xHCI, 24=SD
  * Arg1:D-state
  */
 Mutex (FDAS, 0) /* FCH Device AOAC Semophore */
@@ -382,7 +375,6 @@ Method(FDDC, 2, Serialized)
 					Store(U1DS, Local0)
 				}
 			}
-/* todo			Case(15) { STD0()} */ /* SATA */
 		}
 	} else {
 		/* put device into D3cold */
@@ -435,7 +427,6 @@ Method(FDDC, 2, Serialized)
 				}
 				Store(0x03, U1TD)
 			}
-/* todo			Case(15) { STD3()} */ /* SATA */
 		}
 		if(LEqual(I1TD, 3)) {
 			if(LEqual(I2TD, 3)) {

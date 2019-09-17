@@ -454,8 +454,6 @@ void southbridge_init(void *chip_info)
 
 static void set_sb_final_nvs(void)
 {
-	const struct device *sata;
-
 	struct global_nvs_t *gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
 	if (gnvs == NULL)
 		return;
@@ -465,9 +463,6 @@ static void set_sb_final_nvs(void)
 	gnvs->aoac.ic4e = is_aoac_device_enabled(FCH_AOAC_DEV_I2C4);
 	gnvs->aoac.ut0e = is_aoac_device_enabled(FCH_AOAC_DEV_UART0);
 	gnvs->aoac.ut1e = is_aoac_device_enabled(FCH_AOAC_DEV_UART1);
-	/* Rely on these being in sync with devicetree */
-	sata = pcidev_path_on_root(SATA_DEVFN);
-	gnvs->aoac.st_e = sata && sata->enabled ? 1 : 0;
 	gnvs->aoac.espi = 1;
 }
 

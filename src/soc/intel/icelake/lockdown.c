@@ -15,6 +15,7 @@
 
 #include <device/mmio.h>
 #include <intelblocks/cfg.h>
+#include <intelblocks/pmclib.h>
 #include <intelpch/lockdown.h>
 #include <soc/pm.h>
 
@@ -60,6 +61,8 @@ static void pmc_lockdown_cfg(int chipset_lockdown)
 	pmc_lock_pmsync();
 	/* Lock down ABASE and sleep stretching policy */
 	pmc_lock_abase();
+	/* Make sure payload/OS can't trigger global reset */
+	pmc_global_reset_disable_and_lock();
 
 	if (chipset_lockdown == CHIPSET_LOCKDOWN_COREBOOT)
 		pmc_lock_smi();

@@ -26,7 +26,7 @@ static void do_force_global_reset(void)
 	/*
 	 * BIOS should ensure it does a global reset
 	 * to reset both host and Intel ME by setting
-	 * PCH PMC [B0:D31:F2 register offset 0x1048 bit 20]
+	 * PCH PMC [B0:D31:F2 register offset 0xAC bit 20]
 	 */
 	pmc_global_reset_enable(true);
 

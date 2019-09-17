@@ -25,6 +25,8 @@ enum {
 	SKU_1_2A2C = 1,
 	SKU_9_HDMI = 9,
 	SKU_17_LTE = 17,
+	SKU_18_LTE_TS = 18,
+	SKU_37_2A2C_360 = 37,
 };
 
 struct gpio_with_delay {
@@ -78,6 +80,7 @@ void variant_smi_sleep(u8 slp_typ)
 
 	switch (get_board_sku()) {
 	case SKU_17_LTE:
+	case SKU_18_LTE_TS:
 		power_off_lte_module(slp_typ);
 		return;
 	default:

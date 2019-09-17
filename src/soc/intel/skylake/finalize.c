@@ -26,6 +26,7 @@
 #include <intelblocks/lpc_lib.h>
 #include <intelblocks/p2sb.h>
 #include <intelblocks/pcr.h>
+#include <intelblocks/tco.h>
 #include <intelblocks/thermal.h>
 #include <reg_script.h>
 #include <spi-generic.h>
@@ -71,6 +72,8 @@ static void pch_finalize_script(struct device *dev)
 	uint8_t *pmcbase;
 	config_t *config;
 	u8 reg8;
+
+	tco_lockdown();
 
 	/* Display me status before we hide it */
 	intel_me_status();

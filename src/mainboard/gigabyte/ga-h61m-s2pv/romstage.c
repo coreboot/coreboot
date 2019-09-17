@@ -25,14 +25,11 @@
 
 void pch_enable_lpc(void)
 {
-	if (CONFIG(BOARD_GIGABYTE_GA_H61M_S2PV)) {
-		pci_write_config16(PCH_LPC_DEV, LPC_EN, KBC_LPC_EN |
-				CNF1_LPC_EN | CNF2_LPC_EN | COMA_LPC_EN);
-		pci_write_config16(PCH_LPC_DEV, LPC_IO_DEC, 0x10);
+	pci_write_config16(PCH_LPC_DEV, LPC_EN, KBC_LPC_EN | CNF1_LPC_EN);
 
-	} else if (CONFIG(BOARD_GIGABYTE_GA_H61MA_D3V)) {
-		pci_write_config16(PCH_LPC_DEV, LPC_EN, KBC_LPC_EN |
-				CNF1_LPC_EN);
+	if (!CONFIG(NO_UART_ON_SUPERIO)) {
+		pci_or_config16(PCH_LPC_DEV, LPC_EN, COMA_LPC_EN);
+		pci_write_config16(PCH_LPC_DEV, LPC_IO_DEC, 0x10);
 	}
 }
 

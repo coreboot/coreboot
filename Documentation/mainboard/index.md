@@ -2,17 +2,17 @@
 
 This section contains documentation about coreboot on specific mainboards.
 
+## ASRock
+
+- [H81M-HDS](asrock/h81m-hds.md)
+- [H110M-DVS](asrock/h110m-dvs.md)
+
 ## ASUS
 
 - [F2A85-M](asus/f2a85-m.md)
 - [P8H61-M LX](asus/p8h61-m_lx.md)
 - [P8H61-M Pro](asus/p8h61-m_pro.md)
 - [P8Z77-M Pro](asus/p8z77-m_pro.md)
-
-## ASRock
-
-- [H81M-HDS](asrock/h81m-hds.md)
-- [H110M-DVS](asrock/h110m-dvs.md)
 
 ## Cavium
 
@@ -25,12 +25,6 @@ The boards in this section are not real mainboards, but emulators.
 - [Spike RISC-V emulator](emulation/spike-riscv.md)
 - [Qemu RISC-V emulator](emulation/qemu-riscv.md)
 - [Qemu AArch64 emulator](emulation/qemu-aarch64.md)
-
-## Intel
-
-- [DG43GT](intel/dg43gt.md)
-- [IceLake RVP](intel/icelake_rvp.md)
-- [KBLRVP11](intel/kblrvp11.md)
 
 ## Facebook
 
@@ -48,11 +42,6 @@ The boards in this section are not real mainboards, but emulators.
 
 - [Dragonegg](google/dragonegg.md)
 
-## Open Cellular
-
-- [Elgon](opencellular/elgon.md)
-- [Rotundu](opencellular/rotundu.md)
-
 ## HP
 
 - [Compaq 8200 Elite SFF](hp/compaq_8200_sff.md)
@@ -63,16 +52,18 @@ The boards in this section are not real mainboards, but emulators.
 - [EliteBook common](hp/elitebook_series.md)
 - [EliteBook 8760w](hp/8760w.md)
 
+## Intel
+
+- [DG43GT](intel/dg43gt.md)
+- [IceLake RVP](intel/icelake_rvp.md)
+- [KBLRVP11](intel/kblrvp11.md)
+
 ## Lenovo
 
 - [Mainboard codenames](lenovo/codenames.md)
 - [Hardware Maintenance Manual of ThinkPads](lenovo/thinkpad_hmm.md)
 - [T4xx common](lenovo/t4xx_series.md)
 - [X2xx common](lenovo/x2xx_series.md)
-
-## Portwell
-
-- [PQ7-M107](portwell/pq7-m107.md)
 
 ### Sandy Bridge series
 
@@ -92,17 +83,23 @@ The boards in this section are not real mainboards, but emulators.
 
 - [MS-7707](msi/ms7707/ms7707.md)
 
-## PC Engines
+## Open Cellular
 
-- [APU2](pcengines/apu2.md)
-
-## Roda
-
-- [RK9 Flash Header](roda/rk9/flash_header.md)
+- [Elgon](opencellular/elgon.md)
+- [Rotundu](opencellular/rotundu.md)
 
 ## PC Engines
 
 - [APU1](pcengines/apu1.md)
+- [APU2](pcengines/apu2.md)
+
+## Portwell
+
+- [PQ7-M107](portwell/pq7-m107.md)
+
+## Roda
+
+- [RK9 Flash Header](roda/rk9/flash_header.md)
 
 ## SiFive
 

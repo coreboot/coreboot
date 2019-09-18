@@ -1,4 +1,4 @@
-config BOARD_SUPERMICRO_BASEBOARD_X11SSH
+config BOARD_SUPERMICRO_BASEBOARD_X11_LGA1151_SERIES
 	def_bool n
 	select BOARD_ROMSIZE_KB_16384
 	select HAVE_ACPI_RESUME
@@ -12,7 +12,27 @@ config BOARD_SUPERMICRO_BASEBOARD_X11SSH
 	select GENERATE_SMBIOS_TABLES
 	select IPMI_KCS
 
-if BOARD_SUPERMICRO_BASEBOARD_X11SSH
+if BOARD_SUPERMICRO_BASEBOARD_X11_LGA1151_SERIES
+
+config MAINBOARD_FAMILY
+	string
+	default "Supermicro_X11_LGA1151_SERIES"
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "X11SSH-TF"	if BOARD_SUPERMICRO_X11SSH_TF
+
+config MAINBOARD_DIR
+	string
+	default "supermicro/x11-lga1151-series"
+
+config VARIANT_DIR
+	string
+	default "x11ssh-tf"	if BOARD_SUPERMICRO_X11SSH_TF
+
+config OVERRIDE_DEVICETREE
+	string
+	default "variants/$(CONFIG_VARIANT_DIR)/overridetree.cb"
 
 config VBOOT
 	select VBOOT_NO_BOARD_SUPPORT
@@ -40,22 +60,6 @@ config IRQ_SLOT_COUNT
 	int
 	default 18
 
-config MAINBOARD_DIR
-	string
-	default "supermicro/x11ssh"
-
-config VARIANT_DIR
-	string
-	default "tf" if BOARD_SUPERMICRO_X11SSH_TF
-
-config DEVICETREE
-	string
-	default "variants/$(CONFIG_VARIANT_DIR)/devicetree.cb"
-
-config MAINBOARD_PART_NUMBER
-	string
-	default "X11SSH-TF" if BOARD_SUPERMICRO_X11SSH_TF
-
 config MAX_CPUS
 	int
 	default 8
@@ -76,4 +80,4 @@ config DIMM_SPD_SIZE
 	int
 	default 512
 
-endif # BOARD_SUPERMICRO_BASEBOARD_X11SSH
+endif  # BOARD_SUPERMICRO_BASEBOARD_X11_LGA1151_SERIES

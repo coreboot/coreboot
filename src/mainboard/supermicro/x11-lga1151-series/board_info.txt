@@ -1,0 +1,2 @@
+Category: server
+Vendor name: Supermicro

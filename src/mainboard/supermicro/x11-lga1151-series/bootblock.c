@@ -15,7 +15,7 @@
 
 #include <bootblock_common.h>
 #include <soc/gpio.h>
-#include "gpio.h"
+#include <variant/gpio.h>
 #include <superio/aspeed/common/aspeed.h>
 #include <superio/aspeed/ast2400/ast2400.h>
 #include <delay.h>

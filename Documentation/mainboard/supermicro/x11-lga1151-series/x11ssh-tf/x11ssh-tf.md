@@ -15,7 +15,7 @@ The CH341 was found working, while Dediprog won't detect the chip.
 For more details have a look at the [flashing tutorial].
 
 The flash IC can be found between the two PCIe slots near the southbridge:
-![](x11ssh_flash.jpg)
+![](x11ssh-tf_flash.jpg)
 
 ## BMC (IPMI)
 
@@ -68,6 +68,6 @@ mainboard near the [AST2400]. This chip is an [MX25L25635F].
 [flashrom]: https://flashrom.org/Flashrom
 [MX25L25635F]: https://media.digikey.com/pdf/Data%20Sheets/Macronix/MX25L25635F.pdf
 [N25Q128A]: https://www.micron.com/~/media/Documents/Products/Data%20Sheet/NOR%20Flash/Serial%20NOR/N25Q/n25q_128mb_3v_65nm.pdf
-[flashing tutorial]: ../../flash_tutorial/ext_power.md
-[Intel FSP2.0]: ../../soc/intel/fsp/index.md
+[flashing tutorial]: ../../../../flash_tutorial/ext_power.md
+[Intel FSP2.0]: ../../../../soc/intel/fsp/index.md
 [Supermicro X11SSH-TF]: https://www.supermicro.com/en/products/motherboard/X11SSH-TF

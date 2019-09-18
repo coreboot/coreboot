@@ -13,8 +13,8 @@
  * GNU General Public License for more details.
  */
 
-#ifndef _GPIOX11SSHTF_H
-#define _GPIOX11SSHTF_H
+#ifndef _GPIO_X11SSH_TF_H
+#define _GPIO_X11SSH_TF_H
 
 #include <soc/gpe.h>
 #include <soc/gpio.h>
@@ -245,4 +245,4 @@ static const struct pad_config early_gpio_table[] = {
 };
 
 #endif /* __ACPI__ */
-#endif /* _GPIOX11SSHTF_H */
+#endif /* _GPIO_X11SSH_TF_H */

@@ -13,7 +13,7 @@
 
 #include <bootstate.h>
 #include <soc/ramstage.h>
-#include "gpio.h"
+#include <variant/gpio.h>
 
 void mainboard_silicon_init_params(FSP_SIL_UPD *params)
 {

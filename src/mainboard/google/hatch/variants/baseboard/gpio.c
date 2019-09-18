@@ -31,7 +31,7 @@ static const struct pad_config gpio_table[] = {
 	/* A7  : PP3300_SOC_A */
 	PAD_NC(GPP_A7, NONE),
 	/* A8  : PEN_GARAGE_DET_L (wake) */
-	PAD_CFG_GPI_GPIO_DRIVER_SCI(GPP_A8, NONE, DEEP, LEVEL, NONE),
+	PAD_CFG_GPI_SCI(GPP_A8, NONE, DEEP, EDGE_SINGLE, NONE),
 	/* A9  : ESPI_CLK */
 	/* A10 : FPMCU_PCH_BOOT1 */
 	PAD_CFG_GPO(GPP_A10, 0, DEEP),

@@ -411,13 +411,6 @@
 		PAD_IOSSTATE(TxDRxE))
 
 #if CONFIG(SOC_INTEL_COMMON_BLOCK_GPIO_DUAL_ROUTE_SUPPORT)
-/* GPI, GPIO Driver, SCI interrupt */
-#define PAD_CFG_GPI_GPIO_DRIVER_SCI(pad, pull, rst, trig, inv)	\
-	_PAD_CFG_STRUCT(pad,		\
-		PAD_FUNC(GPIO) | PAD_RESET(rst) | PAD_BUF(TX_DISABLE) | \
-			PAD_IRQ_CFG(SCI, trig, inv),	\
-		PAD_PULL(pull) | PAD_CFG1_GPIO_DRIVER | PAD_IOSSTATE(TxDRxE))
-
 #define PAD_CFG_GPI_DUAL_ROUTE(pad, pull, rst, trig, inv, route1, route2) \
 	_PAD_CFG_STRUCT(pad,						\
 		PAD_FUNC(GPIO) | PAD_RESET(rst) | PAD_BUF(TX_DISABLE) | \

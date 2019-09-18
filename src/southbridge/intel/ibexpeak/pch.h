@@ -352,6 +352,8 @@ void pch_enable(struct device *dev);
 #define SOFT_RESET_CTRL 0x38f4
 #define SOFT_RESET_DATA 0x38f8
 
+#define PRSTS		0x3310
+
 #define DIR_ROUTE(x,a,b,c,d) \
   RCBA32(x) = (((d) << DIR_IDR) | ((c) << DIR_ICR) | \
                ((b) << DIR_IBR) | ((a) << DIR_IAR))

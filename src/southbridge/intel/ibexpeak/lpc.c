@@ -266,10 +266,11 @@ static void pch_power_options(struct device *dev)
 	outl(reg32, pmbase + 0x04);
 
 	/* Clear magic status bits to prevent unexpected wake */
-	reg32 = RCBA32(0x3310);
-	reg32 |= (1 << 4)|(1 << 5)|(1 << 0);
-	RCBA32(0x3310) = reg32;
+	reg32 = RCBA32(PRSTS);
+	reg32 |= (1 << 5) | (1 << 4) | (1 << 0);
+	RCBA32(PRSTS) = reg32;
 
+	/* FIXME: Does this even exist? */
 	reg32 = RCBA32(0x3f02);
 	reg32 &= ~0xf;
 	RCBA32(0x3f02) = reg32;

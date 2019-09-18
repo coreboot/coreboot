@@ -34,7 +34,7 @@ config FMDFILE
 
 config CBFS_SIZE
 	hex
-	default 0x009aa000 if !VBOOT
+	default 0xb00000
 
 config IRQ_SLOT_COUNT
 	int

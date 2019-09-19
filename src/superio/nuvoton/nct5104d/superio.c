@@ -106,6 +106,47 @@ static void route_pins_to_uart(struct device *dev, bool to_uart)
 	pnp_write_config(dev, 0x1c, reg);
 }
 
+static void reset_gpio_default_in(struct device *dev)
+{
+	pnp_set_logical_device(dev);
+
+	/* Soft reset GPIOs to default state: IN */
+	switch (dev->path.pnp.device) {
+	case NCT5104D_GPIO0:
+		pnp_write_config(dev, NCT5104D_GPIO0_IO, 0xFF);
+		break;
+	case NCT5104D_GPIO1:
+		pnp_write_config(dev, NCT5104D_GPIO1_IO, 0xFF);
+		break;
+	case NCT5104D_GPIO6:
+		pnp_write_config(dev, NCT5104D_GPIO6_IO, 0xFF);
+		break;
+	default:
+		break;
+	}
+}
+
+static void reset_gpio_default_od(struct device *dev)
+{
+	struct device *gpio0, *gpio1, *gpio6;
+
+	gpio0 = dev_find_slot_pnp(dev->path.pnp.port, NCT5104D_GPIO0);
+	gpio1 = dev_find_slot_pnp(dev->path.pnp.port, NCT5104D_GPIO1);
+	gpio6 = dev_find_slot_pnp(dev->path.pnp.port, NCT5104D_GPIO6);
+
+	pnp_set_logical_device(dev);
+
+	/* Soft reset GPIOs to default state: Open-drain */
+	if (gpio0 && gpio0->enabled)
+		pnp_write_config(dev, NCT5104D_GPIO0_PP_OD, 0xFF);
+
+	if (gpio1 && gpio1->enabled)
+		pnp_write_config(dev, NCT5104D_GPIO1_PP_OD, 0xFF);
+
+	if (gpio6 && gpio6->enabled)
+		pnp_write_config(dev, NCT5104D_GPIO6_PP_OD, 0xFF);
+}
+
 static void nct5104d_init(struct device *dev)
 {
 	struct superio_nuvoton_nct5104d_config *conf = dev->chip_info;
@@ -128,6 +169,13 @@ static void nct5104d_init(struct device *dev)
 	case NCT5104D_GPIO0:
 	case NCT5104D_GPIO1:
 		route_pins_to_uart(dev, false);
+		reset_gpio_default_in(dev);
+		break;
+	case NCT5104D_GPIO6:
+		reset_gpio_default_in(dev);
+		break;
+	case NCT5104D_GPIO_PP_OD:
+		reset_gpio_default_od(dev);
 		break;
 	default:
 		break;
@@ -152,10 +200,10 @@ static struct pnp_info pnp_dev_info[] = {
 	{ NULL, NCT5104D_SP3,  PNP_IO0 | PNP_IRQ0, 0x07f8, },
 	{ NULL, NCT5104D_SP4,  PNP_IO0 | PNP_IRQ0, 0x07f8, },
 	{ NULL, NCT5104D_GPIO_WDT},
-	{ NULL, NCT5104D_GPIO_PP_OD},
 	{ NULL, NCT5104D_GPIO0},
 	{ NULL, NCT5104D_GPIO1},
 	{ NULL, NCT5104D_GPIO6},
+	{ NULL, NCT5104D_GPIO_PP_OD},
 	{ NULL, NCT5104D_PORT80},
 };
 

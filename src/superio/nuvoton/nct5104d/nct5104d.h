@@ -26,6 +26,16 @@
 #define GLOBAL_OPTION_CR26  0x26
 #define CR26_LOCK_REG       (1 << 4) /* required to access CR10/CR11 */
 
+/* LDN 0x07 specific registers */
+#define NCT5104D_GPIO0_IO   0xE0
+#define NCT5104D_GPIO1_IO   0xE4
+#define NCT5104D_GPIO6_IO   0xF8
+
+/* LDN 0x0F specific registers */
+#define NCT5104D_GPIO0_PP_OD   0xE0
+#define NCT5104D_GPIO1_PP_OD   0xE1
+#define NCT5104D_GPIO6_PP_OD   0xE6
+
 /* Logical Device Numbers (LDN). */
 #define NCT5104D_FDC        0x00 /* FDC - not pinned out */
 #define NCT5104D_SP1        0x02 /* UARTA */

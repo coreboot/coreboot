@@ -1,0 +1,7 @@
+Category: server
+Vendor name: Supermicro
+Board name: X11SSM-F
+Board URL: https://www.supermicro.com/en/products/motherboard/X11SSM-F
+ROM protocol: SPI
+ROM socketed: y
+Flashrom support: y

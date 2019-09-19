@@ -18,5 +18,7 @@ bootblock-y += bootblock.c
 
 ramstage-y += ramstage.c
 
+CPPFLAGS_common += -I$(src)/mainboard/$(MAINBOARDDIR)/include
+
 subdirs-y += variants/$(VARIANT_DIR)
 CPPFLAGS_common += -I$(src)/mainboard/$(MAINBOARDDIR)/variants/$(VARIANT_DIR)/include

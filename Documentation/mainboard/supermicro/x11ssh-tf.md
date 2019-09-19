@@ -27,8 +27,7 @@ mainboard near the [AST2400]. This chip is an [MX25L25635F].
 
 - Intel SGX causes secondary APs to crash (disabled for now).
 - Tianocore doesn't work with Aspeed NGI, as it's text mode only.
-- After S5 resume coreboot detects more DIMMs than installed, causing FSP-M
-  to fail.
+- SMBus / I2C does not work (interrupt timeout)
 
 ## Tested and working
 

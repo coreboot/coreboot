@@ -239,7 +239,8 @@ const char *generic_wifi_acpi_name(const struct device *dev)
 {
 	static char wifi_acpi_name[WIFI_ACPI_NAME_MAX_LEN];
 
-	snprintf(wifi_acpi_name, sizeof(wifi_acpi_name), "WF%02x",
+	/* ACPI 6.3, ASL 20.2.2: (Name Objects Encoding). */
+	snprintf(wifi_acpi_name, sizeof(wifi_acpi_name), "WF%02X",
 		 (dev_path_encode(dev) & 0xff));
 	return wifi_acpi_name;
 }

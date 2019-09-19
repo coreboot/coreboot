@@ -212,11 +212,10 @@ void dramc_sw_impedance_save_reg(u8 freq_group)
 	clrsetbits_le32(&ch[0].phy.shu[0].ca_cmd[11], 0x1f << 22,
 		sw_impedance[ca_term][1] << 22);
 
-	clrsetbits_le32(&ch[0].phy.shu[0].ca_cmd[3],
-		SHU1_CA_CMD3_RG_TX_ARCMD_PU_PRE_MASK,
-		1 << SHU1_CA_CMD3_RG_TX_ARCMD_PU_PRE_SHIFT);
-	clrbits_le32(&ch[0].phy.shu[0].ca_cmd[0],
-		SHU1_CA_CMD0_RG_TX_ARCLK_DRVN_PRE_MASK);
+	SET32_BITFIELDS(&ch[0].phy.shu[0].ca_cmd[3],
+			SHU1_CA_CMD3_RG_TX_ARCMD_PU_PRE, 1);
+	SET32_BITFIELDS(&ch[0].phy.shu[0].ca_cmd[0],
+			SHU1_CA_CMD0_RG_TX_ARCLK_DRVN_PRE, 0);
 
 	clrsetbits_le32(&ch[0].phy.shu[0].ca_dll[1], 0x1f << 16, 0x9 << 16);
 }

@@ -92,10 +92,8 @@ static void ddr_phy_pll_setting(u8 chn, u8 freq_group)
 	clrsetbits_le32(&ch[chn].phy.ckmux_sel, 0x3 << 18 | 0x3 << 16, 0x0);
 	clrsetbits_le32(&ch[chn].phy.shu[0].ca_cmd[0], 0x3 << 18, 0x1 << 18);
 
-	if (ca_dll_mode[chn] == DLL_SLAVE)
-		setbits_le32(&ch[chn].ao.dvfsdll, 0x1 << 1);
-	else
-		clrbits_le32(&ch[chn].ao.dvfsdll, 0x1 << 1);
+	SET32_BITFIELDS(&ch[chn].ao.dvfsdll, DVFSDLL_R_BYPASS_1ST_DLL_SHU1,
+			ca_dll_mode[chn] == DLL_SLAVE);
 
 	bool is_master = (ca_dll_mode[chn] == DLL_MASTER);
 	u8 phdet_out = is_master ? 0x0 : 0x1;
@@ -138,7 +136,7 @@ static void ddr_phy_pll_setting(u8 chn, u8 freq_group)
 	setbits_le32(&ch[chn].phy.ca_cmd[2], 0x1 << 21);
 
 	/* 26M */
-	clrsetbits_le32(&ch[chn].phy.misc_cg_ctrl0, 0x3 << 4, 0x0 << 4);
+	SET32_BITFIELDS(&ch[chn].phy.misc_cg_ctrl0, MISC_CG_CTRL0_CLK_MEM_SEL, 0);
 
 	/* MID FINE_TUNE */
 	clrbits_le32(&ch[chn].phy.shu[0].b[0].dq[6], (0x1 << 26) | (0x1 << 27));
@@ -682,26 +680,26 @@ static u8 dramc_zq_calibration(u8 chn, u8 rank)
 	setbits_le32(&ch[chn].ao.dramc_pd_ctrl, 0x1 << 26);
 	dramc_cke_fix_onoff(chn, true, false);
 
-	clrsetbits_le32(&ch[chn].ao.mrs, MRS_MRSRK_MASK, rank << MRS_MRSRK_SHIFT);
-	setbits_le32(&ch[chn].ao.mpc_option, 0x1 << MPC_OPTION_MPCRKEN_SHIFT);
-	setbits_le32(&ch[chn].ao.spcmd, 0x1 << SPCMD_ZQCEN_SHIFT);
+	SET32_BITFIELDS(&ch[chn].ao.mrs, MRS_MRSRK, rank);
+	SET32_BITFIELDS(&ch[chn].ao.mpc_option, MPC_OPTION_MPCRKEN, 1);
+	SET32_BITFIELDS(&ch[chn].ao.spcmd, SPCMD_ZQCEN, 1);
 
 	if (!wait_us(TIMEOUT_US, read32(&ch[chn].nao.spcmdresp) & 0x1 << 4)) {
 		dramc_dbg("ZQCAL Start fail (time out)\n");
 		return 1;
 	}
 
-	clrbits_le32(&ch[chn].ao.spcmd, 0x1 << SPCMD_ZQCEN_SHIFT);
+	SET32_BITFIELDS(&ch[chn].ao.spcmd, SPCMD_ZQCEN, 0);
 
 	udelay(1);
-	setbits_le32(&ch[chn].ao.spcmd, 0x1 << SPCMD_ZQLATEN_SHIFT);
+	SET32_BITFIELDS(&ch[chn].ao.spcmd, SPCMD_ZQLATEN, 1);
 
 	if (!wait_us(TIMEOUT_US, read32(&ch[chn].nao.spcmdresp) & 0x1 << 6)) {
 		dramc_dbg("ZQCAL Latch fail (time out)\n");
 		return 1;
 	}
 
-	clrbits_le32(&ch[chn].ao.spcmd, 0x1 << SPCMD_ZQLATEN_SHIFT);
+	SET32_BITFIELDS(&ch[chn].ao.spcmd, SPCMD_ZQLATEN, 0);
 	udelay(1);
 	for (size_t i = 0; i < ARRAY_SIZE(regs_bak); i++)
 		write32(regs_bak[i].addr, regs_bak[i].value);

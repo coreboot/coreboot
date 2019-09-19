@@ -89,24 +89,23 @@ extern u8 MR13Value;
 
 static void dramc_auto_refresh_switch(u8 chn, bool option)
 {
-	clrsetbits_le32(&ch[chn].ao.refctrl0, 1 << REFCTRL0_REFDIS_SHIFT,
-		(option ? 0 : 1) << REFCTRL0_REFDIS_SHIFT);
+	SET32_BITFIELDS(&ch[chn].ao.refctrl0, REFCTRL0_REFDIS, option ? 0 : 1);
 
 	if (!option) {
 		/*
 		 * Because HW will actually disable autorefresh after
 		 * refresh_queue empty, we need to wait until queue empty.
 		 */
-		udelay(((read32(&ch[chn].nao.misc_statusa) &
-				MISC_STATUSA_REFRESH_QUEUE_CNT_MASK) >>
-				MISC_STATUSA_REFRESH_QUEUE_CNT_SHIFT) * 4);
+		udelay(READ32_BITFIELD(&ch[chn].nao.misc_statusa,
+				       MISC_STATUSA_REFRESH_QUEUE_CNT) * 4);
 	}
 }
 
 void dramc_cke_fix_onoff(u8 chn, bool cke_on, bool cke_off)
 {
-	clrsetbits_le32(&ch[chn].ao.ckectrl, (0x1 << 6) | (0x1 << 7),
-			((cke_on ? 1 : 0) << 6) | ((cke_off ? 1 : 0) << 7));
+	SET32_BITFIELDS(&ch[chn].ao.ckectrl,
+			CKECTRL_CKEFIXON, cke_on,
+			CKECTRL_CKEFIXOFF, cke_off);
 }
 
 void dramc_mode_reg_write(u8 chn, u8 mr_idx, u8 value)
@@ -114,17 +113,16 @@ void dramc_mode_reg_write(u8 chn, u8 mr_idx, u8 value)
 	u32 ckectrl_bak = read32(&ch[chn].ao.ckectrl);
 
 	dramc_cke_fix_onoff(chn, true, false);
-	clrsetbits_le32(&ch[chn].ao.mrs,
-		MRS_MRSMA_MASK, mr_idx << MRS_MRSMA_SHIFT);
-	clrsetbits_le32(&ch[chn].ao.mrs,
-		MRS_MRSOP_MASK, value << MRS_MRSOP_SHIFT);
-	setbits_le32(&ch[chn].ao.spcmd, 1 << SPCMD_MRWEN_SHIFT);
+	SET32_BITFIELDS(&ch[chn].ao.mrs, MRS_MRSMA, mr_idx);
+	SET32_BITFIELDS(&ch[chn].ao.mrs, MRS_MRSOP, value);
+	SET32_BITFIELDS(&ch[chn].ao.spcmd, SPCMD_MRWEN, 1);
 
 	/* Wait MRW command fired */
-	while ((read32(&ch[chn].nao.spcmdresp) & 1) == 0)
+	while (READ32_BITFIELD(&ch[chn].nao.spcmdresp, SPCMDRESP_MRW_RESPONSE)
+	       == 0)
 		;
 
-	clrbits_le32(&ch[chn].ao.spcmd, 1 << SPCMD_MRWEN_SHIFT);
+	SET32_BITFIELDS(&ch[chn].ao.spcmd, SPCMD_MRWEN, 0);
 	write32(&ch[chn].ao.ckectrl, ckectrl_bak);
 	dramc_dbg("Write MR%d =0x%x\n", mr_idx, value);
 }
@@ -132,13 +130,12 @@ void dramc_mode_reg_write(u8 chn, u8 mr_idx, u8 value)
 static void dramc_mode_reg_write_by_rank(u8 chn, u8 rank,
 		u8 mr_idx, u8 value)
 {
-	u32 mrs_back = read32(&ch[chn].ao.mrs) & MRS_MRSRK_MASK;
+	u32 mrs_bak = READ32_BITFIELD(&ch[chn].ao.mrs, MRS_MRSRK);
 	dramc_dbg("Mode reg write rank%d MR%d = 0x%x\n", rank, mr_idx, value);
 
-	clrsetbits_le32(&ch[chn].ao.mrs,
-		MRS_MRSRK_MASK, rank << MRS_MRSRK_SHIFT);
+	SET32_BITFIELDS(&ch[chn].ao.mrs, MRS_MRSRK, rank);
 	dramc_mode_reg_write(chn, mr_idx, value);
-	clrsetbits_le32(&ch[chn].ao.mrs, MRS_MRSRK_MASK, mrs_back);
+	SET32_BITFIELDS(&ch[chn].ao.mrs, MRS_MRSRK, mrs_bak);
 }
 
 static void move_dramc_delay(u32 *reg_0, u32 *reg_1, u8 shift, s8 shift_coarse_tune)
@@ -225,24 +222,21 @@ static void dramc_write_leveling(u8 chn, u8 rank, u8 freq_group,
 			       freq_group == LP4X_DDR2400))
 		write_leveling_move_dqs_instead_of_clk(chn);
 
-	clrsetbits_le32(&ch[chn].phy.shu[0].rk[rank].ca_cmd[9],
-		SHU1_CA_CMD9_RG_RK_ARFINE_TUNE_CLK_MASK, 0);
+	SET32_BITFIELDS(&ch[chn].phy.shu[0].rk[rank].ca_cmd[9],
+			SHU1_R0_CA_CMD9_RG_RK0_ARPI_CLK, 0);
 
 	for (size_t byte = 0; byte < DQS_NUMBER; byte++) {
 		u32 wrlevel_dq_delay = wr_level[chn][rank][byte] + 0x10;
-		clrsetbits_le32(&ch[chn].phy.shu[0].rk[rank].b[byte].dq[7],
-			FINE_TUNE_PBYTE_MASK,
-			wr_level[chn][rank][byte] << FINE_TUNE_PBYTE_SHIFT);
+		SET32_BITFIELDS(&ch[chn].phy.shu[0].rk[rank].b[byte].dq[7],
+				FINE_TUNE_PBYTE, wr_level[chn][rank][byte]);
 		if (wrlevel_dq_delay >= 0x40) {
 			wrlevel_dq_delay -= 0x40;
 			move_dramc_tx_dq(chn, rank, byte, 2);
 			move_dramc_tx_dq_oen(chn, rank, byte, 2);
 		}
-
-		clrsetbits_le32(&ch[chn].phy.shu[0].rk[rank].b[byte].dq[7],
-			FINE_TUNE_DQM_MASK | FINE_TUNE_DQ_MASK,
-			(wrlevel_dq_delay << FINE_TUNE_DQM_SHIFT) |
-			(wrlevel_dq_delay << FINE_TUNE_DQ_SHIFT));
+		SET32_BITFIELDS(&ch[chn].phy.shu[0].rk[rank].b[byte].dq[7],
+				FINE_TUNE_DQM, wrlevel_dq_delay,
+				FINE_TUNE_DQ, wrlevel_dq_delay);
 	}
 }
 
@@ -258,14 +252,15 @@ static void dramc_cmd_bus_training(u8 chn, u8 rank, u8 freq_group,
 
 	if (fast_calib) {
 		/* Set CLK and CA delay */
-		clrsetbits_le32(&ch[chn].phy.shu[0].rk[rank].ca_cmd[9],
-			(0x3f << 8) | (0x3f << 24),
-			(cmd_dly << 8) | (clk_dly << 24));
+		SET32_BITFIELDS(&ch[chn].phy.shu[0].rk[rank].ca_cmd[9],
+				SHU1_R0_CA_CMD9_RG_RK0_ARPI_CMD, cmd_dly,
+				SHU1_R0_CA_CMD9_RG_RK0_ARPI_CLK, clk_dly);
 		udelay(1);
 	}
 
 	/* Set CLK and CS delay */
-	clrsetbits_le32(&ch[chn].phy.shu[0].rk[rank].ca_cmd[9], 0x3f, cs_dly << 0);
+	SET32_BITFIELDS(&ch[chn].phy.shu[0].rk[rank].ca_cmd[9],
+			SHU1_R0_CA_CMD9_RG_RK0_ARPI_CS, cs_dly);
 
 	/* CBT set vref */
 	dramc_mode_reg_write_by_rank(chn, rank, 12, final_vref);
@@ -275,17 +270,14 @@ static void dramc_read_dbi_onoff(bool on)
 {
 	for (size_t chn = 0; chn < CHANNEL_MAX; chn++)
 		for (size_t b = 0; b < 2; b++)
-			clrsetbits_le32(&ch[chn].phy.shu[0].b[b].dq[7],
-				0x1 << SHU1_BX_DQ7_R_DMDQMDBI_SHIFT,
-				(on ? 1 : 0) << SHU1_BX_DQ7_R_DMDQMDBI_SHIFT);
+			SET32_BITFIELDS(&ch[chn].phy.shu[0].b[b].dq[7],
+					SHU1_B0_DQ7_R_DMDQMDBI_SHU_B0, on);
 }
 
-static void dramc_write_dbi_onoff(bool on)
+static void dramc_write_dbi_onoff(bool onoff)
 {
 	for (size_t chn = 0; chn < CHANNEL_MAX; chn++)
-		clrsetbits_le32(&ch[chn].ao.shu[0].wodt,
-			0x1 << SHU1_WODT_DBIWR_SHIFT,
-			(on ? 1 : 0) << SHU1_WODT_DBIWR_SHIFT);
+		SET32_BITFIELDS(&ch[chn].ao.shu[0].wodt, SHU1_WODT_DBIWR, onoff);
 }
 
 static void dramc_phy_dcm_2_channel(u8 chn, bool en)
@@ -497,59 +489,59 @@ static void dramc_rx_dqs_isi_pulse_cg_switch(u8 chn, bool flag)
 
 static void dramc_set_rank_engine2(u8 chn, u8 rank)
 {
-	setbits_le32(&ch[chn].ao.dramctrl, 0x1 << 1);
-	clrbits_le32(&ch[chn].ao.test2_4, TEST2_4_TESTAGENTRKSEL_MASK);
-	clrsetbits_le32(&ch[chn].ao.test2_4, TEST2_4_TESTAGENTRK_MASK,
-		rank << TEST2_4_TESTAGENTRK_SHIFT);
+	/*  Select CTO_AGENT1_RANK */
+	SET32_BITFIELDS(&ch[chn].ao.dramctrl, DRAMCTRL_ADRDECEN_TARKMODE, 1);
+	SET32_BITFIELDS(&ch[chn].ao.test2_4, TEST2_4_TESTAGENTRKSEL, 0);
+	SET32_BITFIELDS(&ch[chn].ao.test2_4, TEST2_4_TESTAGENTRK, rank);
 }
 
 static void dramc_engine2_setpat(u8 chn, bool test_pat)
 {
-	clrbits_le32(&ch[chn].ao.test2_4,
-		(0x1 << TEST2_4_TEST_REQ_LEN1_SHIFT) |
-		(0x1 << TEST2_4_TESTXTALKPAT_SHIFT) |
-		(0x1 << TEST2_4_TESTAUDMODE_SHIFT) |
-		(0x1 << TEST2_4_TESTAUDBITINV_SHIFT));
+	SET32_BITFIELDS(&ch[chn].ao.test2_4,
+			TEST2_4_TEST_REQ_LEN1, 0,
+			TEST2_4_TESTXTALKPAT, 0,
+			TEST2_4_TESTAUDMODE, 0,
+			TEST2_4_TESTAUDBITINV, 0);
 
 	if (!test_pat) {
-		setbits_le32(&ch[chn].ao.perfctl0, 1 << PERFCTL0_RWOFOEN_SHIFT);
-
-		clrsetbits_le32(&ch[chn].ao.test2_4,
-			(0x1 << TEST2_4_TESTSSOPAT_SHIFT) |
-			(0x1 << TEST2_4_TESTSSOXTALKPAT_SHIFT),
-			(0x1 << TEST2_4_TESTXTALKPAT_SHIFT));
+		SET32_BITFIELDS(&ch[chn].ao.perfctl0, PERFCTL0_RWOFOEN, 1);
+		SET32_BITFIELDS(&ch[chn].ao.test2_4,
+				TEST2_4_TESTSSOPAT, 0,
+				TEST2_4_TESTSSOXTALKPAT, 0,
+				TEST2_4_TESTXTALKPAT, 1);
 	} else {
-		clrsetbits_le32(&ch[chn].ao.test2_4,
-			TEST2_4_TESTAUDINIT_MASK | TEST2_4_TESTAUDINC_MASK,
-			(0x11 << 8) | (0xd << 0) | (0x1 << 14));
+		SET32_BITFIELDS(&ch[chn].ao.test2_4,
+				TEST2_4_TESTAUDINIT, 0x11,
+				TEST2_4_TESTAUDINC, 0xd,
+				TEST2_4_TESTAUDBITINV, 1);
 	}
-	clrsetbits_le32(&ch[chn].ao.test2_3,
-		(0x1 << TEST2_3_TESTAUDPAT_SHIFT) | TEST2_3_TESTCNT_MASK,
-		(test_pat ? 1 : 0) << TEST2_3_TESTAUDPAT_SHIFT);
+	SET32_BITFIELDS(&ch[chn].ao.test2_3,
+			TEST2_3_TESTAUDPAT, test_pat, TEST2_3_TESTCNT, 0);
 }
 
 static void dramc_engine2_init(u8 chn, u8 rank, u32 t2_1, u32 t2_2, bool test_pat)
 {
 	dramc_set_rank_engine2(chn, rank);
 
-	clrbits_le32(&ch[chn].ao.dummy_rd,
-		(0x1 << DUMMY_RD_DQSG_DMYRD_EN_SHIFT) |
-		(0x1 << DUMMY_RD_DQSG_DMYWR_EN_SHIFT) |
-		(0x1 << DUMMY_RD_DUMMY_RD_EN_SHIFT) |
-		(0x1 << DUMMY_RD_SREF_DMYRD_EN_SHIFT) |
-		(0x1 << DUMMY_RD_DMY_RD_DBG_SHIFT) |
-		(0x1 << DUMMY_RD_DMY_WR_DBG_SHIFT));
-	clrbits_le32(&ch[chn].nao.testchip_dma1, 0x1 << 12);
-	clrbits_le32(&ch[chn].ao.test2_3,
-		(0x1 << TEST2_3_TEST2W_SHIFT) |
-		(0x1 << TEST2_3_TEST2R_SHIFT) |
-		(0x1 << TEST2_3_TEST1_SHIFT));
-	clrsetbits_le32(&ch[chn].ao.test2_0,
-		TEST2_0_PAT0_MASK | TEST2_0_PAT1_MASK,
-		((t2_1 >> 24) << TEST2_0_PAT0_SHIFT) |
-		((t2_2 >> 24) << TEST2_0_PAT1_SHIFT));
-	clrsetbits_le32(&ch[chn].ao.test2_1, 0xfffffff0, (t2_1 & 0x00ffffff) << 4);
-	clrsetbits_le32(&ch[chn].ao.test2_2, 0xfffffff0, (t2_2 & 0x00ffffff) << 4);
+	SET32_BITFIELDS(&ch[chn].ao.dummy_rd,
+			DUMMY_RD_DQSG_DMYRD_EN, 0,
+			DUMMY_RD_DQSG_DMYWR_EN, 0,
+			DUMMY_RD_DUMMY_RD_EN, 0,
+			DUMMY_RD_SREF_DMYRD_EN, 0,
+			DUMMY_RD_DMY_RD_DBG, 0,
+			DUMMY_RD_DMY_WR_DBG, 0);
+	SET32_BITFIELDS(&ch[chn].nao.testchip_dma1,
+			TESTCHIP_DMA1_DMA_LP4MATAB_OPT, 0);
+	SET32_BITFIELDS(&ch[chn].ao.test2_3,
+			TEST2_3_TEST2W, 0,
+			TEST2_3_TEST2R, 0,
+			TEST2_3_TEST1, 0);
+	SET32_BITFIELDS(&ch[chn].ao.test2_0, TEST2_0_PAT0, t2_1 >> 24,
+			TEST2_0_PAT1, t2_2 >> 24);
+	SET32_BITFIELDS(&ch[chn].ao.test2_1, TEST2_1_TEST2_BASE,
+			t2_1 & 0xffffff);
+	SET32_BITFIELDS(&ch[chn].ao.test2_2, TEST2_2_TEST2_OFF,
+			t2_2 & 0xffffff);
 
 	dramc_engine2_setpat(chn, test_pat);
 }
@@ -576,10 +568,10 @@ static void dramc_engine2_compare(u8 chn, enum dram_te_op wr)
 	if (wr == TE_OP_WRITE_READ_CHECK) {
 		dramc_engine2_check_complete(chn, rank_status);
 
-		clrbits_le32(&ch[chn].ao.test2_3, (0x1 << TEST2_3_TEST2W_SHIFT) |
-			(0x1 << TEST2_3_TEST2R_SHIFT) | (0x1 << TEST2_3_TEST1_SHIFT));
+		SET32_BITFIELDS(&ch[chn].ao.test2_3, TEST2_3_TEST2W, 0,
+				TEST2_3_TEST2R, 0, TEST2_3_TEST1, 0);
 		udelay(1);
-		setbits_le32(&ch[chn].ao.test2_3, 0x1 << TEST2_3_TEST2W_SHIFT);
+		SET32_BITFIELDS(&ch[chn].ao.test2_3, TEST2_3_TEST2W, 1);
 	}
 
 	dramc_engine2_check_complete(chn, rank_status);
@@ -590,26 +582,20 @@ static u32 dramc_engine2_run(u8 chn, enum dram_te_op wr)
 	u32 result;
 
 	if (wr == TE_OP_READ_CHECK) {
-		clrbits_le32(&ch[chn].ao.test2_4,
-			0x1 << TEST2_4_TESTAUDMODE_SHIFT);
-
-		clrsetbits_le32(&ch[chn].ao.test2_3,
-			(0x1 << TEST2_3_TEST2W_SHIFT) | (0x1 << TEST2_3_TEST2R_SHIFT) |
-			(0x1 << TEST2_3_TEST1_SHIFT), 0x1 << TEST2_3_TEST2R_SHIFT);
+		SET32_BITFIELDS(&ch[chn].ao.test2_4, TEST2_4_TESTAUDMODE, 0);
+		SET32_BITFIELDS(&ch[chn].ao.test2_3,
+				TEST2_3_TEST2W, 0, TEST2_3_TEST2R, 1, TEST2_3_TEST1, 0);
 	} else if (wr == TE_OP_WRITE_READ_CHECK) {
-		clrsetbits_le32(&ch[chn].ao.test2_3,
-			(0x1 << TEST2_3_TEST2W_SHIFT) | (0x1 << TEST2_3_TEST2R_SHIFT) |
-			(0x1 << TEST2_3_TEST1_SHIFT), 0x1 << TEST2_3_TEST2W_SHIFT);
+		SET32_BITFIELDS(&ch[chn].ao.test2_3,
+				TEST2_3_TEST2W, 1, TEST2_3_TEST2R, 0, TEST2_3_TEST1, 0);
 	}
 
 	dramc_engine2_compare(chn, wr);
 
 	udelay(1);
 	result = read32(&ch[chn].nao.cmp_err);
-	clrbits_le32(&ch[chn].ao.test2_3,
-		(0x1 << TEST2_3_TEST2W_SHIFT) |
-		(0x1 << TEST2_3_TEST2R_SHIFT) |
-		(0x1 << TEST2_3_TEST1_SHIFT));
+	SET32_BITFIELDS(&ch[chn].ao.test2_3,
+			TEST2_3_TEST2W, 0, TEST2_3_TEST2R, 0, TEST2_3_TEST1, 0);
 
 	return result;
 }
@@ -731,16 +717,16 @@ static void dramc_find_dly_tune(u8 chn, u8 dly_coarse_large, u8 dly_coarse_0p5t,
 
 static void dram_phy_reset(u8 chn)
 {
-	setbits_le32(&ch[chn].ao.ddrconf0, 1 << DDRCONF0_RDATRST_SHIFT);
-	setbits_le32(&ch[chn].phy.misc_ctrl1, 1 << MISC_CTRL1_R_DMPHYRST_SHIFT);
+	SET32_BITFIELDS(&ch[chn].ao.ddrconf0, DDRCONF0_RDATRST, 1);
+	SET32_BITFIELDS(&ch[chn].phy.misc_ctrl1, MISC_CTRL1_R_DMPHYRST, 1);
 	clrbits_le32(&ch[chn].phy.b[0].dq[9], (1 << 4) | (1 << 0));
 	clrbits_le32(&ch[chn].phy.b[1].dq[9], (1 << 4) | (1 << 0));
 
 	udelay(1);
 	setbits_le32(&ch[chn].phy.b[1].dq[9], (1 << 4) | (1 << 0));
 	setbits_le32(&ch[chn].phy.b[0].dq[9], (1 << 4) | (1 << 0));
-	clrbits_le32(&ch[chn].phy.misc_ctrl1, 1 << MISC_CTRL1_R_DMPHYRST_SHIFT);
-	clrbits_le32(&ch[chn].ao.ddrconf0, 1 << DDRCONF0_RDATRST_SHIFT);
+	SET32_BITFIELDS(&ch[chn].phy.misc_ctrl1, MISC_CTRL1_R_DMPHYRST, 0);
+	SET32_BITFIELDS(&ch[chn].ao.ddrconf0, DDRCONF0_RDATRST, 0);
 }
 
 static void dramc_set_gating_mode(u8 chn, bool mode)
@@ -769,22 +755,21 @@ static void dramc_set_gating_mode(u8 chn, bool mode)
 
 static void dramc_rx_dqs_gating_cal_pre(u8 chn, u8 rank)
 {
-	clrbits_le32(&ch[chn].ao.refctrl0, 1 << REFCTRL0_PBREFEN_SHIFT);
+	SET32_BITFIELDS(&ch[chn].ao.refctrl0, REFCTRL0_PBREFEN, 0);
 
 	dramc_hw_gating_onoff(chn, false);
 
-	setbits_le32(&ch[chn].ao.stbcal1, 1 << STBCAL1_STBENCMPEN_SHIFT);
-	setbits_le32(&ch[chn].ao.stbcal1, 1 << STBCAL1_STBCNT_LATCH_EN_SHIFT);
-	clrbits_le32(&ch[chn].ao.ddrconf0, 1 << DDRCONF0_DM4TO1MODE_SHIFT);
-	setbits_le32(&ch[chn].ao.spcmd, 1 << SPCMD_DQSGCNTEN_SHIFT);
+	SET32_BITFIELDS(&ch[chn].ao.stbcal1, STBCAL1_STBENCMPEN, 1);
+	SET32_BITFIELDS(&ch[chn].ao.stbcal1, STBCAL1_STBCNT_LATCH_EN, 1);
+	SET32_BITFIELDS(&ch[chn].ao.ddrconf0, DDRCONF0_DM4TO1MODE, 0);
+	SET32_BITFIELDS(&ch[chn].ao.spcmd, SPCMD_DQSGCNTEN, 1);
 
 	udelay(4);
-	setbits_le32(&ch[chn].ao.spcmd, 1 << SPCMD_DQSGCNTRST_SHIFT);
+	SET32_BITFIELDS(&ch[chn].ao.spcmd, SPCMD_DQSGCNTRST, 1);
 	udelay(1);
-	clrbits_le32(&ch[chn].ao.spcmd, 1 << SPCMD_DQSGCNTRST_SHIFT);
-	clrsetbits_le32(&ch[chn].phy.misc_ctrl1,
-		1 << MISC_CTRL1_R_DMSTBENCMP_RK_OPT_SHIFT,
-		rank << MISC_CTRL1_R_DMSTBENCMP_RK_OPT_SHIFT);
+	SET32_BITFIELDS(&ch[chn].ao.spcmd, SPCMD_DQSGCNTRST, 0);
+	SET32_BITFIELDS(&ch[chn].phy.misc_ctrl1, MISC_CTRL1_R_DMSTBENCMP_RK,
+			rank);
 
 }
 
@@ -897,22 +882,24 @@ static void dramc_rx_dqs_gating_cal_partial(u8 chn, u8 rank,
 		for (u8 dly_fine_xt = 0; dly_fine_xt < DQS_GW_FINE_END;
 		     dly_fine_xt += 4) {
 			dramc_set_gating_mode(chn, 0);
-			write32(&ch[chn].ao.shu[0].rk[rank].dqsien,
-				dly_fine_xt | (dly_fine_xt << 8));
+			WRITE32_BITFIELDS(&ch[chn].ao.shu[0].rk[rank].dqsien,
+					  SHURK_DQSIEN_DQS0IEN, dly_fine_xt,
+					  SHURK_DQSIEN_DQS1IEN, dly_fine_xt);
 
 			dram_phy_reset(chn);
-			setbits_le32(&ch[chn].ao.spcmd,
-				1 << SPCMD_DQSGCNTRST_SHIFT);
+			SET32_BITFIELDS(&ch[chn].ao.spcmd, SPCMD_DQSGCNTRST, 1);
 			udelay(1);
-			clrbits_le32(&ch[chn].ao.spcmd,
-				1 << SPCMD_DQSGCNTRST_SHIFT);
+			SET32_BITFIELDS(&ch[chn].ao.spcmd, SPCMD_DQSGCNTRST, 0);
 
 			dramc_engine2_run(chn, TE_OP_READ_CHECK);
 
-			u32 result_r = read32(&ch[chn].phy.misc_stberr_rk0_r) &
-					MISC_STBERR_RK_R_STBERR_RK_R_MASK;
-			u32 result_f = read32(&ch[chn].phy.misc_stberr_rk0_f) &
-					MISC_STBERR_RK_F_STBERR_RK_F_MASK;
+			u32 result_r = READ32_BITFIELD(
+					&ch[chn].phy.misc_stberr_rk0_r,
+					MISC_STBERR_RK_R_STBERR_RK_R);
+			u32 result_f = READ32_BITFIELD(
+					&ch[chn].phy.misc_stberr_rk0_f,
+					MISC_STBERR_RK_F_STBERR_RK_F);
+
 			debug_cnt[0] = read32(&ch[chn].nao.dqsgnwcnt[0]);
 			debug_cnt[1] = (debug_cnt[0] >> 16) & 0xffff;
 			debug_cnt[0] &= 0xffff;
@@ -1066,8 +1053,9 @@ static void dramc_rx_dqs_gating_cal(u8 chn, u8 rank, u8 freq_group,
 	dramc_write_dqs_gating_result(chn, rank, best_coarse_tune2t,
 		best_coarse_tune0p5t, best_coarse_tune2t_p1, best_coarse_tune0p5t_p1);
 
-	write32(&ch[chn].ao.shu[0].rk[rank].dqsien,
-		best_fine_tune[0] | (best_fine_tune[1] << 8));
+	WRITE32_BITFIELDS(&ch[chn].ao.shu[0].rk[rank].dqsien,
+			  SHURK_DQSIEN_DQS0IEN, best_fine_tune[0],
+			  SHURK_DQSIEN_DQS1IEN, best_fine_tune[1]);
 
 	dram_phy_reset(chn);
 }
@@ -1080,26 +1068,24 @@ static void dramc_rx_rd_dqc_init(u8 chn, u8 rank)
 	for (size_t b = 0; b < 2; b++)
 		clrbits_le32(&ch[chn].phy.shu[0].b[b].dq[7], 0x1 << 7);
 
-	clrsetbits_le32(&ch[chn].ao.mrs,
-		MRS_MRSRK_MASK, rank << MRS_MRSRK_SHIFT);
-	setbits_le32(&ch[chn].ao.mpc_option,
-		0x1 << MPC_OPTION_MPCRKEN_SHIFT);
+	SET32_BITFIELDS(&ch[chn].ao.mrs, MRS_MRSRK, rank);
+	SET32_BITFIELDS(&ch[chn].ao.mpc_option, MPC_OPTION_MPCRKEN, 1);
 
 	for (size_t bit = 0; bit < DQ_DATA_WIDTH; bit++)
 		temp_value |= ((0x5555 >> bit) & 0x1) << lpddr_phy_mapping[bit];
 
 	u16 mr15_golden_value = temp_value & 0xff;
 	u16 mr20_golden_value = (temp_value >> 8) & 0xff;
-	clrsetbits_le32(&ch[chn].ao.mr_golden,
-		MR_GOLDEN_MR15_GOLDEN_MASK | MR_GOLDEN_MR20_GOLDEN_MASK,
-		(mr15_golden_value << 8) | mr20_golden_value);
+	SET32_BITFIELDS(&ch[chn].ao.mr_golden,
+			MR_GOLDEN_MR15_GOLDEN, mr15_golden_value,
+			MR_GOLDEN_MR20_GOLDEN, mr20_golden_value);
 }
 
 static u32 dramc_rx_rd_dqc_run(u8 chn)
 {
 	u32 loop = 0;
-	setbits_le32(&ch[chn].ao.spcmdctrl, 1 << SPCMDCTRL_RDDQCDIS_SHIFT);
-	setbits_le32(&ch[chn].ao.spcmd, 1 << SPCMD_RDDQCEN_SHIFT);
+	SET32_BITFIELDS(&ch[chn].ao.spcmdctrl, SPCMDCTRL_RDDQCDIS, 1);
+	SET32_BITFIELDS(&ch[chn].ao.spcmd, SPCMD_RDDQCEN, 1);
 
 	while (!wait_us(10, read32(&ch[chn].nao.spcmdresp) & (0x1 << 7))) {
 		if (loop++ > 10)
@@ -1107,27 +1093,28 @@ static u32 dramc_rx_rd_dqc_run(u8 chn)
 	}
 
 	u32 result = read32(&ch[chn].nao.rdqc_cmp);
-	clrbits_le32(&ch[chn].ao.spcmd, 1 << SPCMD_RDDQCEN_SHIFT);
-	clrbits_le32(&ch[chn].ao.spcmdctrl, 1 << SPCMDCTRL_RDDQCDIS_SHIFT);
+	SET32_BITFIELDS(&ch[chn].ao.spcmd, SPCMD_RDDQCEN, 0);
+	SET32_BITFIELDS(&ch[chn].ao.spcmdctrl, SPCMDCTRL_RDDQCDIS, 0);
 
 	return result;
 }
 
 static void dramc_rx_rd_dqc_end(u8 chn)
 {
-	clrbits_le32(&ch[chn].ao.mrs, MRS_MRSRK_MASK);
+	SET32_BITFIELDS(&ch[chn].ao.mrs, MRS_MRSRK, 0);
 }
 
 static void dramc_rx_vref_pre_setting(u8 chn)
 {
-	setbits_le32(&ch[chn].phy.b[0].dq[5], 0x1 << 16);
-	setbits_le32(&ch[chn].phy.b[1].dq[5], 0x1 << 16);
+	SET32_BITFIELDS(&ch[chn].phy.b[0].dq[5], B0_DQ5_RG_RX_ARDQ_VREF_EN_B0, 1);
+	SET32_BITFIELDS(&ch[chn].phy.b[1].dq[5], B1_DQ5_RG_RX_ARDQ_VREF_EN_B1, 1);
 }
 
 static void dramc_set_rx_vref(u8 chn, u8 vref)
 {
 	for (size_t b = 0; b < 2; b++)
-		clrsetbits_le32(&ch[chn].phy.shu[0].b[b].dq[5], 0x3f, vref << 0);
+		SET32_BITFIELDS(&ch[chn].phy.shu[0].b[b].dq[5],
+				SHU1_BX_DQ5_RG_RX_ARDQ_VREF_SEL_B0, vref);
 	dramc_dbg("set rx vref :%d\n", vref);
 }
 
@@ -1174,35 +1161,31 @@ static void dramc_transfer_dly_tune(u8 chn, u32 dly, u32 adjust_center,
 
 static void dramc_set_rx_dly_factor(u8 chn, u8 rank, enum RX_TYPE type, u32 val)
 {
-	u32 tmp, mask;
+	int b, dq;
 
 	switch (type) {
 	case RX_DQ:
-		tmp = (val << 24 | val << 16 | val << 8 | val);
-		for (size_t dq = 2; dq < 6; dq++) {
-			write32(&ch[chn].phy.shu[0].rk[rank].b[0].dq[dq], tmp);
-			write32(&ch[chn].phy.shu[0].rk[rank].b[1].dq[dq], tmp);
-		}
+		for (dq = 2; dq < 6; dq++)
+			for (b = 0; b < 2; b++)
+				WRITE32_BITFIELDS(&ch[chn].phy.shu[0].rk[rank].b[b].dq[dq],
+						  SHU1_R0_B0_DQ6_RK0_RX_ARDQM0_F_DLY_B0, val,
+						  SHU1_R0_B0_DQ6_RK0_RX_ARDQM0_R_DLY_B0, val,
+						  SHU1_R0_B0_DQ6_RK0_RX_ARDQS0_F_DLY_B0, val,
+						  SHU1_R0_B0_DQ6_RK0_RX_ARDQS0_R_DLY_B0, val);
 		break;
 
 	case RX_DQM:
-		tmp = (val << 8 | val);
-		mask = SHU1_B0_DQ6_RK_RX_ARDQM0_F_DLY_B0_MASK |
-		    SHU1_B0_DQ6_RK_RX_ARDQM0_R_DLY_B0_MASK;
-		clrsetbits_le32(&ch[chn].phy.shu[0].rk[rank].b[0].dq[6],
-			mask, tmp);
-		clrsetbits_le32(&ch[chn].phy.shu[0].rk[rank].b[1].dq[6],
-			mask, tmp);
+		for (b = 0; b < 2; b++)
+			SET32_BITFIELDS(&ch[chn].phy.shu[0].rk[rank].b[b].dq[6],
+					SHU1_R0_B0_DQ6_RK0_RX_ARDQM0_F_DLY_B0, val,
+					SHU1_R0_B0_DQ6_RK0_RX_ARDQM0_R_DLY_B0, val);
 		break;
 
 	case RX_DQS:
-		tmp = (val << 24 | val << 16);
-		mask = SHU1_B0_DQ6_RK_RX_ARDQS0_F_DLY_B0_MASK |
-			SHU1_B0_DQ6_RK_RX_ARDQS0_R_DLY_B0_MASK;
-		clrsetbits_le32(&ch[chn].phy.shu[0].rk[rank].b[0].dq[6],
-			mask, tmp);
-		clrsetbits_le32(&ch[chn].phy.shu[0].rk[rank].b[1].dq[6],
-			mask, tmp);
+		for (b = 0; b < 2; b++)
+			SET32_BITFIELDS(&ch[chn].phy.shu[0].rk[rank].b[b].dq[6],
+					SHU1_R0_B0_DQ6_RK0_RX_ARDQS0_F_DLY_B0, val,
+					SHU1_R0_B0_DQ6_RK0_RX_ARDQS0_R_DLY_B0, val);
 		break;
 	default:
 		dramc_show("error calibration type:%d\n", type);
@@ -1251,13 +1234,13 @@ static void dramc_set_tx_dly_factor(u8 chn, u8 rk,
 
 	if (type == TX_WIN_DQ_DQM || type == TX_WIN_DQ_ONLY) {
 		for (size_t b = 0; b < 2; b++)
-			clrsetbits_le32(&ch[chn].phy.shu[0].rk[rk].b[b].dq[7],
-				FINE_TUNE_DQ_MASK, dly_tune.fine_tune << 8);
+			SET32_BITFIELDS(&ch[chn].phy.shu[0].rk[rk].b[b].dq[7],
+					FINE_TUNE_DQ, dly_tune.fine_tune);
 	}
 	if (type == TX_WIN_DQ_DQM) {
 		for (size_t b = 0; b < 2; b++)
-			clrsetbits_le32(&ch[chn].phy.shu[0].rk[rk].b[b].dq[7],
-				FINE_TUNE_DQM_MASK, dly_tune.fine_tune << 16);
+			SET32_BITFIELDS(&ch[chn].phy.shu[0].rk[rk].b[b].dq[7],
+					FINE_TUNE_DQM, dly_tune.fine_tune);
 	}
 }
 
@@ -1510,10 +1493,10 @@ static void dramc_set_tx_best_dly_factor(u8 chn, u8 rank_start, u8 type,
 			0x77777777, dqm_small | (dqm_small_oen << 16));
 
 		for (size_t byte = 0; byte < 2; byte++)
-			clrsetbits_le32(&ch[chn].phy.shu[0].rk[rank].b[byte].dq[7],
-				FINE_TUNE_DQ_MASK | FINE_TUNE_DQM_MASK,
-				(dqdly_tune[byte].fine_tune << 8) |
-				(dqmdly_tune[byte].fine_tune << 16));
+			SET32_BITFIELDS(&ch[chn].phy.shu[0].rk[rank].b[byte].dq[7],
+					FINE_TUNE_DQ, dqdly_tune[byte].fine_tune,
+					FINE_TUNE_DQM, dqmdly_tune[byte].fine_tune);
+
 		if (use_delay_cell == 1) {
 			for (size_t byte = 0; byte < DQS_NUMBER; byte++)
 				write32(&ch[chn].phy.shu[0].rk[rank].b[byte].dq[0],
@@ -1944,12 +1927,10 @@ static void dramc_dle_factor_handler(u8 chn, u8 val, u8 freq_group)
 	u8 start_ext2 = 0, start_ext3 = 0, last_ext2 = 0, last_ext3 = 0;
 
 	val = MAX(val, 2);
-	clrsetbits_le32(&ch[chn].ao.shu[0].conf[1],
-		SHU_CONF1_DATLAT_MASK | SHU_CONF1_DATLAT_DSEL_MASK |
-		SHU_CONF1_DATLAT_DSEL_PHY_MASK,
-		(val << SHU_CONF1_DATLAT_SHIFT) |
-		((val - 2) << SHU_CONF1_DATLAT_DSEL_SHIFT) |
-		((val - 2) << SHU_CONF1_DATLAT_DSEL_PHY_SHIFT));
+	SET32_BITFIELDS(&ch[chn].ao.shu[0].conf[1],
+			SHU_CONF1_DATLAT, val,
+			SHU_CONF1_DATLAT_DSEL, val - 2,
+			SHU_CONF1_DATLAT_DSEL_PHY, val - 2);
 
 	if (freq_group == LP4X_DDR3200 || freq_group == LP4X_DDR3600)
 		start_ext2 = 1;
@@ -1959,10 +1940,13 @@ static void dramc_dle_factor_handler(u8 chn, u8 val, u8 freq_group)
 	else if (val >= 18)
 		last_ext2 = 1;
 
-	clrsetbits_le32(&ch[chn].ao.shu[0].pipe, (0x1 << 31) | (0x1 << 30) | (0x1 << 29) |
-		(0x1 << 28) | (0x1 << 27) | (0x1 << 26),
-		(0x1 << 31) | (0x1 << 30) | (start_ext2 << 29) |
-		(last_ext2 << 28) | (start_ext3 << 27) | (last_ext3 << 26));
+	SET32_BITFIELDS(&ch[chn].ao.shu[0].pipe,
+			SHU_PIPE_READ_START_EXTEND1, 1,
+			SHU_PIPE_DLE_LAST_EXTEND1, 1,
+			SHU_PIPE_READ_START_EXTEND2, start_ext2,
+			SHU_PIPE_DLE_LAST_EXTEND2, last_ext2,
+			SHU_PIPE_READ_START_EXTEND3, start_ext3,
+			SHU_PIPE_DLE_LAST_EXTEND3, last_ext3);
 	dram_phy_reset(chn);
 }
 
@@ -1974,7 +1958,7 @@ static u8 dramc_rx_datlat_cal(u8 chn, u8 rank, u8 freq_group,
 	u32 datlat_start = 7;
 
 	*test_passed = true;
-	best_step = read32(&ch[chn].ao.shu[0].conf[1]) & SHU_CONF1_DATLAT_MASK;
+	best_step = READ32_BITFIELD(&ch[chn].ao.shu[0].conf[1], SHU_CONF1_DATLAT);
 
 	dramc_dbg("[DATLAT] start. CH%d RK%d DATLAT Default: 0x%x\n",
 		chn, rank, best_step);
@@ -2026,9 +2010,8 @@ static u8 dramc_rx_datlat_cal(u8 chn, u8 rank, u8 freq_group,
 
 	dramc_dle_factor_handler(chn, best_step, freq_group);
 
-	clrsetbits_le32(&ch[chn].ao.padctrl, 0x3 | (0x1 << 3),
-		(0x1 << PADCTRL_DQIENQKEND_SHIFT) |
-		(0x1 << PADCTRL_DQIENLATEBEGIN_SHIFT));
+	SET32_BITFIELDS(&ch[chn].ao.padctrl,
+			PADCTRL_DQIENQKEND, 1, PADCTRL_DQIENLATEBEGIN, 1);
 
 	return (u8) best_step;
 }
@@ -2099,12 +2082,12 @@ static void dramc_rx_dqs_gating_post_process(u8 chn, u8 freq_group)
 		}
 	}
 
-	read_dqsinctl = (read32(&ch[chn].ao.shu[0].rk[0].dqsctl) &
-				SHURK_DQSCTL_DQSINCTL_MASK) - dqsinctl;
+	read_dqsinctl = READ32_BITFIELD(&ch[chn].ao.shu[0].rk[0].dqsctl,
+					SHURK_DQSCTL_DQSINCTL) - dqsinctl;
 	rankinctl_root = (read_dqsinctl >= 2) ? (read_dqsinctl - 2) : 0;
 
-	clrsetbits_le32(&ch[chn].ao.shu[0].rk[0].dqsctl, 0xf, read_dqsinctl << 0);
-	clrsetbits_le32(&ch[chn].ao.shu[0].rk[1].dqsctl, 0xf, read_dqsinctl << 0);
+	SET32_BITFIELDS(&ch[chn].ao.shu[0].rk[0].dqsctl, SHURK_DQSCTL_DQSINCTL, read_dqsinctl);
+	SET32_BITFIELDS(&ch[chn].ao.shu[0].rk[1].dqsctl, SHURK_DQSCTL_DQSINCTL, read_dqsinctl);
 	clrsetbits_le32(&ch[chn].ao.shu[0].rankctl,
 		(0xf << 28) | (0xf << 20) | (0xf << 24) | 0xf,
 		(read_dqsinctl << 28) | (rankinctl_root << 20) |

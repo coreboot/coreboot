@@ -1,7 +1,4 @@
-if VENDOR_LENOVO
-
-config SMBIOS_PROVIDED_BY_MOBO
+config DRIVER_LENOVO_SERIALS
 	bool
-	default y
-
-endif
+	default y if VENDOR_LENOVO
+	select SMBIOS_PROVIDED_BY_MOBO

@@ -1,2 +1,2 @@
-ramstage-$(CONFIG_VENDOR_LENOVO) += at24rf08c.c
-ramstage-$(CONFIG_VENDOR_LENOVO) += lenovo_serials.c
+ramstage-$(CONFIG_DRIVER_LENOVO_SERIALS) += at24rf08c.c
+ramstage-$(CONFIG_DRIVER_LENOVO_SERIALS) += lenovo_serials.c

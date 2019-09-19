@@ -136,48 +136,6 @@ config AMD_PUBKEY_FILE
 	string "AMD public Key"
 	default "3rdparty/blobs/soc/amd/picasso/PSP/AmdPubKeyRV.bin"
 
-config PICASSO_SATA_MODE
-	int "SATA Mode"
-	default 0
-	range 0 6
-	help
-	  Select the mode in which SATA should be driven.
-	  The default is NATIVE.
-	  0: NATIVE mode does not require a ROM.
-	  2: AHCI may work with or without AHCI ROM. It depends on the payload support.
-	     For example, seabios does not require the AHCI ROM.
-	  3: LEGACY IDE
-	  4: IDE to AHCI
-	  5: AHCI7804: ROM Required, and AMD driver required in the OS.
-	  6: IDE to AHCI7804: ROM Required, and AMD driver required in the OS.
-
-comment "NATIVE"
-	depends on PICASSO_SATA_MODE = 0
-
-comment "AHCI"
-	depends on PICASSO_SATA_MODE = 2
-
-comment "LEGACY IDE"
-	depends on PICASSO_SATA_MODE = 3
-
-comment "IDE to AHCI"
-	depends on PICASSO_SATA_MODE = 4
-
-comment "AHCI7804"
-	depends on PICASSO_SATA_MODE = 5
-
-comment "IDE to AHCI7804"
-	depends on PICASSO_SATA_MODE = 6
-
-if PICASSO_SATA_MODE = 2 || PICASSO_SATA_MODE = 5
-
-config AHCI_ROM_ID
-	string  "AHCI device PCI IDs"
-	default "1022,7801" if PICASSO_SATA_MODE = 2
-	default "1022,7804" if PICASSO_SATA_MODE = 5
-
-endif # PICASSO_SATA_MODE = 2 || PICASSO_SATA_MODE = 5
-
 config SERIRQ_CONTINUOUS_MODE
 	bool
 	default n

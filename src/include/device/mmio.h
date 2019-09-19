@@ -51,6 +51,126 @@ static inline void buffer_to_fifo32(void *buffer, size_t size, void *fifo,
 	buffer_to_fifo32_prefix(buffer, size, 0, 0, fifo,
 				fifo_stride, fifo_width);
 }
+
+/*
+ * Utilities to help processing bit fields.
+ *
+ * To define a bit field (usually inside a register), do:
+ *
+ *  DEFINE_BITFIELD(name, high_bit, low_bit)
+ *
+ *  - name: Name of the field to access.
+ *  - high_bit: highest bit that's part of the bit field.
+ *  - low_bit: lowest bit in the bit field.
+ *
+ * To extract one field value from a raw reg value:
+ *
+ *  EXTRACT_BITFIELD(value, name);
+ *
+ * To read from an MMIO register and extract one field from it:
+ *
+ *  READ32_BITFIELD(&reg, name);
+ *
+ * To write into an MMIO register, set given fields (by names) to specified
+ * values, and all other bits to zero (usually used for resetting a register):
+ *
+ *  WRITE32_BITFIELDS(&reg, name, value, [name, value, ...])
+ *
+ * To write into an MMIO register, set given fields (by names) to specified
+ * values, and leaving all others "unchanged" (usually used for updating some
+ * settings):
+ *
+ *  SET32_BITFIELDS(&reg, name, value, [name, value, ...])
+ *
+ * Examples:
+ *
+ *  DEFINE_BITFIELD(DISP_TYPE, 2, 1)
+ *  DEFINE_BITFIELD(DISP_EN, 0, 0)
+ *
+ *  SET32_BITFIELDS(&disp_regs.ctrl, DISP_TYPE, 2);
+ *  SET32_BITFIELDS(&disp_regs.ctrl, DISP_EN, 0);
+ *
+ *  SET32_BITFIELDS(&disp_regs.ctrl, DISP_TYPE, 1, DISP_EN, 1);
+ *  WRITE32_BITFIELDS(&disp_regs.ctrl, DISP_TYPE, 1, DISP_EN, 1);
+ *
+ *  READ32_BITFIELD(&reg, DISP_TYPE)
+ *  EXTRACT_BITFIELD(value, DISP_TYPE)
+ *
+ * These will be translated to:
+ *
+ *  clrsetbits_le32(&disp_regs.ctrl, 0x6, 0x4);
+ *  clrsetbits_le32(&disp_regs.ctrl, 0x1, 0x0);
+ *
+ *  clrsetbits_le32(&disp_regs.ctrl, 0x7, 0x3);
+ *  write32(&disp_regs.ctrl, 0x3);
+ *
+ *  (read32(&reg) & 0x6) >> 1
+ *  (value & 0x6) >> 1
+ *
+ * The {WRITE,SET}32_BITFIELDS currently only allows setting up to 8 fields at
+ * one invocation.
+ */
+
+#define DEFINE_BITFIELD(name, high_bit, low_bit) \
+	_Static_assert(high_bit >= low_bit, "invalid bit field range"); \
+	enum { \
+		name##_BITFIELD_SHIFT = (low_bit), \
+		name##_BITFIELD_SIZE = (high_bit) - (low_bit) + 1, \
+	};
+
+#define _BF_MASK(name, value) \
+	(((1 << name##_BITFIELD_SIZE) - 1) << name##_BITFIELD_SHIFT)
+
+#define _BF_VALUE(name, value) \
+	((value) << name##_BITFIELD_SHIFT)
+
+#define _BF_APPLY1(op, name, value, ...) (op(name, value))
+#define _BF_APPLY2(op, name, value, ...) ((op(name, value)) | \
+		_BF_APPLY1(op, __VA_ARGS__))
+#define _BF_APPLY3(op, name, value, ...) ((op(name, value)) | \
+		_BF_APPLY2(op, __VA_ARGS__))
+#define _BF_APPLY4(op, name, value, ...) ((op(name, value)) | \
+		_BF_APPLY3(op, __VA_ARGS__))
+#define _BF_APPLY5(op, name, value, ...) ((op(name, value)) | \
+		_BF_APPLY4(op, __VA_ARGS__))
+#define _BF_APPLY6(op, name, value, ...) ((op(name, value)) | \
+		_BF_APPLY5(op, __VA_ARGS__))
+#define _BF_APPLY7(op, name, value, ...) ((op(name, value)) | \
+		_BF_APPLY6(op, __VA_ARGS__))
+#define _BF_APPLY8(op, name, value, ...) ((op(name, value)) | \
+		_BF_APPLY7(op, __VA_ARGS__))
+#define _BF_APPLYINVALID(...) \
+		_Static_assert(0, "Invalid arguments for {WRITE,SET}*_BITFIELDS")
+
+#define _BF_IMPL2(op, addr, \
+	n1, v1, n2, v2, n3, v3, n4, v4, n5, v5, n6, v6, n7, v7, n8, v8, \
+	NARGS, ...) \
+	\
+	op(addr, \
+	   _BF_APPLY##NARGS(_BF_MASK, n1, v1, n2, v2, n3, v3, n4, v4, \
+			    n5, v5, n6, v6, n7, v7, n8, v8), \
+	   _BF_APPLY##NARGS(_BF_VALUE, n1, v1, n2, v2, n3, v3, n4, v4, \
+			    n5, v5, n6, v6, n7, v7, n8, v8))
+
+#define _BF_IMPL(op, addr, ...) \
+	_BF_IMPL2(op, addr, __VA_ARGS__, \
+		  8, INVALID, 7, INVALID, 6, INVALID, 5, INVALID, \
+		  4, INVALID, 3, INVALID, 2, INVALID, 1, INVALID)
+
+#define _WRITE32_BITFIELDS_IMPL(addr, masks, values) write32(addr, values)
+
+#define WRITE32_BITFIELDS(addr, ...)  \
+	_BF_IMPL(_WRITE32_BITFIELDS_IMPL, addr, __VA_ARGS__)
+
+#define SET32_BITFIELDS(addr, ...) \
+	_BF_IMPL(clrsetbits_le32, addr, __VA_ARGS__)
+
+#define EXTRACT_BITFIELD(value, name) \
+	(((value) & _BF_MASK(name, 0)) >> name##_BITFIELD_SHIFT)
+
+#define READ32_BITFIELD(addr, name) \
+	EXTRACT_BITFIELD(read32(addr), name)
+
 #endif	/* !__ROMCC__ */
 
 #endif	/* __DEVICE_MMIO_H__ */

@@ -71,6 +71,13 @@ BL31_MAKEARGS += PLAT=sc7180
 
 SC7180_BLOB := $(top)/3rdparty/qc_blobs/sc7180
 
+ifeq ($(CONFIG_QC_SDI_ENABLE),y)
+BL31_MAKEARGS += QTI_SDI_BUILD=1
+BL31_MAKEARGS += QTISECLIB_PATH=$(SC7180_BLOB)/qtiseclib/libqtisec_dbg.a
+else
+BL31_MAKEARGS += QTISECLIB_PATH=$(SC7180_BLOB)/qtiseclib/libqtisec.a
+endif # CONFIG_QC_SDI_ENABLE
+
 ################################################################################
 ifeq ($(CONFIG_QC_SDI_ENABLE),y)
 QCSDI_FILE := $(SC7180_BLOB)/boot/QcSdi.elf

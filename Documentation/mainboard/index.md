@@ -126,6 +126,7 @@ The boards in this section are not real mainboards, but emulators.
 
 - [X10SLM+-F](supermicro/x10slm-f.md)
 - [X11 LGA1151 series](supermicro/x11-lga1151-series/x11-lga1151-series.md)
+- [Flashing using the BMC](supermicro/flashing_on_vendorbmc.md)
 
 ## UP
 

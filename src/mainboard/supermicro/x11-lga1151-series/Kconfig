@@ -86,4 +86,8 @@ config DIMM_SPD_SIZE
 	int
 	default 512
 
+config SUPERMICRO_BOARDID
+	string
+	default "089C"
+
 endif  # BOARD_SUPERMICRO_BASEBOARD_X11_LGA1151_SERIES

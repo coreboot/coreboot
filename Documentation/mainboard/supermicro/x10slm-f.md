@@ -135,7 +135,7 @@ for caveats.
   can't be used for temperature readings.
 
 - There is no automatic, OS-independent fan control. This is because
-  the super I/O hardware monitor can only obtain valid CPU temperature
+  the Super I/O hardware monitor can only obtain valid CPU temperature
   readings from the PECI agent, but the required driver doesn't exist
   in coreboot. The `coretemp` driver can still be used for accurate CPU
   temperature readings from an OS, and hence the OS can do fan control.

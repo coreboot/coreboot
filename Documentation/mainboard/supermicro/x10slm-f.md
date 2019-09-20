@@ -68,7 +68,7 @@ region is not readable even by the host.
 The main firmware flash chip is an SOIC-8 package located near the CMOS
 battery and SATA ports. It should come with a sticker attached that
 states the firmware revision (e.g. "X10SLH 4.424"). The chip model is
-an N25Q128A, and the datasheet can be found [here][N25Q128A].
+an N25Q128A ([datasheet][N25Q128A]).
 
 As with [internal programming](#internal-programming), [flashrom] works
 reliably:
@@ -87,8 +87,7 @@ way without issue.
 
 This board has an ASPEED [AST2400], which has BMC functionality. The
 BMC firmware resides in a 32 MiB SOIC-16 chip just above the [AST2400].
-This chip is an MX25L25635F, whose datasheet can be found
-[here][MX25L25635F].
+This chip is an MX25L25635F ([datasheet][MX25L25635F]).
 
 ### Removing the BMC functionality
 

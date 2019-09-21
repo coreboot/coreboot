@@ -35,6 +35,11 @@ config PAYLOAD_FILE
 	string
 	default "payloads/external/depthcharge/depthcharge/build/depthcharge.elf"
 
+config MAINBOARD_DEPTHCHARGE
+	string ""
+	help
+	   Override BOARD setting for depthcharge
+
 config LP_DEFCONFIG_OVERRIDE
 	bool "Use default libpayload config"
 	help

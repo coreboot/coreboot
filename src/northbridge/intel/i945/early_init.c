@@ -546,13 +546,13 @@ static void i945_setup_pci_express_x16(void)
 	 */
 
 	/* First we reset the secondary bus */
-	reg16 = pci_read_config16(PCI_DEV(0, 0x01, 0), BCTRL1);
-	reg16 |= (1 << 6); /* SRESET */
-	pci_write_config16(PCI_DEV(0, 0x01, 0), BCTRL1, reg16);
+	reg16 = pci_read_config16(PCI_DEV(0, 0x01, 0), PCI_BRIDGE_CONTROL);
+	reg16 |= PCI_BRIDGE_CTL_BUS_RESET;
+	pci_write_config16(PCI_DEV(0, 0x01, 0), PCI_BRIDGE_CONTROL, reg16);
 	/* Read back and clear reset bit. */
-	reg16 = pci_read_config16(PCI_DEV(0, 0x01, 0), BCTRL1);
-	reg16 &= ~(1 << 6); /* SRESET */
-	pci_write_config16(PCI_DEV(0, 0x01, 0), BCTRL1, reg16);
+	reg16 = pci_read_config16(PCI_DEV(0, 0x01, 0), PCI_BRIDGE_CONTROL);
+	reg16 &= ~PCI_BRIDGE_CTL_BUS_RESET; /* SRESET */
+	pci_write_config16(PCI_DEV(0, 0x01, 0), PCI_BRIDGE_CONTROL, reg16);
 
 	reg16 = pci_read_config16(PCI_DEV(0, 0x01, 0), SLOTSTS);
 	printk(BIOS_DEBUG, "SLOTSTS: %04x\n", reg16);
@@ -610,12 +610,11 @@ static void i945_setup_pci_express_x16(void)
 		reg32 |= 1;
 		pci_write_config32(PCI_DEV(0, 0x01, 0), PEGSTS, reg32);
 
-		reg16 = pci_read_config16(PCI_DEV(0, 0x01, 0), BCTRL1);
-
-		reg16 |= (1 << 6);
-		pci_write_config16(PCI_DEV(0, 0x01, 0), BCTRL1, reg16);
-		reg16 &= ~(1 << 6);
-		pci_write_config16(PCI_DEV(0, 0x01, 0), BCTRL1, reg16);
+		reg16 = pci_read_config16(PCI_DEV(0, 0x01, 0), PCI_BRIDGE_CONTROL);
+		reg16 |= PCI_BRIDGE_CTL_BUS_RESET;
+		pci_write_config16(PCI_DEV(0, 0x01, 0), PCI_BRIDGE_CONTROL, reg16);
+		reg16 &= ~PCI_BRIDGE_CTL_BUS_RESET;
+		pci_write_config16(PCI_DEV(0, 0x01, 0), PCI_BRIDGE_CONTROL, reg16);
 
 		printk(BIOS_DEBUG, "PCIe link training ...");
 		timeout = 0x7ffff;
@@ -663,9 +662,9 @@ static void i945_setup_pci_express_x16(void)
 		pci_write_config32(PCI_DEV(0, 0x0, 0), DEVEN, reg32);
 
 		/* Set VGA enable bit in PCIe bridge */
-		reg16 = pci_read_config16(PCI_DEV(0, 0x1, 0), BCTRL1);
-		reg16 |= (1 << 3);
-		pci_write_config16(PCI_DEV(0, 0x1, 0), BCTRL1, reg16);
+		reg16 = pci_read_config16(PCI_DEV(0, 0x1, 0), PCI_BRIDGE_CONTROL);
+		reg16 |= PCI_BRIDGE_CTL_VGA;
+		pci_write_config16(PCI_DEV(0, 0x1, 0), PCI_BRIDGE_CONTROL, reg16);
 	}
 
 	/* Enable GPEs */
@@ -776,17 +775,17 @@ disable_pciexpress_x16_link:
 
 	MCHBAR16(UPMC1) |= (1 << 5) | (1 << 0);
 
-	reg16 = pci_read_config16(PCI_DEV(0, 0x01, 0), BCTRL1);
-	reg16 |= (1 << 6);
-	pci_write_config16(PCI_DEV(0, 0x01, 0), BCTRL1, reg16);
+	reg16 = pci_read_config16(PCI_DEV(0, 0x01, 0), PCI_BRIDGE_CONTROL);
+	reg16 |= PCI_BRIDGE_CTL_BUS_RESET;
+	pci_write_config16(PCI_DEV(0, 0x01, 0), PCI_BRIDGE_CONTROL, reg16);
 
 	reg32 = pci_read_config32(PCI_DEV(0, 0x01, 0), 0x224);
 	reg32 |= (1 << 8);
 	pci_write_config32(PCI_DEV(0, 0x01, 0), 0x224, reg32);
 
-	reg16 = pci_read_config16(PCI_DEV(0, 0x01, 0), BCTRL1);
-	reg16 &= ~(1 << 6);
-	pci_write_config16(PCI_DEV(0, 0x01, 0), BCTRL1, reg16);
+	reg16 = pci_read_config16(PCI_DEV(0, 0x01, 0), PCI_BRIDGE_CONTROL);
+	reg16 &= ~PCI_BRIDGE_CTL_BUS_RESET;
+	pci_write_config16(PCI_DEV(0, 0x01, 0), PCI_BRIDGE_CONTROL, reg16);
 
 	printk(BIOS_DEBUG, "Wait for link to enter detect state... ");
 	timeout = 0x7fffff;

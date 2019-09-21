@@ -59,10 +59,6 @@ int smbus_block_write(unsigned int device, unsigned int cmd, u8 bytes,
 #define SMLT	0x1b
 #define SECSTS	0x1e
 #define INTR	0x3c
-#define BCTRL	0x3e
-#define   SBR	(1 << 6)
-#define   SEE	(1 << 1)
-#define   PERE	(1 << 0)
 
 #define ICH_PCIE_DEV_SLOT	28
 

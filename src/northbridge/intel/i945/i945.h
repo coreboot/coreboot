@@ -86,7 +86,6 @@
 #define SBUSN1		0x19	/*  8bit */
 #define SUBUSN1		0x1a	/*  8bit */
 #define SSTS1		0x1e	/* 16bit */
-#define BCTRL1		0x3e	/* 16bit */
 #define PEG_CAP		0xa2	/* 16bit */
 #define DSTS		0xaa	/* 16bit */
 #define SLOTCAP		0xb4	/* 32bit */

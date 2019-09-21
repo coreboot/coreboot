@@ -18,6 +18,7 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
+#include <device/pci_def.h>
 #include <device/pci_ops.h>
 #include <device/pciexp.h>
 #include <device/pci_ids.h>
@@ -41,10 +42,10 @@ static void pci_init(struct device *dev)
 	// This has no effect but the OS might expect it
 	pci_write_config8(dev, 0x0c, 0x10);
 
-	reg16 = pci_read_config16(dev, 0x3e);
-	reg16 &= ~(1 << 0); /* disable parity error response */
-	reg16 |= (1 << 2); /* ISA enable */
-	pci_write_config16(dev, 0x3e, reg16);
+	reg16 = pci_read_config16(dev, PCI_BRIDGE_CONTROL);
+	reg16 &= ~PCI_BRIDGE_CTL_PARITY;
+	reg16 |= PCI_BRIDGE_CTL_NO_ISA;
+	pci_write_config16(dev, PCI_BRIDGE_CONTROL, reg16);
 
 	/* Enable IO xAPIC on this PCIe port */
 	reg32 = pci_read_config32(dev, 0xd8);

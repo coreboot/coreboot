@@ -247,9 +247,9 @@ void mainboard_romstage_entry(void)
 	enable_lapic();
 
 	/* Force PCIRST# */
-	pci_write_config16(PCI_DEV(0, 0x1e, 0), BCTRL, SBR);
+	pci_write_config16(PCI_DEV(0, 0x1e, 0), PCI_BRIDGE_CONTROL, PCI_BRIDGE_CTL_BUS_RESET);
 	udelay(200 * 1000);
-	pci_write_config16(PCI_DEV(0, 0x1e, 0), BCTRL, 0);
+	pci_write_config16(PCI_DEV(0, 0x1e, 0), PCI_BRIDGE_CONTROL, 0);
 
 	ich7_enable_lpc();
 	early_superio_config_w83627thg();

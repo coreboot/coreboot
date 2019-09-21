@@ -17,6 +17,7 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
+#include <device/pci_def.h>
 #include <device/pci_ops.h>
 #include <device/pci_ids.h>
 #include "i82801gx.h"
@@ -35,10 +36,10 @@ static void pci_init(struct device *dev)
 	pci_write_config8(dev, INTR, 0xff);
 
 	/* disable parity error response and SERR */
-	reg16 = pci_read_config16(dev, BCTRL);
-	reg16 &= ~(1 << 0);
-	reg16 &= ~(1 << 1);
-	pci_write_config16(dev, BCTRL, reg16);
+	reg16 = pci_read_config16(dev, PCI_BRIDGE_CONTROL);
+	reg16 &= ~PCI_BRIDGE_CTL_PARITY;
+	reg16 &= ~PCI_BRIDGE_CTL_SERR;
+	pci_write_config16(dev, PCI_BRIDGE_CONTROL, reg16);
 
 	/* Master Latency Count must be set to 0x04! */
 	reg8 = pci_read_config8(dev, SMLT);

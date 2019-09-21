@@ -195,10 +195,6 @@ void mainboard_config_superio(void);
 #define SMLT	0x1b
 #define SECSTS	0x1e
 #define INTR	0x3c
-#define BCTRL	0x3e
-#define   SBR	(1 << 6)
-#define   SEE	(1 << 1)
-#define   PERE	(1 << 0)
 
 /* Power Management Control and Status */
 #define PCH_PCS			0x84

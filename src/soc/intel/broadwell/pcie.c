@@ -604,10 +604,10 @@ static void pch_pcie_init(struct device *dev)
 	/* Set Cache Line Size to 0x10 */
 	pci_write_config8(dev, 0x0c, 0x10);
 
-	reg16 = pci_read_config16(dev, 0x3e);
-	reg16 &= ~(1 << 0); /* disable parity error response */
-	reg16 |= (1 << 2); /* ISA enable */
-	pci_write_config16(dev, 0x3e, reg16);
+	reg16 = pci_read_config16(dev, PCI_BRIDGE_CONTROL);
+	reg16 &= ~PCI_BRIDGE_CTL_PARITY;
+	reg16 |= PCI_BRIDGE_CTL_NO_ISA;
+	pci_write_config16(dev, PCI_BRIDGE_CONTROL, reg16);
 
 #ifdef EVEN_MORE_DEBUG
 	reg32 = pci_read_config32(dev, 0x20);

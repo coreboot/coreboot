@@ -108,10 +108,6 @@
 #define  GLBIOTLBINV	(1 << 1)
 #define  GLBCTXTINV	(1 << 0)
 
-/* Device 0:1.0 PCI configuration space (PCI Express) */
-
-#define BCTRL1		0x3e	/* 16bit */
-
 
 /* Device 0:2.0 PCI configuration space (Graphics Device) */
 

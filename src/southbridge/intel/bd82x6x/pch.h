@@ -101,10 +101,6 @@ void early_usb_init(const struct southbridge_usb_port *portmap);
 #define SMLT	0x1b
 #define SECSTS	0x1e
 #define INTR	0x3c
-#define BCTRL	0x3e
-#define   SBR	(1 << 6)
-#define   SEE	(1 << 1)
-#define   PERE	(1 << 0)
 
 #define PCH_EHCI1_DEV		PCI_DEV(0, 0x1d, 0)
 #define PCH_EHCI2_DEV		PCI_DEV(0, 0x1a, 0)

@@ -161,7 +161,7 @@ void cardbus_enable_resources(struct device *dev)
 	/* Error check */
 	ctrl |= (PCI_CB_BRIDGE_CTL_PARITY | PCI_CB_BRIDGE_CTL_SERR);
 	printk(BIOS_DEBUG, "%s bridge ctrl <- %04x\n", dev_path(dev), ctrl);
-	pci_write_config16(dev, PCI_BRIDGE_CONTROL, ctrl);
+	pci_write_config16(dev, PCI_CB_BRIDGE_CONTROL, ctrl);
 
 	pci_dev_enable_resources(dev);
 }

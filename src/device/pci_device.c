@@ -793,6 +793,43 @@ struct device_operations default_pci_ops_bus = {
 };
 
 /**
+ * Check for compatibility to route legacy VGA cycles through a bridge.
+ *
+ * Originally, when decoding i/o ports for legacy VGA cycles, bridges
+ * should only consider the 10 least significant bits of the port address.
+ * This means all VGA registers were aliased every 1024 ports!
+ *     e.g. 0x3b0 was also decoded as 0x7b0, 0xbb0 etc.
+ *
+ * To avoid this mess, a bridge control bit (VGA16) was introduced in
+ * 2003 to enable decoding of 16-bit port addresses. As we don't want
+ * to make this any more complex for now, we use this bit if possible
+ * and only warn if it's not supported (in set_vga_bridge_bits()).
+ */
+static void pci_bridge_vga_compat(struct bus *const bus)
+{
+	uint16_t bridge_ctrl;
+
+	bridge_ctrl = pci_read_config16(bus->dev, PCI_BRIDGE_CONTROL);
+
+	/* Ensure VGA decoding is disabled during probing (it should
+	   be by default, but we run blobs nowadays) */
+	bridge_ctrl &= ~PCI_BRIDGE_CTL_VGA;
+	pci_write_config16(bus->dev, PCI_BRIDGE_CONTROL, bridge_ctrl);
+
+	/* If the upstream bridge doesn't support VGA16, we don't have to check */
+	bus->no_vga16 |= bus->dev->bus->no_vga16;
+	if (bus->no_vga16)
+		return;
+
+	/* Test if we can enable 16-bit decoding */
+	bridge_ctrl |= PCI_BRIDGE_CTL_VGA16;
+	pci_write_config16(bus->dev, PCI_BRIDGE_CONTROL, bridge_ctrl);
+	bridge_ctrl = pci_read_config16(bus->dev, PCI_BRIDGE_CONTROL);
+
+	bus->no_vga16 = !(bridge_ctrl & PCI_BRIDGE_CTL_VGA16);
+}
+
+/**
  * Detect the type of downstream bridge.
  *
  * This function is a heuristic to detect which type of bus is downstream
@@ -1292,6 +1329,8 @@ void do_pci_scan_bridge(struct device *dev,
 	}
 
 	bus = dev->link_list;
+
+	pci_bridge_vga_compat(bus);
 
 	pci_bridge_route(bus, PCI_ROUTE_SCAN);
 

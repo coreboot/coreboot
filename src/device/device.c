@@ -759,6 +759,10 @@ static void set_vga_bridge_bits(void)
 			continue;
 
 		printk(BIOS_DEBUG, "found VGA at %s\n", dev_path(dev));
+		if (dev->bus->no_vga16) {
+			printk(BIOS_WARNING,
+				"A bridge on the path doesn't support 16-bit VGA decoding!");
+		}
 
 		if (dev->on_mainboard) {
 			vga_onboard = dev;
@@ -797,7 +801,7 @@ static void set_vga_bridge_bits(void)
 	while (bus) {
 		printk(BIOS_DEBUG, "Setting PCI_BRIDGE_CTL_VGA for bridge %s\n",
 		       dev_path(bus->dev));
-		bus->bridge_ctrl |= PCI_BRIDGE_CTL_VGA;
+		bus->bridge_ctrl |= PCI_BRIDGE_CTL_VGA | PCI_BRIDGE_CTL_VGA16;
 		bus = (bus == bus->dev->bus) ? 0 : bus->dev->bus;
 	}
 }

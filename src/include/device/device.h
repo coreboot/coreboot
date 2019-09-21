@@ -94,6 +94,7 @@ struct bus {
 	unsigned int	reset_needed : 1;
 	unsigned int	disable_relaxed_ordering : 1;
 	unsigned int	ht_link_up : 1;
+	unsigned int	no_vga16 : 1;	/* No support for 16-bit VGA decoding */
 };
 
 /*

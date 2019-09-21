@@ -626,7 +626,7 @@ void pci_bus_enable_resources(struct device *dev)
 		dev->command |= PCI_COMMAND_IO;
 	ctrl = pci_read_config16(dev, PCI_BRIDGE_CONTROL);
 	ctrl |= dev->link_list->bridge_ctrl;
-	ctrl |= (PCI_BRIDGE_CTL_PARITY + PCI_BRIDGE_CTL_SERR); /* Error check. */
+	ctrl |= (PCI_BRIDGE_CTL_PARITY | PCI_BRIDGE_CTL_SERR); /* Error check. */
 	printk(BIOS_DEBUG, "%s bridge ctrl <- %04x\n", dev_path(dev), ctrl);
 	pci_write_config16(dev, PCI_BRIDGE_CONTROL, ctrl);
 

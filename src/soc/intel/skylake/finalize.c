@@ -20,6 +20,7 @@
 #include <bootstate.h>
 #include <console/console.h>
 #include <console/post_codes.h>
+#include <cpu/x86/mp.h>
 #include <cpu/x86/smm.h>
 #include <device/pci.h>
 #include <intelblocks/cpulib.h>
@@ -123,6 +124,9 @@ static void soc_lockdown(struct device *dev)
 		reg8 |= SMI_LOCK;
 		pci_write_config8(dev, GEN_PMCON_A, reg8);
 	}
+
+	/* Lock chipset memory registers to protect SMM */
+	mp_run_on_all_cpus(cpu_lt_lock_memory, NULL);
 }
 
 static void soc_finalize(void *unused)

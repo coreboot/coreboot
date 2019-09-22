@@ -161,4 +161,7 @@ uint32_t cpu_get_max_turbo_ratio(void);
 /* Configure Machine Check Architecture support */
 void mca_configure(void);
 
+/* Lock chipset memory registers to protect SMM */
+void cpu_lt_lock_memory(void *unused);
+
 #endif	/* SOC_INTEL_COMMON_BLOCK_CPULIB_H */

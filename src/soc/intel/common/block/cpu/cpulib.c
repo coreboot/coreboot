@@ -23,10 +23,10 @@
 #include <arch/cpu.h>
 #include <intelblocks/cpulib.h>
 #include <intelblocks/fast_spi.h>
+#include <intelblocks/msr.h>
 #include <soc/cpu.h>
 #include <soc/iomap.h>
 #include <soc/pm.h>
-#include <intelblocks/msr.h>
 #include <soc/pci_devs.h>
 #include <stdint.h>
 
@@ -319,4 +319,9 @@ void mca_configure(void)
 		wrmsr(IA32_MC0_CTL + i * 4,
 			(msr_t) {.lo = 0xffffffff, .hi = 0xffffffff});
 	}
+}
+
+void cpu_lt_lock_memory(void *unused)
+{
+	msr_set_bit(MSR_LT_CONTROL, LT_CONTROL_LOCK_BIT);
 }

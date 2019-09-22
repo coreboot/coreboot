@@ -1,0 +1,58 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+# -----------------------------------------------------------------
+entries
+
+# start-bit	length	config	config-ID	name
+0		120	r	0		reserved_memory
+
+# -----------------------------------------------------------------
+# RTC_BOOT_BYTE (coreboot hardcoded)
+384		1	e	1		boot_option
+388		4	h	0		reboot_counter
+
+# -----------------------------------------------------------------
+# coreboot config options: console
+392		24	r	0		cmos_post_offset
+416		4	e	2		debug_level
+
+# -----------------------------------------------------------------
+# coreboot config options: southbridge
+420		2	e	3		power_on_after_fail
+422		1	e	4		legacy_8254_timer
+
+# -----------------------------------------------------------------
+# vboot nv area
+816		64	r	0		boot_count_offset
+880		128	r	0		vbnv
+
+# -----------------------------------------------------------------
+# coreboot config options: check sums
+1008		16	h	0		check_sum
+#1024		1024	r	0		upper_bank
+
+# -----------------------------------------------------------------
+
+enumerations
+
+#ID	value	text
+1	0	Fallback
+1	1	Normal
+2	0	Emergency
+2	1	Alert
+2	2	Critical
+2	3	Error
+2	4	Warning
+2	5	Notice
+2	6	Info
+2	7	Debug
+2	8	Spew
+3	0	Disable
+3	1	Enable
+3	2	Keep
+4	0	Disable
+4	1	Enable
+# -----------------------------------------------------------------
+checksums
+
+checksum 416 815 1008

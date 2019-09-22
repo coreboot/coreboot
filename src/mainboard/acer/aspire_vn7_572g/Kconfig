@@ -1,0 +1,110 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+if BOARD_ACER_VN7_572G
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select BOARD_ROMSIZE_KB_8192
+	select DRIVERS_I2C_HID
+	select DRIVERS_USB_ACPI
+	select EC_ACPI
+	select HAVE_ACPI_RESUME
+	select HAVE_ACPI_TABLES
+	select HAVE_CMOS_DEFAULT
+	select HAVE_INTEL_PTT
+	select HAVE_OPTION_TABLE
+	select INTEL_GMA_HAVE_VBT
+	select INTEL_INT15
+	select INTEL_LPSS_UART_FOR_CONSOLE
+	select MAINBOARD_HAS_CRB_TPM
+	select MAINBOARD_HAS_LIBGFXINIT
+	select MAINBOARD_HAS_TPM2
+	select NO_UART_ON_SUPERIO
+	select SOC_INTEL_COMMON_BLOCK_HDA_VERB
+	select SOC_INTEL_SKYLAKE
+	select SPD_READ_BY_WORD
+	select SYSTEM_TYPE_LAPTOP
+
+config CBFS_SIZE
+	default 0x600000
+
+config CONSOLE_SERIAL
+	default n
+
+config DIMM_MAX
+	default 2
+
+config DIMM_SPD_SIZE
+	default 512
+
+config FMDFILE
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/board.fmd" if INCLUDE_EC_FIRMWARE
+
+config INCLUDE_EC_FIRMWARE
+	bool "Include EC firmware blob"
+	help
+	  If corrupted, the EC can recover its firmware from the SPI flash.
+
+config EC_FIRMWARE_FILE
+	string "Location of EC firmware blob"
+	depends on INCLUDE_EC_FIRMWARE
+	default "3rdparty/blobs/mainboard/\$(MAINBOARDDIR)/ec.bin"
+
+config EC_USE_LGMR
+	bool "Use LPC generic memory range for EC"
+	help
+	  Using MMIO accesses for EC range can improve performance.
+
+config INCLUDE_NHLT_BLOBS
+	bool "Include blobs for audio"
+	select NHLT_DMIC_1CH
+	# It appears OS chooses blob?
+	select NHLT_DMIC_2CH
+#	select NHLT_DMIC_4CH	# Wrong lie to tell? Double-check blob.
+
+config LINEAR_FRAMEBUFFER_MAX_HEIGHT
+	default 1080
+
+config LINEAR_FRAMEBUFFER_MAX_WIDTH
+	default 1920
+
+config MAINBOARD_DIR
+	default "acer/aspire_vn7_572g"
+
+config MAINBOARD_FAMILY
+	default "Aspire V Nitro"
+
+config MAINBOARD_PART_NUMBER
+	default "Aspire VN7-572G"
+
+config MAINBOARD_SUPPORTS_KABYLAKE_DUAL
+	default n
+
+config MAINBOARD_SUPPORTS_KABYLAKE_QUAD
+	default n
+
+config MAX_CPUS
+	default 4
+
+config ME_CLEANER_ARGS
+	default "-s"
+
+config ONBOARD_VGA_IS_PRIMARY
+	default y
+
+config POST_DEVICE
+	default n
+
+config POST_IO
+	default n
+
+config UART_FOR_CONSOLE
+	default 2
+
+config VGA_BIOS_DGPU_ID
+	default "10de,139a"
+
+config VGA_BIOS_ID
+	default "8086,1916"
+
+endif

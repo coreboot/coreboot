@@ -1,0 +1,2 @@
+config BOARD_ACER_VN7_572G
+	bool "Aspire VN7-572G"

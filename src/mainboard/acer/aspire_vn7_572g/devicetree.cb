@@ -1,0 +1,336 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+chip soc/intel/skylake
+
+	# Intel Common SoC Config
+	#+-------------------+---------------------------+
+	#| Field             |  Value                    |
+	#+-------------------+---------------------------+
+	#| chipset_lockdown  | CHIPSET_LOCKDOWN_COREBOOT |
+	#| I2C0              | Touchscreen               |
+	#| I2C1              | Touchpad                  |
+	#+-------------------+---------------------------+
+	register "common_soc_config" = "{
+		.i2c[0] = {
+			.speed = I2C_SPEED_FAST,
+		},
+		.i2c[1] = {
+			.speed = I2C_SPEED_FAST,
+			.speed_config[0] = {
+				.speed = I2C_SPEED_FAST,
+				.scl_lcnt = 128,
+				.scl_hcnt = 160,
+				.sda_hold = 30,
+			}
+		},
+	}"
+
+	# TODO: Drop once CB:55224 is merged
+	register "SerialIoDevMode" = "{
+		[PchSerialIoIndexI2C0]	= PchSerialIoPci,
+		[PchSerialIoIndexI2C1]	= PchSerialIoPci,
+		[PchSerialIoIndexI2C4]	= PchSerialIoDisabled,
+		[PchSerialIoIndexUart2]	= PchSerialIoSkipInit,
+	}"
+
+	device cpu_cluster 0 on
+		device lapic 0 on end
+	end
+	device domain 0 on
+		subsystemid 0x1025 0x1037 inherit
+		device ref system_agent	on
+			# Enable "Enhanced Intel SpeedStep"
+			register "eist_enable" = "1"
+
+			# Set the Thermal Control Circuit (TCC) activation value to 97C
+			# even though FSP integration guide says to set it to 100C for SKL-U
+			# (offset at 0), because when the TCC activates at 100C, the CPU
+			# will have already shut itself down from overheating protection.
+			register "tcc_offset" = "3"	# TCC of 97C
+
+			register "SaGv" = "SaGv_Enabled"
+
+			# VR Slew rate setting for improving audible noise
+			register "AcousticNoiseMitigation" = "1"
+			register "SlowSlewRateForIa" = "3"	# Fast/16
+			register "SlowSlewRateForGt" = "3"	# Fast/16
+			register "SlowSlewRateForSa" = "0"	# Fast/2
+			register "FastPkgCRampDisableIa" = "0"
+			register "FastPkgCRampDisableGt" = "0"
+			register "FastPkgCRampDisableSa" = "0"
+
+			# PL1, PL2 override 35W, PL4 override 43W
+			register "power_limits_config" = "{
+				.tdp_pl1_override = 35,
+				.tdp_pl2_override = 35,
+				.tdp_pl4 = 43,
+			}"
+
+			# ISL95857 VR
+			# Send VR specific command for PS4 exit issue
+			register "SendVrMbxCmd" = "2"
+			# Send VR mailbox command for IA/GT/SA rails
+			register "IslVrCmd" = "2"
+		end
+		device ref igpu		on
+			register "panel_cfg" = "{
+				.up_delay_ms		= 150,	// T3
+				.down_delay_ms		= 50,	// T10
+				.cycle_delay_ms		= 500,	// T12
+				.backlight_on_delay_ms	= 1,	// T7
+				.backlight_off_delay_ms	= 200,	// T9
+				.backlight_pwm_hz	= 1000,
+			}"
+
+			# IGD Displays; LFP and 3*EFP
+			# FIXME: VBT does not define EFP3, board has no EFP2?
+			register "gfx" = "{
+				.use_spread_spectrum_clock = 1,
+				.ndid = 4, .did = { 0x0400, 0x0300, 0x0301, 0x0302 }
+			}"
+
+			register "PrimaryDisplay" = "Display_Switchable"
+		end
+		device ref sa_thermal	off	end
+		device ref chap		off	end
+		device ref gmm		off	end
+		device ref south_xhci	on
+			register "usb2_ports[0]" = "{
+				.enable		= 1,
+				.ocpin		= OC_SKIP,
+				.tx_bias	= USB2_BIAS_17MV,
+				.tx_emp_enable	= USB2_DE_EMP_ON,
+				.pre_emp_bias	= USB2_BIAS_28MV,
+				.pre_emp_bit	= USB2_HALF_BIT_PRE_EMP,
+			}" # Type-A Port (right)
+			register "usb2_ports[1]" = "{
+				.enable		= 1,
+				.ocpin		= OC_SKIP,
+				.tx_bias	= USB2_BIAS_17MV,
+				.tx_emp_enable	= USB2_DE_EMP_ON,
+				.pre_emp_bias	= USB2_BIAS_28MV,
+				.pre_emp_bit	= USB2_HALF_BIT_PRE_EMP,
+			}" # Type-A Port (right)
+			register "usb2_ports[2]" = "{
+				.enable		= 1,
+				.ocpin		= OC_SKIP,
+				.tx_bias	= USB2_BIAS_17MV,
+				.tx_emp_enable	= USB2_DE_EMP_ON,
+				.pre_emp_bias	= USB2_BIAS_28MV,
+				.pre_emp_bit	= USB2_HALF_BIT_PRE_EMP,
+			}" # Type-C Port
+			register "usb2_ports[3]" = "USB2_PORT_FLEX(OC_SKIP)"	# Type-A Port (left)
+			register "usb2_ports[4]" = "USB2_PORT_FLEX(OC_SKIP)"	# Bluetooth
+			register "usb2_ports[5]" = "USB2_PORT_FLEX(OC_SKIP)"	# Touchscreen
+			register "usb2_ports[6]" = "USB2_PORT_FLEX(OC_SKIP)"	# Webcam
+			register "usb2_ports[7]" = "USB2_PORT_FLEX(OC_SKIP)"	# SD
+			register "usb2_ports[8]" = "USB2_PORT_FLEX(OC_SKIP)"	# Finger-printer
+
+			register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC_SKIP)" # Type-A Port (right); Capable of OTG
+			register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)" # Type-A Port (right)
+			register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC_SKIP)" # Type-C Port
+			register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC_SKIP)" # Type-C Port
+			chip drivers/usb/acpi
+				register "desc" = ""Root Hub""
+				register "type" = "UPC_TYPE_HUB"
+				device usb 0.0 on
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-A Right""
+						register "type" = "UPC_TYPE_USB3_A"
+						register "group" = "ACPI_PLD_GROUP(0, 1)"
+						device usb 2.0 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-A Right""
+						register "type" = "UPC_TYPE_USB3_A"
+						register "group" = "ACPI_PLD_GROUP(0, 2)"
+						device usb 2.1 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-C""
+						register "type" = "UPC_TYPE_C_USB2_SS"
+						register "group" = "ACPI_PLD_GROUP(0, 3)"
+						device usb 2.2 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-A Left""
+						register "type" = "UPC_TYPE_A"
+						register "group" = "ACPI_PLD_GROUP(0, 4)"
+						device usb 2.3 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Bluetooth""
+						register "type" = "UPC_TYPE_UNUSED"
+						register "group" = "ACPI_PLD_GROUP(0, 5)"
+						device usb 2.4 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Touchscreen""
+						register "type" = "UPC_TYPE_UNUSED"
+						register "group" = "ACPI_PLD_GROUP(0, 6)"
+						device usb 2.5 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Webcam""
+						register "type" = "UPC_TYPE_UNUSED"
+						register "group" = "ACPI_PLD_GROUP(0, 7)"
+						device usb 2.6 on  end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 SD""
+						register "type" = "UPC_TYPE_UNUSED"
+						register "group" = "ACPI_PLD_GROUP(0, 8)"
+						device usb 2.7 on  end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Finger-printer""
+						register "type" = "UPC_TYPE_UNUSED"
+						register "group" = "ACPI_PLD_GROUP(0, 9)"
+						device usb 2.8 on  end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Type-A Right""
+						register "type" = "UPC_TYPE_USB3_A"
+						register "group" = "ACPI_PLD_GROUP(0, 1)"
+						device usb 3.0 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Type-A Right""
+						register "type" = "UPC_TYPE_USB3_A"
+						register "group" = "ACPI_PLD_GROUP(0, 2)"
+						device usb 3.1 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Type-C""
+						register "type" = "UPC_TYPE_C_USB2_SS"
+						register "group" = "ACPI_PLD_GROUP(0, 3)"
+						device usb 3.2 on  end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Type-C""
+						register "type" = "UPC_TYPE_C_USB2_SS"
+						register "group" = "ACPI_PLD_GROUP(0, 3)"
+						device usb 3.3 on end
+					end
+				end
+			end
+		end
+		device ref south_xdci	off	end
+		device ref thermal	on	end
+		device ref cio		off	end
+		device ref i2c0		on
+			chip drivers/i2c/hid
+				register "generic.name" = ""TPL0""
+				register "generic.hid" = ""ELAN2259""
+				register "generic.desc" = ""ELAN Touchscreen""
+				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_E7_IRQ)"
+				register "generic.device_present_gpio" = "GPP_B15"
+				register "hid_desc_reg_offset" = "0x01"
+				device i2c 0x10 on end
+			end
+		end
+		device ref i2c1		on
+			chip drivers/i2c/hid
+				register "generic.name" = ""TPD0""
+				register "generic.hid" = ""SYN1B7F""
+				register "generic.desc" = ""Synaptics Touchpad""
+				register "generic.irq" = "ACPI_IRQ_WAKE_LEVEL_LOW(GPP_B3_IRQ)"
+#				register "generic.wake" = "GPE0_DW2_16"	# FIXME: Use EC's GPE?
+				register "generic.probed" = "1"
+				register "hid_desc_reg_offset" = "0x20"
+				device i2c 0x2c on end
+			end
+			chip drivers/i2c/hid
+				register "generic.name" = ""TPD1""
+				register "generic.hid" = ""ELAN0501""
+				register "generic.desc" = ""ELAN Touchpad""
+				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_B3_IRQ)"
+				register "generic.probed" = "1"
+				register "hid_desc_reg_offset" = "0x01"
+				device i2c 0x15 on end
+			end
+		end
+		device ref heci1	on	end
+		device ref sata		on
+			register "SataMode" = "SATA_AHCI"
+			register "SataSalpSupport" = "1"
+			register "SataPortsEnable[1]" = "1"	# HDD; BIT1 in 92h-93h
+			register "SataPortsEnable[2]" = "1"	# ODD; BIT2 in 92h-93h
+		end
+		device ref uart2	on	end
+		# Board has no GPIO expander on I2C4 (despite SetupUtility claim that it does - this would be static text)
+		device ref pcie_rp1	on
+			register "PcieRpEnable[0]" = "1"
+			register "PcieRpAdvancedErrorReporting[0]" = "1"
+			register "PcieRpLtrEnable[0]" = "1"
+			register "PcieRpClkReqSupport[0]" = "1"
+			register "PcieRpClkReqNumber[0]" = "0"
+			register "PcieRpMaxPayload[0]" = "RpMaxPayload_256"
+		end # PCI Express Port 1 (dGPU; x4)
+		device ref pcie_rp7	on
+			register "PcieRpEnable[6]" = "1"
+			register "PcieRpAdvancedErrorReporting[6]" = "1"
+			register "PcieRpLtrEnable[6]" = "1"
+			register "PcieRpClkReqSupport[6]" = "1"
+			register "PcieRpClkReqNumber[6]" = "3"
+			register "PcieRpMaxPayload[6]" = "RpMaxPayload_256"
+		end # PCI Express Port 7 (NGFF; x2)
+		device ref pcie_rp9	on
+			register "PcieRpEnable[8]" = "1"
+			register "PcieRpAdvancedErrorReporting[8]" = "1"
+			register "PcieRpLtrEnable[8]" = "1"
+			register "PcieRpClkReqSupport[8]" = "1"
+			register "PcieRpClkReqNumber[8]" = "1"
+			register "PcieRpMaxPayload[8]" = "RpMaxPayload_256"
+		end # PCI Express Port 9 (LAN)
+		device ref pcie_rp10	on
+			register "PcieRpEnable[9]" = "1"
+			register "PcieRpAdvancedErrorReporting[9]" = "1"
+			register "PcieRpLtrEnable[9]" = "1"
+			register "PcieRpClkReqSupport[9]" = "1"
+			register "PcieRpClkReqNumber[9]" = "2"
+			register "PcieRpMaxPayload[9]" = "RpMaxPayload_256"
+			# ASPM L0s is broken/unsupported on Qualcomm Atheros QCA6174 (AER: corrected errors)
+			register "pcie_rp_aspm[9]" = "AspmL1"
+		end # PCI Express Port 10 (WLAN)
+		# Although vendor's platform NVS area shows SCS is enabled, the SD card reader is actually connected over USB
+		device ref lpc_espi	on
+			register "lpc_iod" = "0x0010"	# 80h-81h; ComB: 2F8h-2FFh (COM 2)
+			register "lpc_ioe" = "LPC_IOE_COMA_EN | LPC_IOE_COMB_EN | LPC_IOE_KBC_60_64
+					| LPC_IOE_EC_62_66 | LPC_IOE_SUPERIO_2E_2F | LPC_IOE_EC_4E_4F"	# 82h-83h
+			register "gen3_dec" = "0x00040069"	# 8Ch-8Fh; EC (sideband): Port 68h/6Ch
+			register "gen4_dec" = "0x000c1201"	# 90h-93h; EC (index): Port 1200h
+
+			# EC/KBC requires continuous mode
+			register "serirq_mode" = "SERIRQ_CONTINUOUS"
+		end
+		device ref p2sb		on	end
+		device ref pmc		on
+			# Note that GPE events called out in ASL code rely on this
+			# route. i.e. If this route changes then the affected GPE
+			# offset bits also need to be changed.
+			register "gpe0_dw0" = "GPP_C"	# 3:0 in pwrmbase+0120h
+			register "gpe0_dw1" = "GPP_D"	# 7:4 in pwrmbase+0120h
+			register "gpe0_dw2" = "GPP_E"	# 11:8 in pwrmbase+0120h
+
+			# Enable S0ix
+			register "s0ix_enable" = "1"
+
+			register "PmConfigSlpS3MinAssert" = "SLP_S3_MIN_ASSERT_50MS"	# 11:10 in A4h-A7h
+			register "PmConfigSlpS4MinAssert" = "SLP_S4_MIN_ASSERT_4S"	# 5:4 in A4h-A7h
+			register "PmConfigSlpSusMinAssert" = "SLP_SUS_MIN_ASSERT_4S"	# 19:18 in pmbase+0018h
+			register "PmConfigSlpAMinAssert" = "SLP_A_MIN_ASSERT_2S"	# 17:16 in pmbase+0018h
+		end
+		device ref hda		on
+			register "DspEnable" = "1"
+			# PchHdaDspEndpointDmic is only to be returned to reference code
+			# DXE phase as HOB, used to select blob for NHLT
+		end
+		device ref smbus	on	end
+		device ref fast_spi	on	end
+		device ref tracehub	off	end
+	end
+	chip drivers/crb
+		device mmio 0xfed40000 on end
+	end
+end

@@ -24,6 +24,7 @@
 #define TCOBASE		0x50
 #define TCOCTL		0x54
 #define  TCO_BASE_EN		(1 << 8)
+#define  TCO_BASE_LOCK		(1 << 0)
 
 /* Get base address of TCO I/O registers. */
 static uint16_t tco_get_bar(void)
@@ -52,6 +53,10 @@ void tco_write_reg(uint16_t tco_reg, uint16_t value)
 void tco_lockdown(void)
 {
 	uint16_t tcocnt;
+	const pci_devfn_t dev = PCH_DEV_SMBUS;
+
+	/* TCO base address lockdown */
+	pci_or_config32(dev, TCOCTL, TCO_BASE_LOCK);
 
 	/* TCO Lock down */
 	tcocnt = tco_read_reg(TCO1_CNT);

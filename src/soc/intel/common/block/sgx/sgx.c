@@ -18,6 +18,7 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/intel/microcode.h>
 #include <cpu/intel/common/common.h>
+#include <intelblocks/cpulib.h>
 #include <intelblocks/mp_init.h>
 #include <intelblocks/msr.h>
 #include <intelblocks/sgx.h>
@@ -216,8 +217,9 @@ void sgx_configure(void *unused)
 	if (owner_epoch_update() < 0)
 		return;
 
-	/* Ensure to lock memory before reload microcode patch */
-	cpu_lock_sgx_memory();
+	if (CONFIG(SOC_INTEL_COMMON_BLOCK_SGX_LOCK_MEMORY))
+		/* Ensure to lock memory before reload microcode patch */
+		cpu_lt_lock_memory(NULL);
 
 	/*
 	 * Update just on the first CPU in the core. Other siblings

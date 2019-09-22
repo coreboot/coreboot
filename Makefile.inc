@@ -504,7 +504,7 @@ $(build_h): $$(shell $$(build_h_check))
 	@printf "    GEN        build.h\n"
 	mv $< $@
 
-build-dirs:
+build-dirs $(objcbfs) $(objgenerated):
 	mkdir -p $(objcbfs) $(objgenerated)
 
 #######################################################################
@@ -706,7 +706,7 @@ $(objcbfs)/bootblock.raw.bin: $(objcbfs)/bootblock.raw.elf
 	$(OBJCOPY_bootblock) -O binary $< $@
 
 ifneq ($(CONFIG_HAVE_BOOTBLOCK),y)
-$(objcbfs)/bootblock.bin:
+$(objcbfs)/bootblock.bin: $(objcbfs)
 	dd if=/dev/zero of=$@ bs=64 count=1
 endif
 

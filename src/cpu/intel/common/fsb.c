@@ -42,12 +42,12 @@ static int get_fsb_tsc(int *fsb, int *ratio)
 		case 0xe:  /* Core Solo/Duo */
 		case 0x1c: /* Atom */
 			*fsb = core_fsb[rdmsr(MSR_FSB_FREQ).lo & 7];
-			*ratio = rdmsr(MSR_EBC_FREQUENCY_ID).lo >> 24;
+			*ratio = (rdmsr(IA32_PERF_STATUS).hi >> 8) & 0x1f;
 			break;
 		case 0xf:  /* Core 2 or Xeon */
 		case 0x17: /* Enhanced Core */
 			*fsb = core2_fsb[rdmsr(MSR_FSB_FREQ).lo & 7];
-			*ratio = rdmsr(MSR_EBC_FREQUENCY_ID).lo >> 24;
+			*ratio = (rdmsr(IA32_PERF_STATUS).hi >> 8) & 0x1f;
 			break;
 		case 0x25: /* Nehalem BCLK fixed at 133MHz */
 			*fsb = 133;

@@ -109,7 +109,7 @@ void pnp_read_resources(struct device *dev)
 static void pnp_set_resource(struct device *dev, struct resource *resource)
 {
 	if (!(resource->flags & IORESOURCE_ASSIGNED)) {
-		/* The PNP_MSC super IO registers have the IRQ flag set. If no
+		/* The PNP_MSC Super IO registers have the IRQ flag set. If no
 		   value is assigned in the devicetree, the corresponding
 		   PNP_MSC register doesn't get written, which should be printed
 		   as warning and not as error. */

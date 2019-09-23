@@ -20,9 +20,9 @@
  *
  * Controlled by the following preprocessor defines:
  *
- * SUPERIO_CHIP_NAME	The name of the super i/o chip (unique, required)
+ * SUPERIO_CHIP_NAME	The name of the Super I/O chip (unique, required)
  * SUPERIO_PNP_HID	The EisaId string that identifies this device (optional)
- * SUPERIO_PNP_LDN	The logical device number on the super i/o
+ * SUPERIO_PNP_LDN	The logical device number on the Super I/O
  *			chip for this device (required)
  * SUPERIO_PNP_DDN	A string literal that identifies the dos device
  *                      name (DDN) of this device (e.g. "COM1", optional)

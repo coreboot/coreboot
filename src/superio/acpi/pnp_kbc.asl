@@ -22,8 +22,8 @@
  *
  * Controlled by the following preprocessor defines:
  *
- * SUPERIO_CHIP_NAME	The name of the super i/o chip (unique, required)
- * SUPERIO_KBC_LDN	The logical device number on the super i/o
+ * SUPERIO_CHIP_NAME	The name of the Super I/O chip (unique, required)
+ * SUPERIO_KBC_LDN	The logical device number on the Super I/O
  *			chip for this keyboard controller (required)
  * SUPERIO_KBC_PS2M	If defined, PS/2 mouse support is included in
  *			the KBC_LDN. Mouse irq is set at IRQ1 of the

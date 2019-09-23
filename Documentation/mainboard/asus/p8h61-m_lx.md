@@ -49,7 +49,7 @@ region is not readable even by the host.
   suspend.
 
 - There is no automatic, OS-independent fan control. This is because
-  the super I/O hardware monitor can only obtain valid CPU temperature
+  the Super I/O hardware monitor can only obtain valid CPU temperature
   readings from the PECI agent, whose complete initialisation is not
   publicly documented. The `coretemp` driver can still be used for
   accurate CPU temperature readings.

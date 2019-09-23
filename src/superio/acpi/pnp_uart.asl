@@ -21,8 +21,8 @@
  *
  * Controlled by the following preprocessor defines:
  *
- * SUPERIO_CHIP_NAME	The name of the super i/o chip (unique, required)
- * SUPERIO_UART_LDN	The logical device number on the super i/o
+ * SUPERIO_CHIP_NAME	The name of the Super I/O chip (unique, required)
+ * SUPERIO_UART_LDN	The logical device number on the Super I/O
  *			chip for this UART (required)
  * SUPERIO_UART_DDN	A string literal that identifies the dos device
  *                      name (DDN) of this uart (e.g. "COM1", optional)

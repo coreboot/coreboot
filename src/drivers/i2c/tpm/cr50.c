@@ -1,9 +1,5 @@
 /*
- * Copyright 2016 Google Inc.
- *
- * Based on Linux Kernel TPM driver by
- * Peter Huewe <peter.huewe@infineon.com>
- * Copyright (C) 2011 Infineon Technologies
+ * This file is part of the coreboot project.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -15,6 +11,8 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
+
+/* Based on Linux Kernel TPM driver */
 
 /*
  * cr50 is a TPM 2.0 capable device that requries special

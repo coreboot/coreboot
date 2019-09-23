@@ -9,7 +9,9 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ */
+
+/*
  * This driver checks if the PTT Bit is set correctly within the FWSTS4
  * register. This is needed in order to use the iTPM, because we have to
  * check prior using the interface that this bit is set correctly - otherwise

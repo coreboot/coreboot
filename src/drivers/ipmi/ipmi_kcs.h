@@ -1,9 +1,5 @@
-#ifndef __IPMI_KCS_H
-#define __IPMI_KCS_H
 /*
  * This file is part of the coreboot project.
- *
- * Copyright (C) 2012 Sven Schnelle <svens@stackframe.org>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -15,6 +11,9 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
+
+#ifndef __IPMI_KCS_H
+#define __IPMI_KCS_H
 
 #define IPMI_NETFN_CHASSIS 0x00
 #define IPMI_NETFN_BRIDGE 0x02

@@ -1,4 +1,6 @@
 /*
+ * This file is part of the coreboot project.
+ *
  * Copyright 2012 Red Hat Inc.
  * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  *
@@ -22,9 +24,6 @@
  * next paragraph) shall be included in all copies or substantial portions
  * of the Software.
  *
- */
-/*
- * Authors: Dave Airlie <airlied@redhat.com>
  */
 
 #define COREBOOT_AST_FAILOVER_TIMEOUT	10000000

@@ -90,14 +90,6 @@ static struct cse_device {
 	uintptr_t sec_bar;
 } g_cse;
 
-/* HECI Message Header */
-struct mkhi_hdr {
-	uint8_t group_id;
-	uint8_t command:7;
-	uint8_t is_resp:1;
-	uint8_t rsvd;
-	uint8_t result;
-} __packed;
 /*
  * Initialize the device with provided temporary BAR. If BAR is 0 use a
  * default. This is intended for pre-mem usage only where BARs haven't been

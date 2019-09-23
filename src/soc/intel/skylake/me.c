@@ -200,14 +200,6 @@ static const char *const me_progress_bup_values[] = {
 
 static void print_me_version(void *unused)
 {
-	struct mkhi_hdr {
-		uint8_t group_id;
-		uint8_t command:7;
-		uint8_t is_resp:1;
-		uint8_t rsvd;
-		uint8_t result;
-	} __packed;
-
 	struct version {
 		uint16_t minor;
 		uint16_t major;

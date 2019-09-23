@@ -53,6 +53,15 @@ union me_hfsts1 {
 	} __packed fields;
 };
 
+/* HECI Message Header */
+struct mkhi_hdr {
+	uint8_t group_id;
+	uint8_t command:7;
+	uint8_t is_resp:1;
+	uint8_t rsvd;
+	uint8_t result;
+} __packed;
+
 /* set up device for use in early boot enviroument with temp bar */
 void heci_init(uintptr_t bar);
 /*

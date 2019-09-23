@@ -19,7 +19,6 @@
 #include <soc/gpe.h>
 #include <soc/gpio.h>
 
-#ifndef __ACPI__
 static const struct pad_config gpio_table[] = {
 /* RCIN# */	_PAD_CFG_STRUCT(GPP_A0, 0x44000702, 0x00000000),
 /* LAD0 */	_PAD_CFG_STRUCT(GPP_A1, 0x44000702, 0x00000000),
@@ -244,5 +243,4 @@ static const struct pad_config early_gpio_table[] = {
 /* CLKOUT_LPC1 */	_PAD_CFG_STRUCT(GPP_A10, 0x44000700, 0x00000000),
 };
 
-#endif /* __ACPI__ */
 #endif /* _GPIO_X11SSH_TF_H */

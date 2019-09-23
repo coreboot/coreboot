@@ -18,4 +18,6 @@
 
 #include <baseboard/ec.h>
 
+#define EC_ENABLE_MULTIPLE_DPTF_PROFILES
+
 #endif

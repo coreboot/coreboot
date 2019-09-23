@@ -74,7 +74,7 @@ void acpi_create_serialio_ssdt(acpi_header_t *ssdt)
 	/* Fill the SSDT header */
 	memset((void *)ssdt, 0, sizeof(acpi_header_t));
 	memcpy(&ssdt->signature, "SSDT", 4);
-	ssdt->revision = 2;
+	ssdt->revision = get_acpi_table_revision(SSDT);
 	memcpy(&ssdt->oem_id, OEM_ID, 6);
 	memcpy(&ssdt->oem_table_id, "SERIALIO", 8);
 	ssdt->oem_revision = 43;

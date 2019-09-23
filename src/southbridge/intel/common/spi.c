@@ -1060,9 +1060,9 @@ void spi_finalize_ops(void)
 	struct ich_spi_controller *cntlr = car_get_var_ptr(&g_cntlr);
 	u16 spi_opprefix;
 	u16 optype = 0;
-	struct intel_swseq_spi_config spi_config = {
+	struct intel_swseq_spi_config spi_config_default = {
 		{0x06, 0x50},  /* OPPREFIXES: EWSR and WREN */
-		{ /* OPTYPE and OPCODE */
+		{ /* OPCODE and OPTYPE */
 			{0x01, WRITE_NO_ADDR},		/* WRSR: Write Status Register */
 			{0x02, WRITE_WITH_ADDR},	/* BYPR: Byte Program */
 			{0x03, READ_WITH_ADDR},		/* READ: Read Data */
@@ -1073,19 +1073,43 @@ void spi_finalize_ops(void)
 			{0x0b, READ_WITH_ADDR},		/* FAST: Fast Read */
 		}
 	};
+	struct intel_swseq_spi_config spi_config_aai_write = {
+		{0x06, 0x50}, /* OPPREFIXES: EWSR and WREN */
+		{ /* OPCODE and OPTYPE */
+			{0x01, WRITE_NO_ADDR},		/* WRSR: Write Status Register */
+			{0x02, WRITE_WITH_ADDR},	/* BYPR: Byte Program */
+			{0x03, READ_WITH_ADDR},		/* READ: Read Data */
+			{0x05, READ_NO_ADDR},		/* RDSR: Read Status Register */
+			{0x20, WRITE_WITH_ADDR},	/* SE20: Sector Erase 0x20 */
+			{0x9f, READ_NO_ADDR},		/* RDID: Read ID */
+			{0xad, WRITE_NO_ADDR},		/* Auto Address Increment Word Program */
+			{0x04, WRITE_NO_ADDR}		/* Write Disable */
+		}
+	};
+	const struct spi_flash *flash = boot_device_spi_flash();
+	struct intel_swseq_spi_config *spi_config = &spi_config_default;
 	int i;
+
+	/*
+	 * Some older SST SPI flashes support AAI write but use 0xaf opcde for
+	 * that. Flashrom uses the byte program opcode to write those flashes,
+	 * so this configuration is fine too. SST25VF064C (id = 0x4b) is an
+	 * exception.
+	 */
+	if (flash && flash->vendor == VENDOR_ID_SST && (flash->model & 0x00ff) != 0x4b)
+		spi_config = &spi_config_aai_write;
 
 	if (spi_locked())
 		return;
 
-	intel_southbridge_override_spi(&spi_config);
+	intel_southbridge_override_spi(spi_config);
 
-	spi_opprefix = spi_config.opprefixes[0]
-		| (spi_config.opprefixes[1] << 8);
+	spi_opprefix = spi_config->opprefixes[0]
+		| (spi_config->opprefixes[1] << 8);
 	writew_(spi_opprefix, cntlr->preop);
-	for (i = 0; i < ARRAY_SIZE(spi_config.ops); i++) {
-		optype |= (spi_config.ops[i].type & 3) << (i * 2);
-		writeb_(spi_config.ops[i].op, &cntlr->opmenu[i]);
+	for (i = 0; i < ARRAY_SIZE(spi_config->ops); i++) {
+		optype |= (spi_config->ops[i].type & 3) << (i * 2);
+		writeb_(spi_config->ops[i].op, &cntlr->opmenu[i]);
 	}
 	writew_(optype, cntlr->optype);
 }

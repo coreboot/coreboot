@@ -51,30 +51,6 @@ enum {
 	PCI_ME_HFSTS6 = 0x6C,
 };
 
-/* ME Host Firmware Status register 1 */
-union me_hfsts1 {
-	u32 data;
-	struct {
-		u32 working_state: 4;
-		u32 mfg_mode: 1;
-		u32 fpt_bad: 1;
-		u32 operation_state: 3;
-		u32 fw_init_complete: 1;
-		u32 ft_bup_ld_flr: 1;
-		u32 update_in_progress: 1;
-		u32 error_code: 4;
-		u32 operation_mode: 4;
-		u32 reset_count: 4;
-		u32 boot_options_present: 1;
-		u32 reserved1: 1;
-		u32 bist_test_state: 1;
-		u32 bist_reset_request: 1;
-		u32 current_power_source: 2;
-		u32 d3_support_valid: 1;
-		u32 d0i3_support_valid: 1;
-	} __packed fields;
-};
-
 /* HECI Message Header */
 struct mkhi_hdr {
 	uint8_t group_id;
@@ -171,5 +147,29 @@ int send_hmrfpo_get_status_msg(void);
 #define MKHI_HMRFPO_DISABLED	0
 #define MKHI_HMRFPO_LOCKED	1
 #define MKHI_HMRFPO_ENABLED	2
+
+/*
+ * Checks current working operation state is normal or not.
+ * Returns true if CSE's current working state is normal, otherwise false.
+ */
+bool cse_is_hfs1_cws_normal(void);
+
+/*
+ * Checks CSE's current operation mode is normal or not.
+ * Returns true if CSE's current operation mode is normal, otherwise false.
+ */
+bool cse_is_hfs1_com_normal(void);
+
+/*
+ * Checks CSE's current operation mode is SECOVER_MEI_MSG or not.
+ * Returns true if CSE's current operation mode is SECOVER_MEI_MSG, otherwise false.
+ */
+bool cse_is_hfs1_com_secover_mei_msg(void);
+
+/*
+ * Checks CSE's current operation mode is Soft Disable Mode or not.
+ * Returns true if CSE's current operation mode is Soft Disable Mode, otherwise false.
+ */
+bool cse_is_hfs1_com_soft_temp_disable(void);
 
 #endif // SOC_INTEL_COMMON_CSE_H

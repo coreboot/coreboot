@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2019 Google LLC
+ * Copyright (C) 2020 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,15 +13,15 @@
  * GNU General Public License for more details.
  */
 
-#ifndef _CANNONLAKE_ME_H_
-#define _CANNONLAKE_ME_H_
+#ifndef _TIGERLAKE_ME_H_
+#define _TIGERLAKE_ME_H_
 
 /* ME Host Firmware Status register 1 */
 union me_hfsts1 {
 	u32 data;
 	struct {
 		u32 working_state: 4;
-		u32 mfg_mode: 1;
+		u32 spi_protection_mode: 1;
 		u32 fpt_bad: 1;
 		u32 operation_state: 3;
 		u32 fw_init_complete: 1;
@@ -31,19 +31,13 @@ union me_hfsts1 {
 		u32 operation_mode: 4;
 		u32 reset_count: 4;
 		u32 boot_options_present: 1;
-#if CONFIG(SOC_INTEL_COMETLAKE)
-		u32 invoke_enhance_dbg_mode:1;
-#else
-		u32 reserved0: 1;
-#endif
+		u32 invoke_enhance_dbg_mode: 1;
 		u32 bist_test_state: 1;
 		u32 bist_reset_request: 1;
 		u32 current_power_source: 2;
-		u32 reserved1: 1;
+		u32 reserved: 1;
 		u32 d0i3_support_valid: 1;
 	} __packed fields;
 };
 
-void dump_me_status(void *unused);
-
-#endif /* _CANNONLAKE_ME_H_ */
+#endif /* _TIGERLAKE_ME_H_ */

@@ -24,6 +24,7 @@
 #include <intelblocks/cse.h>
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>
+#include <soc/me.h>
 #include <string.h>
 #include <timer.h>
 
@@ -238,17 +239,35 @@ static int cse_ready(void)
 	return csr & CSR_READY;
 }
 
-/*
- * Checks if CSE is in ME_HFS1_COM_SECOVER_MEI_MSG operation mode. This is the mode where
- * CSE will allow reflashing of CSE region.
- */
-static uint8_t check_cse_sec_override_mode(void)
+static bool cse_check_hfs1_com(int mode)
 {
 	union me_hfsts1 hfs1;
 	hfs1.data = me_read_config32(PCI_ME_HFSTS1);
-	if (hfs1.fields.operation_mode == ME_HFS1_COM_SECOVER_MEI_MSG)
-		return 1;
-	return 0;
+	return hfs1.fields.operation_mode == mode;
+}
+
+bool cse_is_hfs1_cws_normal(void)
+{
+	union me_hfsts1 hfs1;
+	hfs1.data = me_read_config32(PCI_ME_HFSTS1);
+	if (hfs1.fields.working_state == ME_HFS1_CWS_NORMAL)
+		return true;
+	return false;
+}
+
+bool cse_is_hfs1_com_normal(void)
+{
+	return cse_check_hfs1_com(ME_HFS1_COM_NORMAL);
+}
+
+bool cse_is_hfs1_com_secover_mei_msg(void)
+{
+	return cse_check_hfs1_com(ME_HFS1_COM_SECOVER_MEI_MSG);
+}
+
+bool cse_is_hfs1_com_soft_temp_disable(void)
+{
+	return cse_check_hfs1_com(ME_HFS1_COM_SOFT_TEMP_DISABLE);
 }
 
 /* Makes the host ready to communicate with CSE */
@@ -266,7 +285,7 @@ uint8_t wait_cse_sec_override_mode(void)
 {
 	struct stopwatch sw;
 	stopwatch_init_msecs_expire(&sw, HECI_DELAY_READY);
-	while (!check_cse_sec_override_mode()) {
+	while (!cse_is_hfs1_com_secover_mei_msg()) {
 		udelay(HECI_DELAY);
 		if (stopwatch_expired(&sw))
 			return 0;
@@ -632,18 +651,15 @@ int send_hmrfpo_enable_msg(void)
 
 	struct hmrfpo_enable_resp resp;
 	size_t resp_size = sizeof(struct hmrfpo_enable_resp);
-	union me_hfsts1 hfs1;
 
 	printk(BIOS_DEBUG, "HECI: Send HMRFPO Enable Command\n");
-	hfs1.data = me_read_config32(PCI_ME_HFSTS1);
 	/*
 	 * This command can be run only if:
 	 * - Working state is normal and
 	 * - Operation mode is normal or temporary disable mode.
 	 */
-	if (hfs1.fields.working_state != ME_HFS1_CWS_NORMAL ||
-		(hfs1.fields.operation_mode != ME_HFS1_COM_NORMAL &&
-		hfs1.fields.operation_mode != ME_HFS1_COM_SOFT_TEMP_DISABLE)) {
+	if (!cse_is_hfs1_cws_normal() ||
+		(!cse_is_hfs1_com_normal() && !cse_is_hfs1_com_soft_temp_disable())) {
 		printk(BIOS_ERR, "HECI: ME not in required Mode\n");
 		goto failed;
 	}

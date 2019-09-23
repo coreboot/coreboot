@@ -208,6 +208,12 @@ struct soc_intel_skylake_config {
 	u8 EnableAzalia;
 	u8 DspEnable;
 
+	/* HDA Virtual Channel Type Select */
+	enum {
+		Vc0,
+		Vc1,
+	} PchHdaVcType;
+
 	/*
 	 * I/O Buffer Ownership:
 	 * 0: HD-A Link

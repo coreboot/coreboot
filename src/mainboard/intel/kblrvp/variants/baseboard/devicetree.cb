@@ -30,6 +30,7 @@ chip soc/intel/skylake
 	register "SkipExtGfxScan" = "1"
 	register "Device4Enable" = "1"
 	register "SaGv" = "SaGv_Enabled"
+	register "PchHdaVcType" = "Vc1"
 
 	register "pirqa_routing" = "PCH_IRQ11"
 	register "pirqb_routing" = "PCH_IRQ10"

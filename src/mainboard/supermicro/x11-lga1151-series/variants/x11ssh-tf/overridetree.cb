@@ -30,6 +30,9 @@ chip soc/intel/skylake
 	register "PcieRpEnable[8]" = "1"
 	register "PcieRpClkReqSupport[8]" = "0"
 
+	# FIXME: find out why FSP crashes without this
+	register "PchHdaVcType" = "Vc1"
+
 	device domain 0 on
 		device pci 01.0 on end	# unused
 		device pci 01.1 on	# PCIE Slot (JPCIE1)

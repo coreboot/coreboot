@@ -198,8 +198,13 @@ static void redraw_module(struct coreinfo_cat *cat)
 
 static void handle_category_key(struct coreinfo_cat *cat, int key)
 {
-	if (key >= 'a' && key <= 'z') {
-		int index = key - 'a';
+	if ((key >= 'a' && key <= 'z') || (key >= 'A' && key <= 'Z')) {
+		int index;
+		if (key >= 'A' && key <= 'Z') {
+			index = key - 'A';
+		} else {
+			index = key - 'a';
+		}
 		if (index < cat->count) {
 			cat->cur = index;
 			redraw_module(cat);

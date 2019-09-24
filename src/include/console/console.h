@@ -19,7 +19,6 @@
 #include <stdint.h>
 #include <arch/cpu.h>
 #include <console/post_codes.h>
-#include <console/vtxprintf.h>
 
 /* console.h is supposed to provide the log levels defined in here: */
 #include <commonlib/loglevel.h>
@@ -28,6 +27,8 @@
 #define RAM_SPEW  (CONFIG(DEBUG_RAM_SETUP) ? BIOS_SPEW  : BIOS_NEVER)
 
 #ifndef __ROMCC__
+
+#include <console/vtxprintf.h>
 
 void post_code(u8 value);
 #if CONFIG(CMOS_POST_EXTRA)
@@ -92,6 +93,11 @@ int do_printk(int msg_level, const char *fmt, ...)
 	__attribute__((format(printf, 2, 3)));
 
 int do_vprintk(int msg_level, const char *fmt, va_list args);
+
+#else
+
+static inline void romcc_printk(void) { }
+#define printk(...) romcc_printk()
 
 #endif /* !__ROMCC__ */
 

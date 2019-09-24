@@ -17,11 +17,11 @@
 #include <stddef.h>
 #if !defined(__ROMCC__)
 #include <cbfs.h>
-#include <console/console.h>
 #else
 #include <arch/cbfs.h>
 #endif
 #include <arch/cpu.h>
+#include <console/console.h>
 #include <cpu/x86/msr.h>
 #include <cpu/intel/microcode.h>
 #include <smp/spinlock.h>
@@ -84,9 +84,7 @@ void intel_microcode_load_unlocked(const void *microcode_patch)
 
 	/* No use loading the same revision. */
 	if (current_rev == m->rev) {
-#if !defined(__ROMCC__)
 		printk(BIOS_INFO, "microcode: Update skipped, already up-to-date\n");
-#endif
 		return;
 	}
 
@@ -104,18 +102,14 @@ void intel_microcode_load_unlocked(const void *microcode_patch)
 
 	current_rev = read_microcode_rev();
 	if (current_rev == m->rev) {
-#if !defined(__ROMCC__)
 		printk(BIOS_INFO, "microcode: updated to revision "
 		    "0x%x date=%04x-%02x-%02x\n", read_microcode_rev(),
 		    m->date & 0xffff, (m->date >> 24) & 0xff,
 		    (m->date >> 16) & 0xff);
-#endif
 		return;
 	}
 
-#if !defined(__ROMCC__)
 	printk(BIOS_INFO, "microcode: Update failed\n");
-#endif
 }
 
 uint32_t get_current_microcode_rev(void)
@@ -180,13 +174,9 @@ const void *intel_microcode_find(void)
 		msr = rdmsr(IA32_PLATFORM_ID);
 		pf = 1 << ((msr.hi >> 18) & 7);
 	}
-#if !defined(__ROMCC__)
-	/* If this code is compiled with ROMCC we're probably in
-	 * the bootblock and don't have console output yet.
-	 */
+
 	printk(BIOS_DEBUG, "microcode: sig=0x%x pf=0x%x revision=0x%x\n",
 			sig, pf, rev);
-#endif
 
 	while (microcode_len >= sizeof(*ucode_updates)) {
 		/* Newer microcode updates include a size field, whereas older
@@ -194,17 +184,13 @@ const void *intel_microcode_find(void)
 		if (ucode_updates->total_size) {
 			update_size = ucode_updates->total_size;
 		} else {
-			#if !defined(__ROMCC__)
 			printk(BIOS_SPEW, "Microcode size field is 0\n");
-			#endif
 			update_size = 2048;
 		}
 
 		/* Checkpoint 1: The microcode update falls within CBFS */
 		if (update_size > microcode_len) {
-#if !defined(__ROMCC__)
 			printk(BIOS_WARNING, "Microcode header corrupted!\n");
-#endif
 			break;
 		}
 

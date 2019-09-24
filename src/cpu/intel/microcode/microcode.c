@@ -24,11 +24,9 @@
 #include <arch/cpu.h>
 #include <cpu/x86/msr.h>
 #include <cpu/intel/microcode.h>
-
-#if !defined(__PRE_RAM__)
 #include <smp/spinlock.h>
+
 DECLARE_SPIN_LOCK(microcode_lock)
-#endif
 
 struct microcode {
 	u32 hdrver;	/* Header Version */
@@ -225,15 +223,11 @@ void intel_update_microcode_from_cbfs(void)
 {
 	const void *patch = intel_microcode_find();
 
-#if !defined(__ROMCC__) && !defined(__PRE_RAM__)
 	spin_lock(&microcode_lock);
-#endif
 
 	intel_microcode_load_unlocked(patch);
 
-#if !defined(__ROMCC__) && !defined(__PRE_RAM__)
 	spin_unlock(&microcode_lock);
-#endif
 }
 
 #if ENV_RAMSTAGE

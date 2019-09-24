@@ -5,3 +5,4 @@ This section contains documentation about coreboot on specific vendorcode.
 ## Vendor
 
 - [Cavium](cavium/index.md)
+- [Eltan](eltan/index.md)

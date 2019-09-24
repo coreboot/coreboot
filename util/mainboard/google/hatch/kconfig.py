@@ -149,7 +149,6 @@ def add_to_Kconfig_name(variant_name):
       print('\tbool "-> ' + capitalized + '"', file=outfile)
       print('\tselect BOARD_GOOGLE_BASEBOARD_HATCH', file=outfile)
       print('\tselect BOARD_ROMSIZE_KB_16384', file=outfile)
-      print('\tselect SOC_INTEL_COMETLAKE', file=outfile)
 
 
 if __name__ == '__main__':

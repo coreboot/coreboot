@@ -19,3 +19,7 @@ config BOARD_GOOGLE_FLAPJACK
 config BOARD_GOOGLE_JACUZZI
 	bool "->  Jacuzzi"
 	select BOARD_GOOGLE_KUKUI_COMMON
+
+config BOARD_GOOGLE_JUNIPER
+	bool "->  Juniper"
+	select BOARD_GOOGLE_KUKUI_COMMON

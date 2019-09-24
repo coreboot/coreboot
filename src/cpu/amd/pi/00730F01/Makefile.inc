@@ -12,8 +12,6 @@
 #
 
 romstage-y += fixme.c
-romstage-y += update_microcode.c
-romstage-y += microcode_fam16h.c
 
 ramstage-y += fixme.c
 ramstage-y += chip_name.c

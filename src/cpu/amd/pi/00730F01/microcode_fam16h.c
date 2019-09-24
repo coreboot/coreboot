@@ -16,8 +16,6 @@
 #include <cpu/x86/msr.h>
 #include <cpu/amd/microcode.h>
 #include <cbfs.h>
-#include <arch/io.h>
-#include <smp/spinlock.h>
 
 /*
  * Values and header structure from:
@@ -122,22 +120,12 @@ void amd_update_microcode_from_cbfs(uint32_t equivalent_processor_rev_id)
 				   "Skipping microcode patch!\n");
 		return;
 	}
-#ifdef __PRE_RAM__
-#if CONFIG(HAVE_ROMSTAGE_MICROCODE_CBFS_SPINLOCK)
-		spin_lock(romstage_microcode_cbfs_lock());
-#endif
-#endif
 	ucode = cbfs_boot_map_with_leak("cpu_microcode_blob.bin",
 					CBFS_TYPE_MICROCODE,
 					&ucode_len);
 	if (!ucode) {
 		printk(BIOS_DEBUG, "cpu_microcode_blob.bin not found. "
 				   "Skipping updates.\n");
-#ifdef __PRE_RAM__
-#if CONFIG(HAVE_ROMSTAGE_MICROCODE_CBFS_SPINLOCK)
-			spin_unlock(romstage_microcode_cbfs_lock());
-#endif
-#endif
 		return;
 	}
 
@@ -145,21 +133,8 @@ void amd_update_microcode_from_cbfs(uint32_t equivalent_processor_rev_id)
 	    ucode_len < F16H_MPB_DATA_OFFSET) {
 		printk(BIOS_DEBUG, "microcode file invalid. Skipping "
 				   "updates.\n");
-#ifdef __PRE_RAM__
-#if CONFIG(HAVE_ROMSTAGE_MICROCODE_CBFS_SPINLOCK)
-		spin_unlock(romstage_microcode_cbfs_lock());
-#endif
-#endif
 		return;
 	}
 
-	amd_update_microcode(ucode, ucode_len,
-				equivalent_processor_rev_id);
-
-#ifdef __PRE_RAM__
-#if CONFIG(HAVE_ROMSTAGE_MICROCODE_CBFS_SPINLOCK)
-	spin_unlock(romstage_microcode_cbfs_lock());
-#endif
-#endif
-
+	amd_update_microcode(ucode, ucode_len, equivalent_processor_rev_id);
 }

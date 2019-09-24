@@ -414,14 +414,15 @@ void dramc_apply_config_before_calibration(u8 freq_group)
 		clrsetbits_le32(&ch[chn].phy.b[0].dq[6], 0x3 << 0, 0x1 << 0);
 		clrsetbits_le32(&ch[chn].phy.b[1].dq[6], 0x3 << 0, 0x1 << 0);
 		clrsetbits_le32(&ch[chn].phy.ca_cmd[6], 0x3 << 0, 0x1 << 0);
+
+		dramc_rx_input_delay_tracking_init_by_freq(chn);
+
 		setbits_le32(&ch[chn].ao.dummy_rd, 0x1 << 25);
 		setbits_le32(&ch[chn].ao.drsctrl, 0x1 << 0);
 		if (freq_group == LP4X_DDR3200 || freq_group == LP4X_DDR3600)
 			clrbits_le32(&ch[chn].ao.shu[1].drving[1], 0x1 << 31);
 		else
 			setbits_le32(&ch[chn].ao.shu[1].drving[1], 0x1 << 31);
-
-		dramc_rx_input_delay_tracking_init_by_freq(chn);
 	}
 
 	for (size_t r = 0; r < 2; r++) {
@@ -2119,11 +2120,11 @@ int dramc_calibrate_all_channels(const struct sdram_params *pams, u8 freq_group)
 		for (u8 rk = RANK_0; rk < RANK_MAX; rk++) {
 			dramc_show("Start K: freq=%d, ch=%d, rank=%d\n",
 				   freq_group, chn, rk);
-			dramc_auto_refresh_switch(chn, false);
 			dramc_cmd_bus_training(chn, rk, freq_group, pams,
 				fast_calib);
 			dramc_write_leveling(chn, rk, freq_group, pams->wr_level);
 			dramc_auto_refresh_switch(chn, true);
+
 			dramc_rx_dqs_gating_cal(chn, rk, freq_group, pams,
 				fast_calib);
 			dramc_window_perbit_cal(chn, rk, freq_group,
@@ -2138,6 +2139,7 @@ int dramc_calibrate_all_channels(const struct sdram_params *pams, u8 freq_group)
 				return -2;
 			dramc_window_perbit_cal(chn, rk, freq_group,
 				RX_WIN_TEST_ENG, pams, fast_calib);
+			dramc_auto_refresh_switch(chn, false);
 		}
 
 		dramc_rx_dqs_gating_post_process(chn, freq_group);

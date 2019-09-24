@@ -288,7 +288,7 @@ struct dramc_ao_regs {
 	uint32_t rsvd_10[46];
 	struct dramc_ao_regs_rk rk[3];
 	uint32_t rsvd_16[64];
-	struct {
+	struct dramc_ao_regs_shu {
 		uint32_t rsvd0[64];
 		uint32_t actim[7];
 		uint32_t actim_xrt;

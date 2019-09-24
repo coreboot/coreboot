@@ -20,6 +20,7 @@
 #include <soc/emi.h>
 #include <soc/infracfg.h>
 #include <soc/mt6358.h>
+#include <soc/spm.h>
 
 static const u8 freq_shuffle[DRAM_DFS_SHUFFLE_MAX] = {
 	[DRAM_DFS_SHUFFLE_1] = LP4X_DDR3200,
@@ -339,6 +340,15 @@ static void dramc_ac_timing_optimize(u8 freq_group)
 	}
 }
 
+static void spm_pinmux_setting(void)
+{
+	clrsetbits_le32(&mtk_spm->poweron_config_set,
+		(0xffff << 16) | (0x1 << 0), (0xb16 << 16) | (0x1 << 0));
+	clrbits_le32(&mtk_spm->pcm_pwr_io_en, (0xff << 0) | (0xff << 16));
+	write32(&mtk_spm->dramc_dpy_clk_sw_con_sel, 0xffffffff);
+	write32(&mtk_spm->dramc_dpy_clk_sw_con_sel2, 0xffffffff);
+}
+
 static void dfs_init_for_calibration(const struct sdram_params *params, u8 freq_group)
 {
 	dramc_init(params, freq_group);
@@ -352,6 +362,8 @@ static void init_dram(const struct sdram_params *params, u8 freq_group)
 
 	dramc_set_broadcast(DRAMC_BROADCAST_ON);
 	dramc_init_pre_settings();
+	spm_pinmux_setting();
+
 	dramc_sw_impedance_cal(params, ODT_OFF);
 	dramc_sw_impedance_cal(params, ODT_ON);
 
@@ -368,13 +380,143 @@ void enable_emi_dcm(void)
 		clrbits_le32(&ch[chn].emi.chn_conb, 0xff << 24);
 }
 
-static int do_calib(const struct sdram_params *params, u8 freq_group)
+struct shuffle_reg_addr {
+	u32 start;
+	u32 end;
+};
+
+#define AO_SHU_ADDR(s, e) \
+	{ \
+		.start = offsetof(struct dramc_ao_regs_shu, s), \
+		.end = offsetof(struct dramc_ao_regs_shu, e), \
+	}
+
+static const struct shuffle_reg_addr dramc_regs[] = {
+	AO_SHU_ADDR(actim, hwset_vrcg),
+	AO_SHU_ADDR(rk[0], rk[0].dqs2dq_cal5),
+	AO_SHU_ADDR(rk[1], rk[1].dqs2dq_cal5),
+	AO_SHU_ADDR(rk[2], rk[2].dqs2dq_cal5),
+	AO_SHU_ADDR(dqsg_retry, dqsg_retry),
+};
+
+#define PHY_SHU_ADDR(s, e) \
+	{ \
+		.start = offsetof(struct ddrphy_ao_shu, s), \
+		.end = offsetof(struct ddrphy_ao_shu, e), \
+	}
+
+static const struct shuffle_reg_addr phy_regs[] = {
+	PHY_SHU_ADDR(b[0], b[0].dll[1]),
+	PHY_SHU_ADDR(b[1], b[1].dll[1]),
+	PHY_SHU_ADDR(ca_cmd, ca_dll[1]),
+	PHY_SHU_ADDR(pll[0], pll[15]),
+	PHY_SHU_ADDR(pll20, misc0),
+	PHY_SHU_ADDR(rk[0].b[0], rk[0].b[0].rsvd_20[3]),
+	PHY_SHU_ADDR(rk[0].b[1], rk[0].b[1].rsvd_20[3]),
+	PHY_SHU_ADDR(rk[0].ca_cmd, rk[0].rsvd_22[1]),
+	PHY_SHU_ADDR(rk[1].b[0], rk[1].b[0].rsvd_20[3]),
+	PHY_SHU_ADDR(rk[1].b[1], rk[1].b[1].rsvd_20[3]),
+	PHY_SHU_ADDR(rk[1].ca_cmd, rk[1].rsvd_22[1]),
+	PHY_SHU_ADDR(rk[2].b[0], rk[2].b[0].rsvd_20[3]),
+	PHY_SHU_ADDR(rk[2].b[1], rk[2].b[1].rsvd_20[3]),
+	PHY_SHU_ADDR(rk[2].ca_cmd, rk[2].rsvd_22[1]),
+};
+
+static void dramc_save_result_to_shuffle(u32 src_shuffle, u32 dst_shuffle)
 {
-	dramc_show("Start K, current clock is:%d\n", params->frequency);
+	u32 offset, chn, index, value;
+	u8 *src_addr, *dst_addr;
+
+	if (src_shuffle == dst_shuffle)
+		return;
+
+	dramc_show("Save shuffle %u to shuffle %u\n", src_shuffle, dst_shuffle);
+
+	for (chn = 0; chn < CHANNEL_MAX; chn++) {
+		/* DRAMC */
+		for (index = 0; index < ARRAY_SIZE(dramc_regs); index++) {
+			for (offset = dramc_regs[index].start;
+				offset <= dramc_regs[index].end; offset += 4) {
+				src_addr = (u8 *)&ch[chn].ao.shu[src_shuffle] +
+					offset;
+				dst_addr = (u8 *)&ch[chn].ao.shu[dst_shuffle] +
+					offset;
+				write32(dst_addr, read32(src_addr));
+
+			}
+		}
+		dramc_show("the dramc register of chn %d saved!\n", chn);
+
+		/* DRAMC-exception-1 */
+		src_addr = (u8 *)&ch[chn].ao.shuctrl2;
+		dst_addr = (u8 *)&ch[chn].ao.dvfsdll;
+		value = read32(src_addr) & 0x7f;
+
+		if (dst_shuffle == DRAM_DFS_SHUFFLE_2)
+			clrsetbits_le32(dst_addr, 0x7f << 0x8, value << 0x8);
+		else if (dst_shuffle == DRAM_DFS_SHUFFLE_3)
+			clrsetbits_le32(dst_addr, 0x7f << 0x16, value << 0x16);
+
+		dramc_show("the dramc exception-1 register of chn %d saved!\n", chn);
+
+		/* DRAMC-exception-2 */
+		src_addr = (u8 *)&ch[chn].ao.dvfsdll;
+		value = (read32(src_addr) >> 1) & 0x1;
+
+		if (dst_shuffle == DRAM_DFS_SHUFFLE_2)
+			clrsetbits_le32(src_addr, 0x1 << 2, value << 2);
+		else if (dst_shuffle == DRAM_DFS_SHUFFLE_3)
+			clrsetbits_le32(src_addr, 0x1 << 3, value << 3);
+
+		dramc_show("the dramc exception-2 register of chn %d saved!\n", chn);
+
+		/* PHY */
+		for (index = 0; index < ARRAY_SIZE(phy_regs); index++) {
+			for (offset = phy_regs[index].start;
+				offset <= phy_regs[index].end; offset += 4) {
+				src_addr = (u8 *)&ch[chn].phy.shu[src_shuffle] +
+					offset;
+				dst_addr = (u8 *)&ch[chn].phy.shu[dst_shuffle] +
+					offset;
+				write32(dst_addr, read32(src_addr));
+
+			}
+		}
+		dramc_show("the phy register of chn %d saved!\n", chn);
+	}
+}
+
+static int run_calib(const struct dramc_param *dparam,
+		     const int shuffle, bool *first_run)
+{
+	const u8 *freq_tbl;
+
+	if (CONFIG(MT8183_DRAM_EMCP))
+		freq_tbl = freq_shuffle_emcp;
+	else
+		freq_tbl = freq_shuffle;
+
+	const u8 freq_group = freq_tbl[shuffle];
+	const struct sdram_params *params = &dparam->freq_params[shuffle];
+
+	set_vcore_voltage(freq_group);
+
+	dramc_show("Run calibration (freq: %u, first: %d)\n",
+		   freq_group, *first_run);
+
+	if (*first_run)
+		init_dram(params, freq_group);
+	else
+		dfs_init_for_calibration(params, freq_group);
+	*first_run = false;
+
+	dramc_show("Start K (current clock: %u\n", params->frequency);
 	if (dramc_calibrate_all_channels(params, freq_group) != 0)
 		return -1;
 	dramc_ac_timing_optimize(freq_group);
-	dramc_show("K finish with clock:%d\n", params->frequency);
+	dramc_show("K finished (current clock: %u\n", params->frequency);
+
+	dramc_save_result_to_shuffle(DRAM_DFS_SHUFFLE_1, shuffle);
 	return 0;
 }
 
@@ -386,23 +528,17 @@ static void after_calib(void)
 
 int mt_set_emi(const struct dramc_param *dparam)
 {
-	const u8 *freq_tbl;
-	const int shuffle = DRAM_DFS_SHUFFLE_1;
-	u8 current_freqsel;
-	const struct sdram_params *params;
-
-	if (CONFIG(MT8183_DRAM_EMCP))
-		freq_tbl = freq_shuffle_emcp;
-	else
-		freq_tbl = freq_shuffle;
-
-	current_freqsel = freq_tbl[shuffle];
-	params = &dparam->freq_params[shuffle];
-
-	set_vcore_voltage(current_freqsel);
+	bool first_run = true;
 	set_vdram1_vddq_voltage();
-	init_dram(params, current_freqsel);
-	if (do_calib(params, current_freqsel) != 0)
+
+	if (CONFIG(MT8183_DRAM_DVFS)) {
+		if (run_calib(dparam, DRAM_DFS_SHUFFLE_3, &first_run) != 0)
+			return -1;
+		if (run_calib(dparam, DRAM_DFS_SHUFFLE_2, &first_run) != 0)
+			return -1;
+	}
+
+	if (run_calib(dparam, DRAM_DFS_SHUFFLE_1, &first_run) != 0)
 		return -1;
 
 	after_calib();

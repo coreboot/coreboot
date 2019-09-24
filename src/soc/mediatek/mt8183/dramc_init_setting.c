@@ -43,6 +43,40 @@ static void cke_fix_onoff(int option, u8 chn)
 		(0x1 << 6) | (0x1 << 7), (on << 6) | (off << 7));
 }
 
+static void dvfs_settings(u8 freq_group)
+{
+	u8 dll_idle;
+
+	switch (freq_group) {
+	case LP4X_DDR1600:
+		dll_idle = 0x18;
+		break;
+	case LP4X_DDR2400:
+		dll_idle = 0x10;
+		break;
+	case LP4X_DDR3200:
+		dll_idle = 0xc;
+		break;
+	case LP4X_DDR3600:
+		dll_idle = 0xa;
+		break;
+	default:
+		die("Invalid DDR frequency group %u\n", freq_group);
+		return;
+	}
+
+	dll_idle = dll_idle << 1;
+	for (u8 chn = 0; chn < CHANNEL_MAX; chn++) {
+		setbits_le32(&ch[chn].ao.dvfsdll, 0x1 << 5);
+		setbits_le32(&ch[chn].phy.dvfs_emi_clk, 0x1 << 29);
+		clrsetbits_le32(&ch[0].ao.shuctrl2, 0x7f, dll_idle);
+
+		setbits_le32(&ch[0].phy.misc_ctrl0, 0x3 << 19);
+		setbits_le32(&ch[chn].phy.dvfs_emi_clk, 0x1 << 24);
+		setbits_le32(&ch[chn].ao.dvfsdll, 0x1 << 7);
+	}
+}
+
 static void ddr_phy_pll_setting(u8 chn, u8 freq_group)
 {
 	u8 cap_sel, mid_cap_sel;
@@ -1268,6 +1302,8 @@ static void dramc_setting(const struct sdram_params *params, u8 freq_group)
 	setbits_le32(&ch[0].ao.dramc_pd_ctrl, 0x1 << 0);
 	clrsetbits_le32(&ch[0].ao.eyescan, (0x1 << 1) | (0xf << 16), (0x0 << 1) | (0x1 << 16));
 	setbits_le32(&ch[0].ao.stbcal1, (0x1 << 10) | (0x1 << 11));
+	clrsetbits_le32(&ch[0].ao.test2_1, 0xfffffff << 4, 0x10000 << 4);
+	clrsetbits_le32(&ch[0].ao.test2_2, 0xfffffff << 4, 0x400 << 4);
 	clrsetbits_le32(&ch[0].ao.test2_3,
 		(0x1 << 7) | (0x7 << 8) | (0x1 << 28),
 		(0x1 << 7) | (0x4 << 8) | (0x1 << 28));
@@ -1277,15 +1313,14 @@ static void dramc_setting(const struct sdram_params *params, u8 freq_group)
 	udelay(1);
 	clrsetbits_le32(&ch[0].ao.hw_mrr_fun, (0xf << 0) | (0xf << 4), (0x8 << 0) | (0x6 << 4));
 
+	clrbits_le32(&ch[0].ao.dramctrl, 0x1 << 0);
 	clrsetbits_le32(&ch[0].ao.perfctl0,
 		(0x1 << 18) | (0x1 << 19), (0x0 << 18) | (0x1 << 19));
+	setbits_le32(&ch[0].ao.spcmdctrl, 0x1 << 28);
 	clrbits_le32(&ch[0].ao.rstmask, 0x1 << 28);
 	setbits_le32(&ch[0].ao.rkcfg, 0x1 << 11);
-	setbits_le32(&ch[0].ao.spcmdctrl, 0x1 << 28);
-	setbits_le32(&ch[0].ao.eyescan, 0x1 << 2);
-
-	clrbits_le32(&ch[0].ao.dramctrl, 0x1 << 0);
 	setbits_le32(&ch[0].ao.mpc_option, 0x1 << 17);
+	setbits_le32(&ch[0].ao.eyescan, 0x1 << 2);
 	setbits_le32(&ch[0].ao.shu[0].wodt, 0x1 << 29);
 	setbits_le32(&ch[0].phy.shu[0].b[0].dq[7], 0x1 << 7);
 	setbits_le32(&ch[0].phy.shu[0].b[1].dq[7], 0x1 << 7);
@@ -1699,6 +1734,7 @@ void dramc_init(const struct sdram_params *params, u8 freq_group)
 	dramc_setting(params, freq_group);
 
 	dramc_duty_calibration(params, freq_group);
+	dvfs_settings(freq_group);
 
 	dramc_mode_reg_init(freq_group);
 	ddr_update_ac_timing(freq_group);

@@ -30,13 +30,6 @@
 #define   VTD_DFX1_RANGE_3F8_DISABLE      (1u << 29)
 #define   VTD_DFX1_RANGE_2F8_DISABLE      (1u << 30)
 
-static inline uint8_t get_busno1(void)
-{
-	uint32_t reg32;
-
-	/* Figure out what bus number is assigned for CPUBUSNO(1) */
-	reg32 = pci_mmio_read_config32(VTD_PCI_DEV, VTD_CPUBUSNO);
-	return ((reg32 >> VTD_CPUBUSNO_BUS1_SHIFT) & VTD_CPUBUSNO_BUS1_MASK);
-}
+uint8_t get_busno1(void);
 
 #endif

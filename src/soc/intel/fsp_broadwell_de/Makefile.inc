@@ -16,6 +16,7 @@ romstage-y += memmap.c
 romstage-y += tsc_freq.c
 romstage-y += smbus-imc.c
 romstage-y += ubox.c
+romstage-y += vtd.c
 
 postcar-y += tsc_freq.c
 

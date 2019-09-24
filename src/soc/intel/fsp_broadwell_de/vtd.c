@@ -18,8 +18,10 @@
 #include <device/pci_ids.h>
 #include <soc/pci_devs.h>
 #include <soc/acpi.h>
+#include <soc/vtd.h>
 #include <soc/broadwell_de.h>
 
+#if ENV_RAMSTAGE
 
 static void vtd_read_resources(struct device *dev)
 {
@@ -44,3 +46,14 @@ static const struct pci_driver vtd_driver __pci_driver = {
 	.vendor = PCI_VENDOR_ID_INTEL,
 	.device = VTD_DEVID,
 };
+
+#endif
+
+uint8_t get_busno1(void)
+{
+	uint32_t reg32;
+
+	/* Figure out what bus number is assigned for CPUBUSNO(1) */
+	reg32 = pci_mmio_read_config32(VTD_PCI_DEV, VTD_CPUBUSNO);
+	return ((reg32 >> VTD_CPUBUSNO_BUS1_SHIFT) & VTD_CPUBUSNO_BUS1_MASK);
+}

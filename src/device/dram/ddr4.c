@@ -111,16 +111,30 @@ int spd_decode_ddr4(dimm_attr *dimm, spd_raw_data spd)
 		return SPD_STATUS_INVALID;
 	}
 
-	spd_bytes_total = (spd[0] >> 4) & ((1 << 3) - 1);
-	spd_bytes_used = spd[0] & ((1 << 4) - 1);
+	spd_bytes_total = (spd[0] >> 4) & 0x7;
+	spd_bytes_used = spd[0] & 0xf;
 
 	if (!spd_bytes_total || !spd_bytes_used) {
 		printk(BIOS_ERR, "SPD failed basic sanity checks\n");
 		return SPD_STATUS_INVALID;
 	}
 
+	if (spd_bytes_total >= 3)
+		printk(BIOS_WARNING, "SPD Bytes Total value is reserved\n");
+
 	spd_bytes_total = 256 << (spd_bytes_total - 1);
+
+	if (spd_bytes_used > 4) {
+		printk(BIOS_ERR, "SPD Bytes Used value is reserved\n");
+		return SPD_STATUS_INVALID;
+	}
+
 	spd_bytes_used = spd_bytes_used_table[spd_bytes_used];
+
+	if (spd_bytes_used > spd_bytes_total) {
+		printk(BIOS_ERR, "SPD Bytes Used is greater than SPD Bytes Total\n");
+		return SPD_STATUS_INVALID;
+	}
 
 	/* Verify CRC of blocks that have them, do not step over 'used' length */
 	for (int i = 0; i < ARRAY_SIZE(spd_blocks); i++) {

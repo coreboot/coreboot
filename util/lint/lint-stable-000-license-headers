@@ -1,22 +1,14 @@
 #!/bin/sh
+# SPDX-License-Identifier: GPL-2.0-only
 # This file is part of the coreboot project.
-#
-# Copyright (C) 2016 Google Inc.
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; version 2 of the License.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
 #
 # DESCR: Check that files have license headers
 
+# Directories requiring SPDX Identifiers only
+util/lint/lint-000-license-headers "src/acpi" SPDX_ONLY
+
 # Top level
-util/lint/lint-000-license-headers "src/acpi src/arch src/commonlib src/console \
+util/lint/lint-000-license-headers "src/arch src/commonlib src/console \
 	src/cpu src/device src/ec src/mainboard src/northbridge src/soc \
 	src/southbridge src/superio"
 

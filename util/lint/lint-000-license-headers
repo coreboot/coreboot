@@ -62,11 +62,18 @@ cmos\.layout|\
 cmos\.default\
 "
 
+HEADER_TEXT="license header"
+
 #space separated list of directories to test
 if [ "$1" = "" ]; then
 	HEADER_DIRS="src util"
 else
 	HEADER_DIRS="$1"
+fi
+
+if [ "$2" = "SPDX_ONLY" ]; then
+	SPDX_ONLY=1
+	HEADER_TEXT="SPDX identifier"
 fi
 
 LC_ALL=C export LC_ALL
@@ -96,6 +103,17 @@ check_for_license() {
 }
 
 #search the files for license headers
+check_for_license 'SPDX-License-Identifier: Apache-2.0'
+check_for_license 'SPDX-License-Identifier: BSD-3-Clause'
+check_for_license 'SPDX-License-Identifier: GPL-2.0-only'
+check_for_license 'SPDX-License-Identifier: GPL-2.0-or-later'
+check_for_license 'SPDX-License-Identifier: GPL-3.0-only'
+check_for_license 'SPDX-License-Identifier: GPL-3.0-or-later'
+check_for_license 'SPDX-License-Identifier: ISC'
+check_for_license 'SPDX-License-Identifier: MIT'
+check_for_license 'SPDX-License-Identifier: X11'
+
+if [ ! "${SPDX_ONLY}" = "1" ]; then
 check_for_license "under the terms of the GNU General Public License" \
 		"WITHOUT ANY WARRANTY"
 check_for_license 'IS PROVIDED .*"AS IS"'
@@ -106,13 +124,13 @@ check_for_license 'assumes any liability or responsibility for the use'
 check_for_license 'THE AUTHORS DISCLAIM.*ALL WARRANTIES WITH REGARD TO THIS SOFTWARE'
 check_for_license 'No license required'
 check_for_license 'GNU Lesser General Public'
-check_for_license 'SPDX-License-Identifier:.*GPL-2.0-or-later'
+fi
 
 for file in $headerlist; do
 	# Verify the file exists, and has content that requires a header
 	# This assumes that a file that has 4 lines or fewer is not notable
 	# enough to require a license.
 	if [ -f "$file" ] && [ "$(wc -l < "$file")" -gt 4 ]; then
-		echo "$file has no recognized license header."
+		echo "$file has no recognized ${HEADER_TEXT}."
 	fi
 done

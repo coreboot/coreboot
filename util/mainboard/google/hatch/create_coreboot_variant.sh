@@ -53,7 +53,8 @@ DATE=$(date +%Y%m%d)
 git checkout -b "create_${variant}_${DATE}"
 
 # Copy the template tree to the target
-cp -r "${SRC}/template/*" "variants/${variant}/"
+mkdir -p "variants/${variant}/"
+cp -pr "${SRC}/template/." "variants/${variant}/"
 git add "variants/${variant}/"
 
 # Now add the new variant to Kconfig and Kconfig.name

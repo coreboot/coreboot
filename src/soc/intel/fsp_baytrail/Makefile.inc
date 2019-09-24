@@ -3,7 +3,7 @@
 #
 # Copyright (C) 2010 Google Inc.
 # Copyright (C) 2013-2014 Sage Electronic Engineering, LLC.
-# Copyright (C) 2016 Siemens AG
+# Copyright (C) 2016-2019 Siemens AG
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -34,6 +34,7 @@ romstage-y += memmap.c
 romstage-y += pmutil.c
 romstage-y += spi.c
 romstage-y += tsc_freq.c
+romstage-y += i2c.c
 
 postcar-y += tsc_freq.c
 

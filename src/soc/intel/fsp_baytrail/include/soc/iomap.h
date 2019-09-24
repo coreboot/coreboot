@@ -65,6 +65,8 @@
 
 /* Temporary Base Address */
 #define TEMP_BASE_ADDRESS		0xfd000000
+#define EARLY_I2C_BASE_ADDRESS		0xfe020000
+#define EARLY_I2C_BASE(x)		(EARLY_I2C_BASE_ADDRESS + (0x2000 * (x)))
 
 /*
  * IO Port bases.

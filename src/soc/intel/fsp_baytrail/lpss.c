@@ -89,20 +89,6 @@ static void dev_ctl_reg(struct device *dev, int *iosf_reg, int *nvs_index)
 	switch (dev->path.pci.devfn) {
 	SET_IOSF_REG(SIO_DMA1);
 		break;
-	SET_IOSF_REG(I2C1);
-		break;
-	SET_IOSF_REG(I2C2);
-		break;
-	SET_IOSF_REG(I2C3);
-		break;
-	SET_IOSF_REG(I2C4);
-		break;
-	SET_IOSF_REG(I2C5);
-		break;
-	SET_IOSF_REG(I2C6);
-		break;
-	SET_IOSF_REG(I2C7);
-		break;
 	SET_IOSF_REG(SIO_DMA2);
 		break;
 	SET_IOSF_REG(PWM1);
@@ -115,33 +101,6 @@ static void dev_ctl_reg(struct device *dev, int *iosf_reg, int *nvs_index)
 		break;
 	SET_IOSF_REG(SPI);
 		break;
-	}
-}
-
-static void i2c_disable_resets(struct device *dev)
-{
-	/* Release the I2C devices from reset. */
-	static const struct reg_script ops[] = {
-		REG_RES_WRITE32(PCI_BASE_ADDRESS_0, 0x804, 0x3),
-		REG_SCRIPT_END,
-	};
-
-#define CASE_I2C(name_) \
-	case PCI_DEVFN(name_ ## _DEV, name_ ## _FUNC)
-
-	switch (dev->path.pci.devfn) {
-	CASE_I2C(I2C1):
-	CASE_I2C(I2C2):
-	CASE_I2C(I2C3):
-	CASE_I2C(I2C4):
-	CASE_I2C(I2C5):
-	CASE_I2C(I2C6):
-	CASE_I2C(I2C7):
-		printk(BIOS_DEBUG, "Releasing I2C device from reset.\n");
-		reg_script_run_on_dev(dev, ops);
-		break;
-	default:
-		return;
 	}
 }
 
@@ -160,7 +119,6 @@ static void lpss_init(struct device *dev)
 		return;
 	}
 	dev_enable_snoop_and_pm(dev, iosf_reg);
-	i2c_disable_resets(dev);
 
 	if (config->PcdLpssSioEnablePciMode == LPSS_PCI_MODE_DISABLE)
 		dev_enable_acpi_mode(dev, iosf_reg, nvs_index);
@@ -178,13 +136,6 @@ static struct device_operations device_ops = {
 
 static const unsigned short pci_device_ids[] = {
 	SIO_DMA1_DEVID,
-	I2C1_DEVID,
-	I2C2_DEVID,
-	I2C3_DEVID,
-	I2C4_DEVID,
-	I2C5_DEVID,
-	I2C6_DEVID,
-	I2C7_DEVID,
 	SIO_DMA2_DEVID,
 	PWM1_DEVID,
 	PWM2_DEVID,

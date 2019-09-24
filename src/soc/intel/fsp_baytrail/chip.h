@@ -20,6 +20,7 @@
 
 #include <arch/acpi.h>
 #include <drivers/intel/fsp1_0/fsp_values.h>
+#include <drivers/i2c/designware/dw_i2c.h>
 
 /* The devicetree parser expects chip.h to reside directly in the path
  * specified by the devicetree. */
@@ -345,6 +346,9 @@ struct soc_intel_fsp_baytrail_config {
 	/* LPE Audio Clock configuration. */
 	int lpe_codec_clk_freq; /* 19 or 25 are valid. */
 	int lpe_codec_clk_num; /* Platform clock pins. [0:5] are valid. */
+
+	/* Structure for designware I2C controller */
+	struct dw_i2c_bus_config i2c[CONFIG_SOC_INTEL_I2C_DEV_MAX];
 
 /* ***** ACPI configuration ***** */
 	/* Options for these are in src/arch/x86/include/arch/acpi.h */

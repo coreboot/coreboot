@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2014 Siemens AG
+ * Copyright (C) 2014-2019 Siemens AG
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 #include <string.h>
 #include <delay.h>
 #include <types.h>
-
+#include <device/i2c_simple.h>
 #include "soc/i2c.h"
 #include "ptn3460.h"
 
@@ -34,16 +34,13 @@ int ptn3460_init(char *hwi_block)
 	uint8_t disp_con = 0, color_depth = 0;
 	uint8_t edid_data[0x80];
 	uint8_t hwid[4], tcu31_hwid[4] = {7, 9, 2, 0};
+	uint8_t i;
 
 	if (!hwi_block || hwilib_find_blocks(hwi_block) != CB_SUCCESS) {
 		printk(BIOS_ERR, "LCD: Info block \"%s\" not found!\n",
 			hwi_block);
 		return 1;
 	}
-
-	status = i2c_init(PTN_I2C_CONTROLLER);
-	if (status)
-		return (PTN_BUS_ERROR | status);
 
 	/* Get all needed information from hwinfo block */
 	if (hwilib_get_field(Edid, edid_data, 0x80) != sizeof(edid_data)) {
@@ -69,8 +66,8 @@ int ptn3460_init(char *hwi_block)
 	/* Select this table to be emulated */
 	ptn_select_edid(6);
 	/* Read PTN configuration data */
-	status = i2c_read(PTN_I2C_CONTROLLER, PTN_SLAVE_ADR, PTN_CONFIG_OFF,
-			  (u8*)&cfg, PTN_CONFIG_LEN);
+	status = i2c_read_bytes(PTN_I2C_CONTROLLER, PTN_SLAVE_ADR, PTN_CONFIG_OFF, (u8 *) &cfg,
+				sizeof(struct ptn_3460_config));
 	if (status)
 		return (PTN_BUS_ERROR | status);
 
@@ -81,7 +78,6 @@ int ptn3460_init(char *hwi_block)
 		cfg.lvds_interface_ctrl1 |= 0x0b; /* Turn on dual LVDS lane and clock */
 	if (color_depth == PF_COLOR_DEPTH_6BIT)
 		cfg.lvds_interface_ctrl1 |= 0x20; /* Use 18 bits per pixel */
-
 	cfg.lvds_interface_ctrl2 = 0x03;  /* no clock spreading, 300 mV LVDS swing */
 	/* Swap LVDS even and odd lanes for HW-ID 7.9.2.0 only. */
 	if (hwilib_get_field(HWID, hwid, sizeof(hwid)) == sizeof(hwid) &&
@@ -89,20 +85,22 @@ int ptn3460_init(char *hwi_block)
 		cfg.lvds_interface_ctrl3 = 0x01;  /* swap LVDS even and odd */
 	} else
 		cfg.lvds_interface_ctrl3 = 0x00;  /* no LVDS signal swap */
-	cfg.t2_delay = 1;		  /* Delay T2 (VDD to LVDS active) by 16 ms */
-	cfg.t3_timing = 10;		  /* 500 ms from LVDS to backlight active */
-	cfg.t12_timing = 20;		  /* 1 second re-power delay */
-	cfg.t4_timing = 3;		  /* 150 ms backlight off to LVDS inactive */
-	cfg.t5_delay = 1;		  /* Delay T5 (LVDS to VDD inactive) by 16 ms */
-	cfg.backlight_ctrl = 0;		  /* Enable backlight control */
+	cfg.t2_delay = 1;		/* Delay T2 (VDD to LVDS active) by 16 ms */
+	cfg.t3_timing = 10;		/* 500 ms from LVDS to backlight active */
+	cfg.t12_timing = 20;		/* 1 second re-power delay */
+	cfg.t4_timing = 3;		/* 150 ms backlight off to LVDS inactive */
+	cfg.t5_delay = 1;		/* Delay T5 (LVDS to VDD inactive) by 16 ms */
+	cfg.backlight_ctrl = 0;		/* Enable backlight control */
 
 	/* Write back configuration data to PTN3460 */
-	status = i2c_write(PTN_I2C_CONTROLLER, PTN_SLAVE_ADR, PTN_CONFIG_OFF,
-			   (u8*)&cfg, PTN_CONFIG_LEN);
-	if (status)
-		return (PTN_BUS_ERROR | status);
-	else
-		return PTN_NO_ERROR;
+	for (i = 0; i < sizeof(struct ptn_3460_config); i++) {
+		status = i2c_writeb(PTN_I2C_CONTROLLER, PTN_SLAVE_ADR, PTN_CONFIG_OFF + i,
+				    *(((uint8_t *) &cfg) + i));
+		if (status)
+			return (PTN_BUS_ERROR | status);
+	}
+
+	return PTN_NO_ERROR;
 }
 
 /** \brief This functions reads one desired EDID data structure from PTN3460
@@ -117,14 +115,13 @@ int ptn3460_read_edid(u8 edid_num, u8 *data)
 	if (edid_num > PTN_MAX_EDID_NUM)
 		return PTN_INVALID_EDID;
 	/* First enable access to the desired EDID table */
-	status = i2c_write(PTN_I2C_CONTROLLER, PTN_SLAVE_ADR, PTN_CONFIG_OFF + 5,
-			   &edid_num, 1);
+	status = i2c_writeb(PTN_I2C_CONTROLLER, PTN_SLAVE_ADR, PTN_CONFIG_OFF + 5, edid_num);
 	if (status)
 		return (PTN_BUS_ERROR | status);
 
 	/* Now we can simply read back EDID-data */
-	status = i2c_read(PTN_I2C_CONTROLLER, PTN_SLAVE_ADR, PTN_EDID_OFF,
-			  data, PTN_EDID_LEN);
+	status = i2c_read_bytes(PTN_I2C_CONTROLLER, PTN_SLAVE_ADR, PTN_EDID_OFF, data,
+				PTN_EDID_LEN);
 	if (status)
 		return (PTN_BUS_ERROR | status);
 	else
@@ -139,22 +136,24 @@ int ptn3460_read_edid(u8 edid_num, u8 *data)
 int ptn3460_write_edid(u8 edid_num, u8 *data)
 {
 	int status;
+	int i;
 
 	if (edid_num > PTN_MAX_EDID_NUM)
 		return PTN_INVALID_EDID;
+
 	/* First enable access to the desired EDID table */
-	status = i2c_write(PTN_I2C_CONTROLLER, PTN_SLAVE_ADR, PTN_CONFIG_OFF + 5,
-			   &edid_num, 1);
+	status = i2c_writeb(PTN_I2C_CONTROLLER, PTN_SLAVE_ADR, PTN_CONFIG_OFF + 5, edid_num);
 	if (status)
 		return (PTN_BUS_ERROR | status);
 
 	/* Now we can simply write EDID-data to ptn3460 */
-	status = i2c_write(PTN_I2C_CONTROLLER, PTN_SLAVE_ADR, PTN_EDID_OFF,
-			   data, PTN_EDID_LEN);
-	if (status)
-		return (PTN_BUS_ERROR | status);
-	else
-		return PTN_NO_ERROR;
+	for (i = 0; i < PTN_EDID_LEN; i++) {
+		status = i2c_writeb(PTN_I2C_CONTROLLER, PTN_SLAVE_ADR, PTN_EDID_OFF + i,
+				    data[i]);
+		if (status)
+			return (PTN_BUS_ERROR | status);
+	}
+	return PTN_NO_ERROR;
 }
 
 /** \brief  This functions selects one of 7 EDID-tables inside PTN3460
@@ -171,8 +170,7 @@ int ptn_select_edid (u8 edid_num)
 		return PTN_INVALID_EDID;
 	/* Enable emulation of the desired EDID table */
 	val = (edid_num << 1) | 1;
-	status = i2c_write(PTN_I2C_CONTROLLER, PTN_SLAVE_ADR, PTN_CONFIG_OFF + 4,
-			   &val, 1);
+	status = i2c_writeb(PTN_I2C_CONTROLLER, PTN_SLAVE_ADR, PTN_CONFIG_OFF + 4, val);
 	if (status)
 		return (PTN_BUS_ERROR | status);
 	else
@@ -188,14 +186,19 @@ int ptn_select_edid (u8 edid_num)
  */
 int ptn3460_flash_config(void)
 {
-	int status;
+	int status, i;
 	struct ptn_3460_flash flash;
 
 	flash.cmd = 0x01;	/* perform erase and flash cycle */
 	flash.magic = 0x7845;	/* Magic number to protect flash operation */
 	flash.trigger = 0x56;	/* This value starts flash operation */
-	status = i2c_write(PTN_I2C_CONTROLLER, PTN_SLAVE_ADR, PTN_FLASH_CFG_OFF,
-			   (u8*)&flash, PTN_FLASH_CFG_LEN);
+
+	for (i = 0; i < sizeof(struct ptn_3460_flash); i++) {
+		status = i2c_writeb(PTN_I2C_CONTROLLER, PTN_SLAVE_ADR, PTN_FLASH_CFG_OFF+i,
+				*(((uint8_t *) &flash) + i));
+			if (status)
+				return (PTN_BUS_ERROR | status);
+	}
 	if (status) {
 		return (PTN_BUS_ERROR | status);
 	} else {

@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2014 Siemens AG
+ * Copyright (C) 2014-2019 Siemens AG
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,258 +13,282 @@
  * GNU General Public License for more details.
  */
 
-#include <device/pci.h>
-#include <device/pci_ops.h>
+#include <cbmem.h>
 #include <console/console.h>
-#include <soc/baytrail.h>
-#include <soc/pci_devs.h>
-#include <soc/iosf.h>
-#include <device/mmio.h>
-#include <delay.h>
+#include <device/device.h>
+#include <device/pci_def.h>
+#include <device/pci.h>
+#include <device/pci_ids.h>
+#include <drivers/i2c/designware/dw_i2c.h>
 #include <soc/i2c.h>
+#include <soc/iosf.h>
+#include <soc/iomap.h>
+#include <soc/nvs.h>
+#include <soc/pci_devs.h>
 
-/* Wait for the transmit FIFO till there is at least one slot empty.
- * FIFO stall due to transmit abort will be checked and resolved
- */
-static int wait_tx_fifo(char *base_adr)
+#include "chip.h"
+
+/* Convert I2C bus number to PCI device and function */
+int dw_i2c_soc_bus_to_devfn(unsigned int bus)
 {
-	int i;
-	u32 as;
-
-	as = read32(base_adr + I2C_ABORT_SOURCE) & 0x1ffff;
-	if (as) {
-		/* Reading back I2C_CLR_TX_ABRT resets abort lock on TX FIFO */
-		i = read32(base_adr + I2C_CLR_TX_ABRT);
-		return I2C_ERR_ABORT | as;
-	}
-
-	/* Wait here for a free slot in TX-FIFO */
-	i = I2C_TIMEOUT_US;
-	while (!(read32(base_adr + I2C_STATUS) & I2C_TFNF)) {
-		udelay(1);
-		if (!--i)
-			return I2C_ERR_TIMEOUT;
-	}
-
-	return I2C_SUCCESS;
+	if (bus <= 6)
+		return PCI_DEVFN(SIO1_DEV, bus + 1);
+	else
+		return -1;
 }
 
-/* Wait for the receive FIFO till there is at least one valid entry to read.
- * FIFO stall due to transmit abort will be checked and resolved
- */
-static int wait_rx_fifo(char *base_adr)
+/* Convert PCI device and function to I2C bus number */
+int dw_i2c_soc_dev_to_bus(struct device *dev)
 {
-	int i;
-	u32 as;
-
-	as = read32(base_adr + I2C_ABORT_SOURCE) & 0x1ffff;
-	if (as) {
-		/* Reading back I2C_CLR_TX_ABRT resets abort lock on TX FIFO */
-		i = read32(base_adr + I2C_CLR_TX_ABRT);
-		return I2C_ERR_ABORT | as;
-	}
-
-	/* Wait here for a received entry in RX-FIFO */
-	i = I2C_TIMEOUT_US;
-	while (!(read32(base_adr + I2C_STATUS) & I2C_RFNE)) {
-		udelay(1);
-		if (!--i)
-			return I2C_ERR_TIMEOUT;
-	}
-
-	return I2C_SUCCESS;
+	pci_devfn_t devfn = dev->path.pci.devfn;
+	if ((devfn >= SOC_DEVFN_I2C1) && (devfn <= SOC_DEVFN_I2C7))
+		return PCI_FUNC(devfn) - 1;
+	else
+		return -1;
 }
 
-/* When there will be a fast switch between send and receive, one have
- * to wait until the first operation is completely finished
- * before starting the second operation
- */
-static int wait_for_idle(char *base_adr)
+/* Getting I2C bus configuration from devicetree config */
+const struct dw_i2c_bus_config *dw_i2c_get_soc_cfg(unsigned int bus)
 {
-	int i;
-	int status;
+	const struct soc_intel_fsp_baytrail_config *config;
+	const struct device *dev = pcidev_path_on_root(SOC_DEVFN_SOC);
 
-	/* For IDLE, increase timeout by ten times */
-	i = I2C_TIMEOUT_US * 10;
-	status = read32(base_adr + I2C_STATUS);
-	while (((status & I2C_MST_ACTIVITY) || (!(status & I2C_TFE)))) {
-		status = read32(base_adr + I2C_STATUS);
-		udelay(1);
-		if (!--i)
-			return I2C_ERR_TIMEOUT;
+	if (dev && dev->chip_info) {
+		config = dev->chip_info;
+		return &config->i2c[bus];
 	}
 
-	return I2C_SUCCESS;
+	die("Could not find SA_DEV_ROOT devicetree config!\n");
 }
 
-/** \brief Enables I2C-controller, sets up BAR and timing parameters
- * @param   bus Number of the I2C-controller to use (0...6)
- * @return  I2C_SUCCESS on success, otherwise error code
- */
-int i2c_init(unsigned bus)
+#if !ENV_RAMSTAGE
+static int lpss_i2c_early_init_bus(unsigned int bus)
 {
-	struct device *dev;
-	int base_adr[7] = {I2C0_MEM_BASE, I2C1_MEM_BASE, I2C2_MEM_BASE,
-			   I2C3_MEM_BASE, I2C4_MEM_BASE, I2C5_MEM_BASE,
-			   I2C6_MEM_BASE};
-	char *base_ptr;
+	const struct dw_i2c_bus_config *config;
+	const struct device *tree_dev;
+	pci_devfn_t dev;
+	int devfn;
+	uintptr_t base;
 
-	/* Ensure the desired device is valid */
-	if (bus >= ARRAY_SIZE(base_adr)) {
-		printk(BIOS_ERR, "I2C: Only I2C controllers 0...6 are available.\n");
-		return I2C_ERR;
+	/* Find the PCI device for this bus controller */
+	devfn = dw_i2c_soc_bus_to_devfn(bus);
+	if (devfn < 0) {
+		printk(BIOS_ERR, "I2C%u device not found\n", bus);
+		return -1;
 	}
 
-	base_ptr = (char*)base_adr[bus];
-	/* Set the I2C-device the user wants to use */
-	dev = pcidev_on_root(PCH_DEV_SLOT_I2C1, bus + 1);
-
-	/* Ensure we have the right PCI device */
-	if ((pci_read_config16(dev, 0x0) != I2C_PCI_VENDOR_ID) ||
-	    (pci_read_config16(dev, 0x2) != (I2C0_PCI_DEV_ID + bus))) {
-		printk(BIOS_ERR, "I2C: Controller %d not found!\n", bus);
-		return I2C_ERR;
+	/* Look up the controller device in the devicetree */
+	dev = PCI_DEV(0, PCI_SLOT(devfn), PCI_FUNC(devfn));
+	tree_dev = pcidev_path_on_root(devfn);
+	if (!tree_dev || !tree_dev->enabled) {
+		printk(BIOS_ERR, "I2C%u device not enabled\n", bus);
+		return -1;
 	}
 
-	/* Set memory base */
-	pci_write_config32(dev, PCI_BASE_ADDRESS_0, (int)base_ptr);
+	/* Skip if not enabled for early init */
+	config = dw_i2c_get_soc_cfg(bus);
+	if (!config || !config->early_init) {
+		printk(BIOS_DEBUG, "I2C%u not enabled for early init\n", bus);
+		return -1;
+	}
 
-	/* Enable memory space */
+	/* Prepare early base address for access before memory */
+	base = EARLY_I2C_BASE(bus);
+	pci_write_config32(dev, PCI_BASE_ADDRESS_0, base);
 	pci_write_config32(dev, PCI_COMMAND,
-			   (pci_read_config32(dev, PCI_COMMAND) | 0x2));
+			   PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER);
 
-	/* Set up some settings of I2C controller */
-	write32(base_ptr + I2C_CTRL,
-		I2C_RESTART_EN | (I2C_STANDARD_MODE << 1) | I2C_MASTER_ENABLE);
-	/* Adjust frequency for standard mode to 100 kHz */
-	/* The counter value can be computed by N=100MHz/2/I2C_CLK */
-	/* Thus, for 100 kHz I2C_CLK, N is 0x1F4 */
-	write32(base_ptr + I2C_SS_SCL_HCNT, 0x1f4);
-	write32(base_ptr + I2C_SS_SCL_LCNT, 0x1f4);
-	/* For 400 kHz, the counter value is 0x7d */
-	write32(base_ptr + I2C_FS_SCL_HCNT, 0x7d);
-	write32(base_ptr + I2C_FS_SCL_LCNT, 0x7d);
-	/* no interrupts in BIOS */
-	write32(base_ptr + I2C_INTR_MASK, 0);
+	/* Take device out of reset */
+	write32((void *)((uint32_t)base + I2C_SOFTWARE_RESET), I2C_RESET_APB | I2C_RESET_FUNC);
 
-	/* Enable the I2C controller for operation */
-	write32(base_ptr + I2C_ENABLE, 0x1);
+	/* Initialize the controller */
+	if (dw_i2c_init(bus, config) < 0) {
+		printk(BIOS_ERR, "I2C%u failed to initialize\n", bus);
+		return -1;
+	}
 
-	printk(BIOS_INFO, "I2C: Controller %d enabled.\n", bus);
-	return I2C_SUCCESS;
+	return 0;
 }
 
-/** \brief Read bytes over I2C-Bus from a slave. This function tries only one
- *         time to transmit data. In case of an error (abort) error code is
- *         returned. Retransmission has to be done from caller!
- * @param bus  Number of the I2C-controller to use (0...6)
- * @param chip 7 Bit of the slave address on I2C bus
- * @param addr Address inside slave where to read from
- * @param *buf Pointer to the buffer where to store read data
- * @param len  Number of bytes to read
- * @return     I2C_SUCCESS when read was successful, otherwise error code
- */
-int i2c_read(unsigned bus, unsigned chip, unsigned addr,
-			uint8_t *buf, unsigned len)
+uintptr_t dw_i2c_base_address(unsigned int bus)
 {
-	int i = 0;
-	char *base_ptr = NULL;
-	struct device *dev;
-	unsigned int val;
-	int stat;
+	int devfn;
+	pci_devfn_t dev;
+	uintptr_t base;
 
-	/* Get base address of desired I2C-controller */
-	dev = pcidev_on_root(PCH_DEV_SLOT_I2C1, bus + 1);
-	base_ptr = (char *)pci_read_config32(dev, PCI_BASE_ADDRESS_0);
-	if (base_ptr == NULL) {
-		printk(BIOS_INFO, "I2C: Invalid Base address\n");
-		return I2C_ERR_INVALID_ADR;
-	}
+	/* Find device+function for this controller */
+	devfn = dw_i2c_soc_bus_to_devfn(bus);
+	if (devfn < 0)
+		return 0;
 
-	/* Ensure I2C controller is not active before setting slave address */
-	stat = wait_for_idle(base_ptr);
-	if (stat != I2C_SUCCESS)
-		return stat;
+	/* Form a PCI address for this device */
+	dev = PCI_DEV(0, PCI_SLOT(devfn), PCI_FUNC(devfn));
 
-	/* clear any abort status from a previous transaction */
-	read32(base_ptr + I2C_CLR_TX_ABRT);
+	/* Read the first base address for this device */
+	base = pci_read_config32(dev, PCI_BASE_ADDRESS_0) & 0xfffffff0;
 
-	/* Now we can program the desired slave address and start transfer */
-	write32(base_ptr + I2C_TARGET_ADR, chip & 0xff);
-	/* Send address inside slave to read from */
-	write32(base_ptr + I2C_DATA_CMD, addr & 0xff);
-
-	/* For the next byte we need a repeated start condition */
-	val = I2C_RW_CMD | I2C_RESTART;
-	/* Now we can read desired amount of data over I2C */
-	for (i = 0; i < len; i++) {
-		/* A read is initiated by writing dummy data to the DATA-register */
-		write32(base_ptr + I2C_DATA_CMD, val);
-		stat = wait_rx_fifo(base_ptr);
-		if (stat)
-			return stat;
-		buf[i] = read32(base_ptr + I2C_DATA_CMD) & 0xff;
-		val = I2C_RW_CMD;
-		if (i == (len - 2)) {
-			/* For the last byte we need a stop condition to be generated */
-			val |= I2C_STOP;
-		}
-	}
-	return I2C_SUCCESS;
+	/* Attempt to initialize bus if base is not set yet */
+	if (!base && !lpss_i2c_early_init_bus(bus))
+		base = pci_read_config32(dev, PCI_BASE_ADDRESS_0) & 0xfffffff0;
+	return base;
 }
+#else
 
-/** \brief Write bytes over I2C-Bus from a slave. This function tries only one
- *         time to transmit data. In case of an error (abort) error code is
- *         returned. Retransmission has to be done from caller!
- * @param bus  Number of the I2C-controller to use (0...6)
- * @param chip 7 Bit of the slave address on I2C bus
- * @param addr Address inside slave where to write to
- * @param *buf Pointer to the buffer where data to write is stored
- * @param len  Number of bytes to write
- * @return     I2C_SUCCESS when read was successful, otherwise error code
- */
-int i2c_write(unsigned bus, unsigned chip, unsigned addr,
-			const uint8_t *buf, unsigned len)
+uintptr_t dw_i2c_base_address(unsigned int bus)
 {
-	int i;
-	char *base_ptr;
+	int devfn;
 	struct device *dev;
-	unsigned int val;
-	int stat;
+	struct resource *bar = NULL;
 
-	/* Get base address of desired I2C-controller */
-	dev = pcidev_on_root(PCH_DEV_SLOT_I2C1, bus + 1);
-	base_ptr = (char *)pci_read_config32(dev, PCI_BASE_ADDRESS_0);
-	if (base_ptr == NULL) {
-		return I2C_ERR_INVALID_ADR;
+	/* bus -> devfn */
+	devfn = dw_i2c_soc_bus_to_devfn(bus);
+
+	if (devfn < 0)
+		return (uintptr_t)NULL;
+
+	/* devfn -> dev */
+	dev = pcidev_path_on_root(devfn);
+	if (dev && dev->enabled) {
+		/* dev -> bar0 */
+		bar = find_resource(dev, PCI_BASE_ADDRESS_0);
 	}
 
-	/* Ensure I2C controller is not active yet */
-	stat = wait_for_idle(base_ptr);
-	if (stat) {
-		return stat;
-	}
-
-	/* clear any abort status from a previous transaction */
-	read32(base_ptr + I2C_CLR_TX_ABRT);
-
-	/* Program slave address to use for this transfer */
-	write32(base_ptr + I2C_TARGET_ADR, chip & 0xff);
-
-	/* Send address inside slave to write data to */
-	write32(base_ptr + I2C_DATA_CMD, addr & 0xff);
-
-	for (i = 0; i < len; i++) {
-		val = (unsigned int)(buf[i] & 0xff);	/* Take only 8 bits */
-		if (i == (len - 1)) {
-			/* For the last byte we need a stop condition */
-			val |= I2C_STOP;
-		}
-		stat = wait_tx_fifo(base_ptr);
-		if (stat) {
-			return stat;
-		}
-		write32(base_ptr + I2C_DATA_CMD, val);
-	}
-	return I2C_SUCCESS;
+	if (bar)
+		return bar->base;
+	else
+		return (uintptr_t)NULL;
 }
+
+static void i2c_enable_acpi_mode(struct device *dev, int iosf_reg, int nvs_index)
+{
+	struct resource *bar;
+	global_nvs_t *gnvs;
+	uint32_t val;
+
+	/* Find ACPI NVS to update BARs */
+	gnvs = (global_nvs_t *)cbmem_find(CBMEM_ID_ACPI_GNVS);
+	if (!gnvs) {
+		printk(BIOS_ERR, "Unable to locate Global NVS\n");
+		return;
+	}
+
+	/* Save BAR0 and BAR1 to ACPI NVS */
+	bar = find_resource(dev, PCI_BASE_ADDRESS_0);
+	if (bar)
+		gnvs->dev.lpss_bar0[nvs_index] = (uint32_t)bar->base;
+
+	bar = find_resource(dev, PCI_BASE_ADDRESS_1);
+	if (bar)
+		gnvs->dev.lpss_bar1[nvs_index] = (uint32_t)bar->base;
+
+	/* Device is enabled in ACPI mode */
+	gnvs->dev.lpss_en[nvs_index] = 1;
+
+	/* Put device in ACPI mode */
+	val = iosf_lpss_read(iosf_reg);
+	val |= (LPSS_CTL_PCI_CFG_DIS | LPSS_CTL_ACPI_INT_EN);
+	iosf_lpss_write(iosf_reg, val);
+	val = pci_read_config32(dev, PCI_COMMAND);
+	val |= PCI_COMMAND_INT_DISABLE;
+	pci_write_config32(dev, PCI_COMMAND, val);
+}
+
+static void dev_enable_snoop_and_pm(struct device *dev, int iosf_reg)
+{
+	uint32_t val;
+
+	val = iosf_lpss_read(iosf_reg);
+	val &= ~(LPSS_CTL_SNOOP | LPSS_CTL_NOSNOOP);
+	val |= (LPSS_CTL_SNOOP | LPSS_CTL_PM_CAP_PRSNT);
+	iosf_lpss_write(iosf_reg, val);
+}
+
+static void dev_ctl_reg(struct device *dev, int *iosf_reg, int *nvs_index)
+{
+	int bus;
+
+	bus = dw_i2c_soc_dev_to_bus(dev);
+	if (bus >= 0) {
+		*iosf_reg = LPSS_I2C1_CTL + (bus * 8);
+		*nvs_index = bus + 1;
+	} else {
+
+		*iosf_reg = -1;
+		*nvs_index = -1;
+	}
+}
+
+static void i2c_disable_resets(struct device *dev)
+{
+	uint32_t base;
+
+	printk(BIOS_DEBUG, "Releasing I2C device from reset.\n");
+	base = pci_read_config32(dev, PCI_BASE_ADDRESS_0) & 0xfffffff0;
+	write32((void *)(base + I2C_SOFTWARE_RESET), I2C_RESET_APB | I2C_RESET_FUNC);
+}
+
+static void i2c_lpss_init(struct device *dev)
+{
+	struct soc_intel_fsp_baytrail_config *config = dev->chip_info;
+	int iosf_reg, nvs_index;
+
+	dev_ctl_reg(dev, &iosf_reg, &nvs_index);
+
+	if (iosf_reg < 0) {
+		int slot = PCI_SLOT(dev->path.pci.devfn);
+		int func = PCI_FUNC(dev->path.pci.devfn);
+		printk(BIOS_DEBUG, "Could not find iosf_reg for %02x.%01x\n",
+		       slot, func);
+		return;
+	}
+	dev_enable_snoop_and_pm(dev, iosf_reg);
+	i2c_disable_resets(dev);
+
+	if (config && (config->PcdLpssSioEnablePciMode == LPSS_PCI_MODE_DISABLE))
+		i2c_enable_acpi_mode(dev, iosf_reg, nvs_index);
+}
+/*
+ * This function ensures that the device is actually out of reset and
+ * it is ready for initialization sequence.
+ */
+static void dw_i2c_device_init(struct device *dev)
+{
+	int bus = dw_i2c_soc_dev_to_bus(dev);
+
+	if (bus < 0)
+		return;
+
+	if (!dw_i2c_base_address(bus))
+		return;
+	i2c_lpss_init(dev);
+	dw_i2c_dev_init(dev);
+}
+
+static struct device_operations i2c_dev_ops = {
+	.read_resources			= pci_dev_read_resources,
+	.set_resources			= pci_dev_set_resources,
+	.enable_resources		= pci_dev_enable_resources,
+	.scan_bus			= scan_smbus,
+	.ops_i2c_bus			= &dw_i2c_bus_ops,
+	.ops_pci			= &pci_dev_ops_pci,
+	.init				= dw_i2c_device_init,
+	.acpi_fill_ssdt_generator	= dw_i2c_acpi_fill_ssdt,
+};
+
+static const unsigned short pci_device_ids[] = {
+	I2C1_DEVID,
+	I2C2_DEVID,
+	I2C3_DEVID,
+	I2C4_DEVID,
+	I2C5_DEVID,
+	I2C6_DEVID,
+	I2C7_DEVID,
+	0
+};
+
+static const struct pci_driver pch_i2c __pci_driver = {
+	.ops	 = &i2c_dev_ops,
+	.vendor	 = PCI_VENDOR_ID_INTEL,
+	.devices = pci_device_ids,
+};
+#endif

@@ -278,12 +278,26 @@ static int fch_spi_flash_probe(const struct spi_slave *spi, struct spi_flash *fl
 		printk(BIOS_SPEW, "\n");
 	}
 
-	/* count the number of continuation bytes */
-	for (shift = 0, idp = idcode; shift < IDCODE_CONT_LEN && *idp == 0x7f;
-	     ++shift, ++idp)
-		continue;
+	/*
+	 * All solid state devices have vendor id defined by JEDEC specification JEP106,
+	 * which originally allocated only 7 bits for it plus parity. When number of
+	 * vendors exploded beyond 126, a banking proposition came maintaining
+	 * compatibility with older vendors while allowing for 4 extra bits (16 banks)
+	 * through the introduction of the concept "Continuation Code", denoted by the
+	 * byte value of 0x7f.
+	 * Examples:
+	 * 0xfe, 0x60, 0x18, 0x00, 0x00, 0x00 => vendor 0xfe of bank o
+	 * 0x7f, 0x7f, 0xfe, 0x60, 0x18, 0x00 => vendor 0xfe of bank 2
+	 * count the number of continuation code bytes
+	 */
+	for (shift = 0, idp = idcode; *idp == IDCODE_CONT_CODE; ++shift, ++idp) {
+		if (shift < IDCODE_CONT_LEN)
+			continue;
+		printk(BIOS_ERR, "unsupported ID code bank\n");
+		return -1;
+	}
 
-	printk(BIOS_INFO, "Manufacturer: %02x\n", *idp);
+	printk(BIOS_INFO, "Manufacturer: %02x on bank %d\n", *idp, shift);
 
 	/* search the table for matches in shift and id */
 	for (i = 0; i < table_size; ++i) {

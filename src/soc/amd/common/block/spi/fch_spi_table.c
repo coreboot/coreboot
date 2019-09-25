@@ -30,11 +30,6 @@
  * Several matching entries are permitted, they will be tried
  * in sequence until a probe function returns non NULL.
  *
- * IDCODE_CONT_LEN may be redefined if a device needs to declare a
- * larger "shift" value.  IDCODE_PART_LEN generally shouldn't be
- * changed.  This is the max number of bytes probe functions may
- * examine when looking up part-specific identification info.
- *
  * Probe functions will be given the idcode buffer starting at their
  * manu id byte (the "idcode" in the table below).  In other words,
  * all of the continuation bytes will be skipped (the "shift" below).

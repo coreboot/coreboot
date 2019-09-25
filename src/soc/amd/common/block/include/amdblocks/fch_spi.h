@@ -23,7 +23,14 @@
 #define WORD_TO_DWORD_UPPER(x)		((x << 16) & 0xffff0000)
 #define SPI_PAGE_WRITE			0x02
 #define SPI_WRITE_ENABLE		0x06
-#define IDCODE_CONT_LEN			0
+/*
+ * IDCODE_CONT_LEN may be redefined if a device needs to declare a
+ * larger "shift" value.  IDCODE_PART_LEN generally shouldn't be
+ * changed.  This is the max number of bytes probe functions may
+ * examine when looking up part-specific identification info.
+ */
+#define IDCODE_CONT_CODE		0x7f
+#define IDCODE_CONT_LEN			1 /* currently support only bank 0 */
 #define IDCODE_PART_LEN			5
 #define IDCODE_LEN (IDCODE_CONT_LEN + IDCODE_PART_LEN)
 

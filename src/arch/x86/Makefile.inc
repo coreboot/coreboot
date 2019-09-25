@@ -167,6 +167,8 @@ $(objgenerated)/bootblock.inc: $(src)/arch/x86/$(subst ",,$(CONFIG_BOOTBLOCK_SOU
 	@printf "    ROMCC      $(subst $(obj)/,,$(@))\n"
 	$(CC_bootblock) -D__ROMCC__ -D__PRE_RAM__ -D__BOOTBLOCK__ $(CPPFLAGS_bootblock) -MM -MT$(objgenerated)/bootblock.inc \
 		$< > $(objgenerated)/bootblock.inc.d
+	$(CC_bootblock) -D__ROMCC__ -D__PRE_RAM__ -D__BOOTBLOCK__ $(CPPFLAGS_bootblock) -E \
+		$< -o $(objgenerated)/bootblock_romcc.c
 	$(ROMCC) -c -S $(bootblock_romccflags) -I. $(CPPFLAGS_bootblock) $< -o $@
 
 # bootblock.ld is part of $(bootblock-objs)

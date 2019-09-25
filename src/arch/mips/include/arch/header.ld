@@ -19,7 +19,7 @@ PHDRS
 	to_load PT_LOAD;
 }
 
-#ifdef __BOOTBLOCK__
+#if ENV_BOOTBLOCK
 ENTRY(_start)
 #else
 ENTRY(stage_entry)

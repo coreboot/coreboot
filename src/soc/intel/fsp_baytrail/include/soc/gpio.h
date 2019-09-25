@@ -313,8 +313,6 @@
 #define GPSSUS_GPIO_F1_RANGE_START	11
 #define GPSSUS_GPIO_F1_RANGE_END	21
 
-#ifndef __BOOTBLOCK__
-
 struct soc_gpio_map {
 	u32 pad_conf0;
 	u32 pad_conf1;
@@ -360,8 +358,6 @@ void write_ssus_gpio(uint8_t gpio_num, uint8_t val);
 void configure_ssus_gpio(uint8_t gpio_num, uint32_t pconf0, uint32_t pad_val);
 void configure_score_gpio(uint8_t gpio_num, uint32_t pconf0, uint32_t pad_val);
 
-#endif /* #ifndef __BOOTBLOCK__ */
-
 /* Functions / defines for changing GPIOs in romstage */
 /* SCORE Pad definitions. */
 #define UART_RXD_PAD			82
@@ -401,7 +397,6 @@ static inline void ssus_select_func(int pad, int func)
 	write32(pconf0_addr, reg);
 }
 
-#ifndef __BOOTBLOCK__
 
 /* These functions require that the input pad be configured as an input GPIO */
 static inline int score_get_gpio(int pad)
@@ -436,10 +431,12 @@ static inline void ssus_set_gpio(int pad, int val)
 
 static inline void ssus_disable_internal_pull(int pad)
 {
-	const uint32_t pull_mask = ~(0xf << 7);
-	write32(ssus_pconf0(pad), read32(ssus_pconf0(pad)) & pull_mask);
-}
+	uint32_t reg;
+	uint32_t *pconf0_addr = ssus_pconf0(pad);
 
-#endif /* #ifndef __BOOTBLOCK__ */
+	reg = read32(pconf0_addr);
+	reg &= ~(0xf << 7);
+	write32(pconf0_addr, reg);
+}
 
 #endif /* _BAYTRAIL_GPIO_H_ */

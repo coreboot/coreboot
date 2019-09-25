@@ -16,6 +16,19 @@ config BOARD_SPECIFIC_OPTIONS
 	select MAINBOARD_HAS_TPM2
 	select MAINBOARD_HAS_LPC_TPM
 
+config VBOOT
+	select VBOOT_MEASURED_BOOT
+	select VBOOT_VBNV_FLASH
+	select VBOOT_NO_BOARD_SUPPORT
+	select GBB_FLAG_DISABLE_LID_SHUTDOWN
+	select GBB_FLAG_DISABLE_PD_SOFTWARE_SYNC
+	select GBB_FLAG_DISABLE_EC_SOFTWARE_SYNC
+	select GBB_FLAG_DISABLE_FWMP
+
+config FMDFILE
+	string
+	default "src/mainboard/$(CONFIG_MAINBOARD_DIR)/mc_bdx1.fmd" if VBOOT
+
 config MAINBOARD_DIR
 	string
 	default "siemens/mc_bdx1"
@@ -30,7 +43,7 @@ config IRQ_SLOT_COUNT
 
 config CBFS_SIZE
 	hex
-	default 0x00D00000
+	default 0x00D00000 if !VBOOT
 
 config VIRTUAL_ROM_SIZE
 	hex

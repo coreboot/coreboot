@@ -64,8 +64,11 @@ def get_gbb_hwid(variant_name):
   converted to all uppercase as part of this function."""
   hwid = variant_name + ' test'
   upperhwid = hwid.upper()
-  suffix = zlib.crc32(upperhwid.encode('UTF-8')) % 10000
-  gbb_hwid = upperhwid + ' ' + str(suffix).zfill(4)
+  # Force conversion to unsigned by bitwise AND with (2^32)-1.
+  # See the docs for crc32 at https://docs.python.org/3/library/zlib.html
+  # for why '& 0xffffffff' is necessary.
+  crc = zlib.crc32(upperhwid.encode('UTF-8')) & 0xffffffff
+  gbb_hwid = upperhwid + ' ' + str(crc % 10000).zfill(4)
   return gbb_hwid
 
 

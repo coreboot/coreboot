@@ -346,18 +346,6 @@ config OVERRIDE_DEVICETREE
 	  Examples: "devicetree.variant-override.cb"
 	            "variant/devicetree-override.cb"
 
-config CBFS_SIZE
-	hex "Size of CBFS filesystem in ROM"
-	# Default value set at the end of the file
-	help
-	  This is the part of the ROM actually managed by CBFS, located at the
-	  end of the ROM (passed through cbfstool -o) on x86 and at at the start
-	  of the ROM (passed through cbfstool -s) everywhere else. It defaults
-	  to span the whole ROM on all but Intel systems that use an Intel Firmware
-	  Descriptor.  It can be overridden to make coreboot live alongside other
-	  components like ChromeOS's vboot/FMAP or Intel's IFD / ME / TXE
-	  binaries.
-
 config FMDFILE
 	string "fmap description file in fmd format"
 	default "src/mainboard/$(CONFIG_MAINBOARD_DIR)/chromeos.fmd" if CHROMEOS
@@ -366,6 +354,20 @@ config FMDFILE
 	  The build system creates a default FMAP from ROM_SIZE and CBFS_SIZE,
 	  but in some cases more complex setups are required.
 	  When an fmd is specified, it overrides the default format.
+
+config CBFS_SIZE
+	hex "Size of CBFS filesystem in ROM"
+	depends on FMDFILE = ""
+	# Default value set at the end of the file
+	help
+	  This is the part of the ROM actually managed by CBFS, located at the
+	  end of the ROM (passed through cbfstool -o) on x86 and at at the start
+	  of the ROM (passed through cbfstool -s) everywhere else. It defaults
+	  to span the whole ROM on all but Intel systems that use an Intel Firmware
+	  Descriptor.  It can be overridden to make coreboot live alongside other
+	  components like ChromeOS's vboot/FMAP or Intel's IFD / ME / TXE
+	  binaries. This symbol should only be used to generate a default FMAP and
+	  is unused when a non-default fmd file is provided via CONFIG_FMDFILE.
 
 endmenu
 

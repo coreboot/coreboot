@@ -357,7 +357,11 @@ static amd_fw_entry amd_fw_table[] = {
 };
 
 static amd_bios_entry amd_bios_table[] = {
-	{ .type = AMD_BIOS_APCB, .level = BDT_BOTH },
+	{ .type = AMD_BIOS_APCB, .inst = 0, .level = BDT_BOTH },
+	{ .type = AMD_BIOS_APCB, .inst = 1, .level = BDT_BOTH },
+	{ .type = AMD_BIOS_APCB, .inst = 2, .level = BDT_BOTH },
+	{ .type = AMD_BIOS_APCB, .inst = 3, .level = BDT_BOTH },
+	{ .type = AMD_BIOS_APCB, .inst = 4, .level = BDT_BOTH },
 	{ .type = AMD_BIOS_APCB_BK, .level = BDT_BOTH },
 	{ .type = AMD_BIOS_APOB, .level = BDT_BOTH },
 	{ .type = AMD_BIOS_BIN,

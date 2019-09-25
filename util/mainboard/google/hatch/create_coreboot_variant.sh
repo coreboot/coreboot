@@ -15,9 +15,9 @@
 
 export LC_ALL=C
 
-if [[ "$#" -ne 1 ]]; then
-  echo "Usage: $0 variant_name"
-  echo "e.g. $0 kohaku"
+if [[ "$#" -lt 1 ]]; then
+  echo "Usage: $0 variant_name [b:bug_number]"
+  echo "e.g. $0 kohaku b:140261109"
   echo "Adds a new variant of Hatch to Kconfig and Kconfig.name, creates the"
   echo "skeleton files for acpi, ec, and gpio, copies the makefile for"
   echo "SPD sources, and sets up a basic overridetree"
@@ -33,6 +33,10 @@ BASE="hatch"
 # ${var,,} converts to all lowercase; ${var^^} is all uppercase.
 VARIANT="${1,,}"
 VARIANT_UPPER="${VARIANT^^}"
+
+# Assign text for the "BUG=" part of the commit, or use "None" if that
+# parameter wasn't specified.
+BUG=${2:-None}
 
 # This script and the templates live in util/mainboard/google/hatch
 # We need to create files in src/mainboard/google/hatch
@@ -71,7 +75,7 @@ git add Kconfig Kconfig.name
 # Now commit the files.
 git commit -sm "${BASE}: Create ${VARIANT} variant
 
-BUG=none
+BUG=${BUG}
 TEST=util/abuild/abuild -p none -t google/${BASE} -x -a
 make sure the build includes GOOGLE_${VARIANT_UPPER}"
 

@@ -192,7 +192,11 @@ endif
 #
 
 # type = 0x60
-PSP_APCB_FILE=$(call strip_quotes, $(CONFIG_PSP_APCB_FILE))
+PSP_APCB0_FILE=$(call strip_quotes, $(CONFIG_PSP_APCB_FILE))
+PSP_APCB1_FILE=$(call strip_quotes, $(CONFIG_PSP_APCB1_FILE))
+PSP_APCB2_FILE=$(call strip_quotes, $(CONFIG_PSP_APCB2_FILE))
+PSP_APCB3_FILE=$(call strip_quotes, $(CONFIG_PSP_APCB3_FILE))
+PSP_APCB4_FILE=$(call strip_quotes, $(CONFIG_PSP_APCB4_FILE))
 
 # type = 0x61
 PSP_APOB_BASE=$(CONFIG_PSP_APOB_DESTINATION)
@@ -258,7 +262,11 @@ OPT_ABL6_FILE=$(call add_opt_prefix,  $(PSP_ABL6_FILE), --abl-image)
 OPT_ABL7_FILE=$(call add_opt_prefix,  $(PSP_ABL7_FILE), --abl-image)
 OPT_WHITELIST_FILE=$(call add_opt_prefix, $(PSP_WHITELIST_FILE), --whitelist)
 
-OPT_PSP_APCB_FILE=$(call add_opt_prefix, $(PSP_APCB_FILE), --apcb)
+OPT_PSP_APCB0_FILE=$(call add_opt_prefix, $(PSP_APCB0_FILE), --instance 0 --apcb)
+OPT_PSP_APCB1_FILE=$(call add_opt_prefix, $(PSP_APCB1_FILE), --instance 1 --apcb)
+OPT_PSP_APCB2_FILE=$(call add_opt_prefix, $(PSP_APCB2_FILE), --instance 2 --apcb)
+OPT_PSP_APCB3_FILE=$(call add_opt_prefix, $(PSP_APCB3_FILE), --instance 3 --apcb)
+OPT_PSP_APCB4_FILE=$(call add_opt_prefix, $(PSP_APCB4_FILE), --instance 4 --apcb)
 OPT_APOB_ADDR=$(call add_opt_prefix, $(PSP_APOB_BASE), --apob-base)
 OPT_PSP_BIOSBIN_FILE=$(call add_opt_prefix, $(PSP_BIOSBIN_FILE), --bios-bin)
 OPT_PSP_BIOSBIN_DEST=$(call add_opt_prefix, $(PSP_BIOSBIN_DEST), --bios-bin-dest)
@@ -284,7 +292,11 @@ $(obj)/amdfw.rom:	$(call strip_quotes, $(CONFIG_AMD_PUBKEY_FILE)) \
 			$(call strip_quotes, $(PSPSCUREOS_FILE)) \
 			$(call strip_quotes, $(PSP_SEC_DBG_KEY_FILE)) \
 			$(call strip_quotes, $(PSPTRUSTLETS_FILE)) \
-			$(call strip_quotes, $(PSP_APCB_FILE)) \
+			$(call strip_quotes, $(PSP_APCB0_FILE)) \
+			$(call strip_quotes, $(PSP_APCB1_FILE)) \
+			$(call strip_quotes, $(PSP_APCB2_FILE)) \
+			$(call strip_quotes, $(PSP_APCB3_FILE)) \
+			$(call strip_quotes, $(PSP_APCB4_FILE)) \
 			$(call strip_quotes, $(PSP_BIOSBIN_FILE)) \
 			$(call strip_quotes, $(PSP_PMUI_FILE1)) \
 			$(call strip_quotes, $(PSP_PMUI_FILE2)) \
@@ -331,7 +343,11 @@ $(obj)/amdfw.rom:	$(call strip_quotes, $(CONFIG_AMD_PUBKEY_FILE)) \
 		$(OPT_SMUFW2_SUB2_FILE) \
 		$(OPT_SMUFW1_SUB1_FILE) \
 		$(OPT_SMUFW2_SUB1_FILE) \
-		$(OPT_PSP_APCB_FILE) \
+		$(OPT_PSP_APCB0_FILE) \
+		$(OPT_PSP_APCB1_FILE) \
+		$(OPT_PSP_APCB2_FILE) \
+		$(OPT_PSP_APCB3_FILE) \
+		$(OPT_PSP_APCB4_FILE) \
 		$(OPT_APOB_ADDR) \
 		$(OPT_APOBNV_ADDR) \
 		$(OPT_APOBNV_SIZE) \

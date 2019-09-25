@@ -13,6 +13,8 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
+export LC_ALL=C
+
 if [[ "$#" -ne 1 ]]; then
   echo "Usage: $0 variant_name"
   echo "e.g. $0 kohaku"
@@ -26,54 +28,52 @@ fi
 # you to specify the baseboard as one of the cmdline arguments.
 #
 # This is the name of the base board that we're cloning to make the variant.
-base="hatch"
-# This is the name of the variant that is being cloned
-# ${var,,} converts to all lowercase
-variant="${1,,}"
+BASE="hatch"
+# This is the name of the variant that is being cloned.
+# ${var,,} converts to all lowercase; ${var^^} is all uppercase.
+VARIANT="${1,,}"
+VARIANT_UPPER="${VARIANT^^}"
 
 # This script and the templates live in util/mainboard/google/hatch
 # We need to create files in src/mainboard/google/hatch
-pushd "${BASH_SOURCE%/*}" || exit
+pushd "${BASH_SOURCE%/*}" || exit 1
 SRC=$(pwd)
-popd || exit
-pushd "${SRC}/../../../../src/mainboard/google/${base}" || {
-  echo "The baseboard directory for ${base} does not exist.";
-  exit; }
+popd || exit 1
+pushd "${SRC}/../../../../src/mainboard/google/${BASE}" || {
+  echo "The baseboard directory for ${BASE} does not exist.";
+  exit 1; }
 
-# Make sure the variant doesn't already exist
-if [[ -e variants/${variant} ]]; then
-  echo "variants/${variant} already exists."
+# Make sure the variant doesn't already exist.
+if [[ -e variants/${VARIANT} ]]; then
+  echo "variants/${VARIANT} already exists."
   echo "Have you already created this variant?"
-  popd || exit
-  exit 2
+  exit 1
 fi
 
 # Start a branch. Use YMD timestamp to avoid collisions.
 DATE=$(date +%Y%m%d)
-git checkout -b "create_${variant}_${DATE}"
+git checkout -b "create_${VARIANT}_${DATE}" || exit 1
 
-# Copy the template tree to the target
-mkdir -p "variants/${variant}/"
-cp -pr "${SRC}/template/." "variants/${variant}/"
-git add "variants/${variant}/"
+# Copy the template tree to the target.
+mkdir -p "variants/${VARIANT}/"
+cp -pr "${SRC}/template/." "variants/${VARIANT}/"
+git add "variants/${VARIANT}/"
 
 # Now add the new variant to Kconfig and Kconfig.name
 # These files are in the current directory, e.g. src/mainboard/google/hatch
-"${SRC}/kconfig.py" --name "${variant}"
+"${SRC}/kconfig.py" --name "${VARIANT}"
 
 mv Kconfig.new Kconfig
 mv Kconfig.name.new Kconfig.name
 
 git add Kconfig Kconfig.name
 
-# Now commit the files
-git commit -sm "${base}: Create ${variant} variant
+# Now commit the files.
+git commit -sm "${BASE}: Create ${VARIANT} variant
 
 BUG=none
-TEST=util/abuild/abuild -p none -t google/${base} -x -a
-make sure the build includes GOOGLE_${variant^^}"
-
-popd || exit
+TEST=util/abuild/abuild -p none -t google/${BASE} -x -a
+make sure the build includes GOOGLE_${VARIANT_UPPER}"
 
 echo "Please check all the files (git show), make any changes you want,"
 echo "and then push to coreboot HEAD:refs/for/master"

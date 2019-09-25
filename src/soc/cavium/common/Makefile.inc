@@ -17,7 +17,8 @@ ifeq ($(CONFIG_SOC_CAVIUM_COMMON),y)
 
 subdirs-y += pci
 
-CFLAGS_arm64   += -Wstack-usage=$(CONFIG_STACK_SIZE)
+# -Wstack-usage doesn't recognize hexadecimal numbers.
+CFLAGS_arm64   += -Wstack-usage=$(shell printf "%d" $(CONFIG_STACK_SIZE))
 
 bootblock-$(CONFIG_BOOTBLOCK_CUSTOM) += bootblock.c
 

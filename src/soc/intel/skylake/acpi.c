@@ -760,6 +760,10 @@ const char *soc_acpi_name(const struct device *dev)
 	if (dev->path.type != DEVICE_PATH_PCI)
 		return NULL;
 
+	/* Only match devices on the root bus */
+	if (dev->bus && dev->bus->secondary > 0)
+		return NULL;
+
 	switch (dev->path.pci.devfn) {
 	case SA_DEVFN_ROOT:	return "MCHC";
 	case SA_DEVFN_IGD:	return "GFX0";

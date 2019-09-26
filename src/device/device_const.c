@@ -24,6 +24,12 @@ DEVTREE_CONST struct device * DEVTREE_CONST all_devices = &dev_root;
 /**
  * Given a PCI bus and a devfn number, find the device structure.
  *
+ * Note that this function can return the incorrect device prior
+ * to PCI enumeration because the secondary field of the bus object
+ * is 0. The failing scenario is determined by the order of the
+ * devices in all_devices singly-linked list as well as the time
+ * when this function is called (secondary reflecting topology).
+ *
  * @param bus The bus number.
  * @param devfn A device/function number.
  * @return Pointer to the device structure (if found), 0 otherwise.

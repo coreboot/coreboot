@@ -11,8 +11,6 @@
  * GNU General Public License for more details.
  */
 
-#define __SIMPLE_DEVICE__
-
 #include <stdint.h>
 #include <console/console.h>
 #include <device/pci.h>

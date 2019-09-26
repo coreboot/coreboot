@@ -12,10 +12,6 @@
  * GNU General Public License for more details.
  */
 
-#if ENV_RAMSTAGE
-#define __SIMPLE_DEVICE__		1
-#endif
-
 #include <arch/early_variables.h>
 #include <commonlib/sdhci.h>
 #include <device/pci.h>
@@ -54,11 +50,11 @@ struct sd_mmc_ctrlr *new_mem_sdhci_controller(void *ioaddr)
 	return car_get_var_ptr(&sdhci_ctrlr.sd_mmc_ctrlr);
 }
 
-struct sd_mmc_ctrlr *new_pci_sdhci_controller(uint32_t dev)
+struct sd_mmc_ctrlr *new_pci_sdhci_controller(pci_devfn_t dev)
 {
 	uint32_t addr;
 
-	addr = pci_read_config32(dev, PCI_BASE_ADDRESS_0);
+	addr = pci_s_read_config32(dev, PCI_BASE_ADDRESS_0);
 	if (addr == ((uint32_t)~0)) {
 		sdhc_error("Error: PCI SDHCI not found\n");
 		return NULL;

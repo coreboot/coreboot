@@ -17,6 +17,7 @@
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/intel/microcode.h>
+#include <cpu/intel/common/common.h>
 #include <intelblocks/mp_init.h>
 #include <intelblocks/msr.h>
 #include <intelblocks/sgx.h>
@@ -54,9 +55,18 @@ void prmrr_core_configure(void)
 	} prmrr_base, prmrr_mask;
 	msr_t msr;
 
-	if (!is_sgx_supported())
+	/*
+	 * Software Developer's Manual Volume 4:
+	 * Order Number: 335592-068US
+	 * Chapter 2.16.1
+	 * MSR_PRMRR_PHYS_MASK is in scope "Core"
+	 * MSR_PRMRR_PHYS_BASE is in scope "Core"
+	 * Return if Hyper-Threading is enabled and not thread 0
+	 */
+	if (!is_sgx_supported() || intel_ht_sibling())
 		return;
 
+	/* PRMRR_PHYS_MASK is in scope "Core" */
 	msr = rdmsr(MSR_PRMRR_PHYS_MASK);
 	/* If it is locked don't attempt to write PRMRR MSRs. */
 	if (msr.lo & PRMRR_PHYS_MASK_LOCK)
@@ -109,6 +119,12 @@ static void enable_sgx(void)
 {
 	msr_t msr;
 
+	/*
+	 * Intel 64 and IA-32 ArchitecturesSoftware Developer's ManualVolume 3C
+	 * Order Number:  326019-060US
+	 * Chapter 35.10.2 "Additional MSRs Supported by Intel"
+	 * IA32_FEATURE_CONTROL is in scope "Thread"
+	 */
 	msr = rdmsr(IA32_FEATURE_CONTROL);
 	/* Only enable it when it is not locked */
 	if ((msr.lo & FEATURE_CONTROL_LOCK_BIT) == 0) {
@@ -121,6 +137,12 @@ static void lock_sgx(void)
 {
 	msr_t msr;
 
+	/*
+	 * Intel 64 and IA-32 ArchitecturesSoftware Developer's ManualVolume 3C
+	 * Order Number:  326019-060US
+	 * Chapter 35.10.2 "Additional MSRs Supported by Intel"
+	 * IA32_FEATURE_CONTROL is in scope "Thread"
+	 */
 	msr = rdmsr(IA32_FEATURE_CONTROL);
 	/* If it is locked don't attempt to lock it again. */
 	if ((msr.lo & 1) == 0) {
@@ -135,6 +157,7 @@ static int owner_epoch_update(void)
 	 * for PoC just write '0's to the MSRs. */
 	msr_t msr = {0, 0};
 
+	/* SGX_OWNEREPOCH is in scope "Package" */
 	wrmsr(MSR_SGX_OWNEREPOCH0, msr);
 	wrmsr(MSR_SGX_OWNEREPOCH1, msr);
 	return 0;
@@ -175,16 +198,19 @@ static int is_prmrr_approved(void)
 	return 0;
 }
 
+/*
+ * Configures SGX according to "Intel Software Guard Extensions Technology"
+ * Document Number: 565432
+ */
 void sgx_configure(void *unused)
 {
-	const void *microcode_patch = intel_mp_current_microcode();
 
 	if (!is_sgx_supported() || !is_prmrr_set()) {
 		printk(BIOS_ERR, "SGX: pre-conditions not met\n");
 		return;
 	}
 
-	/* Enable the SGX feature */
+	/* Enable the SGX feature on all threads. */
 	enable_sgx();
 
 	/* Update the owner epoch value */
@@ -194,10 +220,26 @@ void sgx_configure(void *unused)
 	/* Ensure to lock memory before reload microcode patch */
 	cpu_lock_sgx_memory();
 
-	/* Reload the microcode patch */
-	intel_microcode_load_unlocked(microcode_patch);
+	/*
+	 * Update just on the first CPU in the core. Other siblings
+	 * get the update automatically according to Document: 253668-060US
+	 * Intel SDM Chapter 9.11.6.3
+	 * "Update in a System Supporting Intel Hyper-Threading Technology"
+	 * Intel Hyper-Threading Technology has implications on the loading of the
+	 * microcode update. The update must be loaded for each core in a physical
+	 * processor. Thus, for a processor supporting Intel Hyper-Threading
+	 * Technology, only one logical processor per core is required to load the
+	 * microcode update. Each individual logical processor can independently
+	 * load the update. However, MP initialization must provide some mechanism
+	 * (e.g. a software semaphore) to force serialization of microcode update
+	 * loads and to prevent simultaneous load attempts to the same core.
+	 */
+	if (!intel_ht_sibling()) {
+		const void *microcode_patch = intel_mp_current_microcode();
+		intel_microcode_load_unlocked(microcode_patch);
+	}
 
-	/* Lock the SGX feature */
+	/* Lock the SGX feature on all threads. */
 	lock_sgx();
 
 	/* Activate the SGX feature, if PRMRR config was approved by MCHECK */

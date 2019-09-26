@@ -29,7 +29,6 @@ Look at the [flashing tutorial] and the board-specific section.
 
 These issues apply to all boards. Have a look at the board-specific issues, too.
 
-- Intel SGX causes secondary APs to crash (disabled for now) when HT is enabled (Fix is WIP CB:35312)
 - TianoCore doesn't work with Aspeed NGI, as it's text mode only (Fix is WIP CB:35726)
 
 ## ToDo

@@ -1,30 +1,45 @@
-FLASH@0x0 0x800000 {
-	WP_RO@0x0 0x200000 {
-		RO_SECTION@0x0 0x1f8000 {
-			BOOTBLOCK@0 32K
-			FMAP@0x8000 0x1000
-			COREBOOT(CBFS)@0x9000 0x1ec000
+# Firmware Layout Description for Chrome OS.
+#
+# The size and address of every section must be aligned to at least 4K, except:
+# RO_FRID, RW_FWID*, GBB, or any unused / padding / CBFS type sections.
+#
+# 'FMAP' may be found by binary search so its starting address should be better
+# aligned to larger values.
+#
+# For sections to be preserved on update, add (PRESERVE) to individual sections
+# instead of a group section; otherwise the preserved data may be wrong if you
+# resize or reorder sections inside a group.
+
+FLASH@0x0 8M {
+	WP_RO@0x0 4M {
+		RO_SECTION {
+			BOOTBLOCK 128K
+			FMAP 4K
+			COREBOOT(CBFS)
 			GBB 0x2f00
 			RO_FRID 0x100
 		}
-		RO_VPD(PRESERVE)@0x1f8000 0x8000
+		RO_VPD(PRESERVE) 32K  # At least 16K.
 	}
-	RW_SECTION_A@0x200000 0x7c000 {
-		VBLOCK_A@0x0 0x2000
-		FW_MAIN_A(CBFS) 0x79f00
+	RW_SECTION_A 1500K {
+		VBLOCK_A 8K
+		FW_MAIN_A(CBFS)
 		RW_FWID_A 0x100
 	}
-	RW_SHARED@0x27c000 0x1000 {
-		SHARED_DATA@0x0 0x1000
+	RW_MISC 36K {
+		RW_VPD(PRESERVE) 16K  # At least 8K.
+		RW_NVRAM(PRESERVE) 8K
+		RW_DDR_TRAINING(PRESERVE) 8K
+		RW_ELOG(PRESERVE) 4K  # ELOG driver hard-coded size in 4K.
 	}
-	RW_NVRAM(PRESERVE)@0x27d000 0x2000
-	# ELOG driver has hard-coded the size to 4k.
-	RW_ELOG(PRESERVE)@0x27f000 0x1000
-	RW_SECTION_B@0x280000 0x7c000 {
-		VBLOCK_B@0x0 0x2000
-		FW_MAIN_B(CBFS) 0x79f00
+	RW_SECTION_B 1500K {
+		VBLOCK_B 8K
+		FW_MAIN_B(CBFS)
 		RW_FWID_B 0x100
 	}
-	RW_VPD(PRESERVE)@0x2fc000 0x4000
-	RW_LEGACY(CBFS)@0x300000 0x100000
+	RW_SHARED 36K {  # Will be force updated on recovery.
+		SHARED_DATA 4K  # 4K or less for netboot params.
+		RW_UNUSED
+	}
+	RW_LEGACY(CBFS) 1M  # Minimal 1M.
 }

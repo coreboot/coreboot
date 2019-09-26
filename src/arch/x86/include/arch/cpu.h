@@ -158,6 +158,7 @@ static inline unsigned int cpuid_edx(unsigned int op)
 
 #define CPUID_FEATURE_PAE (1 << 6)
 #define CPUID_FEATURE_PSE36 (1 << 17)
+#define CPUID_FEAURE_HTT (1 << 28)
 
 // Intel leaf 0x4, AMD leaf 0x8000001d EAX
 

@@ -8,7 +8,6 @@ subdirs-y += ../../intel/turbo
 subdirs-y += ../../intel/microcode
 subdirs-y += ../../x86/smm
 subdirs-y += ../smm/gen1
-subdirs-y += ../common
 
 ramstage-y += acpi.c
 

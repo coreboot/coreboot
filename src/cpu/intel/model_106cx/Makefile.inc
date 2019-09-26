@@ -1,6 +1,5 @@
 ramstage-y += model_106cx_init.c
 subdirs-y += ../../x86/name
-subdirs-y += ../common
 subdirs-y += ../smm/gen1
 ramstage-$(CONFIG_PARALLEL_MP) += ../model_1067x/mp_init.c
 

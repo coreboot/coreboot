@@ -22,4 +22,7 @@ config SET_IA32_FC_LOCK_BIT
 config CPU_INTEL_COMMON_TIMEBASE
 	bool
 
+config CPU_INTEL_COMMON_HYPERTHREADING
+	bool
+
 endif

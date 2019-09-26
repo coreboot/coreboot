@@ -13,7 +13,6 @@
 
 ramstage-y += model_406dx_init.c
 subdirs-y += ../../x86/name
-subdirs-y += ../common
 
 subdirs-y += ../../x86/tsc
 subdirs-y += ../../x86/mtrr

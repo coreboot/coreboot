@@ -16,3 +16,5 @@ subdirs-$(CONFIG_NORTHBRIDGE_INTEL_HASWELL) += haswell
 subdirs-$(CONFIG_NORTHBRIDGE_INTEL_FSP_RANGELEY) += fsp_model_406dx
 subdirs-$(CONFIG_CPU_INTEL_SLOT_1) += slot_1
 subdirs-$(CONFIG_CPU_INTEL_SOCKET_LGA775) += socket_LGA775
+
+subdirs-y += common

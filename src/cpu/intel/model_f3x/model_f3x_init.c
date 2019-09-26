@@ -17,6 +17,7 @@
 #include <cpu/x86/lapic.h>
 #include <cpu/intel/microcode.h>
 #include <cpu/intel/hyperthreading.h>
+#include <cpu/intel/common/common.h>
 #include <cpu/x86/cache.h>
 
 static void model_f3x_init(struct device *cpu)

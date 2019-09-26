@@ -46,14 +46,6 @@
 #define PCR_PSFX_T0_SHDW_PCIEN	0x1C
 #define PCR_PSFX_T0_SHDW_PCIEN_FUNDIS	(1 << 8)
 
-static void disable_sideband_access(void)
-{
-	p2sb_disable_sideband_access();
-
-	/* hide p2sb device */
-	p2sb_hide();
-}
-
 static void pch_disable_heci(void)
 {
 	/* unhide p2sb device */
@@ -63,7 +55,7 @@ static void pch_disable_heci(void)
 	pcr_or32(PID_PSF1, PSF_BASE_ADDRESS + PCR_PSFX_T0_SHDW_PCIEN,
 		PCR_PSFX_T0_SHDW_PCIEN_FUNDIS);
 
-	disable_sideband_access();
+	p2sb_disable_sideband_access();
 }
 
 static void pch_finalize_script(struct device *dev)
@@ -113,6 +105,9 @@ static void pch_finalize_script(struct device *dev)
 	/* we should disable Heci1 based on the devicetree policy */
 	if (config->HeciEnabled == 0)
 		pch_disable_heci();
+
+	/* Hide p2sb device as the OS must not change BAR0. */
+	p2sb_hide();
 }
 
 static void soc_lockdown(struct device *dev)

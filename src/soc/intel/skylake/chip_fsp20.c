@@ -28,6 +28,7 @@
 #include <intelblocks/lpc_lib.h>
 #include <intelblocks/mp_init.h>
 #include <intelblocks/xdci.h>
+#include <intelblocks/p2sb.h>
 #include <intelpch/lockdown.h>
 #include <romstage_handoff.h>
 #include <soc/acpi.h>
@@ -174,6 +175,13 @@ void soc_init_pre_device(void *chip_info)
 
 	/* Perform silicon specific init. */
 	fsp_silicon_init(romstage_handoff_is_resume());
+
+	/*
+	 * Keep the P2SB device visible so it and the other devices are
+	 * visible in coreboot for driver support and PCI resource allocation.
+	 * There is no UPD setting for this.
+	 */
+	p2sb_unhide();
 
 	/* Restore GPIO IRQ polarities back to previous settings. */
 	itss_restore_irq_polarities(GPIO_IRQ_START, GPIO_IRQ_END);

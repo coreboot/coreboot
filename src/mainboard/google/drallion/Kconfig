@@ -91,7 +91,7 @@ config MAX_CPUS
 
 config UART_FOR_CONSOLE
 	int
-	default 2
+	default 0
 
 config VARIANT_DIR
 	string

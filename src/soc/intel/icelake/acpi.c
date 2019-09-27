@@ -138,7 +138,7 @@ acpi_cstate_t *soc_get_cstate_map(size_t *entries)
 	int *set;
 	int i;
 
-	config_t *config = config_of_path(SA_DEVFN_ROOT);
+	config_t *config = config_of_soc();
 
 	int is_s0ix_enable = config->s0ix_enable;
 
@@ -159,7 +159,7 @@ acpi_cstate_t *soc_get_cstate_map(size_t *entries)
 
 void soc_power_states_generation(int core_id, int cores_per_package)
 {
-	config_t *config = config_of_path(SA_DEVFN_ROOT);
+	config_t *config = config_of_soc();
 
 	if (config->eist_enable)
 		/* Generate P-state tables */
@@ -170,7 +170,7 @@ void soc_fill_fadt(acpi_fadt_t *fadt)
 {
 	const uint16_t pmbase = ACPI_BASE_ADDRESS;
 
-	config_t *config = config_of_path(SA_DEVFN_ROOT);
+	config_t *config = config_of_soc();
 
 	if (!config->PmTimerDisabled) {
 		fadt->pm_tmr_blk = pmbase + PM1_TMR;
@@ -194,7 +194,7 @@ uint32_t soc_read_sci_irq_select(void)
 
 void acpi_create_gnvs(struct global_nvs_t *gnvs)
 {
-	config_t *config = config_of_path(SA_DEVFN_ROOT);
+	config_t *config = config_of_soc();
 
 	/* Set unknown wake source */
 	gnvs->pm1i = -1;

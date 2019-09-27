@@ -43,7 +43,7 @@ void soc_pre_ram_init(struct romstage_params *params)
 	/* Program MCHBAR and DMIBAR */
 	systemagent_early_init();
 
-	config = config_of_path(PCH_DEVFN_LPC);
+	config = config_of_soc();
 
 	/* Force a full memory train if RMT is enabled */
 	params->disable_saved_data = config->Rmt;
@@ -57,7 +57,7 @@ void soc_memory_init_params(struct romstage_params *params,
 
 	/* Set the parameters for MemoryInit */
 
-	config = config_of_path(PCH_DEVFN_LPC);
+	config = config_of_soc();
 
 	/*
 	 * Set IGD stolen size to 64MB.  The FBC hardware for skylake does not

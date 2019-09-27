@@ -90,7 +90,7 @@ acpi_cstate_t *soc_get_cstate_map(size_t *entries)
 void acpi_create_gnvs(struct global_nvs_t *gnvs)
 {
 	struct soc_intel_apollolake_config *cfg;
-	cfg = config_of_path(SA_DEVFN_ROOT);
+	cfg = config_of_soc();
 
 	/* Clear out GNVS. */
 	memset(gnvs, 0, sizeof(*gnvs));
@@ -152,7 +152,7 @@ int soc_madt_sci_irq_polarity(int sci)
 void soc_fill_fadt(acpi_fadt_t *fadt)
 {
 	const struct soc_intel_apollolake_config *cfg;
-	cfg = config_of_path(SA_DEVFN_ROOT);
+	cfg = config_of_soc();
 
 	fadt->pm_tmr_blk = ACPI_BASE_ADDRESS + PM1_TMR;
 

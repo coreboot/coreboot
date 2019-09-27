@@ -83,7 +83,7 @@ static void pch_finalize(void)
 	 * point and hence removed from the root bus. pcidev_path_on_root thus
 	 * returns NULL for PCH_DEV_PMC device.
 	 */
-	config = config_of_path(SA_DEVFN_ROOT);
+	config = config_of_soc();
 	pmcbase = pmc_mmio_regs();
 	if (config->PmTimerDisabled) {
 		reg8 = read8(pmcbase + PCH_PWRM_ACPI_TMR_CTL);

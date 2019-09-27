@@ -79,7 +79,7 @@ void smihandler_soc_at_finalize(void)
 {
 	const struct soc_intel_cannonlake_config *config;
 
-	config = config_of_path(PCH_DEVFN_CSE);
+	config = config_of_soc();
 
 	if (!config->HeciEnabled && CONFIG(HECI_DISABLE_USING_SMM))
 		pch_disable_heci();

@@ -39,7 +39,7 @@ static void pnp_settings(void *unused)
 	const struct pnpconfig *pnpconfigarr;
 	struct soc_intel_apollolake_config *config;
 
-	config = config_of_path(SA_DEVFN_ROOT);
+	config = config_of_soc();
 
 	switch (config->pnp_settings) {
 	case PNP_PERF:

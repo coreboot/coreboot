@@ -170,7 +170,7 @@ void cnl_configure_pads(const struct pad_config *cfg, size_t num_pads)
 static void soc_fill_gpio_pm_configuration(void)
 {
 	uint8_t value[TOTAL_GPIO_COMM];
-	const config_t *config = config_of_path(SA_DEVFN_ROOT);
+	const config_t *config = config_of_soc();
 
 	if (config->gpio_override_pm)
 		memcpy(value, config->gpio_pm, sizeof(uint8_t) *

@@ -175,7 +175,7 @@ uintptr_t soc_read_pmc_base(void)
 void soc_get_gpi_gpe_configs(uint8_t *dw0, uint8_t *dw1, uint8_t *dw2)
 {
 	DEVTREE_CONST struct soc_intel_cannonlake_config *config;
-	config = config_of_path(SA_DEVFN_ROOT);
+	config = config_of_soc();
 
 	/* Assign to out variable */
 	*dw0 = config->gpe0_dw0;

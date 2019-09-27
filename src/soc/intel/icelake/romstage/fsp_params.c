@@ -79,7 +79,7 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	const struct soc_intel_icelake_config *config;
 	FSP_M_CONFIG *m_cfg = &mupd->FspmConfig;
 
-	config = config_of_path(SA_DEVFN_ROOT);
+	config = config_of_soc();
 
 	soc_memory_init_params(m_cfg, config);
 

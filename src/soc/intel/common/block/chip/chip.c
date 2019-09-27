@@ -22,7 +22,7 @@ const struct soc_intel_common_config *chip_get_common_soc_structure(void)
 	const struct soc_intel_common_config *soc_config;
 	const config_t *config;
 
-	config = config_of_path(SA_DEVFN_ROOT);
+	config = config_of_soc();
 	soc_config = &config->common_soc_config;
 
 	return soc_config;

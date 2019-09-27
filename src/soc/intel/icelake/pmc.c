@@ -84,7 +84,7 @@ static void config_deep_sx(uint32_t deepsx_config)
 
 static void pmc_init(void *unused)
 {
-	const config_t *config = config_of_path(SA_DEVFN_ROOT);
+	const config_t *config = config_of_soc();
 
 	rtc_init();
 

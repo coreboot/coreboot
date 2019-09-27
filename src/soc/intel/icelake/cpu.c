@@ -40,7 +40,7 @@ static void soc_fsp_load(void)
 
 static void configure_isst(void)
 {
-	config_t *conf = config_of_path(SA_DEVFN_ROOT);
+	config_t *conf = config_of_soc();
 	msr_t msr;
 
 	if (conf->speed_shift_enable) {
@@ -67,7 +67,7 @@ static void configure_misc(void)
 {
 	msr_t msr;
 
-	config_t *conf = config_of_path(SA_DEVFN_ROOT);
+	config_t *conf = config_of_soc();
 
 	msr = rdmsr(IA32_MISC_ENABLE);
 	msr.lo |= (1 << 0);	/* Fast String enable */

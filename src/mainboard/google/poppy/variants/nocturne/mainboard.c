@@ -40,7 +40,7 @@ static uint32_t get_pl2(void)
 /* Override dev tree settings per board */
 void variant_devtree_update(void)
 {
-	config_t *cfg = config_of_path(SA_DEVFN_ROOT);
+	config_t *cfg = config_of_soc();
 
 	/* Update PL2 based on CPU */
 	cfg->tdp_pl2_override = get_pl2();

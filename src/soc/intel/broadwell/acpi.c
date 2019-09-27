@@ -390,7 +390,7 @@ static void generate_C_state_entries(void)
 	int *set;
 	int i;
 
-	config_t *config = config_of_path(SA_DEVFN_ROOT);
+	config_t *config = config_of_soc();
 
 	if (config->s0ix_enable)
 		set = cstate_set_s0ix;

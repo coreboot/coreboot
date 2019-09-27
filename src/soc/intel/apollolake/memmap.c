@@ -35,7 +35,7 @@ void *cbmem_top(void)
 	if (!CONFIG(SOC_INTEL_GLK))
 		return tolum;
 
-	config = config_of_path(PCH_DEVFN_LPC);
+	config = config_of_soc();
 
 	/* FSP allocates 2x PRMRR Size Memory for alignment */
 	if (config->sgx_enable)

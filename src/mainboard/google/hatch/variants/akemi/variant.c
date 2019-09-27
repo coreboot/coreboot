@@ -23,7 +23,7 @@ void variant_devtree_update(void)
 	uint32_t sku_id;
 	struct device *emmc_host;
 	struct device *ssd_host;
-	config_t *cfg = config_of_path(SA_DEVFN_ROOT);
+	config_t *cfg = config_of_soc();
 	emmc_host = pcidev_path_on_root(PCH_DEVFN_EMMC);
 	ssd_host = pcidev_path_on_root(PCH_DEVFN_SATA);
 

@@ -237,7 +237,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	uintptr_t vbt_data = (uintptr_t)vbt_get();
 	int i;
 
-	config = config_of_path(SA_DEVFN_ROOT);
+	config = config_of_soc();
 
 	mainboard_silicon_init_params(params);
 	/* Set PsysPmax if it is available from DT */

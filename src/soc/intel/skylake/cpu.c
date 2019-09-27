@@ -117,7 +117,7 @@ void set_power_limits(u8 power_limit_1_time)
 	unsigned int tdp, min_power, max_power, max_time, tdp_pl2, tdp_pl1;
 	u8 power_limit_1_val;
 
-	config_t *conf = config_of_path(SA_DEVFN_ROOT);
+	config_t *conf = config_of_soc();
 
 	if (power_limit_1_time >= ARRAY_SIZE(power_limit_time_sec_to_msr))
 		power_limit_1_time = ARRAY_SIZE(power_limit_time_sec_to_msr) - 1;
@@ -240,7 +240,7 @@ void set_power_limits(u8 power_limit_1_time)
 
 static void configure_thermal_target(void)
 {
-	config_t *conf = config_of_path(SA_DEVFN_ROOT);
+	config_t *conf = config_of_soc();
 	msr_t msr;
 
 
@@ -260,7 +260,7 @@ static void configure_thermal_target(void)
 
 static void configure_isst(void)
 {
-	config_t *conf = config_of_path(SA_DEVFN_ROOT);
+	config_t *conf = config_of_soc();
 	msr_t msr;
 
 
@@ -286,7 +286,7 @@ static void configure_isst(void)
 
 static void configure_misc(void)
 {
-	config_t *conf = config_of_path(SA_DEVFN_ROOT);
+	config_t *conf = config_of_soc();
 	msr_t msr;
 
 
@@ -562,7 +562,7 @@ void cpu_lock_sgx_memory(void)
 
 int soc_fill_sgx_param(struct sgx_param *sgx_param)
 {
-	config_t *conf = config_of_path(SA_DEVFN_ROOT);
+	config_t *conf = config_of_soc();
 
 	sgx_param->enable = conf->sgx_enable;
 	return 0;

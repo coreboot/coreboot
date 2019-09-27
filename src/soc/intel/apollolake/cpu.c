@@ -296,7 +296,7 @@ void cpu_lock_sgx_memory(void)
 
 int soc_fill_sgx_param(struct sgx_param *sgx_param)
 {
-	config_t *conf = config_of_path(SA_DEVFN_ROOT);
+	config_t *conf = config_of_soc();
 
 	sgx_param->enable = conf->sgx_enable;
 	return 0;

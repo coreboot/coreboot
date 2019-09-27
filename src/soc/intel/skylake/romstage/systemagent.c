@@ -29,7 +29,7 @@ static void systemagent_vtd_init(void)
 	const struct device *const igd_dev = pcidev_path_on_root(SA_DEVFN_IGD);
 	const struct soc_intel_skylake_config *config = NULL;
 
-	config = config_of_path(SA_DEVFN_ROOT);
+	config = config_of_soc();
 	if (config->ignore_vtd)
 		return;
 

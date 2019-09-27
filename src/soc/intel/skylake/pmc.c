@@ -188,7 +188,7 @@ BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_LOAD, BS_ON_EXIT, pm1_enable_pwrbtn_smi, NULL);
  */
 static void pm1_handle_wake_pin(void *unused)
 {
-	const config_t *conf = config_of_path(SA_DEVFN_ROOT);
+	const config_t *conf = config_of_soc();
 
 	/* If WAKE# pin is enabled, bail out early. */
 	if (conf->deep_sx_config & DSX_EN_WAKE_PIN)

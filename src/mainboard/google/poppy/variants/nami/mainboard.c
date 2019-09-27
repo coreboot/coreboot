@@ -241,7 +241,7 @@ void variant_devtree_update(void)
 	uint8_t pl2_id = PL2_ID_DEFAULT;
 	struct device *spi_fpmcu = PCH_DEV_GSPI1;
 
-	config_t *cfg = config_of_path(SA_DEVFN_ROOT);
+	config_t *cfg = config_of_soc();
 
 	switch (sku_id) {
 	case SKU_0_SONA:

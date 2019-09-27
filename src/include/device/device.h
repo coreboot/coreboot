@@ -321,16 +321,9 @@ static inline DEVTREE_CONST void *config_of(const struct device *dev)
 	devtree_die();
 }
 
-static inline DEVTREE_CONST void *config_of_path(pci_devfn_t devfn)
+static inline DEVTREE_CONST void *config_of_soc(void)
 {
-	const struct device *dev = pcidev_path_on_root(devfn);
-	if (dev)
-		return config_of(dev);
-
-	devtree_bug(__func__, devfn);
-
-	dev = dev_find_slot(0, devfn);
-	return config_of(dev);
+	return config_of(pcidev_on_root(0, 0));
 }
 
 void scan_smbus(struct device *bus);

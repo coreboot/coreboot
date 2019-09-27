@@ -99,7 +99,7 @@ static void parse_devicetree_param(const config_t *config, FSP_S_CONFIG *params)
 
 static void parse_devicetree(FSP_S_CONFIG *params)
 {
-	const config_t *config = config_of_path(SA_DEVFN_ROOT);
+	const config_t *config = config_of_soc();
 
 	parse_devicetree_param(config, params);
 }
@@ -145,7 +145,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	FSP_S_TEST_CONFIG *tconfig = &supd->FspsTestConfig;
 	struct device *dev;
 
-	config_t *config = config_of_path(SA_DEVFN_ROOT);
+	config_t *config = config_of_soc();
 
 	/* Parse device tree and enable/disable devices */
 	parse_devicetree(params);

@@ -44,7 +44,7 @@ void variant_devtree_update(void)
 	uint16_t abase;
 	uint32_t val32;
 
-	config_t *cfg = config_of_path(SA_DEVFN_ROOT);
+	config_t *cfg = config_of_soc();
 
 	switch (sku_id) {
 	case SKU_0_NAUTILUS:

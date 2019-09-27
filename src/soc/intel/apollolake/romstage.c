@@ -95,7 +95,7 @@ static void soc_early_romstage_init(void)
 static void configure_thermal_target(void)
 {
 	msr_t msr;
-	const config_t *conf = config_of_path(SA_DEVFN_ROOT);
+	const config_t *conf = config_of_soc();
 
 	if (!conf->tcc_offset)
 		return;
@@ -269,7 +269,7 @@ static void soc_memory_init_params(FSPM_UPD *mupd)
 	/* Only for GLK */
 	FSP_M_CONFIG *m_cfg = &mupd->FspmConfig;
 
-	const config_t *config = config_of_path(PCH_DEVFN_LPC);
+	const config_t *config = config_of_soc();
 
 	m_cfg->PrmrrSize = config->PrmrrSize;
 

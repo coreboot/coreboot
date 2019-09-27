@@ -31,7 +31,7 @@
 static void parse_devicetree(FSP_S_CONFIG *params)
 {
 	const struct soc_intel_icelake_config *config;
-	config = config_of_path(SA_DEVFN_ROOT);
+	config = config_of_soc();
 
 	for (int i = 0; i < CONFIG_SOC_INTEL_I2C_DEV_MAX; i++)
 		params->SerialIoI2cMode[i] = config->SerialIoI2cMode[i];
@@ -69,7 +69,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 
 	struct device *dev;
 	struct soc_intel_icelake_config *config;
-	config = config_of_path(SA_DEVFN_ROOT);
+	config = config_of_soc();
 
 	/* Parse device tree and enable/disable devices */
 	parse_devicetree(params);

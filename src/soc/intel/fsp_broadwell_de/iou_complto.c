@@ -24,7 +24,7 @@
 static void iou_init(struct device *dev)
 {
 	/* Use config from device always present in static devicetree. */
-	const config_t *config = config_of_path(SOC_DEV_FUNC);
+	const config_t *config = config_of_soc();
 	u16 devctl2;
 
 	/* pcie completion timeout

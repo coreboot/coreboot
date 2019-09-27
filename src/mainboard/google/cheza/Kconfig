@@ -47,9 +47,4 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "Cheza" if BOARD_GOOGLE_CHEZA
 
-config GBB_HWID
-	string
-	depends on CHROMEOS
-	default "CHEZA TEST 1859" if BOARD_GOOGLE_CHEZA
-
 endif # BOARD_GOOGLE_CHEZA_COMMON

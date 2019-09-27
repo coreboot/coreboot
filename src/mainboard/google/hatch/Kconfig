@@ -69,16 +69,6 @@ config FMDFILE
 	default "src/mainboard/$(CONFIG_MAINBOARD_DIR)/chromeos-16MiB.fmd" if BOARD_ROMSIZE_KB_16384
 	default "src/mainboard/$(CONFIG_MAINBOARD_DIR)/chromeos.fmd" if BOARD_ROMSIZE_KB_32768
 
-config GBB_HWID
-	string
-	depends on CHROMEOS
-	default "AKEMI TEST 4326" if BOARD_GOOGLE_AKEMI
-	default "DRATINI TEST 4583" if BOARD_GOOGLE_DRATINI
-	default "HATCH TEST 1823" if BOARD_GOOGLE_HATCH
-	default "HELIOS TEST 0878" if BOARD_GOOGLE_HELIOS
-	default "KINDRED TEST 2636" if BOARD_GOOGLE_KINDRED
-	default "KOHAKU TEST 1953" if BOARD_GOOGLE_KOHAKU
-
 config MAINBOARD_DIR
 	string
 	default "google/hatch"

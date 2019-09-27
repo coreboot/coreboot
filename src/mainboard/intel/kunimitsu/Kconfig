@@ -69,11 +69,6 @@ config INCLUDE_NHLT_BLOBS
 	select NHLT_NAU88L25
 	select NHLT_SSM4567
 
-config GBB_HWID
-	string
-	depends on CHROMEOS
-	default "KUNIMITSU TEST 8819"
-
 config UART_FOR_CONSOLE
 	int
 	default 2

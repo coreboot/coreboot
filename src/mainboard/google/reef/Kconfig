@@ -81,16 +81,6 @@ config MAINBOARD_FAMILY
 	default "Google_Coral" if BOARD_GOOGLE_CORAL
 	default "Google_Reef"
 
-config GBB_HWID
-	string
-	depends on CHROMEOS
-	default "REEF TEST 3240" if BOARD_GOOGLE_REEF
-	default "PYRO TEST 0290" if BOARD_GOOGLE_PYRO
-	default "SAND TEST 1904" if BOARD_GOOGLE_SAND
-	default "SNAPPY TEST 1088" if BOARD_GOOGLE_SNAPPY
-	default "NASHER TEST 4258" if BOARD_GOOGLE_NASHER
-	default "CORAL TEST 8594" if BOARD_GOOGLE_CORAL
-
 config MAX_CPUS
 	int
 	default 8

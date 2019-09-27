@@ -47,14 +47,6 @@ config MAINBOARD_FAMILY
 	string
 	default "Google_Slippy"
 
-config GBB_HWID
-	string
-	depends on CHROMEOS
-	default "X86 FALCO TEST 0289" if BOARD_GOOGLE_FALCO
-	default "X86 LEON TEST 5181" if BOARD_GOOGLE_LEON
-	default "X86 PEPPY TEST 4211" if BOARD_GOOGLE_PEPPY
-	default "X86 WOLF TEST 6457" if BOARD_GOOGLE_WOLF
-
 config DEVICETREE
 	string
 	default "variants/$(CONFIG_VARIANT_DIR)/devicetree.cb"

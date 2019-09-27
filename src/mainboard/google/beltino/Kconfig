@@ -42,15 +42,6 @@ config MAINBOARD_FAMILY
 	string
 	default "Google_Beltino"
 
-config GBB_HWID
-	string
-	depends on CHROMEOS
-	default "X86 MCCLOUD TEST 5268" if BOARD_GOOGLE_MCCLOUD
-	default "X86 MONROE TEST 9962" if BOARD_GOOGLE_MONROE
-	default "X86 PANTHER TEST 6287" if BOARD_GOOGLE_PANTHER
-	default "X86 TRICKY TEST 4487" if BOARD_GOOGLE_TRICKY
-	default "X86 ZAKO TEST 8602" if BOARD_GOOGLE_ZAKO
-
 config MAX_CPUS
 	int
 	default 8

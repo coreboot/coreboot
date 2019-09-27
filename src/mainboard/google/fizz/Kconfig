@@ -44,12 +44,6 @@ config VBOOT
 config DRIVER_TPM_SPI_BUS
 	default 0x1
 
-config GBB_HWID
-	string
-	depends on CHROMEOS
-	default "FIZZ TEST 5997" if BOARD_GOOGLE_FIZZ
-	default "KARMA TEST 5022" if BOARD_GOOGLE_KARMA
-
 config MAINBOARD_DIR
 	string
 	default "google/fizz"

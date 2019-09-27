@@ -93,21 +93,6 @@ config VGA_BIOS_ID
 	  The VGA_BIOS_ID for the C0 version of the video bios is hardcoded
 	  in soc/intel/braswell/Makefile.inc as 8086,22b1
 
-config GBB_HWID
-	string
-	depends on CHROMEOS
-	default "BANON TEST A-A 8050" if BOARD_GOOGLE_BANON
-	default "CELES TEST A-A 5441" if BOARD_GOOGLE_CELES
-	default "CYAN TEST A-A 1829" if BOARD_GOOGLE_CYAN
-	default "EDGAR TEST A-A 2507" if BOARD_GOOGLE_EDGAR
-	default "KEFKA TEST A-A 5397" if BOARD_GOOGLE_KEFKA
-	default "REKS TEST A-A 3004" if BOARD_GOOGLE_REKS
-	default "RELM TEST A-A 2323" if BOARD_GOOGLE_RELM
-	default "SETZER TEST A-A 8721" if BOARD_GOOGLE_SETZER
-	default "TERRA TEST A-A 1650" if BOARD_GOOGLE_TERRA
-	default "ULTIMA TEST A-A 6017" if BOARD_GOOGLE_ULTIMA
-	default "WIZPIG TEST A-A 0597" if BOARD_GOOGLE_WIZPIG
-
 config CBFS_SIZE
 	hex
 	default 0x200000

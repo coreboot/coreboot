@@ -51,11 +51,6 @@ config TPM_PIRQ
 	hex
 	default 0x18  # GPP_E0_IRQ
 
-config GBB_HWID
-	string
-	depends on CHROMEOS
-	default "KBLRVP TEST 8819"
-
 config DEVICETREE
 	string
 	default "variants/baseboard/devicetree.cb"

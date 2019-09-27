@@ -37,14 +37,6 @@ config MAINBOARD_PART_NUMBER
 	default "Rikku" if BOARD_GOOGLE_RIKKU
 	default "Tidus" if BOARD_GOOGLE_TIDUS
 
-config GBB_HWID
-	string
-	depends on CHROMEOS
-	default "GUADO TEST A-A 7416" if BOARD_GOOGLE_GUADO
-	default "JECHT TEST A-A 8958" if BOARD_GOOGLE_JECHT
-	default "RIKKU TEST A-A 0702" if BOARD_GOOGLE_RIKKU
-	default "TIDUS TEST A-A 0595" if BOARD_GOOGLE_TIDUS
-
 config MAX_CPUS
 	int
 	default 8

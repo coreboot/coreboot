@@ -45,16 +45,6 @@ config MAINBOARD_PART_NUMBER
 	default "Lulu" if BOARD_GOOGLE_LULU
 	default "Samus" if BOARD_GOOGLE_SAMUS
 
-config GBB_HWID
-	string
-	depends on CHROMEOS
-	default "PAINE TEST A-A 8843" if BOARD_GOOGLE_AURON_PAINE
-	default "YUNA TEST A-A 3347" if BOARD_GOOGLE_AURON_YUNA
-	default "BUDDY TEST A-A 6186" if BOARD_GOOGLE_BUDDY
-	default "GANDOF TEST A-A 7705" if BOARD_GOOGLE_GANDOF
-	default "LULU TEST A-A 7705" if BOARD_GOOGLE_LULU
-	default "SAMUS TEST 8028" if BOARD_GOOGLE_SAMUS
-
 config DEVICETREE
 	string
 	default "variants/$(CONFIG_VARIANT_DIR)/devicetree.cb"

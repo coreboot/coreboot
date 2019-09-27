@@ -52,9 +52,4 @@ config CONSOLE_SERIAL_UART_ADDRESS
 config BOOT_DEVICE_SPI_FLASH_BUS
 	int
 	default 1
-
-config GBB_HWID
-	string
-	depends on CHROMEOS
-	default "Urara TEST 1"
 endif

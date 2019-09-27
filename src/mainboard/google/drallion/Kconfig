@@ -58,13 +58,6 @@ config POWER_OFF_ON_CR50_UPDATE
 	bool
 	default n
 
-config GBB_HWID
-	string
-	depends on CHROMEOS
-	default "ARCADACML TEST 2699" if BOARD_GOOGLE_ARCADA_CML
-	default "SARIENCML TEST 3111" if BOARD_GOOGLE_SARIEN_CML
-	default "DRALLION TEST 4932" if BOARD_GOOGLE_DRALLION
-
 config MAINBOARD_DIR
 	string
 	default "google/drallion"

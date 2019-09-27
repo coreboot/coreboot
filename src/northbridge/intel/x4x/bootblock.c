@@ -16,7 +16,10 @@
 
 #include <device/pci_ops.h>
 #include "iomap.h"
-#include "x4x.h"
+
+/* Just re-define these instead of including x4x.h. It blows up romcc. */
+#define D0F0_PCIEXBAR_LO 0x60
+#define D0F0_PCIEXBAR_HI 0x64
 
 static void bootblock_northbridge_init(void)
 {

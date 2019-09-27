@@ -178,7 +178,7 @@ void pci_update_config32(const struct device *dev, u16 reg, u32 mask, u32 or)
 u16 pci_s_find_next_capability(pci_devfn_t dev, u16 cap, u16 last);
 u16 pci_s_find_capability(pci_devfn_t dev, u16 cap);
 
-#ifndef __SIMPLE_DEVICE__
+#ifndef __ROMCC__
 static __always_inline
 u16 pci_find_next_capability(const struct device *dev, u16 cap, u16 last)
 {

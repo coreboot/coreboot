@@ -26,3 +26,19 @@ $ ./crosfirmware.sh panther
 
 Right now it will produce the ME firmware blob, IFD, VGA option rom,
 and `mrc.bin`.
+
+## gen_test_hwid.sh
+
+`gen_test_hwid.sh` generates a test-only identifier in Chrome OS HWID v2
+compatible format.
+
+Usage:
+```
+$ ./gen_test_hwid.sh BOARD_NAME
+```
+
+Example:
+```
+$ ./gen_test_hwid.sh Kukui
+KUKUI TEST 9847
+```

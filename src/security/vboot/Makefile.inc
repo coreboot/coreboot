@@ -239,6 +239,11 @@ $(obj)/gbb.stub: $(obj)/coreboot.rom $(FUTILITY)
 	mv $@.tmp $@
 endif
 
+# Generate a test-only HWID
+ifeq ($(CONFIG_GBB_HWID),)
+CONFIG_GBB_HWID := $$($(top)/util/chromeos/gen_test_hwid.sh "$(CONFIG_MAINBOARD_PART_NUMBER)")
+endif
+
 $(obj)/gbb.region: $(obj)/gbb.stub
 	@printf "    SETUP GBB\n"
 	cp $< $@.tmp

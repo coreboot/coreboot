@@ -228,7 +228,12 @@ menu "GBB configuration"
 
 config GBB_HWID
 	string "Hardware ID"
-	default "NOCONF HWID"
+	default ""
+	help
+	  A hardware identifier for device. On Chrome OS this is used for auto
+	  update and recovery, and will be generated when manufacturing by the
+	  factory software, in a strictly defined format.
+	  Leave empty to get a test-only Chrome OS HWID v2 string generated.
 
 config GBB_BMPFV_FILE
 	string "Path to bmpfv image"

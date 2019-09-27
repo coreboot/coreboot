@@ -39,10 +39,6 @@ uint64_t get_uma_memory_base(void);
 /* We use these throughout the code. They really belong in a generic part of
  * coreboot, but until bureaucracy gets them there, we still need them  */
 
-#ifdef __SIMPLE_DEVICE__
 void dump_pci_device(pci_devfn_t dev);
-#else
-void dump_pci_device(struct device *dev);
-#endif
 
 #endif				/* __VX900_H */

@@ -180,7 +180,7 @@ static void vx900_lpc_init(struct device *dev)
 {
 	vx900_lpc_interrupt_stuff(dev);
 	vx900_lpc_misc_stuff(dev);
-	dump_pci_device(dev);
+	dump_pci_device(PCI_BDF(dev));
 }
 
 static void vx900_lpc_read_resources(struct device *dev)

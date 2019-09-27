@@ -240,7 +240,7 @@ static void chrome9hd_init(struct device *dev)
 
 	printk(BIOS_DEBUG, "Enable VGA console\n");
 
-	dump_pci_device(dev);
+	dump_pci_device(PCI_BDF(dev));
 }
 
 static void chrome9hd_enable(struct device *dev)

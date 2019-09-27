@@ -19,11 +19,7 @@
 
 #include "vx900.h"
 
-#ifdef __SIMPLE_DEVICE__
 void dump_pci_device(pci_devfn_t dev)
-#else
-void dump_pci_device(struct device *dev)
-#endif
 {
 	int i;
 	for (i = 0; i <= 0xff; i++) {
@@ -34,7 +30,7 @@ void dump_pci_device(struct device *dev)
 		if ((i & 0x0f) == 0x08)
 			printk(BIOS_DEBUG, " |");
 
-		val = pci_read_config8(dev, i);
+		val = pci_s_read_config8(dev, i);
 		printk(BIOS_DEBUG, " %.2x", val);
 
 		if ((i & 0x0f) == 0x0f)

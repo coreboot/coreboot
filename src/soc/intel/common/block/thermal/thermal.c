@@ -15,7 +15,7 @@
 
 #include <console/console.h>
 #include <device/mmio.h>
-#include <intelblocks/chip.h>
+#include <intelblocks/cfg.h>
 #include <intelblocks/thermal.h>
 #include <soc/pci_devs.h>
 

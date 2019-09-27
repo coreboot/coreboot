@@ -21,7 +21,7 @@
 #include <device/device.h>
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
-#include <intelblocks/chip.h>
+#include <intelblocks/cfg.h>
 #include <intelblocks/gspi.h>
 #include <intelblocks/lpss.h>
 #include <intelblocks/spi.h>

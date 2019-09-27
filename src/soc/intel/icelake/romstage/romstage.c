@@ -17,7 +17,7 @@
 #include <cbmem.h>
 #include <console/console.h>
 #include <fsp/util.h>
-#include <intelblocks/chip.h>
+#include <intelblocks/cfg.h>
 #include <intelblocks/cse.h>
 #include <intelblocks/pmclib.h>
 #include <memory_info.h>

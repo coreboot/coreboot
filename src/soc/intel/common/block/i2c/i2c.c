@@ -21,7 +21,7 @@
 #include <device/pci_def.h>
 #include <device/pci_ids.h>
 #include <drivers/i2c/designware/dw_i2c.h>
-#include <intelblocks/chip.h>
+#include <intelblocks/cfg.h>
 #include <intelblocks/lpss.h>
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>

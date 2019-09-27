@@ -16,7 +16,7 @@
 #ifndef _SOC_CHIP_H_
 #define _SOC_CHIP_H_
 
-#include <intelblocks/chip.h>
+#include <intelblocks/cfg.h>
 #include <drivers/i2c/designware/dw_i2c.h>
 #include <intelblocks/gpio.h>
 #include <intelblocks/gspi.h>

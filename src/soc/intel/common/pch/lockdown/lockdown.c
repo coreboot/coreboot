@@ -14,7 +14,7 @@
  */
 
 #include <bootstate.h>
-#include <intelblocks/chip.h>
+#include <intelblocks/cfg.h>
 #include <intelblocks/fast_spi.h>
 #include <intelblocks/pcr.h>
 #include <intelpch/lockdown.h>

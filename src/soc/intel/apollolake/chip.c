@@ -28,7 +28,7 @@
 #include <device/pci.h>
 #include <device/pci_ops.h>
 #include <intelblocks/acpi.h>
-#include <intelblocks/chip.h>
+#include <intelblocks/cfg.h>
 #include <intelblocks/fast_spi.h>
 #include <intelblocks/msr.h>
 #include <intelblocks/p2sb.h>

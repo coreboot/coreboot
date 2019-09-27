@@ -16,7 +16,7 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <console/console.h>
-#include <intelblocks/chip.h>
+#include <intelblocks/cfg.h>
 #include <intelblocks/mmc.h>
 
 static int mmc_write_dll_reg(void *bar, uint32_t reg, uint32_t val)

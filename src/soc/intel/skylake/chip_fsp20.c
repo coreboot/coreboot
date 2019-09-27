@@ -23,7 +23,7 @@
 #include <device/device.h>
 #include <device/pci_ids.h>
 #include <fsp/util.h>
-#include <intelblocks/chip.h>
+#include <intelblocks/cfg.h>
 #include <intelblocks/itss.h>
 #include <intelblocks/lpc_lib.h>
 #include <intelblocks/mp_init.h>

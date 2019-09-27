@@ -13,8 +13,8 @@
  * GNU General Public License for more details.
  */
 
-#ifndef SOC_INTEL_COMMON_BLOCK_CHIP_H
-#define SOC_INTEL_COMMON_BLOCK_CHIP_H
+#ifndef SOC_INTEL_COMMON_BLOCK_CFG_H
+#define SOC_INTEL_COMMON_BLOCK_CFG_H
 
 #include <intelblocks/gspi.h>
 #include <drivers/i2c/designware/dw_i2c.h>
@@ -42,4 +42,4 @@ struct soc_intel_common_config {
 /* This function to retrieve soc config structure required by common code */
 const struct soc_intel_common_config *chip_get_common_soc_structure(void);
 
-#endif /* SOC_INTEL_COMMON_BLOCK_CHIP_H */
+#endif /* SOC_INTEL_COMMON_BLOCK_CFG_H */

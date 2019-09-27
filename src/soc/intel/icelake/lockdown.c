@@ -14,7 +14,7 @@
  */
 
 #include <device/mmio.h>
-#include <intelblocks/chip.h>
+#include <intelblocks/cfg.h>
 #include <intelpch/lockdown.h>
 #include <soc/pm.h>
 

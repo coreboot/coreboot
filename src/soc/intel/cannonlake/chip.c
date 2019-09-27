@@ -18,7 +18,7 @@
 #include <fsp/api.h>
 #include <fsp/util.h>
 #include <intelblocks/acpi.h>
-#include <intelblocks/chip.h>
+#include <intelblocks/cfg.h>
 #include <intelblocks/itss.h>
 #include <intelblocks/xdci.h>
 #include <romstage_handoff.h>

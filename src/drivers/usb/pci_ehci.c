@@ -33,45 +33,39 @@ static struct device_operations ehci_dbg_ops;
 
 int ehci_debug_hw_enable(unsigned int *base, unsigned int *dbg_offset)
 {
-	pci_devfn_t dbg_dev = pci_ehci_dbg_dev(CONFIG_USBDEBUG_HCD_INDEX);
+	pci_devfn_t dev = pci_ehci_dbg_dev(CONFIG_USBDEBUG_HCD_INDEX);
 
 	/* We only support controllers on bus 0. */
-	if (PCI_DEV2SEGBUS(dbg_dev) != 0)
+	if (PCI_DEV2SEGBUS(dev) != 0)
 		return -1;
 
-#ifdef __SIMPLE_DEVICE__
-	pci_devfn_t dev = dbg_dev;
-#else
-	struct device *dev = pcidev_path_on_root(PCI_DEV2DEVFN(dbg_dev));
-#endif
-
-	u32 class = pci_read_config32(dev, PCI_CLASS_REVISION) >> 8;
+	u32 class = pci_s_read_config32(dev, PCI_CLASS_REVISION) >> 8;
 	if (class != PCI_EHCI_CLASSCODE)
 		return -1;
 
-	u8 pm_cap = pci_s_find_capability(dbg_dev, PCI_CAP_ID_PM);
+	u8 pm_cap = pci_s_find_capability(dev, PCI_CAP_ID_PM);
 	if (pm_cap) {
-		u16 pm_ctrl = pci_read_config16(dev, pm_cap + PCI_PM_CTRL);
+		u16 pm_ctrl = pci_s_read_config16(dev, pm_cap + PCI_PM_CTRL);
 		/* Set to D0 and disable PM events. */
 		pm_ctrl &= ~PCI_PM_CTRL_PME_ENABLE;
 		pm_ctrl &= ~PCI_PM_CTRL_STATE_MASK;
-		pci_write_config16(dev, pm_cap + PCI_PM_CTRL, pm_ctrl);
+		pci_s_write_config16(dev, pm_cap + PCI_PM_CTRL, pm_ctrl);
 	}
 
-	u8 pos = pci_s_find_capability(dbg_dev, PCI_CAP_ID_EHCI_DEBUG);
+	u8 pos = pci_s_find_capability(dev, PCI_CAP_ID_EHCI_DEBUG);
 	if (!pos)
 		return -1;
 
-	u32 cap = pci_read_config32(dev, pos);
+	u32 cap = pci_s_read_config32(dev, pos);
 
 	/* FIXME: We should remove static EHCI_BAR_INDEX. */
 	u8 ehci_bar = 0x10 + 4 * ((cap >> 29) - 1);
 	if (ehci_bar != EHCI_BAR_INDEX)
 		return -1;
 
-	pci_write_config32(dev, ehci_bar, CONFIG_EHCI_BAR);
+	pci_s_write_config32(dev, ehci_bar, CONFIG_EHCI_BAR);
 
-	pci_write_config8(dev, PCI_COMMAND, PCI_COMMAND_MEMORY |
+	pci_s_write_config8(dev, PCI_COMMAND, PCI_COMMAND_MEMORY |
 		PCI_COMMAND_MASTER);
 
 	*base = CONFIG_EHCI_BAR;
@@ -125,11 +119,6 @@ void pci_ehci_read_resources(struct device *dev)
 
 u8 *pci_ehci_base_regs(pci_devfn_t sdev)
 {
-#ifdef __SIMPLE_DEVICE__
-	u8 *base = (u8 *)(pci_read_config32(sdev, EHCI_BAR_INDEX) & ~0x0f);
-#else
-	struct device *dev = pcidev_path_on_root(PCI_DEV2DEVFN(sdev));
-	u8 *base = (u8 *)(pci_read_config32(dev, EHCI_BAR_INDEX) & ~0x0f);
-#endif
+	u8 *base = (u8 *)(pci_s_read_config32(sdev, EHCI_BAR_INDEX) & ~0x0f);
 	return base + HC_LENGTH(read32(base));
 }

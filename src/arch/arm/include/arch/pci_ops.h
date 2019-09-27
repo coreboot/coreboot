@@ -14,16 +14,6 @@
 #ifndef ARCH_ARM_PCI_OPS_H
 #define ARCH_ARM_PCI_OPS_H
 
-#include <stdint.h>
-#include <device/pci_type.h>
-
-#ifdef __SIMPLE_DEVICE__
-u8 pci_read_config8(pci_devfn_t dev, unsigned int where);
-u16 pci_read_config16(pci_devfn_t dev, unsigned int where);
-u32 pci_read_config32(pci_devfn_t dev, unsigned int where);
-void pci_write_config8(pci_devfn_t dev, unsigned int where, u8 val);
-void pci_write_config16(pci_devfn_t dev, unsigned int where, u16 val);
-void pci_write_config32(pci_devfn_t dev, unsigned int where, u32 val);
-#endif
+#include <device/pci_mmio_cfg.h>
 
 #endif

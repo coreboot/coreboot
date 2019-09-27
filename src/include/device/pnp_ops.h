@@ -19,7 +19,7 @@
 #include <arch/io.h>
 #include <device/pnp_type.h>
 
-#ifdef __SIMPLE_DEVICE__
+#if ENV_PNP_SIMPLE_DEVICE
 
 static __always_inline void pnp_write_config(
 	pnp_devfn_t dev, uint8_t reg, uint8_t value)
@@ -82,6 +82,6 @@ void pnp_set_drq(pnp_devfn_t dev, unsigned int index, unsigned int drq)
 	pnp_write_config(dev, index, drq & 0xff);
 }
 
-#endif /* __SIMPLE_DEVICE__ */
+#endif
 
 #endif

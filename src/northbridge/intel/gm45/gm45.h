@@ -449,12 +449,10 @@ int get_blc_values(const struct blc_pwm_t **entries);
 u16 get_blc_pwm_freq_value(const char *edid_ascii_string);
 
 
-#if ENV_RAMSTAGE && !defined(__SIMPLE_DEVICE__)
 #include <device/device.h>
 
 struct acpi_rsdp;
 unsigned long northbridge_write_acpi_tables(struct device *device, unsigned long start, struct acpi_rsdp *rsdp);
-#endif
 
 #endif /* !__ACPI__ */
 #endif /* __NORTHBRIDGE_INTEL_GM45_GM45_H__ */

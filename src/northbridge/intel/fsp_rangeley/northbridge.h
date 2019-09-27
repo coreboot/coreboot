@@ -63,9 +63,7 @@ void rangeley_late_initialization(void);
 u32 sideband_read(int port, int reg);
 void sideband_write(int port, int reg, long data);
 
-#ifndef __SIMPLE_DEVICE__
 void northbridge_acpi_fill_ssdt_generator(struct device *device);
-#endif
 
 #endif /* #ifndef __ASSEMBLER__ */
 #endif /* #ifndef __ACPI__ */

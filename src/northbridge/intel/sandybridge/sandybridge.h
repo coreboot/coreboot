@@ -227,12 +227,10 @@ int mainboard_should_reset_usb(int s3resume);
 void perform_raminit(int s3resume);
 enum platform_type get_platform_type(void);
 
-#if ENV_RAMSTAGE && !defined(__SIMPLE_DEVICE__)
 #include <device/device.h>
 
 struct acpi_rsdp;
 unsigned long northbridge_write_acpi_tables(struct device *device, unsigned long start, struct acpi_rsdp *rsdp);
-#endif
 
 #endif
 #endif

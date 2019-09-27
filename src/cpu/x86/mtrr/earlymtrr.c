@@ -38,9 +38,6 @@ int get_free_var_mtrr(void)
 	return -1;
 }
 
-#ifdef __ROMCC__
-static
-#endif
 void set_var_mtrr(
 	unsigned int reg, unsigned int base, unsigned int size,
 	unsigned int type)

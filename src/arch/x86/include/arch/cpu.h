@@ -214,7 +214,8 @@ static inline bool cpu_is_intel(void)
 	return CONFIG(CPU_INTEL_COMMON) || CONFIG(SOC_INTEL_COMMON);
 }
 
-#ifndef __SIMPLE_DEVICE__
+#ifndef __ROMCC__
+/* romcc does not support anonymous structs. */
 
 struct device;
 
@@ -258,9 +259,8 @@ static inline struct cpu_info *cpu_info(void)
 	);
 	return ci;
 }
-#endif
 
-#ifndef __ROMCC__ // romcc is segfaulting in some cases
+/* romcc is segfaulting in some cases. */
 struct cpuinfo_x86 {
 	uint8_t	x86;		/* CPU family */
 	uint8_t	x86_vendor;	/* CPU vendor */

@@ -13,6 +13,21 @@ chip soc/intel/cannonlake
 	register "gen2_dec" = "0x00040941" # 0x940-0x947
 	register "gen3_dec" = "0x000c0951" # 0x950-0x95f
 
+	register "SerialIoDevMode" = "{
+		[PchSerialIoIndexI2C0]  = PchSerialIoPci,
+		[PchSerialIoIndexI2C1]  = PchSerialIoPci,
+		[PchSerialIoIndexI2C2]  = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C3]  = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C4]  = PchSerialIoPci,
+		[PchSerialIoIndexI2C5]  = PchSerialIoDisabled,
+		[PchSerialIoIndexSPI0] = PchSerialIoDisabled,
+		[PchSerialIoIndexSPI1] = PchSerialIoDisabled,
+		[PchSerialIoIndexSPI2] = PchSerialIoDisabled,
+		[PchSerialIoIndexUART0] = PchSerialIoSkipInit,
+		[PchSerialIoIndexUART1] = PchSerialIoDisabled,
+		[PchSerialIoIndexUART2] = PchSerialIoDisabled,
+	}"
+
 	# FSP configuration
 	register "SaGv" = "SaGv_Enabled"
 	register "HeciEnabled" = "0"

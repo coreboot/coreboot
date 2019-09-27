@@ -128,6 +128,9 @@ struct sysinfo_t {
 	uint32_t mtc_size;
 	void	*chromeos_vpd;
 	int	mmc_early_wake_status;
+
+	/* Pointer to FMAP cache in CBMEM */
+	void	*fmap_cache;
 };
 
 extern struct sysinfo_t lib_sysinfo;

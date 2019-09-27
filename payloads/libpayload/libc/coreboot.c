@@ -239,6 +239,12 @@ static void cb_parse_vpd(void *ptr, struct sysinfo_t *info)
 	info->chromeos_vpd = phys_to_virt(cbmem->cbmem_tab);
 }
 
+static void cb_parse_fmap_cache(void *ptr, struct sysinfo_t *info)
+{
+	struct cb_cbmem_tab *const cbmem = (struct cb_cbmem_tab *)ptr;
+	info->fmap_cache = phys_to_virt(cbmem->cbmem_tab);
+}
+
 #if CONFIG(LP_TIMER_RDTSC)
 static void cb_parse_tsc_info(void *ptr, struct sysinfo_t *info)
 {
@@ -411,6 +417,9 @@ int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 #endif
 		case CB_TAG_VPD:
 			cb_parse_vpd(ptr, info);
+			break;
+		case CB_TAG_FMAP:
+			cb_parse_fmap_cache(ptr, info);
 			break;
 		default:
 			cb_parse_arch_specific(rec, info);

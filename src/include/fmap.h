@@ -19,9 +19,6 @@
 #include <commonlib/region.h>
 #include <commonlib/fmap_serialized.h>
 
-/* Locate the fmap directory. Return 0 on success, < 0 on error. */
-int find_fmap_directory(struct region_device *fmrd);
-
 /* Locate the named area in the fmap and fill in a region device representing
  * that area. The region is a sub-region of the readonly boot media. Return
  * 0 on success, < 0 on error. */
@@ -48,4 +45,8 @@ ssize_t fmap_read_area(const char *name, void *buffer, size_t size);
 /* Write provided buffer into fmap area.
  * Return size written on success, < 0 on error. */
 ssize_t fmap_overwrite_area(const char *name, const void *buffer, size_t size);
+
+/* Get offset of FMAP in flash. */
+uint64_t get_fmap_flash_offset(void);
+
 #endif

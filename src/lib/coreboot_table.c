@@ -256,7 +256,6 @@ static void lb_boot_media_params(struct lb_header *header)
 	struct lb_boot_media_params *bmp;
 	struct cbfs_props props;
 	const struct region_device *boot_dev;
-	struct region_device fmrd;
 
 	boot_device_init();
 
@@ -275,9 +274,7 @@ static void lb_boot_media_params(struct lb_header *header)
 	bmp->cbfs_size = props.size;
 	bmp->boot_media_size = region_device_sz(boot_dev);
 
-	bmp->fmap_offset = ~(uint64_t)0;
-	if (find_fmap_directory(&fmrd) == 0)
-		bmp->fmap_offset = region_device_offset(&fmrd);
+	bmp->fmap_offset = get_fmap_flash_offset();
 }
 
 static void lb_ram_code(struct lb_header *header)

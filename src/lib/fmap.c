@@ -31,7 +31,12 @@
 static int fmap_print_once CAR_GLOBAL;
 static struct mem_region_device fmap_cache CAR_GLOBAL;
 
-int find_fmap_directory(struct region_device *fmrd)
+uint64_t get_fmap_flash_offset(void)
+{
+	return FMAP_OFFSET;
+}
+
+static int find_fmap_directory(struct region_device *fmrd)
 {
 	const struct region_device *boot;
 	struct fmap *fmap;

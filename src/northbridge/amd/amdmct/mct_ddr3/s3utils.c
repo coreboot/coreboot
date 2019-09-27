@@ -69,7 +69,7 @@ ssize_t get_s3nv_file_offset(void)
 	return s3nv_region.region.offset;
 }
 
-#ifdef __SIMPLE_DEVICE__
+#if ENV_PCI_SIMPLE_DEVICE
 static uint32_t read_config32_dct(pci_devfn_t dev, uint8_t node, uint8_t dct,
 				  uint32_t reg)
 #else
@@ -79,7 +79,7 @@ static uint32_t read_config32_dct(struct device *dev, uint8_t node, uint8_t dct,
 {
 	if (is_fam15h()) {
 		uint32_t dword;
-#ifdef __SIMPLE_DEVICE__
+#if ENV_PCI_SIMPLE_DEVICE
 		pci_devfn_t dev_fn1 = PCI_DEV(0, 0x18 + node, 1);
 #else
 		struct device *dev_fn1 = pcidev_on_root(0x18 + node, 1);
@@ -98,7 +98,7 @@ static uint32_t read_config32_dct(struct device *dev, uint8_t node, uint8_t dct,
 	return pci_read_config32(dev, reg);
 }
 
-#ifdef __SIMPLE_DEVICE__
+#if ENV_PCI_SIMPLE_DEVICE
 static void write_config32_dct(pci_devfn_t dev, uint8_t node, uint8_t dct,
 			       uint32_t reg, uint32_t value)
 #else
@@ -108,7 +108,7 @@ static void write_config32_dct(struct device *dev, uint8_t node, uint8_t dct,
 {
 	if (is_fam15h()) {
 		uint32_t dword;
-#ifdef __SIMPLE_DEVICE__
+#if ENV_PCI_SIMPLE_DEVICE
 		pci_devfn_t dev_fn1 = PCI_DEV(0, 0x18 + node, 1);
 #else
 		struct device *dev_fn1 = pcidev_on_root(0x18 + node, 1);
@@ -127,7 +127,7 @@ static void write_config32_dct(struct device *dev, uint8_t node, uint8_t dct,
 	pci_write_config32(dev, reg, value);
 }
 
-#ifdef __SIMPLE_DEVICE__
+#if ENV_PCI_SIMPLE_DEVICE
 static uint32_t read_amd_dct_index_register(pci_devfn_t dev,
 					uint32_t index_ctl_reg, uint32_t index)
 #else
@@ -147,7 +147,7 @@ static uint32_t read_amd_dct_index_register(struct device *dev,
 	return dword;
 }
 
-#ifdef __SIMPLE_DEVICE__
+#if ENV_PCI_SIMPLE_DEVICE
 static uint32_t read_amd_dct_index_register_dct(pci_devfn_t dev, uint8_t node,
 			uint8_t dct, uint32_t index_ctl_reg, uint32_t index)
 #else
@@ -158,7 +158,7 @@ static uint32_t read_amd_dct_index_register_dct(struct device *dev,
 {
 	if (is_fam15h()) {
 		uint32_t dword;
-#ifdef __SIMPLE_DEVICE__
+#if ENV_PCI_SIMPLE_DEVICE
 		pci_devfn_t dev_fn1 = PCI_DEV(0, 0x18 + node, 1);
 #else
 		struct device *dev_fn1 = pcidev_on_root(0x18 + node, 1);

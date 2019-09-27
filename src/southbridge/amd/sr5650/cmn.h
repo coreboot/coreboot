@@ -34,7 +34,7 @@
 #define AB_INDX   0xCD8
 #define AB_DATA   (AB_INDX+4)
 
-#ifdef __SIMPLE_DEVICE__
+#if ENV_PCI_SIMPLE_DEVICE
 static inline u32 nb_read_index(pci_devfn_t dev, u32 index_reg, u32 index)
 #else
 static inline u32 nb_read_index(struct device *dev, u32 index_reg, u32 index)
@@ -44,7 +44,7 @@ static inline u32 nb_read_index(struct device *dev, u32 index_reg, u32 index)
 	return pci_read_config32(dev, index_reg + 0x4);
 }
 
-#ifdef __SIMPLE_DEVICE__
+#if ENV_PCI_SIMPLE_DEVICE
 static inline void nb_write_index(pci_devfn_t dev, u32 index_reg, u32 index,
 				  u32 data)
 #else
@@ -56,7 +56,7 @@ static inline void nb_write_index(struct device *dev, u32 index_reg, u32 index,
 	pci_write_config32(dev, index_reg + 0x4, data);
 }
 
-#ifdef __SIMPLE_DEVICE__
+#if ENV_PCI_SIMPLE_DEVICE
 static inline u32 nbmisc_read_index(pci_devfn_t nb_dev, u32 index)
 #else
 static inline u32 nbmisc_read_index(struct device *nb_dev, u32 index)
@@ -65,7 +65,7 @@ static inline u32 nbmisc_read_index(struct device *nb_dev, u32 index)
 	return nb_read_index((nb_dev), NBMISC_INDEX, (index));
 }
 
-#ifdef __SIMPLE_DEVICE__
+#if ENV_PCI_SIMPLE_DEVICE
 static inline void nbmisc_write_index(pci_devfn_t nb_dev, u32 index, u32 data)
 #else
 static inline void nbmisc_write_index(struct device *nb_dev, u32 index,
@@ -75,7 +75,7 @@ static inline void nbmisc_write_index(struct device *nb_dev, u32 index,
 	nb_write_index((nb_dev), NBMISC_INDEX, ((index) | 0x80), (data));
 }
 
-#ifdef __SIMPLE_DEVICE__
+#if ENV_PCI_SIMPLE_DEVICE
 static inline void set_nbmisc_enable_bits(pci_devfn_t nb_dev, u32 reg_pos,
 					  u32 mask, u32 val)
 #else
@@ -92,7 +92,7 @@ static inline void set_nbmisc_enable_bits(struct device *nb_dev, u32 reg_pos,
 	}
 }
 
-#ifdef __SIMPLE_DEVICE__
+#if ENV_PCI_SIMPLE_DEVICE
 static inline u32 htiu_read_index(pci_devfn_t nb_dev, u32 index)
 #else
 static inline u32 htiu_read_index(struct device *nb_dev, u32 index)
@@ -101,7 +101,7 @@ static inline u32 htiu_read_index(struct device *nb_dev, u32 index)
 	return nb_read_index((nb_dev), NBHTIU_INDEX, (index));
 }
 
-#ifdef __SIMPLE_DEVICE__
+#if ENV_PCI_SIMPLE_DEVICE
 static inline void htiu_write_index(pci_devfn_t nb_dev, u32 index, u32 data)
 #else
 static inline void htiu_write_index(struct device *nb_dev, u32 index, u32 data)
@@ -110,7 +110,7 @@ static inline void htiu_write_index(struct device *nb_dev, u32 index, u32 data)
 	nb_write_index((nb_dev), NBHTIU_INDEX, ((index) | 0x100), (data));
 }
 
-#ifdef __SIMPLE_DEVICE__
+#if ENV_PCI_SIMPLE_DEVICE
 static inline u32 nbmc_read_index(pci_devfn_t nb_dev, u32 index)
 #else
 static inline u32 nbmc_read_index(struct device *nb_dev, u32 index)
@@ -119,7 +119,7 @@ static inline u32 nbmc_read_index(struct device *nb_dev, u32 index)
 	return nb_read_index((nb_dev), NBMC_INDEX, (index));
 }
 
-#ifdef __SIMPLE_DEVICE__
+#if ENV_PCI_SIMPLE_DEVICE
 static inline void nbmc_write_index(pci_devfn_t nb_dev, u32 index, u32 data)
 #else
 static inline void nbmc_write_index(struct device *nb_dev, u32 index, u32 data)
@@ -128,7 +128,7 @@ static inline void nbmc_write_index(struct device *nb_dev, u32 index, u32 data)
 	nb_write_index((nb_dev), NBMC_INDEX, ((index) | 1 << 9), (data));
 }
 
-#ifdef __SIMPLE_DEVICE__
+#if ENV_PCI_SIMPLE_DEVICE
 static inline void set_htiu_enable_bits(pci_devfn_t nb_dev, u32 reg_pos,
 					u32 mask, u32 val)
 #else
@@ -145,7 +145,7 @@ static inline void set_htiu_enable_bits(struct device *nb_dev, u32 reg_pos,
 	}
 }
 
-#ifdef __SIMPLE_DEVICE__
+#if ENV_PCI_SIMPLE_DEVICE
 static inline void set_nbcfg_enable_bits(pci_devfn_t nb_dev, u32 reg_pos,
 					 u32 mask, u32 val)
 #else
@@ -162,7 +162,7 @@ static inline void set_nbcfg_enable_bits(struct device *nb_dev, u32 reg_pos,
 	}
 }
 
-#ifdef __SIMPLE_DEVICE__
+#if ENV_PCI_SIMPLE_DEVICE
 static inline void set_nbcfg_enable_bits_8(pci_devfn_t nb_dev, u32 reg_pos,
 					   u8 mask, u8 val)
 #else
@@ -179,7 +179,7 @@ static inline void set_nbcfg_enable_bits_8(struct device *nb_dev, u32 reg_pos,
 	}
 }
 
-#ifdef __SIMPLE_DEVICE__
+#if ENV_PCI_SIMPLE_DEVICE
 static inline void set_nbmc_enable_bits(pci_devfn_t nb_dev, u32 reg_pos,
 					u32 mask, u32 val)
 #else
@@ -196,7 +196,7 @@ static inline void set_nbmc_enable_bits(struct device *nb_dev, u32 reg_pos,
 	}
 }
 
-#ifdef __SIMPLE_DEVICE__
+#if ENV_PCI_SIMPLE_DEVICE
 static inline void set_pcie_enable_bits(pci_devfn_t dev, u32 reg_pos, u32 mask,
 					u32 val)
 #else

@@ -1017,11 +1017,9 @@ BOOL AMD_CB_ManualBUIDSwapList(u8 Node, u8 Link, const u8 **List);
 
 struct acpi_rsdp;
 
-#ifndef __SIMPLE_DEVICE__
 unsigned long northbridge_write_acpi_tables(struct device *device,
 					    unsigned long start,
 					    struct acpi_rsdp *rsdp);
 void northbridge_acpi_write_vars(struct device *device);
-#endif
 
 #endif /* AMDFAM10_H */

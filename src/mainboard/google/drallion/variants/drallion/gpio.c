@@ -214,7 +214,6 @@ static const struct pad_config gpio_table[] = {
 /* BATLOW# */		PAD_CFG_NF(GPD0, NONE, DEEP, NF1), /* BATLOW# */
 /* ACPRESENT */		PAD_CFG_NF(GPD1, NONE, DEEP, NF1), /* AC_PRESENT */
 /* LAN_WAKE# */		PAD_CFG_NF(GPD2, NONE, DEEP, NF1), /* LAN_WAKE# */
-/* PWRBTN# */		PAD_CFG_NF(GPD3, NONE, DEEP, NF1), /* SIO_PWRBTN# */
 /* SLP_S3# */		PAD_CFG_NF(GPD4, NONE, DEEP, NF1), /* SIO_SLP_S3# */
 /* SLP_S4# */		PAD_CFG_NF(GPD5, NONE, DEEP, NF1), /* SIO_SLP_S4# */
 /* SLP_A# */		PAD_CFG_NF(GPD6, NONE, DEEP, NF1), /* SIO_SLP_A# */
@@ -250,6 +249,7 @@ static const struct pad_config early_gpio_table[] = {
 /* EMMC_DATA3 */	PAD_CFG_GPI(GPP_F15, NONE, DEEP), /* MEM_CONFIGO_1P8 */
 /* EMMC_DATA4 */	PAD_CFG_GPI(GPP_F16, NONE, DEEP), /* MEM_CONFIGO_1P8 */
 /* I2C2_SCL */		PAD_CFG_GPI(GPP_H5, NONE, PLTRST), /* 360_SENSOR_DET# */
+/* PWRBTN# */		PAD_CFG_NF(GPD3, UP_20K, DEEP, NF1), /* SIO_PWRBTN# */
 };
 
 const struct pad_config *variant_gpio_table(size_t *num)

@@ -87,14 +87,9 @@ uint32_t nc_read_top_of_low_memory(void)
 
 static int get_pcie_bar(u32 *base)
 {
-	struct device *dev;
 	u32 pciexbar_reg;
 
 	*base = 0;
-
-	dev = pcidev_on_root(0, 0);
-	if (!dev)
-		return 0;
 
 	pciexbar_reg = iosf_bunit_read(BUNIT_MMCONF_REG);
 

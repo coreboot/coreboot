@@ -38,9 +38,17 @@ cache_as_ram:
 
 	/* Align the stack and keep aligned for call to bootblock_c_entry() */
 	and	$0xfffffff0, %esp
-	sub	$4, %esp
 
 	/* Restore the BIST result and timestamps. */
+#if defined(__x86_64__)
+	movd	%mm1, %rdi
+	shld	%rdi, 32
+	movd	%mm1, %rsi
+	or	%rsi, %rdi
+	movd	%mm2, %rsi
+#else
+	sub	$4, %esp
+
 	movd	%mm0, %ebx
 	movd	%mm1, %eax
 	movd	%mm2, %edx
@@ -48,6 +56,7 @@ cache_as_ram:
 	pushl	%ebx
 	pushl	%edx
 	pushl	%eax
+#endif
 
 before_c_entry:
 	post_code(0x29)

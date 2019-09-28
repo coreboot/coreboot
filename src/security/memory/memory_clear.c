@@ -127,7 +127,8 @@ static void clear_memory(void *unused)
 		       __func__, range_entry_base(r), range_entry_end(r));
 
 		/* Does regular memset work? */
-		if (!(range_entry_end(r) >> sizeof(void *) * 8)) {
+		if (sizeof(resource_t) == sizeof(void *) ||
+		    !(range_entry_end(r) >> (sizeof(void *) * 8))) {
 			/* fastpath */
 			memset((void *)(uintptr_t)range_entry_base(r), 0,
 			       range_entry_size(r));

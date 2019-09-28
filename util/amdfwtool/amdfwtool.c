@@ -387,6 +387,8 @@ typedef struct _embedded_firmware {
 	uint32_t comboable;
 	uint32_t bios0_entry; /* todo: add way to select correct entry */
 	uint32_t bios1_entry;
+	uint32_t bios2_entry;
+	uint32_t reserved[0x2c]; /* 0x24 - 0x4f */
 } __attribute__((packed, aligned(16))) embedded_firmware;
 
 typedef struct _psp_directory_header {

@@ -79,6 +79,7 @@ chip northbridge/intel/i945
 						irq 0xf0 = 0x82		# HW accel A20.
 					end
 					device pnp 2e.7 on		# GPIO1, GAME, MIDI
+						 io 0x60 = 0x220	# allocator workaround
 						 io 0x62 = 0x330
 						irq 0x70 = 9
 					end

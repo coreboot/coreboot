@@ -41,13 +41,11 @@ void punit_init(void)
 {
 	uint32_t reg;
 	uint8_t rid;
-	const struct device *dev;
 	const struct soc_intel_baytrail_config *cfg = NULL;
 
 	rid = pci_read_config8(IOSF_PCI_DEV, REVID);
-	dev = pcidev_on_root(SOC_DEV, SOC_FUNC);
 
-	cfg = config_of(dev);
+	cfg = config_of_soc();
 
 	reg = iosf_punit_read(SB_BIOS_CONFIG);
 	/* Write bits 17:16 of SB_BIOS_CONFIG in the PUNIT. */

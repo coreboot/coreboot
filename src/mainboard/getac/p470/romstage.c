@@ -237,13 +237,6 @@ void mainboard_romstage_entry(void)
 
 	enable_lapic();
 
-#if 0
-	/* Force PCIRST# */
-	pci_write_config16(PCI_DEV(0, 0x1e, 0), BCTRL, SBR);
-	udelay(200 * 1000);
-	pci_write_config16(PCI_DEV(0, 0x1e, 0), BCTRL, 0);
-#endif
-
 	ich7_enable_lpc();
 	early_superio_config();
 

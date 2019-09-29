@@ -531,6 +531,9 @@ static void i945_setup_pci_express_x16(void)
 	u16 reg16;
 	pci_devfn_t p2peg = PCI_DEV(0, 0x01, 0);
 
+	u8 tmp_secondary = 0x0a;
+	pci_devfn_t peg_plugin = PCI_DEV(tmp_secondary, 0, 0);
+
 	printk(BIOS_DEBUG, "Enabling PCI Express x16 Link\n");
 
 	reg16 = pci_read_config16(PCI_DEV(0, 0x00, 0), DEVEN);
@@ -562,10 +565,10 @@ static void i945_setup_pci_express_x16(void)
 	reg16 |= (1 << 4) | (1 << 0);
 	pci_write_config16(p2peg, SLOTSTS, reg16);
 
-	pci_write_config8(p2peg, SBUSN1, 0x00);
-	pci_write_config8(p2peg, SUBUSN1, 0x00);
-	pci_write_config8(p2peg, SBUSN1, 0x0a);
-	pci_write_config8(p2peg, SUBUSN1, 0x0a);
+	pci_write_config8(p2peg, PCI_SECONDARY_BUS, 0x00);
+	pci_write_config8(p2peg, PCI_SUBORDINATE_BUS, 0x00);
+	pci_write_config8(p2peg, PCI_SECONDARY_BUS, tmp_secondary);
+	pci_write_config8(p2peg, PCI_SUBORDINATE_BUS, tmp_secondary);
 
 	reg32 = pci_read_config32(p2peg, 0x224);
 	reg32 &= ~(1 << 8);
@@ -597,7 +600,7 @@ static void i945_setup_pci_express_x16(void)
 		&& --timeout)
 		;
 
-	reg32 = pci_read_config32(PCI_DEV(0x0a, 0x0, 0), 0);
+	reg32 = pci_read_config32(peg_plugin, PCI_VENDOR_ID);
 	if (reg32 != 0x00000000 && reg32 != 0xffffffff) {
 		printk(BIOS_DEBUG, " Detected PCIe device %04x:%04x\n",
 				reg32 & 0xffff, reg32 >> 16);
@@ -623,7 +626,7 @@ static void i945_setup_pci_express_x16(void)
 			&& --timeout)
 			;
 
-		reg32 = pci_read_config32(PCI_DEV(0xa, 0x00, 0), 0);
+		reg32 = pci_read_config32(peg_plugin, PCI_VENDOR_ID);
 		if (reg32 != 0x00000000 && reg32 != 0xffffffff) {
 			printk(BIOS_DEBUG, " Detected PCIe x1 device %04x:%04x\n",
 				reg32 & 0xffff, reg32 >> 16);
@@ -651,7 +654,7 @@ static void i945_setup_pci_express_x16(void)
 		// TODO
 		/* pci_write_config32(p2peg, PEGTC, reg32); */
 
-	reg32 = (pci_read_config32(PCI_DEV(0xa, 0, 0), 0x8) >> 8);
+	reg32 = (pci_read_config32(peg_plugin, 0x8) >> 8);
 	printk(BIOS_DEBUG, "PCIe device class: %06x\n", reg32);
 	if (reg32 == 0x030000) {
 		printk(BIOS_DEBUG, "PCIe device is VGA. Disabling IGD.\n");

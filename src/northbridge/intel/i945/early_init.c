@@ -661,11 +661,6 @@ static void i945_setup_pci_express_x16(void)
 		reg32 = pci_read_config32(PCI_DEV(0, 0x0, 0), DEVEN);
 		reg32 &= ~(DEVEN_D2F0 | DEVEN_D2F1);
 		pci_write_config32(PCI_DEV(0, 0x0, 0), DEVEN, reg32);
-
-		/* Set VGA enable bit in PCIe bridge */
-		reg16 = pci_read_config16(p2peg, PCI_BRIDGE_CONTROL);
-		reg16 |= PCI_BRIDGE_CTL_VGA;
-		pci_write_config16(p2peg, PCI_BRIDGE_CONTROL, reg16);
 	}
 
 	/* Enable GPEs */

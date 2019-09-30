@@ -52,7 +52,7 @@ static void ConfigureDefaultUpdData(UPD_DATA_REGION *UpdData)
 	DEVTREE_CONST config_t *config;
 	printk(BIOS_DEBUG, "Configure Default UPD Data\n");
 
-	dev = pcidev_path_on_root(SOC_DEV_FUNC);
+	dev = pcidev_path_on_root(SOC_DEVFN_SOC);
 	config = dev->chip_info;
 
 	/* Set SPD addresses */
@@ -103,30 +103,30 @@ static void ConfigureDefaultUpdData(UPD_DATA_REGION *UpdData)
 			continue;
 
 		switch (dev->path.pci.devfn) {
-			case GBE1_DEV_FUNC:
-			case GBE2_DEV_FUNC:
-			case GBE3_DEV_FUNC:
-			case GBE4_DEV_FUNC:
+			case SOC_DEVFN_GBE1:
+			case SOC_DEVFN_GBE2:
+			case SOC_DEVFN_GBE3:
+			case SOC_DEVFN_GBE4:
 				UpdData->PcdEnableLan |= dev->enabled;
 				printk(BIOS_DEBUG, "PcdEnableLan %d\n",
 						UpdData->PcdEnableLan);
 				break;
-			case SATA2_DEV_FUNC:
+			case SOC_DEVFN_SATA2:
 				UpdData->PcdEnableSata2 = dev->enabled;
 				printk(BIOS_DEBUG, "PcdEnableSata2 %d\n",
 						UpdData->PcdEnableSata2);
 				break;
-			case SATA3_DEV_FUNC:
+			case SOC_DEVFN_SATA3:
 				UpdData->PcdEnableSata3 = dev->enabled;
 				printk(BIOS_DEBUG, "PcdEnableSata3 %d\n",
 						UpdData->PcdEnableSata3);
 				break;
-			case IQAT_DEV_FUNC:
+			case SOC_DEVFN_IQAT:
 				UpdData->PcdEnableIQAT |= dev->enabled;
 				printk(BIOS_DEBUG, "PcdEnableIQAT %d\n",
 					UpdData->PcdEnableIQAT);
 				break;
-			case USB2_DEV_FUNC:
+			case SOC_DEVFN_USB2:
 				UpdData->PcdEnableUsb20 = dev->enabled;
 				printk(BIOS_DEBUG, "PcdEnableUsb20 %d\n",
 						UpdData->PcdEnableUsb20);

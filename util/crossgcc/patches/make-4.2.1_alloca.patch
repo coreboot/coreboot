@@ -1,0 +1,11 @@
+--- clean/make-4.2/glob/glob.c	2013-10-20 17:14:38.000000000 +0000
++++ make-4.2/glob/glob.c	2018-09-18 10:16:03.860886356 +0000
+@@ -208,7 +208,7 @@
+ #endif /* __GNU_LIBRARY__ || __DJGPP__ */
+ 
+ 
+-#if !defined __alloca && !defined __GNU_LIBRARY__
++#if !defined __alloca && defined __GNU_LIBRARY__
+ 
+ # ifdef	__GNUC__
+ #  undef alloca

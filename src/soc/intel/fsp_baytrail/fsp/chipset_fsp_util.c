@@ -79,7 +79,7 @@ static void ConfigureDefaultUpdData(FSP_INFO_HEADER *FspInfo, UPD_DATA_REGION *U
 	DEVTREE_CONST config_t *config;
 	printk(FSP_INFO_LEVEL, "Configure Default UPD Data\n");
 
-	dev = pcidev_path_on_root(SOC_DEV_FUNC);
+	dev = pcidev_path_on_root(SOC_DEVFN_SOC);
 	config = config_of(dev);
 
 	/* Set up default verb tables - Just HDMI audio */
@@ -142,26 +142,26 @@ static void ConfigureDefaultUpdData(FSP_INFO_HEADER *FspInfo, UPD_DATA_REGION *U
 			continue;
 
 		switch (dev->path.pci.devfn) {
-			UPD_DEVICE_CHECK(SDIO_DEV_FUNC, PcdEnableSdio, "Sdio:\t\t\t");
-			UPD_DEVICE_CHECK(SD_DEV_FUNC, PcdEnableSdcard, "Sdcard:\t\t\t");
-			UPD_DEVICE_CHECK(SIO_DMA1_DEV_FUNC, PcdEnableDma0, "SIO Dma 0:\t\t");
-			UPD_DEVICE_CHECK(I2C1_DEV_FUNC, PcdEnableI2C0, "SIO I2C0:\t\t");
-			UPD_DEVICE_CHECK(I2C2_DEV_FUNC, PcdEnableI2C1, "SIO I2C1:\t\t");
-			UPD_DEVICE_CHECK(I2C3_DEV_FUNC, PcdEnableI2C2, "SIO I2C2:\t\t");
-			UPD_DEVICE_CHECK(I2C4_DEV_FUNC, PcdEnableI2C3, "SIO I2C3:\t\t");
-			UPD_DEVICE_CHECK(I2C5_DEV_FUNC, PcdEnableI2C4, "SIO I2C4:\t\t");
-			UPD_DEVICE_CHECK(I2C6_DEV_FUNC, PcdEnableI2C5, "SIO I2C5:\t\t");
-			UPD_DEVICE_CHECK(I2C7_DEV_FUNC, PcdEnableI2C6, "SIO I2C6:\t\t");
-			UPD_DEVICE_CHECK(SIO_DMA2_DEV_FUNC, PcdEnableDma1, "SIO Dma1:\t\t");
-			UPD_DEVICE_CHECK(PWM1_DEV_FUNC, PcdEnablePwm0, "Pwm0:\t\t\t");
-			UPD_DEVICE_CHECK(PWM2_DEV_FUNC, PcdEnablePwm1, "Pwm1:\t\t\t");
-			UPD_DEVICE_CHECK(HSUART1_DEV_FUNC, PcdEnableHsuart0, "Hsuart0:\t\t");
-			UPD_DEVICE_CHECK(HSUART2_DEV_FUNC, PcdEnableHsuart1, "Hsuart1:\t\t");
-			UPD_DEVICE_CHECK(SPI_DEV_FUNC, PcdEnableSpi, "Spi:\t\t\t");
-			UPD_DEVICE_CHECK(SATA_DEV_FUNC, PcdEnableSata, "SATA:\t\t\t");
-			UPD_DEVICE_CHECK(HDA_DEV_FUNC, PcdEnableAzalia, "Azalia:\t\t\t");
+			UPD_DEVICE_CHECK(SOC_DEVFN_SDIO, PcdEnableSdio, "Sdio:\t\t\t");
+			UPD_DEVICE_CHECK(SOC_DEVFN_SD, PcdEnableSdcard, "Sdcard:\t\t\t");
+			UPD_DEVICE_CHECK(SOC_DEVFN_SIO_DMA1, PcdEnableDma0, "SIO Dma 0:\t\t");
+			UPD_DEVICE_CHECK(SOC_DEVFN_I2C1, PcdEnableI2C0, "SIO I2C0:\t\t");
+			UPD_DEVICE_CHECK(SOC_DEVFN_I2C2, PcdEnableI2C1, "SIO I2C1:\t\t");
+			UPD_DEVICE_CHECK(SOC_DEVFN_I2C3, PcdEnableI2C2, "SIO I2C2:\t\t");
+			UPD_DEVICE_CHECK(SOC_DEVFN_I2C4, PcdEnableI2C3, "SIO I2C3:\t\t");
+			UPD_DEVICE_CHECK(SOC_DEVFN_I2C5, PcdEnableI2C4, "SIO I2C4:\t\t");
+			UPD_DEVICE_CHECK(SOC_DEVFN_I2C6, PcdEnableI2C5, "SIO I2C5:\t\t");
+			UPD_DEVICE_CHECK(SOC_DEVFN_I2C7, PcdEnableI2C6, "SIO I2C6:\t\t");
+			UPD_DEVICE_CHECK(SOC_DEVFN_SIO_DMA2, PcdEnableDma1, "SIO Dma1:\t\t");
+			UPD_DEVICE_CHECK(SOC_DEVFN_PWM1, PcdEnablePwm0, "Pwm0:\t\t\t");
+			UPD_DEVICE_CHECK(SOC_DEVFN_PWM2, PcdEnablePwm1, "Pwm1:\t\t\t");
+			UPD_DEVICE_CHECK(SOC_DEVFN_HSUART1, PcdEnableHsuart0, "Hsuart0:\t\t");
+			UPD_DEVICE_CHECK(SOC_DEVFN_HSUART2, PcdEnableHsuart1, "Hsuart1:\t\t");
+			UPD_DEVICE_CHECK(SOC_DEVFN_SPI, PcdEnableSpi, "Spi:\t\t\t");
+			UPD_DEVICE_CHECK(SOC_DEVFN_SATA, PcdEnableSata, "SATA:\t\t\t");
+			UPD_DEVICE_CHECK(SOC_DEVFN_HDA, PcdEnableAzalia, "Azalia:\t\t\t");
 
-			case MIPI_DEV_FUNC:	/* Camera / Image Signal Processing */
+			case SOC_DEVFN_MIPI:	/* Camera / Image Signal Processing */
 				if (FspInfo->ImageRevision >= FSP_GOLD3_REV_ID) {
 					UpdData->ISPEnable = dev->enabled;
 				} else {
@@ -174,24 +174,24 @@ static void ConfigureDefaultUpdData(FSP_INFO_HEADER *FspInfo, UPD_DATA_REGION *U
 				printk(FSP_INFO_LEVEL, "MIPI/ISP:\t\t%s\n",
 						dev->enabled?"Enabled":"Disabled");
 				break;
-			case EMMC_DEV_FUNC: /* EMMC 4.1*/
+			case SOC_DEVFN_EMMC: /* EMMC 4.1*/
 				if ((dev->enabled) &&
 						(config->PcdeMMCBootMode == EMMC_FOLLOWS_DEVICETREE))
 					UpdData->PcdeMMCBootMode = EMMC_4_1 - EMMC_DISABLED;
 				break;
-			case MMC45_DEV_FUNC: /* MMC 4.5*/
+			case SOC_DEVFN_MMC45: /* MMC 4.5*/
 				if ((dev->enabled) &&
 						(config->PcdeMMCBootMode == EMMC_FOLLOWS_DEVICETREE))
 					UpdData->PcdeMMCBootMode = EMMC_4_5 - EMMC_DISABLED;
 				break;
-			case XHCI_DEV_FUNC:
+			case SOC_DEVFN_XHCI:
 				UpdData->PcdEnableXhci = dev->enabled;
 				break;
-			case EHCI_DEV_FUNC:
+			case SOC_DEVFN_EHCI:
 				UpdData->PcdEnableXhci = !(dev->enabled);
 				break;
 
-			case LPE_DEV_FUNC:
+			case SOC_DEVFN_LPE:
 				if (dev->enabled)
 					UpdData->PcdEnableLpe = config->LpeAcpiModeEnable;
 				else

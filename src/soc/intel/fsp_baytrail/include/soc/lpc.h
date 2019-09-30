@@ -17,8 +17,6 @@
 #ifndef _BAYTRAIL_LPC_H_
 #define _BAYTRAIL_LPC_H_
 
-#define FADT_SOC_LPC_DEVFN PCI_DEVFN(0x1f, 0)
-
 /* PCI config registers in LPC bridge. */
 #define REVID		0x08
 #define ABASE		0x40 /* IO BAR */

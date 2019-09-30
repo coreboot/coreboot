@@ -31,11 +31,11 @@
 #define PCH_PHRC 7
 #define PCH_MAX_IRQ_CONFIG 8
 
-#define DEVICE_INT_CONFIG(dev, func, line, irqno) {\
-	.Device = dev, \
-	.Function = func, \
-	.IntX = line, \
-	.Irq = irqno }
+#define DEVICE_INT_CONFIG(devfn, line, irqno) {\
+	.Device = PCI_SLOT(devfn), \
+	.Function = PCI_FUNC(devfn), \
+	.IntX = (line), \
+	.Irq = (irqno) }
 
 #define no_int 0
 #define int_A 1

@@ -117,7 +117,7 @@ int i2c_init(unsigned bus)
 
 	base_ptr = (char*)base_adr[bus];
 	/* Set the I2C-device the user wants to use */
-	dev = pcidev_on_root(I2C1_DEV, bus + 1);
+	dev = pcidev_on_root(PCH_DEV_SLOT_I2C1, bus + 1);
 
 	/* Ensure we have the right PCI device */
 	if ((pci_read_config16(dev, 0x0) != I2C_PCI_VENDOR_ID) ||
@@ -174,7 +174,7 @@ int i2c_read(unsigned bus, unsigned chip, unsigned addr,
 	int stat;
 
 	/* Get base address of desired I2C-controller */
-	dev = pcidev_on_root(I2C1_DEV, bus + 1);
+	dev = pcidev_on_root(PCH_DEV_SLOT_I2C1, bus + 1);
 	base_ptr = (char *)pci_read_config32(dev, PCI_BASE_ADDRESS_0);
 	if (base_ptr == NULL) {
 		printk(BIOS_INFO, "I2C: Invalid Base address\n");
@@ -233,7 +233,7 @@ int i2c_write(unsigned bus, unsigned chip, unsigned addr,
 	int stat;
 
 	/* Get base address of desired I2C-controller */
-	dev = pcidev_on_root(I2C1_DEV, bus + 1);
+	dev = pcidev_on_root(PCH_DEV_SLOT_I2C1, bus + 1);
 	base_ptr = (char *)pci_read_config32(dev, PCI_BASE_ADDRESS_0);
 	if (base_ptr == NULL) {
 		return I2C_ERR_INVALID_ADR;

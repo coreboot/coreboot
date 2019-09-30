@@ -110,6 +110,8 @@
 # define SOC_DEVFN_I2C6 PCI_DEVFN(I2C6_DEV,I2C6_FUNC)
 # define SOC_DEVFN_I2C7 PCI_DEVFN(I2C7_DEV,I2C7_FUNC)
 
+#define PCH_DEV_SLOT_I2C1 I2C1_DEV
+
 /* Trusted Execution Engine */
 #define TXE_DEV 0x1a
 #define TXE_FUNC 0

@@ -15,7 +15,6 @@
 
 #include <stdint.h>
 #include <cf9_reset.h>
-#include <delay.h>
 #include <console/console.h>
 #include <arch/romstage.h>
 #include <cpu/x86/lapic.h>
@@ -246,10 +245,8 @@ void mainboard_romstage_entry(void)
 
 	enable_lapic();
 
-	/* Force PCIRST# */
-	pci_write_config16(PCI_DEV(0, 0x1e, 0), PCI_BRIDGE_CONTROL, PCI_BRIDGE_CTL_BUS_RESET);
-	udelay(200 * 1000);
-	pci_write_config16(PCI_DEV(0, 0x1e, 0), PCI_BRIDGE_CONTROL, 0);
+	/* Force PCIRST# to conventional PCI slot and Firewire. */
+	ich7_p2p_secondary_reset();
 
 	ich7_enable_lpc();
 	early_superio_config_w83627thg();

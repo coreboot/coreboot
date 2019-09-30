@@ -17,7 +17,6 @@
 #include <stdint.h>
 #include <arch/io.h>
 #include <cf9_reset.h>
-#include <delay.h>
 #include <device/pnp_ops.h>
 #include <device/pci_ops.h>
 #include <device/pci_def.h>
@@ -209,10 +208,8 @@ void mainboard_romstage_entry(void)
 
 	enable_lapic();
 
-	/* Force PCIRST# */
-	pci_write_config16(PCI_DEV(0, 0x1e, 0), PCI_BRIDGE_CONTROL, PCI_BRIDGE_CTL_BUS_RESET);
-	udelay(200 * 1000);
-	pci_write_config16(PCI_DEV(0, 0x1e, 0), PCI_BRIDGE_CONTROL, 0);
+	/* Force PCIRST# to cardbus add-on. */
+	ich7_p2p_secondary_reset();
 
 	ich7_enable_lpc();
 	early_superio_config();

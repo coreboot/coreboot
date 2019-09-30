@@ -83,8 +83,6 @@
 /* Device 0:1.0 PCI configuration space (PCI Express) */
 
 #define PCISTS1		0x06	/* 16bit */
-#define SBUSN1		0x19	/*  8bit */
-#define SUBUSN1		0x1a	/*  8bit */
 #define SSTS1		0x1e	/* 16bit */
 #define PEG_CAP		0xa2	/* 16bit */
 #define DSTS		0xaa	/* 16bit */

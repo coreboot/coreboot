@@ -39,6 +39,8 @@
 void i82801gx_enable(struct device *dev);
 #endif
 
+void ich7_p2p_secondary_reset(void);
+
 void enable_smbus(void);
 
 #if ENV_ROMSTAGE

@@ -17,6 +17,8 @@
 #include <cf9_reset.h>
 #include <console/console.h>
 #include <arch/io.h>
+#include <delay.h>
+#include <device/pci.h>
 #include <device/pci_ops.h>
 #include <device/pci_def.h>
 #include <cbmem.h>
@@ -549,14 +551,9 @@ static void i945_setup_pci_express_x16(void)
 	 * PCI bus 0x0a and check whether we find a device on 0:a.0
 	 */
 
-	/* First we reset the secondary bus */
-	reg16 = pci_read_config16(p2peg, PCI_BRIDGE_CONTROL);
-	reg16 |= PCI_BRIDGE_CTL_BUS_RESET;
-	pci_write_config16(p2peg, PCI_BRIDGE_CONTROL, reg16);
-	/* Read back and clear reset bit. */
-	reg16 = pci_read_config16(p2peg, PCI_BRIDGE_CONTROL);
-	reg16 &= ~PCI_BRIDGE_CTL_BUS_RESET; /* SRESET */
-	pci_write_config16(p2peg, PCI_BRIDGE_CONTROL, reg16);
+	/* Force PCIRST# */
+	pci_s_assert_secondary_reset(p2peg);
+	pci_s_deassert_secondary_reset(p2peg);
 
 	reg16 = pci_read_config16(p2peg, SLOTSTS);
 	printk(BIOS_DEBUG, "SLOTSTS: %04x\n", reg16);
@@ -565,10 +562,7 @@ static void i945_setup_pci_express_x16(void)
 	reg16 |= (1 << 4) | (1 << 0);
 	pci_write_config16(p2peg, SLOTSTS, reg16);
 
-	pci_write_config8(p2peg, PCI_SECONDARY_BUS, 0x00);
-	pci_write_config8(p2peg, PCI_SUBORDINATE_BUS, 0x00);
-	pci_write_config8(p2peg, PCI_SECONDARY_BUS, tmp_secondary);
-	pci_write_config8(p2peg, PCI_SUBORDINATE_BUS, tmp_secondary);
+	pci_s_bridge_set_secondary(p2peg, tmp_secondary);
 
 	reg32 = pci_read_config32(p2peg, 0x224);
 	reg32 &= ~(1 << 8);
@@ -614,11 +608,9 @@ static void i945_setup_pci_express_x16(void)
 		reg32 |= 1;
 		pci_write_config32(p2peg, PEGSTS, reg32);
 
-		reg16 = pci_read_config16(p2peg, PCI_BRIDGE_CONTROL);
-		reg16 |= PCI_BRIDGE_CTL_BUS_RESET;
-		pci_write_config16(p2peg, PCI_BRIDGE_CONTROL, reg16);
-		reg16 &= ~PCI_BRIDGE_CTL_BUS_RESET;
-		pci_write_config16(p2peg, PCI_BRIDGE_CONTROL, reg16);
+		/* Force PCIRST# */
+		pci_s_assert_secondary_reset(p2peg);
+		pci_s_deassert_secondary_reset(p2peg);
 
 		printk(BIOS_DEBUG, "PCIe link training ...");
 		timeout = 0x7ffff;
@@ -774,17 +766,14 @@ disable_pciexpress_x16_link:
 
 	MCHBAR16(UPMC1) |= (1 << 5) | (1 << 0);
 
-	reg16 = pci_read_config16(p2peg, PCI_BRIDGE_CONTROL);
-	reg16 |= PCI_BRIDGE_CTL_BUS_RESET;
-	pci_write_config16(p2peg, PCI_BRIDGE_CONTROL, reg16);
+	/* Toggle PCIRST# */
+	pci_s_assert_secondary_reset(p2peg);
 
 	reg32 = pci_read_config32(p2peg, 0x224);
 	reg32 |= (1 << 8);
 	pci_write_config32(p2peg, 0x224, reg32);
 
-	reg16 = pci_read_config16(p2peg, PCI_BRIDGE_CONTROL);
-	reg16 &= ~PCI_BRIDGE_CTL_BUS_RESET;
-	pci_write_config16(p2peg, PCI_BRIDGE_CONTROL, reg16);
+	pci_s_deassert_secondary_reset(p2peg);
 
 	printk(BIOS_DEBUG, "Wait for link to enter detect state... ");
 	timeout = 0x7fffff;
@@ -878,6 +867,14 @@ static void ich7_setup_pci_express(void)
 #endif
 
 	pci_write_config32(PCI_DEV(0, 0x1c, 0), 0xd8, 0x00110000);
+}
+
+void ich7_p2p_secondary_reset(void)
+{
+	pci_devfn_t p2p_bridge = PCI_DEV(0, 0x1e, 0);
+	pci_s_assert_secondary_reset(p2p_bridge);
+	mdelay(200);
+	pci_s_deassert_secondary_reset(p2p_bridge);
 }
 
 void i945_early_initialization(void)

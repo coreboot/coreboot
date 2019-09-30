@@ -11,14 +11,13 @@ image server, unpacks it, extracts the firmware update shell archive,
 extracts the firmware images from the shell archive.
 
 To download all Chrome OS firmware images, run
-```
-$ ./crosfirmware.sh
-```
+
+    $ ./crosfirmware.sh
+
 
 To download, e.g. the Panther firmware image, run
-```
-$ ./crosfirmware.sh panther
-```
+
+    $ ./crosfirmware.sh panther
 
 ## extract_blobs.sh
 
@@ -33,12 +32,10 @@ and `mrc.bin`.
 compatible format.
 
 Usage:
-```
-$ ./gen_test_hwid.sh BOARD_NAME
-```
+
+    $ ./gen_test_hwid.sh BOARD_NAME
 
 Example:
-```
-$ ./gen_test_hwid.sh Kukui
-KUKUI TEST 9847
-```
+
+    $ ./gen_test_hwid.sh Kukui
+    KUKUI TEST 9847

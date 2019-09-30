@@ -48,13 +48,19 @@ static void aspeed_ast2050_init(struct device *dev)
 	outb(0xa6, 0x3d4); outb(0x2f, 0x3d5);
 	outb(0xa7, 0x3d4); outb(0x3f, 0x3d5);
 
-	/* Initialize standard VGA text mode */
-	vga_io_init();
-	vga_textmode_init();
-	printk(BIOS_INFO, "ASpeed VGA text mode initialized\n");
+	if (CONFIG(VGA_TEXT_FRAMEBUFFER)) {
+		/* Initialize standard VGA text mode */
+		vga_io_init();
 
-	/* if we don't have console, at least print something... */
-	vga_line_write(0, "ASpeed VGA text mode initialized");
+		vga_textmode_init();
+		printk(BIOS_INFO, "ASpeed VGA text mode initialized\n");
+
+		/* if we don't have console, at least print something... */
+		vga_line_write(0, "ASpeed VGA text mode initialized");
+	} else if (CONFIG(GENERIC_LINEAR_FRAMEBUFFER)) {
+		ast_driver_framebuffer_init(&drm_dev, 0);
+		printk(BIOS_INFO, "ASpeed high resolution framebuffer initialized\n");
+	}
 }
 
 static struct device_operations aspeed_ast2050_ops  = {

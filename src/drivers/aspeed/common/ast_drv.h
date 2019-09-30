@@ -46,6 +46,7 @@ enum ast_chip {
 	AST2150,
 	AST2300,
 	AST2400,
+	AST2500,
 	AST1180,
 };
 
@@ -192,6 +193,8 @@ static inline void ast_open_key(struct ast_private *ast)
 #define AST_HWC_SIZE                (AST_MAX_HWC_WIDTH*AST_MAX_HWC_HEIGHT*2)
 #define AST_HWC_SIGNATURE_SIZE      32
 
+#define	EINVAL		22	/* Invalid argument */
+
 #define AST_DEFAULT_HWC_NUM 2
 /* define for signature structure */
 #define AST_HWC_SIGNATURE_CHECKSUM  0x00
@@ -201,6 +204,99 @@ static inline void ast_open_key(struct ast_private *ast)
 #define AST_HWC_SIGNATURE_Y         0x10
 #define AST_HWC_SIGNATURE_HOTSPOTX  0x14
 #define AST_HWC_SIGNATURE_HOTSPOTY  0x18
+
+/* ast_mode.c stuff */
+struct ast_vbios_stdtable {
+	u8 misc;
+	u8 seq[4];
+	u8 crtc[25];
+	u8 ar[20];
+	u8 gr[9];
+};
+
+struct ast_vbios_enhtable {
+	u32 ht;
+	u32 hde;
+	u32 hfp;
+	u32 hsync;
+	u32 vt;
+	u32 vde;
+	u32 vfp;
+	u32 vsync;
+	u32 dclk_index;
+	u32 flags;
+	u32 refresh_rate;
+	u32 refresh_rate_index;
+	u32 mode_id;
+};
+
+struct ast_vbios_dclk_info {
+	u8 param1;
+	u8 param2;
+	u8 param3;
+};
+
+struct ast_vbios_mode_info {
+	const struct ast_vbios_stdtable *std_table;
+	const struct ast_vbios_enhtable *enh_table;
+};
+
+#define DRM_MODE_FLAG_NVSYNC 1
+#define DRM_MODE_FLAG_PVSYNC 2
+#define DRM_MODE_FLAG_NHSYNC 4
+#define DRM_MODE_FLAG_PHSYNC 8
+
+struct drm_display_mode {
+	/* Proposed mode values */
+	u16 vrefresh;	/* in Hz */
+	u32 clock;
+	u16 hdisplay;
+	u16 vdisplay;
+	u32 flags;
+
+	/* Actual mode we give to hw */
+	u16 crtc_hdisplay;
+	u16 crtc_htotal;
+	u16 crtc_hblank_start;
+	u16 crtc_hblank_end;
+	u16 crtc_hsync_start;
+	u16 crtc_hsync_end;
+	u16 crtc_vtotal;
+	u16 crtc_vsync_start;
+	u16 crtc_vsync_end;
+	u16 crtc_vdisplay;
+	u16 crtc_vblank_start;
+	u16 crtc_vblank_end;
+};
+
+struct drm_format {
+	u32 cpp[1]; /* Colors per pixel */
+};
+
+struct drm_framebuffer {
+	u32 pitches[1];
+	struct drm_format *format;
+	u32 mmio_addr;
+};
+
+struct drm_primary {
+	struct drm_framebuffer *fb;
+};
+
+struct drm_crtc {
+	struct drm_device *dev;
+	struct drm_primary *primary;
+	struct drm_display_mode mode;
+};
+
+struct drm_connector {
+	struct drm_device *dev;
+};
+
+enum drm_mode_status {
+	MODE_NOMODE,
+	MODE_OK
+};
 
 #define AST_MM_ALIGN_SHIFT 4
 #define AST_MM_ALIGN_MASK ((1 << AST_MM_ALIGN_SHIFT) - 1)
@@ -222,4 +318,23 @@ bool ast_backup_fw(struct drm_device *dev, u8 *addr, u32 size);
 bool ast_dp501_read_edid(struct drm_device *dev, u8 *ediddata);
 u8 ast_get_dp501_max_clk(struct drm_device *dev);
 void ast_init_3rdtx(struct drm_device *dev);
+
+/* ast mode */
+int ast_crtc_mode_set(struct drm_crtc *crtc,
+		      struct drm_display_mode *mode,
+		      struct drm_display_mode *adjusted_mode);
+enum drm_mode_status ast_mode_valid(struct drm_connector *connector,
+				    const unsigned int hdisplay,
+				    const unsigned int vdisplay);
+void ast_hide_cursor(struct drm_crtc *crtc);
+void ast_set_offset_reg(struct drm_crtc *crtc);
+void ast_set_start_address_crt1(struct ast_private *ast, u32 offset);
+
+/* ast_mode_corebootfb */
+int ast_driver_framebuffer_init(struct drm_device *dev, int flags);
+int ast_crtc_do_set_base(struct drm_crtc *crtc);
+
+/* ast i2c */
+int ast_software_i2c_read(struct ast_private *ast_priv, uint8_t edid[128]);
+
 #endif

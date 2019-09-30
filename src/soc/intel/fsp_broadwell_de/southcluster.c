@@ -280,7 +280,7 @@ void southcluster_enable_dev(struct device *dev)
 #if CONFIG(HAVE_ACPI_TABLES)
 static const char *lpc_acpi_name(const struct device *dev)
 {
-	if (dev->path.pci.devfn == LPC_DEV_FUNC)
+	if (dev->path.pci.devfn == PCH_DEVFN_LPC)
 		return "LPC0";
 	else
 		return NULL;

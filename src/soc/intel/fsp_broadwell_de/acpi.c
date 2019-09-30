@@ -316,7 +316,7 @@ void acpi_fill_in_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
 static unsigned long acpi_fill_dmar(unsigned long current)
 {
 	uint32_t vtbar, tmp = current;
-	struct device *dev = pcidev_path_on_root(VTD_DEV_FUNC);
+	struct device *dev = pcidev_path_on_root(IIO_DEVFN_VTD);
 	uint16_t bdf, hpet_bdf[8];
 	uint8_t i, j;
 
@@ -333,7 +333,7 @@ static unsigned long acpi_fill_dmar(unsigned long current)
 	current += acpi_create_dmar_ds_ioapic(current,
 			9, 0, 5, 4);
 	/* Get the PCI BDF for the PCH I/O APIC */
-	dev = pcidev_path_on_root(LPC_DEV_FUNC);
+	dev = pcidev_path_on_root(PCH_DEVFN_LPC);
 	bdf = pci_read_config16(dev, 0x6c);
 	current += acpi_create_dmar_ds_ioapic(current,
 			8, (bdf >> 8), PCI_SLOT(bdf), PCI_FUNC(bdf));

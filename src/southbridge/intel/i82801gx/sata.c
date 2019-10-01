@@ -94,7 +94,6 @@ static void sata_init(struct device *dev)
 {
 	u32 reg32;
 	u16 reg16;
-	u32 *ahci_bar;
 	u8 ports;
 
 	/* Get the chip configuration */
@@ -117,7 +116,7 @@ static void sata_init(struct device *dev)
 	case SATA_MODE_IDE_LEGACY_COMBINED:
 		printk(BIOS_DEBUG, "SATA controller in combined mode.\n");
 		/* No AHCI: clear AHCI base */
-		pci_write_config32(dev, 0x24, 0x00000000);
+		pci_write_config32(dev, PCI_BASE_ADDRESS_5, 0x00000000);
 		/* And without AHCI BAR no memory decoding */
 		reg16 = pci_read_config16(dev, PCI_COMMAND);
 		reg16 &= ~PCI_COMMAND_MEMORY;
@@ -155,8 +154,11 @@ static void sata_init(struct device *dev)
 		/* Interrupt Pin is set by D31IP.PIP */
 		pci_write_config8(dev, INTR_LN, 0x0a);
 
-		ahci_bar = (u32 *)(pci_read_config32(dev, 0x27) & ~0x3ff);
-		ahci_bar[3] = config->sata_ports_implemented;
+		struct resource *ahci_res = find_resource(dev, PCI_BASE_ADDRESS_5);
+		if (ahci_res != NULL)
+			/* write AHCI GHC_PI register */
+			write32(res2mmio(ahci_res, 0xc, 0),
+				config->sata_ports_implemented);
 		break;
 	default:
 	case SATA_MODE_IDE_PLAIN:
@@ -165,7 +167,7 @@ static void sata_init(struct device *dev)
 		pci_write_config8(dev, SATA_MAP, 0x00);
 
 		/* No AHCI: clear AHCI base */
-		pci_write_config32(dev, 0x24, 0x00000000);
+		pci_write_config32(dev, PCI_BASE_ADDRESS_5, 0x00000000);
 
 		/* And without AHCI BAR no memory decoding */
 		reg16 = pci_read_config16(dev, PCI_COMMAND);

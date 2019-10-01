@@ -409,11 +409,6 @@ static void enable_clock_gating(struct device *dev)
 	reg16 |= (1 << 2) | (1 << 11);
 	pci_write_config16(dev, GEN_PMCON_1, reg16);
 
-	pch_iobp_update(0xEB007F07, ~0UL, (1 << 31));
-	pch_iobp_update(0xEB004000, ~0UL, (1 << 7));
-	pch_iobp_update(0xEC007F07, ~0UL, (1 << 31));
-	pch_iobp_update(0xEC004000, ~0UL, (1 << 7));
-
 	reg32 = RCBA32(CG);
 	reg32 |= (1 << 31);
 	reg32 |= (1 << 29) | (1 << 28);
@@ -500,13 +495,7 @@ static void lpc_init(struct device *dev)
 	pch_power_options(dev);
 
 	/* Initialize power management */
-	switch (pch_silicon_type()) {
-	case PCH_TYPE_MOBILE5:
-		mobile5_pm_init (dev);
-		break;
-	default:
-		printk(BIOS_ERR, "Unknown Chipset: 0x%04x\n", dev->device);
-	}
+	mobile5_pm_init(dev);
 
 	/* Set the state of the GPIO lines. */
 	//gpio_init(dev);

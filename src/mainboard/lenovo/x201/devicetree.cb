@@ -74,9 +74,10 @@ chip northbridge/intel/nehalem
 
 			register "pcie_hotplug_map" = "{ 0, 0, 0, 1, 0, 0, 0, 0 }"
 
-			device pci 16.2 on # IDE/SATA
-				subsystemid 0x17aa 0x2161
-			end
+			device pci 16.0 on end # Management Engine Interface 1
+			device pci 16.1 off end # Management Engine Interface 2
+			device pci 16.2 off end # Management Engine IDE-R, only management boot
+			device pci 16.3 off end # Management Engine KT
 
 			device pci 19.0 on # Ethernet
 				subsystemid 0x17aa 0x2153
@@ -92,14 +93,19 @@ chip northbridge/intel/nehalem
 
 			device pci 1c.0 on end # PCIe Port #1
 			device pci 1c.1 on end # PCIe Port #2 (wwan)
+			device pci 1c.2 off end
 			device pci 1c.3 on
 				smbios_slot_desc "7" "3" "ExpressCard Slot" "8"
 			end # PCIe Port #4 (Expresscard)
 			device pci 1c.4 on end # PCIe Port #5 (wlan)
+			device pci 1c.5 off end
+			device pci 1c.6 off end
+			device pci 1c.7 off end
 
 			device pci 1d.0 on # USB2 EHCI
 				subsystemid 0x17aa 0x2163
 			end
+			device pci 1e.0 on end # PCI 2 PCI bridge
 			device pci 1f.0 on # PCI-LPC bridge
 				subsystemid 0x17aa 0x2166
 				chip superio/nsc/pc87382
@@ -179,6 +185,9 @@ chip northbridge/intel/nehalem
 					device i2c 5f on end
 				end
 			end
+			device pci 1f.4 off end
+			device pci 1f.5 off end
+			device pci 1f.6 on end
 		end
 	end
 end

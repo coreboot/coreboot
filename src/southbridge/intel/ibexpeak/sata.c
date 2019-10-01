@@ -176,15 +176,6 @@ static void sata_init(struct device *dev)
 				     sata_port_map ^ 0x3f) << 24) | 0x183);
 	}
 
-	/* Set Gen3 Transmitter settings if needed */
-	if (config->sata_port0_gen3_tx)
-		pch_iobp_update(SATA_IOBP_SP0G3IR, 0,
-				config->sata_port0_gen3_tx);
-
-	if (config->sata_port1_gen3_tx)
-		pch_iobp_update(SATA_IOBP_SP1G3IR, 0,
-				config->sata_port1_gen3_tx);
-
 	/* Additional Programming Requirements */
 	sir_write(dev, 0x04, 0x00000000);
 	sir_write(dev, 0x28, 0x0a000033);
@@ -208,9 +199,6 @@ static void sata_init(struct device *dev)
 	sir_write(dev, 0xc4, 0x0c0c0c0c);
 	sir_write(dev, 0xc8, 0x0c0c0c0c);
 	sir_write(dev, 0xd4, 0x10000000);
-
-	pch_iobp_update(0xea004001, 0x3fffffff, 0xc0000000);
-	pch_iobp_update(0xea00408a, 0xfffffcff, 0x00000100);
 }
 
 static void sata_enable(struct device *dev)

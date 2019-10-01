@@ -21,10 +21,9 @@
 #include <soc/dramc_common_mt8183.h>
 
 struct sdram_params {
-	u32 impedance[2][4];
 	u8 wr_level[CHANNEL_MAX][RANK_MAX][DQS_NUMBER];
-	u8 cbt_cs[CHANNEL_MAX][RANK_MAX];
-	u8 cbt_mr12[CHANNEL_MAX][RANK_MAX];
+	u8 cbt_cs_dly[CHANNEL_MAX][RANK_MAX];
+	u8 cbt_final_vref[CHANNEL_MAX][RANK_MAX];
 	u32 emi_cona_val;
 	u32 emi_conh_val;
 	u32 emi_conf_val;

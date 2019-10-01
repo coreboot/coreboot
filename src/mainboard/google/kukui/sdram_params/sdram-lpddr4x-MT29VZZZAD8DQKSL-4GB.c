@@ -16,19 +16,15 @@
 #include <soc/emi.h>
 
 struct sdram_params params = {
-	.impedance = {
-		[ODT_OFF] = {0x9, 0x7, 0x0, 0xF},
-		[ODT_ON] = {0xA, 0x9, 0x0, 0xE}
-	},
 	.wr_level = {
 		[CHANNEL_A] = { {0x21, 0x21}, {0x20, 0x20} },
 		[CHANNEL_B] = { {0x21, 0x28}, {0x21, 0x29} }
 	},
-	.cbt_cs = {
+	.cbt_cs_dly = {
 		[CHANNEL_A] = {0x2, 0x2},
 		[CHANNEL_B] = {0x2, 0x2}
 	},
-	.cbt_mr12 = {
+	.cbt_final_vref = {
 		[CHANNEL_A] = {0x5E, 0x5E},
 		[CHANNEL_B] = {0x5E, 0x5C}
 	},

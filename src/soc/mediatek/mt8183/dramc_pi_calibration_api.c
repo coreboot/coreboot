@@ -252,8 +252,8 @@ static void dramc_cmd_bus_training(u8 chn, u8 rank, u8 freq_group,
 {
 	u32 cbt_cs, mr12_value;
 
-	cbt_cs = params->cbt_cs[chn][rank];
-	mr12_value = params->cbt_mr12[chn][rank];
+	cbt_cs = params->cbt_cs_dly[chn][rank];
+	mr12_value = params->cbt_final_vref[chn][rank];
 
 	/* CBT adjust cs */
 	clrsetbits_le32(&ch[chn].phy.shu[0].rk[rank].ca_cmd[9],

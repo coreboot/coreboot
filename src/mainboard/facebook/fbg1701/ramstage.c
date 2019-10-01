@@ -324,15 +324,11 @@ static const struct edp_data b101uan08_table[] = {
 
 static void mainboard_configure_edp_bridge(void)
 {
-	u8 cpld_version;
 	const struct edp_data *edptable;
 	unsigned int loops;
 	int status;
 
-	cpld_version = (inb(CPLD_PCB_VERSION_PORT) & CPLD_PCB_VERSION_MASK) >>
-			CPLD_PCB_VERSION_BIT;
-	printk(BIOS_DEBUG, "CPLD version: %x\n", cpld_version);
-	if (cpld_version < 7)
+	if (mainboard_read_pcb_version() < 7)
 		edptable = b101uan01_table;
 	else
 		edptable = b101uan08_table;

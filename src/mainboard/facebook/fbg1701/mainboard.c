@@ -16,7 +16,10 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/io.h>
 #include <device/device.h>
+#include "mainboard.h"
+#include "onboard.h"
 
 /*
  * Declare the resources we are using
@@ -34,6 +37,13 @@ static void mainboard_reserve_resources(struct device *dev)
 	res->base = 0x7;
 	res->size = 0x1;
 	res->flags = IORESOURCE_IRQ | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+}
+
+/* Read PCB version */
+unsigned int mainboard_read_pcb_version(void)
+{
+	return ((inb(CPLD_PCB_VERSION_PORT) & CPLD_PCB_VERSION_MASK) >>
+		CPLD_PCB_VERSION_BIT);
 }
 
 /*

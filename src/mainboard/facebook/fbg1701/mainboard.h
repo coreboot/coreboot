@@ -16,6 +16,7 @@
 #ifndef MAINBOARD_H
 #define MAINBOARD_H
 
+unsigned int mainboard_read_pcb_version(void);
 void *load_logo(size_t *logo_size);
 
 #endif

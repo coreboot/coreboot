@@ -48,6 +48,7 @@ chip northbridge/intel/nehalem
 		device pci 00.0 on # Host bridge
 			subsystemid 0x1025 0x0379
 		end
+		device pci 01.0 off end # PEG
 		device pci 02.0 on # VGA controller
 			subsystemid 0x1025 0x0379
 		end

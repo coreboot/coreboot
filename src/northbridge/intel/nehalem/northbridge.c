@@ -229,6 +229,28 @@ static void northbridge_init(struct device *dev)
 	northbridge_dmi_init(dev);
 }
 
+/* Disable unused PEG devices based on devicetree before PCI enumeration */
+static void nehalem_init(void *const chip_info)
+{
+	u32 deven_mask = UINT32_MAX;
+	const struct device *dev;
+
+	dev = pcidev_on_root(1, 0);
+	if (!dev || !dev->enabled) {
+		printk(BIOS_DEBUG, "Disabling PEG10.\n");
+		deven_mask &= ~DEVEN_PEG10;
+	}
+	dev = pcidev_on_root(2, 0);
+	if (!dev || !dev->enabled) {
+		printk(BIOS_DEBUG, "Disabling IGD.\n");
+		deven_mask &= ~DEVEN_IGD;
+	}
+	const struct device *const d0f0 = pcidev_on_root(0, 0);
+	if (d0f0)
+		pci_update_config32(d0f0, D0F0_DEVEN, deven_mask, 0);
+
+}
+
 static struct pci_operations intel_pci_ops = {
 	.set_subsystem = pci_dev_set_subsystem,
 };
@@ -269,5 +291,6 @@ static void enable_dev(struct device *dev)
 
 struct chip_operations northbridge_intel_nehalem_ops = {
 	CHIP_NAME("Intel i7 (Nehalem) integrated Northbridge")
-	    .enable_dev = enable_dev,
+	.enable_dev = enable_dev,
+	.init = nehalem_init,
 };

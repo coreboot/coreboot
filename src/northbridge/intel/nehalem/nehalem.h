@@ -177,9 +177,6 @@ typedef struct {
 #define MCHBAR32_OR(x, or) (MCHBAR32(x) = MCHBAR32(x) | (or))
 #define MCHBAR32_AND_OR(x, and, or) \
 	(MCHBAR32(x) = (MCHBAR32(x) & (and)) | (or))
-
-#define BIOS_RESET_CPL	0x5da8	/* 8bit */
-
 /*
  * EPBAR - Egress Port Root Complex Register Block
  */

@@ -121,7 +121,7 @@ static void pch_log_pme_internal_wake_source(void)
 #define RP_PME_STS_BIT		(1 << 16)
 static void pch_log_rp_wake_source(void)
 {
-	size_t i;
+	size_t i, maxports;
 #ifdef __SIMPLE_DEVICE__
 	pci_devfn_t dev;
 #else
@@ -142,9 +142,23 @@ static void pch_log_rp_wake_source(void)
 		{ PCH_DEV_PCIE10, 0x60, ELOG_WAKE_SOURCE_PME_PCIE10 },
 		{ PCH_DEV_PCIE11, 0x60, ELOG_WAKE_SOURCE_PME_PCIE11 },
 		{ PCH_DEV_PCIE12, 0x60, ELOG_WAKE_SOURCE_PME_PCIE12 },
+		{ PCH_DEV_PCIE13, 0x60, ELOG_WAKE_SOURCE_PME_PCIE13 },
+		{ PCH_DEV_PCIE14, 0x60, ELOG_WAKE_SOURCE_PME_PCIE14 },
+		{ PCH_DEV_PCIE15, 0x60, ELOG_WAKE_SOURCE_PME_PCIE15 },
+		{ PCH_DEV_PCIE16, 0x60, ELOG_WAKE_SOURCE_PME_PCIE16 },
+		{ PCH_DEV_PCIE17, 0x60, ELOG_WAKE_SOURCE_PME_PCIE17 },
+		{ PCH_DEV_PCIE18, 0x60, ELOG_WAKE_SOURCE_PME_PCIE18 },
+		{ PCH_DEV_PCIE19, 0x60, ELOG_WAKE_SOURCE_PME_PCIE19 },
+		{ PCH_DEV_PCIE20, 0x60, ELOG_WAKE_SOURCE_PME_PCIE20 },
+		{ PCH_DEV_PCIE21, 0x60, ELOG_WAKE_SOURCE_PME_PCIE21 },
+		{ PCH_DEV_PCIE22, 0x60, ELOG_WAKE_SOURCE_PME_PCIE22 },
+		{ PCH_DEV_PCIE23, 0x60, ELOG_WAKE_SOURCE_PME_PCIE23 },
+		{ PCH_DEV_PCIE24, 0x60, ELOG_WAKE_SOURCE_PME_PCIE24 },
 	};
 
-	for (i = 0; i < ARRAY_SIZE(pme_status_info); i++) {
+	maxports = min(CONFIG_MAX_ROOT_PORTS, ARRAY_SIZE(pme_status_info));
+
+	for (i = 0; i < maxports; i++) {
 		dev = pme_status_info[i].dev;
 
 		if (!dev)

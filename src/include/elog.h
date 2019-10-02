@@ -149,6 +149,18 @@
 #define  ELOG_WAKE_SOURCE_PME_XHCI_USB_2   0x1d
 #define  ELOG_WAKE_SOURCE_PME_XHCI_USB_3   0x1e
 #define  ELOG_WAKE_SOURCE_PME_WIFI         0x1f
+#define  ELOG_WAKE_SOURCE_PME_PCIE13       0x20
+#define  ELOG_WAKE_SOURCE_PME_PCIE14       0x21
+#define  ELOG_WAKE_SOURCE_PME_PCIE15       0x22
+#define  ELOG_WAKE_SOURCE_PME_PCIE16       0x23
+#define  ELOG_WAKE_SOURCE_PME_PCIE17       0x24
+#define  ELOG_WAKE_SOURCE_PME_PCIE18       0x25
+#define  ELOG_WAKE_SOURCE_PME_PCIE19       0x26
+#define  ELOG_WAKE_SOURCE_PME_PCIE20       0x27
+#define  ELOG_WAKE_SOURCE_PME_PCIE21       0x28
+#define  ELOG_WAKE_SOURCE_PME_PCIE22       0x29
+#define  ELOG_WAKE_SOURCE_PME_PCIE23       0x2a
+#define  ELOG_WAKE_SOURCE_PME_PCIE24       0x2b
 
 struct elog_event_data_wake {
 	u8 source;

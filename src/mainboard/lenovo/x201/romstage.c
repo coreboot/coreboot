@@ -61,6 +61,24 @@ static void pch_enable_lpc(void)
 			   pci_read_config32(PCH_LPC_DEV, ETR3) & ~ETR3_CF9GR);
 }
 
+const struct southbridge_usb_port mainboard_usb_ports[] = {
+	/* Enabled, Current table lookup index, OC map */
+	{ 1, IF1_557, 0 },
+	{ 1, IF1_55F, 1 },
+	{ 1, IF1_74B, 3 },
+	{ 1, IF1_74B, 3 },
+	{ 1, IF1_557, 3 },
+	{ 1, IF1_14B, 3 },
+	{ 1, IF1_74B, 3 },
+	{ 1, IF1_74B, 3 },
+	{ 1, IF1_74B, 4 },
+	{ 1, IF1_74B, 5 },
+	{ 1, IF1_55F, 7 },
+	{ 1, IF1_55F, 7 },
+	{ 1, IF1_557, 7 },
+	{ 1, IF1_55F, 7 },
+};
+
 static void rcba_config(void)
 {
 	southbridge_configure_default_intmap();
@@ -73,29 +91,7 @@ static void rcba_config(void)
 	/* Set reserved bit to 1 */
 	RCBA32(FD2) = 1;
 
-	static const u32 rcba_dump3[] = {
-		/* 3500 */ 0x20000557, 0x2000055f, 0x2000074b, 0x2000074b,
-		/* 3510 */ 0x20000557, 0x2000014b, 0x2000074b, 0x2000074b,
-		/* 3520 */ 0x2000074b, 0x2000074b, 0x2000055f, 0x2000055f,
-		/* 3530 */ 0x20000557, 0x2000055f, 0x00000000, 0x00000000,
-		/* 3540 */ 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-		/* 3550 */ 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-		/* 3560 */ 0x00000001, 0x000026a3, 0x00040002, 0x01000052,
-		/* 3570 */ 0x02000772, 0x16000f8f, 0x1800ff4f, 0x0001d630,
-		/* 3580 */ 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-		/* 3590 */ 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-		/* 35a0 */ 0xfc000201, 0x3c000201, 0x00000000, 0x00000000,
-		/* 35b0 */ 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-		/* 35c0 */ 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-		/* 35d0 */ 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-		/* 35e0 */ 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-		/* 35f0 */ 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-	};
-	unsigned i;
-	for (i = 0; i < sizeof(rcba_dump3) / 4; i++) {
-		RCBA32(4 * i + 0x3500) = rcba_dump3[i];
-		(void)RCBA32(4 * i + 0x3500);
-	}
+	early_usb_init(mainboard_usb_ports);
 }
 
 static inline void write_acpi32(u32 addr, u32 val)

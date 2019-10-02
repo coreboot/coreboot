@@ -43,5 +43,6 @@ romstage-y +=../bd82x6x/me_status.c
 romstage-y += early_thermal.c
 romstage-y += ../bd82x6x/early_rcba.c
 romstage-y += early_cir.c
+romstage-y += early_usb.c
 
 endif

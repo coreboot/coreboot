@@ -42,6 +42,12 @@
 /* === Parsing code === */
 /* This is the generic parsing code. */
 
+void *get_cbmem_ptr(unsigned char *ptr)
+{
+	struct cb_cbmem_tab *const cbmem = (struct cb_cbmem_tab *)ptr;
+	return phys_to_virt(cbmem->cbmem_tab);
+}
+
 static void cb_parse_memory(void *ptr, struct sysinfo_t *info)
 {
 	struct cb_memory *mem = ptr;
@@ -128,20 +134,17 @@ static void cb_parse_mac_addresses(unsigned char *ptr,
 
 static void cb_parse_tstamp(unsigned char *ptr, struct sysinfo_t *info)
 {
-	struct cb_cbmem_tab *const cbmem = (struct cb_cbmem_tab *)ptr;
-	info->tstamp_table = phys_to_virt(cbmem->cbmem_tab);
+	info->tstamp_table = get_cbmem_ptr(ptr);
 }
 
 static void cb_parse_cbmem_cons(unsigned char *ptr, struct sysinfo_t *info)
 {
-	struct cb_cbmem_tab *const cbmem = (struct cb_cbmem_tab *)ptr;
-	info->cbmem_cons = phys_to_virt(cbmem->cbmem_tab);
+	info->cbmem_cons = get_cbmem_ptr(ptr);
 }
 
 static void cb_parse_acpi_gnvs(unsigned char *ptr, struct sysinfo_t *info)
 {
-	struct cb_cbmem_tab *const cbmem = (struct cb_cbmem_tab *)ptr;
-	info->acpi_gnvs = phys_to_virt(cbmem->cbmem_tab);
+	info->acpi_gnvs = get_cbmem_ptr(ptr);
 }
 
 static void cb_parse_board_id(unsigned char *ptr, struct sysinfo_t *info)
@@ -193,8 +196,7 @@ static void cb_parse_string(unsigned char *ptr, char **info)
 
 static void cb_parse_wifi_calibration(void *ptr, struct sysinfo_t *info)
 {
-	struct cb_cbmem_tab *const cbmem = (struct cb_cbmem_tab *)ptr;
-	info->wifi_calibration = phys_to_virt(cbmem->cbmem_tab);
+	info->wifi_calibration = get_cbmem_ptr(ptr);
 }
 
 static void cb_parse_ramoops(void *ptr, struct sysinfo_t *info)
@@ -235,14 +237,12 @@ static void cb_parse_boot_media_params(unsigned char *ptr,
 
 static void cb_parse_vpd(void *ptr, struct sysinfo_t *info)
 {
-	struct cb_cbmem_tab *const cbmem = (struct cb_cbmem_tab *)ptr;
-	info->chromeos_vpd = phys_to_virt(cbmem->cbmem_tab);
+	info->chromeos_vpd = get_cbmem_ptr(ptr);
 }
 
 static void cb_parse_fmap_cache(void *ptr, struct sysinfo_t *info)
 {
-	struct cb_cbmem_tab *const cbmem = (struct cb_cbmem_tab *)ptr;
-	info->fmap_cache = phys_to_virt(cbmem->cbmem_tab);
+	info->fmap_cache = get_cbmem_ptr(ptr);
 }
 
 #if CONFIG(LP_TIMER_RDTSC)

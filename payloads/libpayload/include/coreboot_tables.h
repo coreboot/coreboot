@@ -395,4 +395,6 @@ static inline const char *cb_mb_part_string(const struct cb_mainboard *cbm)
 	(void *)(((u8 *) (_rec)) + sizeof(*(_rec)) \
 		+ (sizeof((_rec)->map[0]) * (_idx)))
 
+/* Helper functions */
+void *get_cbmem_ptr(unsigned char *ptr);
 #endif

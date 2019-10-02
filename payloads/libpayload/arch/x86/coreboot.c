@@ -50,8 +50,7 @@ static void cb_parse_x86_rom_var_mtrr(void *ptr, struct sysinfo_t *info)
 
 static void cb_parse_mrc_cache(void *ptr, struct sysinfo_t *info)
 {
-	struct cb_cbmem_tab *const cbmem = (struct cb_cbmem_tab *)ptr;
-	info->mrc_cache = phys_to_virt(cbmem->cbmem_tab);
+	info->mrc_cache = get_cbmem_ptr(ptr);
 }
 
 int cb_parse_arch_specific(struct cb_record *rec, struct sysinfo_t *info)

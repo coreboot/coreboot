@@ -32,6 +32,11 @@
 #define SVID_CONFIG3		3
 #define SVID_PMIC_CONFIG	8
 
+#define IGD_MEMSIZE_32MB	0x01
+#define IGD_MEMSIZE_64MB	0x02
+#define IGD_MEMSIZE_96MB	0x03
+#define IGD_MEMSIZE_128MB	0x04
+
 enum lpe_clk_src {
 	LPE_CLK_SRC_XTAL,
 	LPE_CLK_SRC_PLL,

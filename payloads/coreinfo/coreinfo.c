@@ -290,8 +290,11 @@ static void loop(void)
 	}
 }
 
-int main(void)
+int main(int argc, char **argv)
 {
+	(void)argc;
+	(void)argv;
+
 	int j;
 
 	if (CONFIG(LP_USB))

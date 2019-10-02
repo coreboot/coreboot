@@ -394,6 +394,7 @@ static void enable_hpet(void)
 	reg32 |= (1 << 7); // HPET Address Enable
 	reg32 &= ~(3 << 0);
 	RCBA32(HPTC) = reg32;
+	RCBA32(HPTC); /* Read back for it to work */
 
 	write32((u32 *)0xfed00010, read32((u32 *)0xfed00010) | 1);
 }

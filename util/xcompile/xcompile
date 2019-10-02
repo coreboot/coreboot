@@ -293,12 +293,17 @@ EOF
 	fi # if [ "${TARCH}" = "arm64" ]...
 
 	cat <<EOF
-NM_${TARCH}:=${GCCPREFIX}nm
+ifeq (\$(CONFIG_COMPILER_GCC)\$(CONFIG_LP_COMPILER_GCC),y)
+	NM_${TARCH}:=${GCCPREFIX}gcc-nm
+	AR_${TARCH}:=${GCCPREFIX}gcc-ar
+else
+	NM_${TARCH}:=${GCCPREFIX}nm
+	AR_${TARCH}:=${GCCPREFIX}ar
+endif
 OBJCOPY_${TARCH}:=${GCCPREFIX}objcopy
 OBJDUMP_${TARCH}:=${GCCPREFIX}objdump
 READELF_${TARCH}:=${GCCPREFIX}readelf
 STRIP_${TARCH}:=${GCCPREFIX}strip
-AR_${TARCH}:=${GCCPREFIX}ar
 GNATBIND_${TARCH}:=${GCCPREFIX}gnatbind
 CROSS_COMPILE_${TARCH}:=${GCCPREFIX}
 

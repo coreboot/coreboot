@@ -607,9 +607,10 @@ static u32 dramc_engine2_run(u8 chn, enum dram_te_op wr)
 	return result;
 }
 
-static void dramc_engine2_end(u8 chn)
+static void dramc_engine2_end(u8 chn, u32 dummy_rd)
 {
 	clrbits_le32(&ch[chn].ao.test2_4, 0x1 << 17);
+	write32(&ch[chn].ao.dummy_rd, dummy_rd);
 }
 
 static bool dramc_find_gating_window(u32 result_r, u32 result_f, u32 *debug_cnt,
@@ -995,8 +996,7 @@ static void dramc_rx_dqs_gating_cal(u8 chn, u8 rank, u8 freq_group,
 		}
 	}
 
-	dramc_engine2_end(chn);
-	write32(&ch[chn].ao.dummy_rd, dummy_rd_backup);
+	dramc_engine2_end(chn, dummy_rd_backup);
 
 	for (dqs = 0; dqs < DQS_NUMBER; dqs++) {
 		pass_count[dqs] = dqs_transition[dqs];
@@ -1811,12 +1811,10 @@ static u8 dramc_window_perbit_cal(u8 chn, u8 rank, u8 freq_group,
 			break;
 	}
 
-	if (type == RX_WIN_RD_DQC) {
+	if (type == RX_WIN_RD_DQC)
 		dramc_rx_rd_dqc_end(chn);
-	} else {
-		dramc_engine2_end(chn);
-		write32(&ch[chn].ao.dummy_rd, dummy_rd_bak_engine2);
-	}
+	else
+		dramc_engine2_end(chn, dummy_rd_bak_engine2);
 
 	if (vref_scan_enable && type == RX_WIN_TEST_ENG)
 		dramc_set_vref(chn, rank, type, vref_dly.best_vref);
@@ -1895,8 +1893,7 @@ static u8 dramc_rx_datlat_cal(u8 chn, u8 rank, u8 freq_group, const struct sdram
 		dramc_dbg("Datlat=%2d, err_value=0x%4x, sum=%d\n", datlat, err, sum);
 	}
 
-	dramc_engine2_end(chn);
-	write32(&ch[chn].ao.dummy_rd, dummy_rd_backup);
+	dramc_engine2_end(chn, dummy_rd_backup);
 
 	assert(sum != 0);
 

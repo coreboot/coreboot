@@ -208,9 +208,6 @@ void mainboard_romstage_entry(void)
 
 	enable_lapic();
 
-	/* Force PCIRST# to cardbus add-on. */
-	ich7_p2p_secondary_reset();
-
 	ich7_enable_lpc();
 	early_superio_config();
 

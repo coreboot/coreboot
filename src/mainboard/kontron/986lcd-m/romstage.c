@@ -245,9 +245,6 @@ void mainboard_romstage_entry(void)
 
 	enable_lapic();
 
-	/* Force PCIRST# to conventional PCI slot and Firewire. */
-	ich7_p2p_secondary_reset();
-
 	ich7_enable_lpc();
 	early_superio_config_w83627thg();
 

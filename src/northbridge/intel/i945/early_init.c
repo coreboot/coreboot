@@ -17,7 +17,6 @@
 #include <cf9_reset.h>
 #include <console/console.h>
 #include <arch/io.h>
-#include <delay.h>
 #include <device/pci.h>
 #include <device/pci_ops.h>
 #include <device/pci_def.h>
@@ -867,14 +866,6 @@ static void ich7_setup_pci_express(void)
 #endif
 
 	pci_write_config32(PCI_DEV(0, 0x1c, 0), 0xd8, 0x00110000);
-}
-
-void ich7_p2p_secondary_reset(void)
-{
-	pci_devfn_t p2p_bridge = PCI_DEV(0, 0x1e, 0);
-	pci_s_assert_secondary_reset(p2p_bridge);
-	mdelay(200);
-	pci_s_deassert_secondary_reset(p2p_bridge);
 }
 
 void i945_early_initialization(void)

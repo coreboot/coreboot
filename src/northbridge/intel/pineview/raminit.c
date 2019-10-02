@@ -552,10 +552,12 @@ static void sdram_detect_ram_speed(struct sysinfo *s)
 static void enable_hpet(void)
 {
 	u32 reg32;
-	reg32 = RCBA32(0x3404);
+	reg32 = RCBA32(HPTC);
 	reg32 &= ~0x3;
 	reg32 |= (1 << 7);
-	RCBA32(0x3404) = reg32;
+	RCBA32(HPTC) = reg32;
+	/* On NM10 this only works if read back */
+	RCBA32(HPTC);
 	HPET32(0x10) = HPET32(0x10) | 1;
 }
 

@@ -310,6 +310,10 @@ static void enable_hpet(void)
 	reg32 |= (1 << 7); // HPET Address Enable
 	reg32 &= ~(3 << 0);
 	RCBA32(HPTC) = reg32;
+	/* On NM10 this only works if read back */
+	RCBA32(HPTC);
+
+	write32((u32 *)0xfed00010, read32((u32 *)0xfed00010) | 1);
 }
 
 static void enable_clock_gating(void)

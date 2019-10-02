@@ -385,22 +385,29 @@ chip soc/intel/cannonlake
 		device pci 19.1 off end # I2C #5
 		device pci 19.2 on  end # UART #2
 		device pci 1a.0 off end # eMMC
-		device pci 1c.0 on  end # PCI Express Port 1 (USB)
+		device pci 1c.0 on	# PCI Express Port 1 (USB)
+			register "PcieRpSlotImplemented[0]" = "1"
+		end
 		device pci 1c.1 off end # PCI Express Port 2 (USB)
 		device pci 1c.2 off end # PCI Express Port 3 (USB)
 		device pci 1c.3 off end # PCI Express Port 4 (USB)
 		device pci 1c.4 off end # PCI Express Port 5 (USB)
 		device pci 1c.5 off end # PCI Express Port 6
 		device pci 1c.6 off end # PCI Express Port 7
-		device pci 1c.7 on  end # PCI Express Port 8
+		device pci 1c.7 on	# PCI Express Port 8
+			register "PcieRpSlotImplemented[7]" = "1"
+		end
 		device pci 1d.0 on
 			chip drivers/generic/bayhub
 				register "power_saving" = "1"
 				device pci 00.0 on end
 			end
 			smbios_slot_desc "SlotTypeM2Socket1_SD" "SlotLengthOther" "2230" "SlotDataBusWidth1X"
+			register "PcieRpSlotImplemented[8]" = "1"
 		end # PCI Express Port 9
-		device pci 1d.1 on  end # PCI Express Port 10
+		device pci 1d.1 on	# PCI Express Port 10
+			register "PcieRpSlotImplemented[9]" = "1"
+		end
 		device pci 1d.2 off end # PCI Express Port 11
 		device pci 1d.3 off end # PCI Express Port 12
 		device pci 1d.4 on
@@ -409,6 +416,7 @@ chip soc/intel/cannonlake
 				device pci 00.0 on end
 			end
 			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther" "2280" "SlotDataBusWidth4X"
+			register "PcieRpSlotImplemented[12]" = "1"
 		end # PCI Express Port 13 (x4)
 		device pci 1e.0 off end # UART #0
 		device pci 1e.1 off end # UART #1

@@ -107,12 +107,18 @@ chip soc/intel/cannonlake
 		device pci 19.1 off end # I2C #5 (Not available on PCH-H)
 		device pci 19.2 on  end # UART #2
 		device pci 1a.0 on  end # eMMC
-		device pci 1c.0 on  end # PCI Express Port 1
-		device pci 1c.4 on  end # PCI Express Port 5
+		device pci 1c.0 on	# PCI Express Port 1
+			register "PcieRpSlotImplemented[0]" = "1"
+		end
+		device pci 1c.4 on	# PCI Express Port 5
+			register "PcieRpSlotImplemented[4]" = "1"
+		end
 		device pci 1c.5 off end # PCI Express Port 6
 		device pci 1c.6 off end # PCI Express Port 7
 		device pci 1c.7 off end # PCI Express Port 8
-		device pci 1d.0 on  end # PCI Express Port 9 x4 SLOT 1
+		device pci 1d.0 on	# PCI Express Port 9 x4 SLOT 1
+			register "PcieRpSlotImplemented[8]" = "1"
+		end
 		device pci 1d.1 off end # PCI Express Port 10
 		device pci 1d.2 off end # PCI Express Port 11
 		device pci 1d.3 off end # PCI Express Port 12
@@ -120,11 +126,21 @@ chip soc/intel/cannonlake
 		device pci 1d.5 off end # PCI Express Port 14
 		device pci 1d.6 off end # PCI Express Port 15
 		device pci 1d.7 off end # PCI Express Port 16
-		device pci 1b.0 on  end # PCI Express Port 17
-		device pci 1b.1 on  end # PCI Express Port 18
-		device pci 1b.2 on  end # PCI Express Port 19
-		device pci 1b.3 on  end # PCI Express Port 20
-		device pci 1b.4 on  end # PCI Express Port 21 X4 SLOT 2
+		device pci 1b.0 on	# PCI Express Port 17
+			register "PcieRpSlotImplemented[16]" = "1"
+		end
+		device pci 1b.1 on	# PCI Express Port 18
+			register "PcieRpSlotImplemented[17]" = "1"
+		end
+		device pci 1b.2 on	# PCI Express Port 19
+			register "PcieRpSlotImplemented[18]" = "1"
+		end
+		device pci 1b.3 on	# PCI Express Port 20
+			register "PcieRpSlotImplemented[19]" = "1"
+		end
+		device pci 1b.4 on	# PCI Express Port 21 X4 SLOT 2
+			register "PcieRpSlotImplemented[20]" = "1"
+		end
 		device pci 1e.1 off end # UART #1
 		device pci 1f.6 on  end # GbE
 	end

@@ -215,14 +215,22 @@ chip soc/intel/cannonlake
 		device pci 1c.2 off end # PCI Express Port 3
 		device pci 1c.3 off end # PCI Express Port 4
 		device pci 1c.4 off end # PCI Express Port 5
-		device pci 1c.5 on  end # PCI Express Port 6
+		device pci 1c.5 on	# PCI Express Port 6
+			register "PcieRpSlotImplemented[5]" = "1"
+		end
 		device pci 1c.6 off end # PCI Express Port 7
-		device pci 1c.7 on  end # PCI Express Port 8
-		device pci 1d.0 on  end # PCI Express Port 9
+		device pci 1c.7 on	# PCI Express Port 8
+			register "PcieRpSlotImplemented[7]" = "1"
+		end
+		device pci 1d.0 on	# PCI Express Port 9
+			register "PcieRpSlotImplemented[8]" = "1"
+		end
 		device pci 1d.1 off end # PCI Express Port 10
 		device pci 1d.2 off end # PCI Express Port 11
 		device pci 1d.3 off end # PCI Express Port 12
-		device pci 1d.4 on  end # PCI Express Port 13
+		device pci 1d.4 on	# PCI Express Port 13
+			register "PcieRpSlotImplemented[12]" = "1"
+		end
 		device pci 1d.5 off end # PCI Express Port 14
 		device pci 1d.6 off end # PCI Express Port 15
 		device pci 1d.7 off end # PCI Express Port 16

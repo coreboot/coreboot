@@ -124,12 +124,18 @@ chip soc/intel/cannonlake
 		device pci 19.1 off end # I2C #5
 		device pci 19.2 on  end # UART #2
 		device pci 1a.0 on  end # eMMC
-		device pci 1c.0 on  end # PCI Express Port 1 x4 SLOT1
-		device pci 1c.4 on  end # PCI Express Port 5 x1 SLOT2/LAN
+		device pci 1c.0 on	# PCI Express Port 1 x4 SLOT1
+			register "PcieRpSlotImplemented[0]" = "1"
+		end
+		device pci 1c.4 on	# PCI Express Port 5 x1 SLOT2/LAN
+			register "PcieRpSlotImplemented[4]" = "1"
+		end
 		device pci 1c.5 off end # PCI Express Port 6
 		device pci 1c.6 off end # PCI Express Port 7
 		device pci 1c.7 off end # PCI Express Port 8
-		device pci 1d.0 on  end # PCI Express Port 9
+		device pci 1d.0 on	# PCI Express Port 9
+			register "PcieRpSlotImplemented[8]" = "1"
+		end
 		device pci 1d.1 off end # PCI Express Port 10
 		device pci 1d.2 off end # PCI Express Port 11
 		device pci 1d.3 off end # PCI Express Port 12

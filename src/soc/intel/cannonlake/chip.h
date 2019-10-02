@@ -185,6 +185,8 @@ struct soc_intel_cannonlake_config {
 	uint8_t PcieClkSrcClkReq[CONFIG_MAX_PCIE_CLOCKS];
 	/* PCIe LTR(Latency Tolerance Reporting) mechanism */
 	uint8_t PcieRpLtrEnable[CONFIG_MAX_ROOT_PORTS];
+	/* Implemented as slot or built-in? */
+	uint8_t PcieRpSlotImplemented[CONFIG_MAX_ROOT_PORTS];
 	/* Enable/Disable HotPlug support for Root Port */
 	uint8_t PcieRpHotPlug[CONFIG_MAX_ROOT_PORTS];
 

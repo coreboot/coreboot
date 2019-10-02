@@ -479,6 +479,8 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 
 	memcpy(params->PcieRpLtrEnable, config->PcieRpLtrEnable,
 	       sizeof(config->PcieRpLtrEnable));
+	memcpy(params->PcieRpSlotImplemented, config->PcieRpSlotImplemented,
+	       sizeof(config->PcieRpSlotImplemented));
 	memcpy(params->PcieRpHotPlug, config->PcieRpHotPlug,
 	       sizeof(params->PcieRpHotPlug));
 

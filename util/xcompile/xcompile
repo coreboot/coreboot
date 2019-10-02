@@ -221,7 +221,7 @@ SUBARCH_SUPPORTED+=${TSUPP-${TARCH}}
 GCC_CC_${TARCH}:=${GCC}
 GCC_CFLAGS_${TARCH}:=${CFLAGS_GCC}
 # Generally available for GCC's cc1:
-GCC_CFLAGS_${TARCH}+=-Wlogical-op
+GCC_CFLAGS_${TARCH}+=-fno-delete-null-pointer-checks -Wlogical-op
 GCC_ADAFLAGS_${TARCH}:=${CFLAGS_GCC}
 GCC_COMPILER_RT_${TARCH}:=${CC_RT_GCC}
 GCC_COMPILER_RT_FLAGS_${TARCH}:=${CC_RT_EXTRA_GCC}

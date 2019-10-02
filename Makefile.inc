@@ -414,7 +414,6 @@ CFLAGS_common += -Wstrict-aliasing -Wshadow -Wdate-time -Wtype-limits -Wvla
 CFLAGS_common += -fno-common -ffreestanding -fno-builtin -fomit-frame-pointer
 CFLAGS_common += -ffunction-sections -fdata-sections -fno-pie
 ifeq ($(CONFIG_COMPILER_GCC),y)
-CFLAGS_common += -fno-delete-null-pointer-checks
 # Don't add these GCC specific flags when running scan-build
 ifeq ($(CCC_ANALYZER_OUTPUT_FORMAT),)
 CFLAGS_common += -Wno-packed-not-aligned

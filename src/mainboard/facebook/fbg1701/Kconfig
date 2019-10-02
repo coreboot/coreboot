@@ -31,20 +31,11 @@ config BOARD_SPECIFIC_OPTIONS
 	select INTEL_GMA_HAVE_VBT
 	select GENERIC_SPD_BIN
 
-choice
-	prompt "Onboard memory manufacturer"
-	default ONBOARD_MICRON_MEM
-
 config ONBOARD_SAMSUNG_MEM
-	bool "Samsung"
+	bool "Onboard memory manufacturer Samsung"
+	default n
 	help
 	  Samsung K4B8G1646D memory
-
-config ONBOARD_MICRON_MEM
-	bool "Micron"
-	help
-	  Micron MT41K512M16HA memory
-endchoice
 
 config MAINBOARD_DIR
 	string

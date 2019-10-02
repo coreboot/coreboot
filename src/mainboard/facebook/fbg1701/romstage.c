@@ -35,7 +35,7 @@ void mainboard_memory_init_params(struct romstage_params *params,
 	struct region_device spd_rdev;
 	u8 spd_index = 0;
 
-	if (CONFIG(ONBOARD_MICRON_MEM))
+	if (!CONFIG(ONBOARD_SAMSUNG_MEM))
 		spd_index = 1;
 	if (get_spd_cbfs_rdev(&spd_rdev, spd_index) < 0)
 		die("spd.bin not found\n");

@@ -37,7 +37,8 @@ enum {
 
 enum dram_odt_type {
 	ODT_OFF = 0,
-	ODT_ON
+	ODT_ON,
+	ODT_MAX
 };
 
 enum {

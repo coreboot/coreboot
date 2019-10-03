@@ -349,13 +349,16 @@ static void spm_pinmux_setting(void)
 	write32(&mtk_spm->dramc_dpy_clk_sw_con_sel2, 0xffffffff);
 }
 
-static void dfs_init_for_calibration(const struct sdram_params *params, u8 freq_group)
+static void dfs_init_for_calibration(const struct sdram_params *params,
+				     u8 freq_group,
+				     struct dram_impedance *impedance)
 {
-	dramc_init(params, freq_group);
+	dramc_init(params, freq_group, impedance);
 	dramc_apply_config_before_calibration(freq_group);
 }
 
-static void init_dram(const struct sdram_params *params, u8 freq_group)
+static void init_dram(const struct sdram_params *params, u8 freq_group,
+		      struct dram_impedance *impedance)
 {
 	global_option_init(params);
 	emi_init(params);
@@ -364,10 +367,11 @@ static void init_dram(const struct sdram_params *params, u8 freq_group)
 	dramc_init_pre_settings();
 	spm_pinmux_setting();
 
-	dramc_sw_impedance_cal(params, ODT_OFF);
-	dramc_sw_impedance_cal(params, ODT_ON);
+	dramc_sw_impedance_cal(params, ODT_OFF, impedance);
+	dramc_sw_impedance_cal(params, ODT_ON, impedance);
 
-	dfs_init_for_calibration(params, freq_group);
+	dramc_init(params, freq_group, impedance);
+	dramc_apply_config_before_calibration(freq_group);
 	emi_init2(params);
 }
 
@@ -487,6 +491,7 @@ static void dramc_save_result_to_shuffle(u32 src_shuffle, u32 dst_shuffle)
 }
 
 static int run_calib(const struct dramc_param *dparam,
+		     struct dram_impedance *impedance,
 		     const int shuffle, bool *first_run)
 {
 	const u8 *freq_tbl;
@@ -505,9 +510,9 @@ static int run_calib(const struct dramc_param *dparam,
 		   freq_group, *first_run);
 
 	if (*first_run)
-		init_dram(params, freq_group);
+		init_dram(params, freq_group, impedance);
 	else
-		dfs_init_for_calibration(params, freq_group);
+		dfs_init_for_calibration(params, freq_group, impedance);
 	*first_run = false;
 
 	dramc_show("Start K (current clock: %u\n", params->frequency);
@@ -528,17 +533,20 @@ static void after_calib(void)
 
 int mt_set_emi(const struct dramc_param *dparam)
 {
+	struct dram_impedance impedance;
 	bool first_run = true;
 	set_vdram1_vddq_voltage();
 
 	if (CONFIG(MT8183_DRAM_DVFS)) {
-		if (run_calib(dparam, DRAM_DFS_SHUFFLE_3, &first_run) != 0)
+		if (run_calib(dparam, &impedance, DRAM_DFS_SHUFFLE_3,
+			      &first_run) != 0)
 			return -1;
-		if (run_calib(dparam, DRAM_DFS_SHUFFLE_2, &first_run) != 0)
+		if (run_calib(dparam, &impedance, DRAM_DFS_SHUFFLE_2,
+			      &first_run) != 0)
 			return -1;
 	}
 
-	if (run_calib(dparam, DRAM_DFS_SHUFFLE_1, &first_run) != 0)
+	if (run_calib(dparam, &impedance, DRAM_DFS_SHUFFLE_1, &first_run) != 0)
 		return -1;
 
 	after_calib();

@@ -82,6 +82,10 @@ enum {
 	LP4X_DDRFREQ_MAX,
 };
 
+struct dram_impedance {
+	u32 data[ODT_MAX][4];
+};
+
 extern const u8 phy_mapping[CHANNEL_MAX][16];
 
 int complex_mem_test(u8 *start, unsigned int len);

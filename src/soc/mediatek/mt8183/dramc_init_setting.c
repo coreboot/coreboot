@@ -979,7 +979,8 @@ static void dramc_setting_DDR3600(void)
 	clrsetbits_le32(&ch[0].ao.shu[0].selph_dqs1, 0x77777777, SELPH_DQS1_3600);
 }
 
-static void dramc_setting(const struct sdram_params *params, u8 freq_group)
+static void dramc_setting(const struct sdram_params *params, u8 freq_group,
+			  const struct dram_impedance *impedance)
 {
 	u8 chn;
 
@@ -1399,11 +1400,10 @@ static void dramc_setting(const struct sdram_params *params, u8 freq_group)
 	default:
 		die("Invalid DDR frequency group %u\n", freq_group);
 		return;
-	break;
 	}
 
 	update_initial_settings(freq_group);
-	dramc_sw_impedance_save_reg(freq_group);
+	dramc_sw_impedance_save_reg(freq_group, impedance);
 
 	clrbits_le32(&ch[0].ao.test2_4, 0x1 << 17);
 	clrsetbits_le32(&ch[0].ao.shu[0].conf[3], 0x1ff << 0, 0x5 << 0);
@@ -1729,9 +1729,10 @@ static void ddr_update_ac_timing(u8 freq_group)
 	clrsetbits_le32(&ch[0].ao.arbctl, 0x1 << 13, dram_cbt_mode);
 }
 
-void dramc_init(const struct sdram_params *params, u8 freq_group)
+void dramc_init(const struct sdram_params *params, u8 freq_group,
+		const struct dram_impedance *impedance)
 {
-	dramc_setting(params, freq_group);
+	dramc_setting(params, freq_group, impedance);
 
 	dramc_duty_calibration(params, freq_group);
 	dvfs_settings(freq_group);

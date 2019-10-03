@@ -176,7 +176,8 @@ static void gma_func0_init(struct device *dev)
 	if (!gtt_res || !gtt_res->base)
 		return;
 
-	if (CONFIG(MAINBOARD_USE_LIBGFXINIT)) {
+	if (!acpi_is_wakeup_s3() &&
+	    CONFIG(MAINBOARD_USE_LIBGFXINIT)) {
 		struct northbridge_intel_nehalem_config *conf = dev->chip_info;
 		int lightup_ok;
 		printk(BIOS_SPEW, "Initializing VGA without OPROM.");

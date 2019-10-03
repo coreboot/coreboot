@@ -1063,7 +1063,7 @@ static void google_chromeec_log_uptimeinfo(void)
 		if ((cmd_resp.ec_reset_flags & (1 << flag)) != 0) {
 			if (flag_count)
 				printk(BIOS_DEBUG, " | ");
-			printk(BIOS_DEBUG, reset_flag_strings[flag]);
+			printk(BIOS_DEBUG, "%s", reset_flag_strings[flag]);
 			flag_count++;
 		}
 	}

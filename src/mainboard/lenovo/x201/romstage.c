@@ -94,21 +94,6 @@ static void rcba_config(void)
 	early_usb_init(mainboard_usb_ports);
 }
 
-static inline void write_acpi32(u32 addr, u32 val)
-{
-	outl(val, DEFAULT_PMBASE | addr);
-}
-
-static inline void write_acpi16(u32 addr, u16 val)
-{
-	outw(val, DEFAULT_PMBASE | addr);
-}
-
-static inline u32 read_acpi32(u32 addr)
-{
-	return inl(DEFAULT_PMBASE | addr);
-}
-
 static void set_fsb_frequency(void)
 {
 	u8 block[5];
@@ -178,20 +163,6 @@ void mainboard_romstage_entry(void)
 	     DEFAULT_GPIOBASE | 0x3a);
 	outb(0x50, 0x15ec);
 	outb(inb(0x15ee) & 0x70, 0x15ee);
-
-	write_acpi16(0x2, 0x0);
-	write_acpi32(0x28, 0x0);
-	write_acpi32(0x2c, 0x0);
-	if (!s3resume) {
-		read_acpi32(0x4);
-		read_acpi32(0x20);
-		read_acpi32(0x34);
-		write_acpi16(0x0, 0x900);
-		write_acpi32(0x20, 0xffff7ffe);
-		write_acpi32(0x34, 0x56974);
-		pci_write_config8(PCH_LPC_DEV, GEN_PMCON_3,
-				  pci_read_config8(PCH_LPC_DEV, GEN_PMCON_3) | 2);
-	}
 
 	early_thermal_init();
 

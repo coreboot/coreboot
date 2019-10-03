@@ -60,6 +60,7 @@ config VARIANT_DIR
 	default "bloog" if BOARD_GOOGLE_BLOOG
 	default "octopus" if BOARD_GOOGLE_OCTOPUS
 	default "garg" if BOARD_GOOGLE_GARG
+	default "dood" if BOARD_GOOGLE_DOOD
 
 config DEVICETREE
 	string
@@ -81,6 +82,7 @@ config MAINBOARD_PART_NUMBER
 	default "Bloog" if BOARD_GOOGLE_BLOOG
 	default "Octopus" if BOARD_GOOGLE_OCTOPUS
 	default "Garg" if BOARD_GOOGLE_GARG
+	default "Dood" if BOARD_GOOGLE_DOOD
 
 config MAINBOARD_FAMILY
 	string

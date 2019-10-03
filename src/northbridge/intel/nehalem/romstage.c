@@ -30,8 +30,6 @@
 #include <northbridge/intel/nehalem/raminit.h>
 #include <southbridge/intel/ibexpeak/pch.h>
 #include <southbridge/intel/ibexpeak/me.h>
-#include <southbridge/intel/common/pmclib.h>
-#include <southbridge/intel/common/gpio.h>
 
 /* Platform has no romstage entry point under mainboard directory,
  * so this one is named with prefix mainboard.
@@ -47,29 +45,7 @@ void mainboard_romstage_entry(void)
 	/* TODO, make this configurable */
 	nehalem_early_initialization(NEHALEM_MOBILE);
 
-	/* mainboard_lpc_init */
-	mainboard_lpc_init();
-
-	/* Enable GPIOs */
-	pci_write_config32(PCH_LPC_DEV, GPIO_BASE, DEFAULT_GPIOBASE | 1);
-	pci_write_config8(PCH_LPC_DEV, GPIO_CNTL, 0x10);
-
-	setup_pch_gpios(&mainboard_gpio_map);
-
-	/* TODO, make this configurable */
-	pch_setup_cir(NEHALEM_MOBILE);
-
-	southbridge_configure_default_intmap();
-
-	/* Must set BIT0 (hides performance counters PCI device).
-	   coreboot enables the Rate Matching Hub which makes the UHCI PCI
-	   devices disappear, so BIT5-12 and BIT28 can be set to hide those. */
-	RCBA32(FD) = (1 << 28) | (0xff << 5) | 1;
-
-	/* Set reserved bit to 1 */
-	RCBA32(FD2) = 1;
-
-	early_usb_init(mainboard_usb_ports);
+	early_pch_init();
 
 	/* Initialize console device(s) */
 	console_init();

@@ -26,28 +26,6 @@
 
 void mainboard_lpc_init(void)
 {
-	/* EC Decode Range Port60/64, Port62/66 */
-	/* Enable EC, PS/2 Keyboard/Mouse */
-	pci_write_config16(PCH_LPC_DEV, LPC_EN,
-			   CNF2_LPC_EN | CNF1_LPC_EN | MC_LPC_EN | KBC_LPC_EN |
-			   COMA_LPC_EN | GAMEL_LPC_EN);
-
-	pci_write_config32(PCH_LPC_DEV, LPC_GEN1_DEC, 0x7c1601);
-	pci_write_config32(PCH_LPC_DEV, LPC_GEN2_DEC, 0xc15e1);
-	pci_write_config32(PCH_LPC_DEV, LPC_GEN3_DEC, 0x1c1681);
-	pci_write_config32(PCH_LPC_DEV, LPC_GEN4_DEC, (0x68 & ~3) | 0x00040001);
-
-	pci_write_config16(PCH_LPC_DEV, LPC_IO_DEC, 0x10);
-
-	pci_write_config32(PCH_LPC_DEV, 0xd0, 0x0);
-	pci_write_config32(PCH_LPC_DEV, 0xdc, 0x8);
-
-	pci_write_config8(PCH_LPC_DEV, GEN_PMCON_3,
-			  (pci_read_config8(PCH_LPC_DEV, GEN_PMCON_3) & ~2) | 1);
-
-	pci_write_config32(PCH_LPC_DEV, ETR3,
-			   pci_read_config32(PCH_LPC_DEV, ETR3) & ~ETR3_CF9GR);
-
 	/* Enable USB Power. We need to do it early for usbdebug to work. */
 	ec_set_bit(0x3b, 4);
 }

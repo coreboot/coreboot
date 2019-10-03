@@ -26,6 +26,7 @@ romstage-y += memmap.c
 romstage-y += raminit.c
 romstage-y += raminit_tables.c
 romstage-y += early_init.c
+romstage-y += romstage.c
 
 smm-y += finalize.c
 

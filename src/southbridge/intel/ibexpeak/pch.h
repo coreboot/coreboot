@@ -65,6 +65,7 @@ int smbus_block_write(unsigned device, unsigned cmd, u8 bytes, const u8 *buf);
 void early_thermal_init(void);
 void southbridge_configure_default_intmap(void);
 void pch_setup_cir(int chipset_type);
+void mainboard_lpc_init(void);
 
 enum current_lookup_idx {
 	IF1_F57 = 0,
@@ -84,9 +85,11 @@ struct southbridge_usb_port {
 	enum current_lookup_idx current;
 	int oc_pin;
 };
+
 void early_usb_init(const struct southbridge_usb_port *portmap);
 
 #ifndef __ROMCC__
+extern const struct southbridge_usb_port mainboard_usb_ports[14];
 #include <device/device.h>
 void pch_enable(struct device *dev);
 #endif

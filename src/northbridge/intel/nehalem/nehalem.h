@@ -256,6 +256,8 @@ void intel_nehalem_finalize_smm(void);
 int bridge_silicon_revision(void);
 void nehalem_early_initialization(int chipset_type);
 void nehalem_late_initialization(void);
+void mainboard_pre_raminit(void);
+void mainboard_get_spd_map(u8 *spd_addrmap);
 
 #endif /* !__SMM__ */
 

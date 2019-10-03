@@ -19,24 +19,12 @@
 #include <stdint.h>
 #include <arch/io.h>
 #include <device/pci_ops.h>
-#include <device/pci_def.h>
-#include <cpu/x86/lapic.h>
-#include <romstage_handoff.h>
-#include <console/console.h>
-#include <arch/romstage.h>
 #include <ec/acpi/ec.h>
-#include <timestamp.h>
-#include <arch/acpi.h>
 
-#include "dock.h"
 #include <southbridge/intel/ibexpeak/pch.h>
-#include <southbridge/intel/common/gpio.h>
 #include <northbridge/intel/nehalem/nehalem.h>
 
-#include <northbridge/intel/nehalem/raminit.h>
-#include <southbridge/intel/ibexpeak/me.h>
-
-static void pch_enable_lpc(void)
+void mainboard_lpc_init(void)
 {
 	/* EC Decode Range Port60/64, Port62/66 */
 	/* Enable EC, PS/2 Keyboard/Mouse */
@@ -59,6 +47,9 @@ static void pch_enable_lpc(void)
 
 	pci_write_config32(PCH_LPC_DEV, ETR3,
 			   pci_read_config32(PCH_LPC_DEV, ETR3) & ~ETR3_CF9GR);
+
+	/* Enable USB Power. We need to do it early for usbdebug to work. */
+	ec_set_bit(0x3b, 4);
 }
 
 const struct southbridge_usb_port mainboard_usb_ports[] = {
@@ -79,21 +70,6 @@ const struct southbridge_usb_port mainboard_usb_ports[] = {
 	{ 1, IF1_55F, 7 },
 };
 
-static void rcba_config(void)
-{
-	southbridge_configure_default_intmap();
-
-	/* Must set BIT0 (hides performance counters PCI device).
-	   coreboot enables the Rate Matching Hub which makes the UHCI PCI
-	   devices disappear, so BIT5-12 and BIT28 can be set to hide those. */
-	RCBA32(FD) = (1 << 28) | (0xff << 5) | 1;
-
-	/* Set reserved bit to 1 */
-	RCBA32(FD2) = 1;
-
-	early_usb_init(mainboard_usb_ports);
-}
-
 static void set_fsb_frequency(void)
 {
 	u8 block[5];
@@ -105,86 +81,18 @@ static void set_fsb_frequency(void)
 	smbus_block_write(0x69, 0, 5, block);
 }
 
-void mainboard_romstage_entry(void)
+void mainboard_pre_raminit(void)
 {
-	u32 reg32;
-	int s3resume = 0;
-	const u8 spd_addrmap[4] = { 0x50, 0, 0x51, 0 };
-	enable_lapic();
-
-	nehalem_early_initialization(NEHALEM_MOBILE);
-
-	pch_enable_lpc();
-
-	/* Enable USB Power. We need to do it early for usbdebug to work. */
-	ec_set_bit(0x3b, 4);
-
-	/* Enable GPIOs */
-	pci_write_config32(PCH_LPC_DEV, GPIO_BASE, DEFAULT_GPIOBASE | 1);
-	pci_write_config8(PCH_LPC_DEV, GPIO_CNTL, 0x10);
-
-	setup_pch_gpios(&mainboard_gpio_map);
-
-	pch_setup_cir(NEHALEM_MOBILE);
-
-
-	/* This should probably go away. Until now it is required
-	 * and mainboard specific
-	 */
-	rcba_config();
-
-	console_init();
-
-	/* Read PM1_CNT */
-	reg32 = inl(DEFAULT_PMBASE + 0x04);
-	printk(BIOS_DEBUG, "PM1_CNT: %08x\n", reg32);
-	if (((reg32 >> 10) & 7) == 5) {
-		u8 reg8;
-		reg8 = pci_read_config8(PCI_DEV(0, 0x1f, 0), 0xa2);
-		printk(BIOS_DEBUG, "a2: %02x\n", reg8);
-		if (!(reg8 & 0x20)) {
-			outl(reg32 & ~(7 << 10), DEFAULT_PMBASE + 0x04);
-			printk(BIOS_DEBUG, "Bad resume from S3 detected.\n");
-		} else {
-			if (acpi_s3_resume_allowed()) {
-				printk(BIOS_DEBUG, "Resume from S3 detected.\n");
-				s3resume = 1;
-			} else {
-				printk(BIOS_DEBUG,
-				       "Resume from S3 detected, but disabled.\n");
-			}
-		}
-	}
-
-	/* Enable SMBUS. */
-	enable_smbus();
-
 	outb((inb(DEFAULT_GPIOBASE | 0x3a) & ~0x2) | 0x20,
 	     DEFAULT_GPIOBASE | 0x3a);
 	outb(0x50, 0x15ec);
 	outb(inb(0x15ee) & 0x70, 0x15ee);
 
-	early_thermal_init();
-
-	timestamp_add_now(TS_BEFORE_INITRAM);
-
-	chipset_init(s3resume);
-
 	set_fsb_frequency();
+}
 
-	raminit(s3resume, spd_addrmap);
-
-	timestamp_add_now(TS_AFTER_INITRAM);
-
-	intel_early_me_status();
-
-	if (s3resume) {
-		/* Clear SLP_TYPE. This will break stage2 but
-		 * we care for that when we get there.
-		 */
-		reg32 = inl(DEFAULT_PMBASE + 0x04);
-		outl(reg32 & ~(7 << 10), DEFAULT_PMBASE + 0x04);
-	}
-
-	romstage_handoff_init(s3resume);
+void mainboard_get_spd_map(u8 *spd_addrmap)
+{
+	spd_addrmap[0] = 0x50;
+	spd_addrmap[2] = 0x51;
 }

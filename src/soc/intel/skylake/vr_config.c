@@ -286,7 +286,7 @@ static uint16_t get_sku_ac_dc_loadline(const int domain)
 		};
 
 		if (igd_id == PCI_DEVICE_ID_INTEL_SPT_LP_U_PREMIUM_HDCP22) {
-			loadline[VR_GT_UNSLICED] = VR_CFG_MOHMS(6);
+			loadline[VR_GT_UNSLICED] = VR_CFG_MOHMS(2);
 			loadline[VR_GT_SLICED] = VR_CFG_MOHMS(6);
 		}
 

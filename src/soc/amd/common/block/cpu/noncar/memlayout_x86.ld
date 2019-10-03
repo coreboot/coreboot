@@ -39,6 +39,8 @@
  *                     |          Unused hole           |
  *                     +--------------------------------+
  *                     |     FMAP cache (FMAP_SIZE)     |
+ *                     +--------------------------------+
+ *                     | CBFS mcache (CBFS_MCACHE_SIZE) |
  *                     +--------------------------------+ PSP_SHAREDMEM_BASE + 0x40 + VB2_FIRMWARE_WORKBUF_RECOMMENDED_SIZE + PRERAM_CBMEM_CONSOLE_SIZE + 0x200
  *                     |  Early Timestamp region (512B) |
  *                     +--------------------------------+ PSP_SHAREDMEM_BASE + 0x40 + VB2_FIRMWARE_WORKBUF_RECOMMENDED_SIZE + PRERAM_CBMEM_CONSOLE_SIZE

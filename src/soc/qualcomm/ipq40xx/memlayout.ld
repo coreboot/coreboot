@@ -20,7 +20,8 @@ SECTIONS
 	/* This includes bootblock image, can be reused after bootblock starts */
 /*	UBER_SBL(0x0A0C0000, 48K) */
 
-	PRERAM_CBFS_CACHE(0x0A0C0000, 92K)
+	PRERAM_CBFS_CACHE(0x0A0C0000, 84K)
+	CBFS_MCACHE(0x0A0ED800, 8K)
 	FMAP_CACHE(0x0A0EF800, 2K)
 
 	TTB(0x0A0F0000, 16K)

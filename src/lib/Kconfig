@@ -83,7 +83,6 @@ config ESPI_DEBUG
 
 config NO_CBFS_MCACHE
 	bool
-	default y
 	help
 	  Disables the CBFS metadata cache. This means that your platform does
 	  not need to provide a CBFS_MCACHE section in memlayout and can save

@@ -76,9 +76,13 @@ ifneq ($(strip $(HAVE_DOTCONFIG)),)
 include $(src)/.config
 real-all: $(TARGET)
 
+ifeq ($(CONFIG_LTO),y)
+CFLAGS += -flto
+endif
+
 $(TARGET): $(src)/.config $(coreinfo_obj)/config.h $(OBJS) libpayload
 	printf "    LPCC       $(subst $(CURDIR)/,,$(@)) (LINK)\n"
-	$(LPCC) -o $@ $(OBJS)
+	$(LPCC) $(CFLAGS) -o $@ $(OBJS)
 	$(OBJCOPY) --only-keep-debug $@ $(TARGET).debug
 	$(OBJCOPY) --strip-debug $@
 	$(OBJCOPY) --add-gnu-debuglink=$(TARGET).debug $@

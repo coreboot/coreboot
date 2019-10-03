@@ -213,7 +213,8 @@ static uint16_t get_sku_icc_max(int domain)
 			VR_CFG_AMP(31),
 		};
 
-		if (igd_id == PCI_DEVICE_ID_INTEL_SPT_LP_U_BASE_HDCP22)
+		if ((igd_id == PCI_DEVICE_ID_INTEL_KBL_GT3E_SULTM_1) ||
+		    (igd_id == PCI_DEVICE_ID_INTEL_KBL_GT3E_SULTM_2))
 			icc_max[VR_IA_CORE] = VR_CFG_AMP(29);
 
 		return icc_max[domain];
@@ -285,7 +286,8 @@ static uint16_t get_sku_ac_dc_loadline(const int domain)
 			VR_CFG_MOHMS(3.1),
 		};
 
-		if (igd_id == PCI_DEVICE_ID_INTEL_SPT_LP_U_PREMIUM_HDCP22) {
+		if ((igd_id == PCI_DEVICE_ID_INTEL_KBL_GT3E_SULTM_1) ||
+		    (igd_id == PCI_DEVICE_ID_INTEL_KBL_GT3E_SULTM_2)) {
 			loadline[VR_GT_UNSLICED] = VR_CFG_MOHMS(2);
 			loadline[VR_GT_SLICED] = VR_CFG_MOHMS(6);
 		}

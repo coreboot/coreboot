@@ -128,8 +128,8 @@ void dramc_sw_impedance_cal(const struct sdram_params *params, u8 term,
 
 	write32(&ch[0].ao.impcal, impcal_bak);
 
-	dramc_show("impedance: term=%d, DRVP=%d, DRVN=%d, ODTN=%d\n",
-		   term, DRVP_result, DRVN_result, ODTN_result);
+	dramc_dbg("impedance: term=%d, DRVP=%d, DRVN=%d, ODTN=%d\n",
+		  term, DRVP_result, DRVN_result, ODTN_result);
 	u32 *imp = impedance->data[term];
 	if (term == ODT_OFF) {
 		imp[0] = DRVP_result;

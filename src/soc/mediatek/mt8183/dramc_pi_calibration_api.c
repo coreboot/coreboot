@@ -1036,14 +1036,14 @@ static void dramc_rx_dqs_gating_cal(u8 chn, u8 rank, u8 freq_group,
 	}
 
 	for (dqs = 0; dqs < DQS_NUMBER; dqs++)
-		dramc_show("Best DQS%d dly(2T, 0.5T, fine tune)"
-			   " = (%d, %d, %d)\n", dqs, best_coarse_tune2t[dqs],
-			   best_coarse_tune0p5t[dqs], best_fine_tune[dqs]);
+		dramc_dbg("Best DQS%d dly(2T, 0.5T, fine tune)"
+			  " = (%d, %d, %d)\n", dqs, best_coarse_tune2t[dqs],
+			  best_coarse_tune0p5t[dqs], best_fine_tune[dqs]);
 
 	for (dqs = 0; dqs < DQS_NUMBER; dqs++)
-		dramc_show("Best DQS%d P1 dly(2T, 0.5T, fine tune)"
-			   " = (%d, %d, %d)\n", dqs, best_coarse_tune2t_p1[dqs],
-			   best_coarse_tune0p5t_p1[dqs], best_fine_tune[dqs]);
+		dramc_dbg("Best DQS%d P1 dly(2T, 0.5T, fine tune)"
+			  " = (%d, %d, %d)\n", dqs, best_coarse_tune2t_p1[dqs],
+			  best_coarse_tune0p5t_p1[dqs], best_fine_tune[dqs]);
 
 	for (size_t i = 0; i < ARRAY_SIZE(regs_bak); i++)
 		write32(regs_bak[i].addr, regs_bak[i].value);
@@ -1189,7 +1189,7 @@ static void dramc_set_rx_dly_factor(u8 chn, u8 rank, enum RX_TYPE type, u32 val)
 					SHU1_R0_B0_DQ6_RK0_RX_ARDQS0_R_DLY_B0, val);
 		break;
 	default:
-		dramc_show("error calibration type:%d\n", type);
+		dramc_err("error calibration type: %d\n", type);
 		break;
 	}
 }
@@ -1302,7 +1302,7 @@ static void dramc_get_dly_range(u8 chn, u8 rank, enum CAL_TYPE type,
 		*end = *begin + 64;
 		break;
 	default:
-		dramc_show("error calibration type:%d\n", type);
+		dramc_err("error calibration type: %d\n", type);
 		break;
 	}
 }
@@ -1429,7 +1429,7 @@ static bool dramk_calc_best_vref(enum CAL_TYPE type, u8 vref,
 		break;
 
 	default:
-		dramc_show("error calibration type:%d\n", type);
+		dramc_err("error calibration type: %d\n", type);
 		break;
 	}
 
@@ -1997,7 +1997,7 @@ static u8 dramc_rx_datlat_cal(u8 chn, u8 rank, u8 freq_group,
 
 		*test_passed = (sum != 0);
 		if (!*test_passed) {
-			dramc_show("DRAM memory test failed\n");
+			dramc_err("DRAM memory test failed\n");
 			return 0;
 		}
 
@@ -2118,8 +2118,8 @@ int dramc_calibrate_all_channels(const struct sdram_params *pams, u8 freq_group)
 	u8 rx_datlat[RANK_MAX] = {0};
 	for (u8 chn = 0; chn < CHANNEL_MAX; chn++) {
 		for (u8 rk = RANK_0; rk < RANK_MAX; rk++) {
-			dramc_show("Start K: freq=%d, ch=%d, rank=%d\n",
-				   freq_group, chn, rk);
+			dramc_dbg("Start K: freq=%d, ch=%d, rank=%d\n",
+				  freq_group, chn, rk);
 			dramc_cmd_bus_training(chn, rk, freq_group, pams,
 				fast_calib);
 			dramc_write_leveling(chn, rk, freq_group, pams->wr_level);

@@ -434,7 +434,7 @@ static void dramc_save_result_to_shuffle(u32 src_shuffle, u32 dst_shuffle)
 	if (src_shuffle == dst_shuffle)
 		return;
 
-	dramc_show("Save shuffle %u to shuffle %u\n", src_shuffle, dst_shuffle);
+	dramc_dbg("Save shuffle %u to shuffle %u\n", src_shuffle, dst_shuffle);
 
 	for (chn = 0; chn < CHANNEL_MAX; chn++) {
 		/* DRAMC */
@@ -449,7 +449,6 @@ static void dramc_save_result_to_shuffle(u32 src_shuffle, u32 dst_shuffle)
 
 			}
 		}
-		dramc_show("the dramc register of chn %d saved!\n", chn);
 
 		/* DRAMC-exception-1 */
 		src_addr = (u8 *)&ch[chn].ao.shuctrl2;
@@ -461,8 +460,6 @@ static void dramc_save_result_to_shuffle(u32 src_shuffle, u32 dst_shuffle)
 		else if (dst_shuffle == DRAM_DFS_SHUFFLE_3)
 			clrsetbits_le32(dst_addr, 0x7f << 0x16, value << 0x16);
 
-		dramc_show("the dramc exception-1 register of chn %d saved!\n", chn);
-
 		/* DRAMC-exception-2 */
 		src_addr = (u8 *)&ch[chn].ao.dvfsdll;
 		value = (read32(src_addr) >> 1) & 0x1;
@@ -471,8 +468,6 @@ static void dramc_save_result_to_shuffle(u32 src_shuffle, u32 dst_shuffle)
 			clrsetbits_le32(src_addr, 0x1 << 2, value << 2);
 		else if (dst_shuffle == DRAM_DFS_SHUFFLE_3)
 			clrsetbits_le32(src_addr, 0x1 << 3, value << 3);
-
-		dramc_show("the dramc exception-2 register of chn %d saved!\n", chn);
 
 		/* PHY */
 		for (index = 0; index < ARRAY_SIZE(phy_regs); index++) {
@@ -486,7 +481,6 @@ static void dramc_save_result_to_shuffle(u32 src_shuffle, u32 dst_shuffle)
 
 			}
 		}
-		dramc_show("the phy register of chn %d saved!\n", chn);
 	}
 }
 
@@ -507,7 +501,7 @@ static int run_calib(const struct dramc_param *dparam,
 	set_vcore_voltage(freq_group);
 
 	dramc_show("Run calibration (freq: %u, first: %d)\n",
-		   freq_group, *first_run);
+		   frequency_table[freq_group], *first_run);
 
 	if (*first_run)
 		init_dram(params, freq_group, impedance);
@@ -515,11 +509,11 @@ static int run_calib(const struct dramc_param *dparam,
 		dfs_init_for_calibration(params, freq_group, impedance);
 	*first_run = false;
 
-	dramc_show("Start K (current clock: %u\n", params->frequency);
+	dramc_dbg("Start K (current clock: %u\n", params->frequency);
 	if (dramc_calibrate_all_channels(params, freq_group) != 0)
 		return -1;
 	dramc_ac_timing_optimize(freq_group);
-	dramc_show("K finished (current clock: %u\n", params->frequency);
+	dramc_dbg("K finished (current clock: %u\n", params->frequency);
 
 	dramc_save_result_to_shuffle(DRAM_DFS_SHUFFLE_1, shuffle);
 	return 0;

@@ -20,6 +20,7 @@
 #include <soc/emi.h>
 #include <console/console.h>
 
+#define dramc_err(_x_...) printk(BIOS_ERR, _x_)
 #define dramc_show(_x_...) printk(BIOS_INFO, _x_)
 #if CONFIG(DEBUG_DRAM)
 #define dramc_dbg(_x_...) printk(BIOS_DEBUG, _x_)

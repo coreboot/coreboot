@@ -121,7 +121,7 @@ static void fill_in_relocation_params(struct smm_relocation_params *params)
 
 	/* On model_6fx and model_1067x bits [0:11] on smrr_base are reserved */
 	if (cpu_has_alternative_smrr())
-		params->smrr_base.lo &= ~rmask;
+		params->smrr_base.lo &= rmask;
 
 	smm_subregion(SMM_SUBREGION_CHIPSET, &params->ied_base, &params->ied_size);
 }

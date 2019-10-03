@@ -79,6 +79,14 @@ config COMPILER_LLVM_CLANG
 
 endchoice
 
+config LTO
+	bool "Use link time optimization (LTO)"
+	default n
+	depends on COMPILER_GCC
+	help
+	  Compile with link time optimization. This can often decrease the
+	  final binary size, but may increase compilation time.
+
 config REMOTEGDB
 	bool "Remote GDB stub"
 	default n

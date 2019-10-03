@@ -64,6 +64,10 @@ CFLAGS += -Wall -Wundef -Wstrict-prototypes -Wmissing-prototypes -Wvla
 CFLAGS += -Wwrite-strings -Wredundant-decls -Wno-trigraphs -Wimplicit-fallthrough
 CFLAGS += -Wstrict-aliasing -Wshadow -Werror
 
+ifeq ($(CONFIG_LP_LTO),y)
+CFLAGS += -flto
+endif
+
 $(obj)/libpayload-config.h: $(KCONFIG_AUTOHEADER)
 	cmp $@ $< 2>/dev/null || cp $< $@
 

@@ -14,10 +14,6 @@
  * GNU General Public License for more details.
  */
 
-/* These come from the dynamically created CPU SSDT */
-External(PDC0)
-External(PDC1)
-
 /* The APM port can be used for generating software SMIs */
 
 OperationRegion (APMP, SystemIO, 0xb2, 2)

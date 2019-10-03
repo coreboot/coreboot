@@ -100,8 +100,8 @@ int spi_flash_cmd(const struct spi_slave *spi, u8 cmd, void *response, size_t le
 #pragma GCC diagnostic push
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic ignored "-Wstack-usage="
-#pragma GCC diagnostic ignored "-Wvla"
 #endif
+#pragma GCC diagnostic ignored "-Wvla"
 int spi_flash_cmd_write(const struct spi_slave *spi, const u8 *cmd,
 			size_t cmd_len, const void *data, size_t data_len)
 {

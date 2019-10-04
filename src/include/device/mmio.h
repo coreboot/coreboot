@@ -63,6 +63,10 @@ static inline void buffer_to_fifo32(void *buffer, size_t size, void *fifo,
  *  - high_bit: highest bit that's part of the bit field.
  *  - low_bit: lowest bit in the bit field.
  *
+ * To define a field with a single bit:
+ *
+ *  DEFINE_BIT(name, bit)
+ *
  * To extract one field value from a raw reg value:
  *
  *  EXTRACT_BITFIELD(value, name);
@@ -85,7 +89,7 @@ static inline void buffer_to_fifo32(void *buffer, size_t size, void *fifo,
  * Examples:
  *
  *  DEFINE_BITFIELD(DISP_TYPE, 2, 1)
- *  DEFINE_BITFIELD(DISP_EN, 0, 0)
+ *  DEFINE_BIT(DISP_EN, 0)
  *
  *  SET32_BITFIELDS(&disp_regs.ctrl, DISP_TYPE, 2);
  *  SET32_BITFIELDS(&disp_regs.ctrl, DISP_EN, 0);
@@ -117,6 +121,8 @@ static inline void buffer_to_fifo32(void *buffer, size_t size, void *fifo,
 		name##_BITFIELD_SHIFT = (low_bit), \
 		name##_BITFIELD_SIZE = (high_bit) - (low_bit) + 1, \
 	};
+
+#define DEFINE_BIT(name, bit) DEFINE_BITFIELD(name, bit, bit)
 
 #define _BF_MASK(name, value) \
 	(((1 << name##_BITFIELD_SIZE) - 1) << name##_BITFIELD_SHIFT)

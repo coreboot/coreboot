@@ -13,46 +13,26 @@
  * GNU General Public License for more details.
  */
 
-#define DPTF_CPU_PASSIVE	95
+#define DPTF_CPU_PASSIVE	0
 #define DPTF_CPU_CRITICAL	105
-#define DPTF_CPU_ACTIVE_AC0	87
-#define DPTF_CPU_ACTIVE_AC1	85
-#define DPTF_CPU_ACTIVE_AC2	83
-#define DPTF_CPU_ACTIVE_AC3	80
-#define DPTF_CPU_ACTIVE_AC4	75
 
 #define DPTF_TSR0_SENSOR_ID	0
 #define DPTF_TSR0_SENSOR_NAME	"Battery Charger"
-#define DPTF_TSR0_PASSIVE	65
-#define DPTF_TSR0_CRITICAL	75
-#define DPTF_TSR0_ACTIVE_AC0	50
-#define DPTF_TSR0_ACTIVE_AC1	47
-#define DPTF_TSR0_ACTIVE_AC2	45
-#define DPTF_TSR0_ACTIVE_AC3	42
-#define DPTF_TSR0_ACTIVE_AC4	40
-#define DPTF_TSR0_ACTIVE_AC5	38
+#define DPTF_TSR0_PASSIVE	50
+#define DPTF_TSR0_CRITICAL	80
 
 #define DPTF_TSR1_SENSOR_ID	1
 #define DPTF_TSR1_SENSOR_NAME	"5V Regulator"
-#define DPTF_TSR1_PASSIVE	45
-#define DPTF_TSR1_CRITICAL	65
-#define DPTF_TSR1_ACTIVE_AC0	50
-#define DPTF_TSR1_ACTIVE_AC1	47
-#define DPTF_TSR1_ACTIVE_AC2	45
-#define DPTF_TSR1_ACTIVE_AC3	42
-#define DPTF_TSR1_ACTIVE_AC4	40
-#define DPTF_TSR1_ACTIVE_AC5	38
+#define DPTF_TSR1_PASSIVE	0
+#define DPTF_TSR1_CRITICAL	70
+#define DPTF_TSR1_ACTIVE_AC0	43
+#define DPTF_TSR1_ACTIVE_AC1	40
+#define DPTF_TSR1_ACTIVE_AC2	38
 
 #define DPTF_TSR2_SENSOR_ID	2
 #define DPTF_TSR2_SENSOR_NAME	"Ambient"
-#define DPTF_TSR2_PASSIVE	50
+#define DPTF_TSR2_PASSIVE	0
 #define DPTF_TSR2_CRITICAL	65
-#define DPTF_TSR2_ACTIVE_AC0	50
-#define DPTF_TSR2_ACTIVE_AC1	47
-#define DPTF_TSR2_ACTIVE_AC2	45
-#define DPTF_TSR2_ACTIVE_AC3	42
-#define DPTF_TSR2_ACTIVE_AC4	40
-#define DPTF_TSR2_ACTIVE_AC5	38
 
 #define DPTF_TSR3_SENSOR_ID	3
 #define DPTF_TSR3_SENSOR_NAME	"CPU"
@@ -73,7 +53,6 @@ Name (CHPS, Package () {
 	Package () { 0, 0, 0, 0, 255, 0x6a4, "mA", 0 },	/* 1.7A (MAX) */
 	Package () { 0, 0, 0, 0, 24, 0x600, "mA", 0 },	/* 1.5A */
 	Package () { 0, 0, 0, 0, 16, 0x400, "mA", 0 },	/* 1.0A */
-	Package () { 0, 0, 0, 0, 8, 0x200, "mA", 0 },	/* 0.5A */
 })
 
 /* DFPS: Fan Performance States */
@@ -104,19 +83,19 @@ Name (DART, Package () {
 		 * Source, Target, Weight, AC0, AC1, AC2, AC3, AC4, AC5, AC6,
 		 *	AC7, AC8, AC9
 		 */
-		\_SB.DPTF.TFN1, \_SB.PCI0.TCPU, 100, 100, 80, 60, 55, 40, 0, 0,
+		\_SB.DPTF.TFN1, \_SB.PCI0.TCPU, 100, 0, 0, 0, 0, 0, 0, 0,
 			0, 0, 0
 	},
 	Package () {
-		\_SB.DPTF.TFN1, \_SB.DPTF.TSR0, 100, 90, 69, 56, 46, 36, 30, 0,
+		\_SB.DPTF.TFN1, \_SB.DPTF.TSR0, 100, 0, 0, 0, 0, 0, 0, 0,
 			0, 0, 0
 	},
 	Package () {
-		\_SB.DPTF.TFN1, \_SB.DPTF.TSR1, 100, 90, 69, 56, 46, 36, 30, 0,
+		\_SB.DPTF.TFN1, \_SB.DPTF.TSR1, 100, 100, 80, 60, 0, 0, 0, 0,
 			0, 0, 0
 	},
 	Package () {
-		\_SB.DPTF.TFN1, \_SB.DPTF.TSR2, 100, 90, 69, 56, 46, 36, 30, 0,
+		\_SB.DPTF.TFN1, \_SB.DPTF.TSR2, 100, 0, 0, 0, 0, 0, 0, 0,
 			0, 0, 0
 	},
 	Package () {
@@ -126,20 +105,11 @@ Name (DART, Package () {
 })
 
 Name (DTRT, Package () {
-	/* CPU Throttle Effect on CPU */
-	Package () { \_SB.PCI0.TCPU, \_SB.PCI0.TCPU, 100, 60, 0, 0, 0, 0 },
-
 	/* CPU Throttle Effect on TSR0 */
 	Package () { \_SB.PCI0.TCPU, \_SB.DPTF.TSR0, 100, 60, 0, 0, 0, 0 },
 
-	/* Charger Throttle Effect on TSR1 */
-	Package () { \_SB.DPTF.TCHG, \_SB.DPTF.TSR1, 100, 60, 0, 0, 0, 0 },
-
-	/* CPU Throttle Effect on TSR2 */
-	Package () { \_SB.PCI0.TCPU, \_SB.DPTF.TSR2, 100, 60, 0, 0, 0, 0 },
-
-	/* CPU Throttle Effect on TSR3 */
-	Package () { \_SB.PCI0.TCPU, \_SB.DPTF.TSR3, 100, 60, 0, 0, 0, 0 },
+	/* Charger Throttle Effect on TSR0 */
+	Package () { \_SB.DPTF.TCHG, \_SB.DPTF.TSR0, 100, 60, 0, 0, 0, 0 },
 })
 
 Name (MPPC, Package ()
@@ -147,8 +117,8 @@ Name (MPPC, Package ()
 	0x2,		/* Revision */
 	Package () {	/* Power Limit 1 */
 		0,	/* PowerLimitIndex, 0 for Power Limit 1 */
-		8000,	/* PowerLimitMinimum */
-		13000,	/* PowerLimitMaximum */
+		10000,	/* PowerLimitMinimum */
+		15000,	/* PowerLimitMaximum */
 		28000,	/* TimeWindowMinimum */
 		28000,	/* TimeWindowMaximum */
 		200	/* StepSize */

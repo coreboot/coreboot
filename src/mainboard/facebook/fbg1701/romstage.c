@@ -29,14 +29,21 @@
 #include <spd_bin.h>
 #include <stdint.h>
 
+#include "cpld.h"
+
 void mainboard_memory_init_params(struct romstage_params *params,
 				  MEMORY_INIT_UPD *memory_params)
 {
 	struct region_device spd_rdev;
 	u8 spd_index = 0;
 
-	if (!CONFIG(ONBOARD_SAMSUNG_MEM))
-		spd_index = 1;
+	if (!CONFIG(ONBOARD_SAMSUNG_MEM)) {
+		if (cpld_read_pcb_version() <= 7)
+			spd_index = 1;
+		else
+			spd_index = 2;
+	}
+
 	if (get_spd_cbfs_rdev(&spd_rdev, spd_index) < 0)
 		die("spd.bin not found\n");
 

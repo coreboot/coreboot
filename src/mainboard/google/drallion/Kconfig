@@ -84,7 +84,9 @@ config MAX_CPUS
 
 config UART_FOR_CONSOLE
 	int
-	default 0
+	default 2 if BOARD_GOOGLE_ARCADA_CML
+	default 2 if BOARD_GOOGLE_SARIEN_CML
+	default 0 if BOARD_GOOGLE_DRALLION
 
 config VARIANT_DIR
 	string

@@ -144,12 +144,11 @@ endif
 	\mv -f $@.tmp $@ 2> /dev/null
 	rm -f $@.tmp
 
--include $(TOPLEVEL)/site-local/Makefile.inc
-
 ifeq ($(NOCOMPILE),1)
 include $(TOPLEVEL)/Makefile.inc
 include $(TOPLEVEL)/payloads/Makefile.inc
 include $(TOPLEVEL)/util/testing/Makefile.inc
+-include $(TOPLEVEL)/site-local/Makefile.inc
 real-all:
 	@echo "Error: Expected config file ($(DOTCONFIG)) not present." >&2
 	@echo "Please specify a config file or run 'make menuconfig' to" >&2

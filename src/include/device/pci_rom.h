@@ -47,4 +47,5 @@ void pci_rom_ssdt(struct device *device);
 
 u32 map_oprom_vendev(u32 vendev);
 
+int verified_boot_should_run_oprom(struct rom_header *rom_header);
 #endif

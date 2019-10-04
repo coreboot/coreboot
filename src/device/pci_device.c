@@ -679,9 +679,14 @@ void pci_dev_set_subsystem(struct device *dev, unsigned int vendor,
 	}
 }
 
-static int should_run_oprom(struct device *dev)
+static int should_run_oprom(struct device *dev, struct rom_header *rom)
 {
 	static int should_run = -1;
+
+	if (CONFIG(VENDORCODE_ELTAN_VBOOT))
+		if (rom != NULL)
+			if (!verified_boot_should_run_oprom(rom))
+				return 0;
 
 	if (should_run >= 0)
 		return should_run;
@@ -711,7 +716,7 @@ static int should_load_oprom(struct device *dev)
 		return 0;
 	if (CONFIG(ALWAYS_LOAD_OPROM))
 		return 1;
-	if (should_run_oprom(dev))
+	if (should_run_oprom(dev, NULL))
 		return 1;
 
 	return 0;
@@ -742,7 +747,7 @@ void pci_dev_init(struct device *dev)
 		return;
 	timestamp_add_now(TS_OPROM_COPY_END);
 
-	if (!should_run_oprom(dev))
+	if (!should_run_oprom(dev, rom))
 		return;
 
 	run_bios(dev, (unsigned long)ram);

@@ -155,6 +155,8 @@ static void read_resources(struct device *dev)
 	/*
 	 * There's only one resource on the P2SB device. It's also already
 	 * manually set to a fixed address in earlier boot stages.
+	 * The following code makes sure that it doesn't change if the device
+	 * is visible and the resource allocator is being run.
 	 */
 	mmio_resource(dev, PCI_BASE_ADDRESS_0, P2SB_BAR / KiB, P2SB_SIZE / KiB);
 }
@@ -170,6 +172,9 @@ static const unsigned short pci_device_ids[] = {
 	PCI_DEVICE_ID_INTEL_GLK_P2SB,
 	PCI_DEVICE_ID_INTEL_LWB_P2SB,
 	PCI_DEVICE_ID_INTEL_LWB_P2SB_SUPER,
+	PCI_DEVICE_ID_INTEL_SKL_LP_P2SB,
+	PCI_DEVICE_ID_INTEL_SKL_P2SB,
+	PCI_DEVICE_ID_INTEL_KBL_P2SB,
 	PCI_DEVICE_ID_INTEL_CNL_P2SB,
 	PCI_DEVICE_ID_INTEL_CNP_H_P2SB,
 	PCI_DEVICE_ID_INTEL_ICL_P2SB,

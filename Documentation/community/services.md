@@ -34,3 +34,12 @@ bytes.
 After you push for review, the system will automatically verify your change
 and, if adhering to these constraints, approve it. You can then immediately
 submit it.
+
+## Issue tracker
+We have an [issue tracker](https://ticket.coreboot.org) that is used for
+coreboot and related code, such as libpayload, as well as for the project's
+infrastructure.
+
+It can be helpful to refer to issues we track there in commit messages:
+
+    Fixes: https://ticket.coreboot.org/issues/$id

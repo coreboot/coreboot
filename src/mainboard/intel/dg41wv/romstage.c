@@ -32,7 +32,6 @@
 
 static void mb_lpc_setup(void)
 {
-	u32 reg32;
 	/* Set the value for GPIO base address register and enable GPIO. */
 	pci_write_config32(LPC_DEV, GPIO_BASE, (DEFAULT_GPIOBASE | 1));
 	pci_write_config8(LPC_DEV, GPIO_CNTL, 0x10);
@@ -55,10 +54,7 @@ static void mb_lpc_setup(void)
 	RCBA8(0x31ff) = 0x03;
 	RCBA8(0x31ff);
 
-	reg32 = RCBA32(GCS);
-	reg32 |= (1 << 5);
-	RCBA32(GCS) = reg32;
-	RCBA32(CG) = 0x00000001;
+	ich7_setup_cir();
 }
 
 static void ich7_enable_lpc(void)

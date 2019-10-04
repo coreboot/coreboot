@@ -96,16 +96,7 @@ static void mb_gpio_init(void)
 	RCBA8(OIC) = 0x03;
 	RCBA8(OIC);
 
-	RCBA32(GCS) = 0x00190464;
-	RCBA32(CG) = 0x00000000;
-	RCBA32(0x3430) = 0x00000001;
-	RCBA32(0x3e00) = 0xff000001;
-	RCBA32(0x3e08) = 0x00000080;
-	RCBA32(0x3e0c) = 0x00800000;
-	RCBA32(0x3e40) = 0xff000001;
-	RCBA32(0x3e48) = 0x00000080;
-	RCBA32(0x3e4c) = 0x00800000;
-	RCBA32(0x3f00) = 0x0000000b;
+	ich7_setup_cir();
 }
 
 static void ich7_enable_lpc(void)

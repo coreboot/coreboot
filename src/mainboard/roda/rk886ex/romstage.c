@@ -168,31 +168,7 @@ static void early_ich7_init(void)
 	reg32 |= (1 << 31) | (1 << 27);
 	pci_write_config32(PCI_DEV(0, 0x1d, 7), 0xdc, reg32);
 
-	RCBA32(0x0088) = 0x0011d000;
-	RCBA16(0x01fc) = 0x060f;
-	RCBA32(0x01f4) = 0x86000040;
-	RCBA32(0x0214) = 0x10030549;
-	RCBA32(0x0218) = 0x00020504;
-	RCBA8(0x0220) = 0xc5;
-	reg32 = RCBA32(GCS);
-	reg32 |= (1 << 6);
-	RCBA32(GCS) = reg32;
-	reg32 = RCBA32(0x3430);
-	reg32 &= ~(3 << 0);
-	reg32 |= (1 << 0);
-	RCBA32(0x3430) = reg32;
-	RCBA16(0x0200) = 0x2008;
-	RCBA8(0x2027) = 0x0d;
-	RCBA16(0x3e08) |= (1 << 7);
-	RCBA16(0x3e48) |= (1 << 7);
-	RCBA32(0x3e0e) |= (1 << 7);
-	RCBA32(0x3e4e) |= (1 << 7);
-
-	/* next step only on ich7m b0 and later: */
-	reg32 = RCBA32(0x2034);
-	reg32 &= ~(0x0f << 16);
-	reg32 |= (5 << 16);
-	RCBA32(0x2034) = reg32;
+	ich7_setup_cir();
 }
 
 static void init_artec_dongle(void)

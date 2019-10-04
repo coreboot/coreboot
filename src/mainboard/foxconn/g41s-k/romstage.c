@@ -67,7 +67,8 @@ static void mb_lpc_setup(void)
 	RCBA8(OIC);
 
 	RCBA32(FD) |= FD_INTLAN;
-	RCBA32(CG) = 0x00000001;
+
+	ich7_setup_cir();
 }
 
 static void ich7_enable_lpc(void)

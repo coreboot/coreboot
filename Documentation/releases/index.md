@@ -10,6 +10,7 @@ Release notes for previous releases
 * [4.7 - January 2018](coreboot-4.7-relnotes.md)
 * [4.8 - May 2018](coreboot-4.8.1-relnotes.md)
 * [4.9 - December 2018](coreboot-4.9-relnotes.md)
+* [4.10 - July 2019](coreboot-4.10-relnotes.md)
 
 The checklist contains instructions to ensure that a release covers all
 important things and provides a reliable format for tarballs, branch
@@ -21,4 +22,4 @@ Upcoming release
 ----------------
 
 Please add to the release notes as changes are added:
-* [4.10 - April 2019](coreboot-4.10-relnotes.md)
+* [4.11 - October 2019](coreboot-4.11-relnotes.md)

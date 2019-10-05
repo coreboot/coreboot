@@ -48,20 +48,6 @@ static const struct vr_config default_configs[NUM_VR_DOMAINS] = {
 		.icc_max = VR_CFG_AMP(34),
 		.voltage_limit = 1520,
 	},
-#if CONFIG(PLATFORM_USES_FSP1_1)
-	[VR_RING] = {
-		.vr_config_enable = 1,
-		.psi1threshold = VR_CFG_AMP(20),
-		.psi2threshold = VR_CFG_AMP(5),
-		.psi3threshold = VR_CFG_AMP(1),
-		.psi3enable = 0,
-		.psi4enable = 0,
-		.imon_slope = 0x0,
-		.imon_offset = 0x0,
-		.icc_max = VR_CFG_AMP(34),
-		.voltage_limit = 1520,
-	},
-#endif
 	[VR_GT_UNSLICED] = {
 		.vr_config_enable = 1,
 		.psi1threshold = VR_CFG_AMP(20),
@@ -246,7 +232,6 @@ static uint16_t get_sku_icc_max(int domain)
 	return 0;
 }
 
-#if CONFIG(PLATFORM_USES_FSP2_0)
 static uint16_t get_sku_ac_dc_loadline(const int domain)
 {
 	static uint16_t mch_id = 0, igd_id = 0;
@@ -316,7 +301,6 @@ static uint16_t get_sku_ac_dc_loadline(const int domain)
 	}
 	return 0;
 }
-#endif
 
 void fill_vr_domain_config(void *params,
 		int domain, const struct vr_config *chip_cfg)
@@ -348,7 +332,6 @@ void fill_vr_domain_config(void *params,
 		vr_params->IccMax[domain] = get_sku_icc_max(domain);
 	vr_params->VrVoltageLimit[domain] = cfg->voltage_limit;
 
-#if CONFIG(PLATFORM_USES_FSP2_0)
 	if (cfg->ac_loadline)
 		vr_params->AcLoadline[domain] = cfg->ac_loadline;
 	else
@@ -357,5 +340,4 @@ void fill_vr_domain_config(void *params,
 		vr_params->DcLoadline[domain] = cfg->dc_loadline;
 	else
 		vr_params->DcLoadline[domain] = get_sku_ac_dc_loadline(domain);
-#endif
 }

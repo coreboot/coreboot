@@ -19,11 +19,7 @@
 #ifndef _SOC_VR_CONFIG_H_
 #define _SOC_VR_CONFIG_H_
 
-#if CONFIG(PLATFORM_USES_FSP1_1)
-#include <fsp/soc_binding.h>
-#else
 #include <fsp/api.h>
-#endif
 
 struct vr_config {
 
@@ -70,30 +66,6 @@ struct vr_config {
 #define VR_CFG_AMP(i) ((i) * 4)
 #define VR_CFG_MOHMS(i) (uint16_t)((i) * 100)
 
-#if CONFIG(PLATFORM_USES_FSP1_1)
-/* VrConfig Settings for 5 domains
- * 0 = System Agent, 1 = IA Core, 2 = Ring,
- * 3 = GT unsliced,  4 = GT sliced
- */
-enum vr_domain {
-	VR_SYSTEM_AGENT,
-	VR_IA_CORE,
-	VR_RING,
-	VR_GT_UNSLICED,
-	VR_GT_SLICED,
-	NUM_VR_DOMAINS
-};
-
-#define VR_CFG_ALL_DOMAINS_ICC(sa, ia, gt_unsl, gt_sl)	\
-	{							\
-		[VR_SYSTEM_AGENT] = VR_CFG_AMP(sa),		\
-		[VR_IA_CORE]      = VR_CFG_AMP(ia),		\
-		[VR_RING]         = VR_CFG_AMP(0),		\
-		[VR_GT_UNSLICED]  = VR_CFG_AMP(gt_unsl),	\
-		[VR_GT_SLICED]    = VR_CFG_AMP(gt_sl),		\
-	}
-
-#else
 /* VrConfig Settings for 4 domains
  * 0 = System Agent, 1 = IA Core,
  * 2 = GT unsliced,  3 = GT sliced
@@ -113,8 +85,6 @@ enum vr_domain {
 		[VR_GT_UNSLICED]  = VR_CFG_AMP(gt_unsl),	\
 		[VR_GT_SLICED]    = VR_CFG_AMP(gt_sl),		\
 	}
-
-#endif
 
 #define VR_CFG_ALL_DOMAINS_LOADLINE(sa, ia, gt_unsl, gt_sl)	\
 	{							\

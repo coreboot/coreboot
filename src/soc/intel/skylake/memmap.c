@@ -84,12 +84,7 @@ static size_t get_prmrr_size(uintptr_t dram_base,
 		const struct soc_intel_skylake_config *config)
 {
 	uintptr_t prmrr_base = dram_base;
-	size_t prmrr_size;
-
-	if (CONFIG(PLATFORM_USES_FSP1_1))
-		prmrr_size = 1*MiB;
-	else
-		prmrr_size = config->PrmrrSize;
+	size_t prmrr_size = config->PrmrrSize;
 
 	if (!prmrr_size)
 		return 0;
@@ -292,7 +287,6 @@ void *cbmem_top(void)
 	return (void *)(uintptr_t)ebda_cfg.tolum_base;
 }
 
-#if CONFIG(PLATFORM_USES_FSP2_0)
 void fill_postcar_frame(struct postcar_frame *pcf)
 {
 	uintptr_t top_of_ram;
@@ -311,4 +305,3 @@ void fill_postcar_frame(struct postcar_frame *pcf)
 	/* Cache the TSEG region */
 	postcar_enable_tseg_cache(pcf);
 }
-#endif

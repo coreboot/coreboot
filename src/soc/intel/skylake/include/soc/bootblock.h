@@ -18,12 +18,6 @@
 
 #include <intelblocks/systemagent.h>
 
-#if CONFIG(PLATFORM_USES_FSP1_1)
-#include <fsp/bootblock.h>
-#else
-static inline void bootblock_fsp_temp_ram_init(void) {}
-#endif
-
 /* Bootblock pre console init programming */
 void bootblock_cpu_init(void);
 void bootblock_pch_early_init(void);

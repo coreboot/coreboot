@@ -169,14 +169,6 @@ struct chipset_power_state {
 	uint32_t prev_sleep_state;
 } __packed;
 
-/*
- * This is used only in FSP1_1 as we wanted to keep the flow unchanged.
- * Internally fill_power_state calls the new pmc_fill_power_state now
- */
-#if CONFIG(PLATFORM_USES_FSP1_1)
-struct chipset_power_state *fill_power_state(void);
-#endif
-
 /* Return the selected ACPI SCI IRQ */
 int acpi_sci_irq(void);
 

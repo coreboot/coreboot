@@ -37,13 +37,12 @@ romstage-y += memmap.c
 romstage-y += me.c
 romstage-y += pmc.c
 romstage-y += pmutil.c
-romstage-$(CONFIG_PLATFORM_USES_FSP2_0) += reset.c
+romstage-y += reset.c
 romstage-y += spi.c
 romstage-y += uart.c
 
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi.c
-ramstage-$(CONFIG_PLATFORM_USES_FSP1_1) += chip.c
-ramstage-$(CONFIG_PLATFORM_USES_FSP2_0) += chip_fsp20.c
+ramstage-y += chip_fsp20.c
 ramstage-y += cpu.c
 ramstage-y += elog.c
 ramstage-y += finalize.c
@@ -59,7 +58,7 @@ ramstage-y += memmap.c
 ramstage-y += p2sb.c
 ramstage-y += pmc.c
 ramstage-y += pmutil.c
-ramstage-$(CONFIG_PLATFORM_USES_FSP2_0) += reset.c
+ramstage-y += reset.c
 ramstage-y += sd.c
 ramstage-y += smmrelocate.c
 ramstage-y += spi.c
@@ -101,13 +100,7 @@ endif
 
 CPPFLAGS_common += -I$(src)/soc/intel/skylake
 CPPFLAGS_common += -I$(src)/soc/intel/skylake/include
-
-ifeq ($(CONFIG_PLATFORM_USES_FSP1_1),y)
-CPPFLAGS_common += -I$(src)/soc/intel/skylake/include/fsp11
-CPPFLAGS_common += -I$(src)/vendorcode/intel/fsp/fsp1_1/skylake
-else
 CPPFLAGS_common += -I$(src)/soc/intel/skylake/include/fsp20
-endif
 
 # Currently used for microcode path.
 CPPFLAGS_common += -I3rdparty/blobs/mainboard/$(MAINBOARDDIR)

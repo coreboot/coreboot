@@ -19,7 +19,7 @@ I/O range and ISA IRQ number.
 
 This example is based on AST2400.
 
-```code
+```
 # Add a "container" for proper ACPI code generation
 chip superio/common
   device pnp 2e.0 on # just for the base device, not for the LDNs

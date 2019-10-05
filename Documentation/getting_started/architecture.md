@@ -1,6 +1,6 @@
 # coreboot architecture
 
-## Overwiew
+## Overview
 ![][architecture]
 
 [architecture]: comparision_coreboot_uefi.svg

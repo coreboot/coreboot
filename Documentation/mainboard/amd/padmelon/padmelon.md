@@ -75,6 +75,6 @@ Three items are marked in this picture
 
 [Merlin Falcon BKDG][merlinfalcon]
 
-[merlinfalcon]: ../../soc/amd/family15h.md
+[merlinfalcon]: ../../../soc/amd/family15h.md
 [padmelon]: padmelon.jpg
 [padmelon_io]: padmelon_io.jpg

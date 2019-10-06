@@ -21,8 +21,4 @@ config CPU_ADDR_BITS
 	int
 	default 48
 
-config XIP_ROM_SIZE
-	hex
-	default 0x80000
-
 endif

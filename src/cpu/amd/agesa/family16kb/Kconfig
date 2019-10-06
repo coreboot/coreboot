@@ -21,10 +21,6 @@ config CPU_ADDR_BITS
 	int
 	default 40
 
-config XIP_ROM_SIZE
-	hex
-	default 0x100000
-
 config FORCE_AM1_SOCKET_SUPPORT
 	bool
 	default n

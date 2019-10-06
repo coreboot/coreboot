@@ -37,9 +37,26 @@ config CONFIGURABLE_CBFS_PREFIX
 	help
 	  Select this to prompt to use to configure the prefix for cbfs files.
 
+choice
+	prompt "CBFS prefix to use"
+	depends on CONFIGURABLE_CBFS_PREFIX
+	default CBFS_PREFIX_FALLBACK
+
+config CBFS_PREFIX_FALLBACK
+	bool "fallback"
+
+config CBFS_PREFIX_NORMAL
+	bool "normal"
+
+config CBFS_PREFIX_DIY
+	bool "Define your own cbfs prefix"
+
+endchoice
+
 config CBFS_PREFIX
-	string "CBFS prefix to use" if CONFIGURABLE_CBFS_PREFIX
-	default "fallback"
+	string "CBFS prefix to use" if CBFS_PREFIX_DIY
+	default "fallback" if !CONFIGURABLE_CBFS_PREFIX || CBFS_PREFIX_FALLBACK
+	default "normal" if CBFS_PREFIX_NORMAL
 	help
 	  Select the prefix to all files put into the image. It's "fallback"
 	  by default, "normal" is a common alternative.

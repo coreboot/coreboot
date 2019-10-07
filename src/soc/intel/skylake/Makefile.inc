@@ -42,7 +42,7 @@ romstage-y += spi.c
 romstage-y += uart.c
 
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi.c
-ramstage-y += chip_fsp20.c
+ramstage-y += chip.c
 ramstage-y += cpu.c
 ramstage-y += elog.c
 ramstage-y += finalize.c
@@ -100,7 +100,6 @@ endif
 
 CPPFLAGS_common += -I$(src)/soc/intel/skylake
 CPPFLAGS_common += -I$(src)/soc/intel/skylake/include
-CPPFLAGS_common += -I$(src)/soc/intel/skylake/include/fsp20
 
 # Currently used for microcode path.
 CPPFLAGS_common += -I3rdparty/blobs/mainboard/$(MAINBOARDDIR)

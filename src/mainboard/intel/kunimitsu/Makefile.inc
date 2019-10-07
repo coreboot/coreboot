@@ -29,5 +29,3 @@ ramstage-y += mainboard.c
 ramstage-y += ramstage.c
 
 smm-y += smihandler.c
-
-romstage-srcs := $(subst $(MAINBOARDDIR)/romstage.c,$(MAINBOARDDIR)/romstage_fsp20.c,$(romstage-srcs))

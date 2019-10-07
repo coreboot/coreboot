@@ -1969,11 +1969,13 @@ static void dramc_dle_factor_handler(u8 chn, u8 val, u8 freq_group)
 }
 
 static u8 dramc_rx_datlat_cal(u8 chn, u8 rank, u8 freq_group,
-		const struct sdram_params *params, const bool fast_calib)
+		const struct sdram_params *params, const bool fast_calib,
+		bool *test_passed)
 {
-	u32 datlat, begin = 0,  first = 0, sum = 0, best_step;
+	u32 datlat, begin = 0, first = 0, sum = 0, best_step;
 	u32 datlat_start = 7;
 
+	*test_passed = true;
 	best_step = read32(&ch[chn].ao.shu[0].conf[1]) & SHU_CONF1_DATLAT_MASK;
 
 	dramc_dbg("[DATLAT] start. CH%d RK%d DATLAT Default: 0x%x\n",
@@ -2010,7 +2012,11 @@ static u8 dramc_rx_datlat_cal(u8 chn, u8 rank, u8 freq_group,
 
 		dramc_engine2_end(chn, dummy_rd_backup);
 
-		assert(sum != 0);
+		*test_passed = (sum != 0);
+		if (!*test_passed) {
+			dramc_show("DRAM memory test failed\n");
+			return 0;
+		}
 
 		if (sum <= 3)
 			best_step = first + (sum >> 1);
@@ -2111,7 +2117,7 @@ static void dramc_rx_dqs_gating_post_process(u8 chn, u8 freq_group)
 			(0xff << 8) | (0x9 << 2) | ROEN);
 }
 
-void dramc_calibrate_all_channels(const struct sdram_params *pams, u8 freq_group)
+int dramc_calibrate_all_channels(const struct sdram_params *pams, u8 freq_group)
 {
 	bool fast_calib;
 	switch (pams->source) {
@@ -2123,9 +2129,10 @@ void dramc_calibrate_all_channels(const struct sdram_params *pams, u8 freq_group
 		break;
 	default:
 		die("Invalid DRAM param source %u\n", pams->source);
-		return;
+		return -1;
 	}
 
+	bool test_passed;
 	u8 rx_datlat[RANK_MAX] = {0};
 	for (u8 chn = 0; chn < CHANNEL_MAX; chn++) {
 		for (u8 rk = RANK_0; rk < RANK_MAX; rk++) {
@@ -2144,7 +2151,9 @@ void dramc_calibrate_all_channels(const struct sdram_params *pams, u8 freq_group
 			dramc_window_perbit_cal(chn, rk, freq_group,
 				TX_WIN_DQ_ONLY, pams, fast_calib);
 			rx_datlat[rk] = dramc_rx_datlat_cal(chn, rk, freq_group,
-				pams, fast_calib);
+				pams, fast_calib, &test_passed);
+			if (!test_passed)
+				return -2;
 			dramc_window_perbit_cal(chn, rk, freq_group,
 				RX_WIN_TEST_ENG, pams, fast_calib);
 		}
@@ -2152,4 +2161,5 @@ void dramc_calibrate_all_channels(const struct sdram_params *pams, u8 freq_group
 		dramc_rx_dqs_gating_post_process(chn, freq_group);
 		dramc_dual_rank_rx_datlat_cal(chn, freq_group, rx_datlat[0], rx_datlat[1]);
 	}
+	return 0;
 }

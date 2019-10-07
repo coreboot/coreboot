@@ -19,10 +19,9 @@
 #include <soc/dramc_param.h>
 #include <soc/dramc_pi_api.h>
 #include <soc/emi.h>
-#include <string.h>
 #include <symbols.h>
 
-static void mt_mem_test(void)
+static int mt_mem_test(void)
 {
 	u64 rank_size[RANK_MAX];
 
@@ -43,11 +42,16 @@ static void mt_mem_test(void)
 			printk(BIOS_DEBUG, "[MEM] complex R/W mem test %s : %d\n",
 			       (i == 0) ? "pass" : "fail", i);
 
-			ASSERT(i == 0);
+			if (i != 0) {
+				dramc_show("DRAM memory test failed\n");
+				return -1;
+			}
 
 			addr += rank_size[r];
 		}
 	}
+
+	return 0;
 }
 
 static void dump_param_header(const struct dramc_param *dparam)
@@ -147,9 +151,8 @@ void mt_mem_init(struct dramc_param_ops *dparam_ops)
 		if (dram_run_fast_calibration(dparam, config) == 0) {
 			printk(BIOS_INFO,
 			       "DRAM calibraion params loaded from flash\n");
-			mt_set_emi(dparam);
-			mt_mem_test();
-			return;
+			if (mt_set_emi(dparam) == 0 && mt_mem_test() == 0)
+				return;
 		}
 	} else {
 		printk(BIOS_WARNING,
@@ -174,6 +177,8 @@ void mt_mem_init(struct dramc_param_ops *dparam_ops)
 
 	/* Init params from sdram configs and run partial calibration */
 	init_sdram_params(dparam->freq_params, get_sdram_config());
-	mt_set_emi(dparam);
-	mt_mem_test();
+	if (mt_set_emi(dparam) != 0)
+		die("Set emi failed with params from sdram config\n");
+	if (mt_mem_test() != 0)
+		die("Memory test failed with params from sdram config\n");
 }

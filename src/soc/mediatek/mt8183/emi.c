@@ -342,12 +342,14 @@ void enable_emi_dcm(void)
 		clrbits_le32(&ch[chn].emi.chn_conb, 0xff << 24);
 }
 
-static void do_calib(const struct sdram_params *params, u8 freq_group)
+static int do_calib(const struct sdram_params *params, u8 freq_group)
 {
 	dramc_show("Start K, current clock is:%d\n", params->frequency);
-	dramc_calibrate_all_channels(params, freq_group);
+	if (dramc_calibrate_all_channels(params, freq_group) != 0)
+		return -1;
 	dramc_ac_timing_optimize(freq_group);
 	dramc_show("K finish with clock:%d\n", params->frequency);
+	return 0;
 }
 
 static void after_calib(void)
@@ -356,7 +358,7 @@ static void after_calib(void)
 	dramc_runtime_config();
 }
 
-void mt_set_emi(const struct dramc_param *dparam)
+int mt_set_emi(const struct dramc_param *dparam)
 {
 	const u8 *freq_tbl;
 	const int shuffle = DRAM_DFS_SHUFFLE_1;
@@ -372,7 +374,9 @@ void mt_set_emi(const struct dramc_param *dparam)
 	params = &dparam->freq_params[shuffle];
 
 	init_dram(params, current_freqsel);
-	do_calib(params, current_freqsel);
+	if (do_calib(params, current_freqsel) != 0)
+		return -1;
 
 	after_calib();
+	return 0;
 }

@@ -88,7 +88,7 @@ int complex_mem_test(u8 *start, unsigned int len);
 size_t sdram_size(void);
 const struct sdram_params *get_sdram_config(void);
 void enable_emi_dcm(void);
-void mt_set_emi(const struct dramc_param *dparam);
+int mt_set_emi(const struct dramc_param *dparam);
 void mt_mem_init(struct dramc_param_ops *dparam_ops);
 
 #endif /* SOC_MEDIATEK_MT8183_EMI_H */

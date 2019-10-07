@@ -110,7 +110,7 @@ void dramc_sw_impedance_save_reg(u8 freq_group);
 void dramc_sw_impedance_cal(const struct sdram_params *params, u8 term_option);
 void dramc_apply_config_before_calibration(u8 freq_group);
 void dramc_apply_config_after_calibration(void);
-void dramc_calibrate_all_channels(const struct sdram_params *pams,
+int dramc_calibrate_all_channels(const struct sdram_params *pams,
 	u8 freq_group);
 void dramc_hw_gating_onoff(u8 chn, bool onoff);
 void dramc_enable_phy_dcm(bool bEn);

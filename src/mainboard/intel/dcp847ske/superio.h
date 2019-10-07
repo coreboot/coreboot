@@ -18,6 +18,7 @@
 #define DCP847SKE_SUPERIO_H
 
 #include <arch/io.h>
+#include <superio/hwm5_conf.h>
 
 #define NUVOTON_PORT 0x4e
 #define HWM_PORT     0x0a30
@@ -44,11 +45,6 @@
 
 #define SUPERIO_WRITE_INITVAL(val) SUPERIO_WRITE((val) >> 8, (val) & 0xff)
 
-#define HWM_WRITE(reg, data) do { \
-	outb((reg), HWM_PORT + 5); \
-	outb((data), HWM_PORT + 6); \
-} while (0)
-
-#define HWM_WRITE_INITVAL(val) HWM_WRITE((val) >> 8, (val) & 0xff)
+#define HWM_WRITE_INITVAL(val) pnp_write_hwm5_index(HWM_PORT, (val) >> 8, (val) & 0xff)
 
 #endif /* DCP847SKE_SUPERIO_H */

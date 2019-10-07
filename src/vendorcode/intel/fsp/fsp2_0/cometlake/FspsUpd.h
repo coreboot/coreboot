@@ -3621,7 +3621,17 @@ typedef struct {
 **/
   UINT32                      SdCardRxCmdDataDelay2RegValue;
 
-/** Offset 0x0ABC
+/** Offset 0x0ABC - Enforce Enhanced Debug Mode
+  Determine if ME should enter Enhanced Debug Mode. 0: disable, 1: enable
+  $EN_DIS
+**/
+  UINT8                       EnforceEDebugMode;
+
+/** Offset 0x0ABD
+**/
+  UINT8                       UnusedUpdSpace31[7];
+
+/** Offset 0x0AC4
 **/
   UINT8                       ReservedFspsTestUpd[12];
 } FSP_S_TEST_CONFIG;
@@ -3642,11 +3652,11 @@ typedef struct {
 **/
   FSP_S_TEST_CONFIG           FspsTestConfig;
 
-/** Offset 0x0AC8
+/** Offset 0x0AD0
 **/
-  UINT8                       UnusedUpdSpace31[6];
+  UINT8                       UnusedUpdSpace32[6];
 
-/** Offset 0x0ACE
+/** Offset 0x0AD6
 **/
   UINT16                      UpdTerminator;
 } FSPS_UPD;

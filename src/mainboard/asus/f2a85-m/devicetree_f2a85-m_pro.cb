@@ -54,7 +54,7 @@ chip northbridge/amd/agesa/family15tn/root_complex
 				device pci 14.1 off end # unused
 				device pci 14.2 on  end # HDA	0x4383
 				device pci 14.3 on      # LPC	0x780e
-					chip superio/nuvoton/nct5572d
+					chip superio/nuvoton/nct6779d
 						device pnp 2e.0 off end	# FDC
 						device pnp 2e.1 off end	# LPT1
 						device pnp 2e.2 on	#  COM1

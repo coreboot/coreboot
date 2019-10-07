@@ -22,21 +22,12 @@
 #include <delay.h>
 #include <stdlib.h>
 #include <superio/conf_mode.h>
+#include <superio/hwm5_conf.h>
 
 #include "chip.h" /* FIXME */
 #include "it8772f.h"
 
-static inline u8 it8772f_envc_read(struct resource *res, u8 addr)
-{
-	outb(addr, res->base + 5);
-	return inb(res->base + 6);
-}
-
-static inline void it8772f_envc_write(struct resource *res, u8 addr, u8 value)
-{
-	outb(addr, res->base + 5);
-	outb(value, res->base + 6);
-}
+/* FIXME: see if the common ITE environment controller code can be used here */
 
 static void it8772f_extemp_force_idle_status(struct resource *res)
 {
@@ -45,7 +36,7 @@ static void it8772f_extemp_force_idle_status(struct resource *res)
 
 	/* Wait up to 10ms for non-busy state. */
 	while (retries > 0) {
-		reg = it8772f_envc_read(res, IT8772F_EXTEMP_STATUS);
+		reg = pnp_read_hwm5_index(res->base, IT8772F_EXTEMP_STATUS);
 
 		if ((reg & IT8772F_EXTEMP_STATUS_HOST_BUSY) == 0x0)
 			break;
@@ -60,7 +51,7 @@ static void it8772f_extemp_force_idle_status(struct resource *res)
 		 * SIO is busy due to unfinished peci transaction.
 		 * Re-configure Register 0x8E to terminate processes.
 		 */
-		it8772f_envc_write(res, IT8772F_EXTEMP_CONTROL,
+		pnp_write_hwm5_index(res->base, IT8772F_EXTEMP_CONTROL,
 			IT8772F_EXTEMP_CONTROL_AUTO_4HZ |
 			IT8772F_EXTEMP_CONTROL_AUTO_START);
 	}
@@ -75,25 +66,25 @@ static void it8772f_enable_peci(struct resource *res, int tmpin)
 		return;
 
 	/* Enable PECI interface */
-	it8772f_envc_write(res, IT8772F_INTERFACE_SELECT,
+	pnp_write_hwm5_index(res->base, IT8772F_INTERFACE_SELECT,
 			   IT8772F_INTERFACE_SEL_PECI |
 			   IT8772F_INTERFACE_SPEED_TOLERANCE);
 
 	/* Setup External Temperature using PECI GetTemp */
-	it8772f_envc_write(res, IT8772F_EXTEMP_ADDRESS,
+	pnp_write_hwm5_index(res->base, IT8772F_EXTEMP_ADDRESS,
 			   PECI_CLIENT_ADDRESS);
-	it8772f_envc_write(res, IT8772F_EXTEMP_COMMAND,
+	pnp_write_hwm5_index(res->base, IT8772F_EXTEMP_COMMAND,
 			   PECI_GETTEMP_COMMAND);
-	it8772f_envc_write(res, IT8772F_EXTEMP_WRITE_LENGTH,
+	pnp_write_hwm5_index(res->base, IT8772F_EXTEMP_WRITE_LENGTH,
 			   PECI_GETTEMP_WRITE_LENGTH);
-	it8772f_envc_write(res, IT8772F_EXTEMP_READ_LENGTH,
+	pnp_write_hwm5_index(res->base, IT8772F_EXTEMP_READ_LENGTH,
 			   PECI_GETTEMP_READ_LENGTH);
-	it8772f_envc_write(res, IT8772F_EXTEMP_CONTROL,
+	pnp_write_hwm5_index(res->base, IT8772F_EXTEMP_CONTROL,
 			   IT8772F_EXTEMP_CONTROL_AUTO_4HZ |
 			   IT8772F_EXTEMP_CONTROL_AUTO_START);
 
 	/* External Temperature reported in TMPINx register */
-	it8772f_envc_write(res, IT8772F_ADC_TEMP_CHANNEL_ENABLE,
+	pnp_write_hwm5_index(res->base, IT8772F_ADC_TEMP_CHANNEL_ENABLE,
 			   (tmpin & 3) << 6);
 }
 
@@ -109,17 +100,17 @@ static void it8772f_enable_tmpin(struct resource *res, int tmpin,
 	if (tmpin != 1 && tmpin != 2)
 		return;
 
-	reg = it8772f_envc_read(res, IT8772F_ADC_TEMP_CHANNEL_ENABLE);
+	reg = pnp_read_hwm5_index(res->base, IT8772F_ADC_TEMP_CHANNEL_ENABLE);
 
 	switch (mode) {
 	case THERMAL_DIODE:
 		/* Thermal Diode Mode */
-		it8772f_envc_write(res, IT8772F_ADC_TEMP_CHANNEL_ENABLE,
+		pnp_write_hwm5_index(res->base, IT8772F_ADC_TEMP_CHANNEL_ENABLE,
 				   reg | tmpin);
 		break;
 	case THERMAL_RESISTOR:
 		/* Thermal Resistor Mode */
-		it8772f_envc_write(res, IT8772F_ADC_TEMP_CHANNEL_ENABLE,
+		pnp_write_hwm5_index(res->base, IT8772F_ADC_TEMP_CHANNEL_ENABLE,
 				   reg | (tmpin << 3));
 		break;
 	default:
@@ -128,10 +119,10 @@ static void it8772f_enable_tmpin(struct resource *res, int tmpin,
 		return;
 	}
 
-	reg = it8772f_envc_read(res, IT8772F_CONFIGURATION);
+	reg = pnp_read_hwm5_index(res->base, IT8772F_CONFIGURATION);
 
 	/* Enable the startup of monitoring operation */
-	it8772f_envc_write(res, IT8772F_CONFIGURATION, reg | 0x01);
+	pnp_write_hwm5_index(res->base, IT8772F_CONFIGURATION, reg | 0x01);
 }
 
 /*
@@ -145,41 +136,41 @@ static void it8772f_enable_fan(struct resource *res, int fan, u8 fan_speed)
 		return;
 
 	/* Enable 6MHz (23.43kHz PWM) active high output */
-	reg = it8772f_envc_read(res, IT8772F_FAN_CTL_MODE);
+	reg = pnp_read_hwm5_index(res->base, IT8772F_FAN_CTL_MODE);
 	reg |= IT8772F_FAN_CTL_ON(fan) |
 		IT8772F_FAN_PWM_CLOCK_6MHZ |
 		IT8772F_FAN_CTL_POLARITY_HIGH;
-	it8772f_envc_write(res, IT8772F_FAN_CTL_MODE, reg);
+	pnp_write_hwm5_index(res->base, IT8772F_FAN_CTL_MODE, reg);
 
 	/* Enable output in smart mode */
-	reg = it8772f_envc_read(res, IT8772F_FAN_MAIN_CTL);
+	reg = pnp_read_hwm5_index(res->base, IT8772F_FAN_MAIN_CTL);
 	reg |= IT8772F_FAN_MAIN_CTL_TAC_SMART(fan);
 	reg |= IT8772F_FAN_MAIN_CTL_TAC_EN(fan);
-	it8772f_envc_write(res, IT8772F_FAN_MAIN_CTL, reg);
+	pnp_write_hwm5_index(res->base, IT8772F_FAN_MAIN_CTL, reg);
 
 	switch (fan) {
 	case 2:
 		/* Enable software operation */
-		it8772f_envc_write(res, IT8772F_FAN_CTL2_PWM_MODE,
+		pnp_write_hwm5_index(res->base, IT8772F_FAN_CTL2_PWM_MODE,
 				   IT8772F_FAN_CTL_PWM_MODE_SOFTWARE);
 		/* Disable Smoothing */
-		it8772f_envc_write(res, IT8772F_FAN_CTL2_AUTO_MODE,
+		pnp_write_hwm5_index(res->base, IT8772F_FAN_CTL2_AUTO_MODE,
 				   IT8772F_FAN_CTL_AUTO_SMOOTHING_DIS);
 		/* Set a default fan speed */
 		if (fan_speed)
-			it8772f_envc_write(res, IT8772F_FAN_CTL2_PWM_START,
+			pnp_write_hwm5_index(res->base, IT8772F_FAN_CTL2_PWM_START,
 				   fan_speed);
 		break;
 	case 3:
 		/* Enable software operation */
-		it8772f_envc_write(res, IT8772F_FAN_CTL3_PWM_MODE,
+		pnp_write_hwm5_index(res->base, IT8772F_FAN_CTL3_PWM_MODE,
 				   IT8772F_FAN_CTL_PWM_MODE_SOFTWARE);
 		/* Disable Smoothing */
-		it8772f_envc_write(res, IT8772F_FAN_CTL3_AUTO_MODE,
+		pnp_write_hwm5_index(res->base, IT8772F_FAN_CTL3_AUTO_MODE,
 				   IT8772F_FAN_CTL_AUTO_SMOOTHING_DIS);
 		/* Set a default fan speed */
 		if (fan_speed)
-			it8772f_envc_write(res, IT8772F_FAN_CTL3_PWM_START,
+			pnp_write_hwm5_index(res->base, IT8772F_FAN_CTL3_PWM_START,
 				   fan_speed);
 		break;
 	}

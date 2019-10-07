@@ -14,10 +14,11 @@
  */
 
 #include <device/mmio.h>
-#include <soc/emi.h>
-#include <soc/infracfg.h>
+#include <soc/dramc_param.h>
 #include <soc/dramc_pi_api.h>
 #include <soc/dramc_register.h>
+#include <soc/emi.h>
+#include <soc/infracfg.h>
 
 static const u8 freq_shuffle[DRAM_DFS_SHUFFLE_MAX] = {
 	[DRAM_DFS_SHUFFLE_1] = LP4X_DDR3200,
@@ -355,7 +356,7 @@ static void after_calib(void)
 	dramc_runtime_config();
 }
 
-void mt_set_emi(const struct sdram_params *freq_params)
+void mt_set_emi(const struct dramc_param *dparam)
 {
 	const u8 *freq_tbl;
 	const int shuffle = DRAM_DFS_SHUFFLE_1;
@@ -368,7 +369,7 @@ void mt_set_emi(const struct sdram_params *freq_params)
 		freq_tbl = freq_shuffle;
 
 	current_freqsel = freq_tbl[shuffle];
-	params = &freq_params[shuffle];
+	params = &dparam->freq_params[shuffle];
 
 	init_dram(params, current_freqsel);
 	do_calib(params, current_freqsel);

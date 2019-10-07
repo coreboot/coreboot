@@ -137,7 +137,6 @@ static void init_sdram_params(struct sdram_params *dst,
 void mt_mem_init(struct dramc_param_ops *dparam_ops)
 {
 	struct dramc_param *dparam = dparam_ops->param;
-	struct sdram_params *freq_params = dparam->freq_params;
 
 	u16 config = 0;
 	if (CONFIG(MT8183_DRAM_EMCP))
@@ -148,7 +147,7 @@ void mt_mem_init(struct dramc_param_ops *dparam_ops)
 		if (dram_run_fast_calibration(dparam, config) == 0) {
 			printk(BIOS_INFO,
 			       "DRAM calibraion params loaded from flash\n");
-			mt_set_emi(freq_params);
+			mt_set_emi(dparam);
 			mt_mem_test();
 			return;
 		}
@@ -174,7 +173,7 @@ void mt_mem_init(struct dramc_param_ops *dparam_ops)
 	       "falling back to load default sdram param\n", err);
 
 	/* Init params from sdram configs and run partial calibration */
-	init_sdram_params(freq_params, get_sdram_config());
-	mt_set_emi(freq_params);
+	init_sdram_params(dparam->freq_params, get_sdram_config());
+	mt_set_emi(dparam);
 	mt_mem_test();
 }

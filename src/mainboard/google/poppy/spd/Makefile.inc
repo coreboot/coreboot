@@ -5,7 +5,7 @@ SEC_SPD_BIN = $(obj)/sec-spd.bin
 define gen_spd_bin
 	for f in $2; \
 	  do for c in $$(cat $$f | grep -v ^#); \
-	    do printf $$(printf '\%o' 0x$$c); \
+	    do printf $$(printf '\\%o' 0x$$c); \
 	  done; \
 	done > $1
 endef

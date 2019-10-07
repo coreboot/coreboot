@@ -33,7 +33,7 @@ SPD_DEPS := $(foreach f, $(SPD_SOURCES), src/mainboard/$(MAINBOARDDIR)/variants/
 $(SPD_BIN): $(SPD_DEPS)
 	for f in $+; \
 	  do for c in $$(cat $$f | grep -v ^#); \
-	    do printf $$(printf '\%o' 0x$$c); \
+	    do printf $$(printf '\\%o' 0x$$c); \
 	  done; \
 	done > $@
 

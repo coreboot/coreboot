@@ -241,7 +241,7 @@ static enum cb_err get_cmos_value(unsigned long bit, unsigned long length,
 static enum cb_err locate_cmos_layout(struct region_device *rdev)
 {
 	uint32_t cbfs_type = CBFS_COMPONENT_CMOS_LAYOUT;
-	struct cbfsf fh;
+	MAYBE_STATIC_BSS struct cbfsf fh = {};
 
 	/*
 	 * In case VBOOT is enabled and this function is called from SMM,
@@ -250,11 +250,13 @@ static enum cb_err locate_cmos_layout(struct region_device *rdev)
 	 *
 	 * Support only one CMOS layout in the 'COREBOOT' region for now.
 	 */
-	if (cbfs_locate_file_in_region(&fh, "COREBOOT", "cmos_layout.bin",
-				       &cbfs_type)) {
-		printk(BIOS_ERR, "RTC: cmos_layout.bin could not be found. "
+	if (!region_device_sz(&(fh.data))) {
+		if (cbfs_locate_file_in_region(&fh, "COREBOOT", "cmos_layout.bin",
+					       &cbfs_type)) {
+			printk(BIOS_ERR, "RTC: cmos_layout.bin could not be found. "
 						"Options are disabled\n");
-		return CB_CMOS_LAYOUT_NOT_FOUND;
+			return CB_CMOS_LAYOUT_NOT_FOUND;
+		}
 	}
 
 	cbfs_file_data(rdev, &fh);

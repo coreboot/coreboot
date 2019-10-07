@@ -21,26 +21,6 @@
 
 /* NOTICE: This file is deprecated, use ite/common instead */
 
-/* RAMstage equiv */
-/* u8 pnp_read_config(pnp_devfn_t dev, u8 reg) */
-u8 it8772f_sio_read(pnp_devfn_t dev, u8 reg)
-{
-	u16 port = dev >> 8;
-
-	outb(reg, port);
-	return inb(port + 1);
-}
-
-/* RAMstage equiv */
-/* void pnp_write_config(pnp_devfn_t dev, u8 reg, u8 value) */
-void it8772f_sio_write(pnp_devfn_t dev, u8 reg, u8 value)
-{
-	u16 port = dev >> 8;
-
-	outb(reg, port);
-	outb(value, port + 1);
-}
-
 void it8772f_enter_conf(pnp_devfn_t dev)
 {
 	u16 port = dev >> 8;
@@ -53,15 +33,15 @@ void it8772f_enter_conf(pnp_devfn_t dev)
 
 void it8772f_exit_conf(pnp_devfn_t dev)
 {
-	it8772f_sio_write(dev, IT8772F_CONFIG_REG_CC, 0x02);
+	pnp_write_config(dev, IT8772F_CONFIG_REG_CC, 0x02);
 }
 
 /* Set AC resume to be up to the Southbridge */
 void it8772f_ac_resume_southbridge(pnp_devfn_t dev)
 {
 	it8772f_enter_conf(dev);
-	it8772f_sio_write(dev, IT8772F_CONFIG_REG_LDN, IT8772F_EC);
-	it8772f_sio_write(dev, 0xf4, 0x60);
+	pnp_write_config(dev, IT8772F_CONFIG_REG_LDN, IT8772F_EC);
+	pnp_write_config(dev, 0xf4, 0x60);
 	it8772f_exit_conf(dev);
 }
 
@@ -71,14 +51,14 @@ void it8772f_gpio_setup(pnp_devfn_t dev, int set, u8 select, u8 polarity,
 {
 	set--; /* Set 1 is offset 0 */
 	it8772f_enter_conf(dev);
-	it8772f_sio_write(dev, IT8772F_CONFIG_REG_LDN, IT8772F_GPIO);
+	pnp_write_config(dev, IT8772F_CONFIG_REG_LDN, IT8772F_GPIO);
 	if (set < 5) {
-		it8772f_sio_write(dev, GPIO_REG_SELECT(set), select);
-		it8772f_sio_write(dev, GPIO_REG_ENABLE(set), enable);
-		it8772f_sio_write(dev, GPIO_REG_POLARITY(set), polarity);
+		pnp_write_config(dev, GPIO_REG_SELECT(set), select);
+		pnp_write_config(dev, GPIO_REG_ENABLE(set), enable);
+		pnp_write_config(dev, GPIO_REG_POLARITY(set), polarity);
 	}
-	it8772f_sio_write(dev, GPIO_REG_OUTPUT(set), output);
-	it8772f_sio_write(dev, GPIO_REG_PULLUP(set), pullup);
+	pnp_write_config(dev, GPIO_REG_OUTPUT(set), output);
+	pnp_write_config(dev, GPIO_REG_PULLUP(set), pullup);
 	it8772f_exit_conf(dev);
 }
 
@@ -88,15 +68,15 @@ void it8772f_gpio_led(pnp_devfn_t dev,int set, u8 select, u8 polarity, u8 pullup
 {
 	set--; /* Set 1 is offset 0 */
 	it8772f_enter_conf(dev);
-	it8772f_sio_write(dev, IT8772F_CONFIG_REG_LDN, IT8772F_GPIO);
+	pnp_write_config(dev, IT8772F_CONFIG_REG_LDN, IT8772F_GPIO);
 	if (set < 5) {
-		it8772f_sio_write(dev, IT8772F_GPIO_LED_BLINK1_PINMAP, led_pin_map);
-		it8772f_sio_write(dev, IT8772F_GPIO_LED_BLINK1_CONTROL, led_freq);
-		it8772f_sio_write(dev, GPIO_REG_SELECT(set), select);
-		it8772f_sio_write(dev, GPIO_REG_ENABLE(set), enable);
-		it8772f_sio_write(dev, GPIO_REG_POLARITY(set), polarity);
+		pnp_write_config(dev, IT8772F_GPIO_LED_BLINK1_PINMAP, led_pin_map);
+		pnp_write_config(dev, IT8772F_GPIO_LED_BLINK1_CONTROL, led_freq);
+		pnp_write_config(dev, GPIO_REG_SELECT(set), select);
+		pnp_write_config(dev, GPIO_REG_ENABLE(set), enable);
+		pnp_write_config(dev, GPIO_REG_POLARITY(set), polarity);
 	}
-	it8772f_sio_write(dev, GPIO_REG_OUTPUT(set), output);
-	it8772f_sio_write(dev, GPIO_REG_PULLUP(set), pullup);
+	pnp_write_config(dev, GPIO_REG_OUTPUT(set), output);
+	pnp_write_config(dev, GPIO_REG_PULLUP(set), pullup);
 	it8772f_exit_conf(dev);
 }

@@ -129,8 +129,6 @@ enum thermal_mode {
 #include <device/pnp_type.h>
 #include <stdint.h>
 
-u8 it8772f_sio_read(pnp_devfn_t dev, u8 reg);
-void it8772f_sio_write(pnp_devfn_t dev, u8 reg, u8 value);
 void it8772f_ac_resume_southbridge(pnp_devfn_t dev);
 void it8772f_gpio_setup(pnp_devfn_t dev, int set, u8 select, u8 polarity,
 			u8 pullup, u8 output, u8 enable);

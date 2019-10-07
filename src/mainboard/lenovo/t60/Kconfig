@@ -1,4 +1,4 @@
-if BOARD_LENOVO_T60 || BOARD_LENOVO_Z61T
+if BOARD_LENOVO_T60 || BOARD_LENOVO_Z61T || BOARD_LENOVO_R60
 
 config BOARD_SPECIFIC_OPTIONS
 	def_bool y
@@ -30,7 +30,7 @@ config MAINBOARD_DIR
 
 config VARIANT_DIR
 	string
-	default "t60" if BOARD_LENOVO_T60
+	default "t60" if BOARD_LENOVO_T60 || BOARD_LENOVO_R60
 	default "z61t" if BOARD_LENOVO_Z61T
 
 config OVERRIDE_DEVICETREE
@@ -41,9 +41,10 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "ThinkPad T60" if BOARD_LENOVO_T60
 	default "ThinkPad Z61t" if BOARD_LENOVO_Z61T
+	default "ThinkPad R60" if BOARD_LENOVO_R60
 
 config MAX_CPUS
 	int
 	default 2
 
-endif # BOARD_LENOVO_T60 || BOARD_LENOVO_Z61T
+endif # BOARD_LENOVO_T60 || BOARD_LENOVO_Z61T || BOARD_LENOVO_R60

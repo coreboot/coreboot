@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2016 Arthur Heymans <arthur@aheymans.xyz>
+ * Copyright (C) 2019 Maciej Matuszczyk
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,21 +17,24 @@
 #include <southbridge/intel/common/gpio.h>
 
 static const struct pch_gpio_set1 pch_gpio_set1_mode = {
-	.gpio1 = GPIO_MODE_GPIO,
+	.gpio1 = GPIO_MODE_GPIO, /* DASP_BAY# */
 	.gpio6 = GPIO_MODE_GPIO, /* LEGACYIO# */
 	.gpio7 = GPIO_MODE_GPIO, /* BDC_PRESENCE# */
 	.gpio8 = GPIO_MODE_GPIO, /* H8_WAKE# */
-	.gpio9 = GPIO_MODE_GPIO,
+	.gpio9 = GPIO_MODE_GPIO, /* Pulled Up */
 	.gpio10 = GPIO_MODE_GPIO, /* MDI_DETECT */
 	.gpio12 = GPIO_MODE_GPIO, /* H8SCI# */
-	.gpio13 = GPIO_MODE_GPIO,
+	.gpio13 = GPIO_MODE_GPIO, /* Pulled Up */
 	.gpio14 = GPIO_MODE_GPIO, /* CPUSB# */
 	.gpio15 = GPIO_MODE_GPIO, /* CPPE# */
-	.gpio19 = GPIO_MODE_GPIO,
-	.gpio22 = GPIO_MODE_GPIO,
-	.gpio24 = GPIO_MODE_GPIO,
+	.gpio19 = GPIO_MODE_GPIO, /* GBE_RS# */
+#if CONFIG(BOARD_LENOVO_R60)
+	.gpio21 = GPIO_MODE_GPIO, /* LCD_PRESENCE# */
+#endif
+	.gpio22 = GPIO_MODE_GPIO, /* FWH_WP# */
+	.gpio24 = GPIO_MODE_GPIO, /* Pulled Down */
 	.gpio25 = GPIO_MODE_GPIO, /* MDC_KILL# */
-	.gpio26 = GPIO_MODE_GPIO,
+	.gpio26 = GPIO_MODE_GPIO, /* Pulled Down */
 	.gpio27 = GPIO_MODE_GPIO, /* EXC_PWR_CTRL */
 	.gpio28 = GPIO_MODE_GPIO, /* EXC_AUX_CTRL */
 };
@@ -47,7 +51,12 @@ static const struct pch_gpio_set1 pch_gpio_set1_direction = {
 	.gpio14 = GPIO_DIR_INPUT,
 	.gpio15 = GPIO_DIR_INPUT,
 	.gpio19 = GPIO_DIR_OUTPUT,
+#if CONFIG(BOARD_LENOVO_R60)
+	.gpio21 = GPIO_DIR_INPUT,
+	.gpio22 = GPIO_DIR_OUTPUT,
+#else
 	.gpio22 = GPIO_DIR_INPUT,
+#endif
 	.gpio24 = GPIO_DIR_OUTPUT,
 	.gpio25 = GPIO_DIR_OUTPUT,
 	.gpio26 = GPIO_DIR_OUTPUT,
@@ -77,14 +86,20 @@ static const struct pch_gpio_set1 pch_gpio_set1_blink = {
 };
 
 static const struct pch_gpio_set2 pch_gpio_set2_mode = {
-	.gpio36 = GPIO_MODE_GPIO, /*PLANARID0 */
-	.gpio37 = GPIO_MODE_GPIO, /*PLANARID1 */
-	.gpio38 = GPIO_MODE_GPIO, /*PLANARID2 */
-	.gpio39 = GPIO_MODE_GPIO, /*PLANARID3 */
-	.gpio48 = GPIO_MODE_GPIO,
+#if CONFIG(BOARD_LENOVO_R60)
+	.gpio34 = GPIO_MODE_GPIO, /* SMB_3B_EN */
+#endif
+	.gpio36 = GPIO_MODE_GPIO, /* PLANARID0 */
+	.gpio37 = GPIO_MODE_GPIO, /* PLANARID1 */
+	.gpio38 = GPIO_MODE_GPIO, /* PLANARID2 */
+	.gpio39 = GPIO_MODE_GPIO, /* PLANARID3 */
+	.gpio48 = GPIO_MODE_GPIO, /* FWH_TBL# */
 };
 
 static const struct pch_gpio_set2 pch_gpio_set2_direction = {
+#if CONFIG(BOARD_LENOVO_R60)
+	.gpio34 = GPIO_DIR_INPUT,
+#endif
 	.gpio36 = GPIO_DIR_INPUT,
 	.gpio37 = GPIO_DIR_INPUT,
 	.gpio38 = GPIO_DIR_INPUT,

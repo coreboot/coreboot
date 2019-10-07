@@ -1,5 +1,5 @@
 Vendor name: Lenovo
-Board name: ThinkPad T60/T60p
+Board name: ThinkPad R60/T60/T60p
 Category: laptop
 ROM package: SOIC-8
 ROM protocol: SPI

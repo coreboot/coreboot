@@ -65,6 +65,7 @@ The boards in this section are not real mainboards, but emulators.
 
 - [Mainboard codenames](lenovo/codenames.md)
 - [Hardware Maintenance Manual of ThinkPads](lenovo/thinkpad_hmm.md)
+- [R60](lenovo/r60.md)
 - [T4xx common](lenovo/t4xx_series.md)
 - [X2xx common](lenovo/x2xx_series.md)
 

@@ -90,6 +90,10 @@ void pci_mmio_write_config32(pci_devfn_t dev, uint16_t reg, uint32_t value)
 
 #if CONFIG(MMCONF_SUPPORT)
 
+#if CONFIG_MMCONF_BASE_ADDRESS == 0
+#error "CONFIG_MMCONF_BASE_ADDRESS undefined!"
+#endif
+
 /* Avoid name collisions as different stages have different signature
  * for these functions. The _s_ stands for simple, fundamental IO or
  * MMIO variant.

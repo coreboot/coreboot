@@ -171,7 +171,8 @@ chip soc/intel/cannonlake
 				register "hid" = "ACPI_DT_NAMESPACE_HID"
 				register "uid" = "1"
 				register "compat_string" = ""google,cros-ec-spi""
-				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPP_A23_IRQ)"
+				register "irq" = "ACPI_IRQ_WAKE_LEVEL_LOW(GPP_A23_IRQ)"
+				register "wake" = "GPE0_DW0_23"
 				device spi 1 on end
 			end # FPMCU
 		end # GSPI #1

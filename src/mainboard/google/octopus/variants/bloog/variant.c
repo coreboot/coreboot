@@ -17,8 +17,20 @@
 #include <ec/google/chromeec/ec.h>
 #include <sar.h>
 #include <baseboard/variants.h>
+#include <drivers/intel/gma/opregion.h>
 
 #define SKU_UNKNOWN     0xFFFFFFFF
+
+enum {
+	SKU_33_BLOOG = 33, /* no kb blit, USI Stylus */
+	SKU_34_BLOOG = 34, /* kb blit, no USI Stylus */
+	SKU_35_BLOOG = 35, /* kb blit, USI Stylus */
+	SKU_36_BLOOG = 36, /* no kb blit, no USI Stylus */
+	SKU_49_BLOOGUARD = 49, /* kb blit, no USI Stylus */
+	SKU_50_BLOOGUARD = 50, /* kb blit, USI Stylus */
+	SKU_51_BLOOGUARD = 51, /* no kb blit, no USI Stylus */
+	SKU_52_BLOOGUARD = 52, /* no kb blit, USI Stylus */
+};
 
 const char *get_wifi_sar_cbfs_filename(void)
 {
@@ -29,11 +41,26 @@ const char *get_wifi_sar_cbfs_filename(void)
 	if (sku_id == SKU_UNKNOWN)
 		return NULL;
 
-	if (sku_id == 33 || sku_id == 34 || sku_id == 35 || sku_id == 36)
+	if (sku_id == SKU_33_BLOOG || sku_id == SKU_34_BLOOG ||
+		sku_id == SKU_35_BLOOG || sku_id == SKU_36_BLOOG)
 		filename = "wifi_sar-bloog.hex";
 
-	if (sku_id == 49 || sku_id == 50 || sku_id == 51 || sku_id == 52)
+	if (sku_id == SKU_49_BLOOGUARD || sku_id == SKU_50_BLOOGUARD ||
+		sku_id == SKU_51_BLOOGUARD || sku_id == SKU_52_BLOOGUARD)
 		filename = "wifi_sar-blooguard.hex";
 
 	return filename;
+}
+
+const char *mainboard_vbt_filename(void)
+{
+	uint32_t sku_id;
+
+	sku_id = get_board_sku();
+
+	if (sku_id == SKU_49_BLOOGUARD || sku_id == SKU_50_BLOOGUARD ||
+		sku_id == SKU_51_BLOOGUARD || sku_id == SKU_52_BLOOGUARD)
+		return "vbt_blooguard.bin";
+
+	return "vbt.bin";
 }

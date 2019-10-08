@@ -117,8 +117,11 @@ struct soc_intel_broadwell_config {
 	u16 gpu_panel_power_backlight_off_delay;
 
 	/* Panel backlight settings */
-	u32 gpu_cpu_backlight;
-	u32 gpu_pch_backlight;
+	unsigned int gpu_pch_backlight_pwm_hz;
+	enum {
+		GPU_BACKLIGHT_POLARITY_HIGH = 0,
+		GPU_BACKLIGHT_POLARITY_LOW,
+	} gpu_pch_backlight_polarity;
 
 	/*
 	 * Graphics CD Clock Frequency

@@ -335,14 +335,34 @@ static void igd_setup_panel(struct device *dev)
 		gtt_write(PCH_PP_DIVISOR, reg32);
 	}
 
-	/* Enable Backlight if needed */
-	if (conf->gpu_cpu_backlight) {
-		gtt_write(BLC_PWM_CPU_CTL2, BLC_PWM2_ENABLE);
-		gtt_write(BLC_PWM_CPU_CTL, conf->gpu_cpu_backlight);
-	}
-	if (conf->gpu_pch_backlight) {
-		gtt_write(BLC_PWM_PCH_CTL1, BLM_PCH_PWM_ENABLE);
-		gtt_write(BLC_PWM_PCH_CTL2, conf->gpu_pch_backlight);
+	/* So far all devices seem to use the PCH PWM function.
+	   The CPU PWM registers are all zero after reset.      */
+	if (conf->gpu_pch_backlight_pwm_hz) {
+		/* For Lynx Point-LP:
+		   Reference clock is 24MHz. We can choose either a 16
+		   or a 128 step increment. Use 16 if we would have less
+		   than 100 steps otherwise. */
+		const unsigned int hz_limit = 24 * 1000 * 1000 / 128 / 100;
+		unsigned int pwm_increment, pwm_period;
+		u32 south_chicken2;
+
+		south_chicken2 = gtt_read(SOUTH_CHICKEN2);
+		if (conf->gpu_pch_backlight_pwm_hz > hz_limit) {
+			pwm_increment = 16;
+			south_chicken2 &= ~(1 << 5);
+		} else {
+			pwm_increment = 128;
+			south_chicken2 |= 1 << 5;
+		}
+		gtt_write(SOUTH_CHICKEN2, south_chicken2);
+
+		pwm_period = 24 * 1000 * 1000 / pwm_increment / conf->gpu_pch_backlight_pwm_hz;
+		/* Start with a 50% duty cycle. */
+		gtt_write(BLC_PWM_PCH_CTL2, pwm_period << 16 | pwm_period / 2);
+
+		gtt_write(BLC_PWM_PCH_CTL1,
+			(conf->gpu_pch_backlight_polarity == GPU_BACKLIGHT_POLARITY_LOW) << 29 |
+			BLM_PCH_OVERRIDE_ENABLE | BLM_PCH_PWM_ENABLE);
 	}
 }
 

@@ -19,6 +19,7 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <pc80/mc146818rtc.h>
+#include <superio/hwm5_conf.h>
 
 #include "superio_hwm.h"
 
@@ -32,17 +33,6 @@
 //#define FAN_TEMPERATURE_30DEGC	0
 
 #define HWM_BASE 0x290
-
-static void hwm_write(u8 reg, u8 value)
-{
-	outb(reg, HWM_BASE + 0x05);
-	outb(value, HWM_BASE + 0x06);
-}
-
-static void hwm_bank(u8 bank)
-{
-	hwm_write(0x4e, bank);
-}
 
 struct fan_speed {
 	u8 fan_in;
@@ -90,19 +80,19 @@ void hwm_setup(void)
 	//sysfan_temperature = FAN_TEMPERATURE_30DEGC;
 	//get_option(&sysfan_temperature, "sysfan_temperature");
 
-	// hwm_write(0x31, 0x20); // AVCC high limit
-	// hwm_write(0x34, 0x06); // VIN2 low limit
+	// pnp_write_hwm5_index(HWM_BASE, 0x31, 0x20); // AVCC high limit
+	// pnp_write_hwm5_index(HWM_BASE, 0x34, 0x06); // VIN2 low limit
 
-	hwm_bank(0);
-	hwm_write(0x59, 0x20); // Diode Selection
-	hwm_write(0x5d, 0x0f); // All Sensors Diode, not Thermistor
+	pnp_write_hwm5_index(HWM_BASE, 0x4e, 0);
+	pnp_write_hwm5_index(HWM_BASE, 0x59, 0x20); // Diode Selection
+	pnp_write_hwm5_index(HWM_BASE, 0x5d, 0x0f); // All Sensors Diode, not Thermistor
 
-	hwm_bank(4);
-	hwm_write(0x54, 0xf1); // SYSTIN temperature offset
-	hwm_write(0x55, 0x19); // CPUTIN temperature offset
-	hwm_write(0x56, 0xfc); // AUXTIN temperature offset
+	pnp_write_hwm5_index(HWM_BASE, 0x4e, 4);
+	pnp_write_hwm5_index(HWM_BASE, 0x54, 0xf1); // SYSTIN temperature offset
+	pnp_write_hwm5_index(HWM_BASE, 0x55, 0x19); // CPUTIN temperature offset
+	pnp_write_hwm5_index(HWM_BASE, 0x56, 0xfc); // AUXTIN temperature offset
 
-	hwm_bank(0x80); // Default
+	pnp_write_hwm5_index(HWM_BASE, 0x4e, 0x80); // Default
 
 	u8 fan_config = 0;
 	// 00 FANOUT is Manual Mode
@@ -117,41 +107,43 @@ void hwm_setup(void)
 	case FAN_CRUISE_CONTROL_THERMAL: fan_config |= (1 << 2); break;
 	}
 	// This register must be written first
-	hwm_write(0x04, fan_config);
+	pnp_write_hwm5_index(HWM_BASE, 0x04, fan_config);
 
 	switch (cpufan_control) {
-	case FAN_CRUISE_CONTROL_SPEED:
+	case FAN_CRUISE_CONTROL_SPEED: /* CPUFANIN target speed */
 		printk(BIOS_DEBUG, "Fan Cruise Control setting CPU fan to %d RPM\n",
 				fan_speeds[cpufan_speed].fan_speed);
-		hwm_write(0x06, fan_speeds[cpufan_speed].fan_in);  // CPUFANIN target speed
+		pnp_write_hwm5_index(HWM_BASE, 0x06, fan_speeds[cpufan_speed].fan_in);
 		break;
-	case FAN_CRUISE_CONTROL_THERMAL:
+	case FAN_CRUISE_CONTROL_THERMAL: /* CPUFANIN target temperature */
 		printk(BIOS_DEBUG, "Fan Cruise Control setting CPU fan to activation at %d deg C/%d deg F\n",
 				temperatures[cpufan_temperature].deg_celsius,
 				temperatures[cpufan_temperature].deg_fahrenheit);
-		hwm_write(0x06, temperatures[cpufan_temperature].deg_celsius);  // CPUFANIN target temperature
+		pnp_write_hwm5_index(HWM_BASE, 0x06,
+				     temperatures[cpufan_temperature].deg_celsius);
 		break;
 	}
 
 	switch (sysfan_control) {
-	case FAN_CRUISE_CONTROL_SPEED:
+	case FAN_CRUISE_CONTROL_SPEED: /* SYSFANIN target speed */
 		printk(BIOS_DEBUG, "Fan Cruise Control setting system fan to %d RPM\n",
 				fan_speeds[sysfan_speed].fan_speed);
-		hwm_write(0x05, fan_speeds[sysfan_speed].fan_in);  // SYSFANIN target speed
+		pnp_write_hwm5_index(HWM_BASE, 0x05, fan_speeds[sysfan_speed].fan_in);
 		break;
-	case FAN_CRUISE_CONTROL_THERMAL:
+	case FAN_CRUISE_CONTROL_THERMAL: /* SYSFANIN target temperature */
 		printk(BIOS_DEBUG, "Fan Cruise Control setting system fan to activation at %d deg C/%d deg F\n",
 				temperatures[sysfan_temperature].deg_celsius,
 				temperatures[sysfan_temperature].deg_fahrenheit);
-		hwm_write(0x05, temperatures[sysfan_temperature].deg_celsius); // SYSFANIN target temperature
+		pnp_write_hwm5_index(HWM_BASE,
+				     0x05, temperatures[sysfan_temperature].deg_celsius);
 		break;
 	}
 
-	hwm_write(0x0e, 0x02); // Fan Output Step Down Time
-	hwm_write(0x0f, 0x02); // Fan Output Step Up Time
+	pnp_write_hwm5_index(HWM_BASE, 0x0e, 0x02); // Fan Output Step Down Time
+	pnp_write_hwm5_index(HWM_BASE, 0x0f, 0x02); // Fan Output Step Up Time
 
-	hwm_write(0x47, 0xaf); // FAN divisor register
-	hwm_write(0x4b, 0x84); // AUXFANIN speed divisor
+	pnp_write_hwm5_index(HWM_BASE, 0x47, 0xaf); // FAN divisor register
+	pnp_write_hwm5_index(HWM_BASE, 0x4b, 0x84); // AUXFANIN speed divisor
 
-	hwm_write(0x40, 0x01); // Init, but no SMI#
+	pnp_write_hwm5_index(HWM_BASE, 0x40, 0x01); // Init, but no SMI#
 }

@@ -1539,7 +1539,7 @@ int print_intel_core_msrs(void)
  */
 
 	static const msr_entry_t model96ex_global_msrs[] = {
-		{ 0x0000, "IA32_PLATFORM_ID"},
+		{ 0x0017, "IA32_PLATFORM_ID"},
 		{ 0x0080, "MSR_TRACE_HUB_STH_ACPIBAR_BASE"},
 		{ 0x00CE, "MSR_PLATFORM_INFO"},
 		{ 0x0198, "IA32_PERF_STATUS"},

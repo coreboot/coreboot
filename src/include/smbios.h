@@ -550,7 +550,13 @@ enum misc_slot_type {
 	SlotTypePciExpressGen3X2 = 0xB3,
 	SlotTypePciExpressGen3X4 = 0xB4,
 	SlotTypePciExpressGen3X8 = 0xB5,
-	SlotTypePciExpressGen3X16 = 0xB6
+	SlotTypePciExpressGen3X16 = 0xB6,
+	SlotTypePciExpressGen4 = 0xB8,
+	SlotTypePciExpressGen4x1 = 0xB9,
+	SlotTypePciExpressGen4x2 = 0xBA,
+	SlotTypePciExpressGen4x4 = 0xBB,
+	SlotTypePciExpressGen4x8 = 0xBC,
+	SlotTypePciExpressGen4x16 = 0xBD
 };
 
 /* System Slots - Slot Data Bus Width. */

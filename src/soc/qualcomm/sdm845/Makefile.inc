@@ -48,8 +48,4 @@ ramstage-y += aop_load_reset.c
 CPPFLAGS_common += -Isrc/soc/qualcomm/sdm845/include
 CPPFLAGS_common += -Isrc/soc/qualcomm/common/include
 
-$(objcbfs)/bootblock.bin: $(objcbfs)/bootblock.raw.bin
-	@printf "Generating: $(subst $(obj)/,,$(@))\n"
-	cp $(objcbfs)/bootblock.raw.bin $(objcbfs)/bootblock.bin
-
 endif

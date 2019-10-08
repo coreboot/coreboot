@@ -52,8 +52,4 @@ ramstage-$(CONFIG_DRIVERS_UART) += uart.c
 
 CPPFLAGS_common += -Isrc/soc/qualcomm/qcs405/include
 
-$(objcbfs)/bootblock.bin: $(objcbfs)/bootblock.raw.bin
-	@printf "Generating: $(subst $(obj)/,,$(@))\n"
-	cp $(objcbfs)/bootblock.raw.bin $(objcbfs)/bootblock.bin
-
 endif

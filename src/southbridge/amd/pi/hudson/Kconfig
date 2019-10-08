@@ -102,7 +102,7 @@ config AMD_PUBKEY_FILE
 
 config HUDSON_SATA_MODE
 	int "SATA Mode"
-	default 0
+	default 2
 	range 0 6
 	help
 	  Select the mode in which SATA should be driven. NATIVE AHCI, or RAID.

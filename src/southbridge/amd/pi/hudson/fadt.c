@@ -20,7 +20,6 @@
 #include <string.h>
 #include <console/console.h>
 #include <arch/acpi.h>
-#include <arch/io.h>
 #include <device/device.h>
 #include <version.h>
 
@@ -70,7 +69,6 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 		fadt->s4bios_req = 0;	/* Not supported */
 		fadt->pstate_cnt = 0;	/* Not supported */
 		fadt->cst_cnt = 0;	/* Not supported */
-		outl(0x0, ACPI_PM1_CNT_BLK);	/* clear SCI_EN */
 	} else {
 		fadt->smi_cmd = 0;	/* disable system management mode */
 		fadt->acpi_enable = 0;	/* unused if SMI_CMD = 0 */
@@ -78,7 +76,6 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 		fadt->s4bios_req = 0;	/* unused if SMI_CMD = 0 */
 		fadt->pstate_cnt = 0;	/* unused if SMI_CMD = 0 */
 		fadt->cst_cnt = 0x00;	/* unused if SMI_CMD = 0 */
-		outl(0x1, ACPI_PM1_CNT_BLK);	/* set SCI_EN */
 	}
 
 	fadt->pm1a_evt_blk = ACPI_PM_EVT_BLK;

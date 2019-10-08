@@ -23,6 +23,7 @@
 #include <device/pci_def.h>
 #include <pc80/mc146818rtc.h>
 #include <pc80/isa-dma.h>
+#include <arch/io.h>
 #include <arch/ioapic.h>
 #include <arch/acpi.h>
 #include <pc80/i8254.h>
@@ -335,6 +336,16 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 	return current;
 }
 
+static void lpc_final(struct device *dev)
+{
+	if (!acpi_is_wakeup_s3()) {
+		if (CONFIG(HAVE_SMI_HANDLER))
+			outl(0x0, ACPI_PM1_CNT_BLK);	/* clear SCI_EN */
+		else
+			outl(0x1, ACPI_PM1_CNT_BLK);	/* set SCI_EN */
+	}
+}
+
 static struct pci_operations lops_pci = {
 	.set_subsystem = pci_dev_set_subsystem,
 };
@@ -347,6 +358,7 @@ static struct device_operations lpc_ops = {
 	.write_acpi_tables = acpi_write_hpet,
 #endif
 	.init = lpc_init,
+	.final = lpc_final,
 	.scan_bus = scan_static_bus,
 	.ops_pci = &lops_pci,
 	.acpi_name = lpc_acpi_name,

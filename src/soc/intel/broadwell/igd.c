@@ -27,6 +27,7 @@
 #include <reg_script.h>
 #include <cbmem.h>
 #include <drivers/intel/gma/i915_reg.h>
+#include <drivers/intel/gma/libgfxinit.h>
 #include <drivers/intel/gma/opregion.h>
 #include <soc/cpu.h>
 #include <soc/nvs.h>
@@ -592,6 +593,12 @@ static void igd_init(struct device *dev)
 		 */
 		gtt_write(DDI_BUF_CTL_A, DDI_BUF_IS_IDLE | DDI_A_4_LANES |
 			  DDI_INIT_DISPLAY_DETECTED);
+	}
+
+	if (CONFIG(MAINBOARD_USE_LIBGFXINIT)) {
+		int lightup_ok;
+		gma_gfxinit(&lightup_ok);
+		gfx_set_init_done(lightup_ok);
 	}
 
 	intel_gma_restore_opregion();

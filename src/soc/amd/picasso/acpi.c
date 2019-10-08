@@ -98,7 +98,6 @@ void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
 		fadt->s4bios_req = 0;	/* Not supported */
 		fadt->pstate_cnt = 0;	/* Not supported */
 		fadt->cst_cnt = 0;	/* Not supported */
-		acpi_disable_sci();
 	} else {
 		fadt->smi_cmd = 0;	/* disable system management mode */
 		fadt->acpi_enable = 0;	/* unused if SMI_CMD = 0 */
@@ -106,7 +105,6 @@ void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
 		fadt->s4bios_req = 0;	/* unused if SMI_CMD = 0 */
 		fadt->pstate_cnt = 0;	/* unused if SMI_CMD = 0 */
 		fadt->cst_cnt = 0x00;	/* unused if SMI_CMD = 0 */
-		acpi_enable_sci();
 	}
 
 	fadt->pm1a_evt_blk = ACPI_PM_EVT_BLK;

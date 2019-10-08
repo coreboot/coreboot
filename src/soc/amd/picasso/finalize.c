@@ -13,12 +13,14 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/acpi.h>
 #include <cpu/x86/mp.h>
 #include <cpu/x86/msr.h>
 #include <cpu/amd/msr.h>
 #include <bootstate.h>
 #include <timer.h>
 #include <console/console.h>
+#include <amdblocks/acpi.h>
 
 static void per_core_finalize(void *unused)
 {
@@ -52,6 +54,13 @@ static void finalize_cores(void)
 static void soc_finalize(void *unused)
 {
 	finalize_cores();
+
+	if (!acpi_is_wakeup_s3()) {
+		if (CONFIG(HAVE_SMI_HANDLER))
+			acpi_disable_sci();
+		else
+			acpi_enable_sci();
+	}
 
 	post_code(POST_OS_BOOT);
 }

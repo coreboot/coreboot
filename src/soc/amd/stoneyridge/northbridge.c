@@ -170,7 +170,7 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 					     CONFIG_MMCONF_BASE_ADDRESS,
 					     0,
 					     0,
-					     CONFIG_MMCONF_BUS_NUMBER);
+					     CONFIG_MMCONF_BUS_NUMBER - 1);
 
 	return current;
 }

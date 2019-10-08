@@ -205,7 +205,7 @@ static void acpi_create_gnvs(global_nvs_t *gnvs)
 	gnvs->u2we = config->usb2_wake_enable_bitmap;
 	gnvs->u3we = config->usb3_wake_enable_bitmap;
 
-	if (CONFIG(SOC_INTEL_COMMON_BLOCK_SGX))
+	if (config->sgx_enable)
 		sgx_fill_gnvs(gnvs);
 }
 

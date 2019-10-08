@@ -18,10 +18,6 @@
 
 #include <soc/nvs.h>
 
-struct sgx_param {
-	uint8_t enable;
-};
-
 /*
  * Lock SGX memory.
  * CPU specific code needs to provide the implementation.
@@ -39,10 +35,6 @@ void prmrr_core_configure(void);
  * Configure SGX.
  */
 void sgx_configure(void *unused);
-
-/* SOC specific API to get SGX params.
- * returns 0, if able to get SGX params; otherwise returns -1 */
-int soc_fill_sgx_param(struct sgx_param *sgx_param);
 
 /* Fill GNVS data with SGX status, EPC base and length */
 void sgx_fill_gnvs(global_nvs_t *gnvs);

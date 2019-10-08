@@ -423,6 +423,8 @@ static void enable_pm_timer_emulation(void)
 /* All CPUs including BSP will run the following function. */
 void soc_core_init(struct device *cpu)
 {
+	config_t *conf = config_of_soc();
+
 	/* Clear out pending MCEs */
 	/* TODO(adurbin): This should only be done on a cold boot. Also, some
 	 * of these banks are core vs package scope. For now every CPU clears
@@ -455,7 +457,8 @@ void soc_core_init(struct device *cpu)
 	enable_turbo();
 
 	/* Configure Core PRMRR for SGX. */
-	prmrr_core_configure();
+	if (conf->sgx_enable)
+		prmrr_core_configure();
 }
 
 static void per_cpu_smm_trigger(void)
@@ -477,6 +480,7 @@ static void fc_lock_configure(void *unused)
 static void post_mp_init(void)
 {
 	int ret = 0;
+	config_t *conf = config_of_soc();
 
 	/* Set Max Ratio */
 	cpu_set_max_ratio();
@@ -493,7 +497,8 @@ static void post_mp_init(void)
 
 	ret |= mp_run_on_all_cpus(vmx_configure, NULL);
 
-	ret |= mp_run_on_all_cpus(sgx_configure, NULL);
+	if (conf->sgx_enable)
+		ret |= mp_run_on_all_cpus(sgx_configure, NULL);
 
 	ret |= mp_run_on_all_cpus(fc_lock_configure, NULL);
 
@@ -558,12 +563,4 @@ void cpu_lock_sgx_memory(void)
 		msr.lo |= 1; /* Lock it */
 		wrmsr(MSR_LT_LOCK_MEMORY, msr);
 	}
-}
-
-int soc_fill_sgx_param(struct sgx_param *sgx_param)
-{
-	config_t *conf = config_of_soc();
-
-	sgx_param->enable = conf->sgx_enable;
-	return 0;
 }

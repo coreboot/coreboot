@@ -304,7 +304,7 @@ static void lpc_init(struct device *dev)
 	/* Don't allow evil boot loaders, kernels, or
 	 * userspace applications to deceive us:
 	 */
-	if (CONFIG(HAVE_SMI_HANDLER))
+	if (CONFIG(HAVE_SMI_HANDLER) && !CONFIG(PARALLEL_MP))
 		aseg_smm_lock();
 }
 

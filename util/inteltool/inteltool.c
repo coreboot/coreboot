@@ -10,6 +10,7 @@
 #include <sys/mman.h>
 #include <unistd.h>
 #include <errno.h>
+#include <limits.h>
 #include "inteltool.h"
 #include "pcr.h"
 
@@ -21,6 +22,7 @@
 
 enum long_only_opts {
 	LONG_OPT_PCR = 0x100,
+	LONG_OPT_RANGE = 0x101,
 };
 
 /*
@@ -516,6 +518,7 @@ static void print_usage(const char *name)
 	     "   -d | --dmibar:                    dump northbridge DMIBAR registers\n"
 	     "   -P | --pciexpress:                dump northbridge PCIEXBAR registers\n\n"
 	     "   -M | --msrs:                      dump CPU MSRs\n"
+	     "        --cpu-range <start>[-<end>]: (optional) set CPU cores range for -M (--msrs) option\n"
 	     "   -A | --ambs:                      dump AMB registers\n"
 	     "   -x | --sgx:                       dump SGX status\n"
 	     "   -t | --tme:                       dump TME status\n"
@@ -585,6 +588,8 @@ int main(int argc, char *argv[])
 	size_t pcr_count = 0;
 	uint8_t dump_pcr[MAX_PCR_PORTS];
 
+	unsigned int cores_range_start = 0, cores_range_end = UINT_MAX;
+
 	static struct option long_options[] = {
 		{"version", 0, 0, 'v'},
 		{"help", 0, 0, 'h'},
@@ -598,6 +603,7 @@ int main(int argc, char *argv[])
 		{"dmibar", 0, 0, 'd'},
 		{"pciexpress", 0, 0, 'P'},
 		{"msrs", 0, 0, 'M'},
+		{"cpu-range", required_argument, 0, LONG_OPT_RANGE},
 		{"ambs", 0, 0, 'A'},
 		{"spi", 0, 0, 's'},
 		{"spd", 0, 0, 'S'},
@@ -656,6 +662,24 @@ int main(int argc, char *argv[])
 			break;
 		case 'M':
 			dump_coremsrs = 1;
+			break;
+		case LONG_OPT_RANGE:
+			if (strlen(optarg) == 0) {
+				print_usage(argv[0]);
+				exit(1);
+			}
+			const int sscanf_ret = sscanf(optarg, "%u-%u", &cores_range_start, &cores_range_end);
+			if (sscanf_ret == 1) {
+				/* the end of the range is not specified - only for one core */
+				cores_range_end = cores_range_start;
+			} else if (sscanf_ret != 2) {
+				print_usage(argv[0]);
+				exit(1);
+			} else if (cores_range_end < cores_range_start) {
+				printf("Error: invalid cores range <%u-%u>!\n",
+						cores_range_start, cores_range_end);
+				exit(1);
+			}
 			break;
 		case 'a':
 			dump_gpios = 1;
@@ -859,7 +883,7 @@ int main(int argc, char *argv[])
 	}
 
 	if (dump_coremsrs) {
-		print_intel_core_msrs();
+		print_intel_msrs(cores_range_start, cores_range_end);
 		printf("\n\n");
 	}
 

@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include <limits.h>
 
 #include "inteltool.h"
 
@@ -265,9 +266,9 @@ void print_tme(void)
 #endif
 }
 
-int print_intel_core_msrs(void)
+int print_intel_msrs(unsigned int range_start, unsigned int range_end)
 {
-	unsigned int i, core, id, core_num = get_number_of_cores();
+	unsigned int i, core, id;
 	msr_t msr;
 
 #define IA32_PLATFORM_ID		0x0017
@@ -2295,7 +2296,15 @@ int print_intel_core_msrs(void)
 
 	close(fd_msr);
 
-	for (core = 0; core < core_num; core++) {
+	const unsigned int cores_range_max_limit = get_number_of_cores() - 1;
+	if (range_end > cores_range_max_limit) {
+		if (range_end != UINT_MAX)
+			printf("Warning: the range exceeds the maximum core number %d!\n",
+				cores_range_max_limit);
+		range_end = cores_range_max_limit;
+	}
+
+	for (core = range_start; core <= range_end; core++) {
 #ifndef __DARWIN__
 		char msrfilename[64];
 		memset(msrfilename, 0, 64);

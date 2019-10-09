@@ -396,7 +396,7 @@ void *map_physical(uint64_t phys_addr, size_t len);
 void unmap_physical(void *virt_addr, size_t len);
 
 unsigned int cpuid(unsigned int op);
-int print_intel_core_msrs(void);
+int print_intel_msrs(unsigned int range_start, unsigned int range_end);
 int print_mchbar(struct pci_dev *nb, struct pci_access *pacc, const char *dump_spd_file);
 int print_pmbase(struct pci_dev *sb, struct pci_access *pacc);
 int print_lpc(struct pci_dev *sb, struct pci_access *pacc);

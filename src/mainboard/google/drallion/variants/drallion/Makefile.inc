@@ -22,6 +22,7 @@ SPD_SOURCES += hynix_dimm_H5AN8G6NCJR-VKC	# 0b10001
 SPD_SOURCES += hynix_dimm_H5ANAG6NCMR-VKC	# 0b11001
 SPD_SOURCES += samsung_dimm_K4A8G165WC-BCTD	# 0b10011
 SPD_SOURCES += samsung_dimm_K4AAG165WB-MCTD	# 0b11011
+SPD_SOURCES += micron_dimm_MT40A1G16KD-062EE	# 0b11010
 
 bootblock-y += gpio.c
 ramstage-y += gpio.c

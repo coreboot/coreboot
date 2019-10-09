@@ -24,7 +24,7 @@ static const int spd_index[32] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 4, 3, 6, 1, 0, 0, 0,
-	0, 5, 0, 7, 2, 0, 0, 0
+	0, 5, 8, 7, 2, 0, 0, 0
 	};
 
 const struct cnl_mb_cfg *get_variant_memory_cfg(struct cnl_mb_cfg *mem_cfg)

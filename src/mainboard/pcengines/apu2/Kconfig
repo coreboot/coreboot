@@ -114,4 +114,14 @@ config DIMM_SPD_SIZE
 	int
 	default 128
 
+config AGESA_USE_1_0_0_4_HEADER
+	bool
+	default y
+	help
+	  Due to a bug in AGESA 1.0.0.A affecting boards without UMA, it is
+	  impossible to use the newest blob. Using an older 1.0.0.4 blob
+	  workarounds the problem, however some headers changes between blob
+	  revisions. This option removes the changes in headers introduced
+	  with AGESA 1.0.0.A to fit the 1.0.0.4 revision.
+
 endif # BOARD_PCENGINES_APU2

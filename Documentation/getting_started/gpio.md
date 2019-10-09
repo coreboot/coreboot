@@ -1,0 +1,136 @@
+# Configuring a mainboard's GPIOs in coreboot
+
+## Introduction
+
+Every mainboard needs to appropriately configure its General Purpose Inputs /
+Outputs (GPIOs). There are many facets of this issue, including which boot
+stage a GPIO might need to be configured.
+
+## Boot stages
+
+Typically, coreboot does most of its non-memory related initialization work in
+ramstage, when DRAM is available for use. Hence, the bulk of a mainboard's GPIOs
+are configured in this stage. However, some boards might need a few GPIOs
+configured before that; think of memory strapping pins which indicate what kind
+of DRAM is installed. These pins might need to be read before initializing the
+memory, so these GPIOs are then typically configured in bootblock or romstage.
+
+## Configuration
+
+Most mainboards will have a ``gpio.c`` file in their mainboard directory. This
+file typically contains tables which describe the configuration of the GPIO
+registers. Since these registers could be different on a per-SoC or per
+SoC-family basis, you may need to consult the datasheet for your SoC to find out
+how to appropriately set these registers. In addition, some mainboards are
+based on a baseboard/variant model, where several variant mainboards may share a
+lot of their circuitry and ICs and the commonality between the boards is
+collected into a virtual ``baseboard.`` In that case, the GPIOs which are shared
+between multiple boards are placed in the baseboard's ``gpio.c` file, while the
+ones that are board-specific go into each variant's ``gpio.c`` file.
+
+## Intel SoCs
+
+Many newer Intel SoCs share a common IP block for GPIOs, and that commonality
+has been taken advantage of in coreboot, which has a large set of macros that
+can be used to describe the configuration of each GPIO pad. This file lives in
+``src/soc/intel/common/block/include/intelblocks/gpio_defs.h``.
+
+### Older Intel SoCs
+
+Baytrail and Braswell, for example, simply expect the mainboard to supply a
+callback, `mainboard_get_gpios` which returns an array of `struct soc_gpio`
+objects, defining the configuration of each pin.
+
+### AMD SoCs
+
+Some AMD SoCs use a list of `struct soc_amd_gpio` objects to define the
+register values configuring each pin, similar to Intel.
+
+### Register details
+
+GPIO configuration registers typically control properties such as:
+1. Input / Output
+2. Pullups / Pulldowns
+3. Termination
+4. Tx / Rx Disable
+5. Which reset signal to use
+6. Native Function / IO
+7. Interrupts
+    * IRQ routing (e.g. on x86, APIC, SCI, SMI)
+    * Edge or Level Triggered
+    * Active High or Active Low
+8. Debouncing
+
+## Configuring GPIOs for pre-ramstage
+
+coreboot provides for several SoC-specific and mainboard-specific callbacks at
+specific points in time, such as bootblock-early, bootblock, romstage entry,
+pre-silicon init, pre-RAM init, or post-RAM init. The GPIOs that are
+configured in either bootblock or romstage, depending on when they are needed,
+are denoted the "early" GPIOs. Some mainboard will use
+``bootblock_mainboard_init()`` to configure their early GPIOs, and this is
+probably a good place to start. Many mainboards will declare their GPIO
+configuration as structs, i.e. (Intel),
+
+```C
+struct pad_config {
+    /* offset of pad within community */
+        int             pad;
+    /* Pad config data corresponding to DW0, DW1,.... */
+        uint32_t        pad_config[GPIO_NUM_PAD_CFG_REGS];
+};
+```
+
+and will usually place these in an array, one for each pad to be configured.
+Mainboards using Intel SoCs can use a library which combines common
+configurations together into a set of macros, e.g.,
+
+```C
+    /* Native function configuration */
+    #define PAD_CFG_NF(pad, pull, rst, func)
+    /*
+     * Set native function with RX Level/Edge configuration and disable
+     * input/output buffer if necessary
+     */
+    #define PAD_CFG_NF_BUF_TRIG(pad, pull, rst, func, bufdis, trig)
+    /* General purpose output, no pullup/down. */
+    #define PAD_CFG_GPO(pad, val, rst)
+    /* General purpose output, with termination specified */
+    #define PAD_CFG_TERM_GPO(pad, val, pull, rst)
+    /* General purpose output, no pullup/down. */
+    #define PAD_CFG_GPO_GPIO_DRIVER(pad, val, rst, pull)
+    /* General purpose input */
+    #define PAD_CFG_GPI(pad, pull, rst)
+```
+etc.
+
+## Configuring GPIOs for ramstage and beyond...
+
+In ramstage, most mainboards will configure the rest of their GPIOs for the
+function they will be performing while the device is active. The goal is the
+same as above in bootblock; another ``static const`` array is created, and the
+rest of the GPIO registers are programmed.
+
+In the baseboard/variant model described above, the baseboard will provide the
+configuration for the GPIOs which are configured identically between variants,
+and will provide a mechanism for a variant to override the baseboard's
+configuration. This is usually done via two tables: the baseboard table and the
+variant's override table.
+
+This configuration is often hooked into the mainboard's `enable_dev` callback,
+defined in its `struct chip_operations`.
+
+## Potential issues (gotchas!)
+
+There are a couple of configurations that you need to especially careful about,
+as they can have a large impact on your mainboard.
+
+The first is configuring a pin as an output, when it was designed to be an
+input. There is a real risk in this case of short-circuiting a component which
+could cause catastrophic failures, up to and including your mainboard!
+
+The other configuration option to watch out for deals with unconnected GPIOs.
+If no pullup or pulldown is declared with these, they may end up "floating",
+i.e., not at logical high or logical low. This can cause problems such as
+unwanted power consumption or not reading the pin correctly, if it was intended
+to be strapped.

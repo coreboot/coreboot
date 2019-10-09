@@ -7,3 +7,4 @@
 * [Gerrit Guidelines](gerrit_guidelines.md)
 * [Documentation License](license.md)
 * [Writing Documentation](writing_documentation.md)
+* [Setting up GPIOs](gpio.md)

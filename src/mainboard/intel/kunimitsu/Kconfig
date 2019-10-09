@@ -19,19 +19,7 @@ config BOARD_SPECIFIC_OPTIONS
 	select MAINBOARD_HAS_CHROMEOS
 	select MAINBOARD_HAS_LPC_TPM
 	select SOC_INTEL_SKYLAKE
-
-choice
-	prompt "FSP driver"
-	default KUNIMITSU_USES_FSP1_1
-
-config KUNIMITSU_USES_FSP1_1
-	bool "FSP driver 1.1"
-
-config KUNIMITSU_USES_FSP2_0
-	bool "FSP driver 2.0"
 	select MAINBOARD_USES_FSP2_0
-
-endchoice
 
 config VBOOT
 	select EC_GOOGLE_CHROMEEC_SWITCHES

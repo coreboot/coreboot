@@ -37,6 +37,22 @@ void smm_region(uintptr_t *start, size_t *size)
 	*size = sa_get_tseg_size();
 }
 
+static bool is_ptt_enable(void)
+{
+	if ((read32((void *)PTT_TXT_BASE_ADDRESS) & PTT_PRESENT) ==
+			PTT_PRESENT)
+		return true;
+
+	return false;
+}
+
+/* Calculate PTT size */
+static size_t get_ptt_size(void)
+{
+	/* Allocate 4KB for PTT if enabled */
+	return is_ptt_enable() ? 4*KiB : 0;
+}
+
 /* Calculate ME Stolen size */
 static size_t get_imr_size(void)
 {
@@ -129,6 +145,9 @@ static size_t calculate_reserved_mem_size(uintptr_t dram_base,
 
 	/* Get Tracehub size */
 	reserve_mem_base -= get_imr_size();
+
+	/* Get PTT size */
+	reserve_mem_base -= get_ptt_size();
 
 	/* Traditional Area Size */
 	reserve_mem_size = dram_base - reserve_mem_base;

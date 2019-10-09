@@ -7,3 +7,4 @@ This section contains documentation about coreboot on specific SOCs.
 - [AMD](amd/index.md)
 - [Cavium](cavium/index.md)
 - [Intel](intel/index.md)
+- [Qualcomm](qualcomm/index.md)

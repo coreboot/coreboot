@@ -1,0 +1,58 @@
+/*
+ * This file is part of the coreboot project.
+ *
+ * Copyright (C) 2018-2019, The Linux Foundation.  All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+#include <memlayout.h>
+#include <arch/header.ld>
+
+/* SYSTEM_IMEM : 0x14680000 - 0x146AE000 */
+#define SSRAM_START(addr) SYMBOL(ssram, addr)
+#define SSRAM_END(addr) SYMBOL(essram, addr)
+
+/* BOOT_IMEM   : 0x14800000 - 0x14980000 */
+#define BSRAM_START(addr) SYMBOL(bsram, addr)
+#define BSRAM_END(addr) SYMBOL(ebsram, addr)
+
+SECTIONS
+{
+	SSRAM_START(0x14680000)
+	OVERLAP_VERSTAGE_ROMSTAGE(0x14680000, 100K)
+	REGION(qcsdi, 0x14699000, 52K, 4K)
+	SSRAM_END(0x146AE000)
+
+	BSRAM_START(0x14800000)
+	BOOTBLOCK(0x14815000, 40K)
+	PRERAM_CBFS_CACHE(0x1481F000, 70K)
+	PRERAM_CBMEM_CONSOLE(0x14830800, 32K)
+	TIMESTAMP(0x14838800, 1K)
+	TTB(0x14839000, 56K)
+	STACK(0x14847000, 16K)
+	VBOOT2_WORK(0x1484B000, 12K)
+	DMA_COHERENT(0x1484E000, 8K)
+	REGION(ddr_training, 0x14850000, 8K, 4K)
+	REGION(qclib_serial_log, 0x14852000, 4K, 4K)
+	REGION(ddr_information, 0x14853000, 1K, 1K)
+	REGION(dcb, 0x14870000, 16K, 4K)
+	REGION(pmic, 0x14874000, 44K, 4K)
+	REGION(limits_cfg, 0x1487F000, 4K, 4K)
+	REGION(qclib, 0x14880000, 512K, 4K)
+	BSRAM_END(0x14900000)
+
+	DRAM_START(0x80000000)
+	/* Various hardware/software subsystems make use of this area */
+	REGION(dram_soc,  0x80900000, 0x300000, 0x1000)
+	BL31(0x80C00000, 0x1A800000)
+	POSTRAM_CBFS_CACHE(0x9F800000, 16M)
+	RAMSTAGE(0xA0800000, 16M)
+}

@@ -54,6 +54,17 @@
 #define DPTF_TSR2_ACTIVE_AC4	40
 #define DPTF_TSR2_ACTIVE_AC5	38
 
+#define DPTF_TSR3_SENSOR_ID	3
+#define DPTF_TSR3_SENSOR_NAME	"CPU"
+#define DPTF_TSR3_PASSIVE	85
+#define DPTF_TSR3_CRITICAL	100
+#define DPTF_TSR3_ACTIVE_AC0	0
+#define DPTF_TSR3_ACTIVE_AC1	0
+#define DPTF_TSR3_ACTIVE_AC2	0
+#define DPTF_TSR3_ACTIVE_AC3	0
+#define DPTF_TSR3_ACTIVE_AC4	0
+#define DPTF_TSR3_ACTIVE_AC5	0
+
 #define DPTF_ENABLE_CHARGER
 #define DPTF_ENABLE_FAN_CONTROL
 
@@ -107,6 +118,10 @@ Name (DART, Package () {
 	Package () {
 		\_SB.DPTF.TFN1, \_SB.DPTF.TSR2, 100, 90, 69, 56, 46, 36, 30, 0,
 			0, 0, 0
+	},
+	Package () {
+		\_SB.DPTF.TFN1, \_SB.DPTF.TSR3, 100, 90, 69, 56, 46, 36, 30, 0,
+			0, 0, 0
 	}
 })
 
@@ -122,6 +137,9 @@ Name (DTRT, Package () {
 
 	/* CPU Throttle Effect on TSR2 */
 	Package () { \_SB.PCI0.TCPU, \_SB.DPTF.TSR2, 100, 60, 0, 0, 0, 0 },
+
+	/* CPU Throttle Effect on TSR3 */
+	Package () { \_SB.PCI0.TCPU, \_SB.DPTF.TSR3, 100, 60, 0, 0, 0, 0 },
 })
 
 Name (MPPC, Package ()

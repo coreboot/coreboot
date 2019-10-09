@@ -204,7 +204,6 @@ static void move_dramc_tx_dq_oen(u8 chn, u8 rank,
 
 static void write_leveling_move_dqs_instead_of_clk(u8 chn)
 {
-	dramc_dbg("%s do ch:%d k\n", __func__, chn);
 	for (u8 byte = 0; byte < DQS_NUMBER; byte++) {
 		move_dramc_tx_dqs(chn, byte, -WRITE_LEVELING_MOVD_DQS);
 		move_dramc_tx_dqs_oen(chn, byte, -WRITE_LEVELING_MOVD_DQS);
@@ -394,7 +393,7 @@ void dramc_apply_config_before_calibration(u8 freq_group)
 	setbits_le32(&ch[0].ao.spcmdctrl, 0x1 << 24);
 	clrsetbits_le32(&ch[0].ao.shu[0].scintv, 0x1f << 1, 0x1b << 1);
 
-	for (size_t shu = 0; shu < DRAM_DFS_SHUFFLE_MAX; shu++)
+	for (size_t shu = DRAM_DFS_SHUFFLE_1; shu < DRAM_DFS_SHUFFLE_MAX; shu++)
 		setbits_le32(&ch[0].ao.shu[shu].conf[3], 0x1ff << 0);
 
 	clrbits_le32(&ch[0].ao.dramctrl, 0x1 << 18);
@@ -409,15 +408,14 @@ void dramc_apply_config_before_calibration(u8 freq_group)
 	for (size_t chn = 0; chn < CHANNEL_MAX; chn++) {
 		setbits_le32(&ch[chn].ao.spcmdctrl, 0x1 << 29);
 		setbits_le32(&ch[chn].ao.dqsoscr, 0x1 << 24);
-		for (size_t shu = 0; shu < DRAM_DFS_SHUFFLE_MAX; shu++)
+		for (size_t shu = DRAM_DFS_SHUFFLE_1; shu < DRAM_DFS_SHUFFLE_MAX; shu++)
 			setbits_le32(&ch[chn].ao.shu[shu].scintv, 0x1 << 30);
 
 		clrbits_le32(&ch[chn].ao.dummy_rd, (0x1 << 7) | (0x7 << 20));
 		dramc_hw_gating_onoff(chn, false);
 		clrbits_le32(&ch[chn].ao.stbcal2, 0x1 << 28);
 
-		setbits_le32(&ch[chn].phy.misc_ctrl1,
-			(0x1 << 7) | (0x1 << 11));
+		setbits_le32(&ch[chn].phy.misc_ctrl1, (0x1 << 7) | (0x1 << 11));
 		clrbits_le32(&ch[chn].ao.refctrl0, 0x1 << 18);
 		clrbits_le32(&ch[chn].ao.mrs, 0x3 << 24);
 		setbits_le32(&ch[chn].ao.mpc_option, 0x1 << 17);
@@ -966,13 +964,13 @@ static void dramc_rx_dqs_gating_cal(u8 chn, u8 rank, u8 freq_group,
 	u32 coarse_start, coarse_end;
 
 	struct reg_value regs_bak[] = {
-		{&ch[chn].ao.stbcal, 0x0},
-		{&ch[chn].ao.stbcal1, 0x0},
-		{&ch[chn].ao.ddrconf0, 0x0},
-		{&ch[chn].ao.spcmd, 0x0},
-		{&ch[chn].ao.refctrl0, 0x0},
-		{&ch[chn].phy.b[0].dq[6], 0x0},
-		{&ch[chn].phy.b[1].dq[6], 0x0},
+		{&ch[chn].ao.stbcal},
+		{&ch[chn].ao.stbcal1},
+		{&ch[chn].ao.ddrconf0},
+		{&ch[chn].ao.spcmd},
+		{&ch[chn].ao.refctrl0},
+		{&ch[chn].phy.b[0].dq[6]},
+		{&ch[chn].phy.b[1].dq[6]},
 	};
 	for (size_t i = 0; i < ARRAY_SIZE(regs_bak); i++)
 		regs_bak[i].value = read32(regs_bak[i].addr);
@@ -2136,7 +2134,8 @@ int dramc_calibrate_all_channels(const struct sdram_params *pams, u8 freq_group)
 	u8 rx_datlat[RANK_MAX] = {0};
 	for (u8 chn = 0; chn < CHANNEL_MAX; chn++) {
 		for (u8 rk = RANK_0; rk < RANK_MAX; rk++) {
-			dramc_show("Start K ch:%d, rank:%d\n", chn, rk);
+			dramc_show("Start K: freq=%d, ch=%d, rank=%d\n",
+				   freq_group, chn, rk);
 			dramc_auto_refresh_switch(chn, false);
 			dramc_cmd_bus_training(chn, rk, freq_group, pams,
 				fast_calib);

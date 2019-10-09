@@ -73,7 +73,7 @@ void dramc_sw_impedance_cal(const struct sdram_params *params, u8 term)
 	clrsetbits_le32(&ch[0].phy.misc_imp_ctrl0, 0x7 << 4, 0x3 << 4);
 	udelay(1);
 
-	dramc_show("K DRVP\n");
+	dramc_dbg("impedance: K DRVP\n");
 	setbits_le32(&ch[0].ao.impcal, 0x1 << 23);
 	setbits_le32(&ch[0].ao.impcal, 0x1 << 22);
 	clrbits_le32(&ch[0].ao.impcal, 0x1 << 21);
@@ -88,18 +88,18 @@ void dramc_sw_impedance_cal(const struct sdram_params *params, u8 term)
 		udelay(1);
 		imp_cal_result = (read32(&ch[0].phy_nao.misc_phy_rgs_cmd) >>
 				  24) & 0x1;
-		dramc_show("1. OCD DRVP=%d CALOUT=%d\n",
+		dramc_dbg("1. OCD DRVP=%d CALOUT=%d\n",
 			   impx_drv, imp_cal_result);
 
 		if (imp_cal_result == 1 && DRVP_result == 0xff) {
 			DRVP_result = impx_drv;
-			dramc_show("1. OCD DRVP calibration OK! DRVP=%d\n",
+			dramc_dbg("1. OCD DRVP calibration OK! DRVP=%d\n",
 				   DRVP_result);
 			break;
 		}
 	}
 
-	dramc_show("K ODTN\n");
+	dramc_dbg("impedance: K ODTN\n");
 	dramc_sw_imp_cal_vref_sel(term, IMPCAL_STAGE_DRVN);
 	clrbits_le32(&ch[0].ao.impcal, 0x1 << 22);
 	if (term == ODT_ON)
@@ -116,12 +116,12 @@ void dramc_sw_impedance_cal(const struct sdram_params *params, u8 term)
 		udelay(1);
 		imp_cal_result = (read32(&ch[0].phy_nao.misc_phy_rgs_cmd) >>
 				  24) & 0x1;
-		dramc_show("3. OCD ODTN=%d CALOUT=%d\n",
+		dramc_dbg("3. OCD ODTN=%d CALOUT=%d\n",
 			   impx_drv, imp_cal_result);
 
 		if (imp_cal_result == 0 && ODTN_result == 0xff) {
 			ODTN_result = impx_drv;
-			dramc_show("3. OCD ODTN calibration OK! ODTN=%d\n",
+			dramc_dbg("3. OCD ODTN calibration OK! ODTN=%d\n",
 				   ODTN_result);
 			break;
 		}
@@ -129,7 +129,7 @@ void dramc_sw_impedance_cal(const struct sdram_params *params, u8 term)
 
 	write32(&ch[0].ao.impcal, impcal_bak);
 
-	dramc_show("term:%d, DRVP=%d, DRVN=%d, ODTN=%d\n",
+	dramc_show("impedance: term=%d, DRVP=%d, DRVN=%d, ODTN=%d\n",
 		   term, DRVP_result, DRVN_result, ODTN_result);
 	if (term == ODT_OFF) {
 		impedance[term][0] = DRVP_result;

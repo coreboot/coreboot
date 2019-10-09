@@ -43,7 +43,7 @@ static int mt_mem_test(void)
 			       (i == 0) ? "pass" : "fail", i);
 
 			if (i != 0) {
-				dramc_show("DRAM memory test failed\n");
+				printk(BIOS_ERR, "DRAM memory test failed\n");
 				return -1;
 			}
 
@@ -80,7 +80,7 @@ static int dram_run_fast_calibration(const struct dramc_param *dparam,
 		return -1;
 	}
 
-	if (dparam->header.config != config)  {
+	if (dparam->header.config != config) {
 		printk(BIOS_WARNING,
 		       "Incompatible config for calibration data from flash "
 		       "(expected: %#x, saved: %#x)\n",
@@ -167,7 +167,7 @@ void mt_mem_init(struct dramc_param_ops *dparam_ops)
 		set_source_to_flash(dparam->freq_params);
 		dparam_ops->write_to_flash(dparam);
 		printk(BIOS_DEBUG, "Calibration params saved to flash: "
-		       "version=%#x, size=#%x\n",
+		       "version=%#x, size=%#x\n",
 		       dparam->header.version, dparam->header.size);
 		return;
 	}

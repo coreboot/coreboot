@@ -288,6 +288,9 @@ static void dump_spi_regs(struct tegra_spi_channel *spi)
 
 static void dump_dma_regs(struct apb_dma_channel *dma)
 {
+	if (dma == NULL)
+		return;
+
 	printk(BIOS_INFO, "DMA regs:\n"
 			"\tahb_ptr: 0x%08x\n"
 			"\tapb_ptr: 0x%08x\n"
@@ -545,9 +548,9 @@ static int tegra_spi_dma_finish(struct tegra_spi_channel *spi)
 	int ret;
 	unsigned int todo;
 
-	todo = read32(&spi->dma_in->regs->wcount);
-
 	if (spi->dma_in) {
+		todo = read32(&spi->dma_in->regs->wcount);
+
 		while ((read32(&spi->dma_in->regs->dma_byte_sta) < todo) ||
 				dma_busy(spi->dma_in))
 			;	/* this shouldn't take long, no udelay */
@@ -557,9 +560,12 @@ static int tegra_spi_dma_finish(struct tegra_spi_channel *spi)
 	}
 
 	if (spi->dma_out) {
+		todo = read32(&spi->dma_out->regs->wcount);
+
 		while ((read32(&spi->dma_out->regs->dma_byte_sta) < todo) ||
-				dma_busy(spi->dma_out))
+				dma_busy(spi->dma_out)) {
 			spi_delay(spi, todo - spi_byte_count(spi));
+		}
 		clrbits_le32(&spi->regs->command1, SPI_CMD1_TX_EN);
 		dma_stop(spi->dma_out);
 		dma_release(spi->dma_out);

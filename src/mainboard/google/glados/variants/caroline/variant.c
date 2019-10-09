@@ -21,9 +21,11 @@
 #include <string.h>
 #include <variant/gpio.h>
 
-void variant_memory_init_params(
-		MEMORY_INIT_UPD *const memory_params, const int spd_index)
+void variant_memory_init_params(FSPM_UPD *mupd, const int spd_index)
 {
+	FSP_M_CONFIG *mem_cfg;
+	mem_cfg = &mupd->FspmConfig;
+
 	/* DQ byte map */
 	const u8 dq_map[2][12] = {
 		  { 0x0F, 0xF0, 0x00, 0xF0, 0x0F, 0xF0,
@@ -41,19 +43,12 @@ void variant_memory_init_params(
 	/* Rcomp target */
 	const u16 RcompTarget[5] = { 100, 40, 40, 23, 40 };
 
-	memcpy(memory_params->DqByteMapCh0, dq_map[0],
-			sizeof(memory_params->DqByteMapCh0));
-	memcpy(memory_params->DqByteMapCh1, dq_map[1],
-			sizeof(memory_params->DqByteMapCh1));
-	memcpy(memory_params->DqsMapCpu2DramCh0, dqs_map[0],
-			sizeof(memory_params->DqsMapCpu2DramCh0));
-	memcpy(memory_params->DqsMapCpu2DramCh1, dqs_map[1],
-			sizeof(memory_params->DqsMapCpu2DramCh1));
-	memcpy(memory_params->RcompResistor, RcompResistor,
-			sizeof(memory_params->RcompResistor));
-	memcpy(memory_params->RcompTarget, RcompTarget,
-			sizeof(memory_params->RcompTarget));
-	memory_params->DdrFreqLimit = 1600;
+	memcpy(mem_cfg->DqByteMapCh0, dq_map[0], sizeof(mem_cfg->DqByteMapCh0));
+	memcpy(mem_cfg->DqByteMapCh1, dq_map[1], sizeof(mem_cfg->DqByteMapCh1));
+	memcpy(mem_cfg->DqsMapCpu2DramCh0, dqs_map[0], sizeof(mem_cfg->DqsMapCpu2DramCh0));
+	memcpy(mem_cfg->DqsMapCpu2DramCh1, dqs_map[1], sizeof(mem_cfg->DqsMapCpu2DramCh1));
+	memcpy(mem_cfg->RcompResistor, RcompResistor, sizeof(mem_cfg->RcompResistor));
+	memcpy(mem_cfg->RcompTarget, RcompTarget, sizeof(mem_cfg->RcompTarget));
 }
 
 void mainboard_gpio_smi_sleep(void)

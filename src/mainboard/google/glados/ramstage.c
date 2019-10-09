@@ -17,7 +17,7 @@
 #include <soc/ramstage.h>
 #include <variant/gpio.h>
 
-void mainboard_silicon_init_params(SILICON_INIT_UPD *params)
+void mainboard_silicon_init_params(FSP_SIL_UPD *params)
 {
 	/* Configure pads prior to SiliconInit() in case there's any
 	 * dependencies during hardware initialization. */

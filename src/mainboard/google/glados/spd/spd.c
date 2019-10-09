@@ -83,8 +83,10 @@ __weak int is_dual_channel(const int spd_index)
 }
 
 /* Copy SPD data for on-board memory */
-void spd_memory_init_params(MEMORY_INIT_UPD *const memory_params, int spd_index)
+void spd_memory_init_params(FSPM_UPD *mupd, int spd_index)
 {
+	FSP_M_CONFIG *mem_cfg;
+	mem_cfg = &mupd->FspmConfig;
 	uint8_t *spd_file;
 	size_t spd_file_len;
 
@@ -112,9 +114,9 @@ void spd_memory_init_params(MEMORY_INIT_UPD *const memory_params, int spd_index)
 		die("Invalid SPD data.");
 
 	/* Assume same memory in both channels */
-	memory_params->MemorySpdPtr00 = (uintptr_t)spd_file + spd_offset;
+	mem_cfg->MemorySpdPtr00 = (uintptr_t)spd_file + spd_offset;
 	if (is_dual_channel(spd_index))
-		memory_params->MemorySpdPtr10 = memory_params->MemorySpdPtr00;
+		mem_cfg->MemorySpdPtr10 = mem_cfg->MemorySpdPtr00;
 
 	mainboard_print_spd_info(spd_file + spd_offset);
 }

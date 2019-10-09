@@ -19,6 +19,6 @@
 
 int is_dual_channel(const int spd_index);
 void mainboard_gpio_smi_sleep(void);
-void variant_memory_init_params(MEMORY_INIT_UPD *memory_params, int spd_index);
+void variant_memory_init_params(FSPM_UPD *mupd, const int spd_index);
 
 #endif /* GLADOS_VARIANT_H */

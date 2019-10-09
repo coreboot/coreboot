@@ -17,6 +17,7 @@ config BOARD_GOOGLE_BASEBOARD_GLADOS
 	select MAINBOARD_HAS_CHROMEOS
 	select MAINBOARD_HAS_LPC_TPM
 	select MAINBOARD_HAS_TPM1
+	select MAINBOARD_USES_FSP2_0
 	select SOC_INTEL_SKYLAKE
 	select SYSTEM_TYPE_LAPTOP
 
@@ -61,6 +62,9 @@ config VARIANT_DIR
 config DEVICETREE
 	string
 	default "variants/$(CONFIG_VARIANT_DIR)/devicetree.cb"
+
+config INTEL_GMA_VBT_FILE
+	default "3rdparty/fsp/KabylakeFspBinPkg/SampleCode/Vbt/Vbt.bin"
 
 config MAX_CPUS
 	int

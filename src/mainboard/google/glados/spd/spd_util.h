@@ -16,6 +16,6 @@
 
 #include <fsp/soc_binding.h>
 
-void spd_memory_init_params(MEMORY_INIT_UPD *, int spd_index);
+void spd_memory_init_params(FSPM_UPD *mupd, int spd_index);
 
 #endif /* SPD_UTIL_H */

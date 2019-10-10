@@ -15,6 +15,8 @@
 
 ifeq ($(CONFIG_SOUTHBRIDGE_INTEL_IBEXPEAK),y)
 
+bootblock-y += bootblock.c
+
 ramstage-y += pch.c
 ramstage-y += azalia.c
 ramstage-y += lpc.c

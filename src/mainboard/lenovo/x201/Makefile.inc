@@ -13,6 +13,8 @@
 ## GNU General Public License for more details.
 ##
 
+bootblock-y += early_init.c
+
 smm-y += dock.c
 smm-y += smihandler.c
 romstage-y += dock.c

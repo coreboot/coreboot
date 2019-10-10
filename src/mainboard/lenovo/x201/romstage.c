@@ -24,12 +24,6 @@
 #include <southbridge/intel/ibexpeak/pch.h>
 #include <northbridge/intel/nehalem/nehalem.h>
 
-void mainboard_lpc_init(void)
-{
-	/* Enable USB Power. We need to do it early for usbdebug to work. */
-	ec_set_bit(0x3b, 4);
-}
-
 const struct southbridge_usb_port mainboard_usb_ports[] = {
 	/* Enabled, Current table lookup index, OC map */
 	{ 1, IF1_557, 0 },

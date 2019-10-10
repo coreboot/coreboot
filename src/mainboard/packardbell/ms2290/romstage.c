@@ -22,10 +22,6 @@
 #include <southbridge/intel/ibexpeak/pch.h>
 #include <northbridge/intel/nehalem/nehalem.h>
 
-void mainboard_lpc_init(void)
-{
-}
-
 /* Seems copied from Lenovo Thinkpad x201, might be wrong */
 const struct southbridge_usb_port mainboard_usb_ports[] = {
 	/* Enabled, Current table lookup index, OC map */

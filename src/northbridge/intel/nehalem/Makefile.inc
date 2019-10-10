@@ -15,6 +15,8 @@
 
 ifeq ($(CONFIG_NORTHBRIDGE_INTEL_NEHALEM),y)
 
+bootblock-y += bootblock.c
+
 ramstage-y += memmap.c
 ramstage-y += northbridge.c
 ramstage-y += smi.c

@@ -23,10 +23,6 @@ config CPU_SPECIFIC_OPTIONS
 	select NO_FIXED_XIP_ROM_SIZE
 	select PARALLEL_MP
 
-config BOOTBLOCK_CPU_INIT
-	string
-	default "cpu/intel/model_2065x/bootblock.c"
-
 config SMM_TSEG_SIZE
 	hex
 	default 0x800000

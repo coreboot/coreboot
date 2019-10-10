@@ -62,13 +62,11 @@ int smbus_block_read(unsigned device, unsigned cmd, u8 bytes, u8 *buf);
 int smbus_block_write(unsigned device, unsigned cmd, u8 bytes, const u8 *buf);
 #endif
 
-void pch_pre_console_init(void);
 void early_pch_init(void);
 
 void early_thermal_init(void);
 void southbridge_configure_default_intmap(void);
 void pch_setup_cir(int chipset_type);
-void mainboard_lpc_init(void);
 
 enum current_lookup_idx {
 	IF1_F57 = 0,

@@ -12,8 +12,9 @@
  */
 
 #include <device/pci_ops.h>
+#include <cpu/intel/car/bootblock.h>
 
-static void bootblock_northbridge_init(void)
+void bootblock_early_northbridge_init(void)
 {
 	pci_io_write_config32(PCI_DEV(0xff, 0x00, 1), 0x50, CONFIG_MMCONF_BASE_ADDRESS | 1);
 	pci_io_write_config32(PCI_DEV(0xff, 0x00, 1), 0x54, 0);

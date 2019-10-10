@@ -7,7 +7,6 @@ config BOARD_PURISM_BASEBOARD_LIBREM_BDW
 	select HAVE_ACPI_TABLES
 	select INTEL_INT15
 	select SOC_INTEL_BROADWELL
-	select NO_POST # This platform does not have any way to see POST codes
 
 if BOARD_PURISM_BASEBOARD_LIBREM_BDW
 
@@ -73,5 +72,8 @@ config VGA_BIOS_ID
 	default "8086,1616" if BOARD_PURISM_LIBREM13_V1
 	default "8086,162b" if BOARD_PURISM_LIBREM15_V2
 
+# This platform has limited means to display POST codes
+config NO_POST
+	default y
 
 endif

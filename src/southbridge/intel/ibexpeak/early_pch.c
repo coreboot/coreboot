@@ -80,10 +80,14 @@ static void pch_default_disable(void)
 	RCBA32(FD2) = 1;
 }
 
-void early_pch_init(void)
+void pch_pre_console_init(void)
 {
 	early_lpc_init();
 	mainboard_lpc_init();
+}
+
+void early_pch_init(void)
+{
 	early_gpio_init();
 	/* TODO, make this configurable */
 	pch_setup_cir(NEHALEM_MOBILE);

@@ -45,10 +45,12 @@ void mainboard_romstage_entry(void)
 	/* TODO, make this configurable */
 	nehalem_early_initialization(NEHALEM_MOBILE);
 
-	early_pch_init();
+	pch_pre_console_init();
 
 	/* Initialize console device(s) */
 	console_init();
+
+	early_pch_init();
 
 	/* Read PM1_CNT, DON'T CLEAR IT or raminit will fail! */
 	reg32 = inl(DEFAULT_PMBASE + 0x04);

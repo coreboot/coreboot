@@ -62,6 +62,7 @@ int smbus_block_read(unsigned device, unsigned cmd, u8 bytes, u8 *buf);
 int smbus_block_write(unsigned device, unsigned cmd, u8 bytes, const u8 *buf);
 #endif
 
+void pch_pre_console_init(void);
 void early_pch_init(void);
 
 void early_thermal_init(void);

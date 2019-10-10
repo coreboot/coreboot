@@ -1,0 +1,6 @@
+Vendor name: Google
+Board name: Trogdor Qualcomm sc7180 reference board
+Category: eval
+ROM protocol: SPI
+ROM socketed: n
+Flashrom support: y

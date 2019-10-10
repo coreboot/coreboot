@@ -1,0 +1,4 @@
+
+config BOARD_GOOGLE_TROGDOR
+	bool "Trogdor"
+	select BOARD_GOOGLE_TROGDOR_COMMON

@@ -30,6 +30,7 @@ config BOARD_SPECIFIC_OPTIONS
 	select DISABLE_HPET
 	select INTEL_GMA_HAVE_VBT
 	select GENERIC_SPD_BIN
+	select USE_VENDORCODE_ELTAN
 
 config ONBOARD_SAMSUNG_MEM
 	bool "Onboard memory manufacturer Samsung"

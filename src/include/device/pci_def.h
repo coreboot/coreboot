@@ -435,6 +435,7 @@
 #define  PCI_EXP_LNKSTA_LT	0x800	/* Link Training */
 #define  PCI_EXP_LNKSTA_SLC	0x1000	/* Slot Clock Configuration */
 #define PCI_EXP_SLTCAP		20	/* Slot Capabilities */
+#define  PCI_EXP_SLTCAP_HPC	0x0040	/* Hot-Plug Capable */
 #define PCI_EXP_SLTCTL		24	/* Slot Control */
 #define PCI_EXP_SLTSTA		26	/* Slot Status */
 #define PCI_EXP_RTCTL		28	/* Root Control */

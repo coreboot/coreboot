@@ -121,6 +121,7 @@ struct device {
 	unsigned int    disable_pcie_aspm : 1;
 	unsigned int    hidden : 1;	/* set if we should hide from UI */
 	u8 command;
+	uint16_t hotplug_buses; /* Number of hotplug buses to allocate */
 
 	/* Base registers for this device. I/O, MEM and Expansion ROM */
 	DEVTREE_CONST struct resource *resource_list;

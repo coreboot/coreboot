@@ -518,3 +518,62 @@ struct device_operations default_pciexp_ops_bus = {
 	.reset_bus        = pci_bus_reset,
 	.ops_pci          = &pciexp_bus_ops_pci,
 };
+
+#if CONFIG(PCIEXP_HOTPLUG)
+
+static void pciexp_hotplug_dummy_read_resources(struct device *dev)
+{
+	struct resource *resource;
+
+	// Add extra memory space
+	resource = new_resource(dev, 0x10);
+	resource->size = CONFIG_PCIEXP_HOTPLUG_MEM;
+	resource->align = 12;
+	resource->gran = 12;
+	resource->limit = 0xffffffff;
+	resource->flags |= IORESOURCE_MEM;
+
+	// Add extra prefetchable memory space
+	resource = new_resource(dev, 0x14);
+	resource->size = CONFIG_PCIEXP_HOTPLUG_PREFETCH_MEM;
+	resource->align = 12;
+	resource->gran = 12;
+	resource->limit = 0xffffffffffffffff;
+	resource->flags |= IORESOURCE_MEM | IORESOURCE_PREFETCH;
+
+	// Add extra I/O space
+	resource = new_resource(dev, 0x18);
+	resource->size = CONFIG_PCIEXP_HOTPLUG_IO;
+	resource->align = 12;
+	resource->gran = 12;
+	resource->limit = 0xffff;
+	resource->flags |= IORESOURCE_IO;
+}
+
+static struct device_operations pciexp_hotplug_dummy_ops = {
+	.read_resources   = pciexp_hotplug_dummy_read_resources,
+};
+
+void pciexp_hotplug_scan_bridge(struct device *dev)
+{
+	dev->hotplug_buses = CONFIG_PCIEXP_HOTPLUG_BUSES;
+
+	/* Normal PCIe Scan */
+	pciexp_scan_bridge(dev);
+
+	/* Add dummy slot to preserve resources, must happen after bus scan */
+	struct device *dummy;
+	struct device_path dummy_path = { .type = DEVICE_PATH_NONE };
+	dummy = alloc_dev(dev->link_list, &dummy_path);
+	dummy->ops = &pciexp_hotplug_dummy_ops;
+}
+
+struct device_operations default_pciexp_hotplug_ops_bus = {
+	.read_resources   = pci_bus_read_resources,
+	.set_resources    = pci_dev_set_resources,
+	.enable_resources = pci_bus_enable_resources,
+	.scan_bus         = pciexp_hotplug_scan_bridge,
+	.reset_bus        = pci_bus_reset,
+	.ops_pci          = &pciexp_bus_ops_pci,
+};
+#endif /* CONFIG(PCIEXP_HOTPLUG) */

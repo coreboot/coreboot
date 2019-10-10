@@ -16,5 +16,3 @@
 config USE_SIEMENS_HWILIB
 	bool
 	default n
-
-source "src/vendorcode/siemens/*/Kconfig"

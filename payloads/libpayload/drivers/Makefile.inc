@@ -38,6 +38,7 @@ libc-$(CONFIG_LP_S5P_SERIAL_CONSOLE) += serial/s5p.c serial/serial.c
 libc-$(CONFIG_LP_IPQ806X_SERIAL_CONSOLE) += serial/ipq806x.c serial/serial.c
 libc-$(CONFIG_LP_IPQ40XX_SERIAL_CONSOLE) += serial/ipq40xx.c serial/serial.c
 libc-$(CONFIG_LP_QCS405_SERIAL_CONSOLE) += serial/qcs405.c serial/serial.c
+libc-$(CONFIG_LP_QUALCOMM_QUPV3_SERIAL_CONSOLE) += serial/qcom_qupv3_serial.c serial/serial.c
 libc-$(CONFIG_LP_PC_KEYBOARD) += i8042/keyboard.c
 libc-$(CONFIG_LP_PC_MOUSE) += i8042/mouse.c
 libc-$(CONFIG_LP_PC_I8042) += i8042/i8042.c

@@ -257,6 +257,11 @@ config QCS405_SERIAL_CONSOLE
 	depends on SERIAL_CONSOLE
 	default n
 
+config QUALCOMM_QUPV3_SERIAL_CONSOLE
+	bool "Qualcomm QUPV3 serial port driver"
+	depends on SERIAL_CONSOLE
+	default n
+
 config PL011_SERIAL_CONSOLE
 	bool "PL011 compatible serial port driver"
 	depends on 8250_SERIAL_CONSOLE

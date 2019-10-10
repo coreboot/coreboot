@@ -31,4 +31,10 @@ config BOOT_DEVICE_SPI_FLASH_BUS
 	int
 	default 16
 
+config UART_FOR_CONSOLE
+	int
+	default 8
+	help
+	 Select the QUP instance to be used for UART console output.
+
 endif

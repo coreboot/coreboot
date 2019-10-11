@@ -90,13 +90,6 @@ static void pnp_exit_ext_func_mode(pnp_devfn_t dev)
 	outb(0xaa, port);
 }
 
-static void pnp_write_register(pnp_devfn_t dev, int reg, int val)
-{
-	unsigned int port = dev >> 8;
-	outb(reg, port);
-	outb(val, port+1);
-}
-
 static void early_superio_config(void)
 {
 	pnp_devfn_t dev;
@@ -104,40 +97,40 @@ static void early_superio_config(void)
 	dev = PNP_DEV(0x4e, 0x00);
 
 	pnp_enter_ext_func_mode(dev);
-	pnp_write_register(dev, 0x02, 0x0e); // UART power
-	pnp_write_register(dev, 0x1b, (0x3e8 >> 2)); // UART3 base
-	pnp_write_register(dev, 0x1c, (0x2e8 >> 2)); // UART4 base
-	pnp_write_register(dev, 0x1d, (5 << 4) | 11); // UART3,4 IRQ
-	pnp_write_register(dev, 0x1e, 1); // no 32khz clock
-	pnp_write_register(dev, 0x24, (0x3f8 >> 2)); // UART1 base
-	pnp_write_register(dev, 0x28, (4 << 4) | 0); // UART1,2 IRQ
-	pnp_write_register(dev, 0x2c, 0); // DMA0 FIR
-	pnp_write_register(dev, 0x30, (0x600 >> 4)); // Runtime Register Block Base
+	pnp_write_config(dev, 0x02, 0x0e); // UART power
+	pnp_write_config(dev, 0x1b, (0x3e8 >> 2)); // UART3 base
+	pnp_write_config(dev, 0x1c, (0x2e8 >> 2)); // UART4 base
+	pnp_write_config(dev, 0x1d, (5 << 4) | 11); // UART3,4 IRQ
+	pnp_write_config(dev, 0x1e, 1); // no 32khz clock
+	pnp_write_config(dev, 0x24, (0x3f8 >> 2)); // UART1 base
+	pnp_write_config(dev, 0x28, (4 << 4) | 0); // UART1,2 IRQ
+	pnp_write_config(dev, 0x2c, 0); // DMA0 FIR
+	pnp_write_config(dev, 0x30, (0x600 >> 4)); // Runtime Register Block Base
 
-	pnp_write_register(dev, 0x31, 0xce); // GPIO1 DIR
-	pnp_write_register(dev, 0x32, 0x00); // GPIO1 POL
-	pnp_write_register(dev, 0x33, 0x0f); // GPIO2 DIR
-	pnp_write_register(dev, 0x34, 0x00); // GPIO2 POL
-	pnp_write_register(dev, 0x35, 0xa8); // GPIO3 DIR
-	pnp_write_register(dev, 0x36, 0x00); // GPIO3 POL
-	pnp_write_register(dev, 0x37, 0xa8); // GPIO4 DIR
-	pnp_write_register(dev, 0x38, 0x00); // GPIO4 POL
+	pnp_write_config(dev, 0x31, 0xce); // GPIO1 DIR
+	pnp_write_config(dev, 0x32, 0x00); // GPIO1 POL
+	pnp_write_config(dev, 0x33, 0x0f); // GPIO2 DIR
+	pnp_write_config(dev, 0x34, 0x00); // GPIO2 POL
+	pnp_write_config(dev, 0x35, 0xa8); // GPIO3 DIR
+	pnp_write_config(dev, 0x36, 0x00); // GPIO3 POL
+	pnp_write_config(dev, 0x37, 0xa8); // GPIO4 DIR
+	pnp_write_config(dev, 0x38, 0x00); // GPIO4 POL
 
-	pnp_write_register(dev, 0x39, 0x00); // GPIO1 OUT
-	pnp_write_register(dev, 0x40, 0x80); // GPIO2/MISC OUT
-	pnp_write_register(dev, 0x41, 0x00); // GPIO5 OUT
-	pnp_write_register(dev, 0x42, 0xa8); // GPIO5 DIR
-	pnp_write_register(dev, 0x43, 0x00); // GPIO5 POL
-	pnp_write_register(dev, 0x44, 0x00); // GPIO ALT1
-	pnp_write_register(dev, 0x45, 0x50); // GPIO ALT2
-	pnp_write_register(dev, 0x46, 0x00); // GPIO ALT3
+	pnp_write_config(dev, 0x39, 0x00); // GPIO1 OUT
+	pnp_write_config(dev, 0x40, 0x80); // GPIO2/MISC OUT
+	pnp_write_config(dev, 0x41, 0x00); // GPIO5 OUT
+	pnp_write_config(dev, 0x42, 0xa8); // GPIO5 DIR
+	pnp_write_config(dev, 0x43, 0x00); // GPIO5 POL
+	pnp_write_config(dev, 0x44, 0x00); // GPIO ALT1
+	pnp_write_config(dev, 0x45, 0x50); // GPIO ALT2
+	pnp_write_config(dev, 0x46, 0x00); // GPIO ALT3
 
-	pnp_write_register(dev, 0x48, 0x55); // GPIO ALT5
-	pnp_write_register(dev, 0x49, 0x55); // GPIO ALT6
-	pnp_write_register(dev, 0x4a, 0x55); // GPIO ALT7
-	pnp_write_register(dev, 0x4b, 0x55); // GPIO ALT8
-	pnp_write_register(dev, 0x4c, 0x55); // GPIO ALT9
-	pnp_write_register(dev, 0x4d, 0x55); // GPIO ALT10
+	pnp_write_config(dev, 0x48, 0x55); // GPIO ALT5
+	pnp_write_config(dev, 0x49, 0x55); // GPIO ALT6
+	pnp_write_config(dev, 0x4a, 0x55); // GPIO ALT7
+	pnp_write_config(dev, 0x4b, 0x55); // GPIO ALT8
+	pnp_write_config(dev, 0x4c, 0x55); // GPIO ALT9
+	pnp_write_config(dev, 0x4d, 0x55); // GPIO ALT10
 
 	pnp_exit_ext_func_mode(dev);
 }

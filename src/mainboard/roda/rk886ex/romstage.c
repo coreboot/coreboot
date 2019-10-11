@@ -69,13 +69,6 @@ static void pnp_exit_ext_func_mode(pnp_devfn_t dev)
 	outb(0xaa, port);
 }
 
-static void pnp_write_register(pnp_devfn_t dev, int reg, int val)
-{
-	unsigned int port = dev >> 8;
-	outb(reg, port);
-	outb(val, port+1);
-}
-
 static void early_superio_config(void)
 {
 	pnp_devfn_t dev;
@@ -83,30 +76,30 @@ static void early_superio_config(void)
 	dev = PNP_DEV(0x2e, 0x00);
 
 	pnp_enter_ext_func_mode(dev);
-	pnp_write_register(dev, 0x01, 0x94); /* Extended Parport modes */
-	pnp_write_register(dev, 0x02, 0x88); /* UART power on */
-	pnp_write_register(dev, 0x03, 0x72); /* Floppy */
-	pnp_write_register(dev, 0x04, 0x01); /* EPP + SPP */
-	pnp_write_register(dev, 0x14, 0x03); /* Floppy */
-	pnp_write_register(dev, 0x20, (0x3f0 >> 2)); /* Floppy */
-	pnp_write_register(dev, 0x23, (0x378 >> 2)); /* PP base */
-	pnp_write_register(dev, 0x24, (0x3f8 >> 2)); /* UART1 base */
-	pnp_write_register(dev, 0x25, (0x2f8 >> 2)); /* UART2 base */
-	pnp_write_register(dev, 0x26, (2 << 4) | 0); /* FDC + PP DMA */
-	pnp_write_register(dev, 0x27, (6 << 4) | 7); /* FDC + PP DMA */
-	pnp_write_register(dev, 0x28, (4 << 4) | 3); /* UART1,2 IRQ */
+	pnp_write_config(dev, 0x01, 0x94); /* Extended Parport modes */
+	pnp_write_config(dev, 0x02, 0x88); /* UART power on */
+	pnp_write_config(dev, 0x03, 0x72); /* Floppy */
+	pnp_write_config(dev, 0x04, 0x01); /* EPP + SPP */
+	pnp_write_config(dev, 0x14, 0x03); /* Floppy */
+	pnp_write_config(dev, 0x20, (0x3f0 >> 2)); /* Floppy */
+	pnp_write_config(dev, 0x23, (0x378 >> 2)); /* PP base */
+	pnp_write_config(dev, 0x24, (0x3f8 >> 2)); /* UART1 base */
+	pnp_write_config(dev, 0x25, (0x2f8 >> 2)); /* UART2 base */
+	pnp_write_config(dev, 0x26, (2 << 4) | 0); /* FDC + PP DMA */
+	pnp_write_config(dev, 0x27, (6 << 4) | 7); /* FDC + PP DMA */
+	pnp_write_config(dev, 0x28, (4 << 4) | 3); /* UART1,2 IRQ */
 	/* These are the SMI status registers in the SIO: */
-	pnp_write_register(dev, 0x30, (0x600 >> 4)); /* Runtime Register Block Base */
+	pnp_write_config(dev, 0x30, (0x600 >> 4)); /* Runtime Register Block Base */
 
-	pnp_write_register(dev, 0x31, 0x00); /* GPIO1 DIR */
-	pnp_write_register(dev, 0x32, 0x00); /* GPIO1 POL */
-	pnp_write_register(dev, 0x33, 0x40); /* GPIO2 DIR */
-	pnp_write_register(dev, 0x34, 0x00); /* GPIO2 POL */
-	pnp_write_register(dev, 0x35, 0xff); /* GPIO3 DIR */
-	pnp_write_register(dev, 0x36, 0x00); /* GPIO3 POL */
-	pnp_write_register(dev, 0x37, 0xe0); /* GPIO4 DIR */
-	pnp_write_register(dev, 0x38, 0x00); /* GPIO4 POL */
-	pnp_write_register(dev, 0x39, 0x80); /* GPIO4 POL */
+	pnp_write_config(dev, 0x31, 0x00); /* GPIO1 DIR */
+	pnp_write_config(dev, 0x32, 0x00); /* GPIO1 POL */
+	pnp_write_config(dev, 0x33, 0x40); /* GPIO2 DIR */
+	pnp_write_config(dev, 0x34, 0x00); /* GPIO2 POL */
+	pnp_write_config(dev, 0x35, 0xff); /* GPIO3 DIR */
+	pnp_write_config(dev, 0x36, 0x00); /* GPIO3 POL */
+	pnp_write_config(dev, 0x37, 0xe0); /* GPIO4 DIR */
+	pnp_write_config(dev, 0x38, 0x00); /* GPIO4 POL */
+	pnp_write_config(dev, 0x39, 0x80); /* GPIO4 POL */
 
 	pnp_exit_ext_func_mode(dev);
 }

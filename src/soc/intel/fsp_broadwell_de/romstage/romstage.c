@@ -94,6 +94,37 @@ static void enable_integrated_uart(uint8_t port)
 	pci_mmio_write_config32(ubox_dev, UBOX_UART_ENABLE, ubox_uart_en);
 }
 
+static void early_iio_hide(void)
+{
+	DEVTREE_CONST struct device *dev;
+
+	const pci_devfn_t iio_rootport[] = {
+		PCI_DEVFN(PCIE_IIO_PORT_1_DEV, PCIE_IIO_PORT_1A_FUNC),
+		PCI_DEVFN(PCIE_IIO_PORT_1_DEV, PCIE_IIO_PORT_1B_FUNC),
+		PCI_DEVFN(PCIE_IIO_PORT_2_DEV, PCIE_IIO_PORT_2A_FUNC),
+		PCI_DEVFN(PCIE_IIO_PORT_2_DEV, PCIE_IIO_PORT_2B_FUNC),
+		PCI_DEVFN(PCIE_IIO_PORT_2_DEV, PCIE_IIO_PORT_2C_FUNC),
+		PCI_DEVFN(PCIE_IIO_PORT_2_DEV, PCIE_IIO_PORT_2D_FUNC),
+		PCI_DEVFN(PCIE_IIO_PORT_3_DEV, PCIE_IIO_PORT_3A_FUNC),
+		PCI_DEVFN(PCIE_IIO_PORT_3_DEV, PCIE_IIO_PORT_3B_FUNC),
+		PCI_DEVFN(PCIE_IIO_PORT_3_DEV, PCIE_IIO_PORT_3C_FUNC),
+		PCI_DEVFN(PCIE_IIO_PORT_3_DEV, PCIE_IIO_PORT_3D_FUNC),
+		};
+
+	/* Walk through IIO root ports and hide if it is disabled in devtree */
+	for (int i = 0; i < ARRAY_SIZE(iio_rootport); i++) {
+		dev = pcidev_path_on_bus(BUS0, iio_rootport[i]);
+		if (dev && !dev->enabled) {
+			printk(BIOS_DEBUG, "Hiding IIO root port: %d:%d.%d\n",
+					BUS0,
+					PCI_SLOT(iio_rootport[i]),
+					PCI_FUNC(iio_rootport[i]));
+			iio_hide(dev);
+		}
+	}
+
+}
+
 /* Entry from cache-as-ram.inc. */
 void *asmlinkage main(FSP_INFO_HEADER *fsp_info_header)
 {
@@ -121,14 +152,15 @@ void *asmlinkage main(FSP_INFO_HEADER *fsp_info_header)
 	init_rtc();
 	setup_gpio_io_address();
 
+	/* Hide before MemoryInit since hiding later seems to break FSP */
+	early_iio_hide();
 	timestamp_add_now(TS_BEFORE_INITRAM);
-
+	post_code(0x48);
 	/*
 	 * Call early init to initialize memory and chipset. This function returns
 	 * to the romstage_main_continue function with a pointer to the HOB
 	 * structure.
 	 */
-	post_code(0x48);
 	printk(BIOS_DEBUG, "Starting the Intel FSP (early_init)\n");
 	fsp_early_init(fsp_info_header);
 	die_with_post_code(POST_INVALID_VENDOR_BINARY,

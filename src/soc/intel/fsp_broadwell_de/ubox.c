@@ -18,10 +18,13 @@
 #include <stdint.h>
 #include <soc/ubox.h>
 
-void iio_hide(const uint8_t devno, const uint8_t funcno)
+void iio_hide(DEVTREE_CONST struct device *dev)
 {
 	pci_devfn_t ubox_dev;
+	uint8_t slot, func;
 
+	slot = PCI_SLOT(dev->path.pci.devfn);
+	func = PCI_FUNC(dev->path.pci.devfn);
 	ubox_dev = PCI_DEV(get_busno1(), UBOX_DEV, UBOX_FUNC);
-	pci_or_config32(ubox_dev, UBOX_DEVHIDE0 + funcno * 4, 1 << devno);
+	pci_or_config32(ubox_dev, UBOX_DEVHIDE0 + func * 4, 1 << slot);
 }

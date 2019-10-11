@@ -21,6 +21,12 @@ those are fixed. If possible a workaround is described here as well.
   * Workaround: Don't disable this PCI device
   * Issue on public tracker: [Issue 13]
 
+* FSP Notify(EnumInitPhaseAfterPciEnumeration) hangs if 00:02.03/00:02.03 are hidden
+  * Release MR2
+  * Seems to get stuck on some SKUs only if hidden after MemoryInit
+  * Workaround: Hide before MemoryInit
+  * Issue on public tracker: [Issue 35]
+
 ### KabylakeFsp
 * MfgId and ModulePartNum in the DIMM_INFO struct are empty
   * Release 3.7.1
@@ -59,4 +65,5 @@ those are fixed. If possible a workaround is described here as well.
 [Issue 13]: https://github.com/IntelFsp/FSP/issues/13
 [Issue 15]: https://github.com/IntelFsp/FSP/issues/15
 [Issue 22]: https://github.com/IntelFsp/FSP/issues/22
+[Issue 35]: https://github.com/IntelFsp/FSP/issues/35
 

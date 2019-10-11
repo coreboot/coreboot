@@ -40,6 +40,5 @@
 
 #define UBOX_DEVHIDE0			0xb0
 
-void iio_hide(const uint8_t devno, const uint8_t funcno);
-
+void iio_hide(DEVTREE_CONST struct device *dev);
 #endif

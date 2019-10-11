@@ -257,24 +257,11 @@ void southcluster_enable_dev(struct device *dev)
 	const int slot = PCI_SLOT(dev->path.pci.devfn);
 	const int func = PCI_FUNC(dev->path.pci.devfn);
 
-	switch (slot) {
-	case PCIE_IIO_PORT_0_DEV:
-		die("should not hide PCH link");
-	case PCIE_IIO_PORT_1_DEV: /* fallthrough */
-	case PCIE_IIO_PORT_2_DEV: /* fallthrough */
-	case PCIE_IIO_PORT_3_DEV: /* fallthrough */
-		printk(BIOS_DEBUG, "%s: Disabling IOU bridge %02x.%01x\n", dev_path(dev), slot,
-			func);
-		iio_hide(slot, func);
-		break;
-	default:
-		printk(BIOS_DEBUG, "%s: Disabling device: %02x.%01x\n", dev_path(dev), slot,
-			func);
-		/* Ensure memory, io, and bus master are all disabled */
-		reg32 = pci_read_config32(dev, PCI_COMMAND);
-		reg32 &= ~(PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY | PCI_COMMAND_IO);
-		pci_write_config32(dev, PCI_COMMAND, reg32);
-	}
+	printk(BIOS_DEBUG, "%s: Disabling device: %02x.%01x\n", dev_path(dev), slot, func);
+	/* Ensure memory, io, and bus master are all disabled */
+	reg32 = pci_read_config32(dev, PCI_COMMAND);
+	reg32 &= ~(PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY | PCI_COMMAND_IO);
+	pci_write_config32(dev, PCI_COMMAND, reg32);
 }
 
 #if CONFIG(HAVE_ACPI_TABLES)

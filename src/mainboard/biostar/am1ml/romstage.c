@@ -24,8 +24,6 @@
 #include <superio/ite/common/ite.h>
 #include <superio/ite/it8728f/it8728f.h>
 
-
-#define ITE_CONFIG_REG_CC	0x02
 #define SERIAL_DEV	PNP_DEV(0x2e, IT8728F_SP1)
 #define GPIO_DEV	PNP_DEV(0x2e, IT8728F_GPIO)
 #define ENVC_DEV	PNP_DEV(0x2e, IT8728F_EC)
@@ -34,62 +32,42 @@
 #define MMIO_NON_POSTED_END	0xfedfffff
 #define SB_MMIO_MISC32(x)	*(volatile u32 *)(AMD_SB_ACPI_MMIO_ADDR + 0xE00 + (x))
 
-
-static void it_sio_write(pnp_devfn_t dev, u8 reg, u8 value)
-{
-	pnp_set_logical_device(dev);
-	pnp_write_config(dev, reg, value);
-}
-
-static void ite_enter_conf(pnp_devfn_t dev)
-{
-	u16 port = dev >> 8;
-
-	outb(0x87, port);
-	outb(0x01, port);
-	outb(0x55, port);
-	outb((port == 0x4e) ? 0xaa : 0x55, port);
-}
-
-static void ite_exit_conf(pnp_devfn_t dev)
-{
-	it_sio_write(dev, ITE_CONFIG_REG_CC, 0x02);
-}
-
 static void ite_evc_conf(pnp_devfn_t dev)
 {
-	ite_enter_conf(dev);
-	it_sio_write(dev, 0xf1, 0x40);
-	it_sio_write(dev, 0xf4, 0x80);
-	it_sio_write(dev, 0xf5, 0x00);
-	it_sio_write(dev, 0xf6, 0xf0);
-	it_sio_write(dev, 0xf9, 0x48);
-	it_sio_write(dev, 0xfa, 0x00);
-	it_sio_write(dev, 0xfb, 0x00);
-	ite_exit_conf(dev);
+	pnp_enter_conf_state(dev);
+	pnp_set_logical_device(dev);
+	pnp_write_config(dev, 0xf1, 0x40);
+	pnp_write_config(dev, 0xf4, 0x80);
+	pnp_write_config(dev, 0xf5, 0x00);
+	pnp_write_config(dev, 0xf6, 0xf0);
+	pnp_write_config(dev, 0xf9, 0x48);
+	pnp_write_config(dev, 0xfa, 0x00);
+	pnp_write_config(dev, 0xfb, 0x00);
+	pnp_exit_conf_state(dev);
 }
 
 static void ite_gpio_conf(pnp_devfn_t dev)
 {
-	ite_enter_conf (dev);
-	it_sio_write(dev, 0x25, 0x80);
-	it_sio_write(dev, 0x26, 0x07);
-	it_sio_write(dev, 0x28, 0x81);
-	it_sio_write(dev, 0x2c, 0x06);
-	it_sio_write(dev, 0x72, 0x00);
-	it_sio_write(dev, 0x73, 0x00);
-	it_sio_write(dev, 0xb3, 0x01);
-	it_sio_write(dev, 0xb8, 0x00);
-	it_sio_write(dev, 0xc0, 0x00);
-	it_sio_write(dev, 0xc3, 0x00);
-	it_sio_write(dev, 0xc8, 0x00);
-	it_sio_write(dev, 0xc9, 0x07);
-	it_sio_write(dev, 0xcb, 0x01);
-	it_sio_write(dev, 0xf0, 0x10);
-	it_sio_write(dev, 0xf4, 0x27);
-	it_sio_write(dev, 0xf8, 0x20);
-	it_sio_write(dev, 0xf9, 0x01);
-	ite_exit_conf(dev);
+	pnp_enter_conf_state(dev);
+	pnp_set_logical_device(dev);
+	pnp_write_config(dev, 0x25, 0x80);
+	pnp_write_config(dev, 0x26, 0x07);
+	pnp_write_config(dev, 0x28, 0x81);
+	pnp_write_config(dev, 0x2c, 0x06);
+	pnp_write_config(dev, 0x72, 0x00);
+	pnp_write_config(dev, 0x73, 0x00);
+	pnp_write_config(dev, 0xb3, 0x01);
+	pnp_write_config(dev, 0xb8, 0x00);
+	pnp_write_config(dev, 0xc0, 0x00);
+	pnp_write_config(dev, 0xc3, 0x00);
+	pnp_write_config(dev, 0xc8, 0x00);
+	pnp_write_config(dev, 0xc9, 0x07);
+	pnp_write_config(dev, 0xcb, 0x01);
+	pnp_write_config(dev, 0xf0, 0x10);
+	pnp_write_config(dev, 0xf4, 0x27);
+	pnp_write_config(dev, 0xf8, 0x20);
+	pnp_write_config(dev, 0xf9, 0x01);
+	pnp_exit_conf_state(dev);
 }
 
 void board_BeforeAgesa(struct sysinfo *cb)

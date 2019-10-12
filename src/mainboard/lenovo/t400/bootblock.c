@@ -1,8 +1,6 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2012 secunet Security Networks AG
- *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; version 2 of
@@ -14,10 +12,26 @@
  * GNU General Public License for more details.
  */
 
-#include <northbridge/intel/gm45/gm45.h>
+#include <console/console.h>
+#include <bootblock_common.h>
+#include "dock.h"
 
-void get_mb_spd_addrmap(u8 *spd_addrmap)
+static int dock_err;
+
+void bootblock_mainboard_early_init(void)
 {
-	spd_addrmap[0] = 0x50;
-	spd_addrmap[2] = 0x52;
+	/* Minimal setup to detect dock */
+	dock_err = pc87382_early();
+	if (dock_err == 0)
+		dock_connect();
+}
+
+void bootblock_mainboard_init(void)
+{
+	/* Console is not yet initialized in bootblock_mainboard_early_init,
+	   so we print the dock information here */
+	if (dock_err)
+		printk(BIOS_ERR, "DOCK: Failed to init pc87382\n");
+	else
+		dock_info();
 }

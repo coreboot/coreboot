@@ -35,6 +35,9 @@ ramstage-$(CONFIG_HAVE_SMI_HANDLER) += ../../../cpu/x86/smm/smmrelocate.S
 endif
 smm-y += smihandler.c
 
+bootblock-y += bootblock.c
+bootblock-y += early_init.c
+
 romstage-y += early_init.c
 romstage-y += early_smbus.c
 romstage-y += dmi_setup.c

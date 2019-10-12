@@ -13,6 +13,8 @@
 ## GNU General Public License for more details.
 ##
 
+bootblock-y += bootblock.c
+
 romstage-y = gpio.c
 
 ramstage-$(CONFIG_CARDBUS_PLUGIN_SUPPORT) += ti_pci7xx1.c

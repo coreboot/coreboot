@@ -14,6 +14,9 @@
  */
 
 #include <device/pci_ops.h>
+#include <cpu/intel/car/bootblock.h>
+#include "i82801ix.h"
+
 
 static void enable_spi_prefetch(void)
 {
@@ -28,7 +31,10 @@ static void enable_spi_prefetch(void)
 	pci_write_config8(dev, 0xdc, reg8);
 }
 
-static void bootblock_southbridge_init(void)
+void bootblock_early_southbridge_init(void)
 {
 	enable_spi_prefetch();
+
+	i82801ix_early_init();
+	i82801ix_lpc_decode();
 }

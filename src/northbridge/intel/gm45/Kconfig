@@ -26,14 +26,11 @@ config NORTHBRIDGE_SPECIFIC_OPTIONS # dummy
 	select INTEL_GMA_ACPI
 	select INTEL_GMA_SSC_ALTERNATE_REF
 	select PARALLEL_MP
+	select C_ENVIRONMENT_BOOTBLOCK
 
 config CBFS_SIZE
 	hex
 	default 0x100000
-
-config BOOTBLOCK_NORTHBRIDGE_INIT
-	string
-	default "northbridge/intel/gm45/bootblock.c"
 
 config VGA_BIOS_ID
 	string

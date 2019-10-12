@@ -13,7 +13,8 @@
 ## GNU General Public License for more details.
 ##
 
-romstage-y += dock.c
+bootblock-y += bootblock.c
+bootblock-y += dock.c
 
 subdirs-y += variants/$(VARIANT_DIR)/
 

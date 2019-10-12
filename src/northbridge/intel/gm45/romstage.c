@@ -62,12 +62,6 @@ void mainboard_romstage_entry(void)
 	i82801ix_early_init();
 	setup_pch_gpios(&mainboard_gpio_map);
 
-	i82801ix_lpc_decode();
-
-	mb_setup_superio();
-
-	console_init();
-
 	reg16 = pci_read_config16(LPC_DEV, D31F0_GEN_PMCON_3);
 	pci_write_config16(LPC_DEV, D31F0_GEN_PMCON_3, reg16);
 	if ((MCHBAR16(SSKPD_MCHBAR) == 0xCAFE) && !(reg16 & (1 << 9))) {

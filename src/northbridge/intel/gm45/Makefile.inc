@@ -15,6 +15,8 @@
 
 ifeq ($(CONFIG_NORTHBRIDGE_INTEL_GM45),y)
 
+bootblock-y += bootblock.c
+
 romstage-y += early_init.c
 romstage-y += early_reset.c
 romstage-y += raminit.c

@@ -18,6 +18,15 @@
 #define CACHE_AS_RAM_SIZE CONFIG_DCACHE_RAM_SIZE
 #define CACHE_AS_RAM_BASE CONFIG_DCACHE_RAM_BASE
 
+#if CONFIG(C_ENVIRONMENT_BOOTBLOCK)
+#if ((CONFIG_C_ENV_BOOTBLOCK_SIZE & (CONFIG_C_ENV_BOOTBLOCK_SIZE - 1)) != 0)
+#error "CONFIG_C_ENV_BOOTBLOCK_SIZE must be a power of 2!"
+#endif
+#define XIP_ROM_SIZE CONFIG_C_ENV_BOOTBLOCK_SIZE
+#else
+#define XIP_ROM_SIZE CONFIG_XIP_ROM_SIZE
+#endif
+
 .global bootblock_pre_c_entry
 
 .code32
@@ -136,13 +145,13 @@ addrsize_set_high:
 	 * https://mail.coreboot.org/pipermail/coreboot/2010-October/060922.html
 	 */
 	movl	$_program, %eax
-	andl	$(~(CONFIG_XIP_ROM_SIZE - 1)), %eax
+	andl	$(~(XIP_ROM_SIZE - 1)), %eax
 	orl	$MTRR_TYPE_WRPROT, %eax
 	wrmsr
 
 	movl	$MTRR_PHYS_MASK(1), %ecx
 	rdmsr
-	movl	$(~(CONFIG_XIP_ROM_SIZE - 1) | MTRR_PHYS_MASK_VALID), %eax
+	movl	$(~(XIP_ROM_SIZE - 1) | MTRR_PHYS_MASK_VALID), %eax
 	wrmsr
 
 	post_code(0x2e)

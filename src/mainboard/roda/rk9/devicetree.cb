@@ -67,6 +67,8 @@ chip northbridge/intel/gm45
 			# Maybe we should set less for Mini PCIe.
 			register "pcie_power_limits" = "{ { 10, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 10, 0 }, { 0, 0 } }"
 
+			register "gen1_dec" = "0x000c0601"
+
 			device pci 19.0 off end # LAN
 			device pci 1a.0 on # UHCI
 				ioapic_irq 2 INTA 0x10

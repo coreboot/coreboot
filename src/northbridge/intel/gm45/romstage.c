@@ -62,7 +62,7 @@ void mainboard_romstage_entry(void)
 	i82801ix_early_init();
 	setup_pch_gpios(&mainboard_gpio_map);
 
-	mb_setup_lpc();
+	i82801ix_lpc_decode();
 
 	mb_setup_superio();
 

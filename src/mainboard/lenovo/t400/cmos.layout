@@ -88,6 +88,9 @@ entries
 # RAM initialization internal data
 1024        128       r       0        read_training_results
 
+# VBOOT
+1152         128       r      0        vbnv
+
 # -----------------------------------------------------------------
 
 enumerations

@@ -18,7 +18,6 @@
 #include <device/device.h>
 #include <device/path.h>
 #include <device/smbus.h>
-#include <device/smbus_def.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>

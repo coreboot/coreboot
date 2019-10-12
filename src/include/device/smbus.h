@@ -4,7 +4,6 @@
 #include <stdint.h>
 #include <device/device.h>
 #include <device/i2c_bus.h>
-#include <device/smbus_def.h>
 
 /* Common SMBus bus operations */
 struct smbus_bus_operations {

@@ -426,6 +426,7 @@
 #define  PCI_EXP_LNKCAP_L0SEL	0x7000	/* L0s Exit Latency */
 #define  PCI_EXP_LNKCAP_L1EL	0x38000	/* L1 Exit Latency */
 #define  PCI_EXP_CLK_PM		0x40000	/* Clock Power Management */
+#define  PCI_EXP_LNKCAP_PORT	0xff000000 /* Port Number */
 #define PCI_EXP_LNKCTL		16	/* Link Control */
 #define  PCI_EXP_LNKCTL_RL	0x20	/* Retrain Link */
 #define  PCI_EXP_LNKCTL_CCC	0x40	/* Common Clock COnfiguration */

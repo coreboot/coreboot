@@ -78,6 +78,16 @@ config XIP_ROM_SIZE
 	depends on !NO_FIXED_XIP_ROM_SIZE
 	default 0x10000
 
+config SETUP_XIP_CACHE
+	bool
+	depends on C_ENVIRONMENT_BOOTBLOCK
+	depends on !NO_XIP_EARLY_STAGES
+	help
+	  Select this option to set up an MTRR to cache XIP stages loaded
+	  from the bootblock. This is useful on platforms lacking a
+	  non-eviction mode and therefore need to be careful to avoid
+	  eviction.
+
 config CPU_ADDR_BITS
 	int
 	default 36

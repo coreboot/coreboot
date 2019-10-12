@@ -7,13 +7,14 @@ Introduction and Current State in coreboot
 *libgfxinit* is a library of full-featured graphics initialization
 (aka. modesetting) drivers. It's implemented in SPARK (a subset of
 Ada with formal verification features). While not restricted to in
-any way, it currently only supports Intel's integrated gfx control-
-lers (GMA).
+any way, it currently only supports Intel's integrated graphics
+controllers (GMA).
 
-Currently, it supports the Intel Core i3/i5/i7 processor line and
-will support HDMI and DP on the Atom successor Apollo Lake. At the
-time of writing, Sandy Bridge, Ivy Bridge, and Haswell are veri-
-fied to work within *coreboot*.
+Currently, it supports the Intel Core i3/i5/i7 processor line, HDMI
+and DP on the Apollo Lake processors and everything but SDVO on G45
+and GM45 chipsets. At the time of writing, G45, GM45, everything
+from Arrandale to Coffee Lake, and Apollo Lake are verified to work
+within *coreboot*.
 
 GMA: Framebuffer Configuration
 ------------------------------

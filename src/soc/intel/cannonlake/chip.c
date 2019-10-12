@@ -7,6 +7,7 @@
 #include <intelblocks/acpi.h>
 #include <intelblocks/cfg.h>
 #include <intelblocks/itss.h>
+#include <intelblocks/pcie_rp.h>
 #include <intelblocks/xdci.h>
 #include <romstage_handoff.h>
 #include <soc/intel/common/vbt.h>
@@ -15,6 +16,19 @@
 #include <soc/ramstage.h>
 
 #include "chip.h"
+
+static const struct pcie_rp_group pch_lp_rp_groups[] = {
+	{ .slot = PCH_DEV_SLOT_PCIE,	.count = 8 },
+	{ .slot = PCH_DEV_SLOT_PCIE_1,	.count = 8 },
+	{ 0 }
+};
+
+static const struct pcie_rp_group pch_h_rp_groups[] = {
+	{ .slot = PCH_DEV_SLOT_PCIE,	.count = 8 },
+	{ .slot = PCH_DEV_SLOT_PCIE_1,	.count = 8 },
+	{ .slot = PCH_DEV_SLOT_PCIE_2,	.count = 8 },
+	{ 0 }
+};
 
 #if CONFIG(HAVE_ACPI_TABLES)
 const char *soc_acpi_name(const struct device *dev)
@@ -166,6 +180,12 @@ void soc_init_pre_device(void *chip_info)
 	cnl_configure_pads(NULL, 0);
 
 	soc_gpio_pm_configuration();
+
+	/* swap enabled PCI ports in device tree if needed */
+	if (CONFIG(SOC_INTEL_CANNONLAKE_PCH_H))
+		pcie_rp_update_devicetree(pch_h_rp_groups);
+	else
+		pcie_rp_update_devicetree(pch_lp_rp_groups);
 }
 
 static struct device_operations pci_domain_ops = {

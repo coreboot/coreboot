@@ -373,10 +373,10 @@ chip soc/intel/cannonlake
 		device pci 1c.5 off end # PCI Express Port 6
 		device pci 1c.6 off end # PCI Express Port 7
 		device pci 1c.7 off end # PCI Express Port 8
-		device pci 1d.0 on
+		device pci 1d.0 off end # PCI Express Port 9
+		device pci 1d.1 on
 			smbios_slot_desc "SlotTypeM2Socket1_SD" "SlotLengthOther" "2230" "SlotDataBusWidth1X"
-		end # PCI Express Port 9
-		device pci 1d.1 on  end # PCI Express Port 10
+		end # PCI Express Port 10
 		device pci 1d.2 on  end # PCI Express Port 11
 		device pci 1d.3 off end # PCI Express Port 12
 		device pci 1d.4 on

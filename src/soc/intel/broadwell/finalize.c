@@ -27,6 +27,7 @@
 #include <soc/rcba.h>
 #include <soc/spi.h>
 #include <soc/systemagent.h>
+#include <southbridge/intel/common/spi.h>
 
 const struct reg_script system_agent_finalize_script[] = {
 	REG_PCI_OR16(0x50, 1 << 0),				/* GGC */
@@ -57,16 +58,6 @@ const struct reg_script system_agent_finalize_script[] = {
 
 const struct reg_script pch_finalize_script[] = {
 #if !CONFIG(SPI_CONSOLE)
-	/* Set SPI opcode menu */
-	REG_MMIO_WRITE16(RCBA_BASE_ADDRESS + SPIBAR_OFFSET + SPIBAR_PREOP,
-			 SPI_OPPREFIX),
-	REG_MMIO_WRITE16(RCBA_BASE_ADDRESS + SPIBAR_OFFSET + SPIBAR_OPTYPE,
-			 SPI_OPTYPE),
-	REG_MMIO_WRITE32(RCBA_BASE_ADDRESS + SPIBAR_OFFSET +
-			 SPIBAR_OPMENU_LOWER, SPI_OPMENU_LOWER),
-	REG_MMIO_WRITE32(RCBA_BASE_ADDRESS + SPIBAR_OFFSET +
-			 SPIBAR_OPMENU_UPPER, SPI_OPMENU_UPPER),
-
 	/* Lock SPIBAR */
 	REG_MMIO_OR32(RCBA_BASE_ADDRESS + SPIBAR_OFFSET + SPIBAR_HSFS,
 		      SPIBAR_HSFS_FLOCKDN),
@@ -101,6 +92,8 @@ static void broadwell_finalize(void *unused)
 	printk(BIOS_DEBUG, "Finalizing chipset.\n");
 
 	reg_script_run_on_dev(sa_dev, system_agent_finalize_script);
+
+	spi_finalize_ops();
 	reg_script_run_on_dev(PCH_DEV_LPC, pch_finalize_script);
 
 	/* Lock */

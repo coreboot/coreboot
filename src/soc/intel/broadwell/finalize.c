@@ -112,12 +112,6 @@ static void broadwell_finalize(void *unused)
 	MCHBAR32(0x6008) = MCHBAR32(0x6008);
 	RCBA32(0x21a4) = RCBA32(0x21a4);
 
-	/* Re-init SPI after lockdown */
-	spi_init();
-
-	printk(BIOS_DEBUG, "Finalizing SMM.\n");
-	outb(APM_CNT_FINALIZE, APM_CNT);
-
 	/* Indicate finalize step with post code */
 	post_code(POST_OS_BOOT);
 }

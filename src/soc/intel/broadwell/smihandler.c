@@ -312,22 +312,6 @@ static void southbridge_smi_gsmi(void)
 	*ret = gsmi_exec(sub_command, param);
 }
 
-static void finalize(void)
-{
-	static int finalize_done;
-
-	if (finalize_done) {
-		printk(BIOS_DEBUG, "SMM already finalized.\n");
-		return;
-	}
-	finalize_done = 1;
-
-#if CONFIG(SPI_FLASH_SMM)
-	/* Re-init SPI driver to handle locked BAR */
-	spi_init();
-#endif
-}
-
 static void southbridge_smi_apmc(void)
 {
 	u8 reg8;
@@ -350,9 +334,6 @@ static void southbridge_smi_apmc(void)
 	case APM_CNT_ACPI_ENABLE:
 		enable_pm1_control(SCI_EN);
 		printk(BIOS_DEBUG, "SMI#: ACPI enabled.\n");
-		break;
-	case APM_CNT_FINALIZE:
-		finalize();
 		break;
 	case APM_CNT_GNVS_UPDATE:
 		if (smm_initialized) {

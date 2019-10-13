@@ -577,9 +577,6 @@ static void finalize_chipset(void *unused)
 		write32(spi + UVSCC, cfg.uvscc);
 		write32(spi + LVSCC, cfg.lvscc | VCL);
 	}
-
-	printk(BIOS_DEBUG, "Finalizing SMM.\n");
-	outb(APM_CNT_FINALIZE, APM_CNT);
 }
 
 BOOT_STATE_INIT_ENTRY(BS_OS_RESUME, BS_ON_ENTRY, finalize_chipset, NULL);

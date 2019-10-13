@@ -229,22 +229,6 @@ static void southbridge_smi_gsmi(void)
 	*ret = gsmi_exec(sub_command, param);
 }
 
-static void finalize(void)
-{
-	static int finalize_done;
-
-	if (finalize_done) {
-		printk(BIOS_DEBUG, "SMM already finalized.\n");
-		return;
-	}
-	finalize_done = 1;
-
-#if CONFIG(SPI_FLASH_SMM)
-	/* Re-init SPI driver to handle locked BAR */
-	spi_init();
-#endif
-}
-
 /*
  * soc_legacy: A payload (Depthcharge) has indicated that the
  *   legacy payload (SeaBIOS) is being loaded. Switch devices that are
@@ -348,10 +332,6 @@ static void southbridge_smi_apmc(void)
 		if (CONFIG(ELOG_GSMI))
 			southbridge_smi_gsmi();
 		break;
-	case APM_CNT_FINALIZE:
-		finalize();
-		break;
-
 	case APM_CNT_LEGACY:
 		soc_legacy();
 		break;

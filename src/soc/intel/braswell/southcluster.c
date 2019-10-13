@@ -42,6 +42,7 @@
 #include <soc/spi.h>
 #include <spi-generic.h>
 #include <stdint.h>
+#include <southbridge/intel/common/spi.h>
 
 static void sc_set_serial_irqs_mode(struct device *dev, enum serirq_mode mode)
 {
@@ -608,13 +609,6 @@ static const struct pci_driver southcluster __pci_driver = {
 	.device		= LPC_DEVID,
 };
 
-int __weak mainboard_get_spi_config(struct spi_config *cfg)
-{
-	printk(BIOS_SPEW, "%s/%s (0x%p)\n",
-			__FILE__, __func__, (void *)cfg);
-	return -1;
-}
-
 static void finalize_chipset(void *unused)
 {
 	void *bcr = (void *)(SPI_BASE_ADDRESS + BCR);
@@ -622,7 +616,7 @@ static void finalize_chipset(void *unused)
 	void *gen_pmcon2 = (void *)(PMC_BASE_ADDRESS + GEN_PMCON2);
 	void *etr = (void *)(PMC_BASE_ADDRESS + ETR);
 	uint8_t *spi = (uint8_t *)SPI_BASE_ADDRESS;
-	struct spi_config cfg;
+	struct vscc_config cfg;
 
 	printk(BIOS_SPEW, "%s/%s (0x%p)\n",
 			__FILE__, __func__, unused);
@@ -639,14 +633,12 @@ static void finalize_chipset(void *unused)
 	/*  Set the CF9 lock. */
 	write32(etr, read32(etr) | CF9LOCK);
 
-	if (mainboard_get_spi_config(&cfg) < 0) {
-		printk(BIOS_DEBUG, "No SPI lockdown configuration.\n");
+	spi_finalize_ops();
+	write16(spi + HSFSTS, read16(spi + HSFSTS) | FLOCKDN);
+
+	if (mainboard_get_spi_vscc_config(&cfg) < 0) {
+		printk(BIOS_DEBUG, "No SPI VSCC configuration.\n");
 	} else {
-		write16(spi + PREOP, cfg.preop);
-		write16(spi + OPTYPE, cfg.optype);
-		write32(spi + OPMENU0, cfg.opmenu[0]);
-		write32(spi + OPMENU1, cfg.opmenu[1]);
-		write16(spi + HSFSTS, read16(spi + HSFSTS) | FLOCKDN);
 		write32(spi + UVSCC, cfg.uvscc);
 		write32(spi + LVSCC, cfg.lvscc | VCL);
 	}

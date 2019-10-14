@@ -224,7 +224,21 @@ chip soc/intel/cannonlake
 	end
 	device domain 0 on
 		device pci 00.0 on  end # Host Bridge
-		device pci 02.0 on  end # Integrated Graphics Device
+		device pci 02.0 on
+			chip drivers/generic/gfx
+				register "device_count" = "1"
+				register "device[0].name" = ""LCD""
+				# Address is set following the ACPI spec section A.3.2
+				# for an internal panel on the first port of the graphics chip
+				register "device[0].addr" = "0x80010400"
+				register "device[0].privacy.enabled" = "1"
+				register "device[0].privacy.detect_function" = ""\\_SB.PCI0.LPCB.EC0.GPVD""
+				register "device[0].privacy.status_function" = ""\\_SB.PCI0.LPCB.EC0.GPVX""
+				register "device[0].privacy.enable_function" = ""\\_SB.PCI0.LPCB.EC0.EPVX""
+				register "device[0].privacy.disable_function" = ""\\_SB.PCI0.LPCB.EC0.DPVX""
+				device generic 0 on end
+			end
+		end # Integrated Graphics Device
 		device pci 04.0 on  end # SA Thermal device
 		device pci 12.0 on  end # Thermal Subsystem
 		device pci 12.5 off end # UFS SCS

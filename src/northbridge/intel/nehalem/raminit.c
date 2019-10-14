@@ -3766,9 +3766,6 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 
 		collect_system_info(&info);
 
-		/* Enable SMBUS. */
-		enable_smbus();
-
 		memset(&info.populated_ranks, 0, sizeof(info.populated_ranks));
 
 		info.use_ecc = 1;

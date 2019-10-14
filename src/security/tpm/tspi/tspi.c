@@ -141,6 +141,11 @@ uint32_t tpm_setup(int s3flag)
 	}
 
 	result = tlcl_startup();
+	if (CONFIG(TPM_STARTUP_IGNORE_POSTINIT)
+	    && result == TPM_E_INVALID_POSTINIT) {
+		printk(BIOS_DEBUG, "TPM: ignoring invalid POSTINIT\n");
+		result = TPM_SUCCESS;
+	}
 	if (result != TPM_SUCCESS) {
 		printk(BIOS_ERR, "TPM: Can't run startup command.\n");
 		return tpm_setup_epilogue(result);

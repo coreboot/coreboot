@@ -93,4 +93,13 @@ config TPM_RDRESP_NEED_DELAY
 	  to work around a race-condition-related issue, possibly
 	  caused by ill-programmed TPM firmware.
 
+config TPM_STARTUP_IGNORE_POSTINIT
+	bool
+	help
+	  Select this to ignore POSTINIT INVALID return codes on TPM
+	  startup. This is useful on platforms where a previous stage
+	  issued a TPM startup. Examples of use cases are Intel TXT
+	  or VBOOT on the Intel Nehalem northbridge which issues a
+	  CPU-only reset during the romstage.
+
 endmenu # Trusted Platform Module (tpm)

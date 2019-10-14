@@ -3730,6 +3730,9 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 	int cbmem_wasnot_inited;
 
 	x2ca8 = MCHBAR8(0x2ca8);
+
+	printk(RAM_DEBUG, "Scratchpad MCHBAR8(0x2ca8): 0x%04x\n", x2ca8);
+
 	deven = pci_read_config16(NORTHBRIDGE, D0F0_DEVEN);
 
 	memset(&info, 0x5a, sizeof(info));
@@ -4241,6 +4244,8 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 	if (x2ca8 == 0) {
 		MCHBAR8_AND(0x2ca8, ~3);
 		MCHBAR8(0x2ca8) = MCHBAR8(0x2ca8) + 4;	// "+" or  "|"?
+		/* This issues a CPU reset without resetting the platform */
+		printk(BIOS_DEBUG, "Issuing a CPU reset\n");
 		MCHBAR32_OR(0x1af0, 0x10);
 		halt();
 	}

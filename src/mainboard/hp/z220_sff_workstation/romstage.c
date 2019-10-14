@@ -17,7 +17,6 @@
  */
 
 #include <stdint.h>
-#include <arch/io.h>
 #include <device/pci_ops.h>
 #include <device/pci_def.h>
 #include <superio/nuvoton/npcd378/npcd378.h>

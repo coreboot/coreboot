@@ -20,7 +20,6 @@
 #include <assert.h>
 #include <soc/romstage.h>
 #include <spd_bin.h>
-#include <arch/io.h>
 #include "spd/spd.h"
 #include <ec/acpi/ec.h>
 #include <stdint.h>

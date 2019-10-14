@@ -18,7 +18,6 @@
 
 #include <console/console.h>
 #include <device/device.h>
-#include <arch/io.h>
 #include <device/pci_ops.h>
 #include <ec/acpi/ec.h>
 #include <northbridge/intel/nehalem/nehalem.h>

@@ -28,6 +28,7 @@
 #include <device/device.h>
 #include <northbridge/intel/nehalem/chip.h>
 #include <northbridge/intel/nehalem/raminit.h>
+#include <southbridge/intel/common/pmclib.h>
 #include <southbridge/intel/ibexpeak/pch.h>
 #include <southbridge/intel/ibexpeak/me.h>
 
@@ -47,24 +48,12 @@ void mainboard_romstage_entry(void)
 
 	early_pch_init();
 
-	/* Read PM1_CNT, DON'T CLEAR IT or raminit will fail! */
-	reg32 = inl(DEFAULT_PMBASE + 0x04);
-	printk(BIOS_DEBUG, "PM1_CNT: %08x\n", reg32);
-	if (((reg32 >> 10) & 7) == 5) {
-		u8 reg8;
-		reg8 = pci_read_config8(PCI_DEV(0, 0x1f, 0), 0xa2);
-		printk(BIOS_DEBUG, "a2: %02x\n", reg8);
+	s3resume = southbridge_detect_s3_resume();
+	if (s3resume) {
+		u8 reg8 = pci_read_config8(PCI_DEV(0, 0x1f, 0), 0xa2);
 		if (!(reg8 & 0x20)) {
-			outl(reg32 & ~(7 << 10), DEFAULT_PMBASE + 0x04);
+			s3resume = 0;
 			printk(BIOS_DEBUG, "Bad resume from S3 detected.\n");
-		} else {
-			if (acpi_s3_resume_allowed()) {
-				printk(BIOS_DEBUG, "Resume from S3 detected.\n");
-				s3resume = 1;
-			} else {
-				printk(BIOS_DEBUG,
-				       "Resume from S3 detected, but disabled.\n");
-			}
 		}
 	}
 

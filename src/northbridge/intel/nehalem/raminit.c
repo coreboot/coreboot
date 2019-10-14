@@ -36,6 +36,7 @@
 #include <cpu/intel/turbo.h>
 #include <mrc_cache.h>
 #include <southbridge/intel/ibexpeak/me.h>
+#include <southbridge/intel/common/pmbase.h>
 #include <delay.h>
 #include <types.h>
 
@@ -4246,6 +4247,11 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 		MCHBAR8(0x2ca8) = MCHBAR8(0x2ca8) + 4;	// "+" or  "|"?
 		/* This issues a CPU reset without resetting the platform */
 		printk(BIOS_DEBUG, "Issuing a CPU reset\n");
+		/* Write back the S3 state to PM1_CNT to let the reset CPU
+		   know it also needs to take the s3 path. */
+		if (s3resume)
+			write_pmbase32(PM1_CNT, read_pmbase32(PM1_CNT)
+				       | (SLP_TYP_S3 << 10));
 		MCHBAR32_OR(0x1af0, 0x10);
 		halt();
 	}

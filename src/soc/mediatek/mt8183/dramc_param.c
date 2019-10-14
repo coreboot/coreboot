@@ -35,7 +35,6 @@ int validate_dramc_param(const void *blob)
 	if (hdr->size != sizeof(*param))
 		return DRAMC_ERR_INVALID_SIZE;
 
-	/* TODO(hungte) Verify and check hdr->checksum. */
 	return DRAMC_SUCCESS;
 }
 

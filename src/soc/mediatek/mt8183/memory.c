@@ -16,6 +16,7 @@
 #include <assert.h>
 #include <cbfs.h>
 #include <console/console.h>
+#include <ip_checksum.h>
 #include <soc/dramc_param.h>
 #include <soc/dramc_pi_api.h>
 #include <soc/emi.h>
@@ -70,6 +71,12 @@ static void dump_param_header(const struct dramc_param *dparam)
 	printk(BIOS_DEBUG, "header.checksum = %#x\n", header->checksum);
 }
 
+static u32 compute_checksum(const struct dramc_param *dparam)
+{
+	return (u32)compute_ip_checksum(dparam->freq_params,
+					sizeof(dparam->freq_params));
+}
+
 static int dram_run_fast_calibration(const struct dramc_param *dparam,
 				     u16 config)
 {
@@ -85,6 +92,15 @@ static int dram_run_fast_calibration(const struct dramc_param *dparam,
 		       "Incompatible config for calibration data from flash "
 		       "(expected: %#x, saved: %#x)\n",
 		       config, dparam->header.config);
+		return -1;
+	}
+
+	const u32 checksum = compute_checksum(dparam);
+	if (dparam->header.checksum != checksum) {
+		printk(BIOS_ERR,
+		       "Invalid DRAM calibration checksum from flash "
+		       "(expected: %#x, saved: %#x)\n",
+		       checksum, dparam->header.checksum);
 		return -1;
 	}
 
@@ -165,6 +181,7 @@ void mt_mem_init(struct dramc_param_ops *dparam_ops)
 		printk(BIOS_INFO, "Successfully loaded DRAM blobs and "
 		       "ran DRAM calibration\n");
 		set_source_to_flash(dparam->freq_params);
+		dparam->header.checksum = compute_checksum(dparam);
 		dparam_ops->write_to_flash(dparam);
 		printk(BIOS_DEBUG, "Calibration params saved to flash: "
 		       "version=%#x, size=%#x\n",

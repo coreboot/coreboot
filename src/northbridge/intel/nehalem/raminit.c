@@ -1576,14 +1576,14 @@ static void write_training_data(struct raminfo *info)
 static void dump_timings(struct raminfo *info)
 {
 	int channel, slot, rank, lane, i;
-	printk(RAM_DEBUG, "Timings:\n");
+	printk(RAM_SPEW, "Timings:\n");
 	FOR_POPULATED_RANKS {
-		printk(RAM_DEBUG, "channel %d, slot %d, rank %d\n", channel,
+		printk(RAM_SPEW, "channel %d, slot %d, rank %d\n", channel,
 		       slot, rank);
 		for (lane = 0; lane < 9; lane++) {
-			printk(RAM_DEBUG, "lane %d: ", lane);
+			printk(RAM_SPEW, "lane %d: ", lane);
 			for (i = 0; i < 4; i++) {
-				printk(RAM_DEBUG, "%x (%x) ",
+				printk(RAM_SPEW, "%x (%x) ",
 				       read_500(info, channel,
 						get_timing_register_addr
 						(lane, i, slot, rank),
@@ -1592,12 +1592,12 @@ static void dump_timings(struct raminfo *info)
 				       lane_timings[i][channel][slot][rank]
 				       [lane]);
 			}
-			printk(RAM_DEBUG, "\n");
+			printk(RAM_SPEW, "\n");
 		}
 	}
-	printk(RAM_DEBUG, "[178] = %x (%x)\n", read_1d0(0x178, 7),
+	printk(RAM_SPEW, "[178] = %x (%x)\n", read_1d0(0x178, 7),
 	       info->training.reg_178);
-	printk(RAM_DEBUG, "[10b] = %x (%x)\n", read_1d0(0x10b, 6),
+	printk(RAM_SPEW, "[10b] = %x (%x)\n", read_1d0(0x10b, 6),
 	       info->training.reg_10b);
 }
 
@@ -4011,19 +4011,19 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 		int j;
 		if (s3resume && info.cached_training) {
 			restore_274265(&info);
-			printk(RAM_DEBUG, "reg2ca9_bit0 = %x\n",
+			printk(RAM_SPEW, "reg2ca9_bit0 = %x\n",
 			       info.cached_training->reg2ca9_bit0);
 			for (i = 0; i < 2; i++)
 				for (j = 0; j < 3; j++)
-					printk(RAM_DEBUG, "reg274265[%d][%d] = %x\n",
+					printk(RAM_SPEW, "reg274265[%d][%d] = %x\n",
 					       i, j, info.cached_training->reg274265[i][j]);
 		} else {
 			set_274265(&info);
-			printk(RAM_DEBUG, "reg2ca9_bit0 = %x\n",
+			printk(RAM_SPEW, "reg2ca9_bit0 = %x\n",
 			       info.training.reg2ca9_bit0);
 			for (i = 0; i < 2; i++)
 				for (j = 0; j < 3; j++)
-					printk(RAM_DEBUG, "reg274265[%d][%d] = %x\n",
+					printk(RAM_SPEW, "reg274265[%d][%d] = %x\n",
 					       i, j, info.training.reg274265[i][j]);
 		}
 

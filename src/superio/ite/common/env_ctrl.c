@@ -18,7 +18,6 @@
  */
 
 #include <stdlib.h>
-#include <arch/io.h>
 #include <console/console.h>
 #include <delay.h>
 #include <superio/hwm5_conf.h>

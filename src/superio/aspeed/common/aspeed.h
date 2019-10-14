@@ -18,7 +18,6 @@
 #ifndef SUPERIO_ASPEED_COMMON_ROMSTAGE_H
 #define SUPERIO_ASPEED_COMMON_ROMSTAGE_H
 
-#include <arch/io.h>
 #include <device/pnp_type.h>
 #include <stdint.h>
 

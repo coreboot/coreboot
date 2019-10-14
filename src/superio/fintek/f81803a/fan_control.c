@@ -14,6 +14,7 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/io.h>
 #include <console/console.h>
 #include "../common/fan_control.h"
 #include "f81803a_hwm.h"

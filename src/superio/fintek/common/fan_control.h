@@ -18,7 +18,6 @@
 #define SUPERIO_FINTEK_FAN_CONTROL_H
 
 #include <stdint.h>
-#include <arch/io.h>
 
 typedef enum {
 	IGNORE_SENSOR = 0,

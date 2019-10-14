@@ -87,6 +87,11 @@ vb2_error_t vb2ex_read_resource(struct vb2_context *ctx,
 	return VB2_SUCCESS;
 }
 
+void vb2ex_abort(void)
+{
+	die("vboot has aborted execution; exit\n");
+}
+
 /* No-op stubs that can be overridden by SoCs with hardware crypto support. */
 __weak vb2_error_t vb2ex_hwcrypto_digest_init(enum vb2_hash_algorithm hash_alg,
 					      uint32_t data_size)

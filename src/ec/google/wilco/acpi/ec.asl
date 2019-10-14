@@ -178,4 +178,7 @@ Device (EC0)
 #ifdef EC_ENABLE_DPTF
 	#include "dptf.asl"
 #endif
+#ifdef EC_ENABLE_PRIVACY
+	#include "privacy.asl"
+#endif
 }

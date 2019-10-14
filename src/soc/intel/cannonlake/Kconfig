@@ -120,11 +120,12 @@ config DCACHE_RAM_SIZE
 
 config DCACHE_BSP_STACK_SIZE
 	hex
-	default 0x20000 if FSP_USES_CB_STACK
+	default 0x20400 if FSP_USES_CB_STACK
 	default 0x4000
 	help
 	  The amount of anticipated stack usage in CAR by bootblock and
-	  other stages.
+	  other stages. In the case of FSP_USES_CB_STACK default value will be
+	  sum of FSP-M stack requirement (128KiB) and CB romstage stack requirement (~1KiB).
 
 config FSP_TEMP_RAM_SIZE
 	hex

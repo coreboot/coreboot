@@ -95,5 +95,14 @@ config CHROMEOS_USE_EC_WATCHDOG_FLAG
 	help
 	  Use the AP watchdog flag stored in EC.
 
+config CHROMEOS_DSM_CALIB
+	bool
+	default n
+	help
+	  On some boards, there are calibrated parameters for Dynamic Speaker Management(DSM)
+	  stored in VPD. Enable this config to read and parse these VPD values and write them
+	  to ACPI DSD table in device driver. These parameters will be applied by kernel driver
+	  through device property at boot.
+
 endif # CHROMEOS
 endmenu

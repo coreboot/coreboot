@@ -23,6 +23,7 @@
 #include <rules.h>
 #include <security/vboot/misc.h>
 #include <security/vboot/vboot_common.h>
+#include <types.h>
 
 #if CONFIG(CHROMEOS)
 /* functions implemented in watchdog.c */
@@ -57,6 +58,16 @@ static inline void chromeos_reserve_ram_oops(struct device *dev, int idx) {}
 #endif /* CONFIG_CHROMEOS_RAMOOPS */
 
 void cbmem_add_vpd_calibration_data(void);
+
+/**
+ * get_dsm_calibration_from_key - Gets value related to DSM calibration from VPD
+ * @key: The key in RO_VPD. The valid prefix is "dsm_calib_". The valid keys are
+ *   documented in https://chromeos.google.com/partner/dlm/docs/factory/vpd.html.
+ * @value: Output value. The value read from VPD parsed into uint64_t integer.
+ *
+ * Returns CB_SUCCESS on success or CB_ERR on failure.
+ */
+enum cb_err get_dsm_calibration_from_key(const char *key, uint64_t *value);
 
 /*
  * Create the OIPG package containing the Chrome OS gpios described by

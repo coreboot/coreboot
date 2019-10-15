@@ -29,6 +29,8 @@ config VBOOT
 	select VBOOT_MUST_REQUEST_DISPLAY
 	select VBOOT_STARTS_IN_BOOTBLOCK
 	select VBOOT_SEPARATE_VERSTAGE
+	# CPU is reset without platform/TPM during romstage
+	select TPM_STARTUP_IGNORE_POSTINIT
 
 config MMCONF_BUS_NUMBER
 	int

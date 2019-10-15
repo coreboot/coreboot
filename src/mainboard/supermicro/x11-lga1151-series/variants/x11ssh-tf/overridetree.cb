@@ -114,12 +114,7 @@ chip soc/intel/skylake
 							io 0x66 = 0xa30
 							irq 0x70 = 0xb
 						end
-						device pnp 2e.5 on	# Keyboard
-							io 0x60 = 0x60
-							io 0x62 = 0x64
-							irq 0x70 = 1
-							irq 0x72 = 0xc
-						end
+						device pnp 2e.5 off end	# KBC
 						device pnp 2e.7 on end	# GPIO
 						device pnp 2e.b on	# SUART3
 							io 0x60 = 0x3e8

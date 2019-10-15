@@ -121,15 +121,17 @@ static uint16_t get_sku_icc_max(int domain)
 	 *   SKL-U + OPC          (15W) GT3 dual    5.1      29      57/19
 	 *   SKL-U                (15W) GT2 dual    4.5      29      31
 	 *
-	 *   KBL-U/R + OPC        (28W) GT3 dual    5.1      32      57/19
-	 *   KBL-U/R + OPC        (15W) GT3 dual    5.1      32      57/19
+	 *   KBL-U + OPC          (28W) GT3 dual    5.1      32      57/19
+	 *   KBL-U + OPC          (15W) GT3 dual    5.1      32      57/19
+	 *   KBL-U                (15W) GT1/2 dual  4.5      32      31
+	 *   KBL-U [*]            (15W) GT1 quad    4.5      29      31
 	 *
 	 *   KBL-U/R              (15W) GT2 quad    6        64      31
-	 *   KBL-U/R              (15W) GT1/2 dual  4.5      32      31
-	 *   KBL-U/R              (15W) GT2 quad    4.5      29      31
 	 *
 	 *   SKL/KBL-Y            (6W)              4.1      24      24
 	 *   SKL/KBL-Y            (4.5W)            4.1      24      24
+	 *
+	 *   [*] Pentium/Celeron CPUs with HD Graphics 610
 	 */
 
 	switch (mch_id) {
@@ -220,9 +222,16 @@ static uint16_t get_sku_icc_max(int domain)
 	case PCI_DEVICE_ID_INTEL_KBL_ID_U: {
 		uint16_t icc_max[NUM_VR_DOMAINS] = VR_CFG_ALL_DOMAINS_ICC(4.5, 32, 31, 31);
 
-		if ((igd_id == PCI_DEVICE_ID_INTEL_KBL_GT3E_SULTM_1) ||
-		    (igd_id == PCI_DEVICE_ID_INTEL_KBL_GT3E_SULTM_2))
+		if (igd_id == PCI_DEVICE_ID_INTEL_KBL_GT1_SULTM)
 			icc_max[VR_IA_CORE] = VR_CFG_AMP(29);
+
+		else if ((igd_id == PCI_DEVICE_ID_INTEL_KBL_GT3E_SULTM_1) ||
+		         (igd_id == PCI_DEVICE_ID_INTEL_KBL_GT3E_SULTM_2)) {
+			const uint16_t icc_max_gt3[NUM_VR_DOMAINS] =
+				VR_CFG_ALL_DOMAINS_ICC(5.1, 32, 57, 19);
+
+			return icc_max_gt3[domain];
+		}
 
 		return icc_max[domain];
 	}

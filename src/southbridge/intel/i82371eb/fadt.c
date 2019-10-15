@@ -21,7 +21,6 @@
 #include <arch/acpi.h>
 #include <device/device.h>
 #include <device/pci.h>
-#include <device/pci_ids.h>
 #include <version.h>
 
 #include "i82371eb.h"

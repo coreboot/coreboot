@@ -16,7 +16,6 @@
 #include <device/device.h>
 #include <device/pci_def.h>
 #include <device/pci.h>
-#include <device/pci_ids.h>
 #include <console/console.h>
 #include <console/uart.h>
 #include <device/mmio.h>

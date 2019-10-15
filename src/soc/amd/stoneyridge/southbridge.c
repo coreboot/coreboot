@@ -19,7 +19,6 @@
 #include <cpu/x86/smm.h>
 #include <device/device.h>
 #include <device/pci.h>
-#include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <cbmem.h>
 #include <amdblocks/amd_pci_util.h>

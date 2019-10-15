@@ -17,7 +17,6 @@
 #define __SIMPLE_DEVICE__
 
 #include <stdint.h>
-#include <device/pci_ids.h>
 #include <arch/io.h>
 #include "SbPlatform.h"
 #include "sb_cimx.h"

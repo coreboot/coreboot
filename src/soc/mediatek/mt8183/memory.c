@@ -120,6 +120,7 @@ static int dram_run_full_calibration(struct dramc_param *dparam, u16 config)
 	if (cbfs_prog_stage_load(&dram))
 		return -2;
 
+	dparam->do_putc = do_putchar;
 	prog_set_entry(&dram, prog_entry(&dram), dparam);
 	prog_run(&dram);
 

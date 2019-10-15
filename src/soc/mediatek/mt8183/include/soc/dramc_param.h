@@ -61,6 +61,7 @@ struct dramc_param_header {
 
 struct dramc_param {
 	struct dramc_param_header header;
+	void (*do_putc)(unsigned char c);
 	struct sdram_params freq_params[DRAM_DFS_SHUFFLE_MAX];
 };
 

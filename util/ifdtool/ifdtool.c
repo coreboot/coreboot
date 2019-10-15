@@ -1659,7 +1659,7 @@ int main(int argc, char *argv[])
 
 	if ((mode_dump + mode_layout + mode_extract + mode_inject +
 		mode_newlayout + (mode_spifreq | mode_em100 | mode_unlocked |
-		 mode_locked) + mode_altmedisable + mode_layout) > 1) {
+		 mode_locked) + mode_altmedisable + mode_validate) > 1) {
 		fprintf(stderr, "You may not specify more than one mode.\n\n");
 		print_usage(argv[0]);
 		exit(EXIT_FAILURE);

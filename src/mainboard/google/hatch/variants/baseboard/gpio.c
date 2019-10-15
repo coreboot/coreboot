@@ -443,3 +443,10 @@ const struct pad_config *__weak override_gpio_table(size_t *num)
 	*num = 0;
 	return NULL;
 }
+
+/* Weak implementation of early gpio */
+const struct pad_config *__weak variant_early_gpio_table(size_t *num)
+{
+	*num = 0;
+	return NULL;
+}

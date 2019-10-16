@@ -716,7 +716,7 @@ MemFGetDctInterleavedLimit (
   UINT8 i;
 
   DctMemLimit = 0;
-  if (DctInterleavedMemSize == NBPtr->DCTPtr->Timings.DctMemSize << 6) {
+  if (DctInterleavedMemSize == (UINT64)(NBPtr->DCTPtr->Timings.DctMemSize) << 6) {
     // The whole memory range is interleaved for the DCTs with the minimum memory size
     for (i = 0; i < NBPtr->DctCount; i++) {
       DctMemLimit += DctInterleavedMemSize;

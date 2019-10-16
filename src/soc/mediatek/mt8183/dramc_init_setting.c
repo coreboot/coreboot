@@ -873,7 +873,7 @@ static void dramc_setting_DDR1600(void)
 	clrsetbits_le32(&ch[0].phy.b[0].dq[7], (0x3 << 4) | (0x1 << 7) | (0x1 << 13),
 			(0x2 << 4) | (0x0 << 7) | (0x0 << 13));
 	clrsetbits_le32(&ch[0].phy.b[1].dq[5], 0x7 << 20, 0x4 << 20);
-	clrbits_le32(&ch[0].phy.b[0].dq[7], (0x1 << 7) | (0x1 << 13));
+	clrbits_le32(&ch[0].phy.b[1].dq[7], (0x1 << 7) | (0x1 << 13));
 
 	for (size_t r = 0; r < 2; r++) {
 		int value = ((r == 0) ? 0x1a : 0x26);
@@ -931,7 +931,7 @@ static void dramc_setting_DDR2400(void)
 	clrsetbits_le32(&ch[0].phy.b[0].dq[7], (0x3 << 4) | (0x1 << 7) | (0x1 << 13),
 		(0x1 << 4) | (0x1 << 7) | (0x1 << 13));
 	clrsetbits_le32(&ch[0].phy.b[1].dq[5], 0x7 << 20, 0x3 << 20);
-	clrsetbits_le32(&ch[0].phy.b[0].dq[7],
+	clrsetbits_le32(&ch[0].phy.b[1].dq[7],
 		(0x1 << 7) | (0x1 << 13), (0x1 << 7) | (0x1 << 13));
 
 	for (size_t r = 0; r < 2; r++) {

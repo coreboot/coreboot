@@ -14,7 +14,6 @@
 #ifndef __ARCH_ROMSTAGE_H__
 #define __ARCH_ROMSTAGE_H__
 
-#include <arch/cpu.h>
 #include <stddef.h>
 #include <stdint.h>
 

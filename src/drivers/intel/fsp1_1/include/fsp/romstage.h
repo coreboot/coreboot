@@ -16,7 +16,6 @@
 
 #include <stddef.h>
 #include <stdint.h>
-#include <arch/cpu.h>
 #include <memory_info.h>
 #include <fsp/car.h>
 #include <fsp/util.h>

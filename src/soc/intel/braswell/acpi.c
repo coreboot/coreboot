@@ -18,7 +18,6 @@
 
 #include <arch/acpi.h>
 #include <arch/acpigen.h>
-#include <arch/cpu.h>
 #include <device/mmio.h>
 #include <arch/smp/mpspec.h>
 #include <cbmem.h>

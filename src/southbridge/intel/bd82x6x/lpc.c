@@ -26,7 +26,6 @@
 #include <arch/io.h>
 #include <arch/ioapic.h>
 #include <arch/acpi.h>
-#include <arch/cpu.h>
 #include <arch/acpigen.h>
 #include <drivers/intel/gma/i915.h>
 #include <cpu/x86/smm.h>

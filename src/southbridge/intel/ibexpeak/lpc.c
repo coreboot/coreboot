@@ -27,7 +27,6 @@
 #include <device/pci_ops.h>
 #include <arch/ioapic.h>
 #include <arch/acpi.h>
-#include <arch/cpu.h>
 #include <elog.h>
 #include <arch/acpigen.h>
 #include <drivers/intel/gma/i915.h>

@@ -14,7 +14,6 @@
 #ifndef FSP1_1_CAR_H
 #define FSP1_1_CAR_H
 
-#include <arch/cpu.h>
 #include <fsp/api.h>
 #include <stdint.h>
 

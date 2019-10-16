@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/cpu.h>
 #include <arch/romstage.h>
 #include <cbmem.h>
 #include <soc/reg_access.h>

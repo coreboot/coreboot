@@ -17,7 +17,6 @@
 #define _BAYTRAIL_ROMSTAGE_H_
 
 #include <stdint.h>
-#include <arch/cpu.h>
 #include <soc/mrc_wrapper.h>
 
 void mainboard_fill_mrc_params(struct mrc_params *mp);

@@ -17,7 +17,6 @@
 #define _BROADWELL_ROMSTAGE_H_
 
 #include <stdint.h>
-#include <arch/cpu.h>
 #include <soc/pei_data.h>
 
 struct chipset_power_state;

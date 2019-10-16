@@ -61,7 +61,7 @@ chip soc/intel/cannonlake
 	# Refer to EDS-Vol2-14.3.8.
 	# [14:8] steps of delay for HS400, each 125ps, range: 0 - 78.
 	# [6:0] steps of delay for SDR104/HS200, each 125ps, range: 0 - 79.
-	register "common_soc_config.emmc_dll.emmc_tx_data_cntl1" = "0x0F10"
+	register "common_soc_config.emmc_dll.emmc_tx_data_cntl1" = "0x911"
 
 	# EMMC TX DATA Delay 2
 	# Refer to EDS-Vol2-14.3.9.
@@ -69,7 +69,7 @@ chip soc/intel/cannonlake
 	# [22:16] steps of delay for DDR50, each 125ps, range: 0 - 78.
 	# [14:8] steps of delay for SDR25/HS50, each 125ps, range: 0 -79.
 	# [6:0] steps of delay for SDR12, each 125ps. Range: 0 - 79.
-	register "common_soc_config.emmc_dll.emmc_tx_data_cntl2" = "0x1C2F2D2D"
+	register "common_soc_config.emmc_dll.emmc_tx_data_cntl2" = "0x1C262828"
 
 	# EMMC RX CMD/DATA Delay 1
 	# Refer to EDS-Vol2-14.3.10.
@@ -77,7 +77,7 @@ chip soc/intel/cannonlake
 	# [22:16] steps of delay for DDR50, each 125ps, range: 0 - 78.
 	# [14:8] steps of delay for SDR25/HS50, each 125ps, range: 0 - 119.
 	# [6:0] steps of delay for SDR12, each 125ps, range: 0 - 119.
-	register "common_soc_config.emmc_dll.emmc_rx_cmd_data_cntl1" = "0x1C121936"
+	register "common_soc_config.emmc_dll.emmc_rx_cmd_data_cntl1" = "0x1C16583b"
 
 	# EMMC RX CMD/DATA Delay 2
 	# Refer to EDS-Vol2-14.3.12.
@@ -88,13 +88,13 @@ chip soc/intel/cannonlake
 	#         11: Reserved
 	# [14:8] steps of delay for Auto Tuning Mode, each 125ps, range: 0 - 39.
 	# [6:0] steps of delay for HS200, each 125ps, range: 0 - 79.
-	register "common_soc_config.emmc_dll.emmc_rx_cmd_data_cntl2" = "0x1182D"
+	register "common_soc_config.emmc_dll.emmc_rx_cmd_data_cntl2" = "0x1001D"
 
 	# EMMC Rx Strobe Delay
 	# Refer to EDS-Vol2-14.3.11.
 	# [14:8] Rx Strobe Delay DLL 1(HS400 Mode), each 125ps, range: 0 - 39.
 	# [6:0] Rx Strobe Delay DLL 2(HS400 Mode), each 125ps, range: 0 - 39.
-	register "common_soc_config.emmc_dll.emmc_rx_strobe_cntl" = "0x1414"
+	register "common_soc_config.emmc_dll.emmc_rx_strobe_cntl" = "0x1515"
 
 	device domain 0 on
 		device pci 15.0 on

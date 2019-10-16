@@ -95,10 +95,6 @@ The boards in this section are not real mainboards, but emulators.
 
 - [T440p](lenovo/t440p.md)
 
-## Portwell
-
-- [PQ7-M107](portwell/pq7-m107.md)
-
 ## MSI
 
 - [MS-7707](msi/ms7707/ms7707.md)

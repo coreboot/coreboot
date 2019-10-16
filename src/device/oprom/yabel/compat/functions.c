@@ -36,7 +36,6 @@
  */
 
 #include <types.h>
-#include <string.h>
 #include <device/device.h>
 #include "../debug.h"
 #include "../biosemu.h"

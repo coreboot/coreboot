@@ -14,7 +14,6 @@
  */
 
 #include <console/console.h>
-#include <string.h>
 #include <bootmode.h>
 #include <boot/coreboot_tables.h>
 #include <device/device.h>

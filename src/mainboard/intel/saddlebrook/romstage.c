@@ -17,7 +17,6 @@
 
 #include <console/console.h>
 #include <fsp/api.h>
-#include <string.h>
 #include <soc/gpio.h>
 #include <soc/pm.h>
 #include <soc/romstage.h>

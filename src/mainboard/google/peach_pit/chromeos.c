@@ -19,7 +19,6 @@
 #include <ec/google/chromeec/ec_commands.h>
 #include <soc/cpu.h>
 #include <soc/gpio.h>
-#include <string.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
 void fill_lb_gpios(struct lb_gpios *gpios)

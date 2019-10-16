@@ -15,7 +15,6 @@
 #include <console/console.h>
 #include <device/pci.h>
 #include <device/pci_ops.h>
-#include <string.h>
 
 /* we use x86emu's register file representation */
 #include <x86emu/regs.h>

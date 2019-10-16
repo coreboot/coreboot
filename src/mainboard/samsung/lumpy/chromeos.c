@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <string.h>
 #include <bootmode.h>
 #include <boot/coreboot_tables.h>
 #include <device/pci_ops.h>

@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <string.h>
 #include <soc/pei_data.h>
 #include <soc/pei_wrapper.h>
 #include <soc/romstage.h>

@@ -19,7 +19,6 @@
 #include <edid.h>
 #include <gpio.h>
 #include <soc/i2c.h>
-#include <string.h>
 
 #include "panel.h"
 

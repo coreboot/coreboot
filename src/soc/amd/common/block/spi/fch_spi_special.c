@@ -16,7 +16,6 @@
 #include <console/console.h>
 #include <spi-generic.h>
 #include <amdblocks/fch_spi.h>
-#include <string.h>
 
 int non_standard_sst_byte_write(u32 offset, const void *buf)
 {

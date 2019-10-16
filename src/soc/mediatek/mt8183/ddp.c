@@ -16,7 +16,6 @@
 #include <device/mmio.h>
 #include <edid.h>
 #include <stdlib.h>
-#include <string.h>
 #include <stddef.h>
 #include <soc/addressmap.h>
 #include <soc/ddp.h>

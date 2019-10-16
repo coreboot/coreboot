@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <string.h>
 #include <bootmode.h>
 #include <boot/coreboot_tables.h>
 #include <southbridge/intel/bd82x6x/pch.h>

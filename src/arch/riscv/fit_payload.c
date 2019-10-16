@@ -18,7 +18,6 @@
 #include <bootmem.h>
 #include <stdlib.h>
 #include <program_loading.h>
-#include <string.h>
 #include <commonlib/compression.h>
 #include <commonlib/cbfs_serialized.h>
 #include <lib.h>

@@ -72,7 +72,6 @@
 #ifdef IN_MODULE
 #include <xf86_ansic.h>
 #else
-#include <string.h>
 #endif
 /*--------------------------- Inline Functions ----------------------------*/
 

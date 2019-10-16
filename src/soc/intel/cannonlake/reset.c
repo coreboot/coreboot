@@ -19,7 +19,6 @@
 #include <intelblocks/pmclib.h>
 #include <fsp/util.h>
 #include <soc/intel/common/reset.h>
-#include <string.h>
 #include <soc/pci_devs.h>
 
 void do_global_reset(void)

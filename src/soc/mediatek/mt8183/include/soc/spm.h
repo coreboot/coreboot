@@ -19,7 +19,6 @@
 #include <arch/barrier.h>
 #include <console/console.h>
 #include <soc/addressmap.h>
-#include <string.h>
 #include <stdint.h>
 #include <types.h>
 

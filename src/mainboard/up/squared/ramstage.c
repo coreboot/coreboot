@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <string.h>
 #include <soc/ramstage.h>
 #include <fsp/api.h>
 #include <FspsUpd.h>

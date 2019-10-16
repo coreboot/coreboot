@@ -15,7 +15,6 @@
  */
 
 #include <console/console.h>
-#include <string.h>
 #include <ec/google/chromeec/ec.h>
 #include <soc/pei_data.h>
 #include <soc/pei_wrapper.h>

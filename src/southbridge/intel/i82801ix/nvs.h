@@ -13,6 +13,10 @@
  * GNU General Public License for more details.
  */
 
+#ifndef SOUTHBRIDGE_INTEL_I82801IX_NVS_H
+#define SOUTHBRIDGE_INTEL_I82801IX_NVS_H
+#include <stdint.h>
+
 typedef struct {
 	/* Miscellaneous */
 	u16	osys; /* 0x00 - Operating System */
@@ -133,3 +137,5 @@ typedef struct {
 } __packed global_nvs_t;
 
 void acpi_create_gnvs(global_nvs_t *gnvs);
+
+#endif /* SOUTHBRIDGE_INTEL_I82801IX_NVS_H */

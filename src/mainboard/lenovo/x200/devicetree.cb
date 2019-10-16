@@ -73,12 +73,6 @@ chip northbridge/intel/gm45
 			# Set thermal throttling to 75%.
 			register "throttle_duty"		= "THTL_75_0"
 
-			# Enable PCIe ports 1,2,4 as slots (Mini * PCIe).
-			register "pcie_slot_implemented"	= "0xb"
-			# Set power limits to 10 * 10^0 watts.
-			# Maybe we should set less for Mini PCIe.
-			register "pcie_power_limits" = "{ { 10, 0 }, { 10, 0 }, { 0, 0 }, { 10, 0 }, { 0, 0 }, { 0, 0 } }"
-			register "pcie_hotplug_map" = "{ 0, 0, 0, 1, 0, 0, 0, 0 }"
 			register "gen1_dec" = "0x007c1601"
 			register "gen2_dec" = "0x000c15e1"
 			register "gen3_dec" = "0x001c1681"
@@ -114,10 +108,7 @@ chip northbridge/intel/gm45
 			device pci 1c.2 on
 				subsystemid 0x17aa 0x20f3 # UWB
 			end # PCIe Port #3
-			device pci 1c.3 on
-				subsystemid 0x17aa 0x20f3 # Expresscard
-				smbios_slot_desc "7" "3" "ExpressCard Slot" "8"
-			end # PCIe Port #4
+			# PCIe Port #4 is configured in override tree.
 			device pci 1c.4 off end # PCIe Port #5
 			device pci 1c.5 off end # PCIe Port #6
 			device pci 1d.0 on # UHCI
@@ -154,7 +145,6 @@ chip northbridge/intel/gm45
 					device pnp ff.1 on # dummy
 					end
 					register "backlight_enable" = "0x01"
-					register "dock_event_enable" = "0x01"
 				end
 
 				chip ec/lenovo/h8
@@ -192,22 +182,6 @@ chip northbridge/intel/gm45
 					register "bdc_gpio_num" = "7"
 					register "bdc_gpio_lvl" = "0"
 				end
-
-				chip superio/nsc/pc87382
-					device pnp 164e.3 on # Digitizer
-						io 0x60 = 0x200
-						irq 0x29 = 0xb0
-						irq 0x70 = 0x5
-						irq 0xf0 = 0x82
-					end
-					# IR, not connected
-					device pnp 164e.2 off end
-					# GPIO, not connected
-					device pnp 164e.7 off end
-					# DLPC, not connected
-					device pnp 164e.19 off end
-				end
-
 			end
 			device pci 1f.2 on # SATA/IDE 1
 				subsystemid 0x17aa 0x20f8

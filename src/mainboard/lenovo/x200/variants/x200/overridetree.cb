@@ -1,0 +1,38 @@
+chip northbridge/intel/gm45
+	device domain 0 on
+		chip southbridge/intel/i82801ix
+			# Enable PCIe ports 1,2,3,4 as slots (Mini * PCIe).
+			register "pcie_slot_implemented"	= "0xf"
+			# Set power limits to 10 * 10^0 watts.
+			# Maybe we should set less for Mini PCIe.
+			register "pcie_power_limits" = "{ { 10, 0 }, { 10, 0 }, { 10, 0 }, { 10, 0 }, { 0, 0 }, { 0, 0 } }"
+			# Enable hotplug on PCIe port 4 (Express Card)
+			register "pcie_hotplug_map" = "{ 0, 0, 0, 1, 0, 0, 0, 0 }"
+
+			device pci 1c.3 on
+				subsystemid 0x17aa 0x20f3 # Expresscard
+				smbios_slot_desc "7" "3" "ExpressCard Slot" "8"
+			end # PCIe Port #4
+
+			device pci 1f.0 on # LPC bridge
+				chip ec/lenovo/pmh7
+					register "dock_event_enable" = "0x01"
+				end
+				chip superio/nsc/pc87382
+					device pnp 164e.3 on # Digitizer
+						io 0x60 = 0x200
+						irq 0x29 = 0xb0
+						irq 0x70 = 0x5
+						irq 0xf0 = 0x82
+					end
+					# IR, not connected
+					device pnp 164e.2 off end
+					# GPIO, not connected
+					device pnp 164e.7 off end
+					# DLPC, not connected
+					device pnp 164e.19 off end
+				end
+			end
+		end
+	end
+end

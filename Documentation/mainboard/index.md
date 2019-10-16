@@ -72,6 +72,10 @@ The boards in this section are not real mainboards, but emulators.
 
 - [T410](lenovo/t410.md)
 
+### GM45 series
+
+- [X301](lenovo/x301.md)
+
 ### Sandy Bridge series
 
 - [T420](lenovo/t420.md)

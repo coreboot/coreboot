@@ -1,6 +1,5 @@
 Category: laptop
-Board name: Thinkpad X200/X200T/X200S/X301
-ROM package: SOIC-16 or SOIC-8 or WSON8
+ROM package: SOIC-16 or SOIC-8
 ROM protocol: SPI
 ROM socketed: n
 Flashrom support: n

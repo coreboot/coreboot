@@ -17,6 +17,7 @@
 #include <cbfs.h>
 #include <console/console.h>
 #include <ip_checksum.h>
+#include <security/vboot/vboot_common.h>
 #include <soc/dramc_param.h>
 #include <soc/dramc_pi_api.h>
 #include <soc/emi.h>
@@ -163,13 +164,21 @@ void mt_mem_init(struct dramc_param_ops *dparam_ops)
 	if (CONFIG(MT8183_DRAM_EMCP))
 		config |= DRAMC_CONFIG_EMCP;
 
+	const bool recovery_mode = vboot_recovery_mode_enabled();
+
 	/* Load calibration params from flash and run fast calibration */
-	if (dparam_ops->read_from_flash(dparam)) {
+	if (recovery_mode) {
+		printk(BIOS_WARNING, "Skip loading cached calibration data\n");
+	} else if (dparam_ops->read_from_flash(dparam)) {
+		printk(BIOS_INFO, "DRAM-K: Fast Calibration\n");
 		if (dram_run_fast_calibration(dparam, config) == 0) {
 			printk(BIOS_INFO,
-			       "DRAM calibraion params loaded from flash\n");
+			       "Calibration params loaded from flash\n");
 			if (mt_set_emi(dparam) == 0 && mt_mem_test() == 0)
 				return;
+		} else {
+			printk(BIOS_ERR,
+			       "Failed to apply cached calibration data\n");
 		}
 	} else {
 		printk(BIOS_WARNING,
@@ -177,16 +186,23 @@ void mt_mem_init(struct dramc_param_ops *dparam_ops)
 	}
 
 	/* Run full calibration */
+	printk(BIOS_INFO, "DRAM-K: Full Calibration\n");
 	int err = dram_run_full_calibration(dparam, config);
 	if (err == 0) {
 		printk(BIOS_INFO, "Successfully loaded DRAM blobs and "
 		       "ran DRAM calibration\n");
-		set_source_to_flash(dparam->freq_params);
-		dparam->header.checksum = compute_checksum(dparam);
-		dparam_ops->write_to_flash(dparam);
-		printk(BIOS_DEBUG, "Calibration params saved to flash: "
-		       "version=%#x, size=%#x\n",
-		       dparam->header.version, dparam->header.size);
+		/*
+		 * In recovery mode the system boots in RO but the flash params
+		 * should be calibrated for RW so we can't mix them up.
+		 */
+		if (!recovery_mode) {
+			set_source_to_flash(dparam->freq_params);
+			dparam->header.checksum = compute_checksum(dparam);
+			dparam_ops->write_to_flash(dparam);
+			printk(BIOS_DEBUG, "Calibration params saved to flash: "
+			       "version=%#x, size=%#x\n",
+			       dparam->header.version, dparam->header.size);
+		}
 		return;
 	}
 
@@ -194,6 +210,7 @@ void mt_mem_init(struct dramc_param_ops *dparam_ops)
 	       "falling back to load default sdram param\n", err);
 
 	/* Init params from sdram configs and run partial calibration */
+	printk(BIOS_INFO, "DRAM-K: Partial Calibration\n");
 	init_sdram_params(dparam->freq_params, get_sdram_config());
 	if (mt_set_emi(dparam) != 0)
 		die("Set emi failed with params from sdram config\n");

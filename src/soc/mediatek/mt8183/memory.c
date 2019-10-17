@@ -169,6 +169,12 @@ void mt_mem_init(struct dramc_param_ops *dparam_ops)
 	/* Load calibration params from flash and run fast calibration */
 	if (recovery_mode) {
 		printk(BIOS_WARNING, "Skip loading cached calibration data\n");
+		if (vboot_recovery_mode_memory_retrain()) {
+			printk(BIOS_WARNING, "Retrain memory in next boot\n");
+			/* Use 0xFF as erased flash data. */
+			memset(dparam, 0xff, sizeof(*dparam));
+			dparam_ops->write_to_flash(dparam);
+		}
 	} else if (dparam_ops->read_from_flash(dparam)) {
 		printk(BIOS_INFO, "DRAM-K: Fast Calibration\n");
 		if (dram_run_fast_calibration(dparam, config) == 0) {

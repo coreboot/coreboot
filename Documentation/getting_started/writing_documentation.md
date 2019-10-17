@@ -14,7 +14,29 @@ coreboot uses [Sphinx] documentation tool. We prefer the markdown format
 over reStructuredText so only embedded ReST is supported. Checkout the
 [Markdown Guide] for more information.
 
-### Install Sphinx
+### option 1: Use the docker image
+
+The easiest way to build the documentation is using a docker image.
+To build the image run the following in the base directory:
+
+	make -C util/docker/ doc.coreboot.org
+
+Before building the documentation make sure the output directory is given
+the correct permissions before running docker.
+
+	mkdir -p Documentation/_build
+
+To build the documentation:
+
+	make -C util/docker docker-build-docs
+
+To have the documentation build and served over a web server live run:
+
+	make -C util/docker docker-livehtml-docs
+
+On the host machine, open a browser to the address <http://0.0.0.0:8000>.
+
+### option 2: Install Sphinx
 
 Please follow this official [guide] to install sphinx.
 You will also need python-recommonmark for sphinx to be able to handle

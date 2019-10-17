@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2018-2019 Eltan B.V.
+ * Copyright (C) 2019 Eltan B.V.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,9 +13,10 @@
  * GNU General Public License for more details.
  */
 
-#ifndef MAINBOARD_H
-#define MAINBOARD_H
+#ifndef CPLD_H
+#define CPLD_H
 
-void *load_logo(size_t *logo_size);
+unsigned int cpld_read_pcb_version(void);
+void cpld_reset_bridge(void);
 
 #endif

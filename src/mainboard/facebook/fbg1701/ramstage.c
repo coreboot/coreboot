@@ -19,7 +19,7 @@
 #include <soc/ramstage.h>
 #include <soc/smbus.h>
 #include "mainboard.h"
-#include "onboard.h"
+#include "cpld.h"
 
 struct edp_data {
 	u8 payload_length;
@@ -326,16 +326,19 @@ static void mainboard_configure_edp_bridge(void)
 {
 	const struct edp_data *edptable;
 	unsigned int loops;
+	unsigned int pcb_version;
 	int status;
 
-	if (mainboard_read_pcb_version() < 7)
+	pcb_version = cpld_read_pcb_version();
+	printk(BIOS_DEBUG, "PCB version: %x\n", pcb_version);
+
+	if (pcb_version < 7)
 		edptable = b101uan01_table;
 	else
 		edptable = b101uan08_table;
 
 	/* reset bridge */
-	outb(CPLD_CMD_RESET_DSI_BRIDGE_ACTIVE, CPLD_RESET_PORT);
-	outb(CPLD_CMD_RESET_DSI_BRIDGE_INACTIVE, CPLD_RESET_PORT);
+	cpld_reset_bridge();
 
 	while (edptable->payload_length) {
 		loops = 5;

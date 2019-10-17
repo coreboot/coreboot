@@ -24,12 +24,15 @@ endif
 
 bootblock-$(CONFIG_C_ENVIRONMENT_BOOTBLOCK) += com_init.c
 
+ramstage-y += cpld.c
 ramstage-y += gpio.c
 ramstage-y += hda_verb.c
 ramstage-y += irqroute.c
 ramstage-$(CONFIG_FSP1_1_DISPLAY_LOGO) += logo.c
 ramstage-y += ramstage.c
 ramstage-y += w25q64.c
+
+romstage-y += cpld.c
 
 cbfs-files-$(CONFIG_FSP1_1_DISPLAY_LOGO) += logo.bmp
 logo.bmp-file := $(call strip_quotes,$(CONFIG_FSP1_1_LOGO_FILE_NAME))

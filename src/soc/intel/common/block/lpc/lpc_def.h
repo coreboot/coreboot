@@ -37,7 +37,7 @@
 #define LPC_LGMR_WINDOW_SIZE		(64 * KiB)
 #define LPC_BIOS_CNTL			0xdc
 #define  LPC_BC_BILD			(1 << 7) /* BILD */
-#define  LPC_BC_LE			(1 << 2) /* LE */
+#define  LPC_BC_LE			(1 << 1) /* LE */
 #define  LPC_BC_EISS			(1 << 5) /* EISS */
 #define LPC_PCCTL			0xE0 /* PCI Clock Control */
 #define  LPC_PCCTL_CLKRUN_EN		(1 << 0)

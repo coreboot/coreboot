@@ -363,7 +363,7 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(SVID0_CLK, UP_20K, DEEP, NF1),	/* SVID0_CLK */
 };
 
-const struct pad_config *__weak variant_gpio_table(size_t *num)
+const struct pad_config *variant_gpio_table(size_t *num)
 {
 	*num = ARRAY_SIZE(gpio_table);
 	return gpio_table;
@@ -406,8 +406,7 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_NF(LPC_FRAMEB, NONE, DEEP, NF1),	/* LPC_FRAME_N */
 };
 
-const struct pad_config *__weak
-variant_early_gpio_table(size_t *num)
+const struct pad_config *variant_early_gpio_table(size_t *num)
 {
 	*num = ARRAY_SIZE(early_gpio_table);
 	return early_gpio_table;

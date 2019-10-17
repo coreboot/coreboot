@@ -71,6 +71,10 @@ coreboot-jenkins-node: test-docker
 upload-coreboot-jenkins-node: test-docker-login
 	$(DOCKER) push coreboot/coreboot-jenkins-node:$(COREBOOT_IMAGE_TAG)
 
+doc.coreboot.org: test-docker
+	$(DOCKER) build --force-rm -t doc.coreboot.org \
+	$(top)/util/docker/doc.coreboot.org/
+
 docker-killall: test-docker
 	@if [ -n "$$($(DOCKER) ps | grep 'coreboot')" ]; then \
 		$(DOCKER) kill $$($(DOCKER) ps | grep 'coreboot' | cut -f1 -d ' '); \
@@ -166,12 +170,27 @@ docker-jenkins-attach:
 		-it "$$(docker ps | grep coreboot-jenkins-node | cut -f1 -d' ')" \
 		/bin/bash -l
 
+docker-build-docs: test-docker
+docker-build-docs:
+	$(DOCKER) run -it --rm \
+           --user $(UID):$(GID) \
+           -v "$(top)/:/data-in/:ro" \
+           -v "$(top)/Documentation/_build/:/data-out/" \
+           doc.coreboot.org
+
+docker-livehtml-docs: test-docker
+docker-livehtml-docs:
+	$(DOCKER) run -it --rm \
+           --net=host -v "$(top)/:/data-in/:ro" \
+           doc.coreboot.org livehtml
+
 help:
 	@echo "Commands for working with docker images:"
 	@echo "  coreboot-sdk                 - Build coreboot-sdk container"
 	@echo "  upload-coreboot-sdk          - Upload coreboot-sdk to hub.docker.com"
 	@echo "  coreboot-jenkins-node        - Build coreboot-jenkins-node container"
 	@echo "  upload-coreboot-jenkins-node - Upload coreboot-jenkins-node to hub.docker.com"
+	@echo "  doc.coreboot.org             - Build doc.coreboot.org container"
 	@echo "  clean-coreboot-containers    - Remove all docker coreboot containers"
 	@echo "  clean-coreboot-images        - Remove all docker coreboot images"
 	@echo "  clean-docker                 - Remove docker coreboot containers & images"
@@ -186,6 +205,8 @@ help:
 	@echo "      <USER=root or USER=coreboot>"
 	@echo "  docker-jenkins-server        - Run coreboot-jenkins-node image (for server)"
 	@echo "  docker-jenkins-attach        - Open shell in running jenkins server"
+	@echo "  docker-build-docs            - Build the documentation"
+	@echo "  docker-livehtml-docs         - Run sphinx-autobuild"
 	@echo
 	@echo "Variables:"
 	@echo "  COREBOOT_JENKINS_PORT=$(COREBOOT_JENKINS_PORT)"
@@ -197,7 +218,9 @@ help:
 .PHONY: test-docker test-docker-login
 .PHONY: coreboot-jenkins-node upload-coreboot-jenkins-node
 .PHONY: coreboot-sdk upload-coreboot-sdk
+.PHONY: doc.coreboot.org
 .PHONY: clean-coreboot-containers clean-coreboot-images
 .PHONY: docker-abuild
 .PHONY: docker-what-jenkins-does docker-shell docker-jenkins-server docker-jenkins-attach
+.PHONY: docker-build-docs docker-livehtml-docs
 .PHONY: help

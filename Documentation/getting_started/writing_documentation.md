@@ -18,7 +18,7 @@ over reStructuredText so only embedded ReST is supported. Checkout the
 
 Please follow this official [guide] to install sphinx.
 You will also need python-recommonmark for sphinx to be able to handle
-markdown documenation.
+markdown documentation.
 
 The recommended version is sphinx 1.7.7, sphinx_rtd_theme 0.4.1 and
 recommonmark 0.4.0.

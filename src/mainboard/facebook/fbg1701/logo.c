@@ -17,7 +17,7 @@
 #include <soc/ramstage.h>
 #include <console/console.h>
 #include <include/cbfs.h>
-#include "mainboard.h"
+#include "logo.h"
 
 static char logo_data[1 * MiB];
 static size_t logo_data_sz = 0;

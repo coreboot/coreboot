@@ -18,8 +18,8 @@
 #include <console/console.h>
 #include <soc/ramstage.h>
 #include <soc/smbus.h>
-#include "mainboard.h"
 #include "cpld.h"
+#include "logo.h"
 
 struct edp_data {
 	u8 payload_length;

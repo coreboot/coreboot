@@ -1,4 +1,7 @@
 # Utilities
+
+## List of utils
+
 _Scripts and programs found in the `./util` directory_
 * __abuild__ - coreboot autobuild script builds coreboot images for all
 available targets. `bash`
@@ -131,3 +134,8 @@ CPUs. `C`
 * __x86__ - Generates 32-bit PAE page tables based on a CSV input file.
 `Go`
 * __xcompile__ - Cross compile setup `Bash`
+
+
+## In depth documentation
+
+* [ifdtool](ifdtool/index.md)

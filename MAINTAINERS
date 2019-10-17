@@ -391,6 +391,11 @@ M:	Tristan Corrick <tristan@corrick.kiwi>
 S:	Maintained
 F:	src/mainboard/supermicro/x10slm-f/
 
+SUPERMICRO X11-LGA1151-SERIES
+M:	Michael Niewöhner <foss@mniewoehner.de>
+S:	Maintained
+F:	src/mainboard/supermicro/x11-lga1151-series
+
 FACEBOOK FBG1701 MAINBOARD
 M:	Frans Hendriks <fhendriks@eltan.com>
 M:	Wim Vervoorn <wvervoorn@eltan.com>

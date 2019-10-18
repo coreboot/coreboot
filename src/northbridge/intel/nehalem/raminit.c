@@ -820,12 +820,10 @@ static void compute_derived_timings(struct raminfo *info)
 	int some_delay_2_halfcycles_ceil;
 	int some_delay_2_halfcycles_floor;
 	int some_delay_3_ps;
-	int some_delay_3_halfcycles;
 	int some_delay_3_ps_rounded;
 	int some_delay_1_cycle_ceil;
 	int some_delay_1_cycle_floor;
 
-	some_delay_3_halfcycles = 0;
 	some_delay_3_ps_rounded = 0;
 	extended_silicon_revision = info->silicon_revision;
 	if (!info->silicon_revision)
@@ -873,13 +871,12 @@ static void compute_derived_timings(struct raminfo *info)
 	some_delay_3_ps =
 	    halfcycle_ps(info) - some_delay_2_ps % halfcycle_ps(info);
 	if (info->revision_flag_1) {
-		if (some_delay_3_ps < 150)
-			some_delay_3_halfcycles = 0;
-		else
-			some_delay_3_halfcycles =
+		if (some_delay_3_ps >= 150) {
+			const int some_delay_3_halfcycles =
 			    (some_delay_3_ps << 6) / halfcycle_ps(info);
-		some_delay_3_ps_rounded =
-		    halfcycle_ps(info) * some_delay_3_halfcycles >> 6;
+			some_delay_3_ps_rounded =
+			    halfcycle_ps(info) * some_delay_3_halfcycles >> 6;
+		}
 	}
 	some_delay_2_halfcycles_ceil =
 	    (some_delay_2_ps + halfcycle_ps(info) - 1) / halfcycle_ps(info) -

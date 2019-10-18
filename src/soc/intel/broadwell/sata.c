@@ -75,8 +75,7 @@ static void sata_init(struct device *dev)
 	pci_write_config32(dev, 0x98, reg32);
 
 	/* Setup register 9Ch */
-	reg16 = 0;           /* Disable alternate ID */
-	reg16 = 1 << 5;      /* BWG step 12 */
+	reg16 = (1 << 5);   /* BWG step 12 */
 	pci_write_config16(dev, 0x9c, reg16);
 
 	/* SATA Initialization register */

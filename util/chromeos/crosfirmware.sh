@@ -76,7 +76,7 @@ extract_partition()
 	SIZE=$(( $( echo $ROOTP | cut -f4 -d\ | tr -d "B" ) ))
 
 	dd if=$FILE of=$ROOTFS bs=$_bs skip=$(( $START / $_bs )) \
-		count=$(( $SIZE / $_bs ))  > /dev/null 2>&1
+		count=$(( $SIZE / $_bs ))  > /dev/null
 }
 
 extract_shellball()

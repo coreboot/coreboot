@@ -15,20 +15,13 @@
  * GNU General Public License for more details.
  */
 
-#define __SIMPLE_DEVICE__
-
 #include <console/console.h>
-#include <arch/io.h>
-#include <device/pci_ops.h>
 #include <device/device.h>
-#include <device/pci.h>
-#include <southbridge/intel/i82801ix/i82801ix.h>
+#include <southbridge/intel/common/gpio.h>
 #include <ec/lenovo/h8/h8.h>
 #include <ec/acpi/ec.h>
 
 #include "dock.h"
-
-#define LPC_DEV PCI_DEV(0, 0x1f, 0)
 
 void h8_mainboard_init_dock (void)
 {
@@ -41,22 +34,19 @@ void h8_mainboard_init_dock (void)
 
 void dock_connect(void)
 {
-	u16 gpiobase = pci_read_config16(LPC_DEV, D31F0_GPIO_BASE) & 0xfffc;
 	ec_set_bit(0x02, 0);
-	outl(inl(gpiobase + 0x0c) | (1 << 28), gpiobase + 0x0c);
+	set_gpio(28, GPIO_LEVEL_HIGH);
 }
 
 void dock_disconnect(void)
 {
-	u16 gpiobase = pci_read_config16(LPC_DEV, D31F0_GPIO_BASE) & 0xfffc;
 	ec_clr_bit(0x02, 0);
-	outl(inl(gpiobase + 0x0c) & ~(1 << 28), gpiobase + 0x0c);
+	set_gpio(28, GPIO_LEVEL_LOW);
 }
 
 int dock_present(void)
 {
-	u16 gpiobase = pci_read_config16(LPC_DEV, D31F0_GPIO_BASE) & 0xfffc;
-	u8 st = inb(gpiobase + 0x0c);
+	const int dock_id_gpio[] = { 2, 3, 4, -1};
 
-	return ((st >> 2) & 7) != 7;
+	return get_gpios(dock_id_gpio) != 7;
 }

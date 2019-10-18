@@ -202,7 +202,6 @@
 #define DMIDRCCFG	0xeb4	/* 32bit */
 
 #ifndef __ASSEMBLER__
-static inline void barrier(void) { asm("" ::: "memory"); }
 
 void intel_northbridge_haswell_finalize_smm(void);
 

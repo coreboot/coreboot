@@ -245,7 +245,6 @@ typedef struct {
 #define DMIDRCCFG	0xeb4	/* 32bit */
 
 #ifndef __ASSEMBLER__
-static inline void barrier(void) { asm("" ::: "memory"); }
 
 #define PCI_DEVICE_ID_SB 0x0104
 #define PCI_DEVICE_ID_IB 0x0154

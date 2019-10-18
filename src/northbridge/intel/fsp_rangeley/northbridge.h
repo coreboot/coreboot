@@ -52,7 +52,6 @@
 #define P_UNIT 4
 
 #ifndef __ASSEMBLER__
-static inline void barrier(void) { asm("" ::: "memory"); }
 
 #define PCI_DEVICE_ID_RG_MIN 0x1F00
 #define PCI_DEVICE_ID_RG_MAX 0x1F0F

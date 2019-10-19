@@ -30,13 +30,12 @@ int payload_arch_usable_ram_quirk(uint64_t start, uint64_t size)
 
 void arch_prog_run(struct prog *prog)
 {
-	__asm__ volatile (
 #ifdef __x86_64__
-		"jmp  *%%rdi\n"
+	void (*doit)(void *arg);
 #else
-		"jmp  *%%edi\n"
+	/* Ensure the argument is pushed on the stack. */
+	asmlinkage void (*doit)(void *arg);
 #endif
-
-		:: "D"(prog_entry(prog))
-	);
+	doit = prog_entry(prog);
+	doit(prog_entry_arg(prog));
 }

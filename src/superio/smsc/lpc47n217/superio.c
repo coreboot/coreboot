@@ -23,7 +23,6 @@
 #include <device/device.h>
 #include <device/pnp.h>
 #include <console/console.h>
-#include <device/smbus.h>
 #include <assert.h>
 #include <stdlib.h>
 #include "lpc47n217.h"

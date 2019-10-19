@@ -16,12 +16,6 @@
 #include <console/console.h>
 #include <fsp/util.h>
 
-void fsp_find_bootloader_tolum(struct range_entry *re)
-{
-	if (fsp_find_range_hob(re, fsp_bootloader_tolum_guid))
-		die("9.3: FSP_BOOTLOADER_TOLUM_HOB missing!\n");
-}
-
 void fsp_verify_memory_init_hobs(void)
 {
 	struct range_entry fsp_mem;

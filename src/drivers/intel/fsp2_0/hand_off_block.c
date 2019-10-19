@@ -300,3 +300,9 @@ const void *fsp_find_nv_storage_data(size_t *size)
 {
 	return fsp_find_extension_hob_by_guid(fsp_nv_storage_guid, size);
 }
+
+void fsp_find_bootloader_tolum(struct range_entry *re)
+{
+	if (fsp_find_range_hob(re, fsp_bootloader_tolum_guid))
+		die("9.3: FSP_BOOTLOADER_TOLUM_HOB missing!\n");
+}

@@ -21,12 +21,10 @@ bootblock-y += bootblock/pch.c
 bootblock-y += bootblock/report_platform.c
 bootblock-y += espi.c
 bootblock-y += gpio.c
-bootblock-y += memmap.c
 bootblock-y += p2sb.c
 
 romstage-y += espi.c
 romstage-y += gpio.c
-romstage-y += memmap.c
 romstage-y += reset.c
 
 ramstage-y += acpi.c
@@ -39,7 +37,6 @@ ramstage-y += fsp_params.c
 ramstage-y += gpio.c
 ramstage-y += graphics.c
 ramstage-y += lockdown.c
-ramstage-y += memmap.c
 ramstage-y += p2sb.c
 ramstage-y += pmc.c
 ramstage-y += reset.c
@@ -53,8 +50,6 @@ smm-y += pmc.c
 smm-y += pmutil.c
 smm-y += smihandler.c
 smm-y += uart.c
-
-postcar-y += memmap.c
 
 CPPFLAGS_common += -I$(src)/soc/intel/icelake
 CPPFLAGS_common += -I$(src)/soc/intel/icelake/include

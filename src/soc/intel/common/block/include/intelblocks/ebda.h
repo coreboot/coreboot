@@ -16,52 +16,23 @@
 #ifndef SOC_INTEL_COMMON_BLOCK_EBDA_H
 #define SOC_INTEL_COMMON_BLOCK_EBDA_H
 
-#include <soc/ebda.h>
-
 #define EBDA_SIGNATURE 0xebdaebda
 
-/*
- * Mainboard Override function
- *
- * Mainboard directory may implement below functionality for romstage.
- */
+/* EBDA structure */
+struct ebda_config {
+	uint32_t signature; /* EBDA signature */
+	uint32_t cbmem_top; /* coreboot memory start */
+};
 
-/* Fill up EBDA structure inside Mainboard directory */
-void create_mainboard_ebda(struct ebda_config *cfg);
-
-/*
- * SoC overrides
- *
- * All new SoC must implement below functionality for romstage.
- */
-void fill_soc_memmap_ebda(struct ebda_config *cfg);
+/* Initialize EBDA and store structure into EBDA area */
+void initialize_ebda_area(void);
 
 /*
- * API to perform below operation
- * 1. Initialize EBDA area
- * 2. Fill up EBDA structure inside SOC directory
- * 3. Fill up EBDA structure inside Mainboard directory
- * 4. Store EBDA structure into EBDA area
- */
-void fill_ebda_area(void);
-
-/* Fill the ebda object pointed to by cfg. Object will be zero filled
+ * Fill the ebda object pointed to by cfg. Object will be zero filled
  * if signature check fails. */
 void retrieve_ebda_object(struct ebda_config *cfg);
 
-/*
- * EBDA structure
- *
- * SOC should implement EBDA structure as per need
- * as below.
- *
- * Note: First 4 bytes should be reserved for signature as
- * 0xEBDA
- *
- * struct ebda_config {
- *	uint32_t signature;
- *	<Required variables..>
- * };
- */
+/* API for filling ebda with data in romstage */
+void fill_memmap_ebda(struct ebda_config *cfg);
 
 #endif

@@ -17,34 +17,14 @@
 #include <intelblocks/ebda.h>
 #include <string.h>
 
-/*
- * Mainboard Override function
- *
- * Mainboard directory may implement below functionality for romstage.
- */
-
-/* Fill up EBDA structure inside Mainboard directory */
-__weak void create_mainboard_ebda(struct ebda_config *cfg)
-{
-	/* no-op */
-}
-
-static void create_soc_ebda(struct ebda_config *cfg)
-{
-	/* Create EBDA header */
-	cfg->signature = EBDA_SIGNATURE;
-	/* Fill up memory layout information */
-	fill_soc_memmap_ebda(cfg);
-}
-
-void fill_ebda_area(void)
+void initialize_ebda_area(void)
 {
 	struct ebda_config ebda_cfg;
 
 	/* Initialize EBDA area early during romstage. */
 	setup_default_ebda();
-	create_soc_ebda(&ebda_cfg);
-	create_mainboard_ebda(&ebda_cfg);
+	ebda_cfg.signature = EBDA_SIGNATURE;
+	fill_memmap_ebda(&ebda_cfg);
 	write_ebda_data(&ebda_cfg, sizeof(ebda_cfg));
 }
 

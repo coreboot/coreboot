@@ -59,41 +59,35 @@ chip soc/intel/skylake
 	# superspeed_inter-chip_supplement (SSIC) disabled
 	register "SsicPortEnable" = "0"
 
-	# USB configuration
-	# USB2/3
-	register "usb2_ports[0]"	= "USB2_PORT_MID(OC0)"
-	register "usb2_ports[1]"	= "USB2_PORT_MID(OC0)"
-
-	# ?
-	register "usb2_ports[14]"	= "USB2_PORT_MID(OC0)"
-	register "usb2_ports[15]"	= "USB2_PORT_MID(OC0)"
-
-	# USB4/5
-	register "usb2_ports[2]"	= "USB2_PORT_MID(OC1)"
-	register "usb2_ports[3]"	= "USB2_PORT_MID(OC1)"
-
-	# USB0/1
-	register "usb2_ports[4]"	= "USB2_PORT_MID(OC2)"
-	register "usb2_ports[5]"	= "USB2_PORT_MID(OC2)"
-
-	# USB9/10 (USB3.0)
-	register "usb2_ports[8]"	= "USB2_PORT_MID(OC3)"
-	register "usb2_ports[12]"	= "USB2_PORT_MID(OC3)"
-	register "usb3_ports[3]"	= "USB3_PORT_DEFAULT(OC3)"
-	register "usb3_ports[4]"	= "USB3_PORT_DEFAULT(OC3)"
-
-	# USB6/7 (USB3.0)
-	register "usb2_ports[10]"	= "USB2_PORT_MID(OC4)"
-	register "usb2_ports[11]"	= "USB2_PORT_MID(OC4)"
-	register "usb3_ports[1]"	= "USB3_PORT_DEFAULT(OC4)"
-	register "usb3_ports[2]"	= "USB3_PORT_DEFAULT(OC4)"
-
-	# USB8 (USB3.0)
-	register "usb2_ports[9]"	= "USB2_PORT_MID(OC5)"
-	register "usb3_ports[0]"	= "USB3_PORT_DEFAULT(OC5)"
-
-	# IPMI USB HUB
-	register "usb2_ports[13]"	= "USB2_PORT_MID(OC_SKIP)"
+	# USB
+	register "usb2_ports" = "{
+		[0]	= USB2_PORT_EMPTY,
+		[1]	= USB2_PORT_EMPTY,
+		[2]	= USB2_PORT_EMPTY,
+		[3]	= USB2_PORT_EMPTY,
+		[4]	= USB2_PORT_EMPTY,
+		[5]	= USB2_PORT_EMPTY,
+		[6]	= USB2_PORT_EMPTY,
+		[7]	= USB2_PORT_EMPTY,
+		[8]	= USB2_PORT_EMPTY,
+		[9]	= USB2_PORT_EMPTY,
+		[10]	= USB2_PORT_EMPTY,
+		[11]	= USB2_PORT_EMPTY,
+		[12]	= USB2_PORT_EMPTY,
+		[13]	= USB2_PORT_EMPTY,
+	}"
+	register "usb3_ports" = "{
+		[0]	= USB3_PORT_EMPTY,
+		[1]	= USB3_PORT_EMPTY,
+		[2]	= USB3_PORT_EMPTY,
+		[3]	= USB3_PORT_EMPTY,
+		[4]	= USB3_PORT_EMPTY,
+		[5]	= USB3_PORT_EMPTY,
+		[6]	= USB3_PORT_EMPTY,
+		[7]	= USB3_PORT_EMPTY,
+		[8]	= USB3_PORT_EMPTY,
+		[9]	= USB3_PORT_EMPTY,
+	}"
 
 	# LPC
 	register "serirq_mode" = "SERIRQ_CONTINUOUS"

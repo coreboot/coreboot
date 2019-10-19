@@ -17,6 +17,7 @@ config ARCH_ROMSTAGE_ARM
 config ARCH_RAMSTAGE_ARM
 	bool
 	select ARCH_ARM
+	select RAMSTAGE_CBMEM_TOP_ARG
 
 source src/arch/arm/armv4/Kconfig
 source src/arch/arm/armv7/Kconfig

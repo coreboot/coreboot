@@ -18,7 +18,6 @@ ifeq ($(CONFIG_SOC_ROCKCHIP_RK3288),y)
 IDBTOOL = util/rockchip/make_idb.py
 
 bootblock-y += bootblock.c
-bootblock-y += ../common/cbmem.c
 bootblock-y += ../common/uart.c
 bootblock-y += timer.c
 bootblock-y += clock.c
@@ -55,7 +54,6 @@ romstage-y += tsadc.c
 romstage-y += ../common/i2c.c
 
 ramstage-y += soc.c
-ramstage-y += ../common/cbmem.c
 ramstage-y += timer.c
 ramstage-y += ../common/i2c.c
 ramstage-$(CONFIG_SOFTWARE_I2C) += software_i2c.c

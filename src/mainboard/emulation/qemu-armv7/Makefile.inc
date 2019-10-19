@@ -15,7 +15,6 @@
 romstage-y += romstage.c
 
 romstage-y += cbmem.c
-ramstage-y += cbmem.c
 
 bootblock-y += media.c
 romstage-y += media.c

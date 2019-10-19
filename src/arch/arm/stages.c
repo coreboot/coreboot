@@ -22,13 +22,16 @@
  * .text.stage_entry section created by -ffunction-sections).
  */
 
+#include <cbmem.h>
 #include <arch/stages.h>
 #include <arch/cache.h>
 
 /**
  * generic stage entry point. override this if board specific code is needed.
  */
-__weak void stage_entry(void)
+__weak void stage_entry(uintptr_t stage_arg)
 {
+	if (!ENV_ROMSTAGE_OR_BEFORE)
+		_cbmem_top_ptr = stage_arg;
 	main();
 }

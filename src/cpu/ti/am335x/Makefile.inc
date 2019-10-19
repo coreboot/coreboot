@@ -10,7 +10,6 @@ romstage-y	+= cbmem.c
 ramstage-y	+= dmtimer.c
 ramstage-y	+= monotonic_timer.c
 ramstage-y	+= nand.c
-ramstage-y	+= cbmem.c
 
 bootblock-y	+= uart.c
 romstage-y	+= uart.c

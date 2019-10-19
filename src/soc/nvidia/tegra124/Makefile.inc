@@ -46,7 +46,6 @@ romstage-y += ../tegra/pinmux.c
 romstage-y += cache.c
 romstage-y += uart.c
 
-ramstage-y += cbmem.c
 ramstage-y += clock.c
 ramstage-y += display.c
 ramstage-y += dma.c

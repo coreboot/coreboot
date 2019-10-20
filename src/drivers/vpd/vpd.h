@@ -7,6 +7,8 @@
 #ifndef __VPD_H__
 #define __VPD_H__
 
+#include <stdint.h>
+
 #define GOOGLE_VPD_2_0_OFFSET 0x600
 
 enum vpd_region {

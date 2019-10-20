@@ -274,7 +274,7 @@ static void southbridge_smi_store(void)
 	u8 sub_command, ret;
 	em64t101_smm_state_save_area_t *io_smi =
 		smi_apmc_find_state_save(APM_CNT_SMMSTORE);
-	uint32_t reg_ebx;
+	uintptr_t reg_rbx;
 
 	if (!io_smi)
 		return;
@@ -282,10 +282,10 @@ static void southbridge_smi_store(void)
 	sub_command = (io_smi->rax >> 8) & 0xff;
 
 	/* Parameter buffer in EBX */
-	reg_ebx = io_smi->rbx;
+	reg_rbx = (uintptr_t)io_smi->rbx;
 
 	/* drivers/smmstore/smi.c */
-	ret = smmstore_exec(sub_command, (uintptr_t *)reg_ebx);
+	ret = smmstore_exec(sub_command, (void *)reg_rbx);
 	io_smi->rax = ret;
 }
 

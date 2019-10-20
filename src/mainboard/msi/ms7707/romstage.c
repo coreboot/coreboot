@@ -18,7 +18,6 @@
 #include <device/pci_ops.h>
 #include <northbridge/intel/sandybridge/raminit_native.h>
 #include <southbridge/intel/common/pmbase.h>
-#include <console/console.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 
 void pch_enable_lpc(void)

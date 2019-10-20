@@ -17,7 +17,6 @@
 #include <device/pci_ops.h>
 #include <arch/romstage.h>
 #include <cbmem.h>
-#include <console/console.h>
 #include <cpu/x86/mtrr.h>
 #include <program_loading.h>
 #include "e7505.h"

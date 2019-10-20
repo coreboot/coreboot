@@ -18,7 +18,6 @@
 #include <arch/romstage.h>
 #include <device/pci_ops.h>
 #include <cbmem.h>
-#include <console/console.h>
 #include <cpu/intel/smm_reloc.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/smm.h>

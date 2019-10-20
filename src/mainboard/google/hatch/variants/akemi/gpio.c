@@ -17,7 +17,6 @@
 #include <baseboard/gpio.h>
 #include <baseboard/variants.h>
 #include <commonlib/helpers.h>
-#include <console/console.h>
 
 static const struct pad_config ssd_sku_gpio_table[] = {
 	/* A0  : NC */

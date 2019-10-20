@@ -21,7 +21,6 @@
 #include <southbridge/intel/common/gpio.h>
 #include <southbridge/intel/common/pmbase.h>
 #include <southbridge/intel/common/rcba.h>
-#include <console/console.h>
 
 /* For DMI bar.  */
 #include <northbridge/intel/sandybridge/sandybridge.h>

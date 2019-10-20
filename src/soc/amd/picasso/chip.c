@@ -14,7 +14,6 @@
  */
 
 #include <bootstate.h>
-#include <console/console.h>
 #include <cpu/amd/mtrr.h>
 #include <device/device.h>
 #include <device/pci.h>

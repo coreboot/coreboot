@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <console/console.h>
 #include <soc/pci_devs.h>
 #include <soc/soc_chip.h>
 

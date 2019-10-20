@@ -17,7 +17,6 @@
 #define __SIMPLE_DEVICE__
 
 #include <arch/romstage.h>
-#include <console/console.h>
 #include <commonlib/helpers.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/smm.h>

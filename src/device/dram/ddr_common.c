@@ -11,7 +11,6 @@
  * GNU General Public License for more details.
  */
 
-#include <console/console.h>
 #include <device/dram/common.h>
 #include <types.h>
 

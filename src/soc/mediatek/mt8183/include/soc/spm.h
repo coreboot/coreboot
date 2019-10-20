@@ -17,7 +17,6 @@
 #define SOC_MEDIATEK_MT8183_SPM_H
 
 #include <arch/barrier.h>
-#include <console/console.h>
 #include <soc/addressmap.h>
 #include <stdint.h>
 #include <types.h>

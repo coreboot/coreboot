@@ -14,7 +14,6 @@
  */
 
 #include <stddef.h>
-#include <console/console.h>
 #include <device/pci_def.h>
 #include <device/early_smbus.h>
 #include <intelblocks/imc.h>

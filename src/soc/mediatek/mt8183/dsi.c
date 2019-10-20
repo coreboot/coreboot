@@ -15,7 +15,6 @@
 
 #include <assert.h>
 #include <device/mmio.h>
-#include <console/console.h>
 #include <delay.h>
 #include <soc/dsi.h>
 #include <soc/pll.h>

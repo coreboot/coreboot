@@ -123,8 +123,7 @@ config FSP_S_FILE
 	  The path and filename of the Intel FSP-S binary for this platform.
 
 config FSP_CAR
-	bool "Use FSP TempRamInit & TempRamExit APIs"
-	depends on ADD_FSP_BINARIES
+	bool
 	default n
 	help
 	  Use FSP APIs to initialize & Tear Down the Cache-As-Ram

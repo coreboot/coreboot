@@ -37,32 +37,6 @@ config ADD_FSP_BINARIES
 	  Add the FSP-M and FSP-S binaries to CBFS. Currently coreboot does not
 	  use the FSP-T binary and it is not added.
 
-config DISPLAY_FSP_CALLS_AND_STATUS
-	bool "Display the FSP calls and status"
-	default n
-	help
-	  Display the FSP call entry point and parameters prior to calling FSP
-	  and display the status upon return from FSP.
-
-config DISPLAY_FSP_HEADER
-	bool "Display the FSP header"
-	default n
-	help
-	  Display the FSP header information when the FSP file is found.
-
-config DISPLAY_HOBS
-	bool "Display the hand-off-blocks"
-	default n
-	help
-	  Display the FSP HOBs which are provided for coreboot.
-
-config DISPLAY_UPD_DATA
-	bool "Display UPD data"
-	default n
-	help
-	  Display the user specified product data prior to memory
-	  initialization.
-
 config CPU_MICROCODE_CBFS_LEN
 	hex "Microcode update region length in bytes"
 	depends on FSP_CAR
@@ -158,21 +132,9 @@ config FSP_TEMP_RAM_SIZE
 	  stack with coreboot/bootloader.
 	  Sync this value with Platform FSP integration guide recommendation.
 
-config VERIFY_HOBS
-	bool "Verify the FSP hand-off-blocks"
-	default n
-	help
-	  Verify that the HOBs required by coreboot are returned by FSP and
-	  that the resource HOBs are in the correct order and position.
-
 config RESET_ON_INVALID_RAMSTAGE_CACHE
 	bool "Reset the system on S3 wake when ramstage cache invalid."
 	default n
-
-config DISPLAY_FSP_VERSION_INFO
-	bool "Display Firmware Ingredient Version Information"
-	help
-	  Select this option to display Firmware version information.
 
 config FSP2_0_USES_TPM_MRC_HASH
 	bool

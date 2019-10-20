@@ -1,0 +1,41 @@
+if PLATFORM_USES_FSP2_0
+
+config DISPLAY_FSP_CALLS_AND_STATUS
+	bool "Display the FSP calls and status"
+	default n
+	help
+	  Display the FSP call entry point and parameters prior to calling FSP
+	  and display the status upon return from FSP.
+
+config DISPLAY_FSP_HEADER
+	bool "Display the FSP header"
+	default n
+	help
+	  Display the FSP header information when the FSP file is found.
+
+config DISPLAY_HOBS
+	bool "Display the hand-off-blocks"
+	default n
+	help
+	  Display the FSP HOBs which are provided for coreboot.
+
+config DISPLAY_UPD_DATA
+	bool "Display UPD data"
+	default n
+	help
+	  Display the user specified product data prior to memory
+	  initialization.
+
+config VERIFY_HOBS
+	bool "Verify the FSP hand-off-blocks"
+	default n
+	help
+	  Verify that the HOBs required by coreboot are returned by FSP and
+	  that the resource HOBs are in the correct order and position.
+
+config DISPLAY_FSP_VERSION_INFO
+	bool "Display Firmware Ingredient Version Information"
+	help
+	  Select this option to display Firmware version information.
+
+endif # PLATFORM_USES_FSP2_0

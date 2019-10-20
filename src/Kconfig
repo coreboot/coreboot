@@ -740,6 +740,9 @@ menu "Debugging"
 comment "CPU Debug Settings"
 source "src/cpu/*/Kconfig.debug_cpu"
 
+comment "BLOB Debug Settings"
+source "src/drivers/intel/fsp*/Kconfig.debug_blob"
+
 comment "General Debug Settings"
 
 # TODO: Better help text and detailed instructions.

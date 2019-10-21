@@ -390,24 +390,23 @@ typedef struct acpi_dmar {
 } __packed acpi_dmar_t;
 
 /* MADT: APIC Structure Types */
-/* TODO: Convert to ALLCAPS. */
 enum acpi_apic_types {
-	LocalApic		= 0,	/* Processor local APIC */
-	IOApic			= 1,	/* I/O APIC */
-	IRQSourceOverride	= 2,	/* Interrupt source override */
-	NMIType			= 3,	/* NMI source */
-	LocalApicNMI		= 4,	/* Local APIC NMI */
-	LApicAddressOverride	= 5,	/* Local APIC address override */
-	IOSApic			= 6,	/* I/O SAPIC */
-	LocalSApic		= 7,	/* Local SAPIC */
-	PlatformIRQSources	= 8,	/* Platform interrupt sources */
-	Localx2Apic		= 9,	/* Processor local x2APIC */
-	Localx2ApicNMI		= 10,	/* Local x2APIC NMI */
-	GICC			= 11,	/* GIC CPU Interface */
-	GICD			= 12,	/* GIC Distributor */
-	GIC_MSI_FRAME		= 13,	/* GIC MSI Frame */
-	GICR			= 14,	/* GIC Redistributor */
-	GIC_ITS			= 15,	/* Interrupt Translation Service */
+	LOCAL_APIC,			/* Processor local APIC */
+	IO_APIC,			/* I/O APIC */
+	IRQ_SOURCE_OVERRIDE,		/* Interrupt source override */
+	NMI_TYPE,			/* NMI source */
+	LOCAL_APIC_NMI,			/* Local APIC NMI */
+	LAPIC_ADDRESS_OVERRIDE,		/* Local APIC address override */
+	IO_SAPIC,			/* I/O SAPIC */
+	LOCAL_SAPIC,			/* Local SAPIC */
+	PLATFORM_IRQ_SOURCES,		/* Platform interrupt sources */
+	LOCAL_X2APIC,			/* Processor local x2APIC */
+	LOCAL_X2APIC_NMI,		/* Local x2APIC NMI */
+	GICC,				/* GIC CPU Interface */
+	GICD,				/* GIC Distributor */
+	GIC_MSI_FRAME,			/* GIC MSI Frame */
+	GICR,				/* GIC Redistributor */
+	GIC_ITS,			/* Interrupt Translation Service */
 	/* 0x10-0x7f: Reserved */
 	/* 0x80-0xff: Reserved for OEM use */
 };

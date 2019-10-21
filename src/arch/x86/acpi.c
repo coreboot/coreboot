@@ -127,7 +127,7 @@ int acpi_create_mcfg_mmconfig(acpi_mcfg_mmconfig_t *mmconfig, u32 base,
 
 int acpi_create_madt_lapic(acpi_madt_lapic_t *lapic, u8 cpu, u8 apic)
 {
-	lapic->type = 0; /* Local APIC structure */
+	lapic->type = LOCAL_APIC; /* Local APIC structure */
 	lapic->length = sizeof(acpi_madt_lapic_t);
 	lapic->flags = (1 << 0); /* Processor/LAPIC enabled */
 	lapic->processor_id = cpu;
@@ -165,7 +165,7 @@ unsigned long acpi_create_madt_lapics(unsigned long current)
 int acpi_create_madt_ioapic(acpi_madt_ioapic_t *ioapic, u8 id, u32 addr,
 				u32 gsi_base)
 {
-	ioapic->type = 1; /* I/O APIC structure */
+	ioapic->type = IO_APIC; /* I/O APIC structure */
 	ioapic->length = sizeof(acpi_madt_ioapic_t);
 	ioapic->reserved = 0x00;
 	ioapic->gsi_base = gsi_base;
@@ -178,7 +178,7 @@ int acpi_create_madt_ioapic(acpi_madt_ioapic_t *ioapic, u8 id, u32 addr,
 int acpi_create_madt_irqoverride(acpi_madt_irqoverride_t *irqoverride,
 		u8 bus, u8 source, u32 gsirq, u16 flags)
 {
-	irqoverride->type = 2; /* Interrupt source override */
+	irqoverride->type = IRQ_SOURCE_OVERRIDE; /* Interrupt source override */
 	irqoverride->length = sizeof(acpi_madt_irqoverride_t);
 	irqoverride->bus = bus;
 	irqoverride->source = source;
@@ -191,7 +191,7 @@ int acpi_create_madt_irqoverride(acpi_madt_irqoverride_t *irqoverride,
 int acpi_create_madt_lapic_nmi(acpi_madt_lapic_nmi_t *lapic_nmi, u8 cpu,
 				u16 flags, u8 lint)
 {
-	lapic_nmi->type = 4; /* Local APIC NMI structure */
+	lapic_nmi->type = LOCAL_APIC_NMI; /* Local APIC NMI structure */
 	lapic_nmi->length = sizeof(acpi_madt_lapic_nmi_t);
 	lapic_nmi->flags = flags;
 	lapic_nmi->processor_id = cpu;

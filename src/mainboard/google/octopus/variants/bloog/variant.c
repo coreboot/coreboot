@@ -30,6 +30,10 @@ enum {
 	SKU_50_BLOOGUARD = 50, /* kb blit, USI Stylus */
 	SKU_51_BLOOGUARD = 51, /* no kb blit, no USI Stylus */
 	SKU_52_BLOOGUARD = 52, /* no kb blit, USI Stylus */
+	SKU_65_BLOOGLET = 65, /* TS, kb blit */
+	SKU_66_BLOOGLET = 66, /* TS, no kb blit */
+	SKU_67_BLOOGLET = 67, /* non-TS, kb blit */
+	SKU_68_BLOOGLET = 68, /* non-TS, no kb blit */
 };
 
 const char *get_wifi_sar_cbfs_filename(void)
@@ -59,7 +63,9 @@ const char *mainboard_vbt_filename(void)
 	sku_id = get_board_sku();
 
 	if (sku_id == SKU_49_BLOOGUARD || sku_id == SKU_50_BLOOGUARD ||
-		sku_id == SKU_51_BLOOGUARD || sku_id == SKU_52_BLOOGUARD)
+		sku_id == SKU_51_BLOOGUARD || sku_id == SKU_52_BLOOGUARD ||
+		sku_id == SKU_65_BLOOGLET || sku_id == SKU_66_BLOOGLET ||
+		sku_id == SKU_67_BLOOGLET || sku_id == SKU_68_BLOOGLET)
 		return "vbt_blooguard.bin";
 
 	return "vbt.bin";

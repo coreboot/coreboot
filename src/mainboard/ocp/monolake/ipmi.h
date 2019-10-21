@@ -23,7 +23,7 @@
 #define GET_CMOS_BIT(x) ((x) & (1 << 1))
 #define GET_VALID_BIT(x) ((x) & (1 << 7))
 #define CLEAR_CMOS_AND_VALID_BIT(x) ((x) &= 0x7d)
-
+#define BMC_KCS_BASE 0xca2
 typedef struct {
 	u8 BootMode; /* Bit 1:CMOS clear, bit 7:valid bit. */
 	u8 Boot0000;

@@ -17,8 +17,6 @@
 #include <console/console.h>
 #include "ipmi.h"
 
-#define BMC_KCS_BASE 0xca2
-
 int is_ipmi_clear_cmos_set(ipmi_oem_rsp_t *rsp)
 {
 	int ret;

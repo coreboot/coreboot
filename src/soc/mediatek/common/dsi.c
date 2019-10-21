@@ -81,9 +81,9 @@ static void mtk_dsi_phy_timing(int data_rate, struct mtk_phy_timing *phy_timing)
 	memset(phy_timing, 0, sizeof(*phy_timing));
 
 	phy_timing->lpx = DIV_ROUND_UP(60, cycle_time);
-	phy_timing->da_hs_prepare = DIV_ROUND_UP((40 + 5 * ui), cycle_time);
+	phy_timing->da_hs_prepare = DIV_ROUND_UP((50 + 5 * ui), cycle_time);
 	phy_timing->da_hs_zero = DIV_ROUND_UP((110 + 6 * ui), cycle_time);
-	phy_timing->da_hs_trail = DIV_ROUND_UP(((4 * ui) + 80), cycle_time);
+	phy_timing->da_hs_trail = DIV_ROUND_UP(((4 * ui) + 77), cycle_time);
 
 	phy_timing->ta_go = 4U * phy_timing->lpx;
 	phy_timing->ta_sure = 3U * phy_timing->lpx / 2U;

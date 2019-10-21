@@ -14,10 +14,7 @@
 #
 
 subdirs-$(CONFIG_SOUTHBRIDGE_AMD_CIMX_SB800) += sb800
-subdirs-$(CONFIG_SOUTHBRIDGE_AMD_CIMX_SB900) += sb900
 
 romstage-$(CONFIG_SOUTHBRIDGE_AMD_CIMX_SB800) += cimx_util.c
-romstage-$(CONFIG_SOUTHBRIDGE_AMD_CIMX_SB900) += cimx_util.c
 
 ramstage-$(CONFIG_SOUTHBRIDGE_AMD_CIMX_SB800) += cimx_util.c
-ramstage-$(CONFIG_SOUTHBRIDGE_AMD_CIMX_SB900) += cimx_util.c

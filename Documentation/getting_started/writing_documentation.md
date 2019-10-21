@@ -25,7 +25,7 @@ recommonmark 0.4.0.
 
 ### Optional
 
-Install [shpinx-autobuild] for rebuilding markdown/rst sources on the fly!
+Install [sphinx-autobuild] for rebuilding markdown/rst sources on the fly!
 
 ## Basic and simple rules
 
@@ -116,7 +116,7 @@ TOC tree.
 
 [coreboot]: https://coreboot.org
 [Documentation]: https://review.coreboot.org/cgit/coreboot.git/tree/Documentation
-[shpinx-autobuild]: https://github.com/GaretJax/sphinx-autobuild
+[sphinx-autobuild]: https://github.com/GaretJax/sphinx-autobuild
 [guide]: http://www.sphinx-doc.org/en/stable/install.html
 [Sphinx]: http://www.sphinx-doc.org/en/master/
 [Markdown Guide]: https://www.markdownguide.org/

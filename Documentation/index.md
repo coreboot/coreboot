@@ -170,7 +170,7 @@ Contents:
 * [coreboot at conferences](community/conferences.md)
 * [Payloads](payloads.md)
 * [Distributions](distributions.md)
-* [Dealing with Untrusted Input in SMM](technotes/2017-02-dealing-with-untrusted-input-in-smm.md)
+* [Technotes](technotes/index.md)
 * [GPIO toggling in ACPI AML](acpi/gpio.md)
 * [Adding devices to a device tree](acpi/devicetree.md)
 * [Native Graphics Initialization with libgfxinit](gfx/libgfxinit.md)

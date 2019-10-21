@@ -15,9 +15,8 @@
  */
 
 #include <bootblock_common.h>
-#include <delay.h>
-
 #include <ec/acpi/ec.h>
+
 void bootblock_mainboard_early_init(void)
 {
 	/* Enable USB Power. We need to do it early for usbdebug to work. */

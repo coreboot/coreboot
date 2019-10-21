@@ -14,7 +14,6 @@
  * GNU General Public License for more details.
  */
 
-#include "smi.h"
 Scope (\_GPE)
 {
 	Method(_L18, 0, NotSerialized)

@@ -14,8 +14,6 @@
  * GNU General Public License for more details.
  */
 
-#include "smi.h"
-
 Scope (\_SB)
 {
 	Device(DOCK)

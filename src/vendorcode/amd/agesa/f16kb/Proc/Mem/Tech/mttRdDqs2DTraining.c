@@ -260,8 +260,7 @@ MemTAmdRdDqs2DTraining (
           //
           IDS_HDT_CONSOLE (MEM_FLOW, "\n\t\tProgramming Final Vref for channel\n\n");
           MemT2DProgramVref (TechPtr, NBPtr->ChannelPtr->MaxVref);
-          Status = TRUE;
-        } else {
+         } else {
           SetMemError (AGESA_ERROR, NBPtr->MCTPtr);
           PutEventLog (AGESA_ERROR, MEM_ERROR_2D_DQS_VREF_MARGIN_ERROR, NBPtr->Node, NBPtr->Dct, NBPtr->Channel, 0, &NBPtr->MemPtr->StdHeader);
         }

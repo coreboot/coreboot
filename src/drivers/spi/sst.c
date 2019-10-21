@@ -1,15 +1,19 @@
 /*
+ * This file is part of the coreboot project.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+/*
  * Driver for SST serial flashes
- *
- * (C) Copyright 2000-2002
- * Wolfgang Denk, DENX Software Engineering, wd@denx.de.
- * Copyright 2008, Network Appliance Inc.
- * Jason McMullan <mcmullan@netapp.com>
- * Copyright (C) 2004-2007 Freescale Semiconductor, Inc.
- * TsiChung Liew (Tsi-Chung.Liew@freescale.com)
- * Copyright (c) 2008-2009 Analog Devices Inc.
- *
- * Licensed under the GPL-2 or later.
  */
 
 #include <console/console.h>

@@ -1,10 +1,6 @@
 /*
  * This file is part of the coreboot project.
  *
- * It was taken from the Linux kernel (include/linux/usb/ehci_def.h).
- *
- * Copyright (C) 2001-2002 David Brownell
- *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
  * Free Software Foundation; either version 2 of the License, or (at your
@@ -15,6 +11,8 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  */
+
+ /* This came from the Linux kernel (include/linux/usb/ehci_def.h). */
 
 #ifndef EHCI_H
 #define EHCI_H

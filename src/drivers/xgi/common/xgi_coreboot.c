@@ -1,11 +1,6 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
- *
- * xgifb_probe taken from the Linux xgifb driver (v3.18.5) and adapted for coreboot
- * xgifb_modeset cobbled together from other portions of the same driver
- *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; version 2 of the License.
@@ -15,6 +10,8 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
+
+ /* Code taken from the Linux xgifb driver (v3.18.5) */
 
 #include <stdlib.h>
 #include <vbe.h>

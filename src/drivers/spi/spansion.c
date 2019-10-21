@@ -1,10 +1,5 @@
 /*
- * Copyright (C) 2009 Freescale Semiconductor, Inc.
- *
- * Author: Mingkai Hu (Mingkai.hu@freescale.com)
- * Based on stmicro.c by Wolfgang Denk (wd@denx.de),
- * TsiChung Liew (Tsi-Chung.Liew@freescale.com),
- * and  Jason McMullan (mcmullan@netapp.com)
+ * This file is part of the coreboot project.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as

@@ -1,14 +1,5 @@
 /*
- * Copyright 2009(C) Marvell International Ltd. and its affiliates
- * Prafulla Wadaskar <prafulla@marvell.com>
- *
- * Based on drivers/mtd/spi/stmicro.c
- *
- * Copyright 2008, Network Appliance Inc.
- * Jason McMullan <mcmullan@netapp.com>
- *
- * Copyright (C) 2004-2007 Freescale Semiconductor, Inc.
- * TsiChung Liew (Tsi-Chung.Liew@freescale.com)
+ * This file is part of the coreboot project.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as

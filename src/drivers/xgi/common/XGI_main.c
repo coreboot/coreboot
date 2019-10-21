@@ -1,8 +1,6 @@
 /*
  * This file is part of the coreboot project.
  *
- * Code taken from the Linux xgifb driver (v3.18.5)
- *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; version 2 of the License.
@@ -14,6 +12,7 @@
  */
 
 /*
+ * Code taken from the Linux xgifb driver (v3.18.5)
  * Select functions taken from the Linux xgifb driver file XGI_main_26.c
  *
  * Original file header:

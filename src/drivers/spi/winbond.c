@@ -1,6 +1,5 @@
 /*
- * Copyright 2008, Network Appliance Inc.
- * Jason McMullan <mcmullan@netapp.com>
+ * This file is part of the coreboot project.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as

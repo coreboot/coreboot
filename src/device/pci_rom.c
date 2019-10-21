@@ -200,7 +200,7 @@ static unsigned long
 pci_rom_acpi_fill_vfct(struct device *device, struct acpi_vfct *vfct_struct,
 		       unsigned long current)
 {
-	struct acpi_vfct_image_hdr *header = &vfct_struct->image_hdr;
+	acpi_vfct_image_hdr_t *header = &vfct_struct->image_hdr;
 	struct rom_header *rom;
 
 	rom = check_initialized(device);

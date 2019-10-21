@@ -251,7 +251,7 @@ typedef struct acpi_madt {
 } __packed acpi_madt_t;
 
 /* VFCT image header */
-struct acpi_vfct_image_hdr {
+typedef struct acpi_vfct_image_hdr {
 	u32 PCIBus;
 	u32 PCIDevice;
 	u32 PCIFunction;
@@ -262,7 +262,7 @@ struct acpi_vfct_image_hdr {
 	u32 Revision;
 	u32 ImageLength;
 	u8  VbiosContent;	// dummy - copy VBIOS here
-} __packed;
+} __packed acpi_vfct_image_hdr_t;
 
 /* VFCT (VBIOS Fetch Table) */
 struct acpi_vfct {
@@ -271,7 +271,7 @@ struct acpi_vfct {
 	u32 VBIOSImageOffset;
 	u32 Lib1ImageOffset;
 	u32 Reserved[4];
-	struct acpi_vfct_image_hdr image_hdr;
+	acpi_vfct_image_hdr_t image_hdr;
 } __packed;
 
 typedef struct acpi_ivrs_info {

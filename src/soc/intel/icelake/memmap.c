@@ -190,21 +190,6 @@ static uintptr_t calculate_dram_base(size_t *reserved_mem_size)
 	return dram_base;
 }
 
-/*
- * SoC implementation
- *
- * SoC call to summarize all Intel Reserve MMIO size and report to SA
- */
-size_t soc_reserved_mmio_size(void)
-{
-	struct ebda_config cfg;
-
-	retrieve_ebda_object(&cfg);
-
-	/* Get Intel Reserved Memory Range Size */
-	return cfg.reserved_mem_size;
-}
-
 /* Fill up memory layout information */
 void fill_soc_memmap_ebda(struct ebda_config *cfg)
 {

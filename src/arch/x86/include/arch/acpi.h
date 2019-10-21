@@ -265,14 +265,14 @@ typedef struct acpi_vfct_image_hdr {
 } __packed acpi_vfct_image_hdr_t;
 
 /* VFCT (VBIOS Fetch Table) */
-struct acpi_vfct {
+typedef struct acpi_vfct {
 	struct acpi_table_header header;
 	u8  TableUUID[16];
 	u32 VBIOSImageOffset;
 	u32 Lib1ImageOffset;
 	u32 Reserved[4];
 	acpi_vfct_image_hdr_t image_hdr;
-} __packed;
+} __packed acpi_vfct_t;
 
 typedef struct acpi_ivrs_info {
 } __packed acpi_ivrs_info_t;
@@ -864,9 +864,9 @@ void acpi_create_slit(acpi_slit_t *slit,
 		      unsigned long (*acpi_fill_slit)(unsigned long current));
 
 void acpi_create_vfct(struct device *device,
-		      struct acpi_vfct *vfct,
+		      acpi_vfct_t *vfct,
 		      unsigned long (*acpi_fill_vfct)(struct device *device,
-				struct acpi_vfct *vfct_struct,
+				acpi_vfct_t *vfct_struct,
 				unsigned long current));
 
 void acpi_create_ipmi(struct device *device,

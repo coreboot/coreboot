@@ -737,14 +737,14 @@ void acpi_create_hpet(acpi_hpet_t *hpet)
 }
 
 void acpi_create_vfct(struct device *device,
-		      struct acpi_vfct *vfct,
+		      acpi_vfct_t *vfct,
 		      unsigned long (*acpi_fill_vfct)(struct device *device,
-		      struct acpi_vfct *vfct_struct, unsigned long current))
+		      acpi_vfct_t *vfct_struct, unsigned long current))
 {
 	acpi_header_t *header = &(vfct->header);
-	unsigned long current = (unsigned long)vfct + sizeof(struct acpi_vfct);
+	unsigned long current = (unsigned long)vfct + sizeof(acpi_vfct_t);
 
-	memset((void *)vfct, 0, sizeof(struct acpi_vfct));
+	memset((void *)vfct, 0, sizeof(acpi_vfct_t));
 
 	if (!header)
 		return;

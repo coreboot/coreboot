@@ -154,6 +154,7 @@ several data regions for its own purpose (similar to GBB, FWID, VPD, …). After
 the regions are filled, one data region must be post-processed to contain
 signatures to enable verifying other regions.
 
+```
 Chipset manifest
 ================
 # A region called IFD, starting at 0, ending at 4K
@@ -249,14 +250,15 @@ EC firmware manifest
 # overrides the cbfsdefault above
 group payload: ecrw.bin name=ecrw hash=sha256
 group payload: pdrw.bin name=pdrw hash=sha256
+```
 
 manifest parsing
-================
+----------------
 The exact BNF is work in progress.
 
 Some parser rules are
 * one line per statement
-* # introduces a command until the end of line
+* '#' introduces a command until the end of line
 
 Some processing rules
 * When there’s a conflict (eg. two statements on what to do to a region,

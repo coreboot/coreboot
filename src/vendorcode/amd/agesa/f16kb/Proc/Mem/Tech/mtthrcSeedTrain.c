@@ -314,7 +314,6 @@ MemTRdPosWithRxEnDlySeeds3 (
       //
       IDS_HDT_CONSOLE (MEM_FLOW, "\n\t\t Setting PassTestRxEnDly\n");
       IDS_HDT_CONSOLE (MEM_FLOW, "\t  PassTestRxEnDly: ");
-      PassTestRxEnDly[ByteLane] = RxOrig[ByteLane];
       for (ByteLane = 0; ByteLane < MaxByteLanes; ByteLane++) {
         if (RxEnDlyTargetFound[ByteLane] == FALSE) {
           // Calculate "PassTestRxEnDly" from  current "RxEnDly"
@@ -329,6 +328,7 @@ MemTRdPosWithRxEnDlySeeds3 (
             MemTRdPosRxEnSeedSetDly3 (TechPtr, PassTestRxEnDly[ByteLane], ByteLane);
             OutOfRange[ByteLane] = FALSE;
           } else {
+            PassTestRxEnDly[ByteLane] = RxOrig[ByteLane];
             OutOfRange[ByteLane] = TRUE;
           }
         } else {

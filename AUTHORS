@@ -13,12 +13,17 @@ Advanced Micro Devices, Inc.
 Alex Züpke
 Alexander Couzens
 Alexandru Gagniuc
+Analog Devices Inc.
 Andy Fleming
 ARM Limited and Contributors
 Arthur Heymans
+ASPEED Technology Inc.
+Atheros Corporation
+Atmel Corporation
 Carl-Daniel Hailfinger
 coresystems GmbH
 Damien Zammit
+David Brownell
 David Hendricks
 David Mosberger-Tang
 Denis Dowling
@@ -26,6 +31,7 @@ DENX Software Engineering
 DMP Electronics Inc.
 Drew Eckhardt
 Egbert Eich
+Eltan B.V
 Eric Biederman
 Eswar Nallusamy
 Facebook, Inc.
@@ -37,12 +43,16 @@ Gary Jennejohn
 Gerd Hoffmann
 Google LLC
 Greg Watson
+Idwer Vollering
 Imagination Technologies
+Infineon Technologies
 Intel Corporation
 Jason Zhao
+Jonathan Neuschäfer
 Jordan Crouse
 Joseph Smith
 Keith Hui
+Keith Packard
 Kshitij
 Kyösti Mälkki
 Lei Wen
@@ -50,43 +60,58 @@ Li-Ta Lo
 Libra Li
 Linus Torvalds
 Linux Networx, Inc.
+Luc Verhaegen
 Marc Jones
 Marek Vasut
 Marius Gröger
 Martin Mares
+Marvell International Ltd.
 Marvell Semiconductor Inc.
 MediaTek Inc.
 MontaVista Software, Inc.
 Myles Watson
+Network Appliance Inc.
 Nicholas Sielicki
 Nick Barker
 Nico Huber
+Ollie Lo
+Orion Technologies, LLC
 Patrick Georgi
 Patrick Rudolph
 PC Engines GmbH
 Per Odlund
 Peter Stuge
 Raptor Engineering, LLC
+Red Hat Inc
+Reinhard Meyer
 Richard Woodruff
 Ronald G. Minnich
 Rudolf Marek
 Russell King
 Sage Electronic Engineering, LLC
+Samsung Electronics
 SciTech Software, Inc.
+Sebastian Grzywna
 secunet Security Networks AG
 Siemens AG
 Silicon Integrated System Corporation
 Stefan Reinauer
 Steve Magnani
+ST Microelectronics
 SUSE LINUX AG
 Sven Schnelle
 Syed Mohammed Khasim
 Texas Instruments
 The Linux Foundation
+Thomas Winischhofer
 Timothy Pearson
+Tungsten Graphics, Inc.
 Tyan Computer Corp.
+ucRobotics Inc.
 Uwe Hermann
 VIA Technologies, Inc
+Vipin Kumar
+Ward Vandewege
 Wolfgang Denk
 Yinghai Lu
 
@@ -99,3 +124,4 @@ src/commonlib
 src/console
 src/cpu
 src/device
+src/drivers

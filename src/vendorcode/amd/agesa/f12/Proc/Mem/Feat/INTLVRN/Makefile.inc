@@ -1,1 +1,0 @@
-libagesa-y += mfintlvrn.c

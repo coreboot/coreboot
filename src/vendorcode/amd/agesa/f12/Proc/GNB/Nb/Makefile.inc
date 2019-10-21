@@ -1,9 +1,0 @@
-libagesa-y += NbConfigData.c
-libagesa-y += NbInit.c
-libagesa-y += NbInitAtEarly.c
-libagesa-y += NbInitAtEnv.c
-libagesa-y += NbInitAtLatePost.c
-libagesa-y += NbInitAtPost.c
-libagesa-y += NbInitAtReset.c
-libagesa-y += NbPowerMgmt.c
-libagesa-y += NbSmuLib.c

@@ -22,12 +22,6 @@
 #include <southbridge/intel/i82801ix/nvs.h>
 #include "thermal.h"
 
-static void acpi_update_thermal_table(global_nvs_t *gnvs)
-{
-	gnvs->tcrt = CRITICAL_TEMPERATURE;
-	gnvs->tpsv = PASSIVE_TEMPERATURE;
-}
-
 void acpi_create_gnvs(global_nvs_t *gnvs)
 {
 	memset((void *)gnvs, 0, sizeof(*gnvs));
@@ -38,7 +32,8 @@ void acpi_create_gnvs(global_nvs_t *gnvs)
 	gnvs->cmap = 0x01;
 	gnvs->cmbp = 0x01;
 
-	acpi_update_thermal_table(gnvs);
+	gnvs->tcrt = CRITICAL_TEMPERATURE;
+	gnvs->tpsv = PASSIVE_TEMPERATURE;
 }
 
 unsigned long acpi_fill_madt(unsigned long current)

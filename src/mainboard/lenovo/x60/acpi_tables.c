@@ -18,17 +18,12 @@
 #include <southbridge/intel/i82801gx/nvs.h>
 #include "thermal.h"
 
-static void acpi_update_thermal_table(global_nvs_t *gnvs)
-{
-	gnvs->tcrt = CRITICAL_TEMPERATURE;
-	gnvs->tpsv = PASSIVE_TEMPERATURE;
-}
-
 void acpi_create_gnvs(global_nvs_t *gnvs)
 {
 	/* Enable both COM ports */
 	gnvs->cmap = 0x01;
 	gnvs->cmbp = 0x01;
 
-	acpi_update_thermal_table(gnvs);
+	gnvs->tcrt = CRITICAL_TEMPERATURE;
+	gnvs->tpsv = PASSIVE_TEMPERATURE;
 }

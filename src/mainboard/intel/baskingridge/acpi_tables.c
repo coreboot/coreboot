@@ -23,8 +23,28 @@
 
 #include "thermal.h"
 
-static void acpi_update_thermal_table(global_nvs_t *gnvs)
+void acpi_create_gnvs(global_nvs_t *gnvs)
 {
+	/* Enable USB ports in S3 */
+	gnvs->s3u0 = 1;
+	gnvs->s3u1 = 1;
+
+	/*
+	 * Enable Front USB ports in S5 by default
+	 * to be consistent with back port behavior
+	 */
+	gnvs->s5u0 = 1;
+	gnvs->s5u1 = 1;
+
+	/* TPM Present */
+	gnvs->tpmp = 1;
+
+
+#if CONFIG(CHROMEOS)
+	/* Emerald Lake has no EC (?) */
+	gnvs->chromeos.vbt2 = ACTIVE_ECFW_RO;
+#endif
+
 	gnvs->f4of = FAN4_THRESHOLD_OFF;
 	gnvs->f4on = FAN4_THRESHOLD_ON;
 	gnvs->f4pw = FAN4_PWM;
@@ -48,29 +68,4 @@ static void acpi_update_thermal_table(global_nvs_t *gnvs)
 	gnvs->tcrt = CRITICAL_TEMPERATURE;
 	gnvs->tpsv = PASSIVE_TEMPERATURE;
 	gnvs->tmax = MAX_TEMPERATURE;
-}
-
-void acpi_create_gnvs(global_nvs_t *gnvs)
-{
-	/* Enable USB ports in S3 */
-	gnvs->s3u0 = 1;
-	gnvs->s3u1 = 1;
-
-	/*
-	 * Enable Front USB ports in S5 by default
-	 * to be consistent with back port behavior
-	 */
-	gnvs->s5u0 = 1;
-	gnvs->s5u1 = 1;
-
-	/* TPM Present */
-	gnvs->tpmp = 1;
-
-
-#if CONFIG(CHROMEOS)
-	/* Emerald Lake has no EC (?) */
-	gnvs->chromeos.vbt2 = ACTIVE_ECFW_RO;
-#endif
-
-	acpi_update_thermal_table(gnvs);
 }

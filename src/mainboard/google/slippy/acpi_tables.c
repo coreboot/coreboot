@@ -24,16 +24,6 @@
 
 #include "thermal.h"
 
-static void acpi_update_thermal_table(global_nvs_t *gnvs)
-{
-	gnvs->tmps = TEMPERATURE_SENSOR_ID;
-	gnvs->tcrt = CRITICAL_TEMPERATURE;
-	gnvs->tpsv = PASSIVE_TEMPERATURE;
-	gnvs->tmax = MAX_TEMPERATURE;
-	gnvs->f0pw = EC_THROTTLE_POWER_LIMIT;
-	gnvs->flvl = 1;
-}
-
 void acpi_create_gnvs(global_nvs_t *gnvs)
 {
 	/* Enable USB ports in S3 */
@@ -53,5 +43,10 @@ void acpi_create_gnvs(global_nvs_t *gnvs)
 		ACTIVE_ECFW_RO : ACTIVE_ECFW_RW;
 #endif
 
-	acpi_update_thermal_table(gnvs);
+	gnvs->tmps = TEMPERATURE_SENSOR_ID;
+	gnvs->tcrt = CRITICAL_TEMPERATURE;
+	gnvs->tpsv = PASSIVE_TEMPERATURE;
+	gnvs->tmax = MAX_TEMPERATURE;
+	gnvs->f0pw = EC_THROTTLE_POWER_LIMIT;
+	gnvs->flvl = 1;
 }

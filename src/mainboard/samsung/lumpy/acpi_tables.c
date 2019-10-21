@@ -27,8 +27,24 @@
 
 static global_nvs_t *gnvs_;
 
-static void acpi_update_thermal_table(global_nvs_t *gnvs)
+void acpi_create_gnvs(global_nvs_t *gnvs)
 {
+	gnvs_ = gnvs;
+
+	/*
+	 * Disable 3G in suspend by default.
+	 * Provide option to enable for http://crosbug.com/p/7925
+	 */
+	gnvs->s33g = 0;
+
+	/* Disable USB ports in S3 by default */
+	gnvs->s3u0 = 0;
+	gnvs->s3u1 = 0;
+
+	/* Disable USB ports in S5 by default */
+	gnvs->s5u0 = 0;
+	gnvs->s5u1 = 0;
+
 	gnvs->f4of = FAN4_THRESHOLD_OFF;
 	gnvs->f4on = FAN4_THRESHOLD_ON;
 
@@ -48,28 +64,6 @@ static void acpi_update_thermal_table(global_nvs_t *gnvs)
 	gnvs->tpsv = PASSIVE_TEMPERATURE;
 	gnvs->tmax = MAX_TEMPERATURE;
 	gnvs->flvl = 5;
-}
-
-void acpi_create_gnvs(global_nvs_t *gnvs)
-{
-	gnvs_ = gnvs;
-
-	/*
-	 * Disable 3G in suspend by default.
-	 * Provide option to enable for http://crosbug.com/p/7925
-	 */
-	gnvs->s33g = 0;
-
-	/* Disable USB ports in S3 by default */
-	gnvs->s3u0 = 0;
-	gnvs->s3u1 = 0;
-
-	/* Disable USB ports in S5 by default */
-	gnvs->s5u0 = 0;
-	gnvs->s5u1 = 0;
-
-
-	acpi_update_thermal_table(gnvs);
 
 	gnvs->chromeos.vbt2 = ec_read(0xcb) ? ACTIVE_ECFW_RW : ACTIVE_ECFW_RO;
 }

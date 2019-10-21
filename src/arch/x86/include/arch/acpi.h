@@ -147,19 +147,19 @@ typedef struct acpi_table_header {
 
 /* RSDT (Root System Description Table) */
 typedef struct acpi_rsdt {
-	struct acpi_table_header header;
+	acpi_header_t header;
 	u32 entry[MAX_ACPI_TABLES];
 } __packed acpi_rsdt_t;
 
 /* XSDT (Extended System Description Table) */
 typedef struct acpi_xsdt {
-	struct acpi_table_header header;
+	acpi_header_t header;
 	u64 entry[MAX_ACPI_TABLES];
 } __packed acpi_xsdt_t;
 
 /* HPET timers */
 typedef struct acpi_hpet {
-	struct acpi_table_header header;
+	acpi_header_t header;
 	u32 id;
 	struct acpi_gen_regaddr addr;
 	u8 number;
@@ -169,19 +169,19 @@ typedef struct acpi_hpet {
 
 /* MCFG (PCI Express MMIO config space BAR description table) */
 typedef struct acpi_mcfg {
-	struct acpi_table_header header;
+	acpi_header_t header;
 	u8 reserved[8];
 } __packed acpi_mcfg_t;
 
 typedef struct acpi_tcpa {
-	struct acpi_table_header header;
+	acpi_header_t header;
 	u16 platform_class;
 	u32 laml;
 	u64 lasa;
 } __packed acpi_tcpa_t;
 
 typedef struct acpi_tpm2 {
-	struct acpi_table_header header;
+	acpi_header_t header;
 	u16 platform_class;
 	u8  reserved[2];
 	u64 control_area;
@@ -202,7 +202,7 @@ typedef struct acpi_mcfg_mmconfig {
 
 /* SRAT (System Resource Affinity Table) */
 typedef struct acpi_srat {
-	struct acpi_table_header header;
+	acpi_header_t header;
 	u32 resv;
 	u64 resv1;
 	/* Followed by static resource allocation structure[n] */
@@ -239,13 +239,13 @@ typedef struct acpi_srat_mem {
 
 /* SLIT (System Locality Distance Information Table) */
 typedef struct acpi_slit {
-	struct acpi_table_header header;
+	acpi_header_t header;
 	/* Followed by static resource allocation 8+byte[num*num] */
 } __packed acpi_slit_t;
 
 /* MADT (Multiple APIC Description Table) */
 typedef struct acpi_madt {
-	struct acpi_table_header header;
+	acpi_header_t header;
 	u32 lapic_addr;			/* Local APIC address */
 	u32 flags;			/* Multiple APIC flags */
 } __packed acpi_madt_t;
@@ -266,7 +266,7 @@ typedef struct acpi_vfct_image_hdr {
 
 /* VFCT (VBIOS Fetch Table) */
 typedef struct acpi_vfct {
-	struct acpi_table_header header;
+	acpi_header_t header;
 	u8  TableUUID[16];
 	u32 VBIOSImageOffset;
 	u32 Lib1ImageOffset;
@@ -294,7 +294,7 @@ typedef struct acpi_ivrs_ivhd {
 
 /* IVRS (I/O Virtualization Reporting Structure) Type 10h */
 typedef struct acpi_ivrs {
-	struct acpi_table_header header;
+	acpi_header_t header;
 	uint32_t iv_info;
 	uint32_t reserved[2];
 	struct acpi_ivrs_ivhd ivhd;
@@ -382,7 +382,7 @@ typedef struct dmar_andd_entry {
 
 /* DMAR (DMA Remapping Reporting Structure) */
 typedef struct acpi_dmar {
-	struct acpi_table_header header;
+	acpi_header_t header;
 	u8 host_address_width;
 	u8 flags;
 	u8 reserved[10];
@@ -466,7 +466,7 @@ typedef struct acpi_madt_irqoverride {
 
 /* DBG2: Microsoft Debug Port Table 2 header */
 typedef struct acpi_dbg2_header {
-	struct acpi_table_header header;
+	acpi_header_t header;
 	uint32_t devices_offset;
 	uint32_t devices_count;
 } __attribute__((packed)) acpi_dbg2_header_t;
@@ -489,7 +489,7 @@ typedef struct acpi_dbg2_device {
 
 /* FADT (Fixed ACPI Description Table) */
 typedef struct acpi_fadt {
-	struct acpi_table_header header;
+	acpi_header_t header;
 	u32 firmware_ctrl;
 	u32 dsdt;
 	u8 reserved;	/* Should be 0 */
@@ -634,7 +634,7 @@ typedef struct acpi_facs {
 
 /* ECDT (Embedded Controller Boot Resources Table) */
 typedef struct acpi_ecdt {
-	struct acpi_table_header header;
+	acpi_header_t header;
 	struct acpi_gen_regaddr ec_control;	/* EC control register */
 	struct acpi_gen_regaddr ec_data;	/* EC data register */
 	u32 uid;				/* UID */
@@ -644,7 +644,7 @@ typedef struct acpi_ecdt {
 
 /* HEST (Hardware Error Source Table) */
 typedef struct acpi_hest {
-	struct acpi_table_header header;
+	acpi_header_t header;
 	u32 error_source_count;
 	/* error_source_struct(s) */
 } __packed acpi_hest_t;
@@ -677,7 +677,7 @@ typedef struct acpi_hest_hen {
 
 /* BERT (Boot Error Record Table) */
 typedef struct acpi_bert {
-	struct acpi_table_header header;
+	acpi_header_t header;
 	u32 region_length;
 	u64 error_region;
 } __packed acpi_bert_t;
@@ -794,7 +794,7 @@ enum acpi_ipmi_interface_type {
 
 /* ACPI IPMI 2.0 */
 struct acpi_spmi {
-	struct acpi_table_header header;
+	acpi_header_t header;
 	u8 interface_type;
 	u8 reserved;
 	u16 specification_revision;

@@ -11,6 +11,8 @@
  * GNU General Public License for more details.
  */
 
+#include <cpu/x86/mtrr.h>
+#include <cpu/x86/cache.h>
 #include <cpu/x86/post_code.h>
 
 /*
@@ -42,6 +44,45 @@ bootblock_pre_c_entry:
 
 cache_as_ram:
 	post_code(0x20)
+
+	/* Cache the rom and update the microcode */
+cache_rom:
+	/* Disable cache */
+	movl	%cr0, %eax
+	orl	$CR0_CacheDisable, %eax
+	movl	%eax, %cr0
+
+	movl	$MTRR_PHYS_BASE(1), %ecx
+	xorl	%edx, %edx
+	movl	$(CACHE_ROM_BASE | MTRR_TYPE_WRPROT), %eax
+	wrmsr
+
+	movl	$MTRR_PHYS_MASK(1), %ecx
+	rdmsr
+	movl	$(~(CACHE_ROM_SIZE - 1) | MTRR_PHYS_MASK_VALID), %eax
+	wrmsr
+
+	/* Enable cache */
+	movl	%cr0, %eax
+	andl	$(~(CR0_CacheDisable | CR0_NoWriteThrough)), %eax
+	invd
+	movl	%eax, %cr0
+
+	/* Enable MTRR. */
+	movl	$MTRR_DEF_TYPE_MSR, %ecx
+	rdmsr
+	orl	$MTRR_DEF_TYPE_EN, %eax
+	wrmsr
+
+	/* The Google FSP release for Braswell has broken microcode update
+	   code and FSP needs the installed microcode revision to be non zero.
+	   It is better to have coreboot do it instead of relying on a fragile
+	   blob. */
+update_microcode:
+	/* put the return address in %esp */
+	movl	$end_microcode_update, %esp
+	jmp	update_bsp_microcode
+end_microcode_update:
 
 	/*
 	 * Find the FSP binary in cbfs.

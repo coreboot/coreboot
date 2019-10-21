@@ -19,6 +19,7 @@ verstage-$(CONFIG_SEPARATE_VERSTAGE) += verstage.c
 
 bootblock-$(CONFIG_USE_GENERIC_FSP_CAR_INC) += cache_as_ram.S
 bootblock-y += fsp_util.c
+bootblock-y += ../../../cpu/intel/microcode/microcode_asm.S
 
 romstage-y += car.c
 romstage-y += fsp_util.c

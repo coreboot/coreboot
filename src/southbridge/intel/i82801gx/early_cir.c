@@ -29,9 +29,6 @@ void ich7_setup_cir(void)
 	RCBA32(0x0214) = 0x10030549;
 	RCBA32(0x0218) = 0x00020504;
 	RCBA8(0x0220) = 0xc5;
-	reg32 = RCBA32(GCS);
-	reg32 |= (1 << 6);
-	RCBA32(GCS) = reg32;
 	RCBA32_AND_OR(0x3430, ~(3 << 0), 1 << 0);
 	RCBA16(0x0200) = 0x2008;
 	RCBA8(0x2027) = 0x0d;
@@ -51,5 +48,9 @@ void ich7_setup_cir(void)
 			reg32 |= (5 << 16);
 			RCBA32(0x2034) = reg32;
 		}
+		/* FERR# MUX Enable (FME) */
+		reg32 = RCBA32(GCS);
+		reg32 |= (1 << 6);
+		RCBA32(GCS) = reg32;
 	}
 }

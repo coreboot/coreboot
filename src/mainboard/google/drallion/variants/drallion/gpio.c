@@ -78,7 +78,7 @@ static const struct pad_config gpio_table[] = {
 /* GSPI0_MOSI */	PAD_NC(GPP_B18, NONE),
 /* GSPI1_CS# */		PAD_NC(GPP_B19, NONE), /* HDD_FALL_INT (nostuff) */
 /* GSPI1_CLK */		PAD_NC(GPP_B20, NONE),
-/* GSPI1_MISO */	PAD_CFG_GPO(GPP_B21, 1, PLTRST), /* PCH_3.3V_TS_EN */
+/* GSPI1_MISO */	PAD_CFG_GPO(GPP_B21, 0, PLTRST), /* PCH_3.3V_TS_EN */
 /* GSPI1_MOSI */	PAD_NC(GPP_B22, NONE),
 /* SML1ALERT# */	PAD_NC(GPP_B23, DN_20K),
 

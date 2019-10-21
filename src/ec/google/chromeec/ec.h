@@ -35,6 +35,7 @@ uint8_t google_chromeec_get_event(void);
 /* Check if EC supports feature EC_FEATURE_UNIFIED_WAKE_MASKS */
 bool google_chromeec_is_uhepi_supported(void);
 int google_ec_running_ro(void);
+enum ec_current_image google_chromeec_get_current_image(void);
 void google_chromeec_init(void);
 int google_chromeec_pd_get_amode(uint16_t svid);
 int google_chromeec_wait_for_displayport(long timeout);
@@ -150,6 +151,13 @@ int crosec_command_proto(struct chromeec_command *cec_command,
 			 crosec_io_t crosec_io, void *context);
 
 /**
+ * Performs light verification of the EC<->AP communcation channel.
+ *
+ * @return		0 on success, -1 on error
+ */
+int google_chromeec_hello(void);
+
+/**
  * Send a command to a CrOS EC
  *
  * @param cec_command: CrOS EC command to send
@@ -177,5 +185,118 @@ int google_chromeec_get_mkbp_event(struct ec_response_get_next_event *event);
 
 /* Log host events to eventlog based on the mask provided. */
 void google_chromeec_log_events(uint64_t mask);
+
+/**
+ * Protect/un-protect EC flash regions.
+ *
+ * @param mask		Set/clear the requested bits in 'flags'
+ * @param flags		Flash protection flags
+ * @param resp		Pointer to response structure
+ * @return		0 on success, -1 on error
+ */
+int google_chromeec_flash_protect(uint32_t mask, uint32_t flags,
+				  struct ec_response_flash_protect *resp);
+/**
+ * Calculate image hash for vboot.
+ *
+ * @param hash_type	The hash types supported by the EC for vboot
+ * @param offset	The offset to start hashing in flash
+ * @param resp		Pointer to response structure
+ * @return		0 on success, -1 on error
+ */
+int google_chromeec_start_vboot_hash(enum ec_vboot_hash_type hash_type,
+				     uint32_t offset,
+				     struct ec_response_vboot_hash *resp);
+/**
+ * Return the EC's vboot image hash.
+ *
+ * @param offset	Get hash for flash region beginning here
+ * @param resp		Pointer to response structure
+ * @return		0 on success, -1 on error
+ *
+ */
+int google_chromeec_get_vboot_hash(uint32_t offset,
+				   struct ec_response_vboot_hash *resp);
+
+/**
+ * Get offset and size of the specified EC flash region.
+ *
+ * @param region	Which region of EC flash
+ * @param offset	Gets filled with region's offset
+ * @param size		Gets filled with region's size
+ * @return		0 on success, -1 on error
+ */
+int google_chromeec_flash_region_info(enum ec_flash_region region,
+				      uint32_t *offset, uint32_t *size);
+/**
+ * Erase a region of EC flash.
+ *
+ * @param offset	Where to begin erasing
+ * @param size		Size of area to erase
+ * @return		0 on success, -1 on error
+ */
+int google_chromeec_flash_erase(uint32_t region_offset, uint32_t region_size);
+
+/**
+ * Return information about the entire flash.
+ *
+ * @param info		Pointer to response structure
+ * @return		0 on success, -1 on error
+ */
+int google_chromeec_flash_info(struct ec_response_flash_info *info);
+
+/**
+ * Write a block into EC flash.
+ *
+ * @param data		Pointer to data to write to flash, prefixed by a
+ *			struct ec_params_flash_write
+ * @param offset        Offset to begin writing data
+ * @param size		Number of bytes to be written to flash from data
+ * @return		0 on success, -1 on error
+ */
+int google_chromeec_flash_write_block(const uint8_t *data, uint32_t size);
+
+/**
+ * Verify flash using EFS if available.
+ *
+ * @param region	Which flash region to verify
+ * @return		0 on success, -1 on error
+ */
+int google_chromeec_efs_verify(enum ec_flash_region region);
+
+/**
+ * Command EC to perform battery cutoff.
+ *
+ * @param flags		Flags to pass to the EC
+ * @return		0 on success, -1 on error
+ */
+int google_chromeec_battery_cutoff(uint8_t flags);
+
+/**
+ * Check if the EC is requesting the system to limit input power.
+ *
+ * @param limit_power	If successful, limit_power is 1 if EC is requesting
+ *			input power limits, otherwise 0.
+ * @return		0 on success, -1 on error
+ */
+int google_chromeec_read_limit_power_request(int *limit_power);
+
+/**
+ * Get information about the protocol that the EC speaks.
+ *
+ * @param resp		Filled with host command protocol information.
+ * @return		0 on success, -1 on error
+ */
+int google_chromeec_get_protocol_info(
+	struct ec_response_get_protocol_info *resp);
+
+/**
+ * Get available versions of the specified command.
+ *
+ * @param command	Command ID
+ * @param pmask		Pointer to version mask
+ * @return		0 on success, -1 on error
+ */
+int google_chromeec_get_cmd_versions(int command, uint32_t *pmask);
 
 #endif /* _EC_GOOGLE_CHROMEEC_EC_H */

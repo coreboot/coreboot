@@ -483,7 +483,6 @@ void google_chromeec_events_init(const struct google_chromeec_event_info *info,
 
 	/* Clear wake event mask. */
 	google_chromeec_set_wake_mask(0);
-
 }
 
 int google_chromeec_check_feature(int feature)
@@ -507,16 +506,295 @@ int google_chromeec_check_feature(int feature)
 	return resp.flags[feature / 32] & EC_FEATURE_MASK_0(feature);
 }
 
+int google_chromeec_get_cmd_versions(int command, uint32_t *pmask)
+{
+	struct ec_params_get_cmd_versions_v1 params = {
+		.cmd = command,
+	};
+	struct ec_response_get_cmd_versions resp = {};
+	struct chromeec_command cmd = {
+		.cmd_code = EC_CMD_GET_CMD_VERSIONS,
+		.cmd_version = 1,
+		.cmd_size_in = sizeof(params),
+		.cmd_data_in = &params,
+		.cmd_size_out = sizeof(resp),
+		.cmd_data_out = &resp,
+		.cmd_dev_index = 0,
+	};
+
+	if (google_chromeec_command(&cmd) != 0)
+		return -1;
+
+	*pmask = resp.version_mask;
+	return 0;
+}
+
+int google_chromeec_get_vboot_hash(uint32_t offset,
+				struct ec_response_vboot_hash *resp)
+{
+	struct ec_params_vboot_hash params = {
+		.cmd = EC_VBOOT_HASH_GET,
+		.offset = offset,
+	};
+	struct chromeec_command cmd = {
+		.cmd_code = EC_CMD_VBOOT_HASH,
+		.cmd_version = 0,
+		.cmd_size_in = sizeof(params),
+		.cmd_data_in = &params,
+		.cmd_size_out = sizeof(*resp),
+		.cmd_data_out = resp,
+		.cmd_dev_index = 0,
+	};
+
+	if (google_chromeec_command(&cmd) != 0)
+		return -1;
+
+	return 0;
+}
+
+int google_chromeec_start_vboot_hash(enum ec_vboot_hash_type hash_type,
+				uint32_t hash_offset,
+				struct ec_response_vboot_hash *resp)
+{
+	struct ec_params_vboot_hash params = {
+		.cmd = EC_VBOOT_HASH_START,
+		.hash_type = hash_type,
+		.nonce_size = 0,
+		.offset = hash_offset,
+	};
+	struct chromeec_command cmd = {
+		.cmd_code = EC_CMD_VBOOT_HASH,
+		.cmd_version = 0,
+		.cmd_size_in = sizeof(params),
+		.cmd_data_in = &params,
+		.cmd_size_out = sizeof(*resp),
+		.cmd_data_out = resp,
+		.cmd_dev_index = 0,
+	};
+
+	if (google_chromeec_command(&cmd) != 0)
+		return -1;
+
+	return 0;
+}
+
+int google_chromeec_flash_protect(uint32_t mask, uint32_t flags,
+	struct ec_response_flash_protect *resp)
+{
+	struct ec_params_flash_protect params = {
+		.mask = mask,
+		.flags = flags,
+	};
+	struct chromeec_command cmd = {
+		.cmd_code = EC_CMD_FLASH_PROTECT,
+		.cmd_version = EC_VER_FLASH_PROTECT,
+		.cmd_size_in = sizeof(params),
+		.cmd_data_in = &params,
+		.cmd_size_out = sizeof(*resp),
+		.cmd_data_out = resp,
+		.cmd_dev_index = 0,
+	};
+
+	if (google_chromeec_command(&cmd) != 0)
+		return -1;
+
+	return 0;
+}
+
+int google_chromeec_flash_region_info(enum ec_flash_region region,
+				uint32_t *offset, uint32_t *size)
+{
+	struct ec_params_flash_region_info params = {
+		.region = region,
+	};
+	struct ec_response_flash_region_info resp = {};
+	struct chromeec_command cmd = {
+		.cmd_code = EC_CMD_FLASH_REGION_INFO,
+		.cmd_version = EC_VER_FLASH_REGION_INFO,
+		.cmd_size_in = sizeof(params),
+		.cmd_data_in = &params,
+		.cmd_size_out = sizeof(resp),
+		.cmd_data_out = &resp,
+		.cmd_dev_index = 0,
+	};
+
+	if (google_chromeec_command(&cmd) != 0)
+		return -1;
+
+	if (offset)
+		*offset = resp.offset;
+	if (size)
+		*size = resp.size;
+
+	return 0;
+}
+
+int google_chromeec_flash_erase(uint32_t offset, uint32_t size)
+{
+	struct ec_params_flash_erase params = {
+		.offset = offset,
+		.size = size,
+	};
+	struct chromeec_command cmd = {
+		.cmd_code = EC_CMD_FLASH_ERASE,
+		.cmd_version = 0,
+		.cmd_size_in = sizeof(params),
+		.cmd_data_in = &params,
+		.cmd_size_out = 0,
+		.cmd_data_out = NULL,
+		.cmd_dev_index = 0,
+	};
+
+	if (google_chromeec_command(&cmd) != 0)
+		return -1;
+
+	return 0;
+}
+
+int google_chromeec_flash_info(struct ec_response_flash_info *info)
+{
+	struct chromeec_command cmd;
+
+	cmd.cmd_code = EC_CMD_FLASH_INFO;
+	cmd.cmd_version = 0;
+	cmd.cmd_size_in = 0;
+	cmd.cmd_data_in = NULL;
+	cmd.cmd_size_out = sizeof(*info);
+	cmd.cmd_data_out = info;
+	cmd.cmd_dev_index = 0;
+
+	if (google_chromeec_command(&cmd) != 0)
+		return -1;
+
+	return 0;
+}
+
+/*
+ * Write a block into EC flash.  Expects params_data to be a buffer where
+ * the first N bytes are a struct ec_params_flash_write, and the rest of it
+ * is the data to write to flash.
+*/
+int google_chromeec_flash_write_block(const uint8_t *params_data,
+				uint32_t bufsize)
+{
+	struct chromeec_command cmd = {
+		.cmd_code = EC_CMD_FLASH_WRITE,
+		.cmd_version = EC_VER_FLASH_WRITE,
+		.cmd_size_out = 0,
+		.cmd_data_out = NULL,
+		.cmd_size_in = bufsize,
+		.cmd_data_in = params_data,
+		.cmd_dev_index = 0,
+	};
+
+	assert(params_data);
+
+	return google_chromeec_command(&cmd);
+}
+
+/*
+ * EFS verification of flash.
+ */
+int google_chromeec_efs_verify(enum ec_flash_region region)
+{
+	struct ec_params_efs_verify params = {
+		.region = region,
+	};
+	struct chromeec_command cmd = {
+		.cmd_code = EC_CMD_EFS_VERIFY,
+		.cmd_version = 0,
+		.cmd_size_in = sizeof(params),
+		.cmd_data_in = &params,
+		.cmd_size_out = 0,
+		.cmd_data_out = NULL,
+		.cmd_dev_index = 0,
+	};
+	int rv;
+
+	/* It's okay if the EC doesn't support EFS */
+	rv = google_chromeec_command(&cmd);
+	if (rv != 0 && (cmd.cmd_code == EC_RES_INVALID_COMMAND))
+		return 0;
+	else if (rv != 0)
+		return -1;
+
+	return 0;
+}
+
+int google_chromeec_battery_cutoff(uint8_t flags)
+{
+	struct ec_params_battery_cutoff params = {
+		.flags = flags,
+	};
+	struct chromeec_command cmd = {
+		.cmd_code = EC_CMD_BATTERY_CUT_OFF,
+		.cmd_version = 1,
+		.cmd_size_in = sizeof(params),
+		.cmd_data_in = &params,
+		.cmd_data_out = NULL,
+		.cmd_size_out = 0,
+		.cmd_dev_index = 0,
+	};
+
+	if (google_chromeec_command(&cmd) != 0)
+		return -1;
+
+	return 0;
+}
+
+int google_chromeec_read_limit_power_request(int *limit_power)
+{
+	struct ec_params_charge_state params = {
+		.cmd = CHARGE_STATE_CMD_GET_PARAM,
+		.get_param.param = CS_PARAM_LIMIT_POWER,
+	};
+	struct ec_response_charge_state resp = {};
+	struct chromeec_command cmd = {
+		.cmd_code = EC_CMD_CHARGE_STATE,
+		.cmd_version = 0,
+		.cmd_size_in = sizeof(params),
+		.cmd_data_in = &params,
+		.cmd_size_out = sizeof(resp),
+		.cmd_data_out = &resp,
+		.cmd_dev_index = 0,
+	};
+
+	if (google_chromeec_command(&cmd))
+		return -1;
+
+	*limit_power = resp.get_param.value;
+	return 0;
+}
+
+int google_chromeec_get_protocol_info(
+	struct ec_response_get_protocol_info *resp)
+{
+	struct chromeec_command cmd = {
+		.cmd_code = EC_CMD_GET_PROTOCOL_INFO,
+		.cmd_version = 0,
+		.cmd_size_in = 0,
+		.cmd_data_in = NULL,
+		.cmd_data_out = resp,
+		.cmd_size_out = sizeof(*resp),
+		.cmd_dev_index = 0,
+	};
+
+	if (google_chromeec_command(&cmd))
+		return -1;
+
+	return 0;
+}
+
 int google_chromeec_set_sku_id(uint32_t skuid)
 {
-	struct ec_sku_id_info set_skuid = {
+	struct ec_sku_id_info params = {
 		.sku_id = skuid
 	};
 	struct chromeec_command cmd = {
 		.cmd_code = EC_CMD_SET_SKU_ID,
 		.cmd_version = 0,
-		.cmd_size_in = sizeof(set_skuid),
-		.cmd_data_in = &set_skuid,
+		.cmd_size_in = sizeof(params),
+		.cmd_data_in = &params,
 		.cmd_data_out = NULL,
 		.cmd_size_out = 0,
 		.cmd_dev_index = 0,
@@ -944,7 +1222,7 @@ int google_chromeec_set_usb_pd_role(uint8_t port, enum usb_pd_control_role role)
 	return google_chromeec_command(&cmd);
 }
 
-static int google_chromeec_hello(void)
+int google_chromeec_hello(void)
 {
 	struct ec_params_hello params = {
 		.in_data = 0x10203040,
@@ -963,6 +1241,10 @@ static int google_chromeec_hello(void)
 	int rv = google_chromeec_command(&cmd);
 	if (rv)
 		return -1;
+
+	if (resp.out_data != (params.in_data + 0x01020304))
+		return -1;
+
 	return 0;
 }
 
@@ -1087,10 +1369,14 @@ static void google_chromeec_log_uptimeinfo(void)
 	printk(BIOS_DEBUG, "\n");
 }
 
-static int ec_image_type; /* Cached EC image type (ro or rw). */
-
-void google_chromeec_init(void)
+/* Cache and retrieve the EC image type (ro or rw) */
+enum ec_current_image google_chromeec_get_current_image(void)
 {
+	MAYBE_STATIC_BSS enum ec_current_image ec_image_type = EC_IMAGE_UNKNOWN;
+
+	if (ec_image_type != EC_IMAGE_UNKNOWN)
+		return ec_image_type;
+
 	struct ec_response_get_version resp = {};
 	struct chromeec_command cmd = {
 		.cmd_code = EC_CMD_GET_VERSION,
@@ -1101,7 +1387,6 @@ void google_chromeec_init(void)
 		.cmd_dev_index = 0,
 	};
 
-	google_chromeec_hello();
 	google_chromeec_command(&cmd);
 
 	if (cmd.cmd_code) {
@@ -1116,12 +1401,18 @@ void google_chromeec_init(void)
 		ec_image_type = resp.current_image;
 	}
 
+	/* Will still be UNKNOWN if command failed */
+	return ec_image_type;
+}
+
+void google_chromeec_init(void)
+{
 	google_chromeec_log_uptimeinfo();
 }
 
 int google_ec_running_ro(void)
 {
-	return (ec_image_type == EC_IMAGE_RO);
+	return (google_chromeec_get_current_image() == EC_IMAGE_RO);
 }
 
 /**
@@ -1148,29 +1439,29 @@ int google_chromeec_pd_get_amode(uint16_t svid)
 		return -1;
 
 	for (i = 0; i < resp.num_ports; i++) {
-		struct ec_params_usb_pd_get_mode_request p;
-		struct ec_params_usb_pd_get_mode_response res;
+		struct ec_params_usb_pd_get_mode_request params;
+		struct ec_params_usb_pd_get_mode_response resp2;
 		int svid_idx = 0;
 
 		do {
 			/* Reset cmd in each iteration in case
 			   google_chromeec_command changes it. */
-			p.port = i;
-			p.svid_idx = svid_idx;
+			params.port = i;
+			params.svid_idx = svid_idx;
 			cmd.cmd_code = EC_CMD_USB_PD_GET_AMODE;
 			cmd.cmd_version = 0;
-			cmd.cmd_data_in = &p;
-			cmd.cmd_size_in = sizeof(p);
-			cmd.cmd_data_out = &res;
-			cmd.cmd_size_out = sizeof(res);
+			cmd.cmd_data_in = &params;
+			cmd.cmd_size_in = sizeof(params);
+			cmd.cmd_data_out = &resp2;
+			cmd.cmd_size_out = sizeof(resp2);
 			cmd.cmd_dev_index = 0;
 
 			if (google_chromeec_command(&cmd) < 0)
 				return -1;
-			if (res.svid == svid)
+			if (resp2.svid == svid)
 				return 1;
 			svid_idx++;
-		} while (res.svid);
+		} while (resp2.svid);
 	}
 
 	return 0;

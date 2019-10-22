@@ -29,13 +29,6 @@
 
 #define GPE_EC_SCI	12
 
-static void mainboard_smm_init(void)
-{
-	printk(BIOS_DEBUG, "initializing SMI\n");
-	/* Enable 0x1600/0x1600 register pair */
-	ec_set_bit(0x00, 0x05);
-}
-
 static void mainboard_smi_save_cmos(void)
 {
 	u8 val;
@@ -55,13 +48,6 @@ static void mainboard_smi_save_cmos(void)
 
 int mainboard_io_trap_handler(int smif)
 {
-	static int smm_initialized;
-
-	if (!smm_initialized) {
-		mainboard_smm_init();
-		smm_initialized = 1;
-	}
-
 	switch (smif) {
 	case SMI_DOCK_CONNECT:
 		ec_clr_bit(0x03, 2);

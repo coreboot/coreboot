@@ -28,13 +28,6 @@
 
 #define LVTMA_BL_MOD_LEVEL 0x7af9 /* ATI Radeon backlight level */
 
-static void mainboard_smm_init(void)
-{
-	printk(BIOS_DEBUG, "initializing SMI\n");
-	/* Enable 0x1600/0x1600 register pair */
-	ec_set_bit(0x00, 0x05);
-}
-
 static void mainboard_smi_brightness_down(void)
 {
 	u8 *bar;
@@ -59,13 +52,6 @@ static void mainboard_smi_brightness_up(void)
 
 int mainboard_io_trap_handler(int smif)
 {
-	static int smm_initialized;
-
-	if (!smm_initialized) {
-		mainboard_smm_init();
-		smm_initialized = 1;
-	}
-
 	switch (smif) {
 	case SMI_DOCK_CONNECT:
 		/* If there's an legacy I/O module present, we're not

@@ -516,6 +516,7 @@ struct device *new_device(struct bus *parent,
 
 	new_d->enabled = status & 0x01;
 	new_d->hidden = (status >> 1) & 0x01;
+	new_d->mandatory = (status >> 2) & 0x01;
 	new_d->chip_instance = chip_instance;
 	chip_instance->ref_count++;
 
@@ -810,6 +811,7 @@ static void pass1(FILE *fil, FILE *head, struct device *ptr, struct device *next
 	fprintf(fil, "},\n");
 	fprintf(fil, "\t.enabled = %d,\n", ptr->enabled);
 	fprintf(fil, "\t.hidden = %d,\n", ptr->hidden);
+	fprintf(fil, "\t.mandatory = %d,\n", ptr->mandatory);
 	fprintf(fil, "\t.on_mainboard = 1,\n");
 	if (ptr->subsystem_vendor > 0)
 		fprintf(fil, "\t.subsystem_vendor = 0x%04x,\n",

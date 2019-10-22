@@ -119,7 +119,10 @@ struct device {
 	unsigned int  initialized : 1; /* 1 if we have initialized the device */
 	unsigned int    on_mainboard : 1;
 	unsigned int    disable_pcie_aspm : 1;
-	unsigned int    hidden : 1;	/* set if we should hide from UI */
+	/* set if we should hide from UI */
+	unsigned int    hidden : 1;
+	/* set if this device is used even in minimum PCI cases */
+	unsigned int    mandatory : 1;
 	u8 command;
 	uint16_t hotplug_buses; /* Number of hotplug buses to allocate */
 

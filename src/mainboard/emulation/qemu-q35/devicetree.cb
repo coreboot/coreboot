@@ -5,10 +5,10 @@ chip mainboard/emulation/qemu-q35
 		end
 	end
 	device domain 0 on
-		device pci 0.0 on end		# northbridge (q35)
+		device pci 0.0 mandatory end		# northbridge (q35)
 		chip southbridge/intel/i82801ix
 			# present unconditionally
-			device pci 1f.0 on end	# LPC
+			device pci 1f.0 mandatory end	# LPC
 			device pci 1f.2 on end	# SATA
 			device pci 1f.3 on end	# SMBus
 

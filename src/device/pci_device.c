@@ -1195,6 +1195,12 @@ void pci_scan_bus(struct bus *bus, unsigned int min_devfn,
 	 * non-existence and single function devices.
 	 */
 	for (devfn = min_devfn; devfn <= max_devfn; devfn++) {
+		if (CONFIG(MINIMAL_PCI_SCANNING)) {
+			dev = pcidev_path_behind(bus, devfn);
+			if (!dev || !dev->mandatory)
+				continue;
+		}
+
 		/* First thing setup the device structure. */
 		dev = pci_scan_get_dev(bus, devfn);
 

@@ -104,6 +104,8 @@ struct device {
 	/* Indicates device status (enabled / hidden or not). */
 	int enabled;
 	int hidden;
+	/* non-zero if the device should be included in all cases */
+	int mandatory;
 
 	/* Subsystem IDs for the device. */
 	int subsystem_vendor;

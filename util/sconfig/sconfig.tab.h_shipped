@@ -1,8 +1,8 @@
-/* A Bison parser, made by GNU Bison 3.0.5.  */
+/* A Bison parser, made by GNU Bison 3.0.4.  */
 
 /* Bison interface for Yacc-like parsers in C
 
-   Copyright (C) 1984, 1989-1990, 2000-2015, 2018 Free Software Foundation, Inc.
+   Copyright (C) 1984, 1989-1990, 2000-2015 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -30,8 +30,8 @@
    This special exception was added by the Free Software Foundation in
    version 2.2 of Bison.  */
 
-#ifndef YY_YY_UTIL_SCONFIG_SCONFIG_TAB_H_SHIPPED_INCLUDED
-# define YY_YY_UTIL_SCONFIG_SCONFIG_TAB_H_SHIPPED_INCLUDED
+#ifndef YY_YY_HOME_RMINNICH_PROJECTS_LINUXBOOT_COREBOOTNERF_GITHUBCOREBOOT_UTIL_SCONFIG_SCONFIG_TAB_H_SHIPPED_INCLUDED
+# define YY_YY_HOME_RMINNICH_PROJECTS_LINUXBOOT_COREBOOTNERF_GITHUBCOREBOOT_UTIL_SCONFIG_SCONFIG_TAB_H_SHIPPED_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
 # define YYDEBUG 0
@@ -49,34 +49,35 @@ extern int yydebug;
     DEVICE = 259,
     REGISTER = 260,
     BOOL = 261,
-    HIDDEN = 262,
-    BUS = 263,
-    RESOURCE = 264,
-    END = 265,
-    EQUALS = 266,
-    HEX = 267,
-    STRING = 268,
-    PCI = 269,
-    PNP = 270,
-    I2C = 271,
-    APIC = 272,
-    CPU_CLUSTER = 273,
-    CPU = 274,
-    DOMAIN = 275,
-    IRQ = 276,
-    DRQ = 277,
-    SLOT_DESC = 278,
-    IO = 279,
-    NUMBER = 280,
-    SUBSYSTEMID = 281,
-    INHERIT = 282,
-    IOAPIC_IRQ = 283,
-    IOAPIC = 284,
-    PCIINT = 285,
-    GENERIC = 286,
-    SPI = 287,
-    USB = 288,
-    MMIO = 289
+    STATUS = 262,
+    MANDATORY = 263,
+    BUS = 264,
+    RESOURCE = 265,
+    END = 266,
+    EQUALS = 267,
+    HEX = 268,
+    STRING = 269,
+    PCI = 270,
+    PNP = 271,
+    I2C = 272,
+    APIC = 273,
+    CPU_CLUSTER = 274,
+    CPU = 275,
+    DOMAIN = 276,
+    IRQ = 277,
+    DRQ = 278,
+    SLOT_DESC = 279,
+    IO = 280,
+    NUMBER = 281,
+    SUBSYSTEMID = 282,
+    INHERIT = 283,
+    IOAPIC_IRQ = 284,
+    IOAPIC = 285,
+    PCIINT = 286,
+    GENERIC = 287,
+    SPI = 288,
+    USB = 289,
+    MMIO = 290
   };
 #endif
 
@@ -105,4 +106,4 @@ extern YYSTYPE yylval;
 
 int yyparse (void);
 
-#endif /* !YY_YY_UTIL_SCONFIG_SCONFIG_TAB_H_SHIPPED_INCLUDED  */
+#endif /* !YY_YY_HOME_RMINNICH_PROJECTS_LINUXBOOT_COREBOOTNERF_GITHUBCOREBOOT_UTIL_SCONFIG_SCONFIG_TAB_H_SHIPPED_INCLUDED  */

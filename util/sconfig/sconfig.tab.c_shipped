@@ -1,8 +1,8 @@
-/* A Bison parser, made by GNU Bison 3.0.5.  */
+/* A Bison parser, made by GNU Bison 3.0.4.  */
 
 /* Bison implementation for Yacc-like parsers in C
 
-   Copyright (C) 1984, 1989-1990, 2000-2015, 2018 Free Software Foundation, Inc.
+   Copyright (C) 1984, 1989-1990, 2000-2015 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -44,7 +44,7 @@
 #define YYBISON 1
 
 /* Bison version.  */
-#define YYBISON_VERSION "3.0.5"
+#define YYBISON_VERSION "3.0.4"
 
 /* Skeleton name.  */
 #define YYSKELETON_NAME "yacc.c"
@@ -109,8 +109,8 @@ static struct chip_instance *cur_chip_instance;
 
 /* In a future release of Bison, this section will be replaced
    by #include "sconfig.tab.h_shipped".  */
-#ifndef YY_YY_UTIL_SCONFIG_SCONFIG_TAB_H_SHIPPED_INCLUDED
-# define YY_YY_UTIL_SCONFIG_SCONFIG_TAB_H_SHIPPED_INCLUDED
+#ifndef YY_YY_HOME_RMINNICH_PROJECTS_LINUXBOOT_COREBOOTNERF_GITHUBCOREBOOT_UTIL_SCONFIG_SCONFIG_TAB_H_SHIPPED_INCLUDED
+# define YY_YY_HOME_RMINNICH_PROJECTS_LINUXBOOT_COREBOOTNERF_GITHUBCOREBOOT_UTIL_SCONFIG_SCONFIG_TAB_H_SHIPPED_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
 # define YYDEBUG 0
@@ -128,34 +128,35 @@ extern int yydebug;
     DEVICE = 259,
     REGISTER = 260,
     BOOL = 261,
-    HIDDEN = 262,
-    BUS = 263,
-    RESOURCE = 264,
-    END = 265,
-    EQUALS = 266,
-    HEX = 267,
-    STRING = 268,
-    PCI = 269,
-    PNP = 270,
-    I2C = 271,
-    APIC = 272,
-    CPU_CLUSTER = 273,
-    CPU = 274,
-    DOMAIN = 275,
-    IRQ = 276,
-    DRQ = 277,
-    SLOT_DESC = 278,
-    IO = 279,
-    NUMBER = 280,
-    SUBSYSTEMID = 281,
-    INHERIT = 282,
-    IOAPIC_IRQ = 283,
-    IOAPIC = 284,
-    PCIINT = 285,
-    GENERIC = 286,
-    SPI = 287,
-    USB = 288,
-    MMIO = 289
+    STATUS = 262,
+    MANDATORY = 263,
+    BUS = 264,
+    RESOURCE = 265,
+    END = 266,
+    EQUALS = 267,
+    HEX = 268,
+    STRING = 269,
+    PCI = 270,
+    PNP = 271,
+    I2C = 272,
+    APIC = 273,
+    CPU_CLUSTER = 274,
+    CPU = 275,
+    DOMAIN = 276,
+    IRQ = 277,
+    DRQ = 278,
+    SLOT_DESC = 279,
+    IO = 280,
+    NUMBER = 281,
+    SUBSYSTEMID = 282,
+    INHERIT = 283,
+    IOAPIC_IRQ = 284,
+    IOAPIC = 285,
+    PCIINT = 286,
+    GENERIC = 287,
+    SPI = 288,
+    USB = 289,
+    MMIO = 290
   };
 #endif
 
@@ -184,7 +185,7 @@ extern YYSTYPE yylval;
 
 int yyparse (void);
 
-#endif /* !YY_YY_UTIL_SCONFIG_SCONFIG_TAB_H_SHIPPED_INCLUDED  */
+#endif /* !YY_YY_HOME_RMINNICH_PROJECTS_LINUXBOOT_COREBOOTNERF_GITHUBCOREBOOT_UTIL_SCONFIG_SCONFIG_TAB_H_SHIPPED_INCLUDED  */
 
 /* Copy the second part of user declarations.  */
 
@@ -430,10 +431,10 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  3
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   43
+#define YYLAST   40
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  35
+#define YYNTOKENS  36
 /* YYNNTS -- Number of nonterminals.  */
 #define YYNNTS  15
 /* YYNRULES -- Number of rules.  */
@@ -444,7 +445,7 @@ union yyalloc
 /* YYTRANSLATE[YYX] -- Symbol number corresponding to YYX as returned
    by yylex, with out-of-bounds checking.  */
 #define YYUNDEFTOK  2
-#define YYMAXUTOK   289
+#define YYMAXUTOK   290
 
 #define YYTRANSLATE(YYX)                                                \
   ((unsigned int) (YYX) <= YYMAXUTOK ? yytranslate[YYX] : YYUNDEFTOK)
@@ -481,7 +482,8 @@ static const yytype_uint8 yytranslate[] =
        2,     2,     2,     2,     2,     2,     1,     2,     3,     4,
        5,     6,     7,     8,     9,    10,    11,    12,    13,    14,
       15,    16,    17,    18,    19,    20,    21,    22,    23,    24,
-      25,    26,    27,    28,    29,    30,    31,    32,    33,    34
+      25,    26,    27,    28,    29,    30,    31,    32,    33,    34,
+      35
 };
 
 #if YYDEBUG
@@ -500,12 +502,12 @@ static const yytype_uint8 yyrline[] =
 static const char *const yytname[] =
 {
   "$end", "error", "$undefined", "CHIP", "DEVICE", "REGISTER", "BOOL",
-  "HIDDEN", "BUS", "RESOURCE", "END", "EQUALS", "HEX", "STRING", "PCI",
-  "PNP", "I2C", "APIC", "CPU_CLUSTER", "CPU", "DOMAIN", "IRQ", "DRQ",
-  "SLOT_DESC", "IO", "NUMBER", "SUBSYSTEMID", "INHERIT", "IOAPIC_IRQ",
-  "IOAPIC", "PCIINT", "GENERIC", "SPI", "USB", "MMIO", "$accept",
-  "devtree", "$@1", "chipchildren", "devicechildren", "chip", "@2",
-  "device", "@3", "status", "resource", "registers", "subsystemid",
+  "STATUS", "MANDATORY", "BUS", "RESOURCE", "END", "EQUALS", "HEX",
+  "STRING", "PCI", "PNP", "I2C", "APIC", "CPU_CLUSTER", "CPU", "DOMAIN",
+  "IRQ", "DRQ", "SLOT_DESC", "IO", "NUMBER", "SUBSYSTEMID", "INHERIT",
+  "IOAPIC_IRQ", "IOAPIC", "PCIINT", "GENERIC", "SPI", "USB", "MMIO",
+  "$accept", "devtree", "$@1", "chipchildren", "devicechildren", "chip",
+  "@2", "device", "@3", "status", "resource", "registers", "subsystemid",
   "ioapic_irq", "smbios_slot_desc", YY_NULLPTR
 };
 #endif
@@ -518,7 +520,7 @@ static const yytype_uint16 yytoknum[] =
        0,   256,   257,   258,   259,   260,   261,   262,   263,   264,
      265,   266,   267,   268,   269,   270,   271,   272,   273,   274,
      275,   276,   277,   278,   279,   280,   281,   282,   283,   284,
-     285,   286,   287,   288,   289
+     285,   286,   287,   288,   289,   290
 };
 # endif
 
@@ -536,11 +538,11 @@ static const yytype_uint16 yytoknum[] =
      STATE-NUM.  */
 static const yytype_int8 yypact[] =
 {
-     -12,    11,     9,   -12,     1,   -12,   -12,   -12,     0,     5,
-       3,   -12,   -12,   -12,   -12,   -10,     6,     2,     8,   -12,
-     -12,   -12,   -12,   -12,    -3,    -1,   -12,    13,     4,     7,
-     -12,   -12,   -12,   -12,   -12,   -12,    16,    15,    10,   -11,
-      12,    17,    -5,    14,   -12,    18,   -12,   -12,   -12
+     -12,     6,     9,   -12,    -1,   -12,   -12,   -12,     0,     5,
+       1,   -12,   -12,   -12,   -12,   -10,     7,     3,     8,   -12,
+     -12,   -12,   -12,   -12,    -3,    -9,   -12,    11,     2,     4,
+     -12,   -12,   -12,   -12,   -12,   -12,    15,    17,    10,   -11,
+      12,    18,    -5,    13,   -12,    19,   -12,   -12,   -12
 };
 
   /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -558,7 +560,7 @@ static const yytype_uint8 yydefact[] =
   /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-     -12,   -12,   -12,   -12,   -12,    -6,   -12,    19,   -12,   -12,
+     -12,   -12,   -12,   -12,   -12,    -6,   -12,    16,   -12,   -12,
      -12,   -12,   -12,   -12,   -12
 };
 
@@ -574,39 +576,39 @@ static const yytype_int8 yydefgoto[] =
      number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_uint8 yytable[] =
 {
-       4,     9,    12,     4,     9,    10,    25,    26,    19,    20,
-      11,     3,     4,    15,     6,    17,    16,    18,    30,    43,
-      27,    22,    46,    28,    36,    29,    37,    40,    41,    38,
-      45,    48,    39,     0,     0,    42,     0,    44,     0,    47,
-       0,     0,     0,    31
+       4,     9,    12,     4,     9,    10,     3,    25,    26,    19,
+      20,    11,     4,     6,    15,    16,    17,    36,    30,    18,
+      43,    27,    22,    46,    28,    37,    29,    40,    38,     0,
+      39,    41,    45,    48,     0,     0,    42,     0,    44,    47,
+      31
 };
 
 static const yytype_int8 yycheck[] =
 {
-       3,     4,     8,     3,     4,     5,     9,    10,     6,     7,
-      10,     0,     3,     8,    13,    25,    13,    11,    24,    30,
-      23,    13,    27,    26,    25,    28,    13,    11,    13,    25,
-      13,    13,    25,    -1,    -1,    25,    -1,    25,    -1,    25,
-      -1,    -1,    -1,    24
+       3,     4,     8,     3,     4,     5,     0,    10,    11,     6,
+       7,    11,     3,    14,     9,    14,    26,    26,    24,    12,
+      31,    24,    14,    28,    27,    14,    29,    12,    26,    -1,
+      26,    14,    14,    14,    -1,    -1,    26,    -1,    26,    26,
+      24
 };
 
   /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
      symbol of state STATE-NUM.  */
 static const yytype_uint8 yystos[] =
 {
-       0,    36,    37,     0,     3,    40,    13,    41,    38,     4,
-       5,    10,    40,    42,    46,     8,    13,    25,    11,     6,
-       7,    44,    13,    43,    39,     9,    10,    23,    26,    28,
-      40,    42,    45,    47,    48,    49,    25,    13,    25,    25,
-      11,    13,    25,    30,    25,    13,    27,    25,    13
+       0,    37,    38,     0,     3,    41,    14,    42,    39,     4,
+       5,    11,    41,    43,    47,     9,    14,    26,    12,     6,
+       7,    45,    14,    44,    40,    10,    11,    24,    27,    29,
+      41,    43,    46,    48,    49,    50,    26,    14,    26,    26,
+      12,    14,    26,    31,    26,    14,    28,    26,    14
 };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_uint8 yyr1[] =
 {
-       0,    35,    37,    36,    38,    38,    38,    38,    39,    39,
-      39,    39,    39,    39,    39,    41,    40,    43,    42,    44,
-      44,    45,    46,    47,    47,    48,    49,    49,    49
+       0,    36,    38,    37,    39,    39,    39,    39,    40,    40,
+      40,    40,    40,    40,    40,    42,    41,    44,    43,    45,
+      45,    46,    47,    48,    48,    49,    50,    50,    50
 };
 
   /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
@@ -975,7 +977,6 @@ yysyntax_error (YYSIZE_T *yymsg_alloc, char **yymsg,
       case N:                               \
         yyformat = S;                       \
       break
-    default: /* Avoid compiler warnings. */
       YYCASE_(0, YY_("syntax error"));
       YYCASE_(1, YY_("syntax error, unexpected %s"));
       YYCASE_(2, YY_("syntax error, unexpected %s, expecting %s"));

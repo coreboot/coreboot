@@ -354,6 +354,21 @@ config RAMPAYLOAD
 	  Skip PCI enumeration logic and only allocate BAR for fixed devices
 	  (bootable devices, TPM over GSPI).
 
+config CONFIGURABLE_RAMSTAGE
+	bool "Enable a configurable ramstage."
+	default y if ARCH_X86
+	help
+	  A configurable ramstage allows you to select which parts of the ramstage
+	  to run. Currently, we can only select a minimal PCI scanning step.
+	  The minimal PCI scanning will only check those parts that are enabled
+	  in the devicetree.cb. By convention none of those devices should be bridges.
+
+config MINIMAL_PCI_SCANNING
+	bool "Enable minimal PCI scanning"
+	depends on CONFIGURABLE_RAMSTAGE
+	help
+	  If this option is enabled, coreboot will scan only devices
+	  marked as mandatory in devicetree.cb
 endmenu
 
 menu "Mainboard"

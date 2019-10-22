@@ -192,6 +192,10 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 			sizeof(params->SataPortsDevSlpResetConfig));
 #endif
 	}
+	params->SlpS0WithGbeSupport = 0;
+	params->PchPmSlpS0VmRuntimeControl = config->PchPmSlpS0VmRuntimeControl;
+	params->PchPmSlpS0Vm070VSupport = config->PchPmSlpS0Vm070VSupport;
+	params->PchPmSlpS0Vm075VSupport = config->PchPmSlpS0Vm075VSupport;
 
 	/* Lan */
 	dev = pcidev_path_on_root(PCH_DEVFN_GBE);
@@ -199,7 +203,14 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 		params->PchLanEnable = 0;
 	else {
 		params->PchLanEnable = dev->enabled;
-		if (config->s0ix_enable) {
+		if (config->s0ix_enable && params->PchLanEnable) {
+			/*
+			 * The VmControl UPDs need to be set as per board
+			 * design to allow voltage margining in S0ix to lower
+			 * power consumption.
+			 * But if GbE is enabled, voltage magining cannot be
+			 * enabled, so the Vm control UPDs need to be set to 0.
+			 */
 			params->SlpS0WithGbeSupport = 1;
 			params->PchPmSlpS0VmRuntimeControl = 0;
 			params->PchPmSlpS0Vm070VSupport = 0;

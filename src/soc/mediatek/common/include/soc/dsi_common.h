@@ -115,6 +115,7 @@ enum {
 enum {
 	DSI_RESET = BIT(0),
 	DSI_EN = BIT(1),
+	DPHY_RESET = BIT(2),
 	DSI_DUAL = BIT(4),
 };
 

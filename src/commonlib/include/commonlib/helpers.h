@@ -108,16 +108,16 @@
 #define GHz (1000 * MHz)
 
 #ifndef offsetof
+#ifdef __ROMCC__
 #define offsetof(TYPE, MEMBER) ((size_t) &((TYPE *)0)->MEMBER)
+#else
+#define offsetof(TYPE, MEMBER) __builtin_offsetof(TYPE, MEMBER)
+#endif
 #endif
 
-#if !defined(__clang__)
 #define check_member(structure, member, offset) _Static_assert( \
 	offsetof(struct structure, member) == offset, \
 	"`struct " #structure "` offset for `" #member "` is not " #offset)
-#else
-#define check_member(structure, member, offset)
-#endif
 
 /**
  * container_of - cast a member of a structure out to the containing structure

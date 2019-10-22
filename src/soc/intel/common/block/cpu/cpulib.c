@@ -325,3 +325,44 @@ void cpu_lt_lock_memory(void *unused)
 {
 	msr_set_bit(MSR_LT_CONTROL, LT_CONTROL_LOCK_BIT);
 }
+
+int get_prmrr_size(void)
+{
+	msr_t msr;
+	int i;
+	int valid_size;
+
+	if (CONFIG(SOC_INTEL_COMMON_BLOCK_SGX_PRMRR_DISABLED)) {
+		printk(BIOS_DEBUG, "PRMRR disabled by config.\n");
+		return 0;
+	}
+
+	msr = rdmsr(MSR_PRMRR_VALID_CONFIG);
+	if (!msr.lo) {
+		printk(BIOS_WARNING, "PRMRR not supported.\n");
+		return 0;
+	}
+
+	printk(BIOS_DEBUG, "MSR_PRMRR_VALID_CONFIG = 0x%08x\n", msr.lo);
+
+	/* find the first (greatest) value that is lower than or equal to the selected size */
+	for (i = 8; i >= 0; i--) {
+		valid_size = msr.lo & (1 << i);
+
+		if (valid_size && valid_size <= CONFIG_SOC_INTEL_COMMON_BLOCK_SGX_PRMRR_SIZE)
+			break;
+		else if (i == 0)
+			valid_size = 0;
+	}
+
+	/* die if we could not find a valid size within the limit */
+	if (!valid_size)
+		die("Unsupported PRMRR size limit %i MiB, check your config!\n",
+			CONFIG_SOC_INTEL_COMMON_BLOCK_SGX_PRMRR_SIZE);
+
+	printk(BIOS_DEBUG, "PRMRR size set to %i MiB\n", valid_size);
+
+	valid_size *= MiB;
+
+	return valid_size;
+}

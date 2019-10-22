@@ -16,23 +16,20 @@
  */
 
 #include <cbmem.h>
+#include <intelblocks/cpulib.h>
 #include <soc/systemagent.h>
 
 #include "chip.h"
 
 void *cbmem_top_chipset(void)
 {
-	const config_t *config;
 	void *tolum = (void *)sa_get_tseg_base();
 
 	if (!CONFIG(SOC_INTEL_GLK))
 		return tolum;
 
-	config = config_of_soc();
-
 	/* FSP allocates 2x PRMRR Size Memory for alignment */
-	if (config->sgx_enable)
-		tolum -= config->PrmrrSize * 2;
+	tolum -= get_prmrr_size() * 2;
 
 	return tolum;
 }

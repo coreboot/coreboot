@@ -17,6 +17,7 @@
 #include <cpu/x86/msr.h>
 #include <console/console.h>
 #include <fsp/util.h>
+#include <intelblocks/cpulib.h>
 #include <intelblocks/pmclib.h>
 #include <soc/iomap.h>
 #include <soc/msr.h>
@@ -48,7 +49,7 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg, const config_t *config)
 			mask |= (1 << i);
 	}
 	m_cfg->PcieRpEnableMask = mask;
-	m_cfg->PrmrrSize = config->PrmrrSize;
+	m_cfg->PrmrrSize = get_prmrr_size();
 	m_cfg->EnableC6Dram = config->enable_c6dram;
 #if CONFIG(SOC_INTEL_COMETLAKE)
 	m_cfg->SerialIoUartDebugControllerNumber = CONFIG_UART_FOR_CONSOLE;

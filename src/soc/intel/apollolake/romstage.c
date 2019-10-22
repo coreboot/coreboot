@@ -269,9 +269,7 @@ static void soc_memory_init_params(FSPM_UPD *mupd)
 	/* Only for GLK */
 	FSP_M_CONFIG *m_cfg = &mupd->FspmConfig;
 
-	const config_t *config = config_of_soc();
-
-	m_cfg->PrmrrSize = config->PrmrrSize;
+	m_cfg->PrmrrSize = get_prmrr_size();
 
 	/*
 	 * CpuMemoryTest in FSP tests 0 to 1M of the RAM after MRC init.

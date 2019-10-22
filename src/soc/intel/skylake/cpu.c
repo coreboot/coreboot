@@ -442,8 +442,6 @@ static void cpu_lock_aesni(void)
 /* All CPUs including BSP will run the following function. */
 void soc_core_init(struct device *cpu)
 {
-	config_t *conf = config_of_soc();
-
 	/* Clear out pending MCEs */
 	/* TODO(adurbin): This should only be done on a cold boot. Also, some
 	 * of these banks are core vs package scope. For now every CPU clears
@@ -479,7 +477,7 @@ void soc_core_init(struct device *cpu)
 	enable_turbo();
 
 	/* Configure Core PRMRR for SGX. */
-	if (conf->sgx_enable)
+	if (CONFIG(SOC_INTEL_COMMON_BLOCK_SGX_ENABLE))
 		prmrr_core_configure();
 }
 
@@ -502,7 +500,6 @@ static void fc_lock_configure(void *unused)
 static void post_mp_init(void)
 {
 	int ret = 0;
-	config_t *conf = config_of_soc();
 
 	/* Set Max Ratio */
 	cpu_set_max_ratio();
@@ -519,7 +516,7 @@ static void post_mp_init(void)
 
 	ret |= mp_run_on_all_cpus(vmx_configure, NULL);
 
-	if (conf->sgx_enable)
+	if (CONFIG(SOC_INTEL_COMMON_BLOCK_SGX_ENABLE))
 		ret |= mp_run_on_all_cpus(sgx_configure, NULL);
 
 	ret |= mp_run_on_all_cpus(fc_lock_configure, NULL);

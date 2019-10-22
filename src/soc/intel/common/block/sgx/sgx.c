@@ -206,7 +206,7 @@ void sgx_configure(void *unused)
 {
 
 	if (!is_sgx_supported() || !is_prmrr_set()) {
-		printk(BIOS_ERR, "SGX: pre-conditions not met\n");
+		printk(BIOS_ERR, "SGX: not supported or pre-conditions not met\n");
 		return;
 	}
 

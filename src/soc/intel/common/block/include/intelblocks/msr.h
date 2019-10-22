@@ -64,6 +64,7 @@
 #define MSR_PRMRR_PHYS_MASK		0x1f5
 #define  PRMRR_PHYS_MASK_LOCK		(1 << 10)
 #define  PRMRR_PHYS_MASK_VALID		(1 << 11)
+#define MSR_PRMRR_VALID_CONFIG		0x1fb
 #define MSR_POWER_CTL			0x1fc
 #define  POWER_CTL_C1E_MASK		(1 << 1)
 #define MSR_EVICT_CTL			0x2e0

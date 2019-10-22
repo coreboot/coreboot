@@ -48,8 +48,6 @@ chip soc/intel/icelake
 	register "PchHdaDspEnable" = "1"
 	register "PchHdaAudioLinkHda" = "1"
 
-	register "PrmrrSize" = "0x10000000"
-
 	register "PcieRpEnable[0]" = "1"
 	register "PcieRpEnable[1]" = "1"
 	register "PcieRpEnable[2]" = "1"

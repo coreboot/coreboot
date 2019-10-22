@@ -18,6 +18,7 @@
 #define SOC_INTEL_COMMON_BLOCK_CPULIB_H
 
 #include <stdint.h>
+#include <stddef.h>
 
 /*
  * Set PERF_CTL MSR (0x199) P_Req with
@@ -163,5 +164,8 @@ void mca_configure(void);
 
 /* Lock chipset memory registers to protect SMM */
 void cpu_lt_lock_memory(void *unused);
+
+/* Get the a supported PRMRR size in bytes with respect users choice */
+int get_prmrr_size(void);
 
 #endif	/* SOC_INTEL_COMMON_BLOCK_CPULIB_H */

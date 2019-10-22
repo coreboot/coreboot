@@ -17,10 +17,6 @@ chip soc/intel/skylake
 	register "Device4Enable" = "1"
 	register "SaGv" = "SaGv_Disabled"
 
-	# Enable SGX
-	register "sgx_enable" = "1"
-	register "PrmrrSize" = "128 * MiB"
-
 	register "pirqa_routing" = "PCH_IRQ11"
 	register "pirqb_routing" = "PCH_IRQ10"
 	register "pirqc_routing" = "PCH_IRQ11"

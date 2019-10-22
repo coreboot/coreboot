@@ -97,14 +97,6 @@ chip soc/intel/apollolake
 	# Minimum SLP S3 assertion width 28ms.
 	register "slp_s3_assertion_width_usecs" = "28000"
 
-	register "sgx_enable" = "1"
-
-	# PRMRR size options
-	# 0x02000000 - 32MiB
-	# 0x04000000 - 64MiB
-	# 0x08000000 - 128MiB
-	register "PrmrrSize" = "128 * MiB"
-
 	register "pnp_settings" = "PNP_PERF_POWER"
 
 	device domain 0 on

@@ -4,9 +4,7 @@ config SOC_INTEL_COMMON_BLOCK_SGX
 	select CPU_INTEL_COMMON_HYPERTHREADING
 	default n
 	help
-	 Software Guard eXtension(SGX) Feature. Intel SGX is a set of new CPU
-	 instructions that can be used by applications to set aside private
-	 regions of code and data.
+	  Intel Processor common SGX support
 
 config SOC_INTEL_COMMON_BLOCK_SGX_LOCK_MEMORY
 	bool
@@ -14,3 +12,61 @@ config SOC_INTEL_COMMON_BLOCK_SGX_LOCK_MEMORY
 	default n
 	help
 	 Lock memory before SGX activation. This is only needed if MCHECK does not do it.
+
+config SOC_INTEL_COMMON_BLOCK_SGX_ENABLE
+	bool "Enable Software Guard Extensions (SGX) if available"
+	depends on SOC_INTEL_COMMON_BLOCK_SGX
+	default n
+	help
+	  Intel Software Guard Extensions (SGX) is a set of new CPU instructions that can be
+	  used by applications to set aside private regions (so-called Secure Enclaves) of
+	  code and data.
+
+	  SGX will only be enabled when supported by the CPU!
+
+config SOC_INTEL_COMMON_BLOCK_SGX_PRMRR_SIZE
+	int
+	default 256 if SOC_INTEL_COMMON_BLOCK_SGX_PRMRR_SIZE_MAX
+	default 256 if SOC_INTEL_COMMON_BLOCK_SGX_PRMRR_SIZE_256MB
+	default 128 if SOC_INTEL_COMMON_BLOCK_SGX_PRMRR_SIZE_128MB
+	default  64 if SOC_INTEL_COMMON_BLOCK_SGX_PRMRR_SIZE_64MB
+	default  32 if SOC_INTEL_COMMON_BLOCK_SGX_PRMRR_SIZE_32MB
+	default   1 if SOC_INTEL_COMMON_BLOCK_SGX_PRMRR_SIZE_1MB
+
+choice
+	prompt "PRMRR size"
+	default SOC_INTEL_COMMON_BLOCK_SGX_PRMRR_SIZE_MAX if SOC_INTEL_COMMON_BLOCK_SGX_ENABLE
+	default SOC_INTEL_COMMON_BLOCK_SGX_PRMRR_DISABLED if !SOC_INTEL_COMMON_BLOCK_SGX_ENABLE
+	help
+	  PRMRR (Protected Memory Range) is the space in RAM that is used to provide a protected
+	  memory area (e.g. for the Intel SGX Secure Enclaves). The memory region is accessible
+	  only by the processor itself to protect the data from unauthorized access.
+
+	  This option selects the maximum size that gets reserved. Depending on the SoC a lower,
+	  compatible value may be chosen at runtime as not all values are supported on all
+	  families.
+
+config SOC_INTEL_COMMON_BLOCK_SGX_PRMRR_SIZE_MAX
+	bool "Maximum"
+
+config SOC_INTEL_COMMON_BLOCK_SGX_PRMRR_SIZE_256MB
+	bool "256 MiB"
+
+config SOC_INTEL_COMMON_BLOCK_SGX_PRMRR_SIZE_128MB
+	bool "128 MiB"
+
+config SOC_INTEL_COMMON_BLOCK_SGX_PRMRR_SIZE_64MB
+	bool "64 MiB"
+
+config SOC_INTEL_COMMON_BLOCK_SGX_PRMRR_SIZE_32MB
+	bool "32 MiB"
+
+config SOC_INTEL_COMMON_BLOCK_SGX_PRMRR_SIZE_1MB
+	depends on !SOC_INTEL_COMMON_BLOCK_SGX_ENABLE  # SGX depends on PRMRR >= 32 MiB
+	bool "1 MiB"
+
+config SOC_INTEL_COMMON_BLOCK_SGX_PRMRR_DISABLED
+	depends on !SOC_INTEL_COMMON_BLOCK_SGX_ENABLE  # SGX depends on PRMRR >= 32 MiB
+	bool "Disabled"
+
+endchoice

@@ -139,18 +139,6 @@ struct soc_intel_apollolake_config {
 	/* GPIO SD card detect pin */
 	unsigned int sdcard_cd_gpio;
 
-	/* PRMRR size setting with three options
-	 *  0x02000000 - 32MiB
-	 *  0x04000000 - 64MiB
-	 *  0x08000000 - 128MiB */
-	uint32_t PrmrrSize;
-
-	/* Enable SGX feature.
-	 * Enabling SGX feature is 2 step process,
-	 * (1) set sgx_enable = 1
-	 * (2) set PrmrrSize to supported size */
-	uint8_t sgx_enable;
-
 	/* Select PNP Settings.
 	 * (0) Performance,
 	 * (1) Power

@@ -7,6 +7,7 @@ romstage-$(CONFIG_SOC_INTEL_COMMON_BLOCK_CAR) += car/exit_car.S
 romstage-$(CONFIG_SOC_INTEL_COMMON_BLOCK_CPU) += cpulib.c
 
 postcar-$(CONFIG_SOC_INTEL_COMMON_BLOCK_CAR) += car/exit_car.S
+postcar-$(CONFIG_SOC_INTEL_COMMON_BLOCK_CPU) += cpulib.c
 postcar-$(CONFIG_FSP_CAR) += car/exit_car_fsp.S
 
 ramstage-$(CONFIG_SOC_INTEL_COMMON_BLOCK_CPU) += cpulib.c

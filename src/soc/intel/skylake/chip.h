@@ -510,14 +510,6 @@ struct soc_intel_skylake_config {
 	*/
 	u8 SendVrMbxCmd;
 
-	/*
-	 * PRMRR size setting with three options
-	 * 0x02000000 - 32MiB
-	 * 0x04000000 - 64MiB
-	 * 0x08000000 - 128MiB
-	 */
-	u32 PrmrrSize;
-
 	/* Enable/Disable host reads to PMC XRAM registers */
 	u8 PchPmPmcReadDisable;
 
@@ -575,9 +567,6 @@ struct soc_intel_skylake_config {
 	u8 SlowSlewRateForIa;
 	u8 SlowSlewRateForGt;
 	u8 SlowSlewRateForSa;
-
-	/* Enable SGX feature */
-	u8 sgx_enable;
 
 	/* Enable/Disable EIST
 	 * 1b - Enabled

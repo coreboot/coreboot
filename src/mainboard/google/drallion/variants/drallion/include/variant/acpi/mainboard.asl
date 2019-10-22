@@ -15,6 +15,7 @@
 
 #define CAM_EN GPP_B11 /* Active low */
 #define TS_PD GPP_E7
+#define HDMI_PD GPP_E16
 
 /* Method called from LPIT prior to enter s0ix state */
 Method (MS0X, 1)
@@ -22,9 +23,13 @@ Method (MS0X, 1)
 	If (Arg0) {
 		/* Turn off camera power */
 		\_SB.PCI0.STXS (CAM_EN)
+		/* Turn off HDMI power */
+		\_SB.PCI0.CTXS (HDMI_PD)
 	} Else {
 		/* Turn on camera power */
 		\_SB.PCI0.CTXS (CAM_EN)
+		/* Turn on HDMI power */
+		\_SB.PCI0.STXS (HDMI_PD)
 	}
 }
 
@@ -35,6 +40,8 @@ Method (MPTS, 1)
 
 	/* Clear touch screen pd pin to avoid leakage */
 	\_SB.PCI0.CTXS (TS_PD)
+	/* Clear HDMI power to avoid leakage */
+	\_SB.PCI0.CTXS (HDMI_PD)
 }
 
 /* Method called from _WAK prior to wakeup */

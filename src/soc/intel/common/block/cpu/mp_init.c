@@ -84,6 +84,7 @@ static const struct cpu_device_id cpu_table[] = {
 	{ X86_VENDOR_INTEL, CPUID_COMETLAKE_U_K0_S0 },
 	{ X86_VENDOR_INTEL, CPUID_COMETLAKE_H_S_6_2_P0 },
 	{ X86_VENDOR_INTEL, CPUID_COMETLAKE_H_S_10_2_P0 },
+	{ X86_VENDOR_INTEL, CPUID_TIGERLAKE_A0 },
 	{ 0, 0 },
 };
 

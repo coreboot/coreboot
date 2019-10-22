@@ -51,6 +51,7 @@
 #define CPUID_COMETLAKE_U_K0_S0		0xa0661
 #define CPUID_COMETLAKE_H_S_6_2_P0	0xa0650
 #define CPUID_COMETLAKE_H_S_10_2_P0	0xa0651
+#define CPUID_TIGERLAKE_A0	0x806c0
 
 /*
  * MP Init callback function to Find CPU Topology. This function is common

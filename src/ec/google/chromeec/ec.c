@@ -1380,11 +1380,11 @@ enum ec_image google_chromeec_get_current_image(void)
 	return ec_image_type;
 }
 
-int google_chromeec_get_num_pd_ports(int *num_ports)
+int google_chromeec_get_num_pd_ports(unsigned int *num_ports)
 {
 	struct ec_response_charge_port_count resp = {};
 	struct chromeec_command cmd = {
-		.cmd_code = EC_CMD_CHARGE_PORT_COUNT,
+		.cmd_code = EC_CMD_USB_PD_PORTS,
 		.cmd_version = 0,
 		.cmd_data_out = &resp,
 		.cmd_size_in = 0,
@@ -1439,6 +1439,65 @@ void google_chromeec_init(void)
 int google_ec_running_ro(void)
 {
 	return (google_chromeec_get_current_image() == EC_IMAGE_RO);
+}
+
+int google_chromeec_usb_pd_control(int port, bool *ufp, bool *dbg_acc, uint8_t *dp_mode)
+{
+	struct ec_params_usb_pd_control pd_control = {
+		.port = port,
+		.role = USB_PD_CTRL_ROLE_NO_CHANGE,
+		.mux = USB_PD_CTRL_ROLE_NO_CHANGE,
+		.swap = USB_PD_CTRL_SWAP_NONE,
+	};
+	struct ec_response_usb_pd_control_v2 resp = {};
+	struct chromeec_command cmd = {
+		.cmd_code = EC_CMD_USB_PD_CONTROL,
+		.cmd_version = 2,
+		.cmd_data_in = &pd_control,
+		.cmd_size_in = sizeof(pd_control),
+		.cmd_data_out = &resp,
+		.cmd_size_out = sizeof(resp),
+		.cmd_dev_index = 0,
+	};
+
+	if (google_chromeec_command(&cmd) < 0)
+		return -1;
+
+	*ufp = (resp.cc_state == PD_CC_DFP_ATTACHED);
+	*dbg_acc = (resp.cc_state == PD_CC_DFP_DEBUG_ACC);
+	*dp_mode = resp.dp_mode;
+
+	return 0;
+}
+
+/**
+ * Check for the current mux state in EC. Flags representing the mux state found
+ * in ec_commands.h
+ */
+int google_chromeec_usb_get_pd_mux_info(int port, uint8_t *flags)
+{
+	struct ec_params_usb_pd_mux_info req_mux = {
+		.port = port,
+	};
+	struct ec_response_usb_pd_mux_info resp_mux = {};
+	struct chromeec_command cmd = {
+		.cmd_code = EC_CMD_USB_PD_MUX_INFO,
+		.cmd_version = 0,
+		.cmd_data_in = &req_mux,
+		.cmd_size_in = sizeof(req_mux),
+		.cmd_data_out = &resp_mux,
+		.cmd_size_out = sizeof(resp_mux),
+		.cmd_dev_index = 0,
+	};
+
+	if (port < 0)
+		return -1;
+
+	if (google_chromeec_command(&cmd) < 0)
+		return -1;
+
+	*flags = resp_mux.flags;
+	return 0;
 }
 
 /**

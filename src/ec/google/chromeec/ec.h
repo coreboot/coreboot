@@ -27,6 +27,15 @@ int google_ec_running_ro(void);
 enum ec_image google_chromeec_get_current_image(void);
 void google_chromeec_init(void);
 int google_chromeec_pd_get_amode(uint16_t svid);
+/* Check for the current mux state in EC
+ * in: int port physical port number of the type-c port
+ * out: uint8_t flags flags representing the status of the mux such as
+ *	usb capability, dp capability, cable type, etc
+ */
+int google_chromeec_usb_get_pd_mux_info(int port, uint8_t *flags);
+/* Returns data role and type of device connected */
+int google_chromeec_usb_pd_control(int port, bool *ufp, bool *dbg_acc,
+					uint8_t *dp_mode);
 int google_chromeec_wait_for_displayport(long timeout);
 
 /* Device events */
@@ -306,7 +315,7 @@ int google_chromeec_get_cmd_versions(int command, uint32_t *pmask);
  *			of PD-capable USB ports according to the EC.
  * @return		0 on success, -1 on error
  */
-int google_chromeec_get_num_pd_ports(int *num_ports);
+int google_chromeec_get_num_pd_ports(unsigned int *num_ports);
 
 /* Structure representing the capabilities of a USB-PD port */
 struct usb_pd_port_caps {

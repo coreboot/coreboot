@@ -144,7 +144,8 @@ static bool match_connector(DEVTREE_CONST struct device *dev)
 static void fill_ssdt_typec_device(const struct device *dev)
 {
 	int rv;
-	int i, num_ports;
+	int i;
+	unsigned int num_ports;
 	struct device *usb2_port;
 	struct device *usb3_port;
 	struct device *usb4_port;

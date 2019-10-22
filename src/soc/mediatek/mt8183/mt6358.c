@@ -798,7 +798,7 @@ static unsigned int pmic_read_efuse(int i)
 static int pmic_get_efuse_votrim(void)
 {
 	const unsigned int cali_efuse = pmic_read_efuse(104) & 0xF;
-	assert(cali_efuse < sizeof(vddq_votrim));
+	assert(cali_efuse < ARRAY_SIZE(vddq_votrim));
 	return vddq_votrim[cali_efuse];
 }
 
@@ -907,7 +907,7 @@ unsigned int pmic_get_vddq_vol(void)
 
 	efuse_votrim = pmic_get_efuse_votrim();
 	cali_trim = pwrap_read_field(PMIC_VDDQ_ELR_0, 0xF, 0);
-	assert(cali_trim < sizeof(vddq_votrim));
+	assert(cali_trim < ARRAY_SIZE(vddq_votrim));
 	return 600 * 1000 - efuse_votrim + vddq_votrim[cali_trim];
 }
 
@@ -930,10 +930,10 @@ void pmic_set_vddq_vol(unsigned int vddq_uv)
 		cali_trim = 7;
 	else {
 		cali_trim = 0;
-		while (cali_trim < sizeof(vddq_votrim) &&
+		while (cali_trim < ARRAY_SIZE(vddq_votrim) &&
 		       vddq_votrim[cali_trim] != cali_offset_uv)
 			++cali_trim;
-		assert(cali_trim < sizeof(vddq_votrim));
+		assert(cali_trim < ARRAY_SIZE(vddq_votrim));
 	}
 
 	pwrap_write_field(PMIC_TOP_TMA_KEY, 0x9CA7, 0xFFFF, 0);

@@ -26,6 +26,7 @@ romstage-y += ../common/qclib.c
 romstage-y += qclib.c
 romstage-y += ../common/mmu.c
 romstage-y += mmu.c
+romstage-y += usb.c
 romstage-y += spi.c
 romstage-y += gpio.c
 romstage-$(CONFIG_DRIVERS_UART) += uart_bitbang.c
@@ -41,6 +42,7 @@ ramstage-$(CONFIG_DRIVERS_UART) += uart_bitbang.c
 ramstage-y += clock.c
 ramstage-$(CONFIG_SC7180_QSPI) += qspi.c
 ramstage-y += aop_load_reset.c
+ramstage-y += usb.c
 
 ################################################################################
 

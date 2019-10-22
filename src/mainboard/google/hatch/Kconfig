@@ -58,6 +58,10 @@ config DIMM_SPD_SIZE
 	int
 	default 512
 
+config ROMSTAGE_SPD_CBFS
+	bool
+	default y
+
 config DRIVER_TPM_SPI_BUS
 	default 0x1
 

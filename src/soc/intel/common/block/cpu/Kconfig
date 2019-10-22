@@ -21,6 +21,7 @@ config SOC_INTEL_COMMON_BLOCK_CPU_MPINIT
 config SOC_INTEL_COMMON_BLOCK_CAR
 	bool
 	default n
+	select NO_FIXED_XIP_ROM_SIZE
 	help
 	  This option allows you to select how cache-as-ram (CAR) is set up.
 

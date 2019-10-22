@@ -21,18 +21,6 @@
 
 #define GPE_EC_SCI	12
 
-int mainboard_io_trap_handler(int smif)
-{
-	switch (smif) {
-	default:
-		return 0;
-	}
-
-	/* On success, the IO Trap Handler returns 1
-	 * On failure, the IO Trap Handler returns a value != 1 */
-	return 1;
-}
-
 int mainboard_smi_apmc(u8 data)
 {
 	switch (data) {

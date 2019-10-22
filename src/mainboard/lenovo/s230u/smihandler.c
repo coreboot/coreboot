@@ -32,11 +32,6 @@
 /* FIXME: check this */
 #define GPE_EC_WAKE	13
 
-int mainboard_io_trap_handler(int smif)
-{
-	return 0;
-}
-
 enum sleep_states {
 	S0 = 0,
 	S1 = 1,

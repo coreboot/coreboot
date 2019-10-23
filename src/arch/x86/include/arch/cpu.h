@@ -141,6 +141,11 @@ static inline unsigned int cpuid_edx(unsigned int op)
 	return edx;
 }
 
+static inline unsigned int cpuid_get_max_func(void)
+{
+	return cpuid_eax(0);
+}
+
 #define X86_VENDOR_INVALID    0
 #define X86_VENDOR_INTEL      1
 #define X86_VENDOR_CYRIX      2

@@ -30,11 +30,6 @@ static int get_processor_model(void)
 	return c.x86_model;
 }
 
-static unsigned int get_max_cpuid_func(void)
-{
-	return cpuid_eax(0);
-}
-
 static unsigned long get_hardcoded_crystal_freq(void)
 {
 	unsigned long core_crystal_nominal_freq_khz = 0;
@@ -72,7 +67,7 @@ static unsigned long calculate_tsc_freq_from_core_crystal(void)
 	unsigned long core_crystal_nominal_freq_khz;
 	struct cpuid_result cpuidr_15h;
 
-	if (get_max_cpuid_func() < 0x15)
+	if (cpuid_get_max_func() < 0x15)
 		return 0;
 
 	/* CPUID 15H TSC/Crystal ratio, plus optionally Crystal Hz */
@@ -103,7 +98,7 @@ static unsigned long calculate_tsc_freq_from_core_crystal(void)
  */
 static unsigned long get_freq_from_cpuid16h(void)
 {
-	if (get_max_cpuid_func() < 0x16)
+	if (cpuid_get_max_func() < 0x16)
 		return 0;
 
 	return cpuid_eax(0x16);

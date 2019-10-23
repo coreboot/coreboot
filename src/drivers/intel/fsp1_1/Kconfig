@@ -56,19 +56,6 @@ config FSP_LOC
 	  value that is set in the FSP binary.  If the FSP needs to be moved,
 	  rebase the FSP with Intel's BCT (tool).
 
-config CPU_MICROCODE_CBFS_LEN
-	hex "Microcode update region length in bytes"
-	default 0x0
-	help
-	  The length in bytes of the microcode update region.
-
-config CPU_MICROCODE_CBFS_LOC
-	hex "Microcode update base address in CBFS"
-	default 0x0
-	help
-	  The location (base address) in CBFS that contains the microcode update
-	  binary.
-
 config DISPLAY_HOBS
 	bool "Display hand-off-blocks (HOBs)"
 	default n

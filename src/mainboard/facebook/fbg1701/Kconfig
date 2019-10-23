@@ -50,16 +50,6 @@ config CBFS_SIZE
 	hex
 	default 0x00600000
 
-config CPU_MICROCODE_CBFS_LEN
-	hex
-	default 0x10C00
-	help
-	  This should be updated when the microcode patch changes.
-
-config CPU_MICROCODE_CBFS_LOC
-	hex
-	default 0xFFFE9400
-
 config MRC_SETTINGS_CACHE_SIZE
 	hex
 	default 0x08000

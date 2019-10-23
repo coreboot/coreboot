@@ -11,94 +11,49 @@
  * GNU General Public License for more details.
  */
 
-	/*
-	 * Processor Object
-	 *
-	 */
-	Scope (\_PR) {      /* define processor scope */
-		Processor(
-			P000,       /* name space name */
-			0,          /* Unique core number for this processor within a socket */
-			0x810,      /* PBLK system I/O address !hardcoded! */
-			0x06        /* PBLKLEN for boot processor */
-			) {
-		}
+/*
+ * Processor Object
+ *
+ */
+Scope (\_PR) {	/* define processor scope */
 
-		Processor(
-			P001,       /* name space name */
-			1,          /* Unique core number for this processor within a socket */
-			0x0810,     /* PBLK system I/O address !hardcoded! */
-			0x06        /* PBLKLEN for boot processor */
-			) {
-		}
-		Processor(
-			P002,       /* name space name */
-			2,          /* Unique core number for this processor within a socket */
-			0x0810,     /* PBLK system I/O address !hardcoded! */
-			0x06        /* PBLKLEN for boot processor */
-			) {
-		}
-		Processor(
-			P003,       /* name space name */
-			3,          /* Unique core number for this processor within a socket */
-			0x0810,     /* PBLK system I/O address !hardcoded! */
-			0x06        /* PBLKLEN for boot processor */
-			) {
-		}
-		Processor(
-			P004,       /* name space name */
-			4,          /* Unique core number for this processor within a socket */
-			0x0810,     /* PBLK system I/O address !hardcoded! */
-			0x06        /* PBLKLEN for boot processor */
-			) {
-		}
-		Processor(
-			P005,       /* name space name */
-			5,          /* Unique core number for this processor within a socket */
-			0x0810,     /* PBLK system I/O address !hardcoded! */
-			0x06        /* PBLKLEN for boot processor */
-			) {
-		}
-		Processor(
-			P006,       /* name space name */
-			6,          /* Unique core number for this processor within a socket */
-			0x0810,     /* PBLK system I/O address !hardcoded! */
-			0x06        /* PBLKLEN for boot processor */
-			) {
-		}
-		Processor(
-			P007,       /* name space name */
-			7,          /* Unique core number for this processor within a socket */
-			0x0810,     /* PBLK system I/O address !hardcoded! */
-			0x06        /* PBLKLEN for boot processor */
-			) {
-		}
-		Processor(
-			P008,       /* name space name */
-			8,          /* Unique core number for this processor within a socket */
-			0x0810,     /* PBLK system I/O address !hardcoded! */
-			0x06        /* PBLKLEN for boot processor */
-			) {
-		}
-		Processor(
-			P009,       /* name space name */
-			9,          /* Unique core number for this processor within a socket */
-			0x0810,     /* PBLK system I/O address !hardcoded! */
-			0x06        /* PBLKLEN for boot processor */
-			) {
-		}
-		Processor(
-			P010,       /* name space name */
-			10,         /* Unique core number for this processor within a socket */
-			0x0810,     /* PBLK system I/O address !hardcoded! */
-			0x06        /* PBLKLEN for boot processor */
-			) {
-		}
-		Processor(
-			P011,       /* name space name */
-			11,         /* Unique core number for this processor within a socket */
-			0x0810,     /* PBLK system I/O address !hardcoded! */
-			0x06        /* PBLKLEN for boot processor */
-			) {
-		}
-	} /* End _PR scope */
+	Device (P000) {
+	Name(_HID, "ACPI0007")
+	Name(_UID, 0)
+	}
+
+	Device (P001) {
+	Name(_HID, "ACPI0007")
+	Name(_UID, 1)
+	}
+
+	Device (P002) {
+	Name(_HID, "ACPI0007")
+	Name(_UID, 2)
+	}
+
+	Device (P003) {
+	Name(_HID, "ACPI0007")
+	Name(_UID, 3)
+	}
+
+	Device (P004) {
+	Name(_HID, "ACPI0007")
+	Name(_UID, 4)
+	}
+
+	Device (P005) {
+	Name(_HID, "ACPI0007")
+	Name(_UID, 5)
+	}
+
+	Device (P006) {
+	Name(_HID, "ACPI0007")
+	Name(_UID, 6)
+	}
+
+	Device (P007) {
+	Name(_HID, "ACPI0007")
+	Name(_UID, 7)
+	}
+} /* End _PR scope */

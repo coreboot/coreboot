@@ -96,6 +96,8 @@ static void run_ramstage_from_resume(struct prog *ramstage)
 	/* Load the cached ramstage to runtime location. */
 	stage_cache_load_stage(STAGE_RAMSTAGE, ramstage);
 
+	prog_set_arg(ramstage, cbmem_top());
+
 	if (prog_entry(ramstage) != NULL) {
 		printk(BIOS_DEBUG, "Jumping to image.\n");
 		prog_run(ramstage);
@@ -147,6 +149,9 @@ void run_ramstage(void)
 	stage_cache_add(STAGE_RAMSTAGE, &ramstage);
 
 	timestamp_add_now(TS_END_COPYRAM);
+
+	/* This overrides the arg fetched from the relocatable module */
+	prog_set_arg(&ramstage, cbmem_top());
 
 	prog_run(&ramstage);
 

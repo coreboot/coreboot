@@ -137,6 +137,11 @@ static inline void prog_set_entry(struct prog *prog, void *e, void *arg)
 	prog->arg = arg;
 }
 
+static inline void prog_set_arg(struct prog *prog, void *arg)
+{
+	prog->arg = arg;
+}
+
 /* Locate the identified program to run. Return 0 on success. < 0 on error. */
 int prog_locate(struct prog *prog);
 /* The prog_locate_hook() is called prior to CBFS traversal. The hook can be

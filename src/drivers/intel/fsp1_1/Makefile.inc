@@ -17,7 +17,6 @@ verstage-y += car.c
 verstage-y += fsp_util.c
 verstage-$(CONFIG_SEPARATE_VERSTAGE) += verstage.c
 
-bootblock-y += bootblock.c
 bootblock-$(CONFIG_USE_GENERIC_FSP_CAR_INC) += cache_as_ram.S
 bootblock-y += fsp_util.c
 

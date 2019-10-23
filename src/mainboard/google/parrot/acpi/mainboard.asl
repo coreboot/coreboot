@@ -43,7 +43,6 @@ Scope (\_SB) {
 
 	Device (TPAD)
 	{
-		Name (_ADR, 0x0)
 		Name (_UID, 1)
 
 		// Report as a Sleep Button device so Linux will

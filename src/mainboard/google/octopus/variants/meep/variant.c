@@ -53,6 +53,13 @@ const char *mainboard_vbt_filename(void)
 	case SKU_35_DORP:
 	case SKU_36_DORP:
 		return "vbt_dorp_hdmi.bin";
+	case SKU_49_VORTININJA:
+	case SKU_50_VORTININJA:
+	case SKU_51_VORTININJA:
+	case SKU_52_VORTININJA:
+	case SKU_65_VORTICON:
+	case SKU_66_VORTICON:
+		return "vbt_vortininja.bin";
 	default:
 		return "vbt.bin";
 	}

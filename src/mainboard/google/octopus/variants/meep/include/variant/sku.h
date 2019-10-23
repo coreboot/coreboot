@@ -29,6 +29,8 @@ enum {
 	SKU_50_VORTININJA = 50, /* Stylus + no rear camera */
 	SKU_51_VORTININJA = 51, /* no Stylus + rear camera */
 	SKU_52_VORTININJA = 52, /* no Stylus + no rear camera */
+	SKU_65_VORTICON = 65, /* no touchscreen */
+	SKU_66_VORTICON = 66, /* with touchscreen */
 
 };
 

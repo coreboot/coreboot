@@ -93,8 +93,8 @@ int get_recovery_mode_switch(void)
 	 * and the value from the TPM would be wrong anyway since the verstage
 	 * read would have cleared the value on the TPM.
 	 *
-	 * The TPM recovery request is passed between stages through the
-	 * vboot_get_shared_data or cbmem depending on stage.
+	 * The TPM recovery request is passed between stages through vboot data
+	 * or cbmem depending on stage.
 	 */
 	if (ENV_VERSTAGE &&
 	    tlcl_cr50_get_recovery_button(&cr50_state) == TPM_SUCCESS &&

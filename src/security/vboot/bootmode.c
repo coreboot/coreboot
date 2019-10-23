@@ -26,7 +26,7 @@
 
 static int vboot_get_recovery_reason_shared_data(void)
 {
-	struct vb2_shared_data *sd = vboot_get_shared_data();
+	struct vb2_shared_data *sd = vb2_get_sd(vboot_get_context());
 	assert(sd);
 	return sd->recovery_reason;
 }

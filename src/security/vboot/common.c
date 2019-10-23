@@ -24,6 +24,8 @@
 #include <security/vboot/symbols.h>
 #include <security/vboot/vboot_common.h>
 
+static struct vb2_context *vboot_ctx CAR_GLOBAL;
+
 struct vboot_working_data *vboot_get_working_data(void)
 {
 	struct vboot_working_data *wd = NULL;
@@ -40,43 +42,45 @@ struct vboot_working_data *vboot_get_working_data(void)
 	return wd;
 }
 
-void vboot_init_work_context(struct vb2_context *ctx)
+static inline void *vboot_get_workbuf(struct vboot_working_data *wd)
 {
+	return (void *)((uintptr_t)wd + wd->buffer_offset);
+}
+
+struct vb2_context *vboot_get_context(void)
+{
+	struct vb2_context **vboot_ctx_ptr = car_get_var_ptr(&vboot_ctx);
 	struct vboot_working_data *wd;
 
-	/* First initialize the working data region. */
+	/* Return if context has already been initialized/restored. */
+	if (*vboot_ctx_ptr)
+		return *vboot_ctx_ptr;
+
 	wd = vboot_get_working_data();
-	memset(wd, 0, VB2_FIRMWARE_WORKBUF_RECOMMENDED_SIZE);
+
+	/* Restore context from a previous stage. */
+	if (vboot_logic_executed()) {
+		assert(vb2api_reinit(vboot_get_workbuf(wd),
+				     vboot_ctx_ptr) == VB2_SUCCESS);
+		return *vboot_ctx_ptr;
+	}
+
+	assert(verification_should_run());
 
 	/*
 	 * vboot prefers 16-byte alignment. This takes away 16 bytes
 	 * from the VBOOT2_WORK region, but the vboot devs said that's okay.
 	 */
+	memset(wd, 0, sizeof(*wd));
 	wd->buffer_offset = ALIGN_UP(sizeof(*wd), 16);
 	wd->buffer_size = VB2_FIRMWARE_WORKBUF_RECOMMENDED_SIZE
 			  - wd->buffer_offset;
 
-	/* Initialize the vb2_context. */
-	memset(ctx, 0, sizeof(*ctx));
-	ctx->workbuf = (void *)vboot_get_shared_data();
-	ctx->workbuf_size = wd->buffer_size;
-}
+	/* Initialize vb2_shared_data and friends. */
+	assert(vb2api_init(vboot_get_workbuf(wd), wd->buffer_size,
+			   vboot_ctx_ptr) == VB2_SUCCESS);
 
-void vboot_finalize_work_context(struct vb2_context *ctx)
-{
-	/*
-	 * Shrink buffer_size so that vboot_migrate_cbmem knows how
-	 * much of vboot_working_data needs to be copied into CBMEM
-	 * (if applicable), and so that downstream users know how much
-	 * of the workbuf is currently used.
-	 */
-	vboot_get_working_data()->buffer_size = ctx->workbuf_used;
-}
-
-struct vb2_shared_data *vboot_get_shared_data(void)
-{
-	struct vboot_working_data *wd = vboot_get_working_data();
-	return (void *)((uintptr_t)wd + wd->buffer_offset);
+	return *vboot_ctx_ptr;
 }
 
 int vboot_get_selected_region(struct region *region)
@@ -126,17 +130,25 @@ int vboot_is_slot_selected(void)
  */
 static void vboot_migrate_cbmem(int unused)
 {
-	const struct vboot_working_data *wd_preram =
+	const size_t cbmem_size = VB2_KERNEL_WORKBUF_RECOMMENDED_SIZE;
+	struct vboot_working_data *wd_preram =
 		(struct vboot_working_data *)_vboot2_work;
-	size_t cbmem_size = wd_preram->buffer_offset + wd_preram->buffer_size;
 	struct vboot_working_data *wd_cbmem =
 		cbmem_add(CBMEM_ID_VBOOT_WORKBUF, cbmem_size);
 	assert(wd_cbmem != NULL);
-
-	printk(BIOS_DEBUG,
-	       "VBOOT: copying vboot_working_data (%zu bytes) to CBMEM...\n",
-	       cbmem_size);
-	memcpy(wd_cbmem, wd_preram, cbmem_size);
+	memcpy(wd_cbmem, wd_preram, sizeof(struct vboot_working_data));
+	/*
+	 * TODO(chromium:1021452): buffer_size is uint16_t and not large enough
+	 * to hold the kernel verification workbuf size.  The only code which
+	 * reads this value is in lb_vboot_workbuf() for lb_range->range_size.
+	 * This value being zero doesn't cause any problems, since it is never
+	 * read downstream.  Fix or deprecate vboot_working_data.
+	 */
+	wd_cbmem->buffer_size = 0;
+	vb2api_relocate(vboot_get_workbuf(wd_cbmem),
+			vboot_get_workbuf(wd_preram),
+			cbmem_size - wd_cbmem->buffer_offset,
+			car_get_var_ptr(&vboot_ctx));
 }
 ROMSTAGE_CBMEM_INIT_HOOK(vboot_migrate_cbmem)
 #else
@@ -144,7 +156,7 @@ static void vboot_setup_cbmem(int unused)
 {
 	struct vboot_working_data *wd_cbmem =
 		cbmem_add(CBMEM_ID_VBOOT_WORKBUF,
-			  VB2_FIRMWARE_WORKBUF_RECOMMENDED_SIZE);
+			  VB2_KERNEL_WORKBUF_RECOMMENDED_SIZE);
 	assert(wd_cbmem != NULL);
 }
 ROMSTAGE_CBMEM_INIT_HOOK(vboot_setup_cbmem)

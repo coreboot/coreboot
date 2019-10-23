@@ -29,10 +29,11 @@ struct selected_region {
 };
 
 /*
- * this is placed at the start of the vboot work buffer. selected_region is used
- * for the verstage to return the location of the selected slot. buffer is used
- * by the vboot2 core. Keep the struct CPU architecture agnostic as it crosses
- * stage boundaries.
+ * Stores vboot-related information.  selected_region is used by verstage to
+ * store the location of the selected slot.  buffer is used by vboot to store
+ * its work buffer.  vb2_context is contained within this work buffer, and is
+ * accessible via vboot_init_context() and vboot_get_context() (see below).
+ * Keep the struct CPU architecture agnostic as it crosses stage boundaries.
  */
 struct vboot_working_data {
 	struct selected_region selected_region;
@@ -54,9 +55,7 @@ struct vboot_working_data {
  * Source: security/vboot/common.c
  */
 struct vboot_working_data *vboot_get_working_data(void);
-void vboot_init_work_context(struct vb2_context *ctx);
-void vboot_finalize_work_context(struct vb2_context *ctx);
-struct vb2_shared_data *vboot_get_shared_data(void);
+struct vb2_context *vboot_get_context(void);
 
 /* Returns 0 on success. < 0 on failure. */
 int vboot_get_selected_region(struct region *region);

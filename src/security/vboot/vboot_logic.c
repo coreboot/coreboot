@@ -319,17 +319,17 @@ ROMSTAGE_CBMEM_INIT_HOOK(vboot_log_and_clear_recovery_mode_switch)
  */
 void verstage_main(void)
 {
-	struct vb2_context ctx;
+	struct vb2_context *ctx;
 	struct region_device fw_main;
 	vb2_error_t rv;
 
 	timestamp_add_now(TS_START_VBOOT);
 
 	/* Set up context and work buffer */
-	vboot_init_work_context(&ctx);
+	ctx = vboot_get_context();
 
 	/* Initialize and read nvdata from non-volatile storage. */
-	vbnv_init(ctx.nvdata);
+	vbnv_init(ctx->nvdata);
 
 	/* Set S3 resume flag if vboot should behave differently when selecting
 	 * which slot to boot.  This is only relevant to vboot if the platform
@@ -337,51 +337,51 @@ void verstage_main(void)
 	 * the same slot that it booted from. */
 	if (CONFIG(RESUME_PATH_SAME_AS_BOOT) &&
 		vboot_platform_is_resuming())
-		ctx.flags |= VB2_CONTEXT_S3_RESUME;
+		ctx->flags |= VB2_CONTEXT_S3_RESUME;
 
 	/* Read secdata from TPM. Initialize TPM if secdata not found. We don't
 	 * check the return value here because vb2api_fw_phase1 will catch
 	 * invalid secdata and tell us what to do (=reboot). */
 	timestamp_add_now(TS_START_TPMINIT);
-	if (vboot_setup_tpm(&ctx) == TPM_SUCCESS)
-		antirollback_read_space_firmware(&ctx);
+	if (vboot_setup_tpm(ctx) == TPM_SUCCESS)
+		antirollback_read_space_firmware(ctx);
 	timestamp_add_now(TS_END_TPMINIT);
 
 	/* Enable measured boot mode */
 	if (CONFIG(VBOOT_MEASURED_BOOT) &&
-		!(ctx.flags & VB2_CONTEXT_S3_RESUME)) {
+		!(ctx->flags & VB2_CONTEXT_S3_RESUME)) {
 		if (vboot_init_crtm() != VB2_SUCCESS)
 			die_with_post_code(POST_INVALID_ROM,
 				"Initializing measured boot mode failed!");
 	}
 
 	if (get_recovery_mode_switch()) {
-		ctx.flags |= VB2_CONTEXT_FORCE_RECOVERY_MODE;
+		ctx->flags |= VB2_CONTEXT_FORCE_RECOVERY_MODE;
 		if (CONFIG(VBOOT_DISABLE_DEV_ON_RECOVERY))
-			ctx.flags |= VB2_CONTEXT_DISABLE_DEVELOPER_MODE;
+			ctx->flags |= VB2_CONTEXT_DISABLE_DEVELOPER_MODE;
 	}
 
 	if (CONFIG(VBOOT_WIPEOUT_SUPPORTED) &&
 		get_wipeout_mode_switch())
-		ctx.flags |= VB2_CONTEXT_FORCE_WIPEOUT_MODE;
+		ctx->flags |= VB2_CONTEXT_FORCE_WIPEOUT_MODE;
 
 	if (CONFIG(VBOOT_LID_SWITCH) && !get_lid_switch())
-		ctx.flags |= VB2_CONTEXT_NOFAIL_BOOT;
+		ctx->flags |= VB2_CONTEXT_NOFAIL_BOOT;
 
 	/* Mainboard/SoC always initializes display. */
 	if (!CONFIG(VBOOT_MUST_REQUEST_DISPLAY))
-		ctx.flags |= VB2_CONTEXT_DISPLAY_INIT;
+		ctx->flags |= VB2_CONTEXT_DISPLAY_INIT;
 
 	/* Do early init (set up secdata and NVRAM, load GBB) */
 	printk(BIOS_INFO, "Phase 1\n");
-	rv = vb2api_fw_phase1(&ctx);
+	rv = vb2api_fw_phase1(ctx);
 
 	/* Jot down some information from vboot which may be required later on
 	   in coreboot boot flow. */
-	if (ctx.flags & VB2_CONTEXT_DISPLAY_INIT)
+	if (ctx->flags & VB2_CONTEXT_DISPLAY_INIT)
 		/* Mainboard/SoC should initialize display. */
 		vboot_get_working_data()->flags |= VBOOT_WD_FLAG_DISPLAY_INIT;
-	if (ctx.flags & VB2_CONTEXT_DEVELOPER_MODE)
+	if (ctx->flags & VB2_CONTEXT_DEVELOPER_MODE)
 		vboot_get_working_data()->flags |= VBOOT_WD_FLAG_DEVELOPER_MODE;
 
 	if (rv) {
@@ -393,58 +393,58 @@ void verstage_main(void)
 		 */
 		if (rv == VB2_ERROR_API_PHASE1_RECOVERY) {
 			printk(BIOS_INFO, "Recovery requested (%x)\n", rv);
-			save_if_needed(&ctx);
-			extend_pcrs(&ctx); /* ignore failures */
+			save_if_needed(ctx);
+			extend_pcrs(ctx); /* ignore failures */
 			goto verstage_main_exit;
 		}
 
 		printk(BIOS_INFO, "Reboot requested (%x)\n", rv);
-		save_if_needed(&ctx);
+		save_if_needed(ctx);
 		vboot_reboot();
 	}
 
 	/* Determine which firmware slot to boot (based on NVRAM) */
 	printk(BIOS_INFO, "Phase 2\n");
-	rv = vb2api_fw_phase2(&ctx);
+	rv = vb2api_fw_phase2(ctx);
 	if (rv) {
 		printk(BIOS_INFO, "Reboot requested (%x)\n", rv);
-		save_if_needed(&ctx);
+		save_if_needed(ctx);
 		vboot_reboot();
 	}
 
 	/* Try that slot (verify its keyblock and preamble) */
 	printk(BIOS_INFO, "Phase 3\n");
 	timestamp_add_now(TS_START_VERIFY_SLOT);
-	rv = vb2api_fw_phase3(&ctx);
+	rv = vb2api_fw_phase3(ctx);
 	timestamp_add_now(TS_END_VERIFY_SLOT);
 	if (rv) {
 		printk(BIOS_INFO, "Reboot requested (%x)\n", rv);
-		save_if_needed(&ctx);
+		save_if_needed(ctx);
 		vboot_reboot();
 	}
 
 	printk(BIOS_INFO, "Phase 4\n");
-	rv = locate_firmware(&ctx, &fw_main);
+	rv = locate_firmware(ctx, &fw_main);
 	if (rv)
 		die_with_post_code(POST_INVALID_ROM,
 			"Failed to read FMAP to locate firmware");
 
-	rv = hash_body(&ctx, &fw_main);
-	save_if_needed(&ctx);
+	rv = hash_body(ctx, &fw_main);
+	save_if_needed(ctx);
 	if (rv) {
 		printk(BIOS_INFO, "Reboot requested (%x)\n", rv);
 		vboot_reboot();
 	}
 
 	/* Only extend PCRs once on boot. */
-	if (!(ctx.flags & VB2_CONTEXT_S3_RESUME)) {
+	if (!(ctx->flags & VB2_CONTEXT_S3_RESUME)) {
 		timestamp_add_now(TS_START_TPMPCR);
-		rv = extend_pcrs(&ctx);
+		rv = extend_pcrs(ctx);
 		if (rv) {
 			printk(BIOS_WARNING,
 			       "Failed to extend TPM PCRs (%#x)\n", rv);
-			vb2api_fail(&ctx, VB2_RECOVERY_RO_TPM_U_ERROR, rv);
-			save_if_needed(&ctx);
+			vb2api_fail(ctx, VB2_RECOVERY_RO_TPM_U_ERROR, rv);
+			save_if_needed(ctx);
 			vboot_reboot();
 		}
 		timestamp_add_now(TS_END_TPMPCR);
@@ -456,8 +456,8 @@ void verstage_main(void)
 	rv = antirollback_lock_space_firmware();
 	if (rv) {
 		printk(BIOS_INFO, "Failed to lock TPM (%x)\n", rv);
-		vb2api_fail(&ctx, VB2_RECOVERY_RO_TPM_L_ERROR, 0);
-		save_if_needed(&ctx);
+		vb2api_fail(ctx, VB2_RECOVERY_RO_TPM_L_ERROR, 0);
+		save_if_needed(ctx);
 		vboot_reboot();
 	}
 	timestamp_add_now(TS_END_TPMLOCK);
@@ -468,14 +468,14 @@ void verstage_main(void)
 		if (rv) {
 			printk(BIOS_INFO, "Failed to lock rec hash space(%x)\n",
 			       rv);
-			vb2api_fail(&ctx, VB2_RECOVERY_RO_TPM_REC_HASH_L_ERROR,
+			vb2api_fail(ctx, VB2_RECOVERY_RO_TPM_REC_HASH_L_ERROR,
 				    0);
-			save_if_needed(&ctx);
+			save_if_needed(ctx);
 			vboot_reboot();
 		}
 	}
 
-	printk(BIOS_INFO, "Slot %c is selected\n", is_slot_a(&ctx) ? 'A' : 'B');
+	printk(BIOS_INFO, "Slot %c is selected\n", is_slot_a(ctx) ? 'A' : 'B');
 	vboot_set_selected_region(region_device_region(&fw_main));
 
  verstage_main_exit:
@@ -487,6 +487,5 @@ void verstage_main(void)
 	/* Save recovery reason in case of unexpected reboots on x86. */
 	vboot_save_recovery_reason_vbnv();
 
-	vboot_finalize_work_context(&ctx);
 	timestamp_add_now(TS_END_VBOOT);
 }

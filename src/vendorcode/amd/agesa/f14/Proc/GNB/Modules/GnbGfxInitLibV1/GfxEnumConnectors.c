@@ -474,13 +474,11 @@ GfxIntegratedEnumConnectorsForDevice (
     if (ExtDisplayDeviceInfo == NULL) {
       //Run out of supported display device types
       AGESA_STATUS_UPDATE (AGESA_ERROR, ConnectorEnumInfo.Status);
-      Status = AGESA_ERROR;
       PcieConfigDisableEngine (ConnectorEnumInfo.Engine);
     }
 
     if ((Gfx->Gnb3dStereoPinIndex != 0) && (ConnectorEnumInfo.Engine->Type.Ddi.DdiData.HdpIndex == (Gfx->Gnb3dStereoPinIndex - 1))) {
       AGESA_STATUS_UPDATE (AGESA_ERROR, ConnectorEnumInfo.Status);
-      Status = AGESA_ERROR;
       PcieConfigDisableEngine (ConnectorEnumInfo.Engine);
     }
 

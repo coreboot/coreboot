@@ -115,6 +115,14 @@ static void mainboard_enable(struct device *dev)
 	dev->ops->acpi_inject_dsdt_generator = chromeos_dsdt_generator;
 }
 
+static void mainboard_chip_init(void *chip_info)
+{
+	/* Configure pads prior to SiliconInit() in case there's any
+	 * dependencies during hardware initialization. */
+	gpio_configure_pads(gpio_table, ARRAY_SIZE(gpio_table));
+}
+
 struct chip_operations mainboard_ops = {
+	.init = mainboard_chip_init,
 	.enable_dev = mainboard_enable,
 };

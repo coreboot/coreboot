@@ -23,6 +23,12 @@
 
 static void mainboard_init(void *chip_info)
 {
+	size_t num;
+	const struct pad_config *gpio_table;
+
+	gpio_table = variant_gpio_table(&num);
+	gpio_configure_pads(gpio_table, num);
+
 	mainboard_ec_init();
 }
 

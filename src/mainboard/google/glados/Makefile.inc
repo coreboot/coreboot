@@ -27,7 +27,6 @@ ramstage-$(CONFIG_CHROMEOS) += chromeos.c
 ramstage-$(CONFIG_EC_GOOGLE_CHROMEEC) += ec.c
 
 ramstage-y += mainboard.c
-ramstage-y += ramstage.c
 
 smm-y += smihandler.c
 

@@ -79,17 +79,27 @@ postcar-y += i2c.c
 postcar-y += uart.c
 
 ifeq ($(CONFIG_SKYLAKE_SOC_PCH_H),y)
+ifeq ($(CONFIG_MAINBOARD_SUPPORTS_SKYLAKE_CPU),y)
 # Skylake H Q0
 cpu_microcode_bins += 3rdparty/intel-microcode/intel-ucode/06-5e-03
+endif
+ifeq ($(CONFIG_MAINBOARD_SUPPORTS_KABYLAKE_CPU),y)
 # Kabylake H B0 S0
 cpu_microcode_bins += 3rdparty/intel-microcode/intel-ucode/06-9e-09
+endif
 else
+ifeq ($(CONFIG_MAINBOARD_SUPPORTS_SKYLAKE_CPU),y)
 # Skylake D0
 cpu_microcode_bins += 3rdparty/intel-microcode/intel-ucode/06-4e-03
+endif
+ifeq ($(CONFIG_MAINBOARD_SUPPORTS_KABYLAKE_DUAL),y)
 # Kabylake H0, J0, J1
 cpu_microcode_bins += 3rdparty/intel-microcode/intel-ucode/06-8e-09
+endif
+ifeq ($(CONFIG_MAINBOARD_SUPPORTS_KABYLAKE_QUAD),y)
 # Kabylake Y0
 cpu_microcode_bins += 3rdparty/intel-microcode/intel-ucode/06-8e-0a
+endif
 endif
 # Missing for Skylake C0 (0x406e2), Kabylake G0 (0x406e8), Kabylake HA0 (0x506e8)
 # since those are probably pre-release samples.

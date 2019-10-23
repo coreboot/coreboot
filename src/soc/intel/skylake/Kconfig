@@ -288,4 +288,28 @@ config INTEL_TXT_BIOSACM_ALIGNMENT
 	hex
 	default 0x40000 # 256KB
 
+config MAINBOARD_SUPPORTS_SKYLAKE_CPU
+	bool "Board can contain Skylake CPU"
+	default y
+
+if SKYLAKE_SOC_PCH_H
+
+config MAINBOARD_SUPPORTS_KABYLAKE_CPU
+	bool "Board can contain Kaby Lake CPU"
+	default y if SOC_INTEL_KABYLAKE
+
+endif
+
+if !SKYLAKE_SOC_PCH_H
+
+config MAINBOARD_SUPPORTS_KABYLAKE_DUAL
+	bool "Board can contain Kaby Lake DUAL core"
+	default y
+
+config MAINBOARD_SUPPORTS_KABYLAKE_QUAD
+	bool "Board can contain Kaby Lake QUAD core"
+	default y
+
+endif
+
 endif

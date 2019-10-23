@@ -66,7 +66,7 @@ static const struct pad_config gpio_unused[] = {
 /* M2_SKT2_CFG1 */	PAD_NC(GPP_H13, NONE),
 };
 
-void mainboard_silicon_init_params(FSP_S_CONFIG *params)
+static void mainboard_init(void *chip_info)
 {
 	const struct pad_config *gpio_table;
 	size_t num_gpios;
@@ -85,5 +85,6 @@ static void mainboard_enable(struct device *dev)
 }
 
 struct chip_operations mainboard_ops = {
+	.init = mainboard_init,
 	.enable_dev = mainboard_enable,
 };

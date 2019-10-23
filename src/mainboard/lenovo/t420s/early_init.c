@@ -35,8 +35,8 @@ static void hybrid_graphics_init(void)
 }
 
 const struct southbridge_usb_port mainboard_usb_ports[] = {
-	{ 0, 1, -1 }, /* P0 empty */
-	{ 1, 1,  1 }, /* P1 system port 2 (To system port) (EHCI debug), OC 1 */
+	{ 0, 1, -1 }, /* P0: empty */
+	{ 1, 1,  1 }, /* P1: system port 2 (To system port) (EHCI debug), OC 1 */
 	{ 1, 1, -1 }, /* P2: HALF MINICARD (WLAN) no oc */
 	{ 1, 0, -1 }, /* P3: WWAN, no OC */
 	{ 1, 1, -1 }, /* P4: smartcard, no OC */

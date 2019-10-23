@@ -1,4 +1,5 @@
 chip northbridge/intel/sandybridge
+	# IGD Displays
 	register "gfx" = "GMA_STATIC_DISPLAYS(1)"
 
 	# Enable DisplayPort Hotplug with 6ms pulse
@@ -66,6 +67,7 @@ chip northbridge/intel/sandybridge
 
 			register "c2_latency" = "101"  # c2 not supported
 
+			# device specific SPI configuration
 			register "spi_uvscc" = "0x2005"
 			register "spi_lvscc" = "0x2005"
 

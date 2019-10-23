@@ -29,6 +29,7 @@ config CPU_SPECIFIC_OPTIONS
 	select C_ENVIRONMENT_BOOTBLOCK
 	select NO_MMCONF_SUPPORT
 	select REG_SCRIPT
+	select PLATFORM_USES_FSP2_0
 	select SOC_INTEL_COMMON
 	select SOC_INTEL_COMMON_RESET
 	select SOC_SETS_MSRS
@@ -113,8 +114,7 @@ config ENABLE_DEBUG_LED_BOOTBLOCK_ENTRY
 	select ENABLE_DEBUG_LED
 	help
 	  Indicate that bootblock_c_entry was entered.  If the SD LED does not
-	  light then debug the code between ESRAM and bootblock_c_entry.  For
-	  FSP 1.1, use ENABLE_DEBUG_LED_FINDFSP to split this code.
+	  light then debug the code between ESRAM and bootblock_c_entry.
 
 config ENABLE_DEBUG_LED_SOC_EARLY_INIT_ENTRY
 	bool "SD LED indicates bootblock_soc_early_init successfully entered"
@@ -192,12 +192,10 @@ config FSP_ESRAM_LOC
 
 config FSP_M_FILE
 	string
-	depends on PLATFORM_USES_FSP2_0
 	default "3rdparty/blobs/soc/intel/quark/$(CONFIG_FSP_TYPE)/$(CONFIG_FSP_BUILD_TYPE)/FSP_M.fd"
 
 config FSP_S_FILE
 	string
-	depends on PLATFORM_USES_FSP2_0
 	default "3rdparty/blobs/soc/intel/quark/$(CONFIG_FSP_TYPE)/$(CONFIG_FSP_BUILD_TYPE)/FSP_S.fd"
 
 #####

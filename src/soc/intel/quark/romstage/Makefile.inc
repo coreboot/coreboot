@@ -14,10 +14,8 @@
 #
 
 romstage-y += car.c
-ifeq ($(CONFIG_PLATFORM_USES_FSP2_0),y)
 romstage-$(CONFIG_DISPLAY_UPD_DATA) += debug.c
-romstage-$(CONFIG_PLATFORM_USES_FSP2_0) += fsp2_0.c
-endif # CONFIG_PLATFORM_USES_FSP2_0
+romstage-y += fsp_params.c
 romstage-y += mtrr.c
 romstage-y += pcie.c
 romstage-y += report_platform.c

@@ -49,7 +49,6 @@ config HAVE_IFD_BIN
 
 config ADD_FSP_BINARIES
 	bool "Add FSP blobs"
-	depends on PLATFORM_USES_FSP2_0
 	default n
 
 config FSP_M_FILE

@@ -23,7 +23,6 @@ config BOARD_SPECIFIC_OPTIONS
 	select SOC_INTEL_QUARK
 	select MAINBOARD_HAS_I2C_TPM_ATMEL
 	select MAINBOARD_HAS_TPM2
-	select PLATFORM_USES_FSP2_0
 	select UDK_2015_BINDING
 
 
@@ -103,7 +102,6 @@ config FSP_DEBUG_ALL
 	  Turn on debug support to display HOBS, MTRRS, SMM_MEMORY_MAP, UPD_DATA
 	  also turn on FSP 2.0 debug support for ESRAM_LAYOUT,
 	  FSP_CALLS_AND_STATUS, FSP_HEADER, POSTCAR_CONSOLE and VERIFY_HOBS
-	  or FSP 1.1 DISPLAY_FSP_ENTRY_POINTS
 
 config VBOOT_WITH_CRYPTO_SHIELD
 	bool "Verified boot using the Crypto Shield board"

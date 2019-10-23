@@ -22,7 +22,7 @@ bootblock-y += uart.c
 
 romstage-y += car.c
 romstage-y += ../../../cpu/intel/car/romstage.c
-romstage-$(CONFIG_PLATFORM_USES_FSP2_0) += romstage.c
+romstage-y += romstage.c
 romstage-y += gspi.c
 romstage-y += heci.c
 romstage-y += i2c.c

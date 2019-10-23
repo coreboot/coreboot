@@ -40,7 +40,6 @@ Device (SIO) {
 	Device (ECMM) {
 		Name (_HID, EISAID ("PNP0C02"))
 		Name (_UID, 4)
-		Name (_ADR, 0)
 
 		Method (_STA, 0, NotSerialized) {
 			Return (0x0F)
@@ -64,7 +63,6 @@ Device (SIO) {
 	Device (ECUI) {
 		Name (_HID, EISAID ("PNP0C02"))
 		Name (_UID, 3)
-		Name (_ADR, 0)
 
 		Method (_STA, 0, NotSerialized) {
 			Return (0x0F)
@@ -109,7 +107,6 @@ Device (SIO) {
 	Device (COM1) {
 		Name (_HID, EISAID ("PNP0501"))
 		Name (_UID, 1)
-		Name (_ADR, 0)
 
 		Method (_STA, 0, NotSerialized) {
 			Return (0x0F)
@@ -137,7 +134,6 @@ Device (SIO) {
 Device (PS2K)		// Keyboard
 {
 	Name (_UID, 0)
-	Name (_ADR, 0)
 	Name (_HID, "GOOG000A")
 	Name (_CID, Package() { EISAID("PNP0303"), EISAID("PNP030B") } )
 

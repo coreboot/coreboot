@@ -18,7 +18,7 @@
 #include <cbmem.h>
 #include <soc/reg_access.h>
 
-void *cbmem_top(void)
+void *cbmem_top_chipset(void)
 {
 	uint32_t top_of_memory;
 

@@ -24,6 +24,12 @@ config RAMSTAGE_LIBHWBASE
 	help
 	  Selected by features that require `libhwbase` in ramstage.
 
+config RAMSTAGE_CBMEM_TOP_ARG
+	bool
+	help
+	  Select this if stages run after romstage get the cbmem_top
+	  pointer as the function arguments when called from romstage.
+
 config FLATTENED_DEVICE_TREE
 	bool
 	help

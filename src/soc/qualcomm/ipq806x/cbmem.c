@@ -23,7 +23,7 @@ void ipq_cbmem_backing_store_ready(void)
 	cbmem_backing_store_ready = 1;
 }
 
-void *cbmem_top(void)
+void *cbmem_top_chipset(void)
 {
 	/*
 	 * In romstage, make sure that cbmem backing store is ready before

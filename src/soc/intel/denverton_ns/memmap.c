@@ -60,7 +60,7 @@ u32 top_of_32bit_ram(void)
 	       power_of_2(iqat_region_size + tseg_region_size);
 }
 
-void *cbmem_top(void) { return (void *)top_of_32bit_ram(); }
+void *cbmem_top_chipset(void) { return (void *)top_of_32bit_ram(); }
 
 static inline uintptr_t smm_region_start(void)
 {

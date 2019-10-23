@@ -16,7 +16,7 @@
 
 #if CONFIG(CBMEM_TOP_BACKUP)
 
-void *cbmem_top(void)
+void *cbmem_top_chipset(void)
 {
 	static void *cbmem_top_backup;
 	void *top_backup;

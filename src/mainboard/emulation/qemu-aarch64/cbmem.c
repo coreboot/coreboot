@@ -10,7 +10,7 @@
 #include <ramdetect.h>
 #include <symbols.h>
 
-void *cbmem_top(void)
+void *cbmem_top_chipset(void)
 {
 	return _dram + (probe_ramsize((uintptr_t)_dram, CONFIG_DRAM_SIZE_MB) * MiB);
 }

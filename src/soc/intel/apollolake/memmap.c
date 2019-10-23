@@ -20,7 +20,7 @@
 
 #include "chip.h"
 
-void *cbmem_top(void)
+void *cbmem_top_chipset(void)
 {
 	const config_t *config;
 	void *tolum = (void *)sa_get_tseg_base();

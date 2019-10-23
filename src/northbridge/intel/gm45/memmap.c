@@ -117,7 +117,7 @@ static size_t northbridge_get_tseg_size(void)
  * 1 MiB alignment. As this may cause very greedy MTRR setup, push
  * CBMEM top downwards to 4 MiB boundary.
  */
-void *cbmem_top(void)
+void *cbmem_top_chipset(void)
 {
 	uintptr_t top_of_ram = ALIGN_DOWN(northbridge_get_tseg_base(), 4*MiB);
 	return (void *) top_of_ram;

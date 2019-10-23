@@ -16,7 +16,7 @@
 #include <cbmem.h>
 #include <soc/addressmap.h>
 
-void *cbmem_top(void)
+void *cbmem_top_chipset(void)
 {
 	static uintptr_t addr;
 

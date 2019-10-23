@@ -23,7 +23,7 @@
 #include <soc/pci_devs.h>
 #include <device/pci_ops.h>
 
-void *cbmem_top(void)
+void *cbmem_top_chipset(void)
 {
 	return find_fsp_reserved_mem(*(void **)CBMEM_FSP_HOB_PTR);
 }

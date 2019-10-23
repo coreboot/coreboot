@@ -248,7 +248,7 @@ void cbmem_top_init(void)
  *     |                         |
  *     +-------------------------+
  */
-void *cbmem_top(void)
+void *cbmem_top_chipset(void)
 {
 	struct ebda_config ebda_cfg;
 

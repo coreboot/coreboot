@@ -29,7 +29,7 @@ static size_t smm_region_size(void)
 	return CONFIG_SMM_TSEG_SIZE;
 }
 
-void *cbmem_top(void)
+void *cbmem_top_chipset(void)
 {
 	return (void *) smm_region_start();
 }

@@ -73,7 +73,18 @@ void cbmem_top_init(void);
  * below 4GiB for 32bit coreboot builds. On 64bit coreboot builds there's no
  * upper limit. This should not be called before memory is initialized.
  */
+/* The assumption is made that the result of cbmem_top_romstage fits in the size
+   of uintptr_t in the ramstage. */
+extern uintptr_t _cbmem_top_ptr;
 void *cbmem_top(void);
+/* With CONFIG_RAMSTAGE_CBMEM_TOP_ARG set, the result of cbmem_top is passed via
+ * calling arguments to the next stage and saved in the global _cbmem_top_ptr
+ * global variable. Only a romstage callback needs to be implemented by the
+ * platform. It is up to the stages after romstage to save the calling argument
+ * in the _cbmem_top_ptr symbol. Without CONFIG_RAMSTAGE_CBMEM_TOP_ARG the same
+ * implementation as used in romstage will be used.
+ */
+void *cbmem_top_chipset(void);
 
 /* Add a cbmem entry of a given size and id. These return NULL on failure. The
  * add function performs a find first and do not check against the original

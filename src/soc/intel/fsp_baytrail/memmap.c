@@ -40,7 +40,7 @@ static size_t smm_region_size(void)
  * @return pointer to the first byte of reserved memory
  */
 
-void *cbmem_top(void)
+void *cbmem_top_chipset(void)
 {
 	return find_fsp_reserved_mem(*(void **)CBMEM_FSP_HOB_PTR);
 }

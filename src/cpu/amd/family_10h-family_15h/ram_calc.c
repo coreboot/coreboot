@@ -86,7 +86,7 @@ uint64_t get_cc6_memory_size()
 	return cc6_size;
 }
 
-void *cbmem_top(void)
+void *cbmem_top_chipset(void)
 {
 	uint32_t topmem = rdmsr(TOP_MEM).lo;
 

@@ -41,7 +41,7 @@ static uintptr_t dpr_region_start(void)
 	return tom;
 }
 
-void *cbmem_top(void)
+void *cbmem_top_chipset(void)
 {
 	return (void *) dpr_region_start();
 }

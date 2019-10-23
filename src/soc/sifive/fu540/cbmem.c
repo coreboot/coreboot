@@ -19,7 +19,7 @@
 #include <stdlib.h>
 #include <symbols.h>
 
-void *cbmem_top(void)
+void *cbmem_top_chipset(void)
 {
 	return (void *)min((uintptr_t)_dram + sdram_size_mb() * MiB,
 			   FU540_MAXDRAM);

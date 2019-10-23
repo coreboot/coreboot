@@ -52,7 +52,7 @@ unsigned long qemu_get_memory_size(void)
 	return tomk;
 }
 
-void *cbmem_top(void)
+void *cbmem_top_chipset(void)
 {
 	uintptr_t top = 0;
 

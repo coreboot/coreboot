@@ -23,7 +23,7 @@
 #include <program_loading.h>
 #include "i440bx.h"
 
-void *cbmem_top(void)
+void *cbmem_top_chipset(void)
 {
 	/* Base of TSEG is top of usable DRAM */
 	/*

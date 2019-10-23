@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <assert.h>
 #include <boot/coreboot_tables.h>
 #include <bootstate.h>
 #include <bootmem.h>
@@ -43,6 +44,28 @@
 #define CAN_USE_GLOBALS \
 	(!CONFIG(ARCH_X86) || ENV_RAMSTAGE || ENV_POSTCAR || \
 	 !CONFIG(CAR_GLOBAL_MIGRATION))
+
+/* The program loader passes on cbmem_top and the program entry point
+   has to fill in the _cbmem_top_ptr symbol based on the calling arguments. */
+uintptr_t _cbmem_top_ptr;
+
+void *cbmem_top(void)
+{
+	if (ENV_ROMSTAGE
+	    || ((ENV_POSTCAR || ENV_RAMSTAGE)
+		&& !CONFIG(RAMSTAGE_CBMEM_TOP_ARG))) {
+		MAYBE_STATIC_BSS void *top = NULL;
+		if (top)
+			return top;
+		top = cbmem_top_chipset();
+		return top;
+	}
+	if ((ENV_POSTCAR || ENV_RAMSTAGE) && CONFIG(RAMSTAGE_CBMEM_TOP_ARG))
+		return (void *)_cbmem_top_ptr;
+
+	dead_code();
+}
+
 
 static inline struct imd *cbmem_get_imd(void)
 {

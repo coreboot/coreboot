@@ -120,7 +120,7 @@ u32 vx900_get_tolm(void)
 	return (pci_read_config16(MCU, 0x84) & 0xfff0) >> 4;
 }
 
-void *cbmem_top(void)
+void *cbmem_top_chipset(void)
 {
 	uintptr_t tolm;
 	uintptr_t fb_size;

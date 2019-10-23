@@ -36,7 +36,7 @@ static uintptr_t smm_region_start(void)
 	return tom;
 }
 
-void *cbmem_top(void)
+void *cbmem_top_chipset(void)
 {
 	return (void *) (smm_region_start() - FSP_RESERVE_MEMORY_SIZE);
 }

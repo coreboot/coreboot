@@ -58,7 +58,7 @@ void bert_reserved_region(void **start, size_t *size)
 	*size = BERT_REGION_MAX_SIZE;
 }
 
-void *cbmem_top(void)
+void *cbmem_top_chipset(void)
 {
 	msr_t tom = rdmsr(TOP_MEM);
 

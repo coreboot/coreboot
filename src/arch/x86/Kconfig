@@ -16,6 +16,7 @@ config ARCH_X86
 	default n
 	select PCI
 	select RELOCATABLE_MODULES
+	select RAMSTAGE_CBMEM_TOP_ARG
 
 # stage selectors for x86
 

@@ -31,6 +31,14 @@ _start:
 	/* Migrate GDT to this text segment */
 	call	gdt_init
 
+#ifdef	__x86_64__
+	mov	%rdi, _cbmem_top_ptr
+#else
+	/* The return argument is at 0(%esp), the calling argument at 4(%esp) */
+	movl	4(%esp), %eax
+	movl	%eax, _cbmem_top_ptr
+#endif
+
 	/* chipset_teardown_car() is expected to disable cache-as-ram. */
 	call	chipset_teardown_car
 

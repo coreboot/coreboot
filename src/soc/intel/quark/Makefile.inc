@@ -41,7 +41,6 @@ romstage-y += reset.c
 
 postcar-y += fsp_params.c
 postcar-y += i2c.c
-postcar-y += memmap.c
 postcar-y += reg_access.c
 postcar-y += tsc_freq.c
 postcar-$(CONFIG_ENABLE_BUILTIN_HSUART1) += uart_common.c
@@ -53,7 +52,6 @@ ramstage-y += fsp_params.c
 ramstage-y += gpio_i2c.c
 ramstage-y += i2c.c
 ramstage-y += lpc.c
-ramstage-y += memmap.c
 ramstage-y += northcluster.c
 ramstage-y += reg_access.c
 ramstage-y += reset.c

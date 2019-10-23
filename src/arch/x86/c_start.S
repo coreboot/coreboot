@@ -60,6 +60,14 @@ _start:
 
 	cld
 
+#ifdef	__x86_64__
+	mov	%rdi, _cbmem_top_ptr
+#else
+	/* The return argument is at 0(%esp), the calling argument at 4(%esp) */
+	movl	4(%esp), %eax
+	movl	%eax, _cbmem_top_ptr
+#endif
+
 	/** poison the stack. Code should not count on the
 	 * stack being full of zeros. This stack poisoning
 	 * recently uncovered a bug in the broadcast SIPI

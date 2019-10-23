@@ -18,7 +18,6 @@ ifeq ($(CONFIG_NORTHBRIDGE_INTEL_FSP_RANGELEY),y)
 
 subdirs-y += fsp
 ramstage-y += northbridge.c
-ramstage-y += memmap.c
 
 ramstage-y += acpi.c
 ramstage-y += port_access.c

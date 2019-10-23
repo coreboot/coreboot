@@ -522,6 +522,16 @@ void __weak smbios_system_set_uuid(u8 *uuid)
 	/* leave all zero */
 }
 
+unsigned int __weak smbios_cpu_get_max_speed_mhz(void)
+{
+	return 0; /* Unknown */
+}
+
+unsigned int __weak smbios_cpu_get_current_speed_mhz(void)
+{
+	return 0; /* Unknown */
+}
+
 const char *__weak smbios_system_sku(void)
 {
 	return "";
@@ -648,11 +658,20 @@ static int smbios_write_type4(unsigned long *current, int handle)
 	t->processor_family = (res.eax > 0) ? 0x0c : 0x6;
 	t->processor_type = 3; /* System Processor */
 	t->core_count = (res.ebx >> 16) & 0xff;
+	/* Assume we enable all the cores always, capped only by MAX_CPUS */
+	t->core_enabled = MAX(t->core_count, CONFIG_MAX_CPUS);
 	t->l1_cache_handle = 0xffff;
 	t->l2_cache_handle = 0xffff;
 	t->l3_cache_handle = 0xffff;
 	t->processor_upgrade = get_socket_type();
 	len = t->length + smbios_string_table_len(t->eos);
+	if (cpu_have_cpuid() && cpuid_get_max_func() >= 0x16) {
+		t->max_speed = cpuid_ebx(0x16);
+		t->current_speed = cpuid_eax(0x16); /* base frequency */
+	} else {
+		t->max_speed = smbios_cpu_get_max_speed_mhz();
+		t->current_speed = smbios_cpu_get_current_speed_mhz();
+	}
 	*current += len;
 	return len;
 }

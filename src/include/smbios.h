@@ -53,6 +53,9 @@ const char *smbios_system_version(void);
 void smbios_system_set_uuid(u8 *uuid);
 const char *smbios_system_sku(void);
 
+unsigned int smbios_cpu_get_max_speed_mhz(void);
+unsigned int smbios_cpu_get_current_speed_mhz(void);
+
 const char *smbios_mainboard_manufacturer(void);
 const char *smbios_mainboard_product_name(void);
 const char *smbios_mainboard_serial_number(void);

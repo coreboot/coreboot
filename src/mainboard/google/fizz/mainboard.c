@@ -16,6 +16,7 @@
 #include <arch/acpi.h>
 #include <baseboard/variants.h>
 #include <chip.h>
+#include <delay.h>
 #include <device/device.h>
 #include <ec/ec.h>
 #include <ec/google/chromeec/ec.h>
@@ -26,7 +27,10 @@
 #include <soc/pci_devs.h>
 #include <soc/nhlt.h>
 #include <string.h>
+#include <timer.h>
 #include <vendorcode/google/chromeos/chromeos.h>
+
+#include <variant/gpio.h>
 
 #define FIZZ_SKU_ID_I7_U42  0x4
 #define FIZZ_SKU_ID_I5_U42  0x5
@@ -230,6 +234,50 @@ static void mainboard_enable(struct device *dev)
 	dev->ops->write_acpi_tables = mainboard_write_acpi_tables;
 }
 
+#define GPIO_HDMI_HPD		GPP_E13
+#define GPIO_DP_HPD		GPP_E14
+
+/* TODO: This can be moved to common directory */
+static void wait_for_hpd(gpio_t gpio, long timeout)
+{
+	struct stopwatch sw;
+
+	printk(BIOS_INFO, "Waiting for HPD\n");
+	gpio_input(gpio);
+
+	stopwatch_init_msecs_expire(&sw, timeout);
+	while (!gpio_get(gpio)) {
+		if (stopwatch_expired(&sw)) {
+			printk(BIOS_WARNING,
+			       "HPD not ready after %ldms. Abort.\n", timeout);
+			return;
+		}
+		mdelay(200);
+	}
+	printk(BIOS_INFO, "HPD ready after %lu ms\n",
+	       stopwatch_duration_msecs(&sw));
+}
+
+static void mainboard_chip_init(void *chip_info)
+{
+	const struct pad_config *pads;
+	size_t num;
+	static const long display_timeout_ms = 3000;
+
+	/* This is reconfigured back to whatever FSP-S expects by
+	   gpio_configure_pads. */
+	gpio_input(GPIO_HDMI_HPD);
+	if (display_init_required() && !gpio_get(GPIO_HDMI_HPD)) {
+		/* This has to be done before FSP-S runs. */
+		if (google_chromeec_wait_for_displayport(display_timeout_ms))
+			wait_for_hpd(GPIO_DP_HPD, display_timeout_ms);
+	}
+
+	pads = variant_gpio_table(&num);
+	gpio_configure_pads(pads, num);
+}
+
 struct chip_operations mainboard_ops = {
+	.init = mainboard_chip_init,
 	.enable_dev = mainboard_enable,
 };

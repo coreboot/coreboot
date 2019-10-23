@@ -21,6 +21,8 @@
 #include <vendorcode/google/chromeos/chromeos.h>
 #include <soc/nhlt.h>
 
+#include "gpio.h"
+
 #define SUBSYSTEM_ID 0x1AE0006B
 
 static const char *oem_id_maxim = "GOOGLE";
@@ -74,6 +76,12 @@ static void mainboard_enable(struct device *dev)
 	dev->ops->write_acpi_tables = mainboard_write_acpi_tables;
 }
 
+static void mainboard_chip_init(void *chip_info)
+{
+	gpio_configure_pads(gpio_table, ARRAY_SIZE(gpio_table));
+}
+
 struct chip_operations mainboard_ops = {
+	.init = mainboard_chip_init,
 	.enable_dev = mainboard_enable,
 };

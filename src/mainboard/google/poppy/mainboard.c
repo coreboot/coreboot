@@ -21,6 +21,8 @@
 #include <soc/nhlt.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
+#include <variant/gpio.h>
+
 static void mainboard_init(struct device *dev)
 {
 	mainboard_ec_init();
@@ -62,6 +64,18 @@ static void mainboard_enable(struct device *dev)
 	dev->ops->write_acpi_tables = mainboard_write_acpi_tables;
 }
 
+static void mainboard_chip_init(void *chip_info)
+{
+	const struct pad_config *pads;
+	size_t num;
+
+	pads = variant_gpio_table(&num);
+	gpio_configure_pads(pads, num);
+	pads = variant_sku_gpio_table(&num);
+	gpio_configure_pads(pads, num);
+}
+
 struct chip_operations mainboard_ops = {
+	.init = mainboard_chip_init,
 	.enable_dev = mainboard_enable,
 };

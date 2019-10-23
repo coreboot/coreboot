@@ -16,17 +16,9 @@
 #include <baseboard/variants.h>
 #include <soc/ramstage.h>
 
-#include <variant/gpio.h>
-
 void mainboard_silicon_init_params(FSP_SIL_UPD *params)
 {
-	const struct pad_config *pads;
-	size_t num;
 	variant_devtree_update();
-	pads = variant_gpio_table(&num);
-	gpio_configure_pads(pads, num);
-	pads = variant_sku_gpio_table(&num);
-	gpio_configure_pads(pads, num);
 }
 
 void __weak variant_devtree_update(void)

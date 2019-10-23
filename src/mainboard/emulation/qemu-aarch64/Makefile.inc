@@ -6,7 +6,6 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 romstage-y += cbmem.c
-ramstage-y += cbmem.c
 
 bootblock-y += media.c
 romstage-y += media.c

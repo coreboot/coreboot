@@ -11,6 +11,7 @@
  * GNU General Public License for more details.
  */
 
+#include <cbmem.h>
 #include <arch/cache.h>
 #include <arch/lib_helpers.h>
 #include <arch/stages.h>
@@ -48,7 +49,10 @@ void arch_prog_run(struct prog *prog)
 }
 
 /* Generic stage entry point. Can be overridden by board/SoC if needed. */
-__weak void stage_entry(void)
+__weak void stage_entry(uintptr_t stage_arg)
 {
+	if (!ENV_ROMSTAGE_OR_BEFORE)
+		_cbmem_top_ptr = stage_arg;
+
 	main();
 }

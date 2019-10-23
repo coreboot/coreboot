@@ -45,7 +45,7 @@ romstage-y += ../common/uart.c
 romstage-y += ../common/wdt.c
 
 ramstage-y += auxadc.c
-ramstage-y += ../common/cbmem.c emi.c
+ramstage-y += emi.c
 ramstage-y += ../common/ddp.c ddp.c
 ramstage-y += ../common/dsi.c dsi.c
 ramstage-y += ../common/gpio.c gpio.c

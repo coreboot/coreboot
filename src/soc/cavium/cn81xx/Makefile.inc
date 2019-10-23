@@ -35,7 +35,6 @@ verstage-y += gpio.c
 verstage-y += timer.c
 verstage-y += spi.c
 verstage-y += uart.c
-verstage-y += cbmem.c
 
 ################################################################################
 # romstage
@@ -65,7 +64,6 @@ ramstage-y += soc.c
 ramstage-y += cpu.c
 ramstage-y += cpu_secondary.S
 ramstage-y += ecam0.c
-ramstage-y += cbmem.c
 
 ramstage-$(CONFIG_ARM64_USE_ARM_TRUSTED_FIRMWARE) += bl31_plat_params.c
 

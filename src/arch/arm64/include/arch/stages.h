@@ -17,7 +17,7 @@
 #include <stdint.h>
 #include <main_decl.h>
 
-void stage_entry(void);
+void stage_entry(uintptr_t stage_arg);
 
 /* This function is the romstage platform entry point, and should contain all
    chipset and mainboard setup until DRAM is initialized and accessible. */

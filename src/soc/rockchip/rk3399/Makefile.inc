@@ -31,7 +31,6 @@ bootblock-y += gpio.c
 bootblock-y += saradc.c
 bootblock-y += timer.c
 
-verstage-y += ../common/cbmem.c
 verstage-y += ../common/gpio.c
 verstage-y += gpio.c
 verstage-y += sdram.c
@@ -59,7 +58,6 @@ romstage-y += ../common/i2c.c
 
 ################################################################################
 
-ramstage-y += ../common/cbmem.c
 ramstage-y += sdram.c
 ramstage-y += ../common/spi.c
 ramstage-y += ../common/uart.c

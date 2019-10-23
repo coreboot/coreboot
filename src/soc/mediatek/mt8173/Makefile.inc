@@ -64,7 +64,7 @@ romstage-y += ../common/rtc.c rtc.c
 
 ################################################################################
 
-ramstage-y += ../common/cbmem.c emi.c
+ramstage-y += emi.c
 ramstage-y += ../common/spi.c spi.c
 ramstage-$(CONFIG_SPI_FLASH) += flash_controller.c
 ramstage-y += soc.c ../common/mtcmos.c

@@ -33,7 +33,6 @@ romstage-y += mmu.c
 ################################################################################
 ramstage-y += soc.c
 ramstage-y += spi.c
-ramstage-y += cbmem.c
 ramstage-y += timer.c
 ramstage-y += gpio.c
 ramstage-y += clock.c

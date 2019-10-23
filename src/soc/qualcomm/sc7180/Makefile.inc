@@ -28,7 +28,6 @@ romstage-$(CONFIG_DRIVERS_UART) += uart_bitbang.c
 
 ################################################################################
 ramstage-y += soc.c
-ramstage-y += cbmem.c
 ramstage-y += timer.c
 ramstage-y += spi.c
 ramstage-y += gpio.c

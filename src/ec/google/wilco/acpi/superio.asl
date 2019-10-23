@@ -25,7 +25,6 @@ Device (SIO)
 	{
 		Name (_HID, EisaId ("PNP0501"))
 		Name (_UID, 1)
-		Name (_ADR, 0)
 
 		Method (_STA, 0, NotSerialized)
 		{
@@ -57,7 +56,6 @@ Device (SIO)
 		Name (_HID, EisaId ("PNP0303"))
 		Name (_CID, EisaId ("PNP030B"))
 		Name (_UID, 0)
-		Name (_ADR, 0)
 
 		Method (_STA, 0, NotSerialized)
 		{
@@ -90,7 +88,6 @@ Device (SIO)
 	{
 		Name (_HID, EisaId ("PNP0F13"))
 		Name (_UID, 0)
-		Name (_ADR, 0)
 
 		Method (_STA, 0, NotSerialized)
 		{

@@ -874,6 +874,7 @@ void pmic_set_vcore_vol(unsigned int vcore_uv)
 
 	pwrap_write_field(PMIC_VCORE_OP_EN, 1, 0x7F, 0);
 	pwrap_write_field(PMIC_VCORE_VOSEL, vol_reg, 0x7F, 0);
+	udelay(1);
 }
 
 unsigned int pmic_get_vdram1_vol(void)
@@ -895,6 +896,7 @@ void pmic_set_vdram1_vol(unsigned int vdram_uv)
 
 	pwrap_write_field(PMIC_VDRAM1_OP_EN, 1, 0x7F, 0);
 	pwrap_write_field(PMIC_VDRAM1_VOSEL, vol_reg, 0x7F, 0);
+	udelay(1);
 }
 
 unsigned int pmic_get_vddq_vol(void)

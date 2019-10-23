@@ -16,6 +16,6 @@
 
 #include <main_decl.h>
 
-void stage_entry(void) __attribute__((section(".text.stage_entry")));
+void stage_entry(uintptr_t stage_arg) __attribute__((section(".text.stage_entry")));
 
 #endif

@@ -1,5 +1,6 @@
 config ARCH_PPC64
 	bool
+	select RAMSTAGE_CBMEM_TOP_ARG
 
 config ARCH_BOOTBLOCK_PPC64
 	bool

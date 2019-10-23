@@ -132,10 +132,6 @@ config EHCI_BAR
 	hex
 	default 0xfef00000
 
-config AMD_PUBKEY_FILE
-	string "AMD public Key"
-	default "3rdparty/blobs/soc/amd/picasso/PSP/AmdPubKeyRV.bin"
-
 config SERIRQ_CONTINUOUS_MODE
 	bool
 	default n

@@ -23,7 +23,6 @@ scope (\_SB) {
 
 	Device (GPO0)
 	{
-		Name (_ADR, 0)
 		Name (_HID, GPIO_COMM_NAME)
 		Name (_CID, GPIO_COMM_NAME)
 		Name (_DDN, GPIO_COMM_0_DESC)
@@ -54,7 +53,6 @@ scope (\_SB) {
 
 	Device (GPO1)
 	{
-		Name (_ADR, 0)
 		Name (_HID, GPIO_COMM_NAME)
 		Name (_CID, GPIO_COMM_NAME)
 		Name (_DDN, GPIO_COMM_1_DESC)
@@ -85,7 +83,6 @@ scope (\_SB) {
 
 	Device (GPO2)
 	{
-		Name (_ADR, 0)
 		Name (_HID, GPIO_COMM_NAME)
 		Name (_CID, GPIO_COMM_NAME)
 		Name (_DDN, GPIO_COMM_2_DESC)
@@ -116,7 +113,6 @@ scope (\_SB) {
 
 	Device (GPO3)
 	{
-		Name (_ADR, 0)
 		Name (_HID, GPIO_COMM_NAME)
 		Name (_CID, GPIO_COMM_NAME)
 		Name (_DDN, GPIO_COMM_3_DESC)

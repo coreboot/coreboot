@@ -58,39 +58,24 @@ DefinitionBlock (
 	 *
 	 */
 	Scope (\_PR) {		/* define processor scope */
-		Processor(
-			CPU0,		/* name space name */
-			0,		/* Unique number for this processor */
-			0x808,		/* PBLK system I/O address !hardcoded! */
-			0x06		/* PBLKLEN for boot processor */
-			) {
+		Device (CPU0) {
+		Name (_HID, "ACPI0007")
+		Name (_UID, 0)
 			#include "acpi/cpstate.asl"
 		}
-
-		Processor(
-			CPU1,		/* name space name */
-			1,		/* Unique number for this processor */
-			0x0000,		/* PBLK system I/O address !hardcoded! */
-			0x00		/* PBLKLEN for boot processor */
-			) {
+		Device (CPU1) {
+		Name (_HID, "ACPI0007")
+		Name (_UID, 1)
 			#include "acpi/cpstate.asl"
 		}
-
-		Processor(
-			CPU2,		/* name space name */
-			2,		/* Unique number for this processor */
-			0x0000,		/* PBLK system I/O address !hardcoded! */
-			0x00		/* PBLKLEN for boot processor */
-			) {
+		Device (CPU2) {
+		Name (_HID, "ACPI0007")
+		Name (_UID, 2)
 			#include "acpi/cpstate.asl"
 		}
-
-		Processor(
-			CPU3,		/* name space name */
-			3,		/* Unique number for this processor */
-			0x0000,		/* PBLK system I/O address !hardcoded! */
-			0x00		/* PBLKLEN for boot processor */
-			) {
+		Device (CPU3) {
+		Name (_HID, "ACPI0007")
+		Name (_UID, 3)
 			#include "acpi/cpstate.asl"
 		}
 	} /* End _PR scope */

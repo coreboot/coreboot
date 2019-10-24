@@ -502,15 +502,55 @@ static void print_usage(const char *name)
 	exit(1);
 }
 
+static void print_system_info(struct pci_dev *nb, struct pci_dev *sb, struct pci_dev *gfx)
+{
+	unsigned int id, i;
+	char *sbname = "unknown", *nbname = "unknown", *gfxname = "unknown";
+
+	id = cpuid(1);
+
+	/* Determine names */
+	for (i = 0; i < ARRAY_SIZE(supported_chips_list); i++) {
+		if (nb->device_id == supported_chips_list[i].device_id)
+			nbname = supported_chips_list[i].name;
+	}
+	for (i = 0; i < ARRAY_SIZE(supported_chips_list); i++) {
+		if (sb->device_id == supported_chips_list[i].device_id)
+			sbname = supported_chips_list[i].name;
+	}
+	if (gfx) {
+		for (i = 0; i < ARRAY_SIZE(supported_chips_list); i++)
+			if (gfx->device_id == supported_chips_list[i].device_id)
+				gfxname = supported_chips_list[i].name;
+	}
+
+	/* Intel has suggested applications to display the family of a CPU as
+	 * the sum of the "Family" and the "Extended Family" fields shown
+	 * above, and the model as the sum of the "Model" and the 4-bit
+	 * left-shifted "Extended Model" fields.
+	 * http://download.intel.com/design/processor/applnots/24161832.pdf
+	 */
+	printf("CPU: ID 0x%x, Processor Type 0x%x, Family 0x%x, Model 0x%x, Stepping 0x%x\n",
+			id, (id >> 12) & 0x3, ((id >> 8) & 0xf) + ((id >> 20) & 0xff),
+			((id >> 12) & 0xf0) + ((id >> 4) & 0xf), (id & 0xf));
+
+	printf("Northbridge: %04x:%04x (%s)\n",
+		nb->vendor_id, nb->device_id, nbname);
+
+	printf("Southbridge: %04x:%04x (%s)\n",
+		sb->vendor_id, sb->device_id, sbname);
+
+	if (gfx)
+		printf("IGD: %04x:%04x (%s)\n",
+		       gfx->vendor_id, gfx->device_id, gfxname);
+}
+
 int main(int argc, char *argv[])
 {
 	struct pci_access *pacc;
 	struct pci_dev *sb = NULL, *nb, *gfx = NULL, *ahci = NULL, *dev;
 	const char *dump_spd_file = NULL;
 	int opt, option_index = 0;
-	unsigned int id, i;
-
-	char *sbname = "unknown", *nbname = "unknown", *gfxname = "unknown";
 
 	int dump_gpios = 0, dump_mchbar = 0, dump_rcba = 0;
 	int dump_pmbase = 0, dump_epbar = 0, dump_dmibar = 0;
@@ -737,43 +777,9 @@ int main(int argc, char *argv[])
 			ahci = NULL;
 	}
 
-	id = cpuid(1);
-
-	/* Intel has suggested applications to display the family of a CPU as
-	 * the sum of the "Family" and the "Extended Family" fields shown
-	 * above, and the model as the sum of the "Model" and the 4-bit
-	 * left-shifted "Extended Model" fields.
-	 * http://download.intel.com/design/processor/applnots/24161832.pdf
-	 */
-	printf("CPU: ID 0x%x, Processor Type 0x%x, Family 0x%x, Model 0x%x, Stepping 0x%x\n",
-			id, (id >> 12) & 0x3, ((id >> 8) & 0xf) + ((id >> 20) & 0xff),
-			((id >> 12) & 0xf0) + ((id >> 4) & 0xf), (id & 0xf));
-
-	/* Determine names */
-	for (i = 0; i < ARRAY_SIZE(supported_chips_list); i++)
-		if (nb->device_id == supported_chips_list[i].device_id)
-			nbname = supported_chips_list[i].name;
-	for (i = 0; i < ARRAY_SIZE(supported_chips_list); i++)
-		if (sb->device_id == supported_chips_list[i].device_id)
-			sbname = supported_chips_list[i].name;
-	if (gfx) {
-		for (i = 0; i < ARRAY_SIZE(supported_chips_list); i++)
-			if (gfx->device_id == supported_chips_list[i].device_id)
-				gfxname = supported_chips_list[i].name;
-	}
-
-	printf("Northbridge: %04x:%04x (%s)\n",
-		nb->vendor_id, nb->device_id, nbname);
-
-	printf("Southbridge: %04x:%04x (%s)\n",
-		sb->vendor_id, sb->device_id, sbname);
-
-	if (gfx)
-		printf("IGD: %04x:%04x (%s)\n",
-		       gfx->vendor_id, gfx->device_id, gfxname);
+	print_system_info(nb, sb, gfx);
 
 	/* Now do the deed */
-
 	if (dump_gpios) {
 		print_gpios(sb, 1, show_gpio_diffs);
 		printf("\n\n");

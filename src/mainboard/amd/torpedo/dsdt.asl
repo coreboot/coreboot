@@ -45,33 +45,21 @@ DefinitionBlock (
 	 *
 	 */
 	Scope (\_PR) {		/* define processor scope */
-		Processor(
-			C000,		/* name space name, align with BLDCFG_PROCESSOR_SCOPE_NAME[01] */
-			0,		/* Unique number for this processor */
-			0x810,		/* PBLK system I/O address !hardcoded! */
-			0x06		/* PBLKLEN for boot processor */
-			) {
+		Device (C000) {
+		Name (_HID, "ACPI0007")
+		Name (_UID, 0)
 		}
-		Processor(
-			C001,		/* name space name */
-			1,		/* Unique number for this processor */
-			0x810,		/* PBLK system I/O address !hardcoded! */
-			0x06		/* PBLKLEN for boot processor */
-			) {
+		Device (C001) {
+		Name (_HID, "ACPI0007")
+		Name (_UID, 1)
 		}
-		Processor(
-			C002,		/* name space name */
-			2,		/* Unique number for this processor */
-			0x810,		/* PBLK system I/O address !hardcoded! */
-			0x06		/* PBLKLEN for boot processor */
-			) {
+		Device (C002) {
+		Name (_HID, "ACPI0007")
+		Name (_UID, 2)
 		}
-		Processor(
-			C003,		/* name space name */
-			3,		/* Unique number for this processor */
-			0x810,		/* PBLK system I/O address !hardcoded! */
-			0x06		/* PBLKLEN for boot processor */
-			) {
+		Device (C003) {
+		Name (_HID, "ACPI0007")
+		Name (_UID, 3)
 		}
 	} /* End _PR scope */
 

@@ -74,8 +74,7 @@ static void do_fsp_post_memory_init(bool s3wake, uint32_t fsp_version)
 {
 	struct range_entry fsp_mem;
 
-	if (fsp_find_reserved_memory(&fsp_mem))
-		die("Failed to find FSP_RESERVED_MEMORY_RESOURCE_HOB!\n");
+	fsp_find_reserved_memory(&fsp_mem);
 
 	/* initialize cbmem by adding FSP reserved memory first thing */
 	if (!s3wake) {

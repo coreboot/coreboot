@@ -189,9 +189,10 @@ int fsp_find_range_hob(struct range_entry *re, const uint8_t guid[16])
 	return 0;
 }
 
-int fsp_find_reserved_memory(struct range_entry *re)
+void fsp_find_reserved_memory(struct range_entry *re)
 {
-	return fsp_find_range_hob(re, fsp_reserved_memory_guid);
+	if (fsp_find_range_hob(re, fsp_reserved_memory_guid))
+		die("9.1: FSP_RESERVED_MEMORY_RESOURCE_HOB missing!\n");
 }
 
 const void *fsp_find_extension_hob_by_guid(const uint8_t *guid, size_t *size)

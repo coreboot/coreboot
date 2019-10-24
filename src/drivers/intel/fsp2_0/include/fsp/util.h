@@ -79,11 +79,13 @@ const void *fsp_find_nv_storage_data(size_t *size);
 enum cb_err fsp_fill_lb_framebuffer(struct lb_framebuffer *framebuffer);
 int fsp_find_range_hob(struct range_entry *re, const uint8_t guid[16]);
 void fsp_display_fvi_version_hob(void);
-int fsp_find_reserved_memory(struct range_entry *re);
+void fsp_find_reserved_memory(struct range_entry *re);
 const struct hob_resource *fsp_hob_header_to_resource(
 	const struct hob_header *hob);
 const struct hob_header *fsp_next_hob(const struct hob_header *parent);
 bool fsp_guid_compare(const uint8_t guid1[16], const uint8_t guid2[16]);
+void fsp_find_bootloader_tolum(struct range_entry *re);
+
 
 /* Fill in header and validate sanity of component within region device. */
 enum cb_err fsp_validate_component(struct fsp_header *hdr,

@@ -59,7 +59,6 @@ void fsp_print_resource_descriptor(const void *base);
 const char *fsp_get_hob_type_name(const struct hob_header *hob);
 const char *fsp_get_guid_name(const uint8_t *guid);
 void fsp_print_guid_extension_hob(const struct hob_header *hob);
-int fsp_find_bootloader_tolum(struct range_entry *re);
 
 /*
  * Writes number_of_bytes data bytes from buffer to the console.

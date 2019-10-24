@@ -16,9 +16,10 @@
 #include <console/console.h>
 #include <fsp/util.h>
 
-int fsp_find_bootloader_tolum(struct range_entry *re)
+void fsp_find_bootloader_tolum(struct range_entry *re)
 {
-	return fsp_find_range_hob(re, fsp_bootloader_tolum_guid);
+	if (fsp_find_range_hob(re, fsp_bootloader_tolum_guid))
+		die("9.3: FSP_BOOTLOADER_TOLUM_HOB missing!\n");
 }
 
 void fsp_verify_memory_init_hobs(void)
@@ -26,9 +27,8 @@ void fsp_verify_memory_init_hobs(void)
 	struct range_entry fsp_mem;
 	struct range_entry tolum;
 
-	/* Lookup the FSP_BOOTLOADER_TOLUM_HOB */
-	if (fsp_find_bootloader_tolum(&tolum))
-		die("9.3: FSP_BOOTLOADER_TOLUM_HOB missing!\n");
+	/* Verify the size of the TOLUM range */
+	fsp_find_bootloader_tolum(&tolum);
 	if (range_entry_size(&tolum) < cbmem_overhead_size()) {
 		printk(BIOS_CRIT,
 			"FSP_BOOTLOADER_TOLUM_SIZE: 0x%08llx < 0x%08zx\n",
@@ -36,11 +36,8 @@ void fsp_verify_memory_init_hobs(void)
 		die("FSP_BOOTLOADER_TOLUM_HOB too small!\n");
 	}
 
-	/* Locate the FSP reserved memory area */
-	if (fsp_find_reserved_memory(&fsp_mem))
-		die("9.1: FSP_RESERVED_MEMORY_RESOURCE_HOB missing!\n");
-
 	/* Verify the bootloader tolum is above the FSP reserved area */
+	fsp_find_reserved_memory(&fsp_mem);
 	if (range_entry_end(&tolum) <= range_entry_base(&fsp_mem)) {
 		printk(BIOS_CRIT,
 			"TOLUM end: 0x%08llx != 0x%08llx: FSP rsvd base\n",

@@ -20,6 +20,7 @@
 #include <cpu/cpu.h>
 #include <cpu/intel/microcode.h>
 #include <cpu/intel/smm_reloc.h>
+#include <cpu/intel/turbo.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/lapic.h>
 #include <cpu/x86/mp.h>
@@ -27,6 +28,8 @@
 #include <cpu/x86/mtrr.h>
 #include <device/device.h>
 #include <device/pci_ops.h>
+#include <smbios.h>
+#include <soc/broadwell_de.h>
 #include <soc/lpc.h>
 #include <soc/msr.h>
 #include <soc/pattrs.h>
@@ -96,6 +99,25 @@ static void set_max_ratio(void)
 		perf_ctl.lo = msr.lo & 0xff00;
 	}
 	wrmsr(IA32_PERF_CTL, perf_ctl);
+}
+
+unsigned int smbios_cpu_get_max_speed_mhz(void)
+{
+	msr_t msr;
+	uint32_t uncore_max_ratio, turbo_max_ratio = 0;
+
+	/*
+	 * Use turbo's max ratio if it is enabled, otherwise use
+	 * uncore's max ratio.
+	 */
+	msr = rdmsr(MSR_UNCORE_RATIO_LIMIT);
+	uncore_max_ratio = msr.lo & 0x7f;
+	if (get_turbo_state() == TURBO_ENABLED) {
+		msr = rdmsr(MSR_TURBO_RATIO_LIMIT);
+		turbo_max_ratio = msr.lo & 0xff; /* 1 core */
+	}
+
+	return MAX(uncore_max_ratio, turbo_max_ratio) * CPU_BCLK;
 }
 
 static void alt_smm_lock(void)

@@ -20,7 +20,6 @@ Scope (\_SB.PCI0.I2C2)
 	/* Maxim Audio Codec */
 	Device (MAXM)   /* Audio Codec driver I2C */
 	{
-		Name (_ADR, 0)
 		Name (_HID, AUDIO_CODEC_HID)
 		Name (_CID, AUDIO_CODEC_CID)
 		Name (_DDN, AUDIO_CODEC_DDN)
@@ -64,7 +63,6 @@ Scope (\_SB.PCI0.I2C2)
 	}
 	Device (TISW)   /* TI Switch driver I2C */
 	{
-		Name (_ADR, 0)
 		Name (_HID, TI_SWITCH_HID)
 		Name (_CID, TI_SWITCH_CID)
 		Name (_DDN, TI_SWITCH_DDN)

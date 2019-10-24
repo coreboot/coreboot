@@ -43,7 +43,6 @@ Scope (\_SB) {
 
 	Device (TSCR)
 	{
-		Name (_ADR, 0x0)
 		Name (_UID, 2)
 
 		// Report as a Sleep Button device so Linux will

@@ -54,7 +54,6 @@ DefinitionBlock(
 		Device (UNCR)
 		{
 			Name (_BBN, 0xFF)
-			Name (_ADR, 0x00)
 			Name (RID, 0x00)
 			Name (_HID, EisaId ("PNP0A03"))
 			Name (_CRS, ResourceTemplate ()

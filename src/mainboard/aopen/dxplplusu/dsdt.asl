@@ -28,7 +28,6 @@ Scope(\_SB)
 {
 	Device(PCI0) {
 		Name (_HID, EISAID("PNP0A03"))
-		Name (_ADR, 0x00)
 		Name (_PRT, Package() {
 			Package() { 0x001dffff, 0, 0, 16 },
 			Package() { 0x001dffff, 1, 0, 19 },

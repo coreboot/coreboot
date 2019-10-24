@@ -46,7 +46,6 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, OEM_ID, ACPI_TABLE_CREATOR, 100925440)
 			External (CBB2)
 
 			Name (_HID, EisaId ("PNP0A03"))
-			Name (_ADR, 0x00000000)
 			Name (_UID, 0x01)
 
 			Name (HCIN, 0x00)  // HC1
@@ -118,7 +117,6 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, OEM_ID, ACPI_TABLE_CREATOR, 100925440)
 		Device (PCI1)
 		{
 			Name (_HID, "PNP0A03")
-			Name (_ADR, 0x00000000)
 			Name (_UID, 0x02)
 			Method (_STA, 0, NotSerialized)
 			{
@@ -133,7 +131,6 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, OEM_ID, ACPI_TABLE_CREATOR, 100925440)
 		Device (PCI2)
 		{
 			Name (_HID, "PNP0A03")
-			Name (_ADR, 0x00000000)
 			Name (_UID, 0x02)
 			Method (_STA, 0, NotSerialized)
 			{

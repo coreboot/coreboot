@@ -124,7 +124,6 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, OEM_ID, ACPI_TABLE_CREATOR, 1)
 		Device (PCI0)
 		{
 			Name (_HID, EisaId ("PNP0A03"))
-			Name (_ADR, 0x00)
 			Name (_UID, 0x00)
 			Name (_BBN, 0x00)
 

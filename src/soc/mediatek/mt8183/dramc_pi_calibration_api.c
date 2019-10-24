@@ -84,9 +84,6 @@ struct per_byte_dly {
 	u16 final_dly;
 };
 
-extern u8 MR01Value[FSP_MAX];
-extern u8 MR13Value;
-
 static void dramc_auto_refresh_switch(u8 chn, bool option)
 {
 	SET32_BITFIELDS(&ch[chn].ao.refctrl0, REFCTRL0_REFDIS, option ? 0 : 1);
@@ -433,24 +430,24 @@ void dramc_apply_config_before_calibration(u8 freq_group)
 	}
 }
 
-static void dramc_set_mr13_vrcg_to_Normal(u8 chn)
+static void dramc_set_mr13_vrcg_to_Normal(u8 chn, const struct mr_value *mr)
 {
-	MR13Value &= ~(0x1 << 3);
 	for (u8 rank = 0; rank < RANK_MAX; rank++)
-		dramc_mode_reg_write_by_rank(chn, rank, 13, MR13Value);
+		dramc_mode_reg_write_by_rank(chn, rank, 13,
+					     mr->MR13Value & ~(0x1 << 3));
 
 	for (u8 shu = 0; shu < DRAM_DFS_SHUFFLE_MAX; shu++)
 		clrbits_le32(&ch[chn].ao.shu[shu].hwset_vrcg, 0x1 << 19);
 }
 
-void dramc_apply_config_after_calibration(void)
+void dramc_apply_config_after_calibration(const struct mr_value *mr)
 {
 	for (size_t chn = 0; chn < CHANNEL_MAX; chn++) {
 		write32(&ch[chn].phy.misc_cg_ctrl4, 0x11400000);
 		clrbits_le32(&ch[chn].ao.refctrl1, 0x1 << 7);
 		clrbits_le32(&ch[chn].ao.shuctrl, 0x1 << 2);
 		clrbits_le32(&ch[chn].phy.ca_cmd[6], 0x1 << 6);
-		dramc_set_mr13_vrcg_to_Normal(chn);
+		dramc_set_mr13_vrcg_to_Normal(chn, mr);
 
 		clrbits_le32(&ch[chn].phy.b[0].dq[6], 0x3);
 		clrbits_le32(&ch[chn].phy.b[1].dq[6], 0x3);
@@ -936,7 +933,8 @@ static void dramc_rx_dqs_gating_cal_partial(u8 chn, u8 rank,
 }
 
 static void dramc_rx_dqs_gating_cal(u8 chn, u8 rank, u8 freq_group,
-		const struct sdram_params *params, const bool fast_calib)
+		const struct sdram_params *params, const bool fast_calib,
+		const struct mr_value *mr)
 {
 	u8 dqs, fsp, freqDiv = 4;
 	u8 pass_begin[DQS_NUMBER] = {0}, pass_count[DQS_NUMBER] = {0},
@@ -966,8 +964,7 @@ static void dramc_rx_dqs_gating_cal(u8 chn, u8 rank, u8 freq_group,
 	fsp = get_freq_fsq(freq_group);
 	dramc_rx_dqs_isi_pulse_cg_switch(chn, false);
 
-	MR01Value[fsp] |= 0x80;
-	dramc_mode_reg_write_by_rank(chn, rank, 0x1, MR01Value[fsp]);
+	dramc_mode_reg_write_by_rank(chn, rank, 0x1, mr->MR01Value[fsp] | 0x80);
 	dramc_rx_dqs_gating_cal_pre(chn, rank);
 
 	u32 dummy_rd_backup = read32(&ch[chn].ao.dummy_rd);
@@ -1048,8 +1045,7 @@ static void dramc_rx_dqs_gating_cal(u8 chn, u8 rank, u8 freq_group,
 	for (size_t i = 0; i < ARRAY_SIZE(regs_bak); i++)
 		write32(regs_bak[i].addr, regs_bak[i].value);
 
-	MR01Value[fsp] &= 0x7f;
-	dramc_mode_reg_write_by_rank(chn, rank, 0x1, MR01Value[fsp]);
+	dramc_mode_reg_write_by_rank(chn, rank, 0x1, mr->MR01Value[fsp]);
 
 	dramc_write_dqs_gating_result(chn, rank, best_coarse_tune2t,
 		best_coarse_tune0p5t, best_coarse_tune2t_p1, best_coarse_tune0p5t_p1);
@@ -2099,7 +2095,8 @@ static void dramc_rx_dqs_gating_post_process(u8 chn, u8 freq_group)
 			(0xff << 8) | (0x9 << 2) | ROEN);
 }
 
-int dramc_calibrate_all_channels(const struct sdram_params *pams, u8 freq_group)
+int dramc_calibrate_all_channels(const struct sdram_params *pams, u8 freq_group,
+				 const struct mr_value *mr)
 {
 	bool fast_calib;
 	switch (pams->source) {
@@ -2126,7 +2123,7 @@ int dramc_calibrate_all_channels(const struct sdram_params *pams, u8 freq_group)
 			dramc_auto_refresh_switch(chn, true);
 
 			dramc_rx_dqs_gating_cal(chn, rk, freq_group, pams,
-				fast_calib);
+				fast_calib, mr);
 			dramc_window_perbit_cal(chn, rk, freq_group,
 				RX_WIN_RD_DQC, pams, fast_calib);
 			dramc_window_perbit_cal(chn, rk, freq_group,

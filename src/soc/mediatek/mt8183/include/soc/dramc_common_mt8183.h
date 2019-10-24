@@ -59,4 +59,10 @@ enum {
 	CBT_BYTE_MODE1
 };
 
+enum {
+	FSP_0 = 0,
+	FSP_1,
+	FSP_MAX
+};
+
 #endif   /* _DRAMC_COMMON_MT8183_H_ */

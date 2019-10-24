@@ -351,14 +351,14 @@ static void spm_pinmux_setting(void)
 
 static void dfs_init_for_calibration(const struct sdram_params *params,
 				     u8 freq_group,
-				     struct dram_impedance *impedance)
+				     struct dram_shared_data *shared)
 {
-	dramc_init(params, freq_group, impedance);
+	dramc_init(params, freq_group, shared);
 	dramc_apply_config_before_calibration(freq_group);
 }
 
 static void init_dram(const struct sdram_params *params, u8 freq_group,
-		      struct dram_impedance *impedance)
+		      struct dram_shared_data *shared)
 {
 	global_option_init(params);
 	emi_init(params);
@@ -367,10 +367,10 @@ static void init_dram(const struct sdram_params *params, u8 freq_group,
 	dramc_init_pre_settings();
 	spm_pinmux_setting();
 
-	dramc_sw_impedance_cal(params, ODT_OFF, impedance);
-	dramc_sw_impedance_cal(params, ODT_ON, impedance);
+	dramc_sw_impedance_cal(params, ODT_OFF, &shared->impedance);
+	dramc_sw_impedance_cal(params, ODT_ON, &shared->impedance);
 
-	dramc_init(params, freq_group, impedance);
+	dramc_init(params, freq_group, shared);
 	dramc_apply_config_before_calibration(freq_group);
 	emi_init2(params);
 }
@@ -485,7 +485,7 @@ static void dramc_save_result_to_shuffle(u32 src_shuffle, u32 dst_shuffle)
 }
 
 static int run_calib(const struct dramc_param *dparam,
-		     struct dram_impedance *impedance,
+		     struct dram_shared_data *shared,
 		     const int shuffle, bool *first_run)
 {
 	const u8 *freq_tbl;
@@ -504,13 +504,13 @@ static int run_calib(const struct dramc_param *dparam,
 		   frequency_table[freq_group], *first_run);
 
 	if (*first_run)
-		init_dram(params, freq_group, impedance);
+		init_dram(params, freq_group, shared);
 	else
-		dfs_init_for_calibration(params, freq_group, impedance);
+		dfs_init_for_calibration(params, freq_group, shared);
 	*first_run = false;
 
 	dramc_dbg("Start K (current clock: %u\n", params->frequency);
-	if (dramc_calibrate_all_channels(params, freq_group) != 0)
+	if (dramc_calibrate_all_channels(params, freq_group, &shared->mr) != 0)
 		return -1;
 	dramc_ac_timing_optimize(freq_group);
 	dramc_dbg("K finished (current clock: %u\n", params->frequency);
@@ -519,30 +519,30 @@ static int run_calib(const struct dramc_param *dparam,
 	return 0;
 }
 
-static void after_calib(void)
+static void after_calib(const struct mr_value *mr)
 {
-	dramc_apply_config_after_calibration();
+	dramc_apply_config_after_calibration(mr);
 	dramc_runtime_config();
 }
 
 int mt_set_emi(const struct dramc_param *dparam)
 {
-	struct dram_impedance impedance;
+	struct dram_shared_data shared;
 	bool first_run = true;
 	set_vdram1_vddq_voltage();
 
 	if (CONFIG(MT8183_DRAM_DVFS)) {
-		if (run_calib(dparam, &impedance, DRAM_DFS_SHUFFLE_3,
+		if (run_calib(dparam, &shared, DRAM_DFS_SHUFFLE_3,
 			      &first_run) != 0)
 			return -1;
-		if (run_calib(dparam, &impedance, DRAM_DFS_SHUFFLE_2,
+		if (run_calib(dparam, &shared, DRAM_DFS_SHUFFLE_2,
 			      &first_run) != 0)
 			return -1;
 	}
 
-	if (run_calib(dparam, &impedance, DRAM_DFS_SHUFFLE_1, &first_run) != 0)
+	if (run_calib(dparam, &shared, DRAM_DFS_SHUFFLE_1, &first_run) != 0)
 		return -1;
 
-	after_calib();
+	after_calib(&shared.mr);
 	return 0;
 }

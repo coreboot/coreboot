@@ -86,6 +86,16 @@ struct dram_impedance {
 	u32 data[ODT_MAX][4];
 };
 
+struct mr_value {
+	u8 MR01Value[FSP_MAX];
+	u8 MR13Value;
+};
+
+struct dram_shared_data {
+	struct dram_impedance impedance;
+	struct mr_value mr;
+};
+
 extern const u8 phy_mapping[CHANNEL_MAX][16];
 
 int complex_mem_test(u8 *start, unsigned int len);

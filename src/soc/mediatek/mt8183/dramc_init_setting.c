@@ -739,24 +739,24 @@ static u8 dramc_zq_calibration(u8 chn, u8 rank)
 	return 0;
 }
 
-u8 MR01Value[FSP_MAX] = {0x26, 0x56};
-u8 MR13Value = (1 << 4) | (1 << 3);
-static void dramc_mode_reg_init(u8 freq_group)
+static void dramc_mode_reg_init(u8 freq_group, struct mr_value *mr)
 {
+	u8 *MR01Value = mr->MR01Value;
 	u8 MR02Value[FSP_MAX] = {0x12, 0x12};
 	u8 MR03Value = 0x30;
 	u8 MR11Value[FSP_MAX] = {0x0, 0x23};
 	u8 MR12Value[CHANNEL_MAX][RANK_MAX][FSP_MAX] = {
 		{{0x5d, 0x5d}, {0x5d, 0x5d} }, {{0x5d, 0x5d}, {0x5d, 0x5d} },
 	};
+	u8 MR13Value;
 	u8 MR14Value[CHANNEL_MAX][RANK_MAX][FSP_MAX] = {
 		{{0x5d, 0x10}, {0x5d, 0x10} }, {{0x5d, 0x10}, {0x5d, 0x10} },
 	};
 
 	u8 MR22Value[FSP_MAX] = {0x38, 0x34};
 
-	MR01Value[FSP_0] &= 0x8f;
-	MR01Value[FSP_1] &= 0x8f;
+	MR01Value[FSP_0] = 0x6;
+	MR01Value[FSP_1] = 0x6;
 
 	if (freq_group == LP4X_DDR1600) {
 		MR02Value[0] = 0x12;
@@ -837,6 +837,8 @@ static void dramc_mode_reg_init(u8 freq_group)
 			(0x1fff << 0) | (0xff << 16),
 			(2 << 0) | (MR02Value[operate_fsp] << 16));
 	}
+
+	mr->MR13Value = MR13Value;
 
 	clrsetbits_le32(&ch[0].ao.mrs, 0x3 << 24, RANK_0 << 24);
 	clrsetbits_le32(&ch[1].ao.mrs, 0x3 << 24, RANK_0 << 24);
@@ -1730,13 +1732,13 @@ static void ddr_update_ac_timing(u8 freq_group)
 }
 
 void dramc_init(const struct sdram_params *params, u8 freq_group,
-		const struct dram_impedance *impedance)
+		struct dram_shared_data *shared)
 {
-	dramc_setting(params, freq_group, impedance);
+	dramc_setting(params, freq_group, &shared->impedance);
 
 	dramc_duty_calibration(params, freq_group);
 	dvfs_settings(freq_group);
 
-	dramc_mode_reg_init(freq_group);
+	dramc_mode_reg_init(freq_group, &shared->mr);
 	ddr_update_ac_timing(freq_group);
 }

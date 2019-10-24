@@ -26,7 +26,7 @@ static void *smp_write_config_table(void *v)
 {
 	struct mp_config_table *mc;
 	struct mb_sysconf_t *m;
-	unsigned sbdn;
+	unsigned int sbdn;
 	int i, j, bus_isa;
 
 	mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);

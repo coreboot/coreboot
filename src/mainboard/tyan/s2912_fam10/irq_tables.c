@@ -49,10 +49,10 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 
 	struct irq_routing_table *pirq;
 	struct irq_info *pirq_info;
-	unsigned slot_num;
+	unsigned int slot_num;
 	uint8_t *v;
 	struct mb_sysconf_t *m;
-	unsigned sbdn;
+	unsigned int sbdn;
 
 	uint8_t sum = 0;
 	int i;
@@ -96,8 +96,8 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 	for (i = 1; i < sysconf.hc_possible_num; i++) {
 		if (!(sysconf.pci1234[i] & 0x1))
 			continue;
-		unsigned busn = (sysconf.pci1234[i] >> 12) & 0xff;
-		unsigned devn = sysconf.hcdn[i] & 0xff;
+		unsigned int busn = (sysconf.pci1234[i] >> 12) & 0xff;
+		unsigned int devn = sysconf.hcdn[i] & 0xff;
 
 		write_pirq_info(pirq_info, busn, PCI_DEVFN(devn, 0), 0x1, 0xdef8,
 				0x2, 0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 0, 0);

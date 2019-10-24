@@ -36,7 +36,7 @@ struct max77620_init_reg {
 	u8 delay;
 };
 
-static void pmic_write_reg(unsigned bus, uint8_t chip, uint8_t reg, uint8_t val,
+static void pmic_write_reg(unsigned int bus, uint8_t chip, uint8_t reg, uint8_t val,
 			   int delay)
 {
 	if (i2c_writeb(bus, chip, reg, val)) {
@@ -50,19 +50,19 @@ static void pmic_write_reg(unsigned bus, uint8_t chip, uint8_t reg, uint8_t val,
 	}
 }
 
-void pmic_write_reg_77620(unsigned bus, uint8_t reg, uint8_t val,
+void pmic_write_reg_77620(unsigned int bus, uint8_t reg, uint8_t val,
 					int delay)
 {
 	pmic_write_reg(bus, MAX77620_I2C_ADDR, reg, val, delay);
 }
 
-static inline void pmic_write_reg_77621(unsigned bus, uint8_t reg, uint8_t val,
+static inline void pmic_write_reg_77621(unsigned int bus, uint8_t reg, uint8_t val,
 					int delay)
 {
 	pmic_write_reg(bus, MAX77621_CPU_I2C_ADDR, reg, val, delay);
 }
 
-void pmic_init(unsigned bus)
+void pmic_init(unsigned int bus)
 {
 	/* MAX77620: Set SD0 to 1.0V - VDD_CORE */
 	pmic_write_reg_77620(bus, MAX77620_SD0_REG, 0x20, 1);

@@ -34,7 +34,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 	//extern unsigned char bus_mcp55[8];
 	//extern unsigned apicid_mcp55;
 
-	unsigned sbdn;
+	unsigned int sbdn;
 	struct resource *res;
 	struct device *dev;
 

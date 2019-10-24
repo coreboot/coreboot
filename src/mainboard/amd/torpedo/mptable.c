@@ -43,7 +43,7 @@ u8 intr_data[] = {
 	0x10,0x11,0x12,0x13
 };
 
-static void smp_add_mpc_entry(struct mp_config_table *mc, unsigned length)
+static void smp_add_mpc_entry(struct mp_config_table *mc, unsigned int length)
 {
 	mc->mpc_length += length;
 	mc->mpc_entry_count++;
@@ -64,9 +64,9 @@ static void *smp_write_config_table(void *v)
 	struct mp_config_table *mc;
 	int bus_isa;
 	int boot_apic_id;
-	unsigned apic_version;
-	unsigned cpu_features;
-	unsigned cpu_feature_flags;
+	unsigned int apic_version;
+	unsigned int cpu_features;
+	unsigned int cpu_feature_flags;
 	struct cpuid_result result;
 	unsigned long cpu_flag;
 

@@ -32,11 +32,11 @@
  */
 /* busnum is default */
 unsigned char bus_ck804[6];
-unsigned apicid_ck804;
+unsigned int apicid_ck804;
 
 void get_bus_conf(void)
 {
-	unsigned apicid_base, sbdn;
+	unsigned int apicid_base, sbdn;
 	struct device *dev;
 	int i;
 

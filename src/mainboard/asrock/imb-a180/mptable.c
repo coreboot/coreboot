@@ -40,7 +40,7 @@ u8 intr_data[0x54] = {
 	0x10,0x11,0x12,0x13
 };
 
-static void smp_add_mpc_entry(struct mp_config_table *mc, unsigned length)
+static void smp_add_mpc_entry(struct mp_config_table *mc, unsigned int length)
 {
 	mc->mpc_length += length;
 	mc->mpc_entry_count++;

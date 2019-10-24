@@ -165,7 +165,7 @@ static void mainboard_enable(struct device *dev)
 	mainboard_interrupt_handlers(0x15, &int15_handler);
 #endif
 
-	unsigned disable = 0;
+	unsigned int disable = 0;
 	if ((get_option(&disable, "ethernet1") == CB_SUCCESS) && disable) {
 		struct device *nic = pcidev_on_root(0x1c, 2);
 		if (nic) {

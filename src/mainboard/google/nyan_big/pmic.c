@@ -55,7 +55,7 @@ static struct as3722_init_reg init_list[] = {
 	{AS3722_LDO11, 0x00, 1},
 };
 
-static void pmic_write_reg(unsigned bus, uint8_t reg, uint8_t val, int do_delay)
+static void pmic_write_reg(unsigned int bus, uint8_t reg, uint8_t val, int do_delay)
 {
 	if (i2c_writeb(bus, AS3722_I2C_ADDR, reg, val)) {
 		printk(BIOS_ERR, "%s: reg = 0x%02X, value = 0x%02X failed!\n",
@@ -68,7 +68,7 @@ static void pmic_write_reg(unsigned bus, uint8_t reg, uint8_t val, int do_delay)
 	}
 }
 
-static void pmic_slam_defaults(unsigned bus)
+static void pmic_slam_defaults(unsigned int bus)
 {
 	int i;
 
@@ -78,7 +78,7 @@ static void pmic_slam_defaults(unsigned bus)
 	}
 }
 
-void pmic_init(unsigned bus)
+void pmic_init(unsigned int bus)
 {
 	/*
 	 * Don't need to set up VDD_CORE - already done - by OTP

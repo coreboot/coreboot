@@ -64,7 +64,7 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 {
 	struct irq_routing_table *pirq;
 	struct irq_info *pirq_info;
-	unsigned slot_num, sbdn;
+	unsigned int slot_num, sbdn;
 	uint8_t *v, sum = 0;
 	int i;
 

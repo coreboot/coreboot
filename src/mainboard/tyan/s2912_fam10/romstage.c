@@ -62,7 +62,7 @@ inline int spd_read_byte(unsigned int device, unsigned int address)
 #include <southbridge/nvidia/mcp55/early_setup_ss.h>
 #include "southbridge/nvidia/mcp55/early_setup_car.c"
 
-unsigned get_sbdn(unsigned bus)
+unsigned int get_sbdn(unsigned int bus)
 {
 	pci_devfn_t dev;
 

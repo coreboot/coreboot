@@ -20,13 +20,13 @@
 
 struct mb_sysconf_t {
 	unsigned char bus_mcp55[8]; //1
-	unsigned apicid_mcp55;
+	unsigned int apicid_mcp55;
 
 	unsigned char bus_8132_0;  //7
 	unsigned char bus_8132_1;  //8
 	unsigned char bus_8132_2;  //9
-	unsigned apicid_8132_1;
-	unsigned apicid_8132_2;
+	unsigned int apicid_8132_1;
+	unsigned int apicid_8132_2;
 };
 
 #endif

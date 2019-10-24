@@ -22,7 +22,7 @@
 #include <southbridge/amd/pi/hudson/hudson.h>
 #include <southbridge/amd/common/amd_pci_util.h>
 
-static void smp_add_mpc_entry(struct mp_config_table *mc, unsigned length)
+static void smp_add_mpc_entry(struct mp_config_table *mc, unsigned int length)
 {
 	mc->mpc_length += length;
 	mc->mpc_entry_count++;

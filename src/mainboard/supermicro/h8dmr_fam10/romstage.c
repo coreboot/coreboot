@@ -55,7 +55,7 @@ inline int spd_read_byte(unsigned int device, unsigned int address)
 	return smbus_read_byte(device, address);
 }
 
-unsigned get_sbdn(unsigned bus)
+unsigned int get_sbdn(unsigned int bus)
 {
 	pci_devfn_t dev;
 

@@ -25,7 +25,7 @@ static void pci7xx1_enable(struct device *const dev)
 {
 	printk(BIOS_DEBUG, "%s: TI PCI7xx1 media controller\n", __func__);
 	if (PCI_FUNC(dev->path.pci.devfn) == 0) {
-		const unsigned slot = PCI_SLOT(dev->path.pci.devfn);
+		const unsigned int slot = PCI_SLOT(dev->path.pci.devfn);
 
 		int fn;
 

@@ -20,7 +20,7 @@
 
 struct mb_sysconf_t {
 	unsigned char bus_mcp55[8]; //1
-	unsigned apicid_mcp55;
+	unsigned int apicid_mcp55;
 };
 
 #endif

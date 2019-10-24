@@ -34,7 +34,7 @@ struct max77620_init_reg {
 	u8 delay;
 };
 
-static void pmic_write_reg(unsigned bus, uint8_t reg, uint8_t val, int delay)
+static void pmic_write_reg(unsigned int bus, uint8_t reg, uint8_t val, int delay)
 {
 	if (i2c_writeb(bus, MAX77620_I2C_ADDR, reg, val)) {
 		printk(BIOS_ERR, "%s: reg = 0x%02X, value = 0x%02X failed!\n",
@@ -47,7 +47,7 @@ static void pmic_write_reg(unsigned bus, uint8_t reg, uint8_t val, int delay)
 	}
 }
 
-void pmic_init(unsigned bus)
+void pmic_init(unsigned int bus)
 {
 	/* Setup/Enable GPIO5 - VDD_CPU_REG_EN */
 	pmic_write_reg(bus, MAX77620_GPIO5_REG, 0x09, 1);

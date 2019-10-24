@@ -330,9 +330,9 @@ static void mainboard_enable(struct device *dev)
 	mmu_config_range(DRAM_END, 4096 - DRAM_END, DCACHE_OFF);
 	dcache_mmu_enable();
 
-	const unsigned epll_hz = 192000000;
-	const unsigned sample_rate = 48000;
-	const unsigned lr_frame_size = 256;
+	const unsigned int epll_hz = 192000000;
+	const unsigned int sample_rate = 48000;
+	const unsigned int lr_frame_size = 256;
 	clock_epll_set_rate(epll_hz);
 	clock_select_i2s_clk_source();
 	clock_set_i2s_clk_prescaler(epll_hz, sample_rate * lr_frame_size);

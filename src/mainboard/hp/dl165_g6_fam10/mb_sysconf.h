@@ -29,9 +29,9 @@ struct mb_sysconf_t {
 	unsigned char bus_bcm5785_0;
 	unsigned char bus_bcm5785_1;
 	unsigned char bus_bcm5785_1_1;
-	unsigned apicid_bcm5785[3];
+	unsigned int apicid_bcm5785[3];
 
-	unsigned sbdn2;
+	unsigned int sbdn2;
 };
 
 #endif

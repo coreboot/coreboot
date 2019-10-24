@@ -30,12 +30,12 @@
 // Global variables for MB layouts and these will be shared by irqtable mptable and acpi_tables
 struct mb_sysconf_t mb_sysconf;
 
-unsigned sbdn3;
+unsigned int sbdn3;
 
 void get_bus_conf(void)
 {
 
-	unsigned apicid_base;
+	unsigned int apicid_base;
 	struct mb_sysconf_t *m;
 
 	struct device *dev;

@@ -33,7 +33,7 @@ struct mb_sysconf_t mb_sysconf;
 void get_bus_conf(void)
 {
 
-	unsigned apicid_base;
+	unsigned int apicid_base;
 	struct mb_sysconf_t *m;
 
 	struct device *dev;

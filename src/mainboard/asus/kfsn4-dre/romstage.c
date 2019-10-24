@@ -65,7 +65,7 @@ int spd_read_byte(unsigned int device, unsigned int address)
  * @param[in] bus target bus number
  * @return southbridge device number
  */
-unsigned int get_sbdn(unsigned bus)
+unsigned int get_sbdn(unsigned int bus)
 {
 	pci_devfn_t dev;
 
@@ -114,7 +114,7 @@ static const unsigned int ctrl_conf_enable_msi_mapping[] = {
 static void ck804_control(const unsigned int *values, u32 size,
 			  uint8_t bus_unit_id)
 {
-	unsigned busn[4], io_base[4];
+	unsigned int busn[4], io_base[4];
 	int i, ck804_num = 0;
 
 	for (i = 0; i < 4; i++) {

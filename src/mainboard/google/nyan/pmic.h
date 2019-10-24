@@ -39,6 +39,6 @@ enum {
 	AS3722_LDO11,
 };
 
-void pmic_init(unsigned bus);
+void pmic_init(unsigned int bus);
 
 #endif /* __MAINBOARD_GOOGLE_NYAN_PMIC_H__ */

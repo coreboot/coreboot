@@ -73,8 +73,8 @@
 #define MAX77621_CONTROL1_REG		0x02
 #define MAX77621_CONTROL2_REG		0x03
 
-void pmic_init(unsigned bus);
-void pmic_write_reg_77620(unsigned bus, uint8_t reg, uint8_t val,
+void pmic_init(unsigned int bus);
+void pmic_write_reg_77620(unsigned int bus, uint8_t reg, uint8_t val,
 					int delay);
 
 #endif /* __MAINBOARD_GOOGLE_FOSTER_PMIC_H__ */

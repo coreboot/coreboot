@@ -29,12 +29,12 @@
 #include <cpu/amd/amdfam10_sysconf.h>
 
 extern unsigned char bus_ck804[6];
-extern unsigned apicid_ck804;
+extern unsigned int apicid_ck804;
 
 static void *smp_write_config_table(void *v)
 {
 	struct mp_config_table *mc;
-	unsigned sbdn;
+	unsigned int sbdn;
 	int bus_isa;
 
 	mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);

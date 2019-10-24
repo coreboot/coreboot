@@ -21,7 +21,7 @@
 
 struct ht_link {
 	struct device *dev;
-	unsigned pos;
+	unsigned int pos;
 	unsigned char ctrl_off, config_off, freq_off, freq_cap_off;
 };
 
@@ -64,7 +64,7 @@ static struct device *ht_scan_get_devs(struct device **old_devices)
 	return first;
 }
 
-static int ht_setup_link(struct ht_link *prev, struct device *dev, unsigned pos)
+static int ht_setup_link(struct ht_link *prev, struct device *dev, unsigned int pos)
 {
 	struct ht_link cur[1];
 	int linkb_to_host;
@@ -113,9 +113,9 @@ static int ht_setup_link(struct ht_link *prev, struct device *dev, unsigned pos)
 	return 0;
 }
 
-static unsigned ht_lookup_slave_capability(struct device *dev)
+static unsigned int ht_lookup_slave_capability(struct device *dev)
 {
-	unsigned pos;
+	unsigned int pos;
 
 	pos = 0;
 	do {
@@ -135,7 +135,7 @@ static unsigned ht_lookup_slave_capability(struct device *dev)
 }
 
 static void ht_collapse_early_enumeration(struct bus *bus,
-					  unsigned offset_unitid)
+					  unsigned int offset_unitid)
 {
 	unsigned int devfn;
 	struct ht_link prev;
@@ -207,7 +207,7 @@ static void ht_collapse_early_enumeration(struct bus *bus,
 	for (devfn = PCI_DEVFN(1, 0); devfn <= 0xff; devfn += 8) {
 		struct device dummy;
 		u32 id;
-		unsigned pos, flags;
+		unsigned int pos, flags;
 
 		dummy.bus = bus;
 		dummy.path.type = DEVICE_PATH_PCI;
@@ -236,10 +236,10 @@ static void ht_collapse_early_enumeration(struct bus *bus,
 	}
 }
 
-static unsigned int do_hypertransport_scan_chain(struct bus *bus, unsigned min_devfn,
-				       unsigned max_devfn,
-				       unsigned *ht_unitid_base,
-				       unsigned offset_unitid)
+static unsigned int do_hypertransport_scan_chain(struct bus *bus, unsigned int min_devfn,
+				       unsigned int max_devfn,
+				       unsigned int *ht_unitid_base,
+				       unsigned int offset_unitid)
 {
 	/*
 	 * Even CONFIG_HT_CHAIN_UNITID_BASE == 0, we still can go through this

@@ -18,7 +18,7 @@
 
 struct drivers_net_config {
 	uint16_t customized_leds;
-	unsigned wake;	/* Wake pin for ACPI _PRW */
+	unsigned int wake;	/* Wake pin for ACPI _PRW */
 	/*
 	 * There maybe many NIC cards in a system.
 	 * This parameter is for driver to identify what

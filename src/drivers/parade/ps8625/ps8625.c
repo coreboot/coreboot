@@ -17,7 +17,7 @@
 
 #include "ps8625.h"
 
-void parade_ps8625_bridge_setup(unsigned bus, unsigned chip_base,
+void parade_ps8625_bridge_setup(unsigned int bus, unsigned int chip_base,
 				const struct parade_write *parade_writes,
 				int parade_write_count)
 {

@@ -18,7 +18,7 @@ void init_timer(void)
 {
 }
 
-void udelay(unsigned usecs)
+void udelay(unsigned int usecs)
 {
 	int i;
 

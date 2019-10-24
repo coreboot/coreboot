@@ -29,30 +29,30 @@
 #define SINGLE_CHAR_TIMEOUT	(50 * 1000)
 #define FIFO_TIMEOUT		(16 * SINGLE_CHAR_TIMEOUT)
 
-static int uart8250_can_tx_byte(unsigned base_port)
+static int uart8250_can_tx_byte(unsigned int base_port)
 {
 	return inb(base_port + UART8250_LSR) & UART8250_LSR_THRE;
 }
 
-static void uart8250_tx_byte(unsigned base_port, unsigned char data)
+static void uart8250_tx_byte(unsigned int base_port, unsigned char data)
 {
 	unsigned long int i = SINGLE_CHAR_TIMEOUT;
 	while (i-- && !uart8250_can_tx_byte(base_port));
 	outb(data, base_port + UART8250_TBR);
 }
 
-static void uart8250_tx_flush(unsigned base_port)
+static void uart8250_tx_flush(unsigned int base_port)
 {
 	unsigned long int i = FIFO_TIMEOUT;
 	while (i-- && !(inb(base_port + UART8250_LSR) & UART8250_LSR_TEMT));
 }
 
-static int uart8250_can_rx_byte(unsigned base_port)
+static int uart8250_can_rx_byte(unsigned int base_port)
 {
 	return inb(base_port + UART8250_LSR) & UART8250_LSR_DR;
 }
 
-static unsigned char uart8250_rx_byte(unsigned base_port)
+static unsigned char uart8250_rx_byte(unsigned int base_port)
 {
 	unsigned long int i = SINGLE_CHAR_TIMEOUT;
 	while (i && !uart8250_can_rx_byte(base_port))
@@ -64,7 +64,7 @@ static unsigned char uart8250_rx_byte(unsigned base_port)
 		return 0x0;
 }
 
-static void uart8250_init(unsigned base_port, unsigned divisor)
+static void uart8250_init(unsigned int base_port, unsigned int divisor)
 {
 	DISABLE_TRACE;
 	/* Disable interrupts */
@@ -87,7 +87,7 @@ static void uart8250_init(unsigned base_port, unsigned divisor)
 	ENABLE_TRACE;
 }
 
-static const unsigned bases[] = { 0x3f8, 0x2f8, 0x3e8, 0x2e8 };
+static const unsigned int bases[] = { 0x3f8, 0x2f8, 0x3e8, 0x2e8 };
 
 uintptr_t uart_platform_base(int idx)
 {

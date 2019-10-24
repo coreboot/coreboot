@@ -26,7 +26,7 @@
 #define NODE_MC(x) NODE_PCI(x,3)
 #define NODE_LC(x) NODE_PCI(x,4)
 
-unsigned int get_sbdn(unsigned bus);
+unsigned int get_sbdn(unsigned int bus);
 void cpuSetAMDMSR(uint8_t node_id);
 
 typedef void (*process_ap_t) (u32 apicid, void *gp);

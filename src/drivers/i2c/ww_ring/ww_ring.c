@@ -88,12 +88,12 @@
  * the program page size.
  */
 typedef struct {
-	unsigned i2c_bus;
+	unsigned int i2c_bus;
 	uint8_t  dev_addr;
 	uint8_t  data_buffer[LP55231_PROG_PAGE_SIZE + 1];
 } TiLp55231;
 
-static void ww_ring_init(unsigned i2c_bus);
+static void ww_ring_init(unsigned int i2c_bus);
 
 /* Controller descriptors. */
 static TiLp55231 lp55231s[WW_RING_NUM_LED_CONTROLLERS];
@@ -142,7 +142,7 @@ static int ledc_transfer(TiLp55231 *ledc, struct i2c_msg *segs,
  * bytes can be transmitted in one write transaction.
  */
 static int ledc_write(TiLp55231 *ledc, uint8_t start_addr,
-		      const uint8_t *data, unsigned count)
+		      const uint8_t *data, unsigned int count)
 {
 	struct i2c_msg seg;
 
@@ -220,10 +220,10 @@ static int ledc_reset(TiLp55231 *ledc)
  * into sections fitting into memory pages.
  */
 static void ledc_write_program(TiLp55231 *ledc, uint8_t load_addr,
-			       const uint8_t *program, unsigned count)
+			       const uint8_t *program, unsigned int count)
 {
 	uint8_t page_num = load_addr / LP55231_PROG_PAGE_SIZE;
-	unsigned page_offs = load_addr % LP55231_PROG_PAGE_SIZE;
+	unsigned int page_offs = load_addr % LP55231_PROG_PAGE_SIZE;
 
 	if ((load_addr + count) > LP55231_MAX_PROG_SIZE) {
 		printk(BIOS_WARNING,
@@ -233,7 +233,7 @@ static void ledc_write_program(TiLp55231 *ledc, uint8_t load_addr,
 	}
 
 	while (count) {
-		unsigned segment_size = LP55231_PROG_PAGE_SIZE - page_offs;
+		unsigned int segment_size = LP55231_PROG_PAGE_SIZE - page_offs;
 
 		if (segment_size > count)
 			segment_size = count;
@@ -334,7 +334,7 @@ static int ledc_init_validate(TiLp55231 *ledc)
  * Find a program matching screen type, and run it on both controllers, if
  * found.
  */
-int ww_ring_display_pattern(unsigned i2c_bus, enum display_pattern pattern)
+int ww_ring_display_pattern(unsigned int i2c_bus, enum display_pattern pattern)
 {
 	static int initted;
 	const WwRingStateProg *wwr_prog;
@@ -379,7 +379,7 @@ int ww_ring_display_pattern(unsigned i2c_bus, enum display_pattern pattern)
 
 #define LP55231_I2C_BASE_ADDR 0x32
 
-static void ww_ring_init(unsigned i2c_bus)
+static void ww_ring_init(unsigned int i2c_bus)
 {
 	TiLp55231 *ledc;
 	int i, count = 0;

@@ -25,7 +25,7 @@
  * @param apic_id The Local APIC ID number.
  * @return Pointer to the device structure (if found), 0 otherwise.
  */
-struct device *dev_find_lapic(unsigned apic_id)
+struct device *dev_find_lapic(unsigned int apic_id)
 {
 	struct device *dev;
 	struct device *result = NULL;
@@ -325,7 +325,7 @@ void compact_resources(struct device *dev)
  * @param index The index of the resource on the device.
  * @return The resource, if it already exists.
  */
-struct resource *probe_resource(const struct device *dev, unsigned index)
+struct resource *probe_resource(const struct device *dev, unsigned int index)
 {
 	struct resource *res;
 
@@ -348,7 +348,7 @@ struct resource *probe_resource(const struct device *dev, unsigned index)
  * @param index The index of the resource on the device.
  * @return TODO.
  */
-struct resource *new_resource(struct device *dev, unsigned index)
+struct resource *new_resource(struct device *dev, unsigned int index)
 {
 	struct resource *resource, *tail;
 
@@ -395,7 +395,7 @@ struct resource *new_resource(struct device *dev, unsigned index)
  * @param index The index of the resource on the device.
  * return TODO.
  */
-struct resource *find_resource(const struct device *dev, unsigned index)
+struct resource *find_resource(const struct device *dev, unsigned int index)
 {
 	struct resource *resource;
 

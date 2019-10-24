@@ -27,7 +27,7 @@
 
 static void wait_rdy(u8 *mmio)
 {
-	unsigned try = 100;
+	unsigned int try = 100;
 
 	while (try--) {
 		if (read32(GMBUS2_ADDR) & GMBUS_HW_RDY)

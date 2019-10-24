@@ -116,7 +116,7 @@ const char *smbios_mainboard_product_name(void)
 void smbios_system_set_uuid(u8 *uuid)
 {
 	static char result[16];
-	unsigned i;
+	unsigned int i;
 	static int already_read;
 	struct device *dev;
 	const int remap[16] = {

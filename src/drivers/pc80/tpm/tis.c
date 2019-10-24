@@ -465,7 +465,7 @@ static u32 tis_senddata(const u8 *const data, u32 len)
 	burst = tpm_read_burst_count(locality);
 
 	while (1) {
-		unsigned count;
+		unsigned int count;
 
 		/* Wait till the device is ready to accept more data. */
 		while (!burst) {

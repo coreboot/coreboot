@@ -18,9 +18,9 @@ struct drivers_generic_max98357a_config {
 	struct acpi_gpio sdmode_gpio;
 
 	/* SDMODE Delay */
-	unsigned sdmode_delay;
+	unsigned int sdmode_delay;
 
 	/* GPIO used to indicate if this device is present */
-	unsigned device_present_gpio;
-	unsigned device_present_gpio_invert;
+	unsigned int device_present_gpio;
+	unsigned int device_present_gpio_invert;
 };

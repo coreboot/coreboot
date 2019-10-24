@@ -45,7 +45,7 @@ unsigned int pciexp_find_extended_cap(struct device *dev, unsigned int cap)
  * Re-train a PCIe link
  */
 #define PCIE_TRAIN_RETRY 10000
-static int pciexp_retrain_link(struct device *dev, unsigned cap)
+static int pciexp_retrain_link(struct device *dev, unsigned int cap)
 {
 	unsigned int try;
 	u16 lnk;
@@ -90,8 +90,8 @@ static int pciexp_retrain_link(struct device *dev, unsigned cap)
  * and enable Common Clock Configuration if possible.  If CCC is
  * enabled the link must be retrained.
  */
-static void pciexp_enable_common_clock(struct device *root, unsigned root_cap,
-				       struct device *endp, unsigned endp_cap)
+static void pciexp_enable_common_clock(struct device *root, unsigned int root_cap,
+				       struct device *endp, unsigned int endp_cap)
 {
 	u16 root_scc, endp_scc, lnkctl;
 
@@ -122,7 +122,7 @@ static void pciexp_enable_common_clock(struct device *root, unsigned root_cap,
 	}
 }
 
-static void pciexp_enable_clock_power_pm(struct device *endp, unsigned endp_cap)
+static void pciexp_enable_clock_power_pm(struct device *endp, unsigned int endp_cap)
 {
 	/* check if per port clk req is supported in device */
 	u32 endp_ca;
@@ -328,8 +328,8 @@ static void pciexp_config_L1_sub_state(struct device *root, struct device *dev)
  * by checking both root port and endpoint and returning
  * the highest latency value.
  */
-static int pciexp_aspm_latency(struct device *root, unsigned root_cap,
-			       struct device *endp, unsigned endp_cap,
+static int pciexp_aspm_latency(struct device *root, unsigned int root_cap,
+			       struct device *endp, unsigned int endp_cap,
 			       enum aspm_type type)
 {
 	int root_lat = 0, endp_lat = 0;
@@ -364,8 +364,8 @@ static int pciexp_aspm_latency(struct device *root, unsigned root_cap,
 /*
  * Enable ASPM on PCIe root port and endpoint.
  */
-static void pciexp_enable_aspm(struct device *root, unsigned root_cap,
-					 struct device *endp, unsigned endp_cap)
+static void pciexp_enable_aspm(struct device *root, unsigned int root_cap,
+					 struct device *endp, unsigned int endp_cap)
 {
 	const char *aspm_type_str[] = { "None", "L0s", "L1", "L0s and L1" };
 	enum aspm_type apmc = PCIE_ASPM_NONE;

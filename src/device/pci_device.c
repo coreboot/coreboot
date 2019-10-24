@@ -345,7 +345,7 @@ static void pci_read_bases(struct device *dev, unsigned int howmany)
 }
 
 static void pci_record_bridge_resource(struct device *dev, resource_t moving,
-				       unsigned index, unsigned long type)
+				       unsigned int index, unsigned long type)
 {
 	struct resource *resource;
 	unsigned long gran;
@@ -1162,8 +1162,8 @@ unsigned int pci_match_simple_dev(struct device *dev, pci_devfn_t sdev)
  * @param min_devfn Minimum devfn to look at in the scan, usually 0x00.
  * @param max_devfn Maximum devfn to look at in the scan, usually 0xff.
  */
-void pci_scan_bus(struct bus *bus, unsigned min_devfn,
-			  unsigned max_devfn)
+void pci_scan_bus(struct bus *bus, unsigned int min_devfn,
+			  unsigned int max_devfn)
 {
 	unsigned int devfn;
 	struct device *dev, **prev;
@@ -1311,8 +1311,8 @@ static void pci_bridge_route(struct bus *link, scan_state state)
  */
 void do_pci_scan_bridge(struct device *dev,
 				void (*do_scan_bus) (struct bus * bus,
-							     unsigned min_devfn,
-							     unsigned max_devfn))
+							     unsigned int min_devfn,
+							     unsigned int max_devfn))
 {
 	struct bus *bus;
 

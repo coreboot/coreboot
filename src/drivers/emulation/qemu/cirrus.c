@@ -197,23 +197,23 @@ write_hidden_dac (uint8_t data)
 static void cirrus_init_linear_fb(struct device *dev)
 {
 	uint8_t cr_ext, cr_overlay;
-	unsigned pitch = (width * 4) / VGA_CR_PITCH_DIVISOR;
+	unsigned int pitch = (width * 4) / VGA_CR_PITCH_DIVISOR;
 	uint8_t sr_ext = 0, hidden_dac = 0;
-	unsigned vdisplay_end = height - 2;
-	unsigned line_compare = 0x3ff;
+	unsigned int vdisplay_end = height - 2;
+	unsigned int line_compare = 0x3ff;
 	uint8_t overflow, cell_height_reg;
-	unsigned horizontal_end = width / VGA_CR_WIDTH_DIVISOR;
-	unsigned horizontal_total = horizontal_end + 40;
-	unsigned horizontal_blank_start = horizontal_end;
-	unsigned horizontal_sync_pulse_start = horizontal_end + 3;
-	unsigned horizontal_sync_pulse_end = 0;
+	unsigned int horizontal_end = width / VGA_CR_WIDTH_DIVISOR;
+	unsigned int horizontal_total = horizontal_end + 40;
+	unsigned int horizontal_blank_start = horizontal_end;
+	unsigned int horizontal_sync_pulse_start = horizontal_end + 3;
+	unsigned int horizontal_sync_pulse_end = 0;
 
-	unsigned horizontal_blank_end = 0;
-	unsigned vertical_blank_start = height + 1;
-	unsigned vertical_blank_end = 0;
-	unsigned vertical_sync_start = height + 3;
-	unsigned vertical_sync_end = 0;
-	unsigned vertical_total = height + 40;
+	unsigned int horizontal_blank_end = 0;
+	unsigned int vertical_blank_start = height + 1;
+	unsigned int vertical_blank_end = 0;
+	unsigned int vertical_sync_start = height + 3;
+	unsigned int vertical_sync_end = 0;
+	unsigned int vertical_total = height + 40;
 
 	/* find lfb pci bar */
 	addr = pci_read_config32(dev, PCI_BASE_ADDRESS_0);

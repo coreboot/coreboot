@@ -30,6 +30,6 @@ enum display_pattern {
  *
  * Display pattern on the ring LEDs.
  */
-int ww_ring_display_pattern(unsigned i2c_bus, enum display_pattern pattern);
+int ww_ring_display_pattern(unsigned int i2c_bus, enum display_pattern pattern);
 
 #endif

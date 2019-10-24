@@ -103,7 +103,7 @@ static int tpm_sync(void)
  *
  * Returns 1 on success, 0 on failure (TPM SPI flow control timeout.)
  */
-static int start_transaction(int read_write, size_t bytes, unsigned addr)
+static int start_transaction(int read_write, size_t bytes, unsigned int addr)
 {
 	spi_frame_header header;
 	uint8_t byte;
@@ -291,7 +291,7 @@ static void read_bytes(void *buffer, size_t bytes)
  *
  * Returns one to indicate success, zero to indicate failure.
  */
-static int tpm2_write_reg(unsigned reg_number, const void *buffer, size_t bytes)
+static int tpm2_write_reg(unsigned int reg_number, const void *buffer, size_t bytes)
 {
 	struct spi_slave *spi_slave = car_get_var_ptr(&g_spi_slave);
 	trace_dump("W", reg_number, bytes, buffer, 0);
@@ -309,7 +309,7 @@ static int tpm2_write_reg(unsigned reg_number, const void *buffer, size_t bytes)
  * Returns one to indicate success, zero to indicate failure. In case of
  * failure zero out the user buffer.
  */
-static int tpm2_read_reg(unsigned reg_number, void *buffer, size_t bytes)
+static int tpm2_read_reg(unsigned int reg_number, void *buffer, size_t bytes)
 {
 	struct spi_slave *spi_slave = car_get_var_ptr(&g_spi_slave);
 	if (!start_transaction(true, bytes, reg_number)) {

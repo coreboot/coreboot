@@ -88,7 +88,7 @@ static unsigned char uart8250_mem_rx_byte(void *base)
 		return 0x0;
 }
 
-static void uart8250_mem_init(void *base, unsigned divisor)
+static void uart8250_mem_init(void *base, unsigned int divisor)
 {
 	/* Disable interrupts */
 	uart8250_write(base, UART8250_IER, 0x0);

@@ -16,13 +16,13 @@
 
 #include <types.h>
 
-void usbdebug_re_enable(unsigned ehci_base);
+void usbdebug_re_enable(unsigned int ehci_base);
 void usbdebug_disable(void);
 
 /* Returns 0 on success and sets MMIO base and dbg_offset if EHCI debug
  * capability was found and enabled. Returns non-zero on error.
  */
-int ehci_debug_hw_enable(unsigned *base, unsigned *dbg_offset);
+int ehci_debug_hw_enable(unsigned int *base, unsigned int *dbg_offset);
 void ehci_debug_select_port(unsigned int port);
 
 #define DBGP_EP_VALID		(1<<0)
@@ -60,7 +60,7 @@ int dbgp_ep_is_active(struct dbgp_pipe *pipe);
 int dbgp_bulk_write_x(struct dbgp_pipe *pipe, const char *bytes, int size);
 int dbgp_bulk_read_x(struct dbgp_pipe *pipe, void *data, int size);
 
-int dbgp_control_msg(struct ehci_dbg_port *ehci_debug, unsigned devnum,
+int dbgp_control_msg(struct ehci_dbg_port *ehci_debug, unsigned int devnum,
 	int requesttype, int request, int value, int index, void *data, int size);
 void dbgp_mdelay(int ms);
 

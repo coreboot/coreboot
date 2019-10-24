@@ -74,10 +74,10 @@ static inline __attribute__((unused)) int do_normal_boot(void)
 	return boot_use_normal(byte);
 }
 
-unsigned read_option_lowlevel(unsigned start, unsigned size, unsigned def)
+unsigned int read_option_lowlevel(unsigned int start, unsigned int size, unsigned int def)
 {
 #if CONFIG(USE_OPTION_TABLE)
-	unsigned byte;
+	unsigned int byte;
 
 	byte = cmos_read(start/8);
 	return (byte >> (start & 7U)) & ((1U << size) - 1U);

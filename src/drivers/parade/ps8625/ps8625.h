@@ -22,7 +22,7 @@ struct parade_write {
 	uint8_t val;
 };
 
-void parade_ps8625_bridge_setup(unsigned bus, unsigned chip_base,
+void parade_ps8625_bridge_setup(unsigned int bus, unsigned int chip_base,
 				const struct parade_write *,
 				int parade_write_count);
 

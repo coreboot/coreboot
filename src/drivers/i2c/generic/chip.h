@@ -24,10 +24,10 @@ struct drivers_i2c_generic_config {
 	const char *cid;	/* ACPI _CID */
 	const char *name;	/* ACPI Device Name */
 	const char *desc;	/* Device Description */
-	unsigned uid;		/* ACPI _UID */
+	unsigned int uid;		/* ACPI _UID */
 	enum i2c_speed speed;	/* Bus speed in Hz, default is I2C_SPEED_FAST */
 	const char *compat_string;	/* Compatible string for _HID=PRP0001 */
-	unsigned wake;		/* Wake GPE */
+	unsigned int wake;		/* Wake GPE */
 	struct acpi_irq irq;	/* Interrupt */
 
 	/* Use GPIO based interrupt instead of PIRQ */
@@ -43,8 +43,8 @@ struct drivers_i2c_generic_config {
 	int probed;
 
 	/* GPIO used to indicate if this device is present */
-	unsigned device_present_gpio;
-	unsigned device_present_gpio_invert;
+	unsigned int device_present_gpio;
+	unsigned int device_present_gpio_invert;
 
 	/* Disable reset and enable GPIO export in _CRS */
 	bool disable_gpio_export_in_crs;

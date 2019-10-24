@@ -24,19 +24,19 @@ struct drivers_i2c_nau8825_config {
 	struct acpi_irq irq;
 
 	/* I2C Bus Frequency in Hertz (default 400kHz) */
-	unsigned bus_speed;
+	unsigned int bus_speed;
 
 	/* Enable jack detection via JKDET pin */
-	unsigned jkdet_enable;
+	unsigned int jkdet_enable;
 
 	/* Enable JKDET pin pull if set, otherwise high impedance state */
-	unsigned jkdet_pull_enable;
+	unsigned int jkdet_pull_enable;
 
 	/* Pull-up JKDET pin if set, otherwise pull down */
-	unsigned jkdet_pull_up;
+	unsigned int jkdet_pull_up;
 
 	/* JKDET pin polarity, 0 => active high, 1 => active low */
-	unsigned jkdet_polarity;
+	unsigned int jkdet_polarity;
 
 	/*
 	 * VREF Impedance selection
@@ -45,10 +45,10 @@ struct drivers_i2c_nau8825_config {
 	 *  2 - 125 kOhm
 	 *  3 - 2.5 kOhm
 	 */
-	unsigned vref_impedance;
+	unsigned int vref_impedance;
 
 	/* Button impedance measurement hysteresis */
-	unsigned sar_hysteresis;
+	unsigned int sar_hysteresis;
 
 	/*
 	 * Reference voltage for button impedance measurement and micbias
@@ -61,8 +61,8 @@ struct drivers_i2c_nau8825_config {
 	 *  6 - VDDA * 1.53
 	 *  7 - VDDA * 1.53
 	 */
-	unsigned micbias_voltage;
-	unsigned sar_voltage;
+	unsigned int micbias_voltage;
+	unsigned int sar_voltage;
 
 	/*
 	 * SAR compare time
@@ -71,7 +71,7 @@ struct drivers_i2c_nau8825_config {
 	 *  2 - 2 us
 	 *  3 - 4 us
 	 */
-	unsigned sar_compare_time;
+	unsigned int sar_compare_time;
 
 	/*
 	 * SAR sampling time
@@ -80,7 +80,7 @@ struct drivers_i2c_nau8825_config {
 	 *  2 - 8 us
 	 *  3 - 16 us
 	 */
-	unsigned sar_sampling_time;
+	unsigned int sar_sampling_time;
 
 	/*
 	 * Button short key press debounce time
@@ -89,16 +89,16 @@ struct drivers_i2c_nau8825_config {
 	 *  2 - 100 ms
 	 *  3 - 30 ms
 	 */
-	unsigned short_key_debounce;
+	unsigned int short_key_debounce;
 
 	/* Debounce time 2^(n+2) ms (0-7) for jack insert */
-	unsigned jack_insert_debounce;
+	unsigned int jack_insert_debounce;
 
 	/* Debounce time 2^(n+2) ms (0-7) for jack eject */
-	unsigned jack_eject_debounce;
+	unsigned int jack_eject_debounce;
 
 	/* Number of buttons supported, up to 8 */
-	unsigned sar_threshold_num;
+	unsigned int sar_threshold_num;
 
 	/*
 	 * Impedance threshold for each button, up to 8

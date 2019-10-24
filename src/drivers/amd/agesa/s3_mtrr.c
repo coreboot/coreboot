@@ -19,7 +19,7 @@
 #include <string.h>
 #include <northbridge/amd/agesa/agesa_helper.h>
 
-static void write_mtrr(u8 **p_nvram_pos, unsigned idx)
+static void write_mtrr(u8 **p_nvram_pos, unsigned int idx)
 {
 	msr_t  msr_data;
 	msr_data = rdmsr(idx);

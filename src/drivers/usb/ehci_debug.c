@@ -109,7 +109,7 @@ static void dbgp_breath(void)
 }
 
 static int dbgp_wait_until_done(struct ehci_dbg_port *ehci_debug, struct dbgp_pipe *pipe,
-	unsigned ctrl, const int timeout)
+	unsigned int ctrl, const int timeout)
 {
 	u32 rd_ctrl, rd_pids;
 	u32 ctrl_prev = 0, pids_prev = 0;
@@ -312,7 +312,7 @@ void dbgp_mdelay(int ms)
 	}
 }
 
-int dbgp_control_msg(struct ehci_dbg_port *ehci_debug, unsigned devnum, int requesttype,
+int dbgp_control_msg(struct ehci_dbg_port *ehci_debug, unsigned int devnum, int requesttype,
 		int request, int value, int index, void *data, int size)
 {
 	struct ehci_debug_info *info = dbgp_ehci_info();
@@ -435,7 +435,7 @@ static int ehci_wait_for_port(struct ehci_regs *ehci_regs, int port)
 
 
 
-static int usbdebug_init_(unsigned ehci_bar, unsigned offset, struct ehci_debug_info *info)
+static int usbdebug_init_(unsigned int ehci_bar, unsigned int offset, struct ehci_debug_info *info)
 {
 	struct ehci_caps *ehci_caps;
 	struct ehci_regs *ehci_regs;
@@ -654,7 +654,7 @@ void dbgp_put(struct dbgp_pipe *pipe)
 }
 
 #if ENV_RAMSTAGE
-void usbdebug_re_enable(unsigned ehci_base)
+void usbdebug_re_enable(unsigned int ehci_base)
 {
 	struct ehci_debug_info *dbg_info = dbgp_ehci_info();
 	u64 diff;

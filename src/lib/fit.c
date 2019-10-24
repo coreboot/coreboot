@@ -261,12 +261,12 @@ static void update_reserve_map(uint64_t start, uint64_t end,
 }
 
 struct entry_params {
-	unsigned addr_cells;
-	unsigned size_cells;
+	unsigned int addr_cells;
+	unsigned int size_cells;
 	void *data;
 };
 
-static uint64_t max_range(unsigned size_cells)
+static uint64_t max_range(unsigned int size_cells)
 {
 	/*
 	 * Split up ranges who's sizes are too large to fit in #size-cells.

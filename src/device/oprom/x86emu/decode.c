@@ -735,7 +735,7 @@ REMARKS:
 Decodes scale/index of SIB byte and returns relevant offset part of
 effective address.
 ****************************************************************************/
-static unsigned decode_sib_si(
+static unsigned int decode_sib_si(
     int scale,
     int index)
 {
@@ -785,7 +785,7 @@ Offset in memory for the address decoding
 REMARKS:
 Decodes SIB addressing byte and returns calculated effective address.
 ****************************************************************************/
-static unsigned decode_sib_address(
+static unsigned int decode_sib_address(
     int mod)
 {
     int sib   = fetch_byte_imm();
@@ -874,10 +874,10 @@ NOTE:   The code which specifies the corresponding segment (ds vs ss)
         if a SS access is needed, set this bit.  Otherwise, DS access
         occurs (unless any of the segment override bits are set).
 ****************************************************************************/
-unsigned decode_rm00_address(
+unsigned int decode_rm00_address(
     int rm)
 {
-    unsigned offset;
+    unsigned int offset;
 
     if (M.x86.mode & SYSMODE_PREFIX_ADDR) {
         /* 32-bit addressing */
@@ -954,7 +954,7 @@ REMARKS:
 Return the offset given by mod=01 addressing.  Also enables the
 decoding of instructions.
 ****************************************************************************/
-unsigned decode_rm01_address(
+unsigned int decode_rm01_address(
     int rm)
 {
     int displacement;
@@ -1043,7 +1043,7 @@ REMARKS:
 Return the offset given by mod=10 addressing.  Also enables the
 decoding of instructions.
 ****************************************************************************/
-unsigned decode_rm10_address(
+unsigned int decode_rm10_address(
     int rm)
 {
     if (M.x86.mode & SYSMODE_PREFIX_ADDR) {
@@ -1136,7 +1136,7 @@ REMARKS:
 Return the offset given by "mod" addressing.
 ****************************************************************************/
 
-unsigned decode_rmXX_address(int mod, int rm)
+unsigned int decode_rmXX_address(int mod, int rm)
 {
   if (mod == 0)
     return decode_rm00_address(rm);

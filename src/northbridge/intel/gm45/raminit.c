@@ -175,7 +175,7 @@ void get_gmch_info(sysinfo_t *sysinfo)
 		printk(BIOS_SPEW, "GMCH supports DDR3 with %d MT or less\n", sysinfo->max_ddr3_mt);
 	}
 
-	const unsigned max_fsb = (capid >> 28) & 0x3;
+	const unsigned int max_fsb = (capid >> 28) & 0x3;
 	switch (max_fsb) {
 		case 1:
 			sysinfo->max_fsb_mhz = 1067;

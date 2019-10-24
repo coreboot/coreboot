@@ -205,7 +205,7 @@ static inline void gtt_write_regs(const struct gt_reg *gt)
 #define GTT_RETRY 1000
 int gtt_poll(u32 reg, u32 mask, u32 value)
 {
-	unsigned try = GTT_RETRY;
+	unsigned int try = GTT_RETRY;
 	u32 data;
 
 	while (try--) {

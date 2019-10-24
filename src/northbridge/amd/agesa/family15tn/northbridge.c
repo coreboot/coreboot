@@ -645,7 +645,7 @@ static struct hw_mem_hole_info get_hw_mem_hole_info(void)
 			base_k = ((resource_t)(d.base & 0x1fffff00)) <<9;
 			if (base_k > 4 *1024 * 1024) break; // don't need to go to check
 			if (limitk_pri != base_k) { // we find the hole
-				mem_hole.hole_startk = (unsigned)limitk_pri; // must beblow 4G
+				mem_hole.hole_startk = (unsigned int)limitk_pri; // must beblow 4G
 				mem_hole.node_id = i;
 				break; //only one hole
 			}

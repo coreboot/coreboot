@@ -26,6 +26,6 @@
 void set_bios_reset(void);
 void distinguish_cpu_resets(unsigned int nodeid);
 unsigned int get_sblk(void);
-unsigned int get_sbbusn(unsigned sblk);
+unsigned int get_sbbusn(unsigned int sblk);
 
 #endif /* AMDK8_H */

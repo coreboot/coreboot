@@ -31,7 +31,7 @@ void sdram_initialize(void);
 /* Debug */
 #if CONFIG(DEBUG_RAM_SETUP)
 void dump_spd_registers(void);
-void dump_pci_device(unsigned dev);
+void dump_pci_device(unsigned int dev);
 #else
 #define dump_spd_registers()
 #endif

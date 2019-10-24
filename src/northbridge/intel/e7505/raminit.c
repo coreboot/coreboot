@@ -434,7 +434,7 @@ static struct dimm_size sdram_spd_get_width(uint16_t dimm_socket_address)
  * @param dimm_socket_address SMBus address of DIMM socket to interrogate.
  * @return log2(number of bits) for each side of the DIMM.
  */
-static struct dimm_size spd_get_dimm_size(unsigned dimm_socket_address)
+static struct dimm_size spd_get_dimm_size(unsigned int dimm_socket_address)
 {
 	int value;
 
@@ -757,7 +757,7 @@ DIMM-independent configuration functions:
  *                   (0..MAX_DIMM_SOCKETS_PER_CHANNEL).
  * @return New multiple of 64 MB total DRAM in the system.
  */
-static uint8_t configure_dimm_row_boundaries(struct dimm_size dimm_log2_num_bits, uint8_t total_dram_64M_multiple, unsigned dimm_index)
+static uint8_t configure_dimm_row_boundaries(struct dimm_size dimm_log2_num_bits, uint8_t total_dram_64M_multiple, unsigned int dimm_index)
 {
 	int i;
 

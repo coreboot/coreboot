@@ -21,7 +21,7 @@ void dump_spd_registers(void)
 	int i;
 	printk(BIOS_DEBUG, "\n");
 	for (i = 0; i < DIMM_SOCKETS; i++) {
-		unsigned device;
+		unsigned int device;
 		device = DIMM0 + i;
 		if (device) {
 			int j;
@@ -45,7 +45,7 @@ void dump_spd_registers(void)
 	}
 }
 
-void dump_pci_device(unsigned dev)
+void dump_pci_device(unsigned int dev)
 {
 	int i;
 	printk(BIOS_DEBUG, "PCI: %02x:%02x.%02x\n", (dev >> 20) & 0xff, (dev >> 15) & 0x1f, (dev >> 12) & 7);

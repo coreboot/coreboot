@@ -133,7 +133,7 @@ static void mc_read_resources(struct device *dev)
 				  D0F0_TOUUD);
 
 	printk(BIOS_DEBUG, "ram_before_4g_top: 0x%x\n", tseg_base);
-	printk(BIOS_DEBUG, "TOUUD: 0x%x\n", (unsigned)TOUUD);
+	printk(BIOS_DEBUG, "TOUUD: 0x%x\n", (unsigned int)TOUUD);
 
 	/* Report the memory regions */
 	ram_resource(dev, 3, 0, 640);

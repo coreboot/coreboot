@@ -22,7 +22,7 @@
 
 typedef struct {
 	u32 addr[RANKS_PER_CHANNEL];
-	unsigned count;
+	unsigned int count;
 } address_bunch_t;
 
 /* Read Training. */

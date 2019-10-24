@@ -508,12 +508,12 @@ void K8FInterleaveBanks(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCT
 void mctInitWithWritetoCS(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat);
 
 void mctGet_PS_Cfg(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat);
-void Get_ChannelPS_Cfg0(unsigned MAAdimms, unsigned Speed, unsigned MAAload, unsigned DATAAload,
-		unsigned *AddrTmgCTL, unsigned *ODC_CTL);
-void Get_ChannelPS_Cfg1(unsigned MAAdimms, unsigned Speed, unsigned MAAload,
-		unsigned *AddrTmgCTL, unsigned *ODC_CTL, unsigned *val);
-void Get_ChannelPS_Cfg2(unsigned MAAdimms, unsigned Speed, unsigned MAAload,
-		unsigned *AddrTmgCTL, unsigned *ODC_CTL, unsigned *val);
+void Get_ChannelPS_Cfg0(unsigned int MAAdimms, unsigned int Speed, unsigned int MAAload, unsigned int DATAAload,
+		unsigned int *AddrTmgCTL, unsigned int *ODC_CTL);
+void Get_ChannelPS_Cfg1(unsigned int MAAdimms, unsigned int Speed, unsigned int MAAload,
+		unsigned int *AddrTmgCTL, unsigned int *ODC_CTL, unsigned int *val);
+void Get_ChannelPS_Cfg2(unsigned int MAAdimms, unsigned int Speed, unsigned int MAAload,
+		unsigned int *AddrTmgCTL, unsigned int *ODC_CTL, unsigned int *val);
 
 u8 MCTDefRet(void);
 
@@ -532,7 +532,7 @@ void K8FCPUMemTyping(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTsta
 void K8FCPUMemTyping_clear(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA);
 
 void K8FWaitMemClrDelay(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat);
-unsigned K8FCalcFinalDQSRcvValue(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat, unsigned LeftRcvEn, unsigned RightRcvEn, unsigned *valid);
+unsigned int K8FCalcFinalDQSRcvValue(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat, unsigned int LeftRcvEn, unsigned int RightRcvEn, unsigned int *valid);
 
 void K8FGetDeltaTSCPart1(struct DCTStatStruc *pDCTstat);
 void K8FGetDeltaTSCPart2(struct DCTStatStruc *pDCTstat);

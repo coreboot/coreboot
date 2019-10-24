@@ -207,13 +207,13 @@ struct raminfo {
 	u8 mode4030[2];
 	u16 avg4044[2];
 	u16 max4048[2];
-	unsigned total_memory_mb;
-	unsigned interleaved_part_mb;
-	unsigned non_interleaved_part_mb;
+	unsigned int total_memory_mb;
+	unsigned int interleaved_part_mb;
+	unsigned int non_interleaved_part_mb;
 
 	u32 heci_bar;
 	u64 heci_uma_addr;
-	unsigned memory_reserved_for_heci_mb;
+	unsigned int memory_reserved_for_heci_mb;
 
 	struct ram_training training;
 	u32 last_500_command[2];
@@ -549,14 +549,14 @@ enum {
 
 static void calculate_timings(struct raminfo *info)
 {
-	unsigned cycletime;
-	unsigned cas_latency_time;
-	unsigned supported_cas_latencies;
-	unsigned channel, slot;
-	unsigned clock_speed_index;
-	unsigned min_cas_latency;
-	unsigned cas_latency;
-	unsigned max_clock_index;
+	unsigned int cycletime;
+	unsigned int cas_latency_time;
+	unsigned int supported_cas_latencies;
+	unsigned int channel, slot;
+	unsigned int clock_speed_index;
+	unsigned int min_cas_latency;
+	unsigned int cas_latency;
+	unsigned int max_clock_index;
 
 	/* Find common CAS latency  */
 	supported_cas_latencies = 0x3fe;
@@ -579,7 +579,7 @@ static void calculate_timings(struct raminfo *info)
 	for (channel = 0; channel < NUM_CHANNELS; channel++)
 		for (slot = 0; slot < NUM_SLOTS; slot++)
 			if (info->populated_ranks[channel][slot][0]) {
-				unsigned timebase;
+				unsigned int timebase;
 				timebase =
 				    1000 *
 				    info->
@@ -627,9 +627,9 @@ static void calculate_timings(struct raminfo *info)
 
 static void program_base_timings(struct raminfo *info)
 {
-	unsigned channel;
-	unsigned slot, rank, lane;
-	unsigned extended_silicon_revision;
+	unsigned int channel;
+	unsigned int slot, rank, lane;
+	unsigned int extended_silicon_revision;
 	int i;
 
 	extended_silicon_revision = info->silicon_revision;
@@ -790,30 +790,30 @@ static unsigned int cycle_ps(struct raminfo *info)
 }
 
 /* Frequency in 1.(1)=10/9 MHz units. */
-static unsigned frequency_11(struct raminfo *info)
+static unsigned int frequency_11(struct raminfo *info)
 {
 	return (info->clock_speed_index + 3) * 120;
 }
 
 /* Frequency in 0.1 MHz units. */
-static unsigned frequency_01(struct raminfo *info)
+static unsigned int frequency_01(struct raminfo *info)
 {
 	return 100 * frequency_11(info) / 9;
 }
 
-static unsigned ps_to_halfcycles(struct raminfo *info, unsigned int ps)
+static unsigned int ps_to_halfcycles(struct raminfo *info, unsigned int ps)
 {
 	return (frequency_11(info) * 2) * ps / 900000;
 }
 
-static unsigned ns_to_cycles(struct raminfo *info, unsigned int ns)
+static unsigned int ns_to_cycles(struct raminfo *info, unsigned int ns)
 {
 	return (frequency_11(info)) * ns / 900;
 }
 
 static void compute_derived_timings(struct raminfo *info)
 {
-	unsigned channel, slot, rank;
+	unsigned int channel, slot, rank;
 	int extended_silicon_revision;
 	int some_delay_1_ps;
 	int some_delay_2_ps;
@@ -1157,7 +1157,7 @@ static void jedec_init(struct raminfo *info)
 
 static void program_modules_memory_map(struct raminfo *info, int pre_jedec)
 {
-	unsigned channel, slot, rank;
+	unsigned int channel, slot, rank;
 	unsigned int total_mb[2] = { 0, 0 };	/* total memory per channel in MB */
 	unsigned int channel_0_non_interleaved;
 
@@ -1196,7 +1196,7 @@ static void program_board_delay(struct raminfo *info)
 	int some_delay_ns;
 	int some_delay_3_half_cycles;
 
-	unsigned channel, i;
+	unsigned int channel, i;
 	int high_multiplier;
 	int lane_3_delay;
 	int cas_latency_derived;
@@ -1234,7 +1234,7 @@ static void program_board_delay(struct raminfo *info)
 	MCHBAR16(0x125) = 0x1360;
 	MCHBAR8(0x127) = 0x40;
 	if (info->fsb_frequency < frequency_11(info) / 2) {
-		unsigned some_delay_2_half_cycles;
+		unsigned int some_delay_2_half_cycles;
 		high_multiplier = 1;
 		some_delay_2_half_cycles = ps_to_halfcycles(info,
 							    ((3 *
@@ -1487,7 +1487,7 @@ static void collect_system_info(struct raminfo *info)
 {
 	u32 capid0[3];
 	int i;
-	unsigned channel;
+	unsigned int channel;
 
 	/* Wait for some bit, maybe TXT clear. */
 	while (!(read8((u8 *)0xfed40000) & (1 << 7)))
@@ -3204,9 +3204,9 @@ static void ram_training(struct raminfo *info)
 	MCHBAR16(0xfc4) = saved_fc4;
 }
 
-static unsigned gcd(unsigned a, unsigned b)
+static unsigned int gcd(unsigned int a, unsigned int b)
 {
-	unsigned t;
+	unsigned int t;
 	if (a > b) {
 		t = a;
 		a = b;
@@ -3226,7 +3226,7 @@ static inline int div_roundup(int a, int b)
 	return DIV_ROUND_UP(a, b);
 }
 
-static unsigned lcm(unsigned a, unsigned b)
+static unsigned int lcm(unsigned int a, unsigned int b)
 {
 	return (a * b) / gcd(a, b);
 }
@@ -3723,7 +3723,7 @@ void chipset_init(const int s3resume)
 
 void raminit(const int s3resume, const u8 *spd_addrmap)
 {
-	unsigned channel, slot, lane, rank;
+	unsigned int channel, slot, lane, rank;
 	int i;
 	struct raminfo info;
 	u8 x2ca8;

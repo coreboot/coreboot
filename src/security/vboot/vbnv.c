@@ -43,7 +43,7 @@ static inline uint8_t vbnv_data(int index)
 /* Return CRC-8 of the data, using x^8 + x^2 + x + 1 polynomial. */
 static uint8_t crc8_vbnv(const uint8_t *data, int len)
 {
-	unsigned crc = 0;
+	unsigned int crc = 0;
 	int i, j;
 
 	for (j = len; j; j--, data++) {

@@ -62,7 +62,7 @@ static struct device *__f0_dev[FX_DEVS];
 struct device *__f1_dev[FX_DEVS];
 static struct device *__f2_dev[FX_DEVS];
 static struct device *__f4_dev[FX_DEVS];
-static unsigned fx_devs = 0;
+static unsigned int fx_devs = 0;
 
 struct device *get_node_pci(u32 nodeid, u32 fn)
 {
@@ -94,14 +94,14 @@ static void get_fx_devs(void)
 	}
 }
 
-static u32 f1_read_config32(unsigned reg)
+static u32 f1_read_config32(unsigned int reg)
 {
 	if (fx_devs == 0)
 		get_fx_devs();
 	return pci_read_config32(__f1_dev[0], reg);
 }
 
-static void f1_write_config32(unsigned reg, u32 value)
+static void f1_write_config32(unsigned int reg, u32 value)
 {
 	int i;
 	if (fx_devs == 0)
@@ -118,7 +118,7 @@ static void f1_write_config32(unsigned reg, u32 value)
 u32 amdfam10_nodeid(struct device *dev)
 {
 #if NODE_NUMS == 64
-	unsigned busn;
+	unsigned int busn;
 	busn = dev->bus->secondary;
 	if (busn != CONFIG_CBB) {
 		return (dev->path.pci.devfn >> 3) - CONFIG_CDB + 32;
@@ -361,11 +361,11 @@ static void amdfam10_scan_chains(struct device *dev)
 }
 
 
-static int reg_useable(unsigned reg, struct device *goal_dev, unsigned goal_nodeid,
-			unsigned goal_link)
+static int reg_useable(unsigned int reg, struct device *goal_dev, unsigned int goal_nodeid,
+			unsigned int goal_link)
 {
 	struct resource *res;
-	unsigned nodeid, link = 0;
+	unsigned int nodeid, link = 0;
 	int result;
 	res = 0;
 	for (nodeid = 0; !res && (nodeid < fx_devs); nodeid++) {
@@ -389,7 +389,7 @@ static int reg_useable(unsigned reg, struct device *goal_dev, unsigned goal_node
 	return result;
 }
 
-static struct resource *amdfam10_find_iopair(struct device *dev, unsigned nodeid, unsigned link)
+static struct resource *amdfam10_find_iopair(struct device *dev, unsigned int nodeid, unsigned int link)
 {
 	struct resource *resource;
 	u32 free_reg, reg;
@@ -514,7 +514,7 @@ static void amdfam10_set_resource(struct device *dev, struct resource *resource,
 				u32 nodeid)
 {
 	resource_t rbase, rend;
-	unsigned reg, link_num;
+	unsigned int reg, link_num;
 	char buf[50];
 
 	/* Make certain the resource has actually been set */
@@ -564,7 +564,7 @@ static void amdfam10_set_resource(struct device *dev, struct resource *resource,
  * but it is too difficult to deal with the resource allocation magic.
  */
 
-static void amdfam10_create_vga_resource(struct device *dev, unsigned nodeid)
+static void amdfam10_create_vga_resource(struct device *dev, unsigned int nodeid)
 {
 	struct bus *link;
 	struct resource *res;
@@ -607,7 +607,7 @@ static void amdfam10_create_vga_resource(struct device *dev, unsigned nodeid)
 
 static void amdfam10_set_resources(struct device *dev)
 {
-	unsigned nodeid;
+	unsigned int nodeid;
 	struct bus *bus;
 	struct resource *res;
 
@@ -685,7 +685,7 @@ struct chip_operations northbridge_amd_amdfam10_ops = {
 
 static void amdfam10_domain_read_resources(struct device *dev)
 {
-	unsigned reg;
+	unsigned int reg;
 	uint8_t nvram;
 	uint8_t enable_cc6;
 
@@ -697,7 +697,7 @@ static void amdfam10_domain_read_resources(struct device *dev)
 		limit = f1_read_config32(reg + 0x04);
 		/* Is this register allocated? */
 		if ((base & 3) != 0) {
-			unsigned nodeid, reg_link;
+			unsigned int nodeid, reg_link;
 			struct device *reg_dev;
 			if (reg < 0xc0) { // mmio
 				nodeid = (limit & 0xf) + (base&0x30);
@@ -817,7 +817,7 @@ static u32 my_find_pci_tolm(struct bus *bus, u32 tolm)
 #if CONFIG_HW_MEM_HOLE_SIZEK != 0
 
 struct hw_mem_hole_info {
-	unsigned hole_startk;
+	unsigned int hole_startk;
 	int node_id;
 };
 
@@ -857,7 +857,7 @@ static struct hw_mem_hole_info get_hw_mem_hole_info(void)
 				base_k = ((resource_t)(d.base & 0x1fffff00)) <<9;
 				if (base_k > 4 *1024 * 1024) break; // don't need to go to check
 				if (limitk_pri != base_k) { // we find the hole
-					mem_hole.hole_startk = (unsigned)limitk_pri; // must beblow 4G
+					mem_hole.hole_startk = (unsigned int)limitk_pri; // must beblow 4G
 					mem_hole.node_id = i;
 					break; //only one hole
 				}
@@ -949,7 +949,7 @@ static void amdfam10_domain_set_resources(struct device *dev)
 		/* split the region to accommodate pci memory space */
 		if ((basek < 4*1024*1024) && (limitk > mmio_basek)) {
 			if (basek <= mmio_basek) {
-				unsigned pre_sizek;
+				unsigned int pre_sizek;
 				pre_sizek = mmio_basek - basek;
 				if (pre_sizek > 0) {
 					ram_resource(dev, (idx | i), basek, pre_sizek);
@@ -1325,7 +1325,7 @@ static void sysconf_init(struct device *dev) // first node
 	sysconf.segbit = 0;
 	sysconf.ht_c_num = 0;
 
-	unsigned ht_c_index;
+	unsigned int ht_c_index;
 
 	for (ht_c_index = 0; ht_c_index < 32; ht_c_index++) {
 		sysconf.ht_c_conf_bus[ht_c_index] = 0;
@@ -1386,12 +1386,12 @@ static void cpu_bus_scan(struct device *dev)
 	int nvram = 0;
 	int i,j;
 	int nodes;
-	unsigned nb_cfg_54;
-	unsigned siblings;
+	unsigned int nb_cfg_54;
+	unsigned int siblings;
 	int cores_found;
 	int disable_siblings;
 	uint8_t disable_cu_siblings = 0;
-	unsigned ApicIdCoreIdSize;
+	unsigned int ApicIdCoreIdSize;
 
 	nb_cfg_54 = 0;
 	ApicIdCoreIdSize = (cpuid_ecx(0x80000008)>>12 & 0xf);
@@ -1485,7 +1485,7 @@ static void cpu_bus_scan(struct device *dev)
 
 	for (i = 0; i < nodes; i++) {
 		struct device *cdb_dev;
-		unsigned busn, devn;
+		unsigned int busn, devn;
 		struct bus *pbus;
 
 		uint8_t fam15h = 0;

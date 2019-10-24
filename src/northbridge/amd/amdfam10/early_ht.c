@@ -50,11 +50,11 @@ void enumerate_ht_chain(void)
 	 * non Coherent links the appropriate bus registers for the
 	 * links needs to be programed to point at bus 0.
 	 */
-	unsigned next_unitid, last_unitid = 0;
+	unsigned int next_unitid, last_unitid = 0;
 #if CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20
 	// let't record the device of last ht device, So we can set the
 	// Unitid to CONFIG_HT_CHAIN_END_UNITID_BASE
-	unsigned real_last_unitid = 0;
+	unsigned int real_last_unitid = 0;
 	u8 real_last_pos = 0;
 	int ht_dev_num = 0; // except host_bridge
 	u8 end_used = 0;
@@ -96,8 +96,8 @@ void enumerate_ht_chain(void)
 				pci_io_write_config16(PCI_DEV(0,0,0), pos + PCI_CAP_FLAGS, flags);
 				flags = pci_io_read_config16(PCI_DEV(0,0,0), pos + PCI_CAP_FLAGS);
 				if ((flags >> 13) == 0) {
-					unsigned count;
-					unsigned ctrl, ctrl_off;
+					unsigned int count;
+					unsigned int ctrl, ctrl_off;
 					pci_devfn_t devx;
 
 #if CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20

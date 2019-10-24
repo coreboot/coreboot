@@ -47,13 +47,13 @@ typedef struct dram_base_mask {
 	u32 mask; //[47:27] at [28:8] and enable at bit 0
 } dram_base_mask_t;
 
-static unsigned node_nums;
-static unsigned sblink;
+static unsigned int node_nums;
+static unsigned int sblink;
 static struct device *__f0_dev[MAX_NODE_NUMS];
 static struct device *__f1_dev[MAX_NODE_NUMS];
 static struct device *__f2_dev[MAX_NODE_NUMS];
 static struct device *__f4_dev[MAX_NODE_NUMS];
-static unsigned fx_devs = 0;
+static unsigned int fx_devs = 0;
 
 static dram_base_mask_t get_dram_base_mask(u32 nodeid)
 {
@@ -122,14 +122,14 @@ static void get_fx_devs(void)
 	printk(BIOS_DEBUG, "fx_devs = 0x%x\n", fx_devs);
 }
 
-static u32 f1_read_config32(unsigned reg)
+static u32 f1_read_config32(unsigned int reg)
 {
 	if (fx_devs == 0)
 		get_fx_devs();
 	return pci_read_config32(__f1_dev[0], reg);
 }
 
-static void f1_write_config32(unsigned reg, u32 value)
+static void f1_write_config32(unsigned int reg, u32 value)
 {
 	int i;
 	if (fx_devs == 0)
@@ -167,11 +167,11 @@ static void set_vga_enable_reg(u32 nodeid, u32 linkn)
  *  @retval 0  resource exists, not usable
  *  @retval 1  resource exist, resource has been allocated before
  */
-static int reg_useable(unsigned reg, struct device *goal_dev, unsigned goal_nodeid,
-			unsigned goal_link)
+static int reg_useable(unsigned int reg, struct device *goal_dev, unsigned int goal_nodeid,
+			unsigned int goal_link)
 {
 	struct resource *res;
-	unsigned nodeid, link = 0;
+	unsigned int nodeid, link = 0;
 	int result;
 	res = 0;
 	for (nodeid = 0; !res && (nodeid < fx_devs); nodeid++) {
@@ -196,7 +196,7 @@ static int reg_useable(unsigned reg, struct device *goal_dev, unsigned goal_node
 	return result;
 }
 
-static struct resource *amdfam15_find_iopair(struct device *dev, unsigned nodeid, unsigned link)
+static struct resource *amdfam15_find_iopair(struct device *dev, unsigned int nodeid, unsigned int link)
 {
 	struct resource *resource;
 	u32 free_reg, reg;
@@ -301,7 +301,7 @@ static void read_resources(struct device *dev)
 static void set_resource(struct device *dev, struct resource *resource, u32 nodeid)
 {
 	resource_t rbase, rend;
-	unsigned reg, link_num;
+	unsigned int reg, link_num;
 	char buf[50];
 
 	/* Make certain the resource has actually been set */
@@ -347,7 +347,7 @@ static void set_resource(struct device *dev, struct resource *resource, u32 node
  * but it is too difficult to deal with the resource allocation magic.
  */
 
-static void create_vga_resource(struct device *dev, unsigned nodeid)
+static void create_vga_resource(struct device *dev, unsigned int nodeid)
 {
 	struct bus *link;
 
@@ -377,7 +377,7 @@ static void create_vga_resource(struct device *dev, unsigned nodeid)
 
 static void set_resources(struct device *dev)
 {
-	unsigned nodeid;
+	unsigned int nodeid;
 	struct bus *bus;
 	struct resource *res;
 
@@ -658,7 +658,7 @@ static struct hw_mem_hole_info get_hw_mem_hole_info(void)
 			base_k = ((resource_t)(d.base & 0x1fffff00)) <<9;
 			if (base_k > 4 *1024 * 1024) break; // don't need to go to check
 			if (limitk_pri != base_k) { // we find the hole
-				mem_hole.hole_startk = (unsigned)limitk_pri; // must beblow 4G
+				mem_hole.hole_startk = (unsigned int)limitk_pri; // must beblow 4G
 				mem_hole.node_id = i;
 				break; //only one hole
 			}
@@ -791,8 +791,8 @@ static void cpu_bus_scan(struct device *dev)
 	int i,j;
 	int coreid_bits;
 	int core_max = 0;
-	unsigned ApicIdCoreIdSize;
-	unsigned core_nums;
+	unsigned int ApicIdCoreIdSize;
+	unsigned int core_nums;
 	int siblings = 0;
 	unsigned int family;
 	u32 modules = 0;
@@ -830,7 +830,7 @@ static void cpu_bus_scan(struct device *dev)
 	cpu_bus = dev->link_list;
 	for (i = 0; i < node_nums; i++) {
 		struct device *cdb_dev;
-		unsigned devn;
+		unsigned int devn;
 		struct bus *pbus;
 
 		devn = DEV_CDB + i;

@@ -314,7 +314,7 @@ static void read_resources(struct device *dev)
 static void set_resource(struct device *dev, struct resource *resource, u32 nodeid)
 {
 	resource_t rbase, rend;
-	unsigned reg, link_num;
+	unsigned int reg, link_num;
 	char buf[50];
 
 	/* Make certain the resource has actually been set */
@@ -658,7 +658,7 @@ static struct hw_mem_hole_info get_hw_mem_hole_info(void)
 			base_k = ((resource_t)(d.base & 0x1fffff00)) <<9;
 			if (base_k > 4 *1024 * 1024) break; // don't need to go to check
 			if (limitk_pri != base_k) { // we find the hole
-				mem_hole.hole_startk = (unsigned)limitk_pri; // must be below 4G
+				mem_hole.hole_startk = (unsigned int)limitk_pri; // must be below 4G
 				mem_hole.node_id = i;
 				break; //only one hole
 			}

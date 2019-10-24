@@ -42,7 +42,7 @@ struct pattrs {
 	const void *microcode_patch;
 	int address_bits;
 	int num_cpus;
-	unsigned bclk_khz;
+	unsigned int bclk_khz;
 };
 
 /* This is just to hide the abstraction w/o relying on how the underlying

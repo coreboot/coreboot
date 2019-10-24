@@ -154,14 +154,14 @@ void gpio_set_rate(int gpio, int mode)
 	write32(&bank->drv, value);
 }
 
-int gpio_direction_input(unsigned gpio)
+int gpio_direction_input(unsigned int gpio)
 {
 	gpio_cfg_pin(gpio, GPIO_INPUT);
 
 	return 0;
 }
 
-int gpio_direction_output(unsigned gpio, int value)
+int gpio_direction_output(unsigned int gpio, int value)
 {
 	unsigned int val;
 	struct gpio_bank *bank = gpio_get_bank(gpio);
@@ -177,7 +177,7 @@ int gpio_direction_output(unsigned gpio, int value)
 	return 0;
 }
 
-int gpio_get_value(unsigned gpio)
+int gpio_get_value(unsigned int gpio)
 {
 	unsigned int value;
 	struct gpio_bank *bank = gpio_get_bank(gpio);
@@ -186,7 +186,7 @@ int gpio_get_value(unsigned gpio)
 	return !!(value & DAT_MASK(GPIO_BIT(gpio)));
 }
 
-int gpio_set_value(unsigned gpio, int value)
+int gpio_set_value(unsigned int gpio, int value)
 {
 	unsigned int val;
 	struct gpio_bank *bank = gpio_get_bank(gpio);
@@ -207,7 +207,7 @@ int gpio_set_value(unsigned gpio, int value)
  */
 #define GPIO_DELAY_US	15
 
-int gpio_read_mvl3(unsigned gpio)
+int gpio_read_mvl3(unsigned int gpio)
 {
 	int high, low;
 	enum mvl3 value;
@@ -248,7 +248,7 @@ int gpio_read_mvl3(unsigned gpio)
  */
 void gpio_info(void)
 {
-	unsigned gpio;
+	unsigned int gpio;
 
 	for (gpio = 0; gpio < GPIO_MAX_PORT; gpio++) {
 		int cfg = gpio_get_cfg(gpio);

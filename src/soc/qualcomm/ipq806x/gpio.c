@@ -59,11 +59,11 @@ Return : None
 *******************************************************/
 
 
-void gpio_tlmm_config_set(gpio_t gpio, unsigned func,
-			  unsigned pull, unsigned drvstr,
-			  unsigned enable)
+void gpio_tlmm_config_set(gpio_t gpio, unsigned int func,
+			  unsigned int pull, unsigned int drvstr,
+			  unsigned int enable)
 {
-	unsigned val = 0;
+	unsigned int val = 0;
 
 	if (gpio_not_valid(gpio))
 		return;
@@ -89,11 +89,11 @@ Return : None
 *******************************************************/
 
 
-void gpio_tlmm_config_get(gpio_t gpio, unsigned *func,
-			  unsigned *pull, unsigned *drvstr,
-			  unsigned *enable)
+void gpio_tlmm_config_get(gpio_t gpio, unsigned int *func,
+			  unsigned int *pull, unsigned int *drvstr,
+			  unsigned int *enable)
 {
-	unsigned val;
+	unsigned int val;
 	void *addr = GPIO_CONFIG_ADDR(gpio);
 
 	if (gpio_not_valid(gpio))

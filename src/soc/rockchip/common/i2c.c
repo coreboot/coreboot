@@ -231,7 +231,7 @@ static int i2c_do_xfer(void *reg_addr, struct i2c_msg segment)
 	return i2c_send_stop(reg_addr) || res;
 }
 
-int platform_i2c_transfer(unsigned bus, struct i2c_msg *segments,
+int platform_i2c_transfer(unsigned int bus, struct i2c_msg *segments,
 			  int seg_count)
 {
 	int i;

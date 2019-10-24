@@ -47,7 +47,7 @@
 typedef struct {
 	void *uart_dm_base;
 	void *uart_gsbi_base;
-	unsigned uart_gsbi;
+	unsigned int uart_gsbi;
 	uart_clk_mnd_t mnd_value;
 	gpio_func_data_t dbg_uart_gpio[NO_OF_DBG_UART_GPIOS];
 } uart_params_t;
@@ -194,7 +194,7 @@ msm_boot_uart_dm_read(unsigned int *data, int *count, int wait)
 void uart_tx_byte(int idx, unsigned char data)
 {
 	int num_of_chars = 1;
-	unsigned tx_data = 0;
+	unsigned int tx_data = 0;
 	void *base = uart_board_param.uart_dm_base;
 
 	/* Wait until transmit FIFO is empty. */

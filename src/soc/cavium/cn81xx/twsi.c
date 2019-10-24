@@ -667,7 +667,7 @@ int twsi_init(unsigned int bus, enum i2c_speed hz)
 	return 0;
 }
 
-int platform_i2c_transfer(unsigned bus, struct i2c_msg *segments,
+int platform_i2c_transfer(unsigned int bus, struct i2c_msg *segments,
 			  int seg_count)
 {
 	int result;

@@ -50,4 +50,4 @@ struct tegra_i2c_bus_info tegra_i2c_info[] = {
 	}
 };
 
-unsigned g_num_i2c_buses = ARRAY_SIZE(tegra_i2c_info);
+unsigned int g_num_i2c_buses = ARRAY_SIZE(tegra_i2c_info);

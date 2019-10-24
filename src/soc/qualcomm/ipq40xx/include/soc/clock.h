@@ -209,7 +209,7 @@ void uart_clock_config(unsigned int blsp_uart, unsigned int m, unsigned int n,
 		unsigned int d);
 void nand_clock_config(void);
 void usb_clock_config(void);
-int audio_clock_config(unsigned frequency);
+int audio_clock_config(unsigned int frequency);
 int blsp_i2c_clock_config(blsp_qup_id_t id);
 
 

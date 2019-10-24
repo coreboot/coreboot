@@ -49,7 +49,7 @@ static int tegra210_uart_tst_byte(void);
 static void tegra210_uart_init(void)
 {
 	// Use a hardcoded divisor for now.
-	const unsigned divisor = 221;
+	const unsigned int divisor = 221;
 	const uint8_t line_config = UART8250_LCR_WLS_8; // 8n1
 
 	tegra210_uart_tx_flush();

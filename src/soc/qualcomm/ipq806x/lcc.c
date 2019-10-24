@@ -76,11 +76,11 @@ typedef struct __packed {
 } Ipq806xLccPllRegs;
 
 struct lcc_freq_tbl {
-	unsigned freq;
-	unsigned pd;
-	unsigned m;
-	unsigned n;
-	unsigned d;
+	unsigned int freq;
+	unsigned int pd;
+	unsigned int m;
+	unsigned int n;
+	unsigned int d;
 };
 
 static const struct lcc_freq_tbl lcc_mi2s_freq_tbl[] = {
@@ -205,12 +205,12 @@ static int lcc_init_enable_ahbix(Ipq806xLccClocks *bus)
 	return 1;
 }
 
-static int lcc_init_mi2s(Ipq806xLccClocks *bus, unsigned freq)
+static int lcc_init_mi2s(Ipq806xLccClocks *bus, unsigned int freq)
 {
 	Ipq806xLccMi2sRegs *mi2s_regs = bus->lcc_mi2s_regs;
 	uint32_t regval;
 	uint8_t pd, m, n, d;
-	unsigned i;
+	unsigned int i;
 
 	i = 0;
 	while (lcc_mi2s_freq_tbl[i].freq != 0) {
@@ -285,7 +285,7 @@ static int lcc_enable_mi2s(Ipq806xLccClocks *bus)
 	return 1;
 }
 
-int audio_clock_config(unsigned frequency)
+int audio_clock_config(unsigned int frequency)
 {
 	Ipq806xLccClocks bus = {
 		.gcc_apcs_regs = (void *)(MSM_GCC_BASE + GCC_PLL_APCS_REG),

@@ -37,14 +37,14 @@
 #define TIMEOUT_CNT	100000
 
 //TODO: refactor the following array to iomap driver.
-static unsigned gsbi_qup_base[] = {
-	(unsigned)GSBI_QUP1_BASE,
-	(unsigned)GSBI_QUP2_BASE,
-	(unsigned)GSBI_QUP3_BASE,
-	(unsigned)GSBI_QUP4_BASE,
-	(unsigned)GSBI_QUP5_BASE,
-	(unsigned)GSBI_QUP6_BASE,
-	(unsigned)GSBI_QUP7_BASE,
+static unsigned int gsbi_qup_base[] = {
+	(unsigned int)GSBI_QUP1_BASE,
+	(unsigned int)GSBI_QUP2_BASE,
+	(unsigned int)GSBI_QUP3_BASE,
+	(unsigned int)GSBI_QUP4_BASE,
+	(unsigned int)GSBI_QUP5_BASE,
+	(unsigned int)GSBI_QUP6_BASE,
+	(unsigned int)GSBI_QUP7_BASE,
 };
 
 #define QUP_ADDR(gsbi_num, reg)	((void *)((gsbi_qup_base[gsbi_num-1]) + (reg)))
@@ -91,7 +91,7 @@ static int check_bit_state(uint32_t *reg, int wait_for)
 /*
  * Check whether GSBIn_QUP State is valid
  */
-static qup_return_t qup_wait_for_state(gsbi_id_t gsbi_id, unsigned wait_for)
+static qup_return_t qup_wait_for_state(gsbi_id_t gsbi_id, unsigned int wait_for)
 {
 	return check_bit_state(QUP_ADDR(gsbi_id, QUP_STATE), wait_for);
 }
@@ -155,8 +155,8 @@ static qup_return_t qup_i2c_write_fifo(gsbi_id_t gsbi_id, qup_data_t *p_tx_obj,
 	qup_return_t ret = QUP_ERR_UNDEFINED;
 	uint8_t addr = p_tx_obj->p.iic.addr;
 	uint8_t *data_ptr = p_tx_obj->p.iic.data;
-	unsigned data_len = p_tx_obj->p.iic.data_len;
-	unsigned idx = 0;
+	unsigned int data_len = p_tx_obj->p.iic.data_len;
+	unsigned int idx = 0;
 
 	qup_reset_master_status(gsbi_id);
 	qup_set_state(gsbi_id, QUP_STATE_RUN);
@@ -228,8 +228,8 @@ static qup_return_t qup_i2c_read_fifo(gsbi_id_t gsbi_id, qup_data_t *p_tx_obj)
 	qup_return_t ret = QUP_ERR_UNDEFINED;
 	uint8_t addr = p_tx_obj->p.iic.addr;
 	uint8_t *data_ptr = p_tx_obj->p.iic.data;
-	unsigned data_len = p_tx_obj->p.iic.data_len;
-	unsigned idx = 0;
+	unsigned int data_len = p_tx_obj->p.iic.data_len;
+	unsigned int idx = 0;
 
 	qup_reset_master_status(gsbi_id);
 	qup_set_state(gsbi_id, QUP_STATE_RUN);
@@ -377,7 +377,7 @@ bailout:
 qup_return_t qup_set_state(gsbi_id_t gsbi_id, uint32_t state)
 {
 	qup_return_t ret = QUP_ERR_UNDEFINED;
-	unsigned curr_state = read32(QUP_ADDR(gsbi_id, QUP_STATE));
+	unsigned int curr_state = read32(QUP_ADDR(gsbi_id, QUP_STATE));
 
 	if (state <= QUP_STATE_PAUSE && (curr_state & QUP_STATE_VALID_MASK)) {
 		/*

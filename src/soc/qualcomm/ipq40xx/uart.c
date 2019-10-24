@@ -44,7 +44,7 @@
 typedef struct {
 	void *uart_dm_base;
 	uart_clk_mnd_t mnd_value;
-	unsigned blsp_uart;
+	unsigned int blsp_uart;
 	gpio_func_data_t dbg_uart_gpio[NO_OF_DBG_UART_GPIOS];
 } uart_params_t;
 

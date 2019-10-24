@@ -57,12 +57,12 @@ static inline void *gsbi_ctl_reg_addr(gsbi_id_t gsbi_id)
 
 gsbi_return_t gsbi_init(gsbi_id_t gsbi_id, gsbi_protocol_t protocol)
 {
-	unsigned reg_val;
-	unsigned m = 1;
-	unsigned n = 4;
-	unsigned pre_div = 4;
-	unsigned src = 3;
-	unsigned mnctr_mode = 2;
+	unsigned int reg_val;
+	unsigned int m = 1;
+	unsigned int n = 4;
+	unsigned int pre_div = 4;
+	unsigned int src = 3;
+	unsigned int mnctr_mode = 2;
 	void *gsbi_ctl = gsbi_ctl_reg_addr(gsbi_id);
 
 	if (!gsbi_ctl)

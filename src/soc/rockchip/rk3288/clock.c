@@ -669,7 +669,7 @@ int rkclk_was_watchdog_reset(void)
 	return read32(&cru_ptr->cru_glb_rst_st) & 0x30;
 }
 
-unsigned rkclk_i2c_clock_for_bus(unsigned bus)
+unsigned int rkclk_i2c_clock_for_bus(unsigned int bus)
 {
 	/*i2c0,i2c2 src clk from pd_bus_pclk
 	other i2c src clk from peri_pclk

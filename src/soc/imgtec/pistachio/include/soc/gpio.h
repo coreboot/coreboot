@@ -16,6 +16,6 @@
 #ifndef __SOC_IMGTECH_PISTACHIO_GPIO_H__
 #define __SOC_IMGTECH_PISTACHIO_GPIO_H__
 
-typedef unsigned gpio_t;
+typedef unsigned int gpio_t;
 
 #endif // __SOC_IMGTECH_PISTACHIO_GPIO_H__

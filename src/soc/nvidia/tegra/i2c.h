@@ -18,9 +18,9 @@
 
 #include <stdint.h>
 
-void i2c_init(unsigned bus);
-void tegra_software_i2c_init(unsigned bus);
-void tegra_software_i2c_disable(unsigned bus);
+void i2c_init(unsigned int bus);
+void tegra_software_i2c_init(unsigned int bus);
+void tegra_software_i2c_disable(unsigned int bus);
 
 enum {
 	/* Word 0 */
@@ -168,6 +168,6 @@ struct tegra_i2c_regs {
 };
 check_member(tegra_i2c_regs, config_load, 0x8C);
 
-extern unsigned g_num_i2c_buses;
+extern unsigned int g_num_i2c_buses;
 
 #endif	/* __SOC_NVIDIA_TEGRA_I2C_H__ */

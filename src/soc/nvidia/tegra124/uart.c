@@ -45,7 +45,7 @@ static int tegra124_uart_tst_byte(struct tegra124_uart *uart_ptr);
 static void tegra124_uart_init(struct tegra124_uart *uart_ptr)
 {
 	// Use a hardcoded divisor for now.
-	const unsigned divisor = 221;
+	const unsigned int divisor = 221;
 	const uint8_t line_config = UART8250_LCR_WLS_8; // 8n1
 
 	tegra124_uart_tx_flush(uart_ptr);

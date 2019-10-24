@@ -29,6 +29,6 @@
 #define MSR_IACORE_TURBO_VIDS		0x66d
 
 /* Read BCLK from MSR */
-unsigned bus_freq_khz(void);
+unsigned int bus_freq_khz(void);
 
 #endif /* _BAYTRAIL_MSR_H_ */

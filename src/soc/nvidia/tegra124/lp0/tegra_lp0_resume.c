@@ -292,7 +292,7 @@ static void __noreturn reset(void)
 	halt();
 }
 
-static void udelay(unsigned usecs)
+static void udelay(unsigned int usecs)
 {
 	uint32_t start = read32(timer_us_ptr);
 	while (read32(timer_us_ptr) - start < usecs)
@@ -313,7 +313,7 @@ static uint32_t get_wakeup_vector(void)
 	return read32(pmc_ctlr_scratch41_ptr);
 }
 
-static unsigned get_osc_freq(void)
+static unsigned int get_osc_freq(void)
 {
 	return (read32(clk_rst_osc_ctrl_ptr) & OSC_FREQ_MASK) >> OSC_FREQ_SHIFT;
 }
@@ -507,7 +507,7 @@ void ram_repair(void)
 
 /* Power. */
 
-static void power_on_partition(unsigned id)
+static void power_on_partition(unsigned int id)
 {
 	uint32_t bit = 0x1 << id;
 	if (!(read32(pmc_ctlr_pwrgate_status_ptr) & bit)) {

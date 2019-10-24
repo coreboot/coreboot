@@ -24,7 +24,7 @@
 
 static int get_count_mhz_freq(void)
 {
-	static unsigned count_mhz_freq;
+	static unsigned int count_mhz_freq;
 
 	if (!count_mhz_freq) {
 		if (IMG_PLATFORM_ID() != IMG_PLATFORM_ID_SILICON)

@@ -18,7 +18,7 @@
 
 #include <types.h>
 
-unsigned smem_get_board_machtype(void);
+unsigned int smem_get_board_machtype(void);
 
 typedef enum {
         PHY_INTERFACE_MODE_MII,
@@ -101,17 +101,17 @@ typedef struct {
 } spinorflash_params_t;
 
 typedef struct {
-	unsigned count;
+	unsigned int count;
 	uint8_t addr[7];
 } ipq_gmac_phy_addr_t;
 
 typedef struct {
-	unsigned base;
+	unsigned int base;
 	int unit;
-	unsigned is_macsec;
-	unsigned mac_pwr0;
-	unsigned mac_pwr1;
-	unsigned mac_conn_to_phy;
+	unsigned int is_macsec;
+	unsigned int mac_pwr0;
+	unsigned int mac_pwr1;
+	unsigned int mac_conn_to_phy;
 	phy_interface_t phy;
 	ipq_gmac_phy_addr_t phy_addr;
 } ipq_gmac_board_cfg_t;
@@ -154,8 +154,8 @@ static inline int gmac_cfg_is_valid(ipq_gmac_board_cfg_t *cfg)
 }
 #endif
 
-unsigned int get_board_index(unsigned machid);
-void ipq_configure_gpio(const gpio_func_data_t *gpio, unsigned count);
+unsigned int get_board_index(unsigned int machid);
+void ipq_configure_gpio(const gpio_func_data_t *gpio, unsigned int count);
 
 void board_nand_init(void);
 

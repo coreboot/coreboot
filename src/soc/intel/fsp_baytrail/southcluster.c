@@ -489,7 +489,7 @@ static void hda_work_around(struct device *dev)
 
 static int place_device_in_d3hot(struct device *dev)
 {
-	unsigned offset;
+	unsigned int offset;
 
 	/* Parts of the HDA block are used for LPE audio as well.
 	 * Therefore assume the HDA will never be put into D3Hot. */

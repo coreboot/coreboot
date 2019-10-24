@@ -72,7 +72,7 @@ void init_timer(void)
  * udelay -  generates micro second delay.
  * @param usec: delay duration in microseconds
  */
-void udelay(unsigned usec)
+void udelay(unsigned int usec)
 {
 	uint32_t now;
 	uint32_t last;

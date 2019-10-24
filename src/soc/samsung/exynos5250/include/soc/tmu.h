@@ -19,39 +19,39 @@
 #define CPU_SAMSUNG_EXYNOS5250_TMU_H
 
 struct tmu_reg {
-	unsigned triminfo;
-	unsigned rsvd1;
-	unsigned rsvd2;
-	unsigned rsvd3;
-	unsigned rsvd4;
-	unsigned triminfo_control;
-	unsigned rsvd5;
-	unsigned rsvd6;
-	unsigned tmu_control;
-	unsigned rsvd7;
-	unsigned tmu_status;
-	unsigned sampling_internal;
-	unsigned counter_value0;
-	unsigned counter_value1;
-	unsigned rsvd8;
-	unsigned rsvd9;
-	unsigned current_temp;
-	unsigned rsvd10;
-	unsigned rsvd11;
-	unsigned rsvd12;
-	unsigned threshold_temp_rise;
-	unsigned threshold_temp_fall;
-	unsigned rsvd13;
-	unsigned rsvd14;
-	unsigned past_temp3_0;
-	unsigned past_temp7_4;
-	unsigned past_temp11_8;
-	unsigned past_temp15_12;
-	unsigned inten;
-	unsigned intstat;
-	unsigned intclear;
-	unsigned rsvd15;
-	unsigned emul_con;
+	unsigned int triminfo;
+	unsigned int rsvd1;
+	unsigned int rsvd2;
+	unsigned int rsvd3;
+	unsigned int rsvd4;
+	unsigned int triminfo_control;
+	unsigned int rsvd5;
+	unsigned int rsvd6;
+	unsigned int tmu_control;
+	unsigned int rsvd7;
+	unsigned int tmu_status;
+	unsigned int sampling_internal;
+	unsigned int counter_value0;
+	unsigned int counter_value1;
+	unsigned int rsvd8;
+	unsigned int rsvd9;
+	unsigned int current_temp;
+	unsigned int rsvd10;
+	unsigned int rsvd11;
+	unsigned int rsvd12;
+	unsigned int threshold_temp_rise;
+	unsigned int threshold_temp_fall;
+	unsigned int rsvd13;
+	unsigned int rsvd14;
+	unsigned int past_temp3_0;
+	unsigned int past_temp7_4;
+	unsigned int past_temp11_8;
+	unsigned int past_temp15_12;
+	unsigned int inten;
+	unsigned int intstat;
+	unsigned int intclear;
+	unsigned int rsvd15;
+	unsigned int emul_con;
 };
 check_member(tmu_reg, emul_con, 0x80);
 
@@ -93,7 +93,7 @@ struct tmu_data {
 /* TMU device specific details and status */
 struct tmu_info {
 	/* base Address for the TMU */
-	unsigned tmu_base;
+	unsigned int tmu_base;
 	/* mux Address for the TMU */
 	int tmu_mux;
 	/* pre-defined values for calibration and thresholds */

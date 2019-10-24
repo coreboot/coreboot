@@ -36,7 +36,7 @@ static struct {
 	    .sda = GPIO(Z7), .scl = GPIO(Z6)},
 };
 
-static void tegra_set_sda(unsigned bus, int high)
+static void tegra_set_sda(unsigned int bus, int high)
 {
 	if (high)
 		gpio_input_pullup(pins[bus].sda);
@@ -44,7 +44,7 @@ static void tegra_set_sda(unsigned bus, int high)
 		gpio_output(pins[bus].sda, 0);
 }
 
-static void tegra_set_scl(unsigned bus, int high)
+static void tegra_set_scl(unsigned int bus, int high)
 {
 	if (high)
 		gpio_input_pullup(pins[bus].scl);
@@ -52,12 +52,12 @@ static void tegra_set_scl(unsigned bus, int high)
 		gpio_output(pins[bus].scl, 0);
 }
 
-static int tegra_get_sda(unsigned bus)
+static int tegra_get_sda(unsigned int bus)
 {
 	return gpio_get(pins[bus].sda);
 }
 
-static int tegra_get_scl(unsigned bus)
+static int tegra_get_scl(unsigned int bus)
 {
 	return gpio_get(pins[bus].scl);
 }
@@ -69,7 +69,7 @@ static struct software_i2c_ops tegra_ops = {
 	.get_scl = tegra_get_scl,
 };
 
-void tegra_software_i2c_init(unsigned bus)
+void tegra_software_i2c_init(unsigned int bus)
 {
 	software_i2c[bus] = &tegra_ops;
 
@@ -78,7 +78,7 @@ void tegra_software_i2c_init(unsigned bus)
 	tegra_set_scl(bus, 1);
 }
 
-void tegra_software_i2c_disable(unsigned bus)
+void tegra_software_i2c_disable(unsigned int bus)
 {
 	software_i2c[bus] = NULL;
 

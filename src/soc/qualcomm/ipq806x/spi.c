@@ -632,7 +632,7 @@ static void spi_ctrlr_release_bus(const struct spi_slave *slave)
 }
 
 static int spi_xfer_tx_packet(struct ipq_spi_slave *ds,
-		const uint8_t *dout, unsigned out_bytes)
+		const uint8_t *dout, unsigned int out_bytes)
 {
 	int ret;
 
@@ -660,7 +660,7 @@ static int spi_xfer_tx_packet(struct ipq_spi_slave *ds,
 }
 
 static int spi_xfer_rx_packet(struct ipq_spi_slave *ds,
-		uint8_t *din, unsigned in_bytes)
+		uint8_t *din, unsigned int in_bytes)
 {
 	int ret;
 
@@ -711,7 +711,7 @@ static int spi_ctrlr_xfer(const struct spi_slave *slave, const void *dout,
 			  SPI_QUP_CONF_OUTPUT_ENA);
 
 	while (out_bytes) {
-		unsigned todo = MIN(out_bytes, MAX_PACKET_COUNT);
+		unsigned int todo = MIN(out_bytes, MAX_PACKET_COUNT);
 
 		ret = spi_xfer_tx_packet(ds, dout, todo);
 		if (ret)
@@ -733,7 +733,7 @@ spi_receive:
 			  SPI_QUP_CONF_INPUT_ENA);
 
 	while (in_bytes) {
-		unsigned todo = MIN(in_bytes, MAX_PACKET_COUNT);
+		unsigned int todo = MIN(in_bytes, MAX_PACKET_COUNT);
 
 		ret = spi_xfer_rx_packet(ds, din, todo);
 		if (ret)

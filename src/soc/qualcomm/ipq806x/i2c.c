@@ -96,9 +96,9 @@ static int i2c_write(uint32_t gsbi_id, uint8_t slave,
 		return 0;
 }
 
-static int i2c_init(unsigned bus)
+static int i2c_init(unsigned int bus)
 {
-	unsigned gsbi_id = bus;
+	unsigned int gsbi_id = bus;
 	qup_config_t *qup_config;
 
 	switch (gsbi_id) {
@@ -139,7 +139,7 @@ static int i2c_init(unsigned bus)
 	return 0;
 }
 
-int platform_i2c_transfer(unsigned bus, struct i2c_msg *segments,
+int platform_i2c_transfer(unsigned int bus, struct i2c_msg *segments,
 			  int seg_count)
 {
 	struct i2c_msg *seg = segments;

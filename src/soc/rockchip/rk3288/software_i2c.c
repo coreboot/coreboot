@@ -33,17 +33,17 @@ static struct {
 	[5]{.scl = GPIO(7, C, 4), .sda = GPIO(7, C, 3)},
 };
 
-static int get_scl(unsigned bus)
+static int get_scl(unsigned int bus)
 {
 	return gpio_get(pins[bus].scl);
 }
 
-static int get_sda(unsigned bus)
+static int get_sda(unsigned int bus)
 {
 	return gpio_get(pins[bus].sda);
 }
 
-static void set_scl(unsigned bus, int high)
+static void set_scl(unsigned int bus, int high)
 {
 	if (high)
 		gpio_input_pullup(pins[bus].scl);
@@ -51,7 +51,7 @@ static void set_scl(unsigned bus, int high)
 		gpio_output(pins[bus].scl, 0);
 }
 
-static void set_sda(unsigned bus, int high)
+static void set_sda(unsigned int bus, int high)
 {
 	if (high)
 		gpio_input_pullup(pins[bus].sda);
@@ -66,7 +66,7 @@ static struct software_i2c_ops rk_ops = {
 	.set_sda = set_sda,
 };
 
-void software_i2c_attach(unsigned bus)
+void software_i2c_attach(unsigned int bus)
 {
 	software_i2c[bus] = &rk_ops;
 
@@ -101,7 +101,7 @@ void software_i2c_attach(unsigned bus)
 	set_sda(bus, 1);
 }
 
-void software_i2c_detach(unsigned bus)
+void software_i2c_detach(unsigned int bus)
 {
 	software_i2c[bus] = NULL;
 

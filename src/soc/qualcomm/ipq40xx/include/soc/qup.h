@@ -159,10 +159,10 @@ typedef enum {
 
 typedef struct {
 	qup_protocol_t protocol;
-	unsigned clk_frequency;
-	unsigned src_frequency;
+	unsigned int clk_frequency;
+	unsigned int src_frequency;
 	qup_mode_t mode;
-	unsigned initialized;
+	unsigned int initialized;
 } qup_config_t;
 
 typedef struct {
@@ -171,12 +171,12 @@ typedef struct {
 		struct {
 			uint8_t addr;
 			uint8_t *data;
-			unsigned data_len;
+			unsigned int data_len;
 		} iic;
 		struct {
 			void *in;
 			void *out;
-			unsigned size;
+			unsigned int size;
 		} spi;
 	} p;
 } qup_data_t;

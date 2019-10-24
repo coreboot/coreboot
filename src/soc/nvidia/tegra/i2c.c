@@ -138,7 +138,7 @@ static int tegra_i2c_send_recv(int bus, int read,
 	return 0;
 }
 
-static int tegra_i2c_request(int bus, unsigned chip, int cont, int restart,
+static int tegra_i2c_request(int bus, unsigned int chip, int cont, int restart,
 			     int read, void *data, int data_len)
 {
 	uint32_t headers[3];
@@ -170,7 +170,7 @@ static int tegra_i2c_request(int bus, unsigned chip, int cont, int restart,
 				   data, data_len);
 }
 
-static int i2c_transfer_segment(unsigned bus, unsigned chip, int restart,
+static int i2c_transfer_segment(unsigned int bus, unsigned int chip, int restart,
 				int read, void *buf, int len)
 {
 	const uint32_t max_payload =
@@ -188,7 +188,7 @@ static int i2c_transfer_segment(unsigned bus, unsigned chip, int restart,
 	return 0;
 }
 
-int platform_i2c_transfer(unsigned bus, struct i2c_msg *segments, int count)
+int platform_i2c_transfer(unsigned int bus, struct i2c_msg *segments, int count)
 {
 	struct i2c_msg *seg = segments;
 	int i;
@@ -208,7 +208,7 @@ int platform_i2c_transfer(unsigned bus, struct i2c_msg *segments, int count)
 	return 0;
 }
 
-void i2c_init(unsigned bus)
+void i2c_init(unsigned int bus)
 {
 	struct tegra_i2c_regs *regs;
 

@@ -456,7 +456,7 @@ static void __noreturn reset(void)
 	halt();
 }
 
-static void udelay(unsigned usecs)
+static void udelay(unsigned int usecs)
 {
 	uint32_t start = read32(timer_us_ptr);
 	while (read32(timer_us_ptr) - start < usecs)
@@ -638,7 +638,7 @@ void ram_repair(void)
 
 /* Power. */
 
-static void power_on_partition(unsigned id)
+static void power_on_partition(unsigned int id)
 {
 	uint32_t bit = 0x1 << id;
 	if (!(read32(pmc_pwrgate_status_ptr) & bit)) {

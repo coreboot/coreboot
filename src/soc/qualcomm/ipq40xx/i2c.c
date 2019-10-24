@@ -152,7 +152,7 @@ static int i2c_init(blsp_qup_id_t id)
 	return 0;
 }
 
-int platform_i2c_transfer(unsigned bus, struct i2c_msg *segments,
+int platform_i2c_transfer(unsigned int bus, struct i2c_msg *segments,
 			  int seg_count)
 {
 	struct i2c_msg *seg = segments;

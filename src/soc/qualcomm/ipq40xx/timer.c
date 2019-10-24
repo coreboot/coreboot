@@ -70,7 +70,7 @@ static inline uint64_t read_gcnt_val(void)
  * udelay -  generates micro second delay.
  * @param usec: delay duration in microseconds
  */
-void udelay(unsigned usec)
+void udelay(unsigned int usec)
 {
 	uint64_t expire;
 

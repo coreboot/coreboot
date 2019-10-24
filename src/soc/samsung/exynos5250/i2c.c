@@ -233,7 +233,7 @@ static int i2c_recv_buf(struct i2c_regs *regs, uint8_t *data, int len)
 	return 0;
 }
 
-int platform_i2c_transfer(unsigned bus, struct i2c_msg *segments,
+int platform_i2c_transfer(unsigned int bus, struct i2c_msg *segments,
 			  int seg_count)
 {
 	struct s3c24x0_i2c_bus *i2c = &i2c_busses[bus];
@@ -263,7 +263,7 @@ int platform_i2c_transfer(unsigned bus, struct i2c_msg *segments,
 	return i2c_send_stop(regs) || res;
 }
 
-void i2c_init(unsigned bus, int speed, int slaveadd)
+void i2c_init(unsigned int bus, int speed, int slaveadd)
 {
 	struct s3c24x0_i2c_bus *i2c = &i2c_busses[bus];
 

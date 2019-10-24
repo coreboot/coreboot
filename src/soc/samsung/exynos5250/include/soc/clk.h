@@ -561,7 +561,7 @@ struct st_epll_con_val {
  * @param periph_id	Peripheral ID of peripheral to change
  * @param divisor	New divisor for this peripheral's clock
  */
-void clock_ll_set_pre_ratio(enum periph_id periph_id, unsigned divisor);
+void clock_ll_set_pre_ratio(enum periph_id periph_id, unsigned int divisor);
 
 /**
  * Low-level function to set the clock ratio for a peripheral
@@ -569,7 +569,7 @@ void clock_ll_set_pre_ratio(enum periph_id periph_id, unsigned divisor);
  * @param periph_id	Peripheral ID of peripheral to change
  * @param divisor	New divisor for this peripheral's clock
  */
-void clock_ll_set_ratio(enum periph_id periph_id, unsigned divisor);
+void clock_ll_set_ratio(enum periph_id periph_id, unsigned int divisor);
 
 /**
  * Low-level function that selects the best clock scalars for a given rate and

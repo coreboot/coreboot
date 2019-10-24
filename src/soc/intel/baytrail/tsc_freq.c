@@ -18,7 +18,7 @@
 #include <cpu/x86/tsc.h>
 #include <soc/msr.h>
 
-unsigned bus_freq_khz(void)
+unsigned int bus_freq_khz(void)
 {
 	msr_t clk_info = rdmsr(MSR_BSEL_CR_OVERCLOCK_CONTROL);
 	switch (clk_info.lo & 0x3) {
@@ -38,7 +38,7 @@ unsigned bus_freq_khz(void)
 unsigned long tsc_freq_mhz(void)
 {
 	msr_t platform_info;
-	unsigned bclk_khz = bus_freq_khz();
+	unsigned int bclk_khz = bus_freq_khz();
 
 	if (!bclk_khz)
 		return 0;

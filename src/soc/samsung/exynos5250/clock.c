@@ -385,10 +385,10 @@ void set_mmc_clk(int dev_index, unsigned int div)
 	write32(addr, val);
 }
 
-void clock_ll_set_pre_ratio(enum periph_id periph_id, unsigned divisor)
+void clock_ll_set_pre_ratio(enum periph_id periph_id, unsigned int divisor)
 {
-	unsigned shift;
-	unsigned mask = 0xff;
+	unsigned int shift;
+	unsigned int mask = 0xff;
 	u32 *reg;
 
 	/*
@@ -428,10 +428,10 @@ void clock_ll_set_pre_ratio(enum periph_id periph_id, unsigned divisor)
 	clrsetbits_le32(reg, mask << shift, (divisor & mask) << shift);
 }
 
-void clock_ll_set_ratio(enum periph_id periph_id, unsigned divisor)
+void clock_ll_set_ratio(enum periph_id periph_id, unsigned int divisor)
 {
-	unsigned shift;
-	unsigned mask = 0xff;
+	unsigned int shift;
+	unsigned int mask = 0xff;
 	u32 *reg;
 
 	switch (periph_id) {

@@ -193,6 +193,6 @@ void uart_clock_config(unsigned int gsbi_port, unsigned int m, unsigned int n,
 		unsigned int d, unsigned int clk_dummy);
 void nand_clock_config(void);
 void usb_clock_config(void);
-int audio_clock_config(unsigned frequency);
+int audio_clock_config(unsigned int frequency);
 
 #endif /* __IPQ860X_CLOCK_H_ */

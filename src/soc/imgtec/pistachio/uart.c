@@ -34,12 +34,12 @@
 #define UART_SHIFT		2
 
 #define GEN_ACCESSOR(name, idx)						\
-static inline uint8_t read_##name(unsigned base_port)			\
+static inline uint8_t read_##name(unsigned int base_port)			\
 {									\
 	return read8((void *)(base_port + (idx << UART_SHIFT)));	\
 }									\
 									\
-static inline void write_##name(unsigned base_port, uint8_t val)	\
+static inline void write_##name(unsigned int base_port, uint8_t val)	\
 {									\
 	write8((void *)(base_port + (idx << UART_SHIFT)), val);		\
 }
@@ -54,12 +54,12 @@ GEN_ACCESSOR(lsr, UART8250_LSR)
 GEN_ACCESSOR(dll, UART8250_DLL)
 GEN_ACCESSOR(dlm, UART8250_DLM)
 
-static int uart8250_mem_can_tx_byte(unsigned base_port)
+static int uart8250_mem_can_tx_byte(unsigned int base_port)
 {
 	return read_lsr(base_port) & UART8250_LSR_THRE;
 }
 
-static void uart8250_mem_tx_byte(unsigned base_port, unsigned char data)
+static void uart8250_mem_tx_byte(unsigned int base_port, unsigned char data)
 {
 	unsigned long int i = SINGLE_CHAR_TIMEOUT;
 	while (i-- && !uart8250_mem_can_tx_byte(base_port))
@@ -67,19 +67,19 @@ static void uart8250_mem_tx_byte(unsigned base_port, unsigned char data)
 	write_tbr(base_port, data);
 }
 
-static void uart8250_mem_tx_flush(unsigned base_port)
+static void uart8250_mem_tx_flush(unsigned int base_port)
 {
 	unsigned long int i = FIFO_TIMEOUT;
 	while (i-- && !(read_lsr(base_port) & UART8250_LSR_TEMT))
 		udelay(1);
 }
 
-static int uart8250_mem_can_rx_byte(unsigned base_port)
+static int uart8250_mem_can_rx_byte(unsigned int base_port)
 {
 	return read_lsr(base_port) & UART8250_LSR_DR;
 }
 
-static unsigned char uart8250_mem_rx_byte(unsigned base_port)
+static unsigned char uart8250_mem_rx_byte(unsigned int base_port)
 {
 	unsigned long int i = SINGLE_CHAR_TIMEOUT;
 	while (i-- && !uart8250_mem_can_rx_byte(base_port))
@@ -90,7 +90,7 @@ static unsigned char uart8250_mem_rx_byte(unsigned base_port)
 		return 0x0;
 }
 
-static void uart8250_mem_init(unsigned base_port, unsigned divisor)
+static void uart8250_mem_init(unsigned int base_port, unsigned int divisor)
 {
 	/* Disable interrupts */
 	write_ier(base_port, 0x0);

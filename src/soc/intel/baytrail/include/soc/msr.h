@@ -39,7 +39,7 @@
 #define MSR_CPU_THERM_SENS_CFG		0x675
 
 /* Read BCLK from MSR */
-unsigned bus_freq_khz(void);
+unsigned int bus_freq_khz(void);
 void set_max_freq(void);
 
 #endif /* _BAYTRAIL_MSR_H_ */

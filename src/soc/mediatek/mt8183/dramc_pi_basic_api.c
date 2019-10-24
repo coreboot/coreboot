@@ -88,12 +88,12 @@ void dramc_sw_impedance_cal(const struct sdram_params *params, u8 term,
 		imp_cal_result = (read32(&ch[0].phy_nao.misc_phy_rgs_cmd) >>
 				  24) & 0x1;
 		dramc_dbg("1. OCD DRVP=%d CALOUT=%d\n",
-			   impx_drv, imp_cal_result);
+			  impx_drv, imp_cal_result);
 
 		if (imp_cal_result == 1 && DRVP_result == 0xff) {
 			DRVP_result = impx_drv;
 			dramc_dbg("1. OCD DRVP calibration OK! DRVP=%d\n",
-				   DRVP_result);
+				  DRVP_result);
 			break;
 		}
 	}
@@ -116,12 +116,12 @@ void dramc_sw_impedance_cal(const struct sdram_params *params, u8 term,
 		imp_cal_result = (read32(&ch[0].phy_nao.misc_phy_rgs_cmd) >>
 				  24) & 0x1;
 		dramc_dbg("3. OCD ODTN=%d CALOUT=%d\n",
-			   impx_drv, imp_cal_result);
+			  impx_drv, imp_cal_result);
 
 		if (imp_cal_result == 0 && ODTN_result == 0xff) {
 			ODTN_result = impx_drv;
 			dramc_dbg("3. OCD ODTN calibration OK! ODTN=%d\n",
-				   ODTN_result);
+				  ODTN_result);
 			break;
 		}
 	}

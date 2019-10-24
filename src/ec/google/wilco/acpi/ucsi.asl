@@ -19,7 +19,6 @@ Device (UCSI)
 	Name (_CID, EisaId ("PNP0CA0"))
 	Name (_DDN, "Wilco EC UCSI")
 	Name (_UID, One)
-	Name (_ADR, Zero)
 	Name (_STA, 0xf)
 
 	/* Value written to EC control register to start UCSI command */

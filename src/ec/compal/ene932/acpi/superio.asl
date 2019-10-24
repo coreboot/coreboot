@@ -18,7 +18,6 @@
 Device (SIO) {
 	Name (_HID, EisaId("PNP0A05"))
 	Name (_UID, 0)
-	Name (_ADR, 0)
 
 // Keyboard or AUX port (a.k.a Mouse)
 #ifdef SIO_EC_ENABLE_PS2K

@@ -346,3 +346,5 @@ cbfs-files-$(CONFIG_GENERIC_SPD_BIN) += spd.bin
 spd.bin-file := $(LIB_SPD_BIN)
 spd.bin-type := spd
 endif
+
+ramstage-y += uuid.c

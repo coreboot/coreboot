@@ -17,7 +17,7 @@ something else) should have its own Flashmap section, and everything else should
 normally go into CBFS.
 
 The Flashmap itself starts with a header `struct fmap` and followed by a list of
-section descriptions in `strcut fmap_area`.
+section descriptions in `struct fmap_area`.
 
 ### Header
 The header `struct fmap` has following fields:

@@ -39,27 +39,23 @@ leave the backup chip untouched.
 
 The original IFD defines the BIOS region as the whole flash chip. While this is
 not an issue if flashing a complete image, it confuses flashrom and trashes the
-flash chip's contents when using the --ifd option. However, this can be easily
-fixed by reading the IFD with flashrom, editing the correct values into it with
-ifdtool and then reflashing it.
-
-Create a layout.txt with the following contents:
+flash chip's contents when using the `--ifd` option. A possible workaround is
+to create a `layout.txt` file with a non-overlapping BIOS region:
 
 	00000000:00000fff fd
 	00180000:003fffff bios
 	00001000:0017ffff me
 
-After that, simply run:
+After that, use flashrom with the new layout file. For example, to create a
+backup of the BIOS region and then flash a `coreboot.rom`, do:
 
 ```bash
-sudo flashrom -p internal --ifd -i fd -r ifd.rom
-ifdtool -n layout.txt ifd.rom
-sudo flashrom -p internal --ifd -i fd -w ifd.rom.new
+sudo flashrom -p internal -l layout.txt -i bios -r backup.rom
+sudo flashrom -p internal -l layout.txt -i bios -w coreboot.rom
 ```
 
-After flashing, power cycle the computer to ensure the new IFD is being used.
-If only a reboot is done, the old IFD layout is still seen by flashrom, even if
-the IFD on the flash chip is correctly defining the new region layout.
+Modifying the IFD so that the BIOS region does not overlap would work as well.
+However, this makes DualBIOS unable to recover from a bad flash for some reason.
 
 ## Technology
 

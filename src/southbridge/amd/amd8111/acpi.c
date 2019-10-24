@@ -100,7 +100,7 @@ static int lsmbus_block_write(struct device *dev, uint8_t cmd, u8 bytes,
 
 
 #if CONFIG(HAVE_ACPI_TABLES)
-unsigned pm_base;
+unsigned int pm_base;
 #endif
 
 static void acpi_init(struct device *dev)

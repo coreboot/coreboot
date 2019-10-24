@@ -59,7 +59,7 @@ int soc_silicon_supported(int type, int rev)
 }
 
 /* Set bit in Function Disable register to hide this device */
-static void soc_hide_devfn(unsigned devfn)
+static void soc_hide_devfn(unsigned int devfn)
 {
 /* TODO Function Disable. */
 }

@@ -97,7 +97,7 @@ static void rom_dummy_write(struct device *dev)
 		pci_write_config8(dev, 0x6d, new);
 }
 
-unsigned pm_base = 0;
+unsigned int pm_base = 0;
 
 static void lpc_init(struct device *dev)
 {

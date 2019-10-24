@@ -36,7 +36,7 @@
 
 void i82801dx_enable(struct device *dev);
 void enable_smbus(void);
-int smbus_read_byte(unsigned device, unsigned address);
+int smbus_read_byte(unsigned int device, unsigned int address);
 void aseg_smm_lock(void);
 
 #endif

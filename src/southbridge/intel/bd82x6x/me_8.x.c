@@ -156,7 +156,7 @@ static inline u32 read_cb(void)
 static int mei_wait_for_me_ready(void)
 {
 	struct mei_csr me;
-	unsigned try = ME_RETRY;
+	unsigned int try = ME_RETRY;
 
 	while (try--) {
 		read_me_csr(&me);
@@ -197,7 +197,7 @@ static int mei_send_msg(struct mei_header *mei, struct mkhi_header *mkhi,
 			void *req_data)
 {
 	struct mei_csr host;
-	unsigned ndata, n;
+	unsigned int ndata, n;
 	u32 *data;
 
 	/* Number of dwords to write, ignoring MKHI */
@@ -262,8 +262,8 @@ static int mei_recv_msg(struct mkhi_header *mkhi,
 	struct mei_header mei_rsp;
 	struct mkhi_header mkhi_rsp;
 	struct mei_csr me, host;
-	unsigned ndata, n/*, me_data_len*/;
-	unsigned expected;
+	unsigned int ndata, n/*, me_data_len*/;
+	unsigned int expected;
 	u32 *data;
 
 	/* Total number of dwords to read from circular buffer */

@@ -29,10 +29,10 @@
 #include "chip.h"
 #include "mcp55.h"
 
-static int phy_read(u8 *base, unsigned phy_addr, unsigned phy_reg)
+static int phy_read(u8 *base, unsigned int phy_addr, unsigned int phy_reg)
 {
 	u32 dword;
-	unsigned loop = 0x100;
+	unsigned int loop = 0x100;
 
 	write32(base + 0x190, 0x8000); /* Clear MDIO lock bit. */
 	mdelay(1);
@@ -61,7 +61,7 @@ static void phy_detect(u8 *base)
 {
 	u32 dword;
 	int i, val;
-	unsigned id;
+	unsigned int id;
 
 	dword = read32(base + 0x188);
 	dword &= ~(1 << 20);

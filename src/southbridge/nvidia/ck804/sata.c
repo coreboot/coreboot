@@ -27,7 +27,7 @@
 #endif
 
 #if CK804_SATA_RESET_FOR_ATAPI
-static void sata_com_reset(struct device *dev, unsigned reset)
+static void sata_com_reset(struct device *dev, unsigned int reset)
 // reset = 1 : reset
 // reset = 0 : clear
 {

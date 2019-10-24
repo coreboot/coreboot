@@ -193,8 +193,8 @@ static void rl5c476_set_resources(struct device *dev)
 
 }
 
-static void rl5c476_set_subsystem(struct device *dev, unsigned vendor,
-				  unsigned device)
+static void rl5c476_set_subsystem(struct device *dev, unsigned int vendor,
+				  unsigned int device)
 {
 	u16 miscreg = pci_read_config16(dev, 0x82);
 	/* Enable subsystem id register writes */

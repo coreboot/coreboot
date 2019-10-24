@@ -51,7 +51,7 @@ void enable_smbus(void)
 	printk(BIOS_DEBUG, "SMBus controller enabled.\n");
 }
 
-int smbus_read_byte(unsigned device, unsigned address)
+int smbus_read_byte(unsigned int device, unsigned int address)
 {
 	return do_smbus_read_byte(SMBUS_IO_BASE, device, address);
 }

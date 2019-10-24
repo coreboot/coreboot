@@ -43,8 +43,8 @@ static void amd8132_walk_children(struct bus *bus,
 }
 
 struct amd8132_bus_info {
-	unsigned sstatus;
-	unsigned rev;
+	unsigned int sstatus;
+	unsigned int rev;
 	int master_devices;
 	int max_func;
 };
@@ -65,9 +65,9 @@ static void amd8132_count_dev(struct device *dev, void *ptr)
 static void amd8132_pcix_tune_dev(struct device *dev, void *ptr)
 {
 	struct amd8132_bus_info *info = ptr;
-	unsigned cap;
-	unsigned status, cmd, orig_cmd;
-	unsigned max_read, max_tran;
+	unsigned int cap;
+	unsigned int status, cmd, orig_cmd;
+	unsigned int max_read, max_tran;
 	int  sibs;
 
 	if (dev->hdr_type != PCI_HEADER_TYPE_NORMAL) {
@@ -133,10 +133,10 @@ static void amd8132_pcix_tune_dev(struct device *dev, void *ptr)
 
 }
 static void amd8132_scan_bus(struct bus *bus,
-	unsigned min_devfn, unsigned max_devfn)
+	unsigned int min_devfn, unsigned int max_devfn)
 {
 	struct amd8132_bus_info info;
-	unsigned pos;
+	unsigned int pos;
 
 	/* Find the children on the bus */
 	pci_scan_bus(bus, min_devfn, max_devfn);
@@ -162,7 +162,7 @@ static void amd8132_scan_bus(struct bus *bus,
 	 */
 	if (!bus->children)
 	{
-		unsigned pcix_misc;
+		unsigned int pcix_misc;
 		/* Disable all of my children */
 		disable_children(bus);
 
@@ -198,7 +198,7 @@ static void amd8132_pcix_init(struct device *dev)
 {
 	uint32_t dword;
 	uint8_t byte;
-	unsigned chip_rev;
+	unsigned int chip_rev;
 
 	/* Find the revision of the 8132 */
 	chip_rev = pci_read_config8(dev, PCI_CLASS_REVISION);
@@ -368,7 +368,7 @@ static void ioapic_enable(struct device *dev)
 static void amd8132_ioapic_init(struct device *dev)
 {
 	uint32_t dword;
-	unsigned chip_rev;
+	unsigned int chip_rev;
 
 	/* Find the revision of the 8132 */
 	chip_rev = pci_read_config8(dev, PCI_CLASS_REVISION);

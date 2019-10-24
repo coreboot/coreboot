@@ -137,7 +137,7 @@ static void i82801ix_ehci_init(void)
 					   (1 << 29) | (1 << 17) | (2 << 2));
 }
 
-static int i82801ix_function_disabled(const unsigned devfn)
+static int i82801ix_function_disabled(const unsigned int devfn)
 {
 	struct device *const dev = pcidev_path_on_root(devfn);
 	if (!dev) {

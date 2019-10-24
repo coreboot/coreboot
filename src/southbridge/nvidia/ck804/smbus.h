@@ -35,7 +35,7 @@ static inline void smbus_delay(void)
 	outb(0x80, 0x80);
 }
 
-static int smbus_wait_until_done(unsigned smbus_io_base)
+static int smbus_wait_until_done(unsigned int smbus_io_base)
 {
 	unsigned long loops;
 	loops = SMBUS_TIMEOUT;
@@ -52,7 +52,7 @@ static int smbus_wait_until_done(unsigned smbus_io_base)
 
 /* Platform has severe issues placing non-inlined functions in headers. */
 #if ENV_RAMSTAGE
-static int do_smbus_recv_byte(unsigned smbus_io_base, unsigned device)
+static int do_smbus_recv_byte(unsigned int smbus_io_base, unsigned int device)
 {
 	unsigned char global_status_register, byte;
 
@@ -85,10 +85,10 @@ static int do_smbus_recv_byte(unsigned smbus_io_base, unsigned device)
 	return byte;
 }
 
-static int do_smbus_send_byte(unsigned smbus_io_base, unsigned device,
+static int do_smbus_send_byte(unsigned int smbus_io_base, unsigned int device,
 			      unsigned char val)
 {
-	unsigned global_status_register;
+	unsigned int global_status_register;
 
 	outb(val, smbus_io_base + SMBHSTDAT0);
 	smbus_delay();
@@ -118,8 +118,8 @@ static int do_smbus_send_byte(unsigned smbus_io_base, unsigned device,
 }
 #endif /* ENV_RAMSTAGE */
 
-static int do_smbus_read_byte(unsigned smbus_io_base, unsigned device,
-			      unsigned address)
+static int do_smbus_read_byte(unsigned int smbus_io_base, unsigned int device,
+			      unsigned int address)
 {
 	unsigned char global_status_register, byte;
 
@@ -152,10 +152,10 @@ static int do_smbus_read_byte(unsigned smbus_io_base, unsigned device,
 	return byte;
 }
 
-static int do_smbus_write_byte(unsigned smbus_io_base, unsigned device,
-			       unsigned address, unsigned char val)
+static int do_smbus_write_byte(unsigned int smbus_io_base, unsigned int device,
+			       unsigned int address, unsigned char val)
 {
-	unsigned global_status_register;
+	unsigned int global_status_register;
 
 	outb(val, smbus_io_base + SMBHSTDAT0);
 	smbus_delay();

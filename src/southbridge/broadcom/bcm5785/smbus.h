@@ -42,7 +42,7 @@ static inline void smbus_delay(void)
 	outb(0x80, 0x80);
 }
 
-static int smbus_wait_until_ready(unsigned smbus_io_base)
+static int smbus_wait_until_ready(unsigned int smbus_io_base)
 {
 	unsigned long loops;
 	loops = SMBUS_TIMEOUT;
@@ -58,7 +58,7 @@ static int smbus_wait_until_ready(unsigned smbus_io_base)
 	return -2; // time out
 }
 
-static int smbus_wait_until_done(unsigned smbus_io_base)
+static int smbus_wait_until_done(unsigned int smbus_io_base)
 {
 	unsigned long loops;
 	loops = SMBUS_TIMEOUT;
@@ -78,7 +78,7 @@ static int smbus_wait_until_done(unsigned smbus_io_base)
 	return -3; // timeout
 }
 
-static int do_smbus_recv_byte(unsigned smbus_io_base, unsigned device)
+static int do_smbus_recv_byte(unsigned int smbus_io_base, unsigned int device)
 {
 	uint8_t byte;
 
@@ -105,7 +105,7 @@ static int do_smbus_recv_byte(unsigned smbus_io_base, unsigned device)
 	return byte;
 }
 
-static int do_smbus_send_byte(unsigned smbus_io_base, unsigned device, unsigned char val)
+static int do_smbus_send_byte(unsigned int smbus_io_base, unsigned int device, unsigned char val)
 {
 	uint8_t byte;
 
@@ -132,7 +132,7 @@ static int do_smbus_send_byte(unsigned smbus_io_base, unsigned device, unsigned 
 	return 0;
 }
 
-static int do_smbus_read_byte(unsigned smbus_io_base, unsigned device, unsigned address)
+static int do_smbus_read_byte(unsigned int smbus_io_base, unsigned int device, unsigned int address)
 {
 	uint8_t byte;
 
@@ -162,7 +162,7 @@ static int do_smbus_read_byte(unsigned smbus_io_base, unsigned device, unsigned 
 	return byte;
 }
 
-static int do_smbus_write_byte(unsigned smbus_io_base, unsigned device, unsigned address, unsigned char val)
+static int do_smbus_write_byte(unsigned int smbus_io_base, unsigned int device, unsigned int address, unsigned char val)
 {
 	uint8_t byte;
 

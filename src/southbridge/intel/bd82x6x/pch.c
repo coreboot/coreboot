@@ -87,7 +87,7 @@ int pch_silicon_supported(int type, int rev)
 #define IOBP_RETRY 1000
 static inline int iobp_poll(void)
 {
-	unsigned try = IOBP_RETRY;
+	unsigned int try = IOBP_RETRY;
 	u32 data;
 
 	while (try--) {
@@ -147,7 +147,7 @@ void pch_iobp_update(u32 address, u32 andvalue, u32 orvalue)
 
 #ifndef __SMM__
 /* Set bit in function disable register to hide this device */
-static void pch_hide_devfn(unsigned devfn)
+static void pch_hide_devfn(unsigned int devfn)
 {
 	switch (devfn) {
 	case PCI_DEVFN(20, 0): /* xHCI */

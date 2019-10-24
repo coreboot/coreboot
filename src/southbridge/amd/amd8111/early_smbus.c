@@ -64,13 +64,13 @@ static inline int smbus_write_byte(unsigned int device, unsigned int address,
 	return do_smbus_write_byte(SMBUS_IO_BASE, device, address, val);
 }
 
-static inline int smbus_block_read(unsigned int device, unsigned cmd, u8 bytes,
+static inline int smbus_block_read(unsigned int device, unsigned int cmd, u8 bytes,
 				   u8 *buf)
 {
 	return do_smbus_block_read(SMBUS_IO_BASE, device, cmd, bytes, buf);
 }
 
-static inline int smbus_block_write(unsigned int device, unsigned cmd, u8 bytes,
+static inline int smbus_block_write(unsigned int device, unsigned int cmd, u8 bytes,
 				    const u8 *buf)
 {
 	return do_smbus_block_write(SMBUS_IO_BASE, device, cmd, bytes, buf);

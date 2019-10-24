@@ -11,7 +11,7 @@
  * GNU General Public License for more details.
  */
 
-int ck804_smbus_read_byte(unsigned int, unsigned int, unsigned);
+int ck804_smbus_read_byte(unsigned int, unsigned int, unsigned int);
 int ck804_smbus_write_byte(unsigned int, unsigned int, unsigned int, unsigned char);
 void enable_smbus(void);
 int smbus_read_byte(unsigned int, unsigned int);

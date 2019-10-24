@@ -26,7 +26,7 @@
 
 static int lsmbus_recv_byte(struct device *dev)
 {
-	unsigned device;
+	unsigned int device;
 	struct resource *res;
 	struct bus *pbus;
 
@@ -40,7 +40,7 @@ static int lsmbus_recv_byte(struct device *dev)
 
 static int lsmbus_send_byte(struct device *dev, u8 val)
 {
-	unsigned device;
+	unsigned int device;
 	struct resource *res;
 	struct bus *pbus;
 
@@ -54,7 +54,7 @@ static int lsmbus_send_byte(struct device *dev, u8 val)
 
 static int lsmbus_read_byte(struct device *dev, u8 address)
 {
-	unsigned device;
+	unsigned int device;
 	struct resource *res;
 	struct bus *pbus;
 
@@ -68,7 +68,7 @@ static int lsmbus_read_byte(struct device *dev, u8 address)
 
 static int lsmbus_write_byte(struct device *dev, u8 address, u8 val)
 {
-	unsigned device;
+	unsigned int device;
 	struct resource *res;
 	struct bus *pbus;
 
@@ -87,7 +87,7 @@ static struct smbus_bus_operations lops_smbus_bus = {
 };
 
 #if CONFIG(HAVE_ACPI_TABLES)
-unsigned pm_base;
+unsigned int pm_base;
 #endif
 
 static void mcp55_sm_read_resources(struct device *dev)

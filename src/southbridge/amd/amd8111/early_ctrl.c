@@ -19,7 +19,7 @@
 #include <southbridge/amd/common/reset.h>
 #include "amd8111.h"
 
-unsigned get_sbdn(unsigned bus)
+unsigned int get_sbdn(unsigned int bus)
 {
 	pci_devfn_t dev;
 
@@ -34,7 +34,7 @@ unsigned get_sbdn(unsigned bus)
 
 }
 
-static void enable_cf9_x(unsigned sbbusn, unsigned sbdn)
+static void enable_cf9_x(unsigned int sbbusn, unsigned int sbdn)
 {
 	pci_devfn_t dev;
 	uint8_t byte;
@@ -48,9 +48,9 @@ static void enable_cf9_x(unsigned sbbusn, unsigned sbdn)
 
 static void enable_cf9(void)
 {
-	unsigned sblk = get_sblk();
-	unsigned sbbusn = get_sbbusn(sblk);
-	unsigned sbdn = get_sbdn(sbbusn);
+	unsigned int sblk = get_sblk();
+	unsigned int sbbusn = get_sbbusn(sblk);
+	unsigned int sbdn = get_sbdn(sbbusn);
 
 	enable_cf9_x(sbbusn, sbdn);
 }
@@ -63,7 +63,7 @@ void do_board_reset(void)
 	outb(0x0e, 0x0cf9); // make sure cf9 is enabled
 }
 
-void enable_fid_change_on_sb(unsigned sbbusn, unsigned sbdn)
+void enable_fid_change_on_sb(unsigned int sbbusn, unsigned int sbdn)
 {
 	pci_devfn_t dev;
 
@@ -76,7 +76,7 @@ void enable_fid_change_on_sb(unsigned sbbusn, unsigned sbdn)
 
 }
 
-static void soft_reset_x(unsigned sbbusn, unsigned sbdn)
+static void soft_reset_x(unsigned int sbbusn, unsigned int sbdn)
 {
 	pci_devfn_t dev;
 
@@ -91,9 +91,9 @@ static void soft_reset_x(unsigned sbbusn, unsigned sbdn)
 void do_soft_reset(void)
 {
 
-	unsigned sblk = get_sblk();
-	unsigned sbbusn = get_sbbusn(sblk);
-	unsigned sbdn = get_sbdn(sbbusn);
+	unsigned int sblk = get_sblk();
+	unsigned int sbbusn = get_sbbusn(sblk);
+	unsigned int sbdn = get_sbdn(sbbusn);
 
 	return soft_reset_x(sbbusn, sbdn);
 

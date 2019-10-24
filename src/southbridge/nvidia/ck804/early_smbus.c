@@ -55,23 +55,23 @@ void enable_smbus(void)
 	printk(BIOS_DEBUG, "SMBus controller enabled\n");
 }
 
-int ck804_smbus_read_byte(unsigned bus, unsigned device, unsigned address)
+int ck804_smbus_read_byte(unsigned int bus, unsigned int device, unsigned int address)
 {
 	return do_smbus_read_byte(SMBUS_BASE(bus), device, address);
 }
 
-int ck804_smbus_write_byte(unsigned bus, unsigned device, unsigned address,
+int ck804_smbus_write_byte(unsigned int bus, unsigned int device, unsigned int address,
 			   unsigned char val)
 {
 	return do_smbus_write_byte(SMBUS_BASE(bus), device, address, val);
 }
 
-int smbus_read_byte(unsigned device, unsigned address)
+int smbus_read_byte(unsigned int device, unsigned int address)
 {
 	return ck804_smbus_read_byte(0, device, address);
 }
 
-int smbus_write_byte(unsigned device, unsigned address, unsigned char val)
+int smbus_write_byte(unsigned int device, unsigned int address, unsigned char val)
 {
 	return ck804_smbus_write_byte(0, device, address, val);
 }

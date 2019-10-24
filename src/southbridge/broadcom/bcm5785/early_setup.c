@@ -64,7 +64,7 @@ static void bcm5785_enable_wdt_port_cf9(void)
 	pci_write_config8(dev, 0x40, 1 << 2);
 }
 
-unsigned get_sbdn(unsigned bus)
+unsigned int get_sbdn(unsigned int bus)
 {
 	pci_devfn_t dev;
 
@@ -81,7 +81,7 @@ unsigned get_sbdn(unsigned bus)
 
 #define SB_VFSMAF 0
 
-void enable_fid_change_on_sb(unsigned sbbusn, unsigned sbdn)
+void enable_fid_change_on_sb(unsigned int sbbusn, unsigned int sbdn)
 {
 	//ACPI Decode Enable
 	outb(0x0e, 0xcd6);

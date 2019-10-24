@@ -31,21 +31,21 @@ void bcm5785_enable(struct device *dev)
 	if ((bus_dev->vendor == PCI_VENDOR_ID_SERVERWORKS) &&
 		(bus_dev->device == 0x0036)) // device under PCI-X Bridge
 	{
-		unsigned devfn;
+		unsigned int devfn;
 		devfn = bus_dev->path.pci.devfn + (1 << 3);
 		sb_pci_main_dev = pcidev_path_behind(bus_dev->bus, devfn);
 		// index = ((dev->path.pci.devfn & ~7) >> 3) + 8;
 	} else if ((bus_dev->vendor == PCI_VENDOR_ID_SERVERWORKS) &&
 		(bus_dev->device == 0x0104)) // device under PCI Bridge (under PCI-X)
 	{
-		unsigned devfn;
+		unsigned int devfn;
 		devfn = bus_dev->bus->dev->path.pci.devfn + (1 << 3);
 		sb_pci_main_dev = pcidev_path_behind(bus_dev->bus->dev->bus,
 						devfn);
 		// index = ((dev->path.pci.devfn & ~7) >> 3) + 8;
 	}
 	else { // same bus
-		unsigned devfn;
+		unsigned int devfn;
 		devfn = (dev->path.pci.devfn) & ~7;
 		if (dev->vendor == PCI_VENDOR_ID_SERVERWORKS) {
 			if (dev->device == 0x0036) //PCI-X Bridge
@@ -62,7 +62,7 @@ void bcm5785_enable(struct device *dev)
 
 	// get index now
 #if 0
-	unsigned reg_old, reg;
+	unsigned int reg_old, reg;
 	if (index < 16) {
 		reg = reg_old = pci_read_config16(sb_pci_main_dev, 0x48);
 		reg &= ~(1 << index);

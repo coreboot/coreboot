@@ -38,7 +38,7 @@ void do_board_reset(void)
 	outb(0x0e, 0x0cf9);
 }
 
-void enable_fid_change_on_sb(unsigned sbbusn, unsigned sbdn)
+void enable_fid_change_on_sb(unsigned int sbbusn, unsigned int sbdn)
 {
 	/* The default value for MCP55 is good. */
 	/* Set VFSMAF (VID/FID System Management Action Field) to 2. */

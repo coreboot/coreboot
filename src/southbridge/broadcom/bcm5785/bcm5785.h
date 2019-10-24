@@ -21,7 +21,7 @@
 #include "chip.h"
 
 void bcm5785_enable(struct device *dev);
-void enable_fid_change_on_sb(unsigned sbbusn, unsigned sbdn);
+void enable_fid_change_on_sb(unsigned int sbbusn, unsigned int sbdn);
 
 void bcm5785_set_subsystem(struct device *dev, unsigned int vendor,
 			       unsigned int device);

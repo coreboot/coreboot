@@ -48,48 +48,48 @@ void enable_smbus(void)
 	outb(inb(SMBUS1_IO_BASE + SMBHSTSTAT), SMBUS1_IO_BASE + SMBHSTSTAT);
 }
 
-int smbus_recv_byte(unsigned device)
+int smbus_recv_byte(unsigned int device)
 {
 	return do_smbus_recv_byte(SMBUS0_IO_BASE, device);
 }
 
-int smbus_send_byte(unsigned device, unsigned char val)
+int smbus_send_byte(unsigned int device, unsigned char val)
 {
 	return do_smbus_send_byte(SMBUS0_IO_BASE, device, val);
 }
 
-int smbus_read_byte(unsigned device, unsigned address)
+int smbus_read_byte(unsigned int device, unsigned int address)
 {
 	return do_smbus_read_byte(SMBUS0_IO_BASE, device, address);
 }
 
-int smbus_write_byte(unsigned device, unsigned address,
+int smbus_write_byte(unsigned int device, unsigned int address,
 				   unsigned char val)
 {
 	return do_smbus_write_byte(SMBUS0_IO_BASE, device, address, val);
 }
 
-int smbusx_recv_byte(unsigned smb_index, unsigned device)
+int smbusx_recv_byte(unsigned int smb_index, unsigned int device)
 {
 	return do_smbus_recv_byte(SMBUS0_IO_BASE + (smb_index << 8), device);
 }
 
-int smbusx_send_byte(unsigned smb_index, unsigned device,
+int smbusx_send_byte(unsigned int smb_index, unsigned int device,
 				   unsigned char val)
 {
 	return do_smbus_send_byte(SMBUS0_IO_BASE + (smb_index << 8),
 				  device, val);
 }
 
-int smbusx_read_byte(unsigned smb_index, unsigned device,
-				   unsigned address)
+int smbusx_read_byte(unsigned int smb_index, unsigned int device,
+				   unsigned int address)
 {
 	return do_smbus_read_byte(SMBUS0_IO_BASE + (smb_index << 8),
 				  device, address);
 }
 
-int smbusx_write_byte(unsigned smb_index, unsigned device,
-				    unsigned address, unsigned char val)
+int smbusx_write_byte(unsigned int smb_index, unsigned int device,
+				    unsigned int address, unsigned char val)
 {
 	return do_smbus_write_byte(SMBUS0_IO_BASE + (smb_index << 8),
 				   device, address, val);

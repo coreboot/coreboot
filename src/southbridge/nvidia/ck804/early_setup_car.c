@@ -24,20 +24,20 @@
 #include "ck804.h"
 
 /* Someone messed up and snuck in some K8-specific code */
-static int  set_ht_link_buffer_counts_chain(uint8_t ht_c_num, unsigned vendorid, unsigned val) { return 0; /* stub */};
+static int  set_ht_link_buffer_counts_chain(uint8_t ht_c_num, unsigned int vendorid, unsigned int val) { return 0; /* stub */};
 
 static int set_ht_link_ck804(u8 ht_c_num)
 {
-	unsigned vendorid = 0x10de;
-	unsigned val = 0x01610169;
+	unsigned int vendorid = 0x10de;
+	unsigned int val = 0x01610169;
 	return set_ht_link_buffer_counts_chain(ht_c_num, vendorid, val);
 }
 
-static void setup_ss_table(unsigned index, unsigned where, unsigned control,
+static void setup_ss_table(unsigned int index, unsigned int where, unsigned int control,
 			   const unsigned int *register_values, int max)
 {
 	int i;
-	unsigned val;
+	unsigned int val;
 
 	val = inl(control);
 	val &= 0xfffffffe;
@@ -77,8 +77,8 @@ static void setup_ss_table(unsigned index, unsigned where, unsigned control,
  */
 #define CK804_DEV(d, f, r) PCI_ADDR(0, d, f, r)
 
-static void ck804_early_set_port(unsigned ck804_num, unsigned *busn,
-				 unsigned *io_base)
+static void ck804_early_set_port(unsigned int ck804_num, unsigned int *busn,
+				 unsigned int *io_base)
 {
 	static const unsigned int ctrl_devport_conf[] = {
 		CK804_DEV(0x1, 0, ANACTRL_REG_POS), ~(0x0000ff00), ANACTRL_IO_BASE,
@@ -97,8 +97,8 @@ static void ck804_early_set_port(unsigned ck804_num, unsigned *busn,
 	}
 }
 
-static void ck804_early_clear_port(unsigned ck804_num, unsigned *busn,
-				   unsigned *io_base)
+static void ck804_early_clear_port(unsigned int ck804_num, unsigned int *busn,
+				   unsigned int *io_base)
 {
 	static const unsigned int ctrl_devport_conf_clear[] = {
 		CK804_DEV(0x1, 0, ANACTRL_REG_POS), ~(0x0000ff01), 0,
@@ -117,8 +117,8 @@ static void ck804_early_clear_port(unsigned ck804_num, unsigned *busn,
 	}
 }
 
-static void ck804_early_setup(unsigned ck804_num, unsigned *busn,
-			      unsigned *io_base)
+static void ck804_early_setup(unsigned int ck804_num, unsigned int *busn,
+			      unsigned int *io_base)
 {
 	static const unsigned int ctrl_conf_master[] = {
 		RES_PCI_IO, CK804_DEV(1, 2, 0x8c), 0xffff0000, 0x00009880,
@@ -337,7 +337,7 @@ static void ck804_early_setup(unsigned ck804_num, unsigned *busn,
 
 static int ck804_early_setup_x(void)
 {
-	unsigned busn[4], io_base[4];
+	unsigned int busn[4], io_base[4];
 	int i, ck804_num = 0;
 
 	for (i = 0; i < 4; i++) {
@@ -380,7 +380,7 @@ void do_soft_reset(void)
 	outb(0x06, 0x0cf9);
 }
 
-void enable_fid_change_on_sb(unsigned sbbusn, unsigned sbdn)
+void enable_fid_change_on_sb(unsigned int sbbusn, unsigned int sbdn)
 {
 	/* The default value for CK804 is good. */
 	/* Set VFSMAF (VID/FID System Management Action Field) to 2. */

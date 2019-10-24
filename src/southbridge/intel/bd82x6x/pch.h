@@ -66,7 +66,7 @@ void enable_smbus(void);
 void enable_usb_bar(void);
 
 #if ENV_ROMSTAGE
-int smbus_read_byte(unsigned device, unsigned address);
+int smbus_read_byte(unsigned int device, unsigned int address);
 #endif
 
 void early_thermal_init(void);

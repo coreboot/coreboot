@@ -23,7 +23,7 @@
 #include <device/pci_ids.h>
 #include <version.h>
 
-extern unsigned pm_base;
+extern unsigned int pm_base;
 
 /* Create the Fixed ACPI Description Tables (FADT) for this board. */
 void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)

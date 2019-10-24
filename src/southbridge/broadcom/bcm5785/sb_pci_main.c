@@ -72,7 +72,7 @@ static void bcm5785_sb_read_resources(struct device *dev)
 
 static int lsmbus_recv_byte(struct device *dev)
 {
-	unsigned device;
+	unsigned int device;
 	struct resource *res;
 	struct bus *pbus;
 
@@ -86,7 +86,7 @@ static int lsmbus_recv_byte(struct device *dev)
 
 static int lsmbus_send_byte(struct device *dev, uint8_t val)
 {
-	unsigned device;
+	unsigned int device;
 	struct resource *res;
 	struct bus *pbus;
 
@@ -100,7 +100,7 @@ static int lsmbus_send_byte(struct device *dev, uint8_t val)
 
 static int lsmbus_read_byte(struct device *dev, uint8_t address)
 {
-	unsigned device;
+	unsigned int device;
 	struct resource *res;
 	struct bus *pbus;
 
@@ -114,7 +114,7 @@ static int lsmbus_read_byte(struct device *dev, uint8_t address)
 
 static int lsmbus_write_byte(struct device *dev, uint8_t address, uint8_t val)
 {
-	unsigned device;
+	unsigned int device;
 	struct resource *res;
 	struct bus *pbus;
 

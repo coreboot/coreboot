@@ -23,7 +23,7 @@
 
 static int lsmbus_recv_byte(struct device *dev)
 {
-	unsigned device;
+	unsigned int device;
 	struct resource *res;
 	struct bus *pbus;
 
@@ -37,7 +37,7 @@ static int lsmbus_recv_byte(struct device *dev)
 
 static int lsmbus_send_byte(struct device *dev, u8 val)
 {
-	unsigned device;
+	unsigned int device;
 	struct resource *res;
 	struct bus *pbus;
 
@@ -51,7 +51,7 @@ static int lsmbus_send_byte(struct device *dev, u8 val)
 
 static int lsmbus_read_byte(struct device *dev, u8 address)
 {
-	unsigned device;
+	unsigned int device;
 	struct resource *res;
 	struct bus *pbus;
 
@@ -65,7 +65,7 @@ static int lsmbus_read_byte(struct device *dev, u8 address)
 
 static int lsmbus_write_byte(struct device *dev, u8 address, u8 val)
 {
-	unsigned device;
+	unsigned int device;
 	struct resource *res;
 	struct bus *pbus;
 

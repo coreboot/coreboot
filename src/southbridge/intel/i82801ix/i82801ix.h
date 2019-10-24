@@ -215,7 +215,7 @@ void i82801ix_dmi_setup(void);
 void i82801ix_dmi_poll_vc1(void);
 
 #if ENV_ROMSTAGE
-int smbus_read_byte(unsigned device, unsigned address);
+int smbus_read_byte(unsigned int device, unsigned int address);
 #endif
 
 #endif

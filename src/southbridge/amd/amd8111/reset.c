@@ -21,7 +21,7 @@
 
 
 #define PCI_DEV_INVALID (0xffffffffU)
-static pci_devfn_t pci_io_locate_device_on_bus(unsigned pci_id, unsigned bus)
+static pci_devfn_t pci_io_locate_device_on_bus(unsigned int pci_id, unsigned int bus)
 {
 	pci_devfn_t dev, last;
 	dev = PCI_DEV(bus, 0, 0);
@@ -41,9 +41,9 @@ static pci_devfn_t pci_io_locate_device_on_bus(unsigned pci_id, unsigned bus)
 void do_board_reset(void)
 {
 	pci_devfn_t dev;
-	unsigned bus;
-	unsigned node = 0;
-	unsigned link = get_sblk();
+	unsigned int bus;
+	unsigned int node = 0;
+	unsigned int link = get_sblk();
 
 	/* Find the device.
 	 * There can only be one 8111 on a hypertransport chain/bus.

@@ -21,15 +21,15 @@ void amd8111_enable(struct device *dev)
 {
 	struct device *lpc_dev;
 	struct device *bus_dev;
-	unsigned index;
-	unsigned reg_old, reg;
+	unsigned int index;
+	unsigned int reg_old, reg;
 
 	/* See if we are on the bus behind the amd8111 pci bridge */
 	bus_dev = dev->bus->dev;
 	if ((bus_dev->vendor == PCI_VENDOR_ID_AMD) &&
 	    (bus_dev->device == PCI_DEVICE_ID_AMD_8111_PCI))
 	{
-		unsigned devfn;
+		unsigned int devfn;
 		devfn = bus_dev->path.pci.devfn + (1 << 3);
 		lpc_dev = pcidev_path_behind(bus_dev->bus, devfn);
 		index = ((dev->path.pci.devfn & ~7) >> 3) + 8;
@@ -37,7 +37,7 @@ void amd8111_enable(struct device *dev)
 			index = 16;
 		}
 	} else {
-		unsigned devfn;
+		unsigned int devfn;
 		devfn = (dev->path.pci.devfn) & ~7;
 		lpc_dev = pcidev_path_behind(dev->bus, devfn);
 		index = dev->path.pci.devfn & 7;

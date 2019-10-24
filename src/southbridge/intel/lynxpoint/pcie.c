@@ -168,7 +168,7 @@ static void root_port_init_config(struct device *dev)
 static void pch_pcie_device_set_func(int index, int pci_func)
 {
 	struct device *dev;
-	unsigned new_devfn;
+	unsigned int new_devfn;
 
 	dev = rpc.ports[index];
 

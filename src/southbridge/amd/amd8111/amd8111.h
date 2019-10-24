@@ -17,6 +17,6 @@
 #include <device/device.h>
 
 void amd8111_enable(struct device *dev);
-void enable_fid_change_on_sb(unsigned sbbusn, unsigned sbdn);
+void enable_fid_change_on_sb(unsigned int sbbusn, unsigned int sbdn);
 
 #endif /* AMD8111_H */

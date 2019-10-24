@@ -177,7 +177,7 @@ void acpi_create_serialio_ssdt(acpi_header_t *ssdt);
 void enable_smbus(void);
 
 #if ENV_ROMSTAGE
-int smbus_read_byte(unsigned device, unsigned address);
+int smbus_read_byte(unsigned int device, unsigned int address);
 #endif
 
 void enable_usb_bar(void);

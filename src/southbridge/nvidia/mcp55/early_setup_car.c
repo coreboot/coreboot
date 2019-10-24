@@ -21,21 +21,21 @@
 #include <device/pci_ops.h>
 
 #ifdef UNUSED_CODE
-int set_ht_link_buffer_counts_chain(u8 ht_c_num, unsigned vendorid, unsigned val);
+int set_ht_link_buffer_counts_chain(u8 ht_c_num, unsigned int vendorid, unsigned int val);
 
 static int set_ht_link_mcp55(u8 ht_c_num)
 {
-	unsigned vendorid = 0x10de;
-	unsigned val = 0x01610109;
+	unsigned int vendorid = 0x10de;
+	unsigned int val = 0x01610109;
 	/* NVIDIA MCP55 hardcode, hardware can not set it automatically. */
 	return set_ht_link_buffer_counts_chain(ht_c_num, vendorid, val);
 }
 
-static void setup_ss_table(unsigned index, unsigned where, unsigned control,
+static void setup_ss_table(unsigned int index, unsigned int where, unsigned int control,
 			   const unsigned int *register_values, int max)
 {
 	int i;
-	unsigned val;
+	unsigned int val;
 
 	val = inl(control);
 	val &= 0xfffffffe;
@@ -82,8 +82,8 @@ static void setup_ss_table(unsigned index, unsigned where, unsigned control,
  */
 #define MCP55_DEV(d, f, r) PCI_ADDR(0, d, f, r)
 
-static void mcp55_early_set_port(unsigned mcp55_num, unsigned *busn,
-				 unsigned *devn, unsigned *io_base)
+static void mcp55_early_set_port(unsigned int mcp55_num, unsigned int *busn,
+				 unsigned int *devn, unsigned int *io_base)
 {
 
 	static const unsigned int ctrl_devport_conf[] = {
@@ -100,8 +100,8 @@ static void mcp55_early_set_port(unsigned mcp55_num, unsigned *busn,
 	}
 }
 
-static void mcp55_early_clear_port(unsigned mcp55_num, unsigned *busn,
-				   unsigned *devn, unsigned *io_base)
+static void mcp55_early_clear_port(unsigned int mcp55_num, unsigned int *busn,
+				   unsigned int *devn, unsigned int *io_base)
 {
 	static const unsigned int ctrl_devport_conf_clear[] = {
 		MCP55_DEV(1, 1, ANACTRL_REG_POS), ~(0x0000ff00), 0,
@@ -117,8 +117,8 @@ static void mcp55_early_clear_port(unsigned mcp55_num, unsigned *busn,
 	}
 }
 
-static void mcp55_early_pcie_setup(unsigned busnx, unsigned devnx,
-				   unsigned anactrl_io_base, unsigned pci_e_x)
+static void mcp55_early_pcie_setup(unsigned int busnx, unsigned int devnx,
+				   unsigned int anactrl_io_base, unsigned int pci_e_x)
 {
 	u32 tgio_ctrl, pll_ctrl, dword;
 	int i;
@@ -156,9 +156,9 @@ static void mcp55_early_pcie_setup(unsigned busnx, unsigned devnx,
 	mdelay(100); /* Need to wait 100ms. */
 }
 
-static void mcp55_early_setup(unsigned mcp55_num, unsigned *busn,
-			      unsigned *devn, unsigned *io_base,
-			      unsigned *pci_e_x)
+static void mcp55_early_setup(unsigned int mcp55_num, unsigned int *busn,
+			      unsigned int *devn, unsigned int *io_base,
+			      unsigned int *pci_e_x)
 {
     static const unsigned int ctrl_conf_1[] = {
 	RES_PORT_IO_32, ACPICTRL_IO_BASE + 0x10, 0x0007ffff, 0xff78000,
@@ -348,21 +348,21 @@ static void mcp55_early_setup(unsigned mcp55_num, unsigned *busn,
 static int mcp55_early_setup_x(void)
 {
 	/* Find out how many MCP55 we have. */
-	unsigned busn[HT_CHAIN_NUM_MAX] = {0};
-	unsigned devn[HT_CHAIN_NUM_MAX] = {0};
-	unsigned io_base[HT_CHAIN_NUM_MAX] = {0};
+	unsigned int busn[HT_CHAIN_NUM_MAX] = {0};
+	unsigned int devn[HT_CHAIN_NUM_MAX] = {0};
+	unsigned int io_base[HT_CHAIN_NUM_MAX] = {0};
 
 	/*
 	 * FIXME: May have problem if there is different MCP55 HTX card with
 	 * different PCI_E lane allocation. Need to use same trick about
 	 * pci1234 to verify node/link connection.
 	 */
-	unsigned pci_e_x[HT_CHAIN_NUM_MAX] = {
+	unsigned int pci_e_x[HT_CHAIN_NUM_MAX] = {
 		CONFIG_MCP55_PCI_E_X_0, CONFIG_MCP55_PCI_E_X_1,
 		CONFIG_MCP55_PCI_E_X_2, CONFIG_MCP55_PCI_E_X_3,
 	};
 	int mcp55_num = 0, ht_c_index;
-	unsigned busnx, devnx;
+	unsigned int busnx, devnx;
 
 	/* FIXME: Multi PCI segment handling. */
 

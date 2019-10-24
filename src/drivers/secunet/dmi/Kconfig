@@ -1,0 +1,3 @@
+config SECUNET_DMI
+	bool
+	select SMBIOS_PROVIDED_BY_MOBO

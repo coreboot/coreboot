@@ -16,23 +16,31 @@
 /* This file defines the processor and performance state capability
  * for each core in the system.  It is included into the DSDT for each
  * core.  It assumes that each core of the system has the same performance
- * characteristics.
+ * charateristics.
 */
 /*
 #include <arch/acpi.h>
 DefinitionBlock ("DSDT.AML", "DSDT", 0x01, OEM_ID, ACPI_TABLE_CREATOR, 0x00010001)
 	{
-		Scope (\_PR) {
-		Processor(CPU0,0,0x808,0x06) {
+	Scope (\_PR) {
+		Device (CPU0) {
+		Name (_HID, "ACPI0007")
+		Name (_UID, 0)
 			#include "cpstate.asl"
 		}
-		Processor(CPU1,1,0x0,0x0) {
+		Device (CPU1) {
+		Name (_HID, "ACPI0007")
+		Name (_UID, 1)
 			#include "cpstate.asl"
 		}
-		Processor(CPU2,2,0x0,0x0) {
+		Device (CPU2) {
+		Name (_HID, "ACPI0007")
+		Name (_UID, 2)
 			#include "cpstate.asl"
 		}
-		Processor(CPU3,3,0x0,0x0) {
+		Device (CPU3) {
+		Name (_HID, "ACPI0007")
+		Name (_UID, 3)
 			#include "cpstate.asl"
 		}
 	}

@@ -177,12 +177,12 @@ static void early_ich7_init(void)
 	uint32_t reg32;
 
 	// program secondary mlt XXX byte?
-	pci_write_config8(PCI_DEV(0, 0x1e, 0), 0x1b, 0x20);
+	pci_write_config8(PCI_DEV(0, 0x1e, 0), SMLT, 0x20);
 
 	// reset rtc power status
-	reg8 = pci_read_config8(PCI_DEV(0, 0x1f, 0), 0xa4);
-	reg8 &= ~(1 << 2);
-	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0xa4, reg8);
+	reg8 = pci_read_config8(PCI_DEV(0, 0x1f, 0), GEN_PMCON_3);
+	reg8 &= ~RTC_BATTERY_DEAD;
+	pci_write_config8(PCI_DEV(0, 0x1f, 0), GEN_PMCON_3, reg8);
 
 	// usb transient disconnect
 	reg8 = pci_read_config8(PCI_DEV(0, 0x1f, 0), 0xad);

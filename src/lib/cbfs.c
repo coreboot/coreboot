@@ -302,7 +302,7 @@ static int cbfs_master_header_props(struct cbfs_props *props)
 	if (rdev_readat(bdev, &rel_offset, offset, sizeof(int32_t)) < 0)
 		return -1;
 
-	offset = fmap_top + rel_offset;
+	offset = fmap_top + (int32_t)le32_to_cpu(rel_offset);
 	if (rdev_readat(bdev, &header, offset, sizeof(header)) < 0)
 		return -1;
 

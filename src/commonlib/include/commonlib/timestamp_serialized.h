@@ -79,6 +79,10 @@ enum timestamp_id {
 	TS_END_TPMPCR = 512,
 	TS_START_TPMLOCK = 513,
 	TS_END_TPMLOCK = 514,
+	TS_START_EC_SYNC = 515,
+	TS_EC_HASH_READY = 516,
+	TS_EC_POWER_LIMIT_WAIT = 517,
+	TS_END_EC_SYNC = 518,
 	TS_START_COPYVPD = 550,
 	TS_END_COPYVPD_RO = 551,
 	TS_END_COPYVPD_RW = 552,
@@ -201,6 +205,11 @@ static const struct timestamp_id_to_name {
 	{ TS_START_COPYVPD,	"starting to load Chrome OS VPD" },
 	{ TS_END_COPYVPD_RO,	"finished loading Chrome OS VPD (RO)" },
 	{ TS_END_COPYVPD_RW,	"finished loading Chrome OS VPD (RW)" },
+
+	{ TS_START_EC_SYNC,	"starting EC software sync" },
+	{ TS_EC_HASH_READY,	"EC vboot hash ready" },
+	{ TS_EC_POWER_LIMIT_WAIT,	"waiting for EC to allow higher power draw" },
+	{ TS_END_EC_SYNC,	"finished EC software sync" },
 
 	{ TS_DC_START,		"depthcharge start" },
 	{ TS_RO_PARAMS_INIT,	"RO parameter init" },

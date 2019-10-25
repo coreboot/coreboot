@@ -15,14 +15,11 @@
 #include <cpu/x86/cr.h>
 #include <cpu/amd/mtrr.h>
 #include <cpu/x86/msr.h>
+#include <arch/ram_segs.h>
 
 /* The SIPI vector is responsible for initializing the APs in the system. It
  * loads microcode, sets up MSRs, and enables caching before calling into
  * C code. */
-
-/* These segment selectors need to match the gdt entries in c_start.S. */
-#define CODE_SEG 0x10
-#define DATA_SEG 0x18
 
 .section ".module_parameters", "aw", @progbits
 ap_start_params:
@@ -83,10 +80,10 @@ _start:
 	orl	$CR0_SET_FLAGS, %eax
 	movl	%eax, %cr0
 
-	ljmpl	$CODE_SEG, $1f
+	ljmpl	$RAM_CODE_SEG, $1f
 1:
 	.code32
-	movw	$DATA_SEG, %ax
+	movw	$RAM_DATA_SEG, %ax
 	movw	%ax, %ds
 	movw	%ax, %es
 	movw	%ax, %ss

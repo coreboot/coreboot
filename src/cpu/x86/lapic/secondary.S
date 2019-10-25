@@ -13,6 +13,7 @@
 
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/lapic_def.h>
+#include <arch/ram_segs.h>
 
 	.text
 	.globl _secondary_start, _secondary_start_end, _secondary_gdt_addr
@@ -38,7 +39,7 @@ _secondary_start:
 	orl	$0x60000001, %eax /* CD, NW, PE = 1 */
 	movl	%eax, %cr0
 
-	ljmpl	$0x10, $__ap_protected_start
+	ljmpl	$RAM_CODE_SEG, $__ap_protected_start
 
 	/* This will get filled in by C code. */
 _secondary_gdt_addr:
@@ -51,11 +52,11 @@ _secondary_start_end:
 ap_protected_start:
 	.code32
 	lgdt	gdtaddr
-	ljmpl	$0x10, $__ap_protected_start
+	ljmpl	$RAM_CODE_SEG, $__ap_protected_start
 
 __ap_protected_start:
 
-	movw	$0x18, %ax
+	movw	$RAM_DATA_SEG, %ax
 	movw	%ax, %ds
 	movw	%ax, %es
 	movw	%ax, %ss

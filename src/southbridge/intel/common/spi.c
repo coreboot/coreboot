@@ -271,11 +271,36 @@ static void ich_set_bbar(uint32_t minaddr)
 #define MENU_BYTES member_size(struct ich9_spi_regs, opmenu)
 #endif
 
+#define RCBA 0xf0
+#define SBASE 0x54
+
+#ifdef __SIMPLE_DEVICE__
+static void *get_spi_bar(pci_devfn_t dev)
+#else
+static void *get_spi_bar(struct device *dev)
+#endif
+{
+	uintptr_t rcba; /* Root Complex Register Block */
+	uintptr_t sbase;
+
+	if (CONFIG(SOUTHBRIDGE_INTEL_I82801GX)) {
+		rcba = pci_read_config32(dev, RCBA);
+		return (void *)((rcba & 0xffffc000) + 0x3020);
+	}
+	if (CONFIG(SOUTHBRIDGE_INTEL_COMMON_SPI_SILVERMONT)) {
+		sbase = pci_read_config32(dev, SBASE);
+		sbase &= ~0x1ff;
+		return (void *)sbase;
+	}
+	if (CONFIG(SOUTHBRIDGE_INTEL_COMMON_SPI_ICH9)) {
+		rcba = pci_read_config32(dev, RCBA);
+		return (void *)((rcba & 0xffffc000) + 0x3800);
+	}
+}
+
 void spi_init(void)
 {
 	struct ich_spi_controller *cntlr = car_get_var_ptr(&g_cntlr);
-	uint8_t *rcrb; /* Root Complex Register Block */
-	uint32_t rcba; /* Root Complex Base Address */
 	uint8_t bios_cntl;
 	struct ich9_spi_regs *ich9_spi;
 	struct ich7_spi_regs *ich7_spi;
@@ -287,11 +312,8 @@ void spi_init(void)
 	struct device *dev = pcidev_on_root(31, 0);
 #endif
 
-	rcba = pci_read_config32(dev, 0xf0);
-	/* Bits 31-14 are the base address, 13-1 are reserved, 0 is enable. */
-	rcrb = (uint8_t *)(rcba & 0xffffc000);
 	if (CONFIG(SOUTHBRIDGE_INTEL_I82801GX)) {
-		ich7_spi = (struct ich7_spi_regs *)(rcrb + 0x3020);
+		ich7_spi = get_spi_bar(dev);
 		cntlr->ich7_spi = ich7_spi;
 		cntlr->opmenu = ich7_spi->opmenu;
 		cntlr->menubytes = sizeof(ich7_spi->opmenu);
@@ -306,7 +328,7 @@ void spi_init(void)
 		cntlr->fpr = &ich7_spi->pbr[0];
 		cntlr->fpr_max = 3;
 	} else {
-		ich9_spi = (struct ich9_spi_regs *)(rcrb + 0x3800);
+		ich9_spi = get_spi_bar(dev);
 		cntlr->ich9_spi = ich9_spi;
 		hsfs = readw_(&ich9_spi->hsfs);
 		cntlr->hsfs = hsfs;
@@ -333,11 +355,13 @@ void spi_init(void)
 
 	ich_set_bbar(0);
 
-	/* Disable the BIOS write protect so write commands are allowed. */
-	bios_cntl = pci_read_config8(dev, 0xdc);
-	/* Deassert SMM BIOS Write Protect Disable. */
-	bios_cntl &= ~(1 << 5);
-	pci_write_config8(dev, 0xdc, bios_cntl | 0x1);
+	if (CONFIG(SOUTHBRIDGE_INTEL_I82801GX) || CONFIG(SOUTHBRIDGE_INTEL_COMMON_SPI_ICH9)) {
+		/* Disable the BIOS write protect so write commands are allowed. */
+		bios_cntl = pci_read_config8(dev, 0xdc);
+		/* Deassert SMM BIOS Write Protect Disable. */
+		bios_cntl &= ~(1 << 5);
+		pci_write_config8(dev, 0xdc, bios_cntl | 0x1);
+	}
 }
 
 static int spi_locked(void)

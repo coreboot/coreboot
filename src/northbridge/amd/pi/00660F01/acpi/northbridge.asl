@@ -16,7 +16,7 @@
 /* Note: Only need HID on Primary Bus */
 External (TOM1)
 External (TOM2)
-Name(_HID, EISAID("PNP0A08"))	/* PCI Express Root Bridge */
+/* Name(_HID, EISAID("PNP0A08")) // PCI Express Root Bridge */
 Name(_CID, EISAID("PNP0A03"))	/* PCI Root Bridge */
 Name(_ADR, 0x00180000)	/* Dev# = BSP Dev#, Func# = 0 */
 

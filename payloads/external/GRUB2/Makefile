@@ -1,4 +1,4 @@
-TAG-$(CONFIG_GRUB2_MASTER)=
+TAG-$(CONFIG_GRUB2_MASTER)=origin/HEAD
 TAG-$(CONFIG_GRUB2_REVISION)=$(CONFIG_GRUB2_REVISION_ID)
 TAG-$(CONFIG_GRUB2_STABLE)=grub-2.04
 NAME-$(CONFIG_GRUB2_MASTER)=HEAD
@@ -15,14 +15,14 @@ all: grub2
 
 checkout:
 	echo "    GIT        GRUB2 $(NAME-y)"
-	test -d grub2 || \
-		git clone $(project_git_repo) $(project_dir)
-	cd grub2 && \
-		git checkout master && \
-		git pull; \
-		test -n "$(TAG-y)" && \
-			git branch -f $(NAME-y) $(TAG-y) && \
-			git checkout $(NAME-y) || true
+	test -d $(project_dir) || git clone $(project_git_repo) $(project_dir)
+	git -C $(project_dir) fetch
+ifeq ("$(shell git -C $(project_dir) status --ignored=no --untracked-files=no --porcelain)",)
+	git -C $(project_dir) checkout -f $(TAG-y)
+else
+	echo "WARNING: index/tree not clean, skipping update / force checkout."
+	echo "         Checkout manually with `git -C $(project_dir) checkout -f`."
+endif
 
 grub2/build/config.h: $(CONFIG_DEP) | checkout
 	echo "    CONFIG     GRUB2 $(NAME-y)"

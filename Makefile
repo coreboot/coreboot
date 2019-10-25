@@ -194,7 +194,7 @@ $(KCONFIG_AUTOHEADER): $(KCONFIG_CONFIG) $(objutil)/kconfig/conf
 $(KCONFIG_AUTOCONFIG): $(KCONFIG_AUTOHEADER)
 	true
 
-$(KCONFIG_AUTOADS): $(KCONFIG_AUTOCONFIG) $(objutil)/kconfig/toada
+$(KCONFIG_AUTOADS): $(KCONFIG_CONFIG) $(KCONFIG_AUTOHEADER) $(objutil)/kconfig/toada
 	$(objutil)/kconfig/toada CB.Config <$< >$@
 
 $(obj)/%/$(notdir $(KCONFIG_AUTOADS)): $(KCONFIG_AUTOADS)

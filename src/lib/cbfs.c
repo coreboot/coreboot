@@ -256,7 +256,7 @@ int cbfs_prog_stage_load(struct prog *pstage)
 
 	/* Hacky way to not load programs over read only media. The stages
 	 * that would hit this path initialize themselves. */
-	if (ENV_VERSTAGE && !CONFIG(NO_XIP_EARLY_STAGES) &&
+	if ((ENV_BOOTBLOCK || ENV_VERSTAGE) && !CONFIG(NO_XIP_EARLY_STAGES) &&
 		CONFIG(BOOT_DEVICE_MEMORY_MAPPED)) {
 		void *mapping = rdev_mmap(fh, foffset, fsize);
 		rdev_munmap(fh, mapping);

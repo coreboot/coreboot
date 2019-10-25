@@ -251,21 +251,27 @@ static vb2_error_t hash_body(struct vb2_context *ctx,
 	return VB2_SUCCESS;
 }
 
-/**
- * Save non-volatile and/or secure data if needed.
- */
-static void save_if_needed(struct vb2_context *ctx)
+void vboot_save_nvdata_only(struct vb2_context *ctx)
 {
+	assert(!(ctx->flags & (VB2_CONTEXT_SECDATA_FIRMWARE_CHANGED |
+			       VB2_CONTEXT_SECDATA_KERNEL_CHANGED)));
+
 	if (ctx->flags & VB2_CONTEXT_NVDATA_CHANGED) {
 		printk(BIOS_INFO, "Saving nvdata\n");
 		save_vbnv(ctx->nvdata);
 		ctx->flags &= ~VB2_CONTEXT_NVDATA_CHANGED;
 	}
+}
+
+void vboot_save_data(struct vb2_context *ctx)
+{
 	if (ctx->flags & VB2_CONTEXT_SECDATA_CHANGED) {
 		printk(BIOS_INFO, "Saving secdata\n");
 		antirollback_write_space_firmware(ctx);
 		ctx->flags &= ~VB2_CONTEXT_SECDATA_CHANGED;
 	}
+
+	vboot_save_nvdata_only(ctx);
 }
 
 static uint32_t extend_pcrs(struct vb2_context *ctx)
@@ -368,13 +374,13 @@ void verstage_main(void)
 		 */
 		if (rv == VB2_ERROR_API_PHASE1_RECOVERY) {
 			printk(BIOS_INFO, "Recovery requested (%x)\n", rv);
-			save_if_needed(ctx);
+			vboot_save_data(ctx);
 			extend_pcrs(ctx); /* ignore failures */
 			goto verstage_main_exit;
 		}
 
 		printk(BIOS_INFO, "Reboot requested (%x)\n", rv);
-		save_if_needed(ctx);
+		vboot_save_data(ctx);
 		vboot_reboot();
 	}
 
@@ -383,7 +389,7 @@ void verstage_main(void)
 	rv = vb2api_fw_phase2(ctx);
 	if (rv) {
 		printk(BIOS_INFO, "Reboot requested (%x)\n", rv);
-		save_if_needed(ctx);
+		vboot_save_data(ctx);
 		vboot_reboot();
 	}
 
@@ -394,7 +400,7 @@ void verstage_main(void)
 	timestamp_add_now(TS_END_VERIFY_SLOT);
 	if (rv) {
 		printk(BIOS_INFO, "Reboot requested (%x)\n", rv);
-		save_if_needed(ctx);
+		vboot_save_data(ctx);
 		vboot_reboot();
 	}
 
@@ -405,7 +411,7 @@ void verstage_main(void)
 			"Failed to read FMAP to locate firmware");
 
 	rv = hash_body(ctx, &fw_main);
-	save_if_needed(ctx);
+	vboot_save_data(ctx);
 	if (rv) {
 		printk(BIOS_INFO, "Reboot requested (%x)\n", rv);
 		vboot_reboot();
@@ -419,7 +425,7 @@ void verstage_main(void)
 			printk(BIOS_WARNING,
 			       "Failed to extend TPM PCRs (%#x)\n", rv);
 			vb2api_fail(ctx, VB2_RECOVERY_RO_TPM_U_ERROR, rv);
-			save_if_needed(ctx);
+			vboot_save_data(ctx);
 			vboot_reboot();
 		}
 		timestamp_add_now(TS_END_TPMPCR);
@@ -432,7 +438,7 @@ void verstage_main(void)
 	if (rv) {
 		printk(BIOS_INFO, "Failed to lock TPM (%x)\n", rv);
 		vb2api_fail(ctx, VB2_RECOVERY_RO_TPM_L_ERROR, 0);
-		save_if_needed(ctx);
+		vboot_save_data(ctx);
 		vboot_reboot();
 	}
 	timestamp_add_now(TS_END_TPMLOCK);
@@ -445,7 +451,7 @@ void verstage_main(void)
 			       rv);
 			vb2api_fail(ctx, VB2_RECOVERY_RO_TPM_REC_HASH_L_ERROR,
 				    0);
-			save_if_needed(ctx);
+			vboot_save_data(ctx);
 			vboot_reboot();
 		}
 	}

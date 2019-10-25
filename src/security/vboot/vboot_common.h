@@ -80,4 +80,13 @@ static inline int vboot_can_enable_udc(void) { return 1; }
 static inline void vboot_run_logic(void) {}
 #endif
 
+void vboot_save_nvdata_only(struct vb2_context *ctx);
+void vboot_save_data(struct vb2_context *ctx);
+
+/*
+ * The API for performing EC software sync.  Does not support
+ * "slow" updates or Auxiliary FW sync.
+ */
+void vboot_sync_ec(void);
+
 #endif /* __VBOOT_VBOOT_COMMON_H__ */

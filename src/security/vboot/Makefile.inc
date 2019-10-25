@@ -37,6 +37,8 @@ verstage-y += vbnv.c
 romstage-y += vbnv.c
 ramstage-y += vbnv.c
 
+romstage-$(CONFIG_VBOOT_EARLY_EC_SYNC) += ec_sync.c
+
 bootblock-$(CONFIG_VBOOT_VBNV_CMOS) += vbnv_cmos.c
 verstage-$(CONFIG_VBOOT_VBNV_CMOS) += vbnv_cmos.c
 romstage-$(CONFIG_VBOOT_VBNV_CMOS) += vbnv_cmos.c

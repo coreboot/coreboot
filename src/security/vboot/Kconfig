@@ -242,6 +242,18 @@ config VBOOT_ENABLE_CBFS_FALLBACK
 	  When this option is enabled cbfs_boot_locate will look for a file in the RO
 	  (COREBOOT) region if it isn't available in the active RW region.
 
+config VBOOT_EARLY_EC_SYNC
+	bool
+	default n
+	depends on EC_GOOGLE_CHROMEEC
+	help
+	  Enables CrOS EC software sync in romstage, before memory training
+	  runs. This is useful mainly as a way to achieve full USB-PD
+	  negotiation earlier in the boot flow, as the EC will only do this once
+	  it has made the sysjump to its RW firmware. It should not
+	  significantly impact boot time, as this operation will be performed
+	  later in the boot flow if it is disabled here.
+
 menu "GBB configuration"
 
 config GBB_HWID

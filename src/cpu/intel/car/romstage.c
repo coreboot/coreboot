@@ -21,6 +21,7 @@
 #include <commonlib/helpers.h>
 #include <program_loading.h>
 #include <timestamp.h>
+#include <security/vboot/vboot_common.h>
 
 /* If we do not have a constrained _car_stack region size, use the
    following as a guideline for acceptable stack usage. */
@@ -50,6 +51,9 @@ static void romstage_main(unsigned long bist)
 
 	for (i = 0; i < num_guards; i++)
 		stack_base[i] = stack_guard;
+
+	if (CONFIG(VBOOT_EARLY_EC_SYNC))
+		vboot_sync_ec();
 
 	mainboard_romstage_entry();
 

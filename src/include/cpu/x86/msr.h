@@ -301,5 +301,25 @@ static inline enum mca_err_code_types mca_err_type(msr_t reg)
 	return MCA_ERRTYPE_UNKNOWN;
 }
 
+
+/* Helper for setting single MSR bits */
+static inline void msr_set_bit(unsigned int reg, unsigned int bit)
+{
+	msr_t msr = rdmsr(reg);
+
+	if (bit < 32) {
+		if (msr.lo & (1 << bit))
+			return;
+		msr.lo |= 1 << bit;
+	} else {
+		if (msr.hi & (1 << (bit - 32)))
+			return;
+		msr.hi |= 1 << (bit - 32);
+	}
+
+	wrmsr(reg, msr);
+}
+
+
 #endif /* __ASSEMBLER__ */
 #endif /* CPU_X86_MSR_H */

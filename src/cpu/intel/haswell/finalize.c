@@ -22,25 +22,6 @@
  * Document Number 504790
  * Revision 1.6.0, June 2012 */
 
-#if 0
-static void msr_set_bit(unsigned int reg, unsigned int bit)
-{
-	msr_t msr = rdmsr(reg);
-
-	if (bit < 32) {
-		if (msr.lo & (1 << bit))
-			return;
-		msr.lo |= 1 << bit;
-	} else {
-		if (msr.hi & (1 << (bit - 32)))
-			return;
-		msr.hi |= 1 << (bit - 32);
-	}
-
-	wrmsr(reg, msr);
-}
-#endif
-
 void intel_cpu_haswell_finalize_smm(void)
 {
 #if 0

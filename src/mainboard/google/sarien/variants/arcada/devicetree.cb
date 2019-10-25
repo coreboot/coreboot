@@ -335,6 +335,14 @@ chip soc/intel/cannonlake
 				register "probed" = "1"
 				device i2c 2c on end
 			end
+			chip drivers/i2c/hid
+			        register "generic.hid" = ""PNP0C50""
+				register "generic.desc" = ""Cirque Touchpad""
+				register "generic.irq" = "ACPI_IRQ_EDGE_LOW(GPP_B3_IRQ)"
+				register "generic.probed" = "1"
+				register "hid_desc_reg_offset" = "0x20"
+				device i2c 2a on end
+			end
 		end # I2C #1
 		device pci 15.2 off end # I2C #2
 		device pci 15.3 off end # I2C #3

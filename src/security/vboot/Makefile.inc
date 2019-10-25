@@ -110,24 +110,24 @@ vboot-fixup-includes = $(patsubst -I%,-I$(top)/%,\
 # call with $1 = stage name to create rules for building the library
 # for the stage and adding it to the stage's set of object files.
 define vboot-for-stage
-VB2_LIB_$(1) = $(obj)/external/vboot_reference-$(1)/vboot_fw20.a
+VBOOT_LIB_$(1) = $(obj)/external/vboot_reference-$(1)/vboot_fw.a
 VBOOT_CFLAGS_$(1) += $$(call vboot-fixup-includes,$$(CPPFLAGS_$(1)))
 VBOOT_CFLAGS_$(1) += $$(CFLAGS_$(1))
 VBOOT_CFLAGS_$(1) += $$(call vboot-fixup-includes,$$($(1)-c-ccopts))
 VBOOT_CFLAGS_$(1) += -I$(abspath $(obj)) -Wno-missing-prototypes
 VBOOT_CFLAGS_$(1) += -DVBOOT_DEBUG
 
-$$(VB2_LIB_$(1)): $(obj)/config.h
+$$(VBOOT_LIB_$(1)): $(obj)/config.h
 	printf "    MAKE       $(subst $(obj)/,,$(@))\n"
 	+FIRMWARE_ARCH=$$(ARCHDIR-$$(ARCH-$(1)-y)) \
 	CC="$$(CC_$(1))" \
 	CFLAGS="$$(VBOOT_CFLAGS_$(1))" VBOOT2="y" \
 	$(MAKE) -C $(VBOOT_SOURCE) \
-		BUILD=$$(abspath $$(dir $$(VB2_LIB_$(1)))) \
+		BUILD=$$(abspath $$(dir $$(VBOOT_LIB_$(1)))) \
 		V=$(V) \
-		fwlib20
+		fwlib
 
-$(1)-srcs += $$(VB2_LIB_$(1))
+$(1)-srcs += $$(VBOOT_LIB_$(1))
 
 endef # vboot-for-stage
 

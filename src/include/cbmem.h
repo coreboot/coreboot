@@ -71,9 +71,8 @@ void cbmem_top_init(void);
 /* Return the top address for dynamic cbmem. The address returned needs to
  * be consistent across romstage and ramstage, and it is required to be
  * below 4GiB for 32bit coreboot builds. On 64bit coreboot builds there's no
- * upper limit.
- * x86 boards or chipsets must return NULL before the cbmem backing store has
- * been initialized. */
+ * upper limit. This should not be called before memory is initialized.
+ */
 void *cbmem_top(void);
 
 /* Add a cbmem entry of a given size and id. These return NULL on failure. The

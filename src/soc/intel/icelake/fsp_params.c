@@ -94,15 +94,11 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	mainboard_silicon_init_params(params);
 
 	dev = pcidev_path_on_root(SA_DEVFN_IGD);
-
-	if (!dev || !dev->enabled) {
-		/*
-		 * Skip IGD initialization in FSP in case device is disabled
-		 * in the devicetree.cb.
-		 */
-		params->PeiGraphicsPeimInit = 0;
-	} else {
+	if (CONFIG(RUN_FSP_GOP) && dev && dev->enabled)
 		params->PeiGraphicsPeimInit = 1;
+	else
+		params->PeiGraphicsPeimInit = 0;
+	if (dev && dev->enabled) {
 		params->GtFreqMax = 2;
 		params->CdClock = 3;
 	}

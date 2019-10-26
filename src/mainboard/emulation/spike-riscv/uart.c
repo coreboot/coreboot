@@ -15,7 +15,6 @@
 
 #include <types.h>
 #include <console/uart.h>
-#include <boot/coreboot_tables.h>
 
 uintptr_t uart_platform_base(int idx)
 {

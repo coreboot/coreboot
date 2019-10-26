@@ -17,7 +17,6 @@
 #include <types.h>
 #include <arch/acpi.h>
 #include <arch/io.h>
-#include <boot/coreboot_tables.h>
 #include <device/device.h>
 #include <device/pci_def.h>
 #include <southbridge/intel/lynxpoint/pch.h>

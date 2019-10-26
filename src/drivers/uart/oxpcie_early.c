@@ -15,7 +15,6 @@
 #include <stddef.h>
 #include <device/pci_ops.h>
 #include <arch/early_variables.h>
-#include <boot/coreboot_tables.h>
 #include <console/uart.h>
 #include <device/pci.h>
 #include <device/pci_def.h>

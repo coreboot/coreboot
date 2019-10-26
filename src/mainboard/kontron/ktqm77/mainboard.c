@@ -24,7 +24,6 @@
 #endif
 #include <pc80/mc146818rtc.h>
 #include <arch/interrupt.h>
-#include <boot/coreboot_tables.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 
 #if CONFIG(VGA_ROM_RUN)

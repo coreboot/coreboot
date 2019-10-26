@@ -12,6 +12,7 @@
  * GNU General Public License for more details.
  */
 
+#include <boot/coreboot_tables.h>
 #include <console/console.h>
 #include <fsp/util.h>
 #include <soc/intel/common/vbt.h>

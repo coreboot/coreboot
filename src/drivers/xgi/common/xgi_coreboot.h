@@ -20,6 +20,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <arch/io.h>
+#include <boot/coreboot_tables.h>
 #include <delay.h>
 #include <device/mmio.h>
 #include <console/console.h>

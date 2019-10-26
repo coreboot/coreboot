@@ -15,7 +15,6 @@
 #include <stdint.h>
 #include <edid.h>
 #include <stdlib.h>
-#include <boot/coreboot_tables.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>

@@ -23,7 +23,6 @@
 #endif
 #include <arch/acpi.h>
 #include <arch/interrupt.h>
-#include <boot/coreboot_tables.h>
 #include <smbios.h>
 #include "ec.h"
 #include <variant/onboard.h>

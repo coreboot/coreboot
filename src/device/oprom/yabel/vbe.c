@@ -32,6 +32,7 @@
  *     IBM Corporation - initial implementation
  *****************************************************************************/
 
+#include <boot/coreboot_tables.h>
 #include <string.h>
 #include <types.h>
 

@@ -20,7 +20,6 @@
 #if CONFIG(VGA_ROM_RUN)
 #include <x86emu/x86emu.h>
 #endif
-#include <boot/coreboot_tables.h>
 
 /*
  * mainboard_enable is executed as first thing after enumerate_buses().

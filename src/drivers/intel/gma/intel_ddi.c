@@ -32,7 +32,6 @@
 #include <device/pci_def.h>
 #include <console/console.h>
 #include <arch/acpi.h>
-#include <boot/coreboot_tables.h>
 #include <smbios.h>
 #include <device/pci.h>
 #include <ec/google/chromeec/ec.h>

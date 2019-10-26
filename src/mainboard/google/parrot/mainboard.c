@@ -20,7 +20,6 @@
 #include <drivers/intel/gma/int15.h>
 #include <arch/acpi.h>
 #include <arch/io.h>
-#include <boot/coreboot_tables.h>
 #include "onboard.h"
 #include "ec.h"
 #include <southbridge/intel/bd82x6x/pch.h>

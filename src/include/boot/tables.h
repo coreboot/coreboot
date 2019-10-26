@@ -1,7 +1,7 @@
 #ifndef BOOT_TABLES_H
 #define BOOT_TABLES_H
 
-#include <boot/coreboot_tables.h>
+#include <stdint.h>
 
 /*
  * Write architecture specific tables as well as the common

@@ -15,7 +15,6 @@
  */
 
 #include <arch/mmu.h>
-#include <boot/coreboot_tables.h>
 #include <device/device.h>
 #include <memrange.h>
 #include <soc/addressmap.h>

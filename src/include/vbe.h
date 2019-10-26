@@ -13,7 +13,8 @@
 #ifndef VBE_H
 #define VBE_H
 
-#include <boot/coreboot_tables.h>
+#include <stdint.h>
+
 // these structs are for input from and output to OF
 typedef struct {
 	u8 display_type;	// 0 = NONE, 1 = analog, 2 = digital

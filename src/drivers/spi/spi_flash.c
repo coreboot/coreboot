@@ -15,6 +15,7 @@
 #include <arch/early_variables.h>
 #include <assert.h>
 #include <boot_device.h>
+#include <boot/coreboot_tables.h>
 #include <console/console.h>
 #include <cpu/x86/smm.h>
 #include <stdlib.h>

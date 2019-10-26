@@ -36,7 +36,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include <edid.h>
-#include <boot/coreboot_tables.h>
 #include <vbe.h>
 
 struct edid_context {

@@ -21,7 +21,6 @@
 #if CONFIG(VGA_ROM_RUN)
 #include <x86emu/x86emu.h>
 #endif
-#include <boot/coreboot_tables.h>
 #include <hwilib.h>
 #include <i210.h>
 #include "lcd_panel.h"

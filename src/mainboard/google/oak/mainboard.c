@@ -15,7 +15,6 @@
 
 #include <arch/cache.h>
 #include <boardid.h>
-#include <boot/coreboot_tables.h>
 #include <bootmode.h>
 #include <console/console.h>
 #include <delay.h>

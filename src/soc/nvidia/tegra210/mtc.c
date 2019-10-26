@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <boot/coreboot_tables.h>
 #include <cbfs.h>
 #include <cbmem.h>
 #include <console/console.h>

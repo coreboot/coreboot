@@ -18,7 +18,6 @@
 #include <version.h>
 #include <console/console.h>
 #include <pc80/mc146818rtc.h>
-#include <boot/coreboot_tables.h>
 #include <rtc.h>
 #include <string.h>
 #include <cbfs.h>

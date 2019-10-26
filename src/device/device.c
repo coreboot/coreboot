@@ -1165,13 +1165,8 @@ void dev_initialize(void)
 	printk(BIOS_INFO, "Initializing devices...\n");
 
 #if CONFIG(ARCH_X86)
-	/*
-	 * Initialize EBDA area in ramstage if early
-	 * initialization is not done.
-	 */
-	if (!CONFIG(EARLY_EBDA_INIT))
-		/* Ensure EBDA is prepared before Option ROMs. */
-		setup_default_ebda();
+	/* Ensure EBDA is prepared before Option ROMs. */
+	setup_default_ebda();
 #endif
 
 	/* First call the mainboard init. */

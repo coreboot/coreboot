@@ -27,27 +27,6 @@
 #define DEFAULT_EBDA_SEGMENT	0xF600
 #define DEFAULT_EBDA_SIZE	0x400
 
-void setup_ebda(u32 low_memory_size, u16 ebda_segment, u16 ebda_size);
 void setup_default_ebda(void);
-
-/*
- * This read/write API only allows and assumes
- * a single EBDA structure type for a platform.
- */
-
-/*
- * write_ebda_data is a wrapper function to write into EBDA area
- *
- * data = data to be written into EBDA area
- * length = input data size.
- */
-void write_ebda_data(const void *data, size_t length);
-/*
- * read_ebda_data is a wrapper function to read from EBDA area
- *
- * data = data read from EBDA area based on input size
- * length = read data size.
- */
-void read_ebda_data(void *data, size_t length);
 
 #endif

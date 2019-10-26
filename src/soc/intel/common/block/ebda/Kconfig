@@ -1,5 +1,0 @@
-config SOC_INTEL_COMMON_BLOCK_EBDA
-	bool
-	select EARLY_EBDA_INIT
-	help
-	  Intel Processor common EBDA library support

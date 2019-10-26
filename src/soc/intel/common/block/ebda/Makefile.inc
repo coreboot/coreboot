@@ -1,3 +1,0 @@
-romstage-$(CONFIG_SOC_INTEL_COMMON_BLOCK_EBDA) += ebda.c
-ramstage-$(CONFIG_SOC_INTEL_COMMON_BLOCK_EBDA) += ebda.c
-postcar-$(CONFIG_SOC_INTEL_COMMON_BLOCK_EBDA) += ebda.c

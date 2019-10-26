@@ -509,6 +509,12 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 		params->PchIoApicFunctionNumber = V_P2SB_IBDF_FUN;
 	}
 
+	dev = pcidev_path_on_root(SA_DEVFN_IGD);
+	if (CONFIG(RUN_FSP_GOP) && dev && dev->enabled)
+		params->PeiGraphicsPeimInit = 1;
+	else
+		params->PeiGraphicsPeimInit = 0;
+
 	soc_irq_settings(params);
 }
 

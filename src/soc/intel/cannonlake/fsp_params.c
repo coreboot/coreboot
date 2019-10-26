@@ -460,6 +460,12 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 		params->SpiFlashCfgLockDown = 1;
 #endif
 	}
+
+	dev = pcidev_path_on_root(SA_DEVFN_IGD);
+	if (CONFIG(RUN_FSP_GOP) && dev && dev->enabled)
+		params->PeiGraphicsPeimInit = 1;
+	else
+		params->PeiGraphicsPeimInit = 0;
 }
 
 /* Mainboard GPIO Configuration */

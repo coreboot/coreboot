@@ -751,6 +751,12 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *silupd)
 	/* Set VTD feature according to devicetree */
 	silconfig->VtdEnable = cfg->enable_vtd;
 
+	dev = pcidev_path_on_root(SA_DEVFN_IGD);
+	if (CONFIG(RUN_FSP_GOP) && dev && dev->enabled)
+		silconfig->PeiGraphicsPeimInit = 1;
+	else
+		silconfig->PeiGraphicsPeimInit = 0;
+
 	mainboard_silicon_init_params(silconfig);
 }
 

@@ -36,6 +36,11 @@ config HAVE_FSP_GOP
 	  Selected by drivers that support to run a blob that implements
 	  the Graphics Output Protocol (GOP).
 
+config MAINBOARD_NO_FSP_GOP
+	bool
+	help
+	  Selected by mainboards that do not have any graphics ports connected to the SoC.
+
 config MAINBOARD_HAS_NATIVE_VGA_INIT
 	def_bool n
 	help
@@ -94,7 +99,7 @@ config VGA_ROM_RUN
 
 config RUN_FSP_GOP
 	bool "Run a GOP driver"
-	depends on HAVE_FSP_GOP
+	depends on HAVE_FSP_GOP && !MAINBOARD_NO_FSP_GOP
 	select HAVE_LINEAR_FRAMEBUFFER
 	help
 	  Some platforms (e.g. Intel Braswell and Skylake/Kaby Lake) support

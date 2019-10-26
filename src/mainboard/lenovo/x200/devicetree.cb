@@ -108,7 +108,7 @@ chip northbridge/intel/gm45
 			device pci 1c.2 on
 				subsystemid 0x17aa 0x20f3 # UWB
 			end # PCIe Port #3
-			# PCIe Port #4 is configured in override tree.
+			device pci 1c.3 off end # PCIe Port #4
 			device pci 1c.4 off end # PCIe Port #5
 			device pci 1c.5 off end # PCIe Port #6
 			device pci 1d.0 on # UHCI

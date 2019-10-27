@@ -19,3 +19,15 @@ config DRIVERS_PS2_KEYBOARD
 	  Otherwise say Y.
 
 endif
+
+config PS2K_EISAID
+	string
+	default "PNP0303"
+	help
+	  Mainboards can override the default to match vendor drivers and quirks.
+
+config PS2M_EISAID
+	string
+	default "PNP0F13"
+	help
+	  Mainboards can override the default to match vendor drivers and quirks.

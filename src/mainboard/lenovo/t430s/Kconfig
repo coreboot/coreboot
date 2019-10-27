@@ -84,4 +84,10 @@ config ONBOARD_VGA_IS_PRIMARY
 	bool
 	default y
 
+config PS2K_EISAID
+	default "PNP0303"
+
+config PS2M_EISAID
+	default "LEN0015"
+
 endif # BOARD_LENOVO_T430S || BOARD_LENOVO_T431S

@@ -79,4 +79,10 @@ config CBFS_SIZE
 	hex
 	default 0x200000
 
+config PS2K_EISAID
+	default "LEN0010"
+
+config PS2M_EISAID
+	default "IBM3780"
+
 endif # BOARD_LENOVO_T400

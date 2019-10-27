@@ -63,4 +63,10 @@ config DRAM_RESET_GATE_GPIO
 	int
 	default 10
 
+config PS2K_EISAID
+	default "PNP0303"
+
+config PS2M_EISAID
+	default "LEN0015"
+
 endif

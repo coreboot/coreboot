@@ -52,4 +52,10 @@ config VGA_BIOS_ID
 	string
 	default "8086,0166"
 
+config PS2K_EISAID
+	default "PTL0001"
+
+config PS2M_EISAID
+	default "LEN0031"
+
 endif # BOARD_LENOVO_S230U

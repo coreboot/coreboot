@@ -68,4 +68,10 @@ config ME_CLEANER_ARGS
 	string
 	default "-S -w EFFS"
 
+config PS2K_EISAID
+	default "PNP0303"
+
+config PS2M_EISAID
+	default "LEN0018"
+
 endif

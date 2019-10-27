@@ -46,4 +46,10 @@ config USBDEBUG_HCD_INDEX
 	int
 	default 2
 
+config PS2K_EISAID
+	default "PNP0303"
+
+config PS2M_EISAID
+	default "LEN0017"
+
 endif

@@ -72,4 +72,10 @@ config CBFS_SIZE
 	hex
 	default 0x200000
 
+config PS2K_EISAID
+	default "LEN0010" if BOARD_LENOVO_X200
+
+config PS2M_EISAID
+	default "IBM3780" if BOARD_LENOVO_X200
+
 endif # BOARD_LENOVO_X200 || BOARD_LENOVO_X301

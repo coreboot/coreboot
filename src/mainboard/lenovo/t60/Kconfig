@@ -46,4 +46,12 @@ config MAX_CPUS
 	int
 	default 2
 
+config PS2K_EISAID
+	default "PNP0303" if BOARD_LENOVO_T60
+	default "PNP0303" if BOARD_LENOVO_R60
+
+config PS2M_EISAID
+	default "IBM0057" if BOARD_LENOVO_T60
+	default "IBM0057" if BOARD_LENOVO_R60
+
 endif # BOARD_LENOVO_T60 || BOARD_LENOVO_Z61T || BOARD_LENOVO_R60

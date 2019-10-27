@@ -73,4 +73,10 @@ config VGA_BIOS_ID
 	string
 	default "8086,0166"
 
+config PS2K_EISAID
+	default "LEN0071"
+
+config PS2M_EISAID
+	default "LEN0030"
+
 endif # BOARD_LENOVO_X1_CARBON_GEN1

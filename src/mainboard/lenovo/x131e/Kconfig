@@ -56,4 +56,10 @@ config USBDEBUG_HCD_INDEX
 	int
 	default 2
 
+config PS2K_EISAID
+	default "MSF0001"
+
+config PS2M_EISAID
+	default "LEN0026"
+
 endif # BOARD_LENOVO_X131E

@@ -87,4 +87,10 @@ config VGA_BIOS_ID
 	default "8086,0116" if BOARD_LENOVO_X220I
 	default "8086,0126"
 
+config PS2K_EISAID
+	default "PNP0303"
+
+config PS2M_EISAID
+	default "LEN0020"
+
 endif # BOARD_LENOVO_X220 || BOARD_LENOVO_X220I || BOARD_LENOVO_X1

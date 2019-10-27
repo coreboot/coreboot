@@ -12,7 +12,6 @@
  */
 
 #include <arch/early_variables.h>
-#include <cpu/cpu.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/tsc.h>
 #include <cpu/intel/speedstep.h>

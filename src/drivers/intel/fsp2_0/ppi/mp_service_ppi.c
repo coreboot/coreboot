@@ -12,7 +12,6 @@
  */
 
 #include <console/console.h>
-#include <cpu/cpu.h>
 #include <cpu/x86/mp.h>
 #include <cpu/x86/lapic.h>
 #include <cpu/intel/microcode.h>

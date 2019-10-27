@@ -25,7 +25,6 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <stdlib.h>
-#include <cpu/cpu.h>
 #include "chip.h"
 #include "sandybridge.h"
 #include <cpu/intel/smm_reloc.h>

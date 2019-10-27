@@ -14,7 +14,7 @@
 #ifndef __UPDATE_UCODE_H
 #define __UPDATE_UCODE_H
 
-#include <cpu/cpu.h>
+#include <stdint.h>
 
 #define MSR_UCODE_UPDATE_STATUS         0x00001205
 

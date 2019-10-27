@@ -18,7 +18,6 @@
 
 #include <boot/tables.h>
 #include <console/console.h>
-#include <cpu/cpu.h>
 #include <delay.h>
 #include <device/device.h>
 #include <soc/addressmap.h>

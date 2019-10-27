@@ -12,7 +12,6 @@
  */
 
 #include <console/console.h>
-#include <cpu/cpu.h>
 #include <device/pci_ops.h>
 #include <device/pci_def.h>
 #include <northbridge/intel/nehalem/nehalem.h>

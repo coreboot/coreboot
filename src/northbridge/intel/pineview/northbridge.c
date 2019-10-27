@@ -21,7 +21,6 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <stdlib.h>
-#include <cpu/cpu.h>
 #include <boot/tables.h>
 #include <arch/acpi.h>
 #include <northbridge/intel/pineview/pineview.h>

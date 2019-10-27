@@ -14,7 +14,6 @@
  */
 
 #include <arch/cpu.h>
-#include <cpu/cpu.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/tsc.h>
 #include <intelblocks/msr.h>

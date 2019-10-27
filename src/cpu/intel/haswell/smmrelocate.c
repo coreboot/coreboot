@@ -27,6 +27,7 @@
 #include <console/console.h>
 #include <northbridge/intel/haswell/haswell.h>
 #include <southbridge/intel/lynxpoint/pch.h>
+#include <smp/node.h>
 #include "haswell.h"
 
 #define MSR_PRMRR_PHYS_BASE 0x1f4

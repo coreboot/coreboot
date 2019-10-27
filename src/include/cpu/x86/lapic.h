@@ -4,7 +4,6 @@
 #include <cpu/x86/lapic_def.h>
 #include <cpu/x86/msr.h>
 #include <halt.h>
-#include <smp/node.h>
 
 static __always_inline unsigned long lapic_read(unsigned long reg)
 {

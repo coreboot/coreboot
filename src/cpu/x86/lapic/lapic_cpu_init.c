@@ -28,6 +28,7 @@
 #include <smp/spinlock.h>
 #include <cpu/cpu.h>
 #include <cpu/intel/speedstep.h>
+#include <smp/node.h>
 #include <stdlib.h>
 #include <thread.h>
 

@@ -30,6 +30,7 @@
 #include "chip.h"
 #include <cpu/intel/smm_reloc.h>
 #include <cpu/intel/common/common.h>
+#include <smp/node.h>
 
 /*
  * List of supported C-states in this processor

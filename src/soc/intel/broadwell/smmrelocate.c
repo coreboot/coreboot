@@ -27,6 +27,7 @@
 #include <cpu/intel/em64t101_save_state.h>
 #include <cpu/intel/smm_reloc.h>
 #include <console/console.h>
+#include <smp/node.h>
 #include <soc/cpu.h>
 #include <soc/msr.h>
 #include <soc/pci_devs.h>

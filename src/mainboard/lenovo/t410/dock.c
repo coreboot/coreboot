@@ -22,7 +22,7 @@
 #include <ec/lenovo/h8/h8.h>
 #include <ec/acpi/ec.h>
 
-void h8_mainboard_init_dock(void)
+void init_dock(void)
 {
 	if (dock_present()) {
 		printk(BIOS_DEBUG, "dock is connected\n");

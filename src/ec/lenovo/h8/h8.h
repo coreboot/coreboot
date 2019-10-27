@@ -36,8 +36,6 @@ int h8_ultrabay_device_present(void);
 u8 h8_build_id_and_function_spec_version(char *buf, u8 buf_len);
 void h8_usb_always_on(void);
 
-void h8_mainboard_init_dock (void);
-
 int h8_get_fn_key(void);
 int h8_get_sense_ready(void);
 

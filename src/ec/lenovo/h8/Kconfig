@@ -44,7 +44,4 @@ config H8_HAS_PRIMARY_FN_KEYS
 	bool
 	default n
 
-endif
-
-config H8_DOCK_EARLY_INIT
-	bool
+endif # EC_LENOVO_H8

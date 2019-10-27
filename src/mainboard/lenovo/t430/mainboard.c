@@ -17,10 +17,6 @@
 #include <drivers/intel/gma/int15.h>
 #include <ec/lenovo/h8/h8.h>
 
-void h8_mainboard_init_dock (void)
-{
-}
-
 static void mainboard_enable(struct device *dev)
 {
 	install_intel_vga_int15_handler(GMA_INT15_ACTIVE_LFP_INT_LVDS,

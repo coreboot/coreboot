@@ -13,7 +13,7 @@
 ## GNU General Public License for more details.
 ##
 
-ramstage-y += variants/$(VARIANT_DIR)/dock.c
+ramstage-$(CONFIG_BOARD_LENOVO_X200) += variants/$(VARIANT_DIR)/dock.c
 ramstage-y += cstates.c
 ramstage-y += blc.c
 romstage-y += variants/$(VARIANT_DIR)/gpio.c

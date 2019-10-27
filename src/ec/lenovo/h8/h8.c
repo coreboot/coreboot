@@ -353,10 +353,6 @@ static void h8_enable(struct device *dev)
 	h8_charge_priority(val);
 
 	h8_set_audio_mute(0);
-
-#if !CONFIG(H8_DOCK_EARLY_INIT)
-	h8_mainboard_init_dock();
-#endif
 }
 
 struct chip_operations ec_lenovo_h8_ops = {

@@ -16,6 +16,7 @@
 #include <device/device.h>
 #include <drivers/intel/gma/int15.h>
 #include <drivers/lenovo/lenovo.h>
+#include "dock.h"
 
 static void fill_ssdt(struct device *device)
 {
@@ -29,6 +30,8 @@ static void mainboard_enable(struct device *dev)
 					GMA_INT15_BOOT_DISPLAY_DEFAULT, 2);
 
 	dev->ops->acpi_fill_ssdt_generator = fill_ssdt;
+	if (CONFIG(BOARD_LENOVO_X200))
+		init_dock();
 }
 
 struct chip_operations mainboard_ops = {

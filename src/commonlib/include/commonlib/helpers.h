@@ -137,4 +137,8 @@
 #define __unused __attribute__((unused))
 #endif
 
+#ifndef alloca
+#define alloca(x) __builtin_alloca(x)
+#endif
+
 #endif /* COMMONLIB_HELPERS_H */

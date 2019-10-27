@@ -415,10 +415,10 @@ chip soc/intel/skylake
 				device pnp 2e.14  off end # SVID, Port 80 UART
 				device pnp 2e.16  off end # DS5
 				device pnp 2e.116 off end # DS3
-				device pnp 2e.316 off end # PCHDSW
+				device pnp 2e.316 on  end # PCHDSW
 				device pnp 2e.416 off end # DSWWOPT
-				device pnp 2e.516 off end # DS3OPT
-				device pnp 2e.616 off end # DSDSS
+				device pnp 2e.516 on  end # DS3OPT
+				device pnp 2e.616 on  end # DSDSS
 				device pnp 2e.716 off end # DSPU
 			end     # superio/nuvoton/nct6791d
 			chip drivers/pc80/tpm

@@ -280,10 +280,3 @@ void fsp_display_upd_value(const char *name, uint32_t size, uint64_t old,
 		}
 	}
 }
-
-__attribute__((cdecl)) size_t fsp_write_line(uint8_t *buffer,
-	size_t number_of_bytes)
-{
-	console_write_line(buffer, number_of_bytes);
-	return number_of_bytes;
-}

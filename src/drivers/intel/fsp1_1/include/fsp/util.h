@@ -96,15 +96,6 @@ void *get_first_hob(uint16_t type);
 void *get_next_guid_hob(const EFI_GUID *guid, const void *hob_start);
 void *get_first_guid_hob(const EFI_GUID *guid);
 
-/*
- * Writes number_of_bytes data bytes from buffer to the console.
- * The number of bytes actually written to the console is returned.
- *
- * If number_of_bytes is zero, don't output any data but instead wait until
- * the console has output all data, then return 0.
- */
-__attribute__((cdecl)) size_t fsp_write_line(uint8_t *buffer,
-	size_t number_of_bytes);
 
 asmlinkage void chipset_teardown_car_main(void);
 

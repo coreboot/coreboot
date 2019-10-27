@@ -32,7 +32,7 @@ void *cbmem_top_chipset(void)
 	 * (e.g. vboot_locator for loading ipq blobs before DRAM is
 	 * initialized).
 	 */
-	if (ENV_ROMSTAGE && (cbmem_backing_store_ready == 0))
+	if (cbmem_backing_store_ready == 0)
 		return NULL;
 
 	return _memlayout_cbmem_top;

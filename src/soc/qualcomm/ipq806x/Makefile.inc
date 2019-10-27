@@ -42,7 +42,6 @@ romstage-y += gsbi.c
 romstage-y += qup.c
 
 ramstage-y += blobs_init.c
-ramstage-y += cbmem.c
 ramstage-y += clock.c
 ramstage-y += gpio.c
 ramstage-y += lcc.c

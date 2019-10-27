@@ -236,15 +236,6 @@ void *cbmem_top(void)
 {
 	struct ebda_config ebda_cfg;
 
-	/*
-	 * Check if Tseg has been initialized, we will use this as a flag
-	 * to check if the MRC is done, and only then continue to read the
-	 * PRMMR_BASE MSR. The system hangs if PRMRR_BASE MSR is read before
-	 * PRMRR_MASK MSR lock bit is set.
-	 */
-	if (sa_get_tseg_base() == 0)
-		return NULL;
-
 	retrieve_ebda_object(&ebda_cfg);
 
 	return (void *)(uintptr_t)ebda_cfg.tolum_base;

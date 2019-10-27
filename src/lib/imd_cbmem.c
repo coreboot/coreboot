@@ -130,18 +130,12 @@ void cbmem_initialize_empty(void)
 	cbmem_initialize_empty_id_size(0, 0);
 }
 
-void __weak cbmem_top_init(void)
-{
-}
-
 static void cbmem_top_init_once(void)
 {
 	/* Call one-time hook on expected cbmem init during boot. This sequence
 	   assumes first init call is in romstage. */
 	if (!ENV_ROMSTAGE)
 		return;
-
-	cbmem_top_init();
 
 	/* The test is only effective on X86 and when address hits UC memory. */
 	if (ENV_X86)

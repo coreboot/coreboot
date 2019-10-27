@@ -63,11 +63,6 @@ int cbmem_initialize_id_size(u32 id, u64 size);
 void cbmem_initialize_empty(void);
 void cbmem_initialize_empty_id_size(u32 id, u64 size);
 
-/* Optional hook for platforms to initialize cbmem_top() value. When employed
- * it's called a single time during boot at cbmem initialization/recovery
- * time. */
-void cbmem_top_init(void);
-
 /* Return the top address for dynamic cbmem. The address returned needs to
  * be consistent across romstage and ramstage, and it is required to be
  * below 4GiB for 32bit coreboot builds. On 64bit coreboot builds there's no

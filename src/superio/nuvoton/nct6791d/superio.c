@@ -22,9 +22,9 @@
 #include <device/pnp.h>
 #include <pc80/keyboard.h>
 #include <superio/conf_mode.h>
-
+#include <superio/common/ssdt.h>
+#include <arch/acpi.h>
 #include "nct6791d.h"
-
 
 static void nct6791d_init(struct device *dev)
 {
@@ -38,6 +38,27 @@ static void nct6791d_init(struct device *dev)
 	}
 }
 
+#if CONFIG(HAVE_ACPI_TABLES)
+/* Provide ACPI HIDs for generic Super I/O SSDT */
+static const char *nct6791d_acpi_hid(const struct device *dev)
+{
+	if ((dev->path.type != DEVICE_PATH_PNP) ||
+		(dev->path.pnp.port == 0) ||
+		((dev->path.pnp.device & 0xff) > NCT6791D_DS))
+		return NULL;
+
+	switch (dev->path.pnp.device & 0xff) {
+	case NCT6791D_SP1: /* falltrough */
+	case NCT6791D_SP2:
+		return ACPI_HID_COM;
+	case NCT6791D_KBC:
+		return ACPI_HID_KEYBOARD;
+	default:
+		return ACPI_HID_PNP;
+	}
+}
+#endif
+
 static struct device_operations ops = {
 	.read_resources   = pnp_read_resources,
 	.set_resources    = pnp_set_resources,
@@ -45,6 +66,11 @@ static struct device_operations ops = {
 	.enable           = pnp_alt_enable,
 	.init             = nct6791d_init,
 	.ops_pnp_mode     = &pnp_conf_mode_8787_aa,
+#if CONFIG(HAVE_ACPI_TABLES)
+	.acpi_fill_ssdt_generator = superio_common_fill_ssdt_generator,
+	.acpi_name = superio_common_ldn_acpi_name,
+	.acpi_hid = nct6791d_acpi_hid,
+#endif
 };
 
 static struct pnp_info pnp_dev_info[] = {

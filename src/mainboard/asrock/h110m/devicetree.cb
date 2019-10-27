@@ -326,101 +326,108 @@ chip soc/intel/skylake
 		device pci 1e.6 off end # SDCard
 		device pci 1f.0 on # LPC bridge
 			subsystemid 0x1849 0x1a43
-			chip superio/nuvoton/nct6791d
-				device pnp 2e.0   off end # Floppy
-				device pnp 2e.1   on
-					# Global Control Registers
-					# Device IRQ Polarity
-					irq 0x13 = 0x00
-					irq 0x14 = 0x00
-					# Global Option
-					irq 0x24 = 0xfb
-					irq 0x27 = 0x10
-					# Multi Function
-					irq 0x1a = 0xb0
-					irq 0x1b = 0xe6
-					irq 0x2a = 0x04
-					irq 0x2c = 0x40
-					irq 0x2d = 0x03
 
-					# Parallel Port
-					io  0x60 = 0x0378
-					irq 0x70 = 7
-					drq 0x74 = 4      # No DMA
-					irq 0xf0 = 0x3c   # Printer mode
-				end
-				device pnp 2e.2   on      # UART A
-					io  0x60 = 0x03f8
-					irq 0x70 = 4
-				end
-				device pnp 2e.3   on      # IR
-					io  0x60 = 0x02f8
-					irq 0x70 = 3
-				end
-				device pnp 2e.5   on      # PS/2 KBC
-					io  0x60 = 0x0060
-					io  0x62 = 0x0064
-					irq 0x70 = 1      # Keyboard
-					irq 0x72 = 12     # Mouse
-				end
-				device pnp 2e.6   off end # CIR
-				device pnp 2e.7   on      # GPIO6
-					irq 0xf6 = 0xff
-					irq 0xf7 = 0xff
-					irq 0xf8 = 0xff
-				end
-				device pnp 2e.107 on      # GPIO7
-					irq 0xe0 = 0x7f
-					irq 0xe1 = 0x0d
-				end
-				device pnp 2e.207 on      # GPIO8
-					irq 0xe6 = 0xff
-					irq 0xe7 = 0xff
-					irq 0xed = 0xff
-				end
-				device pnp 2e.8   off end # WDT
-				device pnp 2e.108 on  end # GPIO0
-				device pnp 2e.308 off end # GPIO base
-				device pnp 2e.408 off end # WDTMEM
-				device pnp 2e.708 on  end # GPIO1
-				device pnp 2e.9   on  end # GPIO2
-				device pnp 2e.109 on      # GPIO3
-					irq 0xe4 = 0x7b
-					irq 0xe5 = 0x02
-					irq 0xea = 0x04
-				end
-				device pnp 2e.209 on      # GPIO4
-					irq 0xf0 = 0x7f
-					irq 0xf1 = 0x80
-				end
-				device pnp 2e.309 on      # GPIO5
-					irq 0xf4 = 0xdf
-					irq 0xf5 = 0xd5
-				end
-				device pnp 2e.a   on
-					# Power RAM in S3 and let the PCH
-					# handle power failure actions
-					irq 0xe4 = 0x70
-					# Set HWM reset source to LRESET#
-					irq 0xe7 = 0x01
-				end # ACPI
-				device pnp 2e.b   on      # HWM, LED
-					io  0x60 = 0x0290
-					io  0x62 = 0
-					irq 0x70 = 0
-				end
-				device pnp 2e.d   off end # BCLK, WDT2, WDT_MEM
-				device pnp 2e.e   off end # CIR wake-up
-				device pnp 2e.f   off end # GPIO PP/OD
-				device pnp 2e.14  off end # SVID, Port 80 UART
-				device pnp 2e.16  off end # DS5
-				device pnp 2e.116 off end # DS3
-				device pnp 2e.316 on  end # PCHDSW
-				device pnp 2e.416 off end # DSWWOPT
-				device pnp 2e.516 on  end # DS3OPT
-				device pnp 2e.616 on  end # DSDSS
-				device pnp 2e.716 off end # DSPU
-			end     # superio/nuvoton/nct6791d
+			chip superio/common
+				device pnp 2e.0 on # passes SIO base addr to SSDT gen
+
+					chip superio/nuvoton/nct6791d
+						device pnp 2e.1   on
+							# Global Control Registers
+							# Device IRQ Polarity
+							irq 0x13 = 0x00
+							irq 0x14 = 0x00
+							# Global Option
+							irq 0x24 = 0xfb
+							irq 0x27 = 0x10
+							# Multi Function
+							irq 0x1a = 0xb0
+							irq 0x1b = 0xe6
+							irq 0x2a = 0x04
+							irq 0x2c = 0x40
+							irq 0x2d = 0x03
+
+							# Parallel Port
+							io  0x60 = 0x0378
+							irq 0x70 = 7
+							drq 0x74 = 4      # No DMA
+							irq 0xf0 = 0x3c   # Printer mode
+						end
+						device pnp 2e.2   on      # UART A
+							io  0x60 = 0x03f8
+							irq 0x70 = 4
+						end
+						device pnp 2e.3   on      # IR
+							io  0x60 = 0x02f8
+							irq 0x70 = 3
+						end
+						device pnp 2e.5   on      # PS/2 KBC
+							io  0x60 = 0x0060
+							io  0x62 = 0x0064
+							irq 0x70 = 1      # Keyboard
+							irq 0x72 = 12     # Mouse
+						end
+						device pnp 2e.6   off end # CIR
+						device pnp 2e.7   on      # GPIO6
+							irq 0xf6 = 0xff
+							irq 0xf7 = 0xff
+							irq 0xf8 = 0xff
+						end
+						device pnp 2e.107 on      # GPIO7
+							irq 0xe0 = 0x7f
+							irq 0xe1 = 0x0d
+						end
+						device pnp 2e.207 on      # GPIO8
+							irq 0xe6 = 0xff
+							irq 0xe7 = 0xff
+							irq 0xed = 0xff
+						end
+						device pnp 2e.8   off end # WDT
+						device pnp 2e.108 on  end # GPIO0
+						device pnp 2e.308 off end # GPIO base
+						device pnp 2e.408 off end # WDTMEM
+						device pnp 2e.708 on  end # GPIO1
+						device pnp 2e.9   on  end # GPIO2
+						device pnp 2e.109 on      # GPIO3
+							irq 0xe4 = 0x7b
+							irq 0xe5 = 0x02
+							irq 0xea = 0x04
+						end
+						device pnp 2e.209 on      # GPIO4
+							irq 0xf0 = 0x7f
+							irq 0xf1 = 0x80
+						end
+						device pnp 2e.309 on      # GPIO5
+							irq 0xf4 = 0xdf
+							irq 0xf5 = 0xd5
+						end
+						device pnp 2e.a   on
+							# Power RAM in S3 and let the PCH
+							# handle power failure actions
+							irq 0xe4 = 0x70
+							# Set HWM reset source to LRESET#
+							irq 0xe7 = 0x01
+						end # ACPI
+						device pnp 2e.b   on      # HWM, LED
+							io  0x60 = 0x0290
+							io  0x62 = 0
+							irq 0x70 = 0
+						end
+						device pnp 2e.d   off end # BCLK, WDT2, WDT_MEM
+						device pnp 2e.e   off end # CIR wake-up
+						device pnp 2e.f   off end # GPIO PP/OD
+						device pnp 2e.14  off end # SVID, Port 80 UART
+						device pnp 2e.16  off end # DS5
+						device pnp 2e.116 off end # DS3
+						device pnp 2e.316 on  end # PCHDSW
+						device pnp 2e.416 off end # DSWWOPT
+						device pnp 2e.516 on  end # DS3OPT
+						device pnp 2e.616 on  end # DSDSS
+						device pnp 2e.716 off end # DSPU
+					end # chip superio/nuvoton/nct6791d
+
+				end # device pnp 2e.0
+			end # chip superio/common
+
 			chip drivers/pc80/tpm
 				device pnp 4e.0 on end  # TPM module
 			end

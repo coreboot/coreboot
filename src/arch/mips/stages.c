@@ -11,10 +11,13 @@
  * GNU General Public License for more details.
  */
 
+#include <cbmem.h>
 #include <arch/stages.h>
 #include <arch/cache.h>
 
-void stage_entry(void)
+void stage_entry(uintptr_t stage_arg)
 {
+	if (!ENV_ROMSTAGE_OR_BEFORE)
+		_cbmem_top_ptr = stage_arg;
 	main();
 }

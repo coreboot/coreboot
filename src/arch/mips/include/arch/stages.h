@@ -14,8 +14,9 @@
 #ifndef __MIPS_ARCH_STAGES_H
 #define __MIPS_ARCH_STAGES_H
 
+#include <stdint.h>
 #include <main_decl.h>
 
-void stage_entry(void);
+void stage_entry(uintptr_t stage_arg);
 
 #endif /* __MIPS_ARCH_STAGES_H */

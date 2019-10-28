@@ -11,6 +11,13 @@ notes.
 * The chip and board additions and removals will be updated right
   before the release, so those do not need to be added.
 
+Clean Up
+--------
+Because there was only a single developer board (AMD Torpedo)
+using AGESA family 12h, and because there were multiple,
+unique Coverity issues with it, the associated vendorcode will
+be removed shortly after this release.
+
 Significant changes
 -------------------
 

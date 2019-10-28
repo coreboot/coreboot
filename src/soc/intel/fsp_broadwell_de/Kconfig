@@ -63,9 +63,9 @@ config VGA_BIOS
 	bool
 	default n
 
-config SMM_TSEG_SIZE
+config IED_REGION_SIZE
 	hex
-	default 0x800000
+	default 0x400000
 
 config SMM_RESERVED_SIZE
 	hex

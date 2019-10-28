@@ -1,0 +1,5 @@
+config DRIVERS_I2C_PTN3460
+	bool
+	default n
+	help
+	  Enable support for external display bridge (eDP to LVDS) PTN3460.

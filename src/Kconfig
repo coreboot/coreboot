@@ -235,6 +235,20 @@ config USE_BLOBS
 	  might be required for some chipsets or boards.
 	  This flag ensures that a "Free" option remains available for users.
 
+config USE_AMD_BLOBS
+	bool "Allow AMD blobs repository (with license agreement)"
+	depends on USE_BLOBS
+	help
+	  This draws in the amd_blobs repository, which contains binary files
+	  distributed by AMD, including VBIOS, PSP bootloaders, SMU firmwares,
+	  etc.  Selecting this item to download or clone the repo implies your
+	  agreement to the AMD license agreement.  A copy of the license text
+	  may be reviewed by reading Documentation/soc/amd/amdblobs_license.md,
+	  and your copy of the license is present in the repo once downloaded.
+
+	  Note that for some products, omitting PSP, SMU images, or other items
+	  may result in a nonbooting coreboot.rom.
+
 config COVERAGE
 	bool "Code coverage support"
 	depends on COMPILER_GCC

@@ -531,7 +531,7 @@ int mt_set_emi(const struct dramc_param *dparam)
 	bool first_run = true;
 	set_vdram1_vddq_voltage();
 
-	if (CONFIG(MT8183_DRAM_DVFS)) {
+	if (dparam->header.config & DRAMC_CONFIG_DVFS) {
 		if (run_calib(dparam, &shared, DRAM_DFS_SHUFFLE_3,
 			      &first_run) != 0)
 			return -1;

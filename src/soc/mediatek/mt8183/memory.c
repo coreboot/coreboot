@@ -166,6 +166,10 @@ void mt_mem_init(struct dramc_param_ops *dparam_ops)
 
 	const bool recovery_mode = vboot_recovery_mode_enabled();
 
+	/* DRAM DVFS is disabled in recovery mode */
+	if (CONFIG(MT8183_DRAM_DVFS) && !recovery_mode)
+		config |= DRAMC_CONFIG_DVFS;
+
 	/* Load calibration params from flash and run fast calibration */
 	if (recovery_mode) {
 		printk(BIOS_WARNING, "Skip loading cached calibration data\n");

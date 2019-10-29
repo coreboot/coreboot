@@ -15,17 +15,20 @@ menu "Devices"
 
 config HAVE_VGA_TEXT_FRAMEBUFFER
 	bool
+	depends on !NO_GFX_INIT
 	help
 	  Selected by graphics drivers that support legacy VGA text mode.
 
 config HAVE_VBE_LINEAR_FRAMEBUFFER
 	bool
+	depends on !NO_GFX_INIT
 	help
 	  Selected by graphics drivers that can set up a VBE linear-framebuffer
 	  mode.
 
 config HAVE_LINEAR_FRAMEBUFFER
 	bool
+	depends on !NO_GFX_INIT
 	help
 	  Selected by graphics drivers that can set up a generic linear
 	  framebuffer.

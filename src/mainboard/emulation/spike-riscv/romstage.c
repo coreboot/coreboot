@@ -13,12 +13,15 @@
  * GNU General Public License for more details.
  */
 
+#include <cbmem.h>
 #include <console/console.h>
 #include <program_loading.h>
 
 void main(void)
 {
 	console_init();
+
+	cbmem_initialize_empty();
 
 	//query_mem(configstring(), &base, &size);
 	//printk(BIOS_SPEW, "0x%zx bytes of memory at 0x%llx\n", size, base);

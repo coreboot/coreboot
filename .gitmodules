@@ -37,3 +37,8 @@
 [submodule "3rdparty/ffs"]
 	path = 3rdparty/ffs
 	url = ../ffs.git
+[submodule "3rdparty/amd_blobs"]
+	path = 3rdparty/amd_blobs
+	url = ../amd_blobs
+	update = none
+	ignore = dirty

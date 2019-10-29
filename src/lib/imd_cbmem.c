@@ -51,16 +51,14 @@ uintptr_t _cbmem_top_ptr;
 
 void *cbmem_top(void)
 {
-	if (ENV_ROMSTAGE
-	    || ((ENV_POSTCAR || ENV_RAMSTAGE)
-		&& !CONFIG(RAMSTAGE_CBMEM_TOP_ARG))) {
+	if (ENV_ROMSTAGE) {
 		MAYBE_STATIC_BSS void *top = NULL;
 		if (top)
 			return top;
 		top = cbmem_top_chipset();
 		return top;
 	}
-	if ((ENV_POSTCAR || ENV_RAMSTAGE) && CONFIG(RAMSTAGE_CBMEM_TOP_ARG))
+	if (ENV_POSTCAR || ENV_RAMSTAGE)
 		return (void *)_cbmem_top_ptr;
 
 	dead_code();

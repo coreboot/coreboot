@@ -17,7 +17,6 @@ config ARCH_ROMSTAGE_ARM64
 config ARCH_RAMSTAGE_ARM64
 	bool
 	select ARCH_ARM64
-	select RAMSTAGE_CBMEM_TOP_ARG
 
 source src/arch/arm64/armv8/Kconfig
 

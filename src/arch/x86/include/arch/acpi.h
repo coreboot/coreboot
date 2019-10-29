@@ -161,7 +161,7 @@ typedef struct acpi_xsdt {
 typedef struct acpi_hpet {
 	acpi_header_t header;
 	u32 id;
-	struct acpi_gen_regaddr addr;
+	acpi_addr_t addr;
 	u8 number;
 	u16 min_tick;
 	u8 attributes;
@@ -527,7 +527,7 @@ typedef struct acpi_fadt {
 	u16 iapc_boot_arch;
 	u8 res2;
 	u32 flags;
-	struct acpi_gen_regaddr reset_reg;
+	acpi_addr_t reset_reg;
 	u8 reset_value;
 	u16 ARM_boot_arch;
 	u8 FADT_MinorVersion;
@@ -535,14 +535,14 @@ typedef struct acpi_fadt {
 	u32 x_firmware_ctl_h;
 	u32 x_dsdt_l;
 	u32 x_dsdt_h;
-	struct acpi_gen_regaddr x_pm1a_evt_blk;
-	struct acpi_gen_regaddr x_pm1b_evt_blk;
-	struct acpi_gen_regaddr x_pm1a_cnt_blk;
-	struct acpi_gen_regaddr x_pm1b_cnt_blk;
-	struct acpi_gen_regaddr x_pm2_cnt_blk;
-	struct acpi_gen_regaddr x_pm_tmr_blk;
-	struct acpi_gen_regaddr x_gpe0_blk;
-	struct acpi_gen_regaddr x_gpe1_blk;
+	acpi_addr_t x_pm1a_evt_blk;
+	acpi_addr_t x_pm1b_evt_blk;
+	acpi_addr_t x_pm1a_cnt_blk;
+	acpi_addr_t x_pm1b_cnt_blk;
+	acpi_addr_t x_pm2_cnt_blk;
+	acpi_addr_t x_pm_tmr_blk;
+	acpi_addr_t x_gpe0_blk;
+	acpi_addr_t x_gpe1_blk;
 } __packed acpi_fadt_t;
 
 /* FADT TABLE Revision values */
@@ -634,8 +634,8 @@ typedef struct acpi_facs {
 /* ECDT (Embedded Controller Boot Resources Table) */
 typedef struct acpi_ecdt {
 	acpi_header_t header;
-	struct acpi_gen_regaddr ec_control;	/* EC control register */
-	struct acpi_gen_regaddr ec_data;	/* EC data register */
+	acpi_addr_t ec_control;	/* EC control register */
+	acpi_addr_t ec_data;	/* EC data register */
 	u32 uid;				/* UID */
 	u8 gpe_bit;				/* GPE bit */
 	u8 ec_id[];				/* EC ID  */

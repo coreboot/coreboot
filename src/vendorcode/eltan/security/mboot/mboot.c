@@ -335,11 +335,11 @@ int mb_measure_log_worker(EFI_TCG2_EVENT_ALGORITHM_BITMAP activePcr,
  *
  *mb_entry
  *
- * initializes measured boot mechanism, initializes the
- * tpm library and starts the tpm called by mb_measure
+ * initializes measured boot mechanism, initializes the tpm library and starts the tpm called
+ * by mb_measure
  *
- * The function can be overridden at the mainboard level my simply creating a
- * function with the same name there.
+ * The function can be overridden at the mainboard level my simply creating a function with the
+ * same name there.
  *
  * @param[in] wake_from_s3	1 if we are waking from S3, 0 standard boot
  *
@@ -354,8 +354,7 @@ int __attribute__((weak)) mb_entry(int wake_from_s3)
 	/* Initialize TPM driver. */
 	printk(BIOS_DEBUG, "%s: tlcl_lib_init\n", __func__);
 	if (tlcl_lib_init() != VB2_SUCCESS) {
-		printk(BIOS_ERR, "%s: TPM driver initialization failed.\n",
-			__func__);
+		printk(BIOS_ERR, "%s: TPM driver initialization failed.\n", __func__);
 		return TPM_E_IOERROR;
 	}
 
@@ -368,8 +367,7 @@ int __attribute__((weak)) mb_entry(int wake_from_s3)
 	}
 
 	if (status)
-		printk(BIOS_ERR, "%s: StartUp failed 0x%x!\n", __func__,
-			status);
+		printk(BIOS_ERR, "%s: StartUp failed 0x%x!\n", __func__, status);
 
 	return status;
 }
@@ -402,18 +400,16 @@ int __attribute__((weak))mb_measure(int wake_from_s3)
 		printk(BIOS_DEBUG, "%s: StartUp, successful!\n", __func__);
 		status = mb_measure_log_start();
 		if (status == TPM_SUCCESS) {
-			printk(BIOS_DEBUG, "%s: Measuring, successful!\n",
-			__func__);
+			printk(BIOS_DEBUG, "%s: Measuring, successful!\n", __func__);
 		} else {
 			invalidate_pcrs();
-			printk(BIOS_ERR, "%s: Measuring returned 0x%x "
-				"unsuccessful! PCRs invalidated.\n",
-				__func__, status);
+			printk(BIOS_ERR, "%s: Measuring returned 0x%x unsuccessful! PCRs invalidated.\n",
+			       __func__, status);
 		}
 	} else {
 		invalidate_pcrs();
-		printk(BIOS_ERR, "%s: StartUp returned 0x%x, unsuccessful!"
-			"PCRs invalidated.\n", __func__, status);
+		printk(BIOS_ERR, "%s: StartUp returned 0x%x, unsuccessful! PCRs invalidated.\n", __func__,
+		       status);
 	}
 	return status;
 }
@@ -519,8 +515,7 @@ int __attribute__((weak))mb_crtm(EFI_TCG2_EVENT_ALGORITHM_BITMAP activePcr)
 		tcgEventHdr.eventSize, &tcgEventHdr, (uint8_t *)crtm_version,
 		0);
 	if (status) {
-		printk(BIOS_DEBUG, "Measure CRTM Version returned 0x%x\n",
-			status);
+		printk(BIOS_DEBUG, "Measure CRTM Version returned 0x%x\n", status);
 		return status;
 	}
 

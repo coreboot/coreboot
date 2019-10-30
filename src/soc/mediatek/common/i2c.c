@@ -15,6 +15,7 @@
 
 #include <string.h>
 #include <assert.h>
+#include <console/console.h>
 #include <delay.h>
 #include <timer.h>
 #include <symbols.h>

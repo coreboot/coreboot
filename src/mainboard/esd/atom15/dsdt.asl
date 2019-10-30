@@ -48,7 +48,7 @@ DefinitionBlock(
 	}
 
 	/* Chipset specific sleep states */
-	#include <soc/intel/fsp_baytrail/acpi/sleepstates.asl>
+	#include <southbridge/intel/common/acpi/sleepstates.asl>
 
 	#include "acpi/mainboard.asl"
 }

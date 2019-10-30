@@ -43,7 +43,7 @@ DefinitionBlock(
 	}
 
 	// Chipset specific sleep states
-	#include <soc/intel/skylake/acpi/sleepstates.asl>
+	#include <southbridge/intel/common/acpi/sleepstates.asl>
 
 	// Mainboard specific
 	#include "acpi/mainboard.asl"

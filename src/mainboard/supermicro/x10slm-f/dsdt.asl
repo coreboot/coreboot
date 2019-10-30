@@ -21,7 +21,7 @@ DefinitionBlock("dsdt.aml", "DSDT", 2, OEM_ID, ACPI_TABLE_CREATOR, 0x20181220)
 	#include "acpi/platform.asl"
 	#include <southbridge/intel/lynxpoint/acpi/platform.asl>
 	#include <southbridge/intel/lynxpoint/acpi/globalnvs.asl>
-	#include <southbridge/intel/lynxpoint/acpi/sleepstates.asl>
+	#include <southbridge/intel/common/acpi/sleepstates.asl>
 	#include <cpu/intel/common/acpi/cpu.asl>
 
 	Device (\_SB.PCI0)

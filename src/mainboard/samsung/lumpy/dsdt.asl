@@ -56,5 +56,5 @@ DefinitionBlock(
 	#include <vendorcode/google/chromeos/acpi/chromeos.asl>
 
 	/* Chipset specific sleep states */
-	#include <southbridge/intel/bd82x6x/acpi/sleepstates.asl>
+	#include <southbridge/intel/common/acpi/sleepstates.asl>
 }

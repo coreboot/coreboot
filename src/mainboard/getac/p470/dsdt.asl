@@ -55,5 +55,5 @@ DefinitionBlock(
 	}
 
 	/* Chipset specific sleep states */
-	#include <southbridge/intel/i82801gx/acpi/sleepstates.asl>
+	#include <southbridge/intel/common/acpi/sleepstates.asl>
 }

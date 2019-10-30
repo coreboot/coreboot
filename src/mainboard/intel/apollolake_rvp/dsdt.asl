@@ -33,6 +33,6 @@ DefinitionBlock(
 	}
 
 	/* Chipset specific sleep states */
-	#include <soc/intel/apollolake/acpi/sleepstates.asl>
+	#include <southbridge/intel/common/acpi/sleepstates.asl>
 
 }

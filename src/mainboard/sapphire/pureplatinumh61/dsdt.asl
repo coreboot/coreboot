@@ -33,7 +33,7 @@ DefinitionBlock(
 	#include <southbridge/intel/bd82x6x/acpi/platform.asl>
 	/* global NVS and variables.  */
 	#include <southbridge/intel/bd82x6x/acpi/globalnvs.asl>
-	#include <southbridge/intel/bd82x6x/acpi/sleepstates.asl>
+	#include <southbridge/intel/common/acpi/sleepstates.asl>
 
 	Scope (\_SB) {
 		Device (PCI0)

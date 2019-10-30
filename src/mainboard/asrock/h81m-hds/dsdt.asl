@@ -27,7 +27,7 @@ DefinitionBlock(
 	#include "acpi/platform.asl"
 	#include <southbridge/intel/lynxpoint/acpi/platform.asl>
 	#include <southbridge/intel/lynxpoint/acpi/globalnvs.asl>
-	#include <southbridge/intel/lynxpoint/acpi/sleepstates.asl>
+	#include <southbridge/intel/common/acpi/sleepstates.asl>
 	#include <cpu/intel/common/acpi/cpu.asl>
 
 	Scope (\_SB)

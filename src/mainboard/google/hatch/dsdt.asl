@@ -52,10 +52,10 @@ DefinitionBlock(
 #endif
 
 	/* Chipset specific sleep states */
-	#include <soc/intel/cannonlake/acpi/sleepstates.asl>
+	#include <southbridge/intel/common/acpi/sleepstates.asl>
 
-        /* Low power idle table */
-        #include <soc/intel/cannonlake/acpi/lpit.asl>
+	/* Low power idle table */
+	#include <soc/intel/cannonlake/acpi/lpit.asl>
 
 	/* Chrome OS Embedded Controller */
 	Scope (\_SB.PCI0.LPCB)

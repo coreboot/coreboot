@@ -49,5 +49,5 @@ DefinitionBlock(
 	}
 
 	/* Chipset specific sleep states */
-	#include <southbridge/intel/fsp_rangeley/acpi/sleepstates.asl>
+	#include <southbridge/intel/common/acpi/sleepstates.asl>
 }

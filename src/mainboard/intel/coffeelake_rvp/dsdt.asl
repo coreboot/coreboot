@@ -45,6 +45,6 @@ DefinitionBlock(
 #endif
 
 	// Chipset specific sleep states
-	#include <soc/intel/cannonlake/acpi/sleepstates.asl>
+	#include <southbridge/intel/common/acpi/sleepstates.asl>
 
 }

@@ -41,7 +41,7 @@ DefinitionBlock(
 	#include <southbridge/intel/bd82x6x/acpi/globalnvs.asl>
 
 	// Chipset specific sleep states
-	#include <southbridge/intel/bd82x6x/acpi/sleepstates.asl>
+	#include <southbridge/intel/common/acpi/sleepstates.asl>
 
 	Scope (\_SB) {
 		Device (PCI0)

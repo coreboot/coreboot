@@ -53,7 +53,7 @@ DefinitionBlock(
 	}
 
 	/* Chipset specific sleep states */
-	#include <southbridge/intel/i82801ix/acpi/sleepstates.asl>
+	#include <southbridge/intel/common/acpi/sleepstates.asl>
 
 	/* Hybrid graphics support code */
 	#include "acpi/graphics.asl"

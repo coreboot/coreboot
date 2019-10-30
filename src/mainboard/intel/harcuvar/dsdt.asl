@@ -50,5 +50,5 @@ DefinitionBlock(
 	}
 
 	/* Chipset specific sleep states */
-	#include <soc/intel/denverton_ns/acpi/sleepstates.asl>
+	#include <southbridge/intel/common/acpi/sleepstates.asl>
 }

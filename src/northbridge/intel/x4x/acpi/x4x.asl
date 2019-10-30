@@ -17,6 +17,7 @@
 
 #include "hostbridge.asl"
 #include "../iomap.h"
+#include <southbridge/intel/common/rcba.h>
 
 /* PCI Device Resource Consumption */
 Device (PDRC)
@@ -25,7 +26,7 @@ Device (PDRC)
 	Name (_UID, 1)
 
 	Name (PDRS, ResourceTemplate() {
-		Memory32Fixed(ReadWrite, 0xfed1c000, 0x00004000) // RCBA
+		Memory32Fixed(ReadWrite, DEFAULT_RCBA, 0x00004000)
 		Memory32Fixed(ReadWrite, DEFAULT_MCHBAR,   0x00004000)
 		Memory32Fixed(ReadWrite, DEFAULT_DMIBAR,   0x00001000)
 		Memory32Fixed(ReadWrite, DEFAULT_EPBAR,    0x00001000)

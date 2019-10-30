@@ -73,7 +73,7 @@ config FSP1_1_DISPLAY_LOGO
 	default n
 
 config VENDORCODE_ELTAN_OEM_MANIFEST_LOC
-	hex "OEM Manifest working dflt"
+	hex
 	default 0xFFFE9000
 
 config SPI_FLASH_INCLUDE_ALL_DRIVERS
@@ -101,7 +101,7 @@ config VENDORCODE_ELTAN_VBOOT_MANIFEST
 	default "mainboard/facebook/fbg1701/manifest.h"
 
 config VENDORCODE_ELTAN_VBOOT_KEY_LOCATION
-	hex "Key Location working dflt"
+	hex
 	default 0xFFFF9C00
 
 config DRIVERS_INTEL_WIFI

@@ -1,5 +1,0 @@
-Vendor name: Google
-Board name: Urara Imgtec Pistachio reference board
-Category: eval
-ROM protocol: SPI
-ROM socketed: n

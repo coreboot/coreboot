@@ -74,7 +74,7 @@ Device (LPCB)
 
 		Name (BUF0, ResourceTemplate()
 		{
-			Memory32Fixed(ReadOnly, 0xfed00000, 0x400, FED0)
+			Memory32Fixed(ReadOnly, CONFIG_HPET_ADDRESS, 0x400, FED0)
 		})
 
 		Method (_STA, 0)	// Device Status
@@ -99,15 +99,15 @@ Device (LPCB)
 					\_SB.PCI0.LPCB.HPET.FED0._BAS, HPT0)
 
 				If (Lequal(HPAS, 1)) {
-					Store(0xfed01000, HPT0)
+					Add(CONFIG_HPET_ADDRESS, 0x1000, HPT0)
 				}
 
 				If (Lequal(HPAS, 2)) {
-					Store(0xfed02000, HPT0)
+					Add(CONFIG_HPET_ADDRESS, 0x2000, HPT0)
 				}
 
 				If (Lequal(HPAS, 3)) {
-					Store(0xfed03000, HPT0)
+					Add(CONFIG_HPET_ADDRESS, 0x3000, HPT0)
 				}
 			}
 

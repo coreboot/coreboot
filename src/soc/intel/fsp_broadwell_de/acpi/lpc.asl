@@ -44,7 +44,7 @@ Device (LPC0)
 
 		Name(_CRS, ResourceTemplate()
 		{
-			Memory32Fixed(ReadOnly, 0xfed00000, 0x400)
+			Memory32Fixed(ReadOnly, CONFIG_HPET_ADDRESS, 0x400)
 		})
 	}
 

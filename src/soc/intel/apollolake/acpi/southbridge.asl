@@ -33,7 +33,7 @@
 #include "xhci.asl"
 
 /* LPC */
-#include "lpc.asl"
+#include <soc/intel/common/block/acpi/acpi/lpc.asl>
 
 /* eMMC */
 #include "scs.asl"

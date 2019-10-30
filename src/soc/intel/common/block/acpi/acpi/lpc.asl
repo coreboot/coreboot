@@ -1,7 +1,9 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2018 Intel Corp.
+ * Copyright (C) 2007-2009 coresystems GmbH
+ * Copyright (C) 2014 Google Inc.
+ * Copyright (C) 2015 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,13 +15,29 @@
  * GNU General Public License for more details.
  */
 
+/* Intel LPC/eSPI Bus Device  - 0:1f.0 */
+#include <soc/iomap.h>
 
-/* Device identifier is not changed to ESPI to maintain coherency with ec.asl */
 Device (LPCB)
 {
 	Name (_ADR, 0x001f0000)
-	Name (_DDN, "ESPI Bus Device")
+	Name (_DDN, "LPC Bus Device")
 
+	/* DMA Controller */
+	Device (DMAC)
+	{
+		Name (_HID, EISAID("PNP0200"))
+		Name (_CRS, ResourceTemplate()
+		{
+			IO (Decode16, 0x00, 0x00, 0x01, 0x20)
+			IO (Decode16, 0x81, 0x81, 0x01, 0x11)
+			IO (Decode16, 0x93, 0x93, 0x01, 0x0d)
+			IO (Decode16, 0xc0, 0xc0, 0x01, 0x20)
+			DMA (Compatibility, NotBusMaster, Transfer8_16) { 4 }
+		})
+	}
+
+	/* Firmware Hub */
 	Device (FWH)
 	{
 		Name (_HID, EISAID ("INT0800"))
@@ -30,9 +48,11 @@ Device (LPCB)
 		})
 	}
 
+	/* High Precision Event Timer */
 	Device (HPET)
 	{
 		Name (_HID, EISAID ("PNP0103"))
+		Name (_CID, 0x010CD041)
 		Name (_DDN, "High Precision Event Timer")
 		Name (_CRS, ResourceTemplate ()
 		{
@@ -40,10 +60,22 @@ Device (LPCB)
 		})
 		Method (_STA, 0)
 		{
-			Return (0xf)
+			Return (0xF)
 		}
 	}
 
+	/* FPU */
+	Device(MATH)
+	{
+		Name (_HID, EISAID("PNP0C04"))
+		Name (_CRS, ResourceTemplate()
+		{
+			IO (Decode16, 0xf0, 0xf0, 0x01, 0x01)
+			IRQNoFlags() { 13 }
+		})
+	}
+
+	/* AT Interrupt Controller */
 	Device (PIC)
 	{
 		Name (_HID, EISAID ("PNP0000"))
@@ -71,6 +103,7 @@ Device (LPCB)
 		})
 	}
 
+	/* LPC device: Resource consumption */
 	Device (LDRC)
 	{
 		Name (_HID, EISAID ("PNP0C02"))
@@ -92,6 +125,7 @@ Device (LPCB)
 		})
 	}
 
+	/* Real Time Clock Device */
 	Device (RTC)
 	{
 		Name (_HID, EISAID ("PNP0B00"))
@@ -102,6 +136,7 @@ Device (LPCB)
 		})
 	}
 
+	/* Timer */
 	Device (TIMR)
 	{
 		Name (_HID, EISAID ("PNP0100"))
@@ -113,5 +148,4 @@ Device (LPCB)
 			IRQNoFlags () {0}
 		})
 	}
-
 }

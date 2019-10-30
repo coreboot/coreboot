@@ -44,7 +44,7 @@ libpayload: checkout
 		$(MAKE) && $(MAKE) DESTDIR=../external/FILO/filo/build install
 
 clean:
-	test -d filo && $(MAKE) -C filo clean || exit 0
+	test -d filo && $(MAKE) -C filo clean LIBCONFIG_PATH=../../../libpayload || exit 0
 
 distclean:
 	rm -rf filo

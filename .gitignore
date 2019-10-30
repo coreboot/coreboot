@@ -85,7 +85,6 @@ util/*/.dependencies
 util/*/.test
 util/amdfwtool/amdfwtool
 util/archive/archive
-util/bimgtool/bimgtool
 util/bincfg/bincfg
 util/board_status/board-status
 util/bucts/bucts

@@ -14,9 +14,6 @@ settings. `Perl`
 platform. `C`
 * __autoport__ - Automated porting coreboot to Sandy Bridge/Ivy Bridge
 platforms `Go`
-* __bimgtool__ - A simple tool which generates and verifies boot images
-in the BIMG format, used in systems designed by Imagination
-Technologies, for example the Pistachio SoC. `C`
 * __bincfg__ - Compiler/Decompiler for data blobs with specs `Lex`
 `Yacc`
 * __board_status__ - Tools to collect logs and upload them to the board

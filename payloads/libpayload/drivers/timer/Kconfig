@@ -50,9 +50,6 @@ config TIMER_RK3288
 config TIMER_RK3399
 	bool "Timer for Rockchip RK3399"
 
-config TIMER_IMG_PISTACHIO
-	bool "Timer for IMG Pistachio"
-
 config TIMER_MTK
 	bool "Timer for MediaTek"
 

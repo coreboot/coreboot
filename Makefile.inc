@@ -488,7 +488,7 @@ endif
 
 additional-dirs := $(objutil)/cbfstool $(objutil)/romcc $(objutil)/ifdtool \
 		   $(objutil)/options $(objutil)/amdfwtool \
-		   $(objutil)/cbootimage $(objutil)/bimgtool
+		   $(objutil)/cbootimage
 
 export $(COREBOOT_EXPORTS)
 
@@ -580,11 +580,6 @@ CBOOTIMAGE:=$(objutil)/cbootimage/cbootimage
 FUTILITY?=$(objutil)/futility/futility
 
 subdirs-y += util/nvidia
-
-BIMGTOOL:=$(objutil)/bimgtool/bimgtool
-$(BIMGTOOL): $(top)/util/bimgtool/bimgtool.c
-	@printf "    HOSTCC     $(subst $(obj)/,,$(@))\n"
-	$(HOSTCC) $(HOSTCFLAGS) -o $@ $<
 
 $(obj)/config.h: $(objutil)/kconfig/conf
 

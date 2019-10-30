@@ -102,8 +102,8 @@ int tpm2_get_capability_pcrs(TPML_PCR_SELECTION *Pcrs)
 		for (index = 0; index < Pcrs->count; index++) {
 			Pcrs->pcrSelections[index].hash =
 				swab16(TpmCap.data.assignedPCR.pcrSelections[index].hash);
-			printk(BIOS_DEBUG, "Pcrs->pcrSelections[index].hash ="
-				"0x%x\n", Pcrs->pcrSelections[index].hash);
+			printk(BIOS_DEBUG, "Pcrs->pcrSelections[%d].hash = 0x%x\n", index,
+			       Pcrs->pcrSelections[index].hash);
 			Pcrs->pcrSelections[index].sizeofSelect =
 				TpmCap.data.assignedPCR.pcrSelections[index].sizeofSelect;
 			memcpy(Pcrs->pcrSelections[index].pcrSelect,

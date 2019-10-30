@@ -37,12 +37,10 @@ endif # ($(CONFIG_VENDORCODE_ELTAN_VBOOT_SIGNED_MANIFEST),y)
 
 ifeq ($(CONFIG_VENDORCODE_ELTAN_VBOOT_SIGNED_MANIFEST),y)
 cbfs-files-y += vboot_public_key.bin
-vboot_public_key.bin-file     := $(obj)/vboot_public_key.bin
+vboot_public_key.bin-file     := $(call strip_quotes, $(CONFIG_VENDORCODE_ELTAN_VBOOT_KEY_FILE))
 vboot_public_key.bin-position := $(CONFIG_VENDORCODE_ELTAN_VBOOT_KEY_LOCATION)
 vboot_public_key.bin-type     := raw
 
-$(obj)/vboot_public_key.bin:
-	dd if=/dev/zero of=$@ bs=$(CONFIG_VENDORCODE_ELTAN_VBOOT_KEY_SIZE) count=1
 endif # ($(CONFIG_VENDORCODE_ELTAN_VBOOT_SIGNED_MANIFEST),y)
 endif # CONFIG_VENDORCODE_ELTAN_VBOOT
 

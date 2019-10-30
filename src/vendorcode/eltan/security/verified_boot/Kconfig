@@ -55,9 +55,14 @@ config VENDORCODE_ELTAN_VBOOT_KEY_LOCATION
 	depends on VENDORCODE_ELTAN_VBOOT_SIGNED_MANIFEST
 	default 0xFFFFF500
 
+config VENDORCODE_ELTAN_VBOOT_KEY_FILE
+	string "Verified boot Key File"
+	depends on VENDORCODE_ELTAN_VBOOT_SIGNED_MANIFEST
+	default "3rdparty/eltan/verified_boot/Keys/key.vbpubk2"
+
 config VENDORCODE_ELTAN_VBOOT_KEY_SIZE
 	int
-	default 554 if VENDORCODE_ELTAN_VBOOT_USE_SHA512
-	default 520
+	default 610 if VENDORCODE_ELTAN_VBOOT_USE_SHA512
+	default 576
 
 endmenu # Verified Boot (verified_boot)

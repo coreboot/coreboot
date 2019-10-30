@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2018 Eltan B.V.
+ * Copyright (C) 2018-2019 Eltan B.V.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@
 
 #include <mboot.h>
 
-int log_efi_specid_event(EFI_TCG2_EVENT_ALGORITHM_BITMAP ActivePcrs) {
+int log_efi_specid_event(void) {
 	return TPM_SUCCESS;
 }
 

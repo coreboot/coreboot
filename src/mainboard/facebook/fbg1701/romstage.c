@@ -78,7 +78,7 @@ static const uint8_t crtm_version[] =
 	CONFIG_VENDORCODE_ELTAN_CRTM_VERSION_STRING COREBOOT_VERSION COREBOOT_EXTRA_VERSION
 	" " COREBOOT_BUILD;
 
-int mb_crtm(EFI_TCG2_EVENT_ALGORITHM_BITMAP activePcr)
+int mb_crtm(void)
 {
 	int status = TPM_E_IOERROR;
 	TCG_PCR_EVENT2_HDR tcgEventHdr;
@@ -91,9 +91,9 @@ int mb_crtm(EFI_TCG2_EVENT_ALGORITHM_BITMAP activePcr)
 	tcgEventHdr.eventSize = sizeof(crtm_version);
 	printk(BIOS_DEBUG, "%s: EventSize - %u\n", __func__, tcgEventHdr.eventSize);
 
-	status = mboot_hash_extend_log(activePcr, 0, (uint8_t *)crtm_version,
+	status = mboot_hash_extend_log(0, (uint8_t *)crtm_version,
 				       tcgEventHdr.eventSize, &tcgEventHdr,
-				       (uint8_t *)crtm_version, 0);
+				       (uint8_t *)crtm_version);
 	if (status) {
 		printk(BIOS_DEBUG, "Measure CRTM Version returned 0x%x\n", status);
 	}

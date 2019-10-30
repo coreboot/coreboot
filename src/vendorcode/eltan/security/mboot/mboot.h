@@ -89,16 +89,14 @@ typedef uint32_t EFI_TCG2_EVENT_ALGORITHM_BITMAP;
  */
 #define MBOOT_HASH_PROVIDED (0x00000001)
 
-
 int is_zero_buffer(void *buffer, unsigned int size);
 
-int mboot_hash_extend_log(EFI_TCG2_EVENT_ALGORITHM_BITMAP activePcr,
-	uint64_t flags, uint8_t *hashData, uint32_t hashDataLen,
-	TCG_PCR_EVENT2_HDR *newEventHdr, uint8_t *eventLog, uint8_t invalid);
+int mboot_hash_extend_log(uint64_t flags, uint8_t *hashData, uint32_t hashDataLen,
+			  TCG_PCR_EVENT2_HDR *newEventHdr, uint8_t *eventLog);
 
 void mboot_print_buffer(uint8_t *buffer, uint32_t bufferSize);
 
-int mb_crtm(EFI_TCG2_EVENT_ALGORITHM_BITMAP activePcr);
+int mb_crtm(void);
 
 typedef struct {
 	const char *cbfs_name;
@@ -108,9 +106,8 @@ typedef struct {
 	const char *event_msg;
 } mboot_measure_item_t;
 
-int mb_measure_log_worker(EFI_TCG2_EVENT_ALGORITHM_BITMAP activePcr,
-		const char *name, uint32_t type, uint32_t pcr,
-		TCG_EVENTTYPE eventType, const char *event_msg);
+int mb_measure_log_worker(const char *name, uint32_t type, uint32_t pcr,
+			  TCG_EVENTTYPE eventType, const char *event_msg);
 
 int mb_measure_log_start(void);
 void invalidate_pcrs(void);
@@ -122,7 +119,7 @@ int tpm2_get_capability_pcrs(TPML_PCR_SELECTION *Pcrs);
 int mb_measure(int wake_from_s3);
 int mb_entry(int wake_from_s3);
 
-int log_efi_specid_event(EFI_TCG2_EVENT_ALGORITHM_BITMAP ActivePcrs);
+int log_efi_specid_event(void);
 int log_event_tcg_20_format(TCG_PCR_EVENT2_HDR *EventHdr, uint8_t *EventLog);
 int log_event_tcg_12_format(TCG_PCR_EVENT2_HDR *EventHdr, uint8_t *EventLog);
 

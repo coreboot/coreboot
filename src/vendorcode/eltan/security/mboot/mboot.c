@@ -120,92 +120,37 @@ int tpm2_get_capability_pcrs(TPML_PCR_SELECTION *Pcrs)
  * Calculates the hash over the data and extends it in active PCR banks and
  * then logs them in the event log.
  *
- * @param[in] activePcr		bitmap of active PCR banks in TPM.
- * @param[in] flags		flags associated with hash data. Currently
- *				unused.
+ * @param[in] flags		flags associated with hash data. Currently unused.
  * @param[in] hashData		data to be hashed.
  * @param[in] hashDataLen	length of the data to be hashed.
  * @param[in] newEventHdr	event header in TCG_PCR_EVENT2 format.
  * @param[in] eventLog		description of the event.
- * @param[in] invalid		invalidate the pcr
  *
  * @retval TPM_SUCCESS		Operation completed successfully.
  * @retval TPM_E_IOERROR	Unexpected device behavior.
  */
-int mboot_hash_extend_log(EFI_TCG2_EVENT_ALGORITHM_BITMAP activePcr,
-	uint64_t flags, uint8_t *hashData, uint32_t hashDataLen,
-	TCG_PCR_EVENT2_HDR *newEventHdr, uint8_t *eventLog, uint8_t invalid)
+int mboot_hash_extend_log(uint64_t flags, uint8_t *hashData, uint32_t hashDataLen,
+	TCG_PCR_EVENT2_HDR *newEventHdr, uint8_t *eventLog)
 {
-	int status;
 	TPMT_HA *digest = NULL;
-	int digest_num = 0;
 
-	printk(BIOS_DEBUG, "%s: Hash Data Length: %zu bytes\n", __func__,
-		(size_t)hashDataLen);
+	printk(BIOS_DEBUG, "%s: Hash Data Length: %zu bytes\n", __func__, (size_t)hashDataLen);
 
-	if (invalid) {
-		digest = &(newEventHdr->digest.digests[digest_num]);
-		digest->hashAlg = TPM_ALG_ERROR;
-		digest_num++;
+	/* Generate SHA256 */
+	digest = &(newEventHdr->digest.digests[0]);
+	if (flags & MBOOT_HASH_PROVIDED) {
+		/* The hash is provided as data */
+		memcpy(digest->digest.sha256, (void *)hashData, hashDataLen);
 	} else {
-		/*
-		 * Generate SHA1 hash if SHA1 PCR bank is active in TPM
-		 * currently
-		 */
-		if (activePcr & EFI_TCG2_BOOT_HASH_ALG_SHA1) {
-			digest = &(newEventHdr->digest.digests[digest_num]);
-			if (flags & MBOOT_HASH_PROVIDED) {
-				/* The hash is provided as data */
-				memcpy(digest->digest.sha1, (void *)hashData,
-					VB2_SHA1_DIGEST_SIZE);
-			} else {
-				if (cb_sha_little_endian(VB2_HASH_SHA1, hashData,
-						       hashDataLen, digest->digest.sha1))
-					return TPM_E_IOERROR;
-			}
-
-			digest->hashAlg = TPM_ALG_SHA1;
-			digest_num++;
-
-			printk(BIOS_DEBUG, "%s: SHA1 Hash Digest:\n", __func__);
-			mboot_print_buffer(digest->digest.sha1,
-				VB2_SHA1_DIGEST_SIZE);
-		}
-
-		/*
-		 * Generate SHA256 hash if SHA256 PCR bank is active in TPM
-		 * currently
-		 */
-		if (activePcr & EFI_TCG2_BOOT_HASH_ALG_SHA256) {
-			digest = &(newEventHdr->digest.digests[digest_num]);
-			if (flags & MBOOT_HASH_PROVIDED) {
-				/* The hash is provided as data */
-				memcpy(digest->digest.sha256,
-					(void *)hashData, hashDataLen);
-			} else {
-
-				if (cb_sha_little_endian(VB2_HASH_SHA256, hashData,
-						       hashDataLen, digest->digest.sha256))
-					return TPM_E_IOERROR;
-			}
-			digest->hashAlg = TPM_ALG_SHA256;
-			digest_num++;
-
-			printk(BIOS_DEBUG, "%s: SHA256 Hash Digest:\n",
-				__func__);
-			mboot_print_buffer(digest->digest.sha256,
-				VB2_SHA256_DIGEST_SIZE);
-		}
+		if (cb_sha_little_endian(VB2_HASH_SHA256, hashData, hashDataLen,
+				  digest->digest.sha256))
+			return TPM_E_IOERROR;
 	}
 
-	newEventHdr->digest.count = digest_num;
+	printk(BIOS_DEBUG, "%s: SHA256 Hash Digest:\n", __func__);
+	mboot_print_buffer(digest->digest.sha256, VB2_SHA256_DIGEST_SIZE);
 
-	status = tlcl_extend(newEventHdr->pcrIndex, (uint8_t *)&(newEventHdr->digest),
-			NULL);
-	if (status != TPM_SUCCESS)
-		printk(BIOS_DEBUG, "%s: returned 0x%x\n", __func__, status);
-
-	return status;
+	return (tlcl_extend(newEventHdr->pcrIndex, (uint8_t *)&(newEventHdr->digest), NULL));
 }
 
 /*
@@ -215,13 +160,11 @@ int mboot_hash_extend_log(EFI_TCG2_EVENT_ALGORITHM_BITMAP activePcr,
  */
 void invalidate_pcrs(void)
 {
-	int status, pcr;
-	TCG_PCR_EVENT2_HDR tcgEventHdr;
-	EFI_TCG2_EVENT_ALGORITHM_BITMAP ActivePcrs;
-	uint8_t invalidate;
+	int pcr;
+	int status;
 
-	ActivePcrs = tpm2_get_active_pcrs();
-	invalidate = 1;
+	TCG_PCR_EVENT2_HDR tcgEventHdr;
+	uint8_t invalidate = 1;
 
 	for (pcr = 0; pcr < 8; pcr++) {
 		printk(BIOS_DEBUG, "%s: Invalidating PCR %d\n", __func__, pcr);
@@ -230,10 +173,9 @@ void invalidate_pcrs(void)
 		tcgEventHdr.eventType = EV_NO_ACTION;
 		tcgEventHdr.eventSize = (uint32_t) sizeof(invalidate);
 
-		status = mboot_hash_extend_log(ActivePcrs, 0,
-			(uint8_t *)&invalidate, tcgEventHdr.eventSize,
-			&tcgEventHdr, (uint8_t *)"Invalidate PCR", invalidate);
-
+		status = mboot_hash_extend_log(0, (uint8_t *)&invalidate,
+					       tcgEventHdr.eventSize, &tcgEventHdr,
+					       (uint8_t *)"Invalidate PCR");
 		if (status != TPM_SUCCESS)
 			printk(BIOS_DEBUG, "%s: invalidating pcr %d returned"
 				" 0x%x\n", __func__, pcr, status);
@@ -288,7 +230,6 @@ void mboot_print_buffer(uint8_t *buffer, uint32_t bufferSize)
 /*
  * measures and logs the specified cbfs file.
  *
- * @param[in] activePcr		bitmap of active PCR banks in TPM.
  * @param[in] name		name of the cbfs file to measure
  * @param[in] type		data type of the cbfs file.
  * @param[in] pcr		pcr to extend.
@@ -298,9 +239,8 @@ void mboot_print_buffer(uint8_t *buffer, uint32_t bufferSize)
  * @retval TPM_SUCCESS		Operation completed successfully.
  * @retval TPM_E_IOERROR	Unexpected device behavior.
  */
-int mb_measure_log_worker(EFI_TCG2_EVENT_ALGORITHM_BITMAP activePcr,
-		const char *name, uint32_t type, uint32_t pcr,
-		TCG_EVENTTYPE eventType, const char *event_msg)
+int mb_measure_log_worker(const char *name, uint32_t type, uint32_t pcr,
+			  TCG_EVENTTYPE eventType, const char *event_msg)
 {
 	int status;
 	TCG_PCR_EVENT2_HDR tcgEventHdr;
@@ -311,21 +251,18 @@ int mb_measure_log_worker(EFI_TCG2_EVENT_ALGORITHM_BITMAP activePcr,
 	base = cbfs_boot_map_with_leak(name, type, &size);
 
 	if (base == NULL) {
-		printk(BIOS_DEBUG, "%s: CBFS locate fail: %s\n", __func__,
-			name);
+		printk(BIOS_DEBUG, "%s: CBFS locate fail: %s\n", __func__, name);
 		return VB2_ERROR_READ_FILE_OPEN;
 	}
 
-	printk(BIOS_DEBUG, "%s: CBFS locate success: %s\n",
-			__func__, name);
+	printk(BIOS_DEBUG, "%s: CBFS locate success: %s\n", __func__, name);
 	memset(&tcgEventHdr, 0, sizeof(tcgEventHdr));
 	tcgEventHdr.pcrIndex  = pcr;
 	tcgEventHdr.eventType = eventType;
 	if (event_msg)
 		tcgEventHdr.eventSize = (uint32_t) strlen(event_msg);
 
-	status = mboot_hash_extend_log(activePcr, 0, base, size, &tcgEventHdr,
-		(uint8_t *)event_msg, 0);
+	status = mboot_hash_extend_log(0, base, size, &tcgEventHdr, (uint8_t *)event_msg);
 	return status;
 }
 
@@ -436,18 +373,15 @@ int __attribute__((weak))mb_measure(int wake_from_s3)
 int __attribute__((weak))mb_measure_log_start(void)
 {
 	int status;
-	EFI_TCG2_EVENT_ALGORITHM_BITMAP ActivePcrs;
 	uint32_t i;
 
-	ActivePcrs = tpm2_get_active_pcrs();
-
-	if (ActivePcrs == 0x0) {
-		printk(BIOS_DEBUG, "%s: No Active PCR Bank in TPM.\n",
+	if ((tpm2_get_active_pcrs() & EFI_TCG2_BOOT_HASH_ALG_SHA256) == 0x0) {
+		printk(BIOS_DEBUG, "%s: SHA256 PCR Bank not active in TPM.\n",
 			__func__);
 		return TPM_E_IOERROR;
 	}
 
-	status = mb_crtm(ActivePcrs);
+	status = mb_crtm();
 	if (status != TPM_SUCCESS) {
 		printk(BIOS_DEBUG, "%s: Fail! CRTM Version can't be measured."
 			" ABORTING!!!\n", __func__);
@@ -458,7 +392,7 @@ int __attribute__((weak))mb_measure_log_start(void)
 	/* Log the items defined by the mainboard */
 	for (i = 0; i < ARRAY_SIZE(mb_log_list); i++) {
 		status = mb_measure_log_worker(
-				ActivePcrs, mb_log_list[i].cbfs_name,
+				mb_log_list[i].cbfs_name,
 				mb_log_list[i].cbfs_type, mb_log_list[i].pcr,
 				mb_log_list[i].eventType,
 				mb_log_list[i].event_msg);
@@ -490,12 +424,10 @@ static const uint8_t crtm_version[] =
  * The function can be overridden at the mainboard level my simply creating a
  * function with the same name there.
  *
- * @param[in] activePcr		bitmap of the support
- *
  * @retval TPM_SUCCESS		Operation completed successfully.
  * @retval TPM_E_IOERROR	Unexpected device behavior.
 **/
-int __attribute__((weak))mb_crtm(EFI_TCG2_EVENT_ALGORITHM_BITMAP activePcr)
+int __attribute__((weak))mb_crtm(void)
 {
 	int status;
 	TCG_PCR_EVENT2_HDR tcgEventHdr;
@@ -511,9 +443,8 @@ int __attribute__((weak))mb_crtm(EFI_TCG2_EVENT_ALGORITHM_BITMAP activePcr)
 	printk(BIOS_DEBUG, "%s: EventSize - %u\n", __func__,
 		tcgEventHdr.eventSize);
 
-	status = mboot_hash_extend_log(activePcr, 0, (uint8_t *)crtm_version,
-		tcgEventHdr.eventSize, &tcgEventHdr, (uint8_t *)crtm_version,
-		0);
+	status = mboot_hash_extend_log(0, (uint8_t *)crtm_version, tcgEventHdr.eventSize,
+				       &tcgEventHdr, (uint8_t *)crtm_version);
 	if (status) {
 		printk(BIOS_DEBUG, "Measure CRTM Version returned 0x%x\n", status);
 		return status;
@@ -535,8 +466,8 @@ int __attribute__((weak))mb_crtm(EFI_TCG2_EVENT_ALGORITHM_BITMAP activePcr)
 
 	msgPtr = NULL;
 	tcgEventHdr.eventSize = 0;
-	status = mboot_hash_extend_log(activePcr, MBOOT_HASH_PROVIDED, hash,
-			sizeof(hash), &tcgEventHdr, msgPtr, 0);
+	status = mboot_hash_extend_log(MBOOT_HASH_PROVIDED, hash, sizeof(hash), &tcgEventHdr,
+				       msgPtr);
 	if (status)
 		printk(BIOS_DEBUG, "Add ME hash returned 0x%x\n", status);
 

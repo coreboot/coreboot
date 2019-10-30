@@ -18,15 +18,6 @@
 /* Generic indicator for sleep state */
 #include <soc/intel/common/acpi/platform.asl>
 
-/* The APM port can be used for generating software SMIs */
-
-OperationRegion (APMP, SystemIO, 0xb2, 2)
-Field (APMP, ByteAcc, NoLock, Preserve)
-{
-	APMC, 8,	// APM command
-	APMS, 8		// APM status
-}
-
 /*
  * The _PIC method is called by the OS to choose between interrupt
  * routing via the i8259 interrupt controller or the APIC.

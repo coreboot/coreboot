@@ -18,15 +18,6 @@
 /* Enable ACPI _SWS methods */
 #include <soc/intel/common/acpi/acpi_wake_source.asl>
 
-/* The APM port can be used for generating software SMIs */
-
-OperationRegion (APMP, SystemIO, 0xb2, 2)
-Field (APMP, ByteAcc, NoLock, Preserve)
-{
-	APMC, 8,	// APM command
-	APMS, 8		// APM status
-}
-
 /* Port 80 POST */
 
 OperationRegion (POST, SystemIO, 0x80, 1)

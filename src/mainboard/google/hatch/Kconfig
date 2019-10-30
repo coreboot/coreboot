@@ -93,6 +93,7 @@ config MAINBOARD_PART_NUMBER
 	default "Helios" if BOARD_GOOGLE_HELIOS
 	default "Kindred" if BOARD_GOOGLE_KINDRED
 	default "Kohaku" if BOARD_GOOGLE_KOHAKU
+	default "Puff" if BOARD_GOOGLE_PUFF
 
 config MAINBOARD_VENDOR
 	string
@@ -118,6 +119,7 @@ config VARIANT_DIR
 	default "helios" if BOARD_GOOGLE_HELIOS
 	default "kindred" if BOARD_GOOGLE_KINDRED
 	default "kohaku" if BOARD_GOOGLE_KOHAKU
+	default "puff" if BOARD_GOOGLE_PUFF
 
 config VBOOT
 	select HAS_RECOVERY_MRC_CACHE

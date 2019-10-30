@@ -74,7 +74,8 @@ int verified_boot_check_manifest(void)
 	vb2_sig_hdr->sig_size = vb2_rsa_sig_size(VB2_SIG_RSA2048);
 	vb2_sig_hdr->hash_alg = HASH_ALG;
 	vb2_sig_hdr->data_size = CONFIG_VENDORCODE_ELTAN_OEM_MANIFEST_ITEMS * DIGEST_SIZE;
-	memcpy(&sig_buffer[sizeof(struct vb21_signature)], (uint8_t *)CONFIG_VENDORCODE_ELTAN_OEM_MANIFEST_LOC, size);
+	memcpy(&sig_buffer[sizeof(struct vb21_signature)],
+	       (uint8_t *)CONFIG_VENDORCODE_ELTAN_OEM_MANIFEST_LOC, size);
 
 	if (vb21_verify_data(&sig_buffer[sizeof(struct vb21_signature)], vb2_sig_hdr->data_size,
 			     (struct vb21_signature *)&sig_buffer, &key, &wb)) {
@@ -185,7 +186,7 @@ static void verified_boot_check_buffer(const char *name, void *start, size_t siz
 		else
 			hash_algorithm = VB2_HASH_SHA256;
 
-		status = cb_sha_endian(hash_algorithm, (const uint8_t *)start, size, digest);
+		status = cb_sha_little_endian(hash_algorithm, (const uint8_t *)start, size, digest);
 		if ((CONFIG(VENDORCODE_ELTAN_VBOOT) && memcmp((void *)(
 		    (uint8_t *)CONFIG_VENDORCODE_ELTAN_OEM_MANIFEST_LOC +
 		    sizeof(digest) * hash_index), digest, sizeof(digest))) || status) {
@@ -203,7 +204,8 @@ static void verified_boot_check_buffer(const char *name, void *start, size_t siz
 					printk(BIOS_DEBUG, "%s: measuring %s\n", __func__, name);
 					if (measure_item(pcr, digest, sizeof(digest),
 							 (int8_t *)name, 0))
-						printk(BIOS_DEBUG, "%s: measuring failed!\n", __func__);
+						printk(BIOS_DEBUG, "%s: measuring failed!\n",
+						       __func__);
 				}
 			}
 #endif

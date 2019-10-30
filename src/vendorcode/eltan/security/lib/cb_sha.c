@@ -15,42 +15,24 @@
 
 #include <cb_sha.h>
 
-int cb_sha_endian(enum vb2_hash_algorithm hash_alg, const uint8_t *data, uint32_t len,
-		  uint8_t *digest, enum endian_algorithm endian)
+vb2_error_t cb_sha_little_endian(enum vb2_hash_algorithm hash_alg, const uint8_t *data,
+				 uint32_t len, uint8_t *digest)
 {
 	int i;
 	int rv;
-	uint32_t digest_size;
-	uint8_t *result_ptr;
+	uint32_t digest_size = vb2_digest_size(hash_alg);
 	uint8_t result[VB2_MAX_DIGEST_SIZE];
 
-	switch (hash_alg) {
-	case VB2_HASH_SHA1:
-	        digest_size = VB2_SHA1_DIGEST_SIZE;
-		break;
-	case VB2_HASH_SHA256:
-	        digest_size = VB2_SHA256_DIGEST_SIZE;
-		break;
-	case VB2_HASH_SHA512:
-	        digest_size = VB2_SHA512_DIGEST_SIZE;
-		break;
-	default:
+	if (!digest_size)
 		return VB2_ERROR_SHA_INIT_ALGORITHM;
-	}
 
-	result_ptr = result;
-	rv = vb2_digest_buffer(data, len, hash_alg, result_ptr, digest_size);
-	if (rv || (endian == NO_ENDIAN_ALGORITHM))
+	rv = vb2_digest_buffer(data, len, hash_alg, (uint8_t *)&result, digest_size);
+	if (rv)
 		return rv;
 
 	for (i = 0; i < digest_size; ++i) {
-		if (endian == BIG_ENDIAN_ALGORITHM) {
-			/* use big endian */
-			digest[i] = *result_ptr++;
-		} else {
-			/* use little endian */
-			digest[digest_size - i - 1] = *result_ptr++;
-		}
+		/* use little endian */
+		digest[digest_size - i - 1] = result[i];
 	}
 	return rv;
 }

@@ -159,11 +159,8 @@ int mboot_hash_extend_log(EFI_TCG2_EVENT_ALGORITHM_BITMAP activePcr,
 				memcpy(digest->digest.sha1, (void *)hashData,
 					VB2_SHA1_DIGEST_SIZE);
 			} else {
-				status = cb_sha_endian(VB2_HASH_SHA1, hashData,
-						       hashDataLen,
-						       digest->digest.sha1,
-						       NO_ENDIAN_ALGORITHM);
-				if ( status )
+				if (cb_sha_little_endian(VB2_HASH_SHA1, hashData,
+						       hashDataLen, digest->digest.sha1))
 					return TPM_E_IOERROR;
 			}
 
@@ -186,11 +183,9 @@ int mboot_hash_extend_log(EFI_TCG2_EVENT_ALGORITHM_BITMAP activePcr,
 				memcpy(digest->digest.sha256,
 					(void *)hashData, hashDataLen);
 			} else {
-				status = cb_sha_endian(VB2_HASH_SHA256, hashData,
-						       hashDataLen,
-						       digest->digest.sha256,
-						       LITTLE_ENDIAN_ALGORITHM);
-				if (status)
+
+				if (cb_sha_little_endian(VB2_HASH_SHA256, hashData,
+						       hashDataLen, digest->digest.sha256))
 					return TPM_E_IOERROR;
 			}
 			digest->hashAlg = TPM_ALG_SHA256;

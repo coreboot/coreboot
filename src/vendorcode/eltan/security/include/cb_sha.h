@@ -20,14 +20,7 @@
 #include <vb21_common.h>
 #include <vb2_api.h>
 
-/* Supported Algorithm types for hash */
-enum endian_algorithm {
-	NO_ENDIAN_ALGORITHM = 0,
-	BIG_ENDIAN_ALGORITHM = 1,
-	LITTLE_ENDIAN_ALGORITHM = 2,
-};
-
-int cb_sha_endian(enum vb2_hash_algorithm hash_alg, const uint8_t *data, uint32_t len,
-		  uint8_t *digest, enum endian_algorithm endian);
+vb2_error_t cb_sha_little_endian(enum vb2_hash_algorithm hash_alg, const uint8_t *data,
+				 uint32_t len, uint8_t *digest);
 
 #endif

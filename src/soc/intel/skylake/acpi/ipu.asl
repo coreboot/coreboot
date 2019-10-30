@@ -13,13 +13,7 @@
  * GNU General Public License for more details.
  */
 
-/* IPU3 input system - Device 05, Function 0 */
-Device (IMGU)
-{
-	Name (_ADR, 0x00050000)
-	Name (_DDN, "Imaging Unit")
-	Name (CAMD, 0x01)
-}
+#include <soc/intel/common/block/acpi/acpi/ipu.asl>
 
 /* IPU3 processing system - Device 14, Function 3 */
 Device (CIO2)

@@ -29,7 +29,7 @@ DefinitionBlock(
 	#include <soc/intel/cannonlake/acpi/platform.asl>
 
 	/* global NVS and variables */
-	#include <soc/intel/cannonlake/acpi/globalnvs.asl>
+	#include <soc/intel/common/block/acpi/acpi/globalnvs.asl>
 
 	/* CPU */
 	#include <cpu/intel/common/acpi/cpu.asl>

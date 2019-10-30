@@ -30,7 +30,7 @@ DefinitionBlock(
 	#include <soc/intel/icelake/acpi/platform.asl>
 
 	// global NVS and variables
-	#include <soc/intel/icelake/acpi/globalnvs.asl>
+	#include <soc/intel/common/block/acpi/acpi/globalnvs.asl>
 
 	// CPU
 	#include <cpu/intel/common/acpi/cpu.asl>

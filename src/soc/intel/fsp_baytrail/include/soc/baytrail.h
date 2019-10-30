@@ -47,8 +47,6 @@
 #ifndef __ASSEMBLER__
 #include <device/device.h>
 
-static inline void barrier(void) { asm("" ::: "memory"); }
-
 int bridge_silicon_revision(void);
 void rangeley_early_initialization(void);
 void set_max_freq(void);

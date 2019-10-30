@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/barrier.h>
 #include <device/mmio.h>
 #include <assert.h>
 #include <console/console.h>

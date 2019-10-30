@@ -127,7 +127,7 @@ static void enable_pm_timer_emulation(void)
 	 * frequency is used.
 	 */
 	msr.hi = (3579545ULL << 32) / CTC_FREQ;
-	/* Set PM1 timer IO port and enable*/
+	/* Set PM1 timer IO port and enable */
 	msr.lo = (EMULATE_DELAY_VALUE << EMULATE_DELAY_OFFSET_VALUE) |
 			EMULATE_PM_TMR_EN | (ACPI_BASE_ADDRESS + PM1_TMR);
 	wrmsr(MSR_EMULATE_PM_TIMER, msr);

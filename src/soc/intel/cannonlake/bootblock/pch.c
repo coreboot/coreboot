@@ -90,7 +90,7 @@ static void soc_config_pwrmbase(void)
 
 	/* Enable Bus Master and MMIO Space */
 	reg32 = pci_read_config32(PCH_DEV_PMC, PCI_COMMAND);
-	reg32 |=  PCI_COMMAND_MEMORY;
+	reg32 |= PCI_COMMAND_MEMORY;
 	pci_write_config32(PCH_DEV_PMC, PCI_COMMAND, reg32);
 
 	/* Enable PWRM in PMC */

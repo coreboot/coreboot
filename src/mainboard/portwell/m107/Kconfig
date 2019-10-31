@@ -91,8 +91,4 @@ config C_ENV_BOOTBLOCK_SIZE
 	hex "C Bootblock Size"
 	default 0x4000
 
-config DRIVERS_INTEL_WIFI
-	bool
-	default n
-
 endif # BOARD_PORTWELL_M107

@@ -32,3 +32,4 @@ verstage-y += gpio.c
 romstage-y += memory.c
 
 ramstage-y += sku.c
+ramstage-y += smbios.c

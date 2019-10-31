@@ -492,7 +492,7 @@ smbios_board_type __weak smbios_mainboard_board_type(void)
 	return SMBIOS_BOARD_TYPE_UNKNOWN;
 }
 
-u8 __weak smbios_mainboard_enclosure_type(void)
+smbios_enclosure_type __weak smbios_mainboard_enclosure_type(void)
 {
 	return CONFIG_SMBIOS_ENCLOSURE_TYPE;
 }

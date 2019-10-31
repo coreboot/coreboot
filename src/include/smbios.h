@@ -65,7 +65,6 @@ const char *smbios_mainboard_bios_version(void);
 const char *smbios_mainboard_asset_tag(void);
 u8 smbios_mainboard_feature_flags(void);
 const char *smbios_mainboard_location_in_chassis(void);
-u8 smbios_mainboard_enclosure_type(void);
 
 #define BIOS_CHARACTERISTICS_PCI_SUPPORTED	(1 << 7)
 #define BIOS_CHARACTERISTICS_PC_CARD		(1 << 8)
@@ -319,7 +318,7 @@ struct smbios_type2 {
 	u8 eos[2];
 } __packed;
 
-enum {
+typedef enum {
 	SMBIOS_ENCLOSURE_OTHER = 0x01,
 	SMBIOS_ENCLOSURE_UNKNOWN = 0x02,
 	SMBIOS_ENCLOSURE_DESKTOP = 0x03,
@@ -356,7 +355,7 @@ enum {
 	SMBIOS_ENCLOSURE_EMBEDDED_PC = 0x22,
 	SMBIOS_ENCLOSURE_MINI_PC = 0x23,
 	SMBIOS_ENCLOSURE_STICK_PC = 0x24,
-};
+} smbios_enclosure_type;
 
 struct smbios_type3 {
 	u8 type;
@@ -798,5 +797,6 @@ void smbios_fill_dimm_locator(const struct dimm_info *dimm,
 	struct smbios_type17 *t);
 
 smbios_board_type smbios_mainboard_board_type(void);
+smbios_enclosure_type smbios_mainboard_enclosure_type(void);
 
 #endif

@@ -1243,11 +1243,6 @@ config HAVE_ROMSTAGE
 	bool
 	default y
 
-config HAVE_POSTCAR
-	bool
-	depends on POSTCAR_STAGE
-	default y
-
 config HAVE_RAMSTAGE
 	bool
 	default n if RAMPAYLOAD

@@ -104,4 +104,8 @@ config VENDORCODE_ELTAN_VBOOT_KEY_LOCATION
 	hex "Key Location working dflt"
 	default 0xFFFF9C00
 
+config DRIVERS_INTEL_WIFI
+	bool
+	default n
+
 endif # BOARD_FACEBOOK_FBG1701

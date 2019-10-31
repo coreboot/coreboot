@@ -26,6 +26,10 @@ const verify_item_t bootblock_verify_list[] = {
 		{ { (void *)0xffffffff - CONFIG_C_ENV_BOOTBLOCK_SIZE + 1,
 		CONFIG_C_ENV_BOOTBLOCK_SIZE, } }, HASH_IDX_BOOTBLOCK,
 		MBOOT_PCR_INDEX_0 },
+	{ VERIFY_BLOCK, "PublicKey",
+		{ { (void *)CONFIG_VENDORCODE_ELTAN_VBOOT_KEY_LOCATION,
+		CONFIG_VENDORCODE_ELTAN_VBOOT_KEY_SIZE, } }, HASH_IDX_PUBLICKEY,
+		MBOOT_PCR_INDEX_0 },
 	{ VERIFY_TERMINATOR, NULL, { { NULL, 0 } }, 0, 0 }
 };
 #endif

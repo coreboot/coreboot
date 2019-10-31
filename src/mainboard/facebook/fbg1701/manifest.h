@@ -30,6 +30,6 @@
 #define HASH_IDX_LOGO		7
 #define HASH_IDX_DSDT		8
 #define HASH_IDX_POSTCAR_STAGE	9
-#define HASH_IDX_BOOTBLOCK	10 /* Should always be the last one */
-
+#define HASH_IDX_PUBLICKEY	10
+#define HASH_IDX_BOOTBLOCK	11 /* Should always be the last one */
 #endif

@@ -42,8 +42,7 @@ config VENDORCODE_ELTAN_VBOOT_MANIFEST
 
 config VENDORCODE_ELTAN_OEM_MANIFEST_ITEMS
 	int "Manifest Items"
-	default 11 if POSTCAR_STAGE
-	default 10
+	default 12
 
 config VENDORCODE_ELTAN_OEM_MANIFEST_ITEM_SIZE
 	int

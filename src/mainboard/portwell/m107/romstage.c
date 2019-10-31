@@ -33,6 +33,9 @@ void mainboard_memory_init_params(struct romstage_params *params,
 
 	if (CONFIG(ONBOARD_MEM_MICRON))
 		spd_index = 1;
+	else if (CONFIG(ONBOARD_MEM_KINGSTON))
+		spd_index = 2;
+
 	if (get_spd_cbfs_rdev(&spd_rdev, spd_index) < 0)
 		die("spd.bin not found\n");
 

@@ -41,6 +41,12 @@ config ONBOARD_MEM_MICRON
 	bool "Micron"
 	help
 	  Micron MT41K512M16HA memory
+
+config ONBOARD_MEM_KINGSTON
+	bool "Kingston"
+	help
+	  Kingston B5116ECMDXGGB memory
+
 endchoice
 
 config MAINBOARD_DIR

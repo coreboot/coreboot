@@ -1,0 +1,258 @@
+#
+# This file is part of the coreboot project.
+#
+# Copyright (C) 2019 Facebook, Inc.
+# Copyright (C) 2019 Eltan B.V.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; version 2 of the License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+
+#
+# 8 Gb DDR3 (1600 MHz 11-11-11) Kingston B5116ECMDXGGB
+#
+# SINGLE DIE
+#
+
+# 64Mx16x8 ( 8 bank, 16 Rows, 10 Col, 2 KB page size )
+# 6-7-8-9-10-11
+# DDR3L-1600
+# tCk 1.25ns
+# tRCD 13.75ns
+# tRP 13.75ns
+# tRAS 35ns
+# tRC 48.75ns
+# CL-tRCD-tRP 11-11-11
+
+#	0 Number of SPD Bytes used / Total SPD Size / CRC Coverage
+#		bits[3:0]: 3 = 384 SPD Bytes Used
+#		bits[6:4]: 1 = 256 SPD Bytes Total
+#		bit7 : 0 = CRC covers bytes 0 ~ 128
+23
+
+#	1 SPD Revision
+#		0x10 = Revision 1.0
+10
+
+#	2 Key Byte / DRAM Device Type
+#		bits[7:0]: 0x0c = DDR3 SDRAM
+0B
+
+#	3 Key Byte / Module Type
+#		bits[3:0]: 3 = SODIMM
+#		bits[6:4]: 0 = Not hybrid
+#		bits[7]: 0 = Not hybrid
+03
+
+#	4 SDRAM CHIP Density and Banks
+#		bits[3:0]: 5 = 8 Gigabits Total SDRAM capacity per chip
+#		bits[6:4]: 0 = 3 (8 banks)
+#		bits[7]: reserverd
+05
+
+#	5 SDRAM Addressing
+#		bits[2:0]: 1 = 10 Column Address Bits
+#		bits[5:3]: 4 = 16 Row Address Bits
+#		bits[7:6]: 0 = reserved
+21
+
+#	6 Module Nominal Voltage
+#		bits[0]: 0 = 1.5V operable
+#		bits[1]: 1 = 1.35V operable
+#		bits[2]: 0 = NOT 1.25V operable
+#		bits[7:3]: reserved
+02
+
+#	7 Module Organization
+#		bits[2:0]: 010b = 16 bits SDRAM device
+#		bits[5:3]: 000b = 1 ranks
+#		bits[7:6]: reserved
+02
+
+#	8 Module Memory Bus width
+#		bits[2:0]: 3 = 64 bits pirmary bus width
+#		bits[4:3]: 0 = 0 bits bus witdth extension
+#		bits[7:5]: reserved
+03
+
+#	9 Fine Timebase (FTB) dividend / divisor
+#		bits[3:0]: 1 = Divisor
+#		bits[7:4]: 1 = Dividend
+11
+
+#	10 Medium Timebase (MTB) dividend
+#		bits[7:0]: 0 = 1 (timebase 0.125ns)
+01
+
+#	11 Medium Timebase (MTB) divisor
+#		bits[7:0]: 8 (timebase 0.125ns)
+08
+
+#	12 SDRAM Minimum cycle time (tCKmin)
+#		0xA tCK = 1.25ns (DDR3-1600 (800 MHz clock))
+0A
+
+#	13 Reserved
+00
+
+#	14 CAS Latencies supported, Least Significate Byte
+#		Support 6,7,8,9,10,11
+FC
+
+#	15 CAS Latencies supported, Most Significate Byte
+#		No supporting CL 12-18
+00
+
+#	16 Minimum CAS Latency Time (tAAmin)
+#		0x69 tAA = 13.125ns (offset = 00) DDR3-1600K downbin
+69
+
+#	17 Minimum Write Recovery Time (tWRmin)
+#		0x78 tWR = 15 ns
+78
+
+#	18 Minimum RAS to CAS Delay Time (tRCDmin)
+#		0x69 tRCD = 13.125ns (offset 00) DDR3-1600K downbin
+69
+
+#	19 Minimum Row Active to Row Active Delay Time (tRRDmin)
+#		0x3C tRRD = 7.5ns DDR3-1600, 2KB
+3C
+
+#	20 Minimum Row Precharge Delay Time (tRPmin)
+#		0x69 tRP = 13.125ns (offset 00) DDR3-1600K downbin
+69
+
+#	21 Upper Nibble for tRAS and tRC
+#		3:0 : 1 higher tRAS = 35ns
+#		7:0 : 1 higher tRC = 48.125ns
+11
+
+#	22 Minimum Active to Precharge Delay Time (tRASmin), Least Significant byte
+#		lower 0x118 : tRAS = 35ns DDR3-1600
+18
+
+#	23 Minimum Active to Precharge Delay Time (tRCmin), Most Significant byte
+#		lower 0x181 : tRC = 48.125ns  (offset 00) DDR3-1600K downbin
+81
+
+#	24 Minimum Refresh Recovery Delay time (tRFCmin), Least Significant byte
+#		lower 0xAF0 : tRFC = 350ns 8 Gb
+F0
+
+#	25 Minimum Refresh Recovery Delay time (tRFCmin), Most Significant byte
+#		higher 0xAF0 : tRFC = 350ns 8 Gb
+0A
+
+#	26 tWTRmin
+#		0x3C : tWTR = 7.5 ns (DDR3)
+3C
+
+#	27 tRTPmin
+#		0x3C : tRTP = 7.5 ns (DDR3)
+3C
+
+#	28 Upper Nibble for tFAW
+#		Bit [3:0] : 1 = higher 0x140 tFAW = 40ns
+01
+
+#	29 tFAWmin Lower
+#		lower 0x140 : tFAW = 40ns
+40
+
+#	30 SDRAM Optional Features
+#		byte [0] : 1 = RZQ/6 is support
+#		byte [1] : 1 = RZQ/7 is supported
+#		byte [7] : 1 = DLL-Off Mode support
+83
+
+#	31 Thermal options
+#		byte [0] : 1 = 0 - 95C
+#		byte [2] : 0 = Auto Self Refresh (ASR) is not supported
+#		byte [7] : 0 = Partial Array Self Refres (PASR) is not supported
+01
+
+#	32 Module Thermal support
+#		byte [0] : 0 = Thermal sensor accuracy undefined
+#		byte [7] : 0 = No thermal sensor
+00
+
+#	33 SDRAM device type
+# 		byte [1:0] : 00b = Signal Loading not specified
+#		byte [6:4] : 000b = Die count not specified
+#		byte [7]   : 0 = Standard Monolithic DRAM Device
+00
+
+#	34 Fine tCKmin
+#		0x00 tCK = 1.25ns (DDR3-1600 (800 MHz clock))
+00
+
+#	35 Fine tAAmin
+#		0x00 tAA = 13.125ns (tAAmin offset = 00) DDR3-1600K downbin
+00
+
+#	36 Fine tRCDmin
+#		0x00 tRCD = 13.125ns DDR3-1600K downbin
+00
+
+#	37 Fine tRPmin
+#		0x00 tRP = 13.125ns (offset 00) DDR3-1600K downbin
+00
+
+#	38 Fine tRCmin
+#		0x00 tRC = 48.125ns (offset 00) DDR3-1600K downbin
+00
+
+#	39-59 reserved, general section
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00
+
+#	60-116 Module specific section
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00
+
+#	117-118 Module Manufacturer
+01 98
+
+#	119 Module Manufacturing Location
+00
+
+#	120-121 Module Manufacturing Date
+13 0A
+
+#	122-125 Module Serial number
+00 00 00 00
+
+#	126-127 SPD CRC
+00 00
+
+#	128-145 Module Part number
+66 53 49 49 54 69 67 77 68 88 71 71 66 00 00 00
+00 00
+
+#	145-146 Module revision code
+00 00
+
+#	148-149 DRAM Manufacturer ID code
+01 98
+
+#	150-175 Manufacturer Specific Data
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00
+
+#	176-255 Open for Customer Use
+
+#	176 - 255
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00

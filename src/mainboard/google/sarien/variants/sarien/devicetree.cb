@@ -30,6 +30,8 @@ chip soc/intel/cannonlake
 	register "PchPmSlpS4MinAssert" = "4"  # 4s
 	register "PchPmSlpSusMinAssert" = "4" # 4s
 	register "PchPmSlpAMinAssert" = "4"   # 2s
+	# USB2 PHY Power gating
+	register "PchUsb2PhySusPgDisable" = "1"
 
 	register "speed_shift_enable" = "1"
 	register "s0ix_enable" = "1"

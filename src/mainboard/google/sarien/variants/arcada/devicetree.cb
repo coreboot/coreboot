@@ -27,6 +27,8 @@ chip soc/intel/cannonlake
 	register "PchPmSlpSusMinAssert" = "4" # 4s
 	register "PchPmSlpAMinAssert" = "4"   # 2s
 	register "PchUnlockGpioPads" = "1"
+	# USB2 PHY Power gating
+	register "PchUsb2PhySusPgDisable" = "1"
 
 	register "speed_shift_enable" = "1"
 	register "psys_pmax" = "140"

@@ -273,6 +273,9 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 		params->Usb2AfePehalfbit[i] = config->usb2_ports[i].pre_emp_bit;
 	}
 
+	if (config->PchUsb2PhySusPgDisable)
+		params->PchUsb2PhySusPgEnable = 0;
+
 	for (i = 0; i < ARRAY_SIZE(config->usb3_ports); i++) {
 		params->PortUsb30Enable[i] = config->usb3_ports[i].enable;
 		params->Usb3OverCurrentPin[i] = config->usb3_ports[i].ocpin;

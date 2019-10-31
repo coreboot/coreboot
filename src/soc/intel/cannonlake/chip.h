@@ -130,6 +130,8 @@ struct soc_intel_cannonlake_config {
 	uint16_t usb2_wake_enable_bitmap;
 	/* Wake Enable Bitmap for USB3 ports */
 	uint16_t usb3_wake_enable_bitmap;
+	/* USB2 PHY power gating */
+	uint8_t PchUsb2PhySusPgDisable;
 
 	/* SATA related */
 	enum {

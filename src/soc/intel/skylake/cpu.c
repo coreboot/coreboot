@@ -575,14 +575,3 @@ int soc_skip_ucode_update(u32 current_patch_id, u32 new_patch_id)
 		return (msr1.lo & PRMRR_SUPPORTED) &&
 			(current_patch_id == new_patch_id - 1);
 }
-
-void cpu_lock_sgx_memory(void)
-{
-	msr_t msr;
-
-	msr = rdmsr(MSR_LT_LOCK_MEMORY);
-	if ((msr.lo & 1) == 0) {
-		msr.lo |= 1; /* Lock it */
-		wrmsr(MSR_LT_LOCK_MEMORY, msr);
-	}
-}

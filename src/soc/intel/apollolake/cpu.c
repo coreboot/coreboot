@@ -291,9 +291,3 @@ void apollolake_init_cpus(struct device *dev)
 		CONFIG(BOOT_DEVICE_SPI_FLASH))
 		fast_spi_cache_bios_region();
 }
-
-void cpu_lock_sgx_memory(void)
-{
-	/* Do nothing because MCHECK while loading microcode and enabling
-	 * IA untrusted mode takes care of necessary locking */
-}

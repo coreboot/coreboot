@@ -19,12 +19,6 @@
 #include <soc/nvs.h>
 
 /*
- * Lock SGX memory.
- * CPU specific code needs to provide the implementation.
- */
-void cpu_lock_sgx_memory(void);
-
-/*
  * Configure core PRMRR.
  * PRMRR needs to configured first on all cores and then
  * call sgx_configure() for all cores to init SGX.

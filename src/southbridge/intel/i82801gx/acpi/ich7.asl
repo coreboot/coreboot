@@ -186,4 +186,4 @@ Scope(\)
 #include "sata.asl"
 
 // SMBus
-#include "smbus.asl"
+#include <southbridge/intel/common/acpi/smbus.asl>

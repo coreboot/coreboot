@@ -251,7 +251,7 @@ Scope(\)
 #include "sata.asl"
 
 // SMBus 0:1f.3
-#include "smbus.asl"
+#include <southbridge/intel/common/acpi/smbus.asl>
 
 Method (_OSC, 4)
 {

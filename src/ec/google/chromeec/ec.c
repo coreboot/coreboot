@@ -97,7 +97,7 @@ void log_recovery_mode_switch(void)
 static void google_chromeec_elog_add_recovery_event(void *unused)
 {
 	uint64_t *events = cbmem_find(CBMEM_ID_EC_HOSTEVENT);
-	uint8_t event_byte = EC_EVENT_KEYBOARD_RECOVERY;
+	uint8_t event_byte = EC_HOST_EVENT_KEYBOARD_RECOVERY;
 
 	if (!events)
 		return;
@@ -107,7 +107,7 @@ static void google_chromeec_elog_add_recovery_event(void *unused)
 
 	if (*events &
 	    EC_HOST_EVENT_MASK(EC_HOST_EVENT_KEYBOARD_RECOVERY_HW_REINIT))
-		event_byte = EC_EVENT_KEYBOARD_RECOVERY_HWREINIT;
+		event_byte = EC_HOST_EVENT_KEYBOARD_RECOVERY_HW_REINIT;
 
 	elog_add_event_byte(ELOG_TYPE_EC_EVENT, event_byte);
 }

@@ -11,6 +11,7 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/early_variables.h>
 #include <arch/io.h>
 #include <commonlib/helpers.h>
 #include <cpu/x86/tsc.h>
@@ -122,3 +123,25 @@ unsigned long calibrate_tsc_with_pit(void)
 bad_ctc:
 	return 0;
 }
+
+#if CONFIG(UNKNOWN_TSC_RATE)
+static u32 g_timer_tsc CAR_GLOBAL;
+
+unsigned long tsc_freq_mhz(void)
+{
+	u32 tsc;
+
+	tsc = car_get_var(g_timer_tsc);
+	if (tsc > 0)
+		return tsc;
+
+	tsc = calibrate_tsc_with_pit();
+
+	/* Set some semi-ridiculous rate if approximation fails. */
+	if (tsc == 0)
+		tsc = 5000;
+
+	car_set_var(g_timer_tsc, tsc);
+	return tsc;
+}
+#endif

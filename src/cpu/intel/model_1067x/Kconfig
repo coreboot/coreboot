@@ -7,7 +7,6 @@ config CPU_INTEL_MODEL_1067X
 	select SMP
 	select SSE2
 	select UDELAY_TSC
-	select TSC_CONSTANT_RATE
 	select TSC_MONOTONIC_TIMER
 	select TSC_SYNC_MFENCE
 	select SUPPORT_CPU_UCODE_IN_CBFS

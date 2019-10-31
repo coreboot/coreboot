@@ -7,7 +7,6 @@ config CPU_INTEL_MODEL_106CX
 	select SMP
 	select SSE2
 	select UDELAY_TSC
-	select TSC_CONSTANT_RATE
 	select TSC_MONOTONIC_TIMER
 	select SIPI_VECTOR_IN_ROM
 	select AP_IN_SIPI_WAIT

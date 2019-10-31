@@ -20,5 +20,6 @@ config CPU_QEMU_X86
 	select SMP
 	select UDELAY_TSC
 	select TSC_MONOTONIC_TIMER
+	select UNKNOWN_TSC_RATE
 	select C_ENVIRONMENT_BOOTBLOCK
 	select SMM_ASEG

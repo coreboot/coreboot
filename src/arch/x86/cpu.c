@@ -315,7 +315,7 @@ void lb_arch_add_records(struct lb_header *header)
 	struct lb_tsc_info *tsc_info;
 
 	/* Don't advertise a TSC rate unless it's constant. */
-	if (!CONFIG(TSC_CONSTANT_RATE))
+	if (!tsc_constant_rate())
 		return;
 
 	freq_khz = tsc_freq_mhz() * 1000;

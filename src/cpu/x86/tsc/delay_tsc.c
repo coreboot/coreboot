@@ -18,26 +18,9 @@
 #include <delay.h>
 #include <thread.h>
 
-static unsigned long clocks_per_usec CAR_GLOBAL;
-
-static unsigned long calibrate_tsc(void)
-{
-	if (CONFIG(TSC_CONSTANT_RATE))
-		return tsc_freq_mhz();
-	else
-		return calibrate_tsc_with_pit();
-}
-
 void init_timer(void)
 {
-	if (!car_get_var(clocks_per_usec))
-		car_set_var(clocks_per_usec, calibrate_tsc());
-}
-
-static inline unsigned long get_clocks_per_usec(void)
-{
-	init_timer();
-	return car_get_var(clocks_per_usec);
+	(void)tsc_freq_mhz();
 }
 
 void udelay(unsigned int us)
@@ -51,7 +34,7 @@ void udelay(unsigned int us)
 
 	start = rdtscll();
 	clocks = us;
-	clocks *= get_clocks_per_usec();
+	clocks *= tsc_freq_mhz();
 	current = rdtscll();
 	while ((current - start) < clocks) {
 		cpu_relax();
@@ -89,7 +72,7 @@ void timer_monotonic_get(struct mono_time *mt)
 
 	current_tick = rdtscll();
 	ticks_elapsed = current_tick - mono_counter->last_value;
-	ticks_per_usec = get_clocks_per_usec();
+	ticks_per_usec = tsc_freq_mhz();
 
 	/* Update current time and tick values only if a full tick occurred. */
 	if (ticks_elapsed >= ticks_per_usec) {

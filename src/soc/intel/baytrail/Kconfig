@@ -27,7 +27,6 @@ config CPU_SPECIFIC_OPTIONS
 	select SMP
 	select SPI_FLASH
 	select SSE2
-	select TSC_CONSTANT_RATE
 	select TSC_MONOTONIC_TIMER
 	select TSC_SYNC_MFENCE
 	select UDELAY_TSC

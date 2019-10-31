@@ -13,7 +13,6 @@ config CPU_SPECIFIC_OPTIONS
 	select MMX
 	select SSE2
 	select UDELAY_TSC
-	select TSC_CONSTANT_RATE
 	select TSC_MONOTONIC_TIMER
 	select SUPPORT_CPU_UCODE_IN_CBFS
 	#select AP_IN_SIPI_WAIT

@@ -12,7 +12,7 @@
  */
 
 SECTIONS {
-	. = (0xffffffff - CONFIG_ID_SECTION_OFFSET) - (__id_end - __id_start) + 1;
+	. = (CONFIG_X86_RESET_VECTOR - CONFIG_ID_SECTION_OFFSET) - (__id_end - __id_start) + 0x10;
 	.id (.): {
 		KEEP(*(.id))
 	}

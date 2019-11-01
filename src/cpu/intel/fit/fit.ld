@@ -12,7 +12,7 @@
  */
 
 SECTIONS {
-	. = 0xffffffc0;
+	. = CONFIG_X86_RESET_VECTOR - 0x30; /* 0xffffffc0 */
 	.fit_pointer (.): {
 		KEEP(*(.fit_pointer))
 	}

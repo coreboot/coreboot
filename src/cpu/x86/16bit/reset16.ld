@@ -11,16 +11,14 @@
  * GNU General Public License for more details.
  */
 
-/*
- *      _ROMTOP                 : The top of the ROM used where we
- *				  need to put the reset vector.
- */
+/* _RESET_VECTOR: typically the top of the ROM */
 
 SECTIONS {
 	/* Trigger an error if I have an unuseable start address */
-	_bogus = ASSERT(_start16bit >= 0xffff0000, "_start16bit too low. Please report.");
-	_ROMTOP = 0xfffffff0;
-	. = _ROMTOP;
+	_TOO_LOW = CONFIG_X86_RESET_VECTOR - 0xfff0;
+	_bogus = ASSERT(_start16bit >= _TOO_LOW, "_start16bit too low. Please report.");
+
+	. = CONFIG_X86_RESET_VECTOR;
 	.reset . : {
 		*(.reset);
 		. = 15;

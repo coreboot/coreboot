@@ -14,7 +14,7 @@
 ENTRY(_start)
 
 MEMORY {
-	rom : ORIGIN = 0xffff0000, LENGTH = 64K
+	rom : ORIGIN = CONFIG_X86_RESET_VECTOR - 0xfff0, LENGTH = 64K
 }
 
 TARGET(binary)

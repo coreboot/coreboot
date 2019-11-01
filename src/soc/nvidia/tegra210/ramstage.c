@@ -15,6 +15,7 @@
 
 #include <arch/lib_helpers.h>
 #include <arch/stages.h>
+#include <cbmem.h>
 #include <console/console.h>
 #include <device/mmio.h>
 #include <gic.h>
@@ -71,6 +72,11 @@ void ramstage_entry(void)
 
 	if (tegra210_run_mtc() != 0)
 		printk(BIOS_ERR, "MTC: No training data.\n");
+
+	/* Ramstage is run on a different core, so passing cbmem_top
+	   via calling arguments is not an option, but it is not a problem
+	   to call cbmem_top_chipset() again here to populate _cbmem_top_ptr. */
+	_cbmem_top_ptr = (uintptr_t)cbmem_top_chipset();
 
 	/* Jump to boot state machine in common code. */
 	main();

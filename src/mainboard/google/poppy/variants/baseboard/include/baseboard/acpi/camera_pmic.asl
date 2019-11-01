@@ -468,23 +468,33 @@ Scope (\_SB.PCI0.I2C2)
 							C0GP = 1
 						}
 
-						VACT = 1
 						if (LNotEqual (ACVA, 109)) {
 							/* Set ANA at 2.8152V */
 							ACVA = 109
 						}
-						Sleep(3)
+						VACT = 1
 
-						\_SB.PCI0.I2C2.PMIC.CLKE()
-						CLE0 = 1
-
-						VDCT = 1
 						if (LNotEqual (DCVA, 12)) {
 							/* Set CORE at 1.2V */
 							DCVA = 12
 						}
-						Sleep(3)
+						VDCT = 1
+
+						\_SB.PCI0.I2C2.PMIC.CLKE()
+						CLE0 = 1
+
+						/*
+						 * Wait for all regulator
+						 * outputs to settle.
+						 */
+						Sleep(1)
+
 						\_SB.PCI0.I2C2.PMIC.CRST(1)
+
+						/*
+						 * 5 ms needed before
+						 * streaming on.
+						 */
 						Sleep(5)
 
 						STA = 1

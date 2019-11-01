@@ -19,6 +19,9 @@ On entry to a stage or payload (including SELF payloads),
 * all harts are running.
 * A0 is the hart ID.
 * A1 is the pointer to the Flattened Device Tree (FDT).
+* A2 contains the additional program calling argument:
+  - cbmem_top for ramstage
+  - the address of the payload for opensbi
 
 ## Additional payload handoff requirements
 The location of cbmem should be placed in a node in the FDT.

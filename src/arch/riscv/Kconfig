@@ -90,6 +90,7 @@ config ARCH_ROMSTAGE_RISCV
 config ARCH_RAMSTAGE_RISCV
 	bool
 	default n
+	select RAMSTAGE_CBMEM_TOP_ARG
 
 config RISCV_USE_ARCH_TIMER
 	bool

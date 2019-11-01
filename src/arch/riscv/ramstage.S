@@ -20,6 +20,13 @@
 .section ".text._start", "ax", %progbits
 .globl _start
 _start:
+	/* cbmem_top is passed via a2 */
+	la   t0, _cbmem_top_ptr
+#if __riscv_xlen == 32
+	sw   a2, (t0)
+#elif __riscv_xlen == 64
+	sd   a2, (t0)
+#endif
 	# initialize stack point for each hart
 	# and the stack must be page-aligned.
 	# 0xDEADBEEF used to check stack overflow

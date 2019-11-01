@@ -36,7 +36,7 @@ struct arch_prog_run_args {
 
 static void do_arch_prog_run(struct arch_prog_run_args *args)
 {
-	int hart_id;
+	int hart_id = HLS()->hart_id;
 	struct prog *prog = args->prog;
 	void *fdt = HLS()->fdt;
 
@@ -49,11 +49,8 @@ static void do_arch_prog_run(struct arch_prog_run_args *args)
 		else
 			run_payload(prog, fdt, RISCV_PAYLOAD_MODE_S);
 	} else {
-		void (*doit)(int hart_id, void *fdt) = prog_entry(prog);
-
-		hart_id = HLS()->hart_id;
-
-		doit(hart_id, fdt);
+		void (*doit)(int hart_id, void *fdt, void *arg) = prog_entry(prog);
+		doit(hart_id, fdt, prog_entry_arg(prog));
 	}
 
 	die("Failed to run stage");

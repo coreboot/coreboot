@@ -7,7 +7,7 @@ Controller etc.
 ## Supported boards
 
 - [X11SSH-TF](x11ssh-tf/x11ssh-tf.md)
-- [X11SSM-F](x11ssh-tf/x11ssm-f.md)
+- [X11SSM-F](x11ssm-f/x11ssm-f.md)
 
 ## Required proprietary blobs
 

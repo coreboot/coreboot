@@ -400,50 +400,41 @@ Scope (\_SB.PCI0.I2C2)
 		}
 
 		/* Reference count for VSIO */
-		Mutex (MUTV, 0)
 		Name (VSIC, 0)
 		Method (DOVD, 1, Serialized) {
-			/* Save Acquire result so we can check for
-			Mutex acquired */
-			Store (Acquire (MUTV, 1000), Local0)
-			/* Check for Mutex acquired */
-			If (LEqual (Local0, Zero)) {
-				/* Turn off VSIO */
-				If (LEqual (Arg0, Zero)) {
-					/* Decrement only if VSIC > 0 */
-					if (LGreater (VSIC, 0)) {
-						Decrement (VSIC)
-						If (LEqual (VSIC, Zero)) {
-							VSIO = 0
-							Sleep(1)
-							PMOF()
-						}
-					}
-				} ElseIf (LEqual (Arg0, 1)) {
-					/* Increment only if VSIC < 4 */
-					If (LLess (VSIC, 4)) {
-						/* Turn on VSIO */
-						If (LEqual (VSIC, Zero)) {
-							PMON()
-							VSIO = 3
-
-							if (LNotEqual (IOVA, 52)) {
-								/* Set VSIO value as
-								1.8006 V */
-								IOVA = 52
-							}
-							if (LNotEqual (SIOV, 52)) {
-								/* Set VSIO value as
-								1.8006 V */
-								SIOV = 52
-							}
-							Sleep(3)
-						}
-						Increment (VSIC)
+			/* Turn off VSIO */
+			If (LEqual (Arg0, Zero)) {
+				/* Decrement only if VSIC > 0 */
+				if (LGreater (VSIC, 0)) {
+					Decrement (VSIC)
+					If (LEqual (VSIC, Zero)) {
+						VSIO = 0
+						Sleep(1)
+						PMOF()
 					}
 				}
+			} ElseIf (LEqual (Arg0, 1)) {
+				/* Increment only if VSIC < 4 */
+				If (LLess (VSIC, 4)) {
+					/* Turn on VSIO */
+					If (LEqual (VSIC, Zero)) {
+						PMON()
+						VSIO = 3
 
-				Release (MUTV)
+						if (LNotEqual (IOVA, 52)) {
+							/* Set VSIO value as
+							1.8006 V */
+							IOVA = 52
+						}
+						if (LNotEqual (SIOV, 52)) {
+							/* Set VSIO value as
+							1.8006 V */
+							SIOV = 52
+						}
+						Sleep(3)
+					}
+					Increment (VSIC)
+				}
 			}
 		}
 

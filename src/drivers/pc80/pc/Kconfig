@@ -18,10 +18,6 @@ config DRIVERS_PS2_KEYBOARD
 	  this option, then you can say N here to speed up boot time.
 	  Otherwise say Y.
 
-config UDELAY_IO
-	bool
-	default n
-
 # This option is used in code but never selected.
 config UDELAY_TIMER2
 	bool

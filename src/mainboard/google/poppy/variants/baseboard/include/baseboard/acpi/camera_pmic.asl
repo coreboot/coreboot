@@ -458,15 +458,15 @@ Scope (\_SB.PCI0.I2C2)
 				/* TODO: Read Voltage and Sleep values from Sensor Obj */
 				If (LEqual (AVBL, 1)) {
 					If (LEqual (STA, 0)) {
+						/* Enable VSIO regulator +
+						daisy chain */
+						DOVD(1)
+
 						If (LEqual (C0GP, 0)) {
 							\_SB.PCI0.I2C2.PMIC.CGP1()
 							\_SB.PCI0.I2C2.PMIC.CGP2()
 							C0GP = 1
 						}
-
-						/* Enable VSIO regulator +
-						daisy chain */
-						DOVD(1)
 
 						VACT = 1
 						if (LNotEqual (ACVA, 109)) {

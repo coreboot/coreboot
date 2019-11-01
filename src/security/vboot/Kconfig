@@ -220,6 +220,13 @@ config RO_REGION_ONLY
 	  Add a space delimited list of filenames that should only be in the
 	  RO section.
 
+config RW_REGION_ONLY
+	string
+	default ""
+	depends on VBOOT_SLOTS_RW_A
+	help
+	  Add a space delimited list of filenames that should only be in the
+	  RW sections.
 
 config VBOOT_ENABLE_CBFS_FALLBACK
 	bool

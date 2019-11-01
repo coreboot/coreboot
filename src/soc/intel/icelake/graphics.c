@@ -52,14 +52,14 @@ void graphics_soc_init(struct device *dev)
 
 	/*
 	 * GFX PEIM module inside FSP binary is taking care of graphics
-	 * initialization based on INTEL_GMA_ADD_VBT Kconfig
+	 * initialization based on RUN_FSP_GOP Kconfig
 	 * option and input VBT file. Hence no need to load/execute legacy VGA
 	 * OpROM in order to initialize GFX.
 	 *
 	 * In case of non-FSP solution, SoC need to select VGA_ROM_RUN
 	 * Kconfig to perform GFX initialization through VGA OpRom.
 	 */
-	if (CONFIG(INTEL_GMA_ADD_VBT))
+	if (CONFIG(RUN_FSP_GOP))
 		return;
 
 	/* IGD needs to Bus Master */

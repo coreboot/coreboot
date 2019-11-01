@@ -18,6 +18,8 @@
 #ifndef __NORTHBRIDGE_INTEL_X4X_H__
 #define __NORTHBRIDGE_INTEL_X4X_H__
 
+#include "iomap.h"
+
 /*
  * D0:F0
  */

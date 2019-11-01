@@ -142,21 +142,21 @@ Scope (\_SB.PCI0.I2C2)
 				2
 			}
 			/* GPIO.4 is AVDD pin for user facing camera */
-			GpioIo (Exclusive, PullDefault, 0x0000, 0x0000,
+			GpioIo (Exclusive, PullDown, 0x0000, 0x0000,
 				IoRestrictionOutputOnly, "\\_SB.PCI0.I2C2.PMIC",
 				0x00, ResourceConsumer,,)
 			{
 				4
 			}
 			/* GPIO.5 is XSHUTDOWN pin for user facing camera */
-			GpioIo (Exclusive, PullDefault, 0x0000, 0x0000,
+			GpioIo (Exclusive, PullDown, 0x0000, 0x0000,
 				IoRestrictionOutputOnly, "\\_SB.PCI0.I2C2.PMIC",
 				0x00, ResourceConsumer,,)
 			{
 				5
 			}
 			/* GPIO.9 is XSHUTDOWN pin for world facing camera */
-			GpioIo (Exclusive, PullDefault, 0x0000, 0x0000,
+			GpioIo (Exclusive, PullDown, 0x0000, 0x0000,
 				IoRestrictionOutputOnly, "\\_SB.PCI0.I2C2.PMIC",
 				0x00, ResourceConsumer,,)
 			{
@@ -188,7 +188,7 @@ Scope (\_SB.PCI0.I2C2)
 			GPO2, 1,
 			Connection
 			(
-				GpioIo (Exclusive, PullDefault, 0x0000, 0x0000,
+				GpioIo (Exclusive, PullDown, 0x0000, 0x0000,
 					IoRestrictionOutputOnly,
 					"\\_SB.PCI0.I2C2.PMIC", 0x00,
 					ResourceConsumer,,)
@@ -199,7 +199,7 @@ Scope (\_SB.PCI0.I2C2)
 			GRST, 1,
 			Connection
 			(
-				GpioIo (Exclusive, PullDefault, 0x0000, 0x0000,
+				GpioIo (Exclusive, PullDown, 0x0000, 0x0000,
 					IoRestrictionOutputOnly,
 					"\\_SB.PCI0.I2C2.PMIC", 0x00,
 					ResourceConsumer,,)
@@ -210,7 +210,7 @@ Scope (\_SB.PCI0.I2C2)
 			GPO4, 1,
 			Connection
 			(
-				GpioIo (Exclusive, PullDefault, 0x0000, 0x0000,
+				GpioIo (Exclusive, PullDown, 0x0000, 0x0000,
 					IoRestrictionOutputOnly,
 					"\\_SB.PCI0.I2C2.PMIC", 0x00,
 					ResourceConsumer,,)

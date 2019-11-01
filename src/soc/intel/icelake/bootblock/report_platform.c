@@ -93,7 +93,8 @@ static void report_cpu_info(void)
 {
 	struct cpuid_result cpuidr;
 	u32 i, index, cpu_id, cpu_feature_flag;
-	char cpu_string[50], *cpu_name = cpu_string; /* 48 bytes are reported */
+	const char cpu_not_found[] = "Platform info not available";
+	const char *cpu_name = cpu_not_found; /* 48 bytes are reported */
 	int vt, txt, aes;
 	msr_t microcode_ver;
 	static const char *const mode[] = {"NOT ", ""};
@@ -102,9 +103,7 @@ static void report_cpu_info(void)
 
 	index = 0x80000000;
 	cpuidr = cpuid(index);
-	if (cpuidr.eax < 0x80000004) {
-		strcpy(cpu_string, "Platform info not available");
-	} else {
+	if (cpuidr.eax >= 0x80000004) {
 		int j = 0;
 
 		for (i = 2; i <= 4; i++) {
@@ -116,10 +115,11 @@ static void report_cpu_info(void)
 		}
 		p[12] = 0;
 		cpu_name = (char *)p;
+
+		/* Skip leading spaces in CPU name string */
+		while (cpu_name[0] == ' ' && strlen(cpu_name) > 0)
+			cpu_name++;
 	}
-	/* Skip leading spaces in CPU name string */
-	while (cpu_name[0] == ' ')
-		cpu_name++;
 
 	microcode_ver.lo = 0;
 	microcode_ver.hi = 0;

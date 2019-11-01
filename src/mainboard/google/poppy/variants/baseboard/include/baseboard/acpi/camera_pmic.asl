@@ -526,30 +526,39 @@ Scope (\_SB.PCI0.I2C2)
 						daisy chain */
 						DOVD(1)
 
-						VAX2 = 1 /* Enable VAUX2 */
-
 						if (LNotEqual (AX2V, 52)) {
 							/* Set VAUX2 as
 							1.8006 V */
 							AX2V = 52
 						}
+						VAX2 = 1 /* Enable VAUX2 */
+
+						\_SB.PCI0.I2C2.PMIC.CGP4(1)
+
+						/*
+						 * Wait for DOVDD and AVDD
+						 * to settle.
+						 */
+						Sleep(1)
+
+						if (LNotEqual (AX1V, 19)) {
+						/* Set VAUX1 as 1.2132V */
+							AX1V = 19
+						}
+						VAX1 = 1 /* Enable VAUX1 */
+
+						/* Wait for VDD to settle. */
 						Sleep(1)
 
 						\_SB.PCI0.I2C2.PMIC.CLKE()
 						CLE1 = 1
 
-						VAX1 = 1 /* Enable VAUX1 */
-						if (LNotEqual (AX1V, 19)) {
-						/* Set VAUX1 as 1.2132V */
-							AX1V = 19
-						}
-						Sleep(3)
-
-						\_SB.PCI0.I2C2.PMIC.CGP4(1)
-						Sleep(3)
-
 						\_SB.PCI0.I2C2.PMIC.CGP5(1)
-						Sleep(3)
+						/*
+						 * Ensure 10 ms between
+						 * power-up and streamon.
+						 */
+						Sleep(10)
 						STA = 1
 					}
 				}

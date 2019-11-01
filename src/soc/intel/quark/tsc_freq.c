@@ -14,21 +14,10 @@
  * GNU General Public License for more details.
  */
 
-#include <stdint.h>
-#include <cpu/x86/msr.h>
 #include <cpu/x86/tsc.h>
-#include <timer.h>
 
 unsigned long tsc_freq_mhz(void)
 {
 	/* CPU freq = 400 MHz */
 	return 400;
-}
-
-void timer_monotonic_get(struct mono_time *mt)
-{
-	uint64_t tsc_value;
-
-	tsc_value = rdtscll();
-	mt->microseconds = tsc_value / tsc_freq_mhz();
 }

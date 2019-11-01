@@ -30,6 +30,7 @@
 #include <symbols.h>
 #include <timestamp.h>
 #include <fit_payload.h>
+#include <security/vboot/vboot_common.h>
 
 /* Only can represent up to 1 byte less than size_t. */
 const struct mem_region_device addrspace_32bit =
@@ -58,6 +59,8 @@ void run_romstage(void)
 {
 	struct prog romstage =
 		PROG_INIT(PROG_ROMSTAGE, CONFIG_CBFS_PREFIX "/romstage");
+
+	vboot_run_logic();
 
 	if (prog_locate(&romstage))
 		goto fail;
@@ -134,6 +137,8 @@ void run_ramstage(void)
 	if (CONFIG(ARCH_X86) &&
 	    !CONFIG(NO_STAGE_CACHE))
 		run_ramstage_from_resume(&ramstage);
+
+	vboot_run_logic();
 
 	if (prog_locate(&ramstage))
 		goto fail;

@@ -35,7 +35,7 @@ _Static_assert(!CONFIG(VBOOT_RETURN_FROM_VERSTAGE) ||
 
 int vboot_executed CAR_GLOBAL;
 
-static void vboot_prepare(void)
+void vboot_run_logic(void)
 {
 	if (verification_should_run()) {
 		/* Note: this path is not used for VBOOT_RETURN_FROM_VERSTAGE */
@@ -90,6 +90,5 @@ static int vboot_locate(struct cbfs_props *props)
 
 const struct cbfs_locator vboot_locator = {
 	.name = "VBOOT",
-	.prepare = vboot_prepare,
 	.locate = vboot_locate,
 };

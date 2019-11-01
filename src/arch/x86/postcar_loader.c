@@ -23,6 +23,7 @@
 #include <romstage_handoff.h>
 #include <stage_cache.h>
 #include <timestamp.h>
+#include <security/vboot/vboot_common.h>
 
 static inline void stack_push(struct postcar_frame *pcf, uint32_t val)
 {
@@ -170,6 +171,8 @@ static void load_postcar_cbfs(struct prog *prog, struct postcar_frame *pcf)
 		.cbmem_id = CBMEM_ID_AFTER_CAR,
 		.prog = prog,
 	};
+
+	vboot_run_logic();
 
 	if (prog_locate(prog))
 		die_with_post_code(POST_INVALID_ROM,

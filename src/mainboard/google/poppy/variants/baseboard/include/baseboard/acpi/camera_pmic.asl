@@ -438,10 +438,6 @@ Scope (\_SB.PCI0.I2C2)
 			}
 		}
 
-		/* C0GP is used to indicate if CAM0
-		 * GPIOs are configured as input.
-		 */
-		Name (C0GP, 0)
 		/* Power resource methods for CAM0 */
 		PowerResource (OVTH, 0, 0) {
 			Name (STA, 0)
@@ -453,22 +449,15 @@ Scope (\_SB.PCI0.I2C2)
 						daisy chain */
 						DOVD(1)
 
-						If (LEqual (C0GP, 0)) {
-							\_SB.PCI0.I2C2.PMIC.CGP1()
-							\_SB.PCI0.I2C2.PMIC.CGP2()
-							C0GP = 1
-						}
+						\_SB.PCI0.I2C2.PMIC.CGP1()
+						\_SB.PCI0.I2C2.PMIC.CGP2()
 
-						if (LNotEqual (ACVA, 109)) {
-							/* Set ANA at 2.8152V */
-							ACVA = 109
-						}
+						/* Set ANA at 2.8152V */
+						ACVA = 109
 						VACT = 1
 
-						if (LNotEqual (DCVA, 12)) {
-							/* Set CORE at 1.2V */
-							DCVA = 12
-						}
+						/* Set CORE at 1.2V */
+						DCVA = 12
 						VDCT = 1
 
 						\_SB.PCI0.I2C2.PMIC.CLKE()
@@ -527,11 +516,8 @@ Scope (\_SB.PCI0.I2C2)
 						daisy chain */
 						DOVD(1)
 
-						if (LNotEqual (AX2V, 52)) {
-							/* Set VAUX2 as
-							1.8006 V */
-							AX2V = 52
-						}
+						/* Set VAUX2 as 1.8006 V */
+						AX2V = 52
 						VAX2 = 1 /* Enable VAUX2 */
 
 						\_SB.PCI0.I2C2.PMIC.CGP4(1)
@@ -542,10 +528,8 @@ Scope (\_SB.PCI0.I2C2)
 						 */
 						Sleep(1)
 
-						if (LNotEqual (AX1V, 19)) {
 						/* Set VAUX1 as 1.2132V */
-							AX1V = 19
-						}
+						AX1V = 19
 						VAX1 = 1 /* Enable VAUX1 */
 
 						/* Wait for VDD to settle. */
@@ -603,11 +587,8 @@ Scope (\_SB.PCI0.I2C2)
 
 						/* Enable VCM regulator */
 						VCMC = 1
-						if (LNotEqual (VCMV, 109)) {
-							/* Set VCM value at
-							2.8152 V */
-							VCMV = 109
-						}
+						/* Set VCM value at 2.8152 V */
+						VCMV = 109
 						Sleep(3)
 
 						STA = 1

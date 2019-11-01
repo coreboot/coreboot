@@ -15,6 +15,7 @@
 
 #include <bootblock_common.h>
 #include <intelblocks/gspi.h>
+#include <intelblocks/systemagent.h>
 #include <intelblocks/uart.h>
 #include <soc/bootblock.h>
 #include <soc/iomap.h>

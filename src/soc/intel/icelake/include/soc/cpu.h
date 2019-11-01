@@ -16,7 +16,6 @@
 #ifndef _SOC_ICELAKE_CPU_H_
 #define _SOC_ICELAKE_CPU_H_
 
-#include <device/device.h>
 #include <intelblocks/msr.h>
 
 /* Latency times in units of 32768ns */

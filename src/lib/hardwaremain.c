@@ -23,6 +23,7 @@
 #include <bootstate.h>
 #include <console/console.h>
 #include <console/post_codes.h>
+#include <commonlib/helpers.h>
 #include <cbmem.h>
 #include <version.h>
 #include <device/device.h>
@@ -256,7 +257,12 @@ static void bs_report_time(struct boot_state *state)
 	run_time = mono_time_diff_microseconds(&samples[1], &samples[2]);
 	exit_time = mono_time_diff_microseconds(&samples[2], &samples[3]);
 
-	printk(BIOS_DEBUG, "BS: %s times (us): entry %ld run %ld exit %ld\n",
+	/* Report with millisecond precision to reduce log diffs. */
+	entry_time = DIV_ROUND_CLOSEST(entry_time, USECS_PER_MSEC);
+	run_time = DIV_ROUND_CLOSEST(run_time, USECS_PER_MSEC);
+	exit_time = DIV_ROUND_CLOSEST(exit_time, USECS_PER_MSEC);
+
+	printk(BIOS_DEBUG, "BS: %s times (ms): entry %ld run %ld exit %ld\n",
 	       state->name, entry_time, run_time, exit_time);
 }
 #else

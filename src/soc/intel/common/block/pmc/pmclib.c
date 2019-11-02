@@ -420,37 +420,24 @@ int pmc_fill_power_state(struct chipset_power_state *ps)
 }
 
 #if CONFIG(PMC_GLOBAL_RESET_ENABLE_LOCK)
-/*
- * If possible, lock 0xcf9. Once the register is locked, it can't be changed.
- * This lock is reset on cold boot, hard reset, soft reset and Sx.
- */
-void pmc_global_reset_lock(void)
+void pmc_global_reset_disable_and_lock(void)
 {
-	/* Read PMC base address from soc */
-	uintptr_t etr = soc_read_pmc_base() + ETR;
+	uint32_t *etr = soc_pmc_etr_addr();
 	uint32_t reg;
 
-	reg = read32((void *)etr);
-	if (reg & CF9_LOCK)
-		return;
-	reg |= CF9_LOCK;
-	write32((void *)etr, reg);
+	reg = read32(etr);
+	reg = (reg & ~CF9_GLB_RST) | CF9_LOCK;
+	write32(etr, reg);
 }
 
-/*
- * Enable or disable global reset. If global reset is enabled, hard reset and
- * soft reset will trigger global reset, where both host and TXE are reset.
- * This is cleared on cold boot, hard reset, soft reset and Sx.
- */
 void pmc_global_reset_enable(bool enable)
 {
-	/* Read PMC base address from soc */
-	uintptr_t etr = soc_read_pmc_base() + ETR;
+	uint32_t *etr = soc_pmc_etr_addr();
 	uint32_t reg;
 
-	reg = read32((void *)etr);
+	reg = read32(etr);
 	reg = enable ? reg | CF9_GLB_RST : reg & ~CF9_GLB_RST;
-	write32((void *)etr, reg);
+	write32(etr, reg);
 }
 #endif // CONFIG_PMC_GLOBAL_RESET_ENABLE_LOCK
 

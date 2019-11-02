@@ -418,10 +418,8 @@ static void soc_init(void *data)
 
 static void soc_final(void *data)
 {
-	/* Disable global reset, just in case */
-	pmc_global_reset_enable(0);
 	/* Make sure payload/OS can't trigger global reset */
-	pmc_global_reset_lock();
+	pmc_global_reset_disable_and_lock();
 }
 
 static void disable_dev(struct device *dev, FSP_S_CONFIG *silconfig)

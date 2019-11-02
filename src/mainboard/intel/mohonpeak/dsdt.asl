@@ -31,6 +31,7 @@ DefinitionBlock(
 	#include <arch/x86/acpi/debug.asl>
 
 	// Some generic macros
+	#include <southbridge/intel/common/acpi/platform.asl>
 	#include "acpi/platform.asl"
 
 	// global NVS and variables

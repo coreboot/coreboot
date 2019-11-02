@@ -49,7 +49,7 @@ void console_time_report(void)
 	if (!TRACK_CONSOLE_TIME)
 		return;
 
-	printk(BIOS_DEBUG, "Accumulated console time in " ENV_STRING " %ld ms\n",
+	printk(BIOS_DEBUG, "BS: " ENV_STRING " times (exec / console): total (unknown) / %ld ms\n",
 		DIV_ROUND_CLOSEST(console_usecs, USECS_PER_MSEC));
 }
 

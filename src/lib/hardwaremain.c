@@ -52,20 +52,6 @@ static boot_state_t bs_write_tables(void *arg);
 static boot_state_t bs_payload_load(void *arg);
 static boot_state_t bs_payload_boot(void *arg);
 
-/*
- * Typically a state will take 4 time samples:
- *   1. Before state entry callbacks
- *   2. After state entry callbacks / Before state function.
- *   3. After state function / Before state exit callbacks.
- *   4. After state exit callbacks.
- */
-#define MAX_TIME_SAMPLES 4
-struct boot_state_times {
-	int num_samples;
-	struct mono_time samples[MAX_TIME_SAMPLES];
-	long console_usecs[MAX_TIME_SAMPLES];
-};
-
 /* The prologue (BS_ON_ENTRY) and epilogue (BS_ON_EXIT) of a state can be
  * blocked from transitioning to the next (state,seq) pair. When the blockers
  * field is 0 a transition may occur. */
@@ -81,10 +67,8 @@ struct boot_state {
 	struct boot_phase phases[2];
 	boot_state_t (*run_state)(void *arg);
 	void *arg;
+	int num_samples;
 	int complete : 1;
-#if CONFIG(HAVE_MONOTONIC_TIMER)
-	struct boot_state_times times;
-#endif
 };
 
 #define BS_INIT(state_, run_func_)				\
@@ -237,46 +221,43 @@ static boot_state_t bs_payload_boot(void *arg)
 	return BS_PAYLOAD_BOOT;
 }
 
-#if CONFIG(HAVE_MONOTONIC_TIMER)
+/*
+ * Typically a state will take 4 time samples:
+ *   1. Before state entry callbacks
+ *   2. After state entry callbacks / Before state function.
+ *   3. After state function / Before state exit callbacks.
+ *   4. After state exit callbacks.
+ */
 static void bs_sample_time(struct boot_state *state)
 {
-	struct mono_time *mt;
+	static const char *const sample_id[] = { "entry", "run", "exit" };
+	static struct mono_time previous_sample;
+	struct mono_time this_sample;
+	long console;
 
-	long console_usecs = console_time_get_and_reset();
-	state->times.console_usecs[state->times.num_samples] = console_usecs;
+	if (!CONFIG(HAVE_MONOTONIC_TIMER))
+		return;
 
-	mt = &state->times.samples[state->times.num_samples];
-	timer_monotonic_get(mt);
-	state->times.num_samples++;
+	console = console_time_get_and_reset();
+	timer_monotonic_get(&this_sample);
+	state->num_samples++;
+
+	int i = state->num_samples - 2;
+	if ((i >= 0) && (i < ARRAY_SIZE(sample_id))) {
+		long execution = mono_time_diff_microseconds(&previous_sample, &this_sample);
+
+		/* Report with millisecond precision to reduce log diffs. */
+		execution = DIV_ROUND_CLOSEST(execution, USECS_PER_MSEC);
+		console = DIV_ROUND_CLOSEST(console, USECS_PER_MSEC);
+		if (execution) {
+			printk(BIOS_DEBUG, "BS: %s %s times (exec / console): %ld / %ld ms\n",
+				state->name, sample_id[i], execution - console, console);
+			/* Reset again to ignore printk() time above. */
+			console_time_get_and_reset();
+		}
+	}
+	timer_monotonic_get(&previous_sample);
 }
-
-static void bs_report_time(struct boot_state *state)
-{
-	long entry_time;
-	long run_time;
-	long exit_time;
-	struct mono_time *samples = &state->times.samples[0];
-
-	entry_time = mono_time_diff_microseconds(&samples[0], &samples[1]);
-	run_time = mono_time_diff_microseconds(&samples[1], &samples[2]);
-	exit_time = mono_time_diff_microseconds(&samples[2], &samples[3]);
-
-	entry_time -= state->times.console_usecs[1];
-	run_time -= state->times.console_usecs[2];
-	exit_time -= state->times.console_usecs[3];
-
-	/* Report with millisecond precision to reduce log diffs. */
-	entry_time = DIV_ROUND_CLOSEST(entry_time, USECS_PER_MSEC);
-	run_time = DIV_ROUND_CLOSEST(run_time, USECS_PER_MSEC);
-	exit_time = DIV_ROUND_CLOSEST(exit_time, USECS_PER_MSEC);
-
-	printk(BIOS_DEBUG, "BS: %s times (ms): entry %ld run %ld exit %ld\n",
-	       state->name, entry_time, run_time, exit_time);
-}
-#else
-static inline void bs_sample_time(struct boot_state *state) {}
-static inline void bs_report_time(struct boot_state *state) {}
-#endif
 
 #if CONFIG(TIMER_QUEUE)
 static void bs_run_timers(int drain)
@@ -387,8 +368,6 @@ static void bs_walk_state_machine(void)
 		current_phase.seq = BS_ON_ENTRY;
 
 		bs_sample_time(state);
-
-		bs_report_time(state);
 
 		state->complete = 1;
 	}

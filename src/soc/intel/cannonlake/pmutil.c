@@ -172,6 +172,11 @@ uintptr_t soc_read_pmc_base(void)
 	return (uintptr_t)pmc_mmio_regs();
 }
 
+uint32_t *soc_pmc_etr_addr(void)
+{
+	return (uint32_t *)(soc_read_pmc_base() + ETR);
+}
+
 void soc_get_gpi_gpe_configs(uint8_t *dw0, uint8_t *dw1, uint8_t *dw2)
 {
 	DEVTREE_CONST struct soc_intel_cannonlake_config *config;

@@ -15,8 +15,6 @@
 #ifndef _CPU_INTEL_MODEL_406DX_H
 #define _CPU_INTEL_MODEL_406DX_H
 
-/* Rangeley bus clock is fixed at 100MHz */
-#define RANGELEY_BCLK		100
 
 #define MSR_FEATURE_CONFIG		0x13c
 #define MSR_FLEX_RATIO			0x194

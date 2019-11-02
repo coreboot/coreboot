@@ -13,6 +13,7 @@
  */
 
 #include <types.h>
+#include <commonlib/helpers.h>
 #include <console/console.h>
 #include <arch/acpi.h>
 #include <arch/acpigen.h>
@@ -20,6 +21,7 @@
 #include <cpu/x86/msr.h>
 #include <cpu/intel/speedstep.h>
 #include <cpu/intel/turbo.h>
+#include <delay.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include "model_406dx.h"
@@ -154,6 +156,20 @@ static int calculate_power(int tdp, int p1_ratio, int ratio)
 	return (int)power;
 }
 
+static int get_core_frequency_mhz(int ratio)
+{
+	int fsb, core_freq;
+
+	/* Get BCLK - different SKUs can have different BCLK */
+	fsb = get_timer_fsb();
+
+	printk(BIOS_DEBUG, "BCLK:%d MHz ratio:%d\n", fsb, ratio);
+
+	core_freq = DIV_ROUND_CLOSEST(fsb * ratio, 100) * 100;
+	printk(BIOS_DEBUG, "core frequency for ratio(%d) %dMHz\n", ratio, core_freq);
+	return core_freq;
+}
+
 static void generate_P_state_entries(int core, int cores_per_package)
 {
 	int ratio_min, ratio_max, ratio_turbo, ratio_step;
@@ -177,7 +193,7 @@ static void generate_P_state_entries(int core, int cores_per_package)
 		/* Max Non-Turbo Ratio */
 		ratio_max = (msr.lo >> 8) & 0xff;
 	}
-	clock_max = ratio_max * RANGELEY_BCLK;
+	clock_max = get_core_frequency_mhz(ratio_max);
 
 	/* Calculate CPU TDP in mW */
 	msr = rdmsr(MSR_PKG_POWER_SKU_UNIT);
@@ -240,7 +256,7 @@ static void generate_P_state_entries(int core, int cores_per_package)
 
 		/* Calculate power at this ratio */
 		power = calculate_power(power_max, ratio_max, ratio);
-		clock = ratio * RANGELEY_BCLK;
+		clock = get_core_frequency_mhz(ratio);
 
 		acpigen_write_PSS_package(
 			clock,			/*MHz*/

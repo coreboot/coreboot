@@ -32,6 +32,7 @@ static int get_fsb_tsc(int *fsb, int *ratio)
 	static const short core_fsb[8] = { -1, 133, -1, 166, -1, 100, -1, -1 };
 	static const short core2_fsb[8] = { 266, 133, 200, 166, 333, 100, 400, -1 };
 	static const short f2x_fsb[8] = { 100, 133, 200, 166, 333, -1, -1, -1 };
+	static const short rangeley_fsb[4] = { 83, 100, 133, 116 };
 	msr_t msr;
 
 	get_fms(&c, cpuid_eax(1));
@@ -56,8 +57,11 @@ static int get_fsb_tsc(int *fsb, int *ratio)
 		case 0x3a: /* IvyBridge BCLK fixed at 100MHz */
 		case 0x3c: /* Haswell BCLK fixed at 100MHz */
 		case 0x45: /* Haswell-ULT BCLK fixed at 100MHz */
-		case 0x4d: /* Rangeley BCLK fixed at 100MHz */
 			*fsb = 100;
+			*ratio = (rdmsr(MSR_PLATFORM_INFO).lo >> 8) & 0xff;
+			break;
+		case 0x4d: /* Rangeley */
+			*fsb = rangeley_fsb[rdmsr(MSR_FSB_FREQ).lo & 3];
 			*ratio = (rdmsr(MSR_PLATFORM_INFO).lo >> 8) & 0xff;
 			break;
 		default:

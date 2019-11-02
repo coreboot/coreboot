@@ -26,7 +26,7 @@ DefinitionBlock(
 {
 	#include "acpi/platform.asl"
 	#include <cpu/intel/common/acpi/cpu.asl>
-	#include <southbridge/intel/bd82x6x/acpi/platform.asl>
+	#include <southbridge/intel/common/acpi/platform.asl>
 	#include <southbridge/intel/bd82x6x/acpi/globalnvs.asl>
 	#include <southbridge/intel/common/acpi/sleepstates.asl>
 

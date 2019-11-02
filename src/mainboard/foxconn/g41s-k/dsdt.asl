@@ -25,7 +25,7 @@ DefinitionBlock(
 )
 {
 	// global NVS and variables
-	#include "acpi/platform.asl"
+	#include <southbridge/intel/common/acpi/platform.asl>
 	#include <southbridge/intel/i82801gx/acpi/globalnvs.asl>
 
 	Scope (\_SB) {

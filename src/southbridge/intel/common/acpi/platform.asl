@@ -71,16 +71,6 @@ Method(GOS, 0)
 	Store (2000, OSYS)
 
 	If (CondRefOf(_OSI)) {
-		/* Linux answers _OSI with "True" for a couple of
-		 * Windows version queries. But unlike Windows it
-		 * needs a Video repost, so let's determine whether
-		 * we're running Linux.
-		 */
-
-		If (_OSI("Linux")) {
-			Store (1, LINX)
-		}
-
 		If (_OSI("Windows 2001")) {
 			Store (2001, OSYS)
 		}

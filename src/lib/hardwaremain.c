@@ -63,6 +63,7 @@ static boot_state_t bs_payload_boot(void *arg);
 struct boot_state_times {
 	int num_samples;
 	struct mono_time samples[MAX_TIME_SAMPLES];
+	long console_usecs[MAX_TIME_SAMPLES];
 };
 
 /* The prologue (BS_ON_ENTRY) and epilogue (BS_ON_EXIT) of a state can be
@@ -241,6 +242,9 @@ static void bs_sample_time(struct boot_state *state)
 {
 	struct mono_time *mt;
 
+	long console_usecs = console_time_get_and_reset();
+	state->times.console_usecs[state->times.num_samples] = console_usecs;
+
 	mt = &state->times.samples[state->times.num_samples];
 	timer_monotonic_get(mt);
 	state->times.num_samples++;
@@ -256,6 +260,10 @@ static void bs_report_time(struct boot_state *state)
 	entry_time = mono_time_diff_microseconds(&samples[0], &samples[1]);
 	run_time = mono_time_diff_microseconds(&samples[1], &samples[2]);
 	exit_time = mono_time_diff_microseconds(&samples[2], &samples[3]);
+
+	entry_time -= state->times.console_usecs[1];
+	run_time -= state->times.console_usecs[2];
+	exit_time -= state->times.console_usecs[3];
 
 	/* Report with millisecond precision to reduce log diffs. */
 	entry_time = DIV_ROUND_CLOSEST(entry_time, USECS_PER_MSEC);

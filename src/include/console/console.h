@@ -64,6 +64,11 @@ asmlinkage void console_init(void);
 int console_log_level(int msg_level);
 void do_putchar(unsigned char byte);
 
+/* Return number of microseconds elapsed from start of stage or the previous
+   get_and_reset() call. */
+long console_time_get_and_reset(void);
+void console_time_report(void);
+
 #define printk(LEVEL, fmt, args...) do_printk(LEVEL, fmt, ##args)
 #define vprintk(LEVEL, fmt, args) do_vprintk(LEVEL, fmt, args)
 
@@ -87,6 +92,8 @@ static inline int console_log_level(int msg_level) { return 0; }
 static inline void printk(int LEVEL, const char *fmt, ...) {}
 static inline void vprintk(int LEVEL, const char *fmt, va_list args) {}
 static inline void do_putchar(unsigned char byte) {}
+static inline long console_time_get_and_reset(void) { return 0; }
+static inline void console_time_report(void) {}
 #endif
 
 int do_printk(int msg_level, const char *fmt, ...)

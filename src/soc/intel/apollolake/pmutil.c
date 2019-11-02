@@ -49,6 +49,11 @@ uintptr_t soc_read_pmc_base(void)
 	return read_pmc_mmio_bar();
 }
 
+uint32_t *soc_pmc_etr_addr(void)
+{
+	return (uint32_t *)(soc_read_pmc_base() + ETR);
+}
+
 const char *const *soc_smi_sts_array(size_t *a)
 {
 	static const char *const smi_sts_bits[] = {

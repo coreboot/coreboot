@@ -173,6 +173,16 @@ uintptr_t soc_read_pmc_base(void)
 	return (uintptr_t) (pmc_mmio_regs());
 }
 
+uint32_t *soc_pmc_etr_addr(void)
+{
+	/*
+	 * The pointer returned must not be cached, because the address depends on the
+	 * MMCONF base address and the assigned PCI bus number, which both may change
+	 * during the boot process!
+	 */
+	return pci_mmio_config32_addr(PCH_DEVFN_PMC << 12, ETR);
+}
+
 void soc_get_gpi_gpe_configs(uint8_t *dw0, uint8_t *dw1, uint8_t *dw2)
 {
 	DEVTREE_CONST struct soc_intel_skylake_config *config;

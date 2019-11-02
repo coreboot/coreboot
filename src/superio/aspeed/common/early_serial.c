@@ -35,6 +35,7 @@
  */
 
 #include <arch/io.h>
+#include <delay.h>
 #include <device/pnp_def.h>
 #include <device/pnp_ops.h>
 #include <stdint.h>
@@ -67,4 +68,7 @@ void aspeed_enable_serial(pnp_devfn_t dev, u16 iobase)
 	pnp_set_iobase(dev, PNP_IDX_IO0, iobase);
 	pnp_set_enable(dev, 1);
 	pnp_exit_conf_state(dev);
+
+	if (CONFIG(SUPERIO_ASPEED_USE_UART_DELAY_WORKAROUND))
+		mdelay(500);
 }

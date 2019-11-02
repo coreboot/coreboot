@@ -63,7 +63,7 @@ void platform_prog_run(struct prog *prog)
 	if (cpu_info.x86 == 0xf) {
 		printk(BIOS_NOTICE,
 		       "PROG_RUN: CPU does not support caching ROM\n"
-		       "The next stage will run slowly\n");
+		       "The next stage will run slowly!\n");
 		return;
 	}
 

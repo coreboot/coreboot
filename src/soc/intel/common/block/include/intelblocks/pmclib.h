@@ -169,6 +169,9 @@ void pmc_gpe_init(void);
 /* Returns PMC base address */
 uintptr_t soc_read_pmc_base(void);
 
+/* Returns pointer to the ETR register */
+uint32_t *soc_pmc_etr_addr(void);
+
 /*
  * This function returns array of string which represents
  * names for the SMI status register bits. Size of the array is

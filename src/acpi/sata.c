@@ -44,7 +44,7 @@ void generate_sata_ssdt_ports(const char *scope, uint32_t enable_map)
 	/* generate a device for every enabled port */
 	for (i = 0; i < 32; i++) {
 		bit = 1 << i;
-		if (!(bit & enable_map))
+		if (!(bit && enable_map))
 			continue;
 
 		port_name[2] = '0' + i / 10;

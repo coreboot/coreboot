@@ -168,6 +168,9 @@ void smm_info(uintptr_t *perm_smbase, size_t *perm_smsize,
 	if (smm_reloc_params.ied_size)
 		setup_ied_area(&smm_reloc_params);
 
+	/* This may not be be correct for older CPU's supported by this code,
+	   but given that em64t101_smm_state_save_area_t is larger than the
+	   save_state of these CPU's it works. */
 	*smm_save_state_size = sizeof(em64t101_smm_state_save_area_t);
 }
 
@@ -191,6 +194,8 @@ void smm_relocation_handler(int cpu, uintptr_t curr_smbase,
 {
 	msr_t mtrr_cap;
 	struct smm_relocation_params *relo_params = &smm_reloc_params;
+	/* The em64t101 save state is sufficiently compatible with older
+	   save states with regards of smbase, smm_revision. */
 	em64t101_smm_state_save_area_t *save_state;
 	u32 smbase = staggered_smbase;
 	u32 iedbase = relo_params->ied_base;
@@ -208,7 +213,10 @@ void smm_relocation_handler(int cpu, uintptr_t curr_smbase,
 	save_state = (void *)(curr_smbase + SMM_DEFAULT_SIZE -
 			sizeof(*save_state));
 	save_state->smbase = smbase;
-	save_state->iedbase = iedbase;
+
+	printk(BIOS_SPEW, "SMM revision: 0x%08x\n", save_state->smm_revision);
+	if (save_state->smm_revision == 0x00030101)
+		save_state->iedbase = iedbase;
 
 	/* Write EMRR and SMRR MSRs based on indicated support. */
 	mtrr_cap = rdmsr(MTRR_CAP_MSR);

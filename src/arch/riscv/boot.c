@@ -38,20 +38,10 @@ static void do_arch_prog_run(struct arch_prog_run_args *args)
 {
 	int hart_id;
 	struct prog *prog = args->prog;
-	void *fdt = prog_entry_arg(prog);
+	void *fdt = HLS()->fdt;
 
-	/*
-	 * Workaround selfboot putting the coreboot table into prog_entry_arg
-	 */
-	if (prog_cbfs_type(prog) == CBFS_TYPE_SELF)
-		fdt = HLS()->fdt;
-
-	/*
-	 * If prog_entry_arg is not set (e.g. by fit_payload), use fdt from HLS
-	 * instead.
-	 */
-	if (fdt == NULL)
-		fdt = HLS()->fdt;
+	if (prog_cbfs_type(prog) == CBFS_TYPE_FIT)
+		fdt = prog_entry_arg(prog);
 
 	if (ENV_RAMSTAGE && prog_type(prog) == PROG_PAYLOAD) {
 		if (CONFIG(RISCV_OPENSBI))

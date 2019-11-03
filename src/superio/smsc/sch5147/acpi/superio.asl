@@ -57,7 +57,7 @@ Device(SUPERIO_DEV) {
 		PNP_ADDR_REG,	8,
 		PNP_DATA_REG,   8
 	}
-	IndexField (ADDR, DATA, ByteAcc, NoLock, Preserve)
+	IndexField (PNP_ADDR_REG, PNP_DATA_REG, ByteAcc, NoLock, Preserve)
 	{
 		Offset (0x07),
 		PNP_LOGICAL_DEVICE,	8, /* Logical device selector */

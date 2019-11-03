@@ -177,12 +177,6 @@ cores_counted:
 
 hyper_threading_cpu:
 
-	/* delay 10 ms */
-	movl	$10000, %ecx
-1:	inb	$0x80, %al
-	dec	%ecx
-	jnz	1b
-
 	post_code(0x25)
 
 	/* Send Start IPI to all excluding ourself. */
@@ -196,12 +190,6 @@ hyper_threading_cpu:
 	jnz	2b
 	movl	(%edi), %ecx
 	andl	$LAPIC_ICR_BUSY, %ecx
-	jnz	1b
-
-	/* delay 250 us */
-	movl	$250, %ecx
-1:	inb	$0x80, %al
-	dec	%ecx
 	jnz	1b
 
 	post_code(0x26)

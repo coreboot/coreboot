@@ -117,3 +117,7 @@ _bogus = ASSERT((CONFIG_DCACHE_RAM_SIZE == 0) || (SIZEOF(.car.data) <= CONFIG_DC
 _bogus2 = ASSERT(_pagetables == ALIGN(_pagetables, 4096), "_pagetables aren't 4KiB aligned");
 #endif
 _bogus3 = ASSERT(CONFIG_DCACHE_BSP_STACK_SIZE > 0x0, "BSP stack size not configured");
+#if CONFIG(NO_XIP_EARLY_STAGES) && (ENV_ROMSTAGE || ENV_VERSTAGE)
+_bogus4 = ASSERT(_eprogram <= _car_region_end, "Stage end too high !");
+_bogus5 = ASSERT(_program >= _car_unallocated_start, "Stage start too low!");
+#endif

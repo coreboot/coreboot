@@ -15,6 +15,7 @@
  * GNU General Public License for more details.
  */
 
+#include <cbmem.h>
 #include <console/console.h>
 #include <device/mmio.h>
 #include <device/pci_ops.h>
@@ -209,6 +210,7 @@ static void mc_add_dram_resources(struct device *dev)
 	unsigned long index;
 	struct resource *resource;
 	uint64_t mc_values[NUM_MAP_ENTRIES];
+	uintptr_t top_of_ram;
 
 	/* Read in the MAP registers and report their values. */
 	mc_read_map_entries(dev, &mc_values[0]);
@@ -246,6 +248,7 @@ static void mc_add_dram_resources(struct device *dev)
 	 * PCI_BASE_ADDRESS_0.
 	 */
 	index = 0;
+	top_of_ram = (uintptr_t)cbmem_top();
 
 	/* 0 - > 0xa0000 */
 	base_k = 0;
@@ -254,12 +257,12 @@ static void mc_add_dram_resources(struct device *dev)
 
 	/* 0x100000 -> top_of_ram */
 	base_k = 0x100000 >> 10;
-	size_k = (top_of_32bit_ram() >> 10) - base_k;
+	size_k = (top_of_ram >> 10) - base_k;
 	ram_resource(dev, index++, base_k, size_k);
 
 	/* top_of_ram -> TSEG */
 	resource = new_resource(dev, index++);
-	resource->base = top_of_32bit_ram();
+	resource->base = top_of_ram;
 	resource->size = mc_values[TSEG_REG] - resource->base;
 	resource->flags = IORESOURCE_MEM | IORESOURCE_FIXED |
 			  IORESOURCE_STORED | IORESOURCE_RESERVE |

@@ -38,30 +38,6 @@ static inline uintptr_t system_agent_region_base(size_t reg)
 	return ALIGN_DOWN(pci_read_config32(dev, reg), 1 * MiB);
 }
 
-/* Returns min power of 2 >= size */
-static inline u32 power_of_2(u32 size)
-{
-	return size ? 1 << (1 + log2(size - 1)) : 0;
-}
-
-u32 top_of_32bit_ram(void)
-{
-	u32 iqat_region_size = 0;
-	u32 tseg_region_size = system_agent_region_base(TOLUD) -
-			       system_agent_region_base(TSEGMB);
-
-/*
- * Add IQAT region size if enabled.
- */
-#if CONFIG(IQAT_ENABLE)
-	iqat_region_size = CONFIG_IQAT_MEMORY_REGION_SIZE;
-#endif
-	return system_agent_region_base(TOLUD) -
-	       power_of_2(iqat_region_size + tseg_region_size);
-}
-
-void *cbmem_top_chipset(void) { return (void *)top_of_32bit_ram(); }
-
 static inline uintptr_t smm_region_start(void)
 {
 	return system_agent_region_base(TSEGMB);

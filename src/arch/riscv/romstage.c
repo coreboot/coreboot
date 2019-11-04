@@ -14,10 +14,6 @@
  */
 
 /*
- * This file contains entry/exit functions for each stage during coreboot
- * execution (bootblock entry and ramstage exit will depend on external
- * loading).
- *
  * Entry points must be placed at the location the previous stage jumps
  * to (the lowest address in the stage image). This is done by giving
  * stage_entry() its own section in .text and placing it first in the
@@ -31,11 +27,6 @@
 
 void stage_entry(int hart_id, void *fdt)
 {
-	/*
-	 * Save the FDT pointer before entering ramstage, because mscratch
-	 * might be overwritten in the trap handler, and there is code in
-	 * ramstage that generates misaligned access faults.
-	 */
 	HLS()->hart_id = hart_id;
 	HLS()->fdt = fdt;
 	smp_pause(CONFIG_RISCV_WORKING_HARTID);

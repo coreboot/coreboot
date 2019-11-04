@@ -98,7 +98,7 @@ endif #CONFIG_ARCH_BOOTBLOCK_RISCV
 ifeq ($(CONFIG_ARCH_ROMSTAGE_RISCV),y)
 
 romstage-y += boot.c
-romstage-y += stages.c
+romstage-y += romstage.c
 romstage-y += misc.c
 romstage-$(ARCH_RISCV_PMP) += pmp.c
 romstage-y += smp.c

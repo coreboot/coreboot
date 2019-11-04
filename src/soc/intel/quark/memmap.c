@@ -18,23 +18,6 @@
 #include <cbmem.h>
 #include <soc/reg_access.h>
 
-void *cbmem_top_chipset(void)
-{
-	uint32_t top_of_memory;
-
-	/* Determine the TSEG base */
-	top_of_memory = reg_host_bridge_unit_read(QNC_MSG_FSBIC_REG_HSMMC);
-	top_of_memory &= SMM_START_MASK;
-	top_of_memory <<= 16;
-
-	/* Reserve 64 KiB for RMU firmware */
-	if (top_of_memory)
-		top_of_memory -= 0x10000;
-
-	/* Return the top of memory */
-	return (void *)top_of_memory;
-}
-
 void fill_postcar_frame(struct postcar_frame *pcf)
 {
 	uintptr_t top_of_ram;

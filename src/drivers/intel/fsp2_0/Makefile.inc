@@ -22,6 +22,7 @@ romstage-$(CONFIG_VERIFY_HOBS) += hob_verify.c
 romstage-y += util.c
 romstage-y += memory_init.c
 romstage-$(CONFIG_MMA) += mma_core.c
+romstage-y += cbmem.c
 
 ramstage-y += debug.c
 ramstage-$(CONFIG_RUN_FSP_GOP) += graphics.c

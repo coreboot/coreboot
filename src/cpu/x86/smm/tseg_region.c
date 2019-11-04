@@ -17,6 +17,7 @@
 #include <cpu/x86/smm.h>
 #include <stage_cache.h>
 #include <types.h>
+#include <inttypes.h>
 
 /*
  *        Subregions within SMM
@@ -88,11 +89,11 @@ void smm_list_regions(void)
 		return;
 
 	printk(BIOS_DEBUG, "SMM Memory Map\n");
-	printk(BIOS_DEBUG, "SMRAM       : 0x%zx 0x%zx\n", base, size);
+	printk(BIOS_DEBUG, "SMRAM       : 0x%" PRIxPTR " 0x%zx\n", base, size);
 
 	for (i = 0; i < SMM_SUBREGION_NUM; i++) {
 		if (smm_subregion(i, &base, &size))
 			continue;
-		printk(BIOS_DEBUG, " Subregion %d: 0x%zx 0x%zx\n", i, base, size);
+		printk(BIOS_DEBUG, " Subregion %d: 0x%" PRIxPTR " 0x%zx\n", i, base, size);
 	}
 }

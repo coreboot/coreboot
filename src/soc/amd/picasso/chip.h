@@ -9,9 +9,8 @@
 #include <commonlib/helpers.h>
 #include <drivers/i2c/designware/dw_i2c.h>
 #include <soc/i2c.h>
+#include <soc/iomap.h>
 #include <arch/acpi_device.h>
-
-#define PICASSO_I2C_DEV_MAX 4
 
 struct soc_amd_picasso_config {
 	/*
@@ -23,7 +22,7 @@ struct soc_amd_picasso_config {
 	 * register i2c_scl_reset = (GPIO_I2C0_SCL | GPIO_I2C3_SCL)
 	 */
 	u8 i2c_scl_reset;
-	struct dw_i2c_bus_config i2c[PICASSO_I2C_DEV_MAX];
+	struct dw_i2c_bus_config i2c[I2C_MASTER_DEV_COUNT];
 	enum {
 		I2S_PINS_MAX_HDA = 0,	/* HDA w/reset  3xSDI, SW w/Data0 */
 		I2S_PINS_MAX_MHDA = 1,	/* HDA no reset 3xSDI, SW w/Data0-1 */

@@ -8,34 +8,39 @@
 #include <device/device.h>
 #include <drivers/i2c/designware/dw_i2c.h>
 #include <amdblocks/acpimmio.h>
+#include <soc/i2c.h>
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>
 #include <soc/southbridge.h>
-#include <soc/i2c.h>
 #include "chip.h"
 
 /* Global to provide access to chip.c */
 const char *i2c_acpi_name(const struct device *dev);
 
-static const uintptr_t i2c_bus_address[] = {
+/*
+ * We don't have addresses for I2C0-1.
+ */
+static const uintptr_t i2c_bus_address[I2C_MASTER_DEV_COUNT + I2C_SLAVE_DEV_COUNT] = {
+	0,
+	0,
 	APU_I2C2_BASE,
 	APU_I2C3_BASE,
-	APU_I2C4_BASE, /* slave device only */
+	APU_I2C4_BASE, /* Can only be used in slave mode */
 };
 
 uintptr_t dw_i2c_base_address(unsigned int bus)
 {
-	if (bus < APU_I2C_MIN_BUS || bus > APU_I2C_MAX_BUS)
+	if (bus >= ARRAY_SIZE(i2c_bus_address))
 		return 0;
 
-	return i2c_bus_address[bus - APU_I2C_MIN_BUS];
+	return i2c_bus_address[bus];
 }
 
 const struct dw_i2c_bus_config *dw_i2c_get_soc_cfg(unsigned int bus)
 {
 	const struct soc_amd_picasso_config *config;
 
-	if (bus < APU_I2C_MIN_BUS || bus > APU_I2C_MAX_BUS)
+	if (bus >= ARRAY_SIZE(config->i2c))
 		return NULL;
 
 	/* config is not NULL; if it was, config_of_soc calls die() internally */
@@ -83,7 +88,7 @@ static void dw_i2c_soc_init(bool is_early_init)
 	/* config is not NULL; if it was, config_of_soc calls die() internally */
 	config = config_of_soc();
 
-	for (i = 0; i < ARRAY_SIZE(config->i2c); i++) {
+	for (i = I2C_MASTER_START_INDEX; i < ARRAY_SIZE(config->i2c); i++) {
 		const struct dw_i2c_bus_config *cfg  = &config->i2c[i];
 
 		if (cfg->early_init != is_early_init)

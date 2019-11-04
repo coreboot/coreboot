@@ -18,15 +18,29 @@
 
 /* Reserved				0xfecd1000-0xfedc3fff */
 
+/*
+ * Picasso/Dali have I2C0 and I2C1 wired to the Sensor Fusion Hub (SFH/MP2).
+ * The controllers are not directly accessible via the x86.
+ *
+ * On Pollock, I2C0 and I2C1 are routed to the x86 domain, but unfortunately the
+ * interrupts weren't. This effectively makes the I2C controllers useless, so we
+ * pretend they don't exist.
+ *
+ * We want the device tree numbering to match the I2C numbers, so we allocate
+ * I2C0 and I2C1 even though they are not functional.
+ */
+#define I2C_MASTER_DEV_COUNT		4
+#define I2C_MASTER_START_INDEX		2
+#define I2C_SLAVE_DEV_COUNT		1
+
 #define APU_I2C2_BASE			0xfedc4000
 #define APU_I2C3_BASE			0xfedc5000
 #define APU_I2C4_BASE			0xfedc6000
-#define   APU_I2C_MIN_BUS		2
-#define   APU_I2C_MAX_BUS		4
-#define   APU_I2C_BLOCK_SIZE		0x1000
-#define   I2C_BASE_ADDRESS		APU_I2C2_BASE
-#define   I2C_DEVICE_SIZE		0x00001000
-#define   I2C_DEVICE_COUNT		3
+
+/* I2C parameters for lpc_read_resources */
+#define I2C_BASE_ADDRESS		APU_I2C2_BASE
+#define I2C_DEVICE_SIZE			0x00001000
+#define I2C_DEVICE_COUNT		3
 
 #define APU_DMAC0_BASE			0xfedc7000
 #define APU_DMAC1_BASE			0xfedc8000

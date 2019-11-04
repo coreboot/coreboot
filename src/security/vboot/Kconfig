@@ -174,10 +174,6 @@ config VBOOT_HAS_REC_HASH_SPACE
 	  Set this option to indicate to vboot that recovery data hash space
 	  is present in TPM.
 
-config VBOOT_SOFT_REBOOT_WORKAROUND
-	bool
-	default n
-
 config VBOOT_LID_SWITCH
 	bool
 	default n

@@ -140,7 +140,6 @@ ramstage-y += fp_asm.S
 ramstage-y += misaligned.c
 ramstage-y += sbi.c
 ramstage-y += virtual_memory.c
-ramstage-y += stages.c
 ramstage-y += misc.c
 ramstage-y += smp.c
 ramstage-y += boot.c

@@ -19,8 +19,6 @@
 #include <console/console.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/smm.h>
-#include <fsp/util.h>
-#include <intelblocks/ebda.h>
 #include <intelblocks/systemagent.h>
 #include <stdlib.h>
 
@@ -69,31 +67,6 @@ void smm_region(uintptr_t *start, size_t *size)
 	*start = sa_get_tseg_base();
 	*size = sa_get_tseg_size();
 }
-
-#if CONFIG(SOC_INTEL_COMMON_BLOCK_EBDA)
-void fill_memmap_ebda(struct ebda_config *cfg)
-{
-	struct range_entry tolum;
-
-	fsp_find_bootloader_tolum(&tolum);
-	cfg->cbmem_top = range_entry_end(&tolum);
-}
-
-void cbmem_top_init(void)
-{
-	/* Initialize EBDA area */
-	initialize_ebda_area();
-}
-
-void *cbmem_top_chipset(void)
-{
-	struct ebda_config ebda_cfg;
-
-	retrieve_ebda_object(&ebda_cfg);
-
-	return (void *)(uintptr_t)ebda_cfg.cbmem_top;
-}
-#endif
 
 void fill_postcar_frame(struct postcar_frame *pcf)
 {

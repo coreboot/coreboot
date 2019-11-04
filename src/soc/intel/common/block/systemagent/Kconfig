@@ -3,6 +3,12 @@ config SOC_INTEL_COMMON_BLOCK_SA
 	help
 	  Intel Processor common System Agent support
 
+config SOC_INTEL_COMMON_BLOCK_SA_FSP_TOLUM
+	bool
+	help
+	  Select this if you want cbmem_top_chipset use the TOLUM returned
+	  by the FSP HOB.
+
 config MMCONF_BASE_ADDRESS
 	hex
 	default 0xe0000000

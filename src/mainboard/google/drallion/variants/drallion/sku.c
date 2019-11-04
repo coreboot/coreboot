@@ -14,15 +14,13 @@
  */
 
 #include <boardid.h>
-#include <ec/google/wilco/commands.h>
 #include <smbios.h>
+#include <ec/google/wilco/commands.h>
 #include <variant/variant.h>
-#include <gpio.h>
-#include <variant/gpio.h>
 
 static const uint32_t get_sku_index(void)
 {
-	return (gpio_get(SENSOR_DET_360) | (wilco_ec_signed_fw() << 1));
+	return ((!has_360_sensor_board()) | (wilco_ec_signed_fw() << 1));
 }
 
 uint32_t sku_id(void)

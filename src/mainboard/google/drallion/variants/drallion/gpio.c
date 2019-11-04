@@ -14,6 +14,7 @@
  */
 
 #include <variant/gpio.h>
+#include <variant/variant.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 #include <gpio.h>
 #include <soc/romstage.h>
@@ -274,17 +275,11 @@ const struct cros_gpio *variant_cros_gpios(size_t *num)
 	return cros_gpios;
 }
 
-static int is_ish_device_enabled(void)
-{
-	gpio_input(SENSOR_DET_360);
-	return gpio_get(SENSOR_DET_360) == 0;
-}
-
 void variant_mainboard_post_init_params(FSPM_UPD *mupd)
 {
 	FSP_M_CONFIG *fsp_m_cfg = &mupd->FspmConfig;
 	if (fsp_m_cfg->PchIshEnable)
-		fsp_m_cfg->PchIshEnable = is_ish_device_enabled();
+		fsp_m_cfg->PchIshEnable = has_360_sensor_board();
 
 	/*
 	 * Disable memory channel by HW strap pin, HW default is enable

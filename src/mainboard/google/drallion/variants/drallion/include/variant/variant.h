@@ -16,6 +16,9 @@
 #ifndef VARIANT_H
 #define VARIANT_H
 
+#include <gpio.h>
+#include <variant/gpio.h>
+
 /* Need to update for Drallion with right SKU IDs*/
 typedef struct {
 	int id;
@@ -35,5 +38,11 @@ const static sku_info skus[] = {
 
 /* Return memory SKU for the variant */
 int variant_memory_sku(void);
+
+/* Check if the device has a 360 sensor board present */
+static inline int has_360_sensor_board(void)
+{
+	return gpio_get(SENSOR_DET_360) == 0;
+}
 
 #endif

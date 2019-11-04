@@ -840,19 +840,6 @@ config DEBUG_MALLOC
 
 	  If unsure, say N.
 
-# Only visible if debug level is DEBUG (7) or SPEW (8) as it does additional
-# printk(BIOS_DEBUG, ...) calls.
-config DEBUG_ACPI
-	prompt "Output verbose ACPI debug messages" if DEFAULT_CONSOLE_LOGLEVEL_7 || DEFAULT_CONSOLE_LOGLEVEL_8
-	bool
-	default n
-	help
-	  This option enables additional ACPI related debug messages.
-
-	  Note: This option will slightly increase the size of the coreboot image.
-
-	  If unsure, say N.
-
 config DEBUG_CONSOLE_INIT
 	bool "Debug console initialisation code"
 	default n

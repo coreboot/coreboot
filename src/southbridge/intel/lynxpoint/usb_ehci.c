@@ -24,7 +24,7 @@
 #include <device/pci_ops.h>
 #include "pch.h"
 
-#ifdef __SMM__
+#ifdef __SIMPLE_DEVICE__
 
 void usb_ehci_disable(pci_devfn_t dev)
 {
@@ -132,7 +132,7 @@ void usb_ehci_sleep_prepare(pci_devfn_t dev, u8 slp_typ)
 	}
 }
 
-#else /* !__SMM__ */
+#else /* !__SIMPLE_DEVICE__ */
 
 static void usb_ehci_clock_gating(struct device *dev)
 {
@@ -202,4 +202,4 @@ static const struct pci_driver pch_usb_ehci __pci_driver = {
 	.devices = pci_device_ids,
 };
 
-#endif /* !__SMM__ */
+#endif /* !__SIMPLE_DEVICE__ */

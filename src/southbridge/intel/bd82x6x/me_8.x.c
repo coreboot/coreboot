@@ -24,6 +24,8 @@
 
 #include <arch/acpi.h>
 #include <device/mmio.h>
+#include <device/device.h>
+#include <device/pci.h>
 #include <device/pci_ops.h>
 #include <console/console.h>
 #include <device/pci_ids.h>
@@ -33,11 +35,6 @@
 #include <elog.h>
 #include <halt.h>
 
-#ifndef __SMM__
-#include <device/device.h>
-#include <device/pci.h>
-#endif
-
 #include "me.h"
 #include "pch.h"
 
@@ -46,9 +43,8 @@
 #include <vendorcode/google/chromeos/gnvs.h>
 #endif
 
-#ifndef __SMM__
 /* Path that the BIOS should take based on ME state */
-static const char *me_bios_path_values[] = {
+static const char *me_bios_path_values[] __unused  = {
 	[ME_NORMAL_BIOS_PATH]		= "Normal",
 	[ME_S3WAKE_BIOS_PATH]		= "S3 Wake",
 	[ME_ERROR_BIOS_PATH]		= "Error",
@@ -57,7 +53,6 @@ static const char *me_bios_path_values[] = {
 	[ME_FIRMWARE_UPDATE_BIOS_PATH]	= "Firmware Update",
 };
 static int intel_me_read_mbp(me_bios_payload *mbp_data);
-#endif
 
 /* MMIO base address for MEI interface */
 static u32 *mei_base_address;
@@ -115,7 +110,7 @@ static inline void mei_write_dword_ptr(void *ptr, int offset)
 	mei_dump(ptr, dword, offset, "WRITE");
 }
 
-#ifndef __SMM__
+#ifndef __SIMPLE_DEVICE__
 static inline void pci_read_dword_ptr(struct device *dev, void *ptr, int offset)
 {
 	u32 dword = pci_read_config32(dev, offset);
@@ -453,10 +448,8 @@ static int mkhi_global_reset(void)
 }
 #endif
 
-#ifdef __SMM__
-
 /* Send END OF POST message to the ME */
-static int mkhi_end_of_post(void)
+static int __unused mkhi_end_of_post(void)
 {
 	struct mkhi_header mkhi = {
 		.group_id	= MKHI_GROUP_ID_GEN,
@@ -481,6 +474,8 @@ static int mkhi_end_of_post(void)
 	printk(BIOS_INFO, "ME: END OF POST message successful (%d)\n", eop_ack);
 	return 0;
 }
+
+#ifdef __SIMPLE_DEVICE__
 
 void intel_me8_finalize_smm(void)
 {
@@ -517,7 +512,7 @@ void intel_me8_finalize_smm(void)
 	RCBA32_OR(FD2, PCH_DISABLE_MEI1);
 }
 
-#else /* !__SMM__ */
+#else /* !__SIMPLE_DEVICE__ */
 
 /* Determine the path that we should take based on ME status */
 static me_bios_path intel_me_path(struct device *dev)
@@ -752,6 +747,8 @@ static const struct pci_driver intel_me __pci_driver = {
 	.device	= 0x1e3a,
 };
 
+#endif /* !__SIMPLE_DEVICE__ */
+
 /******************************************************************************
  *									     */
 static u32 me_to_host_words_pending(void)
@@ -783,7 +780,7 @@ static u32 host_to_me_words_room(void)
  * mbp seems to be following its own flow, let's retrieve it in a dedicated
  * function.
  */
-static int intel_me_read_mbp(me_bios_payload *mbp_data)
+static int __unused intel_me_read_mbp(me_bios_payload *mbp_data)
 {
 	mbp_header mbp_hdr;
 	mbp_item_header	mbp_item_hdr;
@@ -907,5 +904,3 @@ static int intel_me_read_mbp(me_bios_payload *mbp_data)
 
 	return 0;
 }
-
-#endif /* !__SMM__ */

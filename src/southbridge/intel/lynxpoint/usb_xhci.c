@@ -166,7 +166,7 @@ static void usb_xhci_reset_usb3(struct device *dev, int all)
 		usb_xhci_reset_status_usb3(mem_base, port);
 }
 
-#ifdef __SMM__
+#ifdef __SIMPLE_DEVICE__
 
 /* Handler for XHCI controller on entry to S3/S4/S5 */
 void usb_xhci_sleep_prepare(pci_devfn_t dev, u8 slp_typ)
@@ -251,7 +251,7 @@ void usb_xhci_route_all(void)
 	usb_xhci_reset_usb3(PCH_XHCI_DEV, 1);
 }
 
-#else /* !__SMM__ */
+#else /* !__SIMPLE_DEVICE__ */
 
 static void usb_xhci_clock_gating(struct device *dev)
 {
@@ -395,4 +395,4 @@ static const struct pci_driver pch_usb_xhci __pci_driver = {
 	.vendor	 = PCI_VENDOR_ID_INTEL,
 	.devices = pci_device_ids,
 };
-#endif /* !__SMM__ */
+#endif /* !__SIMPLE_DEVICE__ */

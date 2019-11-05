@@ -17,7 +17,9 @@
 #include <arch/acpi.h>
 #include <arch/io.h>
 #include <assert.h>
+#include <device/device.h>
 #include <device/mmio.h>
+#include <device/pci.h>
 #include <device/pci_ops.h>
 #include <console/console.h>
 #include <soc/iomap.h>
@@ -37,9 +39,7 @@ static inline pci_devfn_t get_pcu_dev(void)
 	return pcu_dev;
 }
 
-#else /* ENV_SMM */
-#include <device/device.h>
-#include <device/pci.h>
+#else /* __SIMPLE_DEVICE__ */
 
 static struct device *pcu_dev;
 static struct device *get_pcu_dev(void)
@@ -48,7 +48,7 @@ static struct device *get_pcu_dev(void)
 		pcu_dev = pcidev_on_root(PCU_DEV, 0);
 	return pcu_dev;
 }
-#endif /* ENV_SMM */
+#endif /* __SIMPLE_DEVICE__ */
 
 uint16_t get_pmbase(void)
 {

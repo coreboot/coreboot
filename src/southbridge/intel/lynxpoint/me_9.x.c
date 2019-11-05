@@ -45,9 +45,8 @@
 #include <vendorcode/google/chromeos/gnvs.h>
 #endif
 
-#ifndef __SMM__
 /* Path that the BIOS should take based on ME state */
-static const char *me_bios_path_values[] = {
+static const char *me_bios_path_values[] __unused = {
 	[ME_NORMAL_BIOS_PATH]		= "Normal",
 	[ME_S3WAKE_BIOS_PATH]		= "S3 Wake",
 	[ME_ERROR_BIOS_PATH]		= "Error",
@@ -56,7 +55,6 @@ static const char *me_bios_path_values[] = {
 	[ME_FIRMWARE_UPDATE_BIOS_PATH]	= "Firmware Update",
 };
 static int intel_me_read_mbp(me_bios_payload *mbp_data, struct device *dev);
-#endif
 
 /* MMIO base address for MEI interface */
 static u32 *mei_base_address;
@@ -557,10 +555,8 @@ static int mkhi_global_reset(void)
 }
 #endif
 
-#ifdef __SMM__
-
 /* Send END OF POST message to the ME */
-static int mkhi_end_of_post(void)
+static int __unused mkhi_end_of_post(void)
 {
 	struct mkhi_header mkhi = {
 		.group_id	= MKHI_GROUP_ID_GEN,
@@ -578,6 +574,8 @@ static int mkhi_end_of_post(void)
 	printk(BIOS_INFO, "ME: END OF POST message successful (%d)\n", eop_ack);
 	return 0;
 }
+
+#ifdef __SIMPLE_DEVICE__
 
 void intel_me_finalize_smm(void)
 {
@@ -619,7 +617,7 @@ void intel_me_finalize_smm(void)
 	RCBA32_OR(FD2, PCH_DISABLE_MEI1);
 }
 
-#else /* !__SMM__ */
+#else /* !__SIMPLE_DEVICE__ */
 
 static inline int mei_sendrecv_icc(struct icc_header *icc,
 				   void *req_data, int req_bytes,
@@ -901,6 +899,8 @@ static const struct pci_driver intel_me __pci_driver = {
 	.devices= pci_device_ids,
 };
 
+#endif /* !__SIMPLE_DEVICE__ */
+
 /******************************************************************************
  *									     */
 static u32 me_to_host_words_pending(void)
@@ -938,7 +938,7 @@ struct mbp_payload {
  * mbp seems to be following its own flow, let's retrieve it in a dedicated
  * function.
  */
-static int intel_me_read_mbp(me_bios_payload *mbp_data, struct device *dev)
+static int __unused intel_me_read_mbp(me_bios_payload *mbp_data, struct device *dev)
 {
 	mbp_header mbp_hdr;
 	u32 me2host_pending;
@@ -947,7 +947,11 @@ static int intel_me_read_mbp(me_bios_payload *mbp_data, struct device *dev)
 	struct mbp_payload *mbp;
 	int i;
 
+#ifdef __SIMPLE_DEVICE__
+	pci_read_dword_ptr(PCI_BDF(dev), &hfs2, PCI_ME_HFS2);
+#else
 	pci_read_dword_ptr(dev, &hfs2, PCI_ME_HFS2);
+#endif
 
 	if (!hfs2.mbp_rdy) {
 		printk(BIOS_ERR, "ME: MBP not ready\n");
@@ -1057,8 +1061,10 @@ static int intel_me_read_mbp(me_bios_payload *mbp_data, struct device *dev)
 	return 0;
 
 mbp_failure:
+#ifdef __SIMPLE_DEVICE__
+	intel_me_mbp_give_up(PCI_BDF(dev));
+#else
 	intel_me_mbp_give_up(dev);
+#endif
 	return -1;
 }
-
-#endif /* !__SMM__ */

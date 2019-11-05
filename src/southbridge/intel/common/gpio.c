@@ -35,7 +35,7 @@
 
 static u16 get_gpio_base(void)
 {
-#if defined(__SMM__)
+#ifdef __SIMPLE_DEVICE__
 	/* Don't assume GPIO_BASE is still the same */
 	return pci_read_config16(PCH_LPC_DEV, GPIO_BASE) & 0xfffe;
 #else

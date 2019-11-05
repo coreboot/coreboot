@@ -17,12 +17,9 @@
 
 #include <console/console.h>
 #include <delay.h>
-#ifdef __SMM__
-#include <device/pci_def.h>
-#else /* !__SMM__ */
 #include <device/device.h>
 #include <device/pci.h>
-#endif
+#include <device/pci_def.h>
 #include <device/pci_ops.h>
 #include <string.h>
 
@@ -145,7 +142,7 @@ void pch_iobp_update(u32 address, u32 andvalue, u32 orvalue)
 		return;
 }
 
-#ifndef __SMM__
+#ifndef __SIMPLE_DEVICE__
 /* Set bit in function disable register to hide this device */
 static void pch_hide_devfn(unsigned int devfn)
 {

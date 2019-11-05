@@ -90,7 +90,7 @@ u16 get_gpiobase(void)
 	return gpiobase;
 }
 
-#ifndef __SMM__
+#ifndef __SIMPLE_DEVICE__
 
 /* Put device in D3Hot Power State */
 static void pch_enable_d3hot(struct device *dev)
@@ -330,4 +330,4 @@ struct chip_operations southbridge_intel_lynxpoint_ops = {
 	.enable_dev = pch_enable,
 };
 
-#endif /* __SMM__ */
+#endif /* __SIMPLE_DEVICE__ */

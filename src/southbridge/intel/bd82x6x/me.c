@@ -26,17 +26,14 @@
 #include <device/mmio.h>
 #include <device/pci_ops.h>
 #include <console/console.h>
+#include <device/device.h>
+#include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_def.h>
 #include <string.h>
 #include <delay.h>
 #include <elog.h>
 #include <halt.h>
-
-#ifndef __SMM__
-#include <device/device.h>
-#include <device/pci.h>
-#endif
 
 #include "me.h"
 #include "pch.h"
@@ -45,9 +42,8 @@
 #include <vendorcode/google/chromeos/gnvs.h>
 #endif
 
-#ifndef __SMM__
 /* Path that the BIOS should take based on ME state */
-static const char *me_bios_path_values[] = {
+static const char *me_bios_path_values[] __unused = {
 	[ME_NORMAL_BIOS_PATH]		= "Normal",
 	[ME_S3WAKE_BIOS_PATH]		= "S3 Wake",
 	[ME_ERROR_BIOS_PATH]		= "Error",
@@ -55,7 +51,6 @@ static const char *me_bios_path_values[] = {
 	[ME_DISABLE_BIOS_PATH]		= "Disable",
 	[ME_FIRMWARE_UPDATE_BIOS_PATH]	= "Firmware Update",
 };
-#endif
 
 /* MMIO base address for MEI interface */
 static u32 *mei_base_address;
@@ -112,7 +107,7 @@ static inline void mei_write_dword_ptr(void *ptr, int offset)
 	mei_dump(ptr, dword, offset, "WRITE");
 }
 
-#ifndef __SMM__
+#ifndef __SIMPLE_DEVICE__
 static inline void pci_read_dword_ptr(struct device *dev, void *ptr, int offset)
 {
 	u32 dword = pci_read_config32(dev, offset);
@@ -346,9 +341,8 @@ static inline int mei_sendrecv(struct mei_header *mei, struct mkhi_header *mkhi,
 	return 0;
 }
 
-#ifdef __SMM__
 /* Send END OF POST message to the ME */
-static int mkhi_end_of_post(void)
+static int __unused mkhi_end_of_post(void)
 {
 	struct mkhi_header mkhi = {
 		.group_id	= MKHI_GROUP_ID_GEN,
@@ -370,7 +364,6 @@ static int mkhi_end_of_post(void)
 	printk(BIOS_INFO, "ME: END OF POST message successful\n");
 	return 0;
 }
-#endif
 
 /* Get ME firmware version */
 static int __unused mkhi_get_fw_version(void)
@@ -486,7 +479,8 @@ int mkhi_global_reset(void)
 }
 #endif
 
-#ifdef __SMM__
+#ifdef __SIMPLE_DEVICE__
+
 static void intel_me7_finalize_smm(void)
 {
 	struct me_hfs hfs;
@@ -536,7 +530,8 @@ void intel_me_finalize_smm(void)
 		printk(BIOS_ERR, "No finalize handler for ME %08x.\n", did);
 	}
 }
-#else /* !__SMM__ */
+
+#else
 
 /* Determine the path that we should take based on ME status */
 static me_bios_path intel_me_path(struct device *dev)
@@ -748,4 +743,4 @@ static const struct pci_driver intel_me __pci_driver = {
 	.device	= 0x1c3a,
 };
 
-#endif /* !__SMM__ */
+#endif /* __SIMPLE_DEVICE__ */

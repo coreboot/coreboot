@@ -17,6 +17,7 @@
 #include <bootmode.h>
 #include <types.h>
 #include <console/console.h>
+#include <cpu/x86/smm.h>
 #include <ec/quanta/it8518/ec.h>
 #include <device/device.h>
 #include <device/pci.h>
@@ -25,11 +26,6 @@
 #include <elog.h>
 #include "ec.h"
 
-#ifdef __SMM__
-#include <cpu/x86/smm.h>
-#endif
-
-#ifndef __SMM__
 void stout_ec_init(void)
 {
 
@@ -58,8 +54,6 @@ void stout_ec_init(void)
 
 	// TODO: Power Limit Setting
 }
-
-#else // SMM
 
 void stout_ec_finalize_smm(void)
 {
@@ -105,4 +99,3 @@ void stout_ec_finalize_smm(void)
 		write_pmbase32(PM1_CNT, read_pmbase32(PM1_CNT) | (0xf << 10));
 	}
 }
-#endif //__SMM__

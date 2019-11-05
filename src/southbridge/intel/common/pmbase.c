@@ -38,7 +38,7 @@
 
 u16 lpc_get_pmbase(void)
 {
-#if defined(__SMM__)
+#ifdef __SIMPLE_DEVICE__
 	/* Don't assume PMBASE is still the same */
 	return pci_read_config16(PCH_LPC_DEV, PMBASE) & 0xfffc;
 #else

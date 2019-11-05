@@ -16,7 +16,9 @@
 #include <stdint.h>
 #include <arch/acpi.h>
 #include <arch/io.h>
+#include <device/device.h>
 #include <device/mmio.h>
+#include <device/pci.h>
 #include <device/pci_ops.h>
 #include <cbmem.h>
 #include <console/console.h>
@@ -37,10 +39,7 @@ static inline pci_devfn_t get_pcu_dev(void)
 	return pcu_dev;
 }
 
-#else /* !__SMM__ */
-#include <device/device.h>
-#include <device/pci.h>
-
+#else
 static struct device *pcu_dev;
 static struct device *get_pcu_dev(void)
 {

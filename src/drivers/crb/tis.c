@@ -104,8 +104,6 @@ int tis_sendrecv(const uint8_t *sendbuf, size_t sbuf_size, uint8_t *recvbuf, siz
 	return 0;
 }
 
-#ifdef __RAMSTAGE__
-
 static void crb_tpm_fill_ssdt(struct device *dev)
 {
 	const char *path = acpi_device_path(dev);
@@ -139,7 +137,7 @@ static const char *crb_tpm_acpi_name(const struct device *dev)
 	return "TPM";
 }
 
-static struct device_operations crb_ops = {
+static struct device_operations __unused crb_ops = {
 	.read_resources = DEVICE_NOOP,
 	.set_resources = DEVICE_NOOP,
 #if CONFIG(HAVE_ACPI_TABLES)
@@ -151,9 +149,12 @@ static struct device_operations crb_ops = {
 
 static void enable_dev(struct device *dev)
 {
+#if !DEVTREE_EARLY
 	dev->ops = &crb_ops;
+#endif
 }
 
-struct chip_operations drivers_crb_ops = {CHIP_NAME("CRB TPM").enable_dev = enable_dev};
-
-#endif /* __RAMSTAGE__ */
+struct chip_operations drivers_crb_ops = {
+	CHIP_NAME("CRB TPM")
+	.enable_dev = enable_dev
+};

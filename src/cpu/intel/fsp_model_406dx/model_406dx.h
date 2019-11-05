@@ -79,12 +79,9 @@
 #define PSS_LATENCY_BUSMASTER		10
 
 #ifndef __ROMCC__
-#ifdef __SMM__
 /* Lock MSRs */
 void intel_model_406dx_finalize_smm(void);
-#else
 int cpu_config_tdp_levels(void);
-#endif
 #endif
 
 #endif /* _CPU_INTEL_MODEL_406DX_H */

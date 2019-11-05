@@ -93,14 +93,12 @@
 # error "CONFIG_IED_REGION_SIZE is not a power of 2"
 #endif
 
-#ifdef __SMM__
 /* Lock MSRs */
 void intel_model_206ax_finalize_smm(void);
-#else
+
 /* Configure power limits for turbo mode */
 void set_power_limits(u8 power_limit_1_time);
 int cpu_config_tdp_levels(void);
-#endif
 int get_platform_id(void);
 
 #endif

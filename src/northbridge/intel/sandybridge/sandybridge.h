@@ -203,17 +203,14 @@ enum platform_type {
 
 #ifndef __ASSEMBLER__
 
-#ifdef __SMM__
 void intel_sandybridge_finalize_smm(void);
-#else /* !__SMM__ */
+
 int bridge_silicon_revision(void);
 void systemagent_early_init(void);
 void sandybridge_init_iommu(void);
 void sandybridge_late_initialization(void);
 void northbridge_romstage_finalize(int s3resume);
 void early_init_dmi(void);
-
-#endif /* !__SMM__ */
 
 void pch_enable_lpc(void);
 void mainboard_early_init(int s3resume);

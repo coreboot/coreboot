@@ -19,8 +19,6 @@
 
 #include "mainboard.h"
 
-#ifndef __SMM__
 void pavilion_m6_1035dx_ec_init(void);
-#endif
 
 #endif /* _MAINBOARD_HP_PAVILION_M6_1035DX_EC_H   */

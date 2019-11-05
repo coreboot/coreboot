@@ -235,8 +235,6 @@ void disable_gevent_smi(uint8_t gevent);
 void gpe_configure_sci(const struct sci_source *scis, size_t num_gpes);
 void soc_route_sci(uint8_t event);
 
-#ifndef __SMM__
 void enable_smi_generation(void);
-#endif
 
 #endif /* __SOUTHBRIDGE_AMD_PI_STONEYRIDGE_SMI_H__ */

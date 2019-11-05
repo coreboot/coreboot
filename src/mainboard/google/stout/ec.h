@@ -22,10 +22,7 @@
 #define EC_SMI_LID_CLOSED	0x2B
 
 #ifndef __ACPI__
-extern void stout_ec_init(void);
-#endif
-
-#ifdef __SMM__
+void stout_ec_init(void);
 void stout_ec_finalize_smm(void);
 #endif
 

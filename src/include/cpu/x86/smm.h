@@ -86,7 +86,6 @@ struct smm_module_params {
 /* smm_handler_t is called with arg of smm_module_params pointer. */
 typedef asmlinkage void (*smm_handler_t)(void *);
 
-#ifdef __SMM__
 /* SMM Runtime helpers. */
 
 /* Entry point for SMM modules. */
@@ -95,7 +94,6 @@ asmlinkage void smm_handler_start(void *params);
 /* Retrieve SMM save state for a given CPU. WARNING: This does not take into
  * account CPUs which are configured to not save their state to RAM. */
 void *smm_get_save_state(int cpu);
-#endif /* __SMM__ */
 
 /* SMM Module Loading API */
 

@@ -69,14 +69,12 @@
 #define PSS_LATENCY_TRANSITION		10
 #define PSS_LATENCY_BUSMASTER		10
 
-#ifdef __SMM__
 /* Lock MSRs */
 void intel_model_2065x_finalize_smm(void);
-#else
+
 /* Configure power limits for turbo mode */
 void set_power_limits(u8 power_limit_1_time);
 int cpu_config_tdp_levels(void);
-#endif
 
 /* Sanity check config options. */
 #if (CONFIG_SMM_TSEG_SIZE <= CONFIG_SMM_RESERVED_SIZE)

@@ -107,9 +107,7 @@ typedef struct global_nvs_t {
 check_member(global_nvs_t, chromeos, GNVS_CHROMEOS_ACPI_OFFSET);
 
 void acpi_create_gnvs(global_nvs_t *gnvs);
-#if ENV_SMM
 /* Used in SMM to find the ACPI GNVS address */
 global_nvs_t *smm_get_gnvs(void);
-#endif
 
 #endif /* _SOC_NVS_H_ */

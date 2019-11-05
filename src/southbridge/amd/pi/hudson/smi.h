@@ -71,8 +71,6 @@ void hudson_configure_gevent_smi(uint8_t gevent, uint8_t mode, uint8_t level);
 void hudson_disable_gevent_smi(uint8_t gevent);
 void hudson_enable_acpi_cmd_smi(void);
 
-#ifndef __SMM__
 void hudson_enable_smi_generation(void);
-#endif
 
 #endif /* _SOUTHBRIDGE_AMD_PI_HUDSON_SMI_H */

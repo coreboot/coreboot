@@ -19,8 +19,6 @@
 
 #include "mainboard.h"
 
-#ifndef __SMM__
 void lenovo_g505s_ec_init(void);
-#endif
 
 #endif /* _MAINBOARD_LENOVO_G505S_EC_H   */

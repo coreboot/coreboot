@@ -65,9 +65,7 @@ typedef struct global_nvs_t {
 
 } __packed global_nvs_t;
 
-#ifdef __SMM__
 /* Used in SMM to find the ACPI GNVS address */
 global_nvs_t *smm_get_gnvs(void);
-#endif
 
 #endif /* _DENVERTON_NS_NVS_H_ */

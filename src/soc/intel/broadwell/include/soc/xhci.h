@@ -50,8 +50,6 @@
 #define   XHCI_PLSR_POLLING	(7 << 5)	/* Port is polling */
 #define   XHCI_PLSW_ENABLE	(5 << 5)	/* Transition from disabled */
 
-#ifdef __SMM__
 void usb_xhci_sleep_prepare(pci_devfn_t dev, u8 slp_typ);
-#endif
 
 #endif

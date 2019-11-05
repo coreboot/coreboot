@@ -65,9 +65,8 @@ typedef struct {
 } __packed global_nvs_t;
 
 void acpi_create_gnvs(global_nvs_t *gnvs);
-#ifdef __SMM__
+
 /* Used in SMM to find the ACPI GNVS address */
 global_nvs_t *smm_get_gnvs(void);
-#endif
 
 #endif /* _BAYTRAIL_NVS_H_ */

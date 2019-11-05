@@ -249,16 +249,13 @@ typedef struct {
 #define PCI_DEVICE_ID_SB 0x0104
 #define PCI_DEVICE_ID_IB 0x0154
 
-#ifdef __SMM__
 void intel_nehalem_finalize_smm(void);
-#else /* !__SMM__ */
+
 int bridge_silicon_revision(void);
 void nehalem_early_initialization(int chipset_type);
 void nehalem_late_initialization(void);
 void mainboard_pre_raminit(void);
 void mainboard_get_spd_map(u8 *spd_addrmap);
-
-#endif /* !__SMM__ */
 
 #endif
 #endif

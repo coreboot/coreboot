@@ -60,6 +60,61 @@ struct clock_config qspi_core_cfg[] = {
 	}
 };
 
+struct clock_config qup_wrap_cfg[] = {
+	{
+		.hz = SRC_XO_HZ,	/* 19.2KHz */
+		.src = SRC_XO_19_2MHZ,
+		.div = DIV(1),
+	},
+	{
+		.hz =  32 * MHz,
+		.src = SRC_GPLL0_EVEN_300MHZ,
+		.div = DIV(1),
+		.m = 8,
+		.n = 75,
+		.d_2 = 150,
+	},
+	{
+		.hz =  48 * MHz,
+		.src = SRC_GPLL0_EVEN_300MHZ,
+		.div = DIV(1),
+		.m = 4,
+		.n = 25,
+		.d_2 = 50,
+	},
+	{
+		.hz =  64 * MHz,
+		.src = SRC_GPLL0_EVEN_300MHZ,
+		.div = DIV(1),
+		.m = 16,
+		.n = 75,
+		.d_2 = 150,
+	},
+	{
+		.hz =  96 * MHz,
+		.src = SRC_GPLL0_EVEN_300MHZ,
+		.div = DIV(1),
+		.m = 8,
+		.n = 25,
+		.d_2 = 50,
+	},
+	{
+		.hz =  100 * MHz,
+		.src = SRC_GPLL0_EVEN_300MHZ,
+		.div = DIV(3),
+	},
+	{
+		.hz = SRC_XO_HZ,	/* 19.2KHz */
+		.src = SRC_XO_19_2MHZ,
+		.div = DIV(1),
+	},
+	{
+		.hz = SRC_XO_HZ,	/* 19.2KHz */
+		.src = SRC_XO_19_2MHZ,
+		.div = DIV(1),
+	},
+};
+
 static int clock_configure_gpll0(void)
 {
 	setbits32(&gcc->gpll0.user_ctl_u, 1 << SCALE_FREQ_SHFT);
@@ -171,6 +226,40 @@ int clock_reset_bcr(void *bcr_addr, bool reset)
 		clrbits32(bcr, BIT(CLK_CTL_BCR_BLK_ARES_SHFT));
 
 	return 0;
+}
+
+void clock_configure_dfsr(int qup)
+{
+	int idx;
+	int s = qup % QUP_WRAP1_S0;
+	uint32_t reg_val;
+	struct sc7180_qupv3_clock *qup_clk = qup < QUP_WRAP1_S0 ?
+				&gcc->qup_wrap0_s[s] : &gcc->qup_wrap1_s[s];
+
+	setbits32(&qup_clk->dfsr_clk.cmd_dfsr, BIT(CLK_CTL_CMD_DFSR_SHFT));
+
+	for (idx = 0; idx < ARRAY_SIZE(qup_wrap_cfg); idx++) {
+		reg_val = (qup_wrap_cfg[idx].src << CLK_CTL_CFG_SRC_SEL_SHFT) |
+			(qup_wrap_cfg[idx].div << CLK_CTL_CFG_SRC_DIV_SHFT);
+
+		write32(&qup_clk->dfsr_clk.perf_dfsr[idx], reg_val);
+
+		if (qup_wrap_cfg[idx].m == 0)
+			continue;
+
+		setbits32(&qup_clk->dfsr_clk.cmd_dfsr,
+				RCG_MODE_DUAL_EDGE << CLK_CTL_CFG_MODE_SHFT);
+
+		reg_val = qup_wrap_cfg[idx].m & CLK_CTL_RCG_MND_BMSK;
+		write32(&qup_clk->dfsr_clk.perf_m_dfsr[idx], reg_val);
+
+		reg_val = ~(qup_wrap_cfg[idx].n - qup_wrap_cfg[idx].m)
+				& CLK_CTL_RCG_MND_BMSK;
+		write32(&qup_clk->dfsr_clk.perf_n_dfsr[idx], reg_val);
+
+		reg_val = ~(qup_wrap_cfg[idx].d_2) & CLK_CTL_RCG_MND_BMSK;
+		write32(&qup_clk->dfsr_clk.perf_d_dfsr[idx], reg_val);
+	}
 }
 
 void clock_configure_qup(int qup, uint32_t hz)

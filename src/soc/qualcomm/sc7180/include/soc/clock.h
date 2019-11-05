@@ -56,9 +56,22 @@ struct sc7180_mnd_clock {
 	u32 d_2;
 };
 
+struct sc7180_dfsr_clock {
+	u32 cmd_dfsr;
+	u8 _res0[0x20 - 0x1c];
+	u32 perf_dfsr[8];
+	u8 _res1[0x60 - 0x40];
+	u32 perf_m_dfsr[8];
+	u8 _res2[0xa0 - 0x80];
+	u32 perf_n_dfsr[8];
+	u8 _res3[0xe0 - 0xc0];
+	u32 perf_d_dfsr[8];
+	u8 _res4[0x130 - 0x100];
+};
+
 struct sc7180_qupv3_clock {
 	struct sc7180_mnd_clock mnd_clk;
-	u8 _res[0x130 - 0x18];
+	struct sc7180_dfsr_clock dfsr_clk;
 };
 
 struct sc7180_gpll {
@@ -171,6 +184,11 @@ enum clk_ctl_bcr {
 	CLK_CTL_BCR_BLK_ARES_SHFT = 0,
 };
 
+enum clk_ctl_dfsr {
+	CLK_CTL_CMD_DFSR_BMSK = 0x1,
+	CLK_CTL_CMD_DFSR_SHFT = 0,
+};
+
 enum clk_qup {
 	QUP_WRAP0_S0,
 	QUP_WRAP0_S1,
@@ -210,5 +228,6 @@ void clock_configure_qspi(uint32_t hz);
 int clock_reset_bcr(void *bcr_addr, bool reset);
 void clock_configure_qup(int qup, uint32_t hz);
 void clock_enable_qup(int qup);
+void clock_configure_dfsr(int qup);
 
 #endif	// __SOC_QUALCOMM_SC7180_CLOCK_H__

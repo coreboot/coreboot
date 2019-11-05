@@ -45,8 +45,10 @@ static struct {
 	{ CPUID_COFFEELAKE_R0, "Coffeelake R0" },
 	{ CPUID_COMETLAKE_U_A0, "Cometlake-U A0 (6+2)" },
 	{ CPUID_COMETLAKE_U_K0_S0, "Cometlake-U K0/S0 (6+2)/(4+2)" },
-	{ CPUID_COMETLAKE_H_S_6_2_P0, "Cometlake-H/S P0 (6+2)" },
+	{ CPUID_COMETLAKE_H_S_6_2_G0, "Cometlake-H/S G0 (6+2)" },
+	{ CPUID_COMETLAKE_H_S_6_2_G1, "Cometlake-H/S G1 (6+2)" },
 	{ CPUID_COMETLAKE_H_S_10_2_P0, "Cometlake-H/S P0 (10+2)" },
+	{ CPUID_COMETLAKE_H_S_10_2_Q0_P1, "Cometlake-H/S Q0/P1 (10+2)" },
 };
 
 static struct {
@@ -77,7 +79,9 @@ static struct {
 	{ PCI_DEVICE_ID_INTEL_CML_ULT_6_2, "CometLake-U (6+2)" },
 	{ PCI_DEVICE_ID_INTEL_CML_ULX, "CometLake-ULX (4+2)" },
 	{ PCI_DEVICE_ID_INTEL_CML_S, "CometLake-S (6+2)" },
-	{ PCI_DEVICE_ID_INTEL_CML_S_10_2, "CometLake-S (10+2)" },
+	{ PCI_DEVICE_ID_INTEL_CML_S_G0G1_P0P1_6_2, "CometLake-S G0/G1/P0/P1 (6+2)" },
+	{ PCI_DEVICE_ID_INTEL_CML_S_P0P1_8_2, "CometLake-S P0/P1 (8+2)" },
+	{ PCI_DEVICE_ID_INTEL_CML_S_P0P1_10_2, "CometLake-S P0/P1 (10+2)" },
 	{ PCI_DEVICE_ID_INTEL_CML_H, "CometLake-H (6+2)" },
 	{ PCI_DEVICE_ID_INTEL_CML_H_8_2, "CometLake-H (8+2)" },
 };
@@ -104,6 +108,13 @@ static struct {
 	{ PCI_DEVICE_ID_INTEL_CMP_PREMIUM_U_LPC, "Cometlake-U Premium" },
 	{ PCI_DEVICE_ID_INTEL_CMP_BASE_U_LPC, "Cometlake-U Base" },
 	{ PCI_DEVICE_ID_INTEL_CMP_SUPER_Y_LPC, "Cometlake-Y Super" },
+	{ PCI_DEVICE_ID_INTEL_CMP_H_LPC_HM470, "Cometlake-H HM470" },
+	{ PCI_DEVICE_ID_INTEL_CMP_H_LPC_WM490, "Cometlake-H WM490" },
+	{ PCI_DEVICE_ID_INTEL_CMP_H_LPC_QM480, "Cometlake-H QM480" },
+	{ PCI_DEVICE_ID_INTEL_CMP_H_LPC_W480, "Cometlake-H W480" },
+	{ PCI_DEVICE_ID_INTEL_CMP_H_LPC_H470, "Cometlake-H H470" },
+	{ PCI_DEVICE_ID_INTEL_CMP_H_LPC_Z490, "Cometlake-H Z490" },
+	{ PCI_DEVICE_ID_INTEL_CMP_H_LPC_Q470, "Cometlake-H Q470" },
 };
 
 static struct {
@@ -143,10 +154,15 @@ static struct {
 	{ PCI_DEVICE_ID_INTEL_CML_GT1_S_2, "CometLake S GT1" },
 	{ PCI_DEVICE_ID_INTEL_CML_GT2_S_1, "CometLake S GT2" },
 	{ PCI_DEVICE_ID_INTEL_CML_GT2_S_2, "CometLake S GT2" },
+	{ PCI_DEVICE_ID_INTEL_CML_GT2_S_G0, "CometLake S GT2 G0" },
+	{ PCI_DEVICE_ID_INTEL_CML_GT2_S_P0, "CometLake S GT2 P0" },
 	{ PCI_DEVICE_ID_INTEL_CML_GT1_H_1, "CometLake H GT1" },
 	{ PCI_DEVICE_ID_INTEL_CML_GT1_H_2, "CometLake H GT1" },
 	{ PCI_DEVICE_ID_INTEL_CML_GT2_H_1, "CometLake H GT2" },
 	{ PCI_DEVICE_ID_INTEL_CML_GT2_H_2, "CometLake H GT2" },
+	{ PCI_DEVICE_ID_INTEL_CML_GT2_H_R0, "CometLake H GT2 R0" },
+	{ PCI_DEVICE_ID_INTEL_CML_GT2_H_R1, "CometLake H GT2 R1" },
+
 };
 
 static uint8_t get_dev_revision(pci_devfn_t dev)

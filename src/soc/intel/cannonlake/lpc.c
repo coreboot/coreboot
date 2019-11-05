@@ -83,7 +83,8 @@ uint8_t get_pch_series(void)
 	case 0x02: /* CML-LP */
 		pch_series = PCH_LP;
 		break;
-	case 0xA3:
+	case 0xA3: /* CFL-H */
+	case 0x06: /* CML-H */
 		pch_series = PCH_H;
 		break;
 	default:

@@ -40,3 +40,22 @@ removed soon after release.
 
 Significant refactoring has bee done to achieve some consistency across platforms
 and to reduce code duplication.
+
+### Added VBOOT support to the following platforms:
+* intel/gm45
+* intel/nehalem
+
+### Moved the following platforms to C_ENVIRONMENT_BOOTBLOCK:
+* intel/gm45
+* intel/nehalem
+* intel/braswell
+
+### Other
+* Did cleanups around TSC timer
+* Improved automatic VR configuration on SKL/KBL
+* Filled additional fields in SMBIOS type 4
+* Removed magic value replay from Intel Nehalem/ibexpeak code base
+* Added OpenSBI on RISCV platforms
+* Did more preparations for Intel TXT support
+* Did more preparations for x86_64 stage support
+* Added SSDT generator for arbitrary SuperIO chips based on devicetree.cb

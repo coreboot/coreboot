@@ -222,16 +222,14 @@ void verified_boot_check_cbfsfile(const char *name, uint32_t type, uint32_t hash
 	start = cbfs_boot_map_with_leak(name, type & ~VERIFIED_BOOT_COPY_BLOCK, &size);
 	if (start && size) {
 		/* Speed up processing by copying the file content to memory first */
-#ifndef __PRE_RAM__
-		if ((type & VERIFIED_BOOT_COPY_BLOCK) && (buffer) && (*buffer) &&
-		    ((uint32_t) start > (uint32_t)(~(CONFIG_CBFS_SIZE-1)))) {
+		if (!ENV_ROMSTAGE_OR_BEFORE && (type & VERIFIED_BOOT_COPY_BLOCK) && (buffer) &&
+		    (*buffer) && ((uint32_t) start > (uint32_t)(~(CONFIG_CBFS_SIZE-1)))) {
 				printk(BIOS_DEBUG, "%s: move buffer to memory\n", __func__);
 			/* Move the file to a memory bufferof which we know it doesn't harm */
 			memcpy(*buffer, start, size);
 			start = *buffer;
 			printk(BIOS_DEBUG, "%s: done\n", __func__);
 		}
-#endif // __PRE_RAM__
 		verified_boot_check_buffer(name, start, size, hash_index, pcr);
 	} else {
 		printk(BIOS_EMERG, "CBFS Failed to get file content for %s\n", name);

@@ -131,8 +131,6 @@ static int vendor_secure_locate(struct cbfs_props *props)
 	return 0;
 }
 
-#ifndef __BOOTBLOCK__
-
 /*
  *
  * measure_item
@@ -168,7 +166,6 @@ static int measure_item(uint32_t pcr, uint8_t *hashData, uint32_t hashDataLen,
 	}
 	return status;
 }
-#endif
 
 static void verified_boot_check_buffer(const char *name, void *start, size_t size,
 				       uint32_t hash_index, int32_t pcr)
@@ -198,8 +195,7 @@ static void verified_boot_check_buffer(const char *name, void *start, size_t siz
 			printk(BIOS_EMERG, "%s ", name);
 			die("HASH verification failed!\n");
 		} else {
-#ifndef __BOOTBLOCK__
-			if (CONFIG(VENDORCODE_ELTAN_MBOOT)) {
+			if (!ENV_BOOTBLOCK && CONFIG(VENDORCODE_ELTAN_MBOOT)) {
 				if (pcr != -1) {
 					printk(BIOS_DEBUG, "%s: measuring %s\n", __func__, name);
 					if (measure_item(pcr, digest, sizeof(digest),
@@ -208,7 +204,6 @@ static void verified_boot_check_buffer(const char *name, void *start, size_t siz
 						       __func__);
 				}
 			}
-#endif
 			if (CONFIG(VENDORCODE_ELTAN_VBOOT))
 				printk(BIOS_DEBUG, "%s HASH verification success\n", name);
 		}

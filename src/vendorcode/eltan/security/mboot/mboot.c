@@ -266,7 +266,6 @@ int mb_measure_log_worker(const char *name, uint32_t type, uint32_t pcr,
 	return status;
 }
 
-#ifdef __PRE_RAM__
 /*
  * Called from early romstage
  *
@@ -473,4 +472,3 @@ int __attribute__((weak))mb_crtm(void)
 
 	return status;
 }
-#endif // __PRE_RAM__

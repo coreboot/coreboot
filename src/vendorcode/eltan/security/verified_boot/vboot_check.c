@@ -276,12 +276,10 @@ void process_verify_list(const verify_item_t list[])
 		i++;
 	}
 }
-#ifdef __BOOTBLOCK__
+
 /*
  * BOOTBLOCK
  */
-
-extern verify_item_t bootblock_verify_list[];
 
 void verified_boot_bootblock_check(void)
 {
@@ -296,14 +294,6 @@ void verified_boot_bootblock_check(void)
 	process_verify_list(bootblock_verify_list);
 }
 
-static void vendor_secure_prepare(void)
-{
-	printk(BIOS_SPEW, "%s: bootblock\n", __func__);
-	verified_boot_bootblock_check();
-}
-#endif //__BOOTBLOCK__
-
-#ifdef __ROMSTAGE__
 /*
  * ROMSTAGE
  */
@@ -330,33 +320,6 @@ void verified_boot_early_check(void)
 	process_verify_list(romstage_verify_list);
 }
 
-static int prepare_romstage = 0;
-
-static void vendor_secure_prepare(void)
-{
-	printk(BIOS_SPEW, "%s: romstage\n", __func__);
-	if (!prepare_romstage) {
-		verified_boot_early_check();
-		prepare_romstage = 1;
-	}
-}
-#endif //__ROMSTAGE__
-
-#ifdef __POSTCAR__
-/*
- * POSTCAR
- */
-
-extern verify_item_t postcar_verify_list[];
-
-static void vendor_secure_prepare(void)
-{
-	printk(BIOS_SPEW, "%s: postcar\n", __func__);
-	process_verify_list(postcar_verify_list);
-}
-#endif //__POSTCAR__
-
-#ifdef __RAMSTAGE__
 /*
  * RAM STAGE
  */
@@ -408,10 +371,6 @@ static int process_oprom_list(const verify_item_t list[],
 	return 0;
 }
 
-extern verify_item_t payload_verify_list[];
-
-extern verify_item_t oprom_verify_list[];
-
 int verified_boot_should_run_oprom(struct rom_header *rom_header)
 {
 	return process_oprom_list(oprom_verify_list, rom_header);
@@ -419,10 +378,30 @@ int verified_boot_should_run_oprom(struct rom_header *rom_header)
 
 static void vendor_secure_prepare(void)
 {
-	printk(BIOS_SPEW, "%s: ramstage\n", __func__);
-	process_verify_list(payload_verify_list);
+	if (ENV_BOOTBLOCK) {
+		printk(BIOS_SPEW, "%s: bootblock\n", __func__);
+		verified_boot_bootblock_check();
+	}
+
+	if (ENV_ROMSTAGE) {
+		static int prepare_romstage = 0;
+		printk(BIOS_SPEW, "%s: romstage\n", __func__);
+		if (!prepare_romstage) {
+			verified_boot_early_check();
+			prepare_romstage = 1;
+		}
+	}
+
+	if (ENV_POSTCAR) {
+		printk(BIOS_SPEW, "%s: postcar\n", __func__);
+		process_verify_list(postcar_verify_list);
+	}
+
+	if (ENV_RAMSTAGE) {
+		printk(BIOS_SPEW, "%s: ramstage\n", __func__);
+		process_verify_list(payload_verify_list);
+	}
 }
-#endif //__RAMSTAGE__
 
 const struct cbfs_locator cbfs_master_header_locator = {
 	.name = "Vendorcode Header Locator",

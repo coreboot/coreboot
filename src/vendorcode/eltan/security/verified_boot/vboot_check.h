@@ -32,12 +32,8 @@
 /* These method verifies the SHA256 hash over the 'named' CBFS component.
  * 'type' denotes the type of CBFS component i.e. stage, payload or fsp.
  */
-#ifdef __BOOTBLOCK__
 void verified_boot_bootblock_check(void);
-#endif
-#ifdef __ROMSTAGE__
 void verified_boot_early_check(void);
-#endif
 
 int verified_boot_check_manifest(void);
 
@@ -74,5 +70,10 @@ typedef struct {
 } verify_item_t;
 
 void process_verify_list(const verify_item_t list[]);
+
+extern const verify_item_t bootblock_verify_list[];
+extern const verify_item_t postcar_verify_list[];
+extern const verify_item_t payload_verify_list[];
+extern const verify_item_t oprom_verify_list[];
 
 #endif //VBOOT_CHECK_H

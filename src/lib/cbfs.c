@@ -62,6 +62,22 @@ int cbfs_boot_locate(struct cbfsf *fh, const char *name, uint32_t *type)
 	}
 
 	int ret = cbfs_locate(fh, &rdev, name, type);
+
+	if (CONFIG(VBOOT_ENABLE_CBFS_FALLBACK) && ret) {
+
+		/*
+		 * When VBOOT_ENABLE_CBFS_FALLBACK is enabled and a file is not available in the
+		 * active RW region, the RO (COREBOOT) region will be used to locate the file.
+		 *
+		 * This functionality makes it possible to avoid duplicate files in the RO
+		 * and RW partitions while maintaining updateability.
+		 *
+		 * Files can be added to the RO_REGION_ONLY config option to use this feature.
+		 */
+		printk(BIOS_DEBUG, "Fall back to RO region for %s\n", name);
+		ret = cbfs_locate_file_in_region(fh, "COREBOOT", name, type);
+	}
+
 	if (!ret)
 		if (vboot_measure_cbfs_hook(fh, name))
 			return -1;

@@ -186,6 +186,26 @@ In addition to adding the coreboot files into the read-only region,
 enabling vboot causes the build script to add the read/write files into
 coreboot file systems in *FW_MAIN_A* and *FW_MAIN_B*.
 
+**RO_REGION_ONLY**  
+
+The files added to this list will only be placed in the read-only region and
+not into the read/write coreboot file systems in *FW_MAIN_A* and *FW_MAIN_B*.
+
+**VBOOT_ENABLE_CBFS_FALLBACK**  
+
+Normally coreboot will use the active read/write coreboot file system for all
+of it's file access when VBOOT is active and is not in recovery mode.
+
+When the `VBOOT_ENABLE_CBFS_FALLBACK` option is enabled the cbfs file system will
+first try to locate a file in the active read/write file system. If the file
+doesn't exist here the file system will try to locate the file in the read-only
+file system.
+
+This option can be used to prevent duplication of static data. Files can be
+removed from the read/write partitions by adding them to the `RO_REGION_ONLY`
+config. If a file needs to be changed in a later stage simply remove it from
+this list.
+
 ***
 
 ## Signing the coreboot Image

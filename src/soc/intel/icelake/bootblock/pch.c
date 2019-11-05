@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2018 Intel Corp.
+ * Copyright (C) 2018-2019 Intel Corp.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,17 +23,13 @@
 #include <intelblocks/pcr.h>
 #include <intelblocks/pmclib.h>
 #include <intelblocks/rtc.h>
-#include <intelblocks/smbus.h>
-#include <intelblocks/tco.h>
 #include <soc/bootblock.h>
-#include <soc/espi.h>
 #include <soc/iomap.h>
 #include <soc/p2sb.h>
 #include <soc/pch.h>
 #include <soc/pci_devs.h>
 #include <soc/pcr_ids.h>
 #include <soc/pm.h>
-#include <soc/smbus.h>
 
 #define PCR_PSF3_TO_SHDW_PMC_REG_BASE	0x0600
 #define PCR_PSFX_TO_SHDW_BAR0	0
@@ -93,7 +89,6 @@ void bootblock_pch_early_init(void)
 	 */
 	soc_config_pwrmbase();
 }
-
 
 static void soc_config_acpibase(void)
 {
@@ -162,12 +157,6 @@ void pch_early_init(void)
 	 * GPE0_STS, GPE0_EN registers.
 	 */
 	soc_config_acpibase();
-
-	/* Programming TCO_BASE_ADDRESS and TCO Timer Halt */
-	tco_configure();
-
-	/* Program SMBUS_BASE_ADDRESS and Enable it */
-	smbus_common_init();
 
 	/* Set up GPE configuration */
 	pmc_gpe_init();

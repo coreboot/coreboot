@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2018 Intel Corporation.
+ * Copyright (C) 2019 Intel Corp.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,21 +13,15 @@
  * GNU General Public License for more details.
  */
 
-#ifndef _SOC_ROMSTAGE_H_
-#define _SOC_ROMSTAGE_H_
+#include <intelblocks/smbus.h>
+#include <intelblocks/tco.h>
+#include <soc/romstage.h>
 
-#include <fsp/api.h>
+void pch_init(void)
+{
+	/* Programming TCO_BASE_ADDRESS and TCO Timer Halt */
+	tco_configure();
 
-void mainboard_memory_init_params(FSPM_UPD *mupd);
-void systemagent_early_init(void);
-void pch_init(void);
-
-/* Board type */
-enum board_type {
-	BOARD_TYPE_MOBILE  = 0,
-	BOARD_TYPE_DESKTOP = 1,
-	BOARD_TYPE_ULT_ULX = 5,
-	BOARD_TYPE_SERVER  = 7
-};
-
-#endif /* _SOC_ROMSTAGE_H_ */
+	/* Program SMBUS_BASE_ADDRESS and Enable it */
+	smbus_common_init();
+}

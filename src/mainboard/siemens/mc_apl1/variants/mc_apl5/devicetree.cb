@@ -84,6 +84,10 @@ chip soc/intel/apollolake
 				register "user_weekday" = "4"
 				device i2c 0x32 on end	# RTC RX6110 SA
 			end
+			# Enable external display bridge (eDP to LVDS)
+			chip drivers/i2c/ptn3460
+				device i2c 0x20 on end  # PTN3460 DP2LVDS Bridge
+			end
 		end
 		device pci 16.1 off end	# - I2C 1
 		device pci 16.2 off end	# - I2C 2

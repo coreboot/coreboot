@@ -23,8 +23,6 @@
 #endif
 #include <hwilib.h>
 #include <i210.h>
-#include "lcd_panel.h"
-
 
 /** \brief This function will search for a MAC address which can be assigned
  *         to a MACPHY.
@@ -69,12 +67,10 @@ enum cb_err mainboard_get_mac_address(struct device *dev, uint8_t mac[6])
  */
 static void mainboard_enable(struct device *dev)
 {
-
 }
 
 static void mainboard_final(void *chip_info)
 {
-	setup_lcd_panel();
 }
 
 struct chip_operations mainboard_ops = {

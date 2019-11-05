@@ -27,25 +27,13 @@
 #include <timestamp.h>
 #include <baseboard/variants.h>
 #include <types.h>
-#include <variant/ptn3460.h>
 
 #define TX_DWORD3	0xa8c
 
 void variant_mainboard_final(void)
 {
-	int status;
 	struct device *dev = NULL;
 	uint16_t cmd;
-
-	/*
-	 * Set up the DP2LVDS converter.
-	 * ptn3460_init() may only be executed after i2c bus init.
-	 */
-	status = ptn3460_init("hwinfo.hex");
-	if (status)
-		printk(BIOS_ERR, "LCD: Set up PTN with status 0x%x\n", status);
-	else
-		printk(BIOS_INFO, "LCD: Set up PTN was successful.\n");
 
 	/*
 	 * PIR6 register mapping for PCIe root ports

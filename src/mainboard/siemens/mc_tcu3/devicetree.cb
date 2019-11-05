@@ -50,7 +50,12 @@ chip soc/intel/fsp_baytrail
 		device pci 16.0 off end # 8086 0F37 - OTG controller
 		device pci 17.0 on end	# 8086 0F50 - EMMC 4.5 Port (MMC1 pins) - Only 1 EMMC port at a time
 		device pci 18.0 on end	# 8086 0F40 - SIO - DMA
-		device pci 18.1 on end	# 8086 0F41 -   I2C Port 1
+		device pci 18.1 on 	# 8086 0F41 -   I2C Port 1
+			# Enable external display bridge (eDP to LVDS)
+			chip drivers/i2c/ptn3460
+				device i2c 0x20 on end	# PTN3460 DP2LVDS Bridge
+			end
+		end
 		device pci 18.2 on end	# 8086 0F42 -   I2C Port 2
 		device pci 18.3 on end	# 8086 0F43 -   I2C Port 3
 		device pci 18.4 on end	# 8086 0F44 -   I2C Port 4

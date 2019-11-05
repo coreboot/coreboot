@@ -75,7 +75,12 @@ chip soc/intel/apollolake
 		device pci 17.0 on  end	# - I2C 4
 		device pci 17.1 on  end	# - I2C 5
 		device pci 17.2 on  end	# - I2C 6
-		device pci 17.3 on  end	# - I2C 7
+		device pci 17.3 on	# - I2C 7
+			# Enable external display bridge (eDP to LVDS)
+			chip drivers/i2c/ptn3460
+				device i2c 0x60 on end  # PTN3460 DP2LVDS Bridge
+			end
+		end
 		device pci 18.0 on  end	# - UART 0
 		device pci 18.1 on  end	# - UART 1
 		device pci 18.2 on  end	# - UART 2

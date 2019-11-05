@@ -17,4 +17,3 @@
 ramstage-y += gpio.c
 ramstage-y += irqroute.c
 ramstage-y += lcd_panel.c
-ramstage-y += ptn3460.c

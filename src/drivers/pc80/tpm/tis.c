@@ -721,8 +721,6 @@ int tis_sendrecv(const uint8_t *sendbuf, size_t send_size,
 	return tis_readresponse(recvbuf, recv_len);
 }
 
-#ifdef __RAMSTAGE__
-
 /*
  * tis_setup_interrupt()
  *
@@ -769,7 +767,7 @@ static void lpc_tpm_read_resources(struct device *dev)
 static void lpc_tpm_set_resources(struct device *dev)
 {
 	tpm_config_t *config = (tpm_config_t *)dev->chip_info;
-	struct resource *res;
+	DEVTREE_CONST struct resource *res;
 
 	for (res = dev->resource_list; res; res = res->next) {
 		if (!(res->flags & IORESOURCE_ASSIGNED))
@@ -783,8 +781,10 @@ static void lpc_tpm_set_resources(struct device *dev)
 			continue;
 		}
 
+#if !DEVTREE_EARLY
 		res->flags |= IORESOURCE_STORED;
 		report_resource_stored(dev, res, " <tpm>");
+#endif
 	}
 }
 
@@ -973,8 +973,10 @@ static void lpc_tpm_fill_ssdt(struct device *dev)
 	acpigen_pop_len(); /* Device */
 	acpigen_pop_len(); /* Scope */
 
+#if !DEVTREE_EARLY
 	printk(BIOS_INFO, "%s.%s: %s %s\n", path, acpi_device_name(dev),
 	       dev->chip_ops->name, dev_path(dev));
+#endif
 }
 
 static const char *lpc_tpm_acpi_name(const struct device *dev)
@@ -1006,5 +1008,3 @@ struct chip_operations drivers_pc80_tpm_ops = {
 	CHIP_NAME("LPC TPM")
 	.enable_dev = enable_dev
 };
-
-#endif /* __RAMSTAGE__ */

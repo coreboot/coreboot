@@ -1213,9 +1213,11 @@ sub load_kconfig_file {
     my @dir_file_data;
 
     #recursively handle coreboot's new source glob operator
-    if ( $input_file =~ /^(.*?)\/\*\/(.*)$/ ) {
+    if ( $input_file =~ /^(.*?)\/(\w*)\*(\w*)\/(.*)$/ ) {
         my $dir_prefix = $1;
-        my $dir_suffix = $2;
+        my $dir_glob_prefix = $2;
+        my $dir_glob_suffix = $3;
+        my $dir_suffix = $4;
         if ( -d "$dir_prefix" ) {
 
             opendir( D, "$dir_prefix" ) || die "Can't open directory '$dir_prefix'\n";
@@ -1225,7 +1227,8 @@ sub load_kconfig_file {
             while ( my $directory = shift @dirlist ) {
 
                 #ignore non-directory files
-                if ( ( -d "$dir_prefix/$directory" ) && !( $directory =~ /^\..*/ ) ) {
+                if ( ( -d "$dir_prefix/$directory" ) && !( $directory =~ /^\..*/ )
+                     && ( $directory =~ /\Q$dir_glob_prefix\E.*\Q$dir_glob_suffix\E/ ) ) {
                     push @dir_file_data,
                       load_kconfig_file( "$dir_prefix/$directory/$dir_suffix",
                         $input_file, $loadline, 1, $loadfile, $loadline );

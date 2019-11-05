@@ -15,7 +15,6 @@
 
 #include "board_verified_boot.h"
 
-#ifdef __BOOTBLOCK__
 /* The items verified by the bootblock, the bootblock will not measure the
  * items to the TPM
  */
@@ -32,9 +31,7 @@ const verify_item_t bootblock_verify_list[] = {
 		MBOOT_PCR_INDEX_0 },
 	{ VERIFY_TERMINATOR, NULL, { { NULL, 0 } }, 0, 0 }
 };
-#endif
 
-#if defined(__ROMSTAGE__) || defined(__POSTCAR__)
 /* The FSP is already checked in romstage */
 static const verify_item_t ram_stage_additional_list[] = {
 	{ VERIFY_FILE, OP_ROM_VBT, { { NULL, CBFS_TYPE_RAW } },
@@ -44,10 +41,8 @@ static const verify_item_t ram_stage_additional_list[] = {
 	{ VERIFY_FILE, "fallback/dsdt.aml", { { NULL, CBFS_TYPE_RAW } },
 		HASH_IDX_DSDT, MBOOT_PCR_INDEX_2 },
 	{ VERIFY_TERMINATOR, NULL, { { NULL, 0 } }, 0, 0 }
-	};
-#endif
+};
 
-#ifdef __ROMSTAGE__
 /* The items used by the romstage */
 const verify_item_t romstage_verify_list[] = {
 	{ VERIFY_FILE, ROMSTAGE, { { NULL, CBFS_TYPE_STAGE } },
@@ -75,10 +70,8 @@ const verify_item_t ramstage_verify_list[] = {
 		CBFS_TYPE_STAGE } }, HASH_IDX_RAM_STAGE, MBOOT_PCR_INDEX_0 },
 	{ VERIFY_TERMINATOR, NULL, { { NULL, 0 } }, 0, 0 }
 };
-#endif
 
-#ifdef __POSTCAR__
-/* POSTSTAGE */
+/* POSTCAR */
 /* The items used by the postcar stage */
 const verify_item_t postcar_verify_list[] = {
 	{ VERIFY_FILE, RAMSTAGE, { { ram_stage_additional_list,
@@ -91,9 +84,7 @@ const verify_item_t postcar_verify_list[] = {
 		MBOOT_PCR_INDEX_1 },
 	{ VERIFY_TERMINATOR, NULL, { { NULL, 0 } }, 0, 0 }
 };
-#endif
 
-#ifdef __RAMSTAGE__
 /* RAMSTAGE */
 const verify_item_t payload_verify_list[] = {
 	{ VERIFY_FILE, PAYLOAD, { { NULL, CBFS_TYPE_SELF |
@@ -105,4 +96,3 @@ const verify_item_t payload_verify_list[] = {
 const verify_item_t oprom_verify_list[] = {
 	{ VERIFY_TERMINATOR, NULL, { { NULL, 0 } }, 0, 0 }
 };
-#endif

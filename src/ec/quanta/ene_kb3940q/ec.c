@@ -125,11 +125,11 @@ void ec_mem_write(u8 addr, u8 data)
 
 static void ene_kb3940q_log_events(void)
 {
-#if CONFIG(ELOG)
-	u8 reason = ec_mem_read(EC_SHUTDOWN_REASON);
-	if (reason)
-		elog_add_event_byte(ELOG_TYPE_EC_SHUTDOWN, reason);
-#endif
+	if (CONFIG(ELOG)) {
+		u8 reason = ec_mem_read(EC_SHUTDOWN_REASON);
+		if (reason)
+			elog_add_event_byte(ELOG_TYPE_EC_SHUTDOWN, reason);
+	}
 }
 
 static void ene_kb3940q_init(struct device *dev)

@@ -585,8 +585,7 @@ static me_bios_path intel_me_path(struct device *dev)
 	if (hfs.error_code || hfs.fpt_bad)
 		path = ME_ERROR_BIOS_PATH;
 
-#if CONFIG(ELOG)
-	if (path != ME_NORMAL_BIOS_PATH) {
+	if (CONFIG(ELOG) && path != ME_NORMAL_BIOS_PATH) {
 		struct elog_event_data_me_extended data = {
 			.current_working_state = hfs.working_state,
 			.operation_state       = hfs.operation_state,
@@ -600,7 +599,6 @@ static me_bios_path intel_me_path(struct device *dev)
 		elog_add_event_raw(ELOG_TYPE_MANAGEMENT_ENGINE_EXT,
 				   &data, sizeof(data));
 	}
-#endif
 
 	return path;
 }

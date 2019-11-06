@@ -29,10 +29,10 @@ void smm_southbridge_clear_state(void)
 {
 	u32 smi_en;
 
-#if CONFIG(ELOG)
 	/* Log events from chipset before clearing */
-	pch_log_state();
-#endif
+	if (CONFIG(ELOG))
+		pch_log_state();
+
 	printk(BIOS_DEBUG, "Initializing Southbridge SMI...");
 	printk(BIOS_SPEW, " ... pmbase = 0x%04x\n", get_pmbase());
 

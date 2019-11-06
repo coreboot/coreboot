@@ -60,10 +60,12 @@ static const char *me_bios_path_values[] = {
 /* MMIO base address for MEI interface */
 static u32 *mei_base_address;
 
-#if CONFIG(DEBUG_INTEL_ME)
 static void mei_dump(void *ptr, int dword, int offset, const char *type)
 {
 	struct mei_csr *csr;
+
+	if (!CONFIG(DEBUG_INTEL_ME))
+		return;
 
 	printk(BIOS_SPEW, "%-9s[%02x] : ", type, offset);
 
@@ -90,9 +92,6 @@ static void mei_dump(void *ptr, int dword, int offset, const char *type)
 		break;
 	}
 }
-#else
-# define mei_dump(ptr,dword,offset,type) do {} while (0)
-#endif
 
 /*
  * ME/MEI access helpers using memcpy to avoid aliasing.
@@ -373,9 +372,8 @@ static int mkhi_end_of_post(void)
 }
 #endif
 
-#if (CONFIG_DEFAULT_CONSOLE_LOGLEVEL >= BIOS_DEBUG) && !defined(__SMM__)
 /* Get ME firmware version */
-static int mkhi_get_fw_version(void)
+static int __unused mkhi_get_fw_version(void)
 {
 	struct me_fw_version version;
 	struct mkhi_header mkhi = {
@@ -412,7 +410,7 @@ static inline void print_cap(const char *name, int state)
 }
 
 /* Get ME Firmware Capabilities */
-static int mkhi_get_fwcaps(void)
+static int __unused mkhi_get_fwcaps(void)
 {
 	u32 rule_id = 0;
 	struct me_fwcaps cap;
@@ -454,7 +452,6 @@ static int mkhi_get_fwcaps(void)
 
 	return 0;
 }
-#endif
 
 #if CONFIG(CHROMEOS) && 0 /* DISABLED */
 /* Tell ME to issue a global reset */
@@ -714,12 +711,12 @@ static void intel_me_init(struct device *dev)
 		if (intel_mei_setup(dev) < 0)
 			break;
 
-#if (CONFIG_DEFAULT_CONSOLE_LOGLEVEL >= BIOS_DEBUG)
-		/* Print ME firmware version */
-		mkhi_get_fw_version();
-		/* Print ME firmware capabilities */
-		mkhi_get_fwcaps();
-#endif
+		if (CONFIG_DEFAULT_CONSOLE_LOGLEVEL >= BIOS_DEBUG) {
+			/* Print ME firmware version */
+			mkhi_get_fw_version();
+			/* Print ME firmware capabilities */
+			mkhi_get_fwcaps();
+		}
 
 		/*
 		 * Leave the ME unlocked in this path.

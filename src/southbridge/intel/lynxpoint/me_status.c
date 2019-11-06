@@ -18,7 +18,6 @@
 #include <console/console.h>
 #include "me.h"
 
-#if (CONFIG_DEFAULT_CONSOLE_LOGLEVEL >= BIOS_DEBUG)
 /* HFS1[3:0] Current Working State Values */
 static const char *me_cws_values[] = {
 	[ME_HFS_CWS_RESET]	= "Reset",
@@ -138,11 +137,12 @@ static const char *me_progress_policy_values[] = {
 	[ME_HFS2_STATE_POLICY_DESCRIPTOR_ERR] = "ME cannot access the chipset descriptor region",
 	[ME_HFS2_STATE_POLICY_VSCC_NO_MATCH] = "Required VSCC values for flash parts do not match",
 };
-#endif
 
 void intel_me_status(struct me_hfs *hfs, struct me_hfs2 *hfs2)
 {
-#if (CONFIG_DEFAULT_CONSOLE_LOGLEVEL >= BIOS_DEBUG)
+	if (CONFIG_DEFAULT_CONSOLE_LOGLEVEL < BIOS_DEBUG)
+		return;
+
 	/* Check Current States */
 	printk(BIOS_DEBUG, "ME: FW Partition Table      : %s\n",
 	       hfs->fpt_bad ? "BAD" : "OK");
@@ -206,5 +206,4 @@ void intel_me_status(struct me_hfs *hfs, struct me_hfs2 *hfs2)
 		       hfs2->progress_code, hfs2->current_state);
 	}
 	printk(BIOS_DEBUG, "\n");
-#endif
 }

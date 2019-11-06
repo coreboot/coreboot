@@ -58,10 +58,12 @@ static const char *me_bios_path_values[] = {
 /* MMIO base address for MEI interface */
 static u8 *mei_base_address;
 
-#if CONFIG(DEBUG_INTEL_ME)
 static void mei_dump(void *ptr, int dword, int offset, const char *type)
 {
 	struct mei_csr *csr;
+
+	if (!CONFIG(DEBUG_INTEL_ME))
+		return;
 
 	printk(BIOS_SPEW, "%-9s[%02x] : ", type, offset);
 
@@ -88,9 +90,6 @@ static void mei_dump(void *ptr, int dword, int offset, const char *type)
 		break;
 	}
 }
-#else
-# define mei_dump(ptr, dword, offset, type) do {} while (0)
-#endif
 
 /*
  * ME/MEI access helpers using memcpy to avoid aliasing.
@@ -483,7 +482,6 @@ static void me_print_fw_version(mbp_fw_version_name *vers_name)
 	       vers_name->hotfix_version, vers_name->build_version);
 }
 
-#if CONFIG(DEBUG_INTEL_ME)
 static inline void print_cap(const char *name, int state)
 {
 	printk(BIOS_DEBUG, "ME Capability: %-41s : %sabled\n",
@@ -536,7 +534,6 @@ static void me_print_fwcaps(mbp_mefwcaps *cap)
 	print_cap("TLS", cap->tls);
 	print_cap("Wireless LAN (WLAN)", cap->wlan);
 }
-#endif
 
 /* Send END OF POST message to the ME */
 static int mkhi_end_of_post(void)
@@ -804,9 +801,8 @@ static void intel_me_print_mbp(me_bios_payload *mbp_data)
 {
 	me_print_fw_version(mbp_data->fw_version_name);
 
-#if CONFIG(DEBUG_INTEL_ME)
-	me_print_fwcaps(mbp_data->fw_capabilities);
-#endif
+	if (CONFIG(DEBUG_INTEL_ME))
+		me_print_fwcaps(mbp_data->fw_capabilities);
 
 	if (mbp_data->plat_time) {
 		printk(BIOS_DEBUG, "ME: Wake Event to ME Reset:      %u ms\n",
@@ -912,12 +908,12 @@ static int intel_me_read_mbp(me_bios_payload *mbp_data, struct device *dev)
 	}
 
 	/* Dump out the MBP contents. */
-#if CONFIG(DEBUG_INTEL_ME)
-	printk(BIOS_INFO, "ME MBP: Header: items: %d, size dw: %d\n",
-	       mbp->header.num_entries, mbp->header.mbp_size);
-	for (i = 0; i < mbp->header.mbp_size - 1; i++)
-		printk(BIOS_INFO, "ME MBP: %04x: 0x%08x\n", i, mbp->data[i]);
-#endif
+	if (CONFIG(DEBUG_INTEL_ME)) {
+		printk(BIOS_INFO, "ME MBP: Header: items: %d, size dw: %d\n",
+		       mbp->header.num_entries, mbp->header.mbp_size);
+		for (i = 0; i < mbp->header.mbp_size - 1; i++)
+			printk(BIOS_INFO, "ME MBP: %04x: 0x%08x\n", i, mbp->data[i]);
+	}
 
 #define ASSIGN_FIELD_PTR(field_, val_) \
 	{ \

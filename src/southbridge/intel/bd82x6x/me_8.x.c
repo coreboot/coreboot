@@ -62,10 +62,13 @@ static int intel_me_read_mbp(me_bios_payload *mbp_data);
 /* MMIO base address for MEI interface */
 static u32 *mei_base_address;
 
-#if CONFIG(DEBUG_INTEL_ME)
+
 static void mei_dump(void *ptr, int dword, int offset, const char *type)
 {
 	struct mei_csr *csr;
+
+	if (!CONFIG(DEBUG_INTEL_ME))
+		return;
 
 	printk(BIOS_SPEW, "%-9s[%02x] : ", type, offset);
 
@@ -92,9 +95,6 @@ static void mei_dump(void *ptr, int dword, int offset, const char *type)
 		break;
 	}
 }
-#else
-# define mei_dump(ptr,dword,offset,type) do {} while (0)
-#endif
 
 /*
  * ME/MEI access helpers using memcpy to avoid aliasing.
@@ -350,14 +350,13 @@ static inline int mei_sendrecv(struct mei_header *mei, struct mkhi_header *mkhi,
 	return 0;
 }
 
-#if (CONFIG_DEFAULT_CONSOLE_LOGLEVEL >= BIOS_DEBUG) && !defined(__SMM__)
 static inline void print_cap(const char *name, int state)
 {
 	printk(BIOS_DEBUG, "ME Capability: %-41s : %sabled\n",
 	       name, state ? " en" : "dis");
 }
 
-static void me_print_fw_version(mbp_fw_version_name *vers_name)
+static void __unused me_print_fw_version(mbp_fw_version_name *vers_name)
 {
 	if (!vers_name->major_version) {
 		printk(BIOS_ERR, "ME: mbp missing version report\n");
@@ -395,7 +394,7 @@ static int mkhi_get_fwcaps(mefwcaps_sku *cap)
 }
 
 /* Get ME Firmware Capabilities */
-static void me_print_fwcaps(mbp_fw_caps *caps_section)
+static void __unused me_print_fwcaps(mbp_fw_caps *caps_section)
 {
 	mefwcaps_sku *cap = &caps_section->fw_capabilities;
 	if (!caps_section->available) {
@@ -421,7 +420,6 @@ static void me_print_fwcaps(mbp_fw_caps *caps_section)
 	print_cap("TLS", cap->tls);
 	print_cap("Wireless LAN (WLAN)", cap->wlan);
 }
-#endif
 
 #if CONFIG(CHROMEOS) && 0 /* DISABLED */
 /* Tell ME to issue a global reset */
@@ -719,10 +717,10 @@ static void intel_me_init(struct device *dev)
 		}
 #endif
 
-#if (CONFIG_DEFAULT_CONSOLE_LOGLEVEL >= BIOS_DEBUG)
-		me_print_fw_version(&mbp_data.fw_version_name);
-		me_print_fwcaps(&mbp_data.fw_caps_sku);
-#endif
+		if (CONFIG_DEFAULT_CONSOLE_LOGLEVEL >= BIOS_DEBUG) {
+			me_print_fw_version(&mbp_data.fw_version_name);
+			me_print_fwcaps(&mbp_data.fw_caps_sku);
+		}
 
 		/*
 		 * Leave the ME unlocked in this path.

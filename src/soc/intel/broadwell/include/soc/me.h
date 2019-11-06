@@ -493,11 +493,7 @@ struct me_fwcaps {
 
 void intel_me_hsio_version(uint16_t *version, uint16_t *checksum);
 
-#if (CONFIG_DEFAULT_CONSOLE_LOGLEVEL >= BIOS_DEBUG)
 /* Defined in me_status.c for both romstage and ramstage */
 void intel_me_status(void);
-#else
-static inline void intel_me_status(void) { }
-#endif
 
 #endif

@@ -66,10 +66,12 @@ void intel_me_mbp_clear(pci_devfn_t dev);
 void intel_me_mbp_clear(struct device *dev);
 #endif
 
-#if CONFIG(DEBUG_INTEL_ME)
 static void mei_dump(void *ptr, int dword, int offset, const char *type)
 {
 	struct mei_csr *csr;
+
+	if (!CONFIG(DEBUG_INTEL_ME))
+		return;
 
 	printk(BIOS_SPEW, "%-9s[%02x] : ", type, offset);
 
@@ -96,9 +98,6 @@ static void mei_dump(void *ptr, int dword, int offset, const char *type)
 		break;
 	}
 }
-#else
-# define mei_dump(ptr,dword,offset,type) do {} while (0)
-#endif
 
 /*
  * ME/MEI access helpers using memcpy to avoid aliasing.
@@ -380,7 +379,6 @@ static int mei_recv_msg(void *header, int header_bytes,
 	return mei_wait_for_me_ready();
 }
 
-#if CONFIG(DEBUG_INTEL_ME) || defined(__SMM__)
 static inline int mei_sendrecv_mkhi(struct mkhi_header *mkhi,
 				    void *req_data, int req_bytes,
 				    void *rsp_data, int rsp_bytes)
@@ -418,7 +416,6 @@ static inline int mei_sendrecv_mkhi(struct mkhi_header *mkhi,
 
 	return 0;
 }
-#endif /* CONFIG_DEBUG_INTEL_ME || __SMM__ */
 
 /*
  * mbp give up routine. This path is taken if hfs.mpb_rdy is 0 or the read
@@ -469,8 +466,7 @@ void intel_me_mbp_clear(struct device *dev)
 	}
 }
 
-#if (CONFIG_DEFAULT_CONSOLE_LOGLEVEL >= BIOS_DEBUG) && !defined(__SMM__)
-static void me_print_fw_version(mbp_fw_version_name *vers_name)
+static void __unused me_print_fw_version(mbp_fw_version_name *vers_name)
 {
 	if (!vers_name) {
 		printk(BIOS_ERR, "ME: mbp missing version report\n");
@@ -482,7 +478,6 @@ static void me_print_fw_version(mbp_fw_version_name *vers_name)
 	       vers_name->hotfix_version, vers_name->build_version);
 }
 
-#if CONFIG(DEBUG_INTEL_ME)
 static inline void print_cap(const char *name, int state)
 {
 	printk(BIOS_DEBUG, "ME Capability: %-41s : %sabled\n",
@@ -510,7 +505,7 @@ static int mkhi_get_fwcaps(mbp_mefwcaps *cap)
 }
 
 /* Get ME Firmware Capabilities */
-static void me_print_fwcaps(mbp_mefwcaps *cap)
+static void __unused me_print_fwcaps(mbp_mefwcaps *cap)
 {
 	mbp_mefwcaps local_caps;
 	if (!cap) {
@@ -535,8 +530,6 @@ static void me_print_fwcaps(mbp_mefwcaps *cap)
 	print_cap("TLS", cap->tls);
 	print_cap("Wireless LAN (WLAN)", cap->wlan);
 }
-#endif /* CONFIG_DEBUG_INTEL_ME */
-#endif
 
 #if CONFIG(CHROMEOS) && 0 /* DISABLED */
 /* Tell ME to issue a global reset */
@@ -851,21 +844,21 @@ static void intel_me_init(struct device *dev)
 	if (intel_me_read_mbp(&mbp_data, dev))
 		return;
 
-#if (CONFIG_DEFAULT_CONSOLE_LOGLEVEL >= BIOS_DEBUG)
-	me_print_fw_version(mbp_data.fw_version_name);
-#if CONFIG(DEBUG_INTEL_ME)
-	me_print_fwcaps(mbp_data.fw_capabilities);
-#endif
+	if (CONFIG_DEFAULT_CONSOLE_LOGLEVEL >= BIOS_DEBUG) {
+		me_print_fw_version(mbp_data.fw_version_name);
 
-	if (mbp_data.plat_time) {
-		printk(BIOS_DEBUG, "ME: Wake Event to ME Reset:      %u ms\n",
-		       mbp_data.plat_time->wake_event_mrst_time_ms);
-		printk(BIOS_DEBUG, "ME: ME Reset to Platform Reset:  %u ms\n",
-		       mbp_data.plat_time->mrst_pltrst_time_ms);
-		printk(BIOS_DEBUG, "ME: Platform Reset to CPU Reset: %u ms\n",
-		       mbp_data.plat_time->pltrst_cpurst_time_ms);
+		if (CONFIG(DEBUG_INTEL_ME))
+			me_print_fwcaps(mbp_data.fw_capabilities);
+
+		if (mbp_data.plat_time) {
+			printk(BIOS_DEBUG, "ME: Wake Event to ME Reset:      %u ms\n",
+			       mbp_data.plat_time->wake_event_mrst_time_ms);
+			printk(BIOS_DEBUG, "ME: ME Reset to Platform Reset:  %u ms\n",
+			       mbp_data.plat_time->mrst_pltrst_time_ms);
+			printk(BIOS_DEBUG, "ME: Platform Reset to CPU Reset: %u ms\n",
+			       mbp_data.plat_time->pltrst_cpurst_time_ms);
+		}
 	}
-#endif
 
 	/* Set clock enables according to devicetree */
 	if (config && config->icc_clock_disable)
@@ -1004,15 +997,15 @@ static int intel_me_read_mbp(me_bios_payload *mbp_data, struct device *dev)
 #endif
 
 	/* Dump out the MBP contents. */
-#if (CONFIG_DEFAULT_CONSOLE_LOGLEVEL >= BIOS_DEBUG)
-	printk(BIOS_INFO, "ME MBP: Header: items: %d, size dw: %d\n",
-	       mbp->header.num_entries, mbp->header.mbp_size);
-#if CONFIG(DEBUG_INTEL_ME)
-	for (i = 0; i < mbp->header.mbp_size - 1; i++) {
-		printk(BIOS_INFO, "ME MBP: %04x: 0x%08x\n", i, mbp->data[i]);
+	if (CONFIG_DEFAULT_CONSOLE_LOGLEVEL >= BIOS_DEBUG) {
+		printk(BIOS_INFO, "ME MBP: Header: items: %d, size dw: %d\n",
+		       mbp->header.num_entries, mbp->header.mbp_size);
+		if (CONFIG(DEBUG_INTEL_ME)) {
+			for (i = 0; i < mbp->header.mbp_size - 1; i++) {
+				printk(BIOS_INFO, "ME MBP: %04x: 0x%08x\n", i, mbp->data[i]);
+			}
+		}
 	}
-#endif
-#endif
 
 	#define ASSIGN_FIELD_PTR(field_,val_) \
 		{ \

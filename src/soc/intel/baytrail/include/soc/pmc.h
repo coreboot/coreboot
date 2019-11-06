@@ -281,11 +281,7 @@ void enable_gpe(uint32_t mask);
 void disable_gpe(uint32_t mask);
 void disable_all_gpe(void);
 
-#if CONFIG(ELOG)
 void southcluster_log_state(void);
-#else
-static inline void southcluster_log_state(void) {}
-#endif
 
 /* Return non-zero when RTC failure happened. */
 int rtc_failure(void);

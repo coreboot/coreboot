@@ -262,14 +262,4 @@
 #define RST_CPU (1 << 2)
 #define SYS_RST (1 << 1)
 
-#if !defined(__ASSEMBLER__) && !defined(__ACPI__)
-
-#if CONFIG(ELOG)
-void southcluster_log_state(void);
-#else
-static inline void southcluster_log_state(void) {}
-#endif
-
-#endif /* !defined(__ASSEMBLER__) && !defined(__ACPI__) */
-
 #endif /* _DENVERTON_NS_PMC_H_ */

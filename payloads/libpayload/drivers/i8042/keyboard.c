@@ -35,6 +35,7 @@
 #include "i8042.h"
 
 #define POWER_BUTTON         0x90
+#define MEDIA_KEY_PREFIX     0xE0
 
 struct layout_maps {
 	const char *country;
@@ -43,6 +44,7 @@ struct layout_maps {
 
 static struct layout_maps *map;
 static int modifier = 0;
+int (*media_key_mapping_callback)(char ch);
 
 static struct layout_maps keyboard_layouts[] = {
 #if CONFIG(LP_PC_KEYBOARD_LAYOUT_US)
@@ -230,6 +232,11 @@ int keyboard_getmodifier(void)
 	return modifier;
 }
 
+void initialize_keyboard_media_key_mapping_callback(int (*media_key_mapper)(char))
+{
+	media_key_mapping_callback = media_key_mapper;
+}
+
 int keyboard_getchar(void)
 {
 	unsigned char ch;
@@ -239,6 +246,10 @@ int keyboard_getchar(void)
 	while (!keyboard_havechar()) ;
 
 	ch = keyboard_get_scancode();
+	if ((media_key_mapping_callback != NULL) && (ch == MEDIA_KEY_PREFIX)) {
+		ch = keyboard_get_scancode();
+		return media_key_mapping_callback(ch);
+	}
 
 	if (!(ch & 0x80) && ch < 0x59) {
 		shift =

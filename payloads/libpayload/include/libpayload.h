@@ -187,6 +187,7 @@ unsigned char keyboard_get_scancode(void);
 int keyboard_getchar(void);
 int keyboard_set_layout(char *country);
 int keyboard_getmodifier(void);
+void initialize_keyboard_media_key_mapping_callback(int (*media_key_mapper)(char));
 
 enum KEYBOARD_MODIFIERS {
 	KB_MOD_SHIFT = (1 << 0),

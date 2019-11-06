@@ -22,6 +22,12 @@
 #define  IPMI_BMC_GET_DEVICE_ID 0x01
 #define   IPMI_IPMI_VERSION_MINOR(x) ((x) >> 4)
 #define   IPMI_IPMI_VERSION_MAJOR(x) ((x) & 0xf)
+#define  IPMI_BMC_GET_SELFTEST_RESULTS 0x04
+#define   IPMI_APP_SELFTEST_RESERVED             0xFF
+#define   IPMI_APP_SELFTEST_NO_ERROR             0x55
+#define   IPMI_APP_SELFTEST_NOT_IMPLEMENTED      0x56
+#define   IPMI_APP_SELFTEST_ERROR                0x57
+#define   IPMI_APP_SELFTEST_FATAL_HW_ERROR       0x58
 
 #define IPMI_NETFN_FIRMWARE 0x08
 #define IPMI_NETFN_STORAGE 0x0a
@@ -50,6 +56,13 @@ struct ipmi_devid_rsp {
 	uint8_t additional_device_support;
 	uint8_t manufacturer_id[3];
 	uint8_t product_id[2];
+} __packed;
+
+/* Get Self Test Results */
+struct ipmi_selftest_rsp {
+	struct ipmi_rsp resp;
+	uint8_t result;
+	uint8_t param;
 } __packed;
 
 #endif

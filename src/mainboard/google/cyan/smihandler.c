@@ -62,11 +62,9 @@ static uint8_t mainboard_smi_ec(void)
 	uint16_t pmbase = get_pmbase();
 	uint32_t pm1_cnt;
 
-#if CONFIG(ELOG_GSMI)
 	/* Log this event */
 	if (cmd)
-		elog_add_event_byte(ELOG_TYPE_EC_EVENT, cmd);
-#endif
+		elog_gsmi_add_event_byte(ELOG_TYPE_EC_EVENT, cmd);
 
 	switch (cmd) {
 	case EC_HOST_EVENT_LID_CLOSED:

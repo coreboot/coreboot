@@ -195,8 +195,8 @@ void smihandler_southbridge_sleep(
 	mainboard_smi_sleep(slp_typ);
 
 	/* Log S3, S4, and S5 entry */
-	if (slp_typ >= ACPI_S3 && CONFIG(ELOG_GSMI))
-		elog_add_event_byte(ELOG_TYPE_ACPI_ENTER, slp_typ);
+	if (slp_typ >= ACPI_S3)
+		elog_gsmi_add_event_byte(ELOG_TYPE_ACPI_ENTER, slp_typ);
 
 	/* Clear pending GPE events */
 	pmc_clear_all_gpe_status();
@@ -413,8 +413,7 @@ void smihandler_southbridge_pm1(
 	 */
 	if ((pm1_sts & PWRBTN_STS) && (pm1_en & PWRBTN_EN)) {
 		/* power button pressed */
-		if (CONFIG(ELOG_GSMI))
-			elog_add_event(ELOG_TYPE_POWER_BUTTON);
+		elog_gsmi_add_event(ELOG_TYPE_POWER_BUTTON);
 		pmc_disable_pm1_control(-1UL);
 		pmc_enable_pm1_control(SLP_EN | (SLP_TYP_S5 << SLP_TYP_SHIFT));
 	}

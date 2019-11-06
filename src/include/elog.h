@@ -243,6 +243,16 @@ static inline int elog_smbios_write_type15(unsigned long *current,
 static inline int elog_add_extended_event(u8 type, u32 complement) { return 0; }
 #endif
 
+#if CONFIG(ELOG_GSMI)
+#define elog_gsmi_add_event elog_add_event
+#define elog_gsmi_add_event_byte elog_add_event_byte
+#define elog_gsmi_add_event_word elog_add_event_word
+#else
+static inline int elog_gsmi_add_event(u8 event_type) { return 0; }
+static inline int elog_gsmi_add_event_byte(u8 event_type, u8 data) { return 0; }
+static inline int elog_gsmi_add_event_word(u8 event_type, u16 data) { return 0; }
+#endif
+
 extern u32 gsmi_exec(u8 command, u32 *param);
 
 #if CONFIG(ELOG_BOOT_COUNT)

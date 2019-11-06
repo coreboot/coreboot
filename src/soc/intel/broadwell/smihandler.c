@@ -179,11 +179,9 @@ static void southbridge_smi_sleep(void)
 	/* USB sleep preparations */
 	usb_xhci_sleep_prepare(PCH_DEV_XHCI, slp_typ);
 
-#if CONFIG(ELOG_GSMI)
 	/* Log S3, S4, and S5 entry */
 	if (slp_typ >= ACPI_S3)
-		elog_add_event_byte(ELOG_TYPE_ACPI_ENTER, slp_typ);
-#endif
+		elog_gsmi_add_event_byte(ELOG_TYPE_ACPI_ENTER, slp_typ);
 
 	/* Clear pending GPE events */
 	clear_gpe_status();
@@ -293,7 +291,6 @@ static em64t101_smm_state_save_area_t *smi_apmc_find_state_save(u8 cmd)
 	return NULL;
 }
 
-#if CONFIG(ELOG_GSMI)
 static void southbridge_smi_gsmi(void)
 {
 	u32 *ret, *param;
@@ -314,7 +311,6 @@ static void southbridge_smi_gsmi(void)
 	/* drivers/elog/gsmi.c */
 	*ret = gsmi_exec(sub_command, param);
 }
-#endif
 
 static void finalize(void)
 {
@@ -372,11 +368,10 @@ static void southbridge_smi_apmc(void)
 			printk(BIOS_DEBUG, "SMI#: Setting GNVS to %p\n", gnvs);
 		}
 		break;
-#if CONFIG(ELOG_GSMI)
 	case APM_CNT_ELOG_GSMI:
-		southbridge_smi_gsmi();
+		if (CONFIG(ELOG_GSMI))
+			southbridge_smi_gsmi();
 		break;
-#endif
 	}
 
 	mainboard_smi_apmc(reg8);
@@ -391,9 +386,7 @@ static void southbridge_smi_pm1(void)
 	 */
 	if (pm1_sts & PWRBTN_STS) {
 		/* power button pressed */
-#if CONFIG(ELOG_GSMI)
-		elog_add_event(ELOG_TYPE_POWER_BUTTON);
-#endif
+		elog_gsmi_add_event(ELOG_TYPE_POWER_BUTTON);
 		disable_pm1_control(-1UL);
 		enable_pm1_control(SLP_EN | (SLP_TYP_S5 << 10));
 	}

@@ -138,11 +138,9 @@ static void southbridge_smi_sleep(void)
 	/* Do any mainboard sleep handling */
 	mainboard_smi_sleep(slp_typ);
 
-#if CONFIG(ELOG_GSMI)
 	/* Log S3, S4, and S5 entry */
 	if (slp_typ >= ACPI_S3)
-		elog_add_event_byte(ELOG_TYPE_ACPI_ENTER, slp_typ);
-#endif
+		elog_gsmi_add_event_byte(ELOG_TYPE_ACPI_ENTER, slp_typ);
 
 	/* Next, do the deed.
 	 */
@@ -246,7 +244,6 @@ em64t101_smm_state_save_area_t *smi_apmc_find_state_save(u8 cmd)
 	return NULL;
 }
 
-#if CONFIG(ELOG_GSMI)
 static void southbridge_smi_gsmi(void)
 {
 	u32 *ret, *param;
@@ -267,7 +264,6 @@ static void southbridge_smi_gsmi(void)
 	/* drivers/elog/gsmi.c */
 	*ret = gsmi_exec(sub_command, param);
 }
-#endif
 
 static void southbridge_smi_store(void)
 {
@@ -338,11 +334,10 @@ static void southbridge_smi_apmc(void)
 		southbridge_finalize_all();
 		mainboard_finalized = 1;
 		break;
-#if CONFIG(ELOG_GSMI)
 	case APM_CNT_ELOG_GSMI:
-		southbridge_smi_gsmi();
+		if (CONFIG(ELOG_GSMI))
+			southbridge_smi_gsmi();
 		break;
-#endif
 	case APM_CNT_SMMSTORE:
 		if (CONFIG(SMMSTORE))
 			southbridge_smi_store();
@@ -366,9 +361,7 @@ static void southbridge_smi_pm1(void)
 		// power button pressed
 		u32 reg32;
 		reg32 = (7 << 10) | (1 << 13);
-#if CONFIG(ELOG_GSMI)
-		elog_add_event(ELOG_TYPE_POWER_BUTTON);
-#endif
+		elog_gsmi_add_event(ELOG_TYPE_POWER_BUTTON);
 		write_pmbase32(PM1_CNT, reg32);
 	}
 }

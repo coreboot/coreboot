@@ -26,8 +26,8 @@ static int chromeec_process_one_event(void)
 	uint8_t event = google_chromeec_get_event();
 
 	/* Log this event */
-	if (CONFIG(ELOG_GSMI) && event)
-		elog_add_event_byte(ELOG_TYPE_EC_EVENT, event);
+	if (event)
+		elog_gsmi_add_event_byte(ELOG_TYPE_EC_EVENT, event);
 
 	switch (event) {
 	case EC_HOST_EVENT_LID_CLOSED:

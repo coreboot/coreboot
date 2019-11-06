@@ -153,8 +153,7 @@ static void sb_slp_typ_handler(void)
 
 	if (slp_typ >= ACPI_S3) {
 		/* Sleep Type Elog S3, S4, and S5 entry */
-		if (CONFIG(ELOG_GSMI))
-			elog_add_event_byte(ELOG_TYPE_ACPI_ENTER, slp_typ);
+		elog_gsmi_add_event_byte(ELOG_TYPE_ACPI_ENTER, slp_typ);
 
 		wbinvd();
 

@@ -32,11 +32,9 @@ static u8 mainboard_smi_ec(void)
 {
 	u8 cmd = google_chromeec_get_event();
 
-#if CONFIG(ELOG_GSMI)
 	/* Log this event */
 	if (cmd)
-		elog_add_event_byte(ELOG_TYPE_EC_EVENT, cmd);
-#endif
+		elog_gsmi_add_event_byte(ELOG_TYPE_EC_EVENT, cmd);
 
 	switch (cmd) {
 	case EC_HOST_EVENT_LID_CLOSED:

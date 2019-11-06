@@ -71,7 +71,7 @@ CPPFLAGS_common += -I$(src)/soc/intel/quark/include/soc/fsp
 CPPFLAGS_common += -I3rdparty/blobs/soc/intel/quark
 
 # Since FSP-M runs in CAR we need to relocate it to a specific address
-$(FSP_M_CBFS)-options := -b $(CONFIG_FSP_ESRAM_LOC)
+$(call strip_quotes,$(CONFIG_FSP_M_CBFS))-options := -b $(CONFIG_FSP_ESRAM_LOC)
 
 # Add the FSP binary to the CBFS image
 cbfs-files-$(CONFIG_ADD_FSP_RAW_BIN) += fsp.bin

@@ -108,7 +108,7 @@ endif
 CPPFLAGS_common += -I$(src)/soc/intel/apollolake/include
 
 # Since FSP-M runs in CAR we need to relocate it to a specific address
-$(FSP_M_CBFS)-options := -b $(CONFIG_FSP_M_ADDR)
+$(call strip_quotes,$(CONFIG_FSP_M_CBFS))-options := -b $(CONFIG_FSP_M_ADDR)
 
 # Handle GLK paging requirements
 ifeq ($(CONFIG_PAGING_IN_CACHE_AS_RAM),y)

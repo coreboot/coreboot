@@ -90,8 +90,8 @@ CPPFLAGS_common += -I$(src)/vendorcode/intel/fsp/fsp2_0/denverton_ns
 
 ##Set FSP binary blobs memory location
 
-$(FSP_T_CBFS)-options := -b $(CONFIG_FSP_T_ADDR) --xip
-$(FSP_M_CBFS)-options := -b $(CONFIG_FSP_M_ADDR) --xip
-$(FSP_S_CBFS)-options := -b $(CONFIG_FSP_S_ADDR) --xip
+$(call strip_quotes,$(CONFIG_FSP_T_CBFS))-options := -b $(CONFIG_FSP_T_ADDR) --xip
+$(call strip_quotes,$(CONFIG_FSP_M_CBFS))-options := -b $(CONFIG_FSP_M_ADDR) --xip
+$(call strip_quotes,$(CONFIG_FSP_S_CBFS))-options := -b $(CONFIG_FSP_S_ADDR) --xip
 
 endif ## CONFIG_SOC_INTEL_DENVERTON_NS

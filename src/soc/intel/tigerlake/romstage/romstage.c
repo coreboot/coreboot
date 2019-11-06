@@ -37,22 +37,23 @@
 /* Save the DIMM information for SMBIOS table 17 */
 static void save_dimm_info(void)
 {
-	int channel, dimm, dimm_max, index;
+	int node, channel, dimm, dimm_max, index;
 	size_t hob_size;
 	const CONTROLLER_INFO *ctrlr_info;
 	const CHANNEL_INFO *channel_info;
 	const DIMM_INFO *src_dimm;
 	struct dimm_info *dest_dimm;
 	struct memory_info *mem_info;
-	const MEMORY_INFO_DATA_HOB *memory_info_hob;
+	const MEMORY_INFO_DATA_HOB *meminfo_hob;
 	const uint8_t smbios_memory_info_guid[16] =
 			FSP_SMBIOS_MEMORY_INFO_GUID;
+	const uint8_t *serial_num;
 
 	/* Locate the memory info HOB, presence validated by raminit */
-	memory_info_hob = fsp_find_extension_hob_by_guid(
+	meminfo_hob = fsp_find_extension_hob_by_guid(
 						smbios_memory_info_guid,
 						&hob_size);
-	if (memory_info_hob == NULL || hob_size == 0) {
+	if (meminfo_hob == NULL || hob_size == 0) {
 		printk(BIOS_ERR, "SMBIOS MEMORY_INFO_DATA_HOB not found\n");
 		return;
 	}
@@ -68,40 +69,46 @@ static void save_dimm_info(void)
 	}
 	memset(mem_info, 0, sizeof(*mem_info));
 
-	/* Describe the first N DIMMs in the system */
+	/* Save available DIMM information */
 	index = 0;
 	dimm_max = ARRAY_SIZE(mem_info->dimm);
-	ctrlr_info = &memory_info_hob->Controller[0];
-	for (channel = 0; channel < MAX_CH && index < dimm_max; channel++) {
-		channel_info = &ctrlr_info->ChannelInfo[channel];
-		if (channel_info->Status != CHANNEL_PRESENT)
-			continue;
-		for (dimm = 0; dimm < MAX_DIMM && index < dimm_max; dimm++) {
-			src_dimm = &channel_info->DimmInfo[dimm];
-			dest_dimm = &mem_info->dimm[index];
-
-			if (src_dimm->Status != DIMM_PRESENT)
+	for (node = 0; node < MAX_NODE; node++) {
+		ctrlr_info = &meminfo_hob->Controller[node];
+		for (channel = 0; channel < MAX_CH && index < dimm_max;
+			channel++) {
+			channel_info = &ctrlr_info->ChannelInfo[channel];
+			if (channel_info->Status != CHANNEL_PRESENT)
 				continue;
 
-			u8 memProfNum = memory_info_hob->MemoryProfile;
+			for (dimm = 0; dimm < MAX_DIMM && index < dimm_max;
+				dimm++) {
+				src_dimm = &channel_info->DimmInfo[dimm];
+				dest_dimm = &mem_info->dimm[index];
+				if (src_dimm->Status != DIMM_PRESENT)
+					continue;
 
-			/* Populate the DIMM information */
-			dimm_info_fill(dest_dimm,
-				src_dimm->DimmCapacity,
-				memory_info_hob->MemoryType,
-				memory_info_hob->ConfiguredMemoryClockSpeed,
-				src_dimm->RankInDimm,
-				channel_info->ChannelId,
-				src_dimm->DimmId,
-				(const char *)src_dimm->ModulePartNum,
-				sizeof(src_dimm->ModulePartNum),
-				src_dimm->SpdSave + SPD_SAVE_OFFSET_SERIAL,
-				memory_info_hob->DataWidth,
-				memory_info_hob->VddVoltage[memProfNum],
-				memory_info_hob->EccSupport,
-				src_dimm->MfgId,
-				src_dimm->SpdModuleType);
-			index++;
+				u8 memProfNum = meminfo_hob->MemoryProfile;
+				serial_num = src_dimm->SpdSave +
+						SPD_SAVE_OFFSET_SERIAL;
+
+				/* Populate the DIMM information */
+				dimm_info_fill(dest_dimm,
+					src_dimm->DimmCapacity,
+					meminfo_hob->MemoryType,
+					meminfo_hob->ConfiguredMemoryClockSpeed,
+					src_dimm->RankInDimm,
+					channel_info->ChannelId,
+					src_dimm->DimmId,
+					(const char *)src_dimm->ModulePartNum,
+					sizeof(src_dimm->ModulePartNum),
+					serial_num,
+					meminfo_hob->DataWidth,
+					meminfo_hob->VddVoltage[memProfNum],
+					meminfo_hob->EccSupport,
+					src_dimm->MfgId,
+					src_dimm->SpdModuleType);
+				index++;
+			}
 		}
 	}
 	mem_info->dimm_cnt = index;

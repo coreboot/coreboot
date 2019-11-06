@@ -41,5 +41,6 @@
 
 /* Read BCLK from MSR */
 unsigned int cpu_bus_freq_khz(void);
+void set_max_freq(void);
 
 #endif /* _SOC_MSR_H_ */

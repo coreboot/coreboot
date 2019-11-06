@@ -20,11 +20,11 @@
 #include <console/console.h>
 #include <device/pci_ops.h>
 #include <pc80/mc146818rtc.h>
-#include <soc/bootblock.h>
 #include <soc/gpio.h>
 #include <soc/iomap.h>
 #include <soc/iosf.h>
 #include <soc/lpc.h>
+#include <soc/msr.h>
 #include <soc/pm.h>
 #include <soc/spi.h>
 

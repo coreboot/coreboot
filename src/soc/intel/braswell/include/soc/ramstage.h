@@ -98,7 +98,6 @@ enum {
  */
 void soc_init_pre_device(struct soc_intel_braswell_config *config);
 void soc_init_cpus(struct device *dev);
-void set_max_freq(void);
 void southcluster_enable_dev(struct device *dev);
 void scc_enable_acpi_mode(struct device *dev, int iosf_reg, int nvs_index);
 int SocStepping(void);

@@ -17,11 +17,6 @@
 #include <cpu/x86/msr.h>
 #include <cpu/x86/tsc.h>
 #include <soc/msr.h>
-#if ENV_RAMSTAGE
-#include <soc/ramstage.h>
-#else
-#include <soc/romstage.h>
-#endif
 #include <stdint.h>
 
 static const unsigned int cpu_bus_clk_freq_table[] = {
@@ -57,8 +52,6 @@ unsigned long tsc_freq_mhz(void)
 	return (bclk_khz * ((platform_info.lo >> 8) & 0xff)) / 1000;
 }
 
-#if !ENV_SMM
-
 void set_max_freq(void)
 {
 	msr_t perf_ctl;
@@ -91,5 +84,3 @@ void set_max_freq(void)
 
 	wrmsr(IA32_PERF_CTL, perf_ctl);
 }
-
-#endif /* ENV_SMM */

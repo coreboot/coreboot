@@ -24,7 +24,6 @@
 
 void gfx_init(void);
 void punit_init(void);
-void set_max_freq(void);
 
 /* romstage.c functions */
 int chipset_prev_sleep_state(struct chipset_power_state *ps);

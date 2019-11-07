@@ -4,14 +4,6 @@
 #include <cpu/x86/cache.h>
 #include <cpu/x86/post_code.h>
 
-#define CACHE_AS_RAM_SIZE CONFIG_DCACHE_RAM_SIZE
-#define CACHE_AS_RAM_BASE CONFIG_DCACHE_RAM_BASE
-
-#if ((CONFIG_C_ENV_BOOTBLOCK_SIZE & (CONFIG_C_ENV_BOOTBLOCK_SIZE - 1)) != 0)
-#error "CONFIG_C_ENV_BOOTBLOCK_SIZE must be a power of 2!"
-#endif
-#define XIP_ROM_SIZE CONFIG_C_ENV_BOOTBLOCK_SIZE
-
 .global bootblock_pre_c_entry
 
 .code32
@@ -90,7 +82,8 @@ addrsize_set_high:
 	post_code(0x23)
 	/* Set Cache-as-RAM base address. */
 	movl	$(MTRR_PHYS_BASE(0)), %ecx
-	movl	$(CACHE_AS_RAM_BASE | MTRR_TYPE_WRBACK), %eax
+	movl	$_car_mtrr_start, %eax
+	orl	$MTRR_TYPE_WRBACK, %eax
 	xorl	%edx, %edx
 	wrmsr
 
@@ -98,7 +91,8 @@ addrsize_set_high:
 	/* Set Cache-as-RAM mask. */
 	movl	$(MTRR_PHYS_MASK(0)), %ecx
 	rdmsr
-	movl	$(~(CACHE_AS_RAM_SIZE - 1) | MTRR_PHYS_MASK_VALID), %eax
+	movl	$_car_mtrr_mask, %eax
+	orl	$MTRR_PHYS_MASK_VALID, %eax
 	wrmsr
 
 	post_code(0x25)
@@ -122,10 +116,11 @@ addrsize_set_high:
 	movl	%eax, %cr0
 
 	/* Clear the cache memory region. This will also fill up the cache. */
-	movl	$CACHE_AS_RAM_BASE, %esi
-	movl	%esi, %edi
-	movl	$(CACHE_AS_RAM_SIZE >> 2), %ecx
+	cld
 	xorl	%eax, %eax
+	movl	$_car_mtrr_start, %edi
+	movl	$_car_mtrr_size, %ecx
+	shr	$2, %ecx
 	rep	stosl
 
 	post_code(0x26)
@@ -142,13 +137,13 @@ addrsize_set_high:
 	 * https://mail.coreboot.org/pipermail/coreboot/2010-October/060922.html
 	 */
 	movl	$_program, %eax
-	andl	$(~(XIP_ROM_SIZE - 1)), %eax
+	andl	$_xip_mtrr_mask, %eax
 	orl	$MTRR_TYPE_WRPROT, %eax
 	wrmsr
-
 	movl	$MTRR_PHYS_MASK(1), %ecx
 	rdmsr
-	movl	$(~(XIP_ROM_SIZE - 1) | MTRR_PHYS_MASK_VALID), %eax
+	movl	$_xip_mtrr_mask, %eax
+	orl	$MTRR_PHYS_MASK_VALID, %eax
 	wrmsr
 
 	post_code(0x28)

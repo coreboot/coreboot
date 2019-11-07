@@ -4,10 +4,6 @@
 #include <cpu/x86/cache.h>
 #include <cpu/x86/post_code.h>
 
-#define CACHE_AS_RAM_SIZE (CONFIG_DCACHE_RAM_SIZE \
-		+ CONFIG_DCACHE_RAM_MRC_VAR_SIZE)
-#define CACHE_AS_RAM_BASE CONFIG_DCACHE_RAM_BASE
-
 #define NoEvictMod_MSR 0x2e0
 #define BBL_CR_CTL3_MSR 0x11e
 
@@ -91,7 +87,8 @@ addrsize_set_high:
 	post_code(0x23)
 	/* Set Cache-as-RAM base address. */
 	movl	$(MTRR_PHYS_BASE(0)), %ecx
-	movl	$(CACHE_AS_RAM_BASE | MTRR_TYPE_WRBACK), %eax
+	movl	$_car_mtrr_start, %eax
+	orl	$MTRR_TYPE_WRBACK, %eax
 	xorl	%edx, %edx
 	wrmsr
 
@@ -99,18 +96,21 @@ addrsize_set_high:
 	/* Set Cache-as-RAM mask. */
 	movl	$(MTRR_PHYS_MASK(0)), %ecx
 	rdmsr
-	movl	$(~(CACHE_AS_RAM_SIZE - 1) | MTRR_PHYS_MASK_VALID), %eax
+	movl	$_car_mtrr_mask, %eax
+	orl	$MTRR_PHYS_MASK_VALID, %eax
 	wrmsr
 
 	/* Enable cache for our code in Flash because we do XIP here */
 	movl	$MTRR_PHYS_BASE(1), %ecx
 	xorl	%edx, %edx
-	movl	$(CACHE_ROM_BASE | MTRR_TYPE_WRPROT), %eax
+	movl	$_rom_mtrr_base, %eax
+	orl	$MTRR_TYPE_WRPROT, %eax
 	wrmsr
 
 	movl	$MTRR_PHYS_MASK(1), %ecx
 	rdmsr
-	movl	$(~(CACHE_ROM_SIZE - 1) | MTRR_PHYS_MASK_VALID), %eax
+	movl	$_rom_mtrr_mask, %eax
+	orl	$MTRR_PHYS_MASK_VALID, %eax
 	wrmsr
 
 	post_code(0x25)
@@ -171,10 +171,11 @@ end_microcode_update:
 	wrmsr
 
 	/* Clear the cache memory region. This will also fill up the cache. */
-	movl	$CACHE_AS_RAM_BASE, %esi
-	movl	%esi, %edi
-	movl	$(CACHE_AS_RAM_SIZE >> 2), %ecx
+	cld
 	xorl	%eax, %eax
+	movl	$_car_mtrr_start, %edi
+	movl	$_car_mtrr_size, %ecx
+	shr	$2, %ecx
 	rep	stosl
 
 	/* enable the 'no eviction run' state */

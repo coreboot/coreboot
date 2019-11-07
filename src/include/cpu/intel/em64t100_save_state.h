@@ -17,10 +17,8 @@
 #include <types.h>
 #include <cpu/x86/smm.h>
 
-/* Intel Revision 30100 SMM State-Save Area
- * The following processor architectures use this:
- * - Bay Trail
- */
+/* Intel Revision 30100 SMM State-Save Area */
+
 #define SMM_EM64T100_ARCH_OFFSET 0x7c00
 #define SMM_EM64T100_SAVE_STATE_OFFSET \
 	SMM_SAVE_STATE_BEGIN(SMM_EM64T100_ARCH_OFFSET)

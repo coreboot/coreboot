@@ -18,7 +18,6 @@
 #include <cpu/x86/smm.h>
 #include <cpu/x86/smi_deprecated.h>
 #include <cpu/amd/amd64_save_state.h>
-#include <cpu/intel/em64t_save_state.h>
 #include <cpu/intel/em64t100_save_state.h>
 #include <cpu/intel/em64t101_save_state.h>
 #include <cpu/x86/legacy_save_state.h>
@@ -29,7 +28,7 @@
 
 typedef enum {
 	AMD64,
-	EM64T,
+	EM64T100,
 	EM64T101,
 	LEGACY
 } save_state_type_t;
@@ -38,7 +37,7 @@ typedef struct {
 	save_state_type_t type;
 	union {
 	amd64_smm_state_save_area_t *amd64_state_save;
-	em64t_smm_state_save_area_t *em64t_state_save;
+	em64t100_smm_state_save_area_t *em64t100_state_save;
 	em64t101_smm_state_save_area_t *em64t101_state_save;
 	legacy_smm_state_save_area_t *legacy_state_save;
 	};
@@ -178,10 +177,10 @@ void smi_handler(u32 smm_revision)
 				       SMM_LEGACY_ARCH_OFFSET, node);
 		break;
 	case 0x00030100:
-		state_save.type = EM64T;
-		state_save.em64t_state_save =
+		state_save.type = EM64T100;
+		state_save.em64t100_state_save =
 			smm_save_state(smm_base,
-				       SMM_EM64T_ARCH_OFFSET, node);
+				       SMM_EM64T100_ARCH_OFFSET, node);
 		break;
 	case 0x00030101: /* SandyBridge, IvyBridge, and Haswell */
 		state_save.type = EM64T101;

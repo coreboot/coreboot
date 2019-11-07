@@ -75,6 +75,7 @@ Method (TPET)
 #endif
 }
 
+#if defined(DPTF_TSR0_SENSOR_ID) || defined(DPTF_TSR1_SENSOR_ID) || defined(DPTF_TSR2_SENSOR_ID)
 /*
  * Method to return trip temperature value depending upon the device mode.
  * Arg0 --> Value to return when device is in tablet mode
@@ -92,6 +93,7 @@ Method (DTRP, 2, Serialized)
 	}
 #endif
 }
+#endif
 
 #ifdef DPTF_TSR0_SENSOR_ID
 

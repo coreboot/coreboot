@@ -21,6 +21,8 @@
 #include <arch/memlayout.h>
 #include <vb2_constants.h>
 
+#include "fmap_config.h"
+
 /* Macros that the architecture can override. */
 #ifndef ARCH_POINTER_ALIGN_SIZE
 #define ARCH_POINTER_ALIGN_SIZE 8
@@ -30,7 +32,8 @@
 #define ARCH_CACHELINE_ALIGN_SIZE 64
 #endif
 
-#define STR(x) #x
+#define STR(x) XSTR(x)
+#define XSTR(x) #x
 
 #define ALIGN_COUNTER(align) \
 	. = ALIGN(align);
@@ -72,6 +75,11 @@
 	REGION(cbfs_cache, addr, size, 4) \
 	ALIAS_REGION(cbfs_cache, preram_cbfs_cache) \
 	ALIAS_REGION(cbfs_cache, postram_cbfs_cache)
+
+#define FMAP_CACHE(addr, sz) \
+	REGION(fmap_cache, addr, sz, 4) \
+	_ = ASSERT(sz == 0 || sz >= FMAP_SIZE, \
+		   STR(FMAP does not fit in FMAP_CACHE! (sz < FMAP_SIZE)));
 
 #if ENV_ROMSTAGE_OR_BEFORE
 	#define PRERAM_CBFS_CACHE(addr, size) \

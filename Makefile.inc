@@ -226,7 +226,7 @@ $(foreach type,ads adb, \
 # Add handler to copy linker scripts
 define generic-objs_ld_template_gen
 de$(EMPTY)fine $(1)-objs_ld_template
-$$(call src-to-obj,$1,$$(1).ld): $$(1).ld $(obj)/config.h
+$$(call src-to-obj,$1,$$(1).ld): $$(1).ld $(obj)/config.h $(obj)/fmap_config.h
 	@printf "    CP         $$$$(subst $$$$(obj)/,,$$$$(@))\n"
 	$$(CC_$(1)) -MMD $$(CPPFLAGS_$(1)) $$($(1)-ld-ccopts) $(PREPROCESS_ONLY) -include $(obj)/config.h -MT $$$$@ -o $$$$@ $$$$<
 en$(EMPTY)def

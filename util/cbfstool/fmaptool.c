@@ -24,6 +24,7 @@
 #define STDIN_FILENAME_SENTINEL "-"
 
 #define HEADER_FMAP_OFFSET "FMAP_OFFSET"
+#define HEADER_FMAP_SIZE "FMAP_SIZE"
 
 enum fmaptool_return {
 	FMAPTOOL_EXIT_SUCCESS = 0,
@@ -83,7 +84,8 @@ static void list_cbfs_section_names(FILE *out)
 }
 
 static bool write_header(const char *out_fname,
-					const struct flashmap_descriptor *root)
+			 const struct flashmap_descriptor *root,
+			 const int fmap_size)
 {
 	assert(out_fname);
 
@@ -100,21 +102,8 @@ static bool write_header(const char *out_fname,
 
 	fputs("#ifndef FMAPTOOL_GENERATED_HEADER_H_\n", header);
 	fputs("#define FMAPTOOL_GENERATED_HEADER_H_\n\n", header);
-	fprintf(header, "#define %s %#x\n\n", HEADER_FMAP_OFFSET, fmap_offset);
-
-	/* also add defines for each CBFS-carrying fmap region: base and size */
-	cbfs_section_iterator_t cbfs_it = cbfs_sections_iterator();
-	while (cbfs_it) {
-		const struct flashmap_descriptor *item =
-				cbfs_sections_iterator_deref(cbfs_it);
-		assert(item->offset_known && item->size_known);
-		unsigned abs_base = fmd_calc_absolute_offset(root, item->name);
-		fprintf(header, "#define ___FMAP__%s_BASE 0x%x\n",
-			item->name, abs_base);
-		fprintf(header, "#define ___FMAP__%s_SIZE 0x%x\n",
-			item->name, item->size);
-		cbfs_sections_iterator_advance(&cbfs_it);
-	}
+	fprintf(header, "#define %s %#x\n", HEADER_FMAP_OFFSET, fmap_offset);
+	fprintf(header, "#define %s %#x\n\n", HEADER_FMAP_SIZE, fmap_size);
 
 	fputs("#endif\n", header);
 
@@ -245,7 +234,7 @@ int main(int argc, char **argv)
 	fmap_destroy(flashmap);
 
 	if (args.header_filename &&
-			!write_header(args.header_filename, descriptor)) {
+			!write_header(args.header_filename, descriptor, size)) {
 		full_fmd_cleanup(&descriptor);
 		return FMAPTOOL_EXIT_FAILED_WRITING_HEADER;
 	}

@@ -34,6 +34,7 @@ DECLARE_REGION(stack)
 DECLARE_REGION(preram_cbfs_cache)
 DECLARE_REGION(postram_cbfs_cache)
 DECLARE_REGION(cbfs_cache)
+DECLARE_REGION(fmap_cache)
 DECLARE_REGION(payload)
 
 /* "program" always refers to the current execution unit. */

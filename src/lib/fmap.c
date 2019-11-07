@@ -15,12 +15,13 @@
 
 #include <arch/early_variables.h>
 #include <boot_device.h>
+#include <cbmem.h>
 #include <console/console.h>
 #include <fmap.h>
 #include <commonlib/fmap_serialized.h>
 #include <stddef.h>
 #include <string.h>
-#include <cbmem.h>
+#include <symbols.h>
 
 #include "fmap_config.h"
 
@@ -31,26 +32,94 @@
 static int fmap_print_once CAR_GLOBAL;
 static struct mem_region_device fmap_cache CAR_GLOBAL;
 
+#define print_once(...) do { \
+		if (!car_get_var(fmap_print_once)) \
+			printk(__VA_ARGS__); \
+	} while (0)
+
+DECLARE_OPTIONAL_REGION(fmap_cache);
+
 uint64_t get_fmap_flash_offset(void)
 {
 	return FMAP_OFFSET;
+}
+
+static int check_signature(const struct fmap *fmap)
+{
+	return memcmp(fmap->signature, FMAP_SIGNATURE, sizeof(fmap->signature));
+}
+
+static void report(const struct fmap *fmap)
+{
+	print_once(BIOS_DEBUG, "FMAP: Found \"%s\" version %d.%d at %#x.\n",
+	       fmap->name, fmap->ver_major, fmap->ver_minor, FMAP_OFFSET);
+	print_once(BIOS_DEBUG, "FMAP: base = %#llx size = %#x #areas = %d\n",
+	       (long long)fmap->base, fmap->size, fmap->nareas);
+	car_set_var(fmap_print_once, 1);
+}
+
+static void setup_preram_cache(struct mem_region_device *cache_mrdev)
+{
+	if (!ENV_ROMSTAGE_OR_BEFORE) {
+		/* We get here if ramstage makes an FMAP access before calling
+		   cbmem_initialize(). We should avoid letting it come to that,
+		   so print a warning. */
+		print_once(BIOS_WARNING,
+			"WARNING: Post-RAM FMAP access too early for cache!\n");
+		return;
+	}
+
+	if (REGION_SIZE(fmap_cache) == 0) {
+		/* If you see this you really want to add an FMAP_CACHE to your
+		   memlayout, unless you absolutely can't affort the 2K. */
+		print_once(BIOS_NOTICE,
+			"NOTE: Running without FMAP_CACHE, should add it!\n");
+		return;
+	}
+
+	struct fmap *fmap = (struct fmap *)_fmap_cache;
+	if (!ENV_BOOTBLOCK) {
+		/* NOTE: This assumes that for all platforms running this code,
+		   the bootblock is the first stage and the bootblock will make
+		   at least one FMAP access (usually from finding CBFS). */
+		if (!check_signature(fmap))
+			goto register_cache;
+
+		printk(BIOS_ERR, "ERROR: FMAP cache corrupted?!\n");
+	}
+
+	/* In case we fail below, make sure the cache is invalid. */
+	memset(fmap->signature, 0, sizeof(fmap->signature));
+
+	boot_device_init();
+	const struct region_device *boot_rdev = boot_device_ro();
+	if (!boot_rdev)
+		return;
+
+	/* memlayout statically guarantees that the FMAP_CACHE is big enough. */
+	if (rdev_readat(boot_rdev, fmap, FMAP_OFFSET, FMAP_SIZE) != FMAP_SIZE)
+		return;
+	if (check_signature(fmap))
+		return;
+	report(fmap);
+
+register_cache:
+	mem_region_device_ro_init(cache_mrdev, fmap, FMAP_SIZE);
 }
 
 static int find_fmap_directory(struct region_device *fmrd)
 {
 	const struct region_device *boot;
 	struct fmap *fmap;
-	size_t fmap_size;
+	struct mem_region_device *cache;
 	size_t offset = FMAP_OFFSET;
 
-	if (cbmem_possibly_online() && !ENV_SMM) {
-		/* Try FMAP cache first */
-		const struct mem_region_device *cache;
-
-		cache = car_get_var_ptr(&fmap_cache);
-		if (region_device_sz(&cache->rdev))
-			return rdev_chain_full(fmrd, &cache->rdev);
-	}
+	/* Try FMAP cache first */
+	cache = car_get_var_ptr(&fmap_cache);
+	if (!region_device_sz(&cache->rdev))
+		setup_preram_cache(cache);
+	if (region_device_sz(&cache->rdev))
+		return rdev_chain_full(fmrd, &cache->rdev);
 
 	boot_device_init();
 	boot = boot_device_ro();
@@ -58,32 +127,22 @@ static int find_fmap_directory(struct region_device *fmrd)
 	if (boot == NULL)
 		return -1;
 
-	fmap_size = sizeof(struct fmap);
-
-	fmap = rdev_mmap(boot, offset, fmap_size);
+	fmap = rdev_mmap(boot, offset, sizeof(struct fmap));
 
 	if (fmap == NULL)
 		return -1;
 
-	if (memcmp(fmap->signature, FMAP_SIGNATURE, sizeof(fmap->signature))) {
+	if (check_signature(fmap)) {
 		printk(BIOS_DEBUG, "No FMAP found at %zx offset.\n", offset);
 		rdev_munmap(boot, fmap);
 		return -1;
 	}
 
-	if (!car_get_var(fmap_print_once)) {
-		printk(BIOS_DEBUG, "FMAP: Found \"%s\" version %d.%d at %zx.\n",
-		       fmap->name, fmap->ver_major, fmap->ver_minor, offset);
-		printk(BIOS_DEBUG, "FMAP: base = %llx size = %x #areas = %d\n",
-		       (long long)fmap->base, fmap->size, fmap->nareas);
-		car_set_var(fmap_print_once, 1);
-	}
-
-	fmap_size += fmap->nareas * sizeof(struct fmap_area);
+	report(fmap);
 
 	rdev_munmap(boot, fmap);
 
-	return rdev_chain(fmrd, boot, offset, fmap_size);
+	return rdev_chain(fmrd, boot, offset, FMAP_SIZE);
 }
 
 int fmap_locate_area_as_rdev(const char *name, struct region_device *area)
@@ -212,7 +271,7 @@ ssize_t fmap_overwrite_area(const char *name, const void *buffer, size_t size)
 	return rdev_writeat(&rdev, buffer, 0, size);
 }
 
-static void fmap_register_cache(int unused)
+static void fmap_register_cbmem_cache(int unused)
 {
 	const struct cbmem_entry *e;
 	struct mem_region_device *mdev;
@@ -232,7 +291,7 @@ static void fmap_register_cache(int unused)
  * The main reason to copy the FMAP into CBMEM is to make it available to the
  * OS on every architecture. As side effect use the CBMEM copy as cache.
  */
-static void fmap_setup_cache(int unused)
+static void fmap_setup_cbmem_cache(int unused)
 {
 	struct region_device fmrd;
 
@@ -255,9 +314,9 @@ static void fmap_setup_cache(int unused)
 	}
 
 	/* Finally advertise the cache for the current stage */
-	fmap_register_cache(unused);
+	fmap_register_cbmem_cache(unused);
 }
 
-ROMSTAGE_CBMEM_INIT_HOOK(fmap_setup_cache)
-RAMSTAGE_CBMEM_INIT_HOOK(fmap_register_cache)
-POSTCAR_CBMEM_INIT_HOOK(fmap_register_cache)
+ROMSTAGE_CBMEM_INIT_HOOK(fmap_setup_cbmem_cache)
+RAMSTAGE_CBMEM_INIT_HOOK(fmap_register_cbmem_cache)
+POSTCAR_CBMEM_INIT_HOOK(fmap_register_cbmem_cache)

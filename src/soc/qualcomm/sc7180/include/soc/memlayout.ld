@@ -43,6 +43,7 @@ SECTIONS
 	REGION(ddr_training, 0x14850000, 8K, 4K)
 	REGION(qclib_serial_log, 0x14852000, 4K, 4K)
 	REGION(ddr_information, 0x14853000, 1K, 1K)
+	FMAP_CACHE(0x14853400, 2K)
 	REGION(dcb, 0x14870000, 16K, 4K)
 	REGION(pmic, 0x14874000, 44K, 4K)
 	REGION(limits_cfg, 0x1487F000, 4K, 4K)

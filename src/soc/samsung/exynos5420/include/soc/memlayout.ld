@@ -32,7 +32,8 @@ SECTIONS
 	ROMSTAGE(0x2030000, 128K)
 	/* 32K hole */
 	TTB(0x2058000, 16K)
-	PRERAM_CBFS_CACHE(0x205C000, 76K)
+	PRERAM_CBFS_CACHE(0x205C000, 74K)
+	FMAP_CACHE(0x206E800, 2K)
 	STACK(0x206F000, 16K)
 	/* 1K hole for weird kernel-shared CPU/SMP state structure that doesn't
 	 * seem to be implemented right now? */

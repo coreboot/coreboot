@@ -26,7 +26,6 @@
 #include <symbols.h>
 #include <timestamp.h>
 #include <fmap.h>
-#include "fmap_config.h"
 #include <security/vboot/vboot_crtm.h>
 
 #define ERROR(x...) printk(BIOS_ERR, "CBFS: " x)
@@ -310,7 +309,10 @@ int cbfs_master_header_props(struct cbfs_props *props)
 	if (bdev == NULL)
 		return -1;
 
-	size_t fmap_top = ___FMAP__COREBOOT_BASE + ___FMAP__COREBOOT_SIZE;
+	struct region fmap_region;
+	if (fmap_locate_area("COREBOOT", &fmap_region))
+		return -1;
+	size_t fmap_top = region_end(&fmap_region);
 
 	/* Find location of header using signed 32-bit offset from
 	 * end of CBFS region. */

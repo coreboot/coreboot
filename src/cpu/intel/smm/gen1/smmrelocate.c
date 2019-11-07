@@ -11,8 +11,7 @@
  * GNU General Public License for more details.
  */
 
-/* SMM relocation with intention to work for i945-ivybridge.
-   Right now used for sandybridge and ivybridge.  */
+/* SMM relocation for i945-ivybridge. */
 
 #include <assert.h>
 #include <types.h>

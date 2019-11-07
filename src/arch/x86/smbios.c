@@ -659,7 +659,7 @@ static int smbios_write_type4(unsigned long *current, int handle)
 	t->processor_type = 3; /* System Processor */
 	t->core_count = (res.ebx >> 16) & 0xff;
 	/* Assume we enable all the cores always, capped only by MAX_CPUS */
-	t->core_enabled = MAX(t->core_count, CONFIG_MAX_CPUS);
+	t->core_enabled = MIN(t->core_count, CONFIG_MAX_CPUS);
 	t->l1_cache_handle = 0xffff;
 	t->l2_cache_handle = 0xffff;
 	t->l3_cache_handle = 0xffff;

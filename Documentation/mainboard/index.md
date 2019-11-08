@@ -92,6 +92,7 @@ The boards in this section are not real mainboards, but emulators.
 - [W530](lenovo/w530.md)
 - [T430 / T530 / X230 / W530 common](lenovo/xx30_series.md)
 - [T431s](lenovo/t431s.md)
+- [Internal flashing](lenovo/ivb_internal_flashing.md)
 
 ### Haswell series
 

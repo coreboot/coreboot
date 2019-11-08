@@ -296,44 +296,16 @@ out:
 	return 0;
 }
 
-/* This only supports the "COREBOOT" fmap region. */
-int cbfs_master_header_props(struct cbfs_props *props)
+/* The default locator to find the CBFS in the "COREBOOT" FMAP region. */
+int cbfs_default_props(struct cbfs_props *props)
 {
-	struct cbfs_header header;
-	const struct region_device *bdev;
-	int32_t rel_offset;
-	size_t offset;
+	struct region region;
 
-	bdev = boot_device_ro();
-
-	if (bdev == NULL)
+	if (fmap_locate_area("COREBOOT", &region))
 		return -1;
 
-	struct region fmap_region;
-	if (fmap_locate_area("COREBOOT", &fmap_region))
-		return -1;
-	size_t fmap_top = region_end(&fmap_region);
-
-	/* Find location of header using signed 32-bit offset from
-	 * end of CBFS region. */
-	offset = fmap_top - sizeof(int32_t);
-	if (rdev_readat(bdev, &rel_offset, offset, sizeof(int32_t)) < 0)
-		return -1;
-
-	offset = fmap_top + (int32_t)le32_to_cpu(rel_offset);
-	if (rdev_readat(bdev, &header, offset, sizeof(header)) < 0)
-		return -1;
-
-	header.magic = ntohl(header.magic);
-	header.romsize = ntohl(header.romsize);
-	header.offset = ntohl(header.offset);
-
-	if (header.magic != CBFS_HEADER_MAGIC)
-		return -1;
-
-	props->offset = header.offset;
-	props->size = header.romsize;
-	props->size -= props->offset;
+	props->offset = region_offset(&region);
+	props->size = region_sz(&region);
 
 	printk(BIOS_SPEW, "CBFS @ %zx size %zx\n", props->offset, props->size);
 
@@ -343,9 +315,9 @@ int cbfs_master_header_props(struct cbfs_props *props)
 /* This struct is marked as weak to allow a particular platform to
  * override the master header logic. This implementation should work for most
  * devices. */
-const struct cbfs_locator __weak cbfs_master_header_locator = {
-	.name = "Master Header Locator",
-	.locate = cbfs_master_header_props,
+const struct cbfs_locator __weak cbfs_default_locator = {
+	.name = "COREBOOT Locator",
+	.locate = cbfs_default_props,
 };
 
 extern const struct cbfs_locator vboot_locator;
@@ -359,7 +331,7 @@ static const struct cbfs_locator *locators[] = {
 	 */
 	&vboot_locator,
 #endif
-	&cbfs_master_header_locator,
+	&cbfs_default_locator,
 };
 
 int cbfs_boot_region_properties(struct cbfs_props *props)

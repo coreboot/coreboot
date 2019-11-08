@@ -355,8 +355,8 @@ static void vendor_secure_prepare(void)
 	}
 }
 
-const struct cbfs_locator cbfs_master_header_locator = {
+const struct cbfs_locator cbfs_default_locator = {
 	.name = "Vendorcode Header Locator",
 	.prepare = vendor_secure_prepare,
-	.locate = cbfs_master_header_props
+	.locate = cbfs_default_props
 };

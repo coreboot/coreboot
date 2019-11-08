@@ -128,10 +128,10 @@ static int iafw_boot_region_properties(struct cbfs_props *props)
 }
 
 /*
- * Named cbfs_master_header_locator so that it overrides the default, but
- * incompatible locator in cbfs.c
+ * Named cbfs_default_locator so that it overrides the default, but incompatible
+ * locator in cbfs.c
  */
-const struct cbfs_locator cbfs_master_header_locator = {
+const struct cbfs_locator cbfs_default_locator = {
 	.name = "IAFW Locator",
 	.locate = iafw_boot_region_properties,
 };

@@ -86,6 +86,24 @@ void pci_mmio_write_config32(pci_devfn_t dev, uint16_t reg, uint32_t value)
 	pcicfg(dev)->reg32[reg / sizeof(uint32_t)] = value;
 }
 
+static __always_inline
+uint8_t *pci_mmio_config8_addr(pci_devfn_t dev, uint16_t reg)
+{
+	return (uint8_t *)&pcicfg(dev)->reg8[reg];
+}
+
+static __always_inline
+uint16_t *pci_mmio_config16_addr(pci_devfn_t dev, uint16_t reg)
+{
+	return (uint16_t *)&pcicfg(dev)->reg16[reg / sizeof(uint16_t)];
+}
+
+static __always_inline
+uint32_t *pci_mmio_config32_addr(pci_devfn_t dev, uint16_t reg)
+{
+	return (uint32_t *)&pcicfg(dev)->reg32[reg / sizeof(uint32_t)];
+}
+
 #endif /* !defined(__ROMCC__) */
 
 #if CONFIG(MMCONF_SUPPORT)

@@ -154,9 +154,7 @@ config COMPRESS_RAMSTAGE
 	depends on HAVE_RAMSTAGE
 	# Default value set at the end of the file
 	help
-	  Compress ramstage to save memory in the flash image. Note
-	  that decompression might slow down booting if the boot flash
-	  is connected through a slow link (i.e. SPI).
+	  Compress ramstage to save memory in the flash image.
 
 config COMPRESS_PRERAM_STAGES
 	bool "Compress romstage and verstage with LZ4"

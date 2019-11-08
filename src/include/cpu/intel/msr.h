@@ -12,6 +12,9 @@
 
 #define MSR_PLATFORM_INFO	0xce
 
+#define MSR_BC_PBEC		0x139
+#define  B_STOP_PBET		(1 << 0)
+
 #define MSR_BOOT_GUARD_SACM_INFO	0x13a
 #define  V_TPM_PRESENT_MASK		0x06
 #define  B_BOOT_GUARD_SACM_INFO_NEM_ENABLED	(1 << 0)

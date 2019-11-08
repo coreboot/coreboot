@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <commonlib/helpers.h>
+#include <cpu/intel/msr.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/cr.h>
 #include <cpu/x86/msr.h>
@@ -63,6 +64,22 @@ bootblock_pre_c_entry:
 
 	post_code(0x20)
 
+/* Bootguard sets up its own CAR and needs separate handling */
+check_boot_guard:
+	movl	$MSR_BOOT_GUARD_SACM_INFO, %ecx
+	rdmsr
+	andl	$B_BOOT_GUARD_SACM_INFO_NEM_ENABLED, %eax
+	jz	no_bootguard
+
+	/* Disable PBE timer */
+	movl	$MSR_BC_PBEC, %ecx
+	movl	$B_STOP_PBET, %eax
+	xorl	%edx, %edx
+	wrmsr
+
+	jmp	setup_car_mtrr
+
+no_bootguard:
 	movl	$no_reset, %esp /* return address */
 	jmp	check_mtrr /* Check if CPU properly reset */
 
@@ -108,6 +125,7 @@ clear_var_mtrr:
 		 MTRR_DEF_TYPE_FIX_EN), %eax
 	wrmsr
 
+setup_car_mtrr:
 	/* Configure MTRR_PHYS_MASK_HIGH for proper addressing above 4GB
 	 * based on the physical address size supported for this processor
 	 * This is based on read from CPUID EAX = 080000008h, EAX bits [7:0]
@@ -186,6 +204,16 @@ clear_var_mtrr:
 #endif
 	post_code(0x25)
 
+	movl	$MSR_BOOT_GUARD_SACM_INFO, %ecx
+	rdmsr
+	andl	$B_BOOT_GUARD_SACM_INFO_NEM_ENABLED, %eax
+	jz	no_bootguard_car_continue
+
+	clear_car
+
+	jmp	car_init_done
+
+no_bootguard_car_continue:
 	/* Enable variable MTRRs */
 	mov	$MTRR_DEF_TYPE_MSR, %ecx
 	rdmsr

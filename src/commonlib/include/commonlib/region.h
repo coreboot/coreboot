@@ -73,7 +73,6 @@ ssize_t rdev_eraseat(const struct region_device *rd, size_t offset,
 int rdev_chain(struct region_device *child, const struct region_device *parent,
 		size_t offset, size_t size);
 
-
 /* A region_device operations. */
 struct region_device_ops {
 	void *(*mmap)(const struct region_device *, size_t, size_t);
@@ -143,6 +142,13 @@ static inline size_t region_device_offset(const struct region_device *rdev)
 static inline void *rdev_mmap_full(const struct region_device *rd)
 {
 	return rdev_mmap(rd, 0, region_device_sz(rd));
+}
+
+static inline int rdev_chain_full(struct region_device *child,
+				const struct region_device *parent)
+{
+	/* Chain full size of parent. */
+	return rdev_chain(child, parent, 0, region_device_sz(parent));
 }
 
 /*

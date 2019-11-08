@@ -32,14 +32,13 @@ int cbfs_locate(struct cbfsf *fh, const struct region_device *cbfs,
 static inline void cbfs_file_data(struct region_device *data,
 					const struct cbfsf *file)
 {
-	rdev_chain(data, &file->data, 0, region_device_sz(&file->data));
+	rdev_chain_full(data, &file->data);
 }
 
 static inline void cbfs_file_metadata(struct region_device *metadata,
 					const struct cbfsf *file)
 {
-	rdev_chain(metadata, &file->metadata, 0,
-			region_device_sz(&file->metadata));
+	rdev_chain_full(metadata, &file->metadata);
 }
 
 /*

@@ -49,8 +49,7 @@ static int find_fmap_directory(struct region_device *fmrd)
 
 		cache = car_get_var_ptr(&fmap_cache);
 		if (region_device_sz(&cache->rdev))
-			return rdev_chain(fmrd, &cache->rdev, 0,
-					  region_device_sz(&cache->rdev));
+			return rdev_chain_full(fmrd, &cache->rdev);
 	}
 
 	boot_device_init();

@@ -208,7 +208,7 @@ int region_file_init(struct region_file *f, const struct region_device *p)
 	f->slot = RF_FATAL;
 
 	/* Keep parent around for accessing data later. */
-	if (rdev_chain(&f->rdev, p, 0, region_device_sz(p)))
+	if (rdev_chain_full(&f->rdev, p))
 		return -1;
 
 	if (rdev_readat(p, &mb, 0, sizeof(mb)) < 0) {

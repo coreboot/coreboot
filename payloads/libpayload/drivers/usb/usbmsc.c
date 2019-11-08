@@ -232,9 +232,9 @@ get_csw (endpoint_t *ep, csw_t *csw)
 
 	if (ret < 0) {
 		clear_stall (ep);
-		if (ctrlr->bulk (ep, sizeof (csw_t), (u8 *) csw, 1) < 0) {
+		ret = ctrlr->bulk (ep, sizeof (csw_t), (u8 *) csw, 1);
+		if (ret < 0)
 			return reset_transport (ep->dev);
-		}
 	}
 	if (ret != sizeof(csw_t) || csw->dCSWTag != tag ||
 	    csw->dCSWSignature != csw_signature) {

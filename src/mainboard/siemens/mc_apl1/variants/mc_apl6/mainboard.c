@@ -60,12 +60,12 @@ void variant_mainboard_final(void)
 		cmd |= PCI_COMMAND_MASTER;
 		pci_write_config16(dev, PCI_COMMAND, cmd);
 
-		/* Disable clock outputs 0 and 2-4 (CLKOUT) for upstream
+		/* Disable clock outputs 0-3 (CLKOUT) for upstream
 		 * XIO2001 PCIe to PCI Bridge.
 		 */
 		struct device *parent = dev->bus->dev;
 		if (parent && parent->device == PCI_DEVICE_ID_TI_XIO2001)
-			pci_write_config8(parent, 0xd8, 0x1d);
+			pci_write_config8(parent, 0xd8, 0x0F);
 	}
 
 	/* Disable clock outputs 2-5 (CLKOUT) for another XIO2001 PCIe to PCI

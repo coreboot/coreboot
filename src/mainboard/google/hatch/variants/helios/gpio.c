@@ -33,6 +33,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_B19, NONE),
 	/* C1  : SMBDATA ==> NC */
 	PAD_NC(GPP_C1, NONE),
+	/* C4  : TOUCHSCREEN_DIS_L */
+	PAD_CFG_GPO(GPP_C4, 0, DEEP),
 	/* C6  : GPP_C6 ==> NC */
 	PAD_NC(GPP_C6, NONE),
 	/* C7  : GPP_C7 ==> NC */

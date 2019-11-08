@@ -92,6 +92,7 @@ config MAINBOARD_PART_NUMBER
 	default "Hatch" if BOARD_GOOGLE_HATCH
 	default "Helios" if BOARD_GOOGLE_HELIOS
 	default "Helios_Diskswap" if BOARD_GOOGLE_HELIOS_DISKSWAP
+	default "Jinlon" if BOARD_GOOGLE_JINLON
 	default "Kindred" if BOARD_GOOGLE_KINDRED
 	default "Kohaku" if BOARD_GOOGLE_KOHAKU
 	default "Puff" if BOARD_GOOGLE_PUFF
@@ -120,6 +121,7 @@ config VARIANT_DIR
 	default "hatch" if BOARD_GOOGLE_HATCH
 	default "helios" if BOARD_GOOGLE_HELIOS
 	default "helios" if BOARD_GOOGLE_HELIOS_DISKSWAP
+	default "jinlon" if BOARD_GOOGLE_JINLON
 	default "kindred" if BOARD_GOOGLE_KINDRED
 	default "kohaku" if BOARD_GOOGLE_KOHAKU
 	default "puff" if BOARD_GOOGLE_PUFF

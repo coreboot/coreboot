@@ -431,8 +431,7 @@ static int winbond_get_write_protection(const struct spi_flash *flash,
 	}
 
 	printk(BIOS_DEBUG, "WINBOND: flash protected range 0x%08zx-0x%08zx\n",
-	       region_offset(&wp_region),
-	       region_offset(&wp_region) + region_sz(&wp_region));
+	       region_offset(&wp_region), region_end(&wp_region));
 
 	return region_is_subregion(&wp_region, region);
 }
@@ -562,8 +561,7 @@ winbond_set_write_protection(const struct spi_flash *flash,
 	int ret;
 
 	/* Need to touch TOP or BOTTOM */
-	if (region_offset(region) != 0 &&
-	    (region_offset(region) + region_sz(region)) != flash->size)
+	if (region_offset(region) != 0 && region_end(region) != flash->size)
 		return -1;
 
 	params = (const struct winbond_spi_flash_params *)flash->driver_private;
@@ -654,8 +652,7 @@ winbond_set_write_protection(const struct spi_flash *flash,
 		return ret;
 
 	printk(BIOS_DEBUG, "WINBOND: write-protection set to range "
-	       "0x%08zx-0x%08zx\n", region_offset(region),
-	       region_offset(region) + region_sz(region));
+	       "0x%08zx-0x%08zx\n", region_offset(region), region_end(region));
 
 	return ret;
 }

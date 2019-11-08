@@ -15,11 +15,6 @@
 #include <commonlib/region.h>
 #include <string.h>
 
-static inline size_t region_end(const struct region *r)
-{
-	return region_sz(r) + region_offset(r);
-}
-
 int region_is_subregion(const struct region *p, const struct region *c)
 {
 	if (region_offset(c) < region_offset(p))

@@ -44,7 +44,6 @@ void bootblock_soc_init(void)
 	 * and abase, i2c programming and print platform info
 	 */
 	report_platform_info();
-	pch_early_init();
-
+	pch_init();
 	gspi_early_bar_init();
 }

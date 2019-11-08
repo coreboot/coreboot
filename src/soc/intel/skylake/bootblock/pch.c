@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2014 Google Inc.
- * Copyright (C) 2015-2018 Intel Corporation.
+ * Copyright (C) 2015-2019 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,8 +24,6 @@
 #include <intelblocks/pcr.h>
 #include <intelblocks/pmclib.h>
 #include <intelblocks/rtc.h>
-#include <intelblocks/smbus.h>
-#include <intelblocks/tco.h>
 #include <soc/bootblock.h>
 #include <soc/iomap.h>
 #include <soc/p2sb.h>
@@ -34,8 +32,6 @@
 #include <soc/pcr_ids.h>
 #include <soc/pm.h>
 #include <soc/pmc.h>
-#include <soc/smbus.h>
-
 #include "../chip.h"
 
 #define PCR_DMI_DMICTL		0x2234
@@ -150,7 +146,7 @@ void pch_early_iorange_init(void)
 	pch_enable_lpc();
 }
 
-void pch_early_init(void)
+void pch_init(void)
 {
 	/*
 	 * Enabling ABASE for accessing PM1_STS, PM1_EN, PM1_CNT,
@@ -163,12 +159,6 @@ void pch_early_init(void)
 	 * Global Reset Cause Register.
 	 */
 	soc_config_pwrmbase();
-
-	/* Programming TCO_BASE_ADDRESS and TCO Timer Halt */
-	tco_configure();
-
-	/* Program SMBUS_BASE_ADDRESS and Enable it */
-	smbus_common_init();
 
 	/* Set up GPE configuration */
 	pmc_gpe_init();

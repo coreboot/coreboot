@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2016 Intel Corporation
+ * Copyright (C) 2019 Intel Corp.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,20 +13,15 @@
  * GNU General Public License for more details.
  */
 
-#ifndef _SOC_SKYLAKE_BOOTBLOCK_H_
-#define _SOC_SKYLAKE_BOOTBLOCK_H_
+#include <intelblocks/smbus.h>
+#include <intelblocks/tco.h>
+#include <soc/romstage.h>
 
-#include <intelblocks/systemagent.h>
+void pch_init(void)
+{
+	/* Programming TCO_BASE_ADDRESS and TCO Timer Halt */
+	tco_configure();
 
-/* Bootblock pre console init programming */
-void bootblock_cpu_init(void);
-void bootblock_pch_early_init(void);
-
-/* Bootblock post console init programming */
-void i2c_early_init(void);
-void pch_init(void);
-void pch_early_iorange_init(void);
-void report_platform_info(void);
-void report_memory_config(void);
-
-#endif
+	/* Program SMBUS_BASE_ADDRESS and Enable it */
+	smbus_common_init();
+}

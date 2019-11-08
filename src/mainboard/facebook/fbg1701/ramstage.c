@@ -19,7 +19,6 @@
 #include <soc/ramstage.h>
 #include <soc/smbus.h>
 #include "cpld.h"
-#include "logo.h"
 
 struct edp_data {
 	u8 payload_length;
@@ -359,16 +358,4 @@ static void mainboard_configure_edp_bridge(void)
 void mainboard_silicon_init_params(SILICON_INIT_UPD *params)
 {
 	mainboard_configure_edp_bridge();
-
-	if (CONFIG(FSP1_1_DISPLAY_LOGO)) {
-		size_t logo_len;
-		void *logo = NULL;
-
-		logo = load_logo(&logo_len);
-
-		if (logo) {
-			params->PcdLogoPtr = (u32)logo;
-			params->PcdLogoSize = logo_len;
-		}
-	}
 }

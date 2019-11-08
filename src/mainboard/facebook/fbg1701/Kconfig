@@ -58,15 +58,6 @@ config FSP_LOC
 	hex
 	default 0xfff9c000
 
-config FSP1_1_DISPLAY_LOGO
-	bool "Enable logo"
-	default n
-
-config FSP1_1_LOGO_FILE_NAME
-	string "Logo file"
-	depends on FSP1_1_DISPLAY_LOGO
-	default "3rdparty/blobs/mainboard/$(MAINBOARDDIR)/logo.bmp"
-
 config VENDORCODE_ELTAN_OEM_MANIFEST_LOC
 	hex
 	default 0xFFFE9000

@@ -79,16 +79,10 @@ int cbfs_default_props(struct cbfs_props *props);
 /* Return < 0 on error otherwise props are filled out accordingly. */
 int cbfs_boot_region_properties(struct cbfs_props *props);
 
-/* Allow external logic to take action prior to locating a program
- * (stage or payload). */
-void cbfs_prepare_program_locate(void);
-
 /* Object used to identify location of current cbfs to use for cbfs_boot_*
- * operations. It's used by cbfs_boot_region_properties() and
- * cbfs_prepare_program_locate(). */
+ * operations. It's used by cbfs_boot_region_properties(). */
 struct cbfs_locator {
 	const char *name;
-	void (*prepare)(void);
 	/* Returns 0 on successful fill of cbfs properties. */
 	int (*locate)(struct cbfs_props *props);
 };

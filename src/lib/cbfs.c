@@ -359,16 +359,3 @@ int cbfs_boot_region_properties(struct cbfs_props *props)
 
 	return -1;
 }
-
-void cbfs_prepare_program_locate(void)
-{
-	int i;
-
-	boot_device_init();
-
-	for (i = 0; i < ARRAY_SIZE(locators); i++) {
-		if (locators[i]->prepare == NULL)
-			continue;
-		locators[i]->prepare();
-	}
-}

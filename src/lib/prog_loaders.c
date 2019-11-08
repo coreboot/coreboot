@@ -43,8 +43,6 @@ int prog_locate(struct prog *prog)
 	if (prog_locate_hook(prog))
 		return -1;
 
-	cbfs_prepare_program_locate();
-
 	if (cbfs_boot_locate(&file, prog_name(prog), NULL))
 		return -1;
 

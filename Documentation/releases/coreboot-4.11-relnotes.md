@@ -30,6 +30,15 @@ Preprocessor use of `defined(__PRE_RAM_)` have been mostly replaced with
 
 The remaining cases and `-D__PRE_RAM__` are to be removed soon after release.
 
+### `__BOOTBLOCK__` et.al. are converted
+
+This applies to all `ENV_xxx` definitions found in `<rules.h>`.
+
+Write code without preprocessor directives whenever possible, replacing
+`#ifdef __BOOTBLOCK__` with  `if (ENV_BOOTBLOCK)`
+
+In cases where preprocessor is needed use `#if ENV_BOOTBLOCK` instead.
+
 ### `CAR_GLOBAL` is removed where possible
 
 For all platform code with `NO_CAR_GLOBAL_MIGRATION=y`, any `CAR_GLOBAL`

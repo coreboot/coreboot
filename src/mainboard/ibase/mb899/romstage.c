@@ -185,7 +185,6 @@ void mainboard_romstage_entry(void)
 	console_init();
 
 	if (MCHBAR16(SSKPD) == 0xCAFE) {
-		printk(BIOS_DEBUG, "soft reset detected, rebooting properly\n");
 		system_reset();
 	}
 

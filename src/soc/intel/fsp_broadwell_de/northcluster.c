@@ -30,7 +30,7 @@
 static const int legacy_hole_base_k = 0xa0000 / 1024;
 static const int legacy_hole_size_k = 384;
 
-static int add_fixed_resources(struct device *dev, int index)
+static void add_fixed_resources(struct device *dev, int index)
 {
 	struct resource *resource;
 	u32 pcie_config_base, pcie_config_size;
@@ -52,8 +52,6 @@ static int add_fixed_resources(struct device *dev, int index)
 			IORESOURCE_FIXED | IORESOURCE_STORED | IORESOURCE_ASSIGNED;
 
 	mmio_resource(dev, index++, legacy_hole_base_k, legacy_hole_size_k);
-
-	return index;
 }
 
 static void mc_add_dram_resources(struct device *dev)
@@ -117,7 +115,7 @@ static void mc_add_dram_resources(struct device *dev)
 	printk(BIOS_INFO, "Available memory above 4GB: %lluM\n",
 	       highmem_size >> 20);
 
-	index = add_fixed_resources(dev, index);
+	add_fixed_resources(dev, index);
 }
 
 static void nc_read_resources(struct device *dev)

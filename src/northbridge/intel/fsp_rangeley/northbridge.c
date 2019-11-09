@@ -76,7 +76,7 @@ static int get_pcie_bar(u32 *base)
 
 }
 
-static int add_fixed_resources(struct device *dev, int index)
+static void add_fixed_resources(struct device *dev, int index)
 {
 	struct resource *resource;
 
@@ -87,8 +87,6 @@ static int add_fixed_resources(struct device *dev, int index)
 		    IORESOURCE_FIXED | IORESOURCE_STORED | IORESOURCE_ASSIGNED;
 
 	mmio_resource(dev, index++, legacy_hole_base_k, legacy_hole_size_k);
-
-	return index;
 }
 
 static void mc_add_dram_resources(struct device *dev)
@@ -133,7 +131,7 @@ static void mc_add_dram_resources(struct device *dev)
 		printk(BIOS_INFO, "Available memory above 4GB: %lluM\n", (bmbound_hi - 0x100000000) >> 20);
 	}
 
-	index = add_fixed_resources(dev, index);
+	add_fixed_resources(dev, index);
 }
 
 static void mc_read_resources(struct device *dev)

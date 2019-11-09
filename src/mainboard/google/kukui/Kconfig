@@ -56,6 +56,8 @@ config MAINBOARD_PART_NUMBER
 	default "Flapjack" if BOARD_GOOGLE_FLAPJACK
 	default "Jacuzzi" if BOARD_GOOGLE_JACUZZI
 	default "Juniper" if BOARD_GOOGLE_JUNIPER
+	default "Kappa" if BOARD_GOOGLE_KAPPA
+	default "Damu" if BOARD_GOOGLE_DAMU
 
 config DRIVER_TPM_SPI_BUS
 	hex

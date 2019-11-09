@@ -66,15 +66,6 @@ static void mb_lpc_setup(void)
 	ich7_setup_cir();
 }
 
-static void ich7_enable_lpc(void)
-{
-	pci_write_config8(PCI_DEV(0, 0x1f, 0), SERIRQ_CNTL, 0xd0);
-	/* Decode range */
-	pci_write_config16(PCI_DEV(0, 0x1f, 0), LPC_EN, CNF1_LPC_EN
-			| KBC_LPC_EN | LPT_LPC_EN | COMA_LPC_EN);
-	pci_write_config32(PCI_DEV(0, 0x1f, 0), GEN1_DEC, 0x000c0291);
-}
-
 void mainboard_romstage_entry(void)
 {
 	//                          ch0      ch1
@@ -83,7 +74,7 @@ void mainboard_romstage_entry(void)
 	u8 s3_resume;
 
 	/* Set southbridge and Super I/O GPIOs. */
-	ich7_enable_lpc();
+	i82801gx_lpc_setup();
 	mb_lpc_setup();
 
 	console_init();

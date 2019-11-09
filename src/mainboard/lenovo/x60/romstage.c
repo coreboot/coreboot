@@ -33,24 +33,11 @@
 #include <southbridge/intel/common/pmclib.h>
 #include "dock.h"
 
-static void ich7_enable_lpc(void)
+/* Override the default lpc decode ranges */
+static void mb_lpc_decode(void)
 {
-	// Enable Serial IRQ
-	pci_write_config8(PCI_DEV(0, 0x1f, 0), SERIRQ_CNTL, 0xd0);
 	// decode range
 	pci_write_config16(PCI_DEV(0, 0x1f, 0), LPC_IO_DEC, 0x0210);
-	// decode range
-	pci_write_config16(PCI_DEV(0, 0x1f, 0), LPC_EN, CNF1_LPC_EN | MC_LPC_EN
-			| KBC_LPC_EN | GAMEH_LPC_EN | GAMEL_LPC_EN | FDD_LPC_EN
-			| LPT_LPC_EN | COMA_LPC_EN);
-	/* range 0x1600 - 0x167f */
-	pci_write_config32(PCI_DEV(0, 0x1f, 0), GEN1_DEC, 0x007c1601);
-
-	/* range 0x15e0 - 0x15ef */
-	pci_write_config32(PCI_DEV(0, 0x1f, 0), GEN2_DEC, 0x000c15e1);
-
-	/* range 0x1680 - 0x169f */
-	pci_write_config32(PCI_DEV(0, 0x1f, 0), GEN3_DEC, 0x001c1681);
 }
 
 static void early_superio_config(void)
@@ -144,7 +131,8 @@ void mainboard_romstage_entry(void)
 	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0x4c, 0x10);  /* 0x4c == GC */
 	setup_pch_gpios(&mainboard_gpio_map);
 
-	ich7_enable_lpc();
+	i82801gx_lpc_setup();
+	mb_lpc_decode();
 
 	dlpc_init();
 	/* dock_init initializes the DLPC switch on

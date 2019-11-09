@@ -79,6 +79,9 @@ chip northbridge/intel/i945
 
 			register "p_cnt_throttling_supported" = "0"
 
+			register "gen1_dec" = "0x000c0801" # ???
+			register "gen2_dec" = "0x00040291" # Environment Controller
+
 			device pci 1b.0 on # High Definition Audio
 				ioapic_irq 2 INTA 0x10
 			end

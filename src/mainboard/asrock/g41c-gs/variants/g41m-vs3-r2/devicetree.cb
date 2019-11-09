@@ -48,6 +48,8 @@ chip northbridge/intel/x4x		# Northbridge
 			register "ide_enable_primary" = "0x1"
 			register "gpe0_en" = "0x440"
 
+			register "gen1_dec" = "0x000c0291" # Superio HWM
+
 			device pci 1b.0 on		# Audio
 				subsystemid 0x1849 0x3662
 			end

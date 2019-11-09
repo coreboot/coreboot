@@ -30,26 +30,16 @@
 #include <southbridge/intel/common/pmclib.h>
 #include "option_table.h"
 
-static void ich7_enable_lpc(void)
+/* Override the default lpc decode ranges */
+static void mb_lpc_decode(void)
 {
 	int lpt_en = 0;
 	if (read_option(lpt, 0) != 0)
 		lpt_en = LPT_LPC_EN; /* enable LPT */
 
-	/* Enable Serial IRQ */
-	pci_write_config8(PCI_DEV(0, 0x1f, 0), SERIRQ_CNTL, 0xd0);
-	/* decode range */
 	pci_write_config16(PCI_DEV(0, 0x1f, 0), LPC_IO_DEC, 0x0007);
-	/* decode range */
-	pci_write_config16(PCI_DEV(0, 0x1f, 0), LPC_EN, CNF2_LPC_EN | CNF1_LPC_EN
-			| MC_LPC_EN | KBC_LPC_EN | GAMEH_LPC_EN | GAMEL_LPC_EN
-			| FDD_LPC_EN | lpt_en | COMB_LPC_EN | COMA_LPC_EN);
-	/* COM3 and COM4 decode? */
-	pci_write_config32(PCI_DEV(0, 0x1f, 0), GEN1_DEC, 0x1c02e1);
-	/* ??decode?? */
-	pci_write_config32(PCI_DEV(0, 0x1f, 0), GEN2_DEC, 0x00fc0601);
-	/* EC decode? */
-	pci_write_config32(PCI_DEV(0, 0x1f, 0), GEN3_DEC, 0x00040069);
+
+	pci_update_config16(PCI_DEV(0, 0x1f, 0), LPC_EN, ~LPT_LPC_EN, lpt_en);
 }
 
 /* This box has two superios, so enabling serial becomes slightly excessive.
@@ -177,7 +167,8 @@ void mainboard_romstage_entry(void)
 
 	enable_lapic();
 
-	ich7_enable_lpc();
+	i82801gx_lpc_setup();
+	mb_lpc_decode();
 	early_superio_config();
 
 	/* Set up the console */

@@ -76,6 +76,10 @@ chip northbridge/intel/i945
 			register "docking_supported" = "1"
 			register "p_cnt_throttling_supported" = "1"
 
+			register "gen1_dec" = "0x007c1601"
+			register "gen2_dec" = "0x000c15e1"
+			register "gen3_dec" = "0x001c1681"
+
 			device pci 1b.0 on # Audio Controller
 				subsystemid 0x17aa 0x2010
 			end

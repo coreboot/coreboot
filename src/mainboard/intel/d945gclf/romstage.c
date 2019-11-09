@@ -28,19 +28,6 @@
 #define SERIAL_DEV PNP_DEV(0x2e, LPC47M15X_SP1)
 #define PME_DEV PNP_DEV(0x2e, LPC47M15X_PME)
 
-static void ich7_enable_lpc(void)
-{
-	// Enable Serial IRQ
-	pci_write_config8(PCI_DEV(0, 0x1f, 0), SERIRQ_CNTL, 0xd0);
-	// Set COM1/COM2 decode range
-	pci_write_config16(PCI_DEV(0, 0x1f, 0), LPC_IO_DEC, 0x0010);
-	// Enable COM1
-	pci_write_config16(PCI_DEV(0, 0x1f, 0), LPC_EN, CNF1_LPC_EN | KBC_LPC_EN
-			| FDD_LPC_EN | LPT_LPC_EN | COMA_LPC_EN);
-	// Enable SuperIO Power Management Events
-	pci_write_config32(PCI_DEV(0, 0x1f, 0), GEN1_DEC, 0x007c0681);
-}
-
 static void rcba_config(void)
 {
 	/* Set up virtual channel 0 */
@@ -98,7 +85,7 @@ void mainboard_romstage_entry(void)
 
 	enable_lapic();
 
-	ich7_enable_lpc();
+	i82801gx_lpc_setup();
 	/* Enable SuperIO PM */
 	lpc47m15x_enable_serial(PME_DEV, 0x680);
 	lpc47m15x_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE); /* 0x3f8 */

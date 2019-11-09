@@ -55,6 +55,9 @@ chip northbridge/intel/i945
 
 			register "p_cnt_throttling_supported" = "0"
 
+			# SuperIO Power Management Events
+			register "gen1_dec" = "0x00040291"
+
 			device pci 1b.0 on # High Definition Audio
 				ioapic_irq 2 INTA 0x10
 			end

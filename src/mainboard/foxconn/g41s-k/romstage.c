@@ -70,16 +70,6 @@ static void mb_lpc_setup(void)
 	ich7_setup_cir();
 }
 
-static void ich7_enable_lpc(void)
-{
-	pci_write_config16(LPC_DEV, LPC_IO_DEC, 0x0010);
-	pci_write_config16(LPC_DEV, LPC_EN, CNF1_LPC_EN | KBC_LPC_EN |
-			FDD_LPC_EN | COMB_LPC_EN | COMA_LPC_EN);
-
-	/* Decode 64 bytes at 0x0a00 to LPC for Super I/O EC and GPIO. */
-	pci_write_config32(LPC_DEV, GEN1_DEC, 0x003c0a01);
-}
-
 void mainboard_romstage_entry(void)
 {
 	//                          ch0      ch1
@@ -94,7 +84,7 @@ void mainboard_romstage_entry(void)
 	u8 s3_resume;
 
 	/* Set up southbridge and Super I/O GPIOs. */
-	ich7_enable_lpc();
+	i82801gx_lpc_setup();
 	mb_lpc_setup();
 	ite_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 

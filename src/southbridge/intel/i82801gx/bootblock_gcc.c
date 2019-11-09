@@ -41,4 +41,6 @@ void bootblock_early_southbridge_init(void)
 
 	/* Disable watchdog timer */
 	RCBA32(GCS) = RCBA32(GCS) | 0x20;
+
+	i82801gx_lpc_setup();
 }

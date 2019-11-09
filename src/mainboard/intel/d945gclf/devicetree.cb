@@ -52,6 +52,8 @@ chip northbridge/intel/i945
 			register "c3_latency" = "85"
 			register "p_cnt_throttling_supported" = "0"
 
+			register "gen1_dec" = "0x0007c0681" # SuperIO Power Management
+
 			device pci 1b.0 on end # High Definition Audio
 			device pci 1c.0 on end # PCIe port 1
 			device pci 1c.1 off end # PCIe port 2

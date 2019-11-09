@@ -34,28 +34,14 @@
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627THG_SP1)
 
-static void ich7_enable_lpc(void)
+/* Override the default lpc decode ranges */
+static void mb_lpc_decode(void)
 {
 	int lpt_en = 0;
 	if (read_option(lpt, 0) != 0)
 		lpt_en = LPT_LPC_EN; /* enable LPT */
 
-	/* Enable Serial IRQ */
-	pci_write_config8(PCI_DEV(0, 0x1f, 0), SERIRQ_CNTL, 0xd0);
-	/* Set COM1/COM2 decode range */
-	pci_write_config16(PCI_DEV(0, 0x1f, 0), LPC_IO_DEC, 0x0010);
-	/* Enable COM1/COM2/KBD/SuperIO1+2 */
-	pci_write_config16(PCI_DEV(0, 0x1f, 0), LPC_EN,  CNF2_LPC_EN
-			| CNF1_LPC_EN | KBC_LPC_EN | FDD_LPC_EN | COMA_LPC_EN
-			| COMB_LPC_EN | lpt_en);
-	/* Enable HWM at 0xa00 */
-	pci_write_config32(PCI_DEV(0, 0x1f, 0), GEN1_DEC, 0x00fc0a01);
-	/* COM3 decode */
-	pci_write_config32(PCI_DEV(0, 0x1f, 0), GEN2_DEC, 0x000403e9);
-	/* COM4 decode */
-	pci_write_config32(PCI_DEV(0, 0x1f, 0), GEN3_DEC, 0x000402e9);
-	/* io 0x300 decode */
-	pci_write_config32(PCI_DEV(0, 0x1f, 0), GEN4_DEC, 0x00000301);
+	pci_update_config16(PCI_DEV(0, 0x1f, 0), LPC_EN, ~LPT_LPC_EN, lpt_en);
 }
 
 /* This box has two superios, so enabling serial becomes slightly excessive.
@@ -221,7 +207,8 @@ void mainboard_romstage_entry(void)
 
 	enable_lapic();
 
-	ich7_enable_lpc();
+	i82801gx_lpc_setup();
+	mb_lpc_decode();
 	early_superio_config_w83627thg();
 
 	/* Set up the console */

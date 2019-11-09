@@ -32,22 +32,6 @@
 #define SERIAL_DEV PNP_DEV(0x4e, W83627EHG_SP1)
 #define SUPERIO_DEV PNP_DEV(0x4e, 0)
 
-static void ich7_enable_lpc(void)
-{
-	// Enable Serial IRQ
-	pci_write_config8(PCI_DEV(0, 0x1f, 0), SERIRQ_CNTL, 0xd0);
-	// Set COM1/COM2 decode range
-	pci_write_config16(PCI_DEV(0, 0x1f, 0), LPC_IO_DEC, 0x0010);
-	// Enable COM1/COM2/KBD/SuperIO1+2
-	pci_write_config16(PCI_DEV(0, 0x1f, 0), LPC_EN, CNF2_LPC_EN
-			| CNF1_LPC_EN | KBC_LPC_EN | FDD_LPC_EN | COMA_LPC_EN
-			| COMB_LPC_EN);
-	// Enable HWM at 0x290
-	pci_write_config32(PCI_DEV(0, 0x1f, 0), GEN1_DEC, 0x00fc0291);
-	// io 0x300 decode
-	pci_write_config32(PCI_DEV(0, 0x1f, 0), GEN4_DEC, 0x00000301);
-}
-
 /* This box has one superio
  * Also set up the GPIOs from the beginning. This is the "no schematic
  * but safe anyways" method.
@@ -178,7 +162,7 @@ void mainboard_romstage_entry(void)
 
 	enable_lapic();
 
-	ich7_enable_lpc();
+	i82801gx_lpc_setup();
 	early_superio_config_w83627ehg();
 
 	/* Set up the console */

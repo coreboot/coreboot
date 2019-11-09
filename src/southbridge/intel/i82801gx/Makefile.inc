@@ -15,6 +15,7 @@
 
 ifeq ($(CONFIG_SOUTHBRIDGE_INTEL_I82801GX),y)
 
+bootblock-y += early_init.c
 bootblock-y += bootblock_gcc.c
 
 ramstage-y += i82801gx.c
@@ -34,6 +35,7 @@ ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/hda_verb.c
 
 smm-y += smihandler.c
 
+romstage-y += early_init.c
 romstage-y += early_smbus.c
 romstage-y += early_cir.c
 

@@ -26,17 +26,6 @@
 
 void bootblock_mainboard_early_init(void)
 {
-	/* Disable Serial IRQ */
-	pci_write_config8(PCI_DEV(0, 0x1f, 0), SERIRQ_CNTL, 0xd0);
-	/* Decode range */
-	pci_or_config16(PCI_DEV(0, 0x1f, 0), LPC_IO_DEC, 0x0010);
-	pci_write_config16(PCI_DEV(0, 0x1f, 0), LPC_EN, CNF1_LPC_EN | KBC_LPC_EN
-			   | FDD_LPC_EN | LPT_LPC_EN | COMB_LPC_EN
-			   | COMA_LPC_EN);
-
-	/* Environment Controller */
-	pci_write_config32(PCI_DEV(0, 0x1f, 0), GEN1_DEC, 0x00fc0a01);
-
 	ite_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 }
 

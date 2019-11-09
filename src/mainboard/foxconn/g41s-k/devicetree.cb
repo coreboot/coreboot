@@ -49,6 +49,8 @@ chip northbridge/intel/x4x		# Northbridge
 			register "ide_enable_secondary" = "0x0"
 			register "sata_ports_implemented" = "0x3"
 
+			register "gen1_dec" = "0x003c0a01" # Super I/O EC and GPIO
+
 			device pci 1b.0 on end		# Audio
 			device pci 1c.0 on end		# PCIe 1
 			device pci 1c.1 on		# PCIe 2 (NIC)

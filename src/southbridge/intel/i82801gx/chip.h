@@ -80,6 +80,12 @@ struct southbridge_intel_i82801gx_config {
 	int docking_supported:1;
 	int p_cnt_throttling_supported:1;
 	int c3_latency;
+
+	/* Additional LPC IO decode ranges */
+	uint32_t gen1_dec;
+	uint32_t gen2_dec;
+	uint32_t gen3_dec;
+	uint32_t gen4_dec;
 };
 
 #endif				/* SOUTHBRIDGE_INTEL_I82801GX_CHIP_H */

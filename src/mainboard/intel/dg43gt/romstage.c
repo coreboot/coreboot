@@ -53,19 +53,6 @@ static void mb_gpio_init(void)
 	RCBA32(0x3f00) = 0x0000000b;
 }
 
-static void ich10_enable_lpc(void)
-{
-	/* Configure serial IRQs.*/
-	pci_write_config16(LPC_DEV, D31F0_LPC_IODEC, 0x0010);
-	pci_write_config16(LPC_DEV, D31F0_LPC_EN, CNF2_LPC_EN | CNF1_LPC_EN
-			   | MC_LPC_EN | KBC_LPC_EN | GAMEH_LPC_EN
-			   | GAMEL_LPC_EN | FDD_LPC_EN | LPT_LPC_EN
-			   | COMB_LPC_EN | COMA_LPC_EN);
-	pci_write_config32(LPC_DEV, D31F0_GEN1_DEC, 0xfc0601);
-	pci_write_config32(LPC_DEV, D31F0_GEN2_DEC, 0xfc0291);
-	pci_write_config32(LPC_DEV, D31F0_GEN3_DEC, 0);
-}
-
 void mainboard_romstage_entry(void)
 {
 	const u8 spd_addrmap[4] = { 0x50, 0x51, 0x52, 0x53 };
@@ -73,7 +60,7 @@ void mainboard_romstage_entry(void)
 	u8 s3_resume;
 
 	/* Set southbridge and Super I/O GPIOs. */
-	ich10_enable_lpc();
+	i82801jx_lpc_setup();
 	mb_gpio_init();
 	winbond_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 

@@ -78,6 +78,12 @@ struct southbridge_intel_i82801jx_config {
 	} pcie_power_limits[6];
 
 	uint8_t pcie_hotplug_map[8];
+
+	/* Additional LPC IO decode ranges */
+	uint32_t gen1_dec;
+	uint32_t gen2_dec;
+	uint32_t gen3_dec;
+	uint32_t gen4_dec;
 };
 
 #endif				/* SOUTHBRIDGE_INTEL_I82801JX_CHIP_H */

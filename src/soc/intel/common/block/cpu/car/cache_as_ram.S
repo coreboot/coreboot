@@ -170,7 +170,7 @@ car_init_done:
 	post_code(0x29)
 
 	/* Setup bootblock stack */
-	mov	$_car_stack_end, %esp
+	mov	$_ecar_stack, %esp
 
 	/* Need to align stack to 16 bytes at call instruction. Account for
 	   the two pushes below. */

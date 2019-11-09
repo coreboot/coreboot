@@ -37,9 +37,9 @@
 	 * use CAR it can be reused. The chipset/SoC is expected to provide
 	 * the stack size. */
 #if CONFIG(C_ENVIRONMENT_BOOTBLOCK)
-	_car_stack_start = .;
+	_car_stack = .;
 	. += CONFIG_DCACHE_BSP_STACK_SIZE;
-	_car_stack_end = .;
+	_ecar_stack = .;
 #endif
 	/* The pre-ram cbmem console as well as the timestamp region are fixed
 	 * in size. Therefore place them above the car global section so that
@@ -59,10 +59,10 @@
 
 	TIMESTAMP(., 0x200)
 
-	_car_ehci_dbg_info_start = .;
+	_car_ehci_dbg_info = .;
 	/* Reserve sizeof(struct ehci_dbg_info). */
         . += 80;
-        _car_ehci_dbg_info_end = .;
+        _ecar_ehci_dbg_info = .;
 
 	/* _bss and _ebss provide symbols to per-stage
 	 * variables that are not shared like the timestamp and the pre-ram
@@ -87,8 +87,8 @@
 	_car_unallocated_start = .;
 
 #if !CONFIG(C_ENVIRONMENT_BOOTBLOCK)
-	_car_stack_start = .;
-	_car_stack_end = _car_region_end;
+	_car_stack = .;
+	_ecar_stack = _car_region_end;
 #endif
 	_car_region_end = . + CONFIG_DCACHE_RAM_SIZE - (. - _car_region_start);
 }

@@ -34,7 +34,7 @@ cache_as_ram:
 
 	post_code(0x21)
 
-	movl	$_car_stack_end, %esp
+	movl	$_ecar_stack, %esp
 
 	/* Align the stack and keep aligned for call to bootblock_c_entry() */
 	and	$0xfffffff0, %esp

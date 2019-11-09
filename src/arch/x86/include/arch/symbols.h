@@ -27,15 +27,15 @@ extern char _car_region_end[];
  * This is the stack area used for all stages that execute when cache-as-ram
  * is up. Area is not cleared in between stages.
  */
-extern char _car_stack_start[];
-extern char _car_stack_end[];
-#define _car_stack_size (_car_stack_end - _car_stack_start)
+extern char _car_stack[];
+extern char _ecar_stack[];
+#define _car_stack_size (_ecar_stack - _car_stack)
 
 extern char _car_unallocated_start[];
 
-extern char _car_ehci_dbg_info_start[];
-extern char _car_ehci_dbg_info_end[];
+extern char _car_ehci_dbg_info[];
+extern char _ecar_ehci_dbg_info[];
 #define _car_ehci_dbg_info_size \
-	(_car_ehci_dbg_info_end - _car_ehci_dbg_info_start)
+	(_ecar_ehci_dbg_info - _car_ehci_dbg_info)
 
 #endif

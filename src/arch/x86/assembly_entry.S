@@ -30,7 +30,7 @@ _start:
 	call	gdt_init
 
 	/* reset stack pointer to CAR stack */
-	mov	$_car_stack_end, %esp
+	mov	$_ecar_stack, %esp
 
 	/* clear .bss section as it is not shared */
 	cld

@@ -46,7 +46,7 @@ static void romstage_main(unsigned long bist)
 		printk(BIOS_DEBUG, "Romstage stack size limited to 0x%x!\n",
 			size);
 
-	stack_base = (u32 *) (_car_stack_end - size);
+	stack_base = (u32 *) (_ecar_stack - size);
 
 	for (i = 0; i < num_guards; i++)
 		stack_base[i] = stack_guard;

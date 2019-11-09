@@ -118,7 +118,7 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *fspm_upd, uint32_t version)
 			_car_unallocated_start);
 		printk(BIOS_SPEW, "| coreboot data     |\n");
 		printk(BIOS_SPEW, "+-------------------+ 0x%p\n",
-			_car_stack_end);
+			_ecar_stack);
 		printk(BIOS_SPEW, "| coreboot stack    |\n");
 		printk(BIOS_SPEW,
 			"+-------------------+ 0x80000000 - ESRAM start\n\n");

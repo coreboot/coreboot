@@ -70,7 +70,7 @@ static inline struct ehci_debug_info *dbgp_ehci_info(void)
 			/* The message likely does not show if we hit this. */
 			if (sizeof(*info) > _car_ehci_dbg_info_size)
 				die("BUG: Increase ehci_dbg_info reserve in CAR");
-			info = (void *)_car_ehci_dbg_info_start;
+			info = (void *)_car_ehci_dbg_info;
 		} else {
 			info = &glob_dbg_info;
 		}

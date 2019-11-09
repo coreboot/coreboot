@@ -502,7 +502,7 @@ L44:
 	*/
 
 	/* Setup bootblock stack */
-	movl	$_car_stack_end, %esp
+	movl	$_ecar_stack, %esp
 
 before_carstage:
 	post_code(0x2b)

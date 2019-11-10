@@ -25,8 +25,12 @@ config VBOOT
 	select GBB_FLAG_DISABLE_EC_SOFTWARE_SYNC
 	select GBB_FLAG_DISABLE_FWMP
 
+if VBOOT
+
 config VBOOT_SLOTS_RW_A
 	default y
+
+endif
 
 config FMDFILE
 	string

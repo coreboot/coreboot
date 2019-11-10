@@ -28,8 +28,12 @@ config FMDFILE
 	string
 	default "src/mainboard/$(CONFIG_MAINBOARD_DIR)/vboot-rwa-16M.fmd" if VBOOT_SLOTS_RW_A
 
+if VBOOT
+
 config VBOOT_SLOTS_RW_A
 	default y
+
+endif
 
 config VBOOT_VBNV_OFFSET
 	hex

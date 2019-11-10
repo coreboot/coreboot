@@ -19,6 +19,7 @@
 #include <device/pci_ops.h>
 #include <console/console.h>
 #include <device/pci_def.h>
+#include <device/pci_ids.h>
 #include <southbridge/intel/common/smbus.h>
 #include "i82801ix.h"
 
@@ -30,9 +31,8 @@ void enable_smbus(void)
 	dev = PCI_DEV(0x0, 0x1f, 0x3);
 
 	/* Check to make sure we've got the right device. */
-	if (pci_read_config16(dev, 0x2) != 0x2930) {
+	if (pci_read_config16(dev, 0x2) != PCI_DEVICE_ID_INTEL_82801IB_SMB)
 		die("SMBus controller not found!");
-	}
 
 	/* Set SMBus I/O base. */
 	pci_write_config32(dev, SMB_BASE,

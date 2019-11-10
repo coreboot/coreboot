@@ -51,8 +51,8 @@ static void usb_ehci_set_subsystem(struct device *dev, unsigned int vendor,
 }
 
 static const unsigned short pci_device_ids[] = {
-	0x293a,
-	0x293c,
+	PCI_DEVICE_ID_INTEL_82801IB_EHCI1,
+	PCI_DEVICE_ID_INTEL_82801IB_EHCI2,
 	0
 };
 

@@ -155,7 +155,8 @@ static void sata_init(struct device *const dev)
 	const config_t *const config = dev->chip_info;
 
 	const u16 devid = pci_read_config16(dev, PCI_DEVICE_ID);
-	const int is_mobile = (devid == 0x2928) || (devid == 0x2929);
+	const int is_mobile = (devid == PCI_DEVICE_ID_INTEL_82801IBM_IEM_SATA_IDE_P01) ||
+			      (devid == PCI_DEVICE_ID_INTEL_82801IBM_IEM_SATA_AHCI_P0145);
 	u8 sata_mode;
 
 	printk(BIOS_DEBUG, "i82801ix_sata: initializing...\n");
@@ -276,8 +277,12 @@ static struct device_operations sata_ops = {
 };
 
 static const unsigned short pci_device_ids[] = {
-	0x2920, 0x2921, 0x2922, 0x2923,
-	0x2928, 0x2929,
+	PCI_DEVICE_ID_INTEL_82801IB_SATA_P0123,
+	PCI_DEVICE_ID_INTEL_82801IB_SATA_P01,
+	PCI_DEVICE_ID_INTEL_82801IB_SATA_AHCI1,
+	PCI_DEVICE_ID_INTEL_82801IB_SATA_AHCI2,
+	PCI_DEVICE_ID_INTEL_82801IBM_IEM_SATA_IDE_P01,
+	PCI_DEVICE_ID_INTEL_82801IBM_IEM_SATA_AHCI_P0145,
 	0,
 };
 

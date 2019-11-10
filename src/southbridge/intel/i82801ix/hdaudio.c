@@ -305,5 +305,5 @@ static struct device_operations azalia_ops = {
 static const struct pci_driver i82801ix_azalia __pci_driver = {
 	.ops	= &azalia_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x293e,
+	.device	= PCI_DEVICE_ID_INTEL_82801IB_HD_AUDIO,
 };

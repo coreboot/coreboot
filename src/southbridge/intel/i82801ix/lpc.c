@@ -541,12 +541,12 @@ static struct device_operations device_ops = {
 };
 
 static const unsigned short pci_device_ids[] = {
-	0x2912, /* ICH9DH  */
-	0x2914, /* ICH9DO  */
-	0x2916, /* ICH9R   */
-	0x2918, /* ICH9    */
-	0x2917, /* ICH9M-E */
-	0x2919, /* ICH9M   */
+	PCI_DEVICE_ID_INTEL_82801IH_LPC,   /* ICH9DH  */
+	PCI_DEVICE_ID_INTEL_82801IO_LPC,   /* ICH9DO  */
+	PCI_DEVICE_ID_INTEL_82801IR_LPC,   /* ICH9R   */
+	PCI_DEVICE_ID_INTEL_82801IEM_LPC,  /* ICH9M-E */
+	PCI_DEVICE_ID_INTEL_82801IB_LPC,   /* ICH9    */
+	PCI_DEVICE_ID_INTEL_82801IBM_LPC,  /* ICH9M   */
 	0
 };
 

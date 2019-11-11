@@ -56,7 +56,7 @@ void i82801jx_lpc_setup(void)
 	pci_write_config32(d31f0, D31F0_GEN4_DEC, config->gen4_dec);
 }
 
-static void i82801jx_setup_bars(void)
+void i82801jx_setup_bars(void)
 {
 	const pci_devfn_t d31f0 = PCI_DEV(0, 0x1f, 0);
 

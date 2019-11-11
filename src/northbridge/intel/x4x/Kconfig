@@ -26,14 +26,11 @@ config NORTHBRIDGE_SPECIFIC_OPTIONS # dummy
 	select INTEL_GMA_ACPI
 	select CACHE_MRC_SETTINGS
 	select PARALLEL_MP
+	select C_ENVIRONMENT_BOOTBLOCK
 
 config CBFS_SIZE
 	hex
 	default 0x100000 if !SOUTHBRIDGE_INTEL_I82801GX
-
-config BOOTBLOCK_NORTHBRIDGE_INIT
-	string
-	default "northbridge/intel/x4x/bootblock.c"
 
 config VGA_BIOS_ID
 	string

@@ -16,6 +16,8 @@
 
 ifeq ($(CONFIG_NORTHBRIDGE_INTEL_X4X),y)
 
+bootblock-y += bootblock.c
+
 romstage-y += early_init.c
 romstage-y += raminit.c
 romstage-y += raminit_ddr23.c

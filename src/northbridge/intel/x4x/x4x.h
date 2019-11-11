@@ -373,7 +373,6 @@ enum ddr2_signals {
 
 void x4x_early_init(void);
 void x4x_late_init(int s3resume);
-void mb_lpc_setup(void);
 void mb_get_spd_map(u8 spd_map[4]);
 void mb_pre_raminit_setup(int s3_resume);
 u32 decode_igd_memory_size(u32 gms);

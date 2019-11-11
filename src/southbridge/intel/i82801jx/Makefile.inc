@@ -16,6 +16,9 @@
 
 ifeq ($(CONFIG_SOUTHBRIDGE_INTEL_I82801JX),y)
 
+bootblock-y += bootblock.c
+bootblock-y += early_init.c
+
 ramstage-y += i82801jx.c
 ramstage-y += pci.c
 ramstage-y += lpc.c

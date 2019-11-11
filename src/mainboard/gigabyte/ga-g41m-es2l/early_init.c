@@ -14,6 +14,7 @@
  * GNU General Public License for more details.
  */
 
+#include <bootblock_common.h>
 #include <device/pci_ops.h>
 #include <southbridge/intel/i82801gx/i82801gx.h>
 #include <northbridge/intel/x4x/x4x.h>
@@ -29,7 +30,7 @@
  * We should use standard gpio.h eventually
  */
 
-void mb_lpc_setup(void)
+void bootblock_mainboard_early_init(void)
 {
 	pci_devfn_t dev;
 

@@ -34,16 +34,6 @@ void mainboard_romstage_entry(void)
 	u8 boot_path = 0;
 	u8 s3_resume;
 
-#if CONFIG(SOUTHBRIDGE_INTEL_I82801JX)
-	i82801jx_lpc_setup();
-#elif CONFIG(SOUTHBRIDGE_INTEL_I82801GX)
-	i82801gx_lpc_setup();
-#endif
-
-	mb_lpc_setup();
-
-	console_init();
-
 	enable_smbus();
 
 #if CONFIG(SOUTHBRIDGE_INTEL_I82801JX)

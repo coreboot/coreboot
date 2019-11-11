@@ -1,6 +1,9 @@
 /*
  * This file is part of the coreboot project.
  *
+ * Copyright (C) 2015 Damien Zammit <damien@zamaudio.com>
+ * Copyright (C) 2017 Arthur Heymans <arthur@aheymans.xyz>
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -12,19 +15,20 @@
  * GNU General Public License for more details.
  */
 
+#include <bootblock_common.h>
+#include <cf9_reset.h>
 #include <device/pnp_ops.h>
 #include <console/console.h>
-#include <northbridge/intel/x4x/x4x.h>
-#include <cpu/x86/msr.h>
 #include <cpu/intel/speedstep.h>
-#include <cf9_reset.h>
-#include <superio/winbond/w83627dhg/w83627dhg.h>
+#include <cpu/x86/msr.h>
+#include <northbridge/intel/x4x/x4x.h>
 #include <superio/winbond/common/winbond.h>
+#include <superio/winbond/w83627dhg/w83627dhg.h>
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627DHG_SP1)
 #define GPIO_DEV PNP_DEV(0x2e, W83627DHG_GPIO2345_V)
 
-void mb_lpc_setup(void)
+void bootblock_mainboard_early_init(void)
 {
 	winbond_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 }
@@ -48,6 +52,7 @@ static u8 msr_get_fsb(void)
 }
 
 /* BSEL MCH straps are not hooked up to the CPU as usual but to the SIO */
+
 static int setup_sio_gpio(void)
 {
 	int need_reset = 0;
@@ -69,35 +74,55 @@ static int setup_sio_gpio(void)
 	pnp_enter_ext_func_mode(GPIO_DEV);
 	pnp_set_logical_device(GPIO_DEV);
 
-	/*
-	 * P5QL-EM:
-	 * BSEL0 -> not hooked up (not supported anyways)
-	 * BSEL1 -> GPIO33 (inverted)
-	 * BSEL2 -> GPIO40
-	 */
-	reg = 0x92;
-	/* Multi-function Pin Selection */
-	old_reg = pnp_read_config(GPIO_DEV, 0x2c);
-	pnp_write_config(GPIO_DEV, 0x2c, reg);
-	need_reset = (reg != old_reg);
+	if (CONFIG(BOARD_ASUS_P5QPL_AM)) {
+		/*
+		 * P5QPL-AM:
+		 * BSEL0 -> not hooked up (not supported anyways)
+		 * BSEL1 -> GPIO33
+		 * BSEL2 -> GPIO40
+		 */
+		reg = 0x92;
+		old_reg = pnp_read_config(GPIO_DEV, 0x2c);
+		pnp_write_config(GPIO_DEV, 0x2c, reg);
+		need_reset = (reg != old_reg);
 
-	pnp_write_config(GPIO_DEV, 0x30, 0x0e); /* Enable GPIO3x,4x,5x */
-	pnp_write_config(GPIO_DEV, 0xf0, 0xf3); /* GPIO3x direction */
-	pnp_write_config(GPIO_DEV, 0xf2, 0x08); /* GPIO3x inversion */
-	pnp_write_config(GPIO_DEV, 0xf4, 0x06); /* GPIO4x direction */
+		pnp_write_config(GPIO_DEV, 0x30, 0x06);
+		pnp_write_config(GPIO_DEV, 0xf0, 0xf3); /* GPIO3 direction */
+		pnp_write_config(GPIO_DEV, 0xf4, 0x00); /* GPIO4 direction */
 
-	const int gpio33 = (bsel & 2) >> 1;
-	const int gpio40 = (bsel & 4) >> 2;
-	reg = (gpio33 << 3);
-	old_reg = pnp_read_config(GPIO_DEV, 0xf1); /* GPIO3x data */
-	/* Set GPIO32 high like vendor firmware */
-	pnp_write_config(GPIO_DEV, 0xf1, old_reg | reg | 4);
-	need_reset += ((reg & 0x8) != (old_reg & 0x8));
+		const int gpio33 = (bsel & 2) >> 1;
+		const int gpio40 = (bsel & 4) >> 2;
+		reg = (gpio33 << 3);
+		old_reg = pnp_read_config(GPIO_DEV, 0xf1);
+		pnp_write_config(GPIO_DEV, 0xf1, old_reg | reg);
+		need_reset += ((reg & 0x8) != (old_reg & 0x8));
 
-	reg = gpio40;
-	old_reg = pnp_read_config(GPIO_DEV, 0xf5); /* GPIO4x data */
-	pnp_write_config(GPIO_DEV, 0xf5, old_reg | reg);
-	need_reset += ((reg & 0x1) != (old_reg & 0x1));
+		reg = gpio40;
+		old_reg = pnp_read_config(GPIO_DEV, 0xf5);
+		pnp_write_config(GPIO_DEV, 0xf5, old_reg | reg);
+		need_reset += ((reg & 0x1) != (old_reg & 0x1));
+	} else {
+		/*
+		 * P5G41T-M LX:
+		 * BSEL0 -> not hooked up
+		 * BSEL1 -> GPIO43 (inverted)
+		 * BSEL2 -> GPIO44
+		 */
+		reg = 0xf2;
+		old_reg = pnp_read_config(GPIO_DEV, 0x2c);
+		pnp_write_config(GPIO_DEV, 0x2c, reg);
+		need_reset = (reg != old_reg);
+		pnp_write_config(GPIO_DEV, 0x30, 0x05);
+		pnp_write_config(GPIO_DEV, 0xf6, 0x08); /* invert GPIO43 */
+		pnp_write_config(GPIO_DEV, 0xf4, 0x00); /* GPIO4 direction */
+
+		const int gpio43 = (bsel & 2) >> 1;
+		const int gpio44 = (bsel & 4) >> 2;
+		reg = (gpio43 << 3) | (gpio44 << 4);
+		old_reg = pnp_read_config(GPIO_DEV, 0xf5);
+		pnp_write_config(GPIO_DEV, 0xf5, old_reg | reg);
+		need_reset += ((reg & 0x18) != (old_reg & 0x18));
+	}
 	pnp_exit_ext_func_mode(GPIO_DEV);
 
 	return need_reset;
@@ -113,10 +138,6 @@ void mb_pre_raminit_setup(int s3_resume)
 
 void mb_get_spd_map(u8 spd_map[4])
 {
-	/* This board has first dimm slot of each channel hooked up to
-	   rank0 and rank1, while the second dimm slot is only connected
-	   to rank1. The raminit does not support such setups. So only the
-	   first dimms of each channel are used. */
 	spd_map[0] = 0x50;
 	spd_map[2] = 0x52;
 }

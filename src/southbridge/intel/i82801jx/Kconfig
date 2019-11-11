@@ -51,9 +51,4 @@ config INTEL_DESCRIPTOR_MODE_REQUIRED
 config HPET_MIN_TICKS
 	hex
 	default 0x80
-
-config BOOTBLOCK_SOUTHBRIDGE_INIT
-	string
-	default "southbridge/intel/i82801jx/bootblock.c"
-
 endif

@@ -19,6 +19,10 @@ config DCACHE_RAM_SIZE
 	hex
 	default 0x4000 # 16 kB
 
+config DCACHE_BSP_STACK_SIZE
+	hex
+	default 0x2000
+
 config DCACHE_RAM_BASE
 	hex
 	default 0xfeffc000 # 4GB - 16MB - DCACHE_RAM_SIZE

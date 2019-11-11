@@ -16,6 +16,7 @@
  * GNU General Public License for more details.
  */
 
+#include <bootblock_common.h>
 #include <northbridge/intel/x4x/x4x.h>
 #include <southbridge/intel/i82801gx/i82801gx.h>
 #include <superio/ite/common/ite.h>
@@ -24,7 +25,7 @@
 #define SERIAL_DEV PNP_DEV(0x2e, IT8720F_SP1)
 #define GPIO_DEV PNP_DEV(0x2e, IT8720F_GPIO)
 
-void mb_lpc_setup(void)
+void bootblock_mainboard_early_init(void)
 {
 	/* Set up GPIOs on Super I/O. */
 	ite_reg_write(GPIO_DEV, 0x25, 0x01);

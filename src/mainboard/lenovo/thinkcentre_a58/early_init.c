@@ -15,12 +15,13 @@
  * GNU General Public License for more details.
  */
 
+#include <bootblock_common.h>
 #include <northbridge/intel/x4x/x4x.h>
 #include <superio/smsc/smscsuperio/smscsuperio.h>
 
 #define SERIAL_DEV PNP_DEV(0x2e, SMSCSUPERIO_SP1)
 
-void mb_lpc_setup(void)
+void bootblock_mainboard_early_init(void)
 {
 	smscsuperio_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 }

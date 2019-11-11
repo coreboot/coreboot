@@ -17,20 +17,20 @@
 
 #include <cf9_reset.h>
 #include <device/pnp_ops.h>
-#include <device/pci_ops.h>
 #include <console/console.h>
-#include <arch/romstage.h>
 #include <cpu/intel/speedstep.h>
 #include <cpu/x86/msr.h>
 #include <northbridge/intel/x4x/x4x.h>
-#include <southbridge/intel/common/pmclib.h>
-#include <southbridge/intel/i82801gx/i82801gx.h>
 #include <superio/winbond/common/winbond.h>
 #include <superio/winbond/w83627dhg/w83627dhg.h>
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627DHG_SP1)
 #define GPIO_DEV PNP_DEV(0x2e, W83627DHG_GPIO2345_V)
-#define LPC_DEV PCI_DEV(0, 0x1f, 0)
+
+void mb_lpc_setup(void)
+{
+	winbond_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
+}
 
 static u8 msr_get_fsb(void)
 {
@@ -127,40 +127,16 @@ static int setup_sio_gpio(void)
 	return need_reset;
 }
 
-void mainboard_romstage_entry(void)
+void mb_pre_raminit_setup(int s3_resume)
 {
-	//                          ch0      ch1
-	const u8 spd_addrmap[4] = { 0x50, 0, 0x52, 0 };
-	u8 boot_path = 0;
-	u8 s3_resume;
-
-	/* Set southbridge and Super I/O GPIOs. */
-	i82801gx_lpc_setup();
-	winbond_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
-
-	console_init();
-
-	enable_smbus();
-
-	i82801gx_early_init();
-	x4x_early_init();
-
-	s3_resume = southbridge_detect_s3_resume();
-	if (s3_resume)
-		boot_path = BOOT_PATH_RESUME;
-	if (MCHBAR32(PMSTS_MCHBAR) & PMSTS_WARM_RESET)
-		boot_path = BOOT_PATH_WARM_RESET;
-
 	if (!s3_resume && setup_sio_gpio()) {
-		printk(BIOS_DEBUG,
-		       "Needs reset to configure CPU BSEL straps\n");
+		printk(BIOS_DEBUG, "Needs reset to configure CPU BSEL straps\n");
 		full_reset();
 	}
+}
 
-	sdram_initialize(boot_path, spd_addrmap);
-
-	x4x_late_init(s3_resume);
-
-	printk(BIOS_DEBUG, "x4x late init complete\n");
-
+void mb_get_spd_map(u8 spd_map[4])
+{
+	spd_map[0] = 0x50;
+	spd_map[2] = 0x52;
 }

@@ -16,11 +16,7 @@
  */
 
 #include <device/pnp_ops.h>
-#include <device/pci_ops.h>
-#include <console/console.h>
-#include <arch/romstage.h>
 #include <northbridge/intel/x4x/x4x.h>
-#include <southbridge/intel/common/pmclib.h>
 #include <southbridge/intel/i82801gx/i82801gx.h>
 #include <superio/nuvoton/common/nuvoton.h>
 #include <superio/nuvoton/nct6776/nct6776.h>
@@ -30,9 +26,8 @@
 #define SERIAL_DEV_R2 PNP_DEV(0x2e, NCT6776_SP1)
 #define SERIAL_DEV_R1 PNP_DEV(0x2e, W83627DHG_SP1)
 #define SUPERIO_DEV PNP_DEV(0x2e, 0)
-#define LPC_DEV PCI_DEV(0, 0x1f, 0)
 
-static void mb_lpc_setup(void)
+void mb_lpc_setup(void)
 {
 	/* Set GPIOs on superio, enable UART */
 	if (CONFIG(SUPERIO_NUVOTON_NCT6776)) {
@@ -53,34 +48,8 @@ static void mb_lpc_setup(void)
 	RCBA16(D29IR) = 0x0237;
 }
 
-void mainboard_romstage_entry(void)
+void mb_get_spd_map(u8 spd_map[4])
 {
-	//                          ch0      ch1
-	const u8 spd_addrmap[4] = { 0x50, 0, 0x52, 0 };
-	u8 boot_path = 0;
-	u8 s3_resume;
-
-	/* Set southbridge and Super I/O GPIOs. */
-	i82801gx_lpc_setup();
-	mb_lpc_setup();
-
-	console_init();
-
-	enable_smbus();
-
-	i82801gx_early_init();
-	x4x_early_init();
-
-	s3_resume = southbridge_detect_s3_resume();
-	if (s3_resume)
-		boot_path = BOOT_PATH_RESUME;
-	if (MCHBAR32(PMSTS_MCHBAR) & PMSTS_WARM_RESET)
-		boot_path = BOOT_PATH_WARM_RESET;
-
-	sdram_initialize(boot_path, spd_addrmap);
-
-	x4x_late_init(s3_resume);
-
-	printk(BIOS_DEBUG, "x4x late init complete\n");
-
+	spd_map[0] = 0x50;
+	spd_map[2] = 0x52;
 }

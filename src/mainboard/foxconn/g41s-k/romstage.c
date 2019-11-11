@@ -16,20 +16,15 @@
  * GNU General Public License for more details.
  */
 
-#include <console/console.h>
-#include <arch/romstage.h>
-#include <device/pci_ops.h>
 #include <northbridge/intel/x4x/x4x.h>
-#include <southbridge/intel/common/pmclib.h>
 #include <southbridge/intel/i82801gx/i82801gx.h>
 #include <superio/ite/common/ite.h>
 #include <superio/ite/it8720f/it8720f.h>
 
-#define LPC_DEV PCI_DEV(0, 0x1f, 0)
 #define SERIAL_DEV PNP_DEV(0x2e, IT8720F_SP1)
 #define GPIO_DEV PNP_DEV(0x2e, IT8720F_GPIO)
 
-static void mb_lpc_setup(void)
+void mb_lpc_setup(void)
 {
 	/* Set up GPIOs on Super I/O. */
 	ite_reg_write(GPIO_DEV, 0x25, 0x01);
@@ -55,43 +50,13 @@ static void mb_lpc_setup(void)
 	RCBA16(D29IR) = 0x0237;
 
 	RCBA32(FD) |= FD_INTLAN;
+
+	ite_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 }
 
-void mainboard_romstage_entry(void)
+void mb_get_spd_map(u8 spd_map[4])
 {
-	//                          ch0      ch1
-#if CONFIG(BOARD_FOXCONN_G41S_K)
-	const u8 spd_addrmap[4] = { 0x50, 0, 0, 0 };
-#else
-	/* TODO adapt raminit such that other slots can be used
-	 * for single rank dimms */
-	const u8 spd_addrmap[4] = { 0x50, 0, 0x52, 0 };
-#endif
-	u8 boot_path = 0;
-	u8 s3_resume;
-
-	/* Set up southbridge and Super I/O GPIOs. */
-	i82801gx_lpc_setup();
-	mb_lpc_setup();
-	ite_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
-
-	console_init();
-
-	enable_smbus();
-
-	i82801gx_early_init();
-	x4x_early_init();
-
-	s3_resume = southbridge_detect_s3_resume();
-	if (s3_resume)
-		boot_path = BOOT_PATH_RESUME;
-	if (MCHBAR32(PMSTS_MCHBAR) & PMSTS_WARM_RESET)
-		boot_path = BOOT_PATH_WARM_RESET;
-
-	sdram_initialize(boot_path, spd_addrmap);
-
-	x4x_late_init(s3_resume);
-
-	printk(BIOS_DEBUG, "x4x late init complete\n");
-
+	spd_map[0] = 0x50;
+	if (CONFIG(BOARD_FOXCONN_G41M))
+		spd_map[2] = 0x52;
 }

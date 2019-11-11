@@ -23,6 +23,7 @@ romstage-y += memmap.c
 romstage-y += rcven.c
 romstage-y += raminit_tables.c
 romstage-y += dq_dqs.c
+romstage-y += romstage.c
 
 ramstage-y += acpi.c
 ramstage-y += memmap.c

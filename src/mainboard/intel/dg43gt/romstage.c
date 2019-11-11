@@ -17,7 +17,6 @@
 #include <device/pci_ops.h>
 #include <console/console.h>
 #include <southbridge/intel/i82801jx/i82801jx.h>
-#include <southbridge/intel/common/gpio.h>
 #include <southbridge/intel/common/pmclib.h>
 #include <northbridge/intel/x4x/x4x.h>
 #include <arch/romstage.h>
@@ -31,20 +30,8 @@
  * We should use standard gpio.h eventually
  */
 
-static void mb_gpio_init(void)
+static void mb_misc_rcba(void)
 {
-	/* Set the value for GPIO base address register and enable GPIO. */
-	pci_write_config32(LPC_DEV, D31F0_GPIO_BASE, (DEFAULT_GPIOBASE | 1));
-	pci_write_config8(LPC_DEV,  D31F0_GPIO_CNTL, 0x10);
-
-	setup_pch_gpios(&mainboard_gpio_map);
-
-	/* Set default GPIOs on superio: TODO (here or in ramstage) */
-
-	/* Enable IOAPIC */
-	RCBA8(0x31ff) = 0x03;
-	RCBA8(0x31ff);
-
 	RCBA32(0x3410) = 0x00060464;
 	RCBA32(RCBA_BUC) &= ~BUC_LAND;
 	RCBA32(0x3418) = 0x01320001;
@@ -61,13 +48,14 @@ void mainboard_romstage_entry(void)
 
 	/* Set southbridge and Super I/O GPIOs. */
 	i82801jx_lpc_setup();
-	mb_gpio_init();
+	mb_misc_rcba();
 	winbond_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 
 	console_init();
 
 	enable_smbus();
 
+	i82801jx_early_init();
 	x4x_early_init();
 
 	s3_resume = southbridge_detect_s3_resume();

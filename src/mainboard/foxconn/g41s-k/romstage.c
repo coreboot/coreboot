@@ -20,7 +20,6 @@
 #include <arch/romstage.h>
 #include <device/pci_ops.h>
 #include <northbridge/intel/x4x/x4x.h>
-#include <southbridge/intel/common/gpio.h>
 #include <southbridge/intel/common/pmclib.h>
 #include <southbridge/intel/i82801gx/i82801gx.h>
 #include <superio/ite/common/ite.h>
@@ -32,12 +31,6 @@
 
 static void mb_lpc_setup(void)
 {
-	/* Set the value for GPIO base address register and enable GPIO. */
-	pci_write_config32(LPC_DEV, GPIO_BASE, (DEFAULT_GPIOBASE | 1));
-	pci_write_config8(LPC_DEV, GPIO_CNTL, 0x10);
-
-	setup_pch_gpios(&mainboard_gpio_map);
-
 	/* Set up GPIOs on Super I/O. */
 	ite_reg_write(GPIO_DEV, 0x25, 0x01);
 	ite_reg_write(GPIO_DEV, 0x26, 0x04);
@@ -61,13 +54,7 @@ static void mb_lpc_setup(void)
 	RCBA16(D30IR) = 0x3241;
 	RCBA16(D29IR) = 0x0237;
 
-	/* Enable IOAPIC. */
-	RCBA8(OIC) = 0x03;
-	RCBA8(OIC);
-
 	RCBA32(FD) |= FD_INTLAN;
-
-	ich7_setup_cir();
 }
 
 void mainboard_romstage_entry(void)
@@ -92,6 +79,7 @@ void mainboard_romstage_entry(void)
 
 	enable_smbus();
 
+	i82801gx_early_init();
 	x4x_early_init();
 
 	s3_resume = southbridge_detect_s3_resume();

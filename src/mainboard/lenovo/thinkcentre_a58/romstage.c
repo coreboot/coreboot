@@ -17,7 +17,6 @@
 
 #include <console/console.h>
 #include <southbridge/intel/i82801gx/i82801gx.h>
-#include <southbridge/intel/common/gpio.h>
 #include <southbridge/intel/common/pmclib.h>
 #include <northbridge/intel/x4x/x4x.h>
 #include <arch/romstage.h>
@@ -26,21 +25,6 @@
 
 #define SERIAL_DEV PNP_DEV(0x2e, SMSCSUPERIO_SP1)
 #define LPC_DEV PCI_DEV(0, 0x1f, 0)
-
-static void mb_lpc_setup(void)
-{
-	/* Set the value for GPIO base address register and enable GPIO. */
-	pci_write_config32(LPC_DEV, GPIO_BASE, (DEFAULT_GPIOBASE | 1));
-	pci_write_config8(LPC_DEV, GPIO_CNTL, 0x10);
-
-	setup_pch_gpios(&mainboard_gpio_map);
-
-	/* Enable IOAPIC */
-	RCBA8(0x31ff) = 0x03;
-	RCBA8(0x31ff);
-
-	ich7_setup_cir();
-}
 
 void mainboard_romstage_entry(void)
 {
@@ -51,13 +35,13 @@ void mainboard_romstage_entry(void)
 
 	/* Set southbridge and Super I/O GPIOs. */
 	i82801gx_lpc_setup();
-	mb_lpc_setup();
 	smscsuperio_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 
 	console_init();
 
 	enable_smbus();
 
+	i82801gx_early_init();
 	x4x_early_init();
 
 	s3_resume = southbridge_detect_s3_resume();

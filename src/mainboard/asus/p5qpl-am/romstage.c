@@ -23,7 +23,6 @@
 #include <cpu/intel/speedstep.h>
 #include <cpu/x86/msr.h>
 #include <northbridge/intel/x4x/x4x.h>
-#include <southbridge/intel/common/gpio.h>
 #include <southbridge/intel/common/pmclib.h>
 #include <southbridge/intel/i82801gx/i82801gx.h>
 #include <superio/winbond/common/winbond.h>
@@ -128,21 +127,6 @@ static int setup_sio_gpio(void)
 	return need_reset;
 }
 
-static void mb_lpc_setup(void)
-{
-	/* Set the value for GPIO base address register and enable GPIO. */
-	pci_write_config32(LPC_DEV, GPIO_BASE, (DEFAULT_GPIOBASE | 1));
-	pci_write_config8(LPC_DEV, GPIO_CNTL, 0x10);
-
-	setup_pch_gpios(&mainboard_gpio_map);
-
-	/* Enable IOAPIC */
-	RCBA8(0x31ff) = 0x03;
-	RCBA8(0x31ff);
-
-	ich7_setup_cir();
-}
-
 void mainboard_romstage_entry(void)
 {
 	//                          ch0      ch1
@@ -152,13 +136,13 @@ void mainboard_romstage_entry(void)
 
 	/* Set southbridge and Super I/O GPIOs. */
 	i82801gx_lpc_setup();
-	mb_lpc_setup();
 	winbond_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 
 	console_init();
 
 	enable_smbus();
 
+	i82801gx_early_init();
 	x4x_early_init();
 
 	s3_resume = southbridge_detect_s3_resume();

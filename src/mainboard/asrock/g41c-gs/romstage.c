@@ -20,7 +20,6 @@
 #include <console/console.h>
 #include <arch/romstage.h>
 #include <northbridge/intel/x4x/x4x.h>
-#include <southbridge/intel/common/gpio.h>
 #include <southbridge/intel/common/pmclib.h>
 #include <southbridge/intel/i82801gx/i82801gx.h>
 #include <superio/nuvoton/common/nuvoton.h>
@@ -35,12 +34,6 @@
 
 static void mb_lpc_setup(void)
 {
-	/* Set the value for GPIO base address register and enable GPIO. */
-	pci_write_config32(LPC_DEV, GPIO_BASE, (DEFAULT_GPIOBASE | 1));
-	pci_write_config8(LPC_DEV, GPIO_CNTL, 0x10);
-
-	setup_pch_gpios(&mainboard_gpio_map);
-
 	/* Set GPIOs on superio, enable UART */
 	if (CONFIG(SUPERIO_NUVOTON_NCT6776)) {
 		nuvoton_pnp_enter_conf_state(SERIAL_DEV_R2);
@@ -58,12 +51,6 @@ static void mb_lpc_setup(void)
 	/* IRQ routing */
 	RCBA16(D31IR) = 0x0132;
 	RCBA16(D29IR) = 0x0237;
-
-	/* Enable IOAPIC */
-	RCBA8(OIC) = 0x03;
-	RCBA8(OIC);
-
-	ich7_setup_cir();
 }
 
 void mainboard_romstage_entry(void)
@@ -81,6 +68,7 @@ void mainboard_romstage_entry(void)
 
 	enable_smbus();
 
+	i82801gx_early_init();
 	x4x_early_init();
 
 	s3_resume = southbridge_detect_s3_resume();

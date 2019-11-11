@@ -19,7 +19,6 @@
 #include <device/pci_ops.h>
 #include <console/console.h>
 #include <southbridge/intel/i82801gx/i82801gx.h>
-#include <southbridge/intel/common/gpio.h>
 #include <southbridge/intel/common/pmclib.h>
 #include <northbridge/intel/x4x/x4x.h>
 #include <arch/romstage.h>
@@ -35,19 +34,12 @@
  * We should use standard gpio.h eventually
  */
 
-static void mb_gpio_init(void)
+static void mb_lpc_init(void)
 {
 	pci_devfn_t dev;
 
 	/* Southbridge GPIOs. */
 	dev = PCI_DEV(0x0, 0x1f, 0x0);
-
-	/* Set the value for GPIO base address register and enable GPIO. */
-	pci_write_config32(dev, GPIO_BASE, (DEFAULT_GPIOBASE | 1));
-	pci_write_config8(dev, GPIO_CNTL, 0x10);
-
-	setup_pch_gpios(&mainboard_gpio_map);
-
 	/* Set default GPIOs on superio */
 	ite_reg_write(GPIO_DEV, 0x25, 0x00);
 	ite_reg_write(GPIO_DEV, 0x26, 0xc7);
@@ -90,12 +82,6 @@ static void mb_gpio_init(void)
 	RCBA32(D31IR) = 0x00410032;
 	RCBA32(D29IR) = 0x32100237;
 	RCBA32(D27IR) = 0x00000000;
-
-	/* Enable IOAPIC */
-	RCBA8(OIC) = 0x03;
-	RCBA8(OIC);
-
-	ich7_setup_cir();
 }
 
 void mainboard_romstage_entry(void)
@@ -107,7 +93,7 @@ void mainboard_romstage_entry(void)
 
 	/* Set southbridge and Super I/O GPIOs. */
 	i82801gx_lpc_setup();
-	mb_gpio_init();
+	mb_lpc_init();
 	ite_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 
 	/* Disable SIO reboot */
@@ -117,6 +103,7 @@ void mainboard_romstage_entry(void)
 
 	enable_smbus();
 
+	i82801gx_early_init();
 	x4x_early_init();
 
 	s3_resume = southbridge_detect_s3_resume();

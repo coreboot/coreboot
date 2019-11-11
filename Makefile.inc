@@ -258,7 +258,10 @@ endef
 # ResourceTemplate is the correct code.
 # As it's valid ASL, disable the warning.
 EMPTY_RESOURCE_TEMPLATE_WARNING = 3150
-IGNORED_IASL_WARNINGS = -vw $(EMPTY_RESOURCE_TEMPLATE_WARNING)
+# Redundant offset remarks are not useful in any way and are masking useful
+# ones that might indicate an issue so it is better to hide them.
+REDUNDANT_OFFSET_REMARK = 2158
+IGNORED_IASL_WARNINGS = -vw $(EMPTY_RESOURCE_TEMPLATE_WARNING) -vw $(REDUNDANT_OFFSET_REMARK)
 
 define asl_template
 $(CONFIG_CBFS_PREFIX)/$(1).aml-file = $(obj)/$(1).aml

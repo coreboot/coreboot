@@ -11,6 +11,7 @@
  * GNU General Public License for more details.
  */
 
+#include <stdint.h>
 #include <device/pci_ops.h>
 #include "i82801gx.h"
 #include "chip.h"
@@ -49,4 +50,15 @@ void i82801gx_lpc_setup(void)
 	pci_write_config32(d31f0, GEN2_DEC, config->gen2_dec);
 	pci_write_config32(d31f0, GEN3_DEC, config->gen3_dec);
 	pci_write_config32(d31f0, GEN4_DEC, config->gen4_dec);
+}
+
+void i82801gx_setup_bars(void)
+{
+	const pci_devfn_t d31f0 = PCI_DEV(0, 0x1f, 0);
+	pci_write_config32(d31f0, RCBA, (uint32_t)DEFAULT_RCBA | 1);
+	pci_write_config32(d31f0, PMBASE, DEFAULT_PMBASE | 1);
+	pci_write_config8(d31f0, ACPI_CNTL, ACPI_EN);
+
+	pci_write_config32(d31f0, GPIOBASE, DEFAULT_GPIOBASE | 1);
+	pci_write_config8(d31f0, GPIO_CNTL, GPIO_EN);
 }

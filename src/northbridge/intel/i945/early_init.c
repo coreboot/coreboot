@@ -159,11 +159,8 @@ static void i945_setup_bars(void)
 	/* Setting up Southbridge. In the northbridge code. */
 	printk(BIOS_DEBUG, "Setting up static southbridge registers...");
 
-	pci_write_config32(PCI_DEV(0, 0x1f, 0), PMBASE, DEFAULT_PMBASE | 1);
-	pci_write_config8(PCI_DEV(0, 0x1f, 0), ACPI_CNTL, ACPI_EN);
+	i82801gx_setup_bars();
 
-	pci_write_config32(PCI_DEV(0, 0x1f, 0), GPIOBASE, DEFAULT_GPIOBASE | 1);
-	pci_write_config8(PCI_DEV(0, 0x1f, 0), GPIO_CNTL, GPIO_EN);
 	setup_pch_gpios(&mainboard_gpio_map);
 	printk(BIOS_DEBUG, " done.\n");
 

@@ -32,9 +32,7 @@ void bootblock_early_southbridge_init(void)
 {
 	enable_spi_prefetch();
 
-	/* Enable RCBA */
-	pci_devfn_t lpc_dev = PCI_DEV(0, 0x1f, 0);
-	pci_write_config32(lpc_dev, RCBA, (uintptr_t)DEFAULT_RCBA | 1);
+	i82801gx_setup_bars();
 
 	/* Enable upper 128bytes of CMOS */
 	RCBA32(0x3400) = (1 << 2);

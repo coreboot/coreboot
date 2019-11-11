@@ -25,33 +25,33 @@
 #define DPTF_TSR0_SENSOR_NAME	"Thermal Sensor 1"
 #define DPTF_TSR0_PASSIVE	65
 #define DPTF_TSR0_CRITICAL	75
-#define DPTF_TSR0_ACTIVE_AC0	50
-#define DPTF_TSR0_ACTIVE_AC1	47
-#define DPTF_TSR0_ACTIVE_AC2	45
-#define DPTF_TSR0_ACTIVE_AC3	42
-#define DPTF_TSR0_ACTIVE_AC4	39
+#define DPTF_TSR0_ACTIVE_AC0	61
+#define DPTF_TSR0_ACTIVE_AC1	59
+#define DPTF_TSR0_ACTIVE_AC2	57
+#define DPTF_TSR0_ACTIVE_AC3	55
+#define DPTF_TSR0_ACTIVE_AC4	51
+#define DPTF_TSR0_ACTIVE_AC5	48
+#define DPTF_TSR0_ACTIVE_AC6	40
 
 #define DPTF_TSR1_SENSOR_ID	1
 #define DPTF_TSR1_SENSOR_NAME	"Thermal Sensor 2"
-#define DPTF_TSR1_PASSIVE	65
+#define DPTF_TSR1_PASSIVE	38
 #define DPTF_TSR1_CRITICAL	75
-#define DPTF_TSR1_ACTIVE_AC0    50
-#define DPTF_TSR1_ACTIVE_AC1    47
-#define DPTF_TSR1_ACTIVE_AC2    45
-#define DPTF_TSR1_ACTIVE_AC3    42
-#define DPTF_TSR1_ACTIVE_AC4    39
+#define DPTF_TSR1_ACTIVE_AC0    42
+#define DPTF_TSR1_ACTIVE_AC1    40
+#define DPTF_TSR1_ACTIVE_AC2    38
 
 #define DPTF_TSR2_SENSOR_ID	2
 #define DPTF_TSR2_SENSOR_NAME	"Thermal Sensor - CPU"
-#define DPTF_TSR2_PASSIVE	60
-#define DPTF_TSR2_CRITICAL	75
-#define DPTF_TSR2_ACTIVE_AC0	51
-#define DPTF_TSR2_ACTIVE_AC1	48
-#define DPTF_TSR2_ACTIVE_AC2	45
-#define DPTF_TSR2_ACTIVE_AC3	42
-#define DPTF_TSR2_ACTIVE_AC4	39
-#define DPTF_TSR2_ACTIVE_AC5	36
-#define DPTF_TSR2_ACTIVE_AC6	33
+#define DPTF_TSR2_PASSIVE	62
+#define DPTF_TSR2_CRITICAL	105
+#define DPTF_TSR2_ACTIVE_AC0	62
+#define DPTF_TSR2_ACTIVE_AC1	61
+#define DPTF_TSR2_ACTIVE_AC2	60
+#define DPTF_TSR2_ACTIVE_AC3	54
+#define DPTF_TSR2_ACTIVE_AC4	51
+#define DPTF_TSR2_ACTIVE_AC5	48
+#define DPTF_TSR2_ACTIVE_AC6	45
 
 #define DPTF_ENABLE_CHARGER
 #define DPTF_ENABLE_FAN_CONTROL
@@ -72,16 +72,21 @@ Name (DFPS, Package () {
 	 *	  These are initial reference values.
 	 */
 	/* Control, Trip Point, Speed, NoiseLevel, Power */
-	Package () {90,		0xFFFFFFFF,	6700,	220,	2200},
-	Package () {80,		0xFFFFFFFF,	5800,	180,	1800},
-	Package () {70,		0xFFFFFFFF,	5000,	145,	1450},
-	Package () {60,		0xFFFFFFFF,	4900,	115,	1150},
-	Package () {50,		0xFFFFFFFF,	3838,	90,	900},
-	Package () {40,		0xFFFFFFFF,	2904,	55,	550},
-	Package () {30,		0xFFFFFFFF,	2337,	30,	300},
-	Package () {20,		0xFFFFFFFF,	1608,	15,	150},
-	Package () {10,		0xFFFFFFFF,	800,	10,	100},
-	Package () {0,		0xFFFFFFFF,	0,	0,	50}
+	Package () {85,		0xFFFFFFFF,	5500,	180,	1800},
+	Package () {79,		0xFFFFFFFF,	5400,	170,	1700},
+	Package () {73,		0xFFFFFFFF,	5200,	160,	1600},
+	Package () {68,		0xFFFFFFFF,	5000,	150,	1500},
+	Package () {62,		0xFFFFFFFF,	4800,	140,	1400},
+	Package () {58,		0xFFFFFFFF,	4600,	130,	1300},
+	Package () {53,		0xFFFFFFFF,	4400,	110,	1100},
+	Package () {49,		0xFFFFFFFF,	4200,	95,	950},
+	Package () {46,		0xFFFFFFFF,	4000,	70,	700},
+	Package () {42,		0xFFFFFFFF,	3700,	50,	500},
+	Package () {40,		0xFFFFFFFF,	3600,	35,	350},
+	Package () {36,		0xFFFFFFFF,	3400,	25,	250},
+	Package () {33,		0xFFFFFFFF,	3200,	15,	150},
+	Package () {30,		0xFFFFFFFF,	3000,	5,	50},
+	Package () {0,		0xFFFFFFFF,	0,	0,	0}
 })
 
 Name (DART, Package () {
@@ -96,15 +101,15 @@ Name (DART, Package () {
 			0, 0, 0
 	},
 	Package () {
-		\_SB.DPTF.TFN1, \_SB.DPTF.TSR0, 100, 90, 69, 56, 46, 36, 0, 0,
+		\_SB.DPTF.TFN1, \_SB.DPTF.TSR0, 100, 85, 73, 62, 49, 33, 25, 14,
 			0, 0, 0
 	},
 	Package () {
-		\_SB.DPTF.TFN1, \_SB.DPTF.TSR1, 100, 90, 69, 56, 46, 36, 0, 0,
+		\_SB.DPTF.TFN1, \_SB.DPTF.TSR1, 100, 85, 73, 62, 0, 0, 0, 0,
 			0, 0, 0
 	},
 	Package () {
-		\_SB.DPTF.TFN1, \_SB.DPTF.TSR2, 100, 90, 80, 70, 60, 50, 40, 30,
+		\_SB.DPTF.TFN1, \_SB.DPTF.TSR2, 100, 85, 73, 62, 56, 33, 25, 14,
 			0, 0, 0
 	},
 })
@@ -114,13 +119,13 @@ Name (DTRT, Package () {
 	Package () { \_SB.PCI0.TCPU, \_SB.PCI0.TCPU, 100, 50, 0, 0, 0, 0 },
 
 	/* CPU Throttle Effect on Ambient (TSR0) */
-	Package () { \_SB.PCI0.TCPU, \_SB.DPTF.TSR0, 100, 60, 0, 0, 0, 0 },
+	Package () { \_SB.DPTF.TCHG, \_SB.DPTF.TSR0, 100, 60, 0, 0, 0, 0 },
 
 	/* Charger Throttle Effect on Charger (TSR1) */
-	Package () { \_SB.DPTF.TCHG, \_SB.DPTF.TSR1, 100, 60, 0, 0, 0, 0 },
+	Package () { \_SB.PCI0.TCPU, \_SB.DPTF.TSR1, 100, 60, 0, 0, 0, 0 },
 
 	/* CPU Throttle Effect on CPU (TSR2) */
-	Package () { \_SB.DPTF.TCHG, \_SB.DPTF.TSR2, 100, 60, 0, 0, 0, 0 },
+	Package () { \_SB.PCI0.TCPU, \_SB.DPTF.TSR2, 100, 60, 0, 0, 0, 0 },
 })
 
 Name (MPPC, Package ()
@@ -128,7 +133,7 @@ Name (MPPC, Package ()
 	0x2,		/* Revision */
 	Package () {	/* Power Limit 1 */
 		0,	/* PowerLimitIndex, 0 for Power Limit 1 */
-		3000,	/* PowerLimitMinimum */
+		5000,	/* PowerLimitMinimum */
 		15000,	/* PowerLimitMaximum */
 		28000,	/* TimeWindowMinimum */
 		32000,	/* TimeWindowMaximum */

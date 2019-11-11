@@ -27,4 +27,8 @@
 
 void save_dimm_info(void);
 
+/* Determine if memory configuration has been locked by TXT */
+bool memory_config_is_locked(void);
+
+
 #endif

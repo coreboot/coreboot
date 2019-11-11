@@ -13,6 +13,8 @@
  * GNU General Public License for more details.
  */
 
+#include <cpu/x86/msr.h>
+#include <soc/msr.h>
 #include <stddef.h>
 #include <device/pci_ops.h>
 #include <device/dram/ddr4.h>
@@ -84,4 +86,10 @@ void save_dimm_info(void)
 			}
 		}
 	}
+}
+
+bool memory_config_is_locked(void)
+{
+	msr_t msr = rdmsr(MSR_LT_MEMORY_LOCKED);
+	return (msr.lo & (MSR_MEM_LOCK_BIT1 | MSR_MEM_LOCK_BIT2));
 }

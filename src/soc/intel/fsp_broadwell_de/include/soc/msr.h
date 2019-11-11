@@ -39,4 +39,9 @@
 #define MSR_PRMRR_PHYS_BASE	0x1f4
 #define MSR_PRMRR_PHYS_MASK	0x1f5
 
+/* EDS vol 2 */
+#define MSR_LT_MEMORY_LOCKED	0x2e7
+#define   MSR_MEM_LOCK_BIT1	(1 << 1)
+#define   MSR_MEM_LOCK_BIT2	(1 << 2)
+
 #endif /* _SOC_MSR_H_ */

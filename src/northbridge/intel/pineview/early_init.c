@@ -136,8 +136,6 @@ static void early_misc_setup(void)
 	pci_write_config8(LPC, 0x8, 0x0);
 	RCBA32(0x3410) = 0x00020465;
 
-	ich7_setup_cir();
-
 	pci_write_config32(PCI_DEV(0, 0x1d, 0), 0xca, 0x1);
 	pci_write_config32(PCI_DEV(0, 0x1d, 1), 0xca, 0x1);
 	pci_write_config32(PCI_DEV(0, 0x1d, 2), 0xca, 0x1);
@@ -156,22 +154,6 @@ static void early_misc_setup(void)
 
 static void pineview_setup_bars(void)
 {
-	/* Setting up Southbridge. In the northbridge code. */
-	printk(BIOS_DEBUG, "Setting up static southbridge registers...");
-
-	i82801gx_setup_bars();
-
-	pci_write_config32(PCI_DEV(0, 0x1e, 0), 0x1b, 0x20);
-	printk(BIOS_DEBUG, " done.\n");
-
-	printk(BIOS_DEBUG, "Disabling Watchdog reboot...");
-	RCBA32(GCS) = RCBA32(GCS) | (1 << 5);	/* No reset */
-	outw((1 << 11), DEFAULT_PMBASE | 0x60 | 0x08);	/* halt timer */
-	printk(BIOS_DEBUG, " done.\n");
-
-	/* Enable upper 128bytes of CMOS */
-	RCBA32(0x3400) = (1 << 2);
-
 	printk(BIOS_DEBUG, "Setting up static northbridge registers...");
 	pci_write_config8(D0F0, 0x8, 0x69);
 

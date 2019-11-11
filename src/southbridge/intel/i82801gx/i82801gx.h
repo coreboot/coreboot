@@ -42,6 +42,7 @@ void i82801gx_enable(struct device *dev);
 void enable_smbus(void);
 void i82801gx_lpc_setup(void);
 void i82801gx_setup_bars(void);
+void i82801gx_early_init(void);
 
 #if ENV_ROMSTAGE
 int smbus_read_byte(unsigned int device, unsigned int address);

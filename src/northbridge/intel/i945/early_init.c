@@ -23,7 +23,6 @@
 #include <cbmem.h>
 #include <romstage_handoff.h>
 #include <pc80/mc146818rtc.h>
-#include <southbridge/intel/common/gpio.h>
 #include <types.h>
 
 #include "i945.h"
@@ -155,21 +154,6 @@ static void i945_setup_bars(void)
 	/* As of now, we don't have all the A0 workarounds implemented */
 	if (i945_silicon_revision() == 0)
 		printk(BIOS_INFO, "Warning: i945 silicon revision A0 might not work correctly.\n");
-
-	/* Setting up Southbridge. In the northbridge code. */
-	printk(BIOS_DEBUG, "Setting up static southbridge registers...");
-
-	i82801gx_setup_bars();
-
-	setup_pch_gpios(&mainboard_gpio_map);
-	printk(BIOS_DEBUG, " done.\n");
-
-	printk(BIOS_DEBUG, "Disabling Watchdog reboot...");
-	RCBA32(GCS) = RCBA32(GCS) | (1 << 5);	/* No reset */
-	outw((1 << 11), DEFAULT_PMBASE | 0x60 | 0x08);	/* halt timer */
-	outw((1 <<  3), DEFAULT_PMBASE | 0x60 | 0x04);	/* clear timeout */
-	outw((1 <<  1), DEFAULT_PMBASE | 0x60 | 0x06);	/* clear 2nd timeout */
-	printk(BIOS_DEBUG, " done.\n");
 
 	printk(BIOS_DEBUG, "Setting up static northbridge registers...");
 	/* Set up all hardcoded northbridge BARs */

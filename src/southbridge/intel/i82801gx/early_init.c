@@ -12,7 +12,10 @@
  */
 
 #include <stdint.h>
+#include <console/console.h>
 #include <device/pci_ops.h>
+#include <southbridge/intel/common/gpio.h>
+#include <southbridge/intel/common/pmbase.h>
 #include "i82801gx.h"
 #include "chip.h"
 
@@ -62,3 +65,53 @@ void i82801gx_setup_bars(void)
 	pci_write_config32(d31f0, GPIOBASE, DEFAULT_GPIOBASE | 1);
 	pci_write_config8(d31f0, GPIO_CNTL, GPIO_EN);
 }
+
+#define TCO_BASE 0x60
+
+#if ENV_ROMSTAGE
+void i82801gx_early_init(void)
+{
+	uint8_t reg8;
+	uint32_t reg32;
+	/* Setting up Southbridge. In the northbridge code. */
+	printk(BIOS_DEBUG, "Setting up static southbridge registers...");
+	i82801gx_setup_bars();
+
+	setup_pch_gpios(&mainboard_gpio_map);
+	printk(BIOS_DEBUG, " done.\n");
+
+	printk(BIOS_DEBUG, "Disabling Watchdog reboot...");
+	RCBA32(GCS) = RCBA32(GCS) | (1 << 5);	/* No reset */
+	write_pmbase16(TCO_BASE + 0x8, (1 << 11));	/* halt timer */
+	write_pmbase16(TCO_BASE + 0x4, (1 << 3));	/* clear timeout */
+	write_pmbase16(TCO_BASE + 0x6, (1 << 1));	/* clear 2nd timeout */
+	printk(BIOS_DEBUG, " done.\n");
+
+	/* program secondary mlt XXX byte? */
+	pci_write_config8(PCI_DEV(0, 0x1e, 0), SMLT, 0x20);
+
+	/* reset rtc power status */
+	reg8 = pci_read_config8(PCI_DEV(0, 0x1f, 0), GEN_PMCON_3);
+	reg8 &= ~RTC_BATTERY_DEAD;
+	pci_write_config8(PCI_DEV(0, 0x1f, 0), GEN_PMCON_3, reg8);
+
+	/* usb transient disconnect */
+	reg8 = pci_read_config8(PCI_DEV(0, 0x1f, 0), 0xad);
+	reg8 |= (3 << 0);
+	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0xad, reg8);
+
+	reg32 = pci_read_config32(PCI_DEV(0, 0x1d, 7), 0xfc);
+	reg32 |= (1 << 29) | (1 << 17);
+	pci_write_config32(PCI_DEV(0, 0x1d, 7), 0xfc, reg32);
+
+	reg32 = pci_read_config32(PCI_DEV(0, 0x1d, 7), 0xdc);
+	reg32 |= (1 << 31) | (1 << 27);
+	pci_write_config32(PCI_DEV(0, 0x1d, 7), 0xdc, reg32);
+
+	/* Enable IOAPIC */
+	RCBA8(OIC) = 0x03;
+	RCBA8(OIC);
+
+	ich7_setup_cir();
+}
+#endif

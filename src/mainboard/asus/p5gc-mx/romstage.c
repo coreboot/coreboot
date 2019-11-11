@@ -98,42 +98,9 @@ static u8 msr_get_fsb(void)
 
 static void rcba_config(void)
 {
-	/* Enable IOAPIC */
-	RCBA8(OIC) = 0x03;
-
 	/* Enable PCIe Root Port Clock Gate */
 	RCBA32(CG) = 0x00000001;
 }
-
-static void early_ich7_init(void)
-{
-	uint8_t reg8;
-	uint32_t reg32;
-
-	// program secondary mlt XXX byte?
-	pci_write_config8(PCI_DEV(0, 0x1e, 0), SMLT, 0x20);
-
-	// reset rtc power status
-	reg8 = pci_read_config8(PCI_DEV(0, 0x1f, 0), GEN_PMCON_3);
-	reg8 &= ~RTC_BATTERY_DEAD;
-	pci_write_config8(PCI_DEV(0, 0x1f, 0), GEN_PMCON_3, reg8);
-
-	// usb transient disconnect
-	reg8 = pci_read_config8(PCI_DEV(0, 0x1f, 0), 0xad);
-	reg8 |= (3 << 0);
-	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0xad, reg8);
-
-	reg32 = pci_read_config32(PCI_DEV(0, 0x1d, 7), 0xfc);
-	reg32 |= (1 << 29) | (1 << 17);
-	pci_write_config32(PCI_DEV(0, 0x1d, 7), 0xfc, reg32);
-
-	reg32 = pci_read_config32(PCI_DEV(0, 0x1d, 7), 0xdc);
-	reg32 |= (1 << 31) | (1 << 27);
-	pci_write_config32(PCI_DEV(0, 0x1d, 7), 0xdc, reg32);
-
-	ich7_setup_cir();
-}
-
 void mainboard_romstage_entry(void)
 {
 	int s3resume = 0, boot_mode = 0;
@@ -157,6 +124,7 @@ void mainboard_romstage_entry(void)
 	/* Perform some early chipset initialization required
 	 * before RAM initialization can work
 	 */
+	i82801gx_early_init();
 	i945_early_initialization();
 
 	s3resume = southbridge_detect_s3_resume();
@@ -178,9 +146,6 @@ void mainboard_romstage_entry(void)
 		dump_spd_registers();
 
 	sdram_initialize(s3resume ? 2 : boot_mode, NULL);
-
-	/* Perform some initialization that must run before stage2 */
-	early_ich7_init();
 
 	/* This should probably go away. Until now it is required
 	 * and mainboard specific

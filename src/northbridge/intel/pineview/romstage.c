@@ -24,7 +24,6 @@
 #include <cf9_reset.h>
 #include <romstage_handoff.h>
 #include <southbridge/intel/i82801gx/i82801gx.h>
-#include <southbridge/intel/common/gpio.h>
 #include <southbridge/intel/common/pmclib.h>
 #include <arch/romstage.h>
 #include <cpu/x86/lapic.h>
@@ -36,9 +35,6 @@ static void rcba_config(void)
 	/* Set up virtual channel 0 */
 	RCBA32(0x0014) = 0x80000001;
 	RCBA32(0x001c) = 0x03128010;
-
-	/* Enable IOAPIC */
-	RCBA8(OIC) = 0x03;
 }
 
 __weak void mb_pirq_setup(void)
@@ -55,17 +51,12 @@ void mainboard_romstage_entry(void)
 
 	enable_lapic();
 
-	/* Enable GPIOs */
-	pci_write_config32(LPC_DEV, GPIO_BASE, DEFAULT_GPIOBASE | 1);
-	pci_write_config8(LPC_DEV, GPIO_CNTL, 0x10);
-
-	setup_pch_gpios(&mainboard_gpio_map);
-
 	enable_smbus();
 
 	/* Perform some early chipset initialization required
 	 * before RAM initialization can work
 	 */
+	i82801gx_early_init();
 	pineview_early_initialization();
 
 	post_code(0x30);

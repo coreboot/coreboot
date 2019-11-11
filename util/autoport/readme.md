@@ -407,9 +407,9 @@ Keep `GPE_EC_WAKE` and `GPE_EC_SCI` in sync with `gpi*_routing`.
 `gpi*_routing` matching `GPE_EC_WAKE` or `GPE_EC_SCI` is set to `2`
 and all others are absent.
 
-If your dock has LPC wires or needs some special treatement you
-need to fill `h8_mainboard_init_dock` and add support code to
-DSDT. See the code for `x60`, `x200` or `x201`
+If your dock has LPC wires or needs some special treatement you may
+need to add codes to initialize the dock and support code to
+DSDT. See the `init_dock()` for `x60`, `x200` or `x201`.
 
 ## EC (generic laptop)
 

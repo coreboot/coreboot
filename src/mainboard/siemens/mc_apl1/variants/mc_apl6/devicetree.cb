@@ -14,6 +14,9 @@ chip soc/intel/apollolake
 	register "pcie_rp_clkreq_pin[4]" = "CLKREQ_DISABLED"
 	register "pcie_rp_clkreq_pin[5]" = "CLKREQ_DISABLED"
 
+	# Enable Vtd feature
+	register "enable_vtd" = "1"
+
 	device domain 0 on
 		device pci 00.0 on  end	# - Host Bridge
 		device pci 00.1 off end	# - DPTF

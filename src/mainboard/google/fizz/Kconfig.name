@@ -7,3 +7,7 @@ config BOARD_GOOGLE_FIZZ
 config BOARD_GOOGLE_KARMA
 	bool "->  Karma"
 	select BOARD_GOOGLE_BASEBOARD_FIZZ
+
+config BOARD_GOOGLE_ENDEAVOUR
+	bool "->  Endeavour"
+	select BOARD_GOOGLE_BASEBOARD_FIZZ

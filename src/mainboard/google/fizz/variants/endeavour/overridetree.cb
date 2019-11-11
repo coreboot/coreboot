@@ -1,0 +1,141 @@
+chip soc/intel/skylake
+
+	# Enable Root port 9(x4) for i350 LAN
+	register "PcieRpEnable[8]" = "1"
+	# Disable CLKREQ#
+	register "PcieRpClkReqSupport[8]" = "0"
+	# RP 9, Enable Advanced Error Reporting
+	register "PcieRpAdvancedErrorReporting[8]" = "1"
+	# RP 9, Enable Latency Tolerance Reporting Mechanism
+	register "PcieRpLtrEnable[8]" = "1"
+	# RP 9 uses uses CLK SRC 2
+	register "PcieRpClkSrcNumber[8]" = "2"
+
+	# These are part of Root port 9(x4)
+	register "PcieRpEnable[9]" = "0"
+	register "PcieRpEnable[10]" = "0"
+	register "PcieRpEnable[11]" = "0"
+
+	register "usb2_ports[0]" = "USB2_PORT_LONG(OC_SKIP)"	# Type-C
+	register "usb2_ports[1]" = "USB2_PORT_MID(OC_SKIP)"	# HDMI
+	register "usb2_ports[2]" = "USB2_PORT_MID(OC2)"		# Type-A Rear
+	register "usb2_ports[3]" = "USB2_PORT_MID(OC2)"		# Type-A Rear
+	register "usb2_ports[4]" = "USB2_PORT_MID(OC3)"		# Type-A Rear
+	register "usb2_ports[5]" = "USB2_PORT_MID(OC_SKIP)"	# HDMI Audio
+	register "usb2_ports[6]" = "USB2_PORT_MID(OC_SKIP)"	# Bluetooth
+	register "usb2_ports[7]" = "USB2_PORT_EMPTY"		# None
+	register "usb2_ports[8]" = "USB2_PORT_EMPTY"		# H1 (disconnected)
+
+	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# Type-C
+	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# HDMI
+	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC2)"	# Type-A Rear
+	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC2)"	# Type-A Rear
+	register "usb3_ports[4]" = "USB3_PORT_DEFAULT(OC3)"	# Type-A Rear
+	register "usb3_ports[5]" = "USB3_PORT_EMPTY"	# None
+
+	register "i2c_voltage[0]" = "I2C_VOLTAGE_3V3"		# TPU
+	register "i2c_voltage[1]" = "I2C_VOLTAGE_3V3"		# TPM
+	register "i2c_voltage[2]" = "I2C_VOLTAGE_1V8"		# None
+	register "i2c_voltage[3]" = "I2C_VOLTAGE_1V8"		# HDMI
+	register "i2c_voltage[5]" = "I2C_VOLTAGE_1V8"		# Audio
+
+	register "SerialIoDevMode" = "{
+		[PchSerialIoIndexI2C0]  = PchSerialIoPci,
+		[PchSerialIoIndexI2C1]  = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C2]  = PchSerialIoPci,
+		[PchSerialIoIndexI2C3]  = PchSerialIoPci,
+		[PchSerialIoIndexI2C4]  = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C5]  = PchSerialIoPci,
+		[PchSerialIoIndexSpi0]  = PchSerialIoPci,
+		[PchSerialIoIndexSpi1]  = PchSerialIoDisabled,
+		[PchSerialIoIndexUart0] = PchSerialIoSkipInit,
+		[PchSerialIoIndexUart1] = PchSerialIoDisabled,
+		[PchSerialIoIndexUart2] = PchSerialIoSkipInit,
+	}"
+
+	device domain 0 on
+		device pci 14.0 on
+			chip drivers/usb/acpi
+				device usb 0.0 on
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 HDMI In""
+						register "type" = "UPC_TYPE_INTERNAL"
+						device usb 2.1 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-A Rear Left""
+						register "type" = "UPC_TYPE_A"
+						device usb 2.2 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-A Rear Middle""
+						register "type" = "UPC_TYPE_A"
+						device usb 2.3 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-A Rear Right""
+						register "type" = "UPC_TYPE_A"
+						device usb 2.4 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 HDMI Audio In""
+						register "type" = "UPC_TYPE_INTERNAL"
+						device usb 2.5 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 HDMI Video In""
+						register "type" = "UPC_TYPE_INTERNAL"
+						device usb 3.1 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Type-A Rear Left""
+						register "type" = "UPC_TYPE_USB3_A"
+						device usb 3.2 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Type-A Rear Middle""
+						register "type" = "UPC_TYPE_USB3_A"
+						device usb 3.3 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Type-A Rear Right""
+						register "type" = "UPC_TYPE_USB3_A"
+						device usb 3.4 on end
+					end
+					device usb 3.5 off end
+				end
+			end
+		end # USB xHCI
+		device pci 15.3 on
+			chip drivers/i2c/generic
+				register "hid" = "ACPI_DT_NAMESPACE_HID"
+				register "desc" = ""Chrontel 7322""
+				register "uid" = "1"
+				register "compat_string" = ""chrontel,7322""
+				register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_HIGH(GPP_A18)"
+				device i2c 75 on end
+			end
+			chip drivers/i2c/generic
+				register "hid" = "ACPI_DT_NAMESPACE_HID"
+				register "desc" = ""Chrontel 7322""
+				register "uid" = "2"
+				register "compat_string" = ""chrontel,7322""
+				register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_HIGH(GPP_A20)"
+				device i2c 76 on end
+			end
+		end # I2C #3
+		device pci 19.1 on
+			chip drivers/i2c/generic
+				register "hid" = ""10EC5663""
+				register "name" = ""RT53""
+				register "desc" = ""Realtek RT5663""
+				register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_BOTH(GPP_D9)"
+				device i2c 13 on end
+			end
+		end # I2C #5
+		device pci 1d.0 on end # PCI Express Port 9 for POE LAN
+		device pci 1d.1 off end # PCI Express Port 10
+		device pci 1d.2 off end # PCI Express Port 11
+		device pci 1d.3 off end # PCI Express Port 12
+	end
+end

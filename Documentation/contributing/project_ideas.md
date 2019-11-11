@@ -166,3 +166,21 @@ This is a research-heavy project.
 
 ### Mentors
 * Ron Minnich <rminnich@google.com>
+
+## Libpayload based memtest payload
+[Memtest86+](https://www.memtest.org/) has some limitations: first and
+foremost it only works on x86, while it can print to serial console the
+GUI only works in legacy VGA mode.
+
+This project would involve porting the memtest suite to libpayload and
+build a payload around it.
+
+### Requirements
+* coreboot knowledge: Should know how to build coreboot images and
+  include payloads.
+* other knowledge: Knowledge on how dram works is a plus.
+* hardware requirements: Initial work can happen on qemu targets,
+  being able to test on coreboot supported hardware is a plus.
+
+### Mentors
+* TODO

@@ -17,7 +17,8 @@ checkout:
 	echo "    GIT        GRUB2 $(NAME-y)"
 	test -d $(project_dir) || git clone $(project_git_repo) $(project_dir)
 	git -C $(project_dir) fetch
-ifeq ("$(shell git -C $(project_dir) status --ignored=no --untracked-files=no --porcelain)",)
+ifeq ("$(shell test -d $(project_dir) && \
+	(git -C $(project_dir) status --ignored=no --untracked-files=no --porcelain))",)
 	git -C $(project_dir) checkout -f $(TAG-y)
 else
 	echo "WARNING: index/tree not clean, skipping update / force checkout."

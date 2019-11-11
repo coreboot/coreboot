@@ -50,6 +50,8 @@ config CPU_SPECIFIC_OPTIONS
 	select SOC_INTEL_COMMON_BLOCK_SMM_IO_TRAP
 	select SOC_INTEL_COMMON_PCH_BASE
 	select SOC_INTEL_COMMON_RESET
+	select SOC_INTEL_COMMON_BLOCK_CAR
+	select INTEL_CAR_NEM_ENHANCED
 	select SSE2
 	select SUPPORT_CPU_UCODE_IN_CBFS
 	select TSC_MONOTONIC_TIMER
@@ -173,32 +175,6 @@ config C_ENV_BOOTBLOCK_SIZE
 config CBFS_SIZE
 	hex
 	default 0x200000
-
-choice
-	prompt "Cache-as-ram implementation"
-	default USE_TIGERLAKE_CAR_NEM_ENHANCED
-	help
-	  This option allows you to select how cache-as-ram (CAR) is set up.
-
-config USE_TIGERLAKE_CAR_NEM_ENHANCED
-	bool "Enhanced Non-evict mode"
-	select SOC_INTEL_COMMON_BLOCK_CAR
-	select INTEL_CAR_NEM_ENHANCED
-	help
-	  A current limitation of NEM (Non-Evict mode) is that code and data
-	  sizes are derived from the requirement to not write out any modified
-	  cache line. With NEM, if there is no physical memory behind the
-	  cached area, the modified data will be lost and NEM results will be
-	  inconsistent. ENHANCED NEM guarantees that modified data is always
-	  kept in cache while clean data is replaced.
-
-config USE_TIGERLAKE_FSP_CAR
-	bool "Use FSP CAR"
-	select FSP_CAR
-	help
-	  Use FSP APIs to initialize and tear down the Cache-As-Ram.
-
-endchoice
 
 config FSP_HEADER_PATH
 	string "Location of FSP headers"

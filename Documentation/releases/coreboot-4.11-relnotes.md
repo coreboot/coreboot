@@ -18,14 +18,17 @@ using AGESA family 12h, and because there were multiple,
 unique Coverity issues with it, the associated vendorcode will
 be removed shortly after this release.
 
+Support for the MIPS architecture will also be removed shortly after
+this release as the only board in the tree was a discontinued development
+board and no other work has picked up MIPS support, so it's very likely
+broken already.
+
 Significant changes
 -------------------
 
-### Add significant changes here
-
 ### `__PRE_RAM__` is deprecated
 
-Preprocessor use of `defined(__PRE_RAM_)` have been mostly replaced with
+Preprocessor use of `defined(__PRE_RAM__)` have been mostly replaced with
 `if (ENV_ROMSTAGE_OR_BEFORE)` or the inverse `if (ENV_RAMSTAGE)`.
 
 The remaining cases and `-D__PRE_RAM__` are to be removed soon after release.
@@ -49,6 +52,42 @@ removed soon after release.
 
 Significant refactoring has bee done to achieve some consistency across platforms
 and to reduce code duplication.
+
+### Build system amenities ###
+
+The build system now has an `all` class of source files to remove the need to
+list source files for each and every source class (romstage, ramstage, ...)
+
+The site-local/ mechanism became more robust.
+
+### Stricter coding standards to improve security ###
+
+The build now fails on variable length arrays (that make it way too easy to
+smash a stack) and case statements falling through without a note that it is
+intentional.
+
+### Shorter file headers ###
+
+This project is still under way, but we started moving author information
+from individual files into the global AUTHORS file (and there's the git
+history for more details).
+
+In the future, we also want to replace the license headers (lots of lines)
+in each file with spdx identifiers (one line) and so we added a LICENSES/
+directory that contains the full text of all the licenses that are used
+throughout our tree.
+
+### Variant creation scripts ###
+
+To ease the creation of variant boards, `util/mainboard/` now contains
+scripts to generate a new variant to a given board. These are still
+specific to google/hatch at this time, but they're written with the idea
+of becoming more generally useful.
+
+### Payloads ###
+
+Payload integration has been updated, coreinfo learned to cope with
+UPPER CASE commands and libpayload knows how to deal with USB3 hubs.
 
 ### Added VBOOT support to the following platforms:
 * intel/gm45

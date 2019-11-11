@@ -59,7 +59,11 @@ config UART_FOR_CONSOLE
 
 config DEVICETREE
 	string
-	default "variants/$(CONFIG_VARIANT_DIR)/devicetree.cb"
+	default "variants/baseboard/devicetree.cb"
+
+config OVERRIDE_DEVICETREE
+	string
+	default "variants/$(CONFIG_VARIANT_DIR)/overridetree.cb"
 
 config FMDFILE
 	string

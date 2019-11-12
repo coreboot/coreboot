@@ -1,0 +1,2 @@
+config BOARD_ASROCK_B85M_PRO4
+	bool "B85M Pro4"

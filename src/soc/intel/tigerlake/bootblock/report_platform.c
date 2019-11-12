@@ -33,9 +33,69 @@
 
 #define BIOS_SIGN_ID	0x8B
 
-/*
- * TODO: Add TGL specific CPU/SA/PCH IDs here
- */
+static struct {
+	u32 cpuid;
+	const char *name;
+} cpu_table[] = {
+	{ CPUID_TIGERLAKE_A0, "Tigerlake A0" },
+};
+
+static struct {
+	u16 mchid;
+	const char *name;
+} mch_table[] = {
+	{ PCI_DEVICE_ID_INTEL_TGL_ID_U, "Tigerlake-U-4-2" },
+	{ PCI_DEVICE_ID_INTEL_TGL_ID_U_1, "Tigerlake-U-4-3e" },
+	{ PCI_DEVICE_ID_INTEL_TGL_ID_Y, "Tigerlake-Y-4-2" },
+};
+
+static struct {
+	u16 espiid;
+	const char *name;
+} pch_table[] = {
+	{ PCI_DEVICE_ID_INTEL_TGP_ESPI_0, "Tigerlake-Base SKU" },
+	{ PCI_DEVICE_ID_INTEL_TGP_SUPER_U_ESPI, "Tigerlake-U Super SKU" },
+	{ PCI_DEVICE_ID_INTEL_TGP_PREMIUM_U_ESPI, "Tigerlake-U Premium SKU" },
+	{ PCI_DEVICE_ID_INTEL_TGP_BASE_U_ESPI, "Tigerlake-U Base SKU" },
+	{ PCI_DEVICE_ID_INTEL_TGP_ESPI_1, "Tigerlake-Base SKU" },
+	{ PCI_DEVICE_ID_INTEL_TGP_ESPI_2, "Tigerlake-Base SKU" },
+	{ PCI_DEVICE_ID_INTEL_TGP_SUPER_Y_ESPI, "Tigerlake-Y Super SKU" },
+	{ PCI_DEVICE_ID_INTEL_TGP_PREMIUM_Y_ESPI, "Tigerlake-Y Premium SKU" },
+	{ PCI_DEVICE_ID_INTEL_TGP_ESPI_3, "Tigerlake-Base SKU" },
+	{ PCI_DEVICE_ID_INTEL_TGP_ESPI_4, "Tigerlake-Base SKU" },
+	{ PCI_DEVICE_ID_INTEL_TGP_ESPI_5, "Tigerlake-Base SKU" },
+	{ PCI_DEVICE_ID_INTEL_TGP_ESPI_6, "Tigerlake-Base SKU" },
+	{ PCI_DEVICE_ID_INTEL_TGP_ESPI_7, "Tigerlake-Base SKU" },
+	{ PCI_DEVICE_ID_INTEL_TGP_ESPI_8, "Tigerlake-Base SKU" },
+	{ PCI_DEVICE_ID_INTEL_TGP_ESPI_9, "Tigerlake-Base SKU" },
+	{ PCI_DEVICE_ID_INTEL_TGP_ESPI_10, "Tigerlake-Base SKU" },
+	{ PCI_DEVICE_ID_INTEL_TGP_ESPI_11, "Tigerlake-Base SKU" },
+	{ PCI_DEVICE_ID_INTEL_TGP_ESPI_12, "Tigerlake-Base SKU" },
+	{ PCI_DEVICE_ID_INTEL_TGP_ESPI_13, "Tigerlake-Base SKU" },
+	{ PCI_DEVICE_ID_INTEL_TGP_ESPI_14, "Tigerlake-Base SKU" },
+	{ PCI_DEVICE_ID_INTEL_TGP_ESPI_15, "Tigerlake-Base SKU" },
+	{ PCI_DEVICE_ID_INTEL_TGP_ESPI_16, "Tigerlake-Base SKU" },
+	{ PCI_DEVICE_ID_INTEL_TGP_ESPI_17, "Tigerlake-Base SKU" },
+	{ PCI_DEVICE_ID_INTEL_TGP_ESPI_18, "Tigerlake-Base SKU" },
+	{ PCI_DEVICE_ID_INTEL_TGP_ESPI_19, "Tigerlake-Base SKU" },
+	{ PCI_DEVICE_ID_INTEL_TGP_ESPI_20, "Tigerlake-Base SKU" },
+	{ PCI_DEVICE_ID_INTEL_TGP_ESPI_21, "Tigerlake-Base SKU" },
+	{ PCI_DEVICE_ID_INTEL_TGP_ESPI_22, "Tigerlake-Base SKU" },
+	{ PCI_DEVICE_ID_INTEL_TGP_ESPI_23, "Tigerlake-Base SKU" },
+	{ PCI_DEVICE_ID_INTEL_TGP_ESPI_24, "Tigerlake-Base SKU" },
+	{ PCI_DEVICE_ID_INTEL_TGP_ESPI_25, "Tigerlake-Base SKU" },
+	{ PCI_DEVICE_ID_INTEL_TGP_ESPI_26, "Tigerlake-Base SKU" },
+};
+
+static struct {
+	u16 igdid;
+	const char *name;
+} igd_table[] = {
+	{ PCI_DEVICE_ID_INTEL_TGL_GT0, "Tigerlake U GT0" },
+	{ PCI_DEVICE_ID_INTEL_TGL_GT2_ULT, "Tigerlake U GT2" },
+	{ PCI_DEVICE_ID_INTEL_TGL_GT2_ULX, "Tigerlake Y GT2" },
+	{ PCI_DEVICE_ID_INTEL_TGL_GT3_ULT, "Tigerlake U GT3" },
+};
 
 static inline uint8_t get_dev_revision(pci_devfn_t dev)
 {

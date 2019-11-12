@@ -14,6 +14,7 @@
  * GNU General Public License for more details.
  */
 
+#include <bootblock_common.h>
 #include <stdint.h>
 #include <arch/io.h>
 #include <cf9_reset.h>
@@ -54,7 +55,7 @@ static void pnp_exit_ext_func_mode(pnp_devfn_t dev)
 	outb(0xaa, port);
 }
 
-void mainboard_superio_config(void)
+void bootblock_mainboard_early_init(void)
 {
 	pnp_devfn_t dev;
 

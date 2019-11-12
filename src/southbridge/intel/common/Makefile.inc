@@ -32,6 +32,7 @@ bootblock-$(CONFIG_USBDEBUG) += usb_debug.c
 romstage-$(CONFIG_USBDEBUG) += usb_debug.c
 ramstage-$(CONFIG_USBDEBUG) += usb_debug.c
 
+bootblock-$(CONFIG_SOUTHBRIDGE_INTEL_COMMON_GPIO) += gpio.c
 romstage-$(CONFIG_SOUTHBRIDGE_INTEL_COMMON_GPIO) += gpio.c
 ramstage-$(CONFIG_SOUTHBRIDGE_INTEL_COMMON_GPIO) += gpio.c
 smm-$(CONFIG_SOUTHBRIDGE_INTEL_COMMON_GPIO) += gpio.c

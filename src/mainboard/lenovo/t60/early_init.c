@@ -15,11 +15,12 @@
  * GNU General Public License for more details.
  */
 
+#include <bootblock_common.h>
 #include <delay.h>
 #include <stdint.h>
-#include <device/pnp_def.h>
 #include <device/pnp_ops.h>
 #include <device/pci_ops.h>
+#include <device/pnp_def.h>
 #include <northbridge/intel/i945/i945.h>
 #include <southbridge/intel/i82801gx/i82801gx.h>
 #include <southbridge/intel/common/gpio.h>
@@ -37,9 +38,9 @@ static void early_superio_config(void)
 	int timeout = 100000;
 	pnp_devfn_t dev = PNP_DEV(0x2e, 3);
 
-	pnp_write_config(dev, 0x29, 0x06);
+	pnp_write_config(dev, 0x29, 0xa0);
 
-	while (!(pnp_read_config(dev, 0x29) & 0x08) && timeout--)
+	while(!(pnp_read_config(dev, 0x29) & 0x10) && timeout--)
 		udelay(1000);
 
 	/* Enable COM1 */
@@ -48,18 +49,19 @@ static void early_superio_config(void)
 	pnp_set_enable(dev, 1);
 }
 
-void mainboard_superio_config(void)
+void bootblock_mainboard_early_init(void)
 {
 	/* Set up GPIO's early since it is needed for dock init */
 	i82801gx_setup_bars();
 	setup_pch_gpios(&mainboard_gpio_map);
 
-	dlpc_init();
-	/* dock_init initializes the DLPC switch on
-	 *  thinpad side, so this is required even
-	 *  if we're undocked.
-	 */
-	if (dock_present()) {
+	int dock_err = dlpc_init();
+
+	/* We prefer Legacy I/O module over docking */
+	if (legacy_io_present()) {
+		legacy_io_init();
+		early_superio_config();
+	} else if (!dock_err && dock_present()) {
 		dock_connect();
 		early_superio_config();
 	}
@@ -95,7 +97,6 @@ void mainboard_late_rcba_config(void)
 	/* Set up I/O Trap #3 for 0x800-0x80c (Trap) */
 	RCBA64(IOTR3) = 0x000200f0000c0801ULL;
 }
-
 
 void mainboard_get_spd_map(u8 spd_map[4])
 {

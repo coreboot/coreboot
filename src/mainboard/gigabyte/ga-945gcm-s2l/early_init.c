@@ -14,6 +14,7 @@
  * GNU General Public License for more details.
  */
 
+#include <bootblock_common.h>
 #include <superio/ite/it8718f/it8718f.h>
 #include <superio/ite/common/ite.h>
 #include <northbridge/intel/i945/i945.h>
@@ -24,7 +25,7 @@
 #define EC_DEV PNP_DEV(0x2e, IT8718F_EC)
 #define SUPERIO_DEV PNP_DEV(0x2e, 0)
 
-void mainboard_superio_config(void)
+void bootblock_mainboard_early_init(void)
 {
 	/* Set default GPIOs on superio */
 	ite_reg_write(GPIO_DEV, 0x25, 0x40);

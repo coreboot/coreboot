@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <bootblock_common.h>
 #include <device/pci_ops.h>
 #include <device/pnp_ops.h>
 #include <device/pnp_def.h>
@@ -41,7 +42,7 @@ void mainboard_lpc_decode(void)
  * the two. Also set up the GPIOs from the beginning. This is the "no schematic
  * but safe anyways" method.
  */
-void mainboard_superio_config(void)
+void bootblock_mainboard_early_init(void)
 {
 	pnp_devfn_t dev;
 

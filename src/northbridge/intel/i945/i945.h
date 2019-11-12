@@ -378,8 +378,6 @@ u32 decode_tseg_size(const u8 esmramc);
 /* Romstage mainboard callbacks */
 /* Optional: Override the default LPC config. */
 void mainboard_lpc_decode(void);
-/* Optional: Initialize the superio for serial output. */
-void mainboard_superio_config(void);
 /* Optional: mainboard specific init after console init and before raminit. */
 void mainboard_pre_raminit_config(int s3_resume);
 /* Mainboard specific RCBA init. Happens after raminit. */

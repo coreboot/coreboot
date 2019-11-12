@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <bootblock_common.h>
 #include <superio/smsc/lpc47m15x/lpc47m15x.h>
 #include <northbridge/intel/i945/i945.h>
 #include <southbridge/intel/i82801gx/i82801gx.h>
@@ -39,7 +40,7 @@ void mainboard_late_rcba_config(void)
 	// RCBA32(0x341c) = 0x00000001;
 }
 
-void mainboard_superio_config(void)
+void bootblock_mainboard_early_init(void)
 {
 	/* Enable SuperIO PM */
 	lpc47m15x_enable_serial(PME_DEV, 0x680);

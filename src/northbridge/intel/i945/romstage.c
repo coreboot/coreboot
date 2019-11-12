@@ -28,10 +28,6 @@ __weak void mainboard_lpc_decode(void)
 {
 }
 
-__weak void mainboard_superio_config(void)
-{
-}
-
 __weak void mainboard_pre_raminit_config(int s3_resume)
 {
 }
@@ -51,12 +47,7 @@ void mainboard_romstage_entry(void)
 
 	enable_lapic();
 
-	i82801gx_lpc_setup();
 	mainboard_lpc_decode();
-	mainboard_superio_config();
-
-	/* Set up the console */
-	console_init();
 
 	if (MCHBAR16(SSKPD) == 0xCAFE) {
 		system_reset();

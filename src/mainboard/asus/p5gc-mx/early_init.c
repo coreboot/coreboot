@@ -15,6 +15,7 @@
  * GNU General Public License for more details.
  */
 
+#include <bootblock_common.h>
 #include <stdint.h>
 #include <cf9_reset.h>
 #include <device/pnp_ops.h>
@@ -111,7 +112,7 @@ void mainboard_pre_raminit_config(int s3_resume)
 	}
 }
 
-void mainboard_superio_config(void)
+void bootblock_mainboard_early_init(void)
 {
 	winbond_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 }

@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <bootblock_common.h>
 #include <stdint.h>
 #include <device/pnp_ops.h>
 #include <cpu/x86/lapic.h>
@@ -29,7 +30,7 @@
  * Also set up the GPIOs from the beginning. This is the "no schematic
  * but safe anyways" method.
  */
-void mainboard_superio_config(void)
+void bootblock_mainboard_early_init(void)
 {
 	pnp_devfn_t dev;
 

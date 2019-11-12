@@ -298,7 +298,7 @@ out:
 }
 
 /* This only supports the "COREBOOT" fmap region. */
-static int cbfs_master_header_props(struct cbfs_props *props)
+int cbfs_master_header_props(struct cbfs_props *props)
 {
 	struct cbfs_header header;
 	const struct region_device *bdev;

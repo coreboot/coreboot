@@ -17,7 +17,6 @@
 #include <cbfs.h>
 #include <vboot_check.h>
 #include <vboot_common.h>
-#include "fmap_config.h"
 
 #define RSA_PUBLICKEY_FILE_NAME "vboot_public_key.bin"
 
@@ -89,46 +88,6 @@ int verified_boot_check_manifest(void)
 fail:
 	die("HASH table verification failed!\n");
 	return -1;
-}
-
-static int vendor_secure_locate(struct cbfs_props *props)
-{
-	struct cbfs_header header;
-	const struct region_device *bdev;
-	int32_t rel_offset;
-	size_t offset;
-
-	bdev = boot_device_ro();
-
-	if (bdev == NULL)
-		return -1;
-
-	size_t fmap_top = ___FMAP__COREBOOT_BASE + ___FMAP__COREBOOT_SIZE;
-
-	/* Find location of header using signed 32-bit offset from
-	 * end of CBFS region. */
-	offset = fmap_top - sizeof(int32_t);
-	if (rdev_readat(bdev, &rel_offset, offset, sizeof(int32_t)) < 0)
-		return -1;
-
-	offset = fmap_top + rel_offset;
-	if (rdev_readat(bdev, &header, offset, sizeof(header)) < 0)
-		return -1;
-
-	header.magic = ntohl(header.magic);
-	header.romsize = ntohl(header.romsize);
-	header.offset = ntohl(header.offset);
-
-	if (header.magic != CBFS_HEADER_MAGIC)
-		return -1;
-
-	props->offset = header.offset;
-	props->size = header.romsize;
-	props->size -= props->offset;
-
-	printk(BIOS_SPEW, "CBFS @ %zx size %zx\n", props->offset, props->size);
-
-	return 0;
 }
 
 /*
@@ -399,5 +358,5 @@ static void vendor_secure_prepare(void)
 const struct cbfs_locator cbfs_master_header_locator = {
 	.name = "Vendorcode Header Locator",
 	.prepare = vendor_secure_prepare,
-	.locate = vendor_secure_locate
+	.locate = cbfs_master_header_props
 };

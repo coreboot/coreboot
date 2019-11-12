@@ -73,6 +73,9 @@ struct cbfs_props {
 	size_t size;
 };
 
+/* Default CBFS locator .locate() callback that locates "COREBOOT" region. */
+int cbfs_master_header_props(struct cbfs_props *props);
+
 /* Return < 0 on error otherwise props are filled out accordingly. */
 int cbfs_boot_region_properties(struct cbfs_props *props);
 

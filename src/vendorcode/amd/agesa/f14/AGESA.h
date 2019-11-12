@@ -369,7 +369,7 @@ typedef struct {
   IN       UINT8 Socket;                 ///< The Socket on which this Link is located
   IN       UINT8 Link;                   ///< The Link about to be initialized
   // Customization fields
-  IN       FINAL_LINK_STATE LinkState;   ///< The link may be left unitialized, or powered off.
+  IN       FINAL_LINK_STATE LinkState;   ///< The link may be left uninitialized, or powered off.
 } IGNORE_LINK;
 
 

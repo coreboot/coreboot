@@ -38,12 +38,14 @@ static void usage(char *argv[])
  *
  * Page table attributes: WB, User+Supervisor, Present, Writeable
  */
-#define PRES (1ULL << 0)
-#define RW   (1ULL << 1)
-#define US   (1ULL << 2)
-#define PS   (1ULL << 7)
-#define _GEN_DIR(a) (PRES | RW | US | (a))
-#define _GEN_PAGE(a) (PRES | RW | US | PS | (a))
+#define _PRES (1ULL << 0)
+#define _RW   (1ULL << 1)
+#define _US   (1ULL << 2)
+#define _A    (1ULL << 5)
+#define _D    (1ULL << 6)
+#define _PS   (1ULL << 7)
+#define _GEN_DIR(a) (_PRES | _RW | _US | _A | (a))
+#define _GEN_PAGE(a) (_PRES | _RW | _US | _PS | _A |  _D | (a))
 
 /*
  * Generate x86_64 page tables.

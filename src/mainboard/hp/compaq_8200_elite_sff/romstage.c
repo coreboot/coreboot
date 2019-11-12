@@ -27,10 +27,6 @@
 
 #define SERIAL_DEV PNP_DEV(0x2e, NPCD378_SP2)
 
-void pch_enable_lpc(void)
-{
-}
-
 const struct southbridge_usb_port mainboard_usb_ports[] = {
 	{ 1, 0, -1 },
 	{ 1, 0, -1 },

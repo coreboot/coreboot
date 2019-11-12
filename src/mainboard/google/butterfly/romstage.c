@@ -28,7 +28,7 @@
 #include <vendorcode/google/chromeos/chromeos.h>
 #endif
 
-void pch_enable_lpc(void)
+void mainboard_pch_lpc_setup(void)
 {
 	/* EC Decode Range Port60/64 and Port62/66 */
 	/* Enable EC and PS/2 Keyboard/Mouse*/

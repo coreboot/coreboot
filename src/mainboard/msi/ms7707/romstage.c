@@ -20,7 +20,7 @@
 #include <southbridge/intel/common/pmbase.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 
-void pch_enable_lpc(void)
+void mainboard_pch_lpc_setup(void)
 {
 	u16 reg16;
 	reg16 = pci_read_config16(PCI_DEV(0, 0x1f, 0), 0xa4);

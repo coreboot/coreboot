@@ -26,10 +26,6 @@
 #include <southbridge/intel/common/gpio.h>
 #include "ec/compal/ene932/ec.h"
 
-void pch_enable_lpc(void)
-{
-}
-
 void mainboard_late_rcba_config(void)
 {
 	u32 reg32;

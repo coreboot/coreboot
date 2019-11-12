@@ -24,10 +24,6 @@
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <ec/hp/kbc1126/ec.h>
 
-void pch_enable_lpc(void)
-{
-}
-
 void mainboard_late_rcba_config(void)
 {
 	RCBA32(BUC) = 0x00000000;

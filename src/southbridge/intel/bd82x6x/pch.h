@@ -75,6 +75,9 @@ void southbridge_rcba_config(void);
 /* Optional mainboard hook to do additional configuration
    on the RCBA config space. It is called after the raminit. */
 void mainboard_late_rcba_config(void);
+/* Optional mainboard hook to do additional LPC configuration
+   or to override what is set up by default. */
+void mainboard_pch_lpc_setup(void);
 void early_pch_init_native(void);
 void early_pch_init(void);
 void early_pch_init_native_dmi_pre(void);

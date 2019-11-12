@@ -25,10 +25,6 @@
 #include <superio/ite/it8783ef/it8783ef.h>
 #include <superio/ite/common/ite.h>
 
-void pch_enable_lpc(void)
-{
-}
-
 void mainboard_config_superio(void)
 {
 	const pnp_devfn_t dev = PNP_DEV(0x2e, IT8783EF_GPIO);

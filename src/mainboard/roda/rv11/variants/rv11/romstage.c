@@ -21,10 +21,6 @@
 #include <northbridge/intel/sandybridge/sandybridge.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 
-void pch_enable_lpc(void)
-{
-}
-
 void mainboard_config_superio(void)
 {
 }

@@ -27,7 +27,7 @@
 #include <southbridge/intel/common/gpio.h>
 #include <superio/winbond/common/winbond.h>
 
-void pch_enable_lpc(void)
+void mainboard_pch_lpc_setup(void)
 {
 	/* Set COM3/COM1 decode ranges: 0x3e8/0x3f8 */
 	pci_write_config16(PCH_LPC_DEV, LPC_IO_DEC, 0x0070);

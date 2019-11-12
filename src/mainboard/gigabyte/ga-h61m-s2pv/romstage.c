@@ -23,10 +23,6 @@
 #define SUPERIO_GPIO PNP_DEV(0x2e, IT8728F_GPIO)
 #define SERIAL_DEV PNP_DEV(0x2e, 0x01)
 
-void pch_enable_lpc(void)
-{
-}
-
 const struct southbridge_usb_port mainboard_usb_ports[] = {
 	{ 1, 0, 0 },
 	{ 1, 0, 0 },

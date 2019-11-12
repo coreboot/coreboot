@@ -28,7 +28,7 @@
 
 #define SIO_PORT 0x164e
 
-void pch_enable_lpc(void)
+void mainboard_pch_lpc_setup(void)
 {
 	pci_devfn_t dev = PCH_LPC_DEV;
 

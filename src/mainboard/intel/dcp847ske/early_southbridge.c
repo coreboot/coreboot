@@ -27,10 +27,6 @@
 #include "superio.h"
 #include "thermal.h"
 
-void pch_enable_lpc(void)
-{
-}
-
 void mainboard_late_rcba_config(void)
 {
 	/* Disable devices */

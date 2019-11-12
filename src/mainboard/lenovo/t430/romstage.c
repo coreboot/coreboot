@@ -49,10 +49,6 @@ static void hybrid_graphics_init(void)
 	pci_write_config32(PCI_DEV(0, 0, 0), DEVEN, reg32);
 }
 
-void pch_enable_lpc(void)
-{
-}
-
 /* FIXME: used T530 values here */
 const struct southbridge_usb_port mainboard_usb_ports[] = {
 	{ 1, 1,  0 },

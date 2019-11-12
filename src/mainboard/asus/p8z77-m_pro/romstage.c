@@ -30,10 +30,6 @@
 #define GLOBAL_DEV PNP_DEV(0x2e, 0)
 #define SERIAL_DEV PNP_DEV(0x2e, NCT6779D_SP2)
 
-void pch_enable_lpc(void)
-{
-}
-
 const struct southbridge_usb_port mainboard_usb_ports[] = {
 	/* {enable, current, oc_pin} */
 	{ 1, 2, 0 }, /* Port 0: USB3 front internal header, top */

@@ -286,12 +286,16 @@ static void pch_enable_lpc_decode(void)
 	pci_write_config32(PCH_LPC_DEV, LPC_GEN4_DEC, config->gen4_dec);
 }
 
+__weak void mainboard_pch_lpc_setup(void)
+{
+}
+
 void early_pch_init(void)
 {
 
 	pch_enable_lpc_decode();
 
-	pch_enable_lpc();
+	mainboard_pch_lpc_setup();
 
 	pch_enable_bars();
 

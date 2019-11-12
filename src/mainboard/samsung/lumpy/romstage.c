@@ -33,7 +33,7 @@
 #include <superio/smsc/lpc47n207/lpc47n207.h>
 #endif
 
-void pch_enable_lpc(void)
+void mainboard_pch_lpc_setup(void)
 {
 	/* Set COM1/COM2 decode range */
 	pci_write_config16(PCH_LPC_DEV, LPC_IO_DEC, 0x0010);

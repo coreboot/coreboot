@@ -20,7 +20,7 @@
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <cbfs.h>
 
-void pch_enable_lpc(void)
+void mainboard_pch_lpc_setup(void)
 {
 	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x82, 0x3f0f);
 	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x80, 0x0070);

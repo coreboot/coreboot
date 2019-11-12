@@ -25,7 +25,7 @@
 #define SIO_GPIO PNP_DEV(SUPERIO_BASE, IT8728F_GPIO)
 #define SERIAL_DEV PNP_DEV(SUPERIO_BASE, 0x01)
 
-void pch_enable_lpc(void)
+void mainboard_pch_lpc_setup(void)
 {
 	pci_write_config32(PCH_LPC_DEV, ETR3, 0x10000);
 }

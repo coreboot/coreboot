@@ -19,7 +19,7 @@
 #include <northbridge/intel/sandybridge/sandybridge.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 
-void pch_enable_lpc(void)
+void mainboard_pch_lpc_setup(void)
 {
 	pci_write_config32(PCH_LPC_DEV, ETR3, 0x10000);
 }

@@ -30,7 +30,7 @@
 #include "ec.h"
 #include "onboard.h"
 
-void pch_enable_lpc(void)
+void mainboard_pch_lpc_setup(void)
 {
 	/*
 	 * Enable:

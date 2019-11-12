@@ -27,10 +27,6 @@
 #define SIO_DEV		PNP_DEV(SIO_PORT, 0)
 #define ACPI_DEV	PNP_DEV(SIO_PORT, NCT6779D_ACPI)
 
-void pch_enable_lpc(void)
-{
-}
-
 const struct southbridge_usb_port mainboard_usb_ports[] = {
 	{ 1, 0, 0 },
 	{ 1, 0, 0 },

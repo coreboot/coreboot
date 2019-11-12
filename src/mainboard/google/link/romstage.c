@@ -32,7 +32,7 @@
 
 #include <southbridge/intel/bd82x6x/chip.h>
 
-void pch_enable_lpc(void)
+void mainboard_pch_lpc_setup(void)
 {
 	/* Enable PS/2 Keyboard/Mouse, EC areas and COM1 */
 	pci_write_config16(PCH_LPC_DEV, LPC_EN, KBC_LPC_EN | MC_LPC_EN | \

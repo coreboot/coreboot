@@ -30,7 +30,7 @@ void pch_enable_lpc(void)
 {
 }
 
-void mainboard_rcba_config(void)
+void mainboard_late_rcba_config(void)
 {
 	u32 reg32;
 

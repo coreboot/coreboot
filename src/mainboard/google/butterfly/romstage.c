@@ -35,7 +35,7 @@ void pch_enable_lpc(void)
 	pci_write_config16(PCH_LPC_DEV, LPC_EN, KBC_LPC_EN | MC_LPC_EN);
 }
 
-void mainboard_rcba_config(void)
+void mainboard_late_rcba_config(void)
 {
 	u32 reg32;
 

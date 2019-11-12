@@ -16,7 +16,7 @@
 #include <northbridge/intel/sandybridge/sandybridge.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 
-void mainboard_rcba_config(void)
+void mainboard_late_rcba_config(void)
 {
 	u32 reg32;
 

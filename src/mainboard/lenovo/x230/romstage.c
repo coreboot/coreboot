@@ -29,10 +29,6 @@ void pch_enable_lpc(void)
 	pci_write_config32(PCH_LPC_DEV, ETR3, 0x10000);
 }
 
-void mainboard_rcba_config(void)
-{
-}
-
 const struct southbridge_usb_port mainboard_usb_ports[] = {
 	{ 1, 0, 0 }, /* P0 (left, fan side), OC 0 */
 	{ 1, 0, 1 }, /* P1 (left touchpad side), OC 1 */

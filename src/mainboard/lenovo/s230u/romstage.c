@@ -42,7 +42,7 @@ void pch_enable_lpc(void)
 		ec_mm_set_bit(0x3b, 4);
 }
 
-void mainboard_rcba_config(void)
+void mainboard_late_rcba_config(void)
 {
 	/* Disable devices.  */
 	RCBA32(BUC) = 0x00000020;

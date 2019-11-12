@@ -25,10 +25,6 @@ void pch_enable_lpc(void)
 {
 }
 
-void mainboard_rcba_config(void)
-{
-}
-
 const struct southbridge_usb_port mainboard_usb_ports[] = {
 	{ 1, 1, 0 }, /* SSP1: dock */
 	{ 1, 1, 0 }, /* SSP2: left, EHCI Debug */

@@ -47,10 +47,6 @@ void pch_enable_lpc(void)
 			CNF1_LPC_EN | KBC_LPC_EN | LPT_LPC_EN | COMA_LPC_EN);
 }
 
-void mainboard_rcba_config(void)
-{
-}
-
 void mainboard_config_superio(void)
 {
 	nuvoton_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);

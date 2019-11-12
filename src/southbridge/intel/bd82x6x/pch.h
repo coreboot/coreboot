@@ -72,7 +72,9 @@ int smbus_read_byte(unsigned int device, unsigned int address);
 void early_thermal_init(void);
 void southbridge_configure_default_intmap(void);
 void southbridge_rcba_config(void);
-void mainboard_rcba_config(void);
+/* Optional mainboard hook to do additional configuration
+   on the RCBA config space. It is called after the raminit. */
+void mainboard_late_rcba_config(void);
 void early_pch_init_native(void);
 void early_pch_init(void);
 void early_pch_init_native_dmi_pre(void);

@@ -34,6 +34,10 @@ __weak void mainboard_early_init(int s3_resume)
 {
 }
 
+__weak void mainboard_late_rcba_config(void)
+{
+}
+
 static void early_pch_reset_pmcon(void)
 {
 	u8 reg8;
@@ -100,7 +104,7 @@ void mainboard_romstage_entry(void)
 
 	southbridge_configure_default_intmap();
 	southbridge_rcba_config();
-	mainboard_rcba_config();
+	mainboard_late_rcba_config();
 
 	post_code(0x3d);
 

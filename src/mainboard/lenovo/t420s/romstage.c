@@ -54,10 +54,6 @@ void pch_enable_lpc(void)
 	pci_write_config32(PCH_LPC_DEV, ETR3, 0x10000);
 }
 
-void mainboard_rcba_config(void)
-{
-}
-
 const struct southbridge_usb_port mainboard_usb_ports[] = {
 	{ 0, 1, -1 }, /* P0 empty */
 	{ 1, 1,  1 }, /* P1 system port 2 (To system port) (EHCI debug), OC 1 */

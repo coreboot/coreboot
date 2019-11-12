@@ -87,7 +87,7 @@ void mainboard_get_spd(spd_raw_data *spd, bool id_only)
 	read_spd(&spd[3], 0x53, id_only);
 }
 
-void mainboard_rcba_config(void)
+void mainboard_late_rcba_config(void)
 {
 	/* Enable HECI */
 	RCBA32(FD2) &= ~0x2;

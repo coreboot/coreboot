@@ -39,7 +39,7 @@ void pch_enable_lpc(void)
 #endif
 }
 
-void mainboard_rcba_config(void)
+void mainboard_late_rcba_config(void)
 {
 	RCBA32(0x3414) = 0x00000000;
 }

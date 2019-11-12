@@ -54,10 +54,6 @@ void pch_enable_lpc(void)
 	pci_write_config32(PCH_LPC_DEV, ETR3, 0x10000);
 }
 
-void mainboard_rcba_config(void)
-{
-}
-
 // OC3 set in bios to port 2-7, OC7 set in bios to port 10-13
 const struct southbridge_usb_port mainboard_usb_ports[] = {
 	{ 1, 1,  0 }, /* P0: system port 4, OC0 */

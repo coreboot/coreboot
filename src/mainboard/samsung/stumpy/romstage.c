@@ -62,7 +62,7 @@ void pch_enable_lpc(void)
 #endif
 }
 
-void mainboard_rcba_config(void)
+void mainboard_late_rcba_config(void)
 {
 	/*
 	 *             GFX    INTA -> PIRQA (MSI)

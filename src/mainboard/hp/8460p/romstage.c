@@ -27,10 +27,6 @@ void pch_enable_lpc(void)
 {
 }
 
-void mainboard_rcba_config(void)
-{
-}
-
 const struct southbridge_usb_port mainboard_usb_ports[] = {
 	{ 1, 1, 0 }, /* USB0, eSATA */
 	{ 1, 0, 0 }, /* USB charger */

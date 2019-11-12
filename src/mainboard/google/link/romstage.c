@@ -39,7 +39,7 @@ void pch_enable_lpc(void)
 			   GAMEL_LPC_EN | COMA_LPC_EN);
 }
 
-void mainboard_rcba_config(void)
+void mainboard_late_rcba_config(void)
 {
 	/*
 	 *             GFX    INTA -> PIRQA (MSI)

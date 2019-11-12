@@ -28,10 +28,6 @@ void pch_enable_lpc(void)
 	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0xa4, reg16);
 }
 
-void mainboard_rcba_config(void)
-{
-}
-
 const struct southbridge_usb_port mainboard_usb_ports[] = {
 	{1, 0, 0},
 	{1, 0, 0},

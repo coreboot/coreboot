@@ -68,10 +68,6 @@ static uint8_t *get_spd_data(int spd_index)
 	return spd_file + spd_index * 256;
 }
 
-void mainboard_rcba_config(void)
-{
-}
-
 void mainboard_get_spd(spd_raw_data *spd, bool id_only)
 {
 	uint8_t *memory;

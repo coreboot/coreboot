@@ -44,10 +44,6 @@ void pch_enable_lpc(void)
 {
 }
 
-void mainboard_rcba_config(void)
-{
-}
-
 void mainboard_config_superio(void)
 {
 	static const pnp_devfn_t GLOBAL_PSEUDO_DEV = PNP_DEV(0x2e, 0);

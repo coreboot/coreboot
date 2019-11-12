@@ -34,10 +34,6 @@ void pch_enable_lpc(void)
 {
 }
 
-void mainboard_rcba_config(void)
-{
-}
-
 const struct southbridge_usb_port mainboard_usb_ports[] = {
 	/* {enable, current, oc_pin} */
 	{ 1, 2, 0 }, /* Port 0: USB3 front internal header, top */

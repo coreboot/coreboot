@@ -43,7 +43,7 @@ void pch_enable_lpc(void)
 			   COMA_LPC_EN | COMB_LPC_EN);
 }
 
-void mainboard_rcba_config(void)
+void mainboard_late_rcba_config(void)
 {
 	u32 reg32;
 

@@ -24,10 +24,6 @@ void pch_enable_lpc(void)
 {
 }
 
-void mainboard_rcba_config(void)
-{
-}
-
 const struct southbridge_usb_port mainboard_usb_ports[] = {
 	{1, 1, 0},	/* P0: USB 3.0 1 (OC0) */
 	{1, 1, 0},	/* P1: USB 3.0 2 (OC0) */

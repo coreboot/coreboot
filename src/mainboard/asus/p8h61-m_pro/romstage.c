@@ -32,10 +32,6 @@ void pch_enable_lpc(void)
 			KBC_LPC_EN | LPT_LPC_EN | COMA_LPC_EN);
 }
 
-void mainboard_rcba_config(void)
-{
-}
-
 const struct southbridge_usb_port mainboard_usb_ports[] = {
 	{ 1, 0, 0 },
 	{ 1, 0, 0 },

@@ -43,11 +43,6 @@ void pch_enable_lpc(void)
 	}
 }
 
-void mainboard_rcba_config(void)
-{
-	southbridge_configure_default_intmap();
-}
-
 void mainboard_config_superio(void)
 {
 	const u16 port = SIO_PORT;

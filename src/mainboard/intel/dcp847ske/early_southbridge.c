@@ -31,7 +31,7 @@ void pch_enable_lpc(void)
 {
 }
 
-void mainboard_rcba_config(void)
+void mainboard_late_rcba_config(void)
 {
 	/* Disable devices */
 	RCBA32(FD) |= PCH_DISABLE_P2P | PCH_DISABLE_XHCI;

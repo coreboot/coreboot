@@ -56,10 +56,6 @@ void pch_enable_lpc(void)
 	pci_write_config32(PCH_LPC_DEV, ETR3, 0x10000);
 }
 
-void mainboard_rcba_config(void)
-{
-}
-
 void mainboard_early_init(int s3resume)
 {
 	hybrid_graphics_init();

@@ -18,22 +18,14 @@
 
 /* Macro to access Local APIC registers at default base. */
 #define LAPIC(x)		$(LAPIC_DEFAULT_BASE | LAPIC_ ## x)
-#if !CONFIG(C_ENVIRONMENT_BOOTBLOCK)
-/* Fixed location, ASSERTED in failover.ld if it changes. */
-.set ap_sipi_vector_in_rom, 0xff
-#endif
 
 #define CACHE_AS_RAM_SIZE CONFIG_DCACHE_RAM_SIZE
 #define CACHE_AS_RAM_BASE CONFIG_DCACHE_RAM_BASE
 
-#if CONFIG(C_ENVIRONMENT_BOOTBLOCK)
 #if ((CONFIG_C_ENV_BOOTBLOCK_SIZE & (CONFIG_C_ENV_BOOTBLOCK_SIZE - 1)) != 0)
 #error "CONFIG_C_ENV_BOOTBLOCK_SIZE must be a power of 2!"
 #endif
 #define XIP_ROM_SIZE CONFIG_C_ENV_BOOTBLOCK_SIZE
-#else
-#define XIP_ROM_SIZE CONFIG_XIP_ROM_SIZE
-#endif
 
 .global bootblock_pre_c_entry
 

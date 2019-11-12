@@ -14,14 +14,13 @@
  */
 
 #include <device/pci_ops.h>
+#include <cpu/intel/car/bootblock.h>
 #include "i82801gx.h"
 
 static void enable_spi_prefetch(void)
 {
 	u8 reg8;
-	pci_devfn_t dev;
-
-	dev = PCI_DEV(0, 0x1f, 0);
+	pci_devfn_t dev = PCI_DEV(0, 0x1f, 0);
 
 	reg8 = pci_read_config8(dev, BIOS_CNTL);
 	reg8 &= ~(3 << 2);
@@ -29,13 +28,17 @@ static void enable_spi_prefetch(void)
 	pci_write_config8(dev, BIOS_CNTL, reg8);
 }
 
-static void bootblock_southbridge_init(void)
+void bootblock_early_southbridge_init(void)
 {
 	enable_spi_prefetch();
 
-	/* Enable RCBA */
-	pci_write_config32(PCI_DEV(0, 0x1f, 0), RCBA, (uintptr_t)DEFAULT_RCBA | 1);
+	i82801gx_setup_bars();
 
 	/* Enable upper 128bytes of CMOS */
 	RCBA32(0x3400) = (1 << 2);
+
+	/* Disable watchdog timer */
+	RCBA32(GCS) = RCBA32(GCS) | 0x20;
+
+	i82801gx_lpc_setup();
 }

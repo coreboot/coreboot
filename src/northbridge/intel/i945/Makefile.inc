@@ -15,6 +15,8 @@
 
 ifeq ($(CONFIG_NORTHBRIDGE_INTEL_I945),y)
 
+bootblock-y += bootblock.c
+
 ramstage-y += memmap.c
 ramstage-y += northbridge.c
 ramstage-y += gma.c

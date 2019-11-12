@@ -11,12 +11,11 @@
  * GNU General Public License for more details.
  */
 
+#include <cpu/intel/car/bootblock.h>
 #include <device/pci_ops.h>
+#include "i945.h"
 
-/* Just re-define this instead of including i945.h. It blows up romcc. */
-#define PCIEXBAR	0x48
-
-static void bootblock_northbridge_init(void)
+void bootblock_early_northbridge_init(void)
 {
 	uint32_t reg;
 

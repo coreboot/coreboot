@@ -8,6 +8,11 @@ config SOCKET_SPECIFIC_OPTIONS # dummy
 	select CPU_INTEL_MODEL_106CX
 	select MMX
 	select SSE
+	select SETUP_XIP_CACHE
+
+config C_ENV_BOOTBLOCK_SIZE
+	hex
+	default 0x4000
 
 config DCACHE_RAM_BASE
 	hex
@@ -16,5 +21,9 @@ config DCACHE_RAM_BASE
 config DCACHE_RAM_SIZE
 	hex
 	default 0x8000
+
+config DCACHE_BSP_STACK_SIZE
+	hex
+	default 0x2000
 
 endif # CPU_INTEL_SOCKET_441

@@ -27,15 +27,13 @@ config NORTHBRIDGE_SPECIFIC_OPTIONS # dummy
 	select INTEL_EDID
 	select HAVE_VGA_TEXT_FRAMEBUFFER if MAINBOARD_DO_NATIVE_VGA_INIT
 	select PARALLEL_MP
+	select C_ENVIRONMENT_BOOTBLOCK
+	select NO_BOOTBLOCK_CONSOLE
 
 config NORTHBRIDGE_INTEL_SUBTYPE_I945GC
 	def_bool n
 config NORTHBRIDGE_INTEL_SUBTYPE_I945GM
 	def_bool n
-
-config BOOTBLOCK_NORTHBRIDGE_INIT
-	string
-	default "northbridge/intel/i945/bootblock.c"
 
 config VGA_BIOS_ID
 	string

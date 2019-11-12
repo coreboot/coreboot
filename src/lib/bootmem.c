@@ -238,7 +238,7 @@ void *bootmem_allocate_buffer(size_t size)
 	resource_t end;
 
 	if (!bootmem_is_initialized()) {
-		printk(BIOS_ERR, "%s: lib unitialized!\n", __func__);
+		printk(BIOS_ERR, "%s: lib uninitialized!\n", __func__);
 		return NULL;
 	}
 

@@ -30,4 +30,6 @@ ramstage-$(CONFIG_BOARD_GOOGLE_KODAMA) += panel_kodama.c
 ramstage-$(CONFIG_BOARD_GOOGLE_KRANE) += panel_krane.c
 ramstage-$(CONFIG_BOARD_GOOGLE_KUKUI) += panel_kukui.c
 ramstage-$(CONFIG_DRIVER_PARADE_PS8640) += panel_ps8640.c
+ramstage-$(CONFIG_DRIVER_ANALOGIX_ANX7625) += panel_anx7625.c
+
 ramstage-y += reset.c

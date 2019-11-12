@@ -1,18 +1,20 @@
 #ifndef CPU_X86_LAPIC_H
 #define CPU_X86_LAPIC_H
 
+#include <arch/mmio.h>
 #include <cpu/x86/lapic_def.h>
 #include <cpu/x86/msr.h>
 #include <halt.h>
+#include <stdint.h>
 
-static __always_inline unsigned long lapic_read(unsigned long reg)
+static __always_inline uint32_t lapic_read(unsigned int reg)
 {
-	return *((volatile unsigned long *)(LAPIC_DEFAULT_BASE+reg));
+	return read32((volatile void *)(LAPIC_DEFAULT_BASE + reg));
 }
 
-static __always_inline void lapic_write(unsigned long reg, unsigned long v)
+static __always_inline void lapic_write(unsigned int reg, uint32_t v)
 {
-	*((volatile unsigned long *)(LAPIC_DEFAULT_BASE+reg)) = v;
+	write32((volatile void *)(LAPIC_DEFAULT_BASE + reg), v);
 }
 
 static __always_inline void lapic_wait_icr_idle(void)
@@ -39,7 +41,7 @@ static inline void disable_lapic(void)
 	wrmsr(LAPIC_BASE_MSR, msr);
 }
 
-static __always_inline unsigned long lapicid(void)
+static __always_inline unsigned int lapicid(void)
 {
 	return lapic_read(LAPIC_ID) >> 24;
 }
@@ -57,58 +59,19 @@ static __always_inline void stop_this_cpu(void)
 void stop_this_cpu(void);
 #endif
 
-#define xchg(ptr, v) ((__typeof__(*(ptr)))__xchg((unsigned long)(v), (ptr), \
-	sizeof(*(ptr))))
-
-struct __xchg_dummy { unsigned long a[100]; };
-#define __xg(x) ((struct __xchg_dummy *)(x))
-
-/*
- * Note: no "lock" prefix even on SMP: xchg always implies lock anyway
- * Note 2: xchg has side effect, so that attribute volatile is necessary,
- *	  but generally the primitive is invalid, *ptr is output argument. --ANK
- */
-static inline unsigned long __xchg(unsigned long x, volatile void *ptr,
-	int size)
+static inline void lapic_write_atomic(unsigned long reg, uint32_t v)
 {
-	switch (size) {
-	case 1:
-		__asm__ __volatile__("xchgb %b0,%1"
-			: "=q" (x)
-			: "m" (*__xg(ptr)), "0" (x)
-			: "memory");
-		break;
-	case 2:
-		__asm__ __volatile__("xchgw %w0,%1"
-			: "=r" (x)
-			: "m" (*__xg(ptr)), "0" (x)
-			: "memory");
-		break;
-	case 4:
-		__asm__ __volatile__("xchgl %0,%1"
-			: "=r" (x)
-			: "m" (*__xg(ptr)), "0" (x)
-			: "memory");
-		break;
-	}
-	return x;
+	volatile uint32_t *ptr;
+
+	ptr = (volatile uint32_t *)(LAPIC_DEFAULT_BASE + reg);
+
+	asm volatile ("xchgl %0, %1\n"
+		      : "+r" (v), "+m" (*(ptr))
+		      : : "memory", "cc");
 }
 
-static inline void lapic_write_atomic(unsigned long reg, unsigned long v)
-{
-	(void)xchg((volatile unsigned long *)(LAPIC_DEFAULT_BASE+reg), v);
-}
-
-
-#ifdef X86_GOOD_APIC
-# define FORCE_READ_AROUND_WRITE 0
-# define lapic_read_around(x) lapic_read(x)
-# define lapic_write_around(x, y) lapic_write((x), (y))
-#else
-# define FORCE_READ_AROUND_WRITE 1
 # define lapic_read_around(x) lapic_read(x)
 # define lapic_write_around(x, y) lapic_write_atomic((x), (y))
-#endif
 
 void do_lapic_init(void);
 

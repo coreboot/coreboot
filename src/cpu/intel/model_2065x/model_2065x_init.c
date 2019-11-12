@@ -228,7 +228,7 @@ static void model_2065x_init(struct device *cpu)
 	/* Print processor name */
 	fill_processor_name(processor_name);
 	printk(BIOS_INFO, "CPU: %s.\n", processor_name);
-	printk(BIOS_INFO, "CPU:lapic=%ld, boot_cpu=%d\n", lapicid(),
+	printk(BIOS_INFO, "CPU:lapic=%d, boot_cpu=%d\n", lapicid(),
 		boot_cpu());
 
 	/* Setup Page Attribute Tables (PAT) */

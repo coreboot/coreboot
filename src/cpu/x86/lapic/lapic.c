@@ -47,6 +47,6 @@ void do_lapic_init(void)
 			LAPIC_DELIVERY_MODE_NMI)
 		);
 
-	printk(BIOS_DEBUG, " apic_id: 0x%02lx ", lapicid());
+	printk(BIOS_DEBUG, " apic_id: 0x%02x ", lapicid());
 	printk(BIOS_INFO, "done.\n");
 }

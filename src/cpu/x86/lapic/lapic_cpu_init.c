@@ -91,7 +91,7 @@ static void recover_lowest_1M(void)
 static int lapic_start_cpu(unsigned long apicid)
 {
 	int timeout;
-	unsigned long send_status, accept_status;
+	uint32_t send_status, accept_status;
 	int j, maxlvt;
 
 	/*
@@ -123,11 +123,11 @@ static int lapic_start_cpu(unsigned long apicid)
 		printk(BIOS_ERR, "CPU %ld: First APIC write timed out. "
 			"Disabling\n", apicid);
 		// too bad.
-		printk(BIOS_ERR, "ESR is 0x%lx\n", lapic_read(LAPIC_ESR));
+		printk(BIOS_ERR, "ESR is 0x%x\n", lapic_read(LAPIC_ESR));
 		if (lapic_read(LAPIC_ESR)) {
 			printk(BIOS_ERR, "Try to reset ESR\n");
 			lapic_write_around(LAPIC_ESR, 0);
-			printk(BIOS_ERR, "ESR is 0x%lx\n",
+			printk(BIOS_ERR, "ESR is 0x%x\n",
 				lapic_read(LAPIC_ESR));
 		}
 		return 0;
@@ -216,7 +216,7 @@ static int lapic_start_cpu(unsigned long apicid)
 	if (send_status)
 		printk(BIOS_WARNING, "APIC never delivered???\n");
 	if (accept_status)
-		printk(BIOS_WARNING, "APIC delivery error (%lx).\n",
+		printk(BIOS_WARNING, "APIC delivery error (%x).\n",
 			accept_status);
 	if (send_status || accept_status)
 		return 0;

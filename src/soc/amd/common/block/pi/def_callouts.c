@@ -195,7 +195,7 @@ static void callout_ap_entry(void *unused)
 	Status = amd_late_run_ap_task(agesadata.ConfigPtr);
 
 	if (Status)
-		printk(BIOS_DEBUG, "There was a problem with %lx returned %s\n",
+		printk(BIOS_DEBUG, "There was a problem with %x returned %s\n",
 			lapicid(), decodeAGESA_STATUS(Status));
 }
 

@@ -13,8 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#define __SIMPLE_DEVICE__
-
 #include <arch/romstage.h>
 #include <device/pci_ops.h>
 #include <cbmem.h>

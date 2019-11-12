@@ -18,6 +18,7 @@
 #include <device/pci_ops.h>
 #include <device/pci_ids.h>
 #include <device/pci_type.h>
+#include <cpu/intel/car/bootblock.h>
 #include "i82371eb.h"
 
 #define PCI_ID(VENDOR_ID, DEVICE_ID) \
@@ -34,7 +35,13 @@ static pci_devfn_t pci_locate_device(unsigned int pci_id, pci_devfn_t dev)
 	return PCI_DEV_INVALID;
 }
 
-static void bootblock_southbridge_init(void)
+/* TODO: Does not need to happen before console init. */
+/* The whole rom is not accessible before this so limit
+   the bootblock size. */
+#if CONFIG_C_ENV_BOOTBLOCK_SIZE > 0x10000
+#error "CONFIG_C_ENV_BOOTBLOCK_SIZE needs to be below 64KiB"
+#endif
+void bootblock_early_southbridge_init(void)
 {
 	u16 reg16;
 	pci_devfn_t dev;

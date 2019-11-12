@@ -16,6 +16,8 @@
 
 ifeq ($(CONFIG_SOUTHBRIDGE_INTEL_I82371EB),y)
 
+bootblock-y += bootblock.c
+
 ramstage-y +=  i82371eb.c
 ramstage-y +=  isa.c
 ramstage-y +=  ide.c

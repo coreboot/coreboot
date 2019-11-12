@@ -27,7 +27,6 @@ config SLOT_SPECIFIC_OPTIONS # dummy
 	select UDELAY_TSC
 	select TSC_MONOTONIC_TIMER
 	select UNKNOWN_TSC_RATE
-	select ROMCC_BOOTBLOCK
 
 config DCACHE_RAM_BASE
 	hex
@@ -36,5 +35,13 @@ config DCACHE_RAM_BASE
 config DCACHE_RAM_SIZE
 	hex
 	default 0x02000
+
+config DCACHE_BSP_STACK_SIZE
+	hex
+	default 0x1000
+
+config C_ENV_BOOTBLOCK_SIZE
+	hex
+	default 0x2000
 
 endif

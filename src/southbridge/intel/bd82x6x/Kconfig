@@ -57,10 +57,6 @@ config DRAM_RESET_GATE_GPIO
 	int
 	default 60
 
-config BOOTBLOCK_SOUTHBRIDGE_INIT
-	string
-	default "southbridge/intel/bd82x6x/bootblock.c"
-
 config SERIRQ_CONTINUOUS_MODE
 	bool
 	default n

@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <cpu/intel/car/bootblock.h>
 #include <device/pci_ops.h>
 #include "pch.h"
 
@@ -32,18 +33,8 @@ static void enable_spi_prefetch(void)
 
 static void enable_port80_on_lpc(void)
 {
-	pci_devfn_t dev = PCH_LPC_DEV;
-
 	/* Enable port 80 POST on LPC */
-	pci_write_config32(dev, RCBA, (uintptr_t)DEFAULT_RCBA | 1);
-#if 0
 	RCBA32(GCS) &= (~0x04);
-#else
-	volatile u32 *gcs = (volatile u32 *)(DEFAULT_RCBA + GCS);
-	u32 reg32 = *gcs;
-	reg32 = reg32 & ~0x04;
-	*gcs = reg32;
-#endif
 }
 
 static void set_spi_speed(void)
@@ -66,9 +57,12 @@ static void set_spi_speed(void)
 	RCBA8(0x3893) = ssfc;
 }
 
-static void bootblock_southbridge_init(void)
+void bootblock_early_southbridge_init(void)
 {
 	enable_spi_prefetch();
+
+	early_pch_init();
+
 	enable_port80_on_lpc();
 	set_spi_speed();
 

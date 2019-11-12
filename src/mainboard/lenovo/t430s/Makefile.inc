@@ -14,6 +14,7 @@
 ##
 
 smm-y += smihandler.c
+bootblock-y += variants/$(VARIANT_DIR)/gpio.c
 romstage-y += variants/$(VARIANT_DIR)/gpio.c
 romstage-y += variants/$(VARIANT_DIR)/romstage.c
 ramstage-y += variants/$(VARIANT_DIR)/hda_verb.c

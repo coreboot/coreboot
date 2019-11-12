@@ -15,6 +15,9 @@
 
 ifeq ($(CONFIG_SOUTHBRIDGE_INTEL_C216)$(CONFIG_SOUTHBRIDGE_INTEL_BD82X6X),y)
 
+bootblock-y += bootblock.c
+bootblock-y += early_pch.c
+
 ramstage-y += pch.c
 ramstage-y += azalia.c
 ramstage-y += lpc.c

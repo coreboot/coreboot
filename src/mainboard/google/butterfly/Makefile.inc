@@ -17,6 +17,7 @@ ramstage-y += ec.c
 
 romstage-y += chromeos.c
 ramstage-y += chromeos.c
+bootblock-y += gpio.c
 romstage-y += gpio.c
 
 smm-y += mainboard_smi.c

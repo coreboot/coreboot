@@ -1,3 +1,4 @@
+bootblock-y += gpio.c
 romstage-y += gpio.c
 ramstage-y += ec.c
 smm-y += smihandler.c

@@ -15,6 +15,8 @@
 
 ifeq ($(CONFIG_NORTHBRIDGE_INTEL_SANDYBRIDGE),y)
 
+bootblock-y += bootblock.c
+
 ramstage-y += memmap.c
 ramstage-y += northbridge.c
 ramstage-y += pcie.c
@@ -44,7 +46,6 @@ mrc.bin-type := mrc
 endif
 romstage-y += romstage.c
 romstage-y += early_init.c
-romstage-y += ../../../arch/x86/walkcbfs.S
 
 smm-y += finalize.c
 

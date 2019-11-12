@@ -12,11 +12,10 @@
  */
 
 #include <device/pci_ops.h>
+#include <cpu/intel/car/bootblock.h>
+#include "sandybridge.h"
 
-/* Just re-define this instead of including sandybridge.h. It blows up romcc. */
-#define PCIEXBAR	0x60
-
-static void bootblock_northbridge_init(void)
+void bootblock_early_northbridge_init(void)
 {
 	uint32_t reg;
 

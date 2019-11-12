@@ -14,6 +14,7 @@
 ##
 
 romstage-y += romstage.c
+bootblock-y += gpio.c
 romstage-y += gpio.c
 smm-y += smihandler.c
 

@@ -13,4 +13,5 @@
 ## GNU General Public License for more details.
 ##
 
+bootblock-y += gpio.c
 romstage-y += gpio.c

@@ -68,6 +68,9 @@
 #define MEI_HDR_CSE_ADDR_START	0
 #define MEI_HDR_CSE_ADDR	(((1 << 8) - 1) << MEI_HDR_CSE_ADDR_START)
 
+/* Wait up to 5 seconds for CSE to boot from RO(BP1) */
+#define CSE_DELAY_BOOT_TO_RO (5 * 1000)
+
 static struct cse_device {
 	uintptr_t sec_bar;
 } cse;
@@ -300,6 +303,26 @@ uint8_t cse_wait_sec_override_mode(void)
 		}
 	}
 	printk(BIOS_DEBUG, "HECI: CSE took %lu ms to enter security override mode\n",
+			stopwatch_duration_msecs(&sw));
+	return 1;
+}
+
+/*
+ * Polls for CSE's current operation mode 'Soft Temporary Disable'.
+ * The CSE enters the current operation mode when it boots from RO(BP1).
+ */
+uint8_t cse_wait_com_soft_temp_disable(void)
+{
+	struct stopwatch sw;
+	stopwatch_init_msecs_expire(&sw, CSE_DELAY_BOOT_TO_RO);
+	while (!cse_is_hfs1_com_soft_temp_disable()) {
+		udelay(HECI_DELAY);
+		if (stopwatch_expired(&sw)) {
+			printk(BIOS_ERR, "HECI: Timed out waiting for CSE to boot from RO!\n");
+			return 0;
+		}
+	}
+	printk(BIOS_SPEW, "HECI: CSE took %lu ms to boot from RO\n",
 			stopwatch_duration_msecs(&sw));
 	return 1;
 }

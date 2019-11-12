@@ -192,4 +192,9 @@ bool cse_is_hfs1_com_soft_temp_disable(void);
  */
 bool cse_is_hfs3_fw_sku_custom(void);
 
+/*
+ * Polls for CSE's current operation mode 'Soft Temp Disable'.
+ * Returns 0 on failure and 1 on success.
+ */
+uint8_t cse_wait_com_soft_temp_disable(void);
 #endif // SOC_INTEL_COMMON_CSE_H

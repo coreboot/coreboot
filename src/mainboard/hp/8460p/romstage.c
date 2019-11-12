@@ -48,10 +48,6 @@ const struct southbridge_usb_port mainboard_usb_ports[] = {
 	{ 1, 0, 6 }, /* docking */
 };
 
-void mainboard_early_init(int s3resume)
-{
-}
-
 void mainboard_config_superio(void)
 {
 	lpc47n217_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);

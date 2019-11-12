@@ -51,10 +51,6 @@ void mainboard_rcba_config(void)
 {
 }
 
-void mainboard_early_init(int s3resume)
-{
-}
-
 void mainboard_config_superio(void)
 {
 	nuvoton_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);

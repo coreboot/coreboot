@@ -27,10 +27,6 @@ void mainboard_rcba_config(void)
 	RCBA32(FD) = reg32;
 }
 
-void mainboard_early_init(int s3resume)
-{
-}
-
 int mainboard_should_reset_usb(int s3resume)
 {
 	return !s3resume;

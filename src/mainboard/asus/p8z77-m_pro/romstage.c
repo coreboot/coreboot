@@ -56,10 +56,6 @@ const struct southbridge_usb_port mainboard_usb_ports[] = {
 	{ 0, 2, 6 }  /* Port 13: Unused. Asus propietary DEBUG_PORT ??? */
 };
 
-void mainboard_early_init(int s3resume)
-{
-}
-
 void mainboard_config_superio(void)
 {
 	/* Setup COM/UART */

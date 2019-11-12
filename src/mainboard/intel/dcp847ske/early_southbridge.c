@@ -52,10 +52,6 @@ void mainboard_rcba_config(void)
 	MCHBAR32(0x0104) |= 0x00001000;
 }
 
-void mainboard_early_init(int s3resume)
-{
-}
-
 static const u16 hwm_initvals[] = {
 	HWM_BANK(0),
 	HWM_INITVAL(0xae, 0x01), /* Enable PECI Agent0 */

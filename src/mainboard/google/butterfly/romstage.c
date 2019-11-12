@@ -112,10 +112,6 @@ void mainboard_get_spd(spd_raw_data *spd, bool id_only)
 	read_spd(&spd[2], 0x52, id_only);
 }
 
-void mainboard_early_init(int s3resume)
-{
-}
-
 void mainboard_config_superio(void)
 {
 }

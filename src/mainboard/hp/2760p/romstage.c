@@ -44,10 +44,6 @@ const struct southbridge_usb_port mainboard_usb_ports[] = {
 	{ 1, 1, 6 },
 };
 
-void mainboard_early_init(int s3resume)
-{
-}
-
 void mainboard_config_superio(void)
 {
 	kbc1126_enter_conf();

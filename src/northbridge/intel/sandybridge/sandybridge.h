@@ -213,6 +213,8 @@ void northbridge_romstage_finalize(int s3resume);
 void early_init_dmi(void);
 
 void pch_enable_lpc(void);
+/* mainboard_early_init: Optional mainboard callback run after console init
+   but before raminit. */
 void mainboard_early_init(int s3resume);
 void mainboard_config_superio(void);
 int mainboard_should_reset_usb(int s3resume);

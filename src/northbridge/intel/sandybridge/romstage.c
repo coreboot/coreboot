@@ -30,6 +30,10 @@
 #include <southbridge/intel/common/pmclib.h>
 #include <elog.h>
 
+__weak void mainboard_early_init(int s3_resume)
+{
+}
+
 static void early_pch_reset_pmcon(void)
 {
 	u8 reg8;

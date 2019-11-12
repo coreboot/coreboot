@@ -49,10 +49,6 @@ const struct southbridge_usb_port mainboard_usb_ports[] = {
 	{1, 0, 6},
 };
 
-void mainboard_early_init(int s3resume)
-{
-}
-
 void mainboard_config_superio(void)
 {
 }

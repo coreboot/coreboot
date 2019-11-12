@@ -215,7 +215,6 @@ void early_init_dmi(void);
 /* mainboard_early_init: Optional mainboard callback run after console init
    but before raminit. */
 void mainboard_early_init(int s3resume);
-void mainboard_config_superio(void);
 int mainboard_should_reset_usb(int s3resume);
 void perform_raminit(int s3resume);
 enum platform_type get_platform_type(void);

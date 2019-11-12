@@ -16,6 +16,7 @@
  * GNU General Public License for more details.
  */
 
+#include <bootblock_common.h>
 #include <stdint.h>
 #include <cf9_reset.h>
 #include <device/pci_ops.h>
@@ -160,7 +161,7 @@ static void superio_init(void)
 	SUPERIO_LOCK;
 }
 
-void mainboard_config_superio(void)
+void bootblock_mainboard_early_init(void)
 {
 	superio_init();
 	hwm_init();

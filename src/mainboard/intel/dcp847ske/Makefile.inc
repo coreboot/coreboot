@@ -1,3 +1,4 @@
+bootblock-y += early_southbridge.c
 romstage-y += early_southbridge.c
 bootblock-y += gpio.c
 romstage-y += gpio.c

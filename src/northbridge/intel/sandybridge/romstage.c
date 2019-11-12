@@ -63,16 +63,10 @@ void mainboard_romstage_entry(void)
 	/* Init LPC, GPIO, BARs, disable watchdog ... */
 	early_pch_init();
 
-	/* Initialize superio */
-	mainboard_config_superio();
-
 	/* USB is initialized in MRC if MRC is used.  */
 	if (CONFIG(USE_NATIVE_RAMINIT)) {
 		early_usb_init(mainboard_usb_ports);
 	}
-
-	/* Initialize console device(s) */
-	console_init();
 
 	/* Perform some early chipset initialization required
 	 * before RAM initialization can work

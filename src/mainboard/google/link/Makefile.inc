@@ -42,3 +42,5 @@ spd.bin-file := $(SPD_BIN)
 spd.bin-type := spd
 bootblock-y += gpio.c
 romstage-y += gpio.c
+bootblock-y += early_init.c
+romstage-y += early_init.c

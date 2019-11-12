@@ -23,3 +23,5 @@ romstage-y += gpio.c
 smm-y += mainboard_smi.c
 
 ramstage-$(CONFIG_MAINBOARD_USE_LIBGFXINIT) += gma-mainboard.ads
+bootblock-y += early_init.c
+romstage-y += early_init.c

@@ -20,3 +20,5 @@ romstage-y += variants/$(VARIANT_DIR)/romstage.c
 ramstage-y += variants/$(VARIANT_DIR)/hda_verb.c
 ramstage-$(CONFIG_MAINBOARD_USE_LIBGFXINIT) += gma-mainboard.ads
 subdirs-$(CONFIG_BOARD_LENOVO_T431S) += variants/$(VARIANT_DIR)/spd
+bootblock-y += early_init.c
+romstage-y += early_init.c

@@ -21,3 +21,5 @@ ramstage-$(CONFIG_MAINBOARD_USE_LIBGFXINIT) += variants/$(VARIANT_DIR)/gma-mainb
 subdirs-y += variants/$(VARIANT_DIR)
 
 CPPFLAGS_common += -I$(src)/mainboard/$(MAINBOARDDIR)/variants/$(VARIANT_DIR)/include
+bootblock-y += early_init.c
+romstage-y += early_init.c

@@ -15,25 +15,18 @@
  * GNU General Public License for more details.
  */
 
-#include <stdint.h>
-#include <cf9_reset.h>
 #include <delay.h>
+#include <stdint.h>
 #include <device/pnp_ops.h>
 #include <device/pci_ops.h>
-#include <device/pci_def.h>
 #include <device/pnp_def.h>
-#include <cpu/x86/lapic.h>
-#include <console/console.h>
-#include <arch/romstage.h>
 #include <northbridge/intel/i945/i945.h>
-#include <northbridge/intel/i945/raminit.h>
 #include <southbridge/intel/i82801gx/i82801gx.h>
 #include <southbridge/intel/common/gpio.h>
-#include <southbridge/intel/common/pmclib.h>
 #include "dock.h"
 
 /* Override the default lpc decode ranges */
-static void mb_lpc_decode(void)
+void mainboard_lpc_decode(void)
 {
 	// decode range
 	pci_write_config16(PCI_DEV(0, 0x1f, 0), LPC_IO_DEC, 0x0210);
@@ -55,7 +48,25 @@ static void early_superio_config(void)
 	pnp_set_enable(dev, 1);
 }
 
-static void rcba_config(void)
+void mainboard_superio_config(void)
+{
+	/* Set up GPIO's early since it is needed for dock init */
+	i82801gx_setup_bars();
+	setup_pch_gpios(&mainboard_gpio_map);
+
+	int dock_err = dlpc_init();
+
+	/* We prefer Legacy I/O module over docking */
+	if (legacy_io_present()) {
+		legacy_io_init();
+		early_superio_config();
+	} else if (!dock_err && dock_present()) {
+		dock_connect();
+		early_superio_config();
+	}
+}
+
+void mainboard_late_rcba_config(void)
 {
 	/* Set up virtual channel 0 */
 	RCBA32(V0CTL) = 0x80000001;
@@ -86,63 +97,8 @@ static void rcba_config(void)
 	RCBA64(IOTR3) = 0x000200f0000c0801ULL;
 }
 
-void mainboard_romstage_entry(void)
+void mainboard_get_spd_map(u8 spd_map[4])
 {
-	int s3resume = 0;
-	int dock_err;
-	const u8 spd_addrmap[2 * DIMM_SOCKETS] = { 0x50, 0, 0x51, 0 };
-
-	enable_lapic();
-
-	/* Set up GPIO's early since it is needed for dock init */
-	i82801gx_setup_bars();
-	setup_pch_gpios(&mainboard_gpio_map);
-
-	i82801gx_lpc_setup();
-	mb_lpc_decode();
-
-	dock_err = dlpc_init();
-
-	/* We prefer Legacy I/O module over docking */
-	if (legacy_io_present()) {
-		legacy_io_init();
-		early_superio_config();
-	} else if (!dock_err && dock_present()) {
-		dock_connect();
-		early_superio_config();
-	}
-
-	/* Setup the console */
-	console_init();
-
-	if (MCHBAR16(SSKPD) == 0xCAFE) {
-		system_reset();
-	}
-
-	/* Perform some early chipset initialization required
-	 * before RAM initialization can work
-	 */
-	i82801gx_early_init();
-	i945_early_initialization();
-
-	s3resume = southbridge_detect_s3_resume();
-
-	/* Enable SPD ROMs and DDR-II DRAM */
-	enable_smbus();
-
-	if (CONFIG(DEBUG_RAM_SETUP))
-		dump_spd_registers();
-
-	sdram_initialize(s3resume ? 2 : 0, spd_addrmap);
-
-	/* This should probably go away. Until now it is required
-	 * and mainboard specific
-	 */
-	rcba_config();
-
-	/* Chipset Errata! */
-	fixup_i945_errata();
-
-	/* Initialize the internal PCIe links before we go into stage2 */
-	i945_late_initialization(s3resume);
+	spd_map[0] = 0x50;
+	spd_map[2] = 0x51;
 }

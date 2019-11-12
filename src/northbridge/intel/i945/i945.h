@@ -375,6 +375,18 @@ void sdram_dump_mchbar_registers(void);
 u32 decode_igd_memory_size(u32 gms);
 u32 decode_tseg_size(const u8 esmramc);
 
+/* Romstage mainboard callbacks */
+/* Optional: Override the default LPC config. */
+void mainboard_lpc_decode(void);
+/* Optional: Initialize the superio for serial output. */
+void mainboard_superio_config(void);
+/* Optional: mainboard specific init after console init and before raminit. */
+void mainboard_pre_raminit_config(int s3_resume);
+/* Mainboard specific RCBA init. Happens after raminit. */
+void mainboard_late_rcba_config(void);
+/* Optional: mainboard callback to get SPD map */
+void mainboard_get_spd_map(u8 spd_map[4]);
+
 #endif /* __ACPI__ */
 
 #endif /* NORTHBRIDGE_INTEL_I945_H */

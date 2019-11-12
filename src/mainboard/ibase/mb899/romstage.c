@@ -14,20 +14,13 @@
  */
 
 #include <stdint.h>
-#include <cf9_reset.h>
 #include <device/pnp_ops.h>
-#include <device/pci_ops.h>
-#include <console/console.h>
-#include <arch/romstage.h>
 #include <cpu/x86/lapic.h>
-#include <device/pci_def.h>
 #include <device/pnp_def.h>
 #include <northbridge/intel/i945/i945.h>
-#include <northbridge/intel/i945/raminit.h>
 #include <southbridge/intel/i82801gx/i82801gx.h>
 #include <superio/winbond/common/winbond.h>
 #include <superio/winbond/w83627ehg/w83627ehg.h>
-#include <southbridge/intel/common/pmclib.h>
 
 #define SERIAL_DEV PNP_DEV(0x4e, W83627EHG_SP1)
 #define SUPERIO_DEV PNP_DEV(0x4e, 0)
@@ -36,7 +29,7 @@
  * Also set up the GPIOs from the beginning. This is the "no schematic
  * but safe anyways" method.
  */
-static void early_superio_config_w83627ehg(void)
+void mainboard_superio_config(void)
 {
 	pnp_devfn_t dev;
 
@@ -103,7 +96,7 @@ static void early_superio_config_w83627ehg(void)
 	pnp_exit_conf_state(dev);
 }
 
-static void rcba_config(void)
+void mainboard_late_rcba_config(void)
 {
 	/* Set up virtual channel 0 */
 	//RCBA32(0x0014) = 0x80000001;
@@ -122,48 +115,4 @@ static void rcba_config(void)
 
 	/* Enable PCIe Root Port Clock Gate */
 	// RCBA32(0x341c) = 0x00000001;
-}
-
-void mainboard_romstage_entry(void)
-{
-	int s3resume = 0;
-
-	enable_lapic();
-
-	i82801gx_lpc_setup();
-	early_superio_config_w83627ehg();
-
-	/* Set up the console */
-	console_init();
-
-	if (MCHBAR16(SSKPD) == 0xCAFE) {
-		system_reset();
-	}
-
-	/* Perform some early chipset initialization required
-	 * before RAM initialization can work
-	 */
-	i82801gx_early_init();
-	i945_early_initialization();
-
-	s3resume = southbridge_detect_s3_resume();
-
-	/* Enable SPD ROMs and DDR-II DRAM */
-	enable_smbus();
-
-	if (CONFIG(DEBUG_RAM_SETUP))
-		dump_spd_registers();
-
-	sdram_initialize(s3resume ? 2 : 0, NULL);
-
-	/* This should probably go away. Until now it is required
-	 * and mainboard specific
-	 */
-	rcba_config();
-
-	/* Chipset Errata! */
-	fixup_i945_errata();
-
-	/* Initialize the internal PCIe links before we go into stage2 */
-	i945_late_initialization(s3resume);
 }

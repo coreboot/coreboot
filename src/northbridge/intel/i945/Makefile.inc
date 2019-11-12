@@ -20,6 +20,7 @@ ramstage-y += northbridge.c
 ramstage-y += gma.c
 ramstage-y += acpi.c
 
+romstage-y += romstage.c
 romstage-y += memmap.c
 romstage-y += raminit.c
 romstage-y += early_init.c

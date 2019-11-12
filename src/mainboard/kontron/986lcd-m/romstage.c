@@ -13,20 +13,12 @@
  * GNU General Public License for more details.
  */
 
-#include <stdint.h>
-#include <cf9_reset.h>
-#include <console/console.h>
-#include <arch/romstage.h>
-#include <cpu/x86/lapic.h>
-#include <device/pci_def.h>
 #include <device/pci_ops.h>
 #include <device/pnp_ops.h>
 #include <device/pnp_def.h>
 #include <pc80/mc146818rtc.h>
 #include <northbridge/intel/i945/i945.h>
-#include <northbridge/intel/i945/raminit.h>
 #include <southbridge/intel/i82801gx/i82801gx.h>
-#include <southbridge/intel/common/pmclib.h>
 #include <superio/winbond/common/winbond.h>
 #include <superio/winbond/w83627thg/w83627thg.h>
 
@@ -35,7 +27,7 @@
 #define SERIAL_DEV PNP_DEV(0x2e, W83627THG_SP1)
 
 /* Override the default lpc decode ranges */
-static void mb_lpc_decode(void)
+void mainboard_lpc_decode(void)
 {
 	int lpt_en = 0;
 	if (read_option(lpt, 0) != 0)
@@ -49,7 +41,7 @@ static void mb_lpc_decode(void)
  * the two. Also set up the GPIOs from the beginning. This is the "no schematic
  * but safe anyways" method.
  */
-static void early_superio_config_w83627thg(void)
+void mainboard_superio_config(void)
 {
 	pnp_devfn_t dev;
 
@@ -149,7 +141,7 @@ static void early_superio_config_w83627thg(void)
 	pnp_exit_conf_state(dev);
 }
 
-static void rcba_config(void)
+void mainboard_late_rcba_config(void)
 {
 	/* Set up virtual channel 0 */
 
@@ -166,49 +158,4 @@ static void rcba_config(void)
 	RCBA16(D27IR) = 0x3210;
 
 	/* Enable PCIe Root Port Clock Gate */
-}
-
-void mainboard_romstage_entry(void)
-{
-	int s3resume = 0;
-
-	enable_lapic();
-
-	i82801gx_lpc_setup();
-	mb_lpc_decode();
-	early_superio_config_w83627thg();
-
-	/* Set up the console */
-	console_init();
-
-	if (MCHBAR16(SSKPD) == 0xCAFE) {
-		system_reset();
-	}
-
-	/* Perform some early chipset initialization required
-	 * before RAM initialization can work
-	 */
-	i82801gx_early_init();
-	i945_early_initialization();
-
-	s3resume = southbridge_detect_s3_resume();
-
-	/* Enable SPD ROMs and DDR-II DRAM */
-	enable_smbus();
-
-	if (CONFIG(DEBUG_RAM_SETUP))
-		dump_spd_registers();
-
-	sdram_initialize(s3resume ? 2 : 0, NULL);
-
-	/* This should probably go away. Until now it is required
-	 * and mainboard specific
-	 */
-	rcba_config();
-
-	/* Chipset Errata! */
-	fixup_i945_errata();
-
-	/* Initialize the internal PCIe links before we go into stage2 */
-	i945_late_initialization(s3resume);
 }

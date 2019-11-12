@@ -19,16 +19,11 @@
 #include <cf9_reset.h>
 #include <device/pnp_ops.h>
 #include <device/pci_ops.h>
-#include <device/pci_def.h>
-#include <cpu/x86/lapic.h>
 #include <superio/winbond/common/winbond.h>
 #include <superio/winbond/w83627dhg/w83627dhg.h>
 #include <console/console.h>
-#include <arch/romstage.h>
 #include <northbridge/intel/i945/i945.h>
-#include <northbridge/intel/i945/raminit.h>
 #include <southbridge/intel/i82801gx/i82801gx.h>
-#include <southbridge/intel/common/pmclib.h>
 #include <cpu/x86/msr.h>
 #include <cpu/intel/speedstep.h>
 #include <arch/cpu.h>
@@ -96,65 +91,27 @@ static u8 msr_get_fsb(void)
 	return fsbcfg;
 }
 
-static void rcba_config(void)
+void mainboard_late_rcba_config(void)
 {
 	/* Enable PCIe Root Port Clock Gate */
 	RCBA32(CG) = 0x00000001;
 }
-void mainboard_romstage_entry(void)
+
+void mainboard_pre_raminit_config(int s3_resume)
 {
-	int s3resume = 0, boot_mode = 0;
-
 	u8 c_bsel = msr_get_fsb();
-
-	enable_lapic();
-
-	i82801gx_lpc_setup();
-
-	winbond_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
-
-	/* Set up the console */
-	console_init();
-
-	if (MCHBAR16(SSKPD) == 0xCAFE) {
-		printk(BIOS_DEBUG, "soft reset detected.\n");
-		boot_mode = 1;
-	}
-
-	/* Perform some early chipset initialization required
-	 * before RAM initialization can work
-	 */
-	i82801gx_early_init();
-	i945_early_initialization();
-
-	s3resume = southbridge_detect_s3_resume();
-
 	/*
 	 * Result is that FSB is incorrect on s3 resume (fixed at 800MHz).
 	 * Some CPU accept this others don't.
 	 */
-	if (!s3resume && setup_sio_gpio(c_bsel)) {
+	if (!s3_resume && setup_sio_gpio(c_bsel)) {
 		printk(BIOS_DEBUG,
 			"Needs reset to configure CPU BSEL straps\n");
 		full_reset();
 	}
+}
 
-	/* Enable SPD ROMs and DDR-II DRAM */
-	enable_smbus();
-
-	if (CONFIG(DEBUG_RAM_SETUP))
-		dump_spd_registers();
-
-	sdram_initialize(s3resume ? 2 : boot_mode, NULL);
-
-	/* This should probably go away. Until now it is required
-	 * and mainboard specific
-	 */
-	rcba_config();
-
-	/* Chipset Errata! */
-	fixup_i945_errata();
-
-	/* Initialize the internal PCIe links before we go into stage2 */
-	i945_late_initialization(s3resume);
+void mainboard_superio_config(void)
+{
+	winbond_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 }

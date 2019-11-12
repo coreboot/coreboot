@@ -16,22 +16,16 @@
 
 #include <stdint.h>
 #include <arch/io.h>
-#include <cf9_reset.h>
 #include <delay.h>
 #include <device/pnp_ops.h>
 #include <device/pci_ops.h>
-#include <device/pci_def.h>
-#include <cpu/x86/lapic.h>
 #include <pc80/mc146818rtc.h>
 #include <console/console.h>
-#include <arch/romstage.h>
 #include <northbridge/intel/i945/i945.h>
-#include <northbridge/intel/i945/raminit.h>
 #include <southbridge/intel/i82801gx/i82801gx.h>
-#include <southbridge/intel/common/pmclib.h>
 #include "option_table.h"
 
-static void setup_special_ich7_gpios(void)
+void mainboard_pre_raminit_config(int s3_resume)
 {
 	u32 gpios;
 
@@ -52,7 +46,7 @@ static void setup_special_ich7_gpios(void)
 }
 
 /* Override the default lpc decode ranges */
-static void mb_lpc_decode(void)
+void mainboard_lpc_decode(void)
 {
 	int lpt_en = 0;
 	if (read_option(lpt, 0) != 0)
@@ -81,7 +75,7 @@ static void pnp_exit_ext_func_mode(pnp_devfn_t dev)
 	outb(0xaa, port);
 }
 
-static void early_superio_config(void)
+void mainboard_superio_config(void)
 {
 	pnp_devfn_t dev;
 
@@ -126,7 +120,7 @@ static void early_superio_config(void)
 	pnp_exit_ext_func_mode(dev);
 }
 
-static void rcba_config(void)
+void mainboard_late_rcba_config(void)
 {
 	/* Set up virtual channel 0 */
 	//RCBA32(0x0014) = 0x80000001;
@@ -157,51 +151,4 @@ static void rcba_config(void)
 	/* Set up I/O Trap #3 for 0x800-0x80c (Trap) */
 	RCBA32(0x1e9c) = 0x000200f0;
 	RCBA32(0x1e98) = 0x000c0801;
-}
-
-void mainboard_romstage_entry(void)
-{
-	int s3resume = 0;
-
-	enable_lapic();
-
-	i82801gx_lpc_setup();
-	mb_lpc_decode();
-	early_superio_config();
-
-	/* Set up the console */
-	console_init();
-
-	if (MCHBAR16(SSKPD) == 0xCAFE) {
-		system_reset();
-	}
-
-	/* Perform some early chipset initialization required
-	 * before RAM initialization can work
-	 */
-	i82801gx_early_init();
-	i945_early_initialization();
-
-	setup_special_ich7_gpios();
-
-	s3resume = southbridge_detect_s3_resume();
-
-	/* Enable SPD ROMs and DDR-II DRAM */
-	enable_smbus();
-
-	if (CONFIG(DEBUG_RAM_SETUP))
-		dump_spd_registers();
-
-	sdram_initialize(s3resume ? 2 : 0, NULL);
-
-	/* This should probably go away. Until now it is required
-	 * and mainboard specific
-	 */
-	rcba_config();
-
-	/* Chipset Errata! */
-	fixup_i945_errata();
-
-	/* Initialize the internal PCIe links before we go into stage2 */
-	i945_late_initialization(s3resume);
 }

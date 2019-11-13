@@ -112,6 +112,9 @@ void i82801gx_early_init(void)
 	RCBA8(OIC) = 0x03;
 	RCBA8(OIC);
 
-	ich7_setup_cir();
+	/* A lot of CIR bits relate DMI setup which is likely not correctly
+	   done for x4x. The issue is also present on ICH10. */
+	if (!CONFIG(NORTHBRIDGE_INTEL_X4X))
+		ich7_setup_cir();
 }
 #endif

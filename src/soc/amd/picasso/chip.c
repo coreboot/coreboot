@@ -143,6 +143,8 @@ static void enable_dev(struct device *dev)
 
 static void soc_init(void *chip_info)
 {
+	default_dev_ops_root.write_acpi_tables = agesa_write_acpi_tables;
+
 	fsp_silicon_init(acpi_is_wakeup_s3());
 
 	data_fabric_set_mmio_np();

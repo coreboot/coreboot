@@ -16,6 +16,7 @@
 #include <assert.h>
 #include <bootmode.h>
 #include <security/vboot/misc.h>
+#include <vb2_api.h>
 
 static int gfx_init_done = -1;
 
@@ -33,14 +34,13 @@ void gfx_set_init_done(int done)
 
 int display_init_required(void)
 {
-	/* For vboot, always honor VBOOT_WD_FLAG_DISPLAY_INIT. */
+	/* For vboot, always honor VB2_CONTEXT_DISPLAY_INIT. */
 	if (CONFIG(VBOOT)) {
 		/* Must always select MUST_REQUEST_DISPLAY when using this
 		   function. */
 		if (!CONFIG(VBOOT_MUST_REQUEST_DISPLAY))
 			dead_code();
-		return vboot_get_working_data()->flags
-			& VBOOT_WD_FLAG_DISPLAY_INIT;
+		return vboot_get_context()->flags & VB2_CONTEXT_DISPLAY_INIT;
 	}
 
 	/* By default always initialize display. */

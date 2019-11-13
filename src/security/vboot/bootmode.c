@@ -148,8 +148,8 @@ int vboot_recovery_mode_memory_retrain(void)
 
 int vboot_developer_mode_enabled(void)
 {
-	return cbmem_possibly_online() &&
-		vboot_get_working_data()->flags & VBOOT_WD_FLAG_DEVELOPER_MODE;
+	return vboot_logic_executed() &&
+		vboot_get_context()->flags & VB2_CONTEXT_DEVELOPER_MODE;
 }
 
 #if CONFIG(VBOOT_NO_BOARD_SUPPORT)

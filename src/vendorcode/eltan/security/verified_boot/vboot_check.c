@@ -252,8 +252,6 @@ void verified_boot_bootblock_check(void)
  * ROMSTAGE
  */
 
-extern verify_item_t romstage_verify_list[];
-
 void verified_boot_early_check(void)
 {
 	printk(BIOS_SPEW, "%s: processing early items\n", __func__);

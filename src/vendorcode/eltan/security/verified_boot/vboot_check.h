@@ -72,7 +72,9 @@ typedef struct {
 void process_verify_list(const verify_item_t list[]);
 
 extern const verify_item_t bootblock_verify_list[];
+extern const verify_item_t romstage_verify_list[];
 extern const verify_item_t postcar_verify_list[];
+extern const verify_item_t ramstage_verify_list[];
 extern const verify_item_t payload_verify_list[];
 extern const verify_item_t oprom_verify_list[];
 

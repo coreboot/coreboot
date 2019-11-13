@@ -23,9 +23,5 @@ const mboot_measure_item_t mb_log_list[] = {
 #if CONFIG(VENDORCODE_ELTAN_VBOOT)
 	{ "oemmanifest.bin", CBFS_TYPE_RAW, MBOOT_PCR_INDEX_7, EV_NO_ACTION,
 		NULL },
-#if CONFIG(VENDORCODE_ELTAN_VBOOT_SIGNED_MANIFEST)
-	{ "vboot_public_key.bin", CBFS_TYPE_RAW, MBOOT_PCR_INDEX_6,
-		EV_NO_ACTION, NULL },
-#endif
 #endif
 };

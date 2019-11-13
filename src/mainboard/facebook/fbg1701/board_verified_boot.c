@@ -34,17 +34,6 @@ const verify_item_t bootblock_verify_list[] = {
 	{ VERIFY_TERMINATOR, NULL, { { NULL, 0 } }, 0, 0 }
 };
 
-/* The FSP is already checked in romstage */
-static const verify_item_t ram_stage_additional_list[] = {
-	{ VERIFY_FILE, OP_ROM_VBT, { { NULL, CBFS_TYPE_RAW } },
-		HASH_IDX_OPROM, MBOOT_PCR_INDEX_2 },
-	{ VERIFY_FILE, "logo.bmp", { { NULL, CBFS_TYPE_RAW } },
-		HASH_IDX_LOGO, MBOOT_PCR_INDEX_2 },
-	{ VERIFY_FILE, "fallback/dsdt.aml", { { NULL, CBFS_TYPE_RAW } },
-		HASH_IDX_DSDT, MBOOT_PCR_INDEX_2 },
-	{ VERIFY_TERMINATOR, NULL, { { NULL, 0 } }, 0, 0 }
-};
-
 /*
  * The items used by the romstage. Bootblock and PublicKey are added here to make sure they
  * are measured
@@ -71,13 +60,6 @@ const verify_item_t romstage_verify_list[] = {
 	{ VERIFY_TERMINATOR, NULL, { { NULL, 0 } }, 0, 0 }
 };
 
-/* The items  used by the ramstage */
-const verify_item_t ramstage_verify_list[] = {
-	{ VERIFY_FILE, RAMSTAGE, { { ram_stage_additional_list,
-		CBFS_TYPE_STAGE } }, HASH_IDX_RAM_STAGE, MBOOT_PCR_INDEX_0 },
-	{ VERIFY_TERMINATOR, NULL, { { NULL, 0 } }, 0, 0 }
-};
-
 /* The items used by the postcar stage */
 const verify_item_t postcar_verify_list[] = {
 	{ VERIFY_FILE, POSTCAR, { { NULL, CBFS_TYPE_STAGE } },
@@ -85,7 +67,27 @@ const verify_item_t postcar_verify_list[] = {
 	{ VERIFY_TERMINATOR, NULL, { { NULL, 0 } }, 0, 0 }
 };
 
-/* RAMSTAGE */
+/*
+ * The items  used by the ramstage. FSP and microcode are already checked in the
+ * romstage verify list
+ */
+static const verify_item_t ram_stage_additional_list[] = {
+	{ VERIFY_FILE, OP_ROM_VBT, { { NULL, CBFS_TYPE_RAW } },
+		HASH_IDX_OPROM, MBOOT_PCR_INDEX_2 },
+	{ VERIFY_FILE, "logo.bmp", { { NULL, CBFS_TYPE_RAW } },
+		HASH_IDX_LOGO, MBOOT_PCR_INDEX_2 },
+	{ VERIFY_FILE, "fallback/dsdt.aml", { { NULL, CBFS_TYPE_RAW } },
+		HASH_IDX_DSDT, MBOOT_PCR_INDEX_2 },
+	{ VERIFY_TERMINATOR, NULL, { { NULL, 0 } }, 0, 0 }
+};
+
+const verify_item_t ramstage_verify_list[] = {
+	{ VERIFY_FILE, RAMSTAGE, { { ram_stage_additional_list,
+		CBFS_TYPE_STAGE } }, HASH_IDX_RAM_STAGE, MBOOT_PCR_INDEX_0 },
+	{ VERIFY_TERMINATOR, NULL, { { NULL, 0 } }, 0, 0 }
+};
+
+/* items used by the payload */
 const verify_item_t payload_verify_list[] = {
 	{ VERIFY_FILE, PAYLOAD, { { NULL, CBFS_TYPE_SELF |
 		VERIFIED_BOOT_COPY_BLOCK } }, HASH_IDX_PAYLOAD,
@@ -93,6 +95,7 @@ const verify_item_t payload_verify_list[] = {
 	{ VERIFY_TERMINATOR, NULL, { { NULL, 0 } }, 0, 0 }
 };
 
+/* list of allowed options roms */
 const verify_item_t oprom_verify_list[] = {
 	{ VERIFY_TERMINATOR, NULL, { { NULL, 0 } }, 0, 0 }
 };

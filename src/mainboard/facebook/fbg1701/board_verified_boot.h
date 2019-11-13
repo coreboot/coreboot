@@ -16,7 +16,6 @@
 #ifndef BOARD_VERIFIED_BOOT_H
 #define BOARD_VERIFIED_BOOT_H
 
-#include <soc/romstage.h>
 #include <vboot_check.h>
 #include "onboard.h"
 

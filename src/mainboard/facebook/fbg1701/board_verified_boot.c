@@ -56,10 +56,6 @@ const verify_item_t romstage_verify_list[] = {
 		MBOOT_PCR_INDEX_1 },
 	{ VERIFY_FILE, "spd.bin", { { NULL, CBFS_TYPE_SPD } },
 		HASH_IDX_SPD0, MBOOT_PCR_INDEX_1 },
-#if CONFIG(POSTCAR_STAGE)
-	{ VERIFY_FILE, POSTCAR, { { NULL, CBFS_TYPE_STAGE } },
-		HASH_IDX_POSTCAR_STAGE, MBOOT_PCR_INDEX_0 },
-#endif
 	{ VERIFY_BLOCK, "BootBlock",
 		{ { (void *)0xffffffff - CONFIG_C_ENV_BOOTBLOCK_SIZE + 1,
 		CONFIG_C_ENV_BOOTBLOCK_SIZE, } }, HASH_IDX_BOOTBLOCK,
@@ -80,17 +76,10 @@ const verify_item_t ramstage_verify_list[] = {
 	{ VERIFY_TERMINATOR, NULL, { { NULL, 0 } }, 0, 0 }
 };
 
-/* POSTCAR */
 /* The items used by the postcar stage */
 const verify_item_t postcar_verify_list[] = {
-	{ VERIFY_FILE, RAMSTAGE, { { ram_stage_additional_list,
-		CBFS_TYPE_STAGE } }, HASH_IDX_RAM_STAGE, MBOOT_PCR_INDEX_0 },
-	{ VERIFY_FILE, MICROCODE, { { NULL, CBFS_TYPE_MICROCODE } },
-		HASH_IDX_MICROCODE, MBOOT_PCR_INDEX_1 },
-	{ VERIFY_FILE, FSP, { { NULL, CBFS_TYPE_FSP } }, HASH_IDX_FSP,
-		MBOOT_PCR_INDEX_1 },
-	{ VERIFY_FILE, "spd.bin", { { NULL, CBFS_TYPE_SPD } }, HASH_IDX_SPD0,
-		MBOOT_PCR_INDEX_1 },
+	{ VERIFY_FILE, POSTCAR, { { NULL, CBFS_TYPE_STAGE } },
+		HASH_IDX_POSTCAR_STAGE, MBOOT_PCR_INDEX_0 },
 	{ VERIFY_TERMINATOR, NULL, { { NULL, 0 } }, 0, 0 }
 };
 

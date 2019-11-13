@@ -18,7 +18,6 @@ if BOARD_AMD_PADMELON
 config BOARD_SPECIFIC_OPTIONS # dummy
 	def_bool y
 	select SOC_AMD_STONEYRIDGE
-	select AMD_APU_MERLINFALCON
 	select AMD_APU_PKG_FP4
 	select BOARD_ROMSIZE_KB_8192
 	select DRIVERS_I2C_GENERIC
@@ -42,6 +41,23 @@ config MAINBOARD_DIR
 config MAINBOARD_PART_NUMBER
 	string
 	default "Padmelon"
+
+choice PADMELON_SOC
+	prompt "SOC used in padmelon board"
+	default PADMELON_MERLIN_FALCON
+
+config PADMELON_MERLIN_FALCON
+	bool "Merlin Falcon"
+
+config PADMELON_PRAIRIE_FALCON
+	bool "Prairie Falcon"
+
+endchoice
+
+config PADMELON_SOC_IN_USE
+	def_bool y
+	select AMD_APU_MERLINFALCON if PADMELON_MERLIN_FALCON
+	select AMD_APU_PRAIRIEFALCON if PADMELON_PRAIRIE_FALCON
 
 config HAVE_S3_SUPPORT
 	bool

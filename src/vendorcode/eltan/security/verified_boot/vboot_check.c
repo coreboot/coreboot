@@ -330,28 +330,25 @@ int verified_boot_should_run_oprom(struct rom_header *rom_header)
 
 int prog_locate_hook(struct prog *prog)
 {
-	if (ENV_BOOTBLOCK) {
-		printk(BIOS_SPEW, "%s: bootblock\n", __func__);
+	if (ENV_BOOTBLOCK)
 		verified_boot_bootblock_check();
-	}
 
 	if (ENV_ROMSTAGE) {
-		static int prepare_romstage = 0;
-		printk(BIOS_SPEW, "%s: romstage\n", __func__);
-		if (!prepare_romstage) {
+		if (prog->type == PROG_REFCODE)
 			verified_boot_early_check();
-			prepare_romstage = 1;
-		}
+
+		if (CONFIG(POSTCAR_STAGE) && prog->type == PROG_POSTCAR)
+			process_verify_list(postcar_verify_list);
+
+		if (!CONFIG(POSTCAR_STAGE) && prog->type == PROG_RAMSTAGE)
+			process_verify_list(ramstage_verify_list);
 	}
 
-	if (ENV_POSTCAR) {
-		printk(BIOS_SPEW, "%s: postcar\n", __func__);
-		process_verify_list(postcar_verify_list);
-	}
+	if (ENV_POSTCAR && prog->type == PROG_RAMSTAGE)
+		process_verify_list(ramstage_verify_list);
 
-	if (ENV_RAMSTAGE) {
-		printk(BIOS_SPEW, "%s: ramstage\n", __func__);
+	if (ENV_RAMSTAGE && prog->type == PROG_PAYLOAD)
 		process_verify_list(payload_verify_list);
-	}
+
 	return 0;
 }

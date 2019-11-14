@@ -73,11 +73,11 @@ struct vb2_context *vboot_get_context(void)
 	 */
 	memset(wd, 0, sizeof(*wd));
 	wd->buffer_offset = ALIGN_UP(sizeof(*wd), 16);
-	wd->buffer_size = VB2_FIRMWARE_WORKBUF_RECOMMENDED_SIZE
-			  - wd->buffer_offset;
 
 	/* Initialize vb2_shared_data and friends. */
-	assert(vb2api_init(vboot_get_workbuf(wd), wd->buffer_size,
+	assert(vb2api_init(vboot_get_workbuf(wd),
+			   VB2_FIRMWARE_WORKBUF_RECOMMENDED_SIZE -
+				wd->buffer_offset,
 			   vboot_ctx_ptr) == VB2_SUCCESS);
 
 	return *vboot_ctx_ptr;
@@ -137,14 +137,6 @@ static void vboot_migrate_cbmem(int unused)
 		cbmem_add(CBMEM_ID_VBOOT_WORKBUF, cbmem_size);
 	assert(wd_cbmem != NULL);
 	memcpy(wd_cbmem, wd_preram, sizeof(struct vboot_working_data));
-	/*
-	 * TODO(chromium:1021452): buffer_size is uint16_t and not large enough
-	 * to hold the kernel verification workbuf size.  The only code which
-	 * reads this value is in lb_vboot_workbuf() for lb_range->range_size.
-	 * This value being zero doesn't cause any problems, since it is never
-	 * read downstream.  Fix or deprecate vboot_working_data.
-	 */
-	wd_cbmem->buffer_size = 0;
 	vb2api_relocate(vboot_get_workbuf(wd_cbmem),
 			vboot_get_workbuf(wd_preram),
 			cbmem_size - wd_cbmem->buffer_offset,

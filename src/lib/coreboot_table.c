@@ -227,7 +227,14 @@ static void lb_vboot_workbuf(struct lb_header *header)
 	vbwb->tag = LB_TAG_VBOOT_WORKBUF;
 	vbwb->size = sizeof(*vbwb);
 	vbwb->range_start = (uintptr_t)wd + wd->buffer_offset;
-	vbwb->range_size = wd->buffer_size;
+	/*
+	 * TODO(chromium:1021452): Since cbmem size of vboot workbuf is now
+	 * always a known value, we hardcode the value of range_size here.
+	 * Ultimately we'll want to move this to add_cbmem_pointers() below,
+	 * but we'll have to get rid of the vboot_working_data struct first.
+	 */
+	vbwb->range_size = VB2_KERNEL_WORKBUF_RECOMMENDED_SIZE -
+		wd->buffer_offset;
 }
 
 __weak uint32_t board_id(void) { return UNDEFINED_STRAPPING_ID; }

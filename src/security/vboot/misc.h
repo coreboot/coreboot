@@ -39,7 +39,6 @@ struct vboot_working_data {
 	struct selected_region selected_region;
 	/* offset of the buffer from the start of this struct */
 	uint16_t buffer_offset;
-	uint16_t buffer_size;
 };
 
 /*

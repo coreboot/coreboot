@@ -16,6 +16,8 @@
 #ifndef __SOC_MEDIATEK_MT6358_H__
 #define __SOC_MEDIATEK_MT6358_H__
 
+#include <types.h>
+
 enum {
 	PMIC_SWCID                    = 0x000a,
 	PMIC_VM_MODE                  = 0x004e,

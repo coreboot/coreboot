@@ -17,8 +17,7 @@
 #ifndef SOC_INTEL_COMMON_BLOCK_CPULIB_H
 #define SOC_INTEL_COMMON_BLOCK_CPULIB_H
 
-#include <stdint.h>
-#include <stddef.h>
+#include <types.h>
 
 /*
  * Set PERF_CTL MSR (0x199) P_Req with

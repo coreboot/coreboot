@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  */
 
-#include <stdint.h>
+#include <types.h>
 #include "memory.h"
 
 /**

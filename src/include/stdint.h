@@ -101,13 +101,4 @@ typedef uint64_t u64;
 #define UINTMAX_MAX UINT64_MAX
 #endif
 
-/* TODO: move into stdbool.h */
-#ifdef __ROMCC__
-typedef uint8_t bool;
-#else
-typedef _Bool   bool;
-#endif
-#define true    1
-#define false   0
-
 #endif /* STDINT_H */

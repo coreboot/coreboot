@@ -9,11 +9,10 @@
  */
 #if !defined(__ROMCC__)
 
-#include <stdint.h>
-#include <stddef.h>
 #include <device/resource.h>
 #include <device/path.h>
 #include <device/pci_type.h>
+#include <types.h>
 
 struct device;
 struct pci_operations;

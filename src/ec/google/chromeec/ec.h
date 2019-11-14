@@ -17,8 +17,7 @@
 
 #ifndef _EC_GOOGLE_CHROMEEC_EC_H
 #define _EC_GOOGLE_CHROMEEC_EC_H
-#include <stddef.h>
-#include <stdint.h>
+#include <types.h>
 #include "ec_commands.h"
 
 /* Fill in base and size of the IO port resources used. */

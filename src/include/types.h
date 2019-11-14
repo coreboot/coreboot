@@ -16,7 +16,8 @@
 #ifndef __TYPES_H
 #define __TYPES_H
 
-/* types.h is supposed to provide stdint and stddef defined in here: */
+/* types.h is supposed to provide the standard headers defined in here: */
+#include <stdbool.h>
 #include <stdint.h>
 #include <stddef.h>
 

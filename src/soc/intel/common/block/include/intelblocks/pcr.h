@@ -20,7 +20,7 @@
 #define PCR_PORTID_SHIFT	16
 
 #if !defined(__ACPI__)
-#include <stdint.h>
+#include <types.h>
 
 uint32_t pcr_read32(uint8_t pid, uint16_t offset);
 uint16_t pcr_read16(uint8_t pid, uint16_t offset);

@@ -16,9 +16,9 @@
 #ifndef BOOTMEM_H
 #define BOOTMEM_H
 
-#include <memrange.h>
-#include <stdint.h>
 #include <boot/coreboot_tables.h>
+#include <memrange.h>
+#include <types.h>
 
 /**
  * Bootmem types match to LB_MEM tags, except for the following:

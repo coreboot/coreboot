@@ -19,6 +19,7 @@
 #include <imd.h>
 #include <stdlib.h>
 #include <string.h>
+#include <types.h>
 
 /* For more details on implementation and usage please see the imd.h header. */
 

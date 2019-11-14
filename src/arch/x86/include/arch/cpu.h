@@ -14,8 +14,7 @@
 #ifndef ARCH_CPU_H
 #define ARCH_CPU_H
 
-#include <stdint.h>
-#include <stddef.h>
+#include <types.h>
 
 /*
  * EFLAGS bits

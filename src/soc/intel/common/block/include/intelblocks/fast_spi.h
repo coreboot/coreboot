@@ -16,8 +16,7 @@
 #ifndef SOC_INTEL_COMMON_BLOCK_FAST_SPI_H
 #define SOC_INTEL_COMMON_BLOCK_FAST_SPI_H
 
-#include <stdint.h>
-#include <stddef.h>
+#include <types.h>
 
 /*
  * Disable the BIOS write protect and Enable Prefetching and Caching.

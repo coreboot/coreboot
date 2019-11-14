@@ -17,7 +17,7 @@
 #ifndef _CONSOLE_USB_H_
 #define _CONSOLE_USB_H_
 
-#include <stdint.h>
+#include <types.h>
 
 void usbdebug_init(void);
 int usbdebug_hw_init(bool force);

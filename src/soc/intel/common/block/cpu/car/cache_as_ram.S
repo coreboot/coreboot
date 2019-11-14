@@ -177,7 +177,7 @@ car_init_done:
 	andl	$0xfffffff0, %esp
 	sub	$8, %esp
 
-	/*push TSC value to stack*/
+	/* push TSC value to stack */
 	movd	%mm2, %eax
 	pushl	%eax	/* tsc[63:32] */
 	movd	%mm1, %eax

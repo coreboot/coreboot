@@ -20,7 +20,7 @@
 #include <delay.h>
 #include "hda_verb.h"
 
-/**
+/*
  * Set bits in a register and wait for status
  */
 static int set_bits(void *port, u32 mask, u32 val)
@@ -52,7 +52,7 @@ static int set_bits(void *port, u32 mask, u32 val)
 	return 0;
 }
 
-/**
+/*
  * Probe for supported codecs
  */
 int hda_codec_detect(u8 *base)
@@ -95,7 +95,7 @@ no_codec:
 	return 0;
 }
 
-/**
+/*
  * Wait 50usec for the codec to indicate it is ready
  * no response would imply that the codec is non-operative
  */
@@ -116,7 +116,7 @@ static int hda_wait_for_ready(u8 *base)
 	return -1;
 }
 
-/**
+/*
  * Wait 50usec for the codec to indicate that it accepted
  * the previous command.  No response would imply that the code
  * is non-operative
@@ -145,7 +145,7 @@ static int hda_wait_for_valid(u8 *base)
 	return -1;
 }
 
-/**
+/*
  * Find a specific entry within a verb table
  *
  * @param verb_table_bytes:	verb table size in bytes
@@ -190,7 +190,7 @@ static u32 hda_find_verb(u32 verb_table_bytes,
 	return 0;
 }
 
-/**
+/*
  * Write a supplied verb table
  */
 int hda_codec_write(u8 *base, u32 size, const u32 *data)
@@ -210,7 +210,7 @@ int hda_codec_write(u8 *base, u32 size, const u32 *data)
 	return 0;
 }
 
-/**
+/*
  * Initialize codec, then find the verb table and write it
  */
 int hda_codec_init(u8 *base, int addr, int verb_size, const u32 *verb_data)

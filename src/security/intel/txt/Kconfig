@@ -26,6 +26,8 @@ config INTEL_TXT
 
 if INTEL_TXT
 
+menu "Intel"
+
 config INTEL_TXT_BIOSACM_FILE
 	string "BIOS ACM file"
 	default "3rdparty/blobs/soc/intel/fsp_broadwell_de/biosacm.bin" if SOC_INTEL_FSP_BROADWELL_DE
@@ -50,5 +52,7 @@ config INTEL_TXT_BIOSACM_ALIGNMENT
 	help
 	  Exceptions are Ivy- and Sandy Bridge with 64KB and Purely with 256KB
 	  alignment size. Please overwrite it SoC specific.
+
+endmenu # Intel
 
 endif

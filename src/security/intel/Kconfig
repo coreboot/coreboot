@@ -13,8 +13,4 @@
 ## GNU General Public License for more details.
 ##
 
-menu "Intel"
-
 source "src/security/intel/txt/Kconfig"
-
-endmenu # Intel

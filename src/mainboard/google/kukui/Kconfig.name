@@ -12,6 +12,10 @@ config BOARD_GOOGLE_KODAMA
 	bool "->  Kodama"
 	select BOARD_GOOGLE_KUKUI_COMMON
 
+config BOARD_GOOGLE_KAKADU
+	bool "->  Kakadu"
+	select BOARD_GOOGLE_KUKUI_COMMON
+
 config BOARD_GOOGLE_FLAPJACK
 	bool "->  Flapjack"
 	select BOARD_GOOGLE_KUKUI_COMMON

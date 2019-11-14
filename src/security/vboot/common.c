@@ -16,6 +16,7 @@
 #include <assert.h>
 #include <cbmem.h>
 #include <console/console.h>
+#include <fmap.h>
 #include <stdint.h>
 #include <string.h>
 #include <symbols.h>
@@ -83,42 +84,17 @@ struct vb2_context *vboot_get_context(void)
 	return *vboot_ctx_ptr;
 }
 
-int vboot_get_selected_region(struct region *region)
+int vboot_locate_firmware(const struct vb2_context *ctx,
+			  struct region_device *fw)
 {
-	const struct selected_region *reg =
-		&vboot_get_working_data()->selected_region;
+	const char *name;
 
-	if (reg == NULL)
-		return -1;
+	if (vboot_is_firmware_slot_a(ctx))
+		name = "FW_MAIN_A";
+	else
+		name = "FW_MAIN_B";
 
-	if (reg->offset == 0 && reg->size == 0)
-		return -1;
-
-	region->offset = reg->offset;
-	region->size = reg->size;
-
-	return 0;
-}
-
-void vboot_set_selected_region(const struct region *region)
-{
-	struct selected_region *reg =
-		&vboot_get_working_data()->selected_region;
-
-	assert(reg != NULL);
-
-	reg->offset = region_offset(region);
-	reg->size = region_sz(region);
-}
-
-int vboot_is_slot_selected(void)
-{
-	struct selected_region *reg =
-		&vboot_get_working_data()->selected_region;
-
-	assert(reg != NULL);
-
-	return reg->size > 0;
+	return fmap_locate_area_as_rdev(name, fw);
 }
 
 #if CONFIG(VBOOT_STARTS_IN_BOOTBLOCK)

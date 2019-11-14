@@ -73,17 +73,23 @@ void vboot_run_logic(void)
 
 static int vboot_locate(struct cbfs_props *props)
 {
-	struct region selected_region;
+	const struct vb2_context *ctx;
+	struct region_device fw_main;
 
 	/* Don't honor vboot results until the vboot logic has run. */
 	if (!vboot_logic_executed())
 		return -1;
 
-	if (vboot_get_selected_region(&selected_region))
+	ctx = vboot_get_context();
+
+	if (ctx->flags & VB2_CONTEXT_RECOVERY_MODE)
 		return -1;
 
-	props->offset = region_offset(&selected_region);
-	props->size = region_sz(&selected_region);
+	if (vboot_locate_firmware(ctx, &fw_main))
+		return -1;
+
+	props->offset = region_device_offset(&fw_main);
+	props->size = region_device_sz(&fw_main);
 
 	return 0;
 }

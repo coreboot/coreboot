@@ -23,11 +23,6 @@
 struct vb2_context;
 struct vb2_shared_data;
 
-struct selected_region {
-	uint32_t offset;
-	uint32_t size;
-};
-
 /*
  * Stores vboot-related information.  selected_region is used by verstage to
  * store the location of the selected slot.  buffer is used by vboot to store
@@ -36,7 +31,6 @@ struct selected_region {
  * Keep the struct CPU architecture agnostic as it crosses stage boundaries.
  */
 struct vboot_working_data {
-	struct selected_region selected_region;
 	/* offset of the buffer from the start of this struct */
 	uint16_t buffer_offset;
 };
@@ -47,11 +41,19 @@ struct vboot_working_data {
 struct vboot_working_data *vboot_get_working_data(void);
 struct vb2_context *vboot_get_context(void);
 
-/* Returns 0 on success. < 0 on failure. */
-int vboot_get_selected_region(struct region *region);
+/*
+ * Returns 1 if firmware slot A is used, 0 if slot B is used.
+ */
+static inline int vboot_is_firmware_slot_a(const struct vb2_context *ctx)
+{
+	return !(ctx->flags & VB2_CONTEXT_FW_SLOT_B);
+}
 
-void vboot_set_selected_region(const struct region *region);
-int vboot_is_slot_selected(void);
+/*
+ * Locates firmware as a region device. Returns 0 on success, -1 on failure.
+ */
+int vboot_locate_firmware(const struct vb2_context *ctx,
+			  struct region_device *fw);
 
 /*
  * Source: security/vboot/vboot_handoff.c

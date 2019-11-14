@@ -35,11 +35,6 @@
 
 #define TODO_BLOCK_SIZE 1024
 
-static int is_slot_a(struct vb2_context *ctx)
-{
-	return !(ctx->flags & VB2_CONTEXT_FW_SLOT_B);
-}
-
 /* exports */
 
 void vb2ex_printf(const char *func, const char *fmt, ...)
@@ -70,7 +65,7 @@ vb2_error_t vb2ex_read_resource(struct vb2_context *ctx,
 		name = "GBB";
 		break;
 	case VB2_RES_FW_VBLOCK:
-		if (is_slot_a(ctx))
+		if (vboot_is_firmware_slot_a(ctx))
 			name = "VBLOCK_A";
 		else
 			name = "VBLOCK_B";
@@ -256,19 +251,6 @@ static vb2_error_t hash_body(struct vb2_context *ctx,
 	return VB2_SUCCESS;
 }
 
-static int locate_firmware(struct vb2_context *ctx,
-			   struct region_device *fw_main)
-{
-	const char *name;
-
-	if (is_slot_a(ctx))
-		name = "FW_MAIN_A";
-	else
-		name = "FW_MAIN_B";
-
-	return fmap_locate_area_as_rdev(name, fw_main);
-}
-
 /**
  * Save non-volatile and/or secure data if needed.
  */
@@ -417,7 +399,7 @@ void verstage_main(void)
 	}
 
 	printk(BIOS_INFO, "Phase 4\n");
-	rv = locate_firmware(ctx, &fw_main);
+	rv = vboot_locate_firmware(ctx, &fw_main);
 	if (rv)
 		die_with_post_code(POST_INVALID_ROM,
 			"Failed to read FMAP to locate firmware");
@@ -468,8 +450,8 @@ void verstage_main(void)
 		}
 	}
 
-	printk(BIOS_INFO, "Slot %c is selected\n", is_slot_a(ctx) ? 'A' : 'B');
-	vboot_set_selected_region(region_device_region(&fw_main));
+	printk(BIOS_INFO, "Slot %c is selected\n",
+	       vboot_is_firmware_slot_a(ctx) ? 'A' : 'B');
 
  verstage_main_exit:
 	/* If CBMEM is not up yet, let the ROMSTAGE_CBMEM_INIT_HOOK take care

@@ -71,9 +71,8 @@ BOOT_STATE_INIT_ENTRY(BS_DEV_INIT, BS_ON_EXIT,
  * VB2_RECOVERY_RO_MANUAL.
  * 2. Checks if recovery request is present in VBNV and returns the code read
  * from it.
- * 3. Checks if vboot verification is done and looks up selected region
- * to identify if vboot_reference library has requested recovery path.
- * If yes, return the reason code from shared data.
+ * 3. Checks if vboot verification is done. If yes, return the reason code from
+ * shared data.
  * 4. If nothing applies, return 0 indicating no recovery request.
  */
 int vboot_check_recovery_request(void)
@@ -88,11 +87,8 @@ int vboot_check_recovery_request(void)
 	if ((reason = get_recovery_mode_from_vbnv()) != 0)
 		return reason;
 
-	/*
-	 * Identify if vboot verification is already complete and no slot
-	 * was selected i.e. recovery path was requested.
-	 */
-	if (vboot_logic_executed() && !vboot_is_slot_selected())
+	/* Identify if vboot verification is already complete. */
+	if (vboot_logic_executed())
 		return vboot_get_recovery_reason_shared_data();
 
 	return 0;

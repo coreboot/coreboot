@@ -461,6 +461,7 @@ endmenu
 menu "Security"
 
 source "src/security/Kconfig"
+source "src/vendorcode/eltan/security/Kconfig"
 
 endmenu
 

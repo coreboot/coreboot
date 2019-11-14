@@ -12,7 +12,16 @@
 ## GNU General Public License for more details.
 ##
 
+config USE_VENDORCODE_ELTAN
+	bool
+
+if USE_VENDORCODE_ELTAN
+
 menu "Eltan Security Settings"
+
 source src/vendorcode/eltan/security/mboot/Kconfig
 source src/vendorcode/eltan/security/verified_boot/Kconfig
+
 endmenu
+
+endif

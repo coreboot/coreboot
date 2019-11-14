@@ -95,3 +95,9 @@ void smbios_fill_dimm_locator(const struct dimm_info *dimm, struct smbios_type17
 		 dimm->dimm_num);
 	t->bank_locator = smbios_add_string(t->eos, locator);
 }
+
+/* Override SMBIOS uuid from the value from BMC. */
+void smbios_system_set_uuid(u8 *uuid)
+{
+	ipmi_get_system_guid(BMC_KCS_BASE, uuid);
+}

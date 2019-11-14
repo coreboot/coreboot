@@ -328,7 +328,7 @@ int verified_boot_should_run_oprom(struct rom_header *rom_header)
 	return process_oprom_list(oprom_verify_list, rom_header);
 }
 
-static void vendor_secure_prepare(void)
+int prog_locate_hook(struct prog *prog)
 {
 	if (ENV_BOOTBLOCK) {
 		printk(BIOS_SPEW, "%s: bootblock\n", __func__);
@@ -353,10 +353,5 @@ static void vendor_secure_prepare(void)
 		printk(BIOS_SPEW, "%s: ramstage\n", __func__);
 		process_verify_list(payload_verify_list);
 	}
+	return 0;
 }
-
-const struct cbfs_locator cbfs_default_locator = {
-	.name = "Vendorcode Header Locator",
-	.prepare = vendor_secure_prepare,
-	.locate = cbfs_default_props
-};

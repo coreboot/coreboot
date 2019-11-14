@@ -16,6 +16,7 @@
 
 #include <console/console.h>
 #include "ipmi_ops.h"
+#include <string.h>
 
 enum cb_err ipmi_init_and_start_bmc_wdt(const int port, uint16_t countdown,
 				uint8_t action)
@@ -102,5 +103,30 @@ enum cb_err ipmi_stop_bmc_wdt(const int port)
 	}
 	printk(BIOS_DEBUG, "IPMI BMC watchdog is stopped\n");
 
+	return CB_SUCCESS;
+}
+
+enum cb_err ipmi_get_system_guid(const int port, uint8_t *uuid)
+{
+	int ret;
+	struct ipmi_get_system_guid_rsp rsp;
+
+	if (uuid == NULL) {
+		printk(BIOS_ERR, "%s failed, null pointer parameter\n",
+			 __func__);
+		return CB_ERR;
+	}
+
+	ret = ipmi_kcs_message(port, IPMI_NETFN_APPLICATION, 0x0,
+			IPMI_BMC_GET_SYSTEM_GUID, NULL, 0,
+			(unsigned char *) &rsp, sizeof(rsp));
+
+	if (ret < sizeof(struct ipmi_rsp) || rsp.resp.completion_code) {
+		printk(BIOS_ERR, "IPMI: %s command failed (ret=%d resp=0x%x)\n",
+			 __func__, ret, rsp.resp.completion_code);
+		return CB_ERR;
+	}
+
+	memcpy(uuid, rsp.data, 16);
 	return CB_SUCCESS;
 }

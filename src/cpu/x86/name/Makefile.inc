@@ -11,4 +11,5 @@
 ## GNU General Public License for more details.
 ##
 
+bootblock-y += name.c
 ramstage-y += name.c

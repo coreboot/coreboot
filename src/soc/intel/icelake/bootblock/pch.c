@@ -150,7 +150,7 @@ void pch_early_iorange_init(void)
 	pch_enable_lpc();
 }
 
-void pch_early_init(void)
+void pch_init(void)
 {
 	/*
 	 * Enabling ABASE for accessing PM1_STS, PM1_EN, PM1_CNT,

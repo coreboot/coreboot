@@ -27,6 +27,9 @@ cache_as_ram:
 	/* Align the stack and keep aligned for call to bootblock_c_entry() */
 	and	$0xfffffff0, %esp
 
+        /* entry64.inc preserves ebx. */
+#include <cpu/x86/64bit/entry64.inc>
+
 	/* Restore the BIST result and timestamps. */
 #if defined(__x86_64__)
 	movd	%mm2, %rdi

@@ -20,12 +20,6 @@
 #include <cpu/x86/16bit/reset16.inc>
 #include <cpu/x86/32bit/entry32.inc>
 
-	/* BIST result in eax */
-	mov	%eax, %ebx
-	/* entry64.inc preserves ebx. */
-#include <cpu/x86/64bit/entry64.inc>
-	mov	%ebx, %eax
-
 #if CONFIG(BOOTBLOCK_DEBUG_SPINLOOP)
 
 	/* Wait for a JTAG debugger to break in and set EBX non-zero */

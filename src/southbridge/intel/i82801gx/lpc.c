@@ -616,7 +616,8 @@ static void lpc_final(struct device *dev)
 	if (!CONFIG(INTEL_CHIPSET_LOCKDOWN))
 		return;
 
-	spi_finalize_ops();
+	if (CONFIG(BOOT_DEVICE_SPI_FLASH))
+		spi_finalize_ops();
 
 	/* Lock SPIBAR */
 	SPIBAR16(0) = SPIBAR16(0) | (1 << 15);

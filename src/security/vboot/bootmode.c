@@ -65,27 +65,6 @@ BOOT_STATE_INIT_ENTRY(BS_DEV_INIT, BS_ON_EXIT,
 		      vboot_clear_recovery_reason_vbnv, NULL);
 
 /*
- * Returns 1 if vboot is being used and currently in a stage which might have
- * already executed vboot verification.
- */
-static int vboot_possibly_executed(void)
-{
-	if (CONFIG(VBOOT_STARTS_IN_BOOTBLOCK)) {
-		if (ENV_BOOTBLOCK && CONFIG(VBOOT_SEPARATE_VERSTAGE))
-			return 0;
-		return 1;
-	}
-
-	if (CONFIG(VBOOT_STARTS_IN_ROMSTAGE)) {
-		if (ENV_BOOTBLOCK)
-			return 0;
-		return 1;
-	}
-
-	return 0;
-}
-
-/*
  * vb2_check_recovery_request looks up different components to identify if there
  * is a recovery request and returns appropriate reason code:
  * 1. Checks if recovery mode is initiated by EC. If yes, returns
@@ -113,8 +92,7 @@ int vboot_check_recovery_request(void)
 	 * Identify if vboot verification is already complete and no slot
 	 * was selected i.e. recovery path was requested.
 	 */
-	if (vboot_possibly_executed() && vboot_logic_executed() &&
-	    !vboot_is_slot_selected())
+	if (vboot_logic_executed() && !vboot_is_slot_selected())
 		return vboot_get_recovery_reason_shared_data();
 
 	return 0;

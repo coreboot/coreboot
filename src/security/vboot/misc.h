@@ -32,7 +32,7 @@ struct selected_region {
  * Stores vboot-related information.  selected_region is used by verstage to
  * store the location of the selected slot.  buffer is used by vboot to store
  * its work buffer.  vb2_context is contained within this work buffer, and is
- * accessible via vboot_init_context() and vboot_get_context() (see below).
+ * accessible via vboot_get_context() declared below.
  * Keep the struct CPU architecture agnostic as it crosses stage boundaries.
  */
 struct vboot_working_data {

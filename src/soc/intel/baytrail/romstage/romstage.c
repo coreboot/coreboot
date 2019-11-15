@@ -27,60 +27,11 @@
 #include <romstage_handoff.h>
 #include <string.h>
 #include <timestamp.h>
-#include <vendorcode/google/chromeos/chromeos.h>
-#include <soc/gpio.h>
 #include <soc/iomap.h>
-#include <soc/lpc.h>
 #include <soc/msr.h>
 #include <soc/pci_devs.h>
 #include <soc/pmc.h>
 #include <soc/romstage.h>
-#include <soc/spi.h>
-
-static void program_base_addresses(void)
-{
-	uint32_t reg;
-	const uint32_t lpc_dev = PCI_DEV(0, LPC_DEV, LPC_FUNC);
-
-	/* Memory Mapped IO registers. */
-	reg = PMC_BASE_ADDRESS | 2;
-	pci_write_config32(lpc_dev, PBASE, reg);
-	reg = IO_BASE_ADDRESS | 2;
-	pci_write_config32(lpc_dev, IOBASE, reg);
-	reg = ILB_BASE_ADDRESS | 2;
-	pci_write_config32(lpc_dev, IBASE, reg);
-	reg = SPI_BASE_ADDRESS | 2;
-	pci_write_config32(lpc_dev, SBASE, reg);
-	reg = MPHY_BASE_ADDRESS | 2;
-	pci_write_config32(lpc_dev, MPBASE, reg);
-	reg = PUNIT_BASE_ADDRESS | 2;
-	pci_write_config32(lpc_dev, PUBASE, reg);
-	reg = RCBA_BASE_ADDRESS | 1;
-	pci_write_config32(lpc_dev, RCBA, reg);
-
-	/* IO Port Registers. */
-	reg = ACPI_BASE_ADDRESS | 2;
-	pci_write_config32(lpc_dev, ABASE, reg);
-	reg = GPIO_BASE_ADDRESS | 2;
-	pci_write_config32(lpc_dev, GBASE, reg);
-}
-
-static void spi_init(void)
-{
-	u32 *scs = (u32 *)(SPI_BASE_ADDRESS + SCS);
-	u32 *bcr = (u32 *)(SPI_BASE_ADDRESS + BCR);
-	uint32_t reg;
-
-	/* Disable generating SMI when setting WPD bit. */
-	write32(scs, read32(scs) & ~SMIWPEN);
-	/*
-	 * Enable caching and prefetching in the SPI controller. Disable
-	 * the SMM-only BIOS write and set WPD bit.
-	 */
-	reg = (read32(bcr) & ~SRC_MASK) | SRC_CACHE_PREFETCH | BCR_WPD;
-	reg &= ~EISS;
-	write32(bcr, reg);
-}
 
 static struct chipset_power_state power_state;
 
@@ -157,17 +108,6 @@ void mainboard_romstage_entry(void)
 	struct chipset_power_state *ps;
 	int prev_sleep_state;
 	struct mrc_params mp;
-
-	program_base_addresses();
-
-	tco_disable();
-
-	if (CONFIG(ENABLE_BUILTIN_COM1))
-		byt_config_com1_and_enable();
-
-	console_init();
-
-	spi_init();
 
 	set_max_freq();
 

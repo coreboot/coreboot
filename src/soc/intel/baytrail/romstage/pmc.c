@@ -14,7 +14,6 @@
  */
 
 #include <stddef.h>
-#include <arch/io.h>
 #include <device/pci_ops.h>
 #include <console/console.h>
 #include <device/device.h>
@@ -26,15 +25,6 @@
 #include <soc/pmc.h>
 #include <soc/romstage.h>
 #include "../chip.h"
-
-void tco_disable(void)
-{
-	uint32_t reg;
-
-	reg = inl(ACPI_BASE_ADDRESS + TCO1_CNT);
-	reg |= TCO_TMR_HALT;
-	outl(reg, ACPI_BASE_ADDRESS + TCO1_CNT);
-}
 
 /* This sequence signals the PUNIT to start running. */
 void punit_init(void)

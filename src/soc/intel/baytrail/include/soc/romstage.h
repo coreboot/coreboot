@@ -24,8 +24,6 @@ void mainboard_fill_mrc_params(struct mrc_params *mp);
 
 void raminit(struct mrc_params *mp, int prev_sleep_state);
 void gfx_init(void);
-void tco_disable(void);
 void punit_init(void);
-void byt_config_com1_and_enable(void);
 
 #endif /* _BAYTRAIL_ROMSTAGE_H_ */

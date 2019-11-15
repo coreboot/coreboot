@@ -23,8 +23,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_A0, NONE),
 	/* A6  : SERIRQ ==> NC */
 	PAD_NC(GPP_A6, NONE),
-	/* A10 : PEN_RESET_ODL for old revision devices */
-	PAD_CFG_GPO(GPP_A10, 1, DEEP),
+	/* A10 : GPP_A10 ==> NC */
+	PAD_NC(GPP_A10, NONE),
 	/* A16 : EMR_GARAGE_DET (notification) */
 	PAD_CFG_GPI_GPIO_DRIVER(GPP_A16, NONE, PLTRST),
 	/* A17 : PIRQA# ==> NC */

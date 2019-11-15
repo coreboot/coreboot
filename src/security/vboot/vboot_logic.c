@@ -369,7 +369,7 @@ void verstage_main(void)
 		ctx->flags |= VB2_CONTEXT_NOFAIL_BOOT;
 
 	/* Mainboard/SoC always initializes display. */
-	if (!CONFIG(VBOOT_MUST_REQUEST_DISPLAY))
+	if (!CONFIG(VBOOT_MUST_REQUEST_DISPLAY) || CONFIG(VBOOT_ALWAYS_ENABLE_DISPLAY))
 		ctx->flags |= VB2_CONTEXT_DISPLAY_INIT;
 
 	/* Do early init (set up secdata and NVRAM, load GBB) */

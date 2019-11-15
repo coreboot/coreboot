@@ -167,6 +167,12 @@ config VBOOT_MUST_REQUEST_DISPLAY
 	  Unless display is specifically requested, the video option ROM is not
 	  loaded, and any other native display initialization code is not run.
 
+config VBOOT_ALWAYS_ENABLE_DISPLAY
+	bool "Force to always enable display"
+	default n
+	help
+	  Set this option to indicate to vboot that display should always be enabled.
+
 config VBOOT_HAS_REC_HASH_SPACE
 	bool
 	default n

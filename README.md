@@ -34,7 +34,6 @@ coreboot supports a wide range of chipsets, devices, and mainboards.
 For details please consult:
 
  * <https://www.coreboot.org/Supported_Motherboards>
- * <https://www.coreboot.org/Supported_Chipsets_and_Devices>
 
 
 Build Requirements

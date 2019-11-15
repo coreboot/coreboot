@@ -19,7 +19,7 @@ endif
 ifeq ($(CONFIG_PAYLOAD_DEPTHCHARGE),y)
 PAYLOAD_CONFIG=payloads/external/depthcharge/depthcharge/.config
 $(PAYLOAD_CONFIG): payloads/external/depthcharge/depthcharge/build/depthcharge.elf
-ifeq ($(call strip_quotes,$(CONFIG_MAINBOARD_DEPTHCHARGE))),)
+ifeq ($(call strip_quotes,$(CONFIG_MAINBOARD_DEPTHCHARGE)),)
   BOARD=$(call ws_to_under,$(call strip_quotes,$(call tolower,$(CONFIG_MAINBOARD_PART_NUMBER))))
 else
   BOARD=$(CONFIG_MAINBOARD_DEPTHCHARGE)

@@ -23,27 +23,6 @@
 
 #define SIO_PORT 0x164e
 
-void mainboard_pch_lpc_setup(void)
-{
-	pci_devfn_t dev = PCH_LPC_DEV;
-
-	/* Enable SuperIO */
-	u16 lpc_config = CNF1_LPC_EN | CNF2_LPC_EN;
-	pci_write_config16(dev, LPC_EN, lpc_config);
-
-#if CONFIG(DRIVERS_UART_8250IO)
-	/* Enable COM1 */
-	if (sio1007_enable_uart_at(SIO_PORT)) {
-		pci_write_config16(dev, LPC_EN,
-				   lpc_config | COMA_LPC_EN);
-	}
-#endif
-}
-
-void mainboard_late_rcba_config(void)
-{
-	RCBA32(0x3414) = 0x00000000;
-}
 const struct southbridge_usb_port mainboard_usb_ports[] = {
 	{ 1, 1, 0 },
 	{ 1, 1, 0 },
@@ -65,6 +44,10 @@ void bootblock_mainboard_early_init(void)
 {
 	const u16 port = SIO_PORT;
 	const u16 runtime_port = 0x180;
+
+	/* Enable COM1 if requested */
+	if (CONFIG(DRIVERS_UART_8250IO))
+		sio1007_enable_uart_at(port);
 
 	/* Turn on configuration mode. */
 	outb(0x55, port);

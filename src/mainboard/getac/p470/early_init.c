@@ -123,9 +123,6 @@ void bootblock_mainboard_early_init(void)
 
 void mainboard_late_rcba_config(void)
 {
-	/* Set up virtual channel 0 */
-	//RCBA32(0x0014) = 0x80000001;
-
 	/* Device 1f interrupt pin register */
 	RCBA32(D31IP) = 0x00042220;
 	/* Device 1d interrupt pin register */

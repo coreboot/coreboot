@@ -20,9 +20,6 @@
 
 void mainboard_late_rcba_config(void)
 {
-	/* V0CTL Virtual Channel 0 Resource Control */
-	RCBA32(0x0014) = 0x80000001;
-
 	/* Device 1f interrupt pin register */
 	RCBA32(0x3100) = 0x00042210;
 	RCBA32(0x3108) = 0x10004321;

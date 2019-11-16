@@ -23,9 +23,6 @@
 
 void mainboard_late_rcba_config(void)
 {
-	/* Set up virtual channel 0 */
-	//RCBA32(0x0014) = 0x80000001;
-
 	/* dev irq route register */
 	RCBA16(D31IR) = 0x0132;
 	RCBA16(D30IR) = 0x0146;

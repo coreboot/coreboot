@@ -76,6 +76,9 @@ config DCACHE_RAM_BASE
 	hex
 	default 0xfefe0000
 
+config DCACHE_BSP_STACK_SIZE
+	hex
+	default 0x2800
 
 if USE_NATIVE_RAMINIT
 

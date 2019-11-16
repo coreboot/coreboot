@@ -26,13 +26,6 @@
 #define SERIAL_DEV PNP_DEV(0x2e, NCT6776_SP1)
 #define ACPI_DEV PNP_DEV(0x2e, NCT6776_ACPI)
 
-void mainboard_pch_lpc_setup(void)
-{
-	/* Enable the Super IO */
-	pci_write_config16(PCH_LPC_DEV, LPC_EN, CNF1_LPC_EN |
-			KBC_LPC_EN | LPT_LPC_EN | COMA_LPC_EN);
-}
-
 const struct southbridge_usb_port mainboard_usb_ports[] = {
 	{ 1, 0, 0 },
 	{ 1, 0, 0 },

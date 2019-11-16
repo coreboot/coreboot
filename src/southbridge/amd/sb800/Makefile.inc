@@ -12,9 +12,9 @@ ramstage-y += pcie.c
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += fadt.c
 ramstage-y += reset.c
 
-bootblock-$(CONFIG_USBDEBUG) += enable_usbdebug.c
-romstage-$(CONFIG_USBDEBUG) += enable_usbdebug.c
-ramstage-$(CONFIG_USBDEBUG) += enable_usbdebug.c
+bootblock-y += enable_usbdebug.c
+romstage-y += enable_usbdebug.c
+ramstage-y += enable_usbdebug.c
 
 romstage-y += ramtop.c
 ramstage-y += ramtop.c

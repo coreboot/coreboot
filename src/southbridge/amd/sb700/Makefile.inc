@@ -14,9 +14,9 @@ romstage-y += reset.c
 ramstage-y += reset.c
 ramstage-y += spi.c
 
-bootblock-$(CONFIG_USBDEBUG) += enable_usbdebug.c
-romstage-$(CONFIG_USBDEBUG) += enable_usbdebug.c
-ramstage-$(CONFIG_USBDEBUG) += enable_usbdebug.c
+bootblock-y += enable_usbdebug.c
+romstage-y += enable_usbdebug.c
+ramstage-y += enable_usbdebug.c
 
 romstage-y += early_setup.c
 romstage-y += smbus.c

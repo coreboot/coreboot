@@ -22,6 +22,7 @@
 #include <device/pci_def.h>
 #include <soc/pci_devs.h>
 #include <soc/southbridge.h>
+#include <amdblocks/acpimmio.h>
 
 pci_devfn_t pci_ehci_dbg_dev(unsigned int hcd_idx)
 {

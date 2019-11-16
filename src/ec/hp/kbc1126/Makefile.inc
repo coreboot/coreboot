@@ -53,6 +53,7 @@ ifeq ($(CONFIG_KBC1126_FIRMWARE),)
 endif
 
 ramstage-y += ec.c
+bootblock-y += early_init.c
 romstage-y += early_init.c
 
 endif

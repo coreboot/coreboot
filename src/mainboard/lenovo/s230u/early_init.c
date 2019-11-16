@@ -29,8 +29,6 @@
 
 void mainboard_pch_lpc_setup(void)
 {
-	pci_write_config32(PCH_LPC_DEV, ETR3, 0x10000);
-
 	/* Memory map KB9012 EC registers */
 	pci_write_config32(
 		PCH_LPC_DEV, LGMR,

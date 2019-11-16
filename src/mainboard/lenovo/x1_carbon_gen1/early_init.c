@@ -28,11 +28,6 @@
 #include <southbridge/intel/common/gpio.h>
 #include <cbfs.h>
 
-void mainboard_pch_lpc_setup(void)
-{
-	pci_write_config32(PCH_LPC_DEV, ETR3, 0x10000);
-}
-
 const struct southbridge_usb_port mainboard_usb_ports[] = {
 	/* enabled, current, OC pin */
 	{ 0, 3, 0 }, /* P00 disconnected */

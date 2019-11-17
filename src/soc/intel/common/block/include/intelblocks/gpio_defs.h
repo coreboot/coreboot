@@ -32,6 +32,7 @@
 #define  PAD_CFG0_MODE_NF4		(4 << 10)
 #define  PAD_CFG0_MODE_NF5		(5 << 10)
 #define  PAD_CFG0_MODE_NF6		(6 << 10)
+#define  PAD_CFG0_MODE_NF7		(7 << 10)
 #define PAD_CFG0_ROUTE_MASK		(0xF << 17)
 #define  PAD_CFG0_ROUTE_NMI		(1 << 17)
 #define  PAD_CFG0_ROUTE_SMI		(1 << 18)

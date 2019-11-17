@@ -55,8 +55,6 @@ static void set_fsb_frequency(void)
 
 void mainboard_pre_raminit(void)
 {
-	outb((inb(DEFAULT_GPIOBASE | 0x3a) & ~0x2) | 0x20,
-	     DEFAULT_GPIOBASE | 0x3a);
 	outb(0x50, 0x15ec);
 	outb(inb(0x15ee) & 0x70, 0x15ee);
 

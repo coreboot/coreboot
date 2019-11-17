@@ -5,6 +5,7 @@ config BOARD_PURISM_BASEBOARD_LIBREM_BDW
 	select EC_PURISM_LIBREM
 	select HAVE_ACPI_RESUME
 	select HAVE_ACPI_TABLES
+	select INTEL_GMA_HAVE_VBT
 	select INTEL_INT15
 	select MAINBOARD_HAS_LIBGFXINIT
 	select SOC_INTEL_BROADWELL
@@ -72,6 +73,11 @@ config VGA_BIOS_ID
 	string
 	default "8086,1616" if BOARD_PURISM_LIBREM13_V1
 	default "8086,162b" if BOARD_PURISM_LIBREM15_V2
+
+# Override the default variant behavior, since the data.vbt is the same
+# for both variants.
+config INTEL_GMA_VBT_FILE
+	default "src/mainboard/$(MAINBOARDDIR)/data.vbt"
 
 # This platform has limited means to display POST codes
 config NO_POST

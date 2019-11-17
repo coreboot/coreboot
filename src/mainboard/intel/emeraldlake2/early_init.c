@@ -29,25 +29,12 @@
 
 #define SIO_PORT 0x164e
 
-void mainboard_pch_lpc_setup(void)
-{
-	pci_devfn_t dev = PCH_LPC_DEV;
-
-	/* Enable SuperIO + PS/2 Keyboard/Mouse */
-	u16 lpc_config = CNF1_LPC_EN | CNF2_LPC_EN | KBC_LPC_EN;
-	pci_write_config16(dev, LPC_EN, lpc_config);
-
-	/* Enable COM1 */
-	if (sio1007_enable_uart_at(SIO_PORT)) {
-		pci_write_config16(dev, LPC_EN,
-				   lpc_config | COMA_LPC_EN);
-	}
-}
-
 void bootblock_mainboard_early_init(void)
 {
 	const u16 port = SIO_PORT;
 	const u16 runtime_port = 0x180;
+
+	sio1007_enable_uart_at(port);
 
 	/* Turn on configuration mode. */
 	outb(0x55, port);

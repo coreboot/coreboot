@@ -17,6 +17,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <arch/io.h>
+#include <bootblock_common.h>
 #include <device/pci_ops.h>
 #include <device/pci_def.h>
 #include <cpu/x86/lapic.h>
@@ -33,22 +34,10 @@
 #include <superio/smsc/lpc47n207/lpc47n207.h>
 #endif
 
-void mainboard_pch_lpc_setup(void)
+void bootblock_mainboard_early_init(void)
 {
-	/* Set COM1/COM2 decode range */
-	pci_write_config16(PCH_LPC_DEV, LPC_IO_DEC, 0x0010);
-
-#if CONFIG(DRIVERS_UART_8250IO)
-	/* Enable SuperIO + EC + KBC + COM1 + lpc47n207 config*/
-	pci_write_config16(PCH_LPC_DEV, LPC_EN, CNF1_LPC_EN | MC_LPC_EN |
-		KBC_LPC_EN | CNF2_LPC_EN | COMA_LPC_EN);
-
-	try_enabling_LPC47N207_uart();
-#else
-	/* Enable SuperIO + EC + KBC */
-	pci_write_config16(PCH_LPC_DEV, LPC_EN, CNF1_LPC_EN | MC_LPC_EN |
-		KBC_LPC_EN);
-#endif
+	if (CONFIG(DRIVERS_UART_8250IO))
+		try_enabling_LPC47N207_uart();
 }
 
 void mainboard_late_rcba_config(void)
@@ -88,11 +77,6 @@ void mainboard_late_rcba_config(void)
 	DIR_ROUTE(D26IR, PIRQB, PIRQC, PIRQD, PIRQA);
 	DIR_ROUTE(D25IR, PIRQA, PIRQB, PIRQC, PIRQD);
 	DIR_ROUTE(D22IR, PIRQA, PIRQB, PIRQC, PIRQD);
-
-	/* Enable IOAPIC (generic) */
-	RCBA16(OIC) = 0x0100;
-	/* PCH BWG says to read back the IOAPIC enable register */
-	(void) RCBA16(OIC);
 }
 
 static const uint8_t *locate_spd(void)

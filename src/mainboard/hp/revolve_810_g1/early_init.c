@@ -25,11 +25,6 @@
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <ec/hp/kbc1126/ec.h>
 
-void mainboard_late_rcba_config(void)
-{
-	RCBA32(BUC) = 0x00000000;
-}
-
 const struct southbridge_usb_port mainboard_usb_ports[] = {
 	{ 1, 1, 0 },
 	{ 1, 0, 0 },

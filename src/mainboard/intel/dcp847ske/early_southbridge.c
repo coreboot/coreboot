@@ -33,16 +33,6 @@ void mainboard_late_rcba_config(void)
 	/* Disable devices */
 	RCBA32(FD) |= PCH_DISABLE_P2P;
 
-#if CONFIG(USE_NATIVE_RAMINIT)
-	/* Enable Gigabit Ethernet */
-	if (RCBA32(BUC) & PCH_DISABLE_GBE) {
-		RCBA32(BUC) &= ~PCH_DISABLE_GBE;
-		/* Datasheet says clearing the bit requires a reset after */
-		printk(BIOS_DEBUG, "Enabled gigabit ethernet, reset once.\n");
-		full_reset();
-	}
-#endif
-
 	/* Set "mobile" bit in MCH (which makes sense layout-wise). */
 	/* Note sure if this has any effect at all though. */
 	MCHBAR32(0x0004) |= 0x00001000;

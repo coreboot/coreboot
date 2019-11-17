@@ -166,7 +166,7 @@ static void pch_hide_devfn(unsigned int devfn)
 		RCBA32_OR(FD2, PCH_DISABLE_KT);
 		break;
 	case PCI_DEVFN(25, 0): /* Gigabit Ethernet */
-		RCBA32_OR(BUC, PCH_DISABLE_GBE);
+		/* BUC is already handled in `early_pch.c`. */
 		break;
 	case PCI_DEVFN(26, 0): /* EHCI #2 */
 		RCBA32_OR(FD, PCH_DISABLE_EHCI2);

@@ -16,6 +16,7 @@
 #include <device/mmio.h>
 #include <device/pci_ops.h>
 #include <arch/cbfs.h>
+#include <cf9_reset.h>
 #include <ip_checksum.h>
 #include <device/pci_def.h>
 #include <southbridge/intel/common/gpio.h>
@@ -253,6 +254,30 @@ static void pch_generic_setup(void)
 	write_pmbase16(TCO1_CNT, 1 << 11);	/* halt timer */
 }
 
+static void pch_enable_gbe(void)
+{
+	uint8_t wanted_buc;
+
+	/* Don't do this in the bootblock, it might be RO. So one
+	   couldn't change the setting later in an updated romstage. */
+	if (ENV_BOOTBLOCK)
+		return;
+
+	const struct device *const gbe = pcidev_on_root(0x19, 0);
+	if (gbe && gbe->enabled)
+		wanted_buc = RCBA8(BUC) & ~PCH_DISABLE_GBE;
+	else
+		wanted_buc = RCBA8(BUC) | PCH_DISABLE_GBE;
+
+	if (RCBA8(BUC) != wanted_buc) {
+		RCBA8(BUC) = wanted_buc;
+		/* Be double sure not to reset for naught. */
+		if (RCBA8(BUC) != wanted_buc)
+			return;
+		full_reset();
+	}
+}
+
 static void pch_enable_lpc_decode(void)
 {
 	/*
@@ -292,7 +317,6 @@ __weak void mainboard_pch_lpc_setup(void)
 
 void early_pch_init(void)
 {
-
 	pch_enable_lpc_decode();
 
 	mainboard_pch_lpc_setup();
@@ -300,6 +324,8 @@ void early_pch_init(void)
 	pch_enable_bars();
 
 	pch_generic_setup();
+
+	pch_enable_gbe();
 
 	setup_pch_gpios(&mainboard_gpio_map);
 }

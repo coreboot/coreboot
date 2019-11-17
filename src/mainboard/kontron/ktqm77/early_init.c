@@ -44,17 +44,6 @@ void mainboard_pch_lpc_setup(void)
 			   COMA_LPC_EN | COMB_LPC_EN);
 }
 
-void mainboard_late_rcba_config(void)
-{
-	u32 reg32;
-
-	/* Disable unused devices (board specific) */
-	reg32 = RCBA32(FD);
-	/* Disable PCI bridge so MRC does not probe this bus */
-	reg32 |= PCH_DISABLE_P2P;
-	RCBA32(FD) = reg32;
-}
-
 void bootblock_mainboard_early_init(void)
 {
 	int lvds_3v = 0; /* 0 (5V) or 1 (3V3) */

@@ -16,17 +16,6 @@
 #include <northbridge/intel/sandybridge/sandybridge.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 
-void mainboard_late_rcba_config(void)
-{
-	u32 reg32;
-
-	/* Disable unused devices (board specific) */
-	reg32 = RCBA32(FD);
-	/* Disable PCI bridge so MRC does not probe this bus */
-	reg32 |= PCH_DISABLE_P2P;
-	RCBA32(FD) = reg32;
-}
-
 int mainboard_should_reset_usb(int s3resume)
 {
 	return !s3resume;

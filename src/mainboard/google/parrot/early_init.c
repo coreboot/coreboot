@@ -28,8 +28,6 @@
 
 void mainboard_late_rcba_config(void)
 {
-	u32 reg32;
-
 	/*
 	 *             GFX    INTA -> PIRQA (MSI)
 	 * D28IP_P2IP  WLAN   INTA -> PIRQB
@@ -67,12 +65,6 @@ void mainboard_late_rcba_config(void)
 	DIR_ROUTE(D26IR, PIRQF, PIRQE, PIRQG, PIRQH);
 	DIR_ROUTE(D25IR, PIRQA, PIRQB, PIRQC, PIRQD);
 	DIR_ROUTE(D22IR, PIRQA, PIRQB, PIRQC, PIRQD);
-
-	/* Disable unused devices (board specific) */
-	reg32 = RCBA32(FD);
-	/* Disable PCI bridge so MRC does not probe this bus */
-	reg32 |= PCH_DISABLE_P2P;
-	RCBA32(FD) = reg32;
 }
 
 void mainboard_fill_pei_data(struct pei_data *pei_data)

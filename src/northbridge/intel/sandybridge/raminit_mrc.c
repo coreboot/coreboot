@@ -18,6 +18,7 @@
 #include <bootmode.h>
 #include <cf9_reset.h>
 #include <string.h>
+#include <device/device.h>
 #include <device/pci_ops.h>
 #include <arch/cpu.h>
 #include <cbmem.h>
@@ -382,6 +383,16 @@ static void devicetree_fill_pei_data(struct pei_data *pei_data)
 	pei_data->usb3.xhci_streams = cfg->usb3.xhci_streams;
 }
 
+static void disable_p2p(void)
+{
+	/* Disable PCI-to-PCI bridge early to prevent probing by MRC. */
+	const struct device *const p2p = pcidev_on_root(0x1e, 0);
+	if (p2p && p2p->enabled)
+		return;
+
+	RCBA32(FD) |= PCH_DISABLE_P2P;
+}
+
 void perform_raminit(int s3resume)
 {
 	int cbmem_was_initted;
@@ -422,6 +433,8 @@ void perform_raminit(int s3resume)
 				die("Onboard SPDs must match each other");
 		}
 	}
+
+	disable_p2p();
 
 	pei_data.boot_mode = s3resume ? 2 : 0;
 	timestamp_add_now(TS_BEFORE_INITRAM);

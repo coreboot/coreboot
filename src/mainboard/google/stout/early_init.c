@@ -32,8 +32,6 @@
 
 void mainboard_late_rcba_config(void)
 {
-	u32 reg32;
-
 	/*
 	 *             GFX         INTA -> PIRQA (MSI)
 	 * D20IP_XHCI  XHCI        INTA -> PIRQD (MSI)
@@ -71,12 +69,6 @@ void mainboard_late_rcba_config(void)
 	DIR_ROUTE(D25IR, PIRQA, PIRQB, PIRQC, PIRQD);
 	DIR_ROUTE(D22IR, PIRQA, PIRQB, PIRQC, PIRQD);
 	DIR_ROUTE(D20IR, PIRQD, PIRQE, PIRQF, PIRQG);
-
-	/* Disable unused devices (board specific) */
-	reg32 = RCBA32(FD);
-	/* Disable PCI bridge so MRC does not probe this bus */
-	reg32 |= PCH_DISABLE_P2P;
-	RCBA32(FD) = reg32;
 }
 
 	/*

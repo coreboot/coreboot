@@ -30,9 +30,6 @@
 
 void mainboard_late_rcba_config(void)
 {
-	/* Disable devices */
-	RCBA32(FD) |= PCH_DISABLE_P2P;
-
 	/* Set "mobile" bit in MCH (which makes sense layout-wise). */
 	/* Note sure if this has any effect at all though. */
 	MCHBAR32(0x0004) |= 0x00001000;

@@ -30,19 +30,6 @@
 #include "ec.h"
 #include "onboard.h"
 
-void mainboard_pch_lpc_setup(void)
-{
-	/*
-	 * Enable:
-	 *  EC Decode Range Port62/66
-	 *  SuperIO Port2E/2F
-	 *  PS/2 Keyboard/Mouse Port60/64
-	 *  FDD Port3F0h-3F5h and Port3F7h
-	 */
-	pci_write_config16(PCH_LPC_DEV, LPC_EN, KBC_LPC_EN | MC_LPC_EN |
-			CNF1_LPC_EN | FDD_LPC_EN);
-}
-
 void mainboard_late_rcba_config(void)
 {
 	u32 reg32;
@@ -84,11 +71,6 @@ void mainboard_late_rcba_config(void)
 	DIR_ROUTE(D25IR, PIRQA, PIRQB, PIRQC, PIRQD);
 	DIR_ROUTE(D22IR, PIRQA, PIRQB, PIRQC, PIRQD);
 	DIR_ROUTE(D20IR, PIRQD, PIRQE, PIRQF, PIRQG);
-
-	/* Enable IOAPIC (generic) */
-	RCBA16(OIC) = 0x0100;
-	/* PCH BWG says to read back the IOAPIC enable register */
-	(void) RCBA16(OIC);
 
 	/* Disable unused devices (board specific) */
 	reg32 = RCBA32(FD);

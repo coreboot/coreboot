@@ -68,11 +68,6 @@ void mainboard_late_rcba_config(void)
 	DIR_ROUTE(D25IR, PIRQA, PIRQB, PIRQC, PIRQD);
 	DIR_ROUTE(D22IR, PIRQA, PIRQB, PIRQC, PIRQD);
 
-	/* Enable IOAPIC (generic) */
-	RCBA16(OIC) = 0x0100;
-	/* PCH BWG says to read back the IOAPIC enable register */
-	(void) RCBA16(OIC);
-
 	/* Disable unused devices (board specific) */
 	reg32 = RCBA32(FD);
 	/* Disable PCI bridge so MRC does not probe this bus */

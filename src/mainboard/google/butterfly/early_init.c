@@ -28,13 +28,6 @@
 #include <vendorcode/google/chromeos/chromeos.h>
 #endif
 
-void mainboard_pch_lpc_setup(void)
-{
-	/* EC Decode Range Port60/64 and Port62/66 */
-	/* Enable EC and PS/2 Keyboard/Mouse*/
-	pci_write_config16(PCH_LPC_DEV, LPC_EN, KBC_LPC_EN | MC_LPC_EN);
-}
-
 void mainboard_late_rcba_config(void)
 {
 	u32 reg32;
@@ -75,11 +68,6 @@ void mainboard_late_rcba_config(void)
 	DIR_ROUTE(D26IR, PIRQF, PIRQE, PIRQG, PIRQH);
 	DIR_ROUTE(D25IR, PIRQA, PIRQB, PIRQC, PIRQD);
 	DIR_ROUTE(D22IR, PIRQA, PIRQB, PIRQC, PIRQD);
-
-	/* Enable IOAPIC (generic) */
-	RCBA16(OIC) = 0x0100;
-	/* PCH BWG says to read back the IOAPIC enable register */
-	(void) RCBA16(OIC);
 
 	/* Disable unused devices (board specific) */
 	reg32 = RCBA32(FD);

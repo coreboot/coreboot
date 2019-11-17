@@ -34,9 +34,8 @@
 
 void mainboard_pch_lpc_setup(void)
 {
-	/* Enable PS/2 Keyboard/Mouse, EC areas and COM1 */
-	pci_write_config16(PCH_LPC_DEV, LPC_EN, KBC_LPC_EN | MC_LPC_EN | \
-			   GAMEL_LPC_EN | COMA_LPC_EN);
+	/* Enable additional 0x200..0x207 for EC */
+	pci_or_config16(PCH_LPC_DEV, LPC_EN, GAMEL_LPC_EN);
 }
 
 void mainboard_late_rcba_config(void)
@@ -74,11 +73,6 @@ void mainboard_late_rcba_config(void)
 	DIR_ROUTE(D26IR, PIRQF, PIRQE, PIRQG, PIRQH);
 	DIR_ROUTE(D25IR, PIRQA, PIRQB, PIRQC, PIRQD);
 	DIR_ROUTE(D22IR, PIRQA, PIRQB, PIRQC, PIRQD);
-
-	/* Enable IOAPIC (generic) */
-	RCBA16(OIC) = 0x0100;
-	/* PCH BWG says to read back the IOAPIC enable register */
-	(void) RCBA16(OIC);
 }
 
 static uint8_t *locate_spd(void)

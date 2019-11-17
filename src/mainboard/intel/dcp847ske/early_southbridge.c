@@ -31,7 +31,7 @@
 void mainboard_late_rcba_config(void)
 {
 	/* Disable devices */
-	RCBA32(FD) |= PCH_DISABLE_P2P | PCH_DISABLE_XHCI;
+	RCBA32(FD) |= PCH_DISABLE_P2P;
 
 #if CONFIG(USE_NATIVE_RAMINIT)
 	/* Enable Gigabit Ethernet */

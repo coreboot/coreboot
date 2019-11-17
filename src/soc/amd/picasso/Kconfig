@@ -37,7 +37,6 @@ config CPU_SPECIFIC_OPTIONS
 	select SOC_AMD_COMMON_BLOCK_SPI
 	select TSC_SYNC_LFENCE
 	select UDELAY_TSC
-	select SOC_AMD_PI
 	select SOC_AMD_COMMON
 	select SOC_AMD_COMMON_BLOCK
 	select SOC_AMD_COMMON_BLOCK_IOMMU
@@ -48,7 +47,6 @@ config CPU_SPECIFIC_OPTIONS
 	select SOC_AMD_COMMON_BLOCK_PCI
 	select SOC_AMD_COMMON_BLOCK_HDA
 	select SOC_AMD_COMMON_BLOCK_SATA
-	select SOC_AMD_COMMON_BLOCK_S3
 	select BOOT_DEVICE_SUPPORTS_WRITES if BOOT_DEVICE_SPI_FLASH
 	select BOOT_DEVICE_SPI_FLASH_RW_NOMMAP_EARLY if BOOT_DEVICE_SPI_FLASH
 	select PARALLEL_MP
@@ -57,35 +55,9 @@ config CPU_SPECIFIC_OPTIONS
 	select SSE2
 	select RTC
 
-config VBOOT
-	select VBOOT_SEPARATE_VERSTAGE
-	select VBOOT_STARTS_IN_BOOTBLOCK
-	select VBOOT_SAVE_RECOVERY_REASON_ON_REBOOT
-	select VBOOT_VBNV_CMOS
-	select VBOOT_VBNV_CMOS_BACKUP_TO_FLASH
-
 config HAVE_BOOTBLOCK
 	bool
 	default n
-
-# TODO: Sync these with definitions in PI vendorcode.
-# DCACHE_RAM_BASE must equal BSP_STACK_BASE_ADDR.
-# DCACHE_RAM_SIZE must equal BSP_STACK_SIZE.
-
-config DCACHE_RAM_BASE
-	hex
-	default 0x30000
-
-config DCACHE_RAM_SIZE
-	hex
-	default 0x10000
-
-config DCACHE_BSP_STACK_SIZE
-	hex
-	default 0x4000
-	help
-	  The amount of anticipated stack usage in CAR by bootblock and
-	  other stages.
 
 config PRERAM_CBMEM_CONSOLE_SIZE
 	hex

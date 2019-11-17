@@ -40,11 +40,6 @@ void mainboard_pch_lpc_setup(void)
 		ec_mm_set_bit(0x3b, 4);
 }
 
-void mainboard_late_rcba_config(void)
-{
-	/* Disable devices.  */
-	RCBA32(BUC) = 0x00000020;
-}
 const struct southbridge_usb_port mainboard_usb_ports[] = {
 	{ 1, 1, 0 },
 	{ 1, 0, 0 },

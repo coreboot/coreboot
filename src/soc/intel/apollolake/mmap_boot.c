@@ -99,28 +99,23 @@ const struct region_device *boot_device_ro(void)
 	return &real_dev.rdev;
 }
 
-static int iafw_boot_region_properties(struct cbfs_props *props)
+static int iafw_boot_region_device(struct region_device *rdev)
 {
 	struct region *real_dev_reg;
-	struct region regn;
 
-	/* use fmap to locate CBFS area */
-	if (fmap_locate_area("COREBOOT", &regn))
+	if (cbfs_default_region_device(rdev))
 		return -1;
-
-	props->offset = region_offset(&regn);
-	props->size = region_sz(&regn);
 
 	/* Check that we are within the memory mapped area. It's too
 	   easy to forget the SRAM mapping when crafting an FMAP file. */
 	real_dev_reg = &real_dev.sub_region;
-	if (region_is_subregion(real_dev_reg, &regn)) {
+	if (region_is_subregion(real_dev_reg, region_device_region(rdev))) {
 		printk(BIOS_DEBUG, "CBFS @ %zx size %zx\n",
-		       props->offset, props->size);
+		       region_device_offset(rdev), region_device_sz(rdev));
 	} else {
 		printk(BIOS_CRIT,
 		       "ERROR: CBFS @ %zx size %zx exceeds mem-mapped area @ %zx size %zx\n",
-		       props->offset, props->size,
+		       region_device_offset(rdev), region_device_sz(rdev),
 		       region_offset(real_dev_reg), region_sz(real_dev_reg));
 	}
 
@@ -133,5 +128,5 @@ static int iafw_boot_region_properties(struct cbfs_props *props)
  */
 const struct cbfs_locator cbfs_default_locator = {
 	.name = "IAFW Locator",
-	.locate = iafw_boot_region_properties,
+	.locate = iafw_boot_region_device,
 };

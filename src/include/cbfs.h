@@ -73,18 +73,22 @@ struct cbfs_props {
 	size_t size;
 };
 
-/* Default CBFS locator .locate() callback that locates "COREBOOT" region. */
-int cbfs_default_props(struct cbfs_props *props);
+/* Default CBFS locator .locate() callback that locates "COREBOOT" region. This
+   function is exposed to reduce code duplication in other parts of the code
+   base. To obtain the correct region device the selection process is required
+   by way of cbfs_boot_region_device(). */
+int cbfs_default_region_device(struct region_device *rdev);
 
-/* Return < 0 on error otherwise props are filled out accordingly. */
-int cbfs_boot_region_properties(struct cbfs_props *props);
+/* Select the boot region device from the cbfs locators.
+   Return < 0 on error, 0 on success. */
+int cbfs_boot_region_device(struct region_device *rdev);
 
 /* Object used to identify location of current cbfs to use for cbfs_boot_*
  * operations. It's used by cbfs_boot_region_properties(). */
 struct cbfs_locator {
 	const char *name;
 	/* Returns 0 on successful fill of cbfs properties. */
-	int (*locate)(struct cbfs_props *props);
+	int (*locate)(struct region_device *rdev);
 };
 
 #endif

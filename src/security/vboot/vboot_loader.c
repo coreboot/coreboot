@@ -14,6 +14,7 @@
  */
 
 #include <arch/early_variables.h>
+#include <boot_device.h>
 #include <cbfs.h>
 #include <console/console.h>
 #include <ec/google/chromeec/ec.h>
@@ -71,10 +72,9 @@ void vboot_run_logic(void)
 	}
 }
 
-static int vboot_locate(struct cbfs_props *props)
+static int vboot_locate(struct region_device *rdev)
 {
 	const struct vb2_context *ctx;
-	struct region_device fw_main;
 
 	/* Don't honor vboot results until the vboot logic has run. */
 	if (!vboot_logic_executed())
@@ -85,13 +85,7 @@ static int vboot_locate(struct cbfs_props *props)
 	if (ctx->flags & VB2_CONTEXT_RECOVERY_MODE)
 		return -1;
 
-	if (vboot_locate_firmware(ctx, &fw_main))
-		return -1;
-
-	props->offset = region_device_offset(&fw_main);
-	props->size = region_device_sz(&fw_main);
-
-	return 0;
+	return vboot_locate_firmware(ctx, rdev);
 }
 
 const struct cbfs_locator vboot_locator = {

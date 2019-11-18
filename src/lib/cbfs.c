@@ -39,26 +39,9 @@
 int cbfs_boot_locate(struct cbfsf *fh, const char *name, uint32_t *type)
 {
 	struct region_device rdev;
-	const struct region_device *boot_dev;
-	struct cbfs_props props;
 
-	if (cbfs_boot_region_properties(&props)) {
-		printk(BIOS_ALERT, "ERROR: Failed to locate boot region\n");
+	if (cbfs_boot_region_device(&rdev))
 		return -1;
-	}
-
-	/* All boot CBFS operations are performed using the RO device. */
-	boot_dev = boot_device_ro();
-
-	if (boot_dev == NULL) {
-		printk(BIOS_ALERT, "ERROR: Failed to find boot device\n");
-		return -1;
-	}
-
-	if (rdev_chain(&rdev, boot_dev, props.offset, props.size)) {
-		printk(BIOS_ALERT, "ERROR: Failed to access boot region inside boot device\n");
-		return -1;
-	}
 
 	int ret = cbfs_locate(fh, &rdev, name, type);
 
@@ -297,17 +280,13 @@ out:
 }
 
 /* The default locator to find the CBFS in the "COREBOOT" FMAP region. */
-int cbfs_default_props(struct cbfs_props *props)
+int cbfs_default_region_device(struct region_device *rdev)
 {
-	struct region region;
-
-	if (fmap_locate_area("COREBOOT", &region))
+	if (fmap_locate_area_as_rdev("COREBOOT", rdev))
 		return -1;
 
-	props->offset = region_offset(&region);
-	props->size = region_sz(&region);
-
-	printk(BIOS_SPEW, "CBFS @ %zx size %zx\n", props->offset, props->size);
+	printk(BIOS_SPEW, "CBFS @ %zx size %zx\n",
+		region_device_offset(rdev), region_device_sz(rdev));
 
 	return 0;
 }
@@ -317,7 +296,7 @@ int cbfs_default_props(struct cbfs_props *props)
  * devices. */
 const struct cbfs_locator __weak cbfs_default_locator = {
 	.name = "COREBOOT Locator",
-	.locate = cbfs_default_props,
+	.locate = cbfs_default_region_device,
 };
 
 extern const struct cbfs_locator vboot_locator;
@@ -334,7 +313,7 @@ static const struct cbfs_locator *locators[] = {
 	&cbfs_default_locator,
 };
 
-int cbfs_boot_region_properties(struct cbfs_props *props)
+int cbfs_boot_region_device(struct region_device *rdev)
 {
 	int i;
 
@@ -348,11 +327,12 @@ int cbfs_boot_region_properties(struct cbfs_props *props)
 		if (ops->locate == NULL)
 			continue;
 
-		if (ops->locate(props))
+		if (ops->locate(rdev))
 			continue;
 
 		LOG("'%s' located CBFS at [%zx:%zx)\n",
-		    ops->name, props->offset, props->offset + props->size);
+		    ops->name, region_device_offset(rdev),
+		    region_device_end(rdev));
 
 		return 0;
 	}

@@ -424,6 +424,19 @@ struct soc_intel_cannonlake_config {
 	 * Bit 0: MISCCFG_GPDLCGEN
 	 */
 	uint8_t gpio_pm[TOTAL_GPIO_COMM];
+
+	/*
+	 * Override CPU flex ratio value:
+	 * CPU ratio value controls the maximum processor non-turbo ratio.
+	 * Valid Range 0 to 63.
+	 *
+	 * In general descriptor provides option to set default cpu flex ratio.
+	 * Default cpu flex ratio is 0 ensures booting with non-turbo max frequency.
+	 * Thats the reason FSP skips cpu_ratio override if cpu_ratio is 0.
+	 *
+	 * Only override CPU flex ratio if don't want to boot with non-turbo max.
+	 */
+	uint8_t cpu_ratio_override;
 };
 
 typedef struct soc_intel_cannonlake_config config_t;

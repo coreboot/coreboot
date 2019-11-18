@@ -74,10 +74,14 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg, const config_t *config)
 	m_cfg->SkipMpInit = !CONFIG_USE_INTEL_FSP_MP_INIT;
 #endif
 
-	/* Set CpuRatio to match existing MSR value */
-	msr_t flex_ratio;
-	flex_ratio = rdmsr(MSR_FLEX_RATIO);
-	m_cfg->CpuRatio = (flex_ratio.lo >> 8) & 0xff;
+	if (config->cpu_ratio_override) {
+		m_cfg->CpuRatio = config->cpu_ratio_override;
+	} else {
+		/* Set CpuRatio to match existing MSR value */
+		msr_t flex_ratio;
+		flex_ratio = rdmsr(MSR_FLEX_RATIO);
+		m_cfg->CpuRatio = (flex_ratio.lo >> 8) & 0xff;
+	}
 
 	/* If ISH is enabled, enable ISH elements */
 	if (!dev)

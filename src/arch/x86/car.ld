@@ -58,7 +58,10 @@
 #endif
 
 	TIMESTAMP(., 0x200)
+
+#if !CONFIG(NO_FMAP_CACHE)
 	FMAP_CACHE(., FMAP_SIZE)
+#endif
 
 	_car_ehci_dbg_info = .;
 	/* Reserve sizeof(struct ehci_dbg_info). */

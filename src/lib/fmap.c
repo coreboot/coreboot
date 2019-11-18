@@ -60,6 +60,9 @@ static void report(const struct fmap *fmap)
 
 static void setup_preram_cache(struct mem_region_device *cache_mrdev)
 {
+	if (CONFIG(NO_FMAP_CACHE))
+		return;
+
 	if (!ENV_ROMSTAGE_OR_BEFORE) {
 		/* We get here if ramstage makes an FMAP access before calling
 		   cbmem_initialize(). We should avoid letting it come to that,
@@ -70,10 +73,10 @@ static void setup_preram_cache(struct mem_region_device *cache_mrdev)
 	}
 
 	if (REGION_SIZE(fmap_cache) == 0) {
-		/* If you see this you really want to add an FMAP_CACHE to your
-		   memlayout, unless you absolutely can't affort the 2K. */
-		print_once(BIOS_NOTICE,
-			"NOTE: Running without FMAP_CACHE, should add it!\n");
+		/* If you see this you should add FMAP_CACHE() to your memlayout
+		   (or select NO_FMAP_CACHE if you can't afford the 2K). */
+		print_once(BIOS_ERR,
+			"ERROR: FMAP_CACHE enabled but no region provided!\n");
 		return;
 	}
 

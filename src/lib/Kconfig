@@ -68,3 +68,10 @@ config HWBASE_DIRECT_PCIDEV
 	def_bool y
 
 endif
+
+config NO_FMAP_CACHE
+	bool
+	help
+	  If your platform really doesn't want to use an FMAP cache (e.g. due to
+	  space constraints), you can select this to disable warnings and save
+	  a bit more code.

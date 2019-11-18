@@ -24,16 +24,6 @@
 #include <security/vboot/vbnv.h>
 #include <vb2_api.h>
 
-int vboot_named_region_device(const char *name, struct region_device *rdev)
-{
-	return fmap_locate_area_as_rdev(name, rdev);
-}
-
-int vboot_named_region_device_rw(const char *name, struct region_device *rdev)
-{
-	return fmap_locate_area_as_rdev_rw(name, rdev);
-}
-
 /* Check if it is okay to enable USB Device Controller (UDC). */
 int vboot_can_enable_udc(void)
 {

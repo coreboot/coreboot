@@ -19,6 +19,7 @@
 #include <cbmem.h>
 #include <console/console.h>
 #include <console/vtxprintf.h>
+#include <fmap.h>
 #include <string.h>
 #include <timestamp.h>
 #include <vb2_api.h>
@@ -78,7 +79,7 @@ vb2_error_t vb2ex_read_resource(struct vb2_context *ctx,
 		return VB2_ERROR_EX_READ_RESOURCE_INDEX;
 	}
 
-	if (vboot_named_region_device(name, &rdev))
+	if (fmap_locate_area_as_rdev(name, &rdev))
 		return VB2_ERROR_EX_READ_RESOURCE_SIZE;
 
 	if (rdev_readat(&rdev, buf, offset, size) != size)
@@ -265,7 +266,7 @@ static int locate_firmware(struct vb2_context *ctx,
 	else
 		name = "FW_MAIN_B";
 
-	return vboot_named_region_device(name, fw_main);
+	return fmap_locate_area_as_rdev(name, fw_main);
 }
 
 /**

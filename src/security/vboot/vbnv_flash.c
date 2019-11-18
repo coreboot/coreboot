@@ -16,6 +16,7 @@
 #include <arch/early_variables.h>
 #include <commonlib/region.h>
 #include <console/console.h>
+#include <fmap.h>
 #include <string.h>
 #include <vb2_api.h>
 #include <security/vboot/vboot_common.h>
@@ -67,7 +68,7 @@ static int init_vbnv(void)
 	int offset;
 	int i;
 
-	if (vboot_named_region_device_rw("RW_NVRAM", rdev) ||
+	if (fmap_locate_area_as_rdev_rw("RW_NVRAM", rdev) ||
 	    region_device_sz(rdev) < BLOB_SIZE) {
 		printk(BIOS_ERR, "%s: failed to locate NVRAM\n", __func__);
 		return 1;

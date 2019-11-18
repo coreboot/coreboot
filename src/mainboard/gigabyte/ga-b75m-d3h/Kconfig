@@ -1,4 +1,4 @@
-if BOARD_GIGABYTE_GA_B75M_D3H || BOARD_GIGABYTE_GA_B75M_D3V
+if BOARD_GIGABYTE_GA_B75M_D3H || BOARD_GIGABYTE_GA_B75M_D3V || BOARD_GIGABYTE_GA_B75_D3V
 
 config BOARD_SPECIFIC_OPTIONS
 	def_bool y
@@ -34,11 +34,17 @@ config VARIANT_DIR
 	string
 	default "ga-b75m-d3h" if BOARD_GIGABYTE_GA_B75M_D3H
 	default "ga-b75m-d3v" if BOARD_GIGABYTE_GA_B75M_D3V
+	default "ga-b75-d3v" if BOARD_GIGABYTE_GA_B75_D3V
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "GA-B75M-D3H" if BOARD_GIGABYTE_GA_B75M_D3H
 	default "GA-B75M-D3V" if BOARD_GIGABYTE_GA_B75M_D3V
+	default "GA-B75-D3V" if BOARD_GIGABYTE_GA_B75_D3V
+
+config OVERRIDE_DEVICETREE
+	string
+	default "variants/$(CONFIG_VARIANT_DIR)/overridetree.cb" if BOARD_GIGABYTE_GA_B75_D3V
 
 config MAX_CPUS
 	int
@@ -49,4 +55,4 @@ config INTEL_GMA_VBT_FILE
 	string
 	default "src/mainboard/$(MAINBOARDDIR)/data.vbt"
 
-endif # BOARD_GIGABYTE_GA_B75M*
+endif # BOARD_GIGABYTE_GA_B75*

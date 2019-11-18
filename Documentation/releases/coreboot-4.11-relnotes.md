@@ -100,6 +100,19 @@ UPPER CASE commands and libpayload knows how to deal with USB3 hubs.
 * intel/nehalem
 * intel/braswell
 
+### libgfxinit ###
+
+Most notable, dynamic CDClk configuration was added to libgfxinit,
+to support higher resolution displays without changes in the static
+configuration. It also received some fixes for better DP and eDP
+compatibility, better error recovery for Intel's fickle GMBus and
+updated platform support:
+* Correct HDMI clock limit for G45.
+* DP support for Ibex Peak (Ironlake graphics).
+* Fixed scaling on eDP for Broadwell.
+* Support for ULX variants of Haswell and later.
+* Support for Kaby, Amber, Coffee and Whiskey Lake.
+
 ### Other
 * Did cleanups around TSC timer
 * Improved automatic VR configuration on SKL/KBL

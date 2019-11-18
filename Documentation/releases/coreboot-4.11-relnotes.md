@@ -94,6 +94,8 @@ UPPER CASE commands and libpayload knows how to deal with USB3 hubs.
 * intel/nehalem
 
 ### Moved the following platforms to C_ENVIRONMENT_BOOTBLOCK:
+* intel/i945
+* intel/x4x
 * intel/gm45
 * intel/nehalem
 * intel/braswell

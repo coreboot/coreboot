@@ -1788,8 +1788,9 @@ static u8 dramc_window_perbit_cal(u8 chn, u8 rank, u8 freq_group,
 
 	u8 fsp = get_freq_fsq(freq_group);
 	u8 vref_range = !fsp;
-	bool bypass_tx = !fsp;
+	bool bypass_tx_rx = !fsp;
 
+	dramc_dbg("bypass TX RX window: %s\n", bypass_tx_rx ? "Yes" : "No");
 	dramc_get_vref_prop(rank, type, fsp,
 		&vref_scan_enable, &vref_begin, &vref_end);
 	dramc_get_dly_range(chn, rank, type, freq_group, dq_precal_result,
@@ -1826,9 +1827,9 @@ static u8 dramc_window_perbit_cal(u8 chn, u8 rank, u8 freq_group,
 			vref_step = 2;
 	}
 
-	if (fast_calib && bypass_tx &&
+	if (fast_calib && bypass_tx_rx &&
 	    (type == TX_WIN_DQ_ONLY || type == TX_WIN_DQ_DQM)) {
-		dramc_set_tx_best_dly(chn, rank, true, vref_dly.perbit_dly,
+		dramc_set_tx_best_dly(chn, rank, bypass_tx_rx, vref_dly.perbit_dly,
 			type, freq_group, dq_precal_result, dly_cell_unit,
 			params, fast_calib);
 
@@ -1872,7 +1873,7 @@ static u8 dramc_window_perbit_cal(u8 chn, u8 rank, u8 freq_group,
 				RX_DQ, FIRST_DQ_DELAY);
 		}
 
-		if (fast_calib &&
+		if (fast_calib && bypass_tx_rx &&
 		    (type == RX_WIN_RD_DQC || type == RX_WIN_TEST_ENG)) {
 			dramc_dbg("bypass RX params\n");
 			for (size_t bit = 0; bit < DQ_DATA_WIDTH; bit++) {

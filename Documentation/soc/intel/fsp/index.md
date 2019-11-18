@@ -34,6 +34,11 @@ those are fixed. If possible a workaround is described here as well.
   * Workaround: none
   * Issue on public tracker: [Issue 22]
 
+* MRC forces memory re-training on cold boot on boards with Intel SPS
+  * Releases 3.7.1, 3.7.6
+  * Workaround: Flash Intel ME instead of SPS
+  * Issue on public tracker: [Issue 41]
+
 ### BraswellFsp
 * Internal UART can't be disabled using PcdEnableHsuart*
   * Release MR2
@@ -66,4 +71,5 @@ those are fixed. If possible a workaround is described here as well.
 [Issue 15]: https://github.com/IntelFsp/FSP/issues/15
 [Issue 22]: https://github.com/IntelFsp/FSP/issues/22
 [Issue 35]: https://github.com/IntelFsp/FSP/issues/35
+[Issue 41]: https://github.com/IntelFsp/FSP/issues/41
 

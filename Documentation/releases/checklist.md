@@ -83,9 +83,7 @@ release notes that are in the making and ask people to test the hardware
 they have to make sure it's working with the current master branch,
 from which the release will ultimately be derived from.
 
-People should also be encouraged to provide additions to the
-release notes, for example by putting them on some [collaborative
-editor](https://www.piratenpad.de).
+People should be encouraged to provide additions to the release notes.
 
 The final release notes will reside in coreboot's Documentation/releases
 directory, so asking for additions to that through the regular Gerrit

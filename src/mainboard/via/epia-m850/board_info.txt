@@ -1,7 +1,0 @@
-Category: mini
-Board URL: http://www.viaembedded.com/en/products/boards/1290/1/EPIA-M850.html
-ROM package: SOIC8
-ROM protocol: SPI
-ROM socketed: n
-Flashrom support: y
-Release year: 2010

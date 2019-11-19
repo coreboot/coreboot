@@ -1,2 +1,0 @@
-config BOARD_VIA_EPIA_M850
-	bool "EPIA-M850"

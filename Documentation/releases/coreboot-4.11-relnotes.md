@@ -1,5 +1,5 @@
-Upcoming release - coreboot 4.11
-================================
+coreboot 4.11
+=============
 
 coreboot 4.11 was released on November 19th.
 

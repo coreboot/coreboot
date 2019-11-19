@@ -545,16 +545,6 @@ static int get_socket_type(void)
 		return 0x13;
 	if (CONFIG(CPU_INTEL_SOCKET_LGA775))
 		return 0x15;
-	if (CONFIG(CPU_AMD_SOCKET_AM2R2))
-		return 0x17;
-	if (CONFIG(CPU_AMD_SOCKET_F_1207))
-		return 0x18;
-	if (CONFIG(CPU_AMD_SOCKET_G34_NON_AGESA))
-		return 0x1a;
-	if (CONFIG(CPU_AMD_SOCKET_AM3))
-		return 0x1b;
-	if (CONFIG(CPU_AMD_SOCKET_C32_NON_AGESA))
-		return 0x1c;
 
 	return 0x02; /* Unknown */
 }

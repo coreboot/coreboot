@@ -142,9 +142,7 @@ static int lapic_start_cpu(unsigned long apicid)
 		}
 		return 0;
 	}
-#if !CONFIG(CPU_AMD_MODEL_10XXX)
 	mdelay(10);
-#endif
 
 	printk(BIOS_SPEW, "Deasserting INIT.\n");
 

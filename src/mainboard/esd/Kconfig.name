@@ -1,2 +1,0 @@
-config VENDOR_ESD
-	bool "electronic system design"

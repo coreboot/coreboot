@@ -1,2 +1,0 @@
-config BOARD_SIEMENS_MC_TCU3
-	bool "MB TCU3"

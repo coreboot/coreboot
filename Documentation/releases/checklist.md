@@ -72,6 +72,7 @@ be more frequent than was needed, so we scaled it back to twice a year.
 - [ ] Update download page to point to files, push to repo
 - [ ] Write and publish blog post with release notes.
 - [ ] Update the topic in the irc channel that the release is done.
+- [ ] Announce the release to the mailing list
 
 ## Pre-Release tasks
 Announce the upcoming release to the mailing list release 2 weeks ahead

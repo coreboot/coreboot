@@ -37,13 +37,8 @@ void watchdog_off(void)
 
 	value = pci_read_config16(dev, PCI_COMMAND);
 
-	if (CONFIG(SOUTHBRIDGE_INTEL_FSP_RANGELEY)) {
-		/* Enable I/O space. */
-		value |= PCI_COMMAND_IO;
-	} else {
-		/* Disable interrupt. */
-		value |= PCI_COMMAND_INT_DISABLE;
-	}
+	/* Disable interrupt. */
+	value |= PCI_COMMAND_INT_DISABLE;
 	pci_write_config16(dev, PCI_COMMAND, value);
 
 	/* Disable the watchdog timer. */

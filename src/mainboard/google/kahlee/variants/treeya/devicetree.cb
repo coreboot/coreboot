@@ -44,6 +44,7 @@ chip soc/amd/stoneyridge
 		.speed = I2C_SPEED_FAST,
 		.rise_time_ns = 3,
 		.fall_time_ns = 2,
+		.data_hold_time_ns = 400,
 	}"
 
 	# Enable I2C3 for touchscreen at 400kHz

@@ -1,18 +1,99 @@
 Upcoming release - coreboot 4.11
 ================================
 
-The 4.11 release is planned for October 2019
+coreboot 4.11 was released on November 19th.
 
-Update this document with changes that should be in the release
-notes.
-* Please use Markdown.
-* See the [4.9](coreboot-4.9-relnotes.md) and [4.10](coreboot-4.10-relnotes.md)
-  release notes for the general format.
-* The chip and board additions and removals will be updated right
-  before the release, so those do not need to be added.
+This release cycle was a bit shorter to get closer to our regular
+schedule of releasing in spring and autumn.
+
+Since 4.10 there were 1630 new commits by over 130 developers.
+Of these, about 30 contributed to coreboot for the first time.
+
+Thank you to all contributors who made 4.11 what it is and welcome
+to the project to all new contributors!
 
 Clean Up
 --------
+
+The past few months saw lots of cleanup across the source tree:
+
+The included headers in source files were stripped down to avoid reading
+unused headers, and unused code fragments, duplicate preprocessor symbols
+and configuration options were eliminated. Even ACPI got its share
+of attention, making our tables and bytecode more standards compliant
+than ever.
+
+The code across Intel's chipsets was unified some more into drivers for
+common function blocks, an effort we're more confident will succeed now
+that Intel itself is driving it.
+
+Chipset work
+------------
+
+Most activity in the last couple months was on Intel support,
+specifically the Kaby Lake and Cannon Lake drivers were extended
+for the generations following them.
+
+On ARM, the Mediatek 8173 chipset support saw significant work while
+the AMD side worked on getting Picasso support in.
+
+But everything else also saw some action, the relatively old
+(e.g. Intel GM45, Via VX900), the tiny (RISC-V) and the obscure
+(Quark).
+
+Verified Boot
+-------------
+
+The vboot feature that Chromebooks brought into coreboot was extended
+to work on devices that weren't specially adapted for it: In addition
+to its original device family it's now supported on various Lenovo
+laptops, Open Compute Project systems and Siemens industrial machines.
+
+Eltan's support for measured boot continues to be integrated with
+vboot, sharing data structures and generally working together where
+possible.
+
+New devices
+-----------
+
+With 4.11 there's the beginning of support for Intel Tiger Lake and
+Qualcomm's SC7180 SoCs, while we removed the unmaintained support
+for Allwinner's A10 SoC.
+
+There are also 25 new mainboards in our tree:
+
+* AMD PADMELON
+* ASUS P5QL-EM
+* EMULATION QEMU-AARCH64
+* GOOGLE AKEMI
+* GOOGLE ARCADA CML
+* GOOGLE DAMU
+* GOOGLE DOOD
+* GOOGLE DRALLION
+* GOOGLE DRATINI
+* GOOGLE JACUZZI
+* GOOGLE JUNIPER
+* GOOGLE KAKADU
+* GOOGLE KAPPA
+* GOOGLE PUFF
+* GOOGLE SARIEN CML
+* GOOGLE TREEYA
+* GOOGLE TROGDOR
+* LENOVO R60
+* LENOVO T410
+* LENOVO THINKPAD T440P
+* LENOVO X301
+* RAZER BLADE-STEALTH KBL
+* SIEMENS MC-APL6
+* SUPERMICRO X11SSH-TF
+* SUPERMICRO X11SSM-F
+
+In addition to the Cubieboard (which uses the A10 SoC), we also
+removed Google Hatch WHL.
+
+Deprecations
+------------
+
 Because there was only a single developer board (AMD Torpedo)
 using AGESA family 12h, and because there were multiple,
 unique Coverity issues with it, the associated vendorcode will
@@ -22,6 +103,11 @@ Support for the MIPS architecture will also be removed shortly after
 this release as the only board in the tree was a discontinued development
 board and no other work has picked up MIPS support, so it's very likely
 broken already.
+
+After more than a year of planning and following the announcement in
+coreboot 4.10, platforms not using relocatable ramstage, a C bootblock
+and, on systems using Cache as RAM, a postcar stage, won't be supported
+going forward.
 
 Significant changes
 -------------------
@@ -90,14 +176,17 @@ Payload integration has been updated, coreinfo learned to cope with
 UPPER CASE commands and libpayload knows how to deal with USB3 hubs.
 
 ### Added VBOOT support to the following platforms:
+
 * intel/gm45
 * intel/nehalem
 
 ### Moved the following platforms to C_ENVIRONMENT_BOOTBLOCK:
+
 * intel/i945
 * intel/x4x
 * intel/gm45
 * intel/nehalem
+* intel/sandybridge
 * intel/braswell
 
 ### libgfxinit ###

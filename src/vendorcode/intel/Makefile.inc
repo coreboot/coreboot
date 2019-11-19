@@ -14,15 +14,6 @@
 ## GNU General Public License for more details.
 ##
 
-ifneq ($(CONFIG_FSP_VENDORCODE_HEADER_PATH),)
-FSP_PATH := $(call strip_quotes,$(CONFIG_FSP_VENDORCODE_HEADER_PATH))
-FSP_SRC_FILES := $(wildcard src/vendorcode/intel/$(FSP_PATH)/srx/*.c)
-FSP_C_INPUTS := $(foreach file, $(FSP_SRC_FILES), $(FSP_PATH)/srx/$(notdir $(file)))
-ramstage-y += $(FSP_C_INPUTS)
-
-CFLAGS_x86_32 += -Isrc/vendorcode/intel/$(FSP_PATH)/include
-endif
-
 ifeq ($(CONFIG_UEFI_2_4_BINDING),y)
 # ProccessorBind.h provided in Ia32 directory. Types are derived from ia32.
 # It's possible to provide our own ProcessorBind.h using posix types. However,

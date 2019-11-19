@@ -28,8 +28,7 @@
 #include <cpu/x86/msr.h>
 #endif
 
-#define HAS_IOSF (CONFIG(SOC_INTEL_BAYTRAIL) || \
-		CONFIG(SOC_INTEL_FSP_BAYTRAIL))
+#define HAS_IOSF (CONFIG(SOC_INTEL_BAYTRAIL))
 
 #if HAS_IOSF
 #include <soc/iosf.h>	/* TODO: wrap in <soc/reg_script.h, remove #ifdef? */

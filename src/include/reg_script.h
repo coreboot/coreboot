@@ -369,8 +369,7 @@ struct reg_script_bus_entry {
 	REG_RES_RXW32(bar_, reg_, 0xffffffff, value_)
 
 
-#if CONFIG(SOC_INTEL_BAYTRAIL) || \
-CONFIG(SOC_INTEL_FSP_BAYTRAIL)
+#if CONFIG(SOC_INTEL_BAYTRAIL)
 /*
  * IO Sideband Function
  */
@@ -394,7 +393,7 @@ CONFIG(SOC_INTEL_FSP_BAYTRAIL)
 	REG_SCRIPT_IOSF(POLL, unit_, reg_, mask_, value_, timeout_)
 #define REG_IOSF_XOR(unit_, reg_, value_) \
 	REG_IOSF_RXW(unit_, reg_, 0xffffffff, value_)
-#endif	/* CONFIG_SOC_INTEL_BAYTRAIL || CONFIG_SOC_INTEL_FSP_BAYTRAIL*/
+#endif	/* CONFIG_SOC_INTEL_BAYTRAIL */
 
 /*
  * CPU Model Specific Register

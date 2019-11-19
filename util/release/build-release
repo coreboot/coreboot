@@ -10,6 +10,10 @@ GPG_KEY_ID=$4
 
 set -e
 
+if [ -z "$GPG_TTY" ]; then
+	export GPG_TTY=$(tty)
+fi
+
 # set local + tz to be reproducible
 LC_ALL=C
 LANG=C

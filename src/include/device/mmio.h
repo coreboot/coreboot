@@ -48,7 +48,7 @@ void buffer_to_fifo32_prefix(void *buffer, u32 prefix, int prefsz, size_t size,
 static inline void buffer_to_fifo32(void *buffer, size_t size, void *fifo,
 				    int fifo_stride, int fifo_width)
 {
-	buffer_to_fifo32_prefix(buffer, size, 0, 0, fifo,
+	buffer_to_fifo32_prefix(buffer, 0, 0, size, fifo,
 				fifo_stride, fifo_width);
 }
 

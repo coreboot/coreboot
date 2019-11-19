@@ -30,10 +30,6 @@
 
 #include <southbridge/amd/common/reset.h>
 
-#if CONFIG(SOUTHBRIDGE_AMD_SB800)
-#include <southbridge/amd/sb800/sb800.h>
-#endif
-
 #include "cpu/amd/car/disable_cache_as_ram.c"
 
 #if CONFIG(PCI_IO_CFG_EXT)
@@ -1040,37 +1036,6 @@ void cpuSetAMDMSR(uint8_t node_id)
 			wrmsr(BU_CFG3_MSR, msr);
 		}
 	}
-
-#if CONFIG(SOUTHBRIDGE_AMD_SB800)
-	if (revision & (AMD_DR_GT_D0 | AMD_FAM15_ALL)) {
-		/* Set up message triggered C1E */
-		msr = rdmsr(MSR_INTPEND);
-		msr.lo &= ~0xffff;		/* IOMsgAddr = ACPI_PM_EVT_BLK */
-		msr.lo |= ACPI_PM_EVT_BLK & 0xffff;
-		msr.lo |= (0x1 << 29);		/* BmStsClrOnHltEn = 1 */
-		if (revision & AMD_DR_GT_D0) {
-			msr.lo &= ~(0x1 << 28);	/* C1eOnCmpHalt = 0 */
-			msr.lo &= ~(0x1 << 27);	/* SmiOnCmpHalt = 0 */
-		}
-		wrmsr(MSR_INTPEND, msr);
-
-		msr = rdmsr(HWCR_MSR);
-		msr.lo |= (0x1 << 12);		/* HltXSpCycEn = 1 */
-		wrmsr(HWCR_MSR, msr);
-	}
-
-	if (revision & (AMD_DR_Ex | AMD_FAM15_ALL)) {
-		if (CONFIG(HAVE_ACPI_TABLES))
-			if ((get_option(&nvram, "cpu_c_states") == CB_SUCCESS) &&
-			    (nvram)) {
-				/* Set up the C-state base address */
-				msr_t c_state_addr_msr;
-				c_state_addr_msr = rdmsr(MSR_CSTATE_ADDRESS);
-				c_state_addr_msr.lo = ACPI_CPU_P_LVL2;
-				wrmsr(MSR_CSTATE_ADDRESS, c_state_addr_msr);
-			}
-	}
-#endif
 
 	if (revision & AMD_FAM15_ALL) {
 		enable_cpb = 1;

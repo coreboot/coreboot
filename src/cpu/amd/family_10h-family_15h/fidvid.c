@@ -505,7 +505,7 @@ static void config_power_ctrl_misc_reg(pci_devfn_t dev, uint64_t cpuRev,
 	}
 
 	   /* TODO: look into C1E state and F3xA0[IdleExitEn]*/
-	#if CONFIG(SVI_HIGH_FREQ)
+	#if 0
 	if (cpuRev & AMD_FAM10_C3) {
 		dword |= SVI_HIGH_FREQ_ON;
 	}
@@ -585,7 +585,7 @@ static void config_acpi_pwr_state_ctrl_regs(pci_devfn_t dev, uint64_t cpuRev,
 		if (cpuRev & AMD_DR_Bx ) {
 			smaf001 = 0xA6;
 		} else {
-		#if CONFIG(SVI_HIGH_FREQ)
+		#if 0
 			if (cpuRev & (AMD_RB_C3 | AMD_DA_C3)) {
 				smaf001 = 0xF6;
 			}

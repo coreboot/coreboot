@@ -23,8 +23,7 @@ static inline bool offset_unit_id(bool is_sb_ht_chain)
 {
 	bool need_offset = (CONFIG_HT_CHAIN_UNITID_BASE != 1)
 		|| (CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20);
-	return need_offset && (!CONFIG(SB_HT_CHAIN_UNITID_OFFSET_ONLY)
-		|| is_sb_ht_chain);
+	return need_offset && is_sb_ht_chain;
 }
 
 #endif /* DEVICE_HYPERTRANSPORT_DEF_H */

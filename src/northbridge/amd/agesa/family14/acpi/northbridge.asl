@@ -128,5 +128,5 @@ Device(NBF3) {
 	Name(_ADR, 0x00180003)
 
 	/* k10temp thermal zone */
-	#include <northbridge/amd/amdfam10/thermal_mixin.asl>
+	#include "thermal_mixin.asl"
 } /* end NBF3 */

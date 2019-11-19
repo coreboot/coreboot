@@ -576,7 +576,7 @@ static void start_node(u8 node)
 	/* Enable routing table */
 	printk(BIOS_DEBUG, "Start node %02x", node);
 
-#if CONFIG(NORTHBRIDGE_AMD_AMDFAM10)
+#if 0
 	/* For FAM10 support, we need to set Dram base/limit for the new node */
 	pci_write_config32(NODE_MP(node), 0x44, 0);
 	pci_write_config32(NODE_MP(node), 0x40, 3);

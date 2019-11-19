@@ -1,2 +1,0 @@
-config BOARD_FACEBOOK_WATSON
-	bool "Watson"

@@ -1,5 +1,0 @@
-Board name: Camelback Mountain
-Category: eval
-ROM protocol: SPI
-ROM socketed: yes
-Release year: 2015

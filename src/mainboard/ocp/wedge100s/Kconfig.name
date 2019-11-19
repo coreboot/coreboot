@@ -1,2 +1,0 @@
-config BOARD_OCP_WEDGE100S
-	bool "Wedge 100S"

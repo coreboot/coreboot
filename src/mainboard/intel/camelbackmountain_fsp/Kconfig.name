@@ -1,2 +1,0 @@
-config BOARD_INTEL_CAMELBACKMOUNTAIN_FSP
-	bool "Camelback Mountain FSP-based CRB"

@@ -1,2 +1,0 @@
-config BOARD_SIEMENS_MC_BDX1
-	bool "MC BDX1"

@@ -6,7 +6,6 @@ subdirs-y += amd
 subdirs-y += armltd
 subdirs-y += intel
 subdirs-y += ti
-subdirs-y += via
 subdirs-$(CONFIG_ARCH_X86) += x86
 subdirs-$(CONFIG_CPU_QEMU_X86) += qemu-x86
 

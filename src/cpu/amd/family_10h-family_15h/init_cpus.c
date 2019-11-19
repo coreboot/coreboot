@@ -30,10 +30,6 @@
 
 #include <southbridge/amd/common/reset.h>
 
-#if CONFIG(SOUTHBRIDGE_AMD_SB700)
-#include <southbridge/amd/sb700/sb700.h>
-#endif
-
 #if CONFIG(SOUTHBRIDGE_AMD_SB800)
 #include <southbridge/amd/sb800/sb800.h>
 #endif
@@ -1045,7 +1041,7 @@ void cpuSetAMDMSR(uint8_t node_id)
 		}
 	}
 
-#if CONFIG(SOUTHBRIDGE_AMD_SB700) || CONFIG(SOUTHBRIDGE_AMD_SB800)
+#if CONFIG(SOUTHBRIDGE_AMD_SB800)
 	if (revision & (AMD_DR_GT_D0 | AMD_FAM15_ALL)) {
 		/* Set up message triggered C1E */
 		msr = rdmsr(MSR_INTPEND);

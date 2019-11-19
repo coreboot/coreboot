@@ -1,2 +1,0 @@
-config SOUTHBRIDGE_AMD_AMD8132
-	bool

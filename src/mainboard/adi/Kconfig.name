@@ -1,2 +1,0 @@
-config VENDOR_ADI
-	bool "ADI"

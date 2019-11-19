@@ -1,4 +1,0 @@
-Board name: Kino-780AM2
-Category: half
-Board URL: http://web.archive.org/web/20111208234719/http://ieiworld.com/product_groups/industrial/content.aspx?gid=00001000010000000001&cid=09050652111816087425&id=09069696333360342284
-ROM protocol: SPI

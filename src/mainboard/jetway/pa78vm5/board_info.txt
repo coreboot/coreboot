@@ -1,3 +1,0 @@
-Category: desktop
-Board URL: http://www.jetway.com.tw/jw/motherboard_view.asp?productid=567&proname=PA78VM5
-Release year: 2009

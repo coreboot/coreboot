@@ -1,2 +1,0 @@
-config BOARD_ASUS_M4A785TM
-	bool "M4A785T-M"

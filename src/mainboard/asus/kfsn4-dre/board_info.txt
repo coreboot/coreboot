@@ -1,6 +1,0 @@
-Category: server
-ROM package: PLCC-32
-ROM protocol: LPC
-ROM socketed: y
-Flashrom support: y
-Release year: 2007

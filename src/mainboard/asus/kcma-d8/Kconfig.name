@@ -1,2 +1,0 @@
-config BOARD_ASUS_KCMA_D8
-	bool "KCMA-D8"

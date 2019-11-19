@@ -1,2 +1,0 @@
-Category: server
-Board URL: http://www.supermicro.com/Aplus/motherboard/Opteron8000/MCP55/H8QME-2.cfm

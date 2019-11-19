@@ -1,2 +1,0 @@
-config BOARD_SUPERMICRO_H8SCM_FAM10
-	bool "H8SCM (Fam10)"

@@ -1,2 +1,0 @@
-config BOARD_ASUS_M5A88_V
-	bool "M5A88-V"

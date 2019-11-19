@@ -1,3 +1,0 @@
-Category: desktop
-Board URL: http://www.gigabyte.com/products/product-page.aspx?pid=2995#ov
-Release year: 2008

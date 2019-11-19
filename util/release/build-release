@@ -39,10 +39,15 @@ if ! tar --sort=name -cf /dev/null /dev/null 2>/dev/null ; then
 fi
 
 if [ ! -d "coreboot-${VERSION_NAME}" ]; then
+	if [ -d .git ]; then
+		GIT_REF_OPTS="--reference . --dissociate"
+	elif [ -d ../../.git ]; then
+		GIT_REF_OPTS="--reference ../.. --dissociate"
+	fi
 	if [ -n "${USERNAME}" ]; then
-		git clone "ssh://${USERNAME}@review.coreboot.org:29418/coreboot.git" "coreboot-${VERSION_NAME}"
+		git clone ${GIT_REF_OPTS} "ssh://${USERNAME}@review.coreboot.org:29418/coreboot.git" "coreboot-${VERSION_NAME}"
 	else
-		git clone https://review.coreboot.org/coreboot.git "coreboot-${VERSION_NAME}"
+		git clone ${GIT_REF_OPTS} https://review.coreboot.org/coreboot.git "coreboot-${VERSION_NAME}"
 	fi
 fi
 

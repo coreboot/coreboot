@@ -18,9 +18,6 @@
 #include <arch/early_variables.h>
 #include <symbols.h>
 
-#if CONFIG(PLATFORM_USES_FSP1_0)
-#include <drivers/intel/fsp1_0/fsp_util.h>
-#endif
 typedef void (* const car_migration_func_t)(void);
 
 extern car_migration_func_t _car_migrate_start;
@@ -59,52 +56,14 @@ void *car_get_var_ptr(void *var)
 		return var;
 	}
 
-#if CONFIG(PLATFORM_USES_FSP1_0)
-	migrated_base = (char *)find_saved_temp_mem(
-			*(void **)CBMEM_FSP_HOB_PTR);
-	/* FSP 1.0 migrates the entire DCACHE RAM */
-	offset = (char *)var - (char *)CONFIG_DCACHE_RAM_BASE;
-#else
 	migrated_base = cbmem_find(CBMEM_ID_CAR_GLOBALS);
 	offset = (char *)var - (char *)_car_start;
-#endif
 
 	if (migrated_base == NULL)
 		die("CAR: Could not find migration base!\n");
 
 	return &migrated_base[offset];
 }
-
-#if CONFIG(PLATFORM_USES_FSP1_0)
-/*
- * When a CAR_GLOBAL points to target object inside CAR, use relative
- * addressing. Such CAR_GLOBAL has to be expicitly accessed using
- * car_set_reloc_ptr() and car_get_reloc_ptr() as the stored value is now
- * an offset instead of the absolute address (pointer) of the target.
- *
- * This way discovery of objects that are not CAR_GLOBALs themselves,
- * remain discoverable after CAR migration has implicitly happened.
- */
-void car_set_reloc_ptr(void *var, void *val)
-{
-	uintptr_t *offset = car_get_var_ptr(var);
-	*offset = 0;
-
-	if (val)
-		*offset = (uintptr_t)offset - (uintptr_t)val;
-}
-
-void *car_get_reloc_ptr(void *var)
-{
-	uintptr_t *offset = car_get_var_ptr(var);
-	void *val = NULL;
-
-	if (*offset)
-		val = (void *)((uintptr_t)offset - *offset);
-
-	return val;
-}
-#endif
 
 int car_active(void)
 {
@@ -135,7 +94,6 @@ static void do_car_migrate_variables(void)
 
 static void car_migrate_variables(int is_recovery)
 {
-	if (!CONFIG(PLATFORM_USES_FSP1_0))
-		do_car_migrate_variables();
+	do_car_migrate_variables();
 }
 ROMSTAGE_CBMEM_INIT_HOOK(car_migrate_variables)

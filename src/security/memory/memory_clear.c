@@ -97,12 +97,6 @@ static void clear_memory(void *unused)
 	cbmem_get_region(&baseptr, &size);
 	memranges_insert(&mem, (uintptr_t)baseptr, size, BM_MEM_TABLE);
 
-	if (CONFIG(PLATFORM_USES_FSP1_0)) {
-		/* Protect CBMEM pointer */
-		memranges_insert(&mem, CBMEM_FSP_HOB_PTR, sizeof(void *),
-				 BM_MEM_TABLE);
-	}
-
 	if (CONFIG(ARCH_X86)) {
 		/* Find space for PAE enabled memset */
 		pgtbl = get_free_memory_range(&mem, MEMSET_PAE_PGTL_ALIGN,

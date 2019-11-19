@@ -5,6 +5,7 @@ config BOARD_PURISM_BASEBOARD_LIBREM_SKL
 	select HAVE_ACPI_RESUME
 	select HAVE_ACPI_TABLES
 	select INTEL_LPSS_UART_FOR_CONSOLE
+	select INTEL_GMA_HAVE_VBT
 	select SOC_INTEL_COMMON_BLOCK_HDA_VERB
 	select SOC_INTEL_SKYLAKE
 	select SPD_READ_BY_WORD
@@ -54,6 +55,11 @@ config VGA_BIOS_ID
 	string
 	default "8086,1916" if BOARD_PURISM_LIBREM13_V2 || BOARD_PURISM_LIBREM15_V3
 	default "8086,5916" if BOARD_PURISM_LIBREM13_V4 || BOARD_PURISM_LIBREM15_V4
+
+# Override the default variant behavior, since same VBT
+# is used for all variants.
+config INTEL_GMA_VBT_FILE
+	default "src/mainboard/$(MAINBOARDDIR)/data.vbt"
 
 config DIMM_MAX
 	int

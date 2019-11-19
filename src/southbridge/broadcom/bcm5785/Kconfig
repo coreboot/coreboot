@@ -1,7 +1,0 @@
-config SOUTHBRIDGE_BROADCOM_BCM5785
-	bool
-
-config BOOTBLOCK_SOUTHBRIDGE_INIT
-	string
-	default "southbridge/broadcom/bcm5785/bootblock.c"
-	depends on SOUTHBRIDGE_BROADCOM_BCM5785

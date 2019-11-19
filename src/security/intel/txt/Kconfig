@@ -22,7 +22,7 @@ config INTEL_TXT
 	depends on (TPM1 || TPM2)
 	depends on CPU_INTEL_FIRMWARE_INTERFACE_TABLE
 	depends on PLATFORM_HAS_DRAM_CLEAR
-	depends on SOC_INTEL_FSP_BROADWELL_DE || SOC_INTEL_COMMON_BLOCK_SA
+	depends on SOC_INTEL_COMMON_BLOCK_SA
 
 if INTEL_TXT
 
@@ -30,7 +30,6 @@ menu "Intel"
 
 config INTEL_TXT_BIOSACM_FILE
 	string "BIOS ACM file"
-	default "3rdparty/blobs/soc/intel/fsp_broadwell_de/biosacm.bin" if SOC_INTEL_FSP_BROADWELL_DE
 	default "3rdparty/blobs/soc/intel/skylake/biosacm.bin" if SOC_INTEL_COMMON_SKYLAKE_BASE
 	help
 	  Intel TXT BIOS ACM file. This file can be obtained by privileged
@@ -39,7 +38,6 @@ config INTEL_TXT_BIOSACM_FILE
 
 config INTEL_TXT_SINITACM_FILE
 	string "SINIT ACM file"
-	default "3rdparty/blobs/soc/intel/fsp_broadwell_de/sinitacm.bin" if SOC_INTEL_FSP_BROADWELL_DE
 	default "3rdparty/blobs/soc/intel/skylake/sinitacm.bin" if SOC_INTEL_COMMON_SKYLAKE_BASE
 	help
 	  Intel TXT SINIT ACM file. This file can be obtained by privileged

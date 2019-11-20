@@ -40,9 +40,6 @@ asm(".previous");
 /* Get the correct pointer for the CAR global variable. */
 void *car_get_var_ptr(void *var);
 
-/* Return 1 when currently running with globals in Cache-as-RAM, 0 otherwise. */
-int car_active(void);
-
 /* Get and set a primitive type global variable. */
 #define car_get_var(var) \
 	(*(typeof(var) *)car_get_var_ptr(&(var)))
@@ -79,11 +76,6 @@ static inline size_t car_object_offset(void *ptr)
 static inline void *car_get_var_ptr(void *var)
 {
 	return var;
-}
-
-static inline int car_active(void)
-{
-	return ENV_CACHE_AS_RAM;
 }
 
 #endif

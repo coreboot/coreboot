@@ -65,11 +65,6 @@ void *car_get_var_ptr(void *var)
 	return &migrated_base[offset];
 }
 
-int car_active(void)
-{
-	return !car_migrated;
-}
-
 static void do_car_migrate_variables(void)
 {
 	void *migrated_base;

@@ -31,13 +31,12 @@
 #ifndef ARCH_CACHE_H
 #define ARCH_CACHE_H
 
-#include <arch/early_variables.h>
 #include <cpu/x86/cache.h>
 
 /* Executing WBINVD when running out of CAR would not be good, prevent that. */
 static inline void dcache_clean_invalidate_all(void)
 {
-	if (!car_active())
+	if (!ENV_CACHE_AS_RAM)
 		wbinvd();
 }
 static inline void dcache_clean_all(void)
@@ -47,7 +46,7 @@ static inline void dcache_clean_all(void)
 }
 static inline void dcache_invalidate_all(void)
 {
-	if (!car_active())
+	if (!ENV_CACHE_AS_RAM)
 		invd();
 }
 

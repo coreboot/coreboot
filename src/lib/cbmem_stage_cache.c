@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/early_variables.h>
 #include <cbmem.h>
 #include <stage_cache.h>
 #include <string.h>

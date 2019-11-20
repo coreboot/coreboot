@@ -12,7 +12,6 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/early_variables.h>
 #include <commonlib/sdhci.h>
 #include <device/pci.h>
 #include <device/pci_ops.h>
@@ -32,22 +31,22 @@ int sdhci_controller_init(struct sdhci_ctrlr *sdhci_ctrlr, void *ioaddr)
 
 struct sd_mmc_ctrlr *new_mem_sdhci_controller(void *ioaddr)
 {
-	static bool sdhci_init_done CAR_GLOBAL;
-	static struct sdhci_ctrlr sdhci_ctrlr CAR_GLOBAL;
+	static bool sdhci_init_done;
+	static struct sdhci_ctrlr sdhci_ctrlr;
 
-	if (car_get_var(sdhci_init_done) == true) {
+	if (sdhci_init_done == true) {
 		sdhc_error("Error: SDHCI is already initialized.\n");
 		return NULL;
 	}
 
-	if (sdhci_controller_init(car_get_var_ptr(&sdhci_ctrlr), ioaddr)) {
+	if (sdhci_controller_init(&sdhci_ctrlr, ioaddr)) {
 		sdhc_error("Error: SDHCI initialization failed.\n");
 		return NULL;
 	}
 
-	car_set_var(sdhci_init_done, true);
+	sdhci_init_done = true;
 
-	return car_get_var_ptr(&sdhci_ctrlr.sd_mmc_ctrlr);
+	return &sdhci_ctrlr.sd_mmc_ctrlr;
 }
 
 struct sd_mmc_ctrlr *new_pci_sdhci_controller(pci_devfn_t dev)

@@ -16,7 +16,6 @@
 #include <console/cbmem_console.h>
 #include <console/uart.h>
 #include <cbmem.h>
-#include <arch/early_variables.h>
 #include <symbols.h>
 
 /*
@@ -49,7 +48,7 @@ struct cbmem_console {
 _Static_assert(CONFIG_CONSOLE_CBMEM_BUFFER_SIZE <= MAX_SIZE,
 	"cbmem_console format cannot support buffers larger than 256MB!");
 
-static struct cbmem_console *cbmem_console_p CAR_GLOBAL;
+static struct cbmem_console *cbmem_console_p;
 
 /*
  * While running from ROM, before DRAM is initialized, some area in cache as
@@ -65,14 +64,9 @@ static struct cbmem_console *cbmem_console_p CAR_GLOBAL;
 #define STATIC_CONSOLE_SIZE 1024
 static u8 static_console[STATIC_CONSOLE_SIZE];
 
-static struct cbmem_console *current_console(void)
-{
-	return car_get_ptr(cbmem_console_p);
-}
-
 static void current_console_set(struct cbmem_console *new_console_p)
 {
-	car_set_ptr(cbmem_console_p, new_console_p);
+	cbmem_console_p = new_console_p;
 }
 
 static int buffer_valid(struct cbmem_console *cbm_cons_p, u32 total_space)
@@ -112,21 +106,19 @@ void cbmemc_init(void)
 
 void cbmemc_tx_byte(unsigned char data)
 {
-	struct cbmem_console *cbm_cons_p = current_console();
-
-	if (!cbm_cons_p || !cbm_cons_p->size)
+	if (!cbmem_console_p || !cbmem_console_p->size)
 		return;
 
-	u32 flags = cbm_cons_p->cursor & ~CURSOR_MASK;
-	u32 cursor = cbm_cons_p->cursor & CURSOR_MASK;
+	u32 flags = cbmem_console_p->cursor & ~CURSOR_MASK;
+	u32 cursor = cbmem_console_p->cursor & CURSOR_MASK;
 
-	cbm_cons_p->body[cursor++] = data;
-	if (cursor >= cbm_cons_p->size) {
+	cbmem_console_p->body[cursor++] = data;
+	if (cursor >= cbmem_console_p->size) {
 		cursor = 0;
 		flags |= OVERFLOW;
 	}
 
-	cbm_cons_p->cursor = flags | cursor;
+	cbmem_console_p->cursor = flags | cursor;
 }
 
 /*
@@ -166,7 +158,7 @@ static void cbmemc_reinit(int is_recovery)
 	const size_t size = CONFIG_CONSOLE_CBMEM_BUFFER_SIZE;
 	/* If CBMEM entry already existed, old contents are not altered. */
 	struct cbmem_console *cbmem_cons_p = cbmem_add(CBMEM_ID_CONSOLE, size);
-	struct cbmem_console *previous_cons_p = current_console();
+	struct cbmem_console *previous_cons_p = cbmem_console_p;
 
 	init_console_ptr(cbmem_cons_p, size);
 	copy_console_buffer(previous_cons_p);
@@ -178,19 +170,16 @@ POSTCAR_CBMEM_INIT_HOOK(cbmemc_reinit)
 #if CONFIG(CONSOLE_CBMEM_DUMP_TO_UART)
 void cbmem_dump_console(void)
 {
-	struct cbmem_console *cbm_cons_p;
 	u32 cursor;
-
-	cbm_cons_p = current_console();
-	if (!cbm_cons_p)
+	if (!cbmem_console_p)
 		return;
 
 	uart_init(0);
-	if (cbm_cons_p->cursor & OVERFLOW)
-		for (cursor = cbm_cons_p->cursor & CURSOR_MASK;
-		     cursor < cbm_cons_p->size; cursor++)
-			uart_tx_byte(0, cbm_cons_p->body[cursor]);
-	for (cursor = 0; cursor < (cbm_cons_p->cursor & CURSOR_MASK); cursor++)
-		uart_tx_byte(0, cbm_cons_p->body[cursor]);
+	if (cbmem_console_p->cursor & OVERFLOW)
+		for (cursor = cbmem_console_p->cursor & CURSOR_MASK;
+		     cursor < cbmem_console_p->size; cursor++)
+			uart_tx_byte(0, cbmem_console_p->body[cursor]);
+	for (cursor = 0; cursor < (cbmem_console_p->cursor & CURSOR_MASK); cursor++)
+		uart_tx_byte(0, cbmem_console_p->body[cursor]);
 }
 #endif

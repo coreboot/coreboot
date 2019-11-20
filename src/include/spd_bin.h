@@ -16,7 +16,6 @@
 #ifndef SPD_BIN_H
 #define SPD_BIN_H
 
-#include <arch/early_variables.h>
 #include <stdint.h>
 #include <commonlib/region.h>
 

@@ -20,7 +20,7 @@
 #include <device/early_smbus.h>
 #include <device/dram/ddr3.h>
 
-static u8 spd_data[CONFIG_DIMM_MAX * CONFIG_DIMM_SPD_SIZE] CAR_GLOBAL;
+static u8 spd_data[CONFIG_DIMM_MAX * CONFIG_DIMM_SPD_SIZE];
 
 void dump_spd_info(struct spd_block *blk)
 {
@@ -258,12 +258,10 @@ static void get_spd(u8 *spd, u8 addr)
 void get_spd_smbus(struct spd_block *blk)
 {
 	u8 i;
-	unsigned char *spd_data_ptr = car_get_var_ptr(&spd_data);
-
 	for (i = 0 ; i < CONFIG_DIMM_MAX; i++) {
-		get_spd(spd_data_ptr + i * CONFIG_DIMM_SPD_SIZE,
+		get_spd(&spd_data[i * CONFIG_DIMM_SPD_SIZE],
 			blk->addr_map[i]);
-		blk->spd_array[i] = spd_data_ptr + i * CONFIG_DIMM_SPD_SIZE;
+		blk->spd_array[i] = &spd_data[i * CONFIG_DIMM_SPD_SIZE];
 	}
 
 	update_spd_len(blk);

@@ -25,7 +25,7 @@
 #include <security/vboot/symbols.h>
 #include <security/vboot/vboot_common.h>
 
-static struct vb2_context *vboot_ctx CAR_GLOBAL;
+static struct vb2_context *vboot_ctx;
 
 struct vboot_working_data *vboot_get_working_data(void)
 {
@@ -50,20 +50,19 @@ static inline void *vboot_get_workbuf(struct vboot_working_data *wd)
 
 struct vb2_context *vboot_get_context(void)
 {
-	struct vb2_context **vboot_ctx_ptr = car_get_var_ptr(&vboot_ctx);
 	struct vboot_working_data *wd;
 
 	/* Return if context has already been initialized/restored. */
-	if (*vboot_ctx_ptr)
-		return *vboot_ctx_ptr;
+	if (vboot_ctx)
+		return vboot_ctx;
 
 	wd = vboot_get_working_data();
 
 	/* Restore context from a previous stage. */
 	if (vboot_logic_executed()) {
 		assert(vb2api_reinit(vboot_get_workbuf(wd),
-				     vboot_ctx_ptr) == VB2_SUCCESS);
-		return *vboot_ctx_ptr;
+				     &vboot_ctx) == VB2_SUCCESS);
+		return vboot_ctx;
 	}
 
 	assert(verification_should_run());
@@ -78,10 +77,10 @@ struct vb2_context *vboot_get_context(void)
 	/* Initialize vb2_shared_data and friends. */
 	assert(vb2api_init(vboot_get_workbuf(wd),
 			   VB2_FIRMWARE_WORKBUF_RECOMMENDED_SIZE -
-				wd->buffer_offset,
-			   vboot_ctx_ptr) == VB2_SUCCESS);
+			   wd->buffer_offset,
+			   &vboot_ctx) == VB2_SUCCESS);
 
-	return *vboot_ctx_ptr;
+	return vboot_ctx;
 }
 
 int vboot_locate_firmware(const struct vb2_context *ctx,
@@ -116,7 +115,7 @@ static void vboot_migrate_cbmem(int unused)
 	vb2api_relocate(vboot_get_workbuf(wd_cbmem),
 			vboot_get_workbuf(wd_preram),
 			cbmem_size - wd_cbmem->buffer_offset,
-			car_get_var_ptr(&vboot_ctx));
+			&vboot_ctx);
 }
 ROMSTAGE_CBMEM_INIT_HOOK(vboot_migrate_cbmem)
 #else

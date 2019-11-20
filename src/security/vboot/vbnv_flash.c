@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/early_variables.h>
 #include <commonlib/region.h>
 #include <console/console.h>
 #include <fmap.h>
@@ -41,7 +40,7 @@ struct vbnv_flash_ctx {
 	/* Cache of the current nvdata */
 	uint8_t cache[BLOB_SIZE];
 };
-static struct vbnv_flash_ctx vbnv_flash CAR_GLOBAL;
+static struct vbnv_flash_ctx vbnv_flash;
 
 /*
  * This code assumes that flash is erased to 1-bits, and write operations can
@@ -60,7 +59,7 @@ static inline int can_overwrite(uint8_t current, uint8_t new)
 
 static int init_vbnv(void)
 {
-	struct vbnv_flash_ctx *ctx = car_get_var_ptr(&vbnv_flash);
+	struct vbnv_flash_ctx *ctx = &vbnv_flash;
 	struct region_device *rdev = &ctx->vbnv_dev;
 	uint8_t buf[BLOB_SIZE];
 	uint8_t empty_blob[BLOB_SIZE];
@@ -116,7 +115,7 @@ static int init_vbnv(void)
 
 static int erase_nvram(void)
 {
-	struct vbnv_flash_ctx *ctx = car_get_var_ptr(&vbnv_flash);
+	struct vbnv_flash_ctx *ctx = &vbnv_flash;
 	const struct region_device *rdev = &ctx->vbnv_dev;
 
 	if (rdev_eraseat(rdev, 0, region_device_sz(rdev)) < 0) {
@@ -130,7 +129,7 @@ static int erase_nvram(void)
 
 void read_vbnv_flash(uint8_t *vbnv_copy)
 {
-	struct vbnv_flash_ctx *ctx = car_get_var_ptr(&vbnv_flash);
+	struct vbnv_flash_ctx *ctx = &vbnv_flash;
 
 	if (!ctx->initialized)
 		if (init_vbnv())
@@ -141,7 +140,7 @@ void read_vbnv_flash(uint8_t *vbnv_copy)
 
 void save_vbnv_flash(const uint8_t *vbnv_copy)
 {
-	struct vbnv_flash_ctx *ctx = car_get_var_ptr(&vbnv_flash);
+	struct vbnv_flash_ctx *ctx = &vbnv_flash;
 	int new_offset;
 	int i;
 	const struct region_device *rdev = &ctx->vbnv_dev;

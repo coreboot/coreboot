@@ -13,8 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/early_variables.h>
-#include <boot_device.h>
 #include <cbfs.h>
 #include <console/console.h>
 #include <ec/google/chromeec/ec.h>
@@ -34,14 +32,14 @@ _Static_assert(!CONFIG(VBOOT_RETURN_FROM_VERSTAGE) ||
 	       CONFIG(VBOOT_SEPARATE_VERSTAGE),
 	       "return from verstage only makes sense for separate verstages");
 
-int vboot_executed CAR_GLOBAL;
+int vboot_executed;
 
 void vboot_run_logic(void)
 {
 	if (verification_should_run()) {
 		/* Note: this path is not used for VBOOT_RETURN_FROM_VERSTAGE */
 		verstage_main();
-		car_set_var(vboot_executed, 1);
+		vboot_executed = 1;
 	} else if (verstage_should_load()) {
 		struct cbfsf file;
 		struct prog verstage =
@@ -68,7 +66,7 @@ void vboot_run_logic(void)
 		if (!CONFIG(VBOOT_RETURN_FROM_VERSTAGE))
 			return;
 
-		car_set_var(vboot_executed, 1);
+		vboot_executed = 1;
 	}
 }
 

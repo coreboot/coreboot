@@ -17,7 +17,6 @@
 #define __VBOOT_MISC_H__
 
 #include <assert.h>
-#include <arch/early_variables.h>
 #include <security/vboot/vboot_common.h>
 
 struct vb2_context;
@@ -112,7 +111,7 @@ static inline int vboot_logic_executed(void)
 	   need to check a global to see if verfication has run. */
 	if (verification_should_run() ||
 	    (verstage_should_load() && CONFIG(VBOOT_RETURN_FROM_VERSTAGE)))
-		return car_get_var(vboot_executed);
+		return vboot_executed;
 
 	if (CONFIG(VBOOT_STARTS_IN_BOOTBLOCK)) {
 		/* All other stages are "after the bootblock" */

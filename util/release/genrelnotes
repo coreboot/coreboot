@@ -427,8 +427,8 @@ NEW_AUTHORS=$(git log --pretty=%an "${OLD_GIT_VERSION}" 2>/dev/null | sort | \
 	git log --pretty=%an "${NEW_GIT_VERSION}" 2>/dev/null | \
 	sort | uniq > "$after_names" && \
 	grep -Fxv -c -f "$before_names" "$after_names")
-NEW_AUTHOR_LIST=$( grep -Fxv -f "$before_names" "$after_names" && \
-	rm "$before_names" "$after_names")
+NEW_AUTHOR_LIST=$( grep -Fxv -f "$before_names" "$after_names")
+rm -f "$before_names" "$after_names"
 {
 	printf -- "- Total commits: %s\n" "$TOTAL_COMMITS"
 	printf -- "- Total authors: %s\n" \

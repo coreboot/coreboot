@@ -11,7 +11,6 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/early_variables.h>
 #include <cpu/x86/tsc.h>
 #include <pc80/i8254.h>
 #include <smp/spinlock.h>
@@ -49,11 +48,11 @@ static struct monotonic_counter {
 	int initialized;
 	struct mono_time time;
 	uint64_t last_value;
-} mono_counter_g CAR_GLOBAL;
+} mono_counter_g;
 
 static inline struct monotonic_counter *get_monotonic_context(void)
 {
-	return car_get_var_ptr(&mono_counter_g);
+	return &mono_counter_g;
 }
 
 void timer_monotonic_get(struct mono_time *mt)

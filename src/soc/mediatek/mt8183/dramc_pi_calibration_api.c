@@ -1588,18 +1588,24 @@ static void dramc_set_tx_best_dly(u8 chn, u8 rank, bool bypass_tx,
 	struct per_byte_dly center_dly[DQS_NUMBER];
 	u16 tune_diff, dq_delay_cell[DQ_DATA_WIDTH];
 
+
+	/*
+	 * The clock rate is usually (frequency / 2 - delta), where the delta
+	 * is introduced to avoid interference from RF peripherals like
+	 * modem, WiFi, and Bluetooth.
+	 */
 	switch (freq_group) {
 	case LP4X_DDR1600:
-		clock_rate = 800;
+		clock_rate = 796;
 		break;
 	case LP4X_DDR2400:
-		clock_rate = 1200;
+		clock_rate = 1196;
 		break;
 	case LP4X_DDR3200:
-		clock_rate = 1600;
+		clock_rate = 1596;
 		break;
 	case LP4X_DDR3600:
-		clock_rate = 1866;
+		clock_rate = 1792;
 		break;
 	default:
 		die("Invalid DDR frequency group %u\n", freq_group);
@@ -1612,7 +1618,7 @@ static void dramc_set_tx_best_dly(u8 chn, u8 rank, bool bypass_tx,
 		use_delay_cell = 0;
 
 	if (fast_calib && bypass_tx) {
-		dramc_dbg("bypass TX\n");
+		dramc_dbg("bypass TX, clock_rate: %d\n", clock_rate);
 		for (u8 byte = 0; byte < DQS_NUMBER; byte++) {
 			center_dly[byte].min_center = params->tx_center_min[chn][rank][byte];
 			center_dly[byte].max_center = params->tx_center_max[chn][rank][byte];
@@ -1645,8 +1651,10 @@ static void dramc_set_tx_best_dly(u8 chn, u8 rank, bool bypass_tx,
 				tune_diff = vref_dly[index].win_center -
 					center_dly[byte].min_center;
 				dq_delay_cell[index] = ((tune_diff * 100000000) /
-					(clock_rate / 2 * 64)) / dly_cell_unit;
+					(clock_rate * 64)) / dly_cell_unit;
 				byte_dly_cell[byte] |= (dq_delay_cell[index] << (bit * 4));
+				dramc_show("u1DelayCellOfst[%d]=%d cells (%d PI)\n",
+					index, dq_delay_cell[index], tune_diff);
 			}
 		}
 	}

@@ -53,7 +53,7 @@ static void mainboard_smi_handle_ec_sci(void)
 	case 0x58:
 		/* Dock Event */
 		ec_clr_bit(0x03, 2);
-		udelay(250000);
+		mdelay(250);
 		dock_connect();
 		ec_set_bit(0x03, 2);
 		/* set dock LED to indicate status */
@@ -101,9 +101,9 @@ void mainboard_smi_sleep(u8 slp_typ)
 {
 	if (slp_typ == 3) {
 		u8 ec_wake = ec_read(0x32);
-		/* If EC wake events are enabled, enable wake on EC WAKE GPE.  */
+		/* If EC wake events are enabled, enable wake on EC WAKE GPE. */
 		if (ec_wake & 0x14) {
-			/* Redirect EC WAKE GPE to SCI.  */
+			/* Redirect EC WAKE GPE to SCI. */
 			gpi_route_interrupt(GPE_EC_WAKE, GPI_IS_SCI);
 		}
 	}

@@ -51,7 +51,7 @@ int mainboard_io_trap_handler(int smif)
 	switch (smif) {
 	case SMI_DOCK_CONNECT:
 		ec_clr_bit(0x03, 2);
-		udelay(250000);
+		mdelay(250);
 		if (!dock_connect()) {
 			ec_set_bit(0x03, 2);
 			/* set dock LED to indicate status */

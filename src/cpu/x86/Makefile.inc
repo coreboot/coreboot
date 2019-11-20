@@ -1,5 +1,3 @@
-romstage-$(CONFIG_CAR_GLOBAL_MIGRATION) += car.c
-
 subdirs-y += pae
 subdirs-$(CONFIG_PARALLEL_MP) += name
 ramstage-$(CONFIG_PARALLEL_MP) += mp_init.c

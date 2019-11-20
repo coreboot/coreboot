@@ -4,13 +4,12 @@
  * found in the LICENSE file.
  */
 
-#include <arch/early_variables.h>
 #include <console/console.h>
 #include <security/tpm/tis.h>
 
 #include "tpm.h"
 
-static unsigned tpm_is_open CAR_GLOBAL;
+static unsigned tpm_is_open;
 
 static const struct {
 	uint16_t vid;
@@ -34,7 +33,7 @@ static const char *tis_get_dev_name(struct tpm2_info *info)
 
 int tis_open(void)
 {
-	if (car_get_var(tpm_is_open)) {
+	if (tpm_is_open) {
 		printk(BIOS_ERR, "tis_open() called twice.\n");
 		return -1;
 	}
@@ -43,13 +42,13 @@ int tis_open(void)
 
 int tis_close(void)
 {
-	if (car_get_var(tpm_is_open)) {
+	if (tpm_is_open) {
 
 		/*
 		 * Do we need to do something here, like waiting for a
 		 * transaction to stop?
 		 */
-		car_set_var(tpm_is_open, 0);
+		tpm_is_open = 0;
 	}
 
 	return 0;

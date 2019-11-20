@@ -15,7 +15,6 @@
 
 #include <console/console.h>
 #include <security/tpm/tspi.h>
-#include <arch/early_variables.h>
 #include <region_file.h>
 #include <string.h>
 #include <security/vboot/symbols.h>

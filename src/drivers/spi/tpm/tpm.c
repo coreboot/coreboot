@@ -15,7 +15,6 @@
  * Specification Revision 00.43".
  */
 
-#include <arch/early_variables.h>
 #include <assert.h>
 #include <commonlib/endian.h>
 #include <console/console.h>
@@ -40,10 +39,10 @@
 #define CR50_TIMEOUT_INIT_MS 30000 /* Very long timeout for TPM init */
 
 /* SPI slave structure for TPM device. */
-static struct spi_slave g_spi_slave CAR_GLOBAL;
+static struct spi_slave g_spi_slave;
 
 /* Cached TPM device identification. */
-static struct tpm2_info g_tpm_info CAR_GLOBAL;
+static struct tpm2_info g_tpm_info;
 
 /*
  * TODO(vbendeb): make CONFIG_DEBUG_TPM an int to allow different level of
@@ -61,16 +60,16 @@ typedef struct {
 
 void tpm2_get_info(struct tpm2_info *info)
 {
-	*info = car_get_var(g_tpm_info);
+	*info = g_tpm_info;
 }
 
 __weak int tis_plat_irq_status(void)
 {
-	static int warning_displayed CAR_GLOBAL;
+	static int warning_displayed;
 
-	if (!car_get_var(warning_displayed)) {
+	if (!warning_displayed) {
 		printk(BIOS_WARNING, "WARNING: tis_plat_irq_status() not implemented, wasting 10ms to wait on Cr50!\n");
-		car_set_var(warning_displayed, 1);
+		warning_displayed = 1;
 	}
 	mdelay(10);
 
@@ -109,9 +108,8 @@ static int start_transaction(int read_write, size_t bytes, unsigned int addr)
 	uint8_t byte;
 	int i;
 	struct stopwatch sw;
-	static int tpm_sync_needed CAR_GLOBAL;
-	static struct stopwatch wake_up_sw CAR_GLOBAL;
-	struct spi_slave *spi_slave = car_get_var_ptr(&g_spi_slave);
+	static int tpm_sync_needed;
+	static struct stopwatch wake_up_sw;
 	/*
 	 * First Cr50 access in each coreboot stage where TPM is used will be
 	 * prepended by a wake up pulse on the CS line.
@@ -119,7 +117,7 @@ static int start_transaction(int read_write, size_t bytes, unsigned int addr)
 	int wakeup_needed = 1;
 
 	/* Wait for TPM to finish previous transaction if needed */
-	if (car_get_var(tpm_sync_needed)) {
+	if (tpm_sync_needed) {
 		tpm_sync();
 		/*
 		 * During the first invocation of this function on each stage
@@ -127,17 +125,17 @@ static int start_transaction(int read_write, size_t bytes, unsigned int addr)
 		 * value is zero), during all following invocations the
 		 * stopwatch below is guaranteed to be started.
 		 */
-		if (!stopwatch_expired(car_get_var_ptr(&wake_up_sw)))
+		if (!stopwatch_expired(&wake_up_sw))
 			wakeup_needed = 0;
 	} else {
-		car_set_var(tpm_sync_needed, 1);
+		tpm_sync_needed = 1;
 	}
 
 	if (wakeup_needed) {
 		/* Just in case Cr50 is asleep. */
-		spi_claim_bus(spi_slave);
+		spi_claim_bus(&g_spi_slave);
 		udelay(1);
-		spi_release_bus(spi_slave);
+		spi_release_bus(&g_spi_slave);
 		udelay(100);
 	}
 
@@ -146,7 +144,7 @@ static int start_transaction(int read_write, size_t bytes, unsigned int addr)
 	 * SPI slave activity, let's be conservative and limit the
 	 * window to 900 ms.
 	 */
-	stopwatch_init_msecs_expire(car_get_var_ptr(&wake_up_sw), 900);
+	stopwatch_init_msecs_expire(&wake_up_sw, 900);
 
 	/*
 	 * The first byte of the frame header encodes the transaction type
@@ -160,7 +158,7 @@ static int start_transaction(int read_write, size_t bytes, unsigned int addr)
 		header.body[i + 1] = (addr >> (8 * (2 - i))) & 0xff;
 
 	/* CS assert wakes up the slave. */
-	spi_claim_bus(spi_slave);
+	spi_claim_bus(&g_spi_slave);
 
 	/*
 	 * The TCG TPM over SPI specification introduces the notion of SPI
@@ -187,7 +185,7 @@ static int start_transaction(int read_write, size_t bytes, unsigned int addr)
 	 * to require to stall the master, this would present an issue.
 	 * crosbug.com/p/52132 has been opened to track this.
 	 */
-	spi_xfer(spi_slave, header.body, sizeof(header.body), NULL, 0);
+	spi_xfer(&g_spi_slave, header.body, sizeof(header.body), NULL, 0);
 
 	/*
 	 * Now poll the bus until TPM removes the stall bit. Give it up to 100
@@ -198,10 +196,10 @@ static int start_transaction(int read_write, size_t bytes, unsigned int addr)
 	do {
 		if (stopwatch_expired(&sw)) {
 			printk(BIOS_ERR, "TPM flow control failure\n");
-			spi_release_bus(spi_slave);
+			spi_release_bus(&g_spi_slave);
 			return 0;
 		}
-		spi_xfer(spi_slave, NULL, 0, &byte, 1);
+		spi_xfer(&g_spi_slave, NULL, 0, &byte, 1);
 	} while (!(byte & 1));
 	return 1;
 }
@@ -214,11 +212,10 @@ static void trace_dump(const char *prefix, uint32_t reg,
 		       size_t bytes, const uint8_t *buffer,
 		       int force)
 {
-	static char prev_prefix CAR_GLOBAL;
-	static unsigned prev_reg CAR_GLOBAL;
-	static int current_char CAR_GLOBAL;
+	static char prev_prefix;
+	static unsigned int prev_reg;
+	static int current_char;
 	const int BYTES_PER_LINE = 32;
-	int *current_char_ptr = car_get_var_ptr(&current_char);
 
 	if (!force) {
 		if (!debug_level_)
@@ -232,12 +229,11 @@ static void trace_dump(const char *prefix, uint32_t reg,
 	 * Do not print register address again if the last dump print was for
 	 * that register.
 	 */
-	if ((car_get_var(prev_prefix) != *prefix) ||
-		(car_get_var(prev_reg) != reg)) {
-		car_set_var(prev_prefix, *prefix);
-		car_set_var(prev_reg, reg);
+	if (prev_prefix != *prefix || (prev_reg != reg)) {
+		prev_prefix = *prefix;
+		prev_reg = reg;
 		printk(BIOS_DEBUG, "\n%s %2.2x:", prefix, reg);
-		*current_char_ptr = 0;
+		current_char = 0;
 	}
 
 	if ((reg != TPM_DATA_FIFO_REG) && (bytes == 4)) {
@@ -254,12 +250,12 @@ static void trace_dump(const char *prefix, uint32_t reg,
 		 * quantiites is printed byte at a time.
 		 */
 		for (i = 0; i < bytes; i++) {
-			if (*current_char_ptr &&
-				!(*current_char_ptr % BYTES_PER_LINE)) {
+			if (current_char &&
+				!(current_char % BYTES_PER_LINE)) {
 				printk(BIOS_DEBUG, "\n     ");
-				*current_char_ptr = 0;
+				current_char = 0;
 			}
-			(*current_char_ptr)++;
+			(current_char)++;
 			printk(BIOS_DEBUG, " %2.2x", buffer[i]);
 		}
 	}
@@ -271,8 +267,7 @@ static void trace_dump(const char *prefix, uint32_t reg,
  */
 static void write_bytes(const void *buffer, size_t bytes)
 {
-	struct spi_slave *spi_slave = car_get_var_ptr(&g_spi_slave);
-	spi_xfer(spi_slave, buffer, bytes, NULL, 0);
+	spi_xfer(&g_spi_slave, buffer, bytes, NULL, 0);
 }
 
 /*
@@ -281,8 +276,7 @@ static void write_bytes(const void *buffer, size_t bytes)
  */
 static void read_bytes(void *buffer, size_t bytes)
 {
-	struct spi_slave *spi_slave = car_get_var_ptr(&g_spi_slave);
-	spi_xfer(spi_slave, NULL, 0, buffer, bytes);
+	spi_xfer(&g_spi_slave, NULL, 0, buffer, bytes);
 }
 
 /*
@@ -293,12 +287,11 @@ static void read_bytes(void *buffer, size_t bytes)
  */
 static int tpm2_write_reg(unsigned int reg_number, const void *buffer, size_t bytes)
 {
-	struct spi_slave *spi_slave = car_get_var_ptr(&g_spi_slave);
 	trace_dump("W", reg_number, bytes, buffer, 0);
 	if (!start_transaction(false, bytes, reg_number))
 		return 0;
 	write_bytes(buffer, bytes);
-	spi_release_bus(spi_slave);
+	spi_release_bus(&g_spi_slave);
 	return 1;
 }
 
@@ -311,13 +304,12 @@ static int tpm2_write_reg(unsigned int reg_number, const void *buffer, size_t by
  */
 static int tpm2_read_reg(unsigned int reg_number, void *buffer, size_t bytes)
 {
-	struct spi_slave *spi_slave = car_get_var_ptr(&g_spi_slave);
 	if (!start_transaction(true, bytes, reg_number)) {
 		memset(buffer, 0, bytes);
 		return 0;
 	}
 	read_bytes(buffer, bytes);
-	spi_release_bus(spi_slave);
+	spi_release_bus(&g_spi_slave);
 	trace_dump("R", reg_number, bytes, buffer, 0);
 	return 1;
 }
@@ -424,10 +416,8 @@ int tpm2_init(struct spi_slave *spi_if)
 	uint32_t did_vid, status;
 	uint8_t cmd;
 	int retries;
-	struct tpm2_info *tpm_info = car_get_var_ptr(&g_tpm_info);
-	struct spi_slave *spi_slave = car_get_var_ptr(&g_spi_slave);
 
-	memcpy(spi_slave, spi_if, sizeof(*spi_if));
+	memcpy(&g_spi_slave, spi_if, sizeof(*spi_if));
 
 	/* clear any pending IRQs */
 	tis_plat_irq_status();
@@ -484,15 +474,15 @@ int tpm2_init(struct spi_slave *spi_if)
 	 * structure.
 	 */
 	tpm2_read_reg(TPM_RID_REG, &cmd, sizeof(cmd));
-	tpm_info->vendor_id = did_vid & 0xffff;
-	tpm_info->device_id = did_vid >> 16;
-	tpm_info->revision = cmd;
+	g_tpm_info.vendor_id = did_vid & 0xffff;
+	g_tpm_info.device_id = did_vid >> 16;
+	g_tpm_info.revision = cmd;
 
 	printk(BIOS_INFO, "Connected to device vid:did:rid of %4.4x:%4.4x:%2.2x\n",
-	       tpm_info->vendor_id, tpm_info->device_id, tpm_info->revision);
+	       g_tpm_info.vendor_id, g_tpm_info.device_id, g_tpm_info.revision);
 
 	/* Let's report device FW version if available. */
-	if (tpm_info->vendor_id == 0x1ae0) {
+	if (g_tpm_info.vendor_id == 0x1ae0) {
 		int chunk_count = 0;
 		size_t chunk_size;
 		/*
@@ -619,10 +609,9 @@ size_t tpm2_process_command(const void *tpm2_command, size_t command_size,
 	uint8_t *rsp_body = tpm2_response;
 	union fifo_transfer_buffer fifo_buffer;
 	const int HEADER_SIZE = 6;
-	struct tpm2_info *tpm_info = car_get_var_ptr(&g_tpm_info);
 
 	/* Do not try using an uninitialized TPM. */
-	if (!tpm_info->vendor_id)
+	if (!g_tpm_info.vendor_id)
 		return 0;
 
 	/* Skip the two byte tag, read the size field. */

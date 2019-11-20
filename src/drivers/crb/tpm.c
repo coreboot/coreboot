@@ -15,7 +15,6 @@
  */
 
 #include <timer.h>
-#include <arch/early_variables.h>
 #include <console/console.h>
 #include <arch/mmio.h>
 #include <delay.h>

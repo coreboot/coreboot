@@ -12,7 +12,6 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/early_variables.h>
 #include <stdint.h>
 #include <string.h>
 #include <assert.h>
@@ -27,25 +26,24 @@
 #include "tpm.h"
 
 /* global structure for tpm chip data */
-static struct tpm_chip g_chip CAR_GLOBAL;
+static struct tpm_chip g_chip;
 
 #define TPM_CMD_COUNT_BYTE 2
 #define TPM_CMD_ORDINAL_BYTE 6
 
 int tis_open(void)
 {
-	struct tpm_chip *chip = car_get_var_ptr(&g_chip);
 	int rc;
 
-	if (chip->is_open) {
+	if (g_chip.is_open) {
 		printk(BIOS_DEBUG, "tis_open() called twice.\n");
 		return -1;
 	}
 
-	rc = tpm_vendor_init(chip, CONFIG_DRIVER_TPM_I2C_BUS,
+	rc = tpm_vendor_init(&g_chip, CONFIG_DRIVER_TPM_I2C_BUS,
 			     CONFIG_DRIVER_TPM_I2C_ADDR);
 	if (rc < 0)
-		chip->is_open = 0;
+		g_chip.is_open = 0;
 
 	if (rc)
 		return -1;
@@ -55,11 +53,9 @@ int tis_open(void)
 
 int tis_close(void)
 {
-	struct tpm_chip *chip = car_get_var_ptr(&g_chip);
-
-	if (chip->is_open) {
-		tpm_vendor_cleanup(chip);
-		chip->is_open = 0;
+	if (g_chip.is_open) {
+		tpm_vendor_cleanup(&g_chip);
+		g_chip.is_open = 0;
 	}
 
 	return 0;
@@ -76,12 +72,11 @@ static ssize_t tpm_transmit(const uint8_t *sbuf, size_t sbufsiz, void *rbuf,
 {
 	int rc;
 	uint32_t count;
-	struct tpm_chip *chip = car_get_var_ptr(&g_chip);
 
 	memcpy(&count, sbuf + TPM_CMD_COUNT_BYTE, sizeof(count));
 	count = be32_to_cpu(count);
 
-	if (!chip->vendor.send || !chip->vendor.status || !chip->vendor.cancel)
+	if (!g_chip.vendor.send || !g_chip.vendor.status || !g_chip.vendor.cancel)
 		return -1;
 
 	if (count == 0) {
@@ -94,8 +89,8 @@ static ssize_t tpm_transmit(const uint8_t *sbuf, size_t sbufsiz, void *rbuf,
 		return -1;
 	}
 
-	ASSERT(chip->vendor.send);
-	rc = chip->vendor.send(chip, (uint8_t *) sbuf, count);
+	ASSERT(g_chip.vendor.send);
+	rc = g_chip.vendor.send(&g_chip, (uint8_t *) sbuf, count);
 	if (rc < 0) {
 		printk(BIOS_DEBUG, "tpm_transmit: tpm_send error\n");
 		goto out;
@@ -103,14 +98,14 @@ static ssize_t tpm_transmit(const uint8_t *sbuf, size_t sbufsiz, void *rbuf,
 
 	int timeout = 2 * 60 * 1000; /* two minutes timeout */
 	while (timeout) {
-		ASSERT(chip->vendor.status);
-		uint8_t status = chip->vendor.status(chip);
-		if ((status & chip->vendor.req_complete_mask) ==
-		    chip->vendor.req_complete_val) {
+		ASSERT(g_chip.vendor.status);
+		uint8_t status = g_chip.vendor.status(&g_chip);
+		if ((status & g_chip.vendor.req_complete_mask) ==
+		    g_chip.vendor.req_complete_val) {
 			goto out_recv;
 		}
 
-		if (status == chip->vendor.req_canceled) {
+		if (status == g_chip.vendor.req_canceled) {
 			printk(BIOS_DEBUG,
 				"tpm_transmit: Operation Canceled\n");
 			rc = -1;
@@ -120,15 +115,15 @@ static ssize_t tpm_transmit(const uint8_t *sbuf, size_t sbufsiz, void *rbuf,
 		timeout--;
 	}
 
-	ASSERT(chip->vendor.cancel);
-	chip->vendor.cancel(chip);
+	ASSERT(g_chip.vendor.cancel);
+	g_chip.vendor.cancel(&g_chip);
 	printk(BIOS_DEBUG, "tpm_transmit: Operation Timed out\n");
 	rc = -1; //ETIME;
 	goto out;
 
 out_recv:
 
-	rc = chip->vendor.recv(chip, (uint8_t *) rbuf, rbufsiz);
+	rc = g_chip.vendor.recv(&g_chip, (uint8_t *) rbuf, rbufsiz);
 	if (rc < 0)
 		printk(BIOS_DEBUG, "tpm_transmit: tpm_recv: error %d\n", rc);
 out:

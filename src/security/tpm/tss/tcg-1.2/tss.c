@@ -14,7 +14,6 @@
  * time.
  */
 
-#include <arch/early_variables.h>
 #include <assert.h>
 #include <string.h>
 #include <security/tpm/tis.h>
@@ -148,12 +147,11 @@ static uint32_t send(const uint8_t *command)
 
 /* Exported functions. */
 
-static uint8_t tlcl_init_done CAR_GLOBAL;
+static uint8_t tlcl_init_done;
 
 uint32_t tlcl_lib_init(void)
 {
-	uint8_t done = car_get_var(tlcl_init_done);
-	if (done)
+	if (tlcl_init_done)
 		return VB2_SUCCESS;
 
 	if (tis_init())
@@ -161,7 +159,7 @@ uint32_t tlcl_lib_init(void)
 	if (tis_open())
 		return VB2_ERROR_UNKNOWN;
 
-	car_set_var(tlcl_init_done, 1);
+	tlcl_init_done = 1;
 
 	return VB2_SUCCESS;
 }

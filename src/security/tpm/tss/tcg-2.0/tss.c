@@ -5,7 +5,6 @@
  * found in the LICENSE file.
  */
 
-#include <arch/early_variables.h>
 #include <console/console.h>
 #include <endian.h>
 #include <string.h>
@@ -30,11 +29,9 @@ void *tpm_process_command(TPM_CC command, void *command_body)
 	size_t in_size;
 	const uint8_t *sendb;
 	/* Command/response buffer. */
-	static uint8_t cr_buffer[TPM_BUFFER_SIZE] CAR_GLOBAL;
+	static uint8_t cr_buffer[TPM_BUFFER_SIZE];
 
-	uint8_t *cr_buffer_ptr = car_get_var_ptr(cr_buffer);
-
-	obuf_init(&ob, cr_buffer_ptr, sizeof(cr_buffer));
+	obuf_init(&ob, cr_buffer, sizeof(cr_buffer));
 
 	if (tpm_marshal_command(command, command_body, &ob) < 0) {
 		printk(BIOS_ERR, "command %#x\n", command);
@@ -44,12 +41,12 @@ void *tpm_process_command(TPM_CC command, void *command_body)
 	sendb = obuf_contents(&ob, &out_size);
 
 	in_size = sizeof(cr_buffer);
-	if (tis_sendrecv(sendb, out_size, cr_buffer_ptr, &in_size)) {
+	if (tis_sendrecv(sendb, out_size, cr_buffer, &in_size)) {
 		printk(BIOS_ERR, "tpm transaction failed\n");
 		return NULL;
 	}
 
-	ibuf_init(&ib, cr_buffer_ptr, in_size);
+	ibuf_init(&ib, cr_buffer, in_size);
 
 	return tpm_unmarshal_response(command, &ib);
 }
@@ -173,13 +170,12 @@ uint32_t tlcl_force_clear(void)
 	return TPM_SUCCESS;
 }
 
-static uint8_t tlcl_init_done CAR_GLOBAL;
+static uint8_t tlcl_init_done;
 
 /* This function is called directly by vboot, uses vboot return types. */
 uint32_t tlcl_lib_init(void)
 {
-	uint8_t done = car_get_var(tlcl_init_done);
-	if (done)
+	if (tlcl_init_done)
 		return VB2_SUCCESS;
 
 	if (tis_init()) {
@@ -192,7 +188,7 @@ uint32_t tlcl_lib_init(void)
 		return VB2_ERROR_UNKNOWN;
 	}
 
-	car_set_var(tlcl_init_done, 1);
+	tlcl_init_done = 1;
 
 	return VB2_SUCCESS;
 }

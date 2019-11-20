@@ -4,7 +4,6 @@
  * found in the LICENSE file.
  */
 
-#include <arch/early_variables.h>
 #include <console/console.h>
 #include <endian.h>
 #include <vb2_api.h>

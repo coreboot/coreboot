@@ -12,7 +12,6 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/early_variables.h>
 #include <assert.h>
 #include <commonlib/endian.h>
 #include <console/console.h>

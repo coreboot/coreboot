@@ -16,7 +16,7 @@
 #include <console/console.h>
 #include <delay.h>
 #include <device/device.h>
-#include <southbridge/amd/sb800/sb800.h>
+#include <southbridge/amd/cimx/cimx_util.h>
 #include <southbridge/amd/cimx/sb800/SBPLATFORM.h>	/* Platform Specific Definitions */
 
 /**

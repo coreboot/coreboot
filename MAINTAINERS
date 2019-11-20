@@ -502,11 +502,6 @@ F:	src/northbridge/amd/
 F:	src/southbridge/amd/
 F:	src/include/cpu/amd/
 
-VIA SUPPORT
-F:	src/cpu/via/
-F:	src/northbridge/via/
-F:	src/southbridge/via/
-
 LINT SCRIPTS
 M:	Patrick Georgi <patrick@georgi-clan.de>
 M:	Martin Roth <gaumless@gmail.com>

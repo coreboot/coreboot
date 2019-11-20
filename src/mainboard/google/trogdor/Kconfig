@@ -8,20 +8,23 @@ config BOARD_SPECIFIC_OPTIONS
 	def_bool y
 	select BOARD_ROMSIZE_KB_8192
 	select COMMON_CBFS_SPI_WRAPPER
-	select EC_GOOGLE_CHROMEEC
-	select EC_GOOGLE_CHROMEEC_RTC
-	select EC_GOOGLE_CHROMEEC_SPI
-	select RTC
+	select EC_GOOGLE_CHROMEEC if !BOARD_GOOGLE_BUBS
+	select EC_GOOGLE_CHROMEEC_RTC if !BOARD_GOOGLE_BUBS
+	select EC_GOOGLE_CHROMEEC_SPI if !BOARD_GOOGLE_BUBS
+	select RTC if !BOARD_GOOGLE_BUBS
+	select MISSING_BOARD_RESET if BOARD_GOOGLE_BUBS
 	select SOC_QUALCOMM_SC7180
 	select SPI_FLASH
 	select SPI_FLASH_WINBOND
 	select MAINBOARD_HAS_CHROMEOS
+	select MAINBOARD_HAS_SPI_TPM_CR50 if !BOARD_GOOGLE_BUBS
+	select MAINBOARD_HAS_TPM2 if !BOARD_GOOGLE_BUBS
 
 config VBOOT
-	select EC_GOOGLE_CHROMEEC_SWITCHES
+	select EC_GOOGLE_CHROMEEC_SWITCHES if !BOARD_GOOGLE_BUBS
 	select VBOOT_VBNV_FLASH
-	select GBB_FLAG_DISABLE_EC_SOFTWARE_SYNC
-	select VBOOT_MOCK_SECDATA
+	select VBOOT_NO_BOARD_SUPPORT if BOARD_GOOGLE_BUBS
+	select VBOOT_MOCK_SECDATA if BOARD_GOOGLE_BUBS
 
 config MAINBOARD_DIR
 	string
@@ -29,11 +32,11 @@ config MAINBOARD_DIR
 
 config DRIVER_TPM_SPI_BUS
 	hex
-	default 0x5
+	default 0x6
 
 config EC_GOOGLE_CHROMEEC_SPI_BUS
 	hex
-	default 0xa
+	default 0x0
 
 ##########################################################
 #### Update below when adding a new derivative board. ####
@@ -43,5 +46,6 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "Trogdor" if BOARD_GOOGLE_TROGDOR
 	default "Lazor" if BOARD_GOOGLE_LAZOR
+	default "Bubs" if BOARD_GOOGLE_BUBS
 
 endif # BOARD_GOOGLE_TROGDOR_COMMON

@@ -258,7 +258,7 @@
 /* No .data sections with execute-in-place from ROM.  */
 #define ENV_STAGE_HAS_DATA_SECTION	!ENV_CACHE_AS_RAM
 /* No .bss sections for stage with CAR teardown. */
-#define ENV_STAGE_HAS_BSS_SECTION	!(ENV_ROMSTAGE && CONFIG(CAR_GLOBAL_MIGRATION))
+#define ENV_STAGE_HAS_BSS_SECTION	1
 #else
 /* Both .data and .bss, sometimes SRAM not DRAM. */
 #define ENV_STAGE_HAS_DATA_SECTION	1

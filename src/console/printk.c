@@ -25,8 +25,7 @@
 
 DECLARE_SPIN_LOCK(console_lock)
 
-#define TRACK_CONSOLE_TIME (CONFIG(HAVE_MONOTONIC_TIMER) && \
-	(ENV_RAMSTAGE || !CONFIG(CAR_GLOBAL_MIGRATION)))
+#define TRACK_CONSOLE_TIME (CONFIG(HAVE_MONOTONIC_TIMER))
 
 static struct mono_time mt_start, mt_stop;
 static long console_usecs;

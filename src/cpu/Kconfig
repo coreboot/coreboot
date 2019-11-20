@@ -6,14 +6,6 @@ source "src/cpu/*/Kconfig"
 
 if ARCH_X86
 
-config CAR_GLOBAL_MIGRATION
-	bool
-	default n
-	help
-	  This option is selected if there is need to migrate CAR globals.
-	  All stages which use CAR globals can directly access the variables
-	  from their linked addresses.
-
 config DCACHE_RAM_BASE
 	hex
 

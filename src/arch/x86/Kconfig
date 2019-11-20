@@ -219,7 +219,6 @@ config VERSTAGE_ADDR
 config POSTCAR_STAGE
 	def_bool y
 	depends on ARCH_X86
-	depends on !CAR_GLOBAL_MIGRATION
 
 config VERSTAGE_DEBUG_SPINLOOP
 	bool

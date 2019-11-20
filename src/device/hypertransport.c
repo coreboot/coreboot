@@ -466,30 +466,6 @@ end_of_chain:
 	return next_unitid;
 }
 
-unsigned int hypertransport_scan_chain(struct bus *bus)
-{
-	int i;
-	unsigned int max_devfn;
-	u32 ht_unitid_base[4];
-
-	for (i = 0; i < 4; i++)
-		ht_unitid_base[i] = 0x20;
-
-	if (bus->secondary == 0)
-		max_devfn = (CONFIG_CDB << 3) - 1;
-	else
-		max_devfn = (0x20 << 3) - 1;
-
-	unsigned int next_unitid = do_hypertransport_scan_chain(bus, 0, max_devfn,
-					 ht_unitid_base, offset_unit_id(bus->secondary == 0));
-
-	bus->hcdn_reg = 0;
-	for (i = 0; i < 4; i++)
-		bus->hcdn_reg |= (ht_unitid_base[i] & 0xff) << (i*8);
-
-	return next_unitid;
-}
-
 /**
  * Scan a PCI bridge and the buses behind the bridge.
  *
@@ -515,26 +491,9 @@ static void hypertransport_scan_chain_x(struct bus *bus,
 	pci_scan_bus(bus, 0x00, ((next_unitid - 1) << 3) | 7);
 }
 
-void ht_scan_bridge(struct device *dev)
+static void ht_scan_bridge(struct device *dev)
 {
 	do_pci_scan_bridge(dev, hypertransport_scan_chain_x);
-}
-
-bool ht_is_non_coherent_link(struct bus *link)
-{
-	u32 link_type;
-	do {
-		link_type = pci_read_config32(link->dev, link->cap + 0x18);
-	} while (link_type & ConnectionPending);
-
-	if (!(link_type & LinkConnected))
-		return false;
-
-	do {
-		link_type = pci_read_config32(link->dev, link->cap + 0x18);
-	} while (!(link_type & InitComplete));
-
-	return !!(link_type & NonCoherent);
 }
 
 /** Default device operations for hypertransport bridges */

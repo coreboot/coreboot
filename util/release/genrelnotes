@@ -226,14 +226,29 @@ show_diff () {
 
 get_sloc () {
 	# Because cloc works on extensions, and .inc identifies as pascal,
-	# rename Makefile.inc, then remap the other .inc files to c
-	find 'src' -name 'Makefile.inc' -exec rename 's/Makefile\.inc/gnumakefile/' {} \;
+	# while we use it both for Makefile.inc and some files that are
+	# really C, do three passes: everything but .inc files, all .inc files
+	# that aren't Makefiles, all Makefile.inc, then combine them.
 
-	cloc --progress-rate=0 --quiet --script-lang="Bourne Shell",bash \
-		--force-lang=c,inc --exclude-dir=vendorcode src
+	local base=`mktemp`
+	find src -name Makefile.inc > ${base}.mak
 
-	# Change all the makefiles back to Makefile.inc
-	find 'src' -name 'gnumakefile' -exec rename 's/gnumakefile/Makefile\.inc/' {} \;
+	cloc --progress-rate=0 --quiet \
+		--script-lang="Bourne Shell",bash --exclude-ext=inc \
+		--exclude-dir=vendorcode --out=${base} src
+	cloc --progress-rate=0 --quiet \
+		--exclude-list-file=${base}.mak --force-lang=c,inc \
+		--exclude-dir=vendorcode --out=${base}.c src
+	cloc --progress-rate=0 --quiet \
+		--list-file=${base}.mak --force-lang=make,inc \
+		--exclude-dir=vendorcode --out=${base}.m src
+	cloc --progress-rate=0 --quiet --sum-reports \
+		${base} ${base}.c ${base}.m --out ${base}.result
+
+	echo
+	cat ${base}.result.lang
+
+	rm -f ${base}*
 }
 
 # Start collecting data from the old and new revisions.

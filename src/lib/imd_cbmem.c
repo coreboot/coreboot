@@ -22,28 +22,6 @@
 #include <imd.h>
 #include <lib.h>
 #include <stdlib.h>
-#include <arch/early_variables.h>
-
-/*
- * We need special handling on x86 where CAR global migration is employed. One
- * cannot use true globals in that circumstance because CAR is where the globals
- * are backed -- creating a circular dependency. For non CAR platforms globals
- * are free to be used as well as any stages that are purely executing out of
- * RAM. For CAR platforms that don't migrate globals the as-linked globals can
- * be used, but they need special decoration using CAR_GLOBAL. That ensures
- * proper object placement in conjunction with the linker.
- *
- * For the CAR global migration platforms we have to always try to partially
- * recover CBMEM from cbmem_top() whenever we try to access it. In other
- * environments we're not so constrained and just keep the backing imd struct
- * in a global. This also means that we can easily tell whether CBMEM has
- * explicitly been initialized or recovered yet on those platforms, and don't
- * need to put the burden on board or chipset code to tell us by returning
- * NULL from cbmem_top() before that point.
- */
-#define CAN_USE_GLOBALS \
-	(!CONFIG(ARCH_X86) || ENV_RAMSTAGE || ENV_POSTCAR || \
-	 !CONFIG(CAR_GLOBAL_MIGRATION))
 
 /* The program loader passes on cbmem_top and the program entry point
    has to fill in the _cbmem_top_ptr symbol based on the calling arguments. */
@@ -67,11 +45,8 @@ void *cbmem_top(void)
 
 static inline struct imd *cbmem_get_imd(void)
 {
-	if (CAN_USE_GLOBALS) {
-		static struct imd imd_cbmem CAR_GLOBAL;
-		return &imd_cbmem;
-	}
-	return NULL;
+	static struct imd imd_cbmem;
+	return &imd_cbmem;
 }
 
 static inline const struct cbmem_entry *imd_to_cbmem(const struct imd_entry *e)
@@ -115,12 +90,6 @@ static struct imd *imd_init_backing_with_recover(struct imd *backing)
 	struct imd *imd;
 
 	imd = imd_init_backing(backing);
-	if (!CAN_USE_GLOBALS) {
-		/* Always partially recover if we can't keep track of whether
-		 * we have already initialized CBMEM in this stage. */
-		imd_handle_init(imd, cbmem_top());
-		imd_handle_init_partial_recovery(imd);
-	}
 
 	return imd;
 }

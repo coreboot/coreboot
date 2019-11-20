@@ -192,7 +192,6 @@ version_ctrl_c() {
 		-exec rename 's/gnumakefile/Makefile\.inc/' {} \;
 	git checkout origin/master > /dev/null 2>&1
 	git submodule update --init --checkout  > /dev/null 2>&1
-	rm -f "$mainboard_list_old" "$mainboard_list_new"
 	rm "$LOGFILE"
 	exit 1;
 }

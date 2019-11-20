@@ -62,15 +62,21 @@ static void early_lpc_init(void)
 	const struct device *dev = pcidev_on_root(0x1f, 0);
 	const struct southbridge_intel_ibexpeak_config *config = NULL;
 
-	/* Add some default decode ranges:
-	   - 0x2e/2f, 0x4e/0x4f
-	   - EC/Mouse/KBC 60/64, 62/66
-	   - 0x3f8 COMA
-	   If more are needed, update in mainboard_lpc_init hook
-	*/
-	pci_write_config16(PCH_LPC_DEV, LPC_EN,
-			   CNF2_LPC_EN | CNF1_LPC_EN | MC_LPC_EN | KBC_LPC_EN |
-			   COMA_LPC_EN);
+	/*
+	 * Enable some common LPC IO ranges:
+	 * - 0x2e/0x2f, 0x4e/0x4f often SuperIO
+	 * - 0x60/0x64, 0x62/0x66 often KBC/EC
+	 * - 0x3f0-0x3f5/0x3f7 FDD
+	 * - 0x378-0x37f and 0x778-0x77f LPT
+	 * - 0x2f8-0x2ff COMB
+	 * - 0x3f8-0x3ff COMA
+	 * - 0x208-0x20f GAMEH
+	 * - 0x200-0x207 GAMEL
+	 */
+	pci_write_config16(PCH_LPC_DEV, LPC_EN, CNF2_LPC_EN | CNF1_LPC_EN
+			   | MC_LPC_EN | KBC_LPC_EN | GAMEH_LPC_EN
+			   | GAMEL_LPC_EN | FDD_LPC_EN | LPT_LPC_EN
+			   | COMB_LPC_EN | COMA_LPC_EN);
 	pci_write_config16(PCH_LPC_DEV, LPC_IO_DEC, 0x10);
 
 	/* Clear PWR_FLR */

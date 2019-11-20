@@ -14,7 +14,6 @@
 #if CONFIG(HAVE_ACPI_RESUME)
 #include <arch/acpi.h>
 #endif
-#include <arch/early_variables.h>
 #include <bootstate.h>
 #include <cbmem.h>
 #include <console/console.h>
@@ -66,21 +65,14 @@ struct elog_state {
 	enum elog_init_state elog_initialized;
 };
 
-static struct elog_state g_elog_state CAR_GLOBAL;
+static struct elog_state g_elog_state;
 
 #define ELOG_SIZE (4 * KiB)
-static uint8_t elog_mirror_buf[ELOG_SIZE] CAR_GLOBAL;
-
-static void *get_elog_mirror_buffer(void)
-{
-	return car_get_var_ptr(elog_mirror_buf);
-}
+static uint8_t elog_mirror_buf[ELOG_SIZE];
 
 static inline struct region_device *mirror_dev_get(void)
 {
-	struct elog_state *es = car_get_var_ptr(&g_elog_state);
-
-	return &es->mirror_dev.rdev;
+	return &g_elog_state.mirror_dev.rdev;
 }
 
 static size_t elog_events_start(void)
@@ -91,9 +83,7 @@ static size_t elog_events_start(void)
 
 static size_t elog_events_total_space(void)
 {
-	struct elog_state *es = car_get_var_ptr(&g_elog_state);
-
-	return region_device_sz(&es->nv_dev) - elog_events_start();
+	return region_device_sz(&g_elog_state.nv_dev) - elog_events_start();
 }
 
 static struct event_header *elog_get_event_buffer(size_t offset, size_t size)
@@ -103,10 +93,8 @@ static struct event_header *elog_get_event_buffer(size_t offset, size_t size)
 
 static struct event_header *elog_get_next_event_buffer(size_t size)
 {
-	struct elog_state *es = car_get_var_ptr(&g_elog_state);
-
-	elog_debug("ELOG: new event at offset 0x%zx\n", es->mirror_last_write);
-	return elog_get_event_buffer(es->mirror_last_write, size);
+	elog_debug("ELOG: new event at offset 0x%zx\n", g_elog_state.mirror_last_write);
+	return elog_get_event_buffer(g_elog_state.mirror_last_write, size);
 }
 
 static void elog_put_event_buffer(struct event_header *event)
@@ -116,71 +104,54 @@ static void elog_put_event_buffer(struct event_header *event)
 
 static size_t elog_mirror_reset_last_write(void)
 {
-	struct elog_state *es = car_get_var_ptr(&g_elog_state);
 	/* Return previous write value. */
-	size_t prev = es->mirror_last_write;
+	size_t prev = g_elog_state.mirror_last_write;
 
-	es->mirror_last_write = 0;
+	g_elog_state.mirror_last_write = 0;
 	return prev;
 }
 
 static void elog_mirror_increment_last_write(size_t size)
 {
-	struct elog_state *es = car_get_var_ptr(&g_elog_state);
-
-	es->mirror_last_write += size;
+	g_elog_state.mirror_last_write += size;
 }
 
 static void elog_nv_reset_last_write(void)
 {
-	struct elog_state *es = car_get_var_ptr(&g_elog_state);
-
-	es->nv_last_write = 0;
+	g_elog_state.nv_last_write = 0;
 }
 
 static void elog_nv_increment_last_write(size_t size)
 {
-	struct elog_state *es = car_get_var_ptr(&g_elog_state);
-
-	es->nv_last_write += size;
+	g_elog_state.nv_last_write += size;
 }
 
 static void elog_nv_needs_possible_erase(void)
 {
-	struct elog_state *es = car_get_var_ptr(&g_elog_state);
-
 	/* If last write is 0 it means it is already erased. */
-	if (es->nv_last_write != 0)
-		es->nv_last_write = NV_NEEDS_ERASE;
+	if (g_elog_state.nv_last_write != 0)
+		g_elog_state.nv_last_write = NV_NEEDS_ERASE;
 }
 
 static bool elog_should_shrink(void)
 {
-	struct elog_state *es = car_get_var_ptr(&g_elog_state);
-
-	return es->mirror_last_write >= es->full_threshold;
+	return g_elog_state.mirror_last_write >= g_elog_state.full_threshold;
 }
 
 static bool elog_nv_needs_erase(void)
 {
-	struct elog_state *es = car_get_var_ptr(&g_elog_state);
-
-	return es->nv_last_write == NV_NEEDS_ERASE;
+	return g_elog_state.nv_last_write == NV_NEEDS_ERASE;
 }
 
 static bool elog_nv_needs_update(void)
 {
-	struct elog_state *es = car_get_var_ptr(&g_elog_state);
-
-	return es->nv_last_write != es->mirror_last_write;
+	return g_elog_state.nv_last_write != g_elog_state.mirror_last_write;
 }
 
 static size_t elog_nv_region_to_update(size_t *offset)
 {
-	struct elog_state *es = car_get_var_ptr(&g_elog_state);
-
-	*offset = es->nv_last_write;
-	return es->mirror_last_write - es->nv_last_write;
+	*offset = g_elog_state.nv_last_write;
+	return g_elog_state.mirror_last_write - g_elog_state.nv_last_write;
 }
 
 /*
@@ -352,8 +323,6 @@ static void elog_nv_write(size_t offset, size_t size)
 {
 	void *address;
 	const struct region_device *rdev = mirror_dev_get();
-	struct elog_state *es = car_get_var_ptr(&g_elog_state);
-
 	if (!size)
 		return;
 
@@ -366,7 +335,7 @@ static void elog_nv_write(size_t offset, size_t size)
 		return;
 
 	/* Write the data to flash */
-	if (rdev_writeat(&es->nv_dev, address, offset, size) != size)
+	if (rdev_writeat(&g_elog_state.nv_dev, address, offset, size) != size)
 		printk(BIOS_ERR, "ELOG: NV Write failed at 0x%zx, size 0x%zx\n",
 			offset, size);
 
@@ -379,12 +348,11 @@ static void elog_nv_write(size_t offset, size_t size)
  */
 static void elog_nv_erase(void)
 {
-	struct elog_state *es = car_get_var_ptr(&g_elog_state);
-	size_t size = region_device_sz(&es->nv_dev);
+	size_t size = region_device_sz(&g_elog_state.nv_dev);
 	elog_debug("%s()\n", __func__);
 
 	/* Erase the sectors in this region */
-	if (rdev_eraseat(&es->nv_dev, 0, size) != size)
+	if (rdev_eraseat(&g_elog_state.nv_dev, 0, size) != size)
 		printk(BIOS_ERR, "ELOG: erase failure.\n");
 }
 
@@ -442,12 +410,12 @@ static int elog_scan_flash(void)
 	elog_debug("elog_scan_flash()\n");
 	void *mirror_buffer;
 	const struct region_device *rdev = mirror_dev_get();
-	struct elog_state *es = car_get_var_ptr(&g_elog_state);
-	size_t size = region_device_sz(&es->nv_dev);
+
+	size_t size = region_device_sz(&g_elog_state.nv_dev);
 
 	/* Fill memory buffer by reading from SPI */
 	mirror_buffer = rdev_mmap_full(rdev);
-	if (rdev_readat(&es->nv_dev, mirror_buffer, 0, size) != size) {
+	if (rdev_readat(&g_elog_state.nv_dev, mirror_buffer, 0, size) != size) {
 		rdev_munmap(rdev, mirror_buffer);
 		printk(BIOS_ERR, "ELOG: NV read failure.\n");
 		return -1;
@@ -611,10 +579,8 @@ static int elog_prepare_empty(void)
 
 static int elog_shrink(void)
 {
-	struct elog_state *es = car_get_var_ptr(&g_elog_state);
-
 	if (elog_should_shrink())
-		return elog_shrink_by_size(es->shrink_size);
+		return elog_shrink_by_size(g_elog_state.shrink_size);
 	return 0;
 }
 
@@ -623,18 +589,16 @@ static int elog_shrink(void)
  */
 static inline u8 *elog_flash_offset_to_address(void)
 {
-	struct elog_state *es = car_get_var_ptr(&g_elog_state);
-
 	/* Only support memory-mapped devices. */
 	if (!CONFIG(BOOT_DEVICE_MEMORY_MAPPED))
 		return NULL;
 
-	if (!region_device_sz(&es->nv_dev))
+	if (!region_device_sz(&g_elog_state.nv_dev))
 		return NULL;
 
 	/* Get a view into the read-only boot device. */
-	return rdev_mmap(boot_device_ro(), region_device_offset(&es->nv_dev),
-			region_device_sz(&es->nv_dev));
+	return rdev_mmap(boot_device_ro(), region_device_offset(&g_elog_state.nv_dev),
+			region_device_sz(&g_elog_state.nv_dev));
 }
 
 /*
@@ -646,8 +610,8 @@ int elog_smbios_write_type15(unsigned long *current, int handle)
 	struct smbios_type15 *t = (struct smbios_type15 *)*current;
 	int len = sizeof(struct smbios_type15);
 	uintptr_t log_address;
-	struct elog_state *es = car_get_var_ptr(&g_elog_state);
-	size_t elog_size = region_device_sz(&es->nv_dev);
+
+	size_t elog_size = region_device_sz(&g_elog_state.nv_dev);
 
 	if (CONFIG(ELOG_CBMEM)) {
 		/* Save event log buffer into CBMEM for the OS to read */
@@ -701,8 +665,7 @@ static int elog_find_flash(void)
 {
 	size_t total_size;
 	size_t reserved_space = ELOG_MIN_AVAILABLE_ENTRIES * MAX_EVENT_SIZE;
-	struct elog_state *es = car_get_var_ptr(&g_elog_state);
-	struct region_device *rdev = &es->nv_dev;
+	struct region_device *rdev = &g_elog_state.nv_dev;
 
 	elog_debug("%s()\n", __func__);
 
@@ -725,10 +688,10 @@ static int elog_find_flash(void)
 	total_size = MIN(ELOG_SIZE, region_device_sz(rdev));
 	rdev_chain(rdev, rdev, 0, total_size);
 
-	es->full_threshold = total_size - reserved_space;
-	es->shrink_size = total_size * ELOG_SHRINK_PERCENTAGE / 100;
+	g_elog_state.full_threshold = total_size - reserved_space;
+	g_elog_state.shrink_size = total_size * ELOG_SHRINK_PERCENTAGE / 100;
 
-	if (reserved_space > es->shrink_size) {
+	if (reserved_space > g_elog_state.shrink_size) {
 		printk(BIOS_ERR, "ELOG: SHRINK_PERCENTAGE too small\n");
 		return -1;
 	}
@@ -741,8 +704,6 @@ static int elog_sync_to_nv(void)
 	size_t offset;
 	size_t size;
 	bool erase_needed;
-	struct elog_state *es = car_get_var_ptr(&g_elog_state);
-
 	/* Determine if any updates are required. */
 	if (!elog_nv_needs_update())
 		return 0;
@@ -773,7 +734,7 @@ static int elog_sync_to_nv(void)
 	if (elog_scan_flash() < 0) {
 		printk(BIOS_ERR, "ELOG: Sync back from NV storage failed.\n");
 		elog_debug_dump_buffer("ELOG: Buffer from NV:\n");
-		es->elog_initialized = ELOG_BROKEN;
+		g_elog_state.elog_initialized = ELOG_BROKEN;
 		return -1;
 	}
 
@@ -815,9 +776,7 @@ int elog_init(void)
 {
 	void *mirror_buffer;
 	size_t elog_size;
-	struct elog_state *es = car_get_var_ptr(&g_elog_state);
-
-	switch (es->elog_initialized) {
+	switch (g_elog_state.elog_initialized) {
 	case ELOG_UNINITIALIZED:
 		break;
 	case ELOG_INITIALIZED:
@@ -825,7 +784,7 @@ int elog_init(void)
 	case ELOG_BROKEN:
 		return -1;
 	}
-	es->elog_initialized = ELOG_BROKEN;
+	g_elog_state.elog_initialized = ELOG_BROKEN;
 
 	elog_debug("elog_init()\n");
 
@@ -833,19 +792,19 @@ int elog_init(void)
 	if (elog_find_flash() < 0)
 		return -1;
 
-	elog_size = region_device_sz(&es->nv_dev);
-	mirror_buffer = get_elog_mirror_buffer();
+	elog_size = region_device_sz(&g_elog_state.nv_dev);
+	mirror_buffer = elog_mirror_buf;
 	if (!mirror_buffer) {
 		printk(BIOS_ERR, "ELOG: Unable to allocate backing store\n");
 		return -1;
 	}
-	mem_region_device_rw_init(&es->mirror_dev, mirror_buffer, elog_size);
+	mem_region_device_rw_init(&g_elog_state.mirror_dev, mirror_buffer, elog_size);
 
 	/*
 	 * Mark as initialized to allow elog_init() to be called and deemed
 	 * successful in the prepare/shrink path which adds events.
 	 */
-	es->elog_initialized = ELOG_INITIALIZED;
+	g_elog_state.elog_initialized = ELOG_INITIALIZED;
 
 	/* Load the log from flash and prepare the flash if necessary. */
 	if (elog_scan_flash() < 0 && elog_prepare_empty() < 0) {
@@ -854,8 +813,8 @@ int elog_init(void)
 	}
 
 	printk(BIOS_INFO, "ELOG: area is %zu bytes, full threshold %d,"
-	       " shrink size %d\n", region_device_sz(&es->nv_dev),
-		es->full_threshold, es->shrink_size);
+	       " shrink size %d\n", region_device_sz(&g_elog_state.nv_dev),
+		g_elog_state.full_threshold, g_elog_state.shrink_size);
 
 	if (ENV_PAYLOAD_LOADER)
 		elog_add_boot_count();

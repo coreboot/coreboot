@@ -17,7 +17,6 @@
 #include <string.h>
 #include <console/console.h>
 #include <device/mmio.h>
-#include <arch/early_variables.h>
 #include <types.h>
 
 #include "hwilib.h"
@@ -74,15 +73,15 @@ struct param_info {
 /* Storage for pointers to the different blocks. The contents will be filled
  * in hwilib_find_blocks().
  */
-static uint8_t *all_blocks[MAX_BLOCK_NUM] CAR_GLOBAL;
+static uint8_t *all_blocks[MAX_BLOCK_NUM];
 
 /* As the length of extended block is variable, save all length to a global
  * variable so that they can be used later to check boundaries.
  */
-static uint16_t all_blk_size[MAX_BLOCK_NUM] CAR_GLOBAL;
+static uint16_t all_blk_size[MAX_BLOCK_NUM];
 
 /* Storage for the cbfs file name of the currently open hwi file. */
-static char current_hwi[HWI_MAX_NAME_LEN] CAR_GLOBAL;
+static char current_hwi[HWI_MAX_NAME_LEN];
 
 
 static uint32_t hwilib_read_bytes (const struct param_info *param, uint8_t *dst,
@@ -405,16 +404,14 @@ static uint32_t hwilib_read_bytes (const struct param_info *param, uint8_t *dst,
 					uint32_t maxlen)
 {
 	uint8_t i = 0, *blk = NULL;
-	uint8_t **blk_ptr = car_get_var_ptr(&all_blocks[0]);
-	uint16_t *all_blk_size_ptr = car_get_var_ptr(&all_blk_size[0]);
 
 	if (!param || !dst)
 		return 0;
 	/* Take the first valid block to get the parameter from */
 	do {
 		if ((param->pos[i].len) && (param->pos[i].offset) &&
-		     (blk_ptr[param->pos[i].blk_type])) {
-			blk =  blk_ptr[param->pos[i].blk_type];
+		     (all_blocks[param->pos[i].blk_type])) {
+			blk =  all_blocks[param->pos[i].blk_type];
 			break;
 		}
 		i++;
@@ -425,7 +422,7 @@ static uint32_t hwilib_read_bytes (const struct param_info *param, uint8_t *dst,
 	 */
 	if ((!blk) || (param->pos[i].len > maxlen) ||
 	    (param->pos[i].len + param->pos[i].offset >
-	     all_blk_size_ptr[param->pos[i].blk_type]))
+	     all_blk_size[param->pos[i].blk_type]))
 		return 0;
 	/* We can now copy the wanted data. */
 	memcpy(dst, (blk + param->pos[i].offset), param->pos[i].len);
@@ -472,9 +469,6 @@ enum cb_err hwilib_find_blocks (const char *hwi_filename)
 {
 	uint8_t *ptr = NULL, *base = NULL;
 	uint32_t next_offset = 1;
-	uint8_t **blk_ptr = car_get_var_ptr(&all_blocks[0]);
-	uint16_t *all_blk_size_ptr = car_get_var_ptr(&all_blk_size[0]);
-	char *curr_hwi_name_ptr = car_get_var_ptr(&current_hwi);
 	size_t filesize = 0;
 
 	/* Check for a valid parameter */
@@ -482,8 +476,7 @@ enum cb_err hwilib_find_blocks (const char *hwi_filename)
 		return CB_ERR_ARG;
 	/* Check if this file is already open. If yes, just leave as there is
 	   nothing left to do here. */
-	if (curr_hwi_name_ptr &&
-	    !strncmp(curr_hwi_name_ptr, hwi_filename, HWI_MAX_NAME_LEN)) {
+	if (!strncmp((char *)&current_hwi, hwi_filename, HWI_MAX_NAME_LEN)) {
 		printk(BIOS_SPEW, "HWILIB: File \"%s\" already open.\n",
 			hwi_filename);
 		return CB_SUCCESS;
@@ -504,15 +497,15 @@ enum cb_err hwilib_find_blocks (const char *hwi_filename)
 	 *  in prior calls to this function.
 	 * This way the caller do not need to "close" already opened blocks.
 	 */
-	memset(blk_ptr, 0, (MAX_BLOCK_NUM * sizeof (uint8_t *)));
+	memset(all_blocks, 0, (MAX_BLOCK_NUM * sizeof (uint8_t *)));
 	/* Check which blocks are available by examining the length field. */
 	base = ptr;
 	/* Fill in sizes of all fixed length blocks. */
-	all_blk_size_ptr[BLK_HIB] = LEN_HIB;
-	all_blk_size_ptr[BLK_SIB] = LEN_SIB;
-	all_blk_size_ptr[BLK_EIB] = LEN_EIB;
+	all_blk_size[BLK_HIB] = LEN_HIB;
+	all_blk_size[BLK_SIB] = LEN_SIB;
+	all_blk_size[BLK_EIB] = LEN_EIB;
 	/* Length of BLK_XIB is variable and will be filled if block is found */
-	all_blk_size_ptr[BLK_XIB] = 0;
+	all_blk_size[BLK_XIB] = 0;
 	while(!(strncmp((char *)ptr, BLOCK_MAGIC, LEN_MAGIC_NUM)) &&
 		next_offset) {
 		uint16_t len = read16(ptr + LEN_OFFSET);
@@ -520,26 +513,26 @@ enum cb_err hwilib_find_blocks (const char *hwi_filename)
 		if ((ptr - base + len) > filesize)
 			break;
 		if (len == LEN_HIB) {
-			blk_ptr[BLK_HIB] = ptr;
+			all_blocks[BLK_HIB] = ptr;
 			next_offset = read32(ptr + NEXT_OFFSET_HIB);
 			if (next_offset)
 				ptr = base + next_offset;
 		} else if (len == LEN_SIB) {
-			blk_ptr[BLK_SIB] = ptr;
+			all_blocks[BLK_SIB] = ptr;
 			next_offset = read32(ptr + NEXT_OFFSET_SIB);
 			if (next_offset)
 				ptr = base + next_offset;
 		} else if (len == LEN_EIB) {
 			/* Skip preliminary blocks */
 			if (!(read16(ptr + EIB_FEATRUE_OFFSET) & 0x01))
-				blk_ptr[BLK_EIB] = ptr;
+				all_blocks[BLK_EIB] = ptr;
 			next_offset = read32(ptr + NEXT_OFFSET_EIB);
 			if (next_offset)
 				ptr = base + next_offset;
 		} else if (len >= MIN_LEN_XIB) {
-			blk_ptr[BLK_XIB] = ptr;
+			all_blocks[BLK_XIB] = ptr;
 			next_offset = read32(ptr + NEXT_OFFSET_XIB);
-			all_blk_size_ptr[BLK_XIB] = len;
+			all_blk_size[BLK_XIB] = len;
 			if (next_offset)
 				ptr = base + next_offset;
 		} else {
@@ -547,10 +540,10 @@ enum cb_err hwilib_find_blocks (const char *hwi_filename)
 		}
 	}
 	/* We should have found at least one valid block */
-	if (blk_ptr[BLK_HIB] || blk_ptr[BLK_SIB] || blk_ptr[BLK_EIB] ||
-	    blk_ptr[BLK_XIB]) {
+	if (all_blocks[BLK_HIB] || all_blocks[BLK_SIB] || all_blocks[BLK_EIB] ||
+	    all_blocks[BLK_XIB]) {
 		/* Save currently opened hwi filename. */
-		strncpy(curr_hwi_name_ptr, hwi_filename, HWI_MAX_NAME_LEN);
+		strncpy((char *)&current_hwi, hwi_filename, HWI_MAX_NAME_LEN);
 		return CB_SUCCESS;
 	}
 	else

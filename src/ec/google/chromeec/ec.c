@@ -17,7 +17,6 @@
 #include <string.h>
 #include <cbmem.h>
 #include <console/console.h>
-#include <arch/early_variables.h>
 #include <assert.h>
 #include <bootmode.h>
 #include <bootstate.h>
@@ -231,7 +230,7 @@ bool google_chromeec_is_uhepi_supported(void)
 #define UHEPI_SUPPORTED 1
 #define UHEPI_NOT_SUPPORTED 2
 
-	static int uhepi_support CAR_GLOBAL;
+	static int uhepi_support;
 
 	if (!uhepi_support) {
 		uhepi_support = google_chromeec_check_feature

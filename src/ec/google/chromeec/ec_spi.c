@@ -20,8 +20,6 @@
 #include <spi-generic.h>
 #include <timer.h>
 
-/* This is assuming that this driver is not used on x86. If that changes, this
-   might need to become a CAR_GLOBAL or maybe even more complicated. */
 static struct stopwatch cs_cooldown_sw;
 static const long cs_cooldown_us = 200;
 

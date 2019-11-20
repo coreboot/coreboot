@@ -12,7 +12,6 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/early_variables.h>
 #include <assert.h>
 #include <boot_device.h>
 #include <boot/coreboot_tables.h>
@@ -522,7 +521,7 @@ int spi_flash_set_write_protected(const struct spi_flash *flash,
 	return ret;
 }
 
-static uint32_t volatile_group_count CAR_GLOBAL;
+static uint32_t volatile_group_count;
 
 int spi_flash_volatile_group_begin(const struct spi_flash *flash)
 {
@@ -532,12 +531,12 @@ int spi_flash_volatile_group_begin(const struct spi_flash *flash)
 	if (!CONFIG(SPI_FLASH_HAS_VOLATILE_GROUP))
 		return ret;
 
-	count = car_get_var(volatile_group_count);
+	count = volatile_group_count;
 	if (count == 0)
 		ret = chipset_volatile_group_begin(flash);
 
 	count++;
-	car_set_var(volatile_group_count, count);
+	volatile_group_count = count;
 	return ret;
 }
 
@@ -549,10 +548,10 @@ int spi_flash_volatile_group_end(const struct spi_flash *flash)
 	if (!CONFIG(SPI_FLASH_HAS_VOLATILE_GROUP))
 		return ret;
 
-	count = car_get_var(volatile_group_count);
+	count = volatile_group_count;
 	assert(count == 0);
 	count--;
-	car_set_var(volatile_group_count, count);
+	volatile_group_count = count;
 
 	if (count == 0)
 		ret = chipset_volatile_group_end(flash);

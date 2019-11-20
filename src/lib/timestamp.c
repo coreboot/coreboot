@@ -22,7 +22,6 @@
 #include <symbols.h>
 #include <timer.h>
 #include <timestamp.h>
-#include <arch/early_variables.h>
 #include <smp/node.h>
 
 #define MAX_TIMESTAMPS 192
@@ -31,7 +30,7 @@ DECLARE_OPTIONAL_REGION(timestamp);
 
 /* This points to the active timestamp_table and can change within a stage
    as CBMEM comes available. */
-static struct timestamp_table *glob_ts_table CAR_GLOBAL;
+static struct timestamp_table *glob_ts_table;
 
 static void timestamp_cache_init(struct timestamp_table *ts_cache,
 				 uint64_t base)
@@ -94,21 +93,17 @@ static int timestamp_should_run(void)
 
 static struct timestamp_table *timestamp_table_get(void)
 {
-	struct timestamp_table *ts_table;
+	if (glob_ts_table)
+		return glob_ts_table;
 
-	ts_table = car_get_ptr(glob_ts_table);
-	if (ts_table)
-		return ts_table;
+	glob_ts_table = timestamp_cache_get();
 
-	ts_table = timestamp_cache_get();
-	car_set_ptr(glob_ts_table, ts_table);
-
-	return ts_table;
+	return glob_ts_table;
 }
 
 static void timestamp_table_set(struct timestamp_table *ts)
 {
-	car_set_ptr(glob_ts_table, ts);
+	glob_ts_table = ts;
 }
 
 static const char *timestamp_name(enum timestamp_id id)

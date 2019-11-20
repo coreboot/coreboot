@@ -14,12 +14,11 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <device/pci_ops.h>
-#include <arch/early_variables.h>
 #include <console/uart.h>
 #include <device/pci.h>
 #include <device/pci_def.h>
 
-static unsigned int oxpcie_present CAR_GLOBAL;
+static unsigned int oxpcie_present;
 static DEVTREE_CONST u32 uart0_base = CONFIG_EARLY_PCI_MMIO_BASE + 0x1000;
 
 int pci_early_device_probe(u8 bus, u8 dev, u32 mmio_base)
@@ -58,13 +57,13 @@ int pci_early_device_probe(u8 bus, u8 dev, u32 mmio_base)
 	reg16 |= PCI_COMMAND_MEMORY;
 	pci_s_write_config16(device, PCI_COMMAND, reg16);
 
-	car_set_var(oxpcie_present, 1);
+	oxpcie_present = 1;
 	return 0;
 }
 
 static int oxpcie_uart_active(void)
 {
-	return (car_get_var(oxpcie_present));
+	return oxpcie_present;
 }
 
 uintptr_t uart_platform_base(int idx)

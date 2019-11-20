@@ -202,12 +202,22 @@ show_diff () {
 	local new
 	local old
 
-	new="$(comm -13 <(echo "$2") <(echo "$3") | sed 's/^/* /')"
+	new="$(comm -13 <(echo "$2") <(echo "$3"))"
+	old="$(comm -23 <(echo "$2") <(echo "$3"))"
+
+	# Allow running a postprocessor, given as 4th argument over the
+	# resulting diff, provide context if it's old or new data
+	if [ -n "$4" ]; then
+		new=$(echo "$new" | $4 new | sort)
+		old=$(echo "$old" | $4 old | sort)
+	fi
+	new="$(printf "$new" | sed 's/^/* /')"
+	old="$(printf "$old" | sed 's/^/* /')"
+
 	if [ -n "$new" ]; then
 		printf "Added %s $1:\n-------------------\n%s\n\n" \
 			"$(echo "$new" | wc -l)" "$new"  >> "$LOGFILE"
 	fi
-	old="$(comm -23 <(echo "$2") <(echo "$3") | sed 's/^/* /')"
 	if [ -n "$old" ]; then
 		printf "Removed %s $1:\n-------------------\n%s\n\n" \
 			"$(echo "$old" | wc -l)" "$old"  >> "$LOGFILE"
@@ -400,8 +410,26 @@ get_log_dedupe "Maintainers" "MAINTAINERS" ""
 # Finally, get anything that was missed above
 get_log_dedupe "MISC" "."
 
+# Replace VENDOR_DEVICE from stdin with their nice names on stdout
+real_mainboard_names() {
+	local tree_version=$1 # "old" or "new"
+	local git_version_var=${tree_version^^}_GIT_VERSION
+	local git_version=${!git_version_var}
+	local line
+
+	while read line; do
+		local file="$(git grep -l "^[[:space:]]*config\>[[:space:]]*\<BOARD_${line}\$" ${git_version} -- src/mainboard/\*/\*/Kconfig.name | sed "s,^${git_version}:,,")"
+		if [ -z "$file" ]; then
+			echo "This shouldn't happen: couldn't find Kconfig for $line"
+			exit 1
+		fi
+		local vendor="$(git grep \" ${git_version} -- $(echo ${file} | cut -d/ -f1-3,5) | cut -d\" -f2)"
+		git grep -h -A1 "^[[:space:]]*config\>[[:space:]]*\<BOARD_${line}\$" ${git_version} -- ${file} | grep \" |cut -d\" -f2 |sed "s,^,${vendor} ,"
+	done
+}
+
 # Show areas that have been added or removed
-show_diff "mainboards"   "$mainboard_list_old"   "$mainboard_list_new"
+show_diff "mainboards"   "$mainboard_list_old"   "$mainboard_list_new"    real_mainboard_names
 show_diff "processors"   "$cpu_list_old"         "$cpu_list_new"
 show_diff "socs"         "$soc_list_old"         "$soc_list_new"
 show_diff "northbridges" "$northbridge_list_old" "$northbridge_list_new"

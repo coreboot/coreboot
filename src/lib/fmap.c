@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/early_variables.h>
 #include <boot_device.h>
 #include <cbmem.h>
 #include <console/console.h>
@@ -29,11 +28,11 @@
  * See http://code.google.com/p/flashmap/ for more information on FMAP.
  */
 
-static int fmap_print_once CAR_GLOBAL;
-static struct mem_region_device fmap_cache CAR_GLOBAL;
+static int fmap_print_once;
+static struct mem_region_device fmap_cache;
 
 #define print_once(...) do { \
-		if (!car_get_var(fmap_print_once)) \
+		if (!fmap_print_once) \
 			printk(__VA_ARGS__); \
 	} while (0)
 
@@ -55,7 +54,7 @@ static void report(const struct fmap *fmap)
 	       fmap->name, fmap->ver_major, fmap->ver_minor, FMAP_OFFSET);
 	print_once(BIOS_DEBUG, "FMAP: base = %#llx size = %#x #areas = %d\n",
 	       (long long)fmap->base, fmap->size, fmap->nareas);
-	car_set_var(fmap_print_once, 1);
+	fmap_print_once = 1;
 }
 
 static void setup_preram_cache(struct mem_region_device *cache_mrdev)
@@ -114,15 +113,13 @@ static int find_fmap_directory(struct region_device *fmrd)
 {
 	const struct region_device *boot;
 	struct fmap *fmap;
-	struct mem_region_device *cache;
 	size_t offset = FMAP_OFFSET;
 
 	/* Try FMAP cache first */
-	cache = car_get_var_ptr(&fmap_cache);
-	if (!region_device_sz(&cache->rdev))
-		setup_preram_cache(cache);
-	if (region_device_sz(&cache->rdev))
-		return rdev_chain_full(fmrd, &cache->rdev);
+	if (!region_device_sz(&fmap_cache.rdev))
+		setup_preram_cache(&fmap_cache);
+	if (region_device_sz(&fmap_cache.rdev))
+		return rdev_chain_full(fmrd, &fmap_cache.rdev);
 
 	boot_device_init();
 	boot = boot_device_ro();
@@ -277,9 +274,6 @@ ssize_t fmap_overwrite_area(const char *name, const void *buffer, size_t size)
 static void fmap_register_cbmem_cache(int unused)
 {
 	const struct cbmem_entry *e;
-	struct mem_region_device *mdev;
-
-	mdev = car_get_var_ptr(&fmap_cache);
 
 	/* Find the FMAP cache installed by previous stage */
 	e = cbmem_entry_find(CBMEM_ID_FMAP);
@@ -287,7 +281,7 @@ static void fmap_register_cbmem_cache(int unused)
 	if (!e)
 		return;
 
-	mem_region_device_ro_init(mdev, cbmem_entry_start(e), cbmem_entry_size(e));
+	mem_region_device_ro_init(&fmap_cache, cbmem_entry_start(e), cbmem_entry_size(e));
 }
 
 /*

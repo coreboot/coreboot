@@ -12,7 +12,6 @@
  */
 
 #include <arch/cpu.h>
-#include <arch/early_variables.h>
 #include <arch/exception.h>
 #include <commonlib/helpers.h>
 #include <console/console.h>
@@ -569,7 +568,7 @@ static const uintptr_t intr_entries[] = {
 	(uintptr_t)vec16, (uintptr_t)vec17, (uintptr_t)vec18, (uintptr_t)vec19,
 };
 
-static struct intr_gate idt[ARRAY_SIZE(intr_entries)] __aligned(8) CAR_GLOBAL;
+static struct intr_gate idt[ARRAY_SIZE(intr_entries)] __aligned(8);
 
 static inline uint16_t get_cs(void)
 {
@@ -620,21 +619,19 @@ asmlinkage void exception_init(void)
 {
 	int i;
 	uint16_t segment;
-	struct intr_gate *gates;
 
 	segment = get_cs();
-	gates = car_get_var_ptr(idt);
 
 	/* Initialize IDT. */
 	for (i = 0; i < ARRAY_SIZE(idt); i++) {
-		gates[i].offset_0 = intr_entries[i];
-		gates[i].segsel = segment;
-		gates[i].flags = IGATE_FLAGS;
-		gates[i].offset_1 = intr_entries[i] >> 16;
+		idt[i].offset_0 = intr_entries[i];
+		idt[i].segsel = segment;
+		idt[i].flags = IGATE_FLAGS;
+		idt[i].offset_1 = intr_entries[i] >> 16;
 #if ENV_X86_64
-		gates[i].offset_2 = intr_entries[i] >> 32;
+		idt[i].offset_2 = intr_entries[i] >> 32;
 #endif
 	}
 
-	load_idt(gates, sizeof(idt));
+	load_idt(idt, sizeof(idt));
 }

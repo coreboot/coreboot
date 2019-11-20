@@ -167,7 +167,7 @@ def UpdateGPTHeader(options, GPTBlobBuffer):
     # CRC of Partition Entry
 
     PartEntry = GPTBlobBuffer[options.sector_size*2:options.sector_size*2 + 128]
-    CalcEntryCRC = crc32(''.join(struct.pack("B", x) for x in PartEntry))
+    CalcEntryCRC = crc32(b''.join(struct.pack("B", x) for x in PartEntry))
 
     GPTBlobBuffer[i] = CalcEntryCRC & 0xFF
     GPTBlobBuffer[i+1] = (CalcEntryCRC>>8) & 0xFF
@@ -177,7 +177,7 @@ def UpdateGPTHeader(options, GPTBlobBuffer):
 
     # CRC of Partition Table Header
     GPTHeader = GPTBlobBuffer[options.sector_size:options.sector_size + 92]
-    CalcEntryCRC = crc32(''.join(struct.pack("B", x) for x in GPTHeader))
+    CalcEntryCRC = crc32(b''.join(struct.pack("B", x) for x in GPTHeader))
     i = options.sector_size + 16
 
     GPTBlobBuffer[i] = CalcEntryCRC & 0xFF
@@ -209,11 +209,11 @@ if __name__ == '__main__':
     options.inputfile = args[0]
     options.outputfile = args[1]
 
-    with open(options.inputfile, 'r+') as fin:
+    with open(options.inputfile, 'rb+') as fin:
       bb_buffer = fin.read()
 
     # Round up to next sector if bootblock size not evenly divisible
-    options.end_lba = ((len(bb_buffer) + options.sector_size - 1) /
+    options.end_lba = ((len(bb_buffer) + options.sector_size - 1) //
       options.sector_size)
     # Add 3 sectors for MBR, GPT header and GPT partition entry
     options.end_lba += 3

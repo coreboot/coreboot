@@ -4,7 +4,6 @@
  * found in the LICENSE file.
  */
 
-#include <arch/early_variables.h>
 #include <assert.h>
 #include <console/console.h>
 #include <cbmem.h>
@@ -24,7 +23,7 @@ struct vpd_gets_arg {
 	int matched;
 };
 
-struct vpd_blob g_vpd_blob CAR_GLOBAL = {0};
+struct vpd_blob g_vpd_blob;
 
 /*
  * returns the size of data in a VPD 2.0 formatted fmap region, or 0.
@@ -86,13 +85,10 @@ static void vpd_get_blob(void)
 	if (ro_vpd_size == 0 && rw_vpd_size == 0)
 		return;
 
-	struct vpd_blob *blob = car_get_var_ptr(&g_vpd_blob);
-	if (!blob)
-		return;
-	blob->ro_base = NULL;
-	blob->ro_size = 0;
-	blob->rw_base = NULL;
-	blob->rw_size = 0;
+	g_vpd_blob.ro_base = NULL;
+	g_vpd_blob.ro_size = 0;
+	g_vpd_blob.rw_base = NULL;
+	g_vpd_blob.rw_size = 0;
 
 	struct region_device vpd;
 
@@ -105,9 +101,9 @@ static void vpd_get_blob(void)
 		}
 		rdev_chain(&vpd, &vpd, GOOGLE_VPD_2_0_OFFSET,
 			region_device_sz(&vpd) - GOOGLE_VPD_2_0_OFFSET);
-		blob->ro_base = (uint8_t *)(rdev_mmap_full(&vpd) +
+		g_vpd_blob.ro_base = (uint8_t *)(rdev_mmap_full(&vpd) +
 			sizeof(struct google_vpd_info));
-		blob->ro_size = ro_vpd_size;
+		g_vpd_blob.ro_size = ro_vpd_size;
 	}
 	if (rw_vpd_size) {
 		if (fmap_locate_area_as_rdev("RW_VPD", &vpd)) {
@@ -118,23 +114,19 @@ static void vpd_get_blob(void)
 		}
 		rdev_chain(&vpd, &vpd, GOOGLE_VPD_2_0_OFFSET,
 			region_device_sz(&vpd) - GOOGLE_VPD_2_0_OFFSET);
-		blob->rw_base = (uint8_t *)(rdev_mmap_full(&vpd) +
+		g_vpd_blob.rw_base = (uint8_t *)(rdev_mmap_full(&vpd) +
 			sizeof(struct google_vpd_info));
-		blob->rw_size = rw_vpd_size;
+		g_vpd_blob.rw_size = rw_vpd_size;
 	}
-	blob->initialized = true;
+	g_vpd_blob.initialized = true;
 }
 
 const struct vpd_blob *vpd_load_blob(void)
 {
-	struct vpd_blob *blob = NULL;
-
-	blob = car_get_var_ptr(&g_vpd_blob);
-
-	if (blob && blob->initialized == false)
+	if (g_vpd_blob.initialized == false)
 		vpd_get_blob();
 
-	return blob;
+	return &g_vpd_blob;
 }
 
 static int vpd_gets_callback(const uint8_t *key, uint32_t key_len,

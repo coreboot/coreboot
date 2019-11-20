@@ -175,7 +175,6 @@ AGESA_STATUS agesa_ReadSpd_from_cbfs(UINT32 Func, UINTN Data, VOID *ConfigPtr)
 #if HAS_AGESA_FCH_OEM_CALLOUT
 void agesa_fch_oem_config(uintptr_t Data, AMD_CONFIG_PARAMS *StdHeader)
 {
-	/* FIXME: CAR_GLOBAL needed here to pass sysinfo. */
 	struct sysinfo *cb_NA = NULL;
 
 	if (StdHeader->Func == AMD_INIT_RESET) {

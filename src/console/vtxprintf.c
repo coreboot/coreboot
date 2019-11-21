@@ -36,20 +36,8 @@ static int number(void (*tx_byte)(unsigned char byte, void *data),
 	const char *digits = "0123456789abcdef";
 	int i;
 	int count = 0;
-#ifdef SUPPORT_64BIT_INTS
 	unsigned long long num = inum;
 	long long snum = num;
-#else
-	unsigned long num = (unsigned long)inum;
-	long snum = (long)num;
-
-	if (num != inum) {
-		/* Alert user to an incorrect result by printing #^!. */
-		call_tx('#');
-		call_tx('^');
-		call_tx('!');
-	}
-#endif
 
 	if (type & LARGE)
 		digits = "0123456789ABCDEF";

@@ -217,18 +217,10 @@ F:	src/mainboard/google/parrot/
 F:	src/mainboard/google/slippy/
 F:	src/mainboard/google/stout/
 
-OCP MAINBOARDS
-M:	Philipp Deppenwiese <zaolin.daisuki@gmail.com>
-M:	Patrick Rudolph <patrick.rudolph@9elements.com>
-S:	Supported
-F:	src/mainboard/ocp/wedge100s/
-F:	src/mainboard/ocp/monolake/
-
 OPENCELLULAR MAINBOARDS
 M:	Philipp Deppenwiese <zaolin.daisuki@gmail.com>
 M:	Patrick Rudolph <patrick.rudolph@9elements.com>
 S:	Supported
-F:	src/mainboard/opencellular/rotundu/
 F:	src/mainboard/opencellular/elgon/
 
 PURISM MAINBOARDS
@@ -242,30 +234,6 @@ S:	Maintained
 F:	src/mainboard/samsung/lumpy/
 F:	src/mainboard/samsung/stumpy/
 
-INTEL MINNOWBOARD MAX MAINBOARD
-M:	Huang Jin <huang.jin@intel.com>
-M:	York Yang <york.yang@intel.com>
-S:	Supported
-F:	src/mainboard/intel/minnowmax/
-
-INTEL FSP BAYTRAIL CHIP & CRBs
-M:	Huang Jin <huang.jin@intel.com>
-M:	York Yang <york.yang@intel.com>
-M:	Philipp Deppenwiese <zaolin.daisuki@gmail.com>
-S:	Supported
-F:	src/soc/intel/fsp_baytrail/
-F:	src/vendorcode/intel/fsp1_0/baytrail/
-F:	src/mainboard/intel/bakersport_fsp/
-F:	src/mainboard/intel/bayleybay_fsp/
-
-INTEL FSP BROADWELL-DE SOC & CRB
-M:	York Yang <york.yang@intel.com>
-M:	Philipp Deppenwiese <zaolin.daisuki@gmail.com>
-S:	Supported
-F:	src/soc/intel/fsp_broadwell_de/
-F:	src/vendorcode/intel/fsp1_0/broadwell_de/
-F:	src/mainboard/intel/camelbackmountain_fsp/
-
 INTEL FSP DENVERTON-NS SOC & HARCUVAR CRB
 M:	Vanessa Eusebio <vanessa.f.eusebio@intel.com>
 M:	David Guckian <david.guckian@intel.com>
@@ -273,24 +241,6 @@ S:	Odd Fixes
 F:	src/mainboard/intel/harcuvar/
 F:	src/soc/intel/denverton_ns/
 F:	src/vendorcode/intel/fsp/fsp2_0/denverton_ns/
-
-FSP 1.0 RANGELEY & CRB
-M:	David Guckian <david.guckian@intel.com>
-M:	Fei Wang <fei.z.wang@intel.com>
-S:	Supported
-F:	src/cpu/intel/fsp_model_406dx/
-F:	src/northbridge/intel/fsp_rangeley/
-F:	src/southbridge/intel/fsp_rangeley/
-F:	src/vendorcode/intel/fsp1_0/rangeley/
-F:	src/mainboard/intel/mohonpeak/
-
-INTEL FSP 1.0
-M:	Huang Jin <huang.jin@intel.com>
-M:	York Yang <york.yang@intel.com>
-M:	Philipp Deppenwiese <zaolin.daisuki@gmail.com>
-S:	Supported
-F:	src/drivers/intel/fsp1_0/
-F:	src/vendorcode/intel/fsp1_0/broadwell_de/
 
 INTEL FSP 1.1
 M:	Lee Leahy <leroy.p.leahy@intel.com>
@@ -367,8 +317,6 @@ SIEMENS MC_xxxx MAINBOARDS
 M:	Werner Zeh <werner.zeh@siemens.com>
 S:	Maintained
 F:	src/mainboard/siemens/mc_apl1/
-F:	src/mainboard/siemens/mc_bdx1/
-F:	src/mainboard/siemens/mc_tcu3/
 
 SUPERMICRO X10SLM+-F MAINBOARD
 M:	Tristan Corrick <tristan@corrick.kiwi>

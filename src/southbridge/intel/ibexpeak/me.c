@@ -614,8 +614,11 @@ static struct device_operations device_ops = {
 	.ops_pci		= &pci_ops,
 };
 
-static const unsigned short pci_device_ids[] = { 0x1c3a, 0x3b64,
-						 0 };
+static const unsigned short pci_device_ids[] = {
+	0x1c3a,
+	PCI_DID_INTEL_IBEXPEAK_HECI1,
+	0
+};
 
 
 static const struct pci_driver intel_me __pci_driver = {

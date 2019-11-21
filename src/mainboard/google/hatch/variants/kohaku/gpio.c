@@ -55,6 +55,14 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_E23, NONE),
 	/* F1 : GPP_F1 ==> NC */
 	PAD_NC(GPP_F1, NONE),
+	/* F11 : PCH_MEM_STRAP2 */
+	PAD_CFG_GPI(GPP_F11, NONE, PLTRST),
+	/* F20 : PCH_MEM_STRAP0 */
+	PAD_CFG_GPI(GPP_F20, NONE, PLTRST),
+	/* F21 : PCH_MEM_STRAP1 */
+	PAD_CFG_GPI(GPP_F21, NONE, PLTRST),
+	/* F22 : PCH_MEM_STRAP3 */
+	PAD_CFG_GPI(GPP_F22, NONE, PLTRST),
 	/* G0 : GPP_G0 ==> NC  */
 	PAD_NC(GPP_G0, NONE),
 	/* G1 : GPP_G1 ==> NC  */
@@ -111,6 +119,14 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_NF(GPP_E5, NONE, PLTRST, NF1),
 	/* F2  : MEM_CH_SEL */
 	PAD_CFG_GPI(GPP_F2, NONE, PLTRST),
+	/* F11 : PCH_MEM_STRAP2 */
+	PAD_CFG_GPI(GPP_F11, NONE, PLTRST),
+	/* F20 : PCH_MEM_STRAP0 */
+	PAD_CFG_GPI(GPP_F20, NONE, PLTRST),
+	/* F21 : PCH_MEM_STRAP1 */
+	PAD_CFG_GPI(GPP_F21, NONE, PLTRST),
+	/* F22 : PCH_MEM_STRAP3 */
+	PAD_CFG_GPI(GPP_F22, NONE, PLTRST),
 };
 
 const struct pad_config *variant_early_gpio_table(size_t *num)

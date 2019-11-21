@@ -15,3 +15,4 @@ trackpoint=Enable
 backlight=Both
 hybrid_graphics_mode=Integrated Only
 usb_always_on=Disable
+me_state=Normal

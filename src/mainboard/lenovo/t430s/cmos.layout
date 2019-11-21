@@ -35,7 +35,9 @@ entries
 422	2	e	10	backlight
 424	1	e	1	f1_to_f12_as_primary
 
-# coreboot config options: cpu
+# coreboot config options: ME
+425	1	e	13	me_state
+426	2	h	0	me_state_prev
 
 # coreboot config options: northbridge
 432	3	e	11	gfx_uma_size
@@ -94,6 +96,8 @@ enumerations
 12	0	Disable
 12	1	AC and battery
 12	2	AC only
+13	0	Normal
+13	1	Disabled
 
 # -----------------------------------------------------------------
 checksums

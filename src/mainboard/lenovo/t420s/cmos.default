@@ -14,3 +14,4 @@ sticky_fn=Disable
 trackpoint=Enable
 hybrid_graphics_mode=Integrated Only
 usb_always_on=Disable
+me_state=Normal

@@ -34,7 +34,9 @@ entries
 421	1	e	9	sata_mode
 422	2	e	12	usb_always_on
 
-# coreboot config options: cpu
+# coreboot config options: ME
+424	1	e	13	me_state
+425	2	h	0	me_state_prev
 
 # coreboot config options: northbridge
 432	3	e	11	gfx_uma_size
@@ -92,6 +94,8 @@ enumerations
 12	0	Disable
 12	1	AC and battery
 12	2	AC only
+13	0	Normal
+13	1	Disabled
 
 # -----------------------------------------------------------------
 checksums

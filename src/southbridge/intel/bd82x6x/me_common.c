@@ -11,6 +11,7 @@
 #include <string.h>
 #include <delay.h>
 #include <halt.h>
+#include <timer.h>
 
 #include "me.h"
 #include "pch.h"
@@ -415,6 +416,80 @@ void intel_me_hide(struct device *dev)
 {
 	dev->enabled = 0;
 	pch_enable(dev);
+}
+
+bool enter_soft_temp_disable(void)
+{
+	/* The binary sequence for the disable command was found by PT in some vendor BIOS */
+	struct me_disable message = {
+		.rule_id = MKHI_DISABLE_RULE_ID,
+		.data = 0x01,
+	};
+	struct mkhi_header mkhi = {
+		.group_id	= MKHI_GROUP_ID_FWCAPS,
+		.command	= MKHI_FWCAPS_SET_RULE,
+	};
+	struct mei_header mei = {
+		.is_complete	= 1,
+		.length		= sizeof(mkhi) + sizeof(message),
+		.host_address	= MEI_HOST_ADDRESS,
+		.client_address	= MEI_ADDRESS_MKHI,
+	};
+	u32 resp;
+
+	if (mei_sendrecv(&mei, &mkhi, &message, &resp, sizeof(resp)) < 0
+	    || resp != MKHI_DISABLE_RULE_ID) {
+		printk(BIOS_WARNING, "ME: disable command failed\n");
+		return false;
+	}
+
+	return true;
+}
+
+void enter_soft_temp_disable_wait(void)
+{
+	/*
+	 * TODO: Find smarter way to determine when we're ready to reboot.
+	 *
+	 * There has to be some bit in some register, or something, that indicates that ME has
+	 * finished doing its thing and we're ready to reboot.
+	 *
+	 * It was not found yet, though, and waiting for a response after the disable command is
+	 * not enough. If we reboot too early, ME will not be disabled on next boot. For now,
+	 * let's just wait for 1 second here.
+	 */
+	mdelay(1000);
+}
+
+void exit_soft_temp_disable(struct device *dev)
+{
+	/* To bring ME out of Soft Temporary Disable Mode, host writes 0x20000000 to H_GS */
+	pci_write_config32(dev, PCI_ME_H_GS, 0x2 << 28);
+}
+
+void exit_soft_temp_disable_wait(struct device *dev)
+{
+	struct me_hfs hfs;
+	struct stopwatch sw;
+
+	stopwatch_init_msecs_expire(&sw, ME_ENABLE_TIMEOUT);
+
+	/**
+	 * Wait for fw_init_complete. Check every 50 ms, give up after 20 sec.
+	 * This is what vendor BIOS does. Usually it takes 1.5 seconds or so.
+	 */
+	do {
+		mdelay(50);
+		pci_read_dword_ptr(dev, &hfs, PCI_ME_HFS);
+		if (hfs.fw_init_complete)
+			break;
+	} while (!stopwatch_expired(&sw));
+
+	if (!hfs.fw_init_complete)
+		printk(BIOS_ERR, "ME: giving up on waiting for fw_init_complete\n");
+	else
+		printk(BIOS_NOTICE, "ME: took %lums to complete initialization\n",
+		       stopwatch_duration_msecs(&sw));
 }
 
 #endif

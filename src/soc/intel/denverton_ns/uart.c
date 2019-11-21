@@ -58,7 +58,7 @@ static struct device_operations uart_ops = {
 };
 
 static const unsigned short uart_ids[] = {
-	HSUART_DEVID, /* HSUART 0/1/2 */
+	PCI_DEVICE_ID_INTEL_DENVERTON_HSUART,
 	0
 };
 

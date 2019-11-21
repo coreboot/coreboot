@@ -76,8 +76,8 @@ static struct device_operations csme_ie_kt_ops = {
 };
 
 static const unsigned short pci_device_ids[] = {
-	ME_MEKT_DEVID, /* DVN CSME KT */
-	IE_MEKT_DEVID, /* DVN IE KT */
+	PCI_DEVICE_ID_INTEL_DENVERTON_ME_KT,
+	PCI_DEVICE_ID_INTEL_DENVERTON_IE_KT,
 	0
 };
 

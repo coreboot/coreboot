@@ -71,5 +71,5 @@ void mainboard_pre_raminit(void)
 void mainboard_get_spd_map(u8 *spd_addrmap)
 {
 	spd_addrmap[0] = 0x50;
-	spd_addrmap[2] = 0x52;
+	spd_addrmap[2] = 0x51;
 }

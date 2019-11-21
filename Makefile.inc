@@ -182,9 +182,9 @@ ramstage-postprocess=$$(eval DEPENDENCIES+=$$(addsuffix .d,$$(basename $(1)))) \
 	$(eval $(d)ramstage.a: $(call files-in-dir,$(d),$(filter-out %.ld,$(1))); rm -f $$@ && $(AR_ramstage) rcsT $$@ $$^ ) \
 	$(eval ramstage-objs:=$(d)ramstage.a $(filter-out $(filter-out %.ld, $(call files-in-dir,$(d),$(1))),$(ramstage-objs))))
 
-decompressor-generic-ccopts += -D__PRE_RAM__ -D__DECOMPRESSOR__
-bootblock-generic-ccopts += -D__PRE_RAM__ -D__BOOTBLOCK__
-romstage-generic-ccopts += -D__PRE_RAM__ -D__ROMSTAGE__
+decompressor-generic-ccopts += -D__DECOMPRESSOR__
+bootblock-generic-ccopts += -D__BOOTBLOCK__
+romstage-generic-ccopts += -D__ROMSTAGE__
 ramstage-generic-ccopts += -D__RAMSTAGE__
 ifeq ($(CONFIG_TRACE),y)
 ramstage-c-ccopts += -finstrument-functions

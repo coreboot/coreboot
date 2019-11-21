@@ -147,9 +147,9 @@ $(call src-to-obj,bootblock,$(dir)/bootblock_romcc.S): $(objgenerated)/bootblock
 bootblock-y += bootblock.ld
 $(call src-to-obj,bootblock,$(dir)/bootblock.ld): $(objgenerated)/bootblock.ld
 
-bootblock_romccflags := -mcpu=i386 -O2 -D__PRE_RAM__ -D__BOOTBLOCK__
+bootblock_romccflags := -mcpu=i386 -O2 -D__BOOTBLOCK__
 ifeq ($(CONFIG_SSE),y)
-bootblock_romccflags := -mcpu=k7 -mno-mmx -msse -O2 -D__PRE_RAM__ -D__BOOTBLOCK__
+bootblock_romccflags := -mcpu=k7 -mno-mmx -msse -O2 -D__BOOTBLOCK__
 endif
 
 # This is a hack in case there are no per chipset linker files.
@@ -165,9 +165,9 @@ $(objgenerated)/bootblock.ld: $$(filter-out $(call src-to-obj,bootblock,src/arch
 $(objgenerated)/bootblock.inc: $(src)/arch/x86/$(subst ",,$(CONFIG_BOOTBLOCK_SOURCE)) $(objutil)/romcc/romcc $(OPTION_TABLE_H) $(KCONFIG_AUTOHEADER)
 # The open quote in the subst messes with syntax highlighting. Fix it - ")
 	@printf "    ROMCC      $(subst $(obj)/,,$(@))\n"
-	$(CC_bootblock) -D__ROMCC__ -D__PRE_RAM__ -D__BOOTBLOCK__ $(CPPFLAGS_bootblock) -MM -MT$(objgenerated)/bootblock.inc \
+	$(CC_bootblock) -D__ROMCC__ -D__BOOTBLOCK__ $(CPPFLAGS_bootblock) -MM -MT$(objgenerated)/bootblock.inc \
 		$< > $(objgenerated)/bootblock.inc.d
-	$(CC_bootblock) -D__ROMCC__ -D__PRE_RAM__ -D__BOOTBLOCK__ $(CPPFLAGS_bootblock) -E \
+	$(CC_bootblock) -D__ROMCC__ -D__BOOTBLOCK__ $(CPPFLAGS_bootblock) -E \
 		$< -o $(objgenerated)/bootblock_romcc.c
 	$(ROMCC) -c -S $(bootblock_romccflags) -I. $(CPPFLAGS_bootblock) $< -o $@
 

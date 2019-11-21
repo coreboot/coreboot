@@ -70,7 +70,7 @@ CFLAGS_ppc64	+=
 # stack use, we use 1.5K as heuristic, assuming that we typically have lots
 # of tiny stack frames and the odd large one.
 #
-# Store larger buffers in BSS, use MAYBE_STATIC_BSS to share code with __PRE_RAM__
+# Store larger buffers in BSS, use MAYBE_STATIC_BSS to share data in cache-as-ram
 # on x86.
 # Since GCCs detection of dynamic array bounds unfortunately seems to be
 # very basic, you'll sometimes have to use a static upper bound for the

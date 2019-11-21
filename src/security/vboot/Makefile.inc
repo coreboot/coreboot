@@ -22,12 +22,6 @@ ramstage-y += bootmode.c
 verstage-y += bootmode.c
 postcar-y += bootmode.c
 
-# When VBOOT_STARTS_IN_ROMSTAGE is selected, DRAM is already up by
-# the time verstage runs.
-ifneq ($(CONFIG_VBOOT_STARTS_IN_ROMSTAGE),y)
-verstage-generic-ccopts += -D__PRE_RAM__
-endif
-
 verstage-generic-ccopts += -D__VERSTAGE__
 
 ramstage-y += gbb.c

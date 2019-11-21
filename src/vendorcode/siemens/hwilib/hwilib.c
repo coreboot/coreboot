@@ -476,7 +476,7 @@ enum cb_err hwilib_find_blocks (const char *hwi_filename)
 		return CB_ERR_ARG;
 	/* Check if this file is already open. If yes, just leave as there is
 	   nothing left to do here. */
-	if (!strncmp((char *)&current_hwi, hwi_filename, HWI_MAX_NAME_LEN)) {
+	if (!strncmp(current_hwi, hwi_filename, HWI_MAX_NAME_LEN)) {
 		printk(BIOS_SPEW, "HWILIB: File \"%s\" already open.\n",
 			hwi_filename);
 		return CB_SUCCESS;
@@ -543,7 +543,7 @@ enum cb_err hwilib_find_blocks (const char *hwi_filename)
 	if (all_blocks[BLK_HIB] || all_blocks[BLK_SIB] || all_blocks[BLK_EIB] ||
 	    all_blocks[BLK_XIB]) {
 		/* Save currently opened hwi filename. */
-		strncpy((char *)&current_hwi, hwi_filename, HWI_MAX_NAME_LEN);
+		strncpy(current_hwi, hwi_filename, HWI_MAX_NAME_LEN);
 		return CB_SUCCESS;
 	}
 	else

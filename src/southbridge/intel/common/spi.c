@@ -15,6 +15,8 @@
  * GNU General Public License for more details.
  */
 
+#define __SIMPLE_DEVICE__
+
 /* This file is derived from the flashrom project. */
 #include <arch/early_variables.h>
 #include <stdint.h>
@@ -274,11 +276,7 @@ static void ich_set_bbar(uint32_t minaddr)
 #define RCBA 0xf0
 #define SBASE 0x54
 
-#ifdef __SIMPLE_DEVICE__
 static void *get_spi_bar(pci_devfn_t dev)
-#else
-static void *get_spi_bar(struct device *dev)
-#endif
 {
 	uintptr_t rcba; /* Root Complex Register Block */
 	uintptr_t sbase;
@@ -306,11 +304,7 @@ void spi_init(void)
 	struct ich7_spi_regs *ich7_spi;
 	uint16_t hsfs;
 
-#ifdef __SIMPLE_DEVICE__
 	pci_devfn_t dev = PCI_DEV(0, 31, 0);
-#else
-	struct device *dev = pcidev_on_root(31, 0);
-#endif
 
 	if (CONFIG(SOUTHBRIDGE_INTEL_I82801GX)) {
 		ich7_spi = get_spi_bar(dev);

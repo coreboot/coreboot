@@ -1073,6 +1073,16 @@ static int device_match(struct device *a, struct device *b)
 }
 
 /*
+ * Match resource nodes from base and override tree to see if they are the same
+ * node.
+ */
+static int res_match(struct resource *a, struct resource *b)
+{
+	return ((a->type == b->type) &&
+		(a->index == b->index));
+}
+
+/*
  * Walk through the override subtree in breadth-first manner starting at node to
  * see if chip_instance pointer of the node is same as chip_instance pointer of
  * override parent that is passed into the function. If yes, then update the
@@ -1104,8 +1114,7 @@ static void update_resource(struct device *dev, struct resource *res)
 	struct resource *base_res = dev->res;
 
 	while (base_res) {
-		if (base_res->type == res->type) {
-			base_res->index = res->index;
+		if (res_match(base_res, res)) {
 			base_res->base = res->base;
 			return;
 		}
@@ -1195,9 +1204,9 @@ static void override_devicetree(struct bus *base_parent,
  * |                    |                                            |
  * | res                | Each resource that is present in override  |
  * |                    | device is copied over to base device:      |
- * |                    | 1. If resource of same type is present in  |
- * |                    |    base device, then index and base of the |
- * |                    |    resource is copied.                     |
+ * |                    | 1. If resource of same type and index is   |
+ * |                    |    present in base device, then base of    |
+ * |                    |    the resource is copied.                 |
  * |                    | 2. If not, then a new resource is allocated|
  * |                    |    under the base device using type, index |
  * |                    |    and base from override res.             |

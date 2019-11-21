@@ -1,9 +1,19 @@
+config SOC_INTEL_TIGERLAKE_BASE
+	bool
+
 config SOC_INTEL_TIGERLAKE
 	bool
+	select SOC_INTEL_TIGERLAKE_BASE
 	help
 	  Intel Tigerlake support
 
-if SOC_INTEL_TIGERLAKE
+config SOC_INTEL_JASPERLAKE
+	bool
+	select SOC_INTEL_TIGERLAKE_BASE
+	help
+	  Intel Jasperlake support
+
+if SOC_INTEL_TIGERLAKE_BASE
 
 config CPU_SPECIFIC_OPTIONS
 	def_bool y

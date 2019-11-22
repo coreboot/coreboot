@@ -1,0 +1,28 @@
+From d470f1069744c3e6ef2e928217c1a4a23a87efa2 Mon Sep 17 00:00:00 2001
+From: zbao <fishbaozi@gmail.com>
+Date: Sat, 26 Sep 2015 06:20:53 -0400
+Subject: [PATCH] util/kconfig: Set parameter of mkdir to only one for mingw.
+
+The second parameter is to set file permissions for the directory, which
+is not needed in mingw.
+
+Signed-off-by: Zheng Bao <fishbaozi@gmail.com>
+---
+ util/kconfig/confdata.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+Index: kconfig/confdata.c
+===================================================================
+--- kconfig.orig/confdata.c
++++ kconfig/confdata.c
+@@ -164,6 +164,10 @@ struct conf_printer {
+ 	void (*print_comment)(FILE *, const char *, void *);
+ };
+ 
++#ifdef __MINGW32__
++#define mkdir(_n,_p) mkdir((_n))
++#endif
++
+ static void conf_warning(const char *fmt, ...)
+ 	__attribute__ ((format (printf, 1, 2)));
+ 

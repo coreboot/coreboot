@@ -1,0 +1,189 @@
+From af6c23be63d14860c8c1f0d9fcbc020f7c11d84d Mon Sep 17 00:00:00 2001
+From: Stefan Reinauer <reinauer@chromium.org>
+Date: Thu, 20 Aug 2015 11:19:34 -0700
+Subject: [PATCH] kconfig: Allow KCONFIG_STRICT outside of confdata.c
+
+To catch dependency errors in symbol.c (such as the ones
+fixed by I51b4ee326f082c6a656a813ee5772e9c34f5c343) we need
+to check for global kconfig warnings before saving config
+files.
+
+This patch will produce errors for wrong dependencies and
+add catching of errors to conf, nconf and mconf. Sorry,
+gconf users, you will have to wait.
+
+Signed-off-by: Stefan Reinauer <stefan.reinauer@coreboot.org>
+---
+ util/kconfig/conf.c     | 10 ++++++++++
+ util/kconfig/confdata.c |  6 +-----
+ util/kconfig/lkc.h      |  3 +++
+ util/kconfig/mconf.c    | 10 ++++++++++
+ util/kconfig/nconf.c    | 13 +++++++++++++
+ util/kconfig/qconf.cc   |  2 ++
+ util/kconfig/symbol.c   |  1 +
+ 7 files changed, 40 insertions(+), 5 deletions(-)
+
+Index: kconfig/conf.c
+===================================================================
+--- kconfig.orig/conf.c
++++ kconfig/conf.c
+@@ -16,6 +16,8 @@
+ 
+ #include "lkc.h"
+ 
++int kconfig_warnings = 0;
++
+ static void conf(struct menu *menu);
+ static void check_conf(struct menu *menu);
+ 
+@@ -732,6 +734,7 @@ int main(int ac, char **av)
+ 	const char *progname = av[0];
+ 	int opt;
+ 	const char *name, *defconfig_file = NULL /* gcc uninit */;
++	char *env;
+ 	int no_conf_write = 0;
+ 
+ 	tty_stdio = isatty(0) && isatty(1);
+@@ -838,6 +841,13 @@ int main(int ac, char **av)
+ 		break;
+ 	}
+ 
++	env = getenv("KCONFIG_STRICT");
++	if (env && *env && kconfig_warnings) {
++		fprintf(stderr, "\n*** ERROR: %d warnings encountered, and "
++			"warnings are errors.\n\n", kconfig_warnings);
++		exit(1);
++	}
++
+ 	if (sync_kconfig) {
+ 		name = getenv("KCONFIG_NOSILENTUPDATE");
+ 		if (name && *name) {
+Index: kconfig/confdata.c
+===================================================================
+--- kconfig.orig/confdata.c
++++ kconfig/confdata.c
+@@ -539,11 +539,7 @@ load:
+ 	free(line);
+ 	fclose(in);
+ 
+-	name = getenv("KCONFIG_STRICT");
+-	if (name && *name && conf_warnings) {
+-		fprintf(stderr, "\nERROR: %d warnings encountered, and warnings are errors.\n\n", conf_warnings);
+-		return 1;
+-	}
++	kconfig_warnings += conf_warnings;
+ 
+ 	return 0;
+ }
+Index: kconfig/lkc.h
+===================================================================
+--- kconfig.orig/lkc.h
++++ kconfig/lkc.h
+@@ -39,6 +39,9 @@ void zconf_nextfile(const char *name);
+ int zconf_lineno(void);
+ const char *zconf_curname(void);
+ 
++/* conf.c */
++extern int kconfig_warnings;
++
+ /* confdata.c */
+ const char *conf_get_configname(void);
+ void set_all_choice_values(struct symbol *csym);
+Index: kconfig/mconf.c
+===================================================================
+--- kconfig.orig/mconf.c
++++ kconfig/mconf.c
+@@ -24,6 +24,8 @@
+ 
+ #define JUMP_NB			9
+ 
++int kconfig_warnings = 0;
++
+ static const char mconf_readme[] =
+ "Overview\n"
+ "--------\n"
+@@ -948,6 +950,7 @@ static void conf_save(void)
+ static int handle_exit(void)
+ {
+ 	int res;
++	char *env;
+ 
+ 	save_and_exit = 1;
+ 	reset_subtitle();
+@@ -962,6 +965,13 @@ static int handle_exit(void)
+ 
+ 	end_dialog(saved_x, saved_y);
+ 
++	env = getenv("KCONFIG_STRICT");
++	if (env && *env && kconfig_warnings) {
++		fprintf(stderr, "\n*** ERROR: %d warnings encountered, and "
++			"warnings are errors.\n\n", kconfig_warnings);
++		res = 2;
++	}
++
+ 	switch (res) {
+ 	case 0:
+ 		if (conf_write(filename)) {
+Index: kconfig/nconf.c
+===================================================================
+--- kconfig.orig/nconf.c
++++ kconfig/nconf.c
+@@ -15,6 +15,8 @@
+ #include "nconf.h"
+ #include <ctype.h>
+ 
++int kconfig_warnings = 0;
++
+ static const char nconf_global_help[] =
+ "Help windows\n"
+ "------------\n"
+@@ -645,6 +647,8 @@ static void set_config_filename(const ch
+ static int do_exit(void)
+ {
+ 	int res;
++	char *env;
++
+ 	if (!conf_get_changed()) {
+ 		global_exit = 1;
+ 		return 0;
+@@ -660,6 +664,15 @@ static int do_exit(void)
+ 		return -1;
+ 	}
+ 
++	env = getenv("KCONFIG_STRICT");
++	if (env && *env && kconfig_warnings) {
++		btn_dialog(main_window,
++			"\nWarnings encountered, and warnings are errors.\n\n",
++			1,
++			"<OK>");
++		res = 2;
++	}
++
+ 	/* if we got here, the user really wants to exit */
+ 	switch (res) {
+ 	case 0:
+Index: kconfig/qconf.cc
+===================================================================
+--- kconfig.orig/qconf.cc
++++ kconfig/qconf.cc
+@@ -26,6 +26,8 @@
+ #include "images.h"
+ 
+ 
++int kconfig_warnings = 0;
++
+ static QApplication *configApp;
+ static ConfigSettings *configSettings;
+ 
+Index: kconfig/symbol.c
+===================================================================
+--- kconfig.orig/symbol.c
++++ kconfig/symbol.c
+@@ -319,6 +319,7 @@ static void sym_warn_unmet_dep(struct sy
+ 			       "  Selected by [m]:\n");
+ 
+ 	fputs(str_get(&gs), stderr);
++	kconfig_warnings++;
+ }
+ 
+ void sym_calc_value(struct symbol *sym)

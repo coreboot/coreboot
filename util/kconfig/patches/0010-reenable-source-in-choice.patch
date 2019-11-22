@@ -1,0 +1,16 @@
+Kconfig 5.8 (since commit 09d5873e4d1f70202314b5fe40160f9b14b9d2d0)
+blocks using the source statement within choice but that's a pattern we
+use intensively. Re-enable it.
+
+Index: kconfig/parser.y
+===================================================================
+--- kconfig.orig/parser.y
++++ kconfig/parser.y
+@@ -134,6 +134,7 @@ stmt_list_in_choice:
+ 	| stmt_list_in_choice comment_stmt
+ 	| stmt_list_in_choice config_stmt
+ 	| stmt_list_in_choice if_stmt_in_choice
++	| stmt_list_in_choice source_stmt
+ 	| stmt_list_in_choice error T_EOL	{ zconf_error("invalid statement"); }
+ ;
+ 

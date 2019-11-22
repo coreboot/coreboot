@@ -55,10 +55,6 @@ command line.
 - savedefconfig - Creates a ‘defconfig’ file, stripping out all of the symbols
   that were left as default values.  This is very useful for debugging, and is
   how config files should be saved.
-- silentoldconfig - This evaluates the .config file the same way that the
-  oldconfig target does, but does not print out each question as it is
-  evaluated.  It still stops to query the user if an option with no answer in
-  the .config file is found.
 
 
 ### Targets not typically used in coreboot

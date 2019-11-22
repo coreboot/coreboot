@@ -34,7 +34,7 @@ export KCONFIG_SPLITCONFIG	:= $(obj)/config
 export KCONFIG_TRISTATE		:= $(obj)/tristate.conf
 export KCONFIG_CONFIG		:= $(CURDIR)/.config
 export KCONFIG_NEGATIVES	:= 1
-export Kconfig			:= Kconfig
+export KBUILD_KCONFIG		:= Kconfig
 
 CONFIG_SHELL := sh
 KBUILD_DEFCONFIG := configs/defconfig
@@ -70,7 +70,7 @@ $(obj)/config.h:
 
 $(shell mkdir -p $(objk)/lxdialog $(KCONFIG_SPLITCONFIG))
 
-include $(srck)/Makefile
+include $(srck)/Makefile.inc
 
 .PHONY: $(PHONY) prepare all real-all defaultbuild
 

@@ -1,0 +1,46 @@
+From e8287a030fc8fcec7404aa6731aef21a48035786 Mon Sep 17 00:00:00 2001
+From: Elyes HAOUAS <ehaouas@noos.fr>
+Date: Tue, 5 Jun 2018 08:41:29 +0200
+Subject: [PATCH] {src,util}: Use NULL instead of 0 for pointer
+
+Signed-off-by: Elyes HAOUAS <ehaouas@noos.fr>
+---
+ util/kconfig/lxdialog/util.c | 2 +-
+ util/kconfig/qconf.h         | 8 ++++----
+ 2 files changed, 5 insertions(+), 5 deletions(-)
+
+Index: kconfig/lxdialog/util.c
+===================================================================
+--- kconfig.orig/lxdialog/util.c
++++ kconfig/lxdialog/util.c
+@@ -370,7 +370,7 @@ void print_autowrap(WINDOW * win, const
+ {
+ 	int newl, cur_x, cur_y;
+ 	int prompt_len, room, wlen;
+-	char tempstr[MAX_LEN + 1], *word, *sp, *sp2, *newline_separator = 0;
++	char tempstr[MAX_LEN + 1], *word, *sp, *sp2, *newline_separator = NULL;
+ 
+ 	strcpy(tempstr, prompt);
+ 
+Index: kconfig/qconf.h
+===================================================================
+--- kconfig.orig/qconf.h
++++ kconfig/qconf.h
+@@ -42,7 +42,7 @@ class ConfigList : public QTreeWidget {
+ 	Q_OBJECT
+ 	typedef class QTreeWidget Parent;
+ public:
+-	ConfigList(QWidget *parent, const char *name = 0);
++	ConfigList(QWidget *parent, const char *name = NULL);
+ 	~ConfigList();
+ 	void reinit(void);
+ 	ConfigItem* findConfigItem(struct menu *);
+@@ -188,7 +188,7 @@ class ConfigInfoView : public QTextBrows
+ 	typedef class QTextBrowser Parent;
+ 	QMenu *contextMenu;
+ public:
+-	ConfigInfoView(QWidget* parent, const char *name = 0);
++	ConfigInfoView(QWidget* parent, const char *name = NULL);
+ 	bool showDebug(void) const { return _showDebug; }
+ 
+ public slots:

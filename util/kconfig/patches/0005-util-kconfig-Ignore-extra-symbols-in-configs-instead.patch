@@ -1,0 +1,37 @@
+From 2796443d5a2194400e56e6762e0f748ed0f0470c Mon Sep 17 00:00:00 2001
+From: Martin Roth <martinroth@google.com>
+Date: Wed, 10 Feb 2016 16:06:00 -0700
+Subject: [PATCH] util/kconfig: Ignore extra symbols in configs instead of
+ failing
+
+When updating an old .config file that has a symbol that has been
+removed from the current Kconfig tree, kconfig will generate a warning
+and fail to save the updated file.  This is incredibly annoying, and
+not the goal when trying to eliminate Kconfig warnings.
+
+Instead of generating a warning, just print a message that it's being
+ignored.  This will remove the offending symbol, while allowing the
+updated config file to be saved.
+
+Split the change from 1 line to 3 lines to keep it at 80 characters.
+
+Signed-off-by: Martin Roth <martinroth@google.com>
+---
+ util/kconfig/confdata.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+Index: kconfig/confdata.c
+===================================================================
+--- kconfig.orig/confdata.c
++++ kconfig/confdata.c
+@@ -449,7 +449,9 @@ load:
+ 			if (def == S_DEF_USER) {
+ 				sym = sym_find(line + 2 + strlen(CONFIG_));
+ 				if (!sym) {
+-					conf_warning("trying to assign non-existent symbol %s", line + strlen(CONFIG_));
++					conf_message(
++						"ignoring nonexistent symbol %s",
++						line + 2 + strlen(CONFIG_));
+ 					conf_set_changed(true);
+ 					continue;
+ 				}

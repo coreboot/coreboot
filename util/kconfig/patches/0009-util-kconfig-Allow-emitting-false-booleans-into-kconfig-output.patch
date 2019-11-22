@@ -1,0 +1,93 @@
+commit ab0cc6067d5a00182e89fbec82b942eb3d803204
+Author: Patrick Georgi <pgeorgi@google.com>
+Date:   Fri Nov 22 22:08:15 2019 +0100
+
+    util/kconfig: Allow emitting false booleans into kconfig output
+
+    This is controlled by an environment variable so the same tool is
+    useful in different contexts.
+
+    Change-Id: I9e62b05e45709f1539e455e2eed37308609be15e
+    Signed-off-by: Patrick Georgi <pgeorgi@google.com>
+
+Index: kconfig/confdata.c
+===================================================================
+--- kconfig.orig/confdata.c
++++ kconfig/confdata.c
+@@ -687,6 +687,9 @@ header_print_symbol(FILE *fp, struct sym
+ 
+ 		switch (*value) {
+ 		case 'n':
++			if (getenv("KCONFIG_NEGATIVES") != NULL)
++				fprintf(fp, "#define %s%s%s 0\n",
++				    CONFIG_, sym->name, suffix);
+ 			break;
+ 		case 'm':
+ 			suffix = "_MODULE";
+@@ -702,14 +705,28 @@ header_print_symbol(FILE *fp, struct sym
+ 
+ 		if (value[0] != '0' || (value[1] != 'x' && value[1] != 'X'))
+ 			prefix = "0x";
++		if (value[0] == '\0') {
++			/*
++			 * prefix is reset to remain closer to the older
++			 * coreboot patch. No need to keep this once kconfig
++			 * is fully upreved
++			 */
++			prefix = "";
++			value = "0";
++		}
+ 		fprintf(fp, "#define %s%s %s%s\n",
+ 		    CONFIG_, sym->name, prefix, value);
+ 		break;
+ 	}
+ 	case S_STRING:
++		if (value[0] == '\0')
++			break;
++		if (!(sym->flags & SYMBOL_WRITE))
++			break;
++		/* fall through */
+ 	case S_INT:
+ 		fprintf(fp, "#define %s%s %s\n",
+-		    CONFIG_, sym->name, value);
++		    CONFIG_, sym->name, value[0]?value:"0");
+ 		break;
+ 	default:
+ 		break;
+@@ -1080,6 +1097,7 @@ int conf_write_autoconf(int overwrite)
+ 	const char *autoconf_name = conf_get_autoconfig_name();
+ 	FILE *out, *out_h;
+ 	int i;
++	int print_negatives = getenv("KCONFIG_NEGATIVES") != NULL;
+ 
+ 	if (!overwrite && is_present(autoconf_name))
+ 		return 0;
+@@ -1104,11 +1122,13 @@ int conf_write_autoconf(int overwrite)
+ 
+ 	for_all_symbols(i, sym) {
+ 		sym_calc_value(sym);
+-		if (!(sym->flags & SYMBOL_WRITE) || !sym->name)
++		if (!(sym->flags & SYMBOL_WRITE) && !print_negatives)
++			continue;
++		if (!sym->name)
+ 			continue;
+ 
+ 		/* write symbols to auto.conf and autoconf.h */
+-		conf_write_symbol(out, sym, &kconfig_printer_cb, (void *)1);
++		conf_write_symbol(out, sym, &kconfig_printer_cb, print_negatives?NULL:(void *)1);
+ 		conf_write_symbol(out_h, sym, &header_printer_cb, NULL);
+ 	}
+ 	fclose(out);
+Index: kconfig/symbol.c
+===================================================================
+--- kconfig.orig/symbol.c
++++ kconfig/symbol.c
+@@ -757,7 +757,7 @@ const char *sym_get_string_default(struc
+ 		}
+ 	case S_INT:
+ 	case S_HEX:
+-		return str;
++		return "0";
+ 	case S_STRING:
+ 		return str;
+ 	case S_UNKNOWN:

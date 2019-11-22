@@ -1,0 +1,43 @@
+From c822f47921feb53b97f48f3aa8d1e843f5099c63 Mon Sep 17 00:00:00 2001
+From: Stefan Reinauer <stefan.reinauer@coreboot.org>
+Date: Fri, 17 Jul 2015 17:26:48 -0700
+Subject: [PATCH] Kconfig: Add KCONFIG_STRICT mode
+
+This is basically a -Werror mode for Kconfig. When exporting
+KCONFIG_STRICT in the Makefile, warnings in Kconfig will produce
+errors instead.
+
+This will make it easier to spot unclean Kconfig files, settings
+and dependencies.
+
+Signed-off-by: Stefan Reinauer <stefan.reinauer@coreboot.org>
+---
+ util/kconfig/confdata.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+Index: kconfig/confdata.c
+===================================================================
+--- kconfig.orig/confdata.c
++++ kconfig/confdata.c
+@@ -439,6 +439,7 @@ load:
+ 			if (def == S_DEF_USER) {
+ 				sym = sym_find(line + 2 + strlen(CONFIG_));
+ 				if (!sym) {
++					conf_warning("trying to assign non-existent symbol %s", line + strlen(CONFIG_));
+ 					conf_set_changed(true);
+ 					continue;
+ 				}
+@@ -521,6 +522,13 @@ load:
+ 	}
+ 	free(line);
+ 	fclose(in);
++
++	name = getenv("KCONFIG_STRICT");
++	if (name && *name && conf_warnings) {
++		fprintf(stderr, "\nERROR: %d warnings encountered, and warnings are errors.\n\n", conf_warnings);
++		return 1;
++	}
++
+ 	return 0;
+ }
+ 

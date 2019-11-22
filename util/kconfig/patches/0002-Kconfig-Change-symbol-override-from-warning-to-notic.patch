@@ -1,0 +1,69 @@
+From 20df4491aa88eb4a7f97090fbc4ff53f81926861 Mon Sep 17 00:00:00 2001
+From: Martin Roth <martinroth@google.com>
+Date: Wed, 21 Sep 2016 14:27:26 -0600
+Subject: [PATCH] Kconfig: Change symbol override from warning to notice
+
+Overriding symbols within a .config is pretty common when doing
+automated builds with various different options.  The warning
+text makes it sound like this is an issue, so change it to say
+'notice' instead.  We could get rid of it completely, but it's
+not a bad thing to know that we have two copies of the same symbol
+in the .config.
+
+BUG=chrome-os-partner:54059
+TEST=copy a disabled kconfig option to the end and set it to y.
+See notice text instead of warning.
+
+Signed-off-by: Martin Roth <martinroth@google.com>
+---
+ util/kconfig/confdata.c | 16 +++++++++++++---
+ 1 file changed, 13 insertions(+), 3 deletions(-)
+
+Index: kconfig/confdata.c
+===================================================================
+--- kconfig.orig/confdata.c
++++ kconfig/confdata.c
+@@ -184,6 +184,16 @@ static void conf_warning(const char *fmt
+ 	conf_warnings++;
+ }
+ 
++static void conf_notice(const char *fmt, ...)
++{
++	va_list ap;
++	va_start(ap, fmt);
++	fprintf(stderr, "%s:%d:notice: ", conf_filename, conf_lineno);
++	vfprintf(stderr, fmt, ap);
++	fprintf(stderr, "\n");
++	va_end(ap);
++}
++
+ static void conf_default_message_callback(const char *s)
+ {
+ 	printf("#\n# ");
+@@ -449,7 +459,7 @@ load:
+ 					sym->type = S_BOOLEAN;
+ 			}
+ 			if (sym->flags & def_flags) {
+-				conf_warning("override: reassigning to symbol %s", sym->name);
++				conf_notice("override: reassigning to symbol %s", sym->name);
+ 			}
+ 			switch (sym->type) {
+ 			case S_BOOLEAN:
+@@ -488,7 +498,7 @@ load:
+ 			}
+ 
+ 			if (sym->flags & def_flags) {
+-				conf_warning("override: reassigning to symbol %s", sym->name);
++				conf_notice("override: reassigning to symbol %s", sym->name);
+ 			}
+ 			if (conf_set_sym_val(sym, def, def_flags, p))
+ 				continue;
+@@ -513,7 +523,7 @@ load:
+ 				break;
+ 			case yes:
+ 				if (cs->def[def].tri != no)
+-					conf_warning("override: %s changes choice state", sym->name);
++					conf_notice("override: %s changes choice state", sym->name);
+ 				cs->def[def].val = sym;
+ 				break;
+ 			}

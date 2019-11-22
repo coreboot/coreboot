@@ -43,10 +43,10 @@ export objk := $(objutil)/lp_kconfig
 export KCONFIG_AUTOHEADER := $(obj)/config.h
 export KCONFIG_AUTOCONFIG := $(obj)/auto.conf
 export KCONFIG_DEPENDENCIES := $(obj)/auto.conf.cmd
-export KCONFIG_SPLITCONFIG := $(obj)/config
+export KCONFIG_SPLITCONFIG := $(obj)/config/
 export KCONFIG_TRISTATE := $(obj)/tristate.conf
 export KCONFIG_NEGATIVES := 1
-export Kconfig := Kconfig
+export KBUILD_KCONFIG := Kconfig
 export CONFIG_ := CONFIG_LP_
 
 # directory containing the toplevel Makefile.inc
@@ -88,7 +88,7 @@ endif
 
 # This include must come _before_ the pattern rules below!
 # Order _does_ matter for pattern rules.
-include $(srck)/Makefile
+include $(srck)/Makefile.inc
 
 include $(HAVE_DOTCONFIG)
 
@@ -202,7 +202,8 @@ endif
 .SECONDEXPANSION:
 
 $(KCONFIG_AUTOHEADER): $(KCONFIG_CONFIG)
-	$(MAKE) oldconfig
+	$(MAKE) CONFIG_=CONFIG_LP_ olddefconfig
+	$(MAKE) CONFIG_=CONFIG_LP_ syncconfig
 
 # Add a new class of source/object files to the build system
 add-class= \

@@ -1,0 +1,25 @@
+From 887ae0ac3dc53fc73488a4dbc1fbf36fa620ce8b Mon Sep 17 00:00:00 2001
+From: Martin Roth <martinroth@google.com>
+Date: Tue, 6 Dec 2016 14:28:44 -0700
+Subject: [PATCH] util/kconfig/conf.c: Fix newline in error printf
+
+For some reason the \n in the defconfig save error was not escaped.
+
+Signed-off-by: Martin Roth <martinroth@google.com>
+---
+ util/kconfig/conf.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+Index: kconfig/conf.c
+===================================================================
+--- kconfig.orig/conf.c
++++ kconfig/conf.c
+@@ -900,7 +900,7 @@ int main(int ac, char **av)
+ 
+ 	if (input_mode == savedefconfig) {
+ 		if (conf_write_defconfig(defconfig_file)) {
+-			fprintf(stderr, "n*** Error while saving defconfig to: %s\n\n",
++			fprintf(stderr, "\n*** Error while saving defconfig to: %s\n\n",
+ 				defconfig_file);
+ 			return 1;
+ 		}

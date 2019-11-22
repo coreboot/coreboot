@@ -1,0 +1,94 @@
+From 5e2355bf017b3347b29126a0eeb866558334f704 Mon Sep 17 00:00:00 2001
+From: Stefan Reinauer <stefan.reinauer@coreboot.org>
+Date: Fri, 3 Apr 2015 20:01:38 +0200
+Subject: [PATCH] kconfig: Add wildcard support for "source"
+
+Kconfig's include directive "source" does not support
+wildcards (e.g. source src/mainboard/*/Kconfig) which
+makes automatic inclusion of all boards a tedious task
+and prevents us from implementing "drop in" boards.
+
+In our Makefile.inc files we already include mainboard
+directories per wildcard, so let's add the infrastructure
+to do the same with Kconfig.
+
+v2: change from wordexp to glob for better portability.
+
+Signed-off-by: Stefan Reinauer <stefan.reinauer@coreboot.org>
+Signed-off-by: Patrick Georgi <pgeorgi@google.com>
+---
+ util/kconfig/lexer.l  | 27 +++++++++++++++++++++++++++
+ util/kconfig/lkc.h    |  1 +
+ util/kconfig/parser.y |  2 +-
+ 3 files changed, 29 insertions(+), 1 deletion(-)
+
+Index: kconfig/lexer.l
+===================================================================
+--- kconfig.orig/lexer.l
++++ kconfig/lexer.l
+@@ -8,6 +8,7 @@
+ %{
+ 
+ #include <assert.h>
++#include <glob.h>
+ #include <limits.h>
+ #include <stdio.h>
+ #include <stdlib.h>
+@@ -438,6 +439,32 @@ void zconf_nextfile(const char *name)
+ 	current_file = file;
+ }
+ 
++void zconf_nextfiles(const char *wildcard)
++{
++	glob_t g;
++	char **w;
++	int i;
++
++	if (glob(wildcard, 0, NULL, &g) != 0) {
++		return;
++	}
++	if (g.gl_pathv == NULL) {
++		globfree(&g);
++		return;
++	}
++
++	/* working through files backwards, since
++	 * we're first pushing them on a stack
++	 * before actually handling them.
++	 */
++	for (i = g.gl_pathc; i > 0; i--) {
++		w = &g.gl_pathv[i - 1];
++		zconf_nextfile(*w);
++	}
++
++	globfree(&g);
++}
++
+ static void zconf_endfile(void)
+ {
+ 	struct buffer *parent;
+Index: kconfig/lkc.h
+===================================================================
+--- kconfig.orig/lkc.h
++++ kconfig/lkc.h
+@@ -36,6 +36,7 @@ void zconf_starthelp(void);
+ FILE *zconf_fopen(const char *name);
+ void zconf_initscan(const char *name);
+ void zconf_nextfile(const char *name);
++void zconf_nextfiles(const char *name);
+ int zconf_lineno(void);
+ const char *zconf_curname(void);
+ 
+Index: kconfig/parser.y
+===================================================================
+--- kconfig.orig/parser.y
++++ kconfig/parser.y
+@@ -358,7 +358,7 @@ menu_option_list:
+ source_stmt: T_SOURCE T_WORD_QUOTE T_EOL
+ {
+ 	printd(DEBUG_PARSE, "%s:%d:source %s\n", zconf_curname(), zconf_lineno(), $2);
+-	zconf_nextfile($2);
++	zconf_nextfiles($2);
+ 	free($2);
+ };
+ 

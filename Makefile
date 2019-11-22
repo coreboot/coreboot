@@ -37,7 +37,7 @@ KCONFIG_AUTOADS := $(obj)/cb-config.ads
 KCONFIG_AUTOHEADER := $(obj)/config.h
 KCONFIG_AUTOCONFIG := $(obj)/auto.conf
 KCONFIG_DEPENDENCIES := $(obj)/auto.conf.cmd
-KCONFIG_SPLITCONFIG := $(obj)/config
+KCONFIG_SPLITCONFIG := $(obj)/config/
 KCONFIG_TRISTATE := $(obj)/tristate.conf
 KCONFIG_NEGATIVES := 1
 KCONFIG_STRICT := 1
@@ -196,7 +196,8 @@ real-all: real-target
 .DELETE_ON_ERROR:
 
 $(KCONFIG_AUTOHEADER): $(KCONFIG_CONFIG) $(objutil)/kconfig/conf
-	+$(MAKE) oldconfig
+	$(MAKE) olddefconfig
+	$(MAKE) syncconfig
 
 $(KCONFIG_AUTOCONFIG): $(KCONFIG_AUTOHEADER)
 	true

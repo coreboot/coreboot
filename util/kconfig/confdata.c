@@ -1,12 +1,15 @@
+// SPDX-License-Identifier: GPL-2.0
 /*
  * Copyright (C) 2002 Roman Zippel <zippel@linux-m68k.org>
- * Released under the terms of the GNU GPL v2.0.
  */
 
+#include <sys/mman.h>
 #include <sys/stat.h>
+#include <sys/types.h>
 #include <ctype.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <limits.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -16,6 +19,155 @@
 
 #include "lkc.h"
 
+/* return true if 'path' exists, false otherwise */
+static bool is_present(const char *path)
+{
+	struct stat st;
+
+	return !stat(path, &st);
+}
+
+/* return true if 'path' exists and it is a directory, false otherwise */
+static bool is_dir(const char *path)
+{
+	struct stat st;
+
+	if (stat(path, &st))
+		return false;
+
+	return S_ISDIR(st.st_mode);
+}
+
+/* return true if the given two files are the same, false otherwise */
+static bool is_same(const char *file1, const char *file2)
+{
+	int fd1, fd2;
+	struct stat st1, st2;
+	void *map1, *map2;
+	bool ret = false;
+
+	fd1 = open(file1, O_RDONLY);
+	if (fd1 < 0)
+		return ret;
+
+	fd2 = open(file2, O_RDONLY);
+	if (fd2 < 0)
+		goto close1;
+
+	ret = fstat(fd1, &st1);
+	if (ret)
+		goto close2;
+	ret = fstat(fd2, &st2);
+	if (ret)
+		goto close2;
+
+	if (st1.st_size != st2.st_size)
+		goto close2;
+
+	map1 = mmap(NULL, st1.st_size, PROT_READ, MAP_PRIVATE, fd1, 0);
+	if (map1 == MAP_FAILED)
+		goto close2;
+
+	map2 = mmap(NULL, st2.st_size, PROT_READ, MAP_PRIVATE, fd2, 0);
+	if (map2 == MAP_FAILED)
+		goto close2;
+
+	if (bcmp(map1, map2, st1.st_size))
+		goto close2;
+
+	ret = true;
+close2:
+	close(fd2);
+close1:
+	close(fd1);
+
+	return ret;
+}
+
+/*
+ * Create the parent directory of the given path.
+ *
+ * For example, if 'include/config/auto.conf' is given, create 'include/config'.
+ */
+static int make_parent_dir(const char *path)
+{
+	char tmp[PATH_MAX + 1];
+	char *p;
+
+	strncpy(tmp, path, sizeof(tmp));
+	tmp[sizeof(tmp) - 1] = 0;
+
+	/* Remove the base name. Just return if nothing is left */
+	p = strrchr(tmp, '/');
+	if (!p)
+		return 0;
+	*(p + 1) = 0;
+
+	/* Just in case it is an absolute path */
+	p = tmp;
+	while (*p == '/')
+		p++;
+
+	while ((p = strchr(p, '/'))) {
+		*p = 0;
+
+		/* skip if the directory exists */
+		if (!is_dir(tmp) && mkdir(tmp, 0755))
+			return -1;
+
+		*p = '/';
+		while (*p == '/')
+			p++;
+	}
+
+	return 0;
+}
+
+static char depfile_path[PATH_MAX];
+static size_t depfile_prefix_len;
+
+/* touch depfile for symbol 'name' */
+static int conf_touch_dep(const char *name)
+{
+	int fd, ret;
+	char *d;
+
+	/* check overflow: prefix + name + '\0' must fit in buffer. */
+	if (depfile_prefix_len + strlen(name) + 1 > sizeof(depfile_path))
+		return -1;
+
+	d = depfile_path + depfile_prefix_len;
+	strcpy(d, name);
+
+	/* Assume directory path already exists. */
+	fd = open(depfile_path, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	if (fd == -1) {
+		if (errno != ENOENT)
+			return -1;
+
+		ret = make_parent_dir(depfile_path);
+		if (ret)
+			return ret;
+
+		/* Try it again. */
+		fd = open(depfile_path, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+		if (fd == -1)
+			return -1;
+	}
+	close(fd);
+
+	return 0;
+}
+
+struct conf_printer {
+	void (*print_symbol)(FILE *, struct symbol *, const char *, void *);
+	void (*print_comment)(FILE *, const char *, void *);
+};
+
+#ifdef __MINGW32__
+#define mkdir(_n,_p) mkdir((_n))
+#endif
+
 static void conf_warning(const char *fmt, ...)
 	__attribute__ ((format (printf, 1, 2)));
 
@@ -23,13 +175,7 @@ static void conf_message(const char *fmt, ...)
 	__attribute__ ((format (printf, 1, 2)));
 
 static const char *conf_filename;
-static int conf_lineno, conf_warnings, conf_unsaved;
-
-const char conf_defname[] = "arch/$ARCH/defconfig";
-
-#ifdef __MINGW32__
-#define mkdir(_n,_p) mkdir((_n))
-#endif
+static int conf_lineno, conf_warnings;
 
 static void conf_warning(const char *fmt, ...)
 {
@@ -52,16 +198,16 @@ static void conf_notice(const char *fmt, ...)
 	va_end(ap);
 }
 
-static void conf_default_message_callback(const char *fmt, va_list ap)
+static void conf_default_message_callback(const char *s)
 {
 	printf("#\n# ");
-	vprintf(fmt, ap);
+	printf("%s", s);
 	printf("\n#\n");
 }
 
-static void (*conf_message_callback) (const char *fmt, va_list ap) =
+static void (*conf_message_callback)(const char *s) =
 	conf_default_message_callback;
-void conf_set_message_callback(void (*fn) (const char *fmt, va_list ap))
+void conf_set_message_callback(void (*fn)(const char *s))
 {
 	conf_message_callback = fn;
 }
@@ -69,10 +215,15 @@ void conf_set_message_callback(void (*fn) (const char *fmt, va_list ap))
 static void conf_message(const char *fmt, ...)
 {
 	va_list ap;
+	char buf[4096];
+
+	if (!conf_message_callback)
+		return;
 
 	va_start(ap, fmt);
-	if (conf_message_callback)
-		conf_message_callback(fmt, ap);
+
+	vsnprintf(buf, sizeof(buf), fmt, ap);
+	conf_message_callback(buf);
 	va_end(ap);
 }
 
@@ -83,53 +234,18 @@ const char *conf_get_configname(void)
 	return name ? name : ".config";
 }
 
-const char *conf_get_autoconfig_name(void)
+static const char *conf_get_autoconfig_name(void)
 {
 	char *name = getenv("KCONFIG_AUTOCONFIG");
 
 	return name ? name : "include/config/auto.conf";
 }
 
-static char *conf_expand_value(const char *in)
+static const char *conf_get_autobase_name(void)
 {
-	struct symbol *sym;
-	const char *src;
-	static char res_value[SYMBOL_MAXLENGTH];
-	char *dst, name[SYMBOL_MAXLENGTH];
+	char *name = getenv("KCONFIG_SPLITCONFIG");
 
-	res_value[0] = 0;
-	dst = name;
-	while ((src = strchr(in, '$'))) {
-		strncat(res_value, in, src - in);
-		src++;
-		dst = name;
-		while (isalnum(*src) || *src == '_')
-			*dst++ = *src++;
-		*dst = 0;
-		sym = sym_lookup(name, 0);
-		sym_calc_value(sym);
-		strcat(res_value, sym_get_string_value(sym));
-		in = src;
-	}
-	strcat(res_value, in);
-
-	return res_value;
-}
-
-char *conf_get_default_confname(void)
-{
-	struct stat buf;
-	static char fullname[PATH_MAX+1];
-	char *env, *name;
-
-	name = conf_expand_value(conf_defname);
-	env = getenv(SRCTREE);
-	if (env) {
-		sprintf(fullname, "%s/%s", env, name);
-		if (!stat(fullname, &buf))
-			return fullname;
-	}
-	return name;
+	return name ? name : "include/config/";
 }
 
 static int conf_set_sym_val(struct symbol *sym, int def, int def_flags, char *p)
@@ -159,14 +275,6 @@ static int conf_set_sym_val(struct symbol *sym, int def, int def_flags, char *p)
 			conf_warning("symbol value '%s' invalid for %s",
 				     p, sym->name);
 		return 1;
-	case S_OTHER:
-		if (*p != '"') {
-			for (p2 = p; *p2 && !isspace(*p2); p2++)
-				;
-			sym->type = S_STRING;
-			goto done;
-		}
-		/* fall through */
 	case S_STRING:
 		if (*p++ != '"')
 			break;
@@ -185,9 +293,8 @@ static int conf_set_sym_val(struct symbol *sym, int def, int def_flags, char *p)
 		/* fall through */
 	case S_INT:
 	case S_HEX:
-	done:
 		if (sym_string_valid(sym, p)) {
-			sym->def[def].val = strdup(p);
+			sym->def[def].val = xstrdup(p);
 			sym->flags |= def_flags;
 		} else {
 			if (def != S_DEF_AUTO)
@@ -210,7 +317,7 @@ static int add_byte(int c, char **lineptr, size_t slen, size_t *n)
 	if (new_size > *n) {
 		new_size += LINE_GROWTH - 1;
 		new_size *= 2;
-		nline = realloc(*lineptr, new_size);
+		nline = xrealloc(*lineptr, new_size);
 		if (!nline)
 			return -1;
 
@@ -269,30 +376,46 @@ int conf_read_simple(const char *name, int def)
 	if (name) {
 		in = zconf_fopen(name);
 	} else {
-		struct property *prop;
+		char *env;
 
 		name = conf_get_configname();
 		in = zconf_fopen(name);
 		if (in)
 			goto load;
-		sym_add_change_count(1);
-		if (!sym_defconfig_list) {
-			if (modules_sym)
-				sym_calc_value(modules_sym);
-			return 1;
-		}
+		conf_set_changed(true);
 
-		for_all_defaults(sym_defconfig_list, prop) {
-			if (expr_calc_value(prop->visible.expr) == no ||
-			    prop->expr->type != E_SYMBOL)
-				continue;
-			name = conf_expand_value(prop->expr->left.sym->name);
-			in = zconf_fopen(name);
+		env = getenv("KCONFIG_DEFCONFIG_LIST");
+		if (!env)
+			return 1;
+
+		while (1) {
+			bool is_last;
+
+			while (isspace(*env))
+				env++;
+
+			if (!*env)
+				break;
+
+			p = env;
+			while (*p && !isspace(*p))
+				p++;
+
+			is_last = (*p == '\0');
+
+			*p = '\0';
+
+			in = zconf_fopen(env);
 			if (in) {
-				conf_message(_("using defaults found in %s"),
-					 name);
+				conf_message("using defaults found in %s",
+					     env);
 				goto load;
 			}
+
+			if (is_last)
+				break;
+
+			env = p + 1;
 		}
 	}
 	if (!in)
@@ -302,7 +425,6 @@ load:
 	conf_filename = name;
 	conf_lineno = 0;
 	conf_warnings = 0;
-	conf_unsaved = 0;
 
 	def_flags = SYMBOL_DEF << def;
 	for_all_symbols(i, sym) {
@@ -338,8 +460,11 @@ load:
 			if (def == S_DEF_USER) {
 				sym = sym_find(line + 2 + strlen(CONFIG_));
 				if (!sym) {
-					sym_add_change_count(1);
-					goto setsym;
+					conf_message(
+						"ignoring nonexistent symbol %s",
+						line + 2 + strlen(CONFIG_));
+					conf_set_changed(true);
+					continue;
 				}
 			} else {
 				sym = sym_lookup(line + 2 + strlen(CONFIG_), 0);
@@ -369,20 +494,22 @@ load:
 				if (*p2 == '\r')
 					*p2 = 0;
 			}
-			if (def == S_DEF_USER) {
-				sym = sym_find(line + strlen(CONFIG_));
-				if (!sym) {
-					conf_message(
-						"ignoring nonexistent symbol %s",
-						line + strlen(CONFIG_));
-					sym_add_change_count(1);
-					goto setsym;
-				}
-			} else {
-				sym = sym_lookup(line + strlen(CONFIG_), 0);
-				if (sym->type == S_UNKNOWN)
-					sym->type = S_OTHER;
+
+			sym = sym_find(line + strlen(CONFIG_));
+			if (!sym) {
+				if (def == S_DEF_AUTO)
+					/*
+					 * Reading from include/config/auto.conf
+					 * If CONFIG_FOO previously existed in
+					 * auto.conf but it is missing now,
+					 * include/config/FOO must be touched.
+					 */
+					conf_touch_dep(line + strlen(CONFIG_));
+				else
+					conf_set_changed(true);
+				continue;
 			}
+
 			if (sym->flags & def_flags) {
 				conf_notice("override: reassigning to symbol %s", sym->name);
 			}
@@ -390,10 +517,12 @@ load:
 				continue;
 		} else {
 			if (line[0] != '\r' && line[0] != '\n')
-				conf_warning("unexpected data");
+				conf_warning("unexpected data: %.*s",
+					     (int)strcspn(line, "\r\n"), line);
+
 			continue;
 		}
-setsym:
+
 		if (sym && sym_is_choice_value(sym)) {
 			struct symbol *cs = prop_get_symbol(sym_get_choice_prop(sym));
 			switch (sym->def[def].tri) {
@@ -417,9 +546,6 @@ setsym:
 	free(line);
 	fclose(in);
 
-	if (modules_sym)
-		sym_calc_value(modules_sym);
-
 	kconfig_warnings += conf_warnings;
 
 	return 0;
@@ -428,27 +554,30 @@ setsym:
 int conf_read(const char *name)
 {
 	struct symbol *sym;
+	int conf_unsaved = 0;
 	int i;
 
-	sym_set_change_count(0);
+	conf_set_changed(false);
 
-	if (conf_read_simple(name, S_DEF_USER))
+	if (conf_read_simple(name, S_DEF_USER)) {
+		sym_calc_value(modules_sym);
 		return 1;
+	}
+
+	sym_calc_value(modules_sym);
 
 	for_all_symbols(i, sym) {
 		sym_calc_value(sym);
-		if (sym_is_choice(sym) || (sym->flags & SYMBOL_AUTO))
+		if (sym_is_choice(sym) || (sym->flags & SYMBOL_NO_WRITE))
 			continue;
 		if (sym_has_value(sym) && (sym->flags & SYMBOL_WRITE)) {
 			/* check that calculated value agrees with saved value */
 			switch (sym->type) {
 			case S_BOOLEAN:
 			case S_TRISTATE:
-				if (sym->def[S_DEF_USER].tri != sym_get_tristate_value(sym))
-					break;
-				if (!sym_is_choice(sym))
+				if (sym->def[S_DEF_USER].tri == sym_get_tristate_value(sym))
 					continue;
-				/* fall through */
+				break;
 			default:
 				if (!strcmp(sym->curr.val, sym->def[S_DEF_USER].val))
 					continue;
@@ -486,7 +615,8 @@ int conf_read(const char *name)
 		}
 	}
 
-	sym_add_change_count(conf_warnings || conf_unsaved);
+	if (conf_warnings || conf_unsaved)
+		conf_set_changed(true);
 
 	return 0;
 }
@@ -564,10 +694,9 @@ header_print_symbol(FILE *fp, struct symbol *sym, const char *value, void *arg)
 
 		switch (*value) {
 		case 'n':
-			if (getenv("KCONFIG_NEGATIVES")) {
+			if (getenv("KCONFIG_NEGATIVES") != NULL)
 				fprintf(fp, "#define %s%s%s 0\n",
 				    CONFIG_, sym->name, suffix);
-			}
 			break;
 		case 'm':
 			suffix = "_MODULE";
@@ -581,23 +710,30 @@ header_print_symbol(FILE *fp, struct symbol *sym, const char *value, void *arg)
 	case S_HEX: {
 		const char *prefix = "";
 
-		if (!value || (value[0] == '\0')) {
-			value = "0";
-		} else
 		if (value[0] != '0' || (value[1] != 'x' && value[1] != 'X'))
 			prefix = "0x";
+		if (value[0] == '\0') {
+			/*
+			 * prefix is reset to remain closer to the older
+			 * coreboot patch. No need to keep this once kconfig
+			 * is fully upreved
+			 */
+			prefix = "";
+			value = "0";
+		}
 		fprintf(fp, "#define %s%s %s%s\n",
 		    CONFIG_, sym->name, prefix, value);
 		break;
 	}
-	case S_INT:
-		if (!value || (value[0] == '\0')) {
-			value = "0";
-		}
-		/* fall through */
 	case S_STRING:
+		if (value[0] == '\0')
+			break;
+		if (!(sym->flags & SYMBOL_WRITE))
+			break;
+		/* fall through */
+	case S_INT:
 		fprintf(fp, "#define %s%s %s\n",
-		    CONFIG_, sym->name, value);
+		    CONFIG_, sym->name, value[0]?value:"0");
 		break;
 	default:
 		break;
@@ -633,32 +769,12 @@ static struct conf_printer header_printer_cb =
 	.print_comment = header_print_comment,
 };
 
-/*
- * Tristate printer
- *
- * This printer is used when generating the `include/config/tristate.conf' file.
- */
-static void
-tristate_print_symbol(FILE *fp, struct symbol *sym, const char *value, void *arg)
-{
-
-	if (sym->type == S_TRISTATE && (*value != 'n' || arg == NULL))
-		fprintf(fp, "%s%s=%c\n", CONFIG_, sym->name, (char)toupper(*value));
-}
-
-static struct conf_printer tristate_printer_cb =
-{
-	.print_symbol = tristate_print_symbol,
-	.print_comment = kconfig_print_comment,
-};
-
 static void conf_write_symbol(FILE *fp, struct symbol *sym,
 			      struct conf_printer *printer, void *printer_arg)
 {
 	const char *str;
 
 	switch (sym->type) {
-	case S_OTHER:
 	case S_UNKNOWN:
 		break;
 	case S_STRING:
@@ -718,7 +834,7 @@ int conf_write_defconfig(const char *filename)
 				goto next_menu;
 			sym->flags &= ~SYMBOL_WRITE;
 			/* If we cannot change the symbol - skip */
-			if (!sym_is_changable(sym))
+			if (!sym_is_changeable(sym))
 				goto next_menu;
 			/* If symbol equals to default value - skip */
 			if (strcmp(sym_get_string_value(sym), sym_get_string_default(sym)) == 0)
@@ -765,7 +881,7 @@ next_menu:
 }
 
 
-int conf_mktemp(const char *path, char *tmpfile)
+static int conf_mktemp(const char *path, char *tmpfile)
 {
 	if (snprintf(tmpfile, PATH_MAX, "%s.tmp.XXXXXX", path) >= PATH_MAX) {
 		errno = EOVERFLOW;
@@ -779,48 +895,36 @@ int conf_write(const char *name)
 	FILE *out;
 	struct symbol *sym;
 	struct menu *menu;
-	const char *basename = NULL;
 	const char *str;
-	char dirname[PATH_MAX+1], tmpname[PATH_MAX+1], newname[PATH_MAX+1];
+	char tmpname[PATH_MAX + 1], oldname[PATH_MAX + 1];
 	char *env;
+	int i;
+	bool need_newline = false;
 
-	dirname[0] = 0;
-	if (name && name[0]) {
-		struct stat st;
-
-		if (!stat(name, &st) && S_ISDIR(st.st_mode)) {
-			strcpy(dirname, name);
-			strcat(dirname, "/");
-			basename = conf_get_configname();
-		}
-	} else {
+	if (!name)
 		name = conf_get_configname();
+
+	if (!*name) {
+		fprintf(stderr, "config name is empty\n");
+		return -1;
 	}
 
-	if (!basename) {
-		char *slash = strrchr(name, '/');
-
-		if (slash) {
-			int size = slash - name + 1;
-			memcpy(dirname, name, size);
-			dirname[size] = 0;
-			if (slash[1])
-				basename = slash + 1;
-			else
-				basename = conf_get_configname();
-		} else {
-			basename = name;
-		}
+	if (is_dir(name)) {
+		fprintf(stderr, "%s: Is a directory\n", name);
+		return -1;
 	}
 
-	sprintf(newname, "%s%s", dirname, basename);
+	if (make_parent_dir(name))
+		return -1;
+
 	env = getenv("KCONFIG_OVERWRITECONFIG");
-	if (!env || !*env) {
-		conf_mktemp(newname, tmpname);
-		out = fopen(tmpname, "w");
-	} else {
+	if (env && *env) {
 		*tmpname = 0;
-		out = fopen(newname, "w");
+		out = fopen(name, "w");
+	} else {
+		snprintf(tmpname, sizeof(tmpname), "%s.%d.tmp",
+			 name, (int)getpid());
+		out = fopen(tmpname, "w");
 	}
 	if (!out)
 		return 1;
@@ -841,12 +945,17 @@ int conf_write(const char *name)
 				     "#\n"
 				     "# %s\n"
 				     "#\n", str);
-		} else if (!(sym->flags & SYMBOL_CHOICE)) {
+			need_newline = false;
+		} else if (!(sym->flags & SYMBOL_CHOICE) &&
+			   !(sym->flags & SYMBOL_WRITTEN)) {
 			sym_calc_value(sym);
 			if (!(sym->flags & SYMBOL_WRITE))
 				goto next;
-			sym->flags &= ~SYMBOL_WRITE;
-
+			if (need_newline) {
+				fprintf(out, "\n");
+				need_newline = false;
+			}
+			sym->flags |= SYMBOL_WRITTEN;
 			conf_write_symbol(out, sym, &kconfig_printer_cb, NULL);
 		}
 
@@ -858,6 +967,12 @@ next:
 		if (menu->next)
 			menu = menu->next;
 		else while ((menu = menu->parent)) {
+			if (!menu->sym && menu_is_visible(menu) &&
+			    menu != &rootmenu) {
+				str = menu_get_prompt(menu);
+				fprintf(out, "# end of %s\n", str);
+				need_newline = true;
+			}
 			if (menu->next) {
 				menu = menu->next;
 				break;
@@ -866,45 +981,81 @@ next:
 	}
 	fclose(out);
 
+	for_all_symbols(i, sym)
+		sym->flags &= ~SYMBOL_WRITTEN;
+
 	if (*tmpname) {
-		strcat(dirname, basename);
-		strcat(dirname, ".old");
-		rename(newname, dirname);
-		if (rename(tmpname, newname))
+		if (is_same(name, tmpname)) {
+			conf_message("No change to %s", name);
+			unlink(tmpname);
+			conf_set_changed(false);
+			return 0;
+		}
+
+		snprintf(oldname, sizeof(oldname), "%s.old", name);
+		rename(name, oldname);
+		if (rename(tmpname, name))
 			return 1;
 	}
 
-	conf_message(_("configuration written to %s"), newname);
+	conf_message("configuration written to %s", name);
 
-	sym_set_change_count(0);
+	conf_set_changed(false);
 
 	return 0;
 }
 
-static int conf_split_config(void)
+/* write a dependency file as used by kbuild to track dependencies */
+static int conf_write_dep(const char *name)
+{
+	struct file *file;
+	FILE *out;
+
+	if (make_parent_dir(name))
+		return 1;
+	char filename[PATH_MAX];
+	int fd = conf_mktemp(name, filename);
+	if (fd == -1)
+		return 1;
+
+	out = fdopen(fd, "w");
+	if (!out)
+		return 1;
+	fprintf(out, "deps_config := \\\n");
+	for (file = file_list; file; file = file->next) {
+		if (file->next)
+			fprintf(out, "\t%s \\\n", file->name);
+		else
+			fprintf(out, "\t%s\n", file->name);
+	}
+	fprintf(out, "\n%s: \\\n"
+		     "\t$(deps_config)\n\n", conf_get_autoconfig_name());
+
+	env_write_dep(out, conf_get_autoconfig_name());
+
+	fprintf(out, "\n$(deps_config): ;\n");
+	fclose(out);
+
+	rename(filename, name);
+	return 0;
+}
+
+static int conf_touch_deps(void)
 {
 	const char *name;
-	char path[PATH_MAX+1];
-	char pwd[PATH_MAX+1];
-	char *s, *d, c;
 	struct symbol *sym;
-	struct stat sb;
-	int res, i, fd;
+	int res, i;
+
+	strcpy(depfile_path, conf_get_autobase_name());
+	depfile_prefix_len = strlen(depfile_path);
 
 	name = conf_get_autoconfig_name();
 	conf_read_simple(name, S_DEF_AUTO);
+	sym_calc_value(modules_sym);
 
-	getcwd(pwd, sizeof(pwd));
-	name = getenv("KCONFIG_SPLITCONFIG");
-	if (!name)
-		name = "include/config";
-	if (chdir(name))
-		return 1;
-
-	res = 0;
 	for_all_symbols(i, sym) {
 		sym_calc_value(sym);
-		if ((sym->flags & SYMBOL_AUTO) || !sym->name)
+		if ((sym->flags & SYMBOL_NO_WRITE) || !sym->name)
 			continue;
 		if (sym->flags & SYMBOL_WRITE) {
 			if (sym->flags & SYMBOL_DEF_AUTO) {
@@ -953,245 +1104,108 @@ static int conf_split_config(void)
 		 *	different from 'no').
 		 */
 
-		/* Replace all '_' and append ".h" */
-		s = sym->name;
-		d = path;
-		while ((c = *s++)) {
-			c = tolower(c);
-			*d++ = (c == '_') ? '/' : c;
-		}
-		strcpy(d, ".h");
-
-		/* Assume directory path already exists. */
-		fd = open(path, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-		if (fd == -1) {
-			if (errno != ENOENT) {
-				res = 1;
-				break;
-			}
-			/*
-			 * Create directory components,
-			 * unless they exist already.
-			 */
-			d = path;
-			while ((d = strchr(d, '/'))) {
-				*d = 0;
-				if (stat(path, &sb) && mkdir(path, 0755)) {
-					res = 1;
-					goto out;
-				}
-				*d++ = '/';
-			}
-			/* Try it again. */
-			fd = open(path, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-			if (fd == -1) {
-				res = 1;
-				break;
-			}
-		}
-		close(fd);
+		res = conf_touch_dep(sym->name);
+		if (res)
+			return res;
 	}
-out:
-	if (chdir(pwd))
-		return 1;
 
-	return res;
+	return 0;
 }
 
-int conf_write_autoconf(void)
+int conf_write_autoconf(int overwrite)
 {
 	struct symbol *sym;
-	FILE *out, *tristate, *out_h;
+	const char *name;
+	const char *autoconf_name = conf_get_autoconfig_name();
+	FILE *out, *out_h;
 	int i;
-	int print_negatives;
+	int print_negatives = getenv("KCONFIG_NEGATIVES") != NULL;
 
-	print_negatives = getenv("KCONFIG_NEGATIVES") != NULL;
+	if (!overwrite && is_present(autoconf_name))
+		return 0;
 
-	sym_clear_all_valid();
+	char autoconfcmd_path[PATH_MAX];
+	snprintf(autoconfcmd_path, sizeof(autoconfcmd_path), "%s%s",
+		conf_get_autobase_name(), "auto.conf.cmd");
+	conf_write_dep(autoconfcmd_path);
 
-	char *dep_file = getenv("KCONFIG_DEPENDENCIES");
-	if (!dep_file)
-		dep_file = "include/config/auto.conf.cmd";
-	file_write_dep(dep_file);
-
-	if (conf_split_config())
+	if (conf_touch_deps())
 		return 1;
 
-	char tmpconfig_name[PATH_MAX];
-	const char *config_name = conf_get_autoconfig_name();
-
-	i = conf_mktemp(config_name, tmpconfig_name);
-	if (i == -1)
-		goto error_auto_conf_cmd_tmp;
-	out = fdopen(i, "w");
+	if (make_parent_dir(autoconf_name))
+		return 1;
+	char filename[PATH_MAX];
+	int fd = conf_mktemp(autoconf_name, filename);
+	if (fd == -1)
+		return 1;
+	out = fdopen(fd, "w");
 	if (!out)
-		goto error_auto_conf_cmd_open;
+		return 1;
 
-	char tmpconfig_triname[PATH_MAX];
-	const char *config_triname = getenv("KCONFIG_TRISTATE");
-	if (!config_triname)
-		config_triname = "include/config/tristate.conf";
-
-	i = conf_mktemp(config_triname, tmpconfig_triname);
-	if (i == -1)
-		goto error_tristate_tmp;
-
-	tristate = fdopen(i, "w");
-	if (!tristate)
-		goto error_tristate_open;
-
-	char tmpconfig_h[PATH_MAX];
-	const char *config_h = getenv("KCONFIG_AUTOHEADER");
-	if (!config_h)
-		config_h = "include/generated/autoconf.h";
-
-	i = conf_mktemp(config_h, tmpconfig_h);
-	if (i == -1)
-		goto error_auto_conf_h_tmp;
-
-	out_h = fdopen(i, "w");
-	if (!out_h)
-		goto error_auto_conf_h_open;
+	name = getenv("KCONFIG_AUTOHEADER");
+	if (!name)
+		name = "include/generated/autoconf.h";
+	if (make_parent_dir(name))
+		return 1;
+	char filename_h[PATH_MAX];
+	int fd_h = conf_mktemp(name, filename_h);
+	if (fd_h == -1)
+		return 1;
+	out_h = fdopen(fd_h, "w");
+	if (!out_h) {
+		fclose(out);
+		return 1;
+	}
 
 	conf_write_heading(out, &kconfig_printer_cb, NULL);
-
-	conf_write_heading(tristate, &tristate_printer_cb, NULL);
-
 	conf_write_heading(out_h, &header_printer_cb, NULL);
 
 	for_all_symbols(i, sym) {
 		sym_calc_value(sym);
+		if (!(sym->flags & SYMBOL_WRITE) && !print_negatives)
+			continue;
 		if (!sym->name)
 			continue;
 
-		if (!(sym->flags & SYMBOL_WRITE) && !print_negatives)
-			continue;
-
-		/* these are safe to write out, so do it all the time */
-		if (!(sym->flags & SYMBOL_WRITE) &&
-			!(sym->type == S_BOOLEAN ||
-			  sym->type == S_HEX ||
-			  sym->type == S_INT))
-			continue;
-
-		/* write symbol to auto.conf, tristate and header files */
+		/* write symbols to auto.conf and autoconf.h */
 		conf_write_symbol(out, sym, &kconfig_printer_cb, print_negatives?NULL:(void *)1);
-
-		conf_write_symbol(tristate, sym, &tristate_printer_cb, print_negatives?NULL:(void *)1);
-
 		conf_write_symbol(out_h, sym, &header_printer_cb, NULL);
 	}
 	fclose(out);
-	fclose(tristate);
 	fclose(out_h);
 
-	if (rename(tmpconfig_h, config_h))
-		return 1;
-
-	if (rename(tmpconfig_triname, config_triname))
+	if (rename(filename_h, name))
 		return 1;
 
 	/*
 	 * This must be the last step, kbuild has a dependency on auto.conf
 	 * and this marks the successful completion of the previous steps.
 	 */
-	if (rename(tmpconfig_name, config_name))
+	if (rename(filename, autoconf_name))
 		return 1;
 
 	return 0;
-
-error_auto_conf_h_open:
-	unlink(tmpconfig_h);
-
-error_auto_conf_h_tmp:
-	fclose(tristate);
-
-error_tristate_open:
-	unlink(tmpconfig_triname);
-
-error_tristate_tmp:
-	fclose(out);
-
-error_auto_conf_cmd_open:
-	unlink(tmpconfig_name);
-
-error_auto_conf_cmd_tmp:
-	return 1;
 }
 
-static int sym_change_count;
+static bool conf_changed;
 static void (*conf_changed_callback)(void);
 
-void sym_set_change_count(int count)
+void conf_set_changed(bool val)
 {
-	int _sym_change_count = sym_change_count;
-	sym_change_count = count;
-	if (conf_changed_callback &&
-	    (bool)_sym_change_count != (bool)count)
+	if (conf_changed_callback && conf_changed != val)
 		conf_changed_callback();
-}
 
-void sym_add_change_count(int count)
-{
-	sym_set_change_count(count + sym_change_count);
+	conf_changed = val;
 }
 
 bool conf_get_changed(void)
 {
-	return sym_change_count;
+	return conf_changed;
 }
 
 void conf_set_changed_callback(void (*fn)(void))
 {
 	conf_changed_callback = fn;
-}
-
-static bool randomize_choice_values(struct symbol *csym)
-{
-	struct property *prop;
-	struct symbol *sym;
-	struct expr *e;
-	int cnt, def;
-
-	/*
-	 * If choice is mod then we may have more items selected
-	 * and if no then no-one.
-	 * In both cases stop.
-	 */
-	if (csym->curr.tri != yes)
-		return false;
-
-	prop = sym_get_choice_prop(csym);
-
-	/* count entries in choice block */
-	cnt = 0;
-	expr_list_for_each_sym(prop->expr, e, sym)
-		cnt++;
-
-	/*
-	 * find a random value and set it to yes,
-	 * set the rest to no so we have only one set
-	 */
-	def = (rand() % cnt);
-
-	cnt = 0;
-	expr_list_for_each_sym(prop->expr, e, sym) {
-		if (def == cnt++) {
-			sym->def[S_DEF_USER].tri = yes;
-			csym->def[S_DEF_USER].val = sym;
-		}
-		else {
-			sym->def[S_DEF_USER].tri = no;
-		}
-		sym->flags |= SYMBOL_DEF_USER;
-		/* clear VALID to get value calculated */
-		sym->flags &= ~SYMBOL_VALID;
-	}
-	csym->flags |= SYMBOL_DEF_USER;
-	/* clear VALID to get value calculated */
-	csym->flags &= ~(SYMBOL_VALID);
-
-	return true;
 }
 
 void set_all_choice_values(struct symbol *csym)
@@ -1212,132 +1226,4 @@ void set_all_choice_values(struct symbol *csym)
 	csym->flags |= SYMBOL_DEF_USER;
 	/* clear VALID to get value calculated */
 	csym->flags &= ~(SYMBOL_VALID | SYMBOL_NEED_SET_CHOICE_VALUES);
-}
-
-bool conf_set_all_new_symbols(enum conf_def_mode mode)
-{
-	struct symbol *sym, *csym;
-	int i, cnt, pby, pty, ptm;	/* pby: probability of boolean  = y
-					 * pty: probability of tristate = y
-					 * ptm: probability of tristate = m
-					 */
-
-	pby = 50; pty = ptm = 33; /* can't go as the default in switch-case
-				   * below, otherwise gcc whines about
-				   * -Wmaybe-uninitialized */
-	if (mode == def_random) {
-		int n, p[3];
-		char *env = getenv("KCONFIG_PROBABILITY");
-		n = 0;
-		while( env && *env ) {
-			char *endp;
-			int tmp = strtol( env, &endp, 10 );
-			if( tmp >= 0 && tmp <= 100 ) {
-				p[n++] = tmp;
-			} else {
-				errno = ERANGE;
-				perror( "KCONFIG_PROBABILITY" );
-				exit( 1 );
-			}
-			env = (*endp == ':') ? endp+1 : endp;
-			if( n >=3 ) {
-				break;
-			}
-		}
-		switch( n ) {
-		case 1:
-			pby = p[0]; ptm = pby/2; pty = pby-ptm;
-			break;
-		case 2:
-			pty = p[0]; ptm = p[1]; pby = pty + ptm;
-			break;
-		case 3:
-			pby = p[0]; pty = p[1]; ptm = p[2];
-			break;
-		}
-
-		if( pty+ptm > 100 ) {
-			errno = ERANGE;
-			perror( "KCONFIG_PROBABILITY" );
-			exit( 1 );
-		}
-	}
-	bool has_changed = false;
-
-	for_all_symbols(i, sym) {
-		if (sym_has_value(sym) || (sym->flags & SYMBOL_VALID))
-			continue;
-		switch (sym_get_type(sym)) {
-		case S_BOOLEAN:
-		case S_TRISTATE:
-			has_changed = true;
-			switch (mode) {
-			case def_yes:
-				sym->def[S_DEF_USER].tri = yes;
-				break;
-			case def_mod:
-				sym->def[S_DEF_USER].tri = mod;
-				break;
-			case def_no:
-				if (sym->flags & SYMBOL_ALLNOCONFIG_Y)
-					sym->def[S_DEF_USER].tri = yes;
-				else
-					sym->def[S_DEF_USER].tri = no;
-				break;
-			case def_random:
-				sym->def[S_DEF_USER].tri = no;
-				cnt = rand() % 100;
-				if (sym->type == S_TRISTATE) {
-					if (cnt < pty)
-						sym->def[S_DEF_USER].tri = yes;
-					else if (cnt < (pty+ptm))
-						sym->def[S_DEF_USER].tri = mod;
-				} else if (cnt < pby)
-					sym->def[S_DEF_USER].tri = yes;
-				break;
-			default:
-				continue;
-			}
-			if (!(sym_is_choice(sym) && mode == def_random))
-				sym->flags |= SYMBOL_DEF_USER;
-			break;
-		default:
-			break;
-		}
-
-	}
-
-	sym_clear_all_valid();
-
-	/*
-	 * We have different type of choice blocks.
-	 * If curr.tri equals to mod then we can select several
-	 * choice symbols in one block.
-	 * In this case we do nothing.
-	 * If curr.tri equals yes then only one symbol can be
-	 * selected in a choice block and we set it to yes,
-	 * and the rest to no.
-	 */
-	if (mode != def_random) {
-		for_all_symbols(i, csym) {
-			if ((sym_is_choice(csym) && !sym_has_value(csym)) ||
-			    sym_is_choice_value(csym))
-				csym->flags |= SYMBOL_NEED_SET_CHOICE_VALUES;
-		}
-	}
-
-	for_all_symbols(i, csym) {
-		if (sym_has_value(csym) || !sym_is_choice(csym))
-			continue;
-
-		sym_calc_value(csym);
-		if (mode == def_random)
-			has_changed = randomize_choice_values(csym);
-		else {
-			set_all_choice_values(csym);
-			has_changed = true;
-		}
-	}
-
-	return has_changed;
 }

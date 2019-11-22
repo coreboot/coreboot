@@ -1,0 +1,12 @@
+0001-Kconfig-Add-KCONFIG_STRICT-mode.patch
+0002-Kconfig-Change-symbol-override-from-warning-to-notic.patch
+0003-util-kconfig-conf.c-Fix-newline-in-error-printf.patch
+0004-src-util-Use-NULL-instead-of-0-for-pointer.patch
+0005-util-kconfig-Ignore-extra-symbols-in-configs-instead.patch
+0006-util-kconfig-Set-parameter-of-mkdir-to-only-one-for-.patch
+0007-kconfig-Allow-KCONFIG_STRICT-outside-of-confdata.c.patch
+0008-kconfig-Add-wildcard-support-for-source.patch
+0009-util-kconfig-Allow-emitting-false-booleans-into-kconfig-output.patch
+0010-reenable-source-in-choice.patch
+0011-remove-include-config-hardcodes.patch
+0012-safer-tmpfiles.patch

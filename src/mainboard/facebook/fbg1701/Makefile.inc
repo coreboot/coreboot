@@ -16,13 +16,13 @@
 ##
 
 ifneq ($(filter y,$(CONFIG_VENDORCODE_ELTAN_VBOOT) $(CONFIG_VENDORCODE_ELTAN_MBOOT)),)
-bootblock-$(CONFIG_C_ENVIRONMENT_BOOTBLOCK) += board_verified_boot.c
+bootblock-y += board_verified_boot.c
 postcar-y += board_verified_boot.c
 ramstage-y += board_verified_boot.c
 romstage-y += board_verified_boot.c
 endif
 
-bootblock-$(CONFIG_C_ENVIRONMENT_BOOTBLOCK) += com_init.c
+bootblock-y += com_init.c
 
 ramstage-y += cpld.c
 ramstage-y += gpio.c

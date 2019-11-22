@@ -15,7 +15,7 @@
 ## GNU General Public License for more details.
 ##
 
-bootblock-$(CONFIG_C_ENVIRONMENT_BOOTBLOCK) += com_init.c
+bootblock-y += com_init.c
 
 ramstage-y += gpio.c
 ramstage-y += hda_verb.c

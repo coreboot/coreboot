@@ -13,13 +13,9 @@ subdirs-y += ../microcode
 subdirs-y += ../hyperthreading
 subdirs-y += ../speedstep
 
-ifneq ($(CONFIG_C_ENVIRONMENT_BOOTBLOCK),y)
-cpu_incs-y += $(src)/cpu/intel/car/p4-netburst/cache_as_ram.S
-else
 bootblock-y += ../car/p4-netburst/cache_as_ram.S
 bootblock-y += ../car/bootblock.c
 bootblock-y += ../../x86/early_reset.S
-endif
 
 postcar-y += ../car/p4-netburst/exit_car.S
 

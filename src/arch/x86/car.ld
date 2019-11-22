@@ -36,7 +36,7 @@
 	/* Stack for CAR stages. Since it persists across all stages that
 	 * use CAR it can be reused. The chipset/SoC is expected to provide
 	 * the stack size. */
-#if CONFIG(C_ENVIRONMENT_BOOTBLOCK)
+#if !CONFIG(ROMCC_BOOTBLOCK)
 	_car_stack = .;
 	. += CONFIG_DCACHE_BSP_STACK_SIZE;
 	_ecar_stack = .;
@@ -90,7 +90,7 @@
 	_ebss = .;
 	_car_unallocated_start = .;
 
-#if !CONFIG(C_ENVIRONMENT_BOOTBLOCK)
+#if CONFIG(ROMCC_BOOTBLOCK)
 	_car_stack = .;
 	_ecar_stack = _car_region_end;
 #endif
@@ -121,6 +121,6 @@ _bogus = ASSERT((CONFIG_DCACHE_RAM_SIZE == 0) || (SIZEOF(.car.data) <= CONFIG_DC
 #if CONFIG(PAGING_IN_CACHE_AS_RAM)
 _bogus2 = ASSERT(_pagetables == ALIGN(_pagetables, 4096), "_pagetables aren't 4KiB aligned");
 #endif
-#if CONFIG(C_ENVIRONMENT_BOOTBLOCK)
+#if !CONFIG(ROMCC_BOOTBLOCK)
 _bogus3 = ASSERT(CONFIG_DCACHE_BSP_STACK_SIZE > 0x0, "BSP stack size not configured");
 #endif

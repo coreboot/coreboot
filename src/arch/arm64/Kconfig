@@ -4,7 +4,6 @@ config ARCH_ARM64
 config ARCH_BOOTBLOCK_ARM64
 	bool
 	select ARCH_ARM64
-	select C_ENVIRONMENT_BOOTBLOCK
 
 config ARCH_VERSTAGE_ARM64
 	bool

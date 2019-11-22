@@ -1177,9 +1177,7 @@ config BOOTBLOCK_CUSTOM
 	# src/lib/bootblock.c#main() C entry point.
 	bool
 
-config C_ENVIRONMENT_BOOTBLOCK
-	# To be selected by arch or platform if a C environment is available during the
-	# bootblock. Normally this signifies availability of RW memory (e.g. SRAM).
+config ROMCC_BOOTBLOCK
 	bool
 
 ###############################################################################

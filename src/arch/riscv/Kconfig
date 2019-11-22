@@ -77,7 +77,6 @@ config ARCH_RISCV_PMP
 config ARCH_BOOTBLOCK_RISCV
 	bool
 	default n
-	select C_ENVIRONMENT_BOOTBLOCK
 
 config ARCH_VERSTAGE_RISCV
 	bool

@@ -13,14 +13,13 @@
 
 #include <rules.h>
 
-#if CONFIG(C_ENVIRONMENT_BOOTBLOCK)
+#if !CONFIG(ROMCC_BOOTBLOCK)
 
 /*
- * This path is for stages that are post bootblock when employing
- * CONFIG_C_ENVIRONMENT_BOOTBLOCK. The gdt is reloaded to accommodate
- * platforms that are executing out of CAR. In order to continue with
- * C code execution one needs to set stack pointer and clear CAR_GLOBAL
- * variables that are stage specific.
+ * This path is for stages that are post bootblock. The gdt is reloaded
+ * to accommodate platforms that are executing out of CAR. In order to
+ * continue with C code execution one needs to set stack pointer and
+ * clear .bss variables that are stage specific.
  */
 .section ".text._start", "ax", @progbits
 .global _start

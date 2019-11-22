@@ -11,8 +11,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * This is the modern bootblock. It is used by platforms which select
- * C_ENVIRONMENT_BOOTBLOCK, and it prepares the system for C environment runtime
+ * This is the modern bootblock. It prepares the system for C environment runtime
  * setup. The actual setup is done by hardware-specific code.
  *
  * It provides a bootflow similar to other architectures, and thus is considered

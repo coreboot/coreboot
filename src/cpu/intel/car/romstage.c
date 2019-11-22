@@ -71,8 +71,8 @@ static void romstage_main(unsigned long bist)
 	/* We do not return here. */
 }
 
-#if !CONFIG(C_ENVIRONMENT_BOOTBLOCK)
-/* This wrapper enables easy transition towards C_ENVIRONMENT_BOOTBLOCK,
+#if CONFIG(ROMCC_BOOTBLOCK)
+/* This wrapper enables easy transition away from ROMCC_BOOTBLOCK
  * keeping changes in cache_as_ram.S easy to manage.
  */
 asmlinkage void bootblock_c_entry_bist(uint64_t base_timestamp, uint32_t bist)

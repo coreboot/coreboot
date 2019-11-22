@@ -29,7 +29,7 @@ _cache_as_ram_setup:
 
 bootblock_pre_c_entry:
 
-#if CONFIG(C_ENVIRONMENT_BOOTBLOCK)
+#if !CONFIG(ROMCC_BOOTBLOCK)
 	movl	$cache_as_ram, %esp /* return address */
 	jmp	check_mtrr /* Check if CPU properly reset */
 #endif

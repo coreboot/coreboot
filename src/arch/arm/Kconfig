@@ -4,7 +4,6 @@ config ARCH_ARM
 config ARCH_BOOTBLOCK_ARM
 	bool
 	select ARCH_ARM
-	select C_ENVIRONMENT_BOOTBLOCK
 
 config ARCH_VERSTAGE_ARM
 	bool

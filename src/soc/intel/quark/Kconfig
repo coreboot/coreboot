@@ -26,7 +26,6 @@ config CPU_SPECIFIC_OPTIONS
 	select ARCH_RAMSTAGE_X86_32
 	select ARCH_ROMSTAGE_X86_32
 	select ARCH_VERSTAGE_X86_32
-	select C_ENVIRONMENT_BOOTBLOCK
 	select NO_MMCONF_SUPPORT
 	select REG_SCRIPT
 	select PLATFORM_USES_FSP2_0
@@ -225,11 +224,6 @@ config RMU_LOC
 	help
 	  The location in CBFS that the RMU is located. It must match the
 	  strap-determined base address.
-
-#####
-# Bootblock
-#     The following options support the C_ENVIRONMENT_BOOTBLOCK.
-#####
 
 config DCACHE_BSP_STACK_SIZE
 	hex

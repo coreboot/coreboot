@@ -268,7 +268,9 @@ postcar-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 postcar-$(CONFIG_GENERIC_UDELAY) += timer.c
 
 # Use program.ld for all the platforms which use C fo the bootblock.
-bootblock-$(CONFIG_C_ENVIRONMENT_BOOTBLOCK) += program.ld
+ifneq ($(CONFIG_ROMCC_BOOTBLOCK),y)
+bootblock-y += program.ld
+endif
 
 decompressor-y += program.ld
 postcar-y += program.ld

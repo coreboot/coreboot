@@ -20,7 +20,7 @@
  *     - timestamp.inc: store TSC in MMX registers
  *     - generated/bootblock.inc: ROMCC part of the bootblock
  *
- * This is used on platforms which do not select C_ENVIRONMENT_BOOTBLOCK, and it
+ * This is used on platforms which select ROMCC_BOOTBLOCK, and it
  * tries to do the absolute minimum before walking CBFS and jumping to romstage.
  *
  * This file assembles the bootblock program by the order of the includes. Thus,

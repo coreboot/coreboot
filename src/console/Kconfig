@@ -5,7 +5,7 @@ config NO_BOOTBLOCK_CONSOLE
 
 config BOOTBLOCK_CONSOLE
 	bool "Enable early (bootblock) console output."
-	depends on C_ENVIRONMENT_BOOTBLOCK && !NO_BOOTBLOCK_CONSOLE
+	depends on !ROMCC_BOOTBLOCK && !NO_BOOTBLOCK_CONSOLE
 	default y
 	help
 	  Use console during the bootblock if supported

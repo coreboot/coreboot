@@ -288,9 +288,8 @@ static inline void get_fms(struct cpuinfo_x86 *c, uint32_t tfms)
 #define asmlinkage __attribute__((regparm(0)))
 
 /*
- * When using CONFIG_C_ENVIRONMENT_BOOTBLOCK the car_stage_entry()
- * is the symbol jumped to for each stage after bootblock using
- * cache-as-ram.
+ * When not using a romcc bootblock the car_stage_entry() is the symbol
+ * jumped to for each stage after bootblock using cache-as-ram.
  */
 asmlinkage void car_stage_entry(void);
 

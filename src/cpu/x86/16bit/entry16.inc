@@ -29,7 +29,7 @@
 
 #include <arch/rom_segs.h>
 
-#if CONFIG(C_ENVIRONMENT_BOOTBLOCK) || \
+#if !CONFIG(ROMCC_BOOTBLOCK) || \
     CONFIG(SIPI_VECTOR_IN_ROM)
 /* Symbol _start16bit must be aligned to 4kB to start AP CPUs with
  * Startup IPI message without RAM.

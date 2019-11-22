@@ -116,7 +116,7 @@ bootblock-$(CONFIG_X86_TOP4G_BOOTMEDIA_MAP) += mmap_boot.c
 bootblock-y += id.S
 $(call src-to-obj,bootblock,$(dir)/id.S): $(obj)/build.h
 
-ifeq ($(CONFIG_C_ENVIRONMENT_BOOTBLOCK),y)
+ifneq ($(CONFIG_ROMCC_BOOTBLOCK),y)
 
 bootblock-y += bootblock_crt0.S
 
@@ -128,7 +128,7 @@ endif
 
 bootblock-$(CONFIG_ARCH_BOOTBLOCK_X86_32) += walkcbfs.S
 
-else # !C_ENVIRONMENT_BOOTBLOCK
+else # ROMCC_BOOTBLOCK
 
 # x86-specific linker flags
 ifeq ($(CONFIG_ARCH_BOOTBLOCK_X86_32),y)
@@ -178,7 +178,7 @@ $(objcbfs)/bootblock.debug: $$(bootblock-objs)
 		$(filter-out %.ld,$(bootblock-objs)) \
 		-T $(call src-to-obj,bootblock,src/arch/x86/bootblock.ld)
 
-endif # C_ENVIRONMENT_BOOTBLOCK
+endif # ROMCC_BOOTBLOCK
 
 
 endif # CONFIG_ARCH_BOOTBLOCK_X86_32 / CONFIG_ARCH_BOOTBLOCK_X86_64
@@ -223,7 +223,9 @@ ifeq ($(CONFIG_ARCH_ROMSTAGE_X86_32)$(CONFIG_ARCH_ROMSTAGE_X86_64),y)
 romstage-$(CONFIG_HAVE_ACPI_RESUME) += acpi_s3.c
 # gdt_init.S is included by entry32.inc when romstage is the first C
 # environment.
-romstage-$(CONFIG_C_ENVIRONMENT_BOOTBLOCK) += gdt_init.S
+ifneq ($(CONFIG_ROMCC_BOOTBLOCK),y)
+romstage-y += gdt_init.S
+endif
 romstage-y += cbmem.c
 romstage-$(CONFIG_IDT_IN_EVERY_STAGE) += exception.c
 romstage-$(CONFIG_IDT_IN_EVERY_STAGE) += idt.S

@@ -10,14 +10,6 @@ DEFCONFIG?=defconfig
 PHONY += oldconfig xconfig gconfig menuconfig config silentoldconfig update-po-config \
 	localmodconfig localyesconfig
 
-_OS=$(shell uname -s |cut -c-7)
-regex-objs=
-ifeq ($(_OS),MINGW32)
-	regex-objs=regex.o
-endif
-
-Kconfig ?= src/Kconfig
-
 xconfig: $(objk)/qconf
 	$< $(Kconfig)
 
@@ -345,8 +337,6 @@ $(objk)/nconf: $(patsubst %,$(objk)/%,$(nconf-objs))
 	$(HOSTCC) $(HOSTCFLAGS) -o $@ $^ $(HOSTLOADLIBES_nconf)
 $(objk)/conf: $(patsubst %,$(objk)/%,$(conf-objs))
 	$(HOSTCC) $(HOSTCFLAGS) $(HOST_EXTRACFLAGS) -o $@ $^
-$(objk)/toada: $(objk)/toada.o
-	$(HOSTCC) $(HOSTCFLAGS) $(HOST_EXTRACFLAGS) -o $@ $^
 
 $(objk)/mconf.o: $(srck)/mconf.c
 	$(HOSTCC) $(HOSTCFLAGS) $(HOST_EXTRACFLAGS) -c -o $@ $<
@@ -356,8 +346,6 @@ $(objk)/nconf.gui.o: $(srck)/nconf.gui.c
 	$(HOSTCC) $(HOSTCFLAGS) $(HOST_EXTRACFLAGS) -c -o $@ $<
 $(objk)/conf.o: $(srck)/conf.c
 	$(HOSTCC) $(HOSTCFLAGS) $(HOST_EXTRACFLAGS) -c -o $@ $<
-$(objk)/regex.o: $(srck)/regex.c
-	$(HOSTCC) $(HOSTCFLAGS) $(HOST_EXTRACFLAGS) -DHAVE_STRING_H -c -o $@ $<
 
 $(objk)/zconf.tab.o: $(objk)/zconf.tab.c $(objk)/zconf.lex.c \
 		     $(objk)/zconf.hash.c
@@ -384,9 +372,6 @@ $(objk)/lxdialog/lxdialog: $(objk)/dochecklxdialog \
 		$(patsubst %,$(objk)/lxdialog/%,$(lxdialog)) $(HOST_LOADLIBES) -o $@
 $(objk)/lxdialog/%.o: $(srck)/lxdialog/%.c
 	$(HOSTCC) $(HOSTCFLAGS) $(HOST_EXTRACFLAGS) $^ -c -o $@
-
-$(objk)/toada.o: $(srck)/toada.c
-	$(HOSTCC) $(HOSTCFLAGS) $(HOST_EXTRACFLAGS) -c -o $@ $<
 
 $(objk)/%.o: HOSTCFLAGS+=-I$(srck) -I$(objk)
 $(objk)/%.o: HOSTCXXFLAGS+=-I$(srck) -I$(objk)

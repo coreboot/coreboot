@@ -119,7 +119,7 @@ help_coreboot help::
 
 # This include must come _before_ the pattern rules below!
 # Order _does_ matter for pattern rules.
-include $(srck)/Makefile
+include $(srck)/Makefile.inc
 
 # Three cases where we don't need fully populated $(obj) lists:
 # 1. when no .config exists

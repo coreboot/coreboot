@@ -231,7 +231,7 @@ More details are available in `3rdparty/vboot/README`.
 #  The keys were made using the following command
 #
 #        3rdparty/vboot/scripts/keygeneration/create_new_keys.sh  \
-#                --4k --4k-root --output $PWD/keys
+#                --output $PWD/keys
 #
 #
 #  The "magic" numbers below are derived from the GBB section in

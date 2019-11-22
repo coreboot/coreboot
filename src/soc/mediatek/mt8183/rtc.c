@@ -435,8 +435,8 @@ void mt6358_dcxo_disable_unused(void)
 {
 	/* Disable clock buffer XO_CEL */
 	rtc_write(PMIC_RG_DCXO_CW00_CLR, 0x0800);
-	/* Mask bblpm */
-	rtc_write(PMIC_RG_DCXO_CW23, 0x0053);
+	/* Mask bblpm request and switch off bblpm mode */
+	rtc_write(PMIC_RG_DCXO_CW23, 0x0052);
 }
 
 /* the rtc boot flow entry */

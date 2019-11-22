@@ -117,7 +117,6 @@ config LINUXBOOT_KERNEL_ARCH_DEFAULT_CONFIG
 
 config LINUXBOOT_KERNEL_CUSTOM_CONFIG
 	bool "Custom (def)config file"
-	help
 
 endchoice
 

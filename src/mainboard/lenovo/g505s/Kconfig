@@ -33,7 +33,7 @@ config BOARD_SPECIFIC_OPTIONS
 
 config MAINBOARD_DIR
 	string
-	default lenovo/g505s
+	default "lenovo/g505s"
 
 config MAINBOARD_PART_NUMBER
 	string

@@ -50,7 +50,7 @@ if BOARD_GOOGLE_BASEBOARD_KAHLEE
 
 config MAINBOARD_DIR
 	string
-	default google/kahlee
+	default "google/kahlee"
 
 config VGA_BIOS_FILE
 	string

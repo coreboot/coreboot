@@ -28,7 +28,7 @@ config VBOOT
 
 config MAINBOARD_DIR
 	string
-	default google/slippy
+	default "google/slippy"
 
 config VARIANT_DIR
 	string

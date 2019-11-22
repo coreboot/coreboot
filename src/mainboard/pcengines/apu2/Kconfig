@@ -36,7 +36,7 @@ config BOARD_SPECIFIC_OPTIONS
 
 config MAINBOARD_DIR
 	string
-	default pcengines/apu2
+	default "pcengines/apu2"
 
 config VARIANT_DIR
 	string

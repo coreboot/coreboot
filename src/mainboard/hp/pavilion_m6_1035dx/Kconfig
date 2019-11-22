@@ -35,7 +35,7 @@ config BOARD_SPECIFIC_OPTIONS
 
 config MAINBOARD_DIR
 	string
-	default hp/pavilion_m6_1035dx
+	default "hp/pavilion_m6_1035dx"
 
 config MAINBOARD_PART_NUMBER
 	string

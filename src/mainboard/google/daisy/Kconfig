@@ -36,7 +36,7 @@ config VBOOT
 
 config MAINBOARD_DIR
 	string
-	default google/daisy
+	default "google/daisy"
 
 config MAINBOARD_PART_NUMBER
 	string

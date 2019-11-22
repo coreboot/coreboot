@@ -37,7 +37,7 @@ config MAX_CPUS
 
 config MAINBOARD_DIR
 	string
-	default foxconn/d41s
+	default "foxconn/d41s"
 
 config MAINBOARD_PART_NUMBER
 	string

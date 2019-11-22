@@ -13,4 +13,4 @@
 # GNU General Public License for more details.
 #
 
-source src/southbridge/amd/pi/hudson/Kconfig
+source "src/southbridge/amd/pi/hudson/Kconfig"

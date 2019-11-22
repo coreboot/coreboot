@@ -30,7 +30,7 @@ config BOARD_SPECIFIC_OPTIONS
 
 config MAINBOARD_DIR
 	string
-	default amd/bettong
+	default "amd/bettong"
 
 config MAINBOARD_PART_NUMBER
 	string

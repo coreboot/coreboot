@@ -20,7 +20,7 @@ config BOARD_SPECIFIC_OPTIONS
 
 config MAINBOARD_DIR
 	string
-	default asus/am1i-a
+	default "asus/am1i-a"
 
 config MAINBOARD_PART_NUMBER
 	string

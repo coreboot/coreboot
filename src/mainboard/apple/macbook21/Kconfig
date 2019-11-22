@@ -21,7 +21,7 @@ config BOARD_SPECIFIC_OPTIONS
 
 config MAINBOARD_DIR
 	string
-	default apple/macbook21
+	default "apple/macbook21"
 
 config MAINBOARD_PART_NUMBER
 	string

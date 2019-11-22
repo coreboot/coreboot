@@ -9,7 +9,7 @@ config BOARD_SPECIFIC_OPTIONS
 
 config MAINBOARD_DIR
 	string
-	default intel/minnow3
+	default "intel/minnow3"
 
 config MAINBOARD_PART_NUMBER
 	string

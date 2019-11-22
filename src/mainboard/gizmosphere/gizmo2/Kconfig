@@ -32,7 +32,7 @@ config BOARD_SPECIFIC_OPTIONS
 
 config MAINBOARD_DIR
 	string
-	default gizmosphere/gizmo2
+	default "gizmosphere/gizmo2"
 
 config MAINBOARD_PART_NUMBER
 	string

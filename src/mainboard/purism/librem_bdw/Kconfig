@@ -40,7 +40,7 @@ config PCIEXP_AER
 
 config MAINBOARD_DIR
 	string
-	default purism/librem_bdw
+	default "purism/librem_bdw"
 
 config MAINBOARD_VENDOR
 	string

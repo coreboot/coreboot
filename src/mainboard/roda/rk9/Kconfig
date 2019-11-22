@@ -19,7 +19,7 @@ config BOARD_SPECIFIC_OPTIONS
 
 config MAINBOARD_DIR
 	string
-	default roda/rk9
+	default "roda/rk9"
 
 config MAINBOARD_PART_NUMBER
 	string

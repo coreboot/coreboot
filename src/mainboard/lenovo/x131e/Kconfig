@@ -23,7 +23,7 @@ config BOARD_SPECIFIC_OPTIONS
 
 config MAINBOARD_DIR
 	string
-	default lenovo/x131e
+	default "lenovo/x131e"
 
 config MAINBOARD_PART_NUMBER
 	string

@@ -16,7 +16,7 @@ config BOARD_SPECIFIC_OPTIONS
 
 config MAINBOARD_DIR
 	string
-	default packardbell/ms2290
+	default "packardbell/ms2290"
 
 config MAINBOARD_PART_NUMBER
 	string

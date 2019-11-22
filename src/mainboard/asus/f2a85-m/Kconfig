@@ -57,7 +57,7 @@ config BOARD_ASUS_F2A85_M_DDR3_VOLT_VAL
 
 config MAINBOARD_DIR
 	string
-	default asus/f2a85-m
+	default "asus/f2a85-m"
 
 config MAINBOARD_PART_NUMBER
 	string

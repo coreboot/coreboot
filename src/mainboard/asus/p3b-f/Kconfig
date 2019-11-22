@@ -26,7 +26,7 @@ config BOARD_SPECIFIC_OPTIONS
 
 config MAINBOARD_DIR
 	string
-	default asus/p3b-f
+	default "asus/p3b-f"
 
 config MAINBOARD_PART_NUMBER
 	string

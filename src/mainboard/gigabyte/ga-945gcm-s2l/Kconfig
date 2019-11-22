@@ -35,7 +35,7 @@ config BOARD_SPECIFIC_OPTIONS
 
 config MAINBOARD_DIR
 	string
-	default gigabyte/ga-945gcm-s2l
+	default "gigabyte/ga-945gcm-s2l"
 
 config VARIANT_DIR
 	string

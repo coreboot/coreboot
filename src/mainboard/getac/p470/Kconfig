@@ -36,7 +36,7 @@ config BOARD_SPECIFIC_OPTIONS
 
 config MAINBOARD_DIR
 	string
-	default getac/p470
+	default "getac/p470"
 
 config MAINBOARD_PART_NUMBER
 	string

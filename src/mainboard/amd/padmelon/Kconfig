@@ -35,7 +35,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 
 config MAINBOARD_DIR
 	string
-	default amd/padmelon
+	default "amd/padmelon"
 
 config MAINBOARD_PART_NUMBER
 	string

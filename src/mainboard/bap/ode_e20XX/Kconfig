@@ -31,7 +31,7 @@ config BOARD_SPECIFIC_OPTIONS
 
 config MAINBOARD_DIR
 	string
-	default bap/ode_e20XX
+	default "bap/ode_e20XX"
 
 config MAINBOARD_PART_NUMBER
 	string

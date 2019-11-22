@@ -35,7 +35,7 @@ config BOARD_SPECIFIC_OPTIONS
 
 config MAINBOARD_DIR
 	string
-	default hp/8770w
+	default "hp/8770w"
 
 config MAINBOARD_PART_NUMBER
 	string

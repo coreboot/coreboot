@@ -19,7 +19,7 @@ config BOARD_SPECIFIC_OPTIONS
 
 config MAINBOARD_DIR
 	string
-	default asus/h61m-cs
+	default "asus/h61m-cs"
 
 config MAINBOARD_PART_NUMBER
 	string

@@ -51,7 +51,7 @@ endchoice
 
 config MAINBOARD_DIR
 	string
-	default portwell/m107
+	default "portwell/m107"
 
 config MAINBOARD_PART_NUMBER
 	string

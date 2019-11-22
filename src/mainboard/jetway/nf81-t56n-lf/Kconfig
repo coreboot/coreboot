@@ -32,7 +32,7 @@ config BOARD_SPECIFIC_OPTIONS
 
 config MAINBOARD_DIR
 	string
-	default jetway/nf81-t56n-lf
+	default "jetway/nf81-t56n-lf"
 
 config MAINBOARD_PART_NUMBER
 	string

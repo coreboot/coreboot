@@ -12,7 +12,7 @@
 ## GNU General Public License for more details.
 ##
 
-source src/vendorcode/google/chromeos/Kconfig
+source "src/vendorcode/google/chromeos/Kconfig"
 
 config GOOGLE_SMBIOS_MAINBOARD_VERSION
 	bool

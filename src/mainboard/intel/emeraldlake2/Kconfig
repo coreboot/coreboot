@@ -19,7 +19,7 @@ config VBOOT
 
 config MAINBOARD_DIR
 	string
-	default intel/emeraldlake2
+	default "intel/emeraldlake2"
 
 config MAINBOARD_PART_NUMBER
 	string

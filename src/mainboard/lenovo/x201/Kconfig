@@ -44,7 +44,7 @@ config FMDFILE
 
 config MAINBOARD_DIR
 	string
-	default lenovo/x201
+	default "lenovo/x201"
 
 config MAINBOARD_PART_NUMBER
 	string

@@ -43,7 +43,7 @@ config VBOOT_VBNV_OFFSET
 
 config MAINBOARD_DIR
 	string
-	default lenovo/x220
+	default "lenovo/x220"
 
 config VARIANT_DIR
 	string

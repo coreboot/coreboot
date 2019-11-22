@@ -20,7 +20,7 @@ config BOARD_SPECIFIC_OPTIONS
 
 config MAINBOARD_DIR
 	string
-	default kontron/986lcd-m
+	default "kontron/986lcd-m"
 
 config MAINBOARD_PART_NUMBER
 	string

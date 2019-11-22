@@ -25,7 +25,7 @@ config VBOOT
 
 config MAINBOARD_DIR
 	string
-	default samsung/stumpy
+	default "samsung/stumpy"
 
 config MAINBOARD_PART_NUMBER
 	string

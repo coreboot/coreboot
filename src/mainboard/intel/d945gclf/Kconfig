@@ -33,7 +33,7 @@ config BOARD_SPECIFIC_OPTIONS
 
 config MAINBOARD_DIR
 	string
-	default intel/d945gclf
+	default "intel/d945gclf"
 
 config MAINBOARD_PART_NUMBER
 	string

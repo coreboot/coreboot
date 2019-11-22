@@ -32,7 +32,7 @@ config BOARD_SPECIFIC_OPTIONS
 
 config MAINBOARD_DIR
 	string
-	default asrock/e350m1
+	default "asrock/e350m1"
 
 config MAINBOARD_PART_NUMBER
 	string

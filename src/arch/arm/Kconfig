@@ -18,8 +18,8 @@ config ARCH_RAMSTAGE_ARM
 	bool
 	select ARCH_ARM
 
-source src/arch/arm/armv4/Kconfig
-source src/arch/arm/armv7/Kconfig
+source "src/arch/arm/armv4/Kconfig"
+source "src/arch/arm/armv7/Kconfig"
 
 config ARM_LPAE
 	bool

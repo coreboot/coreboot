@@ -37,7 +37,7 @@ config VBOOT
 
 config MAINBOARD_DIR
 	string
-	default google/nyan_big
+	default "google/nyan_big"
 
 config MAINBOARD_PART_NUMBER
 	string

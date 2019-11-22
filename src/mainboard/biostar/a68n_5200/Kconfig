@@ -32,7 +32,7 @@ config BOARD_SPECIFIC_OPTIONS
 
 config MAINBOARD_DIR
 	string
-	default biostar/a68n_5200
+	default "biostar/a68n_5200"
 
 config MAINBOARD_PART_NUMBER
 	string

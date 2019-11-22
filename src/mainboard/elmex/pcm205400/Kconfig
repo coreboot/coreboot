@@ -43,7 +43,7 @@ config BOARD_SPECIFIC_OPTIONS
 
 config MAINBOARD_DIR
 	string
-	default elmex/pcm205400
+	default "elmex/pcm205400"
 
 config HW_MEM_HOLE_SIZEK
 	hex

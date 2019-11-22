@@ -67,7 +67,7 @@ config VBOOT
 
 config MAINBOARD_DIR
 	string
-	default google/gru
+	default "google/gru"
 
 config MAINBOARD_VENDOR
 	string

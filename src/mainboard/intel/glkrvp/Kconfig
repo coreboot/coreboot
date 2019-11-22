@@ -50,7 +50,7 @@ config VBOOT
 
 config MAINBOARD_DIR
 	string
-	default intel/glkrvp
+	default "intel/glkrvp"
 
 config VARIANT_DIR
 	string

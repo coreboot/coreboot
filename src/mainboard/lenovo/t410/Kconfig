@@ -44,7 +44,7 @@ config FMDFILE
 
 config MAINBOARD_DIR
 	string
-	default lenovo/t410
+	default "lenovo/t410"
 
 config MAINBOARD_PART_NUMBER
 	string

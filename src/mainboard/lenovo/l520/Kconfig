@@ -20,7 +20,7 @@ config BOARD_SPECIFIC_OPTIONS
 
 config MAINBOARD_DIR
 	string
-	default lenovo/l520
+	default "lenovo/l520"
 
 config MAINBOARD_PART_NUMBER
 	string

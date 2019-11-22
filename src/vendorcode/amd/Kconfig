@@ -44,7 +44,7 @@ config CPU_AMD_AGESA_OPENSOURCE
 endchoice
 
 if CPU_AMD_AGESA_BINARY_PI
-source src/vendorcode/amd/pi/Kconfig
+source "src/vendorcode/amd/pi/Kconfig"
 endif
 
 config AGESA_EXTRA_TIMESTAMPS

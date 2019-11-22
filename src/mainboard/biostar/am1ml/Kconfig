@@ -33,7 +33,7 @@ config BOARD_SPECIFIC_OPTIONS
 
 config MAINBOARD_DIR
 	string
-	default biostar/am1ml
+	default "biostar/am1ml"
 
 config MAINBOARD_PART_NUMBER
 	string

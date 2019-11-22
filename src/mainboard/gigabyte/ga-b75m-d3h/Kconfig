@@ -28,7 +28,7 @@ config USBDEBUG_HCD_INDEX
 
 config MAINBOARD_DIR
 	string
-	default gigabyte/ga-b75m-d3h
+	default "gigabyte/ga-b75m-d3h"
 
 config VARIANT_DIR
 	string

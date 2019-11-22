@@ -37,7 +37,7 @@ config VBOOT
 
 config MAINBOARD_DIR
 	string
-	default google/nyan_blaze
+	default "google/nyan_blaze"
 
 config MAINBOARD_PART_NUMBER
 	string

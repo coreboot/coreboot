@@ -32,7 +32,7 @@ config VBOOT_VBNV_OFFSET
 
 config MAINBOARD_DIR
 	string
-	default hp/z220_sff_workstation
+	default "hp/z220_sff_workstation"
 
 config MAINBOARD_PART_NUMBER
 	string

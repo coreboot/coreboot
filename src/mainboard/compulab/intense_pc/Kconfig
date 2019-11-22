@@ -18,7 +18,7 @@ config BOARD_SPECIFIC_OPTIONS
 
 config MAINBOARD_DIR
 	string
-	default compulab/intense_pc
+	default "compulab/intense_pc"
 
 config MAINBOARD_PART_NUMBER
 	string

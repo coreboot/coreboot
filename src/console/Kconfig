@@ -88,7 +88,7 @@ comment "Serial port base address = 0x2e8"
 depends on DRIVERS_UART_8250IO && UART_FOR_CONSOLE = 3
 
 config UART_OVERRIDE_BAUDRATE
-	boolean
+	bool
 	help
 	  Set to "y" when the platform overrides the baudrate by providing
 	  a get_uart_baudrate routine.
@@ -303,7 +303,7 @@ config SPI_CONSOLE
 	  drivers are written.
 
 config CONSOLE_OVERRIDE_LOGLEVEL
-	boolean
+	bool
 	help
 	  Set to "y" when the platform overrides the loglevel by providing
 	  a get_console_loglevel routine.

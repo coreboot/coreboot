@@ -34,7 +34,7 @@ config BOARD_SPECIFIC_OPTIONS
 
 config MAINBOARD_DIR
 	string
-	default asus/p5gc-mx
+	default "asus/p5gc-mx"
 
 config MAINBOARD_PART_NUMBER
 	string

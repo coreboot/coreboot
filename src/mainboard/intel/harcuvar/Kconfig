@@ -23,7 +23,7 @@ config BOARD_SPECIFIC_OPTIONS
 
 config MAINBOARD_DIR
 	string
-	default intel/harcuvar
+	default "intel/harcuvar"
 
 config MAINBOARD_PART_NUMBER
 	string

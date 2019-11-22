@@ -25,7 +25,7 @@ config BOARD_SPECIFIC_OPTIONS
 
 config MAINBOARD_DIR
 	string
-	default lenovo/t440p
+	default "lenovo/t440p"
 
 config MAINBOARD_PART_NUMBER
 	string

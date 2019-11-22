@@ -31,7 +31,7 @@ config BOARD_SPECIFIC_OPTIONS
 
 config MAINBOARD_DIR
 	string
-	default amd/lamar
+	default "amd/lamar"
 
 config MAINBOARD_PART_NUMBER
 	string

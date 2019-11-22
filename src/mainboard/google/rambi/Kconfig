@@ -23,7 +23,7 @@ config VBOOT
 
 config MAINBOARD_DIR
 	string
-	default google/rambi
+	default "google/rambi"
 
 config VARIANT_DIR
 	string

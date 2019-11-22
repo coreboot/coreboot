@@ -33,7 +33,7 @@ config BOARD_SPECIFIC_OPTIONS
 
 config MAINBOARD_DIR
 	string
-	default msi/ms7721
+	default "msi/ms7721"
 
 config MAINBOARD_PART_NUMBER
 	string

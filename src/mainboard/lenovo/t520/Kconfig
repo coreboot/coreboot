@@ -49,7 +49,7 @@ config VARIANT_DIR
 
 config MAINBOARD_DIR
 	string
-	default lenovo/t520
+	default "lenovo/t520"
 
 config DEVICETREE
 	string

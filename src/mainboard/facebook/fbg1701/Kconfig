@@ -42,7 +42,7 @@ config ONBOARD_SAMSUNG_MEM
 
 config MAINBOARD_DIR
 	string
-	default facebook/fbg1701
+	default "facebook/fbg1701"
 
 config MAINBOARD_PART_NUMBER
 	string

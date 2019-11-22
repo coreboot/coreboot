@@ -38,7 +38,7 @@ config VBOOT
 
 config MAINBOARD_DIR
 	string
-	default google/smaug
+	default "google/smaug"
 
 config MAINBOARD_PART_NUMBER
 	string

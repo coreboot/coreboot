@@ -29,7 +29,7 @@ config VBOOT
 
 config MAINBOARD_DIR
 	string
-	default samsung/lumpy
+	default "samsung/lumpy"
 
 config MAINBOARD_PART_NUMBER
 	string

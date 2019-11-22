@@ -61,6 +61,6 @@ config S3_DATA_SIZE
 
 endif # CPU_AMD_PI
 
-source src/cpu/amd/pi/00630F01/Kconfig
-source src/cpu/amd/pi/00730F01/Kconfig
-source src/cpu/amd/pi/00660F01/Kconfig
+source "src/cpu/amd/pi/00630F01/Kconfig"
+source "src/cpu/amd/pi/00730F01/Kconfig"
+source "src/cpu/amd/pi/00660F01/Kconfig"

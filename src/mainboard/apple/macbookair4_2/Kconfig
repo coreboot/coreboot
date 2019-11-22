@@ -17,7 +17,7 @@ config BOARD_SPECIFIC_OPTIONS
 
 config MAINBOARD_DIR
 	string
-	default apple/macbookair4_2
+	default "apple/macbookair4_2"
 
 config MAINBOARD_PART_NUMBER
 	string

@@ -27,7 +27,7 @@ endmenu
 
 config MAINBOARD_DIR
 	string
-	default intel/dcp847ske
+	default "intel/dcp847ske"
 
 config MAINBOARD_PART_NUMBER
 	string

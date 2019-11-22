@@ -37,7 +37,7 @@ config BOARD_SPECIFIC_OPTIONS
 
 config MAINBOARD_DIR
 	string
-	default asus/p8h61-m_lx
+	default "asus/p8h61-m_lx"
 
 config MAINBOARD_PART_NUMBER
 	string

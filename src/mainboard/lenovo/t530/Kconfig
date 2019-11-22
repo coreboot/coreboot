@@ -35,7 +35,7 @@ config VARIANT_DIR
 
 config MAINBOARD_DIR
 	string
-	default lenovo/t530
+	default "lenovo/t530"
 
 config DEVICETREE
 	string

@@ -33,7 +33,7 @@ config BOARD_SPECIFIC_OPTIONS
 
 config MAINBOARD_DIR
 	string
-	default lippert/frontrunner-af
+	default "lippert/frontrunner-af"
 
 config MAINBOARD_PART_NUMBER
 	string

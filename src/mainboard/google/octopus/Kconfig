@@ -48,7 +48,7 @@ config CHROMEOS
 
 config MAINBOARD_DIR
 	string
-	default google/octopus
+	default "google/octopus"
 
 config VARIANT_DIR
 	string

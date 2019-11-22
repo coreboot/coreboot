@@ -17,7 +17,7 @@ config BOARD_SPECIFIC_OPTIONS
 
 config MAINBOARD_DIR
 	string
-	default kontron/ktqm77
+	default "kontron/ktqm77"
 
 config MAINBOARD_PART_NUMBER
 	string

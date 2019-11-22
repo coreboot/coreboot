@@ -1,2 +1,2 @@
-source src/cpu/amd/agesa/Kconfig
-source src/cpu/amd/pi/Kconfig
+source "src/cpu/amd/agesa/Kconfig"
+source "src/cpu/amd/pi/Kconfig"

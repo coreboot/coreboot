@@ -32,7 +32,7 @@ config VBOOT
 
 config MAINBOARD_DIR
 	string
-	default google/foster
+	default "google/foster"
 
 config MAINBOARD_PART_NUMBER
 	string

@@ -31,7 +31,7 @@ config BOARD_SPECIFIC_OPTIONS
 
 config MAINBOARD_DIR
 	string
-	default asrock/b75pro3-m
+	default "asrock/b75pro3-m"
 
 config MAINBOARD_PART_NUMBER
 	string

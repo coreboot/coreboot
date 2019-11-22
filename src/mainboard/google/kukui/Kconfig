@@ -46,7 +46,7 @@ config BOARD_SPECIFIC_OPTIONS
 
 config MAINBOARD_DIR
 	string
-	default google/kukui
+	default "google/kukui"
 
 config MAINBOARD_PART_NUMBER
 	string

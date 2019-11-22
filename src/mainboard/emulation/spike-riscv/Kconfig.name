@@ -1,3 +1,2 @@
 config BOARD_EMULATION_SPIKE_RISCV
 	bool "SPIKE riscv"
-	help

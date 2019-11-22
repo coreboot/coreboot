@@ -29,7 +29,7 @@ config BOARD_SPECIFIC_OPTIONS
 
 config MAINBOARD_DIR
 	string
-	default asus/p2b-d
+	default "asus/p2b-d"
 
 config MAINBOARD_PART_NUMBER
 	string

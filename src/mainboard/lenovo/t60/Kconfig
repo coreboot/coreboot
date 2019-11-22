@@ -25,7 +25,7 @@ config BOARD_SPECIFIC_OPTIONS
 
 config MAINBOARD_DIR
 	string
-	default lenovo/t60
+	default "lenovo/t60"
 
 config VARIANT_DIR
 	string

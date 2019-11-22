@@ -29,7 +29,7 @@ config BOARD_SPECIFIC_OPTIONS
 
 config MAINBOARD_DIR
 	string
-	default lenovo/x230
+	default "lenovo/x230"
 
 config MAINBOARD_PART_NUMBER
 	string

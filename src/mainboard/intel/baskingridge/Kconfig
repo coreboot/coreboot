@@ -18,7 +18,7 @@ config VBOOT
 
 config MAINBOARD_DIR
 	string
-	default intel/baskingridge
+	default "intel/baskingridge"
 
 config MAINBOARD_PART_NUMBER
 	string

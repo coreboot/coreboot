@@ -34,7 +34,7 @@ config VBOOT
 
 config MAINBOARD_DIR
 	string
-	default google/peach_pit
+	default "google/peach_pit"
 
 config MAINBOARD_PART_NUMBER
 	string

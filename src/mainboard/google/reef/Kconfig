@@ -48,7 +48,7 @@ config VBOOT
 
 config MAINBOARD_DIR
 	string
-	default google/reef
+	default "google/reef"
 
 config VARIANT_DIR
 	string

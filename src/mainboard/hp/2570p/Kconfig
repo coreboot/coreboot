@@ -35,7 +35,7 @@ config BOARD_SPECIFIC_OPTIONS
 
 config MAINBOARD_DIR
 	string
-	default hp/2570p
+	default "hp/2570p"
 
 config MAINBOARD_PART_NUMBER
 	string

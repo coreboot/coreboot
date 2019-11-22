@@ -21,7 +21,7 @@ config BOARD_SPECIFIC_OPTIONS
 
 config MAINBOARD_DIR
 	string
-	default hp/folio_9470m
+	default "hp/folio_9470m"
 
 config MAINBOARD_PART_NUMBER
 	string

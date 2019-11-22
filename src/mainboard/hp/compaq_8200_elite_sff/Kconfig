@@ -21,7 +21,7 @@ config BOARD_SPECIFIC_OPTIONS
 
 config MAINBOARD_DIR
 	string
-	default hp/compaq_8200_elite_sff
+	default "hp/compaq_8200_elite_sff"
 
 config MAINBOARD_PART_NUMBER
 	string

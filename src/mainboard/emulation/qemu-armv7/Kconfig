@@ -39,7 +39,7 @@ config BOARD_SPECIFIC_OPTIONS
 
 config MAINBOARD_DIR
 	string
-	default emulation/qemu-armv7
+	default "emulation/qemu-armv7"
 
 config MAINBOARD_PART_NUMBER
 	string

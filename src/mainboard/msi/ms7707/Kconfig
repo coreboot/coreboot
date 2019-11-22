@@ -16,7 +16,7 @@ config BOARD_SPECIFIC_OPTIONS
 
 config MAINBOARD_DIR
 	string
-	default msi/ms7707
+	default "msi/ms7707"
 
 config MAINBOARD_PART_NUMBER
 	string

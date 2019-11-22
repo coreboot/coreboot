@@ -48,7 +48,7 @@ config FMDFILE
 
 config MAINBOARD_DIR
 	string
-	default lenovo/t420s
+	default "lenovo/t420s"
 
 config MAINBOARD_PART_NUMBER
 	string

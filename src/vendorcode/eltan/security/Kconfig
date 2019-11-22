@@ -19,8 +19,8 @@ if USE_VENDORCODE_ELTAN
 
 menu "Eltan Security Settings"
 
-source src/vendorcode/eltan/security/mboot/Kconfig
-source src/vendorcode/eltan/security/verified_boot/Kconfig
+source "src/vendorcode/eltan/security/mboot/Kconfig"
+source "src/vendorcode/eltan/security/verified_boot/Kconfig"
 
 endmenu
 

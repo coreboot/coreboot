@@ -1,1 +1,1 @@
-source src/cpu/ti/am335x/Kconfig
+source "src/cpu/ti/am335x/Kconfig"

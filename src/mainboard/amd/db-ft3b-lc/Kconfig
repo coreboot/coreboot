@@ -31,7 +31,7 @@ config BOARD_SPECIFIC_OPTIONS
 
 config MAINBOARD_DIR
 	string
-	default amd/db-ft3b-lc
+	default "amd/db-ft3b-lc"
 
 config MAINBOARD_PART_NUMBER
 	string

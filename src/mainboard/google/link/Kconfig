@@ -26,7 +26,7 @@ config VBOOT
 
 config MAINBOARD_DIR
 	string
-	default google/link
+	default "google/link"
 
 config MAINBOARD_PART_NUMBER
 	string

@@ -66,6 +66,6 @@ config S3_DATA_SIZE
 
 endif # CPU_AMD_AGESA
 
-source src/cpu/amd/agesa/family14/Kconfig
-source src/cpu/amd/agesa/family15tn/Kconfig
-source src/cpu/amd/agesa/family16kb/Kconfig
+source "src/cpu/amd/agesa/family14/Kconfig"
+source "src/cpu/amd/agesa/family15tn/Kconfig"
+source "src/cpu/amd/agesa/family16kb/Kconfig"

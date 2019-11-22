@@ -34,7 +34,7 @@ config DISPLAY_SPD_DATA
 
 config MAINBOARD_DIR
 	string
-	default google/cyan
+	default "google/cyan"
 
 config MAINBOARD_FAMILY
 	string

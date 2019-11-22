@@ -25,7 +25,7 @@ config VBOOT
 
 config MAINBOARD_DIR
 	string
-	default google/stout
+	default "google/stout"
 
 config MAINBOARD_PART_NUMBER
 	string

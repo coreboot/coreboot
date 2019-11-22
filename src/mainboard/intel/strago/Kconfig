@@ -24,7 +24,7 @@ config VBOOT
 
 config MAINBOARD_DIR
 	string
-	default intel/strago
+	default "intel/strago"
 
 config MAINBOARD_PART_NUMBER
 	string

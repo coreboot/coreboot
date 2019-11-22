@@ -20,14 +20,14 @@ config NO_UART_ON_SUPERIO
 	def_bool n
 
 config UART_OVERRIDE_INPUT_CLOCK_DIVIDER
-	boolean
+	bool
 	default n
 	help
 	  Set to "y" when the platform overrides the uart_input_clock_divider
 	  routine.
 
 config UART_OVERRIDE_REFCLK
-	boolean
+	bool
 	default n
 	help
 	  Set to "y" when the platform overrides the uart_platform_refclk

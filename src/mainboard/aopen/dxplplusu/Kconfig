@@ -12,7 +12,7 @@ config BOARD_SPECIFIC_OPTIONS
 
 config MAINBOARD_DIR
 	string
-	default aopen/dxplplusu
+	default "aopen/dxplplusu"
 
 config MAINBOARD_PART_NUMBER
 	string

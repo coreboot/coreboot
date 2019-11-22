@@ -35,7 +35,7 @@ config BOARD_SPECIFIC_OPTIONS
 
 config MAINBOARD_DIR
 	string
-	default pcengines/apu1
+	default "pcengines/apu1"
 
 config MAINBOARD_PART_NUMBER
 	string

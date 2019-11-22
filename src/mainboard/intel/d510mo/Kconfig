@@ -36,7 +36,7 @@ config MAX_CPUS
 
 config MAINBOARD_DIR
 	string
-	default intel/d510mo
+	default "intel/d510mo"
 
 config MAINBOARD_PART_NUMBER
 	string

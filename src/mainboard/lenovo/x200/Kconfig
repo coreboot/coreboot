@@ -44,7 +44,7 @@ config FMDFILE
 
 config MAINBOARD_DIR
 	string
-	default lenovo/x200
+	default "lenovo/x200"
 
 config VARIANT_DIR
 	string

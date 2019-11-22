@@ -1,5 +1,9 @@
 comment "Important: Run 'make distclean' before switching boards"
 
+if ROMCC_BOOTBLOCK
+comment "Systems with ROMCC bootblocks will be deprecated soon!"
+endif
+
 choice
 	prompt "Mainboard vendor"
 	default VENDOR_EMULATION

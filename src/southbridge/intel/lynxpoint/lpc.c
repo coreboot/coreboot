@@ -740,11 +740,12 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	u16 pmbase = get_pmbase();
 
 	fadt->sci_int = 0x9;
-	fadt->smi_cmd = APM_CNT;
-	fadt->acpi_enable = APM_CNT_ACPI_ENABLE;
-	fadt->acpi_disable = APM_CNT_ACPI_DISABLE;
-	fadt->s4bios_req = 0x0;
-	fadt->pstate_cnt = 0;
+
+	if (CONFIG(HAVE_SMI_HANDLER)) {
+		fadt->smi_cmd = APM_CNT;
+		fadt->acpi_enable = APM_CNT_ACPI_ENABLE;
+		fadt->acpi_disable = APM_CNT_ACPI_DISABLE;
+	}
 
 	fadt->pm1a_evt_blk = pmbase + PM1_STS;
 	fadt->pm1b_evt_blk = 0x0;
@@ -775,7 +776,6 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	fadt->gpe1_blk_len = 0;
 	fadt->gpe1_base = 0;
 
-	fadt->cst_cnt = 0;
 	fadt->p_lvl2_lat = 1;
 	fadt->p_lvl3_lat = 87;
 	fadt->flush_size = 0;

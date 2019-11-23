@@ -521,13 +521,15 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 
 	fadt->reserved = 0;
 	fadt->sci_int = 0x9;
-	fadt->smi_cmd = APM_CNT;
-	fadt->acpi_enable = APM_CNT_ACPI_ENABLE;
-	fadt->acpi_disable = APM_CNT_ACPI_DISABLE;
-	fadt->s4bios_req = 0x0;
-	fadt->pstate_cnt = APM_CNT_PST_CONTROL;
 
-	fadt->cst_cnt = APM_CNT_CST_CONTROL;
+	if (CONFIG(HAVE_SMI_HANDLER)) {
+		fadt->smi_cmd = APM_CNT;
+		fadt->acpi_enable = APM_CNT_ACPI_ENABLE;
+		fadt->acpi_disable = APM_CNT_ACPI_DISABLE;
+		fadt->pstate_cnt = APM_CNT_PST_CONTROL;
+		fadt->cst_cnt = APM_CNT_CST_CONTROL;
+	}
+
 	fadt->p_lvl2_lat = 1;
 	fadt->p_lvl3_lat = chip->c3_latency;
 	fadt->flush_size = 0;

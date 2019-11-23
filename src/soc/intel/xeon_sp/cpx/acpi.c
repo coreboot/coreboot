@@ -152,16 +152,6 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 		fadt->smi_cmd = APM_CNT;
 		fadt->acpi_enable = APM_CNT_ACPI_ENABLE;
 		fadt->acpi_disable = APM_CNT_ACPI_DISABLE;
-		fadt->s4bios_req = 0;
-		fadt->pstate_cnt = 0;
-		fadt->cst_cnt = 0;
-	} else {
-		fadt->smi_cmd = 0;
-		fadt->acpi_enable = 0;
-		fadt->acpi_disable = 0;
-		fadt->s4bios_req = 0;
-		fadt->pstate_cnt = 0;
-		fadt->cst_cnt = 0;
 	}
 
 	/*  General-Purpose Event Registers */

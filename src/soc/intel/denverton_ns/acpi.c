@@ -121,13 +121,6 @@ void soc_fill_fadt(acpi_fadt_t *fadt)
 {
 	u16 pmbase = get_pmbase();
 
-	/* System Management */
-	if (!CONFIG(HAVE_SMI_HANDLER)) {
-		fadt->smi_cmd = 0x00;
-		fadt->acpi_enable = 0x00;
-		fadt->acpi_disable = 0x00;
-	}
-
 	/* Power Control */
 	fadt->pm2_cnt_blk = pmbase + PM2_CNT;
 	fadt->pm_tmr_blk = pmbase + PM1_TMR;
@@ -139,7 +132,7 @@ void soc_fill_fadt(acpi_fadt_t *fadt)
 	fadt->gpe0_blk_len = 8;
 	fadt->gpe1_blk_len = 0;
 	fadt->gpe1_base = 0;
-	fadt->cst_cnt = 0;
+
 	fadt->p_lvl2_lat = ACPI_FADT_C2_NOT_SUPPORTED;
 	fadt->p_lvl3_lat = ACPI_FADT_C3_NOT_SUPPORTED;
 	fadt->flush_size = 0;   /* set to 0 if WBINVD is 1 in flags */

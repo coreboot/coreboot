@@ -100,11 +100,12 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	fadt->header.revision = get_acpi_table_revision(FADT);
 
 	fadt->sci_int = acpi_sci_irq();
-	fadt->smi_cmd = APM_CNT;
-	fadt->acpi_enable = APM_CNT_ACPI_ENABLE;
-	fadt->acpi_disable = APM_CNT_ACPI_DISABLE;
-	fadt->s4bios_req = 0x0;
-	fadt->pstate_cnt = 0;
+
+	if (CONFIG(HAVE_SMI_HANDLER)) {
+		fadt->smi_cmd = APM_CNT;
+		fadt->acpi_enable = APM_CNT_ACPI_ENABLE;
+		fadt->acpi_disable = APM_CNT_ACPI_DISABLE;
+	}
 
 	fadt->pm1a_evt_blk = pmbase + PM1_STS;
 	fadt->pm1b_evt_blk = 0x0;

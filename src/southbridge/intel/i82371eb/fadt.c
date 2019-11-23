@@ -35,11 +35,11 @@ void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
 	fadt->dsdt = (uintptr_t)dsdt;
 	fadt->preferred_pm_profile = 0; /* unspecified */
 	fadt->sci_int = 9;
-	fadt->smi_cmd = 0; /* smi command port */
-	fadt->acpi_enable = 0; /* acpi enable smi command */
-	fadt->acpi_disable = 0; /* acpi disable smi command */
-	fadt->s4bios_req = 0x0;
-	fadt->pstate_cnt = 0x0;
+
+	if (CONFIG(HAVE_SMI_HANDLER)) {
+		/* TODO: SMI handler is not implemented. */
+		fadt->smi_cmd = 0x00;
+	}
 
 	fadt->pm1a_evt_blk = DEFAULT_PMBASE;
 	fadt->pm1b_evt_blk = 0x0;
@@ -60,7 +60,6 @@ void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
 	fadt->pm_tmr_len = 4;
 	fadt->gpe0_blk_len = 4;
 
-	fadt->cst_cnt = 0; /* smi command to indicate c state changed notification */
 	fadt->p_lvl2_lat = 101; /* >100 means c2 not supported */
 	fadt->p_lvl3_lat = 1001; /* >1000 means c3 not supported */
 	fadt->flush_size = 0; /* only needed if CPU wbinvd is broken */

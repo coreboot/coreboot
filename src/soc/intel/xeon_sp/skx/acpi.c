@@ -6,6 +6,7 @@
 #include <intelblocks/acpi.h>
 #include <device/pci.h>
 #include <cbmem.h>
+#include <cpu/x86/smm.h>
 #include <soc/acpi.h>
 #include <soc/cpu.h>
 #include <soc/pci_devs.h>
@@ -227,13 +228,6 @@ void soc_fill_fadt(acpi_fadt_t *fadt)
 {
 	uint16_t pmbase = ACPI_BASE_ADDRESS;
 
-	/* System Management */
-	if (!CONFIG(HAVE_SMI_HANDLER)) {
-		fadt->smi_cmd = 0x00;
-		fadt->acpi_enable = 0x00;
-		fadt->acpi_disable = 0x00;
-	}
-
 	/* Power Control */
 	fadt->pm2_cnt_blk = pmbase + PM2_CNT;
 	fadt->pm_tmr_blk = pmbase + PM1_TMR;
@@ -246,7 +240,6 @@ void soc_fill_fadt(acpi_fadt_t *fadt)
 	fadt->gpe0_blk_len = 2 * GPE0_REG_MAX * sizeof(uint32_t);
 	fadt->gpe1_blk_len = 0;
 	fadt->gpe1_base = 0;
-	fadt->cst_cnt = 0;
 	fadt->p_lvl2_lat = ACPI_FADT_C2_NOT_SUPPORTED;
 	fadt->p_lvl3_lat = ACPI_FADT_C3_NOT_SUPPORTED;
 	fadt->flush_size = 0;   /* set to 0 if WBINVD is 1 in flags */
@@ -345,17 +338,13 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	fadt->header.revision = get_acpi_table_revision(FADT);
 
 	fadt->sci_int = acpi_sci_irq();
-	/*
-	TODO: enabled SMM mode switch when SMM handlers are set up.
-	fadt->smi_cmd = APM_CNT;
-	fadt->acpi_enable = APM_CNT_ACPI_ENABLE;
-	fadt->acpi_disable = APM_CNT_ACPI_DISABLE;
-	*/
-	fadt->smi_cmd = 0x00;
-	fadt->acpi_enable = 0x00;
-	fadt->acpi_disable = 0x00;
-	fadt->s4bios_req = 0x0;
-	fadt->pstate_cnt = 0;
+
+	/* TODO: enabled SMM mode switch when SMM handlers are set up. */
+	if (0 && CONFIG(HAVE_SMI_HANDLER)) {
+		fadt->smi_cmd = APM_CNT;
+		fadt->acpi_enable = APM_CNT_ACPI_ENABLE;
+		fadt->acpi_disable = APM_CNT_ACPI_DISABLE;
+	}
 
 	fadt->pm1a_evt_blk = pmbase + PM1_STS;
 	fadt->pm1b_evt_blk = 0x0;
@@ -374,7 +363,6 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	fadt->gpe0_blk_len = 2 * GPE0_REG_MAX * sizeof(uint32_t);
 	fadt->gpe1_blk_len = 0;
 	fadt->gpe1_base = 0;
-	fadt->cst_cnt = 0;
 	fadt->p_lvl2_lat = 1;
 	fadt->p_lvl3_lat = 87;
 	fadt->flush_size = 1024;

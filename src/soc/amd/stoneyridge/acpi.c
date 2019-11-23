@@ -83,16 +83,6 @@ void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
 		fadt->smi_cmd = APM_CNT;
 		fadt->acpi_enable = APM_CNT_ACPI_ENABLE;
 		fadt->acpi_disable = APM_CNT_ACPI_DISABLE;
-		fadt->s4bios_req = 0;	/* Not supported */
-		fadt->pstate_cnt = 0;	/* Not supported */
-		fadt->cst_cnt = 0;	/* Not supported */
-	} else {
-		fadt->smi_cmd = 0;	/* disable system management mode */
-		fadt->acpi_enable = 0;	/* unused if SMI_CMD = 0 */
-		fadt->acpi_disable = 0;	/* unused if SMI_CMD = 0 */
-		fadt->s4bios_req = 0;	/* unused if SMI_CMD = 0 */
-		fadt->pstate_cnt = 0;	/* unused if SMI_CMD = 0 */
-		fadt->cst_cnt = 0x00;	/* unused if SMI_CMD = 0 */
 	}
 
 	fadt->pm1a_evt_blk = ACPI_PM_EVT_BLK;

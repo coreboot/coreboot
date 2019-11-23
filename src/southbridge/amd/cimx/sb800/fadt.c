@@ -61,11 +61,6 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 	fadt->reserved = 0;		/* reserved, should be 0 ACPI 3.0 */
 	fadt->preferred_pm_profile = FADT_PM_PROFILE;
 	fadt->sci_int = 9;		/* HUDSON 1 - IRQ 09 - ACPI SCI */
-	fadt->smi_cmd = 0;		/* disable system management mode */
-	fadt->acpi_enable = 0;	/* unused if SMI_CMD = 0 */
-	fadt->acpi_disable = 0;	/* unused if SMI_CMD = 0 */
-	fadt->s4bios_req = 0;	/* unused if SMI_CMD = 0 */
-	fadt->pstate_cnt = 0;	/* unused if SMI_CMD = 0 */
 
 	val = PM1_EVT_BLK_ADDRESS;
 	WritePMIO(SB_PMIOA_REG60, AccWidthUint16, &val);
@@ -109,7 +104,6 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 	fadt->gpe1_blk_len = 0;
 	fadt->gpe1_base = 0;
 
-	fadt->cst_cnt = 0x00;	/* unused if SMI_CMD = 0 */
 	fadt->p_lvl2_lat = ACPI_FADT_C2_NOT_SUPPORTED;
 	fadt->p_lvl3_lat = ACPI_FADT_C3_NOT_SUPPORTED;
 	fadt->flush_size = 0;	/* set to 0 if WBINVD is 1 in flags */

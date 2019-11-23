@@ -25,11 +25,14 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 	fadt->reserved = 0x00;
 	fadt->preferred_pm_profile = PM_MOBILE;
 	fadt->sci_int = 0x9;
-	fadt->smi_cmd = APM_CNT;
-	fadt->acpi_enable = APM_CNT_ACPI_ENABLE;
-	fadt->acpi_disable = APM_CNT_ACPI_DISABLE;
-	fadt->s4bios_req = 0x0;
-	fadt->pstate_cnt = APM_CNT_PST_CONTROL;
+
+	if (CONFIG(HAVE_SMI_HANDLER)) {
+		fadt->smi_cmd = APM_CNT;
+		fadt->acpi_enable = APM_CNT_ACPI_ENABLE;
+		fadt->acpi_disable = APM_CNT_ACPI_DISABLE;
+		fadt->pstate_cnt = APM_CNT_PST_CONTROL;
+		fadt->cst_cnt = APM_CNT_CST_CONTROL;
+	}
 
 	fadt->pm1a_evt_blk = pmbase;
 	fadt->pm1b_evt_blk = 0x0;
@@ -48,7 +51,6 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 	fadt->gpe0_blk_len = 16;
 	fadt->gpe1_blk_len = 0;
 	fadt->gpe1_base = 0;
-	fadt->cst_cnt = APM_CNT_CST_CONTROL;
 	fadt->p_lvl2_lat = 1;
 	fadt->p_lvl3_lat = 0x39;
 	fadt->flush_size = 0;

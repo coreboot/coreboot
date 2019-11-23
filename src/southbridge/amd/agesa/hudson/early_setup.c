@@ -87,4 +87,22 @@ void hudson_lpc_port80(void)
 	pci_write_config8(dev, 0x4a, byte);
 }
 
+void hudson_lpc_decode(void)
+{
+	pci_devfn_t dev;
+	u32 tmp;
+
+	dev = PCI_DEV(0, 0x14, 3);
+	/* Serial port numeration on Hudson:
+	 * PORT0 - 0x3f8
+	 * PORT1 - 0x2f8
+	 * PORT5 - 0x2e8
+	 * PORT7 - 0x3e8
+	 */
+	tmp =  DECODE_ENABLE_SERIAL_PORT0 | DECODE_ENABLE_SERIAL_PORT1
+	     | DECODE_ENABLE_SERIAL_PORT5 | DECODE_ENABLE_SERIAL_PORT7;
+
+	pci_write_config32(dev, LPC_IO_PORT_DECODE_ENABLE, tmp);
+}
+
 #endif /* _HUDSON_EARLY_SETUP_C_ */

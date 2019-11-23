@@ -29,7 +29,6 @@
 #include <cpu/cpu.h>
 #include <Porting.h>
 #include <AGESA.h>
-#include <FieldAccessors.h>
 #include <Topology.h>
 #include <cpu/x86/lapic.h>
 #include <cpu/amd/msr.h>
@@ -1031,21 +1030,12 @@ static void cpu_bus_scan(struct device *dev)
 	int siblings = 0;
 	unsigned int family;
 	u32 modules = 0;
-	VOID* modules_ptr = &modules;
-	BUILD_OPT_CFG* options = NULL;
 	int ioapic_count = 0;
 
-	// TODO Remove the printk's.
-	printk(BIOS_SPEW, "MullinsPI Debug: Grabbing the AMD Topology Information.\n");
-	AmdGetValue(AMD_GLOBAL_USER_OPTIONS, (VOID**)&options, sizeof(options));
-	AmdGetValue(AMD_GLOBAL_NUM_MODULES, &modules_ptr, sizeof(modules));
-	modules = *(u32*)modules_ptr;
-	ASSERT(modules > 0);
-	ASSERT(options);
-	ioapic_count = (int)options->CfgPlatNumIoApics;
-	ASSERT(ioapic_count > 0);
-	printk(BIOS_SPEW, "MullinsPI Debug: AMD Topology Number of Modules (@0x%p) is %d\n", modules_ptr, modules);
-	printk(BIOS_SPEW, "MullinsPI Debug: AMD Topology Number of IOAPICs (@0x%p) is %d\n", options, (int)options->CfgPlatNumIoApics);
+	/* For binaryPI there is no multiprocessor configuration, the number of
+	 * modules will always be 1. */
+	modules = 1;
+	ioapic_count = CONFIG_NUM_OF_IOAPICS;
 
 	dev_mc = pcidev_on_root(DEV_CDB, 0);
 	if (!dev_mc) {

@@ -54,4 +54,8 @@ config HEAP_SIZE
 	hex
 	default 0xc0000
 
+config NUM_OF_IOAPICS
+	int
+	default 3
+
 endif # NORTHBRIDGE_AMD_PI

@@ -1,2 +1,3 @@
-config BOARD_AMD_BETTONG
-	bool "Bettong"
+# Disabled
+#config BOARD_AMD_BETTONG
+#	bool "Bettong"

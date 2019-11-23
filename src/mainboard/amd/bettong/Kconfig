@@ -13,6 +13,9 @@
 # GNU General Public License for more details.
 #
 
+config BOARD_AMD_BETTONG
+	def_bool n
+
 if BOARD_AMD_BETTONG
 
 config BOARD_SPECIFIC_OPTIONS

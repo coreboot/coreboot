@@ -13,6 +13,9 @@
 # GNU General Public License for more details.
 #
 
+config BOARD_ODE_E21XX
+	def_bool n
+
 if BOARD_ODE_E21XX
 
 config BOARD_SPECIFIC_OPTIONS

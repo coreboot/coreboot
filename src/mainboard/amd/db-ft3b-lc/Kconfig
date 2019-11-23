@@ -14,6 +14,9 @@
 # GNU General Public License for more details.
 #
 
+config BOARD_AMD_DB_FT3B_LC
+	def_bool n
+
 if BOARD_AMD_DB_FT3B_LC
 
 config BOARD_SPECIFIC_OPTIONS

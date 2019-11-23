@@ -27,6 +27,7 @@ config SLOT_SPECIFIC_OPTIONS # dummy
 	select UDELAY_TSC
 	select TSC_MONOTONIC_TIMER
 	select UNKNOWN_TSC_RATE
+	select SETUP_XIP_CACHE
 
 config DCACHE_RAM_BASE
 	hex

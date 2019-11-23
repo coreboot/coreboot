@@ -28,7 +28,6 @@ config CPU_SPECIFIC_OPTIONS
 	select REG_SCRIPT
 	select PARALLEL_MP
 	select RTC
-	select SMP
 	select SPI_FLASH
 	select SSE2
 	select TSC_SYNC_MFENCE

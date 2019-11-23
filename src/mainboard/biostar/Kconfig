@@ -20,6 +20,9 @@ choice
 
 source "src/mainboard/biostar/*/Kconfig.name"
 
+config BIOSTAR_BOARDS_DISABLED
+	bool "Boards from vendor are disabled"
+
 endchoice
 
 source "src/mainboard/biostar/*/Kconfig"

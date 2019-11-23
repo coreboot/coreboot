@@ -1,2 +1,2 @@
-config BOARD_ODE_E20XX
-	bool "ODE_e20xx"
+#config BOARD_ODE_E20XX
+#	bool"ODE_e20xx"

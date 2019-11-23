@@ -13,6 +13,9 @@
 # GNU General Public License for more details.
 #
 
+config BOARD_ELMEX_PCM205401
+	def_bool n
+
 if BOARD_ELMEX_PCM205401
 
 config MAINBOARD_PART_NUMBER

@@ -1,2 +1,2 @@
-config BOARD_AMD_PARMER
-	bool "Parmer"
+#config BOARD_AMD_PARMER
+#	bool"Parmer"

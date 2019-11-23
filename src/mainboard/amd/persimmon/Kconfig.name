@@ -1,2 +1,2 @@
-config BOARD_AMD_PERSIMMON
-	bool "Persimmon"
+#config BOARD_AMD_PERSIMMON
+#	bool"Persimmon"

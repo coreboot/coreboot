@@ -5,6 +5,9 @@ choice
 
 source "src/mainboard/jetway/*/Kconfig.name"
 
+config JETWAY_BOARDS_DISABLED
+	bool "Boards from vendor are disabled"
+
 endchoice
 
 source "src/mainboard/jetway/*/Kconfig"

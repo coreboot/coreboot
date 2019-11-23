@@ -1,2 +1,2 @@
-config BOARD_AMD_INAGUA
-	bool "Inagua"
+#config BOARD_AMD_INAGUA
+#	bool"Inagua"

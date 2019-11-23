@@ -176,7 +176,7 @@ config SMM_MODULE_STACK_SIZE
 
 config ACPI_CPU_STRING
 	string
-	default "\\_PR.P%03d"
+	default "\\_PR.C%03d"
 
 config ACPI_BERT
 	bool "Build ACPI BERT Table"

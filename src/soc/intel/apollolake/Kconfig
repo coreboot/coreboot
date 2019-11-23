@@ -29,7 +29,6 @@ config CPU_SPECIFIC_OPTIONS
 	select CPU_INTEL_FIRMWARE_INTERFACE_TABLE
 	select IOAPIC
 	select PCR_COMMON_IOSF_1_0
-	select SMP
 	select SSE2
 	select SUPPORT_CPU_UCODE_IN_CBFS
 	# Audio options

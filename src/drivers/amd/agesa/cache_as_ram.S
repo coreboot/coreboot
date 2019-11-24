@@ -39,51 +39,6 @@ _cache_as_ram_setup:
 	/* Align the stack. */
 	and	$0xFFFFFFF0, %esp
 
-#ifdef __x86_64__
-	/* switch to 64 bit long mode */
-	mov	%esi, %ecx
-	add	$0, %ecx # core number
-	xor	%eax, %eax
-	lea	(0x1000+0x23)(%ecx), %edi
-	mov	%edi, (%ecx)
-	mov	%eax, 4(%ecx)
-
-	lea	0x1000(%ecx), %edi
-	movl	$0x000000e3, 0x00(%edi)
-	movl	%eax, 0x04(%edi)
-	movl	$0x400000e3, 0x08(%edi)
-	movl	%eax, 0x0c(%edi)
-	movl	$0x800000e3, 0x10(%edi)
-	movl	%eax, 0x14(%edi)
-	movl	$0xc00000e3, 0x18(%edi)
-	movl	%eax, 0x1c(%edi)
-
-	# load ROM based identity mapped page tables
-	mov	%ecx, %eax
-	mov	%eax, %cr3
-
-	# enable PAE
-	mov	%cr4, %eax
-	bts	$5, %eax
-	mov	%eax, %cr4
-
-	# enable long mode
-	mov	$0xC0000080, %ecx
-	rdmsr
-	bts	$8, %eax
-	wrmsr
-
-	# enable paging
-	mov	%cr0, %eax
-	bts	$31, %eax
-	mov	%eax, %cr0
-
-	# use call far to switch to 64-bit code segment
-	ljmp	$0x18, $1f
-1:
-
-#endif
-
 	/* Must maintain 16-byte stack alignment here. */
 	pushl	$0x0
 	pushl	$0x0

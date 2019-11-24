@@ -22,16 +22,21 @@
 #define PM_INDEX			0xcd6
 #define PM_DATA				0xcd7
 
-/* TODO: In the event this is ported backward far enough, earlier devices
- * enable the decode in PMx24 instead.  All discrete FCHs and the Kabini
- * SoC fall into this category.  Kabini's successor, Mullins, uses this
- * newer method.
+/* Earlier devices enable the decode in PMx24 instead.  All discrete FCHs and
+ * the Kabini SoC fall into this category.  Kabini's successor, Mullins, uses
+ * this newer method.
  */
-#define ACPIMMIO_DECODE_REGISTER 0x4
-#define   ACPIMMIO_DECODE_EN		BIT(0)
+
+#define ACPIMMIO_DECODE_REGISTER_24 0x24
+#define   PM_24_ACPIMMIO_DECODE_EN	BIT(0)
+
+#define ACPIMMIO_DECODE_REGISTER_04 0x4
+#define   PM_04_BIOSRAM_DECODE_EN	BIT(0)
+#define   PM_04_ACPIMMIO_DECODE_EN	BIT(1)
+
 
 /* MMIO register blocks are at fixed offsets from 0xfed80000 and are enabled
- * in PMx24[1] (older implementations) and PMx04[1] (newer implementations).
+ * in PMx24[0] (older implementations) and PMx04[1] (newer implementations).
  * PM registers are also accessible via IO CD6/CD7.
  *
  * All products do not support all blocks below, however AMD has avoided

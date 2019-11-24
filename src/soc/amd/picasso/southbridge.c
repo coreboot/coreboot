@@ -278,7 +278,7 @@ void fch_pre_init(void)
 	sb_disable_4dw_burst();
 	sb_set_spi100(SPI_SPEED_33M, SPI_SPEED_33M,
 			SPI_SPEED_16M, SPI_SPEED_16M);
-	enable_acpimmio_decode();
+	enable_acpimmio_decode_pm04();
 	fch_smbus_init();
 	sb_enable_cf9_io();
 	sb_enable_legacy_io();

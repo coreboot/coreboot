@@ -399,7 +399,7 @@ void bootblock_fch_early_init(void)
 	lpc_enable_spi_prefetch();
 	sb_init_spi_base();
 	sb_disable_4dw_burst(); /* Must be disabled on CZ(ST) */
-	enable_acpimmio_decode();
+	enable_acpimmio_decode_pm04();
 	fch_smbus_init();
 	sb_enable_cf9_io();
 	setup_spread_spectrum(&reboot);

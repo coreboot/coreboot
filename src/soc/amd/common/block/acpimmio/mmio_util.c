@@ -18,13 +18,22 @@
 #include <amdblocks/acpimmio_map.h>
 #include <amdblocks/acpimmio.h>
 
-void enable_acpimmio_decode(void)
+void enable_acpimmio_decode_pm24(void)
 {
 	uint32_t dw;
 
-	dw = pm_io_read32(ACPIMMIO_DECODE_REGISTER);
-	dw |= ACPIMMIO_DECODE_EN;
-	pm_io_write32(ACPIMMIO_DECODE_REGISTER, dw);
+	dw = pm_io_read32(ACPIMMIO_DECODE_REGISTER_24);
+	dw |= PM_24_ACPIMMIO_DECODE_EN;
+	pm_io_write32(ACPIMMIO_DECODE_REGISTER_24, dw);
+}
+
+void enable_acpimmio_decode_pm04(void)
+{
+	uint32_t dw;
+
+	dw = pm_io_read32(ACPIMMIO_DECODE_REGISTER_04);
+	dw |= PM_04_ACPIMMIO_DECODE_EN;
+	pm_io_write32(ACPIMMIO_DECODE_REGISTER_04, dw);
 }
 
 /* PM registers are accessed a byte at a time via CD6/CD7 */

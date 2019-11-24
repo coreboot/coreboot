@@ -101,7 +101,12 @@
  */
 
 /* Enable the AcpiMmio range at 0xfed80000 */
-void enable_acpimmio_decode(void);
+
+/* For older discrete FCHs */
+void enable_acpimmio_decode_pm24(void);
+
+/* For newer integrated FCHs */
+void enable_acpimmio_decode_pm04(void);
 
 /* Access PM registers using IO cycles */
 uint8_t pm_io_read8(uint8_t reg);

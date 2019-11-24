@@ -29,10 +29,8 @@
 #include <northbridge/intel/sandybridge/raminit_native.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <southbridge/intel/common/gpio.h>
-#include "option_table.h"
-#if CONFIG(DRIVERS_UART_8250IO)
 #include <superio/smsc/lpc47n207/lpc47n207.h>
-#endif
+#include "option_table.h"
 
 void bootblock_mainboard_early_init(void)
 {

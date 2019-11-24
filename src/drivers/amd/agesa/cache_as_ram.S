@@ -27,8 +27,16 @@
 
 .code32
 .globl _cache_as_ram_setup, _cache_as_ram_setup_end
+.global bootblock_pre_c_entry
 
 _cache_as_ram_setup:
+
+/*
+ * on entry:
+ *   mm0: BIST (ignored)
+ *   mm2_mm1: timestamp at bootblock_protected_mode_entry
+ */
+bootblock_pre_c_entry:
 
 	post_code(0xa0)
 
@@ -51,8 +59,10 @@ _cache_as_ram_setup:
 	and	$0xfffffff0, %esp
 	sub	$8, %esp
 
-	pushl	$0		/* tsc[63:32] */
-	pushl	$0		/* tsc[31:0] */
+	movd	%mm2, %eax
+	pushl	%eax		/* tsc[63:32] */
+	movd	%mm1, %eax
+	pushl	%eax		/* tsc[31:0] */
 
 	post_code(0xa2)
 

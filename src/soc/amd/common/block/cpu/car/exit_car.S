@@ -29,9 +29,4 @@ chipset_teardown_car:
 
 	AMD_DISABLE_STACK
 
-	/* enable cache */
-	movl	%cr0, %eax
-	andl	$(~(CR0_CD | CR0_NW)), %eax
-	movl	%eax, %cr0
-
 	jmp	*%esp

@@ -18,6 +18,7 @@
  * SMI handler for Hudson southbridges
  */
 
+#include <amdblocks/acpimmio.h>
 #include <arch/io.h>
 #include <cpu/x86/smm.h>
 

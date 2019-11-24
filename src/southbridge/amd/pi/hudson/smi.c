@@ -18,6 +18,7 @@
  * Utilities for SMM setup
  */
 
+#include <amdblocks/acpimmio.h>
 #include <console/console.h>
 #include <cpu/x86/smm.h>
 

@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <amdblocks/acpimmio.h>
 #include <console/console.h>
 #include <device/mmio.h>
 #include <device/device.h>
@@ -25,31 +26,6 @@
 #include "smbus.h"
 #include "smi.h"
 
-/* Offsets from ACPI_MMIO_BASE
- * This is defined by AGESA, but we don't include AGESA headers to avoid
- * polluting the namespace.
- */
-#define PM_MMIO_BASE 0xfed80300
-
-void pm_write8(u8 reg, u8 value)
-{
-	write8((void *)((uintptr_t)PM_MMIO_BASE + reg), value);
-}
-
-u8 pm_read8(u8 reg)
-{
-	return read8((void *)((uintptr_t)PM_MMIO_BASE + reg));
-}
-
-void pm_write16(u8 reg, u16 value)
-{
-	write16((void *)((uintptr_t)PM_MMIO_BASE + reg), value);
-}
-
-u16 pm_read16(u16 reg)
-{
-	return read16((void *)((uintptr_t)PM_MMIO_BASE + reg));
-}
 
 #define PM_REG_USB_ENABLE	0xef
 

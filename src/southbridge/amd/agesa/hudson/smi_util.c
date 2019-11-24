@@ -18,9 +18,10 @@
  * SMM utilities used in both SMM and normal mode
  */
 
-#include "smi.h"
-
+#include <amdblocks/acpimmio.h>
 #include <console/console.h>
+
+#include "smi.h"
 
 #define HUDSON_SMI_ACPI_COMMAND		75
 

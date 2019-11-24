@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <amdblocks/acpimmio.h>
 #include <console/console.h>
 #include <arch/io.h>
 #include <device/mmio.h>
@@ -34,26 +35,6 @@ int acpi_get_sleep_type(void)
 	u16 tmp = inw(ACPI_PM1_CNT_BLK);
 	tmp = ((tmp & (7 << 10)) >> 10);
 	return (int)tmp;
-}
-
-void pm_write8(u8 reg, u8 value)
-{
-	write8((void *)(PM_MMIO_BASE + reg), value);
-}
-
-u8 pm_read8(u8 reg)
-{
-	return read8((void *)(PM_MMIO_BASE + reg));
-}
-
-void pm_write16(u8 reg, u16 value)
-{
-	write16((void *)(PM_MMIO_BASE + reg), value);
-}
-
-u16 pm_read16(u16 reg)
-{
-	return read16((void *)(PM_MMIO_BASE + reg));
 }
 
 void hudson_enable(struct device *dev)

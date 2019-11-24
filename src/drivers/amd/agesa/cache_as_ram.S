@@ -22,6 +22,7 @@
  */
 
 #include "gcccar.inc"
+#include <cpu/x86/lapic_def.h>
 #include <cpu/x86/post_code.h>
 
 .code32
@@ -36,6 +37,19 @@ _cache_as_ram_setup:
 
 	AMD_ENABLE_STACK
 
+	/*
+	 * Set up bootblock stack on BSP.
+	 * AMD_ENABLE_STACK macro sets up a stack for BSP at BSP_STACK_BASE_ADDR
+	 * which is 0x30000 (_car_region_end), but for C bootblock the stack
+	 * begins at _ecar_stack (see arch/x86/car.ld)
+	 */
+	mov	$LAPIC_BASE_MSR, %ecx
+	rdmsr
+	test	$LAPIC_BASE_MSR_BOOTSTRAP_PROCESSOR, %eax
+	jz	ap_entry
+
+	mov	$_ecar_stack, %esp
+
 	/* Align the stack. */
 	and	$0xFFFFFFF0, %esp
 
@@ -47,11 +61,19 @@ _cache_as_ram_setup:
 	pushl	%eax
 	call	romstage_main
 
-	/* Should never see this postcode */
-	post_code(0xae)
+	/* Never reached. */
 
 stop:
+	post_code(POST_DEAD_CODE)
 	hlt
+	jmp	stop
+
+ap_entry:
+	/* Align the stack for call to ap_romstage_main() */
+	and	$0xfffffff0, %esp
+	call	ap_romstage_main
+
+	/* Never reached. */
 	jmp	stop
 
 _cache_as_ram_setup_end:

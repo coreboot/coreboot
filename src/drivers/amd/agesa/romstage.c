@@ -39,7 +39,7 @@ static void fill_sysinfo(struct sysinfo *cb)
 	agesa_set_interface(cb);
 }
 
-static void bsp_romstage_main(void)
+asmlinkage void romstage_main(unsigned long bist)
 {
 	struct postcar_frame pcf;
 	struct sysinfo romstage_state;
@@ -99,7 +99,7 @@ static void bsp_romstage_main(void)
 	/* We do not return. */
 }
 
-static void __noreturn ap_romstage_main(void)
+asmlinkage void ap_romstage_main(void)
 {
 	struct sysinfo romstage_state;
 	struct sysinfo *cb = &romstage_state;
@@ -115,12 +115,4 @@ static void __noreturn ap_romstage_main(void)
 
 	/* Not reached. */
 	halt();
-}
-
-asmlinkage void romstage_main(unsigned long bist)
-{
-	if (boot_cpu())
-		bsp_romstage_main();
-	else
-		ap_romstage_main();
 }

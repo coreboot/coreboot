@@ -22,7 +22,6 @@
  */
 
 #include "gcccar.inc"
-#include <cpu/x86/cache.h>
 #include <cpu/x86/post_code.h>
 
 .code32
@@ -34,15 +33,6 @@ _cache_as_ram_setup:
 	movd	%eax, %mm0
 
 	post_code(0xa0)
-
-	/* enable SSE2 128bit instructions */
-	/* Turn on OSFXSR [BIT9] and OSXMMEXCPT [BIT10] onto CR4 register */
-
-	movl	%cr4, %eax
-	orl	$(3 << 9), %eax
-	movl	%eax, %cr4
-
-	post_code(0xa1)
 
 	AMD_ENABLE_STACK
 

@@ -40,10 +40,6 @@
 #include <vb2_api.h>
 #include <console/console.h>
 
-#ifndef offsetof
-#define offsetof(A,B) __builtin_offsetof(A,B)
-#endif
-
 #ifdef FOR_TEST
 #include <stdio.h>
 #define VBDEBUG(format, args...) printf(format, ## args)

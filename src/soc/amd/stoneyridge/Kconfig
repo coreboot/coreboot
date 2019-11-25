@@ -13,6 +13,13 @@
 ## GNU General Public License for more details.
 ##
 
+config SOC_AMD_STONEYRIDGE
+	bool
+	help
+	  AMD support for SOCs in Family 15h Models 60h-6Fh and Models 70h-7Fh.
+
+if SOC_AMD_STONEYRIDGE
+
 config SOC_AMD_STONEYRIDGE_FP4
 	bool
 	select AMD_APU_STONEYRIDGE
@@ -40,8 +47,6 @@ config SOC_AMD_PRAIRIEFALCON
 	select AMD_APU_PKG_FP4
 	help
 	  AMD Prairie Falcon FP4 support
-
-if SOC_AMD_STONEYRIDGE_FP4 || SOC_AMD_STONEYRIDGE_FT4 || SOC_AMD_MERLINFALCON || SOC_AMD_PRAIRIEFALCON
 
 config CPU_SPECIFIC_OPTIONS
 	def_bool y
@@ -439,4 +444,4 @@ config MAINBOARD_POWER_RESTORE
 	  return to S0.  Otherwise the system will remain in S5 once power
 	  is restored.
 
-endif # SOC_AMD_STONEYRIDGE_FP4 || SOC_AMD_STONEYRIDGE_FT4 || SOC_AMD_MERLINFALCON || SOC_AMD_PRAIRIEFALCON
+endif # SOC_AMD_STONEYRIDGE

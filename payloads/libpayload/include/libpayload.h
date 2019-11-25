@@ -85,6 +85,7 @@
 #define MAX(a, b) __CMP(a, b, >)
 
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
+#define BIT(x)	(1ul << (x))
 
 #define DIV_ROUND_UP(x, y) ({ \
 	typeof(x) _div_local_x = (x); \

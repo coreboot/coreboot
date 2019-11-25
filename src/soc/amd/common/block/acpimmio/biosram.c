@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <amdblocks/acpimmio_map.h>
+#include <amdblocks/acpimmio.h>
 #include <amdblocks/biosram.h>
 #include <cbmem.h>
 #include <device/mmio.h>
@@ -14,12 +14,12 @@
 
 static uint8_t biosram_read8(uint8_t reg)
 {
-	return read8((void *)(ACPIMMIO_BIOSRAM_BASE + reg));
+	return read8(acpimmio_biosram + reg);
 }
 
 static void biosram_write8(uint8_t reg, uint8_t value)
 {
-	write8((void *)(ACPIMMIO_BIOSRAM_BASE + reg), value);
+	write8(acpimmio_biosram + reg, value);
 }
 
 static uint16_t biosram_read16(uint8_t reg) /* Must be 1 byte at a time */

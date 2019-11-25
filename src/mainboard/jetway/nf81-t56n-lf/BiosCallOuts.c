@@ -48,7 +48,7 @@ static AGESA_STATUS board_GnbPcieSlotReset (UINT32 Func, UINTN Data, VOID *Confi
 	FcnData = Data;
 	ResetInfo = ConfigPtr;
 	Status = AGESA_UNSUPPORTED;
-	GpioMmioAddr = ACPIMMIO_GPIO_BASE_100;
+	GpioMmioAddr = (uintptr_t)acpimmio_gpio_100;
 	switch (ResetInfo->ResetId)
 	{
 	case 46:	/* GPIO50 = SBGPIO_PCIE_RST# affects LAN0, LAN1, PCIe slot */

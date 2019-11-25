@@ -5,7 +5,6 @@
 #include <console/console.h>
 #include <gpio.h>
 #include <amdblocks/acpimmio.h>
-#include <amdblocks/acpimmio_map.h>
 #include <soc/gpio.h>
 #include <soc/smi.h>
 #include <assert.h>
@@ -181,8 +180,7 @@ void program_gpios(const struct soc_amd_gpio *gpio_list_ptr, size_t size)
 	const struct soc_amd_event *gev_tbl;
 	size_t gev_items;
 
-	inter_master = (uint32_t *)(uintptr_t)(ACPIMMIO_GPIO0_BASE
-					       + GPIO_MASTER_SWITCH);
+	inter_master = (void *)(acpimmio_gpio0 + GPIO_MASTER_SWITCH);
 	direction = 0;
 	edge_level = 0;
 	mask = 0;
@@ -270,14 +268,10 @@ void program_gpios(const struct soc_amd_gpio *gpio_list_ptr, size_t size)
 	mem_read_write32(inter_master, GPIO_INTERRUPT_EN, GPIO_INTERRUPT_EN);
 
 	/* Set all SCI trigger direction (high/low) */
-	mem_read_write32((uint32_t *)
-			(uintptr_t)(ACPIMMIO_SMI_BASE + SMI_SCI_TRIG),
-					direction, mask);
+	mem_read_write32((void *)(acpimmio_smi + SMI_SCI_TRIG), direction, mask);
 
 	/* Set all SCI trigger level (edge/level) */
-	mem_read_write32((uint32_t *)
-			(uintptr_t)(ACPIMMIO_SMI_BASE + SMI_SCI_LEVEL),
-					edge_level, mask);
+	mem_read_write32((void *)(acpimmio_smi + SMI_SCI_LEVEL), edge_level, mask);
 }
 
 int gpio_interrupt_status(gpio_t gpio)

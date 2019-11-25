@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <amdblocks/agesawrapper.h>
+#include <amdblocks/acpimmio_map.h>
 #include <console/console.h>
 #include <device/pci_def.h>
 #include <device/device.h>

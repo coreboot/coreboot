@@ -5,6 +5,29 @@
 #include <amdblocks/acpimmio_map.h>
 #include <amdblocks/acpimmio.h>
 
+uint8_t *const acpimmio_sm_pci	= ACPIMMIO_BASE(SM_PCI);
+uint8_t *const acpimmio_gpio_100 = ACPIMMIO_BASE(GPIO_100);
+uint8_t *const acpimmio_smi	= ACPIMMIO_BASE(SMI);
+uint8_t *const acpimmio_pmio	= ACPIMMIO_BASE(PMIO);
+uint8_t *const acpimmio_pmio2	= ACPIMMIO_BASE(PMIO2);
+uint8_t *const acpimmio_biosram	= ACPIMMIO_BASE(BIOSRAM);
+uint8_t *const acpimmio_cmosram	= ACPIMMIO_BASE(CMOSRAM);
+uint8_t *const acpimmio_cmos	= ACPIMMIO_BASE(CMOS);
+uint8_t *const acpimmio_acpi	= ACPIMMIO_BASE(ACPI);
+uint8_t *const acpimmio_asf	= ACPIMMIO_BASE(ASF);
+uint8_t *const acpimmio_smbus	= ACPIMMIO_BASE(SMBUS);
+uint8_t *const acpimmio_wdt	= ACPIMMIO_BASE(WDT);
+uint8_t *const acpimmio_hpet	= ACPIMMIO_BASE(HPET);
+uint8_t *const acpimmio_iomux	= ACPIMMIO_BASE(IOMUX);
+uint8_t *const acpimmio_misc	= ACPIMMIO_BASE(MISC);
+uint8_t *const acpimmio_dpvga	= ACPIMMIO_BASE(DPVGA);
+uint8_t *const acpimmio_gpio0	= ACPIMMIO_BASE(GPIO0);
+uint8_t *const acpimmio_gpio1	= ACPIMMIO_BASE(GPIO1);
+uint8_t *const acpimmio_gpio2	= ACPIMMIO_BASE(GPIO2);
+uint8_t *const acpimmio_xhci_pm	= ACPIMMIO_BASE(XHCIPM);
+uint8_t *const acpimmio_acdc_tmr	= ACPIMMIO_BASE(ACDCTMR);
+uint8_t *const acpimmio_aoac	= ACPIMMIO_BASE(AOAC);
+
 void enable_acpimmio_decode_pm24(void)
 {
 	uint32_t dw;

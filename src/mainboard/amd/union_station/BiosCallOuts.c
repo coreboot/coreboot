@@ -38,7 +38,7 @@ static AGESA_STATUS board_BeforeDramInit (UINT32 Func, UINTN Data, VOID *ConfigP
 	MemData = ConfigPtr;
 
 	Status = AGESA_SUCCESS;
-	GpioMmioAddr = ACPIMMIO_GPIO_BASE_100;
+	GpioMmioAddr = (uintptr_t)acpimmio_gpio_100;
 
 	Data8 = Read64Mem8(GpioMmioAddr+SB_GPIO_REG178);
 	Data8 &= ~BIT5;
@@ -106,7 +106,7 @@ static AGESA_STATUS board_GnbPcieSlotReset (UINT32 Func, UINTN Data, VOID *Confi
 	UINT32                  GpioMmioAddr;
 	UINT8                   Data8;
 
-	GpioMmioAddr = ACPIMMIO_GPIO_BASE_100;
+	GpioMmioAddr = (uintptr_t)acpimmio_gpio_100;
 
 	FcnData = Data;
 	ResetInfo = ConfigPtr;

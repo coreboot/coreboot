@@ -4,6 +4,7 @@
 #include <console/console.h>
 #include <device/smbus_host.h>
 #include <amdblocks/acpimmio.h>
+#include <amdblocks/acpimmio_map.h>
 #include <soc/southbridge.h>
 
 /*

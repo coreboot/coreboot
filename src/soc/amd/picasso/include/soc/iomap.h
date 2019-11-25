@@ -27,26 +27,6 @@
 #endif
 #define HPET_BASE_ADDRESS		0xfed00000
 
-/*
- * AcpiMmio blocks are at fixed offsets from FED8_0000h and enabled in PMx04[1].
- * All ranges not specified as supported below may, or may not, be listed in
- * any documentation but should be considered reserved through FED8_1FFFh.
- */
-#include <amdblocks/acpimmio_map.h>
-#define SUPPORTS_ACPIMMIO_SM_PCI_BASE	1 /* 0xfed80000 */
-#define SUPPORTS_ACPIMMIO_SMI_BASE	1 /* 0xfed80100 */
-#define SUPPORTS_ACPIMMIO_PMIO_BASE	1 /* 0xfed80300 */
-#define SUPPORTS_ACPIMMIO_BIOSRAM_BASE	1 /* 0xfed80500 */
-#define SUPPORTS_ACPIMMIO_ACPI_BASE	1 /* 0xfed80800 */
-#define SUPPORTS_ACPIMMIO_ASF_BASE	1 /* 0xfed80900 */
-#define SUPPORTS_ACPIMMIO_SMBUS_BASE	1 /* 0xfed80a00 */
-#define SUPPORTS_ACPIMMIO_IOMUX_BASE	1 /* 0xfed80d00 */
-#define SUPPORTS_ACPIMMIO_MISC_BASE	1 /* 0xfed80e00 */
-#define SUPPORTS_ACPIMMIO_GPIO0_BASE	1 /* 0xfed81500 */
-#define SUPPORTS_ACPIMMIO_GPIO1_BASE	1 /* 0xfed81800 */
-#define SUPPORTS_ACPIMMIO_GPIO2_BASE	1 /* 0xfed81700 */
-#define SUPPORTS_ACPIMMIO_AOAC_BASE	1 /* 0xfed81e00 */
-
 #define ALINK_AHB_ADDRESS		0xfedc0000
 
 /* Reserved				0xfecd1000-0xfedc3fff */

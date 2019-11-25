@@ -21,6 +21,7 @@
 #include <device/mmio.h>
 #include <device/pci_ops.h>
 #include <cpu/x86/msr.h>
+#include <cpu/x86/cache.h>
 #include <cbmem.h>
 #include <cf9_reset.h>
 #include <ip_checksum.h>
@@ -95,12 +96,6 @@ struct ram_training {
 };
 
 #include <lib.h>		/* Prototypes */
-
-
-static void clflush(u32 addr)
-{
-	asm volatile ("clflush (%0)"::"r" (addr));
-}
 
 typedef struct _u128 {
 	u64 lo;
@@ -1956,7 +1951,7 @@ static u32 get_etalon2(int flip, u32 addr)
 	return ret;
 }
 
-static void disable_cache(void)
+static void disable_cache_region(void)
 {
 	msr_t msr = {.lo = 0, .hi = 0 };
 
@@ -1964,7 +1959,7 @@ static void disable_cache(void)
 	wrmsr(MTRR_PHYS_MASK(3), msr);
 }
 
-static void enable_cache(unsigned int base, unsigned int size)
+static void enable_cache_region(unsigned int base, unsigned int size)
 {
 	msr_t msr;
 	msr.lo = base | MTRR_TYPE_WRPROT;
@@ -1983,7 +1978,7 @@ static void flush_cache(u32 start, u32 size)
 
 	end = start + (ALIGN_DOWN(size + 4096, 4096));
 	for (addr = start; addr < end; addr += 64)
-		clflush(addr);
+		clflush((void *)addr);
 }
 
 static void clear_errors(void)
@@ -2019,7 +2014,7 @@ static u8 check_testing(struct raminfo *info, u8 total_rank, int flip)
 	int comp1, comp2, comp3;
 	u32 failxor[2] = { 0, 0 };
 
-	enable_cache((total_rank << 28), 1728 * 5 * 4);
+	enable_cache_region((total_rank << 28), 1728 * 5 * 4);
 
 	for (comp3 = 0; comp3 < 9 && failmask != 0xff; comp3++) {
 		for (comp1 = 0; comp1 < 4; comp1++)
@@ -2042,7 +2037,7 @@ static u8 check_testing(struct raminfo *info, u8 total_rank, int flip)
 			if ((0xff << (8 * (i % 4))) & failxor[i / 4])
 				failmask |= 1 << i;
 	}
-	disable_cache();
+	disable_cache_region();
 	flush_cache((total_rank << 28), 1728 * 5 * 4);
 	return failmask;
 }
@@ -2132,7 +2127,7 @@ check_testing_type2(struct raminfo *info, u8 totalrank, u8 region, u8 block,
 	failxor[0] = 0;
 	failxor[1] = 0;
 
-	enable_cache(totalrank << 28, 134217728);
+	enable_cache_region(totalrank << 28, 134217728);
 	for (comp3 = 0; comp3 < 2 && failmask != 0xff; comp3++) {
 		for (comp1 = 0; comp1 < 16; comp1++)
 			for (comp2 = 0; comp2 < 64; comp2++) {
@@ -2148,7 +2143,7 @@ check_testing_type2(struct raminfo *info, u8 totalrank, u8 region, u8 block,
 			if ((0xff << (8 * (i % 4))) & failxor[i / 4])
 				failmask |= 1 << i;
 	}
-	disable_cache();
+	disable_cache_region();
 	flush_cache((totalrank << 28) | (region << 25) | (block << 16), 16384);
 	return failmask;
 }

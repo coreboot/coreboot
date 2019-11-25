@@ -5,6 +5,7 @@ subdirs-$(CONFIG_HAVE_SMI_HANDLER) += smm
 subdirs-$(CONFIG_UDELAY_TSC) += tsc
 # Use ARCH_BOOTBLOCK_X86_64 as a proxy for knowing if 64bit is going to be used
 subdirs-$(CONFIG_ARCH_BOOTBLOCK_X86_64) += 64bit
+subdirs-y += cache
 
 subdirs-$(CONFIG_PARALLEL_MP) += name
 ramstage-$(CONFIG_PARALLEL_MP) += mp_init.c

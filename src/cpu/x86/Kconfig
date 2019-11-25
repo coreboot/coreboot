@@ -126,6 +126,11 @@ config SETUP_XIP_CACHE
 	  non-eviction mode and therefore need to be careful to avoid
 	  eviction.
 
+config X86_CLFLUSH_CAR
+	bool
+	help
+	  Select this on platforms that allow CLFLUSH while operating in CAR.
+
 config HAVE_SMI_HANDLER
 	bool
 	default n

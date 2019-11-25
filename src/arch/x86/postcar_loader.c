@@ -9,6 +9,7 @@
 #include <program_loading.h>
 #include <reset.h>
 #include <rmodule.h>
+#include <romstage_handoff.h>
 #include <security/vboot/vboot_common.h>
 #include <stage_cache.h>
 #include <timestamp.h>
@@ -137,6 +138,25 @@ static void postcar_cache_invalid(void)
 	board_reset();
 }
 
+/*
+ * POSTCAR will call invd so don't make assumptions on cbmem
+ * and external stage cache being UC.
+ */
+static void postcar_flush_cache(void)
+{
+	uintptr_t cbmem_base;
+	size_t cbmem_size;
+	uintptr_t stage_cache_base;
+	size_t stage_cache_size;
+
+	cbmem_get_region((void **)&cbmem_base, &cbmem_size);
+	prog_segment_loaded(cbmem_base, cbmem_size, SEG_FINAL);
+	if (CONFIG(TSEG_STAGE_CACHE) && !romstage_handoff_is_resume()) {
+		stage_cache_external_region((void **)&stage_cache_base, &stage_cache_size);
+		prog_segment_loaded(stage_cache_base, stage_cache_size, SEG_FINAL);
+	}
+}
+
 static void run_postcar_phase(struct postcar_frame *pcf)
 {
 	struct prog prog =
@@ -158,6 +178,8 @@ static void run_postcar_phase(struct postcar_frame *pcf)
 	timestamp_add_now(TS_ROMSTAGE_END);
 
 	console_time_report();
+
+	postcar_flush_cache();
 
 	prog_set_arg(&prog, cbmem_top());
 

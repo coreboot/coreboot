@@ -12,6 +12,35 @@
 .section .init, "ax", @progbits
 
 .code32
+
+/*
+ * macro: find_free_mtrr
+ * Clobbers: %eax, %ebx, %ecx, %edx.
+ * Returns:
+ * %ebx contains the number of freely available MTRR's.
+ *      It should be checked against 0.
+ * %ecx holds the MTRR_BASE of the free MTRR.
+ */
+.macro find_free_mtrr
+	/* Figure out how many MTRRs we have */
+	mov	$MTRR_CAP_MSR, %ecx
+	rdmsr
+	movzb	%al, %ebx		/* Number of variable MTRRs */
+
+	/* Find a free variable MTRR */
+	movl	$MTRR_PHYS_MASK(0), %ecx
+1:
+	rdmsr
+	test	$MTRR_PHYS_MASK_VALID, %eax
+	jz	2f
+	addl	$2, %ecx
+	dec	%ebx
+	jnz	1b
+2:
+	/* %ecx needs to hold the MTRR_BASE */
+	decl	%ecx
+.endm
+
 .global bootblock_pre_c_entry
 bootblock_pre_c_entry:
 
@@ -82,15 +111,18 @@ clear_var_mtrr:
 	post_code(0x24)
 
 #if ((CONFIG_DCACHE_RAM_SIZE & (CONFIG_DCACHE_RAM_SIZE - 1)) == 0)
+	find_free_mtrr
+	test	%ebx, %ebx
+	jz	.halt_forever
+
 	/* Configure CAR region as write-back (WB) */
-	mov	$MTRR_PHYS_BASE(0), %ecx
 	mov	$CONFIG_DCACHE_RAM_BASE, %eax
 	or	$MTRR_TYPE_WRBACK, %eax
 	xor	%edx,%edx
 	wrmsr
 
 	/* Configure the MTRR mask for the size region */
-	mov	$MTRR_PHYS_MASK(0), %ecx
+	inc	%ecx
 	mov	$CONFIG_DCACHE_RAM_SIZE, %eax	/* size mask */
 	dec	%eax
 	not	%eax
@@ -98,14 +130,17 @@ clear_var_mtrr:
 	movl	%esi, %edx	/* edx <- MTRR_PHYS_MASK_HIGH */
 	wrmsr
 #elif (CONFIG_DCACHE_RAM_SIZE == 768 * KiB) /* 768 KiB */
+	find_free_mtrr
+	test	%ebx, %ebx
+	jz	.halt_forever
+
 	/* Configure CAR region as write-back (WB) */
-	mov	$MTRR_PHYS_BASE(0), %ecx
 	mov	$CONFIG_DCACHE_RAM_BASE, %eax
 	or	$MTRR_TYPE_WRBACK, %eax
 	xor	%edx,%edx
 	wrmsr
 
-	mov	$MTRR_PHYS_MASK(0), %ecx
+	incl	%ecx
 	mov	$(512 * KiB), %eax	/* size mask */
 	dec	%eax
 	not	%eax
@@ -113,13 +148,16 @@ clear_var_mtrr:
 	movl	%esi, %edx	/* edx <- MTRR_PHYS_MASK_HIGH */
 	wrmsr
 
-	mov	$MTRR_PHYS_BASE(1), %ecx
+	find_free_mtrr
+	test	%ebx, %ebx
+	jz	.halt_forever
+1:
 	mov	$(CONFIG_DCACHE_RAM_BASE + 512 * KiB), %eax
 	or	$MTRR_TYPE_WRBACK, %eax
 	xor	%edx,%edx
 	wrmsr
 
-	mov	$MTRR_PHYS_MASK(1), %ecx
+	incl	%ecx
 	mov	$(256 * KiB), %eax	/* size mask */
 	dec	%eax
 	not	%eax

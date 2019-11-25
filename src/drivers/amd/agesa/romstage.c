@@ -27,15 +27,6 @@
 #include <northbridge/amd/agesa/agesa_helper.h>
 #include <northbridge/amd/agesa/state_machine.h>
 
-#if !CONFIG(POSTCAR_STAGE)
-#error "Only POSTCAR_STAGE is supported."
-#endif
-
-void asmlinkage early_all_cores(void)
-{
-	amd_initmmio();
-}
-
 void __weak platform_once(struct sysinfo *cb)
 {
 	board_BeforeAgesa(cb);
@@ -56,6 +47,9 @@ void *asmlinkage romstage_main(unsigned long bist)
 	struct sysinfo *cb = &romstage_state;
 	u8 initial_apic_id = (u8) (cpuid_ebx(1) >> 24);
 	int cbmem_initted = 0;
+
+	/* Enable PCI MMIO configuration. */
+	amd_initmmio();
 
 	fill_sysinfo(cb);
 

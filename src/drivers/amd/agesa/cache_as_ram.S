@@ -94,8 +94,6 @@ _cache_as_ram_setup:
 
 #endif
 
-	call early_all_cores
-
 	/* Must maintain 16-byte stack alignment here. */
 	pushl	$0x0
 	pushl	$0x0

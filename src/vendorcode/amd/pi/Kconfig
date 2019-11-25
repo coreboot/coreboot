@@ -44,10 +44,10 @@ config AGESA_BINARY_PI_FILE
 	string "AGESA PI binary file name"
 	default "3rdparty/blobs/pi/amd/00630F01/FP3/AGESA.bin" if CPU_AMD_PI_00630F01
 	default "3rdparty/blobs/pi/amd/00730F01/FT3b/AGESA.bin" if CPU_AMD_PI_00730F01
-	default "3rdparty/blobs/pi/amd/merlinfalcon/FP4/AGESA_CZ_FP4.bin" if SOC_AMD_MERLINFALCON && HAVE_MERLINFALCON_BINARIES
-	default "3rdparty/blobs/pi/amd/00670F00/FP4/AGESA.bin" if SOC_AMD_MERLINFALCON && !HAVE_MERLINFALCON_BINARIES
-	default "3rdparty/blobs/pi/amd/00670F00/FP4/AGESA.bin" if SOC_AMD_STONEYRIDGE_FP4
-	default "3rdparty/blobs/pi/amd/00670F00/FT4/AGESA.bin" if SOC_AMD_STONEYRIDGE_FT4
+	default "3rdparty/blobs/pi/amd/merlinfalcon/$(CONFIG_AMD_SOC_PACKAGE)/AGESA_CZ_FP4.bin" if SOC_AMD_MERLINFALCON && HAVE_MERLINFALCON_BINARIES
+	default "3rdparty/blobs/pi/amd/00670F00/$(CONFIG_AMD_SOC_PACKAGE)/AGESA.bin" if SOC_AMD_MERLINFALCON && !HAVE_MERLINFALCON_BINARIES
+	default "3rdparty/blobs/pi/amd/00670F00/$(CONFIG_AMD_SOC_PACKAGE)/AGESA.bin" if SOC_AMD_STONEYRIDGE_FP4
+	default "3rdparty/blobs/pi/amd/00670F00/$(CONFIG_AMD_SOC_PACKAGE)/AGESA.bin" if SOC_AMD_STONEYRIDGE_FT4
 	default "3rdparty/blobs/pi/amd/00660F01/FP4/AGESA.bin" if CPU_AMD_PI_00660F01
 	help
 	  Specify the binary file to use for AMD platform initialization.

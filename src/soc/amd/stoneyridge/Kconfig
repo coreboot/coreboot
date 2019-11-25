@@ -20,34 +20,6 @@ config SOC_AMD_STONEYRIDGE
 
 if SOC_AMD_STONEYRIDGE
 
-config SOC_AMD_STONEYRIDGE_FP4
-	bool
-	select AMD_APU_STONEYRIDGE
-	select AMD_APU_PKG_FP4
-	help
-	  AMD Stoney Ridge FP4 support
-
-config SOC_AMD_STONEYRIDGE_FT4
-	bool
-	select AMD_APU_STONEYRIDGE
-	select AMD_APU_PKG_FT4
-	help
-	  AMD Stoney Ridge FT4 support
-
-config SOC_AMD_MERLINFALCON
-	bool
-	select AMD_APU_MERLINFALCON
-	select AMD_APU_PKG_FP4
-	help
-	  AMD Merlin Falcon FP4 support
-
-config SOC_AMD_PRAIRIEFALCON
-	bool
-	select AMD_APU_PRAIRIEFALCON
-	select AMD_APU_PKG_FP4
-	help
-	  AMD Prairie Falcon FP4 support
-
 config CPU_SPECIFIC_OPTIONS
 	def_bool y
 	select ARCH_BOOTBLOCK_X86_32

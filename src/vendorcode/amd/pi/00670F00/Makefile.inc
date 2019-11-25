@@ -28,7 +28,7 @@
 #
 #*****************************************************************************
 
-ifeq ($(CONFIG_SOC_AMD_MERLINFALCON)$(CONFIG_SOC_AMD_STONEYRIDGE_FP4)$(CONFIG_SOC_AMD_STONEYRIDGE_FT4),y)
+ifeq ($(CONFIG_SOC_AMD_STONEYRIDGE),y)
 # AGESA V5 Files
 
 AGESA_ROOT = $(call strip_quotes,$(CONFIG_AGESA_BINARY_PI_VENDORCODE_PATH))

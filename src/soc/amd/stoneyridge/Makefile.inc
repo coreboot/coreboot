@@ -27,7 +27,7 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 #*****************************************************************************
-ifeq ($(CONFIG_SOC_AMD_MERLINFALCON)$(CONFIG_SOC_AMD_STONEYRIDGE_FP4)$(CONFIG_SOC_AMD_STONEYRIDGE_FT4),y)
+ifeq ($(CONFIG_SOC_AMD_STONEYRIDGE),y)
 
 subdirs-y += ../../../cpu/amd/mtrr/
 subdirs-y += ../../../cpu/x86/tsc
@@ -338,4 +338,4 @@ files_added:: warn_no_amdfw
 
 endif # ifneq ($(FIRMWARE_LOCATE),)
 
-endif # ($(CONFIG_SOC_AMD_MERLINFALCON)$(CONFIG_SOC_AMD_STONEYRIDGE_FP4)$(CONFIG_SOC_AMD_STONEYRIDGE_FT4),y)
+endif # ($(CONFIG_SOC_AMD_STONEYRIDGE),y)

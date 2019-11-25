@@ -34,15 +34,14 @@ config SOC_AMD_MERLINFALCON
 	help
 	  AMD Merlin Falcon FP4 support
 
-config HAVE_MERLINFALCON_BINARIES
-	depends on AMD_APU_MERLINFALCON
-	bool "Merlinfalcon binaries are present"
-	default n
+config SOC_AMD_PRAIRIEFALCON
+	bool
+	select AMD_APU_PRAIRIEFALCON
+	select AMD_APU_PKG_FP4
 	help
-	  This config option will be removed once the binaries are merged
-	  to the blobs repo. See 33615.
+	  AMD Prairie Falcon FP4 support
 
-if SOC_AMD_STONEYRIDGE_FP4 || SOC_AMD_STONEYRIDGE_FT4 || SOC_AMD_MERLINFALCON
+if SOC_AMD_STONEYRIDGE_FP4 || SOC_AMD_STONEYRIDGE_FT4 || SOC_AMD_MERLINFALCON || SOC_AMD_PRAIRIEFALCON
 
 config CPU_SPECIFIC_OPTIONS
 	def_bool y
@@ -88,10 +87,15 @@ config AMD_APU_STONEYRIDGE
 	help
 	  AMD Stoney Ridge APU
 
+config AMD_APU_PRAIRIEFALCON
+	bool
+	help
+	  AMD Embedded Prairie Falcon APU
+
 config AMD_APU_MERLINFALCON
 	bool
 	help
-	  AMD Merlin Falcon APU
+	  AMD Embedded Merlin Falcon APU
 
 config AMD_APU_PKG_FP4
 	bool
@@ -176,7 +180,8 @@ config VGA_BIOS_FILE
 	string
 	default "" if !USE_AMD_BLOBS
 	default "3rdparty/amd_blobs/stoneyridge/CarrizoGenericVbios.bin" if AMD_APU_MERLINFALCON
-	default "3rdparty/amd_blobs/stoneyridge/StoneyGenericVbios.bin"
+	default "3rdparty/amd_blobs/stoneyridge/StoneyGenericVbios.bin" if AMD_APU_PRAIRIEFALCON
+	default "3rdparty/amd_blobs/stoneyridge/StoneyGenericVbios.bin" if AMD_APU_STONEYRIDGE
 
 config S3_VGA_ROM_RUN
 	bool
@@ -227,7 +232,8 @@ config AMD_PUBKEY_FILE
 	string "AMD public Key"
 	default "" if !USE_AMD_BLOBS
 	default "3rdparty/amd_blobs/stoneyridge/PSP/CZ/AmdPubKeyCZ.bin" if AMD_APU_MERLINFALCON
-	default "3rdparty/amd_blobs/stoneyridge/PSP/ST/AmdPubKeyST.bin"
+	default "3rdparty/amd_blobs/stoneyridge/PSP/ST/AmdPubKeyST.bin" if AMD_APU_PRAIRIEFALCON
+	default "3rdparty/amd_blobs/stoneyridge/PSP/ST/AmdPubKeyST.bin" if AMD_APU_STONEYRIDGE
 
 config STONEYRIDGE_SATA_MODE
 	int "SATA Mode"
@@ -433,4 +439,4 @@ config MAINBOARD_POWER_RESTORE
 	  return to S0.  Otherwise the system will remain in S5 once power
 	  is restored.
 
-endif # SOC_AMD_STONEYRIDGE_FP4 || SOC_AMD_STONEYRIDGE_FT4 || SOC_AMD_MERLINFALCON
+endif # SOC_AMD_STONEYRIDGE_FP4 || SOC_AMD_STONEYRIDGE_FT4 || SOC_AMD_MERLINFALCON || SOC_AMD_PRAIRIEFALCON

@@ -16,7 +16,7 @@ chip soc/amd/stoneyridge
 
 	register "spd_addr_lookup" = "
 	{
-#if CONFIG(HAVE_MERLINFALCON_BINARIES)
+#if CONFIG(AMD_APU_MERLINFALCON)
 		{ {0xA0, 0x00}, {0xA4, 0x00} }, // socket 0 - Channel 0 & 1, slot 0
 #else
 		{ {0xA0, 0x00} }, // socket 0 - Channel 0, slot 0

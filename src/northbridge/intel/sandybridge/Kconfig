@@ -74,7 +74,10 @@ config DCACHE_RAM_BASE
 
 config DCACHE_BSP_STACK_SIZE
 	hex
-	default 0x2800
+	default 0x10000
+	help
+	  The amount of BSP stack anticipated in bootblock and
+	  other stages.
 
 if USE_NATIVE_RAMINIT
 

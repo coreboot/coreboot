@@ -41,6 +41,23 @@
 	decl	%ecx
 .endm
 
+/*
+ * macro: clear_car
+ * Clears the region between CONFIG_DCACHE_RAM_BASE and
+ * CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE to populate
+ * cachelines.
+ * Clobbers %eax, %ecx, %edi.
+ */
+.macro clear_car
+	/* Clear the cache memory region. This will also fill up the cache */
+	movl	$CONFIG_DCACHE_RAM_BASE, %edi
+	movl	$CONFIG_DCACHE_RAM_SIZE, %ecx
+	shr	$0x02, %ecx
+	xor	%eax, %eax
+	cld
+	rep	stosl
+.endm
+
 .global bootblock_pre_c_entry
 bootblock_pre_c_entry:
 
@@ -256,13 +273,7 @@ car_nem:
 
 	post_code(0x26)
 
-	/* Clear the cache memory region. This will also fill up the cache */
-	movl	$CONFIG_DCACHE_RAM_BASE, %edi
-	movl	$CONFIG_DCACHE_RAM_SIZE, %ecx
-	shr	$0x02, %ecx
-	xor	%eax, %eax
-	cld
-	rep	stosl
+	clear_car
 
 	post_code(0x27)
 
@@ -353,13 +364,7 @@ car_cqos:
 
 	post_code(0x26)
 
-	/* Clear the cache memory region. This will also fill up the cache */
-	movl	$CONFIG_DCACHE_RAM_BASE, %edi
-	movl	$CONFIG_DCACHE_RAM_SIZE, %ecx
-	shr	$0x02, %ecx
-	xor	%eax, %eax
-	cld
-	rep	stosl
+	clear_car
 
 	post_code(0x27)
 
@@ -518,12 +523,9 @@ set_eviction_mask:
 	movl	$0x02, %eax
 #endif
 	wrmsr
-	movl	$CONFIG_DCACHE_RAM_BASE, %edi
-	movl	$CONFIG_DCACHE_RAM_SIZE, %ecx
-	shr	$0x02, %ecx
-	xor	%eax, %eax
-	cld
-	rep	stosl
+
+	clear_car
+
 	/*
 	 * Set IA32_PQR_ASSOC
 	 * At this stage we apply LLC_WAY_MASK_1 to the cache.

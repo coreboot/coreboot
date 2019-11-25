@@ -91,11 +91,11 @@ typedef u32 pcidev_t;
 #define HEADER_TYPE_CARDBUS       2
 #define HEADER_TYPE_MULTIFUNCTION 0x80
 
-#define PCI_ADDR(_bus, _dev, _fn, _reg) \
-(0x80000000 | (_bus << 16) | (_dev << 11) | (_fn << 8) | (_reg & ~3))
+#define PCI_DEV(_bus, _dev, _fn) (0x80000000 | \
+(uint32_t)(_bus << 16) | (uint32_t)(_dev << 11) | (uint32_t)(_fn << 8))
 
-#define PCI_DEV(_bus, _dev, _fn) \
-(0x80000000 | (_bus << 16) | (_dev << 11) | (_fn << 8))
+#define PCI_ADDR(_bus, _dev, _fn, _reg) \
+(PCI_DEV(_bus, _dev, _fn) | (uint8_t)(_reg & ~3))
 
 #define PCI_BUS(_d)  ((_d >> 16) & 0xff)
 #define PCI_SLOT(_d) ((_d >> 11) & 0x1f)

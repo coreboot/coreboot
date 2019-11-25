@@ -40,34 +40,34 @@ static pcidev_t libpci_to_lb(struct pci_dev *dev)
 /* libpci interface */
 u8 pci_read_byte(struct pci_dev *dev, int pos)
 {
-	return pci_read_config8(libpci_to_lb(dev), pos);
+	return pci_read_config8(libpci_to_lb(dev), (uint16_t)pos);
 }
 
 u16 pci_read_word(struct pci_dev *dev, int pos)
 {
-	return pci_read_config16(libpci_to_lb(dev), pos);
+	return pci_read_config16(libpci_to_lb(dev), (uint16_t)pos);
 }
 
 u32 pci_read_long(struct pci_dev *dev, int pos)
 {
-	return pci_read_config32(libpci_to_lb(dev), pos);
+	return pci_read_config32(libpci_to_lb(dev), (uint16_t)pos);
 }
 
 int pci_write_byte(struct pci_dev *dev, int pos, u8 data)
 {
-	pci_write_config8(libpci_to_lb(dev), pos, data);
+	pci_write_config8(libpci_to_lb(dev), (uint16_t)pos, data);
 	return 1; /* success */
 }
 
 int pci_write_word(struct pci_dev *dev, int pos, u16 data)
 {
-	pci_write_config16(libpci_to_lb(dev), pos, data);
+	pci_write_config16(libpci_to_lb(dev), (uint16_t)pos, data);
 	return 1; /* success */
 }
 
 int pci_write_long(struct pci_dev *dev, int pos, u32 data)
 {
-	pci_write_config32(libpci_to_lb(dev), pos, data);
+	pci_write_config32(libpci_to_lb(dev), (uint16_t)pos, data);
 	return 1; /* success */
 }
 
@@ -110,29 +110,29 @@ char *pci_filter_parse_slot(struct pci_filter* filter, const char* id)
 
 	char *funcp = strrchr(id, '.');
 	if (funcp) {
-		filter->func = strtoul(funcp+1, &endptr, 0);
+		filter->func = strtol(funcp+1, &endptr, 0);
 		if (endptr[0] != '\0') return invalid_pci_device_string;
 	}
 
 	char *devp = strrchr(id, ':');
 	if (!devp) {
-		filter->dev = strtoul(id, &endptr, 0);
+		filter->dev = strtol(id, &endptr, 0);
 	} else {
-		filter->dev = strtoul(devp+1, &endptr, 0);
+		filter->dev = strtol(devp+1, &endptr, 0);
 	}
 	if (endptr != funcp) return invalid_pci_device_string;
 	if (!devp) return NULL;
 
 	char *busp = strchr(id, ':');
 	if (busp == devp) {
-		filter->bus = strtoul(id, &endptr, 0);
+		filter->bus = strtol(id, &endptr, 0);
 	} else {
-		filter->bus = strtoul(busp+1, &endptr, 0);
+		filter->bus = strtol(busp+1, &endptr, 0);
 	}
 	if (endptr != funcp) return invalid_pci_device_string;
 	if (busp == devp) return NULL;
 
-	filter->domain = strtoul(id, &endptr, 0);
+	filter->domain = strtol(id, &endptr, 0);
 	if (endptr != busp) return invalid_pci_device_string;
 
 	return NULL;
@@ -155,15 +155,15 @@ int pci_filter_match(struct pci_filter* pf, struct pci_dev* dev)
 	return 1;
 }
 
-static struct pci_dev *pci_scan_single_bus(struct pci_dev *dev, int bus)
+static struct pci_dev *pci_scan_single_bus(struct pci_dev *dev, uint8_t bus)
 {
 	int devfn;
 	u32 val;
 	unsigned char hdr;
 
 	for (devfn = 0; devfn < 0x100; devfn++) {
-		int func = devfn & 0x7;
-		int slot = (devfn >> 3) & 0x1f;
+		uint8_t func = devfn & 0x7;
+		uint8_t slot = (devfn >> 3) & 0x1f;
 
 		val = pci_read_config32(PCI_DEV(bus, slot, func),
 					REG_VENDOR_ID);
@@ -179,7 +179,7 @@ static struct pci_dev *pci_scan_single_bus(struct pci_dev *dev, int bus)
 		dev->dev = slot;
 		dev->func = func;
 		dev->vendor_id = val & 0xffff;
-		dev->device_id = val >> 16;
+		dev->device_id = (uint16_t)(val >> 16);
 		dev->next = 0;
 
 		hdr = pci_read_config8(PCI_DEV(bus, slot, func),
@@ -187,10 +187,10 @@ static struct pci_dev *pci_scan_single_bus(struct pci_dev *dev, int bus)
 		hdr &= 0x7F;
 
 		if (hdr == HEADER_TYPE_BRIDGE || hdr == HEADER_TYPE_CARDBUS) {
-			unsigned int busses;
-			busses = pci_read_config32(PCI_DEV(bus, slot, func),
-						   REG_PRIMARY_BUS);
-			busses = (busses >> 8) & 0xFF;
+			uint8_t busses;
+			busses = (uint8_t)(pci_read_config32(
+				PCI_DEV(bus, slot, func),
+				REG_PRIMARY_BUS) >> 8);
 
 			/* Avoid recursion if the new bus is the same as
 			 * the old bus (insert lame The Who joke here) */

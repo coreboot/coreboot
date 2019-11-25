@@ -86,28 +86,30 @@ static inline uint16_t be16dec(const void *pp)
 {
 	uint8_t const *p = (uint8_t const *)pp;
 
-	return ((p[0] << 8) | p[1]);
+	return (uint16_t)((p[0] << 8) | p[1]);
 }
 
 static inline uint32_t be32dec(const void *pp)
 {
 	uint8_t const *p = (uint8_t const *)pp;
 
-	return (((unsigned)p[0] << 24) | (p[1] << 16) | (p[2] << 8) | p[3]);
+	return (((uint32_t)p[0] << 24) | (uint32_t)(p[1] << 16) |
+		(uint32_t)(p[2] << 8) | p[3]);
 }
 
 static inline uint16_t le16dec(const void *pp)
 {
 	uint8_t const *p = (uint8_t const *)pp;
 
-	return ((p[1] << 8) | p[0]);
+	return (uint16_t)((p[1] << 8) | p[0]);
 }
 
 static inline uint32_t le32dec(const void *pp)
 {
 	uint8_t const *p = (uint8_t const *)pp;
 
-	return ((p[3] << 24) | (p[2] << 16) | (p[1] << 8) | p[0]);
+	return ((uint32_t)(p[3] << 24) | (uint32_t)(p[2] << 16) |
+		(uint32_t)(p[1] << 8) | p[0]);
 }
 
 static inline void bebitenc(void *pp, uint32_t u, uint8_t b)

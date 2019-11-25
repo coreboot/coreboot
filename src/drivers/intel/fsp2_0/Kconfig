@@ -37,21 +37,6 @@ config ADD_FSP_BINARIES
 	  Add the FSP-M and FSP-S binaries to CBFS. Currently coreboot does not
 	  use the FSP-T binary and it is not added.
 
-config CPU_MICROCODE_CBFS_LEN
-	hex "Microcode update region length in bytes"
-	depends on FSP_CAR
-	default 0x0
-	help
-	  The length in bytes of the microcode update region.
-
-config CPU_MICROCODE_CBFS_LOC
-	hex "Microcode update base address in CBFS"
-	depends on FSP_CAR
-	default 0x0
-	help
-	  The location (base address) in CBFS that contains the
-	  microcode update binary.
-
 config FSP_T_CBFS
 	string "Name of FSP-T in CBFS"
 	depends on FSP_CAR

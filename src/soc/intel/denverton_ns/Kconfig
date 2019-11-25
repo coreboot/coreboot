@@ -108,14 +108,6 @@ config DCACHE_BSP_STACK_SIZE
 	hex
 	default 0x10000
 
-config CPU_MICROCODE_CBFS_LOC
-	hex
-	default 0xfff20040
-
-config CPU_MICROCODE_CBFS_LEN
-	hex
-	default 0x0ff80
-
 config CPU_BCLK_MHZ
 	int
 	default 100

@@ -2,6 +2,7 @@
 
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/cr.h>
+#include <cpu/x86/cache.h>
 
 .section ".module_parameters", "aw", @progbits
 /* stack_top indicates the stack to pull MTRR information from. */
@@ -54,7 +55,14 @@ _start:
 	movl	4(%esp), %eax
 	movl	%eax, _cbmem_top_ptr
 #endif
+	/* Make sure _cbmem_top_ptr hits dram before invd */
+	movl	$1, %eax
+	cpuid
+	btl	$CPUID_FEATURE_CLFLUSH_BIT, %edx
+	jz	skip_clflush
+	clflush	_cbmem_top_ptr
 
+skip_clflush:
 	/* chipset_teardown_car() is expected to disable cache-as-ram. */
 	call	chipset_teardown_car
 

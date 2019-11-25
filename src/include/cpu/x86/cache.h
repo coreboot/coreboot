@@ -8,6 +8,8 @@
 #define CR0_CacheDisable	(CR0_CD)
 #define CR0_NoWriteThrough	(CR0_NW)
 
+#define CPUID_FEATURE_CLFLUSH_BIT 19
+
 #if !defined(__ASSEMBLER__)
 
 static inline void wbinvd(void)

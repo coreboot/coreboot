@@ -89,11 +89,9 @@ struct southbridge_usb_port {
 
 void early_usb_init(const struct southbridge_usb_port *portmap);
 
-#ifndef __ROMCC__
 extern const struct southbridge_usb_port mainboard_usb_ports[14];
 #include <device/device.h>
 void pch_enable(struct device *dev);
-#endif
 
 #define MAINBOARD_POWER_OFF	0
 #define MAINBOARD_POWER_ON	1

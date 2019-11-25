@@ -19,10 +19,8 @@
 
 #if !defined(__ACPI__)
 
-#ifndef __ROMCC__
 #include <device/device.h>
 void i82371eb_enable(struct device *dev);
-#endif
 
 void i82371eb_hard_reset(void);
 

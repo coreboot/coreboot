@@ -90,10 +90,8 @@ struct southbridge_usb_port
 	int oc_pin;
 };
 
-#ifndef __ROMCC__
 void pch_enable(struct device *dev);
 extern const struct southbridge_usb_port mainboard_usb_ports[14];
-#endif
 
 void early_usb_init(const struct southbridge_usb_port *portmap);
 

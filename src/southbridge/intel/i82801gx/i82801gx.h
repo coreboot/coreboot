@@ -34,10 +34,8 @@
 #ifndef __ACPI__
 #define DEBUG_PERIODIC_SMIS 0
 
-#ifndef __ROMCC__
 #include <device/device.h>
 void i82801gx_enable(struct device *dev);
-#endif
 
 void enable_smbus(void);
 void i82801gx_lpc_setup(void);

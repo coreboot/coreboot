@@ -18,7 +18,10 @@
 #ifndef __AMDBLOCKS_ACPIMMIO_H__
 #define __AMDBLOCKS_ACPIMMIO_H__
 
+#include <device/mmio.h>
 #include <stdint.h>
+#include <types.h>
+#include <amdblocks/acpimmio_map.h>
 
 /*
  * The following AcpiMmio register block mapping represents definitions
@@ -100,14 +103,6 @@
 /* Enable the AcpiMmio range at 0xfed80000 */
 void enable_acpimmio_decode(void);
 
-/* Access SMBus PCI registers at 0xfed80000 */
-uint8_t sm_pci_read8(uint8_t reg);
-uint16_t sm_pci_read16(uint8_t reg);
-uint32_t sm_pci_read32(uint8_t reg);
-void sm_pci_write8(uint8_t reg, uint8_t value);
-void sm_pci_write16(uint8_t reg, uint16_t value);
-void sm_pci_write32(uint8_t reg, uint32_t value);
-
 /* Access PM registers using IO cycles */
 uint8_t pm_io_read8(uint8_t reg);
 uint16_t pm_io_read16(uint8_t reg);
@@ -116,100 +111,282 @@ void pm_io_write8(uint8_t reg, uint8_t value);
 void pm_io_write16(uint8_t reg, uint16_t value);
 void pm_io_write32(uint8_t reg, uint32_t value);
 
-/* Access SMI registers at 0xfed80100 */
-uint8_t smi_read8(uint8_t reg);
-uint16_t smi_read16(uint8_t reg);
-uint32_t smi_read32(uint8_t reg);
-void smi_write8(uint8_t reg, uint8_t value);
-void smi_write16(uint8_t reg, uint16_t value);
-void smi_write32(uint8_t reg, uint32_t value);
-
-/* Access Power Management registers at 0xfed80300 */
-uint8_t pm_read8(uint8_t reg);
-uint16_t pm_read16(uint8_t reg);
-uint32_t pm_read32(uint8_t reg);
-void pm_write8(uint8_t reg, uint8_t value);
-void pm_write16(uint8_t reg, uint16_t value);
-void pm_write32(uint8_t reg, uint32_t value);
-
-/* Access Power Management 2 registers at 0xfed80400 */
-uint8_t pm2_read8(uint8_t reg);
-uint16_t pm2_read16(uint8_t reg);
-uint32_t pm2_read32(uint8_t reg);
-void pm2_write8(uint8_t reg, uint8_t value);
-void pm2_write16(uint8_t reg, uint16_t value);
-void pm2_write32(uint8_t reg, uint32_t value);
 
 /* Access BIOS RAM storage at 0xfed80500 */
-uint8_t biosram_read8(uint8_t reg);
 uint16_t biosram_read16(uint8_t reg);
 uint32_t biosram_read32(uint8_t reg);
-void biosram_write8(uint8_t reg, uint8_t value);
 void biosram_write16(uint8_t reg, uint16_t value);
 void biosram_write32(uint8_t reg, uint32_t value);
 
-/* Access ACPI registers at 0xfed80800 */
-uint8_t acpi_read8(uint8_t reg);
-uint16_t acpi_read16(uint8_t reg);
-uint32_t acpi_read32(uint8_t reg);
-void acpi_write8(uint8_t reg, uint8_t value);
-void acpi_write16(uint8_t reg, uint16_t value);
-void acpi_write32(uint8_t reg, uint32_t value);
 
-/* Access ASF controller registers at 0xfed80900 */
-uint8_t asf_read8(uint8_t reg);
-uint16_t asf_read16(uint8_t reg);
-void asf_write8(uint8_t reg, uint8_t value);
-void asf_write16(uint8_t reg, uint16_t value);
+static inline uint8_t sm_pci_read8(uint8_t reg)
+{
+	return read8((void *)(ACPIMMIO_SM_PCI_BASE + reg));
+}
 
-/* Access SMBus controller registers at 0xfed80a00 */
-uint8_t smbus_read8(uint8_t reg);
-uint16_t smbus_read16(uint8_t reg);
-void smbus_write8(uint8_t reg, uint8_t value);
-void smbus_write16(uint8_t reg, uint16_t value);
+static inline uint16_t sm_pci_read16(uint8_t reg)
+{
+	return read16((void *)(ACPIMMIO_SM_PCI_BASE + reg));
+}
 
-/* Access WDT registers at 0xfed80b00 */
-uint8_t wdt_read8(uint8_t reg);
-uint16_t wdt_read16(uint8_t reg);
-uint32_t wdt_read32(uint8_t reg);
-void wdt_write8(uint8_t reg, uint8_t value);
-void wdt_write16(uint8_t reg, uint16_t value);
-void wdt_write32(uint8_t reg, uint32_t value);
+static inline uint32_t sm_pci_read32(uint8_t reg)
+{
+	return read32((void *)(ACPIMMIO_SM_PCI_BASE + reg));
+}
 
-/* Access HPET registers at 0xfed80c00 */
-uint8_t hpet_read8(uint8_t reg);
-uint16_t hpet_read16(uint8_t reg);
-uint32_t hpet_read32(uint8_t reg);
-void hpet_write8(uint8_t reg, uint8_t value);
-void hpet_write16(uint8_t reg, uint16_t value);
-void hpet_write32(uint8_t reg, uint32_t value);
+static inline void sm_pci_write8(uint8_t reg, uint8_t value)
+{
+	write8((void *)(ACPIMMIO_SM_PCI_BASE + reg), value);
+}
 
-/* Access GPIO MUX registers at 0xfed80d00 */
-uint8_t iomux_read8(uint8_t reg);
-uint16_t iomux_read16(uint8_t reg);
-uint32_t iomux_read32(uint8_t reg);
-void iomux_write8(uint8_t reg, uint8_t value);
-void iomux_write16(uint8_t reg, uint16_t value);
-void iomux_write32(uint8_t reg, uint32_t value);
+static inline void sm_pci_write16(uint8_t reg, uint16_t value)
+{
+	write16((void *)(ACPIMMIO_SM_PCI_BASE + reg), value);
+}
 
-/* Access Miscellaneous registers at 0xfed80e00 */
-uint8_t misc_read8(uint8_t reg);
-uint16_t misc_read16(uint8_t reg);
-uint32_t misc_read32(uint8_t reg);
-void misc_write8(uint8_t reg, uint8_t value);
-void misc_write16(uint8_t reg, uint16_t value);
-void misc_write32(uint8_t reg, uint32_t value);
+static inline void sm_pci_write32(uint8_t reg, uint32_t value)
+{
+	write32((void *)(ACPIMMIO_SM_PCI_BASE + reg), value);
+}
 
-/* Access xHCI Power Management registers at 0xfed81c00 */
-uint8_t xhci_pm_read8(uint8_t reg);
-uint16_t xhci_pm_read16(uint8_t reg);
-uint32_t xhci_pm_read32(uint8_t reg);
-void xhci_pm_write8(uint8_t reg, uint8_t value);
-void xhci_pm_write16(uint8_t reg, uint16_t value);
-void xhci_pm_write32(uint8_t reg, uint32_t value);
+static inline uint8_t smi_read8(uint8_t reg)
+{
+	return read8((void *)(ACPIMMIO_SMI_BASE + reg));
+}
 
-/* Access Always On Always Connect registers at 0xfed81e00 */
-uint8_t aoac_read8(uint8_t reg);
-void aoac_write8(uint8_t reg, uint8_t value);
+static inline uint16_t smi_read16(uint8_t reg)
+{
+	return read16((void *)(ACPIMMIO_SMI_BASE + reg));
+}
+
+static inline uint32_t smi_read32(uint8_t reg)
+{
+	return read32((void *)(ACPIMMIO_SMI_BASE + reg));
+}
+
+static inline void smi_write8(uint8_t reg, uint8_t value)
+{
+	write8((void *)(ACPIMMIO_SMI_BASE + reg), value);
+}
+
+static inline void smi_write16(uint8_t reg, uint16_t value)
+{
+	write16((void *)(ACPIMMIO_SMI_BASE + reg), value);
+}
+
+static inline void smi_write32(uint8_t reg, uint32_t value)
+{
+	write32((void *)(ACPIMMIO_SMI_BASE + reg), value);
+}
+
+static inline uint8_t pm_read8(uint8_t reg)
+{
+	return read8((void *)(ACPIMMIO_PMIO_BASE + reg));
+}
+
+static inline uint16_t pm_read16(uint8_t reg)
+{
+	return read16((void *)(ACPIMMIO_PMIO_BASE + reg));
+}
+
+static inline uint32_t pm_read32(uint8_t reg)
+{
+	return read32((void *)(ACPIMMIO_PMIO_BASE + reg));
+}
+
+static inline void pm_write8(uint8_t reg, uint8_t value)
+{
+	write8((void *)(ACPIMMIO_PMIO_BASE + reg), value);
+}
+
+static inline void pm_write16(uint8_t reg, uint16_t value)
+{
+	write16((void *)(ACPIMMIO_PMIO_BASE + reg), value);
+}
+
+static inline void pm_write32(uint8_t reg, uint32_t value)
+{
+	write32((void *)(ACPIMMIO_PMIO_BASE + reg), value);
+}
+
+static inline uint8_t biosram_read8(uint8_t reg)
+{
+	return read8((void *)(ACPIMMIO_BIOSRAM_BASE + reg));
+}
+
+static inline void biosram_write8(uint8_t reg, uint8_t value)
+{
+	write8((void *)(ACPIMMIO_BIOSRAM_BASE + reg), value);
+}
+
+static inline uint8_t acpi_read8(uint8_t reg)
+{
+	return read8((void *)(ACPIMMIO_ACPI_BASE + reg));
+}
+
+static inline uint16_t acpi_read16(uint8_t reg)
+{
+	return read16((void *)(ACPIMMIO_ACPI_BASE + reg));
+}
+
+static inline uint32_t acpi_read32(uint8_t reg)
+{
+	return read32((void *)(ACPIMMIO_ACPI_BASE + reg));
+}
+
+static inline void acpi_write8(uint8_t reg, uint8_t value)
+{
+	write8((void *)(ACPIMMIO_ACPI_BASE + reg), value);
+}
+
+static inline void acpi_write16(uint8_t reg, uint16_t value)
+{
+	write16((void *)(ACPIMMIO_ACPI_BASE + reg), value);
+}
+
+static inline void acpi_write32(uint8_t reg, uint32_t value)
+{
+	write32((void *)(ACPIMMIO_ACPI_BASE + reg), value);
+}
+
+static inline uint8_t asf_read8(uint8_t reg)
+{
+	return read8((void *)(ACPIMMIO_ASF_BASE + reg));
+}
+
+static inline uint16_t asf_read16(uint8_t reg)
+{
+	return read16((void *)(ACPIMMIO_ASF_BASE + reg));
+}
+
+static inline void asf_write8(uint8_t reg, uint8_t value)
+{
+	write8((void *)(ACPIMMIO_ASF_BASE + reg), value);
+}
+
+static inline void asf_write16(uint8_t reg, uint16_t value)
+{
+	write16((void *)(ACPIMMIO_ASF_BASE + reg), value);
+}
+
+static inline uint8_t smbus_read8(uint8_t reg)
+{
+	return read8((void *)(ACPIMMIO_SMBUS_BASE + reg));
+}
+
+static inline uint16_t smbus_read16(uint8_t reg)
+{
+	return read16((void *)(ACPIMMIO_SMBUS_BASE + reg));
+}
+
+static inline void smbus_write8(uint8_t reg, uint8_t value)
+{
+	write8((void *)(ACPIMMIO_SMBUS_BASE + reg), value);
+}
+
+static inline void smbus_write16(uint8_t reg, uint16_t value)
+{
+	write16((void *)(ACPIMMIO_SMBUS_BASE + reg), value);
+}
+
+static inline uint8_t iomux_read8(uint8_t reg)
+{
+	return read8((void *)(ACPIMMIO_IOMUX_BASE + reg));
+}
+
+static inline uint16_t iomux_read16(uint8_t reg)
+{
+	return read16((void *)(ACPIMMIO_IOMUX_BASE + reg));
+}
+
+static inline uint32_t iomux_read32(uint8_t reg)
+{
+	return read32((void *)(ACPIMMIO_IOMUX_BASE + reg));
+}
+
+static inline void iomux_write8(uint8_t reg, uint8_t value)
+{
+	write8((void *)(ACPIMMIO_IOMUX_BASE + reg), value);
+}
+
+static inline void iomux_write16(uint8_t reg, uint16_t value)
+{
+	write16((void *)(ACPIMMIO_IOMUX_BASE + reg), value);
+}
+
+static inline void iomux_write32(uint8_t reg, uint32_t value)
+{
+	write32((void *)(ACPIMMIO_IOMUX_BASE + reg), value);
+}
+
+static inline uint8_t misc_read8(uint8_t reg)
+{
+	return read8((void *)(ACPIMMIO_MISC_BASE + reg));
+}
+
+static inline uint16_t misc_read16(uint8_t reg)
+{
+	return read16((void *)(ACPIMMIO_MISC_BASE + reg));
+}
+
+static inline uint32_t misc_read32(uint8_t reg)
+{
+	return read32((void *)(ACPIMMIO_MISC_BASE + reg));
+}
+
+static inline void misc_write8(uint8_t reg, uint8_t value)
+{
+	write8((void *)(ACPIMMIO_MISC_BASE + reg), value);
+}
+
+static inline void misc_write16(uint8_t reg, uint16_t value)
+{
+	write16((void *)(ACPIMMIO_MISC_BASE + reg), value);
+}
+
+static inline void misc_write32(uint8_t reg, uint32_t value)
+{
+	write32((void *)(ACPIMMIO_MISC_BASE + reg), value);
+}
+
+static inline uint8_t xhci_pm_read8(uint8_t reg)
+{
+	return read8((void *)(ACPIMMIO_XHCIPM_BASE + reg));
+}
+
+static inline uint16_t xhci_pm_read16(uint8_t reg)
+{
+	return read16((void *)(ACPIMMIO_XHCIPM_BASE + reg));
+}
+
+static inline uint32_t xhci_pm_read32(uint8_t reg)
+{
+	return read32((void *)(ACPIMMIO_XHCIPM_BASE + reg));
+}
+
+static inline void xhci_pm_write8(uint8_t reg, uint8_t value)
+{
+	write8((void *)(ACPIMMIO_XHCIPM_BASE + reg), value);
+}
+
+static inline void xhci_pm_write16(uint8_t reg, uint16_t value)
+{
+	write16((void *)(ACPIMMIO_XHCIPM_BASE + reg), value);
+}
+
+static inline void xhci_pm_write32(uint8_t reg, uint32_t value)
+{
+	write32((void *)(ACPIMMIO_XHCIPM_BASE + reg), value);
+}
+
+static inline uint8_t aoac_read8(uint8_t reg)
+{
+	return read8((void *)(ACPIMMIO_AOAC_BASE + reg));
+}
+
+static inline void aoac_write8(uint8_t reg, uint8_t value)
+{
+	write8((void *)(ACPIMMIO_AOAC_BASE + reg), value);
+}
 
 #endif /* __AMDBLOCKS_ACPIMMIO_H__ */

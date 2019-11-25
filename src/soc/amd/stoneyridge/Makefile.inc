@@ -137,20 +137,15 @@ STONEYRIDGE_FWM_POSITION=$(call int-add, \
 
 ### 0
 FIRMWARE_LOCATE=$(dir $(call strip_quotes, $(CONFIG_AMD_PUBKEY_FILE)))
+ifneq ($(FIRMWARE_LOCATE),)
 
 ifeq ($(CONFIG_AMD_APU_STONEYRIDGE),y)
 FIRMWARE_TYPE=ST
 else
-
 ifeq ($(CONFIG_AMD_APU_MERLINFALCON),y)
-# If Merlin Falcon, but blobs aren't present, use Stoney Ridge instead
-ifeq ($(CONFIG_HAVE_MERLINFALCON_BINARIES),y)
 FIRMWARE_TYPE=CZ
 else
-FIRMWARE_TYPE=ST
-endif # CONFIG_HAVE_MERLINFALCON_BINARIES
-else
-$(error stoneyridge: Unknown FIRMWARE_TYPE)
+$(error soc/amd/stoneyridge: Unusable FIRMWARE_TYPE)
 
 endif # CONFIG_AMD_APU_MERLINFALCON
 endif # CONFIG_AMD_APU_STONEYRIDGE
@@ -331,5 +326,18 @@ $(error "Proper SMU Firmware not selected")
 endif
 
 endif # ifeq ($(CONFIG_SOC_AMD_PSP_SELECTABLE_SMU_FW),y)
+
+else # ifneq ($(FIRMWARE_LOCATE),)
+
+warn_no_amdfw:
+	printf "\n\t** WARNING **\n"
+	printf "coreboot has been built with no PSP firmware and "
+	printf "a non-booting image has been generated.\n\n"
+
+PHONY+=warn_no_amdfw
+
+files_added:: warn_no_amdfw
+
+endif # ifneq ($(FIRMWARE_LOCATE),)
 
 endif # ($(CONFIG_SOC_AMD_MERLINFALCON)$(CONFIG_SOC_AMD_STONEYRIDGE_FP4)$(CONFIG_SOC_AMD_STONEYRIDGE_FT4),y)

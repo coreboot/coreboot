@@ -202,7 +202,7 @@ AmdS3Save (
       //
       AllocParams.RequestedBufferSize = EarlyBufferSize + LateBufferSize;
       AllocParams.BufferHandle = AMD_S3_INFO_BUFFER_HANDLE;
-
+      AllocParams.Persist = 0;
       AGESA_TESTPOINT (TpIfBeforeAllocateS3SaveBuffer, &AmdS3SaveParams->StdHeader);
       if (HeapAllocateBuffer (&AllocParams, &AmdS3SaveParams->StdHeader) != AGESA_SUCCESS) {
         if (AGESA_ERROR > ReturnStatus) {

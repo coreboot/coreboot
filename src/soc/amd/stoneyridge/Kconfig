@@ -15,24 +15,27 @@
 
 config SOC_AMD_STONEYRIDGE_FP4
 	bool
+	select AMD_APU_STONEYRIDGE
 	select AMD_APU_PKG_FP4
 	help
 	  AMD Stoney Ridge FP4 support
 
 config SOC_AMD_STONEYRIDGE_FT4
 	bool
+	select AMD_APU_STONEYRIDGE
 	select AMD_APU_PKG_FT4
 	help
 	  AMD Stoney Ridge FT4 support
 
 config SOC_AMD_MERLINFALCON
 	bool
+	select AMD_APU_MERLINFALCON
 	select AMD_APU_PKG_FP4
 	help
 	  AMD Merlin Falcon FP4 support
 
 config HAVE_MERLINFALCON_BINARIES
-	depends on SOC_AMD_MERLINFALCON
+	depends on AMD_APU_MERLINFALCON
 	bool "Merlinfalcon binaries are present"
 	default n
 	help
@@ -79,6 +82,16 @@ config CPU_SPECIFIC_OPTIONS
 	select HAVE_SMI_HANDLER
 	select SSE2
 	select RTC
+
+config AMD_APU_STONEYRIDGE
+	bool
+	help
+	  AMD Stoney Ridge APU
+
+config AMD_APU_MERLINFALCON
+	bool
+	help
+	  AMD Merlin Falcon APU
 
 config AMD_APU_PKG_FP4
 	bool
@@ -153,7 +166,7 @@ config MMCONF_BUS_NUMBER
 
 config VGA_BIOS_ID
 	string
-	default "1002,9874" if SOC_AMD_MERLINFALCON
+	default "1002,9874" if AMD_APU_MERLINFALCON
 	default "1002,98e4"
 	help
 	  The default VGA BIOS PCI vendor/device ID should be set to the
@@ -161,7 +174,7 @@ config VGA_BIOS_ID
 
 config VGA_BIOS_FILE
 	string
-	default "3rdparty/blobs/soc/amd/merlinfalcon/VBIOS.bin" if SOC_AMD_MERLINFALCON && HAVE_MERLINFALCON_BINARIES
+	default "3rdparty/blobs/soc/amd/merlinfalcon/VBIOS.bin" if AMD_APU_MERLINFALCON && HAVE_MERLINFALCON_BINARIES
 	default "3rdparty/blobs/soc/amd/stoneyridge/VBIOS.bin"
 
 config S3_VGA_ROM_RUN
@@ -210,7 +223,7 @@ config STONEYRIDGE_GEC_FWM_FILE
 
 config AMD_PUBKEY_FILE
 	string "AMD public Key"
-	default "3rdparty/blobs/soc/amd/merlinfalcon/PSP/AmdPubKeyCZ.bin" if SOC_AMD_MERLINFALCON && HAVE_MERLINFALCON_BINARIES
+	default "3rdparty/blobs/soc/amd/merlinfalcon/PSP/AmdPubKeyCZ.bin" if AMD_APU_MERLINFALCON && HAVE_MERLINFALCON_BINARIES
 	default "3rdparty/blobs/soc/amd/stoneyridge/PSP/AmdPubKeyST.bin"
 
 config STONEYRIDGE_SATA_MODE
@@ -331,8 +344,7 @@ config USE_PSPSECUREOS
 
 config SOC_AMD_PSP_SELECTABLE_SMU_FW
 	bool
-	default n if SOC_AMD_MERLINFALCON
-	default y
+	default y if AMD_APU_STONEYRIDGE
 	help
 	  Some ST implementations allow storing SMU firmware into cbfs and
 	  calling the PSP to load the blobs at the proper time.

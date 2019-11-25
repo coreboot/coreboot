@@ -137,11 +137,23 @@ STONEYRIDGE_FWM_POSITION=$(call int-add, \
 
 ### 0
 FIRMWARE_LOCATE=$(dir $(call strip_quotes, $(CONFIG_AMD_PUBKEY_FILE)))
+
+ifeq ($(CONFIG_AMD_APU_STONEYRIDGE),y)
+FIRMWARE_TYPE=ST
+else
+
+ifeq ($(CONFIG_AMD_APU_MERLINFALCON),y)
+# If Merlin Falcon, but blobs aren't present, use Stoney Ridge instead
 ifeq ($(CONFIG_HAVE_MERLINFALCON_BINARIES),y)
 FIRMWARE_TYPE=CZ
 else
 FIRMWARE_TYPE=ST
-endif
+endif # CONFIG_HAVE_MERLINFALCON_BINARIES
+else
+$(error stoneyridge: Unknown FIRMWARE_TYPE)
+
+endif # CONFIG_AMD_APU_MERLINFALCON
+endif # CONFIG_AMD_APU_STONEYRIDGE
 
 ###5
 PUBSIGNEDKEY_FILE=$(top)/$(FIRMWARE_LOCATE)/RtmPubSigned$(FIRMWARE_TYPE).key

@@ -175,8 +175,8 @@ config VGA_BIOS_ID
 config VGA_BIOS_FILE
 	string
 	default "" if !USE_AMD_BLOBS
-	default "3rdparty/blobs/soc/amd/merlinfalcon/VBIOS.bin" if AMD_APU_MERLINFALCON
-	default "3rdparty/blobs/soc/amd/stoneyridge/VBIOS.bin"
+	default "3rdparty/amd_blobs/stoneyridge/CarrizoGenericVbios.bin" if AMD_APU_MERLINFALCON
+	default "3rdparty/amd_blobs/stoneyridge/StoneyGenericVbios.bin"
 
 config S3_VGA_ROM_RUN
 	bool
@@ -216,7 +216,7 @@ config STONEYRIDGE_GEC_FWM
 config STONEYRIDGE_XHCI_FWM_FILE
 	string "XHCI firmware path and filename"
 	default "" if !USE_AMD_BLOBS
-	default "3rdparty/blobs/soc/amd/stoneyridge/xhci.bin"
+	default "3rdparty/amd_blobs/stoneyridge/xhci.bin"
 	depends on STONEYRIDGE_XHCI_FWM
 
 config STONEYRIDGE_GEC_FWM_FILE
@@ -226,8 +226,8 @@ config STONEYRIDGE_GEC_FWM_FILE
 config AMD_PUBKEY_FILE
 	string "AMD public Key"
 	default "" if !USE_AMD_BLOBS
-	default "3rdparty/blobs/soc/amd/merlinfalcon/PSP/AmdPubKeyCZ.bin" if AMD_APU_MERLINFALCON
-	default "3rdparty/blobs/soc/amd/stoneyridge/PSP/AmdPubKeyST.bin"
+	default "3rdparty/amd_blobs/stoneyridge/PSP/CZ/AmdPubKeyCZ.bin" if AMD_APU_MERLINFALCON
+	default "3rdparty/amd_blobs/stoneyridge/PSP/ST/AmdPubKeyST.bin"
 
 config STONEYRIDGE_SATA_MODE
 	int "SATA Mode"

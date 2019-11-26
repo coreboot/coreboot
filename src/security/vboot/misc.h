@@ -23,21 +23,9 @@ struct vb2_context;
 struct vb2_shared_data;
 
 /*
- * Stores vboot-related information.  selected_region is used by verstage to
- * store the location of the selected slot.  buffer is used by vboot to store
- * its work buffer.  vb2_context is contained within this work buffer, and is
- * accessible via vboot_get_context() declared below.
- * Keep the struct CPU architecture agnostic as it crosses stage boundaries.
- */
-struct vboot_working_data {
-	/* offset of the buffer from the start of this struct */
-	uint16_t buffer_offset;
-};
-
-/*
  * Source: security/vboot/common.c
  */
-struct vboot_working_data *vboot_get_working_data(void);
+void *vboot_get_workbuf(void);
 struct vb2_context *vboot_get_context(void);
 
 /*

@@ -27,57 +27,42 @@
 
 static struct vb2_context *vboot_ctx;
 
-struct vboot_working_data *vboot_get_working_data(void)
+void *vboot_get_workbuf(void)
 {
-	struct vboot_working_data *wd = NULL;
+	void *wb = NULL;
 
 	if (cbmem_possibly_online())
-		wd = cbmem_find(CBMEM_ID_VBOOT_WORKBUF);
+		wb = cbmem_find(CBMEM_ID_VBOOT_WORKBUF);
 
-	if (wd == NULL && CONFIG(VBOOT_STARTS_IN_BOOTBLOCK) &&
+	if (wb == NULL && CONFIG(VBOOT_STARTS_IN_BOOTBLOCK) &&
 	    preram_symbols_available())
-		wd = (struct vboot_working_data *)_vboot2_work;
+		wb = _vboot2_work;
 
-	assert(wd != NULL);
+	assert(wb != NULL);
 
-	return wd;
-}
-
-static inline void *vboot_get_workbuf(struct vboot_working_data *wd)
-{
-	return (void *)((uintptr_t)wd + wd->buffer_offset);
+	return wb;
 }
 
 struct vb2_context *vboot_get_context(void)
 {
-	struct vboot_working_data *wd;
+	void *wb;
 
 	/* Return if context has already been initialized/restored. */
 	if (vboot_ctx)
 		return vboot_ctx;
 
-	wd = vboot_get_working_data();
+	wb = vboot_get_workbuf();
 
 	/* Restore context from a previous stage. */
 	if (vboot_logic_executed()) {
-		assert(vb2api_reinit(vboot_get_workbuf(wd),
-				     &vboot_ctx) == VB2_SUCCESS);
+		assert(vb2api_reinit(wb, &vboot_ctx) == VB2_SUCCESS);
 		return vboot_ctx;
 	}
 
 	assert(verification_should_run());
 
-	/*
-	 * vboot prefers 16-byte alignment. This takes away 16 bytes
-	 * from the VBOOT2_WORK region, but the vboot devs said that's okay.
-	 */
-	memset(wd, 0, sizeof(*wd));
-	wd->buffer_offset = ALIGN_UP(sizeof(*wd), 16);
-
 	/* Initialize vb2_shared_data and friends. */
-	assert(vb2api_init(vboot_get_workbuf(wd),
-			   VB2_FIRMWARE_WORKBUF_RECOMMENDED_SIZE -
-			   wd->buffer_offset,
+	assert(vb2api_init(wb, VB2_FIRMWARE_WORKBUF_RECOMMENDED_SIZE,
 			   &vboot_ctx) == VB2_SUCCESS);
 
 	return vboot_ctx;
@@ -96,35 +81,19 @@ int vboot_locate_firmware(const struct vb2_context *ctx,
 	return fmap_locate_area_as_rdev(name, fw);
 }
 
-#if CONFIG(VBOOT_STARTS_IN_BOOTBLOCK)
-/*
- * For platforms that do not employ VBOOT_STARTS_IN_ROMSTAGE, vboot
- * verification occurs before CBMEM is brought online, using pre-RAM.
- * In order to make vboot data structures available downstream, copy
- * vboot_working_data from SRAM/CAR into CBMEM.
- */
-static void vboot_migrate_cbmem(int unused)
-{
-	const size_t cbmem_size = VB2_KERNEL_WORKBUF_RECOMMENDED_SIZE;
-	struct vboot_working_data *wd_preram =
-		(struct vboot_working_data *)_vboot2_work;
-	struct vboot_working_data *wd_cbmem =
-		cbmem_add(CBMEM_ID_VBOOT_WORKBUF, cbmem_size);
-	assert(wd_cbmem != NULL);
-	memcpy(wd_cbmem, wd_preram, sizeof(struct vboot_working_data));
-	vb2api_relocate(vboot_get_workbuf(wd_cbmem),
-			vboot_get_workbuf(wd_preram),
-			cbmem_size - wd_cbmem->buffer_offset,
-			&vboot_ctx);
-}
-ROMSTAGE_CBMEM_INIT_HOOK(vboot_migrate_cbmem)
-#else
 static void vboot_setup_cbmem(int unused)
 {
-	struct vboot_working_data *wd_cbmem =
-		cbmem_add(CBMEM_ID_VBOOT_WORKBUF,
-			  VB2_KERNEL_WORKBUF_RECOMMENDED_SIZE);
-	assert(wd_cbmem != NULL);
+	const size_t cbmem_size = VB2_KERNEL_WORKBUF_RECOMMENDED_SIZE;
+	void *wb_cbmem = cbmem_add(CBMEM_ID_VBOOT_WORKBUF, cbmem_size);
+	assert(wb_cbmem != NULL);
+	/*
+	 * For platforms where VBOOT_STARTS_IN_BOOTBLOCK, vboot verification
+	 * occurs before CBMEM is brought online, using pre-RAM. In order to
+	 * make vboot data structures available downstream, copy vboot workbuf
+	 * from SRAM/CAR into CBMEM.
+	 */
+	if (CONFIG(VBOOT_STARTS_IN_BOOTBLOCK))
+		assert(vb2api_relocate(wb_cbmem, _vboot2_work, cbmem_size,
+				       &vboot_ctx) == VB2_SUCCESS);
 }
 ROMSTAGE_CBMEM_INIT_HOOK(vboot_setup_cbmem)
-#endif

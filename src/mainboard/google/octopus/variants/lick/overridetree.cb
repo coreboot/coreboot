@@ -1,0 +1,113 @@
+chip soc/intel/apollolake
+
+	# EMMC Tx CMD Delay
+	# Refer to EDS-Vol2-16.32.
+	# [14:8] steps of delay for DDR mode, each 125ps.
+	# [6:0] steps of delay for SDR mode, each 125ps.
+	register "emmc_tx_cmd_cntl" = "0x505"
+
+	# EMMC TX DATA Delay 1
+	# Refer to EDS-Vol2-16.33.
+	# [14:8] steps of delay for HS400, each 125ps.
+	# [6:0] steps of delay for SDR104/HS200, each 125ps.
+	register "emmc_tx_data_cntl1" = "0x0b0c"
+
+	# EMMC TX DATA Delay 2
+	# Refer to EDS-Vol2-16.34.
+	# [30:24] steps of delay for SDR50, each 125ps.
+	# [22:16] steps of delay for DDR50, each 125ps.
+	# [14:8] steps of delay for SDR25/HS50, each 125ps.
+	# [6:0] steps of delay for SDR12, each 125ps.
+	register "emmc_tx_data_cntl2" = "0x1c282929"
+
+	# EMMC RX CMD/DATA Delay 1
+	# Refer to EDS-Vol2-16.35.
+	# [30:24] steps of delay for SDR50, each 125ps.
+	# [22:16] steps of delay for DDR50, each 125ps.
+	# [14:8] steps of delay for SDR25/HS50, each 125ps.
+	# [6:0] steps of delay for SDR12, each 125ps.
+	register "emmc_rx_cmd_data_cntl1" = "0x00181b1b"
+
+	# EMMC RX CMD/DATA Delay 2
+	# Refer to EDS-Vol2-16.37.
+	# [17:16] stands for Rx Clock before Output Buffer
+	# [14:8] steps of delay for Auto Tuning Mode, each 125ps.
+	# [6:0] steps of delay for HS200, each 125ps.
+	register "emmc_rx_cmd_data_cntl2" = "0x10028"
+
+	# EMMC Rx Strobe Delay
+	# Refer to EDS-Vol2-16.36.
+	# [14:8] Rx Strobe Delay DLL 1(HS400 Mode), each 125ps.
+	# [6:0] Rx Strobe Delay DLL 2(HS400 Mode), each 125ps.
+	register "emmc_rx_strobe_cntl" = "0x0b0b"
+
+	# Intel Common SoC Config
+	#+-------------------+---------------------------+
+	#| Field             |  Value                    |
+	#+-------------------+---------------------------+
+	#| GSPI0             | cr50 TPM. Early init is   |
+	#|                   | required to set up a BAR  |
+	#|                   | for TPM communication     |
+	#|                   | before memory is up       |
+	#| I2C5              | Audio                     |
+	#| I2C6              | Trackpad                  |
+	#+-------------------+---------------------------+
+	register "common_soc_config" = "{
+		.gspi[0] = {
+			.speed_mhz = 1,
+			.early_init = 1,
+		},
+		.i2c[5] = {
+			.speed = I2C_SPEED_FAST,
+			.rise_time_ns = 104,
+			.fall_time_ns = 52,
+		},
+		.i2c[6] = {
+			.speed = I2C_SPEED_FAST,
+			.rise_time_ns = 66,
+			.fall_time_ns = 90,
+			.data_hold_time_ns = 350,
+		},
+	}"
+
+	device domain 0 on
+		device pci 17.1 on
+			chip drivers/i2c/da7219
+				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPIO_137_IRQ)"
+				register "btn_cfg" = "50"
+				register "mic_det_thr" = "500"
+				register "jack_ins_deb" = "20"
+				register "jack_det_rate" = ""32ms_64ms""
+				register "jack_rem_deb" = "1"
+				register "a_d_btn_thr" = "0xa"
+				register "d_b_btn_thr" = "0x16"
+				register "b_c_btn_thr" = "0x21"
+				register "c_mic_btn_thr" = "0x3e"
+				register "btn_avg" = "4"
+				register "adc_1bit_rpt" = "1"
+				register "micbias_lvl" = "2600"
+				register "mic_amp_in_sel" = ""diff""
+				device i2c 1a on end
+			end
+		end	# - I2C 5
+		device pci 17.2 on
+			chip drivers/i2c/generic
+				register "hid" = ""ELAN0000""
+				register "desc" = ""ELAN Touchpad""
+				register "irq" = "ACPI_IRQ_WAKE_EDGE_LOW(GPIO_135_IRQ)"
+				register "wake" = "GPE0_DW3_27"
+				register "probed" = "1"
+				device i2c 15 on end
+			end
+			chip drivers/i2c/hid
+				register "generic.hid" = ""PNP0C50""
+				register "generic.desc" = ""Synaptics Touchpad""
+				register "generic.irq" = "ACPI_IRQ_WAKE_EDGE_LOW(GPIO_135_IRQ)"
+				register "generic.wake" = "GPE0_DW3_27"
+				register "generic.probed" = "1"
+				register "hid_desc_reg_offset" = "0x20"
+				device i2c 0x2c on end
+			end
+		end	# - I2C 6
+	end
+end

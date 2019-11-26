@@ -96,6 +96,7 @@ config MAINBOARD_PART_NUMBER
 	default "Kindred" if BOARD_GOOGLE_KINDRED
 	default "Kohaku" if BOARD_GOOGLE_KOHAKU
 	default "Puff" if BOARD_GOOGLE_PUFF
+	default "Stryke" if BOARD_GOOGLE_STRYKE
 
 config MAX_CPUS
 	int
@@ -121,6 +122,7 @@ config VARIANT_DIR
 	default "kindred" if BOARD_GOOGLE_KINDRED
 	default "kohaku" if BOARD_GOOGLE_KOHAKU
 	default "puff" if BOARD_GOOGLE_PUFF
+	default "stryke" if BOARD_GOOGLE_STRYKE
 
 config VBOOT
 	select HAS_RECOVERY_MRC_CACHE

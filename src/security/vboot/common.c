@@ -27,7 +27,7 @@
 
 static struct vb2_context *vboot_ctx;
 
-void *vboot_get_workbuf(void)
+static void *vboot_get_workbuf(void)
 {
 	void *wb = NULL;
 

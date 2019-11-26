@@ -218,23 +218,6 @@ static void lb_vbnv(struct lb_header *header)
 }
 #endif /* CONFIG_CHROMEOS */
 
-static void lb_vboot_workbuf(struct lb_header *header)
-{
-	struct lb_range *vbwb;
-	void *wb = vboot_get_workbuf();
-
-	vbwb = (struct lb_range *)lb_new_record(header);
-	vbwb->tag = LB_TAG_VBOOT_WORKBUF;
-	vbwb->size = sizeof(*vbwb);
-	vbwb->range_start = (uintptr_t)wb;
-	/*
-	 * TODO(chromium:1021452): Since cbmem size of vboot workbuf is now
-	 * always a known value, we hardcode the value of range_size here.
-	 * Ultimately we'll want to move this to add_cbmem_pointers() below.
-	 */
-	vbwb->range_size = VB2_KERNEL_WORKBUF_RECOMMENDED_SIZE;
-}
-
 __weak uint32_t board_id(void) { return UNDEFINED_STRAPPING_ID; }
 __weak uint32_t ram_code(void) { return UNDEFINED_STRAPPING_ID; }
 __weak uint32_t sku_id(void) { return UNDEFINED_STRAPPING_ID; }
@@ -349,6 +332,7 @@ static void add_cbmem_pointers(struct lb_header *header)
 		{CBMEM_ID_WIFI_CALIBRATION, LB_TAG_WIFI_CALIBRATION},
 		{CBMEM_ID_TCPA_LOG, LB_TAG_TCPA_LOG},
 		{CBMEM_ID_FMAP, LB_TAG_FMAP},
+		{CBMEM_ID_VBOOT_WORKBUF, LB_TAG_VBOOT_WORKBUF},
 	};
 	int i;
 
@@ -557,11 +541,6 @@ static uintptr_t write_coreboot_table(uintptr_t rom_table_end)
 	/* pass along VBNV offsets in CMOS */
 	lb_vbnv(head);
 #endif
-
-	if (CONFIG(VBOOT)) {
-		/* pass along the vboot workbuf address. */
-		lb_vboot_workbuf(head);
-	}
 
 	/* Add strapping IDs if available */
 	lb_board_id(head);

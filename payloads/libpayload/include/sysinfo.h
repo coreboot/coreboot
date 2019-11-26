@@ -96,7 +96,6 @@ struct sysinfo_t {
 	struct cb_mainboard *mainboard;
 
 	void *vboot_workbuf;
-	uint32_t vboot_workbuf_size;
 
 #if CONFIG(LP_ARCH_X86)
 	int x86_rom_var_mtrr_index;

@@ -86,10 +86,7 @@ static void cb_parse_serial(void *ptr, struct sysinfo_t *info)
 
 static void cb_parse_vboot_workbuf(unsigned char *ptr, struct sysinfo_t *info)
 {
-	struct lb_range *vbwb = (struct lb_range *)ptr;
-
-	info->vboot_workbuf = (void *)(uintptr_t)vbwb->range_start;
-	info->vboot_workbuf_size = vbwb->range_size;
+	info->vboot_workbuf = get_cbmem_ptr(ptr);
 }
 
 static void cb_parse_vbnv(unsigned char *ptr, struct sysinfo_t *info)

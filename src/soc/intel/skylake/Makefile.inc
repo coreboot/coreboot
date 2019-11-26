@@ -11,7 +11,6 @@ subdirs-y += ../../../cpu/x86/smm
 subdirs-y += ../../../cpu/x86/tsc
 
 bootblock-y += bootblock/bootblock.c
-bootblock-$(CONFIG_FSP_CAR) += fspcar.c
 bootblock-y += bootblock/cpu.c
 bootblock-y += i2c.c
 bootblock-y += bootblock/pch.c

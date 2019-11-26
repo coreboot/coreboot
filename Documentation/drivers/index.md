@@ -5,3 +5,4 @@ and plugin devices, significantly reducing integration complexity and
 they allow to easily reuse existing code accross platforms.
 
 * [IPMI KCS](ipmi_kcs.md)
+* [SMMSTORE](smmstore.md)

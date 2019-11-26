@@ -78,9 +78,10 @@ static int cr50_i2c_wait_tpm_ready(struct tpm_chip *chip)
 	stopwatch_init_msecs_expire(&sw, CR50_TIMEOUT_IRQ_MS);
 
 	while (!tis_plat_irq_status())
-		if (stopwatch_expired(&sw))
+		if (stopwatch_expired(&sw)) {
+			printk(BIOS_ERR, "Cr50 i2c TPM IRQ timeout!\n");
 			return -1;
-
+		}
 	return 0;
 }
 

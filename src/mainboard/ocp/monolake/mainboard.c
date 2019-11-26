@@ -31,8 +31,9 @@
 /* Default countdown is 15 minutes. */
 #define DEFAULT_COUNTDOWN 9000
 #define FRU_DEVICE_ID 0
-
 static struct fru_info_str fru_strings;
+#define MAX_IMC 1
+#define MAX_DIMM_SIZE_GB (32 * MiB)
 
 static void init_frb2_wdt(void)
 {
@@ -63,6 +64,44 @@ static void init_frb2_wdt(void)
 	}
 }
 
+#if CONFIG(GENERATE_SMBIOS_TABLES)
+static int write_smbios_type16(struct device *dev, int *handle, unsigned long *current)
+{
+	struct smbios_type16 *t = (struct smbios_type16 *)*current;
+	u32 maximum_capacity;
+	int len = sizeof(struct smbios_type16);
+
+	printk(BIOS_INFO, "Creating SMBIOS tables type 16 (note, ECC information is hard-coded) ...");
+
+	memset(t, 0, sizeof(struct smbios_type16));
+	t->type = SMBIOS_PHYS_MEMORY_ARRAY;
+	t->location = MEMORY_ARRAY_LOCATION_SYSTEM_BOARD;
+	t->use = MEMORY_ARRAY_USE_SYSTEM;
+	/* The ECC setting can`t be confirmed in FSP, so hardcode it. */
+	t->memory_error_correction = MEMORY_ARRAY_ECC_SINGLE_BIT;
+	t->memory_error_information_handle = 0xFFFE;
+	t->number_of_memory_devices = CONFIG_DIMM_MAX / MAX_IMC;
+
+	maximum_capacity = (u32)(CONFIG_DIMM_MAX * MAX_DIMM_SIZE_GB);
+	if (maximum_capacity >= 0x80000000) {
+		t->maximum_capacity = 0x80000000;
+		t->extended_maximum_capacity = maximum_capacity << 10;
+	} else {
+		t->maximum_capacity = (u32)maximum_capacity;
+		t->extended_maximum_capacity = 0;
+	}
+
+	*current += len;
+	t->handle = *handle;
+	*handle += 1;
+	t->length = len - 2;
+
+	printk(BIOS_INFO, "done\n");
+
+	return len;
+}
+#endif
+
 /*
  * mainboard_enable is executed as first thing after enumerate_buses().
  * This is the earliest point to add customization.
@@ -79,7 +118,12 @@ static void mainboard_enable(struct device *dev)
 		clear_ipmi_flags(&rsp);
 		system_reset();
 	}
+
 	read_fru_areas(BMC_KCS_BASE, FRU_DEVICE_ID, 0, &fru_strings);
+
+#if (CONFIG(GENERATE_SMBIOS_TABLES))
+	dev->ops->get_smbios_data = write_smbios_type16;
+#endif
 }
 
 struct chip_operations mainboard_ops = {

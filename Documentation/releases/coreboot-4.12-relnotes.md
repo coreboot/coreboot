@@ -13,4 +13,8 @@ notes.
 Significant changes
 -------------------
 
+### SMMSTORE is now production ready
+
+See [smmstore](../drivers/smmstore.md) for the documentation on the API.
+
 ### Add significant changes here

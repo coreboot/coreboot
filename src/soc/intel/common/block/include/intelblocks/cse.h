@@ -51,7 +51,7 @@ enum {
 	PCI_ME_HFSTS6 = 0x6C,
 };
 
-/* HECI Message Header */
+/* MKHI Message Header */
 struct mkhi_hdr {
 	uint8_t group_id;
 	uint8_t command:7;
@@ -103,14 +103,14 @@ uint32_t me_read_config32(int offset);
  */
 bool is_cse_enabled(void);
 
-/* Makes the host ready to communicate with CSE*/
-void set_host_ready(void);
+/* Makes the host ready to communicate with CSE */
+void cse_set_host_ready(void);
 
 /*
  * Polls for ME state 'HECI_OP_MODE_SEC_OVERRIDE' for 15 seconds.
  * Returns 0 on failure and 1 on success.
  */
-uint8_t wait_cse_sec_override_mode(void);
+uint8_t cse_wait_sec_override_mode(void);
 
 /*
  * Sends GLOBAL_RESET_REQ cmd to CSE.The reset type can be
@@ -123,14 +123,14 @@ int send_heci_reset_req_message(uint8_t rst_type);
  * Send HMRFPO_ENABLE command.
  * returns 0 on failure and 1 on success.
  */
-int send_hmrfpo_enable_msg(void);
+int cse_hmrfpo_enable(void);
 
 /*
  * Send HMRFPO_GET_STATUS command.
  * returns -1 on failure and 0 (DISABLED)/ 1 (LOCKED)/ 2 (ENABLED)
  * on success.
  */
-int send_hmrfpo_get_status_msg(void);
+int cse_hmrfpo_get_status(void);
 
 /* Fixed Address MEI Header's Host Address field value */
 #define BIOS_HOST_ADDR	0x00

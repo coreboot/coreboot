@@ -271,7 +271,7 @@ bool cse_is_hfs1_com_soft_temp_disable(void)
 }
 
 /* Makes the host ready to communicate with CSE */
-void set_host_ready(void)
+void cse_set_host_ready(void)
 {
 	uint32_t csr;
 	csr = read_host_csr();
@@ -280,17 +280,20 @@ void set_host_ready(void)
 	write_host_csr(csr);
 }
 
-/* Polls for ME state 'HECI_OP_MODE_SEC_OVERRIDE' for 15 seconds */
-uint8_t wait_cse_sec_override_mode(void)
+/* Polls for ME mode ME_HFS1_COM_SECOVER_MEI_MSG for 15 seconds */
+uint8_t cse_wait_sec_override_mode(void)
 {
 	struct stopwatch sw;
 	stopwatch_init_msecs_expire(&sw, HECI_DELAY_READY);
 	while (!cse_is_hfs1_com_secover_mei_msg()) {
 		udelay(HECI_DELAY);
-		if (stopwatch_expired(&sw))
+		if (stopwatch_expired(&sw)) {
+			printk(BIOS_ERR, "HECI: Timed out waiting for SEC_OVERRIDE mode!\n");
 			return 0;
+		}
 	}
-
+	printk(BIOS_DEBUG, "HECI: CSE took %lu ms to enter security override mode\n",
+			stopwatch_duration_msecs(&sw));
 	return 1;
 }
 
@@ -544,7 +547,7 @@ int heci_reset(void)
 
 	if (wait_heci_ready()) {
 		/* Device is back on its imaginary feet, clear reset */
-		set_host_ready();
+		cse_set_host_ready();
 		return 1;
 	}
 
@@ -622,7 +625,7 @@ int send_heci_reset_req_message(uint8_t rst_type)
 }
 
 /* Sends HMRFPO Enable command to CSE */
-int send_hmrfpo_enable_msg(void)
+int cse_hmrfpo_enable(void)
 {
 	struct hmrfpo_enable_msg {
 		struct mkhi_hdr hdr;
@@ -682,7 +685,7 @@ failed:
  * Sends HMRFPO Get Status command to CSE to get the HMRFPO status.
  * The status can be DISABLES/LOCKED/ENABLED
  */
-int send_hmrfpo_get_status_msg(void)
+int cse_hmrfpo_get_status(void)
 {
 	struct hmrfpo_get_status_msg {
 		struct mkhi_hdr hdr;

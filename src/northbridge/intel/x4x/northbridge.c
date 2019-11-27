@@ -206,45 +206,30 @@ static void enable_dev(struct device *dev)
 		dev->ops = &cpu_bus_ops;
 }
 
+static void hide_pci_fn(const int dev_bit_base, const struct device *dev)
+{
+	if (!dev || dev->enabled)
+		return;
+	const unsigned int fn = PCI_FUNC(dev->path.pci.devfn);
+	const struct device *const d0f0 = pcidev_on_root(0, 0);
+	pci_update_config32(d0f0, D0F0_DEVEN, ~(1 << (dev_bit_base + fn)), 0);
+}
+
+static void hide_pci_dev(const int dev, int functions, const int dev_bit_base)
+{
+	for (; functions >= 0; functions--)
+		hide_pci_fn(dev_bit_base, pcidev_on_root(dev, functions));
+}
+
 static void x4x_init(void *const chip_info)
 {
-	int dev, fn, bit_base;
-
 	struct device *const d0f0 = pcidev_on_root(0x0, 0);
 
 	/* Hide internal functions based on devicetree info. */
-	for (dev = 6; dev > 0; --dev) {
-		switch (dev) {
-		case 6: /* PEG1: only on P45 */
-			fn = 0;
-			bit_base = 13;
-			break;
-		case 3: /* ME */
-			fn = 3;
-			bit_base = 6;
-			break;
-		case 2: /* IGD */
-			fn = 1;
-			bit_base = 3;
-			break;
-		case 1: /* PEG0 */
-			fn = 0;
-			bit_base = 1;
-			break;
-		case 4: /* Nothing to do */
-		case 5:
-			continue;
-		}
-		for (; fn >= 0; --fn) {
-			const struct device *const d =
-				pcidev_on_root(dev, fn);
-			if (!d || d->enabled)
-				continue;
-			const u32 deven = pci_read_config32(d0f0, D0F0_DEVEN);
-			pci_write_config32(d0f0, D0F0_DEVEN,
-					   deven & ~(1 << (bit_base + fn)));
-		}
-	}
+	hide_pci_dev(6, 0, 13); /* PEG1: only on P45 */
+	hide_pci_dev(3, 3, 6); /* ME */
+	hide_pci_dev(2, 1, 3); /* IGD */
+	hide_pci_dev(1, 0, 1); /* PEG0 */
 
 	const u32 deven = pci_read_config32(d0f0, D0F0_DEVEN);
 	if (!(deven & (0xf << 6)))

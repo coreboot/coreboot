@@ -45,10 +45,49 @@ fallback_stack_top:
 	(CR0_CD | CR0_NW | CR0_PG | CR0_AM | CR0_WP | \
 	 CR0_NE | CR0_TS | CR0_EM | CR0_MP)
 
+#define SMM_DEFAULT_SIZE 0x10000
+
 .text
 .code16
 .global _start
 _start:
+smm_handler_start:
+#if CONFIG(SMM_LAPIC_REMAP_MITIGATION)
+	/* Check if the LAPIC register block overlaps with the stub.
+	 * This block needs to work without data accesses because they
+	 * may be routed into the LAPIC register block.
+	 * Code accesses, on the other hand, are never routed to LAPIC,
+	 * which is what makes this work in the first place.
+	 */
+	mov	$LAPIC_BASE_MSR, %ecx
+	rdmsr
+	and	$(~0xfff), %eax
+	call	1f
+	/* Get the current program counter */
+1:
+	pop	%ebx
+	sub	%ebx, %eax
+	cmp	$(SMM_DEFAULT_SIZE), %eax
+	ja	untampered_lapic
+1:
+#if CONFIG(CONSOLE_SERIAL)
+	/* emit "Crash" on serial */
+	mov	$(CONFIG_TTYS0_BASE), %dx
+	mov	$'C', %al
+	out	%al, (%dx)
+	mov	$'r', %al
+	out	%al, (%dx)
+	mov	$'a', %al
+	out	%al, (%dx)
+	mov	$'s', %al
+	out	%al, (%dx)
+	mov	$'h', %al
+	out	%al, (%dx)
+#endif /* CONFIG_CONSOLE_SERIAL */
+	/* now crash for real */
+	ud2
+untampered_lapic:
+#endif
 	movl	$(smm_relocate_gdt), %ebx
 	lgdtl	(%ebx)
 

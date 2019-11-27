@@ -79,7 +79,4 @@ config CBFS_SIZE
 	hex
 	default 0x200000
 
-config INTEL_GMA_VBT_FILE
-	default "src/mainboard/$(MAINBOARDDIR)/variants/$(VARIANT_DIR)/data.vbt"
-
 endif # BOARD_LENOVO_T400

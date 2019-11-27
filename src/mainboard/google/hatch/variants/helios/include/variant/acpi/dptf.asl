@@ -18,16 +18,16 @@
 
 #define DPTF_TSR0_SENSOR_ID	0
 #define DPTF_TSR0_SENSOR_NAME	"Battery Charger"
-#define DPTF_TSR0_PASSIVE	50
+#define DPTF_TSR0_PASSIVE	59
 #define DPTF_TSR0_CRITICAL	80
 
 #define DPTF_TSR1_SENSOR_ID	1
 #define DPTF_TSR1_SENSOR_NAME	"5V Regulator"
 #define DPTF_TSR1_PASSIVE	0
 #define DPTF_TSR1_CRITICAL	70
-#define DPTF_TSR1_ACTIVE_AC0	43
-#define DPTF_TSR1_ACTIVE_AC1	40
-#define DPTF_TSR1_ACTIVE_AC2	38
+#define DPTF_TSR1_ACTIVE_AC0	42
+#define DPTF_TSR1_ACTIVE_AC1	41
+#define DPTF_TSR1_ACTIVE_AC2	39
 
 #define DPTF_TSR2_SENSOR_ID	2
 #define DPTF_TSR2_SENSOR_NAME	"Ambient"
@@ -36,14 +36,8 @@
 
 #define DPTF_TSR3_SENSOR_ID	3
 #define DPTF_TSR3_SENSOR_NAME	"CPU"
-#define DPTF_TSR3_PASSIVE	90
-#define DPTF_TSR3_CRITICAL	105
-#define DPTF_TSR3_ACTIVE_AC0	87
-#define DPTF_TSR3_ACTIVE_AC1	85
-#define DPTF_TSR3_ACTIVE_AC2	83
-#define DPTF_TSR3_ACTIVE_AC3	80
-#define DPTF_TSR3_ACTIVE_AC4	78
-#define DPTF_TSR3_ACTIVE_AC5	75
+#define DPTF_TSR3_PASSIVE	44
+#define DPTF_TSR3_CRITICAL	90
 
 #define DPTF_ENABLE_CHARGER
 #define DPTF_ENABLE_FAN_CONTROL
@@ -91,7 +85,7 @@ Name (DART, Package () {
 			0, 0, 0
 	},
 	Package () {
-		\_SB.DPTF.TFN1, \_SB.DPTF.TSR1, 100, 100, 80, 60, 0, 0, 0, 0,
+		\_SB.DPTF.TFN1, \_SB.DPTF.TSR1, 100, 90, 70, 50, 0, 0, 0, 0,
 			0, 0, 0
 	},
 	Package () {
@@ -99,7 +93,7 @@ Name (DART, Package () {
 			0, 0, 0
 	},
 	Package () {
-		\_SB.DPTF.TFN1, \_SB.DPTF.TSR3, 100, 90, 69, 56, 46, 36, 30, 0,
+		\_SB.DPTF.TFN1, \_SB.DPTF.TSR3, 100, 0, 0, 0, 0, 0, 0, 0,
 			0, 0, 0
 	}
 })

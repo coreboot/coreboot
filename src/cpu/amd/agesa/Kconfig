@@ -29,6 +29,7 @@ config CPU_AMD_AGESA
 	select CBMEM_STAGE_CACHE if HAVE_ACPI_RESUME
 	select SMM_ASEG
 	select NO_FIXED_XIP_ROM_SIZE
+	select SSE2
 
 if CPU_AMD_AGESA
 

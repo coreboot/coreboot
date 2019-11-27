@@ -97,7 +97,8 @@ config FSP_TEMP_RAM_SIZE
 
 config IFD_CHIPSET
 	string
-	default "tgl"
+	default "tgl" if SOC_INTEL_TIGERLAKE
+	default "jsl" if SOC_INTEL_JASPERLAKE
 
 config IED_REGION_SIZE
 	hex

@@ -13,7 +13,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
-#include <bootblock_common.h>
+
 #include <FsptUpd.h>
 
 const FSPT_UPD temp_ram_init_params = {

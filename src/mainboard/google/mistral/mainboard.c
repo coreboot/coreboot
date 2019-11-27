@@ -14,7 +14,6 @@
  */
 
 #include <device/device.h>
-#include <bootblock_common.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 #include <soc/usb.h>
 

@@ -14,7 +14,6 @@
  */
 
 #include <device/device.h>
-#include <bootblock_common.h>
 #include <gpio.h>
 #include <soc/usb.h>
 

@@ -17,7 +17,6 @@
 #include <stdint.h>
 #include <arch/cbfs.h>
 #include <arch/romstage.h>
-#include <bootblock_common.h>
 #include <bootmode.h>
 #include <cbmem.h>
 #include <console/console.h>

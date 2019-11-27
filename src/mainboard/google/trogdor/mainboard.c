@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <bootblock_common.h>
 #include <device/device.h>
 #include <device/mmio.h>
 #include <gpio.h>

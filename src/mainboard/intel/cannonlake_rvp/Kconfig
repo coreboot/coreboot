@@ -27,10 +27,6 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "Cannonlake RVP"
 
-config MAINBOARD_VENDOR
-	string
-	default "Intel"
-
 config MAINBOARD_FAMILY
 	string
 	default "Intel_cannonlake_rvp"

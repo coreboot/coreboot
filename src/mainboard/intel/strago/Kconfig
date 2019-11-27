@@ -30,10 +30,6 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "Strago"
 
-config MAINBOARD_VENDOR
-	string
-	default "Intel"
-
 config VGA_BIOS_FILE
 	string
 	depends on VGA_BIOS

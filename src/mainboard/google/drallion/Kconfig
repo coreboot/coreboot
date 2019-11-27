@@ -74,10 +74,6 @@ config MAINBOARD_PART_NUMBER
 	default "Sarien_cml" if BOARD_GOOGLE_SARIEN_CML
 	default "Drallion" if BOARD_GOOGLE_DRALLION
 
-config MAINBOARD_VENDOR
-	string
-	default "Google"
-
 config MAX_CPUS
 	int
 	default 8

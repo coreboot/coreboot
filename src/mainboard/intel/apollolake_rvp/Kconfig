@@ -15,10 +15,6 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "Apollolake RVP"
 
-config MAINBOARD_VENDOR
-	string
-	default "Intel"
-
 config UART_FOR_CONSOLE
 	default 2
 endif

@@ -97,10 +97,6 @@ config MAINBOARD_PART_NUMBER
 	default "Kohaku" if BOARD_GOOGLE_KOHAKU
 	default "Puff" if BOARD_GOOGLE_PUFF
 
-config MAINBOARD_VENDOR
-	string
-	default "Google"
-
 config MAX_CPUS
 	int
 	default 8

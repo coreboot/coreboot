@@ -37,8 +37,4 @@ config MAX_CPUS
 	int
 	default 8
 
-config MAINBOARD_VENDOR
-	string
-	default "Roda"
-
 endif # BOARD_RODA_RV11 || BOARD_RODA_RW11

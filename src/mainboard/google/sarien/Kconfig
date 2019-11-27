@@ -76,10 +76,6 @@ config MAINBOARD_PART_NUMBER
 	default "Arcada" if BOARD_GOOGLE_ARCADA
 	default "Sarien" if BOARD_GOOGLE_SARIEN
 
-config MAINBOARD_VENDOR
-	string
-	default "Google"
-
 config MAX_CPUS
 	int
 	default 8

@@ -32,10 +32,6 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "TAGADA"
 
-config MAINBOARD_VENDOR
-	string
-	default "Scaleway"
-
 config BMC_INFO_LOC
 	hex "BMC information location in flash"
 	default 0xff802000

@@ -35,10 +35,6 @@ config MAINBOARD_PART_NUMBER
 	default "cmlrvp" if BOARD_INTEL_COMETLAKE_RVP
 	default "cflrvp"
 
-config MAINBOARD_VENDOR
-	string
-	default "Intel"
-
 config MAINBOARD_FAMILY
 	string
 	default "Intel_whlrvp" if BOARD_INTEL_WHISKEYLAKE_RVP

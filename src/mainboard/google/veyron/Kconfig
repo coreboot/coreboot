@@ -58,10 +58,6 @@ config MAINBOARD_PART_NUMBER
 	default "Veyron_Speedy" if BOARD_GOOGLE_VEYRON_SPEEDY
 	default "Veyron"
 
-config MAINBOARD_VENDOR
-	string
-	default "Google"
-
 config EC_GOOGLE_CHROMEEC_SPI_BUS
 	hex
 	default 0x0

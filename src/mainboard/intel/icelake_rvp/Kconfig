@@ -30,10 +30,6 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "Icelake RVP"
 
-config MAINBOARD_VENDOR
-	string
-	default "Intel"
-
 config MAINBOARD_FAMILY
 	string
 	default "Intel_icelake_rvp"

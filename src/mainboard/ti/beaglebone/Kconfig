@@ -33,10 +33,6 @@ config MAX_CPUS
 	int
 	default 1
 
-config MAINBOARD_VENDOR
-	string
-	default "TI"
-
 config DRAM_SIZE_MB
 	int
 	default 256

@@ -13,7 +13,8 @@
 # GNU General Public License for more details.
 #
 
-romstage-y += fsp_params.c
+romstage-$(CONFIG_SOC_INTEL_TIGERLAKE) += fsp_params_tgl.c
+romstage-$(CONFIG_SOC_INTEL_JASPERLAKE) += fsp_params_jsl.c
 romstage-y += ../../../../cpu/intel/car/romstage.c
 romstage-y += romstage.c
 romstage-y += pch.c

@@ -20,6 +20,8 @@
 #include <soc/memory.h>
 #include <spd_bin.h>
 
+#define MAX_SPD_READ_TRIES		3
+
 static uint32_t get_memory_dclk(void)
 {
 	uint32_t reg32 =
@@ -30,7 +32,7 @@ static uint32_t get_memory_dclk(void)
 void save_dimm_info(void)
 {
 	int index = 0;
-	uint32_t dclk_mhz = 0;
+	uint32_t dclk_mhz = 0, tries;
 
 	/*
 	 * When talking to SPD chips through IMC slave offset of 0x50 is automagically added
@@ -53,9 +55,33 @@ void save_dimm_info(void)
 		for (int slot = 0; slot < CONFIG_DIMM_MAX / IMC_MAX_CHANNELS; slot++) {
 			dimm_attr dimm = {0};
 			u8 *spd_data = blk.spd_array[index];
-			if (spd_decode_ddr4(&dimm, spd_data) == SPD_STATUS_OK)
-				spd_add_smbios17_ddr4(channel, slot, dclk_mhz, &dimm);
+			int res = SPD_STATUS_OK;
+			tries = MAX_SPD_READ_TRIES;
+			/*
+			 * SMBus controller can't validate data integrity. So on CRC
+			 * error retry a few times.
+			 */
+			do {
+				res = spd_decode_ddr4(&dimm, spd_data);
+				if (res == SPD_STATUS_CRC_ERROR) {
+					printk(BIOS_ERR,
+						"SPD CRC error, channel %u slot %u "
+						"try %u\n", channel, slot, tries);
+					get_spd_smbus(&blk);
+				}
+			} while (tries-- && res == SPD_STATUS_CRC_ERROR);
+
 			index++;
+
+			if (res == SPD_STATUS_CRC_ERROR) {
+				printk(BIOS_WARNING, "Gave up reading CRC on channel %u"
+					" slot %u\n", channel, slot);
+				continue;
+			}
+
+			if (res == SPD_STATUS_OK) {
+				spd_add_smbios17_ddr4(channel, slot, dclk_mhz, &dimm);
+			}
 		}
 	}
 }

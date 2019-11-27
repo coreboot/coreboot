@@ -399,9 +399,9 @@ vb2_error_t VbExDisplayScreen(uint32_t screen_type, uint32_t locale,
 /*
  * Write opaque data into NV storage region.
  */
-vb2_error_t VbExNvStorageWrite(const uint8_t *buf)
+vb2_error_t vb2ex_commit_data(struct vb2_context *ctx)
 {
-	save_vbnv(buf);
+	save_vbnv(ctx->nvdata);
 	return VB2_SUCCESS;
 }
 

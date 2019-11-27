@@ -16,7 +16,7 @@
 bootblock-y += bootblock.c
 bootblock-y += dock.c
 
-subdirs-y += variants/$(VARIANT_DIR)/
+romstage-y += variants/$(VARIANT_DIR)/gpio.c
 
 ramstage-y += dock.c
 ramstage-y += cstates.c

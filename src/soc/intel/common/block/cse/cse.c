@@ -650,6 +650,26 @@ int cse_request_global_reset(enum rst_req_type rst_type)
 	return status;
 }
 
+static bool cse_is_hmrfpo_enable_allowed(void)
+{
+	/*
+	 * Allow sending HMRFPO ENABLE command only if:
+	 *  - CSE's current working state is Normal and current operation mode is Normal
+	 *  - (or) cse's current working state is normal and current operation mode is
+	 *    Soft Temp Disable if CSE's Firmware SKU is Custom
+	 */
+	if (!cse_is_hfs1_cws_normal())
+		return false;
+
+	if (cse_is_hfs1_com_normal())
+		return true;
+
+	if (cse_is_hfs3_fw_sku_custom() && cse_is_hfs1_com_soft_temp_disable())
+		return true;
+
+	return false;
+}
+
 /* Sends HMRFPO Enable command to CSE */
 int cse_hmrfpo_enable(void)
 {
@@ -675,36 +695,34 @@ int cse_hmrfpo_enable(void)
 		/* Length of factory data area, not relevant for client SKUs */
 		uint32_t fct_limit;
 		uint8_t status;
-		uint8_t padding[3];
+		uint8_t reserved[3];
 	} __packed;
 
 	struct hmrfpo_enable_resp resp;
 	size_t resp_size = sizeof(struct hmrfpo_enable_resp);
 
 	printk(BIOS_DEBUG, "HECI: Send HMRFPO Enable Command\n");
-	/*
-	 * This command can be run only if:
-	 * - Working state is normal and
-	 * - Operation mode is normal or temporary disable mode.
-	 */
-	if (!cse_is_hfs1_cws_normal() ||
-		(!cse_is_hfs1_com_normal() && !cse_is_hfs1_com_soft_temp_disable())) {
-		printk(BIOS_ERR, "HECI: ME not in required Mode\n");
-		goto failed;
+
+	if (!cse_is_hmrfpo_enable_allowed()) {
+		printk(BIOS_ERR, "HECI: CSE does not meet required prerequisites\n");
+		return 0;
 	}
 
 	if (!heci_send_receive(&msg, sizeof(struct hmrfpo_enable_msg),
 				&resp, &resp_size))
-		goto failed;
+		return 0;
 
 	if (resp.hdr.result) {
 		printk(BIOS_ERR, "HECI: Resp Failed:%d\n", resp.hdr.result);
-		goto failed;
+		return 0;
 	}
-	return 1;
 
-failed:
-	return 0;
+	if (resp.status) {
+		printk(BIOS_ERR, "HECI: HMRFPO_Enable Failed (resp status: %d)\n", resp.status);
+		return 0;
+	}
+
+	return 1;
 }
 
 /*

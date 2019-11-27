@@ -12,7 +12,8 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
-#include <soc/iomap.h>
+
+#include <amdblocks/acpimmio_map.h>
 
 /* Grunt specific I2S machine driver */
 Device (I2S)

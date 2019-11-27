@@ -18,6 +18,7 @@
 
 #include <stdint.h>
 #include <stddef.h>
+#include <amdblocks/acpimmio_map.h>
 
 struct soc_amd_gpio {
 	uint8_t gpio;

@@ -15,6 +15,7 @@
 
 #include <soc/gpio.h>
 #include <soc/iomap.h>
+#include <amdblocks/acpimmio_map.h>
 
 Device (AAHB)
 {

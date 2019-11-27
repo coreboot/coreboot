@@ -17,4 +17,6 @@ SPD_SOURCES = LP_8G_2133		# 0b000
 romstage-y += memory.c
 
 bootblock-y += gpio.c
+
 ramstage-y += gpio.c
+ramstage-y += ramstage.c

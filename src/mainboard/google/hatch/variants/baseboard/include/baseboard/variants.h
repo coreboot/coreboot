@@ -50,4 +50,7 @@ uint32_t get_board_sku(void);
 /* Modify devictree settings during ramstage. */
 void variant_devtree_update(void);
 
+/* Perform variant specific initialization early on in ramstage. */
+void variant_ramstage_init(void);
+
 #endif /* BASEBOARD_VARIANTS_H */

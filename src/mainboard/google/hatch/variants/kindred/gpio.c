@@ -154,8 +154,6 @@ const struct pad_config *override_gpio_table(size_t *num)
  * needed in this table.
  */
 static const struct pad_config early_gpio_table[] = {
-	/* A12 : FPMCU_RST_ODL */
-	PAD_CFG_GPO(GPP_A12, 0, DEEP),
 	/* B15 : H1_SLAVE_SPI_CS_L */
 	PAD_CFG_NF(GPP_B15, NONE, DEEP, NF1),
 	/* B16 : H1_SLAVE_SPI_CLK */

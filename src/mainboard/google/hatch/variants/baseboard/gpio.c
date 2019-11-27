@@ -38,7 +38,7 @@ static const struct pad_config gpio_table[] = {
 	/* A11 : PCH_SPI_FPMCU_CS_L */
 	PAD_CFG_NF(GPP_A11, NONE, DEEP, NF2),
 	/* A12 : FPMCU_RST_ODL */
-	PAD_CFG_GPO(GPP_A12, 1, DEEP),
+	PAD_CFG_GPO(GPP_A12, 0, DEEP),
 	/* A13 : SUSWARN_L */
 	PAD_CFG_NF(GPP_A13, NONE, DEEP, NF1),
 	/* A14 : ESPI_RST_L */
@@ -133,7 +133,7 @@ static const struct pad_config gpio_table[] = {
 	/* C10 : GPP_10 ==> GPP_C10_TP */
 	PAD_NC(GPP_C10, NONE),
 	/* C11 : GPP_11 ==> EN_FP_RAILS */
-	PAD_CFG_GPO(GPP_C11, 1, DEEP),
+	PAD_CFG_GPO(GPP_C11, 0, DEEP),
 	/* C12 : GPP_C12 ==> NC */
 	PAD_NC(GPP_C12, NONE),
 	/* C13 : EC_PCH_INT_L */
@@ -398,8 +398,10 @@ const struct pad_config *base_gpio_table(size_t *num)
 }
 
 /*
- * Default GPIO settings before entering sleep. Configure A12: FPMCU_RST_ODL
- * as GPO before entering sleep.
+ * Default GPIO settings before entering non-S5 sleep states.
+ * Configure A12: FPMCU_RST_ODL as GPO before entering sleep.
+ * This guarantees that A12's native3 function is disabled.
+ * See https://review.coreboot.org/c/coreboot/+/32111 .
  */
 static const struct pad_config default_sleep_gpio_table[] = {
 	PAD_CFG_GPO(GPP_A12, 1, DEEP), /* FPMCU_RST_ODL */
@@ -408,10 +410,11 @@ static const struct pad_config default_sleep_gpio_table[] = {
 /*
  * GPIO settings before entering S5, which are same as
  * default_sleep_gpio_table but also,
- * turn off EN_PP3300_WWAN.
+ * turn off EN_PP3300_WWAN and FPMCU.
  */
 static const struct pad_config s5_sleep_gpio_table[] = {
-	PAD_CFG_GPO(GPP_A12, 1, DEEP), /* FPMCU_RST_ODL */
+	PAD_CFG_GPO(GPP_A12, 0, DEEP), /* FPMCU_RST_ODL */
+	PAD_CFG_GPO(GPP_C11, 0, DEEP), /* PCH_FP_PWR_EN */
 	PAD_CFG_GPO(GPP_A18, 0, DEEP), /* EN_PP3300_WWAN */
 };
 

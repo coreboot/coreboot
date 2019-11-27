@@ -31,6 +31,11 @@ void __weak variant_devtree_update(void)
 	/* Override dev tree settings per board */
 }
 
+void __weak variant_ramstage_init(void)
+{
+	/* Default weak implementation */
+}
+
 static void mainboard_init(struct device *dev)
 {
 	mainboard_ec_init();
@@ -56,6 +61,8 @@ static void mainboard_chip_init(void *chip_info)
 					base_gpios,
 					override_table,
 					override_gpios);
+
+	variant_ramstage_init();
 }
 
 struct chip_operations mainboard_ops = {

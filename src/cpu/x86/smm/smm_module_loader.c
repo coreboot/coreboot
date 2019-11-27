@@ -174,8 +174,9 @@ static void smm_stub_place_staggered_entry_points(char *base,
  * concurrent areas requested. The save state always lives at the top of SMRAM
  * space, and the entry point is at offset 0x8000.
  */
-static int smm_module_setup_stub(void *smbase, struct smm_loader_params *params,
-		void *fxsave_area)
+static int smm_module_setup_stub(void *smbase, size_t smm_size,
+				 struct smm_loader_params *params,
+				 void *fxsave_area)
 {
 	size_t total_save_state_size;
 	size_t smm_stub_size;
@@ -267,6 +268,7 @@ static int smm_module_setup_stub(void *smbase, struct smm_loader_params *params,
 	stub_params->fxsave_area = (uintptr_t)fxsave_area;
 	stub_params->fxsave_area_size = FXSAVE_SIZE;
 	stub_params->runtime.smbase = (uintptr_t)smbase;
+	stub_params->runtime.smm_size = smm_size;
 	stub_params->runtime.save_state_size = params->per_cpu_save_state_size;
 	stub_params->runtime.num_cpus = params->num_concurrent_stacks;
 
@@ -307,7 +309,8 @@ int smm_setup_relocation_handler(struct smm_loader_params *params)
 	if (params->num_concurrent_stacks == 0)
 		params->num_concurrent_stacks = CONFIG_MAX_CPUS;
 
-	return smm_module_setup_stub(smram, params, fxsave_area_relocation);
+	return smm_module_setup_stub(smram, SMM_DEFAULT_SIZE,
+				     params, fxsave_area_relocation);
 }
 
 /* The SMM module is placed within the provided region in the following
@@ -408,5 +411,5 @@ int smm_load_module(void *smram, size_t size, struct smm_loader_params *params)
 	params->handler = rmodule_entry(&smm_mod);
 	params->handler_arg = rmodule_parameters(&smm_mod);
 
-	return smm_module_setup_stub(smram, params, fxsave_area);
+	return smm_module_setup_stub(smram, size, params, fxsave_area);
 }

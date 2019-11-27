@@ -71,7 +71,7 @@ CAR_init_done:
 	jnz	.halt_forever
 
 	/* Setup bootblock stack */
-	mov	%edx, %esp
+	movl	$_ecar_stack, %esp
 	/*
 	 * temp_memory_start/end reside in the .bss section, which gets cleared
 	 * below. Save the FSP return value to the stack before writing those

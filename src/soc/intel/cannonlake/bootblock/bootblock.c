@@ -39,10 +39,10 @@ const FSPT_UPD temp_ram_init_params = {
 		 * All SoC since Gen-4 has above mechanism in place to load microcode
 		 * even before hitting CPU reset vector. Hence skipping FSP-T loading
 		 * microcode after CPU reset by passing '0' value to
-		 * FSPT_UPD.MicrocodeRegionBase and FSPT_UPD.MicrocodeRegionLength.
+		 * FSPT_UPD.MicrocodeRegionBase and FSPT_UPD.MicrocodeRegionSize.
 		 */
 		.MicrocodeRegionBase = 0,
-		.MicrocodeRegionLength = 0,
+		.MicrocodeRegionSize = 0,
 		.CodeRegionBase =
 			(uint32_t)(0x100000000ULL - CONFIG_ROM_SIZE),
 		.CodeRegionSize = (uint32_t)CONFIG_ROM_SIZE,

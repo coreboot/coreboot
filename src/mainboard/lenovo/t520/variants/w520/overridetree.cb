@@ -1,0 +1,7 @@
+chip northbridge/intel/sandybridge
+	device domain 0 on
+		chip southbridge/intel/bd82x6x # Intel Series 6 Cougar Point PCH
+			device pci 1c.6 on end # PCIe Port #7 USB 3.0
+		end
+	end
+end

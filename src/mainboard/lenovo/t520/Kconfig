@@ -51,9 +51,9 @@ config MAINBOARD_DIR
 	string
 	default "lenovo/t520"
 
-config DEVICETREE
+config OVERRIDE_DEVICETREE
 	string
-	default "variants/$(CONFIG_VARIANT_DIR)/devicetree.cb"
+	default "variants/$(CONFIG_VARIANT_DIR)/overridetree.cb"
 
 config FMDFILE
 	string

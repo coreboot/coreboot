@@ -90,10 +90,9 @@ chip northbridge/intel/sandybridge
 			end # PCIe Port #4 Express Card
 			device pci 1c.4 on end # PCIe Port #5 MMC/SDXC + IEEE1394
 			device pci 1c.5 off end # PCIe Port #6 Intel Ethernet PHY
-			device pci 1c.6 off end # PCIe Port #7 USB 3.0 only W520
+			device pci 1c.6 off end # PCIe Port #7
 			device pci 1c.7 off end # PCIe Port #8
 			device pci 1d.0 on end # USB2 EHCI #1
-			device pci 1e.0 off end # PCI-2-PCI bridge
 
 			device pci 1f.0 on #LPC bridge
 				chip ec/lenovo/pmh7
@@ -139,10 +138,6 @@ chip northbridge/intel/sandybridge
 					register "has_bdc_detection" = "1"
 					register "bdc_gpio_num" = "54"
 					register "bdc_gpio_lvl" = "0"
-
-					register "has_wwan_detection" = "1"
-					register "wwan_gpio_num" = "70"
-					register "wwan_gpio_lvl" = "0"
 				end
 				chip drivers/lenovo/hybrid_graphics
 					device pnp ff.f on end # dummy
@@ -173,8 +168,6 @@ chip northbridge/intel/sandybridge
 					device i2c 5f on end
 				end
 			end # SMBus
-			device pci 1f.5 off end # IDE controller
-			device pci 1f.6 off end # Thermal controller
 		end
 	end
 end

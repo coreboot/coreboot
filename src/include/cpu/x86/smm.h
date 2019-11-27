@@ -63,6 +63,7 @@ extern unsigned char _binary_smm_end[];
 
 struct smm_runtime {
 	u32 smbase;
+	u32 smm_size;
 	u32 save_state_size;
 	u32 num_cpus;
 	/* STM's 32bit entry into SMI handler */

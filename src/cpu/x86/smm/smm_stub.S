@@ -42,6 +42,8 @@ fxsave_area_size:
 smm_runtime:
 smbase:
 .long 0
+smm_size:
+.long 0
 save_state_size:
 .long 0
 num_cpus:

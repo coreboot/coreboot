@@ -24,9 +24,12 @@
 #include <pc80/keyboard.h>
 #include <stdlib.h>
 #include <superio/conf_mode.h>
-
 #include "nct5539d.h"
 
+#if CONFIG(HAVE_ACPI_TABLES)
+#include <superio/common/ssdt.h>
+#include <arch/acpi.h>
+#endif
 
 static void nct5539d_init(struct device *dev)
 {

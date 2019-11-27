@@ -19,7 +19,7 @@
 #include <fmap.h>
 #include <reset.h>
 #include <stddef.h>
-#include <security/vboot/gbb.h>
+#include <security/vboot/misc.h>
 #include <security/vboot/vboot_common.h>
 #include <security/vboot/vbnv.h>
 #include <vb2_api.h>
@@ -31,7 +31,7 @@ int vboot_can_enable_udc(void)
 	if (!vboot_developer_mode_enabled())
 		return 0;
 	/* Enable if GBB flag is set */
-	if (gbb_is_flag_set(VB2_GBB_FLAG_ENABLE_UDC))
+	if (vboot_is_gbb_flag_set(VB2_GBB_FLAG_ENABLE_UDC))
 		return 1;
 	/* Enable if VBNV flag is set */
 	if (vbnv_udc_enable_flag())

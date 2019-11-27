@@ -37,13 +37,11 @@ chip northbridge/intel/sandybridge
 	register "pci_mmio_size" = "1024"
 
 	device domain 0 on
-		device pci 00.0 on
-			subsystemid 0x17aa 0x21fa
-		end # host bridge
+		subsystemid 0x17aa 0x21fa inherit
+
+		device pci 00.0 on end # host bridge
 		device pci 01.0 off end # PCIe Bridge for discrete graphics
-		device pci 02.0 on
-			subsystemid 0x17aa 0x21fa
-		end # vga controller
+		device pci 02.0 on end # vga controller
 
 		chip southbridge/intel/bd82x6x # Intel Series 6 Cougar Point PCH
 			# GPI routing
@@ -76,39 +74,25 @@ chip northbridge/intel/sandybridge
 			register "spi_uvscc" = "0x2005"
 			register "spi_lvscc" = "0x2005"
 
-			device pci 14.0 on
-				subsystemid 0x17aa 0x21fa
-			end # USB 3.0 Controller
-			device pci 16.0 on
-				subsystemid 0x17aa 0x21fa
-			end # Management Engine Interface 1
+			device pci 14.0 on end # USB 3.0 Controller
+			device pci 16.0 on end # Management Engine Interface 1
 			device pci 16.1 off end # Management Engine Interface 2
 			device pci 16.2 off end # Management Engine IDE-R
 			device pci 16.3 off end # Management Engine KT
 			device pci 19.0 on
 				subsystemid 0x17aa 0x21f3
 			end # Intel Gigabit Ethernet
-			device pci 1a.0 on
-				subsystemid 0x17aa 0x21fa
-			end # USB2 EHCI #2
-			device pci 1b.0 on
-				subsystemid 0x17aa 0x21fa
-			end # High Definition Audio
+			device pci 1a.0 on end # USB2 EHCI #2
+			device pci 1b.0 on end # High Definition Audio
 			device pci 1c.0 on
-				subsystemid 0x17aa 0x21fa
 				chip drivers/ricoh/rce822
 					register "sdwppol" = "1"
 					register "disable_mask" = "0x87"
-					device pci 00.0 on
-						subsystemid 0x17aa 0x21fa
-					end
+					device pci 00.0 on end
 				end
 			end # PCIe Port #1
-			device pci 1c.1 on
-				subsystemid 0x17aa 0x21fa
-			end # PCIe Port #2
+			device pci 1c.1 on end # PCIe Port #2
 			device pci 1c.2 on
-				subsystemid 0x17aa 0x21fa
 				smbios_slot_desc "7" "3" "ExpressCard Slot" "8"
 			end # PCIe Port #3 (expresscard)
 			device pci 1c.3 off end # PCIe Port #4
@@ -116,15 +100,11 @@ chip northbridge/intel/sandybridge
 			device pci 1c.5 off end # PCIe Port #6
 			device pci 1c.6 off end # PCIe Port #7
 			device pci 1c.7 off end # PCIe Port #8
-			device pci 1d.0 on
-				subsystemid 0x17aa 0x21fa
-			end # USB2 EHCI #1
+			device pci 1d.0 on end # USB2 EHCI #1
 			device pci 1e.0 off end # PCI bridge
 			device pci 1f.0 on #LPC bridge
-				subsystemid 0x17aa 0x21fa
 				chip ec/lenovo/pmh7
-					device pnp ff.1 on # dummy
-					end
+					device pnp ff.1 on end # dummy
 					register "backlight_enable" = "0x01"
 					register "dock_event_enable" = "0x01"
 				end
@@ -176,11 +156,8 @@ chip northbridge/intel/sandybridge
 					register "wwan_gpio_lvl" = "0"
 				end
 			end # LPC bridge
-			device pci 1f.2 on
-				subsystemid 0x17aa 0x21fa
-			end # SATA Controller 1
+			device pci 1f.2 on end # SATA Controller 1
 			device pci 1f.3 on
-				subsystemid 0x17aa 0x21fa
 				# eeprom, 8 virtual devices, same chip
 				chip drivers/i2c/at24rf08c
 					device i2c 54 on end
@@ -194,9 +171,7 @@ chip northbridge/intel/sandybridge
 				end
 			end # SMBus
 			device pci 1f.5 off end # SATA Controller 2
-			device pci 1f.6 on
-				subsystemid 0x17aa 0x21fa
-			end # Thermal
+			device pci 1f.6 on end # Thermal
 		end
 	end
 end

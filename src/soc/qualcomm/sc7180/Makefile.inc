@@ -10,6 +10,8 @@ bootblock-y += gpio.c
 bootblock-$(CONFIG_DRIVERS_UART) += uart_bitbang.c
 bootblock-y += clock.c
 bootblock-$(CONFIG_SC7180_QSPI) += qspi.c
+bootblock-y += qupv3_config.c
+bootblock-y += qcom_qup_se.c
 
 ################################################################################
 verstage-y += timer.c
@@ -43,6 +45,8 @@ ramstage-y += clock.c
 ramstage-$(CONFIG_SC7180_QSPI) += qspi.c
 ramstage-y += aop_load_reset.c
 ramstage-y += usb.c
+ramstage-y += qupv3_config.c
+ramstage-y += qcom_qup_se.c
 
 ################################################################################
 

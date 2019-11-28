@@ -47,10 +47,6 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "QEMU x86 q35/ich9"
 
-config BOOTBLOCK_MAINBOARD_INIT
-	string
-	default "mainboard/emulation/qemu-q35/bootblock.c"
-
 config MMCONF_BASE_ADDRESS
 	hex
 	default 0xb0000000

@@ -1,3 +1,0 @@
-static void main(void)
-{
-}

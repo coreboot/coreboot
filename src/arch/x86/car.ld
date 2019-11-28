@@ -71,7 +71,7 @@
 	/* _bss and _ebss provide symbols to per-stage
 	 * variables that are not shared like the timestamp and the pre-ram
 	 * cbmem console. This is useful for clearing this area on a per-stage
-	 * basis when more than one stage uses cache-as-ram for CAR_GLOBALs. */
+	 * basis when more than one stage uses cache-as-ram. */
 
 	. = ALIGN(ARCH_POINTER_ALIGN_SIZE);
 	_bss = .;
@@ -81,10 +81,6 @@
 	*(.bss.*)
 	*(.sbss)
 	*(.sbss.*)
-#else
-	_car_global_start = .;
-	*(.car.global_data);
-	_car_global_end = .;
 #endif
 	. = ALIGN(ARCH_POINTER_ALIGN_SIZE);
 	_ebss = .;
@@ -106,15 +102,6 @@
 .illegal_globals . : {
 	*(EXCLUDE_FILE ("*/libagesa.*.a:" "*/romstage*/buildOpts.o" "*/romstage*/agesawrapper.o" "*/vendorcode/amd/agesa/*" "*/vendorcode/amd/cimx/*") .data)
 		*(EXCLUDE_FILE ("*/libagesa.*.a:" "*/romstage*/buildOpts.o" "*/romstage*/agesawrapper.o" "*/vendorcode/amd/agesa/*" "*/vendorcode/amd/cimx/*") .data.*)
-#if CONFIG(CAR_GLOBAL_MIGRATION)
-	*(.bss)
-	*(.bss.*)
-	*(.sbss)
-	*(.sbss.*)
-#else
-	/* In case something sneaks through when it shouldn't. */
-	*(.car.global_data);
-#endif
 }
 
 _bogus = ASSERT((CONFIG_DCACHE_RAM_SIZE == 0) || (SIZEOF(.car.data) <= CONFIG_DCACHE_RAM_SIZE), "Cache as RAM area is too full");

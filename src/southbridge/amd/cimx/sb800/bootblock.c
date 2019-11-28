@@ -79,18 +79,21 @@ static void enable_spi_fast_mode(void)
 	pci_io_write_config32(dev, 0xa0, save);
 }
 
-static void enable_clocks(void)
+static void enable_acpimmio_decode_pm24(void)
 {
 	u8 reg8;
-	u32 reg32;
-	volatile u32 *acpi_mmio = (void *) (0xFED80000 + 0xE00 + 0x40);
 
-	// Program AcpiMmioEn to enable MMIO access to MiscCntrl register
 	outb(0x24, 0xCD6);
 	reg8 = inb(0xCD7);
 	reg8 |= 1;
 	reg8 &= ~(1 << 1);
 	outb(reg8, 0xCD7);
+}
+
+static void enable_clocks(void)
+{
+	u32 reg32;
+	volatile u32 *acpi_mmio = (void *) (0xFED80000 + 0xE00 + 0x40);
 
 	// Program SB800 MiscClkCntrl register to configure clock output on the
 	// 14M_25M_48M_OSC ball usually used for the Super-I/O.
@@ -112,5 +115,17 @@ static void bootblock_southbridge_init(void)
 	enable_rom();
 	enable_prefetch();
 	enable_spi_fast_mode();
+
+	// Program AcpiMmioEn to enable MMIO access to MiscCntrl register
+	enable_acpimmio_decode_pm24();
 	enable_clocks();
 }
+
+#if !CONFIG(ROMCC_BOOTBLOCK)
+#include <bootblock_common.h>
+
+void bootblock_soc_early_init(void)
+{
+	bootblock_southbridge_init();
+}
+#endif

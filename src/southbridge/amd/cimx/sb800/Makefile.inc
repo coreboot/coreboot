@@ -16,6 +16,10 @@
 
 # SB800 Platform Files
 
+ifneq ($(CONFIG_ROMCC_BOOTBLOCK),y)
+bootblock-y += bootblock.c
+endif
+
 romstage-y += cfg.c
 romstage-y += early.c
 romstage-y += smbus.c smbus_spd.c

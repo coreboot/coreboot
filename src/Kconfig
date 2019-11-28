@@ -1177,9 +1177,6 @@ config BOOTBLOCK_CUSTOM
 	# src/lib/bootblock.c#main() C entry point.
 	bool
 
-config ROMCC_BOOTBLOCK
-	bool
-
 ###############################################################################
 # Set default values for symbols created before mainboards.  This allows the
 # option to be displayed in the general menu, but the default to be loaded in

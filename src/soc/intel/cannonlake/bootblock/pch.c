@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2014 Google Inc.
- * Copyright (C) 2017-2018 Intel Corporation.
+ * Copyright (C) 2017-2019 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,8 +25,6 @@
 #include <intelblocks/pcr.h>
 #include <intelblocks/pmclib.h>
 #include <intelblocks/rtc.h>
-#include <intelblocks/smbus.h>
-#include <intelblocks/tco.h>
 #include <soc/bootblock.h>
 #include <soc/gpio.h>
 #include <soc/iomap.h>
@@ -36,7 +34,6 @@
 #include <soc/pci_devs.h>
 #include <soc/pcr_ids.h>
 #include <soc/pm.h>
-#include <soc/smbus.h>
 
 #define PCR_PSF3_TO_SHDW_PMC_REG_BASE_CNP_LP	0x1400
 #define PCR_PSF3_TO_SHDW_PMC_REG_BASE_CNP_H	0x0980
@@ -181,19 +178,13 @@ void pch_early_iorange_init(void)
 	pch_enable_lpc();
 }
 
-void pch_early_init(void)
+void bootblock_pch_init(void)
 {
 	/*
 	 * Enabling ABASE for accessing PM1_STS, PM1_EN, PM1_CNT,
 	 * GPE0_STS, GPE0_EN registers.
 	 */
 	soc_config_acpibase();
-
-	/* Programming TCO_BASE_ADDRESS and TCO Timer Halt */
-	tco_configure();
-
-	/* Program SMBUS_BASE_ADDRESS and Enable it */
-	smbus_common_init();
 
 	/* Set up GPE configuration */
 	pmc_gpe_init();

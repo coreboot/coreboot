@@ -74,5 +74,5 @@ void bootblock_soc_init(void)
 	 */
 	gpi_clear_int_cfg();
 	report_platform_info();
-	pch_early_init();
+	bootblock_pch_init();
 }

@@ -61,7 +61,5 @@ static void early_lpc_init(void)
 
 void board_BeforeAgesa(struct sysinfo *cb)
 {
-	sb_Poweron_Init();
 	early_lpc_init();
-	nuvoton_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 }

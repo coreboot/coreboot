@@ -3,6 +3,6 @@
 
 #include <arch/cpu.h>
 
-void *asmlinkage romstage_main(unsigned long bist);
+asmlinkage void romstage_main(unsigned long bist);
 
 #endif

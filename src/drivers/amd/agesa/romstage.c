@@ -40,7 +40,7 @@ static void fill_sysinfo(struct sysinfo *cb)
 	agesa_set_interface(cb);
 }
 
-void *asmlinkage romstage_main(unsigned long bist)
+static void bsp_romstage_main(unsigned long bist)
 {
 	struct postcar_frame pcf;
 	struct sysinfo romstage_state;
@@ -53,7 +53,7 @@ void *asmlinkage romstage_main(unsigned long bist)
 
 	fill_sysinfo(cb);
 
-	if ((initial_apic_id == 0) && boot_cpu()) {
+	if (initial_apic_id == 0) {
 
 		timestamp_init(timestamp_get());
 		timestamp_add_now(TS_START_ROMSTAGE);
@@ -101,5 +101,33 @@ void *asmlinkage romstage_main(unsigned long bist)
 
 	run_postcar_phase(&pcf);
 	/* We do not return. */
-	return NULL;
+}
+
+static void __noreturn ap_romstage_main(unsigned long bist)
+{
+	struct sysinfo romstage_state;
+	struct sysinfo *cb = &romstage_state;
+
+	/* Enable PCI MMIO configuration. */
+	amd_initmmio();
+
+	fill_sysinfo(cb);
+
+	/* Halt if there was a built in self test failure */
+	report_bist_failure(bist);
+
+	agesa_execute_state(cb, AMD_INIT_RESET);
+
+	agesa_execute_state(cb, AMD_INIT_EARLY);
+
+	/* Not reached. */
+	halt();
+}
+
+asmlinkage void romstage_main(unsigned long bist)
+{
+	if (boot_cpu())
+		bsp_romstage_main(bist);
+	else
+		ap_romstage_main(bist);
 }

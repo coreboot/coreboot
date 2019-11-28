@@ -14,7 +14,3 @@
 #
 
 subdirs-$(CONFIG_SOUTHBRIDGE_AMD_CIMX_SB800) += sb800
-
-romstage-$(CONFIG_SOUTHBRIDGE_AMD_CIMX_SB800) += cimx_util.c
-
-ramstage-$(CONFIG_SOUTHBRIDGE_AMD_CIMX_SB800) += cimx_util.c

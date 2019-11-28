@@ -14,25 +14,18 @@
  */
 
 #include <stdint.h>
+#include <amdblocks/acpimmio.h>
 #include <arch/io.h>
 #include <southbridge/amd/cimx/sb800/SBPLATFORM.h>
-#include <southbridge/amd/cimx/cimx_util.h>
 #include "gpio_ftns.h"
 
 uintptr_t find_gpio_base(void)
 {
-	u8 pm_index, pm_data;
-	uintptr_t base_addr = 0;
-
-	/* Find the ACPImmioAddr base address */
-	for (pm_index = 0x27; pm_index > 0x23; pm_index--) {
-		outb(pm_index, PM_INDEX);
-		pm_data = inb(PM_DATA);
-		base_addr <<= 8;
-		base_addr |= (u32)pm_data;
-	}
+	uintptr_t base_addr;
+	/* Get the ACPIMMIO base address */
+	base_addr = pm_read32(0x24);
 	base_addr &= 0xFFFFF000;
-	return (base_addr);
+	return base_addr;
 }
 
 void configure_gpio(uintptr_t base_addr, u32 gpio, u8 iomux_ftn, u8 setting)

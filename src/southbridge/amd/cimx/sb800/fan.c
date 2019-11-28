@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  */
 
-#include <southbridge/amd/cimx/cimx_util.h>
+#include <amdblocks/acpimmio.h>
 #include <device/device.h>
 #include <device/pci.h>		/* device_operations */
 #include <device/pci_ops.h>
@@ -31,27 +31,27 @@ void init_sb800_MANUAL_fans(struct device *dev)
 	/* Init Fan 0 */
 	if (sb_chip->fan0_enabled)
 		for (i = 0; i < FAN_REGISTER_COUNT; i++)
-			pm2_iowrite(FAN_0_OFFSET + i, sb_chip->fan0_config_vals[i]);
+			pm2_write8(FAN_0_OFFSET + i, sb_chip->fan0_config_vals[i]);
 
 	/* Init Fan 1 */
 	if (sb_chip->fan1_enabled)
 		for (i = 0; i < FAN_REGISTER_COUNT; i++)
-			pm2_iowrite(FAN_1_OFFSET + i, sb_chip->fan1_config_vals[i]);
+			pm2_write8(FAN_1_OFFSET + i, sb_chip->fan1_config_vals[i]);
 
 	/* Init Fan 2 */
 	if (sb_chip->fan2_enabled)
 		for (i = 0; i < FAN_REGISTER_COUNT; i++)
-			pm2_iowrite(FAN_2_OFFSET + i, sb_chip->fan2_config_vals[i]);
+			pm2_write8(FAN_2_OFFSET + i, sb_chip->fan2_config_vals[i]);
 
 	/* Init Fan 3 */
 	if (sb_chip->fan3_enabled)
 		for (i = 0; i < FAN_REGISTER_COUNT; i++)
-			pm2_iowrite(FAN_3_OFFSET + i, sb_chip->fan3_config_vals[i]);
+			pm2_write8(FAN_3_OFFSET + i, sb_chip->fan3_config_vals[i]);
 
 	/* Init Fan 4 */
 	if (sb_chip->fan4_enabled)
 		for (i = 0; i < FAN_REGISTER_COUNT; i++)
-			pm2_iowrite(FAN_4_OFFSET + i, sb_chip->fan4_config_vals[i]);
+			pm2_write8(FAN_4_OFFSET + i, sb_chip->fan4_config_vals[i]);
 
 }
 

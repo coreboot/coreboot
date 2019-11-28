@@ -21,7 +21,6 @@
 #include <device/pci_ops.h>
 #include <device/pci_def.h>
 #include <southbridge/amd/common/amd_pci_util.h>
-#include <southbridge/amd/cimx/cimx_util.h>
 #include <smbios.h>
 #include <string.h>
 #include <southbridge/amd/cimx/sb800/SBPLATFORM.h>

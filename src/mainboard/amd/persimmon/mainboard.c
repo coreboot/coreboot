@@ -14,11 +14,11 @@
  * GNU General Public License for more details.
  */
 
+#include <amdblocks/acpimmio.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/mmio.h>
 #include <southbridge/amd/common/amd_pci_util.h>
-#include <southbridge/amd/cimx/cimx_util.h>
 #include <southbridge/amd/cimx/sb800/SBPLATFORM.h>
 #include <southbridge/amd/cimx/sb800/pci_devs.h>
 #include <northbridge/amd/agesa/family14/pci_devs.h>
@@ -139,8 +139,8 @@ static void mainboard_enable(struct device *dev)
 	 * SPD read code has been made generic and moved out of the board
 	 * directory, so the ASF init is being done here.
 	 */
-	pm_iowrite(0x29, 0x80);
-	pm_iowrite(0x28, 0x61);
+	pm_write8(0x29, 0x80);
+	pm_write8(0x28, 0x61);
 
 	/* Initialize the PIRQ data structures for consumption */
 	pirq_setup();

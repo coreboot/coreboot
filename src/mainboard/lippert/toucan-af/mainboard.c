@@ -14,13 +14,13 @@
  */
 
 #include <stdlib.h>
+#include <amdblocks/acpimmio.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/mmio.h>
 #include <device/pci_ops.h>
 #include <device/pci_def.h>
-#include <southbridge/amd/cimx/cimx_util.h>
 #include <southbridge/amd/cimx/sb800/SBPLATFORM.h>
 #include <vendorcode/amd/cimx/sb800/OEM.h> /* SMBUS0_BASE_ADDRESS */
 #include <southbridge/amd/cimx/sb800/gpio_oem.h>
@@ -101,8 +101,8 @@ static void mainboard_enable(struct device *dev)
 	 * SPD read code has been made generic and moved out of the board
 	 * directory, so the ASF init is being done here.
 	 */
-	pm_iowrite(0x29, 0x80);
-	pm_iowrite(0x28, 0x61);
+	pm_write8(0x29, 0x80);
+	pm_write8(0x28, 0x61);
 }
 
 struct chip_operations mainboard_ops = {

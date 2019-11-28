@@ -15,7 +15,6 @@
 
 #include <stdint.h>
 #include <device/mmio.h>
-#include <southbridge/amd/cimx/cimx_util.h>
 #include <FchPlatform.h>
 #include "gpio_ftns.h"
 

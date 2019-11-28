@@ -21,7 +21,6 @@ config ARCH_X86
 config ARCH_BOOTBLOCK_X86_32
 	bool
 	select ARCH_X86
-	select BOOTBLOCK_CUSTOM if ROMCC_BOOTBLOCK
 
 config ARCH_VERSTAGE_X86_32
 	bool
@@ -44,7 +43,6 @@ config ARCH_RAMSTAGE_X86_32
 config ARCH_BOOTBLOCK_X86_64
 	bool
 	select ARCH_X86
-	select BOOTBLOCK_CUSTOM if ROMCC_BOOTBLOCK
 
 config ARCH_VERSTAGE_X86_64
 	bool

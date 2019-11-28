@@ -77,7 +77,6 @@ config XIP_ROM_SIZE
 
 config SETUP_XIP_CACHE
 	bool
-	depends on !ROMCC_BOOTBLOCK
 	depends on !NO_XIP_EARLY_STAGES
 	help
 	  Select this option to set up an MTRR to cache XIP stages loaded

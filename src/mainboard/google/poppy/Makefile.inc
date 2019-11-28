@@ -24,6 +24,7 @@ ramstage-$(CONFIG_CHROMEOS) += chromeos.c
 ramstage-$(CONFIG_EC_GOOGLE_CHROMEEC) += ec.c
 ramstage-y += mainboard.c
 ramstage-y += ramstage.c
+ramstage-$(CONFIG_MAINBOARD_USE_LIBGFXINIT) += gma-mainboard.ads
 
 smm-y += smihandler.c
 smm-$(CONFIG_EC_GOOGLE_CHROMEEC) += ec.c

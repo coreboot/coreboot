@@ -28,6 +28,12 @@
 #ifndef __ACPI__
 struct pad_config;
 void cnl_configure_pads(const struct pad_config *cfg, size_t num_pads);
+/*
+ * Routine to perform below operations:
+ * 1. SoC routine to fill GPIO PM mask and value for GPIO_MISCCFG register
+ * 2. Program GPIO PM configuration based on PM mask and value
+ */
+void soc_gpio_pm_configuration(void);
 #endif
 
 #endif

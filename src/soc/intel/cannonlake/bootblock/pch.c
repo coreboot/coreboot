@@ -28,6 +28,7 @@
 #include <intelblocks/smbus.h>
 #include <intelblocks/tco.h>
 #include <soc/bootblock.h>
+#include <soc/gpio.h>
 #include <soc/iomap.h>
 #include <soc/lpc.h>
 #include <soc/p2sb.h>
@@ -198,4 +199,7 @@ void pch_early_init(void)
 	pmc_gpe_init();
 
 	enable_rtc_upper_bank();
+
+	/* GPIO community PM configuration */
+	soc_gpio_pm_configuration();
 }

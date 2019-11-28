@@ -89,6 +89,9 @@ smm-y += gpio.c
 verstage-y += gpio.c
 endif
 
+bootblock-y += gpio_common.c
+ramstage-y += gpio_common.c
+
 ifeq ($(CONFIG_SOC_INTEL_CANNONLAKE),y)
 # Not yet in intel-microcode repo
 #cpu_microcode_bins += $(wildcard 3rdparty/intel-microcode/intel-ucode/06-66-*)

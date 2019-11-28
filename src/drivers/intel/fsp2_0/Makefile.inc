@@ -30,6 +30,7 @@ ramstage-y += hand_off_block.c
 ramstage-$(CONFIG_DISPLAY_FSP_HEADER) += header_display.c
 ramstage-$(CONFIG_DISPLAY_HOBS) += hob_display.c
 ramstage-$(CONFIG_VERIFY_HOBS) += hob_verify.c
+ramstage-$(CONFIG_FSP2_0_DISPLAY_LOGO) += logo.c
 ramstage-y += notify.c
 ramstage-y += silicon_init.c
 ramstage-$(CONFIG_DISPLAY_UPD_DATA) += upd_display.c
@@ -77,6 +78,12 @@ $(obj)/Fsp_S.fd: $(call strip_quotes,$(CONFIG_FSP_FD_PATH)) $(obj)/Fsp_M.fd
 $(obj)/Fsp_T.fd: $(call strip_quotes,$(CONFIG_FSP_FD_PATH)) $(obj)/Fsp_M.fd
 	true
 endif
+
+# Add logo to the cbfs image
+cbfs-files-$(CONFIG_FSP2_0_DISPLAY_LOGO) += logo.bmp
+logo.bmp-file := $(call strip_quotes,$(CONFIG_FSP2_0_LOGO_FILE_NAME))
+logo.bmp-type := raw
+logo.bmp-compression := LZMA
 
 ifneq ($(call strip_quotes,$(CONFIG_FSP_HEADER_PATH)),)
 CPPFLAGS_common+=-I$(CONFIG_FSP_HEADER_PATH)

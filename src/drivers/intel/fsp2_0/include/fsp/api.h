@@ -69,6 +69,9 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd);
 uint8_t fsp_memory_mainboard_version(void);
 uint8_t fsp_memory_soc_version(void);
 
+/* Load logo to be displayed by FSP */
+void load_logo(FSPS_UPD *supd);
+
 /* Callback after processing FSP notify */
 void platform_fsp_notify_status(enum fsp_notify_phase phase);
 

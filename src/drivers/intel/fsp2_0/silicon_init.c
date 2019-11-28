@@ -34,6 +34,7 @@ static void do_silicon_init(struct fsp_header *hdr)
 	fsp_silicon_init_fn silicon_init;
 	uint32_t status;
 	uint8_t postcode;
+	const struct cbmem_entry *logo_entry;
 
 	supd = (FSPS_UPD *) (hdr->cfg_region_offset + hdr->image_base);
 
@@ -56,6 +57,15 @@ static void do_silicon_init(struct fsp_header *hdr)
 	/* Give SoC/mainboard a chance to populate entries */
 	platform_fsp_silicon_init_params_cb(upd);
 
+#if (CONFIG(HAVE_FSP_GOP))
+	if (CONFIG(FSP2_0_DISPLAY_LOGO)) {
+		upd->FspsConfig.LogoSize = 1 * MiB;
+		logo_entry = cbmem_entry_add(CBMEM_ID_FSP_LOGO, upd->FspsConfig.LogoSize);
+		upd->FspsConfig.LogoPtr = (UINT32)cbmem_entry_start(logo_entry);
+		load_logo(upd);
+	}
+#endif
+
 	/* Call SiliconInit */
 	silicon_init = (void *) (hdr->image_base +
 				 hdr->silicon_init_entry_offset);
@@ -66,6 +76,9 @@ static void do_silicon_init(struct fsp_header *hdr)
 	status = silicon_init(upd);
 	timestamp_add_now(TS_FSP_SILICON_INIT_END);
 	post_code(POST_FSP_SILICON_EXIT);
+
+	if (CONFIG(FSP2_0_DISPLAY_LOGO))
+		cbmem_entry_remove(logo_entry);
 
 	fsp_debug_after_silicon_init(status);
 

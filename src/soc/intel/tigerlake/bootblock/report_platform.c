@@ -47,6 +47,7 @@ static struct {
 	{ PCI_DEVICE_ID_INTEL_TGL_ID_U, "Tigerlake-U-4-2" },
 	{ PCI_DEVICE_ID_INTEL_TGL_ID_U_1, "Tigerlake-U-4-3e" },
 	{ PCI_DEVICE_ID_INTEL_TGL_ID_Y, "Tigerlake-Y-4-2" },
+	{ PCI_DEVICE_ID_INTEL_JSL_PRE_PROD, "Jasperlake Pre Prod" },
 };
 
 static struct {
@@ -85,6 +86,8 @@ static struct {
 	{ PCI_DEVICE_ID_INTEL_TGP_ESPI_24, "Tigerlake-Base SKU" },
 	{ PCI_DEVICE_ID_INTEL_TGP_ESPI_25, "Tigerlake-Base SKU" },
 	{ PCI_DEVICE_ID_INTEL_TGP_ESPI_26, "Tigerlake-Base SKU" },
+	{ PCI_DEVICE_ID_INTEL_JSP_PRE_PROD_ESPI_1, "Jasperlake Pre Prod" },
+	{ PCI_DEVICE_ID_INTEL_JSP_PRE_PROD_ESPI_2, "Jasperlake Pre Prod" },
 };
 
 static struct {
@@ -95,6 +98,7 @@ static struct {
 	{ PCI_DEVICE_ID_INTEL_TGL_GT2_ULT, "Tigerlake U GT2" },
 	{ PCI_DEVICE_ID_INTEL_TGL_GT2_ULX, "Tigerlake Y GT2" },
 	{ PCI_DEVICE_ID_INTEL_TGL_GT3_ULT, "Tigerlake U GT3" },
+	{ PCI_DEVICE_ID_INTEL_JSL_PRE_PROD_GT0, "Jasperlake Pre Prod GT0" },
 };
 
 static inline uint8_t get_dev_revision(pci_devfn_t dev)

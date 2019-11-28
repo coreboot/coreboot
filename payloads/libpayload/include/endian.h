@@ -34,23 +34,6 @@
 #include <arch/types.h>
 #include <libpayload-config.h>
 
-static inline uint16_t swap_bytes16(uint16_t in)
-{
-	return ((in & 0xFF) << 8) | ((in & 0xFF00) >> 8);
-}
-
-static inline uint32_t swap_bytes32(uint32_t in)
-{
-	return ((in & 0xFF) << 24) | ((in & 0xFF00) << 8) |
-		((in & 0xFF0000) >> 8) | ((in & 0xFF000000) >> 24);
-}
-
-static inline uint64_t swap_bytes64(uint64_t in)
-{
-	return ((uint64_t)swap_bytes32((uint32_t)in) << 32) |
-		((uint64_t)swap_bytes32((uint32_t)(in >> 32)));
-}
-
 /* Endian functions from glibc 2.9 / BSD "endian.h" */
 
 #if CONFIG(LP_BIG_ENDIAN)
@@ -59,15 +42,15 @@ static inline uint64_t swap_bytes64(uint64_t in)
 #define htobe32(in) (in)
 #define htobe64(in) (in)
 
-#define htole16(in) swap_bytes16(in)
-#define htole32(in) swap_bytes32(in)
-#define htole64(in) swap_bytes64(in)
+#define htole16(in) ((uint16_t)__builtin_bswap16(in))
+#define htole32(in) ((uint32_t)__builtin_bswap32(in))
+#define htole64(in) ((uint64_t)__builtin_bswap64(in))
 
 #elif CONFIG(LP_LITTLE_ENDIAN)
 
-#define htobe16(in) swap_bytes16(in)
-#define htobe32(in) swap_bytes32(in)
-#define htobe64(in) swap_bytes64(in)
+#define htobe16(in) ((uint16_t)__builtin_bswap16(in))
+#define htobe32(in) ((uint32_t)__builtin_bswap32(in))
+#define htobe64(in) ((uint64_t)__builtin_bswap64(in))
 
 #define htole16(in) (in)
 #define htole32(in) (in)

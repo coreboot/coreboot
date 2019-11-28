@@ -21,6 +21,7 @@
 
 #include <stdint.h>
 
+#if defined(__ROMCC__) || ENV_ARMV4
 #define swab16(x) \
 	((unsigned short)( \
 		(((unsigned short)(x) & (unsigned short)0x00ffU) << 8) | \
@@ -43,5 +44,10 @@
 		(((uint64_t)(x) & (uint64_t)0x0000ff0000000000ULL) >> 24) | \
 		(((uint64_t)(x) & (uint64_t)0x00ff000000000000ULL) >> 40) | \
 		(((uint64_t)(x) & (uint64_t)0xff00000000000000ULL) >> 56)))
+#else	/* __ROMCC__ || ENV_ARMV4 */
+#define swab16(x) ((uint16_t)__builtin_bswap16(x))
+#define swab32(x) ((uint32_t)__builtin_bswap32(x))
+#define swab64(x) ((uint64_t)__builtin_bswap64(x))
+#endif	/* !(__ROMCC__ || ENV_ARMV4) */
 
 #endif /* _SWAB_H */

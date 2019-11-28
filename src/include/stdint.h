@@ -28,17 +28,14 @@ typedef unsigned short     uint16_t;
 typedef signed int         int32_t;
 typedef unsigned int       uint32_t;
 
-#ifndef __ROMCC__
 typedef signed long long   int64_t;
 typedef unsigned long long uint64_t;
-#endif
 
 /* Types for 'void *' pointers */
 typedef signed long        intptr_t;
 typedef unsigned long      uintptr_t;
 
 /* Ensure that the widths are all correct */
-#ifndef __ROMCC__
 _Static_assert(sizeof(int8_t) == 1, "Size of int8_t is incorrect");
 _Static_assert(sizeof(uint8_t) == 1, "Size of uint8_t is incorrect");
 
@@ -53,13 +50,10 @@ _Static_assert(sizeof(uint64_t) == 8, "Size of uint64_t is incorrect");
 
 _Static_assert(sizeof(intptr_t) == sizeof(void *), "Size of intptr_t is incorrect");
 _Static_assert(sizeof(uintptr_t) == sizeof(void *), "Size of uintptr_t is incorrect");
-#endif
 
 /* Maximum width integer types */
-#ifndef __ROMCC__
 typedef int64_t  intmax_t;
 typedef uint64_t uintmax_t;
-#endif
 
 /* Convenient typedefs */
 typedef int8_t   s8;
@@ -71,10 +65,8 @@ typedef uint16_t u16;
 typedef int32_t  s32;
 typedef uint32_t u32;
 
-#ifndef __ROMCC__
 typedef int64_t  s64;
 typedef uint64_t u64;
-#endif
 
 /* Limits of integer types */
 #define INT8_MIN   ((int8_t)0x80)
@@ -89,16 +81,12 @@ typedef uint64_t u64;
 #define INT32_MAX  ((int32_t)0x7FFFFFFF)
 #define UINT32_MAX ((uint32_t)0xFFFFFFFF)
 
-#ifndef __ROMCC__
 #define INT64_MIN  ((int64_t)0x8000000000000000)
 #define INT64_MAX  ((int64_t)0x7FFFFFFFFFFFFFFF)
 #define UINT64_MAX ((uint64_t)0xFFFFFFFFFFFFFFFF)
-#endif
 
-#ifndef __ROMCC__
 #define INTMAX_MIN  INT64_MIN
 #define INTMAX_MAX  INT64_MAX
 #define UINTMAX_MAX UINT64_MAX
-#endif
 
 #endif /* STDINT_H */

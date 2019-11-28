@@ -23,7 +23,6 @@
 #include <device/pci_type.h>
 #include <arch/pci_ops.h>
 
-#ifndef __ROMCC__
 void __noreturn pcidev_die(void);
 
 static __always_inline pci_devfn_t pcidev_bdf(const struct device *dev)
@@ -37,7 +36,6 @@ static __always_inline pci_devfn_t pcidev_assert(const struct device *dev)
 		pcidev_die();
 	return pcidev_bdf(dev);
 }
-#endif
 
 #if defined(__SIMPLE_DEVICE__)
 #define ENV_PCI_SIMPLE_DEVICE 1
@@ -184,7 +182,6 @@ void pci_update_config32(const struct device *dev, u16 reg, u32 mask, u32 or)
 u16 pci_s_find_next_capability(pci_devfn_t dev, u16 cap, u16 last);
 u16 pci_s_find_capability(pci_devfn_t dev, u16 cap);
 
-#ifndef __ROMCC__
 static __always_inline
 u16 pci_find_next_capability(const struct device *dev, u16 cap, u16 last)
 {
@@ -196,6 +193,5 @@ u16 pci_find_capability(const struct device *dev, u16 cap)
 {
 	return pci_s_find_capability(PCI_BDF(dev), cap);
 }
-#endif
 
 #endif /* PCI_OPS_H */

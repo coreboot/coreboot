@@ -55,7 +55,6 @@ unsigned char uart_rx_byte(int idx);
 
 uintptr_t uart_platform_base(int idx);
 
-#if !defined(__ROMCC__)
 static inline void *uart_platform_baseptr(int idx)
 {
 	return (void *)uart_platform_base(idx);
@@ -99,7 +98,5 @@ static inline u8 __gdb_rx_byte(void)
 	return uart_rx_byte(CONF_UART_FOR_GDB);
 }
 #endif
-
-#endif /* __ROMCC__ */
 
 #endif /* CONSOLE_UART_H */

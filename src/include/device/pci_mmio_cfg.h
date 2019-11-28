@@ -20,7 +20,6 @@
 #include <device/mmio.h>
 #include <device/pci_type.h>
 
-#if !defined(__ROMCC__)
 
 /* By not assigning this to CONFIG_MMCONF_BASE_ADDRESS here we
  * prevent some sub-optimal constant folding. */
@@ -109,8 +108,6 @@ uint32_t *pci_mmio_config32_addr(pci_devfn_t dev, uint16_t reg)
 {
 	return (uint32_t *)&pcicfg(dev)->reg32[reg / sizeof(uint32_t)];
 }
-
-#endif /* !defined(__ROMCC__) */
 
 #if CONFIG(MMCONF_SUPPORT)
 

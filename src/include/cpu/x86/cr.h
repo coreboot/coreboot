@@ -20,12 +20,7 @@
 
 #include <stdint.h>
 
-/* ROMCC apparently chokes certain clobber registers. */
-#if defined(__ROMCC__)
-#define COMPILER_BARRIER
-#else
 #define COMPILER_BARRIER "memory"
-#endif
 
 #ifdef __x86_64__
 #define CRx_TYPE uint64_t

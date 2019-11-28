@@ -15,8 +15,6 @@
 #include <console/console.h>
 #include <halt.h>
 
-#ifndef __ROMCC__
-
 /*
  * The method should be overwritten in mainboard directory to signal that a
  * fatal error had occurred. On boards that do share the same EC and where the
@@ -39,4 +37,3 @@ void __noreturn die(const char *fmt, ...)
 	die_notify();
 	halt();
 }
-#endif

@@ -37,7 +37,6 @@
 #define clrbits32(addr, clear)		clrsetbits32(addr, clear, 0)
 #define clrbits64(addr, clear)		clrsetbits64(addr, clear, 0)
 
-#ifndef __ROMCC__
 /*
  * Reads a transfer buffer from 32-bit FIFO registers. fifo_stride is the
  * distance in bytes between registers (e.g. pass 4 for a normal array of 32-bit
@@ -194,7 +193,5 @@ static inline void buffer_to_fifo32(void *buffer, size_t size, void *fifo,
 
 #define READ32_BITFIELD(addr, name) \
 	EXTRACT_BITFIELD(read32(addr), name)
-
-#endif	/* !__ROMCC__ */
 
 #endif	/* __DEVICE_MMIO_H__ */

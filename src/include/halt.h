@@ -17,14 +17,10 @@
 #ifndef __HALT_H__
 #define __HALT_H__
 
-#ifdef __ROMCC__
-#include <lib/halt.c>
-#else
 /**
  * halt the system reliably
  */
 void __noreturn halt(void);
-#endif /* __ROMCC__ */
 
 /* Power off the system. */
 void poweroff(void);

@@ -187,11 +187,6 @@ struct cbfs_file_attr_align {
 	uint32_t alignment;
 } __packed;
 
-/*
- * ROMCC does not understand uint64_t, so we hide future definitions as they are
- * unlikely to be ever needed from ROMCC
- */
-#ifndef __ROMCC__
 
 /*** Component sub-headers ***/
 
@@ -235,7 +230,5 @@ struct cbfs_optionrom {
 	uint32_t compression;
 	uint32_t len;
 } __packed;
-
-#endif /* __ROMCC__ */
 
 #endif /* _CBFS_SERIALIZED_H_ */

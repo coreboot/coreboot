@@ -148,7 +148,7 @@ gdtaddr:
 	 .data
 
 	/* This is the gdt for GCC part of coreboot.
-	 * It is different from the gdt in ROMCC/ASM part of coreboot
+	 * It is different from the gdt in ASM part of coreboot
 	 * which is defined in entry32.inc
 	 *
 	 * When the machine is initially started, we use a very simple

@@ -79,7 +79,6 @@
 #define clrsetbits_le16(addr, clear, set) __clrsetbits(le, 16, addr, clear, set)
 #define clrsetbits_be16(addr, clear, set) __clrsetbits(be, 16, addr, clear, set)
 
-#ifndef __ROMCC__
 /* be16dec/be32dec/be64dec/le16dec/le32dec/le64dec family of functions. */
 #define DEFINE_ENDIAN_DEC(endian, width) \
 	static inline uint##width##_t endian##width##dec(const void *p) \
@@ -169,6 +168,5 @@ static inline uint64_t le64toh(uint64_t little_endian_64bits)
 {
 	return le64_to_cpu(little_endian_64bits);
 }
-#endif
 
 #endif

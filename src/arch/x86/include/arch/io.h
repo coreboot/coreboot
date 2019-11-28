@@ -21,39 +21,6 @@
  * inb/inw/inl/outb/outw/outl and the "string versions" of the same
  * (insb/insw/insl/outsb/outsw/outsl).
  */
-#if defined(__ROMCC__)
-static inline void outb(uint8_t value, uint16_t port)
-{
-	__builtin_outb(value, port);
-}
-
-static inline void outw(uint16_t value, uint16_t port)
-{
-	__builtin_outw(value, port);
-}
-
-static inline void outl(uint32_t value, uint16_t port)
-{
-	__builtin_outl(value, port);
-}
-
-
-static inline uint8_t inb(uint16_t port)
-{
-	return __builtin_inb(port);
-}
-
-
-static inline uint16_t inw(uint16_t port)
-{
-	return __builtin_inw(port);
-}
-
-static inline uint32_t inl(uint16_t port)
-{
-	return __builtin_inl(port);
-}
-#else
 static inline void outb(uint8_t value, uint16_t port)
 {
 	__asm__ __volatile__ ("outb %b0, %w1" : : "a" (value), "Nd" (port));
@@ -89,7 +56,6 @@ static inline uint32_t inl(uint16_t port)
 	__asm__ __volatile__ ("inl %w1, %0" : "=a"(value) : "Nd" (port));
 	return value;
 }
-#endif /* __ROMCC__ */
 
 static inline void outsb(uint16_t port, const void *addr, unsigned long count)
 {

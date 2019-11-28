@@ -53,7 +53,7 @@
 #define MTRR_FIX_4K_F0000		0x26e
 #define MTRR_FIX_4K_F8000		0x26f
 
-#if !defined(__ASSEMBLER__) && !defined(__ROMCC__)
+#if !defined(__ASSEMBLER__)
 
 #include <stdint.h>
 #include <stddef.h>
@@ -140,9 +140,9 @@ static inline unsigned int fls(unsigned int x)
 		"1:" : "=r" (r) : "mr" (x));
 	return r;
 }
-#endif /* !defined(__ASSEMBLER__) && !defined(__ROMCC__) */
+#endif /* !defined(__ASSEMBLER__) */
 
-/* Align up/down to next power of 2, suitable for ROMCC and assembler
+/* Align up/down to next power of 2, suitable for assembler
    too. Range of result 256kB to 128MB is good enough here. */
 #define _POW2_MASK(x)	((x>>1)|(x>>2)|(x>>3)|(x>>4)|(x>>5)| \
 					(x>>6)|(x>>7)|(x>>8)|((1<<18)-1))

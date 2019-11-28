@@ -57,14 +57,12 @@ void hexdump32(char LEVEL, const void *d, size_t len);
  */
 size_t hexstrtobin(const char *str, uint8_t *buf, size_t len);
 
-#if !defined(__ROMCC__)
 /* Count Leading Zeroes: clz(0) == 32, clz(0xf) == 28, clz(1 << 31) == 0 */
 static inline int clz(u32 x) { return x ? __builtin_clz(x) : sizeof(x) * 8; }
 /* Integer binary logarithm (rounding down): log2(0) == -1, log2(5) == 2 */
 static inline int log2(u32 x) { return sizeof(x) * 8 - clz(x) - 1; }
 /* Find First Set: __ffs(1) == 0, __ffs(0) == -1, __ffs(1<<31) == 31 */
 static inline int __ffs(u32 x) { return log2(x & (u32)(-(s32)x)); }
-#endif
 
 /* Integer binary logarithm (rounding up): log2_ceil(0) == -1, log2(5) == 3 */
 static inline int log2_ceil(u32 x) { return (x == 0) ? -1 : log2(x * 2 - 1); }

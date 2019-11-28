@@ -2,13 +2,6 @@
 
 #define DEVICE_H
 
-/*
- * NOTICE: Header is ROMCC tentative.
- * This header is incompatible with ROMCC and its inclusion leads to 'odd'
- * build failures.
- */
-#if !defined(__ROMCC__)
-
 #include <device/resource.h>
 #include <device/path.h>
 #include <device/pci_type.h>
@@ -329,7 +322,5 @@ void enable_static_devices(struct device *bus);
 void scan_smbus(struct device *bus);
 void scan_generic_bus(struct device *bus);
 void scan_static_bus(struct device *bus);
-
-#endif /* !defined(__ROMCC__) */
 
 #endif /* DEVICE_H */

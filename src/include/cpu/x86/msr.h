@@ -81,21 +81,6 @@
 
 #ifndef __ASSEMBLER__
 #include <types.h>
-#if defined(__ROMCC__)
-
-typedef __builtin_msr_t msr_t;
-
-static msr_t rdmsr(unsigned long index)
-{
-	return __builtin_rdmsr(index);
-}
-
-static void wrmsr(unsigned long index, msr_t msr)
-{
-	__builtin_wrmsr(index, msr.lo, msr.hi);
-}
-
-#else
 
 typedef struct msr_struct {
 	unsigned int lo;
@@ -154,7 +139,6 @@ static __always_inline void wrmsr(unsigned int index, msr_t msr)
 }
 
 #endif /* CONFIG_SOC_SETS_MSRS */
-#endif /* __ROMCC__ */
 
 /* Helpers for interpreting MC[i]_STATUS */
 

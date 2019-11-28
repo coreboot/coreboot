@@ -218,9 +218,6 @@ static inline bool cpu_is_intel(void)
 	return CONFIG(CPU_INTEL_COMMON) || CONFIG(SOC_INTEL_COMMON);
 }
 
-#ifndef __ROMCC__
-/* romcc does not support anonymous structs. */
-
 struct device;
 
 struct cpu_device_id {
@@ -288,12 +285,10 @@ static inline void get_fms(struct cpuinfo_x86 *c, uint32_t tfms)
 #define asmlinkage __attribute__((regparm(0)))
 
 /*
- * When not using a romcc bootblock the car_stage_entry() is the symbol
- * jumped to for each stage after bootblock using cache-as-ram.
+ * The car_stage_entry() is the symbol jumped to for each stage
+ * after bootblock using cache-as-ram.
  */
 asmlinkage void car_stage_entry(void);
-
-#endif
 
 /*
  * Get processor id using cpuid eax=1

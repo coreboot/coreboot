@@ -38,7 +38,7 @@
 #define TOP_MEM_MASK			0x007fffff
 #define TOP_MEM_MASK_KB			(TOP_MEM_MASK >> 10)
 
-#if !defined(__ROMCC__) && !defined(__ASSEMBLER__)
+#if !defined(__ASSEMBLER__)
 
 #include <cpu/x86/msr.h>
 

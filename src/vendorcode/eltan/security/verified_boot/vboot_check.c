@@ -276,13 +276,6 @@ void verified_boot_early_check(void)
 {
 	printk(BIOS_SPEW, "%s: processing early items\n", __func__);
 
-	if (CONFIG(ROMCC_BOOTBLOCK) &&
-	    CONFIG(VENDORCODE_ELTAN_VBOOT_SIGNED_MANIFEST)) {
-		printk(BIOS_SPEW, "%s: check the manifest\n", __func__);
-		if (verified_boot_check_manifest() != 0)
-			die("invalid manifest");
-	}
-
 	if (CONFIG(VENDORCODE_ELTAN_MBOOT)) {
 		printk(BIOS_DEBUG, "mb_measure returned 0x%x\n",
 		mb_measure(vboot_platform_is_resuming()));

@@ -45,7 +45,7 @@
 #define ACPI_TABLE_CREATOR	"COREBOOT"  /* Must be exactly 8 bytes long! */
 #define OEM_ID			"COREv4"    /* Must be exactly 6 bytes long! */
 
-#if !defined(__ASSEMBLER__) && !defined(__ACPI__) && !defined(__ROMCC__)
+#if !defined(__ASSEMBLER__) && !defined(__ACPI__)
 #include <commonlib/helpers.h>
 #include <device/device.h>
 #include <uuid.h>

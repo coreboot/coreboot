@@ -4,9 +4,7 @@
 #include <stddef.h>
 #include <stdlib.h>
 
-#if !defined(__ROMCC__)
 #include <console/vtxprintf.h>
-#endif
 
 /* Stringify a token */
 #ifndef STRINGIFY
@@ -19,10 +17,8 @@ void *memmove(void *dest, const void *src, size_t n);
 void *memset(void *s, int c, size_t n);
 int memcmp(const void *s1, const void *s2, size_t n);
 void *memchr(const void *s, int c, size_t n);
-#if !defined(__ROMCC__)
 int snprintf(char *buf, size_t size, const char *fmt, ...);
 int vsnprintf(char *buf, size_t size, const char *fmt, va_list args);
-#endif
 char *strdup(const char *s);
 char *strconcat(const char *s1, const char *s2);
 size_t strnlen(const char *src, size_t max);

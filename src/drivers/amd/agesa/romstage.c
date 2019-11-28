@@ -16,7 +16,6 @@
 #include <arch/romstage.h>
 #include <cbmem.h>
 #include <cpu/amd/car.h>
-#include <cpu/x86/bist.h>
 #include <console/console.h>
 #include <halt.h>
 #include <program_loading.h>
@@ -40,7 +39,7 @@ static void fill_sysinfo(struct sysinfo *cb)
 	agesa_set_interface(cb);
 }
 
-static void bsp_romstage_main(unsigned long bist)
+static void bsp_romstage_main(void)
 {
 	struct postcar_frame pcf;
 	struct sysinfo romstage_state;
@@ -65,9 +64,6 @@ static void bsp_romstage_main(unsigned long bist)
 
 	printk(BIOS_DEBUG, "APIC %02d: CPU Family_Model = %08x\n",
 		initial_apic_id, cpuid_eax(1));
-
-	/* Halt if there was a built in self test failure */
-	report_bist_failure(bist);
 
 	agesa_execute_state(cb, AMD_INIT_RESET);
 
@@ -103,7 +99,7 @@ static void bsp_romstage_main(unsigned long bist)
 	/* We do not return. */
 }
 
-static void __noreturn ap_romstage_main(unsigned long bist)
+static void __noreturn ap_romstage_main(void)
 {
 	struct sysinfo romstage_state;
 	struct sysinfo *cb = &romstage_state;
@@ -112,9 +108,6 @@ static void __noreturn ap_romstage_main(unsigned long bist)
 	amd_initmmio();
 
 	fill_sysinfo(cb);
-
-	/* Halt if there was a built in self test failure */
-	report_bist_failure(bist);
 
 	agesa_execute_state(cb, AMD_INIT_RESET);
 
@@ -127,7 +120,7 @@ static void __noreturn ap_romstage_main(unsigned long bist)
 asmlinkage void romstage_main(unsigned long bist)
 {
 	if (boot_cpu())
-		bsp_romstage_main(bist);
+		bsp_romstage_main();
 	else
-		ap_romstage_main(bist);
+		ap_romstage_main();
 }

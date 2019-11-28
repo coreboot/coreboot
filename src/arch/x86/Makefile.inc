@@ -116,8 +116,6 @@ bootblock-$(CONFIG_X86_TOP4G_BOOTMEDIA_MAP) += mmap_boot.c
 bootblock-y += id.S
 $(call src-to-obj,bootblock,$(dir)/id.S): $(obj)/build.h
 
-ifneq ($(CONFIG_ROMCC_BOOTBLOCK),y)
-
 bootblock-y += bootblock_crt0.S
 
 ifeq ($(CONFIG_ARCH_BOOTBLOCK_X86_32),y)
@@ -127,59 +125,6 @@ $(eval $(call early_x86_stage,bootblock,elf64-x86-64))
 endif
 
 bootblock-$(CONFIG_ARCH_BOOTBLOCK_X86_32) += walkcbfs.S
-
-else # ROMCC_BOOTBLOCK
-
-# x86-specific linker flags
-ifeq ($(CONFIG_ARCH_BOOTBLOCK_X86_32),y)
-LDFLAGS_bootblock += -m elf_i386 --oformat elf32-i386
-else
-LDFLAGS_bootblock += -m elf_x86_64 --oformat elf64-x86-64
-endif
-
-# Add the assembly file that pulls in the rest of the dependencies in
-# the right order. Make sure the auto generated bootblock.inc is a proper
-# dependency. Make the same true for the linker sript.
-bootblock-y += bootblock_romcc.S
-bootblock-y += walkcbfs.S
-$(call src-to-obj,bootblock,$(dir)/bootblock_romcc.S): $(objgenerated)/bootblock.inc
-
-bootblock-y += bootblock.ld
-$(call src-to-obj,bootblock,$(dir)/bootblock.ld): $(objgenerated)/bootblock.ld
-
-bootblock_romccflags := -mcpu=i386 -O2 -D__BOOTBLOCK__
-ifeq ($(CONFIG_SSE),y)
-bootblock_romccflags := -mcpu=k7 -mno-mmx -msse -O2 -D__BOOTBLOCK__
-endif
-
-# This is a hack in case there are no per chipset linker files.
-$(objgenerated)/empty: build-dirs
-	touch $@
-
-$(objgenerated)/bootblock.ld: $$(filter-out $(call src-to-obj,bootblock,src/arch/x86/bootblock.ld), $$(filter %.ld,$$(bootblock-objs))) $(objgenerated)/empty
-	@printf "    GEN        $(subst $(obj)/,,$(@))\n"
-	cat $^ >> $@.tmp
-	mv $@.tmp $@
-
--include $(objgenerated)/bootblock.inc.d
-$(objgenerated)/bootblock.inc: $(src)/arch/x86/$(subst ",,$(CONFIG_BOOTBLOCK_SOURCE)) $(objutil)/romcc/romcc $(OPTION_TABLE_H) $(KCONFIG_AUTOHEADER)
-# The open quote in the subst messes with syntax highlighting. Fix it - ")
-	@printf "    ROMCC      $(subst $(obj)/,,$(@))\n"
-	$(CC_bootblock) -D__ROMCC__ -D__BOOTBLOCK__ $(CPPFLAGS_bootblock) -MM -MT$(objgenerated)/bootblock.inc \
-		$< > $(objgenerated)/bootblock.inc.d
-	$(CC_bootblock) -D__ROMCC__ -D__BOOTBLOCK__ $(CPPFLAGS_bootblock) -E \
-		$< -o $(objgenerated)/bootblock_romcc.c
-	$(ROMCC) -c -S $(bootblock_romccflags) -I. $(CPPFLAGS_bootblock) $< -o $@
-
-# bootblock.ld is part of $(bootblock-objs)
-$(objcbfs)/bootblock.debug: $$(bootblock-objs)
-	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
-	$(LD_bootblock) $(LDFLAGS_bootblock) -o $@ -L$(obj) \
-		$(filter-out %.ld,$(bootblock-objs)) \
-		-T $(call src-to-obj,bootblock,src/arch/x86/bootblock.ld)
-
-endif # ROMCC_BOOTBLOCK
-
 
 endif # CONFIG_ARCH_BOOTBLOCK_X86_32 / CONFIG_ARCH_BOOTBLOCK_X86_64
 
@@ -223,9 +168,7 @@ ifeq ($(CONFIG_ARCH_ROMSTAGE_X86_32)$(CONFIG_ARCH_ROMSTAGE_X86_64),y)
 romstage-$(CONFIG_HAVE_ACPI_RESUME) += acpi_s3.c
 # gdt_init.S is included by entry32.inc when romstage is the first C
 # environment.
-ifneq ($(CONFIG_ROMCC_BOOTBLOCK),y)
 romstage-y += gdt_init.S
-endif
 romstage-y += cbmem.c
 romstage-$(CONFIG_IDT_IN_EVERY_STAGE) += exception.c
 romstage-$(CONFIG_IDT_IN_EVERY_STAGE) += idt.S

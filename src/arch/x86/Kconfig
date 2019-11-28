@@ -166,12 +166,6 @@ config BOOTBLOCK_DEBUG_SPINLOOP
 	  Add a spin (JMP .) in bootblock_crt0.S during early bootblock to wait
 	  for a JTAG debugger to break into the execution sequence.
 
-config BOOTBLOCK_MAINBOARD_INIT
-	string
-
-config BOOTBLOCK_NORTHBRIDGE_INIT
-	string
-
 config BOOTBLOCK_RESETS
 	string
 
@@ -183,9 +177,6 @@ config CMOS_DEFAULT_FILE
 	string
 	default "src/mainboard/$(MAINBOARDDIR)/cmos.default"
 	depends on HAVE_CMOS_DEFAULT
-
-config BOOTBLOCK_SOUTHBRIDGE_INIT
-	string
 
 config IOAPIC_INTERRUPTS_ON_FSB
 	bool
@@ -255,11 +246,6 @@ config BOOTBLOCK_NORMAL
 	bool "Switch to normal if CMOS says so"
 
 endchoice
-
-config BOOTBLOCK_SOURCE
-	string
-	default "bootblock_simple.c" if BOOTBLOCK_SIMPLE
-	default "bootblock_normal.c" if BOOTBLOCK_NORMAL
 
 config SKIP_MAX_REBOOT_CNT_CLEAR
 	bool "Do not clear reboot count after successful boot"

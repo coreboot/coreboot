@@ -49,7 +49,6 @@ SECTIONS
 
 	#include EARLY_MEMLAYOUT
 #elif ENV_BOOTBLOCK
-	/* arch/x86/bootblock.ld contains the logic for the ROMCC_BOOTBLOCK linking. */
 	BOOTBLOCK(CONFIG_X86_RESET_VECTOR - CONFIG_C_ENV_BOOTBLOCK_SIZE + 0x10,
 			CONFIG_C_ENV_BOOTBLOCK_SIZE)
 

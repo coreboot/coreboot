@@ -1,5 +1,8 @@
 chip soc/intel/skylake
 
+	# IGD Displays
+	register "gfx" = "GMA_STATIC_DISPLAYS(0)"
+
 	# Deep Sx states
 	register "deep_s3_enable_ac" = "0"
 	register "deep_s3_enable_dc" = "0"

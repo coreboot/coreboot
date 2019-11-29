@@ -573,7 +573,7 @@ void southbridge_inject_dsdt(const struct device *dev)
 
 		/* Add it to SSDT.  */
 		acpigen_write_scope("\\");
-		acpigen_write_name_dword("NVSA", (u32) gnvs);
+		acpigen_write_name_dword("NVSA", (uintptr_t) gnvs);
 		acpigen_pop_len();
 	}
 }

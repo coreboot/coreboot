@@ -1941,7 +1941,7 @@ static void flush_cache(u32 start, u32 size)
 
 	end = start + (ALIGN_DOWN(size + 4096, 4096));
 	for (addr = start; addr < end; addr += 64)
-		clflush((void *)addr);
+		clflush((void *)(uintptr_t)addr);
 }
 
 static void clear_errors(void)
@@ -1956,7 +1956,7 @@ static void write_testing(struct raminfo *info, int totalrank, int flip)
 	u32 offset;
 	u8 *base;
 
-	base = (u8 *)(totalrank << 28);
+	base = (u8 *)(uintptr_t)(totalrank << 28);
 	for (offset = 0; offset < 9 * 480; offset += 2) {
 		write32(base + offset * 8, get_etalon2(flip, offset));
 		write32(base + offset * 8 + 4, get_etalon2(flip, offset));

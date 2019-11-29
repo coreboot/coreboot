@@ -359,7 +359,7 @@ static void intel_me7_finalize_smm(void)
 	u32 reg32;
 	u16 reg16;
 
-	mei_base_address = (u32 *)
+	mei_base_address = (u32 *)(uintptr_t)
 		(pci_read_config32(PCH_ME_DEV, PCI_BASE_ADDRESS_0) & ~0xf);
 
 	/* S3 path will have hidden this device already */

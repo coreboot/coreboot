@@ -321,7 +321,8 @@ static inline int mei_sendrecv(struct mei_header *mei, struct mkhi_header *mkhi,
 
 static inline void update_mei_base_address(void)
 {
-	mei_base_address = (u32 *)(pci_read_config32(PCH_ME_DEV, PCI_BASE_ADDRESS_0) & ~0xf);
+	uint32_t reg32 = pci_read_config32(PCH_ME_DEV, PCI_BASE_ADDRESS_0) & ~0xf;
+	mei_base_address = (u32 *)(uintptr_t)reg32;
 }
 
 static inline bool is_mei_base_address_valid(void)

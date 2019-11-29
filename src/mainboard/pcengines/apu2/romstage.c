@@ -22,7 +22,6 @@
 #include <cpu/x86/lapic.h>
 #include <console/console.h>
 #include <northbridge/amd/agesa/state_machine.h>
-#include <cpu/x86/bist.h>
 #include <southbridge/amd/pi/hudson/hudson.h>
 #include <superio/nuvoton/common/nuvoton.h>
 #include <superio/nuvoton/nct5104d/nct5104d.h>

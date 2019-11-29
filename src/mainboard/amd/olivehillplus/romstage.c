@@ -20,7 +20,6 @@
 #include <cpu/x86/lapic.h>
 #include <console/console.h>
 #include <northbridge/amd/agesa/state_machine.h>
-#include <cpu/x86/bist.h>
 #include <southbridge/amd/pi/hudson/hudson.h>
 
 static void romstage_main_template(void)
@@ -46,10 +45,6 @@ static void romstage_main_template(void)
 		post_code(0x31);
 		console_init();
 	}
-
-	/* Halt if there was a built in self test failure */
-	post_code(0x34);
-	report_bist_failure(bist);
 
 	/* Load MPB */
 	val = cpuid_eax(1);

@@ -18,9 +18,12 @@
 #include <arch/io.h>
 #include <arch/cpu.h>
 #include <cpu/x86/lapic.h>
-#include <cpu/x86/bist.h>
 #include <northbridge/amd/agesa/state_machine.h>
 #include <southbridge/amd/pi/hudson/hudson.h>
+
+/* Mask BIST bit 31. One result of Silicon Observation
+ * report_bist_failure(bist & 0x7FFFFFFF);
+ */
 
 static void romstage_main_template(void)
 {
@@ -38,9 +41,6 @@ static void romstage_main_template(void)
 		console_init();
 	}
 
-	/* Halt if there was a built in self test failure */
-	post_code(0x34);
-	report_bist_failure(bist & 0x7FFFFFFF); /* Mask bit 31. One result of Silicon Observation */
 
 	/* Load MPB */
 	val = cpuid_eax(1);

@@ -43,11 +43,7 @@ void *cbmem_top(void)
 }
 
 
-static inline struct imd *cbmem_get_imd(void)
-{
-	static struct imd imd_cbmem;
-	return &imd_cbmem;
-}
+static struct imd imd_cbmem;
 
 static inline const struct cbmem_entry *imd_to_cbmem(const struct imd_entry *e)
 {
@@ -75,7 +71,7 @@ static struct imd *imd_init_backing(struct imd *backing)
 {
 	struct imd *imd;
 
-	imd = cbmem_get_imd();
+	imd = &imd_cbmem;
 
 	if (imd != NULL)
 		return imd;
@@ -288,7 +284,7 @@ void cbmem_add_bootmem(void)
 
 void cbmem_get_region(void **baseptr, size_t *size)
 {
-	imd_region_used(cbmem_get_imd(), baseptr, size);
+	imd_region_used(&imd_cbmem, baseptr, size);
 }
 
 #if ENV_PAYLOAD_LOADER || (CONFIG(EARLY_CBMEM_LIST) \
@@ -314,7 +310,7 @@ void cbmem_add_records_to_cbtable(struct lb_header *header)
 	struct imd_cursor cursor;
 	struct imd *imd;
 
-	imd = cbmem_get_imd();
+	imd = &imd_cbmem;
 
 	if (imd_cursor_init(imd, &cursor))
 		return;

@@ -59,7 +59,7 @@ static int dbgp_enabled(void);
 static void dbgp_print_data(struct ehci_dbg_port *ehci_debug);
 
 static struct ehci_debug_info glob_dbg_info;
-static struct ehci_debug_info * glob_dbg_info_p;
+static struct ehci_debug_info *glob_dbg_info_p;
 
 static inline struct ehci_debug_info *dbgp_ehci_info(void)
 {

@@ -9,7 +9,7 @@
 
 #include "tpm.h"
 
-static unsigned tpm_is_open;
+static unsigned int tpm_is_open;
 
 static const struct {
 	uint16_t vid;

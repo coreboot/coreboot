@@ -26,7 +26,7 @@
 #include "tpm.h"
 
 /* global structure for tpm chip data */
-static struct tpm_chip g_chip;
+static struct tpm_chip chip;
 
 #define TPM_CMD_COUNT_BYTE 2
 #define TPM_CMD_ORDINAL_BYTE 6
@@ -35,15 +35,15 @@ int tis_open(void)
 {
 	int rc;
 
-	if (g_chip.is_open) {
+	if (chip.is_open) {
 		printk(BIOS_DEBUG, "tis_open() called twice.\n");
 		return -1;
 	}
 
-	rc = tpm_vendor_init(&g_chip, CONFIG_DRIVER_TPM_I2C_BUS,
+	rc = tpm_vendor_init(&chip, CONFIG_DRIVER_TPM_I2C_BUS,
 			     CONFIG_DRIVER_TPM_I2C_ADDR);
 	if (rc < 0)
-		g_chip.is_open = 0;
+		chip.is_open = 0;
 
 	if (rc)
 		return -1;
@@ -53,9 +53,9 @@ int tis_open(void)
 
 int tis_close(void)
 {
-	if (g_chip.is_open) {
-		tpm_vendor_cleanup(&g_chip);
-		g_chip.is_open = 0;
+	if (chip.is_open) {
+		tpm_vendor_cleanup(&chip);
+		chip.is_open = 0;
 	}
 
 	return 0;
@@ -76,7 +76,7 @@ static ssize_t tpm_transmit(const uint8_t *sbuf, size_t sbufsiz, void *rbuf,
 	memcpy(&count, sbuf + TPM_CMD_COUNT_BYTE, sizeof(count));
 	count = be32_to_cpu(count);
 
-	if (!g_chip.vendor.send || !g_chip.vendor.status || !g_chip.vendor.cancel)
+	if (!chip.vendor.send || !chip.vendor.status || !chip.vendor.cancel)
 		return -1;
 
 	if (count == 0) {
@@ -89,8 +89,8 @@ static ssize_t tpm_transmit(const uint8_t *sbuf, size_t sbufsiz, void *rbuf,
 		return -1;
 	}
 
-	ASSERT(g_chip.vendor.send);
-	rc = g_chip.vendor.send(&g_chip, (uint8_t *) sbuf, count);
+	ASSERT(chip.vendor.send);
+	rc = chip.vendor.send(&chip, (uint8_t *) sbuf, count);
 	if (rc < 0) {
 		printk(BIOS_DEBUG, "tpm_transmit: tpm_send error\n");
 		goto out;
@@ -98,14 +98,14 @@ static ssize_t tpm_transmit(const uint8_t *sbuf, size_t sbufsiz, void *rbuf,
 
 	int timeout = 2 * 60 * 1000; /* two minutes timeout */
 	while (timeout) {
-		ASSERT(g_chip.vendor.status);
-		uint8_t status = g_chip.vendor.status(&g_chip);
-		if ((status & g_chip.vendor.req_complete_mask) ==
-		    g_chip.vendor.req_complete_val) {
+		ASSERT(chip.vendor.status);
+		uint8_t status = chip.vendor.status(&chip);
+		if ((status & chip.vendor.req_complete_mask) ==
+		    chip.vendor.req_complete_val) {
 			goto out_recv;
 		}
 
-		if (status == g_chip.vendor.req_canceled) {
+		if (status == chip.vendor.req_canceled) {
 			printk(BIOS_DEBUG,
 				"tpm_transmit: Operation Canceled\n");
 			rc = -1;
@@ -115,15 +115,15 @@ static ssize_t tpm_transmit(const uint8_t *sbuf, size_t sbufsiz, void *rbuf,
 		timeout--;
 	}
 
-	ASSERT(g_chip.vendor.cancel);
-	g_chip.vendor.cancel(&g_chip);
+	ASSERT(chip.vendor.cancel);
+	chip.vendor.cancel(&chip);
 	printk(BIOS_DEBUG, "tpm_transmit: Operation Timed out\n");
 	rc = -1; //ETIME;
 	goto out;
 
 out_recv:
 
-	rc = g_chip.vendor.recv(&g_chip, (uint8_t *) rbuf, rbufsiz);
+	rc = chip.vendor.recv(&chip, (uint8_t *) rbuf, rbufsiz);
 	if (rc < 0)
 		printk(BIOS_DEBUG, "tpm_transmit: tpm_recv: error %d\n", rc);
 out:

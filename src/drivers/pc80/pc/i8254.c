@@ -106,19 +106,19 @@ bad_ctc:
 }
 
 #if CONFIG(UNKNOWN_TSC_RATE)
-static u32 g_timer_tsc;
+static u32 timer_tsc;
 
 unsigned long tsc_freq_mhz(void)
 {
-	if (g_timer_tsc > 0)
-		return g_timer_tsc;
+	if (timer_tsc > 0)
+		return timer_tsc;
 
-	g_timer_tsc = calibrate_tsc_with_pit();
+	timer_tsc = calibrate_tsc_with_pit();
 
 	/* Set some semi-ridiculous rate if approximation fails. */
-	if (g_timer_tsc == 0)
-		g_timer_tsc = 5000;
+	if (timer_tsc == 0)
+		timer_tsc = 5000;
 
-	return g_timer_tsc;
+	return timer_tsc;
 }
 #endif

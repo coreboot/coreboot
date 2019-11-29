@@ -19,8 +19,8 @@
 #include <commonlib/helpers.h>
 #include <delay.h>
 
-static u32 g_timer_fsb;
-static u32 g_timer_tsc;
+static u32 timer_fsb;
+static u32 timer_tsc;
 
 /* This is not an architectural MSR. */
 #define MSR_PLATFORM_INFO 0xce
@@ -98,8 +98,8 @@ static void resolve_timebase(void)
 	ret = get_fsb_tsc(&fsb, &ratio);
 	if (ret == 0) {
 		u32 tsc = 100 * DIV_ROUND_CLOSEST(ratio * fsb, 100);
-		g_timer_fsb = fsb;
-		g_timer_tsc = tsc;
+		timer_fsb = fsb;
+		timer_tsc = tsc;
 		return;
 	}
 
@@ -109,27 +109,27 @@ static void resolve_timebase(void)
 		printk(BIOS_ERR, "CPU not supported\n");
 
 	/* Set some semi-ridiculous defaults. */
-	g_timer_fsb = 500;
-	g_timer_tsc = 5000;
+	timer_fsb = 500;
+	timer_tsc = 5000;
 	return;
 }
 
 u32 get_timer_fsb(void)
 {
-	if (g_timer_fsb > 0)
-		return g_timer_fsb;
+	if (timer_fsb > 0)
+		return timer_fsb;
 
 	resolve_timebase();
-	return g_timer_fsb;
+	return timer_fsb;
 }
 
 unsigned long tsc_freq_mhz(void)
 {
-	if (g_timer_tsc > 0)
-		return g_timer_tsc;
+	if (timer_tsc > 0)
+		return timer_tsc;
 
 	resolve_timebase();
-	return g_timer_tsc;
+	return timer_tsc;
 }
 
 /**

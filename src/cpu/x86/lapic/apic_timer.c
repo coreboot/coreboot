@@ -62,7 +62,7 @@ static struct monotonic_counter {
 	int initialized;
 	struct mono_time time;
 	uint32_t last_value;
-} mono_counter_g;
+} mono_counter;
 
 void timer_monotonic_get(struct mono_time *mt)
 {
@@ -70,7 +70,7 @@ void timer_monotonic_get(struct mono_time *mt)
 	uint32_t usecs_elapsed;
 	uint32_t timer_fsb;
 
-	if (!mono_counter_g.initialized) {
+	if (!mono_counter.initialized) {
 		init_timer();
 		timer_fsb = get_timer_fsb();
 		/* An FSB frequency of 200Mhz provides a 20 second polling
@@ -80,22 +80,22 @@ void timer_monotonic_get(struct mono_time *mt)
 			printk(BIOS_WARNING,
 			       "apic timer freq (%d) may be too fast.\n",
 			       timer_fsb);
-		mono_counter_g.last_value = lapic_read(LAPIC_TMCCT);
-		mono_counter_g.initialized = 1;
+		mono_counter.last_value = lapic_read(LAPIC_TMCCT);
+		mono_counter.initialized = 1;
 	}
 
 	timer_fsb = get_timer_fsb();
 	current_tick = lapic_read(LAPIC_TMCCT);
 	/* Note that the APIC timer counts down. */
-	usecs_elapsed = (mono_counter_g.last_value - current_tick) / timer_fsb;
+	usecs_elapsed = (mono_counter.last_value - current_tick) / timer_fsb;
 
 	/* Update current time and tick values only if a full tick occurred. */
 	if (usecs_elapsed) {
-		mono_time_add_usecs(&mono_counter_g.time, usecs_elapsed);
-		mono_counter_g.last_value = current_tick;
+		mono_time_add_usecs(&mono_counter.time, usecs_elapsed);
+		mono_counter.last_value = current_tick;
 	}
 
 	/* Save result. */
-	*mt = mono_counter_g.time;
+	*mt = mono_counter.time;
 }
 #endif

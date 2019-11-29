@@ -48,7 +48,7 @@ static struct monotonic_counter {
 	int initialized;
 	struct mono_time time;
 	uint64_t last_value;
-} mono_counter_g;
+} mono_counter;
 
 void timer_monotonic_get(struct mono_time *mt)
 {
@@ -56,14 +56,14 @@ void timer_monotonic_get(struct mono_time *mt)
 	uint64_t ticks_elapsed;
 	unsigned long ticks_per_usec;
 
-	if (!mono_counter_g.initialized) {
+	if (!mono_counter.initialized) {
 		init_timer();
-		mono_counter_g.last_value = rdtscll();
-		mono_counter_g.initialized = 1;
+		mono_counter.last_value = rdtscll();
+		mono_counter.initialized = 1;
 	}
 
 	current_tick = rdtscll();
-	ticks_elapsed = current_tick - mono_counter_g.last_value;
+	ticks_elapsed = current_tick - mono_counter.last_value;
 	ticks_per_usec = tsc_freq_mhz();
 
 	/* Update current time and tick values only if a full tick occurred. */
@@ -71,11 +71,11 @@ void timer_monotonic_get(struct mono_time *mt)
 		uint64_t usecs_elapsed;
 
 		usecs_elapsed = ticks_elapsed / ticks_per_usec;
-		mono_time_add_usecs(&mono_counter_g.time, (long)usecs_elapsed);
-		mono_counter_g.last_value = current_tick;
+		mono_time_add_usecs(&mono_counter.time, (long)usecs_elapsed);
+		mono_counter.last_value = current_tick;
 	}
 
 	/* Save result. */
-	*mt = mono_counter_g.time;
+	*mt = mono_counter.time;
 }
 #endif

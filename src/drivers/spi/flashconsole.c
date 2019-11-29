@@ -22,11 +22,11 @@
 #define LINE_BUFFER_SIZE 128
 #define READ_BUFFER_SIZE 0x100
 
-static const struct region_device *g_rdev_ptr;
-static struct region_device g_rdev;
-static uint8_t g_line_buffer[LINE_BUFFER_SIZE];
-static size_t g_offset;
-static size_t g_line_offset;
+static const struct region_device *rdev_ptr;
+static struct region_device rdev;
+static uint8_t line_buffer[LINE_BUFFER_SIZE];
+static size_t offset;
+static size_t line_offset;
 
 void flashconsole_init(void)
 {
@@ -36,11 +36,11 @@ void flashconsole_init(void)
 	size_t len = READ_BUFFER_SIZE;
 	size_t i;
 
-	if (fmap_locate_area_as_rdev_rw("CONSOLE", &g_rdev)) {
+	if (fmap_locate_area_as_rdev_rw("CONSOLE", &rdev)) {
 		printk(BIOS_INFO, "Can't find 'CONSOLE' area in FMAP\n");
 		return;
 	}
-	size = region_device_sz(&g_rdev);
+	size = region_device_sz(&rdev);
 
 	/*
 	 * We need to check the region until we find a 0xff indicating
@@ -56,7 +56,7 @@ void flashconsole_init(void)
 		// Fill the buffer on first iteration
 		if (i == 0) {
 			len = min(READ_BUFFER_SIZE, size - offset);
-			if (rdev_readat(&g_rdev, buffer, offset, len) != len)
+			if (rdev_readat(&rdev, buffer, offset, len) != len)
 				return;
 		}
 		if (buffer[i] == 0xff) {
@@ -75,29 +75,29 @@ void flashconsole_init(void)
 		return;
 	}
 
-	g_offset = offset;
-	g_rdev_ptr = &g_rdev;
+	offset = offset;
+	rdev_ptr = &rdev;
 }
 
 void flashconsole_tx_byte(unsigned char c)
 {
-	if (!g_rdev_ptr)
+	if (!rdev_ptr)
 		return;
 
-	size_t region_size = region_device_sz(g_rdev_ptr);
+	size_t region_size = region_device_sz(rdev_ptr);
 
-	g_line_buffer[g_line_offset++] = c;
+	line_buffer[line_offset++] = c;
 
-	if (g_line_offset >= LINE_BUFFER_SIZE ||
-	    g_offset + g_line_offset >= region_size || c == '\n') {
+	if (line_offset >= LINE_BUFFER_SIZE ||
+	    offset + line_offset >= region_size || c == '\n') {
 		flashconsole_tx_flush();
 	}
 }
 
 void flashconsole_tx_flush(void)
 {
-	size_t offset = g_offset;
-	size_t len = g_line_offset;
+	size_t offset = offset;
+	size_t len = line_offset;
 	size_t region_size;
 	static int busy;
 
@@ -107,23 +107,23 @@ void flashconsole_tx_flush(void)
 	if (busy)
 		return;
 
-	if (!g_rdev_ptr)
+	if (!rdev_ptr)
 		return;
 
 	busy = 1;
-	region_size = region_device_sz(g_rdev_ptr);
+	region_size = region_device_sz(rdev_ptr);
 	if (offset + len >= region_size)
 		len = region_size - offset;
 
-	if (rdev_writeat(&g_rdev, g_line_buffer, offset, len) != len)
+	if (rdev_writeat(&rdev, line_buffer, offset, len) != len)
 		return;
 
 	// If the region is full, stop future write attempts
 	if (offset + len >= region_size)
 		return;
 
-	g_offset = offset + len;
-	g_line_offset = 0;
+	offset = offset + len;
+	line_offset = 0;
 
 	busy = 0;
 }

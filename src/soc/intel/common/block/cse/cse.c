@@ -88,7 +88,7 @@
 
 static struct cse_device {
 	uintptr_t sec_bar;
-} g_cse;
+} cse;
 
 /*
  * Initialize the device with provided temporary BAR. If BAR is 0 use a
@@ -105,7 +105,7 @@ void heci_init(uintptr_t tempbar)
 	u8 pcireg;
 
 	/* Assume it is already initialized, nothing else to do */
-	if (g_cse.sec_bar)
+	if (cse.sec_bar)
 		return;
 
 	/* Use default pre-ram bar */
@@ -127,7 +127,7 @@ void heci_init(uintptr_t tempbar)
 	pcireg |= PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY;
 	pci_write_config8(dev, PCI_COMMAND, pcireg);
 
-	g_cse.sec_bar = tempbar;
+	cse.sec_bar = tempbar;
 }
 
 /* Get HECI BAR 0 from PCI configuration space */
@@ -147,17 +147,17 @@ static uint32_t get_cse_bar(void)
 static uint32_t read_bar(uint32_t offset)
 {
 	/* Reach PCI config space to get BAR in case CAR global not available */
-	if (!g_cse.sec_bar)
-		g_cse.sec_bar = get_cse_bar();
-	return read32((void *)(g_cse.sec_bar + offset));
+	if (!cse.sec_bar)
+		cse.sec_bar = get_cse_bar();
+	return read32((void *)(cse.sec_bar + offset));
 }
 
 static void write_bar(uint32_t offset, uint32_t val)
 {
 	/* Reach PCI config space to get BAR in case CAR global not available */
-	if (!g_cse.sec_bar)
-		g_cse.sec_bar = get_cse_bar();
-	return write32((void *)(g_cse.sec_bar + offset), val);
+	if (!cse.sec_bar)
+		cse.sec_bar = get_cse_bar();
+	return write32((void *)(cse.sec_bar + offset), val);
 }
 
 static uint32_t read_cse_csr(void)
@@ -725,7 +725,7 @@ int send_hmrfpo_get_status_msg(void)
 
 static void update_sec_bar(struct device *dev)
 {
-	g_cse.sec_bar = find_resource(dev, PCI_BASE_ADDRESS_0)->base;
+	cse.sec_bar = find_resource(dev, PCI_BASE_ADDRESS_0)->base;
 }
 
 static void cse_set_resources(struct device *dev)

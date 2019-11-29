@@ -39,10 +39,10 @@
 #define CR50_TIMEOUT_INIT_MS 30000 /* Very long timeout for TPM init */
 
 /* SPI slave structure for TPM device. */
-static struct spi_slave g_spi_slave;
+static struct spi_slave spi_slave;
 
 /* Cached TPM device identification. */
-static struct tpm2_info g_tpm_info;
+static struct tpm2_info tpm_info;
 
 /*
  * TODO(vbendeb): make CONFIG_DEBUG_TPM an int to allow different level of
@@ -60,7 +60,7 @@ typedef struct {
 
 void tpm2_get_info(struct tpm2_info *info)
 {
-	*info = g_tpm_info;
+	*info = tpm_info;
 }
 
 __weak int tis_plat_irq_status(void)
@@ -133,9 +133,9 @@ static int start_transaction(int read_write, size_t bytes, unsigned int addr)
 
 	if (wakeup_needed) {
 		/* Just in case Cr50 is asleep. */
-		spi_claim_bus(&g_spi_slave);
+		spi_claim_bus(&spi_slave);
 		udelay(1);
-		spi_release_bus(&g_spi_slave);
+		spi_release_bus(&spi_slave);
 		udelay(100);
 	}
 
@@ -158,7 +158,7 @@ static int start_transaction(int read_write, size_t bytes, unsigned int addr)
 		header.body[i + 1] = (addr >> (8 * (2 - i))) & 0xff;
 
 	/* CS assert wakes up the slave. */
-	spi_claim_bus(&g_spi_slave);
+	spi_claim_bus(&spi_slave);
 
 	/*
 	 * The TCG TPM over SPI specification introduces the notion of SPI
@@ -185,7 +185,7 @@ static int start_transaction(int read_write, size_t bytes, unsigned int addr)
 	 * to require to stall the master, this would present an issue.
 	 * crosbug.com/p/52132 has been opened to track this.
 	 */
-	spi_xfer(&g_spi_slave, header.body, sizeof(header.body), NULL, 0);
+	spi_xfer(&spi_slave, header.body, sizeof(header.body), NULL, 0);
 
 	/*
 	 * Now poll the bus until TPM removes the stall bit. Give it up to 100
@@ -196,10 +196,10 @@ static int start_transaction(int read_write, size_t bytes, unsigned int addr)
 	do {
 		if (stopwatch_expired(&sw)) {
 			printk(BIOS_ERR, "TPM flow control failure\n");
-			spi_release_bus(&g_spi_slave);
+			spi_release_bus(&spi_slave);
 			return 0;
 		}
-		spi_xfer(&g_spi_slave, NULL, 0, &byte, 1);
+		spi_xfer(&spi_slave, NULL, 0, &byte, 1);
 	} while (!(byte & 1));
 	return 1;
 }
@@ -267,7 +267,7 @@ static void trace_dump(const char *prefix, uint32_t reg,
  */
 static void write_bytes(const void *buffer, size_t bytes)
 {
-	spi_xfer(&g_spi_slave, buffer, bytes, NULL, 0);
+	spi_xfer(&spi_slave, buffer, bytes, NULL, 0);
 }
 
 /*
@@ -276,7 +276,7 @@ static void write_bytes(const void *buffer, size_t bytes)
  */
 static void read_bytes(void *buffer, size_t bytes)
 {
-	spi_xfer(&g_spi_slave, NULL, 0, buffer, bytes);
+	spi_xfer(&spi_slave, NULL, 0, buffer, bytes);
 }
 
 /*
@@ -291,7 +291,7 @@ static int tpm2_write_reg(unsigned int reg_number, const void *buffer, size_t by
 	if (!start_transaction(false, bytes, reg_number))
 		return 0;
 	write_bytes(buffer, bytes);
-	spi_release_bus(&g_spi_slave);
+	spi_release_bus(&spi_slave);
 	return 1;
 }
 
@@ -309,7 +309,7 @@ static int tpm2_read_reg(unsigned int reg_number, void *buffer, size_t bytes)
 		return 0;
 	}
 	read_bytes(buffer, bytes);
-	spi_release_bus(&g_spi_slave);
+	spi_release_bus(&spi_slave);
 	trace_dump("R", reg_number, bytes, buffer, 0);
 	return 1;
 }
@@ -417,7 +417,7 @@ int tpm2_init(struct spi_slave *spi_if)
 	uint8_t cmd;
 	int retries;
 
-	memcpy(&g_spi_slave, spi_if, sizeof(*spi_if));
+	memcpy(&spi_slave, spi_if, sizeof(*spi_if));
 
 	/* clear any pending IRQs */
 	tis_plat_irq_status();
@@ -474,15 +474,15 @@ int tpm2_init(struct spi_slave *spi_if)
 	 * structure.
 	 */
 	tpm2_read_reg(TPM_RID_REG, &cmd, sizeof(cmd));
-	g_tpm_info.vendor_id = did_vid & 0xffff;
-	g_tpm_info.device_id = did_vid >> 16;
-	g_tpm_info.revision = cmd;
+	tpm_info.vendor_id = did_vid & 0xffff;
+	tpm_info.device_id = did_vid >> 16;
+	tpm_info.revision = cmd;
 
 	printk(BIOS_INFO, "Connected to device vid:did:rid of %4.4x:%4.4x:%2.2x\n",
-	       g_tpm_info.vendor_id, g_tpm_info.device_id, g_tpm_info.revision);
+	       tpm_info.vendor_id, tpm_info.device_id, tpm_info.revision);
 
 	/* Let's report device FW version if available. */
-	if (g_tpm_info.vendor_id == 0x1ae0) {
+	if (tpm_info.vendor_id == 0x1ae0) {
 		int chunk_count = 0;
 		size_t chunk_size;
 		/*
@@ -611,7 +611,7 @@ size_t tpm2_process_command(const void *tpm2_command, size_t command_size,
 	const int HEADER_SIZE = 6;
 
 	/* Do not try using an uninitialized TPM. */
-	if (!g_tpm_info.vendor_id)
+	if (!tpm_info.vendor_id)
 		return 0;
 
 	/* Skip the two byte tag, read the size field. */

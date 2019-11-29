@@ -193,7 +193,7 @@ int platform_i2c_transfer(unsigned int bus, struct i2c_msg *segments, int count)
 	struct i2c_msg *seg = segments;
 	int i;
 
-	if (bus >= g_num_i2c_buses) {
+	if (bus >= num_i2c_buses) {
 		printk(BIOS_ERR, "%s: ERROR: invalid I2C bus (%u)\n", __func__,
 		       bus);
 		return -1;
@@ -212,7 +212,7 @@ void i2c_init(unsigned int bus)
 {
 	struct tegra_i2c_regs *regs;
 
-	if (bus >= g_num_i2c_buses) {
+	if (bus >= num_i2c_buses) {
 		printk(BIOS_ERR, "%s: ERROR: invalid I2C bus (%u)\n", __func__,
 		       bus);
 		return;

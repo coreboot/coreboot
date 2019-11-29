@@ -54,7 +54,7 @@ struct tpm_inf_dev {
 	uint8_t buf[CR50_MAX_BUFSIZE + sizeof(uint8_t)];
 };
 
-static struct tpm_inf_dev g_tpm_dev;
+static struct tpm_inf_dev tpm_dev;
 
 __weak int tis_plat_irq_status(void)
 {
@@ -101,14 +101,14 @@ static int cr50_i2c_wait_tpm_ready(struct tpm_chip *chip)
 static int cr50_i2c_read(struct tpm_chip *chip, uint8_t addr,
 			 uint8_t *buffer, size_t len)
 {
-	if (g_tpm_dev.addr == 0)
+	if (tpm_dev.addr == 0)
 		return -1;
 
 	/* Clear interrupt before starting transaction */
 	tis_plat_irq_status();
 
 	/* Send the register address byte to the TPM */
-	if (i2c_write_raw(g_tpm_dev.bus, g_tpm_dev.addr, &addr, 1)) {
+	if (i2c_write_raw(tpm_dev.bus, tpm_dev.addr, &addr, 1)) {
 		printk(BIOS_ERR, "%s: Address write failed\n", __func__);
 		return -1;
 	}
@@ -118,7 +118,7 @@ static int cr50_i2c_read(struct tpm_chip *chip, uint8_t addr,
 		return -1;
 
 	/* Read response data from the TPM */
-	if (i2c_read_raw(g_tpm_dev.bus, g_tpm_dev.addr, buffer, len)) {
+	if (i2c_read_raw(tpm_dev.bus, tpm_dev.addr, buffer, len)) {
 		printk(BIOS_ERR, "%s: Read response failed\n", __func__);
 		return -1;
 	}
@@ -143,20 +143,20 @@ static int cr50_i2c_read(struct tpm_chip *chip, uint8_t addr,
 static int cr50_i2c_write(struct tpm_chip *chip,
 			  uint8_t addr, uint8_t *buffer, size_t len)
 {
-	if (g_tpm_dev.addr == 0)
+	if (tpm_dev.addr == 0)
 		return -1;
 	if (len > CR50_MAX_BUFSIZE)
 		return -1;
 
 	/* Prepend the 'register address' to the buffer */
-	g_tpm_dev.buf[0] = addr;
-	memcpy(g_tpm_dev.buf + 1, buffer, len);
+	tpm_dev.buf[0] = addr;
+	memcpy(tpm_dev.buf + 1, buffer, len);
 
 	/* Clear interrupt before starting transaction */
 	tis_plat_irq_status();
 
 	/* Send write request buffer with address */
-	if (i2c_write_raw(g_tpm_dev.bus, g_tpm_dev.addr, g_tpm_dev.buf, len + 1)) {
+	if (i2c_write_raw(tpm_dev.bus, tpm_dev.addr, tpm_dev.buf, len + 1)) {
 		printk(BIOS_ERR, "%s: Error writing to TPM\n", __func__);
 		return -1;
 	}
@@ -494,8 +494,8 @@ int tpm_vendor_init(struct tpm_chip *chip, unsigned int bus, uint32_t dev_addr)
 		return -1;
 	}
 
-	g_tpm_dev.bus = bus;
-	g_tpm_dev.addr = dev_addr;
+	tpm_dev.bus = bus;
+	tpm_dev.addr = dev_addr;
 
 	cr50_vendor_init(chip);
 

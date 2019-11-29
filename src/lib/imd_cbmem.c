@@ -69,16 +69,7 @@ static inline const struct imd_entry *cbmem_to_imd(const struct cbmem_entry *e)
  */
 static struct imd *imd_init_backing(struct imd *backing)
 {
-	struct imd *imd;
-
-	imd = &imd_cbmem;
-
-	if (imd != NULL)
-		return imd;
-
-	imd = backing;
-
-	return imd;
+	return &imd_cbmem;
 }
 
 static struct imd *imd_init_backing_with_recover(struct imd *backing)

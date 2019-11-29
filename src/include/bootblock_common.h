@@ -38,6 +38,9 @@ void bootblock_soc_init(void);
 asmlinkage void bootblock_c_entry(uint64_t base_timestamp);
 asmlinkage void bootblock_c_entry_bist(uint64_t base_timestamp, uint32_t bist);
 
+/* To be used when APs execute through bootblock too. */
+asmlinkage void ap_bootblock_c_entry(void);
+
 void bootblock_main_with_basetime(uint64_t base_timestamp);
 
 /* This is the argument structure passed from decompressor to bootblock. */

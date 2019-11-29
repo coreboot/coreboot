@@ -14,8 +14,8 @@
 #include <arch/acpi.h>
 #include <arch/cpu.h>
 #include <arch/romstage.h>
+#include <bootblock_common.h>
 #include <cbmem.h>
-#include <cpu/amd/car.h>
 #include <console/console.h>
 #include <halt.h>
 #include <program_loading.h>
@@ -39,7 +39,7 @@ static void fill_sysinfo(struct sysinfo *cb)
 	agesa_set_interface(cb);
 }
 
-asmlinkage void romstage_main(unsigned long bist)
+static void romstage_main(void)
 {
 	struct postcar_frame pcf;
 	struct sysinfo romstage_state;
@@ -99,7 +99,7 @@ asmlinkage void romstage_main(unsigned long bist)
 	/* We do not return. */
 }
 
-asmlinkage void ap_romstage_main(void)
+static void ap_romstage_main(void)
 {
 	struct sysinfo romstage_state;
 	struct sysinfo *cb = &romstage_state;
@@ -115,4 +115,17 @@ asmlinkage void ap_romstage_main(void)
 
 	/* Not reached. */
 	halt();
+}
+
+/* This wrapper enables easy transition away from ROMCC_BOOTBLOCK
+ * keeping changes in cache_as_ram.S easy to manage.
+ */
+asmlinkage void bootblock_c_entry(uint64_t base_timestamp)
+{
+	romstage_main();
+}
+
+asmlinkage void ap_bootblock_c_entry(void)
+{
+	ap_romstage_main();
 }

@@ -30,9 +30,6 @@
 
 _cache_as_ram_setup:
 
-	/* Preserve BIST. */
-	movd	%eax, %mm0
-
 	post_code(0xa0)
 
 	AMD_ENABLE_STACK
@@ -50,16 +47,16 @@ _cache_as_ram_setup:
 
 	mov	$_ecar_stack, %esp
 
-	/* Align the stack. */
-	and	$0xFFFFFFF0, %esp
+	/* Align the stack and keep aligned for call to bootblock_c_entry() */
+	and	$0xfffffff0, %esp
+	sub	$8, %esp
 
-	/* Must maintain 16-byte stack alignment here. */
-	pushl	$0x0
-	pushl	$0x0
-	pushl	$0x0
-	movd	%mm0, %eax		/* bist */
-	pushl	%eax
-	call	romstage_main
+	pushl	$0		/* tsc[63:32] */
+	pushl	$0		/* tsc[31:0] */
+
+	post_code(0xa2)
+
+	call	bootblock_c_entry
 
 	/* Never reached. */
 
@@ -69,9 +66,9 @@ stop:
 	jmp	stop
 
 ap_entry:
-	/* Align the stack for call to ap_romstage_main() */
+	/* Align the stack for call to ap_bootblock_c_entry() */
 	and	$0xfffffff0, %esp
-	call	ap_romstage_main
+	call	ap_bootblock_c_entry
 
 	/* Never reached. */
 	jmp	stop

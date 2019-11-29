@@ -18,9 +18,7 @@
 
 #include <ec/ec.h>
 #include <ec/google/chromeec/ec_commands.h>
-
-#include <variant/gpio.h>
-
+#include <baseboard/gpio.h>
 
 #define MAINBOARD_EC_SCI_EVENTS \
 	(EC_HOST_EVENT_MASK(EC_HOST_EVENT_LID_CLOSED)        |\

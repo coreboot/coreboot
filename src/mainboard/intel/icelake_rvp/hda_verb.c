@@ -12,5 +12,4 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
-
-#include "variant/hda_verb.h"
+#include <baseboard/hda_verb.h>

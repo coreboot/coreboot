@@ -14,11 +14,11 @@
  */
 
 #include <arch/acpi.h>
+#include <baseboard/gpio.h>
 #include <baseboard/variants.h>
 #include <device/device.h>
 #include <soc/gpio.h>
 #include <vendorcode/google/chromeos/chromeos.h>
-#include <variant/gpio.h>
 
 static void mainboard_init(void *chip_info)
 {

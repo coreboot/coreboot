@@ -14,8 +14,8 @@
  */
 
 #include <arch/acpi.h>
-#include "variant/ec.h"
-#include "variant/gpio.h"
+#include <baseboard/ec.h>
+#include <baseboard/gpio.h>
 
 DefinitionBlock(
 	"dsdt.aml",

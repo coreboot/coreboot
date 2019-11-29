@@ -14,11 +14,10 @@
  */
 
 #include <arch/acpi.h>
+#include <baseboard/gpio.h>
 #include <baseboard/variants.h>
 #include <boot/coreboot_tables.h>
 #include <gpio.h>
-#include <soc/gpio.h>
-#include <variant/gpio.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
 void fill_lb_gpios(struct lb_gpios *gpios)

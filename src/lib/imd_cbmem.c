@@ -27,6 +27,8 @@
    has to fill in the _cbmem_top_ptr symbol based on the calling arguments. */
 uintptr_t _cbmem_top_ptr;
 
+static struct imd imd;
+
 void *cbmem_top(void)
 {
 	if (ENV_ROMSTAGE) {
@@ -41,9 +43,6 @@ void *cbmem_top(void)
 
 	dead_code();
 }
-
-
-static struct imd imd_cbmem;
 
 static inline const struct cbmem_entry *imd_to_cbmem(const struct imd_entry *e)
 {
@@ -74,16 +73,15 @@ static void cbmem_top_init_once(void)
 
 void cbmem_initialize_empty_id_size(u32 id, u64 size)
 {
-	struct imd *imd = &imd_cbmem;
 	const int no_recovery = 0;
 
 	cbmem_top_init_once();
 
-	imd_handle_init(imd, cbmem_top());
+	imd_handle_init(&imd, cbmem_top());
 
 	printk(BIOS_DEBUG, "CBMEM:\n");
 
-	if (imd_create_tiered_empty(imd, CBMEM_ROOT_MIN_SIZE, CBMEM_LG_ALIGN,
+	if (imd_create_tiered_empty(&imd, CBMEM_ROOT_MIN_SIZE, CBMEM_LG_ALIGN,
 					CBMEM_SM_ROOT_SIZE, CBMEM_SM_ALIGN)) {
 		printk(BIOS_DEBUG, "failed.\n");
 		return;
@@ -104,14 +102,13 @@ int cbmem_initialize(void)
 
 int cbmem_initialize_id_size(u32 id, u64 size)
 {
-	struct imd *imd = &imd_cbmem;
 	const int recovery = 1;
 
 	cbmem_top_init_once();
 
-	imd_handle_init(imd, cbmem_top());
+	imd_handle_init(&imd, cbmem_top());
 
-	if (imd_recover(imd))
+	if (imd_recover(&imd))
 		return 1;
 
 	/*
@@ -120,7 +117,7 @@ int cbmem_initialize_id_size(u32 id, u64 size)
 	 * is being taken.
 	 */
 	if (ENV_ROMSTAGE)
-		imd_lockdown(imd);
+		imd_lockdown(&imd);
 
 	/* Add the specified range first */
 	if (size)
@@ -145,72 +142,62 @@ int cbmem_recovery(int is_wakeup)
 
 const struct cbmem_entry *cbmem_entry_add(u32 id, u64 size64)
 {
-	struct imd *imd = &imd_cbmem;
 	const struct imd_entry *e;
 
-	e = imd_entry_find_or_add(imd, id, size64);
+	e = imd_entry_find_or_add(&imd, id, size64);
 
 	return imd_to_cbmem(e);
 }
 
 void *cbmem_add(u32 id, u64 size)
 {
-	struct imd *imd = &imd_cbmem;
 	const struct imd_entry *e;
 
-	e = imd_entry_find_or_add(imd, id, size);
+	e = imd_entry_find_or_add(&imd, id, size);
 
 	if (e == NULL)
 		return NULL;
 
-	return imd_entry_at(imd, e);
+	return imd_entry_at(&imd, e);
 }
 
 /* Retrieve a region provided a given id. */
 const struct cbmem_entry *cbmem_entry_find(u32 id)
 {
-	struct imd *imd = &imd_cbmem;
 	const struct imd_entry *e;
 
-	e = imd_entry_find(imd, id);
+	e = imd_entry_find(&imd, id);
 
 	return imd_to_cbmem(e);
 }
 
 void *cbmem_find(u32 id)
 {
-	struct imd *imd = &imd_cbmem;
 	const struct imd_entry *e;
 
-	e = imd_entry_find(imd, id);
+	e = imd_entry_find(&imd, id);
 
 	if (e == NULL)
 		return NULL;
 
-	return imd_entry_at(imd, e);
+	return imd_entry_at(&imd, e);
 }
 
 /* Remove a reserved region. Returns 0 on success, < 0 on error. Note: A region
  * cannot be removed unless it was the last one added. */
 int cbmem_entry_remove(const struct cbmem_entry *entry)
 {
-	struct imd *imd = &imd_cbmem;
-
-	return imd_entry_remove(imd, cbmem_to_imd(entry));
+	return imd_entry_remove(&imd, cbmem_to_imd(entry));
 }
 
 u64 cbmem_entry_size(const struct cbmem_entry *entry)
 {
-	struct imd *imd = &imd_cbmem;
-
-	return imd_entry_size(imd, cbmem_to_imd(entry));
+	return imd_entry_size(&imd, cbmem_to_imd(entry));
 }
 
 void *cbmem_entry_start(const struct cbmem_entry *entry)
 {
-	struct imd *imd = &imd_cbmem;
-
-	return imd_entry_at(imd, cbmem_to_imd(entry));
+	return imd_entry_at(&imd, cbmem_to_imd(entry));
 }
 
 void cbmem_add_bootmem(void)
@@ -224,7 +211,7 @@ void cbmem_add_bootmem(void)
 
 void cbmem_get_region(void **baseptr, size_t *size)
 {
-	imd_region_used(&imd_cbmem, baseptr, size);
+	imd_region_used(&imd, baseptr, size);
 }
 
 #if ENV_PAYLOAD_LOADER || (CONFIG(EARLY_CBMEM_LIST) \
@@ -237,20 +224,16 @@ void cbmem_get_region(void **baseptr, size_t *size)
 void cbmem_list(void)
 {
 	static const struct imd_lookup lookup[] = { CBMEM_ID_TO_NAME_TABLE };
-	struct imd *imd = &imd_cbmem;
 
-	imd_print_entries(imd, lookup, ARRAY_SIZE(lookup));
+	imd_print_entries(&imd, lookup, ARRAY_SIZE(lookup));
 }
 #endif
 
 void cbmem_add_records_to_cbtable(struct lb_header *header)
 {
 	struct imd_cursor cursor;
-	struct imd *imd;
 
-	imd = &imd_cbmem;
-
-	if (imd_cursor_init(imd, &cursor))
+	if (imd_cursor_init(&imd, &cursor))
 		return;
 
 	while (1) {
@@ -263,7 +246,7 @@ void cbmem_add_records_to_cbtable(struct lb_header *header)
 		if (e == NULL)
 			break;
 
-		id = imd_entry_id(imd, e);
+		id = imd_entry_id(&imd, e);
 		/* Don't add these metadata entries. */
 		if (id == CBMEM_ID_IMD_ROOT || id == CBMEM_ID_IMD_SMALL)
 			continue;
@@ -271,8 +254,8 @@ void cbmem_add_records_to_cbtable(struct lb_header *header)
 		lbe = (struct lb_cbmem_entry *)lb_new_record(header);
 		lbe->tag = LB_TAG_CBMEM_ENTRY;
 		lbe->size = sizeof(*lbe);
-		lbe->address = (uintptr_t)imd_entry_at(imd, e);
-		lbe->entry_size = imd_entry_size(imd, e);
+		lbe->address = (uintptr_t)imd_entry_at(&imd, e);
+		lbe->entry_size = imd_entry_size(&imd, e);
 		lbe->id = id;
 	}
 }

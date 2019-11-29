@@ -55,32 +55,6 @@ static inline const struct imd_entry *cbmem_to_imd(const struct cbmem_entry *e)
 	return (const struct imd_entry *)e;
 }
 
-/* These are the different situations to handle:
- *
- *      In ramstage cbmem_initialize() attempts a recovery of the
- *      cbmem region set up by romstage. It uses cbmem_top() as the
- *      starting point of recovery.
- *
- *      In romstage, similar to ramstage,  cbmem_initialize() needs to
- *      attempt recovery of the cbmem area using cbmem_top() as the limit.
- *      cbmem_initialize_empty() initializes an empty cbmem area from
- *      cbmem_top();
- *
- */
-static struct imd *imd_init_backing(struct imd *backing)
-{
-	return &imd_cbmem;
-}
-
-static struct imd *imd_init_backing_with_recover(struct imd *backing)
-{
-	struct imd *imd;
-
-	imd = imd_init_backing(backing);
-
-	return imd;
-}
-
 void cbmem_initialize_empty(void)
 {
 	cbmem_initialize_empty_id_size(0, 0);
@@ -100,13 +74,11 @@ static void cbmem_top_init_once(void)
 
 void cbmem_initialize_empty_id_size(u32 id, u64 size)
 {
-	struct imd *imd;
-	struct imd imd_backing;
+	struct imd *imd = &imd_cbmem;
 	const int no_recovery = 0;
 
 	cbmem_top_init_once();
 
-	imd = imd_init_backing(&imd_backing);
 	imd_handle_init(imd, cbmem_top());
 
 	printk(BIOS_DEBUG, "CBMEM:\n");
@@ -132,13 +104,11 @@ int cbmem_initialize(void)
 
 int cbmem_initialize_id_size(u32 id, u64 size)
 {
-	struct imd *imd;
-	struct imd imd_backing;
+	struct imd *imd = &imd_cbmem;
 	const int recovery = 1;
 
 	cbmem_top_init_once();
 
-	imd = imd_init_backing(&imd_backing);
 	imd_handle_init(imd, cbmem_top());
 
 	if (imd_recover(imd))
@@ -175,11 +145,8 @@ int cbmem_recovery(int is_wakeup)
 
 const struct cbmem_entry *cbmem_entry_add(u32 id, u64 size64)
 {
-	struct imd *imd;
-	struct imd imd_backing;
+	struct imd *imd = &imd_cbmem;
 	const struct imd_entry *e;
-
-	imd = imd_init_backing_with_recover(&imd_backing);
 
 	e = imd_entry_find_or_add(imd, id, size64);
 
@@ -188,11 +155,8 @@ const struct cbmem_entry *cbmem_entry_add(u32 id, u64 size64)
 
 void *cbmem_add(u32 id, u64 size)
 {
-	struct imd *imd;
-	struct imd imd_backing;
+	struct imd *imd = &imd_cbmem;
 	const struct imd_entry *e;
-
-	imd = imd_init_backing_with_recover(&imd_backing);
 
 	e = imd_entry_find_or_add(imd, id, size);
 
@@ -205,11 +169,8 @@ void *cbmem_add(u32 id, u64 size)
 /* Retrieve a region provided a given id. */
 const struct cbmem_entry *cbmem_entry_find(u32 id)
 {
-	struct imd *imd;
-	struct imd imd_backing;
+	struct imd *imd = &imd_cbmem;
 	const struct imd_entry *e;
-
-	imd = imd_init_backing_with_recover(&imd_backing);
 
 	e = imd_entry_find(imd, id);
 
@@ -218,11 +179,8 @@ const struct cbmem_entry *cbmem_entry_find(u32 id)
 
 void *cbmem_find(u32 id)
 {
-	struct imd *imd;
-	struct imd imd_backing;
+	struct imd *imd = &imd_cbmem;
 	const struct imd_entry *e;
-
-	imd = imd_init_backing_with_recover(&imd_backing);
 
 	e = imd_entry_find(imd, id);
 
@@ -236,30 +194,21 @@ void *cbmem_find(u32 id)
  * cannot be removed unless it was the last one added. */
 int cbmem_entry_remove(const struct cbmem_entry *entry)
 {
-	struct imd *imd;
-	struct imd imd_backing;
-
-	imd = imd_init_backing_with_recover(&imd_backing);
+	struct imd *imd = &imd_cbmem;
 
 	return imd_entry_remove(imd, cbmem_to_imd(entry));
 }
 
 u64 cbmem_entry_size(const struct cbmem_entry *entry)
 {
-	struct imd *imd;
-	struct imd imd_backing;
-
-	imd = imd_init_backing_with_recover(&imd_backing);
+	struct imd *imd = &imd_cbmem;
 
 	return imd_entry_size(imd, cbmem_to_imd(entry));
 }
 
 void *cbmem_entry_start(const struct cbmem_entry *entry)
 {
-	struct imd *imd;
-	struct imd imd_backing;
-
-	imd = imd_init_backing_with_recover(&imd_backing);
+	struct imd *imd = &imd_cbmem;
 
 	return imd_entry_at(imd, cbmem_to_imd(entry));
 }
@@ -288,10 +237,8 @@ void cbmem_get_region(void **baseptr, size_t *size)
 void cbmem_list(void)
 {
 	static const struct imd_lookup lookup[] = { CBMEM_ID_TO_NAME_TABLE };
-	struct imd *imd;
-	struct imd imd_backing;
+	struct imd *imd = &imd_cbmem;
 
-	imd = imd_init_backing_with_recover(&imd_backing);
 	imd_print_entries(imd, lookup, ARRAY_SIZE(lookup));
 }
 #endif

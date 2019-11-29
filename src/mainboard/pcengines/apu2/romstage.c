@@ -21,7 +21,6 @@
 #include <arch/cpu.h>
 #include <cpu/x86/lapic.h>
 #include <console/console.h>
-#include <cpu/amd/car.h>
 #include <northbridge/amd/agesa/state_machine.h>
 #include <cpu/x86/bist.h>
 #include <southbridge/amd/pi/hudson/hudson.h>

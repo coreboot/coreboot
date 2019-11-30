@@ -23,7 +23,6 @@
 #include <soc/dp-core.h>
 #include <soc/fimd.h>
 #include <stddef.h>
-#include <stdlib.h>
 #include <string.h>
 
 #include "chip.h"

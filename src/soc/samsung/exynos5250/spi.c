@@ -21,7 +21,6 @@
 #include <soc/clk.h>
 #include <soc/gpio.h>
 #include <soc/spi.h>
-#include <stdlib.h>
 #include <symbols.h>
 
 #if defined(CONFIG_DEBUG_SPI) && CONFIG_DEBUG_SPI

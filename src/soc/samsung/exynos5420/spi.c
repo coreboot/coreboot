@@ -20,7 +20,6 @@
 #include <soc/cpu.h>
 #include <soc/spi.h>
 #include <spi-generic.h>
-#include <stdlib.h>
 #include <string.h>
 #include <symbols.h>
 

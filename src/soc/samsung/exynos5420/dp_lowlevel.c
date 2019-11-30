@@ -22,7 +22,6 @@
 #include <soc/i2c.h>
 #include <soc/power.h>
 #include <soc/sysreg.h>
-#include <stdlib.h>
 
 /* FIXME: I think the DP controller shouldn't be hardcoded here... */
 static struct exynos_dp * const dp_regs = (void *)EXYNOS5_DP1_BASE;

@@ -18,7 +18,6 @@
 #include <device/mmio.h>
 #include <soc/cpu.h>
 #include <soc/power.h>
-#include <stdlib.h>
 #include <string.h>
 #include <types.h>
 

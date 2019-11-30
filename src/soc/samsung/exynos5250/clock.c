@@ -18,7 +18,6 @@
 #include <console/console.h>
 #include <soc/clk.h>
 #include <soc/periph.h>
-#include <stdlib.h>
 #include <timer.h>
 
 /* input clock of PLL: SMDK5250 has 24MHz input clock */

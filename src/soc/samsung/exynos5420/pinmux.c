@@ -15,7 +15,6 @@
 
 #include <soc/gpio.h>
 #include <soc/pinmux.h>
-#include <stdlib.h>
 
 static void exynos_pinmux_uart(int start, int count)
 {

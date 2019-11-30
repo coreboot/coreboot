@@ -19,7 +19,6 @@
 #include <soc/sdram.h>
 #include <soc/timer.h>
 #include <soc/mmu.h>
-#include <stdlib.h>
 #include <console/console.h>
 #include <program_loading.h>
 #include <libbdk-hal/bdk-config.h>

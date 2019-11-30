@@ -14,7 +14,6 @@
 
 #include <assert.h>
 #include <cpu/ti/am335x/gpio.h>
-#include <stdlib.h>
 
 #include "leds.h"
 

@@ -14,7 +14,6 @@
  */
 
 #include <stdint.h>
-#include <stdlib.h>
 #include <arch/io.h>
 #include <device/device.h>
 #include <drivers/intel/gma/int15.h>

@@ -15,7 +15,6 @@
  */
 
 #include <types.h>
-#include <stdlib.h>
 #include <console/console.h>
 #include <arch/io.h>
 #include <delay.h>

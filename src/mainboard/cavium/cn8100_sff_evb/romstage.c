@@ -18,7 +18,6 @@
 #include <soc/sdram.h>
 #include <soc/timer.h>
 #include <soc/mmu.h>
-#include <stdlib.h>
 #include <libbdk-hal/bdk-config.h>
 
 extern const struct bdk_devicetree_key_value devtree[];

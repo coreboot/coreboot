@@ -15,7 +15,6 @@
  */
 
 #include <stdint.h>
-#include <stdlib.h>
 #include <console/console.h>
 #include <console/uart.h>
 

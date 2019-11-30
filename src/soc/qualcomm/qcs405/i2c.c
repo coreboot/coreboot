@@ -32,7 +32,6 @@
 #include <assert.h>
 #include <console/console.h>
 #include <device/i2c_simple.h>
-#include <stdlib.h>
 #include <string.h>
 #include <soc/blsp.h>
 #include <soc/qup.h>

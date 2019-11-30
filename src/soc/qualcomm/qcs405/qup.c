@@ -34,7 +34,6 @@
 #include <delay.h>
 #include <soc/gpio.h>
 #include <soc/iomap.h>
-#include <stdlib.h>
 #include <soc/qup.h>
 
 #define TIMEOUT_CNT	100

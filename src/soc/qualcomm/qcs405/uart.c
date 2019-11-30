@@ -38,7 +38,6 @@
 #include <soc/uart.h>
 #include <soc/cdp.h>
 #include <stdint.h>
-#include <stdlib.h>
 #include <soc/iomap.h>
 
 #define FIFO_DATA_SIZE	4

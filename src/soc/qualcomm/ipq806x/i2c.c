@@ -29,7 +29,6 @@
 
 #include <console/console.h>
 #include <device/i2c_simple.h>
-#include <stdlib.h>
 #include <string.h>
 #include <soc/gsbi.h>
 #include <soc/qup.h>

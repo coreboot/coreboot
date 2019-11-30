@@ -34,7 +34,6 @@
 #include <soc/iomap.h>
 #include <soc/spi.h>
 #include <soc/clock.h>
-#include <stdlib.h>
 #include <spi_flash.h>
 #include <timer.h>
 

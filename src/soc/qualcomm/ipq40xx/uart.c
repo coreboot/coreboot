@@ -37,7 +37,6 @@
 #include <soc/blsp.h>
 #include <soc/ipq_uart.h>
 #include <stdint.h>
-#include <stdlib.h>
 
 #define FIFO_DATA_SIZE	4
 

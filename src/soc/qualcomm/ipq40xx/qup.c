@@ -33,7 +33,6 @@
 #include <console/console.h>
 #include <delay.h>
 #include <soc/iomap.h>
-#include <stdlib.h>
 #include <soc/qup.h>
 
 #define TIMEOUT_CNT	100

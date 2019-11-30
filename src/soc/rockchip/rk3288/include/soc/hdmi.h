@@ -19,7 +19,6 @@
 #define __SOC_HDMI_H__
 
 #include <types.h>
-#include <stdlib.h>
 
 #define HDMI_EDID_BLOCK_SIZE            128
 

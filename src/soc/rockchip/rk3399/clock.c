@@ -23,7 +23,6 @@
 #include <soc/i2c.h>
 #include <soc/soc.h>
 #include <stdint.h>
-#include <stdlib.h>
 #include <string.h>
 
 struct pll_div {

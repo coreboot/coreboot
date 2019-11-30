@@ -16,7 +16,6 @@
 #ifndef __RK_MIPI_H
 #define __RK_MIPI_H
 
-#include <stdlib.h>
 #include <types.h>
 
 struct rk_mipi_regs {

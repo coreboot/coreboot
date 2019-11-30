@@ -18,7 +18,6 @@
 #include <soc/grf.h>
 #include <soc/pmu.h>
 #include <soc/soc.h>
-#include <stdlib.h>
 
 struct rockchip_gpio_regs *gpio_port[] = {
 	(struct rockchip_gpio_regs *)0xff750000,

@@ -24,7 +24,6 @@
 #include <delay.h>
 #include <edid.h>
 #include <gpio.h>
-#include <stdlib.h>
 #include <stdint.h>
 #include <soc/addressmap.h>
 #include <soc/hdmi.h>

@@ -20,7 +20,6 @@
 #include <soc/clock.h>
 #include <soc/saradc.h>
 #include <stdint.h>
-#include <stdlib.h>
 #include <timer.h>
 
 struct rk3399_saradc_regs {

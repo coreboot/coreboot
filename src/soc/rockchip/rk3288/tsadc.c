@@ -19,7 +19,6 @@
 #include <soc/pmu.h>
 #include <soc/tsadc.h>
 #include <stdint.h>
-#include <stdlib.h>
 
 struct rk3288_tsadc_regs {
 	u32	user_con;

@@ -21,7 +21,6 @@
 #include <rtc.h>
 #include <soc/rk808.h>
 #include <stdint.h>
-#include <stdlib.h>
 
 #if CONFIG_PMIC_BUS < 0
 #error "PMIC_BUS must be set in mainboard's Kconfig."

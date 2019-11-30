@@ -22,7 +22,6 @@
 #include <soc/soc.h>
 #include <soc/sdram.h>
 #include <stddef.h>
-#include <stdlib.h>
 #include <symbols.h>
 
 #include "chip.h"

@@ -17,7 +17,6 @@
 #define __RK_DP_H
 
 #include <edid.h>
-#include <stdlib.h>
 
 struct rk_edp_regs {
 	u8	res0[0x10];

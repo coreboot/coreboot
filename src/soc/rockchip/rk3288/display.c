@@ -20,7 +20,6 @@
 #include <delay.h>
 #include <edid.h>
 #include <gpio.h>
-#include <stdlib.h>
 #include <stddef.h>
 #include <string.h>
 #include <soc/addressmap.h>

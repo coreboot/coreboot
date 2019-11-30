@@ -19,7 +19,6 @@
 #include <soc/soc.h>
 #include <soc/pwm.h>
 #include <soc/clock.h>
-#include <stdlib.h>
 #include <timer.h>
 
 struct pwm_ctl {

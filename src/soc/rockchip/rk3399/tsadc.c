@@ -19,7 +19,6 @@
 #include <soc/grf.h>
 #include <soc/tsadc.h>
 #include <stdint.h>
-#include <stdlib.h>
 
 struct rk3399_tsadc_regs {
 	u32	user_con;

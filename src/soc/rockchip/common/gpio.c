@@ -19,7 +19,6 @@
 #include <soc/gpio.h>
 #include <soc/grf.h>
 #include <soc/soc.h>
-#include <stdlib.h>
 #include <types.h>
 
 static void gpio_set_dir(gpio_t gpio, enum gpio_dir dir)

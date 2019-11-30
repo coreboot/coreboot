@@ -19,7 +19,6 @@
 #include <device/device.h>
 #include <edid.h>
 #include <gpio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <soc/addressmap.h>
 #include <soc/clock.h>

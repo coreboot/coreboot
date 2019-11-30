@@ -11,7 +11,6 @@
  * GNU General Public License for more details.
  */
 
-#include <stdlib.h>
 #include <stdint.h>
 #include <console/console.h>
 #include <device/smbus.h>

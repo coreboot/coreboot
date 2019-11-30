@@ -20,7 +20,6 @@
 #include <device/pnp.h>
 #include <ec/google/common/mec.h>
 #include <stdint.h>
-#include <stdlib.h>
 
 #include "chip.h"
 #include "ec.h"

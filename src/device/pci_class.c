@@ -14,7 +14,6 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ops.h>
-#include <stdlib.h>
 
 typedef struct {
 	const unsigned char subclass_id;

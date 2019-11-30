@@ -15,7 +15,6 @@
 
 #include <stdint.h>
 #include <string.h>
-#include <stdlib.h>
 #include "ec.h"
 #include "ec_commands.h"
 

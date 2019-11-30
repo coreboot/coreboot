@@ -22,7 +22,6 @@
 #include <ec/acpi/ec.h>
 #include <pc80/keyboard.h>
 #include <stdint.h>
-#include <stdlib.h>
 
 #include "commands.h"
 #include "ec.h"

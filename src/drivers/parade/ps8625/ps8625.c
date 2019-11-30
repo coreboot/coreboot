@@ -13,7 +13,6 @@
 
 #include <device/i2c_simple.h>
 #include <stdint.h>
-#include <stdlib.h>
 
 #include "ps8625.h"
 

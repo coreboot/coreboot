@@ -7,7 +7,6 @@
 #include <console/console.h>
 #include <cbmem.h>
 #include <fmap.h>
-#include <stdlib.h>
 #include <string.h>
 #include <timestamp.h>
 

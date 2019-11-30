@@ -27,7 +27,6 @@
  */
 
 #include <types.h>
-#include <stdlib.h>
 #include <device/device.h>
 #include <device/pci_def.h>
 #include <console/console.h>

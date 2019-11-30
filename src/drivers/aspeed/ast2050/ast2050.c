@@ -11,7 +11,6 @@
  * GNU General Public License for more details.
  */
 
-#include <stdlib.h>
 #include <arch/io.h>
 #include <edid.h>
 #include <console/console.h>

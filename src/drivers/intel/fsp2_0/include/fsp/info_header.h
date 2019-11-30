@@ -16,7 +16,6 @@
 #define _FSP2_0_INFO_HEADER_H_
 
 #include <stdint.h>
-#include <stdlib.h>
 #include <types.h>
 
 #define FSP_HDR_OFFSET			0x94

@@ -18,7 +18,6 @@
 #include <commonlib/region.h>
 #include <console/console.h>
 #include <smmstore.h>
-#include <stdlib.h>
 #include <types.h>
 
 /*

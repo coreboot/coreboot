@@ -13,7 +13,6 @@
 
 #include <stdint.h>
 #include <edid.h>
-#include <stdlib.h>
 #include <arch/io.h>
 #include <console/console.h>
 #include <device/device.h>

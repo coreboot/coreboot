@@ -21,7 +21,6 @@
 #include <device/pci_ids.h>
 #include <pc80/i8259.h>
 #include <pc80/i8254.h>
-#include <stdlib.h>
 #include <string.h>
 #include <vbe.h>
 

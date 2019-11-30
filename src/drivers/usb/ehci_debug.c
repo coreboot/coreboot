@@ -434,7 +434,7 @@ static int ehci_wait_for_port(struct ehci_regs *ehci_regs, int port)
 
 
 
-static int usbdebug_init_(unsigned int ehci_bar, unsigned int offset, struct ehci_debug_info *info)
+static int usbdebug_init_(uintptr_t ehci_bar, unsigned int offset, struct ehci_debug_info *info)
 {
 	struct ehci_caps *ehci_caps;
 	struct ehci_regs *ehci_regs;
@@ -653,7 +653,7 @@ void dbgp_put(struct dbgp_pipe *pipe)
 }
 
 #if ENV_RAMSTAGE
-void usbdebug_re_enable(unsigned int ehci_base)
+void usbdebug_re_enable(uintptr_t ehci_base)
 {
 	struct ehci_debug_info *dbg_info = dbgp_ehci_info();
 	u64 diff;

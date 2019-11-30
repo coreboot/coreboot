@@ -16,7 +16,7 @@
 
 #include <types.h>
 
-void usbdebug_re_enable(unsigned int ehci_base);
+void usbdebug_re_enable(uintptr_t ehci_base);
 void usbdebug_disable(void);
 
 /* Returns 0 on success and sets MMIO base and dbg_offset if EHCI debug

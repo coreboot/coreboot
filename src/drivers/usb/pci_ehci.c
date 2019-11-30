@@ -116,6 +116,7 @@ void pci_ehci_read_resources(struct device *dev)
 
 u8 *pci_ehci_base_regs(pci_devfn_t sdev)
 {
-	u8 *base = (u8 *)(pci_s_read_config32(sdev, EHCI_BAR_INDEX) & ~0x0f);
+	u32 bar = pci_s_read_config32(sdev, EHCI_BAR_INDEX) & ~0x0f;
+	u8 *base = (u8 *)(uintptr_t)bar;
 	return base + HC_LENGTH(read32(base));
 }

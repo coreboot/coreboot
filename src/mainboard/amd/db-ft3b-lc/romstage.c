@@ -43,30 +43,11 @@ static void romstage_main_template(void)
 		post_code(0x31);
 		console_init();
 	}
-
-	/* Load MPB */
-	val = cpuid_eax(1);
-	printk(BIOS_DEBUG, "BSP Family_Model: %08x\n", val);
-	printk(BIOS_DEBUG, "cpu_init_detectedx = %08lx\n", cpu_init_detectedx);
-
-	post_code(0x37);
-	AGESAWRAPPER(amdinitreset);
-
-	post_code(0x38);
-	printk(BIOS_DEBUG, "Got past avalon_early_setup\n");
-
-	post_code(0x39);
-	AGESAWRAPPER(amdinitearly);
-
-	post_code(0x40);
-	AGESAWRAPPER(amdinitpost);
 }
 
 void agesa_postcar(struct sysinfo *cb)
 {
-	post_code(0x41);
-	AGESAWRAPPER(amdinitenv);
-
+	/* After AMD_INIT_ENV -> move to ramstage ? */
 	outb(0xEA, 0xCD6);
 	outb(0x1, 0xcd7);
 }

@@ -21,7 +21,6 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <device/mmio.h>
-#include <stdlib.h>
 #include <southbridge/intel/lynxpoint/hda_verb.h>
 
 static const u32 minihd_verb_table[] = {

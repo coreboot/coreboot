@@ -29,7 +29,6 @@
 #include <cpu/intel/haswell/haswell.h>
 #include <drivers/intel/gma/opregion.h>
 #include <southbridge/intel/lynxpoint/nvs.h>
-#include <stdlib.h>
 #include <string.h>
 #include <types.h>
 

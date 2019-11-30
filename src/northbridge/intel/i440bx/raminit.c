@@ -18,7 +18,6 @@
 #include <spd.h>
 #include <delay.h>
 #include <stdint.h>
-#include <stdlib.h>
 #include <device/mmio.h>
 #include <device/pci_ops.h>
 #include <device/pci_def.h>

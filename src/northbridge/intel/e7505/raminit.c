@@ -30,7 +30,6 @@
 #include <device/mmio.h>
 #include <device/pci_ops.h>
 #include <lib.h>
-#include <stdlib.h>
 #include <commonlib/helpers.h>
 #include <console/console.h>
 #include <cpu/x86/mtrr.h>

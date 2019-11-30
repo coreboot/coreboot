@@ -18,7 +18,6 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <cpu/cpu.h>
-#include <stdlib.h>
 
 #include "e7505.h"
 

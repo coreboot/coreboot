@@ -17,7 +17,6 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <stdlib.h>
 #include <cpu/cpu.h>
 #include "northbridge.h"
 #include "i440bx.h"

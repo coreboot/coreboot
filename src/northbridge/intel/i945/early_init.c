@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <stdlib.h>
 #include <cf9_reset.h>
 #include <console/console.h>
 #include <arch/io.h>

@@ -20,7 +20,6 @@
 #include <stdint.h>
 #include <device/device.h>
 #include <device/pci.h>
-#include <stdlib.h>
 #include <boot/tables.h>
 #include <arch/acpi.h>
 #include <northbridge/intel/x4x/iomap.h>

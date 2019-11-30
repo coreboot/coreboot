@@ -20,7 +20,6 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <stdlib.h>
 #include <arch/acpi.h>
 #include <cpu/intel/smm_reloc.h>
 #include "i945.h"

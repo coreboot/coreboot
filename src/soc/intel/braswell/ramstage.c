@@ -37,7 +37,6 @@
 #include <soc/ramstage.h>
 #include <soc/intel/common/acpi.h>
 #include <boardid.h>
-#include <stdlib.h>
 #include <string.h>
 
 #define SHOW_PATTRS 1

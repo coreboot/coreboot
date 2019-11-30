@@ -38,7 +38,6 @@
 #include <soc/pm.h>
 #include <soc/smbus.h>
 #include <soc/systemagent.h>
-#include <stdlib.h>
 #include <timer.h>
 
 #include "chip.h"

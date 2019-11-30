@@ -14,7 +14,6 @@
  */
 
 #include <arch/cpu.h>
-#include <stdlib.h>
 #include <console/console.h>
 #include <cpu/x86/msr.h>
 #include <soc/cpu.h>

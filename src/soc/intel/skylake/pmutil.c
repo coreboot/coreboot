@@ -29,7 +29,6 @@
 #include <intelblocks/pmclib.h>
 #include <intelblocks/lpc_lib.h>
 #include <intelblocks/tco.h>
-#include <stdlib.h>
 #include <soc/gpe.h>
 #include <soc/gpio.h>
 #include <soc/iomap.h>

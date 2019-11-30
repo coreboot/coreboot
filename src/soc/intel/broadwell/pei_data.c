@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <stdlib.h>
 #include <stdint.h>
 #include <console/streams.h>
 #include <soc/iomap.h>

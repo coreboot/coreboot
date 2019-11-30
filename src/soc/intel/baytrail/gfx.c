@@ -21,7 +21,6 @@
 #include <device/pci_ids.h>
 #include <drivers/intel/gma/opregion.h>
 #include <reg_script.h>
-#include <stdlib.h>
 #include <soc/gfx.h>
 #include <soc/iosf.h>
 #include <soc/nvs.h>

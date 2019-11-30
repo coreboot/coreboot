@@ -23,7 +23,6 @@
 #include <soc/me.h>
 #include <soc/pci_devs.h>
 #include <stdint.h>
-#include <stdlib.h>
 
 
 /* HFSTS1[3:0] Current Working State Values */

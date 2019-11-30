@@ -33,7 +33,6 @@
 #include <soc/msr.h>
 #include <soc/pattrs.h>
 #include <soc/ramstage.h>
-#include <stdlib.h>
 
 /* Core level MSRs */
 static const struct reg_script core_msr_script[] = {

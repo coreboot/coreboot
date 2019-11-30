@@ -20,7 +20,6 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/smm.h>
 #include <intelblocks/systemagent.h>
-#include <stdlib.h>
 
 /*
  * Expected Host Memory Map (we don't know 100% and not all regions are present on all SoCs):

@@ -25,7 +25,6 @@
 #include <soc/pci_devs.h>
 #include <spi_flash.h>
 #include <spi-generic.h>
-#include <stdlib.h>
 
 /*
  * Get the FAST_SPIBAR.

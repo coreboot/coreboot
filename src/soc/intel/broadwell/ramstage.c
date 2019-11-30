@@ -16,7 +16,6 @@
 #include <arch/acpi.h>
 #include <cbmem.h>
 #include <device/device.h>
-#include <stdlib.h>
 #include <string.h>
 #include <soc/nvs.h>
 #include <soc/pm.h>

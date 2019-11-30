@@ -33,7 +33,6 @@
 #include <soc/pm.h>
 #include <soc/smbus.h>
 #include <soc/systemagent.h>
-#include <stdlib.h>
 
 #include "chip.h"
 

@@ -29,7 +29,6 @@
 #include <soc/pm.h>
 #include <spi-generic.h>
 #include <stdint.h>
-#include <stdlib.h>
 #include <soc/gpio.h>
 
 /* GNVS needs to be set by coreboot initiating a software SMI. */

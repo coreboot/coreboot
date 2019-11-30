@@ -19,7 +19,6 @@
 #include <console/console.h>
 #include <soc/nvs.h>
 #include <stdint.h>
-#include <stdlib.h>
 #include "acpi.h"
 
 __weak int soc_fill_acpi_wake(uint32_t *pm1, uint32_t **gpe0)

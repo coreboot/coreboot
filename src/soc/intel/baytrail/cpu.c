@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <stdlib.h>
 #include <console/console.h>
 #include <cpu/cpu.h>
 #include <cpu/intel/common/common.h>

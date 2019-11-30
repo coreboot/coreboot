@@ -22,7 +22,6 @@
 #include <soc/me.h>
 #include <soc/pci_devs.h>
 #include <stdint.h>
-#include <stdlib.h>
 
 /* Miscellaneous constants */
 enum {

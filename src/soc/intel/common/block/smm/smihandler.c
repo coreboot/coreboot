@@ -38,7 +38,6 @@
 #include <soc/smbus.h>
 #include <spi-generic.h>
 #include <stdint.h>
-#include <stdlib.h>
 
 /* GNVS needs to be set by coreboot initiating a software SMI. */
 static struct global_nvs_t *gnvs;

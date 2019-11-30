@@ -22,7 +22,6 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <stdlib.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 #include <soc/cpu.h>
 #include <soc/iomap.h>

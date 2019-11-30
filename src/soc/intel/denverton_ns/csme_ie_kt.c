@@ -15,7 +15,6 @@
  */
 
 #include <stdint.h>
-#include <stdlib.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <console/console.h>

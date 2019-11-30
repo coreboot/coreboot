@@ -25,7 +25,6 @@
  *
  */
 
-#include <stdlib.h>
 #include <AGESA.h>
 
 

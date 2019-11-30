@@ -19,7 +19,6 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <gpio.h>
-#include <stdlib.h>
 #include <soc/nhlt.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 #include "ec.h"

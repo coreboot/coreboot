@@ -16,7 +16,6 @@
 
 #include "irqroute.h"
 #include <soc/gpio.h>
-#include <stdlib.h>
 #include <boardid.h>
 #include "onboard.h"
 #include "gpio.h"

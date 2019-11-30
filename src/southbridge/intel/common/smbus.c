@@ -19,7 +19,6 @@
 #include <arch/io.h>
 #include <console/console.h>
 #include <device/smbus_def.h>
-#include <stdlib.h>
 #include <types.h>
 
 #include "smbus.h"

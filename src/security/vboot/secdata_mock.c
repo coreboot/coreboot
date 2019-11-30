@@ -32,7 +32,6 @@
  * stored in the TPM NVRAM.
  */
 
-#include <stdlib.h>
 #include <security/tpm/tspi.h>
 #include <vb2_api.h>
 

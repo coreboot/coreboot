@@ -7,7 +7,6 @@
 
 #include <commonlib/iobuf.h>
 #include <console/console.h>
-#include <stdlib.h>
 #include <string.h>
 
 #include "tss_marshaling.h"

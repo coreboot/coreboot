@@ -34,7 +34,6 @@
 
 #include <security/vboot/antirollback.h>
 #include <security/vboot/tpm_common.h>
-#include <stdlib.h>
 #include <string.h>
 #include <security/tpm/tspi.h>
 #include <vb2_api.h>

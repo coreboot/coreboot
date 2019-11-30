@@ -14,7 +14,6 @@
 #ifndef _DEVICE_I2C_BUS_H_
 #define _DEVICE_I2C_BUS_H_
 
-#include <stdlib.h>
 #include <stdint.h>
 #include <device/i2c.h>
 #include <device/device.h>

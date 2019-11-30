@@ -16,7 +16,6 @@
 #define BOOTSTATE_H
 
 #include <string.h>
-#include <stdlib.h>
 #include <stddef.h>
 #include <stdint.h>
 /* Only declare main() when in ramstage. */

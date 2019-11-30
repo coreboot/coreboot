@@ -23,7 +23,6 @@
 #include <soc/mc.h>
 #include <soc/pmc.h>
 #include <soc/sdram.h>
-#include <stdlib.h>
 #include <soc/nvidia/tegra/apbmisc.h>
 
 static void sdram_patch(uintptr_t addr, uint32_t value)

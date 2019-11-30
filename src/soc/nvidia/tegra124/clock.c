@@ -25,7 +25,6 @@
 #include <soc/maincpu.h>
 #include <soc/pmc.h>
 #include <soc/sysctr.h>
-#include <stdlib.h>
 #include <symbols.h>
 
 static struct clk_rst_ctlr *clk_rst = (void *)TEGRA_CLK_RST_BASE;

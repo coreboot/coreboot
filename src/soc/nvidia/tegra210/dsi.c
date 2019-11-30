@@ -16,7 +16,6 @@
 #include <commonlib/helpers.h>
 #include <console/console.h>
 #include <device/mmio.h>
-#include <stdlib.h>
 #include <delay.h>
 #include <timer.h>
 #include <soc/addressmap.h>

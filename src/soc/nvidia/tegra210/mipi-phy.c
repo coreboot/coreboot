@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <stdlib.h>
 #include <soc/addressmap.h>
 #include <soc/clock.h>
 #include <device/device.h>

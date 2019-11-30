@@ -20,7 +20,6 @@
 #include <soc/clk_rst.h>
 #include <soc/pmc.h>
 #include <soc/sdram.h>
-#include <stdlib.h>
 
 /*
  * This function reads SDRAM parameters (and a few CLK_RST register values) from

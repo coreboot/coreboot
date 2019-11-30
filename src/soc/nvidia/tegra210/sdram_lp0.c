@@ -19,7 +19,6 @@
 #include <soc/addressmap.h>
 #include <soc/pmc.h>
 #include <soc/sdram.h>
-#include <stdlib.h>
 
 /*
  * This function reads SDRAM parameters from the common BCT format and

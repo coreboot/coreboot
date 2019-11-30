@@ -22,7 +22,6 @@
 #include <soc/mc.h>
 #include <soc/pmc.h>
 #include <soc/sdram.h>
-#include <stdlib.h>
 #include <symbols.h>
 
 

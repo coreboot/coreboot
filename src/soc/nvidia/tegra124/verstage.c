@@ -20,7 +20,6 @@
 #include <program_loading.h>
 #include <soc/cache.h>
 #include <soc/early_configs.h>
-#include <stdlib.h>
 #include <symbols.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 

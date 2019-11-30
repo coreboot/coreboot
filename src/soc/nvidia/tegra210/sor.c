@@ -18,7 +18,6 @@
 
 #include <console/console.h>
 #include <stdint.h>
-#include <stdlib.h>
 #include <delay.h>
 #include <soc/addressmap.h>
 #include <device/device.h>

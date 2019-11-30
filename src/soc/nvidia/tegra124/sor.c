@@ -28,7 +28,6 @@
 #include <soc/nvidia/tegra/displayport.h>
 #include <soc/sor.h>
 #include <stdint.h>
-#include <stdlib.h>
 
 #include "chip.h"
 

@@ -22,7 +22,6 @@
 #include <device/mmio.h>
 #include <soc/clk_rst.h>
 #include <stdint.h>
-#include <stdlib.h>
 
 enum {
 	CLK_L_CPU = 0x1 << 0,

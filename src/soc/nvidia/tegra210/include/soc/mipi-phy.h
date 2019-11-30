@@ -15,7 +15,6 @@
 #ifndef _TEGRA_MIPI_PHY_H
 #define _TEGRA_MIPI_PHY_H
 
-#include <stdlib.h>
 
 /*
  * Macros for calculating the phy timings

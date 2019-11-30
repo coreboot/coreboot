@@ -27,7 +27,6 @@
 
 #include "mainboard.h"
 
-#include <stdlib.h>
 
 #include <vendorcode/amd/agesa/f15tn/AGESA.h>
 

@@ -69,7 +69,7 @@ if ARCH_X86
 config ARCH_X86_64_PGTBL_LOC
 	hex "x86_64 page table location in CBFS"
 	depends on ARCH_BOOTBLOCK_X86_64
-	default 0xfffea000
+	default 0xfffe9000
 	help
 	  The position where to place pagetables. Needs to be known at
 	  compile time. Must not overlap other files in CBFS.

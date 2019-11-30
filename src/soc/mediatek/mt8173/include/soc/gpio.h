@@ -16,7 +16,6 @@
 #define SOC_MEDIATEK_MT8173_GPIO_H
 
 #include <stdint.h>
-#include <stdlib.h>
 #include <soc/addressmap.h>
 #include <soc/gpio_common.h>
 

@@ -21,7 +21,6 @@
 #include <console/console.h>
 #include <soc/southbridge.h>
 #include <soc/pci_devs.h>
-#include <stdlib.h>
 #include <amdblocks/agesawrapper.h>
 #include <amdblocks/dimm_spd.h>
 #include <amdblocks/car.h>

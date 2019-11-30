@@ -17,7 +17,6 @@
 #include <cbmem.h>
 #include <soc/addressmap.h>
 #include <soc/sdram.h>
-#include <stdlib.h>
 #include <symbols.h>
 
 void *cbmem_top_chipset(void)

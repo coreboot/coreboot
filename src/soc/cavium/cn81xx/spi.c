@@ -25,7 +25,6 @@
 #include <soc/clock.h>
 #include <spi-generic.h>
 #include <spi_flash.h>
-#include <stdlib.h>
 #include <timer.h>
 
 union cavium_spi_cfg {

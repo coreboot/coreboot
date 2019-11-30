@@ -33,7 +33,6 @@
 #include <soc/pci_devs.h>
 #include <soc/iomap.h>
 #include <stdint.h>
-#include <stdlib.h>
 #include <string.h>
 #include <arch/bert_storage.h>
 

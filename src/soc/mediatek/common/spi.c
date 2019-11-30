@@ -18,7 +18,6 @@
 #include <console/console.h>
 #include <endian.h>
 #include <gpio.h>
-#include <stdlib.h>
 #include <soc/pll.h>
 #include <soc/spi.h>
 #include <timer.h>

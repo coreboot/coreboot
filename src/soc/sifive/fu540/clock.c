@@ -17,7 +17,6 @@
 #include <console/console.h>
 #include <soc/clock.h>
 #include <soc/addressmap.h>
-#include <stdlib.h>
 #include <stdint.h>
 
 // 33.33 Mhz after reset

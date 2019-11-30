@@ -20,7 +20,6 @@
 #include <device/smbus.h>
 #include <cpu/x86/lapic.h>
 #include <arch/ioapic.h>
-#include <stdlib.h>
 #include <soc/southbridge.h>
 #include <soc/smbus.h>
 

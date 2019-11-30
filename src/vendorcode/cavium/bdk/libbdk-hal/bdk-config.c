@@ -12,6 +12,7 @@
 
 #include <bdk.h>
 #include <libbdk-hal/bdk-config.h>
+#include <stdlib.h>
 #include <string.h>
 #include <assert.h>
 #include <lame_string.h>

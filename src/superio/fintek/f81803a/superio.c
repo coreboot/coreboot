@@ -17,7 +17,6 @@
 #include <device/device.h>
 #include <device/pnp.h>
 #include <superio/conf_mode.h>
-#include <stdlib.h>
 #include <pc80/keyboard.h>
 #include "f81803a.h"
 

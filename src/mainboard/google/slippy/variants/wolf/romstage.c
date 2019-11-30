@@ -15,7 +15,6 @@
  */
 
 #include <stdint.h>
-#include <stdlib.h>
 #include <string.h>
 #include <cbfs.h>
 #include <console/console.h>

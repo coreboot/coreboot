@@ -14,7 +14,6 @@
  */
 
 #include <soc/southbridge.h>
-#include <stdlib.h>
 #include <soc/gpio.h>
 
 #include "gpio.h"

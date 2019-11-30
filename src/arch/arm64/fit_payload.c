@@ -14,7 +14,6 @@
 
 #include <console/console.h>
 #include <bootmem.h>
-#include <stdlib.h>
 #include <program_loading.h>
 #include <string.h>
 #include <commonlib/compression.h>

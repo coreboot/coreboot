@@ -14,7 +14,6 @@
 #ifndef LIBACPI_H
 #define LIBACPI_H
 
-#include <stdlib.h>
 #include <stdint.h>
 #include <arch/acpi.h>
 #include <arch/acpi_device.h>

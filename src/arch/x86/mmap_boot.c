@@ -13,7 +13,6 @@
 
 #include <boot_device.h>
 #include <endian.h>
-#include <stdlib.h>
 
 /* The ROM is memory mapped just below 4GiB. Form a pointer for the base. */
 #define rom_base ((void *)(uintptr_t)(0x100000000ULL-CONFIG_ROM_SIZE))

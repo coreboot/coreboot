@@ -30,7 +30,6 @@
 
 #include <assert.h>
 #include <commonlib/helpers.h>
-#include <stdlib.h>
 #include <stdint.h>
 #include <symbols.h>
 

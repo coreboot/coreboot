@@ -16,7 +16,6 @@
 
 #include <console/console.h>
 #include <bootmem.h>
-#include <stdlib.h>
 #include <program_loading.h>
 #include <commonlib/compression.h>
 #include <commonlib/cbfs_serialized.h>

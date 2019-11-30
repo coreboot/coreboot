@@ -13,7 +13,6 @@
 
 #include <arch/acpigen.h>
 #include <arch/acpigen_dsm.h>
-#include <stdlib.h>
 
 /* -------------------  I2C HID DSM ---------------------------- */
 

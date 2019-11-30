@@ -27,7 +27,6 @@
  * SUCH DAMAGE.
  *
  */
-#include <stdlib.h>
 #include <arch/cpu.h>
 #include <commonlib/helpers.h>
 

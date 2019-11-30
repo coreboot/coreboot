@@ -11,7 +11,6 @@
  * GNU General Public License for more details.
  */
 
-#include <stdlib.h>
 #include <cbmem.h>
 
 #if CONFIG(CBMEM_TOP_BACKUP)

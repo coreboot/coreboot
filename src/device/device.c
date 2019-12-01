@@ -903,15 +903,16 @@ static void scan_bus(struct device *busdev)
 {
 	int do_scan_bus;
 	struct stopwatch sw;
-
-	stopwatch_init(&sw);
+	long scan_time;
 
 	if (!busdev->enabled)
 		return;
 
-	printk(BIOS_SPEW, "%s scanning...\n", dev_path(busdev));
+	printk(BIOS_DEBUG, "%s scanning...\n", dev_path(busdev));
 
 	post_log_path(busdev);
+
+	stopwatch_init(&sw);
 
 	do_scan_bus = 1;
 	while (do_scan_bus) {
@@ -928,8 +929,9 @@ static void scan_bus(struct device *busdev)
 		}
 	}
 
-	printk(BIOS_DEBUG, "%s: scanning of bus %s took %ld usecs\n",
-		__func__, dev_path(busdev), stopwatch_duration_usecs(&sw));
+	scan_time = stopwatch_duration_msecs(&sw);
+	printk(BIOS_DEBUG, "%s: bus %s finished in %ld msecs\n", __func__,
+	       dev_path(busdev), scan_time);
 }
 
 void scan_bridges(struct bus *bus)
@@ -1116,22 +1118,23 @@ static void init_dev(struct device *dev)
 		return;
 
 	if (!dev->initialized && dev->ops && dev->ops->init) {
-#if CONFIG(HAVE_MONOTONIC_TIMER)
 		struct stopwatch sw;
-		stopwatch_init(&sw);
-#endif
+		long init_time;
+
 		if (dev->path.type == DEVICE_PATH_I2C) {
 			printk(BIOS_DEBUG, "smbus: %s[%d]->",
 			       dev_path(dev->bus->dev), dev->bus->link_num);
 		}
 
-		printk(BIOS_DEBUG, "%s init ...\n", dev_path(dev));
+		printk(BIOS_DEBUG, "%s init\n", dev_path(dev));
+
+		stopwatch_init(&sw);
 		dev->initialized = 1;
 		dev->ops->init(dev);
-#if CONFIG(HAVE_MONOTONIC_TIMER)
-		printk(BIOS_DEBUG, "%s init finished in %ld usecs\n", dev_path(dev),
-			stopwatch_duration_usecs(&sw));
-#endif
+
+		init_time = stopwatch_duration_msecs(&sw);
+		printk(BIOS_DEBUG, "%s init finished in %ld msecs\n", dev_path(dev),
+		       init_time);
 	}
 }
 

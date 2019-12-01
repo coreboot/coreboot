@@ -18,6 +18,7 @@
 
 #include <assert.h>
 #include <stdint.h>
+#include <amdblocks/acpimmio.h>
 #include <device/mmio.h>
 #include <device/pci_ops.h>
 #include <console/console.h>
@@ -36,18 +37,17 @@ void configure_hudson_uart(void)
 {
 	u8 byte;
 
-	byte = read8((void *)(ACPI_MMIO_BASE + AOAC_BASE + FCH_AOAC_REG56 +
-				CONFIG_UART_FOR_CONSOLE * sizeof(u16)));
+	byte = aoac_read8(FCH_AOAC_REG56 +
+			  CONFIG_UART_FOR_CONSOLE * sizeof(u16)));
 	byte |= 1 << 3;
-	write8((void *)(ACPI_MMIO_BASE + AOAC_BASE + FCH_AOAC_REG56 +
-			CONFIG_UART_FOR_CONSOLE * sizeof(u16)), byte);
-	byte = read8((void *)(ACPI_MMIO_BASE + AOAC_BASE + FCH_AOAC_REG62));
-	byte |= 1 << 3;
-	write8((void *)(ACPI_MMIO_BASE + AOAC_BASE + FCH_AOAC_REG62), byte);
-	write8((void *)FCH_IOMUXx89_UART0_RTS_L_EGPIO137, 0);
-	write8((void *)FCH_IOMUXx8A_UART0_TXD_EGPIO138, 0);
-	write8((void *)FCH_IOMUXx8E_UART1_RTS_L_EGPIO142, 0);
-	write8((void *)FCH_IOMUXx8F_UART1_TXD_EGPIO143, 0);
+	aoac_write8(FCH_AOAC_REG56 + CONFIG_UART_FOR_CONSOLE * sizeof(u16)),
+		    byte);
+
+	aoac_write8(FCH_AOAC_REG62, aoac_read8(FCH_AOAC_REG62) | (1 << 3));
+	iomux_write8(0x89, 0); /* UART0_RTS_L_EGPIO137 */
+	iomux_write8(0x8a, 0); /* UART0_TXD_EGPIO138 */
+	iomux_write8(0x8e, 0); /* UART1_RTS_L_EGPIO142 */
+	iomux_write8(0x8f, 0); /* UART1_TXD_EGPIO143 */
 
 	udelay(2000);
 	write8((void *)(0xFEDC6000 + 0x2000 * CONFIG_UART_FOR_CONSOLE + 0x88),
@@ -229,11 +229,11 @@ void hudson_clk_output_48Mhz(void)
 	 * Enable the X14M_25M_48M_OSC pin and leaving it at it's default so
 	 * 48Mhz will be on ball AP13 (FT3b package)
 	 */
-	ctrl = read32((void *)(ACPI_MMIO_BASE + MISC_BASE + FCH_MISC_REG40));
+	ctrl = misc_read32(FCH_MISC_REG40);
 
 	/* clear the OSCOUT1_ClkOutputEnb to enable the 48 Mhz clock */
 	ctrl &= (u32)~(1<<2);
-	write32((void *)(ACPI_MMIO_BASE + MISC_BASE + FCH_MISC_REG40), ctrl);
+	misc_write32(FCH_MISC_REG40, ctrl);
 }
 
 static uintptr_t hudson_spibase(void)

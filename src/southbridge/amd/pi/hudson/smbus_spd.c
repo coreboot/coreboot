@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <amdblocks/acpimmio.h>
 #include <console/console.h>
 #include <device/pci_def.h>
 #include <device/device.h>
@@ -127,16 +128,9 @@ static int readspd (int iobase, int SmbusSlaveAddress, char *buffer, int count)
 	return 0;
 }
 
-static void writePmReg (int reg, int data)
-{
-	__outbyte (0xCD6, reg);
-	__outbyte (0xCD7, data);
-}
-
 static void setupFch (int ioBase)
 {
-	writePmReg (0x2D, ioBase >> 8);
-	writePmReg (0x2C, ioBase | 1);
+	pm_write16(0x2c, ioBase | 1);
 	__outbyte (ioBase + 0x0E, 66000000 / 400000 / 4); // set SMBus clock to 400 KHz
 }
 

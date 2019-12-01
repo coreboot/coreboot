@@ -16,6 +16,7 @@
 #define __SIMPLE_DEVICE__
 
 #include "imc.h"
+#include <amdblocks/acpimmio.h>
 #include <device/mmio.h>
 #include <device/pci_ops.h>
 #include <device/device.h>
@@ -26,24 +27,24 @@
 #include <Proc/Fch/Fch.h>
 #include <Proc/Fch/FchPlatform.h>
 
-#define VACPI_MMIO_VBASE ((u8 *)ACPI_MMIO_BASE)
-
 void imc_reg_init(void)
 {
 	u8 reg8;
 	/* Init Power Management Block 2 (PM2) Registers.
 	 * Check BKDG for AMD Family 16h for details. */
-	write8((VACPI_MMIO_VBASE + PMIO2_BASE + 0x00), 0x06);
-	write8((VACPI_MMIO_VBASE + PMIO2_BASE + 0x01), 0x06);
-	write8((VACPI_MMIO_VBASE + PMIO2_BASE + 0x02), 0xf7);
-	write8((VACPI_MMIO_VBASE + PMIO2_BASE + 0x03), 0xff);
-	write8((VACPI_MMIO_VBASE + PMIO2_BASE + 0x04), 0xff);
+	/* Init Power Management Block 2 (PM2) Registers.
+	 * Check BKDG for AMD Family 16h for details. */
+	pm2_write8(0, 0x06);
+	pm2_write8(1, 0x06);
+	pm2_write8(2, 0xf7);
+	pm2_write8(3, 0xff);
+	pm2_write8(4, 0xff);
 
-	write8((VACPI_MMIO_VBASE + PMIO2_BASE + 0x10), 0x06);
-	write8((VACPI_MMIO_VBASE + PMIO2_BASE + 0x11), 0x06);
-	write8((VACPI_MMIO_VBASE + PMIO2_BASE + 0x12), 0xf7);
-	write8((VACPI_MMIO_VBASE + PMIO2_BASE + 0x13), 0xff);
-	write8((VACPI_MMIO_VBASE + PMIO2_BASE + 0x14), 0xff);
+	pm2_write8(0x10, 0x06);
+	pm2_write8(0x11, 0x06);
+	pm2_write8(0x12, 0xf7);
+	pm2_write8(0x13, 0xff);
+	pm2_write8(0x14, 0xff);
 
 	reg8 = pci_read_config8(PCI_DEV(0, 0x18, 0x3), 0x1E4);
 	reg8 &= 0x8F;

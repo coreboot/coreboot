@@ -83,7 +83,6 @@ static void enable_spi_fast_mode(void)
 static void enable_clocks(void)
 {
 	u32 reg32;
-	volatile u32 *acpi_mmio = (void *) (0xFED80000 + 0xE00 + 0x40);
 
 	// Program SB800 MiscClkCntrl register to configure clock output on the
 	// 14M_25M_48M_OSC ball usually used for the Super-I/O.
@@ -91,12 +90,12 @@ static void enable_clocks(void)
 	// which is the SB800's power up default.  We could switch back to 14
 	// in the mainboard's romstage.c, but then the clock frequency would
 	// change twice.
-	reg32 = *acpi_mmio;
+	reg32 = misc_read32(0x40);
 	reg32 &= ~((1 << 2) | (3 << 0)); // enable, 14 MHz (power up default)
 #if !CONFIG(SUPERIO_WANTS_14MHZ_CLOCK)
 	reg32 |= 2 << 0; // Device_CLK1_sel = 48 MHz
 #endif
-	*acpi_mmio = reg32;
+	misc_write32(0x40, reg32);
 }
 
 void bootblock_early_southbridge_init(void)

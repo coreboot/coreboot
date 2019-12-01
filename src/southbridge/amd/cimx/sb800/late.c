@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  */
 
-
+#include <amdblocks/acpimmio.h>
 #include <device/mmio.h>
 #include <device/device.h>
 #include <device/pci.h>		/* device_operations */
@@ -400,9 +400,9 @@ static void sb800_enable(struct device *dev)
 		 *              to function as GPIO {GPIO 35:0}.
 		 */
 		if (!sb_chip->disconnect_pcib && dev->enabled)
-			RWMEM(ACPI_MMIO_BASE + PMIO_BASE + SB_PMIOA_REGEA, AccWidthUint8, ~BIT0, 0);
+			pm_write8(0xea, pm_read8(0xea) & 0xfe);
 		else
-			RWMEM(ACPI_MMIO_BASE + PMIO_BASE + SB_PMIOA_REGEA, AccWidthUint8, ~BIT0, BIT0);
+			pm_write8(0xea, (pm_read8(0xea) & 0xfe) | 1);
 		break;
 
 	case PCI_DEVFN(0x14, 6): /* 0:14:6 GEC */

@@ -14,6 +14,7 @@
  */
 
 #include <stdint.h>
+#include <amdblocks/acpimmio.h>
 #include "SBPLATFORM.h"
 #include "sb_cimx.h"
 #include "cfg.h"		/*sb800_cimx_config*/
@@ -41,9 +42,7 @@ void sb_Poweron_Init(void)
  */
 void sb800_clk_output_48Mhz(void)
 {
-	/* AcpiMMioDecodeEn */
-	RWPMIO(SB_PMIOA_REG24, AccWidthUint8, ~(BIT0 + BIT1), BIT0);
 
-	*(volatile u32 *)(ACPI_MMIO_BASE + MISC_BASE + 0x40) &= ~((1 << 0) | (1 << 2)); /* 48Mhz */
-	*(volatile u32 *)(ACPI_MMIO_BASE + MISC_BASE + 0x40) |= 1 << 1; /* 48Mhz */
+	misc_write32(0x40, misc_read32(0x40) & (~5));
+	misc_write32(0x40, misc_read32(0x40) | 2);
 }

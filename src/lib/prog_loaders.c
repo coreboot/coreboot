@@ -70,8 +70,6 @@ void run_romstage(void)
 
 	timestamp_add_now(TS_END_COPYROM);
 
-	console_time_report();
-
 	prog_run(&romstage);
 
 fail:
@@ -154,8 +152,6 @@ void run_ramstage(void)
 	stage_cache_add(STAGE_RAMSTAGE, &ramstage);
 
 	timestamp_add_now(TS_END_COPYRAM);
-
-	console_time_report();
 
 	/* This overrides the arg fetched from the relocatable module */
 	prog_set_arg(&ramstage, cbmem_top());

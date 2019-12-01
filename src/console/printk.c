@@ -21,56 +21,14 @@
 #include <smp/node.h>
 #include <stddef.h>
 #include <trace.h>
-#include <timer.h>
 
 #if (!defined(__PRE_RAM__) && CONFIG(HAVE_ROMSTAGE_CONSOLE_SPINLOCK)) || !CONFIG(HAVE_ROMSTAGE_CONSOLE_SPINLOCK)
 DECLARE_SPIN_LOCK(console_lock)
 #endif
 
-#define TRACK_CONSOLE_TIME (CONFIG(HAVE_MONOTONIC_TIMER) && \
-	(ENV_RAMSTAGE || !CONFIG(CAR_GLOBAL_MIGRATION)))
-
-static struct mono_time mt_start, mt_stop;
-static long console_usecs;
-
-static void console_time_run(void)
-{
-	if (TRACK_CONSOLE_TIME)
-		timer_monotonic_get(&mt_start);
-}
-
-static void console_time_stop(void)
-{
-	if (TRACK_CONSOLE_TIME) {
-		timer_monotonic_get(&mt_stop);
-		console_usecs += mono_time_diff_microseconds(&mt_start, &mt_stop);
-	}
-}
-
-void console_time_report(void)
-{
-	if (!TRACK_CONSOLE_TIME)
-		return;
-
-	printk(BIOS_DEBUG, "Accumulated console time in " ENV_STRING " %ld ms\n",
-		DIV_ROUND_CLOSEST(console_usecs, USECS_PER_MSEC));
-}
-
-long console_time_get_and_reset(void)
-{
-	if (!TRACK_CONSOLE_TIME)
-		return 0;
-
-	long elapsed = console_usecs;
-	console_usecs = 0;
-	return elapsed;
-}
-
 void do_putchar(unsigned char byte)
 {
-	console_time_run();
 	console_tx_byte(byte);
-	console_time_stop();
 }
 
 static void wrap_putchar(unsigned char byte, void *data)
@@ -103,16 +61,12 @@ int do_vprintk(int msg_level, const char *fmt, va_list args)
 	spin_lock(&console_lock);
 #endif
 
-	console_time_run();
-
 	if (log_this == CONSOLE_LOG_FAST) {
 		i = vtxprintf(wrap_putchar_cbmemc, fmt, args, NULL);
 	} else {
 		i = vtxprintf(wrap_putchar, fmt, args, NULL);
 		console_tx_flush();
 	}
-
-	console_time_stop();
 
 #ifdef __PRE_RAM__
 #if CONFIG(HAVE_ROMSTAGE_CONSOLE_SPINLOCK)

@@ -88,6 +88,8 @@ unsigned long acpi_fill_madt(unsigned long current)
  */
 void acpi_fill_fadt(acpi_fadt_t *fadt)
 {
+	const struct soc_amd_picasso_config *cfg = config_of_soc();
+
 	printk(BIOS_DEBUG, "pm_base: 0x%04x\n", PICASSO_ACPI_IO_BASE);
 
 	fadt->sci_int = 9;		/* IRQ 09 - ACPI SCI */
@@ -115,17 +117,17 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	fadt->day_alrm = 0x0d;
 	fadt->mon_alrm = 0;
 	fadt->century = 0x32;
-	fadt->iapc_boot_arch = ACPI_FADT_LEGACY_DEVICES | ACPI_FADT_8042;
+	fadt->iapc_boot_arch = cfg->fadt_boot_arch; /* legacy free default */
 	fadt->res2 = 0;		/* reserved, MUST be 0 ACPI 3.0 */
-	fadt->flags |= ACPI_FADT_WBINVD | /* See table 5-10 ACPI 3.0a spec */
-				ACPI_FADT_C1_SUPPORTED |
-				ACPI_FADT_SLEEP_BUTTON |
-				ACPI_FADT_S4_RTC_WAKE |
-				ACPI_FADT_32BIT_TIMER |
-				ACPI_FADT_PCI_EXPRESS_WAKE |
-				ACPI_FADT_PLATFORM_CLOCK |
-				ACPI_FADT_S4_RTC_VALID |
-				ACPI_FADT_REMOTE_POWER_ON;
+	fadt->flags |=	ACPI_FADT_WBINVD | /* See table 5-34 ACPI 6.3 spec */
+			ACPI_FADT_C1_SUPPORTED |
+			ACPI_FADT_S4_RTC_WAKE |
+			ACPI_FADT_32BIT_TIMER |
+			ACPI_FADT_PCI_EXPRESS_WAKE |
+			ACPI_FADT_PLATFORM_CLOCK |
+			ACPI_FADT_S4_RTC_VALID |
+			ACPI_FADT_REMOTE_POWER_ON;
+	fadt->flags |= cfg->fadt_flags; /* additional board-specific flags */
 
 	fadt->ARM_boot_arch = 0;	/* MUST be 0 ACPI 3.0 */
 	fadt->FADT_MinorVersion = 0;	/* MUST be 0 ACPI 3.0 */

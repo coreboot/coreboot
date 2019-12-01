@@ -18,11 +18,11 @@
 #include <cbmem.h>
 #include <console/console.h>
 #include <timestamp.h>
+#include <amdblocks/biosram.h>
 #include <amdblocks/s3_resume.h>
 #include <amdblocks/agesawrapper.h>
 #include <amdblocks/BiosCallOuts.h>
 #include <soc/pci_devs.h>
-#include <soc/southbridge.h>
 #include <soc/northbridge.h>
 #include <soc/cpu.h>
 

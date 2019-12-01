@@ -501,27 +501,3 @@ static void set_pci_irqs(void *unused)
  * on entry into BS_DEV_ENABLE.
  */
 BOOT_STATE_INIT_ENTRY(BS_DEV_ENABLE, BS_ON_ENTRY, set_pci_irqs, NULL);
-
-void save_uma_size(uint32_t size)
-{
-	biosram_write32(BIOSRAM_UMA_SIZE, size);
-}
-
-void save_uma_base(uint64_t base)
-{
-	biosram_write32(BIOSRAM_UMA_BASE, (uint32_t) base);
-	biosram_write32(BIOSRAM_UMA_BASE + 4, (uint32_t) (base >> 32));
-}
-
-uint32_t get_uma_size(void)
-{
-	return biosram_read32(BIOSRAM_UMA_SIZE);
-}
-
-uint64_t get_uma_base(void)
-{
-	uint64_t base;
-	base = biosram_read32(BIOSRAM_UMA_BASE);
-	base |= ((uint64_t)(biosram_read32(BIOSRAM_UMA_BASE + 4)) << 32);
-	return base;
-}

@@ -350,38 +350,7 @@ void sb_read_mode(u32 mode);
 void sb_set_spi100(u16 norm, u16 fast, u16 alt, u16 tpm);
 void bootblock_fch_early_init(void);
 void bootblock_fch_init(void);
-/**
- * @brief Save the UMA bize returned by AGESA
- *
- * @param size = in bytes
- *
- * @return none
- */
-void save_uma_size(uint32_t size);
-/**
- * @brief Save the UMA base address returned by AGESA
- *
- * @param base = 64bit base address
- *
- * @return none
- */
-void save_uma_base(uint64_t base);
-/**
- * @brief Get the saved UMA size
- *
- * @param none
- *
- * @return size in bytes
- */
-uint32_t get_uma_size(void);
-/**
- * @brief Get the saved UMA base
- *
- * @param none
- *
- * @return 64bit base address
- */
-uint64_t get_uma_base(void);
+
 /*
  * Call the mainboard to get the USB Over Current Map. The mainboard
  * returns the map and 0 on Success or -1 on error or no map. There is

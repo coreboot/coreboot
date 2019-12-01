@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <amdblocks/biosram.h>
 #include <device/pci_ops.h>
 #include <arch/ioapic.h>
 #include <arch/acpi.h>
@@ -29,7 +30,6 @@
 #include <romstage_handoff.h>
 #include <soc/cpu.h>
 #include <soc/northbridge.h>
-#include <soc/southbridge.h>
 #include <soc/pci_devs.h>
 #include <soc/iomap.h>
 #include <stdint.h>

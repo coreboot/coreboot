@@ -28,16 +28,6 @@
 #include <soc/iomap.h>
 #include <amdblocks/acpimmio.h>
 
-void backup_top_of_low_cacheable(uintptr_t ramtop)
-{
-	biosram_write32(BIOSRAM_CBMEM_TOP, ramtop);
-}
-
-uintptr_t restore_top_of_low_cacheable(void)
-{
-	return biosram_read32(BIOSRAM_CBMEM_TOP);
-}
-
 #if CONFIG(ACPI_BERT)
  #if CONFIG_SMM_TSEG_SIZE == 0x0
   #define BERT_REGION_MAX_SIZE 0x100000

@@ -16,7 +16,7 @@
 #ifndef _I2C_PTN3460_H_
 #define _I2C_PTN3460_H_
 
-#include <stdint.h>
+#include <types.h>
 
 #define PTN_EDID_OFF		0x00
 #define PTN_EDID_LEN		0x80

@@ -18,6 +18,7 @@
 #include <device/device.h>
 #include <ec/acpi/ec.h>
 #include <option.h>
+#include <types.h>
 
 #include "h8.h"
 #include "chip.h"

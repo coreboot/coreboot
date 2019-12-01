@@ -17,6 +17,7 @@
 #include <console/console.h>
 #include "ipmi_ops.h"
 #include <string.h>
+#include <types.h>
 
 enum cb_err ipmi_init_and_start_bmc_wdt(const int port, uint16_t countdown,
 				uint8_t action)

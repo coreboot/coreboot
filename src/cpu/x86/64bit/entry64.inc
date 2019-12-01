@@ -16,7 +16,12 @@
 #endif
 
 #include <cpu/x86/msr.h>
+#if defined(__RAMSTAGE__)
+#include <arch/ram_segs.h>
+#else
 #include <arch/rom_segs.h>
+#endif
+
 
 setup_longmode:
 	/* Get page table address */
@@ -42,7 +47,12 @@ setup_longmode:
 	movl	%eax, %cr0
 
 	/* use long jump to switch to 64-bit code segment */
+#if defined(__RAMSTAGE__)
+	ljmp $RAM_CODE_SEG64, $__longmode_start
+#else
 	ljmp $ROM_CODE_SEG64, $__longmode_start
+
+#endif
 .code64
 __longmode_start:
 

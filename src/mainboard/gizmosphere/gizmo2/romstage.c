@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <amdblocks/acpimmio.h>
 #include <arch/io.h>
 #include <device/pci_ops.h>
 #include <northbridge/amd/agesa/state_machine.h>
@@ -29,21 +30,5 @@ void board_BeforeAgesa(struct sysinfo *cb)
 	 *  even though the register is not documented in the Kabini BKDG.
 	 *  Otherwise the serial output is bad code.
 	 */
-	outb(0xD2, 0xcd6);
-	outb(0x00, 0xcd7);
+	pm_io_write8(0xd2, 0);
 }
-
-#if 0
-	/* LPC clock? Should happen before enable_serial. */
-
-	/* On Larne, after LpcClkDrvSth is set, it needs some time to be stable, because of the buffer ICS551M */
-	int i;
-	for(i = 0; i < 200000; i++)
-		val = inb(0xcd6);
-#endif
-
-#if 0
-	/* Was before copy_and_run. */
-	outb(0xEA, 0xCD6);
-	outb(0x1, 0xcd7);
-#endif

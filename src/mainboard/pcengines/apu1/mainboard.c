@@ -14,6 +14,7 @@
  * GNU General Public License for more details.
  */
 
+#include <amdblocks/acpimmio.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/mmio.h>
@@ -181,17 +182,17 @@ static void mainboard_enable(struct device *dev)
 	config_gpio_mux();
 	config_addon_uart();
 
-	/* Power off unused clock pins of GPP PCIe devices */
-	u8 *misc_mem_clk_cntrl = (u8 *)(ACPI_MMIO_BASE + MISC_BASE);
-	/* GPP CLK0-2 are connected to the 3 ethernet chips
-	 * GPP CLK3-4 are connected to the miniPCIe slots */
-	write8(misc_mem_clk_cntrl + 0, 0x21);
-	write8(misc_mem_clk_cntrl + 1, 0x43);
+	/* Power off unused clock pins of GPP PCIe devices
+	 * GPP CLK0-2 are connected to the 3 ethernet chips
+	 * GPP CLK3-4 are connected to the miniPCIe slots
+	 */
+	misc_write8(0, 0x21);
+	misc_write8(1, 0x43);
 	/* GPP CLK5 is only connected to test pads -> disable */
-	write8(misc_mem_clk_cntrl + 2, 0x05);
+	misc_write8(2, 0x05);
 	/* disable unconnected GPP CLK6-8 and SLT_GFX_CLK */
-	write8(misc_mem_clk_cntrl + 3, 0x00);
-	write8(misc_mem_clk_cntrl + 4, 0x00);
+	misc_write8(3, 0);
+	misc_write8(4, 0);
 
 	/* Initialize the PIRQ data structures for consumption */
 	pirq_setup();

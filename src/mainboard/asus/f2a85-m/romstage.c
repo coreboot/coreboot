@@ -14,6 +14,7 @@
  * GNU General Public License for more details.
  */
 
+#include <amdblocks/acpimmio.h>
 #include <arch/io.h>
 #include <northbridge/amd/agesa/state_machine.h>
 #include <southbridge/amd/agesa/hudson/smbus.h>
@@ -26,10 +27,7 @@ void board_BeforeAgesa(struct sysinfo *cb)
 	post_code(0x30);
 
 	/* turn on secondary smbus at b20 */
-	outb(0x28, 0xcd6);
-	byte = inb(0xcd7);
-	byte |= 1;
-	outb(byte, 0xcd7);
+	pm_write8(0x28, pm_read8(0x28) | 1);
 
 	/* set DDR3 voltage */
 	byte = CONFIG_BOARD_ASUS_F2A85_M_DDR3_VOLT_VAL;

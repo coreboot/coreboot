@@ -14,6 +14,7 @@
  * GNU General Public License for more details.
  */
 
+#include <amdblocks/acpimmio.h>
 #include <arch/io.h>
 #include <device/pci_ops.h>
 #include <northbridge/amd/agesa/state_machine.h>
@@ -26,7 +27,7 @@
 
 void board_BeforeAgesa(struct sysinfo *cb)
 {
-	u32 reg32;
+	u32 t32;
 
 	/* For serial port option, plug-in card on LPC. */
 	pci_devfn_t dev = PCI_DEV(0, 0x14, 3);
@@ -37,32 +38,21 @@ void board_BeforeAgesa(struct sysinfo *cb)
 	 *  even though the register is not documented in the Kabini BKDG.
 	 *  Otherwise the serial output is bad code.
 	 */
-	outb(0xD2, 0xcd6);
-	outb(0x00, 0xcd7);
-
+	pm_io_write8(0xd2, 0);
 
 	/* Enable the AcpiMmio space */
-	outb(0x24, 0xcd6);
-	outb(0x01, 0xcd7);
+	pm_io_write8(0x24, 1);
 
 	/* Set auxiliary output clock frequency on OSCOUT1 pin to be 25MHz */
 	/* Set auxiliary output clock frequency on OSCOUT2 pin to be 48MHz */
-	reg32 = misc_read32(0x28);
-	reg32 &= 0xffc0ffff; // Clr bits [21:19] & [18:16]
-	reg32 |= 0x00010000; // Set bit 16 for 25MHz
-	misc_write32(0x28, reg32);
+	t32 = misc_read32(0x28);
+	t32 &= 0xffc0ffff; // Clr bits [21:19] & [18:16]
+	t32 |= 0x00010000; // Set bit 16 for 25MHz
+	misc_write(0x28, t32);
 
 	/* Enable Auxiliary OSCOUT1/OSCOUT2 */
-	reg32 = misc_read32(0x40;
-	reg32 &= 0xffffff7b; // clear 2, 7
-	misc_write32(0x40, reg32);
+	t32 = misc_write32(0x40, misc_read32(0x40) & 0xffffff7b);
 
 	nct5104d_enable_uartd(SERIAL_DEV);
 	nuvoton_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 }
-
-#if 0
-	/* Was before copy_and_run. */
-	outb(0xEA, 0xCD6);
-	outb(0x1, 0xcd7);
-#endif

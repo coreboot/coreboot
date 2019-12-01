@@ -14,12 +14,12 @@
  * GNU General Public License for more details.
  */
 
+#include <amdblocks/acpimmio.h>
 #include <device/mmio.h>
 #include <console/console.h>
 #include <delay.h>
 #include <device/device.h>
 #include <device/pci_ops.h>
-#include <southbridge/amd/cimx/sb800/SBPLATFORM.h>
 
 /**********************************************
  * Enable the dedicated functions of the board.
@@ -30,18 +30,17 @@ static void mainboard_enable(struct device *dev)
 
 	/* enable GPP CLK0 thru CLK1 */
 	/* disable GPP CLK2 thru SLT_GFX_CLK */
-	u8 *misc_mem_clk_cntrl = (u8 *)(ACPI_MMIO_BASE + MISC_BASE);
-	write8(misc_mem_clk_cntrl + 0, 0xFF);
-	write8(misc_mem_clk_cntrl + 1, 0x00);
-	write8(misc_mem_clk_cntrl + 2, 0x00);
-	write8(misc_mem_clk_cntrl + 3, 0x00);
-	write8(misc_mem_clk_cntrl + 4, 0x00);
+	misc_write8(0, 0xFF);
+	misc_write8(1, 0);
+	misc_write8(2, 0);
+	misc_write8(3, 0);
+	misc_write8(4, 0);
 
 	/*
 	 * Force the onboard SATA port to GEN2 speed.
 	 * The offboard SATA port can remain at GEN3.
 	 */
-	RWMEM(ACPI_MMIO_BASE + PMIO_BASE + SB_PMIOA_REGDA, AccWidthUint8, 0xFB, 0x04);
+	pm_write8(0xda, (pm_read8(0xda) & 0xfb) | 0x04);
 }
 
 static void mainboard_final(void *chip_info)

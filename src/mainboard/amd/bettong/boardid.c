@@ -14,6 +14,7 @@
  */
 
 #include <stdint.h>
+#include <amdblocks/acpimmio.h>
 #include <device/mmio.h>
 #include <southbridge/amd/common/amd_defs.h>
 #include <boardid.h>
@@ -30,17 +31,15 @@
  */
 uint32_t board_id(void)
 {
-	void *gpiommioaddr;
 	u8  value = 0;
 	u8  boardrev = 0;
 	char boardid;
 
-	gpiommioaddr = (void *)AMD_SB_ACPI_MMIO_ADDR + 0x1500;
-	value = read8(gpiommioaddr + (7 << 2) + 2); /* agpio7: board_id2 */
+	value = gpio0_read8((7 << 2) + 2); /* agpio7: board_id2 */
 	boardrev = value & 1;
-	value = read8(gpiommioaddr + (6 << 2) + 2); /* agpio6: board_id1 */
+	value = gpio0_read8((6 << 2) + 2); /* agpio6: board_id1 */
 	boardrev |= (value & 1) << 1;
-	value = read8(gpiommioaddr + (5 << 2) + 2); /* agpio5: board_id0 */
+	value = gpio0_read8((5 << 2) + 2); /* agpio5: board_id0 */
 	boardrev |= (value & 1) << 2;
 
 	boardid = 'A' + boardrev;

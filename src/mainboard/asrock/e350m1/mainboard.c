@@ -26,19 +26,17 @@ static void mainboard_enable(struct device *dev)
 {
 	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
 
-	/* Power off unused clock pins of GPP PCIe devices */
-	u8 *misc_mem_clk_cntrl = (u8 *)(ACPI_MMIO_BASE + MISC_BASE);
-	/*
+	/* Power off unused clock pins of GPP PCIe devices
 	 * GPP CLK0 connected to unpopulated mini PCIe slot
 	 * GPP CLK1 connected to ethernet chip
 	 */
-	write8(misc_mem_clk_cntrl + 0, 0xFF);
+	misc_write8(0, 0xff);
 	/* GPP CLK2 connected to the external USB3 controller */
-	write8(misc_mem_clk_cntrl + 1, 0x0F);
-	write8(misc_mem_clk_cntrl + 2, 0x00);
-	write8(misc_mem_clk_cntrl + 3, 0x00);
+	misc_write8(1, 0x0f);
+	misc_write8(2, 0);
+	misc_write8(3, 0);
 	/* SLT_GFX_CLK connected to PCIe slot */
-	write8(misc_mem_clk_cntrl + 4, 0xF0);
+	misc_write8(4, 0xf0);
 
 	/*
 	 * Initialize ASF registers to an arbitrary address because someone

@@ -17,6 +17,7 @@
 #include <northbridge/amd/agesa/BiosCallOuts.h>
 
 #include <amdlib.h>
+#include <amdblocks/acpimmio.h>
 #include <vendorcode/amd/cimx/sb800/SB800.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -63,11 +64,9 @@ static AGESA_STATUS board_GnbPcieSlotReset (UINT32 Func, UINTN Data, VOID *Confi
 	FcnData = Data;
 	ResetInfo = ConfigPtr;
 	/* Get SB800 MMIO Base (AcpiMmioAddr) */
-	WriteIo8(0xCD6, 0x27);
-	Data8 = ReadIo8(0xCD7);
+	Data8 = pm_io_read8(0x27);
 	Data16 = Data8 << 8;
-	WriteIo8(0xCD6, 0x26);
-	Data8 = ReadIo8(0xCD7);
+	Data8 = pm_io_read8(0x26);
 	Data16 |= Data8;
 	AcpiMmioAddr = (uint32_t)Data16 << 16;
 	Status = AGESA_UNSUPPORTED;

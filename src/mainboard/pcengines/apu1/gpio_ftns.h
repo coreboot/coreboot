@@ -19,8 +19,8 @@
 #include <stdint.h>
 
 uintptr_t find_gpio_base(void);
-void configure_gpio(uintptr_t base_addr, u32 gpio, u8 iomux_ftn, u8 setting);
-u8 read_gpio(uintptr_t base_addr, u32 gpio);
+void configure_gpio(uintptr_t base_addr, u8 gpio, u8 iomux_ftn, u8 setting);
+u8 read_gpio(uintptr_t base_addr, u8 gpio);
 int get_spd_offset(void);
 
 #define IOMUX_OFFSET    0xD00

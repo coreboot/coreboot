@@ -14,6 +14,7 @@
  */
 
 #include <stdint.h>
+#include <amdblocks/acpimmio.h>
 #include <device/pci_def.h>
 #include <arch/io.h>
 #include <console/console.h>
@@ -47,9 +48,7 @@ void board_BeforeAgesa(struct sysinfo *cb)
 	post_code(0x31);
 	lpc47n217_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 
-	outb(0x24, 0xcd6);
-	outb(0x1, 0xcd7);
-	outb(0xea, 0xcd6);
-	outb(0x1, 0xcd7);
+	pm_io_write8(0x24, 1);
+	pm_io_write8(0xea, 1);
 	gpio_100_write8(0x1, 0x98);
 }

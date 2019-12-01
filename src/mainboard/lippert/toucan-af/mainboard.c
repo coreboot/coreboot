@@ -27,36 +27,52 @@
 
 static void init(struct device *dev)
 {
-	volatile u8 *spi_base;	// base addr of Hudson's SPI host controller
+	volatile u8 *spi_base;	/* base addr of Hudson's SPI host controller */
 	printk(BIOS_DEBUG, CONFIG_MAINBOARD_PART_NUMBER " ENTER %s\n", __func__);
 
 	/* Init Hudson GPIOs. */
 	printk(BIOS_DEBUG, "Init FCH GPIOs @ 0x%08x\n", ACPI_MMIO_BASE+GPIO_BASE);
-	FCH_IOMUX(50) = 2;    // GPIO50: FCH_ARST#_GATE resets stuck PCIe devices
-	FCH_GPIO (50) = 0xC0; // = output set to 1 as it's never needed
-	FCH_IOMUX(197) = 2;    // GPIO197: BIOS_DEFAULTS#
-	FCH_GPIO (197) = 0x28; // = input, disable int. pull-up
-	FCH_IOMUX(56) = 1;    // GPIO58-56: REV_ID2-0
-	FCH_GPIO (56) = 0x28; // = inputs, disable int. pull-ups
-	FCH_IOMUX(57) = 1;
-	FCH_GPIO (57) = 0x28;
-	FCH_IOMUX(58) = 1;
-	FCH_GPIO (58) = 0x28;
-	FCH_IOMUX(187) = 2;    // GPIO187,188,166,GPO160: GPO0-3 on COM Express connector
-	FCH_GPIO (187) = 0x08; // = outputs, disable PUs, default to 0
-	FCH_IOMUX(188) = 2;
-	FCH_GPIO (188) = 0x08;
-	FCH_IOMUX(166) = 2;
-	FCH_GPIO (166) = 0x08;
-	// needed to make GPO160 work (Hudson Register Reference section 2.3.6.1)
-	FCH_PMIO(0xDC) &= ~0x80; FCH_PMIO(0xE6) = (FCH_PMIO(0xE6) & ~0x02) | 0x01;
-	FCH_IOMUX(160) = 1;
-	FCH_GPIO (160) = 0x08;
-	FCH_IOMUX(189) = 1;    // GPIO189-192: GPI0-3 on COM Express connector
-	FCH_IOMUX(190) = 1;    // default to inputs with int. PU
-	FCH_IOMUX(191) = 1;
-	FCH_IOMUX(192) = 1;
-	if (!fch_gpio_state(197)) // just in case anyone cares
+	/* GPIO50: FCH_ARST#_GATE resets stuck PCIe devices */
+	iomux_write8(50, 2);
+	/* output set to 1 as it's never needed */
+	iomux_write8(50, 0xc0);
+	/* GPIO197: BIOS_DEFAULTS# = input (int. PU) */
+	iomux_write8(197, 2);
+	/* input, disable int. pull-up */
+	gpio_100_write8(197, 0x28);
+	/* GPIO58-56: REV_ID2-0 */
+	iomux_write8(56, 1);
+	/* inputs, disable int. pull-ups */
+	gpio_100_write8(56, 0x28);
+	iomux_write8(57, 1);
+	gpio_100_write8(57, 0x28);
+	iomux_write8(58, 1);
+	gpio_100_write8(58, 0x28);
+	/* GPIO187,188,166,GPO160: GPO0-3 on COM Express connector */
+	iomux_write8(187, 2);
+	/* outputs, disable PUs, default to 0 */
+	gpio_100_write8(187, 0x08);
+	iomux_write8(188, 2);
+	gpio_100_write8(188, 0x08);
+	iomux_write8(166, 2);
+	gpio_100_write8(166, 0x08);
+	/*
+	 * needed to make GPO160 work (Hudson Register Reference
+	 * section 2.3.6.1)
+	 */
+	pm_write8(0xdc, pm_read8(0xdc) & (~0x80));
+	pm_write8(0xe6, (pm_read8(0xe6) & (~0x02)) | 1);
+	iomux_write8(160, 1);
+	gpio_100_write8(160, 0x08);
+	/* GPIO189-192: GPI0-3 on COM Express connector */
+	iomux_write8(189, 1);
+	/* default to inputs with int. PU */
+	iomux_write8(190, 1);
+	iomux_write8(191, 1);
+	iomux_write8(192, 1);
+
+	/* just in case anyone cares */
+	if (!fch_gpio_state(197))
 		printk(BIOS_INFO, "BIOS_DEFAULTS jumper is present.\n");
 	printk(BIOS_INFO, "Board revision ID: %u\n",
 	       fch_gpio_state(58)<<2 | fch_gpio_state(57)<<1 | fch_gpio_state(56));
@@ -64,9 +80,11 @@ static void init(struct device *dev)
 	/* Lower SPI speed from default 66 to 22 MHz for SST 25VF032B */
 	spi_base = (u8 *)((uintptr_t)pci_read_config32(pcidev_on_root(0x14, 3),
 							   0xA0) & 0xFFFFFFE0);
-	spi_base[0x0D] = (spi_base[0x0D] & ~0x30) | 0x20; // NormSpeed in SPI_Cntrl1 register
+	/* NormSpeed in SPI_Cntrl1 register */
+	spi_base[0x0D] = (spi_base[0x0D] & ~0x30) | 0x20;
 
-	/* Notify the SMC we're alive and kicking, or after a while it will
+	/*
+	 * Notify the SMC we're alive and kicking, or after a while it will
 	 * effect a power cycle and switch to the alternate BIOS chip.
 	 * Should be done as late as possible.
 	 * Failure here does not matter if watchdog was already disabled,
@@ -87,12 +105,11 @@ static void mainboard_enable(struct device *dev)
 
 	/* enable GPP CLK0 thru CLK1 */
 	/* disable GPP CLK2 thru SLT_GFX_CLK */
-	u8 *misc_mem_clk_cntrl = (u8 *)(ACPI_MMIO_BASE + MISC_BASE);
-	write8(misc_mem_clk_cntrl + 0, 0xFF);
-	write8(misc_mem_clk_cntrl + 1, 0x00);
-	write8(misc_mem_clk_cntrl + 2, 0x00);
-	write8(misc_mem_clk_cntrl + 3, 0x00);
-	write8(misc_mem_clk_cntrl + 4, 0x00);
+	misc_write8(0, 0xff);
+	misc_write8(1, 0);
+	misc_write8(2, 0);
+	misc_write8(3, 0);
+	misc_write8(4, 0);
 
 	/*
 	 * Initialize ASF registers to an arbitrary address because someone

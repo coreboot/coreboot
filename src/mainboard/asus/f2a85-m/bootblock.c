@@ -32,9 +32,7 @@ static void sbxxx_enable_48mhzout(void)
 	reg32 |= 0x00100000;
 	misc_write32(0x28, reg32);
 
-	reg32 = misc_read32(0x40);
-	reg32 &= ~0x80u;
-	misc_write32(0x40, reg32);
+	misc_write32(0x40, misc_read32(0x40) & (~0x80u));
 }
 
 static void superio_init_m(void)

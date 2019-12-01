@@ -14,6 +14,7 @@
  */
 
 #include <stdint.h>
+#include <amdblocks/acpimmio.h>
 #include <device/pci_def.h>
 #include <arch/io.h>
 #include <arch/cpu.h>
@@ -28,25 +29,8 @@
 
 static void romstage_main_template(void)
 {
-	u32 val;
-
-	/*
-	 *  In Hudson RRG, PMIOxD2[5:4] is "Drive strength control for
-	 *  LpcClk[1:0]".  This following register setting has been
-	 *  replicated in every reference design since Parmer, so it is
-	 *  believed to be required even though it is not documented in
-	 *  the SoC BKDGs.  Without this setting, there is no serial
-	 *  output.
-	 */
-	outb(0xD2, 0xcd6);
-	outb(0x00, 0xcd7);
-
-	hudson_lpc_decode();
-
-	outb(0x24, 0xCD6);
-	outb(0x01, 0xCD7);
-	*(volatile u32 *) (AMD_SB_ACPI_MMIO_ADDR + 0xE00 + 0x28) |= 1 << 18; /* 24Mhz */
-	*(volatile u32 *) (AMD_SB_ACPI_MMIO_ADDR + 0xE00 + 0x40) &= ~(1 << 2); /* 24Mhz */
+	misc_write32(0x28, misc_read32(0x28) | (1 << 18)); /* 24Mhz */
+	misc_write32(0x40, misc_read32(0x40) & (~(1 << 2))); /* 24Mhz */
 
 	if (!cpu_init_detectedx) {
 		post_code(0x30);

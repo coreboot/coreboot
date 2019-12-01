@@ -16,6 +16,7 @@
  */
 
 #include <arch/io.h>
+#include <amdblocks/acpimmio.h>
 #include <device/pci_ops.h>
 #include <southbridge/amd/agesa/hudson/hudson.h>
 
@@ -29,8 +30,7 @@
 void board_BeforeAgesa(struct sysinfo *cb)
 {
 	/* Disable PCI-PCI bridge and release GPIO32/33 for other uses. */
-	outb(0xea, 0xcd6);
-	outb(0x1, 0xcd7);
+	pm_io_write(0xea, 1);
 
 	/* Set LPC decode enables. */
 	pci_devfn_t dev = PCI_DEV(0, 0x14, 3);

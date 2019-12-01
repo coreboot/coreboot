@@ -16,6 +16,7 @@
  */
 
 #include <stdint.h>
+#include <amdblocks/acpimmio.h>
 #include <device/pci_def.h>
 #include <arch/io.h>
 #include <device/pci_ops.h>
@@ -32,13 +33,11 @@
 static void sbxxx_enable_48mhzout(void)
 {
 	/* most likely programming to 48MHz out signal */
-	/* Set auxiliary output clock frequency on OSCOUT1 pin to be 48MHz */
 	u32 reg32;
 	reg32 = misc_read32(0x28);
 	reg32 &= 0xfff8ffff;
 	misc_write32(0x28, reg32);
 
-	/* Enable Auxiliary Clock1, disable FCH 14 MHz OscClk */
 	reg32 = misc_read32(0x40);
 	reg32 &= 0xffffbffb;
 	misc_write32(0x40, reg32);
@@ -49,8 +48,7 @@ void board_BeforeAgesa(struct sysinfo *cb)
 	u8 byte;
 
 	/* Enable the AcpiMmio space */
-	outb(0x24, 0xcd6);
-	outb(0x1, 0xcd7);
+	pm_io_write8(0x24, 1);
 
 	/* Set LPC decode enables. */
 	pci_devfn_t dev = PCI_DEV(0, 0x14, 3);

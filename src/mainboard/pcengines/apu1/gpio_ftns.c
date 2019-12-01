@@ -27,25 +27,21 @@ uintptr_t find_gpio_base(void)
 	return base_addr;
 }
 
-void configure_gpio(uintptr_t base_addr, u32 gpio, u8 iomux_ftn, u8 setting)
+void configure_gpio(uintptr_t base_addr, u8 gpio, u8 iomux_ftn, u8 setting)
 {
 	u8 bdata;
-	u8 *memptr;
 
-	memptr = (u8 *)(base_addr + IOMUX_OFFSET + gpio);
-	*memptr = iomux_ftn;
+	iomux_write8(gpio, iomux_ftn);
 
-	memptr = (u8 *)(base_addr + GPIO_OFFSET + gpio);
-	bdata = *memptr;
+	bdata = gpio_100_read8(gpio);
 	bdata &= 0x07;
 	bdata |= setting; /* set direction and data value */
-	*memptr = bdata;
+	gpio_100_write8(gpio, bdata);
 }
 
-u8 read_gpio(uintptr_t base_addr, u32 gpio)
+u8 read_gpio(uintptr_t base_addr, u8 gpio)
 {
-	u8 *memptr = (u8 *)(base_addr + GPIO_OFFSET + gpio);
-	return (*memptr & GPIO_DATA_IN) ? 1 : 0;
+	return (gpio_100_read8(gpio) & GPIO_DATA_IN) ? 1 : 0;
 }
 
 int get_spd_offset(void)

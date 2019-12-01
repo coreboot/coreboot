@@ -113,7 +113,7 @@ static void ite_gpio_conf(pnp_devfn_t dev)
 
 void bootblock_mainboard_early_init(void)
 {
-	volatile u32 i, val;
+	u32 val, i;
 
 	/* Disable PCI-PCI bridge and release GPIO32/33 for other uses. */
 	pm_write8(0xea, 0x1);

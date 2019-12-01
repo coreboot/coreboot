@@ -14,6 +14,7 @@
  */
 
 #include <stdint.h>
+#include <amdblocks/acpimmio.h>
 #include <device/pci_def.h>
 #include <arch/io.h>
 #include <device/pci_ops.h>
@@ -30,12 +31,10 @@ void board_BeforeAgesa(struct sysinfo *cb)
 	 *  even though the register is not documented in the Kabini BKDG.
 	 *  Otherwise the serial output is bad code.
 	 */
-	outb(0xD2, 0xcd6);
-	outb(0x00, 0xcd7);
+	pm_io_write8(0xd2, 0);
 
 	/* Disable PCI-PCI bridge and release GPIO32/33 for other uses. */
-	outb(0xea, 0xcd6);
-	outb(0x1, 0xcd7);
+	pm_io_write8(0xea, 1);
 
 	/* Set LPC decode enables. */
 	pci_devfn_t dev = PCI_DEV(0, 0x14, 3);

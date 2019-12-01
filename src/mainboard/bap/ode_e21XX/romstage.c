@@ -14,6 +14,7 @@
  */
 
 #include <stdint.h>
+#include <amdblocks/acpimmio.h>
 #include <device/pci_def.h>
 #include <arch/io.h>
 #include <arch/cpu.h>
@@ -38,8 +39,7 @@ static void romstage_main_template(void)
 	 *  the SoC BKDGs.  Without this setting, there is no serial
 	 *  output.
 	 */
-	outb(0xD2, 0xcd6);
-	outb(0x00, 0xcd7);
+	pm_io_write8(0xd2, 0);
 
 	if (!cpu_init_detectedx && boot_cpu()) {
 		post_code(0x30);
@@ -52,6 +52,5 @@ static void romstage_main_template(void)
 void agesa_postcar(struct sysinfo *cb)
 {
 	/* After AMD_INIT_ENV -> move to ramstage ? */
-	outb(0xEA, 0xCD6);
-	outb(0x1, 0xcd7);
+	pm_io_write8(0xea, 1);
 }

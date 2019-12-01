@@ -61,20 +61,14 @@ static void ite_gpio_conf(pnp_devfn_t dev)
 
 void bootblock_mainboard_early_init(void)
 {
-	u32 reg32;
-
 	/* Disable PCI-PCI bridge and release GPIO32/33 for other uses. */
 	pm_write8(0xea, 0x1);
 
 	/* Set auxiliary output clock frequency on OSCOUT1 pin to be 48MHz */
-	reg32 = misc_read32(0x28);
-	reg32 &= 0xfff8ffff;
-	misc_write32(0x28, reg32);
+	misc_write32(0x28, misc_read32(0x28) & 0xfff8ffff);
 
 	/* Enable Auxiliary Clock1, disable FCH 14 MHz OscClk */
-	reg32 = misc_read32(0x40);
-	reg32 &= 0xffffbffb;
-	misc_write32(0x49, reg32);
+	misc_write32(0x40, misc_read32(0x40) & 0xffffbffb);
 
 	/* Configure SIO as made under vendor BIOS */
 	ite_evc_conf(ENVC_DEV);

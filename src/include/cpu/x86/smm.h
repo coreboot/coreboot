@@ -75,7 +75,7 @@ struct smm_runtime {
 
 struct smm_module_params {
 	void *arg;
-	int cpu;
+	size_t cpu;
 	const struct smm_runtime *runtime;
 	/* A canary value that has been placed at the end of the stack.
 	 * If (uintptr_t)canary != *canary then a stack overflow has occurred.

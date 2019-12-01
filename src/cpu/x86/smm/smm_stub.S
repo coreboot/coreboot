@@ -10,6 +10,7 @@
  */
 
 #include <cpu/x86/cr.h>
+#include <cpu/x86/msr.h>
 
 .code32
 .section ".module_parameters", "aw", @progbits
@@ -148,8 +149,8 @@ smm_trampoline32:
 	pushl	$0x0
 	mov	%esp, %ebp
 
-	/* Allocate locals (fxsave) */
-	subl	$0x4, %esp
+	/* Allocate locals (fxsave, efer_backup) */
+	subl	$0xc, %esp
 
 	/* calculate fxsave location */
 	mov	fxsave_area, %edi
@@ -177,22 +178,65 @@ smm_trampoline32:
 	/* Align stack to 16 bytes. Another 32 bytes are pushed below. */
 	andl	$0xfffffff0, %esp
 
+#ifdef __x86_64__
+	mov	%ecx, %edi
+	/* Backup IA32_EFER. Preserves ebx. */
+	movl	$(IA32_EFER), %ecx
+	rdmsr
+	movl	%eax, -0x8(%ebp)
+	movl	%edx, -0xc(%ebp)
+
+	/* entry64.inc preserves ebx, esi, edi */
+#include <cpu/x86/64bit/entry64.inc>
+	mov	%edi, %ecx
+
+#endif
+
 	/* Call into the c-based SMM relocation function with the platform
 	 * parameters. Equivalent to:
 	 *   struct arg = { c_handler_params, cpu_num, smm_runtime, canary };
 	 *   c_handler(&arg)
 	 */
+#ifdef __x86_64__
+	push	%rbx /* uintptr_t *canary */
+	push	$(smm_runtime)
+	push	%rcx /* size_t cpu */
+	push	c_handler_arg /* void *arg */
+
+	mov	%rsp, %rdi	/* *arg */
+
+	movl	c_handler, %eax
+	call	*%rax
+
+	/*
+	 * The only reason to go back to protected mode is that RSM doesn't restore
+	 * MSR registers and MSR IA32_EFER was modified by entering long mode.
+	 * Drop to protected mode to safely operate on the IA32_EFER MSR.
+	 */
+
+	/* Disable long mode. */
+	#include <cpu/x86/64bit/exit32.inc>
+
+	/* Restore IA32_EFER as RSM doesn't restore MSRs. */
+	movl	$(IA32_EFER), %ecx
+	rdmsr
+	movl	-0x8(%ebp), %eax
+	movl	-0xc(%ebp), %edx
+
+	wrmsr
+
+#else
 	push	$0x0 /* Padding */
 	push	$0x0 /* Padding */
 	push	$0x0 /* Padding */
 	push	%ebx /* uintptr_t *canary */
 	push	$(smm_runtime)
-	push	%ecx /* int cpu */
+	push	%ecx /* size_t cpu */
 	push	c_handler_arg /* void *arg */
 	push	%esp /* smm_module_params *arg (allocated on stack). */
 	mov	c_handler, %eax
 	call	*%eax
-
+#endif
 	/* Retrieve fxsave location. */
 	mov	-4(%ebp), %edi
 	test	%edi, %edi

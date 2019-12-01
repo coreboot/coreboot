@@ -128,16 +128,8 @@
 /* Pad register offset */
 #define PAD_CONF0_REG			0x0
 #define PAD_CONF1_REG			0x4
-#define PAD_VAL_REG			0x8
-
-/* Some banks have no legacy GPIO interface */
-#define GP_LEGACY_BASE_NONE		0xFFFF
 
 /* Number of GPIOs in each bank */
-#define GPNCORE_COUNT			27
-#define GPSCORE_COUNT			102
-#define GPSSUS_COUNT			44
-
 #define GP_SOUTHWEST_COUNT		56
 #define GP_NORTH_COUNT			59
 #define GP_EAST_COUNT			24
@@ -146,8 +138,6 @@
 /* General */
 #define GPIO_REGS_SIZE			8
 #define NA				0
-#define LOW				0
-#define HIGH				1
 #define MASK_WAKE			0
 #define UNMASK_WAKE			1
 #define GPE_CAPABLE			1
@@ -354,13 +344,7 @@
 #define GPIO_END \
 	{  .pad_conf0 = GPIO_LIST_END }
 
-/* 16 DirectIRQs per supported bank */
-#define GPIO_MAX_DIRQS			16
-
-#define GPIO_NONE		255
-
 /* Functions / defines for changing GPIOs in romstage */
-/* SCORE Pad definitions. */
 #define UART_RXD_PAD		82
 #define UART_TXD_PAD		83
 #define PCU_SMB_CLK_PAD		88
@@ -374,7 +358,6 @@
 struct soc_gpio_map {
 	u32 pad_conf0;
 	u32 pad_conf1;
-	u32 pad_val;
 	u32 gpe;
 	u32 int_mask:1;
 	u32 wake_mask:1;
@@ -393,37 +376,10 @@ struct soc_gpio_config {
 struct gpio_bank {
 	const int gpio_count;
 	const u8 *gpio_to_pad;
-	const int legacy_base;
 	const unsigned long pad_base;
 	const u8 has_gpe_en:1;
 	const u8 has_wake_en:1;
 };
-
-typedef enum {
-	NATIVE = 0xff,
-	GPIO = 0,	  /* Native, no need to set PAD_VALUE */
-	GPO = 1,	   /* GPI, input only in PAD_VALUE */
-	GPI = 2,	   /* GPO, output only in PAD_VALUE */
-	HI_Z = 3,
-	NA_GPO = 0,
-} gpio_en_t;
-
-typedef enum {
-	LO = 0,
-	HI = 1,
-} gpo_d4_t;
-
-typedef enum {
-	F0 = 0,
-	F1 = 1,
-	F2 = 2,
-	F3 = 3
-} gpio_func_num_t;
-
-typedef enum {
-	_CAP = 1,
-	_NOT_CAP = 0
-} int_capable_t;
 
 typedef enum {
 	P_NONE  = 0,		/* Pull None */
@@ -434,42 +390,6 @@ typedef enum {
 	P_5K_H  = 10,		/* Pull Up  5K */
 	P_1K_H  = 12		/* Pull Up  1K */
 } pull_type_t;
-
-typedef enum {
-	DISABLE = 0,	/* Disable */
-	ENABLE = 1,	/* Enable */
-} park_mode_enb_t;
-
-typedef enum {
-	VOLT_3_3 = 0,	/* Working on 3.3 Volts */
-	VOLT_1_8 = 1,	/* Working on 1.8 Volts */
-} voltage_t;
-
-typedef enum {
-	DISABLE_HS = 0,	/* Disable high speed mode */
-	ENABLE_HS  = 1,	/* Enable high speed mode */
-} hs_mode_t;
-
-typedef enum {
-	PULL_UP = 0,	/* On Die Termination Up */
-	PULL_DOWN  = 1,	/* On Die Termination Down */
-} odt_up_dn_t;
-
-typedef enum {
-	DISABLE_OD = 0,	/* On Die Termination Disable */
-	ENABLE_OD  = 1,	/* On Die Termination Enable */
-} odt_en_t;
-
-typedef enum {
-	ONE_BIT = 1,
-	TWO_BIT = 3,
-	THREE_BIT = 7,
-	FOUR_BIT = 15,
-	FIVE_BIT = 31,
-	SIX_BIT = 63,
-	SEVEN_BIT = 127,
-	EIGHT_BIT = 255
-} bit_t;
 
 typedef enum {
 	M0 = 0,
@@ -556,22 +476,6 @@ typedef enum {
 
 void setup_soc_gpios(struct soc_gpio_config *config, u8 enable_xdp_tap);
 struct soc_gpio_config *mainboard_get_gpios(void);
-
-static inline void ncore_select_func(int pad, int func)
-{
-
-}
-
-/* These functions require that the input pad be configured as an input GPIO */
-
-static inline int ssus_get_gpio(int pad)
-{
-	return 0;
-}
-
-static inline void ssus_disable_internal_pull(int pad)
-{
-}
 
 typedef int gpio_t;
 

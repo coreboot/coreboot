@@ -20,5 +20,3 @@ bootblock-$(CONFIG_SUPERIO_ASPEED_COMMON_PRE_RAM) += common/early_serial.c
 
 subdirs-y += ast2400
 subdirs-y += common
-
-CPPFLAGS_common += -Isrc/superio/aspeed

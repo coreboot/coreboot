@@ -8,3 +8,13 @@ config IPMI_KCS_REGISTER_SPACING
 	depends on IPMI_KCS
 	help
 	  KCS status and command register IO port address spacing
+
+config IPMI_FRU_SINGLE_RW_SZ
+	int
+	default 16
+	depends on IPMI_KCS
+	help
+	  The data size in a single IPMI FRU read/write command.
+	  IPMB messages are limited to 32-bytes total. When the
+	  data size is larger than this value, IPMI can complete
+	  reading/writing the data over multiple commands.

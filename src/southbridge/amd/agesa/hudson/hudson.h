@@ -65,9 +65,6 @@ void hudson_lpc_port80(void);
 void hudson_pci_port80(void);
 void hudson_clk_output_48Mhz(void);
 
-int s3_save_nvram_early(u32 dword, int size, int  nvram_pos);
-int s3_load_nvram_early(int size, u32 *old_dword, int nvram_pos);
-
 void hudson_enable(struct device *dev);
 
 #endif /* HUDSON_H */

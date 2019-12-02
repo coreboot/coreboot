@@ -313,6 +313,13 @@ void video_printf(int foreground, int background, enum video_printf_align align,
  */
 void cbmem_console_init(void);
 void cbmem_console_write(const void *buffer, size_t count);
+/**
+ * Take a snapshot of the CBMEM memory console. This function will allocate a
+ * range of memory. Callers must free the returned buffer by themselves.
+ *
+ * @return The allocated buffer on success, NULL on failure.
+ */
+char *cbmem_console_snapshot(void);
 /** @} */
 
 /* drivers/option.c */

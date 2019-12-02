@@ -75,3 +75,49 @@ void cbmem_console_write(const void *buffer, size_t count)
 
 	do_write(buffer, count);
 }
+
+char *cbmem_console_snapshot(void)
+{
+	const struct cbmem_console *console_p = cbmem_console_p;
+	char *console_c;
+	uint32_t size, cursor, overflow;
+
+	if (!console_p) {
+		printf("ERROR: No cbmem console found in coreboot table\n");
+		return NULL;
+	}
+
+	cursor = console_p->cursor & CURSOR_MASK;
+	overflow = console_p->cursor & OVERFLOW;
+	if (!overflow && cursor < console_p->size)
+		size = cursor;
+	else
+		size = console_p->size;
+
+	console_c = malloc(size + 1);
+	if (!console_c) {
+		printf("ERROR: Not enough memory for console (size = %u)\n",
+		       size);
+		return NULL;
+	}
+	console_c[size] = '\0';
+
+	if (overflow) {
+		if (cursor >= size) {
+			printf("ERROR: CBMEM console struct is corrupted\n");
+			return NULL;
+		}
+		memcpy(console_c, console_p->body + cursor, size - cursor);
+		memcpy(console_c + size - cursor, console_p->body, cursor);
+	} else {
+		memcpy(console_c, console_p->body, size);
+	}
+
+	/* Slight memory corruption may occur between reboots and give us a few
+	   unprintable characters like '\0'. Replace them with '?' on output. */
+	for (cursor = 0; cursor < size; cursor++)
+		if (!isprint(console_c[cursor]) && !isspace(console_c[cursor]))
+			console_c[cursor] = '?';
+
+	return console_c;
+}

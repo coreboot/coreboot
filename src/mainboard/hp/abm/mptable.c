@@ -99,45 +99,7 @@ static void *smp_write_config_table(void *v)
 		outb(byte | 0x80, 0xC00);
 		outb(intr_data[byte], 0xC01);
 	}
-#if 0
-	outb(0x0B, 0xCD6);
-	outb(0x02, 0xCD7);
 
-	outb(0x50, 0xCD6);
-	outb(0x1F, 0xCD7);
-
-	outb(0x48, 0xCD6);
-	outb(0xF2, 0xCD7);
-
-	//outb(0xBE, 0xCD6);
-	//outb(0x52, 0xCD7);
-
-	outb(0xED, 0xCD6);
-	outb(0x17, 0xCD7);
-
-	*(volatile u8 *) (0xFED80D00 + 0x31) = 2;
-	*(volatile u8 *) (0xFED80D00 + 0x32) = 2;
-	*(volatile u8 *) (0xFED80D00 + 0x33) = 2;
-	*(volatile u8 *) (0xFED80D00 + 0x34) = 2;
-
-	*(volatile u8 *) (0xFED80100 + 0x31) = 0xc8;
-	*(volatile u8 *) (0xFED80100 + 0x32) = 0xc8;
-	*(volatile u8 *) (0xFED80100 + 0x33) = 0xc8;
-	*(volatile u8 *) (0xFED80100 + 0x34) = 0xa0;
-
-	*(volatile u8 *) (0xFED80D00 + 0x6c) = 1;
-	*(volatile u8 *) (0xFED80D00 + 0x6E) = 2;
-	*(volatile u8 *) (0xFED80D00 + 0x6f) = 2;
-
-	*(volatile u8 *) (0xFED80100 + 0x6c) = 0xa0;
-	*(volatile u8 *) (0xFED80100 + 0x6E) = 0xa8;
-	*(volatile u8 *) (0xFED80100 + 0x6f) = 0xa0;
-
-	*(volatile u8 *) (0xFED80D00 + 0xA6) = 2;
-	*(volatile u8 *) (0xFED80100 + 0xA6) = 0;
-
-	*(volatile u8 *) (0xFED80100 + 0x40) = 0xC8;
-#endif
 	/* I/O Ints:    Type    Polarity    Trigger     Bus ID   IRQ    APIC ID PIN# */
 #define IO_LOCAL_INT(type, intr, apicid, pin)				\
 	smp_write_lintsrc(mc, (type), MP_IRQ_TRIGGER_EDGE | MP_IRQ_POLARITY_HIGH, bus_isa, (intr), (apicid), (pin));

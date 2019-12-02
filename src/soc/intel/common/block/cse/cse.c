@@ -146,7 +146,7 @@ static uint32_t get_cse_bar(void)
 
 static uint32_t read_bar(uint32_t offset)
 {
-	/* Reach PCI config space to get BAR in case CAR global not available */
+	/* Load and cache BAR */
 	if (!cse.sec_bar)
 		cse.sec_bar = get_cse_bar();
 	return read32((void *)(cse.sec_bar + offset));
@@ -154,7 +154,7 @@ static uint32_t read_bar(uint32_t offset)
 
 static void write_bar(uint32_t offset, uint32_t val)
 {
-	/* Reach PCI config space to get BAR in case CAR global not available */
+	/* Load and cache BAR */
 	if (!cse.sec_bar)
 		cse.sec_bar = get_cse_bar();
 	return write32((void *)(cse.sec_bar + offset), val);

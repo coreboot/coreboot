@@ -58,8 +58,6 @@ chip soc/intel/cannonlake
 
 	register "PmTimerDisabled" = "1"
 
-	register "PchPmSlpS0Vm075VSupport" = "1"
-
 	# VR Settings Configuration for 4 Domains
 	#+----------------+-------+-------+-------+-------+
 	#| Domain/Setting |  SA   |  IA   | GTUS  |  GTS  |

@@ -29,6 +29,7 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_def.h>
+#include <stdlib.h>
 #include <string.h>
 #include <delay.h>
 #include <elog.h>

@@ -19,6 +19,7 @@
 #include <console/console.h>
 #include <delay.h>
 #include <endian.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "sdhci.h"

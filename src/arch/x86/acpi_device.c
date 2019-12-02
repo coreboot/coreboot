@@ -17,6 +17,7 @@
 #include <arch/acpigen.h>
 #include <device/device.h>
 #include <device/path.h>
+#include <stdlib.h>
 #if CONFIG(GENERIC_GPIO_LIB)
 #include <gpio.h>
 #endif

@@ -40,8 +40,6 @@
 #define  NB_IOAPIC_SCRATCH0	0x3e
 #define  NB_IOAPIC_SCRATCH1	0x3f
 
-#define AP_SCRATCH_REG		NB_IOAPIC_SCRATCH0
-
 /* D1F1 - HDA Configuration Registers */
 #define HDA_DEV_CTRL_STATUS	0x60
 #define   HDA_NO_SNOOP_EN	BIT(11)
@@ -102,10 +100,6 @@
 void domain_enable_resources(struct device *dev);
 void domain_set_resources(struct device *dev);
 void fam15_finalize(void *chip_info);
-uint32_t nb_ioapic_read(unsigned int index);
-void nb_ioapic_write(unsigned int index, uint32_t value);
-void *get_ap_entry_ptr(void);
-void set_ap_entry_ptr(void *entry);
 void set_warm_reset_flag(void);
 int is_warm_reset(void);
 

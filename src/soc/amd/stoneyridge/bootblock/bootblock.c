@@ -24,9 +24,9 @@
 #include <bootblock_common.h>
 #include <amdblocks/agesawrapper.h>
 #include <amdblocks/agesawrapper_call.h>
+#include <amdblocks/biosram.h>
 #include <soc/pci_devs.h>
 #include <soc/cpu.h>
-#include <soc/northbridge.h>
 #include <soc/southbridge.h>
 #include <amdblocks/psp.h>
 #include <timestamp.h>

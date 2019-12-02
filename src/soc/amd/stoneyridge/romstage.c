@@ -14,6 +14,7 @@
  * GNU General Public License for more details.
  */
 
+#include <amdblocks/biosram.h>
 #include <device/pci_ops.h>
 #include <arch/cpu.h>
 #include <arch/romstage.h>

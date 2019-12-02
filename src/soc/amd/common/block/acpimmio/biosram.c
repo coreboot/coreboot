@@ -15,6 +15,17 @@
 #include <amdblocks/acpimmio.h>
 #include <amdblocks/biosram.h>
 
+void *get_ap_entry_ptr(void)
+{
+	return (void *)biosram_read32(BIOSRAM_AP_ENTRY);
+}
+
+void set_ap_entry_ptr(void *entry)
+{
+	biosram_write32(BIOSRAM_AP_ENTRY, (uintptr_t)entry);
+}
+
+
 void backup_top_of_low_cacheable(uintptr_t ramtop)
 {
 	biosram_write32(BIOSRAM_CBMEM_TOP, ramtop);

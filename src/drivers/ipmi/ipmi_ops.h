@@ -49,6 +49,70 @@ struct ipmi_get_system_guid_rsp {
 	struct ipmi_rsp resp;
 	uint8_t data[16];
 } __packed;
+
+struct ipmi_read_fru_data_req {
+	uint8_t fru_device_id;
+	uint16_t fru_offset;
+	uint8_t count; /* count to read, 1-based. */
+} __packed;
+
+struct ipmi_read_fru_data_rsp {
+	struct ipmi_rsp resp;
+	uint8_t count; /* count returned, 1-based. */
+	uint8_t data[CONFIG_IPMI_FRU_SINGLE_RW_SZ];
+} __packed;
+
+/* Platform Management FRU Information Storage Definition Spec. */
+#define PRODUCT_MAN_TYPE_LEN_OFFSET 3
+#define BOARD_MAN_TYPE_LEN_OFFSET 6
+
+struct ipmi_fru_common_hdr {
+	uint8_t format_version;
+	uint8_t internal_use_area_offset;
+	uint8_t chassis_area_offset;
+	uint8_t board_area_offset;
+	uint8_t product_area_offset;
+	uint8_t multirecord_area_offset;
+	uint8_t pad;
+	uint8_t checksum;
+} __packed;
+
+/* The fru_xxx_info only declares the strings that may be added to SMBIOS. */
+struct fru_product_info {
+	char *manufacturer;
+	char *product_name;
+	char *product_partnumber;
+	char *product_version;
+	char *serial_number;
+	char *asset_tag;
+};
+
+struct fru_board_info {
+	char *manufacturer;
+	char *product_name;
+	char *serial_number;
+	char *part_number;
+};
+
+struct fru_info_str {
+	struct fru_product_info prod_info;
+	struct fru_board_info board_info;
+};
+
+enum typecode {
+	BINARY = 0,
+	BCD_PLUS = 1,
+	ASCII_6BIT = 2,
+	ASCII_8BIT = 3,
+};
+
+enum fru_area {
+	INTERNAL_USE_AREA = 0,
+	CHASSIS_INFO_AREA = 1,
+	BOARD_INFO_AREA = 2,
+	PRODUCT_INFO_AREA = 3,
+	MULTIRECORD_INFO_AREA = 4,
+};
 /*
  * Initialize and start BMC FRB2 watchdog timer with the
  * provided timer countdown and action values.
@@ -62,4 +126,13 @@ enum cb_err ipmi_stop_bmc_wdt(const int port);
 /* IPMI get BMC system GUID and store it to parameter uuid.
  * Returns CB_SUCCESS on success and CB_ERR if an error occurred */
 enum cb_err ipmi_get_system_guid(const int port, uint8_t *uuid);
+
+/* Read all FRU inventory areas string data into fru_info_str with
+ * the same FRU device id. */
+void read_fru_areas(const int port, uint8_t id, uint16_t offset,
+			struct fru_info_str *fru_info_str);
+
+/* Read a particular FRU inventory area into fru_info_str. */
+void read_fru_one_area(const int port, uint8_t id, uint16_t offset,
+		struct fru_info_str *fru_info_str, enum fru_area fru_area);
 #endif

@@ -39,9 +39,9 @@ chip northbridge/intel/sandybridge
 	device domain 0 on
 		subsystemid 0x17aa 0x21f6 inherit
 
-		device pci 00.0 on end # host bridge
-		device pci 01.0 on end # PCIe Bridge for discrete graphics
-		device pci 02.0 on end # vga controller
+		device pci 00.0 on end # Host bridge
+		device pci 01.0 on end # PCIe bridge for discrete graphics
+		device pci 02.0 on end # Internal graphics VGA controller
 
 		chip southbridge/intel/bd82x6x # Intel Series 6 Cougar Point PCH
 			# GPI routing
@@ -52,7 +52,6 @@ chip northbridge/intel/sandybridge
 			register "gpi1_routing" = "2"
 			register "gpi13_routing" = "2"
 
-			# Enable SATA ports 0 (HDD bay) & 1 (ODD bay) & 2 (mSATA) & 3 (eSATA) & 4 (dock)
 			register "sata_port_map" = "0x3f"
 			# Set max SATA speed to 6.0 Gb/s
 			register "sata_interface_speed_support" = "0x3"
@@ -69,7 +68,7 @@ chip northbridge/intel/sandybridge
 
 			register "xhci_switchable_ports" = "0xf"
 			register "superspeed_capable_ports" = "0xf"
-			register "xhci_overcurrent_mapping" = "0x4000201"
+			register "xhci_overcurrent_mapping" = "0x04000201"
 
 			register "spi_uvscc" = "0x2005"
 			register "spi_lvscc" = "0x2005"
@@ -86,9 +85,9 @@ chip northbridge/intel/sandybridge
 			device pci 1b.0 on end # High Definition Audio
 			device pci 1c.0 on end # PCIe Port #1
 			device pci 1c.1 on end # PCIe Port #2
-			device pci 1c.2 on
+			device pci 1c.2 on # PCIe Port #3
 				smbios_slot_desc "7" "3" "ExpressCard Slot" "8"
-			end # PCIe Port #3 (expresscard)
+			end
 			device pci 1c.3 off end # PCIe Port #4
 			device pci 1c.4 off end # PCIe Port #5
 			device pci 1c.5 off end # PCIe Port #6
@@ -96,10 +95,9 @@ chip northbridge/intel/sandybridge
 			device pci 1c.7 off end # PCIe Port #8
 			device pci 1d.0 on end # USB2 EHCI #1
 			device pci 1e.0 off end # PCI bridge
-			device pci 1f.0 on #LPC bridge
+			device pci 1f.0 on # PCI-LPC bridge
 				chip ec/lenovo/pmh7
-					device pnp ff.1 on # dummy
-					end
+					device pnp ff.1 on end # dummy
 					register "backlight_enable" = "0x01"
 					register "dock_event_enable" = "0x01"
 				end
@@ -162,9 +160,9 @@ chip northbridge/intel/sandybridge
 
 					register "has_thinker1" = "1"
 				end
-			end # LPC bridge
+			end
 			device pci 1f.2 on end # SATA Controller 1
-			device pci 1f.3 on
+			device pci 1f.3 on # SMBus
 				# eeprom, 8 virtual devices, same chip
 				chip drivers/i2c/at24rf08c
 					device i2c 54 on end
@@ -176,7 +174,7 @@ chip northbridge/intel/sandybridge
 					device i2c 5e on end
 					device i2c 5f on end
 				end
-			end # SMBus
+			end
 			device pci 1f.5 off end # SATA Controller 2
 			device pci 1f.6 on end # Thermal
 		end

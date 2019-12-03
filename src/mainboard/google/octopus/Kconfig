@@ -64,6 +64,7 @@ config VARIANT_DIR
 	default "garg" if BOARD_GOOGLE_GARG
 	default "dood" if BOARD_GOOGLE_DOOD
 	default "lick" if BOARD_GOOGLE_LICK
+	default "foob" if BOARD_GOOGLE_FOOB
 
 config DEVICETREE
 	string
@@ -87,6 +88,7 @@ config MAINBOARD_PART_NUMBER
 	default "Garg" if BOARD_GOOGLE_GARG
 	default "Dood" if BOARD_GOOGLE_DOOD
 	default "Lick" if BOARD_GOOGLE_LICK
+	default "Foob" if BOARD_GOOGLE_FOOB
 
 config MAINBOARD_FAMILY
 	string

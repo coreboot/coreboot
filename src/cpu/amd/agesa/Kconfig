@@ -63,7 +63,7 @@ config S3_DATA_POS
 
 config S3_DATA_SIZE
 	int
-	default 32768
+	default 8192
 
 endif # CPU_AMD_AGESA
 

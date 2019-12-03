@@ -30,6 +30,9 @@
 #define VPD_LEN 10
 /* Default countdown is 15 minutes. */
 #define DEFAULT_COUNTDOWN 9000
+#define FRU_DEVICE_ID 0
+
+static struct fru_info_str fru_strings;
 
 static void init_frb2_wdt(void)
 {
@@ -76,6 +79,7 @@ static void mainboard_enable(struct device *dev)
 		clear_ipmi_flags(&rsp);
 		system_reset();
 	}
+	read_fru_areas(BMC_KCS_BASE, FRU_DEVICE_ID, 0, &fru_strings);
 }
 
 struct chip_operations mainboard_ops = {
@@ -100,4 +104,87 @@ void smbios_fill_dimm_locator(const struct dimm_info *dimm, struct smbios_type17
 void smbios_system_set_uuid(u8 *uuid)
 {
 	ipmi_get_system_guid(BMC_KCS_BASE, uuid);
+}
+/* Override SMBIOS type 1 data. */
+const char *smbios_system_manufacturer(void)
+{
+	if (fru_strings.prod_info.manufacturer != NULL)
+		return (const char *)fru_strings.prod_info.manufacturer;
+	else
+		return CONFIG_MAINBOARD_SMBIOS_MANUFACTURER;
+}
+
+const char *smbios_system_product_name(void)
+{
+	char *prod_name_partnumber;
+	/* Concatenates IPMI FRU Product Info product name
+	 * and product part number. */
+	if (fru_strings.prod_info.product_name != NULL) {
+		if (fru_strings.prod_info.product_partnumber != NULL) {
+			/* Append a space after product_name. */
+			prod_name_partnumber = strconcat(fru_strings.prod_info.product_name,
+				" ");
+			if (!prod_name_partnumber)
+				return (const char *)fru_strings.prod_info.product_name;
+
+			prod_name_partnumber = strconcat(prod_name_partnumber,
+				fru_strings.prod_info.product_partnumber);
+			if (!prod_name_partnumber)
+				return (const char *)fru_strings.prod_info.product_name;
+
+			return (const char *)prod_name_partnumber;
+		} else {
+			return (const char *)fru_strings.prod_info.product_name;
+		}
+	} else {
+		return CONFIG_MAINBOARD_SMBIOS_PRODUCT_NAME;
+	}
+}
+
+const char *smbios_system_serial_number(void)
+{
+	if (fru_strings.prod_info.serial_number != NULL)
+		return (const char *)fru_strings.prod_info.serial_number;
+	else
+		return CONFIG_MAINBOARD_SERIAL_NUMBER;
+}
+
+const char *smbios_system_version(void)
+{
+	if (fru_strings.prod_info.product_version != NULL)
+		return (const char *)fru_strings.prod_info.product_version;
+	else
+		return CONFIG_MAINBOARD_SERIAL_NUMBER;
+}
+/* Override SMBIOS type 2 data. */
+const char *smbios_mainboard_version(void)
+{
+	if (fru_strings.board_info.part_number != NULL)
+		return (const char *)fru_strings.board_info.part_number;
+	else
+		return CONFIG_MAINBOARD_VERSION;
+}
+
+const char *smbios_mainboard_manufacturer(void)
+{
+	if (fru_strings.board_info.manufacturer != NULL)
+		return (const char *)fru_strings.board_info.manufacturer;
+	else
+		return CONFIG_MAINBOARD_SMBIOS_MANUFACTURER;
+}
+
+const char *smbios_mainboard_product_name(void)
+{
+	if (fru_strings.board_info.product_name != NULL)
+		return (const char *)fru_strings.board_info.product_name;
+	else
+		return CONFIG_MAINBOARD_SMBIOS_PRODUCT_NAME;
+}
+
+const char *smbios_mainboard_serial_number(void)
+{
+	if (fru_strings.board_info.serial_number != NULL)
+		return (const char *)fru_strings.board_info.serial_number;
+	else
+		return CONFIG_MAINBOARD_SERIAL_NUMBER;
 }

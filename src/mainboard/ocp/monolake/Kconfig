@@ -60,4 +60,6 @@ config FMDFILE
 config IPMI_KCS_REGISTER_SPACING
 	default 4
 
+config IPMI_FRU_SINGLE_RW_SZ
+	default 16
 endif # BOARD_OCP_MONOLAKE

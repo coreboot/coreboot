@@ -17,11 +17,13 @@
 #include <northbridge/amd/agesa/state_machine.h>
 #include <superio/fintek/common/fintek.h>
 #include <superio/fintek/f71869ad/f71869ad.h>
+#include <sb_cimx.h>
 
 /* Ensure Super I/O config address (i.e., 0x2e or 0x4e) matches that of devicetree.cb */
 #define SERIAL_DEV PNP_DEV(0x2e, F71869AD_SP1)
 
 void board_BeforeAgesa(struct sysinfo *cb)
 {
+	sb_Poweron_Init();
 	fintek_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 }

@@ -45,7 +45,6 @@ struct sysinfo
 };
 
 void board_BeforeAgesa(struct sysinfo *cb);
-void platform_once(struct sysinfo *cb);
 
 void agesa_set_interface(struct sysinfo *cb);
 

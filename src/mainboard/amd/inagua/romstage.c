@@ -15,11 +15,13 @@
 
 #include <northbridge/amd/agesa/state_machine.h>
 #include <superio/smsc/kbc1100/kbc1100.h>
+#include <sb_cimx.h>
 
 #define SERIAL_DEV PNP_DEV(0x2e, SMSCSUPERIO_SP1)
 
 void board_BeforeAgesa(struct sysinfo *cb)
 {
+	sb_Poweron_Init();
 	kbc1100_early_init(0x2e);
 	kbc1100_early_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 }

@@ -12,7 +12,6 @@
 #
 
 romstage-y += fixme.c
-romstage-y += romstage.c
 
 ramstage-y += fixme.c
 ramstage-y += chip_name.c

@@ -29,11 +29,6 @@
 
 void __weak board_BeforeAgesa(struct sysinfo *cb) { }
 
-void __weak platform_once(struct sysinfo *cb)
-{
-	board_BeforeAgesa(cb);
-}
-
 static void fill_sysinfo(struct sysinfo *cb)
 {
 	memset(cb, 0, sizeof(*cb));
@@ -67,7 +62,7 @@ static void romstage_main(void)
 			timestamp_init(timestamp_get());
 		timestamp_add_now(TS_START_ROMSTAGE);
 
-		platform_once(cb);
+		board_BeforeAgesa(cb);
 
 		console_init();
 	}

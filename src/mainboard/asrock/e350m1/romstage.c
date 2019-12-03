@@ -16,11 +16,13 @@
 #include <northbridge/amd/agesa/state_machine.h>
 #include <superio/nuvoton/common/nuvoton.h>
 #include <superio/nuvoton/nct5572d/nct5572d.h>
+#include <sb_cimx.h>
 
 #define SERIAL_DEV PNP_DEV(0x2e, NCT5572D_SP1)
 
 
 void board_BeforeAgesa(struct sysinfo *cb)
 {
+	sb_Poweron_Init();
 	nuvoton_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 }

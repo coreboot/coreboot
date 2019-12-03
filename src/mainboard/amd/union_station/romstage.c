@@ -14,7 +14,9 @@
  */
 
 #include <northbridge/amd/agesa/state_machine.h>
+#include <sb_cimx.h>
 
 void board_BeforeAgesa(struct sysinfo *cb)
 {
+	sb_Poweron_Init();
 }

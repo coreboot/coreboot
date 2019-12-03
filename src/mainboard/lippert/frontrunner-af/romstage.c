@@ -15,10 +15,12 @@
 
 #include <northbridge/amd/agesa/state_machine.h>
 #include <superio/smsc/smscsuperio/smscsuperio.h>
+#include <sb_cimx.h>
 
 #define SERIAL_DEV PNP_DEV(0x4e, SMSCSUPERIO_SP1)
 
 void board_BeforeAgesa(struct sysinfo *cb)
 {
+	sb_Poweron_Init();
 	smscsuperio_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 }

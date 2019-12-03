@@ -19,6 +19,24 @@
 #include <endian.h>
 #include <types.h>
 
+#define __clrsetbits_impl(bits, addr, clear, set) write##bits(addr, \
+	(read##bits(addr) & ~((uint##bits##_t)(clear))) | (set))
+
+#define clrsetbits8(addr, clear, set)	__clrsetbits_impl(8, addr, clear, set)
+#define clrsetbits16(addr, clear, set)	__clrsetbits_impl(16, addr, clear, set)
+#define clrsetbits32(addr, clear, set)	__clrsetbits_impl(32, addr, clear, set)
+#define clrsetbits64(addr, clear, set)	__clrsetbits_impl(64, addr, clear, set)
+
+#define setbits8(addr, set)		clrsetbits8(addr, 0, set)
+#define setbits16(addr, set)		clrsetbits16(addr, 0, set)
+#define setbits32(addr, set)		clrsetbits32(addr, 0, set)
+#define setbits64(addr, set)		clrsetbits64(addr, 0, set)
+
+#define clrbits8(addr, clear)		clrsetbits8(addr, clear, 0)
+#define clrbits16(addr, clear)		clrsetbits16(addr, clear, 0)
+#define clrbits32(addr, clear)		clrsetbits32(addr, clear, 0)
+#define clrbits64(addr, clear)		clrsetbits64(addr, clear, 0)
+
 #ifndef __ROMCC__
 /*
  * Reads a transfer buffer from 32-bit FIFO registers. fifo_stride is the

@@ -127,10 +127,10 @@ static int max77686_enablereg(unsigned int bus, enum max77686_regnum reg, int en
 	}
 
 	if (enable == REG_DISABLE) {
-		clrbits_8(&read_data,
+		clrbits8(&read_data,
 				pmic->reg_enbitmask << pmic->reg_enbitpos);
 	} else {
-		clrsetbits_8(&read_data,
+		clrsetbits8(&read_data,
 				pmic->reg_enbitmask << pmic->reg_enbitpos,
 				pmic->reg_enbiton << pmic->reg_enbitpos);
 	}
@@ -177,7 +177,7 @@ int max77686_volsetting(unsigned int bus, enum max77686_regnum reg,
 	}
 	vol_level /= (u32)pmic->vol_div;
 
-	clrsetbits_8(&read_data, pmic->vol_bitmask << pmic->vol_bitpos,
+	clrsetbits8(&read_data, pmic->vol_bitmask << pmic->vol_bitpos,
 			vol_level << pmic->vol_bitpos);
 
 	ret = max77686_i2c_write(bus, MAX77686_I2C_ADDR, pmic->vol_addr, read_data);

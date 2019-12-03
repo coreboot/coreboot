@@ -79,11 +79,6 @@
 #define clrsetbits_le16(addr, clear, set) __clrsetbits(le, 16, addr, clear, set)
 #define clrsetbits_be16(addr, clear, set) __clrsetbits(be, 16, addr, clear, set)
 
-#define clrsetbits_8(addr, clear, set) \
-	write8(addr, (read8(addr) & ~(clear)) | (set))
-#define clrbits_8(addr, clear) clrsetbits_8(addr, clear, 0)
-#define setbits_8(addr, set) setbits_8(addr, 0, set)
-
 #ifndef __ROMCC__
 /* be16dec/be32dec/be64dec/le16dec/le32dec/le64dec family of functions. */
 #define DEFINE_ENDIAN_DEC(endian, width) \

@@ -11,8 +11,8 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/bootblock.h>
 #include <device/pci_ops.h>
-#include <cpu/intel/car/bootblock.h>
 #include "sandybridge.h"
 
 void bootblock_early_northbridge_init(void)

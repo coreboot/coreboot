@@ -13,6 +13,7 @@
 
 #include <stdint.h>
 #include <arch/cpu.h>
+#include <arch/bootblock.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
 #include <arch/io.h>
@@ -21,7 +22,6 @@
 #include "haswell.h"
 
 #include <southbridge/intel/lynxpoint/pch.h>
-#include <cpu/intel/car/bootblock.h>
 
 static void set_flex_ratio_to_tdp_nominal(void)
 {

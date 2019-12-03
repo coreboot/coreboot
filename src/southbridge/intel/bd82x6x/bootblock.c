@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  */
 
-#include <cpu/intel/car/bootblock.h>
+#include <arch/bootblock.h>
 #include <device/pci_ops.h>
 #include "pch.h"
 

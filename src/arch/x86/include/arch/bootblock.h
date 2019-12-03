@@ -11,8 +11,8 @@
  * GNU General Public License for more details.
  */
 
-#ifndef _CPU_INTEL_CAR_BOOTBLOCK_H
-#define _CPU_INTEL_CAR_BOOTBLOCK_H
+#ifndef __ARCH_BOOTBLOCK_H__
+#define __ARCH_BOOTBLOCK_H__
 
 void bootblock_early_cpu_init(void);
 void bootblock_early_northbridge_init(void);

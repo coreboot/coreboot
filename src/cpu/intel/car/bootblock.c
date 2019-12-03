@@ -12,7 +12,7 @@
  */
 
 #include <bootblock_common.h>
-#include <cpu/intel/car/bootblock.h>
+#include <arch/bootblock.h>
 #include <cpu/x86/bist.h>
 
 static uint32_t saved_bist;

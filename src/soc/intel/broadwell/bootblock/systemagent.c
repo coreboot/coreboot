@@ -13,10 +13,10 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/bootblock.h>
 #include <device/pci_ops.h>
 #include <soc/pci_devs.h>
 #include <soc/systemagent.h>
-#include <cpu/intel/car/bootblock.h>
 
 void bootblock_early_northbridge_init(void)
 {

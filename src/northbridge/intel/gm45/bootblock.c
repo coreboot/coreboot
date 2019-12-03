@@ -11,7 +11,7 @@
  * GNU General Public License for more details.
  */
 
-#include <cpu/intel/car/bootblock.h>
+#include <arch/bootblock.h>
 #include <device/pci_ops.h>
 
 /* Just re-define these instead of including gm45.h. It blows up romcc. */

@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/bootblock.h>
 #include <device/pci_ops.h>
 #include <soc/iomap.h>
 #include <soc/lpc.h>
@@ -22,7 +23,6 @@
 #include <reg_script.h>
 #include <soc/pm.h>
 #include <soc/romstage.h>
-#include <cpu/intel/car/bootblock.h>
 
 /*
  * Enable Prefetching and Caching.

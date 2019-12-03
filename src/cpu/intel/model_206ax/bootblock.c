@@ -12,11 +12,11 @@
  */
 
 #include <stdint.h>
+#include <arch/bootblock.h>
 #include <arch/cpu.h>
 #include <cpu/x86/msr.h>
 #include <arch/io.h>
 #include <halt.h>
-#include <cpu/intel/car/bootblock.h>
 
 #include "model_206ax.h"
 

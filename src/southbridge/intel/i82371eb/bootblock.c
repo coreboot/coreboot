@@ -15,10 +15,10 @@
  */
 
 #include <stdint.h>
+#include <arch/bootblock.h>
 #include <device/pci_ops.h>
 #include <device/pci_ids.h>
 #include <device/pci_type.h>
-#include <cpu/intel/car/bootblock.h>
 #include "i82371eb.h"
 
 #define PCI_ID(VENDOR_ID, DEVICE_ID) \

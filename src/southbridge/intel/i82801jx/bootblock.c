@@ -13,8 +13,8 @@
  * GNU General Public License for more details.
  */
 
+#include <arch/bootblock.h>
 #include <device/pci_ops.h>
-#include <cpu/intel/car/bootblock.h>
 #include "i82801jx.h"
 
 static void enable_spi_prefetch(void)

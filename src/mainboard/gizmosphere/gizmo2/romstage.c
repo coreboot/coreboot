@@ -24,8 +24,6 @@ void board_BeforeAgesa(struct sysinfo *cb)
 	pci_devfn_t dev = PCI_DEV(0, 0x14, 3);
 	pci_write_config32(dev, 0x44, 0xff03ffd5);
 
-	hudson_lpc_port80();
-
 	/* In Hudson RRG, PMIOxD2[5:4] is "Drive strength control for
 	 *  LpcClk[1:0]".  To be consistent with Parmer, setting to 4mA
 	 *  even though the register is not documented in the Kabini BKDG.

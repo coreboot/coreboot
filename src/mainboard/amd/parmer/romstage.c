@@ -19,8 +19,6 @@
 
 void board_BeforeAgesa(struct sysinfo *cb)
 {
-	hudson_lpc_port80();
-
 	pci_devfn_t dev = PCI_DEV(0, 0x14, 3);
 
 	/* For serial port option, plug-in card on LPC. */

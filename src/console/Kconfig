@@ -417,6 +417,7 @@ config POST_DEVICE
 choice
 	prompt "Device to send POST codes to"
 	depends on POST_DEVICE
+	default POST_DEVICE_LPC if DEFAULT_POST_ON_LPC
 	default POST_DEVICE_NONE
 
 config POST_DEVICE_NONE
@@ -428,6 +429,10 @@ config POST_DEVICE_PCI_PCIE
 	bool "PCI/PCIe"
 	depends on PCI
 endchoice
+
+config DEFAULT_POST_ON_LPC
+	bool
+	default n
 
 config POST_IO
 	bool "Send POST codes to an IO port"

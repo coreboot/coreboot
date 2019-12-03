@@ -52,8 +52,6 @@ void board_BeforeAgesa(struct sysinfo *cb)
 	outb(0xd2, 0xcd6);
 	outb(0x00, 0xcd7);
 
-	hudson_lpc_port80();
-
 	post_code(0x30);
 	early_lpc_init();
 

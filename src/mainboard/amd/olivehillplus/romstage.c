@@ -37,8 +37,6 @@ static void romstage_main_template(void)
 	outb(0xD2, 0xcd6);
 	outb(0x00, 0xcd7);
 
-	hudson_lpc_port80();
-
 	if (!cpu_init_detectedx && boot_cpu()) {
 		post_code(0x30);
 

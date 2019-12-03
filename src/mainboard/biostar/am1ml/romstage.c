@@ -89,8 +89,6 @@ void board_BeforeAgesa(struct sysinfo *cb)
 	pci_devfn_t dev2 = PCI_DEV(0, 0x14, 3);
 	pci_write_config32(dev2, 0x44, 0xff03ffd5);
 
-	hudson_lpc_port80();
-
 	/* Enable the AcpiMmio space */
 	outb(0x24, 0xcd6);
 	outb(0x1, 0xcd7);

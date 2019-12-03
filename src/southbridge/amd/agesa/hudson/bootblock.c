@@ -77,6 +77,11 @@ void bootblock_soc_early_init(void)
 	hudson_lpc_decode();
 	enable_acpimmio_decode_pm24();
 
+	if (CONFIG(POST_DEVICE_PCI_PCIE))
+		hudson_pci_port80();
+	else if (CONFIG(POST_DEVICE_LPC))
+		hudson_lpc_port80();
+
 	dev = PCI_DEV(0, 0x14, 3);
 	data = pci_read_config32(dev, LPC_IO_OR_MEM_DECODE_ENABLE);
 	/* enable 0x2e/0x4e IO decoding for SuperIO */

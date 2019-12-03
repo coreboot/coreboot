@@ -29,8 +29,6 @@ static void romstage_main_template(void)
 {
 	u32 val;
 
-	hudson_lpc_port80();
-
 	if (!cpu_init_detectedx && boot_cpu()) {
 		post_code(0x30);
 

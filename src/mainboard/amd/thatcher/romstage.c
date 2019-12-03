@@ -31,7 +31,6 @@ void board_BeforeAgesa(struct sysinfo *cb)
 
 	/* Set LPC decode enables. */
 	dev = PCI_DEV(0, 0x14, 3);
-	hudson_lpc_port80();
 
 	byte = pci_read_config8(dev, 0x48);
 	byte |= 3;		/* 2e, 2f */

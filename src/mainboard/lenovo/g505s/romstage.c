@@ -18,5 +18,4 @@
 
 void board_BeforeAgesa(struct sysinfo *cb)
 {
-	hudson_lpc_port80();
 }

@@ -68,11 +68,6 @@ void board_BeforeAgesa(struct sysinfo *cb)
 	u8 byte;
 	pci_devfn_t dev;
 
-	if (CONFIG(POST_DEVICE_PCI_PCIE))
-		hudson_pci_port80();
-	else if (CONFIG(POST_DEVICE_LPC))
-		hudson_lpc_port80();
-
 	/* enable SIO LPC decode */
 	dev = PCI_DEV(0, 0x14, 3);
 	byte = pci_read_config8(dev, 0x48);

@@ -41,8 +41,6 @@ void board_BeforeAgesa(struct sysinfo *cb)
 	pci_devfn_t dev = PCI_DEV(0, 0x14, 3);
 	pci_write_config32(dev, 0x44, 0xff03ffd5);
 
-	hudson_lpc_port80();
-
 	/* On Larne, after LpcClkDrvSth is set, it needs some time to be stable, because of the buffer ICS551M */
 	for (i = 0; i < 200000; i++)
 		val = inb(0xcd6);

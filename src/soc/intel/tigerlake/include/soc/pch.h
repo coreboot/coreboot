@@ -18,8 +18,8 @@
 
 #include <stdint.h>
 
-#define PCH_H				1
-#define PCH_LP				2
+#define PCH_TGP				1
+#define PCH_JSP				2
 #define PCH_UNKNOWN_SERIES		0xFF
 
 #define PCIE_CLK_NOTUSED		0xFF

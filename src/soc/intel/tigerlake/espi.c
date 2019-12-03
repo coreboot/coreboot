@@ -81,10 +81,10 @@ uint8_t get_pch_series(void)
 	 */
 	lpc_did_hi_byte = pci_read_config8(PCH_DEV_ESPI, PCI_DEVICE_ID + 1);
 
-	if (lpc_did_hi_byte == 0x9D)
-		return PCH_LP;
-	else if (lpc_did_hi_byte == 0xA3)
-		return PCH_H;
+	if (lpc_did_hi_byte == 0xA0)
+		return PCH_TGP;
+	else if (lpc_did_hi_byte == 0x38)
+		return PCH_JSP;
 	else
 		return PCH_UNKNOWN_SERIES;
 }

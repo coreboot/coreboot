@@ -14,6 +14,8 @@
 # GNU General Public License for more details.
 #
 
+bootblock-y += bootblock.c
+
 romstage-y += BiosCallOuts.c
 romstage-y += OemCustomize.c
 romstage-y += gpio_ftns.c

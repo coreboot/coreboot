@@ -48,8 +48,8 @@
  */
 #define readl_i(a)           read32((const void *)(a))
 #define writel_i(v, a)       write32((void *)a, v)
-#define clrsetbits_le32_i(addr, clear, set)  \
-	clrsetbits_le32(((void *)(addr)), (clear), (set))
+#define clrsetbits32_i(addr, clear, set)  \
+	clrsetbits32(((void *)(addr)), (clear), (set))
 
 #define GCC_CLK_CTL_REG			((void *)0x01800000u)
 #define MSM_CLK_CTL_BASE		GCC_CLK_CTL_REG

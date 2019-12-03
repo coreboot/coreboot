@@ -46,17 +46,17 @@ static void mtcmos_power_on(const struct power_domain_data *pd)
 	write32(&mtk_spm->poweron_config_set,
 		(SPM_PROJECT_CODE << 16) | (1U << 0));
 
-	setbits_le32(pd->pwr_con, PWR_ON);
-	setbits_le32(pd->pwr_con, PWR_ON_2ND);
+	setbits32(pd->pwr_con, PWR_ON);
+	setbits32(pd->pwr_con, PWR_ON_2ND);
 
 	while (!(read32(&mtk_spm->pwr_status) & pd->pwr_sta_mask) ||
 	       !(read32(&mtk_spm->pwr_status_2nd) & pd->pwr_sta_mask))
 		continue;
 
-	clrbits_le32(pd->pwr_con, PWR_CLK_DIS);
-	clrbits_le32(pd->pwr_con, PWR_ISO);
-	setbits_le32(pd->pwr_con, PWR_RST_B);
-	clrbits_le32(pd->pwr_con, pd->sram_pdn_mask);
+	clrbits32(pd->pwr_con, PWR_CLK_DIS);
+	clrbits32(pd->pwr_con, PWR_ISO);
+	setbits32(pd->pwr_con, PWR_RST_B);
+	clrbits32(pd->pwr_con, pd->sram_pdn_mask);
 
 	while (read32(pd->pwr_con) & pd->sram_ack_mask)
 		continue;

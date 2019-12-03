@@ -93,12 +93,12 @@ int power_reset_status(void)
 void ram_repair(void)
 {
 	// Request RAM repair for cluster 0
-	setbits_le32(&flow->ram_repair, RAM_REPAIR_REQ);
+	setbits32(&flow->ram_repair, RAM_REPAIR_REQ);
 	// Poll for completion
 	while (!(read32(&flow->ram_repair) & RAM_REPAIR_STS))
 		;
 	// Request RAM repair for cluster 1
-	setbits_le32(&flow->ram_repair_cluster1, RAM_REPAIR_REQ);
+	setbits32(&flow->ram_repair_cluster1, RAM_REPAIR_REQ);
 	// Poll for completion
 	while (!(read32(&flow->ram_repair_cluster1) & RAM_REPAIR_STS))
 		;

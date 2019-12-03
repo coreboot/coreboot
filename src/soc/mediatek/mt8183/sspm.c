@@ -16,7 +16,7 @@
 #include <arch/barrier.h>
 #include <cbfs.h>
 #include <console/console.h>
-#include <arch/mmio.h>
+#include <device/mmio.h>
 #include <soc/sspm.h>
 #include <string.h>
 

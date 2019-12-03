@@ -123,7 +123,7 @@ void init_timer(void)
 	write32(&gti->cc_cntrate, ((1ULL << 32) * tickrate) / sclk);
 
 	/* Enable the counter */
-	setbits_le32(&gti->cc_cntcr, GTI_CC_CNTCR_EN);
+	setbits32(&gti->cc_cntcr, GTI_CC_CNTCR_EN);
 
 	//u32 u = (CNTPS_CTL_EL1_IMASK | CNTPS_CTL_EL1_EN);
 	//BDK_MSR(CNTPS_CTL_EL1, u);
@@ -172,11 +172,11 @@ void watchdog_set(const size_t index, unsigned int timeout_ms)
 
 	printk(BIOS_DEBUG, "Watchdog: Set to expire %llu SCLK cycles\n",
 	       timeout_wdog << 18);
-	clrsetbits_le64(&timer->cwd_wdog[index],
-			(GTI_CWD_WDOG_LEN_MASK << GTI_CWD_WDOG_LEN_SHIFT) |
-			(GTI_CWD_WDOG_MODE_MASK << GTI_CWD_WDOG_MODE_SHIFT),
-			(timeout_wdog << GTI_CWD_WDOG_LEN_SHIFT) |
-			(3 << GTI_CWD_WDOG_MODE_SHIFT));
+	clrsetbits64(&timer->cwd_wdog[index],
+		     (GTI_CWD_WDOG_LEN_MASK << GTI_CWD_WDOG_LEN_SHIFT) |
+		     (GTI_CWD_WDOG_MODE_MASK << GTI_CWD_WDOG_MODE_SHIFT),
+		     (timeout_wdog << GTI_CWD_WDOG_LEN_SHIFT) |
+		     (3 << GTI_CWD_WDOG_MODE_SHIFT));
 }
 
 /**

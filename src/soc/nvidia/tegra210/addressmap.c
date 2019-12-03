@@ -297,14 +297,14 @@ void gpu_region_init(void)
 	write32(&mc->security_carveout2_bom_hi, 0);
 
 	/* Set the locked bit. This will lock out any other writes! */
-	setbits_le32(&mc->security_carveout2_cfg0, MC_SECURITY_CARVEOUT_LOCKED);
+	setbits32(&mc->security_carveout2_cfg0, MC_SECURITY_CARVEOUT_LOCKED);
 
 	/* Set the carveout3 base to 0, unused */
 	write32(&mc->security_carveout3_bom, 0);
 	write32(&mc->security_carveout3_bom_hi, 0);
 
 	/* Set the locked bit. This will lock out any other writes! */
-	setbits_le32(&mc->security_carveout3_cfg0, MC_SECURITY_CARVEOUT_LOCKED);
+	setbits32(&mc->security_carveout3_cfg0, MC_SECURITY_CARVEOUT_LOCKED);
 }
 
 void nvdec_region_init(void)
@@ -322,7 +322,7 @@ void nvdec_region_init(void)
 	write32(&mc->security_carveout1_bom_hi, 0);
 
 	/* Set the locked bit. This will lock out any other writes! */
-	setbits_le32(&mc->security_carveout1_cfg0, MC_SECURITY_CARVEOUT_LOCKED);
+	setbits32(&mc->security_carveout1_cfg0, MC_SECURITY_CARVEOUT_LOCKED);
 }
 
 void tsec_region_init(void)
@@ -345,8 +345,8 @@ void tsec_region_init(void)
 	write32(&mc->security_carveout5_bom_hi, 0);
 
 	/* Set the locked bit. This will lock out any other writes! */
-	setbits_le32(&mc->security_carveout4_cfg0, MC_SECURITY_CARVEOUT_LOCKED);
-	setbits_le32(&mc->security_carveout5_cfg0, MC_SECURITY_CARVEOUT_LOCKED);
+	setbits32(&mc->security_carveout4_cfg0, MC_SECURITY_CARVEOUT_LOCKED);
+	setbits32(&mc->security_carveout5_cfg0, MC_SECURITY_CARVEOUT_LOCKED);
 }
 
 void vpr_region_init(void)

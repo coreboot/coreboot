@@ -42,8 +42,8 @@ static void exynos_spi_rx_tx(struct exynos_spi *regs, int todo,
 	ASSERT(todo % 4 == 0);
 
 	out_bytes = in_bytes = todo;
-	setbits_le32(&regs->ch_cfg, SPI_CH_RST);
-	clrbits_le32(&regs->ch_cfg, SPI_CH_RST);
+	setbits32(&regs->ch_cfg, SPI_CH_RST);
+	clrbits32(&regs->ch_cfg, SPI_CH_RST);
 	write32(&regs->pkt_cnt, ((todo * 8) / 32) | SPI_PACKET_CNT_EN);
 
 	while (in_bytes) {
@@ -81,22 +81,22 @@ int exynos_spi_open(struct exynos_spi *regs)
 	/* set FB_CLK_SEL */
 	write32(&regs->fb_clk, SPI_FB_DELAY_180);
 	/* set CH_WIDTH and BUS_WIDTH as word */
-	setbits_le32(&regs->mode_cfg,
+	setbits32(&regs->mode_cfg,
 		     SPI_MODE_CH_WIDTH_WORD | SPI_MODE_BUS_WIDTH_WORD);
-	clrbits_le32(&regs->ch_cfg, SPI_CH_CPOL_L); /* CPOL: active high */
+	clrbits32(&regs->ch_cfg, SPI_CH_CPOL_L); /* CPOL: active high */
 
 	/* clear rx and tx channel if set previously */
-	clrbits_le32(&regs->ch_cfg, SPI_RX_CH_ON | SPI_TX_CH_ON);
+	clrbits32(&regs->ch_cfg, SPI_RX_CH_ON | SPI_TX_CH_ON);
 
-	setbits_le32(&regs->swap_cfg,
-		     SPI_RX_SWAP_EN | SPI_RX_BYTE_SWAP | SPI_RX_HWORD_SWAP);
+	setbits32(&regs->swap_cfg,
+		  SPI_RX_SWAP_EN | SPI_RX_BYTE_SWAP | SPI_RX_HWORD_SWAP);
 
 	/* do a soft reset */
-	setbits_le32(&regs->ch_cfg, SPI_CH_RST);
-	clrbits_le32(&regs->ch_cfg, SPI_CH_RST);
+	setbits32(&regs->ch_cfg, SPI_CH_RST);
+	clrbits32(&regs->ch_cfg, SPI_CH_RST);
 
 	/* now set rx and tx channel ON */
-	setbits_le32(&regs->ch_cfg, SPI_RX_CH_ON | SPI_TX_CH_ON | SPI_CH_HS_EN);
+	setbits32(&regs->ch_cfg, SPI_RX_CH_ON | SPI_TX_CH_ON | SPI_CH_HS_EN);
 	return 0;
 }
 
@@ -104,7 +104,7 @@ int exynos_spi_read(struct exynos_spi *regs, void *dest, u32 len, u32 off)
 {
 	int upto, todo;
 	int i;
-	clrbits_le32(&regs->cs_reg, SPI_SLAVE_SIG_INACT); /* CS low */
+	clrbits32(&regs->cs_reg, SPI_SLAVE_SIG_INACT); /* CS low */
 
 	/* Send read instruction (0x3h) followed by a 24 bit addr */
 	write32(&regs->tx_data, (SF_READ_DATA_CMD << 24) | off);
@@ -117,7 +117,7 @@ int exynos_spi_read(struct exynos_spi *regs, void *dest, u32 len, u32 off)
 		exynos_spi_rx_tx(regs, todo, dest, (void *)(off), i);
 	}
 
-	setbits_le32(&regs->cs_reg, SPI_SLAVE_SIG_INACT);/* make the CS high */
+	setbits32(&regs->cs_reg, SPI_SLAVE_SIG_INACT);/* make the CS high */
 
 	return len;
 }
@@ -128,17 +128,17 @@ int exynos_spi_close(struct exynos_spi *regs)
 	 * Let put controller mode to BYTE as
 	 * SPI driver does not support WORD mode yet
 	 */
-	clrbits_le32(&regs->mode_cfg,
-		     SPI_MODE_CH_WIDTH_WORD | SPI_MODE_BUS_WIDTH_WORD);
+	clrbits32(&regs->mode_cfg,
+		  SPI_MODE_CH_WIDTH_WORD | SPI_MODE_BUS_WIDTH_WORD);
 	write32(&regs->swap_cfg, 0);
 
 	/*
 	 * Flush spi tx, rx fifos and reset the SPI controller
 	 * and clear rx/tx channel
 	 */
-	clrsetbits_le32(&regs->ch_cfg, SPI_CH_HS_EN, SPI_CH_RST);
-	clrbits_le32(&regs->ch_cfg, SPI_CH_RST);
-	clrbits_le32(&regs->ch_cfg, SPI_TX_CH_ON | SPI_RX_CH_ON);
+	clrsetbits32(&regs->ch_cfg, SPI_CH_HS_EN, SPI_CH_RST);
+	clrbits32(&regs->ch_cfg, SPI_CH_RST);
+	clrbits32(&regs->ch_cfg, SPI_TX_CH_ON | SPI_RX_CH_ON);
 	return 0;
 }
 

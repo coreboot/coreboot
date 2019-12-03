@@ -140,7 +140,7 @@ static void chipidea_halt_ep(struct usbdev_ctrl *this, int ep, int in_dir)
 	writel(1 << ep_to_bits(ep, in_dir), &p->opreg->epflush);
 	while (readl(&p->opreg->epflush))
 		;
-	clrbits_le32(&p->opreg->epctrl[ep], 1 << (7 + (in_dir ? 16 : 0)));
+	clrbits32(&p->opreg->epctrl[ep], 1 << (7 + (in_dir ? 16 : 0)));
 
 	while (!SIMPLEQ_EMPTY(&p->job_queue[ep][in_dir])) {
 		struct job *job = SIMPLEQ_FIRST(&p->job_queue[ep][in_dir]);
@@ -161,7 +161,7 @@ static void chipidea_start_ep(struct usbdev_ctrl *this,
 	in_dir = in_dir ? 1 : 0;
 	debug("enabling %d-%d (type %d)\n", ep, in_dir, ep_type);
 	/* enable endpoint, reset data toggle */
-	setbits_le32(&p->opreg->epctrl[ep],
+	setbits32(&p->opreg->epctrl[ep],
 		((1 << 7) | (1 << 6) | (ep_type << 2)) << (in_dir*16));
 	p->ep_busy[ep][in_dir] = 0;
 	this->ep_mps[ep][in_dir] = mps;
@@ -456,17 +456,17 @@ static void chipidea_stall(struct usbdev_ctrl *this,
 	in_dir = in_dir ? 1 : 0;
 	if (set) {
 		if (in_dir)
-			setbits_le32(ctrl, 1 << 16);
+			setbits32(ctrl, 1 << 16);
 		else
-			setbits_le32(ctrl, 1 << 0);
+			setbits32(ctrl, 1 << 0);
 	} else {
 		/* reset STALL bit, reset data toggle */
 		if (in_dir) {
-			setbits_le32(ctrl, 1 << 22);
-			clrbits_le32(ctrl, 1 << 16);
+			setbits32(ctrl, 1 << 22);
+			clrbits32(ctrl, 1 << 16);
 		} else {
-			setbits_le32(ctrl, 1 << 6);
-			clrbits_le32(ctrl, 1 << 0);
+			setbits32(ctrl, 1 << 6);
+			clrbits32(ctrl, 1 << 0);
 		}
 	}
 	this->ep_halted[ep][in_dir] = set;

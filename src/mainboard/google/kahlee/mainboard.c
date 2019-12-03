@@ -147,16 +147,16 @@ static void mainboard_init(void *chip_info)
 	pm_write8(PM_PCIB_CFG, pm_read8(PM_PCIB_CFG) | PM_GENINT_DISABLE);
 
 	/* Set low-power mode for BayHub eMMC bridge's PCIe clock. */
-	clrsetbits_le32((uint32_t *)(ACPIMMIO_MISC_BASE + GPP_CLK_CNTRL),
-			GPP_CLK2_REQ_MAP_MASK,
-			GPP_CLK2_REQ_MAP_CLK_REQ2 <<
-			GPP_CLK2_REQ_MAP_SHIFT);
+	clrsetbits32((uint32_t *)(ACPIMMIO_MISC_BASE + GPP_CLK_CNTRL),
+		     GPP_CLK2_REQ_MAP_MASK,
+		     GPP_CLK2_REQ_MAP_CLK_REQ2 <<
+		     GPP_CLK2_REQ_MAP_SHIFT);
 
 	/* Same for the WiFi */
-	clrsetbits_le32((uint32_t *)(ACPIMMIO_MISC_BASE + GPP_CLK_CNTRL),
-			GPP_CLK0_REQ_MAP_MASK,
-			GPP_CLK0_REQ_MAP_CLK_REQ0 <<
-			GPP_CLK0_REQ_MAP_SHIFT);
+	clrsetbits32((uint32_t *)(ACPIMMIO_MISC_BASE + GPP_CLK_CNTRL),
+		     GPP_CLK0_REQ_MAP_MASK,
+		     GPP_CLK0_REQ_MAP_CLK_REQ0 <<
+		     GPP_CLK0_REQ_MAP_SHIFT);
 }
 
 /*************************************************

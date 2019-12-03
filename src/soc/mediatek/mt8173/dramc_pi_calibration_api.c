@@ -42,14 +42,14 @@ void sw_impedance_cal(u32 channel,
 		 params->impedance_drvp << 12 | params->impedance_drvn << 8;
 
 	/* DQS and DQ */
-	clrsetbits_le32(&ch[channel].ao_regs->iodrv6, mask, value);
+	clrsetbits32(&ch[channel].ao_regs->iodrv6, mask, value);
 	/* CLK and CMD */
-	clrsetbits_le32(&ch[channel].ao_regs->drvctl1, mask, value);
-	clrsetbits_le32(&ch[channel].ddrphy_regs->drvctl1, mask, value);
+	clrsetbits32(&ch[channel].ao_regs->drvctl1, mask, value);
+	clrsetbits32(&ch[channel].ddrphy_regs->drvctl1, mask, value);
 	/* DQ_2 and CMD_2 */
-	clrsetbits_le32(&ch[channel].ao_regs->iodrv4, mask, value);
+	clrsetbits32(&ch[channel].ao_regs->iodrv4, mask, value);
 	/* disable impcal calibration */
-	clrbits_le32(&ch[channel].ao_regs->impcal, 1 << IMP_CALI_ENP_SHIFT |
+	clrbits32(&ch[channel].ao_regs->impcal, 1 << IMP_CALI_ENP_SHIFT |
 						   1 << IMP_CALI_ENN_SHIFT |
 						   1 << IMP_CALI_EN_SHIFT  |
 						   0xf << IMP_CALI_DRVP_SHIFT |
@@ -89,40 +89,40 @@ void ca_training(u32 channel, const struct mt8173_sdram_params *sdram_params)
 	/* set CA pins output delay */
 	for (i = 0; i < (CATRAINING_NUM - 1); i++) {
 		order = ca_order[channel][i];
-		clrsetbits_le32(&ch[channel].ddrphy_regs->cmddly[cmd_order[i]],
-				0xf << shift[i], ca_shift[order] << shift[i]);
+		clrsetbits32(&ch[channel].ddrphy_regs->cmddly[cmd_order[i]],
+			     0xf << shift[i], ca_shift[order] << shift[i]);
 	}
 
 	order = ca_order[channel][9];
-	clrsetbits_le32(&ch[channel].ddrphy_regs->dqscal0,
-			0xf << DQSCAL0_RA14_SHIFT,
-			ca_shift[order] << DQSCAL0_RA14_SHIFT);
+	clrsetbits32(&ch[channel].ddrphy_regs->dqscal0,
+		     0xf << DQSCAL0_RA14_SHIFT,
+		     ca_shift[order] << DQSCAL0_RA14_SHIFT);
 
 	/* CKE and CS delay */
 	ca_shift_avg32 = (u32)(ca_shift_avg8 + (CATRAINING_NUM >> 1));
 	ca_shift_avg32 /= (u32)CATRAINING_NUM;
 
 	/* CKEDLY */
-	clrsetbits_le32(&ch[channel].ddrphy_regs->cmddly[4],
-			0x1f << CMDDLY4_CS_SHIFT |
-			0x1f << CMDDLY4_CKE_SHIFT,
-			ca_shift_avg32 << CMDDLY4_CS_SHIFT |
-			ca_shift_avg32 << CMDDLY4_CKE_SHIFT);
+	clrsetbits32(&ch[channel].ddrphy_regs->cmddly[4],
+		     0x1f << CMDDLY4_CS_SHIFT |
+		     0x1f << CMDDLY4_CKE_SHIFT,
+		     ca_shift_avg32 << CMDDLY4_CS_SHIFT |
+		     ca_shift_avg32 << CMDDLY4_CKE_SHIFT);
 
 	/* CKE1DLY */
-	clrsetbits_le32(&ch[channel].ao_regs->dqscal1,
-			0x1f << DQSCAL1_CKE1_SHIFT,
-			ca_shift_avg32 << DQSCAL1_CKE1_SHIFT);
+	clrsetbits32(&ch[channel].ao_regs->dqscal1,
+		     0x1f << DQSCAL1_CKE1_SHIFT,
+		     ca_shift_avg32 << DQSCAL1_CKE1_SHIFT);
 
 	/* CS1DLY */
-	clrsetbits_le32(&ch[channel].ddrphy_regs->padctl1,
-			0xf << PADCTL1_CS1_SHIFT,
-			ca_shift_avg32 << PADCTL1_CS1_SHIFT);
+	clrsetbits32(&ch[channel].ddrphy_regs->padctl1,
+		     0xf << PADCTL1_CS1_SHIFT,
+		     ca_shift_avg32 << PADCTL1_CS1_SHIFT);
 
 	/* set max center into clk output delay */
-	clrsetbits_le32(&ch[channel].ddrphy_regs->padctl1,
-			0xf << PADCTL1_CLK_SHIFT,
-			ca_max_center << PADCTL1_CLK_SHIFT);
+	clrsetbits32(&ch[channel].ddrphy_regs->padctl1,
+		     0xf << PADCTL1_CLK_SHIFT,
+		     ca_max_center << PADCTL1_CLK_SHIFT);
 
 	dramc_dbg_msg("=========================================\n");
 	dramc_dbg_msg("   [Channel %d] CA training\n", channel);
@@ -155,8 +155,8 @@ void write_leveling(u32 channel, const struct mt8173_sdram_params *sdram_params)
 	write32(&ch[channel].ddrphy_regs->padctl3, value);
 
 	/* DQM */
-	clrsetbits_le32(&ch[channel].ddrphy_regs->padctl2, MASK_PADCTL2_32BIT,
-			(value << PADCTL2_SHIFT) & MASK_PADCTL2_32BIT);
+	clrsetbits32(&ch[channel].ddrphy_regs->padctl2, MASK_PADCTL2_32BIT,
+		     (value << PADCTL2_SHIFT) & MASK_PADCTL2_32BIT);
 
 	/* DQ */
 	for (byte_i = 0; byte_i < DQS_NUMBER; byte_i++) {
@@ -203,10 +203,10 @@ static void set_gw_coarse_factor(u32 channel, u8 curr_val)
 	curr_val_p1 = curr_val + 2;  /* diff is 0.5T */
 
 	/* Rank 0 P0/P1 coarse tune settings */
-	clrsetbits_le32(&ch[channel].ao_regs->dqsctl1,
-			0xf << DQSCTL1_DQSINCTL_SHIFT,
-			coarse_tune_start << DQSCTL1_DQSINCTL_SHIFT &
-			0xf << DQSCTL1_DQSINCTL_SHIFT);
+	clrsetbits32(&ch[channel].ao_regs->dqsctl1,
+		     0xf << DQSCTL1_DQSINCTL_SHIFT,
+		     coarse_tune_start << DQSCTL1_DQSINCTL_SHIFT &
+		     0xf << DQSCTL1_DQSINCTL_SHIFT);
 
 	/* DQSINCTL does not have P1. */
 	/* Need to use TXDLY_DQSGATE/TXDLY_DQSGATE_P1 to set */
@@ -214,33 +214,33 @@ static void set_gw_coarse_factor(u32 channel, u8 curr_val)
 	selph2_dqsgate = (curr_val >> 2) - coarse_tune_start;
 	selph2_dqsgate_p1 = (curr_val_p1 >> 2) - coarse_tune_start;
 
-	clrsetbits_le32(&ch[channel].ao_regs->selph2,
-			0x7 << SELPH2_TXDLY_DQSGATE_SHIFT |
-			0x7 << SELPH2_TXDLY_DQSGATE_P1_SHIFT,
-			selph2_dqsgate << SELPH2_TXDLY_DQSGATE_SHIFT |
-			selph2_dqsgate_p1 << SELPH2_TXDLY_DQSGATE_P1_SHIFT);
+	clrsetbits32(&ch[channel].ao_regs->selph2,
+		     0x7 << SELPH2_TXDLY_DQSGATE_SHIFT |
+		     0x7 << SELPH2_TXDLY_DQSGATE_P1_SHIFT,
+		     selph2_dqsgate << SELPH2_TXDLY_DQSGATE_SHIFT |
+		     selph2_dqsgate_p1 << SELPH2_TXDLY_DQSGATE_P1_SHIFT);
 
 	/* dly_DQSGATE and dly_DQSGATE_P1 */
-	clrsetbits_le32(&ch[channel].ao_regs->selph5,
-			0x3 << SELPH5_DLY_DQSGATE_SHIFT |
-			0x3 << SELPH5_DLY_DQSGATE_P1_SHIFT,
-			(curr_val & 0x3) << SELPH5_DLY_DQSGATE_SHIFT |
-			(curr_val_p1 & 0x3) << SELPH5_DLY_DQSGATE_P1_SHIFT);
+	clrsetbits32(&ch[channel].ao_regs->selph5,
+		     0x3 << SELPH5_DLY_DQSGATE_SHIFT |
+		     0x3 << SELPH5_DLY_DQSGATE_P1_SHIFT,
+		     (curr_val & 0x3) << SELPH5_DLY_DQSGATE_SHIFT |
+		     (curr_val_p1 & 0x3) << SELPH5_DLY_DQSGATE_P1_SHIFT);
 }
 
 static void set_gw_fine_factor(u32 channel, u8 curr_val, u8 rank)
 {
 	u32 set = curr_val & (0x7f << DQSIEN_DQS0IEN_SHIFT);
 
-	clrsetbits_le32(&ch[channel].ao_regs->dqsien[rank],
-			 0x7f << DQSIEN_DQS0IEN_SHIFT |
-			 0x7f << DQSIEN_DQS1IEN_SHIFT |
-			 0x7f << DQSIEN_DQS2IEN_SHIFT |
-			 0x7f << DQSIEN_DQS3IEN_SHIFT,
-			 set << DQSIEN_DQS0IEN_SHIFT |
-			 set << DQSIEN_DQS1IEN_SHIFT |
-			 set << DQSIEN_DQS2IEN_SHIFT |
-			 set << DQSIEN_DQS3IEN_SHIFT);
+	clrsetbits32(&ch[channel].ao_regs->dqsien[rank],
+		     0x7f << DQSIEN_DQS0IEN_SHIFT |
+		     0x7f << DQSIEN_DQS1IEN_SHIFT |
+		     0x7f << DQSIEN_DQS2IEN_SHIFT |
+		     0x7f << DQSIEN_DQS3IEN_SHIFT,
+		     set << DQSIEN_DQS0IEN_SHIFT |
+		     set << DQSIEN_DQS1IEN_SHIFT |
+		     set << DQSIEN_DQS2IEN_SHIFT |
+		     set << DQSIEN_DQS3IEN_SHIFT);
 }
 
 static void set_gw_coarse_factor_rank1(u32 channel, u8 curr_val, u8 dqsinctl)
@@ -249,33 +249,33 @@ static void set_gw_coarse_factor_rank1(u32 channel, u8 curr_val, u8 dqsinctl)
 
 	curr_val_p1 = curr_val + 2;  /* diff is 0.5T */
 
-	clrsetbits_le32(&ch[channel].ao_regs->dqsctl2,
-			0xf << DQSCTL2_DQSINCTL_SHIFT,
-			dqsinctl << DQSCTL2_DQSINCTL_SHIFT);
+	clrsetbits32(&ch[channel].ao_regs->dqsctl2,
+		     0xf << DQSCTL2_DQSINCTL_SHIFT,
+		     dqsinctl << DQSCTL2_DQSINCTL_SHIFT);
 
 	/* TXDLY_R1DQSGATE and TXDLY_R1DQSGATE_P1 */
 	r1dqsgate = (curr_val >> 2) - dqsinctl;
 	r1dqsgate_p1 = (curr_val_p1 >> 2) - dqsinctl;
 
-	clrsetbits_le32(&ch[channel].ao_regs->selph6_1,
-			0x7 << SELPH6_1_TXDLY_R1DQSGATE_SHIFT |
-			0x7 << SELPH6_1_TXDLY_R1DQSGATE_P1_SHIFT,
-			r1dqsgate << SELPH6_1_TXDLY_R1DQSGATE_SHIFT |
-			r1dqsgate_p1 << SELPH6_1_TXDLY_R1DQSGATE_P1_SHIFT);
+	clrsetbits32(&ch[channel].ao_regs->selph6_1,
+		     0x7 << SELPH6_1_TXDLY_R1DQSGATE_SHIFT |
+		     0x7 << SELPH6_1_TXDLY_R1DQSGATE_P1_SHIFT,
+		     r1dqsgate << SELPH6_1_TXDLY_R1DQSGATE_SHIFT |
+		     r1dqsgate_p1 << SELPH6_1_TXDLY_R1DQSGATE_P1_SHIFT);
 
 	/* dly_R1DQSGATE and dly_R1DQSGATE_P1 */
-	clrsetbits_le32(&ch[channel].ao_regs->selph6_1,
-			0x3 << SELPH6_1_DLY_R1DQSGATE_SHIFT |
-			0x3 << SELPH6_1_DLY_R1DQSGATE_P1_SHIFT,
-			(curr_val & 0x3) << SELPH6_1_DLY_R1DQSGATE_SHIFT |
-			(curr_val_p1 & 0x3) << SELPH6_1_DLY_R1DQSGATE_P1_SHIFT);
+	clrsetbits32(&ch[channel].ao_regs->selph6_1,
+		     0x3 << SELPH6_1_DLY_R1DQSGATE_SHIFT |
+		     0x3 << SELPH6_1_DLY_R1DQSGATE_P1_SHIFT,
+		     (curr_val & 0x3) << SELPH6_1_DLY_R1DQSGATE_SHIFT |
+		     (curr_val_p1 & 0x3) << SELPH6_1_DLY_R1DQSGATE_P1_SHIFT);
 }
 
 static void dqs_gw_counter_reset(u32 channel)
 {
 	/* reset dqs counter (1 to 0) */
-	setbits_le32(&ch[channel].ao_regs->spcmd, 1 << SPCMD_DQSGCNTRST_SHIFT);
-	clrbits_le32(&ch[channel].ao_regs->spcmd, 1 << SPCMD_DQSGCNTRST_SHIFT);
+	setbits32(&ch[channel].ao_regs->spcmd, 1 << SPCMD_DQSGCNTRST_SHIFT);
+	clrbits32(&ch[channel].ao_regs->spcmd, 1 << SPCMD_DQSGCNTRST_SHIFT);
 	dramc_phy_reset(channel);
 }
 
@@ -357,15 +357,15 @@ void rx_dqs_gating_cal(u32 channel, u8 rank,
 	u8 gw_coarse_val, gw_fine_val;
 
 	/* disable HW gating */
-	clrbits_le32(&ch[channel].ao_regs->dqscal0,
+	clrbits32(&ch[channel].ao_regs->dqscal0,
 				  1 << DQSCAL0_STBCALEN_SHIFT);
 	/* enable DQS gating window counter */
-	setbits_le32(&ch[channel].ao_regs->dqsctl1,
+	setbits32(&ch[channel].ao_regs->dqsctl1,
 				  1 << DQSCTL1_DQSIENMODE_SHIFT);
-	setbits_le32(&ch[channel].ao_regs->spcmd,
+	setbits32(&ch[channel].ao_regs->spcmd,
 				  1 << SPCMD_DQSGCNTEN_SHIFT);
 	/* dual-phase DQS clock gating control enabling */
-	setbits_le32(&ch[channel].ddrphy_regs->dqsgctl,
+	setbits32(&ch[channel].ddrphy_regs->dqsgctl,
 				  1 << DQSGCTL_DQSGDUALP_SHIFT);
 
 	/* gating calibration value */
@@ -418,7 +418,7 @@ void dual_rank_rx_dqs_gating_cal(u32 channel,
 	dqsinctl = (dqsinctl >> DQSCTL1_DQSINCTL_SHIFT) & (0xf << 0);
 
 	/* swap cs0 and cs1 */
-	setbits_le32(&ch[channel].ao_regs->rkcfg, MASK_RKCFG_RKSWAP_EN);
+	setbits32(&ch[channel].ao_regs->rkcfg, MASK_RKCFG_RKSWAP_EN);
 
 	/* rank 1 gw calibration */
 	rx_dqs_gating_cal(channel, 1, sdram_params);
@@ -429,7 +429,7 @@ void dual_rank_rx_dqs_gating_cal(u32 channel,
 	set_gw_fine_factor(channel, opt_gw_fine_value[channel][1], 1);
 
 	/* swap cs back */
-	clrbits_le32(&ch[channel].ao_regs->rkcfg, MASK_RKCFG_RKSWAP_EN);
+	clrbits32(&ch[channel].ao_regs->rkcfg, MASK_RKCFG_RKSWAP_EN);
 
 	/* set rank 0 coarse tune and fine tune back */
 	set_gw_coarse_factor(channel, opt_gw_coarse_value[channel][0]);
@@ -446,15 +446,15 @@ void dramc_rankinctl_config(u32 channel,
 		value = min(opt_gw_coarse_value[channel][0],
 			    opt_gw_coarse_value[channel][1]) >> 2;
 
-		clrsetbits_le32(&ch[channel].ao_regs->dummy, 0xf, value);
+		clrsetbits32(&ch[channel].ao_regs->dummy, 0xf, value);
 
 		/* RANKINCTL = RANKINCTL_ROOT1 */
-		clrsetbits_le32(&ch[channel].ao_regs->dqscal1,
-				0xf << 16, value << 16);
+		clrsetbits32(&ch[channel].ao_regs->dqscal1,
+			     0xf << 16, value << 16);
 	}
 	/* disable per-bank refresh when refresh rate >= 5 */
-	setbits_le32(&ch[channel].ao_regs->rkcfg,
-		     1 << RKCFG_PBREF_DISBYRATE_SHIFT);
+	setbits32(&ch[channel].ao_regs->rkcfg,
+		  1 << RKCFG_PBREF_DISBYRATE_SHIFT);
 }
 
 u32 dram_k_perbit(u32 channel)
@@ -624,11 +624,11 @@ void clk_duty_cal(u32 channel)
 
 	max_duty_sel = max_duty = 1;
 
-	clrsetbits_le32(&ch[channel].ddrphy_regs->phyclkduty,
-			0x3 << PHYCLKDUTY_CMDCLKP0DUTYN_SHIFT |
-			1 << PHYCLKDUTY_CMDCLKP0DUTYP_SHIFT,
-			1 << PHYCLKDUTY_CMDCLKP0DUTYSEL_SHIFT |
-			max_duty << PHYCLKDUTY_CMDCLKP0DUTYN_SHIFT);
+	clrsetbits32(&ch[channel].ddrphy_regs->phyclkduty,
+		     0x3 << PHYCLKDUTY_CMDCLKP0DUTYN_SHIFT |
+		     1 << PHYCLKDUTY_CMDCLKP0DUTYP_SHIFT,
+		     1 << PHYCLKDUTY_CMDCLKP0DUTYSEL_SHIFT |
+		     max_duty << PHYCLKDUTY_CMDCLKP0DUTYN_SHIFT);
 
 	max_win_size = read32(&ch[channel].ddrphy_regs->phyclkduty);
 
@@ -639,26 +639,26 @@ void clk_duty_cal(u32 channel)
 
 static void set_dle_factor(u32 channel, u8 curr_val)
 {
-	clrsetbits_le32(&ch[channel].ao_regs->ddr2ctl,
-			0x7 << DDR2CTL_DATLAT_SHIFT,
-			(curr_val & 0x7) << DDR2CTL_DATLAT_SHIFT);
+	clrsetbits32(&ch[channel].ao_regs->ddr2ctl,
+		     0x7 << DDR2CTL_DATLAT_SHIFT,
+		     (curr_val & 0x7) << DDR2CTL_DATLAT_SHIFT);
 
-	clrsetbits_le32(&ch[channel].ao_regs->padctl4,
-			0x1 << PADCTL4_DATLAT3_SHIFT,
-			((curr_val >> 3) & 0x1) << PADCTL4_DATLAT3_SHIFT);
+	clrsetbits32(&ch[channel].ao_regs->padctl4,
+		     0x1 << PADCTL4_DATLAT3_SHIFT,
+		     ((curr_val >> 3) & 0x1) << PADCTL4_DATLAT3_SHIFT);
 
-	clrsetbits_le32(&ch[channel].ao_regs->phyctl1,
-			0x1 << PHYCTL1_DATLAT4_SHIFT,
-			((curr_val >> 4) & 0x1) << PHYCTL1_DATLAT4_SHIFT);
+	clrsetbits32(&ch[channel].ao_regs->phyctl1,
+		     0x1 << PHYCTL1_DATLAT4_SHIFT,
+		     ((curr_val >> 4) & 0x1) << PHYCTL1_DATLAT4_SHIFT);
 
-	clrsetbits_le32(&ch[channel].ao_regs->misc,
-			0x1f << MISC_DATLAT_DSEL_SHIFT,
-			(curr_val - 8) << MISC_DATLAT_DSEL_SHIFT);
+	clrsetbits32(&ch[channel].ao_regs->misc,
+		     0x1f << MISC_DATLAT_DSEL_SHIFT,
+		     (curr_val - 8) << MISC_DATLAT_DSEL_SHIFT);
 
 	/* optimize bandwidth for HW run time test engine use */
-	clrsetbits_le32(&ch[channel].ao_regs->misc,
-			0x1f << MISC_LATNORMP_SHIFT,
-			(curr_val - 3) << MISC_LATNORMP_SHIFT);
+	clrsetbits32(&ch[channel].ao_regs->misc,
+		     0x1f << MISC_LATNORMP_SHIFT,
+		     (curr_val - 3) << MISC_LATNORMP_SHIFT);
 }
 
 void dual_rank_rx_datlat_cal(u32 channel,
@@ -670,7 +670,7 @@ void dual_rank_rx_datlat_cal(u32 channel,
 	r0_dle_setting = rx_datlat_cal(channel, 0, sdram_params);
 
 	/* swap cs0 and cs1 */
-	setbits_le32(&ch[channel].ao_regs->rkcfg, MASK_RKCFG_RKSWAP_EN);
+	setbits32(&ch[channel].ao_regs->rkcfg, MASK_RKCFG_RKSWAP_EN);
 
 	/* set rank 1 coarse tune and fine tune back */
 	set_gw_coarse_factor(channel, opt_gw_coarse_value[channel][1]);
@@ -684,7 +684,7 @@ void dual_rank_rx_datlat_cal(u32 channel,
 	set_gw_fine_factor(channel, opt_gw_fine_value[channel][0], 0);
 
 	/* swap cs back */
-	clrbits_le32(&ch[channel].ao_regs->rkcfg, MASK_RKCFG_RKSWAP_EN);
+	clrbits32(&ch[channel].ao_regs->rkcfg, MASK_RKCFG_RKSWAP_EN);
 
 	/* output dle setting of rank 0 and 1 */
 	dramc_dbg_msg("[DLE] Rank 0 DLE calibrated setting = %xh.\n"
@@ -715,7 +715,7 @@ u8 rx_datlat_cal(u32 channel, u8 rank,
 		       channel, rank);
 	dramc_dbg_msg("=========================================\n");
 
-	clrbits_le32(&ch[channel].ao_regs->mckdly,
+	clrbits32(&ch[channel].ao_regs->mckdly,
 		     0x11 << MCKDLY_DQIENQKEND_SHIFT |
 		     0x1  << MCKDLY_DQIENLAT_SHIFT);
 

@@ -307,7 +307,7 @@ static void gsbi_pin_config(unsigned int port_num, int cs_num)
 	unsigned int gpio;
 	unsigned int i;
 	/* Hold the GSBIn (core_num) core in reset */
-	clrsetbits_le32_i(GSBIn_RESET_REG(GSBI_IDX_TO_GSBI(port_num)),
+	clrsetbits32_i(GSBIn_RESET_REG(GSBI_IDX_TO_GSBI(port_num)),
 			GSBI1_RESET_MSK, GSBI1_RESET);
 
 	/*
@@ -348,11 +348,11 @@ static int gsbi_clock_init(struct ipq_spi_slave *ds)
 	int ret;
 
 	/* Hold the GSBIn (core_num) core in reset */
-	clrsetbits_le32_i(GSBIn_RESET_REG(GSBI_IDX_TO_GSBI(ds->slave.bus)),
+	clrsetbits32_i(GSBIn_RESET_REG(GSBI_IDX_TO_GSBI(ds->slave.bus)),
 			GSBI1_RESET_MSK, GSBI1_RESET);
 
 	/* Disable GSBIn (core_num) QUP core clock branch */
-	clrsetbits_le32_i(ds->regs->qup_ns_reg, QUP_CLK_BRANCH_ENA_MSK,
+	clrsetbits32_i(ds->regs->qup_ns_reg, QUP_CLK_BRANCH_ENA_MSK,
 					QUP_CLK_BRANCH_DIS);
 
 	ret = check_qup_clk_state(ds->slave.bus, 1);
@@ -363,41 +363,41 @@ static int gsbi_clock_init(struct ipq_spi_slave *ds)
 	}
 
 	/* Disable M/N:D counter and hold M/N:D counter in reset */
-	clrsetbits_le32_i(ds->regs->qup_ns_reg, (MNCNTR_MSK | MNCNTR_RST_MSK),
+	clrsetbits32_i(ds->regs->qup_ns_reg, (MNCNTR_MSK | MNCNTR_RST_MSK),
 					(MNCNTR_RST_ENA | MNCNTR_DIS));
 
 	/* Disable GSBIn (core_num) QUP core clock root */
-	clrsetbits_le32_i(ds->regs->qup_ns_reg, CLK_ROOT_ENA_MSK, CLK_ROOT_DIS);
+	clrsetbits32_i(ds->regs->qup_ns_reg, CLK_ROOT_ENA_MSK, CLK_ROOT_DIS);
 
-	clrsetbits_le32_i(ds->regs->qup_ns_reg, GSBIn_PLL_SRC_MSK,
+	clrsetbits32_i(ds->regs->qup_ns_reg, GSBIn_PLL_SRC_MSK,
 					GSBIn_PLL_SRC_PLL8);
-	clrsetbits_le32_i(ds->regs->qup_ns_reg, GSBIn_PRE_DIV_SEL_MSK,
+	clrsetbits32_i(ds->regs->qup_ns_reg, GSBIn_PRE_DIV_SEL_MSK,
 						(0 << GSBI_PRE_DIV_SEL_SHFT));
 
 	/* Program M/N:D values for GSBIn_QUP_APPS_CLK @50MHz */
-	clrsetbits_le32_i(ds->regs->qup_md_reg, GSBIn_M_VAL_MSK,
+	clrsetbits32_i(ds->regs->qup_md_reg, GSBIn_M_VAL_MSK,
 						(0x01 << GSBI_M_VAL_SHFT));
-	clrsetbits_le32_i(ds->regs->qup_md_reg, GSBIn_D_VAL_MSK,
+	clrsetbits32_i(ds->regs->qup_md_reg, GSBIn_D_VAL_MSK,
 						(0xF7 << GSBI_D_VAL_SHFT));
-	clrsetbits_le32_i(ds->regs->qup_ns_reg, GSBIn_N_VAL_MSK,
+	clrsetbits32_i(ds->regs->qup_ns_reg, GSBIn_N_VAL_MSK,
 						(0xF8 << GSBI_N_VAL_SHFT));
 
 	/* Set MNCNTR_MODE = 0: Bypass mode */
-	clrsetbits_le32_i(ds->regs->qup_ns_reg, MNCNTR_MODE_MSK,
+	clrsetbits32_i(ds->regs->qup_ns_reg, MNCNTR_MODE_MSK,
 					MNCNTR_MODE_DUAL_EDGE);
 
 	/* De-assert the M/N:D counter reset */
-	clrsetbits_le32_i(ds->regs->qup_ns_reg, MNCNTR_RST_MSK, MNCNTR_RST_DIS);
-	clrsetbits_le32_i(ds->regs->qup_ns_reg, MNCNTR_MSK, MNCNTR_EN);
+	clrsetbits32_i(ds->regs->qup_ns_reg, MNCNTR_RST_MSK, MNCNTR_RST_DIS);
+	clrsetbits32_i(ds->regs->qup_ns_reg, MNCNTR_MSK, MNCNTR_EN);
 
 	/*
 	 * Enable the GSBIn (core_num) QUP core clock root.
 	 * Keep MND counter disabled
 	 */
-	clrsetbits_le32_i(ds->regs->qup_ns_reg, CLK_ROOT_ENA_MSK, CLK_ROOT_ENA);
+	clrsetbits32_i(ds->regs->qup_ns_reg, CLK_ROOT_ENA_MSK, CLK_ROOT_ENA);
 
 	/* Enable GSBIn (core_num) QUP core clock branch */
-	clrsetbits_le32_i(ds->regs->qup_ns_reg, QUP_CLK_BRANCH_ENA_MSK,
+	clrsetbits32_i(ds->regs->qup_ns_reg, QUP_CLK_BRANCH_ENA_MSK,
 						QUP_CLK_BRANCH_ENA);
 
 	ret = check_qup_clk_state(ds->slave.bus, 0);
@@ -409,7 +409,7 @@ static int gsbi_clock_init(struct ipq_spi_slave *ds)
 	}
 
 	/* Enable GSBIn (core_num) core clock branch */
-	clrsetbits_le32_i(GSBIn_HCLK_CTL_REG(GSBI_IDX_TO_GSBI(ds->slave.bus)),
+	clrsetbits32_i(GSBIn_HCLK_CTL_REG(GSBI_IDX_TO_GSBI(ds->slave.bus)),
 			GSBI_CLK_BRANCH_ENA_MSK, GSBI_CLK_BRANCH_ENA);
 
 	ret = check_hclk_state(ds->slave.bus, 0);
@@ -420,7 +420,7 @@ static int gsbi_clock_init(struct ipq_spi_slave *ds)
 	}
 
 	/* Release GSBIn (core_num) core from reset */
-	clrsetbits_le32_i(GSBIn_RESET_REG(GSBI_IDX_TO_GSBI(ds->slave.bus)),
+	clrsetbits32_i(GSBIn_RESET_REG(GSBI_IDX_TO_GSBI(ds->slave.bus)),
 						GSBI1_RESET_MSK, 0);
 	udelay(50);
 
@@ -541,14 +541,14 @@ static int spi_hw_init(struct ipq_spi_slave *ds)
 		return ret;
 
 	/* Configure GSBI_CTRL register to set protocol_mode to SPI:011 */
-	clrsetbits_le32_i(ds->regs->gsbi_ctrl, PROTOCOL_CODE_MSK,
+	clrsetbits32_i(ds->regs->gsbi_ctrl, PROTOCOL_CODE_MSK,
 					PROTOCOL_CODE_SPI);
 
 	/*
 	 * Configure Mini core to SPI core with Input Output enabled,
 	 * SPI master, N = 8 bits
 	 */
-	clrsetbits_le32_i(ds->regs->qup_config, (QUP_CONFIG_MINI_CORE_MSK |
+	clrsetbits32_i(ds->regs->qup_config, (QUP_CONFIG_MINI_CORE_MSK |
 					       SPI_QUP_CONF_INPUT_MSK |
 					       SPI_QUP_CONF_OUTPUT_MSK |
 					       SPI_BIT_WORD_MSK),
@@ -561,7 +561,7 @@ static int spi_hw_init(struct ipq_spi_slave *ds)
 	 * Configure Input first SPI protocol,
 	 * SPI master mode and no loopback
 	 */
-	clrsetbits_le32_i(ds->regs->spi_config, (LOOP_BACK_MSK |
+	clrsetbits32_i(ds->regs->spi_config, (LOOP_BACK_MSK |
 					       SLAVE_OPERATION_MSK),
 					      (NO_LOOP_BACK |
 					       SLAVE_OPERATION));
@@ -581,7 +581,7 @@ static int spi_hw_init(struct ipq_spi_slave *ds)
 	 * INPUT_MODE = Block Mode
 	 * OUTPUT MODE = Block Mode
 	 */
-	clrsetbits_le32_i(ds->regs->qup_io_modes, (OUTPUT_BIT_SHIFT_MSK |
+	clrsetbits32_i(ds->regs->qup_io_modes, (OUTPUT_BIT_SHIFT_MSK |
 						 INPUT_BLOCK_MODE_MSK |
 						 OUTPUT_BLOCK_MODE_MSK),
 						(OUTPUT_BIT_SHIFT_EN |
@@ -707,7 +707,7 @@ static int spi_ctrlr_xfer(const struct spi_slave *slave, const void *dout,
 	 * Let's do the write side of the transaction first. Enable output
 	 * FIFO.
 	 */
-	clrsetbits_le32_i(ds->regs->qup_config, SPI_QUP_CONF_OUTPUT_MSK,
+	clrsetbits32_i(ds->regs->qup_config, SPI_QUP_CONF_OUTPUT_MSK,
 			  SPI_QUP_CONF_OUTPUT_ENA);
 
 	while (out_bytes) {
@@ -729,7 +729,7 @@ spi_receive:
 		goto out;
 
 	/* Enable input FIFO */
-	clrsetbits_le32_i(ds->regs->qup_config, SPI_QUP_CONF_INPUT_MSK,
+	clrsetbits32_i(ds->regs->qup_config, SPI_QUP_CONF_INPUT_MSK,
 			  SPI_QUP_CONF_INPUT_ENA);
 
 	while (in_bytes) {

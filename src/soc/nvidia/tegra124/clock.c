@@ -203,13 +203,13 @@ void sor_clock_stop(void)
 	 * FIXME: this has to be cleaned up a bit more.
 	 * Waiting on some new info from Nvidia.
 	 */
-	clrbits_le32(&clk_rst->clk_src_sor, SOR0_CLK_SEL0 | SOR0_CLK_SEL1);
+	clrbits32(&clk_rst->clk_src_sor, SOR0_CLK_SEL0 | SOR0_CLK_SEL1);
 }
 
 void sor_clock_start(void)
 {
 	/* uses PLLP, has a non-standard bit layout. */
-	setbits_le32(&clk_rst->clk_src_sor, SOR0_CLK_SEL0);
+	setbits32(&clk_rst->clk_src_sor, SOR0_CLK_SEL0);
 }
 
 static void init_pll(u32 *base, u32 *misc, const union pll_fields pll, u32 lock)
@@ -240,7 +240,7 @@ static void init_utmip_pll(void)
 	int khz = clock_get_pll_input_khz();
 
 	/* Shut off PLL crystal clock while we mess with it */
-	clrbits_le32(&clk_rst->utmip_pll_cfg2, 1 << 30); /* PHY_XTAL_CLKEN */
+	clrbits32(&clk_rst->utmip_pll_cfg2, 1 << 30); /* PHY_XTAL_CLKEN */
 	udelay(1);
 
 	write32(&clk_rst->utmip_pll_cfg0,	/* 960MHz * 1 / 80 == 12 MHz */
@@ -263,7 +263,7 @@ static void init_utmip_pll(void)
 				  0 <<  2 |	/* SAMP_B/XHOST pwrdn */
 				  0 <<  0);	/* SAMP_A/USBD pwrdn */
 
-	setbits_le32(&clk_rst->utmip_pll_cfg2, 1 << 30); /* PHY_XTAL_CLKEN */
+	setbits32(&clk_rst->utmip_pll_cfg2, 1 << 30); /* PHY_XTAL_CLKEN */
 }
 
 /* Graphics just has to be different. There's a few more bits we
@@ -401,9 +401,9 @@ void clock_early_uart(void)
 {
 	write32(&clk_rst->clk_src_uarta, CLK_M << CLK_SOURCE_SHIFT |
 		CLK_UART_DIV_OVERRIDE | CLK_DIVIDER(TEGRA_CLK_M_KHZ, 1900));
-	setbits_le32(&clk_rst->clk_out_enb_l, CLK_L_UARTA);
+	setbits32(&clk_rst->clk_out_enb_l, CLK_L_UARTA);
 	udelay(2);
-	clrbits_le32(&clk_rst->rst_dev_l, CLK_L_UARTA);
+	clrbits32(&clk_rst->rst_dev_l, CLK_L_UARTA);
 }
 
 /* Enable output clock (CLK1~3) for external peripherals. */
@@ -411,13 +411,13 @@ void clock_external_output(int clk_id)
 {
 	switch (clk_id) {
 	case 1:
-		setbits_le32(&pmc->clk_out_cntrl, 1 << 2);
+		setbits32(&pmc->clk_out_cntrl, 1 << 2);
 		break;
 	case 2:
-		setbits_le32(&pmc->clk_out_cntrl, 1 << 10);
+		setbits32(&pmc->clk_out_cntrl, 1 << 10);
 		break;
 	case 3:
-		setbits_le32(&pmc->clk_out_cntrl, 1 << 18);
+		setbits32(&pmc->clk_out_cntrl, 1 << 18);
 		break;
 	default:
 		printk(BIOS_CRIT, "ERROR: Unknown output clock id %d\n",
@@ -461,7 +461,7 @@ void clock_sdram(u32 m, u32 n, u32 p, u32 setup, u32 ph45, u32 ph90,
 		 (p << PLL_BASE_DIVP_SHIFT));
 	write32(&clk_rst->pllm_base, base);
 
-	setbits_le32(&clk_rst->pllm_base, PLL_BASE_ENABLE);
+	setbits32(&clk_rst->pllm_base, PLL_BASE_ENABLE);
 	/* stable_time is required, before we can start to check lock. */
 	udelay(stable_time);
 
@@ -475,7 +475,7 @@ void clock_sdram(u32 m, u32 n, u32 p, u32 setup, u32 ph45, u32 ph90,
 	udelay(10);
 
 	/* Put OUT1 out of reset state (start to output). */
-	setbits_le32(&clk_rst->pllm_out, PLLM_OUT1_RSTN_RESET_DISABLE);
+	setbits32(&clk_rst->pllm_out, PLLM_OUT1_RSTN_RESET_DISABLE);
 
 	/* Enable and start MEM(MC) and EMC. */
 	clock_enable_clear_reset(0, CLK_H_MEM | CLK_H_EMC, 0, 0, 0, 0);
@@ -492,7 +492,7 @@ void clock_cpu0_config(void *entry)
 	write32(evp_cpu_reset, (uintptr_t)&maincpu_setup);
 
 	/* Set active CPU cluster to G */
-	clrbits_le32(&flow->cluster_control, 1);
+	clrbits32(&flow->cluster_control, 1);
 
 	// Set up cclk_brst and divider.
 	write32(&clk_rst->cclk_brst_pol,
@@ -511,9 +511,9 @@ void clock_cpu0_config(void *entry)
 	write32(&clk_rst->clk_cpu_cmplx_clr, cpu_cmplx_clr);
 
 	// Enable other CPU related clocks.
-	setbits_le32(&clk_rst->clk_out_enb_l, CLK_L_CPU);
-	setbits_le32(&clk_rst->clk_out_enb_v, CLK_V_CPUG);
-	setbits_le32(&clk_rst->clk_out_enb_v, CLK_V_CPULP);
+	setbits32(&clk_rst->clk_out_enb_l, CLK_L_CPU);
+	setbits32(&clk_rst->clk_out_enb_v, CLK_V_CPUG);
+	setbits32(&clk_rst->clk_out_enb_v, CLK_V_CPULP);
 }
 
 void clock_cpu0_remove_reset(void)
@@ -573,7 +573,7 @@ void clock_init(void)
 		SCLK_SOURCE_PLLC_OUT1 << SCLK_RUN_SHIFT);
 
 	/* Change the oscillator drive strength (from U-Boot -- why?) */
-	clrsetbits_le32(&clk_rst->osc_ctrl, OSC_XOFS_MASK,
+	clrsetbits32(&clk_rst->osc_ctrl, OSC_XOFS_MASK,
 			OSC_DRIVE_STRENGTH << OSC_XOFS_SHIFT);
 
 	/*
@@ -581,11 +581,11 @@ void clock_init(void)
 	 * "should update same value in PMC_OSC_EDPD_OVER XOFS
 	 * field for warmboot "
 	 */
-	clrsetbits_le32(&pmc->osc_edpd_over, PMC_OSC_EDPD_OVER_XOFS_MASK,
+	clrsetbits32(&pmc->osc_edpd_over, PMC_OSC_EDPD_OVER_XOFS_MASK,
 			OSC_DRIVE_STRENGTH << PMC_OSC_EDPD_OVER_XOFS_SHIFT);
 
 	/* Disable IDDQ for PLLX before we set it up (from U-Boot -- why?) */
-	clrbits_le32(&clk_rst->pllx_misc3, PLLX_IDDQ_MASK);
+	clrbits32(&clk_rst->pllx_misc3, PLLX_IDDQ_MASK);
 
 	/* Set up PLLP_OUT(1|2|3|4) divisor to generate (9.6|48|102|204)MHz */
 	write32(&clk_rst->pllp_outa,

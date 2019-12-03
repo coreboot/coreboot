@@ -188,13 +188,13 @@ struct tegra_spi_channel *tegra_spi_init(unsigned int bus)
 		return NULL;
 
 	/* software drives chip-select, set value to high */
-	setbits_le32(&spi->regs->command1,
+	setbits32(&spi->regs->command1,
 			SPI_CMD1_CS_SW_HW | SPI_CMD1_CS_SW_VAL);
 
 	/* 8-bit transfers, unpacked mode, most significant bit first */
-	clrbits_le32(&spi->regs->command1,
+	clrbits32(&spi->regs->command1,
 			SPI_CMD1_BIT_LEN_MASK | SPI_CMD1_PACKED);
-	setbits_le32(&spi->regs->command1, 7 << SPI_CMD1_BIT_LEN_SHIFT);
+	setbits32(&spi->regs->command1, 7 << SPI_CMD1_BIT_LEN_SHIFT);
 
 	return spi;
 }
@@ -263,7 +263,7 @@ static void dump_fifo_status(struct tegra_spi_channel *spi)
 
 static void clear_fifo_status(struct tegra_spi_channel *spi)
 {
-	clrbits_le32(&spi->regs->fifo_status,
+	clrbits32(&spi->regs->fifo_status,
 				SPI_FIFO_STATUS_ERR |
 				SPI_FIFO_STATUS_TX_FIFO_OVF |
 				SPI_FIFO_STATUS_TX_FIFO_UNR |
@@ -374,7 +374,7 @@ static int tegra_spi_pio_prepare(struct tegra_spi_channel *spi,
 	 */
 	write32(&spi->regs->dma_blk, todo - 1);
 
-	setbits_le32(&spi->regs->command1, enable_mask);
+	setbits32(&spi->regs->command1, enable_mask);
 
 	if (dir == SPI_SEND) {
 		unsigned int to_fifo = bytes;
@@ -390,7 +390,7 @@ static int tegra_spi_pio_prepare(struct tegra_spi_channel *spi,
 
 static void tegra_spi_pio_start(struct tegra_spi_channel *spi)
 {
-	setbits_le32(&spi->regs->trans_status, SPI_STATUS_RDY);
+	setbits32(&spi->regs->trans_status, SPI_STATUS_RDY);
 	/*
 	 * Need to stabilize other reg bit before GO bit set.
 	 *
@@ -403,7 +403,7 @@ static void tegra_spi_pio_start(struct tegra_spi_channel *spi)
 	 * enabling pio or dma.
 	 */
 	udelay(2);
-	setbits_le32(&spi->regs->command1, SPI_CMD1_GO);
+	setbits32(&spi->regs->command1, SPI_CMD1_GO);
 	/* Need to wait a few cycles before command1 register is read */
 	udelay(1);
 	/* Make sure the write to command1 completes. */
@@ -421,7 +421,7 @@ static int tegra_spi_pio_finish(struct tegra_spi_channel *spi)
 {
 	u8 *p = spi->in_buf;
 
-	clrbits_le32(&spi->regs->command1, SPI_CMD1_RX_EN | SPI_CMD1_TX_EN);
+	clrbits32(&spi->regs->command1, SPI_CMD1_RX_EN | SPI_CMD1_TX_EN);
 
 	ASSERT(rx_fifo_count(spi) == spi_byte_count(spi));
 
@@ -447,19 +447,19 @@ static void setup_dma_params(struct tegra_spi_channel *spi,
 				struct apb_dma_channel *dma)
 {
 	/* APB bus width = 8-bits, address wrap for each word */
-	clrbits_le32(&dma->regs->apb_seq,
+	clrbits32(&dma->regs->apb_seq,
 			APB_BUS_WIDTH_MASK << APB_BUS_WIDTH_SHIFT);
 	/* AHB 1 word burst, bus width = 32 bits (fixed in hardware),
 	 * no address wrapping */
-	clrsetbits_le32(&dma->regs->ahb_seq,
+	clrsetbits32(&dma->regs->ahb_seq,
 			(AHB_BURST_MASK << AHB_BURST_SHIFT),
 			4 << AHB_BURST_SHIFT);
 
 	/* Set ONCE mode to transfer one "block" at a time (64KB) and enable
 	 * flow control. */
-	clrbits_le32(&dma->regs->csr,
+	clrbits32(&dma->regs->csr,
 			APB_CSR_REQ_SEL_MASK << APB_CSR_REQ_SEL_SHIFT);
-	setbits_le32(&dma->regs->csr, APB_CSR_ONCE | APB_CSR_FLOW |
+	setbits32(&dma->regs->csr, APB_CSR_ONCE | APB_CSR_FLOW |
 			(spi->req_sel << APB_CSR_REQ_SEL_SHIFT));
 }
 
@@ -496,7 +496,7 @@ static int tegra_spi_dma_prepare(struct tegra_spi_channel *spi,
 		write32(&spi->dma_out->regs->apb_ptr,
 			(uintptr_t) & spi->regs->tx_fifo);
 		write32(&spi->dma_out->regs->ahb_ptr, (uintptr_t)spi->out_buf);
-		setbits_le32(&spi->dma_out->regs->csr, APB_CSR_DIR);
+		setbits32(&spi->dma_out->regs->csr, APB_CSR_DIR);
 		setup_dma_params(spi, spi->dma_out);
 		write32(&spi->dma_out->regs->wcount, wcount);
 	} else {
@@ -510,7 +510,7 @@ static int tegra_spi_dma_prepare(struct tegra_spi_channel *spi,
 		write32(&spi->dma_in->regs->apb_ptr,
 			(uintptr_t)&spi->regs->rx_fifo);
 		write32(&spi->dma_in->regs->ahb_ptr, (uintptr_t)spi->in_buf);
-		clrbits_le32(&spi->dma_in->regs->csr, APB_CSR_DIR);
+		clrbits32(&spi->dma_in->regs->csr, APB_CSR_DIR);
 		setup_dma_params(spi, spi->dma_in);
 		write32(&spi->dma_in->regs->wcount, wcount);
 	}
@@ -527,7 +527,7 @@ static void tegra_spi_dma_start(struct tegra_spi_channel *spi)
 	 * (set bit to clear) between each transaction. Otherwise the next
 	 * transaction does not start.
 	 */
-	setbits_le32(&spi->regs->trans_status, SPI_STATUS_RDY);
+	setbits32(&spi->regs->trans_status, SPI_STATUS_RDY);
 
 	struct apb_dma * const apb_dma = (struct apb_dma *)TEGRA_APB_DMA_BASE;
 
@@ -539,21 +539,21 @@ static void tegra_spi_dma_start(struct tegra_spi_channel *spi)
 	 */
 	if (spi->dma_out) {
 		/* Enable secure access for the channel. */
-		setbits_le32(&apb_dma->security_reg,
+		setbits32(&apb_dma->security_reg,
 			     SECURITY_EN_BIT(spi->dma_out->num));
-		clrsetbits_le32(&spi->regs->dma_ctl,
+		clrsetbits32(&spi->regs->dma_ctl,
 			SPI_DMA_CTL_TX_TRIG_MASK << SPI_DMA_CTL_TX_TRIG_SHIFT,
 			1 << SPI_DMA_CTL_TX_TRIG_SHIFT);
-		setbits_le32(&spi->regs->command1, SPI_CMD1_TX_EN);
+		setbits32(&spi->regs->command1, SPI_CMD1_TX_EN);
 	}
 	if (spi->dma_in) {
 		/* Enable secure access for the channel. */
-		setbits_le32(&apb_dma->security_reg,
+		setbits32(&apb_dma->security_reg,
 			     SECURITY_EN_BIT(spi->dma_in->num));
-		clrsetbits_le32(&spi->regs->dma_ctl,
+		clrsetbits32(&spi->regs->dma_ctl,
 			SPI_DMA_CTL_RX_TRIG_MASK << SPI_DMA_CTL_RX_TRIG_SHIFT,
 			1 << SPI_DMA_CTL_RX_TRIG_SHIFT);
-		setbits_le32(&spi->regs->command1, SPI_CMD1_RX_EN);
+		setbits32(&spi->regs->command1, SPI_CMD1_RX_EN);
 	}
 
 	/*
@@ -562,7 +562,7 @@ static void tegra_spi_dma_start(struct tegra_spi_channel *spi)
 	 */
 	if (spi->dma_out)
 		dma_start(spi->dma_out);
-	setbits_le32(&spi->regs->dma_ctl, SPI_DMA_CTL_DMA);
+	setbits32(&spi->regs->dma_ctl, SPI_DMA_CTL_DMA);
 	if (spi->dma_in)
 		dma_start(spi->dma_in);
 
@@ -583,9 +583,9 @@ static int tegra_spi_dma_finish(struct tegra_spi_channel *spi)
 				dma_busy(spi->dma_in))
 			;
 		dma_stop(spi->dma_in);
-		clrbits_le32(&spi->regs->command1, SPI_CMD1_RX_EN);
+		clrbits32(&spi->regs->command1, SPI_CMD1_RX_EN);
 		/* Disable secure access for the channel. */
-		clrbits_le32(&apb_dma->security_reg,
+		clrbits32(&apb_dma->security_reg,
 			     SECURITY_EN_BIT(spi->dma_in->num));
 		dma_release(spi->dma_in);
 	}
@@ -596,10 +596,10 @@ static int tegra_spi_dma_finish(struct tegra_spi_channel *spi)
 		while ((read32(&spi->dma_out->regs->dma_byte_sta) < todo) ||
 				dma_busy(spi->dma_out))
 			;
-		clrbits_le32(&spi->regs->command1, SPI_CMD1_TX_EN);
+		clrbits32(&spi->regs->command1, SPI_CMD1_TX_EN);
 		dma_stop(spi->dma_out);
 		/* Disable secure access for the channel. */
-		clrbits_le32(&apb_dma->security_reg,
+		clrbits32(&apb_dma->security_reg,
 			     SECURITY_EN_BIT(spi->dma_out->num));
 		dma_release(spi->dma_out);
 	}

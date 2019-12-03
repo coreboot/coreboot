@@ -89,10 +89,10 @@ static void spi_sw_reset(struct exynos_spi *regs, int word)
 	if (swap_cfg != orig_swap_cfg)
 		write32(&regs->swap_cfg, swap_cfg);
 
-	clrbits_le32(&regs->ch_cfg, SPI_RX_CH_ON | SPI_TX_CH_ON);
-	setbits_le32(&regs->ch_cfg, SPI_CH_RST);
-	clrbits_le32(&regs->ch_cfg, SPI_CH_RST);
-	setbits_le32(&regs->ch_cfg, SPI_RX_CH_ON | SPI_TX_CH_ON);
+	clrbits32(&regs->ch_cfg, SPI_RX_CH_ON | SPI_TX_CH_ON);
+	setbits32(&regs->ch_cfg, SPI_CH_RST);
+	clrbits32(&regs->ch_cfg, SPI_CH_RST);
+	setbits32(&regs->ch_cfg, SPI_RX_CH_ON | SPI_TX_CH_ON);
 }
 
 static void exynos_spi_init(struct exynos_spi *regs)
@@ -100,14 +100,14 @@ static void exynos_spi_init(struct exynos_spi *regs)
 	// Set FB_CLK_SEL.
 	write32(&regs->fb_clk, SPI_FB_DELAY_180);
 	// CPOL: Active high.
-	clrbits_le32(&regs->ch_cfg, SPI_CH_CPOL_L);
+	clrbits32(&regs->ch_cfg, SPI_CH_CPOL_L);
 
 	// Clear rx and tx channel if set priveously.
-	clrbits_le32(&regs->ch_cfg, SPI_RX_CH_ON | SPI_TX_CH_ON);
+	clrbits32(&regs->ch_cfg, SPI_RX_CH_ON | SPI_TX_CH_ON);
 
-	setbits_le32(&regs->swap_cfg,
+	setbits32(&regs->swap_cfg,
 		     SPI_RX_SWAP_EN | SPI_RX_BYTE_SWAP | SPI_RX_HWORD_SWAP);
-	clrbits_le32(&regs->ch_cfg, SPI_CH_HS_EN);
+	clrbits32(&regs->ch_cfg, SPI_CH_HS_EN);
 
 	// Do a soft reset, which will also enable both channels.
 	spi_sw_reset(regs, 1);
@@ -117,7 +117,7 @@ static int spi_ctrlr_claim_bus(const struct spi_slave *slave)
 {
 	struct exynos_spi *regs = to_exynos_spi(slave)->regs;
 	// TODO(hungte) Add some delay if too many transactions happen at once.
-	clrbits_le32(&regs->cs_reg, SPI_SLAVE_SIG_INACT);
+	clrbits32(&regs->cs_reg, SPI_SLAVE_SIG_INACT);
 	return 0;
 }
 
@@ -201,7 +201,7 @@ static int spi_ctrlr_xfer(const struct spi_slave *slave, const void *dout, size_
 static void spi_ctrlr_release_bus(const struct spi_slave *slave)
 {
 	struct exynos_spi *regs = to_exynos_spi(slave)->regs;
-	setbits_le32(&regs->cs_reg, SPI_SLAVE_SIG_INACT);
+	setbits32(&regs->cs_reg, SPI_SLAVE_SIG_INACT);
 }
 
 static int spi_ctrlr_setup(const struct spi_slave *slave)

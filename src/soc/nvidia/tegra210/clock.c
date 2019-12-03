@@ -255,13 +255,13 @@ void sor_clock_stop(void)
 	 * FIXME: this has to be cleaned up a bit more.
 	 * Waiting on some new info from Nvidia.
 	 */
-	clrbits_le32(CLK_RST_REG(clk_src_sor), SOR0_CLK_SEL0 | SOR0_CLK_SEL1);
+	clrbits32(CLK_RST_REG(clk_src_sor), SOR0_CLK_SEL0 | SOR0_CLK_SEL1);
 }
 
 void sor_clock_start(void)
 {
 	/* uses PLLP, has a non-standard bit layout. */
-	setbits_le32(CLK_RST_REG(clk_src_sor), SOR0_CLK_SEL0);
+	setbits32(CLK_RST_REG(clk_src_sor), SOR0_CLK_SEL0);
 }
 
 static void init_pll(u32 index, u32 osc)
@@ -280,13 +280,13 @@ static void init_pll(u32 index, u32 osc)
 
 	/* Set Lock bit if needed. */
 	if (pll_reg->lock_enb_val)
-		setbits_le32(pll_reg->lock_enb_reg, pll_reg->lock_enb_val);
+		setbits32(pll_reg->lock_enb_reg, pll_reg->lock_enb_val);
 
 	/* Set KCP/KVCO if needed. */
 	if (pll_reg->kcp_kvco_reg)
-		setbits_le32(pll_reg->kcp_kvco_reg,
-			     pll->kcp << pll_reg->kcp_shift |
-			     pll->kvco << pll_reg->kvco_shift);
+		setbits32(pll_reg->kcp_kvco_reg,
+			  pll->kcp << pll_reg->kcp_shift |
+			  pll->kvco << pll_reg->kvco_shift);
 
 	/* Enable PLL and take it back out of BYPASS */
 	write32(pll_reg->base_reg, dividers | PLL_BASE_ENABLE);
@@ -300,10 +300,10 @@ static void init_pll(u32 index, u32 osc)
 static void init_pllc(u32 osc)
 {
 	/* Clear PLLC reset */
-	clrbits_le32(CLK_RST_REG(pllc_misc), PLLC_MISC_RESET);
+	clrbits32(CLK_RST_REG(pllc_misc), PLLC_MISC_RESET);
 
 	/* Clear PLLC IDDQ */
-	clrbits_le32(CLK_RST_REG(pllc_misc_1), PLLC_MISC_1_IDDQ);
+	clrbits32(CLK_RST_REG(pllc_misc_1), PLLC_MISC_1_IDDQ);
 
 	/* Max out the AVP clock before everything else (need PLLC for that). */
 	init_pll(PLLC_INDEX, osc);
@@ -316,7 +316,7 @@ static void init_pllc(u32 osc)
 static void init_pllu(u32 osc)
 {
 	/* Clear PLLU IDDQ */
-	clrbits_le32(CLK_RST_REG(pllu_misc), PLLU_MISC_IDDQ);
+	clrbits32(CLK_RST_REG(pllu_misc), PLLU_MISC_IDDQ);
 
 	/* Wait 5 us */
 	udelay(5);
@@ -508,13 +508,13 @@ void clock_external_output(int clk_id)
 {
 	switch (clk_id) {
 	case 1:
-		setbits_le32(&pmc->clk_out_cntrl, 1 << 2);
+		setbits32(&pmc->clk_out_cntrl, 1 << 2);
 		break;
 	case 2:
-		setbits_le32(&pmc->clk_out_cntrl, 1 << 10);
+		setbits32(&pmc->clk_out_cntrl, 1 << 10);
 		break;
 	case 3:
-		setbits_le32(&pmc->clk_out_cntrl, 1 << 18);
+		setbits32(&pmc->clk_out_cntrl, 1 << 18);
 		break;
 	default:
 		printk(BIOS_CRIT, "ERROR: Unknown output clock id %d\n",
@@ -555,7 +555,7 @@ void clock_sdram(u32 m, u32 n, u32 p, u32 setup, u32 kvco, u32 kcp,
 		 (p << PLL_BASE_DIVP_SHIFT));
 	write32(CLK_RST_REG(pllm_base), base);
 
-	setbits_le32(CLK_RST_REG(pllm_base), PLL_BASE_ENABLE);
+	setbits32(CLK_RST_REG(pllm_base), PLL_BASE_ENABLE);
 	/* stable_time is required, before we can start to check lock. */
 	udelay(stable_time);
 
@@ -587,8 +587,8 @@ void clock_init(void)
 {
 	u32 osc = clock_get_osc_bits();
 	/* clk_m = osc/2 */
-	clrsetbits_le32(CLK_RST_REG(spare_reg0), CLK_M_DIVISOR_MASK,
-			CLK_M_DIVISOR_BY_2);
+	clrsetbits32(CLK_RST_REG(spare_reg0), CLK_M_DIVISOR_MASK,
+		     CLK_M_DIVISOR_BY_2);
 
 	/* TIMERUS needs to be adjusted for new 19.2MHz CLK_M rate */
 	write32((void *)TEGRA_TMRUS_BASE + TIMERUS_USEC_CFG,
@@ -608,7 +608,7 @@ void clock_init(void)
 		SCLK_SOURCE_PLLC_OUT1 << SCLK_RUN_SHIFT);
 
 	/* Change the oscillator drive strength (from U-Boot -- why?) */
-	clrsetbits_le32(CLK_RST_REG(osc_ctrl), OSC_XOFS_MASK,
+	clrsetbits32(CLK_RST_REG(osc_ctrl), OSC_XOFS_MASK,
 			OSC_DRIVE_STRENGTH << OSC_XOFS_SHIFT);
 
 	/*
@@ -616,11 +616,11 @@ void clock_init(void)
 	 * "should update same value in PMC_OSC_EDPD_OVER XOFS
 	 * field for warmboot "
 	 */
-	clrsetbits_le32(&pmc->osc_edpd_over, PMC_OSC_EDPD_OVER_XOFS_MASK,
-			OSC_DRIVE_STRENGTH << PMC_OSC_EDPD_OVER_XOFS_SHIFT);
+	clrsetbits32(&pmc->osc_edpd_over, PMC_OSC_EDPD_OVER_XOFS_MASK,
+		     OSC_DRIVE_STRENGTH << PMC_OSC_EDPD_OVER_XOFS_SHIFT);
 
 	/* Disable IDDQ for PLLX before we set it up (from U-Boot -- why?) */
-	clrbits_le32(CLK_RST_REG(pllx_misc3), PLLX_IDDQ_MASK);
+	clrbits32(CLK_RST_REG(pllx_misc3), PLLX_IDDQ_MASK);
 
 	/* Set up PLLP_OUT(1|2|3|4) divisor to generate (9.6|48|102|204)MHz */
 	write32(CLK_RST_REG(pllp_outa),

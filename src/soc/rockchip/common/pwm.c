@@ -79,5 +79,5 @@ void pwm_init(u32 id, u32 period_ns, u32 duty_ns)
 
 	write32(&rk_pwm->pwm[id].pwm_period_hpr, period);
 	write32(&rk_pwm->pwm[id].pwm_duty_lpr, duty);
-	setbits_le32(&rk_pwm->pwm[id].pwm_ctrl, RK_PWM_ENABLE);
+	setbits32(&rk_pwm->pwm[id].pwm_ctrl, RK_PWM_ENABLE);
 }

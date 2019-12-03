@@ -120,12 +120,12 @@ static void mtk_dsi_phy_timing(int data_rate, struct mtk_phy_timing *phy_timing)
 
 static void mtk_dsi_clk_hs_mode_enable(void)
 {
-	setbits_le32(&dsi0->dsi_phy_lccon, LC_HS_TX_EN);
+	setbits32(&dsi0->dsi_phy_lccon, LC_HS_TX_EN);
 }
 
 static void mtk_dsi_clk_hs_mode_disable(void)
 {
-	clrbits_le32(&dsi0->dsi_phy_lccon, LC_HS_TX_EN);
+	clrbits32(&dsi0->dsi_phy_lccon, LC_HS_TX_EN);
 }
 
 static void mtk_dsi_set_mode(u32 mode_flags)
@@ -394,8 +394,8 @@ static void mtk_dsi_send_init_commands(const u8 *buf)
 
 static void mtk_dsi_reset_dphy(void)
 {
-	setbits_le32(&dsi0->dsi_con_ctrl, DPHY_RESET);
-	clrbits_le32(&dsi0->dsi_con_ctrl, DPHY_RESET);
+	setbits32(&dsi0->dsi_con_ctrl, DPHY_RESET);
+	clrbits32(&dsi0->dsi_con_ctrl, DPHY_RESET);
 }
 
 int mtk_dsi_init(u32 mode_flags, u32 format, u32 lanes, const struct edid *edid,

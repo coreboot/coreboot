@@ -17,7 +17,7 @@
 #include <boot_device.h>
 #include <symbols.h>
 #include <cbfs.h>
-#include <arch/mmio.h>
+#include <device/mmio.h>
 #include <soc/addressmap.h>
 #include <soc/spi.h>
 #include <soc/clock.h>

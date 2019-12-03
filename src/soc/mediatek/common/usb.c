@@ -32,53 +32,53 @@ static void phy_index_power_on(int index)
 
 	if (!index) {
 		/* Set RG_SSUSB_VUSB10_ON as 1 after VUSB10 ready */
-		setbits_le32(&phy->u3phya.phya_reg0, P3A_RG_U3_VUSB10_ON);
+		setbits32(&phy->u3phya.phya_reg0, P3A_RG_U3_VUSB10_ON);
 		/* Disable power domain ISO */
-		clrbits_le32(&phy->u2phy.usbphyacr6, PA6_RG_U2_ISO_EN);
+		clrbits32(&phy->u2phy.usbphyacr6, PA6_RG_U2_ISO_EN);
 	}
 	/* Switch system IP to USB mode */
-	clrbits_le32(&phy->u2phy.u2phydtm0, P2C_FORCE_UART_EN);
-	clrbits_le32(&phy->u2phy.u2phydtm1, P2C_RG_UART_EN);
+	clrbits32(&phy->u2phy.u2phydtm0, P2C_FORCE_UART_EN);
+	clrbits32(&phy->u2phy.u2phydtm1, P2C_RG_UART_EN);
 	if (!index)
-		clrbits_le32(&phy->u2phy.u2phyacr4, P2C_U2_GPIO_CTR_MSK);
+		clrbits32(&phy->u2phy.u2phyacr4, P2C_U2_GPIO_CTR_MSK);
 
 	/* Disable force settings */
-	clrbits_le32(&phy->u2phy.u2phydtm0, P2C_FORCE_SUSPENDM |
+	clrbits32(&phy->u2phy.u2phydtm0, P2C_FORCE_SUSPENDM |
 		P2C_RG_XCVRSEL | P2C_RG_DATAIN | P2C_DTM0_PART_MASK);
 
-	clrbits_le32(&phy->u2phy.usbphyacr6, PA6_RG_U2_BC11_SW_EN);
+	clrbits32(&phy->u2phy.usbphyacr6, PA6_RG_U2_BC11_SW_EN);
 	/* Improve Rx sensitivity */
-	clrsetbits_le32(&phy->u2phy.usbphyacr6,
+	clrsetbits32(&phy->u2phy.usbphyacr6,
 		PA6_RG_U2_SQTH, PA6_RG_U2_SQTH_VAL(2));
 
-	setbits_le32(&phy->u2phy.usbphyacr6, PA6_RG_U2_OTG_VBUSCMP_EN);
+	setbits32(&phy->u2phy.usbphyacr6, PA6_RG_U2_OTG_VBUSCMP_EN);
 
-	clrsetbits_le32(&phy->u3phya_da.reg0,
+	clrsetbits32(&phy->u3phya_da.reg0,
 		P3A_RG_XTAL_EXT_EN_U3, P3A_RG_XTAL_EXT_EN_U3_VAL(2));
 
-	clrsetbits_le32(&phy->u3phya.phya_reg9,
+	clrsetbits32(&phy->u3phya.phya_reg9,
 		P3A_RG_RX_DAC_MUX, P3A_RG_RX_DAC_MUX_VAL(4));
 
 	if (!index)
-		clrbits_le32(&phy->u2phy.usbphyacr5, PA5_RG_U2_HS_100U_U3_EN);
+		clrbits32(&phy->u2phy.usbphyacr5, PA5_RG_U2_HS_100U_U3_EN);
 
-	clrsetbits_le32(&phy->u3phya.phya_reg6,
+	clrsetbits32(&phy->u3phya.phya_reg6,
 		P3A_RG_TX_EIDLE_CM, P3A_RG_TX_EIDLE_CM_VAL(0xe));
 
-	clrsetbits_le32(&phy->u3phyd.phyd_cdr1,
+	clrsetbits32(&phy->u3phyd.phyd_cdr1,
 		P3D_RG_CDR_BIR_LTD0, P3D_RG_CDR_BIR_LTD0_VAL(0xc));
-	clrsetbits_le32(&phy->u3phyd.phyd_cdr1,
+	clrsetbits32(&phy->u3phyd.phyd_cdr1,
 		P3D_RG_CDR_BIR_LTD1, P3D_RG_CDR_BIR_LTD1_VAL(0x3));
 
-	clrsetbits_le32(&phy->u2phy.u2phydtm1,
+	clrsetbits32(&phy->u2phy.u2phydtm1,
 		P2C_RG_SESSEND, P2C_RG_VBUSVALID | P2C_RG_AVALID);
 
 	/* Set USB 2.0 slew rate value */
-	clrsetbits_le32(&phy->u2phy.usbphyacr5,
+	clrsetbits32(&phy->u2phy.usbphyacr5,
 		PA5_RG_U2_HSTX_SRCTRL, PA5_RG_U2_HSTX_SRCTRL_VAL(4));
 
 	/* Set USB 2.0 disconnect threshold */
-	clrsetbits_le32(&phy->u2phy.usbphyacr6,
+	clrsetbits32(&phy->u2phy.usbphyacr6,
 		PA6_RG_U2_DISCTH, PA6_RG_U2_DISCTH_VAL(15));
 }
 
@@ -128,18 +128,18 @@ static int u3phy_ports_enable(void)
 	u3p_msg("%s u2p:%d, u3p:%d\n", __func__, u2_port_num, u3_port_num);
 
 	/* Power on host ip */
-	clrbits_le32(&ippc_regs->ip_pw_ctr1, CTRL1_IP_HOST_PDN);
+	clrbits32(&ippc_regs->ip_pw_ctr1, CTRL1_IP_HOST_PDN);
 
 	/* Power on and enable all u3 ports */
 	for (i = 0; i < u3_port_num; i++) {
-		clrsetbits_le32(&ippc_regs->u3_ctrl_p[i],
+		clrsetbits32(&ippc_regs->u3_ctrl_p[i],
 			CTRL_U3_PORT_PDN | CTRL_U3_PORT_DIS,
 			CTRL_U3_PORT_HOST_SEL);
 	}
 
 	/* Power on and enable all u2 ports */
 	for (i = 0; i < u2_port_num; i++) {
-		clrsetbits_le32(&ippc_regs->u2_ctrl_p[i],
+		clrsetbits32(&ippc_regs->u2_ctrl_p[i],
 			CTRL_U2_PORT_PDN | CTRL_U2_PORT_DIS,
 			CTRL_U2_PORT_HOST_SEL);
 	}
@@ -149,8 +149,8 @@ static int u3phy_ports_enable(void)
 static inline void ssusb_soft_reset(void)
 {
 	/* Reset whole ip */
-	setbits_le32(&ippc_regs->ip_pw_ctr0, CTRL0_IP_SW_RST);
-	clrbits_le32(&ippc_regs->ip_pw_ctr0, CTRL0_IP_SW_RST);
+	setbits32(&ippc_regs->ip_pw_ctr0, CTRL0_IP_SW_RST);
+	clrbits32(&ippc_regs->ip_pw_ctr0, CTRL0_IP_SW_RST);
 }
 
 __weak void mtk_usb_prepare(void) { /* do nothing */ }

@@ -390,7 +390,7 @@ void clock_ll_set_pre_ratio(enum periph_id periph_id, unsigned int divisor)
 		      periph_id);
 		return;
 	}
-	clrsetbits_le32(reg, mask << shift, (divisor & mask) << shift);
+	clrsetbits32(reg, mask << shift, (divisor & mask) << shift);
 }
 
 void clock_ll_set_ratio(enum periph_id periph_id, unsigned int divisor)
@@ -425,7 +425,7 @@ void clock_ll_set_ratio(enum periph_id periph_id, unsigned int divisor)
 		      periph_id);
 		return;
 	}
-	clrsetbits_le32(reg, mask << shift, (divisor & mask) << shift);
+	clrsetbits32(reg, mask << shift, (divisor & mask) << shift);
 }
 
 /**
@@ -607,7 +607,7 @@ int clock_epll_set_rate(unsigned long rate)
 
 void clock_select_i2s_clk_source(void)
 {
-	clrsetbits_le32(&exynos_clock->clk_src_peric1, AUDIO1_SEL_MASK,
+	clrsetbits32(&exynos_clock->clk_src_peric1, AUDIO1_SEL_MASK,
 			(CLK_SRC_SCLK_EPLL));
 }
 
@@ -627,7 +627,7 @@ int clock_set_i2s_clk_prescaler(unsigned int src_frq, unsigned int dst_frq)
 		printk(BIOS_DEBUG, "src frq = %d des frq = %d ", src_frq, dst_frq);
 		return -1;
 	}
-	clrsetbits_le32(&exynos_clock->clk_div_peric4, AUDIO_1_RATIO_MASK,
+	clrsetbits32(&exynos_clock->clk_div_peric4, AUDIO_1_RATIO_MASK,
 				(div & AUDIO_1_RATIO_MASK));
 	return 0;
 }

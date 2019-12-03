@@ -157,7 +157,7 @@ size_t sdram_size(void)
 static void set_rank_info_to_conf(const struct sdram_params *params)
 {
 	bool is_dual_rank = (params->emi_cona_val & (0x1 << 17)) != 0;
-	clrsetbits_le32(&ch[0].ao.rstmask, 0x1 << 12,
+	clrsetbits32(&ch[0].ao.rstmask, 0x1 << 12,
 			(is_dual_rank ? 0 : 1) << 12);
 }
 
@@ -297,8 +297,8 @@ static void emi_init2(const struct sdram_params *params)
 {
 	emi_esl_setting2();
 
-	setbits_le32(&emi_mpu->mpu_ctrl_d[1], 0x1 << 4);
-	setbits_le32(&emi_mpu->mpu_ctrl_d[7], 0x1 << 4);
+	setbits32(&emi_mpu->mpu_ctrl_d[1], 0x1 << 4);
+	setbits32(&emi_mpu->mpu_ctrl_d[7], 0x1 << 4);
 
 	write32(&emi_regs->bwct0, 0x0a000705);
 	write32(&emi_regs->bwct0_3rd, 0x0);
@@ -311,14 +311,14 @@ static void emi_init2(const struct sdram_params *params)
 
 static void dramc_init_pre_settings(void)
 {
-	clrsetbits_le32(&ch[0].phy.ca_cmd[8],
+	clrsetbits32(&ch[0].phy.ca_cmd[8],
 		(0x1 << 21) | (0x1 << 20) | (0x1 << 19) | (0x1 << 18) |
 		(0x1f << 8) | (0x1f << 0),
 		(0x1 << 19) | (0xa << 8) | (0xa << 0));
 
-	setbits_le32(&ch[0].phy.misc_ctrl1, 0x1 << 12);
-	clrbits_le32(&ch[0].phy.misc_ctrl1, 0x1 << 13);
-	setbits_le32(&ch[0].phy.misc_ctrl1, 0x1 << 31);
+	setbits32(&ch[0].phy.misc_ctrl1, 0x1 << 12);
+	clrbits32(&ch[0].phy.misc_ctrl1, 0x1 << 13);
+	setbits32(&ch[0].phy.misc_ctrl1, 0x1 << 31);
 }
 
 static void dramc_ac_timing_optimize(u8 freq_group)
@@ -331,20 +331,20 @@ static void dramc_ac_timing_optimize(u8 freq_group)
 	};
 
 	for (size_t chn = 0; chn < CHANNEL_MAX; chn++) {
-		clrsetbits_le32(&ch[chn].ao.shu[0].actim[3],
+		clrsetbits32(&ch[chn].ao.shu[0].actim[3],
 			0xff << 16, rf_cab_opt[freq_group].rfc << 16);
-		clrbits_le32(&ch[chn].ao.shu[0].ac_time_05t,
+		clrbits32(&ch[chn].ao.shu[0].ac_time_05t,
 			rf_cab_opt[freq_group].rfc_05t << 2);
-		clrsetbits_le32(&ch[chn].ao.shu[0].actim[4],
+		clrsetbits32(&ch[chn].ao.shu[0].actim[4],
 			0x3ff << 0, rf_cab_opt[freq_group].tx_ref_cnt << 0);
 	}
 }
 
 static void spm_pinmux_setting(void)
 {
-	clrsetbits_le32(&mtk_spm->poweron_config_set,
+	clrsetbits32(&mtk_spm->poweron_config_set,
 		(0xffff << 16) | (0x1 << 0), (0xb16 << 16) | (0x1 << 0));
-	clrbits_le32(&mtk_spm->pcm_pwr_io_en, (0xff << 0) | (0xff << 16));
+	clrbits32(&mtk_spm->pcm_pwr_io_en, (0xff << 0) | (0xff << 16));
 	write32(&mtk_spm->dramc_dpy_clk_sw_con_sel, 0xffffffff);
 	write32(&mtk_spm->dramc_dpy_clk_sw_con_sel2, 0xffffffff);
 }
@@ -377,11 +377,11 @@ static void init_dram(const struct sdram_params *params, u8 freq_group,
 
 void enable_emi_dcm(void)
 {
-	clrbits_le32(&emi_regs->conm, 0xff << 24);
-	clrbits_le32(&emi_regs->conn, 0xff << 24);
+	clrbits32(&emi_regs->conm, 0xff << 24);
+	clrbits32(&emi_regs->conn, 0xff << 24);
 
 	for (size_t chn = 0; chn < CHANNEL_MAX; chn++)
-		clrbits_le32(&ch[chn].emi.chn_conb, 0xff << 24);
+		clrbits32(&ch[chn].emi.chn_conb, 0xff << 24);
 }
 
 struct shuffle_reg_addr {
@@ -456,18 +456,18 @@ static void dramc_save_result_to_shuffle(u32 src_shuffle, u32 dst_shuffle)
 		value = read32(src_addr) & 0x7f;
 
 		if (dst_shuffle == DRAM_DFS_SHUFFLE_2)
-			clrsetbits_le32(dst_addr, 0x7f << 0x8, value << 0x8);
+			clrsetbits32(dst_addr, 0x7f << 0x8, value << 0x8);
 		else if (dst_shuffle == DRAM_DFS_SHUFFLE_3)
-			clrsetbits_le32(dst_addr, 0x7f << 0x16, value << 0x16);
+			clrsetbits32(dst_addr, 0x7f << 0x16, value << 0x16);
 
 		/* DRAMC-exception-2 */
 		src_addr = (u8 *)&ch[chn].ao.dvfsdll;
 		value = (read32(src_addr) >> 1) & 0x1;
 
 		if (dst_shuffle == DRAM_DFS_SHUFFLE_2)
-			clrsetbits_le32(src_addr, 0x1 << 2, value << 2);
+			clrsetbits32(src_addr, 0x1 << 2, value << 2);
 		else if (dst_shuffle == DRAM_DFS_SHUFFLE_3)
-			clrsetbits_le32(src_addr, 0x1 << 3, value << 3);
+			clrsetbits32(src_addr, 0x1 << 3, value << 3);
 
 		/* PHY */
 		for (index = 0; index < ARRAY_SIZE(phy_regs); index++) {

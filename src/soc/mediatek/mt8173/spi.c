@@ -47,10 +47,10 @@ void mtk_spi_set_timing(struct mtk_spi_regs *regs, u32 sck_ticks, u32 cs_ticks,
 		((sck_ticks - 1) << SPI_CFG0_SCK_LOW_SHIFT) |
 		((cs_ticks - 1) << SPI_CFG0_CS_HOLD_SHIFT) |
 		((cs_ticks - 1) << SPI_CFG0_CS_SETUP_SHIFT));
-	clrsetbits_le32(&regs->spi_cfg1_reg, SPI_CFG1_CS_IDLE_MASK |
-			SPI_CFG1_TICK_DLY_MASK,
-			(tick_dly << SPI_CFG1_TICK_DLY_SHIFT) |
-			((cs_ticks - 1) << SPI_CFG1_CS_IDLE_SHIFT));
+	clrsetbits32(&regs->spi_cfg1_reg, SPI_CFG1_CS_IDLE_MASK |
+		     SPI_CFG1_TICK_DLY_MASK,
+		     (tick_dly << SPI_CFG1_TICK_DLY_SHIFT) |
+		     ((cs_ticks - 1) << SPI_CFG1_CS_IDLE_SHIFT));
 }
 
 static const struct spi_ctrlr spi_flash_ctrlr = {

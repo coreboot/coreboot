@@ -166,11 +166,11 @@ size_t sdram_size(void)
 static void init_4GB_mode(void)
 {
 	if (sdram_size() == (size_t)4 * GiB) {
-		setbits_le32(&mt8173_pericfg->axi_bus_ctl3, PERISYS_4G_SUPPORT);
-		setbits_le32(&mt8173_infracfg->infra_misc, DDR_4GB_SUPPORT_EN);
+		setbits32(&mt8173_pericfg->axi_bus_ctl3, PERISYS_4G_SUPPORT);
+		setbits32(&mt8173_infracfg->infra_misc, DDR_4GB_SUPPORT_EN);
 	} else {
-		clrbits_le32(&mt8173_pericfg->axi_bus_ctl3, PERISYS_4G_SUPPORT);
-		clrbits_le32(&mt8173_infracfg->infra_misc, DDR_4GB_SUPPORT_EN);
+		clrbits32(&mt8173_pericfg->axi_bus_ctl3, PERISYS_4G_SUPPORT);
+		clrbits32(&mt8173_infracfg->infra_misc, DDR_4GB_SUPPORT_EN);
 	}
 }
 

@@ -61,9 +61,9 @@ static void set_clock_sources(void)
 	clock_configure_irregular_source(host1x, PLLP, 408000, 4);
 
 	/* Use PLLD_OUT0 as clock source for disp1 */
-	clrsetbits_le32(&clk_rst->clk_src_disp1,
-			CLK_SOURCE_MASK | CLK_DIVISOR_MASK,
-			2 /*PLLD_OUT0 */ << CLK_SOURCE_SHIFT);
+	clrsetbits32(&clk_rst->clk_src_disp1,
+		     CLK_SOURCE_MASK | CLK_DIVISOR_MASK,
+		     2 /*PLLD_OUT0 */ << CLK_SOURCE_SHIFT);
 
 }
 

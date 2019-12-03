@@ -13,9 +13,9 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/mmio.h>
 #include <console/uart.h>
 #include <commonlib/helpers.h>
+#include <device/mmio.h>
 #include <amdblocks/gpio_banks.h>
 #include <amdblocks/acpimmio.h>
 #include <soc/southbridge.h>

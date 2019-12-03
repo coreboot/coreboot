@@ -70,13 +70,13 @@ static struct rockchip_spi_slave *to_rockchip_spi(const struct spi_slave *slave)
 static void spi_cs_activate(const struct spi_slave *slave)
 {
 	struct rockchip_spi *regs = to_rockchip_spi(slave)->regs;
-	setbits_le32(&regs->ser, 1);
+	setbits32(&regs->ser, 1);
 }
 
 static void spi_cs_deactivate(const struct spi_slave *slave)
 {
 	struct rockchip_spi *regs = to_rockchip_spi(slave)->regs;
-	clrbits_le32(&regs->ser, 1);
+	clrbits32(&regs->ser, 1);
 }
 
 static void rockchip_spi_enable_chip(struct rockchip_spi *regs, int enable)
@@ -141,8 +141,8 @@ void rockchip_spi_set_sample_delay(unsigned int bus, unsigned int delay_ns)
 	/* Rxd Sample Delay */
 	rsd = DIV_ROUND_CLOSEST(delay_ns * (SPI_SRCCLK_HZ >> 8), 1*GHz >> 8);
 	assert(rsd <= 3);
-	clrsetbits_le32(&regs->ctrlr0, SPI_RXDSD_MASK << SPI_RXDSD_OFFSET,
-			rsd << SPI_RXDSD_OFFSET);
+	clrsetbits32(&regs->ctrlr0, SPI_RXDSD_MASK << SPI_RXDSD_OFFSET,
+		     rsd << SPI_RXDSD_OFFSET);
 }
 
 static int spi_ctrlr_claim_bus(const struct spi_slave *slave)
@@ -172,7 +172,7 @@ static int rockchip_spi_wait_till_not_busy(struct rockchip_spi *regs)
 
 static void set_tmod(struct rockchip_spi *regs, unsigned int tmod)
 {
-	clrsetbits_le32(&regs->ctrlr0, SPI_TMOD_MASK << SPI_TMOD_OFFSET,
+	clrsetbits32(&regs->ctrlr0, SPI_TMOD_MASK << SPI_TMOD_OFFSET,
 				      tmod << SPI_TMOD_OFFSET);
 }
 
@@ -275,9 +275,9 @@ static int spi_ctrlr_xfer(const struct spi_slave *slave, const void *dout,
 		}
 		mask = SPI_APB_8BIT << SPI_HALF_WORLD_TX_OFFSET;
 		if (use_16bit)
-			clrbits_le32(&regs->ctrlr0, mask);
+			clrbits32(&regs->ctrlr0, mask);
 		else
-			setbits_le32(&regs->ctrlr0, mask);
+			setbits32(&regs->ctrlr0, mask);
 
 		/* Enable/disable transmitter and receiver as needed to
 		 * avoid sending or reading spurious bits. */

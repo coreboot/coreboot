@@ -34,7 +34,7 @@ static void sdram_patch(uintptr_t addr, uint32_t value)
 
 static void writebits(uint32_t value, uint32_t *addr, uint32_t mask)
 {
-	clrsetbits_le32(addr, mask, (value & mask));
+	clrsetbits32(addr, mask, (value & mask));
 }
 
 static void sdram_trigger_emc_timing_update(struct tegra_emc_regs *regs)
@@ -82,15 +82,15 @@ static void sdram_start_clocks(const struct sdram_params *param,
 	u32 clk_source_emc = param->EmcClockSource;
 
 	/* Enable the clocks for EMC and MC */
-	setbits_le32(&clk_rst->clk_enb_h_set, (1 << 25));	// ENB_EMC
-	setbits_le32(&clk_rst->clk_enb_h_set, (1 << 0));	// ENB_MC
+	setbits32(&clk_rst->clk_enb_h_set, (1 << 25));	// ENB_EMC
+	setbits32(&clk_rst->clk_enb_h_set, (1 << 0));	// ENB_MC
 
 	if ((clk_source_emc >> EMC_2X_CLK_SRC_SHIFT) != PLLM_UD)
-		setbits_le32(&clk_rst->clk_enb_x_set, CLK_ENB_EMC_DLL);
+		setbits32(&clk_rst->clk_enb_x_set, CLK_ENB_EMC_DLL);
 
 	/* Remove the EMC and MC controllers from reset */
-	clrbits_le32(&clk_rst->rst_dev_h, (1 << 25));		// SWR_EMC
-	clrbits_le32(&clk_rst->rst_dev_h, (1 << 0));		// SWR_MC
+	clrbits32(&clk_rst->rst_dev_h, (1 << 25));		// SWR_EMC
+	clrbits32(&clk_rst->rst_dev_h, (1 << 0));		// SWR_MC
 
 	clk_source_emc |= (is_same_freq << 16);
 
@@ -818,9 +818,9 @@ static void sdram_set_clock_enable_signal(const struct sdram_params *param,
 		      (param->EmcPinGpio << EMC_PIN_GPIO_SHIFT);
 		write32(&regs->pin, val);
 
-		clrbits_le32(&regs->pin,
-			     (EMC_PIN_RESET_MASK | EMC_PIN_DQM_MASK |
-			      EMC_PIN_CKE_MASK));
+		clrbits32(&regs->pin,
+			  (EMC_PIN_RESET_MASK | EMC_PIN_DQM_MASK |
+			   EMC_PIN_CKE_MASK));
 		/*
 		 * Assert dummy read of PIN register to ensure above write goes
 		 * through. Wait an additional 200us here as per NVIDIA.
@@ -829,7 +829,7 @@ static void sdram_set_clock_enable_signal(const struct sdram_params *param,
 		udelay(param->EmcPinExtraWait + 200);
 
 		/* Deassert reset */
-		setbits_le32(&regs->pin, EMC_PIN_RESET_INACTIVE);
+		setbits32(&regs->pin, EMC_PIN_RESET_INACTIVE);
 
 		/*
 		 * Assert dummy read of PIN register to ensure above write goes
@@ -840,7 +840,7 @@ static void sdram_set_clock_enable_signal(const struct sdram_params *param,
 	}
 
 	/* Enable clock enable signal */
-	setbits_le32(&regs->pin, EMC_PIN_CKE_NORMAL);
+	setbits32(&regs->pin, EMC_PIN_CKE_NORMAL);
 
 	/* Dummy read of PIN register to ensure final write goes through */
 	dummy |= read32(&regs->pin);
@@ -1005,7 +1005,7 @@ static void sdram_enable_arbiter(const struct sdram_params *param)
 	/* TODO(hungte) Move values here to standalone header file. */
 	uint32_t *ahb_arbitration_xbar_ctrl = (uint32_t *)(AHB_ARB_XBAR_CTRL);
 
-	setbits_le32(ahb_arbitration_xbar_ctrl,
+	setbits32(ahb_arbitration_xbar_ctrl,
 		     param->AhbArbitrationXbarCtrlMemInitDone << 16);
 }
 

@@ -84,7 +84,7 @@ static void configure_pll(u32 *reg, const struct pll_settings *s)
 {
 	// Write the settings to the register
 	u32 c = read32(reg);
-	clrsetbits_le32(&c, PRCI_PLLCFG_DIVR_MASK
+	clrsetbits32(&c, PRCI_PLLCFG_DIVR_MASK
 		| PRCI_PLLCFG_DIVF_MASK | PRCI_PLLCFG_DIVQ_MASK
 		| PRCI_PLLCFG_RANGE_MASK | PRCI_PLLCFG_BYPASS_MASK
 		| PRCI_PLLCFG_FSE_MASK,
@@ -155,13 +155,13 @@ static const struct pll_settings gemgxlpll_settings = {
 static void init_coreclk(void)
 {
 	// switch coreclk to input reference frequency before modifying PLL
-	clrsetbits_le32(&prci->coreclksel, PRCI_CORECLK_MASK,
+	clrsetbits32(&prci->coreclksel, PRCI_CORECLK_MASK,
 		PRCI_CORECLK_HFCLK);
 
 	configure_pll(&prci->corepllcfg0, &corepll_settings);
 
 	// switch coreclk to use corepll
-	clrsetbits_le32(&prci->coreclksel, PRCI_CORECLK_MASK,
+	clrsetbits32(&prci->coreclksel, PRCI_CORECLK_MASK,
 		PRCI_CORECLK_CORE_PLL);
 }
 
@@ -169,25 +169,25 @@ static void init_pll_ddr(void)
 {
 	// disable ddr clock output before reconfiguring the PLL
 	u32 cfg1 = read32(&prci->ddrpllcfg1);
-	clrbits_le32(&cfg1, PRCI_DDRPLLCFG1_MASK);
+	clrbits32(&cfg1, PRCI_DDRPLLCFG1_MASK);
 	write32(&prci->ddrpllcfg1, cfg1);
 
 	configure_pll(&prci->ddrpllcfg0, &ddrpll_settings);
 
 	// enable ddr clock output
-	setbits_le32(&cfg1, PRCI_DDRPLLCFG1_MASK);
+	setbits32(&cfg1, PRCI_DDRPLLCFG1_MASK);
 	write32(&prci->ddrpllcfg1, cfg1);
 }
 
 static void init_gemgxlclk(void)
 {
 	u32 cfg1 = read32(&prci->gemgxlpllcfg1);
-	clrbits_le32(&cfg1, PRCI_GEMGXLPPLCFG1_MASK);
+	clrbits32(&cfg1, PRCI_GEMGXLPPLCFG1_MASK);
 	write32(&prci->gemgxlpllcfg1, cfg1);
 
 	configure_pll(&prci->gemgxlpllcfg0, &gemgxlpll_settings);
 
-	setbits_le32(&cfg1, PRCI_GEMGXLPPLCFG1_MASK);
+	setbits32(&cfg1, PRCI_GEMGXLPPLCFG1_MASK);
 	write32(&prci->gemgxlpllcfg1, cfg1);
 }
 

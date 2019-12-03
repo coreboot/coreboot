@@ -522,14 +522,14 @@ static void phy_pctrl_reset(struct rk3288_ddr_publ_regs *ddr_publ_regs,
 	int i;
 	rkclk_ddr_reset(channel, 1, 1);
 	udelay(1);
-	clrbits_le32(&ddr_publ_regs->acdllcr, ACDLLCR_DLLSRST);
+	clrbits32(&ddr_publ_regs->acdllcr, ACDLLCR_DLLSRST);
 	for (i = 0; i < 4; i++)
-		clrbits_le32(&ddr_publ_regs->datx8[i].dxdllcr, DXDLLCR_DLLSRST);
+		clrbits32(&ddr_publ_regs->datx8[i].dxdllcr, DXDLLCR_DLLSRST);
 
 	udelay(10);
-	setbits_le32(&ddr_publ_regs->acdllcr, ACDLLCR_DLLSRST);
+	setbits32(&ddr_publ_regs->acdllcr, ACDLLCR_DLLSRST);
 	for (i = 0; i < 4; i++)
-		setbits_le32(&ddr_publ_regs->datx8[i].dxdllcr, DXDLLCR_DLLSRST);
+		setbits32(&ddr_publ_regs->datx8[i].dxdllcr, DXDLLCR_DLLSRST);
 
 	udelay(10);
 	rkclk_ddr_reset(channel, 1, 0);
@@ -544,23 +544,23 @@ static void phy_dll_bypass_set(struct rk3288_ddr_publ_regs *ddr_publ_regs,
 	int i;
 	if (freq <= 250*MHz) {
 		if (freq <= 150*MHz)
-			clrbits_le32(&ddr_publ_regs->dllgcr, SBIAS_BYPASS);
+			clrbits32(&ddr_publ_regs->dllgcr, SBIAS_BYPASS);
 		else
-			setbits_le32(&ddr_publ_regs->dllgcr, SBIAS_BYPASS);
-		setbits_le32(&ddr_publ_regs->acdllcr, ACDLLCR_DLLDIS);
+			setbits32(&ddr_publ_regs->dllgcr, SBIAS_BYPASS);
+		setbits32(&ddr_publ_regs->acdllcr, ACDLLCR_DLLDIS);
 		for (i = 0; i < 4; i++)
-			setbits_le32(&ddr_publ_regs->datx8[i].dxdllcr,
+			setbits32(&ddr_publ_regs->datx8[i].dxdllcr,
 				DXDLLCR_DLLDIS);
 
-		setbits_le32(&ddr_publ_regs->pir, PIR_DLLBYP);
+		setbits32(&ddr_publ_regs->pir, PIR_DLLBYP);
 	} else {
-		clrbits_le32(&ddr_publ_regs->dllgcr, SBIAS_BYPASS);
-		clrbits_le32(&ddr_publ_regs->acdllcr, ACDLLCR_DLLDIS);
+		clrbits32(&ddr_publ_regs->dllgcr, SBIAS_BYPASS);
+		clrbits32(&ddr_publ_regs->acdllcr, ACDLLCR_DLLDIS);
 		for (i = 0; i < 4; i++)
-			clrbits_le32(&ddr_publ_regs->datx8[i].dxdllcr,
+			clrbits32(&ddr_publ_regs->datx8[i].dxdllcr,
 				DXDLLCR_DLLDIS);
 
-		clrbits_le32(&ddr_publ_regs->pir, PIR_DLLBYP);
+		clrbits32(&ddr_publ_regs->pir, PIR_DLLBYP);
 	}
 }
 
@@ -637,7 +637,7 @@ static void pctl_cfg(u32 channel,
 		break;
 	}
 
-	setbits_le32(&ddr_pctl_regs->scfg, 1);
+	setbits32(&ddr_pctl_regs->scfg, 1);
 }
 
 static void phy_cfg(u32 channel, const struct rk3288_sdram_params *sdram_params)
@@ -668,33 +668,33 @@ static void phy_cfg(u32 channel, const struct rk3288_sdram_params *sdram_params)
 
 	switch (sdram_params->dramtype) {
 	case LPDDR3:
-		clrsetbits_le32(&ddr_publ_regs->pgcr, 0x1F, PGCR_DFTLMT(0)
+		clrsetbits32(&ddr_publ_regs->pgcr, 0x1F, PGCR_DFTLMT(0)
 		       | PGCR_DFTCMP(0) | PGCR_DQSCFG(1) | PGCR_ITMDMD(0));
 		/* DDRMODE select LPDDR3 */
-		clrsetbits_le32(&ddr_publ_regs->dcr, DDRMD_MSK,
+		clrsetbits32(&ddr_publ_regs->dcr, DDRMD_MSK,
 			DDRMD_CFG(DDRMD_LPDDR2_LPDDR3));
-		clrsetbits_le32(&ddr_publ_regs->dxccr, DQSNRES_MSK | DQSRES_MSK,
+		clrsetbits32(&ddr_publ_regs->dxccr, DQSNRES_MSK | DQSRES_MSK,
 				DQSRES_CFG(4) | DQSNRES_CFG(0xc));
 		i = TDQSCKMAX_VAL(read32(&ddr_publ_regs->dtpr[1]))
 		    - TDQSCK_VAL(read32(&ddr_publ_regs->dtpr[1]));
-		clrsetbits_le32(&ddr_publ_regs->dsgcr, DQSGE_MSK | DQSGX_MSK,
+		clrsetbits32(&ddr_publ_regs->dsgcr, DQSGE_MSK | DQSGX_MSK,
 				DQSGE_CFG(i) | DQSGX_CFG(i));
 		break;
 	case DDR3:
-		clrbits_le32(&ddr_publ_regs->pgcr, 0x1f);
-		clrsetbits_le32(&ddr_publ_regs->dcr, DDRMD_MSK,
+		clrbits32(&ddr_publ_regs->pgcr, 0x1f);
+		clrsetbits32(&ddr_publ_regs->dcr, DDRMD_MSK,
 			DDRMD_CFG(DDRMD_DDR3));
 		break;
 	}
 	if (sdram_params->odt) {
 		/*dynamic RTT enable */
 		for (i = 0; i < 4; i++)
-			setbits_le32(&ddr_publ_regs->datx8[i].dxgcr,
+			setbits32(&ddr_publ_regs->datx8[i].dxgcr,
 				DQSRTT | DQRTT);
 	} else {
 		/*dynamic RTT disable */
 		for (i = 0; i < 4; i++)
-			clrbits_le32(&ddr_publ_regs->datx8[i].dxgcr,
+			clrbits32(&ddr_publ_regs->datx8[i].dxgcr,
 				DQSRTT | DQRTT);
 
 	}
@@ -702,7 +702,7 @@ static void phy_cfg(u32 channel, const struct rk3288_sdram_params *sdram_params)
 
 static void phy_init(struct rk3288_ddr_publ_regs *ddr_publ_regs)
 {
-	setbits_le32(&ddr_publ_regs->pir, PIR_INIT | PIR_DLLSRST
+	setbits32(&ddr_publ_regs->pir, PIR_INIT | PIR_DLLSRST
 		| PIR_DLLLOCK | PIR_ZCAL | PIR_ITMSRST | PIR_CLRSR);
 	udelay(1);
 	while ((read32(&ddr_publ_regs->pgsr) &
@@ -723,10 +723,10 @@ static void send_command(struct rk3288_ddr_pctl_regs *ddr_pctl_regs, u32 rank,
 static void memory_init(struct rk3288_ddr_publ_regs *ddr_publ_regs,
 			u32 dramtype)
 {
-	setbits_le32(&ddr_publ_regs->pir,
-		     (PIR_INIT | PIR_DRAMINIT | PIR_LOCKBYP
-		      | PIR_ZCALBYP | PIR_CLRSR | PIR_ICPC
-		      | (dramtype == DDR3 ? PIR_DRAMRST : 0)));
+	setbits32(&ddr_publ_regs->pir,
+		  (PIR_INIT | PIR_DRAMINIT | PIR_LOCKBYP
+		   | PIR_ZCALBYP | PIR_CLRSR | PIR_ICPC
+		   | (dramtype == DDR3 ? PIR_DRAMRST : 0)));
 	udelay(1);
 	while ((read32(&ddr_publ_regs->pgsr) & (PGSR_IDONE | PGSR_DLDONE))
 		!= (PGSR_IDONE | PGSR_DLDONE))
@@ -775,42 +775,42 @@ static void set_bandwidth_ratio(u32 channel, u32 n)
 	struct rk3288_msch_regs *msch_regs = rk3288_msch[channel];
 
 	if (n == 1) {
-		setbits_le32(&ddr_pctl_regs->ppcfg, 1);
+		setbits32(&ddr_pctl_regs->ppcfg, 1);
 		write32(&rk3288_grf->soc_con0, RK_SETBITS(1 << (8 + channel)));
-		setbits_le32(&msch_regs->ddrtiming, 1 << 31);
+		setbits32(&msch_regs->ddrtiming, 1 << 31);
 		/* Data Byte disable*/
-		clrbits_le32(&ddr_publ_regs->datx8[2].dxgcr, 1);
-		clrbits_le32(&ddr_publ_regs->datx8[3].dxgcr, 1);
+		clrbits32(&ddr_publ_regs->datx8[2].dxgcr, 1);
+		clrbits32(&ddr_publ_regs->datx8[3].dxgcr, 1);
 		/*disable DLL */
-		setbits_le32(&ddr_publ_regs->datx8[2].dxdllcr,
+		setbits32(&ddr_publ_regs->datx8[2].dxdllcr,
 			DXDLLCR_DLLDIS);
-		setbits_le32(&ddr_publ_regs->datx8[3].dxdllcr,
+		setbits32(&ddr_publ_regs->datx8[3].dxdllcr,
 			DXDLLCR_DLLDIS);
 	} else {
-		clrbits_le32(&ddr_pctl_regs->ppcfg, 1);
+		clrbits32(&ddr_pctl_regs->ppcfg, 1);
 		write32(&rk3288_grf->soc_con0, RK_CLRBITS(1 << (8 + channel)));
-		clrbits_le32(&msch_regs->ddrtiming, 1 << 31);
+		clrbits32(&msch_regs->ddrtiming, 1 << 31);
 		/* Data Byte enable*/
-		setbits_le32(&ddr_publ_regs->datx8[2].dxgcr, 1);
-		setbits_le32(&ddr_publ_regs->datx8[3].dxgcr, 1);
+		setbits32(&ddr_publ_regs->datx8[2].dxgcr, 1);
+		setbits32(&ddr_publ_regs->datx8[3].dxgcr, 1);
 
 		/*enable DLL */
-		clrbits_le32(&ddr_publ_regs->datx8[2].dxdllcr,
+		clrbits32(&ddr_publ_regs->datx8[2].dxdllcr,
 			DXDLLCR_DLLDIS);
-		clrbits_le32(&ddr_publ_regs->datx8[3].dxdllcr,
+		clrbits32(&ddr_publ_regs->datx8[3].dxdllcr,
 			DXDLLCR_DLLDIS);
 		/* reset DLL */
-		clrbits_le32(&ddr_publ_regs->datx8[2].dxdllcr,
+		clrbits32(&ddr_publ_regs->datx8[2].dxdllcr,
 			DXDLLCR_DLLSRST);
-		clrbits_le32(&ddr_publ_regs->datx8[3].dxdllcr,
+		clrbits32(&ddr_publ_regs->datx8[3].dxdllcr,
 			DXDLLCR_DLLSRST);
 		udelay(10);
-		setbits_le32(&ddr_publ_regs->datx8[2].dxdllcr,
+		setbits32(&ddr_publ_regs->datx8[2].dxdllcr,
 			DXDLLCR_DLLSRST);
-		setbits_le32(&ddr_publ_regs->datx8[3].dxdllcr,
+		setbits32(&ddr_publ_regs->datx8[3].dxdllcr,
 			DXDLLCR_DLLSRST);
 	}
-	setbits_le32(&ddr_pctl_regs->dfistcfg0, 1 << 2);
+	setbits32(&ddr_pctl_regs->dfistcfg0, 1 << 2);
 
 }
 
@@ -829,19 +829,19 @@ static int data_training(u32 channel,
 	write32(&ddr_pctl_regs->trefi, 0);
 
 	if (sdram_params->dramtype != LPDDR3)
-		setbits_le32(&ddr_publ_regs->pgcr, PGCR_DQSCFG(1));
+		setbits32(&ddr_publ_regs->pgcr, PGCR_DQSCFG(1));
 	rank = sdram_params->ch[channel].rank | 1;
 	for (j = 0; j < ARRAY_SIZE(step); j++) {
 		/*
 		 * trigger QSTRN and RVTRN
 		 * clear DTDONE status
 		 */
-		setbits_le32(&ddr_publ_regs->pir, PIR_CLRSR);
+		setbits32(&ddr_publ_regs->pir, PIR_CLRSR);
 
 		/* trigger DTT */
-		setbits_le32(&ddr_publ_regs->pir,
-			     PIR_INIT | step[j] | PIR_LOCKBYP | PIR_ZCALBYP |
-			     PIR_CLRSR);
+		setbits32(&ddr_publ_regs->pir,
+			  PIR_INIT | step[j] | PIR_LOCKBYP | PIR_ZCALBYP |
+			  PIR_CLRSR);
 		udelay(1);
 		/* wait echo byte DTDONE */
 		while ((read32(&ddr_publ_regs->datx8[0].dxgsr[0]) & rank)
@@ -869,7 +869,7 @@ static int data_training(u32 channel,
 		send_command(ddr_pctl_regs, rank, REF_CMD, 0);
 
 	if (sdram_params->dramtype != LPDDR3)
-		clrbits_le32(&ddr_publ_regs->pgcr, PGCR_DQSCFG(1));
+		clrbits32(&ddr_publ_regs->pgcr, PGCR_DQSCFG(1));
 
 	/* resume auto refresh */
 	write32(&ddr_pctl_regs->trefi, sdram_params->pctl_timing.trefi);
@@ -928,9 +928,9 @@ static void dram_cfg_rbc(u32 chnum,
 	struct rk3288_msch_regs *msch_regs = rk3288_msch[chnum];
 
 	if (sdram_params->ch[chnum].bk == 3)
-		clrsetbits_le32(&ddr_publ_regs->dcr, PDQ_MSK, PDQ_CFG(1));
+		clrsetbits32(&ddr_publ_regs->dcr, PDQ_MSK, PDQ_CFG(1));
 	else
-		clrbits_le32(&ddr_publ_regs->dcr, PDQ_MSK);
+		clrbits32(&ddr_publ_regs->dcr, PDQ_MSK);
 
 	write32(&msch_regs->ddrconf, sdram_params->ddrconfig);
 }
@@ -1029,8 +1029,8 @@ void sdram_init(const struct rk3288_sdram_params *sdram_params)
 		 * CS1, n=2
 		 * CS0 & CS1, n = 3
 		 */
-		clrsetbits_le32(&ddr_publ_regs->pgcr, 0xF << 18,
-				(sdram_params->ch[channel].rank | 1) << 18);
+		clrsetbits32(&ddr_publ_regs->pgcr, 0xF << 18,
+			     (sdram_params->ch[channel].rank | 1) << 18);
 		/* DS=40ohm,ODT=155ohm */
 		zqcr = ZDEN(1) | PU_ONDIE(0x2) | PD_ONDIE(0x2)
 				| PU_OUTPUT(0x19) | PD_OUTPUT(0x19);

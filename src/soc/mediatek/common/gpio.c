@@ -63,8 +63,7 @@ void gpio_set_mode(gpio_t gpio, int mode)
 
 	pos_bit_calc_for_mode(gpio, &pos, &bit);
 
-	clrsetbits_le32(&mtk_gpio->mode[pos].val,
-			mask << bit, mode << bit);
+	clrsetbits32(&mtk_gpio->mode[pos].val, mask << bit, mode << bit);
 }
 
 int gpio_get(gpio_t gpio)

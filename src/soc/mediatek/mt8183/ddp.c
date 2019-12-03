@@ -42,7 +42,7 @@ static void disp_config_main_path_mutex(void)
 
 static void ovl_bgclr_in_sel(u32 idx)
 {
-	setbits_le32(&disp_ovl[idx]->datapath_con, BIT(2));
+	setbits32(&disp_ovl[idx]->datapath_con, BIT(2));
 }
 
 static void enable_pq(struct disp_pq_regs *const regs, u32 width, u32 height,
@@ -74,10 +74,10 @@ static void main_disp_path_setup(u32 width, u32 height, u32 vrefresh)
 
 static void disp_clock_on(void)
 {
-	clrbits_le32(&mmsys_cfg->mmsys_cg_con0, CG_CON0_DISP_ALL);
+	clrbits32(&mmsys_cfg->mmsys_cg_con0, CG_CON0_DISP_ALL);
 
-	clrbits_le32(&mmsys_cfg->mmsys_cg_con1, CG_CON1_DISP_DSI0 |
-						CG_CON1_DISP_DSI0_INTERFACE);
+	clrbits32(&mmsys_cfg->mmsys_cg_con1, CG_CON1_DISP_DSI0 |
+					     CG_CON1_DISP_DSI0_INTERFACE);
 }
 
 void mtk_ddp_init(void)

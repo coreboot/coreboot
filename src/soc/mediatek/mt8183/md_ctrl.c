@@ -24,10 +24,10 @@
 static void internal_md_power_down(void)
 {
 	/* Gating MD clock */
-	setbits_le32(&mtk_topckgen->clk_mode,
+	setbits32(&mtk_topckgen->clk_mode,
 		TOPCKGEN_CLK_MODE_MD_32K | TOPCKGEN_CLK_MODE_MD_26M);
 	/* Release SRCCLKENA */
-	clrbits_le32(&mt8183_infracfg->infra_misc2,
+	clrbits32(&mt8183_infracfg->infra_misc2,
 		INFRA_MISC2_SRCCLKENA_RELEASE);
 }
 

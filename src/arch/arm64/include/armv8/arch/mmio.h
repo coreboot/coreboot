@@ -17,7 +17,6 @@
 #ifndef __ARCH_MMIO_H__
 #define __ARCH_MMIO_H__
 
-#include <endian.h>
 #include <stdint.h>
 #include <arch/barrier.h>
 #include <arch/lib_helpers.h>

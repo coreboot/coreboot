@@ -48,8 +48,8 @@ void init_timer(void)
 	timer_prepare();
 
 	/* Disable timer and clear the counter */
-	clrbits_le32(&mtk_gpt->gpt6_con, GPT_CON_EN);
-	setbits_le32(&mtk_gpt->gpt6_con, GPT_CON_CLR);
+	clrbits32(&mtk_gpt->gpt6_con, GPT_CON_EN);
+	setbits32(&mtk_gpt->gpt6_con, GPT_CON_CLR);
 
 	/* Set clock source to system clock and set clock divider to 1 */
 	write32(&mtk_gpt->gpt6_clk, GPT_SYS_CLK | GPT_CLK_DIV1);

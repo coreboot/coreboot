@@ -13,10 +13,10 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/mmio.h>
 #include <stdlib.h>
 #include <console/console.h>
 #include <delay.h>
+#include <device/mmio.h>
 #include <soc/usb.h>
 #include <soc/clock.h>
 #include <soc/addressmap.h>
@@ -725,7 +725,7 @@ static void qusb2_phy_set_tune_param(struct usb_dwc3_cfg *dwc3)
 	 * tune parameters.
 	 */
 	if (tune_val)
-		clrsetbits_le32(&dwc3->qusb_phy_dig->tune1,
+		clrsetbits32(&dwc3->qusb_phy_dig->tune1,
 				PORT_TUNE1_MASK, tune_val << 4);
 }
 
@@ -762,7 +762,7 @@ static void tune_phy(struct usb_dwc3_cfg *dwc3, struct usb_qusb_phy_dig *phy)
 static void hs_qusb_phy_init(struct usb_dwc3_cfg *dwc3)
 {
 	/* PWR_CTRL: set the power down bit to disable the PHY */
-	setbits_le32(&dwc3->qusb_phy_dig->pwr_ctrl1, POWER_DOWN);
+	setbits32(&dwc3->qusb_phy_dig->pwr_ctrl1, POWER_DOWN);
 
 	write32(&dwc3->qusb_phy_pll->analog_controls_two,
 			QUSB2PHY_PLL_ANALOG_CONTROLS_TWO);
@@ -782,7 +782,7 @@ static void hs_qusb_phy_init(struct usb_dwc3_cfg *dwc3)
 	tune_phy(dwc3, dwc3->qusb_phy_dig);
 
 	/* PWR_CTRL1: Clear the power down bit to enable the PHY */
-	clrbits_le32(&dwc3->qusb_phy_dig->pwr_ctrl1, POWER_DOWN);
+	clrbits32(&dwc3->qusb_phy_dig->pwr_ctrl1, POWER_DOWN);
 
 	write32(&dwc3->qusb_phy_dig->debug_ctrl2,
 				DEBUG_CTRL2_MUX_PLL_LOCK_STATUS);
@@ -848,7 +848,7 @@ static void ss_qmp_phy_init(struct usb_dwc3_cfg *dwc3)
 static void setup_dwc3(struct usb_dwc3 *dwc3)
 {
 	/* core exits U1/U2/U3 only in PHY power state P1/P2/P3 respectively */
-	clrsetbits_le32(&dwc3->usb3pipectl,
+	clrsetbits32(&dwc3->usb3pipectl,
 		DWC3_GUSB3PIPECTL_DELAYP1TRANS,
 		DWC3_GUSB3PIPECTL_UX_EXIT_IN_PX);
 
@@ -858,18 +858,18 @@ static void setup_dwc3(struct usb_dwc3 *dwc3)
 	 * 2. Set USBTRDTIM to the corresponding value
 	 * according to the UTMI+ PHY interface.
 	 */
-	clrsetbits_le32(&dwc3->usb2phycfg,
+	clrsetbits32(&dwc3->usb2phycfg,
 			(DWC3_GUSB2PHYCFG_USB2TRDTIM_MASK |
 			DWC3_GUSB2PHYCFG_PHYIF_MASK),
 			(DWC3_GUSB2PHYCFG_PHYIF(UTMI_PHYIF_8_BIT) |
 			DWC3_GUSB2PHYCFG_USBTRDTIM(USBTRDTIM_UTMI_8_BIT)));
 
-	clrsetbits_le32(&dwc3->ctl, (DWC3_GCTL_SCALEDOWN_MASK |
+	clrsetbits32(&dwc3->ctl, (DWC3_GCTL_SCALEDOWN_MASK |
 			DWC3_GCTL_DISSCRAMBLE),
 			DWC3_GCTL_U2EXIT_LFPS | DWC3_GCTL_DSBLCLKGTNG);
 
 	/* configure controller in Host mode */
-	clrsetbits_le32(&dwc3->ctl, (DWC3_GCTL_PRTCAPDIR(DWC3_GCTL_PRTCAP_OTG)),
+	clrsetbits32(&dwc3->ctl, (DWC3_GCTL_PRTCAPDIR(DWC3_GCTL_PRTCAP_OTG)),
 			DWC3_GCTL_PRTCAPDIR(DWC3_GCTL_PRTCAP_HOST));
 	printk(BIOS_SPEW, "Configure USB in Host mode\n");
 }

@@ -96,7 +96,7 @@ struct clock_config spi_cfg[] = {
 static int clock_configure_gpll0(void)
 {
 	/* Keep existing GPLL0 configuration, in RUN mode @800Mhz. */
-	setbits_le32(&gcc->gpll0.user_ctl,
+	setbits32(&gcc->gpll0.user_ctl,
 			1 << CLK_CTL_GPLL_PLLOUT_LV_EARLY_SHFT |
 			1 << CLK_CTL_GPLL_PLLOUT_AUX2_SHFT |
 			1 << CLK_CTL_GPLL_PLLOUT_AUX_SHFT |
@@ -144,7 +144,7 @@ static int clock_configure(struct qcs405_clock *clk,
 				clk_cfg[idx].d_2);
 
 	/* Commit config to RCG*/
-	setbits_le32(&clk->rcg.cmd, BIT(CLK_CTL_CMD_UPDATE_SHFT));
+	setbits32(&clk->rcg.cmd, BIT(CLK_CTL_CMD_UPDATE_SHFT));
 
 	return 0;
 }
@@ -159,7 +159,7 @@ static int clock_enable_vote(void *cbcr_addr, void *vote_addr,
 {
 
 	/* Set clock vote bit */
-	setbits_le32(vote_addr, BIT(vote_bit));
+	setbits32(vote_addr, BIT(vote_bit));
 
 	/* Ensure clock is enabled */
 	while (clock_is_off(cbcr_addr));
@@ -171,7 +171,7 @@ static int clock_enable(void *cbcr_addr)
 {
 
 	/* Set clock enable bit */
-	setbits_le32(cbcr_addr, BIT(CLK_CTL_CBC_CLK_EN_SHFT));
+	setbits32(cbcr_addr, BIT(CLK_CTL_CBC_CLK_EN_SHFT));
 
 	/* Ensure clock is enabled */
 	while (clock_is_off(cbcr_addr))
@@ -184,7 +184,7 @@ static int clock_disable(void *cbcr_addr)
 {
 
 	/* Set clock enable bit */
-	clrbits_le32(cbcr_addr, BIT(CLK_CTL_CBC_CLK_EN_SHFT));
+	clrbits32(cbcr_addr, BIT(CLK_CTL_CBC_CLK_EN_SHFT));
 	return 0;
 }
 
@@ -193,9 +193,9 @@ int clock_reset_bcr(void *bcr_addr, bool reset)
 	struct qcs405_bcr *bcr = bcr_addr;
 
 	if (reset)
-		setbits_le32(&bcr->bcr, BIT(CLK_CTL_BCR_BLK_ARES_SHFT));
+		setbits32(&bcr->bcr, BIT(CLK_CTL_BCR_BLK_ARES_SHFT));
 	else
-		clrbits_le32(&bcr->bcr, BIT(CLK_CTL_BCR_BLK_ARES_SHFT));
+		clrbits32(&bcr->bcr, BIT(CLK_CTL_BCR_BLK_ARES_SHFT));
 
 	return 0;
 }

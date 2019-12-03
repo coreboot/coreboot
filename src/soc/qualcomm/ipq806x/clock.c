@@ -23,7 +23,7 @@
  */
 void uart_pll_vote_clk_enable(unsigned int clk_dummy)
 {
-	setbits_le32(BB_PLL_ENA_SC0_REG, BIT(8));
+	setbits32(BB_PLL_ENA_SC0_REG, BIT(8));
 
 	if (!clk_dummy)
 		while ((read32(PLL_LOCK_DET_STATUS_REG) & BIT(8)) == 0);
@@ -39,11 +39,11 @@ static void uart_set_rate_mnd(unsigned int gsbi_port, unsigned int m,
 		unsigned int n)
 {
 	/* Assert MND reset. */
-	setbits_le32(GSBIn_UART_APPS_NS_REG(gsbi_port), BIT(7));
+	setbits32(GSBIn_UART_APPS_NS_REG(gsbi_port), BIT(7));
 	/* Program M and D values. */
 	write32(GSBIn_UART_APPS_MD_REG(gsbi_port), MD16(m, n));
 	/* Deassert MND reset. */
-	clrbits_le32(GSBIn_UART_APPS_NS_REG(gsbi_port), BIT(7));
+	clrbits32(GSBIn_UART_APPS_NS_REG(gsbi_port), BIT(7));
 }
 
 /**
@@ -53,7 +53,7 @@ static void uart_set_rate_mnd(unsigned int gsbi_port, unsigned int m,
  */
 static void uart_branch_clk_enable_reg(unsigned int gsbi_port)
 {
-	setbits_le32(GSBIn_UART_APPS_NS_REG(gsbi_port), BIT(9));
+	setbits32(GSBIn_UART_APPS_NS_REG(gsbi_port), BIT(9));
 }
 
 /**
@@ -100,7 +100,7 @@ static void uart_local_clock_enable(unsigned int gsbi_port, unsigned int n,
  */
 static void uart_set_gsbi_clk(unsigned int gsbi_port)
 {
-	setbits_le32(GSBIn_HCLK_CTL_REG(gsbi_port), BIT(4));
+	setbits32(GSBIn_HCLK_CTL_REG(gsbi_port), BIT(4));
 }
 
 /**

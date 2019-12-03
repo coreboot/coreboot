@@ -77,16 +77,16 @@ static int spm_register_init(void)
 		MD_DDR_EN_1_DBC_LEN |
 		CONN_DDR_EN_DBC_LEN);
 
-	clrsetbits_le32(&mtk_spm->spare_ack_mask,
-			SPARE_ACK_MASK_B_BIT1,
-			SPARE_ACK_MASK_B_BIT0);
+	clrsetbits32(&mtk_spm->spare_ack_mask,
+		     SPARE_ACK_MASK_B_BIT1,
+		     SPARE_ACK_MASK_B_BIT0);
 
 	write32(&mtk_spm->sysrom_con, IFR_SRAMROM_ROM_PDN);
 	write32(&mtk_spm->spm_pc_trace_con,
 		SPM_PC_TRACE_OFFSET |
 		SPM_PC_TRACE_HW_EN_LSB);
 
-	setbits_le32(&mtk_spm->spare_src_req_mask, SPARE1_DDREN_MASK_B_LSB);
+	setbits32(&mtk_spm->spare_src_req_mask, SPARE1_DDREN_MASK_B_LSB);
 
 	return 0;
 }
@@ -131,9 +131,9 @@ static int spm_reset_and_init_pcm(const struct pcm_desc *pcmdesc)
 
 	write32(&mtk_spm->pcm_pwr_io_en, 0);
 
-	clrsetbits_le32(&mtk_spm->pcm_con1,
-			PCM_TIMER_EN_LSB,
-			SPM_REGWR_CFG_KEY);
+	clrsetbits32(&mtk_spm->pcm_con1,
+		     PCM_TIMER_EN_LSB,
+		     SPM_REGWR_CFG_KEY);
 
 	write32(&mtk_spm->pcm_con0, SPM_REGWR_CFG_KEY | PCM_CK_EN_LSB |
 		PCM_SW_RESET_LSB);

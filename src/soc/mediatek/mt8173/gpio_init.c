@@ -25,14 +25,14 @@
  */
 static void set_gpi_from_mipi(void)
 {
-	setbits_le32(&mt8173_mipi->mipi_rx_ana4c,
+	setbits32(&mt8173_mipi->mipi_rx_ana4c,
 		1 << 0  |	/* RG_MIPI_GPI0_IES GPI47 */
 		1 << 6  |	/* RG_MIPI_GPI1_IES GPI48 */
 		1 << 12 |	/* RG_MIPI_GPI2_IES GPI49 */
 		1 << 18 |	/* RG_MIPI_GPI3_IES GPI50 */
 		1 << 24);	/* RF_MIPI_GPI4_IES GPI51 */
 
-	setbits_le32(&mt8173_mipi->mipi_rx_ana50,
+	setbits32(&mt8173_mipi->mipi_rx_ana50,
 		1 << 0  |	/* RG_MIPI_GPI5_IES GPI52 */
 		1 << 6  |	/* RG_MIPI_GPI6_IES GPI53 */
 		1 << 12 |	/* RG_MIPI_GPI7_IES GPI54 */

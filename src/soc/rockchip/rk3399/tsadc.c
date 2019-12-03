@@ -100,7 +100,7 @@ void tsadc_init(uint32_t polarity)
 	rkclk_configure_tsadc(TSADC_CLOCK_HZ);
 
 	/* tsadc power sequence */
-	clrbits_le32(&rk3399_tsadc->user_con, ADC_POWER_CTRL);
+	clrbits32(&rk3399_tsadc->user_con, ADC_POWER_CTRL);
 	write32(&rk3399_grf->tsadc_testbit_l, GRF_TSADC_TSEN_PD0_ON);
 	udelay(50);
 	write32(&rk3399_grf->tsadc_testbit_l, GRF_TSADC_TSEN_PD0_OFF);
@@ -125,9 +125,9 @@ void tsadc_init(uint32_t polarity)
 	write32(&rk3399_tsadc->auto_period_ht, AUTO_PERIOD_HT);
 	write32(&rk3399_tsadc->hight_tshut_debounce, AUTO_DEBOUNCE_HT);
 	/* Enable the src0, negative temprature coefficient */
-	setbits_le32(&rk3399_tsadc->auto_con, Q_SEL | SRC0_EN);
+	setbits32(&rk3399_tsadc->auto_con, Q_SEL | SRC0_EN);
 	udelay(100);
-	setbits_le32(&rk3399_tsadc->auto_con, AUTO_EN);
+	setbits32(&rk3399_tsadc->auto_con, AUTO_EN);
 
 	write32(&rk3399_tsadc->comp0_shut, TSADC_SHUT_VALUE);
 	write32(&rk3399_tsadc->int_en, TSHUT_CRU_EN_SRC0 | TSHUT_GPIO_EN_SRC0);

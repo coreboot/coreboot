@@ -34,7 +34,7 @@ static void sdram_patch(uintptr_t addr, uint32_t value)
 
 static void writebits(uint32_t value, uint32_t *addr, uint32_t mask)
 {
-	clrsetbits_le32(addr, mask, (value & mask));
+	clrsetbits32(addr, mask, (value & mask));
 }
 
 /* PMC must be configured before clock-enable and de-reset of MC/EMC. */
@@ -77,17 +77,17 @@ static void sdram_start_clocks(const struct sdram_params *param)
 static void sdram_deassert_clock_enable_signal(const struct sdram_params *param,
 					       struct tegra_pmc_regs *regs)
 {
-	clrbits_le32(&regs->por_dpd_ctrl,
-		     PMC_POR_DPD_CTRL_MEM0_HOLD_CKE_LOW_OVR_MASK);
+	clrbits32(&regs->por_dpd_ctrl,
+		  PMC_POR_DPD_CTRL_MEM0_HOLD_CKE_LOW_OVR_MASK);
 	udelay(param->PmcPorDpdCtrlWait);
 }
 
 static void sdram_deassert_sel_dpd(const struct sdram_params *param,
 				   struct tegra_pmc_regs *regs)
 {
-	clrbits_le32(&regs->por_dpd_ctrl,
-		     (PMC_POR_DPD_CTRL_MEM0_ADDR0_CLK_SEL_DPD_MASK |
-		      PMC_POR_DPD_CTRL_MEM0_ADDR1_CLK_SEL_DPD_MASK));
+	clrbits32(&regs->por_dpd_ctrl,
+		  (PMC_POR_DPD_CTRL_MEM0_ADDR0_CLK_SEL_DPD_MASK |
+		   PMC_POR_DPD_CTRL_MEM0_ADDR1_CLK_SEL_DPD_MASK));
 	/*
 	 * Note NVIDIA recommended to always do 10us delay here and ignore
 	 * BCT.PmcPorDpdCtrlWait.
@@ -439,8 +439,8 @@ static void sdram_set_clock_enable_signal(const struct sdram_params *param,
 					  struct tegra_emc_regs *regs)
 {
 	volatile uint32_t dummy = 0;
-	clrbits_le32(&regs->pin, (EMC_PIN_RESET_MASK | EMC_PIN_DQM_MASK |
-				  EMC_PIN_CKE_MASK));
+	clrbits32(&regs->pin, (EMC_PIN_RESET_MASK | EMC_PIN_DQM_MASK |
+			       EMC_PIN_CKE_MASK));
 	/*
 	 * Assert dummy read of PIN register to ensure above write to PIN
 	 * register went through. 200 is the recommended value by NVIDIA.
@@ -449,7 +449,7 @@ static void sdram_set_clock_enable_signal(const struct sdram_params *param,
 	udelay(200 + param->EmcPinExtraWait);
 
 	/* Deassert reset */
-	setbits_le32(&regs->pin, EMC_PIN_RESET_INACTIVE);
+	setbits32(&regs->pin, EMC_PIN_RESET_INACTIVE);
 	/*
 	 * Assert dummy read of PIN register to ensure above write to PIN
 	 * register went through. 200 is the recommended value by NVIDIA.
@@ -458,7 +458,7 @@ static void sdram_set_clock_enable_signal(const struct sdram_params *param,
 	udelay(500 + param->EmcPinExtraWait);
 
 	/* Enable clock enable signal */
-	setbits_le32(&regs->pin, EMC_PIN_CKE_NORMAL);
+	setbits32(&regs->pin, EMC_PIN_CKE_NORMAL);
 	/*
 	 * Assert dummy read of PIN register to ensure above write to PIN
 	 * register went through. 200 is the recommended value by NVIDIA.
@@ -547,8 +547,8 @@ static void sdram_enable_arbiter(const struct sdram_params *param)
 {
 	/* TODO(hungte) Move values here to standalone header file. */
 	uint32_t *AHB_ARBITRATION_XBAR_CTRL = (uint32_t*)(0x6000c000 + 0xe0);
-	setbits_le32(AHB_ARBITRATION_XBAR_CTRL,
-		     param->AhbArbitrationXbarCtrlMemInitDone << 16);
+	setbits32(AHB_ARBITRATION_XBAR_CTRL,
+		  param->AhbArbitrationXbarCtrlMemInitDone << 16);
 }
 
 static void sdram_lock_carveouts(const struct sdram_params *param,

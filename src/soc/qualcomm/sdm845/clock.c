@@ -66,7 +66,7 @@ struct clock_config qspi_core_cfg[] = {
 static int clock_configure_gpll0(void)
 {
 	/* Keep existing GPLL0 configuration, in RUN mode @600Mhz. */
-	setbits_le32(&gcc->gpll0.user_ctl,
+	setbits32(&gcc->gpll0.user_ctl,
 			1 << CLK_CTL_GPLL_PLLOUT_EVEN_SHFT |
 			1 << CLK_CTL_GPLL_PLLOUT_MAIN_SHFT |
 			1 << CLK_CTL_GPLL_PLLOUT_ODD_SHFT);
@@ -76,7 +76,7 @@ static int clock_configure_gpll0(void)
 static int clock_configure_mnd(struct sdm845_clock *clk, uint32_t m, uint32_t n,
 				uint32_t d_2)
 {
-	setbits_le32(&clk->rcg.cfg,
+	setbits32(&clk->rcg.cfg,
 			RCG_MODE_DUAL_EDGE << CLK_CTL_CFG_MODE_SHFT);
 
 	write32(&clk->m, m & CLK_CTL_RCG_MND_BMSK);
@@ -110,7 +110,7 @@ static int clock_configure(struct sdm845_clock *clk,
 				clk_cfg[idx].d_2);
 
 	/* Commit config to RCG*/
-	setbits_le32(&clk->rcg.cmd, BIT(CLK_CTL_CMD_UPDATE_SHFT));
+	setbits32(&clk->rcg.cmd, BIT(CLK_CTL_CMD_UPDATE_SHFT));
 
 	return 0;
 }
@@ -125,7 +125,7 @@ static int clock_enable_vote(void *cbcr_addr, void *vote_addr,
 {
 
 	/* Set clock vote bit */
-	setbits_le32(vote_addr, BIT(vote_bit));
+	setbits32(vote_addr, BIT(vote_bit));
 
 	/* Ensure clock is enabled */
 	while (clock_is_off(cbcr_addr))
@@ -138,7 +138,7 @@ static int clock_enable(void *cbcr_addr)
 {
 
 	/* Set clock enable bit */
-	setbits_le32(cbcr_addr, BIT(CLK_CTL_CBC_CLK_EN_SHFT));
+	setbits32(cbcr_addr, BIT(CLK_CTL_CBC_CLK_EN_SHFT));
 
 	/* Ensure clock is enabled */
 	while (clock_is_off(cbcr_addr))
@@ -169,9 +169,9 @@ int clock_reset_bcr(void *bcr_addr, bool reset)
 	struct sdm845_bcr *bcr = bcr_addr;
 
 	if (reset)
-		setbits_le32(bcr, BIT(CLK_CTL_BCR_BLK_ARES_SHFT));
+		setbits32(bcr, BIT(CLK_CTL_BCR_BLK_ARES_SHFT));
 	else
-		clrbits_le32(bcr, BIT(CLK_CTL_BCR_BLK_ARES_SHFT));
+		clrbits32(bcr, BIT(CLK_CTL_BCR_BLK_ARES_SHFT));
 
 	return 0;
 }

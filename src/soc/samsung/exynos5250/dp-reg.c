@@ -34,8 +34,8 @@ void s5p_dp_reset(struct s5p_dp_device *dp)
 	write32(&base->dp_tx_sw_reset, RESET_DP_TX);
 
 	/* Stop Video */
-	clrbits_le32(&base->video_ctl_1, VIDEO_EN);
-	clrbits_le32(&base->video_ctl_1, HDCP_VIDEO_MUTE);
+	clrbits32(&base->video_ctl_1, VIDEO_EN);
+	clrbits32(&base->video_ctl_1, HDCP_VIDEO_MUTE);
 
 	reg = MASTER_VID_FUNC_EN_N | SLAVE_VID_FUNC_EN_N |
 		AUD_FIFO_FUNC_EN_N | AUD_FUNC_EN_N |
@@ -124,12 +124,12 @@ int s5p_dp_init_analog_func(struct s5p_dp_device *dp)
 	reg = PLL_LOCK_CHG;
 	write32(&base->common_int_sta_1, reg);
 
-	clrbits_le32(&base->dp_debug_ctl, (F_PLL_LOCK | PLL_LOCK_CTRL));
+	clrbits32(&base->dp_debug_ctl, (F_PLL_LOCK | PLL_LOCK_CTRL));
 
 	/* Power up PLL */
 	if (s5p_dp_get_pll_lock_status(dp) == PLL_UNLOCKED) {
 
-		clrbits_le32(&base->dp_pll_ctl, DP_PLL_PD);
+		clrbits32(&base->dp_pll_ctl, DP_PLL_PD);
 
 		stopwatch_init_msecs_expire(&sw, PLL_LOCK_TIMEOUT);
 
@@ -143,7 +143,7 @@ int s5p_dp_init_analog_func(struct s5p_dp_device *dp)
 	}
 
 	/* Enable Serdes FIFO function and Link symbol clock domain module */
-	clrbits_le32(&base->func_en_2, (SERDES_FIFO_FUNC_EN_N |
+	clrbits32(&base->func_en_2, (SERDES_FIFO_FUNC_EN_N |
 				LS_CLK_DOMAIN_FUNC_EN_N | AUX_FUNC_EN_N));
 	return 0;
 }
@@ -158,7 +158,7 @@ void s5p_dp_init_aux(struct s5p_dp_device *dp)
 	write32(&base->dp_int_sta, reg);
 
 	/* Disable AUX channel module */
-	setbits_le32(&base->func_en_2, AUX_FUNC_EN_N);
+	setbits32(&base->func_en_2, AUX_FUNC_EN_N);
 
 	/* Disable AUX transaction H/W retry */
 	reg = (3 & AUX_BIT_PERIOD_MASK) << AUX_BIT_PERIOD_SHIFT;
@@ -172,7 +172,7 @@ void s5p_dp_init_aux(struct s5p_dp_device *dp)
 	write32(&base->aux_ch_defer_dtl, reg);
 
 	/* Enable AUX channel module */
-	clrbits_le32(&base->func_en_2, AUX_FUNC_EN_N);
+	clrbits32(&base->func_en_2, AUX_FUNC_EN_N);
 }
 
 int s5p_dp_start_aux_transaction(struct s5p_dp_device *dp)
@@ -181,7 +181,7 @@ int s5p_dp_start_aux_transaction(struct s5p_dp_device *dp)
 	struct exynos5_dp *base = dp->base;
 
 	/* Enable AUX CH operation */
-	setbits_le32(&base->aux_ch_ctl_2, AUX_EN);
+	setbits32(&base->aux_ch_ctl_2, AUX_EN);
 
 	/* Is AUX CH command reply received? */
 	reg = read32(&base->dp_int_sta);
@@ -386,7 +386,7 @@ void s5p_dp_set_video_cr_mn(struct s5p_dp_device *dp,
 	struct exynos5_dp *base = dp->base;
 
 	if (type == REGISTER_M) {
-		setbits_le32(&base->sys_ctl_4, FIX_M_VID);
+		setbits32(&base->sys_ctl_4, FIX_M_VID);
 
 		reg = m_value >> M_VID_0_VALUE_SHIFT;
 		write32(&base->m_vid_0, reg);
@@ -406,7 +406,7 @@ void s5p_dp_set_video_cr_mn(struct s5p_dp_device *dp,
 		reg = (n_value >> N_VID_2_VALUE_SHIFT);
 		write32(&base->n_vid_2, reg);
 	} else  {
-		clrbits_le32(&base->sys_ctl_4, FIX_M_VID);
+		clrbits32(&base->sys_ctl_4, FIX_M_VID);
 
 		write32(&base->n_vid_0, 0x00);
 		write32(&base->n_vid_1, 0x80);

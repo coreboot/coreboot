@@ -45,10 +45,10 @@ int mtk_wdt_init(void)
 	 * ENABLE: disable watchdog on initialization.
 	 * Setting bit EXTEN to enable watchdog output.
 	 */
-	clrsetbits_le32(&mtk_wdt->wdt_mode,
-			MTK_WDT_MODE_DUAL_MODE | MTK_WDT_MODE_IRQ |
-			MTK_WDT_MODE_EXT_POL | MTK_WDT_MODE_ENABLE,
-			MTK_WDT_MODE_EXTEN | MTK_WDT_MODE_KEY);
+	clrsetbits32(&mtk_wdt->wdt_mode,
+		     MTK_WDT_MODE_DUAL_MODE | MTK_WDT_MODE_IRQ |
+		     MTK_WDT_MODE_EXT_POL | MTK_WDT_MODE_ENABLE,
+		     MTK_WDT_MODE_EXTEN | MTK_WDT_MODE_KEY);
 
 	return wdt_sta;
 }

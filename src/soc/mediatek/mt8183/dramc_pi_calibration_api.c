@@ -154,8 +154,8 @@ static void move_dramc_delay(u32 *reg_0, u32 *reg_1, u8 shift, s8 shift_coarse_t
 		tmp_0p5t = sum - (tmp_2t << DQ_DIV_SHIFT);
 	}
 
-	clrsetbits_le32(reg_0, DQ_DIV_MASK << shift, tmp_0p5t << shift);
-	clrsetbits_le32(reg_1, DQ_DIV_MASK << shift, tmp_2t << shift);
+	clrsetbits32(reg_0, DQ_DIV_MASK << shift, tmp_0p5t << shift);
+	clrsetbits32(reg_1, DQ_DIV_MASK << shift, tmp_2t << shift);
 }
 
 static void move_dramc_tx_dqs(u8 chn, u8 byte, s8 shift_coarse_tune)
@@ -279,36 +279,36 @@ static void dramc_write_dbi_onoff(bool onoff)
 
 static void dramc_phy_dcm_2_channel(u8 chn, bool en)
 {
-	clrsetbits_le32(&ch[chn].phy.misc_cg_ctrl0, (0x3 << 19) | (0x3ff << 8),
+	clrsetbits32(&ch[chn].phy.misc_cg_ctrl0, (0x3 << 19) | (0x3ff << 8),
 		((en ? 0 : 0x1) << 19) | ((en ? 0 : 0x1ff) << 9) | (1 << 8));
 
 	for (size_t i = 0; i < DRAM_DFS_SHUFFLE_MAX; i++) {
 		struct ddrphy_ao_shu *shu = &ch[chn].phy.shu[i];
 		for (size_t b = 0; b < 2; b++)
-			clrsetbits_le32(&shu->b[b].dq[8], 0x1fff << 19,
+			clrsetbits32(&shu->b[b].dq[8], 0x1fff << 19,
 				((en ? 0 : 0x7ff) << 22) | (0x1 << 21) |
 				((en ? 0 : 0x3) << 19));
-		clrbits_le32(&shu->ca_cmd[8], 0x1fff << 19);
+		clrbits32(&shu->ca_cmd[8], 0x1fff << 19);
 	}
-	clrsetbits_le32(&ch[chn].phy.misc_cg_ctrl5, (0x7 << 16) | (0x7 << 20),
+	clrsetbits32(&ch[chn].phy.misc_cg_ctrl5, (0x7 << 16) | (0x7 << 20),
 		((en ? 0x7 : 0) << 16) | ((en ? 0x7 : 0) << 20));
 }
 
 void dramc_enable_phy_dcm(bool en)
 {
 	for (size_t chn = 0; chn < CHANNEL_MAX ; chn++) {
-		clrbits_le32(&ch[chn].phy.b[0].dll_fine_tune[1], 0x1 << 20);
-		clrbits_le32(&ch[chn].phy.b[1].dll_fine_tune[1], 0x1 << 20);
-		clrbits_le32(&ch[chn].phy.ca_dll_fine_tune[1], 0x1 << 20);
+		clrbits32(&ch[chn].phy.b[0].dll_fine_tune[1], 0x1 << 20);
+		clrbits32(&ch[chn].phy.b[1].dll_fine_tune[1], 0x1 << 20);
+		clrbits32(&ch[chn].phy.ca_dll_fine_tune[1], 0x1 << 20);
 
 		for (size_t i = 0; i < DRAM_DFS_SHUFFLE_MAX; i++) {
 			struct ddrphy_ao_shu *shu = &ch[chn].phy.shu[i];
-			setbits_le32(&shu->b[0].dll[0], 0x1);
-			setbits_le32(&shu->b[1].dll[0], 0x1);
-			setbits_le32(&shu->ca_dll[0], 0x1);
+			setbits32(&shu->b[0].dll[0], 0x1);
+			setbits32(&shu->b[1].dll[0], 0x1);
+			setbits32(&shu->ca_dll[0], 0x1);
 		}
 
-		clrsetbits_le32(&ch[chn].ao.dramc_pd_ctrl,
+		clrsetbits32(&ch[chn].ao.dramc_pd_ctrl,
 			(0x1 << 0) | (0x1 << 1) | (0x1 << 2) |
 			(0x1 << 5) | (0x1 << 26) | (0x1 << 30) | (0x1 << 31),
 			((en ? 0x1 : 0) << 0) | ((en ? 0x1 : 0) << 1) |
@@ -324,16 +324,16 @@ void dramc_enable_phy_dcm(bool en)
 		write32(&ch[chn].phy.misc_cg_ctrl2,
 			0x8060033e | (0x40 << (en ? 0x1 : 0)));
 
-		clrsetbits_le32(&ch[chn].phy.misc_ctrl3, 0x3 << 26,
+		clrsetbits32(&ch[chn].phy.misc_ctrl3, 0x3 << 26,
 			(en ? 0 : 0x3) << 26);
 		for (size_t i = 0; i < DRAM_DFS_SHUFFLE_MAX; i++) {
 			u32 mask = 0x7 << 17;
 			u32 value = (en ? 0x7 : 0) << 17;
 			struct ddrphy_ao_shu *shu = &ch[chn].phy.shu[i];
 
-			clrsetbits_le32(&shu->b[0].dq[7], mask, value);
-			clrsetbits_le32(&shu->b[1].dq[7], mask, value);
-			clrsetbits_le32(&shu->ca_cmd[7], mask, value);
+			clrsetbits32(&shu->b[0].dq[7], mask, value);
+			clrsetbits32(&shu->b[1].dq[7], mask, value);
+			clrsetbits32(&shu->ca_cmd[7], mask, value);
 		}
 
 		dramc_phy_dcm_2_channel(chn, en);
@@ -346,31 +346,31 @@ static void dramc_reset_delay_chain_before_calibration(void)
 		for (size_t rank = 0; rank < RANK_MAX; rank++) {
 			struct dramc_ddrphy_regs_shu_rk *rk;
 			rk = &ch[chn].phy.shu[0].rk[rank];
-			clrbits_le32(&rk->ca_cmd[0], 0xffffff << 0);
-			clrbits_le32(&rk->b[0].dq[0], 0xfffffff << 0);
-			clrbits_le32(&rk->b[1].dq[0], 0xfffffff << 0);
-			clrbits_le32(&rk->b[0].dq[1], 0xf << 0);
-			clrbits_le32(&rk->b[1].dq[1], 0xf << 0);
+			clrbits32(&rk->ca_cmd[0], 0xffffff << 0);
+			clrbits32(&rk->b[0].dq[0], 0xfffffff << 0);
+			clrbits32(&rk->b[1].dq[0], 0xfffffff << 0);
+			clrbits32(&rk->b[0].dq[1], 0xf << 0);
+			clrbits32(&rk->b[1].dq[1], 0xf << 0);
 		}
 }
 
 void dramc_hw_gating_onoff(u8 chn, bool on)
 {
-	clrsetbits_le32(&ch[chn].ao.shuctrl2, 0x3 << 14,
+	clrsetbits32(&ch[chn].ao.shuctrl2, 0x3 << 14,
 		(on ? 0x3 : 0) << 14);
-	clrsetbits_le32(&ch[chn].ao.stbcal2, 0x1 << 28, (on ? 0x1 : 0) << 28);
-	clrsetbits_le32(&ch[chn].ao.stbcal, 0x1 << 24, (on ? 0x1 : 0) << 24);
-	clrsetbits_le32(&ch[chn].ao.stbcal, 0x1 << 22, (on ? 0x1 : 0) << 22);
+	clrsetbits32(&ch[chn].ao.stbcal2, 0x1 << 28, (on ? 0x1 : 0) << 28);
+	clrsetbits32(&ch[chn].ao.stbcal, 0x1 << 24, (on ? 0x1 : 0) << 24);
+	clrsetbits32(&ch[chn].ao.stbcal, 0x1 << 22, (on ? 0x1 : 0) << 22);
 }
 
 static void dramc_rx_input_delay_tracking_init_by_freq(u8 chn)
 {
 	struct ddrphy_ao_shu *shu = &ch[chn].phy.shu[0];
 
-	clrsetbits_le32(&shu->b[0].dq[5], 0x7 << 20, 0x3 << 20);
-	clrsetbits_le32(&shu->b[1].dq[5], 0x7 << 20, 0x3 << 20);
-	clrbits_le32(&shu->b[0].dq[7], (0x1 << 12) | (0x1 << 13));
-	clrbits_le32(&shu->b[1].dq[7], (0x1 << 12) | (0x1 << 13));
+	clrsetbits32(&shu->b[0].dq[5], 0x7 << 20, 0x3 << 20);
+	clrsetbits32(&shu->b[1].dq[5], 0x7 << 20, 0x3 << 20);
+	clrbits32(&shu->b[0].dq[7], (0x1 << 12) | (0x1 << 13));
+	clrbits32(&shu->b[1].dq[7], (0x1 << 12) | (0x1 << 13));
 }
 
 void dramc_apply_config_before_calibration(u8 freq_group)
@@ -378,55 +378,55 @@ void dramc_apply_config_before_calibration(u8 freq_group)
 	dramc_enable_phy_dcm(false);
 	dramc_reset_delay_chain_before_calibration();
 
-	setbits_le32(&ch[0].ao.shu[0].conf[3], 0x1ff << 16);
-	setbits_le32(&ch[0].ao.spcmdctrl, 0x1 << 24);
-	clrsetbits_le32(&ch[0].ao.shu[0].scintv, 0x1f << 1, 0x1b << 1);
+	setbits32(&ch[0].ao.shu[0].conf[3], 0x1ff << 16);
+	setbits32(&ch[0].ao.spcmdctrl, 0x1 << 24);
+	clrsetbits32(&ch[0].ao.shu[0].scintv, 0x1f << 1, 0x1b << 1);
 
 	for (size_t shu = DRAM_DFS_SHUFFLE_1; shu < DRAM_DFS_SHUFFLE_MAX; shu++)
-		setbits_le32(&ch[0].ao.shu[shu].conf[3], 0x1ff << 0);
+		setbits32(&ch[0].ao.shu[shu].conf[3], 0x1ff << 0);
 
-	clrbits_le32(&ch[0].ao.dramctrl, 0x1 << 18);
-	clrbits_le32(&ch[0].ao.spcmdctrl, 0x1 << 31);
-	clrbits_le32(&ch[0].ao.spcmdctrl, 0x1 << 30);
-	clrbits_le32(&ch[0].ao.dqsoscr, 0x1 << 26);
-	clrbits_le32(&ch[0].ao.dqsoscr, 0x1 << 25);
+	clrbits32(&ch[0].ao.dramctrl, 0x1 << 18);
+	clrbits32(&ch[0].ao.spcmdctrl, 0x1 << 31);
+	clrbits32(&ch[0].ao.spcmdctrl, 0x1 << 30);
+	clrbits32(&ch[0].ao.dqsoscr, 0x1 << 26);
+	clrbits32(&ch[0].ao.dqsoscr, 0x1 << 25);
 
 	dramc_write_dbi_onoff(false);
 	dramc_read_dbi_onoff(false);
 
 	for (size_t chn = 0; chn < CHANNEL_MAX; chn++) {
-		setbits_le32(&ch[chn].ao.spcmdctrl, 0x1 << 29);
-		setbits_le32(&ch[chn].ao.dqsoscr, 0x1 << 24);
+		setbits32(&ch[chn].ao.spcmdctrl, 0x1 << 29);
+		setbits32(&ch[chn].ao.dqsoscr, 0x1 << 24);
 		for (size_t shu = DRAM_DFS_SHUFFLE_1; shu < DRAM_DFS_SHUFFLE_MAX; shu++)
-			setbits_le32(&ch[chn].ao.shu[shu].scintv, 0x1 << 30);
+			setbits32(&ch[chn].ao.shu[shu].scintv, 0x1 << 30);
 
-		clrbits_le32(&ch[chn].ao.dummy_rd, (0x1 << 7) | (0x7 << 20));
+		clrbits32(&ch[chn].ao.dummy_rd, (0x1 << 7) | (0x7 << 20));
 		dramc_hw_gating_onoff(chn, false);
-		clrbits_le32(&ch[chn].ao.stbcal2, 0x1 << 28);
+		clrbits32(&ch[chn].ao.stbcal2, 0x1 << 28);
 
-		setbits_le32(&ch[chn].phy.misc_ctrl1, (0x1 << 7) | (0x1 << 11));
-		clrbits_le32(&ch[chn].ao.refctrl0, 0x1 << 18);
-		clrbits_le32(&ch[chn].ao.mrs, 0x3 << 24);
-		setbits_le32(&ch[chn].ao.mpc_option, 0x1 << 17);
-		clrsetbits_le32(&ch[chn].phy.b[0].dq[6], 0x3 << 0, 0x1 << 0);
-		clrsetbits_le32(&ch[chn].phy.b[1].dq[6], 0x3 << 0, 0x1 << 0);
-		clrsetbits_le32(&ch[chn].phy.ca_cmd[6], 0x3 << 0, 0x1 << 0);
+		setbits32(&ch[chn].phy.misc_ctrl1, (0x1 << 7) | (0x1 << 11));
+		clrbits32(&ch[chn].ao.refctrl0, 0x1 << 18);
+		clrbits32(&ch[chn].ao.mrs, 0x3 << 24);
+		setbits32(&ch[chn].ao.mpc_option, 0x1 << 17);
+		clrsetbits32(&ch[chn].phy.b[0].dq[6], 0x3 << 0, 0x1 << 0);
+		clrsetbits32(&ch[chn].phy.b[1].dq[6], 0x3 << 0, 0x1 << 0);
+		clrsetbits32(&ch[chn].phy.ca_cmd[6], 0x3 << 0, 0x1 << 0);
 
 		dramc_rx_input_delay_tracking_init_by_freq(chn);
 
-		setbits_le32(&ch[chn].ao.dummy_rd, 0x1 << 25);
-		setbits_le32(&ch[chn].ao.drsctrl, 0x1 << 0);
+		setbits32(&ch[chn].ao.dummy_rd, 0x1 << 25);
+		setbits32(&ch[chn].ao.drsctrl, 0x1 << 0);
 		if (freq_group == LP4X_DDR3200 || freq_group == LP4X_DDR3600)
-			clrbits_le32(&ch[chn].ao.shu[1].drving[1], 0x1 << 31);
+			clrbits32(&ch[chn].ao.shu[1].drving[1], 0x1 << 31);
 		else
-			setbits_le32(&ch[chn].ao.shu[1].drving[1], 0x1 << 31);
+			setbits32(&ch[chn].ao.shu[1].drving[1], 0x1 << 31);
 	}
 
 	for (size_t r = 0; r < 2; r++) {
 		for (size_t b = 0; b < 2; b++)
-			clrbits_le32(&ch[0].phy.r[r].b[b].rxdvs[2],
+			clrbits32(&ch[0].phy.r[r].b[b].rxdvs[2],
 				(0x1 << 28) | (0x1 << 23) | (0x3 << 30));
-		clrbits_le32(&ch[0].phy.r0_ca_rxdvs[2], 0x3 << 30);
+		clrbits32(&ch[0].phy.r0_ca_rxdvs[2], 0x3 << 30);
 	}
 }
 
@@ -437,51 +437,51 @@ static void dramc_set_mr13_vrcg_to_Normal(u8 chn, const struct mr_value *mr)
 					     mr->MR13Value & ~(0x1 << 3));
 
 	for (u8 shu = 0; shu < DRAM_DFS_SHUFFLE_MAX; shu++)
-		clrbits_le32(&ch[chn].ao.shu[shu].hwset_vrcg, 0x1 << 19);
+		clrbits32(&ch[chn].ao.shu[shu].hwset_vrcg, 0x1 << 19);
 }
 
 void dramc_apply_config_after_calibration(const struct mr_value *mr)
 {
 	for (size_t chn = 0; chn < CHANNEL_MAX; chn++) {
 		write32(&ch[chn].phy.misc_cg_ctrl4, 0x11400000);
-		clrbits_le32(&ch[chn].ao.refctrl1, 0x1 << 7);
-		clrbits_le32(&ch[chn].ao.shuctrl, 0x1 << 2);
-		clrbits_le32(&ch[chn].phy.ca_cmd[6], 0x1 << 6);
+		clrbits32(&ch[chn].ao.refctrl1, 0x1 << 7);
+		clrbits32(&ch[chn].ao.shuctrl, 0x1 << 2);
+		clrbits32(&ch[chn].phy.ca_cmd[6], 0x1 << 6);
 		dramc_set_mr13_vrcg_to_Normal(chn, mr);
 
-		clrbits_le32(&ch[chn].phy.b[0].dq[6], 0x3);
-		clrbits_le32(&ch[chn].phy.b[1].dq[6], 0x3);
-		clrbits_le32(&ch[chn].phy.ca_cmd[6], 0x3);
-		setbits_le32(&ch[chn].phy.b[0].dq[6], 0x1 << 5);
-		setbits_le32(&ch[chn].phy.b[1].dq[6], 0x1 << 5);
-		setbits_le32(&ch[chn].phy.ca_cmd[6], 0x1 << 5);
+		clrbits32(&ch[chn].phy.b[0].dq[6], 0x3);
+		clrbits32(&ch[chn].phy.b[1].dq[6], 0x3);
+		clrbits32(&ch[chn].phy.ca_cmd[6], 0x3);
+		setbits32(&ch[chn].phy.b[0].dq[6], 0x1 << 5);
+		setbits32(&ch[chn].phy.b[1].dq[6], 0x1 << 5);
+		setbits32(&ch[chn].phy.ca_cmd[6], 0x1 << 5);
 
-		clrbits_le32(&ch[chn].ao.impcal, 0x3 << 24);
-		clrbits_le32(&ch[chn].phy.misc_imp_ctrl0, 0x4);
-		clrbits_le32(&ch[chn].phy.misc_cg_ctrl0, 0xf);
+		clrbits32(&ch[chn].ao.impcal, 0x3 << 24);
+		clrbits32(&ch[chn].phy.misc_imp_ctrl0, 0x4);
+		clrbits32(&ch[chn].phy.misc_cg_ctrl0, 0xf);
 
-		clrbits_le32(&ch[chn].phy.misc_ctrl0, 0x1 << 31);
-		clrbits_le32(&ch[chn].phy.misc_ctrl1, 0x1 << 25);
+		clrbits32(&ch[chn].phy.misc_ctrl0, 0x1 << 31);
+		clrbits32(&ch[chn].phy.misc_ctrl1, 0x1 << 25);
 
-		setbits_le32(&ch[chn].ao.spcmdctrl, 1 << 29);
-		setbits_le32(&ch[chn].ao.dqsoscr, 1 << 24);
+		setbits32(&ch[chn].ao.spcmdctrl, 1 << 29);
+		setbits32(&ch[chn].ao.dqsoscr, 1 << 24);
 
 		for (u8 shu = 0; shu < DRAM_DFS_SHUFFLE_MAX; shu++)
-			clrbits_le32(&ch[chn].ao.shu[shu].scintv, 0x1 << 30);
+			clrbits32(&ch[chn].ao.shu[shu].scintv, 0x1 << 30);
 
-		clrbits_le32(&ch[chn].ao.dummy_rd, (0x7 << 20) | (0x1 << 7));
+		clrbits32(&ch[chn].ao.dummy_rd, (0x7 << 20) | (0x1 << 7));
 		dramc_cke_fix_onoff(chn, false, false);
-		clrbits_le32(&ch[chn].ao.dramc_pd_ctrl, 0x1 << 26);
+		clrbits32(&ch[chn].ao.dramc_pd_ctrl, 0x1 << 26);
 
-		clrbits_le32(&ch[chn].ao.eyescan, 0x7 << 8);
-		clrsetbits_le32(&ch[chn].ao.test2_4, 0x7 << 28, 0x4 << 28);
+		clrbits32(&ch[chn].ao.eyescan, 0x7 << 8);
+		clrsetbits32(&ch[chn].ao.test2_4, 0x7 << 28, 0x4 << 28);
 	}
 }
 
 static void dramc_rx_dqs_isi_pulse_cg_switch(u8 chn, bool flag)
 {
 	for (size_t b = 0; b < 2; b++)
-		clrsetbits_le32(&ch[chn].phy.b[b].dq[6], 1 << 5,
+		clrsetbits32(&ch[chn].phy.b[b].dq[6], 1 << 5,
 				(flag ? 1 : 0) << 5);
 }
 
@@ -600,7 +600,7 @@ static u32 dramc_engine2_run(u8 chn, enum dram_te_op wr)
 
 static void dramc_engine2_end(u8 chn, u32 dummy_rd)
 {
-	clrbits_le32(&ch[chn].ao.test2_4, 0x1 << 17);
+	clrbits32(&ch[chn].ao.test2_4, 0x1 << 17);
 	write32(&ch[chn].ao.dummy_rd, dummy_rd);
 }
 
@@ -717,12 +717,12 @@ static void dram_phy_reset(u8 chn)
 {
 	SET32_BITFIELDS(&ch[chn].ao.ddrconf0, DDRCONF0_RDATRST, 1);
 	SET32_BITFIELDS(&ch[chn].phy.misc_ctrl1, MISC_CTRL1_R_DMPHYRST, 1);
-	clrbits_le32(&ch[chn].phy.b[0].dq[9], (1 << 4) | (1 << 0));
-	clrbits_le32(&ch[chn].phy.b[1].dq[9], (1 << 4) | (1 << 0));
+	clrbits32(&ch[chn].phy.b[0].dq[9], (1 << 4) | (1 << 0));
+	clrbits32(&ch[chn].phy.b[1].dq[9], (1 << 4) | (1 << 0));
 
 	udelay(1);
-	setbits_le32(&ch[chn].phy.b[1].dq[9], (1 << 4) | (1 << 0));
-	setbits_le32(&ch[chn].phy.b[0].dq[9], (1 << 4) | (1 << 0));
+	setbits32(&ch[chn].phy.b[1].dq[9], (1 << 4) | (1 << 0));
+	setbits32(&ch[chn].phy.b[0].dq[9], (1 << 4) | (1 << 0));
 	SET32_BITFIELDS(&ch[chn].phy.misc_ctrl1, MISC_CTRL1_R_DMPHYRST, 0);
 	SET32_BITFIELDS(&ch[chn].ao.ddrconf0, DDRCONF0_RDATRST, 0);
 }
@@ -737,18 +737,18 @@ static void dramc_set_gating_mode(u8 chn, bool mode)
 	}
 
 	for (size_t b = 0; b < 2; b++) {
-		clrsetbits_le32(&ch[chn].phy.b[b].dq[6], 0x3 << 14, vref << 14);
-		setbits_le32(&ch[chn].phy.b[b].dq[9], 0x1 << 5);
+		clrsetbits32(&ch[chn].phy.b[b].dq[6], 0x3 << 14, vref << 14);
+		setbits32(&ch[chn].phy.b[b].dq[9], 0x1 << 5);
 	}
 
-	clrsetbits_le32(&ch[chn].ao.stbcal1, 0x1 << 5, burst << 5);
-	setbits_le32(&ch[chn].ao.stbcal, 0x1 << 30);
+	clrsetbits32(&ch[chn].ao.stbcal1, 0x1 << 5, burst << 5);
+	setbits32(&ch[chn].ao.stbcal, 0x1 << 30);
 
-	clrbits_le32(&ch[chn].phy.b[0].dq[9], (0x1 << 4) | (0x1 << 0));
-	clrbits_le32(&ch[chn].phy.b[1].dq[9], (0x1 << 4) | (0x1 << 0));
+	clrbits32(&ch[chn].phy.b[0].dq[9], (0x1 << 4) | (0x1 << 0));
+	clrbits32(&ch[chn].phy.b[1].dq[9], (0x1 << 4) | (0x1 << 0));
 	udelay(1);
-	setbits_le32(&ch[chn].phy.b[1].dq[9], (0x1 << 4) | (0x1 << 0));
-	setbits_le32(&ch[chn].phy.b[0].dq[9], (0x1 << 4) | (0x1 << 0));
+	setbits32(&ch[chn].phy.b[1].dq[9], (0x1 << 4) | (0x1 << 0));
+	setbits32(&ch[chn].phy.b[0].dq[9], (0x1 << 4) | (0x1 << 0));
 }
 
 static void dramc_rx_dqs_gating_cal_pre(u8 chn, u8 rank)
@@ -773,7 +773,7 @@ static void dramc_rx_dqs_gating_cal_pre(u8 chn, u8 rank)
 
 static void set_selph_gating_value(uint32_t *addr, u8 dly, u8 dly_p1)
 {
-	clrsetbits_le32(addr, 0x77777777,
+	clrsetbits32(addr, 0x77777777,
 		(dly << 0) | (dly << 8) | (dly << 16) | (dly << 24) |
 		(dly_p1 << 4) | (dly_p1 << 12) | (dly_p1 << 20) | (dly_p1 << 28));
 }
@@ -788,11 +788,11 @@ static void dramc_write_dqs_gating_result(u8 chn, u8 rank,
 
 	dramc_rx_dqs_isi_pulse_cg_switch(chn, true);
 
-	clrsetbits_le32(&ch[chn].ao.shu[0].rk[rank].selph_dqsg0,
+	clrsetbits32(&ch[chn].ao.shu[0].rk[rank].selph_dqsg0,
 		0x77777777,
 		(best_coarse_tune2t[0] << 0) | (best_coarse_tune2t[1] << 8) |
 		(best_coarse_tune2t_p1[0] << 4) | (best_coarse_tune2t_p1[1] << 12));
-	clrsetbits_le32(&ch[chn].ao.shu[0].rk[rank].selph_dqsg1,
+	clrsetbits32(&ch[chn].ao.shu[0].rk[rank].selph_dqsg1,
 		0x77777777,
 		(best_coarse_tune0p5t[0] << 0) | (best_coarse_tune0p5t[1] << 8) |
 		(best_coarse_tune0p5t_p1[0] << 4) | (best_coarse_tune0p5t_p1[1] << 12));
@@ -827,11 +827,11 @@ static void dramc_write_dqs_gating_result(u8 chn, u8 rank,
 		}
 	}
 
-	clrsetbits_le32(&ch[chn].ao.shu[0].rk[rank].selph_odten0,
+	clrsetbits32(&ch[chn].ao.shu[0].rk[rank].selph_odten0,
 		0x77777777,
 		(best_coarse_rodt[0] << 0) | (best_coarse_rodt[1] << 8) |
 		(best_coarse_rodt_p1[0] << 4) | (best_coarse_rodt_p1[1] << 12));
-	clrsetbits_le32(&ch[chn].ao.shu[0].rk[rank].selph_odten1,
+	clrsetbits32(&ch[chn].ao.shu[0].rk[rank].selph_odten1,
 		0x77777777,
 		(best_coarse_0p5t_rodt[0] << 0) | (best_coarse_0p5t_rodt[1] << 8) |
 		(best_coarse_0p5t_rodt_p1[0] << 4) | (best_coarse_0p5t_rodt_p1[1] << 12));
@@ -1063,7 +1063,7 @@ static void dramc_rx_rd_dqc_init(u8 chn, u8 rank)
 	u16 temp_value = 0;
 
 	for (size_t b = 0; b < 2; b++)
-		clrbits_le32(&ch[chn].phy.shu[0].b[b].dq[7], 0x1 << 7);
+		clrbits32(&ch[chn].phy.shu[0].b[b].dq[7], 0x1 << 7);
 
 	SET32_BITFIELDS(&ch[chn].ao.mrs, MRS_MRSRK, rank);
 	SET32_BITFIELDS(&ch[chn].ao.mpc_option, MPC_OPTION_MPCRKEN, 1);
@@ -1213,17 +1213,17 @@ static void dramc_set_tx_dly_factor(u8 chn, u8 rk,
 
 	if (*dq_small_reg != dly_tune.coarse_tune_small) {
 		if (type == TX_WIN_DQ_DQM || type == TX_WIN_DQ_ONLY) {
-			clrsetbits_le32(&ch[chn].ao.shu[0].rk[rk].selph_dq[0],
+			clrsetbits32(&ch[chn].ao.shu[0].rk[rk].selph_dq[0],
 				0x77777777, dly_large | (dly_large_oen << 16));
-			clrsetbits_le32(&ch[chn].ao.shu[0].rk[rk].selph_dq[2],
+			clrsetbits32(&ch[chn].ao.shu[0].rk[rk].selph_dq[2],
 				0x77777777, dly_small | (dly_small_oen << 16));
 		}
 
 		if (type == TX_WIN_DQ_DQM) {
 			/* Large coarse_tune setting */
-			clrsetbits_le32(&ch[chn].ao.shu[0].rk[rk].selph_dq[1],
+			clrsetbits32(&ch[chn].ao.shu[0].rk[rk].selph_dq[1],
 				0x77777777, dly_large | (dly_large_oen << 16));
-			clrsetbits_le32(&ch[chn].ao.shu[0].rk[rk].selph_dq[3],
+			clrsetbits32(&ch[chn].ao.shu[0].rk[rk].selph_dq[3],
 				0x77777777, dly_small | (dly_small_oen << 16));
 		}
 	}
@@ -1480,13 +1480,13 @@ static void dramc_set_tx_best_dly_factor(u8 chn, u8 rank_start, u8 type,
 	}
 
 	for (size_t rank = rank_start; rank < RANK_MAX; rank++) {
-		clrsetbits_le32(&ch[chn].ao.shu[0].rk[rank].selph_dq[0],
+		clrsetbits32(&ch[chn].ao.shu[0].rk[rank].selph_dq[0],
 			0x77777777, dq_large | (dq_large_oen << 16));
-		clrsetbits_le32(&ch[chn].ao.shu[0].rk[rank].selph_dq[2],
+		clrsetbits32(&ch[chn].ao.shu[0].rk[rank].selph_dq[2],
 			0x77777777, dq_small | (dq_small_oen << 16));
-		clrsetbits_le32(&ch[chn].ao.shu[0].rk[rank].selph_dq[1],
+		clrsetbits32(&ch[chn].ao.shu[0].rk[rank].selph_dq[1],
 			0x77777777, dqm_large | (dqm_large_oen << 16));
-		clrsetbits_le32(&ch[chn].ao.shu[0].rk[rank].selph_dq[3],
+		clrsetbits32(&ch[chn].ao.shu[0].rk[rank].selph_dq[3],
 			0x77777777, dqm_small | (dqm_small_oen << 16));
 
 		for (size_t byte = 0; byte < 2; byte++)
@@ -1503,15 +1503,15 @@ static void dramc_set_tx_best_dly_factor(u8 chn, u8 rank_start, u8 type,
 		if (type != TX_WIN_DQ_ONLY)
 			continue;
 
-		clrsetbits_le32(&ch[chn].ao.shu[0].rk[rank].fine_tune, 0x3f3f3f3f,
+		clrsetbits32(&ch[chn].ao.shu[0].rk[rank].fine_tune, 0x3f3f3f3f,
 			(dqdly_tune[0].fine_tune << 8) | (dqdly_tune[1].fine_tune << 0) |
 			(dqmdly_tune[0].fine_tune << 24) | (dqmdly_tune[1].fine_tune << 16));
 
-		clrsetbits_le32(&ch[chn].ao.shu[0].rk[rank].dqs2dq_cal1, 0x7ff | (0x7ff << 16),
+		clrsetbits32(&ch[chn].ao.shu[0].rk[rank].dqs2dq_cal1, 0x7ff | (0x7ff << 16),
 			(dqdly_tune[0].fine_tune << 0) | (dqdly_tune[1].fine_tune << 16));
-		clrsetbits_le32(&ch[chn].ao.shu[0].rk[rank].dqs2dq_cal2, 0x7ff | (0x7ff << 16),
+		clrsetbits32(&ch[chn].ao.shu[0].rk[rank].dqs2dq_cal2, 0x7ff | (0x7ff << 16),
 			(dqdly_tune[0].fine_tune << 0) | (dqdly_tune[1].fine_tune << 16));
-		clrsetbits_le32(&ch[chn].ao.shu[0].rk[rank].dqs2dq_cal5, 0x7ff | (0x7ff << 16),
+		clrsetbits32(&ch[chn].ao.shu[0].rk[rank].dqs2dq_cal5, 0x7ff | (0x7ff << 16),
 			(dqmdly_tune[0].fine_tune << 0) | (dqmdly_tune[1].fine_tune << 16));
 	}
 }
@@ -1525,7 +1525,7 @@ static void dramc_set_rx_best_dly_factor(u8 chn, u8 rank,
 	for (u8 byte = 0; byte < DQS_NUMBER; byte++) {
 		value = (dqsdly_byte[byte] << 24) | (dqsdly_byte[byte] << 16) |
 			(dqmdly_byte[byte] << 8) | (dqmdly_byte[byte] << 0);
-		clrsetbits_le32(&ch[chn].phy.shu[0].rk[rank].b[byte].dq[6], 0x7f7f3f3f, value);
+		clrsetbits32(&ch[chn].phy.shu[0].rk[rank].b[byte].dq[6], 0x7f7f3f3f, value);
 	}
 	dram_phy_reset(chn);
 
@@ -1538,7 +1538,7 @@ static void dramc_set_rx_best_dly_factor(u8 chn, u8 rank,
 				(dly[index + 1].best_dqdly << 16) |
 				(dly[index].best_dqdly << 8) | (dly[index].best_dqdly << 0);
 
-			clrsetbits_le32(&ch[chn].phy.shu[0].rk[rank].b[byte].dq[dq_num],
+			clrsetbits32(&ch[chn].phy.shu[0].rk[rank].b[byte].dq[dq_num],
 				0x3f3f3f3f, value);
 		}
 	}
@@ -1817,11 +1817,11 @@ static u8 dramc_window_perbit_cal(u8 chn, u8 rank, u8 freq_group,
 	if (type == TX_WIN_DQ_ONLY || type == TX_WIN_DQ_DQM) {
 		for (size_t byte = 0; byte < 2; byte++) {
 			write32(&ch[chn].phy.shu[0].rk[rank].b[byte].dq[0], 0);
-			clrbits_le32(&ch[chn].phy.shu[0].rk[rank].b[byte].dq[1],
+			clrbits32(&ch[chn].phy.shu[0].rk[rank].b[byte].dq[1],
 				0xf);
 		}
-		setbits_le32(&ch[chn].phy.misc_ctrl1, 0x1 << 7);
-		setbits_le32(&ch[chn].ao.dqsoscr, 0x1 << 7);
+		setbits32(&ch[chn].phy.misc_ctrl1, 0x1 << 7);
+		setbits32(&ch[chn].ao.dqsoscr, 0x1 << 7);
 		if (fsp == FSP_1)
 			vref_step = 2;
 	}
@@ -2070,7 +2070,7 @@ static void dramc_rx_dqs_gating_post_process(u8 chn, u8 freq_group)
 					dqs, best_coarse_tune2t_p1[rank][dqs]);
 			}
 
-			clrsetbits_le32(&ch[chn].ao.shu[0].rk[rank].selph_dqsg0,
+			clrsetbits32(&ch[chn].ao.shu[0].rk[rank].selph_dqsg0,
 				0x77777777,
 				(best_coarse_tune2t[rank][0] << 0) |
 				(best_coarse_tune2t[rank][1] << 8) |
@@ -2085,13 +2085,13 @@ static void dramc_rx_dqs_gating_post_process(u8 chn, u8 freq_group)
 
 	SET32_BITFIELDS(&ch[chn].ao.shu[0].rk[0].dqsctl, SHURK_DQSCTL_DQSINCTL, read_dqsinctl);
 	SET32_BITFIELDS(&ch[chn].ao.shu[0].rk[1].dqsctl, SHURK_DQSCTL_DQSINCTL, read_dqsinctl);
-	clrsetbits_le32(&ch[chn].ao.shu[0].rankctl,
+	clrsetbits32(&ch[chn].ao.shu[0].rankctl,
 		(0xf << 28) | (0xf << 20) | (0xf << 24) | 0xf,
 		(read_dqsinctl << 28) | (rankinctl_root << 20) |
 		(rankinctl_root << 24) | rankinctl_root);
 
 	u8 ROEN = read32(&ch[chn].ao.shu[0].odtctrl) & 0x1;
-	clrsetbits_le32(&ch[chn].ao.shu[0].rodtenstb, (0xffff << 8) | (0x3f << 2) | (0x1),
+	clrsetbits32(&ch[chn].ao.shu[0].rodtenstb, (0xffff << 8) | (0x3f << 2) | (0x1),
 			(0xff << 8) | (0x9 << 2) | ROEN);
 }
 

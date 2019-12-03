@@ -45,7 +45,7 @@ int gpio_direction_input(unsigned int gpio)
 
 	if (!regs)
 		return -1;
-	setbits_le32(&regs->oe, bit);
+	setbits32(&regs->oe, bit);
 	return 0;
 }
 
@@ -60,7 +60,7 @@ int gpio_direction_output(unsigned int gpio, int value)
 		write32(&regs->setdataout, bit);
 	else
 		write32(&regs->cleardataout, bit);
-	clrbits_le32(&regs->oe, bit);
+	clrbits32(&regs->oe, bit);
 	return 0;
 }
 

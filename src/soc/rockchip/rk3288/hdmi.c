@@ -250,8 +250,8 @@ static void hdmi_update_csc_coeffs(void)
 		}
 	}
 
-	clrsetbits_le32(&hdmi_regs->csc_scale, HDMI_CSC_SCALE_CSCSCALE_MASK,
-			csc_scale);
+	clrsetbits32(&hdmi_regs->csc_scale, HDMI_CSC_SCALE_CSCSCALE_MASK,
+		     csc_scale);
 }
 
 static void hdmi_video_csc(void)
@@ -261,8 +261,8 @@ static void hdmi_video_csc(void)
 
 	/* configure the csc registers */
 	write32(&hdmi_regs->csc_cfg, interpolation);
-	clrsetbits_le32(&hdmi_regs->csc_scale,
-			HDMI_CSC_SCALE_CSC_COLORDE_PTH_MASK, color_depth);
+	clrsetbits32(&hdmi_regs->csc_scale,
+		     HDMI_CSC_SCALE_CSC_COLORDE_PTH_MASK, color_depth);
 
 	hdmi_update_csc_coeffs();
 }
@@ -281,18 +281,18 @@ static void hdmi_video_packetize(void)
 		HDMI_VP_PR_CD_DESIRED_PR_FACTOR_MASK);
 	write32(&hdmi_regs->vp_pr_cd, val);
 
-	clrsetbits_le32(&hdmi_regs->vp_stuff, HDMI_VP_STUFF_PR_STUFFING_MASK,
-			HDMI_VP_STUFF_PR_STUFFING_STUFFING_MODE);
+	clrsetbits32(&hdmi_regs->vp_stuff, HDMI_VP_STUFF_PR_STUFFING_MASK,
+		     HDMI_VP_STUFF_PR_STUFFING_STUFFING_MODE);
 
 	/* data from pixel repeater block */
 	vp_conf = HDMI_VP_CONF_PR_EN_DISABLE |
 		  HDMI_VP_CONF_BYPASS_SELECT_VID_PACKETIZER;
 
-	clrsetbits_le32(&hdmi_regs->vp_conf, HDMI_VP_CONF_PR_EN_MASK |
-			HDMI_VP_CONF_BYPASS_SELECT_MASK, vp_conf);
+	clrsetbits32(&hdmi_regs->vp_conf, HDMI_VP_CONF_PR_EN_MASK |
+		     HDMI_VP_CONF_BYPASS_SELECT_MASK, vp_conf);
 
-	clrsetbits_le32(&hdmi_regs->vp_stuff, HDMI_VP_STUFF_IDEFAULT_PHASE_MASK,
-			1 << HDMI_VP_STUFF_IDEFAULT_PHASE_OFFSET);
+	clrsetbits32(&hdmi_regs->vp_stuff, HDMI_VP_STUFF_IDEFAULT_PHASE_MASK,
+		     1 << HDMI_VP_STUFF_IDEFAULT_PHASE_OFFSET);
 
 	write32(&hdmi_regs->vp_remap, remap_size);
 
@@ -300,23 +300,23 @@ static void hdmi_video_packetize(void)
 		  HDMI_VP_CONF_PP_EN_DISABLE |
 		  HDMI_VP_CONF_YCC422_EN_DISABLE;
 
-	clrsetbits_le32(&hdmi_regs->vp_conf, HDMI_VP_CONF_BYPASS_EN_MASK |
-			HDMI_VP_CONF_PP_EN_ENMASK | HDMI_VP_CONF_YCC422_EN_MASK,
-			vp_conf);
+	clrsetbits32(&hdmi_regs->vp_conf, HDMI_VP_CONF_BYPASS_EN_MASK |
+		     HDMI_VP_CONF_PP_EN_ENMASK | HDMI_VP_CONF_YCC422_EN_MASK,
+		     vp_conf);
 
-	clrsetbits_le32(&hdmi_regs->vp_stuff, HDMI_VP_STUFF_PP_STUFFING_MASK |
-			HDMI_VP_STUFF_YCC422_STUFFING_MASK,
-			HDMI_VP_STUFF_PP_STUFFING_STUFFING_MODE |
-			HDMI_VP_STUFF_YCC422_STUFFING_STUFFING_MODE);
+	clrsetbits32(&hdmi_regs->vp_stuff, HDMI_VP_STUFF_PP_STUFFING_MASK |
+		     HDMI_VP_STUFF_YCC422_STUFFING_MASK,
+		     HDMI_VP_STUFF_PP_STUFFING_STUFFING_MODE |
+		     HDMI_VP_STUFF_YCC422_STUFFING_STUFFING_MODE);
 
-	clrsetbits_le32(&hdmi_regs->vp_conf, HDMI_VP_CONF_OUTPUT_SELECTOR_MASK,
-			output_select);
+	clrsetbits32(&hdmi_regs->vp_conf, HDMI_VP_CONF_OUTPUT_SELECTOR_MASK,
+		     output_select);
 }
 
 static inline void hdmi_phy_test_clear(u8 bit)
 {
-	clrsetbits_le32(&hdmi_regs->phy_tst0, HDMI_PHY_TST0_TSTCLR_MASK,
-			bit << HDMI_PHY_TST0_TSTCLR_OFFSET);
+	clrsetbits32(&hdmi_regs->phy_tst0, HDMI_PHY_TST0_TSTCLR_MASK,
+		     bit << HDMI_PHY_TST0_TSTCLR_OFFSET);
 }
 
 static int hdmi_phy_wait_i2c_done(u32 msec)
@@ -352,46 +352,46 @@ static void hdmi_phy_i2c_write(u16 data, u8 addr)
 
 static void hdmi_phy_enable_power(u8 enable)
 {
-	clrsetbits_le32(&hdmi_regs->phy_conf0, HDMI_PHY_CONF0_PDZ_MASK,
-			enable << HDMI_PHY_CONF0_PDZ_OFFSET);
+	clrsetbits32(&hdmi_regs->phy_conf0, HDMI_PHY_CONF0_PDZ_MASK,
+		     enable << HDMI_PHY_CONF0_PDZ_OFFSET);
 }
 
 static void hdmi_phy_enable_tmds(u8 enable)
 {
-	clrsetbits_le32(&hdmi_regs->phy_conf0, HDMI_PHY_CONF0_ENTMDS_MASK,
-			enable << HDMI_PHY_CONF0_ENTMDS_OFFSET);
+	clrsetbits32(&hdmi_regs->phy_conf0, HDMI_PHY_CONF0_ENTMDS_MASK,
+		     enable << HDMI_PHY_CONF0_ENTMDS_OFFSET);
 }
 
 static void hdmi_phy_enable_spare(u8 enable)
 {
-	clrsetbits_le32(&hdmi_regs->phy_conf0, HDMI_PHY_CONF0_SPARECTRL_MASK,
-			enable << HDMI_PHY_CONF0_SPARECTRL_OFFSET);
+	clrsetbits32(&hdmi_regs->phy_conf0, HDMI_PHY_CONF0_SPARECTRL_MASK,
+		     enable << HDMI_PHY_CONF0_SPARECTRL_OFFSET);
 }
 
 static void hdmi_phy_gen2_pddq(u8 enable)
 {
-	clrsetbits_le32(&hdmi_regs->phy_conf0, HDMI_PHY_CONF0_GEN2_PDDQ_MASK,
-			enable << HDMI_PHY_CONF0_GEN2_PDDQ_OFFSET);
+	clrsetbits32(&hdmi_regs->phy_conf0, HDMI_PHY_CONF0_GEN2_PDDQ_MASK,
+		     enable << HDMI_PHY_CONF0_GEN2_PDDQ_OFFSET);
 }
 
 static void hdmi_phy_gen2_txpwron(u8 enable)
 {
-	clrsetbits_le32(&hdmi_regs->phy_conf0,
-			HDMI_PHY_CONF0_GEN2_TXPWRON_MASK,
-			enable << HDMI_PHY_CONF0_GEN2_TXPWRON_OFFSET);
+	clrsetbits32(&hdmi_regs->phy_conf0,
+		     HDMI_PHY_CONF0_GEN2_TXPWRON_MASK,
+		     enable << HDMI_PHY_CONF0_GEN2_TXPWRON_OFFSET);
 }
 
 static void hdmi_phy_sel_data_en_pol(u8 enable)
 {
-	clrsetbits_le32(&hdmi_regs->phy_conf0,
-			HDMI_PHY_CONF0_SELDATAENPOL_MASK,
-			enable << HDMI_PHY_CONF0_SELDATAENPOL_OFFSET);
+	clrsetbits32(&hdmi_regs->phy_conf0,
+		     HDMI_PHY_CONF0_SELDATAENPOL_MASK,
+		     enable << HDMI_PHY_CONF0_SELDATAENPOL_OFFSET);
 }
 
 static void hdmi_phy_sel_interface_control(u8 enable)
 {
-	clrsetbits_le32(&hdmi_regs->phy_conf0, HDMI_PHY_CONF0_SELDIPIF_MASK,
-			enable << HDMI_PHY_CONF0_SELDIPIF_OFFSET);
+	clrsetbits32(&hdmi_regs->phy_conf0, HDMI_PHY_CONF0_SELDIPIF_MASK,
+		     enable << HDMI_PHY_CONF0_SELDIPIF_OFFSET);
 }
 
 static int hdmi_phy_configure(u32 mpixelclock)
@@ -723,8 +723,8 @@ static int hdmi_ddc_wait_i2c_done(int msec)
 
 static void hdmi_ddc_reset(void)
 {
-	clrsetbits_le32(&hdmi_regs->i2cm_softrstz, HDMI_I2CM_SOFTRSTZ,
-			HDMI_I2CM_SOFTRSTZ);
+	clrsetbits32(&hdmi_regs->i2cm_softrstz, HDMI_I2CM_SOFTRSTZ,
+		     HDMI_I2CM_SOFTRSTZ);
 }
 
 static int hdmi_read_edid(int block, u8 *buff)
@@ -737,7 +737,7 @@ static int hdmi_read_edid(int block, u8 *buff)
 	/* set ddc i2c clk which devided from ddc_clk to 100khz */
 	write32(&hdmi_regs->i2cm_ss_scl_hcnt_0_addr, 0x7a);
 	write32(&hdmi_regs->i2cm_ss_scl_lcnt_0_addr, 0x8d);
-	clrsetbits_le32(&hdmi_regs->i2cm_div, HDMI_I2CM_DIV_FAST_STD_MODE,
+	clrsetbits32(&hdmi_regs->i2cm_div, HDMI_I2CM_DIV_FAST_STD_MODE,
 			HDMI_I2CM_DIV_STD_MODE);
 
 	write32(&hdmi_regs->i2cm_slave, HDMI_I2CM_SLAVE_DDC_ADDR);
@@ -751,13 +751,13 @@ static int hdmi_read_edid(int block, u8 *buff)
 			write32(&hdmi_regs->i2cmess, shift + 8 * n);
 
 			if (block == 0)
-				clrsetbits_le32(&hdmi_regs->i2cm_operation,
-						HDMI_I2CM_OPT_RD8,
-						HDMI_I2CM_OPT_RD8);
+				clrsetbits32(&hdmi_regs->i2cm_operation,
+					     HDMI_I2CM_OPT_RD8,
+					     HDMI_I2CM_OPT_RD8);
 			else
-				clrsetbits_le32(&hdmi_regs->i2cm_operation,
-						HDMI_I2CM_OPT_RD8_EXT,
-						HDMI_I2CM_OPT_RD8_EXT);
+				clrsetbits32(&hdmi_regs->i2cm_operation,
+					     HDMI_I2CM_OPT_RD8_EXT,
+					     HDMI_I2CM_OPT_RD8_EXT);
 
 			if (hdmi_ddc_wait_i2c_done(10)) {
 				hdmi_ddc_reset();

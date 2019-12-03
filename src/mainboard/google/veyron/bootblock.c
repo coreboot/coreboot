@@ -42,8 +42,8 @@ void bootblock_mainboard_init(void)
 		reboot_from_watchdog();
 
 	/* Up VDD_CPU (BUCK1) to 1.4V to support max CPU frequency (1.8GHz). */
-	setbits_le32(&rk3288_pmu->iomux_i2c0scl, IOMUX_I2C0SCL);
-	setbits_le32(&rk3288_pmu->iomux_i2c0sda, IOMUX_I2C0SDA);
+	setbits32(&rk3288_pmu->iomux_i2c0scl, IOMUX_I2C0SCL);
+	setbits32(&rk3288_pmu->iomux_i2c0sda, IOMUX_I2C0SDA);
 	assert(CONFIG_PMIC_BUS == 0);	/* must correspond with IOMUX */
 	i2c_init(CONFIG_PMIC_BUS, 400*KHz);
 

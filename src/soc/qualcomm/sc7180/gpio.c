@@ -13,9 +13,9 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/mmio.h>
 #include <assert.h>
 #include <delay.h>
+#include <device/mmio.h>
 #include <timer.h>
 #include <timestamp.h>
 #include <types.h>
@@ -86,9 +86,9 @@ void gpio_input_irq(gpio_t gpio, enum gpio_irq_type type, uint32_t pull)
 	gpio_configure(gpio, GPIO_FUNC_GPIO,
 			pull, GPIO_2MA, GPIO_OUTPUT_DISABLE);
 
-	clrsetbits_le32(&regs->intr_cfg, GPIO_INTR_DECT_CTL_MASK <<
+	clrsetbits32(&regs->intr_cfg, GPIO_INTR_DECT_CTL_MASK <<
 		GPIO_INTR_DECT_CTL_SHIFT, type << GPIO_INTR_DECT_CTL_SHIFT);
-	clrsetbits_le32(&regs->intr_cfg, GPIO_INTR_RAW_STATUS_ENABLE
+	clrsetbits32(&regs->intr_cfg, GPIO_INTR_RAW_STATUS_ENABLE
 		<< GPIO_INTR_RAW_STATUS_EN_SHIFT, GPIO_INTR_RAW_STATUS_ENABLE
 					<< GPIO_INTR_RAW_STATUS_EN_SHIFT);
 }

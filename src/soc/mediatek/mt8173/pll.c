@@ -296,7 +296,7 @@ static const struct rate rates[] = {
 
 void pll_set_pcw_change(const struct pll *pll)
 {
-	setbits_le32(pll->pcw_reg, PLL_PCW_CHG);
+	setbits32(pll->pcw_reg, PLL_PCW_CHG);
 }
 
 void mt_pll_init(void)
@@ -313,7 +313,7 @@ void mt_pll_init(void)
 	 * xPLL PWR ON
 	 **************/
 	for (i = 0; i < APMIXED_NR_PLL; i++)
-		setbits_le32(plls[i].pwr_reg, PLL_PWR_ON);
+		setbits32(plls[i].pwr_reg, PLL_PWR_ON);
 
 	/* wait for xPLL_PWR_ON ready (min delay is 1us) */
 	udelay(PLL_PWR_ON_DELAY);
@@ -322,7 +322,7 @@ void mt_pll_init(void)
 	 * xPLL ISO Disable
 	 *******************/
 	for (i = 0; i < APMIXED_NR_PLL; i++)
-		clrbits_le32(plls[i].pwr_reg, PLL_ISO);
+		clrbits32(plls[i].pwr_reg, PLL_ISO);
 
 	/********************
 	 * xPLL Frequency Set
@@ -334,7 +334,7 @@ void mt_pll_init(void)
 	 * xPLL Frequency Enable
 	 ************************/
 	for (i = 0; i < APMIXED_NR_PLL; i++)
-		setbits_le32(plls[i].reg, PLL_EN);
+		setbits32(plls[i].reg, PLL_EN);
 
 	udelay(PLL_EN_DELAY);  /* wait for PLL stable (min delay is 20us) */
 
@@ -343,7 +343,7 @@ void mt_pll_init(void)
 	 ****************/
 	for (i = 0; i < APMIXED_NR_PLL; i++) {
 		if (plls[i].rstb_shift != NO_RSTB_SHIFT)
-			setbits_le32(plls[i].reg, 1 << plls[i].rstb_shift);
+			setbits32(plls[i].reg, 1 << plls[i].rstb_shift);
 	}
 
 	/**************
@@ -351,7 +351,7 @@ void mt_pll_init(void)
 	 ***************/
 
 	/* enable infrasys DCM */
-	setbits_le32(&mt8173_infracfg->top_dcmctl, 0x1);
+	setbits32(&mt8173_infracfg->top_dcmctl, 0x1);
 
 	write32(&mtk_topckgen->clk_mode, 0x1);
 	write32(&mtk_topckgen->clk_mode, 0x0); /* enable TOPCKGEN */
@@ -374,16 +374,16 @@ void mt_pll_init(void)
 void mt_pll_enable_ssusb_clk(void)
 {
 	/* set  RG_LTECLKSQ_EN */
-	setbits_le32(&mtk_apmixed->ap_pll_con0, 0x1);
+	setbits32(&mtk_apmixed->ap_pll_con0, 0x1);
 	udelay(100);  /* wait for PLL stable */
 
 	/* set RG_LTECLKSQ_LPF_EN & DA_REF2USB_TX_EN */
-	setbits_le32(&mtk_apmixed->ap_pll_con0, 0x1 << 1);
-	setbits_le32(&mtk_apmixed->ap_pll_con2, 0x1);
+	setbits32(&mtk_apmixed->ap_pll_con0, 0x1 << 1);
+	setbits32(&mtk_apmixed->ap_pll_con2, 0x1);
 	udelay(100);  /* wait for PLL stable */
 
 	/* set DA_REF2USB_TX_LPF_EN & DA_REF2USB_TX_OUT_EN */
-	setbits_le32(&mtk_apmixed->ap_pll_con2, (0x1 << 2) | (0x1 << 1));
+	setbits32(&mtk_apmixed->ap_pll_con2, (0x1 << 2) | (0x1 << 1));
 }
 
 
@@ -391,7 +391,7 @@ void mt_pll_enable_ssusb_clk(void)
 void mt_pll_post_init(void)
 {
 	/* CPU clock divide by 1 */
-	clrbits_le32(&mt8173_infracfg->top_ckdiv1, 0x3ff);
+	clrbits32(&mt8173_infracfg->top_ckdiv1, 0x3ff);
 
 	/* select ARMPLL */
 	write32(&mt8173_infracfg->top_ckmuxsel, (1 << 2) | 1);
@@ -414,20 +414,20 @@ void mt_pll_set_aud_div(u32 rate)
 
 	if (apll1) {
 		/* mclk */
-		clrbits_le32(&mtk_topckgen->clk_auddiv_0, 1 << 5);
-		clrsetbits_le32(&mtk_topckgen->clk_auddiv_1, 0xff << 8,
-				mclk_div << 8);
+		clrbits32(&mtk_topckgen->clk_auddiv_0, 1 << 5);
+		clrsetbits32(&mtk_topckgen->clk_auddiv_1, 0xff << 8,
+			     mclk_div << 8);
 		/* bclk */
-		clrsetbits_le32(&mtk_topckgen->clk_auddiv_0, 0xf << 24,
-				7 << 24);
+		clrsetbits32(&mtk_topckgen->clk_auddiv_0, 0xf << 24,
+			     7 << 24);
 	} else {
 		/* mclk */
-		setbits_le32(&mtk_topckgen->clk_auddiv_0, 1 << 5);
-		clrsetbits_le32(&mtk_topckgen->clk_auddiv_2, 0xff << 8,
-				mclk_div << 8);
+		setbits32(&mtk_topckgen->clk_auddiv_0, 1 << 5);
+		clrsetbits32(&mtk_topckgen->clk_auddiv_2, 0xff << 8,
+			     mclk_div << 8);
 		/* bclk */
-		clrsetbits_le32(&mtk_topckgen->clk_auddiv_0, 0xf << 28,
-				7 << 28);
+		clrsetbits32(&mtk_topckgen->clk_auddiv_0, 0xf << 28,
+			     7 << 28);
 	}
 }
 
@@ -441,19 +441,19 @@ void mt_mem_pll_config_pre(const struct mt8173_sdram_params *sdram_params)
 	u32 mpll_sdm_pcw_20_0 = 0xF13B1;
 
 	/* disable MPLL for adjusting memory clk frequency */
-	clrbits_le32(&mtk_apmixed->mpll_con0, BIT(0));
+	clrbits32(&mtk_apmixed->mpll_con0, BIT(0));
 	/* MPLL configuration: mode selection */
-	setbits_le32(&mtk_apmixed->mpll_con0, BIT(16));
-	clrbits_le32(&mtk_apmixed->mpll_con0, 0x7 << 4);
-	clrbits_le32(&mtk_apmixed->pll_test_con0, 1 << 31);
+	setbits32(&mtk_apmixed->mpll_con0, BIT(16));
+	clrbits32(&mtk_apmixed->mpll_con0, 0x7 << 4);
+	clrbits32(&mtk_apmixed->pll_test_con0, 1 << 31);
 	/* set RG_MPLL_SDM_PCW for feedback divide ratio */
-	clrsetbits_le32(&mtk_apmixed->mpll_con1, 0x1fffff, mpll_sdm_pcw_20_0);
+	clrsetbits32(&mtk_apmixed->mpll_con1, 0x1fffff, mpll_sdm_pcw_20_0);
 }
 
 void mt_mem_pll_config_post(void)
 {
 	/* power up sequence starts: enable MPLL */
-	setbits_le32(&mtk_apmixed->mpll_con0, BIT(0));
+	setbits32(&mtk_apmixed->mpll_con0, BIT(0));
 }
 
 void mt_mem_pll_mux(void)

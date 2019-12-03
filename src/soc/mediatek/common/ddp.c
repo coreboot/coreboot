@@ -31,7 +31,7 @@ void ovl_set_roi(u32 idx, u32 width, u32 height, u32 color)
 
 void rdma_start(void)
 {
-	setbits_le32(&disp_rdma0->global_con, RDMA_ENGINE_EN);
+	setbits32(&disp_rdma0->global_con, RDMA_ENGINE_EN);
 }
 
 void rdma_config(u32 width, u32 height, u32 pixel_clk, u32 fifo_size)
@@ -39,8 +39,8 @@ void rdma_config(u32 width, u32 height, u32 pixel_clk, u32 fifo_size)
 	u32 threshold;
 	u32 reg;
 
-	clrsetbits_le32(&disp_rdma0->size_con_0, 0x1FFF, width);
-	clrsetbits_le32(&disp_rdma0->size_con_1, 0xFFFFF, height);
+	clrsetbits32(&disp_rdma0->size_con_0, 0x1FFF, width);
+	clrsetbits32(&disp_rdma0->size_con_1, 0xFFFFF, height);
 
 	/*
 	 * Enable FIFO underflow since DSI and DPI can't be blocked. Set the
@@ -78,5 +78,5 @@ void ovl_layer_config(u32 fmt, u32 bpp, u32 width, u32 height)
 	write32(&ovl0->rdma[0].ctrl, BIT(0));
 	write32(&ovl0->rdma[0].mem_gmc_setting, RDMA_MEM_GMC);
 
-	setbits_le32(&ovl0->src_con, BIT(0));
+	setbits32(&ovl0->src_con, BIT(0));
 }

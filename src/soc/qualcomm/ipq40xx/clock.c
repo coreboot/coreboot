@@ -59,7 +59,7 @@ void uart_clock_config(unsigned int blsp_uart, unsigned int m,
 			2 << 12);	/* 13:12 Mode = Dual Edge */
 
 	/* Trigger update */
-	setbits_le32(GCC_BLSP1_UART_APPS_CMD_RCGR(blsp_uart), 1);
+	setbits32(GCC_BLSP1_UART_APPS_CMD_RCGR(blsp_uart), 1);
 
 	/* Wait for update */
 	for (i = 0; i < CLOCK_UPDATE_DELAY; i++) {
@@ -71,7 +71,7 @@ void uart_clock_config(unsigned int blsp_uart, unsigned int m,
 	}
 
 	/* Please refer to the comments in blsp_i2c_clock_config() */
-	setbits_le32(GCC_CLK_BRANCH_ENA, BLSP1_AHB | BLSP1_SLEEP);
+	setbits32(GCC_CLK_BRANCH_ENA, BLSP1_AHB | BLSP1_SLEEP);
 }
 
 /**
@@ -154,7 +154,7 @@ int blsp_i2c_clock_config(blsp_qup_id_t id)
 	 * the same bits is harmless. Hence repeating them here should be ok.
 	 * This will ensure root and branch clocks remain on.
 	 */
-	setbits_le32(GCC_CLK_BRANCH_ENA, BLSP1_AHB | BLSP1_SLEEP);
+	setbits32(GCC_CLK_BRANCH_ENA, BLSP1_AHB | BLSP1_SLEEP);
 
 	/* Src Sel 1 (fepll 200), Src Div 10.5 */
 	write32(clk[id].cfg, (1u << 8) | (20u << 0));

@@ -231,8 +231,8 @@ static inline void _clock_set_div(u32 *reg, const char *name, u32 div,
 		printk(BIOS_ERR, "%s clock divisor overflow!", name);
 		hlt();
 	}
-	clrsetbits_le32(reg, CLK_SOURCE_MASK | CLK_DIVISOR_MASK,
-			src << CLK_SOURCE_SHIFT | div);
+	clrsetbits32(reg, CLK_SOURCE_MASK | CLK_DIVISOR_MASK,
+		     src << CLK_SOURCE_SHIFT | div);
 }
 
 #define clock_configure_irregular_source(device, src, freq, src_id) \

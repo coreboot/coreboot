@@ -51,19 +51,19 @@ static void mt_auxadc_update_cali(void)
 }
 static uint32_t auxadc_get_rawdata(int channel)
 {
-	setbits_le32(&mt8183_infracfg->module_sw_cg_1_clr, 1 << 10);
+	setbits32(&mt8183_infracfg->module_sw_cg_1_clr, 1 << 10);
 	assert(wait_ms(300, !(read32(&mtk_auxadc->con2) & 0x1)));
 
-	clrbits_le32(&mtk_auxadc->con1, 1 << channel);
+	clrbits32(&mtk_auxadc->con1, 1 << channel);
 	assert(wait_ms(300, !(read32(&mtk_auxadc->data[channel]) & (1 << 12))));
 
-	setbits_le32(&mtk_auxadc->con1, 1 << channel);
+	setbits32(&mtk_auxadc->con1, 1 << channel);
 	udelay(25);
 	assert(wait_ms(300, read32(&mtk_auxadc->data[channel]) & (1 << 12)));
 
 	uint32_t value = read32(&mtk_auxadc->data[channel]) & 0x0FFF;
 
-	setbits_le32(&mt8183_infracfg->module_sw_cg_1_set, 1 << 10);
+	setbits32(&mt8183_infracfg->module_sw_cg_1_set, 1 << 10);
 
 	return value;
 }

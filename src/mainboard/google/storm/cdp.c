@@ -68,6 +68,6 @@ void board_nand_init(void)
 	configure_nand_gpio();
 
 	/* NAND Flash is connected to CS0 */
-	clrsetbits_le32(&ebi2_regs->chip_select_cfg0, CS0_CFG_MASK,
-			CS0_CFG_SERIAL_FLASH_DEVICE);
+	clrsetbits32(&ebi2_regs->chip_select_cfg0, CS0_CFG_MASK,
+		     CS0_CFG_SERIAL_FLASH_DEVICE);
 }

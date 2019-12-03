@@ -170,11 +170,11 @@ s32 pwrap_init(void)
 	s32 sub_return1 = 0;
 	u16 rdata = 0x0;
 
-	setbits_le32(&mt8173_infracfg->infra_rst0, INFRA_PMIC_WRAP_RST);
+	setbits32(&mt8173_infracfg->infra_rst0, INFRA_PMIC_WRAP_RST);
 	/* add 1us delay for toggling SW reset */
 	udelay(1);
 	/* clear reset bit */
-	clrbits_le32(&mt8173_infracfg->infra_rst0, INFRA_PMIC_WRAP_RST);
+	clrbits32(&mt8173_infracfg->infra_rst0, INFRA_PMIC_WRAP_RST);
 
 	/* Enable DCM */
 	write32(&mtk_pwrap->dcm_en, 3);

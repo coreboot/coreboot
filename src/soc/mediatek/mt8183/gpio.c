@@ -34,15 +34,15 @@ static void gpio_set_pull_pupd(gpio_t gpio, enum pull_enable enable,
 
 	if (enable == GPIO_PULL_ENABLE) {
 		if (select == GPIO_PULL_DOWN)
-			setbits_le32(reg, 1 << (bit + 2));
+			setbits32(reg, 1 << (bit + 2));
 		else
-			clrbits_le32(reg, 1 << (bit + 2));
+			clrbits32(reg, 1 << (bit + 2));
 	}
 
 	if (enable == GPIO_PULL_ENABLE)
-		clrsetbits_le32(reg, 3 << bit, 1 << bit);
+		clrsetbits32(reg, 3 << bit, 1 << bit);
 	else
-		clrbits_le32(reg, 3 << bit);
+		clrbits32(reg, 3 << bit);
 }
 
 static void gpio_set_pull_en_sel(gpio_t gpio, enum pull_enable enable,
@@ -53,15 +53,15 @@ static void gpio_set_pull_en_sel(gpio_t gpio, enum pull_enable enable,
 
 	if (enable == GPIO_PULL_ENABLE) {
 		if (select == GPIO_PULL_DOWN)
-			clrbits_le32(reg + SEL_OFFSET, 1 << bit);
+			clrbits32(reg + SEL_OFFSET, 1 << bit);
 		else
-			setbits_le32(reg + SEL_OFFSET, 1 << bit);
+			setbits32(reg + SEL_OFFSET, 1 << bit);
 	}
 
 	if (enable == GPIO_PULL_ENABLE)
-		setbits_le32(reg + EN_OFFSET, 1 << bit);
+		setbits32(reg + EN_OFFSET, 1 << bit);
 	else
-		clrbits_le32(reg + EN_OFFSET, 1 << bit);
+		clrbits32(reg + EN_OFFSET, 1 << bit);
 }
 
 void gpio_set_pull(gpio_t gpio, enum pull_enable enable,
@@ -112,23 +112,23 @@ enum {
 
 void gpio_set_i2c_eh_rsel(void)
 {
-	clrsetbits_le32((void *)IOCFG_RB_BASE + EH_RSEL_OFFSET,
+	clrsetbits32((void *)IOCFG_RB_BASE + EH_RSEL_OFFSET,
 		I2C_EH_RSL_MASK(SCL0) | I2C_EH_RSL_MASK(SDA0) |
 		I2C_EH_RSL_MASK(SCL1) | I2C_EH_RSL_MASK(SDA1),
 		I2C_EH_RSL_VAL(SCL0) | I2C_EH_RSL_VAL(SDA0) |
 		I2C_EH_RSL_VAL(SCL1) | I2C_EH_RSL_VAL(SDA1));
 
-	clrsetbits_le32((void *)IOCFG_RM_BASE + EH_RSEL_OFFSET,
+	clrsetbits32((void *)IOCFG_RM_BASE + EH_RSEL_OFFSET,
 		I2C_EH_RSL_MASK(SCL2) | I2C_EH_RSL_MASK(SDA2) |
 		I2C_EH_RSL_MASK(SCL4) | I2C_EH_RSL_MASK(SDA4),
 		I2C_EH_RSL_VAL(SCL2) | I2C_EH_RSL_VAL(SDA2) |
 		I2C_EH_RSL_VAL(SCL4) | I2C_EH_RSL_VAL(SDA4));
 
-	clrsetbits_le32((void *)IOCFG_BL_BASE + EH_RSEL_OFFSET,
+	clrsetbits32((void *)IOCFG_BL_BASE + EH_RSEL_OFFSET,
 		I2C_EH_RSL_MASK(SCL3) | I2C_EH_RSL_MASK(SDA3),
 		I2C_EH_RSL_VAL(SCL3) | I2C_EH_RSL_VAL(SDA3));
 
-	clrsetbits_le32((void *)IOCFG_LB_BASE + EH_RSEL_OFFSET,
+	clrsetbits32((void *)IOCFG_LB_BASE + EH_RSEL_OFFSET,
 		I2C_EH_RSL_MASK(SCL5) | I2C_EH_RSL_MASK(SDA5),
 		I2C_EH_RSL_VAL(SCL5) | I2C_EH_RSL_VAL(SDA5));
 }
@@ -153,17 +153,17 @@ void gpio_set_spi_driving(unsigned int bus, enum spi_pad_mask pad_select,
 			reg = (void *)(IOCFG_LM_BASE + GPIO_DRV0_OFFSET);
 			offset = 0;
 		} else if (pad_select == SPI_PAD1_MASK) {
-			clrsetbits_le32((void *)IOCFG_RM_BASE +
+			clrsetbits32((void *)IOCFG_RM_BASE +
 					GPIO_DRV0_OFFSET, 0xf | 0xf << 20,
 					reg_val | reg_val << 20);
-			clrsetbits_le32((void *)IOCFG_RM_BASE +
+			clrsetbits32((void *)IOCFG_RM_BASE +
 					GPIO_DRV1_OFFSET, 0xf << 16,
 					reg_val << 16);
 			return;
 		}
 		break;
 	case 2:
-		clrsetbits_le32((void *)IOCFG_RM_BASE + GPIO_DRV0_OFFSET,
+		clrsetbits32((void *)IOCFG_RM_BASE + GPIO_DRV0_OFFSET,
 				0xf << 8 | 0xf << 12,
 				reg_val << 8 | reg_val << 12);
 		return;
@@ -181,5 +181,5 @@ void gpio_set_spi_driving(unsigned int bus, enum spi_pad_mask pad_select,
 		break;
 	}
 
-	clrsetbits_le32(reg, 0xf << offset, reg_val << offset);
+	clrsetbits32(reg, 0xf << offset, reg_val << offset);
 }

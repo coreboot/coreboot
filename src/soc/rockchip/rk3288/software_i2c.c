@@ -73,8 +73,8 @@ void software_i2c_attach(unsigned int bus)
 	/* Mux pins to GPIO function for software I2C emulation. */
 	switch (bus) {
 	case 0:
-		clrbits_le32(&rk3288_pmu->iomux_i2c0scl, IOMUX_I2C0SCL);
-		clrbits_le32(&rk3288_pmu->iomux_i2c0sda, IOMUX_I2C0SDA);
+		clrbits32(&rk3288_pmu->iomux_i2c0scl, IOMUX_I2C0SCL);
+		clrbits32(&rk3288_pmu->iomux_i2c0sda, IOMUX_I2C0SDA);
 		break;
 	case 1:
 		write32(&rk3288_grf->iomux_i2c1, IOMUX_GPIO(IOMUX_I2C1));
@@ -108,8 +108,8 @@ void software_i2c_detach(unsigned int bus)
 	/* Mux pins back to hardware I2C controller. */
 	switch (bus) {
 	case 0:
-		setbits_le32(&rk3288_pmu->iomux_i2c0scl, IOMUX_I2C0SCL);
-		setbits_le32(&rk3288_pmu->iomux_i2c0sda, IOMUX_I2C0SDA);
+		setbits32(&rk3288_pmu->iomux_i2c0scl, IOMUX_I2C0SCL);
+		setbits32(&rk3288_pmu->iomux_i2c0sda, IOMUX_I2C0SDA);
 		break;
 	case 1:
 		write32(&rk3288_grf->iomux_i2c1, IOMUX_I2C1);

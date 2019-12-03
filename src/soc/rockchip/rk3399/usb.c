@@ -54,8 +54,8 @@ static void tcphy_cfg_24m(struct rk3399_tcphy *tcphy)
 		write32(&tcphy->lane[i].tx_rcvdet_st_tmr, 0x30);
 	}
 
-	clrsetbits_le32(&tcphy->cmn_diag_hsclk_sel,
-			TCPHY_CMN_HSCLK_PLL_MASK, TCPHY_CMN_HSCLK_PLL_CONFIG);
+	clrsetbits32(&tcphy->cmn_diag_hsclk_sel,
+		     TCPHY_CMN_HSCLK_PLL_MASK, TCPHY_CMN_HSCLK_PLL_CONFIG);
 }
 
 static void tcphy_phy_init(struct rk3399_tcphy *tcphy)
@@ -78,11 +78,11 @@ static void tcphy_phy_init(struct rk3399_tcphy *tcphy)
 static void reset_dwc3(struct rockchip_usb_dwc3 *dwc3)
 {
 	/* Before Resetting PHY, put Core in Reset */
-	setbits_le32(&dwc3->ctl, DWC3_GCTL_CORESOFTRESET);
+	setbits32(&dwc3->ctl, DWC3_GCTL_CORESOFTRESET);
 	/* Assert USB3 PHY reset */
-	setbits_le32(&dwc3->usb3pipectl, DWC3_GUSB3PIPECTL_PHYSOFTRST);
+	setbits32(&dwc3->usb3pipectl, DWC3_GUSB3PIPECTL_PHYSOFTRST);
 	/* Assert USB2 PHY reset */
-	setbits_le32(&dwc3->usb2phycfg, DWC3_GUSB2PHYCFG_PHYSOFTRST);
+	setbits32(&dwc3->usb2phycfg, DWC3_GUSB2PHYCFG_PHYSOFTRST);
 }
 
 static void setup_dwc3(struct rockchip_usb_dwc3 *dwc3)
@@ -94,7 +94,7 @@ static void setup_dwc3(struct rockchip_usb_dwc3 *dwc3)
 	assert(ctl & DWC3_GCTL_CORESOFTRESET);
 
 	/* Clear USB3 PHY reset (oddly enough, this is really necessary). */
-	clrbits_le32(&dwc3->usb3pipectl, DWC3_GUSB3PIPECTL_PHYSOFTRST);
+	clrbits32(&dwc3->usb3pipectl, DWC3_GUSB3PIPECTL_PHYSOFTRST);
 
 	/* Clear USB2 PHY and core reset. */
 	usb2phycfg &= ~DWC3_GUSB2PHYCFG_PHYSOFTRST;

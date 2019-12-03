@@ -26,7 +26,7 @@
 static void ps_hold_setup(void)
 {
 	/* Set PS-Hold high */
-	setbits_le32(&exynos_power->ps_hold_ctrl,
+	setbits32(&exynos_power->ps_hold_ctrl,
 		     POWER_PS_HOLD_CONTROL_DATA_HIGH);
 }
 
@@ -35,7 +35,7 @@ void power_reset(void)
 	/* Clear inform1 so there's no change we think we've got a wake reset */
 	exynos_power->inform1 = 0;
 
-	setbits_le32(&exynos_power->sw_reset, 1);
+	setbits32(&exynos_power->sw_reset, 1);
 }
 
 void do_board_reset(void)
@@ -46,7 +46,7 @@ void do_board_reset(void)
 /* This function never returns */
 void power_shutdown(void)
 {
-	clrbits_le32(&exynos_power->ps_hold_ctrl,
+	clrbits32(&exynos_power->ps_hold_ctrl,
 		     POWER_PS_HOLD_CONTROL_DATA_HIGH);
 
 	halt();
@@ -54,13 +54,13 @@ void power_shutdown(void)
 
 void power_enable_dp_phy(void)
 {
-	setbits_le32(&exynos_power->dptx_phy_control, EXYNOS_DP_PHY_ENABLE);
+	setbits32(&exynos_power->dptx_phy_control, EXYNOS_DP_PHY_ENABLE);
 }
 
 void power_enable_hw_thermal_trip(void)
 {
 	/* Enable HW thermal trip */
-	setbits_le32(&exynos_power->ps_hold_ctrl, POWER_ENABLE_HW_TRIP);
+	setbits32(&exynos_power->ps_hold_ctrl, POWER_ENABLE_HW_TRIP);
 }
 
 uint32_t power_read_reset_status(void)
@@ -84,7 +84,7 @@ int power_init(void)
 void power_enable_xclkout(void)
 {
 	/* use xxti for xclk out */
-	clrsetbits_le32(&exynos_power->pmu_debug, PMU_DEBUG_CLKOUT_SEL_MASK,
+	clrsetbits32(&exynos_power->pmu_debug, PMU_DEBUG_CLKOUT_SEL_MASK,
 			PMU_DEBUG_XXTI);
 }
 

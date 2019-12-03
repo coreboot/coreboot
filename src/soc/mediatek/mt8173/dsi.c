@@ -40,16 +40,16 @@ void mtk_dsi_configure_mipi_tx(int data_rate, u32 lanes)
 	write32(&mipi_tx0->dsi_bg_con, reg);
 	udelay(30);
 
-	clrsetbits_le32(&mipi_tx0->dsi_top_con, RG_DSI_LNT_IMP_CAL_CODE,
-			8 << 4 | RG_DSI_LNT_HS_BIAS_EN);
+	clrsetbits32(&mipi_tx0->dsi_top_con, RG_DSI_LNT_IMP_CAL_CODE,
+		     8 << 4 | RG_DSI_LNT_HS_BIAS_EN);
 
-	setbits_le32(&mipi_tx0->dsi_con,
-		     RG_DSI0_CKG_LDOOUT_EN | RG_DSI0_LDOCORE_EN);
+	setbits32(&mipi_tx0->dsi_con,
+		  RG_DSI0_CKG_LDOOUT_EN | RG_DSI0_LDOCORE_EN);
 
-	clrsetbits_le32(&mipi_tx0->dsi_pll_pwr, RG_DSI_MPPLL_SDM_ISO_EN,
-			RG_DSI_MPPLL_SDM_PWR_ON);
+	clrsetbits32(&mipi_tx0->dsi_pll_pwr, RG_DSI_MPPLL_SDM_ISO_EN,
+		     RG_DSI_MPPLL_SDM_PWR_ON);
 
-	clrbits_le32(&mipi_tx0->dsi_pll_con0, RG_DSI0_MPPLL_PLL_EN);
+	clrbits32(&mipi_tx0->dsi_pll_con0, RG_DSI0_MPPLL_PLL_EN);
 
 	if (data_rate > 500) {
 		txdiv0 = 0;
@@ -70,9 +70,9 @@ void mtk_dsi_configure_mipi_tx(int data_rate, u32 lanes)
 		txdiv1 = 2;
 	}
 
-	clrsetbits_le32(&mipi_tx0->dsi_pll_con0,
-			RG_DSI0_MPPLL_TXDIV1 | RG_DSI0_MPPLL_TXDIV0 |
-			RG_DSI0_MPPLL_PREDIV, txdiv1 << 5 | txdiv0 << 3);
+	clrsetbits32(&mipi_tx0->dsi_pll_con0,
+		     RG_DSI0_MPPLL_TXDIV1 | RG_DSI0_MPPLL_TXDIV0 |
+		     RG_DSI0_MPPLL_PREDIV, txdiv1 << 5 | txdiv0 << 3);
 
 	/**
 	 * PLL PCW config
@@ -86,25 +86,25 @@ void mtk_dsi_configure_mipi_tx(int data_rate, u32 lanes)
 	pcw /= 13;
 	write32(&mipi_tx0->dsi_pll_con2, pcw);
 
-	setbits_le32(&mipi_tx0->dsi_pll_con1, RG_DSI0_MPPLL_SDM_FRA_EN);
+	setbits32(&mipi_tx0->dsi_pll_con1, RG_DSI0_MPPLL_SDM_FRA_EN);
 
-	setbits_le32(&mipi_tx0->dsi_clock_lane, LDOOUT_EN);
+	setbits32(&mipi_tx0->dsi_clock_lane, LDOOUT_EN);
 
 	for (i = 0; i < lanes; i++)
-		setbits_le32(&mipi_tx0->dsi_data_lane[i], LDOOUT_EN);
+		setbits32(&mipi_tx0->dsi_data_lane[i], LDOOUT_EN);
 
-	setbits_le32(&mipi_tx0->dsi_pll_con0, RG_DSI0_MPPLL_PLL_EN);
+	setbits32(&mipi_tx0->dsi_pll_con0, RG_DSI0_MPPLL_PLL_EN);
 
 	udelay(40);
 
-	clrbits_le32(&mipi_tx0->dsi_pll_con1, RG_DSI0_MPPLL_SDM_SSC_EN);
-	clrbits_le32(&mipi_tx0->dsi_top_con, RG_DSI_PAD_TIE_LOW_EN);
+	clrbits32(&mipi_tx0->dsi_pll_con1, RG_DSI0_MPPLL_SDM_SSC_EN);
+	clrbits32(&mipi_tx0->dsi_top_con, RG_DSI_PAD_TIE_LOW_EN);
 }
 
 void mtk_dsi_reset(void)
 {
-	setbits_le32(&dsi0->dsi_con_ctrl, 3);
-	clrbits_le32(&dsi0->dsi_con_ctrl, 1);
+	setbits32(&dsi0->dsi_con_ctrl, 3);
+	clrbits32(&dsi0->dsi_con_ctrl, 1);
 }
 
 void mtk_dsi_override_phy_timing(struct mtk_phy_timing *timing)
@@ -131,7 +131,7 @@ void mtk_dsi_pin_drv_ctrl(void)
 	struct stopwatch sw;
 	uint32_t pwr_ack;
 
-	setbits_le32(&lvds_tx1->vopll_ctl3, RG_DA_LVDSTX_PWR_ON);
+	setbits32(&lvds_tx1->vopll_ctl3, RG_DA_LVDSTX_PWR_ON);
 
 	stopwatch_init_usecs_expire(&sw, 1000);
 
@@ -143,5 +143,5 @@ void mtk_dsi_pin_drv_ctrl(void)
 		pwr_ack = read32(&lvds_tx1->vopll_ctl3) & RG_AD_LVDSTX_PWR_ACK;
 	} while (pwr_ack == 0);
 
-	clrbits_le32(&lvds_tx1->vopll_ctl3, RG_DA_LVDS_ISO_EN);
+	clrbits32(&lvds_tx1->vopll_ctl3, RG_DA_LVDS_ISO_EN);
 }

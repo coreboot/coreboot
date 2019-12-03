@@ -60,17 +60,17 @@ static void main_disp_path_setup(u32 width, u32 height, u32 pixel_clk)
 
 static void disp_clock_on(void)
 {
-	clrbits_le32(&mmsys_cfg->mmsys_cg_con0, CG_CON0_SMI_COMMON |
-						CG_CON0_SMI_LARB0 |
-						CG_CON0_MUTEX_32K |
-						CG_CON0_DISP_OVL0 |
-						CG_CON0_DISP_RDMA0 |
-						CG_CON0_DISP_COLOR0 |
-						CG_CON0_DISP_UFOE |
-						CG_CON0_DISP_OD);
+	clrbits32(&mmsys_cfg->mmsys_cg_con0, CG_CON0_SMI_COMMON |
+					     CG_CON0_SMI_LARB0 |
+					     CG_CON0_MUTEX_32K |
+					     CG_CON0_DISP_OVL0 |
+					     CG_CON0_DISP_RDMA0 |
+					     CG_CON0_DISP_COLOR0 |
+					     CG_CON0_DISP_UFOE |
+					     CG_CON0_DISP_OD);
 
-	clrbits_le32(&mmsys_cfg->mmsys_cg_con1, CG_CON1_DSI0_ENGINE |
-						CG_CON1_DSI0_DIGITAL);
+	clrbits32(&mmsys_cfg->mmsys_cg_con1, CG_CON1_DSI0_ENGINE |
+					     CG_CON1_DSI0_DIGITAL);
 }
 
 void mtk_ddp_init(void)

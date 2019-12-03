@@ -49,19 +49,19 @@ void mtk_dsi_configure_mipi_tx(int data_rate, u32 lanes)
 		txdiv1 = 0;
 	}
 
-	clrbits_le32(&mipi_tx->pll_con4, BIT(11) | BIT(10));
-	setbits_le32(&mipi_tx->pll_pwr, AD_DSI_PLL_SDM_PWR_ON);
+	clrbits32(&mipi_tx->pll_con4, BIT(11) | BIT(10));
+	setbits32(&mipi_tx->pll_pwr, AD_DSI_PLL_SDM_PWR_ON);
 	udelay(30);
-	clrbits_le32(&mipi_tx->pll_pwr, AD_DSI_PLL_SDM_ISO_EN);
+	clrbits32(&mipi_tx->pll_pwr, AD_DSI_PLL_SDM_ISO_EN);
 
 	pcw = (u64)data_rate * (1 << txdiv0) * (1 << txdiv1);
 	pcw <<= 24;
 	pcw /= CLK26M_HZ / MHz;
 
 	write32(&mipi_tx->pll_con0, pcw);
-	clrsetbits_le32(&mipi_tx->pll_con1, RG_DSI_PLL_POSDIV, txdiv0 << 8);
+	clrsetbits32(&mipi_tx->pll_con1, RG_DSI_PLL_POSDIV, txdiv0 << 8);
 	udelay(30);
-	setbits_le32(&mipi_tx->pll_con1, RG_DSI_PLL_EN);
+	setbits32(&mipi_tx->pll_con1, RG_DSI_PLL_EN);
 
 	/* BG_LPF_EN / BG_CORE_EN */
 	write32(&mipi_tx->lane_con, 0x3fff0180);
@@ -69,13 +69,13 @@ void mtk_dsi_configure_mipi_tx(int data_rate, u32 lanes)
 	write32(&mipi_tx->lane_con, 0x3fff00c0);
 
 	/* Switch OFF each Lane */
-	clrbits_le32(&mipi_tx->d0_sw_ctl_en, DSI_SW_CTL_EN);
-	clrbits_le32(&mipi_tx->d1_sw_ctl_en, DSI_SW_CTL_EN);
-	clrbits_le32(&mipi_tx->d2_sw_ctl_en, DSI_SW_CTL_EN);
-	clrbits_le32(&mipi_tx->d3_sw_ctl_en, DSI_SW_CTL_EN);
-	clrbits_le32(&mipi_tx->ck_sw_ctl_en, DSI_SW_CTL_EN);
+	clrbits32(&mipi_tx->d0_sw_ctl_en, DSI_SW_CTL_EN);
+	clrbits32(&mipi_tx->d1_sw_ctl_en, DSI_SW_CTL_EN);
+	clrbits32(&mipi_tx->d2_sw_ctl_en, DSI_SW_CTL_EN);
+	clrbits32(&mipi_tx->d3_sw_ctl_en, DSI_SW_CTL_EN);
+	clrbits32(&mipi_tx->ck_sw_ctl_en, DSI_SW_CTL_EN);
 
-	setbits_le32(&mipi_tx->ck_ckmode_en, DSI_CK_CKMODE_EN);
+	setbits32(&mipi_tx->ck_ckmode_en, DSI_CK_CKMODE_EN);
 }
 
 void mtk_dsi_reset(void)

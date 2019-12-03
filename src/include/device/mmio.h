@@ -120,10 +120,10 @@ static inline void buffer_to_fifo32(void *buffer, size_t size, void *fifo,
  *
  * These will be translated to:
  *
- *  clrsetbits_le32(&disp_regs.ctrl, 0x6, 0x4);
- *  clrsetbits_le32(&disp_regs.ctrl, 0x1, 0x0);
+ *  clrsetbits32(&disp_regs.ctrl, 0x6, 0x4);
+ *  clrsetbits32(&disp_regs.ctrl, 0x1, 0x0);
  *
- *  clrsetbits_le32(&disp_regs.ctrl, 0x7, 0x3);
+ *  clrsetbits32(&disp_regs.ctrl, 0x7, 0x3);
  *  write32(&disp_regs.ctrl, 0x3);
  *
  *  (read32(&reg) & 0x6) >> 1
@@ -187,7 +187,7 @@ static inline void buffer_to_fifo32(void *buffer, size_t size, void *fifo,
 	_BF_IMPL(_WRITE32_BITFIELDS_IMPL, addr, __VA_ARGS__)
 
 #define SET32_BITFIELDS(addr, ...) \
-	_BF_IMPL(clrsetbits_le32, addr, __VA_ARGS__)
+	_BF_IMPL(clrsetbits32, addr, __VA_ARGS__)
 
 #define EXTRACT_BITFIELD(value, name) \
 	(((value) & _BF_MASK(name, 0)) >> name##_BITFIELD_SHIFT)

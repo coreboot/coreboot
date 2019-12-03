@@ -13,9 +13,9 @@
  * GNU General Public License for more details.
  */
 
-#include <device/device.h>
 #include <bootblock_common.h>
-#include <arch/mmio.h>
+#include <device/device.h>
+#include <device/mmio.h>
 #include <gpio.h>
 #include <timestamp.h>
 

@@ -58,7 +58,7 @@ void cpu_prepare_startup(void *entry_64)
 	 */
 
 	write32(&sb->sb_aa64_reset_low, (uintptr_t)entry_64);
-	setbits_le32(&sb->sb_aa64_reset_low, 1);
+	setbits32(&sb->sb_aa64_reset_low, 1);
 	write32(&sb->sb_aa64_reset_high, 0);
 }
 

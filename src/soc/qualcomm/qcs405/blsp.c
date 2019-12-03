@@ -59,7 +59,7 @@ blsp_return_t blsp_i2c_init(blsp_qup_id_t id)
 		return BLSP_ID_ERROR;
 
 	/* Configure Mini core to I2C core */
-	clrsetbits_le32(base, BLSP_MINI_CORE_MASK, BLSP_MINI_CORE_I2C);
+	clrsetbits32(base, BLSP_MINI_CORE_MASK, BLSP_MINI_CORE_I2C);
 
 	return BLSP_SUCCESS;
 }

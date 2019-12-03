@@ -374,9 +374,9 @@ static void rkclk_set_dpllssc(struct pll_div *dpll_cfg)
 	write32(&cru_ptr->dpll_con[3],
 		RK_CLRSETBITS(PLL_DSMPD_MASK << PLL_DSMPD_SHIFT,
 			      PLL_FRAC_MODE << PLL_DSMPD_SHIFT));
-	clrsetbits_le32(&cru_ptr->dpll_con[2],
-			PLL_FRACDIV_MASK << PLL_FRACDIV_SHIFT,
-			0 << PLL_FRACDIV_SHIFT);
+	clrsetbits32(&cru_ptr->dpll_con[2],
+		     PLL_FRACDIV_MASK << PLL_FRACDIV_SHIFT,
+		     0 << PLL_FRACDIV_SHIFT);
 
 	/*
 	 * Configure SSC divval.

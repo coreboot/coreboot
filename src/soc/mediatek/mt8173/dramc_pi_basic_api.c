@@ -74,17 +74,17 @@ static void mem_pll_pre_init(u32 channel)
 	write32(&ch[channel].ddrphy_regs->mempll05_divider, 0x1 << 27);
 
 	/* enable chip top memory clock */
-	setbits_le32(&ch[channel].ddrphy_regs->mempll_divider, 0x1 << 4);
+	setbits32(&ch[channel].ddrphy_regs->mempll_divider, 0x1 << 4);
 
 	/* disable C/A and DQ M_CK clock gating */
-	clrbits_le32(&ch[channel].ddrphy_regs->ddrphy_cg_ctrl, 0x1 << 2 |
-							       0x1 << 1);
+	clrbits32(&ch[channel].ddrphy_regs->ddrphy_cg_ctrl, 0x1 << 2 |
+							    0x1 << 1);
 
 	/* enable spm control clock */
-	clrbits_le32(&ch[channel].ddrphy_regs->mempll_divider, 0x1 << 15 |
-							       0x1 << 0);
+	clrbits32(&ch[channel].ddrphy_regs->mempll_divider, 0x1 << 15 |
+							    0x1 << 0);
 	/* enable dramc 2X mode */
-	setbits_le32(&ch[channel].ao_regs->ddr2ctl, 1 << 0);
+	setbits32(&ch[channel].ao_regs->ddr2ctl, 1 << 0);
 
 	/* select internal clock path */
 	write32(&ch[channel].ddrphy_regs->peri[0], 0x21 << 24 | 0x27 << 16 |
@@ -94,12 +94,12 @@ static void mem_pll_pre_init(u32 channel)
 						   0x6 << 8   | 0x1e << 0);
 
 	/* trigger to make memory clock correct phase */
-	setbits_le32(&ch[channel].ddrphy_regs->mempll_divider, 0x1 << 24 |
-							       0x1 << 7);
+	setbits32(&ch[channel].ddrphy_regs->mempll_divider, 0x1 << 24 |
+							    0x1 << 7);
 
 	if (channel == CHANNEL_A) {
 		/* select memory clock sync for channel A (internal source) */
-		clrbits_le32(&ch[channel].ddrphy_regs->mempll_divider, 0x1 << 3);
+		clrbits32(&ch[channel].ddrphy_regs->mempll_divider, 0x1 << 3);
 	}
 }
 
@@ -156,11 +156,11 @@ static void mem_pll_init_phase_sync(u32 channel)
 							  BIT(7)  | BIT(5)  |
 							  BIT(4)  | BIT(0));
 	/* spm control clock enable */
-	clrsetbits_le32(&ch[channel].ddrphy_regs->mempll_divider, BIT(0),
-								  BIT(1));
+	clrsetbits32(&ch[channel].ddrphy_regs->mempll_divider, BIT(0),
+							       BIT(1));
 
-	clrsetbits_le32(&ch[channel].ddrphy_regs->mempll_divider, BIT(1),
-								  BIT(0));
+	clrsetbits32(&ch[channel].ddrphy_regs->mempll_divider, BIT(1),
+							       BIT(0));
 }
 
 static void pll_phase_adjust(u32 channel, struct mem_pll *mempll, int reg_offs)
@@ -169,25 +169,25 @@ static void pll_phase_adjust(u32 channel, struct mem_pll *mempll, int reg_offs)
 
 	case MEMPLL_INIT:
 		/* initial phase: zero out RG_MEPLL(2,3,4)_(REF_DL,FB)_DL */
-		clrbits_le32(&ch[channel].ddrphy_regs->mempll[reg_offs],
-			     0x1f << MEMPLL_REF_DL_SHIFT |
-			     0x1f << MEMPLL_FB_DL_SHIFT);
+		clrbits32(&ch[channel].ddrphy_regs->mempll[reg_offs],
+			  0x1f << MEMPLL_REF_DL_SHIFT |
+			  0x1f << MEMPLL_FB_DL_SHIFT);
 		break;
 
 	case MEMPLL_REF_LAG:
 		/* REF lag FBK, delay FBK */
-		clrsetbits_le32(&ch[channel].ddrphy_regs->mempll[reg_offs],
-				0x1f << MEMPLL_REF_DL_SHIFT |
-				0x1f << MEMPLL_FB_DL_SHIFT,
-				mempll->delay << MEMPLL_FB_DL_SHIFT);
+		clrsetbits32(&ch[channel].ddrphy_regs->mempll[reg_offs],
+			     0x1f << MEMPLL_REF_DL_SHIFT |
+			     0x1f << MEMPLL_FB_DL_SHIFT,
+			     mempll->delay << MEMPLL_FB_DL_SHIFT);
 		break;
 
 	case MEMPLL_REF_LEAD:
 		/* REF lead FBK, delay REF */
-		clrsetbits_le32(&ch[channel].ddrphy_regs->mempll[reg_offs],
-				0x1f << MEMPLL_REF_DL_SHIFT |
-				0x1f << MEMPLL_FB_DL_SHIFT,
-				mempll->delay << MEMPLL_REF_DL_SHIFT);
+		clrsetbits32(&ch[channel].ddrphy_regs->mempll[reg_offs],
+			     0x1f << MEMPLL_REF_DL_SHIFT |
+			     0x1f << MEMPLL_FB_DL_SHIFT,
+			     mempll->delay << MEMPLL_REF_DL_SHIFT);
 	};
 }
 
@@ -250,9 +250,9 @@ static void mem_pll_phase_cali(u32 channel)
 
 	/* 1. set jitter meter count number to 1024 for mempll 2 3 4 */
 	for (i = 0; i < 3; i++)
-		clrsetbits_le32(&ch[channel].ddrphy_regs->jmeter[i],
-				JMETER_COUNTER_MASK,
-				JMETER_COUNT << JMETER_COUNTER_SHIFT);
+		clrsetbits32(&ch[channel].ddrphy_regs->jmeter[i],
+			     JMETER_COUNTER_MASK,
+			     JMETER_COUNT << JMETER_COUNTER_SHIFT);
 
 	while (1) {
 
@@ -266,8 +266,8 @@ static void mem_pll_phase_cali(u32 channel)
 
 		/* 2. enable mempll 2 3 4 jitter meter */
 		for (i = 0; i < 3; i++)
-			setbits_le32(&ch[channel].ddrphy_regs->jmeter[i],
-				     JMETER_EN_BIT);
+			setbits32(&ch[channel].ddrphy_regs->jmeter[i],
+				  JMETER_EN_BIT);
 
 		/* 3. wait for jitter meter complete */
 		udelay(JMETER_WAIT_DONE_US);
@@ -281,8 +281,8 @@ static void mem_pll_phase_cali(u32 channel)
 
 		/* 5. disable mempll 2 3 4 jitter meter */
 		for (i = 0; i < 3; i++)
-			clrbits_le32(&ch[channel].ddrphy_regs->jmeter[i],
-				     JMETER_EN_BIT);
+			clrbits32(&ch[channel].ddrphy_regs->jmeter[i],
+				  JMETER_EN_BIT);
 
 		/* 6. all done early break */
 		if (mempll[0].done && mempll[1].done && mempll[2].done)
@@ -336,58 +336,58 @@ void mem_pll_init(const struct mt8173_sdram_params *sdram_params)
 		udelay(2);
 
 		/* mempll2_en -> mempll4_en -> mempll3_en */
-		setbits_le32(&ch[channel].ddrphy_regs->mempll[5], 1 << 0);
-		setbits_le32(&ch[channel].ddrphy_regs->mempll[11], 1 << 0);
-		setbits_le32(&ch[channel].ddrphy_regs->mempll[8], 1 << 0);
+		setbits32(&ch[channel].ddrphy_regs->mempll[5], 1 << 0);
+		setbits32(&ch[channel].ddrphy_regs->mempll[11], 1 << 0);
+		setbits32(&ch[channel].ddrphy_regs->mempll[8], 1 << 0);
 
 		udelay(100);
 
 		/* mempll_bias_lpf_en */
-		setbits_le32(&ch[channel].ddrphy_regs->mempll[3], 1 << 7);
+		setbits32(&ch[channel].ddrphy_regs->mempll[3], 1 << 7);
 
 		udelay(30);
 
 		/* select mempll4 band register */
-		setbits_le32(&ch[channel].ddrphy_regs->mempll[4], 1 << 26);
-		clrbits_le32(&ch[channel].ddrphy_regs->mempll[4], 1 << 26);
+		setbits32(&ch[channel].ddrphy_regs->mempll[4], 1 << 26);
+		clrbits32(&ch[channel].ddrphy_regs->mempll[4], 1 << 26);
 
 		/* PLL ready */
 
 		/* disable mempll2_en -> mempll4_en -> mempll3_en */
-		clrbits_le32(&ch[channel].ddrphy_regs->mempll[5], 1 << 0);
-		clrbits_le32(&ch[channel].ddrphy_regs->mempll[11], 1 << 0);
-		clrbits_le32(&ch[channel].ddrphy_regs->mempll[8], 1 << 0);
+		clrbits32(&ch[channel].ddrphy_regs->mempll[5], 1 << 0);
+		clrbits32(&ch[channel].ddrphy_regs->mempll[11], 1 << 0);
+		clrbits32(&ch[channel].ddrphy_regs->mempll[8], 1 << 0);
 
 		/* disable autok mempll2_en -> mempll4_en -> mempll3_en */
-		clrbits_le32(&ch[channel].ddrphy_regs->mempll[5], 1 << 23);
-		clrbits_le32(&ch[channel].ddrphy_regs->mempll[11], 1 << 23);
-		clrbits_le32(&ch[channel].ddrphy_regs->mempll[8], 1 << 23);
+		clrbits32(&ch[channel].ddrphy_regs->mempll[5], 1 << 23);
+		clrbits32(&ch[channel].ddrphy_regs->mempll[11], 1 << 23);
+		clrbits32(&ch[channel].ddrphy_regs->mempll[8], 1 << 23);
 
 		udelay(1);
 
 		/* mempll[2->4->3]_fb_mck_sel=1 (switch to outer loop) */
-		setbits_le32(&ch[channel].ddrphy_regs->mempll[6], 1 << 25);
-		setbits_le32(&ch[channel].ddrphy_regs->mempll[12], 1 << 25);
-		setbits_le32(&ch[channel].ddrphy_regs->mempll[9], 1 << 25);
+		setbits32(&ch[channel].ddrphy_regs->mempll[6], 1 << 25);
+		setbits32(&ch[channel].ddrphy_regs->mempll[12], 1 << 25);
+		setbits32(&ch[channel].ddrphy_regs->mempll[9], 1 << 25);
 
 		udelay(1);
 
 		/* enable mempll2_en -> mempll4_en -> mempll3_en */
-		setbits_le32(&ch[channel].ddrphy_regs->mempll[5], 1 << 0);
-		setbits_le32(&ch[channel].ddrphy_regs->mempll[11], 1 << 0);
-		setbits_le32(&ch[channel].ddrphy_regs->mempll[8], 1 << 0);
+		setbits32(&ch[channel].ddrphy_regs->mempll[5], 1 << 0);
+		setbits32(&ch[channel].ddrphy_regs->mempll[11], 1 << 0);
+		setbits32(&ch[channel].ddrphy_regs->mempll[8], 1 << 0);
 	}
 
 	/* mempll new power-on */
 	write32(&mtk_spm->poweron_config_set, 0x1 << 0 |
 						 SPM_PROJECT_CODE << 16);
 	/* request mempll reset/pdn mode */
-	setbits_le32(&mtk_spm->power_on_val0, 0x1 << 27);
+	setbits32(&mtk_spm->power_on_val0, 0x1 << 27);
 
 	udelay(2);
 
 	/* unrequest mempll reset/pdn mode and wait settle */
-	clrbits_le32(&mtk_spm->power_on_val0, 0x1 << 27);
+	clrbits32(&mtk_spm->power_on_val0, 0x1 << 27);
 
 	udelay(31);  /* PLL ready */
 
@@ -628,16 +628,16 @@ void dramc_init(u32 channel, const struct mt8173_sdram_params *sdram_params)
 	write32(&ch[channel].ao_regs->padctl7, 0x0);
 
 	/* CLKTDN, DS0TDN, DS1TDN, DS2TDN, DS3TDN */
-	setbits_le32(&ch[channel].ddrphy_regs->tdsel[2], 0x1 << 31 |
+	setbits32(&ch[channel].ddrphy_regs->tdsel[2], 0x1 << 31 |
 							 0x1 << 29 |
 							 0x1 << 27 |
 							 0x1 << 25 |
 							 0x1 << 1);
 	/* DISABLE_PERBANK_REFRESH */
-	clrbits_le32(&ch[channel].ao_regs->rkcfg, 0x1 << 7);
+	clrbits32(&ch[channel].ao_regs->rkcfg, 0x1 << 7);
 
 	/* clear R_DMREFTHD to reduce MR4 wait refresh queue time */
-	clrbits_le32(&ch[channel].ao_regs->conf2, 0x7 << 24);
+	clrbits32(&ch[channel].ao_regs->conf2, 0x7 << 24);
 
 	/* duty default value */
 	write32(&ch[channel].ddrphy_regs->phyclkduty, 0x1 << 28 |
@@ -645,7 +645,7 @@ void dramc_init(u32 channel, const struct mt8173_sdram_params *sdram_params)
 
 	if (!dual_rank_set) {
 		/* single rank, CKE1 always off */
-		setbits_le32(&ch[channel].ao_regs->gddr3ctl1, 0x1 << 21);
+		setbits32(&ch[channel].ao_regs->gddr3ctl1, 0x1 << 21);
 	}
 
 	/* default dqs rx perbit input delay */
@@ -662,72 +662,72 @@ void dramc_init(u32 channel, const struct mt8173_sdram_params *sdram_params)
 
 void div2_phase_sync(void)
 {
-	clrbits_le32(&ch[CHANNEL_B].ddrphy_regs->mempll_divider,
+	clrbits32(&ch[CHANNEL_B].ddrphy_regs->mempll_divider,
 			1 << MEMCLKENB_SHIFT);
 	udelay(1);
 
-	setbits_le32(&ch[CHANNEL_B].ddrphy_regs->mempll_divider,
+	setbits32(&ch[CHANNEL_B].ddrphy_regs->mempll_divider,
 			1 << MEMCLKENB_SHIFT);
 }
 
 void dramc_phy_reset(u32 channel)
 {
 	/* reset phy */
-	setbits_le32(&ch[channel].ddrphy_regs->phyctl1,
+	setbits32(&ch[channel].ddrphy_regs->phyctl1,
 		     1 << PHYCTL1_PHYRST_SHIFT);
 
 	/* read data counter reset */
-	setbits_le32(&ch[channel].ao_regs->gddr3ctl1,
+	setbits32(&ch[channel].ao_regs->gddr3ctl1,
 		     1 << GDDR3CTL1_RDATRST_SHIFT);
 
 	udelay(1);  /* delay 1ns */
 
-	clrbits_le32(&ch[channel].ao_regs->gddr3ctl1,
+	clrbits32(&ch[channel].ao_regs->gddr3ctl1,
 		     1 << GDDR3CTL1_RDATRST_SHIFT);
 
-	clrbits_le32(&ch[channel].ddrphy_regs->phyctl1,
+	clrbits32(&ch[channel].ddrphy_regs->phyctl1,
 		     1 << PHYCTL1_PHYRST_SHIFT);
 }
 
 void dramc_runtime_config(u32 channel,
 			  const struct mt8173_sdram_params *sdram_params)
 {
-	setbits_le32(&ch[channel].ddrphy_regs->dqsgctl,
+	setbits32(&ch[channel].ddrphy_regs->dqsgctl,
 		BIT(17)|BIT(18));
 
 	/* enable hw gating */
-	setbits_le32(&ch[channel].ao_regs->dqscal0,
-		     1 << DQSCAL0_STBCALEN_SHIFT);
+	setbits32(&ch[channel].ao_regs->dqscal0,
+		  1 << DQSCAL0_STBCALEN_SHIFT);
 
 	/* if frequency >1600, tCKE should >7 clk */
-	setbits_le32(&ch[channel].ao_regs->dummy, 0x1 << 4);
+	setbits32(&ch[channel].ao_regs->dummy, 0x1 << 4);
 
 	if (sdram_params->dram_freq * 2 < 1600 * MHz)
 		die("set tCKE error in runtime config");
 
 	/* DDRPHY C/A and DQ M_CK clock gating enable */
-	setbits_le32(&ch[channel].ddrphy_regs->ddrphy_cg_ctrl, 0x1 << 2 |
+	setbits32(&ch[channel].ddrphy_regs->ddrphy_cg_ctrl, 0x1 << 2 |
 							       0x1 << 1);
 
-	setbits_le32(&ch[channel].ao_regs->perfctl0, BIT(19) | BIT(14) |
+	setbits32(&ch[channel].ao_regs->perfctl0, BIT(19) | BIT(14) |
 						     BIT(11) | BIT(10) |
 						     BIT(9)  | BIT(8)  |
 						     BIT(4)  | BIT(0));
 	/* ZQCS_ENABLE */
 	if (sdram_params->emi_set.cona & 0x1) {
 		/* dual channel, clear ZQCSCNT */
-		clrbits_le32(&ch[channel].ao_regs->spcmd, 0xff << 16);
+		clrbits32(&ch[channel].ao_regs->spcmd, 0xff << 16);
 		/* set ZQCSMASK for different channels */
 		if (channel == CHANNEL_A) {
-			clrbits_le32(&ch[channel].ao_regs->perfctl0, 0x1 << 24);
+			clrbits32(&ch[channel].ao_regs->perfctl0, 0x1 << 24);
 		} else {
-			setbits_le32(&ch[channel].ao_regs->perfctl0, 0x1 << 24);
+			setbits32(&ch[channel].ao_regs->perfctl0, 0x1 << 24);
 		}
 		/* enable ZQCSDUAL */
-		setbits_le32(&ch[channel].ao_regs->perfctl0, 0x1 << 25);
+		setbits32(&ch[channel].ao_regs->perfctl0, 0x1 << 25);
 	} else {
 		/* single channel, set ZQCSCNT */
-		setbits_le32(&ch[channel].ao_regs->spcmd, 0x8 << 16);
+		setbits32(&ch[channel].ao_regs->spcmd, 0x8 << 16);
 	}
 }
 
@@ -736,17 +736,17 @@ void transfer_to_spm_control(void)
 	u32 msk;
 
 	msk = BIT(7) | BIT(11) | BIT(15);
-	clrbits_le32(&mtk_apmixed->ap_pll_con3, msk);
+	clrbits32(&mtk_apmixed->ap_pll_con3, msk);
 
 	msk = BIT(0) | BIT(4) | BIT(8);
-	clrbits_le32(&ch[CHANNEL_A].ddrphy_regs->peri[3], msk);
+	clrbits32(&ch[CHANNEL_A].ddrphy_regs->peri[3], msk);
 
 	msk = BIT(0) | BIT(8);
-	clrbits_le32(&ch[CHANNEL_B].ddrphy_regs->peri[3], msk);
+	clrbits32(&ch[CHANNEL_B].ddrphy_regs->peri[3], msk);
 
 	msk = BIT(0) | BIT(9) | BIT(10) | BIT(11) | BIT(16) | BIT(24);
-	clrbits_le32(&ch[CHANNEL_A].ddrphy_regs->peri[2], msk);
-	clrbits_le32(&ch[CHANNEL_B].ddrphy_regs->peri[2], msk);
+	clrbits32(&ch[CHANNEL_A].ddrphy_regs->peri[2], msk);
+	clrbits32(&ch[CHANNEL_B].ddrphy_regs->peri[2], msk);
 }
 
 void transfer_to_reg_control(void)
@@ -754,17 +754,17 @@ void transfer_to_reg_control(void)
 	u32 val;
 
 	val = BIT(7) | BIT(11) | BIT(15);
-	setbits_le32(&mtk_apmixed->ap_pll_con3, val);
+	setbits32(&mtk_apmixed->ap_pll_con3, val);
 
 	val = BIT(0) | BIT(4) | BIT(8);
-	setbits_le32(&ch[CHANNEL_A].ddrphy_regs->peri[3], val);
+	setbits32(&ch[CHANNEL_A].ddrphy_regs->peri[3], val);
 
 	val = BIT(0) | BIT(8);
 	write32(&ch[CHANNEL_B].ddrphy_regs->peri[3], val);
 
 	val = BIT(0) | BIT(9) | BIT(10) | BIT(11) | BIT(16) | BIT(24);
-	setbits_le32(&ch[CHANNEL_A].ddrphy_regs->peri[2], val);
-	setbits_le32(&ch[CHANNEL_B].ddrphy_regs->peri[2], val);
+	setbits32(&ch[CHANNEL_A].ddrphy_regs->peri[2], val);
+	setbits32(&ch[CHANNEL_B].ddrphy_regs->peri[2], val);
 }
 
 u32 dramc_engine2(u32 channel, enum dram_tw_op wr, u32 test2_1, u32 test2_2,
@@ -776,9 +776,9 @@ u32 dramc_engine2(u32 channel, enum dram_tw_op wr, u32 test2_1, u32 test2_2,
 		die("Invalid loopcount of engine2!");
 
 	/* Disable Test Agent1, Test Agent2 write/read */
-	clrbits_le32(&ch[channel].ao_regs->conf2, CONF2_TEST1_EN |
-						  CONF2_TEST2R_EN |
-						  CONF2_TEST2W_EN);
+	clrbits32(&ch[channel].ao_regs->conf2, CONF2_TEST1_EN |
+					       CONF2_TEST2R_EN |
+					       CONF2_TEST2W_EN);
 
 	/* 1. set pattern, base address, offset address */
 	write32(&ch[channel].nao_regs->test2_1, test2_1);
@@ -794,49 +794,49 @@ u32 dramc_engine2(u32 channel, enum dram_tw_op wr, u32 test2_1, u32 test2_2,
 	switch (testaudpat) {
 	case XTALK:
 		/* TESTAUDPAT = 0 */
-		clrbits_le32(&ch[channel].ao_regs->test2_3,
-			     TEST2_3_TESTAUDPAT_EN);
+		clrbits32(&ch[channel].ao_regs->test2_3,
+			  TEST2_3_TESTAUDPAT_EN);
 		/* TESTXTALKPAT  = 1, select xtalk pattern
 		 * TESTAUDMODE   = 0, read only
 		 * TESTAUDBITINV = 0, no bit inversion
 		 */
-		clrsetbits_le32(&ch[channel].ao_regs->test2_4,
-				TEST2_4_TESTAUDBITINV_EN |
-				TEST2_4_TESTAUDMODE_EN,
-				TEST2_4_TESTXTALKPAT_EN);
+		clrsetbits32(&ch[channel].ao_regs->test2_4,
+			     TEST2_4_TESTAUDBITINV_EN |
+			     TEST2_4_TESTAUDMODE_EN,
+			     TEST2_4_TESTXTALKPAT_EN);
 		break;
 	case AUDIO:
 		/* TESTAUDPAT = 1 */
-		setbits_le32(&ch[channel].ao_regs->test2_3,
-			     TEST2_3_TESTAUDPAT_EN);
+		setbits32(&ch[channel].ao_regs->test2_3,
+			  TEST2_3_TESTAUDPAT_EN);
 		/* TESTXTALKPAT  = 0
 		 * TESTAUDINIT   = 0x11
 		 * TESTAUDINC    = 0x0d
 		 * TESTAUDBITINV = 1
 		 * TESTAUDMODE   = 1
 		 */
-		clrsetbits_le32(&ch[channel].ao_regs->test2_4,
-				TEST2_4_TESTXTALKPAT_EN |
-				TEST2_4_TESTAUDINIT_MASK |
-				TEST2_4_TESTAUDINC_MASK,
-				TEST2_4_TESTAUDMODE_EN |
-				TEST2_4_TESTAUDBITINV_EN |
-				0x11 << TEST2_4_TESTAUDINIT_SHIFT |
-				0xd << TEST2_4_TESTAUDINC_SHIFT);
+		clrsetbits32(&ch[channel].ao_regs->test2_4,
+			     TEST2_4_TESTXTALKPAT_EN |
+			     TEST2_4_TESTAUDINIT_MASK |
+			     TEST2_4_TESTAUDINC_MASK,
+			     TEST2_4_TESTAUDMODE_EN |
+			     TEST2_4_TESTAUDBITINV_EN |
+			     0x11 << TEST2_4_TESTAUDINIT_SHIFT |
+			     0xd << TEST2_4_TESTAUDINC_SHIFT);
 
 		break;
 	case ISI:
 		/* TESTAUDPAT = 0 */
-		clrbits_le32(&ch[channel].ao_regs->test2_3,
-			     TEST2_3_TESTAUDPAT_EN);
+		clrbits32(&ch[channel].ao_regs->test2_3,
+			  TEST2_3_TESTAUDPAT_EN);
 		/* TESTXTALKPAT = 0 */
-		clrbits_le32(&ch[channel].ao_regs->test2_4,
-			     TEST2_4_TESTXTALKPAT_EN);
+		clrbits32(&ch[channel].ao_regs->test2_4,
+			  TEST2_4_TESTXTALKPAT_EN);
 	}
 
 	/* 3. set loop number */
-	clrsetbits_le32(&ch[channel].ao_regs->test2_3, TEST2_3_TESTCNT_MASK,
-			log2loopcount << TEST2_3_TESTCNT_SHIFT);
+	clrsetbits32(&ch[channel].ao_regs->test2_3, TEST2_3_TESTCNT_MASK,
+		     log2loopcount << TEST2_3_TESTCNT_SHIFT);
 
 	/* 4. enable read/write test */
 	if (wr == TE_OP_READ_CHECK) {
@@ -844,15 +844,15 @@ u32 dramc_engine2(u32 channel, enum dram_tw_op wr, u32 test2_1, u32 test2_2,
 			/* if audio pattern, enable read only */
 			/* (disable write after read), */
 			/* AUDMODE=0x48[15]=0 */
-			clrbits_le32(&ch[channel].ao_regs->test2_4,
-				     TEST2_4_TESTAUDMODE_EN);
+			clrbits32(&ch[channel].ao_regs->test2_4,
+				  TEST2_4_TESTAUDMODE_EN);
 		}
 
 		/* enable read, 0x008[30:30] */
-		setbits_le32(&ch[channel].ao_regs->conf2, CONF2_TEST2R_EN);
+		setbits32(&ch[channel].ao_regs->conf2, CONF2_TEST2R_EN);
 	} else if (wr == TE_OP_WRITE_READ_CHECK) {
 		/* enable write, 0x008[31:31] */
-		setbits_le32(&ch[channel].ao_regs->conf2, CONF2_TEST2W_EN);
+		setbits32(&ch[channel].ao_regs->conf2, CONF2_TEST2W_EN);
 
 		/* check "read data compare ready" bit */
 		do {
@@ -860,8 +860,8 @@ u32 dramc_engine2(u32 channel, enum dram_tw_op wr, u32 test2_1, u32 test2_2,
 		} while ((value & (1 << TESTRPT_DM_CMP_CPT_SHIFT)) == 0);
 
 		/* Disable Test Agent2 write and enable Test Agent2 read */
-		clrbits_le32(&ch[channel].ao_regs->conf2, CONF2_TEST2W_EN);
-		setbits_le32(&ch[channel].ao_regs->conf2, CONF2_TEST2R_EN);
+		clrbits32(&ch[channel].ao_regs->conf2, CONF2_TEST2W_EN);
+		setbits32(&ch[channel].ao_regs->conf2, CONF2_TEST2R_EN);
 	}
 
 	/* 5 check "read data compare ready" bit */
@@ -876,7 +876,7 @@ u32 dramc_engine2(u32 channel, enum dram_tw_op wr, u32 test2_1, u32 test2_2,
 	value = read32(&ch[channel].nao_regs->cmp_err);
 
 	/* 6 disable read */
-	clrbits_le32(&ch[channel].ao_regs->conf2, CONF2_TEST2R_EN);
+	clrbits32(&ch[channel].ao_regs->conf2, CONF2_TEST2R_EN);
 
 	/* return CMP_ERR result, pass: 0, failure: otherwise */
 	return value;

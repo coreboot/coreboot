@@ -1,0 +1,62 @@
+
+
+choice
+	prompt "Boot media protection mechanism"
+	default BOOTMEDIA_LOCK_NONE
+
+config BOOTMEDIA_LOCK_NONE
+	bool "Don't lock boot media sections"
+
+config BOOTMEDIA_LOCK_CONTROLLER
+	bool "Lock boot media using the controller"
+	help
+	  Select this if you want the controller to lock specific regions.
+	  This only works on some platforms, please check the code or boot log.
+	  On Intel platforms for e.g. this will make use of the SPIBAR PRRs.
+
+config BOOTMEDIA_LOCK_CHIP
+	bool "Lock boot media using the chip"
+	help
+	  Select this if you want the chip to lock specific regions.
+	  This only works on some chips, please check the code or boot log.
+
+endchoice
+
+choice
+	prompt "Boot media protected regions"
+	depends on !BOOTMEDIA_LOCK_NONE
+	default BOOTMEDIA_LOCK_WHOLE_RO
+
+config BOOTMEDIA_LOCK_WHOLE_RO
+	bool "Write-protect the whole boot medium"
+	help
+	  Select this if you want to write-protect the whole firmware boot
+	  medium.
+
+	  The locking will take place during the chipset lockdown.
+	  Chipset lockdown is platform specific und might be done unconditionally,
+	  when INTEL_CHIPSET_LOCKDOWN is set or has to be triggered later
+	  (e.g. by the payload or the OS).
+
+	  NOTE: If you trigger the chipset lockdown unconditionally,
+	  you won't be able to write to the whole flash chip using the
+	  internal controller any more.
+
+config BOOTMEDIA_LOCK_WHOLE_NO_ACCESS
+	depends on BOOTMEDIA_LOCK_CONTROLLER
+	bool "Read- and write-protect the whole boot medium"
+	help
+	  Select this if you want to protect the firmware boot medium against
+	  all further accesses. On platforms that memory map a part of the
+	  boot medium the corresponding region is still readable.
+
+	  The locking will take place during the chipset lockdown.
+	  Chipset lockdown is platform specific und might be done unconditionally,
+	  when INTEL_CHIPSET_LOCKDOWN is set or has to be triggered later
+	  (e.g. by the payload or the OS).
+
+	  NOTE: If you trigger the chipset lockdown unconditionally,
+	  you won't be able to write to the whole flash chip using the
+	  internal controller any more.
+
+endchoice

@@ -15,6 +15,7 @@
  * GNU General Public License for more details.
  */
 
+#include <commonlib/helpers.h>
 #include <console/console.h>
 #include <string.h>
 #include <arch/cpu.h>
@@ -1461,7 +1462,7 @@ static void test_timC(ramctr_timing * ctrl, int channel, int slotrank)
 	/* DRAM command ACT */
 	MCHBAR32(0x4220 + 0x400 * channel) = 0x1f006;
 	MCHBAR32(0x4230 + 0x400 * channel) =
-		(max((ctrl->tFAW >> 2) + 1, ctrl->tRRD) << 10)
+		(MAX((ctrl->tFAW >> 2) + 1, ctrl->tRRD) << 10)
 		| 4 | (ctrl->tRCD << 16);
 	MCHBAR32(0x4200 + 0x400 * channel) = (slotrank << 24) | (6 << 16);
 	MCHBAR32(0x4210 + 0x400 * channel) = 0x244;
@@ -1499,7 +1500,7 @@ static void test_timC(ramctr_timing * ctrl, int channel, int slotrank)
 	/* DRAM command ACT */
 	MCHBAR32(0x4224 + 0x400 * channel) = 0x1f006;
 	MCHBAR32(0x4234 + 0x400 * channel) =
-		(max(ctrl->tRRD, (ctrl->tFAW >> 2) + 1) << 10)
+		(MAX(ctrl->tRRD, (ctrl->tFAW >> 2) + 1) << 10)
 		| 8 | (ctrl->CAS << 16);
 	MCHBAR32(0x4204 + 0x400 * channel) = (slotrank << 24) | 0x60000;
 	MCHBAR32(0x4214 + 0x400 * channel) = 0x244;
@@ -1507,7 +1508,7 @@ static void test_timC(ramctr_timing * ctrl, int channel, int slotrank)
 	/* DRAM command RD */
 	MCHBAR32(0x4228 + 0x400 * channel) = 0x1f105;
 	MCHBAR32(0x4238 + 0x400 * channel) =
-		0x40011f4 | (max(ctrl->tRTP, 8) << 16);
+		0x40011f4 | (MAX(ctrl->tRTP, 8) << 16);
 	MCHBAR32(0x4208 + 0x400 * channel) = (slotrank << 24);
 	MCHBAR32(0x4218 + 0x400 * channel) = 0x242;
 
@@ -2101,7 +2102,7 @@ static int test_320c(ramctr_timing * ctrl, int channel, int slotrank)
 		/* DRAM command ACT */
 		MCHBAR32(0x4220 + 0x400 * channel) = 0x1f006;
 		MCHBAR32(0x4230 + 0x400 * channel) =
-			((max(ctrl->tRRD, (ctrl->tFAW >> 2) + 1)) << 10)
+			((MAX(ctrl->tRRD, (ctrl->tFAW >> 2) + 1)) << 10)
 			| 8 | (ctrl->tRCD << 16);
 		MCHBAR32(0x4200 + 0x400 * channel) =
 			(slotrank << 24) | ctr | 0x60000;
@@ -2118,7 +2119,7 @@ static int test_320c(ramctr_timing * ctrl, int channel, int slotrank)
 		/* DRAM command RD */
 		MCHBAR32(0x4228 + 0x400 * channel) = 0x1f105;
 		MCHBAR32(0x4238 + 0x400 * channel) =
-			0x4001020 | (max(ctrl->tRTP, 8) << 16);
+			0x4001020 | (MAX(ctrl->tRTP, 8) << 16);
 		MCHBAR32(0x4208 + 0x400 * channel) = (slotrank << 24);
 		MCHBAR32(0x4248 + 0x400 * channel) = 0x389abcd;
 		MCHBAR32(0x4218 + 0x400 * channel) = 0x20e42;
@@ -2662,7 +2663,7 @@ static int discover_edges_write_real(ramctr_timing *ctrl, int channel,
 				MCHBAR32(0x4220 + 0x400 * channel) = 0x1f006;
 				MCHBAR32(0x4230 + 0x400 * channel) =
 					0x4 | (ctrl->tRCD << 16) |
-					(max(ctrl->tRRD, (ctrl->tFAW >> 2) + 1)
+					(MAX(ctrl->tRRD, (ctrl->tFAW >> 2) + 1)
 					<< 10);
 				MCHBAR32(0x4200 + 0x400 * channel) =
 					(slotrank << 24) | 0x60000;
@@ -2679,7 +2680,7 @@ static int discover_edges_write_real(ramctr_timing *ctrl, int channel,
 				/* DRAM command RD */
 				MCHBAR32(0x4228 + 0x400 * channel) = 0x1f105;
 				MCHBAR32(0x4238 + 0x400 * channel) =
-					0x4005020 | (max(ctrl->tRTP, 8) << 16);
+					0x4005020 | (MAX(ctrl->tRTP, 8) << 16);
 				MCHBAR32(0x4208 + 0x400 * channel) =
 					slotrank << 24;
 				MCHBAR32(0x4218 + 0x400 * channel) = 0x242;
@@ -2717,9 +2718,9 @@ static int discover_edges_write_real(ramctr_timing *ctrl, int channel,
 					 rn.end, rn.start + ctrl->edge_offset[i],
 					 rn.end - ctrl->edge_offset[i]);
 				lower[lane] =
-					max(rn.start + ctrl->edge_offset[i], lower[lane]);
+					MAX(rn.start + ctrl->edge_offset[i], lower[lane]);
 				upper[lane] =
-					min(rn.end - ctrl->edge_offset[i], upper[lane]);
+					MIN(rn.end - ctrl->edge_offset[i], upper[lane]);
 				edges[lane] = (lower[lane] + upper[lane]) / 2;
 				if (rn.all || (lower[lane] > upper[lane])) {
 					printk(BIOS_EMERG, "edge write discovery failed: %d, %d, %d\n",
@@ -2787,7 +2788,7 @@ static void test_timC_write(ramctr_timing *ctrl, int channel, int slotrank)
 	/* DRAM command ACT */
 	MCHBAR32(0x4220 + 0x400 * channel) = 0x1f006;
 	MCHBAR32(0x4230 + 0x400 * channel) =
-		(max((ctrl->tFAW >> 2) + 1, ctrl->tRRD)
+		(MAX((ctrl->tFAW >> 2) + 1, ctrl->tRRD)
 		 << 10) | (ctrl->tRCD << 16) | 4;
 	MCHBAR32(0x4200 + 0x400 * channel) =
 		(slotrank << 24) | 0x60000;
@@ -2803,7 +2804,7 @@ static void test_timC_write(ramctr_timing *ctrl, int channel, int slotrank)
 	/* DRAM command RD */
 	MCHBAR32(0x4228 + 0x400 * channel) = 0x1f105;
 	MCHBAR32(0x4238 + 0x400 * channel) =
-		0x40011e0 | (max(ctrl->tRTP, 8) << 16);
+		0x40011e0 | (MAX(ctrl->tRTP, 8) << 16);
 	MCHBAR32(0x4208 + 0x400 * channel) = slotrank << 24;
 	MCHBAR32(0x4218 + 0x400 * channel) = 0x242;
 
@@ -2883,10 +2884,10 @@ int discover_timC_write(ramctr_timing *ctrl)
 							 rn.start + ctrl->timC_offset[i],
 							 rn.end - ctrl->timC_offset[i]);
 						lower[channel][slotrank][lane] =
-							max(rn.start + ctrl->timC_offset[i],
+							MAX(rn.start + ctrl->timC_offset[i],
 							    lower[channel][slotrank][lane]);
 						upper[channel][slotrank][lane] =
-							min(rn.end - ctrl->timC_offset[i],
+							MIN(rn.end - ctrl->timC_offset[i],
 							    upper[channel][slotrank][lane]);
 
 					}
@@ -2927,7 +2928,7 @@ void normalize_training(ramctr_timing * ctrl)
 		int delta;
 		mat = 0;
 		FOR_ALL_LANES mat =
-		    max(ctrl->timings[channel][slotrank].lanes[lane].timA, mat);
+		    MAX(ctrl->timings[channel][slotrank].lanes[lane].timA, mat);
 		printram("normalize %d, %d, %d: mat %d\n",
 		    channel, slotrank, lane, mat);
 
@@ -3080,8 +3081,8 @@ void set_4008c(ramctr_timing * ctrl)
 		int max_320c = -10000;
 
 		FOR_ALL_POPULATED_RANKS {
-			max_320c = max(ctrl->timings[channel][slotrank].val_320c, max_320c);
-			min_320c = min(ctrl->timings[channel][slotrank].val_320c, min_320c);
+			max_320c = MAX(ctrl->timings[channel][slotrank].val_320c, max_320c);
+			min_320c = MIN(ctrl->timings[channel][slotrank].val_320c, min_320c);
 		}
 
 		if (max_320c - min_320c > 51)

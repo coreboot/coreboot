@@ -17,6 +17,7 @@
 #include <cf9_reset.h>
 #include <device/mmio.h>
 #include <device/pci_ops.h>
+#include <commonlib/helpers.h>
 #include <console/console.h>
 #include <cpu/x86/cache.h>
 #include <delay.h>
@@ -364,15 +365,15 @@ static void sdram_detect_smallest_params(struct sysinfo *s)
 	u32 maxtrtp = 0;
 
 	FOR_EACH_POPULATED_DIMM(s->dimms, i) {
-		maxtras = max(maxtras, s->dimms[i].spd_data[30] * 1000);
-		maxtrp = max(maxtrp, (s->dimms[i].spd_data[27] * 1000) >> 2);
-		maxtrcd = max(maxtrcd, (s->dimms[i].spd_data[29] * 1000) >> 2);
-		maxtwr = max(maxtwr, (s->dimms[i].spd_data[36] * 1000) >> 2);
-		maxtrfc = max(maxtrfc, s->dimms[i].spd_data[42] * 1000 +
+		maxtras = MAX(maxtras, s->dimms[i].spd_data[30] * 1000);
+		maxtrp = MAX(maxtrp, (s->dimms[i].spd_data[27] * 1000) >> 2);
+		maxtrcd = MAX(maxtrcd, (s->dimms[i].spd_data[29] * 1000) >> 2);
+		maxtwr = MAX(maxtwr, (s->dimms[i].spd_data[36] * 1000) >> 2);
+		maxtrfc = MAX(maxtrfc, s->dimms[i].spd_data[42] * 1000 +
 				(s->dimms[i].spd_data[40] & 0xf));
-		maxtwtr = max(maxtwtr, (s->dimms[i].spd_data[37] * 1000) >> 2);
-		maxtrrd = max(maxtrrd, (s->dimms[i].spd_data[28] * 1000) >> 2);
-		maxtrtp = max(maxtrtp, (s->dimms[i].spd_data[38] * 1000) >> 2);
+		maxtwtr = MAX(maxtwtr, (s->dimms[i].spd_data[37] * 1000) >> 2);
+		maxtrrd = MAX(maxtrrd, (s->dimms[i].spd_data[28] * 1000) >> 2);
+		maxtrtp = MAX(maxtrtp, (s->dimms[i].spd_data[38] * 1000) >> 2);
 	}
 	/*
 	 * TODO: on ddr3 there might be some minimal required values for some
@@ -456,7 +457,7 @@ static void sdram_detect_ram_speed(struct sysinfo *s)
 	// Start with fastest common CAS
 	cas = 0;
 	highcas = msbp;
-	lowcas = max(lsbp, 5);
+	lowcas = MAX(lsbp, 5);
 
 	while (cas == 0 && highcas >= lowcas) {
 		FOR_EACH_POPULATED_DIMM(s->dimms, i) {

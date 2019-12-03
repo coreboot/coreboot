@@ -14,6 +14,7 @@
  */
 
 #include <device/mmio.h>
+#include <commonlib/helpers.h>
 #include <console/console.h>
 #include <fast_spi_def.h>
 #include <intelblocks/fast_spi.h>
@@ -157,11 +158,11 @@ static int exec_sync_hwseq_xfer(struct fast_spi_flash_ctx *ctx,
 static size_t get_xfer_len(const struct spi_flash *flash, uint32_t addr,
 			   size_t len)
 {
-	size_t xfer_len = min(len, SPIBAR_FDATA_FIFO_SIZE);
+	size_t xfer_len = MIN(len, SPIBAR_FDATA_FIFO_SIZE);
 	size_t bytes_left = ALIGN_UP(addr, flash->page_size) - addr;
 
 	if (bytes_left)
-		xfer_len = min(xfer_len, bytes_left);
+		xfer_len = MIN(xfer_len, bytes_left);
 
 	return xfer_len;
 }

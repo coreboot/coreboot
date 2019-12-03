@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <commonlib/helpers.h>
 #include <console/console.h>
 #include <spi_flash.h>
 #include <soc/southbridge.h>
@@ -31,7 +32,7 @@ static void spi_flash_addr(u32 addr, u8 *cmd)
 
 static int crop_chunk(unsigned int cmd_len, unsigned int buf_len)
 {
-	return min((SPI_FIFO_DEPTH - (cmd_len - 1)), buf_len);
+	return MIN((SPI_FIFO_DEPTH - (cmd_len - 1)), buf_len);
 }
 
 int fch_spi_flash_cmd_write(const u8 *cmd, size_t cmd_len, const void *data, size_t data_len)
@@ -192,7 +193,7 @@ static int fch_spi_flash_write(const struct spi_flash *flash, uint32_t offset, s
 
 	for (actual = start; actual < len; actual += chunk_len) {
 		byte_addr = offset % page_size;
-		chunk_len = min(len - actual, page_size - byte_addr);
+		chunk_len = MIN(len - actual, page_size - byte_addr);
 		chunk_len = crop_chunk(sizeof(cmd), chunk_len);
 
 		cmd[0] = spi_data_ptr->write_cmd;

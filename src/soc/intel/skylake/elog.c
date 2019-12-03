@@ -16,6 +16,7 @@
 
 #include <bootstate.h>
 #include <cbmem.h>
+#include <commonlib/helpers.h>
 #include <console/console.h>
 #include <device/mmio.h>
 #include <device/pci_ops.h>
@@ -156,7 +157,7 @@ static void pch_log_rp_wake_source(void)
 		{ PCH_DEV_PCIE24, 0x60, ELOG_WAKE_SOURCE_PME_PCIE24 },
 	};
 
-	maxports = min(CONFIG_MAX_ROOT_PORTS, ARRAY_SIZE(pme_status_info));
+	maxports = MIN(CONFIG_MAX_ROOT_PORTS, ARRAY_SIZE(pme_status_info));
 
 	for (i = 0; i < maxports; i++) {
 		dev = pme_status_info[i].dev;

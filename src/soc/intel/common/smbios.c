@@ -16,6 +16,7 @@
 #include <smbios.h>
 #include "smbios.h"
 #include <string.h>
+#include <commonlib/helpers.h>
 #include <console/console.h>
 #include <device/dram/ddr3.h>
 
@@ -63,7 +64,7 @@ void dimm_info_fill(struct dimm_info *dimm, u32 dimm_capacity, u8 ddr_type,
 
 	strncpy((char *)dimm->module_part_number,
 			module_part_num,
-			min(sizeof(dimm->module_part_number),
+			MIN(sizeof(dimm->module_part_number),
 				module_part_number_size));
 	if (module_serial_num)
 		memcpy(dimm->serial, module_serial_num,

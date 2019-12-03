@@ -1,8 +1,6 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2012 Advanced Micro Devices, Inc.
- *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; version 2 of the License.
@@ -13,35 +11,21 @@
  * GNU General Public License for more details.
  */
 
-#include <stdint.h>
-#include <device/pci_def.h>
-#include <arch/io.h>
-#include <device/pci_ops.h>
-
-#include <northbridge/amd/agesa/state_machine.h>
-#include <southbridge/amd/agesa/hudson/hudson.h>
-
+#include <amdblocks/acpimmio.h>
+#include <bootblock_common.h>
+#include <device/pnp_type.h>
 #include <superio/winbond/common/winbond.h>
 #include <superio/winbond/w83627uhg/w83627uhg.h>
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627UHG_SP1)
 
-void board_BeforeAgesa(struct sysinfo *cb)
+void bootblock_mainboard_early_init(void)
 {
 	volatile u32 *addr32;
 	u32 t32;
 
-	/* Set LPC decode enables. */
-	pci_devfn_t dev = PCI_DEV(0, 0x14, 3);
-	pci_write_config32(dev, 0x44, 0xff03ffd5);
-
-	/* Enable the AcpiMmio space */
-	outb(0x24, 0xcd6);
-	outb(0x1, 0xcd7);
-
 	/* Disable PCI-PCI bridge and release GPIO32/33 for other uses. */
-	outb(0xea, 0xcd6);
-	outb(0x1, 0xcd7);
+	pm_write8(0xea, 0x1);
 
 	/* Set auxiliary output clock frequency on OSCOUT1 pin to be 48MHz */
 	addr32 = (u32 *)0xfed80e28;

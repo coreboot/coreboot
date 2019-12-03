@@ -603,7 +603,8 @@ fam16_disable_stack_remote_read_exit:
     btr     $INVD_WBINVD, %eax            # Disable INVD -> WBINVD conversion
     _WRMSR
 
-    invd
+    # An invd here sometimes breaks AP CPU startup
+    wbinvd
 
     #Do Standard Family 16 work
     mov     $HWCR, %ecx                    # MSR:C001_0015h

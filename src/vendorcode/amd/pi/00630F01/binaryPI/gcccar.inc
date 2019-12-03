@@ -904,7 +904,8 @@ fam15_disable_stack_remote_read_exit:
     btr     $INVD_WBINVD, %eax            # Disable INVD -> WBINVD conversion
     _WRMSR
 
-    invd
+    # An invd here sometimes breaks AP CPU startup ?
+    wbinvd
 
     #.if (bh == 01h) || (bh == 03h)      ; Is this TN or KV?
     cmp   $01, %bh

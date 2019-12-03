@@ -1,0 +1,13 @@
+chip northbridge/intel/sandybridge
+	device domain 0 on
+		chip southbridge/intel/bd82x6x # Intel Series 7 Panther Point PCH
+			device pci 1f.0 on # PCI-LPC bridge
+				chip ec/lenovo/h8
+					register "has_wwan_detection" = "1"
+					register "wwan_gpio_num" = "70"
+					register "wwan_gpio_lvl" = "0"
+				end
+			end
+		end
+	end
+end

@@ -38,11 +38,9 @@ chip northbridge/intel/sandybridge
 
 		device pci 00.0 on end # Host bridge
 		device pci 01.0 on end # PCIe bridge for discrete graphics
-		device pci 02.0 on # Internal graphics VGA controller
-			subsystemid 0x17aa 0x21f5
-		end
+		device pci 02.0 on end # Internal graphics VGA controller
 
-		chip southbridge/intel/bd82x6x # Intel Series 6 Panther Point PCH
+		chip southbridge/intel/bd82x6x # Intel Series 7 Panther Point PCH
 			# GPI routing
 			#  0 No effect (default)
 			#  1 SMI# (if corresponding ALT_GPI_SMI_EN bit is also set)
@@ -78,19 +76,13 @@ chip northbridge/intel/sandybridge
 			device pci 16.0 on end # Management Engine Interface 1
 			device pci 16.1 off end # Management Engine Interface 2
 			device pci 16.2 off end # Management Engine IDE-R
-			device pci 16.3 on end # Management Engine KT
+			device pci 16.3 off end # Management Engine KT
 			device pci 19.0 on # Intel Gigabit Ethernet
 				subsystemid 0x17aa 0x21f3
 			end
 			device pci 1a.0 on end # USB2 EHCI #2
 			device pci 1b.0 on end # High Definition Audio
-			device pci 1c.0 on # PCIe Port #1
-				chip drivers/ricoh/rce822 # Ricoh cardreader
-					register "disable_mask" = "0x83"
-					register "sdwppol" = "1"
-					device pci 00.0 on end # Ricoh SD card reader
-				end
-			end
+			device pci 1c.0 on end # PCIe Port #1
 			device pci 1c.1 on end # PCIe Port #2
 			device pci 1c.2 on # PCIe Port #3
 				smbios_slot_desc "7" "3" "ExpressCard Slot" "8"
@@ -122,9 +114,9 @@ chip northbridge/intel/sandybridge
 					end
 
 					register "config0" = "0xa7"
-					register "config1" = "0x01"
+					register "config1" = "0x09"
 					register "config2" = "0xa0"
-					register "config3" = "0xe2"
+					register "config3" = "0xc2"
 
 					register "has_keyboard_backlight" = "1"
 
@@ -179,7 +171,7 @@ chip northbridge/intel/sandybridge
 				end
 			end
 			device pci 1f.5 off end # SATA Controller 2
-			device pci 1f.6 off end # Thermal
+			device pci 1f.6 on end # Thermal
 		end
 	end
 end

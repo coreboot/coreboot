@@ -95,63 +95,6 @@ chip soc/intel/skylake
 	register "PmConfigSlpSusMinAssert"	= "SLP_SUS_MIN_ASSERT_4S"
 	register "PmConfigSlpAMinAssert"	= "SLP_A_MIN_ASSERT_2S"
 
-	# VR Settings Configuration for 4 Domains
-	# ICC_MAX = 0 (Auto)
-	# Voltage limit 1.52V (not used on KBL-S and KBL-DT)
-	# Disable PS4 powerstate in S0ix, thus no package C10 support
-	# psi threshold is using FSP default values
-	register "domain_vr_config[VR_SYSTEM_AGENT]" = "{
-		.vr_config_enable = 1, \
-		.psi1threshold = VR_CFG_AMP(20),
-		.psi2threshold = VR_CFG_AMP(5),
-		.psi3threshold = VR_CFG_AMP(1),
-		.psi3enable = 1, \
-		.psi4enable = 0, \
-		.imon_slope = 0x0, \
-		.imon_offset = 0x0, \
-		.icc_max = 0, \
-		.voltage_limit = 1520 \
-	}"
-
-	register "domain_vr_config[VR_IA_CORE]" = "{
-		.vr_config_enable = 1, \
-		.psi1threshold = VR_CFG_AMP(20),
-		.psi2threshold = VR_CFG_AMP(5),
-		.psi3threshold = VR_CFG_AMP(1),
-		.psi3enable = 1, \
-		.psi4enable = 0, \
-		.imon_slope = 0x0, \
-		.imon_offset = 0x0, \
-		.icc_max = 0, \
-		.voltage_limit = 1520 \
-	}"
-
-	register "domain_vr_config[VR_GT_UNSLICED]" = "{
-		.vr_config_enable = 1, \
-		.psi1threshold = VR_CFG_AMP(20),
-		.psi2threshold = VR_CFG_AMP(5),
-		.psi3threshold = VR_CFG_AMP(1),
-		.psi3enable = 1, \
-		.psi4enable = 0, \
-		.imon_slope = 0x0, \
-		.imon_offset = 0x0, \
-		.icc_max = 0 ,\
-		.voltage_limit = 1520 \
-	}"
-
-	register "domain_vr_config[VR_GT_SLICED]" = "{
-		.vr_config_enable = 1, \
-		.psi1threshold = VR_CFG_AMP(20),
-		.psi2threshold = VR_CFG_AMP(5),
-		.psi3threshold = VR_CFG_AMP(1),
-		.psi3enable = 1, \
-		.psi4enable = 0, \
-		.imon_slope = 0x0, \
-		.imon_offset = 0x0, \
-		.icc_max = 0, \
-		.voltage_limit = 1520 \
-	}"
-
 	# No extra VR mailbox command
 	register "SendVrMbxCmd" = "0"
 

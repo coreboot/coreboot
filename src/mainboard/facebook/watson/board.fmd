@@ -20,7 +20,6 @@ FLASH@0xff000000 0x1000000 {
 		# This only exists to satisfy tools that specifically
 		# look for RO_VPD.
 		RO_VPD@0x30000 0x1000
-		UNUSED_4@0x31000 0x1cf000
-		COREBOOT(CBFS)@0x200000 0x800000
+		COREBOOT(CBFS)@0x31000 0x9cf000
 	}
 }

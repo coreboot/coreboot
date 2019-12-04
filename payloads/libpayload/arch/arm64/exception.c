@@ -31,7 +31,7 @@
 #include <libpayload.h>
 #include <stdint.h>
 
-u64 exception_stack[0x200] __attribute__((aligned(16)));
+u64 exception_stack[2*KiB] __attribute__((aligned(16)));
 u64 *exception_stack_end = exception_stack + ARRAY_SIZE(exception_stack);
 extern unsigned int test_exc;
 

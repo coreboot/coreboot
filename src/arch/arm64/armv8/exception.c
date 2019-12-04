@@ -36,7 +36,7 @@
 #include <console/console.h>
 #include <arch/lib_helpers.h>
 
-uint8_t exception_stack[0x200] __attribute__((aligned(16)));
+uint8_t exception_stack[2*KiB] __attribute__((aligned(16)));
 
 static const char *exception_names[NUM_EXC_VIDS] = {
 	[EXC_VID_CUR_SP_EL0_SYNC] = "_sync_sp_el0",

@@ -38,79 +38,46 @@
 #define SPSR_DEBUG           (1 << 9)
 #define SPSR_EXCEPTION_MASK  (SPSR_FIQ | SPSR_IRQ | SPSR_SERROR | SPSR_DEBUG)
 
-#define SCR_NS_SHIFT         0
-#define SCR_NS_MASK          (1 << SCR_NS_SHIFT)
-#define SCR_NS_ENABLE        (1 << SCR_NS_SHIFT)
-#define SCR_NS_DISABLE       (0 << SCR_NS_SHIFT)
-#define SCR_NS               SCR_NS_ENABLE
-#define SCR_RES1             (0x3 << 4)
-#define SCR_IRQ_SHIFT        2
-#define SCR_IRQ_MASK         (1 << SCR_IRQ_SHIFT)
-#define SCR_IRQ_ENABLE       (1 << SCR_IRQ_SHIFT)
-#define SCR_IRQ_DISABLE      (0 << SCR_IRQ_SHIFT)
-#define SCR_FIQ_SHIFT        2
-#define SCR_FIQ_MASK         (1 << SCR_FIQ_SHIFT)
-#define SCR_FIQ_ENABLE       (1 << SCR_FIQ_SHIFT)
-#define SCR_FIQ_DISABLE      (0 << SCR_FIQ_SHIFT)
-#define SCR_EA_SHIFT         3
-#define SCR_EA_MASK          (1 << SCR_EA_SHIFT)
-#define SCR_EA_ENABLE        (1 << SCR_EA_SHIFT)
-#define SCR_EA_DISABLE       (0 << SCR_EA_SHIFT)
-#define SCR_SMD_SHIFT        7
-#define SCR_SMD_MASK         (1 << SCR_SMD_SHIFT)
-#define SCR_SMD_DISABLE      (1 << SCR_SMD_SHIFT)
-#define SCR_SMD_ENABLE       (0 << SCR_SMD_SHIFT)
-#define SCR_HVC_SHIFT        8
-#define SCR_HVC_MASK         (1 << SCR_HVC_SHIFT)
-#define SCR_HVC_DISABLE      (0 << SCR_HVC_SHIFT)
-#define SCR_HVC_ENABLE       (1 << SCR_HVC_SHIFT)
-#define SCR_SIF_SHIFT        9
-#define SCR_SIF_MASK         (1 << SCR_SIF_SHIFT)
-#define SCR_SIF_ENABLE       (1 << SCR_SIF_SHIFT)
-#define SCR_SIF_DISABLE      (0 << SCR_SIF_SHIFT)
-#define SCR_RW_SHIFT         10
-#define SCR_RW_MASK          (1 << SCR_RW_SHIFT)
-#define SCR_LOWER_AARCH64    (1 << SCR_RW_SHIFT)
-#define SCR_LOWER_AARCH32    (0 << SCR_RW_SHIFT)
-#define SCR_ST_SHIFT         11
-#define SCR_ST_MASK          (1 << SCR_ST_SHIFT)
-#define SCR_ST_ENABLE        (1 << SCR_ST_SHIFT)
-#define SCR_ST_DISABLE       (0 << SCR_ST_SHIFT)
-#define SCR_TWI_SHIFT        12
-#define SCR_TWI_MASK         (1 << SCR_TWI_SHIFT)
-#define SCR_TWI_ENABLE       (1 << SCR_TWI_SHIFT)
-#define SCR_TWI_DISABLE      (0 << SCR_TWI_SHIFT)
-#define SCR_TWE_SHIFT        13
-#define SCR_TWE_MASK         (1 << SCR_TWE_SHIFT)
-#define SCR_TWE_ENABLE       (1 << SCR_TWE_SHIFT)
-#define SCR_TWE_DISABLE      (0 << SCR_TWE_SHIFT)
+#define SCR_NS		(1 << 0)	/* EL0/1 are non-secure		*/
+#define SCR_IRQ		(1 << 1)	/* Take IRQs in EL3		*/
+#define SCR_FIQ		(1 << 2)	/* Take FIQs in EL3		*/
+#define SCR_EA		(1 << 3)	/* Take EA/SError in EL3	*/
+#define SCR_SMD		(1 << 7)	/* Disable SMC instruction	*/
+#define SCR_HCE		(1 << 8)	/* Enable HVC instruction	*/
+#define SCR_SIF		(1 << 9)	/* Forbid insns from NS memory	*/
+#define SCR_RW		(1 << 10)	/* Lower ELs are AArch64	*/
+#define SCR_ST		(1 << 11)	/* Don't trap secure CNTPS	*/
+#define SCR_TWI		(1 << 12)	/* Trap WFI to EL3		*/
+#define SCR_TWE		(1 << 13)	/* Trap WFE to EL3		*/
+#define SCR_TLOR	(1 << 14)	/* Trap LOR accesses to EL3	*/
+#define SCR_TERR	(1 << 15)	/* Trap ERR accesses to EL3	*/
+#define SCR_APK		(1 << 16)	/* Don't trap ptrauth keys	*/
+#define SCR_API		(1 << 17)	/* Don't trap ptrauth insn	*/
+#define SCR_EEL2	(1 << 18)	/* Enable secure EL2		*/
+#define SCR_EASE	(1 << 19)	/* Sync EAs use SError vector	*/
+#define SCR_NMEA	(1 << 20)	/* Disallow EL3 SError masking	*/
+#define SCR_FIEN	(1 << 21)	/* Don't trap EXRPFG		*/
+#define SCR_RES1	(3 << 4)
 
 #define HCR_RW_SHIFT         31
 #define HCR_LOWER_AARCH64    (1 << HCR_RW_SHIFT)
 #define HCR_LOWER_AARCH32    (0 << HCR_RW_SHIFT)
 
-#define SCTLR_MMU_ENABLE     1
-#define SCTLR_MMU_DISABLE    0
-#define SCTLR_ACE_SHIFT      1
-#define SCTLR_ACE_ENABLE     (1 << SCTLR_ACE_SHIFT)
-#define SCTLR_ACE_DISABLE    (0 << SCTLR_ACE_SHIFT)
-#define SCTLR_CACHE_SHIFT    2
-#define SCTLR_CACHE_ENABLE   (1 << SCTLR_CACHE_SHIFT)
-#define SCTLR_CACHE_DISABLE  (0 << SCTLR_CACHE_SHIFT)
-#define SCTLR_SAE_SHIFT      3
-#define SCTLR_SAE_ENABLE     (1 << SCTLR_SAE_SHIFT)
-#define SCTLR_SAE_DISABLE    (0 << SCTLR_SAE_SHIFT)
+#define SCTLR_M		(1 << 0)	/* MMU enable			*/
+#define SCTLR_A		(1 << 1)	/* Alignment check enable	*/
+#define SCTLR_C		(1 << 2)	/* Data/unified cache enable	*/
+#define SCTLR_SA	(1 << 3)	/* Stack alignment check enable	*/
+#define SCTLR_NAA	(1 << 6)	/* non-aligned access STA/LDR	*/
+#define SCTLR_I		(1 << 12)	/* Instruction cache enable	*/
+#define SCTLR_ENDB	(1 << 13)	/* Pointer auth (data B)	*/
+#define SCTLR_WXN	(1 << 19)	/* Write permission implies XN	*/
+#define SCTLR_IESB	(1 << 21)	/* Implicit error sync event	*/
+#define SCTLR_EE	(1 << 25)	/* Exception endianness	(BE)	*/
+#define SCTLR_ENDA	(1 << 27)	/* Pointer auth (data A)	*/
+#define SCTLR_ENIB	(1 << 30)	/* Pointer auth (insn B)	*/
+#define SCTLR_ENIA	(1 << 31)	/* Pointer auth (insn A)	*/
 #define SCTLR_RES1           ((0x3 << 4) | (0x1 << 11) | (0x1 << 16) |	\
 			      (0x1 << 18) | (0x3 << 22) | (0x3 << 28))
-#define SCTLR_ICE_SHIFT      12
-#define SCTLR_ICE_ENABLE     (1 << SCTLR_ICE_SHIFT)
-#define SCTLR_ICE_DISABLE    (0 << SCTLR_ICE_SHIFT)
-#define SCTLR_WXN_SHIFT      19
-#define SCTLR_WXN_ENABLE     (1 << SCTLR_WXN_SHIFT)
-#define SCTLR_WXN_DISABLE    (0 << SCTLR_WXN_SHIFT)
-#define SCTLR_ENDIAN_SHIFT   25
-#define SCTLR_LITTLE_END     (0 << SCTLR_ENDIAN_SHIFT)
-#define SCTLR_BIG_END        (1 << SCTLR_ENDIAN_SHIFT)
 
 #define CPTR_EL3_TCPAC_SHIFT	(31)
 #define CPTR_EL3_TTA_SHIFT	(20)

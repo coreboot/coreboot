@@ -99,15 +99,14 @@ ENDPROC(mmu_disable)
 
 /*
  * Bring an ARMv8 processor we just gained control of (e.g. from IROM) into a
- * known state regarding caches/SCTLR/PSTATE. Completely invalidates
+ * known state regarding caches/SCTLR/SCR/PSTATE. Completely invalidates
  * icache/dcache, disables MMU and dcache (if active), and enables unaligned
- * accesses, icache and branch prediction (if inactive). Seeds the stack and
- * initializes SP_EL0. Clobbers R22 and R23.
+ * accesses, icache. Seeds stack and initializes SP_EL0. Clobbers R22 and R23.
  */
 ENTRY(arm64_init_cpu)
-	/* Initialize PSTATE (unmask all exceptions, select SP_EL0). */
+	/* Initialize PSTATE (mask all exceptions, select SP_EL0). */
 	msr	SPSel, #0
-	msr	DAIFClr, #0xf
+	msr	DAIFSet, #0xf
 
 	/* TODO: This is where we'd put non-boot CPUs into WFI if needed. */
 
@@ -116,23 +115,24 @@ ENTRY(arm64_init_cpu)
 	/* TODO: Assert that we always start running at EL3 */
 	mrs	x22, sctlr_el3
 
-	/* Activate ICache (12) already for speed during cache flush below. */
-	orr	x22, x22, #(1 << 12)
+	/* Activate ICache already for speed during cache flush below. */
+	orr	x22, x22, #SCTLR_I
 	msr	sctlr_el3, x22
 	isb
 
 	/* Invalidate dcache */
 	bl	dcache_invalidate_all
 
-	/* Deactivate MMU (0), Alignment Check (1) and DCache (2) */
-	and	x22, x22, # ~(1 << 0) & ~(1 << 1) & ~(1 << 2)
-	/* Activate Stack Alignment (3) because why not */
-	orr	x22, x22, #(1 << 3)
-	/* Set to little-endian (25) */
-	and	x22, x22, # ~(1 << 25)
-	/* Deactivate write-xor-execute enforcement (19) */
-	and	x22, x22, # ~(1 << 19)
+	/* Reinitialize SCTLR from scratch to known-good state.
+	   This may disable MMU or DCache. */
+	ldr	w22, =(SCTLR_RES1 | SCTLR_I | SCTLR_SA)
 	msr	sctlr_el3, x22
+
+	/* Initialize SCR to unmask all interrupts (so that if we get a spurious
+	   IRQ/SError we'll see it when it happens, not hang in BL31). This will
+	   only have an effect after we DAIFClr in exception_init(). */
+	mov	x22, #SCR_RES1 | SCR_IRQ | SCR_FIQ | SCR_EA
+	msr	scr_el3, x22
 
 	/* Invalidate icache and TLB for good measure */
 	ic	iallu

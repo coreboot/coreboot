@@ -58,7 +58,7 @@ Supported compression algorithms:
 The config entries contain a compatible string, that is used to find a
 matching config.
 
-The following mainboard specific funtions provide the BOARDID and SKUID:
+The following mainboard specific functions provide the BOARDID and SKUID:
 
 ```c
 uint32_t board_id(void);

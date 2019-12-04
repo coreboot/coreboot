@@ -267,7 +267,7 @@ static void pcie_update_device_tree(unsigned int devfn0, int num_funcs)
 	devfn = devfn0 + inc;
 
 	/*
-	 * Increase funtion by 1.
+	 * Increase function by 1.
 	 * Then find first enabled device to replace func0
 	 * as that port was move to func0.
 	 */

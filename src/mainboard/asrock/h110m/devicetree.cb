@@ -219,10 +219,8 @@ chip soc/intel/skylake
 
 	# Enable Root port 6(x1) for LAN.
 	register "PcieRpEnable[5]" = "1"
-	# Enable CLKREQ#
-	register "PcieRpClkReqSupport[5]" = "1"
-	# Use SRCCLKREQ1#
-	register "PcieRpClkReqNumber[5]" = "1"
+	# Disable CLKREQ#, since onboard LAN is always present
+	register "PcieRpClkReqSupport[5]" = "0"
 	# Enable Advanced Error Reporting
 	register "PcieRpAdvancedErrorReporting[5]" = "1"
 	# Enable Latency Tolerance Reporting Mechanism

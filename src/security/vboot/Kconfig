@@ -307,8 +307,8 @@ config GBB_FLAG_FORCE_DEV_BOOT_LEGACY
 	bool "Allow booting to legacy in dev mode even if dev_boot_legacy=0"
 	default n
 
-config GBB_FLAG_FAFT_KEY_OVERIDE
-	bool "Allow booting using alternative keys for FAFT servo testing"
+config GBB_FLAG_RUNNING_FAFT
+	bool "Running FAFT tests; used as a hint to disable other debug features"
 	default n
 
 config GBB_FLAG_DISABLE_EC_SOFTWARE_SYNC

@@ -188,7 +188,7 @@ static uint32_t set_space(const char *name, uint32_t index, const void *data,
 	if (rv != TPM_SUCCESS)
 		return rv;
 
-	return safe_write(index, data, length);
+	return write_secdata(index, data, length);
 }
 
 static uint32_t set_firmware_space(const void *firmware_blob)
@@ -398,6 +398,11 @@ static uint32_t factory_initialize_tpm(struct vb2_context *ctx)
 	if (result != TPM_SUCCESS)
 		return result;
 
+	/* _factory_initialize_tpm() writes initial secdata values to TPM
+	   immediately, so let vboot know that it's up to date now. */
+	ctx->flags &= ~(VB2_CONTEXT_SECDATA_FIRMWARE_CHANGED |
+			VB2_CONTEXT_SECDATA_KERNEL_CHANGED);
+
 	VBDEBUG("TPM: factory initialization successful\n");
 
 	return TPM_SUCCESS;
@@ -410,14 +415,11 @@ uint32_t antirollback_read_space_firmware(struct vb2_context *ctx)
 	/* Read the firmware space. */
 	rv = read_space_firmware(ctx);
 	if (rv == TPM_E_BADINDEX) {
-		/*
-		 * This seems the first time we've run. Initialize the TPM.
-		 */
+		/* This seems the first time we've run. Initialize the TPM. */
 		VBDEBUG("TPM: Not initialized yet.\n");
 		RETURN_ON_FAILURE(factory_initialize_tpm(ctx));
 	} else if (rv != TPM_SUCCESS) {
 		VBDEBUG("TPM: Firmware space in a bad state; giving up.\n");
-		//RETURN_ON_FAILURE(factory_initialize_tpm(ctx));
 		return TPM_E_CORRUPTED_STATE;
 	}
 

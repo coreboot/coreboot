@@ -265,10 +265,10 @@ void vboot_save_nvdata_only(struct vb2_context *ctx)
 
 void vboot_save_data(struct vb2_context *ctx)
 {
-	if (ctx->flags & VB2_CONTEXT_SECDATA_CHANGED) {
+	if (ctx->flags & VB2_CONTEXT_SECDATA_FIRMWARE_CHANGED) {
 		printk(BIOS_INFO, "Saving secdata\n");
 		antirollback_write_space_firmware(ctx);
-		ctx->flags &= ~VB2_CONTEXT_SECDATA_CHANGED;
+		ctx->flags &= ~VB2_CONTEXT_SECDATA_FIRMWARE_CHANGED;
 	}
 
 	vboot_save_nvdata_only(ctx);

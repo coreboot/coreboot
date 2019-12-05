@@ -15,22 +15,19 @@
  * GNU General Public License for more details.
  */
 
+/* Bits 31:28 - Codec Address */
+/* Bits 27:20 - NID */
+/* Bits 19:8 - Verb ID */
+/* Bits 7:0  - Payload */
 
 #include <device/azalia_device.h>
 
 const u32 cim_verb_data[] = {
-	/* coreboot specific header */
-	0x10ec0269,	// Codec Vendor / Device ID: Realtek ALC269VC
-	0x17aa21fa,	// Subsystem ID
-	12,		// Number of 4 dword sets
-
-	/* Bits 31:28 - Codec Address */
-	/* Bits 27:20 - NID */
-	/* Bits 19:8 - Verb ID */
-	/* Bits 7:0  - Payload */
-
-	/* NID 0x01 - NodeInfo */
-	AZALIA_SUBVENDOR(0x0, 0x17AA21FA),
+	/* --- Codec #0 --- */
+	0x10ec0269,	/* Codec Vendor / Device ID: Realtek ALC269VC */
+	0x17aa21fa,	/* Subsystem ID */
+	12,		/* Number of 4 dword sets */
+	AZALIA_SUBVENDOR(0x0, 0x17aa21fa),
 
 	/*
 	 * PIN_CFG:
@@ -64,61 +61,49 @@ const u32 cim_verb_data[] = {
 	 * 3:0   Sequence
 	 *   For stream channel to in/out mapping
 	 */
-
-	/*
-	 * NID 0x12 - Digital MIC
-	 * Fixed function, mic in, digital
-	 */
+	/* Digital MIC:	Fixed function, mic in, digital */
 	AZALIA_PIN_CFG(0x0, 0x12, 0x90a60940),
-	/*
-	 * NID 0x14 - SPK out
-	 * Fixed function, speaker, analog
-	 */
+
+	/* SPK out:	Fixed function, speaker, analog */
 	AZALIA_PIN_CFG(0x0, 0x14, 0x90170110),
-	/*
-	 * NID 0x15 - HP out
-	 * Location left, headphone out, 1/8" jack, black
-	 */
+
+	/* HP out:	Location left, headphone out, 1/8" jack, black */
 	AZALIA_PIN_CFG(0x0, 0x15, 0x03211020),
-	/* NID 0x17 - ?  (Unconnected) */
+
+	/* Unknown:	(Unconnected) */
 	AZALIA_PIN_CFG(0x0, 0x17, 0x411111f0),
-	/*
-	 * NID 0x18 - MIC1 in
-	 * Location left, mic in, 1/8" jack, black
-	 */
+
+	/* MIC1 in:	Location left, mic in, 1/8" jack, black */
 	AZALIA_PIN_CFG(0x0, 0x18, 0x03a11830),
-	/* NID 0x19 - MIC2 in (Unconnected) */
+
+	/* MIC2 in:	(Unconnected) */
 	AZALIA_PIN_CFG(0x0, 0x19, 0x411111f0),
-	/* NID 0x1a - Line1 in (Unconnected) */
+
+	/* Line1 in:	(Unconnected) */
 	AZALIA_PIN_CFG(0x0, 0x1a, 0x411111f0),
-	/* NID 0x1b - Line2 in (Unconnected) */
+
+	/* Line2 in:	(Unconnected) */
 	AZALIA_PIN_CFG(0x0, 0x1b, 0x411111f0),
-	/* NID 0x1d - PCBEEP */
+
+	/* PCBEEP */
 	AZALIA_PIN_CFG(0x0, 0x1d, 0x40148605),
-	/* NID 0x1e - S/PDIF out (Unconnected) */
+
+	/* S/PDIF out:	(Unconnected) */
 	AZALIA_PIN_CFG(0x0, 0x1e, 0x411111f0),
 
-	0x01470740,	// Enable output for NID 0x14 (Speaker out)
-	0x015707C0,	// Enable output & HP amp for NID 0x15 (HP out)
-	0x01870724,	// Enable Vrefout NID 0x18 (MIC1 in)
-	0x00170500,	// Set power state to D0
+	0x01470740,	/* Enable output for NID 0x14 (Speaker out) */
+	0x015707C0,	/* Enable output & HP amp for NID 0x15 (HP out) */
+	0x01870724,	/* Enable Vrefout NID 0x18 (MIC1 in) */
+	0x00170500,	/* Set power state to D0 */
 
-	/* coreboot specific header */
-	0x80862806,	// Codec Vendor / Device ID: Intel PantherPoint HDMI
-	0x80860101,	// Subsystem ID
-	4,		// Number of IDs
-
-	/* NID 0x01, HDA Codec Subsystem ID Verb Table: 0x80860101 */
+	/* --- Codec #3 --- */
+	0x80862806,	/* Codec Vendor / Device ID: Intel PantherPoint HDMI */
+	0x80860101,	/* Subsystem ID */
+	4,		/* Number of 4 dword sets */
 	AZALIA_SUBVENDOR(0x3, 0x80860101),
-
-	/* Pin Complex (NID 0x05) Digital Out at Int HDMI */
 	AZALIA_PIN_CFG(0x3, 0x05, 0x18560010),
-
-	/* Pin Complex (NID 0x06) Digital Out at Int HDMI */
 	AZALIA_PIN_CFG(0x3, 0x06, 0x18560020),
-
-	/* Pin Complex (NID 0x07) Digital Out at Int HDMI */
-	AZALIA_PIN_CFG(0x3, 0x07, 0x58560030)
+	AZALIA_PIN_CFG(0x3, 0x07, 0x58560030),
 };
 
 const u32 pc_beep_verbs[] = {

@@ -18,10 +18,9 @@
 #include <device/azalia_device.h>
 
 const u32 cim_verb_data[] = {
-	/* coreboot specific header ALC887 */
-	0x10ec0887, /* Codec Vendor / Device ID: Realtek */
-	0x10438445, /* Subsystem ID */
-	15, /* Number of 4 dword sets */
+	0x10ec0887,	/* Codec Vendor / Device ID: Realtek ALC887 */
+	0x10438445,	/* Subsystem ID */
+	15,		/* Number of 4 dword sets */
 	AZALIA_SUBVENDOR(0x0, 0x10438445),
 	AZALIA_PIN_CFG(0x0, 0x11, 0x40000000),
 	AZALIA_PIN_CFG(0x0, 0x12, 0x411111f0),
@@ -38,20 +37,12 @@ const u32 cim_verb_data[] = {
 	AZALIA_PIN_CFG(0x0, 0x1e, 0x411111f0),
 	AZALIA_PIN_CFG(0x0, 0x1f, 0x411111f0),
 
-	/* coreboot specific header */
-	0x80862809, /* Codec Vendor / Device ID: Intel Skylake HDMI */
-	0x80860101,
-	4,
-	/* NID 0x01, HDA Codec Subsystem ID Verb Table: 0x80860101 */
+	0x80862809,	/* Codec Vendor / Device ID: Intel Skylake HDMI */
+	0x80860101,	/* Subsystem ID */
+	4,		/* Number of 4 dword sets */
 	AZALIA_SUBVENDOR(0x2, 0x80860101),
-
-	/* Pin Complex (NID 0x05) Digital Out at Int HDMI */
 	AZALIA_PIN_CFG(0x2, 0x05, 0x18560010),
-
-	/* Pin Complex (NID 0x06) Digital Out at Int HDMI */
 	AZALIA_PIN_CFG(0x2, 0x06, 0x18560020),
-
-	/* Pin Complex (NID 0x07) Digital Out at Int HDMI */
 	AZALIA_PIN_CFG(0x2, 0x07, 0x18560030)
 };
 

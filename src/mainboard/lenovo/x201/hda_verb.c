@@ -17,58 +17,27 @@
 #include <device/azalia_device.h>
 
 const u32 cim_verb_data[] = {
-	/* coreboot specific header */
-	0x14F15069,	/* Codec Vendor / Device ID: Conexant CX20585 */
-	0x17AA2155,	/* Subsystem ID  */
+	0x14f15069,	/* Codec Vendor / Device ID: Conexant CX20585 */
+	0x17aa2155,	/* Subsystem ID  */
 	11,		/* Number of 4 dword sets */
-
-	/* NID 0x01: Subsystem ID.  */
-	AZALIA_SUBVENDOR(0x0, 0x17AA2155),
-
-	/* NID 0x19: Headphone jack.  */
-	AZALIA_PIN_CFG(0x0, 0x19, 0x042140F0),
-
-	/* NID 0x1A: Dock mic jack.  */
-	AZALIA_PIN_CFG(0x0, 0x1A, 0x61A190F0),
-
-	/* NID 0x1B: Mic jack.  */
-	AZALIA_PIN_CFG(0x0, 0x1B, 0x04A190F0),
-
-	/* NID 0x1C: Dock headphone jack.  */
-	AZALIA_PIN_CFG(0x0, 0x1C, 0x612140F0),
-
-	/* NID 0x1D: EAPD detect.  */
-	AZALIA_PIN_CFG(0x0, 0x1D, 0x601700F0),
-
-	/* NID 0x1E  */
-	AZALIA_PIN_CFG(0x0, 0x1E, 0x40F001F0),
-
-	/* NID 0x1F  */
-	AZALIA_PIN_CFG(0x0, 0x1F, 0x901701F0),
-
-	/* NID 0x20  */
-	AZALIA_PIN_CFG(0x0, 0x20, 0x40F001F0),
-
-	/* NID 0x22  */
-	AZALIA_PIN_CFG(0x0, 0x22, 0x40F001F0),
-
-	/* NID 0x23: Internal mic boost volume.  */
-	AZALIA_PIN_CFG(0x0, 0x23, 0x90A601F0),
+	AZALIA_SUBVENDOR(0x0, 0x17aa2155),
+	AZALIA_PIN_CFG(0x0, 0x19, 0x042140f0),	/* Headphone jack */
+	AZALIA_PIN_CFG(0x0, 0x1a, 0x61a190f0),	/* Dock mic jack */
+	AZALIA_PIN_CFG(0x0, 0x1b, 0x04a190f0),	/* Mic jack */
+	AZALIA_PIN_CFG(0x0, 0x1c, 0x612140f0),	/* Dock headphone jack */
+	AZALIA_PIN_CFG(0x0, 0x1d, 0x601700f0),	/* EAPD detect */
+	AZALIA_PIN_CFG(0x0, 0x1e, 0x40f001f0),
+	AZALIA_PIN_CFG(0x0, 0x1f, 0x901701f0),
+	AZALIA_PIN_CFG(0x0, 0x20, 0x40f001f0),
+	AZALIA_PIN_CFG(0x0, 0x22, 0x40f001f0),
+	AZALIA_PIN_CFG(0x0, 0x23, 0x90a601f0),	/* Internal mic boost volume */
 
 	0x80862804,	/* Codec Vendor / Device ID: Intel Ibexpeak HDMI.  */
 	0x17aa21b5,	/* Subsystem ID  */
 	4,		/* Number of 4 dword sets */
-
-	/* NID 0x01, HDA Codec Subsystem ID Verb Table: 0x17aa21b5 */
-	AZALIA_SUBVENDOR(0x3, 0x17AA21B5),
-
-	/* NID 0x04.  */
+	AZALIA_SUBVENDOR(0x3, 0x17aa21b5),
 	AZALIA_PIN_CFG(0x3, 0x04, 0x58560010),
-
-	/* NID 0x05.  */
 	AZALIA_PIN_CFG(0x3, 0x05, 0x18560020),
-
-	/* NID 0x06.  */
 	AZALIA_PIN_CFG(0x3, 0x06, 0x58560030),
 };
 

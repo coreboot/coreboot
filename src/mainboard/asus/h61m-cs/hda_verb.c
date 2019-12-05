@@ -19,9 +19,9 @@
 #include <device/azalia_device.h>
 
 const u32 cim_verb_data[] = {
-	0x10ec0887, /* Codec Vendor / Device ID: Realtek */
-	0x10438445, /* Subsystem ID */
-	15, /* Number of 4 dword sets */
+	0x10ec0887,	/* Codec Vendor / Device ID: Realtek */
+	0x10438445,	/* Subsystem ID */
+	15,		/* Number of 4 dword sets */
 	AZALIA_SUBVENDOR(0x0, 0x10438445),
 	AZALIA_PIN_CFG(0x0, 0x11, 0x40330000),
 	AZALIA_PIN_CFG(0x0, 0x12, 0x411111f0),

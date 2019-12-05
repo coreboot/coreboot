@@ -16,8 +16,6 @@
 #ifndef SUPERIO_SMSC_LPC47N207_H
 #define SUPERIO_SMSC_LPC47N207_H
 
-#include <stdint.h>
-
 void try_enabling_LPC47N207_uart(void);
 
 #endif /* SUPERIO_SMSC_LPC47N207_H */

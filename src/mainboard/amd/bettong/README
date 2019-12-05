@@ -21,5 +21,5 @@ Changes from last version:
 10. Fix the PCIe lane map.
 11. Lower the TOM to give more MMIO space.
 12. Add USB device.
-13. Set the USB3 port as unremoveable.
+13. Set the USB3 port as irremovable.
 14. Update AGESA to CarrizoPI 1.1.0.1.

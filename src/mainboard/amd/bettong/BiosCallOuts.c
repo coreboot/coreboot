@@ -100,7 +100,7 @@ AGESA_STATUS Fch_Oem_config(UINT32 Func, UINTN FchData, VOID *ConfigPtr)
 			FchParams_env->Usb.Xhci0Enable = FALSE;
 
 		FchParams_env->Usb.Xhci1Enable = FALSE;
-		FchParams_env->Usb.USB30PortInit = 8; /* 8: If USB3 port is unremoveable. */
+		FchParams_env->Usb.USB30PortInit = 8; /* 8: If USB3 port is irremovable. */
 
 		/* sata configuration */
 		/* SD configuration */

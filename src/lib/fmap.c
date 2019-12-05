@@ -36,8 +36,6 @@ static struct mem_region_device fmap_cache;
 			printk(__VA_ARGS__); \
 	} while (0)
 
-DECLARE_OPTIONAL_REGION(fmap_cache);
-
 uint64_t get_fmap_flash_offset(void)
 {
 	return FMAP_OFFSET;
@@ -68,14 +66,6 @@ static void setup_preram_cache(struct mem_region_device *cache_mrdev)
 		   so print a warning. */
 		print_once(BIOS_WARNING,
 			"WARNING: Post-RAM FMAP access too early for cache!\n");
-		return;
-	}
-
-	if (REGION_SIZE(fmap_cache) == 0) {
-		/* If you see this you should add FMAP_CACHE() to your memlayout
-		   (or select NO_FMAP_CACHE if you can't afford the 2K). */
-		print_once(BIOS_ERR,
-			"ERROR: FMAP_CACHE enabled but no region provided!\n");
 		return;
 	}
 

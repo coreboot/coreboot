@@ -78,7 +78,7 @@
 
 #define FMAP_CACHE(addr, sz) \
 	REGION(fmap_cache, addr, sz, 4) \
-	_ = ASSERT(sz == 0 || sz >= FMAP_SIZE, \
+	_ = ASSERT(sz >= FMAP_SIZE, \
 		   STR(FMAP does not fit in FMAP_CACHE! (sz < FMAP_SIZE)));
 
 #if ENV_ROMSTAGE_OR_BEFORE

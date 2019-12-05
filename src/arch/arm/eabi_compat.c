@@ -14,7 +14,6 @@
  * Utility functions needed for (some) EABI conformant tool chains.
  */
 
-#include <stdint.h>
 #include <stddef.h>
 #include <string.h>
 #include <console/console.h>

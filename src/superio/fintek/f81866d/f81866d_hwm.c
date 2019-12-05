@@ -17,7 +17,7 @@
  */
 
 /* Setup only for Fan2
- * Todo: Add support for Fan1 and Fan3
+ * TODO: Add support for Fan1 and Fan3
  */
 
 #include <console/console.h>

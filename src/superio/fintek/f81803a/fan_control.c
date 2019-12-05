@@ -159,16 +159,16 @@ int set_sensor_type(u16 base_address, external_sensor sensor,
 	switch (sensor) {
 	case EXTERNAL_SENSOR1:
 		if (sensor_status & TP_EXTERNAL_SENSOR1_OPEN) {
-			printk(BIOS_WARNING, "Sensor 1 disconected!\n");
-			return HWM_STATUS_WARNING_SENSOR_DISCONECTED;
+			printk(BIOS_WARNING, "Sensor 1 disconnected!\n");
+			return HWM_STATUS_WARNING_SENSOR_DISCONNECTED;
 		}
 		hwm_reg_modify(base_address, TP_SENSOR_TYPE,
 			TP_SENSOR1_TYPE_SHIFT, TP_SENSOR_TYPE_MASK, type);
 		break;
 	case EXTERNAL_SENSOR2:
 		if (sensor_status & TP_EXTERNAL_SENSOR2_OPEN) {
-			printk(BIOS_WARNING, "Sensor 2 disconected!\n");
-			return HWM_STATUS_WARNING_SENSOR_DISCONECTED;
+			printk(BIOS_WARNING, "Sensor 2 disconnected!\n");
+			return HWM_STATUS_WARNING_SENSOR_DISCONNECTED;
 		}
 		hwm_reg_modify(base_address, TP_SENSOR_TYPE,
 			TP_SENSOR2_TYPE_SHIFT, TP_SENSOR_TYPE_MASK, type);

@@ -22,7 +22,7 @@
 #include <device/pnp.h>
 #include "pilot.h"
 
-/* Pilot uses 0x5A/0xA5 pattern to actiavte deactivate config access. */
+/* Pilot uses 0x5A/0xA5 pattern to activate deactivate config access. */
 void pnp_enter_ext_func_mode(pnp_devfn_t dev)
 {
 	u16 port = dev >> 8;

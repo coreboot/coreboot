@@ -1,0 +1,6 @@
+Vendor name: Facebook
+Board name: Monolith System
+Category: misc
+ROM protocol: SPI
+ROM socketed: n
+Flashrom support: y

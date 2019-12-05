@@ -1,0 +1,90 @@
+if BOARD_FACEBOOK_MONOLITH
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select BOARD_ROMSIZE_KB_16384
+	select HAVE_ACPI_RESUME
+	select HAVE_ACPI_TABLES
+	select HAVE_OPTION_TABLE
+	select SOC_INTEL_KABYLAKE
+	select MAINBOARD_HAS_LPC_TPM
+	select MAINBOARD_HAS_TPM2
+	select MAINBOARD_USES_IFD_GBE_REGION
+	select INTEL_GMA_HAVE_VBT
+
+config CBFS_SIZE
+	hex "CBFS_SIZE"
+	default 0x00900000
+
+config IRQ_SLOT_COUNT
+	int
+	default 18
+
+config MAINBOARD_DIR
+	string
+	default "facebook/monolith"
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "Monolith"
+
+config MAINBOARD_FAMILY
+	string
+	default "Facebook Monolith"
+
+config MAX_CPUS
+	int
+	default 4
+
+config IFD_BIN_PATH
+	string
+	depends on HAVE_IFD_BIN
+	default "3rdparty/blobs/mainboard/$(MAINBOARDDIR)/descriptor.bin"
+
+config ME_BIN_PATH
+	string
+	depends on HAVE_ME_BIN
+	default "3rdparty/blobs/mainboard/$(MAINBOARDDIR)/me.bin"
+
+config GBE_BIN_PATH
+	string
+	depends on HAVE_GBE_BIN
+	default "3rdparty/blobs/mainboard/$(MAINBOARDDIR)/gbe.bin"
+
+config PRERAM_CBMEM_CONSOLE_SIZE
+	hex
+	default 0xd00
+
+config DIMM_SPD_SIZE
+	int
+	default 512  #DDR4
+
+config UART_FOR_CONSOLE
+	int
+	default 0
+
+config DIMM_MAX
+	int
+	default 2
+
+config TPM_INIT
+	bool
+	default n
+
+config MAINBOARD_SUPPORTS_SKYLAKE_CPU
+	bool
+	default n
+
+config MAINBOARD_SUPPORTS_KABYLAKE_QUAD
+	bool
+	default n
+
+config RW_REGION_ONLY
+	string "Files in RW only"
+
+config VBOOT_ENABLE_CBFS_FALLBACK
+	bool
+	default y
+	depends on VBOOT
+
+endif

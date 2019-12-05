@@ -1,0 +1,247 @@
+chip soc/intel/skylake
+
+	# Enable deep Sx states
+	register "deep_s5_enable_ac" = "0"
+	register "deep_s5_enable_dc" = "0"
+	register "deep_sx_config" = "DSX_EN_LAN_WAKE_PIN"
+
+	# GPE configuration
+	# Note that GPE events called out in ASL code rely on this
+	# route. i.e. If this route changes then the affected GPE
+	# offset bits also need to be changed.
+	register "gpe0_dw0" = "GPP_C"
+	register "gpe0_dw1" = "GPP_D"
+	register "gpe0_dw2" = "GPP_E"
+
+	# CPLD host command ranges are in 0x280-0x2BF
+	# EC PNP registers are at 0x6e and 0x6f
+	register "gen1_dec" = "0x003c0281"
+	register "gen3_dec" = "0x0004006d"
+
+	# LPC serial IRQ
+	register "serirq_mode" = "SERIRQ_CONTINUOUS"
+
+	# Enable "Intel Speed Shift Technology"
+	register "speed_shift_enable" = "1"
+
+	# Enable DPTF
+	register "dptf_enable" = "0"
+
+	# FSP Configuration
+	register "EnableAzalia" = "0"
+	register "SmbusEnable" = "1"
+	register "ScsEmmcEnabled" = "1"
+	register "ScsEmmcHs400Enabled" = "1"
+	register "SkipExtGfxScan" = "1"
+	register "Device4Enable" = "1"
+	register "SaGv" = "SaGv_Enabled"
+	register "SaImguEnable" = "0"
+	register "Cio2Enable" = "0"
+	register "PmTimerDisabled" = "1"
+	register "HeciEnabled" = "0"
+	register "EnableLan" = "1"
+
+	register "EnableSata" = "1"
+		register "SataSalpSupport" = "1"
+		register "SataPortsEnable" = "{ \
+			[0]	= 1, \
+			[1]	= 0, \
+			[2]	= 0, \
+			[3]	= 0, \
+			[4]	= 0, \
+			[5]	= 0, \
+			[6]	= 0, \
+			[7]	= 0, \
+		}"
+
+	register "pirqa_routing" = "PCH_IRQ11"
+	register "pirqb_routing" = "PCH_IRQ10"
+	register "pirqc_routing" = "PCH_IRQ11"
+	register "pirqd_routing" = "PCH_IRQ11"
+	register "pirqe_routing" = "PCH_IRQ11"
+	register "pirqf_routing" = "PCH_IRQ11"
+	register "pirqg_routing" = "PCH_IRQ11"
+	register "pirqh_routing" = "PCH_IRQ11"
+
+	# Enabling SLP_S3#, SLP_S4#, SLP_SUS and SLP_A Stretch
+	# SLP_S3 Minimum Assertion Width. Values 0: 60us, 1: 1ms, 2: 50ms, 3: 2s
+	register "PmConfigSlpS3MinAssert" = "2"
+
+	# SLP_S4 Minimum Assertion Width. Values 0: default, 1: 1s, 2: 2s, 3: 3s, 4: 4s
+	register "PmConfigSlpS4MinAssert" = "4"
+
+	# SLP_SUS Minimum Assertion Width. Values 0: 0ms, 1: 500ms, 2: 1s, 3: 4s
+	register "PmConfigSlpSusMinAssert" = "3"
+
+	# SLP_A Minimum Assertion Width. Values 0: 0ms, 1: 4s, 2: 98ms, 3: 2s
+	register "PmConfigSlpAMinAssert" = "3"
+
+	# VR Settings Configuration for 4 Domains
+	#+----------------+-------+-------+-------+-------+
+	#| Domain/Setting |  SA   |  IA   | GTUS  |  GTS  |
+	#+----------------+-------+-------+-------+-------+
+	#| Psi1Threshold  | 20A   | 20A   | 20A   | 20A   |
+	#| Psi2Threshold  | 5A    | 5A    | 5A    | 5A    |
+	#| Psi3Threshold  | 1A    | 1A    | 1A    | 1A    |
+	#| Psi3Enable     | 1     | 1     | 1     | 1     |
+	#| Psi4Enable     | 1     | 1     | 1     | 1     |
+	#| ImonSlope      | 0     | 0     | 0     | 0     |
+	#| ImonOffset     | 0     | 0     | 0     | 0     |
+	#| IccMax         | 7A    | 34A   | 35A   | 35A   |
+	#| VrVoltageLimit | 1.52V | 1.52V | 1.52V | 1.52V |
+	#+----------------+-------+-------+-------+-------+
+	register "domain_vr_config[VR_SYSTEM_AGENT]" = "{
+		.vr_config_enable = 1, \
+		.psi1threshold = VR_CFG_AMP(20), \
+		.psi2threshold = VR_CFG_AMP(5), \
+		.psi3threshold = VR_CFG_AMP(1), \
+		.psi3enable = 1, \
+		.psi4enable = 1, \
+		.imon_slope = 0, \
+		.imon_offset = 0, \
+		.icc_max = VR_CFG_AMP(7), \
+		.voltage_limit = 1520 \
+	}"
+
+	register "domain_vr_config[VR_IA_CORE]" = "{
+		.vr_config_enable = 1, \
+		.psi1threshold = VR_CFG_AMP(20), \
+		.psi2threshold = VR_CFG_AMP(5), \
+		.psi3threshold = VR_CFG_AMP(1), \
+		.psi3enable = 1, \
+		.psi4enable = 1, \
+		.imon_slope = 0, \
+		.imon_offset = 0, \
+		.icc_max = VR_CFG_AMP(34), \
+		.voltage_limit = 1520 \
+	}"
+
+	register "domain_vr_config[VR_GT_UNSLICED]" = "{
+		.vr_config_enable = 1, \
+		.psi1threshold = VR_CFG_AMP(20), \
+		.psi2threshold = VR_CFG_AMP(5), \
+		.psi3threshold = VR_CFG_AMP(1), \
+		.psi3enable = 1, \
+		.psi4enable = 1, \
+		.imon_slope = 0, \
+		.imon_offset = 0, \
+		.icc_max = VR_CFG_AMP(35),\
+		.voltage_limit = 1520 \
+	}"
+
+	register "domain_vr_config[VR_GT_SLICED]" = "{
+		.vr_config_enable = 1, \
+		.psi1threshold = VR_CFG_AMP(20), \
+		.psi2threshold = VR_CFG_AMP(5), \
+		.psi3threshold = VR_CFG_AMP(1), \
+		.psi3enable = 1, \
+		.psi4enable = 1, \
+		.imon_slope = 0, \
+		.imon_offset = 0, \
+		.icc_max = VR_CFG_AMP(35), \
+		.voltage_limit = 1520 \
+	}"
+
+	# Send an extra VR mailbox command for the PS4 exit issue
+	register "SendVrMbxCmd" = "2"
+
+	# Enable Root ports.
+	# PCIE Port 1 disabled
+	# PCIE Port 2 disabled
+
+	# PCIE Port 3 x1 -> Module x1 : Mapped to PCIe 2 on the baseboard
+	register "PcieRpEnable[2]" = "1"
+	# Disable CLKREQ#
+	register "PcieRpClkReqSupport[2]" = "0"
+
+	# PCIE Port 4 disabled
+	# PCIE Port 5 x1 -> MODULE i219
+
+	# PCIE Port 6 x1 -> BASEBOARD x1 i210 : Mapped to PCIe 4 on the baseboard
+	register "PcieRpEnable[5]" = "1"
+	register "PcieRpClkReqSupport[5]" = "0"
+
+	# PCIE Port 7 Disabled
+	# PCIE Port 8 Disabled
+
+	# PCIE Port 9 x4 -> BASEBOARD PEG0-3 FPGA
+	register "PcieRpEnable[8]" = "1"
+	# Disable CLKREQ#
+	register "PcieRpClkReqSupport[8]" = "0"
+	# Use Hot Plug subsystem
+	register "PcieRpHotPlug[8]" = "1"
+
+	# USB 2.0 Enable all ports
+	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC_SKIP)"	# USB-C Port 2
+	register "usb2_ports[1]" = "USB2_PORT_MID(OC1)"		# USB3_TYPE-A Port 1
+	register "usb2_ports[2]" = "USB2_PORT_MID(OC1)"		# USB3_TYPE-A Port 2
+	register "usb2_ports[3]" = "USB2_PORT_TYPE_C(OC_SKIP)"	# USB-C Port 1
+	register "usb2_ports[4]" = "USB2_PORT_SHORT(OC_SKIP)"	# M2 Port
+	register "usb2_ports[5]" = "USB2_PORT_EMPTY"		# Disabled
+	register "usb2_ports[6]" = "USB2_PORT_SHORT(OC_SKIP)"	# Audio board
+	register "usb2_ports[7]" = "USB2_PORT_EMPTY"		# Disabled
+	register "usb2_ports[8]" = "USB2_PORT_EMPTY"		# Disabled
+	register "usb2_ports[9]" = "USB2_PORT_EMPTY"		# Disabled
+	register "usb2_ports[10]" = "USB2_PORT_EMPTY"		# Disabled
+	register "usb2_ports[11]" = "USB2_PORT_EMPTY"		# Disabled
+
+	# USB 3.0 Enable Port 1-4. Port 5 & 6 Disabled
+	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# USB-C Port 2
+	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# USB3_TYPE-A Port 1
+	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# USB3_TYPE-A Port 2
+	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# USB-C Port 1
+	register "usb3_ports[4]" = "USB3_PORT_EMPTY"		# Disabled
+	register "usb3_ports[5]" = "USB3_PORT_EMPTY"		# Disabled
+
+	register "SsicPortEnable" = "0"
+
+	# Must leave UART0 enabled or SD/eMMC will not work as PCI
+	register "SerialIoDevMode" = "{ \
+		[PchSerialIoIndexI2C0]  = PchSerialIoDisabled, \
+		[PchSerialIoIndexI2C1]  = PchSerialIoDisabled, \
+		[PchSerialIoIndexI2C2]  = PchSerialIoDisabled, \
+		[PchSerialIoIndexI2C3]  = PchSerialIoDisabled, \
+		[PchSerialIoIndexI2C4]  = PchSerialIoDisabled, \
+		[PchSerialIoIndexI2C5]  = PchSerialIoDisabled, \
+		[PchSerialIoIndexSpi0]  = PchSerialIoDisabled, \
+		[PchSerialIoIndexSpi1]  = PchSerialIoDisabled, \
+		[PchSerialIoIndexUart0] = PchSerialIoPci, \
+		[PchSerialIoIndexUart1] = PchSerialIoDisabled, \
+		[PchSerialIoIndexUart2] = PchSerialIoDisabled, \
+	}"
+
+	# Lock Down
+	register "common_soc_config" = "{
+		.chipset_lockdown = CHIPSET_LOCKDOWN_COREBOOT,
+	}"
+
+	device cpu_cluster 0 on
+		device lapic 0 on end
+	end
+	device domain 0 on
+		device pci 00.0 on  end # Host Bridge
+		device pci 02.0 on  end # Integrated Graphics Device
+		device pci 04.0 on  end #
+		device pci 08.0 on  end # Gaussian Mixture Model
+		device pci 14.0 on  end # USB xHCI
+		device pci 14.1 on  end # USB xDCI (OTG)
+		device pci 14.2 on  end # Thermal Subsystem
+		device pci 17.0 on  end # SATA
+		device pci 1c.2 on  end # PCI Express Port 3 x1 baseboard WWAN
+		device pci 1c.5 on  end # PCI Express Port 6 x1 baseboard i210
+		device pci 1d.0 on  end # PCI Express Port 9 x4 FPGA
+		device pci 1e.0 on  end # UART #0
+		device pci 1e.4 on  end # eMMC
+		device pci 1e.5 off end # SDIO
+		device pci 1f.0 on  # LPC Interface
+			chip drivers/pc80/tpm
+				device pnp 0c31.0 on end
+			end
+		end # LPC Bridge
+		device pci 1f.1 on  end # P2SB
+		device pci 1f.2 on  end # Power Management Controller
+		device pci 1f.4 on  end # SMBus
+		device pci 1f.5 on  end # PCH SPI
+		device pci 1f.6 on  end # GbE
+	end
+end

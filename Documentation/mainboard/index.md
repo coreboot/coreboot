@@ -32,6 +32,7 @@ The boards in this section are not real mainboards, but emulators.
 ## Facebook
 
 - [FBG-1701](facebook/fbg1701.md)
+- [Monolith](facebook/monolith.md)
 
 ## Foxconn
 

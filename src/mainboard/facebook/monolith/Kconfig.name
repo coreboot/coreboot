@@ -1,0 +1,2 @@
+config BOARD_FACEBOOK_MONOLITH
+	bool "Facebook Monolith"

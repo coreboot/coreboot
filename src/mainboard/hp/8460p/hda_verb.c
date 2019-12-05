@@ -21,7 +21,7 @@ const u32 cim_verb_data[] = {
 	0x111d7605, /* Codec Vendor / Device ID: IDT */
 	0x103c3588, /* Subsystem ID */
 
-	0x0000000b, /* Number of 4 dword sets */
+	11, /* Number of 4 dword sets */
 	/* NID 0x01: Subsystem ID.  */
 	AZALIA_SUBVENDOR(0x0, 0x103c3588),
 
@@ -57,7 +57,7 @@ const u32 cim_verb_data[] = {
 	0x11c11040, /* Codec Vendor / Device ID: LSI */
 	0x103c3066, /* Subsystem ID */
 
-	0x00000001, /* Number of 4 dword sets */
+	1, /* Number of 4 dword sets */
 	/* NID 0x01: Subsystem ID.  */
 	AZALIA_SUBVENDOR(0x1, 0x103c3066),
 };

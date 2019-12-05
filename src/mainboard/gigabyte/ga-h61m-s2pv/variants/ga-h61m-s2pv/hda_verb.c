@@ -19,7 +19,7 @@
 const u32 cim_verb_data[] = {
 	0x10ec0887, /* Realtek ALC887 */
 	0x1458a002, /* Subsystem ID */
-	0x0000000f, /* Number of 4 dword sets */
+	15, /* Number of 4 dword sets */
 	AZALIA_SUBVENDOR(0x2, 0x1458a002),
 	AZALIA_PIN_CFG(0x2, 0x11, 0x411111f0),
 	AZALIA_PIN_CFG(0x2, 0x12, 0x411111f0),

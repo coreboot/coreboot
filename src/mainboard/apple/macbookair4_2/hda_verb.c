@@ -17,7 +17,7 @@ const u32 cim_verb_data[] = {
 	0x10134206, /* Codec Vendor / Device ID: Cirrus */
 	0x106b5b00, /* Subsystem ID */
 
-	0x0000000b, /* Number of 4 dword sets */
+	11, /* Number of 4 dword sets */
 	/* NID 0x01: Subsystem ID.  */
 	AZALIA_SUBVENDOR(0x0, 0x106b5b00),
 
@@ -53,7 +53,7 @@ const u32 cim_verb_data[] = {
 	0x80862805, /* Codec Vendor / Device ID: Intel */
 	0x80860101, /* Subsystem ID */
 
-	0x00000004, /* Number of 4 dword sets */
+	4, /* Number of 4 dword sets */
 	/* NID 0x01: Subsystem ID.  */
 	AZALIA_SUBVENDOR(0x3, 0x80860101),
 

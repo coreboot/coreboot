@@ -20,7 +20,7 @@ const u32 cim_verb_data[] = {
 	/* coreboot specific header */
 	0x14F15069,	/* Codec Vendor / Device ID: Conexant CX20585 */
 	0x17AA214C,	/* Subsystem ID  */
-	0x0000000B,	/* Number of 4 dword sets */
+	11,		/* Number of 4 dword sets */
 
 	AZALIA_SUBVENDOR(0x0, 0x17AA214C),
 	AZALIA_PIN_CFG(0x0, 0x19, 0x042110F0),
@@ -36,7 +36,7 @@ const u32 cim_verb_data[] = {
 
 	0x80862804,	/* Codec Vendor / Device ID: Intel Ibexpeak HDMI.  */
 	0x17AA21B5,	/* Subsystem ID  */
-	0x00000004,	/* Number of 4 dword sets */
+	4,		/* Number of 4 dword sets */
 
 	AZALIA_SUBVENDOR(0x3, 0x17AA21B5),
 	AZALIA_PIN_CFG(0x3, 0x04, 0x18560010),

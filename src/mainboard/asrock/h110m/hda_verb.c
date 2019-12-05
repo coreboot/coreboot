@@ -41,7 +41,7 @@ const u32 cim_verb_data[] = {
 	/* coreboot specific header */
 	0x80862809, /* Codec Vendor / Device ID: Intel Skylake HDMI */
 	0x80860101,
-	0x00000004,
+	4,
 	/* NID 0x01, HDA Codec Subsystem ID Verb Table: 0x80860101 */
 	AZALIA_SUBVENDOR(0x2, 0x80860101),
 

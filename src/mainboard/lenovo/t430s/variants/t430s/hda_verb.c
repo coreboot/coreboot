@@ -27,7 +27,7 @@ const u32 cim_verb_data[] = {
 	/* coreboot specific header */
 	0x10ec0269,	// Codec Vendor / Device ID: Realtek ALC269VC
 	0x17aa21fb,	// Subsystem ID
-	0x00000013,	// Number of 4 dword sets
+	19,		// Number of 4 dword sets
 
 /* Bits 31:28 - Codec Address */
 /* Bits 27:20 - NID */
@@ -105,7 +105,7 @@ const u32 cim_verb_data[] = {
 	/* coreboot specific header */
 	0x80862806,	// Codec Vendor / Device ID: Intel PantherPoint HDMI
 	0x80860101,	// Subsystem ID
-	0x00000004,	// Number of IDs
+	4,		// Number of IDs
 
 	/* NID 0x01, HDA Codec Subsystem ID Verb Table: 0x80860101 */
 	AZALIA_SUBVENDOR(0x3, 0x80860101),

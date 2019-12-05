@@ -21,7 +21,7 @@ const u32 cim_verb_data[] = {
 	0x10ec0662, /* Codec Vendor / Device ID: Realtek */
 	0x103c1495, /* Subsystem ID */
 
-	0x0000000b, /* Number of 4 dword sets */
+	11, /* Number of 4 dword sets */
 	/* NID 0x01: Subsystem ID.  */
 	AZALIA_SUBVENDOR(0x0, 0x103c1495),
 
@@ -57,7 +57,7 @@ const u32 cim_verb_data[] = {
 	0x80862805, /* Codec Vendor / Device ID: Intel */
 	0x80861495, /* Subsystem ID */
 
-	0x00000004, /* Number of 4 dword sets */
+	4, /* Number of 4 dword sets */
 	/* NID 0x01: Subsystem ID.  */
 	AZALIA_SUBVENDOR(0x3, 0x80861495),
 

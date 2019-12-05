@@ -22,7 +22,7 @@ const u32 cim_verb_data[] = {
 #if CONFIG(BOARD_APPLE_MACBOOK11) || \
 	CONFIG(BOARD_APPLE_MACBOOK21)
 	0x106b2200,	/* Subsystem ID  */
-	0x0000000B,	/* Number of 4 dword sets */
+	11,		/* Number of 4 dword sets */
 
 	/* NID 0x01: Subsystem ID.  */
 	AZALIA_SUBVENDOR(0x0, 0x106B2200),
@@ -58,7 +58,7 @@ const u32 cim_verb_data[] = {
 	AZALIA_PIN_CFG(0x0, 0x1B, 0x400000FB),
 #else /* CONFIG_BOARD_APPLE_IMAC52 */
 	0x106b0f00,	/* Subsystem ID  */
-	0x0000000b,	/* Number of 4 dword sets */
+	11,		/* Number of 4 dword sets */
 
 	/* NID 0x01: Subsystem ID.  */
 	AZALIA_SUBVENDOR(0x0, 0x106b0f00),

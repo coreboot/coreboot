@@ -20,7 +20,7 @@ const u32 cim_verb_data[] = {
 	/* coreboot specific header */
 	0x10ec0272,	/* Codec Vendor / Device ID: Realtek ALC272X */
 	0x10250379,	/* Subsystem ID  */
-	0x00000006,	/* Number of 4 dword sets */
+	6,		/* Number of 4 dword sets */
 
 	/* NID 0x01: Subsystem ID.  */
 	AZALIA_SUBVENDOR(0x0, 0x10250379),
@@ -42,7 +42,7 @@ const u32 cim_verb_data[] = {
 
 	0x80862804,	/* Codec Vendor / Device ID: Intel Ibexpeak HDMI.  */
 	0x80860101,	/* Subsystem ID  */
-	0x00000004,	/* Number of 4 dword sets */
+	4,		/* Number of 4 dword sets */
 
 	/* NID 0x01, HDA Codec Subsystem ID Verb Table: 0x17aa21b5 */
 	AZALIA_SUBVENDOR(0x3, 0x80860101),

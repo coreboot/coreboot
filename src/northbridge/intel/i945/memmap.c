@@ -55,7 +55,7 @@ static uintptr_t northbridge_get_tseg_base(void)
 	else
 		tom = (pci_read_config8(PCI_DEV(0, 0, 0), TOLUD) & 0xf7) << 24;
 
-	/* subsctract TSEG size */
+	/* subtract TSEG size */
 	tom -= decode_tseg_size(pci_read_config8(PCI_DEV(0, 0, 0), ESMRAMC));
 	return tom;
 }

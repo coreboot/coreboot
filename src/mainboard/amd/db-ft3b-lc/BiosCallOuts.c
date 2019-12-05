@@ -156,7 +156,7 @@ static void oem_fan_control(FCH_DATA_BLOCK *FchParams)
 		FchParams->Imc.EcStruct.MsgFun81Zone0MsgReg5 = 0x00;
 		FchParams->Imc.EcStruct.MsgFun81Zone0MsgReg6 = 0x98;    /* SMBUS Address for SMBUS based temperature sensor such as SB-TSI and ADM1032 */
 		FchParams->Imc.EcStruct.MsgFun81Zone0MsgReg7 = 2;
-		FchParams->Imc.EcStruct.MsgFun81Zone0MsgReg8 = 0;       /* PWM steping rate in unit of PWM level percentage */
+		FchParams->Imc.EcStruct.MsgFun81Zone0MsgReg8 = 0;       /* PWM stepping rate in unit of PWM level percentage */
 		FchParams->Imc.EcStruct.MsgFun81Zone0MsgReg9 = 0;
 
 		/* IMC Fan Policy temperature thresholds */
@@ -193,7 +193,7 @@ static void oem_fan_control(FCH_DATA_BLOCK *FchParams)
 		FchParams->Imc.EcStruct.MsgFun81Zone1MsgReg5 = 0x00;
 		FchParams->Imc.EcStruct.MsgFun81Zone1MsgReg6 = 0x90;    /* SMBUS Address for SMBUS based temperature sensor such as SB-TSI and ADM1032 */
 		FchParams->Imc.EcStruct.MsgFun81Zone1MsgReg7 = 0;
-		FchParams->Imc.EcStruct.MsgFun81Zone1MsgReg8 = 0;       /* PWM steping rate in unit of PWM level percentage */
+		FchParams->Imc.EcStruct.MsgFun81Zone1MsgReg8 = 0;       /* PWM stepping rate in unit of PWM level percentage */
 		FchParams->Imc.EcStruct.MsgFun81Zone1MsgReg9 = 0;
 
 		FchParams->Imc.EcStruct.MsgFun83Zone1MsgReg0 = 0x00;
@@ -228,7 +228,7 @@ static void oem_fan_control(FCH_DATA_BLOCK *FchParams)
 		FchParams->Imc.EcStruct.MsgFun81Zone2MsgReg5 = 0x00;
 		FchParams->Imc.EcStruct.MsgFun81Zone2MsgReg6 = 0x98;    /* SMBUS Address for SMBUS based temperature sensor such as SB-TSI and ADM1032 */
 		FchParams->Imc.EcStruct.MsgFun81Zone2MsgReg7 = 2;
-		FchParams->Imc.EcStruct.MsgFun81Zone2MsgReg8 = 5;       /* PWM steping rate in unit of PWM level percentage */
+		FchParams->Imc.EcStruct.MsgFun81Zone2MsgReg8 = 5;       /* PWM stepping rate in unit of PWM level percentage */
 		FchParams->Imc.EcStruct.MsgFun81Zone2MsgReg9 = 0;
 
 		FchParams->Imc.EcStruct.MsgFun81Zone3MsgReg0 = 0x00;
@@ -239,7 +239,7 @@ static void oem_fan_control(FCH_DATA_BLOCK *FchParams)
 		FchParams->Imc.EcStruct.MsgFun81Zone3MsgReg5 = 0x00;
 		FchParams->Imc.EcStruct.MsgFun81Zone3MsgReg6 = 0x0;     /* SMBUS Address for SMBUS based temperature sensor such as SB-TSI and ADM1032 */
 		FchParams->Imc.EcStruct.MsgFun81Zone3MsgReg7 = 0;
-		FchParams->Imc.EcStruct.MsgFun81Zone3MsgReg8 = 0;       /* PWM steping rate in unit of PWM level percentage */
+		FchParams->Imc.EcStruct.MsgFun81Zone3MsgReg8 = 0;       /* PWM stepping rate in unit of PWM level percentage */
 		FchParams->Imc.EcStruct.MsgFun81Zone3MsgReg9 = 0;
 
 		/* IMC Function */

@@ -28,7 +28,7 @@ void agesawrapper_fchecfancontrolservice()
 	LateParams.Imc.EcStruct.MsgFun81Zone0MsgReg5 = 0x04;
 	LateParams.Imc.EcStruct.MsgFun81Zone0MsgReg6 = 0x98; /* SMBUS Address for SMBUS based temperature sensor such as SB-TSI and ADM1032 */
 	LateParams.Imc.EcStruct.MsgFun81Zone0MsgReg7 = 0x01;
-	LateParams.Imc.EcStruct.MsgFun81Zone0MsgReg8 = 0x01; /* PWM steping rate in unit of PWM level percentage */
+	LateParams.Imc.EcStruct.MsgFun81Zone0MsgReg8 = 0x01; /* PWM stepping rate in unit of PWM level percentage */
 	LateParams.Imc.EcStruct.MsgFun81Zone0MsgReg9 = 0x00;
 
 	/* IMC Fan Policy temperature thresholds */

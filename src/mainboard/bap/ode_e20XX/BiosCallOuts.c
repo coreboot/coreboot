@@ -128,7 +128,7 @@ static void oem_fan_control(FCH_DATA_BLOCK *FchParams)
 		FchParams->Imc.EcStruct.MsgFun81Zone0MsgReg5 = 0x04;
 		FchParams->Imc.EcStruct.MsgFun81Zone0MsgReg6 = 0x9a;	/* SMBUS Address for SMBUS based temperature sensor such as SB-TSI and ADM1032 */
 		FchParams->Imc.EcStruct.MsgFun81Zone0MsgReg7 = 0x01;
-		FchParams->Imc.EcStruct.MsgFun81Zone0MsgReg8 = 0x01;	/* PWM steping rate in unit of PWM level percentage */
+		FchParams->Imc.EcStruct.MsgFun81Zone0MsgReg8 = 0x01;	/* PWM stepping rate in unit of PWM level percentage */
 		FchParams->Imc.EcStruct.MsgFun81Zone0MsgReg9 = 0x00;
 
 		/* IMC Fan Policy temperature thresholds */

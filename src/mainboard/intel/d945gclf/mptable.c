@@ -14,7 +14,6 @@
  */
 
 #include <device/device.h>
-#include <device/pci.h>
 #include <arch/smp/mpspec.h>
 #include <arch/ioapic.h>
 #include <stdint.h>

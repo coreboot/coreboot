@@ -20,7 +20,6 @@
 #include <drivers/intel/gma/int15.h>
 #include <arch/acpi.h>
 #include <southbridge/intel/bd82x6x/pch.h>
-#include <device/pci.h>
 #include <ec/quanta/it8518/ec.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 

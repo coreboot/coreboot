@@ -17,7 +17,6 @@
 #include <arch/acpi.h>
 #include <arch/smp/mpspec.h>
 #include <device/device.h>
-#include <device/pci.h>
 #include <vendorcode/google/chromeos/gnvs.h>
 #include <southbridge/intel/lynxpoint/pch.h>
 #include <southbridge/intel/lynxpoint/nvs.h>

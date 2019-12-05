@@ -19,7 +19,6 @@
 #include <arch/acpi.h>
 #include <arch/smp/mpspec.h>
 #include <device/device.h>
-#include <device/pci.h>
 #include <southbridge/intel/i82801ix/nvs.h>
 
 void acpi_create_gnvs(global_nvs_t *gnvs)

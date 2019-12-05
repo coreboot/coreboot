@@ -19,7 +19,6 @@
 #include <arch/acpi.h>
 #include <arch/smp/mpspec.h>
 #include <device/device.h>
-#include <device/pci.h>
 #include <cpu/x86/msr.h>
 
 #include <intelblocks/acpi.h>

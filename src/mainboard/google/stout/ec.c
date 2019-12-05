@@ -20,7 +20,6 @@
 #include <cpu/x86/smm.h>
 #include <ec/quanta/it8518/ec.h>
 #include <device/device.h>
-#include <device/pci.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <southbridge/intel/common/pmbase.h>
 #include <elog.h>

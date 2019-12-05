@@ -15,7 +15,6 @@
 
 #include <arch/acpi.h>
 #include <arch/ioapic.h>
-#include <device/pci.h>
 
 #define IO_APIC2_ADDR 0xFEC20000
 

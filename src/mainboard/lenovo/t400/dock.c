@@ -20,7 +20,6 @@
 #include <arch/io.h>
 #include <device/pnp_ops.h>
 #include <device/device.h>
-#include <device/pci.h>
 #include <device/pnp.h>
 #include <delay.h>
 #include "dock.h"

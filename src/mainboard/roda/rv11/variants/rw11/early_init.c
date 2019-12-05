@@ -15,7 +15,6 @@
 
 #include <bootblock_common.h>
 #include <stdint.h>
-#include <device/pci.h>
 #include <device/pnp_ops.h>
 #include <device/pnp.h>
 #include <northbridge/intel/sandybridge/raminit.h>

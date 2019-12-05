@@ -23,7 +23,6 @@
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <drivers/lenovo/hybrid_graphics/hybrid_graphics.h>
 #include <device/device.h>
-#include <device/pci.h>
 
 static void hybrid_graphics_init(void)
 {

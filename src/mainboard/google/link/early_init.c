@@ -17,7 +17,6 @@
 #include <stdint.h>
 #include <string.h>
 #include <device/pci_ops.h>
-#include <device/pci.h>
 #include <cpu/x86/lapic.h>
 #include <arch/acpi.h>
 #include <console/console.h>

@@ -17,7 +17,6 @@
 #include <bootmode.h>
 #include <boot/coreboot_tables.h>
 #include <device/device.h>
-#include <device/pci.h>
 
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <southbridge/intel/common/gpio.h>

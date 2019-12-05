@@ -17,7 +17,6 @@
 #include <arch/acpi.h>
 #include <arch/smp/mpspec.h>
 #include <device/device.h>
-#include <device/pci.h>
 #include <ec/acpi/ec.h>
 #if CONFIG(CHROMEOS)
 #include <vendorcode/google/chromeos/gnvs.h>

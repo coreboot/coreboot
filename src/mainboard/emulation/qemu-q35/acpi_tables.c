@@ -19,7 +19,6 @@
 #include <arch/ioapic.h>
 #include <arch/smp/mpspec.h>
 #include <device/device.h>
-#include <device/pci.h>
 #include <device/pci_ops.h>
 #include <version.h>
 

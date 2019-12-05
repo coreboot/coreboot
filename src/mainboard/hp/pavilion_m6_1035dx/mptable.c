@@ -17,7 +17,6 @@
 #include <arch/ioapic.h>
 #include <arch/smp/mpspec.h>
 #include <cpu/x86/lapic.h>
-#include <device/pci.h>
 #include <stdint.h>
 #include <string.h>
 #include <southbridge/amd/agesa/hudson/hudson.h>

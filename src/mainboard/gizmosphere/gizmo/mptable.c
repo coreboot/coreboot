@@ -15,7 +15,6 @@
  */
 
 #include <arch/smp/mpspec.h>
-#include <device/pci.h>
 #include <arch/io.h>
 #include <arch/ioapic.h>
 #include <string.h>

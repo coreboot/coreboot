@@ -21,7 +21,6 @@
 #include <drivers/lenovo/hybrid_graphics/hybrid_graphics.h>
 #include <northbridge/intel/sandybridge/sandybridge.h>
 #include <device/device.h>
-#include <device/pci.h>
 
 static void hybrid_graphics_init(void)
 {

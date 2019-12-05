@@ -14,7 +14,6 @@
  */
 
 #include <device/device.h>
-#include <device/pci.h>
 #include <drivers/intel/gma/int15.h>
 
 static void mainboard_enable(struct device *dev)

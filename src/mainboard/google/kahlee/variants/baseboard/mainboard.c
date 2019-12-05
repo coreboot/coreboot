@@ -21,7 +21,6 @@
 #include <smbios.h>
 #include <variant/gpio.h>
 #include <device/mmio.h>
-#include <device/pci.h>
 #include <device/pci_ops.h>
 #include <drivers/generic/bayhub/bh720.h>
 

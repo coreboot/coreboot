@@ -19,7 +19,6 @@
  */
 
 #include <arch/acpi.h>
-#include <device/pci.h>
 #include <device/pci_def.h>
 
 #define IOAPIC_ICH4		2

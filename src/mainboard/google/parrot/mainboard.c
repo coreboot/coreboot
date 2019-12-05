@@ -23,7 +23,6 @@
 #include "ec.h"
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <smbios.h>
-#include <device/pci.h>
 #include <ec/compal/ene932/ec.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 

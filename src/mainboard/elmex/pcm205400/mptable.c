@@ -15,7 +15,6 @@
  */
 
 #include <arch/smp/mpspec.h>
-#include <device/pci.h>
 #include <stdint.h>
 #include <southbridge/amd/cimx/sb800/SBPLATFORM.h>
 #include <southbridge/amd/common/amd_pci_util.h>

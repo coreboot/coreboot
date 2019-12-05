@@ -18,7 +18,6 @@
 #include <arch/ioapic.h>
 #include <arch/smp/mpspec.h>
 #include <device/device.h>
-#include <device/pci.h>
 #include <soc/acpi.h>
 #include <soc/nvs.h>
 #include "thermal.h"

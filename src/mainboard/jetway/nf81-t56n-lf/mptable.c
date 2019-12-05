@@ -17,7 +17,6 @@
 
 #include <arch/ioapic.h>
 #include <arch/smp/mpspec.h>
-#include <device/pci.h>
 #include <drivers/generic/ioapic/chip.h>
 #include <stdint.h>
 #include <southbridge/amd/common/amd_pci_util.h>

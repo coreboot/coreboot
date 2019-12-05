@@ -20,7 +20,6 @@
 #include <device/pci_ops.h>
 #include <console/console.h>
 #include <device/device.h>
-#include <device/pci.h>
 #include <soc/pch.h>
 #include "onboard.h"
 

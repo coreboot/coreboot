@@ -17,7 +17,6 @@
 #include <arch/acpi.h>
 #include <arch/smp/mpspec.h>
 #include <device/device.h>
-#include <device/pci.h>
 #include <vendorcode/google/chromeos/gnvs.h>
 #include <ec/compal/ene932/ec.h>
 #include "ec.h"

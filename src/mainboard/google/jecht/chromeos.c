@@ -16,7 +16,6 @@
 #include <boot/coreboot_tables.h>
 #include <device/pci_ops.h>
 #include <device/device.h>
-#include <device/pci.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 #include <ec/google/chromeec/ec.h>
 #include <soc/gpio.h>

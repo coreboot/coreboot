@@ -26,7 +26,6 @@
 #include <cpu/intel/turbo.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/name.h>
-#include <pc80/mc146818rtc.h>
 #include "model_206ax.h"
 #include "chip.h"
 #include <cpu/intel/smm_reloc.h>

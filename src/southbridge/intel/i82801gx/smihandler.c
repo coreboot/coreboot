@@ -18,7 +18,6 @@
 #include <console/console.h>
 #include <cpu/x86/smm.h>
 #include <device/pci_def.h>
-#include <pc80/mc146818rtc.h>
 #include <southbridge/intel/common/pmutil.h>
 #include "i82801gx.h"
 

@@ -31,7 +31,9 @@
 #include <libpayload-config.h>
 #include <libpayload.h>
 
-#define IOBASE lib_sysinfo.serial->baseaddr
+static struct cb_serial cb_serial;
+
+#define IOBASE cb_serial.baseaddr
 #define MEMBASE (phys_to_virt(IOBASE))
 
 static int serial_hardware_is_present = 0;
@@ -39,14 +41,14 @@ static int serial_is_mem_mapped = 0;
 
 static uint8_t serial_read_reg(int offset)
 {
-	offset *= lib_sysinfo.serial->regwidth;
+	offset *= cb_serial.regwidth;
 
 #if CONFIG(LP_IO_ADDRESS_SPACE)
 	if (!serial_is_mem_mapped)
 		return inb(IOBASE + offset);
 	else
 #endif
-		if (lib_sysinfo.serial->regwidth == 4)
+		if (cb_serial.regwidth == 4)
 			return readl(MEMBASE + offset) & 0xff;
 		else
 			return readb(MEMBASE + offset);
@@ -54,14 +56,14 @@ static uint8_t serial_read_reg(int offset)
 
 static void serial_write_reg(uint8_t val, int offset)
 {
-	offset *= lib_sysinfo.serial->regwidth;
+	offset *= cb_serial.regwidth;
 
 #if CONFIG(LP_IO_ADDRESS_SPACE)
 	if (!serial_is_mem_mapped)
 		outb(val, IOBASE + offset);
 	else
 #endif
-		if (lib_sysinfo.serial->regwidth == 4)
+		if (cb_serial.regwidth == 4)
 			writel(val & 0xff, MEMBASE + offset);
 		else
 			writeb(val, MEMBASE + offset);
@@ -108,11 +110,7 @@ static struct console_output_driver consout = {
 
 void serial_init(void)
 {
-	if (!lib_sysinfo.serial)
-		return;
-
-	serial_is_mem_mapped =
-		(lib_sysinfo.serial->type == CB_SERIAL_TYPE_MEMORY_MAPPED);
+	serial_is_mem_mapped = (cb_serial.type == CB_SERIAL_TYPE_MEMORY_MAPPED);
 
 	if (!serial_is_mem_mapped) {
 #if CONFIG(LP_IO_ADDRESS_SPACE)
@@ -130,15 +128,16 @@ void serial_init(void)
 #if CONFIG(LP_SERIAL_SET_SPEED)
 	serial_hardware_init(CONFIG_LP_SERIAL_BAUD_RATE, 8, 0, 1);
 #endif
+	serial_hardware_is_present = 1;
 }
 
 void serial_console_init(void)
 {
 	if (!lib_sysinfo.serial)
 		return;
+	cb_serial = *lib_sysinfo.serial;
 
 	serial_init();
-	serial_hardware_is_present = 1;
 
 	console_add_input_driver(&consin);
 	console_add_output_driver(&consout);

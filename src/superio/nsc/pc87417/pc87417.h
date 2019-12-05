@@ -111,7 +111,6 @@
 #define PC87417_XWBCNF		0x16
 
 #include <device/pnp_type.h>
-#include <stdint.h>
 
 void pc87417_disable_dev(pnp_devfn_t dev);
 void pc87417_enable_dev(pnp_devfn_t dev);

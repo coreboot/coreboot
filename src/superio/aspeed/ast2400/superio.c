@@ -48,9 +48,9 @@ static const char *ast2400_acpi_hid(const struct device *dev)
 		return NULL;
 
 	switch (dev->path.pnp.device & 0xff) {
-	case AST2400_SUART1: /* falltrough */
-	case AST2400_SUART2: /* falltrough */
-	case AST2400_SUART3: /* falltrough */
+	case AST2400_SUART1: /* fallthrough */
+	case AST2400_SUART2: /* fallthrough */
+	case AST2400_SUART3: /* fallthrough */
 	case AST2400_SUART4:
 		return ACPI_HID_COM;
 	case AST2400_KBC:

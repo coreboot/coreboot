@@ -48,7 +48,7 @@ static const char *nct6791d_acpi_hid(const struct device *dev)
 		return NULL;
 
 	switch (dev->path.pnp.device & 0xff) {
-	case NCT6791D_SP1: /* falltrough */
+	case NCT6791D_SP1: /* fallthrough */
 	case NCT6791D_SP2:
 		return ACPI_HID_COM;
 	case NCT6791D_KBC:

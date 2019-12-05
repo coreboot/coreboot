@@ -334,6 +334,12 @@ M:	Wim Vervoorn <wvervoorn@eltan.com>
 S:	Maintained
 F:	src/mainboard/facebook/fbg1701/
 
+FACEBOOK MONOLITH MAINBOARD
+M:	Frans Hendriks <fhendriks@eltan.com>
+M:	Wim Vervoorn <wvervoorn@eltan.com>
+S:	Maintained
+F:	src/mainboard/facebook/monolith/
+
 PORTWELL PQ-M107 MAINBOARD
 M:	Frans Hendriks <fhendriks@eltan.com>
 M:	Wim Vervoorn <wvervoorn@eltan.com>

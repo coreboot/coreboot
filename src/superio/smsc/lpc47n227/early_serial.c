@@ -73,7 +73,7 @@ static void lpc47n227_pnp_set_iobase(pnp_devfn_t dev, u16 iobase)
  * true base port is programmed (see lpc47n227_enable_serial() below).
  *
  * @param dev High 8 bits = Super I/O port, low 8 bits = logical device number.
- * @param enable 0 to disable, anythig else to enable.
+ * @param enable 0 to disable, anything else to enable.
  */
 static void lpc47n227_pnp_set_enable(pnp_devfn_t dev, int enable)
 {

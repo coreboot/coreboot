@@ -27,17 +27,17 @@ void variant_devtree_update(void)
 	emmc_host = pcidev_path_on_root(PCH_DEVFN_EMMC);
 	ssd_host = pcidev_path_on_root(PCH_DEVFN_SATA);
 
-	/* SKU ID 2 doesn't have a eMMC device, hence disable it. */
+	/* SKU ID 2 and 4 do not have eMMC, hence disable it. */
 	sku_id = get_board_sku();
-	if (sku_id == 2) {
+	if ((sku_id == 2) || (sku_id == 4)) {
 		if (emmc_host == NULL)
 			return;
 		emmc_host->enabled = 0;
 		cfg->ScsEmmcHs400Enabled = 0;
 	}
 
-	/* SKU ID 1 doesn't have a SSD device, hence disable it. */
-	if (sku_id == 1) {
+	/* SKU ID 1 and 3 do not have SSD, hence disable it. */
+	if ((sku_id == 1) || (sku_id == 3)) {
 		if (ssd_host == NULL)
 			return;
 		ssd_host->enabled = 0;

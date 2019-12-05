@@ -164,7 +164,7 @@ const struct pad_config *override_gpio_table(size_t *num)
 {
 	uint32_t sku_id = get_board_sku();
 	/* For SSD SKU */
-	if (sku_id == 2) {
+	if ((sku_id == 2) || (sku_id == 4)) {
 		*num = ARRAY_SIZE(ssd_sku_gpio_table);
 		return ssd_sku_gpio_table;
 	}

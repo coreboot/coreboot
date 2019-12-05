@@ -37,7 +37,7 @@ static void do_force_global_reset(void)
 
 void do_global_reset(void)
 {
-	if (send_global_reset() != 0) {
+	if (!send_global_reset()) {
 		/* If ME unable to reset platform then
 		 * force global reset using PMC CF9GR register*/
 		do_force_global_reset();

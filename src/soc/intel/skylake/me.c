@@ -441,7 +441,7 @@ int send_global_reset(void)
 		goto ret;
 
 	/* ME should be in Normal Mode for this command */
-	status = send_heci_reset_req_message(GLOBAL_RESET);
+	status = cse_request_global_reset(GLOBAL_RESET);
 ret:
 	return status;
 }

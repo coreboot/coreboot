@@ -112,12 +112,18 @@ void cse_set_host_ready(void);
  */
 uint8_t cse_wait_sec_override_mode(void);
 
+enum rst_req_type {
+	GLOBAL_RESET = 1,
+	HOST_RESET_ONLY = 2,
+	CSE_RESET_ONLY = 3,
+};
+
 /*
- * Sends GLOBAL_RESET_REQ cmd to CSE.The reset type can be
- * GLOBAL_RESET/HOST_RESET_ONLY/CSE_RESET_ONLY.
- * Returns -1 on failure and 0 on success.
+ * Sends GLOBAL_RESET_REQ cmd to CSE.
+ * The reset type can be one of the above defined reset type.
+ * Returns 0 on failure and 1 on success.
  */
-int send_heci_reset_req_message(uint8_t rst_type);
+int cse_request_global_reset(enum rst_req_type rst_type);
 
 /*
  * Send HMRFPO_ENABLE command.
@@ -137,11 +143,6 @@ int cse_hmrfpo_get_status(void);
 
 /* Fixed Address MEI Header's ME Address field value */
 #define HECI_MKHI_ADDR	0x07
-
-/* Command GLOBAL_RESET_REQ Reset Types */
-#define GLOBAL_RESET	1
-#define HOST_RESET_ONLY	2
-#define CSE_RESET_ONLY	3
 
 /* HMRFPO Status types */
 /* Host can't access ME region */

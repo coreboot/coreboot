@@ -582,7 +582,7 @@ uint32_t me_read_config32(int offset)
  * Sends GLOBAL_RESET_REQ cmd to CSE.The reset type can be GLOBAL_RESET/
  * HOST_RESET_ONLY/CSE_RESET_ONLY.
  */
-int send_heci_reset_req_message(uint8_t rst_type)
+int cse_request_global_reset(enum rst_req_type rst_type)
 {
 	int status;
 	struct mkhi_hdr reply;
@@ -601,27 +601,25 @@ int send_heci_reset_req_message(uint8_t rst_type)
 	};
 	size_t reply_size;
 
+	printk(BIOS_DEBUG, "HECI: Global Reset(Type:%d) Command\n", rst_type);
 	if (!((rst_type == GLOBAL_RESET) ||
-		(rst_type == HOST_RESET_ONLY) || (rst_type == CSE_RESET_ONLY)))
-		return -1;
+		(rst_type == HOST_RESET_ONLY) || (rst_type == CSE_RESET_ONLY))) {
+		printk(BIOS_ERR, "HECI: Unsupported reset type is requested\n");
+		return 0;
+	}
 
 	heci_reset();
 
 	reply_size = sizeof(reply);
 	memset(&reply, 0, reply_size);
 
-	printk(BIOS_DEBUG, "HECI: Global Reset(Type:%d) Command\n", rst_type);
 	if (rst_type == CSE_RESET_ONLY)
-		status = heci_send_receive(&msg, sizeof(msg), NULL, 0);
+		status = heci_send(&msg, sizeof(msg), BIOS_HOST_ADDR, HECI_MKHI_ADDR);
 	else
-		status = heci_send_receive(&msg, sizeof(msg), &reply,
-						&reply_size);
+		status = heci_send_receive(&msg, sizeof(msg), &reply, &reply_size);
 
-	if (status != 1)
-		return -1;
-
-	printk(BIOS_DEBUG, "HECI: Global Reset success!\n");
-	return 0;
+	printk(BIOS_DEBUG, "HECI: Global Reset %s!\n", status ? "success" : "failure");
+	return status;
 }
 
 /* Sends HMRFPO Enable command to CSE */

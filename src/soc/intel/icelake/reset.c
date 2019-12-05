@@ -24,7 +24,7 @@
 void do_global_reset(void)
 {
 	/* Ask CSE to do the global reset */
-	if (!send_heci_reset_req_message(GLOBAL_RESET))
+	if (cse_request_global_reset(GLOBAL_RESET))
 		return;
 
 	/* global reset if CSE fail to reset */

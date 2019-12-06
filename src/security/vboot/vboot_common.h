@@ -71,6 +71,7 @@ int vboot_recovery_mode_enabled(void);
 int vboot_recovery_mode_memory_retrain(void);
 int vboot_can_enable_udc(void);
 void vboot_run_logic(void);
+int vboot_locate_cbfs(struct region_device *rdev);
 #else /* !CONFIG_VBOOT */
 static inline int vboot_developer_mode_enabled(void) { return 0; }
 static inline int vboot_recovery_mode_enabled(void) { return 0; }
@@ -78,6 +79,7 @@ static inline int vboot_recovery_mode_memory_retrain(void) { return 0; }
 /* If VBOOT is not enabled, we are okay enabling USB device controller (UDC). */
 static inline int vboot_can_enable_udc(void) { return 1; }
 static inline void vboot_run_logic(void) {}
+static inline int vboot_locate_cbfs(struct region_device *rdev) { return -1; }
 #endif
 
 void vboot_save_nvdata_only(struct vb2_context *ctx);

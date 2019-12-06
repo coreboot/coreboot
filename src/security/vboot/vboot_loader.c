@@ -70,7 +70,7 @@ void vboot_run_logic(void)
 	}
 }
 
-static int vboot_locate(struct region_device *rdev)
+int vboot_locate_cbfs(struct region_device *rdev)
 {
 	struct vb2_context *ctx;
 
@@ -85,8 +85,3 @@ static int vboot_locate(struct region_device *rdev)
 
 	return vboot_locate_firmware(ctx, rdev);
 }
-
-const struct cbfs_locator vboot_locator = {
-	.name = "VBOOT",
-	.locate = vboot_locate,
-};

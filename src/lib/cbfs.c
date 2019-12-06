@@ -27,6 +27,7 @@
 #include <timestamp.h>
 #include <fmap.h>
 #include <security/vboot/vboot_crtm.h>
+#include <security/vboot/vboot_common.h>
 
 #define ERROR(x...) printk(BIOS_ERR, "CBFS: " x)
 #define LOG(x...) printk(BIOS_INFO, "CBFS: " x)
@@ -279,63 +280,9 @@ out:
 	return 0;
 }
 
-/* The default locator to find the CBFS in the "COREBOOT" FMAP region. */
-int cbfs_default_region_device(struct region_device *rdev)
-{
-	if (fmap_locate_area_as_rdev("COREBOOT", rdev))
-		return -1;
-
-	printk(BIOS_SPEW, "CBFS @ %zx size %zx\n",
-		region_device_offset(rdev), region_device_sz(rdev));
-
-	return 0;
-}
-
-/* This struct is marked as weak to allow a particular platform to
- * override the master header logic. This implementation should work for most
- * devices. */
-const struct cbfs_locator __weak cbfs_default_locator = {
-	.name = "COREBOOT Locator",
-	.locate = cbfs_default_region_device,
-};
-
-extern const struct cbfs_locator vboot_locator;
-
-static const struct cbfs_locator *locators[] = {
-#if CONFIG(VBOOT)
-	/*
-	 * NOTE: Does not link in SMM, as the vboot_locator isn't compiled.
-	 * ATM there's no need for VBOOT functionality in SMM and it's not
-	 * a problem.
-	 */
-	&vboot_locator,
-#endif
-	&cbfs_default_locator,
-};
-
 int cbfs_boot_region_device(struct region_device *rdev)
 {
-	int i;
-
 	boot_device_init();
-
-	for (i = 0; i < ARRAY_SIZE(locators); i++) {
-		const struct cbfs_locator *ops;
-
-		ops = locators[i];
-
-		if (ops->locate == NULL)
-			continue;
-
-		if (ops->locate(rdev))
-			continue;
-
-		LOG("'%s' located CBFS at [%zx:%zx)\n",
-		    ops->name, region_device_offset(rdev),
-		    region_device_end(rdev));
-
-		return 0;
-	}
-
-	return -1;
+	return vboot_locate_cbfs(rdev) &&
+	       fmap_locate_area_as_rdev("COREBOOT", rdev);
 }

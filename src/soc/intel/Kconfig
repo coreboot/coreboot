@@ -8,6 +8,7 @@ source "src/soc/intel/denverton_ns/Kconfig"
 source "src/soc/intel/quark/Kconfig"
 source "src/soc/intel/skylake/Kconfig"
 source "src/soc/intel/icelake/Kconfig"
+source "src/soc/intel/tigerlake/Kconfig"
 
 # Load common config
 source "src/soc/intel/common/Kconfig"

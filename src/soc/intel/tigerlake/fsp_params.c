@@ -13,8 +13,8 @@
  * GNU General Public License for more details.
  */
 
-#include <console/console.h>
 #include <fsp/api.h>
+#include <intelblocks/lpss.h>
 #include <soc/ramstage.h>
 
 static const pci_devfn_t serial_io_dev[] = {

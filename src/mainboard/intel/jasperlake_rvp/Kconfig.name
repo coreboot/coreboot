@@ -1,0 +1,5 @@
+config BOARD_INTEL_JASPERLAKE_RVP
+	bool "Jasperlake DDR4/LPDDR4 RVP"
+
+config BOARD_INTEL_JASPERLAKE_RVP_EXT_EC
+	bool "Jasperlake DDR4/LPDDR4 RVP with Chrome EC"

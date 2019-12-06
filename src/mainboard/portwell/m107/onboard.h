@@ -21,6 +21,4 @@
 /* SD CARD gpio */
 #define SDCARD_CD		81 /* Not used */
 
-#define ITE8528_CMD_PORT	0x6E
-#define ITE8528_DATA_PORT	0x6F
 #endif

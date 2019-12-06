@@ -17,9 +17,8 @@
 
 #include <bootblock_common.h>
 #include <device/pnp_ops.h>
-#include "onboard.h"
 
-#define SERIAL_DEV PNP_DEV(ITE8528_CMD_PORT, 1) /* ITE8528 UART1 */
+#define SERIAL_DEV PNP_DEV(0x6E, 1) /* ITE8528 UART1 */
 
 void bootblock_mainboard_early_init(void)
 {

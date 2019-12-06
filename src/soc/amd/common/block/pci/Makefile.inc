@@ -1,5 +1,4 @@
-ifeq ($(CONFIG_SOC_AMD_COMMON_BLOCK_PCI),y)
 
-ramstage-y += amd_pci_util.c
+ramstage-$(CONFIG_SOC_AMD_COMMON_BLOCK_PCI) += amd_pci_util.c
 
-endif
+all-y += amd_pci_mmconf.c

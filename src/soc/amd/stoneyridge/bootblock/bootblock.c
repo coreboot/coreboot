@@ -24,6 +24,7 @@
 #include <bootblock_common.h>
 #include <amdblocks/agesawrapper.h>
 #include <amdblocks/agesawrapper_call.h>
+#include <amdblocks/amd_pci_mmconf.h>
 #include <amdblocks/biosram.h>
 #include <soc/pci_devs.h>
 #include <soc/cpu.h>
@@ -42,14 +43,8 @@
 /* Set the MMIO Configuration Base Address, Bus Range, and misc MTRRs. */
 static void amd_initmmio(void)
 {
-	msr_t mmconf;
 	msr_t mtrr_cap = rdmsr(MTRR_CAP_MSR);
 	int mtrr;
-
-	mmconf.hi = 0;
-	mmconf.lo = CONFIG_MMCONF_BASE_ADDRESS | MMIO_RANGE_EN
-			| fms(CONFIG_MMCONF_BUS_NUMBER) << MMIO_BUS_RANGE_SHIFT;
-	wrmsr(MMIO_CONF_BASE, mmconf);
 
 	/*
 	 * todo: AGESA currently writes variable MTRRs.  Once that is
@@ -75,6 +70,7 @@ static void amd_initmmio(void)
 
 asmlinkage void bootblock_c_entry(uint64_t base_timestamp)
 {
+	enable_pci_mmconf();
 	amd_initmmio();
 	/*
 	 * Call lib/bootblock.c main with BSP, shortcut for APs

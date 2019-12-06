@@ -16,6 +16,7 @@
 #include <console/console.h>
 #include <delay.h>
 #include <ec/google/chromeec/ec.h>
+#include <halt.h>
 #include <security/vboot/misc.h>
 #include <security/vboot/vbnv.h>
 #include <security/vboot/vboot_common.h>
@@ -60,9 +61,38 @@ void vboot_sync_ec(void)
 	retval = vb2api_ec_sync(ctx);
 	vboot_save_nvdata_only(ctx);
 
-	if (retval != VB2_SUCCESS) {
-		printk(BIOS_ERR, "EC software sync failed (%#x), rebooting\n", retval);
+	switch (retval) {
+	case VB2_SUCCESS:
+		break;
+
+	case VBERROR_EC_REBOOT_TO_RO_REQUIRED:
+		printk(BIOS_INFO, "EC Reboot requested. Doing cold reboot\n");
+		if (google_chromeec_reboot(0, EC_REBOOT_COLD, 0))
+			printk(BIOS_EMERG, "Failed to get EC to cold reboot\n");
+
+		halt();
+		break;
+
+	/* Only for EC-EFS */
+	case VBERROR_EC_REBOOT_TO_SWITCH_RW:
+		printk(BIOS_INFO, "Switch EC slot requested. Doing cold reboot\n");
+		if (google_chromeec_reboot(0, EC_REBOOT_COLD,
+						EC_REBOOT_FLAG_SWITCH_RW_SLOT))
+			printk(BIOS_EMERG, "Failed to get EC to cold reboot\n");
+
+		halt();
+		break;
+
+	case VBERROR_REBOOT_REQUIRED:
+		printk(BIOS_INFO, "Reboot requested. Doing warm reboot\n");
 		vboot_reboot();
+		break;
+
+	default:
+		printk(BIOS_ERR, "EC software sync failed (%#x),"
+			" rebooting\n", retval);
+		vboot_reboot();
+		break;
 	}
 
 	timestamp_add_now(TS_END_EC_SYNC);

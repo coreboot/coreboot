@@ -43,16 +43,16 @@ chip soc/intel/skylake
 
 	# Enabling SLP_S3#, SLP_S4#, SLP_SUS and SLP_A Stretch
 	# SLP_S3 Minimum Assertion Width. Values 0: 60us, 1: 1ms, 2: 50ms, 3: 2s
-	register "PmConfigSlpS3MinAssert" = "0x02"
+	register "PmConfigSlpS3MinAssert" = "2"
 
 	# SLP_S4 Minimum Assertion Width. Values 0: default, 1: 1s, 2: 2s, 3: 3s, 4: 4s
-	register "PmConfigSlpS4MinAssert" = "0x04"
+	register "PmConfigSlpS4MinAssert" = "4"
 
 	# SLP_SUS Minimum Assertion Width. Values 0: 0ms, 1: 500ms, 2: 1s, 3: 4s
-	register "PmConfigSlpSusMinAssert" = "0x03"
+	register "PmConfigSlpSusMinAssert" = "3"
 
 	# SLP_A Minimum Assertion Width. Values 0: 0ms, 1: 4s, 2: 98ms, 3: 2s
-	register "PmConfigSlpAMinAssert" = "0x03"
+	register "PmConfigSlpAMinAssert" = "3"
 
 
 	# VR Settings Configuration for 4 Domains
@@ -60,7 +60,7 @@ chip soc/intel/skylake
 	#| Domain/Setting |  SA   |  IA   | GTUS  |  GTS  |
 	#+----------------+-------+-------+-------+-------+
 	#| Psi1Threshold  | 20A   | 20A   | 20A   | 20A   |
-	#| Psi2Threshold  | 5A    | 5A    | 5A    | 5A    |
+	#| Psi2Threshold  | 4A    | 5A    | 5A    | 5A    |
 	#| Psi3Threshold  | 1A    | 1A    | 1A    | 1A    |
 	#| Psi3Enable     | 1     | 1     | 1     | 1     |
 	#| Psi4Enable     | 1     | 1     | 1     | 1     |
@@ -71,54 +71,54 @@ chip soc/intel/skylake
 	#+----------------+-------+-------+-------+-------+
 	register "domain_vr_config[VR_SYSTEM_AGENT]" = "{
 		.vr_config_enable = 1, \
-		.psi1threshold = 0x50, \
-		.psi2threshold = 0x10, \
-		.psi3threshold = 0x4, \
+		.psi1threshold = VR_CFG_AMP(20), \
+		.psi2threshold = VR_CFG_AMP(4), \
+		.psi3threshold = VR_CFG_AMP(1), \
 		.psi3enable = 1, \
 		.psi4enable = 1, \
-		.imon_slope = 0x0, \
-		.imon_offset = 0x0, \
-		.icc_max = 0x1C, \
-		.voltage_limit = 0x5F0 \
+		.imon_slope = 0, \
+		.imon_offset = 0, \
+		.icc_max = VR_CFG_AMP(7), \
+		.voltage_limit = 1520 \
 	}"
 
 	register "domain_vr_config[VR_IA_CORE]" = "{
 		.vr_config_enable = 1, \
-		.psi1threshold = 0x50, \
-		.psi2threshold = 0x14, \
-		.psi3threshold = 0x4, \
+		.psi1threshold = VR_CFG_AMP(20), \
+		.psi2threshold = VR_CFG_AMP(5), \
+		.psi3threshold = VR_CFG_AMP(1), \
 		.psi3enable = 1, \
 		.psi4enable = 1, \
-		.imon_slope = 0x0, \
-		.imon_offset = 0x0, \
-		.icc_max = 0x88, \
-		.voltage_limit = 0x5F0 \
+		.imon_slope = 0, \
+		.imon_offset = 0, \
+		.icc_max = VR_CFG_AMP(34), \
+		.voltage_limit = 1520 \
 	}"
 
 	register "domain_vr_config[VR_GT_UNSLICED]" = "{
 		.vr_config_enable = 1, \
-		.psi1threshold = 0x50, \
-		.psi2threshold = 0x14, \
-		.psi3threshold = 0x4, \
+		.psi1threshold = VR_CFG_AMP(20), \
+		.psi2threshold = VR_CFG_AMP(5), \
+		.psi3threshold = VR_CFG_AMP(1), \
 		.psi3enable = 1, \
 		.psi4enable = 1, \
-		.imon_slope = 0x0, \
-		.imon_offset = 0x0, \
-		.icc_max = 0x8C ,\
-		.voltage_limit = 0x5F0 \
+		.imon_slope = 0, \
+		.imon_offset = 0, \
+		.icc_max = VR_CFG_AMP(35),\
+		.voltage_limit = 1520 \
 	}"
 
 	register "domain_vr_config[VR_GT_SLICED]" = "{
 		.vr_config_enable = 1, \
-		.psi1threshold = 0x50, \
-		.psi2threshold = 0x14, \
-		.psi3threshold = 0x4, \
+		.psi1threshold = VR_CFG_AMP(20), \
+		.psi2threshold = VR_CFG_AMP(5), \
+		.psi3threshold = VR_CFG_AMP(1), \
 		.psi3enable = 1, \
 		.psi4enable = 1, \
-		.imon_slope = 0x0, \
-		.imon_offset = 0x0, \
-		.icc_max = 0x8C, \
-		.voltage_limit = 0x5F0 \
+		.imon_slope = 0, \
+		.imon_offset = 0, \
+		.icc_max = VR_CFG_AMP(35), \
+		.voltage_limit = 1520 \
 	}"
 
 	# Send an extra VR mailbox command for the PS4 exit issue

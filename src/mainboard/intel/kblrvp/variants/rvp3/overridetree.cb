@@ -31,15 +31,15 @@ chip soc/intel/skylake
 	#+----------------+-------+-------+-------+-------+
 	register "domain_vr_config[VR_SYSTEM_AGENT]" = "{
 		.vr_config_enable = 1, \
-		.psi1threshold = 0x50, \
-		.psi2threshold = 0x14, \
-		.psi3threshold = 0x4, \
+		.psi1threshold = VR_CFG_AMP(20), \
+		.psi2threshold = VR_CFG_AMP(5), \
+		.psi3threshold = VR_CFG_AMP(1), \
 		.psi3enable = 1, \
 		.psi4enable = 1, \
-		.imon_slope = 0x0, \
-		.imon_offset = 0x0, \
-		.icc_max = 0x1C, \
-		.voltage_limit = 0x5F0 \
+		.imon_slope = 0, \
+		.imon_offset = 0, \
+		.icc_max = VR_CFG_AMP(7), \
+		.voltage_limit = 1520 \
 	}"
 
 	# Enable Root ports.

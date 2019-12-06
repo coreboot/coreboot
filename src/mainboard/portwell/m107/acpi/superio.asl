@@ -15,8 +15,6 @@
  * GNU General Public License for more details.
  */
 
-/* mainboard configuration */
-#include "onboard.h"
 
 	Device (COM1) {
 		Name (_HID, EISAID ("PNP0501"))

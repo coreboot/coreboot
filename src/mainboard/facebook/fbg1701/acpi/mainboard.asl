@@ -16,8 +16,6 @@
  * GNU General Public License for more details.
  */
 
-#include "onboard.h"
-
 Scope (\_SB)
 {
 	Device (PWRB)

@@ -18,6 +18,8 @@
 
 #include <arch/acpi.h>
 
+#define SDCARD_CD 81 /* Not used */
+
 DefinitionBlock(
 	"dsdt.aml",
 	"DSDT",

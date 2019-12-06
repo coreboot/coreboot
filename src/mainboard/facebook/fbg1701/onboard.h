@@ -18,9 +18,6 @@
 #ifndef ONBOARD_H
 #define ONBOARD_H
 
-/* SD CARD gpio */
-#define SDCARD_CD 81 /* Not used */
-
 /* Define the items to be measured or verified */
 #define FSP (const char *)"fsp.bin"
 #define CMOS_LAYOUT (const char *)"cmos_layout.bin"

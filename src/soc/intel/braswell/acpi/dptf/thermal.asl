@@ -15,7 +15,9 @@
  */
 
 /* Thermal Threshold Event Handler */
-#ifdef HAVE_THERM_EVENT_HANDLER
+#define HAVE_THERM_EVENT_HANDLER
+
+#if CONFIG(EC_SUPPORTS_DPTF_TEVT)
 Method (TEVT, 1, NotSerialized)
 {
 	Store (ToInteger (Arg0), Local0)

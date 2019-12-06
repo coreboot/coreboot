@@ -15,8 +15,6 @@
  * GNU General Public License for more details.
  */
 
-#define HAVE_THERM_EVENT_HANDLER
-
 /* Include Variant DPTF */
 #include <variant/acpi/dptf.asl>
 

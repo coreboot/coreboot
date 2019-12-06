@@ -2,3 +2,9 @@ config EC_ACPI
 	bool
 	help
 	  ACPI Embedded Controller interface. Mostly found in laptops.
+
+config EC_SUPPORTS_DPTF_TEVT
+	bool
+	help
+	  The EC ASL code supports calling of TEVT method when provided by
+	  SoC or mainboard.

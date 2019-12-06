@@ -16,6 +16,8 @@
 
 /* Thermal Threshold Event Handler */
 #define HAVE_THERM_EVENT_HANDLER
+
+#if CONFIG(EC_SUPPORTS_DPTF_TEVT)
 Method (TEVT, 1, NotSerialized)
 {
 	Store (ToInteger (Arg0), Local0)
@@ -36,6 +38,7 @@ Method (TEVT, 1, NotSerialized)
 	}
 #endif
 }
+#endif
 
 /* Thermal device initialization - Disable Aux Trip Points */
 Method (TINI)

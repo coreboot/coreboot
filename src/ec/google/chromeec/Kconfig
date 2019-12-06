@@ -1,5 +1,6 @@
 config EC_GOOGLE_CHROMEEC
 	bool
+	select EC_SUPPORTS_DPTF_TEVT
 	help
 	  Google's Chrome EC
 

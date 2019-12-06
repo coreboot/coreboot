@@ -115,8 +115,10 @@ Method (PATX, 0, Serialized)
 		/* Handle bits that are set */
 		While (FindSetRightBit (Local1, Local2))
 		{
+#ifdef HAVE_THERM_EVENT_HANDLER
 			/* DPTF will Notify sensor devices */
 			\_SB.DPTF.TEVT (Local2)
+#endif
 
 			/* Clear current sensor number */
 			Local1 &= ~(1 << (Local2 - 1))

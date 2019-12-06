@@ -757,12 +757,21 @@ static void domain_set_resources(struct device *dev)
 	}
 }
 
+static const char *domain_acpi_name(const struct device *dev)
+{
+	if (dev->path.type == DEVICE_PATH_DOMAIN)
+		return "PCI0";
+
+	return NULL;
+}
+
 static struct device_operations pci_domain_ops = {
 	.read_resources	  = domain_read_resources,
 	.set_resources	  = domain_set_resources,
 	.enable_resources = domain_enable_resources,
 	.init		  = NULL,
 	.scan_bus	  = pci_domain_scan_bus,
+	.acpi_name	  = domain_acpi_name,
 };
 
 static void sysconf_init(struct device *dev) // first node

@@ -189,11 +189,13 @@ config CBFS_SIZE
 
 config FSP_HEADER_PATH
 	string "Location of FSP headers"
-	default "src/vendorcode/intel/fsp/fsp2_0/tigerlake/"
+	default "src/vendorcode/intel/fsp/fsp2_0/tigerlake/" if SOC_INTEL_TIGERLAKE
+	default "src/vendorcode/intel/fsp/fsp2_0/jasperlake/" if SOC_INTEL_JASPERLAKE
 
 config FSP_FD_PATH
 	string
 	depends on FSP_USE_REPO
-	default "3rdparty/fsp/TigerLakeFspBinPkg/Fsp.fd"
+	default "3rdparty/fsp/TigerLakeFspBinPkg/Fsp.fd" if SOC_INTEL_TIGERLAKE
+	default "3rdparty/fsp/JasperLakeFspBinPkg/Fsp.fd" if SOC_INTEL_JASPERLAKE
 
 endif

@@ -274,7 +274,7 @@ void *bootmem_allocate_buffer(size_t size)
 		end = max_addr;
 	begin = end - size;
 
-	/* Mark buffer as unusuable for future buffer use. */
+	/* Mark buffer as unusable for future buffer use. */
 	bootmem_add_range(begin, size, BM_MEM_PAYLOAD);
 
 	return (void *)(uintptr_t)begin;

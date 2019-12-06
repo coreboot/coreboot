@@ -97,7 +97,7 @@ size_t b64_decode(const uint8_t *input_data,
 	bd.data_size = input_length;
 	bd.input_index = 0;
 
-	while (1) { /* Until input is exausted. */
+	while (1) { /* Until input is exhausted. */
 		int v = get_next_char(&bd);
 
 		if (v < 0) {

@@ -22,7 +22,7 @@
  * package level initialization (e.g. you can initialize huge arrays in
  * a loop instead of cluttering the binary).
  *
- * When an Ada main() is in charge, GNAT emmits the call to the initia-
+ * When an Ada main() is in charge, GNAT emits the call to the initia-
  * lizations automatically. When not, we have to call it explicitly.
  */
 

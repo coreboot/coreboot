@@ -22,7 +22,7 @@
  *
  * The user provides output buffer of the size guaranteed to fit the result.
  *
- * Returns the size of the decoded data or zero if invalid charactes were
+ * Returns the size of the decoded data or zero if invalid characters were
  * encountered in the input buffer.
  */
 size_t b64_decode(const uint8_t *input_data,

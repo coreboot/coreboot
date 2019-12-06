@@ -95,6 +95,7 @@ config MAINBOARD_PART_NUMBER
 	default "Jinlon" if BOARD_GOOGLE_JINLON
 	default "Kindred" if BOARD_GOOGLE_KINDRED
 	default "Kohaku" if BOARD_GOOGLE_KOHAKU
+	default "Mushu" if BOARD_GOOGLE_MUSHU
 	default "Puff" if BOARD_GOOGLE_PUFF
 	default "Stryke" if BOARD_GOOGLE_STRYKE
 
@@ -117,6 +118,7 @@ config VARIANT_DIR
 	default "jinlon" if BOARD_GOOGLE_JINLON
 	default "kindred" if BOARD_GOOGLE_KINDRED
 	default "kohaku" if BOARD_GOOGLE_KOHAKU
+	default "mushu" if BOARD_GOOGLE_MUSHU
 	default "puff" if BOARD_GOOGLE_PUFF
 	default "stryke" if BOARD_GOOGLE_STRYKE
 

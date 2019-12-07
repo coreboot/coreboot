@@ -43,7 +43,7 @@
 #define FINTEK_EXIT_KEY 0xAA
 
 /* Enable configuration: pass entry key '0x87' into index port dev. */
-static void pnp_enter_conf_state(pnp_devfn_t dev)
+void pnp_enter_conf_state(pnp_devfn_t dev)
 {
 	u16 port = dev >> 8;
 	outb(FINTEK_ENTRY_KEY, port);
@@ -51,7 +51,7 @@ static void pnp_enter_conf_state(pnp_devfn_t dev)
 }
 
 /* Disable configuration: pass exit key '0xAA' into index port dev. */
-static void pnp_exit_conf_state(pnp_devfn_t dev)
+void pnp_exit_conf_state(pnp_devfn_t dev)
 {
 	u16 port = dev >> 8;
 	outb(FINTEK_EXIT_KEY, port);

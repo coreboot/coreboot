@@ -41,21 +41,6 @@
 
 
 /* GPIO configuration */
-#define FINTEK_ENTRY_KEY 0x87
-static void pnp_enter_conf_state(pnp_devfn_t dev)
-{
-	u16 port = dev >> 8;
-	outb(FINTEK_ENTRY_KEY, port);
-	outb(FINTEK_ENTRY_KEY, port);
-}
-
-#define FINTEK_EXIT_KEY 0xAA
-static void pnp_exit_conf_state(pnp_devfn_t dev)
-{
-	u16 port = dev >> 8;
-	outb(FINTEK_EXIT_KEY, port);
-}
-
 static void gpio_init(pnp_devfn_t dev)
 {
 	pnp_enter_conf_state(dev);

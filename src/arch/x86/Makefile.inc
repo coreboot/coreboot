@@ -34,6 +34,11 @@ cbfs-files-$(CONFIG_VGA_BIOS) += pci$(stripped_vgabios_id).rom
 pci$(stripped_vgabios_id).rom-file := $(call strip_quotes,$(CONFIG_VGA_BIOS_FILE))
 pci$(stripped_vgabios_id).rom-type := optionrom
 
+stripped_second_vbios_id = $(call strip_quotes,$(CONFIG_VGA_BIOS_SECOND_ID))
+cbfs-files-$(CONFIG_VGA_BIOS_SECOND) += pci$(stripped_second_vbios_id).rom
+pci$(stripped_second_vbios_id).rom-file := $(call strip_quotes,$(CONFIG_VGA_BIOS_SECOND_FILE))
+pci$(stripped_second_vbios_id).rom-type := optionrom
+
 stripped_vgabios_dgpu_id = $(call strip_quotes,$(CONFIG_VGA_BIOS_DGPU_ID))
 cbfs-files-$(CONFIG_VGA_BIOS_DGPU) += pci$(stripped_vgabios_dgpu_id).rom
 pci$(stripped_vgabios_dgpu_id).rom-file := $(call strip_quotes,$(CONFIG_VGA_BIOS_DGPU_FILE))

@@ -165,7 +165,7 @@ static void pciexp_configure_ltr(struct device *dev)
 	cap = pci_find_capability(dev, PCI_CAP_ID_PCIE);
 
 	/*
-	 * Check if capibility pointer is valid and
+	 * Check if capability pointer is valid and
 	 * device supports LTR mechanism.
 	 */
 	if (!cap || !pciexp_is_ltr_supported(dev, cap)) {

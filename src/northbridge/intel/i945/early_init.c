@@ -837,6 +837,7 @@ static void ich7_setup_root_complex_topology(void)
 
 static void ich7_setup_pci_express(void)
 {
+	/* Enable PCIe Root Port Clock Gate */
 	RCBA32(CG) |= (1 << 0);
 
 	/* Initialize slot power limit for root ports */

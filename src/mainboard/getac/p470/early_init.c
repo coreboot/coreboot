@@ -138,9 +138,6 @@ void mainboard_late_rcba_config(void)
 	/* Disable unused devices */
 	RCBA32(FD) |= FD_INTLAN;
 
-	/* Enable PCIe Root Port Clock Gate */
-	// RCBA32(0x341c) = 0x00000001;
-
 	/* This should probably go into the ACPI enable trap */
 	/* Set up I/O Trap #0 for 0xfe00 (SMIC) */
 	RCBA32(0x1e84) = 0x00020001;

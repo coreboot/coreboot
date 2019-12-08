@@ -32,9 +32,6 @@ void mainboard_late_rcba_config(void)
 
 	/* Disable unused devices */
 	RCBA32(FD) |= FD_INTLAN;
-
-	/* Enable PCIe Root Port Clock Gate */
-	// RCBA32(0x341c) = 0x00000001;
 }
 
 void bootblock_mainboard_early_init(void)

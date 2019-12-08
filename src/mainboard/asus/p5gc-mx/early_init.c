@@ -94,7 +94,7 @@ static u8 msr_get_fsb(void)
 
 void mainboard_late_rcba_config(void)
 {
-	/* Enable PCIe Root Port Clock Gate */
+	/* Enable only PCIe Root Port Clock Gate */
 	RCBA32(CG) = 0x00000001;
 }
 

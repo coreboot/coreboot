@@ -110,7 +110,4 @@ void mainboard_late_rcba_config(void)
 	RCBA16(D29IR) = 0x0237;
 	RCBA16(D28IR) = 0x3201;
 	RCBA16(D27IR) = 0x0146;
-
-	/* Enable PCIe Root Port Clock Gate */
-	// RCBA32(0x341c) = 0x00000001;
 }

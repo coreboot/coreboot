@@ -35,6 +35,13 @@
 	0x8d, 0x09, 0x11, 0xcf, 0x8b, 0x9f, 0x03, 0x23	\
 }
 
+/* Memory Channel Present Status */
+enum {
+	CHANNEL_NOT_PRESENT,
+	CHANNEL_DISABLED,
+	CHANNEL_PRESENT
+};
+
 /* Save the DIMM information for SMBIOS table 17 */
 static void save_dimm_info(void)
 {

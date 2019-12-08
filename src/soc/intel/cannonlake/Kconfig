@@ -24,6 +24,7 @@ config SOC_INTEL_COFFEELAKE
 	bool
 	select SOC_INTEL_CANNONLAKE_BASE
 	select FSP_USES_CB_STACK
+	select HAVE_INTEL_FSP_REPO
 	help
 	  Intel Coffeelake support
 
@@ -31,6 +32,7 @@ config SOC_INTEL_WHISKEYLAKE
 	bool
 	select SOC_INTEL_CANNONLAKE_BASE
 	select FSP_USES_CB_STACK
+	select HAVE_INTEL_FSP_REPO
 	help
 	  Intel Whiskeylake support
 
@@ -39,6 +41,7 @@ config SOC_INTEL_COMETLAKE
 	select SOC_INTEL_CANNONLAKE_BASE
 	select MICROCODE_BLOB_UNDISCLOSED
 	select FSP_USES_CB_STACK
+	select HAVE_INTEL_FSP_REPO
 	help
 	  Intel Cometlake support
 

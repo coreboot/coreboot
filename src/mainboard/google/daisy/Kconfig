@@ -58,4 +58,8 @@ config UART_FOR_CONSOLE
 	int
 	default 3
 
+config PMIC_BUS
+	int
+	default 0
+
 endif # BOARD_GOOGLE_DAISY

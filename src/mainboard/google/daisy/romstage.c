@@ -36,8 +36,6 @@
 
 #include "exynos5250.h"
 
-#define PMIC_BUS	0
-
 static void setup_power(int is_resume)
 {
 	int error = 0;
@@ -63,26 +61,26 @@ static void setup_power(int is_resume)
 	 *
 	 * Disable Coin BATT Charging
 	 */
-	error = max77686_disable_backup_batt(PMIC_BUS);
+	error = max77686_disable_backup_batt(CONFIG_PMIC_BUS);
 
-	error |= max77686_volsetting(PMIC_BUS, PMIC_BUCK2, VDD_ARM_MV,
+	error |= max77686_volsetting(CONFIG_PMIC_BUS, PMIC_BUCK2, VDD_ARM_MV,
 						REG_ENABLE, MAX77686_MV);
-	error |= max77686_volsetting(PMIC_BUS, PMIC_BUCK3, VDD_INT_UV,
+	error |= max77686_volsetting(CONFIG_PMIC_BUS, PMIC_BUCK3, VDD_INT_UV,
 						REG_ENABLE, MAX77686_UV);
-	error |= max77686_volsetting(PMIC_BUS, PMIC_BUCK1, VDD_MIF_MV,
+	error |= max77686_volsetting(CONFIG_PMIC_BUS, PMIC_BUCK1, VDD_MIF_MV,
 						REG_ENABLE, MAX77686_MV);
-	error |= max77686_volsetting(PMIC_BUS, PMIC_BUCK4, VDD_G3D_MV,
+	error |= max77686_volsetting(CONFIG_PMIC_BUS, PMIC_BUCK4, VDD_G3D_MV,
 						REG_ENABLE, MAX77686_MV);
-	error |= max77686_volsetting(PMIC_BUS, PMIC_LDO2, VDD_LDO2_MV,
+	error |= max77686_volsetting(CONFIG_PMIC_BUS, PMIC_LDO2, VDD_LDO2_MV,
 						REG_ENABLE, MAX77686_MV);
-	error |= max77686_volsetting(PMIC_BUS, PMIC_LDO3, VDD_LDO3_MV,
+	error |= max77686_volsetting(CONFIG_PMIC_BUS, PMIC_LDO3, VDD_LDO3_MV,
 						REG_ENABLE, MAX77686_MV);
-	error |= max77686_volsetting(PMIC_BUS, PMIC_LDO5, VDD_LDO5_MV,
+	error |= max77686_volsetting(CONFIG_PMIC_BUS, PMIC_LDO5, VDD_LDO5_MV,
 						REG_ENABLE, MAX77686_MV);
-	error |= max77686_volsetting(PMIC_BUS, PMIC_LDO10, VDD_LDO10_MV,
+	error |= max77686_volsetting(CONFIG_PMIC_BUS, PMIC_LDO10, VDD_LDO10_MV,
 						REG_ENABLE, MAX77686_MV);
 
-	error |= max77686_enable_32khz_cp(PMIC_BUS);
+	error |= max77686_enable_32khz_cp(CONFIG_PMIC_BUS);
 
 	if (error) {
 		printk(BIOS_CRIT, "%s: PMIC error: %#x\n", __func__, error);

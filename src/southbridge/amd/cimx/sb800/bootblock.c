@@ -29,11 +29,11 @@ static void enable_rom(void)
 	 * BIT29: Port Enable for KBC port 0x60 and 0x64
 	 * BIT30: Port Enable for ACPI Micro-Controller port 0x66 and 0x62
 	 */
-	dword = pci_io_read_config32(dev, 0x44);
+	dword = pci_s_read_config32(dev, 0x44);
 	//dword |= (1<<6) | (1<<29) | (1<<30);
 	/* Turn on all of LPC IO Port decode enable */
 	dword = 0xffffffff;
-	pci_io_write_config32(dev, 0x44, dword);
+	pci_s_write_config32(dev, 0x44, dword);
 
 	/* SB800 LPC Bridge 0:20:3:48h.
 	 * BIT0: Port Enable for SuperIO 0x2E-0x2F
@@ -42,14 +42,14 @@ static void enable_rom(void)
 	 * BIT6: Port Enable for RTC IO 0x70-0x73
 	 * BIT21: Port Enable for Port 0x80
 	 */
-	dword = pci_io_read_config32(dev, 0x48);
+	dword = pci_s_read_config32(dev, 0x48);
 	dword |= (1 << 0) | (1 << 1) | (1 << 4) | (1 << 6) | (1 << 21);
-	pci_io_write_config32(dev, 0x48, dword);
+	pci_s_write_config32(dev, 0x48, dword);
 
 	/* Enable ROM access */
-	word = pci_io_read_config16(dev, 0x6c);
+	word = pci_s_read_config16(dev, 0x6c);
 	word = 0x10000 - (CONFIG_COREBOOT_ROMSIZE_KB >> 6);
-	pci_io_write_config16(dev, 0x6c, word);
+	pci_s_write_config16(dev, 0x6c, word);
 }
 
 static void enable_prefetch(void)
@@ -58,8 +58,8 @@ static void enable_prefetch(void)
 	pci_devfn_t dev = PCI_DEV(0, 0x14, 0x03);
 
 	/* Enable PrefetchEnSPIFromHost */
-	dword = pci_io_read_config32(dev, 0xb8);
-	pci_io_write_config32(dev, 0xb8, dword | (1 << 24));
+	dword = pci_s_read_config32(dev, 0xb8);
+	pci_s_write_config32(dev, 0xb8, dword | (1 << 24));
 }
 
 static void enable_spi_fast_mode(void)
@@ -69,15 +69,15 @@ static void enable_spi_fast_mode(void)
 
 	// set temp MMIO base
 	volatile u32 *spi_base = (void *)0xa0000000;
-	u32 save = pci_io_read_config32(dev, 0xa0);
-	pci_io_write_config32(dev, 0xa0, (u32) spi_base | 2);
+	u32 save = pci_s_read_config32(dev, 0xa0);
+	pci_s_write_config32(dev, 0xa0, (u32) spi_base | 2);
 
 	// early enable of SPI 33 MHz fast mode read
 	dword = spi_base[3];
 	spi_base[3] = (dword & ~(3 << 14)) | (1 << 14);
 	spi_base[0] = spi_base[0] | (1 << 18);	// fast read enable
 
-	pci_io_write_config32(dev, 0xa0, save);
+	pci_s_write_config32(dev, 0xa0, save);
 }
 
 static void enable_clocks(void)

@@ -59,8 +59,13 @@ struct soc_intel_cannonlake_config {
 	uint32_t gen3_dec;
 	uint32_t gen4_dec;
 
+	/* S0ix configuration */
+
 	/* Enable S0iX support */
 	int s0ix_enable;
+	/* Enable Audio DSP oscillator qualification for S0ix */
+	uint8_t cppmvric2_adsposcdis;
+
 	/* Enable DPTF support */
 	int dptf_enable;
 

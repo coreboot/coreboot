@@ -91,11 +91,18 @@ static void pch_finalize(void)
 		write8(pmcbase + PCH_PWRM_ACPI_TMR_CTL, reg8);
 	}
 
-	/* Disable XTAL shutdown qualification for low power idle. */
 	if (config->s0ix_enable) {
+		/* Disable XTAL shutdown qualification for low power idle. */
 		reg32 = read32(pmcbase + CPPMVRIC);
 		reg32 |= XTALSDQDIS;
 		write32(pmcbase + CPPMVRIC, reg32);
+
+		if (config->cppmvric2_adsposcdis) {
+			/* Enable Audio DSP OSC qualification for S0ix */
+			reg32 = read32(pmcbase + CPPMVRIC2);
+			reg32 &= ~ADSPOSCDIS;
+			write32(pmcbase + CPPMVRIC2, reg32);
+		}
 	}
 
 	pch_handle_sideband(config);

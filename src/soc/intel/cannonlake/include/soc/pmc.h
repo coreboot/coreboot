@@ -156,6 +156,9 @@
 #define CPPMVRIC			0x1B1C
 #define   XTALSDQDIS			(1 << 22)
 
+#define CPPMVRIC2			0x1B4C
+#define   ADSPOSCDIS			(1 << 22)
+
 #define IRQ_REG				ACTL
 #define SCI_IRQ_ADJUST			0
 #define ACTL				0x1BD8

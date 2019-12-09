@@ -20,6 +20,7 @@
 #include <arch/io.h>
 #include <device/pci_ops.h>
 #include <console/console.h>
+#include <amdblocks/acpimmio.h>
 
 #include "hudson.h"
 
@@ -73,13 +74,6 @@ void hudson_lpc_port80(void)
 	u8 byte;
 	pci_devfn_t dev;
 
-	/* Enable LPC controller */
-	outb(0xEC, 0xCD6);
-	byte = inb(0xCD7);
-	byte |= 1;
-	outb(0xEC, 0xCD6);
-	outb(byte, 0xCD7);
-
 	/* Enable port 80 LPC decode in pci function 3 configuration space. */
 	dev = PCI_DEV(0, 0x14, 3);
 	byte = pci_read_config8(dev, 0x4a);
@@ -91,6 +85,9 @@ void hudson_lpc_decode(void)
 {
 	pci_devfn_t dev;
 	u32 tmp;
+
+	/* Enable LPC controller */
+	pm_write8(0xec, pm_read8(0xec) | 0x01);
 
 	dev = PCI_DEV(0, 0x14, 3);
 	/* Serial port numeration on Hudson:

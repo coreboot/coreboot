@@ -74,8 +74,8 @@ void bootblock_soc_early_init(void)
 	u32 data;
 
 	bootblock_southbridge_init();
-	hudson_lpc_decode();
 	enable_acpimmio_decode_pm24();
+	hudson_lpc_decode();
 
 	if (CONFIG(POST_DEVICE_PCI_PCIE))
 		hudson_pci_port80();

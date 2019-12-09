@@ -55,13 +55,13 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_E23, NONE),
 	/* F1 : GPP_F1 ==> NC */
 	PAD_NC(GPP_F1, NONE),
-	/* F11 : PCH_MEM_STRAP2 */
+	/* F11 : PCH_MEM_STRAP_2 */
 	PAD_CFG_GPI(GPP_F11, NONE, PLTRST),
-	/* F20 : PCH_MEM_STRAP0 */
+	/* F20 : PCH_MEM_STRAP_0 */
 	PAD_CFG_GPI(GPP_F20, NONE, PLTRST),
-	/* F21 : PCH_MEM_STRAP1 */
+	/* F21 : PCH_MEM_STRAP_1 */
 	PAD_CFG_GPI(GPP_F21, NONE, PLTRST),
-	/* F22 : PCH_MEM_STRAP3 */
+	/* F22 : PCH_MEM_STRAP_3 */
 	PAD_CFG_GPI(GPP_F22, NONE, PLTRST),
 	/* G0 : GPP_G0 ==> NC  */
 	PAD_NC(GPP_G0, NONE),

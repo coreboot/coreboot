@@ -53,11 +53,6 @@ int vboot_locate_firmware(const struct vb2_context *ctx,
 			  struct region_device *fw);
 
 /*
- * Source: security/vboot/vboot_handoff.c
- */
-void vboot_fill_handoff(void);
-
-/*
  * Source: security/vboot/bootmode.c
  */
 void vboot_save_recovery_reason_vbnv(void);

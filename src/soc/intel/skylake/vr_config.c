@@ -31,9 +31,9 @@ static const struct vr_config default_configs[NUM_VR_DOMAINS] = {
 		.psi3threshold = VR_CFG_AMP(1),
 		.psi3enable = 0,
 		.psi4enable = 0,
-		.imon_slope = 0x0,
-		.imon_offset = 0x0,
-		.icc_max = VR_CFG_AMP(7),
+		.imon_slope = 0,
+		.imon_offset = 0,
+		.icc_max = 0,
 		.voltage_limit = 1520,
 	},
 	[VR_IA_CORE] = {
@@ -43,9 +43,9 @@ static const struct vr_config default_configs[NUM_VR_DOMAINS] = {
 		.psi3threshold = VR_CFG_AMP(1),
 		.psi3enable = 0,
 		.psi4enable = 0,
-		.imon_slope = 0x0,
-		.imon_offset = 0x0,
-		.icc_max = VR_CFG_AMP(34),
+		.imon_slope = 0,
+		.imon_offset = 0,
+		.icc_max = 0,
 		.voltage_limit = 1520,
 	},
 	[VR_GT_UNSLICED] = {
@@ -55,9 +55,9 @@ static const struct vr_config default_configs[NUM_VR_DOMAINS] = {
 		.psi3threshold = VR_CFG_AMP(1),
 		.psi3enable = 0,
 		.psi4enable = 0,
-		.imon_slope = 0x0,
-		.imon_offset = 0x0,
-		.icc_max = VR_CFG_AMP(35),
+		.imon_slope = 0,
+		.imon_offset = 0,
+		.icc_max = 0,
 		.voltage_limit = 1520,
 	},
 	[VR_GT_SLICED] = {
@@ -67,9 +67,9 @@ static const struct vr_config default_configs[NUM_VR_DOMAINS] = {
 		.psi3threshold = VR_CFG_AMP(1),
 		.psi3enable = 0,
 		.psi4enable = 0,
-		.imon_slope = 0x0,
-		.imon_offset = 0x0,
-		.icc_max = VR_CFG_AMP(35),
+		.imon_slope = 0,
+		.imon_offset = 0,
+		.icc_max = 0,
 		.voltage_limit = 1520,
 	},
 };
@@ -334,6 +334,7 @@ void fill_vr_domain_config(void *params,
 	vr_params->Psi4Enable[domain] = cfg->psi4enable;
 	vr_params->ImonSlope[domain] = cfg->imon_slope;
 	vr_params->ImonOffset[domain] = cfg->imon_offset;
+
 	/* If board provided non-zero value, use it. */
 	if (cfg->icc_max)
 		vr_params->IccMax[domain] = cfg->icc_max;

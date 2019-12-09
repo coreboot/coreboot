@@ -9,7 +9,7 @@ chip soc/intel/braswell
 	register "PcdMrcInitMmioSize" = "0x0800"
 	register "PcdMrcInitSpdAddr1" = "0xa0"
 	register "PcdMrcInitSpdAddr2" = "0xa2"
-	register "PcdIgdDvmt50PreAlloc" = "1"
+	register "PcdIgdDvmt50PreAlloc" = "IGD_MEMSIZE_32MB"
 	register "PcdApertureSize" = "2"
 	register "PcdGttSize" = "1"
 	register "PcdDvfsEnable" = "0"

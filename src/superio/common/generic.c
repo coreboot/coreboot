@@ -21,6 +21,9 @@ static void generic_set_resources(struct device *dev)
 {
 	struct resource *res;
 
+	if (dev->link_list)
+		assign_resources(dev->link_list);
+
 	for (res = dev->resource_list; res; res = res->next) {
 		if (!(res->flags & IORESOURCE_ASSIGNED))
 			continue;
@@ -167,6 +170,7 @@ static struct device_operations ops = {
 	.read_resources   = generic_read_resources,
 	.set_resources    = generic_set_resources,
 	.enable_resources = DEVICE_NOOP,
+	.scan_bus	  = scan_static_bus,
 #if CONFIG(HAVE_ACPI_TABLES)
 	.acpi_fill_ssdt_generator = generic_ssdt,
 	.acpi_name = generic_acpi_name,
@@ -182,11 +186,6 @@ static void enable_dev(struct device *dev)
 	else
 		dev->ops = &ops;
 
-	/*
-	 * Need to call enable_dev() on the devices "behind" the Generic Super I/O.
-	 * coreboot's generic allocator doesn't expect them behind PnP devices.
-	 */
-	enable_static_devices(dev);
 }
 
 struct chip_operations superio_common_ops = {

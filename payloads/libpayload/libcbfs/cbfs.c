@@ -106,7 +106,7 @@ void * cbfs_load_stage(struct cbfs_media *media, const char *name)
 	if (stage == NULL)
 		return (void *) -1;
 
-	LOG("loading stage %s @ 0x%p (%d bytes), entry @ 0x%llx\n",
+	LOG("loading stage %s @ %p (%d bytes), entry @ 0x%llx\n",
 			name,
 			(void*)(uintptr_t) stage->load, stage->memlen,
 			stage->entry);
@@ -215,7 +215,7 @@ void *cbfs_simple_buffer_unmap(struct cbfs_simple_buffer *buffer,
 			       const void *address) {
 	// TODO Add simple buffer management so we can free more than last
 	// allocated one.
-	DEBUG("simple_buffer_unmap(address=0x%p): "
+	DEBUG("simple_buffer_unmap(address=%p): "
 	      "allocated=%zu, size=%zu, last_allocate=%zu\n",
 	    address, buffer->allocated, buffer->size,
 	    buffer->last_allocate);

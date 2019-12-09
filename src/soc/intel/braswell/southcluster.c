@@ -618,7 +618,7 @@ static void finalize_chipset(void *unused)
 	uint8_t *spi = (uint8_t *)SPI_BASE_ADDRESS;
 	struct vscc_config cfg;
 
-	printk(BIOS_SPEW, "%s/%s (0x%p)\n",
+	printk(BIOS_SPEW, "%s/%s (%p)\n",
 			__FILE__, __func__, unused);
 
 	/* Set the lock enable on the BIOS control register. */

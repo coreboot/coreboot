@@ -56,7 +56,7 @@ void fsp_verify_memory_init_hobs(void)
 	}
 
 	if (range_entry_end(&tolum) != (uintptr_t)cbmem_top()) {
-		printk(BIOS_CRIT, "TOLUM end: 0x%08llx != 0x%p: cbmem_top\n",
+		printk(BIOS_CRIT, "TOLUM end: 0x%08llx != %p: cbmem_top\n",
 			range_entry_end(&tolum), cbmem_top());
 		die("Space between cbmem_top and BIOS TOLUM!\n");
 	}

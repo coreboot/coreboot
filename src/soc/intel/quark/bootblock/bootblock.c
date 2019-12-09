@@ -118,6 +118,6 @@ void bootblock_soc_init(void)
 void platform_prog_run(struct prog *prog)
 {
 	/* Display the program entry point */
-	printk(BIOS_SPEW, "Calling %s, 0x%p(0x%p)\n", prog->name,
+	printk(BIOS_SPEW, "Calling %s, %p(%p)\n", prog->name,
 		prog->entry, prog->arg);
 }

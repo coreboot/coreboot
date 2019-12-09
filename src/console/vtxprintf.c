@@ -220,10 +220,11 @@ repeat:
 			continue;
 
 		case 'p':
-			if (field_width == -1) {
-				field_width = 2*sizeof(void *);
-				flags |= ZEROPAD;
-			}
+			/* even on 64-bit systems, coreboot only resides in the
+			   low 4GB so pad pointers to 32-bit for readability. */
+			if (field_width == -1 && precision == -1)
+				precision = 2*sizeof(uint32_t);
+			flags |= SPECIAL;
 			count += number(tx_byte,
 				(unsigned long) va_arg(args, void *), 16,
 				field_width, precision, flags, data);

@@ -40,7 +40,7 @@ void fsp_temp_ram_exit(void)
 		die("Invalid FSPM header!\n");
 
 	temp_ram_exit = (void *)(hdr.image_base + hdr.temp_ram_exit_entry);
-	printk(BIOS_DEBUG, "Calling TempRamExit: 0x%p\n", temp_ram_exit);
+	printk(BIOS_DEBUG, "Calling TempRamExit: %p\n", temp_ram_exit);
 	status = temp_ram_exit(NULL);
 
 	if (status != FSP_SUCCESS) {

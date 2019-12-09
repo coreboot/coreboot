@@ -48,7 +48,7 @@
 #if QUP_DEBUG
 #define qup_write32(a, v) do {				\
 	write32(a, v);					\
-	printk(QUPDBG "%s(%d): write32(0x%p, 0x%x)\n",	\
+	printk(QUPDBG "%s(%d): write32(%p, 0x%x)\n",	\
 			__func__, __LINE__, a, v);	\
 } while (0)
 #else

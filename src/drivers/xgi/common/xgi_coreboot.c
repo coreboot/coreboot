@@ -126,13 +126,13 @@ int xgifb_probe(struct pci_dev *pdev, struct xgifb_video_info *xgifb_info)
 	xgifb_info->mmio_vbase = (void *)(intptr_t)xgifb_info->mmio_base;
 
 	dev_info(&pdev->dev,
-		 "Framebuffer at 0x%Lx, mapped to 0x%p, size %dk\n",
+		 "Framebuffer at 0x%Lx, mapped to %p, size %dk\n",
 		 (u64) xgifb_info->video_base,
 		 xgifb_info->video_vbase,
 		 xgifb_info->video_size / 1024);
 
 	dev_info(&pdev->dev,
-		 "MMIO at 0x%Lx, mapped to 0x%p, size %ldk\n",
+		 "MMIO at 0x%Lx, mapped to %p, size %ldk\n",
 		 (u64) xgifb_info->mmio_base, xgifb_info->mmio_vbase,
 		 xgifb_info->mmio_size / 1024);
 

@@ -32,7 +32,7 @@ static void ioapic_init(struct device *dev)
 	ioapic_base = config->base;
 	ioapic_id = config->apicid;
 
-	printk(BIOS_DEBUG, "IOAPIC: Initializing IOAPIC at 0x%p\n",
+	printk(BIOS_DEBUG, "IOAPIC: Initializing IOAPIC at %p\n",
 	       ioapic_base);
 	printk(BIOS_DEBUG, "IOAPIC: Bootstrap Processor Local APIC = 0x%02x\n",
 	       bsp_lapicid);

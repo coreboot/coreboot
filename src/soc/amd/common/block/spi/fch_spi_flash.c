@@ -200,7 +200,7 @@ static int fch_spi_flash_write(const struct spi_flash *flash, uint32_t offset, s
 		cmd[2] = (offset >> 8) & 0xff;
 		cmd[3] = offset & 0xff;
 #if CONFIG(SOC_AMD_COMMON_BLOCK_SPI_DEBUG)
-		printk(BIOS_DEBUG, "PP: 0x%p => cmd = { 0x%02x 0x%02x%02x%02x } chunk_len = %zu"
+		printk(BIOS_DEBUG, "PP: %p => cmd = { 0x%02x 0x%02x%02x%02x } chunk_len = %zu"
 				"\n", buf + actual, cmd[0], cmd[1], cmd[2], cmd[3], chunk_len);
 #endif
 

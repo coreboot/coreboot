@@ -265,7 +265,7 @@ static int eon_write(const struct spi_flash *flash,
 
 #if CONFIG(DEBUG_SPI_FLASH)
 		printk(BIOS_SPEW,
-		    "PP: 0x%p => cmd = { 0x%02x 0x%02x%02x%02x } chunk_len = %zu\n",
+		    "PP: %p => cmd = { 0x%02x 0x%02x%02x%02x } chunk_len = %zu\n",
 		     buf + actual, cmd[0], cmd[1], cmd[2], cmd[3], chunk_len);
 #endif
 

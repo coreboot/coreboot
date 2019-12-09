@@ -81,10 +81,10 @@ void fsp_run_silicon_init(FSP_INFO_HEADER *fsp_info_header, int is_s3_wakeup)
 	/* Initialize the UPD values */
 	vpd_ptr = (VPD_DATA_REGION *)(fsp_info_header->CfgRegionOffset +
 					fsp_info_header->ImageBase);
-	printk(BIOS_DEBUG, "0x%p: VPD Data\n", vpd_ptr);
+	printk(BIOS_DEBUG, "%p: VPD Data\n", vpd_ptr);
 	upd_ptr = (UPD_DATA_REGION *)(vpd_ptr->PcdUpdRegionOffset +
 					fsp_info_header->ImageBase);
-	printk(BIOS_DEBUG, "0x%p: UPD Data\n", upd_ptr);
+	printk(BIOS_DEBUG, "%p: UPD Data\n", upd_ptr);
 	original_params = (void *)((u8 *)upd_ptr +
 		upd_ptr->SiliconInitUpdOffset);
 	memcpy(&silicon_init_params, original_params,
@@ -114,7 +114,7 @@ void fsp_run_silicon_init(FSP_INFO_HEADER *fsp_info_header, int is_s3_wakeup)
 	fsp_silicon_init = (FSP_SILICON_INIT)(fsp_info_header->ImageBase
 		+ fsp_info_header->FspSiliconInitEntryOffset);
 	timestamp_add_now(TS_FSP_SILICON_INIT_START);
-	printk(BIOS_DEBUG, "Calling FspSiliconInit(0x%p) at 0x%p\n",
+	printk(BIOS_DEBUG, "Calling FspSiliconInit(%p) at %p\n",
 		&silicon_init_params, fsp_silicon_init);
 	post_code(POST_FSP_SILICON_INIT);
 	status = fsp_silicon_init(&silicon_init_params);

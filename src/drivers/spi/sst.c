@@ -171,7 +171,7 @@ sst_byte_write(const struct spi_flash *flash, u32 offset, const void *buf)
 	};
 
 #if CONFIG(DEBUG_SPI_FLASH)
-	printk(BIOS_SPEW, "BP[%02x]: 0x%p => cmd = { 0x%02x 0x%06x }\n",
+	printk(BIOS_SPEW, "BP[%02x]: %p => cmd = { 0x%02x 0x%06x }\n",
 		spi_w8r8(&flash->spi, CMD_SST_RDSR), buf, cmd[0], offset);
 #endif
 
@@ -225,7 +225,7 @@ static int sst_write_256(const struct spi_flash *flash, u32 offset, size_t len,
 		cmd[2] = (offset >> 8) & 0xff;
 		cmd[3] = offset & 0xff;
 #if CONFIG(DEBUG_SPI_FLASH)
-		printk(BIOS_SPEW, "PP: 0x%p => cmd = { 0x%02x 0x%02x%02x%02x }"
+		printk(BIOS_SPEW, "PP: %p => cmd = { 0x%02x 0x%02x%02x%02x }"
 		     " chunk_len = %zu\n",
 		     buf + actual, cmd[0], cmd[1], cmd[2], cmd[3], chunk_len);
 #endif
@@ -287,7 +287,7 @@ static int sst_write_ai(const struct spi_flash *flash, u32 offset, size_t len,
 
 	for (; actual < len - 1; actual += 2) {
 #if CONFIG(DEBUG_SPI_FLASH)
-		printk(BIOS_SPEW, "WP[%02x]: 0x%p => cmd = { 0x%02x 0x%06x }\n",
+		printk(BIOS_SPEW, "WP[%02x]: %p => cmd = { 0x%02x 0x%06x }\n",
 		     spi_w8r8(&flash->spi, CMD_SST_RDSR), buf + actual, cmd[0],
 		     offset);
 #endif

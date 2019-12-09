@@ -209,7 +209,7 @@ int platform_i2c_transfer(unsigned int bus, struct i2c_msg *segment,
 			if (index == 0)
 				printk(BIOS_ERR, "I2C Start\n");
 			printk(BIOS_ERR,
-				"I2C segment[%d]: %s 0x%02x %s 0x%p, 0x%08x bytes\n",
+				"I2C segment[%d]: %s 0x%02x %s %p, 0x%08x bytes\n",
 				index,
 				(segment[index].flags & I2C_M_RD) ? "Read from" : "Write to",
 				segment[index].slave,

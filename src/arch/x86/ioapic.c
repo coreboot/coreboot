@@ -73,7 +73,7 @@ void set_ioapic_id(void *ioapic_base, u8 ioapic_id)
 	u32 bsp_lapicid = lapicid();
 	int i;
 
-	printk(BIOS_DEBUG, "IOAPIC: Initializing IOAPIC at 0x%p\n",
+	printk(BIOS_DEBUG, "IOAPIC: Initializing IOAPIC at %p\n",
 	       ioapic_base);
 	printk(BIOS_DEBUG, "IOAPIC: Bootstrap Processor Local APIC = 0x%02x\n",
 	       bsp_lapicid);

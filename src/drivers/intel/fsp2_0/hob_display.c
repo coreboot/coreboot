@@ -186,12 +186,12 @@ void fsp_display_hobs(void)
 
 	/* Display the HOB list pointer */
 	printk(BIOS_SPEW, "\n=== FSP HOBs ===\n");
-	printk(BIOS_SPEW, "0x%p: hob_list_ptr\n", hob);
+	printk(BIOS_SPEW, "%p: hob_list_ptr\n", hob);
 
 	/* Walk the list of HOBs */
 	while (1) {
 		/* Display the HOB header */
-		printk(BIOS_SPEW, "0x%p, 0x%08x bytes: %s\n", hob, hob->length,
+		printk(BIOS_SPEW, "%p, 0x%08x bytes: %s\n", hob, hob->length,
 			fsp_get_hob_type_name(hob));
 		switch (hob->type) {
 		default:

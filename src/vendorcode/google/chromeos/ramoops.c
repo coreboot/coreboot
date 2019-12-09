@@ -32,7 +32,7 @@ static void set_ramoops(chromeos_acpi_t *chromeos, void *ram_oops, size_t size)
 		return;
 	}
 
-	printk(BIOS_DEBUG, "Ramoops buffer: 0x%zx@0x%p.\n", size, ram_oops);
+	printk(BIOS_DEBUG, "Ramoops buffer: 0x%zx@%p.\n", size, ram_oops);
 	chromeos->ramoops_base = (uintptr_t)ram_oops;
 	chromeos->ramoops_len = size;
 }

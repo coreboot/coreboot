@@ -26,7 +26,7 @@ void __cyg_profile_func_enter(void *func, void *callsite)
 		return;
 
 	DISABLE_TRACE
-	printk(BIOS_INFO, "~0x%p(0x%p)\n", func, callsite);
+	printk(BIOS_INFO, "~%p(%p)\n", func, callsite);
 	ENABLE_TRACE
 }
 

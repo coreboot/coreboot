@@ -32,7 +32,7 @@ static void fspm_display_arch_params(const FSPM_ARCH_UPD *old,
 	const FSPM_ARCH_UPD *new)
 {
 	/* Display the architectural parameters for MemoryInit */
-	printk(BIOS_SPEW, "Architectural UPD values for MemoryInit at: 0x%p\n",
+	printk(BIOS_SPEW, "Architectural UPD values for MemoryInit at: %p\n",
 		new);
 	fsp_display_upd_value("Revision", sizeof(old->Revision),
 		old->Revision, new->Revision);

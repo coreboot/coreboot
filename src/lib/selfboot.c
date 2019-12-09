@@ -56,7 +56,7 @@ static int segment_targets_type(void *dest, unsigned long memsz,
 	if (payload_arch_usable_ram_quirk(d, memsz))
 		return 1;
 
-	printk(BIOS_ERR, "SELF segment doesn't target RAM: 0x%p, %lu bytes\n", dest, memsz);
+	printk(BIOS_ERR, "SELF segment doesn't target RAM: %p, %lu bytes\n", dest, memsz);
 	bootmem_dump_ranges();
 	return 0;
 }
@@ -69,7 +69,7 @@ static int load_one_segment(uint8_t *dest,
 			    int flags)
 {
 		unsigned char *middle, *end;
-		printk(BIOS_DEBUG, "Loading Segment: addr: 0x%p memsz: 0x%016zx filesz: 0x%016zx\n",
+		printk(BIOS_DEBUG, "Loading Segment: addr: %p memsz: 0x%016zx filesz: 0x%016zx\n",
 		       dest, memsz, len);
 
 		/* Compute the boundaries of the segment */
@@ -150,7 +150,7 @@ static int check_payload_segments(struct cbfs_payload_segment *cbfssegs,
 	enum bootmem_type dest_type = *(enum bootmem_type *)args;
 
 	for (seg = cbfssegs;; ++seg) {
-		printk(BIOS_DEBUG, "Checking segment from ROM address 0x%p\n", seg);
+		printk(BIOS_DEBUG, "Checking segment from ROM address %p\n", seg);
 		cbfs_decode_payload_segment(&segment, seg);
 		dest = (uint8_t *)(uintptr_t)segment.load_addr;
 		memsz = segment.mem_len;
@@ -171,7 +171,7 @@ static int load_payload_segments(struct cbfs_payload_segment *cbfssegs, uintptr_
 	int flags = 0;
 
 	for (first_segment = seg = cbfssegs;; ++seg) {
-		printk(BIOS_DEBUG, "Loading segment from ROM address 0x%p\n", seg);
+		printk(BIOS_DEBUG, "Loading segment from ROM address %p\n", seg);
 
 		cbfs_decode_payload_segment(&segment, seg);
 		dest = (uint8_t *)(uintptr_t)segment.load_addr;
@@ -187,7 +187,7 @@ static int load_payload_segments(struct cbfs_payload_segment *cbfssegs, uintptr_
 				?  "code" : "data", segment.compression);
 			src = ((uint8_t *)first_segment) + segment.offset;
 			printk(BIOS_DEBUG,
-				"  New segment dstaddr 0x%p memsize 0x%zx srcaddr 0x%p filesize 0x%zx\n",
+				"  New segment dstaddr %p memsize 0x%zx srcaddr %p filesize 0x%zx\n",
 			       dest, memsz, src, filesz);
 
 			/* Clean up the values */
@@ -198,7 +198,7 @@ static int load_payload_segments(struct cbfs_payload_segment *cbfssegs, uintptr_
 			break;
 
 		case PAYLOAD_SEGMENT_BSS:
-			printk(BIOS_DEBUG, "  BSS 0x%p (%d byte)\n", (void *)
+			printk(BIOS_DEBUG, "  BSS %p (%d byte)\n", (void *)
 				(intptr_t)segment.load_addr, segment.mem_len);
 			filesz = 0;
 			src = ((uint8_t *)first_segment) + segment.offset;
@@ -206,7 +206,7 @@ static int load_payload_segments(struct cbfs_payload_segment *cbfssegs, uintptr_
 			break;
 
 		case PAYLOAD_SEGMENT_ENTRY:
-			printk(BIOS_DEBUG, "  Entry Point 0x%p\n", (void *)
+			printk(BIOS_DEBUG, "  Entry Point %p\n", (void *)
 				(intptr_t)segment.load_addr);
 
 			*entry = segment.load_addr;

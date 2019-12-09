@@ -687,7 +687,7 @@ static void imdr_print_entries(const struct imdr *imdr, const char *indent,
 			printk(BIOS_DEBUG, "%s", name);
 		printk(BIOS_DEBUG, "%2zu. ", i);
 		printk(BIOS_DEBUG, "%p ", imdr_entry_at(imdr, e));
-		printk(BIOS_DEBUG, "%08zx\n", imdr_entry_size(imdr, e));
+		printk(BIOS_DEBUG, "0x%08zx\n", imdr_entry_size(imdr, e));
 	}
 }
 

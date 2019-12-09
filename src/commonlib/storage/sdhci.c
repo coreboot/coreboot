@@ -722,7 +722,7 @@ static int sdhci_init(struct sdhci_ctrlr *sdhci_ctrlr)
 	if (ctrlr->initialized)
 		return 0;
 
-	sdhc_debug("SDHCI Controller Base Address: 0x%p\n",
+	sdhc_debug("SDHCI Controller Base Address: %p\n",
 			sdhci_ctrlr->ioaddr);
 
 	rv = sdhci_pre_init(sdhci_ctrlr);

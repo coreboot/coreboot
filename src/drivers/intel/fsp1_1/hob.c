@@ -282,7 +282,7 @@ void print_hob_type_structure(u16 hob_type, void *hob_list_ptr)
 	 * the end of the HOB list
 	 */
 	printk(BIOS_DEBUG, "\n=== FSP HOB Data Structure ===\n");
-	printk(BIOS_DEBUG, "0x%p: hob_list_ptr\n", hob_list_ptr);
+	printk(BIOS_DEBUG, "%p: hob_list_ptr\n", hob_list_ptr);
 	do {
 		EFI_HOB_GENERIC_HEADER *current_header_ptr =
 			(EFI_HOB_GENERIC_HEADER *)current_hob;

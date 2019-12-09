@@ -66,10 +66,10 @@ void raminit(struct romstage_params *params)
 	fsp_header = params->chipset_context;
 	vpd_ptr = (VPD_DATA_REGION *)(fsp_header->CfgRegionOffset +
 					fsp_header->ImageBase);
-	printk(BIOS_DEBUG, "VPD Data: 0x%p\n", vpd_ptr);
+	printk(BIOS_DEBUG, "VPD Data: %p\n", vpd_ptr);
 	upd_ptr = (UPD_DATA_REGION *)(vpd_ptr->PcdUpdRegionOffset +
 					fsp_header->ImageBase);
-	printk(BIOS_DEBUG, "UPD Data: 0x%p\n", upd_ptr);
+	printk(BIOS_DEBUG, "UPD Data: %p\n", upd_ptr);
 	original_params = (void *)((u8 *)upd_ptr +
 		upd_ptr->MemoryInitUpdOffset);
 	memcpy(&memory_init_params, original_params,
@@ -110,12 +110,12 @@ void raminit(struct romstage_params *params)
 	/* Call FspMemoryInit to initialize RAM */
 	fsp_memory_init = (FSP_MEMORY_INIT)(fsp_header->ImageBase
 		+ fsp_header->FspMemoryInitEntryOffset);
-	printk(BIOS_DEBUG, "Calling FspMemoryInit: 0x%p\n", fsp_memory_init);
-	printk(BIOS_SPEW, "    0x%p: NvsBufferPtr\n",
+	printk(BIOS_DEBUG, "Calling FspMemoryInit: %p\n", fsp_memory_init);
+	printk(BIOS_SPEW, "    %p: NvsBufferPtr\n",
 		fsp_memory_init_params.NvsBufferPtr);
-	printk(BIOS_SPEW, "    0x%p: RtBufferPtr\n",
+	printk(BIOS_SPEW, "    %p: RtBufferPtr\n",
 		fsp_memory_init_params.RtBufferPtr);
-	printk(BIOS_SPEW, "    0x%p: HobListPtr\n",
+	printk(BIOS_SPEW, "    %p: HobListPtr\n",
 		fsp_memory_init_params.HobListPtr);
 
 	timestamp_add_now(TS_FSP_MEMORY_INIT_START);
@@ -151,7 +151,7 @@ void raminit(struct romstage_params *params)
 	}
 
 	/* Migrate CAR data */
-	printk(BIOS_DEBUG, "0x%p: cbmem_top\n", cbmem_top());
+	printk(BIOS_DEBUG, "%p: cbmem_top\n", cbmem_top());
 	if (!s3wake) {
 		cbmem_initialize_empty_id_size(CBMEM_ID_FSP_RESERVED_MEMORY,
 			fsp_reserved_bytes);
@@ -216,7 +216,7 @@ void raminit(struct romstage_params *params)
 
 	/* Get the address of the CBMEM region for the FSP reserved memory */
 	fsp_reserved_memory_area = cbmem_find(CBMEM_ID_FSP_RESERVED_MEMORY);
-	printk(BIOS_DEBUG, "0x%p: fsp_reserved_memory_area\n",
+	printk(BIOS_DEBUG, "%p: fsp_reserved_memory_area\n",
 		fsp_reserved_memory_area);
 
 	/* Verify the order of CBMEM root and FSP memory */

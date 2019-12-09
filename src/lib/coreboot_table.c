@@ -476,7 +476,7 @@ size_t write_coreboot_forwarding_table(uintptr_t entry, uintptr_t target)
 {
 	struct lb_header *head;
 
-	printk(BIOS_DEBUG, "Writing table forward entry at 0x%p\n",
+	printk(BIOS_DEBUG, "Writing table forward entry at %p\n",
 		(void *)entry);
 
 	head = lb_table_init(entry);

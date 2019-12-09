@@ -58,7 +58,7 @@ AGESA_STATUS OemInitResume(S3_DATA_BLOCK *dataBlock)
 
 	dataBlock->NvStorage = base;
 	dataBlock->NvStorageSize = size;
-	printk(BIOS_SPEW, "S3 NV data @0x%p, 0x%0zx bytes\n",
+	printk(BIOS_SPEW, "S3 NV data @%p, 0x%0zx bytes\n",
 		dataBlock->NvStorage, (size_t)dataBlock->NvStorageSize);
 
 	return AGESA_SUCCESS;
@@ -77,7 +77,7 @@ AGESA_STATUS OemS3LateRestore(S3_DATA_BLOCK *dataBlock)
 
 	dataBlock->VolatileStorage = base;
 	dataBlock->VolatileStorageSize = size;
-	printk(BIOS_SPEW, "S3 volatile data @0x%p, 0x%0zx bytes\n",
+	printk(BIOS_SPEW, "S3 volatile data @%p, 0x%0zx bytes\n",
 		dataBlock->VolatileStorage, (size_t)dataBlock->VolatileStorageSize);
 
 	return AGESA_SUCCESS;

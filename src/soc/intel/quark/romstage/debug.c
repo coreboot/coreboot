@@ -26,7 +26,7 @@ void soc_display_fspm_upd_params(const FSPM_UPD *fspm_old_upd,
 	new = &fspm_new_upd->FspmConfig;
 
 	/* Display the parameters for MemoryInit */
-	printk(BIOS_SPEW, "UPD values for MemoryInit at: 0x%p\n", new);
+	printk(BIOS_SPEW, "UPD values for MemoryInit at: %p\n", new);
 	fsp_display_upd_value("AddrMode", sizeof(old->AddrMode),
 		old->AddrMode, new->AddrMode);
 	fsp_display_upd_value("ChanMask", sizeof(old->ChanMask),

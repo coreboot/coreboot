@@ -273,7 +273,7 @@ uint64_t mmu_init(struct mmu_ranges *mmu_ranges)
 	max_tables = (TTB_DEFAULT_SIZE >> GRANULE_SIZE_SHIFT);
 	free_idx = 1;
 
-	printf("Libpayload ARM64: TTB_BUFFER: 0x%p Max Tables: %d\n",
+	printf("Libpayload ARM64: TTB_BUFFER: %p Max Tables: %d\n",
 	       (void*)xlat_addr, max_tables);
 
 	/*

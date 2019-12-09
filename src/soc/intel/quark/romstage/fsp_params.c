@@ -111,13 +111,13 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *fspm_upd, uint32_t version)
 			"+-------------------+ 0x%08x (CONFIG_FSP_ESRAM_LOC)\n",
 			CONFIG_FSP_ESRAM_LOC);
 		printk(BIOS_SPEW, "| FSP stack         |\n");
-		printk(BIOS_SPEW, "+-------------------+ 0x%p\n",
+		printk(BIOS_SPEW, "+-------------------+ %p\n",
 			aupd->StackBase);
 		printk(BIOS_SPEW, "|                   |\n");
-		printk(BIOS_SPEW, "+-------------------+ 0x%p\n",
+		printk(BIOS_SPEW, "+-------------------+ %p\n",
 			_car_unallocated_start);
 		printk(BIOS_SPEW, "| coreboot data     |\n");
-		printk(BIOS_SPEW, "+-------------------+ 0x%p\n",
+		printk(BIOS_SPEW, "+-------------------+ %p\n",
 			_ecar_stack);
 		printk(BIOS_SPEW, "| coreboot stack    |\n");
 		printk(BIOS_SPEW,

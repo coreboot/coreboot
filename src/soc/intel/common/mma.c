@@ -219,7 +219,7 @@ static void save_mma_results_data(void *unused)
 	memset(mma_data, 0, mma_data_size);
 
 	printk(BIOS_DEBUG,
-		"MMA: copy MMA data to CBMEM(src 0x%p, dest 0x%p, %u bytes)\n",
+		"MMA: copy MMA data to CBMEM(src %p, dest %p, %u bytes)\n",
 			mma_hob, mma_data, mma_hob_size);
 
 	mma_data->mma_signature = MMA_DATA_SIGNATURE;

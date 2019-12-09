@@ -40,9 +40,9 @@ void fsp_debug_before_memory_init(fsp_memory_init_fn memory_init,
 	/* Display the call entry point and parameters */
 	if (!CONFIG(DISPLAY_FSP_CALLS_AND_STATUS))
 		return;
-	printk(BIOS_SPEW, "Calling FspMemoryInit: 0x%p\n", memory_init);
-	printk(BIOS_SPEW, "\t0x%p: raminit_upd\n", fspm_new_upd);
-	printk(BIOS_SPEW, "\t0x%p: &hob_list_ptr\n", fsp_get_hob_list_ptr());
+	printk(BIOS_SPEW, "Calling FspMemoryInit: %p\n", memory_init);
+	printk(BIOS_SPEW, "\t%p: raminit_upd\n", fspm_new_upd);
+	printk(BIOS_SPEW, "\t%p: &hob_list_ptr\n", fsp_get_hob_list_ptr());
 }
 
 void fsp_debug_after_memory_init(uint32_t status)
@@ -83,8 +83,8 @@ void fsp_debug_before_silicon_init(fsp_silicon_init_fn silicon_init,
 	/* Display the call to FSP SiliconInit */
 	if (!CONFIG(DISPLAY_FSP_CALLS_AND_STATUS))
 		return;
-	printk(BIOS_SPEW, "Calling FspSiliconInit: 0x%p\n", silicon_init);
-	printk(BIOS_SPEW, "\t0x%p: upd\n", fsps_new_upd);
+	printk(BIOS_SPEW, "Calling FspSiliconInit: %p\n", silicon_init);
+	printk(BIOS_SPEW, "\t%p: upd\n", fsps_new_upd);
 }
 
 void fsp_debug_after_silicon_init(uint32_t status)
@@ -111,8 +111,8 @@ void fsp_before_debug_notify(fsp_notify_fn notify,
 		return;
 	printk(BIOS_SPEW, "0x%08x: notify_params->phase\n",
 		notify_params->phase);
-	printk(BIOS_SPEW, "Calling FspNotify: 0x%p\n", notify);
-	printk(BIOS_SPEW, "\t0x%p: notify_params\n", notify_params);
+	printk(BIOS_SPEW, "Calling FspNotify: %p\n", notify);
+	printk(BIOS_SPEW, "\t%p: notify_params\n", notify_params);
 }
 
 void fsp_debug_after_notify(uint32_t status)

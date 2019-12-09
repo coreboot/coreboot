@@ -278,7 +278,7 @@ int rmodule_stage_load(struct rmod_stage_load *rsl)
 
 	rmod_loc = &stage_region[rmodule_offset];
 
-	printk(BIOS_INFO, "Decompressing stage %s @ 0x%p (%d bytes)\n",
+	printk(BIOS_INFO, "Decompressing stage %s @ %p (%d bytes)\n",
 	       prog_name(rsl->prog), rmod_loc, stage.memlen);
 
 	if (!cbfs_load_and_decompress(fh, sizeof(stage), stage.len, rmod_loc,

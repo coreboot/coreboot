@@ -102,22 +102,22 @@ void print_fsp_info(FSP_INFO_HEADER *fsp_header)
 			(u8)(fsp_header->ImageRevision  & 0xff));
 #if CONFIG(DISPLAY_FSP_ENTRY_POINTS)
 	printk(BIOS_SPEW, "FSP Entry Points:\n");
-	printk(BIOS_SPEW, "    0x%p: Image Base\n", fsp_base);
-	printk(BIOS_SPEW, "    0x%p: TempRamInit\n",
+	printk(BIOS_SPEW, "    %p: Image Base\n", fsp_base);
+	printk(BIOS_SPEW, "    %p: TempRamInit\n",
 		&fsp_base[fsp_header->TempRamInitEntryOffset]);
-	printk(BIOS_SPEW, "    0x%p: FspInit\n",
+	printk(BIOS_SPEW, "    %p: FspInit\n",
 		&fsp_base[fsp_header->FspInitEntryOffset]);
 	if (fsp_header->HeaderRevision >= FSP_HEADER_REVISION_2) {
-		printk(BIOS_SPEW, "    0x%p: MemoryInit\n",
+		printk(BIOS_SPEW, "    %p: MemoryInit\n",
 			&fsp_base[fsp_header->FspMemoryInitEntryOffset]);
-		printk(BIOS_SPEW, "    0x%p: TempRamExit\n",
+		printk(BIOS_SPEW, "    %p: TempRamExit\n",
 			&fsp_base[fsp_header->TempRamExitEntryOffset]);
-		printk(BIOS_SPEW, "    0x%p: SiliconInit\n",
+		printk(BIOS_SPEW, "    %p: SiliconInit\n",
 			&fsp_base[fsp_header->FspSiliconInitEntryOffset]);
 	}
-	printk(BIOS_SPEW, "    0x%p: NotifyPhase\n",
+	printk(BIOS_SPEW, "    %p: NotifyPhase\n",
 		&fsp_base[fsp_header->NotifyPhaseEntryOffset]);
-	printk(BIOS_SPEW, "    0x%p: Image End\n",
+	printk(BIOS_SPEW, "    %p: Image End\n",
 			&fsp_base[fsp_header->ImageSize]);
 #endif
 }

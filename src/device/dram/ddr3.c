@@ -531,7 +531,7 @@ enum cb_err spd_add_smbios17(const u8 channel, const u8 slot,
 	if (!mem_info) {
 		mem_info = cbmem_add(CBMEM_ID_MEMINFO, sizeof(*mem_info));
 
-		printk(BIOS_DEBUG, "CBMEM entry for DIMM info: 0x%p\n",
+		printk(BIOS_DEBUG, "CBMEM entry for DIMM info: %p\n",
 				mem_info);
 		if (!mem_info)
 			return CB_ERR;

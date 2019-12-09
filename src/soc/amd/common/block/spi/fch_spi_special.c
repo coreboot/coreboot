@@ -56,7 +56,7 @@ int non_standard_sst_write_aai(u32 offset, size_t len, const void *buf, size_t s
 
 	for (actual = start; actual < len - 1; actual += 2) {
 #if CONFIG(SOC_AMD_COMMON_BLOCK_SPI_DEBUG)
-		printk(BIOS_DEBUG, "PP: 0x%p => cmd = { 0x%02x 0x%06lx }"
+		printk(BIOS_DEBUG, "PP: %p => cmd = { 0x%02x 0x%06lx }"
 		     " chunk_len = 2\n",
 		     buf + actual, cmd[0], (offset + actual));
 #endif

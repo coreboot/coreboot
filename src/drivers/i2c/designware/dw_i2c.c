@@ -743,7 +743,7 @@ int dw_i2c_init(unsigned int bus, const struct dw_i2c_bus_config *bcfg)
 	/* Enable stop detection interrupt */
 	write32(&regs->intr_mask, INTR_STAT_STOP_DET);
 
-	printk(BIOS_INFO, "DW I2C bus %u at 0x%p (%u KHz)\n",
+	printk(BIOS_INFO, "DW I2C bus %u at %p (%u KHz)\n",
 	       bus, regs, speed / KHz);
 
 	return 0;

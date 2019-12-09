@@ -191,7 +191,7 @@ void mainboard_save_dimm_info(struct romstage_params *params)
 	 * table 17
 	 */
 	mem_info = cbmem_add(CBMEM_ID_MEMINFO, sizeof(*mem_info));
-	printk(BIOS_DEBUG, "CBMEM entry for DIMM info: 0x%p\n", mem_info);
+	printk(BIOS_DEBUG, "CBMEM entry for DIMM info: %p\n", mem_info);
 	if (mem_info == NULL)
 		return;
 	memset(mem_info, 0, sizeof(*mem_info));

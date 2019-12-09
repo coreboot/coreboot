@@ -58,6 +58,20 @@ the password, and add the following to your `$HOME/.netrc` file:
 where YourUserNameHere is your username, and YourPasswordHere is the password you
 just generated.
 
+If your system is behind a snooping HTTPS proxy, you might also have to
+make its SSL certificate known to curl, a system specific operation.
+If that's not possible for some reason, you can also disable SSL
+certificate verification in git:
+
+	git config [--global] http.sslVerify [true|false]
+
+The `--global` argument sets it for all git transfers of your local
+user, `false` means not to validate the certificate.
+
+If that still doesn't allow you to pull or push changes to the server, the
+proxy is likely tampering with the data stream, in which case there's nothing
+we can do.
+
 ## Part 3: Clone coreboot and configure it for submitting patches
 
 On Gerrit, click on the **Browse** tab in the upper left corner and select

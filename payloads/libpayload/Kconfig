@@ -347,6 +347,10 @@ config PC_KEYBOARD_IGNORE_INIT_FAILURE
 	bool "Ignore keyboard failures during init and always add input device"
 	default n
 
+config PC_KEYBOARD_AT_TRANSLATED
+	bool "AT Translation keyboard device"
+	default n
+
 config PC_KEYBOARD_LAYOUT_US
 	bool "English (US) keyboard layout"
 	depends on PC_KEYBOARD

@@ -312,9 +312,59 @@ static struct console_input_driver cons = {
 	.input_type = CONSOLE_INPUT_TYPE_EC,
 };
 
-void keyboard_init(void)
+/* Enable keyboard translated */
+static int enable_translated(void)
+{
+	if (!i8042_cmd(I8042_CMD_RD_CMD_BYTE)) {
+		int cmd = i8042_read_data_ps2();
+		cmd |= I8042_CMD_BYTE_XLATE;
+		if (!i8042_cmd(I8042_CMD_WR_CMD_BYTE))
+			i8042_write_data(cmd);
+	} else {
+		printf("ERROR: Keyboard i8042_cmd failed!\n");
+		return 0;
+	}
+	return 1;
+}
+
+/* Set scancode set 1 */
+static int set_scancode_set(void)
 {
 	unsigned int ret;
+	ret = keyboard_cmd(I8042_KBCMD_SET_SCANCODE);
+	if (!ret) {
+		printf("ERROR: Keyboard set scancode failed!\n");
+		return ret;
+	}
+
+	ret = keyboard_cmd(I8042_SCANCODE_SET_1);
+	if (!ret) {
+		printf("ERROR: Keyboard scancode set#1 failed!\n");
+		return ret;
+	}
+
+	/*
+	 * Set default parameters.
+	 * Fix for broken QEMU ps/2 make scancodes.
+	 */
+	ret = keyboard_cmd(I8042_KBCMD_SET_DEFAULT);
+	if (!ret) {
+		printf("ERROR: Keyboard set default params failed!\n");
+		return ret;
+	}
+
+	/* Enable scanning */
+	ret = keyboard_cmd(I8042_KBCMD_EN);
+	if (!ret) {
+		printf("ERROR: Keyboard enable scanning failed!\n");
+		return ret;
+	}
+
+	return ret;
+}
+
+void keyboard_init(void)
+{
 	map = &keyboard_layouts[0];
 
 	/* Initialized keyboard controller. */
@@ -328,34 +378,12 @@ void keyboard_init(void)
 	/* Enable first PS/2 port */
 	i8042_cmd(I8042_CMD_EN_KB);
 
-	/* Set scancode set 1 */
-	ret = keyboard_cmd(I8042_KBCMD_SET_SCANCODE);
-	if (!ret && !CONFIG(LP_PC_KEYBOARD_IGNORE_INIT_FAILURE)) {
-		printf("ERROR: Keyboard set scancode failed!\n");
-		return;
-	}
-
-	ret = keyboard_cmd(I8042_SCANCODE_SET_1);
-	if (!ret && !CONFIG(LP_PC_KEYBOARD_IGNORE_INIT_FAILURE)) {
-		printf("ERROR: Keyboard scancode set#1 failed!\n");
-		return;
-	}
-
-	/*
-	 * Set default parameters.
-	 * Fix for broken QEMU ps/2 make scancodes.
-	 */
-	ret = keyboard_cmd(0xf6);
-	if (!ret) {
-		printf("ERROR: Keyboard set default params failed!\n");
-		return;
-	}
-
-	/* Enable scanning */
-	ret = keyboard_cmd(I8042_KBCMD_EN);
-	if (!ret && !CONFIG(LP_PC_KEYBOARD_IGNORE_INIT_FAILURE)) {
-		printf("ERROR: Keyboard enable scanning failed!\n");
-		return;
+	if (CONFIG(LP_PC_KEYBOARD_AT_TRANSLATED)) {
+		if (!enable_translated())
+			return;
+	} else {
+		if (!set_scancode_set())
+			return;
 	}
 
 	console_add_input_driver(&cons);

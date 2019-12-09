@@ -33,6 +33,7 @@
 /* Port 0x64 commands */
 #define I8042_CMD_RD_CMD_BYTE		0x20
 #define I8042_CMD_WR_CMD_BYTE		0x60
+#define   I8042_CMD_BYTE_XLATE		(1 << 6)
 #define I8042_CMD_DIS_AUX		0xa7
 #define I8042_CMD_EN_AUX		0xa8
 #define I8042_CMD_AUX_TEST		0xa9

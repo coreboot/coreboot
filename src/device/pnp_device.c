@@ -31,6 +31,19 @@ void pnp_exit_conf_mode(struct device *dev)
 		dev->ops->ops_pnp_mode->exit_conf_mode(dev);
 }
 
+#if CONFIG(HAVE_ACPI_TABLES)
+void pnp_ssdt_enter_conf_mode(struct device *dev, const char *idx, const char *data)
+{
+	if (dev->ops->ops_pnp_mode && dev->ops->ops_pnp_mode->ssdt_enter_conf_mode)
+		dev->ops->ops_pnp_mode->ssdt_enter_conf_mode(dev, idx, data);
+}
+void pnp_ssdt_exit_conf_mode(struct device *dev, const char *idx, const char *data)
+{
+	if (dev->ops->ops_pnp_mode && dev->ops->ops_pnp_mode->ssdt_exit_conf_mode)
+		dev->ops->ops_pnp_mode->ssdt_exit_conf_mode(dev, idx, data);
+}
+#endif
+
 /* PNP fundamental operations */
 
 void pnp_write_config(struct device *dev, u8 reg, u8 value)

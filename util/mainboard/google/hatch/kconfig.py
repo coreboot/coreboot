@@ -3,22 +3,11 @@
 
 To start a new variant of an existing baseboard, we need to add
 the variant into the Kconfig and Kconfig.name files for the
-baseboard. In Kconfig, we have three sections that need additional
-entries, GBB_HWID, MAINBOARD_PART_NUMBER, and VARIANT_DIR.
+baseboard. In Kconfig, we have two sections that need additional
+entries, MAINBOARD_PART_NUMBER and VARIANT_DIR.
 
-In GBB_HWID, we need to add a HWID that includes a numeric suffix.
-The numeric suffix is the CRC-32 of the all-caps ASCII name,
-modulo 10000.
-For example, if the board name is "Fizz", we calculate the CRC of
-"FIZZ TEST", which is 0x598C492D. In decimal, the value is 1502365997,
-modulo 10000 is 5997. So the HWID string is "FIZZ TEST 5997"
-In the past, we have used an online CRC-32 calculator such as
-https://www.lammertbies.nl/comm/info/crc-calculation.html, and then
-used the calculator app to convert to decimal and take the last
-4 digits.
-
-The MAINBOARD_PART_NUMBER and VARIANT_DIR are simpler, just using
-various capitalizations of the variant name to create the strings.
+The MAINBOARD_PART_NUMBER and VARIANT_DIR just use various
+capitalizations of the variant name to create the strings.
 
 Kconfig.name adds an entire section for the new variant, and all
 of these use various capitalizations of the variant name. The strings
@@ -38,7 +27,6 @@ GNU General Public License for more details.
 """
 
 import argparse
-import zlib
 
 
 def main():
@@ -50,26 +38,6 @@ def main():
 
   add_to_Kconfig(args.name)
   add_to_Kconfig_name(args.name)
-
-
-def get_gbb_hwid(variant_name):
-  """Create the GBB_HWID for a variant
-
-  variant_name    The name of the board variant, e.g. 'kohaku'
-
-  Returns:
-    GBB_HWID string for the board variant, e.g. 'KOHAKU TEST 1953'
-
-  Note that the case of the variant name does not matter; it gets
-  converted to all uppercase as part of this function."""
-  hwid = variant_name + ' test'
-  upperhwid = hwid.upper()
-  # Force conversion to unsigned by bitwise AND with (2^32)-1.
-  # See the docs for crc32 at https://docs.python.org/3/library/zlib.html
-  # for why '& 0xffffffff' is necessary.
-  crc = zlib.crc32(upperhwid.encode('UTF-8')) & 0xffffffff
-  gbb_hwid = upperhwid + ' ' + str(crc % 10000).zfill(4)
-  return gbb_hwid
 
 
 def add_to_Kconfig(variant_name):
@@ -84,12 +52,10 @@ def add_to_Kconfig(variant_name):
   variant_name    The name of the board variant, e.g. 'kohaku'"""
   # These are the part of the strings that we'll add to the sections
   BOARD = 'BOARD_GOOGLE_' + variant_name.upper()
-  gbb_hwid = get_gbb_hwid(variant_name)
   lowercase = variant_name.lower()
   capitalized = lowercase.capitalize()
 
   # These flags track whether we're in a section where we need to add an option
-  in_gbb_hwid = False
   in_mainboard_part_number = False
   in_variant_dir = False
 
@@ -101,8 +67,6 @@ def add_to_Kconfig(variant_name):
         line = rawline.rstrip('\r\n')
 
         # Are we in one of the sections of interest?
-        if line == 'config GBB_HWID':
-          in_gbb_hwid = True
         if line == 'config MAINBOARD_PART_NUMBER':
           in_mainboard_part_number = True
         if line == 'config VARIANT_DIR':
@@ -111,9 +75,6 @@ def add_to_Kconfig(variant_name):
         # Are we at the end of a section, and if so, is it one of the
         # sections of interest?
         if line == '':
-          if in_gbb_hwid:
-            print('\tdefault "' + gbb_hwid + '" if ' + BOARD, file=outfile)
-            in_gbb_hwid = False
           if in_mainboard_part_number:
             print('\tdefault "' + capitalized + '" if ' + BOARD, file=outfile)
             in_mainboard_part_number = False
@@ -130,12 +91,9 @@ def add_to_Kconfig_name(variant_name):
   Kconfig.name is easier to modify than Kconfig; it only has a block at
   the end with the new variant's details.
 
-  config BOARD_GOOGLE_${VARIANT}
-
   variant_name    The name of the board variant, e.g. 'kohaku'"""
   # Board name for the config section
   uppercase = variant_name.upper()
-  BOARD = 'BOARD_GOOGLE_' + uppercase
   capitalized = variant_name.lower().capitalize()
 
   inputname = 'Kconfig.name'
@@ -148,7 +106,7 @@ def add_to_Kconfig_name(variant_name):
         print(line, file=outfile)
 
       # Now add the new section
-      print('\nconfig ' + BOARD, file=outfile)
+      print('\nconfig ' + 'BOARD_GOOGLE_' + uppercase, file=outfile)
       print('\tbool "-> ' + capitalized + '"', file=outfile)
       print('\tselect BOARD_GOOGLE_BASEBOARD_HATCH', file=outfile)
       print('\tselect BOARD_ROMSIZE_KB_16384', file=outfile)

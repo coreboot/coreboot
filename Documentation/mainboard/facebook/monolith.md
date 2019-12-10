@@ -2,8 +2,8 @@
 
 This page describes how to run coreboot on the Facebook Monolith.
 
-Please note: the coreboot implementation for this boards is in it's Alpha state and isn't fully 
-tested yet.
+Please note: the coreboot implementation for this boards is in its
+Alpha state and isn't fully tested yet.
 
 ## Required blobs
 
@@ -63,7 +63,7 @@ output.
 
 ```eval_rst
 +------------------+--------------------------------------------------+
-| SoC              | Intel Kaby Lake U                                 |
+| SoC              | Intel Kaby Lake U                                |
 +------------------+--------------------------------------------------+
 | CPU              | Intel i3-7100U                                   |
 +------------------+--------------------------------------------------+

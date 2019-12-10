@@ -48,6 +48,7 @@ static struct device_operations ops = {
 	.enable_resources = lpc47n227_pnp_enable_resources,
 	.enable           = lpc47n227_pnp_enable,
 	.init             = lpc47n227_init,
+	.ops_pnp_mode     = &pnp_conf_mode_55_aa,
 };
 
 static struct pnp_info pnp_dev_info[] = {
@@ -81,10 +82,10 @@ void lpc47n227_pnp_set_resources(struct device *dev)
 {
 	struct resource *res;
 
-	pnp_enter_conf_mode_55(dev);
+	pnp_enter_conf_mode(dev);
 	for (res = dev->resource_list; res; res = res->next)
 		lpc47n227_pnp_set_resource(dev, res);
-	pnp_exit_conf_mode_aa(dev);
+	pnp_exit_conf_mode(dev);
 }
 
 /*
@@ -93,9 +94,9 @@ void lpc47n227_pnp_set_resources(struct device *dev)
  */
 void lpc47n227_pnp_enable_resources(struct device *dev)
 {
-	pnp_enter_conf_mode_55(dev);
+	pnp_enter_conf_mode(dev);
 	lpc47n227_pnp_set_enable(dev, 1);
-	pnp_exit_conf_mode_aa(dev);
+	pnp_exit_conf_mode(dev);
 }
 
 /*
@@ -104,9 +105,9 @@ void lpc47n227_pnp_enable_resources(struct device *dev)
  */
 void lpc47n227_pnp_enable(struct device *dev)
 {
-	pnp_enter_conf_mode_55(dev);
+	pnp_enter_conf_mode(dev);
 	lpc47n227_pnp_set_enable(dev, !!dev->enabled);
-	pnp_exit_conf_mode_aa(dev);
+	pnp_exit_conf_mode(dev);
 }
 
 /**

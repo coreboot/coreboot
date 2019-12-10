@@ -43,29 +43,29 @@ static void w83667hg_a_init(struct device *dev)
 	/* TODO: Might potentially need code for HWM or FDC etc. */
 	case W83667HG_A_KBC:
 		/* Enable mouse controller */
-		pnp_enter_conf_mode_8787(dev);
+		pnp_enter_conf_mode(dev);
 		byte = pnp_read_config(dev, 0x2a);
 		byte &= ~(0x1 << 1);
 		pnp_write_config(dev, 0x2a, byte);
-		pnp_exit_conf_mode_aa(dev);
+		pnp_exit_conf_mode(dev);
 
 		mouse_detected = pc_keyboard_init(PROBE_AUX_DEVICE);
 
 		if (!mouse_detected && !acpi_is_wakeup_s3()) {
 			printk(BIOS_INFO, "%s: Disable mouse controller.",
 					__func__);
-			pnp_enter_conf_mode_8787(dev);
+			pnp_enter_conf_mode(dev);
 			byte = pnp_read_config(dev, 0x2a);
 			byte |= 0x1 << 1;
 			pnp_write_config(dev, 0x2a, byte);
-			pnp_exit_conf_mode_aa(dev);
+			pnp_exit_conf_mode(dev);
 		}
 		break;
 	case W83667HG_A_ACPI:
 		/* Set power state after power fail */
 		power_status = CONFIG_MAINBOARD_POWER_FAILURE_STATE;
 		get_option(&power_status, "power_on_after_fail");
-		pnp_enter_conf_mode_8787(dev);
+		pnp_enter_conf_mode(dev);
 		pnp_set_logical_device(dev);
 		byte = pnp_read_config(dev, 0xe4);
 		byte &= ~0x60;
@@ -74,7 +74,7 @@ static void w83667hg_a_init(struct device *dev)
 		else if (power_status == MAINBOARD_POWER_KEEP)
 			byte |= (0x2 << 5);
 		pnp_write_config(dev, 0xe4, byte);
-		pnp_exit_conf_mode_aa(dev);
+		pnp_exit_conf_mode(dev);
 		printk(BIOS_INFO, "set power %s after power fail\n", power_status ? "on" : "off");
 		break;
 	}

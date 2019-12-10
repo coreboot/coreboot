@@ -22,11 +22,22 @@
 #include <superio/common/ssdt.h>
 #include <arch/acpi.h>
 #include "ast2400.h"
+#include "chip.h"
 
 static void ast2400_init(struct device *dev)
 {
+	struct superio_aspeed_ast2400_config *conf = dev->chip_info;
+
 	if (!dev->enabled)
 		return;
+
+	if (conf && conf->use_espi) {
+		pnp_enter_conf_mode(dev);
+		pnp_set_logical_device(dev);
+		/* In ESPI mode must write 0 to IRQ level on every LDN */
+		pnp_write_config(dev, 0x70, 0);
+		pnp_exit_conf_mode(dev);
+	}
 
 	switch (dev->path.pnp.device) {
 	case AST2400_KBC:
@@ -94,11 +105,22 @@ static struct pnp_info pnp_dev_info[] = {
 
 static void enable_dev(struct device *dev)
 {
+	struct superio_aspeed_ast2400_config *conf = dev->chip_info;
+
+	if (conf && conf->use_espi) {
+		/* UART3 and UART4 are not usable in ESPI mode */
+		for (size_t i = 0; i < ARRAY_SIZE(pnp_dev_info); i++) {
+			if ((pnp_dev_info[i].function == AST2400_SUART3) ||
+			    (pnp_dev_info[i].function == AST2400_SUART4))
+				pnp_dev_info[i].function = PNP_SKIP_FUNCTION;
+		}
+	}
+
 	pnp_enable_devices(dev, &ops, ARRAY_SIZE(pnp_dev_info),
 		pnp_dev_info);
 }
 
 struct chip_operations superio_aspeed_ast2400_ops = {
-	CHIP_NAME("ASpeed AST2400 Super I/O")
+	CHIP_NAME("ASpeed AST2400/AST2500 Super I/O")
 	.enable_dev = enable_dev,
 };

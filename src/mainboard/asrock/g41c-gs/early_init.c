@@ -26,7 +26,6 @@
 
 #define SERIAL_DEV_R2 PNP_DEV(0x2e, NCT6776_SP1)
 #define SERIAL_DEV_R1 PNP_DEV(0x2e, W83627DHG_SP1)
-#define SUPERIO_DEV PNP_DEV(0x2e, 0)
 
 void bootblock_mainboard_early_init(void)
 {

@@ -22,7 +22,6 @@
 #include <superio/winbond/common/winbond.h>
 
 #define SERIAL_DEV PNP_DEV(0x4e, W83627THG_SP1)
-#define SUPERIO_DEV PNP_DEV(0x4e, 0)
 
 void bootblock_mainboard_early_init(void)
 {

@@ -24,7 +24,6 @@
 #define SERIAL_DEV PNP_DEV(0x2e, IT8718F_SP1)
 #define GPIO_DEV PNP_DEV(0x2e, IT8718F_GPIO)
 #define EC_DEV PNP_DEV(0x2e, IT8718F_EC)
-#define SUPERIO_DEV PNP_DEV(0x2e, 0)
 
 /* Early mainboard specific GPIO setup.
  * We should use standard gpio.h eventually

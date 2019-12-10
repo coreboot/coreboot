@@ -25,8 +25,6 @@
 
 #include "option_table.h"
 
-#define SERIAL_DEV PNP_DEV(0x2e, W83627THG_SP1)
-
 /* Override the default lpc decode ranges */
 void mainboard_lpc_decode(void)
 {

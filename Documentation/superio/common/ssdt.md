@@ -45,12 +45,33 @@ chip superio/common
 end
 ```
 
+## Automatically generated methods
+
+The following methods are generated for each SuperIO:
+## AMTX()
+Acquire the global mutex and enter config mode.
+It's called this at the begining of an atomic operation to make sure
+no other ACPI code messes with the config space while working on it.
+
+## RMTX()
+Exit config mode and release the global mutex.
+It's called at the end of an atomic operation.
+
+## SLDN(Arg0)
+Selects the (virtual) LDN given as Arg0.
+This method isn't guarded with the global mutex.
+
+## DLDN(Arg0)
+Disables the (virtual) LDN given as Arg0.
+This method aquires the global mutex.
+
+## QLDN(Arg0)
+Queries the state of the (virtual) LDN given as Arg0.
+This method quires the global mutex.
+
 ## TODO
 
 1) Add ACPI HIDs to every SuperIO driver
-2) Don't guess ACPI HID of LDNs if it's known
-3) Add "enter config" and "exit config" bytes
-4) Generate support methods that allow
+2) Generate support methods that allow
    * Setting resource settings at runtime
    * Getting resource settings at runtime
-   * Disabling LDNs at runtime

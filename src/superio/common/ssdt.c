@@ -200,7 +200,24 @@ void superio_common_fill_ssdt_generator(struct device *dev)
 	acpigen_write_name_byte("LDN", ldn);
 	acpigen_write_name_byte("VLDN", vldn);
 
-	acpigen_write_STA(dev->enabled ? 0xf : 0);
+	acpigen_write_method("_STA", 0);
+	{
+		acpigen_write_store();
+		acpigen_emit_namestring("^^QLDN");
+		acpigen_write_integer(ldn);
+		acpigen_emit_byte(LOCAL0_OP);
+
+		/* Multiply (Local0, 0xf, Local0) */
+		acpigen_emit_byte(MULTIPLY_OP);
+		acpigen_emit_byte(LOCAL0_OP);
+		acpigen_write_integer(0xf);
+		acpigen_emit_byte(LOCAL0_OP);
+
+		acpigen_emit_byte(RETURN_OP);
+		acpigen_emit_byte(LOCAL0_OP);
+
+	}
+	acpigen_pop_len(); /* Method */
 
 	if (!dev->enabled) {
 		acpigen_pop_len(); /* Device */
@@ -241,6 +258,13 @@ void superio_common_fill_ssdt_generator(struct device *dev)
 
 	acpigen_write_name_string("_HID", hid);
 	acpigen_write_name_string("_DDN", name_from_hid(hid));
+
+	acpigen_write_method("_DIS", 0);
+	{
+		acpigen_emit_namestring("^^DLDN");
+		acpigen_write_integer(ldn);
+	}
+	acpigen_pop_len(); /* Method */
 
 	acpigen_pop_len(); /* Device */
 	acpigen_pop_len(); /* Scope */

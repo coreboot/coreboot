@@ -67,10 +67,11 @@ static uint32_t read_space_firmware(struct vb2_context *ctx)
 	int attempts = 3;
 
 	while (attempts--) {
-		RETURN_ON_FAILURE(tlcl_read(FIRMWARE_NV_INDEX, ctx->secdata,
-		                            VB2_SECDATA_SIZE));
+		RETURN_ON_FAILURE(tlcl_read(FIRMWARE_NV_INDEX,
+					    ctx->secdata_firmware,
+					    VB2_SECDATA_FIRMWARE_SIZE));
 
-		if (vb2api_secdata_check(ctx) == VB2_SUCCESS)
+		if (vb2api_secdata_firmware_check(ctx) == VB2_SUCCESS)
 			return TPM_SUCCESS;
 
 		VBDEBUG("TPM: %s() - bad CRC\n", __func__);
@@ -194,14 +195,14 @@ static uint32_t set_space(const char *name, uint32_t index, const void *data,
 static uint32_t set_firmware_space(const void *firmware_blob)
 {
 	return set_space("firmware", FIRMWARE_NV_INDEX, firmware_blob,
-			 VB2_SECDATA_SIZE, ro_space_attributes,
+			 VB2_SECDATA_FIRMWARE_SIZE, ro_space_attributes,
 			 pcr0_unchanged_policy, sizeof(pcr0_unchanged_policy));
 }
 
 static uint32_t set_kernel_space(const void *kernel_blob)
 {
 	return set_space("kernel", KERNEL_NV_INDEX, kernel_blob,
-			 VB2_SECDATAK_SIZE, rw_space_attributes, NULL, 0);
+			 VB2_SECDATA_KERNEL_SIZE, rw_space_attributes, NULL, 0);
 }
 
 static uint32_t set_rec_hash_space(const uint8_t *data)
@@ -222,12 +223,12 @@ static uint32_t _factory_initialize_tpm(struct vb2_context *ctx)
 	 * indication that TPM factory initialization was successfully
 	 * completed.
 	 */
-	RETURN_ON_FAILURE(set_kernel_space(ctx->secdatak));
+	RETURN_ON_FAILURE(set_kernel_space(ctx->secdata_kernel));
 
 	if (CONFIG(VBOOT_HAS_REC_HASH_SPACE))
 		RETURN_ON_FAILURE(set_rec_hash_space(rec_hash_data));
 
-	RETURN_ON_FAILURE(set_firmware_space(ctx->secdata));
+	RETURN_ON_FAILURE(set_firmware_space(ctx->secdata_firmware));
 
 	return TPM_SUCCESS;
 }
@@ -326,22 +327,22 @@ static uint32_t _factory_initialize_tpm(struct vb2_context *ctx)
 	VBDEBUG("TPM: Clearing owner\n");
 	RETURN_ON_FAILURE(tpm_clear_and_reenable());
 
-	/* Define and write secdatak kernel space. */
+	/* Define and write secdata_kernel space. */
 	RETURN_ON_FAILURE(safe_define_space(KERNEL_NV_INDEX,
 					    TPM_NV_PER_PPWRITE,
-					    VB2_SECDATAK_SIZE));
+					    VB2_SECDATA_KERNEL_SIZE));
 	RETURN_ON_FAILURE(write_secdata(KERNEL_NV_INDEX,
-					ctx->secdatak,
-					VB2_SECDATAK_SIZE));
+					ctx->secdata_kernel,
+					VB2_SECDATA_KERNEL_SIZE));
 
-	/* Define and write secdata firmware space. */
+	/* Define and write secdata_firmware space. */
 	RETURN_ON_FAILURE(safe_define_space(FIRMWARE_NV_INDEX,
-	                                    TPM_NV_PER_GLOBALLOCK |
-	                                    TPM_NV_PER_PPWRITE,
-	                                    VB2_SECDATA_SIZE));
+					    TPM_NV_PER_GLOBALLOCK |
+					    TPM_NV_PER_PPWRITE,
+					    VB2_SECDATA_FIRMWARE_SIZE));
 	RETURN_ON_FAILURE(write_secdata(FIRMWARE_NV_INDEX,
-					ctx->secdata,
-					VB2_SECDATA_SIZE));
+					ctx->secdata_firmware,
+					VB2_SECDATA_FIRMWARE_SIZE));
 
 	/* Define and set rec hash space, if available. */
 	if (CONFIG(VBOOT_HAS_REC_HASH_SPACE))
@@ -376,9 +377,9 @@ static uint32_t factory_initialize_tpm(struct vb2_context *ctx)
 {
 	uint32_t result;
 
-	/* Set initial values of secdata and secdatak spaces. */
-	vb2api_secdata_create(ctx);
-	vb2api_secdatak_create(ctx);
+	/* Set initial values of secdata_firmware and secdata_kernel spaces. */
+	vb2api_secdata_firmware_create(ctx);
+	vb2api_secdata_kernel_create(ctx);
 
 	VBDEBUG("TPM: factory initialization\n");
 
@@ -430,7 +431,8 @@ uint32_t antirollback_write_space_firmware(struct vb2_context *ctx)
 {
 	if (CONFIG(CR50_IMMEDIATELY_COMMIT_FW_SECDATA))
 		tlcl_cr50_enable_nvcommits();
-	return write_secdata(FIRMWARE_NV_INDEX, ctx->secdata, VB2_SECDATA_SIZE);
+	return write_secdata(FIRMWARE_NV_INDEX, ctx->secdata_firmware,
+			     VB2_SECDATA_FIRMWARE_SIZE);
 }
 
 uint32_t antirollback_read_space_rec_hash(uint8_t *data, uint32_t size)

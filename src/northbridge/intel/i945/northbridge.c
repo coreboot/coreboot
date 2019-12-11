@@ -165,7 +165,6 @@ void northbridge_write_smram(u8 smram)
 
 	/* TODO We could determine how many PCIe busses we need in
 	 * the bar. For now that number is hardcoded to a max of 64.
-	 * See e7525/northbridge.c for an example.
 	 */
 static struct device_operations pci_domain_ops = {
 	.read_resources   = mch_domain_read_resources,

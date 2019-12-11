@@ -73,8 +73,7 @@ void mainboard_fill_rcomp_res_data(void *rcomp_ptr)
 void mainboard_fill_rcomp_strength_data(void *rcomp_strength_ptr)
 {
 	/* Rcomp target */
-	static const u16 RcompTarget[RCOMP_TARGET_PARAMS] = {
-			80, 40, 40, 40, 30 };
+	static const u16 RcompTarget[5] = { 80, 40, 40, 40, 30 };
 
 	memcpy(rcomp_strength_ptr, RcompTarget, sizeof(RcompTarget));
 }

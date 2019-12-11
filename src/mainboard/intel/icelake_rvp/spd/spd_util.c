@@ -114,11 +114,11 @@ void mainboard_fill_rcomp_res_data(void *rcomp_ptr)
 void mainboard_fill_rcomp_strength_data(void *rcomp_strength_ptr)
 {
 	/* Rcomp target */
-	static const u16 RcompTarget_DDR4[RCOMP_TARGET_PARAMS] = {
+	static const u16 RcompTarget_DDR4[5] = {
 			100, 33, 32, 33, 28 };
-	static const u16 RcompTarget_LPDDR4_Ax[RCOMP_TARGET_PARAMS] = {
+	static const u16 RcompTarget_LPDDR4_Ax[5] = {
 			80, 40, 40, 40, 30 };
-	static const u16 RcompTarget_LPDDR4_Bx[RCOMP_TARGET_PARAMS] = {
+	static const u16 RcompTarget_LPDDR4_Bx[5] = {
 			60, 20, 20, 20, 20 };
 
 	switch (get_spd_index()) {

@@ -55,11 +55,11 @@ void mainboard_fill_rcomp_strength_data(void *rcomp_strength_ptr)
 
 	mem_cfg_id = get_spd_index();
 	/* Rcomp target */
-	static const u16 RcompTarget[RCOMP_TARGET_PARAMS] = {
+	static const u16 RcompTarget[5] = {
 		100, 40, 40, 23, 40 };
 
 	/* Strengthen the Rcomp Target Ctrl for 8GB K4E6E304EE -EGCF */
-	static const u16 StrengthendRcompTarget[RCOMP_TARGET_PARAMS] = {
+	static const u16 StrengthendRcompTarget[5] = {
 		100, 40, 40, 21, 40 };
 
 

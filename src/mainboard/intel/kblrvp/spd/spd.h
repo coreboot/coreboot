@@ -20,8 +20,6 @@
 #include <gpio.h>
 #include <variant/gpio.h>
 
-#define RCOMP_TARGET_PARAMS	0x5
-
 void mainboard_fill_dq_map_data(void *dq_map_ch0, void *dq_map_ch1);
 void mainboard_fill_dqs_map_data(void *dqs_map_ch0, void *dqs_map_ch1);
 void mainboard_fill_rcomp_res_data(void *rcomp_ptr);

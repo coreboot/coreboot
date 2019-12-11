@@ -41,7 +41,6 @@
 
 /* PCH_MEM_CFG[3:0] */
 #define MAX_MEMORY_CONFIG	0x10
-#define RCOMP_TARGET_PARAMS	0x5
 #define K4E6E304EE_MEM_ID	0x3
 
 static inline int get_spd_index(void) {

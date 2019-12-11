@@ -18,8 +18,6 @@
 #include <string.h>
 #include <spd_bin.h>
 
-#define RCOMP_TARGET_PARAMS	0x5
-
 static void mainboard_fill_dq_map_data(void *dq_map_ch0, void *dq_map_ch1)
 {
 	/* DQ byte map */
@@ -53,7 +51,7 @@ static void mainboard_fill_rcomp_res_data(void *rcomp_ptr)
 static void mainboard_fill_rcomp_strength_data(void *rcomp_strength_ptr)
 {
 	/* Rcomp target */
-	static const u16 RcompTarget[RCOMP_TARGET_PARAMS] = {
+	static const u16 RcompTarget[5] = {
 		100, 40, 40, 23, 40 };
 	memcpy(rcomp_strength_ptr, RcompTarget, sizeof(RcompTarget));
 }

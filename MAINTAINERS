@@ -490,7 +490,7 @@ F:	src/device/oprom/
 
 CBFS
 F:	src/include/cbfs.h
-F:	src/include/cbfs_serialized.h
+F:	src/commonlib/bsd/include/commonlib/bsd/cbfs_serialized.h
 F:	util/cbfstool/
 
 CBMEM

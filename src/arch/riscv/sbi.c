@@ -15,7 +15,6 @@
 
 #include <mcall.h>
 #include <stdint.h>
-#include <commonlib/compiler.h>
 #include <arch/exception.h>
 #include <sbi.h>
 #include <vm.h>

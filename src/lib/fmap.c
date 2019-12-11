@@ -17,7 +17,6 @@
 #include <cbmem.h>
 #include <console/console.h>
 #include <fmap.h>
-#include <commonlib/fmap_serialized.h>
 #include <stddef.h>
 #include <string.h>
 #include <symbols.h>

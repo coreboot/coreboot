@@ -1,37 +1,8 @@
-/*
- * Copyright 2015-2016 Google Inc.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 3. The name of the author may not be used to endorse or promote products
- *    derived from this software without specific prior written permission.
- *
- * Alternatively, this software may be distributed under the terms of the
- * GNU General Public License ("GPL") version 2 as published by the Free
- * Software Foundation.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
- * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGE.
- */
+/* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0-only */
 
-#include <commonlib/compression.h>
-#include <commonlib/endian.h>
-#include <commonlib/helpers.h>
+#include <commonlib/bsd/compression.h>
+#include <commonlib/bsd/helpers.h>
+#include <endian.h>
 #include <stdint.h>
 #include <string.h>
 
@@ -41,7 +12,7 @@
  * access support), we can easily write the ones we need ourselves. */
 static uint16_t LZ4_readLE16(const void *src)
 {
-	return read_le16(src);
+	return le16toh(*(const uint16_t *)src);
 }
 static void LZ4_copy8(void *dst, const void *src)
 {
@@ -143,7 +114,7 @@ size_t ulz4fn(const void *src, size_t srcn, void *dst, size_t dstn)
 			return 0;	/* input overrun */
 
 		/* We assume there's always only a single, standard frame. */
-		if (read_le32(&h->magic) != LZ4F_MAGICNUMBER || h->version != 1)
+		if (le32toh(h->magic) != LZ4F_MAGICNUMBER || h->version != 1)
 			return 0;	/* unknown format */
 		if (h->reserved0 || h->reserved1 || h->reserved2)
 			return 0;	/* reserved must be zero */
@@ -158,7 +129,9 @@ size_t ulz4fn(const void *src, size_t srcn, void *dst, size_t dstn)
 	}
 
 	while (1) {
-		struct lz4_block_header b = { { .raw = read_le32(in) } };
+		struct lz4_block_header b = {
+			{ .raw = le32toh(*(const uint32_t *)in) }
+		};
 		in += sizeof(struct lz4_block_header);
 
 		if ((size_t)(in - src) + b.size > srcn)

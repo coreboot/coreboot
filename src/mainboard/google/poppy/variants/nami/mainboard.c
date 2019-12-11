@@ -18,7 +18,6 @@
 #include <baseboard/variants.h>
 #include <cbfs.h>
 #include <chip.h>
-#include <commonlib/cbfs_serialized.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <drivers/intel/gma/opregion.h>

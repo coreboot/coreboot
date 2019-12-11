@@ -19,7 +19,7 @@
 #include <arch/encoding.h>
 #include <arch/smp/smp.h>
 #include <mcall.h>
-#include <commonlib/cbfs_serialized.h>
+#include <cbfs.h>
 #include <console/console.h>
 
 struct arch_prog_run_args {

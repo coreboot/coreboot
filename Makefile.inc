@@ -394,12 +394,12 @@ COREBOOT_EXTRA_VERSION := -$(call strip_quotes,$(CONFIG_LOCALVERSION))
 COREBOOT_EXPORTS += COREBOOT_EXTRA_VERSION
 endif
 
-CPPFLAGS_common := -Isrc -Isrc/include -Isrc/commonlib/include -I$(obj)
+CPPFLAGS_common := -Isrc -Isrc/include -Isrc/commonlib/include -Isrc/commonlib/bsd/include -I$(obj)
 VBOOT_SOURCE ?= 3rdparty/vboot
 CPPFLAGS_common += -I$(VBOOT_SOURCE)/firmware/include
 CPPFLAGS_common += -include $(src)/include/kconfig.h
 CPPFLAGS_common += -include $(src)/include/rules.h
-CPPFLAGS_common += -include $(src)/commonlib/include/commonlib/compiler.h
+CPPFLAGS_common += -include $(src)/commonlib/bsd/include/commonlib/bsd/compiler.h
 CPPFLAGS_common += -I3rdparty
 CPPFLAGS_common += -D__BUILD_DIR__=\"$(obj)\"
 

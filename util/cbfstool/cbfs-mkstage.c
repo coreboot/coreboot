@@ -26,7 +26,7 @@
 #include "cbfs.h"
 #include "rmodule.h"
 
-#include <commonlib/compression.h>
+#include <commonlib/bsd/compression.h>
 
 /* Checks if program segment contains the ignored section */
 static int is_phdr_ignored(Elf64_Phdr *phdr, Elf64_Shdr *shdr)

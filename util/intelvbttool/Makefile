@@ -17,7 +17,7 @@ PROGRAM = intelvbttool
 CC ?= gcc
 CFLAGS ?= -O2 -g
 CFLAGS += -Wall -Werror
-CFLAGS += -I../../src/commonlib/include
+CFLAGS += -I../../src/commonlib/include -I ../../src/commonlib/bsd/include
 
 all: $(PROGRAM)
 

@@ -15,6 +15,8 @@
  * GNU General Public License for more details.
  */
 
+#include <cbfs.h>
+#include <commonlib/bsd/compression.h>
 #include <console/console.h>
 #include <bootmem.h>
 #include <cbmem.h>
@@ -25,8 +27,6 @@
 #include <program_loading.h>
 #include <timestamp.h>
 #include <string.h>
-#include <commonlib/cbfs_serialized.h>
-#include <commonlib/compression.h>
 #include <lib.h>
 #include <fit_payload.h>
 #include <boardid.h>

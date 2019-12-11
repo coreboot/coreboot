@@ -75,12 +75,12 @@ $(agesa_src_path)/$(notdir $1): $1
 
 $(call src-to-obj,libagesa,$1): $(agesa_src_path)/$(notdir $1) $(obj)/config.h $(src)/include/kconfig.h
 	@printf "    CC         $$(subst $(obj)/,,$$(@))\n"
-	$(CC_libagesa) -c -MMD $(CFLAGS_libagesa) $(AGESA_CFLAGS)             \
-	               $(AGESA_INC)                                           \
-	               -include $(src)/include/kconfig.h                      \
-	               -include $(src)/include/rules.h                        \
-	               -include $(src)/commonlib/include/commonlib/compiler.h \
-	               -o $$@                                                 \
+	$(CC_libagesa) -c -MMD $(CFLAGS_libagesa) $(AGESA_CFLAGS)                     \
+	               $(AGESA_INC)                                                   \
+	               -include $(src)/include/kconfig.h                              \
+	               -include $(src)/include/rules.h                                \
+	               -include $(src)/commonlib/bsd/include/commonlib/bsd/compiler.h \
+	               -o $$@                                                         \
 	               $(agesa_src_path)/$(notdir $1)
 
 endef

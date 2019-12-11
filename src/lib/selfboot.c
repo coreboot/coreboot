@@ -15,7 +15,7 @@
  * GNU General Public License for more details.
  */
 
-#include <commonlib/compression.h>
+#include <commonlib/bsd/compression.h>
 #include <commonlib/endian.h>
 #include <console/console.h>
 #include <stdint.h>

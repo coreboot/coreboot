@@ -113,8 +113,8 @@ TOOLCPPFLAGS += -D_XOPEN_SOURCE=700 # strdup() from string.h
 TOOLCPPFLAGS += -I$(top)/util/cbfstool/flashmap
 TOOLCPPFLAGS += -I$(top)/util/cbfstool
 TOOLCPPFLAGS += -I$(objutil)/cbfstool
-TOOLCPPFLAGS += -I$(top)/src/commonlib/include
-TOOLCPPFLAGS += -include $(top)/src/commonlib/include/commonlib/compiler.h
+TOOLCPPFLAGS += -I$(top)/src/commonlib/include -I$(top)/src/commonlib/bsd/include
+TOOLCPPFLAGS += -include $(top)/src/commonlib/bsd/include/commonlib/bsd/compiler.h
 TOOLCPPFLAGS += -I$(VBOOT_SOURCE)/firmware/include
 TOOLCPPFLAGS += -I$(VBOOT_SOURCE)/firmware/2lib/include
 # UEFI header file support. It's not pretty, but that's what we currently
@@ -160,6 +160,10 @@ $(objutil)/cbfstool/%.o: $(VBOOT_SOURCE)/firmware/2lib/%.c
 	$(HOSTCC) $(TOOLCPPFLAGS) $(TOOLCFLAGS) $(HOSTCFLAGS) -c -o $@ $<
 
 $(objutil)/cbfstool/%.o: $(top)/src/commonlib/%.c
+	printf "    HOSTCC     $(subst $(objutil)/,,$(@))\n"
+	$(HOSTCC) $(TOOLCPPFLAGS) $(TOOLCFLAGS) $(HOSTCFLAGS) -c -o $@ $<
+
+$(objutil)/cbfstool/%.o: $(top)/src/commonlib/bsd/%.c
 	printf "    HOSTCC     $(subst $(objutil)/,,$(@))\n"
 	$(HOSTCC) $(TOOLCPPFLAGS) $(TOOLCFLAGS) $(HOSTCFLAGS) -c -o $@ $<
 

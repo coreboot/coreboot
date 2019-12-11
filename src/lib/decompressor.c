@@ -15,7 +15,7 @@
  */
 
 #include <bootblock_common.h>
-#include <commonlib/compression.h>
+#include <commonlib/bsd/compression.h>
 #include <delay.h>
 #include <program_loading.h>
 #include <symbols.h>

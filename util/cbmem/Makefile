@@ -20,8 +20,8 @@ INSTALL  ?= /usr/bin/env install
 PREFIX   ?= /usr/local
 CFLAGS   ?= -O2
 CFLAGS   += -Wall -Wextra -Wmissing-prototypes -Werror
-CPPFLAGS += -I . -I $(ROOT)/commonlib/include
-CPPFLAGS += -include commonlib/compiler.h
+CPPFLAGS += -I . -I $(ROOT)/commonlib/include -I $(ROOT)/commonlib/bsd/include
+CPPFLAGS += -include $(ROOT)/commonlib/bsd/include/commonlib/bsd/compiler.h
 
 OBJS = $(PROGRAM).o
 

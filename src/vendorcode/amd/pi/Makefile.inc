@@ -66,6 +66,7 @@ AGESA_INC += -I$(src)/southbridge/amd/pi/hudson
 AGESA_INC += -I$(src)/arch/x86/include
 AGESA_INC += -I$(src)/include
 AGESA_INC += -I$(src)/commonlib/include
+AGESA_INC += -I$(src)/commonlib/bsd/include
 AGESA_INC += -I$(VBOOT_SOURCE)/firmware/include
 
 AGESA_CFLAGS += -march=amdfam10 -mno-3dnow
@@ -98,12 +99,12 @@ $(agesa_src_path)/$(notdir $1): $1
 
 $(call src-to-obj,libagesa,$1): $(agesa_src_path)/$(notdir $1) $(obj)/config.h $(src)/include/kconfig.h
 	@printf "    CC         $$(subst $(obj)/,,$$(@))\n"
-	$(CC_libagesa) -c -MMD $(CFLAGS_libagesa) $(AGESA_CFLAGS)                 \
-	               $(AGESA_INC)                                               \
-	               -include $(src)/include/kconfig.h                          \
-	               -include $(src)/include/rules.h                            \
-	               -include $(src)/commonlib/include/commonlib/compiler.h     \
-	               -o $$@                                                     \
+	$(CC_libagesa) -c -MMD $(CFLAGS_libagesa) $(AGESA_CFLAGS)                     \
+	               $(AGESA_INC)                                                   \
+	               -include $(src)/include/kconfig.h                              \
+	               -include $(src)/include/rules.h                                \
+	               -include $(src)/commonlib/bsd/include/commonlib/bsd/compiler.h \
+	               -o $$@                                                         \
 	               $(agesa_src_path)/$(notdir $1)
 
 endef

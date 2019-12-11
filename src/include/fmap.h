@@ -16,8 +16,8 @@
 #ifndef _FMAP_H_
 #define _FMAP_H_
 
+#include <commonlib/bsd/fmap_serialized.h>
 #include <commonlib/region.h>
-#include <commonlib/fmap_serialized.h>
 
 /* Locate the named area in the fmap and fill in a region device representing
  * that area. The region is a sub-region of the readonly boot media. Return

@@ -19,9 +19,9 @@ CC      = gcc
 INSTALL = /usr/bin/env install
 PREFIX  = /usr/local
 CFLAGS  = -O2 -g -Wall -Wextra -Wmissing-prototypes -Werror
-CFLAGS += -I../../src/commonlib/include
+CFLAGS += -I../../src/commonlib/include -I../../src/commonlib/bsd/include
 CFLAGS += -I../cbfstool/flashmap
-CFLAGS += -include ../../src/commonlib/include/commonlib/compiler.h
+CFLAGS += -include ../../src/commonlib/bsd/include/commonlib/bsd/compiler.h
 LDFLAGS =
 
 OBJS = ifdtool.o

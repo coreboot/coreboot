@@ -18,7 +18,6 @@
 #include <arch/smp/smp.h>
 #include <arch/smp/spinlock.h>
 #include <mcall.h>
-#include <commonlib/compiler.h>
 #include <console/console.h>
 
 void smp_pause(int working_hartid)

@@ -16,6 +16,7 @@
  */
 
 #include <assert.h>
+#include <cbfs.h>
 #include <console/console.h>
 #include <ctype.h>
 #include <endian.h>
@@ -27,7 +28,6 @@
 #include <memrange.h>
 #include <fit.h>
 #include <boardid.h>
-#include <commonlib/cbfs_serialized.h>
 #include <commonlib/stdlib.h>
 
 static struct list_node image_nodes;

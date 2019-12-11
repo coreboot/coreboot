@@ -23,7 +23,7 @@
 #include <stdlib.h>
 #include "common.h"
 #include "lz4/lib/lz4frame.h"
-#include <commonlib/compression.h>
+#include <commonlib/bsd/compression.h>
 
 static int lz4_compress(char *in, int in_len, char *out, int *out_len)
 {

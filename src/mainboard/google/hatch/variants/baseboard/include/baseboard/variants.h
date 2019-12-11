@@ -53,4 +53,7 @@ void variant_devtree_update(void);
 /* Perform variant specific initialization early on in ramstage. */
 void variant_ramstage_init(void);
 
+/* Perform variant specific mainboard initialization */
+void variant_mainboard_enable(struct device *dev);
+
 #endif /* BASEBOARD_VARIANTS_H */

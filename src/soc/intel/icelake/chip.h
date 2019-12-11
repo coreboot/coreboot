@@ -35,12 +35,6 @@ struct soc_intel_icelake_config {
 	/* Common struct containing soc config data required by common code */
 	struct soc_intel_common_config common_soc_config;
 
-	/* GPE configuration */
-	uint32_t gpe0_en_1; /* GPE0_EN_31_0 */
-	uint32_t gpe0_en_2; /* GPE0_EN_63_32 */
-	uint32_t gpe0_en_3; /* GPE0_EN_95_64 */
-	uint32_t gpe0_en_4; /* GPE0_EN_127_96 / GPE_STD */
-
 	/* Gpio group routed to each dword of the GPE0 block. Values are
 	 * of the form GPP_[A:G] or GPD. */
 	uint8_t gpe0_dw0; /* GPE0_31_0 STS/EN */

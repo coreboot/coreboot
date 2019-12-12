@@ -7,21 +7,6 @@
 #include <string.h>
 #include <vb2_sha.h>
 
-#if !defined(LOG)
-#define LOG(x...) printk(BIOS_INFO, "CBFS: " x)
-#endif
-#if defined(CONFIG)
-
-#if CONFIG(DEBUG_CBFS)
-#define DEBUG(x...) printk(BIOS_SPEW, "CBFS: " x)
-#else
-#define DEBUG(x...)
-#endif
-
-#elif !defined(DEBUG)
-#define DEBUG(x...)
-#endif
-
 static size_t cbfs_next_offset(const struct region_device *cbfs,
 				const struct cbfsf *f)
 {

@@ -3,7 +3,7 @@
 #ifndef _COMMONLIB_CBFS_H_
 #define _COMMONLIB_CBFS_H_
 
-#include <commonlib/bsd/cbfs_serialized.h>
+#include <commonlib/bsd/cbfs_private.h>
 #include <commonlib/region.h>
 #include <vb2_api.h>
 
@@ -11,6 +11,7 @@
 struct cbfsf {
 	struct region_device metadata;
 	struct region_device data;
+	union cbfs_mdata mdata;
 };
 
 /* Locate file by name and optional type. Returns 0 on success else < 0 on

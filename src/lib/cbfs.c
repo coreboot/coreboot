@@ -3,6 +3,7 @@
 #include <assert.h>
 #include <boot_device.h>
 #include <cbfs.h>
+#include <commonlib/bsd/cbfs_private.h>
 #include <commonlib/bsd/compression.h>
 #include <commonlib/endian.h>
 #include <console/console.h>
@@ -15,14 +16,6 @@
 #include <symbols.h>
 #include <timestamp.h>
 
-#define ERROR(x...) printk(BIOS_ERR, "CBFS: " x)
-#define LOG(x...) printk(BIOS_INFO, "CBFS: " x)
-#if CONFIG(DEBUG_CBFS)
-#define DEBUG(x...) printk(BIOS_SPEW, "CBFS: " x)
-#else
-#define DEBUG(x...)
-#endif
-
 int cbfs_boot_locate(struct cbfsf *fh, const char *name, uint32_t *type)
 {
 	struct region_device rdev;
@@ -30,31 +23,35 @@ int cbfs_boot_locate(struct cbfsf *fh, const char *name, uint32_t *type)
 	if (cbfs_boot_region_device(&rdev))
 		return -1;
 
-	int ret = cbfs_locate(fh, &rdev, name, type);
+	size_t data_offset;
+	cb_err_t err = cbfs_lookup(&rdev, name, &fh->mdata, &data_offset, NULL);
 
-	if (CONFIG(VBOOT_ENABLE_CBFS_FALLBACK) && ret) {
-
-		/*
-		 * When VBOOT_ENABLE_CBFS_FALLBACK is enabled and a file is not available in the
-		 * active RW region, the RO (COREBOOT) region will be used to locate the file.
-		 *
-		 * This functionality makes it possible to avoid duplicate files in the RO
-		 * and RW partitions while maintaining updateability.
-		 *
-		 * Files can be added to the RO_REGION_ONLY config option to use this feature.
-		 */
-		printk(BIOS_DEBUG, "Fall back to RO region for %s\n", name);
+	if (CONFIG(VBOOT_ENABLE_CBFS_FALLBACK) && err == CB_CBFS_NOT_FOUND) {
+		printk(BIOS_INFO, "CBFS: Fall back to RO region for %s\n",
+		       name);
 		if (fmap_locate_area_as_rdev("COREBOOT", &rdev))
-			ERROR("RO region not found\n");
-		else
-			ret = cbfs_locate(fh, &rdev, name, type);
+			return -1;
+		err = cbfs_lookup(&rdev, name, &fh->mdata, &data_offset, NULL);
+	}
+	if (err)
+		return -1;
+
+	size_t msize = be32toh(fh->mdata.h.offset);
+	if (rdev_chain(&fh->metadata, &addrspace_32bit.rdev,
+		       (uintptr_t)&fh->mdata, msize) ||
+	    rdev_chain(&fh->data, &rdev, data_offset, be32toh(fh->mdata.h.len)))
+		return -1;
+	if (type) {
+		if (!*type)
+			*type = be32toh(fh->mdata.h.type);
+		else if (*type != be32toh(fh->mdata.h.type))
+			return -1;
 	}
 
-	if (!ret)
-		if (tspi_measure_cbfs_hook(fh, name))
-			return -1;
+	if (tspi_measure_cbfs_hook(fh, name))
+		return -1;
 
-	return ret;
+	return 0;
 }
 
 void *cbfs_boot_map_with_leak(const char *name, uint32_t type, size_t *size)

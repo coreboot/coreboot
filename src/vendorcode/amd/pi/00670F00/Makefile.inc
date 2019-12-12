@@ -129,7 +129,7 @@ ifeq ($(CONFIG_AGESA_SPLIT_MEMORY_FILES), y)
 AGESA_POST_MEM_INPUT_ELF = $(call strip_quotes,$(CONFIG_AGESA_POST_MEMORY_BINARY_PI_FILE))
 
 # If no post-mem file then also skip pre-mem file
-ifeq ($(AGESA_POST_MEM_INPUT_ELF,))
+ifeq ($(AGESA_POST_MEM_INPUT_ELF),)
 files_added:: warn_no_agesa
 else
 AGESA_POST_MEM_ELF = $(objcbfs)/$(patsubst %.elf,%.debug,$(notdir $(AGESA_POST_MEM_INPUT_ELF)))

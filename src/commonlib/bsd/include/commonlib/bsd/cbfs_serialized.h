@@ -4,6 +4,7 @@
 #define _CBFS_SERIALIZED_H_
 
 #include <stdint.h>
+#include <vb2_sha.h>
 
 /** These are standard values for the known compression
     algorithms that coreboot knows about for stages and
@@ -124,12 +125,11 @@ struct cbfs_file_attr_compression {
 	uint32_t decompressed_size;
 } __packed;
 
+/* Actual size in CBFS may be larger/smaller than struct size! */
 struct cbfs_file_attr_hash {
 	uint32_t tag;
 	uint32_t len;
-	uint32_t hash_type;
-	/* hash_data is len - sizeof(struct) bytes */
-	uint8_t  hash_data[];
+	struct vb2_hash hash;
 } __packed;
 
 struct cbfs_file_attr_position {

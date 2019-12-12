@@ -34,6 +34,11 @@ enum cb_err {
 	CB_I2C_PROTOCOL_ERROR	= -302,	/**< Data lost or spurious slave
 					     device response, try again? */
 	CB_I2C_TIMEOUT		= -303, /**< Transmission timed out */
+
+	/* CBFS errors */
+	CB_CBFS_IO		= -400, /**< Underlying I/O error */
+	CB_CBFS_NOT_FOUND	= -401, /**< File not found in directory */
+	CB_CBFS_HASH_MISMATCH	= -402, /**< Master hash validation failed */
 };
 
 /* Don't typedef the enum directly, so the size is unambiguous for serialization. */

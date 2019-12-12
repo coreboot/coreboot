@@ -173,10 +173,10 @@ static int handle_digest_result(void *slot_hash, size_t slot_hash_sz)
 }
 
 static vb2_error_t hash_body(struct vb2_context *ctx,
-			     struct region_device *fw_main)
+			     struct region_device *fw_body)
 {
 	uint64_t load_ts;
-	uint32_t expected_size;
+	uint32_t remaining;
 	uint8_t block[TODO_BLOCK_SIZE];
 	uint8_t hash_digest[VBOOT_MAX_HASH_SIZE];
 	const size_t hash_digest_sz = sizeof(hash_digest);
@@ -197,33 +197,22 @@ static vb2_error_t hash_body(struct vb2_context *ctx,
 	load_ts = timestamp_get();
 	timestamp_add(TS_START_HASH_BODY, load_ts);
 
-	expected_size = region_device_sz(fw_main);
+	remaining = region_device_sz(fw_body);
 	offset = 0;
 
 	/* Start the body hash */
-	rv = vb2api_init_hash(ctx, VB2_HASH_TAG_FW_BODY, &expected_size);
+	rv = vb2api_init_hash(ctx, VB2_HASH_TAG_FW_BODY);
 	if (rv)
 		return rv;
 
-	/*
-	 * Honor vboot's RW slot size. The expected size is pulled out of
-	 * the preamble and obtained through vb2api_init_hash() above. By
-	 * creating sub region the RW slot portion of the boot media is
-	 * limited.
-	 */
-	if (rdev_chain(fw_main, fw_main, 0, expected_size)) {
-		printk(BIOS_ERR, "Unable to restrict CBFS size.\n");
-		return VB2_ERROR_UNKNOWN;
-	}
-
 	/* Extend over the body */
-	while (expected_size) {
+	while (remaining) {
 		uint64_t temp_ts;
-		if (block_size > expected_size)
-			block_size = expected_size;
+		if (block_size > remaining)
+			block_size = remaining;
 
 		temp_ts = timestamp_get();
-		if (rdev_readat(fw_main, block, offset, block_size) < 0)
+		if (rdev_readat(fw_body, block, offset, block_size) < 0)
 			return VB2_ERROR_UNKNOWN;
 		load_ts += timestamp_get() - temp_ts;
 
@@ -231,7 +220,7 @@ static vb2_error_t hash_body(struct vb2_context *ctx,
 		if (rv)
 			return rv;
 
-		expected_size -= block_size;
+		remaining -= block_size;
 		offset += block_size;
 	}
 
@@ -309,7 +298,7 @@ ROMSTAGE_CBMEM_INIT_HOOK(vboot_log_and_clear_recovery_mode_switch)
 void verstage_main(void)
 {
 	struct vb2_context *ctx;
-	struct region_device fw_main;
+	struct region_device fw_body;
 	vb2_error_t rv;
 
 	timestamp_add_now(TS_START_VBOOT);
@@ -405,12 +394,12 @@ void verstage_main(void)
 	}
 
 	printk(BIOS_INFO, "Phase 4\n");
-	rv = vboot_locate_firmware(ctx, &fw_main);
+	rv = vboot_locate_firmware(ctx, &fw_body);
 	if (rv)
 		die_with_post_code(POST_INVALID_ROM,
 			"Failed to read FMAP to locate firmware");
 
-	rv = hash_body(ctx, &fw_main);
+	rv = hash_body(ctx, &fw_body);
 	vboot_save_data(ctx);
 	if (rv) {
 		printk(BIOS_INFO, "Reboot requested (%x)\n", rv);

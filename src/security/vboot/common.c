@@ -68,8 +68,7 @@ struct vb2_context *vboot_get_context(void)
 	return vboot_ctx;
 }
 
-int vboot_locate_firmware(const struct vb2_context *ctx,
-			  struct region_device *fw)
+int vboot_locate_firmware(struct vb2_context *ctx, struct region_device *fw)
 {
 	const char *name;
 
@@ -78,7 +77,12 @@ int vboot_locate_firmware(const struct vb2_context *ctx,
 	else
 		name = "FW_MAIN_B";
 
-	return fmap_locate_area_as_rdev(name, fw);
+	int ret = fmap_locate_area_as_rdev(name, fw);
+	if (ret)
+		return ret;
+
+	/* Truncate area to the size that was actually signed by vboot. */
+	return rdev_chain(fw, fw, 0, vb2api_get_firmware_size(ctx));
 }
 
 static void vboot_setup_cbmem(int unused)

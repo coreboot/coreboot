@@ -72,7 +72,7 @@ void vboot_run_logic(void)
 
 static int vboot_locate(struct region_device *rdev)
 {
-	const struct vb2_context *ctx;
+	struct vb2_context *ctx;
 
 	/* Don't honor vboot results until the vboot logic has run. */
 	if (!vboot_logic_executed())

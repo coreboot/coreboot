@@ -318,10 +318,14 @@ static int enable_translated(void)
 	if (!i8042_cmd(I8042_CMD_RD_CMD_BYTE)) {
 		int cmd = i8042_read_data_ps2();
 		cmd |= I8042_CMD_BYTE_XLATE;
-		if (!i8042_cmd(I8042_CMD_WR_CMD_BYTE))
+		if (!i8042_cmd(I8042_CMD_WR_CMD_BYTE)) {
 			i8042_write_data(cmd);
+		} else {
+			printf("ERROR: i8042_cmd WR_CMD failed!\n");
+			return 0;
+		}
 	} else {
-		printf("ERROR: Keyboard i8042_cmd failed!\n");
+		printf("ERROR: i8042_cmd RD_CMD failed!\n");
 		return 0;
 	}
 	return 1;

@@ -297,21 +297,15 @@ config PSP_APOB_DESTINATION
 
 config PSP_APOB_NV_ADDRESS
 	hex "Base address of APOB NV"
-	default 0xffa68000
 	help
 	  Location in flash where the PSP can find the S3 restore information.
 	  Place this on a boundary that the flash device can erase.
-	  TODO:  The above default value is arbitrary, but eventually coreboot's
-	  MRC cache base address should be used.
 
 config PSP_APOB_NV_SIZE
 	hex "Size of APOB NV to be reserved"
-	default 0x10000
 	help
 	  Size of the S3 restore information.  Make this a multiple of the
 	  size the flash device can erase.
-	  TODO:  The above default value is arbitrary, but eventually coreboot's
-	  MRC cache size should be used.
 
 config USE_PSPSCUREOS
 	bool "Include PSP SecureOS blobs in PSP build"

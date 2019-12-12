@@ -1,13 +1,5 @@
 comment "Drallion"
 
-config BOARD_GOOGLE_ARCADA_CML
-	bool "->  Arcada_cml"
-	select BOARD_GOOGLE_BASEBOARD_DRALLION
-
-config BOARD_GOOGLE_SARIEN_CML
-	bool "->  Sarien_cml"
-	select BOARD_GOOGLE_BASEBOARD_DRALLION
-
 config BOARD_GOOGLE_DRALLION
 	bool "->  Drallion"
 	select BOARD_GOOGLE_BASEBOARD_DRALLION

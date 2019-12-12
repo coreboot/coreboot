@@ -211,9 +211,17 @@ config LBP2_FMAP_NAME
 	help
 	  Name of FMAP region to write logical boot partition 2 data.
 
+config LBP2_FROM_IFWI
+	bool "Extract the LBP2 from the IFWI binary"
+	depends on NEED_LBP2
+	default n
+	help
+	 The Logical Boot Partition will be automatically extracted
+	 from the supplied IFWI binary
+
 config LBP2_FILE_NAME
 	string "Path of file to write to logical boot partition 2 region"
-	depends on NEED_LBP2
+	depends on NEED_LBP2 && !LBP2_FROM_IFWI
 	default "3rdparty/blobs/mainboard/$(CONFIG_MAINBOARD_DIR)/lbp2.bin"
 	help
 	  Name of file to store in the logical boot partition 2 region.

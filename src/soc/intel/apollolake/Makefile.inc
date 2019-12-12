@@ -117,8 +117,16 @@ pdpt-type := raw
 endif
 
 ifeq ($(CONFIG_NEED_LBP2),y)
-files_added::
-	$(CBFSTOOL) $(obj)/coreboot.rom write -r $(CONFIG_LBP2_FMAP_NAME) -f $(CONFIG_LBP2_FILE_NAME) --fill-upward
+$(objcbfs)/lbp2.bin: $(IFWITOOL)
+ifeq ($(CONFIG_LBP2_FROM_IFWI),y)
+	$(IFWITOOL) $(CONFIG_IFWI_FILE_NAME) create -f $@ -s
+	$(IFWITOOL) $@ delete -n OBBP
+else
+	cp $(CONFIG_LBP2_FILE_NAME) $@
+endif
+
+files_added:: $(objcbfs)/lbp2.bin
+	$(CBFSTOOL) $(obj)/coreboot.rom write -r $(CONFIG_LBP2_FMAP_NAME) -f $< --fill-upward
 endif
 
 # Bootblock on Apollolake platform lies in the IFWI region. In order to place

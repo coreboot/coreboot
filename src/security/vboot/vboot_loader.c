@@ -1,6 +1,9 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <boot_device.h>
 #include <cbfs.h>
+#include <cbmem.h>
+#include <commonlib/bsd/cbfs_private.h>
 #include <console/console.h>
 #include <ec/google/chromeec/ec.h>
 #include <rmodule.h>
@@ -22,12 +25,27 @@ _Static_assert(!CONFIG(VBOOT_RETURN_FROM_VERSTAGE) ||
 
 int vboot_executed;
 
+static void build_rw_mcache(void)
+{
+	if (CONFIG(NO_CBFS_MCACHE))
+		return;
+
+	const struct cbfs_boot_device *cbd = vboot_get_cbfs_boot_device();
+	if (!cbd)	/* Don't build RW mcache in recovery mode. */
+		return;
+	cb_err_t err = cbfs_mcache_build(&cbd->rdev, cbd->mcache,
+					 cbd->mcache_size, NULL);
+	if (err && err != CB_CBFS_CACHE_FULL)
+		die("Failed to build RW mcache.");	/* TODO: -> recovery? */
+}
+
 void vboot_run_logic(void)
 {
 	if (verification_should_run()) {
 		/* Note: this path is not used for VBOOT_RETURN_FROM_VERSTAGE */
 		verstage_main();
 		vboot_executed = 1;
+		build_rw_mcache();
 	} else if (verstage_should_load()) {
 		struct cbfsf file;
 		struct prog verstage =
@@ -55,21 +73,29 @@ void vboot_run_logic(void)
 			return;
 
 		vboot_executed = 1;
+		build_rw_mcache();
 	}
 }
 
-int vboot_locate_cbfs(struct region_device *rdev)
+const struct cbfs_boot_device *vboot_get_cbfs_boot_device(void)
 {
-	struct vb2_context *ctx;
-
 	/* Don't honor vboot results until the vboot logic has run. */
 	if (!vboot_logic_executed())
-		return -1;
+		return NULL;
 
-	ctx = vboot_get_context();
+	static struct cbfs_boot_device cbd;
+	if (region_device_sz(&cbd.rdev))
+		return &cbd;
 
+	struct vb2_context *ctx = vboot_get_context();
 	if (ctx->flags & VB2_CONTEXT_RECOVERY_MODE)
-		return -1;
+		return NULL;
 
-	return vboot_locate_firmware(ctx, rdev);
+	boot_device_init();
+	if (vboot_locate_firmware(ctx, &cbd.rdev))
+		return NULL;
+
+	cbfs_boot_device_find_mcache(&cbd, CBMEM_ID_CBFS_RW_MCACHE);
+
+	return &cbd;
 }

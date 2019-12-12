@@ -3,10 +3,10 @@
 #ifndef _CBFS_H_
 #define _CBFS_H_
 
+#include <cbmem.h>
 #include <commonlib/cbfs.h>
 #include <program_loading.h>
-#include <stddef.h>
-#include <stdint.h>
+#include <types.h>
 
 /***********************************************
  * Perform CBFS operations on the boot device. *
@@ -42,8 +42,21 @@ size_t cbfs_load_and_decompress(const struct region_device *rdev, size_t offset,
 /* Load stage into memory filling in prog. Return 0 on success. < 0 on error. */
 int cbfs_prog_stage_load(struct prog *prog);
 
-/* Returns the region device of the currently active CBFS.
-   Return < 0 on error, 0 on success. */
-int cbfs_boot_region_device(struct region_device *rdev);
+struct cbfs_boot_device {
+	struct region_device rdev;
+	void *mcache;
+	size_t mcache_size;
+};
+
+/* Helper to fill out |mcache| and |mcache_size| in a cbfs_boot_device. */
+void cbfs_boot_device_find_mcache(struct cbfs_boot_device *cbd, uint32_t id);
+
+/*
+ * Retrieves the currently active CBFS boot device. If |force_ro| is set, will
+ * always return the read-only CBFS instead (this only makes a difference when
+ * CONFIG(VBOOT) is enabled). May perform certain CBFS initialization tasks.
+ * Returns NULL on error (e.g. boot device IO error).
+ */
+const struct cbfs_boot_device *cbfs_get_boot_device(bool force_ro);
 
 #endif

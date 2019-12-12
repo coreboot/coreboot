@@ -3,6 +3,7 @@
 #include <assert.h>
 #include <boot_device.h>
 #include <cbfs.h>
+#include <cbmem.h>
 #include <commonlib/bsd/cbfs_private.h>
 #include <commonlib/bsd/compression.h>
 #include <commonlib/endian.h>
@@ -16,22 +17,33 @@
 #include <symbols.h>
 #include <timestamp.h>
 
+static cb_err_t cbfs_boot_lookup(const struct cbfs_boot_device *cbd,
+		const char *name, union cbfs_mdata *mdata, size_t *data_offset)
+{
+	cb_err_t err = CB_CBFS_CACHE_FULL;
+	if (!CONFIG(NO_CBFS_MCACHE) && !ENV_SMM)
+		err = cbfs_mcache_lookup(cbd->mcache, cbd->mcache_size,
+					  name, mdata, data_offset);
+	if (err == CB_CBFS_CACHE_FULL)
+		err = cbfs_lookup(&cbd->rdev, name, mdata, data_offset, NULL);
+	return err;
+}
+
 int cbfs_boot_locate(struct cbfsf *fh, const char *name, uint32_t *type)
 {
-	struct region_device rdev;
-
-	if (cbfs_boot_region_device(&rdev))
+	const struct cbfs_boot_device *cbd = cbfs_get_boot_device(false);
+	if (!cbd)
 		return -1;
 
 	size_t data_offset;
-	cb_err_t err = cbfs_lookup(&rdev, name, &fh->mdata, &data_offset, NULL);
+	cb_err_t err = cbfs_boot_lookup(cbd, name, &fh->mdata, &data_offset);
 
 	if (CONFIG(VBOOT_ENABLE_CBFS_FALLBACK) && err == CB_CBFS_NOT_FOUND) {
 		printk(BIOS_INFO, "CBFS: Fall back to RO region for %s\n",
 		       name);
-		if (fmap_locate_area_as_rdev("COREBOOT", &rdev))
+		if (!(cbd = cbfs_get_boot_device(true)))
 			return -1;
-		err = cbfs_lookup(&rdev, name, &fh->mdata, &data_offset, NULL);
+		err = cbfs_boot_lookup(cbd, name, &fh->mdata, &data_offset);
 	}
 	if (err)
 		return -1;
@@ -39,7 +51,8 @@ int cbfs_boot_locate(struct cbfsf *fh, const char *name, uint32_t *type)
 	size_t msize = be32toh(fh->mdata.h.offset);
 	if (rdev_chain(&fh->metadata, &addrspace_32bit.rdev,
 		       (uintptr_t)&fh->mdata, msize) ||
-	    rdev_chain(&fh->data, &rdev, data_offset, be32toh(fh->mdata.h.len)))
+	    rdev_chain(&fh->data, &cbd->rdev, data_offset,
+		       be32toh(fh->mdata.h.len)))
 		return -1;
 	if (type) {
 		if (!*type)
@@ -333,9 +346,86 @@ out:
 	return 0;
 }
 
-int cbfs_boot_region_device(struct region_device *rdev)
+void cbfs_boot_device_find_mcache(struct cbfs_boot_device *cbd, uint32_t id)
 {
-	boot_device_init();
-	return vboot_locate_cbfs(rdev) &&
-	       fmap_locate_area_as_rdev("COREBOOT", rdev);
+	if (CONFIG(NO_CBFS_MCACHE) || ENV_SMM)
+		return;
+
+	const struct cbmem_entry *entry;
+	if (cbmem_possibly_online() &&
+	    (entry = cbmem_entry_find(id))) {
+		cbd->mcache = cbmem_entry_start(entry);
+		cbd->mcache_size = cbmem_entry_size(entry);
+	} else if (ENV_ROMSTAGE_OR_BEFORE) {
+		u8 *boundary = _ecbfs_mcache - REGION_SIZE(cbfs_mcache) *
+			CONFIG_CBFS_MCACHE_RW_PERCENTAGE / 100;
+		boundary = (u8 *)ALIGN_DOWN((uintptr_t)boundary,
+					    CBFS_MCACHE_ALIGNMENT);
+		if (id == CBMEM_ID_CBFS_RO_MCACHE) {
+			cbd->mcache = _cbfs_mcache;
+			cbd->mcache_size = boundary - _cbfs_mcache;
+		} else if (id == CBMEM_ID_CBFS_RW_MCACHE) {
+			cbd->mcache = boundary;
+			cbd->mcache_size = _ecbfs_mcache - boundary;
+		}
+	}
 }
+
+const struct cbfs_boot_device *cbfs_get_boot_device(bool force_ro)
+{
+	static struct cbfs_boot_device ro;
+
+	/* Ensure we always init RO mcache, even if first file is from RW.
+	   Otherwise it may not be available when needed in later stages. */
+	if (ENV_INITIAL_STAGE && !force_ro && !region_device_sz(&ro.rdev))
+		cbfs_get_boot_device(true);
+
+	if (!force_ro) {
+		const struct cbfs_boot_device *rw = vboot_get_cbfs_boot_device();
+		/* This will return NULL if vboot isn't enabled, didn't run yet
+		   or decided to boot into recovery mode. */
+		if (rw)
+			return rw;
+	}
+
+	if (region_device_sz(&ro.rdev))
+		return &ro;
+
+	if (fmap_locate_area_as_rdev("COREBOOT", &ro.rdev))
+		return NULL;
+
+	cbfs_boot_device_find_mcache(&ro, CBMEM_ID_CBFS_RO_MCACHE);
+
+	if (ENV_INITIAL_STAGE && !CONFIG(NO_CBFS_MCACHE)) {
+		cb_err_t err = cbfs_mcache_build(&ro.rdev, ro.mcache,
+						 ro.mcache_size, NULL);
+		if (err && err != CB_CBFS_CACHE_FULL)
+			die("Failed to build RO mcache");
+	}
+
+	return &ro;
+}
+
+#if !CONFIG(NO_CBFS_MCACHE)
+static void mcache_to_cbmem(const struct cbfs_boot_device *cbd, u32 cbmem_id)
+{
+	if (!cbd)
+		return;
+
+	size_t real_size = cbfs_mcache_real_size(cbd->mcache, cbd->mcache_size);
+	void *cbmem_mcache = cbmem_add(cbmem_id, real_size);
+	if (!cbmem_mcache) {
+		printk(BIOS_ERR, "ERROR: Cannot allocate CBMEM mcache %#x (%#zx bytes)!\n",
+		       cbmem_id, real_size);
+		return;
+	}
+	memcpy(cbmem_mcache, cbd->mcache, real_size);
+}
+
+static void cbfs_mcache_migrate(int unused)
+{
+	mcache_to_cbmem(vboot_get_cbfs_boot_device(), CBMEM_ID_CBFS_RW_MCACHE);
+	mcache_to_cbmem(cbfs_get_boot_device(true), CBMEM_ID_CBFS_RO_MCACHE);
+}
+ROMSTAGE_CBMEM_INIT_HOOK(cbfs_mcache_migrate)
+#endif

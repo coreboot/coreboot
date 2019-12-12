@@ -80,3 +80,24 @@ config ESPI_DEBUG
 	help
 	  This option enables eSPI library helper functions for displaying debug
 	  information.
+
+config NO_CBFS_MCACHE
+	bool
+	default y
+	help
+	  Disables the CBFS metadata cache. This means that your platform does
+	  not need to provide a CBFS_MCACHE section in memlayout and can save
+	  the associated CAR/SRAM size. In that case every single CBFS file
+	  lookup must re-read the same CBFS directory entries from flash to find
+	  the respective file.
+
+config CBFS_MCACHE_RW_PERCENTAGE
+	int
+	depends on VBOOT && !NO_CBFS_MCACHE
+	default 25 if CHROMEOS	# Chrome OS stores many L10n files in RO only
+	default 50
+	help
+	  The amount of the CBFS_MCACHE area that's used for the RW CBFS, in
+	  percent from 0 to 100. The remaining area will be used for the RO
+	  CBFS. Default is an even 50/50 split. When VBOOT is disabled, this
+	  will automatically be 0 (meaning the whole MCACHE is used for RO).

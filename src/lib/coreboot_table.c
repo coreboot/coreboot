@@ -220,11 +220,8 @@ static void lb_boot_media_params(struct lb_header *header)
 {
 	struct lb_boot_media_params *bmp;
 	const struct region_device *boot_dev;
-	struct region_device cbfs_dev;
-
-	boot_device_init();
-
-	if (cbfs_boot_region_device(&cbfs_dev))
+	const struct cbfs_boot_device *cbd = cbfs_get_boot_device(false);
+	if (!cbd)
 		return;
 
 	boot_dev = boot_device_ro();
@@ -235,8 +232,8 @@ static void lb_boot_media_params(struct lb_header *header)
 	bmp->tag = LB_TAG_BOOT_MEDIA_PARAMS;
 	bmp->size = sizeof(*bmp);
 
-	bmp->cbfs_offset = region_device_offset(&cbfs_dev);
-	bmp->cbfs_size = region_device_sz(&cbfs_dev);
+	bmp->cbfs_offset = region_device_offset(&cbd->rdev);
+	bmp->cbfs_size = region_device_sz(&cbd->rdev);
 	bmp->boot_media_size = region_device_sz(boot_dev);
 
 	bmp->fmap_offset = get_fmap_flash_offset();

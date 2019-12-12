@@ -113,4 +113,25 @@ cb_err_t cbfs_copy_fill_metadata(union cbfs_mdata *dst, const union cbfs_mdata *
 cb_err_t cbfs_lookup(cbfs_dev_t dev, const char *name, union cbfs_mdata *mdata_out,
 		     size_t *data_offset_out, struct vb2_hash *metadata_hash);
 
+/* Both base address and size of CBFS mcaches must be aligned to this value! */
+#define CBFS_MCACHE_ALIGNMENT	sizeof(uint32_t)	/* Largest data type used in CBFS */
+
+/* Build an in-memory CBFS metadata cache out of the CBFS on |dev| into a |mcache_size| bytes
+ * memory area at |mcache|. Also verify |metadata_hash| unless it is NULL. If this returns
+ * CB_CBFS_CACHE_FULL, the mcache is still valid and can be used, but lookups may return
+ * CB_CBFS_CACHE_FULL for files that didn't fit to indicate that the caller needs to fall back
+ * to cbfs_lookup(). */
+cb_err_t cbfs_mcache_build(cbfs_dev_t dev, void *mcache, size_t mcache_size,
+			   struct vb2_hash *metadata_hash);
+
+/*
+ * Find a file named |name| in a CBFS metadata cache and copy its metadata into |mdata_out|.
+ * Pass out offset to the file data (on the original CBFS device used for cbfs_mcache_build()).
+ */
+cb_err_t cbfs_mcache_lookup(const void *mcache, size_t mcache_size, const char *name,
+			    union cbfs_mdata *mdata_out, size_t *data_offset_out);
+
+/* Returns the amount of bytes actually used by the CBFS metadata cache in |mcache|. */
+size_t cbfs_mcache_real_size(const void *mcache, size_t mcache_size);
+
 #endif	/* _COMMONLIB_BSD_CBFS_PRIVATE_H_ */

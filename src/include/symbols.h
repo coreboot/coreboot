@@ -33,6 +33,7 @@ DECLARE_REGION(stack)
 DECLARE_REGION(preram_cbfs_cache)
 DECLARE_REGION(postram_cbfs_cache)
 DECLARE_REGION(cbfs_cache)
+DECLARE_REGION(cbfs_mcache)
 DECLARE_REGION(fmap_cache)
 DECLARE_REGION(tpm_tcpa_log)
 

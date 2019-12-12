@@ -37,6 +37,13 @@ postcar-y += bsd/cbfs_private.c
 ramstage-y += bsd/cbfs_private.c
 smm-y += bsd/cbfs_private.c
 
+bootblock-y += bsd/cbfs_mcache.c
+verstage-y += bsd/cbfs_mcache.c
+romstage-y += bsd/cbfs_mcache.c
+postcar-y += bsd/cbfs_mcache.c
+ramstage-y += bsd/cbfs_mcache.c
+smm-y += bsd/cbfs_mcache.c
+
 decompressor-y += bsd/lz4_wrapper.c
 bootblock-y += bsd/lz4_wrapper.c
 verstage-y += bsd/lz4_wrapper.c

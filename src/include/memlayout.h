@@ -71,6 +71,9 @@
 	_ = ASSERT(sz >= FMAP_SIZE, \
 		   STR(FMAP does not fit in FMAP_CACHE! (sz < FMAP_SIZE)));
 
+#define CBFS_MCACHE(addr, sz) \
+	REGION(cbfs_mcache, addr, sz, 4)
+
 #if ENV_ROMSTAGE_OR_BEFORE
 	#define PRERAM_CBFS_CACHE(addr, size) \
 		REGION(preram_cbfs_cache, addr, size, 4) \

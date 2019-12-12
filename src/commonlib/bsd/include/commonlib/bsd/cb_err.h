@@ -39,6 +39,7 @@ enum cb_err {
 	CB_CBFS_IO		= -400, /**< Underlying I/O error */
 	CB_CBFS_NOT_FOUND	= -401, /**< File not found in directory */
 	CB_CBFS_HASH_MISMATCH	= -402, /**< Master hash validation failed */
+	CB_CBFS_CACHE_FULL	= -403, /**< Metadata cache overflowed */
 };
 
 /* Don't typedef the enum directly, so the size is unambiguous for serialization. */

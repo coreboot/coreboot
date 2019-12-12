@@ -3,6 +3,7 @@
 #define __VBOOT_VBOOT_COMMON_H__
 
 #include <commonlib/region.h>
+#include <cbfs.h>
 #include <vb2_api.h>
 
 /*
@@ -50,14 +51,17 @@ int vboot_developer_mode_enabled(void);
 int vboot_recovery_mode_enabled(void);
 int vboot_can_enable_udc(void);
 void vboot_run_logic(void);
-int vboot_locate_cbfs(struct region_device *rdev);
+const struct cbfs_boot_device *vboot_get_cbfs_boot_device(void);
 #else /* !CONFIG_VBOOT */
 static inline int vboot_developer_mode_enabled(void) { return 0; }
 static inline int vboot_recovery_mode_enabled(void) { return 0; }
 /* If VBOOT is not enabled, we are okay enabling USB device controller (UDC). */
 static inline int vboot_can_enable_udc(void) { return 1; }
 static inline void vboot_run_logic(void) {}
-static inline int vboot_locate_cbfs(struct region_device *rdev) { return -1; }
+static inline const struct cbfs_boot_device *vboot_get_cbfs_boot_device(void)
+{
+	return NULL;
+}
 #endif
 
 void vboot_save_data(struct vb2_context *ctx);

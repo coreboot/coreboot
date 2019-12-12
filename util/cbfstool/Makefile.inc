@@ -129,10 +129,10 @@ ifeq ($(shell uname -s | cut -c-7 2>/dev/null), MINGW32)
 TOOLCFLAGS += -mno-ms-bitfields
 endif
 ifeq ($(shell uname -o 2>/dev/null), Cygwin)
-TOOLCFLAGS+=-std=gnu99
+TOOLCFLAGS+=-std=gnu11
 TOOLCPPFLAGS+=-D_GNU_SOURCE
 else
-TOOLCFLAGS+=-std=c99
+TOOLCFLAGS+=-std=c11
 endif
 
 $(objutil)/cbfstool/%.o: $(objutil)/cbfstool/%.c

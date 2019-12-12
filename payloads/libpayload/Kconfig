@@ -343,10 +343,6 @@ config PC_KEYBOARD
 	default y if ARCH_X86 # uses IO
 	default n
 
-config PC_KEYBOARD_IGNORE_INIT_FAILURE
-	bool "Ignore keyboard failures during init and always add input device"
-	default n
-
 config PC_KEYBOARD_AT_TRANSLATED
 	bool "AT Translation keyboard device"
 	default n

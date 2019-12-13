@@ -51,7 +51,7 @@ Device (LNKA)
 	Name (_PRS, ResourceTemplate ()
 	{
 		IRQ (Level, ActiveLow, Shared)
-			{ 3, 4, 5, 6, 10, 12, 14, 15 }
+			{ 3, 4, 5, 6, 10, 11, 12, 14, 15 }
 	})
 
 	Method (_CRS, 0, Serialized)
@@ -100,7 +100,7 @@ Device (LNKB)
 	Name (_PRS, ResourceTemplate ()
 	{
 		IRQ (Level, ActiveLow, Shared)
-			{ 3, 4, 5, 6, 10, 12, 14, 15 }
+			{ 3, 4, 5, 6, 10, 11, 12, 14, 15 }
 	})
 
 	Method (_CRS, 0, Serialized)
@@ -149,7 +149,7 @@ Device (LNKC)
 	Name (_PRS, ResourceTemplate ()
 	{
 		IRQ (Level, ActiveLow, Shared)
-			{ 3, 4, 5, 6, 10, 12, 14, 15 }
+			{ 3, 4, 5, 6, 10, 11, 12, 14, 15 }
 	})
 
 	Method (_CRS, 0, Serialized)
@@ -198,7 +198,7 @@ Device (LNKD)
 	Name (_PRS, ResourceTemplate ()
 	{
 		IRQ (Level, ActiveLow, Shared)
-			{ 3, 4, 5, 6, 10, 12, 14, 15 }
+			{ 3, 4, 5, 6, 10, 11, 12, 14, 15 }
 	})
 
 	Method (_CRS, 0, Serialized)
@@ -247,7 +247,7 @@ Device (LNKE)
 	Name (_PRS, ResourceTemplate ()
 	{
 		IRQ (Level, ActiveLow, Shared)
-			{ 3, 4, 5, 6, 10, 12, 14, 15 }
+			{ 3, 4, 5, 6, 10, 11, 12, 14, 15 }
 	})
 
 	Method (_CRS, 0, Serialized)
@@ -296,7 +296,7 @@ Device (LNKF)
 	Name (_PRS, ResourceTemplate ()
 	{
 		IRQ (Level, ActiveLow, Shared)
-			{ 3, 4, 5, 6, 10, 12, 14, 15 }
+			{ 3, 4, 5, 6, 10, 11, 12, 14, 15 }
 	})
 
 	Method (_CRS, 0, Serialized)
@@ -345,7 +345,7 @@ Device (LNKG)
 	Name (_PRS, ResourceTemplate ()
 	{
 		IRQ (Level, ActiveLow, Shared)
-			{ 3, 4, 5, 6, 10, 12, 14, 15 }
+			{ 3, 4, 5, 6, 10, 11, 12, 14, 15 }
 	})
 
 	Method (_CRS, 0, Serialized)
@@ -394,7 +394,7 @@ Device (LNKH)
 	Name (_PRS, ResourceTemplate ()
 	{
 		IRQ (Level, ActiveLow, Shared)
-			{ 3, 4, 5, 6, 10, 12, 14, 15 }
+			{ 3, 4, 5, 6, 10, 11, 12, 14, 15 }
 	})
 
 	Method (_CRS, 0, Serialized)

@@ -15,8 +15,6 @@
  * GNU General Public License for more details.
  */
 
-#include <device/pci_ops.h>
-#include <device/pci_def.h>
 #include <northbridge/intel/sandybridge/raminit_native.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 

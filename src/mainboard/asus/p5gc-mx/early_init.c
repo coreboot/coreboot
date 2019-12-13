@@ -19,7 +19,6 @@
 #include <stdint.h>
 #include <cf9_reset.h>
 #include <device/pnp_ops.h>
-#include <device/pci_ops.h>
 #include <superio/winbond/common/winbond.h>
 #include <superio/winbond/w83627dhg/w83627dhg.h>
 #include <console/console.h>

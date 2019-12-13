@@ -13,8 +13,6 @@
 
 #include <stdint.h>
 #include <string.h>
-#include <device/pci_ops.h>
-#include <device/pci_def.h>
 #include <northbridge/intel/sandybridge/sandybridge.h>
 #include <northbridge/intel/sandybridge/raminit_native.h>
 #include <southbridge/intel/bd82x6x/pch.h>

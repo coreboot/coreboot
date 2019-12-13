@@ -14,7 +14,6 @@
  * GNU General Public License for more details.
  */
 #include <bootblock_common.h>
-#include <device/pci_ops.h>
 #include <device/pnp_ops.h>
 #include <northbridge/intel/sandybridge/sandybridge.h>
 #include <southbridge/intel/bd82x6x/pch.h>

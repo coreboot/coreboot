@@ -15,7 +15,6 @@
  */
 
 #include <bootblock_common.h>
-#include <device/pci_ops.h>
 #include <device/dram/ddr3.h>
 #include <northbridge/intel/sandybridge/raminit_native.h>
 #include <northbridge/intel/sandybridge/sandybridge.h>

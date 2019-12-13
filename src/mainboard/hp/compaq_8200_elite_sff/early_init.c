@@ -18,8 +18,6 @@
 
 #include <bootblock_common.h>
 #include <stdint.h>
-#include <device/pci_ops.h>
-#include <device/pci_def.h>
 #include <superio/nuvoton/npcd378/npcd378.h>
 #include <superio/nuvoton/common/nuvoton.h>
 #include <northbridge/intel/sandybridge/sandybridge.h>

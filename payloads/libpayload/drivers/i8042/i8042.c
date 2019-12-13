@@ -197,23 +197,29 @@ u8 i8042_probe(void)
 
 	/* If 0x64 returns 0xff, then we have no keyboard
 	 * controller */
-	if (read_status() == 0xFF)
+	if (read_status() == 0xFF) {
+		printf("ERROR: No keyboard controller found!\n");
 		return 0;
+	}
 
-	if (!i8042_wait_cmd_rdy())
+	if (!i8042_wait_cmd_rdy()) {
+		printf("ERROR: i8042_wait_cmd_rdy failed!\n");
 		return 0;
+	}
 
 	kbc_init = 1;
 
 	/* Disable first device */
 	if (i8042_cmd(I8042_CMD_DIS_KB) != 0) {
 		kbc_init = 0;
+		printf("ERROR: i8042_cmd I8042_CMD_DIS_KB failed!\n");
 		return 0;
 	}
 
 	/* Disable second device */
 	if (i8042_cmd(I8042_CMD_DIS_AUX) != 0) {
 		kbc_init = 0;
+		printf("ERROR: i8042_cmd I8042_CMD_DIS_AUX failed!\n");
 		return 0;
 	}
 
@@ -225,6 +231,7 @@ u8 i8042_probe(void)
 	if (i8042_cmd_with_response(I8042_CMD_SELF_TEST)
 	    != I8042_SELF_TEST_RSP) {
 		kbc_init = 0;
+		printf("ERROR: i8042_cmd I8042_CMD_SELF_TEST failed!\n");
 		return 0;
 	}
 

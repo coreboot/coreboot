@@ -115,6 +115,25 @@ struct rgb_color {
 int draw_box(const struct rect *box, const struct rgb_color *rgb);
 
 /**
+ * Draw a box with rounded corners on screen.
+ *
+ * @param[in] pos_rel	Coordinate of the top left corner of the box relative to
+ *                      the canvas.
+ * @param[in] dim_rel	Width and height of the image relative to the canvas.
+ * @param[in] rgb       Color of the border of the box.
+ * @param[in] thickness Thickness of the border relative to the canvas. If zero
+ *                      is given, the box will be filled with the rgb color.
+ * @param[in] radius    Radius of the rounded corners relative to the canvas. A
+ *                      zero value indicates sharp corners will be drawn.
+ *
+ * @return CBGFX_* error codes
+ */
+int draw_rounded_box(const struct scale *pos_rel, const struct scale *dim_rel,
+		     const struct rgb_color *rgb,
+		     const struct fraction *thickness,
+		     const struct fraction *radius);
+
+/**
  * Clear the canvas
  */
 int clear_canvas(const struct rgb_color *rgb);

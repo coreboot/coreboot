@@ -243,6 +243,162 @@ int draw_box(const struct rect *box, const struct rgb_color *rgb)
 	return CBGFX_SUCCESS;
 }
 
+int draw_rounded_box(const struct scale *pos_rel, const struct scale *dim_rel,
+		     const struct rgb_color *rgb,
+		     const struct fraction *thickness,
+		     const struct fraction *radius)
+{
+	struct vector top_left;
+	struct vector size;
+	struct vector p, t;
+
+	if (cbgfx_init())
+		return CBGFX_ERROR_INIT;
+
+	const uint32_t color = calculate_color(rgb, 0);
+
+	transform_vector(&top_left, &canvas.size, pos_rel, &canvas.offset);
+	transform_vector(&size, &canvas.size, dim_rel, &vzero);
+	add_vectors(&t, &top_left, &size);
+	if (within_box(&t, &canvas) < 0) {
+		LOG("Box exceeds canvas boundary\n");
+		return CBGFX_ERROR_BOUNDARY;
+	}
+
+	if (!is_valid_fraction(thickness) || !is_valid_fraction(radius))
+		return CBGFX_ERROR_INVALID_PARAMETER;
+
+	struct scale thickness_scale = {
+		.x = { .n = thickness->n, .d = thickness->d },
+		.y = { .n = thickness->n, .d = thickness->d },
+	};
+	struct scale radius_scale = {
+		.x = { .n = radius->n, .d = radius->d },
+		.y = { .n = radius->n, .d = radius->d },
+	};
+	struct vector d, r, s;
+	transform_vector(&d, &canvas.size, &thickness_scale, &vzero);
+	transform_vector(&r, &canvas.size, &radius_scale, &vzero);
+	const uint8_t has_thickness = d.x > 0 && d.y > 0;
+	if (thickness->n != 0 && !has_thickness)
+		LOG("Thickness truncated to 0\n");
+	const uint8_t has_radius = r.x > 0 && r.y > 0;
+	if (radius->n != 0 && !has_radius)
+		LOG("Radius truncated to 0\n");
+	if (has_radius) {
+		if (d.x > r.x || d.y > r.y) {
+			LOG("Thickness cannot be greater than radius\n");
+			return CBGFX_ERROR_INVALID_PARAMETER;
+		}
+		if (r.x * 2 > t.x - top_left.x || r.y * 2 > t.y - top_left.y) {
+			LOG("Radius cannot be greater than half of the box\n");
+			return CBGFX_ERROR_INVALID_PARAMETER;
+		}
+	}
+
+	/* Step 1: Draw edges */
+	int32_t x_begin, x_end;
+	if (has_thickness) {
+		/* top */
+		for (p.y = top_left.y; p.y < top_left.y + d.y; p.y++)
+			for (p.x = top_left.x + r.x; p.x < t.x - r.x; p.x++)
+				set_pixel(&p, color);
+		/* bottom */
+		for (p.y = t.y - d.y; p.y < t.y; p.y++)
+			for (p.x = top_left.x + r.x; p.x < t.x - r.x; p.x++)
+				set_pixel(&p, color);
+		for (p.y = top_left.y + r.y; p.y < t.y - r.y; p.y++) {
+			/* left */
+			for (p.x = top_left.x; p.x < top_left.x + d.x; p.x++)
+				set_pixel(&p, color);
+			/* right */
+			for (p.x = t.x - d.x; p.x < t.x; p.x++)
+				set_pixel(&p, color);
+		}
+	} else {
+		/* Fill the regions except circular sectors */
+		for (p.y = top_left.y; p.y < t.y; p.y++) {
+			if (p.y >= top_left.y + r.y && p.y < t.y - r.y) {
+				x_begin = top_left.x;
+				x_end = t.x;
+			} else {
+				x_begin = top_left.x + r.x;
+				x_end = t.x - r.x;
+			}
+			for (p.x = x_begin; p.x < x_end; p.x++)
+				set_pixel(&p, color);
+		}
+	}
+
+	if (!has_radius)
+		return CBGFX_SUCCESS;
+
+	/*
+	 * Step 2: Draw rounded corners
+	 * When has_thickness, only the border is drawn. With fixed thickness,
+	 * the time complexity is linear to the size of the box.
+	 */
+	if (has_thickness) {
+		s.x = r.x - d.x;
+		s.y = r.y - d.y;
+	} else {
+		s.x = 0;
+		s.y = 0;
+	}
+
+	/* Use 64 bits to avoid overflow */
+	int32_t x, y;
+	uint64_t yy;
+	const uint64_t rrx = r.x * r.x, rry = r.y * r.y;
+	const uint64_t ssx = s.x * s.x, ssy = s.y * s.y;
+	x_begin = 0;
+	x_end = 0;
+	for (y = r.y - 1; y >= 0; y--) {
+		/*
+		 * The inequality is valid in the beginning of each iteration:
+		 * y^2 + x_end^2 < r^2
+		 */
+		yy = y * y;
+		/* Check yy/ssy + xx/ssx < 1 */
+		while (yy * ssx + x_begin * x_begin * ssy < ssx * ssy)
+			x_begin++;
+		/* The inequality must be valid now: y^2 + x_begin >= s^2 */
+		x = x_begin;
+		/* Check yy/rry + xx/rrx < 1 */
+		while (x < x_end || yy * rrx + x * x * rry < rrx * rry) {
+			/*
+			 * Example sequence of (y, x) when s = (4, 4) and
+			 * r = (5, 5):
+			 *   [(4, 0), (4, 1), (4, 2), (3, 3), (2, 4),
+			 *    (1, 4), (0, 4)].
+			 * If s.x==s.y r.x==r.y, then the sequence will be
+			 * symmetric, and x and y will range from 0 to (r-1).
+			 */
+			/* top left */
+			p.y = top_left.y + r.y - 1 - y;
+			p.x = top_left.x + r.x - 1 - x;
+			set_pixel(&p, color);
+			/* top right */
+			p.y = top_left.y + r.y - 1 - y;
+			p.x = t.x - r.x + x;
+			set_pixel(&p, color);
+			/* bottom left */
+			p.y = t.y - r.y + y;
+			p.x = top_left.x + r.x - 1 - x;
+			set_pixel(&p, color);
+			/* bottom right */
+			p.y = t.y - r.y + y;
+			p.x = t.x - r.x + x;
+			set_pixel(&p, color);
+			x++;
+		}
+		x_end = x;
+		/* (x_begin <= x_end) must hold now */
+	}
+
+	return CBGFX_SUCCESS;
+}
+
 int clear_canvas(const struct rgb_color *rgb)
 {
 	const struct rect box = {

@@ -219,28 +219,11 @@ void superio_common_fill_ssdt_generator(struct device *dev)
 	}
 	acpigen_pop_len(); /* Method */
 
-	if (!dev->enabled) {
-		acpigen_pop_len(); /* Device */
-		acpigen_pop_len(); /* Scope */
-		return;
-	}
-
-	if (has_resources(dev)) {
-		/* Resources - _CRS */
-		acpigen_write_name("_CRS");
-		acpigen_write_resourcetemplate_header();
-		ldn_gen_resources(dev);
-		acpigen_write_resourcetemplate_footer();
-
-		/* Resources - _PRS */
-		acpigen_write_name("_PRS");
-		acpigen_write_resourcetemplate_header();
-		ldn_gen_resources(dev);
-		acpigen_write_resourcetemplate_footer();
-
-		/* Resources base and size for 3rd party ACPI code */
-		ldn_gen_resources_use(dev);
-	}
+	/*
+	 * The ACPI6.2 spec Chapter 6.1.5 requires to set a  _HID if no _ADR
+	 * is present. Tests on Windows 10 showed that this is also true for
+	 * disabled (_STA = 0) devices, otherwise it BSODs.
+	 */
 
 	hid = acpi_device_hid(dev);
 	if (!hid) {
@@ -265,6 +248,23 @@ void superio_common_fill_ssdt_generator(struct device *dev)
 		acpigen_write_integer(ldn);
 	}
 	acpigen_pop_len(); /* Method */
+
+	if (dev->enabled && has_resources(dev)) {
+		/* Resources - _CRS */
+		acpigen_write_name("_CRS");
+		acpigen_write_resourcetemplate_header();
+		ldn_gen_resources(dev);
+		acpigen_write_resourcetemplate_footer();
+
+		/* Resources - _PRS */
+		acpigen_write_name("_PRS");
+		acpigen_write_resourcetemplate_header();
+		ldn_gen_resources(dev);
+		acpigen_write_resourcetemplate_footer();
+
+		/* Resources base and size for 3rd party ACPI code */
+		ldn_gen_resources_use(dev);
+	}
 
 	acpigen_pop_len(); /* Device */
 	acpigen_pop_len(); /* Scope */

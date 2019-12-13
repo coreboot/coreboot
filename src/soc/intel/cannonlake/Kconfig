@@ -23,6 +23,7 @@ config SOC_INTEL_CANNONLAKE
 config SOC_INTEL_COFFEELAKE
 	bool
 	select SOC_INTEL_CANNONLAKE_BASE
+	select FSP_USES_CB_STACK
 	help
 	  Intel Coffeelake support
 

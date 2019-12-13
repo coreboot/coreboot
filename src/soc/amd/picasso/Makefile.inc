@@ -41,7 +41,6 @@ romstage-y += i2c.c
 romstage-y += romstage.c
 romstage-y += gpio.c
 romstage-y += pmutil.c
-romstage-y += reset.c
 romstage-y += smbus.c
 romstage-y += memmap.c
 romstage-$(CONFIG_PICASSO_UART) += uart.c
@@ -52,7 +51,6 @@ romstage-$(CONFIG_HAVE_SMI_HANDLER) += smi_util.c
 verstage-y += gpio.c
 verstage-y += i2c.c
 verstage-y += pmutil.c
-verstage-y += reset.c
 verstage-$(CONFIG_PICASSO_UART) += uart.c
 verstage-y += tsc_freq.c
 
@@ -71,7 +69,6 @@ ramstage-y += gpio.c
 ramstage-y += southbridge.c
 ramstage-y += northbridge.c
 ramstage-y += pmutil.c
-ramstage-y += reset.c
 ramstage-y += acp.c
 ramstage-y += sata.c
 ramstage-y += sm.c
@@ -83,6 +80,8 @@ ramstage-$(CONFIG_PICASSO_UART) += uart.c
 ramstage-y += usb.c
 ramstage-y += tsc_freq.c
 ramstage-y += finalize.c
+
+all-y += reset.c
 
 smm-y += smihandler.c
 smm-y += smi_util.c

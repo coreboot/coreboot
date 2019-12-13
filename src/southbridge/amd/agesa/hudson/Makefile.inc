@@ -15,7 +15,6 @@ ramstage-y += pcie.c
 ramstage-y += sd.c
 
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += fadt.c
-ramstage-y += reset.c
 
 ifneq ($(CONFIG_ROMCC_BOOTBLOCK),y)
 bootblock-y += bootblock.c
@@ -35,6 +34,8 @@ postcar-y += ramtop.c
 
 romstage-y += imc.c
 ramstage-y += imc.c
+
+all-y += reset.c
 
 smm-y += smihandler.c smi_util.c
 ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smi.c smi_util.c

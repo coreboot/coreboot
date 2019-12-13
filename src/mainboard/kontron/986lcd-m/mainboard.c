@@ -16,7 +16,6 @@
 #include <string.h>
 #include <types.h>
 #include <device/device.h>
-#include <device/pci_def.h>
 #include <console/console.h>
 #include <drivers/intel/gma/int15.h>
 #include <pc80/mc146818rtc.h>

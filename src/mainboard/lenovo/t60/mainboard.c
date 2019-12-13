@@ -15,7 +15,6 @@
  * GNU General Public License for more details.
  */
 
-#include <device/pci_def.h>
 #include <arch/io.h>
 #include <device/device.h>
 #include <ec/lenovo/pmh7/pmh7.h>

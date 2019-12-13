@@ -17,7 +17,6 @@
 #include <types.h>
 #include <string.h>
 #include <device/device.h>
-#include <device/pci_def.h>
 #include <drivers/intel/gma/int15.h>
 #include <arch/acpi.h>
 #include <ec/smsc/mec1308/ec.h>

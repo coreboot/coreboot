@@ -18,7 +18,6 @@
 #include <arch/acpi.h>
 #include <arch/io.h>
 #include <device/device.h>
-#include <device/pci_def.h>
 #include <southbridge/intel/lynxpoint/pch.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 

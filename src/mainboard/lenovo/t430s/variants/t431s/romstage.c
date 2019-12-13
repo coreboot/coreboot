@@ -16,7 +16,6 @@
  */
 
 #include <option.h>
-#include <device/pci_def.h>
 #include <console/console.h>
 #include <cbfs.h>
 #include <northbridge/intel/sandybridge/raminit_native.h>

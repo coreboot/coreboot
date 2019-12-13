@@ -16,7 +16,6 @@
 
 #include <console/console.h>
 #include <device/device.h>
-#include <device/pci_def.h>
 #include <option.h>
 #include <stdint.h>
 #include <types.h>

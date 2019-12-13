@@ -16,7 +16,6 @@
 
 #include <types.h>
 #include <device/device.h>
-#include <device/pci_def.h>
 #include <drivers/intel/gma/int15.h>
 #include <arch/acpi.h>
 #include <southbridge/intel/bd82x6x/pch.h>

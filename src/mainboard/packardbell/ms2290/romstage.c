@@ -17,7 +17,6 @@
  */
 
 #include <stdint.h>
-#include <device/pci_ops.h>
 
 #include <southbridge/intel/ibexpeak/pch.h>
 #include <northbridge/intel/nehalem/nehalem.h>

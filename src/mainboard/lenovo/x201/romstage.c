@@ -18,7 +18,6 @@
 
 #include <stdint.h>
 #include <arch/io.h>
-#include <device/pci_ops.h>
 #include <ec/acpi/ec.h>
 
 #include <southbridge/intel/ibexpeak/pch.h>

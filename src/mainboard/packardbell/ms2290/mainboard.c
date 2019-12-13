@@ -18,8 +18,6 @@
 
 #include <device/device.h>
 #include <arch/io.h>
-#include <device/pci_def.h>
-#include <device/pci_ops.h>
 #include <northbridge/intel/nehalem/nehalem.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <ec/acpi/ec.h>

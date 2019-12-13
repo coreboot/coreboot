@@ -123,7 +123,7 @@ Device (SIOR)
 Device (SDMA)
 {
 	// Serial IO DMA Controller
-	/* Name (_HID, "INTL9C60") */
+	Name (_HID, "INTL9C60")
 	Name (_UID, 1)
 	Name (_ADR, 0x00150000)
 
@@ -163,6 +163,7 @@ Device (I2C0)
 	Name (_HID, "INT33C2")
 	Name (_CID, "INT33C2")
 	Name (_UID, 1)
+	Name (_ADR, 0x00150001)
 
 	Name (SSCN, Package () { 432, 507, 30 })
 	Name (FMCN, Package () { 72, 160, 30 })
@@ -244,6 +245,7 @@ Device (I2C1)
 	Name (_HID, "INT33C3")
 	Name (_CID, "INT33C3")
 	Name (_UID, 1)
+	Name (_ADR, 0x00150002)
 
 	Name (SSCN, Package () { 432, 507, 30 })
 	Name (FMCN, Package () { 72, 160, 30 })
@@ -325,6 +327,7 @@ Device (SPI0)
 	Name (_HID, "INT33C0")
 	Name (_CID, "INT33C0")
 	Name (_UID, 1)
+	Name (_ADR, 0x00150003)
 
 	// BAR0 is assigned during PCI enumeration and saved into NVS
 	Name (RBUF, ResourceTemplate ()
@@ -362,6 +365,7 @@ Device (SPI1)
 	Name (_HID, "INT33C1")
 	Name (_CID, "INT33C1")
 	Name (_UID, 1)
+	Name (_ADR, 0x00150004)
 
 	// BAR0 is assigned during PCI enumeration and saved into NVS
 	Name (RBUF, ResourceTemplate ()
@@ -412,6 +416,7 @@ Device (UAR0)
 	Name (_HID, "INT33C4")
 	Name (_CID, "INT33C4")
 	Name (_UID, 1)
+	Name (_ADR, 0x00150005)
 
 	// BAR0 is assigned during PCI enumeration and saved into NVS
 	Name (RBUF, ResourceTemplate ()
@@ -462,6 +467,7 @@ Device (UAR1)
 	Name (_HID, "INT33C5")
 	Name (_CID, "INT33C5")
 	Name (_UID, 1)
+	Name (_ADR, 0x00150006)
 
 	// BAR0 is assigned during PCI enumeration and saved into NVS
 	Name (RBUF, ResourceTemplate ()
@@ -499,6 +505,7 @@ Device (SDIO)
 	Name (_HID, "INT33C6")
 	Name (_CID, "PNP0D40")
 	Name (_UID, 1)
+	Name (_ADR, 0x00170000)
 
 	// BAR0 is assigned during PCI enumeration and saved into NVS
 	Name (RBUF, ResourceTemplate ()

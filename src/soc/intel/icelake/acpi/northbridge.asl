@@ -308,7 +308,7 @@ Device (PDRC)
 		Memory32Fixed (ReadOnly, VTD_BASE_ADDRESS, VTD_BASE_SIZE)
 
 		/* FLASH range */
-		Memory32Fixed (ReadOnly, 0xFFF00000, 0x1000000, FIOH)
+		Memory32Fixed (ReadOnly, 0xFF000000, 0x1000000, FIOH)
 
 		/* Local APIC range(0xFEE0_0000 to 0xFEEF_FFFF) */
 		Memory32Fixed (ReadOnly, 0xFEE00000, 0x100000, LIOH)

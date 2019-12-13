@@ -18,6 +18,8 @@
 #include <device/device.h>
 #include <device/path.h>
 #include <stdlib.h>
+#include <crc_byte.h>
+
 #if CONFIG(GENERIC_GPIO_LIB)
 #include <gpio.h>
 #endif
@@ -96,6 +98,19 @@ const char *acpi_device_hid(const struct device *dev)
 	 */
 
 	return NULL;
+}
+
+/*
+ * Generate unique ID based on the ACPI path.
+ * Collisions on the same _HID are possible but very unlikely.
+ */
+uint32_t acpi_device_uid(struct device *dev)
+{
+	const char *path = acpi_device_path(dev);
+	if (!path)
+		return 0;
+
+	return CRC(path, strlen(path), crc32_byte);
 }
 
 /* Recursive function to find the root device and print a path from there */
@@ -190,6 +205,13 @@ int acpi_device_status(const struct device *dev)
 	if (dev->hidden)
 		return ACPI_STATUS_DEVICE_HIDDEN_ON;
 	return ACPI_STATUS_DEVICE_ALL_ON;
+}
+
+
+/* Write the unique _UID based on ACPI device path. */
+void acpi_device_write_uid(struct device *dev)
+{
+	acpigen_write_name_integer("_UID", acpi_device_uid(dev));
 }
 
 /* ACPI 6.1 section 6.4.3.6: Extended Interrupt Descriptor */

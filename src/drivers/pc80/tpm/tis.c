@@ -902,7 +902,7 @@ static void lpc_tpm_fill_ssdt(struct device *dev)
 	acpigen_write_name("_CID");
 	acpigen_emit_eisaid("PNP0C31");
 
-	acpigen_write_name_integer("_UID", 1);
+	acpi_device_write_uid(dev);
 
 	u32 did_vid = tpm_read_did_vid(0);
 	if (did_vid > 0 && did_vid < 0xffffffff)

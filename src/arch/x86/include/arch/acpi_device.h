@@ -62,10 +62,12 @@ struct acpi_dp {
 struct device;
 const char *acpi_device_name(const struct device *dev);
 const char *acpi_device_hid(const struct device *dev);
+uint32_t acpi_device_uid(struct device *dev);
 const char *acpi_device_path(const struct device *dev);
 const char *acpi_device_scope(const struct device *dev);
 const char *acpi_device_path_join(const struct device *dev, const char *name);
 int acpi_device_status(const struct device *dev);
+void acpi_device_write_uid(struct device *dev);
 
 /*
  * ACPI Descriptor for extended Interrupt()

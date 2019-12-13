@@ -117,7 +117,7 @@ static void crb_tpm_fill_ssdt(struct device *dev)
 	acpigen_write_name_string("_HID", "MSFT0101");
 	acpigen_write_name_string("_CID", "MSFT0101");
 
-	acpigen_write_name_integer("_UID", 1);
+	acpi_device_write_uid(dev);
 
 	acpigen_write_STA(ACPI_STATUS_DEVICE_ALL_ON);
 

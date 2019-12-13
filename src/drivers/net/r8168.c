@@ -312,7 +312,8 @@ static void r8168_net_fill_ssdt(struct device *dev)
 	acpigen_write_scope(path);
 	acpigen_write_device(acpi_device_name(dev));
 	acpigen_write_name_string("_HID", R8168_ACPI_HID);
-	acpigen_write_name_integer("_UID", 0);
+	acpi_device_write_uid(dev);
+
 	if (dev->chip_ops)
 		acpigen_write_name_string("_DDN", dev->chip_ops->name);
 

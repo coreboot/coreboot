@@ -2,6 +2,8 @@
 
 This section contains documentation about coreboot on ACPI.
 
+- [SSDT UID generation](uid.md)
+
 ## GPIO
 
 - [GPIO toggling in ACPI AML](gpio.md)

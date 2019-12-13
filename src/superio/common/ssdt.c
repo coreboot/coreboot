@@ -196,7 +196,8 @@ void superio_common_fill_ssdt_generator(struct device *dev)
 	/* Device */
 	acpigen_write_device(name);
 
-	acpigen_write_name_byte("_UID", 0);
+	acpi_device_write_uid(dev);
+
 	acpigen_write_name_byte("LDN", ldn);
 	acpigen_write_name_byte("VLDN", vldn);
 

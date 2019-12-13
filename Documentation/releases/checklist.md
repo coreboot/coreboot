@@ -56,6 +56,9 @@ be more frequent than was needed, so we scaled it back to twice a year.
       and to update the release notes
 - [ ] Update the topic in the irc channel with the date of the upcoming
       release
+- [ ] If there are any deprecations announced for the following release,
+      make sure that a list of currently affected board and chipsets is
+      part of the release notes.
 - [ ] Finalize release notes (as much as possible), without specifying
       release commit ids
 

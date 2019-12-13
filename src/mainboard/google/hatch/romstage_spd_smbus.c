@@ -45,6 +45,7 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 
 	/* set to 2 VREF_CA goes to CH_A and VREF_DQ_B goes to CH_B. */
 	memcfg.vref_ca_config = 2;
+	memcfg.dq_pins_interleaved = 1;
 
 	cannonlake_memcfg_init(&memupd->FspmConfig, &memcfg);
 }

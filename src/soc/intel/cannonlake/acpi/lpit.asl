@@ -16,6 +16,8 @@
 
 External(\_SB.MS0X, MethodObj)
 External(\_SB.PCI0.LPCB.EC0.S0IX, MethodObj)
+External(\_SB.PCI0.EGPM, MethodObj)
+External(\_SB.PCI0.RGPM, MethodObj)
 
 scope(\_SB)
 {
@@ -73,6 +75,15 @@ scope(\_SB)
 				If (CondRefOf (\_SB.MS0X)) {
 					\_SB.MS0X(1)
 				}
+
+				/*
+				 * Save the current PM bits then
+				 * enable GPIO PM with MISCCFG_ENABLE_GPIO_PM_CONFIG
+ 				 */
+				If (CondRefOf (\_SB.PCI0.EGPM))
+				{
+					\_SB.PCI0.EGPM ()
+				}
 			}
 			/*
 			 * Function 6 - Low Power S0 Exit Notification
@@ -86,6 +97,12 @@ scope(\_SB)
 				/* provide board level s0ix hook */
 				If (CondRefOf (\_SB.MS0X)) {
 					\_SB.MS0X(0)
+				}
+
+				/* Restore GPIO all Community PM */
+				If (CondRefOf (\_SB.PCI0.RGPM))
+				{
+					\_SB.PCI0.RGPM ()
 				}
 			}
 		}

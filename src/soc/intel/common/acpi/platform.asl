@@ -19,6 +19,8 @@
 
 External(\_SB.MPTS, MethodObj)
 External(\_SB.MWAK, MethodObj)
+External(\_SB.PCI0.EGPM, MethodObj)
+External(\_SB.PCI0.RGPM, MethodObj)
 
 /* Port 80 POST */
 
@@ -41,6 +43,14 @@ Method (_PTS, 1)
 	{
 		\_SB.MPTS (Arg0)
 	}
+	/*
+	 * Save the current PM bits then
+	 * enable GPIO PM with MISCCFG_ENABLE_GPIO_PM_CONFIG
+ 	 */
+	If (CondRefOf (\_SB.PCI0.EGPM))
+	{
+		\_SB.PCI0.EGPM ()
+	}
 }
 
 /* The _WAK method is called on system wakeup */
@@ -52,6 +62,11 @@ Method (_WAK, 1)
 	If (CondRefOf (\_SB.MWAK))
 	{
 		\_SB.MWAK (Arg0)
+	}
+	/* Restore GPIO all Community PM */
+	If (CondRefOf (\_SB.PCI0.RGPM))
+	{
+		\_SB.PCI0.RGPM ()
 	}
 
 	Return (Package(){0,0})

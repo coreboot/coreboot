@@ -157,3 +157,44 @@ Method (CGPM, 2, Serialized)
 		PCRO (Local0, GPIO_MISCCFG, And (Arg1, MISCCFG_ENABLE_GPIO_PM_CONFIG))
 	}
 }
+
+/* GPIO Power Management bits */
+Name(GPMB, Package(TOTAL_GPIO_COMM) {0})
+
+/*
+ * Save GPIO Power Management bits
+ */
+Method (SGPM, 0, Serialized)
+{
+	For (Local0 = 0, Local0 < TOTAL_GPIO_COMM, Local0++)
+	{
+		Local1 = GPID (Local0)
+		GPMB[Local0] = PCRR (Local1, GPIO_MISCCFG)
+	}
+}
+
+/*
+ * Restore GPIO Power Management bits
+ */
+Method (RGPM, 0, Serialized)
+{
+	For (Local0 = 0, Local0 < TOTAL_GPIO_COMM, Local0++)
+	{
+		CGPM (Local0, DerefOf(GPMB[Local0]))
+	}
+}
+
+/*
+ * Save current setting of GPIO Power Management bits and
+ * enable all Power Management bits for all communities
+ */
+Method (EGPM, 0, Serialized)
+{
+	/* Save current setting and will restore it when resuming */
+	SGPM ()
+	/* Enable PM bits */
+	For (Local0 = 0, Local0 < TOTAL_GPIO_COMM, Local0++)
+	{
+		CGPM (Local0, MISCCFG_ENABLE_GPIO_PM_CONFIG)
+	}
+}

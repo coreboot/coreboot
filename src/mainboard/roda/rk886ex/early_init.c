@@ -24,6 +24,8 @@
 #include <pc80/mc146818rtc.h>
 #include <northbridge/intel/i945/i945.h>
 #include <southbridge/intel/i82801gx/i82801gx.h>
+#include <superio/smsc/lpc47n227/lpc47n227.h>
+
 #include "option_table.h"
 
 /* Override the default lpc decode ranges */
@@ -43,17 +45,6 @@ void mainboard_lpc_decode(void)
  * the two. Also set up the GPIOs from the beginning. This is the "no schematic
  * but safe anyways" method.
  */
-static inline void pnp_enter_ext_func_mode(pnp_devfn_t dev)
-{
-	unsigned int port = dev >> 8;
-	outb(0x55, port);
-}
-
-static void pnp_exit_ext_func_mode(pnp_devfn_t dev)
-{
-	unsigned int port = dev >> 8;
-	outb(0xaa, port);
-}
 
 void bootblock_mainboard_early_init(void)
 {
@@ -61,7 +52,7 @@ void bootblock_mainboard_early_init(void)
 
 	dev = PNP_DEV(0x2e, 0x00);
 
-	pnp_enter_ext_func_mode(dev);
+	pnp_enter_conf_state(dev);
 	pnp_write_config(dev, 0x01, 0x94); /* Extended Parport modes */
 	pnp_write_config(dev, 0x02, 0x88); /* UART power on */
 	pnp_write_config(dev, 0x03, 0x72); /* Floppy */
@@ -87,7 +78,7 @@ void bootblock_mainboard_early_init(void)
 	pnp_write_config(dev, 0x38, 0x00); /* GPIO4 POL */
 	pnp_write_config(dev, 0x39, 0x80); /* GPIO4 POL */
 
-	pnp_exit_ext_func_mode(dev);
+	pnp_exit_conf_state(dev);
 }
 
 void mainboard_late_rcba_config(void)

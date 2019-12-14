@@ -9,6 +9,7 @@ config BOARD_GOOGLE_BASEBOARD_BELTINO
 	select HAVE_ACPI_TABLES
 	select HAVE_OPTION_TABLE
 	select HAVE_ACPI_RESUME
+	select INTEL_GMA_HAVE_VBT
 	select MAINBOARD_HAS_CHROMEOS
 	select MAINBOARD_HAS_LIBGFXINIT
 	select MAINBOARD_HAS_LPC_TPM
@@ -50,6 +51,11 @@ config MAX_CPUS
 config VGA_BIOS_FILE
 	string
 	default "pci8086,0406.rom"
+
+# Override the default variant behavior, since the data.vbt is the same
+# for all variants except monroe
+config INTEL_GMA_VBT_FILE
+	default "src/mainboard/$(MAINBOARDDIR)/data.vbt" if !BOARD_GOOGLE_MONROE
 
 config MAINBOARD_SMBIOS_MANUFACTURER
 	string

@@ -40,7 +40,8 @@ int fch_spi_flash_cmd_write(const u8 *cmd, size_t cmd_len, const void *data, siz
 	int ret;
 	u8 buff[SPI_FIFO_DEPTH + 1];
 
-	if ((cmd_len + data_len) > SPI_FIFO_DEPTH)
+	/* Ensure FIFO is large enough.  First byte of command does not go in the FIFO. */
+	if ((cmd_len - 1 + data_len) > SPI_FIFO_DEPTH)
 		return -1;
 	memcpy(buff, cmd, cmd_len);
 	memcpy(buff + cmd_len, data, data_len);

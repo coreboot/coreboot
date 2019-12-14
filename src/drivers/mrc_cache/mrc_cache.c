@@ -415,8 +415,8 @@ static void update_mrc_cache_by_type(int type)
 	printk(BIOS_DEBUG, "MRC: cache data '%s' needs update.\n", cr->name);
 
 	if (region_file_update_data(&cache_file,
-		cbmem_entry_start(to_be_updated),
-		cbmem_entry_size(to_be_updated)) < 0)
+				cbmem_entry_start(to_be_updated),
+				cbmem_entry_size(to_be_updated)) < 0)
 		log_event_cache_update(cr->elog_slot, UPDATE_FAILURE);
 	else
 		log_event_cache_update(cr->elog_slot, UPDATE_SUCCESS);

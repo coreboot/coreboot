@@ -17,3 +17,7 @@
 # pre-ram.
 config SUPERIO_NUVOTON_COMMON_PRE_RAM
 	bool
+
+# Generic Nuvoton HWM driver
+config SUPERIO_NUVOTON_COMMON_HWM
+	bool

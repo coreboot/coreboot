@@ -20,6 +20,7 @@
 #include <drivers/intel/gma/int15.h>
 #include <pc80/mc146818rtc.h>
 #include <superio/hwm5_conf.h>
+#include <superio/nuvoton/common/hwm.h>
 
 /* Hardware Monitor */
 
@@ -74,16 +75,16 @@ static void hwm_setup(void)
 	sysfan_speed = FAN_SPEED_5625;
 	get_option(&sysfan_speed, "sysfan_speed");
 
-	pnp_write_hwm5_index(hwm_base, 0x4e, 0);
+	nuvoton_hwm_select_bank(hwm_base, 0);
 	pnp_write_hwm5_index(hwm_base, 0x59, 0x20); /* Diode Selection */
 	pnp_write_hwm5_index(hwm_base, 0x5d, 0x0f); /* All Sensors Diode, not Thermistor */
 
-	pnp_write_hwm5_index(hwm_base, 0x4e, 4);
+	nuvoton_hwm_select_bank(hwm_base, 4);
 	pnp_write_hwm5_index(hwm_base, 0x54, 0xf1); /* SYSTIN temperature offset */
 	pnp_write_hwm5_index(hwm_base, 0x55, 0x19); /* CPUTIN temperature offset */
 	pnp_write_hwm5_index(hwm_base, 0x56, 0xfc); /* AUXTIN temperature offset */
 
-	pnp_write_hwm5_index(hwm_base, 0x4e, 0x80); /* Default */
+	nuvoton_hwm_select_bank(hwm_base, 0x80); /* Default */
 
 	u8 fan_config = 0;
 	/* 00 FANOUT is Manual Mode */

@@ -86,7 +86,7 @@ chip soc/intel/cannonlake
 			.rise_time_ns = 0,
 			.fall_time_ns = 0,
 		},
-		.i2c[1] = {
+		.i2c[2] = {
 			.speed = I2C_SPEED_FAST,
 			.rise_time_ns = 0,
 			.fall_time_ns = 0,
@@ -111,16 +111,7 @@ chip soc/intel/cannonlake
 			# RFU - Reserved for Future Use.
 		end # I2C #0
 		device pci 15.1 off end # I2C #1
-		device pci 15.2 on
-#			chip drivers/i2c/generic
-#				register "name" = ""PS175""
-#				register "desc" = ""PCON PS175""
-#				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C10)"
-#				register "stop_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C11)"
-#				register "has_power_resource" = "1"
-#				device i2c 15 on end
-#			end
-		end # I2C #2
+		device pci 15.2 on end # I2C #2, PCON PS175.
 		device pci 15.3 on
 #			chip drivers/i2c/generic
 #				register "name" = ""RTD21""

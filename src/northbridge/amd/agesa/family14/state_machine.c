@@ -32,8 +32,7 @@ void platform_BeforeInitReset(struct sysinfo *cb, AMD_RESET_PARAMS *Reset)
 	if (!boot_cpu())
 		return;
 
-	if (!CONFIG(ROMCC_BOOTBLOCK))
-		sb_Poweron_Init();
+	sb_Poweron_Init();
 
 	/* Reboots with outb(3,0x92), outb(4,0xcf9) or triple-fault all
 	 * would fail later in AmdInitPost(), when DRAM is already configured

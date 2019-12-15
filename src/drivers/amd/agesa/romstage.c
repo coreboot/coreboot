@@ -15,7 +15,6 @@
 #include <arch/acpi.h>
 #include <arch/cpu.h>
 #include <arch/romstage.h>
-#include <bootblock_common.h>
 #include <cbmem.h>
 #include <console/console.h>
 #include <halt.h>
@@ -50,16 +49,10 @@ static void romstage_main(void)
 	u8 initial_apic_id = (u8) (cpuid_ebx(1) >> 24);
 	int cbmem_initted = 0;
 
-	/* Enable PCI MMIO configuration. */
-	if (CONFIG(ROMCC_BOOTBLOCK))
-		amd_initmmio();
-
 	fill_sysinfo(cb);
 
 	if (initial_apic_id == 0) {
 
-		if (CONFIG(ROMCC_BOOTBLOCK))
-			timestamp_init(timestamp_get());
 		timestamp_add_now(TS_START_ROMSTAGE);
 
 		board_BeforeAgesa(cb);
@@ -70,8 +63,7 @@ static void romstage_main(void)
 	printk(BIOS_DEBUG, "APIC %02d: CPU Family_Model = %08x\n",
 		initial_apic_id, cpuid_eax(1));
 
-	if (!CONFIG(ROMCC_BOOTBLOCK))
-		set_ap_entry_ptr(ap_romstage_main);
+	set_ap_entry_ptr(ap_romstage_main);
 
 	agesa_execute_state(cb, AMD_INIT_RESET);
 
@@ -112,10 +104,6 @@ static void ap_romstage_main(void)
 	struct sysinfo romstage_state;
 	struct sysinfo *cb = &romstage_state;
 
-	/* Enable PCI MMIO configuration. */
-	if (CONFIG(ROMCC_BOOTBLOCK))
-		amd_initmmio();
-
 	fill_sysinfo(cb);
 
 	agesa_execute_state(cb, AMD_INIT_RESET);
@@ -126,22 +114,7 @@ static void ap_romstage_main(void)
 	halt();
 }
 
-#if CONFIG(ROMCC_BOOTBLOCK)
-/* This wrapper enables easy transition away from ROMCC_BOOTBLOCK
- * keeping changes in cache_as_ram.S easy to manage.
- */
-asmlinkage void bootblock_c_entry(uint64_t base_timestamp)
-{
-	romstage_main();
-}
-
-asmlinkage void ap_bootblock_c_entry(void)
-{
-	ap_romstage_main();
-}
-#else
 asmlinkage void car_stage_entry(void)
 {
 	romstage_main();
 }
-#endif

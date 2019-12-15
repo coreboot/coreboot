@@ -16,6 +16,7 @@
 #include <timestamp.h>
 #include <amdblocks/amd_pci_mmconf.h>
 #include <amdblocks/biosram.h>
+#include <arch/bootblock.h>
 #include <cpu/amd/msr.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/lapic.h>
@@ -27,6 +28,11 @@ static void set_early_mtrrs(void)
 	/* Cache the ROM to speed up booting */
 	set_var_mtrr(EARLY_VMTRR_FLASH, OPTIMAL_CACHE_ROM_BASE,
 		     OPTIMAL_CACHE_ROM_SIZE, MTRR_TYPE_WRPROT);
+}
+
+void bootblock_soc_early_init(void)
+{
+	bootblock_early_southbridge_init();
 }
 
 asmlinkage void bootblock_c_entry(uint64_t base_timestamp)

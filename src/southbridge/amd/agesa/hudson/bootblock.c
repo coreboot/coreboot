@@ -14,7 +14,10 @@
  */
 
 #include <stdint.h>
+#include <arch/bootblock.h>
+#include <amdblocks/acpimmio.h>
 #include <device/pci_ops.h>
+#include <southbridge/amd/agesa/hudson/hudson.h>
 
 /*
  * Enable 4MB (LPC) ROM access at 0xFFC00000 - 0xFFFFFFFF.
@@ -56,24 +59,12 @@ static void hudson_enable_rom(void)
 	pci_io_write_config16(dev, 0x6e, 0xffff);
 }
 
-static void bootblock_southbridge_init(void)
-{
-	hudson_enable_rom();
-}
-
-
-#if !CONFIG(ROMCC_BOOTBLOCK)
-
-#include <bootblock_common.h>
-#include <amdblocks/acpimmio.h>
-#include <southbridge/amd/agesa/hudson/hudson.h>
-
-void bootblock_soc_early_init(void)
+void bootblock_early_southbridge_init(void)
 {
 	pci_devfn_t dev;
 	u32 data;
 
-	bootblock_southbridge_init();
+	hudson_enable_rom();
 	enable_acpimmio_decode_pm24();
 	hudson_lpc_decode();
 
@@ -94,7 +85,6 @@ void bootblock_soc_early_init(void)
 	 * Enable decoding of legacy TPM addresses: IO addresses 0x7f-
 	 * 0x7e and 0xef-0xee.
 	 */
-
 	data = pci_read_config32(dev, LPC_TRUSTED_PLATFORM_MODULE);
 	data |= TPM_12_EN | TPM_LEGACY_EN;
 	pci_write_config32(dev, LPC_TRUSTED_PLATFORM_MODULE, data);
@@ -109,4 +99,3 @@ void bootblock_soc_early_init(void)
 	 */
 	pm_write8(0xd2, 0);
 }
-#endif

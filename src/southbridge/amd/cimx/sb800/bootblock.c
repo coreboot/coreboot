@@ -13,7 +13,8 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/io.h>
+#include <amdblocks/acpimmio.h>
+#include <arch/bootblock.h>
 #include <device/pci_ops.h>
 
 static void enable_rom(void)
@@ -79,17 +80,6 @@ static void enable_spi_fast_mode(void)
 	pci_io_write_config32(dev, 0xa0, save);
 }
 
-static void enable_acpimmio_decode_pm24(void)
-{
-	u8 reg8;
-
-	outb(0x24, 0xCD6);
-	reg8 = inb(0xCD7);
-	reg8 |= 1;
-	reg8 &= ~(1 << 1);
-	outb(reg8, 0xCD7);
-}
-
 static void enable_clocks(void)
 {
 	u32 reg32;
@@ -109,7 +99,7 @@ static void enable_clocks(void)
 	*acpi_mmio = reg32;
 }
 
-static void bootblock_southbridge_init(void)
+void bootblock_early_southbridge_init(void)
 {
 	/* Setup the ROM access for 2M */
 	enable_rom();
@@ -120,12 +110,3 @@ static void bootblock_southbridge_init(void)
 	enable_acpimmio_decode_pm24();
 	enable_clocks();
 }
-
-#if !CONFIG(ROMCC_BOOTBLOCK)
-#include <bootblock_common.h>
-
-void bootblock_soc_early_init(void)
-{
-	bootblock_southbridge_init();
-}
-#endif

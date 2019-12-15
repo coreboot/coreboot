@@ -28,11 +28,9 @@
 #
 #*****************************************************************************
 
-ifneq ($(CONFIG_ROMCC_BOOTBLOCK),y)
 bootblock-y += bootblock.c
 bootblock-y += early_setup.c
 bootblock-$(CONFIG_USBDEBUG) += enable_usbdebug.c
-endif
 
 romstage-y += early_setup.c
 romstage-y += enable_usbdebug.c

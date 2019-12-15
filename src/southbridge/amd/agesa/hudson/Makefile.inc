@@ -16,11 +16,9 @@ ramstage-y += sd.c
 
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += fadt.c
 
-ifneq ($(CONFIG_ROMCC_BOOTBLOCK),y)
 bootblock-y += bootblock.c
 bootblock-y += early_setup.c
 bootblock-$(CONFIG_USBDEBUG) += enable_usbdebug.c
-endif
 
 romstage-y += enable_usbdebug.c
 ramstage-y += enable_usbdebug.c

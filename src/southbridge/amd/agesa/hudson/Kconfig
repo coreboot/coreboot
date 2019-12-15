@@ -31,10 +31,6 @@ config SOUTHBRIDGE_SPECIFIC_OPTIONS # dummy
 	select SOC_AMD_COMMON_BLOCK
 	select SOC_AMD_COMMON_BLOCK_ACPIMMIO
 
-config BOOTBLOCK_SOUTHBRIDGE_INIT
-	string
-	default "southbridge/amd/agesa/hudson/bootblock.c"
-
 config EHCI_BAR
 	hex
 	default 0xfef00000

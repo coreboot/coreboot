@@ -14,7 +14,10 @@
  */
 
 #include <stdint.h>
+#include <arch/bootblock.h>
+#include <amdblocks/acpimmio.h>
 #include <device/pci_ops.h>
+#include <southbridge/amd/pi/hudson/hudson.h>
 
 /*
  * Enable 4MB (LPC) ROM access at 0xFFC00000 - 0xFFFFFFFF.
@@ -56,23 +59,12 @@ static void hudson_enable_rom(void)
 	pci_io_write_config16(dev, 0x6e, 0xffff);
 }
 
-static void bootblock_southbridge_init(void)
-{
-	hudson_enable_rom();
-}
-
-#if !CONFIG(ROMCC_BOOTBLOCK)
-
-#include <bootblock_common.h>
-#include <amdblocks/acpimmio.h>
-#include <southbridge/amd/pi/hudson/hudson.h>
-
-void bootblock_soc_early_init(void)
+void bootblock_early_southbridge_init(void)
 {
 	pci_devfn_t dev;
 	u32 data;
 
-	bootblock_southbridge_init();
+	hudson_enable_rom();
 	if (CONFIG(SOUTHBRIDGE_AMD_PI_BOLTON))
 		enable_acpimmio_decode_pm24();
 	else
@@ -111,4 +103,3 @@ void bootblock_soc_early_init(void)
 	 */
 	pm_write8(0xd2, 0);
 }
-#endif

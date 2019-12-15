@@ -30,7 +30,6 @@
 
 /* Global configuration registers. */
 #define IT8728F_CONFIG_REG_CC        0x02 /* Configure Control (write-only). */
-#define IT8728F_CONFIG_REG_LDN       0x07 /* Logical Device Number. */
 #define IT8728F_CONFIG_REG_CHIPVERS  0x22 /* Chip version */
 #define IT8728F_CONFIG_REG_CLOCKSEL  0x23 /* Clock Selection. */
 #define IT8728F_CONFIG_REG_SWSUSP    0x24 /* Software Suspend, Flash I/F. 'Special register' */

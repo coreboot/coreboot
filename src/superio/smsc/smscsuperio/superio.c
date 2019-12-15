@@ -280,7 +280,10 @@ static void enable_dev(struct device *dev)
 	 */
 	for (j = 0; j < ARRAY_SIZE(pnp_dev_info); j++) {
 		fn = pnp_dev_info[j].function;
-		pnp_dev_info[j].function = logical_device_table[i].devs[fn];
+		if (logical_device_table[i].devs[fn] != -1)
+			pnp_dev_info[j].function = logical_device_table[i].devs[fn];
+		else
+			pnp_dev_info[j].function = PNP_SKIP_FUNCTION;
 	}
 
 	/* Enable the specified devices (if present on the chip). */

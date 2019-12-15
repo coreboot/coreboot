@@ -370,7 +370,7 @@ void pnp_enable_devices(struct device *base_dev, struct device_operations *ops,
 	/* Setup the ops and resources on the newly allocated devices. */
 	for (i = 0; i < functions; i++) {
 		/* Skip logical devices this Super I/O doesn't have. */
-		if (info[i].function == -1)
+		if (info[i].function == PNP_SKIP_FUNCTION)
 			continue;
 
 		path.pnp.device = info[i].function;

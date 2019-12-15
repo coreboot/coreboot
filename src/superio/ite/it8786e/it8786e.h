@@ -31,6 +31,4 @@
 #define IT8786E_SP5	0x0b /* COM5 */
 #define IT8786E_SP6	0x0c /* COM6 */
 
-#include <stdint.h>
-
 #endif /* SUPERIO_ITE_IT8786E_H */

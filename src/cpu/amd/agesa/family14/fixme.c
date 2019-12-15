@@ -18,10 +18,6 @@
 #include <AGESA.h>
 #include <amdlib.h>
 
-/* Define AMD Ontario APPU SSID/SVID */
-#define AMD_APU_SVID		0x1022
-#define AMD_APU_SSID		0x1234
-
 void amd_initcpuio(void)
 {
 	UINT64 MsrReg;
@@ -68,8 +64,6 @@ void amd_initcpuio(void)
 void amd_initmmio(void)
 {
 	UINT64 MsrReg;
-	UINT32 PciData;
-	PCI_ADDR PciAddress;
 	AMD_CONFIG_PARAMS StdHeader;
 
 	/*
@@ -78,14 +72,6 @@ void amd_initmmio(void)
 	 */
 	MsrReg = CONFIG_MMCONF_BASE_ADDRESS | (LibAmdBitScanReverse(CONFIG_MMCONF_BUS_NUMBER) << 2) | 1;
 	LibAmdMsrWrite(MMIO_CONF_BASE, &MsrReg, &StdHeader);
-
-	/* Set Ontario Link Data */
-	PciAddress.AddressValue = MAKE_SBDFO(0, 0, 0, 0, 0xE0);
-	PciData = 0x01308002;
-	LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
-	PciAddress.AddressValue = MAKE_SBDFO(0, 0, 0, 0, 0xE4);
-	PciData = (AMD_APU_SSID << 0x10) | AMD_APU_SVID;
-	LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
 
 	/* Set ROM cache onto WP to decrease post time */
 	MsrReg = (0x0100000000ull - CACHE_ROM_SIZE) | MTRR_TYPE_WRPROT;

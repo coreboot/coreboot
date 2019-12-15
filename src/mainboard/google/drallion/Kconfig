@@ -71,10 +71,6 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "Drallion" if BOARD_GOOGLE_DRALLION
 
-config MAX_CPUS
-	int
-	default 8
-
 config UART_FOR_CONSOLE
 	int
 	default 0 if BOARD_GOOGLE_DRALLION

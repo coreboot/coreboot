@@ -98,10 +98,6 @@ config MAINBOARD_PART_NUMBER
 	default "Puff" if BOARD_GOOGLE_PUFF
 	default "Stryke" if BOARD_GOOGLE_STRYKE
 
-config MAX_CPUS
-	int
-	default 8
-
 config OVERRIDE_DEVICETREE
 	string
 	default "variants/helios_diskswap/overridetree.cb" if BOARD_GOOGLE_HELIOS_DISKSWAP

@@ -92,10 +92,6 @@ void amd_initmmio(void)
 	LibAmdMsrWrite(MTRR_PHYS_BASE(6), &MsrReg, &StdHeader);
 	MsrReg = ((1ULL << CONFIG_CPU_ADDR_BITS) - CACHE_ROM_SIZE) | MTRR_PHYS_MASK_VALID;
 	LibAmdMsrWrite(MTRR_PHYS_MASK(6), &MsrReg, &StdHeader);
-
-	/* Set P-state 0 (1600 MHz) early to save a few ms of boot time */
-	MsrReg = 0;
-	LibAmdMsrWrite(PS_CTL_REG, &MsrReg, &StdHeader);
 }
 
 void amd_initenv(void)

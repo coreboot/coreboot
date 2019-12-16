@@ -179,6 +179,9 @@ struct prog_loader_ops {
 /* Run romstage from bootblock. */
 void run_romstage(void);
 
+/* Runtime selector for CBFS_PREFIX of romstage. */
+int legacy_romstage_selector(struct prog *romstage);
+
 /************************
  *   RAMSTAGE LOADING   *
  ************************/

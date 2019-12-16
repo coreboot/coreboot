@@ -232,11 +232,10 @@ config ROMSTAGE_DEBUG_SPINLOOP
 	  Add a spin (JMP .) in assembly_entry.S during early romstage to wait
 	  for a JTAG debugger to break into the execution sequence.
 
-# Selecting a cbfs prefix from the bootblock is only implemented with romcc
 choice
 	prompt "Bootblock behaviour"
 	default BOOTBLOCK_SIMPLE
-	depends on ROMCC_BOOTBLOCK
+	depends on !VBOOT
 
 config BOOTBLOCK_SIMPLE
 	bool "Always load fallback"

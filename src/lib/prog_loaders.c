@@ -60,8 +60,13 @@ void run_romstage(void)
 
 	vboot_run_logic();
 
-	if (prog_locate(&romstage))
-		goto fail;
+	if (CONFIG(ARCH_X86) && CONFIG(BOOTBLOCK_NORMAL)) {
+		if (legacy_romstage_selector(&romstage))
+			goto fail;
+	} else {
+		if (prog_locate(&romstage))
+			goto fail;
+	}
 
 	timestamp_add_now(TS_START_COPYROM);
 

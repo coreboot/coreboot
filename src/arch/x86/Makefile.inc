@@ -112,7 +112,7 @@ bootblock-$(CONFIG_IDT_IN_EVERY_STAGE) += exception.c
 bootblock-$(CONFIG_IDT_IN_EVERY_STAGE) += idt.S
 bootblock-$(CONFIG_COLLECT_TIMESTAMPS_TSC) += timestamp.c
 bootblock-$(CONFIG_X86_TOP4G_BOOTMEDIA_MAP) += mmap_boot.c
-
+bootblock-$(CONFIG_BOOTBLOCK_NORMAL) += bootblock_normal.c
 bootblock-y += id.S
 $(call src-to-obj,bootblock,$(dir)/id.S): $(obj)/build.h
 

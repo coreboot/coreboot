@@ -110,10 +110,12 @@
  */
 #define PSP_COMBO 0
 
+#if defined(__GLIBC__)
 typedef unsigned long long int uint64_t;
 typedef unsigned int uint32_t;
 typedef unsigned char uint8_t;
 typedef unsigned short uint16_t;
+#endif
 
 /*
  * Creates the OSI Fletcher checksum. See 8473-1, Appendix C, section C.3.

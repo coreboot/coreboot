@@ -19,6 +19,8 @@
  * Chapter number: 2, 3, 4, 27, 28
  */
 
+#include <console/console.h>
+#include <console/post_codes.h>
 #include <device/mmio.h>
 #include <device/device.h>
 #include <device/pci_ops.h>
@@ -30,6 +32,7 @@
 #include <intelblocks/pmclib.h>
 #include <intelblocks/rtc.h>
 #include <soc/bootblock.h>
+#include <soc/espi.h>
 #include <soc/iomap.h>
 #include <soc/p2sb.h>
 #include <soc/pch.h>

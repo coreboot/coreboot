@@ -71,19 +71,6 @@ static void romstage_main(unsigned long bist)
 	/* We do not return here. */
 }
 
-#if CONFIG(ROMCC_BOOTBLOCK)
-/* This wrapper enables easy transition away from ROMCC_BOOTBLOCK
- * keeping changes in cache_as_ram.S easy to manage.
- */
-asmlinkage void bootblock_c_entry_bist(uint64_t base_timestamp, uint32_t bist)
-{
-	timestamp_init(base_timestamp);
-	timestamp_add_now(TS_START_ROMSTAGE);
-	romstage_main(bist);
-}
-#endif
-
-
 /* We don't carry BIST from bootblock in a good location to read from.
  * Any error should have been reported in bootblock already.
  */

@@ -15,11 +15,7 @@
 
 #include <stdint.h>
 #include <stddef.h>
-#if !defined(__ROMCC__)
 #include <cbfs.h>
-#else
-#include <arch/cbfs.h>
-#endif
 #include <arch/cpu.h>
 #include <console/console.h>
 #include <cpu/x86/msr.h>
@@ -141,22 +137,11 @@ const void *intel_microcode_find(void)
 	unsigned int x86_model, x86_family;
 	msr_t msr;
 
-#ifdef __ROMCC__
-	struct cbfs_file *microcode_file;
-
-	microcode_file = walkcbfs_head((char *) MICROCODE_CBFS_FILE);
-	if (!microcode_file)
-		return NULL;
-
-	ucode_updates = CBFS_SUBHEADER(microcode_file);
-	microcode_len = ntohl(microcode_file->len);
-#else
 	ucode_updates = cbfs_boot_map_with_leak(MICROCODE_CBFS_FILE,
 						CBFS_TYPE_MICROCODE,
 						&microcode_len);
 	if (ucode_updates == NULL)
 		return NULL;
-#endif
 
 	/* CPUID sets MSR 0x8B if a microcode update has been loaded. */
 	msr.lo = 0;
@@ -201,8 +186,7 @@ const void *intel_microcode_find(void)
 		microcode_len -= update_size;
 	}
 
-	/* ROMCC doesn't like NULL. */
-	return (void *)0;
+	return NULL;
 }
 
 void intel_update_microcode_from_cbfs(void)

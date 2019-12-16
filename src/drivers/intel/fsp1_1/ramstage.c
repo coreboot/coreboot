@@ -69,7 +69,7 @@ void fsp_run_silicon_init(FSP_INFO_HEADER *fsp_info_header, int is_s3_wakeup)
 	EFI_STATUS status;
 	UPD_DATA_REGION *upd_ptr;
 	VPD_DATA_REGION *vpd_ptr;
-	const struct cbmem_entry *logo_entry;
+	const struct cbmem_entry *logo_entry = NULL;
 
 	/* Display the FSP header */
 	if (fsp_info_header == NULL) {
@@ -96,13 +96,8 @@ void fsp_run_silicon_init(FSP_INFO_HEADER *fsp_info_header, int is_s3_wakeup)
 		load_vbt(is_s3_wakeup, &silicon_init_params);
 	mainboard_silicon_init_params(&silicon_init_params);
 
-	if (CONFIG(FSP1_1_DISPLAY_LOGO) && !is_s3_wakeup) {
-		silicon_init_params.PcdLogoSize = 1 * MiB;
-		logo_entry = cbmem_entry_add(CBMEM_ID_FSP_LOGO,
-					     silicon_init_params.PcdLogoSize);
-		silicon_init_params.PcdLogoPtr = (UINT32)cbmem_entry_start(logo_entry);
-		load_logo(&silicon_init_params);
-	}
+	if (CONFIG(FSP1_1_DISPLAY_LOGO) && !is_s3_wakeup)
+		logo_entry = soc_load_logo(&silicon_init_params);
 
 	/* Display the UPD data */
 	if (CONFIG(DISPLAY_UPD_DATA))
@@ -122,7 +117,7 @@ void fsp_run_silicon_init(FSP_INFO_HEADER *fsp_info_header, int is_s3_wakeup)
 	printk(BIOS_DEBUG, "FspSiliconInit returned 0x%08x\n", status);
 
 	/* The logo_entry can be freed up now as it is not required any longer */
-	if (CONFIG(FSP1_1_DISPLAY_LOGO) && !is_s3_wakeup)
+	if (logo_entry && !is_s3_wakeup)
 		cbmem_entry_remove(logo_entry);
 
 	/* Mark graphics init done after SiliconInit if VBT was provided */
@@ -213,4 +208,10 @@ __weak void soc_display_silicon_init_params(
 /* Initialize the UPD parameters for SiliconInit */
 __weak void soc_silicon_init_params(SILICON_INIT_UPD *params)
 {
+}
+
+/* Load bmp and set FSP parameters, fsp_load_logo can be used */
+__weak const struct cbmem_entry *soc_load_logo(SILICON_INIT_UPD *params)
+{
+	return NULL;
 }

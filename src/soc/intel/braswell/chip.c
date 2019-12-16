@@ -181,6 +181,11 @@ void soc_silicon_init_params(SILICON_INIT_UPD *params)
 	board_silicon_USB2_override(params);
 }
 
+const struct cbmem_entry *soc_load_logo(SILICON_INIT_UPD *params)
+{
+	return fsp_load_logo(&params->PcdLogoPtr, &params->PcdLogoSize);
+}
+
 void soc_display_silicon_init_params(const SILICON_INIT_UPD *old,
 	SILICON_INIT_UPD *new)
 {

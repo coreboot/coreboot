@@ -11,15 +11,24 @@
  * GNU General Public License for more details.
  */
 
+#include <cbfs.h>
+#include <cbmem.h>
 #include <soc/ramstage.h>
-#include <console/console.h>
-#include <fsp/ramstage.h>
-#include <include/cbfs.h>
 
-void load_logo(SILICON_INIT_UPD *params)
+const struct cbmem_entry *fsp_load_logo(UINT32 *logo_ptr, UINT32 *logo_size)
 {
-	params->PcdLogoSize = cbfs_boot_load_file("logo.bmp", (void *)params->PcdLogoPtr,
-						  params->PcdLogoSize, CBFS_TYPE_RAW);
-	if (!params->PcdLogoSize)
-		params->PcdLogoPtr = 0;
+	const struct cbmem_entry *logo_entry = NULL;
+	void *logo_buffer;
+
+	logo_entry = cbmem_entry_add(CBMEM_ID_FSP_LOGO, 1 * MiB);
+	if (logo_entry) {
+		logo_buffer = cbmem_entry_start(logo_entry);
+		if (logo_buffer) {
+			*logo_size = cbfs_boot_load_file("logo.bmp", (void *)logo_buffer,
+							1 * MiB, CBFS_TYPE_RAW);
+			if (logo_size)
+				*logo_ptr = (UINT32)logo_buffer;
+		}
+	}
+	return (logo_entry);
 }

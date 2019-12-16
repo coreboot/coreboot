@@ -45,7 +45,7 @@ vb2_error_t vb2ex_tpm_clear_owner(struct vb2_context *ctx)
 
 vb2_error_t antirollback_read_space_firmware(struct vb2_context *ctx)
 {
-	vb2api_secdata_create(ctx);
+	vb2api_secdata_firmware_create(ctx);
 	return VB2_SUCCESS;
 }
 

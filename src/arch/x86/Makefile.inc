@@ -347,7 +347,9 @@ ifneq ($(wildcard src/mainboard/$(MAINBOARDDIR)/reset.c),)
 ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/reset.c
 endif
 ifeq ($(CONFIG_HAVE_ACPI_TABLES),y)
+ifneq ($(wildcard src/mainboard/$(MAINBOARDDIR)/acpi_tables.c),)
 ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/acpi_tables.c
+endif
 $(eval $(call asl_template,dsdt))
 ifneq ($(wildcard src/mainboard/$(MAINBOARDDIR)/fadt.c),)
 ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/fadt.c

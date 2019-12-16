@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2020 Intel Corp.
+ * Copyright 2020 The coreboot project Authors
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,10 +15,12 @@
 #include <soc/gpio_defs.h>
 #include <soc/irq.h>
 #include <soc/pcr_ids.h>
+#include <intelblocks/gpio.h>
+#include "gpio_op.asl"
 
 Device (GCM0)
 {
-	Name (_HID, "INT34C5")
+	Name (_HID, CROS_GPIO_NAME)
 	Name (_UID, 0)
 	Name (_DDN, "GPIO Controller Community 0")
 
@@ -42,7 +44,7 @@ Device (GCM0)
 
 Device (GCM1)
 {
-	Name (_HID, "INT34C5")
+	Name (_HID, CROS_GPIO_NAME)
 	Name (_UID, 1)
 	Name (_DDN, "GPIO Controller Community 1")
 
@@ -66,7 +68,7 @@ Device (GCM1)
 
 Device (GCM4)
 {
-	Name (_HID, "INT34C5")
+	Name (_HID, CROS_GPIO_NAME)
 	Name (_UID, 4)
 	Name (_DDN, "GPIO Controller Community 4")
 
@@ -90,7 +92,7 @@ Device (GCM4)
 
 Device (GCM5)
 {
-	Name (_HID, "INT34C5")
+	Name (_HID, CROS_GPIO_NAME)
 	Name (_UID, 5)
 	Name (_DDN, "GPIO Controller Community 5")
 
@@ -119,95 +121,36 @@ Device (GCM5)
 Method (GADD, 1, NotSerialized)
 {
 	/* GPIO Community 0 */
-	If (Arg0 >= GPP_B0 && Arg0 <= GPP_A24)
+	If (Arg0 >= GPIO_COM0_START && Arg0 <= GPIO_COM0_END)
 	{
 		Local0 = PID_GPIOCOM0
-		Local1 = Arg0 - GPP_B0
+		Local1 = Arg0 - GPIO_COM0_START
 	}
 	/* GPIO Community 1 */
-	If (Arg0 >= GPP_S0 && Arg0 <= vI2S2_RXD)
+	If (Arg0 >= GPIO_COM1_START && Arg0 <= GPIO_COM1_END)
 	{
 		Local0 = PID_GPIOCOM1
-		Local1 = Arg0 - GPP_S0
+		Local1 = Arg0 - GPIO_COM1_START
 	}
 	/* GPIO Community 2 */
-	If (Arg0 >= GPD0 && Arg0 <= GPD_DRAM_RESETB)
+	If (Arg0 >= GPIO_COM2_START && Arg0 <= GPIO_COM2_END)
 	{
 		Local0 = PID_GPIOCOM2
-		Local1 = Arg0 - GPD0
+		Local1 = Arg0 - GPIO_COM2_START
 	}
 	/* GPIO Community 4 */
-	If (Arg0 >= GPP_C0 && Arg0 <= GPP_DBG_PMODE)
+	If (Arg0 >= GPIO_COM4_START && Arg0 <= GPIO_COM4_END)
 	{
 		Local0 = PID_GPIOCOM4
-		Local1 = Arg0 - GPP_C0
+		Local1 = Arg0 - GPIO_COM4_START
 	}
-	/* GPIO Community 5 */
-	If (Arg0 >= GPP_R0 && Arg0 <= GPP_CLK_LOOPBK)
+	/* GPIO Community 05*/
+	If (Arg0 >= GPIO_COM5_START && Arg0 <= GPIO_COM5_END)
 	{
 		Local0 = PID_GPIOCOM5
-		Local1 = Arg0 - GPP_R0
+		Local1 = Arg0 - GPIO_COM5_START
 	}
+
 	Local2 = PCRB(Local0) + PAD_CFG_BASE + (Local1 * 16)
 	Return (Local2)
-}
-
-/*
- * Get GPIO Value
- * Arg0 - GPIO Number
- */
-Method (GRXS, 1, Serialized)
-{
-	OperationRegion (PREG, SystemMemory, GADD (Arg0), 4)
-	Field (PREG, AnyAcc, NoLock, Preserve)
-	{
-		VAL0, 32
-	}
-	Local0 = GPIORXSTATE_MASK & (VAL0 >> GPIORXSTATE_SHIFT)
-
-	Return (Local0)
-}
-
-/*
- * Get GPIO Tx Value
- * Arg0 - GPIO Number
- */
-Method (GTXS, 1, Serialized)
-{
-	OperationRegion (PREG, SystemMemory, GADD (Arg0), 4)
-	Field (PREG, AnyAcc, NoLock, Preserve)
-	{
-		VAL0, 32
-	}
-	Local0 = GPIOTXSTATE_MASK & VAL0
-
-	Return (Local0)
-}
-
-/*
- * Set GPIO Tx Value
- * Arg0 - GPIO Number
- */
-Method (STXS, 1, Serialized)
-{
-	OperationRegion (PREG, SystemMemory, GADD (Arg0), 4)
-	Field (PREG, AnyAcc, NoLock, Preserve)
-	{
-		VAL0, 32
-	}
-	VAL0 |= GPIOTXSTATE_MASK
-}
-
-/*
- * Clear GPIO Tx Value
- * Arg0 - GPIO Number
- */
-Method (CTXS, 1, Serialized)
-{
-	OperationRegion (PREG, SystemMemory, GADD (Arg0), 4)
-	Field (PREG, AnyAcc, NoLock, Preserve)
-	{
-		VAL0, 32
-	}
-	VAL0 &= ~GPIOTXSTATE_MASK
 }

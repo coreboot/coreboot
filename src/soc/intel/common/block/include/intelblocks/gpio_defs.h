@@ -23,6 +23,7 @@
 #define PAD_CFG0_RX_STATE		(1 << PAD_CFG0_RX_STATE_BIT)
 #define PAD_CFG0_TX_DISABLE		(1 << 8)
 #define PAD_CFG0_RX_DISABLE		(1 << 9)
+#define PAD_CFG0_MODE_SHIFT		10
 #define PAD_CFG0_MODE_MASK		(7 << 10)
 #define  PAD_CFG0_MODE_GPIO		(0 << 10)
 #define  PAD_CFG0_MODE_FUNC(x)		((x) << 10)

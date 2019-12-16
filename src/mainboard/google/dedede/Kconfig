@@ -1,0 +1,35 @@
+config BOARD_GOOGLE_BASEBOARD_DEDEDE
+	def_bool n
+	select SOC_INTEL_JASPERLAKE
+
+if BOARD_GOOGLE_BASEBOARD_DEDEDE
+
+config BASEBOARD_DEDEDE_LAPTOP
+	def_bool n
+	select SYSTEM_TYPE_LAPTOP
+
+config DEVICETREE
+	string
+	default "variants/baseboard/devicetree.cb"
+
+config MAINBOARD_DIR
+	string
+	default "google/dedede"
+
+config MAINBOARD_FAMILY
+	string
+	default "Google_Dedede" if BOARD_GOOGLE_DEDEDE
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "dedede" if BOARD_GOOGLE_DEDEDE
+
+config MAX_CPUS
+	int
+	default 4
+
+config UART_FOR_CONSOLE
+	int
+	default 2
+
+endif #BOARD_GOOGLE_BASEBOARD_DEDEDE

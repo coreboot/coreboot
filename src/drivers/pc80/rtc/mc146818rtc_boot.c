@@ -12,17 +12,13 @@
  */
 
 #include <stdint.h>
-#ifdef __ROMCC__
-#include <arch/cbfs.h>
-#else
 #include <cbfs.h>
-#endif
 #include <pc80/mc146818rtc.h>
+#include <fallback.h>
 #if CONFIG(USE_OPTION_TABLE)
 #include <option_table.h>
 #endif
 
-int cmos_error(void);
 int cmos_error(void)
 {
 	unsigned char reg_d;
@@ -31,7 +27,6 @@ int cmos_error(void)
 	return (reg_d & RTC_VRT) == 0;
 }
 
-int cmos_chksum_valid(void);
 int cmos_chksum_valid(void)
 {
 #if CONFIG(USE_OPTION_TABLE)
@@ -60,12 +55,8 @@ void sanitize_cmos(void)
 	    CONFIG(STATIC_OPTION_TABLE)) {
 		size_t length = 128;
 		const unsigned char *cmos_default =
-#ifdef __ROMCC__
-			walkcbfs("cmos.default");
-#else
 			cbfs_boot_map_with_leak("cmos.default",
 					CBFS_COMPONENT_CMOS_DEFAULT, &length);
-#endif
 		if (cmos_default) {
 			size_t i;
 			cmos_disable_rtc();
@@ -76,3 +67,60 @@ void sanitize_cmos(void)
 	}
 }
 #endif
+
+#if  CONFIG_MAX_REBOOT_CNT > 15
+#error "CONFIG_MAX_REBOOT_CNT too high"
+#endif
+
+static inline int boot_count(uint8_t rtc_byte)
+{
+	return rtc_byte >> 4;
+}
+
+static inline uint8_t increment_boot_count(uint8_t rtc_byte)
+{
+	return rtc_byte + (1 << 4);
+}
+
+static inline uint8_t boot_set_fallback(uint8_t rtc_byte)
+{
+	return rtc_byte & ~RTC_BOOT_NORMAL;
+}
+
+static inline int boot_use_normal(uint8_t rtc_byte)
+{
+	return rtc_byte & RTC_BOOT_NORMAL;
+}
+
+int do_normal_boot(void)
+{
+	unsigned char byte;
+
+	if (cmos_error() || !cmos_chksum_valid()) {
+		/* Invalid CMOS checksum detected!
+		 * Force fallback boot...
+		 */
+		byte = cmos_read(RTC_BOOT_BYTE);
+		byte &= boot_set_fallback(byte) & 0x0f;
+		byte |= 0xf << 4;
+		cmos_write(byte, RTC_BOOT_BYTE);
+	}
+
+	/* The RTC_BOOT_BYTE is now o.k. see where to go. */
+	byte = cmos_read(RTC_BOOT_BYTE);
+
+	/* Are we attempting to boot normally? */
+	if (boot_use_normal(byte)) {
+		/* Are we already at the max count? */
+		if (boot_count(byte) < CONFIG_MAX_REBOOT_CNT)
+			byte = increment_boot_count(byte);
+		else
+			byte = boot_set_fallback(byte);
+	}
+
+	/* Save the boot byte */
+	cmos_write(byte, RTC_BOOT_BYTE);
+
+	/* Return selected code path for this boot attempt */
+	return boot_use_normal(byte);
+}

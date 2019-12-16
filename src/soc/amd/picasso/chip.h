@@ -59,6 +59,11 @@ struct soc_amd_picasso_config {
 		I2S_PINS_UNCONF = 7,	/* All pads will be input mode */
 	} acp_pin_cfg;
 
+	/* Enable ACP I2S wake feature (0 = disable, 1 = enable) */
+	u8 acp_i2s_wake_enable;
+	/* Enable ACP PME (0 = disable, 1 = enable) */
+	u8 acpi_pme_enable;
+
 	/**
 	 * IRQ 0 - 15 have a default trigger of edge and default polarity of high.
 	 * If you have a device that requires a different configuration you can override the

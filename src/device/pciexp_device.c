@@ -12,6 +12,7 @@
  */
 
 #include <console/console.h>
+#include <commonlib/helpers.h>
 #include <delay.h>
 #include <device/device.h>
 #include <device/pci.h>
@@ -408,6 +409,46 @@ static void pciexp_enable_aspm(struct device *root, unsigned int root_cap,
 	printk(BIOS_INFO, "ASPM: Enabled %s\n", aspm_type_str[apmc]);
 }
 
+/*
+ * Set max payload size of endpoint in accordance with max payload size of root port.
+ */
+static void pciexp_set_max_payload_size(struct device *root, unsigned int root_cap,
+					struct device *endp, unsigned int endp_cap)
+{
+	unsigned int endp_max_payload, root_max_payload, max_payload;
+	u16 endp_devctl, root_devctl;
+	u32 endp_devcap, root_devcap;
+
+	/* Get max payload size supported by endpoint */
+	endp_devcap = pci_read_config32(endp, endp_cap + PCI_EXP_DEVCAP);
+	endp_max_payload = endp_devcap & PCI_EXP_DEVCAP_PAYLOAD;
+
+	/* Get max payload size supported by root port */
+	root_devcap = pci_read_config32(root, root_cap + PCI_EXP_DEVCAP);
+	root_max_payload = root_devcap & PCI_EXP_DEVCAP_PAYLOAD;
+
+	/* Set max payload to smaller of the reported device capability. */
+	max_payload = MIN(endp_max_payload, root_max_payload);
+	if (max_payload > 5) {
+		/* Values 6 and 7 are reserved in PCIe 3.0 specs. */
+		printk(BIOS_ERR, "PCIe: Max_Payload_Size field restricted from %d to 5\n",
+		       max_payload);
+		max_payload = 5;
+	}
+
+	endp_devctl = pci_read_config16(endp, endp_cap + PCI_EXP_DEVCTL);
+	endp_devctl &= ~PCI_EXP_DEVCTL_PAYLOAD;
+	endp_devctl |= max_payload << 5;
+	pci_write_config16(endp, endp_cap + PCI_EXP_DEVCTL, endp_devctl);
+
+	root_devctl = pci_read_config16(root, root_cap + PCI_EXP_DEVCTL);
+	root_devctl &= ~PCI_EXP_DEVCTL_PAYLOAD;
+	root_devctl |= max_payload << 5;
+	pci_write_config16(root, root_cap + PCI_EXP_DEVCTL, root_devctl);
+
+	printk(BIOS_INFO, "PCIe: Max_Payload_Size adjusted to %d\n", (1 << (max_payload + 7)));
+}
+
 static void pciexp_tune_dev(struct device *dev)
 {
 	struct device *root = dev->bus->dev;
@@ -436,6 +477,9 @@ static void pciexp_tune_dev(struct device *dev)
 	/* Check for and enable ASPM */
 	if (CONFIG(PCIEXP_ASPM))
 		pciexp_enable_aspm(root, root_cap, dev, cap);
+
+	/* Adjust Max_Payload_Size of link ends. */
+	pciexp_set_max_payload_size(root, root_cap, dev, cap);
 }
 
 void pciexp_scan_bus(struct bus *bus, unsigned int min_devfn,

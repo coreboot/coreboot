@@ -25,8 +25,8 @@
 /* PCR access */
 #include <soc/intel/common/acpi/pcr.asl>
 
-/* eMMC, SD Card */
-#include "scs.asl"
+/* PCH clock */
+#include "camera_clock_ctl.asl"
 
 /* GPIO controller */
 #include "gpio.asl"
@@ -43,11 +43,11 @@
 /* Serial IO */
 #include "serialio.asl"
 
+/* SMBus 0:1f.4 */
+#include "smbus.asl"
+
 /* USB XHCI 0:14.0 */
 #include "xhci.asl"
 
 /* PCI _OSC */
 #include <soc/intel/common/acpi/pci_osc.asl>
-
-/* GBe 0:1f.6 */
-#include "pch_glan.asl"

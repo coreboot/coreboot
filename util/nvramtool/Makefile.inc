@@ -36,8 +36,7 @@ NVRAMTOOLLDFLAGS += -lregex -lwsock32
 nvramtoolobj += win32mmap.o
 endif
 
-$(objutil)/nvramtool $(objutil)/nvramtool/accessors $(objutil)/nvramtool/cli:
-	mkdir -p $@
+additional-dirs += $(objutil)/nvramtool/accessors $(objutil)/nvramtool/cli
 
 $(objutil)/nvramtool/%.o: $(top)/util/nvramtool/%.c
 	printf "    HOSTCC     $(subst $(objutil)/,,$(@))\n"

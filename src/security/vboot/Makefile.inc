@@ -123,8 +123,6 @@ $(1)-srcs += $$(VBOOT_LIB_$(1))
 
 endef # vboot-for-stage
 
-CFLAGS_common += -I3rdparty/vboot/firmware/2lib/include
-
 $(eval $(call vboot-for-stage,bootblock))
 $(eval $(call vboot-for-stage,romstage))
 $(eval $(call vboot-for-stage,ramstage))

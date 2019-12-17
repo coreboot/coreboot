@@ -186,6 +186,7 @@ static int mmc_select_hs(struct storage_media *media)
 
 	/* Increase the controller clock speed */
 	SET_TIMING(media->ctrlr, BUS_TIMING_MMC_HS);
+	media->caps &= ~(DRVR_CAP_HS200 | DRVR_CAP_HS400);
 	media->caps |= DRVR_CAP_HS52 | DRVR_CAP_HS;
 	mmc_recalculate_clock(media);
 	ret = sd_mmc_send_status(media, SD_MMC_IO_RETRIES);

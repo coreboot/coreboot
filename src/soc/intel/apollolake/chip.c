@@ -879,4 +879,10 @@ void mainboard_silicon_init_params(FSP_S_CONFIG *silconfig)
 	printk(BIOS_DEBUG, "WEAK: %s/%s called\n", __FILE__, __func__);
 }
 
+/* Handle FSP logo params */
+const struct cbmem_entry *soc_load_logo(FSPS_UPD *supd)
+{
+	return fsp_load_logo(&supd->FspsConfig.LogoPtr, &supd->FspsConfig.LogoSize);
+}
+
 BOOT_STATE_INIT_ENTRY(BS_PRE_DEVICE, BS_ON_ENTRY, spi_flash_init_cb, NULL);

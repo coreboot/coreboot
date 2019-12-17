@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <cbmem.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
@@ -482,4 +483,10 @@ const pci_devfn_t *soc_lpss_controllers_list(size_t *size)
 {
 	*size = ARRAY_SIZE(serial_io_dev);
 	return serial_io_dev;
+}
+
+/* Handle FSP logo params */
+const struct cbmem_entry *soc_load_logo(FSPS_UPD *supd)
+{
+	return fsp_load_logo(&supd->FspsConfig.LogoPtr, &supd->FspsConfig.LogoSize);
 }

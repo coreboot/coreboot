@@ -156,10 +156,14 @@ config FSP_PEIM_TO_PEIM_INTERFACE
 	  is limited till EFI_PEI_MP_SERVICE_PPI and this option might be
 	  useful to add further PPI if required.
 
+config HAVE_FSP_LOGO_SUPPORT
+	bool
+	default n
+
 config FSP2_0_DISPLAY_LOGO
 	bool "Enable logo"
 	default n
-	depends on HAVE_FSP_GOP
+	depends on HAVE_FSP_LOGO_SUPPORT
 	help
 	  Uses the FSP to display the boot logo. This method supports a
 	  BMP file only. The uncompressed size can be up to 1 MB. The logo can be compressed

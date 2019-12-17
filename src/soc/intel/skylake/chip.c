@@ -15,6 +15,7 @@
 
 #include <bootmode.h>
 #include <bootstate.h>
+#include <cbmem.h>
 #include <fsp/api.h>
 #include <arch/acpi.h>
 #include <console/console.h>
@@ -415,4 +416,10 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 __weak void mainboard_silicon_init_params(FSP_S_CONFIG *params)
 {
 	printk(BIOS_DEBUG, "WEAK: %s/%s called\n", __FILE__, __func__);
+}
+
+/* Handle FSP logo params */
+const struct cbmem_entry *soc_load_logo(FSPS_UPD *supd)
+{
+	return fsp_load_logo(&supd->FspsConfig.LogoPtr, &supd->FspsConfig.LogoSize);
 }

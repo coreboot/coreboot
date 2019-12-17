@@ -11,17 +11,24 @@
  * GNU General Public License for more details.
  */
 
-#include <soc/ramstage.h>
-#include <console/console.h>
+#include <cbfs.h>
+#include <cbmem.h>
 #include <fsp/api.h>
-#include <include/cbfs.h>
 
-void load_logo(FSPS_UPD *supd)
+const struct cbmem_entry *fsp_load_logo(UINT32 *logo_ptr, UINT32 *logo_size)
 {
-	FSP_S_CONFIG *params = &supd->FspsConfig;
+	const struct cbmem_entry *logo_entry = NULL;
+	void *logo_buffer;
 
-	params->LogoSize = cbfs_boot_load_file("logo.bmp", (void *)params->LogoPtr,
-					       params->LogoSize, CBFS_TYPE_RAW);
-	if (!params->LogoSize)
-		params->LogoPtr = 0;
+	logo_entry = cbmem_entry_add(CBMEM_ID_FSP_LOGO, 1 * MiB);
+	if (logo_entry) {
+		logo_buffer = cbmem_entry_start(logo_entry);
+		if (logo_buffer) {
+			*logo_size = cbfs_boot_load_file("logo.bmp", (void *)logo_buffer,
+							1 * MiB, CBFS_TYPE_RAW);
+			if (logo_size)
+				*logo_ptr = (UINT32)logo_buffer;
+		}
+	}
+	return (logo_entry);
 }

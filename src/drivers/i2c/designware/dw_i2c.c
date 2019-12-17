@@ -214,6 +214,13 @@ static const struct soc_clock {
 		},
 	},
 	{
+		.clk_speed_mhz = 150,
+		.freq = {
+			.ticks = 600,
+			.ns = 4000,
+		},
+	},
+	{
 		.clk_speed_mhz = 216,
 		.freq = {
 			.ticks = 1080,

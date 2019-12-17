@@ -199,6 +199,21 @@ void acpigen_write_name_string(const char *name, const char *string)
 	acpigen_write_string(string);
 }
 
+void acpigen_write_name_unicode(const char *name, const char *string)
+{
+	const size_t len = strlen(string) + 1;
+	acpigen_write_name(name);
+	acpigen_emit_byte(BUFFER_OP);
+	acpigen_write_len_f();
+	acpigen_write_integer(len);
+	for (size_t i = 0; i < len; i++) {
+		const char c = string[i];
+		/* Simple ASCII to UTF-16 conversion, replace non ASCII characters */
+		acpigen_emit_word(c >= 0 ? c : '?');
+	}
+	acpigen_pop_len();
+}
+
 void acpigen_emit_stream(const char *data, int size)
 {
 	int i;

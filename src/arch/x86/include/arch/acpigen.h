@@ -309,6 +309,7 @@ void acpigen_write_dword(unsigned int data);
 void acpigen_write_qword(uint64_t data);
 void acpigen_write_integer(uint64_t data);
 void acpigen_write_string(const char *string);
+void acpigen_write_name_unicode(const char *name, const char *string);
 void acpigen_write_name(const char *name);
 void acpigen_write_name_zero(const char *name);
 void acpigen_write_name_one(const char *name);

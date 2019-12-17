@@ -253,7 +253,7 @@ static void ipmi_ssdt(struct device *dev)
 	acpigen_write_scope(scope);
 	acpigen_write_device("SPMI");
 	acpigen_write_name_string("_HID", "IPI0001");
-	acpigen_write_name_string("_STR", "IPMI_KCS");
+	acpigen_write_name_unicode("_STR", "IPMI_KCS");
 	acpigen_write_name_byte("_UID", dev->command);
 	acpigen_write_STA(0xf);
 	acpigen_write_name("_CRS");

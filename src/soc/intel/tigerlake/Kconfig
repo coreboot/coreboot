@@ -115,6 +115,11 @@ config MAX_ROOT_PORTS
 	default 16 if SOC_INTEL_JASPERLAKE
 	default 12 if SOC_INTEL_TIGERLAKE
 
+config MAX_PCIE_CLOCKS
+	int
+	default 7 if SOC_INTEL_TIGERLAKE
+	default 16 if SOC_INTEL_JASPERLAKE
+
 config SMM_TSEG_SIZE
 	hex
 	default 0x800000

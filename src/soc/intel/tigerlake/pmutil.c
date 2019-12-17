@@ -189,9 +189,9 @@ void soc_get_gpi_gpe_configs(uint8_t *dw0, uint8_t *dw1, uint8_t *dw2)
 	config = config_of_soc();
 
 	/* Assign to out variable */
-	*dw0 = config->gpe0_dw0;
-	*dw1 = config->gpe0_dw1;
-	*dw2 = config->gpe0_dw2;
+	*dw0 = config->pmc_gpe0_dw0;
+	*dw1 = config->pmc_gpe0_dw1;
+	*dw2 = config->pmc_gpe0_dw2;
 }
 
 static int rtc_failed(uint32_t gen_pmcon_b)

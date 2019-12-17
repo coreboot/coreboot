@@ -36,10 +36,10 @@ struct soc_intel_tigerlake_config {
 	struct soc_intel_common_config common_soc_config;
 
 	/* Gpio group routed to each dword of the GPE0 block. Values are
-	 * of the form GPP_[A:G] or GPD. */
-	uint8_t gpe0_dw0; /* GPE0_31_0 STS/EN */
-	uint8_t gpe0_dw1; /* GPE0_63_32 STS/EN */
-	uint8_t gpe0_dw2; /* GPE0_95_64 STS/EN */
+	 * of the form PMC_GPP_[A:U] or GPD. */
+	uint8_t pmc_gpe0_dw0; /* GPE0_31_0 STS/EN */
+	uint8_t pmc_gpe0_dw1; /* GPE0_63_32 STS/EN */
+	uint8_t pmc_gpe0_dw2; /* GPE0_95_64 STS/EN */
 
 	/* Generic IO decode ranges */
 	uint32_t gen1_dec;
@@ -67,35 +67,18 @@ struct soc_intel_tigerlake_config {
 	/* TCC activation offset */
 	uint32_t tcc_offset;
 
-	uint64_t PlatformMemorySize;
-	uint8_t SmramMask;
-	uint8_t MrcFastBoot;
-	uint32_t TsegSize;
-	uint16_t MmioSize;
-
-	/* DDR Frequency Limit. Maximum Memory Frequency Selections in Mhz.
-	 * Options : 1067, 1333, 1600, 1867, 2133, 2400, 2667, 2933, 0(Auto) */
-	uint16_t DdrFreqLimit;
-
-	/* SAGV Low Frequency Selections in Mhz.
-	 * Options : 1067, 1333, 1600, 1867, 2133, 2400, 2667, 2933, 0(Auto) */
-	uint16_t FreqSaGvLow;
-
-	/* SAGV Mid Frequency Selections in Mhz.
-	 * Options : 1067, 1333, 1600, 1867, 2133, 2400, 2667, 2933, 0(Auto) */
-	uint16_t FreqSaGvMid;
-
 	/* System Agent dynamic frequency support. Only effects ULX/ULT CPUs.
 	 * When enabled memory will be training at two different frequencies.
-	 * 0:Disabled, 1:FixedLow, 2:FixedMid, 3:FixedHigh, 4:Enabled */
+	 * 0:Disabled, 1:FixedPoint0, 2:FixedPoint1, 3:FixedPoint2,
+	 * 4:FixedPoint3, 5:Enabled */
 	enum {
 		SaGv_Disabled,
-		SaGv_FixedLow,
-		SaGv_FixedMid,
-		SaGv_FixedHigh,
+		SaGv_FixedPoint0,
+		SaGv_FixedPoint1,
+		SaGv_FixedPoint2,
+		SaGv_FixedPoint3,
 		SaGv_Enabled,
 	} SaGv;
-
 
 	/* Rank Margin Tool. 1:Enable, 0:Disable */
 	uint8_t RMT;
@@ -103,7 +86,6 @@ struct soc_intel_tigerlake_config {
 	/* USB related */
 	struct usb2_port_config usb2_ports[16];
 	struct usb3_port_config usb3_ports[10];
-	uint8_t SsicPortEnable;
 	/* Wake Enable Bitmap for USB2 ports */
 	uint16_t usb2_wake_enable_bitmap;
 	/* Wake Enable Bitmap for USB3 ports */
@@ -137,24 +119,16 @@ struct soc_intel_tigerlake_config {
 	/* PCIe output clocks type to Pcie devices.
 	 * 0-23: PCH rootport, 0x70: LAN, 0x80: unspecified but in use,
 	 * 0xFF: not used */
-	uint8_t PcieClkSrcUsage[CONFIG_MAX_ROOT_PORTS];
+	uint8_t PcieClkSrcUsage[CONFIG_MAX_PCIE_CLOCKS];
 	/* PCIe ClkReq-to-ClkSrc mapping, number of clkreq signal assigned to
 	 * clksrc. */
-	uint8_t PcieClkSrcClkReq[CONFIG_MAX_ROOT_PORTS];
+	uint8_t PcieClkSrcClkReq[CONFIG_MAX_PCIE_CLOCKS];
 
 	/* SMBus */
 	uint8_t SmbusEnable;
 
 	/* eMMC and SD */
 	uint8_t ScsEmmcHs400Enabled;
-	/* Need to update DLL setting to get Emmc running at HS400 speed */
-	uint8_t EmmcUseCustomDlls;
-	uint32_t EmmcTxCmdDelayRegValue;
-	uint32_t EmmcTxDataDelay1RegValue;
-	uint32_t EmmcTxDataDelay2RegValue;
-	uint32_t EmmcRxCmdDataDelay1RegValue;
-	uint32_t EmmcRxCmdDataDelay2RegValue;
-	uint32_t EmmcRxStrobeDelayRegValue;
 
 	/* Enable if SD Card Power Enable Signal is Active High */
 	uint8_t SdCardPowerEnableActiveHigh;
@@ -173,14 +147,6 @@ struct soc_intel_tigerlake_config {
 	uint32_t GraphicsConfigPtr;
 	uint8_t Device4Enable;
 
-	/* GPIO IRQ Select. The valid value is 14 or 15 */
-	uint8_t GpioIrqRoute;
-	/* SCI IRQ Select. The valid value is 9, 10, 11, 20, 21, 22, 23 */
-	uint8_t SciIrqSelect;
-	/* TCO IRQ Select. The valid value is 9, 10, 11, 20, 21, 22, 23 */
-	uint8_t TcoIrqSelect;
-	uint8_t TcoIrqEnable;
-
 	/* HeciEnabled decides the state of Heci1 at end of boot
 	 * Setting to 0 (default) disables Heci1 and hides the device from OS */
 	uint8_t HeciEnabled;
@@ -188,21 +154,23 @@ struct soc_intel_tigerlake_config {
 	uint32_t tdp_pl2_override;
 	/* Intel Speed Shift Technology */
 	uint8_t speed_shift_enable;
-	/* Enable VR specific mailbox command
-	 * 00b - no VR specific cmd sent
-	 * 01b - VR mailbox cmd specifically for the MPS IMPV8 VR will be sent
-	 * 10b - VR specific cmd sent for PS4 exit issue
-	 * 11b - Reserved */
-	uint8_t SendVrMbxCmd;
 
 	/* Enable/Disable EIST. 1b:Enabled, 0b:Disabled */
 	uint8_t eist_enable;
 
 	/* Enable C6 DRAM */
 	uint8_t enable_c6dram;
-
+	/*
+	 * PRMRR size setting with below options
+	 * Disable: 0x0
+	 * 32MB: 0x2000000
+	 * 64MB: 0x4000000
+	 * 128 MB: 0x8000000
+	 * 256 MB: 0x10000000
+	 * 512 MB: 0x20000000
+	 */
+	uint32_t PrmrrSize;
 	uint8_t PmTimerDisabled;
-
 	/* Desired platform debug type. */
 	enum {
 		DebugConsent_Disabled,
@@ -211,6 +179,8 @@ struct soc_intel_tigerlake_config {
 		DebugConsent_USB3_DBC,
 		DebugConsent_XDP, /* XDP/Mipi60 */
 		DebugConsent_USB2_DBC,
+		DebugConsent_2WIRE_DCI,
+		DebugConsent_Manual,
 	} DebugConsent;
 	/*
 	 * SerialIO device mode selection:
@@ -244,9 +214,8 @@ struct soc_intel_tigerlake_config {
 
 	/* CNVi BT Audio Offload: Enable/Disable BT Audio Offload. */
 	enum {
-		PLATFORM_POR,
-		FORCE_ENABLE,
 		FORCE_DISABLE,
+		FORCE_ENABLE,
 	} CnviBtAudioOffload;
 
 	/*

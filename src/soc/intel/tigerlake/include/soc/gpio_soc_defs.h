@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2018 Intel Corporation.
+ * Copyright (C) 2020 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,18 +21,18 @@
  * The GPIO groups are accessed through register blocks called
  * communities.
  */
-#define GPP_G			0x0
-#define GPP_B			0x1
+#define GPP_B			0x0
+#define GPP_T			0x1
 #define GPP_A			0x2
 #define GPP_R			0x3
-#define GPP_S			0x4
-#define GPD			0x5
+#define GPD			0x4
+#define GPP_S			0x5
 #define GPP_H			0x6
 #define GPP_D			0x7
-#define GPP_F			0x8
-#define GPP_VGPIO		0x9
-#define GPP_C			0xA
-#define GPP_E			0xB
+#define GPP_U			0x8
+#define GPP_F			0xA
+#define GPP_C			0xB
+#define GPP_E			0xC
 
 #define GPIO_NUM_GROUPS		11
 #define GPIO_MAX_NUM_PER_GROUP	24

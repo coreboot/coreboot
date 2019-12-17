@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2018 Intel Corp.
+ * Copyright (C) 2019 Intel Corp.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,19 +30,20 @@ enum {
 	PchSerialIoIndexI2C2,
 	PchSerialIoIndexI2C3,
 	PchSerialIoIndexI2C4,
-	PchSerialIoIndexI2C5
+	PchSerialIoIndexI2C5,
 };
 
 enum {
 	PchSerialIoIndexGSPI0,
 	PchSerialIoIndexGSPI1,
-	PchSerialIoIndexGSPI2
+	PchSerialIoIndexGSPI2,
+	PchSerialIoIndexGSPI3,
 };
 
 enum {
 	PchSerialIoIndexUART0,
 	PchSerialIoIndexUART1,
-	PchSerialIoIndexUART2
+	PchSerialIoIndexUART2,
 };
 
 #endif

@@ -22,4 +22,12 @@ void mainboard_memory_init_params(FSPM_UPD *mupd);
 void systemagent_early_init(void);
 void pch_init(void);
 
+/* Board type */
+enum board_type {
+	BOARD_TYPE_MOBILE  = 0,
+	BOARD_TYPE_DESKTOP = 1,
+	BOARD_TYPE_ULT_ULX = 5,
+	BOARD_TYPE_SERVER  = 7
+};
+
 #endif /* _SOC_ROMSTAGE_H_ */

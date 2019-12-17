@@ -36,9 +36,9 @@ static const struct pad_config gpio_table[] = {
 /* PME# */		PAD_NC(GPP_A11, NONE),
 			/* ISH_LID_CL#_TAB */
 /* ISH_GP6 */		PAD_CFG_NF(GPP_A12, NONE, DEEP, NF2),
-/* SUSWARN# */		PAD_CFG_GPO(GPP_A13, 0, DEEP),
+/* SUSWARN# */		PAD_NC(GPP_A13, NONE),
 /* ESPI_RESET# */
-/* SUSACK# */		PAD_CFG_GPO(GPP_A15, 0, DEEP),
+/* SUSACK# */		PAD_NC(GPP_A15, NONE),
 /* SD_1P8_SEL */	PAD_CFG_GPI(GPP_A16, NONE, PLTRST), /* 2.7MM_CAM_DET# */
 /* SD_PWR_EN# */	PAD_NC(GPP_A17, NONE),
 			/* ISH_ACC1_INT# */
@@ -200,6 +200,8 @@ static const struct pad_config gpio_table[] = {
 /* I2C4_SCL */		PAD_CFG_NF(GPP_H9, NONE, DEEP, NF1),
 /* I2C5_SDA */		PAD_NC(GPP_H10, NONE), /* ISH_I2C2_SDA */
 /* I2C5_SCL */		PAD_NC(GPP_H11, NONE), /* ISH_I2C2_SCL */
+/* M2_SKT2_CFG0 */	PAD_NC(GPP_H12, NONE),
+/* M2_SKT2_CFG1 */	PAD_NC(GPP_H13, NONE),
 /* M2_SKT2_CFG2 */	PAD_NC(GPP_H14, NONE),
 /* M2_SKT2_CFG3 */      PAD_CFG_GPO(GPP_H15, 1, DEEP), /* BT_RADIO_DIS# */
 /* DDPF_CTRLCLK */	PAD_NC(GPP_H16, NONE),
@@ -226,9 +228,6 @@ static const struct pad_config gpio_table[] = {
 
 /* Early pad configuration in bootblock */
 static const struct pad_config early_gpio_table[] = {
-/* M2_SKT2_CFG1 */	PAD_CFG_GPO(GPP_H13, 1, DEEP), /* M.2 SSD D3 cold */
-/* SSD RESET pin will stay low first */
-/* M2_SKT2_CFG0 */	PAD_CFG_GPO(GPP_H12, 0, DEEP), /* D3 cold RST */
 /* UART2_RXD */		PAD_CFG_NF(GPP_C8, NONE, DEEP, NF1), /* SERVOTX_UART */
 /* UART2_TXD */		PAD_CFG_NF(GPP_C9, NONE, DEEP, NF1), /* SERVORX_UART */
 /* I2C4_SDA */		PAD_CFG_NF(GPP_H8, NONE, DEEP, NF1), /* SDA_PCH_H1 */
@@ -240,7 +239,6 @@ static const struct pad_config early_gpio_table[] = {
 /* CPU_GP0 */		PAD_CFG_GPI(GPP_E3, NONE, DEEP), /* MEM_INTERLEAVED */
 /* SATALED# */		PAD_CFG_GPI(GPP_E8, NONE, DEEP), /* RECOVERY# */
 /* DDPD_HPD2 */		PAD_CFG_GPI(GPP_E15, NONE, DEEP), /* PCH_WP */
-/* M2_SKT2_CFG0 */	PAD_CFG_GPO(GPP_H12, 1, DEEP), /* D3 cold RST */
 /* GPP_F1 */		PAD_CFG_GPI(GPP_F1, NONE, DEEP), /* DDR_CHA_EN_1P8 */
 /* GPP_F2 */		PAD_CFG_GPI(GPP_F2, NONE, DEEP), /* DDR_CHB_EN_1P8 */
 /* EMMC_DATA0 */	PAD_CFG_GPI(GPP_F12, NONE, DEEP), /* MEM_CONFIGO_1P8 */

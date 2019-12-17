@@ -486,7 +486,7 @@ ifeq ($(CONFIG_DEBUG_ADA_CODE),y)
 ADAFLAGS_common += -gnata
 endif
 
-additional-dirs := $(objutil)/cbfstool $(objutil)/romcc $(objutil)/ifdtool \
+additional-dirs := $(objutil)/cbfstool $(objutil)/ifdtool \
 		   $(objutil)/options $(objutil)/amdfwtool \
 		   $(objutil)/cbootimage
 
@@ -551,16 +551,6 @@ endif
 ifeq ($(_WINCHECK),Cygwin)
 	STACK=-Wl,--stack,16384000
 endif
-
-# this allows ccache to prepend itself
-# (ccache handling happens first)
-ROMCC_BIN= $(objutil)/romcc/romcc
-ROMCC?=$(ROMCC_BIN)
-$(ROMCC_BIN): $(top)/util/romcc/romcc.c
-	@printf "    HOSTCC     $(subst $(obj)/,,$(@)) (this may take a while)\n"
-	@# Note: Adding -O2 here might cause problems. For details see:
-	@# https://www.coreboot.org/pipermail/coreboot/2010-February/055825.html
-	$(HOSTCC) -g $(STACK) -Wall -o $@ $<
 
 BINCFG:=$(objutil)/bincfg/bincfg
 
@@ -651,7 +641,7 @@ install-git-commit-clangfmt:
 include util/crossgcc/Makefile.inc
 
 .PHONY: tools
-tools: $(objutil)/kconfig/conf $(objutil)/kconfig/toada $(CBFSTOOL) $(objutil)/cbfstool/cbfs-compression-tool $(FMAPTOOL) $(RMODTOOL) $(IFWITOOL) $(objutil)/nvramtool/nvramtool $(ROMCC_BIN) $(objutil)/sconfig/sconfig $(IFDTOOL) $(CBOOTIMAGE) $(AMDFWTOOL) $(AMDCOMPRESS) $(FUTILITY) $(BINCFG) $(IFITTOOL)
+tools: $(objutil)/kconfig/conf $(objutil)/kconfig/toada $(CBFSTOOL) $(objutil)/cbfstool/cbfs-compression-tool $(FMAPTOOL) $(RMODTOOL) $(IFWITOOL) $(objutil)/nvramtool/nvramtool $(objutil)/sconfig/sconfig $(IFDTOOL) $(CBOOTIMAGE) $(AMDFWTOOL) $(AMDCOMPRESS) $(FUTILITY) $(BINCFG) $(IFITTOOL)
 
 ###########################################################################
 # Common recipes for all stages

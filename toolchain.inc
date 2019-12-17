@@ -29,7 +29,6 @@ $(foreach arch,$(ARCH_SUPPORTED), \
 
 HOSTCC:=$(CCACHE) $(HOSTCC)
 HOSTCXX:=$(CCACHE) $(HOSTCXX)
-ROMCC=$(CCACHE) $(ROMCC_BIN)
 endif
 
 # scan-build integration
@@ -44,7 +43,6 @@ $(foreach arch,$(ARCH_SUPPORTED), \
 
 HOSTCC:=CCC_CC="$(HOSTCC)" $(CC)
 HOSTCXX:=CCC_CXX="$(HOSTCXX)" $(CXX)
-ROMCC=CCC_CC="$(ROMCC_BIN)" $(CC)
 endif
 
 COREBOOT_STANDARD_STAGES := decompressor bootblock verstage romstage ramstage

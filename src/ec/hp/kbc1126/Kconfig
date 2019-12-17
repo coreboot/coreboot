@@ -40,9 +40,9 @@ config KBC1126_FW1
 	  vendor firmware.
 
 config KBC1126_FW1_OFFSET
-	string
+	string "Offset of KBC1126 firmware #1"
 	depends on KBC1126_FIRMWARE
-	default "0xffff8000"
+	default "0xfffe8000"
 
 config KBC1126_FW2
 	string "KBC1126 filename #2 path and filename"
@@ -54,8 +54,8 @@ config KBC1126_FW2
 	  vendor firmware.
 
 config KBC1126_FW2_OFFSET
-	string
+	string "Offset of KBC1126 firmware #2"
 	depends on KBC1126_FIRMWARE
-	default "0xfffe0000"
+	default "0xfffd0000"
 
 endif

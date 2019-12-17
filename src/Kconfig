@@ -274,18 +274,28 @@ config RELOCATABLE_RAMSTAGE
 	 wake. When selecting this option the romstage is responsible for
 	 determing a stack location to use for loading the ramstage.
 
+choice
+	prompt "Stage Cache for ACPI S3 resume"
+	default NO_STAGE_CACHE if !HAVE_ACPI_RESUME || !RELOCATABLE_RAMSTAGE
+	default TSEG_STAGE_CACHE if SMM_TSEG
+
+config NO_STAGE_CACHE
+	bool "Disabled"
+	help
+	  Do not save any component in stage cache for resume path. On resume,
+	  all components would be read back from CBFS again.
+
 config TSEG_STAGE_CACHE
-	bool
-	default y
-	depends on !NO_STAGE_CACHE && SMM_TSEG
+	bool "TSEG"
+	depends on SMM_TSEG
 	help
 	  The option enables stage cache support for platform. Platform
 	  can stash copies of postcar, ramstage and raw runtime data
 	  inside SMM TSEG, to be restored on S3 resume path.
 
 config CBMEM_STAGE_CACHE
-	bool "Cache stages in CBMEM"
-	depends on !NO_STAGE_CACHE && !TSEG_STAGE_CACHE
+	bool "CBMEM"
+	depends on !SMM_TSEG
 	help
 	  The option enables stage cache support for platform. Platform
 	  can stash copies of postcar, ramstage and raw runtime data
@@ -296,6 +306,8 @@ config CBMEM_STAGE_CACHE
 	  circumvent SMM locks and SPI write protections.
 
 	  If unsure, select 'N'
+
+endchoice
 
 config UPDATE_IMAGE
 	bool "Update existing coreboot.rom image"
@@ -1152,13 +1164,6 @@ config RELOCATABLE_MODULES
 	  If RELOCATABLE_MODULES is selected then support is enabled for
 	  building relocatable modules in the RAM stage. Those modules can be
 	  loaded anywhere and all the relocations are handled automatically.
-
-config NO_STAGE_CACHE
-	bool
-	default y if !HAVE_ACPI_RESUME || !RELOCATABLE_RAMSTAGE
-	help
-	  Do not save any component in stage cache for resume path. On resume,
-	  all components would be read back from CBFS again.
 
 config GENERIC_GPIO_LIB
 	bool

@@ -26,7 +26,7 @@ chip soc/intel/skylake
 	register "dptf_enable" = "0"
 
 	# FSP Configuration
-	register "EnableAzalia" = "0"
+	register "EnableAzalia" = "1"
 	register "SmbusEnable" = "1"
 	register "ScsEmmcEnabled" = "1"
 	register "ScsEmmcHs400Enabled" = "1"
@@ -238,6 +238,7 @@ chip soc/intel/skylake
 		end # LPC Bridge
 		device pci 1f.1 on  end # P2SB
 		device pci 1f.2 on  end # Power Management Controller
+		device pci 1f.3 on  end # HDA Controller for HDMI only
 		device pci 1f.4 on  end # SMBus
 		device pci 1f.5 on  end # PCH SPI
 		device pci 1f.6 on  end # GbE

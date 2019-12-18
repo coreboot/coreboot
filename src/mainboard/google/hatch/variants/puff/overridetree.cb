@@ -103,6 +103,13 @@ chip soc/intel/cannonlake
 		},
 	}"
 
+	# PCIe port 7 for LAN
+	register "PcieRpEnable[6]" = "1"
+	register "PcieRpLtrEnable[6]" = "1"
+	# Uses CLK SRC 0
+	register "PcieClkSrcUsage[0]" = "6"
+	register "PcieClkSrcClkReq[0]" = "0"
+
 	# GPIO for SD card detect
 	register "sdcard_cd_gpio" = "vSD3_CD_B"
 
@@ -134,6 +141,7 @@ chip soc/intel/cannonlake
 			end
 		end #I2C #4
 		device pci 1a.0 on  end # eMMC
+		device pci 1c.6 on  end # PCI Express Port 7, RTL8111H Ethernet NIC.
 		device pci 1e.3 off end # GSPI #1
 	end
 

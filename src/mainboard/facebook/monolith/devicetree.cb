@@ -230,7 +230,6 @@ chip soc/intel/skylake
 		device pci 1d.0 on  end # PCI Express Port 9 x4 FPGA
 		device pci 1e.0 on  end # UART #0
 		device pci 1e.4 on  end # eMMC
-		device pci 1e.5 off end # SDIO
 		device pci 1f.0 on  # LPC Interface
 			chip drivers/pc80/tpm
 				device pnp 0c31.0 on end

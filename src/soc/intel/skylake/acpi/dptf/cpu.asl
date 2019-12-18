@@ -20,7 +20,7 @@
 #define DPTF_CPU_CRITICAL       90
 #endif
 
-External (\_PR.CP00._PSS, PkgObj)
+External (\_SB.CP00._PSS, PkgObj)
 External (\_SB.MPDL, IntObj)
 
 Device (B0D4)
@@ -55,8 +55,8 @@ Device (B0D4)
 
 	Method (_PSS)
 	{
-		If (CondRefOf (\_PR.CP00._PSS)) {
-			Return (\_PR.CP00._PSS)
+		If (CondRefOf (\_SB.CP00._PSS)) {
+			Return (\_SB.CP00._PSS)
 		} Else {
 			Return (Package ()
 			{
@@ -71,8 +71,8 @@ Device (B0D4)
 		/* Check for mainboard specific _PDL override */
 		If (CondRefOf (\_SB.MPDL)) {
 			Return (\_SB.MPDL)
-		} ElseIf (CondRefOf (\_PR.CP00._PSS)) {
-			Store (SizeOf (\_PR.CP00._PSS), Local0)
+		} ElseIf (CondRefOf (\_SB.CP00._PSS)) {
+			Store (SizeOf (\_SB.CP00._PSS), Local0)
 			Decrement (Local0)
 			Return (Local0)
 		} Else {

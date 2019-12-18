@@ -12,20 +12,20 @@
  */
 
 /* These come from the dynamically created CPU SSDT */
-External (\_PR.CNOT, MethodObj)
-External (\_PR_.CP00, DeviceObj)
-External (\_PR_.CP00._PPC)
-External (\_PR_.CP01._PPC)
+External (\_SB.CNOT, MethodObj)
+External (\_SB_.CP00, DeviceObj)
+External (\_SB_.CP00._PPC)
+External (\_SB_.CP01._PPC)
 
 Method (PNOT)
 {
 	If (MPEN) {
-		\_PR.CNOT (0x80) // _PPC
+		\_SB.CNOT (0x80) // _PPC
 		Sleep(100)
-		\_PR.CNOT (0x81) // _CST
+		\_SB.CNOT (0x81) // _CST
 	} Else { // UP
-		Notify (\_PR_.CP00, 0x80)
+		Notify (\_SB_.CP00, 0x80)
 		Sleep(0x64)
-		Notify(\_PR_.CP00, 0x81)
+		Notify(\_SB_.CP00, 0x81)
 	}
 }

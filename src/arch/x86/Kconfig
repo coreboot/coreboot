@@ -254,11 +254,11 @@ config ACPI_HAVE_PCAT_8259
 
 config ACPI_CPU_STRING
 	string
-	default "\\_PR.CP%02d"
+	default "\\_SB.CP%02d"
 	depends on HAVE_ACPI_TABLES
 	help
 	  Sets the ACPI name string in the processor scope as written by
-	  the acpigen function. Default is \_PR.CPxx. Note that you need
+	  the acpigen function. Default is \_SB.CPxx. Note that you need
 	  the \ escape character in the string.
 
 config COLLECT_TIMESTAMPS_NO_TSC

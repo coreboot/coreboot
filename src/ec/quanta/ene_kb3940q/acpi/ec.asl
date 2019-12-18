@@ -18,7 +18,7 @@
  * re-evaluate their _PPC and _CST tables.
  */
 
-External (\_PR.CP00._PPC, IntObj)
+External (\_SB.CP00._PPC, IntObj)
 
 Device (EC0)
 {
@@ -146,12 +146,12 @@ Device (EC0)
 		And(Local0, Ones, Local0)
 
 		// Find and program number of P-States
-		Store (SizeOf (\_PR.CP00._PSS), MPST)
+		Store (SizeOf (\_SB.CP00._PSS), MPST)
 		Store ("Programming number of P-states: ", Debug)
 		Store (MPST, Debug)
 
 		// Find and program the current P-State
-		Store(\_PR.CP00._PPC, NPST)
+		Store(\_SB.CP00._PPC, NPST)
 		Store ("Programming Current P-state: ", Debug)
 		Store (NPST, Debug)
 	}
@@ -190,7 +190,7 @@ Device (EC0)
 	{
 		Store ("Pstate Event 0x0E", Debug)
 
-		Store(\_PR.CP00._PPC, Local0)
+		Store(\_SB.CP00._PPC, Local0)
 		Subtract(PPCM, 0x01, Local1)
 
 		If(LLess(Local0, Local1)) {
@@ -205,7 +205,7 @@ Device (EC0)
 	Method (_Q0F)
 	{
 		Store ("Pstate Event 0x0F", Debug)
-		Store(\_PR.CP00._PPC, Local0)
+		Store(\_SB.CP00._PPC, Local0)
 
 		If(Local0) {
 			Decrement(Local0)

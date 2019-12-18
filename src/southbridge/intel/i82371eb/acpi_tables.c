@@ -44,7 +44,7 @@ void generate_cpu_entries(struct device *device)
 
 	/* without the outer scope, furhter ssdt addition will end up
 	 * within the processor statement */
-	acpigen_write_scope("\\_PR");
+	acpigen_write_scope("\\_SB");
 	for (cpu=0; cpu < numcpus; cpu++) {
 		acpigen_write_processor(cpu, pcontrol_blk, plen);
 		acpigen_pop_len();

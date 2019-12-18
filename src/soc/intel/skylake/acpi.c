@@ -522,7 +522,7 @@ void generate_cpu_entries(struct device *device)
 				plen = 0;
 			}
 
-			/* Generate processor \_PR.CPUx */
+			/* Generate processor \_SB.CPUx */
 			acpigen_write_processor(
 				cpu_id*cores_per_package+core_id,
 				pcontrol_blk, plen);

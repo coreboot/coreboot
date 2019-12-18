@@ -340,7 +340,7 @@ void acpigen_write_scope(const char *name)
 void acpigen_write_processor(u8 cpuindex, u32 pblock_addr, u8 pblock_len)
 {
 /*
-	Processor (\_PR.CPcpuindex, cpuindex, pblock_addr, pblock_len)
+	Processor (\_SB.CPcpuindex, cpuindex, pblock_addr, pblock_len)
 	{
 */
 	char pscope[16];
@@ -376,7 +376,7 @@ void acpigen_write_processor_cnot(const unsigned int number_of_cores)
 {
 	int core_id;
 
-	acpigen_write_method("\\_PR.CNOT", 1);
+	acpigen_write_method("\\_SB.CNOT", 1);
 	for (core_id = 0; core_id < number_of_cores; core_id++) {
 		char buffer[DEVICE_PATH_MAX];
 		snprintf(buffer, sizeof(buffer), CONFIG_ACPI_CPU_STRING,

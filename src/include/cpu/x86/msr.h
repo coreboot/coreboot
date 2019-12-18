@@ -30,10 +30,6 @@
 #define IA32_BIOS_SIGN_ID		0x8b
 #define IA32_MPERF			0xe7
 #define IA32_APERF			0xe8
-/* STM */
-#define IA32_SMM_MONITOR_CTL_MSR        0x9B
-#define SMBASE_RO_MSR			0x98
-#define IA32_SMM_MONITOR_VALID          (1<<0)
 #define IA32_MCG_CAP			0x179
 #define  MCG_CTL_P			(1 << 3)
 #define  MCA_BANKS_MASK			0xff
@@ -52,8 +48,6 @@
 #define IA32_PAT			0x277
 #define IA32_MC0_CTL			0x400
 #define IA32_MC0_STATUS			0x401
-#define IA32_VMX_BASIC_MSR              0x480
-#define IA32_VMX_MISC_MSR               0x485
 #define  MCA_STATUS_HI_VAL		(1UL << (63 - 32))
 #define  MCA_STATUS_HI_OVERFLOW		(1UL << (62 - 32))
 #define  MCA_STATUS_HI_UC		(1UL << (61 - 32))

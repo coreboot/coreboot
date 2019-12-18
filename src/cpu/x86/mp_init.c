@@ -352,7 +352,7 @@ static atomic_t *load_sipi_vector(struct mp_params *mp_params)
 	sp->msr_count = num_msrs;
 	/* Provide pointer to microcode patch. */
 	sp->microcode_ptr = (uint32_t)mp_params->microcode_pointer;
-	/* Pass on abiility to load microcode in parallel. */
+	/* Pass on ability to load microcode in parallel. */
 	if (mp_params->parallel_microcode_load)
 		sp->microcode_lock = 0;
 	else

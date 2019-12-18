@@ -13,9 +13,9 @@
  */
 
 #include <assert.h>
+#include <commonlib/helpers.h>
 #include <spi-generic.h>
 #include <stddef.h>
-#include <stdlib.h>
 #include <string.h>
 
 int spi_claim_bus(const struct spi_slave *slave)
@@ -113,7 +113,7 @@ unsigned int spi_crop_chunk(const struct spi_slave *slave, unsigned int cmd_len,
 	if (deduct_cmd_len && (ctrlr_max > cmd_len))
 		ctrlr_max -= cmd_len;
 
-	return min(ctrlr_max, buf_len);
+	return MIN(ctrlr_max, buf_len);
 }
 
 void __weak spi_init(void)

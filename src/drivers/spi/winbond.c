@@ -13,7 +13,7 @@
  */
 
 #include <console/console.h>
-#include <stdlib.h>
+#include <commonlib/helpers.h>
 #include <spi_flash.h>
 #include <spi-generic.h>
 #include <string.h>
@@ -310,7 +310,7 @@ static int winbond_write(const struct spi_flash *flash, u32 offset, size_t len,
 
 	for (actual = 0; actual < len; actual += chunk_len) {
 		byte_addr = offset % page_size;
-		chunk_len = min(len - actual, page_size - byte_addr);
+		chunk_len = MIN(len - actual, page_size - byte_addr);
 		chunk_len = spi_crop_chunk(&flash->spi, sizeof(cmd), chunk_len);
 
 		cmd[0] = CMD_W25_PP;
@@ -366,7 +366,7 @@ static void winbond_bpbits_to_region(const size_t granularity,
 				     struct region *out)
 {
 	size_t protected_size =
-		min(bp ? granularity << (bp - 1) : 0, flash_size);
+		MIN(bp ? granularity << (bp - 1) : 0, flash_size);
 
 	if (cmp) {
 		protected_size = flash_size - protected_size;

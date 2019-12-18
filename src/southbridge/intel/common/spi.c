@@ -18,8 +18,8 @@
 #define __SIMPLE_DEVICE__
 
 /* This file is derived from the flashrom project. */
+
 #include <stdint.h>
-#include <stdlib.h>
 #include <string.h>
 #include <bootstate.h>
 #include <commonlib/helpers.h>
@@ -637,9 +637,9 @@ static int spi_ctrlr_xfer(const struct spi_slave *slave, const void *dout,
 		writel_(trans.offset & 0x00FFFFFF, cntlr.addr);
 
 		if (trans.bytesout)
-			data_length = min(trans.bytesout, cntlr.databytes);
+			data_length = MIN(trans.bytesout, cntlr.databytes);
 		else
-			data_length = min(trans.bytesin, cntlr.databytes);
+			data_length = MIN(trans.bytesin, cntlr.databytes);
 
 		/* Program data into FDATA0 to N */
 		if (trans.bytesout) {
@@ -815,7 +815,7 @@ static int ich_hwseq_read(const struct spi_flash *flash, u32 addr, size_t len,
 	writew_(readw_(&cntlr.ich9_spi->hsfs), &cntlr.ich9_spi->hsfs);
 
 	while (len > 0) {
-		block_len = min(len, cntlr.databytes);
+		block_len = MIN(len, cntlr.databytes);
 		if (block_len > (~addr & 0xff))
 			block_len = (~addr & 0xff) + 1;
 		ich_hwseq_set_addr(addr);
@@ -883,7 +883,7 @@ static int ich_hwseq_write(const struct spi_flash *flash, u32 addr, size_t len,
 	writew_(readw_(&cntlr.ich9_spi->hsfs), &cntlr.ich9_spi->hsfs);
 
 	while (len > 0) {
-		block_len = min(len, cntlr.databytes);
+		block_len = MIN(len, cntlr.databytes);
 		if (block_len > (~addr & 0xff))
 			block_len = (~addr & 0xff) + 1;
 

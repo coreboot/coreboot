@@ -11,12 +11,12 @@
  * GNU General Public License for more details.
  */
 
+#include <commonlib/helpers.h>
 #include <commonlib/region.h>
 #include <boot_device.h>
 #include <fmap.h>
 #include <console/console.h>
 #include <console/flash.h>
-#include <stdlib.h>
 #include <types.h>
 
 #define LINE_BUFFER_SIZE 128
@@ -55,7 +55,7 @@ void flashconsole_init(void)
 	for (i = 0; i < len && offset < size;) {
 		// Fill the buffer on first iteration
 		if (i == 0) {
-			len = min(READ_BUFFER_SIZE, size - offset);
+			len = MIN(READ_BUFFER_SIZE, size - offset);
 			if (rdev_readat(&rdev, buffer, offset, len) != len)
 				return;
 		}

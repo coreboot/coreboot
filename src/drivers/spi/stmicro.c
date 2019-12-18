@@ -13,7 +13,7 @@
  */
 
 #include <console/console.h>
-#include <stdlib.h>
+#include <commonlib/helpers.h>
 #include <spi_flash.h>
 #include <spi-generic.h>
 #include <string.h>
@@ -298,7 +298,7 @@ static int stmicro_write(const struct spi_flash *flash,
 
 	for (actual = 0; actual < len; actual += chunk_len) {
 		byte_addr = offset % page_size;
-		chunk_len = min(len - actual, page_size - byte_addr);
+		chunk_len = MIN(len - actual, page_size - byte_addr);
 		chunk_len = spi_crop_chunk(&flash->spi, sizeof(cmd), chunk_len);
 
 		cmd[0] = CMD_M25PXX_PP;

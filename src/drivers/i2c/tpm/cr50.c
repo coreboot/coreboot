@@ -28,6 +28,7 @@
  */
 
 #include <commonlib/endian.h>
+#include <commonlib/helpers.h>
 #include <string.h>
 #include <types.h>
 #include <delay.h>
@@ -36,7 +37,6 @@
 #include <endian.h>
 #include <timer.h>
 #include <security/tpm/tis.h>
-#include <stdlib.h>
 
 #include "tpm.h"
 
@@ -341,7 +341,7 @@ static int cr50_i2c_tis_recv(struct tpm_chip *chip, uint8_t *buf,
 		if (cr50_i2c_wait_burststs(chip, mask, &burstcnt, &status) < 0)
 			goto out_err;
 
-		len = min(burstcnt, expected - current);
+		len = MIN(burstcnt, expected - current);
 		if (cr50_i2c_read(chip, addr, buf + current, len) != 0) {
 			printk(BIOS_ERR, "%s: Read failed\n", __func__);
 			goto out_err;
@@ -400,7 +400,7 @@ static int cr50_i2c_tis_send(struct tpm_chip *chip, uint8_t *buf, size_t len)
 
 		/* Use burstcnt - 1 to account for the address byte
 		 * that is inserted by cr50_i2c_write() */
-		limit = min(burstcnt - 1, len);
+		limit = MIN(burstcnt - 1, len);
 		if (cr50_i2c_write(chip, TPM_DATA_FIFO(chip->vendor.locality),
 				   &buf[sent], limit) != 0) {
 			printk(BIOS_ERR, "%s: Write failed\n", __func__);

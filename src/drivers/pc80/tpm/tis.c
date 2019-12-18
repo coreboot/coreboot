@@ -21,7 +21,7 @@
  * Infineon slb9635), so this driver provides access to locality 0 only.
  */
 
-#include <stdlib.h>
+#include <commonlib/helpers.h>
 #include <string.h>
 #include <delay.h>
 #include <device/mmio.h>
@@ -488,7 +488,7 @@ static u32 tis_senddata(const u8 *const data, u32 len)
 		 * changes to zero exactly after the last byte is fed into the
 		 * FIFO.
 		 */
-		count = min(burst, len - offset - 1);
+		count = MIN(burst, len - offset - 1);
 		while (count--)
 			tpm_write_data(data[offset++], locality);
 

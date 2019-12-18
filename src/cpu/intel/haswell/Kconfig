@@ -35,16 +35,4 @@ config IED_REGION_SIZE
 config SMM_RESERVED_SIZE
 	hex
 	default 0x100000
-
-config RESET_ON_INVALID_RAMSTAGE_CACHE
-	bool "Reset the system on S3 wake when ramstage cache invalid."
-	default n
-	help
-	  The haswell romstage code caches the loaded ramstage program
-	  in SMM space. On S3 wake the romstage will copy over a fresh
-	  ramstage that was cached in the SMM space. This option determines
-	  the action to take when the ramstage cache is invalid. If selected
-	  the system will reset otherwise the ramstage will be reloaded from
-	  cbfs.
-
 endif

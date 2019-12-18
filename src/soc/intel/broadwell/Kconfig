@@ -166,16 +166,6 @@ config PRE_GRAPHICS_DELAY
 	  VBIOS. On those systems we need to wait for a bit before executing
 	  the VBIOS.
 
-config RESET_ON_INVALID_RAMSTAGE_CACHE
-	bool "Reset the system on S3 wake when ramstage cache invalid."
-	default n
-	help
-	  The romstage code caches the loaded ramstage program in SMM space.
-	  On S3 wake the romstage will copy over a fresh ramstage that was
-	  cached in the SMM space. This option determines the action to take
-	  when the ramstage cache is invalid. If selected the system will
-	  reset otherwise the ramstage will be reloaded from cbfs.
-
 config INTEL_PCH_UART_CONSOLE
 	bool "Use Serial IO UART for console"
 	default n

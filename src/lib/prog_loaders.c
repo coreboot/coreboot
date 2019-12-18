@@ -83,14 +83,6 @@ fail:
 
 int __weak prog_locate_hook(struct prog *prog) { return 0; }
 
-static void ramstage_cache_invalid(void)
-{
-	printk(BIOS_ERR, "ramstage cache invalid.\n");
-	if (CONFIG(RESET_ON_INVALID_RAMSTAGE_CACHE)) {
-		board_reset();
-	}
-}
-
 static void run_ramstage_from_resume(struct prog *ramstage)
 {
 	if (!romstage_handoff_is_resume())
@@ -105,7 +97,9 @@ static void run_ramstage_from_resume(struct prog *ramstage)
 		printk(BIOS_DEBUG, "Jumping to image.\n");
 		prog_run(ramstage);
 	}
-	ramstage_cache_invalid();
+
+	printk(BIOS_ERR, "ramstage cache invalid.\n");
+	board_reset();
 }
 
 static int load_relocatable_ramstage(struct prog *ramstage)

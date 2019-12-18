@@ -117,10 +117,6 @@ config FSP_TEMP_RAM_SIZE
 	  stack with coreboot/bootloader.
 	  Sync this value with Platform FSP integration guide recommendation.
 
-config RESET_ON_INVALID_RAMSTAGE_CACHE
-	bool "Reset the system on S3 wake when ramstage cache invalid."
-	default n
-
 config FSP2_0_USES_TPM_MRC_HASH
 	bool
 	depends on TPM1 || TPM2

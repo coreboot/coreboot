@@ -74,8 +74,8 @@ ramstage-y += xhci.c
 postcar-y += mmap_boot.c
 postcar-y += spi.c
 postcar-y += i2c.c
-postcar-$(CONFIG_RESET_ON_INVALID_RAMSTAGE_CACHE) += heci.c
-postcar-$(CONFIG_RESET_ON_INVALID_RAMSTAGE_CACHE) += reset.c
+postcar-y += heci.c
+postcar-y += reset.c
 postcar-y += uart.c
 postcar-$(CONFIG_VBOOT_MEASURED_BOOT) += gspi.c
 

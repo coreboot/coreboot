@@ -206,6 +206,36 @@ static inline void pm_write32(uint8_t reg, uint32_t value)
 	write32((void *)(ACPIMMIO_PMIO_BASE + reg), value);
 }
 
+static inline uint8_t pm2_read8(uint8_t reg)
+{
+	return read8((void *)(ACPIMMIO_PMIO2_BASE + reg));
+}
+
+static inline uint16_t pm2_read16(uint8_t reg)
+{
+	return read16((void *)(ACPIMMIO_PMIO2_BASE + reg));
+}
+
+static inline uint32_t pm2_read32(uint8_t reg)
+{
+	return read32((void *)(ACPIMMIO_PMIO2_BASE + reg));
+}
+
+static inline void pm2_write8(uint8_t reg, uint8_t value)
+{
+	write8((void *)(ACPIMMIO_PMIO2_BASE + reg), value);
+}
+
+static inline void pm2_write16(uint8_t reg, uint16_t value)
+{
+	write16((void *)(ACPIMMIO_PMIO2_BASE + reg), value);
+}
+
+static inline void pm2_write32(uint8_t reg, uint32_t value)
+{
+	write32((void *)(ACPIMMIO_PMIO2_BASE + reg), value);
+}
+
 static inline uint8_t acpi_read8(uint8_t reg)
 {
 	return read8((void *)(ACPIMMIO_ACPI_BASE + reg));
@@ -334,6 +364,131 @@ static inline void misc_write16(uint8_t reg, uint16_t value)
 static inline void misc_write32(uint8_t reg, uint32_t value)
 {
 	write32((void *)(ACPIMMIO_MISC_BASE + reg), value);
+}
+
+/* Old GPIO configuration registers */
+static inline uint8_t gpio_100_read8(uint8_t reg)
+{
+	return read8((void *)(ACPIMMIO_GPIO_BASE_100 + reg));
+}
+
+static inline uint16_t gpio_100_read16(uint8_t reg)
+{
+	return read16((void *)(ACPIMMIO_GPIO_BASE_100 + reg));
+}
+
+static inline uint32_t gpio_100_read32(uint8_t reg)
+{
+	return read32((void *)(ACPIMMIO_GPIO_BASE_100 + reg));
+}
+
+static inline void gpio_100_write8(uint8_t reg, uint8_t value)
+{
+	write8((void *)(ACPIMMIO_GPIO_BASE_100 + reg), value);
+}
+
+static inline void gpio_100_write16(uint8_t reg, uint16_t value)
+{
+	write16((void *)(ACPIMMIO_GPIO_BASE_100 + reg), value);
+}
+
+static inline void gpio_100_write32(uint8_t reg, uint32_t value)
+{
+	write32((void *)(ACPIMMIO_GPIO_BASE_100 + reg), value);
+}
+
+/* New GPIO banks configuration registers */
+/* GPIO bank 0 */
+static inline uint8_t gpio0_read8(uint8_t reg)
+{
+	return read8((void *)(ACPIMMIO_GPIO0_BASE + reg));
+}
+
+static inline uint16_t gpio0_read16(uint8_t reg)
+{
+	return read16((void *)(ACPIMMIO_GPIO0_BASE + reg));
+}
+
+static inline uint32_t gpio0_read32(uint8_t reg)
+{
+	return read32((void *)(ACPIMMIO_GPIO0_BASE + reg));
+}
+
+static inline void gpio0_write8(uint8_t reg, uint8_t value)
+{
+	write8((void *)(ACPIMMIO_GPIO0_BASE + reg), value);
+}
+
+static inline void gpio0_write16(uint8_t reg, uint16_t value)
+{
+	write16((void *)(ACPIMMIO_GPIO0_BASE + reg), value);
+}
+
+static inline void gpio0_write32(uint8_t reg, uint32_t value)
+{
+	write32((void *)(ACPIMMIO_GPIO0_BASE + reg), value);
+}
+
+/* GPIO bank 1 */
+static inline uint8_t gpio1_read8(uint8_t reg)
+{
+	return read8((void *)(ACPIMMIO_GPIO1_BASE + reg));
+}
+
+static inline uint16_t gpio1_read16(uint8_t reg)
+{
+	return read16((void *)(ACPIMMIO_GPIO1_BASE + reg));
+}
+
+static inline uint32_t gpio1_read32(uint8_t reg)
+{
+	return read32((void *)(ACPIMMIO_GPIO1_BASE + reg));
+}
+
+static inline void gpio1_write8(uint8_t reg, uint8_t value)
+{
+	write8((void *)(ACPIMMIO_GPIO1_BASE + reg), value);
+}
+
+static inline void gpio1_write16(uint8_t reg, uint16_t value)
+{
+	write16((void *)(ACPIMMIO_GPIO1_BASE + reg), value);
+}
+
+static inline void gpio1_write32(uint8_t reg, uint32_t value)
+{
+	write32((void *)(ACPIMMIO_GPIO1_BASE + reg), value);
+}
+
+/* GPIO bank 2 */
+static inline uint8_t gpio2_read8(uint8_t reg)
+{
+	return read8((void *)(ACPIMMIO_GPIO2_BASE + reg));
+}
+
+static inline uint16_t gpio2_read16(uint8_t reg)
+{
+	return read16((void *)(ACPIMMIO_GPIO2_BASE + reg));
+}
+
+static inline uint32_t gpio2_read32(uint8_t reg)
+{
+	return read32((void *)(ACPIMMIO_GPIO2_BASE + reg));
+}
+
+static inline void gpio2_write8(uint8_t reg, uint8_t value)
+{
+	write8((void *)(ACPIMMIO_GPIO2_BASE + reg), value);
+}
+
+static inline void gpio2_write16(uint8_t reg, uint16_t value)
+{
+	write16((void *)(ACPIMMIO_GPIO2_BASE + reg), value);
+}
+
+static inline void gpio2_write32(uint8_t reg, uint32_t value)
+{
+	write32((void *)(ACPIMMIO_GPIO2_BASE + reg), value);
 }
 
 static inline uint8_t xhci_pm_read8(uint8_t reg)

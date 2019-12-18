@@ -136,8 +136,8 @@ static int te_relocate(uintptr_t new_addr, void *te)
 	/*
 	 * A TE image is created by converting a PE file. Because of this
 	 * the offsets within the headers are off. In order to calculate
-	 * the correct releative offets one needs to subtract fixup_offset
-	 * from the encoded offets.  Similarly, the linked address of the
+	 * the correct relative offsets one needs to subtract fixup_offset
+	 * from the encoded offsets. Similarly, the linked address of the
 	 * program is found by adding the fixup_offset to the ImageBase.
 	 */
 	fixup_offset = read_le16(&teih->StrippedSize);

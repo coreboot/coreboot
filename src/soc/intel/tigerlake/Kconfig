@@ -4,12 +4,15 @@ config SOC_INTEL_TIGERLAKE_BASE
 config SOC_INTEL_TIGERLAKE
 	bool
 	select SOC_INTEL_TIGERLAKE_BASE
+	#TODO - Enable INTEL_CAR_NEM_ENHANCED
+	select INTEL_CAR_NEM
 	help
 	  Intel Tigerlake support
 
 config SOC_INTEL_JASPERLAKE
 	bool
 	select SOC_INTEL_TIGERLAKE_BASE
+	select INTEL_CAR_NEM_ENHANCED
 	help
 	  Intel Jasperlake support
 
@@ -61,7 +64,6 @@ config CPU_SPECIFIC_OPTIONS
 	select SOC_INTEL_COMMON_PCH_BASE
 	select SOC_INTEL_COMMON_RESET
 	select SOC_INTEL_COMMON_BLOCK_CAR
-	select INTEL_CAR_NEM_ENHANCED
 	select SSE2
 	select SUPPORT_CPU_UCODE_IN_CBFS
 	select TSC_MONOTONIC_TIMER
@@ -97,8 +99,8 @@ config FSP_TEMP_RAM_SIZE
 
 config IFD_CHIPSET
 	string
-	default "tgl" if SOC_INTEL_TIGERLAKE
 	default "jsl" if SOC_INTEL_JASPERLAKE
+	default "tgl" if SOC_INTEL_TIGERLAKE
 
 config IED_REGION_SIZE
 	hex
@@ -110,7 +112,8 @@ config HEAP_SIZE
 
 config MAX_ROOT_PORTS
 	int
-	default 16
+	default 16 if SOC_INTEL_JASPERLAKE
+	default 12 if SOC_INTEL_TIGERLAKE
 
 config SMM_TSEG_SIZE
 	hex
@@ -144,7 +147,8 @@ config DRIVERS_I2C_DESIGNWARE_CLOCK_MHZ
 
 config SOC_INTEL_COMMON_BLOCK_GSPI_MAX
 	int
-	default 3
+	default 3 if SOC_INTEL_JASPERLAKE
+	default 4 if SOC_INTEL_TIGERLAKE
 
 config SOC_INTEL_I2C_DEV_MAX
 	int
@@ -160,13 +164,18 @@ config CONSOLE_UART_BASE_ADDRESS
 	depends on INTEL_LPSS_UART_FOR_CONSOLE
 
 # Clock divider parameters for 115200 baud rate
+# Baudrate = (UART source clcok * M) /(N *16)
+# TGL UART source clock: 120MHz
+# JSL UART source clock: 100MHz
 config SOC_INTEL_COMMON_LPSS_UART_CLK_M_VAL
 	hex
-	default 0x30
+	default 0x30 if SOC_INTEL_JASPERLAKE
+	default 0x25a if SOC_INTEL_TIGERLAKE
 
 config SOC_INTEL_COMMON_LPSS_UART_CLK_N_VAL
 	hex
-	default 0xc35
+	default 0xc35 if SOC_INTEL_JASPERLAKE
+	default 0x7fff if SOC_INTEL_TIGERLAKE
 
 config CHROMEOS
 	select CHROMEOS_RAMOOPS_DYNAMIC
@@ -189,13 +198,13 @@ config CBFS_SIZE
 
 config FSP_HEADER_PATH
 	string "Location of FSP headers"
-	default "src/vendorcode/intel/fsp/fsp2_0/tigerlake/" if SOC_INTEL_TIGERLAKE
 	default "src/vendorcode/intel/fsp/fsp2_0/jasperlake/" if SOC_INTEL_JASPERLAKE
+	default "src/vendorcode/intel/fsp/fsp2_0/tigerlake/" if SOC_INTEL_TIGERLAKE
 
 config FSP_FD_PATH
 	string
 	depends on FSP_USE_REPO
-	default "3rdparty/fsp/TigerLakeFspBinPkg/Fsp.fd" if SOC_INTEL_TIGERLAKE
 	default "3rdparty/fsp/JasperLakeFspBinPkg/Fsp.fd" if SOC_INTEL_JASPERLAKE
+	default "3rdparty/fsp/TigerLakeFspBinPkg/Fsp.fd" if SOC_INTEL_TIGERLAKE
 
 endif

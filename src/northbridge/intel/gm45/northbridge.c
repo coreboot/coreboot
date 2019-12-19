@@ -19,7 +19,6 @@
 #include <device/pci_ops.h>
 #include <stdint.h>
 #include <device/device.h>
-#include <device/pci.h>
 #include <boot/tables.h>
 #include <arch/acpi.h>
 #include <cpu/intel/smm_reloc.h>

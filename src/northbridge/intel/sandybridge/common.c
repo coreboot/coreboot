@@ -18,7 +18,6 @@
 #include <types.h>
 #include <console/console.h>
 #include <device/device.h>
-#include <device/pci.h>
 #include "sandybridge.h"
 
 enum platform_type get_platform_type(void)

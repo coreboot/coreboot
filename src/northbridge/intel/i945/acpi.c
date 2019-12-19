@@ -18,7 +18,6 @@
 #include <arch/acpi.h>
 #include <arch/acpigen.h>
 #include <device/device.h>
-#include <device/pci.h>
 #include <device/pci_ops.h>
 #include "i945.h"
 

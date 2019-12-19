@@ -19,7 +19,6 @@
 #include <console/console.h>
 #include <arch/acpi.h>
 #include <device/device.h>
-#include <device/pci.h>
 #include <device/pci_ops.h>
 #include "haswell.h"
 #include <southbridge/intel/lynxpoint/pch.h>

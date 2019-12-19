@@ -18,7 +18,6 @@
 #include <arch/acpigen.h>
 #include <arch/acpi.h>
 #include <device/device.h>
-#include <device/pci.h>
 #include <northbridge/intel/pineview/pineview.h>
 #include <types.h>
 

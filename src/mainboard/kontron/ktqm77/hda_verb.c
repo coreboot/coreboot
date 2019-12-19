@@ -100,7 +100,7 @@ const u32 cim_verb_data[] = {
 	0x00000004,	/* Number of jacks */
 
 	/* NID 0x01, HDA Codec Subsystem ID Verb Table: 0x80860101 */
-	AZALIA_SUBVENDOR(0, 0x80860101),
+	AZALIA_SUBVENDOR(3, 0x80860101),
 
 	/* Pin Complex (NID 0x05) Digital Out at Int HDMI */
 	AZALIA_PIN_CFG(3, 0x05, 0x58560010),

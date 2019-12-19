@@ -1,10 +1,6 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2012 Advanced Micro Devices, Inc.
- * Copyright (C) 2015 Sergej Ivanov <getinaks@gmail.com>
- * Copyright (C) 2018 Gergely Kiss <mail.gery@gmail.com>
- *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; version 2 of the License.
@@ -15,12 +11,9 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/io.h>
+#include <amdblocks/acpimmio.h>
+#include <bootblock_common.h>
 #include <device/pnp_ops.h>
-#include <device/pci_ops.h>
-#include <northbridge/amd/agesa/state_machine.h>
-#include <southbridge/amd/common/amd_defs.h>
-#include <southbridge/amd/agesa/hudson/hudson.h>
 #include <superio/ite/common/ite.h>
 #include <superio/ite/it8623e/it8623e.h>
 
@@ -118,33 +111,12 @@ static void ite_gpio_conf(pnp_devfn_t dev)
 	ite_reg_write(dev, 0xfb, 0x00);
 }
 
-void board_BeforeAgesa(struct sysinfo *cb)
+void bootblock_mainboard_early_init(void)
 {
-	int i;
-	u32 val;
-	u8 byte;
-	pci_devfn_t dev;
-	u32 *addr32;
-
-	/* In Hudson RRG, PMIOxD2[5:4] is "Drive strength control for
-	 * LpcClk[1:0]".  To be consistent with Parmer, setting to 4mA
-	 * even though the register is not documented in the Kabini BKDG.
-	 * Otherwise the serial output is bad code.
-	 */
-	outb(0xD2, 0xcd6);
-	outb(0x00, 0xcd7);
+	volatile u32 i, val, *addr32;
 
 	/* Disable PCI-PCI bridge and release GPIO32/33 for other uses. */
-	outb(0xEA, 0xcd6);
-	outb(0x1, 0xcd7);
-
-	/* Set LPC decode enables. */
-	pci_devfn_t dev2 = PCI_DEV(0, 0x14, 3);
-	pci_write_config32(dev2, 0x44, 0xff03ffd5);
-
-	/* Enable the AcpiMmio space */
-	outb(0x24, 0xcd6);
-	outb(0x1, 0xcd7);
+	pm_write8(0xea, 0x1);
 
 	/* Configure ClkDrvStr1 settings */
 	addr32 = (u32 *)0xfed80e24;
@@ -154,15 +126,11 @@ void board_BeforeAgesa(struct sysinfo *cb)
 	addr32 = (u32 *)0xfed80e40;
 	*addr32 = 0x000c4050;
 
-	/* enable SIO LPC decode */
-	dev = PCI_DEV(0, 0x14, 3);
-	byte = pci_read_config8(dev, 0x48);
-	byte |= 3;	/* 2e, 2f & 4e, 4f */
-	pci_write_config8(dev, 0x48, byte);
-
+	/* Configure SIO as made under vendor BIOS */
 	ite_gpio_conf(GPIO_DEV);
 	ite_evc_conf(ENVC_DEV);
 
+	/* Enable serial output on it8623e */
 	ite_conf_clkin(CLKIN_DEV, ITE_UART_CLK_PREDIVIDE_48);
 	ite_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	ite_kill_watchdog(GPIO_DEV);

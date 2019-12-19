@@ -53,7 +53,6 @@ DefinitionBlock(
 	/* Chrome OS specific */
 	#include <vendorcode/google/chromeos/acpi/chromeos.asl>
 
-	/* Chipset specific sleep states */
 	#include <southbridge/intel/common/acpi/sleepstates.asl>
 
 	/* Chrome OS Embedded Controller */

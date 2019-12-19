@@ -39,7 +39,6 @@ DefinitionBlock(
 	// global NVS and variables
 	#include <southbridge/intel/bd82x6x/acpi/globalnvs.asl>
 
-	// Chipset specific sleep states
 	#include <southbridge/intel/common/acpi/sleepstates.asl>
 
 	Scope (\_SB) {

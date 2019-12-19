@@ -45,16 +45,16 @@ const u32 cim_verb_data[] = {
 	// black, jack detect
 	// mic in, analog
 	// connector, left panel
-	AZALIA_PIN_CFG(0, 0x19, 0x03a71011),
+	AZALIA_PIN_CFG(0, 0x18, 0x03a71011),
 
 	/* Pin Complex (NID 0x19) MIC2 PORTF - Disabled */
-	AZALIA_PIN_CFG(0, 0x18, 0x411111f0),
+	AZALIA_PIN_CFG(0, 0x19, 0x411111f0),
 
 	/* Pin Complex (NID 0x1A) LINE1 PORTC - Disabled */
 	AZALIA_PIN_CFG(0, 0x1a, 0x411111f0),
 
 	/* Pin Complex (NID 0x1B) LINE2 PORTE - Disabled */
-	AZALIA_PIN_CFG(0, 0x1a, 0x411111f0),
+	AZALIA_PIN_CFG(0, 0x1b, 0x411111f0),
 
 	/* Pin Complex (NID 0x1d) PCBeep */
 	// eapd low on ex-amp, laptop, custom enable

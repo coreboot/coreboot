@@ -34,9 +34,6 @@ DefinitionBlock(
 	// global NVS and variables
 	#include <southbridge/intel/bd82x6x/acpi/globalnvs.asl>
 
-	// General Purpose Events
-	//#include "acpi/gpe.asl"
-
 	#include <cpu/intel/common/acpi/cpu.asl>
 
 	Scope (\_SB) {

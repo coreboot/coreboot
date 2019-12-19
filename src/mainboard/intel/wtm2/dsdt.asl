@@ -33,9 +33,6 @@ DefinitionBlock(
 	// global NVS and variables
 	#include <soc/intel/broadwell/acpi/globalnvs.asl>
 
-	// General Purpose Events
-	//#include "acpi/gpe.asl"
-
 	// CPU
 	#include <cpu/intel/common/acpi/cpu.asl>
 

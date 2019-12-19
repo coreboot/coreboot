@@ -29,11 +29,6 @@ DefinitionBlock(
 	#include <southbridge/intel/i82801gx/acpi/globalnvs.asl>
 	#include <southbridge/intel/common/acpi/platform.asl>
 
-	// General Purpose Events
-	//#include "acpi/gpe.asl"
-
-	//#include "acpi/thermal.asl"
-
 	#include <cpu/intel/speedstep/acpi/cpu.asl>
 
 	Scope (\_SB) {

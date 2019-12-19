@@ -31,9 +31,6 @@ DefinitionBlock(
 	// global NVS and variables
 	#include <southbridge/intel/lynxpoint/acpi/globalnvs.asl>
 
-	// General Purpose Events
-	//#include "acpi/gpe.asl"
-
 	#include "acpi/thermal.asl"
 
 	#include <cpu/intel/common/acpi/cpu.asl>

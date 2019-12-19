@@ -14,8 +14,8 @@
  * GNU General Public License for more details.
  */
 
-#include <stdlib.h>
 #include <console/console.h>
+#include <commonlib/helpers.h>
 #include <string.h>
 #include <arch/io.h>
 #include <device/mmio.h>
@@ -571,7 +571,7 @@ static void calculate_timings(struct raminfo *info)
 				      spd[channel][slot][CAS_LATENCIES_MSB] <<
 				      8));
 
-	max_clock_index = min(3, info->max_supported_clock_speed_index);
+	max_clock_index = MIN(3, info->max_supported_clock_speed_index);
 
 	cycletime = min_cycletime[max_clock_index];
 	cas_latency_time = min_cas_latency_time[max_clock_index];
@@ -586,11 +586,11 @@ static void calculate_timings(struct raminfo *info)
 				    spd[channel][slot][TIMEBASE_DIVIDEND] /
 				    info->spd[channel][slot][TIMEBASE_DIVISOR];
 				cycletime =
-				    max(cycletime,
+				    MAX(cycletime,
 					timebase *
 					info->spd[channel][slot][CYCLETIME]);
 				cas_latency_time =
-				    max(cas_latency_time,
+				    MAX(cas_latency_time,
 					timebase *
 					info->
 					spd[channel][slot][CAS_LATENCY_TIME]);
@@ -865,7 +865,7 @@ static void compute_derived_timings(struct raminfo *info)
 	if (info->revision_flag_1)
 		some_delay_2_ps = halfcycle_ps(info) >> 6;
 	some_delay_2_ps +=
-	    max(some_delay_1_ps - 30,
+	    MAX(some_delay_1_ps - 30,
 		2 * halfcycle_ps(info) * (some_delay_1_cycle_ceil - 1) + 1000) +
 	    375;
 	some_delay_3_ps =
@@ -977,8 +977,8 @@ static void compute_derived_timings(struct raminfo *info)
 									  clock_speed_index];
 						}
 					}
-					min_of_unk_2 = min(min_of_unk_2, a);
-					min_of_unk_2 = min(min_of_unk_2, b);
+					min_of_unk_2 = MIN(min_of_unk_2, a);
+					min_of_unk_2 = MIN(min_of_unk_2, b);
 					if (rank == 0) {
 						sum += a;
 						count++;
@@ -993,7 +993,7 @@ static void compute_derived_timings(struct raminfo *info)
 									clock_speed_index];
 						if (unk1 >= t)
 							max_of_unk =
-							    max(max_of_unk,
+							    MAX(max_of_unk,
 								unk1 - t);
 					}
 				}
@@ -1005,7 +1005,7 @@ static void compute_derived_timings(struct raminfo *info)
 								[channel]]
 				    [info->clock_speed_index] + min_of_unk_2;
 				if (unk1 >= t)
-					max_of_unk = max(max_of_unk, unk1 - t);
+					max_of_unk = MAX(max_of_unk, unk1 - t);
 			}
 		}
 
@@ -1177,7 +1177,7 @@ static void program_modules_memory_map(struct raminfo *info, int pre_jedec)
 	info->total_memory_mb = total_mb[0] + total_mb[1];
 
 	info->interleaved_part_mb =
-	    pre_jedec ? 0 : 2 * min(total_mb[0], total_mb[1]);
+	    pre_jedec ? 0 : 2 * MIN(total_mb[0], total_mb[1]);
 	info->non_interleaved_part_mb =
 	    total_mb[0] + total_mb[1] - info->interleaved_part_mb;
 	channel_0_non_interleaved = total_mb[0] - info->interleaved_part_mb / 2;
@@ -1247,7 +1247,7 @@ static void program_board_delay(struct raminfo *info)
 							    halfcycle_ps(info)
 							    + 2230);
 		some_delay_3_half_cycles =
-		    min((some_delay_2_half_cycles +
+		    MIN((some_delay_2_half_cycles +
 			 (frequency_11(info) * 2) * (28 -
 						     some_delay_2_half_cycles) /
 			 (frequency_11(info) * 2 -
@@ -1351,7 +1351,7 @@ static void program_board_delay(struct raminfo *info)
 
 	program_modules_memory_map(info, 1);
 
-	MCHBAR16(0x610) = (min(ns_to_cycles(info, some_delay_ns) / 2, 127) << 9)
+	MCHBAR16(0x610) = (MIN(ns_to_cycles(info, some_delay_ns) / 2, 127) << 9)
 		| (MCHBAR16(0x610) & 0x1C3) | 0x3C;
 	MCHBAR16_OR(0x612, 0x100);
 	MCHBAR16_OR(0x214, 0x3E00);
@@ -1421,12 +1421,12 @@ static void program_total_memory_map(struct raminfo *info)
 	if (TOM == 4096)
 		TOM = 4032;
 	TOUUD = ALIGN_DOWN(TOM - info->memory_reserved_for_heci_mb, 64);
-	TOLUD = ALIGN_DOWN(min(4096 - mmio_size + ALIGN_UP(uma_size_igd + uma_size_gtt, 64)
+	TOLUD = ALIGN_DOWN(MIN(4096 - mmio_size + ALIGN_UP(uma_size_igd + uma_size_gtt, 64)
 			      , TOUUD), 64);
 	memory_remap = 0;
 	if (TOUUD - TOLUD > 64) {
 		memory_remap = 1;
-		REMAPbase = max(4096, TOUUD);
+		REMAPbase = MAX(4096, TOUUD);
 		TOUUD = TOUUD - TOLUD + 4096;
 	}
 	if (TOUUD > 4096)
@@ -1472,7 +1472,7 @@ static void program_total_memory_map(struct raminfo *info)
 	memory_map[0] = ALIGN_DOWN(uma_base_gtt, 64) | 1;
 	memory_map[1] = 4096;
 	for (i = 0; i < ARRAY_SIZE(memory_map); i++) {
-		current_limit = max(current_limit, memory_map[i] & ~1);
+		current_limit = MAX(current_limit, memory_map[i] & ~1);
 		pci_write_config32(PCI_DEV(QUICKPATH_BUS, 0, 1), 4 * i + 0x80,
 			       (memory_map[i] & 1) | ALIGN_DOWN(current_limit -
 								1, 64) | 2);
@@ -2737,9 +2737,9 @@ choose_training(struct raminfo *info, int channel, int slot, int rank,
 	upper_margin =
 	    timings[center_178][channel][slot][rank][lane].largest - result;
 	if (upper_margin < 10 && lower_margin > 10)
-		result -= min(lower_margin - 10, 10 - upper_margin);
+		result -= MIN(lower_margin - 10, 10 - upper_margin);
 	if (upper_margin > 10 && lower_margin < 10)
-		result += min(upper_margin - 10, 10 - lower_margin);
+		result += MIN(upper_margin - 10, 10 - lower_margin);
 	return result;
 }
 
@@ -3258,8 +3258,8 @@ compute_frequence_ratios(struct raminfo *info, u16 freq1, u16 freq2,
 	g = gcd(freq1, freq2);
 	freq1_reduced = freq1 / g;
 	freq2_reduced = freq2 / g;
-	freq_min_reduced = min(freq1_reduced, freq2_reduced);
-	freq_max_reduced = max(freq1_reduced, freq2_reduced);
+	freq_min_reduced = MIN(freq1_reduced, freq2_reduced);
+	freq_max_reduced = MAX(freq1_reduced, freq2_reduced);
 
 	common_time_unit_ps = div_roundup(900000, lcm(freq1, freq2));
 	freq3 = div_roundup(num_cycles_2, common_time_unit_ps) - 1;
@@ -3347,7 +3347,7 @@ set_2d5x_reg(struct raminfo *info, u16 reg, u16 freq1, u16 freq2,
 				 0, 1, &vv);
 
 	multiplier =
-	    div_roundup(max
+	    div_roundup(MAX
 			(div_roundup(num_cycles_2, vv.common_time_unit_ps) +
 			 div_roundup(num_cycles_3, vv.common_time_unit_ps),
 			 div_roundup(num_cycles_1,
@@ -3527,7 +3527,7 @@ static u16 get_max_timing(struct raminfo *info, int channel)
 		for (rank = 0; rank < NUM_RANKS; rank++)
 			if (info->populated_ranks[channel][slot][rank])
 				for (lane = 0; lane < 8 + info->use_ecc; lane++)
-					ret = max(ret, read_500(info, channel,
+					ret = MAX(ret, read_500(info, channel,
 								get_timing_register_addr
 								(lane, 0, slot,
 								 rank), 9));

@@ -14,8 +14,8 @@
  * GNU General Public License for more details.
  */
 
+#include <commonlib/helpers.h>
 #include <stdint.h>
-#include <stdlib.h>
 #include <arch/cpu.h>
 #include <device/mmio.h>
 #include <device/pci_ops.h>
@@ -436,7 +436,7 @@ static unsigned int find_common_clock_cas(sysinfo_t *const sysinfo,
 
 	unsigned int clock = 8000 / tCKmin;
 	if ((clock > sysinfo->max_ddr3_mt / 2) || (clock > fsb_mhz / 2)) {
-		int new_clock = min(sysinfo->max_ddr3_mt / 2, fsb_mhz / 2);
+		int new_clock = MIN(sysinfo->max_ddr3_mt / 2, fsb_mhz / 2);
 		printk(BIOS_SPEW, "DIMMs support %d MHz, but chipset only runs at up to %d. Limiting...\n",
 			clock, new_clock);
 		clock = new_clock;

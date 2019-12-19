@@ -308,7 +308,7 @@ static u8 dqs_gw_fine_tune_calib(u32 channel, u8 fine_val)
 	int matches = 0, sum = 0;
 
 	/* fine tune range from 0 to 127 */
-	fine_val = min(max(fine_val, 0 - delta[0]), 127 - delta[6]);
+	fine_val = MIN(MAX(fine_val, 0 - delta[0]), 127 - delta[6]);
 
 	/* test gw fine tune */
 	for (i = 0; i < ARRAY_SIZE(delta); i++) {
@@ -443,7 +443,7 @@ void dramc_rankinctl_config(u32 channel,
 
 	if (is_dual_rank(channel, sdram_params)) {
 		/* RANKINCTL_ROOT1 = DQSINCTL + reg_TX_DLY_DQSGATE */
-		value = min(opt_gw_coarse_value[channel][0],
+		value = MIN(opt_gw_coarse_value[channel][0],
 			    opt_gw_coarse_value[channel][1]) >> 2;
 
 		clrsetbits32(&ch[channel].ao_regs->dummy, 0xf, value);

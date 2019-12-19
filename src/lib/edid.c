@@ -29,12 +29,12 @@
  */
 
 #include <assert.h>
+#include <commonlib/helpers.h>
 #include <stddef.h>
 #include <console/console.h>
 #include <ctype.h>
 #include <stdint.h>
 #include <string.h>
-#include <stdlib.h>
 #include <edid.h>
 #include <vbe.h>
 
@@ -178,7 +178,7 @@ extract_string(unsigned char *x, int *valid_termination, int len)
 
 	memset(ret, 0, sizeof(ret));
 
-	for (i = 0; i < min(len, EDID_ASCII_STRING_LENGTH); i++) {
+	for (i = 0; i < MIN(len, EDID_ASCII_STRING_LENGTH); i++) {
 		if (seen_newline) {
 			if (x[i] != 0x20) {
 				*valid_termination = 0;
@@ -1691,7 +1691,7 @@ void edid_set_framebuffer_bits_per_pixel(struct edid *edid, int fb_bpp,
 {
 	/* Caller should pass a supported value, everything else is BUG(). */
 	assert(fb_bpp == 32 || fb_bpp == 24 || fb_bpp == 16);
-	row_byte_alignment = max(row_byte_alignment, 1);
+	row_byte_alignment = MAX(row_byte_alignment, 1);
 
 	edid->framebuffer_bits_per_pixel = fb_bpp;
 	edid->bytes_per_line = ALIGN_UP(edid->mode.ha *

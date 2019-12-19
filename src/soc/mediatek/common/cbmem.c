@@ -14,8 +14,8 @@
  */
 
 #include <cbmem.h>
+#include <commonlib/helpers.h>
 #include <stddef.h>
-#include <stdlib.h>
 #include <symbols.h>
 #include <soc/emi.h>
 
@@ -23,5 +23,5 @@
 
 void *cbmem_top_chipset(void)
 {
-	return (void *)min((uintptr_t)_dram + sdram_size(), MAX_DRAM_ADDRESS);
+	return (void *)MIN((uintptr_t)_dram + sdram_size(), MAX_DRAM_ADDRESS);
 }

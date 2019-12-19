@@ -20,13 +20,13 @@
 #include <stdint.h>
 #include "lpc47m10x.h"
 
-static void pnp_enter_conf_state(pnp_devfn_t dev)
+void pnp_enter_conf_state(pnp_devfn_t dev)
 {
 	u16 port = dev >> 8;
 	outb(0x55, port);
 }
 
-static void pnp_exit_conf_state(pnp_devfn_t dev)
+void pnp_exit_conf_state(pnp_devfn_t dev)
 {
 	u16 port = dev >> 8;
 	outb(0xaa, port);

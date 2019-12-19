@@ -15,6 +15,7 @@
 #include <cpu/cpu.h>
 #include <cpu/x86/lapic_def.h>
 #include <arch/io.h>
+#include <device/pci_def.h>
 #include <device/pci_ops.h>
 #include <arch/ioapic.h>
 #include <stdint.h>

@@ -45,7 +45,7 @@ const u32 cim_verb_data[] = {
 	AZALIA_PIN_CFG(0x0, 0x17, 0x01011120),
 
 	/* Pin Complex (NID 0x18) MIC1 (Port-B) */
-	AZALIA_PIN_CFG(0x0, 0x18, 0x41111F0),
+	AZALIA_PIN_CFG(0x0, 0x18, 0x411111F0),
 
 	/* Pin Complex (NID 0x19) I2S-IN */
 	AZALIA_PIN_CFG(0x0, 0x19, 0x90870140),

@@ -17,7 +17,6 @@
 External (TOM1)
 External (TOM2)
 Name(_HID, EISAID("PNP0A03"))	/* PCI Express Root Bridge */
-Name(_ADR, 0x00180000)	/* Dev# = BSP Dev#, Func# = 0 */
 
 /* Describe the Northbridge devices */
 
@@ -44,6 +43,10 @@ Method (_PRT, 0, NotSerialized)
 Device(AMRT) {
 	Name(_ADR, 0x00000000)
 } /* end AMRT */
+
+Device(PCSD) { /* Processor configuration space devices */
+	Name(_ADR, 0x00180000)	/* Dev# = BSP Dev#, Func# = 0 */
+}
 
 /* Dev2 is also an external GFX bridge */
 Device(PBR2) {

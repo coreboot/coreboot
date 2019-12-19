@@ -47,3 +47,4 @@ structure.
 3. [Models 30h-3Fh BKDG](https://www.amd.com/system/files/TechDocs/49125_15h_Models_30h-3Fh_BKDG.pdf)
 4. [Models 60h-6Fh BKDG](https://www.amd.com/system/files/TechDocs/50742_15h_Models_60h-6Fh_BKDG.pdf)
 5. [Models 70h-7Fh BKDG](https://www.amd.com/system/files/TechDocs/55072_AMD_Family_15h_Models_70h-7Fh_BKDG.pdf)
+6. [PSP Integration](psp_integration.md)

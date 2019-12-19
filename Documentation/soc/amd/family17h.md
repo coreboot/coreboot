@@ -18,8 +18,8 @@ To the extent necessary, the role of the Platform Security Processor
 (a.k.a. PSP) in system initialization is addressed here.  AMD has
 historically required an NDA for access to the PSP
 specification<sup>1</sup>.  coreboot relies on util/amdfwtool to build
-the structures and add various other firmware to the final image.  The
-Family 17h PSP design guide adds a new BIOS Directory Table, similar to
+the structures and add various other firmware to the final image<sup>2</sup>.
+The Family 17h PSP design guide adds a new BIOS Directory Table, similar to
 the PSP Directory Table.
 
 Support in coreboot for modern AMD products is based on AMD’s
@@ -29,12 +29,12 @@ configuring proprietary core logic, assistance with generating ACPI
 tables, and other features.
 
 AGESA for products earlier than Family 17h is known as v5 or
-Arch2008<sup>2</sup>.  Also note that coreboot currently contains both
+Arch2008<sup>3</sup>.  Also note that coreboot currently contains both
 open source AGESA and closed source implementations (binaryPI) compiled
 from AGESA.
 
 The first AMD Family 17h device ported to coreboot is codenamed
-“Picasso”<sup>3</sup>, and will be added to soc/amd/picasso.
+“Picasso”<sup>4</sup>, and will be added to soc/amd/picasso.
 
 ## Additional Definitions
 
@@ -207,7 +207,7 @@ the existing v5 interface impractical.
 
 Given the UEFI nature of modern AGESA, and the existing open source
 work from Intel, Picasso shall support AGESA via an FSP-like prebuilt
-image.  The Intel Firmware Support Package<sup>4</sup> combines
+image.  The Intel Firmware Support Package<sup>5</sup> combines
 reference code with EDK II source to create a modular image with
 discoverable entry points.  coreboot source already contains knowledge
 of FSP, how to parse it, integrate it, and how to communicate with it.
@@ -218,7 +218,7 @@ of FSP, how to parse it, integrate it, and how to communicate with it.
 for AMD Family 17h Processors” (PID #55758) and “AMD Platform
 Security Processor BIOS Architecture Design Guide” (PID #54267) for
 earlier products
-2. [https://www.amd.com/system/files/TechDocs/44065_Arch2008.pdf](https://www.amd.com/system/files/TechDocs/44065_Arch2008.pdf)
-3. [https://en.wikichip.org/wiki/amd/cores/picasso](https://en.wikichip.org/wiki/amd/cores/picasso)
-4. [https://www.intel.com/content/www/us/en/intelligent-systems/intel-firmware-support-package/intel-fsp-overview.html](https://www.intel.com/content/www/us/en/intelligent-systems/intel-firmware-support-package/intel-fsp-overview.html)
-
+2. [PSP Integration](psp_integration.md)
+3. [https://www.amd.com/system/files/TechDocs/44065_Arch2008.pdf](https://www.amd.com/system/files/TechDocs/44065_Arch2008.pdf)
+4. [https://en.wikichip.org/wiki/amd/cores/picasso](https://en.wikichip.org/wiki/amd/cores/picasso)
+5. [https://www.intel.com/content/www/us/en/intelligent-systems/intel-firmware-support-package/intel-fsp-overview.html](https://www.intel.com/content/www/us/en/intelligent-systems/intel-firmware-support-package/intel-fsp-overview.html)

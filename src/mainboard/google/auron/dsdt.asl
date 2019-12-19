@@ -24,7 +24,6 @@ DefinitionBlock(
 	0x20110725	// OEM revision
 )
 {
-	// Some generic macros
 	#include <soc/intel/broadwell/acpi/platform.asl>
 
 	// Thermal handler

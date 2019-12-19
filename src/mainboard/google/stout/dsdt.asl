@@ -27,7 +27,6 @@ DefinitionBlock(
 {
 	#include <southbridge/intel/common/acpi/platform.asl>
 
-	// Some generic macros
 	#include "acpi/platform.asl"
 	#include "acpi/mainboard.asl"
 

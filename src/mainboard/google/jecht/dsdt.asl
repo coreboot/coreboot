@@ -24,7 +24,6 @@ DefinitionBlock(
 	0x20110725	// OEM revision
 )
 {
-	// Some generic macros
 	#include <southbridge/intel/common/acpi/platform.asl>
 	#include "acpi/platform.asl"
 

@@ -29,8 +29,6 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_A10, NONE),
 	/* C12 : FPMCU_PCH_BOOT1 */
 	PAD_CFG_GPO(GPP_C12, 0, DEEP),
-	/* F1  : NC */
-	PAD_NC(GPP_F1, NONE),
 	/* F3  : MEM_STRAP_3 */
 	PAD_CFG_GPI(GPP_F3, NONE, PLTRST),
 	/* F10 : MEM_STRAP_2 */

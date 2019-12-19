@@ -187,6 +187,7 @@ enum clk_ctl_bcr {
 enum clk_ctl_dfsr {
 	CLK_CTL_CMD_DFSR_BMSK = 0x1,
 	CLK_CTL_CMD_DFSR_SHFT = 0,
+	CLK_CTL_CMD_RCG_SW_CTL_SHFT = 15,
 };
 
 enum clk_qup {

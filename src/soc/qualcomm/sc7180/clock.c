@@ -72,7 +72,7 @@ struct clock_config qup_wrap_cfg[] = {
 		.div = DIV(1),
 		.m = 8,
 		.n = 75,
-		.d_2 = 150,
+		.d_2 = 75,
 	},
 	{
 		.hz =  48 * MHz,
@@ -80,7 +80,7 @@ struct clock_config qup_wrap_cfg[] = {
 		.div = DIV(1),
 		.m = 4,
 		.n = 25,
-		.d_2 = 50,
+		.d_2 = 25,
 	},
 	{
 		.hz =  64 * MHz,
@@ -88,7 +88,7 @@ struct clock_config qup_wrap_cfg[] = {
 		.div = DIV(1),
 		.m = 16,
 		.n = 75,
-		.d_2 = 150,
+		.d_2 = 75,
 	},
 	{
 		.hz =  96 * MHz,
@@ -96,7 +96,7 @@ struct clock_config qup_wrap_cfg[] = {
 		.div = DIV(1),
 		.m = 8,
 		.n = 25,
-		.d_2 = 50,
+		.d_2 = 25,
 	},
 	{
 		.hz =  100 * MHz,
@@ -236,7 +236,9 @@ void clock_configure_dfsr(int qup)
 	struct sc7180_qupv3_clock *qup_clk = qup < QUP_WRAP1_S0 ?
 				&gcc->qup_wrap0_s[s] : &gcc->qup_wrap1_s[s];
 
-	setbits32(&qup_clk->dfsr_clk.cmd_dfsr, BIT(CLK_CTL_CMD_DFSR_SHFT));
+	clrsetbits32(&qup_clk->dfsr_clk.cmd_dfsr,
+					BIT(CLK_CTL_CMD_RCG_SW_CTL_SHFT),
+					BIT(CLK_CTL_CMD_DFSR_SHFT));
 
 	for (idx = 0; idx < ARRAY_SIZE(qup_wrap_cfg); idx++) {
 		reg_val = (qup_wrap_cfg[idx].src << CLK_CTL_CFG_SRC_SEL_SHFT) |
@@ -247,7 +249,7 @@ void clock_configure_dfsr(int qup)
 		if (qup_wrap_cfg[idx].m == 0)
 			continue;
 
-		setbits32(&qup_clk->dfsr_clk.cmd_dfsr,
+		setbits32(&qup_clk->dfsr_clk.perf_dfsr[idx],
 				RCG_MODE_DUAL_EDGE << CLK_CTL_CFG_MODE_SHFT);
 
 		reg_val = qup_wrap_cfg[idx].m & CLK_CTL_RCG_MND_BMSK;

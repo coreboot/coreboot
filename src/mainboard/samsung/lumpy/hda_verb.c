@@ -22,29 +22,29 @@ const u32 cim_verb_data[] = {
 	0x00000007,	// Number of jacks
 
 	/* NID 0x01, HDA Codec Subsystem ID Verb Table: 0x152D0924 */
-	AZALIA_SUBVENDOR(0x0, 0x152D0924),
+	AZALIA_SUBVENDOR(0, 0x152D0924),
 
 	0x00170500,
 
 	/* Pin Widget Verb Table */
 
 	/* Pin Complex (NID 0x05) */
-	AZALIA_PIN_CFG(0x0, 0x05, 0x022110f0),
+	AZALIA_PIN_CFG(0, 0x05, 0x022110f0),
 
 	/* Pin Complex (NID 0x06) */
-	AZALIA_PIN_CFG(0x0, 0x06, 0x901700f0),
+	AZALIA_PIN_CFG(0, 0x06, 0x901700f0),
 
 	/* Pin Complex (NID 0x07) */
-	AZALIA_PIN_CFG(0x0, 0x07, 0x02a110f0),
+	AZALIA_PIN_CFG(0, 0x07, 0x02a110f0),
 
 	/* Pin Complex (NID 0x08) */
-	AZALIA_PIN_CFG(0x0, 0x08, 0x77a70037),
+	AZALIA_PIN_CFG(0, 0x08, 0x77a70037),
 
 	/* Pin Complex (NID 0x09) */
-	AZALIA_PIN_CFG(0x0, 0x09, 0xb7a6003e),
+	AZALIA_PIN_CFG(0, 0x09, 0xb7a6003e),
 
 	/* Pin Complex (NID 0x0a) */
-	AZALIA_PIN_CFG(0x0, 0x0a, 0x434510f0)
+	AZALIA_PIN_CFG(0, 0x0a, 0x434510f0),
 };
 
 const u32 pc_beep_verbs[] = {

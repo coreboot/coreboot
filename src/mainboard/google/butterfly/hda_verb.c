@@ -20,25 +20,25 @@ const u32 cim_verb_data[] = {
 	0x111d76e5,	// Codec Vendor / Device ID: IDT 92HD99
 	0x103c18f9,	// Subsystem ID
 	115,		// Number of 4 dword sets
-	AZALIA_SUBVENDOR(0x0, 0x103c18F9),
+	AZALIA_SUBVENDOR(0, 0x103c18F9),
 
 	/* Ext. Microphone Connector:	External,Right; MicIn,3.5mm; Black,JD; DA,Seq */
-	AZALIA_PIN_CFG(0x0, 0x0a, 0x04a11020),
+	AZALIA_PIN_CFG(0, 0x0a, 0x04a11020),
 
 	/* Headphones Connector:	External,Right; HP,3.5mm; Black,JD; DA,Seq */
-	AZALIA_PIN_CFG(0x0, 0x0b, 0x0421101f),
+	AZALIA_PIN_CFG(0, 0x0b, 0x0421101f),
 
 	/* Not connected:		N/A,N/A; Other,Unknown; Unknown,JD; DA,Seq */
-	AZALIA_PIN_CFG(0x0, 0x0c, 0x40f000f0),
+	AZALIA_PIN_CFG(0, 0x0c, 0x40f000f0),
 
 	/* Internal Speakers:		Fixed,Int; Speaker,Other Analog; Unknown,nJD; DA,Seq */
-	AZALIA_PIN_CFG(0x0, 0x0d, 0x90170110),
+	AZALIA_PIN_CFG(0, 0x0d, 0x90170110),
 
 	/* Not connected */
-	AZALIA_PIN_CFG(0x0, 0x0f, 0x40f000f0),
+	AZALIA_PIN_CFG(0, 0x0f, 0x40f000f0),
 
 	/* Internal Microphone:		Fixed,Int,Top; Mic In,ATIPI; Unknown,nJD; DA,Seq */
-	AZALIA_PIN_CFG(0x0, 0x11, 0xd5a30140),
+	AZALIA_PIN_CFG(0, 0x11, 0xd5a30140),
 
 	/*
 	 * Hardware EQ Parameters
@@ -175,10 +175,10 @@ const u32 cim_verb_data[] = {
 	0x80860101,	// Subsystem ID
 			// Revision ID: 0x100000
 	4,		// Number of 4 dword sets
-	AZALIA_SUBVENDOR(0x3, 0x80860101),
-	AZALIA_PIN_CFG(0x3, 0x05, 0x18560010),
-	AZALIA_PIN_CFG(0x3, 0x06, 0x18560020),
-	AZALIA_PIN_CFG(0x3, 0x07, 0x18560030),
+	AZALIA_SUBVENDOR(3, 0x80860101),
+	AZALIA_PIN_CFG(3, 0x05, 0x18560010),
+	AZALIA_PIN_CFG(3, 0x06, 0x18560020),
+	AZALIA_PIN_CFG(3, 0x07, 0x18560030),
 };
 
 const u32 pc_beep_verbs[] = {

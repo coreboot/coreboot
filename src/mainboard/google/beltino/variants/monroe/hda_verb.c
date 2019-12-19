@@ -30,43 +30,43 @@ const u32 cim_verb_data[] = {
 	0x000F0002,	// Pad - get revision id
 
 	/* NID 0x01, HDA Codec Subsystem ID Verb Table */
-	AZALIA_SUBVENDOR(0x0, 0x11790670),
+	AZALIA_SUBVENDOR(0, 0x11790670),
 
 	/* Pin Widget Verb Table */
 
 	/* Pin Complex (NID 0x12) DMIC - internal mic */
-	AZALIA_PIN_CFG(0x0, 0x12, 0xb7a60110),
+	AZALIA_PIN_CFG(0, 0x12, 0xb7a60110),
 
 	/* Pin Complex (NID 0x14) SPKR-OUT PORTD - Disabled */
-	AZALIA_PIN_CFG(0x0, 0x14, 0x401111f0),
+	AZALIA_PIN_CFG(0, 0x14, 0x401111f0),
 
 	/* Pin Complex (NID 0x17) MONO Out - Disabled */
-	AZALIA_PIN_CFG(0x0, 0x17, 0x411111f0),
+	AZALIA_PIN_CFG(0, 0x17, 0x411111f0),
 
 	/* Pin Complex (NID 0x18) MIC1 PORTB - Disabled*/
-	AZALIA_PIN_CFG(0x0, 0x19, 0x411111f0),
+	AZALIA_PIN_CFG(0, 0x19, 0x411111f0),
 
 	/* Pin Complex (NID 0x19) MIC2 PORTF - 3.5mm Jack*/
-	AZALIA_PIN_CFG(0x0, 0x18, 0x03a11020),
+	AZALIA_PIN_CFG(0, 0x18, 0x03a11020),
 
 	/* Pin Complex (NID 0x1A) LINE1 PORTC - Disabled */
-	AZALIA_PIN_CFG(0x0, 0x1a, 0x411111f0),
+	AZALIA_PIN_CFG(0, 0x1a, 0x411111f0),
 
 	/* Pin Complex (NID 0x1B) LINE2 PORTE - Disabled */
-	AZALIA_PIN_CFG(0x0, 0x1a, 0x411111f0),
+	AZALIA_PIN_CFG(0, 0x1a, 0x411111f0),
 
 	/* Pin Complex (NID 0x1d) PCBeep */
 	// eapd low on ex-amp, laptop, custom enable
 	// mute spkr on hpout
 	// pcbeep en able, checksum
 	// no physical, internal
-	AZALIA_PIN_CFG(0x0, 0x1d, 0x4015812d),
+	AZALIA_PIN_CFG(0, 0x1d, 0x4015812d),
 
 	/* Pin Complex (NID 0x1E) SPDIF-OUT - Disabled */
-	AZALIA_PIN_CFG(0x0, 0x1e, 0x411111f0),
+	AZALIA_PIN_CFG(0, 0x1e, 0x411111f0),
 
 	/* Pin Complex (NID 0x21) HPOUT PORT-I - Disabled */
-	AZALIA_PIN_CFG(0x0, 0x21, 0x411111f0),
+	AZALIA_PIN_CFG(0, 0x21, 0x411111f0),
 
 	/* Undocumented settings from Realtek (needed for beep_gen) */
 	/* Widget node 0x20 */

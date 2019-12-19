@@ -26,18 +26,18 @@ const u32 cim_verb_data[] = {
 	0x14f1506e,	/* Codec Vendor / Device ID: Conexant CX20590 */
 	0x17aa21db,	/* Subsystem ID */
 	13,		/* Number of 4 dword sets */
-	AZALIA_SUBVENDOR(0x0, 0x17aa21db),
+	AZALIA_SUBVENDOR(0, 0x17aa21db),
 
-	AZALIA_PIN_CFG(0x0, 0x19, 0x04211040),
-	AZALIA_PIN_CFG(0x0, 0x1a, 0x61a19050),
-	AZALIA_PIN_CFG(0x0, 0x1b, 0x04a11060),
-	AZALIA_PIN_CFG(0x0, 0x1c, 0x6121401f),
-	AZALIA_PIN_CFG(0x0, 0x1d, 0x40f001f0),
-	AZALIA_PIN_CFG(0x0, 0x1e, 0x40f001f0),
-	AZALIA_PIN_CFG(0x0, 0x1f, 0x90170110),
-	AZALIA_PIN_CFG(0x0, 0x20, 0x40f001f0),
-	AZALIA_PIN_CFG(0x0, 0x22, 0x40f001f0),
-	AZALIA_PIN_CFG(0x0, 0x23, 0x90a60170),
+	AZALIA_PIN_CFG(0, 0x19, 0x04211040),
+	AZALIA_PIN_CFG(0, 0x1a, 0x61a19050),
+	AZALIA_PIN_CFG(0, 0x1b, 0x04a11060),
+	AZALIA_PIN_CFG(0, 0x1c, 0x6121401f),
+	AZALIA_PIN_CFG(0, 0x1d, 0x40f001f0),
+	AZALIA_PIN_CFG(0, 0x1e, 0x40f001f0),
+	AZALIA_PIN_CFG(0, 0x1f, 0x90170110),
+	AZALIA_PIN_CFG(0, 0x20, 0x40f001f0),
+	AZALIA_PIN_CFG(0, 0x22, 0x40f001f0),
+	AZALIA_PIN_CFG(0, 0x23, 0x90a60170),
 
 	/* Misc entries */
 		0x00b707C0, /* Enable PortB as Output with HP amp */
@@ -56,10 +56,10 @@ const u32 cim_verb_data[] = {
 	0x80862806,	/* Codec Vendor / Device ID: Intel PantherPoint HDMI */
 	0x80860101,	/* Subsystem ID */
 	4,		/* Number of 4 dword sets */
-	AZALIA_SUBVENDOR(0x3, 0x80860101),
-	AZALIA_PIN_CFG(0x3, 0x05, 0x18560010),
-	AZALIA_PIN_CFG(0x3, 0x06, 0x18560020),
-	AZALIA_PIN_CFG(0x3, 0x07, 0x18560030),
+	AZALIA_SUBVENDOR(3, 0x80860101),
+	AZALIA_PIN_CFG(3, 0x05, 0x18560010),
+	AZALIA_PIN_CFG(3, 0x06, 0x18560020),
+	AZALIA_PIN_CFG(3, 0x07, 0x18560030),
 };
 
 const u32 pc_beep_verbs[] = {

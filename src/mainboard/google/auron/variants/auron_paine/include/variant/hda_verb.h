@@ -32,59 +32,59 @@ const u32 cim_verb_data[] = {
 	/* Bits 7:0  - Payload */
 
 	/* NID 0x01, HDA Codec Subsystem ID Verb Table */
-	AZALIA_SUBVENDOR(0x0, 0x11790670),
+	AZALIA_SUBVENDOR(0, 0x11790670),
 
 	/* Pin Widget Verb Table */
 
 	/* Pin Complex (NID 0x12) DMIC - Disabled */
-	AZALIA_PIN_CFG(0x0, 0x12, 0x411111f0),
+	AZALIA_PIN_CFG(0, 0x12, 0x411111f0),
 
 	/* Pin Complex (NID 0x14) SPKR-OUT - Internal Speakers */
 	// group 1, cap 0
 	// no connector, no jack detect
 	// speaker out, analog
 	// fixed function, internal, Location N/A
-	AZALIA_PIN_CFG(0x0, 0x14, 0x90170110),
+	AZALIA_PIN_CFG(0, 0x14, 0x90170110),
 
 	/* Pin Complex (NID 0x17) MONO Out - Disabled */
-	AZALIA_PIN_CFG(0x0, 0x17, 0x411111f0),
+	AZALIA_PIN_CFG(0, 0x17, 0x411111f0),
 
 	/* Pin Complex (NID 0x18) MIC1 PORTB - Disabled */
-	AZALIA_PIN_CFG(0x0, 0x18, 0x411111f0),
+	AZALIA_PIN_CFG(0, 0x18, 0x411111f0),
 
 	/* Pin Complex (NID 0x19) MIC2 - 3.5mm Jack */
 	// group2, cap 0
 	// black, jack detect
 	// Mic in, 3.5mm Jack
 	// connector, External left panel
-	AZALIA_PIN_CFG(0x0, 0x19, 0x03a11020),
+	AZALIA_PIN_CFG(0, 0x19, 0x03a11020),
 
 	/* Pin Complex (NID 0x1A) LINE1 - Internal Mic */
 	// group 1, cap 1
 	// no connector, no jack detect
 	// mic in, analog connection
 	// Fixed function, internal, Location N/A
-	AZALIA_PIN_CFG(0x0, 0x1A, 0x90a70111),
+	AZALIA_PIN_CFG(0, 0x1A, 0x90a70111),
 
 	/* Pin Complex (NID 0x1B) LINE2 - Disabled */
-	AZALIA_PIN_CFG(0x0, 0x1B, 0x411111f0),
+	AZALIA_PIN_CFG(0, 0x1B, 0x411111f0),
 
 	/* Pin Complex (NID 0x1D) PCBeep */
 	// eapd low on ex-amp, laptop, custom enable
 	// mute spkr on hpout
 	// pcbeep en able, checksum
 	// no physical, Internal, Location N/A
-	AZALIA_PIN_CFG(0x0, 0x1D, 0x4015812d),
+	AZALIA_PIN_CFG(0, 0x1D, 0x4015812d),
 
 	/* Pin Complex (NID 0x1E) SPDIF-OUT - Disabled*/
-	AZALIA_PIN_CFG(0x0, 0x1E, 0x411111f0),
+	AZALIA_PIN_CFG(0, 0x1E, 0x411111f0),
 
 	/* Pin Complex (NID 0x21) HP-OUT - 3.5mm Jack*/
 	// group2, cap 1
 	// black, jack detect
 	// HPOut, 3.5mm Jack
 	// connector, left panel
-	AZALIA_PIN_CFG(0x0, 0x21, 0x03211021),
+	AZALIA_PIN_CFG(0, 0x21, 0x03211021),
 
 	/* Undocumented settings from Realtek (needed for beep_gen) */
 	/* Widget node 0x20 */

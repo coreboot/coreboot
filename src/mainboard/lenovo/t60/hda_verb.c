@@ -17,7 +17,7 @@ const u32 cim_verb_data[] = {
 	0x11d41981,	/* Codec Vendor / Device ID: Analog Devices AD1981 */
 	0x17aa2025,	/* Subsystem ID */
 	11,		/* Number of 4 dword sets */
-	AZALIA_SUBVENDOR(0x0, 0x17aa2025),
+	AZALIA_SUBVENDOR(0, 0x17aa2025),
 	AZALIA_PIN_CFG(0, 0x05, 0xc3014110),
 	AZALIA_PIN_CFG(0, 0x06, 0x4221401f),
 	AZALIA_PIN_CFG(0, 0x07, 0x591311f0),

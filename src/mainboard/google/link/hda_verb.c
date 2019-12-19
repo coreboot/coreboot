@@ -76,34 +76,34 @@ const u32 cim_verb_data[] = {
 	/* Pin Widget Verb Table */
 
 	/* NID 0x01, HDA Codec Subsystem ID Verb Table: 0x144DC0C2 */
-	AZALIA_SUBVENDOR(0x0, 0x144dc0c2),
+	AZALIA_SUBVENDOR(0, 0x144dc0c2),
 
 	/* Pin Complex (NID 0x0B)  Port-G Analog Unknown  Speaker at Int N/A */
-	AZALIA_PIN_CFG(0x0, 0x0b, 0x901700f0),
+	AZALIA_PIN_CFG(0, 0x0b, 0x901700f0),
 
 	/* Pin Complex (NID 0x0C)  N/C */
-	AZALIA_PIN_CFG(0x0, 0x0c, 0x70f000f0),
+	AZALIA_PIN_CFG(0, 0x0c, 0x70f000f0),
 
 	/* Pin Complex (NID 0x0D)  N/C */
-	AZALIA_PIN_CFG(0x0, 0x0d, 0x70f000f0),
+	AZALIA_PIN_CFG(0, 0x0d, 0x70f000f0),
 
 	/* Pin Complex (NID 0x0E)  N/C */
-	AZALIA_PIN_CFG(0x0, 0x0e, 0x70f000f0),
+	AZALIA_PIN_CFG(0, 0x0e, 0x70f000f0),
 
 	/* Pin Complex (NID 0x0F)  N/C */
-	AZALIA_PIN_CFG(0x0, 0x0f, 0x70f000f0),
+	AZALIA_PIN_CFG(0, 0x0f, 0x70f000f0),
 
 	/* Pin Complex (NID 0x10)  Port-D 1/8 Black HP Out at Ext Left */
-	AZALIA_PIN_CFG(0x0, 0x10, 0x032110f0),
+	AZALIA_PIN_CFG(0, 0x10, 0x032110f0),
 
 	/* Pin Complex (NID 0x11) Port-B Click Mic */
-	AZALIA_PIN_CFG(0x0, 0x11, 0x90a700f0),
+	AZALIA_PIN_CFG(0, 0x11, 0x90a700f0),
 
 	/* Pin Complex (NID 0x12) Port-C Combo Jack Mic or D-Mic */
-	AZALIA_PIN_CFG(0x0, 0x12, 0x03a110f0),
+	AZALIA_PIN_CFG(0, 0x12, 0x03a110f0),
 
 	/* Pin Complex (NID 0x13) What you hear */
-	AZALIA_PIN_CFG(0x0, 0x13, 0x90d600f0),
+	AZALIA_PIN_CFG(0, 0x13, 0x90d600f0),
 
 	/* coreboot specific header */
 	0x80862806,	// Codec Vendor / Device ID: Intel CougarPoint HDMI
@@ -111,16 +111,16 @@ const u32 cim_verb_data[] = {
 	0x00000004,	// Number of jacks
 
 	/* NID 0x01, HDA Codec Subsystem ID Verb Table: 0x80860101 */
-	AZALIA_SUBVENDOR(0x3, 0x80860101),
+	AZALIA_SUBVENDOR(3, 0x80860101),
 
 	/* Pin Complex (NID 0x05) Digital Out at Int HDMI */
-	AZALIA_PIN_CFG(0x3, 0x05, 0x18560010),
+	AZALIA_PIN_CFG(3, 0x05, 0x18560010),
 
 	/* Pin Complex (NID 0x06) Digital Out at Int HDMI */
-	AZALIA_PIN_CFG(0x3, 0x06, 0x18560020),
+	AZALIA_PIN_CFG(3, 0x06, 0x18560020),
 
 	/* Pin Complex (NID 0x07) Digital Out at Int HDMI */
-	AZALIA_PIN_CFG(0x3, 0x07, 0x18560030)
+	AZALIA_PIN_CFG(3, 0x07, 0x18560030),
 };
 
 

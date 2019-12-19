@@ -22,45 +22,45 @@ const u32 cim_verb_data[] = {
 	0x0000000d,	// Number of jacks
 
 	/* NID 0x01, HDA Codec Subsystem ID Verb Table: 0x10ec0000 */
-	AZALIA_SUBVENDOR(0x0, 0x10EC0000),
+	AZALIA_SUBVENDOR(0, 0x10EC0000),
 
 	/* Pin Widget Verb Table */
 
 	/* Pin Complex (NID 0x12), DMIC */
-	AZALIA_PIN_CFG(0x0, 0x12, 0x411111F0),
+	AZALIA_PIN_CFG(0, 0x12, 0x411111F0),
 
 	/* Pin Complex (NID 0x14), LINE_OUT (port D) */
-	AZALIA_PIN_CFG(0x0, 0x14, 0x99130110),
+	AZALIA_PIN_CFG(0, 0x14, 0x99130110),
 
 	/* Pin Complex (NID 0x15), HP_OUT (port A) */
-	AZALIA_PIN_CFG(0x0, 0x15, 0x01214020),
+	AZALIA_PIN_CFG(0, 0x15, 0x01214020),
 
 	/* Pin Complex (NID 0x16), MONO-OUT */
-	AZALIA_PIN_CFG(0x0, 0x16, 0x411111F0),
+	AZALIA_PIN_CFG(0, 0x16, 0x411111F0),
 
 	/* Pin Complex (NID 0x18), MIC1 (port B) */
-	AZALIA_PIN_CFG(0x0, 0x18, 0x01A19830),
+	AZALIA_PIN_CFG(0, 0x18, 0x01A19830),
 
 	/* Pin Complex (NID 0x19), MIC2 (port F) */
-	AZALIA_PIN_CFG(0x0, 0x19, 0x99A30931),
+	AZALIA_PIN_CFG(0, 0x19, 0x99A30931),
 
 	/* Pin Complex (NID 0x1A), LINE1 (port C) */
-	AZALIA_PIN_CFG(0x0, 0x1A, 0x02A1983F),
+	AZALIA_PIN_CFG(0, 0x1A, 0x02A1983F),
 
 	/* Pin Complex (NID 0x1B), LINE2 (port E) */
-	AZALIA_PIN_CFG(0x0, 0x1B, 0x0221401F),
+	AZALIA_PIN_CFG(0, 0x1B, 0x0221401F),
 
 	/* Pin Complex (NID 0x1C), CD_IN */
-	AZALIA_PIN_CFG(0x0, 0x1C, 0x411111F0),
+	AZALIA_PIN_CFG(0, 0x1C, 0x411111F0),
 
 	/* Pin Complex (NID 0x1D), PCBEEP */
-	AZALIA_PIN_CFG(0x0, 0x1D, 0x411111F0),
+	AZALIA_PIN_CFG(0, 0x1D, 0x411111F0),
 
 	/* Pin Complex (NID 0x1E), S/PDIF-OUT */
-	AZALIA_PIN_CFG(0x0, 0x1E, 0x411111F0),
+	AZALIA_PIN_CFG(0, 0x1E, 0x411111F0),
 
 	/* Pin Complex (NID 0x1F), S/PDIF-IN */
-	AZALIA_PIN_CFG(0x0, 0x1F, 0x411111F0),
+	AZALIA_PIN_CFG(0, 0x1F, 0x411111F0),
 };
 
 const u32 pc_beep_verbs[0] = {};

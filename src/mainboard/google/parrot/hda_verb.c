@@ -38,59 +38,59 @@ const u32 cim_verb_data[] = {
 
 
 	/* NID 0x01, HDA Codec Subsystem ID Verb Table: 0x10250742 */
-	AZALIA_SUBVENDOR(0x0, 0x10250742),
+	AZALIA_SUBVENDOR(0, 0x10250742),
 
 	/* Pin Widget Verb Table */
 
 	/* Pin Complex (NID 0x12) DMIC */
-	AZALIA_PIN_CFG(0x0, 0x12, 0x411111f0),
+	AZALIA_PIN_CFG(0, 0x12, 0x411111f0),
 
 	/* Pin Complex (NID 0x14) SPKR-OUT PORTD */
 	// group 1, front left/right
 	// no connector, no jack detect
 	// speaker out, analog
 	// fixed function, internal
-	AZALIA_PIN_CFG(0x0, 0x14, 0x90170110),
+	AZALIA_PIN_CFG(0, 0x14, 0x90170110),
 
 	/* Pin Complex (NID 0x17)  */
-	AZALIA_PIN_CFG(0x0, 0x17, 0x411111f0),
+	AZALIA_PIN_CFG(0, 0x17, 0x411111f0),
 
 	/* Pin Complex (NID 0x18)  MIC1 PORTB */
-	AZALIA_PIN_CFG(0x0, 0x18, 0x411111f0),
+	AZALIA_PIN_CFG(0, 0x18, 0x411111f0),
 
 	/* Pin Complex (NID 0x19)  MIC2 PORTF */
 	// group 2, cap 1
 	// black, jack detect
 	// mic in, analog
 	// connector, right panel
-	AZALIA_PIN_CFG(0x0, 0x19, 0x04a71021),
+	AZALIA_PIN_CFG(0, 0x19, 0x04a71021),
 
 	/* Pin Complex (NID 0x1A)  LINE1 PORTC */
-	AZALIA_PIN_CFG(0x0, 0x1a, 0x411111f0),
+	AZALIA_PIN_CFG(0, 0x1a, 0x411111f0),
 
 	/* Pin Complex (NID 0x1B)  LINE2 PORTE */
 	// group 2, cap 0
 	// no connector, no jack detect
 	// mic in, analog
 	// fixed function, internal
-	AZALIA_PIN_CFG(0x0, 0x1b, 0x90a70120),
+	AZALIA_PIN_CFG(0, 0x1b, 0x90a70120),
 
 	/* Pin Complex (NID 0x1d)  PCBeep */
 	// eapd low on ex-amp, laptop, custom enable
 	// mute spkr on hpout
 	// pcbeep en able, checksum
 	// no physical, internal
-	AZALIA_PIN_CFG(0x0, 0x1d, 0x4015812d),
+	AZALIA_PIN_CFG(0, 0x1d, 0x4015812d),
 
 	/* Pin Complex (NID 0x1E)  SPDIF-OUT */
-	AZALIA_PIN_CFG(0x0, 0x1e, 0x411111f0),
+	AZALIA_PIN_CFG(0, 0x1e, 0x411111f0),
 
 	/* Pin Complex (NID 0x21) HPOUT PORTA? */
 	// group1,
 	// black, jack detect
 	// HPOut, 1/8 stereo
 	// connector, right panel
-	AZALIA_PIN_CFG(0x0, 0x21, 0x0421101f),
+	AZALIA_PIN_CFG(0, 0x21, 0x0421101f),
 
 	/* Undocumented speaker output volume settings from Compal and Realtek */
 	/* Widget node 0x20 */
@@ -117,16 +117,16 @@ const u32 cim_verb_data[] = {
 	0x00000004,	// Number of jacks
 
 	/* NID 0x01, HDA Codec Subsystem ID Verb Table: 0x80860101 */
-	AZALIA_SUBVENDOR(0x0, 0x80860101),
+	AZALIA_SUBVENDOR(0, 0x80860101),
 
 	/* Pin Complex (NID 0x05) Digital Out at Int HDMI */
-	AZALIA_PIN_CFG(0x3, 0x05, 0x18560010),
+	AZALIA_PIN_CFG(3, 0x05, 0x18560010),
 
 	/* Pin Complex (NID 0x06) Digital Out at Int HDMI */
-	AZALIA_PIN_CFG(0x3, 0x06, 0x18560020),
+	AZALIA_PIN_CFG(3, 0x06, 0x18560020),
 
 	/* Pin Complex (NID 0x07) Digital Out at Int HDMI */
-	AZALIA_PIN_CFG(0x3, 0x07, 0x18560030)
+	AZALIA_PIN_CFG(3, 0x07, 0x18560030),
 };
 
 const u32 pc_beep_verbs[] = {

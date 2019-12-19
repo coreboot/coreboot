@@ -32,39 +32,39 @@ const u32 cim_verb_data[] = {
 	/* Bits 7:0  - Payload */
 
 	/* NID 0x01, HDA Codec Subsystem ID Verb Table: 0x19910269 */
-	AZALIA_SUBVENDOR(0x0, 0x19910269),
+	AZALIA_SUBVENDOR(0, 0x19910269),
 
 	/* Pin Widget Verb Table */
 
 	/* Pin Complex (NID 0x12) */
-	AZALIA_PIN_CFG(0x0, 0x12, 0x40000000),
+	AZALIA_PIN_CFG(0, 0x12, 0x40000000),
 
 	/* Pin Complex (NID 0x14) */
-	AZALIA_PIN_CFG(0x0, 0x14, 0x90170110),
+	AZALIA_PIN_CFG(0, 0x14, 0x90170110),
 
 	/* Pin Complex (NID 0x15) */
-	AZALIA_PIN_CFG(0x0, 0x15, 0x04214020),
+	AZALIA_PIN_CFG(0, 0x15, 0x04214020),
 
 	/* Pin Complex (NID 0x17) */
-	AZALIA_PIN_CFG(0x0, 0x17, 0x411111f0),
+	AZALIA_PIN_CFG(0, 0x17, 0x411111f0),
 
 	/* Pin Complex (NID 0x18) */
-	AZALIA_PIN_CFG(0x0, 0x18, 0x04a19040),
+	AZALIA_PIN_CFG(0, 0x18, 0x04a19040),
 
 	/* Pin Complex (NID 0x19) */
-	AZALIA_PIN_CFG(0x0, 0x19, 0x90a70130),
+	AZALIA_PIN_CFG(0, 0x19, 0x90a70130),
 
 	/* Pin Complex (NID 0x1A) */
-	AZALIA_PIN_CFG(0x0, 0x1A, 0x411111f0),
+	AZALIA_PIN_CFG(0, 0x1A, 0x411111f0),
 
 	/* Pin Complex (NID 0x1B) */
-	AZALIA_PIN_CFG(0x0, 0x1B, 0x411111f0),
+	AZALIA_PIN_CFG(0, 0x1B, 0x411111f0),
 
 	/* Pin Complex (NID 0x1D) */
-	AZALIA_PIN_CFG(0x0, 0x1D, 0x40548505),
+	AZALIA_PIN_CFG(0, 0x1D, 0x40548505),
 
 	/* Pin Complex (NID 0x1E) */
-	AZALIA_PIN_CFG(0x0, 0x1E, 0x411111f0),
+	AZALIA_PIN_CFG(0, 0x1E, 0x411111f0),
 };
 
 const u32 pc_beep_verbs[] = {};

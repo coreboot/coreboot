@@ -27,7 +27,7 @@ const u32 cim_verb_data[] = {
 	0x10ec0269,	/* Codec Vendor / Device ID: Realtek ALC269VC */
 	0x17aa21fa,	/* Subsystem ID */
 	12,		/* Number of 4 dword sets */
-	AZALIA_SUBVENDOR(0x0, 0x17aa21fa),
+	AZALIA_SUBVENDOR(0, 0x17aa21fa),
 
 	/*
 	 * PIN_CFG:
@@ -62,34 +62,34 @@ const u32 cim_verb_data[] = {
 	 *   For stream channel to in/out mapping
 	 */
 	/* Digital MIC:	Fixed function, mic in, digital */
-	AZALIA_PIN_CFG(0x0, 0x12, 0x90a60940),
+	AZALIA_PIN_CFG(0, 0x12, 0x90a60940),
 
 	/* SPK out:	Fixed function, speaker, analog */
-	AZALIA_PIN_CFG(0x0, 0x14, 0x90170110),
+	AZALIA_PIN_CFG(0, 0x14, 0x90170110),
 
 	/* HP out:	Location left, headphone out, 1/8" jack, black */
-	AZALIA_PIN_CFG(0x0, 0x15, 0x03211020),
+	AZALIA_PIN_CFG(0, 0x15, 0x03211020),
 
 	/* Unknown:	(Unconnected) */
-	AZALIA_PIN_CFG(0x0, 0x17, 0x411111f0),
+	AZALIA_PIN_CFG(0, 0x17, 0x411111f0),
 
 	/* MIC1 in:	Location left, mic in, 1/8" jack, black */
-	AZALIA_PIN_CFG(0x0, 0x18, 0x03a11830),
+	AZALIA_PIN_CFG(0, 0x18, 0x03a11830),
 
 	/* MIC2 in:	(Unconnected) */
-	AZALIA_PIN_CFG(0x0, 0x19, 0x411111f0),
+	AZALIA_PIN_CFG(0, 0x19, 0x411111f0),
 
 	/* Line1 in:	(Unconnected) */
-	AZALIA_PIN_CFG(0x0, 0x1a, 0x411111f0),
+	AZALIA_PIN_CFG(0, 0x1a, 0x411111f0),
 
 	/* Line2 in:	(Unconnected) */
-	AZALIA_PIN_CFG(0x0, 0x1b, 0x411111f0),
+	AZALIA_PIN_CFG(0, 0x1b, 0x411111f0),
 
 	/* PCBEEP */
-	AZALIA_PIN_CFG(0x0, 0x1d, 0x40148605),
+	AZALIA_PIN_CFG(0, 0x1d, 0x40148605),
 
 	/* S/PDIF out:	(Unconnected) */
-	AZALIA_PIN_CFG(0x0, 0x1e, 0x411111f0),
+	AZALIA_PIN_CFG(0, 0x1e, 0x411111f0),
 
 	0x01470740,	/* Enable output for NID 0x14 (Speaker out) */
 	0x015707C0,	/* Enable output & HP amp for NID 0x15 (HP out) */
@@ -100,10 +100,10 @@ const u32 cim_verb_data[] = {
 	0x80862806,	/* Codec Vendor / Device ID: Intel PantherPoint HDMI */
 	0x80860101,	/* Subsystem ID */
 	4,		/* Number of 4 dword sets */
-	AZALIA_SUBVENDOR(0x3, 0x80860101),
-	AZALIA_PIN_CFG(0x3, 0x05, 0x18560010),
-	AZALIA_PIN_CFG(0x3, 0x06, 0x18560020),
-	AZALIA_PIN_CFG(0x3, 0x07, 0x58560030),
+	AZALIA_SUBVENDOR(3, 0x80860101),
+	AZALIA_PIN_CFG(3, 0x05, 0x18560010),
+	AZALIA_PIN_CFG(3, 0x06, 0x18560020),
+	AZALIA_PIN_CFG(3, 0x07, 0x58560030),
 };
 
 const u32 pc_beep_verbs[] = {

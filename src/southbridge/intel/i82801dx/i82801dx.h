@@ -71,6 +71,7 @@ void i82801dx_early_init(void);
 #define PIRQG_ROUT	0x6A
 #define PIRQH_ROUT	0x6B
 #define COM_DEC         0xE0
+#define GEN1_DEC        0xE4
 #define LPC_EN          0xE6
 #define FUNC_DIS        0xF2
 

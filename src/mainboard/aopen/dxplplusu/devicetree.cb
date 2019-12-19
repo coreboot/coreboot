@@ -41,7 +41,7 @@ chip northbridge/intel/e7505
 						io 0x60 = 0x3f8
 						irq 0x70 = 4
 					end
-					device pnp 2e.5 off # Com2
+					device pnp 2e.5 on # Com2
 						io 0x60 = 0x2f8
 						irq 0x70 = 3
 					end

@@ -110,3 +110,32 @@ const struct pad_config *variant_early_gpio_table(size_t *num)
 	*num = ARRAY_SIZE(early_gpio_table);
 	return early_gpio_table;
 }
+
+/*
+ * Default GPIO settings before entering non-S5 sleep states.
+ * Configure A12: FPMCU_RST_ODL as GPO before entering sleep.
+ * This guarantees that A12's native3 function is disabled.
+ * See commit c41b0e8ea3b2714bf6d6d88a6b66c333c6919f07.
+ */
+static const struct pad_config default_sleep_gpio_table[] = {
+	PAD_CFG_GPO(GPP_A12, 1, DEEP), /* FPMCU_RST_ODL */
+};
+
+/*
+ * GPIO settings before entering S5, which are same as default_sleep_gpio_table
+ * but also, turn off FPMCU.
+ */
+static const struct pad_config s5_sleep_gpio_table[] = {
+	PAD_CFG_GPO(GPP_A12, 0, DEEP), /* FPMCU_RST_ODL */
+	PAD_CFG_GPO(GPP_C11, 0, DEEP), /* PCH_FP_PWR_EN */
+};
+
+const struct pad_config *variant_sleep_gpio_table(u8 slp_typ, size_t *num)
+{
+	if (slp_typ == ACPI_S5) {
+		*num = ARRAY_SIZE(s5_sleep_gpio_table);
+		return s5_sleep_gpio_table;
+	}
+	*num = ARRAY_SIZE(default_sleep_gpio_table);
+	return default_sleep_gpio_table;
+}

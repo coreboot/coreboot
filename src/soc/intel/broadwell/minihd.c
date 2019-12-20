@@ -27,8 +27,8 @@
 
 static const u32 minihd_verb_table[] = {
 	/* coreboot specific header */
-	0x80862807,	// Codec Vendor / Device ID: Intel Mini-HD
-	0x00000000,	// Subsystem ID
+	0x80862808,	// Codec Vendor / Device ID: Intel Broadwell Mini-HD
+	0x80860101,	// Subsystem ID
 	0x00000004,	// Number of jacks
 
 	/* Enable 3rd Pin and Converter Widget */

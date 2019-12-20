@@ -68,7 +68,7 @@ config AGESA_SPLIT_MEMORY_FILES
 	  post-memory.
 
 config AGESA_PRE_MEMORY_BINARY_PI_FILE
-	string
+	string "Pre memory Binary PI file name"
 	depends on AGESA_SPLIT_MEMORY_FILES
 	default "3rdparty/blobs/pi/amd/00670F00/FT4/AGESA_premem.elf" if SOC_AMD_STONEYRIDGE && USE_AMD_BLOBS
 	help
@@ -76,7 +76,7 @@ config AGESA_PRE_MEMORY_BINARY_PI_FILE
 	  initialization.
 
 config AGESA_POST_MEMORY_BINARY_PI_FILE
-	string
+	string "Post memory Binary PI file name"
 	depends on AGESA_SPLIT_MEMORY_FILES
 	default "3rdparty/blobs/pi/amd/00670F00/FT4/AGESA_postmem.elf" if SOC_AMD_STONEYRIDGE && USE_AMD_BLOBS
 	help

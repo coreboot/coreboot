@@ -15,14 +15,10 @@
  * GNU General Public License for more details.
  */
 
+#include <amdblocks/acpimmio.h>
+#include <bootblock_common.h>
 #include <stdint.h>
-#include <amdblocks/acpimmio.h>
-#include <device/pci_def.h>
-#include <arch/io.h>
 #include <device/pci_ops.h>
-#include <northbridge/amd/agesa/state_machine.h>
-#include <southbridge/amd/agesa/hudson/hudson.h>
-#include <amdblocks/acpimmio.h>
 #include <superio/ite/common/ite.h>
 #include <superio/ite/it8728f/it8728f.h>
 
@@ -32,18 +28,20 @@
 
 static void sbxxx_enable_48mhzout(void)
 {
-	/* most likely programming to 48MHz out signal */
 	u32 reg32;
+
+	/* Set auxiliary output clock frequency on OSCOUT1 pin to be 48MHz */
 	reg32 = misc_read32(0x28);
 	reg32 &= 0xfff8ffff;
 	misc_write32(0x28, reg32);
 
+	/* Enable Auxiliary Clock1, disable FCH 14 MHz OscClk */
 	reg32 = misc_read32(0x40);
 	reg32 &= 0xffffbffb;
 	misc_write32(0x40, reg32);
 }
 
-void board_BeforeAgesa(struct sysinfo *cb)
+void bootblock_mainboard_early_init(void)
 {
 	u8 byte;
 
@@ -64,8 +62,10 @@ void board_BeforeAgesa(struct sysinfo *cb)
 	byte |= (1 << 6);  /* 0x3f8 */
 	pci_write_config8(dev, 0x44, byte);
 
-	/* run ite */
+	/* enable SIO clock */
 	sbxxx_enable_48mhzout();
+
+	/* Enable serial output on it8728f */
 	ite_conf_clkin(CLKIN_DEV, ITE_UART_CLK_PREDIVIDE_48);
 	ite_kill_watchdog(GPIO_DEV);
 	ite_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);

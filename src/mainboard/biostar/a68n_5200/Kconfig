@@ -15,14 +15,10 @@
 # GNU General Public License for more details.
 #
 
-config BOARD_BIOSTAR_A68N5200
-	def_bool n
-
 if BOARD_BIOSTAR_A68N5200
 
 config BOARD_SPECIFIC_OPTIONS
 	def_bool y
-	#select ROMCC_BOOTBLOCK
 	select CPU_AMD_AGESA_FAMILY16_KB
 	select NORTHBRIDGE_AMD_AGESA_FAMILY16_KB
 	select SOUTHBRIDGE_AMD_AGESA_YANGTZE

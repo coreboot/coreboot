@@ -1,4 +1,5 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """Add a new variant to the Kconfig and Kconfig.name for the baseboard
 
 To start a new variant of an existing baseboard, we need to add
@@ -26,18 +27,26 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 """
 
+from __future__ import print_function
 import argparse
+import sys
 
 
 def main():
   parser = argparse.ArgumentParser(
-    description="Add strings to coreboot Kconfig for a new board variant")
-  parser.add_argument('--name', type=str, required=True,
-    help='Name of the board variant')
+      description='Add strings to coreboot Kconfig for a new board variant')
+  parser.add_argument('--board', type=str, required=True,
+                      help='Name of the baseboard')
+  parser.add_argument('--variant', type=str, required=True,
+                      help='Name of the board variant')
   args = parser.parse_args()
 
-  add_to_Kconfig(args.name)
-  add_to_Kconfig_name(args.name)
+  if args.board not in ['hatch', 'volteer']:
+    print('Unsupported baseboard "' + args.board + '"')
+    sys.exit(1)
+
+  add_to_Kconfig(args.variant)
+  add_to_Kconfig_name(args.board, args.variant)
 
 
 def add_to_Kconfig(variant_name):
@@ -49,7 +58,8 @@ def add_to_Kconfig(variant_name):
   the blank line. The updated lines are written out to Kconfig.new in the
   same directory as Kconfig.
 
-  variant_name    The name of the board variant, e.g. 'kohaku'"""
+  variant_name    The name of the board variant, e.g. 'kohaku'
+  """
   # These are the part of the strings that we'll add to the sections
   BOARD = 'BOARD_GOOGLE_' + variant_name.upper()
   lowercase = variant_name.lower()
@@ -85,13 +95,16 @@ def add_to_Kconfig(variant_name):
         print(line, file=outfile)
 
 
-def add_to_Kconfig_name(variant_name):
+def add_to_Kconfig_name(baseboard_name, variant_name):
   """Add a config section for the variant to the Kconfig.name
 
   Kconfig.name is easier to modify than Kconfig; it only has a block at
   the end with the new variant's details.
 
-  variant_name    The name of the board variant, e.g. 'kohaku'"""
+  baseboard_name  The name of the baseboard, e.g. 'hatch'
+                  We expect the caller to have checked that it is one we support
+  variant_name    The name of the board variant, e.g. 'kohaku'
+  """
   # Board name for the config section
   uppercase = variant_name.upper()
   capitalized = variant_name.lower().capitalize()
@@ -106,10 +119,16 @@ def add_to_Kconfig_name(variant_name):
         print(line, file=outfile)
 
       # Now add the new section
-      print('\nconfig ' + 'BOARD_GOOGLE_' + uppercase, file=outfile)
-      print('\tbool "-> ' + capitalized + '"', file=outfile)
-      print('\tselect BOARD_GOOGLE_BASEBOARD_HATCH', file=outfile)
-      print('\tselect BOARD_ROMSIZE_KB_16384', file=outfile)
+      if baseboard_name == 'hatch':
+        print('\nconfig ' + 'BOARD_GOOGLE_' + uppercase, file=outfile)
+        print('\tbool "-> ' + capitalized + '"', file=outfile)
+        print('\tselect BOARD_GOOGLE_BASEBOARD_HATCH', file=outfile)
+        print('\tselect BOARD_ROMSIZE_KB_16384', file=outfile)
+
+      if baseboard_name == 'volteer':
+        print('\nconfig ' + 'BOARD_GOOGLE_' + uppercase, file=outfile)
+        print('\tbool "-> ' + capitalized + '"', file=outfile)
+        print('\tselect BOARD_GOOGLE_BASEBOARD_VOLTEER', file=outfile)
 
 
 if __name__ == '__main__':

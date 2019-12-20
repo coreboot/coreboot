@@ -13,39 +13,37 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-VERSION="1.0.1"
+VERSION="1.0.2"
 SCRIPT=$(basename -- "${0}")
 
 export LC_ALL=C
 
-if [[ "$#" -lt 1 ]]; then
-  echo "Usage: ${SCRIPT} variant_name [b:bug_number]"
-  echo "e.g. ${SCRIPT} kohaku b:140261109"
+if [[ "$#" -lt 2 ]]; then
+  echo "Usage: ${SCRIPT} base_name variant_name [bug_number]"
+  echo "e.g. ${SCRIPT} hatch kohaku b:140261109"
   echo "* Adds a new variant of the baseboard to Kconfig and Kconfig.name"
   echo "* Copies the template files for the baseboard to the new variant"
   exit 1
 fi
 
-# Note that this script is specific to Hatch, and so it does not allow
-# you to specify the baseboard as one of the cmdline arguments.
-#
-# This is the name of the base board that we're cloning to make the variant.
-BASE="hatch"
+# This is the name of the base board that we're using to make the variant.
+# ${var,,} converts to all lowercase.
+BASE="${1,,}"
 # This is the name of the variant that is being cloned.
 # ${var,,} converts to all lowercase; ${var^^} is all uppercase.
-VARIANT="${1,,}"
+VARIANT="${2,,}"
 VARIANT_UPPER="${VARIANT^^}"
 
-# Assign text for the "BUG=" part of the commit, or use "None" if that
-# parameter wasn't specified.
-BUG=${2:-None}
+# Assign BUG= text, or "None" if that parameter wasn't specified.
+BUG=${3:-None}
 
-# This script and the templates live in util/mainboard/google/hatch
-# We need to create files in src/mainboard/google/hatch
+# This script lives in util/mainboard/google
+# The template files are in util/mainboard/google/${BASE}/templates
+# We need to create files in src/mainboard/google/${BASE}/variants/${VARIANT}
 pushd "${BASH_SOURCE%/*}" || exit 1
 SRC=$(pwd)
 popd || exit 1
-pushd "${SRC}/../../../../src/mainboard/google/${BASE}" || {
+pushd "${SRC}/../../../src/mainboard/google/${BASE}" || {
   echo "The baseboard directory for ${BASE} does not exist.";
   exit 1; }
 
@@ -62,12 +60,12 @@ git checkout -b "coreboot_${VARIANT}_${DATE}" || exit 1
 
 # Copy the template tree to the target.
 mkdir -p "variants/${VARIANT}/"
-cp -pr "${SRC}/template/." "variants/${VARIANT}/"
+cp -pr "${SRC}/${BASE}/template/." "variants/${VARIANT}/"
 git add "variants/${VARIANT}/"
 
 # Now add the new variant to Kconfig and Kconfig.name
 # These files are in the current directory, e.g. src/mainboard/google/hatch
-"${SRC}/kconfig.py" --name "${VARIANT}"
+"${SRC}/kconfig.py" --board "${BASE}" --variant "${VARIANT}" || exit 1
 
 mv Kconfig.new Kconfig
 mv Kconfig.name.new Kconfig.name

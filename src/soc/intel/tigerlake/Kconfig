@@ -232,4 +232,11 @@ config SOC_INTEL_TIGERLAKE_DEBUG_CONSENT
 config PRERAM_CBMEM_CONSOLE_SIZE
 	hex
 	default 0x2000
+
+config EARLY_TCSS_DISPLAY
+	bool "Enable early TCSS display"
+	depends on RUN_FSP_GOP
+	help
+	  Enable displays to be detected over Type-C ports during boot.
+
 endif

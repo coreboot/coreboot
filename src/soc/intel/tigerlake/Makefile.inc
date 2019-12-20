@@ -31,6 +31,7 @@ romstage-y += reset.c
 ramstage-y += acpi.c
 ramstage-y += chip.c
 ramstage-y += cpu.c
+ramstage-$(CONFIG_EARLY_TCSS_DISPLAY) += early_tcss.c
 ramstage-y += elog.c
 ramstage-y += espi.c
 ramstage-y += finalize.c

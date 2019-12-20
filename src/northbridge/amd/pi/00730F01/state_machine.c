@@ -17,6 +17,7 @@
 #include "AGESA.h"
 
 #include <cbmem.h>
+#include <device/device.h>
 #include <northbridge/amd/agesa/state_machine.h>
 #include <northbridge/amd/agesa/agesa_helper.h>
 
@@ -26,10 +27,14 @@ void platform_BeforeInitReset(struct sysinfo *cb, AMD_RESET_PARAMS *Reset)
 
 void platform_BeforeInitEarly(struct sysinfo *cb, AMD_EARLY_PARAMS *Early)
 {
+	Early->GnbConfig.PsppPolicy = PsppDisabled;
 }
 
 void platform_BeforeInitPost(struct sysinfo *cb, AMD_POST_PARAMS *Post)
 {
+	Post->MemConfig.UmaMode = CONFIG(GFXUMA) ? UMA_AUTO : UMA_NONE;
+	Post->MemConfig.UmaSize = 0;
+	Post->MemConfig.BottomIo = (UINT16)(CONFIG_BOTTOMIO_POSITION >> 24);
 }
 
 void platform_AfterInitPost(struct sysinfo *cb, AMD_POST_PARAMS *Post)
@@ -56,10 +61,29 @@ void platform_AfterInitEnv(struct sysinfo *cb, AMD_ENV_PARAMS *Env)
 void platform_BeforeInitMid(struct sysinfo *cb, AMD_MID_PARAMS *Mid)
 {
 	amd_initcpuio();
+
+	/* 0 iGpuVgaAdapter, 1 iGpuVgaNonAdapter; */
+	Mid->GnbMidConfiguration.iGpuVgaMode = 0;
+	Mid->GnbMidConfiguration.GnbIoapicAddress = 0xFEC20000;
 }
 
 void platform_BeforeInitLate(struct sysinfo *cb, AMD_LATE_PARAMS *Late)
 {
+	const struct device *iommu_dev = pcidev_on_root(0, 2);
+
+	if (iommu_dev && iommu_dev->enabled) {
+		/* According to AGESA headers these must be set to sane values
+		 * when IOMMU build config is enabled otherwise AGESA will skip
+		 * it during IOMMU init and IVRS generation.
+		 */
+		Late->GnbLateConfiguration.GnbIoapicId = CONFIG_MAX_CPUS + 1;
+		Late->GnbLateConfiguration.FchIoapicId = CONFIG_MAX_CPUS;
+	}
+
+	/* Code for creating CDIT requires hop count table. If it is not
+	 * present AGESA_ERROR is returned, which confuses users. CDIT is not
+	 * written to the ACPI tables anyway. */
+	Late->PlatformConfig.UserOptionCdit = 0;
 }
 
 void platform_AfterInitLate(struct sysinfo *cb, AMD_LATE_PARAMS *Late)

@@ -1,0 +1,2 @@
+config BOARD_INTEL_TGLRVP_UP3
+	bool "Tigerlake UP3 DDR4/LPDDR4 RVP"

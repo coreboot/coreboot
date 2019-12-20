@@ -68,6 +68,10 @@ chip soc/intel/cannonlake
 	# [6:0] Rx Strobe Delay DLL 2(HS400 Mode), each 125ps, range: 0 - 39.
 	register "common_soc_config.emmc_dll.emmc_rx_strobe_cntl" = "0x1515"
 
+	# Intel HDA - disable I2S Audio SSP1 and DMIC0 as puff variant does not have them.
+	register "PchHdaAudioLinkSsp1" = "0"
+	register "PchHdaAudioLinkDmic0" = "0"
+
 	# Intel Common SoC Config
 	#+-------------------+---------------------------+
 	#| Field             |  Value                    |

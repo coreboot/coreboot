@@ -65,4 +65,7 @@ DefinitionBlock(
 	/* Mainboard specific */
 	#include "acpi/mainboard.asl"
 
+	/* Camera */
+        #include <soc/intel/tigerlake/acpi/ipu.asl>
+	#include "acpi/mipi_camera.asl"
 }

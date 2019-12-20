@@ -22,6 +22,12 @@ static const struct pad_config gpio_table[] = {
 	/* PCH M.2 SSD */
 	PAD_CFG_GPO(GPP_B16, 1, PLTRST),
 	PAD_CFG_GPO(GPP_H0, 1, PLTRST),
+
+	/* Camera */
+	PAD_CFG_GPO(GPP_B23, 0, PLTRST),
+	PAD_CFG_GPO(GPP_C15, 0, PLTRST),
+	PAD_CFG_GPO(GPP_R6, 0, PLTRST),
+	PAD_CFG_GPO(GPP_H12, 0, PLTRST),
 };
 
 /* Early pad configuration in bootblock */

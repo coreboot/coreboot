@@ -17,9 +17,10 @@
 #define __MAINBOARD_SKU_H__
 
 enum {
-	SKU_21_DRAGONAIR = 21, /* TS + FPS + Stylus */
-	SKU_22_DRAGONAIR = 22, /* TS + KB_BL + FPS + Stylus */
-	SKU_23_DRAGONAIR = 23, /* TS + Stylus */
+	SKU_21_DRAGONAIR = 21,
+	SKU_22_DRAGONAIR = 22,
+	SKU_23_DRAGONAIR = 23,
+	SKU_24_DRAGONAIR = 24,
 };
 
 #endif /* __MAINBOARD_SKU_H__ */

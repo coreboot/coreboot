@@ -26,6 +26,7 @@ const char *get_wifi_sar_cbfs_filename(void)
 	case SKU_21_DRAGONAIR:
 	case SKU_22_DRAGONAIR:
 	case SKU_23_DRAGONAIR:
+	case SKU_24_DRAGONAIR:
 		filename = "wifi_sar-dragonair.hex";
 		break;
 	}

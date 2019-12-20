@@ -218,6 +218,15 @@ struct soc_intel_cannonlake_config {
 	uint8_t TcoIrqSelect;
 	uint8_t TcoIrqEnable;
 
+	/* CPU PL2/4 Config
+	 * Performance: Maximum PLs for maximum performance.
+	 * Baseline: Baseline PLs for balanced performance at lower power.
+	 */
+	enum {
+		baseline,
+		performance
+	} cpu_pl2_4_cfg;
+
 	/* VrConfig Settings for 5 domains
 	 * 0 = System Agent, 1 = IA Core, 2 = Ring,
 	 * 3 = GT unsliced,  4 = GT sliced */

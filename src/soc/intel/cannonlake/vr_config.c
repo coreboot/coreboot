@@ -77,6 +77,7 @@ static const struct vr_config default_configs[NUM_VR_DOMAINS] = {
 static uint16_t get_sku_icc_max(int domain)
 {
 	const uint16_t tdp = cpu_get_power_max();
+	config_t *cfg = config_of_soc();
 
 	static uint16_t mch_id = 0, igd_id = 0;
 	if (!mch_id) {
@@ -91,6 +92,7 @@ static uint16_t get_sku_icc_max(int domain)
 	/*
 	 * Iccmax table from Doc #337344 Section 7.2 DC Specifications for CFL.
 	 * Iccmax table from Doc #338023 Section 7.2 DC Specifications for WHL.
+	 * Iccmax table from Doc #606599 Section 7.2 DC Specifications for CML.
 	 *
 	 *   Platform             Segment           SA       IA      GT (GT/GTx)
 	 * ---------------------------------------------------------------------
@@ -123,7 +125,30 @@ static uint16_t get_sku_icc_max(int domain)
 	 *  WHL-U                 (15W) GT2 quad   6         70       31
 	 *  WHL-U                 (15W) GT2 dual   6         35       31
 	 *
+	 *  CML-U v1/v2           (15W) GT2 hex    6         85(70)   31
+	 *  CML-U v1/v2           (15W) GT2 quad   6         85(70)   31
+	 *  CML-U v1/v2           (15W) GT2 dual   6         35       31
+	 *
+	 *  CML-H                 (65W) GT2 octa   11.1      192(165) 32
+	 *  CML-H                 (45W) GT2 octa   11.1      165(140) 32
+	 *  CML-H                 (45W) GT2 hex    11.1      140(128) 32
+	 *  CML-H                 (45W) GT2 quad   11.1      105(86)  32
+	 *
+	 *  CML-S                 (125W)GT2 deca   11.1      245(210) 35
+	 *  CML-S                 (125W)GT2 octa   11.1      245(210) 35
+	 *  CML-S                 (125W)GT2 hex    11.1      140      35
+	 *  CML-S XeonW           (80W) GT2 deca   11.1      210      35
+	 *  CML-S XeonW           (80W) GT2 octa   11.1      210      35
+	 *  CML-S XeonW           (80W) GT2 hex    11.1      140      35
+	 *  CML-S                 (65W) GT2 deca   11.1      210(175) 35
+	 *  CML-S                 (65W) GT2 octa   11.1      210(175) 35
+	 *  CML-S                 (65W) GT2 hex    11.1      140      35
+	 *  CML-S                 (35W) GT2 deca   11.1      140(104) 35
+	 *  CML-S                 (35W) GT2 octa   11.1      140(104) 35
+	 *  CML-S                 (35W) GT2 hex    11.1      104      35
+	 *
 	 *  GT0 versions are the same as GT2/GT3, but have GT/GTx set to 0.
+	 *  The above values in () are for baseline.
 	 */
 
 	if (igd_id == 0xffff && ((domain == VR_GT_SLICED) || (domain == VR_GT_UNSLICED)))
@@ -215,6 +240,82 @@ static uint16_t get_sku_icc_max(int domain)
 
 		return icc_max[domain];
 	}
+	case PCI_DEVICE_ID_INTEL_CML_ULT: /* fallthrough */
+	case PCI_DEVICE_ID_INTEL_CML_ULT_6_2: {
+		uint16_t icc_max[NUM_VR_DOMAINS] = VR_CFG_ALL_DOMAINS_ICC(6, 85, 31, 31);
+		if (cfg->cpu_pl2_4_cfg == baseline)
+			icc_max[VR_IA_CORE] = VR_CFG_AMP(70);
+
+		return icc_max[domain];
+	}
+	case PCI_DEVICE_ID_INTEL_CML_ULT_2_2: {
+		uint16_t icc_max[NUM_VR_DOMAINS] = VR_CFG_ALL_DOMAINS_ICC(6, 35, 31, 31);
+
+		return icc_max[domain];
+	}
+	case PCI_DEVICE_ID_INTEL_CML_H_8_2: {
+		uint16_t icc_max[NUM_VR_DOMAINS] = VR_CFG_ALL_DOMAINS_ICC(11.1, 192, 32, 32);
+		if (tdp >= 65) { /* 65W */
+			if (cfg->cpu_pl2_4_cfg == baseline)
+				icc_max[VR_IA_CORE] = VR_CFG_AMP(165);
+			else
+				icc_max[VR_IA_CORE] = VR_CFG_AMP(192);
+		} else { /* 45W */
+			if (cfg->cpu_pl2_4_cfg == baseline)
+				icc_max[VR_IA_CORE] = VR_CFG_AMP(140);
+			else
+				icc_max[VR_IA_CORE] = VR_CFG_AMP(165);
+		}
+		return icc_max[domain];
+	}
+	case PCI_DEVICE_ID_INTEL_CML_H: {
+		uint16_t icc_max[NUM_VR_DOMAINS] = VR_CFG_ALL_DOMAINS_ICC(11.1, 140, 32, 32);
+
+		if (cfg->cpu_pl2_4_cfg == baseline)
+			icc_max[VR_IA_CORE] = VR_CFG_AMP(128);
+
+		return icc_max[domain];
+	}
+	case PCI_DEVICE_ID_INTEL_CML_H_4_2: {
+		uint16_t icc_max[NUM_VR_DOMAINS] = VR_CFG_ALL_DOMAINS_ICC(11.1, 105, 32, 32);
+
+		if (cfg->cpu_pl2_4_cfg == baseline)
+			icc_max[VR_IA_CORE] = VR_CFG_AMP(86);
+
+		return icc_max[domain];
+	}
+	case PCI_DEVICE_ID_INTEL_CML_S_P0P1_8_2: /* fallthrough */
+	case PCI_DEVICE_ID_INTEL_CML_S_P0P1_10_2: {
+		uint16_t icc_max[NUM_VR_DOMAINS] = VR_CFG_ALL_DOMAINS_ICC(11.1, 140, 35, 35);
+		if (tdp >= 125) /* 125W */
+			if (cfg->cpu_pl2_4_cfg == baseline)
+				icc_max[VR_IA_CORE] = VR_CFG_AMP(210);
+			else
+				icc_max[VR_IA_CORE] = VR_CFG_AMP(245);
+		else if (tdp >= 80) /* 80W */
+			icc_max[VR_IA_CORE] = VR_CFG_AMP(210);
+		else if (tdp >= 65) /* 65W */
+			if (cfg->cpu_pl2_4_cfg == baseline)
+				icc_max[VR_IA_CORE] = VR_CFG_AMP(175);
+			else
+				icc_max[VR_IA_CORE] = VR_CFG_AMP(210);
+		else /* 35W */
+			if (cfg->cpu_pl2_4_cfg == baseline)
+				icc_max[VR_IA_CORE] = VR_CFG_AMP(104);
+			else
+				icc_max[VR_IA_CORE] = VR_CFG_AMP(140);
+
+		return icc_max[domain];
+	}
+	case PCI_DEVICE_ID_INTEL_CML_S_G0G1_P0P1_6_2: {
+		uint16_t icc_max[NUM_VR_DOMAINS] = VR_CFG_ALL_DOMAINS_ICC(11.1, 104, 35, 35);
+		if (tdp >= 65) /* 125W or 80W or 65W */
+			icc_max[VR_IA_CORE] = VR_CFG_AMP(140);
+		else /* 35W */
+			icc_max[VR_IA_CORE] = VR_CFG_AMP(104);
+
+		return icc_max[domain];
+	}
 	default:
 		printk(BIOS_ERR, "ERROR: Unknown MCH (0x%x) in VR-config\n", mch_id);
 	}
@@ -223,6 +324,7 @@ static uint16_t get_sku_icc_max(int domain)
 
 static uint16_t get_sku_ac_dc_loadline(const int domain)
 {
+	const uint16_t tdp = cpu_get_power_max();
 	static uint16_t mch_id = 0;
 	if (!mch_id) {
 		struct device *dev = pcidev_path_on_root(SA_DEVFN_ROOT);
@@ -271,6 +373,39 @@ static uint16_t get_sku_ac_dc_loadline(const int domain)
 		/* FIXME: Loadline isn't specified for S-series, using H-series default */
 		const uint16_t loadline[NUM_VR_DOMAINS] =
 				VR_CFG_ALL_DOMAINS_LOADLINE(10.3, 2.1, 3.1, 3.1);
+		return loadline[domain];
+	}
+	case PCI_DEVICE_ID_INTEL_CML_ULT_2_2: {
+		const uint16_t loadline[NUM_VR_DOMAINS] =
+				VR_CFG_ALL_DOMAINS_LOADLINE(10.3, 2.4, 3.1, 3.1);
+		return loadline[domain];
+	}
+	case PCI_DEVICE_ID_INTEL_CML_ULT: /* fallthrough */
+	case PCI_DEVICE_ID_INTEL_CML_ULT_6_2: {
+		const uint16_t loadline[NUM_VR_DOMAINS] =
+				VR_CFG_ALL_DOMAINS_LOADLINE(10.3, 1.8, 3.1, 3.1);
+		return loadline[domain];
+	}
+	case PCI_DEVICE_ID_INTEL_CML_H_4_2: /* fallthrough */
+	case PCI_DEVICE_ID_INTEL_CML_H: /* fallthrough */
+	case PCI_DEVICE_ID_INTEL_CML_H_8_2: {
+		const uint16_t loadline[NUM_VR_DOMAINS] =
+				VR_CFG_ALL_DOMAINS_LOADLINE(10.3, 1.1, 2.7, 2.7);
+		return loadline[domain];
+	}
+	case PCI_DEVICE_ID_INTEL_CML_S_G0G1_P0P1_6_2: {
+		uint16_t loadline[NUM_VR_DOMAINS] =
+				VR_CFG_ALL_DOMAINS_LOADLINE(10.3, 1.7, 4.0, 4.0);
+		if (tdp >= 125)
+			loadline[VR_IA_CORE] = VR_CFG_MOHMS(1.1);
+		return loadline[domain];
+	}
+	case PCI_DEVICE_ID_INTEL_CML_S_P0P1_8_2: /* fallthrough */
+	case PCI_DEVICE_ID_INTEL_CML_S_P0P1_10_2: {
+		uint16_t loadline[NUM_VR_DOMAINS] =
+				VR_CFG_ALL_DOMAINS_LOADLINE(10.3, 1.7, 4.0, 4.0);
+		if (tdp > 35)
+			loadline[VR_IA_CORE] = VR_CFG_MOHMS(1.1);
 		return loadline[domain];
 	}
 	default:

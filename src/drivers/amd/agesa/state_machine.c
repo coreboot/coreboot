@@ -223,6 +223,8 @@ static AGESA_STATUS ramstage_dispatch(struct sysinfo *cb,
 		case AMD_INIT_LATE:
 		{
 			AMD_LATE_PARAMS *param = (void *)StdHeader;
+			platform_BeforeInitLate(cb, param);
+			board_BeforeInitLate(cb, param);
 			status = module_dispatch(func, StdHeader);
 			platform_AfterInitLate(cb, param);
 			completion_InitLate(cb, param);
@@ -364,6 +366,8 @@ void __weak
 board_BeforeInitEnv(struct sysinfo *cb, AMD_ENV_PARAMS *Env) { }
 void __weak
 board_BeforeInitMid(struct sysinfo *cb, AMD_MID_PARAMS *Mid) { }
+void __weak
+board_BeforeInitLate(struct sysinfo *cb, AMD_LATE_PARAMS *Late) { }
 
 AGESA_STATUS __weak
 fchs3earlyrestore(AMD_CONFIG_PARAMS *StdHeader)

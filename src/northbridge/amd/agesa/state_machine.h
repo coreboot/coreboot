@@ -84,6 +84,8 @@ void platform_AfterInitEnv(struct sysinfo *cb, AMD_ENV_PARAMS *Env);
 void platform_BeforeInitMid(struct sysinfo *cb, AMD_MID_PARAMS *Mid);
 void board_BeforeInitMid(struct sysinfo *cb, AMD_MID_PARAMS *Mid);
 
+void platform_BeforeInitLate(struct sysinfo *cb, AMD_LATE_PARAMS *Late);
+void board_BeforeInitLate(struct sysinfo *cb, AMD_LATE_PARAMS *Late);
 void platform_AfterInitLate(struct sysinfo *cb, AMD_LATE_PARAMS *Late);
 void completion_InitLate(struct sysinfo *cb, AMD_LATE_PARAMS *Late);
 

@@ -77,6 +77,10 @@ void platform_BeforeInitMid(struct sysinfo *cb, AMD_MID_PARAMS *Mid)
 	amd_initcpuio();
 }
 
+void platform_BeforeInitLate(struct sysinfo *cb, AMD_LATE_PARAMS *Late)
+{
+}
+
 void platform_AfterInitLate(struct sysinfo *cb, AMD_LATE_PARAMS *Late)
 {
 }

@@ -116,14 +116,6 @@ void pm_io_write8(uint8_t reg, uint8_t value);
 void pm_io_write16(uint8_t reg, uint16_t value);
 void pm_io_write32(uint8_t reg, uint32_t value);
 
-
-/* Access BIOS RAM storage at 0xfed80500 */
-uint16_t biosram_read16(uint8_t reg);
-uint32_t biosram_read32(uint8_t reg);
-void biosram_write16(uint8_t reg, uint16_t value);
-void biosram_write32(uint8_t reg, uint32_t value);
-
-
 static inline uint8_t sm_pci_read8(uint8_t reg)
 {
 	return read8((void *)(ACPIMMIO_SM_PCI_BASE + reg));
@@ -212,16 +204,6 @@ static inline void pm_write16(uint8_t reg, uint16_t value)
 static inline void pm_write32(uint8_t reg, uint32_t value)
 {
 	write32((void *)(ACPIMMIO_PMIO_BASE + reg), value);
-}
-
-static inline uint8_t biosram_read8(uint8_t reg)
-{
-	return read8((void *)(ACPIMMIO_BIOSRAM_BASE + reg));
-}
-
-static inline void biosram_write8(uint8_t reg, uint8_t value)
-{
-	write8((void *)(ACPIMMIO_BIOSRAM_BASE + reg), value);
 }
 
 static inline uint8_t acpi_read8(uint8_t reg)

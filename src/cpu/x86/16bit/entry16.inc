@@ -26,6 +26,7 @@
  */
 
 #include <arch/rom_segs.h>
+#include <cpu/x86/post_code.h>
 
 /* Symbol _start16bit must be aligned to 4kB to start AP CPUs with
  * Startup IPI message without RAM.

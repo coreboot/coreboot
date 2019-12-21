@@ -13,12 +13,6 @@
 .text . : {
 	_program = .;
 	_text = .;
-	/*
-	 * The .rom.* sections are to acommodate x86 romstage. romcc as well
-	 * as the assembly files put their text and data in these sections.
-	 */
-	*(.rom.text);
-	*(.rom.data);
 	*(.text._start);
 	*(.text.stage_entry);
 #if (ENV_DECOMPRESSOR || ENV_BOOTBLOCK && \

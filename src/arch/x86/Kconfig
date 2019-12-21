@@ -191,6 +191,9 @@ config C_ENV_BOOTBLOCK_SIZE
 	hex
 	default 0x10000
 
+config FIXED_BOOTBLOCK_SIZE
+	bool
+
 # Default address romstage is to be linked at
 config ROMSTAGE_ADDR
 	hex

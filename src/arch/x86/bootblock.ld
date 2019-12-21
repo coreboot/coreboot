@@ -12,11 +12,24 @@ ap_sipi_vector_in_rom = (_start16bit >> 12) & 0xff;
 #endif
 
 SECTIONS {
+
+#if CONFIG(FIXED_BOOTBLOCK_SIZE)
 	. = _ebootblock - CONFIG_C_ENV_BOOTBLOCK_SIZE;
+#else
+	. = BOOTBLOCK_TOP - PROGRAM_SZ;
+	. = ALIGN(16);
+#endif
 
 	_bootblock = .;
 
 	INCLUDE "bootblock/lib/program.ld"
+
+	/*
+	 * Allocation reserves extra space here. Alignment requirements
+	 * may cause the total size of a section to change when the start
+	 * address gets applied.
+	 */
+	PROGRAM_SZ = SIZEOF(.text) + 512;
 
 	. = MIN(_ID_SECTION, _FIT_POINTER) - EARLYASM_SZ;
 	. = CONFIG(SIPI_VECTOR_IN_ROM) ? ALIGN(4096) : ALIGN(16);
@@ -66,3 +79,5 @@ SECTIONS {
 _bogus1 = ASSERT(_bootblock & 0x80000000, "_bootblock too low, invalid ld script");
 _bogus2 = ASSERT(_start16bit & 0x80000000, "_start16bit too low, invalid ld script");
 _bogus3 = ASSERT(_start16bit >= 0xffff0000, "_start16bit too low. Please report.");
+_bogus4 = ASSERT(_ebootblock - _bootblock <= CONFIG_C_ENV_BOOTBLOCK_SIZE,
+		 "_bootblock too low, increase C_ENV_BOOTBLOCK_SIZE");

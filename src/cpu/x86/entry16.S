@@ -35,7 +35,6 @@
 /* Symbol _start16bit must reachable from the reset vector, and be aligned to
  * 4kB to start AP CPUs with Startup IPI message without RAM.
  */
-.align 4096
 .code16
 .globl _start16bit
 .type _start16bit, @function

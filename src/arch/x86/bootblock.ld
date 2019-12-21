@@ -12,8 +12,27 @@ ap_sipi_vector_in_rom = (_start16bit >> 12) & 0xff;
 #endif
 
 SECTIONS {
-	/* Trigger an error if I have an unusable start address */
-	_bogus = ASSERT(_start16bit >= 0xffff0000, "_start16bit too low. Please report.");
+	. = _ebootblock - CONFIG_C_ENV_BOOTBLOCK_SIZE;
+
+	_bootblock = .;
+
+	INCLUDE "bootblock/lib/program.ld"
+
+	. = MIN(_ID_SECTION, _FIT_POINTER) - EARLYASM_SZ;
+	. = CONFIG(SIPI_VECTOR_IN_ROM) ? ALIGN(4096) : ALIGN(16);
+	BOOTBLOCK_TOP = .;
+	.init (.) : {
+		*(.init._start);
+		*(.init);
+		*(.init.*);
+	}
+
+	/*
+	 * Allocation reserves extra space here. Alignment requirements
+	 * may cause the total size of a section to change when the start
+	 * address gets applied.
+	 */
+	EARLYASM_SZ = SIZEOF(.init) + (CONFIG(SIPI_VECTOR_IN_ROM) ? 4096 : 16);
 
 	. = _ID_SECTION;
 	.id (.): {
@@ -37,4 +56,13 @@ SECTIONS {
 		. = 15;
 		BYTE(0x00);
 	}
+	_ebootblock = .;
 }
+
+/*
+ * Tests _bogus1 and _bogus2 are here to detect case of symbol addresses truncated
+ * to 32 bits and intermediate files reaching size of close to 4 GiB.
+ */
+_bogus1 = ASSERT(_bootblock & 0x80000000, "_bootblock too low, invalid ld script");
+_bogus2 = ASSERT(_start16bit & 0x80000000, "_start16bit too low, invalid ld script");
+_bogus3 = ASSERT(_start16bit >= 0xffff0000, "_start16bit too low. Please report.");

@@ -13,9 +13,11 @@
 .text . : {
 	_program = .;
 	_text = .;
+#if !(ENV_X86 && ENV_BOOTBLOCK)
 	*(.init._start);
 	*(.init);
 	*(.init.*);
+#endif
 	*(.text._start);
 	*(.text.stage_entry);
 	KEEP(*(.metadata_hash_anchor));

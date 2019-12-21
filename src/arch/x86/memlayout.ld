@@ -28,8 +28,6 @@ SECTIONS
 
 	#include "car.ld"
 #elif ENV_BOOTBLOCK
-	BOOTBLOCK(0xffffffff - CONFIG_C_ENV_BOOTBLOCK_SIZE + 1,
-			CONFIG_C_ENV_BOOTBLOCK_SIZE)
 
 	#include "car.ld"
 

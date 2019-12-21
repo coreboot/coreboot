@@ -110,6 +110,22 @@ SECTIONS {
 	_TOO_LOW = _X86_RESET_VECTOR - 0xfff0;
 	_bogus = ASSERT(_start16bit >= _TOO_LOW, "_start16bit too low. Please report.");
 
+	. = _X86_RESET_VECTOR - EARLYASM_SZ;
+	. = ALIGN(16);
+	BOOTBLOCK_TOP = .;
+	.init (.) : {
+		*(.init._start);
+		*(.init);
+		*(.init.*);
+	}
+
+	/*
+	 * Allocation reserves extra space here. Alignment requirements
+	 * may cause the total size of a section to change when the start
+	 * address gets applied.
+	 */
+	EARLYASM_SZ = SIZEOF(.init) + 16;
+
 	. = BOOTBLOCK_END - 0x10;
 	_X86_RESET_VECTOR = .;
 	.reset . : {

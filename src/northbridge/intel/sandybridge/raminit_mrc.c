@@ -22,7 +22,6 @@
 #include <device/pci_ops.h>
 #include <arch/cpu.h>
 #include <cbmem.h>
-#include <arch/cbfs.h>
 #include <cbfs.h>
 #include <ip_checksum.h>
 #include <pc80/mc146818rtc.h>

@@ -15,7 +15,6 @@
 
 #include <device/mmio.h>
 #include <device/pci_ops.h>
-#include <arch/cbfs.h>
 #include <cf9_reset.h>
 #include <ip_checksum.h>
 #include <device/pci_def.h>

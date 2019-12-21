@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/cbfs.h>
 #include <assert.h>
 #include <cbfs.h>
 #include <cbmem.h>

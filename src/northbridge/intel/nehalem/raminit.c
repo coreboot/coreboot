@@ -23,7 +23,6 @@
 #include <cpu/x86/msr.h>
 #include <cbmem.h>
 #include <cf9_reset.h>
-#include <arch/cbfs.h>
 #include <ip_checksum.h>
 #include <pc80/mc146818rtc.h>
 #include <device/pci_def.h>

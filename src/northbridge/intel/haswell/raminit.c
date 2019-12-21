@@ -17,7 +17,6 @@
 #include <console/usb.h>
 #include <string.h>
 #include <cbmem.h>
-#include <arch/cbfs.h>
 #include <cbfs.h>
 #include <cf9_reset.h>
 #include <ip_checksum.h>

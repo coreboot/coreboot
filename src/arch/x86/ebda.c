@@ -13,7 +13,6 @@
  */
 
 #include <stdint.h>
-#include <string.h>
 #include <arch/acpi.h>
 #include <arch/ebda.h>
 #include <commonlib/endian.h>

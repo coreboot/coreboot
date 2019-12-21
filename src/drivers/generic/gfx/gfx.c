@@ -19,7 +19,6 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <stdint.h>
-#include <string.h>
 
 #include "chip.h"
 

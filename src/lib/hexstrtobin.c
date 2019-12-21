@@ -13,7 +13,6 @@
 
 #include <ctype.h>
 #include <lib.h>
-#include <string.h>
 
 size_t hexstrtobin(const char *str, uint8_t *buf, size_t len)
 {

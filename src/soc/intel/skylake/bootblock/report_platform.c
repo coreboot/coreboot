@@ -27,7 +27,6 @@
 #include <soc/pch.h>
 #include <soc/pci_devs.h>
 #include <soc/systemagent.h>
-#include <string.h>
 
 static struct {
 	u32 cpuid;

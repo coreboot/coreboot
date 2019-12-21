@@ -15,7 +15,6 @@
 #include <console/console.h>
 #include <ctype.h>
 #include <lib.h>
-#include <string.h>
 
 void hexdump(const void *memory, size_t length)
 {

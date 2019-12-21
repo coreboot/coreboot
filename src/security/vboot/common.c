@@ -18,7 +18,6 @@
 #include <console/console.h>
 #include <fmap.h>
 #include <stdint.h>
-#include <string.h>
 #include <symbols.h>
 #include <vb2_api.h>
 #include <security/vboot/misc.h>

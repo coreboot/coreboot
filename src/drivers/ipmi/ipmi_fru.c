@@ -17,6 +17,8 @@
 #include <console/console.h>
 #include <string.h>
 #include <delay.h>
+#include <stdlib.h>
+
 #include "ipmi_ops.h"
 
 #define MAX_FRU_BUSY_RETRY 5

@@ -34,7 +34,7 @@
  * These values are used by the PCI configuration space,
  * MP Tables.  TODO: Make ACPI use these values too.
  */
-const u8 mainboard_picr_data[FCH_INT_TABLE_SIZE] = {
+static const u8 mainboard_picr_data[FCH_INT_TABLE_SIZE] = {
 	/* INTA# - INTH# */
 	[0x00] = 0x0A,0x0B,0x0A,0x0B,0x0A,0x0B,0x0A,0x0B,
 	/* Misc-nil,0,1,2, INT from Serial irq */
@@ -49,7 +49,7 @@ const u8 mainboard_picr_data[FCH_INT_TABLE_SIZE] = {
 	[0x41] = 0x0F,
 };
 
-const u8 mainboard_intr_data[FCH_INT_TABLE_SIZE] = {
+static const u8 mainboard_intr_data[FCH_INT_TABLE_SIZE] = {
 	/* INTA# - INTH# */
 	[0x00] = 0x10,0x11,0x12,0x13,0x14,0x15,0x16,0x17,
 	/* Misc-nil,0,1,2, INT from Serial irq */

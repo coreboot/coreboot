@@ -23,7 +23,7 @@
 #include <southbridge/amd/common/amd_pci_util.h>
 #include <northbridge/amd/agesa/family16kb/pci_devs.h>
 
-const u8 mainboard_picr_data[FCH_INT_TABLE_SIZE] = {
+static const u8 mainboard_picr_data[FCH_INT_TABLE_SIZE] = {
 	/* INTA# - INTH# */
 	[0x00] = 0x03,0x04,0x05,0x07,0x0B,0x0A,0x1F,0x1F,
 	/* Misc-nil,0,1,2, INT from Serial irq */
@@ -38,7 +38,7 @@ const u8 mainboard_picr_data[FCH_INT_TABLE_SIZE] = {
 	[0x40] = 0x04, 0x04
 };
 
-const u8 mainboard_intr_data[FCH_INT_TABLE_SIZE] = {
+static const u8 mainboard_intr_data[FCH_INT_TABLE_SIZE] = {
 	/* INTA# - INTH# */
 	[0x00] = 0x10,0x11,0x12,0x13,0x14,0x15,0x16,0x17,
 	/* Misc-nil,0,1,2, INT from Serial irq */

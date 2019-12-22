@@ -14,16 +14,13 @@
  */
 
 #include <bootblock_common.h>
-#include <stdint.h>
 #include <device/pnp_ops.h>
-#include <cpu/x86/lapic.h>
 #include <device/pnp_def.h>
 #include <northbridge/intel/i945/i945.h>
 #include <southbridge/intel/i82801gx/i82801gx.h>
 #include <superio/winbond/common/winbond.h>
 #include <superio/winbond/w83627ehg/w83627ehg.h>
 
-#define SERIAL_DEV PNP_DEV(0x4e, W83627EHG_SP1)
 #define SUPERIO_DEV PNP_DEV(0x4e, 0)
 
 /* This box has one superio

@@ -13,7 +13,6 @@ config BOARD_SPECIFIC_OPTIONS
 	select SUPERIO_WINBOND_W83627DHG if BOARD_LIPPERT_TOUCAN_AF
 	select HAVE_OPTION_TABLE
 	select HAVE_PIRQ_TABLE
-	select HAVE_MP_TABLE
 	# This erases 28 KB and writes 10 KB register dumps to SPI flash on every
 	# boot, wasting 3 s and causing wear!  Therefore disable S3 for now.
 	#select HAVE_ACPI_RESUME

@@ -22,7 +22,6 @@
  */
 
 #include "gcccar.inc"
-#include <cpu/x86/cache.h>
 #include <cpu/x86/post_code.h>
 
 /*

@@ -15,7 +15,6 @@
  */
 
 #include <string.h>
-#include <stdint.h>
 #include <southbridge/intel/i82801gx/nvs.h>
 
 void acpi_create_gnvs(global_nvs_t *gnvs)

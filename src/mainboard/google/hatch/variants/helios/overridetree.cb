@@ -193,5 +193,12 @@ chip soc/intel/cannonlake
 				device spi 1 on end
 			end # FPMCU
 		end # GSPI #1
+		device pci 1f.3 on
+			chip drivers/generic/max98357a
+				register "sdmode_gpio" =  "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_H3)"
+				register "sdmode_delay" = "5"
+				device generic 0 on end
+			end
+		end # Intel HDA
 	end
 end

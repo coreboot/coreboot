@@ -147,7 +147,7 @@ void mainboard_romstage_entry(void)
 	/* Program MCHBAR, DMIBAR, GDXBAR and EDRAMBAR */
 	systemagent_early_init();
 	/* Program PCH init */
-	pch_init();
+	romstage_pch_init();
 	ps = pmc_get_power_state();
 	s3wake = pmc_fill_power_state(ps) == ACPI_S3;
 	fsp_memory_init(s3wake);

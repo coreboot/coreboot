@@ -38,6 +38,9 @@ chip northbridge/intel/sandybridge
 			register "sata_port_map" = "0x3f"
 			register "sata_interface_speed_support" = "0x3"
 
+			register "xhci_switchable_ports" = "0xf"
+			register "superspeed_capable_ports" = "0xf"
+
 			register "pcie_port_coalesce" = "0"
 			register "docking_supported" = "0"
 			register "c2_latency" = "0x0065"

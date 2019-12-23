@@ -20,10 +20,14 @@ chip soc/intel/skylake
 	# LPC serial IRQ
 	register "serirq_mode" = "SERIRQ_CONTINUOUS"
 
-	# Enable "Intel Speed Shift Technology"
+	# "Intel SpeedStep Technology"
+	register "eist_enable" = "1"
+
+	# "Intel Speed Shift Technology"
 	register "speed_shift_enable" = "1"
 
-	register "dptf_enable" = "0"
+	# DPTF
+	register "dptf_enable" = "1"
 
 	# FSP Configuration
 	register "EnableAzalia" = "1"

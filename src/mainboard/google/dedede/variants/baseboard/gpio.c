@@ -31,3 +31,13 @@ const struct pad_config *__weak variant_early_gpio_table(size_t *num)
 	*num = ARRAY_SIZE(early_gpio_table);
 	return early_gpio_table;
 }
+
+/* GPIO settings before entering sleep. */
+static const struct pad_config sleep_gpio_table[] = {
+};
+
+const struct pad_config *__weak variant_sleep_gpio_table(size_t *num)
+{
+	*num = ARRAY_SIZE(sleep_gpio_table);
+	return sleep_gpio_table;
+}

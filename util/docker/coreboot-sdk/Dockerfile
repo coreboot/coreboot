@@ -37,6 +37,8 @@ RUN \
 		gnat \
 		graphviz \
 		libcrypto++-dev \
+		libcurl4 \
+		libcurl4-openssl-dev \
 		libfreetype6-dev \
 		libftdi-dev \
 		libftdi1-dev \

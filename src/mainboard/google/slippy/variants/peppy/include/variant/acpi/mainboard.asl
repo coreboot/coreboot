@@ -140,6 +140,13 @@ Scope (\_SB.PCI0.I2C1)
 			}
 		}
 
+		Name (_DSD, Package () {
+			ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
+			Package () {
+				Package () {"compatible", "atmel,maxtouch"},
+			}
+		})
+
 		Method (_STA)
 		{
 			If (LEqual (\S2EN, 1)) {

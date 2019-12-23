@@ -175,7 +175,8 @@ chip soc/intel/cannonlake
 			end
 		end #I2C #4
 		device pci 1a.0 on  end # eMMC
-		device pci 1c.6 on  end # PCI Express Port 7, RTL8111H Ethernet NIC.
+		device pci 1c.0 on  end # FSP requires func0 be enabled.
+		device pci 1c.6 on  end # RTL8111H Ethernet NIC (becomes RP1).
 		device pci 1e.3 off end # GSPI #1
 	end
 

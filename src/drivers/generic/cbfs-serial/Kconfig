@@ -1,0 +1,6 @@
+config DRIVERS_GENERIC_CBFS_SERIAL
+	bool "Serial number in CBFS"
+	default n
+	help
+	  Enable this option to read the board serial number from a
+	  text file located in CBFS.

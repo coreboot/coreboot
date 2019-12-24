@@ -43,8 +43,6 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_C6, NONE),
 	/* C7  : GPP_C7 ==> NC */
 	PAD_NC(GPP_C7, NONE),
-	/* C15 : UART1_CTS# ==> NC */
-	PAD_NC(GPP_C15, NONE),
 	/* C23 : UART2_CTS# ==> NC */
 	PAD_NC(GPP_C23, NONE),
 	/* D5  : ISH_I2C0_SDA ==> NC */

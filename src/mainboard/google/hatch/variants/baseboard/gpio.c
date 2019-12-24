@@ -140,12 +140,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI_APIC(GPP_C13, NONE, PLTRST, LEVEL, INVERT),
 	/* C14 : BT_DISABLE_L */
 	PAD_CFG_GPO(GPP_C14, 1, DEEP),
-	/* C15 : WWAN_DPR_SAR_ODL
-	 *
-	 * TODO: Driver doesn't use this pin as of now. In case driver starts
-	 * using this pin, expose this pin to driver.
-	 */
-	PAD_CFG_GPO(GPP_C15, 1, DEEP),
+	/* C15 : NC */
+	PAD_NC(GPP_C15, NONE),
 	/* C16 : PCH_I2C_TRACKPAD_SDA */
 	PAD_CFG_NF(GPP_C16, NONE, DEEP, NF1),
 	/* C17 : PCH_I2C_TRACKPAD_SCL */

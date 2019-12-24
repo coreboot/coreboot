@@ -35,8 +35,6 @@ static const struct pad_config ssd_sku_gpio_table[] = {
 	PAD_NC(GPP_B22, NONE),
 	/* C11 : NC */
 	PAD_NC(GPP_C11, NONE),
-	/* C15 : NC */
-	PAD_NC(GPP_C15, NONE),
 	/* F1  : NC */
 	PAD_NC(GPP_F1, NONE),
 	/* F3  : MEM_STRAP_3 */
@@ -94,8 +92,6 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_B22, NONE),
 	/* C11 : NC */
 	PAD_NC(GPP_C11, NONE),
-	/* C15 : NC */
-	PAD_NC(GPP_C15, NONE),
 	/* F1  : NC */
 	PAD_NC(GPP_F1, NONE),
 	/* F3  : MEM_STRAP_3 */

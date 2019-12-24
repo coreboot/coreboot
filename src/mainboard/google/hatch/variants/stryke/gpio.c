@@ -33,6 +33,12 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_C11, NONE),
 	/* C12 : NC */
 	PAD_NC(GPP_C12, NONE),
+	/* C15 : WWAN_DPR_SAR_ODL
+	 *
+	 * TODO: Driver doesn't use this pin as of now. In case driver starts
+	 * using this pin, expose this pin to driver.
+	 */
+	PAD_CFG_GPO(GPP_C15, 1, DEEP),
 	/* F1  : NC */
 	PAD_NC(GPP_F1, NONE),
 	/* F3  : MEM_STRAP_3 */

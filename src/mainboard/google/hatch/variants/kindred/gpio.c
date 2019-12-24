@@ -31,6 +31,12 @@ static const struct pad_config ssd_sku_gpio_table[] = {
 	PAD_CFG_NF(GPP_A11, NONE, DEEP, NF2),
 	/* A12 : FPMCU_RST_ODL */
 	PAD_CFG_GPO(GPP_A12, 0, DEEP),
+	/* C15 : WWAN_DPR_SAR_ODL
+	 *
+	 * TODO: Driver doesn't use this pin as of now. In case driver starts
+	 * using this pin, expose this pin to driver.
+	 */
+	PAD_CFG_GPO(GPP_C15, 1, DEEP),
 	/* F3  : MEM_STRAP_3 */
 	PAD_CFG_GPI(GPP_F3, NONE, PLTRST),
 	/* F10 : MEM_STRAP_2 */
@@ -84,6 +90,12 @@ static const struct pad_config emmc_sku_gpio_table[] = {
 	PAD_NC(GPP_E4, NONE),
 	/* E5  : SATA_DEVSLP1 ==> NC */
 	PAD_NC(GPP_E5, NONE),
+	/* C15 : WWAN_DPR_SAR_ODL
+	 *
+	 * TODO: Driver doesn't use this pin as of now. In case driver starts
+	 * using this pin, expose this pin to driver.
+	 */
+	PAD_CFG_GPO(GPP_C15, 1, DEEP),
 	/* F3  : MEM_STRAP_3 */
 	PAD_CFG_GPI(GPP_F3, NONE, PLTRST),
 	/* F10 : MEM_STRAP_2 */
@@ -131,6 +143,12 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_A11, NONE, DEEP, NF2),
 	/* A12 : FPMCU_RST_ODL */
 	PAD_CFG_GPO(GPP_A12, 0, DEEP),
+	/* C15 : WWAN_DPR_SAR_ODL
+	 *
+	 * TODO: Driver doesn't use this pin as of now. In case driver starts
+	 * using this pin, expose this pin to driver.
+	 */
+	PAD_CFG_GPO(GPP_C15, 1, DEEP),
 	/* F3  : MEM_STRAP_3 */
 	PAD_CFG_GPI(GPP_F3, NONE, PLTRST),
 	/* F10 : MEM_STRAP_2 */

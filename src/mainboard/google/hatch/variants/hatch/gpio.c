@@ -32,7 +32,14 @@ static const struct pad_config gpio_table[] = {
 	/* A12 : FPMCU_RST_ODL */
 	PAD_CFG_GPO(GPP_A12, 0, DEEP),
 	/* C13 : EC_PCH_INT_L */
-	PAD_CFG_GPI_APIC(GPP_C13, UP_20K, PLTRST, LEVEL, INVERT)};
+	PAD_CFG_GPI_APIC(GPP_C13, UP_20K, PLTRST, LEVEL, INVERT),
+	/* C15 : WWAN_DPR_SAR_ODL
+	 *
+	 * TODO: Driver doesn't use this pin as of now. In case driver starts
+	 * using this pin, expose this pin to driver.
+	 */
+	PAD_CFG_GPO(GPP_C15, 1, DEEP),
+};
 
 const struct pad_config *override_gpio_table(size_t *num)
 {

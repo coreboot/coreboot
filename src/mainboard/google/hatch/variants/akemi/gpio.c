@@ -19,18 +19,6 @@
 #include <commonlib/helpers.h>
 
 static const struct pad_config ssd_sku_gpio_table[] = {
-	/* A0  : NC */
-	PAD_NC(GPP_A0, NONE),
-	/* A6  : NC */
-	PAD_NC(GPP_A6, NONE),
-	/* A8  : NC */
-	PAD_NC(GPP_A8, NONE),
-	/* A10 : NC */
-	PAD_NC(GPP_A10, NONE),
-	/* A11 : NC */
-	PAD_NC(GPP_A11, NONE),
-	/* A12 : NC */
-	PAD_NC(GPP_A12, NONE),
 	/* A18 : NC */
 	PAD_NC(GPP_A18, NONE),
 	/* A19 : NC */
@@ -90,18 +78,6 @@ static const struct pad_config ssd_sku_gpio_table[] = {
 };
 
 static const struct pad_config gpio_table[] = {
-	/* A0  : NC */
-	PAD_NC(GPP_A0, NONE),
-	/* A6  : NC */
-	PAD_NC(GPP_A6, NONE),
-	/* A8  : NC */
-	PAD_NC(GPP_A8, NONE),
-	/* A10 : NC */
-	PAD_NC(GPP_A10, NONE),
-	/* A11 : NC */
-	PAD_NC(GPP_A11, NONE),
-	/* A12 : NC */
-	PAD_NC(GPP_A12, NONE),
 	/* A18 : NC */
 	PAD_NC(GPP_A18, NONE),
 	/* A19 : NC */

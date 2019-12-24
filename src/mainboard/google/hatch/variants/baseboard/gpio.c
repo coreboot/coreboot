@@ -19,26 +19,26 @@
 #include <commonlib/helpers.h>
 
 static const struct pad_config gpio_table[] = {
-	/* A0  : SAR0_INT_ODL */
-	PAD_CFG_GPI_INT(GPP_A0, NONE, PLTRST, LEVEL),
+	/* A0  : GPP_A0 ==> NC */
+	PAD_NC(GPP_A0, NONE),
 	/* A1  : ESPI_IO0 */
 	/* A2  : ESPI_IO1 */
 	/* A3  : ESPI_IO2 */
 	/* A4  : ESPI_IO3 */
 	/* A5  : ESPI_CS# */
-	/* A6  : SAR1_INT_ODL */
-	PAD_CFG_GPI_INT(GPP_A6, NONE, PLTRST, LEVEL),
+	/* A6  : GPP_A6 ==> NC */
+	PAD_NC(GPP_A6, NONE),
 	/* A7  : PP3300_SOC_A */
 	PAD_NC(GPP_A7, NONE),
-	/* A8  : PEN_GARAGE_DET_L (wake) */
-	PAD_CFG_GPI_SCI(GPP_A8, NONE, DEEP, EDGE_SINGLE, NONE),
+	/* A8  : GPP_A8 ==> NC */
+	PAD_NC(GPP_A8, NONE),
 	/* A9  : ESPI_CLK */
-	/* A10 : FPMCU_PCH_BOOT1 */
-	PAD_CFG_GPO(GPP_A10, 0, DEEP),
-	/* A11 : PCH_SPI_FPMCU_CS_L */
-	PAD_CFG_NF(GPP_A11, NONE, DEEP, NF2),
-	/* A12 : FPMCU_RST_ODL */
-	PAD_CFG_GPO(GPP_A12, 0, DEEP),
+	/* A10  : GPP_A10 ==> NC */
+	PAD_NC(GPP_A10, NONE),
+	/* A11  : GPP_A11 ==> NC */
+	PAD_NC(GPP_A11, NONE),
+	/* A12  : GPP_A12 ==> NC */
+	PAD_NC(GPP_A12, NONE),
 	/* A13 : SUSWARN_L */
 	PAD_CFG_NF(GPP_A13, NONE, DEEP, NF1),
 	/* A14 : ESPI_RST_L */

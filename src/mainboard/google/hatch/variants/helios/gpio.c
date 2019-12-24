@@ -19,10 +19,14 @@
 #include <commonlib/helpers.h>
 
 static const struct pad_config gpio_table[] = {
-	/* A0  : RCIN# ==> NC */
-	PAD_NC(GPP_A0, NONE),
-	/* A6  : SERIRQ ==> NC */
-	PAD_NC(GPP_A6, NONE),
+	/* A8  : PEN_GARAGE_DET_L (wake) */
+	PAD_CFG_GPI_SCI(GPP_A8, NONE, DEEP, EDGE_SINGLE, NONE),
+	/* A10 : FPMCU_PCH_BOOT1 */
+	PAD_CFG_GPO(GPP_A10, 0, DEEP),
+	/* A11 : PCH_SPI_FPMCU_CS_L */
+	PAD_CFG_NF(GPP_A11, NONE, DEEP, NF2),
+	/* A12 : FPMCU_RST_ODL */
+	PAD_CFG_GPO(GPP_A12, 0, DEEP),
 	/* A18 : ISH_GP0 ==> NC */
 	PAD_NC(GPP_A18, NONE),
 	/* A19 : ISH_GP1 ==> NC */

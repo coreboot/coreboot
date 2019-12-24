@@ -19,6 +19,18 @@
 #include <commonlib/helpers.h>
 
 static const struct pad_config ssd_sku_gpio_table[] = {
+	/* A0  : SAR0_INT_ODL */
+	PAD_CFG_GPI_INT(GPP_A0, NONE, PLTRST, LEVEL),
+	/* A6  : SAR1_INT_ODL */
+	PAD_CFG_GPI_INT(GPP_A6, NONE, PLTRST, LEVEL),
+	/* A8  : PEN_GARAGE_DET_L (wake) */
+	PAD_CFG_GPI_SCI(GPP_A8, NONE, DEEP, EDGE_SINGLE, NONE),
+	/* A10 : FPMCU_PCH_BOOT1 */
+	PAD_CFG_GPO(GPP_A10, 0, DEEP),
+	/* A11 : PCH_SPI_FPMCU_CS_L */
+	PAD_CFG_NF(GPP_A11, NONE, DEEP, NF2),
+	/* A12 : FPMCU_RST_ODL */
+	PAD_CFG_GPO(GPP_A12, 0, DEEP),
 	/* F3  : MEM_STRAP_3 */
 	PAD_CFG_GPI(GPP_F3, NONE, PLTRST),
 	/* F10 : MEM_STRAP_2 */
@@ -54,6 +66,18 @@ static const struct pad_config ssd_sku_gpio_table[] = {
 };
 
 static const struct pad_config emmc_sku_gpio_table[] = {
+	/* A0  : SAR0_INT_ODL */
+	PAD_CFG_GPI_INT(GPP_A0, NONE, PLTRST, LEVEL),
+	/* A6  : SAR1_INT_ODL */
+	PAD_CFG_GPI_INT(GPP_A6, NONE, PLTRST, LEVEL),
+	/* A8  : PEN_GARAGE_DET_L (wake) */
+	PAD_CFG_GPI_SCI(GPP_A8, NONE, DEEP, EDGE_SINGLE, NONE),
+	/* A10 : FPMCU_PCH_BOOT1 */
+	PAD_CFG_GPO(GPP_A10, 0, DEEP),
+	/* A11 : PCH_SPI_FPMCU_CS_L */
+	PAD_CFG_NF(GPP_A11, NONE, DEEP, NF2),
+	/* A12 : FPMCU_RST_ODL */
+	PAD_CFG_GPO(GPP_A12, 0, DEEP),
 	/* E1  : M2_SSD_PEDET ==> NC */
 	PAD_NC(GPP_E1, NONE),
 	/* E4  : M2_SSD_PE_WAKE_ODL ==> NC */
@@ -95,6 +119,18 @@ static const struct pad_config emmc_sku_gpio_table[] = {
 };
 
 static const struct pad_config gpio_table[] = {
+	/* A0  : SAR0_INT_ODL */
+	PAD_CFG_GPI_INT(GPP_A0, NONE, PLTRST, LEVEL),
+	/* A6  : SAR1_INT_ODL */
+	PAD_CFG_GPI_INT(GPP_A6, NONE, PLTRST, LEVEL),
+	/* A8  : PEN_GARAGE_DET_L (wake) */
+	PAD_CFG_GPI_SCI(GPP_A8, NONE, DEEP, EDGE_SINGLE, NONE),
+	/* A10 : FPMCU_PCH_BOOT1 */
+	PAD_CFG_GPO(GPP_A10, 0, DEEP),
+	/* A11 : PCH_SPI_FPMCU_CS_L */
+	PAD_CFG_NF(GPP_A11, NONE, DEEP, NF2),
+	/* A12 : FPMCU_RST_ODL */
+	PAD_CFG_GPO(GPP_A12, 0, DEEP),
 	/* F3  : MEM_STRAP_3 */
 	PAD_CFG_GPI(GPP_F3, NONE, PLTRST),
 	/* F10 : MEM_STRAP_2 */

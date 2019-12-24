@@ -19,14 +19,10 @@
 #include <commonlib/helpers.h>
 
 static const struct pad_config gpio_table[] = {
-	/* A0  : NC */
-	PAD_NC(GPP_A0, NONE),
-	/* A6  : NC */
-	PAD_NC(GPP_A6, NONE),
-	/* A8  : NC */
-	PAD_NC(GPP_A8, NONE),
-	/* A10 : NC */
-	PAD_NC(GPP_A10, NONE),
+	/* A11 : PCH_SPI_FPMCU_CS_L */
+	PAD_CFG_NF(GPP_A11, NONE, DEEP, NF2),
+	/* A12 : FPMCU_RST_ODL */
+	PAD_CFG_GPO(GPP_A12, 0, DEEP),
 	/* C12 : FPMCU_PCH_BOOT1 */
 	PAD_CFG_GPO(GPP_C12, 0, DEEP),
 	/* F3  : MEM_STRAP_3 */

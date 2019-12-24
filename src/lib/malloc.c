@@ -11,6 +11,8 @@
 extern unsigned char _heap, _eheap;
 static void *free_mem_ptr = &_heap;		/* Start of heap */
 static void *free_mem_end_ptr = &_eheap;	/* End of heap */
+static void *free_last_alloc_ptr = &_heap;	/* End of heap before
+						   last allocation */
 
 /* We don't restrict the boundary. This is firmware,
  * you are supposed to know what you are doing.
@@ -26,6 +28,12 @@ void *memalign(size_t boundary, size_t size)
 
 	p = free_mem_ptr;
 	free_mem_ptr += size;
+	/*
+	 * Store last allocation pointer after ALIGN, as malloc() will
+	 * return it. This may cause n bytes of gap between allocations
+	 * where n < boundary.
+	 */
+	free_last_alloc_ptr = p;
 
 	if (free_mem_ptr >= free_mem_end_ptr) {
 		printk(BIOS_ERR, "memalign(boundary=%zu, size=%zu): failed: ",
@@ -45,4 +53,25 @@ void *memalign(size_t boundary, size_t size)
 void *malloc(size_t size)
 {
 	return memalign(sizeof(u64), size);
+}
+
+void free(void *ptr)
+{
+	if (ptr == NULL)
+		return;
+
+	if (ptr < (void *)&_heap || ptr >= free_mem_end_ptr) {
+		printk(BIOS_WARNING, "Warning - Pointer passed to %s is not "
+					"pointing to the heap\n", __func__);
+		return;
+	}
+
+	/*
+	 * Rewind the heap pointer to the end of heap
+	 * before the last successful malloc().
+	 */
+	if (ptr == free_last_alloc_ptr) {
+		free_mem_ptr = free_last_alloc_ptr;
+		free_last_alloc_ptr = NULL;
+	}
 }

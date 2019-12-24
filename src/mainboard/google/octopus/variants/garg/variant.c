@@ -20,14 +20,7 @@
 #include <baseboard/variants.h>
 #include <delay.h>
 #include <gpio.h>
-
-enum {
-	SKU_1_2A2C = 1,
-	SKU_9_HDMI = 9,
-	SKU_17_LTE = 17,
-	SKU_18_LTE_TS = 18,
-	SKU_37_2A2C_360 = 37,
-};
+#include <variant/sku.h>
 
 struct gpio_with_delay {
 	gpio_t gpio;
@@ -65,6 +58,7 @@ const char *mainboard_vbt_filename(void)
 
 	switch (sku_id) {
 	case SKU_9_HDMI:
+	case SKU_19_HDMI_TS:
 		return "vbt_garg_hdmi.bin";
 	default:
 		return "vbt.bin";

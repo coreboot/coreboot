@@ -18,14 +18,7 @@
 #include <boardid.h>
 #include <gpio.h>
 #include <soc/gpio.h>
-
-enum {
-	SKU_1_2A2C = 1,
-	SKU_9_HDMI = 9,
-	SKU_17_LTE = 17,
-	SKU_18_LTE_TS = 18,
-	SKU_37_2A2C_360 = 37,
-};
+#include <variant/sku.h>
 
 static const struct pad_config default_override_table[] = {
 	PAD_NC(GPIO_104, UP_20K),
@@ -83,6 +76,7 @@ const struct pad_config *variant_override_gpio_table(size_t *num)
 
 	switch (sku_id) {
 	case SKU_9_HDMI:
+	case SKU_19_HDMI_TS:
 		*num = ARRAY_SIZE(hdmi_override_table);
 		return hdmi_override_table;
 	case SKU_17_LTE:

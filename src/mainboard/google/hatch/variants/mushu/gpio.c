@@ -39,6 +39,8 @@ static const struct pad_config gpio_table[] = {
 	 * using this pin, expose this pin to driver.
 	 */
 	PAD_CFG_GPO(GPP_C15, 1, DEEP),
+	/* H3  : SPKR_PA_EN */
+	PAD_CFG_GPO(GPP_H3, 0, DEEP),
 };
 
 const struct pad_config *override_gpio_table(size_t *num)

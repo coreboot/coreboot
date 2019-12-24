@@ -59,6 +59,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_F21, NONE),
 	/* F22 : EMMC_RESET# ==> NC */
 	PAD_NC(GPP_F22, NONE),
+	/* H3  : SPKR_PA_EN */
+	PAD_CFG_GPO(GPP_H3, 0, DEEP),
 	/* H19 : MEM_STRAP_0 */
 	PAD_CFG_GPI(GPP_H19, NONE, PLTRST),
 	/* H22 : MEM_STRAP_1 */

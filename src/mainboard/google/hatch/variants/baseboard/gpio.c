@@ -334,8 +334,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_H1, NONE, DEEP, NF3),
 	/* H2  : CNV_CLKREQ0 */
 	PAD_CFG_NF(GPP_H2, NONE, DEEP, NF3),
-	/* H3  : SPKR_PA_EN */
-	PAD_CFG_GPO(GPP_H3, 0, DEEP),
+	/* H3 : GPP_H3 ==> NC */
+	PAD_NC(GPP_H3, NONE),
 	/* H4  : PCH_I2C_PEN_SDA */
 	PAD_NC(GPP_H4, NONE),
 	/* H5  : PCH_I2C_PEN_SCL */

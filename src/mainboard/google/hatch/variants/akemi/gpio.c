@@ -122,6 +122,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_F21, NONE, DEEP, NF1),
 	/* F22 : EMMC_RESET# ==> EMMC_RST_L */
 	PAD_CFG_NF(GPP_F22, NONE, DEEP, NF1),
+	/* H3  : SPKR_PA_EN */
+	PAD_CFG_GPO(GPP_H3, 0, DEEP),
 	/* H6  : NC */
 	PAD_NC(GPP_H6, NONE),
 	/* H7  : NC */

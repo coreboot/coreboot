@@ -21,6 +21,7 @@
 #include <soc/dramc_param.h>
 #include <soc/dramc_pi_api.h>
 #include <soc/emi.h>
+#include <soc/mt6358.h>
 #include <symbols.h>
 
 static int mt_mem_test(void)
@@ -156,7 +157,7 @@ static void init_sdram_params(struct sdram_params *dst,
 		memcpy(&dst[shuffle], src, sizeof(*dst));
 }
 
-void mt_mem_init(struct dramc_param_ops *dparam_ops)
+static void mt_mem_init_run(struct dramc_param_ops *dparam_ops)
 {
 	struct dramc_param *dparam = dparam_ops->param;
 
@@ -202,6 +203,7 @@ void mt_mem_init(struct dramc_param_ops *dparam_ops)
 	if (err == 0) {
 		printk(BIOS_INFO, "Successfully loaded DRAM blobs and "
 		       "ran DRAM calibration\n");
+
 		/*
 		 * In recovery mode the system boots in RO but the flash params
 		 * should be calibrated for RW so we can't mix them up.
@@ -227,4 +229,12 @@ void mt_mem_init(struct dramc_param_ops *dparam_ops)
 		die("Set emi failed with params from sdram config\n");
 	if (mt_mem_test() != 0)
 		die("Memory test failed with params from sdram config\n");
+}
+
+void mt_mem_init(struct dramc_param_ops *dparam_ops)
+{
+	mt_mem_init_run(dparam_ops);
+
+	/* After DRAM calibration, restore vcore voltage to default setting */
+	pmic_set_vcore_vol(800000);
 }

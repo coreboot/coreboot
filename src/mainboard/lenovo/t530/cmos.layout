@@ -81,6 +81,9 @@ entries
 
 440          8       h       0        volume
 
+# VBOOT
+448          128     r       0        vbnv
+
 # SandyBridge MRC Scrambler Seed values
 896         32        r       0        mrc_scrambler_seed
 928         32        r       0        mrc_scrambler_seed_s3

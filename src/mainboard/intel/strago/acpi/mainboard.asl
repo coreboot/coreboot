@@ -114,7 +114,7 @@ Scope (\_SB.PCI0.I2C5)
 	/* Realtek Audio Codec */
 	Device (RTEK)   /* Audio Codec driver I2C */
 	{
-		Name (_ADR, 0)
+
 		Name (_HID, AUDIO_CODEC_HID)
 		Name (_CID, AUDIO_CODEC_CID)
 		Name (_DDN, AUDIO_CODEC_DDN)

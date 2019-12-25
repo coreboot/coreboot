@@ -18,7 +18,6 @@
 /* I/O APIC id 0x3 */
 Device(PBIO)
 {
-	Name (_HID, "ACPI000A")
 	Name (_ADR, 0x001c0000)
 }
 
@@ -59,7 +58,6 @@ Device(P64B)
 /* I/O APIC id 0x4 */
 Device(PAIO)
 {
-	Name (_HID, "ACPI000A")
 	Name (_ADR, 0x001e0000)
 }
 

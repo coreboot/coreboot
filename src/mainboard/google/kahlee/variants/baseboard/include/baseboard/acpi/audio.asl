@@ -18,7 +18,6 @@
 /* Grunt specific I2S machine driver */
 Device (I2S)
 {
-	Name (_ADR, 1)
 	Name (_HID, "AMD7219")
 	Name (_CID, "AMD7219")
 

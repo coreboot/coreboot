@@ -15,7 +15,7 @@ Download, configure, and build coreboot
     $ cd coreboot
 
 ### Step 3 - Build the coreboot toolchain
-Please note that this can take a significant amount of time
+Please note that this can take a significant amount of time.
 
     $ make crossgcc-i386 CPUS=$(nproc)
 
@@ -53,7 +53,7 @@ These should be the default selections, so if anything else was set, run
        select < Exit >
        select < Yes >
 
-##### check your configuration (optional step):
+##### Check your configuration (optional step):
 
     $ make savedefconfig
     $ cat defconfig

@@ -105,7 +105,6 @@ int read_entire_spd(bdk_node_t node, dram_config_t *cfg, int lmc, int dimm)
             int64_t data = bdk_twsix_read_ia(node, bus, address, i, 4, 1);
             if (data < 0)
             {
-                free(spd_buf);
                 bdk_error("Failed to read SPD data at 0x%x\n", i + (bank << 8));
                 /* Restore the bank to zero */
                 if (bank)

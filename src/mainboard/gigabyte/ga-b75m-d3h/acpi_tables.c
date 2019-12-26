@@ -19,8 +19,6 @@
 
 void acpi_create_gnvs(global_nvs_t *gnvs)
 {
-	memset((void *)gnvs, 0, sizeof(*gnvs));
-
 	/* Disable USB ports in S3 by default */
 	gnvs->s3u0 = 0;
 	gnvs->s3u1 = 0;

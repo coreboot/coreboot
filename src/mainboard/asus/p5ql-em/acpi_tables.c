@@ -17,8 +17,6 @@
 
 void acpi_create_gnvs(global_nvs_t *gnvs)
 {
-	memset((void *)gnvs, 0, sizeof(*gnvs));
-
 	gnvs->pwrs = 1;    /* Power state (AC = 1) */
 	gnvs->osys = 2002; /* At least WINXP SP2 (HPET fix) */
 	gnvs->apic = 1;    /* Enable APIC */

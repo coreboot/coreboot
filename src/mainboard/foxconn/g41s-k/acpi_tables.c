@@ -21,8 +21,6 @@
 
 void acpi_create_gnvs(global_nvs_t *gnvs)
 {
-	memset((void *)gnvs, 0, sizeof(*gnvs));
-
 	gnvs->pwrs = 1; /* Power state (AC = 1) */
 	gnvs->cmap = 1; /* COM 1 port */
 	gnvs->cmap = 1; /* COM 2 port */

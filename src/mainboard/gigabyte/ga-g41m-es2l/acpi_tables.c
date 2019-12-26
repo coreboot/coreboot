@@ -20,8 +20,6 @@
 
 void acpi_create_gnvs(global_nvs_t *gnvs)
 {
-	memset((void *)gnvs, 0, sizeof(*gnvs));
-
 	gnvs->pwrs = 1;    /* Power state (AC = 1) */
 	gnvs->lptp = 0;    /* LPT port */
 	gnvs->fdcp = 0;    /* Floppy Disk Controller */

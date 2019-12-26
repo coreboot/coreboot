@@ -185,13 +185,8 @@ int cmos_chksum_valid(void);
 
 enum cb_err set_option(const char *name, void *val);
 enum cb_err get_option(void *dest, const char *name);
-unsigned int read_option_lowlevel(unsigned int start, unsigned int size,
-	unsigned int def);
 
 int do_normal_boot(void);
-
-#define read_option(name, default) read_option_lowlevel(CMOS_VSTART_ ##name, \
-	CMOS_VLEN_ ##name, (default))
 
 #if CONFIG(CMOS_POST)
 #if CONFIG(USE_OPTION_TABLE)

@@ -50,8 +50,10 @@ void mainboard_pre_raminit_config(int s3_resume)
 void mainboard_lpc_decode(void)
 {
 	int lpt_en = 0;
-	if (read_option(lpt, 0) != 0)
-		lpt_en = LPT_LPC_EN;
+	u8 val;
+
+	if (get_option(&val, "lpt") == CB_SUCCESS && val)
+		lpt_en = LPT_LPC_EN; /* enable LPT */
 
 	// decode range
 	pci_write_config16(PCI_DEV(0, 0x1f, 0), LPC_IO_DEC, 0x0007);

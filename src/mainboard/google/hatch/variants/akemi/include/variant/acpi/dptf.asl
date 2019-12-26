@@ -46,8 +46,8 @@
 #define DPTF_TSR2_PASSIVE	62
 #define DPTF_TSR2_CRITICAL	105
 #define DPTF_TSR2_ACTIVE_AC0	62
-#define DPTF_TSR2_ACTIVE_AC1	61
-#define DPTF_TSR2_ACTIVE_AC2	60
+#define DPTF_TSR2_ACTIVE_AC1	60
+#define DPTF_TSR2_ACTIVE_AC2	59
 #define DPTF_TSR2_ACTIVE_AC3	54
 #define DPTF_TSR2_ACTIVE_AC4	51
 #define DPTF_TSR2_ACTIVE_AC5	48
@@ -74,17 +74,29 @@ Name (DFPS, Package () {
 	/* Control, Trip Point, Speed, NoiseLevel, Power */
 	Package () {85,		0xFFFFFFFF,	5500,	180,	1800},
 	Package () {79,		0xFFFFFFFF,	5400,	170,	1700},
+	Package () {76,		0xFFFFFFFF,	5300,	165,	1650},
 	Package () {73,		0xFFFFFFFF,	5200,	160,	1600},
+	Package () {70,		0xFFFFFFFF,	5100,	155,	1550},
 	Package () {68,		0xFFFFFFFF,	5000,	150,	1500},
+	Package () {65,		0xFFFFFFFF,	4900,	145,	1450},
 	Package () {62,		0xFFFFFFFF,	4800,	140,	1400},
+	Package () {60,		0xFFFFFFFF,	4700,	135,	1350},
 	Package () {58,		0xFFFFFFFF,	4600,	130,	1300},
+	Package () {55,		0xFFFFFFFF,	4500,	120,	1200},
 	Package () {53,		0xFFFFFFFF,	4400,	110,	1100},
+	Package () {51,		0xFFFFFFFF,	4300,	100,	1000},
 	Package () {49,		0xFFFFFFFF,	4200,	95,	950},
+	Package () {47,		0xFFFFFFFF,	4100,	80,	800},
 	Package () {46,		0xFFFFFFFF,	4000,	70,	700},
+	Package () {45,		0xFFFFFFFF,	3900,	60,	600},
+	Package () {43,		0xFFFFFFFF,	3800,	55,	550},
 	Package () {42,		0xFFFFFFFF,	3700,	50,	500},
 	Package () {40,		0xFFFFFFFF,	3600,	35,	350},
+	Package () {38,		0xFFFFFFFF,	3500,	30,	300},
 	Package () {36,		0xFFFFFFFF,	3400,	25,	250},
-	Package () {33,		0xFFFFFFFF,	3200,	15,	150},
+	Package () {33,		0xFFFFFFFF,	3300,	20,	200},
+	Package () {32,		0xFFFFFFFF,	3200,	15,	150},
+	Package () {31,		0xFFFFFFFF,	3100,	10,	100},
 	Package () {30,		0xFFFFFFFF,	3000,	5,	50},
 	Package () {0,		0xFFFFFFFF,	0,	0,	0}
 })
@@ -109,7 +121,7 @@ Name (DART, Package () {
 			0, 0, 0
 	},
 	Package () {
-		\_SB.DPTF.TFN1, \_SB.DPTF.TSR2, 100, 85, 73, 62, 56, 33, 25, 14,
+		\_SB.DPTF.TFN1, \_SB.DPTF.TSR2, 100, 85, 73, 65, 53, 33, 25, 14,
 			0, 0, 0
 	},
 })

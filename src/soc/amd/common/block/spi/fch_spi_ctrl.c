@@ -17,14 +17,31 @@
 #include <spi_flash.h>
 #include <soc/southbridge.h>
 #include <soc/pci_devs.h>
-#include <amdblocks/fch_spi.h>
 #include <amdblocks/lpc.h>
-#include <drivers/spi/spi_flash_internal.h>
 #include <device/pci_ops.h>
-#include <timer.h>
 #include <lib.h>
+#include <timer.h>
 
-static struct spi_data ctrl_spi_data;
+#define GRANULARITY_TEST_4k		0x0000f000		/* bits 15-12 */
+#define WORD_TO_DWORD_UPPER(x)		((x << 16) & 0xffff0000)
+
+/* SPI MMIO registers */
+#define SPI_RESTRICTED_CMD1		0x04
+#define SPI_RESTRICTED_CMD2		0x08
+#define SPI_CNTRL1			0x0c
+#define SPI_CMD_CODE			0x45
+#define SPI_CMD_TRIGGER			0x47
+#define   SPI_CMD_TRIGGER_EXECUTE	BIT(7)
+#define SPI_TX_BYTE_COUNT		0x48
+#define SPI_RX_BYTE_COUNT		0x4b
+#define SPI_STATUS			0x4c
+#define   SPI_DONE_BYTE_COUNT_SHIFT	0
+#define   SPI_DONE_BYTE_COUNT_MASK	0xff
+#define   SPI_FIFO_WR_PTR_SHIFT		8
+#define   SPI_FIFO_WR_PTR_MASK		0x7f
+#define   SPI_FIFO_RD_PTR_SHIFT		16
+#define   SPI_FIFO_RD_PTR_MASK		0x7f
+
 static uint32_t spibar;
 
 static inline uint8_t spi_read8(uint8_t reg)
@@ -110,12 +127,8 @@ void spi_init(void)
 	printk(BIOS_DEBUG, "%s: Spibar at 0x%08x\n", __func__, spibar);
 }
 
-const struct spi_data *get_ctrl_spi_data(void)
-{
-	return &ctrl_spi_data;
-}
-
-static int spi_ctrlr_xfer(const void *dout, size_t bytesout, void *din, size_t bytesin)
+static int spi_ctrlr_xfer(const struct spi_slave *slave, const void *dout,
+			size_t bytesout, void *din, size_t bytesin)
 {
 	size_t count;
 	uint8_t cmd;
@@ -161,161 +174,10 @@ static int spi_ctrlr_xfer(const void *dout, size_t bytesout, void *din, size_t b
 	return 0;
 }
 
-static int amd_xfer_vectors(struct spi_op vectors[], size_t count)
+static int xfer_vectors(const struct spi_slave *slave,
+			struct spi_op vectors[], size_t count)
 {
-	int ret;
-	void *din;
-	size_t bytes_in;
-
-	if (count < 1 || count > 2)
-		return -1;
-
-	/* SPI flash commands always have a command first... */
-	if (!vectors[0].dout || !vectors[0].bytesout)
-		return -1;
-	/* And not read any data during the command. */
-	if (vectors[0].din || vectors[0].bytesin)
-		return -1;
-
-	if (count == 2) {
-		/* If response bytes requested ensure the buffer is valid. */
-		if (vectors[1].bytesin && !vectors[1].din)
-			return -1;
-		/* No sends can accompany a receive. */
-		if (vectors[1].dout || vectors[1].bytesout)
-			return -1;
-		din = vectors[1].din;
-		bytes_in = vectors[1].bytesin;
-	} else {
-		din = NULL;
-		bytes_in = 0;
-	}
-
-	ret = spi_ctrlr_xfer(vectors[0].dout, vectors[0].bytesout, din, bytes_in);
-
-	if (ret) {
-		vectors[0].status = SPI_OP_FAILURE;
-		if (count == 2)
-			vectors[1].status = SPI_OP_FAILURE;
-	} else {
-		vectors[0].status = SPI_OP_SUCCESS;
-		if (count == 2)
-			vectors[1].status = SPI_OP_SUCCESS;
-	}
-
-	return ret;
-}
-
-int fch_spi_flash_cmd(const void *dout, size_t bytes_out, void *din, size_t bytes_in)
-{
-	/*
-	 * SPI flash requires command-response kind of behavior. Thus, two
-	 * separate SPI vectors are required -- first to transmit dout and other
-	 * to receive in din.
-	 */
-	struct spi_op vectors[] = {
-		[0] = { .dout = dout, .bytesout = bytes_out,
-			.din = NULL, .bytesin = 0, },
-		[1] = { .dout = NULL, .bytesout = 0,
-			.din = din, .bytesin = bytes_in },
-	};
-	size_t count = ARRAY_SIZE(vectors);
-	if (!bytes_in)
-		count = 1;
-
-	return amd_xfer_vectors(vectors, count);
-}
-
-static void set_ctrl_spi_data(struct spi_flash *flash)
-{
-	u8 cmd = SPI_PAGE_WRITE;
-
-	ctrl_spi_data.name = flash->name;
-	ctrl_spi_data.size = flash->size;
-	ctrl_spi_data.sector_size = flash->sector_size;
-	ctrl_spi_data.status_cmd = flash->status_cmd;
-	ctrl_spi_data.erase_cmd = flash->erase_cmd;
-	ctrl_spi_data.write_enable_cmd = SPI_WRITE_ENABLE;
-
-	if (flash->vendor == VENDOR_ID_SST) {
-		ctrl_spi_data.non_standard = NON_STANDARD_SPI_SST;
-		if ((flash->model & 0x00ff) == SST_256)
-			ctrl_spi_data.page_size = 256;
-		else {
-			ctrl_spi_data.page_size = 2;
-			cmd = CMD_SST_AAI_WP;
-		}
-	} else {
-		ctrl_spi_data.page_size = flash->page_size;
-		ctrl_spi_data.non_standard = NON_STANDARD_SPI_NONE;
-	}
-	ctrl_spi_data.write_cmd = cmd;
-
-	if (CONFIG(SPI_FLASH_NO_FAST_READ)) {
-		ctrl_spi_data.read_cmd_len = 4;
-		ctrl_spi_data.read_cmd = CMD_READ_ARRAY_SLOW;
-	} else {
-		ctrl_spi_data.read_cmd_len = 5;
-		ctrl_spi_data.read_cmd = CMD_READ_ARRAY_FAST;
-	}
-}
-
-static int fch_spi_flash_probe(const struct spi_slave *spi, struct spi_flash *flash)
-{
-	int ret, i, shift, table_size;
-	u8 idcode[IDCODE_LEN], *idp, cmd = CMD_READ_ID;
-	const struct spi_flash_table *flash_ptr = get_spi_flash_table(&table_size);
-
-	/* Read the ID codes */
-	ret = fch_spi_flash_cmd(&cmd, 1, idcode, sizeof(idcode));
-	if (ret)
-		return -1;
-
-	if (CONFIG(SOC_AMD_COMMON_BLOCK_SPI_DEBUG)) {
-		printk(BIOS_SPEW, "SF: Got idcode: ");
-		for (i = 0; i < sizeof(idcode); i++)
-			printk(BIOS_SPEW, "%02x ", idcode[i]);
-		printk(BIOS_SPEW, "\n");
-	}
-
-	/*
-	 * All solid state devices have vendor id defined by JEDEC specification JEP106,
-	 * which originally allocated only 7 bits for it plus parity. When number of
-	 * vendors exploded beyond 126, a banking proposition came maintaining
-	 * compatibility with older vendors while allowing for 4 extra bits (16 banks)
-	 * through the introduction of the concept "Continuation Code", denoted by the
-	 * byte value of 0x7f.
-	 * Examples:
-	 * 0xfe, 0x60, 0x18, 0x00, 0x00, 0x00 => vendor 0xfe of bank o
-	 * 0x7f, 0x7f, 0xfe, 0x60, 0x18, 0x00 => vendor 0xfe of bank 2
-	 * count the number of continuation code bytes
-	 */
-	for (shift = 0, idp = idcode; *idp == IDCODE_CONT_CODE; ++shift, ++idp) {
-		if (shift < IDCODE_CONT_LEN)
-			continue;
-		printk(BIOS_ERR, "unsupported ID code bank\n");
-		return -1;
-	}
-
-	printk(BIOS_INFO, "Manufacturer: %02x on bank %d\n", *idp, shift);
-
-	/* search the table for matches in shift and id */
-	for (i = 0; i < table_size; ++i) {
-		if (flash_ptr->shift == shift && flash_ptr->idcode == *idp) {
-			/* we have a match, call probe */
-			if (flash_ptr->probe(spi, idp, flash) == 0) {
-				flash->vendor = idp[0];
-				flash->model = (idp[1] << 8) | idp[2];
-				set_ctrl_spi_data(flash);
-				fch_spi_flash_ops_init(flash);
-				return 0;
-			}
-		}
-		flash_ptr++;
-	}
-
-	/* No match, return error. */
-	return -1;
+	return spi_flash_vector_helper(slave, vectors, count, spi_ctrlr_xfer);
 }
 
 static int protect_a_range(u32 value)
@@ -408,12 +270,14 @@ static int fch_spi_flash_protect(const struct spi_flash *flash, const struct reg
 	/* define commands to be blocked if in range */
 	reg32 = 0;
 	if (type & WRITE_PROTECT) {
-		reg32 |= (ctrl_spi_data.write_enable_cmd << 24);
-		reg32 |= (ctrl_spi_data.write_cmd << 16);
-		reg32 |= (ctrl_spi_data.erase_cmd << 8);
+		/* FIXME */
+		printk(BIOS_INFO, "%s: Write Enable and Write Cmd not blocked\n", __func__);
+		reg32 |= (flash->erase_cmd << 8);
 	}
-	if (type & READ_PROTECT)
-		reg32 |= ctrl_spi_data.read_cmd;
+	if (type & READ_PROTECT) {
+		/* FIXME */
+		printk(BIOS_INFO, "%s: READ_PROTECT not supported.\n", __func__);
+	}
 
 	/* Final steps to protect region */
 	pci_write_config32(SOC_LPC_DEV, SPI_RESTRICTED_CMD1, reg32);
@@ -424,9 +288,10 @@ static int fch_spi_flash_protect(const struct spi_flash *flash, const struct reg
 	return 0;
 }
 
-const struct spi_ctrlr fch_spi_flash_ctrlr = {
+static const struct spi_ctrlr fch_spi_flash_ctrlr = {
+	.xfer_vector = xfer_vectors,
 	.max_xfer_size = SPI_FIFO_DEPTH,
-	.flash_probe = fch_spi_flash_probe,
+	.flags = SPI_CNTRLR_DEDUCT_CMD_LEN | SPI_CNTRLR_DEDUCT_OPCODE_LEN,
 	.flash_protect = fch_spi_flash_protect,
 };
 

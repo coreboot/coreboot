@@ -107,8 +107,8 @@ static void copy_spd(struct pei_data *peid)
 
 	case PEPPY_BOARD_VERSION_EVT:
 	default:
-		/* Index 0-2 are 4GB config with both CH0 and CH1.
-		 * Index 4-6 are 2GB config with CH0 only. */
+		/* Index 0-3 are 4GB config with both CH0 and CH1.
+		 * Index 4-7 are 2GB config with CH0 only. */
 		if (spd_index > 3)
 			peid->dimm_channel1_disabled = 3;
 		else

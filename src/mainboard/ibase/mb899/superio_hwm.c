@@ -19,6 +19,7 @@
 #include <device/device.h>
 #include <pc80/mc146818rtc.h>
 #include <superio/hwm5_conf.h>
+#include <superio/nuvoton/common/hwm.h>
 
 #include "superio_hwm.h"
 
@@ -82,16 +83,16 @@ void hwm_setup(void)
 	// pnp_write_hwm5_index(HWM_BASE, 0x31, 0x20); // AVCC high limit
 	// pnp_write_hwm5_index(HWM_BASE, 0x34, 0x06); // VIN2 low limit
 
-	pnp_write_hwm5_index(HWM_BASE, 0x4e, 0);
+	nuvoton_hwm_select_bank(HWM_BASE, 0);
 	pnp_write_hwm5_index(HWM_BASE, 0x59, 0x20); // Diode Selection
 	pnp_write_hwm5_index(HWM_BASE, 0x5d, 0x0f); // All Sensors Diode, not Thermistor
 
-	pnp_write_hwm5_index(HWM_BASE, 0x4e, 4);
+	nuvoton_hwm_select_bank(HWM_BASE, 4);
 	pnp_write_hwm5_index(HWM_BASE, 0x54, 0xf1); // SYSTIN temperature offset
 	pnp_write_hwm5_index(HWM_BASE, 0x55, 0x19); // CPUTIN temperature offset
 	pnp_write_hwm5_index(HWM_BASE, 0x56, 0xfc); // AUXTIN temperature offset
 
-	pnp_write_hwm5_index(HWM_BASE, 0x4e, 0x80); // Default
+	nuvoton_hwm_select_bank(HWM_BASE, 0x80); // Default
 
 	u8 fan_config = 0;
 	// 00 FANOUT is Manual Mode

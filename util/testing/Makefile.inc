@@ -97,7 +97,6 @@ what-jenkins-does:
 	unset COREBOOT_BUILD_DIR;$(MAKE) CPUS=$(CPUS) V=$(V) Q=$(Q) BLD_DIR=payloads/nvramcui BLD=nvramcui MFLAGS= MAKEFLAGS= MAKETARGET=all junit.xml
 	unset COREBOOT_BUILD_DIR;$(MAKE) CPUS=$(CPUS) V=$(V) Q=$(Q) BLD_DIR=payloads/coreinfo BLD=coreinfo MFLAGS= MAKEFLAGS= MAKETARGET=defaultbuild junit.xml
 	(cd payloads/libpayload; unset COREBOOT_BUILD_DIR; $(MAKE) $(if $(JENKINS_NOCCACHE),,CONFIG_LP_CCACHE=y) V=$(V) Q=$(Q) junit.xml)
-	$(MAKE) CPUS=$(CPUS) V=$(V) Q=$(Q) BLD_DIR=util/romcc BLD=romcc MFLAGS= MAKEFLAGS= MAKETARGET=test junit.xml
 	$(MAKE) CPUS=$(CPUS) V=$(V) Q=$(Q) BLD_DIR=src/soc/nvidia/tegra124/lp0 BLD=tegra124_lp0 MFLAGS= MAKEFLAGS= MAKETARGET=all junit.xml
 	$(MAKE) CPUS=$(CPUS) V=$(V) Q=$(Q) BLD_DIR=src/soc/nvidia/tegra210/lp0 BLD=tegra120_lp0 MFLAGS= MAKEFLAGS= MAKETARGET=all junit.xml
 
@@ -124,10 +123,7 @@ test-payloads:
 test-tools:
 	@echo "Build testing $(TOOLLIST)"
 	$(foreach tool, $(TOOLLIST), $(MAKE) -C util/$(tool) clean ; )
-	$(MAKE) -C util/romcc clean
 	$(foreach tool, $(TOOLLIST), echo "Building $(tool)";export MFLAGS= ;export MAKEFLAGS= ;$(MAKE) -C util/$(tool) all V=$(V) Q=$(Q) || exit 1; )
-	echo "Building romcc"
-	$(MAKE) -C util/romcc all test -j $(CPUS) V=$(V) Q=$(Q)
 	echo "Testing broadcom/secimage"
 	$(MAKE) -C util/broadcom/secimage test
 	@echo "Running gitconfig tests"
@@ -142,7 +138,6 @@ test-cleanup:
 	$(MAKE) clean
 	$(MAKE) distclean
 	$(foreach tool, $(TOOLLIST), $(MAKE) -C util/$(tool) clean ; )
-	$(MAKE) -C util/romcc clean
 
 .PHONY: test-basic test-lint test-abuild test-payloads
 .PHONY: test-tools test-cleanup test-help

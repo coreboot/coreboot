@@ -61,10 +61,16 @@ Method(GOS, 0)
 	 *    OSYS value | Operating System
 	 *    -----------+------------------
 	 *       2000    | Windows 2000
-	 *       2001    | Windows XP(+SP1)
+	 *       2001    | Windows XP
+	 *       2001    | Windows XP SP1
+	 *       2001    | Windows Server 2003
+	 *       2001    | Windows Server 2003 SP1
 	 *       2002    | Windows XP SP2
 	 *       2006    | Windows Vista
-	 *       ????    | Windows 7
+	 *       2006    | Windows Vista SP1
+	 *       2006    | Windows Server 2008
+	 *       2009    | Windows 7
+	 *       2012    | Windows 8
 	 */
 
 	/* Let's assume we're running at least Windows 2000 */
@@ -79,12 +85,36 @@ Method(GOS, 0)
 			Store (2001, OSYS)
 		}
 
+		If (_OSI("Windows 2001.1")) {
+			Store (2001, OSYS)
+		}
+
+		If (_OSI("Windows 2001.1 SP1")) {
+			Store (2001, OSYS)
+		}
+
 		If (_OSI("Windows 2001 SP2")) {
 			Store (2002, OSYS)
 		}
 
 		If (_OSI("Windows 2006")) {
 			Store (2006, OSYS)
+		}
+
+		If (_OSI("Windows 2006 SP1")) {
+			Store (2006, OSYS)
+		}
+
+		If (_OSI("Windows 2006.1")) {
+			Store (2006, OSYS)
+		}
+
+		If (_OSI("Windows 2009")) {
+			Store (2009, OSYS)
+		}
+
+		If (_OSI("Windows 2012")) {
+			Store (2012, OSYS)
 		}
 	}
 }

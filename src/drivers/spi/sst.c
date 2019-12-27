@@ -32,6 +32,7 @@
 #define CMD_SST_READ		0x03	/* Read Data Bytes */
 #define CMD_SST_FAST_READ	0x0b	/* Read Data Bytes at Higher Speed */
 #define CMD_SST_BP		0x02	/* Byte Program */
+#define CMD_SST_PP		0x02	/* Page Program */
 #define CMD_SST_AAI_WP		0xAD	/* Auto Address Increment Word Program */
 #define CMD_SST_SE		0x20	/* Sector Erase */
 
@@ -197,30 +198,12 @@ static int sst_write_256(const struct spi_flash *flash, u32 offset, size_t len,
 
 	page_size = 256;
 
-	/* If the data is not word aligned, write out leading single byte */
-	actual = offset % 2;
-	if (actual) {
-		ret = sst_byte_write(flash, offset, buf);
-		if (ret)
-			goto done;
-	}
-	offset += actual;
-
-	ret = sst_enable_writing(flash);
-	if (ret)
-		goto done;
-
-	cmd[0] = CMD_SST_AAI_WP;
-	cmd[1] = offset >> 16;
-	cmd[2] = offset >> 8;
-	cmd[3] = offset;
-
 	for (actual = 0; actual < len; actual += chunk_len) {
 		byte_addr = offset % page_size;
 		chunk_len = MIN(len - actual, page_size - byte_addr);
 		chunk_len = spi_crop_chunk(&flash->spi, sizeof(cmd), chunk_len);
 
-		cmd[0] = CMD_SST_BP;
+		cmd[0] = CMD_SST_PP;
 		cmd[1] = (offset >> 16) & 0xff;
 		cmd[2] = (offset >> 8) & 0xff;
 		cmd[3] = offset & 0xff;
@@ -251,7 +234,6 @@ static int sst_write_256(const struct spi_flash *flash, u32 offset, size_t len,
 		offset += chunk_len;
 	}
 
-done:
 #if CONFIG(DEBUG_SPI_FLASH)
 	printk(BIOS_SPEW, "SF: SST: program %s %zu bytes @ 0x%lx\n",
 	      ret ? "failure" : "success", len, (unsigned long)offset - actual);

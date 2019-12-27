@@ -22,7 +22,6 @@
  */
 #define SPI_FLASH_PROG_TIMEOUT_MS		200
 #define SPI_FLASH_PAGE_ERASE_TIMEOUT_MS		500
-#define SPI_FLASH_SECTOR_ERASE_TIMEOUT_MS	1000
 
 #include <commonlib/region.h>
 #include <stdint.h>

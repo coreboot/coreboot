@@ -42,8 +42,25 @@ Please follow this official [guide] to install sphinx.
 You will also need python-recommonmark for sphinx to be able to handle
 markdown documentation.
 
-The recommended version is sphinx 1.7.7, sphinx_rtd_theme 0.4.1 and
-recommonmark 0.4.0.
+Since some Linux distributions don't package every needed sphinx extension,
+the installation via pip in a venv is recommended. You'll need these python3
+modules:
+
+* sphinx
+* recommonmark
+* sphinx_rtd_theme
+* sphinxcontrib-ditaa
+
+The following combination of versions has been tested: sphinx 2.3.1,
+recommonmark 0.6.0, sphinx_rtd_theme 0.4.3 and sphinxcontrib-ditaa 0.7.
+
+Now change into the `Documentation` folder in the coreboot directory and run
+this command in there
+
+	make sphinx
+
+If no error occurs, you can find the generated HTML documentation in
+`Documentation/_build` now.
 
 ### Optional
 

@@ -31,9 +31,7 @@
 #define PC87417_RTC  0x10
 
 #define PC87417_GPIO_DEV PNP_DEV(0x2e, PC87417_GPIO)
-/* This is to get around a romcc bug */
-/* #define PC87417_XBUS_DEV PNP_DEV(0x2e, PC87417_XBUS) */
-#define PC87417_XBUS_DEV PNP_DEV(0x2e, 0x0f)
+#define PC87417_XBUS_DEV PNP_DEV(0x2e, PC87417_XBUS)
 
 #define PC87417_GPSEL		0xf0
 #define PC87417_GPCFG1		0xf1

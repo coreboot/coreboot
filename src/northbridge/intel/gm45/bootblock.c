@@ -14,9 +14,7 @@
 #include <arch/bootblock.h>
 #include <device/pci_ops.h>
 
-/* Just re-define these instead of including gm45.h. It blows up romcc. */
-#define D0F0_PCIEXBAR_LO 0x60
-#define D0F0_PCIEXBAR_HI 0x64
+#include "gm45.h"
 
 void bootblock_early_northbridge_init(void)
 {

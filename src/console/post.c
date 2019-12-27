@@ -82,6 +82,30 @@ void cmos_post_log(void)
 	}
 }
 
+void cmos_post_init(void)
+{
+	u8 magic = CMOS_POST_BANK_0_MAGIC;
+
+	/* Switch to the other bank */
+	switch (cmos_read(CMOS_POST_BANK_OFFSET)) {
+	case CMOS_POST_BANK_1_MAGIC:
+		break;
+	case CMOS_POST_BANK_0_MAGIC:
+		magic = CMOS_POST_BANK_1_MAGIC;
+		break;
+	default:
+		/* Initialize to zero */
+		cmos_write(0, CMOS_POST_BANK_0_OFFSET);
+		cmos_write(0, CMOS_POST_BANK_1_OFFSET);
+#if CONFIG(CMOS_POST_EXTRA)
+		cmos_write32(CMOS_POST_BANK_0_EXTRA, 0);
+		cmos_write32(CMOS_POST_BANK_1_EXTRA, 0);
+#endif
+	}
+
+	cmos_write(magic, CMOS_POST_BANK_OFFSET);
+}
+
 #if CONFIG(CMOS_POST_EXTRA)
 void post_log_extra(u32 value)
 {

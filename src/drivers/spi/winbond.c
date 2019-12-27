@@ -296,64 +296,6 @@ static const struct winbond_spi_flash_params winbond_spi_flash_table[] = {
 	},
 };
 
-static int winbond_write(const struct spi_flash *flash, u32 offset, size_t len,
-			const void *buf)
-{
-	unsigned long byte_addr;
-	unsigned long page_size;
-	size_t chunk_len;
-	size_t actual;
-	int ret = 0;
-	u8 cmd[4];
-
-	page_size = flash->page_size;
-
-	for (actual = 0; actual < len; actual += chunk_len) {
-		byte_addr = offset % page_size;
-		chunk_len = MIN(len - actual, page_size - byte_addr);
-		chunk_len = spi_crop_chunk(&flash->spi, sizeof(cmd), chunk_len);
-
-		cmd[0] = CMD_W25_PP;
-		cmd[1] = (offset >> 16) & 0xff;
-		cmd[2] = (offset >> 8) & 0xff;
-		cmd[3] = offset & 0xff;
-#if CONFIG(DEBUG_SPI_FLASH)
-		printk(BIOS_SPEW, "PP: %p => cmd = { 0x%02x 0x%02x%02x%02x }"
-		        " chunk_len = %zu\n", buf + actual,
-			cmd[0], cmd[1], cmd[2], cmd[3], chunk_len);
-#endif
-
-		ret = spi_flash_cmd(&flash->spi, CMD_W25_WREN, NULL, 0);
-		if (ret < 0) {
-			printk(BIOS_WARNING, "SF: Enabling Write failed\n");
-			goto out;
-		}
-
-		ret = spi_flash_cmd_write(&flash->spi, cmd, sizeof(cmd),
-				buf + actual, chunk_len);
-		if (ret < 0) {
-			printk(BIOS_WARNING, "SF: Winbond Page Program failed\n");
-			goto out;
-		}
-
-		ret = spi_flash_cmd_wait_ready(flash,
-				SPI_FLASH_PROG_TIMEOUT_MS);
-		if (ret)
-			goto out;
-
-		offset += chunk_len;
-	}
-
-#if CONFIG(DEBUG_SPI_FLASH)
-	printk(BIOS_SPEW, "SF: Winbond: Successfully programmed %zu bytes @"
-			" 0x%lx\n", len, (unsigned long)(offset - len));
-#endif
-	ret = 0;
-
-out:
-	return ret;
-}
-
 /*
  * Convert BPx, TB and CMP to a region.
  * SEC (if available) must be zero.
@@ -669,7 +611,7 @@ winbond_set_write_protection(const struct spi_flash *flash,
 }
 
 static const struct spi_flash_ops spi_flash_ops = {
-	.write = winbond_write,
+	.write = spi_flash_cmd_write_page_program,
 	.erase = spi_flash_cmd_erase,
 	.status = spi_flash_cmd_status,
 	.get_write_protection = winbond_get_write_protection,
@@ -706,6 +648,8 @@ int spi_flash_probe_winbond(const struct spi_slave *spi, u8 *idcode,
 			(1 << params->nr_blocks_shift);
 	flash->erase_cmd = CMD_W25_SE;
 	flash->status_cmd = CMD_W25_RDSR;
+	flash->pp_cmd = CMD_W25_PP;
+	flash->wren_cmd = CMD_W25_WREN;
 
 	flash->flags.dual_spi = params->dual_spi;
 

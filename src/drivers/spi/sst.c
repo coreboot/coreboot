@@ -53,8 +53,6 @@ struct sst_spi_flash_params {
 
 static int sst_write_ai(const struct spi_flash *flash, u32 offset, size_t len,
 			const void *buf);
-static int sst_write_256(const struct spi_flash *flash, u32 offset, size_t len,
-			 const void *buf);
 
 static const struct spi_flash_ops spi_flash_ops_write_ai = {
 	.write = sst_write_ai,
@@ -63,7 +61,7 @@ static const struct spi_flash_ops spi_flash_ops_write_ai = {
 };
 
 static const struct spi_flash_ops spi_flash_ops_write_256 = {
-	.write = sst_write_256,
+	.write = spi_flash_cmd_write_page_program,
 	.erase = spi_flash_cmd_erase,
 	.status = spi_flash_cmd_status,
 };
@@ -187,60 +185,6 @@ sst_byte_write(const struct spi_flash *flash, u32 offset, const void *buf)
 	return spi_flash_cmd_wait_ready(flash, SPI_FLASH_PROG_TIMEOUT_MS);
 }
 
-static int sst_write_256(const struct spi_flash *flash, u32 offset, size_t len,
-			const void *buf)
-{
-	size_t actual, chunk_len;
-	unsigned long byte_addr;
-	unsigned long page_size;
-	int ret = 0;
-	u8 cmd[4];
-
-	page_size = 256;
-
-	for (actual = 0; actual < len; actual += chunk_len) {
-		byte_addr = offset % page_size;
-		chunk_len = MIN(len - actual, page_size - byte_addr);
-		chunk_len = spi_crop_chunk(&flash->spi, sizeof(cmd), chunk_len);
-
-		cmd[0] = CMD_SST_PP;
-		cmd[1] = (offset >> 16) & 0xff;
-		cmd[2] = (offset >> 8) & 0xff;
-		cmd[3] = offset & 0xff;
-#if CONFIG(DEBUG_SPI_FLASH)
-		printk(BIOS_SPEW, "PP: %p => cmd = { 0x%02x 0x%02x%02x%02x }"
-		     " chunk_len = %zu\n",
-		     buf + actual, cmd[0], cmd[1], cmd[2], cmd[3], chunk_len);
-#endif
-
-		ret = spi_flash_cmd(&flash->spi, CMD_SST_WREN, NULL, 0);
-		if (ret < 0) {
-			printk(BIOS_WARNING, "SF: Enabling Write failed\n");
-			break;
-		}
-
-		ret = spi_flash_cmd_write(&flash->spi, cmd, sizeof(cmd),
-					  buf + actual, chunk_len);
-		if (ret < 0) {
-			printk(BIOS_WARNING, "SF: SST Page Program failed\n");
-			break;
-		}
-
-		ret = spi_flash_cmd_wait_ready(flash,
-				SPI_FLASH_PROG_TIMEOUT_MS);
-		if (ret)
-			break;
-
-		offset += chunk_len;
-	}
-
-#if CONFIG(DEBUG_SPI_FLASH)
-	printk(BIOS_SPEW, "SF: SST: program %s %zu bytes @ 0x%lx\n",
-	      ret ? "failure" : "success", len, (unsigned long)offset - actual);
-#endif
-	return ret;
-}
-
 static int sst_write_ai(const struct spi_flash *flash, u32 offset, size_t len,
 			const void *buf)
 {
@@ -350,6 +294,12 @@ int spi_flash_probe_sst(const struct spi_slave *spi, u8 *idcode,
 	flash->size = flash->sector_size * params->nr_sectors;
 	flash->erase_cmd = CMD_SST_SE;
 	flash->status_cmd = CMD_SST_RDSR;
+	flash->wren_cmd = CMD_SST_WREN;
+
+	if (params->ops == &spi_flash_ops_write_256) {
+		flash->page_size = 256;
+		flash->pp_cmd = CMD_SST_PP;
+	}
 
 	flash->ops = params->ops;
 

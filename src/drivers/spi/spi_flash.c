@@ -255,6 +255,60 @@ int spi_flash_cmd_status(const struct spi_flash *flash, u8 *reg)
 	return spi_flash_cmd(&flash->spi, flash->status_cmd, reg, sizeof(*reg));
 }
 
+int spi_flash_cmd_write_page_program(const struct spi_flash *flash, u32 offset,
+				size_t len, const void *buf)
+{
+	unsigned long byte_addr;
+	unsigned long page_size;
+	size_t chunk_len;
+	size_t actual;
+	int ret = 0;
+	u8 cmd[4];
+
+	page_size = flash->page_size;
+	cmd[0] = flash->pp_cmd;
+
+	for (actual = 0; actual < len; actual += chunk_len) {
+		byte_addr = offset % page_size;
+		chunk_len = MIN(len - actual, page_size - byte_addr);
+		chunk_len = spi_crop_chunk(&flash->spi, sizeof(cmd), chunk_len);
+
+		spi_flash_addr(offset, cmd);
+		if (CONFIG(DEBUG_SPI_FLASH)) {
+			printk(BIOS_SPEW, "PP: %p => cmd = { 0x%02x 0x%02x%02x%02x } chunk_len = %zu\n",
+				buf + actual, cmd[0], cmd[1], cmd[2], cmd[3],
+				chunk_len);
+		}
+
+		ret = spi_flash_cmd(&flash->spi, flash->wren_cmd, NULL, 0);
+		if (ret < 0) {
+			printk(BIOS_WARNING, "SF: Enabling Write failed\n");
+			goto out;
+		}
+
+		ret = spi_flash_cmd_write(&flash->spi, cmd, sizeof(cmd),
+				buf + actual, chunk_len);
+		if (ret < 0) {
+			printk(BIOS_WARNING, "SF: Page Program failed\n");
+			goto out;
+		}
+
+		ret = spi_flash_cmd_wait_ready(flash, SPI_FLASH_PROG_TIMEOUT_MS);
+		if (ret)
+			goto out;
+
+		offset += chunk_len;
+	}
+
+	if (CONFIG(DEBUG_SPI_FLASH))
+		printk(BIOS_SPEW, "SF: : Successfully programmed %zu bytes @ 0x%lx\n",
+			len, (unsigned long)(offset - len));
+	ret = 0;
+
+out:
+	return ret;
+}
+
 /*
  * The following table holds all device probe functions
  *

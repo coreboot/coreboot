@@ -104,6 +104,8 @@ struct spi_flash {
 	u32 page_size;
 	u8 erase_cmd;
 	u8 status_cmd;
+	u8 pp_cmd; /* Page program command. */
+	u8 wren_cmd; /* Write Enable command. */
 	const struct spi_flash_ops *ops;
 	const void *driver_private;
 };

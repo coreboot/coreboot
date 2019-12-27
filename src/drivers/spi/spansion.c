@@ -218,65 +218,8 @@ static const struct spansion_spi_flash_params spansion_spi_flash_table[] = {
 	},
 };
 
-static int spansion_write(const struct spi_flash *flash, u32 offset, size_t len,
-			const void *buf)
-{
-	unsigned long byte_addr;
-	unsigned long page_size;
-	size_t chunk_len;
-	size_t actual;
-	int ret = 0;
-	u8 cmd[4];
-
-	page_size = flash->page_size;
-
-	for (actual = 0; actual < len; actual += chunk_len) {
-		byte_addr = offset % page_size;
-		chunk_len = MIN(len - actual, page_size - byte_addr);
-		chunk_len = spi_crop_chunk(&flash->spi, sizeof(cmd), chunk_len);
-
-		cmd[0] = CMD_S25FLXX_PP;
-		cmd[1] = (offset >> 16) & 0xff;
-		cmd[2] = (offset >> 8) & 0xff;
-		cmd[3] = offset & 0xff;
-
-#if CONFIG(DEBUG_SPI_FLASH)
-		printk(BIOS_SPEW, "PP: %p => cmd = { 0x%02x 0x%02x%02x%02x }"
-		     " chunk_len = %zu\n",
-		     buf + actual, cmd[0], cmd[1], cmd[2], cmd[3], chunk_len);
-#endif
-
-		ret = spi_flash_cmd(&flash->spi, CMD_S25FLXX_WREN, NULL, 0);
-		if (ret < 0) {
-			printk(BIOS_WARNING, "SF: Enabling Write failed\n");
-			break;
-		}
-
-		ret = spi_flash_cmd_write(&flash->spi, cmd, 4,
-					  buf + actual, chunk_len);
-		if (ret < 0) {
-			printk(BIOS_WARNING, "SF: SPANSION Page Program failed\n");
-			break;
-		}
-
-		ret = spi_flash_cmd_wait_ready(flash,
-				SPI_FLASH_PROG_TIMEOUT_MS);
-		if (ret)
-			break;
-
-		offset += chunk_len;
-	}
-
-#if CONFIG(DEBUG_SPI_FLASH)
-	printk(BIOS_SPEW, "SF: SPANSION: Successfully programmed %zu bytes @ 0x%x\n",
-	      len, offset);
-#endif
-
-	return ret;
-}
-
 static const struct spi_flash_ops spi_flash_ops = {
-	.write = spansion_write,
+	.write = spi_flash_cmd_write_page_program,
 	.erase = spi_flash_cmd_erase,
 	.status = spi_flash_cmd_status,
 };
@@ -307,6 +250,8 @@ int spi_flash_probe_spansion(const struct spi_slave *spi, u8 *idcode,
 	flash->size = flash->sector_size * params->nr_sectors;
 	flash->erase_cmd = CMD_S25FLXX_SE;
 	flash->status_cmd = CMD_S25FLXX_RDSR;
+	flash->pp_cmd = CMD_S25FLXX_PP;
+	flash->wren_cmd = CMD_S25FLXX_WREN;
 
 	flash->ops = &spi_flash_ops;
 

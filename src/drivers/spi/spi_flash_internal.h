@@ -62,6 +62,10 @@ int spi_flash_cmd_erase(const struct spi_flash *flash, u32 offset, size_t len);
 /* Read status register. */
 int spi_flash_cmd_status(const struct spi_flash *flash, u8 *reg);
 
+/* Write to flash utilizing page program semantics. */
+int spi_flash_cmd_write_page_program(const struct spi_flash *flash, u32 offset,
+				size_t len, const void *buf);
+
 /* Manufacturer-specific probe functions */
 int spi_flash_probe_spansion(const struct spi_slave *spi, u8 *idcode,
 			     struct spi_flash *flash);

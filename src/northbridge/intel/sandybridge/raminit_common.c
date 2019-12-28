@@ -585,34 +585,34 @@ void dram_memorymap(ramctr_timing * ctrl, int me_uma_size)
 	pci_write_config32(PCI_DEV(0, 0, 0), BGSM, reg);
 
 	if (me_uma_size) {
-		reg = pci_read_config32(PCI_DEV(0, 0, 0), 0x7c);
+		reg = pci_read_config32(PCI_DEV(0, 0, 0), MEMASK + 4);
 		val = (0x80000 - me_uma_size) & 0xfffff000;
 		reg = (reg & ~0x000fffff) | (val >> 12);
-		printk(BIOS_DEBUG, "PCI(0, 0, 0)[%x] = %x\n", 0x7c, reg);
-		pci_write_config32(PCI_DEV(0, 0, 0), 0x7c, reg);
+		printk(BIOS_DEBUG, "PCI(0, 0, 0)[%x] = %x\n", MEMASK + 4, reg);
+		pci_write_config32(PCI_DEV(0, 0, 0), MEMASK + 4, reg);
 
 		// ME base
-		reg = pci_read_config32(PCI_DEV(0, 0, 0), 0x70);
+		reg = pci_read_config32(PCI_DEV(0, 0, 0), MEBASE);
 		val = mestolenbase & 0xfff;
 		reg = (reg & ~0xfff00000) | (val << 20);
-		printk(BIOS_DEBUG, "PCI(0, 0, 0)[%x] = %x\n", 0x70, reg);
-		pci_write_config32(PCI_DEV(0, 0, 0), 0x70, reg);
+		printk(BIOS_DEBUG, "PCI(0, 0, 0)[%x] = %x\n", MEBASE, reg);
+		pci_write_config32(PCI_DEV(0, 0, 0), MEBASE, reg);
 
-		reg = pci_read_config32(PCI_DEV(0, 0, 0), 0x74);
+		reg = pci_read_config32(PCI_DEV(0, 0, 0), MEBASE + 4);
 		val = mestolenbase & 0xfffff000;
 		reg = (reg & ~0x000fffff) | (val >> 12);
-		printk(BIOS_DEBUG, "PCI(0, 0, 0)[%x] = %x\n", 0x74, reg);
-		pci_write_config32(PCI_DEV(0, 0, 0), 0x74, reg);
+		printk(BIOS_DEBUG, "PCI(0, 0, 0)[%x] = %x\n", MEBASE + 4, reg);
+		pci_write_config32(PCI_DEV(0, 0, 0), MEBASE + 4, reg);
 
 		// ME mask
-		reg = pci_read_config32(PCI_DEV(0, 0, 0), 0x78);
+		reg = pci_read_config32(PCI_DEV(0, 0, 0), MEMASK);
 		val = (0x80000 - me_uma_size) & 0xfff;
 		reg = (reg & ~0xfff00000) | (val << 20);
 		reg = (reg & ~0x400) | (1 << 10);	// set lockbit on ME mem
 
 		reg = (reg & ~0x800) | (1 << 11);	// set ME memory enable
-		printk(BIOS_DEBUG, "PCI(0, 0, 0)[%x] = %x\n", 0x78, reg);
-		pci_write_config32(PCI_DEV(0, 0, 0), 0x78, reg);
+		printk(BIOS_DEBUG, "PCI(0, 0, 0)[%x] = %x\n", MEMASK, reg);
+		pci_write_config32(PCI_DEV(0, 0, 0), MEMASK, reg);
 	}
 }
 

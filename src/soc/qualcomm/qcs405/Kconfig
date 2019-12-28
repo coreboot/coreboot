@@ -18,11 +18,6 @@ config VBOOT
 	select VBOOT_RETURN_FROM_VERSTAGE
 	select VBOOT_STARTS_IN_BOOTBLOCK
 
-config QCS405_BLSP_SPI
-	bool
-	default y
-	prompt "Build Flash Using SPI-NOR"
-
 config BOOT_DEVICE_SPI_FLASH_BUS
 	int
 	default 5

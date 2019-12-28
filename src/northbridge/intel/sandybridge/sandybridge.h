@@ -79,6 +79,9 @@ enum platform_type {
 #define  DEVEN_PEG12	(1 << 1)
 #define  DEVEN_HOST	(1 << 0)
 
+#define PAVPC		0x58	/* Protected Audio Video Path Control */
+#define DPR		0x5c	/* DMA Protected Range */
+
 #define PAM0		0x80
 #define PAM1		0x81
 #define PAM2		0x82
@@ -90,10 +93,13 @@ enum platform_type {
 #define LAC		0x87	/* Legacy Access Control */
 #define SMRAM		0x88	/* System Management RAM Control */
 
+#define REMAPBASE	0x90
+#define REMAPLIMIT	0x98
 #define TOM		0xa0
 #define TOUUD		0xa8	/* Top of Upper Usable DRAM */
+#define BDSM		0xb0	/* Base Data of Stolen Memory */
 #define BGSM		0xb4	/* Base GTT Stolen Memory */
-#define TSEG		0xb8	/* TSEG base */
+#define TSEGMB		0xb8	/* TSEG Memory Base */
 #define TOLUD		0xbc	/* Top of Low Used Memory */
 
 #define CAPID0_A	0xe4	/* Capabilities Register A */

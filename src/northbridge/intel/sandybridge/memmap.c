@@ -27,7 +27,7 @@
 static uintptr_t smm_region_start(void)
 {
 	/* Base of TSEG is top of usable DRAM */
-	uintptr_t tom = pci_read_config32(PCI_DEV(0,0,0), TSEG);
+	uintptr_t tom = pci_read_config32(PCI_DEV(0, 0, 0), TSEGMB);
 	return tom;
 }
 

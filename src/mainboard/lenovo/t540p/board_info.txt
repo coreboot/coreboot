@@ -1,0 +1,2 @@
+Category: laptop
+FIXME: put ROM package, ROM socketed, ROM protocol, Flashrom support, Release year

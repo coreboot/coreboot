@@ -1,0 +1,2 @@
+config BOARD_LENOVO_THINKPAD_T540P
+	bool "ThinkPad T540p"

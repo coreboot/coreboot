@@ -1,0 +1,41 @@
+if BOARD_LENOVO_THINKPAD_T540P
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select BOARD_ROMSIZE_KB_2048 # FIXME: correct this
+	select CPU_INTEL_HASWELL
+	select EC_LENOVO_H8
+	select EC_LENOVO_PMH7
+	select HAVE_ACPI_RESUME
+	select HAVE_ACPI_TABLES
+	select INTEL_INT15
+	select MAINBOARD_HAS_LIBGFXINIT # FIXME: check this
+	select NORTHBRIDGE_INTEL_HASWELL
+	select SERIRQ_CONTINUOUS_MODE
+	select SOUTHBRIDGE_INTEL_LYNXPOINT
+	select SYSTEM_TYPE_LAPTOP
+
+config MAINBOARD_DIR
+	string
+	default lenovo/t540p
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "ThinkPad T540p"
+
+config VGA_BIOS_FILE
+	string
+	default "pci8086,0416.rom"
+
+config VGA_BIOS_ID
+	string
+	default "8086,0416"
+
+config MAX_CPUS
+	int
+	default 8
+
+config USBDEBUG_HCD_INDEX # FIXME: check this
+	int
+	default 2
+endif

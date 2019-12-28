@@ -226,6 +226,7 @@ config TIMESTAMPS_ON_CONSOLE
 
 config USE_BLOBS
 	bool "Allow use of binary-only repository"
+	default y
 	help
 	  This draws in the blobs repository, which contains binary files that
 	  might be required for some chipsets or boards.

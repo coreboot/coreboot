@@ -608,9 +608,8 @@ void dram_memorymap(ramctr_timing * ctrl, int me_uma_size)
 		reg = pci_read_config32(PCI_DEV(0, 0, 0), MEMASK);
 		val = (0x80000 - me_uma_size) & 0xfff;
 		reg = (reg & ~0xfff00000) | (val << 20);
-		reg = (reg & ~0x400) | (1 << 10);	// set lockbit on ME mem
-
-		reg = (reg & ~0x800) | (1 << 11);	// set ME memory enable
+		reg = reg | (1 << 10);	// set lockbit on ME mem
+		reg = reg | (1 << 11);	// set ME memory enable
 		printk(BIOS_DEBUG, "PCI(0, 0, 0)[%x] = %x\n", MEMASK, reg);
 		pci_write_config32(PCI_DEV(0, 0, 0), MEMASK, reg);
 	}

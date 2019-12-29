@@ -17,7 +17,6 @@
 #define _HUDSON_EARLY_SETUP_C_
 
 #include <stdint.h>
-#include <arch/io.h>
 #include <device/pci_ops.h>
 #include <console/console.h>
 #include <amdblocks/acpimmio.h>

@@ -15,7 +15,6 @@
 
 #include <stdint.h>
 #include <amdblocks/acpimmio.h>
-#include <arch/io.h>
 #include <southbridge/amd/cimx/sb800/SBPLATFORM.h>
 #include "gpio_ftns.h"
 

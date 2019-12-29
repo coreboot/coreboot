@@ -15,7 +15,6 @@
  */
 
 #include <stdint.h>
-#include <arch/io.h>
 #include <device/pci_ops.h>
 #include "iomap.h"
 #if CONFIG(SOUTHBRIDGE_INTEL_I82801GX)

@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/io.h>
 #include <bootstate.h>
 #include <console/console.h>
 #include <console/post_codes.h>

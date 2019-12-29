@@ -158,7 +158,7 @@ static int rmodule_relocate(const struct rmodule *module)
 
 		/* If the adjustment location is non-NULL adjust it. */
 		adjust_loc = rmodule_load_addr(module, *reloc);
-		printk(PK_ADJ_LEVEL, "Adjusting %p: 0x%08lx -> 0x%08lx\n",
+		printk(BIOS_DEBUG, "Adjusting %p: 0x%08lx -> 0x%08lx\n",
 		       adjust_loc, (unsigned long) *adjust_loc,
 		       (unsigned long) (*adjust_loc + adjustment));
 		*adjust_loc += adjustment;
@@ -166,6 +166,8 @@ static int rmodule_relocate(const struct rmodule *module)
 		reloc++;
 		num_relocations--;
 	}
+
+	printk(BIOS_DEBUG, "%s done\n", __func__);
 
 	return 0;
 }
@@ -194,11 +196,18 @@ int rmodule_load(void *base, struct rmodule *module)
 	rmodule_copy_payload(module);
 	if (rmodule_relocate(module))
 		return -1;
+
+	printk(BIOS_DEBUG, "%s before rmodule_clear_bss\n", __func__);
+
 	rmodule_clear_bss(module);
+
+	printk(BIOS_DEBUG, "%s after rmodule_clear_bss\n", __func__);
 
 	prog_segment_loaded((uintptr_t)module->location,
 				rmodule_memory_size(module), SEG_FINAL);
 
+	printk(BIOS_DEBUG, "%s after prog_segment_loaded\n", __func__);
+    
 	return 0;
 }
 
@@ -291,13 +300,22 @@ int rmodule_stage_load(struct rmod_stage_load *rsl)
 	if (rmodule_load(&stage_region[load_offset], &rmod_stage))
 		return -1;
 
+	printk(BIOS_DEBUG, "%s after rmodule_load\n", __func__);
+
+
 	prog_set_area(rsl->prog, rmod_stage.location,
 			rmodule_memory_size(&rmod_stage));
+
+	printk(BIOS_DEBUG, "%s after prog_set_area\n", __func__);
 
 	/* Allow caller to pick up parameters, if available. */
 	rsl->params = rmodule_parameters(&rmod_stage);
 
+	printk(BIOS_DEBUG, "%s after rmodule_parameters\n", __func__);
+
 	prog_set_entry(rsl->prog, rmodule_entry(&rmod_stage), rsl->params);
+
+	printk(BIOS_DEBUG, "%s after prog_set_entry\n", __func__);
 
 	return 0;
 }

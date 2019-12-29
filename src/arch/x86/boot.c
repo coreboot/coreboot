@@ -31,11 +31,19 @@ int payload_arch_usable_ram_quirk(uint64_t start, uint64_t size)
 void arch_prog_run(struct prog *prog)
 {
 #ifdef __x86_64__
+    printk(BIOS_DEBUG, "%s is x86_64\n", __func__);
 	void (*doit)(void *arg);
+    printk(BIOS_DEBUG, "%s after void doit\n", __func__);
 #else
+    printk(BIOS_DEBUG, "%s is NOT x86_64\n", __func__);
 	/* Ensure the argument is pushed on the stack. */
 	asmlinkage void (*doit)(void *arg);
+    printk(BIOS_DEBUG, "%s after asmlinkage\n", __func__);
 #endif
+    printk(BIOS_DEBUG, "%s before prog_entry\n", __func__);
 	doit = prog_entry(prog);
+    printk(BIOS_DEBUG, "%s after prog_entry\n", __func__);
+    printk(BIOS_DEBUG, "%s doit pointer: %p\n", __func__, doit);
 	doit(prog_entry_arg(prog));
+    printk(BIOS_DEBUG, "%s after doit\n", __func__);
 }

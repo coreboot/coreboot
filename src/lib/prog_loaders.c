@@ -56,6 +56,8 @@ int prog_locate(struct prog *prog)
 
 void run_romstage(void)
 {
+	printk(BIOS_DEBUG, "%s in\n", __func__);
+
 	struct prog romstage =
 		PROG_INIT(PROG_ROMSTAGE, CONFIG_CBFS_PREFIX "/romstage");
 
@@ -145,17 +147,27 @@ void run_ramstage(void)
 			goto fail;
 	} else if (cbfs_prog_stage_load(&ramstage))
 		goto fail;
+	printk(BIOS_DEBUG, "%s after load_relocatable_ramstage\n", __func__);
 
 	stage_cache_add(STAGE_RAMSTAGE, &ramstage);
 
+	printk(BIOS_DEBUG, "%s after stage_cache_add\n", __func__);
+
+
 	timestamp_add_now(TS_END_COPYRAM);
+	printk(BIOS_DEBUG, "%s after timestamp_add_now\n", __func__);
 
 	/* This overrides the arg fetched from the relocatable module */
 	prog_set_arg(&ramstage, cbmem_top());
 
+	printk(BIOS_DEBUG, "%s after prog_set_arg\n", __func__);
+
 	prog_run(&ramstage);
 
+	printk(BIOS_DEBUG, "%s after prog_run ramstage\n", __func__);
+
 fail:
+	printk(BIOS_DEBUG, "%s i'm failing\n", __func__);
 	die_with_post_code(POST_INVALID_ROM, "Ramstage was not loaded!\n");
 }
 

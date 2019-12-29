@@ -15,6 +15,7 @@
  */
 
 #include <program_loading.h>
+#include <console/console.h>
 
 /* For each segment of a program loaded this function is called*/
 void prog_segment_loaded(uintptr_t start, size_t size, int flags)
@@ -37,8 +38,11 @@ void __weak arch_segment_loaded(uintptr_t start, size_t size,
 
 void prog_run(struct prog *prog)
 {
+	printk(BIOS_DEBUG, "%s before platform_prog_run\n", __func__);
 	platform_prog_run(prog);
+	printk(BIOS_DEBUG, "%s after platform_prog_run\n", __func__);
 	arch_prog_run(prog);
+	printk(BIOS_DEBUG, "%s after arch_prog_run\n", __func__);
 }
 
 void __weak platform_prog_run(struct prog *prog)

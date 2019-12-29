@@ -20,6 +20,9 @@
 
 void acpi_create_gnvs(global_nvs_t *gnvs)
 {
+	/* the lid is open by default. */
+	gnvs->lids = 1;
+
 	gnvs->tcrt = CRITICAL_TEMPERATURE;
 	gnvs->tpsv = PASSIVE_TEMPERATURE;
 }

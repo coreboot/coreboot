@@ -4,7 +4,6 @@
 #include <stdint.h>
 #include <types.h>
 #include <arch/barrier.h>
-#include <arch/cache.h>
 #include <arch/exception.h>
 #include <arch/transition.h>
 #include <console/console.h>

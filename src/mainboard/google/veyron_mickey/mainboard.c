@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/cache.h>
 #include <device/mmio.h>
 #include <boot/coreboot_tables.h>
 #include <device/device.h>

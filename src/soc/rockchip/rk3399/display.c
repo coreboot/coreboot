@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/cache.h>
 #include <arch/mmu.h>
 #include <device/mmio.h>
 #include <console/console.h>

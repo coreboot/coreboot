@@ -14,7 +14,6 @@
 
 #include <cbmem.h>
 #include <arch/stages.h>
-#include <arch/cache.h>
 
 /**
  * generic stage entry point. override this if board specific code is needed.

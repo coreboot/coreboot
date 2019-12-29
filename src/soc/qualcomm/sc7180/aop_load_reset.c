@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/cache.h>
 #include <cbfs.h>
 #include <halt.h>
 #include <console/console.h>

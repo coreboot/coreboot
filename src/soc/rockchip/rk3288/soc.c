@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/cache.h>
 #include <bootmode.h>
 #include <console/console.h>
 #include <device/device.h>

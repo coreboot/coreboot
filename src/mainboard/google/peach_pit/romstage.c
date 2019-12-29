@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/cache.h>
 #include <arch/exception.h>
 #include <armv7.h>
 #include <boot_device.h>

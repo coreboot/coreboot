@@ -14,7 +14,6 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/cache.h>
 #include <console/console.h>
 #include <soc/addressmap.h>
 #include <soc/pmc.h>

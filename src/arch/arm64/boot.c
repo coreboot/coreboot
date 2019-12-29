@@ -2,7 +2,6 @@
 /* This file is part of the coreboot project. */
 
 #include <cbmem.h>
-#include <arch/cache.h>
 #include <arch/lib_helpers.h>
 #include <arch/stages.h>
 #include <arch/transition.h>

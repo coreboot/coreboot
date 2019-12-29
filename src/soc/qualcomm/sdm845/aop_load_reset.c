@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/cache.h>
 #include <cbfs.h>
 #include <console/console.h>
 #include <soc/mmu.h>

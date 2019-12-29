@@ -14,7 +14,6 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/cache.h>
 #include <bootmem.h>
 #include <bootmode.h>
 #include <bootstate.h>

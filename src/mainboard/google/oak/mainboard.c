@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/cache.h>
 #include <boardid.h>
 #include <bootmode.h>
 #include <console/console.h>

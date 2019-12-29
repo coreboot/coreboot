@@ -18,9 +18,6 @@
 
 void acpi_create_gnvs(global_nvs_t *gnvs)
 {
-	// the lid is open by default.
-	gnvs->lids = 1;
-
 	gnvs->tcrt = 100;
 	gnvs->tpsv = 90;
 }

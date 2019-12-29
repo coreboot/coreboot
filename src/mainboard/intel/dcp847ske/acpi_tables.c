@@ -28,9 +28,6 @@ void acpi_create_gnvs(global_nvs_t *gnvs)
 	gnvs->s5u0 = 1;
 	gnvs->s5u1 = 1;
 
-	// No LID: open by default.
-	gnvs->lids = 1;
-
 	gnvs->tcrt = CRITICAL_TEMPERATURE;
 	gnvs->tpsv = PASSIVE_TEMPERATURE;
 }

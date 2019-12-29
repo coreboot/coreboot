@@ -106,6 +106,7 @@ static inline uint32_t inl(unsigned port)
 #define PCI_DEVICE_ID_INTEL_3450		0x3b16
 #define PCI_DEVICE_ID_INTEL_B55_B		0x3b1e
 #define PCI_DEVICE_ID_INTEL_SCH_POULSBO_LPC	0x8119
+#define PCI_DEVICE_ID_INTEL_ICELAKE_LP_U	0x3482
 #define PCI_DEVICE_ID_INTEL_Z68			0x1c44
 #define PCI_DEVICE_ID_INTEL_P67			0x1c46
 #define PCI_DEVICE_ID_INTEL_UM67		0x1c47
@@ -291,6 +292,7 @@ static inline uint32_t inl(unsigned port)
 #define PCI_DEVICE_ID_INTEL_CORE_7TH_GEN_Y	0x590C /* Kabylake (Mobile) */
 #define PCI_DEVICE_ID_INTEL_CORE_7TH_GEN_U_Q	0x5914 /* Kabylake (Mobile) */
 #define PCI_DEVICE_ID_INTEL_CORE_7TH_GEN_E3	0x5918 /* Kabylake Xeon E3 */
+#define PCI_DEVICE_ID_INTEL_CORE_10TH_GEN_U	0x8a12 /* Icelake U */
 
 
 /* Intel GPUs */
@@ -359,6 +361,7 @@ static inline uint32_t inl(unsigned port)
 #define PCI_DEVICE_ID_INTEL_IRIS_PRO_580	0x193B
 #define PCI_DEVICE_ID_INTEL_IRIS_PLUS_650	0x5927
 #define PCI_DEVICE_ID_INTEL_IRIS_PLUS_655	0x3EA5
+#define PCI_DEVICE_ID_INTEL_IRIS_PLUS_G7	0x8A52
 
 #if !defined(__DARWIN__) && !defined(__FreeBSD__)
 typedef struct { uint32_t hi, lo; } msr_t;

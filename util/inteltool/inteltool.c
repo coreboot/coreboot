@@ -139,6 +139,8 @@ static const struct {
 	  "7th generation (Kaby Lake family) Core Processor (Mobile)" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_CORE_7TH_GEN_E3,
 	  "7th generation (Kaby Lake family) Core Processor Xeon E3-1200" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_CORE_10TH_GEN_U,
+	  "10th generation (Icelake family) Core Processor (Mobile)" },
 	/* Southbridges (LPC controllers) */
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_82371XX, "371AB/EB/MB" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ICH10, "ICH10" },
@@ -216,6 +218,8 @@ static const struct {
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_HM75, "HM75" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_HM70, "HM70" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_NM70, "NM70" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ICELAKE_LP_U,
+	  "Icelake U LPC" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_LYNXPOINT_LP_FULL,
 	  "Lynx Point Low Power Full Featured Engineering Sample" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_LYNXPOINT_LP_PREM,
@@ -433,6 +437,8 @@ static const struct {
 	  "Intel(R) Iris Plus Graphics 650" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_IRIS_PLUS_655,
 	  "Intel(R) Iris Plus Graphics 655" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_IRIS_PLUS_G7,
+	  "Intel(R) Iris Plus Graphics G7" },
 };
 
 #ifndef __DARWIN__

@@ -34,7 +34,7 @@ static const u8 freq_shuffle_emcp[DRAM_DFS_SHUFFLE_MAX] = {
 	[DRAM_DFS_SHUFFLE_3] = LP4X_DDR1600,
 };
 
-u32 frequency_table[LP4X_DDRFREQ_MAX] = {
+static const u32 frequency_table[LP4X_DDRFREQ_MAX] = {
 	[LP4X_DDR1600] = 1600,
 	[LP4X_DDR2400] = 2400,
 	[LP4X_DDR3200] = 3200,
@@ -75,6 +75,13 @@ void dramc_set_broadcast(u32 onoff)
 u32 dramc_get_broadcast(void)
 {
 	return read32(&mt8183_infracfg->dramc_wbr);
+}
+
+u32 get_shu_freq(u8 shu)
+{
+	const u8 *freq_tbl = CONFIG(MT8183_DRAM_EMCP) ?
+		freq_shuffle_emcp : freq_shuffle;
+	return frequency_table[freq_tbl[shu]];
 }
 
 static u64 get_ch_rank_size(u8 chn, u8 rank)

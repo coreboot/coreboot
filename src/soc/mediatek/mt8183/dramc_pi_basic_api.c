@@ -427,6 +427,9 @@ void dramc_runtime_config(void)
 	transfer_pll_to_spm_control();
 	setbits32(&mtk_spm->spm_power_on_val0, 0x1 << 25);
 
+	for (u8 chn = 0; chn < CHANNEL_MAX; chn++)
+		dramc_hw_dqsosc(chn);
+
 	/* RX_TRACKING: ON */
 	for (u8 chn = 0; chn < CHANNEL_MAX; chn++)
 		dramc_rx_input_delay_tracking(chn);
@@ -498,6 +501,7 @@ void dramc_runtime_config(void)
 			(0x3 << 4) | (0x1 << 2) | (0x1 << 0));
 		setbits32(&ch[chn].ao.dummy_rd, 0x3 << 26);
 	}
+	dramc_dqs_precalculation_preset();
 
 	enable_emi_dcm();
 	dramc_enable_dramc_dcm();

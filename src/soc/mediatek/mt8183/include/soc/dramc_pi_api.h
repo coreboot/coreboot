@@ -29,6 +29,7 @@
 #endif
 
 #define DATLAT_TAP_NUMBER 32
+#define HW_REG_SHUFFLE_MAX  4
 
 #define DRAMC_BROADCAST_ON 0x1f
 #define DRAMC_BROADCAST_OFF 0x0
@@ -38,6 +39,7 @@
 #define IMP_DRVP_LP4X_UNTERM_VREF_SEL	0x1a
 #define IMP_DRVN_LP4X_UNTERM_VREF_SEL	0x16
 #define IMP_TRACK_LP4X_UNTERM_VREF_SEL	0x1a
+#define MR23_DEFAULT_VALUE		0x3f
 
 enum dram_te_op {
 	TE_OP_WRITE_READ_CHECK = 0,
@@ -114,5 +116,8 @@ void dramc_hw_gating_onoff(u8 chn, bool onoff);
 void dramc_enable_phy_dcm(bool bEn);
 void dramc_mode_reg_write(u8 chn, u8 mr_idx, u8 value);
 void dramc_cke_fix_onoff(u8 chn, bool fix_on, bool fix_off);
+u32 get_shu_freq(u8 shu);
+void dramc_hw_dqsosc(u8 chn);
+void dramc_dqs_precalculation_preset(void);
 
 #endif /* _DRAMC_PI_API_MT8183_H */

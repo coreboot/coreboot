@@ -452,7 +452,7 @@ static int usbdebug_init_(uintptr_t ehci_bar, unsigned int offset, struct ehci_d
 	info->ehci_debug = ehci_bar + offset;
 	info->ep_pipe[0].status	|= DBGP_EP_NOT_PRESENT;
 
-	dprintk(BIOS_INFO, "ehci_bar: 0x%x debug_offset 0x%x\n", ehci_bar, offset);
+	dprintk(BIOS_INFO, "ehci_bar: 0x%lx debug_offset 0x%x\n", ehci_bar, offset);
 
 	ehci_caps  = (struct ehci_caps *)ehci_bar;
 	ehci_regs  = (struct ehci_regs *)(ehci_bar +

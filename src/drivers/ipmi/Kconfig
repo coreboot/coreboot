@@ -42,3 +42,14 @@ config IPMI_KCS_TIMEOUT_MS
 	  The time unit is millisecond for each IPMI KCS transfer.
 	  IPMI spec v2.0 rev 1.1 Sec. 9.15, a five-second timeout or
 	  greater is recommended.
+
+config DRIVERS_IPMI_SUPERMICRO_OEM
+	bool "Supermicro IPMI OEM BMC support"
+	depends on IPMI_KCS
+	default n
+	help
+	  Tested on X11SSH only. Different BMCs might not support these OEM
+	  commands.
+	  The following features are implemented:
+	  * Communicates the BIOS version to the BMC
+	  * Communicates the BIOS date to the BMC

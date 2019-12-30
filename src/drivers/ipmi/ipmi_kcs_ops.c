@@ -23,6 +23,7 @@
 #include <delay.h>
 #include <timer.h>
 #include "ipmi_kcs.h"
+#include "ipmi_supermicro_oem.h"
 #include "chip.h"
 
 /* 4 bit encoding */
@@ -167,6 +168,12 @@ static void ipmi_kcs_init(struct device *dev)
 		/* Don't write tables if communication failed */
 		dev->enabled = 0;
 	}
+
+	if (!dev->enabled)
+		return;
+
+	if (CONFIG(DRIVERS_IPMI_SUPERMICRO_OEM))
+		supermicro_ipmi_oem(dev->path.pnp.port);
 }
 
 #if CONFIG(HAVE_ACPI_TABLES)

@@ -137,6 +137,9 @@ enum platform_type {
 #define MAD_CHNL		0x5000  /* Address Decoder Channel Configuration */
 #define MAD_DIMM_CH0		0x5004  /* Address Decode Channel 0 */
 #define MAD_DIMM_CH1		0x5008  /* Address Decode Channel 1 */
+#define MEM_TRML_ESTIMATION_CONFIG	0x5880
+#define MEM_TRML_THRESHOLDS_CONFIG	0x5888
+#define MEM_TRML_INTERRUPT	0x58a8
 #define MC_BIOS_REQ		0x5e00
 #define MC_BIOS_DATA		0x5e04
 #define SSKPD			0x5d14	/* 16bit (scratchpad) */

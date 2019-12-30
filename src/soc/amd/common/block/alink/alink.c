@@ -36,7 +36,7 @@ void alink_ab_indx(u32 reg_space, u32 reg_addr, u32 mask, u32 val)
 	// printk(BIOS_DEBUG, "about write %x, index=%x", tmp,
 	//				(reg_space&0x3)<<29 | reg_addr);
 
-	/* probably we dont have to do it again. */
+	/* probably we don't have to do it again. */
 	outl((reg_space & 0x7) << 29 | reg_addr, AB_INDX);
 	outl(tmp, AB_DATA);
 	outl(0, AB_INDX);
@@ -60,7 +60,7 @@ void alink_rc_indx(u32 reg_space, u32 reg_addr, u32 port, u32 mask, u32 val)
 	//printk(BIOS_DEBUG, "about write %x, index=%x", tmp,
 	//		(reg_space&0x3)<<29 | (port&3) << 24 | reg_addr);
 
-	/* probably we dont have to do it again. */
+	/* probably we don't have to do it again. */
 	outl((reg_space & 0x7) << 29 | (port & 3) << 24 | reg_addr, AB_INDX);
 	outl(tmp, AB_DATA);
 	outl(0, AB_INDX);

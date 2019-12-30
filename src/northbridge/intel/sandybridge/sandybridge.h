@@ -65,7 +65,6 @@ enum platform_type {
 #define MCHBAR		0x48
 #define PCIEXBAR	0x60
 #define DMIBAR		0x68
-#define X60BAR		0x60
 
 #define GGC		0x50			/* GMCH Graphics Control */
 

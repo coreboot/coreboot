@@ -127,8 +127,11 @@ enum platform_type {
 #define MCHBAR32_AND_OR(x, and, or) \
 	(MCHBAR32(x) = (MCHBAR32(x) & (and)) | (or))
 
-#define SSKPD		0x5d14	/* 16bit (scratchpad) */
-#define BIOS_RESET_CPL	0x5da8	/* 8bit */
+#define PM_PDWN_Config		0x4cb0
+#define MC_BIOS_REQ		0x5e00
+#define MC_BIOS_DATA		0x5e04
+#define SSKPD			0x5d14	/* 16bit (scratchpad) */
+#define BIOS_RESET_CPL		0x5da8	/* 8bit */
 
 /*
  * EPBAR - Egress Port Root Complex Register Block

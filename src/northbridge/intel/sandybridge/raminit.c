@@ -101,9 +101,9 @@ static void report_memory_config(void)
 	u32 addr_decoder_common, addr_decode_ch[NUM_CHANNELS];
 	int i, refclk;
 
-	addr_decoder_common = MCHBAR32(0x5000);
-	addr_decode_ch[0] = MCHBAR32(0x5004);
-	addr_decode_ch[1] = MCHBAR32(0x5008);
+	addr_decoder_common = MCHBAR32(MAD_CHNL);
+	addr_decode_ch[0] = MCHBAR32(MAD_DIMM_CH0);
+	addr_decode_ch[1] = MCHBAR32(MAD_DIMM_CH1);
 
 	refclk = MCHBAR32(MC_BIOS_REQ) & 0x100 ? 100 : 133;
 

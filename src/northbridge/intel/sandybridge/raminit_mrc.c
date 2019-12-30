@@ -149,9 +149,9 @@ static void report_memory_config(void)
 	u32 addr_decoder_common, addr_decode_ch[2];
 	int i;
 
-	addr_decoder_common = MCHBAR32(0x5000);
-	addr_decode_ch[0] = MCHBAR32(0x5004);
-	addr_decode_ch[1] = MCHBAR32(0x5008);
+	addr_decoder_common = MCHBAR32(MAD_CHNL);
+	addr_decode_ch[0] = MCHBAR32(MAD_DIMM_CH0);
+	addr_decode_ch[1] = MCHBAR32(MAD_DIMM_CH1);
 
 	printk(BIOS_DEBUG, "memcfg DDR3 clock %d MHz\n",
 	       (MCHBAR32(0x5e04) * 13333 * 2 + 50)/100);

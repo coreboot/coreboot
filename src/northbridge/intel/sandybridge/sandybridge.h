@@ -127,7 +127,15 @@ enum platform_type {
 #define MCHBAR32_AND_OR(x, and, or) \
 	(MCHBAR32(x) = (MCHBAR32(x) & (and)) | (or))
 
+#define TC_DBP_C0		0x4000  /* Timing of DDR - bin parameters */
+#define TC_RAP_C0		0x4004  /* Timing of DDR - regular access parameters */
+#define SC_IO_LATENCY_C0	0x4028  /* IO Latency Configuration */
+#define TC_RFP_C0		0x4294  /* Refresh Parameters */
+#define TC_RFTP_C0		0x4298  /* Refresh Timing Parameters */
 #define PM_PDWN_Config		0x4cb0
+#define MAD_CHNL		0x5000  /* Address Decoder Channel Configuration */
+#define MAD_DIMM_CH0		0x5004  /* Address Decode Channel 0 */
+#define MAD_DIMM_CH1		0x5008  /* Address Decode Channel 1 */
 #define MC_BIOS_REQ		0x5e00
 #define MC_BIOS_DATA		0x5e04
 #define SSKPD			0x5d14	/* 16bit (scratchpad) */

@@ -229,8 +229,8 @@ void dram_timing_regs(ramctr_timing *ctrl)
 		reg |= (ctrl->CAS << 8);
 		reg |= (ctrl->CWL << 12);
 		reg |= (ctrl->tRAS << 16);
-		printram("DBP [%x] = %x\n", 0x400 * channel + 0x4000, reg);
-		MCHBAR32(0x400 * channel + 0x4000) = reg;
+		printram("DBP [%x] = %x\n", TC_DBP_C0 + 0x400 * channel, reg);
+		MCHBAR32(TC_DBP_C0 + 0x400 * channel) = reg;
 
 		// RAP
 		reg = 0;
@@ -241,8 +241,8 @@ void dram_timing_regs(ramctr_timing *ctrl)
 		reg |= (ctrl->tFAW << 16);
 		reg |= (ctrl->tWR << 24);
 		reg |= (3 << 30);
-		printram("RAP [%x] = %x\n", 0x400 * channel + 0x4004, reg);
-		MCHBAR32(0x400 * channel + 0x4004) = reg;
+		printram("RAP [%x] = %x\n", TC_RAP_C0 + 0x400 * channel, reg);
+		MCHBAR32(TC_RAP_C0 + 0x400 * channel) = reg;
 
 		// OTHP
 		addr = 0x400 * channel + 0x400c;
@@ -271,10 +271,10 @@ void dram_timing_regs(ramctr_timing *ctrl)
 		reg = ((ctrl->tREFI & 0xffff) << 0) |
 			((ctrl->tRFC & 0x1ff) << 16) |
 			(((val32 / 1024) & 0x7f) << 25);
-		printram("REFI [%x] = %x\n", 0x400 * channel + 0x4298, reg);
-		MCHBAR32(0x400 * channel + 0x4298) = reg;
+		printram("REFI [%x] = %x\n", TC_RFTP_C0 + 0x400 * channel, reg);
+		MCHBAR32(TC_RFTP_C0 + 0x400 * channel) = reg;
 
-		MCHBAR32_OR(0x400 * channel + 0x4294,  0xff);
+		MCHBAR32_OR(TC_RFP_C0 + 0x400 * channel,  0xff);
 
 		// SRFTP
 		reg = 0;
@@ -340,7 +340,7 @@ void dram_dimm_set_mapping(ramctr_timing * ctrl)
 {
 	int channel;
 	FOR_ALL_CHANNELS {
-		MCHBAR32(0x5004 + channel * 4) = ctrl->mad_dimm[channel];
+		MCHBAR32(MAD_DIMM_CH0 + channel * 4) = ctrl->mad_dimm[channel];
 	}
 }
 
@@ -364,14 +364,14 @@ void dram_zones(ramctr_timing * ctrl, int training)
 		reg = (reg & ~0xff000000) | val << 24;
 		reg = (reg & ~0xff0000) | (2 * val) << 16;
 		MCHBAR32(0x5014) = reg;
-		MCHBAR32(0x5000) = 0x24;
+		MCHBAR32(MAD_CHNL) = 0x24;
 	} else {
 		reg = MCHBAR32(0x5014);
 		val = ch0size / 256;
 		reg = (reg & ~0xff000000) | val << 24;
 		reg = (reg & ~0xff0000) | (2 * val) << 16;
 		MCHBAR32(0x5014) = reg;
-		MCHBAR32(0x5000) = 0x21;
+		MCHBAR32(MAD_CHNL) = 0x21;
 	}
 }
 
@@ -926,7 +926,7 @@ static const u32 lane_registers[] = {
 
 void program_timings(ramctr_timing * ctrl, int channel)
 {
-	u32 reg32, reg_4024, reg_c14, reg_c18, reg_4028;
+	u32 reg32, reg_4024, reg_c14, reg_c18, reg_io_latency;
 	int lane;
 	int slotrank, slot;
 	int full_shift = 0;
@@ -988,8 +988,8 @@ void program_timings(ramctr_timing * ctrl, int channel)
 	MCHBAR32(0xc14 + channel * 0x100) = reg_c14;
 	MCHBAR32(0xc18 + channel * 0x100) = reg_c18;
 
-	reg_4028 = MCHBAR32(0x4028 + 0x400 * channel);
-	reg_4028 &= 0xffff0000;
+	reg_io_latency = MCHBAR32(SC_IO_LATENCY_C0 + 0x400 * channel);
+	reg_io_latency &= 0xffff0000;
 
 	reg_4024 = 0;
 
@@ -1025,7 +1025,7 @@ void program_timings(ramctr_timing * ctrl, int channel)
 			 post_timA_max_high - post_timA_min_high)
 			shift_402x = -1;
 
-		reg_4028 |=
+		reg_io_latency |=
 		    (ctrl->timings[channel][slotrank].val_4028 + shift_402x -
 		     post_timA_min_high) << (4 * slotrank);
 		reg_4024 |=
@@ -1065,7 +1065,7 @@ void program_timings(ramctr_timing * ctrl, int channel)
 		}
 	}
 	MCHBAR32(0x4024 + 0x400 * channel) = reg_4024;
-	MCHBAR32(0x4028 + 0x400 * channel) = reg_4028;
+	MCHBAR32(SC_IO_LATENCY_C0 + 0x400 * channel) = reg_io_latency;
 }
 
 static void test_timA(ramctr_timing * ctrl, int channel, int slotrank)
@@ -3169,7 +3169,7 @@ void final_registers(ramctr_timing * ctrl)
 	MCHBAR32_AND(0x58a8, ~0x1f);
 
 	FOR_ALL_CHANNELS
-		MCHBAR32_AND_OR(0x4294 + 0x400 * channel, ~0x30000, 1 << 16);
+		MCHBAR32_AND_OR(TC_RFP_C0 + 0x400 * channel, ~0x30000, 1 << 16);
 
 	MCHBAR32_OR(0x5030, 1);
 	MCHBAR32_OR(0x5030, 0x80);

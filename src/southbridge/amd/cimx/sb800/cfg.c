@@ -93,7 +93,7 @@ void sb800_cimx_config(AMDSBCFG *sb_config)
 	sb_config->AzaliaController = AZALIA_CONTROLLER;
 	sb_config->AzaliaPinCfg = AZALIA_PIN_CONFIG;
 	sb_config->AZALIACONFIG.AzaliaSdinPin = AZALIA_SDIN_PIN;
-	/* Mainboard Specific Azalia Cocec Verb Table */
+	/* Mainboard Specific Azalia Codec Verb Table */
 #ifdef AZALIA_OEM_VERB_TABLE
 	sb_config->AZOEMTBL.pAzaliaOemCodecTablePtr = (CODECTBLLIST *)AZALIA_OEM_VERB_TABLE;
 #else

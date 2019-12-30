@@ -54,6 +54,10 @@ config CPU_SPECIFIC_OPTIONS
 	select UDK_2015_BINDING
 	select CPU_INTEL_FIRMWARE_INTERFACE_TABLE
 
+config MMCONF_BASE_ADDRESS
+	hex
+	default 0xe0000000
+
 config FSP_T_ADDR
 	hex "Intel FSP-T (temp ram init) binary location"
 	depends on ADD_FSP_BINARIES && FSP_CAR

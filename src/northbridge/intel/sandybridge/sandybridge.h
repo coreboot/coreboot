@@ -82,8 +82,8 @@ enum platform_type {
 #define PAVPC		0x58	/* Protected Audio Video Path Control */
 #define DPR		0x5c	/* DMA Protected Range */
 
-#define MEBASE		0x70
-#define MEMASK		0x78
+#define MESEG_BASE	0x70
+#define MESEG_MASK	0x78
 
 #define PAM0		0x80
 #define PAM1		0x81

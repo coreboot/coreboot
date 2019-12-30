@@ -585,33 +585,33 @@ void dram_memorymap(ramctr_timing * ctrl, int me_uma_size)
 	pci_write_config32(PCI_DEV(0, 0, 0), BGSM, reg);
 
 	if (me_uma_size) {
-		reg = pci_read_config32(PCI_DEV(0, 0, 0), MEMASK + 4);
+		reg = pci_read_config32(PCI_DEV(0, 0, 0), MESEG_MASK + 4);
 		val = (0x80000 - me_uma_size) & 0xfffff000;
 		reg = (reg & ~0x000fffff) | (val >> 12);
-		printk(BIOS_DEBUG, "PCI(0, 0, 0)[%x] = %x\n", MEMASK + 4, reg);
-		pci_write_config32(PCI_DEV(0, 0, 0), MEMASK + 4, reg);
+		printk(BIOS_DEBUG, "PCI(0, 0, 0)[%x] = %x\n", MESEG_MASK + 4, reg);
+		pci_write_config32(PCI_DEV(0, 0, 0), MESEG_MASK + 4, reg);
 
 		// ME base
-		reg = pci_read_config32(PCI_DEV(0, 0, 0), MEBASE);
+		reg = pci_read_config32(PCI_DEV(0, 0, 0), MESEG_BASE);
 		val = mestolenbase & 0xfff;
 		reg = (reg & ~0xfff00000) | (val << 20);
-		printk(BIOS_DEBUG, "PCI(0, 0, 0)[%x] = %x\n", MEBASE, reg);
-		pci_write_config32(PCI_DEV(0, 0, 0), MEBASE, reg);
+		printk(BIOS_DEBUG, "PCI(0, 0, 0)[%x] = %x\n", MESEG_BASE, reg);
+		pci_write_config32(PCI_DEV(0, 0, 0), MESEG_BASE, reg);
 
-		reg = pci_read_config32(PCI_DEV(0, 0, 0), MEBASE + 4);
+		reg = pci_read_config32(PCI_DEV(0, 0, 0), MESEG_BASE + 4);
 		val = mestolenbase & 0xfffff000;
 		reg = (reg & ~0x000fffff) | (val >> 12);
-		printk(BIOS_DEBUG, "PCI(0, 0, 0)[%x] = %x\n", MEBASE + 4, reg);
-		pci_write_config32(PCI_DEV(0, 0, 0), MEBASE + 4, reg);
+		printk(BIOS_DEBUG, "PCI(0, 0, 0)[%x] = %x\n", MESEG_BASE + 4, reg);
+		pci_write_config32(PCI_DEV(0, 0, 0), MESEG_BASE + 4, reg);
 
 		// ME mask
-		reg = pci_read_config32(PCI_DEV(0, 0, 0), MEMASK);
+		reg = pci_read_config32(PCI_DEV(0, 0, 0), MESEG_MASK);
 		val = (0x80000 - me_uma_size) & 0xfff;
 		reg = (reg & ~0xfff00000) | (val << 20);
 		reg = reg | (1 << 10);	// set lockbit on ME mem
 		reg = reg | (1 << 11);	// set ME memory enable
-		printk(BIOS_DEBUG, "PCI(0, 0, 0)[%x] = %x\n", MEMASK, reg);
-		pci_write_config32(PCI_DEV(0, 0, 0), MEMASK, reg);
+		printk(BIOS_DEBUG, "PCI(0, 0, 0)[%x] = %x\n", MESEG_MASK, reg);
+		pci_write_config32(PCI_DEV(0, 0, 0), MESEG_MASK, reg);
 	}
 }
 

@@ -24,7 +24,7 @@ void intel_sandybridge_finalize_smm(void)
 	pci_or_config16(PCI_DEV_SNB, GGC, 1 << 0);
 	pci_or_config16(PCI_DEV_SNB, PAVPC, 1 << 2);
 	pci_or_config32(PCI_DEV_SNB, DPR, 1 << 0);
-	pci_or_config32(PCI_DEV_SNB, MEMASK, 1 << 10);
+	pci_or_config32(PCI_DEV_SNB, MESEG_MASK, 1 << 10);
 	pci_or_config32(PCI_DEV_SNB, REMAPBASE, 1 << 0);
 	pci_or_config32(PCI_DEV_SNB, REMAPLIMIT, 1 << 0);
 	pci_or_config32(PCI_DEV_SNB, TOM, 1 << 0);

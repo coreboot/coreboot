@@ -13,10 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <types.h>
-
-#include <armv7.h>
-
 #include <program_loading.h>
 #include <console/console.h>
 

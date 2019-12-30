@@ -159,7 +159,7 @@ static void set_vga_enable_reg(u32 nodeid, u32 linkn)
 
 /**
  * @return
- *  @retval 2  resoure does not exist, usable
+ *  @retval 2  resource does not exist, usable
  *  @retval 0  resource exists, not usable
  *  @retval 1  resource exist, resource has been allocated before
  */

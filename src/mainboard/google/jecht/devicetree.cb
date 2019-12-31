@@ -30,10 +30,6 @@ chip soc/intel/broadwell
 	register "sata_port_map" = "0x1"
 	register "sata_devslp_disable" = "0x1"
 
-	register "sio_acpi_mode" = "0"
-	register "sio_i2c0_voltage" = "0" # 3.3V
-	register "sio_i2c1_voltage" = "0" # 3.3V
-
 	# Force enable ASPM for PCIe Port 4
 	register "pcie_port_force_aspm" = "0x10"
 

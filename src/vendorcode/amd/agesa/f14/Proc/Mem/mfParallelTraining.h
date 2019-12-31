@@ -104,12 +104,6 @@ typedef struct _DIE_INFO {
  *----------------------------------------------------------------------------
  */
 
-BOOLEAN
-MemFParallelTraining (
-  IN OUT   REMOTE_TRAINING_ENV *EnvPtr,
-  IN OUT   AMD_CONFIG_PARAMS *StdHeader
- );
-
 #endif  /* _MFPARALLELTRAINING_H_ */
 
 

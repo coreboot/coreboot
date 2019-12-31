@@ -163,6 +163,11 @@ M:	Patrick Rudolph <siro@das-labor.org>
 S:	Maintained
 F:	src/mainboard/lenovo/
 
+LENOVO G505S MAINBOARD
+M:	Mike Banon <mikebdp2@gmail.com>
+S:	Maintained
+F:	src/mainboard/lenovo/g505s/
+
 APPLE MAINBOARDS
 M:	Evgeny Zinoviev <me@ch1p.io>
 S:	Maintained
@@ -281,6 +286,11 @@ ASROCK H81M-HDS MAINBOARD
 M:	Tristan Corrick <tristan@corrick.kiwi>
 S:	Maintained
 F:	src/mainboard/asrock/h81m-hds/
+
+ASUS AM1I-A MAINBOARD
+M:	Mike Banon <mikebdp2@gmail.com>
+S:	Maintained
+F:	src/mainboard/asus/am1i-a/
 
 ASUS MAXIMUS IV GENE-Z MAINBOARD
 M:	Tristan Corrick <tristan@corrick.kiwi>

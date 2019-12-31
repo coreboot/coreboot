@@ -1026,7 +1026,7 @@ void program_timings(ramctr_timing * ctrl, int channel)
 			shift_402x = -1;
 
 		reg_io_latency |=
-		    (ctrl->timings[channel][slotrank].val_4028 + shift_402x -
+		    (ctrl->timings[channel][slotrank].io_latency + shift_402x -
 		     post_timA_min_high) << (4 * slotrank);
 		reg_4024 |=
 		    (ctrl->timings[channel][slotrank].val_4024 +
@@ -1260,9 +1260,9 @@ static int discover_402x(ramctr_timing *ctrl, int channel, int slotrank,
 			printram("4024 -= 2;\n");
 			continue;
 		}
-		ctrl->timings[channel][slotrank].val_4028 += 2;
+		ctrl->timings[channel][slotrank].io_latency += 2;
 		printram("4028 += 2;\n");
-		if (ctrl->timings[channel][slotrank].val_4028 >= 0x10) {
+		if (ctrl->timings[channel][slotrank].io_latency >= 0x10) {
 			printk(BIOS_EMERG, "402x discovery failed (2): %d, %d\n",
 			       channel, slotrank);
 			return MAKE_ERR;
@@ -1321,7 +1321,7 @@ static void post_timA_change(ramctr_timing * ctrl, int channel, int slotrank,
 	else
 		shift_402x = 0;
 
-	ctrl->timings[channel][slotrank].val_4028 += shift_402x;
+	ctrl->timings[channel][slotrank].io_latency += shift_402x;
 	ctrl->timings[channel][slotrank].val_4024 += shift_402x;
 	printram("4024 += %d;\n", shift_402x);
 	printram("4028 += %d;\n", shift_402x);
@@ -1367,7 +1367,7 @@ int read_training(ramctr_timing * ctrl)
 
 		MCHBAR32(0x3400) = (slotrank << 2) | 0x8001;
 
-		ctrl->timings[channel][slotrank].val_4028 = 4;
+		ctrl->timings[channel][slotrank].io_latency = 4;
 		ctrl->timings[channel][slotrank].val_4024 = 55;
 		program_timings(ctrl, channel);
 
@@ -1384,7 +1384,7 @@ int read_training(ramctr_timing * ctrl)
 		}
 
 		if (all_high) {
-			ctrl->timings[channel][slotrank].val_4028--;
+			ctrl->timings[channel][slotrank].io_latency--;
 			printram("4028--;\n");
 			FOR_ALL_LANES {
 				ctrl->timings[channel][slotrank].lanes[lane].
@@ -1394,7 +1394,7 @@ int read_training(ramctr_timing * ctrl)
 			}
 		} else if (some_high) {
 			ctrl->timings[channel][slotrank].val_4024++;
-			ctrl->timings[channel][slotrank].val_4028++;
+			ctrl->timings[channel][slotrank].io_latency++;
 			printram("4024++;\n");
 			printram("4028++;\n");
 		}
@@ -1418,14 +1418,14 @@ int read_training(ramctr_timing * ctrl)
 		FOR_ALL_LANES {
 			ctrl->timings[channel][slotrank].lanes[lane].timA -= mnmx.timA_min_high * 0x40;
 		}
-		ctrl->timings[channel][slotrank].val_4028 -= mnmx.timA_min_high;
+		ctrl->timings[channel][slotrank].io_latency -= mnmx.timA_min_high;
 		printram("4028 -= %d;\n", mnmx.timA_min_high);
 
 		post_timA_change(ctrl, channel, slotrank, &mnmx);
 
 		printram("4/8: %d, %d, %x, %x\n", channel, slotrank,
 		       ctrl->timings[channel][slotrank].val_4024,
-		       ctrl->timings[channel][slotrank].val_4028);
+		       ctrl->timings[channel][slotrank].io_latency);
 
 		printram("final results:\n");
 		FOR_ALL_LANES
@@ -1913,7 +1913,7 @@ static void adjust_high_timB(ramctr_timing * ctrl)
 		MCHBAR32(0x4228 + 0x400 * channel) = 0x3f105;
 		MCHBAR32(0x4238 + 0x400 * channel) = 0x4000c01 | ((ctrl->tRP +
 			  ctrl->timings[channel][slotrank].val_4024 +
-			  ctrl->timings[channel][slotrank].val_4028) << 16);
+			  ctrl->timings[channel][slotrank].io_latency) << 16);
 		MCHBAR32(0x4208 + 0x400 * channel) = (slotrank << 24) | 0x60008;
 		MCHBAR32(0x4218 + 0x400 * channel) = 0;
 
@@ -2931,12 +2931,12 @@ void normalize_training(ramctr_timing * ctrl)
 		printram("normalize %d, %d, %d: mat %d\n",
 		    channel, slotrank, lane, mat);
 
-		delta = (mat >> 6) - ctrl->timings[channel][slotrank].val_4028;
+		delta = (mat >> 6) - ctrl->timings[channel][slotrank].io_latency;
 		printram("normalize %d, %d, %d: delta %d\n",
 		    channel, slotrank, lane, delta);
 
 		ctrl->timings[channel][slotrank].val_4024 += delta;
-		ctrl->timings[channel][slotrank].val_4028 += delta;
+		ctrl->timings[channel][slotrank].io_latency += delta;
 	}
 
 	FOR_ALL_POPULATED_CHANNELS {

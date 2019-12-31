@@ -54,8 +54,8 @@ typedef struct dimm_info_st {
 struct ram_rank_timings {
 	/* Register 4024. One byte per slotrank.  */
 	u8 val_4024;
-	/* Register 4028. One nibble per slotrank.  */
-	u8 val_4028;
+	/* IO_LATENCY register. One nibble per slotrank.  */
+	u8 io_latency;
 
 	int val_320c;
 

@@ -23,6 +23,8 @@ chip soc/amd/stoneyridge
 	register "stapm_percent" = "68"
 	register "stapm_time_ms" = "900000"
 	register "stapm_power_mw" = "7800"
+	register "lvds_poseq_varybl_to_blon" = "0x5"
+	register "lvds_poseq_blon_to_varybl" = "0x5"
 
 	# Enable I2C0 for audio, USB3 hub at 400kHz
 	register "i2c[0]" = "{

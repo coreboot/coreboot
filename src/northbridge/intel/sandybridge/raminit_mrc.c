@@ -154,7 +154,7 @@ static void report_memory_config(void)
 	addr_decode_ch[1] = MCHBAR32(MAD_DIMM_CH1);
 
 	printk(BIOS_DEBUG, "memcfg DDR3 clock %d MHz\n",
-	       (MCHBAR32(0x5e04) * 13333 * 2 + 50)/100);
+	       (MCHBAR32(MC_BIOS_DATA) * 13333 * 2 + 50)/100);
 	printk(BIOS_DEBUG, "memcfg channel assignment: A: %d, B % d, C % d\n",
 	       addr_decoder_common & 3,
 	       (addr_decoder_common >> 2) & 3,

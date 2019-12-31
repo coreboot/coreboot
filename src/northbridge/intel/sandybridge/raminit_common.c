@@ -3134,10 +3134,10 @@ void final_registers(ramctr_timing * ctrl)
 
 	if (is_mobile)
 		/* APD - DLL Off, 64 DCLKs until idle, decision per rank */
-		MCHBAR32(PM_PDWN_Config) = 0x00000740;
+		MCHBAR32(PM_PDWN_CONFIG) = 0x00000740;
 	else
 		/* APD - PPD, 64 DCLKs until idle, decision per rank */
-		MCHBAR32(PM_PDWN_Config) = 0x00000340;
+		MCHBAR32(PM_PDWN_CONFIG) = 0x00000340;
 
 	FOR_ALL_CHANNELS
 		MCHBAR32(0x4380 + 0x400 * channel) = 0x00000aaa;

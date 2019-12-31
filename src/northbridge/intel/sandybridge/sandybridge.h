@@ -133,7 +133,7 @@ enum platform_type {
 #define SC_IO_LATENCY_C0	0x4028  /* IO Latency Configuration */
 #define TC_RFP_C0		0x4294  /* Refresh Parameters */
 #define TC_RFTP_C0		0x4298  /* Refresh Timing Parameters */
-#define PM_PDWN_Config		0x4cb0
+#define PM_PDWN_CONFIG		0x4cb0
 #define MAD_CHNL		0x5000  /* Address Decoder Channel Configuration */
 #define MAD_DIMM_CH0		0x5004  /* Address Decode Channel 0 */
 #define MAD_DIMM_CH1		0x5008  /* Address Decode Channel 1 */

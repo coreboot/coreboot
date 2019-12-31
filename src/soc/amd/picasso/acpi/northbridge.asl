@@ -45,10 +45,6 @@ Device(AMRT) {
 	Name(_ADR, 0x00000000)
 } /* end AMRT */
 
-Device(PCSD) { /* Processor configuration space devices */
-	Name(_ADR, 0x00180000)	/* Dev# = BSP Dev#, Func# = 0 */
-}
-
 /* Internal Graphics */
 Device(IGFX) {
 	Name(_ADR, 0x00010000)

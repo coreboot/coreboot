@@ -44,10 +44,6 @@ Device(AMRT) {
 	Name(_ADR, 0x00000000)
 } /* end AMRT */
 
-Device(PCSD) { /* Processor configuration space devices */
-	Name(_ADR, 0x00180000)	/* Dev# = BSP Dev#, Func# = 0 */
-}
-
 /* Gpp 0 */
 Device(PBR4) {
 	Name(_ADR, 0x00020001)

@@ -44,10 +44,6 @@ Device(AMRT) {
 	Name(_ADR, 0x00000000)
 } /* end AMRT */
 
-Device(PCSD) { /* Processor configuration space devices */
-	Name(_ADR, 0x00180000)	/* Dev# = BSP Dev#, Func# = 0 */
-}
-
 /* Dev2 is also an external GFX bridge */
 Device(PBR2) {
 	Name(_ADR, 0x00020000)

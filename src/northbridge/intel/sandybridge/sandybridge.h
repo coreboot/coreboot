@@ -125,25 +125,24 @@ enum platform_type {
 #define MCHBAR32(x) (*((volatile u32 *)(DEFAULT_MCHBAR + (x))))
 #define MCHBAR32_OR(x, or) (MCHBAR32(x) = (MCHBAR32(x) | (or)))
 #define MCHBAR32_AND(x, and) (MCHBAR32(x) = (MCHBAR32(x) & (and)))
-#define MCHBAR32_AND_OR(x, and, or) \
-	(MCHBAR32(x) = (MCHBAR32(x) & (and)) | (or))
+#define MCHBAR32_AND_OR(x, and, or) (MCHBAR32(x) = (MCHBAR32(x) & (and)) | (or))
 
-#define TC_DBP_C0		0x4000  /* Timing of DDR - bin parameters */
-#define TC_RAP_C0		0x4004  /* Timing of DDR - regular access parameters */
-#define SC_IO_LATENCY_C0	0x4028  /* IO Latency Configuration */
-#define TC_RFP_C0		0x4294  /* Refresh Parameters */
-#define TC_RFTP_C0		0x4298  /* Refresh Timing Parameters */
-#define PM_PDWN_CONFIG		0x4cb0
-#define MAD_CHNL		0x5000  /* Address Decoder Channel Configuration */
-#define MAD_DIMM_CH0		0x5004  /* Address Decode Channel 0 */
-#define MAD_DIMM_CH1		0x5008  /* Address Decode Channel 1 */
+#define TC_DBP_C0			0x4000  /* Timing of DDR - bin parameters */
+#define TC_RAP_C0			0x4004  /* Timing of DDR - regular access parameters */
+#define SC_IO_LATENCY_C0		0x4028  /* IO Latency Configuration */
+#define TC_RFP_C0			0x4294  /* Refresh Parameters */
+#define TC_RFTP_C0			0x4298  /* Refresh Timing Parameters */
+#define PM_PDWN_CONFIG			0x4cb0
+#define MAD_CHNL			0x5000  /* Address Decoder Channel Configuration */
+#define MAD_DIMM_CH0			0x5004  /* Address Decode Channel 0 */
+#define MAD_DIMM_CH1			0x5008  /* Address Decode Channel 1 */
 #define MEM_TRML_ESTIMATION_CONFIG	0x5880
 #define MEM_TRML_THRESHOLDS_CONFIG	0x5888
-#define MEM_TRML_INTERRUPT	0x58a8
-#define MC_BIOS_REQ		0x5e00
-#define MC_BIOS_DATA		0x5e04
-#define SSKPD			0x5d14	/* 16bit (scratchpad) */
-#define BIOS_RESET_CPL		0x5da8	/* 8bit */
+#define MEM_TRML_INTERRUPT		0x58a8
+#define MC_BIOS_REQ			0x5e00
+#define MC_BIOS_DATA			0x5e04
+#define SSKPD				0x5d14	/* 16bit (scratchpad) */
+#define BIOS_RESET_CPL			0x5da8	/* 8bit */
 
 /*
  * EPBAR - Egress Port Root Complex Register Block

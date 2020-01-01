@@ -8,7 +8,6 @@ chip soc/intel/skylake
 
 	register "gpu_pch_backlight_pwm_hz"	  = "200"
 
-	# Enable deep Sx states
 	register "deep_s3_enable_ac" = "0"
 	register "deep_s3_enable_dc" = "0"
 	register "deep_s5_enable_ac" = "0"

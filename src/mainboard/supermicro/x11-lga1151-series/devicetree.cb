@@ -1,6 +1,5 @@
 chip soc/intel/skylake
 
-	# Enable deep Sx states
 	register "deep_s5_enable_ac" = "0"
 	register "deep_s5_enable_dc" = "0"
 	register "deep_sx_config" = "DSX_EN_LAN_WAKE_PIN"

@@ -249,6 +249,7 @@ MemFS3GetDeviceList (
   // Base on the size of the device list, apply for a buffer for it.
   AllocHeapParams.RequestedBufferSize = BufferSize + sizeof (DEVICE_BLOCK_HEADER);
   AllocHeapParams.BufferHandle = AMD_S3_NB_INFO_BUFFER_HANDLE;
+  AllocHeapParams.Persist = HEAP_S3_RESUME;
   AGESA_TESTPOINT (TpIfBeforeAllocateMemoryS3SaveBuffer, StdHeader);
   if (HeapAllocateBuffer (&AllocHeapParams, StdHeader) != AGESA_SUCCESS) {
     return AGESA_FATAL;

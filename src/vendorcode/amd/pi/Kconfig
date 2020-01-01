@@ -42,9 +42,9 @@ config AGESA_BINARY_PI_FILE
 	string "AGESA PI binary file name"
 	default "3rdparty/blobs/pi/amd/00630F01/FP3/AGESA.bin" if CPU_AMD_PI_00630F01
 	default "3rdparty/blobs/pi/amd/00730F01/FT3b/AGESA.bin" if CPU_AMD_PI_00730F01
-	default "3rdparty/amd_blobs/stoneyridge/pi/CZ/\$(CONFIG_AMD_SOC_PACKAGE)/AGESA.bin" if AMD_APU_MERLINFALCON && USE_AMD_BLOBS
-	default "3rdparty/amd_blobs/stoneyridge/pi/ST/\$(CONFIG_AMD_SOC_PACKAGE)/AGESA.bin" if AMD_APU_PRAIRIEFALCON && USE_AMD_BLOBS
-	default "3rdparty/amd_blobs/stoneyridge/pi/ST/\$(CONFIG_AMD_SOC_PACKAGE)/AGESA.bin" if AMD_APU_STONEYRIDGE && USE_AMD_BLOBS
+	default "3rdparty/amd_blobs/stoneyridge/pi/CZ/\$(CONFIG_AMD_SOC_PACKAGE)/AGESA.bin" if AMD_APU_MERLINFALCON
+	default "3rdparty/amd_blobs/stoneyridge/pi/ST/\$(CONFIG_AMD_SOC_PACKAGE)/AGESA.bin" if AMD_APU_PRAIRIEFALCON
+	default "3rdparty/amd_blobs/stoneyridge/pi/ST/\$(CONFIG_AMD_SOC_PACKAGE)/AGESA.bin" if AMD_APU_STONEYRIDGE
 	help
 	  Specify the binary file to use for AMD platform initialization.
 
@@ -68,7 +68,7 @@ config AGESA_SPLIT_MEMORY_FILES
 config AGESA_PRE_MEMORY_BINARY_PI_FILE
 	string "Pre memory Binary PI file name"
 	depends on AGESA_SPLIT_MEMORY_FILES
-	default "3rdparty/blobs/pi/amd/00670F00/FT4/AGESA_premem.elf" if SOC_AMD_STONEYRIDGE && USE_AMD_BLOBS
+	default "3rdparty/blobs/pi/amd/00670F00/FT4/AGESA_premem.elf" if SOC_AMD_STONEYRIDGE
 	help
 	  Specify the binary file to use for pre-memory AMD platform
 	  initialization.
@@ -76,7 +76,7 @@ config AGESA_PRE_MEMORY_BINARY_PI_FILE
 config AGESA_POST_MEMORY_BINARY_PI_FILE
 	string "Post memory Binary PI file name"
 	depends on AGESA_SPLIT_MEMORY_FILES
-	default "3rdparty/blobs/pi/amd/00670F00/FT4/AGESA_postmem.elf" if SOC_AMD_STONEYRIDGE && USE_AMD_BLOBS
+	default "3rdparty/blobs/pi/amd/00670F00/FT4/AGESA_postmem.elf" if SOC_AMD_STONEYRIDGE
 	help
 	  Specify the binary file to use for post-memory AMD platform
 	  initialization.

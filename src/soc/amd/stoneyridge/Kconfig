@@ -141,7 +141,6 @@ config VGA_BIOS_ID
 
 config VGA_BIOS_FILE
 	string
-	default "" if !USE_AMD_BLOBS
 	default "3rdparty/amd_blobs/stoneyridge/CarrizoGenericVbios.bin" if AMD_APU_MERLINFALCON
 	default "3rdparty/amd_blobs/stoneyridge/StoneyGenericVbios.bin" if AMD_APU_PRAIRIEFALCON
 	default "3rdparty/amd_blobs/stoneyridge/StoneyGenericVbios.bin" if AMD_APU_STONEYRIDGE
@@ -183,7 +182,6 @@ config STONEYRIDGE_GEC_FWM
 
 config STONEYRIDGE_XHCI_FWM_FILE
 	string "XHCI firmware path and filename"
-	default "" if !USE_AMD_BLOBS
 	default "3rdparty/amd_blobs/stoneyridge/xhci.bin"
 	depends on STONEYRIDGE_XHCI_FWM
 
@@ -194,7 +192,6 @@ config STONEYRIDGE_GEC_FWM_FILE
 config AMDFW_CONFIG_FILE
 	string
 	string "AMD PSP Firmware config file"
-	default "" if !USE_AMD_BLOBS
 	default "src/soc/amd/stoneyridge/fw_cz.cfg" if AMD_APU_MERLINFALCON
 	default "src/soc/amd/stoneyridge/fw_st.cfg" if AMD_APU_PRAIRIEFALCON
 	default "src/soc/amd/stoneyridge/fw_st.cfg" if AMD_APU_STONEYRIDGE

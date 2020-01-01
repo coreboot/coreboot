@@ -14,7 +14,6 @@
  */
 
 #include <device/pci_def.h>
-#include <device/early_smbus.h>
 #include <intelblocks/smbus.h>
 #include <reg_script.h>
 #include <soc/pci_devs.h>
@@ -34,21 +33,6 @@ static const struct reg_script smbus_init_script[] = {
 	/* Indicate the end of this array by REG_SCRIPT_END */
 	REG_SCRIPT_END,
 };
-
-u16 smbus_read_word(u32 smbus_dev, u8 addr, u8 offset)
-{
-	return smbus_read16(SMBUS_IO_BASE, addr, offset);
-}
-
-u8 smbus_read_byte(u32 smbus_dev, u8 addr, u8 offset)
-{
-	return smbus_read8(SMBUS_IO_BASE, addr, offset);
-}
-
-u8 smbus_write_byte(u32 smbus_dev, u8 addr, u8 offset, u8 value)
-{
-	return smbus_write8(SMBUS_IO_BASE, addr, offset, value);
-}
 
 void smbus_common_init(void)
 {

@@ -14,6 +14,7 @@
  */
 
 #include <arch/io.h>
+#include <device/early_smbus.h>
 #include <device/smbus_def.h>
 #include <timer.h>
 #include "smbuslib.h"
@@ -175,4 +176,19 @@ int smbus_read16(unsigned int smbus_base, unsigned int device,
 	data = inw(smbus_base + SMBHSTDAT0);
 
 	return data;
+}
+
+u16 smbus_read_word(u32 smbus_dev, u8 addr, u8 offset)
+{
+	return smbus_read16(SMBUS_IO_BASE, addr, offset);
+}
+
+u8 smbus_read_byte(u32 smbus_dev, u8 addr, u8 offset)
+{
+	return smbus_read8(SMBUS_IO_BASE, addr, offset);
+}
+
+u8 smbus_write_byte(u32 smbus_dev, u8 addr, u8 offset, u8 value)
+{
+	return smbus_write8(SMBUS_IO_BASE, addr, offset, value);
 }

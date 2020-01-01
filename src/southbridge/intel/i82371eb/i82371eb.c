@@ -47,14 +47,7 @@
 /* TODO: List the other datasheets. */
 
 #include <device/device.h>
-#include "i82371eb.h"
-
-void i82371eb_enable(struct device *dev)
-{
-	/* TODO: Nothing to do? */
-}
 
 const struct chip_operations southbridge_intel_i82371eb_ops = {
 	CHIP_NAME("Intel 82371FB/SB/MX/AB/EB/MB Southbridge")
-	.enable_dev = i82371eb_enable,
 };

@@ -19,11 +19,6 @@
 
 #if !defined(__ACPI__)
 
-#include <device/device.h>
-void i82371eb_enable(struct device *dev);
-
-void i82371eb_hard_reset(void);
-
 void enable_smbus(void);
 void enable_pm(void);
 
@@ -45,7 +40,6 @@ int smbus_read_byte(u8 device, u8 address);
 
 #define XBCS		0x4e	/* X-Bus chip select register */
 #define GENCFG		0xb0	/* General configuration register */
-#define RC		0xcf9	/* Reset control register */
 
 /* IDE */
 #define IDETIM_PRI	0x40	/* IDE timing register, primary channel */
@@ -115,8 +109,6 @@ int smbus_read_byte(u8 device, u8 address);
 #define EXT_BIOS_ENABLE		(1 << 7)  /* Extended BIOS Enable */
 #define LOWER_BIOS_ENABLE	(1 << 6)  /* Lower BIOS Enable */
 #define WRITE_PROTECT_ENABLE	(1 << 2)  /* Write Protect Enable */
-#define SRST			(1 << 1)  /* System Reset */
-#define RCPU			(1 << 2)  /* Reset CPU */
 #define SMB_HST_EN		(1 << 0)  /* Host Interface Enable */
 #define IDE_DECODE_ENABLE	(1 << 15) /* IDE Decode Enable */
 #define DTE0			(1 << 3)  /* DMA Timing Enable Only, drive 0 */

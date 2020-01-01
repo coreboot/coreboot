@@ -37,10 +37,7 @@ chip northbridge/intel/x4x		# Northbridge
 		chip southbridge/intel/i82801jx	# Southbridge
 			register "gpe0_en" = "0x40"
 
-			# Set AHCI mode.
-			register "sata_port_map"	= "0x3f"
-			register "sata_clock_request"	= "0"
-			register "sata_traffic_monitor"	= "0"
+			register "sata_port_map" = "0x3f"
 
 			# Enable PCIe ports 0,2,3 as slots.
 			register "pcie_slot_implemented" = "0x31"

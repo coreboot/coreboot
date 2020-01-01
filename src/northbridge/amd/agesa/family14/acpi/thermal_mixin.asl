@@ -56,7 +56,6 @@ Field (TCTL, ByteAcc, NoLock, Preserve) {
 }
 
 ThermalZone (TZ00) {
-	Name (_HID, EisaId ("PNP0C11"))
 	Name (_STR, Unicode ("AMD CPU Core Thermal Sensor"))
 
 	Method (_STA) {

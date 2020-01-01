@@ -107,7 +107,7 @@ chip northbridge/intel/sandybridge
 				end
 			end
 			device pci 1f.2 on  end	# SATA Controller 1
-			device pci 1f.3 off end	# SMBus
+			device pci 1f.3 on  end	# SMBus
 			device pci 1f.5 off end	# SATA Controller 2
 			device pci 1f.6 off end	# Thermal
 		end

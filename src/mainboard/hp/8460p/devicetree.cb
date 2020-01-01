@@ -72,7 +72,7 @@ chip northbridge/intel/sandybridge
 			device pci 16.3 on  end	# Management Engine KT
 			device pci 19.0 on  end	# Intel Gigabit Ethernet
 			device pci 1a.0 on  end	# USB2 EHCI #2
-			device pci 1b.0 on  end	# High Definition Audio Audio controller
+			device pci 1b.0 on  end	# HD Audio controller
 			device pci 1c.0 on  end	# PCIe Port #1
 			device pci 1c.1 on  end	# PCIe Port #2, ExpressCard
 			device pci 1c.2 on  end	# PCIe Port #3, SD/MMC
@@ -83,27 +83,25 @@ chip northbridge/intel/sandybridge
 			device pci 1c.7 on  end	# PCIe Port #8, NEC USB 3.0 Host Controller
 			device pci 1d.0 on  end	# USB2 EHCI #1
 			device pci 1e.0 off end	# PCI bridge
-			device pci 1f.0 on	# LPC bridge PCI-LPC bridge
+			device pci 1f.0 on	# LPC bridge
 				chip ec/hp/kbc1126
 					register "ec_data_port" = "0x60"
-					register "ec_cmd_port" = "0x64"
-					register "ec_ctrl_reg" = "0xca"
+					register "ec_cmd_port"  = "0x64"
+					register "ec_ctrl_reg"  = "0xca"
 					register "ec_fan_ctrl_value" = "0x6b"
 					device pnp ff.1 off end
-				end # kbc1126
+				end
 				chip superio/smsc/lpc47n217
-					device pnp 4e.3 on #  Parallel
-						io 0x60 = 0x378
+					device pnp 4e.3 on	# Parallel
+						io  0x60  = 0x378
 						irq 0x70 = 7
 					end
-					device pnp 4e.4 on  #  Com1
-						io 0x60 = 0x3f8
+					device pnp 4e.4 on	# COM1
+						io  0x60  = 0x3f8
 						irq 0x70 = 4
 					end
-					device pnp 4e.5 off #  Com2
-					end
-				end	#chip superio/smsc/lpc47n217
-
+					device pnp 4e.5 off end	# COM2
+				end
 				chip drivers/pc80/tpm
 					device pnp 0c31.0 on end
 				end

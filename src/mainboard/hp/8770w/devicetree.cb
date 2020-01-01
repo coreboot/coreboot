@@ -36,7 +36,7 @@ chip northbridge/intel/sandybridge
 			device pci 00.0 on  end	# GPU
 			device pci 00.1 on  end	# HDMI Audio on GPU
 		end
-		device pci 02.0 off end	# Internal graphics VGA controller
+		device pci 02.0 off end	# Internal graphics
 
 		chip southbridge/intel/bd82x6x # Intel Series 7 Panther Point PCH
 			register "c2_latency" = "0x0065"
@@ -51,11 +51,11 @@ chip northbridge/intel/sandybridge
 			register "pcie_port_coalesce" = "1"
 			register "sata_interface_speed_support" = "0x3"
 			register "sata_port_map" = "0x1f"
-			register "superspeed_capable_ports" = "0x0000000f"
-			register "xhci_overcurrent_mapping" = "0x00000c03"
-			register "xhci_switchable_ports" = "0x0000000f"
 			register "spi_uvscc" = "0x2005"
 			register "spi_lvscc" = "0"
+			register "superspeed_capable_ports" = "0x0000000f"
+			register "xhci_overcurrent_mapping" = "0x00000c03"
+			register "xhci_switchable_ports"    = "0x0000000f"
 
 			device pci 14.0 on  end	# USB 3.0 Controller
 			device pci 16.0 on  end	# Management Engine Interface 1
@@ -64,7 +64,7 @@ chip northbridge/intel/sandybridge
 			device pci 16.3 off end	# Management Engine KT
 			device pci 19.0 on  end	# Intel Gigabit Ethernet
 			device pci 1a.0 on  end	# USB2 EHCI #2
-			device pci 1b.0 on  end	# High Definition Audio Audio controller
+			device pci 1b.0 on  end	# HD Audio controller
 			device pci 1c.0 on  end	# PCIe Port #1
 			device pci 1c.1 on  end	# PCIe Port #2
 			device pci 1c.2 on  end	# Media Card and FireWire host controller
@@ -75,26 +75,25 @@ chip northbridge/intel/sandybridge
 			device pci 1c.7 off end	# PCIe Port #8
 			device pci 1d.0 on  end	# USB2 EHCI #1
 			device pci 1e.0 off end	# PCI bridge
-			device pci 1f.0 on	# LPC bridge PCI-LPC bridge
+			device pci 1f.0 on	# LPC bridge
 				chip ec/hp/kbc1126
 					register "ec_data_port" = "0x62"
-					register "ec_cmd_port" = "0x66"
-					register "ec_ctrl_reg" = "0x81"
+					register "ec_cmd_port"  = "0x66"
+					register "ec_ctrl_reg"  = "0x81"
 					register "ec_fan_ctrl_value" = "0x81"
 					device pnp ff.1 off end
-				end # kbc1126
+				end
 				chip superio/smsc/lpc47n217
-					device pnp 4e.3 on #  Parallel
-						io 0x60 = 0x378
+					device pnp 4e.3 on	# Parallel
+						io  0x60 = 0x378
 						irq 0x70 = 7
 					end
-					device pnp 4e.4 on  #  Com1
-						io 0x60 = 0x3f8
+					device pnp 4e.4 on	# COM1
+						io  0x60 = 0x3f8
 						irq 0x70 = 4
 					end
-					device pnp 4e.5 off #  Com2
-					end
-				end	#chip superio/smsc/lpc47n217
+					device pnp 4e.5 off end	# COM2
+				end
 			end
 			device pci 1f.2 on  end	# SATA Controller 1
 			device pci 1f.3 off end	# SMBus

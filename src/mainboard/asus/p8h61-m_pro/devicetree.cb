@@ -30,13 +30,18 @@ chip northbridge/intel/sandybridge
 	end
 	register "pci_mmio_size" = "2048"
 	device domain 0x0 on
-		chip southbridge/intel/bd82x6x # Intel Series 6 Cougar Point PCH
+		device pci 00.0 on end	# Host bridge
+		device pci 01.0 on end	# PCIe bridge for discrete graphics (PCIEX16_1)
+		device pci 02.0 on end	# Internal graphics VGA controller
+
+		chip southbridge/intel/bd82x6x	# Intel Series 6 Cougar Point PCH
 			register "c2_latency" = "0x0065"
-			register "gen1_dec" = "0x000c0291"		# HWM
+			register "gen1_dec" = "0x000c0291"	# HWM
 			register "sata_interface_speed_support" = "0x3"
 			register "sata_port_map" = "0x33"
 			register "spi_lvscc" = "0x2005"
 			register "spi_uvscc" = "0x2005"
+
 			device pci 16.0 on  end	# Management Engine Interface 1
 			device pci 16.1 off end	# Management Engine Interface 2
 			device pci 16.2 off end	# Management Engine IDE-R
@@ -46,8 +51,8 @@ chip northbridge/intel/sandybridge
 			device pci 1b.0 on  end	# High Definition Audio Audio controller
 			device pci 1c.0 on  end	# PCIe x1 Port (PCIEX1_1)
 			device pci 1c.1 on  end	# PCIe x1 Port (PCIEX1_2)
-			device pci 1c.2 on # Realtek RTL8111E Ethernet Controller
-                                chip drivers/net
+			device pci 1c.2 on	# Realtek RTL8111E Ethernet Controller
+				chip drivers/net
 					register "customized_leds" = "0x00f6"
 					register "wake" = "9"
 					device pci 00.0 on end
@@ -113,16 +118,13 @@ chip northbridge/intel/sandybridge
 					end
 				end
 				chip drivers/pc80/tpm
-					device pnp 4e.0 on end		# TPM module
+					device pnp 4e.0 on end	# TPM
 				end
 			end
-			device pci 1f.2 on  end # SATA Controller 1
-			device pci 1f.3 on  end # SMBus
-			device pci 1f.5 off end # SATA Controller 2
-			device pci 1f.6 off end # Thermal
+			device pci 1f.2 on  end	# SATA Controller 1
+			device pci 1f.3 on  end	# SMBus
+			device pci 1f.5 off end	# SATA Controller 2
+			device pci 1f.6 off end	# Thermal
 		end
-		device pci 00.0 on end # Host bridge
-		device pci 01.0 on end # PCIe bridge for discrete graphics (PCIEX16_1)
-		device pci 02.0 on end # Internal graphics VGA controller
 	end
 end

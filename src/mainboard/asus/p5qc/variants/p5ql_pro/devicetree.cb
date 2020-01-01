@@ -20,8 +20,8 @@ chip northbridge/intel/x4x		# Northbridge
 		chip cpu/intel/socket_LGA775
 			device lapic 0 on end
 		end
-		chip cpu/intel/model_1067x		# CPU
-			device lapic 0xACAC off end
+		chip cpu/intel/model_1067x	# CPU
+			device lapic 0xacac off end
 		end
 	end
 	device domain 0 on		# PCI domain
@@ -43,7 +43,7 @@ chip northbridge/intel/x4x		# Northbridge
 			register "sata_traffic_monitor"	= "0"
 
 			# Enable PCIe ports 0,2,3 as slots.
-			register "pcie_slot_implemented"	= "0x31"
+			register "pcie_slot_implemented" = "0x31"
 
 			register "gen1_dec" = "0x00000295"
 			register "gen2_dec" = "0x001c4701"

@@ -15,18 +15,9 @@ chip northbridge/intel/sandybridge # FIXME: check gfx.ndid and gfx.did
 	register "gfx.did" = "{ 0x80000100, 0x80000240, 0x80000410, 0x80000410, 0x00000005 }"
 	register "gfx.link_frequency_270_mhz" = "1"
 	register "gfx.ndid" = "3"
-	register "gfx.use_spread_spectrum_clock" = "0"
-	register "gpu_cpu_backlight" = "0x00000000"
 	register "gpu_dp_b_hotplug" = "4"
 	register "gpu_dp_c_hotplug" = "4"
 	register "gpu_dp_d_hotplug" = "4"
-	register "gpu_panel_port_select" = "0"
-	register "gpu_panel_power_backlight_off_delay" = "0"
-	register "gpu_panel_power_backlight_on_delay" = "0"
-	register "gpu_panel_power_cycle_delay" = "4"
-	register "gpu_panel_power_down_delay" = "0"
-	register "gpu_panel_power_up_delay" = "0"
-	register "gpu_pch_backlight" = "0x00000000"
 	device cpu_cluster 0x0 on
 		chip cpu/intel/model_206ax # FIXME: check all registers
 			register "c1_acpower" = "1"
@@ -48,7 +39,6 @@ chip northbridge/intel/sandybridge # FIXME: check gfx.ndid and gfx.did
 			register "gen3_dec" = "0x000406f1"
 			register "gen4_dec" = "0x000c06a1"
 			register "gpi7_routing" = "2"
-			register "pcie_hotplug_map" = "{ 0, 0, 0, 0, 0, 0, 0, 0 }"
 			register "pcie_port_coalesce" = "1"
 			register "sata_interface_speed_support" = "0x3"
 			# Intense PC SATA portmap:

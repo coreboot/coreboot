@@ -47,8 +47,7 @@ static int smbus_wait_till_done(u16 smbus_base)
 	return -1;
 }
 
-int smbus_read8(unsigned int smbus_base, unsigned int device,
-	unsigned int address)
+int do_smbus_read_byte(unsigned int smbus_base, u8 device, unsigned int address)
 {
 	unsigned char global_status_register;
 	unsigned char byte;
@@ -93,8 +92,8 @@ int smbus_read8(unsigned int smbus_base, unsigned int device,
 	return byte;
 }
 
-int smbus_write8(unsigned int smbus_base, unsigned int device,
-			unsigned int address, unsigned int data)
+int do_smbus_write_byte(unsigned int smbus_base, u8 device, unsigned int address,
+			unsigned int data)
 {
 	unsigned char global_status_register;
 
@@ -137,8 +136,7 @@ int smbus_write8(unsigned int smbus_base, unsigned int device,
 	return 0;
 }
 
-int smbus_read16(unsigned int smbus_base, unsigned int device,
-	unsigned int address)
+int do_smbus_read_word(unsigned int smbus_base, u8 device, unsigned int address)
 {
 	unsigned char global_status_register;
 	unsigned short data;
@@ -180,15 +178,15 @@ int smbus_read16(unsigned int smbus_base, unsigned int device,
 
 u16 smbus_read_word(u8 addr, u8 offset)
 {
-	return smbus_read16(SMBUS_IO_BASE, addr, offset);
+	return do_smbus_read_word(SMBUS_IO_BASE, addr, offset);
 }
 
 u8 smbus_read_byte(u8 addr, u8 offset)
 {
-	return smbus_read8(SMBUS_IO_BASE, addr, offset);
+	return do_smbus_read_byte(SMBUS_IO_BASE, addr, offset);
 }
 
 u8 smbus_write_byte(u8 addr, u8 offset, u8 value)
 {
-	return smbus_write8(SMBUS_IO_BASE, addr, offset, value);
+	return do_smbus_write_byte(SMBUS_IO_BASE, addr, offset, value);
 }

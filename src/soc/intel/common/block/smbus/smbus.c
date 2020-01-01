@@ -30,7 +30,7 @@ static int lsmbus_read_byte(struct device *dev, u8 address)
 	device = dev->path.i2c.device;
 	pbus = get_pbus_smbus(dev);
 	res = find_resource(pbus->dev, PCI_BASE_ADDRESS_4);
-	return smbus_read8(res->base, device, address);
+	return do_smbus_read_byte(res->base, device, address);
 }
 
 static int lsmbus_write_byte(struct device *dev, u8 address, u8 data)
@@ -42,7 +42,7 @@ static int lsmbus_write_byte(struct device *dev, u8 address, u8 data)
 	device = dev->path.i2c.device;
 	pbus = get_pbus_smbus(dev);
 	res = find_resource(pbus->dev, PCI_BASE_ADDRESS_4);
-	return smbus_write8(res->base, device, address, data);
+	return do_smbus_write_byte(res->base, device, address, data);
 }
 
 static struct smbus_bus_operations lops_smbus_bus = {

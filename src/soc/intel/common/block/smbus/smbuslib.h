@@ -16,6 +16,8 @@
 #ifndef SOC_INTEL_COMMON_BLOCK_SMBUS__LIB_H
 #define SOC_INTEL_COMMON_BLOCK_SMBUS__LIB_H
 
+#include <stdint.h>
+
 /* SMBus IO Base Address */
 #define SMBUS_IO_BASE	0xefa0
 /* PCI Configuration Space : SMBus */
@@ -30,11 +32,9 @@
 
 #define SMBUS_TIMEOUT	15	/* 15ms */
 
-int smbus_read8(unsigned int smbus_base, unsigned int device,
-		unsigned int address);
-int smbus_write8(unsigned int smbus_base, unsigned int device,
-		unsigned int address, unsigned int data);
-int smbus_read16(unsigned int smbus_base, unsigned int device,
-		unsigned int address);
+int do_smbus_read_byte(unsigned int smbus_base, u8 device, unsigned int address);
+int do_smbus_write_byte(unsigned int smbus_base, u8 device, unsigned int address,
+			unsigned int data);
+int do_smbus_read_word(unsigned int smbus_base, u8 device, unsigned int address);
 
 #endif	/* SOC_INTEL_COMMON_BLOCK_SMBUS__LIB_H */

@@ -13,7 +13,6 @@
 ## GNU General Public License for more details.
 ##
 
-# TODO fill with Versatile Express board data in QEMU.
 chip soc/rockchip/rk3288
 	device cpu_cluster 0 on end
 	register "vop_id" = "1"

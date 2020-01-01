@@ -15,12 +15,12 @@
 
 chip soc/nvidia/tegra124
 	device cpu_cluster 0 on end
-# N.B. We ae not using the device tree in an effective way.
-# We need to change this in future such that the on-soc
+# N.B. We are not using the device tree in an effective way.
+# We need to change this in future such that the on-SoC
 # devices are 'chips', which will allow us to go at them
-# in parallel. This is even easier on the ARM SOCs since there
+# in parallel. This is even easier on the ARM SoCs since there
 # are no single-access resources such as the infamous
-# cf8/cfc registers found on PCs.
+# 0xcf8/0xcfc registers found on PCs.
 	register "display_controller" = "TEGRA_ARM_DISPLAYA"
 	register "xres" = "1366"
 	register "yres" = "768"
@@ -39,7 +39,7 @@ chip soc/nvidia/tegra124
 	register "panel_vdd_gpio" = "0"
 	register "pwm" = "1"
 
-	# various panel delay time
+	# Various panel delay times
 	register "vdd_delay_ms" = "200"
 	register "pwm_to_bl_delay_ms" = "10"
 	register "vdd_to_hpd_delay_ms" = "200"

@@ -18,7 +18,7 @@ chip northbridge/intel/x4x		# Northbridge
 			device lapic 0 on end
 		end
 		chip cpu/intel/model_1067x		# CPU
-			device lapic 0xACAC off end
+			device lapic 0xacac off end
 		end
 	end
 	device domain 0 on		# PCI domain
@@ -41,10 +41,7 @@ chip northbridge/intel/x4x		# Northbridge
 		chip southbridge/intel/i82801jx	# Southbridge
 			register "gpe0_en" = "0x40"
 
-			# Set AHCI mode.
 			register "sata_port_map"	= "0x3f"
-			register "sata_clock_request"	= "0"
-			register "sata_traffic_monitor"	= "0"
 
 			# Enable PCIe ports 0,1,3,4,5 as slots.
 			register "pcie_slot_implemented"	= "0x3b"

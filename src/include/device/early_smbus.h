@@ -49,23 +49,8 @@
 
 #include <stdint.h>
 
-/**
- * \brief printk macro for SMBus debugging
- */
-#if CONFIG(DEBUG_SMBUS)
-#define printsmbus(x, ...) printk(BIOS_DEBUG, x, ##__VA_ARGS__)
-#else
-#define printsmbus(x, ...)
-#endif
-
-u32 smbus_get_device(void);
-void smbus_reset(u32 smbus_dev);
-int smbus_print_error(u32 smbus_dev, u8 host_status, int loops);
-int smbus_is_busy(u32 smbus_dev);
-int smbus_wait_until_ready(u32 smbus_dev);
 u16 smbus_read_word(u32 smbus_dev, u8 addr, u8 offset);
 u8 smbus_read_byte(u32 smbus_dev, u8 addr, u8 offset);
 u8 smbus_write_byte(u32 smbus_dev, u8 addr, u8 offset, u8 value);
-void smbus_delay(void);
 
 #endif				/* DEVICE_EARLY_SMBUS_H */

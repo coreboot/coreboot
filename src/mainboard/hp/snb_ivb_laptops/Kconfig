@@ -51,9 +51,9 @@ config MAINBOARD_PART_NUMBER
 	default "EliteBook Folio 9470m"    if BOARD_HP_FOLIO_9470M
 	default "EliteBook Revolve 810 G1" if BOARD_HP_REVOLVE_810_G1
 
-config DEVICETREE
+config OVERRIDE_DEVICETREE
 	string
-	default "variants/$(CONFIG_VARIANT_DIR)/devicetree.cb"
+	default "variants/$(CONFIG_VARIANT_DIR)/overridetree.cb"
 
 config VGA_BIOS_FILE
 	string

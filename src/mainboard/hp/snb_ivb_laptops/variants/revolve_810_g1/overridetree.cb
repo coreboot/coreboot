@@ -1,0 +1,63 @@
+#
+# This file is part of the coreboot project.
+#
+# Copyright (C) 2017 Bill Xie <persmule@gmail.com>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+
+chip northbridge/intel/sandybridge
+	register "gpu_cpu_backlight" = "0x00000263"
+	register "gpu_panel_power_backlight_off_delay" = "2000"
+	register "gpu_pch_backlight" = "0x02880288"
+	device domain 0x0 on
+		subsystemid 0x103c 0x18f8 inherit
+
+		device pci 01.0 off end	# PCIe Bridge for discrete graphics
+		device pci 02.0 on  end	# Internal graphics
+
+		chip southbridge/intel/bd82x6x # Intel Series 6 Cougar Point PCH
+			# mailbox at 0x200/0x201 and PM1 at 0x220
+			register "gen1_dec" = "0x007c0201"
+			register "gen2_dec" = "0x000c0101"
+			register "gen3_dec" = "0x00fcfe01"
+			register "gen4_dec" = "0x000402e9"
+			register "gpi6_routing" = "2"
+			register "pcie_hotplug_map" = "{ 0, 0, 1, 0, 0, 0, 0, 0 }"
+			register "sata_port_map" = "0x1"
+			register "superspeed_capable_ports" = "0x0000000f"
+			register "xhci_overcurrent_mapping" = "0x00000c03"
+			register "xhci_switchable_ports"    = "0x0000000f"
+
+			device pci 14.0 on  end	# USB 3.0 Controller
+			device pci 1c.0 on  end	# PCIe Port #1
+			device pci 1c.1 off end	# PCIe Port #2
+			device pci 1c.2 on  end	# PCIe Port #3
+			device pci 1c.3 on  end	# PCIe Port #4
+			device pci 1c.4 off end	# PCIe Port #5
+			device pci 1c.5 off end	# PCIe Port #6
+			device pci 1c.6 off end	# PCIe Port #7
+			device pci 1c.7 off end	# PCIe Port #8
+			device pci 1f.0 on	# LPC bridge
+				chip ec/hp/kbc1126
+					register "ec_data_port" = "0x62"
+					register "ec_cmd_port"  = "0x66"
+					register "ec_ctrl_reg"  = "0x81"
+					register "ec_fan_ctrl_value" = "0x70"
+					device pnp ff.1 off end
+				end
+				chip drivers/pc80/tpm
+					device pnp 0c31.0 on end
+				end
+			end
+		end
+	end
+end

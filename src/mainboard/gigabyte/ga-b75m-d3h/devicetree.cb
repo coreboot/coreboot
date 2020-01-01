@@ -30,8 +30,6 @@ chip northbridge/intel/sandybridge
 		end
 
 		chip southbridge/intel/bd82x6x	# Intel Series 7 Panther Point PCH
-			# GPI routing
-			register "alt_gp_smi_en" = "0x0000"
 			register "gen1_dec" = "0x003c0a01"
 
 			# Set max SATA speed to 6.0 Gb/s
@@ -41,8 +39,6 @@ chip northbridge/intel/sandybridge
 			register "xhci_switchable_ports" = "0xf"
 			register "superspeed_capable_ports" = "0xf"
 
-			register "pcie_port_coalesce" = "0"
-			register "docking_supported" = "0"
 			register "c2_latency" = "0x0065"
 
 			device pci 14.0 on	# USB 3.0 Controller

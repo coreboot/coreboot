@@ -178,21 +178,6 @@ int do_smbus_read_word(unsigned int smbus_base, u8 device, unsigned int address)
 	return data;
 }
 
-static u16 smbus_read_word(u8 addr, u8 offset)
-{
-	return do_smbus_read_word(SMBUS_IO_BASE, addr, offset);
-}
-
-static u8 smbus_read_byte(u8 addr, u8 offset)
-{
-	return do_smbus_read_byte(SMBUS_IO_BASE, addr, offset);
-}
-
-static u8 smbus_write_byte(u8 addr, u8 offset, u8 value)
-{
-	return do_smbus_write_byte(SMBUS_IO_BASE, addr, offset, value);
-}
-
 static void update_spd_len(struct spd_block *blk)
 {
 	u8 i, j = 0;
@@ -218,15 +203,15 @@ static void smbus_read_spd(u8 *spd, u8 addr)
 	for (i = 0; i < SPD_PAGE_LEN; i += step) {
 		if (CONFIG(SPD_READ_BY_WORD))
 			((u16*)spd)[i / sizeof(uint16_t)] =
-				 smbus_read_word(addr, i);
+				 do_smbus_read_word(SMBUS_IO_BASE, addr, i);
 		else
-			spd[i] = smbus_read_byte(addr, i);
+			spd[i] = do_smbus_read_byte(SMBUS_IO_BASE, addr, i);
 	}
 }
 
 static void get_spd(u8 *spd, u8 addr)
 {
-	if (smbus_read_byte(addr, 0) == 0xff) {
+	if (do_smbus_read_byte(SMBUS_IO_BASE, addr, 0) == 0xff) {
 		printk(BIOS_INFO, "No memory dimm at address %02X\n",
 			addr << 1);
 		/* Make sure spd is zeroed if dimm doesn't exist. */
@@ -239,10 +224,10 @@ static void get_spd(u8 *spd, u8 addr)
 	if (spd[SPD_DRAM_TYPE] == SPD_DRAM_DDR4 &&
 		CONFIG_DIMM_SPD_SIZE > SPD_PAGE_LEN) {
 		/* Switch to page 1 */
-		smbus_write_byte(SPD_PAGE_1, 0, 0);
+		do_smbus_write_byte(SMBUS_IO_BASE, SPD_PAGE_1, 0, 0);
 		smbus_read_spd(spd + SPD_PAGE_LEN, addr);
 		/* Restore to page 0 */
-		smbus_write_byte(SPD_PAGE_0, 0, 0);
+		do_smbus_write_byte(SMBUS_IO_BASE, SPD_PAGE_0, 0, 0);
 	}
 }
 

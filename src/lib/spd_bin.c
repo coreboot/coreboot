@@ -17,10 +17,7 @@
 #include <console/console.h>
 #include <spd_bin.h>
 #include <string.h>
-#include <device/early_smbus.h>
 #include <device/dram/ddr3.h>
-
-static u8 spd_data[CONFIG_DIMM_MAX * CONFIG_DIMM_SPD_SIZE];
 
 void dump_spd_info(struct spd_block *blk)
 {
@@ -189,20 +186,6 @@ void print_spd_info(uint8_t spd[])
 	}
 }
 
-static void update_spd_len(struct spd_block *blk)
-{
-	u8 i, j = 0;
-	for (i = 0 ; i < CONFIG_DIMM_MAX; i++)
-		if (blk->spd_array[i] != NULL)
-			j |= blk->spd_array[i][SPD_DRAM_TYPE];
-
-	/* If spd used is DDR4, then its length is 512 byte. */
-	if (j == SPD_DRAM_DDR4)
-		blk->len = SPD_PAGE_LEN_DDR4;
-	else
-		blk->len = SPD_PAGE_LEN;
-}
-
 int get_spd_cbfs_rdev(struct region_device *spd_rdev, u8 spd_index)
 {
 	struct cbfsf fh;
@@ -214,57 +197,6 @@ int get_spd_cbfs_rdev(struct region_device *spd_rdev, u8 spd_index)
 	cbfs_file_data(spd_rdev, &fh);
 	return rdev_chain(spd_rdev, spd_rdev, spd_index * CONFIG_DIMM_SPD_SIZE,
 							CONFIG_DIMM_SPD_SIZE);
-}
-
-static void smbus_read_spd(u8 *spd, u8 addr)
-{
-	u16 i;
-	u8 step = 1;
-
-	if (CONFIG(SPD_READ_BY_WORD))
-		step = sizeof(uint16_t);
-
-	for (i = 0; i < SPD_PAGE_LEN; i += step) {
-		if (CONFIG(SPD_READ_BY_WORD))
-			((u16*)spd)[i / sizeof(uint16_t)] =
-				 smbus_read_word(addr, i);
-		else
-			spd[i] = smbus_read_byte(addr, i);
-	}
-}
-
-static void get_spd(u8 *spd, u8 addr)
-{
-	if (smbus_read_byte(addr, 0) == 0xff) {
-		printk(BIOS_INFO, "No memory dimm at address %02X\n",
-			addr << 1);
-		/* Make sure spd is zeroed if dimm doesn't exist. */
-		memset(spd, 0, CONFIG_DIMM_SPD_SIZE);
-		return;
-	}
-	smbus_read_spd(spd, addr);
-
-	/* Check if module is DDR4, DDR4 spd is 512 byte. */
-	if (spd[SPD_DRAM_TYPE] == SPD_DRAM_DDR4 &&
-		CONFIG_DIMM_SPD_SIZE > SPD_PAGE_LEN) {
-		/* Switch to page 1 */
-		smbus_write_byte(SPD_PAGE_1, 0, 0);
-		smbus_read_spd(spd + SPD_PAGE_LEN, addr);
-		/* Restore to page 0 */
-		smbus_write_byte(SPD_PAGE_0, 0, 0);
-	}
-}
-
-void get_spd_smbus(struct spd_block *blk)
-{
-	u8 i;
-	for (i = 0 ; i < CONFIG_DIMM_MAX; i++) {
-		get_spd(&spd_data[i * CONFIG_DIMM_SPD_SIZE],
-			blk->addr_map[i]);
-		blk->spd_array[i] = &spd_data[i * CONFIG_DIMM_SPD_SIZE];
-	}
-
-	update_spd_len(blk);
 }
 
 #if CONFIG_DIMM_SPD_SIZE == 128

@@ -66,7 +66,7 @@ typedef struct  {
   UINT32                      PP_FUSE_ARRAY_V2_fld11;
   UINT32                      PP_FUSE_ARRAY_V2_fld12;
   BOOLEAN                     PP_FUSE_ARRAY_V2_fld13;
-  UINT8                       VceFlags[5];                ///< VCE Flags
+  UINT8                       VceFlags[4];                ///< VCE Flags
   UINT8                       VceMclk;                    ///< MCLK for VCE
   UINT8                       PP_FUSE_ARRAY_V2_fld16[4];
   UINT8                       EclkDid[5];                 ///< Eclk DID

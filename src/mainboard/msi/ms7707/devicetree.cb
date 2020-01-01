@@ -16,6 +16,11 @@ chip northbridge/intel/sandybridge
 	end
 	device domain 0x0 on
 		subsystemid 0x1462 0x7707 inherit
+
+		device pci 00.0 on  end	# Host bridge
+		device pci 01.0 on  end	# PCIe Bridge for discrete graphics
+		device pci 02.0 off end	# Internal graphics
+
 		chip southbridge/intel/bd82x6x # Intel Series 6 Cougar Point PCH
 			register "c2_latency" = "0x0065"
 			register "docking_supported" = "0"
@@ -27,24 +32,25 @@ chip northbridge/intel/sandybridge
 			register "spi_lvscc" = "0x2005"
 			register "spi_uvscc" = "0x2005"
 			register "gpe0_en" = "0x28000040"
-			device pci 16.0 on end # Management Engine Interface 1
-			device pci 16.1 off end # Management Engine Interface 2
-			device pci 16.2 off end # Management Engine IDE-R
-			device pci 16.3 off end # Management Engine KT
-			device pci 19.0 on end # Intel Gigabit Ethernet
-			device pci 1a.0 on end # USB2 EHCI #2
-			device pci 1b.0 on end # High Definition Audio Audio controller
-			device pci 1c.0 on end # PCIe Port #1
-			device pci 1c.1 off end # PCIe Port #2
-			device pci 1c.2 off end # PCIe Port #3
-			device pci 1c.3 off end # PCIe Port #4
-			device pci 1c.4 off end # PCIe Port #5
-			device pci 1c.5 off end # PCIe Port #6
-			device pci 1c.6 on end # PCIe Port #7
-			device pci 1c.7 off end # PCIe Port #8
-			device pci 1d.0 on end # USB2 EHCI #1
-			device pci 1e.0 off end # PCI bridge
-			device pci 1f.0 on # LPC bridge PCI-LPC bridge
+
+			device pci 16.0 on  end	# Management Engine Interface 1
+			device pci 16.1 off end	# Management Engine Interface 2
+			device pci 16.2 off end	# Management Engine IDE-R
+			device pci 16.3 off end	# Management Engine KT
+			device pci 19.0 on  end	# Intel Gigabit Ethernet
+			device pci 1a.0 on  end	# USB2 EHCI #2
+			device pci 1b.0 on  end	# HD Audio controller
+			device pci 1c.0 on  end	# PCIe Port #1
+			device pci 1c.1 off end	# PCIe Port #2
+			device pci 1c.2 off end	# PCIe Port #3
+			device pci 1c.3 off end	# PCIe Port #4
+			device pci 1c.4 off end	# PCIe Port #5
+			device pci 1c.5 off end	# PCIe Port #6
+			device pci 1c.6 on  end	# PCIe Port #7
+			device pci 1c.7 off end	# PCIe Port #8
+			device pci 1d.0 on  end	# USB2 EHCI #1
+			device pci 1e.0 off end	# PCI bridge
+			device pci 1f.0 on	# LPC bridge
 				chip superio/fintek/f71808a
 					register "multi_function_register_0" = "0x00"	# 0x28
 					register "multi_function_register_1" = "0xc0"	# 0x29
@@ -52,7 +58,7 @@ chip northbridge/intel/sandybridge
 					register "multi_function_register_3" = "0x4f"	# 0x2b
 					register "multi_function_register_4" = "0x90"	# 0x2c
 					register "hwm_peci_tsi_ctrl" = "0x02"	# 0x0a - PECI enabled, 1.23 V
-					register "hwm_tcc_temp" = "0x64"		# 0x0c - TCC temperature = 100 °C
+					register "hwm_tcc_temp" = "0x64"	# 0x0c - TCC temperature = 100 °C
 					register "hwm_fan1_seg1_speed" = "0xff"	# 0xaa - Fan 1 segment 1
 					register "hwm_fan1_seg2_speed" = "0xe2"	# 0xab - Fan 1 segment 2
 					register "hwm_fan1_seg3_speed" = "0xaf"	# 0xac - Fan 1 segment 3
@@ -67,7 +73,7 @@ chip northbridge/intel/sandybridge
 					register "hwm_fan2_temp_src" = "0x1e"	# 0xbf - Fan 2 source = temperature 2
 
 					register "hwm_domain1_en" = "0x01"
-					register "hwm_fan1_boundary_hysteresis" = "0x43"
+					register "hwm_fan1_boundary_hysteresis"   = "0x43"
 					register "hwm_vt1_boundary_1_temperature" = "0x52"	# 82°C
 					register "hwm_vt1_boundary_2_temperature" = "0x46"	# 70°C
 					register "hwm_vt1_boundary_3_temperature" = "0x41"	# 65°C
@@ -104,13 +110,10 @@ chip northbridge/intel/sandybridge
 					end
 				end
 			end
-			device pci 1f.2 on end	# SATA Controller 1
-			device pci 1f.3 on end	# SMBus
-			device pci 1f.5 off end # SATA Controller 2
-			device pci 1f.6 off end # Thermal
+			device pci 1f.2 on  end	# SATA Controller 1
+			device pci 1f.3 on  end	# SMBus
+			device pci 1f.5 off end	# SATA Controller 2
+			device pci 1f.6 off end	# Thermal
 		end
-		device pci 00.0 on end	# Host bridge
-		device pci 01.0 on end	# PCIe Bridge for discrete graphics
-		device pci 02.0 off end	# Internal graphics
 	end
 end

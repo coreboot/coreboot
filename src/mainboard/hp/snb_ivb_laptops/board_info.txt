@@ -1,0 +1,4 @@
+Category: laptop
+ROM protocol: SPI
+ROM package: SOIC-8 or SOIC-16
+ROM socketed: n

@@ -1,0 +1,64 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2017 Iru Cai <mytbk920423@gmail.com>
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; version 2 of the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+
+config BOARD_HP_SNB_IVB_LAPTOPS
+	def_bool n
+	select EC_HP_KBC1126
+	select HAVE_ACPI_RESUME
+	select HAVE_ACPI_TABLES
+	select HAVE_CMOS_DEFAULT
+	select HAVE_OPTION_TABLE
+	select NORTHBRIDGE_INTEL_SANDYBRIDGE
+	select SERIRQ_CONTINUOUS_MODE
+	select SYSTEM_TYPE_LAPTOP
+	select USE_NATIVE_RAMINIT
+
+if BOARD_HP_SNB_IVB_LAPTOPS
+
+config MAINBOARD_DIR
+	string
+	default "hp/snb_ivb_laptops"
+
+config VARIANT_DIR
+	string
+	default "2570p"          if BOARD_HP_2570P
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "EliteBook 2570p"          if BOARD_HP_2570P
+
+config DEVICETREE
+	string
+	default "variants/$(CONFIG_VARIANT_DIR)/devicetree.cb"
+
+config VGA_BIOS_FILE
+	string
+	default "pci8086,0116.rom" if SOUTHBRIDGE_INTEL_BD82X6X
+	default "pci8086,0166.rom" if SOUTHBRIDGE_INTEL_C216
+
+config VGA_BIOS_ID
+	string
+	default "8086,0116" if SOUTHBRIDGE_INTEL_BD82X6X
+	default "8086,0166" if SOUTHBRIDGE_INTEL_C216
+
+config MAX_CPUS
+	int
+	default 8
+
+config USBDEBUG_HCD_INDEX
+	int
+	default 2 if BOARD_HP_2570P
+
+endif

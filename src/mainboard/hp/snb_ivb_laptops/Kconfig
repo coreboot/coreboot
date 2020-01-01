@@ -38,6 +38,7 @@ config VARIANT_DIR
 	default "8460p"          if BOARD_HP_8460P
 	default "8470p"          if BOARD_HP_8470P
 	default "8770w"          if BOARD_HP_8770W
+	default "folio_9470m"    if BOARD_HP_FOLIO_9470M
 
 config MAINBOARD_PART_NUMBER
 	string
@@ -46,6 +47,7 @@ config MAINBOARD_PART_NUMBER
 	default "EliteBook 8460p"          if BOARD_HP_8460P
 	default "EliteBook 8470p"          if BOARD_HP_8470P
 	default "EliteBook 8770w"          if BOARD_HP_8770W
+	default "EliteBook Folio 9470m"    if BOARD_HP_FOLIO_9470M
 
 config DEVICETREE
 	string
@@ -72,5 +74,6 @@ config USBDEBUG_HCD_INDEX
 	default 1 if BOARD_HP_8460P
 	default 2 if BOARD_HP_8470P
 	default 2 if BOARD_HP_8770W
+	default 0 if BOARD_HP_FOLIO_9470M
 
 endif

@@ -29,15 +29,15 @@ chip northbridge/intel/sandybridge
 	end
 
 	device domain 0 on
-		device pci 00.0 on end # host bridge
-		device pci 02.0 on end # vga controller
+		device pci 00.0 on  end	# host bridge
+		device pci 02.0 on  end	# vga controller
 
-		chip southbridge/intel/bd82x6x # Intel Series 6 Cougar Point PCH
+		chip southbridge/intel/bd82x6x	# Intel Series 6 Cougar Point PCH
 			# GPI routing
 			#  0 No effect (default)
 			#  1 SMI# (if corresponding ALT_GPI_SMI_EN bit is also set)
 			#  2 SCI (if corresponding GPIO_EN bit is also set)
-			register "gpi1_routing" = "1"
+			register "gpi1_routing"  = "1"
 			register "gpi14_routing" = "2"
 			register "alt_gp_smi_en" = "0x0002"
 			register "gpe0_en" = "0x4000"
@@ -52,28 +52,28 @@ chip northbridge/intel/sandybridge
 
 			register "c2_latency" = "1"
 
-			device pci 16.0 on end # Management Engine Interface 1
-			device pci 16.1 off end # Management Engine Interface 2
-			device pci 16.2 off end # Management Engine IDE-R
-			device pci 16.3 off end # Management Engine KT
-			device pci 19.0 off end # Intel Gigabit Ethernet
-			device pci 1a.0 on end # USB2 EHCI #2
-			device pci 1b.0 on end # High Definition Audio
-			device pci 1c.0 on end # PCIe Port #1 (WLAN)
-			device pci 1c.1 off end # PCIe Port #2
-			device pci 1c.2 on end # PCIe Port #3 (Debug)
-			device pci 1c.3 on end # PCIe Port #4 (LAN)
-			device pci 1c.4 off end # PCIe Port #5
-			device pci 1c.5 off end # PCIe Port #6
-			device pci 1c.6 off end # PCIe Port #7
-			device pci 1c.7 off end # PCIe Port #8
-			device pci 1d.0 on end # USB2 EHCI #1
-			device pci 1e.0 off end # PCI bridge
-			device pci 1f.0 on end # LPC bridge
-			device pci 1f.2 on end # SATA Controller 1
-			device pci 1f.3 on end # SMBus
-			device pci 1f.5 off end # SATA Controller 2
-			device pci 1f.6 on end # Thermal
+			device pci 16.0 on  end	# Management Engine Interface 1
+			device pci 16.1 off end	# Management Engine Interface 2
+			device pci 16.2 off end	# Management Engine IDE-R
+			device pci 16.3 off end	# Management Engine KT
+			device pci 19.0 off end	# Intel Gigabit Ethernet
+			device pci 1a.0 on  end	# USB2 EHCI #2
+			device pci 1b.0 on  end	# High Definition Audio
+			device pci 1c.0 on  end	# PCIe Port #1 (WLAN)
+			device pci 1c.1 off end	# PCIe Port #2
+			device pci 1c.2 on  end	# PCIe Port #3 (Debug)
+			device pci 1c.3 on  end	# PCIe Port #4 (LAN)
+			device pci 1c.4 off end	# PCIe Port #5
+			device pci 1c.5 off end	# PCIe Port #6
+			device pci 1c.6 off end	# PCIe Port #7
+			device pci 1c.7 off end	# PCIe Port #8
+			device pci 1d.0 on  end	# USB2 EHCI #1
+			device pci 1e.0 off end	# PCI bridge
+			device pci 1f.0 on  end	# LPC bridge
+			device pci 1f.2 on  end	# SATA Controller 1
+			device pci 1f.3 on  end	# SMBus
+			device pci 1f.5 off end	# SATA Controller 2
+			device pci 1f.6 on  end	# Thermal
 		end
 	end
 end

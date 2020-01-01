@@ -1,2 +1,0 @@
-config BOARD_HP_2760P
-	bool "EliteBook 2760p"

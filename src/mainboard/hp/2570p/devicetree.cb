@@ -44,6 +44,11 @@ chip northbridge/intel/sandybridge
 	end
 	device domain 0x0 on
 		subsystemid 0x103c 0x17df inherit
+
+		device pci 00.0 on  end	# Host bridge Host bridge
+		device pci 01.0 off end	# PCIe Bridge for discrete graphics
+		device pci 02.0 on  end	# Internal graphics VGA controller
+
 		chip southbridge/intel/bd82x6x # Intel Series 6 Cougar Point PCH
 			register "c2_latency" = "0x0065"
 			register "docking_supported" = "0"
@@ -95,8 +100,5 @@ chip northbridge/intel/sandybridge
 			device pci 1f.5 off end	# SATA Controller 2
 			device pci 1f.6 off end	# Thermal
 		end
-		device pci 00.0 on  end	# Host bridge Host bridge
-		device pci 01.0 off end	# PCIe Bridge for discrete graphics
-		device pci 02.0 on  end	# Internal graphics VGA controller
 	end
 end

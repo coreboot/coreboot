@@ -1,2 +1,0 @@
-config BOARD_HP_8460P
-	bool "EliteBook 8460p"

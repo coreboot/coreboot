@@ -35,11 +35,13 @@ config VARIANT_DIR
 	string
 	default "2570p"          if BOARD_HP_2570P
 	default "2760p"          if BOARD_HP_2760P
+	default "8460p"          if BOARD_HP_8460P
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "EliteBook 2570p"          if BOARD_HP_2570P
 	default "EliteBook 2760p"          if BOARD_HP_2760P
+	default "EliteBook 8460p"          if BOARD_HP_8460P
 
 config DEVICETREE
 	string
@@ -63,5 +65,6 @@ config USBDEBUG_HCD_INDEX
 	int
 	default 2 if BOARD_HP_2570P
 	default 1 if BOARD_HP_2760P
+	default 1 if BOARD_HP_8460P
 
 endif

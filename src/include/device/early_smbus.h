@@ -49,8 +49,8 @@
 
 #include <stdint.h>
 
-u16 smbus_read_word(u32 smbus_dev, u8 addr, u8 offset);
-u8 smbus_read_byte(u32 smbus_dev, u8 addr, u8 offset);
-u8 smbus_write_byte(u32 smbus_dev, u8 addr, u8 offset, u8 value);
+u16 smbus_read_word(u8 addr, u8 offset);
+u8 smbus_read_byte(u8 addr, u8 offset);
+u8 smbus_write_byte(u8 addr, u8 offset, u8 value);
 
 #endif				/* DEVICE_EARLY_SMBUS_H */

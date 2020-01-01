@@ -178,17 +178,17 @@ int smbus_read16(unsigned int smbus_base, unsigned int device,
 	return data;
 }
 
-u16 smbus_read_word(u32 smbus_dev, u8 addr, u8 offset)
+u16 smbus_read_word(u8 addr, u8 offset)
 {
 	return smbus_read16(SMBUS_IO_BASE, addr, offset);
 }
 
-u8 smbus_read_byte(u32 smbus_dev, u8 addr, u8 offset)
+u8 smbus_read_byte(u8 addr, u8 offset)
 {
 	return smbus_read8(SMBUS_IO_BASE, addr, offset);
 }
 
-u8 smbus_write_byte(u32 smbus_dev, u8 addr, u8 offset, u8 value)
+u8 smbus_write_byte(u8 addr, u8 offset, u8 value)
 {
 	return smbus_write8(SMBUS_IO_BASE, addr, offset, value);
 }

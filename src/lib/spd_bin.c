@@ -227,15 +227,15 @@ static void smbus_read_spd(u8 *spd, u8 addr)
 	for (i = 0; i < SPD_PAGE_LEN; i += step) {
 		if (CONFIG(SPD_READ_BY_WORD))
 			((u16*)spd)[i / sizeof(uint16_t)] =
-				 smbus_read_word(0, addr, i);
+				 smbus_read_word(addr, i);
 		else
-			spd[i] = smbus_read_byte(0, addr, i);
+			spd[i] = smbus_read_byte(addr, i);
 	}
 }
 
 static void get_spd(u8 *spd, u8 addr)
 {
-	if (smbus_read_byte(0, addr, 0) == 0xff) {
+	if (smbus_read_byte(addr, 0) == 0xff) {
 		printk(BIOS_INFO, "No memory dimm at address %02X\n",
 			addr << 1);
 		/* Make sure spd is zeroed if dimm doesn't exist. */
@@ -248,10 +248,10 @@ static void get_spd(u8 *spd, u8 addr)
 	if (spd[SPD_DRAM_TYPE] == SPD_DRAM_DDR4 &&
 		CONFIG_DIMM_SPD_SIZE > SPD_PAGE_LEN) {
 		/* Switch to page 1 */
-		smbus_write_byte(0, SPD_PAGE_1, 0, 0);
+		smbus_write_byte(SPD_PAGE_1, 0, 0);
 		smbus_read_spd(spd + SPD_PAGE_LEN, addr);
 		/* Restore to page 0 */
-		smbus_write_byte(0, SPD_PAGE_0, 0, 0);
+		smbus_write_byte(SPD_PAGE_0, 0, 0);
 	}
 }
 

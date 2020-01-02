@@ -45,5 +45,4 @@ DefinitionBlock(
 
 	/* Mainboard specific sleep states */
 	#include "acpi/sleepstates.asl"
-	#include "acpi/mainboard.asl"
 }

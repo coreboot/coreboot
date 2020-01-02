@@ -209,9 +209,3 @@ __weak void soc_display_silicon_init_params(
 __weak void soc_silicon_init_params(SILICON_INIT_UPD *params)
 {
 }
-
-/* Load bmp and set FSP parameters, fsp_load_logo can be used */
-__weak const struct cbmem_entry *soc_load_logo(SILICON_INIT_UPD *params)
-{
-	return NULL;
-}

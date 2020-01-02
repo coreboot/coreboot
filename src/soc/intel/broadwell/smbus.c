@@ -24,6 +24,7 @@
 #include <soc/iomap.h>
 #include <soc/ramstage.h>
 #include <soc/smbus.h>
+#include <southbridge/intel/common/smbus.h>
 
 static void pch_smbus_init(struct device *dev)
 {

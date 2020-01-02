@@ -40,9 +40,4 @@
 #define SMBUS_TIMEOUT		(10 * 1000 * 100)
 #define SMBUS_SLAVE_ADDR	0x24
 
-int do_smbus_read_byte(unsigned int smbus_base, unsigned int device,
-		       unsigned int address);
-int do_smbus_write_byte(unsigned int smbus_base, unsigned int device,
-			unsigned int address, unsigned int data);
-
 #endif

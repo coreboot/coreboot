@@ -38,17 +38,17 @@ static uint16_t biosram_read16(uint8_t reg) /* Must be 1 byte at a time */
 	return (biosram_read8(reg + sizeof(uint8_t)) << 8 | biosram_read8(reg));
 }
 
-static uint32_t biosram_read32(uint8_t reg)
-{
-	uint32_t value = biosram_read16(reg + sizeof(uint16_t)) << 16;
-	return value | biosram_read16(reg);
-}
-
 static void biosram_write16(uint8_t reg, uint16_t value)
 {
 	biosram_write8(reg, value & 0xff);
 	value >>= 8;
 	biosram_write8(reg + sizeof(uint8_t), value & 0xff);
+}
+
+static uint32_t biosram_read32(uint8_t reg)
+{
+	uint32_t value = biosram_read16(reg + sizeof(uint16_t)) << 16;
+	return value | biosram_read16(reg);
 }
 
 static void biosram_write32(uint8_t reg, uint32_t value)
@@ -57,7 +57,6 @@ static void biosram_write32(uint8_t reg, uint32_t value)
 	value >>= 16;
 	biosram_write16(reg + sizeof(uint16_t), value & 0xffff);
 }
-
 
 /* Access to BIOSRAM is only allowed through the abstractions below. */
 
@@ -70,7 +69,6 @@ void set_ap_entry_ptr(void *entry)
 {
 	biosram_write32(BIOSRAM_AP_ENTRY, (uintptr_t)entry);
 }
-
 
 void backup_top_of_low_cacheable(uintptr_t ramtop)
 {

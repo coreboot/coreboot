@@ -121,7 +121,7 @@ warn_no_agesa:
 	printf "coreboot has been built with no AGESA support.  Successfully "
 	printf "booting this image will be impossible.\n\n"
 
-PHONY+=warn_no_amdfw
+PHONY+=warn_no_agesa
 
 ifeq ($(CONFIG_AGESA_SPLIT_MEMORY_FILES), y)
 

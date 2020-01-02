@@ -6,3 +6,6 @@ config BOARD_ASUS_P5Q_PRO
 
 config BOARD_ASUS_P5QL_PRO
 	bool "P5QL PRO"
+
+config BOARD_ASUS_P5Q
+	bool "P5Q"

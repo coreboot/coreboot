@@ -1,0 +1,122 @@
+#
+# This file is part of the coreboot project.
+#
+# Copyright (C) 2015 Damien Zammit  <damien@zamaudio.com>
+# Copyright (C) 2018 Arthur Heymans <arthur@aheymans.xyz>
+# Copyright (C) 2019 Ivan Vatlin    <jenrus@tuta.io>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+
+chip northbridge/intel/x4x		# Northbridge
+	device cpu_cluster 0 on		# APIC cluster
+		chip cpu/intel/socket_LGA775
+			device lapic 0 on end
+		end
+		chip cpu/intel/model_1067x		# CPU
+			device lapic 0xACAC off end
+		end
+	end
+	device domain 0 on		# PCI domain
+		device pci 0.0 on  end		# Host Bridge
+		device pci 1.0 on  end		# PEG
+		device pci 6.0 off end		# PEG 2
+		chip southbridge/intel/i82801jx	# Southbridge
+			register "gpe0_en" = "0x40"
+
+			# Enable all six SATA ports.
+			register "sata_port_map"	= "0x3f"
+
+			# Enable PCIe ports 0,2,3 as slots.
+			register "pcie_slot_implemented"	= "0x31"
+
+			register "gen1_dec" = "0x00000295"
+			register "gen2_dec" = "0x001c4701"
+
+			device pci 19.0 off end		# GBE
+			device pci 1a.0 on  end		# USB
+			device pci 1a.1 on  end		# USB
+			device pci 1a.2 on  end		# USB
+			device pci 1a.7 on  end		# USB
+			device pci 1b.0 on  end		# Audio
+			device pci 1c.0 on  end		# PCIe 1: PCIEX1_1 slot
+			device pci 1c.1 on  end		# PCIe 2: PCIEX1_2 slot
+			device pci 1c.2 off end		# PCIe 3: Unconnected
+			device pci 1c.3 off end		# PCIe 4: Unconnected
+			device pci 1c.4 on  end		# PCIe 5: Marvell 88SE6121 IDE/SATA controller
+			device pci 1c.5 on  end		# PCIe 6: Atheros AR8121 Ethernet NIC
+			device pci 1d.0 on  end		# USB
+			device pci 1d.1 on  end		# USB
+			device pci 1d.2 on  end		# USB
+			device pci 1d.7 on  end		# USB
+			device pci 1e.0 on  end		# PCI bridge
+			device pci 1f.0 on   		# LPC bridge
+				chip superio/winbond/w83667hg-a	# Super I/O
+					device pnp 2e.0 on		# FDC
+						# Global registers
+						irq 0x2a = 0x00
+						irq 0x2c = 0x22
+						irq 0x2d = 0x00
+						# Floppy
+						io 0x60  = 0x3f0
+						irq 0xf0 = 0x0e
+					end
+					device pnp 2e.1 off end		# LPT1
+					device pnp 2e.2 on		# COM1
+						io 0x60 = 0x3f8
+						irq 0x70 = 4
+					end
+					device pnp 2e.3 off end		# COM2
+					device pnp 2e.5 on		# PS/2 keyboard & mouse
+						io 0x60 = 0x60
+						io 0x62 = 0x64
+						irq 0x70 = 1
+						irq 0x72 = 12
+					end
+					device pnp 2e.106 off end	# SPI1
+					device pnp 2e.107 off end	# GPIO6
+					device pnp 2e.207 off end	# GPIO7
+					device pnp 2e.307 on		# GPIO8
+						irq 0xe4 = 0xfb
+					end
+					device pnp 2e.407 off end	# GPIO9
+					device pnp 2e.8   off end	# WDT
+					device pnp 2e.108 off end	# GPIO1
+					device pnp 2e.9   off end	# GPIO2
+					device pnp 2e.109 on  end	# GPIO3
+					device pnp 2e.209 on		# GPIO4
+						irq 0xf0 = 0x7f
+						irq 0xfe = 0x07
+					end
+					device pnp 2e.309 on end	# GPIO5
+					device pnp 2e.a   on		# ACPI
+						irq 0xe4 = 0x10 # 3VSBSW# enable
+						irq 0xe5 = 0x02
+						irq 0xf2 = 0xfc
+					end
+					device pnp 2e.b on		# HW Monitor
+						io 0x60 = 0x290
+						irq 0x70 = 0
+						# IRQ purposefully not assigned to prevent lockups
+					end
+					device pnp 2e.c on end		# PECI
+					device pnp 2e.d on end		# VID_BUSSEL
+					device pnp 2e.f on end		# GPIO_PP_OD
+				end
+			end
+			device pci 1f.2 on  end		# SATA
+			device pci 1f.3 on  end		# SMbus
+			device pci 1f.4 off end
+			device pci 1f.5 off end		# SATA (legacy mode)
+			device pci 1f.6 off end
+		end
+	end
+end

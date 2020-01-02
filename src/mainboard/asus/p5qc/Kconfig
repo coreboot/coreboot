@@ -1,8 +1,9 @@
 #
 # This file is part of the coreboot project.
 #
-# Copyright (C) 2015 Damien Zammit <damien@zamaudio.com>
+# Copyright (C) 2015 Damien Zammit  <damien@zamaudio.com>
 # Copyright (C) 2018 Arthur Heymans <arthur@aheymans.xyz>
+# Copyright (C) 2019 Ivan Vatlin    <jenrus@tuta.io>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -14,7 +15,7 @@
 # GNU General Public License for more details.
 #
 
-if BOARD_ASUS_P5QC || BOARD_ASUS_P5Q_PRO || BOARD_ASUS_P5QL_PRO
+if BOARD_ASUS_P5QC || BOARD_ASUS_P5Q_PRO || BOARD_ASUS_P5QL_PRO || BOARD_ASUS_P5Q
 
 config BOARD_SPECIFIC_OPTIONS
 	def_bool y
@@ -38,12 +39,14 @@ config VARIANT_DIR
 	default "p5qc" if BOARD_ASUS_P5QC
 	default "p5q_pro" if BOARD_ASUS_P5Q_PRO
 	default "p5ql_pro" if BOARD_ASUS_P5QL_PRO
+	default "p5q" if BOARD_ASUS_P5Q
 
 config MAINBOARD_PART_NUMBER
 	string
 	default "P5QC" if BOARD_ASUS_P5QC
 	default "P5Q PRO" if BOARD_ASUS_P5Q_PRO
 	default "P5QL PRO" if BOARD_ASUS_P5QL_PRO
+	default "P5Q" if BOARD_ASUS_P5Q
 
 config DEVICETREE
 	string

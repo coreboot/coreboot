@@ -175,22 +175,23 @@ static int complete_command(unsigned int smbus_base)
 	return cb_err_from_stat(status);
 }
 
-int do_smbus_read_byte(unsigned int smbus_base, u8 device,
+static int smbus_read_cmd(unsigned int smbus_base, u8 ctrl, u8 device,
 		unsigned int address)
 {
 	int ret;
-	u8 byte;
+	u16 word;
 
 	/* Set up for a byte data read. */
-	ret = setup_command(smbus_base, I801_BYTE_DATA, XMIT_READ(device));
+	ret = setup_command(smbus_base, ctrl, XMIT_READ(device));
 	if (ret < 0)
 		return ret;
 
 	/* Set the command/address... */
 	outb(address, smbus_base + SMBHSTCMD);
 
-	/* Clear the data byte... */
+	/* Clear the data bytes... */
 	outb(0, smbus_base + SMBHSTDAT0);
+	outb(0, smbus_base + SMBHSTDAT1);
 
 	/* Start the command */
 	ret = execute_command(smbus_base);
@@ -203,25 +204,30 @@ int do_smbus_read_byte(unsigned int smbus_base, u8 device,
 		return ret;
 
 	/* Read results of transaction */
-	byte = inb(smbus_base + SMBHSTDAT0);
-	return byte;
+	word = inb(smbus_base + SMBHSTDAT0);
+	if (ctrl == I801_WORD_DATA)
+		word |= inb(smbus_base + SMBHSTDAT1) << 8;
+
+	return word;
 }
 
-int do_smbus_write_byte(unsigned int smbus_base, u8 device,
+static int smbus_write_cmd(unsigned int smbus_base, u8 ctrl, u8 device,
 			unsigned int address, unsigned int data)
 {
 	int ret;
 
 	/* Set up for a byte data write. */
-	ret = setup_command(smbus_base, I801_BYTE_DATA, XMIT_WRITE(device));
+	ret = setup_command(smbus_base, ctrl, XMIT_WRITE(device));
 	if (ret < 0)
 		return ret;
 
 	/* Set the command/address... */
 	outb(address, smbus_base + SMBHSTCMD);
 
-	/* Set the data byte... */
-	outb(data, smbus_base + SMBHSTDAT0);
+	/* Set the data bytes... */
+	outb(data & 0xff, smbus_base + SMBHSTDAT0);
+	if (ctrl == I801_WORD_DATA)
+		outb(data >> 8, smbus_base + SMBHSTDAT1);
 
 	/* Start the command */
 	ret = execute_command(smbus_base);
@@ -311,6 +317,28 @@ static int block_cmd_loop(unsigned int smbus_base,
 		return ret;
 
 	return bytes;
+}
+
+int do_smbus_read_byte(unsigned int smbus_base, u8 device, unsigned int address)
+{
+	return smbus_read_cmd(smbus_base, I801_BYTE_DATA, device, address);
+}
+
+int do_smbus_read_word(unsigned int smbus_base, u8 device, unsigned int address)
+{
+	return smbus_read_cmd(smbus_base, I801_WORD_DATA, device, address);
+}
+
+int do_smbus_write_byte(unsigned int smbus_base, u8 device, unsigned int address,
+			unsigned int data)
+{
+	return smbus_write_cmd(smbus_base, I801_BYTE_DATA, device, address, data);
+}
+
+int do_smbus_write_word(unsigned int smbus_base, u8 device, unsigned int address,
+			unsigned int data)
+{
+	return smbus_write_cmd(smbus_base, I801_WORD_DATA, device, address, data);
 }
 
 int do_smbus_block_read(unsigned int smbus_base, u8 device, u8 cmd,

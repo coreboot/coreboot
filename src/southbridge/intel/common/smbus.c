@@ -82,6 +82,15 @@ static u8 host_inb(unsigned int base, u8 reg)
 	return inb(base + reg);
 }
 
+static void host_and_or(unsigned int base, u8 reg, u8 mask, u8 or)
+{
+	u8 value;
+	value = host_inb(base, reg);
+	value &= mask;
+	value |= or;
+	host_outb(base, reg, value);
+}
+
 static int host_completed(u8 status)
 {
 	if (status & SMBHSTSTS_HOST_BUSY)
@@ -129,7 +138,7 @@ static int setup_command(unsigned int smbus_base, u8 ctrl, u8 xmitadd)
 				      SMBUS_WAIT_UNTIL_READY_TIMEOUT);
 
 	/* Clear any lingering errors, so the transaction will run. */
-	host_outb(smbus_base, SMBHSTSTAT, host_inb(smbus_base, SMBHSTSTAT));
+	host_and_or(smbus_base, SMBHSTSTAT, 0xff, 0);
 
 	/* Set up transaction */
 	/* Disable interrupts */
@@ -147,7 +156,7 @@ static int execute_command(unsigned int smbus_base)
 	u8 status;
 
 	/* Start the command. */
-	host_outb(smbus_base, SMBHSTCTL, host_inb(smbus_base, SMBHSTCTL) | SMBHSTCNT_START);
+	host_and_or(smbus_base, SMBHSTCTL, 0xff, SMBHSTCNT_START);
 
 	/* Poll for it to start. */
 	do {
@@ -298,9 +307,8 @@ static int block_cmd_loop(unsigned int smbus_base,
 
 				/* Indicate that next byte is the last one. */
 				if (sw_drives_nak && (bytes + 1 >= max_bytes)) {
-					host_outb(smbus_base, SMBHSTCTL,
-						host_inb(smbus_base, SMBHSTCTL) |
-							SMBHSTCNT_LAST_BYTE);
+					host_and_or(smbus_base, SMBHSTCTL,
+						    0xff, SMBHSTCNT_LAST_BYTE);
 				}
 
 			}

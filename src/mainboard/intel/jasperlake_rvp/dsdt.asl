@@ -38,7 +38,7 @@ DefinitionBlock(
 	Scope (\_SB) {
 		Device (PCI0)
 		{
-			#include <soc/intel/tigerlake/acpi/northbridge.asl>
+			#include <soc/intel/common/block/acpi/acpi/northbridge.asl>
 			#include <soc/intel/tigerlake/acpi/southbridge.asl>
 		}
 	}

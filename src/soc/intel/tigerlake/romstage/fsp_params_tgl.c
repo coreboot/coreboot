@@ -119,6 +119,19 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 	m_cfg->SmbusEnable = config->SmbusEnable;
 	/* Set debug probe type */
 	m_cfg->PlatformDebugConsent = config->DebugConsent;
+
+	/* Audio: HDAUDIO_LINK_MODE I2S/SNDW */
+	m_cfg->PchHdaDspEnable = config->PchHdaDspEnable;
+	m_cfg->PchHdaAudioLinkHdaEnable = config->PchHdaAudioLinkHdaEnable;
+	memcpy(m_cfg->PchHdaAudioLinkDmicEnable, config->PchHdaAudioLinkDmicEnable,
+			sizeof(m_cfg->PchHdaAudioLinkDmicEnable));
+	memcpy(m_cfg->PchHdaAudioLinkSspEnable, config->PchHdaAudioLinkSspEnable,
+			sizeof(m_cfg->PchHdaAudioLinkSspEnable));
+	memcpy(m_cfg->PchHdaAudioLinkSndwEnable, config->PchHdaAudioLinkSndwEnable,
+			sizeof(m_cfg->PchHdaAudioLinkSndwEnable));
+	m_cfg->PchHdaIDispLinkTmode = config->PchHdaIDispLinkTmode;
+	m_cfg->PchHdaIDispLinkFrequency = config->PchHdaIDispLinkFrequency;
+	m_cfg->PchHdaIDispCodecDisconnect = config->PchHdaIDispCodecDisconnect;
 }
 
 void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)

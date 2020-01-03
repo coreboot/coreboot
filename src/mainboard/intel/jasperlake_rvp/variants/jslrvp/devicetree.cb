@@ -46,7 +46,7 @@ chip soc/intel/tigerlake
 	register "gen3_dec" = "0x00fc0901"
 
 	register "PchHdaDspEnable" = "1"
-	register "PchHdaAudioLinkHda" = "1"
+	register "PchHdaAudioLinkHdaEnable" = "1"
 
 	# PCIe port 1 for M.2 E-key WLAN
 	register "PcieRpEnable[1]" = "1"

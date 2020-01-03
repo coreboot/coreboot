@@ -30,6 +30,10 @@
 #include <soc/serialio.h>
 #include <soc/usb.h>
 
+#define MAX_HD_AUDIO_DMIC_LINKS 2
+#define MAX_HD_AUDIO_SNDW_LINKS 4
+#define MAX_HD_AUDIO_SSP_LINKS  6
+
 struct soc_intel_tigerlake_config {
 
 	/* Common struct containing soc config data required by common code */
@@ -99,20 +103,14 @@ struct soc_intel_tigerlake_config {
 	uint8_t SataPortsDevSlp[8];
 
 	/* Audio related */
-	uint8_t PchHdaEnable;
 	uint8_t PchHdaDspEnable;
-
-	/* Enable/Disable HD Audio Link. Muxed with SSP0/SSP1/SNDW1 */
-	uint8_t PchHdaAudioLinkHda;
-	uint8_t PchHdaAudioLinkDmic0;
-	uint8_t PchHdaAudioLinkDmic1;
-	uint8_t PchHdaAudioLinkSsp0;
-	uint8_t PchHdaAudioLinkSsp1;
-	uint8_t PchHdaAudioLinkSsp2;
-	uint8_t PchHdaAudioLinkSndw1;
-	uint8_t PchHdaAudioLinkSndw2;
-	uint8_t PchHdaAudioLinkSndw3;
-	uint8_t PchHdaAudioLinkSndw4;
+	uint8_t PchHdaAudioLinkHdaEnable;
+	uint8_t PchHdaAudioLinkDmicEnable[MAX_HD_AUDIO_DMIC_LINKS];
+	uint8_t PchHdaAudioLinkSspEnable[MAX_HD_AUDIO_SSP_LINKS];
+	uint8_t PchHdaAudioLinkSndwEnable[MAX_HD_AUDIO_SNDW_LINKS];
+	uint8_t PchHdaIDispLinkTmode;
+	uint8_t PchHdaIDispLinkFrequency;
+	uint8_t PchHdaIDispCodecDisconnect;
 
 	/* PCIe Root Ports */
 	uint8_t PcieRpEnable[CONFIG_MAX_ROOT_PORTS];

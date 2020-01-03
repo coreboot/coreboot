@@ -1,14 +1,18 @@
 Tutorial, part 1: Starting from scratch
 ===========================================
 
-From a fresh Ubuntu 16.04 or 18.04 install, here are all the steps required for
-a very basic build:
+This tutorial will guide you through the process of setting up a working
+coreboot toolchain. In same cases you will find specific instructions for Debian (apt-get),
+Fedora (dnf) and Arch Linux (pacman) based package management systems. Use the
+instructions according to your system.
 
 Download, configure, and build coreboot
 ---------------------------------------
 
 ### Step 1 - Install tools and libraries needed for coreboot
     $ sudo apt-get install -y bison build-essential curl flex git gnat libncurses5-dev m4 zlib1g-dev
+    $ sudo pacman -S base-devel curl git gcc-ada ncurses zlib
+    $ sudo dnf install git make gcc-gnat flex bison xz bzip2 gcc g++ ncurses-devel wget zlib-devel
 
 ### Step 2 - Download coreboot source tree
     $ git clone https://review.coreboot.org/coreboot
@@ -78,6 +82,8 @@ Test the image using QEMU
 
 ### Step 7 - Install QEMU
     $ sudo apt-get install -y qemu
+    $ sudo pacman -S qemu
+    $ sudo dnf install qemu
 
 ### Step 8 - Run QEMU
 Start QEMU, and point it to the ROM you just built:
@@ -91,20 +97,24 @@ Summary
 -------
 
 ### Step 1 summary - Install tools and libraries needed for coreboot
-You installed the minimum additional requirements for ubuntu to download and
-build coreboot. Ubuntu already has most of the other tools that would be
-required installed by default.
+Depending on your distribution you have installed the minimum additional
+software requirements to continue with downloading and building coreboot.
+Not every distribution has the tools, that would be required,
+installed by default. In the following we shortly introduce the purpose of the
+installed packages:
 
-* `build-essential` is the basic tools for doing builds.  It comes pre-installed
-on some Ubuntu flavors, and not on others.
+* `build-essential` or `base-devel` are the basic tools for building software.
 * `git` is needed to download coreboot from the coreboot git repository.
-* `libncurses5-dev` is needed to build the menu for 'make menuconfig'
+* `libncurses5-dev` or `ncurses` is needed to build the menu for 'make menuconfig'
 * `m4, bison, curl, flex, zlib1g-dev, gcc, gnat` and `g++` or `clang`
 are needed to build the coreboot toolchain. `gcc` and `gnat` have to be
 of the same version.
 
-If you started with a different distribution, you might need to install many
-other items which vary by distribution.
+If you started with a different distribution or package management system you
+might need to install other packages. Most likely they are named sightly
+different. If that is the case for you, we'd like to encourage you to contribute
+to the project and submit a pull request with an update for this documentation
+for your system.
 
 ### Step 2 summary - Download coreboot source tree
 This will download a 'read-only' copy of the coreboot tree. This just means
@@ -124,12 +134,12 @@ system during the build process.
 
 ### Step 4 summary - Build the payload
 To actually do anything useful with coreboot, you need to build a payload to
-include in the rom. The idea behind coreboot is that it does the minimum amount
+include into the rom. The idea behind coreboot is that it does the minimum amount
 possible before passing control of the machine to a payload. There are various
 payloads such as grub or SeaBIOS that are typically used to boot the operating
 system. Instead, we used coreinfo, a small demonstration payload that allows the
-user to look at various things such as memory and the contents of coreboot's
-cbfs - the pieces that make up the coreboot rom.
+user to look at various things such as memory and the contents of the coreboot
+file system (CBFS) - the pieces that make up the coreboot rom.
 
 ### Step 5 summary - Configure the build
 This step configures coreboot's build options using the menuconfig interface to
@@ -154,16 +164,17 @@ build directory as 'coreboot.rom'. At the end of the build process, the build
 displayed the contents of the rom file.
 
 ### Step 7 summary - Install QEMU
-QEMU is a processor emulator which we can use to show coreboot
+QEMU is a processor emulator which we can use to show the coreboot boot
+process in a virtualised environment.
 
 ### Step 8 summary - Run QEMU
-Here's the command line broken down:
+Here's the command line instruction broken down:
 * `qemu-system-x86_64`
 This starts the QEMU emulator with the i440FX host PCI bridge and PIIX3 PCI to
 ISA bridge.
 * `-bios build/coreboot.rom`
-Use the bios rom image that we just built. If this is left off, the standard
-SeaBIOS image that comes with QEMU is used.
+Use the bios rom image that we just built. If this flag is left out, the
+standard SeaBIOS image that comes with QEMU is used.
 * `-serial stdio`
 Send the serial output to the console. This allows you to view the coreboot
-debug output.
+boot log.

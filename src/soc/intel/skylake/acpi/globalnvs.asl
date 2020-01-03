@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2007-2009 coresystems GmbH
  * Copyright (C) 2014 Google Inc.
- * Copyright (C) 2015 Intel Corporation.
+ * Copyright (C) 2015-2020 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -70,6 +70,9 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	EPCS,	8,	// 0x43 - SGX Enabled status
 	EMNA,	64,	// 0x44 - 0x4B EPC base address
 	ELNG,	64,	// 0x4C - 0x53 EPC Length
+	E4GM,	8,	// 0x54 - Enable above 4GB MMIO Resource
+	A4GB,	64,	// 0x55 - 0x5C Base of above 4GB MMIO Resource
+	A4GS,	64,	// 0x5D - 0x64 Length of above 4GB MMIO Resource
 
 	/* IGD OpRegion */
 	Offset (0xb4),

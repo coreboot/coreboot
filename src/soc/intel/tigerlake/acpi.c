@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2019 Intel Corp.
+ * Copyright (C) 2019-2020 Intel Corp.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,6 +28,7 @@
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
 #include <soc/soc_chip.h>
+#include <soc/systemagent.h>
 #include <string.h>
 #include <wrdd.h>
 
@@ -223,6 +224,9 @@ void acpi_create_gnvs(struct global_nvs_t *gnvs)
 	/* Set USB2/USB3 wake enable bitmaps. */
 	gnvs->u2we = config->usb2_wake_enable_bitmap;
 	gnvs->u3we = config->usb3_wake_enable_bitmap;
+
+	/* Fill in Above 4GB MMIO resource */
+	sa_fill_gnvs(gnvs);
 }
 
 uint32_t acpi_fill_soc_wake(uint32_t generic_pm1_en,

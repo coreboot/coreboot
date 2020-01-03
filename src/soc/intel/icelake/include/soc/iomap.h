@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2018 Intel Corporation.
+ * Copyright (C) 2018-2020 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,6 +60,10 @@
 
 #define VTD_BASE_ADDRESS	0xFED90000
 #define VTD_BASE_SIZE		0x00004000
+
+#define ABOVE_4GB_MEM_BASE_ADDRESS	(256ULL * GiB)
+#define ABOVE_4GB_MEM_BASE_SIZE	(256ULL * GiB)
+
 /*
  * I/O port address space
  */

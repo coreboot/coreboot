@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2016 Intel Corp.
+ * Copyright (C) 2016-2020 Intel Corp.
  * (Written by Lance Zhao <lijian.zhao@intel.com> for Intel Corp.)
  *
  * This program is free software; you can redistribute it and/or modify
@@ -15,7 +15,6 @@
  * GNU General Public License for more details.
  */
 
-#define BASE_64GB	0x1000000000
 
 Name(_HID, EISAID("PNP0A08"))	/* PCIe */
 Name(_CID, EISAID("PNP0A03"))	/* PCI */
@@ -115,18 +114,18 @@ Method (_CRS, 0, Serialized)
 	Add(Subtract(GMAX, GMIN), 1, GLEN)
 
 	/* Patch PM02 range based on Memory Size */
-	CreateQwordField (MCRS, PM02._MIN, MMIN)
-	CreateQwordField (MCRS, PM02._MAX, MMAX)
-	CreateQwordField (MCRS, PM02._LEN, MLEN)
-
-	Store (\_SB.PCI0.MCHC.TUUD, Local0)
-
-	If (LLessEqual (Local0, BASE_64GB))
-	{
-		Store (0, MMIN)
-		Store (0, MLEN)
+	If (LEqual (A4GS, 0)) {
+		CreateQwordField (MCRS, PM02._LEN, MSEN)
+		Store (0, MSEN)
+	} Else {
+		CreateQwordField (MCRS, PM02._MIN, MMIN)
+		CreateQwordField (MCRS, PM02._MAX, MMAX)
+		CreateQwordField (MCRS, PM02._LEN, MLEN)
+		/* Set 64bit MMIO resource base and length */
+		Store (A4GS, MLEN)
+		Store (A4GB, MMIN)
+		Subtract (Add (MMIN, MLEN), 1, MMAX)
 	}
-	Subtract (Add (MMIN, MLEN), 1, MMAX)
 
 	Return (MCRS)
 }

@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2014 Google Inc.
- * Copyright (C) 2015 Intel Corporation.
+ * Copyright (C) 2015-2020 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -74,6 +74,9 @@
 /* PTT registers */
 #define PTT_TXT_BASE_ADDRESS	0xfed30800
 #define PTT_PRESENT		0x00070000
+
+#define ABOVE_4GB_MEM_BASE_ADDRESS	(128ULL * GiB)
+#define ABOVE_4GB_MEM_BASE_SIZE	(64ULL * GiB)
 
 /*
  * I/O port address space

@@ -16,9 +16,6 @@
 
 #include <soc/iomap.h>
 
-#define BASE_32GB	0x800000000
-#define SIZE_16GB	0x400000000
-
 Name (_HID, EisaId ("PNP0A08") /* PCI Express Bus */)  // _HID: Hardware ID
 Name (_CID, EisaId ("PNP0A03") /* PCI Bus */)  // _CID: Compatible ID
 Name (_SEG, Zero)  // _SEG: PCI Segment
@@ -204,20 +201,18 @@ Method (_CRS, 0, Serialized)
 	Add (Subtract (PMAX, PMIN), 1, PLEN)
 
 	/* Patch PM02 range based on Memory Size */
-	CreateQwordField (MCRS, PM02._MIN, MMIN)
-	CreateQwordField (MCRS, PM02._MAX, MMAX)
-	CreateQwordField (MCRS, PM02._LEN, MLEN)
-
-	Store (\_SB.PCI0.MCHC.TUUD, Local0)
-
-	If (LLessEqual (Local0, BASE_32GB)) {
-		Store (BASE_32GB, MMIN)
-		Store (SIZE_16GB, MLEN)
+	If (LEqual (A4GS, 0)) {
+		CreateQwordField (MCRS, PM02._LEN, MSEN)
+		Store (0, MSEN)
 	} Else {
-		Store (0, MMIN)
-		Store (0, MLEN)
+		CreateQwordField (MCRS, PM02._MIN, MMIN)
+		CreateQwordField (MCRS, PM02._MAX, MMAX)
+		CreateQwordField (MCRS, PM02._LEN, MLEN)
+		/* Set 64bit MMIO resource base and length */
+		Store (A4GS, MLEN)
+		Store (A4GB, MMIN)
+		Subtract (Add (MMIN, MLEN), 1, MMAX)
 	}
-	Subtract (Add (MMIN, MLEN), 1, MMAX)
 
 	Return (MCRS)
 }

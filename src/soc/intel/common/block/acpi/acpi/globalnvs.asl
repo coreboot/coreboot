@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2019 Intel Corporation.
+ * Copyright (C) 2019-2020 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,6 +47,9 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	U2WE,	16,	// 0x2b - 0x2c USB2 Wake Enable Bitmap
 	U3WE,	16,	// 0x2d - 0x2e USB3 Wake Enable Bitmap
 	UIOR,	8,	// 0x2f - UART debug controller init on S3 resume
+	E4GM,	8,	// 0x30 - Enable above 4GB MMIO Resource
+	A4GB,	64,	// 0x31 - 0x38 Base of above 4GB MMIO Resource
+	A4GS,	64,	// 0x39 - 0x40 Length of above 4GB MMIO Resource
 
 	/* ChromeOS specific */
 	Offset (0x100),

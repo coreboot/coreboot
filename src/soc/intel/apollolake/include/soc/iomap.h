@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2015 Intel Corp.
+ * Copyright (C) 2015-2020 Intel Corp.
  * (Written by Andrey Petrov <andrey.petrov@intel.com> for Intel Corp.)
  *
  * This program is free software; you can redistribute it and/or modify
@@ -59,5 +59,8 @@
 /* Temporary BAR for early I2C bus access */
 #define EARLY_I2C_BASE_ADDRESS		0xfe020000
 #define EARLY_I2C_BASE(x)	(EARLY_I2C_BASE_ADDRESS + (0x1000 * (x)))
+
+#define ABOVE_4GB_MEM_BASE_ADDRESS	(128ULL * GiB)
+#define ABOVE_4GB_MEM_BASE_SIZE	(64ULL * GiB)
 
 #endif /* _SOC_APOLLOLAKE_IOMAP_H_ */

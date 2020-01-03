@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2009 coresystems GmbH
  * Copyright (C) 2014 Google Inc.
- * Copyright (C) 2015-2019 Intel Corporation.
+ * Copyright (C) 2015-2020 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -207,6 +207,9 @@ static void acpi_create_gnvs(global_nvs_t *gnvs)
 
 	if (CONFIG(SOC_INTEL_COMMON_BLOCK_SGX_ENABLE))
 		sgx_fill_gnvs(gnvs);
+
+	/* Fill in Above 4GB MMIO resource */
+	sa_fill_gnvs(gnvs);
 }
 
 unsigned long acpi_fill_mcfg(unsigned long current)

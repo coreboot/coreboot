@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2018 Intel Corporation.
+ * Copyright (C) 2018-2020 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,6 +37,7 @@ struct soc_intel_common_config {
 	/* PCH Thermal Trip Temperature in deg C */
 	uint8_t pch_thermal_trip;
 	struct mmc_dll_params emmc_dll;
+	int enable_above_4GB_mmio;
 };
 
 /* This function to retrieve soc config structure required by common code */

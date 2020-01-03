@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2014 Google Inc.
- * Copyright (C) 2017 Intel Corporation.
+ * Copyright (C) 2017-2020 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,6 +67,9 @@
 #define GPIO_BASE_SIZE		0x10000
 
 #define HECI1_BASE_ADDRESS	0xfeda2000
+
+#define ABOVE_4GB_MEM_BASE_ADDRESS	(256ULL * GiB)
+#define ABOVE_4GB_MEM_BASE_SIZE	(256ULL * GiB)
 
 /* PTT registers */
 #define PTT_TXT_BASE_ADDRESS	0xfed30800

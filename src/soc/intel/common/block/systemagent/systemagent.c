@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2017-2018 Intel Corporation.
+ * Copyright (C) 2017-2020 Intel Corporation.
  * Copyright (C) 2019 Siemens AG
  *
  * This program is free software; you can redistribute it and/or modify
@@ -14,12 +14,13 @@
  * GNU General Public License for more details.
  */
 
-#include <device/pci_ops.h>
 #include <cbmem.h>
+#include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <intelblocks/acpi.h>
+#include <intelblocks/cfg.h>
 #include <intelblocks/systemagent.h>
 #include <smbios.h>
 #include <soc/iomap.h>
@@ -51,6 +52,34 @@ __weak unsigned long sa_write_acpi_tables(struct device *dev,
 					  struct acpi_rsdp *rsdp)
 {
 	return current;
+}
+
+/*
+ * This function will get above 4GB mmio enable config specific to soc.
+ *
+ * Return values:
+ *  0 = Above 4GB memory is not enable
+ *  1 = Above 4GB memory is enable
+ */
+static int get_enable_above_4GB_mmio(void)
+{
+	const struct soc_intel_common_config *common_config;
+	common_config = chip_get_common_soc_structure();
+
+	return common_config->enable_above_4GB_mmio;
+}
+
+/* Fill MMIO resource above 4GB into GNVS */
+void sa_fill_gnvs(global_nvs_t *gnvs)
+{
+	if (get_enable_above_4GB_mmio()) {
+		gnvs->e4gm = 1;
+		gnvs->a4gb = ABOVE_4GB_MEM_BASE_ADDRESS;
+		gnvs->a4gs = ABOVE_4GB_MEM_BASE_SIZE;
+		printk(BIOS_DEBUG,
+			"PCI space above 4GB MMIO is from 0x%llx  to len = 0x%llx\n",
+				gnvs->a4gb, gnvs->a4gs);
+	}
 }
 
 /*

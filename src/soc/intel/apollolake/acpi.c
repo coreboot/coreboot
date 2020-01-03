@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2016 Intel Corp.
+ * Copyright (C) 2016-2020 Intel Corp.
  * Copyright (C) 2017-2019 Siemens AG
  * (Written by Lance Zhao <lijian.zhao@intel.com> for Intel Corp.)
  *
@@ -127,6 +127,9 @@ void acpi_create_gnvs(struct global_nvs_t *gnvs)
 
 	if (CONFIG(SOC_INTEL_COMMON_BLOCK_SGX))
 		sgx_fill_gnvs(gnvs);
+
+	/* Fill in Above 4GB MMIO resource */
+	sa_fill_gnvs(gnvs);
 }
 
 uint32_t acpi_fill_soc_wake(uint32_t generic_pm1_en,

@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2019 Intel Corporation.
+ * Copyright (C) 2019-2020 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,6 +52,10 @@
 #define  SA_DEV_TBT1		PCI_DEV(0, SA_DEV_SLOT_TBT, 1)
 #define  SA_DEV_TBT2		PCI_DEV(0, SA_DEV_SLOT_TBT, 2)
 #define  SA_DEV_TBT3		PCI_DEV(0, SA_DEV_SLOT_TBT, 3)
+
+#define SA_DEV_SLOT_IPU		0x05
+#define  SA_DEVFN_IPU		PCI_DEVFN(SA_DEV_SLOT_IPU, 0)
+#define  SA_DEV_IPU		PCI_DEV(0, SA_DEV_SLOT_IPU, 0)
 
 /* PCH Devices */
 #define PCH_DEV_SLOT_SIO0	0x10

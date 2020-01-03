@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2019 Intel Corp.
+ * Copyright (C) 2019-2020 Intel Corp.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@
 
 #include <device/device.h>
 #include <device/pci.h>
+#include <device/pci_ops.h>
 #include <intelblocks/systemagent.h>
 #include <soc/iomap.h>
 #include <soc/systemagent.h>
@@ -56,6 +57,13 @@ void soc_add_fixed_mmio_resources(struct device *dev, int *index)
 
 	sa_add_fixed_mmio_resources(dev, index, soc_fixed_resources,
 			ARRAY_SIZE(soc_fixed_resources));
+
+	/* Add Vt-d resources if VT-d is enabled */
+	if ((pci_read_config32(dev, CAPID0_A) & VTD_DISABLE))
+		return;
+
+	sa_add_fixed_mmio_resources(dev, index, soc_vtd_resources,
+			ARRAY_SIZE(soc_vtd_resources));
 }
 
 /*

@@ -131,6 +131,20 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 	m_cfg->PchHdaIDispLinkTmode = config->PchHdaIDispLinkTmode;
 	m_cfg->PchHdaIDispLinkFrequency = config->PchHdaIDispLinkFrequency;
 	m_cfg->PchHdaIDispCodecDisconnect = config->PchHdaIDispCodecDisconnect;
+
+	/* Vt-D config */
+	m_cfg->VtdDisable = 0;
+	m_cfg->VtdIgdEnable = 0x1;
+	m_cfg->VtdBaseAddress[0] = GFXVT_BASE_ADDRESS;
+	m_cfg->VtdIpuEnable = 0x1;
+	m_cfg->VtdBaseAddress[1] = IPUVT_BASE_ADDRESS;
+	m_cfg->VtdIopEnable = 0x1;
+	m_cfg->VtdBaseAddress[2] = VTVC0_BASE_ADDRESS;
+	m_cfg->VtdItbtEnable = 0x1;
+	m_cfg->VtdBaseAddress[3] = TBT0_BASE_ADDRESS;
+	m_cfg->VtdBaseAddress[4] = TBT1_BASE_ADDRESS;
+	m_cfg->VtdBaseAddress[5] = TBT2_BASE_ADDRESS;
+	m_cfg->VtdBaseAddress[6] = TBT3_BASE_ADDRESS;
 }
 
 void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)

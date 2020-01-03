@@ -480,10 +480,6 @@ config LINEAR_FRAMEBUFFER_MAX_HEIGHT
 
 endmenu # "Display"
 
-config SMBUS_HAS_AUX_CHANNELS
-	bool
-	default n
-
 config PCI
 	bool
 	default n

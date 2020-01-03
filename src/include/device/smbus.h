@@ -53,9 +53,4 @@ static inline int smbus_write_byte(struct device *const dev, u8 addr, u8 val)
 int smbus_block_read(struct device *dev, u8 cmd, u8 bytes, u8 *buffer);
 int smbus_block_write(struct device *dev, u8 cmd, u8 bytes, const u8 *buffer);
 
-#if CONFIG(SMBUS_HAS_AUX_CHANNELS)
-void smbus_switch_to_channel(uint8_t channel_number);
-uint8_t smbus_get_current_channel(void);
-#endif
-
 #endif /* DEVICE_SMBUS_H */

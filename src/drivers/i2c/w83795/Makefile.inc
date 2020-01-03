@@ -1,1 +1,0 @@
-ramstage-$(CONFIG_DRIVERS_I2C_W83795) += w83795.c

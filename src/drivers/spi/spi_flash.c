@@ -368,9 +368,6 @@ static struct {
 	{ 0, VENDOR_ID_WINBOND, spi_flash_probe_winbond, },
 #endif
 	/* Keep it sorted by best detection */
-#if CONFIG(SPI_FLASH_STMICRO)
-	{ 0, VENDOR_ID_STMICRO_FF, spi_flash_probe_stmicro, },
-#endif
 #if CONFIG(SPI_FLASH_ADESTO)
 	{ 0, VENDOR_ID_ADESTO, spi_flash_probe_adesto, },
 #endif
@@ -401,6 +398,15 @@ int spi_flash_generic_probe(const struct spi_slave *spi,
 		continue;
 
 	printk(BIOS_INFO, "Manufacturer: %02x\n", *idp);
+
+	/* If no result from RDID command and STMicro parts are enabled attempt
+	   to wake the part from deep sleep and obtain alternative id info. */
+	if (CONFIG(SPI_FLASH_STMICRO) && *idp == 0xff) {
+		if (stmicro_release_deep_sleep_identify(spi, idcode))
+			return -1;
+		idp = idcode;
+		shift = 0;
+	}
 
 	/* search the table for matches in shift and id */
 	for (i = 0; i < (int)ARRAY_SIZE(flashes); ++i)

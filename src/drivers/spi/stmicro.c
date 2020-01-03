@@ -289,23 +289,29 @@ static const struct spi_flash_ops spi_flash_ops = {
 	.erase = spi_flash_cmd_erase,
 };
 
+int stmicro_release_deep_sleep_identify(const struct spi_slave *spi, u8 *idcode)
+{
+	if (spi_flash_cmd(spi, CMD_M25PXX_RES, idcode, 4))
+		return -1;
+
+	/* Assuming ST parts identify with 0x1X to release from deep
+	   power down and read electronic signature. */
+	if ((idcode[3] & 0xf0) != 0x10)
+		return -1;
+
+	/* Fix up the idcode to mimic rdid jedec instruction. */
+	idcode[0] = 0x20;
+	idcode[1] = 0x20;
+	idcode[2] = idcode[3] + 1;
+
+	return 0;
+}
+
 int spi_flash_probe_stmicro(const struct spi_slave *spi, u8 *idcode,
 			    struct spi_flash *flash)
 {
 	const struct stmicro_spi_flash_params *params;
 	unsigned int i;
-
-	if (idcode[0] == 0xff) {
-		i = spi_flash_cmd(spi, CMD_M25PXX_RES, idcode, 4);
-		if (i)
-			return -1;
-		if ((idcode[3] & 0xf0) == 0x10) {
-			idcode[0] = 0x20;
-			idcode[1] = 0x20;
-			idcode[2] = idcode[3] + 1;
-		} else
-			return -1;
-	}
 
 	for (i = 0; i < ARRAY_SIZE(stmicro_spi_flash_table); i++) {
 		params = &stmicro_spi_flash_table[i];

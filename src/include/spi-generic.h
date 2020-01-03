@@ -37,7 +37,6 @@
 #define VENDOR_ID_SPANSION			0x01
 #define VENDOR_ID_SST				0xbf
 #define VENDOR_ID_STMICRO			0x20
-#define VENDOR_ID_STMICRO_FF			0xff
 #define VENDOR_ID_WINBOND			0xef
 
 /* Controller-specific definitions: */

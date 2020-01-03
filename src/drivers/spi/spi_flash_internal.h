@@ -81,6 +81,8 @@ int spi_flash_probe_sst(const struct spi_slave *spi, u8 *idcode,
 			struct spi_flash *flash);
 int spi_flash_probe_stmicro(const struct spi_slave *spi, u8 *idcode,
 			    struct spi_flash *flash);
+/* Release from deep sleep an provide alternative rdid information. */
+int stmicro_release_deep_sleep_identify(const struct spi_slave *spi, u8 *idcode);
 int spi_flash_probe_winbond(const struct spi_slave *spi, u8 *idcode,
 			    struct spi_flash *flash);
 int spi_flash_probe_gigadevice(const struct spi_slave *spi, u8 *idcode,

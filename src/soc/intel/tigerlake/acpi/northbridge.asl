@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2019 Intel Corp.
+ * Copyright (C) 2019-2020 Intel Corp.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,11 +52,9 @@ Device (MCHC)
 		, 11,
 		DIBR, 20,	/* DMIBAR [31:12] */
 
-		Offset (0xa0),	/* Top of Used Memory */
-		TOM, 64,
-
-		Offset (0xa8),	/* Top of Upper Used Memory */
-		TUUD, 64,
+		Offset (0xa0),
+		TOM, 64,	/* Top of Used Memory */
+		TUUD, 64,	/* Top of Upper Used Memory */
 
 		Offset (0xbc),	/* Top of Low Used Memory */
 		TLUD, 32,
@@ -224,58 +222,39 @@ Method (_CRS, 0, Serialized)
 	Return (MCRS)
 }
 
-/*
- * TODO: Clean up below functions and follow ASL2.0 code syntax
- */
-Name (EP_B, 0) /* to store EP BAR */
-Name (MH_B, 0) /* to store MCH BAR */
-Name (PC_B, 0) /* to store PCIe BAR */
-Name (PC_L, 0) /* to store PCIe BAR Length */
-Name (DM_B, 0) /* to store DMI BAR */
-
 /* Get MCH BAR */
 Method (GMHB, 0, Serialized)
 {
-	If (LEqual (MH_B, 0)) {
-		ShiftLeft (\_SB.PCI0.MCHC.MHBR, 15, MH_B)
-	}
-	Return (MH_B)
+	ShiftLeft (\_SB.PCI0.MCHC.MHBR, 15, Local0)
+	Return (Local0)
 }
 
 /* Get EP BAR */
 Method (GEPB, 0, Serialized)
 {
-	If (LEqual (EP_B, 0)) {
-		ShiftLeft (\_SB.PCI0.MCHC.EPBR, 12, EP_B)
-	}
-	Return (EP_B)
+	ShiftLeft (\_SB.PCI0.MCHC.EPBR, 12, Local0)
+	Return (Local0)
 }
 
 /* Get PCIe BAR */
 Method (GPCB, 0, Serialized)
 {
-	If (LEqual (PC_B, 0)) {
-		ShiftLeft (\_SB.PCI0.MCHC.PXBR, 26, PC_B)
-	}
-	Return (PC_B)
+	ShiftLeft (\_SB.PCI0.MCHC.PXBR, 26, Local0)
+	Return (Local0)
 }
 
 /* Get PCIe Length */
 Method (GPCL, 0, Serialized)
 {
-	If (LEqual (PC_L, 0)) {
-		ShiftRight (0x10000000, \_SB.PCI0.MCHC.PXSZ, PC_L)
-	}
-	Return (PC_L)
+	ShiftRight (0x10000000, \_SB.PCI0.MCHC.PXSZ, Local0)
+	Return (Local0)
 }
 
 /* Get DMI BAR */
 Method (GDMB, 0, Serialized)
 {
-	If (LEqual (DM_B, 0)) {
-		ShiftLeft (\_SB.PCI0.MCHC.DIBR, 12, DM_B)
-	}
-	Return (DM_B)
+	ShiftLeft (\_SB.PCI0.MCHC.DIBR, 12, Local0)
+	Return (Local0)
 }
 
 /* PCI Device Resource Consumption */
@@ -284,58 +263,60 @@ Device (PDRC)
 	Name (_HID, EISAID ("PNP0C02"))
 	Name (_UID, 1)
 
-	Name (BUF0, ResourceTemplate ()
-	{
-		/* MCH BAR _BAS will be updated in _CRS below according to
-		 * B0:D0:F0:Reg.48h
-		 */
-		Memory32Fixed (ReadWrite, 0, 0x08000, MCHB)
-
-		/* DMI BAR _BAS will be updated in _CRS below according to
-		 * B0:D0:F0:Reg.68h
-		 */
-		Memory32Fixed (ReadWrite, 0, 0x01000, DMIB)
-
-		/* EP BAR _BAS will be updated in _CRS below according to
-		 * B0:D0:F0:Reg.40h
-		 */
-		Memory32Fixed (ReadWrite, 0, 0x01000, EGPB)
-
-		/* PCI Express BAR _BAS and _LEN will be updated in
-		 * _CRS below according to B0:D0:F0:Reg.60h
-		 */
-		Memory32Fixed (ReadWrite, 0, 0, PCIX)
-
-		/* VTD engine memory range.
-		 */
-		Memory32Fixed (ReadOnly, VTD_BASE_ADDRESS, VTD_BASE_SIZE)
-
-		/* Memory mapped SPI Flash range */
-		Memory32Fixed (ReadOnly, 0xFFF00000, 0x1000000)
-
-		/* Local APIC range(0xFEE0_0000 to 0xFEEF_FFFF) */
-		Memory32Fixed (ReadOnly, 0xFEE00000, 0x100000)
-
-		/* HPET address decode range */
-		Memory32Fixed (ReadWrite, HPET_BASE_ADDRESS, 0x400)
-	})
-
 	Method (_CRS, 0, Serialized)
 	{
-		CreateDwordField (BUF0, ^MCHB._BAS, MBR0)
+		Name (BUF0, ResourceTemplate ()
+		{
+			/* MCH BAR _BAS will be updated in _CRS below according to
+			 * B0:D0:F0:Reg.48h
+			 */
+			Memory32Fixed (ReadWrite, 0, 0x08000, MCHB)
+
+			/* DMI BAR _BAS will be updated in _CRS below according to
+			 * B0:D0:F0:Reg.68h
+			 */
+			Memory32Fixed (ReadWrite, 0, 0x01000, DMIB)
+
+			/* EP BAR _BAS will be updated in _CRS below according to
+			 * B0:D0:F0:Reg.40h
+			 */
+			Memory32Fixed (ReadWrite, 0, 0x01000, EGPB)
+
+			/* PCI Express BAR _BAS and _LEN will be updated in
+			 * _CRS below according to B0:D0:F0:Reg.60h
+			 */
+			Memory32Fixed (ReadWrite, 0, 0, PCIX)
+
+			/* VTD engine memory range. */
+			Memory32Fixed (ReadOnly, VTD_BASE_ADDRESS, VTD_BASE_SIZE)
+
+			/* FLASH range */
+			Memory32Fixed (ReadOnly, 0, CONFIG_ROM_SIZE, FIOH)
+
+			/* Local APIC range(0xFEE0_0000 to 0xFEEF_FFFF) */
+			Memory32Fixed (ReadOnly, 0xFEE00000, 0x100000)
+
+			/* HPET address decode range */
+			Memory32Fixed (ReadWrite, HPET_BASE_ADDRESS, 0x400)
+		})
+
+		CreateDwordField (BUF0, MCHB._BAS, MBR0)
 		Store (\_SB.PCI0.GMHB (), MBR0)
 
-		CreateDwordField (BUF0, ^DMIB._BAS, DBR0)
+		CreateDwordField (BUF0, DMIB._BAS, DBR0)
 		Store (\_SB.PCI0.GDMB (), DBR0)
 
-		CreateDwordField (BUF0, ^EGPB._BAS, EBR0)
+		CreateDwordField (BUF0, EGPB._BAS, EBR0)
 		Store (\_SB.PCI0.GEPB (), EBR0)
 
-		CreateDwordField (BUF0, ^PCIX._BAS, XBR0)
+		CreateDwordField (BUF0, PCIX._BAS, XBR0)
 		Store (\_SB.PCI0.GPCB (), XBR0)
 
-		CreateDwordField (BUF0, ^PCIX._LEN, XSZ0)
+		CreateDwordField (BUF0, PCIX._LEN, XSZ0)
 		Store (\_SB.PCI0.GPCL (), XSZ0)
+
+		CreateDwordField (BUF0, FIOH._BAS, FBR0)
+		Subtract(0x100000000, CONFIG_ROM_SIZE, FBR0)
 
 		Return (BUF0)
 	}

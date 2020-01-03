@@ -28,7 +28,6 @@ static inline const struct smbus_bus_operations *ops_smbus_bus(struct bus *bus)
 }
 
 struct bus *get_pbus_smbus(struct device *dev);
-int smbus_set_link(struct device *dev);
 
 static inline int smbus_recv_byte(struct device *const dev)
 {

@@ -41,7 +41,6 @@ struct device_operations {
 	void (*scan_bus)(struct device *bus);
 	void (*enable)(struct device *dev);
 	void (*disable)(struct device *dev);
-	void (*set_link)(struct device *dev, unsigned int link);
 	void (*reset_bus)(struct bus *bus);
 #if CONFIG(GENERATE_SMBIOS_TABLES)
 	int (*get_smbios_data)(struct device *dev, int *handle,

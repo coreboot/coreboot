@@ -18,6 +18,7 @@
 #include <bootblock_common.h>
 #include <console/console.h>
 #include <delay.h>
+#include <option.h>
 #include <pc80/mc146818rtc.h>
 #include <program_loading.h>
 #include <symbols.h>

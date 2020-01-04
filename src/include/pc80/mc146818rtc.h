@@ -217,7 +217,6 @@ static inline void cmos_post_log(void) {}
 
 #endif /* CONFIG_ARCH_X86 */
 
-void sanitize_cmos(void);
 void cmos_post_init(void);
 
 #endif /*  PC80_MC146818RTC_H */

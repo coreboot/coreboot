@@ -12,35 +12,9 @@
  */
 
 #include <stdint.h>
-#include <cbfs.h>
+#include <option.h>
 #include <pc80/mc146818rtc.h>
 #include <fallback.h>
-
-#if CONFIG(USE_OPTION_TABLE)
-#include <option_table.h>
-
-int cmos_lb_cks_valid(void)
-{
-	return cmos_checksum_valid(LB_CKS_RANGE_START, LB_CKS_RANGE_END, LB_CKS_LOC);
-}
-
-void sanitize_cmos(void)
-{
-	if (cmos_error() || !cmos_lb_cks_valid() || CONFIG(STATIC_OPTION_TABLE)) {
-		size_t length = 128;
-		const unsigned char *cmos_default =
-			cbfs_boot_map_with_leak("cmos.default",
-					CBFS_COMPONENT_CMOS_DEFAULT, &length);
-		if (cmos_default) {
-			size_t i;
-			u8 control_state = cmos_disable_rtc();
-			for (i = 14; i < MIN(128, length); i++)
-				cmos_write_inner(cmos_default[i], i);
-			cmos_restore_rtc(control_state);
-		}
-	}
-}
-#endif
 
 #if  CONFIG_MAX_REBOOT_CNT > 15
 #error "CONFIG_MAX_REBOOT_CNT too high"

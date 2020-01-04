@@ -16,6 +16,8 @@
 
 #include <types.h>
 
+void sanitize_cmos(void);
+
 enum cb_err cmos_set_option(const char *name, void *val);
 enum cb_err cmos_get_option(void *dest, const char *name);
 

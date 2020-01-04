@@ -233,3 +233,31 @@ enum cb_err cmos_set_option(const char *name, void *value)
 	rdev_munmap(&rdev, ct);
 	return CB_SUCCESS;
 }
+
+int cmos_lb_cks_valid(void)
+{
+	return cmos_checksum_valid(LB_CKS_RANGE_START, LB_CKS_RANGE_END, LB_CKS_LOC);
+}
+
+static void cmos_load_defaults(void)
+{
+	size_t length = 128;
+	size_t i;
+
+	const unsigned char *cmos_default =
+		cbfs_boot_map_with_leak("cmos.default",
+				CBFS_COMPONENT_CMOS_DEFAULT, &length);
+	if (!cmos_default)
+		return;
+
+	u8 control_state = cmos_disable_rtc();
+	for (i = 14; i < MIN(128, length); i++)
+		cmos_write_inner(cmos_default[i], i);
+	cmos_restore_rtc(control_state);
+}
+
+void sanitize_cmos(void)
+{
+	if (cmos_error() || !cmos_lb_cks_valid() || CONFIG(STATIC_OPTION_TABLE))
+		cmos_load_defaults();
+}

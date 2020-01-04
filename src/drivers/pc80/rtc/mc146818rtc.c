@@ -81,6 +81,12 @@ static void cmos_set_checksum(int range_start, int range_end, int cks_loc)
 	cmos_write(((sum >> 0) & 0x0ff), cks_loc + 1);
 }
 
+/* See if the CMOS error condition has been flagged */
+int cmos_error(void)
+{
+	return (cmos_read(RTC_VALID) & RTC_VRT) == 0;
+}
+
 #define RTC_CONTROL_DEFAULT (RTC_24H)
 #define RTC_FREQ_SELECT_DEFAULT (RTC_REF_CLCK_32KHZ | RTC_RATE_1024HZ)
 
@@ -90,7 +96,6 @@ static bool __cmos_init(bool invalid)
 	bool checksum_invalid = false;
 	bool clear_cmos;
 	size_t i;
-	uint8_t x;
 
 	/*
 	 * Avoid clearing pending interrupts and resetting the RTC control
@@ -104,8 +109,7 @@ static bool __cmos_init(bool invalid)
 	printk(BIOS_DEBUG, "RTC Init\n");
 
 	/* See if there has been a CMOS power problem. */
-	x = cmos_read(RTC_VALID);
-	cmos_invalid = !(x & RTC_VRT);
+	cmos_invalid = cmos_error();
 
 	if (CONFIG(USE_OPTION_TABLE)) {
 		/* See if there is a CMOS checksum error */
@@ -118,7 +122,7 @@ static bool __cmos_init(bool invalid)
 	}
 
 	if (cmos_invalid || invalid)
-		cmos_write(cmos_read(RTC_CONTROL) | RTC_SET, RTC_CONTROL);
+		cmos_disable_rtc();
 
 	if (invalid || cmos_invalid || checksum_invalid) {
 		if (clear_cmos) {
@@ -404,6 +408,17 @@ enum cb_err set_option(const char *name, void *value)
 
 	rdev_munmap(&rdev, ct);
 	return CB_SUCCESS;
+}
+
+/*
+ * Upon return the caller is guaranteed 244 microseconds to complete any
+ * RTC operations. wait_uip may be called a single time prior to multiple
+ * accesses, but sequences requiring more time should call wait_uip again.
+ */
+static void wait_uip(void)
+{
+	while (cmos_read(RTC_REG_A) & RTC_UIP)
+		;
 }
 
 /*

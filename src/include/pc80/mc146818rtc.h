@@ -114,16 +114,6 @@ static inline unsigned char cmos_read(unsigned char addr)
 	return inb(RTC_BASE_PORT + offs + 1);
 }
 
-/* Upon return the caller is guaranteed 244 microseconds to complete any
- * RTC operations.  wait_uip may be called a single time prior to multiple
- * accesses, but sequences requiring more time should call wait_uip again.
- */
-static inline void wait_uip(void)
-{
-	while (cmos_read(RTC_REG_A) & RTC_UIP)
-		;
-}
-
 static inline void cmos_write_inner(unsigned char val, unsigned char addr)
 {
 	int offs = 0;
@@ -135,31 +125,34 @@ static inline void cmos_write_inner(unsigned char val, unsigned char addr)
 	outb(val, RTC_BASE_PORT + offs + 1);
 }
 
-static inline void cmos_write(unsigned char val, unsigned char addr)
+static inline u8 cmos_disable_rtc(void)
 {
 	u8 control_state = cmos_read(RTC_CONTROL);
-	/* There are various places where RTC bits might be hiding,
-	 * eg. the Century / AltCentury byte. So to be safe, disable
-	 * RTC before changing any value.
-	 */
-	if ((addr != RTC_CONTROL) && !(control_state & RTC_SET))
+	if (!(control_state & RTC_SET))
 		cmos_write_inner(control_state | RTC_SET, RTC_CONTROL);
-	cmos_write_inner(val, addr);
-	/* reset to prior configuration */
-	if ((addr != RTC_CONTROL) && !(control_state & RTC_SET))
+	return control_state;
+}
+
+static inline void cmos_restore_rtc(u8 control_state)
+{
+	if (!(control_state & RTC_SET))
 		cmos_write_inner(control_state, RTC_CONTROL);
 }
 
-static inline void cmos_disable_rtc(void)
+static inline void cmos_write(unsigned char val, unsigned char addr)
 {
-	u8 control_state = cmos_read(RTC_CONTROL);
-	cmos_write(control_state | RTC_SET, RTC_CONTROL);
-}
+	u8 control_state;
 
-static inline void cmos_enable_rtc(void)
-{
-	u8 control_state = cmos_read(RTC_CONTROL);
-	cmos_write(control_state & ~RTC_SET, RTC_CONTROL);
+	/*
+	 * There are various places where RTC bits might be hiding,
+	 * eg. the Century / AltCentury byte. So to be safe, disable
+	 * RTC before changing any value.
+	 */
+	if (addr != RTC_CONTROL)
+		control_state = cmos_disable_rtc();
+	cmos_write_inner(val, addr);
+	if (addr != RTC_CONTROL)
+		cmos_restore_rtc(control_state);
 }
 
 static inline u32 cmos_read32(u8 offset)

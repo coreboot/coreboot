@@ -19,14 +19,6 @@
 #include <option_table.h>
 #endif
 
-int cmos_error(void)
-{
-	unsigned char reg_d;
-	/* See if the cmos error condition has been flagged */
-	reg_d = cmos_read(RTC_REG_D);
-	return (reg_d & RTC_VRT) == 0;
-}
-
 int cmos_chksum_valid(void)
 {
 #if CONFIG(USE_OPTION_TABLE)
@@ -59,10 +51,10 @@ void sanitize_cmos(void)
 					CBFS_COMPONENT_CMOS_DEFAULT, &length);
 		if (cmos_default) {
 			size_t i;
-			cmos_disable_rtc();
+			u8 control_state = cmos_disable_rtc();
 			for (i = 14; i < MIN(128, length); i++)
 				cmos_write_inner(cmos_default[i], i);
-			cmos_enable_rtc();
+			cmos_restore_rtc(control_state);
 		}
 	}
 }
@@ -72,22 +64,22 @@ void sanitize_cmos(void)
 #error "CONFIG_MAX_REBOOT_CNT too high"
 #endif
 
-static inline int boot_count(uint8_t rtc_byte)
+static int boot_count(uint8_t rtc_byte)
 {
 	return rtc_byte >> 4;
 }
 
-static inline uint8_t increment_boot_count(uint8_t rtc_byte)
+static uint8_t increment_boot_count(uint8_t rtc_byte)
 {
 	return rtc_byte + (1 << 4);
 }
 
-static inline uint8_t boot_set_fallback(uint8_t rtc_byte)
+static uint8_t boot_set_fallback(uint8_t rtc_byte)
 {
 	return rtc_byte & ~RTC_BOOT_NORMAL;
 }
 
-static inline int boot_use_normal(uint8_t rtc_byte)
+static int boot_use_normal(uint8_t rtc_byte)
 {
 	return rtc_byte & RTC_BOOT_NORMAL;
 }

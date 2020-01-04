@@ -1070,6 +1070,7 @@ int print_gpios(struct pci_dev *sb, int show_all, int show_diffs)
 	case PCI_DEVICE_ID_INTEL_QM370:
 	case PCI_DEVICE_ID_INTEL_HM370:
 	case PCI_DEVICE_ID_INTEL_CM246:
+	case PCI_DEVICE_ID_INTEL_ICELAKE_LP_U:
 		print_gpio_groups(sb);
 		return 0;
 	case PCI_DEVICE_ID_INTEL_82371XX:

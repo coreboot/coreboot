@@ -44,7 +44,7 @@ int do_normal_boot(void)
 {
 	unsigned char byte;
 
-	if (!CONFIG(USE_OPTION_TABLE) || cmos_error() || !cmos_lb_cks_valid()) {
+	if (cmos_error() || (CONFIG(USE_OPTION_TABLE) && !cmos_lb_cks_valid())) {
 		/* Invalid CMOS checksum detected!
 		 * Force fallback boot...
 		 */

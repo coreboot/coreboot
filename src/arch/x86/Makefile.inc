@@ -99,6 +99,7 @@ all-y += boot.c
 all-y += memcpy.c
 all-y += memset.c
 all-y += cpu_common.c
+all-y += post.c
 
 endif
 

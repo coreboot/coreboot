@@ -15,13 +15,12 @@
 #include <cbfs.h>
 #include <pc80/mc146818rtc.h>
 #include <fallback.h>
+
 #if CONFIG(USE_OPTION_TABLE)
 #include <option_table.h>
-#endif
 
 int cmos_chksum_valid(void)
 {
-#if CONFIG(USE_OPTION_TABLE)
 	unsigned char addr;
 	u16 sum, old_sum;
 
@@ -35,12 +34,8 @@ int cmos_chksum_valid(void)
 	old_sum |= cmos_read(LB_CKS_LOC + 1);
 
 	return sum == old_sum;
-#else
-	return 0;
-#endif
 }
 
-#if CONFIG(USE_OPTION_TABLE)
 void sanitize_cmos(void)
 {
 	if (cmos_error() || !cmos_chksum_valid() ||
@@ -88,7 +83,7 @@ int do_normal_boot(void)
 {
 	unsigned char byte;
 
-	if (cmos_error() || !cmos_chksum_valid()) {
+	if (!CONFIG(USE_OPTION_TABLE) || cmos_error() || !cmos_chksum_valid()) {
 		/* Invalid CMOS checksum detected!
 		 * Force fallback boot...
 		 */

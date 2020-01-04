@@ -210,9 +210,6 @@ void cmos_set_checksum(int range_start, int range_end, int cks_loc);
 
 #define CMOS_POST_EXTRA_DEV_PATH  0x01
 
-void cmos_post_log(void);
-#else
-static inline void cmos_post_log(void) {}
 #endif /* CONFIG_CMOS_POST */
 
 #endif /* CONFIG_ARCH_X86 */

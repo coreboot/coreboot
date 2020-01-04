@@ -2,7 +2,6 @@
 /* This file is part of the coreboot project. */
 
 #include <stdint.h>
-#include <elog.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <pc80/mc146818rtc.h>
@@ -10,45 +9,41 @@
 
 DECLARE_SPIN_LOCK(cmos_post_lock)
 
-void cmos_post_log(void)
+int cmos_post_previous_boot(u8 *code, u32 *extra)
 {
-	u8 code = 0;
-	u32 extra = 0;
+	*code = 0;
+	*extra = 0;
 
 	spin_lock(&cmos_post_lock);
 
 	/* Get post code from other bank */
 	switch (cmos_read(CMOS_POST_BANK_OFFSET)) {
 	case CMOS_POST_BANK_0_MAGIC:
-		code = cmos_read(CMOS_POST_BANK_1_OFFSET);
+		*code = cmos_read(CMOS_POST_BANK_1_OFFSET);
 		if (CONFIG(CMOS_POST_EXTRA))
-			extra = cmos_read32(CMOS_POST_BANK_1_EXTRA);
+			*extra = cmos_read32(CMOS_POST_BANK_1_EXTRA);
 		break;
 	case CMOS_POST_BANK_1_MAGIC:
-		code = cmos_read(CMOS_POST_BANK_0_OFFSET);
+		*code = cmos_read(CMOS_POST_BANK_0_OFFSET);
 		if (CONFIG(CMOS_POST_EXTRA))
-			extra = cmos_read32(CMOS_POST_BANK_0_EXTRA);
+			*extra = cmos_read32(CMOS_POST_BANK_0_EXTRA);
 		break;
 	}
 
 	spin_unlock(&cmos_post_lock);
 
 	/* Check last post code in previous boot against normal list */
-	switch (code) {
+	switch (*code) {
 	case POST_OS_BOOT:
 	case POST_OS_RESUME:
 	case POST_ENTER_ELF_BOOT:
 	case 0:
 		break;
 	default:
-		printk(BIOS_WARNING, "POST: Unexpected post code "
-		       "in previous boot: 0x%02x\n", code);
-#if CONFIG(ELOG) && (ENV_RAMSTAGE || CONFIG(ELOG_PRERAM))
-		elog_add_event_word(ELOG_TYPE_LAST_POST_CODE, code);
-		if (CONFIG(CMOS_POST_EXTRA) && extra)
-			elog_add_event_dword(ELOG_TYPE_POST_EXTRA, extra);
-#endif
+		return -1;
 	}
+
+	return 0;
 }
 
 void cmos_post_init(void)

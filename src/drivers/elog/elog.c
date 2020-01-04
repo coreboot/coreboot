@@ -748,16 +748,35 @@ static bool elog_do_add_boot_count(void)
 #endif
 }
 
+/* Check and log POST codes from previous boot */
+static void log_last_boot_post(void)
+{
+#if CONFIG(ARCH_X86)
+	u8 code;
+	u32 extra;
+
+	if (!CONFIG(CMOS_POST))
+		return;
+
+	if (cmos_post_previous_boot(&code, &extra) == 0)
+		return;
+
+	printk(BIOS_WARNING, "POST: Unexpected post code/extra "
+	       "in previous boot: 0x%02x/0x%04x\n", code, extra);
+
+	elog_add_event_word(ELOG_TYPE_LAST_POST_CODE, code);
+	/* Always zero with !CMOS_POST_EXTRA. */
+	if (extra)
+		elog_add_event_dword(ELOG_TYPE_POST_EXTRA, extra);
+#endif
+}
+
 static void elog_add_boot_count(void)
 {
 	if (elog_do_add_boot_count()) {
 		elog_add_event_dword(ELOG_TYPE_BOOT, boot_count_read());
 
-#if CONFIG(ARCH_X86)
-		/* Check and log POST codes from previous boot */
-		if (CONFIG(CMOS_POST))
-			cmos_post_log();
-#endif
+		log_last_boot_post();
 	}
 }
 

@@ -19,6 +19,7 @@
 void post_code(u8 value);
 void arch_post_code(u8 value);
 void cmos_post_code(u8 value);
+int cmos_post_previous_boot(u8 *code, u32 *extra);
 #if CONFIG(CMOS_POST_EXTRA)
 struct device;
 void post_log_path(const struct device *dev);

@@ -215,16 +215,9 @@ void cmos_post_log(void);
 static inline void cmos_post_log(void) {}
 #endif /* CONFIG_CMOS_POST */
 
-#if CONFIG(USE_OPTION_TABLE)
-void sanitize_cmos(void);
-#else
-static inline void sanitize_cmos(void) {}
-#endif /* CONFIG_USE_OPTION_TABLE */
-
-#else /* !CONFIG_ARCH_X86 */
-static inline void sanitize_cmos(void) {}
 #endif /* CONFIG_ARCH_X86 */
 
+void sanitize_cmos(void);
 void cmos_post_init(void);
 
 #endif /*  PC80_MC146818RTC_H */

@@ -56,7 +56,8 @@ static void bootblock_main_with_timestamp(uint64_t base_timestamp,
 	bootblock_soc_early_init();
 	bootblock_mainboard_early_init();
 
-	sanitize_cmos();
+	if (CONFIG(USE_OPTION_TABLE))
+		sanitize_cmos();
 
 	if (CONFIG(CMOS_POST))
 		cmos_post_init();

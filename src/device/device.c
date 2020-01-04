@@ -9,6 +9,7 @@
 #include <device/device.h>
 #include <device/pci_def.h>
 #include <device/pci_ids.h>
+#include <post.h>
 #include <stdlib.h>
 #include <string.h>
 #include <smp/spinlock.h>

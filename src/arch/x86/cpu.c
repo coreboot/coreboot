@@ -5,6 +5,7 @@
 #include <boot/coreboot_tables.h>
 #include <console/console.h>
 #include <cpu/cpu.h>
+#include <post.h>
 #include <string.h>
 #include <cpu/x86/mp.h>
 #include <cpu/x86/lapic.h>

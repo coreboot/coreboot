@@ -7,6 +7,7 @@
 #include <stdint.h>
 #include <arch/cpu.h>
 #include <console/post_codes.h>
+#include <console/vtxprintf.h>
 
 /* console.h is supposed to provide the log levels defined in here: */
 #include <commonlib/loglevel.h>
@@ -14,31 +15,10 @@
 #define RAM_DEBUG (CONFIG(DEBUG_RAM_SETUP) ? BIOS_DEBUG : BIOS_NEVER)
 #define RAM_SPEW  (CONFIG(DEBUG_RAM_SETUP) ? BIOS_SPEW  : BIOS_NEVER)
 
-#include <console/vtxprintf.h>
-
-struct device;
-
 void post_code(u8 value);
-void arch_post_code(u8 value);
-void cmos_post_code(u8 value);
-void cmos_post_extra(u32 value);
-void cmos_post_path(const struct device *dev);
-int cmos_post_previous_boot(u8 *code, u32 *extra);
-
-static inline void post_log_path(const struct device *dev)
-{
-	if (CONFIG(CMOS_POST) && dev)
-		cmos_post_path(dev);
-}
-
-static inline void post_log_clear(void)
-{
-	if (CONFIG(CMOS_POST))
-		cmos_post_extra(0);
-}
-
-/* this function is weak and can be overridden by a mainboard function. */
 void mainboard_post(u8 value);
+void arch_post_code(u8 value);
+
 void __noreturn die(const char *fmt, ...);
 #define die_with_post_code(value, fmt, ...) \
 	do { post_code(value); die(fmt, ##__VA_ARGS__); } while (0)

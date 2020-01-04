@@ -15,6 +15,7 @@
 
 #include <cbfs.h>
 #include <assert.h>
+#include <post.h>
 #include <device/pci.h>
 #include <soc/acpi.h>
 #include <soc/ramstage.h>

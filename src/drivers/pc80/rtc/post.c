@@ -2,6 +2,7 @@
 /* This file is part of the coreboot project. */
 
 #include <stdint.h>
+#include <post.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <pc80/mc146818rtc.h>

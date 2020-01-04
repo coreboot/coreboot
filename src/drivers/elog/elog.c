@@ -7,14 +7,12 @@
 #include <bootstate.h>
 #include <cbmem.h>
 #include <console/console.h>
-#if CONFIG(ARCH_X86)
-#include <pc80/mc146818rtc.h>
-#endif
 #include <bcd.h>
 #include <boot_device.h>
 #include <commonlib/region.h>
 #include <fmap.h>
 #include <lib.h>
+#include <post.h>
 #include <rtc.h>
 #include <smbios.h>
 #include <stdint.h>

@@ -6,7 +6,7 @@
 #include <console/console.h>
 #include <delay.h>
 #include <option.h>
-#include <pc80/mc146818rtc.h>
+#include <post.h>
 #include <program_loading.h>
 #include <symbols.h>
 #include <timestamp.h>

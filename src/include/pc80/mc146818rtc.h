@@ -183,6 +183,5 @@ void cmos_set_checksum(int range_start, int range_end, int cks_loc);
 
 #endif /* CONFIG_ARCH_X86 */
 
-void cmos_post_init(void);
 
 #endif /*  PC80_MC146818RTC_H */

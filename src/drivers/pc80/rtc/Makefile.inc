@@ -1,6 +1,7 @@
 ifeq ($(CONFIG_ARCH_X86),y)
 
-bootblock-$(CONFIG_DRIVERS_MC146818)	+= mc146818rtc_boot.c
+all-$(CONFIG_DRIVERS_MC146818)	+= mc146818rtc_boot.c
+
 bootblock-$(CONFIG_DRIVERS_MC146818)	+= mc146818rtc.c
 postcar-$(CONFIG_DRIVERS_MC146818)	+= mc146818rtc.c
 romstage-$(CONFIG_DRIVERS_MC146818)	+= mc146818rtc.c

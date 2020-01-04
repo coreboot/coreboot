@@ -19,27 +19,14 @@
 #if CONFIG(USE_OPTION_TABLE)
 #include <option_table.h>
 
-int cmos_chksum_valid(void)
+int cmos_lb_cks_valid(void)
 {
-	unsigned char addr;
-	u16 sum, old_sum;
-
-	sum = 0;
-	/* Compute the cmos checksum */
-	for (addr = LB_CKS_RANGE_START; addr <= LB_CKS_RANGE_END; addr++)
-		sum += cmos_read(addr);
-
-	/* Read the stored checksum */
-	old_sum = cmos_read(LB_CKS_LOC) << 8;
-	old_sum |= cmos_read(LB_CKS_LOC + 1);
-
-	return sum == old_sum;
+	return cmos_checksum_valid(LB_CKS_RANGE_START, LB_CKS_RANGE_END, LB_CKS_LOC);
 }
 
 void sanitize_cmos(void)
 {
-	if (cmos_error() || !cmos_chksum_valid() ||
-	    CONFIG(STATIC_OPTION_TABLE)) {
+	if (cmos_error() || !cmos_lb_cks_valid() || CONFIG(STATIC_OPTION_TABLE)) {
 		size_t length = 128;
 		const unsigned char *cmos_default =
 			cbfs_boot_map_with_leak("cmos.default",
@@ -83,7 +70,7 @@ int do_normal_boot(void)
 {
 	unsigned char byte;
 
-	if (!CONFIG(USE_OPTION_TABLE) || cmos_error() || !cmos_chksum_valid()) {
+	if (!CONFIG(USE_OPTION_TABLE) || cmos_error() || !cmos_lb_cks_valid()) {
 		/* Invalid CMOS checksum detected!
 		 * Force fallback boot...
 		 */

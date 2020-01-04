@@ -53,7 +53,7 @@ static void cmos_reset_date(void)
 	rtc_set(&time);
 }
 
-static int cmos_checksum_valid(int range_start, int range_end, int cks_loc)
+int cmos_checksum_valid(int range_start, int range_end, int cks_loc)
 {
 	int i;
 	u16 sum, old_sum;
@@ -69,7 +69,7 @@ static int cmos_checksum_valid(int range_start, int range_end, int cks_loc)
 	return sum == old_sum;
 }
 
-static void cmos_set_checksum(int range_start, int range_end, int cks_loc)
+void cmos_set_checksum(int range_start, int range_end, int cks_loc)
 {
 	int i;
 	u16 sum;
@@ -149,8 +149,7 @@ static bool __cmos_init(bool invalid)
 
 	if (CONFIG(USE_OPTION_TABLE)) {
 		/* See if there is a LB CMOS checksum error */
-		checksum_invalid = !cmos_checksum_valid(LB_CKS_RANGE_START,
-				LB_CKS_RANGE_END, LB_CKS_LOC);
+		checksum_invalid = !cmos_lb_cks_valid();
 		if (checksum_invalid)
 			printk(BIOS_DEBUG, "RTC: coreboot checksum invalid\n");
 

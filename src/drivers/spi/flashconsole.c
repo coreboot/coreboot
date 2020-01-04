@@ -32,7 +32,7 @@ void flashconsole_init(void)
 {
 	uint8_t buffer[READ_BUFFER_SIZE];
 	size_t size;
-	size_t offset = 0;
+	size_t initial_offset = 0;
 	size_t len = READ_BUFFER_SIZE;
 	size_t i;
 
@@ -52,30 +52,30 @@ void flashconsole_init(void)
 	 * the sector is already erased, so we would need to read
 	 * anyways to check if it's all 0xff).
 	 */
-	for (i = 0; i < len && offset < size;) {
+	for (i = 0; i < len && initial_offset < size;) {
 		// Fill the buffer on first iteration
 		if (i == 0) {
 			len = MIN(READ_BUFFER_SIZE, size - offset);
-			if (rdev_readat(&rdev, buffer, offset, len) != len)
+			if (rdev_readat(&rdev, buffer, initial_offset, len) != len)
 				return;
 		}
 		if (buffer[i] == 0xff) {
-			offset += i;
+			initial_offset += i;
 			break;
 		}
 		// If we're done, repeat the process for the next sector
 		if (++i == READ_BUFFER_SIZE) {
-			offset += len;
+			initial_offset += len;
 			i = 0;
 		}
 	}
 	// Make sure there is still space left on the console
-	if (offset >= size) {
+	if (initial_offset >= size) {
 		printk(BIOS_INFO, "No space left on 'console' region in SPI flash\n");
 		return;
 	}
 
-	offset = offset;
+	offset = initial_offset;
 	rdev_ptr = &rdev;
 }
 
@@ -96,7 +96,6 @@ void flashconsole_tx_byte(unsigned char c)
 
 void flashconsole_tx_flush(void)
 {
-	size_t offset = offset;
 	size_t len = line_offset;
 	size_t region_size;
 	static int busy;
@@ -122,7 +121,7 @@ void flashconsole_tx_flush(void)
 	if (offset + len >= region_size)
 		return;
 
-	offset = offset + len;
+	offset += len;
 	line_offset = 0;
 
 	busy = 0;

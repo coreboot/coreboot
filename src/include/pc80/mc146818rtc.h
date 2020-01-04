@@ -211,10 +211,8 @@ enum cb_err get_option(void *dest, const char *name);
 #define CMOS_POST_EXTRA_DEV_PATH  0x01
 
 void cmos_post_log(void);
-void cmos_post_init(void);
 #else
 static inline void cmos_post_log(void) {}
-static inline void cmos_post_init(void) {}
 #endif /* CONFIG_CMOS_POST */
 
 #if CONFIG(USE_OPTION_TABLE)
@@ -224,8 +222,9 @@ static inline void sanitize_cmos(void) {}
 #endif /* CONFIG_USE_OPTION_TABLE */
 
 #else /* !CONFIG_ARCH_X86 */
-static inline void cmos_post_init(void) {}
 static inline void sanitize_cmos(void) {}
 #endif /* CONFIG_ARCH_X86 */
+
+void cmos_post_init(void);
 
 #endif /*  PC80_MC146818RTC_H */

@@ -25,8 +25,6 @@
  **********************************************************************/
 #define RTC_FREQ_SELECT	RTC_REG_A
 
-#define RTC_BOOT_NORMAL		0x1
-
 /* update-in-progress  - set to "1" 244 microsecs before RTC goes off the bus,
  * reset after update (may take 1.984ms @ 32768Hz RefClock) is complete,
  * totaling to a max high interval of 2.228 ms.
@@ -103,6 +101,10 @@
 #define PC_CKS_RANGE_END	45
 #define PC_CKS_LOC		46
 
+/* Tracking of fallback/normal boot. */
+#define RTC_BOOT_BYTE		48
+#define RTC_BOOT_NORMAL		0x1
+
 static inline unsigned char cmos_read(unsigned char addr)
 {
 	int offs = 0;
@@ -178,8 +180,6 @@ int cmos_chksum_valid(void);
 
 enum cb_err set_option(const char *name, void *val);
 enum cb_err get_option(void *dest, const char *name);
-
-int do_normal_boot(void);
 
 #if CONFIG(CMOS_POST)
 #if CONFIG(USE_OPTION_TABLE)

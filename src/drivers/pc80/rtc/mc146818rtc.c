@@ -94,7 +94,7 @@ static bool __cmos_init(bool invalid)
 {
 	bool cmos_invalid;
 	bool checksum_invalid = false;
-	bool clear_cmos;
+	bool cleared_cmos = false;
 	size_t i;
 
 	/*
@@ -115,22 +115,19 @@ static bool __cmos_init(bool invalid)
 		/* See if there is a CMOS checksum error */
 		checksum_invalid = !cmos_checksum_valid(PC_CKS_RANGE_START,
 						PC_CKS_RANGE_END, PC_CKS_LOC);
-
-		clear_cmos = false;
-	} else {
-		clear_cmos = true;
 	}
 
 	if (cmos_invalid || invalid)
 		cmos_disable_rtc();
 
 	if (invalid || cmos_invalid || checksum_invalid) {
-		if (clear_cmos) {
+		if (!CONFIG(USE_OPTION_TABLE)) {
 			cmos_write(0, 0x01);
 			cmos_write(0, 0x03);
 			cmos_write(0, 0x05);
 			for (i = 10; i < 128; i++)
 				cmos_write(0, i);
+			cleared_cmos = true;
 		}
 
 		if (cmos_invalid || invalid)
@@ -140,9 +137,8 @@ static bool __cmos_init(bool invalid)
 			invalid ? " Clear requested":"",
 			cmos_invalid ? " Power Problem":"",
 			checksum_invalid ? " Checksum invalid":"",
-			clear_cmos ? " zeroing cmos":"");
-	} else
-		clear_cmos = false;
+			cleared_cmos ? " zeroing cmos":"");
+	}
 
 	/* Setup the real time clock */
 	cmos_write(RTC_CONTROL_DEFAULT, RTC_CONTROL);
@@ -165,7 +161,7 @@ static bool __cmos_init(bool invalid)
 	/* Clear any pending interrupts */
 	cmos_read(RTC_INTR_FLAGS);
 
-	return clear_cmos;
+	return cleared_cmos;
 }
 
 static void cmos_init_vbnv(bool invalid)

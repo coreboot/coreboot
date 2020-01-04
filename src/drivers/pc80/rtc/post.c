@@ -7,6 +7,34 @@
 #include <pc80/mc146818rtc.h>
 #include <smp/spinlock.h>
 
+#if CONFIG(USE_OPTION_TABLE)
+# include "option_table.h"
+# define CMOS_POST_OFFSET (CMOS_VSTART_cmos_post_offset >> 3)
+#else
+# if (CONFIG_CMOS_POST_OFFSET != 0)
+#  define CMOS_POST_OFFSET CONFIG_CMOS_POST_OFFSET
+# else
+#  error "Must configure CONFIG_CMOS_POST_OFFSET"
+# endif
+#endif
+
+/*
+ *    0 = Bank Select Magic
+ *    1 = Bank 0 POST
+ *    2 = Bank 1 POST
+ *  3-6 = BANK 0 Extra log
+ * 7-10 = BANK 1 Extra log
+ */
+#define CMOS_POST_BANK_OFFSET     (CMOS_POST_OFFSET)
+#define CMOS_POST_BANK_0_MAGIC    0x80
+#define CMOS_POST_BANK_0_OFFSET   (CMOS_POST_OFFSET + 1)
+#define CMOS_POST_BANK_0_EXTRA    (CMOS_POST_OFFSET + 3)
+#define CMOS_POST_BANK_1_MAGIC    0x81
+#define CMOS_POST_BANK_1_OFFSET   (CMOS_POST_OFFSET + 2)
+#define CMOS_POST_BANK_1_EXTRA    (CMOS_POST_OFFSET + 7)
+
+#define CMOS_POST_EXTRA_DEV_PATH  0x01
+
 DECLARE_SPIN_LOCK(cmos_post_lock)
 
 int cmos_post_previous_boot(u8 *code, u32 *extra)

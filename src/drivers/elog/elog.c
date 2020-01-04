@@ -765,7 +765,6 @@ static void log_last_boot_post(void)
 	       "in previous boot: 0x%02x/0x%04x\n", code, extra);
 
 	elog_add_event_word(ELOG_TYPE_LAST_POST_CODE, code);
-	/* Always zero with !CMOS_POST_EXTRA. */
 	if (extra)
 		elog_add_event_dword(ELOG_TYPE_POST_EXTRA, extra);
 #endif

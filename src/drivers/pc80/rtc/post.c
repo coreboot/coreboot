@@ -20,13 +20,11 @@ int cmos_post_previous_boot(u8 *code, u32 *extra)
 	switch (cmos_read(CMOS_POST_BANK_OFFSET)) {
 	case CMOS_POST_BANK_0_MAGIC:
 		*code = cmos_read(CMOS_POST_BANK_1_OFFSET);
-		if (CONFIG(CMOS_POST_EXTRA))
-			*extra = cmos_read32(CMOS_POST_BANK_1_EXTRA);
+		*extra = cmos_read32(CMOS_POST_BANK_1_EXTRA);
 		break;
 	case CMOS_POST_BANK_1_MAGIC:
 		*code = cmos_read(CMOS_POST_BANK_0_OFFSET);
-		if (CONFIG(CMOS_POST_EXTRA))
-			*extra = cmos_read32(CMOS_POST_BANK_0_EXTRA);
+		*extra = cmos_read32(CMOS_POST_BANK_0_EXTRA);
 		break;
 	}
 
@@ -61,10 +59,8 @@ void cmos_post_init(void)
 		/* Initialize to zero */
 		cmos_write(0, CMOS_POST_BANK_0_OFFSET);
 		cmos_write(0, CMOS_POST_BANK_1_OFFSET);
-		if (CONFIG(CMOS_POST_EXTRA)) {
-			cmos_write32(0, CMOS_POST_BANK_0_EXTRA);
-			cmos_write32(0, CMOS_POST_BANK_1_EXTRA);
-		}
+		cmos_write32(0, CMOS_POST_BANK_0_EXTRA);
+		cmos_write32(0, CMOS_POST_BANK_1_EXTRA);
 	}
 
 	cmos_write(magic, CMOS_POST_BANK_OFFSET);
@@ -88,9 +84,6 @@ void cmos_post_code(u8 value)
 
 void cmos_post_extra(u32 value)
 {
-	if (!CONFIG(CMOS_POST_EXTRA))
-		return;
-
 	spin_lock(&cmos_post_lock);
 
 	switch (cmos_read(CMOS_POST_BANK_OFFSET)) {

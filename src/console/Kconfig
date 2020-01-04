@@ -392,14 +392,6 @@ config CMOS_POST_OFFSET
 	  If CONFIG_HAVE_OPTION_TABLE is enabled then it will use the value
 	  defined in the mainboard option table.
 
-config CMOS_POST_EXTRA
-	bool "Store extra logging info into CMOS"
-	depends on CMOS_POST
-	default n
-	help
-	  This will enable extra logging of work that happens between post
-	  codes into CMOS for debug.  This uses an additional 8 bytes of CMOS.
-
 config CONSOLE_POST
 	bool "Show POST codes on the debug console"
 	depends on !NO_POST

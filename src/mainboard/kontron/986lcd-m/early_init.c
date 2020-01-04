@@ -23,8 +23,6 @@
 #include <superio/winbond/common/winbond.h>
 #include <superio/winbond/w83627thg/w83627thg.h>
 
-#include "option_table.h"
-
 /* Override the default lpc decode ranges */
 void mainboard_lpc_decode(void)
 {

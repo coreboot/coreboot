@@ -24,7 +24,6 @@
 #include <console/console.h>
 #include <northbridge/intel/i945/i945.h>
 #include <southbridge/intel/i82801gx/i82801gx.h>
-#include "option_table.h"
 
 void mainboard_pre_raminit_config(int s3_resume)
 {

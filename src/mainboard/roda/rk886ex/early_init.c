@@ -26,8 +26,6 @@
 #include <southbridge/intel/i82801gx/i82801gx.h>
 #include <superio/smsc/lpc47n227/lpc47n227.h>
 
-#include "option_table.h"
-
 /* Override the default lpc decode ranges */
 void mainboard_lpc_decode(void)
 {

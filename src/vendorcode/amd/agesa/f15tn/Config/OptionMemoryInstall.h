@@ -4662,7 +4662,8 @@ BOOLEAN MemFS3DefConstructorRet (
    *---------------------------------------------------------------------------------------------------
    */
   OPTION_MEM_FEATURE_NB* memNTrainFlowControl[] = {    // Training flow control
-    NULL
+    NULL,
+    NULL,
   };
   /*---------------------------------------------------------------------------------------------------
    * DEFAULT TECHNOLOGY BLOCK

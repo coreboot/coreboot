@@ -1,14 +1,12 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+
 #ifndef PC80_MC146818RTC_H
 #define PC80_MC146818RTC_H
-
-#if CONFIG(ARCH_X86)
 
 #include <arch/io.h>
 #include <types.h>
 
-#ifndef RTC_BASE_PORT
 #define RTC_BASE_PORT 0x70
-#endif
 
 #define RTC_PORT(x)	(RTC_BASE_PORT + (x))
 
@@ -180,8 +178,5 @@ int cmos_lb_cks_valid(void);
 
 int cmos_checksum_valid(int range_start, int range_end, int cks_loc);
 void cmos_set_checksum(int range_start, int range_end, int cks_loc);
-
-#endif /* CONFIG_ARCH_X86 */
-
 
 #endif /*  PC80_MC146818RTC_H */

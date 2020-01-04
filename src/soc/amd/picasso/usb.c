@@ -48,6 +48,7 @@ static struct device_operations usb_ops = {
 static const unsigned short pci_device_ids[] = {
 	PCI_DEVICE_ID_AMD_PCO_XHCI0,
 	PCI_DEVICE_ID_AMD_PCO_XHCI1,
+	PCI_DEVICE_ID_AMD_DALI_XHCI,
 	0
 };
 

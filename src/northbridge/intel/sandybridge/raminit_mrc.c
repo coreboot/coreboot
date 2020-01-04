@@ -66,11 +66,11 @@ void save_mrc_data(struct pei_data *pei_data)
 			pei_data->mrc_output_len);
 
 	/* Save the MRC seed values to CMOS */
-	cmos_write32(CMOS_OFFSET_MRC_SEED, pei_data->scrambler_seed);
+	cmos_write32(pei_data->scrambler_seed, CMOS_OFFSET_MRC_SEED);
 	printk(BIOS_DEBUG, "Save scrambler seed    0x%08x to CMOS 0x%02x\n",
 	       pei_data->scrambler_seed, CMOS_OFFSET_MRC_SEED);
 
-	cmos_write32(CMOS_OFFSET_MRC_SEED_S3, pei_data->scrambler_seed_s3);
+	cmos_write32(pei_data->scrambler_seed_s3, CMOS_OFFSET_MRC_SEED_S3);
 	printk(BIOS_DEBUG, "Save s3 scrambler seed 0x%08x to CMOS 0x%02x\n",
 	       pei_data->scrambler_seed_s3, CMOS_OFFSET_MRC_SEED_S3);
 

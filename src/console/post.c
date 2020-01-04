@@ -98,8 +98,8 @@ void cmos_post_init(void)
 		cmos_write(0, CMOS_POST_BANK_0_OFFSET);
 		cmos_write(0, CMOS_POST_BANK_1_OFFSET);
 #if CONFIG(CMOS_POST_EXTRA)
-		cmos_write32(CMOS_POST_BANK_0_EXTRA, 0);
-		cmos_write32(CMOS_POST_BANK_1_EXTRA, 0);
+		cmos_write32(0, CMOS_POST_BANK_0_EXTRA);
+		cmos_write32(0, CMOS_POST_BANK_1_EXTRA);
 #endif
 	}
 
@@ -113,10 +113,10 @@ void post_log_extra(u32 value)
 
 	switch (cmos_read(CMOS_POST_BANK_OFFSET)) {
 	case CMOS_POST_BANK_0_MAGIC:
-		cmos_write32(CMOS_POST_BANK_0_EXTRA, value);
+		cmos_write32(value, CMOS_POST_BANK_0_EXTRA);
 		break;
 	case CMOS_POST_BANK_1_MAGIC:
-		cmos_write32(CMOS_POST_BANK_1_EXTRA, value);
+		cmos_write32(value, CMOS_POST_BANK_1_EXTRA);
 		break;
 	}
 

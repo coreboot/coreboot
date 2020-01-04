@@ -171,7 +171,7 @@ static inline u32 cmos_read32(u8 offset)
 	return value;
 }
 
-static inline void cmos_write32(u8 offset, u32 value)
+static inline void cmos_write32(u32 value, u8 offset)
 {
 	u8 i;
 	for (i = 0; i < sizeof(value); ++i)

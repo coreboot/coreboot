@@ -388,7 +388,7 @@ static void dram_timing(ramctr_timing *ctrl)
 		ctrl->timC_offset[0] = 20; //XXX: guessed
 		ctrl->timC_offset[1] = 8;
 		ctrl->timC_offset[2] = 8;
-		ctrl->reg_320c_range_threshold = 10;
+		ctrl->pi_coding_threshold = 10;
 	} else if (ctrl->tCK == TCK_1100MHZ) {
 		ctrl->edge_offset[0] = 17; //XXX: guessed
 		ctrl->edge_offset[1] = 7;
@@ -396,7 +396,7 @@ static void dram_timing(ramctr_timing *ctrl)
 		ctrl->timC_offset[0] = 19; //XXX: guessed
 		ctrl->timC_offset[1] = 7;
 		ctrl->timC_offset[2] = 7;
-		ctrl->reg_320c_range_threshold = 13;
+		ctrl->pi_coding_threshold = 13;
 	} else if (ctrl->tCK == TCK_1066MHZ) {
 		ctrl->edge_offset[0] = 16;
 		ctrl->edge_offset[1] = 7;
@@ -404,7 +404,7 @@ static void dram_timing(ramctr_timing *ctrl)
 		ctrl->timC_offset[0] = 18;
 		ctrl->timC_offset[1] = 7;
 		ctrl->timC_offset[2] = 7;
-		ctrl->reg_320c_range_threshold = 13;
+		ctrl->pi_coding_threshold = 13;
 	} else if (ctrl->tCK == TCK_1000MHZ) {
 		ctrl->edge_offset[0] = 15; //XXX: guessed
 		ctrl->edge_offset[1] = 6;
@@ -412,7 +412,7 @@ static void dram_timing(ramctr_timing *ctrl)
 		ctrl->timC_offset[0] = 17; //XXX: guessed
 		ctrl->timC_offset[1] = 6;
 		ctrl->timC_offset[2] = 6;
-		ctrl->reg_320c_range_threshold = 13;
+		ctrl->pi_coding_threshold = 13;
 	} else if (ctrl->tCK == TCK_933MHZ) {
 		ctrl->edge_offset[0] = 14;
 		ctrl->edge_offset[1] = 6;
@@ -420,7 +420,7 @@ static void dram_timing(ramctr_timing *ctrl)
 		ctrl->timC_offset[0] = 15;
 		ctrl->timC_offset[1] = 6;
 		ctrl->timC_offset[2] = 6;
-		ctrl->reg_320c_range_threshold = 15;
+		ctrl->pi_coding_threshold = 15;
 	} else if (ctrl->tCK == TCK_900MHZ) {
 		ctrl->edge_offset[0] = 14; //XXX: guessed
 		ctrl->edge_offset[1] = 6;
@@ -428,7 +428,7 @@ static void dram_timing(ramctr_timing *ctrl)
 		ctrl->timC_offset[0] = 15; //XXX: guessed
 		ctrl->timC_offset[1] = 6;
 		ctrl->timC_offset[2] = 6;
-		ctrl->reg_320c_range_threshold = 12;
+		ctrl->pi_coding_threshold = 12;
 	} else if (ctrl->tCK == TCK_800MHZ) {
 		ctrl->edge_offset[0] = 13;
 		ctrl->edge_offset[1] = 5;
@@ -436,7 +436,7 @@ static void dram_timing(ramctr_timing *ctrl)
 		ctrl->timC_offset[0] = 14;
 		ctrl->timC_offset[1] = 5;
 		ctrl->timC_offset[2] = 5;
-		ctrl->reg_320c_range_threshold = 15;
+		ctrl->pi_coding_threshold = 15;
 	} else if (ctrl->tCK == TCK_700MHZ) {
 		ctrl->edge_offset[0] = 13; //XXX: guessed
 		ctrl->edge_offset[1] = 5;
@@ -444,7 +444,7 @@ static void dram_timing(ramctr_timing *ctrl)
 		ctrl->timC_offset[0] = 14; //XXX: guessed
 		ctrl->timC_offset[1] = 5;
 		ctrl->timC_offset[2] = 5;
-		ctrl->reg_320c_range_threshold = 16;
+		ctrl->pi_coding_threshold = 16;
 	} else if (ctrl->tCK == TCK_666MHZ) {
 		ctrl->edge_offset[0] = 10;
 		ctrl->edge_offset[1] = 4;
@@ -452,7 +452,7 @@ static void dram_timing(ramctr_timing *ctrl)
 		ctrl->timC_offset[0] = 11;
 		ctrl->timC_offset[1] = 4;
 		ctrl->timC_offset[2] = 4;
-		ctrl->reg_320c_range_threshold = 16;
+		ctrl->pi_coding_threshold = 16;
 	} else if (ctrl->tCK == TCK_533MHZ) {
 		ctrl->edge_offset[0] = 8;
 		ctrl->edge_offset[1] = 3;
@@ -460,7 +460,7 @@ static void dram_timing(ramctr_timing *ctrl)
 		ctrl->timC_offset[0] = 9;
 		ctrl->timC_offset[1] = 3;
 		ctrl->timC_offset[2] = 3;
-		ctrl->reg_320c_range_threshold = 17;
+		ctrl->pi_coding_threshold = 17;
 	} else  { /* TCK_400MHZ */
 		ctrl->edge_offset[0] = 6;
 		ctrl->edge_offset[1] = 2;
@@ -468,14 +468,14 @@ static void dram_timing(ramctr_timing *ctrl)
 		ctrl->timC_offset[0] = 6;
 		ctrl->timC_offset[1] = 2;
 		ctrl->timC_offset[2] = 2;
-		ctrl->reg_320c_range_threshold = 17;
+		ctrl->pi_coding_threshold = 17;
 	}
 
 	/* Initial phase between CLK/CMD pins */
-	ctrl->reg_c14_offset = (256000 / ctrl->tCK) / 66;
+	ctrl->pi_code_offset = (256000 / ctrl->tCK) / 66;
 
 	/* DLL_CONFIG_MDLL_W_TIMER */
-	ctrl->reg_5064b0 = (128000 / ctrl->tCK) + 3;
+	ctrl->mdll_wake_delay = (128000 / ctrl->tCK) + 3;
 
 	if (ctrl->tCWL)
 		ctrl->CWL = DIV_ROUND_UP(ctrl->tCWL, ctrl->tCK);
@@ -528,7 +528,7 @@ static void dram_timing(ramctr_timing *ctrl)
 	ctrl->tAONPD = get_AONPD(ctrl->tCK, ctrl->base_freq);
 }
 
-static void dram_freq(ramctr_timing * ctrl)
+static void dram_freq(ramctr_timing *ctrl)
 {
 	if (ctrl->tCK > TCK_400MHZ) {
 		printk (BIOS_ERR, "DRAM frequency is under lowest supported "
@@ -582,7 +582,7 @@ static void dram_freq(ramctr_timing * ctrl)
 	}
 }
 
-static void dram_ioregs(ramctr_timing * ctrl)
+static void dram_ioregs(ramctr_timing *ctrl)
 {
 	u32 reg, comp2;
 
@@ -590,12 +590,12 @@ static void dram_ioregs(ramctr_timing * ctrl)
 
 	// IO clock
 	FOR_ALL_CHANNELS {
-		MCHBAR32(0xc00 + channel * 0x100) = ctrl->rankmap[channel];
+		MCHBAR32(GDCRCLKRANKSUSED_ch(channel)) = ctrl->rankmap[channel];
 	}
 
 	// IO command
 	FOR_ALL_CHANNELS {
-		MCHBAR32(0x3200 + channel * 0x100) = ctrl->rankmap[channel];
+		MCHBAR32(GDCRCTLRANKSUSED_ch(channel)) = ctrl->rankmap[channel];
 	}
 
 	// IO control
@@ -607,27 +607,27 @@ static void dram_ioregs(ramctr_timing * ctrl)
 	printram("RCOMP...");
 	reg = 0;
 	while (reg == 0) {
-		reg = MCHBAR32(0x5084) & 0x10000;
+		reg = MCHBAR32(RCOMP_TIMER) & 0x10000;
 	}
 	printram("done\n");
 
 	// Set comp2
 	comp2 = get_COMP2(ctrl->tCK, ctrl->base_freq);
-	MCHBAR32(0x3714) = comp2;
+	MCHBAR32(CRCOMPOFST2) = comp2;
 	printram("COMP2 done\n");
 
 	// Set comp1
 	FOR_ALL_POPULATED_CHANNELS {
-		reg = MCHBAR32(0x1810 + channel * 0x100);	//ch0
+		reg = MCHBAR32(CRCOMPOFST1_ch(channel));	//ch0
 		reg = (reg & ~0xe00) | (1 << 9);	//odt
 		reg = (reg & ~0xe00000) | (1 << 21);	//clk drive up
 		reg = (reg & ~0x38000000) | (1 << 27);	//ctl drive up
-		MCHBAR32(0x1810 + channel * 0x100) = reg;
+		MCHBAR32(CRCOMPOFST1_ch(channel)) = reg;
 	}
 	printram("COMP1 done\n");
 
 	printram("FORCE RCOMP and wait 20us...");
-	MCHBAR32(0x5f08) |= 0x100;
+	MCHBAR32(M_COMP) |= 0x100;
 	udelay(20);
 	printram("done\n");
 }
@@ -656,7 +656,7 @@ int try_init_dram_ddr3_ivy(ramctr_timing *ctrl, int fast_boot,
 	}
 
 	/* Set version register */
-	MCHBAR32(0x5034) = 0xC04EB002;
+	MCHBAR32(MRC_REVISION) = 0xC04EB002;
 
 	/* Enable crossover */
 	dram_xover(ctrl);
@@ -665,16 +665,16 @@ int try_init_dram_ddr3_ivy(ramctr_timing *ctrl, int fast_boot,
 	dram_timing_regs(ctrl);
 
 	/* Power mode preset */
-	MCHBAR32(0x4e80) = 0x5500;
+	MCHBAR32(PM_THML_STAT) = 0x5500;
 
-	/* Set scheduler parameters */
-	MCHBAR32(0x4c20) = 0x10100005;
+	/* Set scheduler chicken bits */
+	MCHBAR32(SCHED_CBIT) = 0x10100005;
 
 	/* Set CPU specific register */
 	set_4f8c();
 
 	/* Clear IO reset bit */
-	MCHBAR32(0x5030) &= ~0x20;
+	MCHBAR32(MC_INIT_STATE_G) &= ~0x20;
 
 	/* Set MAD-DIMM registers */
 	dram_dimm_set_mapping(ctrl);

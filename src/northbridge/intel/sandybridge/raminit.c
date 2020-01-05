@@ -293,7 +293,7 @@ static void init_dram_ddr3(int min_tck, int s3resume)
 	int err;
 	u32 cpu;
 
-	MCHBAR32(0x5f00) |= 1;
+	MCHBAR32(SAPMCTL) |= 1;
 
 	/* Wait for ME to be ready */
 	intel_early_me_init();
@@ -404,12 +404,12 @@ static void init_dram_ddr3(int min_tck, int s3resume)
 	if (err)
 		die("raminit failed");
 
-	/* FIXME: should be hardware revision-dependent.  */
-	MCHBAR32(0x5024) = 0x00a030ce;
+	/* FIXME: should be hardware revision-dependent. The register only exists on IVB. */
+	MCHBAR32(CHANNEL_HASH) = 0x00a030ce;
 
 	set_scrambling_seed(&ctrl);
 
-	set_42a0(&ctrl);
+	set_normal_operation(&ctrl);
 
 	final_registers(&ctrl);
 

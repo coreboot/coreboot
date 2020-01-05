@@ -52,12 +52,14 @@ typedef struct dimm_info_st {
 } dimm_info;
 
 struct ram_rank_timings {
-	/* Register 4024. One byte per slotrank.  */
-	u8 val_4024;
-	/* IO_LATENCY register. One nibble per slotrank.  */
+	/* ROUNDT_LAT register. One byte per slotrank. */
+	u8 roundtrip_latency;
+
+	/* IO_LATENCY register. One nibble per slotrank. */
 	u8 io_latency;
 
-	int val_320c;
+	/* Phase interpolator coding for command and control. */
+	int pi_coding;
 
 	struct ram_lane_timings {
 		/* lane register offset 0x10.  */
@@ -96,7 +98,7 @@ typedef struct ramctr_timing_st {
 	u32 tCWL;
 	u32 tCMD;
 	/* Latencies in terms of clock cycles
-	 * They are saved separately as they are needed for DRAM MRS commands*/
+	 * They are saved separately as they are needed for DRAM MRS commands */
 	u8 CAS;			/* CAS read latency */
 	u8 CWL;			/* CAS write latency */
 
@@ -109,7 +111,8 @@ typedef struct ramctr_timing_st {
 	u32 tXP;
 	u32 tAONPD;
 
-	u16 reg_5064b0; /* bits 0-11. */
+	/* Bits [0..11] of PM_DLL_CONFIG: Master DLL wakeup delay timer. */
+	u16 mdll_wake_delay;
 
 	u8 rankmap[NUM_CHANNELS];
 	int ref_card_offset[NUM_CHANNELS];
@@ -117,8 +120,8 @@ typedef struct ramctr_timing_st {
 	int channel_size_mb[NUM_CHANNELS];
 	u32 cmd_stretch[NUM_CHANNELS];
 
-	int reg_c14_offset;
-	int reg_320c_range_threshold;
+	int pi_code_offset;
+	int pi_coding_threshold;
 
 	int edge_offset[3];
 	int timC_offset[3];
@@ -150,33 +153,33 @@ typedef struct ramctr_timing_st {
 #define GET_ERR_CHANNEL(x) (x>>16)
 
 u8 get_CWL(u32 tCK);
-void dram_mrscommands(ramctr_timing * ctrl);
-void program_timings(ramctr_timing * ctrl, int channel);
+void dram_mrscommands(ramctr_timing *ctrl);
+void program_timings(ramctr_timing *ctrl, int channel);
 void dram_find_common_params(ramctr_timing *ctrl);
-void dram_xover(ramctr_timing * ctrl);
-void dram_timing_regs(ramctr_timing * ctrl);
+void dram_xover(ramctr_timing *ctrl);
+void dram_timing_regs(ramctr_timing *ctrl);
 void dram_dimm_mapping(ramctr_timing *ctrl);
-void dram_dimm_set_mapping(ramctr_timing * ctrl);
-void dram_zones(ramctr_timing * ctrl, int training);
+void dram_dimm_set_mapping(ramctr_timing *ctrl);
+void dram_zones(ramctr_timing *ctrl, int training);
 unsigned int get_mem_min_tck(void);
-void dram_memorymap(ramctr_timing * ctrl, int me_uma_size);
-void dram_jedecreset(ramctr_timing * ctrl);
-int read_training(ramctr_timing * ctrl);
-int write_training(ramctr_timing * ctrl);
+void dram_memorymap(ramctr_timing *ctrl, int me_uma_size);
+void dram_jedecreset(ramctr_timing *ctrl);
+int read_training(ramctr_timing *ctrl);
+int write_training(ramctr_timing *ctrl);
 int command_training(ramctr_timing *ctrl);
 int discover_edges(ramctr_timing *ctrl);
 int discover_edges_write(ramctr_timing *ctrl);
 int discover_timC_write(ramctr_timing *ctrl);
-void normalize_training(ramctr_timing * ctrl);
-void write_controller_mr(ramctr_timing * ctrl);
+void normalize_training(ramctr_timing *ctrl);
+void write_controller_mr(ramctr_timing *ctrl);
 int channel_test(ramctr_timing *ctrl);
-void set_scrambling_seed(ramctr_timing * ctrl);
+void set_scrambling_seed(ramctr_timing *ctrl);
 void set_4f8c(void);
-void prepare_training(ramctr_timing * ctrl);
-void set_4008c(ramctr_timing * ctrl);
-void set_42a0(ramctr_timing * ctrl);
-void final_registers(ramctr_timing * ctrl);
-void restore_timings(ramctr_timing * ctrl);
+void prepare_training(ramctr_timing *ctrl);
+void set_4008c(ramctr_timing *ctrl);
+void set_normal_operation(ramctr_timing *ctrl);
+void final_registers(ramctr_timing *ctrl);
+void restore_timings(ramctr_timing *ctrl);
 
 int try_init_dram_ddr3_sandy(ramctr_timing *ctrl, int fast_boot,
 		int s3_resume, int me_uma_size);

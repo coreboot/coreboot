@@ -33,38 +33,162 @@
 /* FIXME: no support for 3-channel chipsets.  */
 
 /*
- * Register description:
+ * ### IOSAV command queue notes ###
+ *
  * Intel provides a command queue of depth four.
- * Every command is configured by using multiple registers.
- * On executing the command queue you have to provide the depth used.
+ * Every command is configured by using multiple MCHBAR registers.
+ * On executing the command queue, you have to specify its depth (number of commands).
  *
- * Known registers:
- * Channel X = [0, 1]
- * Command queue index Y = [0, 1, 2, 3]
+ * The macros for these registers can take some integer parameters, within these bounds:
+ *   channel:   [0..1]
+ *   index:     [0..3]
+ *   lane:      [0..8]
  *
- * DEFAULT_MCHBAR + 0x4220 + 0x400 * X + 4 * Y: command io register
- *  Controls the DRAM command signals
- *  Bit 0: !RAS
- *  Bit 1: !CAS
- *  Bit 2: !WE
+ * Note that these ranges are 'closed': both endpoints are included.
  *
- * DEFAULT_MCHBAR + 0x4200 + 0x400 * X + 4 * Y: addr bankslot io register
- *  Controls the address, bank address and slotrank signals
- *  Bit 0-15 : Address
- *  Bit 20-22: Bank Address
- *  Bit 24-25: slotrank
  *
- * DEFAULT_MCHBAR + 0x4230 + 0x400 * X + 4 * Y: idle register
- *  Controls the idle time after issuing this DRAM command
- *  Bit 16-32: number of clock-cylces to idle
  *
- * DEFAULT_MCHBAR + 0x4284 + channel * 0x400: execute command queue
- *  Starts to execute all queued commands
- *  Bit 0    : start DRAM command execution
- *  Bit 18-19 : number of queued commands - 1
+ * ### Register description ###
+ *
+ * IOSAV_n_SP_CMD_ADDR_ch(channel, index)
+ *   Sub-sequence command addresses. Controls the address, bank address and slotrank signals.
+ *
+ *   Bitfields:
+ *   [0..15]    Row / Column Address.
+ *   [16..18]   The result of (10 + [16..18]) is the number of valid row bits.
+ *                  Note: Value 1 is not implemented. Not that it really matters, though.
+ *                        Value 7 is reserved, as the hardware does not support it.
+ *   [20..22]   Bank Address.
+ *   [24..25]   Rank select. Let's call it "ranksel", as it is mentioned later.
+ *
+ * IOSAV_n_ADDR_UPD_ch(channel, index)
+ *   How the address shall be updated after executing the sub-sequence command.
+ *
+ *   Bitfields:
+ *   [0]        Increment CAS/RAS by 1.
+ *   [1]        Increment CAS/RAS by 8.
+ *   [2]        Increment bank select by 1.
+ *   [3..4]     Increment rank select by 1, 2 or 3.
+ *   [5..9]     Known as "addr_wrap". Address bits will wrap around the [addr_wrap..0] range.
+ *   [10..11]   LFSR update:
+ *                  00: Do not use the LFSR function.
+ *                  01: Undefined, treat as Reserved.
+ *                  10: Apply LFSR on the [addr_wrap..0] bit range.
+ *                  11: Apply LFSR on the [addr_wrap..3] bit range.
+ *
+ *   [12..15]   Update rate. The number of command runs between address updates. For example:
+ *                  0: Update every command run.
+ *                  1: Update every second command run. That is, half of the command rate.
+ *                  N: Update after N command runs without updates.
+ *
+ *   [16..17]   LFSR behavior on the deselect cycles (when no sub-seq command is issued):
+ *                  0: No change w.r.t. the last issued command.
+ *                  1: LFSR XORs with address & command (excluding CS), but does not update.
+ *                  2: LFSR XORs with address & command (excluding CS), and updates.
+ *
+ * IOSAV_n_SP_CMD_CTL_ch(channel, index)
+ *   Special command control register. Controls the DRAM command signals.
+ *
+ *   Bitfields:
+ *   [0]        !RAS signal.
+ *   [1]        !CAS signal.
+ *   [2]        !WE  signal.
+ *   [4..7]     CKE, per rank and channel.
+ *   [8..11]    ODT, per rank and channel.
+ *   [12]       Chip Select mode control.
+ *   [13..16]   Chip select, per rank and channel. It works as follows:
+ *
+ *          entity CS_BLOCK is
+ *              port (
+ *                  MODE    : in  std_logic;                -- Mode select at [12]
+ *                  RANKSEL : in  std_logic_vector(0 to 3); -- Decoded "ranksel" value
+ *                  CS_CTL  : in  std_logic_vector(0 to 3); -- Chip select control at [13..16]
+ *                  CS_Q    : out std_logic_vector(0 to 3)  -- CS signals
+ *              );
+ *          end entity CS_BLOCK;
+ *
+ *          architecture RTL of CS_BLOCK is
+ *          begin
+ *              if MODE = '1' then
+ *                  CS_Q <= not RANKSEL and CS_CTL;
+ *              else
+ *                  CS_Q <= CS_CTL;
+ *              end if;
+ *          end architecture RTL;
+ *
+ *   [17]       Auto Precharge. Only valid when using 10 row bits!
+ *
+ * IOSAV_n_SUBSEQ_CTL_ch(channel, index)
+ *   Sub-sequence parameters. Controls repetititons, delays and data orientation.
+ *
+ *   Bitfields:
+ *   [0..8]     Number of repetitions of the sub-sequence command.
+ *   [10..14]   Gap, number of clock-cycles to wait before sending the next command.
+ *   [16..24]   Number of clock-cycles to idle between sub-sequence commands.
+ *   [26..27]   The direction of the data.
+ *                  00: None, does not handle data
+ *                  01: Read
+ *                  10: Write
+ *                  11: Read & Write
+ *
+ * IOSAV_n_ADDRESS_LFSR_ch(channel, index)
+ *   23-bit LFSR state register. It is written into the LFSR when the sub-sequence is loaded,
+ *   and then read back from the LFSR when the sub-sequence is done.
+ *
+ *   Bitfields:
+ *   [0..22]    LFSR state.
+ *
+ * IOSAV_SEQ_CTL_ch(channel)
+ *   Control the sequence level in IOSAV: number of sub-sequences, iterations, maintenance...
+ *
+ *   Bitfields:
+ *   [0..7]     Number of full sequence executions. When this field becomes non-zero, then the
+ *              sequence starts running immediately. This value is decremented after completing
+ *              a full sequence iteration. When it is zero, the sequence is done. No decrement
+ *              is done if this field is set to 0xff. This is the "infinite repeat" mode, and
+ *              it is manually aborted by clearing this field.
+ *
+ *   [8..16]    Number of wait cycles after each sequence iteration. This wait's purpose is to
+ *              allow performing maintenance in infinite loops. When non-zero, RCOMP, refresh
+ *              and ZQXS operations can take place.
+ *
+ *   [17]       Stop-on-error mode: Whether to stop sequence execution when an error occurs.
+ *   [18..19]   Number of sub-sequences. The programmed value is the index of the last sub-seq.
+ *   [20]       If set, keep refresh disabled until the next sequence execution.
+ *                  DANGER: Refresh must be re-enabled within the (9 * tREFI) period!
+ *
+ *   [22]       If set, sequence execution will not prevent refresh. This cannot be set when
+ *              bit [20] is also set, or was set on the previous sequence. This bit exists so
+ *              that the sequence machine can be used as a timer without affecting the memory.
+ *
+ *   [23]       If set, a output pin is asserted on the first detected error. This output can
+ *              be used as a trigger for an oscilloscope or a logic analyzer, which is handy.
+ *
+ * IOSAV_DATA_CTL_ch(channel)
+ *   Data-related controls in IOSAV mode.
+ *
+ *   Bitfields:
+ *   [0..7]     WDB (Write Data Buffer) pattern length: [0..7] = (length / 8) - 1;
+ *   [8..15]    WDB read pointer. Points at the data used for IOSAV write transactions.
+ *   [16..23]   Comparison pointer. Used to compare data from IOSAV read transactions.
+ *   [24]       If set, increment pointers only when micro-breakpoint is active.
+ *
+ * IOSAV_STATUS_ch(channel)
+ *   State of the IOSAV sequence machine. Should be polled after sending an IOSAV sequence.
+ *
+ *   Bitfields:
+ *   [0]        IDLE:  IOSAV is sleeping.
+ *   [1]        BUSY:  IOSAV is running a sequence.
+ *   [2]        DONE:  IOSAV has completed a sequence.
+ *   [3]        ERROR: IOSAV detected an error and stopped on it, when using Stop-on-error.
+ *   [4]        PANIC: The refresh machine issued a Panic Refresh, and IOSAV was aborted.
+ *   [5]        RCOMP: RComp failure. Unused, consider Reserved.
+ *   [6]        Cleared with a new sequence, and set when done and refresh counter is drained.
+ *
  */
 
-#define RUN_QUEUE_4284(x)	((((x) - 1) << 18) | 1)	// 0 <= x < 4
+/* length:      [1..4] */
+#define IOSAV_RUN_ONCE(length)	((((length) - 1) << 18) | 1)
 
 static void sfence(void)
 {
@@ -73,10 +197,10 @@ static void sfence(void)
 
 static void toggle_io_reset(void) {
 	/* toggle IO reset bit */
-	u32 r32 = MCHBAR32(0x5030);
-	MCHBAR32(0x5030) = r32 | 0x20;
+	u32 r32 = MCHBAR32(MC_INIT_STATE_G);
+	MCHBAR32(MC_INIT_STATE_G) = r32 | 0x20;
 	udelay(1);
-	MCHBAR32(0x5030) = r32 & ~0x20;
+	MCHBAR32(MC_INIT_STATE_G) = r32 & ~0x20;
 	udelay(1);
 }
 
@@ -171,7 +295,7 @@ void dram_find_common_params(ramctr_timing *ctrl)
 		die("No valid DIMMs found");
 }
 
-void dram_xover(ramctr_timing * ctrl)
+void dram_xover(ramctr_timing *ctrl)
 {
 	u32 reg;
 	int channel;
@@ -179,15 +303,13 @@ void dram_xover(ramctr_timing * ctrl)
 	FOR_ALL_CHANNELS {
 		// enable xover clk
 		reg = get_XOVER_CLK(ctrl->rankmap[channel]);
-		printram("XOVER CLK [%x] = %x\n", 0xc14 + channel * 0x100,
-			 reg);
-		MCHBAR32(0xc14 + channel * 0x100) = reg;
+		printram("XOVER CLK [%x] = %x\n", GDCRCKPICODE_ch(channel), reg);
+		MCHBAR32(GDCRCKPICODE_ch(channel)) = reg;
 
 		// enable xover ctl & xover cmd
 		reg = get_XOVER_CMD(ctrl->rankmap[channel]);
-		printram("XOVER CMD [%x] = %x\n", 0x320c + channel * 0x100,
-			 reg);
-		MCHBAR32(0x320c + channel * 0x100) = reg;
+		printram("XOVER CMD [%x] = %x\n", GDCRCMDPICODING_ch(channel), reg);
+		MCHBAR32(GDCRCMDPICODING_ch(channel)) = reg;
 	}
 }
 
@@ -202,14 +324,14 @@ static void dram_odt_stretch(ramctr_timing *ctrl, int channel)
 	if (IS_SANDY_CPU(cpu) && IS_SANDY_CPU_C(cpu)) {
 		if (stretch == 2)
 			stretch = 3;
-		addr = 0x401c + channel * 0x400;
+		addr = SCHED_SECOND_CBIT_ch(channel);
 		MCHBAR32_AND_OR(addr, 0xffffc3ff,
 			(stretch << 12) | (stretch << 10));
 		printk(RAM_DEBUG, "OTHP Workaround [%x] = %x\n", addr,
 			MCHBAR32(addr));
 	} else {
 		// OTHP
-		addr = 0x400c + channel * 0x400;
+		addr = TC_OTHP_ch(channel);
 		MCHBAR32_AND_OR(addr, 0xfff0ffff,
 			(stretch << 16) | (stretch << 18));
 		printk(RAM_DEBUG, "OTHP [%x] = %x\n", addr, MCHBAR32(addr));
@@ -229,8 +351,8 @@ void dram_timing_regs(ramctr_timing *ctrl)
 		reg |= (ctrl->CAS << 8);
 		reg |= (ctrl->CWL << 12);
 		reg |= (ctrl->tRAS << 16);
-		printram("DBP [%x] = %x\n", TC_DBP_C0 + channel * 0x400, reg);
-		MCHBAR32(TC_DBP_C0 + channel * 0x400) = reg;
+		printram("DBP [%x] = %x\n", TC_DBP_ch(channel), reg);
+		MCHBAR32(TC_DBP_ch(channel)) = reg;
 
 		// RAP
 		reg = 0;
@@ -241,11 +363,11 @@ void dram_timing_regs(ramctr_timing *ctrl)
 		reg |= (ctrl->tFAW << 16);
 		reg |= (ctrl->tWR << 24);
 		reg |= (3 << 30);
-		printram("RAP [%x] = %x\n", TC_RAP_C0 + channel * 0x400, reg);
-		MCHBAR32(TC_RAP_C0 + channel * 0x400) = reg;
+		printram("RAP [%x] = %x\n", TC_RAP_ch(channel), reg);
+		MCHBAR32(TC_RAP_ch(channel)) = reg;
 
 		// OTHP
-		addr = 0x400c + channel * 0x400;
+		addr = TC_OTHP_ch(channel);
 		reg = 0;
 		reg |= ctrl->tXPDLL;
 		reg |= (ctrl->tXP << 5);
@@ -271,10 +393,10 @@ void dram_timing_regs(ramctr_timing *ctrl)
 		reg = ((ctrl->tREFI & 0xffff) << 0) |
 			((ctrl->tRFC & 0x1ff) << 16) |
 			(((val32 / 1024) & 0x7f) << 25);
-		printram("REFI [%x] = %x\n", TC_RFTP_C0 + channel * 0x400, reg);
-		MCHBAR32(TC_RFTP_C0 + channel * 0x400) = reg;
+		printram("REFI [%x] = %x\n", TC_RFTP_ch(channel), reg);
+		MCHBAR32(TC_RFTP_ch(channel)) = reg;
 
-		MCHBAR32_OR(TC_RFP_C0 + channel * 0x400,  0xff);
+		MCHBAR32_OR(TC_RFP_ch(channel),  0xff);
 
 		// SRFTP
 		reg = 0;
@@ -286,9 +408,9 @@ void dram_timing_regs(ramctr_timing *ctrl)
 		reg = (reg & ~0x3ff0000) | (val32 << 16);
 		val32 = ctrl->tMOD - 8;
 		reg = (reg & ~0xf0000000) | (val32 << 28);
-		printram("SRFTP [%x] = %x\n", 0x42a4 + channel * 0x400,
+		printram("SRFTP [%x] = %x\n", TC_SRFTP_ch(channel),
 		       reg);
-		MCHBAR32(0x42a4 + channel * 0x400) = reg;
+		MCHBAR32(TC_SRFTP_ch(channel)) = reg;
 	}
 }
 
@@ -336,7 +458,7 @@ void dram_dimm_mapping(ramctr_timing *ctrl)
 	}
 }
 
-void dram_dimm_set_mapping(ramctr_timing * ctrl)
+void dram_dimm_set_mapping(ramctr_timing *ctrl)
 {
 	int channel;
 	FOR_ALL_CHANNELS {
@@ -344,7 +466,7 @@ void dram_dimm_set_mapping(ramctr_timing * ctrl)
 	}
 }
 
-void dram_zones(ramctr_timing * ctrl, int training)
+void dram_zones(ramctr_timing *ctrl, int training)
 {
 	u32 reg, ch0size, ch1size;
 	u8 val;
@@ -359,18 +481,18 @@ void dram_zones(ramctr_timing * ctrl, int training)
 	}
 
 	if (ch0size >= ch1size) {
-		reg = MCHBAR32(0x5014);
+		reg = MCHBAR32(MAD_ZR);
 		val = ch1size / 256;
 		reg = (reg & ~0xff000000) | val << 24;
 		reg = (reg & ~0xff0000) | (2 * val) << 16;
-		MCHBAR32(0x5014) = reg;
+		MCHBAR32(MAD_ZR) = reg;
 		MCHBAR32(MAD_CHNL) = 0x24;
 	} else {
-		reg = MCHBAR32(0x5014);
+		reg = MCHBAR32(MAD_ZR);
 		val = ch0size / 256;
 		reg = (reg & ~0xff000000) | val << 24;
 		reg = (reg & ~0xff0000) | (2 * val) << 16;
-		MCHBAR32(0x5014) = reg;
+		MCHBAR32(MAD_ZR) = reg;
 		MCHBAR32(MAD_CHNL) = 0x21;
 	}
 }
@@ -462,7 +584,7 @@ static unsigned int get_mmio_size(void)
 		return cfg->pci_mmio_size;
 }
 
-void dram_memorymap(ramctr_timing * ctrl, int me_uma_size)
+void dram_memorymap(ramctr_timing *ctrl, int me_uma_size)
 {
 	u32 reg, val, reclaim;
 	u32 tom, gfxstolen, gttsize;
@@ -615,69 +737,69 @@ void dram_memorymap(ramctr_timing * ctrl, int me_uma_size)
 	}
 }
 
-static void wait_428c(int channel)
+static void wait_for_iosav(int channel)
 {
 	while (1) {
-		if (MCHBAR32(0x428c + channel * 0x400) & 0x50)
+		if (MCHBAR32(IOSAV_STATUS_ch(channel)) & 0x50)
 			return;
 	}
 }
 
-static void write_reset(ramctr_timing * ctrl)
+static void write_reset(ramctr_timing *ctrl)
 {
 	int channel, slotrank;
 
 	/* choose a populated channel.  */
 	channel = (ctrl->rankmap[0]) ? 0 : 1;
 
-	wait_428c(channel);
+	wait_for_iosav(channel);
 
 	/* choose a populated rank.  */
 	slotrank = (ctrl->rankmap[channel] & 1) ? 0 : 2;
 
 	/* DRAM command ZQCS */
-	MCHBAR32(0x4220 + channel * 0x400) = 0x0f003;
-	MCHBAR32(0x4230 + channel * 0x400) = 0x80c01;
-	MCHBAR32(0x4200 + channel * 0x400) = (slotrank << 24) | 0x60000;
-	MCHBAR32(0x4210 + channel * 0x400) = 0;
+	MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 0)) = 0x0f003;
+	MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 0)) = 0x80c01;
+	MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 0)) = (slotrank << 24) | 0x60000;
+	MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 0)) = 0;
 
 	// execute command queue - why is bit 22 set here?!
-	MCHBAR32(0x4284 + channel * 0x400) = (1 << 22) | RUN_QUEUE_4284(1);
+	MCHBAR32(IOSAV_SEQ_CTL_ch(channel)) = (1 << 22) | IOSAV_RUN_ONCE(1);
 
-	wait_428c(channel);
+	wait_for_iosav(channel);
 }
 
-void dram_jedecreset(ramctr_timing * ctrl)
+void dram_jedecreset(ramctr_timing *ctrl)
 {
 	u32 reg;
 	int channel;
 
-	while (!(MCHBAR32(0x5084) & 0x10000));
+	while (!(MCHBAR32(RCOMP_TIMER) & 0x10000));
 	do {
-		reg = MCHBAR32(0x428c);
+		reg = MCHBAR32(IOSAV_STATUS_ch(0));
 	} while ((reg & 0x14) == 0);
 
 	// Set state of memory controller
 	reg = 0x112;
-	MCHBAR32(0x5030) = reg;
-	MCHBAR32(0x4ea0) = 0;
+	MCHBAR32(MC_INIT_STATE_G) = reg;
+	MCHBAR32(MC_INIT_STATE) = 0;
 	reg |= 2;		//ddr reset
-	MCHBAR32(0x5030) = reg;
+	MCHBAR32(MC_INIT_STATE_G) = reg;
 
 	// Assert dimm reset signal
-	MCHBAR32_AND(0x5030, ~0x2);
+	MCHBAR32_AND(MC_INIT_STATE_G, ~0x2);
 
 	// Wait 200us
 	udelay(200);
 
 	// Deassert dimm reset signal
-	MCHBAR32_OR(0x5030, 2);
+	MCHBAR32_OR(MC_INIT_STATE_G, 2);
 
 	// Wait 500us
 	udelay(500);
 
 	// Enable DCLK
-	MCHBAR32_OR(0x5030, 4);
+	MCHBAR32_OR(MC_INIT_STATE_G, 4);
 
 	// XXX Wait 20ns
 	udelay(1);
@@ -685,13 +807,13 @@ void dram_jedecreset(ramctr_timing * ctrl)
 	FOR_ALL_CHANNELS {
 		// Set valid rank CKE
 		reg = ctrl->rankmap[channel];
-		MCHBAR32(0x42a0 + channel * 0x400) = reg;
+		MCHBAR32(MC_INIT_STATE_ch(channel)) = reg;
 
 		// Wait 10ns for ranks to settle
 		//udelay(0.01);
 
 		reg = (reg & ~0xf0) | (ctrl->rankmap[channel] << 4);
-		MCHBAR32(0x42a0 + channel * 0x400) = reg;
+		MCHBAR32(MC_INIT_STATE_ch(channel)) = reg;
 
 		// Write reset using a NOP
 		write_reset(ctrl);
@@ -714,7 +836,7 @@ static odtmap get_ODT(ramctr_timing *ctrl, u8 rank, int channel)
 static void write_mrreg(ramctr_timing *ctrl, int channel, int slotrank,
 			int reg, u32 val)
 {
-	wait_428c(channel);
+	wait_for_iosav(channel);
 
 	if (ctrl->rank_mirror[channel][slotrank]) {
 		/* DDR3 Rank1 Address mirror
@@ -726,31 +848,31 @@ static void write_mrreg(ramctr_timing *ctrl, int channel, int slotrank,
 	}
 
 	/* DRAM command MRS */
-	MCHBAR32(0x4220 + channel * 0x400) = 0x0f000;
-	MCHBAR32(0x4230 + channel * 0x400) = 0x41001;
-	MCHBAR32(0x4200 + channel * 0x400) =
+	MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 0)) = 0x0f000;
+	MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 0)) = 0x41001;
+	MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 0)) =
 		(slotrank << 24) | (reg << 20) | val | 0x60000;
-	MCHBAR32(0x4210 + channel * 0x400) = 0;
+	MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 0)) = 0;
 
 	/* DRAM command MRS */
-	MCHBAR32(0x4224 + channel * 0x400) = 0x1f000;
-	MCHBAR32(0x4234 + channel * 0x400) = 0x41001;
-	MCHBAR32(0x4204 + channel * 0x400) =
+	MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 1)) = 0x1f000;
+	MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 1)) = 0x41001;
+	MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 1)) =
 		(slotrank << 24) | (reg << 20) | val | 0x60000;
-	MCHBAR32(0x4214 + channel * 0x400) = 0;
+	MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 1)) = 0;
 
 	/* DRAM command MRS */
-	MCHBAR32(0x4228 + channel * 0x400) = 0x0f000;
-	MCHBAR32(0x4238 + channel * 0x400) = 0x1001 | (ctrl->tMOD << 16);
-	MCHBAR32(0x4208 + channel * 0x400) =
+	MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 2)) = 0x0f000;
+	MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 2)) = 0x1001 | (ctrl->tMOD << 16);
+	MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 2)) =
 		(slotrank << 24) | (reg << 20) | val | 0x60000;
-	MCHBAR32(0x4218 + channel * 0x400) = 0;
+	MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 2)) = 0;
 
 	// execute command queue
-	MCHBAR32(0x4284 + channel * 0x400) = RUN_QUEUE_4284(3);
+	MCHBAR32(IOSAV_SEQ_CTL_ch(channel)) = IOSAV_RUN_ONCE(3);
 }
 
-static u32 make_mr0(ramctr_timing * ctrl, u8 rank)
+static u32 make_mr0(ramctr_timing *ctrl, u8 rank)
 {
 	u16 mr0reg, mch_cas, mch_wr;
 	static const u8 mch_wr_t[12] = { 1, 2, 3, 4, 0, 5, 0, 6, 0, 7, 0, 0 };
@@ -848,7 +970,7 @@ static void dram_mr3(ramctr_timing *ctrl, u8 rank, int channel)
 	write_mrreg(ctrl, channel, rank, 3, 0);
 }
 
-void dram_mrscommands(ramctr_timing * ctrl)
+void dram_mrscommands(ramctr_timing *ctrl)
 {
 	u8 slotrank;
 	int channel;
@@ -870,51 +992,51 @@ void dram_mrscommands(ramctr_timing * ctrl)
 	}
 
 	/* DRAM command NOP */
-	MCHBAR32(0x4e20) = 0x7;
-	MCHBAR32(0x4e30) = 0xf1001;
-	MCHBAR32(0x4e00) = 0x60002;
-	MCHBAR32(0x4e10) = 0;
+	MCHBAR32(IOSAV_n_SP_CMD_CTL(0)) = 0x7;
+	MCHBAR32(IOSAV_n_SUBSEQ_CTL(0)) = 0xf1001;
+	MCHBAR32(IOSAV_n_SP_CMD_ADDR(0)) = 0x60002;
+	MCHBAR32(IOSAV_n_ADDR_UPD(0)) = 0;
 
 	/* DRAM command ZQCL */
-	MCHBAR32(0x4e24) = 0x1f003;
-	MCHBAR32(0x4e34) = 0x1901001;
-	MCHBAR32(0x4e04) = 0x60400;
-	MCHBAR32(0x4e14) = 0x288;
+	MCHBAR32(IOSAV_n_SP_CMD_CTL(1)) = 0x1f003;
+	MCHBAR32(IOSAV_n_SUBSEQ_CTL(1)) = 0x1901001;
+	MCHBAR32(IOSAV_n_SP_CMD_ADDR(1)) = 0x60400;
+	MCHBAR32(IOSAV_n_ADDR_UPD(1)) = 0x288;
 
 	// execute command queue on all channels? Why isn't bit 0 set here?
-	MCHBAR32(0x4e84) = 0x40004;
+	MCHBAR32(IOSAV_SEQ_CTL) = 0x40004;
 
 	// Drain
 	FOR_ALL_CHANNELS {
 		// Wait for ref drained
-		wait_428c(channel);
+		wait_for_iosav(channel);
 	}
 
 	// Refresh enable
-	MCHBAR32_OR(0x5030, 8);
+	MCHBAR32_OR(MC_INIT_STATE_G, 8);
 
 	FOR_ALL_POPULATED_CHANNELS {
-		MCHBAR32_AND(0x4020 + channel * 0x400, ~0x200000);
+		MCHBAR32_AND(SCHED_CBIT_ch(channel), ~0x200000);
 
-		wait_428c(channel);
+		wait_for_iosav(channel);
 
 		slotrank = (ctrl->rankmap[channel] & 1) ? 0 : 2;
 
 		// Drain
-		wait_428c(channel);
+		wait_for_iosav(channel);
 
 		/* DRAM command ZQCS */
-		MCHBAR32(0x4220 + channel * 0x400) = 0x0f003;
-		MCHBAR32(0x4230 + channel * 0x400) = 0x659001;
-		MCHBAR32(0x4200 + channel * 0x400) =
+		MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 0)) = 0x0f003;
+		MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 0)) = 0x659001;
+		MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 0)) =
 			(slotrank << 24) | 0x60000;
-		MCHBAR32(0x4210 + channel * 0x400) = 0x3e0;
+		MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 0)) = 0x3e0;
 
 		// execute command queue
-		MCHBAR32(0x4284 + channel * 0x400) = RUN_QUEUE_4284(1);
+		MCHBAR32(IOSAV_SEQ_CTL_ch(channel)) = IOSAV_RUN_ONCE(1);
 
 		// Drain
-		wait_428c(channel);
+		wait_for_iosav(channel);
 	}
 }
 
@@ -924,81 +1046,81 @@ static const u32 lane_registers[] = {
 	0x0800
 };
 
-void program_timings(ramctr_timing * ctrl, int channel)
+void program_timings(ramctr_timing *ctrl, int channel)
 {
-	u32 reg32, reg_4024, reg_c14, reg_c18, reg_io_latency;
+	u32 reg32, reg_roundtrip_latency, reg_pi_code, reg_logic_delay, reg_io_latency;
 	int lane;
 	int slotrank, slot;
 	int full_shift = 0;
-	u16 slot320c[NUM_SLOTS];
+	u16 pi_coding_ctrl[NUM_SLOTS];
 
 	FOR_ALL_POPULATED_RANKS {
-		if (full_shift < -ctrl->timings[channel][slotrank].val_320c)
-			full_shift = -ctrl->timings[channel][slotrank].val_320c;
+		if (full_shift < -ctrl->timings[channel][slotrank].pi_coding)
+			full_shift = -ctrl->timings[channel][slotrank].pi_coding;
 	}
 
 	for (slot = 0; slot < NUM_SLOTS; slot++)
 		switch ((ctrl->rankmap[channel] >> (2 * slot)) & 3) {
 		case 0:
 		default:
-			slot320c[slot] = 0x7f;
+			pi_coding_ctrl[slot] = 0x7f;
 			break;
 		case 1:
-			slot320c[slot] =
-			    ctrl->timings[channel][2 * slot + 0].val_320c +
+			pi_coding_ctrl[slot] =
+			    ctrl->timings[channel][2 * slot + 0].pi_coding +
 			    full_shift;
 			break;
 		case 2:
-			slot320c[slot] =
-			    ctrl->timings[channel][2 * slot + 1].val_320c +
+			pi_coding_ctrl[slot] =
+			    ctrl->timings[channel][2 * slot + 1].pi_coding +
 			    full_shift;
 			break;
 		case 3:
-			slot320c[slot] =
-			    (ctrl->timings[channel][2 * slot].val_320c +
-			    ctrl->timings[channel][2 * slot + 1].val_320c) / 2 +
+			pi_coding_ctrl[slot] =
+			    (ctrl->timings[channel][2 * slot].pi_coding +
+			    ctrl->timings[channel][2 * slot + 1].pi_coding) / 2 +
 			    full_shift;
 			break;
 		}
 
 	/* enable CMD XOVER */
 	reg32 = get_XOVER_CMD(ctrl->rankmap[channel]);
-	reg32 |= ((slot320c[0] & 0x3f) << 6) | ((slot320c[0] & 0x40) << 9);
-	reg32 |= (slot320c[1] & 0x7f) << 18;
+	reg32 |= ((pi_coding_ctrl[0] & 0x3f) << 6) | ((pi_coding_ctrl[0] & 0x40) << 9);
+	reg32 |= (pi_coding_ctrl[1] & 0x7f) << 18;
 	reg32 |= (full_shift & 0x3f) | ((full_shift & 0x40) << 6);
 
-	MCHBAR32(0x320c + channel * 0x100) = reg32;
+	MCHBAR32(GDCRCMDPICODING_ch(channel)) = reg32;
 
 	/* enable CLK XOVER */
-	reg_c14 = get_XOVER_CLK(ctrl->rankmap[channel]);
-	reg_c18 = 0;
+	reg_pi_code = get_XOVER_CLK(ctrl->rankmap[channel]);
+	reg_logic_delay = 0;
 
 	FOR_ALL_POPULATED_RANKS {
 		int shift =
-		    ctrl->timings[channel][slotrank].val_320c + full_shift;
-		int offset_val_c14;
+		    ctrl->timings[channel][slotrank].pi_coding + full_shift;
+		int offset_pi_code;
 		if (shift < 0)
 			shift = 0;
-		offset_val_c14 = ctrl->reg_c14_offset + shift;
+		offset_pi_code = ctrl->pi_code_offset + shift;
 		/* set CLK phase shift */
-		reg_c14 |= (offset_val_c14 & 0x3f) << (6 * slotrank);
-		reg_c18 |= ((offset_val_c14 >> 6) & 1) << slotrank;
+		reg_pi_code |= (offset_pi_code & 0x3f) << (6 * slotrank);
+		reg_logic_delay |= ((offset_pi_code >> 6) & 1) << slotrank;
 	}
 
-	MCHBAR32(0xc14 + channel * 0x100) = reg_c14;
-	MCHBAR32(0xc18 + channel * 0x100) = reg_c18;
+	MCHBAR32(GDCRCKPICODE_ch(channel)) = reg_pi_code;
+	MCHBAR32(GDCRCKLOGICDELAY_ch(channel)) = reg_logic_delay;
 
-	reg_io_latency = MCHBAR32(SC_IO_LATENCY_C0 + channel * 0x400);
+	reg_io_latency = MCHBAR32(SC_IO_LATENCY_ch(channel));
 	reg_io_latency &= 0xffff0000;
 
-	reg_4024 = 0;
+	reg_roundtrip_latency = 0;
 
 	FOR_ALL_POPULATED_RANKS {
 		int post_timA_min_high = 7, post_timA_max_high = 0;
 		int pre_timA_min_high = 7, pre_timA_max_high = 0;
 		int shift_402x = 0;
 		int shift =
-		    ctrl->timings[channel][slotrank].val_320c + full_shift;
+		    ctrl->timings[channel][slotrank].pi_coding + full_shift;
 
 		if (shift < 0)
 			shift = 0;
@@ -1028,8 +1150,8 @@ void program_timings(ramctr_timing * ctrl, int channel)
 		reg_io_latency |=
 		    (ctrl->timings[channel][slotrank].io_latency + shift_402x -
 		     post_timA_min_high) << (4 * slotrank);
-		reg_4024 |=
-		    (ctrl->timings[channel][slotrank].val_4024 +
+		reg_roundtrip_latency |=
+		    (ctrl->timings[channel][slotrank].roundtrip_latency +
 		     shift_402x) << (8 * slotrank);
 
 		FOR_ALL_LANES {
@@ -1064,49 +1186,49 @@ void program_timings(ramctr_timing * ctrl, int channel)
 				timC + shift) & 0x40) << 13));
 		}
 	}
-	MCHBAR32(0x4024 + channel * 0x400) = reg_4024;
-	MCHBAR32(SC_IO_LATENCY_C0 + channel * 0x400) = reg_io_latency;
+	MCHBAR32(SC_ROUNDT_LAT_ch(channel)) = reg_roundtrip_latency;
+	MCHBAR32(SC_IO_LATENCY_ch(channel)) = reg_io_latency;
 }
 
-static void test_timA(ramctr_timing * ctrl, int channel, int slotrank)
+static void test_timA(ramctr_timing *ctrl, int channel, int slotrank)
 {
-	wait_428c(channel);
+	wait_for_iosav(channel);
 
 	/* DRAM command MRS
 	 * write MR3 MPR enable
 	 * in this mode only RD and RDA are allowed
 	 * all reads return a predefined pattern */
-	MCHBAR32(0x4220 + channel * 0x400) = 0x1f000;
-	MCHBAR32(0x4230 + channel * 0x400) = (0xc01 | (ctrl->tMOD << 16));
-	MCHBAR32(0x4200 + channel * 0x400) = (slotrank << 24) | 0x360004;
-	MCHBAR32(0x4210 + channel * 0x400) = 0;
+	MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 0)) = 0x1f000;
+	MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 0)) = (0xc01 | (ctrl->tMOD << 16));
+	MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 0)) = (slotrank << 24) | 0x360004;
+	MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 0)) = 0;
 
 	/* DRAM command RD */
-	MCHBAR32(0x4224 + channel * 0x400) = 0x1f105;
-	MCHBAR32(0x4234 + channel * 0x400) = 0x4040c01;
-	MCHBAR32(0x4204 + channel * 0x400) = (slotrank << 24);
-	MCHBAR32(0x4214 + channel * 0x400) = 0;
+	MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 1)) = 0x1f105;
+	MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 1)) = 0x4040c01;
+	MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 1)) = (slotrank << 24);
+	MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 1)) = 0;
 
 	/* DRAM command RD */
-	MCHBAR32(0x4228 + channel * 0x400) = 0x1f105;
-	MCHBAR32(0x4238 + channel * 0x400) = 0x100f | ((ctrl->CAS + 36) << 16);
-	MCHBAR32(0x4208 + channel * 0x400) = (slotrank << 24) | 0x60000;
-	MCHBAR32(0x4218 + channel * 0x400) = 0;
+	MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 2)) = 0x1f105;
+	MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 2)) = 0x100f | ((ctrl->CAS + 36) << 16);
+	MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 2)) = (slotrank << 24) | 0x60000;
+	MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 2)) = 0;
 
 	/* DRAM command MRS
 	 * write MR3 MPR disable */
-	MCHBAR32(0x422c + channel * 0x400) = 0x1f000;
-	MCHBAR32(0x423c + channel * 0x400) = 0xc01 | (ctrl->tMOD << 16);
-	MCHBAR32(0x420c + channel * 0x400) = (slotrank << 24) | 0x360000;
-	MCHBAR32(0x421c + channel * 0x400) = 0;
+	MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 3)) = 0x1f000;
+	MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 3)) = 0xc01 | (ctrl->tMOD << 16);
+	MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 3)) = (slotrank << 24) | 0x360000;
+	MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 3)) = 0;
 
 	// execute command queue
-	MCHBAR32(0x4284 + channel * 0x400) = RUN_QUEUE_4284(4);
+	MCHBAR32(IOSAV_SEQ_CTL_ch(channel)) = IOSAV_RUN_ONCE(4);
 
-	wait_428c(channel);
+	wait_for_iosav(channel);
 }
 
-static int does_lane_work(ramctr_timing * ctrl, int channel, int slotrank,
+static int does_lane_work(ramctr_timing *ctrl, int channel, int slotrank,
 			  int lane)
 {
 	u32 timA = ctrl->timings[channel][slotrank].lanes[lane].timA;
@@ -1156,7 +1278,7 @@ static struct run get_longest_zero_run(int *seq, int sz)
 	return ret;
 }
 
-static void discover_timA_coarse(ramctr_timing * ctrl, int channel,
+static void discover_timA_coarse(ramctr_timing *ctrl, int channel,
 				 int slotrank, int *upperA)
 {
 	int timA;
@@ -1187,7 +1309,7 @@ static void discover_timA_coarse(ramctr_timing * ctrl, int channel,
 	}
 }
 
-static void discover_timA_fine(ramctr_timing * ctrl, int channel, int slotrank,
+static void discover_timA_fine(ramctr_timing *ctrl, int channel, int slotrank,
 			       int *upperA)
 {
 	int timA_delta;
@@ -1251,12 +1373,12 @@ static int discover_402x(ramctr_timing *ctrl, int channel, int slotrank,
 		if (all_works)
 			return 0;
 		if (!some_works) {
-			if (ctrl->timings[channel][slotrank].val_4024 < 2) {
+			if (ctrl->timings[channel][slotrank].roundtrip_latency < 2) {
 				printk(BIOS_EMERG, "402x discovery failed (1): %d, %d\n",
 				       channel, slotrank);
 				return MAKE_ERR;
 			}
-			ctrl->timings[channel][slotrank].val_4024 -= 2;
+			ctrl->timings[channel][slotrank].roundtrip_latency -= 2;
 			printram("4024 -= 2;\n");
 			continue;
 		}
@@ -1282,7 +1404,7 @@ struct timA_minmax {
 	int timA_min_high, timA_max_high;
 };
 
-static void pre_timA_change(ramctr_timing * ctrl, int channel, int slotrank,
+static void pre_timA_change(ramctr_timing *ctrl, int channel, int slotrank,
 			    struct timA_minmax *mnmx)
 {
 	int lane;
@@ -1303,7 +1425,7 @@ static void pre_timA_change(ramctr_timing * ctrl, int channel, int slotrank,
 	}
 }
 
-static void post_timA_change(ramctr_timing * ctrl, int channel, int slotrank,
+static void post_timA_change(ramctr_timing *ctrl, int channel, int slotrank,
 			     struct timA_minmax *mnmx)
 {
 	struct timA_minmax post;
@@ -1322,7 +1444,7 @@ static void post_timA_change(ramctr_timing * ctrl, int channel, int slotrank,
 		shift_402x = 0;
 
 	ctrl->timings[channel][slotrank].io_latency += shift_402x;
-	ctrl->timings[channel][slotrank].val_4024 += shift_402x;
+	ctrl->timings[channel][slotrank].roundtrip_latency += shift_402x;
 	printram("4024 += %d;\n", shift_402x);
 	printram("4028 += %d;\n", shift_402x);
 }
@@ -1344,7 +1466,7 @@ static void post_timA_change(ramctr_timing * ctrl, int channel, int slotrank,
  * Once the controller has detected this pattern a bit in the result register is
  * set for the current phase shift.
  */
-int read_training(ramctr_timing * ctrl)
+int read_training(ramctr_timing *ctrl)
 {
 	int channel, slotrank, lane;
 	int err;
@@ -1354,21 +1476,21 @@ int read_training(ramctr_timing * ctrl)
 		int upperA[NUM_LANES];
 		struct timA_minmax mnmx;
 
-		wait_428c(channel);
+		wait_for_iosav(channel);
 
 		/* DRAM command PREA */
-		MCHBAR32(0x4220 + channel * 0x400) = 0x1f002;
-		MCHBAR32(0x4230 + channel * 0x400) = 0xc01 | (ctrl->tRP << 16);
-		MCHBAR32(0x4200 + channel * 0x400) = (slotrank << 24) | 0x60400;
-		MCHBAR32(0x4210 + channel * 0x400) = 0;
+		MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 0)) = 0x1f002;
+		MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 0)) = 0xc01 | (ctrl->tRP << 16);
+		MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 0)) = (slotrank << 24) | 0x60400;
+		MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 0)) = 0;
 
 		// execute command queue
-		MCHBAR32(0x4284 + channel * 0x400) = RUN_QUEUE_4284(1);
+		MCHBAR32(IOSAV_SEQ_CTL_ch(channel)) = IOSAV_RUN_ONCE(1);
 
-		MCHBAR32(0x3400) = (slotrank << 2) | 0x8001;
+		MCHBAR32(GDCRTRAININGMOD) = (slotrank << 2) | 0x8001;
 
 		ctrl->timings[channel][slotrank].io_latency = 4;
-		ctrl->timings[channel][slotrank].val_4024 = 55;
+		ctrl->timings[channel][slotrank].roundtrip_latency = 55;
 		program_timings(ctrl, channel);
 
 		discover_timA_coarse(ctrl, channel, slotrank, upperA);
@@ -1393,7 +1515,7 @@ int read_training(ramctr_timing * ctrl)
 
 			}
 		} else if (some_high) {
-			ctrl->timings[channel][slotrank].val_4024++;
+			ctrl->timings[channel][slotrank].roundtrip_latency++;
 			ctrl->timings[channel][slotrank].io_latency++;
 			printram("4024++;\n");
 			printram("4028++;\n");
@@ -1424,7 +1546,7 @@ int read_training(ramctr_timing * ctrl)
 		post_timA_change(ctrl, channel, slotrank, &mnmx);
 
 		printram("4/8: %d, %d, %x, %x\n", channel, slotrank,
-		       ctrl->timings[channel][slotrank].val_4024,
+		       ctrl->timings[channel][slotrank].roundtrip_latency,
 		       ctrl->timings[channel][slotrank].io_latency);
 
 		printram("final results:\n");
@@ -1433,7 +1555,7 @@ int read_training(ramctr_timing * ctrl)
 			    lane,
 			    ctrl->timings[channel][slotrank].lanes[lane].timA);
 
-		MCHBAR32(0x3400) = 0;
+		MCHBAR32(GDCRTRAININGMOD) = 0;
 
 		toggle_io_reset();
 	}
@@ -1442,85 +1564,85 @@ int read_training(ramctr_timing * ctrl)
 		program_timings(ctrl, channel);
 	}
 	FOR_ALL_CHANNELS FOR_ALL_POPULATED_RANKS FOR_ALL_LANES {
-		MCHBAR32(0x4080 + channel * 0x400 + lane * 4) = 0;
+		MCHBAR32(IOSAV_By_BW_MASK_ch(channel, lane)) = 0;
 	}
 	return 0;
 }
 
-static void test_timC(ramctr_timing * ctrl, int channel, int slotrank)
+static void test_timC(ramctr_timing *ctrl, int channel, int slotrank)
 {
 	int lane;
 
 	FOR_ALL_LANES {
-		MCHBAR32(0x4340 + channel * 0x400 + lane * 4) = 0;
-		MCHBAR32(0x4140 + channel * 0x400 + lane * 4);
+		MCHBAR32(IOSAV_By_ERROR_COUNT_ch(channel, lane)) = 0;
+		MCHBAR32(IOSAV_By_BW_SERROR_C_ch(channel, lane));
 	}
 
-	wait_428c(channel);
+	wait_for_iosav(channel);
 
 	/* DRAM command ACT */
-	MCHBAR32(0x4220 + channel * 0x400) = 0x1f006;
-	MCHBAR32(0x4230 + channel * 0x400) =
+	MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 0)) = 0x1f006;
+	MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 0)) =
 		(MAX((ctrl->tFAW >> 2) + 1, ctrl->tRRD) << 10)
 		| 4 | (ctrl->tRCD << 16);
-	MCHBAR32(0x4200 + channel * 0x400) = (slotrank << 24) | (6 << 16);
-	MCHBAR32(0x4210 + channel * 0x400) = 0x244;
+	MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 0)) = (slotrank << 24) | (6 << 16);
+	MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 0)) = 0x244;
 
 	/* DRAM command NOP */
-	MCHBAR32(0x4224 + channel * 0x400) = 0x1f207;
-	MCHBAR32(0x4234 + channel * 0x400) = 0x8041001;
-	MCHBAR32(0x4204 + channel * 0x400) = (slotrank << 24) | 8;
-	MCHBAR32(0x4214 + channel * 0x400) = 0x3e0;
+	MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 1)) = 0x1f207;
+	MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 1)) = 0x8041001;
+	MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 1)) = (slotrank << 24) | 8;
+	MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 1)) = 0x3e0;
 
 	/* DRAM command WR */
-	MCHBAR32(0x4228 + channel * 0x400) = 0x1f201;
-	MCHBAR32(0x4238 + channel * 0x400) = 0x80411f4;
-	MCHBAR32(0x4208 + channel * 0x400) = slotrank << 24;
-	MCHBAR32(0x4218 + channel * 0x400) = 0x242;
+	MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 2)) = 0x1f201;
+	MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 2)) = 0x80411f4;
+	MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 2)) = slotrank << 24;
+	MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 2)) = 0x242;
 
 	/* DRAM command NOP */
-	MCHBAR32(0x422c + channel * 0x400) = 0x1f207;
-	MCHBAR32(0x423c + channel * 0x400) =
+	MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 3)) = 0x1f207;
+	MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 3)) =
 		0x8000c01 | ((ctrl->CWL + ctrl->tWTR + 5) << 16);
-	MCHBAR32(0x420c + channel * 0x400) = (slotrank << 24) | 8;
-	MCHBAR32(0x421c + channel * 0x400) = 0x3e0;
+	MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 3)) = (slotrank << 24) | 8;
+	MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 3)) = 0x3e0;
 
 	// execute command queue
-	MCHBAR32(0x4284 + channel * 0x400) = RUN_QUEUE_4284(4);
+	MCHBAR32(IOSAV_SEQ_CTL_ch(channel)) = IOSAV_RUN_ONCE(4);
 
-	wait_428c(channel);
+	wait_for_iosav(channel);
 
 	/* DRAM command PREA */
-	MCHBAR32(0x4220 + channel * 0x400) = 0x1f002;
-	MCHBAR32(0x4230 + channel * 0x400) = 0xc01 | (ctrl->tRP << 16);
-	MCHBAR32(0x4200 + channel * 0x400) = (slotrank << 24) | 0x60400;
-	MCHBAR32(0x4210 + channel * 0x400) = 0x240;
+	MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 0)) = 0x1f002;
+	MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 0)) = 0xc01 | (ctrl->tRP << 16);
+	MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 0)) = (slotrank << 24) | 0x60400;
+	MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 0)) = 0x240;
 
 	/* DRAM command ACT */
-	MCHBAR32(0x4224 + channel * 0x400) = 0x1f006;
-	MCHBAR32(0x4234 + channel * 0x400) =
+	MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 1)) = 0x1f006;
+	MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 1)) =
 		(MAX(ctrl->tRRD, (ctrl->tFAW >> 2) + 1) << 10)
 		| 8 | (ctrl->CAS << 16);
-	MCHBAR32(0x4204 + channel * 0x400) = (slotrank << 24) | 0x60000;
-	MCHBAR32(0x4214 + channel * 0x400) = 0x244;
+	MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 1)) = (slotrank << 24) | 0x60000;
+	MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 1)) = 0x244;
 
 	/* DRAM command RD */
-	MCHBAR32(0x4228 + channel * 0x400) = 0x1f105;
-	MCHBAR32(0x4238 + channel * 0x400) =
+	MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 2)) = 0x1f105;
+	MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 2)) =
 		0x40011f4 | (MAX(ctrl->tRTP, 8) << 16);
-	MCHBAR32(0x4208 + channel * 0x400) = (slotrank << 24);
-	MCHBAR32(0x4218 + channel * 0x400) = 0x242;
+	MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 2)) = (slotrank << 24);
+	MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 2)) = 0x242;
 
 	/* DRAM command PREA */
-	MCHBAR32(0x422c + channel * 0x400) = 0x1f002;
-	MCHBAR32(0x423c + channel * 0x400) = 0xc01 | (ctrl->tRP << 16);
-	MCHBAR32(0x420c + channel * 0x400) = (slotrank << 24) | 0x60400;
-	MCHBAR32(0x421c + channel * 0x400) = 0x240;
+	MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 3)) = 0x1f002;
+	MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 3)) = 0xc01 | (ctrl->tRP << 16);
+	MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 3)) = (slotrank << 24) | 0x60400;
+	MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 3)) = 0x240;
 
 	// execute command queue
-	MCHBAR32(0x4284 + channel * 0x400) = RUN_QUEUE_4284(4);
+	MCHBAR32(IOSAV_SEQ_CTL_ch(channel)) = IOSAV_RUN_ONCE(4);
 
-	wait_428c(channel);
+	wait_for_iosav(channel);
 }
 
 static void timC_threshold_process(int *data, const int count)
@@ -1547,16 +1669,16 @@ static int discover_timC(ramctr_timing *ctrl, int channel, int slotrank)
 	int statistics[NUM_LANES][MAX_TIMC + 1];
 	int lane;
 
-	wait_428c(channel);
+	wait_for_iosav(channel);
 
 	/* DRAM command PREA */
-	MCHBAR32(0x4220 + channel * 0x400) = 0x1f002;
-	MCHBAR32(0x4230 + channel * 0x400) = 0xc01 | (ctrl->tRP << 16);
-	MCHBAR32(0x4200 + channel * 0x400) = (slotrank << 24) | 0x60400;
-	MCHBAR32(0x4210 + channel * 0x400) = 0x240;
+	MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 0)) = 0x1f002;
+	MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 0)) = 0xc01 | (ctrl->tRP << 16);
+	MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 0)) = (slotrank << 24) | 0x60400;
+	MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 0)) = 0x240;
 
 	// execute command queue
-	MCHBAR32(0x4284 + channel * 0x400) = RUN_QUEUE_4284(1);
+	MCHBAR32(IOSAV_SEQ_CTL_ch(channel)) = IOSAV_RUN_ONCE(1);
 
 	for (timC = 0; timC <= MAX_TIMC; timC++) {
 		FOR_ALL_LANES ctrl->timings[channel][slotrank].lanes[lane].
@@ -1567,7 +1689,7 @@ static int discover_timC(ramctr_timing *ctrl, int channel, int slotrank)
 
 		FOR_ALL_LANES {
 			statistics[lane][timC] =
-				MCHBAR32(0x4340 + channel * 0x400 + lane * 4);
+				MCHBAR32(IOSAV_By_ERROR_COUNT_ch(channel, lane));
 		}
 	}
 	FOR_ALL_LANES {
@@ -1596,7 +1718,7 @@ static int discover_timC(ramctr_timing *ctrl, int channel, int slotrank)
 	return 0;
 }
 
-static int get_precedening_channels(ramctr_timing * ctrl, int target_channel)
+static int get_precedening_channels(ramctr_timing *ctrl, int target_channel)
 {
 	int channel, ret = 0;
 	FOR_ALL_POPULATED_CHANNELS if (channel < target_channel)
@@ -1604,7 +1726,7 @@ static int get_precedening_channels(ramctr_timing * ctrl, int target_channel)
 	return ret;
 }
 
-static void fill_pattern0(ramctr_timing * ctrl, int channel, u32 a, u32 b)
+static void fill_pattern0(ramctr_timing *ctrl, int channel, u32 a, u32 b)
 {
 	unsigned int j;
 	unsigned int channel_offset =
@@ -1614,7 +1736,7 @@ static void fill_pattern0(ramctr_timing * ctrl, int channel, u32 a, u32 b)
 	sfence();
 }
 
-static int num_of_channels(const ramctr_timing * ctrl)
+static int num_of_channels(const ramctr_timing *ctrl)
 {
 	int ret = 0;
 	int channel;
@@ -1622,7 +1744,7 @@ static int num_of_channels(const ramctr_timing * ctrl)
 	return ret;
 }
 
-static void fill_pattern1(ramctr_timing * ctrl, int channel)
+static void fill_pattern1(ramctr_timing *ctrl, int channel)
 {
 	unsigned int j;
 	unsigned int channel_offset =
@@ -1635,7 +1757,7 @@ static void fill_pattern1(ramctr_timing * ctrl, int channel)
 	sfence();
 }
 
-static void precharge(ramctr_timing * ctrl)
+static void precharge(ramctr_timing *ctrl)
 {
 	int channel, slotrank, lane;
 
@@ -1650,47 +1772,47 @@ static void precharge(ramctr_timing * ctrl)
 		program_timings(ctrl, channel);
 
 		FOR_ALL_POPULATED_RANKS {
-			wait_428c(channel);
+			wait_for_iosav(channel);
 
 			/* DRAM command MRS
 			 * write MR3 MPR enable
 			 * in this mode only RD and RDA are allowed
 			 * all reads return a predefined pattern */
-			MCHBAR32(0x4220 + channel * 0x400) = 0x1f000;
-			MCHBAR32(0x4230 + channel * 0x400) =
+			MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 0)) = 0x1f000;
+			MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 0)) =
 				0xc01 | (ctrl->tMOD << 16);
-			MCHBAR32(0x4200 + channel * 0x400) =
+			MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 0)) =
 				(slotrank << 24) | 0x360004;
-			MCHBAR32(0x4210 + channel * 0x400) = 0;
+			MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 0)) = 0;
 
 			/* DRAM command RD */
-			MCHBAR32(0x4224 + channel * 0x400) = 0x1f105;
-			MCHBAR32(0x4234 + channel * 0x400) = 0x4041003;
-			MCHBAR32(0x4204 + channel * 0x400) =
+			MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 1)) = 0x1f105;
+			MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 1)) = 0x4041003;
+			MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 1)) =
 				(slotrank << 24) | 0;
-			MCHBAR32(0x4214 + channel * 0x400) = 0;
+			MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 1)) = 0;
 
 			/* DRAM command RD */
-			MCHBAR32(0x4228 + channel * 0x400) = 0x1f105;
-			MCHBAR32(0x4238 + channel * 0x400) =
+			MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 2)) = 0x1f105;
+			MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 2)) =
 				0x1001 | ((ctrl->CAS + 8) << 16);
-			MCHBAR32(0x4208 + channel * 0x400) =
+			MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 2)) =
 				(slotrank << 24) | 0x60000;
-			MCHBAR32(0x4218 + channel * 0x400) = 0;
+			MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 2)) = 0;
 
 			/* DRAM command MRS
 			 * write MR3 MPR disable */
-			MCHBAR32(0x422c + channel * 0x400) = 0x1f000;
-			MCHBAR32(0x423c + channel * 0x400) =
+			MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 3)) = 0x1f000;
+			MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 3)) =
 				0xc01 | (ctrl->tMOD << 16);
-			MCHBAR32(0x420c + channel * 0x400) =
+			MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 3)) =
 				(slotrank << 24) | 0x360000;
-			MCHBAR32(0x421c + channel * 0x400) = 0;
+			MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 3)) = 0;
 
 			// execute command queue
-			MCHBAR32(0x4284 + channel * 0x400) = RUN_QUEUE_4284(4);
+			MCHBAR32(IOSAV_SEQ_CTL_ch(channel)) = IOSAV_RUN_ONCE(4);
 
-			wait_428c(channel);
+			wait_for_iosav(channel);
 		}
 
 		FOR_ALL_POPULATED_RANKS FOR_ALL_LANES {
@@ -1703,75 +1825,75 @@ static void precharge(ramctr_timing * ctrl)
 		program_timings(ctrl, channel);
 
 		FOR_ALL_POPULATED_RANKS {
-			wait_428c(channel);
+			wait_for_iosav(channel);
 			/* DRAM command MRS
 			 * write MR3 MPR enable
 			 * in this mode only RD and RDA are allowed
 			 * all reads return a predefined pattern */
-			MCHBAR32(0x4220 + channel * 0x400) = 0x1f000;
-			MCHBAR32(0x4230 + channel * 0x400) =
+			MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 0)) = 0x1f000;
+			MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 0)) =
 				0xc01 | (ctrl->tMOD << 16);
-			MCHBAR32(0x4200 + channel * 0x400) =
+			MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 0)) =
 				(slotrank << 24) | 0x360004;
-			MCHBAR32(0x4210 + channel * 0x400) = 0;
+			MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 0)) = 0;
 
 			/* DRAM command RD */
-			MCHBAR32(0x4224 + channel * 0x400) = 0x1f105;
-			MCHBAR32(0x4234 + channel * 0x400) = 0x4041003;
-			MCHBAR32(0x4204 + channel * 0x400) =
+			MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 1)) = 0x1f105;
+			MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 1)) = 0x4041003;
+			MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 1)) =
 				(slotrank << 24) | 0;
-			MCHBAR32(0x4214 + channel * 0x400) = 0;
+			MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 1)) = 0;
 
 			/* DRAM command RD */
-			MCHBAR32(0x4228 + channel * 0x400) = 0x1f105;
-			MCHBAR32(0x4238 + channel * 0x400) =
+			MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 2)) = 0x1f105;
+			MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 2)) =
 				0x1001 | ((ctrl->CAS + 8) << 16);
-			MCHBAR32(0x4208 + channel * 0x400) =
+			MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 2)) =
 				(slotrank << 24) | 0x60000;
-			MCHBAR32(0x4218 + channel * 0x400) = 0;
+			MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 2)) = 0;
 
 			/* DRAM command MRS
 			 * write MR3 MPR disable */
-			MCHBAR32(0x422c + channel * 0x400) = 0x1f000;
-			MCHBAR32(0x423c + channel * 0x400) =
+			MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 3)) = 0x1f000;
+			MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 3)) =
 				0xc01 | (ctrl->tMOD << 16);
-			MCHBAR32(0x420c + channel * 0x400) =
+			MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 3)) =
 				(slotrank << 24) | 0x360000;
-			MCHBAR32(0x421c + channel * 0x400) = 0;
+			MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 3)) = 0;
 
 			// execute command queue
-			MCHBAR32(0x4284 + channel * 0x400) = RUN_QUEUE_4284(4);
+			MCHBAR32(IOSAV_SEQ_CTL_ch(channel)) = IOSAV_RUN_ONCE(4);
 
-			wait_428c(channel);
+			wait_for_iosav(channel);
 		}
 	}
 }
 
-static void test_timB(ramctr_timing * ctrl, int channel, int slotrank)
+static void test_timB(ramctr_timing *ctrl, int channel, int slotrank)
 {
 	/* enable DQs on this slotrank */
 	write_mrreg(ctrl, channel, slotrank, 1,
 		    0x80 | make_mr1(ctrl, slotrank, channel));
 
-	wait_428c(channel);
+	wait_for_iosav(channel);
 	/* DRAM command NOP */
-	MCHBAR32(0x4220 + channel * 0x400) = 0x1f207;
-	MCHBAR32(0x4230 + channel * 0x400) =
+	MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 0)) = 0x1f207;
+	MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 0)) =
 		0x8000c01 | ((ctrl->CWL + ctrl->tWLO) << 16);
-	MCHBAR32(0x4200 + channel * 0x400) = 8 | (slotrank << 24);
-	MCHBAR32(0x4210 + channel * 0x400) = 0;
+	MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 0)) = 8 | (slotrank << 24);
+	MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 0)) = 0;
 
 	/* DRAM command NOP */
-	MCHBAR32(0x4224 + channel * 0x400) = 0x1f107;
-	MCHBAR32(0x4234 + channel * 0x400) =
+	MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 1)) = 0x1f107;
+	MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 1)) =
 		0x4000c01 | ((ctrl->CAS + 38) << 16);
-	MCHBAR32(0x4204 + channel * 0x400) = (slotrank << 24) | 4;
-	MCHBAR32(0x4214 + channel * 0x400) = 0;
+	MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 1)) = (slotrank << 24) | 4;
+	MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 1)) = 0;
 
 	// execute command queue
-	MCHBAR32(0x4284 + channel * 0x400) = RUN_QUEUE_4284(2);
+	MCHBAR32(IOSAV_SEQ_CTL_ch(channel)) = IOSAV_RUN_ONCE(2);
 
-	wait_428c(channel);
+	wait_for_iosav(channel);
 
 	/* disable DQs on this slotrank */
 	write_mrreg(ctrl, channel, slotrank, 1,
@@ -1784,7 +1906,7 @@ static int discover_timB(ramctr_timing *ctrl, int channel, int slotrank)
 	int statistics[NUM_LANES][128];
 	int lane;
 
-	MCHBAR32(0x3400) = 0x108052 | (slotrank << 2);
+	MCHBAR32(GDCRTRAININGMOD) = 0x108052 | (slotrank << 2);
 
 	for (timB = 0; timB < 128; timB++) {
 		FOR_ALL_LANES {
@@ -1850,77 +1972,77 @@ static int get_timB_high_adjust(u64 val)
 	return 8;
 }
 
-static void adjust_high_timB(ramctr_timing * ctrl)
+static void adjust_high_timB(ramctr_timing *ctrl)
 {
 	int channel, slotrank, lane, old;
-	MCHBAR32(0x3400) = 0x200;
+	MCHBAR32(GDCRTRAININGMOD) = 0x200;
 	FOR_ALL_POPULATED_CHANNELS {
 		fill_pattern1(ctrl, channel);
-		MCHBAR32(0x4288 + channel * 0x400) = 1;
+		MCHBAR32(IOSAV_DATA_CTL_ch(channel)) = 1;
 	}
 	FOR_ALL_POPULATED_CHANNELS FOR_ALL_POPULATED_RANKS {
 
-		MCHBAR32(0x4288 + channel * 0x400) = 0x10001;
+		MCHBAR32(IOSAV_DATA_CTL_ch(channel)) = 0x10001;
 
-		wait_428c(channel);
+		wait_for_iosav(channel);
 
 		/* DRAM command ACT */
-		MCHBAR32(0x4220 + channel * 0x400) = 0x1f006;
-		MCHBAR32(0x4230 + channel * 0x400) = 0xc01 | (ctrl->tRCD << 16);
-		MCHBAR32(0x4200 + channel * 0x400) = (slotrank << 24) | 0x60000;
-		MCHBAR32(0x4210 + channel * 0x400) = 0;
+		MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 0)) = 0x1f006;
+		MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 0)) = 0xc01 | (ctrl->tRCD << 16);
+		MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 0)) = (slotrank << 24) | 0x60000;
+		MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 0)) = 0;
 
 		/* DRAM command NOP */
-		MCHBAR32(0x4224 + channel * 0x400) = 0x1f207;
-		MCHBAR32(0x4234 + channel * 0x400) = 0x8040c01;
-		MCHBAR32(0x4204 + channel * 0x400) = (slotrank << 24) | 0x8;
-		MCHBAR32(0x4214 + channel * 0x400) = 0x3e0;
+		MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 1)) = 0x1f207;
+		MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 1)) = 0x8040c01;
+		MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 1)) = (slotrank << 24) | 0x8;
+		MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 1)) = 0x3e0;
 
 		/* DRAM command WR */
-		MCHBAR32(0x4228 + channel * 0x400) = 0x1f201;
-		MCHBAR32(0x4238 + channel * 0x400) = 0x8041003;
-		MCHBAR32(0x4208 + channel * 0x400) = (slotrank << 24);
-		MCHBAR32(0x4218 + channel * 0x400) = 0x3e2;
+		MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 2)) = 0x1f201;
+		MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 2)) = 0x8041003;
+		MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 2)) = (slotrank << 24);
+		MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 2)) = 0x3e2;
 
 		/* DRAM command NOP */
-		MCHBAR32(0x422c + channel * 0x400) = 0x1f207;
-		MCHBAR32(0x423c + channel * 0x400) =
+		MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 3)) = 0x1f207;
+		MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 3)) =
 			0x8000c01 | ((ctrl->CWL + ctrl->tWTR + 5) << 16);
-		MCHBAR32(0x420c + channel * 0x400) = (slotrank << 24) | 0x8;
-		MCHBAR32(0x421c + channel * 0x400) = 0x3e0;
+		MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 3)) = (slotrank << 24) | 0x8;
+		MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 3)) = 0x3e0;
 
 		// execute command queue
-		MCHBAR32(0x4284 + channel * 0x400) = RUN_QUEUE_4284(4);
+		MCHBAR32(IOSAV_SEQ_CTL_ch(channel)) = IOSAV_RUN_ONCE(4);
 
-		wait_428c(channel);
+		wait_for_iosav(channel);
 
 		/* DRAM command PREA */
-		MCHBAR32(0x4220 + channel * 0x400) = 0x1f002;
-		MCHBAR32(0x4230 + channel * 0x400) =
+		MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 0)) = 0x1f002;
+		MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 0)) =
 			0xc01 | ((ctrl->tRP) << 16);
-		MCHBAR32(0x4200 + channel * 0x400) =
+		MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 0)) =
 			(slotrank << 24) | 0x60400;
-		MCHBAR32(0x4210 + channel * 0x400) = 0x240;
+		MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 0)) = 0x240;
 
 		/* DRAM command ACT */
-		MCHBAR32(0x4224 + channel * 0x400) = 0x1f006;
-		MCHBAR32(0x4234 + channel * 0x400) =
+		MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 1)) = 0x1f006;
+		MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 1)) =
 			0xc01 | ((ctrl->tRCD) << 16);
-		MCHBAR32(0x4204 + channel * 0x400) = (slotrank << 24) | 0x60000;
-		MCHBAR32(0x4214 + channel * 0x400) = 0;
+		MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 1)) = (slotrank << 24) | 0x60000;
+		MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 1)) = 0;
 
 		/* DRAM command RD */
-		MCHBAR32(0x4228 + channel * 0x400) = 0x3f105;
-		MCHBAR32(0x4238 + channel * 0x400) = 0x4000c01 | ((ctrl->tRP +
-			  ctrl->timings[channel][slotrank].val_4024 +
+		MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 2)) = 0x3f105;
+		MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 2)) = 0x4000c01 | ((ctrl->tRP +
+			  ctrl->timings[channel][slotrank].roundtrip_latency +
 			  ctrl->timings[channel][slotrank].io_latency) << 16);
-		MCHBAR32(0x4208 + channel * 0x400) = (slotrank << 24) | 0x60008;
-		MCHBAR32(0x4218 + channel * 0x400) = 0;
+		MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 2)) = (slotrank << 24) | 0x60008;
+		MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 2)) = 0;
 
 		// execute command queue
-		MCHBAR32(0x4284 + channel * 0x400) = RUN_QUEUE_4284(3);
+		MCHBAR32(IOSAV_SEQ_CTL_ch(channel)) = IOSAV_RUN_ONCE(3);
 
-		wait_428c(channel);
+		wait_for_iosav(channel);
 		FOR_ALL_LANES {
 			u64 res = MCHBAR32(lane_registers[lane] +
 				channel * 0x100 + 4);
@@ -1937,28 +2059,28 @@ static void adjust_high_timB(ramctr_timing * ctrl)
 				timB);
 		}
 	}
-	MCHBAR32(0x3400) = 0;
+	MCHBAR32(GDCRTRAININGMOD) = 0;
 }
 
-static void write_op(ramctr_timing * ctrl, int channel)
+static void write_op(ramctr_timing *ctrl, int channel)
 {
 	int slotrank;
 
-	wait_428c(channel);
+	wait_for_iosav(channel);
 
 	/* choose an existing rank.  */
 	slotrank = !(ctrl->rankmap[channel] & 1) ? 2 : 0;
 
 	/* DRAM command ACT */
-	MCHBAR32(0x4220 + channel * 0x400) = 0x0f003;
-	MCHBAR32(0x4230 + channel * 0x400) = 0x41001;
-	MCHBAR32(0x4200 + channel * 0x400) = (slotrank << 24) | 0x60000;
-	MCHBAR32(0x4210 + channel * 0x400) = 0x3e0;
+	MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 0)) = 0x0f003;
+	MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 0)) = 0x41001;
+	MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 0)) = (slotrank << 24) | 0x60000;
+	MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 0)) = 0x3e0;
 
 	// execute command queue
-	MCHBAR32(0x4284 + channel * 0x400) = RUN_QUEUE_4284(1);
+	MCHBAR32(IOSAV_SEQ_CTL_ch(channel)) = IOSAV_RUN_ONCE(1);
 
-	wait_428c(channel);
+	wait_for_iosav(channel);
 }
 
 /* Compensate the skew between CMD/ADDR/CLK and DQ/DQS lanes.
@@ -1973,21 +2095,21 @@ static void write_op(ramctr_timing * ctrl, int channel)
  * In this mode the DRAM-chip samples the CLK on every DQS edge and feeds back the
  * sampled value on the data lanes (DQs).
  */
-int write_training(ramctr_timing * ctrl)
+int write_training(ramctr_timing *ctrl)
 {
 	int channel, slotrank, lane;
 	int err;
 
 	FOR_ALL_POPULATED_CHANNELS
-		MCHBAR32_OR(0x4008 + channel * 0x400, 0x8000000);
+		MCHBAR32_OR(TC_RWP_ch(channel), 0x8000000);
 
 	FOR_ALL_POPULATED_CHANNELS {
 		write_op(ctrl, channel);
-		MCHBAR32_OR(0x4020 + channel * 0x400, 0x200000);
+		MCHBAR32_OR(SCHED_CBIT_ch(channel), 0x200000);
 	}
 
 	/* refresh disable */
-	MCHBAR32_AND(0x5030, ~8);
+	MCHBAR32_AND(MC_INIT_STATE_G, ~8);
 	FOR_ALL_POPULATED_CHANNELS {
 		write_op(ctrl, channel);
 	}
@@ -2000,7 +2122,7 @@ int write_training(ramctr_timing * ctrl)
 			write_mrreg(ctrl, channel, slotrank, 1,
 				make_mr1(ctrl, slotrank, channel) | 0x1080);
 
-	MCHBAR32(0x3400) = 0x108052;
+	MCHBAR32(GDCRTRAININGMOD) = 0x108052;
 
 	toggle_io_reset();
 
@@ -2016,29 +2138,29 @@ int write_training(ramctr_timing * ctrl)
 		write_mrreg(ctrl, channel,
 			slotrank, 1, make_mr1(ctrl, slotrank, channel));
 
-	MCHBAR32(0x3400) = 0;
+	MCHBAR32(GDCRTRAININGMOD) = 0;
 
 	FOR_ALL_POPULATED_CHANNELS
-		wait_428c(channel);
+		wait_for_iosav(channel);
 
 	/* refresh enable */
-	MCHBAR32_OR(0x5030, 8);
+	MCHBAR32_OR(MC_INIT_STATE_G, 8);
 
 	FOR_ALL_POPULATED_CHANNELS {
-		MCHBAR32_AND(0x4020 + channel * 0x400, ~0x00200000);
-		MCHBAR32(0x428c + channel * 0x400);
-		wait_428c(channel);
+		MCHBAR32_AND(SCHED_CBIT_ch(channel), ~0x00200000);
+		MCHBAR32(IOSAV_STATUS_ch(channel));
+		wait_for_iosav(channel);
 
 		/* DRAM command ZQCS */
-		MCHBAR32(0x4220 + channel * 0x400) = 0x0f003;
-		MCHBAR32(0x4230 + channel * 0x400) = 0x659001;
-		MCHBAR32(0x4200 + channel * 0x400) = 0x60000;
-		MCHBAR32(0x4210 + channel * 0x400) = 0x3e0;
+		MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 0)) = 0x0f003;
+		MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 0)) = 0x659001;
+		MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 0)) = 0x60000;
+		MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 0)) = 0x3e0;
 
 		// execute command queue
-		MCHBAR32(0x4284 + channel * 0x400) = RUN_QUEUE_4284(1);
+		MCHBAR32(IOSAV_SEQ_CTL_ch(channel)) = IOSAV_RUN_ONCE(1);
 
-		wait_428c(channel);
+		wait_for_iosav(channel);
 	}
 
 	toggle_io_reset();
@@ -2048,12 +2170,12 @@ int write_training(ramctr_timing * ctrl)
 	printram("CPF\n");
 
 	FOR_ALL_CHANNELS FOR_ALL_POPULATED_RANKS FOR_ALL_LANES {
-		MCHBAR32_AND(0x4080 + channel * 0x400 + lane * 4, 0);
+		MCHBAR32_AND(IOSAV_By_BW_MASK_ch(channel, lane), 0);
 	}
 
 	FOR_ALL_POPULATED_CHANNELS {
 		fill_pattern0(ctrl, channel, 0xaaaaaaaa, 0x55555555);
-		MCHBAR32(0x4288 + channel * 0x400) = 0;
+		MCHBAR32(IOSAV_DATA_CTL_ch(channel)) = 0;
 	}
 
 	FOR_ALL_CHANNELS FOR_ALL_POPULATED_RANKS {
@@ -2072,12 +2194,12 @@ int write_training(ramctr_timing * ctrl)
 		program_timings(ctrl, channel);
 
 	FOR_ALL_CHANNELS FOR_ALL_POPULATED_RANKS FOR_ALL_LANES {
-		MCHBAR32_AND(0x4080 + channel * 0x400 + lane * 4, 0);
+		MCHBAR32_AND(IOSAV_By_BW_MASK_ch(channel, lane), 0);
 	}
 	return 0;
 }
 
-static int test_320c(ramctr_timing * ctrl, int channel, int slotrank)
+static int test_320c(ramctr_timing *ctrl, int channel, int slotrank)
 {
 	struct ram_rank_timings saved_rt = ctrl->timings[channel][slotrank];
 	int timC_delta;
@@ -2092,49 +2214,49 @@ static int test_320c(ramctr_timing * ctrl, int channel, int slotrank)
 		}
 		program_timings(ctrl, channel);
 		FOR_ALL_LANES {
-			MCHBAR32(4 * lane + 0x4f40) = 0;
+			MCHBAR32(IOSAV_By_ERROR_COUNT(lane)) = 0;
 		}
 
-		MCHBAR32(0x4288 + channel * 0x400) = 0x1f;
+		MCHBAR32(IOSAV_DATA_CTL_ch(channel)) = 0x1f;
 
-		wait_428c(channel);
+		wait_for_iosav(channel);
 		/* DRAM command ACT */
-		MCHBAR32(0x4220 + channel * 0x400) = 0x1f006;
-		MCHBAR32(0x4230 + channel * 0x400) =
+		MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 0)) = 0x1f006;
+		MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 0)) =
 			((MAX(ctrl->tRRD, (ctrl->tFAW >> 2) + 1)) << 10)
 			| 8 | (ctrl->tRCD << 16);
-		MCHBAR32(0x4200 + channel * 0x400) =
+		MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 0)) =
 			(slotrank << 24) | ctr | 0x60000;
-		MCHBAR32(0x4210 + channel * 0x400) = 0x244;
+		MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 0)) = 0x244;
 
 		/* DRAM command WR */
-		MCHBAR32(0x4224 + channel * 0x400) = 0x1f201;
-		MCHBAR32(0x4234 + channel * 0x400) =
+		MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 1)) = 0x1f201;
+		MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 1)) =
 			0x8001020 | ((ctrl->CWL + ctrl->tWTR + 8) << 16);
-		MCHBAR32(0x4204 + channel * 0x400) = (slotrank << 24);
-		MCHBAR32(0x4244 + channel * 0x400) = 0x389abcd;
-		MCHBAR32(0x4214 + channel * 0x400) = 0x20e42;
+		MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 1)) = (slotrank << 24);
+		MCHBAR32(IOSAV_n_ADDRESS_LFSR_ch(channel, 1)) = 0x389abcd;
+		MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 1)) = 0x20e42;
 
 		/* DRAM command RD */
-		MCHBAR32(0x4228 + channel * 0x400) = 0x1f105;
-		MCHBAR32(0x4238 + channel * 0x400) =
+		MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 2)) = 0x1f105;
+		MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 2)) =
 			0x4001020 | (MAX(ctrl->tRTP, 8) << 16);
-		MCHBAR32(0x4208 + channel * 0x400) = (slotrank << 24);
-		MCHBAR32(0x4248 + channel * 0x400) = 0x389abcd;
-		MCHBAR32(0x4218 + channel * 0x400) = 0x20e42;
+		MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 2)) = (slotrank << 24);
+		MCHBAR32(IOSAV_n_ADDRESS_LFSR_ch(channel, 2)) = 0x389abcd;
+		MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 2)) = 0x20e42;
 
 		/* DRAM command PRE */
-		MCHBAR32(0x422c + channel * 0x400) = 0x1f002;
-		MCHBAR32(0x423c + channel * 0x400) = 0xf1001;
-		MCHBAR32(0x420c + channel * 0x400) = (slotrank << 24) | 0x60400;
-		MCHBAR32(0x421c + channel * 0x400) = 0x240;
+		MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 3)) = 0x1f002;
+		MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 3)) = 0xf1001;
+		MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 3)) = (slotrank << 24) | 0x60400;
+		MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 3)) = 0x240;
 
 		// execute command queue
-		MCHBAR32(0x4284 + channel * 0x400) = RUN_QUEUE_4284(4);
+		MCHBAR32(IOSAV_SEQ_CTL_ch(channel)) = IOSAV_RUN_ONCE(4);
 
-		wait_428c(channel);
+		wait_for_iosav(channel);
 		FOR_ALL_LANES {
-			u32 r32 = MCHBAR32(0x4340 + channel * 0x400 + lane * 4);
+			u32 r32 = MCHBAR32(IOSAV_By_ERROR_COUNT_ch(channel, lane));
 
 			if (r32 == 0)
 				lanes_ok |= 1 << lane;
@@ -2151,7 +2273,7 @@ static int test_320c(ramctr_timing * ctrl, int channel, int slotrank)
 
 #include "raminit_patterns.h"
 
-static void fill_pattern5(ramctr_timing * ctrl, int channel, int patno)
+static void fill_pattern5(ramctr_timing *ctrl, int channel, int patno)
 {
 	unsigned int i, j;
 	unsigned int channel_offset =
@@ -2181,47 +2303,47 @@ static void fill_pattern5(ramctr_timing * ctrl, int channel, int patno)
 	}
 }
 
-static void reprogram_320c(ramctr_timing * ctrl)
+static void reprogram_320c(ramctr_timing *ctrl)
 {
 	int channel, slotrank;
 
 	FOR_ALL_POPULATED_CHANNELS {
-		wait_428c(channel);
+		wait_for_iosav(channel);
 
 		/* choose an existing rank.  */
 		slotrank = !(ctrl->rankmap[channel] & 1) ? 2 : 0;
 
 		/* DRAM command ZQCS */
-		MCHBAR32(0x4220 + channel * 0x400) = 0x0f003;
-		MCHBAR32(0x4230 + channel * 0x400) = 0x41001;
-		MCHBAR32(0x4200 + channel * 0x400) = (slotrank << 24) | 0x60000;
-		MCHBAR32(0x4210 + channel * 0x400) = 0x3e0;
+		MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 0)) = 0x0f003;
+		MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 0)) = 0x41001;
+		MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 0)) = (slotrank << 24) | 0x60000;
+		MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 0)) = 0x3e0;
 
 		// execute command queue
-		MCHBAR32(0x4284 + channel * 0x400) = RUN_QUEUE_4284(1);
+		MCHBAR32(IOSAV_SEQ_CTL_ch(channel)) = IOSAV_RUN_ONCE(1);
 
-		wait_428c(channel);
-		MCHBAR32_OR(0x4020 + channel * 0x400, 0x200000);
+		wait_for_iosav(channel);
+		MCHBAR32_OR(SCHED_CBIT_ch(channel), 0x200000);
 	}
 
 	/* refresh disable */
-	MCHBAR32_AND(0x5030, ~8);
+	MCHBAR32_AND(MC_INIT_STATE_G, ~8);
 	FOR_ALL_POPULATED_CHANNELS {
-		wait_428c(channel);
+		wait_for_iosav(channel);
 
 		/* choose an existing rank.  */
 		slotrank = !(ctrl->rankmap[channel] & 1) ? 2 : 0;
 
 		/* DRAM command ZQCS */
-		MCHBAR32(0x4220 + channel * 0x400) = 0x0f003;
-		MCHBAR32(0x4230 + channel * 0x400) = 0x41001;
-		MCHBAR32(0x4200 + channel * 0x400) = (slotrank << 24) | 0x60000;
-		MCHBAR32(0x4210 + channel * 0x400) = 0x3e0;
+		MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 0)) = 0x0f003;
+		MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 0)) = 0x41001;
+		MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 0)) = (slotrank << 24) | 0x60000;
+		MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 0)) = 0x3e0;
 
 		// execute command queue
-		MCHBAR32(0x4284 + channel * 0x400) = RUN_QUEUE_4284(1);
+		MCHBAR32(IOSAV_SEQ_CTL_ch(channel)) = IOSAV_RUN_ONCE(1);
 
-		wait_428c(channel);
+		wait_for_iosav(channel);
 	}
 
 	/* jedec reset */
@@ -2251,7 +2373,7 @@ static int try_cmd_stretch(ramctr_timing *ctrl, int channel, int cmd_stretch)
 
 	ctrl->cmd_stretch[channel] = cmd_stretch;
 
-	MCHBAR32(0x4004 + channel * 0x400) =
+	MCHBAR32(TC_RAP_ch(channel)) =
 		ctrl->tRRD
 		| (ctrl->tRTP << 4)
 		| (ctrl->tCKE << 8)
@@ -2266,12 +2388,12 @@ static int try_cmd_stretch(ramctr_timing *ctrl, int channel, int cmd_stretch)
 		delta = 4;
 
 	FOR_ALL_POPULATED_RANKS {
-		ctrl->timings[channel][slotrank].val_4024 -= delta;
+		ctrl->timings[channel][slotrank].roundtrip_latency -= delta;
 	}
 
 	for (c320c = -127; c320c <= 127; c320c++) {
 		FOR_ALL_POPULATED_RANKS {
-			ctrl->timings[channel][slotrank].val_320c = c320c;
+			ctrl->timings[channel][slotrank].pi_coding = c320c;
 		}
 		program_timings(ctrl, channel);
 		reprogram_320c(ctrl);
@@ -2283,7 +2405,7 @@ static int try_cmd_stretch(ramctr_timing *ctrl, int channel, int cmd_stretch)
 	FOR_ALL_POPULATED_RANKS {
 		struct run rn =
 			get_longest_zero_run(stat[slotrank], 255);
-		ctrl->timings[channel][slotrank].val_320c = rn.middle - 127;
+		ctrl->timings[channel][slotrank].pi_coding = rn.middle - 127;
 		printram("cmd_stretch: %d, %d: 0x%02x-0x%02x-0x%02x\n",
 				 channel, slotrank, rn.start, rn.middle, rn.end);
 		if (rn.all || rn.length < MIN_C320C_LEN) {
@@ -2307,7 +2429,7 @@ int command_training(ramctr_timing *ctrl)
 
 	FOR_ALL_POPULATED_CHANNELS {
 		fill_pattern5(ctrl, channel, 0);
-		MCHBAR32(0x4288 + channel * 0x400) = 0x1f;
+		MCHBAR32(IOSAV_DATA_CTL_ch(channel)) = 0x1f;
 	}
 
 	FOR_ALL_POPULATED_CHANNELS {
@@ -2371,50 +2493,50 @@ static int discover_edges_real(ramctr_timing *ctrl, int channel, int slotrank,
 		program_timings(ctrl, channel);
 
 		FOR_ALL_LANES {
-			MCHBAR32(0x4340 + channel * 0x400 + lane * 4) = 0;
-			MCHBAR32(0x4140 + channel * 0x400 + lane * 4);
+			MCHBAR32(IOSAV_By_ERROR_COUNT_ch(channel, lane)) = 0;
+			MCHBAR32(IOSAV_By_BW_SERROR_C_ch(channel, lane));
 		}
 
-		wait_428c(channel);
+		wait_for_iosav(channel);
 		/* DRAM command MRS
 		 * write MR3 MPR enable
 		 * in this mode only RD and RDA are allowed
 		 * all reads return a predefined pattern */
-		MCHBAR32(0x4220 + channel * 0x400) = 0x1f000;
-		MCHBAR32(0x4230 + channel * 0x400) = 0xc01 | (ctrl->tMOD << 16);
-		MCHBAR32(0x4200 + channel * 0x400) =
+		MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 0)) = 0x1f000;
+		MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 0)) = 0xc01 | (ctrl->tMOD << 16);
+		MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 0)) =
 			(slotrank << 24) | 0x360004;
-		MCHBAR32(0x4210 + channel * 0x400) = 0;
+		MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 0)) = 0;
 
 		/* DRAM command RD */
-		MCHBAR32(0x4224 + channel * 0x400) = 0x1f105;
-		MCHBAR32(0x4234 + channel * 0x400) = 0x40411f4;
-		MCHBAR32(0x4204 + channel * 0x400) = slotrank << 24;
-		MCHBAR32(0x4214 + channel * 0x400) = 0;
+		MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 1)) = 0x1f105;
+		MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 1)) = 0x40411f4;
+		MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 1)) = slotrank << 24;
+		MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 1)) = 0;
 
 		/* DRAM command RD */
-		MCHBAR32(0x4228 + channel * 0x400) = 0x1f105;
-		MCHBAR32(0x4238 + channel * 0x400) =
+		MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 2)) = 0x1f105;
+		MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 2)) =
 			0x1001 | ((ctrl->CAS + 8) << 16);
-		MCHBAR32(0x4208 + channel * 0x400) = (slotrank << 24) | 0x60000;
-		MCHBAR32(0x4218 + channel * 0x400) = 0;
+		MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 2)) = (slotrank << 24) | 0x60000;
+		MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 2)) = 0;
 
 		/* DRAM command MRS
 		 * MR3 disable MPR */
-		MCHBAR32(0x422c + channel * 0x400) = 0x1f000;
-		MCHBAR32(0x423c + channel * 0x400) = 0xc01 | (ctrl->tMOD << 16);
-		MCHBAR32(0x420c + channel * 0x400) =
+		MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 3)) = 0x1f000;
+		MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 3)) = 0xc01 | (ctrl->tMOD << 16);
+		MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 3)) =
 			(slotrank << 24) | 0x360000;
-		MCHBAR32(0x421c + channel * 0x400) = 0;
+		MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 3)) = 0;
 
 		// execute command queue
-		MCHBAR32(0x4284 + channel * 0x400) = RUN_QUEUE_4284(4);
+		MCHBAR32(IOSAV_SEQ_CTL_ch(channel)) = IOSAV_RUN_ONCE(4);
 
-		wait_428c(channel);
+		wait_for_iosav(channel);
 
 		FOR_ALL_LANES {
 			statistics[lane][edge] =
-				MCHBAR32(0x4340 + channel * 0x400 + lane * 4);
+				MCHBAR32(IOSAV_By_ERROR_COUNT_ch(channel, lane));
 		}
 	}
 	FOR_ALL_LANES {
@@ -2439,19 +2561,19 @@ int discover_edges(ramctr_timing *ctrl)
 	int channel, slotrank, lane;
 	int err;
 
-	MCHBAR32(0x3400) = 0;
+	MCHBAR32(GDCRTRAININGMOD) = 0;
 
 	toggle_io_reset();
 
 	FOR_ALL_POPULATED_CHANNELS FOR_ALL_LANES {
-		MCHBAR32(0x4080 + channel * 0x400 + lane * 4) = 0;
+		MCHBAR32(IOSAV_By_BW_MASK_ch(channel, lane)) = 0;
 	}
 
 	FOR_ALL_POPULATED_CHANNELS {
 		fill_pattern0(ctrl, channel, 0, 0);
-		MCHBAR32(0x4288 + channel * 0x400) = 0;
+		MCHBAR32(IOSAV_DATA_CTL_ch(channel)) = 0;
 		FOR_ALL_LANES {
-			MCHBAR32(0x4140 + channel * 0x400 + lane * 4);
+			MCHBAR32(IOSAV_By_BW_SERROR_C_ch(channel, lane));
 		}
 
 		FOR_ALL_POPULATED_RANKS FOR_ALL_LANES {
@@ -2464,48 +2586,48 @@ int discover_edges(ramctr_timing *ctrl)
 		program_timings(ctrl, channel);
 
 		FOR_ALL_POPULATED_RANKS {
-			wait_428c(channel);
+			wait_for_iosav(channel);
 
 			/* DRAM command MRS
 			 * MR3 enable MPR
 			 * write MR3 MPR enable
 			 * in this mode only RD and RDA are allowed
 			 * all reads return a predefined pattern */
-			MCHBAR32(0x4220 + channel * 0x400) = 0x1f000;
-			MCHBAR32(0x4230 + channel * 0x400) =
+			MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 0)) = 0x1f000;
+			MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 0)) =
 				0xc01 | (ctrl->tMOD << 16);
-			MCHBAR32(0x4200 + channel * 0x400) =
+			MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 0)) =
 				(slotrank << 24) | 0x360004;
-			MCHBAR32(0x4210 + channel * 0x400) = 0;
+			MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 0)) = 0;
 
 			/* DRAM command RD */
-			MCHBAR32(0x4224 + channel * 0x400) = 0x1f105;
-			MCHBAR32(0x4234 + channel * 0x400) = 0x4041003;
-			MCHBAR32(0x4204 + channel * 0x400) =
+			MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 1)) = 0x1f105;
+			MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 1)) = 0x4041003;
+			MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 1)) =
 				(slotrank << 24) | 0;
-			MCHBAR32(0x4214 + channel * 0x400) = 0;
+			MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 1)) = 0;
 
 			/* DRAM command RD */
-			MCHBAR32(0x4228 + channel * 0x400) = 0x1f105;
-			MCHBAR32(0x4238 + channel * 0x400) =
+			MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 2)) = 0x1f105;
+			MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 2)) =
 				0x1001 | ((ctrl->CAS + 8) << 16);
-			MCHBAR32(0x4208 + channel * 0x400) =
+			MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 2)) =
 				(slotrank << 24) | 0x60000;
-			MCHBAR32(0x4218 + channel * 0x400) = 0;
+			MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 2)) = 0;
 
 			/* DRAM command MRS
 			 * MR3 disable MPR */
-			MCHBAR32(0x422c + channel * 0x400) = 0x1f000;
-			MCHBAR32(0x423c + channel * 0x400) =
+			MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 3)) = 0x1f000;
+			MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 3)) =
 				0xc01 | (ctrl->tMOD << 16);
-			MCHBAR32(0x420c + channel * 0x400) =
+			MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 3)) =
 				(slotrank << 24) | 0x360000;
-			MCHBAR32(0x421c + channel * 0x400) = 0;
+			MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 3)) = 0;
 
 			// execute command queue
-			MCHBAR32(0x4284 + channel * 0x400) = RUN_QUEUE_4284(4);
+			MCHBAR32(IOSAV_SEQ_CTL_ch(channel)) = IOSAV_RUN_ONCE(4);
 
-			wait_428c(channel);
+			wait_for_iosav(channel);
 		}
 
 		/* XXX: check any measured value ? */
@@ -2520,65 +2642,65 @@ int discover_edges(ramctr_timing *ctrl)
 		program_timings(ctrl, channel);
 
 		FOR_ALL_POPULATED_RANKS {
-			wait_428c(channel);
+			wait_for_iosav(channel);
 
 			/* DRAM command MRS
 			 * MR3 enable MPR
 			 * write MR3 MPR enable
 			 * in this mode only RD and RDA are allowed
 			 * all reads return a predefined pattern */
-			MCHBAR32(0x4220 + channel * 0x400) = 0x1f000;
-			MCHBAR32(0x4230 + channel * 0x400) =
+			MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 0)) = 0x1f000;
+			MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 0)) =
 				0xc01 | (ctrl->tMOD << 16);
-			MCHBAR32(0x4200 + channel * 0x400) =
+			MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 0)) =
 				(slotrank << 24) | 0x360004;
-			MCHBAR32(0x4210 + channel * 0x400) = 0;
+			MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 0)) = 0;
 
 			/* DRAM command RD */
-			MCHBAR32(0x4224 + channel * 0x400) = 0x1f105;
-			MCHBAR32(0x4234 + channel * 0x400) = 0x4041003;
-			MCHBAR32(0x4204 + channel * 0x400) =
+			MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 1)) = 0x1f105;
+			MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 1)) = 0x4041003;
+			MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 1)) =
 				(slotrank << 24) | 0;
-			MCHBAR32(0x4214 + channel * 0x400) = 0;
+			MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 1)) = 0;
 
 			/* DRAM command RD */
-			MCHBAR32(0x4228 + channel * 0x400) = 0x1f105;
-			MCHBAR32(0x4238 + channel * 0x400) =
+			MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 2)) = 0x1f105;
+			MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 2)) =
 				0x1001 | ((ctrl->CAS + 8) << 16);
-			MCHBAR32(0x4208 + channel * 0x400) =
+			MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 2)) =
 				(slotrank << 24) | 0x60000;
-			MCHBAR32(0x4218 + channel * 0x400) = 0;
+			MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 2)) = 0;
 
 			/* DRAM command MRS
 			 * MR3 disable MPR */
-			MCHBAR32(0x422c + channel * 0x400) = 0x1f000;
-			MCHBAR32(0x423c + channel * 0x400) =
+			MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 3)) = 0x1f000;
+			MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 3)) =
 				0xc01 | (ctrl->tMOD << 16);
-			MCHBAR32(0x420c + channel * 0x400) =
+			MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 3)) =
 				(slotrank << 24) | 0x360000;
-			MCHBAR32(0x421c + channel * 0x400) = 0;
+			MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 3)) = 0;
 
 			// execute command queue
-			MCHBAR32(0x4284 + channel * 0x400) = RUN_QUEUE_4284(4);
+			MCHBAR32(IOSAV_SEQ_CTL_ch(channel)) = IOSAV_RUN_ONCE(4);
 
-			wait_428c(channel);
+			wait_for_iosav(channel);
 		}
 
 		/* XXX: check any measured value ? */
 
 		FOR_ALL_LANES {
-			MCHBAR32(0x4080 + channel * 0x400 + lane * 4) =
-				~MCHBAR32(0x4040 + channel * 0x400 + lane * 4)
+			MCHBAR32(IOSAV_By_BW_MASK_ch(channel, lane)) =
+				~MCHBAR32(IOSAV_By_BW_SERROR_ch(channel, lane))
 					& 0xff;
 		}
 
 		fill_pattern0(ctrl, channel, 0, 0xffffffff);
-		MCHBAR32(0x4288 + channel * 0x400) = 0;
+		MCHBAR32(IOSAV_DATA_CTL_ch(channel)) = 0;
 	}
 
 	/* FIXME: under some conditions (older chipsets?) vendor BIOS sets both edges to the same value.  */
-	MCHBAR32(0x4eb0) = 0x300;
-	printram("discover falling edges:\n[%x] = %x\n", 0x4eb0, 0x300);
+	MCHBAR32(IOSAV_DC_MASK) = 0x300;
+	printram("discover falling edges:\n[%x] = %x\n", IOSAV_DC_MASK, 0x300);
 
 	FOR_ALL_CHANNELS FOR_ALL_POPULATED_RANKS {
 		err = discover_edges_real(ctrl, channel, slotrank,
@@ -2587,8 +2709,8 @@ int discover_edges(ramctr_timing *ctrl)
 			return err;
 	}
 
-	MCHBAR32(0x4eb0) = 0x200;
-	printram("discover rising edges:\n[%x] = %x\n", 0x4eb0, 0x200);
+	MCHBAR32(IOSAV_DC_MASK) = 0x200;
+	printram("discover rising edges:\n[%x] = %x\n", IOSAV_DC_MASK, 0x200);
 
 	FOR_ALL_CHANNELS FOR_ALL_POPULATED_RANKS {
 		err = discover_edges_real(ctrl, channel, slotrank,
@@ -2597,7 +2719,7 @@ int discover_edges(ramctr_timing *ctrl)
 			return err;
 	}
 
-	MCHBAR32(0x4eb0) = 0;
+	MCHBAR32(IOSAV_DC_MASK) = 0;
 
 	FOR_ALL_CHANNELS FOR_ALL_POPULATED_RANKS FOR_ALL_LANES {
 		ctrl->timings[channel][slotrank].lanes[lane].falling =
@@ -2611,7 +2733,7 @@ int discover_edges(ramctr_timing *ctrl)
 	}
 
 	FOR_ALL_CHANNELS FOR_ALL_POPULATED_RANKS FOR_ALL_LANES {
-		MCHBAR32(0x4080 + channel * 0x400 + lane * 4) = 0;
+		MCHBAR32(IOSAV_By_BW_MASK_ch(channel, lane)) = 0;
 	}
 	return 0;
 }
@@ -2634,12 +2756,12 @@ static int discover_edges_write_real(ramctr_timing *ctrl, int channel,
 	}
 
 	for (i = 0; i < 3; i++) {
-		MCHBAR32(0x3000 + channel * 0x100) = reg3000b24[i] << 24;
+		MCHBAR32(GDCRTRAININGMOD_ch(channel)) = reg3000b24[i] << 24;
 		printram("[%x] = 0x%08x\n",
-		       0x3000 + channel * 0x100, reg3000b24[i] << 24);
+		       GDCRTRAININGMOD_ch(channel), reg3000b24[i] << 24);
 		for (pat = 0; pat < NUM_PATTERNS; pat++) {
 			fill_pattern5(ctrl, channel, pat);
-			MCHBAR32(0x4288 + channel * 0x400) = 0x1f;
+			MCHBAR32(IOSAV_DATA_CTL_ch(channel)) = 0x1f;
 			printram("using pattern %d\n", pat);
 			for (edge = 0; edge <= MAX_EDGE_TIMING; edge++) {
 				FOR_ALL_LANES {
@@ -2651,52 +2773,52 @@ static int discover_edges_write_real(ramctr_timing *ctrl, int channel,
 				program_timings(ctrl, channel);
 
 				FOR_ALL_LANES {
-					MCHBAR32(0x4340 + channel * 0x400 + lane * 4) = 0;
-					MCHBAR32(0x4140 + channel * 0x400 + lane * 4);
+					MCHBAR32(IOSAV_By_ERROR_COUNT_ch(channel, lane)) = 0;
+					MCHBAR32(IOSAV_By_BW_SERROR_C_ch(channel, lane));
 				}
-				wait_428c(channel);
+				wait_for_iosav(channel);
 
 				/* DRAM command ACT */
-				MCHBAR32(0x4220 + channel * 0x400) = 0x1f006;
-				MCHBAR32(0x4230 + channel * 0x400) =
+				MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 0)) = 0x1f006;
+				MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 0)) =
 					0x4 | (ctrl->tRCD << 16) |
 					(MAX(ctrl->tRRD, (ctrl->tFAW >> 2) + 1)
 					<< 10);
-				MCHBAR32(0x4200 + channel * 0x400) =
+				MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 0)) =
 					(slotrank << 24) | 0x60000;
-				MCHBAR32(0x4210 + channel * 0x400) = 0x240;
+				MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 0)) = 0x240;
 
 				/* DRAM command WR */
-				MCHBAR32(0x4224 + channel * 0x400) = 0x1f201;
-				MCHBAR32(0x4234 + channel * 0x400) = 0x8005020 |
+				MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 1)) = 0x1f201;
+				MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 1)) = 0x8005020 |
 					((ctrl->tWTR + ctrl->CWL + 8) << 16);
-				MCHBAR32(0x4204 + channel * 0x400) =
+				MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 1)) =
 					slotrank << 24;
-				MCHBAR32(0x4214 + channel * 0x400) = 0x242;
+				MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 1)) = 0x242;
 
 				/* DRAM command RD */
-				MCHBAR32(0x4228 + channel * 0x400) = 0x1f105;
-				MCHBAR32(0x4238 + channel * 0x400) =
+				MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 2)) = 0x1f105;
+				MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 2)) =
 					0x4005020 | (MAX(ctrl->tRTP, 8) << 16);
-				MCHBAR32(0x4208 + channel * 0x400) =
+				MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 2)) =
 					slotrank << 24;
-				MCHBAR32(0x4218 + channel * 0x400) = 0x242;
+				MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 2)) = 0x242;
 
 				/* DRAM command PRE */
-				MCHBAR32(0x422c + channel * 0x400) = 0x1f002;
-				MCHBAR32(0x423c + channel * 0x400) =
+				MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 3)) = 0x1f002;
+				MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 3)) =
 					0xc01 | (ctrl->tRP << 16);
-				MCHBAR32(0x420c + channel * 0x400) =
+				MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 3)) =
 					(slotrank << 24) | 0x60400;
-				MCHBAR32(0x421c + channel * 0x400) = 0;
+				MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 3)) = 0;
 
 				// execute command queue
-				MCHBAR32(0x4284 + channel * 0x400) =
-					RUN_QUEUE_4284(4);
+				MCHBAR32(IOSAV_SEQ_CTL_ch(channel)) =
+					IOSAV_RUN_ONCE(4);
 
-				wait_428c(channel);
+				wait_for_iosav(channel);
 				FOR_ALL_LANES {
-					MCHBAR32(0x4340 + channel * 0x400 + lane * 4);
+					MCHBAR32(IOSAV_By_ERROR_COUNT_ch(channel, lane));
 				}
 
 				raw_statistics[edge] =
@@ -2727,7 +2849,7 @@ static int discover_edges_write_real(ramctr_timing *ctrl, int channel,
 		}
 	}
 
-	MCHBAR32(0x3000) = 0;
+	MCHBAR32(GDCRTRAININGMOD_ch(0)) = 0;
 	printram("CPA\n");
 	return 0;
 }
@@ -2740,8 +2862,8 @@ int discover_edges_write(ramctr_timing *ctrl)
 	int err;
 
 	/* FIXME: under some conditions (older chipsets?) vendor BIOS sets both edges to the same value.  */
-	MCHBAR32(0x4eb0) = 0x300;
-	printram("discover falling edges write:\n[%x] = %x\n", 0x4eb0, 0x300);
+	MCHBAR32(IOSAV_DC_MASK) = 0x300;
+	printram("discover falling edges write:\n[%x] = %x\n", IOSAV_DC_MASK, 0x300);
 
 	FOR_ALL_CHANNELS FOR_ALL_POPULATED_RANKS {
 		err = discover_edges_write_real(ctrl, channel, slotrank,
@@ -2750,8 +2872,8 @@ int discover_edges_write(ramctr_timing *ctrl)
 			return err;
 	}
 
-	MCHBAR32(0x4eb0) = 0x200;
-	printram("discover rising edges write:\n[%x] = %x\n", 0x4eb0, 0x200);
+	MCHBAR32(IOSAV_DC_MASK) = 0x200;
+	printram("discover rising edges write:\n[%x] = %x\n", IOSAV_DC_MASK, 0x200);
 
 	FOR_ALL_CHANNELS FOR_ALL_POPULATED_RANKS {
 		err = discover_edges_write_real(ctrl, channel, slotrank,
@@ -2760,7 +2882,7 @@ int discover_edges_write(ramctr_timing *ctrl)
 			return err;
 	}
 
-	MCHBAR32(0x4eb0) = 0;
+	MCHBAR32(IOSAV_DC_MASK) = 0;
 
 	FOR_ALL_CHANNELS FOR_ALL_POPULATED_RANKS FOR_ALL_LANES {
 		ctrl->timings[channel][slotrank].lanes[lane].falling =
@@ -2773,47 +2895,47 @@ int discover_edges_write(ramctr_timing *ctrl)
 		program_timings(ctrl, channel);
 
 	FOR_ALL_CHANNELS FOR_ALL_POPULATED_RANKS FOR_ALL_LANES {
-		MCHBAR32(0x4080 + channel * 0x400 + lane * 4) = 0;
+		MCHBAR32(IOSAV_By_BW_MASK_ch(channel, lane)) = 0;
 	}
 	return 0;
 }
 
 static void test_timC_write(ramctr_timing *ctrl, int channel, int slotrank)
 {
-	wait_428c(channel);
+	wait_for_iosav(channel);
 	/* DRAM command ACT */
-	MCHBAR32(0x4220 + channel * 0x400) = 0x1f006;
-	MCHBAR32(0x4230 + channel * 0x400) =
+	MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 0)) = 0x1f006;
+	MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 0)) =
 		(MAX((ctrl->tFAW >> 2) + 1, ctrl->tRRD)
 		 << 10) | (ctrl->tRCD << 16) | 4;
-	MCHBAR32(0x4200 + channel * 0x400) =
+	MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 0)) =
 		(slotrank << 24) | 0x60000;
-	MCHBAR32(0x4210 + channel * 0x400) = 0x244;
+	MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 0)) = 0x244;
 
 	/* DRAM command WR */
-	MCHBAR32(0x4224 + channel * 0x400) = 0x1f201;
-	MCHBAR32(0x4234 + channel * 0x400) =
+	MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 1)) = 0x1f201;
+	MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 1)) =
 		0x80011e0 | ((ctrl->tWTR + ctrl->CWL + 8) << 16);
-	MCHBAR32(0x4204 + channel * 0x400) = slotrank << 24;
-	MCHBAR32(0x4214 + channel * 0x400) = 0x242;
+	MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 1)) = slotrank << 24;
+	MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 1)) = 0x242;
 
 	/* DRAM command RD */
-	MCHBAR32(0x4228 + channel * 0x400) = 0x1f105;
-	MCHBAR32(0x4238 + channel * 0x400) =
+	MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 2)) = 0x1f105;
+	MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 2)) =
 		0x40011e0 | (MAX(ctrl->tRTP, 8) << 16);
-	MCHBAR32(0x4208 + channel * 0x400) = slotrank << 24;
-	MCHBAR32(0x4218 + channel * 0x400) = 0x242;
+	MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 2)) = slotrank << 24;
+	MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 2)) = 0x242;
 
 	/* DRAM command PRE */
-	MCHBAR32(0x422c + channel * 0x400) = 0x1f002;
-	MCHBAR32(0x423c + channel * 0x400) = 0x1001 | (ctrl->tRP << 16);
-	MCHBAR32(0x420c + channel * 0x400) = (slotrank << 24) | 0x60400;
-	MCHBAR32(0x421c + channel * 0x400) = 0;
+	MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 3)) = 0x1f002;
+	MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 3)) = 0x1001 | (ctrl->tRP << 16);
+	MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 3)) = (slotrank << 24) | 0x60400;
+	MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 3)) = 0;
 
 	// execute command queue
-	MCHBAR32(0x4284 + channel * 0x400) = RUN_QUEUE_4284(4);
+	MCHBAR32(IOSAV_SEQ_CTL_ch(channel)) = IOSAV_RUN_ONCE(4);
 
-	wait_428c(channel);
+	wait_for_iosav(channel);
 }
 
 int discover_timC_write(ramctr_timing *ctrl)
@@ -2830,12 +2952,16 @@ int discover_timC_write(ramctr_timing *ctrl)
 		upper[channel][slotrank][lane] = MAX_TIMC;
 	}
 
-	MCHBAR32(0x4ea8) = 1;
+	/*
+	 * Enable IOSAV_n_SPECIAL_COMMAND_ADDR optimization.
+	 * FIXME: This must only be done on Ivy Bridge.
+	 */
+	MCHBAR32(MCMNTS_SPARE) = 1;
 	printram("discover timC write:\n");
 
 	for (i = 0; i < 3; i++)
 		FOR_ALL_POPULATED_CHANNELS {
-			MCHBAR32_AND_OR(0xe3c + (channel * 0x100), ~0x3f000000,
+			MCHBAR32_AND_OR(GDCRCMDDEBUGMUXCFG_Cz_S(channel), ~0x3f000000,
 				rege3c_b24[i] << 24);
 			udelay(2);
 			for (pat = 0; pat < NUM_PATTERNS; pat++) {
@@ -2848,7 +2974,7 @@ int discover_timC_write(ramctr_timing *ctrl)
 					statistics[MAX_TIMC] = 1;
 
 					fill_pattern5(ctrl, channel, pat);
-					MCHBAR32(0x4288 + channel * 0x400) =
+					MCHBAR32(IOSAV_DATA_CTL_ch(channel)) =
 						0x1f;
 					for (timC = 0; timC < MAX_TIMC; timC++) {
 						FOR_ALL_LANES
@@ -2892,11 +3018,15 @@ int discover_timC_write(ramctr_timing *ctrl)
 		}
 
 	FOR_ALL_CHANNELS {
-		MCHBAR32_AND(0xe3c + (channel * 0x100), ~0x3f000000);
+		MCHBAR32_AND(GDCRCMDDEBUGMUXCFG_Cz_S(channel), ~0x3f000000);
 		udelay(2);
 	}
 
-	MCHBAR32(0x4ea8) = 0;
+	/*
+	 * Disable IOSAV_n_SPECIAL_COMMAND_ADDR optimization.
+	 * FIXME: This must only be done on Ivy Bridge.
+	 */
+	MCHBAR32(MCMNTS_SPARE) = 0;
 
 	printram("CPB\n");
 
@@ -2915,7 +3045,7 @@ int discover_timC_write(ramctr_timing *ctrl)
 	return 0;
 }
 
-void normalize_training(ramctr_timing * ctrl)
+void normalize_training(ramctr_timing *ctrl)
 {
 	int channel, slotrank, lane;
 	int mat;
@@ -2932,7 +3062,7 @@ void normalize_training(ramctr_timing * ctrl)
 		printram("normalize %d, %d, %d: delta %d\n",
 		    channel, slotrank, lane, delta);
 
-		ctrl->timings[channel][slotrank].val_4024 += delta;
+		ctrl->timings[channel][slotrank].roundtrip_latency += delta;
 		ctrl->timings[channel][slotrank].io_latency += delta;
 	}
 
@@ -2941,7 +3071,7 @@ void normalize_training(ramctr_timing * ctrl)
 	}
 }
 
-void write_controller_mr(ramctr_timing * ctrl)
+void write_controller_mr(ramctr_timing *ctrl)
 {
 	int channel, slotrank;
 
@@ -2959,7 +3089,7 @@ int channel_test(ramctr_timing *ctrl)
 
 	slotrank = 0;
 	FOR_ALL_POPULATED_CHANNELS
-		if (MCHBAR32(0x42a0 + channel * 0x400) & 0xa000) {
+		if (MCHBAR32(MC_INIT_STATE_ch(channel)) & 0xa000) {
 			printk(BIOS_EMERG, "Mini channel test failed (1): %d\n",
 			       channel);
 			return MAKE_ERR;
@@ -2967,52 +3097,52 @@ int channel_test(ramctr_timing *ctrl)
 	FOR_ALL_POPULATED_CHANNELS {
 		fill_pattern0(ctrl, channel, 0x12345678, 0x98765432);
 
-		MCHBAR32(0x4288 + channel * 0x400) = 0;
+		MCHBAR32(IOSAV_DATA_CTL_ch(channel)) = 0;
 	}
 
 	for (slotrank = 0; slotrank < 4; slotrank++)
 		FOR_ALL_CHANNELS
 			if (ctrl->rankmap[channel] & (1 << slotrank)) {
 		FOR_ALL_LANES {
-			MCHBAR32(0x4f40 + 4 * lane) = 0;
-			MCHBAR32(0x4d40 + 4 * lane) = 0;
+			MCHBAR32(IOSAV_By_ERROR_COUNT(lane)) = 0;
+			MCHBAR32(IOSAV_By_BW_SERROR_C(lane)) = 0;
 		}
-		wait_428c(channel);
+		wait_for_iosav(channel);
 
 		/* DRAM command ACT */
-		MCHBAR32(0x4220 + channel * 0x400) = 0x0001f006;
-		MCHBAR32(0x4230 + channel * 0x400) = 0x0028a004;
-		MCHBAR32(0x4200 + channel * 0x400) =
+		MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 0)) = 0x0001f006;
+		MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 0)) = 0x0028a004;
+		MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 0)) =
 			0x00060000 | (slotrank << 24);
-		MCHBAR32(0x4210 + channel * 0x400) = 0x00000244;
+		MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 0)) = 0x00000244;
 
 		/* DRAM command WR */
-		MCHBAR32(0x4224 + channel * 0x400) = 0x0001f201;
-		MCHBAR32(0x4234 + channel * 0x400) = 0x08281064;
-		MCHBAR32(0x4204 + channel * 0x400) =
+		MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 1)) = 0x0001f201;
+		MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 1)) = 0x08281064;
+		MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 1)) =
 			0x00000000 | (slotrank << 24);
-		MCHBAR32(0x4214 + channel * 0x400) = 0x00000242;
+		MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 1)) = 0x00000242;
 
 		/* DRAM command RD */
-		MCHBAR32(0x4228 + channel * 0x400) = 0x0001f105;
-		MCHBAR32(0x4238 + channel * 0x400) = 0x04281064;
-		MCHBAR32(0x4208 + channel * 0x400) =
+		MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 2)) = 0x0001f105;
+		MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 2)) = 0x04281064;
+		MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 2)) =
 			0x00000000 | (slotrank << 24);
-		MCHBAR32(0x4218 + channel * 0x400) = 0x00000242;
+		MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 2)) = 0x00000242;
 
 		/* DRAM command PRE */
-		MCHBAR32(0x422c + channel * 0x400) = 0x0001f002;
-		MCHBAR32(0x423c + channel * 0x400) = 0x00280c01;
-		MCHBAR32(0x420c + channel * 0x400) =
+		MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 3)) = 0x0001f002;
+		MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 3)) = 0x00280c01;
+		MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 3)) =
 			0x00060400 | (slotrank << 24);
-		MCHBAR32(0x421c + channel * 0x400) = 0x00000240;
+		MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 3)) = 0x00000240;
 
 		// execute command queue
-		MCHBAR32(0x4284 + channel * 0x400) = RUN_QUEUE_4284(4);
+		MCHBAR32(IOSAV_SEQ_CTL_ch(channel)) = IOSAV_RUN_ONCE(4);
 
-		wait_428c(channel);
+		wait_for_iosav(channel);
 		FOR_ALL_LANES
-			if (MCHBAR32(0x4340 + channel * 0x400 + lane * 4)) {
+			if (MCHBAR32(IOSAV_By_ERROR_COUNT_ch(channel, lane))) {
 				printk(BIOS_EMERG, "Mini channel test failed (2): %d, %d, %d\n",
 				       channel, slotrank, lane);
 				return MAKE_ERR;
@@ -3021,7 +3151,7 @@ int channel_test(ramctr_timing *ctrl)
 	return 0;
 }
 
-void set_scrambling_seed(ramctr_timing * ctrl)
+void set_scrambling_seed(ramctr_timing *ctrl)
 {
 	int channel;
 
@@ -3032,10 +3162,10 @@ void set_scrambling_seed(ramctr_timing * ctrl)
 		{0x00028bfa, 0x53fe4b49, 0x19ed5483}
 	};
 	FOR_ALL_POPULATED_CHANNELS {
-		MCHBAR32(0x4020 + channel * 0x400) &= ~0x10000000;
-		MCHBAR32(0x4034 + channel * 0x400) = seeds[channel][0];
-		MCHBAR32(0x403c + channel * 0x400) = seeds[channel][1];
-		MCHBAR32(0x4038 + channel * 0x400) = seeds[channel][2];
+		MCHBAR32(SCHED_CBIT_ch(channel)) &= ~0x10000000;
+		MCHBAR32(SCRAMBLING_SEED_1_ch(channel))      = seeds[channel][0];
+		MCHBAR32(SCRAMBLING_SEED_2_HIGH_ch(channel)) = seeds[channel][1];
+		MCHBAR32(SCRAMBLING_SEED_2_LOW_ch(channel))  = seeds[channel][2];
 	}
 }
 
@@ -3045,77 +3175,76 @@ void set_4f8c(void)
 
 	cpu = cpu_get_cpuid();
 	if (IS_SANDY_CPU(cpu) && (IS_SANDY_CPU_D0(cpu) || IS_SANDY_CPU_D1(cpu))) {
-		MCHBAR32(0x4f8c) = 0x141D1519;
+		MCHBAR32(SC_WDBWM) = 0x141D1519;
 	} else {
-		MCHBAR32(0x4f8c) = 0x551D1519;
+		MCHBAR32(SC_WDBWM) = 0x551D1519;
 	}
 }
 
-void prepare_training(ramctr_timing * ctrl)
+void prepare_training(ramctr_timing *ctrl)
 {
 	int channel;
 
 	FOR_ALL_POPULATED_CHANNELS {
 		// Always drive command bus
-		MCHBAR32_OR(0x4004 + channel * 0x400, 0x20000000);
+		MCHBAR32_OR(TC_RAP_ch(channel), 0x20000000);
 	}
 
 	udelay(1);
 
 	FOR_ALL_POPULATED_CHANNELS {
-		wait_428c(channel);
+		wait_for_iosav(channel);
 	}
 }
 
-void set_4008c(ramctr_timing * ctrl)
+void set_4008c(ramctr_timing *ctrl)
 {
 	int channel, slotrank;
 
 	FOR_ALL_POPULATED_CHANNELS {
 		u32 b20, b4_8_12;
-		int min_320c = 10000;
-		int max_320c = -10000;
+		int min_pi = 10000;
+		int max_pi = -10000;
 
 		FOR_ALL_POPULATED_RANKS {
-			max_320c = MAX(ctrl->timings[channel][slotrank].val_320c, max_320c);
-			min_320c = MIN(ctrl->timings[channel][slotrank].val_320c, min_320c);
+			max_pi = MAX(ctrl->timings[channel][slotrank].pi_coding, max_pi);
+			min_pi = MIN(ctrl->timings[channel][slotrank].pi_coding, min_pi);
 		}
 
-		if (max_320c - min_320c > 51)
+		if (max_pi - min_pi > 51)
 			b20 = 0;
 		else
 			b20 = ctrl->ref_card_offset[channel];
 
-		if (ctrl->reg_320c_range_threshold < max_320c - min_320c)
+		if (ctrl->pi_coding_threshold < max_pi - min_pi)
 			b4_8_12 = 0x3330;
 		else
 			b4_8_12 = 0x2220;
 
 		dram_odt_stretch(ctrl, channel);
 
-		MCHBAR32(0x4008 + channel * 0x400) =
+		MCHBAR32(TC_RWP_ch(channel)) =
 			0x0a000000 | (b20 << 20) |
 			((ctrl->ref_card_offset[channel] + 2) << 16) | b4_8_12;
 	}
 }
 
-void set_42a0(ramctr_timing * ctrl)
+void set_normal_operation(ramctr_timing *ctrl)
 {
 	int channel;
 	FOR_ALL_POPULATED_CHANNELS {
-		MCHBAR32(0x42a0 + channel * 0x400) =
-			0x00001000 | ctrl->rankmap[channel];
-		MCHBAR32_AND(0x4004 + channel * 0x400, ~0x20000000);
+		MCHBAR32(MC_INIT_STATE_ch(channel)) = 0x00001000 | ctrl->rankmap[channel];
+		MCHBAR32_AND(TC_RAP_ch(channel), ~0x20000000);
 	}
 }
 
 static int encode_5d10(int ns)
 {
-  return (ns + 499) / 500;
+	return (ns + 499) / 500;
 }
 
 /* FIXME: values in this function should be hardware revision-dependent.  */
-void final_registers(ramctr_timing * ctrl)
+void final_registers(ramctr_timing *ctrl)
 {
 	const size_t is_mobile = get_platform_type() == PLATFORM_MOBILE;
 
@@ -3124,10 +3253,11 @@ void final_registers(ramctr_timing * ctrl)
 	int t3_ns;
 	u32 r32;
 
-	MCHBAR32(0x4cd4) = 0x00000046;
+	/* FIXME: This register only exists on Ivy Bridge. */
+	MCHBAR32(WMM_READ_CONFIG) = 0x00000046;
 
 	FOR_ALL_CHANNELS
-		MCHBAR32_AND_OR(0x400c + channel * 0x400, 0xFFFFCFFF, 0x1000);
+		MCHBAR32_AND_OR(TC_OTHP_ch(channel), 0xFFFFCFFF, 0x1000);
 
 	if (is_mobile)
 		/* APD - DLL Off, 64 DCLKs until idle, decision per rank */
@@ -3137,26 +3267,26 @@ void final_registers(ramctr_timing * ctrl)
 		MCHBAR32(PM_PDWN_CONFIG) = 0x00000340;
 
 	FOR_ALL_CHANNELS
-		MCHBAR32(0x4380 + 0x400 * channel) = 0x00000aaa;
+		MCHBAR32(PM_TRML_M_CONFIG_ch(channel)) = 0x00000aaa;
 
-	MCHBAR32(0x4f88) = 0x5f7003ff;	// OK
-	MCHBAR32(0x5064) = 0x00073000 | ctrl->reg_5064b0; // OK
+	MCHBAR32(PM_BW_LIMIT_CONFIG) = 0x5f7003ff;	// OK
+	MCHBAR32(PM_DLL_CONFIG) = 0x00073000 | ctrl->mdll_wake_delay; // OK
 
 	FOR_ALL_CHANNELS {
 		switch (ctrl->rankmap[channel]) {
 			/* Unpopulated channel.  */
 		case 0:
-			MCHBAR32(0x4384 + channel * 0x400) = 0;
+			MCHBAR32(PM_CMD_PWR_ch(channel)) = 0;
 			break;
 			/* Only single-ranked dimms.  */
 		case 1:
 		case 4:
 		case 5:
-			MCHBAR32(0x4384 + channel * 0x400) = 0x373131;
+			MCHBAR32(PM_CMD_PWR_ch(channel)) = 0x373131;
 			break;
 			/* Dual-ranked dimms present.  */
 		default:
-			MCHBAR32(0x4384 + channel * 0x400) = 0x9b6ea1;
+			MCHBAR32(PM_CMD_PWR_ch(channel)) = 0x9b6ea1;
 			break;
 		}
 	}
@@ -3166,30 +3296,30 @@ void final_registers(ramctr_timing * ctrl)
 	MCHBAR32_AND(MEM_TRML_INTERRUPT, ~0x1f);
 
 	FOR_ALL_CHANNELS
-		MCHBAR32_AND_OR(TC_RFP_C0 + channel * 0x400, ~0x30000, 1 << 16);
+		MCHBAR32_AND_OR(TC_RFP_ch(channel), ~0x30000, 1 << 16);
 
-	MCHBAR32_OR(0x5030, 1);
-	MCHBAR32_OR(0x5030, 0x80);
-	MCHBAR32(0x5f18) = 0xfa;
+	MCHBAR32_OR(MC_INIT_STATE_G, 1);
+	MCHBAR32_OR(MC_INIT_STATE_G, 0x80);
+	MCHBAR32(BANDTIMERS_SNB) = 0xfa;
 
 	/* Find a populated channel.  */
 	FOR_ALL_POPULATED_CHANNELS
 		break;
 
-	t1_cycles = (MCHBAR32(0x4290 + channel * 0x400) >> 8) & 0xff;
-	r32 = MCHBAR32(0x5064);
+	t1_cycles = (MCHBAR32(TC_ZQCAL_ch(channel)) >> 8) & 0xff;
+	r32 = MCHBAR32(PM_DLL_CONFIG);
 	if (r32 & 0x20000)
 		t1_cycles += (r32 & 0xfff);
-	t1_cycles += MCHBAR32(0x42a4 + channel * 0x400) & 0xfff;
+	t1_cycles += MCHBAR32(TC_SRFTP_ch(channel)) & 0xfff;
 	t1_ns = t1_cycles * ctrl->tCK / 256 + 544;
 	if (!(r32 & 0x20000))
 		t1_ns += 500;
 
-	t2_ns = 10 * ((MCHBAR32(0x5f10) >> 8) & 0xfff);
-	if (MCHBAR32(0x5f00) & 8)
+	t2_ns = 10 * ((MCHBAR32(SAPMTIMERS) >> 8) & 0xfff);
+	if (MCHBAR32(SAPMCTL) & 8)
 	{
-		t3_ns = 10 * ((MCHBAR32(0x5f20) >> 8) & 0xfff);
-		t3_ns += 10 * (MCHBAR32(0x5f18) & 0xff);
+		t3_ns = 10 * ((MCHBAR32(BANDTIMERS_IVB) >> 8) & 0xfff);
+		t3_ns += 10 * (MCHBAR32(SAPMTIMERS2_IVB) & 0xff);
 	}
 	else
 	{
@@ -3203,12 +3333,12 @@ void final_registers(ramctr_timing * ctrl)
 		encode_5d10(t2_ns) + encode_5d10(t1_ns)) << 24) | 0xc);
 }
 
-void restore_timings(ramctr_timing * ctrl)
+void restore_timings(ramctr_timing *ctrl)
 {
 	int channel, slotrank, lane;
 
 	FOR_ALL_POPULATED_CHANNELS
-	    MCHBAR32(0x4004 + channel * 0x400) =
+	    MCHBAR32(TC_RAP_ch(channel)) =
 		ctrl->tRRD
 		| (ctrl->tRTP << 4)
 		| (ctrl->tCKE << 8)
@@ -3220,25 +3350,25 @@ void restore_timings(ramctr_timing * ctrl)
 	udelay(1);
 
 	FOR_ALL_POPULATED_CHANNELS {
-		wait_428c(channel);
+		wait_for_iosav(channel);
 	}
 
 	FOR_ALL_CHANNELS FOR_ALL_POPULATED_RANKS FOR_ALL_LANES {
-		MCHBAR32(0x4080 + channel * 0x400 + lane * 4) = 0;
+		MCHBAR32(IOSAV_By_BW_MASK_ch(channel, lane)) = 0;
 	}
 
 	FOR_ALL_POPULATED_CHANNELS
-		MCHBAR32_OR(0x4008 + channel * 0x400, 0x8000000);
+		MCHBAR32_OR(TC_RWP_ch(channel), 0x8000000);
 
 	FOR_ALL_POPULATED_CHANNELS {
 		udelay (1);
-		MCHBAR32_OR(0x4020 + channel * 0x400, 0x200000);
+		MCHBAR32_OR(SCHED_CBIT_ch(channel), 0x200000);
 	}
 
 	printram("CPE\n");
 
-	MCHBAR32(0x3400) = 0;
-	MCHBAR32(0x4eb0) = 0;
+	MCHBAR32(GDCRTRAININGMOD) = 0;
+	MCHBAR32(IOSAV_DC_MASK) = 0;
 
 	printram("CP5b\n");
 
@@ -3248,14 +3378,14 @@ void restore_timings(ramctr_timing * ctrl)
 
 	u32 reg, addr;
 
-	while (!(MCHBAR32(0x5084) & 0x10000));
+	while (!(MCHBAR32(RCOMP_TIMER) & 0x10000));
 	do {
-		reg = MCHBAR32(0x428c);
+		reg = MCHBAR32(IOSAV_STATUS_ch(0));
 	} while ((reg & 0x14) == 0);
 
 	// Set state of memory controller
-	MCHBAR32(0x5030) = 0x116;
-	MCHBAR32(0x4ea0) = 0;
+	MCHBAR32(MC_INIT_STATE_G) = 0x116;
+	MCHBAR32(MC_INIT_STATE) = 0;
 
 	// Wait 500us
 	udelay(500);
@@ -3264,7 +3394,7 @@ void restore_timings(ramctr_timing * ctrl)
 		// Set valid rank CKE
 		reg = 0;
 		reg = (reg & ~0xf) | ctrl->rankmap[channel];
-		addr = 0x42a0 + channel * 0x400;
+		addr = MC_INIT_STATE_ch(channel);
 		MCHBAR32(addr) = reg;
 
 		// Wait 10ns for ranks to settle
@@ -3282,12 +3412,17 @@ void restore_timings(ramctr_timing * ctrl)
 
 	printram("CP5c\n");
 
-	MCHBAR32(0x3000) = 0;
+	MCHBAR32(GDCRTRAININGMOD_ch(0)) = 0;
 
 	FOR_ALL_CHANNELS {
-		MCHBAR32_AND(0xe3c + channel * 0x100, ~0x3f000000);
+		MCHBAR32_AND(GDCRCMDDEBUGMUXCFG_Cz_S(channel), ~0x3f000000);
 		udelay(2);
 	}
 
-	MCHBAR32(0x4ea8) = 0;
+	/*
+	 * Disable IOSAV_n_SPECIAL_COMMAND_ADDR optimization.
+	 * FIXME: This must only be done on Ivy Bridge. Moreover, this instance seems to be
+	 *        spurious, because nothing else enabled this optimization before.
+	 */
+	MCHBAR32(MCMNTS_SPARE) = 0;
 }

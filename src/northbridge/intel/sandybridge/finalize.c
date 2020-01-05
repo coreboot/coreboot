@@ -34,16 +34,16 @@ void intel_sandybridge_finalize_smm(void)
 	pci_or_config32(PCI_DEV_SNB, TSEGMB, 1 << 0);
 	pci_or_config32(PCI_DEV_SNB, TOLUD, 1 << 0);
 
-	MCHBAR32_OR(0x5500, 1 << 0);	/* PAVP */
-	MCHBAR32_OR(0x5f00, 1 << 31);	/* SA PM */
-	MCHBAR32_OR(0x6020, 1 << 0);	/* UMA GFX */
-	MCHBAR32_OR(0x63fc, 1 << 0);	/* VTDTRK */
+	MCHBAR32_OR(MMIO_PAVP_CTL, 1 << 0);	/* PAVP */
+	MCHBAR32_OR(SAPMCTL, 1 << 31);		/* SA PM */
+	MCHBAR32_OR(0x6020, 1 << 0);		/* UMA GFX */
+	MCHBAR32_OR(0x63fc, 1 << 0);		/* VTDTRK */
 	MCHBAR32_OR(0x6800, 1 << 31);
 	MCHBAR32_OR(0x7000, 1 << 31);
 	MCHBAR32_OR(0x77fc, 1 << 0);
 
 	/* Memory Controller Lockdown */
-	MCHBAR8(0x50fc) = 0x8f;
+	MCHBAR8(MC_LOCK) = 0x8f;
 
 	/* Read+write the following */
 	MCHBAR32(0x6030) = MCHBAR32(0x6030);

@@ -34,10 +34,10 @@ static void systemagent_vtd_init(void)
 		return;
 
 	/* setup BARs */
-	MCHBAR32(0x5404) = IOMMU_BASE1 >> 32;
-	MCHBAR32(0x5400) = IOMMU_BASE1 | 1;
-	MCHBAR32(0x5414) = IOMMU_BASE2 >> 32;
-	MCHBAR32(0x5410) = IOMMU_BASE2 | 1;
+	MCHBAR32(VTD1_BASE + 4) = IOMMU_BASE1 >> 32;
+	MCHBAR32(VTD1_BASE)     = IOMMU_BASE1 | 1;
+	MCHBAR32(VTD2_BASE + 4) = IOMMU_BASE2 >> 32;
+	MCHBAR32(VTD2_BASE)     = IOMMU_BASE2 | 1;
 
 	/* lock policies */
 	write32((void *)(IOMMU_BASE1 + 0xff0), 0x80000000);
@@ -126,13 +126,13 @@ static void sandybridge_setup_graphics(void)
 	pci_write_config8(PCI_DEV(0, 2, 0), MSAC, reg8);
 
 	/* Erratum workarounds */
-	reg32 = MCHBAR32(0x5f00);
+	reg32 = MCHBAR32(SAPMCTL);
 	reg32 |= (1 << 9)|(1 << 10);
-	MCHBAR32(0x5f00) = reg32;
+	MCHBAR32(SAPMCTL) = reg32;
 
 	/* Enable SA Clock Gating */
-	reg32 = MCHBAR32(0x5f00);
-	MCHBAR32(0x5f00) = reg32 | 1;
+	reg32 = MCHBAR32(SAPMCTL);
+	MCHBAR32(SAPMCTL) = reg32 | 1;
 
 	/* GPU RC6 workaround for sighting 366252 */
 	reg32 = MCHBAR32(0x5d14);
@@ -144,9 +144,9 @@ static void sandybridge_setup_graphics(void)
 	reg32 &= ~(1 << 0);
 	MCHBAR32(0x6120) = reg32;
 
-	reg32 = MCHBAR32(0x5418);
+	reg32 = MCHBAR32(PAIR_CTL);
 	reg32 |= (1 << 4) | (1 << 5);
-	MCHBAR32(0x5418) = reg32;
+	MCHBAR32(PAIR_CTL) = reg32;
 }
 
 static void start_peg_link_training(void)

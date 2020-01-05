@@ -8,6 +8,9 @@ romstage-$(CONFIG_DRIVERS_MC146818)	+= mc146818rtc.c
 ramstage-$(CONFIG_DRIVERS_MC146818)	+= mc146818rtc.c
 smm-$(CONFIG_DRIVERS_MC146818)		+= mc146818rtc.c
 
+all-$(CONFIG_USE_OPTION_TABLE) += option.c
+smm-$(CONFIG_USE_OPTION_TABLE) += option.c
+
 ifeq ($(CONFIG_USE_OPTION_TABLE),y)
 cbfs-files-$(CONFIG_HAVE_CMOS_DEFAULT) += cmos.default
 cmos.default-file = $(CONFIG_CMOS_DEFAULT_FILE):nvramtool

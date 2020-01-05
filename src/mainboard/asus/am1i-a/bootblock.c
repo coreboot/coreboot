@@ -113,18 +113,16 @@ static void ite_gpio_conf(pnp_devfn_t dev)
 
 void bootblock_mainboard_early_init(void)
 {
-	volatile u32 i, val, *addr32;
+	volatile u32 i, val;
 
 	/* Disable PCI-PCI bridge and release GPIO32/33 for other uses. */
 	pm_write8(0xea, 0x1);
 
 	/* Configure ClkDrvStr1 settings */
-	addr32 = (u32 *)0xfed80e24;
-	*addr32 = 0x030800aa;
+	misc_write32(0x24, 0x030800aa);
 
 	/* Configure MiscClkCntl1 settings */
-	addr32 = (u32 *)0xfed80e40;
-	*addr32 = 0x000c4050;
+	misc_write32(0x40, 0x000c4050);
 
 	/* Configure SIO as made under vendor BIOS */
 	ite_gpio_conf(GPIO_DEV);

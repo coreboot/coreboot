@@ -21,11 +21,9 @@
 #include <device/pci_ops.h>
 #include <northbridge/amd/agesa/state_machine.h>
 #include <southbridge/amd/agesa/hudson/hudson.h>
+#include <amdblocks/acpimmio.h>
 #include <superio/ite/common/ite.h>
 #include <superio/ite/it8728f/it8728f.h>
-
-#define SB_MMIO 0xFED80000
-#define SB_MMIO_MISC32(x) *(volatile u32 *)(SB_MMIO + 0xE00 + (x))
 
 #define SERIAL_DEV PNP_DEV(0x2e, IT8728F_SP1)
 #define GPIO_DEV PNP_DEV(0x2e, IT8728F_GPIO)
@@ -36,14 +34,14 @@ static void sbxxx_enable_48mhzout(void)
 	/* most likely programming to 48MHz out signal */
 	/* Set auxiliary output clock frequency on OSCOUT1 pin to be 48MHz */
 	u32 reg32;
-	reg32 = SB_MMIO_MISC32(0x28);
+	reg32 = misc_read32(0x28);
 	reg32 &= 0xfff8ffff;
-	SB_MMIO_MISC32(0x28) = reg32;
+	misc_write32(0x28, reg32);
 
 	/* Enable Auxiliary Clock1, disable FCH 14 MHz OscClk */
-	reg32 = SB_MMIO_MISC32(0x40);
+	reg32 = misc_read32(0x40);
 	reg32 &= 0xffffbffb;
-	SB_MMIO_MISC32(0x40) = reg32;
+	misc_write32(0x40, reg32);
 }
 
 void board_BeforeAgesa(struct sysinfo *cb)

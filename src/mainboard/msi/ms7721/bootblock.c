@@ -19,11 +19,9 @@
 #include <device/pnp_ops.h>
 #include <device/pnp_type.h>
 #include <stdint.h>
-#include <southbridge/amd/common/amd_defs.h>
+#include <amdblocks/acpimmio.h>
 #include <superio/fintek/common/fintek.h>
 #include <superio/fintek/f71869ad/f71869ad.h>
-
-#define SB_MMIO_MISC32(x) *(volatile u32 *)(AMD_SB_ACPI_MMIO_ADDR + 0xE00 + (x))
 
 /* Ensure Super I/O config address (i.e., 0x2e or 0x4e) matches that of devicetree.cb */
 #define SUPERIO_ADDRESS 0x4e
@@ -76,14 +74,14 @@ static void sbxxx_enable_48mhzout(void)
 {
 	/* most likely programming to 48MHz out signal */
 	u32 reg32;
-	reg32 = SB_MMIO_MISC32(0x28);
+	reg32 = misc_read32(0x28);
 	reg32 &= 0xffc7ffff;
 	reg32 |= 0x00100000;
-	SB_MMIO_MISC32(0x28) = reg32;
+	misc_write32(0x28, reg32);
 
-	reg32 = SB_MMIO_MISC32(0x40);
+	reg32 = misc_read32(0x40);
 	reg32 &= ~0x80u;
-	SB_MMIO_MISC32(0x40) = reg32;
+	misc_write32(0x40, reg32);
 }
 
 void bootblock_mainboard_early_init(void)

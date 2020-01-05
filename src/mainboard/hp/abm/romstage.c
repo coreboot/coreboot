@@ -18,6 +18,7 @@
 #include <device/pci_ops.h>
 #include <northbridge/amd/agesa/state_machine.h>
 #include <southbridge/amd/agesa/hudson/hudson.h>
+#include <amdblocks/acpimmio.h>
 #include <superio/nuvoton/common/nuvoton.h>
 #include <superio/nuvoton/nct5104d/nct5104d.h>
 
@@ -25,8 +26,7 @@
 
 void board_BeforeAgesa(struct sysinfo *cb)
 {
-	u32 *addr32;
-	u32 t32;
+	u32 reg32;
 
 	/* For serial port option, plug-in card on LPC. */
 	pci_devfn_t dev = PCI_DEV(0, 0x14, 3);
@@ -47,17 +47,15 @@ void board_BeforeAgesa(struct sysinfo *cb)
 
 	/* Set auxiliary output clock frequency on OSCOUT1 pin to be 25MHz */
 	/* Set auxiliary output clock frequency on OSCOUT2 pin to be 48MHz */
-	addr32 = (u32 *)0xfed80e28;
-	t32 = *addr32;
-	t32 &= 0xffc0ffff; // Clr bits [21:19] & [18:16]
-	t32 |= 0x00010000; // Set bit 16 for 25MHz
-	*addr32 = t32;
+	reg32 = misc_read32(0x28);
+	reg32 &= 0xffc0ffff; // Clr bits [21:19] & [18:16]
+	reg32 |= 0x00010000; // Set bit 16 for 25MHz
+	misc_write32(0x28, reg32);
 
 	/* Enable Auxiliary OSCOUT1/OSCOUT2 */
-	addr32 = (u32 *)0xfed80e40;
-	t32 = *addr32;
-	t32 &= 0xffffff7b; // clear 2, 7
-	*addr32 = t32;
+	reg32 = misc_read32(0x40;
+	reg32 &= 0xffffff7b; // clear 2, 7
+	misc_write32(0x40, reg32);
 
 	nct5104d_enable_uartd(SERIAL_DEV);
 	nuvoton_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);

@@ -16,27 +16,25 @@
 
 #include <bootblock_common.h>
 #include <device/pnp_type.h>
-#include <southbridge/amd/common/amd_defs.h>
+#include <amdblocks/acpimmio.h>
 #include <stdint.h>
 #include <superio/ite/common/ite.h>
 #include <superio/ite/it8728f/it8728f.h>
 #include <superio/nuvoton/common/nuvoton.h>
 #include <superio/nuvoton/nct6779d/nct6779d.h>
 
-#define SB_MMIO_MISC32(x) *(volatile u32 *)(AMD_SB_ACPI_MMIO_ADDR + 0xE00 + (x))
-
 static void sbxxx_enable_48mhzout(void)
 {
 	/* most likely programming to 48MHz out signal */
 	u32 reg32;
-	reg32 = SB_MMIO_MISC32(0x28);
+	reg32 = misc_read32(0x28);
 	reg32 &= 0xffc7ffff;
 	reg32 |= 0x00100000;
-	SB_MMIO_MISC32(0x28) = reg32;
+	misc_write32(0x28, reg32);
 
-	reg32 = SB_MMIO_MISC32(0x40);
+	reg32 = misc_read32(0x40);
 	reg32 &= ~0x80u;
-	SB_MMIO_MISC32(0x40) = reg32;
+	misc_write32(0x40, reg32);
 }
 
 static void superio_init_m(void)

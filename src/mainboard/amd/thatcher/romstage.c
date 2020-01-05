@@ -18,6 +18,7 @@
 #include <arch/io.h>
 #include <console/console.h>
 #include <device/pci_ops.h>
+#include <amdblocks/acpimmio.h>
 #include <northbridge/amd/agesa/state_machine.h>
 #include <southbridge/amd/agesa/hudson/hudson.h>
 #include <superio/smsc/lpc47n217/lpc47n217.h>
@@ -50,5 +51,5 @@ void board_BeforeAgesa(struct sysinfo *cb)
 	outb(0x1, 0xcd7);
 	outb(0xea, 0xcd6);
 	outb(0x1, 0xcd7);
-	*(u8 *)0xfed80101 = 0x98;
+	gpio_100_write8(0x1, 0x98);
 }

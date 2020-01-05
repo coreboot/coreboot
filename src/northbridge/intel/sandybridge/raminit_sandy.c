@@ -361,12 +361,12 @@ static void dram_ioregs(ramctr_timing * ctrl)
 
 	// IO clock
 	FOR_ALL_CHANNELS {
-		MCHBAR32(0xc00 + 0x100 * channel) = ctrl->rankmap[channel];
+		MCHBAR32(0xc00 + channel * 0x100) = ctrl->rankmap[channel];
 	}
 
 	// IO command
 	FOR_ALL_CHANNELS {
-		MCHBAR32(0x3200 + 0x100 * channel) = ctrl->rankmap[channel];
+		MCHBAR32(0x3200 + channel * 0x100) = ctrl->rankmap[channel];
 	}
 
 	// IO control

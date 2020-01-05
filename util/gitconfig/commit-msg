@@ -169,7 +169,7 @@ _gen_ChangeId() {
 	git hash-object -t commit --stdin
 }
 
-if ! grep -qi '^[[:space:]]*\+Signed-off-by:' "$MSG"; then
+if ! grep -qi '^[[:space:]]*Signed-off-by:' "$MSG"; then
 	printf "\nError: No Signed-off-by line in the commit message.\n"
 	exit 1
 fi

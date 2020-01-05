@@ -17,7 +17,7 @@
 #include <device/pci_ops.h>
 #include <device/pnp_ops.h>
 #include <device/pnp_def.h>
-#include <pc80/mc146818rtc.h>
+#include <option.h>
 #include <northbridge/intel/i945/i945.h>
 #include <southbridge/intel/i82801gx/i82801gx.h>
 #include <superio/winbond/common/winbond.h>

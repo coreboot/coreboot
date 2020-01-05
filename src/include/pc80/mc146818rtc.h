@@ -181,9 +181,6 @@ int cmos_lb_cks_valid(void);
 int cmos_checksum_valid(int range_start, int range_end, int cks_loc);
 void cmos_set_checksum(int range_start, int range_end, int cks_loc);
 
-enum cb_err set_option(const char *name, void *val);
-enum cb_err get_option(void *dest, const char *name);
-
 #if CONFIG(CMOS_POST)
 #if CONFIG(USE_OPTION_TABLE)
 # include "option_table.h"

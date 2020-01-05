@@ -21,7 +21,7 @@
 #include <southbridge/intel/i82801gx/nvs.h>
 #include <southbridge/intel/common/pmutil.h>
 #include <ec/acpi/ec.h>
-#include <pc80/mc146818rtc.h>
+#include <option.h>
 #include <ec/lenovo/h8/h8.h>
 #include <delay.h>
 #include "dock.h"

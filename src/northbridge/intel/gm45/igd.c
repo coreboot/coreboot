@@ -19,7 +19,7 @@
 #include <device/pci_ops.h>
 #include <device/pci_def.h>
 #include <console/console.h>
-#include <pc80/mc146818rtc.h>
+#include <option.h>
 
 #include "gm45.h"
 

@@ -23,7 +23,7 @@
 #include <superio/hwm5_conf.h>
 #include <console/console.h>
 #include <pc80/keyboard.h>
-#include <pc80/mc146818rtc.h>
+#include <option.h>
 
 #include "w83627hf.h"
 

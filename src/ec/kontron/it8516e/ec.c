@@ -17,7 +17,7 @@
 #include <device/device.h>
 #include <device/pnp.h>
 #include <ec/acpi/ec.h>
-#include <pc80/mc146818rtc.h>
+#include <option.h>
 
 #include "ec.h"
 #include "chip.h"

@@ -18,7 +18,7 @@
 #include <device/device.h>
 #include <device/pnp.h>
 #include <pc80/keyboard.h>
-#include <pc80/mc146818rtc.h>
+#include <option.h>
 #include <superio/ite/common/env_ctrl.h>
 #include <superio/conf_mode.h>
 #include <types.h>

@@ -22,7 +22,7 @@
 #include <northbridge/amd/agesa/state_machine.h>
 #include <FchPlatform.h>
 #include <stdlib.h>
-#include <pc80/mc146818rtc.h>
+#include <option.h>
 #include <types.h>
 
 const BIOS_CALLOUT_STRUCT BiosCallouts[] =

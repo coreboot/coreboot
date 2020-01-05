@@ -22,7 +22,7 @@
 #include <device/pci.h>
 #include <device/pci_ops.h>
 #include <device/pci_ids.h>
-#include <pc80/mc146818rtc.h>
+#include <option.h>
 #include <edid.h>
 #include <drivers/intel/gma/edid.h>
 #include <drivers/intel/gma/i915.h>

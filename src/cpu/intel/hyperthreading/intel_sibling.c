@@ -15,7 +15,7 @@
 #include <cpu/x86/lapic.h>
 #include <cpu/intel/hyperthreading.h>
 #include <device/device.h>
-#include <pc80/mc146818rtc.h>
+#include <option.h>
 #include <smp/spinlock.h>
 
 #if CONFIG(PARALLEL_CPU_INIT)

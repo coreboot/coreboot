@@ -21,7 +21,7 @@
 #include <intelblocks/pmclib.h>
 #include <intelblocks/gpio.h>
 #include <intelblocks/tco.h>
-#include <pc80/mc146818rtc.h>
+#include <option.h>
 #include <soc/pm.h>
 #include <stdint.h>
 #include <string.h>

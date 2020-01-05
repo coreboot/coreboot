@@ -17,7 +17,7 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pnp.h>
-#include <pc80/mc146818rtc.h>
+#include <option.h>
 #include <delay.h>
 #include <types.h>
 

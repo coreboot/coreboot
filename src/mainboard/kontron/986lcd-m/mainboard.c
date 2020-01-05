@@ -18,7 +18,7 @@
 #include <device/device.h>
 #include <console/console.h>
 #include <drivers/intel/gma/int15.h>
-#include <pc80/mc146818rtc.h>
+#include <option.h>
 #include <superio/hwm5_conf.h>
 #include <superio/nuvoton/common/hwm.h>
 

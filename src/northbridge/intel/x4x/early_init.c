@@ -22,7 +22,7 @@
 #else
 #include <southbridge/intel/i82801jx/i82801jx.h> /* DEFAULT_PMBASE */
 #endif
-#include <pc80/mc146818rtc.h>
+#include <option.h>
 #include "x4x.h"
 #include <console/console.h>
 #include <romstage_handoff.h>

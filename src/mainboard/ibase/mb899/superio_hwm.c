@@ -17,7 +17,7 @@
 #include <types.h>
 #include <console/console.h>
 #include <device/device.h>
-#include <pc80/mc146818rtc.h>
+#include <option.h>
 #include <superio/hwm5_conf.h>
 #include <superio/nuvoton/common/hwm.h>
 

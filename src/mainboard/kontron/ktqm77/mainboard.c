@@ -22,7 +22,7 @@
 #if CONFIG(VGA_ROM_RUN)
 #include <x86emu/x86emu.h>
 #endif
-#include <pc80/mc146818rtc.h>
+#include <option.h>
 #include <arch/interrupt.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 

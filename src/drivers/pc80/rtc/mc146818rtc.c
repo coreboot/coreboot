@@ -17,6 +17,7 @@
 #include <fallback.h>
 #include <version.h>
 #include <console/console.h>
+#include <option.h>
 #include <pc80/mc146818rtc.h>
 #include <rtc.h>
 #include <string.h>
@@ -251,7 +252,7 @@ static enum cb_err locate_cmos_layout(struct region_device *rdev)
 	return CB_SUCCESS;
 }
 
-enum cb_err get_option(void *dest, const char *name)
+enum cb_err cmos_get_option(void *dest, const char *name)
 {
 	struct cmos_option_table *ct;
 	struct region_device rdev;
@@ -344,7 +345,7 @@ static enum cb_err set_cmos_value(unsigned long bit, unsigned long length,
 	return CB_SUCCESS;
 }
 
-enum cb_err set_option(const char *name, void *value)
+enum cb_err cmos_set_option(const char *name, void *value)
 {
 	struct cmos_option_table *ct;
 	struct region_device rdev;

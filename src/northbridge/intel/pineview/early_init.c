@@ -20,7 +20,7 @@
 #include <device/pci.h>
 #include <northbridge/intel/pineview/pineview.h>
 #include <northbridge/intel/pineview/chip.h>
-#include <pc80/mc146818rtc.h>
+#include <option.h>
 #include <types.h>
 
 #define LPC PCI_DEV(0, 0x1f, 0)

@@ -27,7 +27,7 @@
 #include <spi-generic.h>
 #include <elog.h>
 #include <halt.h>
-#include <pc80/mc146818rtc.h>
+#include <option.h>
 #include <soc/lpc.h>
 #include <soc/nvs.h>
 #include <soc/pci_devs.h>

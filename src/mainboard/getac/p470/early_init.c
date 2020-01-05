@@ -20,7 +20,7 @@
 #include <delay.h>
 #include <device/pnp_ops.h>
 #include <device/pci_ops.h>
-#include <pc80/mc146818rtc.h>
+#include <option.h>
 #include <console/console.h>
 #include <northbridge/intel/i945/i945.h>
 #include <southbridge/intel/i82801gx/i82801gx.h>

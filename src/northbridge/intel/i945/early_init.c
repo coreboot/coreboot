@@ -21,7 +21,7 @@
 #include <device/pci_def.h>
 #include <cbmem.h>
 #include <romstage_handoff.h>
-#include <pc80/mc146818rtc.h>
+#include <option.h>
 #include <types.h>
 
 #include "i945.h"

@@ -24,7 +24,7 @@
 #include <cbmem.h>
 #include <cf9_reset.h>
 #include <ip_checksum.h>
-#include <pc80/mc146818rtc.h>
+#include <option.h>
 #include <device/pci_def.h>
 #include <device/device.h>
 #include <halt.h>

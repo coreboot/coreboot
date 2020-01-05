@@ -20,7 +20,7 @@
 #include <ec/acpi/ec.h>
 #include <string.h>
 #include <smbios.h>
-#include <pc80/mc146818rtc.h>
+#include <option.h>
 #include <pc80/keyboard.h>
 #include <types.h>
 

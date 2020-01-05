@@ -66,7 +66,7 @@ int tis_open(void);
 /*
  * tis_close()
  *
- * terminate the currect session with the TPM by releasing the locked
+ * terminate the current session with the TPM by releasing the locked
  * locality. Returns 0 on success of -1 on failure (in case lock
  * removal did not succeed).
  */

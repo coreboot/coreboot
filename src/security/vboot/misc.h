@@ -89,7 +89,7 @@ static inline int vboot_logic_executed(void)
 
 	/* If we are in the stage that runs verification, or in the stage that
 	   both loads the verstage and is returned to from it afterwards, we
-	   need to check a global to see if verfication has run. */
+	   need to check a global to see if verification has run. */
 	if (verification_should_run() ||
 	    (verstage_should_load() && CONFIG(VBOOT_RETURN_FROM_VERSTAGE)))
 		return vboot_executed;

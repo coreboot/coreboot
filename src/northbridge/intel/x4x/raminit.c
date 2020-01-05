@@ -39,11 +39,6 @@
 
 #define MRC_CACHE_VERSION 0
 
-static inline int spd_read_byte(unsigned int device, unsigned int address)
-{
-	return smbus_read_byte(device, address);
-}
-
 static u16 ddr2_get_crc(u8 device, u8 len)
 {
 	u8 raw_spd[128] = {};
@@ -514,7 +509,7 @@ static void decode_spd_select_timings(struct sysinfo *s)
 			s->dimms[i].card_type = RAW_CARD_UNPOPULATED;
 			continue;
 		}
-		switch (spd_read_byte(s->spd_map[i], SPD_MEMORY_TYPE)) {
+		switch (smbus_read_byte(s->spd_map[i], SPD_MEMORY_TYPE)) {
 		case DDR2SPD:
 			dram_type_mask &= 1 << DDR2;
 			s->spd_type = DDR2;
@@ -535,7 +530,7 @@ static void decode_spd_select_timings(struct sysinfo *s)
 			printk(BIOS_DEBUG, "i2c block operation failed,"
 				" trying smbus byte operation.\n");
 			for (j = 0; j < 128; j++)
-				raw_spd[j] = spd_read_byte(device, j);
+				raw_spd[j] = smbus_read_byte(device, j);
 		}
 
 		if (s->spd_type == DDR2){

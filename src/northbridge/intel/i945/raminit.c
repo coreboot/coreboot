@@ -62,11 +62,6 @@ static int get_dimm_spd_address(struct sys_info *sysinfo, int device)
 
 }
 
-static inline int spd_read_byte(unsigned int device, unsigned int address)
-{
-	return smbus_read_byte(device, address);
-}
-
 static __attribute__((noinline)) void do_ram_command(u32 command)
 {
 	u32 reg32;
@@ -365,7 +360,7 @@ static void gather_common_timing(struct sys_info *sysinfo,
 		if (!sdram_capabilities_dual_channel() && (i >> 1))
 			continue;
 
-		if (spd_read_byte(device, SPD_MEMORY_TYPE) !=
+		if (smbus_read_byte(device, SPD_MEMORY_TYPE) !=
 					SPD_MEMORY_TYPE_SDRAM_DDR2) {
 			printk(BIOS_DEBUG, "DDR II Channel %d Socket %d: N/A\n",
 				(i >> 1), (i & 1));
@@ -386,7 +381,7 @@ static void gather_common_timing(struct sys_info *sysinfo,
 			printk(BIOS_DEBUG, "i2c block operation failed,"
 				" trying smbus byte operation.\n");
 			for (j = 0; j < 64; j++)
-				raw_spd[j] = spd_read_byte(device, j);
+				raw_spd[j] = smbus_read_byte(device, j);
 			if (CONFIG(DEBUG_RAM_SETUP))
 				hexdump(raw_spd, 64);
 		}

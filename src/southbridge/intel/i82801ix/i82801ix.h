@@ -208,7 +208,6 @@ static inline int lpc_is_mobile(const u16 devid)
 
 void aseg_smm_lock(void);
 
-void enable_smbus(void);
 void i82801ix_early_init(void);
 void i82801ix_lpc_decode(void);
 void i82801ix_dmi_setup(void);

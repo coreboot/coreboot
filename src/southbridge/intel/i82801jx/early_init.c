@@ -14,6 +14,7 @@
 
 #include <console/console.h>
 #include <device/pci_ops.h>
+#include <device/smbus_host.h>
 #include <southbridge/intel/common/gpio.h>
 #include <southbridge/intel/common/pmbase.h>
 #include "i82801jx.h"

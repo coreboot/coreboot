@@ -15,6 +15,7 @@
 #define __DEVICE_SMBUS_HOST_H__
 
 #include <stdint.h>
+#include <console/console.h>
 
 /* Low-level SMBUS host controller. */
 
@@ -34,7 +35,20 @@ int do_i2c_block_write(uintptr_t base, u8 device, size_t bytes, u8 *buf);
 
 /* Upstream API */
 
+uintptr_t smbus_base(void);
+int smbus_enable_iobar(uintptr_t base);
 void smbus_host_reset(uintptr_t base);
 void smbus_set_slave_addr(uintptr_t base, u8 slave_address);
+
+static inline void enable_smbus(void)
+{
+	uintptr_t base = smbus_base();
+
+	if (smbus_enable_iobar(base) < 0)
+		die("SMBus controller not found!");
+
+	smbus_host_reset(base);
+	printk(BIOS_DEBUG, "SMBus controller enabled\n");
+}
 
 #endif

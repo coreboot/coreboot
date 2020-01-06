@@ -19,6 +19,7 @@
 #include <device/pci_ops.h>
 #include <device/device.h>
 #include <device/pci_def.h>
+#include <device/smbus_host.h>
 #include <southbridge/intel/common/pmclib.h>
 #include <elog.h>
 #include "pch.h"

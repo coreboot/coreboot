@@ -37,7 +37,6 @@
 #include <device/device.h>
 void i82801gx_enable(struct device *dev);
 
-void enable_smbus(void);
 void i82801gx_lpc_setup(void);
 void i82801gx_setup_bars(void);
 void i82801gx_early_init(void);

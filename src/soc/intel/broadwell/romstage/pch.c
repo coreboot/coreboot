@@ -16,6 +16,7 @@
 #include <device/device.h>
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
+#include <device/smbus_host.h>
 #include <reg_script.h>
 #include <soc/iomap.h>
 #include <soc/lpc.h>

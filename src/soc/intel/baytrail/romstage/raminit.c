@@ -22,6 +22,7 @@
 #include <console/console.h>
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
+#include <device/smbus_host.h>
 #include <mrc_cache.h>
 #include <soc/gpio.h>
 #include <soc/iomap.h>
@@ -32,13 +33,18 @@
 #include <ec/google/chromeec/ec_commands.h>
 #include <security/vboot/vboot_common.h>
 
-static void enable_smbus(void)
+uintptr_t smbus_base(void)
+{
+	return SMBUS_BASE_ADDRESS;
+}
+
+int smbus_enable_iobar(uintptr_t base)
 {
 	uint32_t reg;
 	const uint32_t smbus_dev = PCI_DEV(0, SMBUS_DEV, SMBUS_FUNC);
 
 	/* SMBus I/O BAR */
-	reg = SMBUS_BASE_ADDRESS | 2;
+	reg = base | 2;
 	pci_write_config32(smbus_dev, PCI_BASE_ADDRESS_4, reg);
 	/* Enable decode of I/O space. */
 	reg = pci_read_config16(smbus_dev, PCI_COMMAND);
@@ -52,6 +58,8 @@ static void enable_smbus(void)
 	/* Configure pads to be used for SMBus */
 	score_select_func(PCU_SMB_CLK_PAD, 1);
 	score_select_func(PCU_SMB_DATA_PAD, 1);
+
+	return 0;
 }
 
 static void ABI_X86 send_to_console(unsigned char b)

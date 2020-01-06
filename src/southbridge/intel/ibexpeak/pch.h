@@ -52,7 +52,6 @@
 #define DEBUG_PERIODIC_SMIS 0
 
 void pch_iobp_update(u32 address, u32 andvalue, u32 orvalue);
-void enable_smbus(void);
 void enable_usb_bar(void);
 
 #if ENV_ROMSTAGE

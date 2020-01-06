@@ -19,7 +19,6 @@
 
 #if !defined(__ACPI__)
 
-void enable_smbus(void);
 void enable_pm(void);
 void i82371eb_early_init(void);
 

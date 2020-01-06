@@ -18,6 +18,7 @@
 
 #include <stdint.h>
 #include <device/pci_ops.h>
+#include <device/smbus_host.h>
 #include <northbridge/intel/nehalem/nehalem.h>
 #include <southbridge/intel/ibexpeak/pch.h>
 #include <southbridge/intel/common/gpio.h>

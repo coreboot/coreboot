@@ -15,6 +15,7 @@
  */
 
 #include <device/pci_def.h>
+#include <device/smbus_host.h>
 #include <reg_script.h>
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>
@@ -36,7 +37,13 @@ static const struct reg_script smbus_init_script[] = {
 	REG_SCRIPT_END,
 };
 
-void enable_smbus(void)
+uintptr_t smbus_base(void)
+{
+	return SMBUS_BASE_ADDRESS;
+}
+
+int smbus_enable_iobar(uintptr_t base)
 {
 	reg_script_run_on_dev(PCH_DEV_SMBUS, smbus_init_script);
+	return 0;
 }

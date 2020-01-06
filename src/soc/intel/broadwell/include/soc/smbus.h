@@ -22,7 +22,6 @@
 #define SMB_BASE		0x20
 #define HOSTC			0x40
 #define  HST_EN			(1 << 0)
-#define SMB_RCV_SLVA		0x09
 
 /* SMBus I/O bits. */
 #define SMBHSTSTAT		0x0

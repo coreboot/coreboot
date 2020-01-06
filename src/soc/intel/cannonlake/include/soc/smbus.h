@@ -19,10 +19,6 @@
 #ifndef _SOC_CANNONLAKE_SMBUS_H_
 #define _SOC_CANNONLAKE_SMBUS_H_
 
-/* IO and MMIO registers under primary BAR */
-/* Set address for PCH as SMBus slave role */
-#define SMB_RCV_SLVA			0x09
-
 /* TCO registers and fields live behind TCOBASE I/O bar in SMBus device. */
 #define TCO1_STS			0x04
 #define  TCO_TIMEOUT			(1 << 3)

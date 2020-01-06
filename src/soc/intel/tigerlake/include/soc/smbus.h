@@ -23,8 +23,6 @@
 #define _SOC_TIGERLAKE_SMBUS_H_
 
 /* IO and MMIO registers under primary BAR */
-/* Set address for PCH as SMBus slave role */
-#define SMB_RCV_SLVA			0x09
 
 /* TCO registers and fields live behind TCOBASE I/O bar in SMBus device. */
 #define TCO1_STS			0x04

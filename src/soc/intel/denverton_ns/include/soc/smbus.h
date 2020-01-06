@@ -25,7 +25,7 @@
 #define HST_EN (1 << 0)
 #define HOSTC_SMI_EN (1 << 1)
 #define HOSTC_I2C_EN (1 << 2)
-#define SMB_RCV_SLVA 0x09
+
 /* SMBUS TCO base address. */
 #define TCOBASE 0x50
 #define MASK_TCOBASE 0xffe0

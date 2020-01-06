@@ -35,6 +35,6 @@ int do_i2c_block_write(uintptr_t base, u8 device, size_t bytes, u8 *buf);
 /* Upstream API */
 
 void smbus_host_reset(uintptr_t base);
-
+void smbus_set_slave_addr(uintptr_t base, u8 slave_address);
 
 #endif

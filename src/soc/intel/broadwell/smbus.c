@@ -24,7 +24,6 @@
 #include <soc/iomap.h>
 #include <soc/ramstage.h>
 #include <soc/smbus.h>
-#include <southbridge/intel/common/smbus.h>
 #include <device/smbus_host.h>
 
 static void pch_smbus_init(struct device *dev)
@@ -40,7 +39,7 @@ static void pch_smbus_init(struct device *dev)
 	/* Set Receive Slave Address */
 	res = find_resource(dev, PCI_BASE_ADDRESS_4);
 	if (res)
-		outb(SMBUS_SLAVE_ADDR, res->base + SMB_RCV_SLVA);
+		smbus_set_slave_addr(res->base, SMBUS_SLAVE_ADDR);
 }
 
 static int lsmbus_read_byte(struct device *dev, u8 address)

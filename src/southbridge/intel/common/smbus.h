@@ -32,4 +32,6 @@
 #define SMBUS_PIN_CTL		0xf
 #define SMBSLVCMD		0x11
 
+#define SMB_RCV_SLVA		SMBTRNSADD
+
 #endif

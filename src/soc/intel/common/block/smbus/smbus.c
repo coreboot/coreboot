@@ -13,14 +13,12 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/io.h>
 #include <device/device.h>
 #include <device/path.h>
 #include <device/smbus.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <soc/smbus.h>
-#include <southbridge/intel/common/smbus.h>
 #include <device/smbus_host.h>
 #include "smbuslib.h"
 
@@ -63,7 +61,7 @@ static void pch_smbus_init(struct device *dev)
 	/* Set Receive Slave Address */
 	res = find_resource(dev, PCI_BASE_ADDRESS_4);
 	if (res)
-		outb(SMBUS_SLAVE_ADDR, res->base + SMB_RCV_SLVA);
+		smbus_set_slave_addr(res->base, SMBUS_SLAVE_ADDR);
 }
 
 static void smbus_read_resources(struct device *dev)

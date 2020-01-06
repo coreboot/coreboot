@@ -101,6 +101,11 @@ void smbus_host_reset(uintptr_t base)
 	host_and_or(base, SMBHSTSTAT, 0xff, 0);
 }
 
+void smbus_set_slave_addr(uintptr_t base, u8 slave_address)
+{
+	host_outb(base, SMB_RCV_SLVA, slave_address);
+}
+
 static int host_completed(u8 status)
 {
 	if (status & SMBHSTSTS_HOST_BUSY)

@@ -21,7 +21,7 @@ PREFIX   ?= /usr/local
 CFLAGS   ?= -O2
 CFLAGS   += -Wall -Wextra -Wmissing-prototypes -Werror
 CPPFLAGS += -I . -I $(ROOT)/commonlib/include
-CPPFLAGS += -include ../../src/commonlib/include/commonlib/compiler.h
+CPPFLAGS += -include commonlib/compiler.h
 
 OBJS = $(PROGRAM).o
 

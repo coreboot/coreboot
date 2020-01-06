@@ -21,6 +21,7 @@
 #include <device/pci_ids.h>
 #include <soc/smbus.h>
 #include <southbridge/intel/common/smbus.h>
+#include <device/smbus_host.h>
 #include "smbuslib.h"
 
 static int lsmbus_read_byte(struct device *dev, u8 address)

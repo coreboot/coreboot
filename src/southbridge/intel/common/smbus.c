@@ -19,6 +19,7 @@
 #include <arch/io.h>
 #include <console/console.h>
 #include <device/smbus_def.h>
+#include <device/smbus_host.h>
 #include <types.h>
 
 #include "smbus.h"
@@ -332,30 +333,27 @@ static int block_cmd_loop(uintptr_t base, u8 *buf, size_t max_bytes, int flags)
 	return bytes;
 }
 
-int do_smbus_read_byte(unsigned int smbus_base, u8 device, unsigned int address)
+int do_smbus_read_byte(uintptr_t smbus_base, u8 device, u8 address)
 {
 	return smbus_read_cmd(smbus_base, I801_BYTE_DATA, device, address);
 }
 
-int do_smbus_read_word(unsigned int smbus_base, u8 device, unsigned int address)
+int do_smbus_read_word(uintptr_t smbus_base, u8 device, u8 address)
 {
 	return smbus_read_cmd(smbus_base, I801_WORD_DATA, device, address);
 }
 
-int do_smbus_write_byte(unsigned int smbus_base, u8 device, unsigned int address,
-			unsigned int data)
+int do_smbus_write_byte(uintptr_t smbus_base, u8 device, u8 address, u8 data)
 {
 	return smbus_write_cmd(smbus_base, I801_BYTE_DATA, device, address, data);
 }
 
-int do_smbus_write_word(unsigned int smbus_base, u8 device, unsigned int address,
-			unsigned int data)
+int do_smbus_write_word(uintptr_t smbus_base, u8 device, u8 address, u16 data)
 {
 	return smbus_write_cmd(smbus_base, I801_WORD_DATA, device, address, data);
 }
 
-int do_smbus_block_read(unsigned int smbus_base, u8 device, u8 cmd,
-			unsigned int max_bytes, u8 *buf)
+int do_smbus_block_read(uintptr_t smbus_base, u8 device, u8 cmd, size_t max_bytes, u8 *buf)
 {
 	int ret, slave_bytes;
 
@@ -382,8 +380,7 @@ int do_smbus_block_read(unsigned int smbus_base, u8 device, u8 cmd,
 	return ret;
 }
 
-int do_smbus_block_write(unsigned int smbus_base, u8 device, u8 cmd,
-			const unsigned int bytes, const u8 *buf)
+int do_smbus_block_write(uintptr_t smbus_base, u8 device, u8 cmd, const size_t bytes, const u8 *buf)
 {
 	int ret;
 
@@ -418,8 +415,7 @@ static int has_i2c_read_command(void)
 	return 1;
 }
 
-int do_i2c_eeprom_read(unsigned int smbus_base, u8 device,
-		unsigned int offset, const unsigned int bytes, u8 *buf)
+int do_i2c_eeprom_read(uintptr_t smbus_base, u8 device, u8 offset, const size_t bytes, u8 *buf)
 {
 	int ret;
 
@@ -456,8 +452,7 @@ int do_i2c_eeprom_read(unsigned int smbus_base, u8 device,
  * The caller is responsible of settings HOSTC I2C_EN bit prior to making this
  * call!
  */
-int do_i2c_block_write(unsigned int smbus_base, u8 device,
-			unsigned int bytes, u8 *buf)
+int do_i2c_block_write(uintptr_t smbus_base, u8 device, size_t bytes, u8 *buf)
 {
 	u8 cmd;
 	int ret;

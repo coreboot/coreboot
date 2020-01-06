@@ -20,8 +20,8 @@
 #include <device/pci_def.h>
 #include <device/pci_type.h>
 #include <device/pci_ops.h>
+#include <device/smbus_host.h>
 #include <soc/smbus.h>
-#include <southbridge/intel/common/smbus.h>
 
 int smbus_i2c_block_write(u8 addr, u8 bytes, u8 *buf)
 {

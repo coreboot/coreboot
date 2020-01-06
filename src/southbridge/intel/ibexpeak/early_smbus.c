@@ -19,6 +19,7 @@
 #include <console/console.h>
 #include <device/pci_def.h>
 #include <southbridge/intel/common/smbus.h>
+#include <device/smbus_host.h>
 #include "pch.h"
 
 void enable_smbus(void)

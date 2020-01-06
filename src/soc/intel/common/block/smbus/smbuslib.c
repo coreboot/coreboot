@@ -15,7 +15,7 @@
 
 #include <console/console.h>
 #include <spd_bin.h>
-#include <southbridge/intel/common/smbus.h>
+#include <device/smbus_host.h>
 #include <string.h>
 #include "smbuslib.h"
 

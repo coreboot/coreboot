@@ -20,7 +20,7 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
-#include <southbridge/intel/common/smbus.h>
+#include <device/smbus_host.h>
 #include "i82801ix.h"
 
 static void pch_smbus_init(struct device *dev)

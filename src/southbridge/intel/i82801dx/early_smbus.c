@@ -19,6 +19,7 @@
 #include <device/pci_def.h>
 #include <console/console.h>
 #include <southbridge/intel/common/smbus.h>
+#include <device/smbus_host.h>
 
 #include "i82801dx.h"
 

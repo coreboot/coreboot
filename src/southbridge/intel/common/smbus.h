@@ -32,22 +32,4 @@
 #define SMBUS_PIN_CTL		0xf
 #define SMBSLVCMD		0x11
 
-int do_smbus_read_byte(unsigned int smbus_base, u8 device,
-		unsigned int address);
-int do_smbus_write_byte(unsigned int smbus_base, u8 device,
-			unsigned int address, unsigned int data);
-int do_smbus_read_word(unsigned int smbus_base, u8 device,
-		unsigned int address);
-int do_smbus_write_word(unsigned int smbus_base, u8 device,
-			unsigned int address, unsigned int data);
-
-int do_smbus_block_read(unsigned int smbus_base, u8 device,
-			u8 cmd, unsigned int max_bytes, u8 *buf);
-int do_smbus_block_write(unsigned int smbus_base, u8 device,
-			u8 cmd, unsigned int bytes, const u8 *buf);
-/* Only since ICH5 */
-int do_i2c_eeprom_read(unsigned int smbus_base, u8 device,
-		unsigned int offset, unsigned int bytes, u8 *buf);
-int do_i2c_block_write(unsigned int smbus_base, u8 device,
-			unsigned int bytes, u8 *buf);
 #endif

@@ -15,12 +15,11 @@
  */
 
 #include <stdint.h>
-#include <arch/io.h>
+#include <console/console.h>
 #include <device/pci_ops.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_def.h>
-#include <southbridge/intel/common/smbus.h>
 #include <device/smbus_host.h>
 #include "i82371eb.h"
 
@@ -47,8 +46,9 @@ void enable_smbus(void)
 	reg16 |= PCI_COMMAND_IO;
 	pci_write_config16(dev, PCI_COMMAND, reg16);
 
-	/* Clear any lingering errors, so the transaction will run. */
-	outb(inb(SMBUS_IO_BASE + SMBHSTSTAT), SMBUS_IO_BASE + SMBHSTSTAT);
+	smbus_host_reset(SMBUS_IO_BASE);
+
+	printk(BIOS_DEBUG, "SMBus controller enabled\n");
 }
 
 int smbus_read_byte(u8 device, u8 address)

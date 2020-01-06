@@ -32,4 +32,9 @@ int do_smbus_block_write(uintptr_t base, u8 device, u8 cmd, size_t bytes, const 
 int do_i2c_eeprom_read(uintptr_t base, u8 device, u8 offset, size_t bytes, u8 *buf);
 int do_i2c_block_write(uintptr_t base, u8 device, size_t bytes, u8 *buf);
 
+/* Upstream API */
+
+void smbus_host_reset(uintptr_t base);
+
+
 #endif

@@ -92,6 +92,15 @@ static void host_and_or(uintptr_t base, u8 reg, u8 mask, u8 or)
 	host_outb(base, reg, value);
 }
 
+void smbus_host_reset(uintptr_t base)
+{
+	/* Disable interrupt generation. */
+	host_outb(base, SMBHSTCTL, 0);
+
+	/* Clear any lingering errors, so transactions can run. */
+	host_and_or(base, SMBHSTSTAT, 0xff, 0);
+}
+
 static int host_completed(u8 status)
 {
 	if (status & SMBHSTSTS_HOST_BUSY)

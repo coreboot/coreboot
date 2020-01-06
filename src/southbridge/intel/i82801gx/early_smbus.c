@@ -14,11 +14,9 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/io.h>
 #include <device/pci_ops.h>
 #include <console/console.h>
 #include <device/pci_def.h>
-#include <southbridge/intel/common/smbus.h>
 #include <device/smbus_host.h>
 #include "i82801gx.h"
 
@@ -43,11 +41,8 @@ void enable_smbus(void)
 	/* Set SMBus I/O space enable. */
 	pci_write_config16(dev, PCI_COMMAND, PCI_COMMAND_IO);
 
-	/* Disable interrupt generation. */
-	outb(0, SMBUS_IO_BASE + SMBHSTCTL);
+	smbus_host_reset(SMBUS_IO_BASE);
 
-	/* Clear any lingering errors, so transactions can run. */
-	outb(inb(SMBUS_IO_BASE + SMBHSTSTAT), SMBUS_IO_BASE + SMBHSTSTAT);
 	printk(BIOS_DEBUG, "SMBus controller enabled.\n");
 }
 

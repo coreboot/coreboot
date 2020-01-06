@@ -24,6 +24,22 @@ enum pnp_settings {
 	PNP_PERF_POWER,
 };
 
+struct soc_intel_apl_pp {
+	unsigned int up_delay_ms;
+	unsigned int down_delay_ms;
+	unsigned int cycle_delay_ms;
+	unsigned int backlight_on_delay_ms;
+	unsigned int backlight_off_delay_ms;
+};
+
+struct soc_intel_apl_blc {
+	unsigned int pwm_hz;
+	enum {
+		GPU_BACKLIGHT_POLARITY_HIGH = 0,
+		GPU_BACKLIGHT_POLARITY_LOW,
+	} polarity;
+};
+
 struct soc_intel_apollolake_config {
 
 	/* Common structure containing soc config data required by common code*/
@@ -31,6 +47,13 @@ struct soc_intel_apollolake_config {
 
 	/* Common struct containing power limits configuration info */
 	struct soc_power_limits_config power_limits_config;
+
+	/* IGD panel configuration */
+	struct soc_intel_apl_pp gpu_pp[2];
+	/* Second backlight control shares logic with other pins (aka. display
+	   utility pin). Be sure it's used for PWM before setting any value for
+	   the secondary controls. */
+	struct soc_intel_apl_blc gpu_blc[2];
 
 	/*
 	 * Mapping from PCIe root port to CLKREQ input on the SOC. The SOC has

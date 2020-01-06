@@ -54,6 +54,7 @@ ramstage-y += cpu.c
 ramstage-y += chip.c
 ramstage-y += cse.c
 ramstage-y += elog.c
+ramstage-y += graphics.c
 ramstage-y += gspi.c
 ramstage-y += heci.c
 ramstage-y += i2c.c

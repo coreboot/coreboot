@@ -17,6 +17,15 @@ chip soc/intel/cannonlake
 		[PchSerialIoIndexUART2] = PchSerialIoDisabled,
 	}"
 
+	# VR Slew rate setting
+	register "AcousticNoiseMitigation" = "1"
+	register "SlowSlewRateForIa" = "2"
+	register "SlowSlewRateForGt" = "2"
+	register "SlowSlewRateForSa" = "2"
+	register "FastPkgCRampDisableIa" = "1"
+	register "FastPkgCRampDisableGt" = "1"
+	register "FastPkgCRampDisableSa" = "1"
+
 	# Intel Common SoC Config
 	#+-------------------+---------------------------+
 	#| Field             |  Value                    |

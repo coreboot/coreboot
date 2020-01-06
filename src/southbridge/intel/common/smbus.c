@@ -22,14 +22,27 @@
 #include <device/smbus_host.h>
 #include <types.h>
 
-#include "smbus.h"
-
-
 #if CONFIG(DEBUG_SMBUS)
 #define dprintk(args...) printk(BIOS_DEBUG, ##args)
 #else
 #define dprintk(args...) do {} while (0)
 #endif
+
+/* SMBus register offsets. */
+#define SMBHSTSTAT		0x0
+#define SMBHSTCTL		0x2
+#define SMBHSTCMD		0x3
+#define SMBXMITADD		0x4
+#define SMBHSTDAT0		0x5
+#define SMBHSTDAT1		0x6
+#define SMBBLKDAT		0x7
+#define SMBTRNSADD		0x9
+#define SMBSLVDATA		0xa
+#define SMLINK_PIN_CTL		0xe
+#define SMBUS_PIN_CTL		0xf
+#define SMBSLVCMD		0x11
+
+#define SMB_RCV_SLVA		SMBTRNSADD
 
 /* I801 command constants */
 #define I801_QUICK		(0 << 2)

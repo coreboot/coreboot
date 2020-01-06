@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # git pre-commit hook that runs an clang-format stylecheck.
 # Features:
 #  - abort commit when commit does not comply with the style guidelines

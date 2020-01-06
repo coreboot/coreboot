@@ -72,17 +72,17 @@ static void smbus_delay(void)
 	inb(0x80);
 }
 
-static void host_outb(unsigned int base, u8 reg, u8 value)
+static void host_outb(uintptr_t base, u8 reg, u8 value)
 {
 	outb(value, base + reg);
 }
 
-static u8 host_inb(unsigned int base, u8 reg)
+static u8 host_inb(uintptr_t base, u8 reg)
 {
 	return inb(base + reg);
 }
 
-static void host_and_or(unsigned int base, u8 reg, u8 mask, u8 or)
+static void host_and_or(uintptr_t base, u8 reg, u8 mask, u8 or)
 {
 	u8 value;
 	value = host_inb(base, reg);
@@ -102,7 +102,7 @@ static int host_completed(u8 status)
 	return status != 0;
 }
 
-static int recover_master(int smbus_base, int ret)
+static int recover_master(uintptr_t base, int ret)
 {
 	/* TODO: Depending of the failure, drive KILL transaction
 	 * or force soft reset on SMBus master controller.
@@ -123,40 +123,39 @@ static int cb_err_from_stat(u8 status)
 	return SMBUS_ERROR;
 }
 
-static int setup_command(unsigned int smbus_base, u8 ctrl, u8 xmitadd)
+static int setup_command(uintptr_t base, u8 ctrl, u8 xmitadd)
 {
 	unsigned int loops = SMBUS_TIMEOUT;
 	u8 host_busy;
 
 	do {
 		smbus_delay();
-		host_busy = host_inb(smbus_base, SMBHSTSTAT) & SMBHSTSTS_HOST_BUSY;
+		host_busy = host_inb(base, SMBHSTSTAT) & SMBHSTSTS_HOST_BUSY;
 	} while (--loops && host_busy);
 
 	if (loops == 0)
-		return recover_master(smbus_base,
-				      SMBUS_WAIT_UNTIL_READY_TIMEOUT);
+		return recover_master(base, SMBUS_WAIT_UNTIL_READY_TIMEOUT);
 
 	/* Clear any lingering errors, so the transaction will run. */
-	host_and_or(smbus_base, SMBHSTSTAT, 0xff, 0);
+	host_and_or(base, SMBHSTSTAT, 0xff, 0);
 
 	/* Set up transaction */
 	/* Disable interrupts */
-	host_outb(smbus_base, SMBHSTCTL, ctrl);
+	host_outb(base, SMBHSTCTL, ctrl);
 
 	/* Set the device I'm talking to. */
-	host_outb(smbus_base, SMBXMITADD, xmitadd);
+	host_outb(base, SMBXMITADD, xmitadd);
 
 	return 0;
 }
 
-static int execute_command(unsigned int smbus_base)
+static int execute_command(uintptr_t base)
 {
 	unsigned int loops = SMBUS_TIMEOUT;
 	u8 status;
 
 	/* Start the command. */
-	host_and_or(smbus_base, SMBHSTCTL, 0xff, SMBHSTCNT_START);
+	host_and_or(base, SMBHSTCTL, 0xff, SMBHSTCNT_START);
 
 	/* Poll for it to start. */
 	do {
@@ -165,103 +164,101 @@ static int execute_command(unsigned int smbus_base)
 		/* If we poll too slow, we could miss HOST_BUSY flag
 		 * set and detect INTR or x_ERR flags instead here.
 		 */
-		status = host_inb(smbus_base, SMBHSTSTAT);
+		status = host_inb(base, SMBHSTSTAT);
 		status &= ~(SMBHSTSTS_SMBALERT_STS | SMBHSTSTS_INUSE_STS);
 	} while (--loops && status == 0);
 
 	if (loops == 0)
-		return recover_master(smbus_base,
+		return recover_master(base,
 				      SMBUS_WAIT_UNTIL_ACTIVE_TIMEOUT);
 
 	return 0;
 }
 
-static int complete_command(unsigned int smbus_base)
+static int complete_command(uintptr_t base)
 {
 	unsigned int loops = SMBUS_TIMEOUT;
 	u8 status;
 
 	do {
 		smbus_delay();
-		status = host_inb(smbus_base, SMBHSTSTAT);
+		status = host_inb(base, SMBHSTSTAT);
 	} while (--loops && !host_completed(status));
 
 	if (loops == 0)
-		return recover_master(smbus_base,
+		return recover_master(base,
 				      SMBUS_WAIT_UNTIL_DONE_TIMEOUT);
 
 	return cb_err_from_stat(status);
 }
 
-static int smbus_read_cmd(unsigned int smbus_base, u8 ctrl, u8 device,
-		unsigned int address)
+static int smbus_read_cmd(uintptr_t base, u8 ctrl, u8 device, u8 address)
 {
 	int ret;
 	u16 word;
 
 	/* Set up for a byte data read. */
-	ret = setup_command(smbus_base, ctrl, XMIT_READ(device));
+	ret = setup_command(base, ctrl, XMIT_READ(device));
 	if (ret < 0)
 		return ret;
 
 	/* Set the command/address... */
-	host_outb(smbus_base, SMBHSTCMD, address);
+	host_outb(base, SMBHSTCMD, address);
 
 	/* Clear the data bytes... */
-	host_outb(smbus_base, SMBHSTDAT0, 0);
-	host_outb(smbus_base, SMBHSTDAT1, 0);
+	host_outb(base, SMBHSTDAT0, 0);
+	host_outb(base, SMBHSTDAT1, 0);
 
 	/* Start the command */
-	ret = execute_command(smbus_base);
+	ret = execute_command(base);
 	if (ret < 0)
 		return ret;
 
 	/* Poll for transaction completion */
-	ret = complete_command(smbus_base);
+	ret = complete_command(base);
 	if (ret < 0)
 		return ret;
 
 	/* Read results of transaction */
-	word = host_inb(smbus_base, SMBHSTDAT0);
+	word = host_inb(base, SMBHSTDAT0);
 	if (ctrl == I801_WORD_DATA)
-		word |= host_inb(smbus_base, SMBHSTDAT1) << 8;
+		word |= host_inb(base, SMBHSTDAT1) << 8;
 
 	return word;
 }
 
-static int smbus_write_cmd(unsigned int smbus_base, u8 ctrl, u8 device,
-			unsigned int address, unsigned int data)
+static int smbus_write_cmd(uintptr_t base, u8 ctrl, u8 device, u8 address, u16 data)
 {
 	int ret;
 
 	/* Set up for a byte data write. */
-	ret = setup_command(smbus_base, ctrl, XMIT_WRITE(device));
+	ret = setup_command(base, ctrl, XMIT_WRITE(device));
 	if (ret < 0)
 		return ret;
 
 	/* Set the command/address... */
-	host_outb(smbus_base, SMBHSTCMD, address);
+	host_outb(base, SMBHSTCMD, address);
 
 	/* Set the data bytes... */
-	host_outb(smbus_base, SMBHSTDAT0, data & 0xff);
+	host_outb(base, SMBHSTDAT0, data & 0xff);
 	if (ctrl == I801_WORD_DATA)
-		host_outb(smbus_base, SMBHSTDAT1, data >> 8);
+		host_outb(base, SMBHSTDAT1, data >> 8);
 
 	/* Start the command */
-	ret = execute_command(smbus_base);
+	ret = execute_command(base);
 	if (ret < 0)
 		return ret;
 
 	/* Poll for transaction completion */
-	return complete_command(smbus_base);
+	return complete_command(base);
 }
 
-static int block_cmd_loop(unsigned int smbus_base,
-	u8 *buf, const unsigned int max_bytes, int flags)
+static int block_cmd_loop(uintptr_t base, u8 *buf, size_t max_bytes, int flags)
 {
 	u8 status;
 	unsigned int loops = SMBUS_TIMEOUT;
-	int ret, bytes = 0;
+	int ret;
+	size_t bytes = 0;
 	int is_write_cmd = flags & BLOCK_WRITE;
 	int sw_drives_nak = flags & BLOCK_I2C;
 
@@ -274,41 +271,41 @@ static int block_cmd_loop(unsigned int smbus_base,
 	 * was really updated with the transaction. */
 	if (!sw_drives_nak) {
 		if (is_write_cmd)
-			host_outb(smbus_base, SMBHSTDAT0, max_bytes);
+			host_outb(base, SMBHSTDAT0, max_bytes);
 		else
-			host_outb(smbus_base, SMBHSTDAT0, 0);
+			host_outb(base, SMBHSTDAT0, 0);
 	}
 
 	/* Send first byte from buffer, bytes_sent increments after
 	 * hardware acknowledges it.
 	 */
 	if (is_write_cmd)
-		host_outb(smbus_base, SMBBLKDAT, *buf++);
+		host_outb(base, SMBBLKDAT, *buf++);
 
 	/* Start the command */
-	ret = execute_command(smbus_base);
+	ret = execute_command(base);
 	if (ret < 0)
 		return ret;
 
 	/* Poll for transaction completion */
 	do {
-		status = host_inb(smbus_base, SMBHSTSTAT);
+		status = host_inb(base, SMBHSTSTAT);
 
 		if (status & SMBHSTSTS_BYTE_DONE) { /* Byte done */
 
 			if (is_write_cmd) {
 				bytes++;
 				if (bytes < max_bytes)
-					host_outb(smbus_base, SMBBLKDAT, *buf++);
+					host_outb(base, SMBBLKDAT, *buf++);
 			} else {
 				if (bytes < max_bytes)
-					*buf++ = host_inb(smbus_base, SMBBLKDAT);
+					*buf++ = host_inb(base, SMBBLKDAT);
 				bytes++;
 
 				/* Indicate that next byte is the last one. */
 				if (sw_drives_nak && (bytes + 1 >= max_bytes)) {
-					host_and_or(smbus_base, SMBHSTCTL,
-						    0xff, SMBHSTCNT_LAST_BYTE);
+					host_and_or(base, SMBHSTCTL, 0xff,
+						    SMBHSTCNT_LAST_BYTE);
 				}
 
 			}
@@ -317,17 +314,16 @@ static int block_cmd_loop(unsigned int smbus_base,
 			 * and clears HOST_BUSY flag once the byte count
 			 * has been reached or LAST_BYTE was set.
 			 */
-			host_outb(smbus_base, SMBHSTSTAT, SMBHSTSTS_BYTE_DONE);
+			host_outb(base, SMBHSTSTAT, SMBHSTSTS_BYTE_DONE);
 		}
 
 	} while (--loops && !host_completed(status));
 
-	dprintk("%s: status = %02x, len = %d / %d, loops = %d\n",
+	dprintk("%s: status = %02x, len = %zd / %zd, loops = %d\n",
 		__func__, status, bytes, max_bytes, SMBUS_TIMEOUT - loops);
 
 	if (loops == 0)
-		return recover_master(smbus_base,
-				      SMBUS_WAIT_UNTIL_DONE_TIMEOUT);
+		return recover_master(base, SMBUS_WAIT_UNTIL_DONE_TIMEOUT);
 
 	ret = cb_err_from_stat(status);
 	if (ret < 0)

@@ -232,6 +232,12 @@ int print_mchbar(struct pci_dev *nb, struct pci_access *pacc, const char *dump_s
 		mchbar_phys &= 0x0000007fffff8000UL; /* 38:15 */
 		size = 32768;
 		break;
+	case PCI_DEVICE_ID_INTEL_CORE_10TH_GEN_U:
+		mchbar_phys = pci_read_long(nb, 0x48);
+		mchbar_phys |= ((uint64_t)pci_read_long(nb, 0x4c)) << 32;
+		mchbar_phys &= 0x0000007fffff0000UL; /* 38:16 */
+		size = 32768;
+		break;
 	default:
 		printf("Error: Dumping MCHBAR on this northbridge is not (yet) supported.\n");
 		return 1;

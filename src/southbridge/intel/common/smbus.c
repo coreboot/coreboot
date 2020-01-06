@@ -333,54 +333,54 @@ static int block_cmd_loop(uintptr_t base, u8 *buf, size_t max_bytes, int flags)
 	return bytes;
 }
 
-int do_smbus_read_byte(uintptr_t smbus_base, u8 device, u8 address)
+int do_smbus_read_byte(uintptr_t base, u8 device, u8 address)
 {
-	return smbus_read_cmd(smbus_base, I801_BYTE_DATA, device, address);
+	return smbus_read_cmd(base, I801_BYTE_DATA, device, address);
 }
 
-int do_smbus_read_word(uintptr_t smbus_base, u8 device, u8 address)
+int do_smbus_read_word(uintptr_t base, u8 device, u8 address)
 {
-	return smbus_read_cmd(smbus_base, I801_WORD_DATA, device, address);
+	return smbus_read_cmd(base, I801_WORD_DATA, device, address);
 }
 
-int do_smbus_write_byte(uintptr_t smbus_base, u8 device, u8 address, u8 data)
+int do_smbus_write_byte(uintptr_t base, u8 device, u8 address, u8 data)
 {
-	return smbus_write_cmd(smbus_base, I801_BYTE_DATA, device, address, data);
+	return smbus_write_cmd(base, I801_BYTE_DATA, device, address, data);
 }
 
-int do_smbus_write_word(uintptr_t smbus_base, u8 device, u8 address, u16 data)
+int do_smbus_write_word(uintptr_t base, u8 device, u8 address, u16 data)
 {
-	return smbus_write_cmd(smbus_base, I801_WORD_DATA, device, address, data);
+	return smbus_write_cmd(base, I801_WORD_DATA, device, address, data);
 }
 
-int do_smbus_block_read(uintptr_t smbus_base, u8 device, u8 cmd, size_t max_bytes, u8 *buf)
+int do_smbus_block_read(uintptr_t base, u8 device, u8 cmd, size_t max_bytes, u8 *buf)
 {
 	int ret, slave_bytes;
 
 	max_bytes = MIN(SMBUS_BLOCK_MAXLEN, max_bytes);
 
 	/* Set up for a block data read. */
-	ret = setup_command(smbus_base, I801_BLOCK_DATA, XMIT_READ(device));
+	ret = setup_command(base, I801_BLOCK_DATA, XMIT_READ(device));
 	if (ret < 0)
 		return ret;
 
 	/* Set the command/address... */
-	host_outb(smbus_base, SMBHSTCMD, cmd);
+	host_outb(base, SMBHSTCMD, cmd);
 
 	/* Execute block transaction. */
-	ret = block_cmd_loop(smbus_base, buf, max_bytes, BLOCK_READ);
+	ret = block_cmd_loop(base, buf, max_bytes, BLOCK_READ);
 	if (ret < 0)
 		return ret;
 
 	/* Post-check we received complete message. */
-	slave_bytes = host_inb(smbus_base, SMBHSTDAT0);
+	slave_bytes = host_inb(base, SMBHSTDAT0);
 	if (ret < slave_bytes)
 		return SMBUS_ERROR;
 
 	return ret;
 }
 
-int do_smbus_block_write(uintptr_t smbus_base, u8 device, u8 cmd, const size_t bytes, const u8 *buf)
+int do_smbus_block_write(uintptr_t base, u8 device, u8 cmd, const size_t bytes, const u8 *buf)
 {
 	int ret;
 
@@ -388,15 +388,15 @@ int do_smbus_block_write(uintptr_t smbus_base, u8 device, u8 cmd, const size_t b
 		return SMBUS_ERROR;
 
 	/* Set up for a block data write. */
-	ret = setup_command(smbus_base, I801_BLOCK_DATA, XMIT_WRITE(device));
+	ret = setup_command(base, I801_BLOCK_DATA, XMIT_WRITE(device));
 	if (ret < 0)
 		return ret;
 
 	/* Set the command/address... */
-	host_outb(smbus_base, SMBHSTCMD, cmd);
+	host_outb(base, SMBHSTCMD, cmd);
 
 	/* Execute block transaction. */
-	ret = block_cmd_loop(smbus_base, (u8 *)buf, bytes, BLOCK_WRITE);
+	ret = block_cmd_loop(base, (u8 *)buf, bytes, BLOCK_WRITE);
 	if (ret < 0)
 		return ret;
 
@@ -415,7 +415,7 @@ static int has_i2c_read_command(void)
 	return 1;
 }
 
-int do_i2c_eeprom_read(uintptr_t smbus_base, u8 device, u8 offset, const size_t bytes, u8 *buf)
+int do_i2c_eeprom_read(uintptr_t base, u8 device, u8 offset, const size_t bytes, u8 *buf)
 {
 	int ret;
 
@@ -428,16 +428,16 @@ int do_i2c_eeprom_read(uintptr_t smbus_base, u8 device, u8 offset, const size_t 
 	 * some revision of PCH. Presumably hardware revisions that
 	 * do not have i2c block write support internally set LSB.
 	 */
-	ret = setup_command(smbus_base, I801_I2C_BLOCK_DATA,
+	ret = setup_command(base, I801_I2C_BLOCK_DATA,
 			    XMIT_WRITE(device));
 	if (ret < 0)
 		return ret;
 
 	/* device offset */
-	host_outb(smbus_base, SMBHSTDAT1, offset);
+	host_outb(base, SMBHSTDAT1, offset);
 
 	/* Execute block transaction. */
-	ret = block_cmd_loop(smbus_base, buf, bytes, BLOCK_READ | BLOCK_I2C);
+	ret = block_cmd_loop(base, buf, bytes, BLOCK_READ | BLOCK_I2C);
 	if (ret < 0)
 		return ret;
 
@@ -452,7 +452,7 @@ int do_i2c_eeprom_read(uintptr_t smbus_base, u8 device, u8 offset, const size_t 
  * The caller is responsible of settings HOSTC I2C_EN bit prior to making this
  * call!
  */
-int do_i2c_block_write(uintptr_t smbus_base, u8 device, size_t bytes, u8 *buf)
+int do_i2c_block_write(uintptr_t base, u8 device, size_t bytes, u8 *buf)
 {
 	u8 cmd;
 	int ret;
@@ -464,7 +464,7 @@ int do_i2c_block_write(uintptr_t smbus_base, u8 device, size_t bytes, u8 *buf)
 		return SMBUS_ERROR;
 
 	/* Set up for a block data write. */
-	ret = setup_command(smbus_base, I801_BLOCK_DATA, XMIT_WRITE(device));
+	ret = setup_command(base, I801_BLOCK_DATA, XMIT_WRITE(device));
 	if (ret < 0)
 		return ret;
 
@@ -476,11 +476,11 @@ int do_i2c_block_write(uintptr_t smbus_base, u8 device, size_t bytes, u8 *buf)
 	*/
 	cmd = *buf++;
 	bytes--;
-	host_outb(smbus_base, SMBHSTCMD, cmd);
-	host_outb(smbus_base, SMBHSTDAT1, cmd);
+	host_outb(base, SMBHSTCMD, cmd);
+	host_outb(base, SMBHSTDAT1, cmd);
 
 	/* Execute block transaction. */
-	ret = block_cmd_loop(smbus_base, buf, bytes, BLOCK_WRITE);
+	ret = block_cmd_loop(base, buf, bytes, BLOCK_WRITE);
 	if (ret < 0)
 		return ret;
 

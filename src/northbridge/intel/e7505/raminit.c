@@ -48,11 +48,6 @@
 Definitions:
 -----------------------------------------------------------------------------*/
 
-// Uncomment this to enable run-time checking of DIMM parameters
-// for dual-channel operation
-// Unfortunately the code seems to chew up several K of space.
-//#define VALIDATE_DIMM_COMPATIBILITY
-
 #if CONFIG(DEBUG_RAM_SETUP)
 #define RAM_DEBUG_MESSAGE(x)	printk(BIOS_DEBUG, x)
 #define RAM_DEBUG_HEX32(x)	printk(BIOS_DEBUG, "%08x", x)
@@ -115,7 +110,6 @@ static const uint32_t refresh_rate_map[] = {
 
 #define MAX_SPD_REFRESH_RATE ((sizeof(refresh_rate_map) / sizeof(uint32_t)) - 1)
 
-#ifdef VALIDATE_DIMM_COMPATIBILITY
 // SPD parameters that must match for dual-channel operation
 static const uint8_t dual_channel_parameters[] = {
 	SPD_MEMORY_TYPE,
@@ -126,7 +120,6 @@ static const uint8_t dual_channel_parameters[] = {
 	SPD_PRIMARY_SDRAM_WIDTH,
 	SPD_NUM_BANKS_PER_SDRAM
 };
-#endif /* VALIDATE_DIMM_COMPATIBILITY */
 
 	/* Comments here are remains of e7501 or even 855PM.
 	 * They might be partially (in)correct for e7505.
@@ -465,8 +458,6 @@ static struct dimm_size spd_get_dimm_size(unsigned int dimm_socket_address)
 	return sz;
 }
 
-#ifdef VALIDATE_DIMM_COMPATIBILITY
-
 /**
  * Determine whether two DIMMs have the same value for an SPD parameter.
  *
@@ -490,7 +481,6 @@ static uint8_t are_spd_values_equal(uint8_t spd_byte_number,
 
 	return bEqual;
 }
-#endif
 
 /**
  * Scan for compatible DIMMs.
@@ -527,10 +517,8 @@ static uint8_t spd_get_supported_dimms(const struct mem_controller *ctrl)
 		uint16_t channel0_dimm = ctrl->channel0[i];
 		uint16_t channel1_dimm = ctrl->channel1[i];
 		uint8_t bDualChannel = 1;
-#ifdef VALIDATE_DIMM_COMPATIBILITY
 		struct dimm_size page_size;
 		struct dimm_size sdram_width;
-#endif
 		int spd_value;
 
 		if (channel0_dimm == 0)
@@ -540,7 +528,6 @@ static uint8_t spd_get_supported_dimms(const struct mem_controller *ctrl)
 		    SPD_MEMORY_TYPE_SDRAM_DDR)
 			continue;
 
-#ifdef VALIDATE_DIMM_COMPATIBILITY
 		if (smbus_read_byte(channel0_dimm, SPD_MODULE_VOLTAGE) !=
 		    SPD_VOLTAGE_SSTL2)
 			continue;	// Unsupported voltage
@@ -586,7 +573,7 @@ static uint8_t spd_get_supported_dimms(const struct mem_controller *ctrl)
 			    && (sdram_width.side2 != 8))
 				continue;
 		}
-#endif
+
 		// Channel 0 DIMM looks compatible.
 		// Now see if it is paired with the proper DIMM on channel 1.
 
@@ -599,7 +586,7 @@ static uint8_t spd_get_supported_dimms(const struct mem_controller *ctrl)
 			printk(BIOS_DEBUG, "Skipping un-matched DIMMs - only dual-channel operation supported\n");
 			continue;
 		}
-#ifdef VALIDATE_DIMM_COMPATIBILITY
+
 		spd_value = smbus_read_byte(channel1_dimm,
 				  SPD_SUPPORTED_BURST_LENGTHS);
 		if (!(spd_value & SPD_BURST_LENGTH_4) || (spd_value < 0))
@@ -615,7 +602,6 @@ static uint8_t spd_get_supported_dimms(const struct mem_controller *ctrl)
 				break;
 			}
 		}
-#endif /* VALIDATE_DIMM_COMPATIBILITY */
 
 		if (bDualChannel) {
 			// This DIMM pair is usable

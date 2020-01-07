@@ -1740,28 +1740,38 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 		d060_control(D060_CMD_1);
 }
 
-/**
- *
- *
- */
-void e7505_mch_init(const struct mem_controller *memctrl)
-{
-	timestamp_add_now(TS_BEFORE_INITRAM);
-
-	sdram_set_registers(memctrl);
-	sdram_set_spd_registers(memctrl);
-	sdram_enable(memctrl);
-}
-
-void e7505_mch_done(const struct mem_controller *memctrl)
-{
-	sdram_post_ecc(memctrl);
-
-	timestamp_add_now(TS_AFTER_INITRAM);
-}
-
-int e7505_mch_is_ready(void)
+static int e7505_mch_is_ready(void)
 {
 	uint32_t dword = pci_read_config32(MCHDEV, DRC);
 	return !!(dword & DRC_DONE);
+}
+
+void sdram_initialize(void)
+{
+	static const struct mem_controller memctrl[] = {
+		{
+			.d0 = PCI_DEV(0, 0, 0),
+			.d0f1 = PCI_DEV(0, 0, 1),
+			.channel0 = { 0x50, 0x52, 0, 0 },
+			.channel1 = { 0x51, 0x53, 0, 0 },
+		},
+	};
+
+	/* If this is a warm boot, some initialisation can be skipped */
+	if (!e7505_mch_is_ready()) {
+
+		/* The real MCH initialisation. */
+		timestamp_add_now(TS_BEFORE_INITRAM);
+
+		sdram_set_registers(memctrl);
+		sdram_set_spd_registers(memctrl);
+		sdram_enable(memctrl);
+
+		/* Hook for post ECC scrub settings and debug. */
+		sdram_post_ecc(memctrl);
+
+		timestamp_add_now(TS_AFTER_INITRAM);
+	}
+
+	printk(BIOS_DEBUG, "SDRAM is up.\n");
 }

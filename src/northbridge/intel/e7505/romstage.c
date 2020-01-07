@@ -13,9 +13,7 @@
  * GNU General Public License for more details.
  */
 
-#include <stdint.h>
 #include <cbmem.h>
-#include <console/console.h>
 #include <arch/romstage.h>
 
 #include <southbridge/intel/i82801dx/i82801dx.h>
@@ -23,27 +21,12 @@
 
 void mainboard_romstage_entry(void)
 {
-	static const struct mem_controller memctrl[] = {
-		{
-			.d0 = PCI_DEV(0, 0, 0),
-			.d0f1 = PCI_DEV(0, 0, 1),
-			.channel0 = { 0x50, 0x52, 0, 0 },
-			.channel1 = { 0x51, 0x53, 0, 0 },
-		},
-	};
+	/* Perform some early chipset initialization required
+	 * before RAM initialization can work
+	 */
+	i82801dx_early_init();
 
-	/* If this is a warm boot, some initialization can be skipped */
-	if (!e7505_mch_is_ready()) {
-		enable_smbus();
-
-		/* The real MCH initialisation. */
-		e7505_mch_init(memctrl);
-
-		/* Hook for post ECC scrub settings and debug. */
-		e7505_mch_done(memctrl);
-	}
-
-	printk(BIOS_DEBUG, "SDRAM is up.\n");
+	sdram_initialize();
 
 	cbmem_recovery(0);
 }

@@ -21,6 +21,11 @@
 
 #include "i82801dx.h"
 
+void i82801dx_early_init(void)
+{
+	enable_smbus();
+}
+
 void enable_smbus(void)
 {
 	pci_devfn_t dev = PCI_DEV(0x0, 0x1f, 0x3);

@@ -6,6 +6,7 @@
  * SPDX-License-Identifier: GPL-2.0-or-later
  */
 
+#include <arch/acpi.h>
 #include <baseboard/variants.h>
 #include <device/device.h>
 
@@ -18,9 +19,16 @@ static void mainboard_init(void *chip_info)
 	gpio_configure_pads(pads, num);
 }
 
+static unsigned long mainboard_write_acpi_tables(
+		struct device *device, unsigned long current, acpi_rsdp_t *rsdp)
+{
+	return current;
+}
+
 static void mainboard_enable(struct device *dev)
 {
-	/* TODO: Enable mainboard */
+	dev->ops->write_acpi_tables = mainboard_write_acpi_tables;
+	dev->ops->acpi_inject_dsdt_generator = NULL;
 }
 
 struct chip_operations mainboard_ops = {

@@ -57,9 +57,6 @@ void mainboard_romstage_entry(void)
 		}
 	}
 
-	/* Enable SMBUS. */
-	enable_smbus();
-
 	early_thermal_init();
 
 	timestamp_add_now(TS_BEFORE_INITRAM);

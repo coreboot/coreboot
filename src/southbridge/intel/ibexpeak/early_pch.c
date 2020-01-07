@@ -44,6 +44,7 @@ static void pch_default_disable(void)
 void early_pch_init(void)
 {
 	early_gpio_init();
+	enable_smbus();
 	/* TODO, make this configurable */
 	pch_setup_cir(NEHALEM_MOBILE);
 	southbridge_configure_default_intmap();

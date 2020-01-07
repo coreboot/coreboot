@@ -1723,9 +1723,6 @@ void raminit(sysinfo_t *const sysinfo, const int s3resume)
 		while (!(read8((u8 *)0xfed40000) & (1 << 7))) {}
 	}
 
-	/* Enable SMBUS. */
-	enable_smbus();
-
 	/* Collect information about DIMMs and find common settings. */
 	collect_dimm_config(sysinfo);
 

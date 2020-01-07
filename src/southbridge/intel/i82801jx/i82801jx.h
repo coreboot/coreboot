@@ -225,8 +225,8 @@ static inline int lpc_is_mobile(const u16 devid)
 }
 #define LPC_IS_MOBILE(dev) lpc_is_mobile(pci_read_config16(dev, PCI_DEVICE_ID))
 
-#if ENV_ROMSTAGE
 void enable_smbus(void);
+#if ENV_ROMSTAGE
 int smbus_read_byte(unsigned int device, unsigned int address);
 int i2c_eeprom_read(unsigned int device, unsigned int cmd, unsigned int bytes,
 		u8 *buf);

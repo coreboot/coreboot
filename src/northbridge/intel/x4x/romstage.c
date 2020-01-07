@@ -34,8 +34,6 @@ void mainboard_romstage_entry(void)
 	u8 boot_path = 0;
 	u8 s3_resume;
 
-	enable_smbus();
-
 #if CONFIG(SOUTHBRIDGE_INTEL_I82801JX)
 	i82801jx_early_init();
 #elif CONFIG(SOUTHBRIDGE_INTEL_I82801GX)

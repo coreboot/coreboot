@@ -23,6 +23,9 @@ void i82801ix_early_init(void)
 {
 	const pci_devfn_t d31f0 = PCI_DEV(0, 0x1f, 0);
 
+	if (ENV_ROMSTAGE)
+		enable_smbus();
+
 	/* Set up RCBA. */
 	pci_write_config32(d31f0, RCBA, (uintptr_t)DEFAULT_RCBA | 1);
 

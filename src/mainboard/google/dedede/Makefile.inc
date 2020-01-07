@@ -1,5 +1,11 @@
 bootblock-y += bootblock.c
+bootblock-$(CONFIG_CHROMEOS) += chromeos.c
 
+verstage-$(CONFIG_CHROMEOS) += chromeos.c
+
+romstage-$(CONFIG_CHROMEOS) += chromeos.c
+
+ramstage-$(CONFIG_CHROMEOS) += chromeos.c
 ramstage-y += mainboard.c
 
 smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c

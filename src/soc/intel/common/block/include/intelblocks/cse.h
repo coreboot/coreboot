@@ -26,7 +26,7 @@
 /* Global Reset Command ID */
 #define MKHI_CBM_GLOBAL_RESET_REQ   0xb
 
-/* RST Origin  */
+/* Origin of Global Reset command */
 #define GR_ORIGIN_BIOS_POST     0x2
 
 /* HMRFPO Command Ids */
@@ -127,7 +127,6 @@ uint32_t me_read_config32(int offset);
  */
 bool is_cse_enabled(void);
 
-
 /* Makes the host ready to communicate with CSE*/
 void set_host_ready(void);
 
@@ -157,18 +156,20 @@ int send_hmrfpo_enable_msg(void);
  */
 int send_hmrfpo_get_status_msg(void);
 
+/* Fixed Address MEI Header's Host Address field value */
+#define BIOS_HOST_ADDR	0x00
 
-#define BIOS_HOST_ADDR							0x00
-#define HECI_MKHI_ADDR							0x07
+/* Fixed Address MEI Header's ME Address field value */
+#define HECI_MKHI_ADDR	0x07
 
 /* Command GLOBAL_RESET_REQ Reset Types */
-#define GLOBAL_RESET       1
-#define HOST_RESET_ONLY    2
-#define CSE_RESET_ONLY     3
+#define GLOBAL_RESET	1
+#define HOST_RESET_ONLY	2
+#define CSE_RESET_ONLY	3
 
-/*HMRFPO Status types */
+/* HMRFPO Status types */
 #define MKHI_HMRFPO_DISABLED	0
 #define MKHI_HMRFPO_LOCKED	1
 #define MKHI_HMRFPO_ENABLED	2
 
-#endif // SOC_INTEL_COMMON_MSR_H
+#endif // SOC_INTEL_COMMON_CSE_H

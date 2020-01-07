@@ -1,8 +1,6 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2007 Uwe Hermann <uwe@hermann-uwe.de>
- *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -14,22 +12,19 @@
  * GNU General Public License for more details.
  */
 
-#ifndef RAMINIT_H
-#define RAMINIT_H
+#include <arch/romstage.h>
+#include <cbmem.h>
+#include <console/console.h>
+#include <southbridge/intel/i82371eb/i82371eb.h>
+#include <northbridge/intel/i440bx/raminit.h>
 
-/* The 440BX supports up to four (single- or double-sided) DIMMs. */
-#define DIMM_SOCKETS	4
+void mainboard_romstage_entry(void)
+{
+	mainboard_enable_serial();
+	console_init();
 
-void enable_spd(void);
-void disable_spd(void);
-void sdram_initialize(void);
-void mainboard_enable_serial(void);
+	i82371eb_early_init();
 
-/* Debug */
-#if CONFIG(DEBUG_RAM_SETUP)
-void dump_spd_registers(void);
-void dump_pci_device(unsigned int dev);
-#else
-#define dump_spd_registers()
-#endif
-#endif				/* RAMINIT_H */
+	sdram_initialize();
+	cbmem_initialize_empty();
+}

@@ -15,14 +15,11 @@
  */
 
 #include <arch/io.h>
-#include <console/console.h>
 #include <southbridge/intel/i82371eb/i82371eb.h>
 #include <northbridge/intel/i440bx/raminit.h>
-#include <arch/romstage.h>
 #include <superio/winbond/common/winbond.h>
 /* FIXME: The ASUS P3B-F has a Winbond W83977EF, actually. */
 #include <superio/winbond/w83977tf/w83977tf.h>
-#include <cbmem.h>
 
 /* FIXME: The ASUS P3B-F has a Winbond W83977EF, actually. */
 #define SERIAL_DEV PNP_DEV(0x3f0, W83977TF_SP1)
@@ -58,16 +55,7 @@ void disable_spd(void)
 	outb(0x67, PM_IO_BASE + 0x37);
 }
 
-void mainboard_romstage_entry(void)
+void mainboard_enable_serial(void)
 {
 	winbond_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
-	console_init();
-
-	enable_smbus();
-	enable_pm();
-
-
-	sdram_initialize();
-
-	cbmem_initialize_empty();
 }

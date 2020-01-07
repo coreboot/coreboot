@@ -21,6 +21,7 @@
 
 void enable_smbus(void);
 void enable_pm(void);
+void i82371eb_early_init(void);
 
 #if ENV_ROMSTAGE
 int smbus_read_byte(u8 device, u8 address);

@@ -667,7 +667,7 @@ static void spd_enable_refresh(void)
 Public interface.
 -----------------------------------------------------------------------------*/
 
-void sdram_set_registers(void)
+static void sdram_set_registers(void)
 {
 	int i, max;
 	uint8_t reg;
@@ -977,7 +977,7 @@ static void set_dram_row_attributes(void)
 	PRINT_DEBUG("DRAMC has been set to 0x%02x\n", value);
 }
 
-void sdram_set_spd_registers(void)
+static void sdram_set_spd_registers(void)
 {
 	/* Setup DRAM row boundary registers and other attributes. */
 	set_dram_row_attributes();
@@ -993,7 +993,7 @@ void sdram_set_spd_registers(void)
 	pci_write_config8(NB, DRAMT, 0x03);
 }
 
-void sdram_enable(void)
+static void sdram_enable(void)
 {
 	int i;
 

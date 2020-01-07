@@ -23,6 +23,12 @@
 #include <device/smbus_host.h>
 #include "i82371eb.h"
 
+void i82371eb_early_init(void)
+{
+	enable_smbus();
+	enable_pm();
+}
+
 void enable_smbus(void)
 {
 	pci_devfn_t dev;

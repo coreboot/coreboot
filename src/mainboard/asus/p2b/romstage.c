@@ -14,22 +14,13 @@
  * GNU General Public License for more details.
  */
 
-#include <console/console.h>
-#include <southbridge/intel/i82371eb/i82371eb.h>
 #include <northbridge/intel/i440bx/raminit.h>
-#include <arch/romstage.h>
 #include <superio/winbond/common/winbond.h>
 #include <superio/winbond/w83977tf/w83977tf.h>
-#include <cbmem.h>
 
 #define SERIAL_DEV PNP_DEV(0x3f0, W83977TF_SP1)
 
-void mainboard_romstage_entry(void)
+void mainboard_enable_serial(void)
 {
 	winbond_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
-	console_init();
-
-	enable_smbus();
-	sdram_initialize();
-	cbmem_initialize_empty();
 }

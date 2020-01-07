@@ -32,4 +32,8 @@ config UART_FOR_CONSOLE
 	int
 	default 2
 
+config VARIANT_DIR
+	string
+	default "dedede" if BOARD_GOOGLE_DEDEDE
+
 endif #BOARD_GOOGLE_BASEBOARD_DEDEDE

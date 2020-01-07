@@ -1257,21 +1257,6 @@ static void configure_e7501_dram_controller_mode(const struct
 		    refresh_frequency[system_refresh_mode])
 			system_refresh_mode = dimm_refresh_mode;
 
-#ifdef SUSPICIOUS_LOOKING_CODE
-// SJM NOTE: This code doesn't look right. SPD values are an order of magnitude smaller
-//                       than the clock period of the memory controller. Also, no other northbridge
-//                       looks at SPD_CMD_SIGNAL_INPUT_HOLD_TIME.
-
-		// Switch to 2 clocks for address/command if required by any one of the DIMMs
-		// NOTE: At 133 MHz, 1 clock == 7.52 ns
-		value = smbus_read_byte(dimm_socket_address,
-				  SPD_CMD_SIGNAL_INPUT_HOLD_TIME);
-		die_on_spd_error(value);
-		if (value >= 0xa0) {	/* At 133MHz this constant should be 0x75 */
-			controller_mode &= ~(1 << 16);	/* Use two clock cycles instead of one */
-		}
-#endif
-
 		/* go to the next DIMM */
 	}
 
@@ -1723,17 +1708,6 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 	byte = pci_read_config8(MCHDEV, 0xd9);
 	byte &= ~0x60;
 	pci_write_config8(MCHDEV, 0xd9, byte);
-
-#ifdef SUSPICIOUS_LOOKING_CODE
-	/* This will access D2:F0:0x50, is this correct??
-	 * Vendor BIOS reads Device ID before this is set.
-	 * Undocumented in the p64h2 PCI-X bridge datasheet.
-	 */
-	byte = pci_read_config8(PCI_DEV(0,2,0), 0x50);
-	byte &= 0xcf;
-	byte |= 0x30
-	pci_write_config8(PCI_DEV(0,2,0), 0x50, byte);
-#endif
 
 	uint8_t revision = pci_read_config8(MCHDEV, 0x08);
 	if (revision >= 3)

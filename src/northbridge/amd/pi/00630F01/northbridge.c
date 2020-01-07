@@ -860,7 +860,7 @@ static void cpu_bus_scan(struct device *dev)
 			u32 lapicid_start = 0;
 
 			/*
-			 * APIC ID calucation is tightly coupled with AGESA v5 code.
+			 * APIC ID calculation is tightly coupled with AGESA v5 code.
 			 * This calculation MUST match the assignment calculation done
 			 * in LocalApicInitializationAtEarly() function.
 			 * And reference GetLocalApicIdForCore()

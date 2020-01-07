@@ -49,7 +49,7 @@ int spd_read_byte(unsigned int device, unsigned int address)
  * 24-30 of the PIIX4E (bit 31 is reserved). Thus, GPIOs 27 and 28
  * control which SMBus/I2C offsets can be accessed.
  */
-static void enable_spd(void)
+void enable_spd(void)
 {
 	outb(0x6f, PM_IO_BASE + 0x37);
 }
@@ -58,7 +58,7 @@ static void enable_spd(void)
  * Disable SPD access after RAM init to allow access to SMBus/I2C offsets
  * 0x48/0x49/0x2d, which is required e.g. by lm-sensors.
  */
-static void disable_spd(void)
+void disable_spd(void)
 {
 	outb(0x67, PM_IO_BASE + 0x37);
 }
@@ -71,10 +71,8 @@ void mainboard_romstage_entry(void)
 	enable_smbus();
 	enable_pm();
 
-	enable_spd();
 
 	sdram_initialize();
 
-	disable_spd();
 	cbmem_initialize_empty();
 }

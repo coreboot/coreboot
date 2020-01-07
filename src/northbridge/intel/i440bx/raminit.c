@@ -1035,10 +1035,18 @@ void sdram_enable(void)
 	DUMPNORTH();
 }
 
+/* Implemented under mainboard. */
+void __weak enable_spd(void) { }
+void __weak disable_spd(void) { }
+
 void sdram_initialize(void)
 {
+	enable_spd();
+
 	dump_spd_registers();
 	sdram_set_registers();
 	sdram_set_spd_registers();
 	sdram_enable();
+
+	disable_spd();
 }

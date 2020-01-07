@@ -327,4 +327,7 @@ void early_pch_init(void)
 	pch_enable_gbe();
 
 	setup_pch_gpios(&mainboard_gpio_map);
+
+	if (ENV_ROMSTAGE)
+		enable_smbus();
 }

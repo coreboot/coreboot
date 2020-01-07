@@ -82,9 +82,6 @@ void mainboard_romstage_entry(void)
 
 	mainboard_early_init(s3resume);
 
-	/* Enable SPD ROMs and DDR-III DRAM */
-	enable_smbus();
-
 	post_code(0x39);
 
 	perform_raminit(s3resume);

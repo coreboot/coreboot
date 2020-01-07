@@ -1,15 +1,11 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include <device/pci_ops.h>
+#include <device/smbus_host.h>
 #include <cbmem.h>
 #include <cf9_reset.h>
 #include <console/console.h>
 #include <arch/cpu.h>
-#if CONFIG(SOUTHBRIDGE_INTEL_I82801GX)
-#include <southbridge/intel/i82801gx/i82801gx.h> /* smbus_read_byte */
-#else
-#include <southbridge/intel/i82801jx/i82801jx.h> /* smbus_read_byte */
-#endif
 #include <spd.h>
 #include <string.h>
 #include <device/dram/ddr2.h>

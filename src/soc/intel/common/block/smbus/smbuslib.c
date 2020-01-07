@@ -31,9 +31,9 @@ static void smbus_read_spd(u8 *spd, u8 addr)
 	for (i = 0; i < SPD_PAGE_LEN; i += step) {
 		if (CONFIG(SPD_READ_BY_WORD))
 			((u16*)spd)[i / sizeof(uint16_t)] =
-				 do_smbus_read_word(SMBUS_IO_BASE, addr, i);
+				 smbus_read_word(addr, i);
 		else
-			spd[i] = do_smbus_read_byte(SMBUS_IO_BASE, addr, i);
+			spd[i] = smbus_read_byte(addr, i);
 	}
 }
 
@@ -41,30 +41,28 @@ static void smbus_read_spd(u8 *spd, u8 addr)
 static int get_spd(u8 *spd, u8 addr)
 {
 	/* If address is not 0, it will return CB_ERR(-1) if no dimm */
-	if (do_smbus_read_byte(SMBUS_IO_BASE, addr, 0) < 0) {
+	if (smbus_read_byte(addr, 0) < 0) {
 		printk(BIOS_INFO, "No memory dimm at address %02X\n",
 			addr << 1);
 		return -1;
 	}
 
-	if (do_i2c_eeprom_read(SMBUS_IO_BASE, addr, 0, SPD_PAGE_LEN, spd) == SMBUS_ERROR) {
+	if (i2c_eeprom_read(addr, 0, SPD_PAGE_LEN, spd) < 0) {
 		printk(BIOS_INFO, "do_i2c_eeprom_read failed, using fallback\n");
 		smbus_read_spd(spd, addr);
 	}
 
 	/* Check if module is DDR4, DDR4 spd is 512 byte. */
-	if (spd[SPD_DRAM_TYPE] == SPD_DRAM_DDR4 &&
-		CONFIG_DIMM_SPD_SIZE > SPD_PAGE_LEN) {
+	if (spd[SPD_DRAM_TYPE] == SPD_DRAM_DDR4 && CONFIG_DIMM_SPD_SIZE > SPD_PAGE_LEN) {
 		/* Switch to page 1 */
-		do_smbus_write_byte(SMBUS_IO_BASE, SPD_PAGE_1, 0, 0);
+		smbus_write_byte(SPD_PAGE_1, 0, 0);
 
-		if (do_i2c_eeprom_read(SMBUS_IO_BASE, addr, 0, SPD_PAGE_LEN,
-				       spd + SPD_PAGE_LEN) == SMBUS_ERROR) {
+		if (i2c_eeprom_read(addr, 0, SPD_PAGE_LEN, spd + SPD_PAGE_LEN) < 0) {
 			printk(BIOS_INFO, "do_i2c_eeprom_read failed, using fallback\n");
 			smbus_read_spd(spd + SPD_PAGE_LEN, addr);
 		}
 		/* Restore to page 0 */
-		do_smbus_write_byte(SMBUS_IO_BASE, SPD_PAGE_0, 0, 0);
+		smbus_write_byte(SPD_PAGE_0, 0, 0);
 	}
 	return 0;
 }
@@ -105,7 +103,7 @@ enum cb_err get_spd_sn(u8 addr, u32 *sn)
 		return CB_ERR;
 
 	/* If dimm is not present, set sn to 0xff. */
-	smbus_ret = do_smbus_read_byte(SMBUS_IO_BASE, addr, SPD_DRAM_TYPE);
+	smbus_ret = smbus_read_byte(addr, SPD_DRAM_TYPE);
 	if (smbus_ret < 0) {
 		printk(BIOS_INFO, "No memory dimm at address %02X\n", addr);
 		*sn = 0xffffffff;
@@ -117,17 +115,17 @@ enum cb_err get_spd_sn(u8 addr, u32 *sn)
 	/* Check if module is DDR4, DDR4 spd is 512 byte. */
 	if (dram_type == SPD_DRAM_DDR4 && CONFIG_DIMM_SPD_SIZE > SPD_PAGE_LEN) {
 		/* Switch to page 1 */
-		do_smbus_write_byte(SMBUS_IO_BASE, SPD_PAGE_1, 0, 0);
+		smbus_write_byte(SPD_PAGE_1, 0, 0);
 
 		for (i = 0; i < SPD_SN_LEN; i++)
-			*((u8 *)sn + i) = do_smbus_read_byte(SMBUS_IO_BASE, addr,
+			*((u8 *)sn + i) = smbus_read_byte(addr,
 						i + DDR4_SPD_SN_OFF);
 
 		/* Restore to page 0 */
-		do_smbus_write_byte(SMBUS_IO_BASE, SPD_PAGE_0, 0, 0);
+		smbus_write_byte(SPD_PAGE_0, 0, 0);
 	} else if (dram_type == SPD_DRAM_DDR3) {
 		for (i = 0; i < SPD_SN_LEN; i++)
-			*((u8 *)sn + i) = do_smbus_read_byte(SMBUS_IO_BASE, addr,
+			*((u8 *)sn + i) = smbus_read_byte(addr,
 							i + DDR3_SPD_SN_OFF);
 	} else {
 		printk(BIOS_ERR, "Unsupported dram_type\n");

@@ -32,8 +32,3 @@ int smbus_enable_iobar(uintptr_t base)
 
 	return 0;
 }
-
-int smbus_read_byte(unsigned int device, unsigned int address)
-{
-	return do_smbus_read_byte(SMBUS_IO_BASE, device, address);
-}

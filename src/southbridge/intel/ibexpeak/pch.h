@@ -39,13 +39,6 @@
 void pch_iobp_update(u32 address, u32 andvalue, u32 orvalue);
 void enable_usb_bar(void);
 
-#if ENV_ROMSTAGE
-int smbus_read_byte(unsigned int device, unsigned int address);
-int smbus_write_byte(unsigned int device, unsigned int address, u8 data);
-int smbus_block_read(unsigned int device, unsigned int cmd, u8 bytes, u8 *buf);
-int smbus_block_write(unsigned int device, unsigned int cmd, u8 bytes, const u8 *buf);
-#endif
-
 void early_pch_init(void);
 
 void early_thermal_init(void);

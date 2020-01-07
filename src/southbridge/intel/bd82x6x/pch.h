@@ -48,10 +48,6 @@ void pch_iobp_update(u32 address, u32 andvalue, u32 orvalue);
 
 void enable_usb_bar(void);
 
-#if ENV_ROMSTAGE
-int smbus_read_byte(unsigned int device, unsigned int address);
-#endif
-
 void early_thermal_init(void);
 void southbridge_configure_default_intmap(void);
 void southbridge_rcba_config(void);

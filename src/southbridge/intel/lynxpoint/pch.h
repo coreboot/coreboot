@@ -160,11 +160,6 @@ void pch_log_state(void);
 void acpi_create_intel_hpet(acpi_hpet_t * hpet);
 void acpi_create_serialio_ssdt(acpi_header_t *ssdt);
 
-
-#if ENV_ROMSTAGE
-int smbus_read_byte(unsigned int device, unsigned int address);
-#endif
-
 void enable_usb_bar(void);
 int early_pch_init(const void *gpio_map,
                    const struct rcba_config_instruction *rcba_config);

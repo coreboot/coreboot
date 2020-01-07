@@ -29,6 +29,7 @@ static inline const struct smbus_bus_operations *ops_smbus_bus(struct bus *bus)
 
 struct bus *get_pbus_smbus(struct device *dev);
 
+#if !DEVTREE_EARLY
 static inline int smbus_recv_byte(struct device *const dev)
 {
 	return i2c_dev_readb(dev);
@@ -51,5 +52,6 @@ static inline int smbus_write_byte(struct device *const dev, u8 addr, u8 val)
 
 int smbus_block_read(struct device *dev, u8 cmd, u8 bytes, u8 *buffer);
 int smbus_block_write(struct device *dev, u8 cmd, u8 bytes, const u8 *buffer);
+#endif
 
 #endif /* DEVICE_SMBUS_H */

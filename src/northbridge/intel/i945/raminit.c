@@ -4,6 +4,7 @@
 #include <delay.h>
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
+#include <device/smbus_host.h>
 #include <cf9_reset.h>
 #include <device/mmio.h>
 #include <device/device.h>

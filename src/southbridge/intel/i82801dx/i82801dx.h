@@ -16,11 +16,9 @@
 #if !defined(__ASSEMBLER__)
 
 #include <device/device.h>
-#include "chip.h"
 
 void i82801dx_enable(struct device *dev);
 void i82801dx_early_init(void);
-int smbus_read_byte(unsigned int device, unsigned int address);
 void aseg_smm_lock(void);
 
 #endif

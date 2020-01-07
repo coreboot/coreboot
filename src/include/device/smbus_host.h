@@ -41,4 +41,42 @@ static inline void enable_smbus(void)
 	printk(BIOS_DEBUG, "SMBus controller enabled\n");
 }
 
+#if DEVTREE_EARLY
+static inline int smbus_read_byte(u8 device, u8 address)
+{
+	uintptr_t base = smbus_base();
+	return do_smbus_read_byte(base, device, address);
+}
+
+static inline int smbus_read_word(u8 device, u8 address)
+{
+	uintptr_t base = smbus_base();
+	return do_smbus_read_word(base, device, address);
+}
+
+static inline int smbus_write_byte(u8 device, u8 address, u8 data)
+{
+	uintptr_t base = smbus_base();
+	return do_smbus_write_byte(base, device, address, data);
+}
+
+static inline int smbus_block_read(u8 device, u8 cmd, size_t max_bytes, u8 *buf)
+{
+	uintptr_t base = smbus_base();
+	return do_smbus_block_read(base, device, cmd, max_bytes, buf);
+}
+
+static inline int smbus_block_write(u8 device, u8 cmd, size_t bytes, const u8 *buf)
+{
+	uintptr_t base = smbus_base();
+	return do_smbus_block_write(base, device, cmd, bytes, buf);
+}
+
+static inline int i2c_eeprom_read(u8 device, u8 offset, size_t bytes, u8 *buf)
+{
+	uintptr_t base = smbus_base();
+	return do_i2c_eeprom_read(base, device, offset, bytes, buf);
+}
+#endif
+
 #endif

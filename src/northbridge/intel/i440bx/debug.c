@@ -2,8 +2,8 @@
 
 #include <console/console.h>
 #include <device/pci_ops.h>
+#include <device/smbus_host.h>
 #include <spd.h>
-#include <southbridge/intel/i82371eb/i82371eb.h>
 #include "raminit.h"
 
 void dump_spd_registers(void)

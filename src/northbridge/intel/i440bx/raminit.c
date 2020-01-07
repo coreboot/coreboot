@@ -6,12 +6,11 @@
 #include <device/mmio.h>
 #include <device/pci_ops.h>
 #include <device/pci_def.h>
+#include <device/smbus_host.h>
 #include <console/console.h>
 #include <timestamp.h>
 #include "i440bx.h"
 #include "raminit.h"
-
-#include <southbridge/intel/i82371eb/i82371eb.h>
 
 /*
  * Macros and definitions

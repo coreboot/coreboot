@@ -210,14 +210,6 @@ static inline int lpc_is_mobile(const u16 devid)
 }
 #define LPC_IS_MOBILE(dev) lpc_is_mobile(pci_read_config16(dev, PCI_DEVICE_ID))
 
-#if ENV_ROMSTAGE
-int smbus_read_byte(unsigned int device, unsigned int address);
-int i2c_eeprom_read(unsigned int device, unsigned int cmd, unsigned int bytes,
-		u8 *buf);
-int smbus_block_read(unsigned int device, unsigned int cmd, u8 bytes, u8 *buf);
-int smbus_block_write(unsigned int device, unsigned int cmd, u8 bytes,
-		const u8 *buf);
-#endif
 void i82801jx_lpc_setup(void);
 void i82801jx_setup_bars(void);
 void i82801jx_early_init(void);

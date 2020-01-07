@@ -3,6 +3,7 @@
 #include <cf9_reset.h>
 #include <device/mmio.h>
 #include <device/pci_ops.h>
+#include <device/smbus_host.h>
 #include <commonlib/helpers.h>
 #include <console/console.h>
 #include <delay.h>

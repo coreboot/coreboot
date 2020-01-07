@@ -3,8 +3,7 @@
 #include <stdint.h>
 #include <arch/io.h>
 #include <ec/acpi/ec.h>
-
-#include <southbridge/intel/ibexpeak/pch.h>
+#include <device/smbus_host.h>
 #include <northbridge/intel/ironlake/ironlake.h>
 
 const struct southbridge_usb_port mainboard_usb_ports[] = {

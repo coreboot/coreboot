@@ -48,8 +48,14 @@ Name(PR0, Package(){
 	Package(){0x0013FFFF, 0, INTC, 0 },
 	Package(){0x0013FFFF, 1, INTB, 0 },
 
-	/* Bus 0, Dev 10 Func 0 - USB: XHCI */
+	/* Bus 0, Dev 16 Func 0 - USB: OHCI */
+	/* Bus 0, Dev 16 Func 2 - USB: EHCI */
+	Package(){0x0016FFFF, 0, INTC, 0 },
+	Package(){0x0016FFFF, 1, INTB, 0 },
+
+	/* Bus 0, Dev 10 - USB: XHCI func 0, 1 */
 	Package(){0x0010FFFF, 0, INTC, 0 },
+	Package(){0x0010FFFF, 1, INTB, 0 },
 
 	/* Bus 0, Dev 11 - SATA controller */
 	Package(){0x0011FFFF, 0, INTD, 0 },
@@ -87,8 +93,14 @@ Name(APR0, Package(){
 	Package(){0x0013FFFF, 0, 0, 18 },
 	Package(){0x0013FFFF, 1, 0, 17 },
 
-	/* Bus 0, Dev 10, Func 0 - USB: XHCI */
+	/* Bus 0, Dev 16 Func 0 - USB: OHCI */
+	/* Bus 0, Dev 16 Func 1 - USB: EHCI */
+	Package(){0x0016FFFF, 0, 0, 18 },
+	Package(){0x0016FFFF, 1, 0, 17 },
+
+	/* Bus 0, Dev 10 - USB: XHCI func 0, 1 */
 	Package(){0x0010FFFF, 0, 0, 18 },
+	Package(){0x0010FFFF, 1, 0, 17 },
 
 	/* Bus 0, Dev 11 - SATA controller */
 	Package(){0x0011FFFF, 0, 0, 19 },

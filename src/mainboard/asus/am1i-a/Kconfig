@@ -37,7 +37,7 @@ config MAX_CPUS
 
 config IRQ_SLOT_COUNT
 	int
-	default 9
+	default 10
 
 config ONBOARD_VGA_IS_PRIMARY
 	bool

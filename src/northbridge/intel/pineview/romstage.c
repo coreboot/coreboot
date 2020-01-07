@@ -51,8 +51,6 @@ void mainboard_romstage_entry(void)
 
 	enable_lapic();
 
-	enable_smbus();
-
 	/* Perform some early chipset initialization required
 	 * before RAM initialization can work
 	 */

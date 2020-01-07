@@ -61,9 +61,6 @@ void mainboard_romstage_entry(void)
 
 	s3resume = southbridge_detect_s3_resume();
 
-	/* Enable SPD ROMs and DDR-II DRAM */
-	enable_smbus();
-
 	mainboard_pre_raminit_config(s3resume);
 
 	if (CONFIG(DEBUG_RAM_SETUP))

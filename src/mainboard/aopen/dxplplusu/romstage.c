@@ -21,11 +21,6 @@
 #include <southbridge/intel/i82801dx/i82801dx.h>
 #include <northbridge/intel/e7505/raminit.h>
 
-int spd_read_byte(unsigned int device, unsigned int address)
-{
-	return smbus_read_byte(device, address);
-}
-
 void mainboard_romstage_entry(void)
 {
 	static const struct mem_controller memctrl[] = {

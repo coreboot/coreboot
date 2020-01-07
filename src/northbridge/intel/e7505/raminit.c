@@ -39,6 +39,7 @@
 #include <spd.h>
 #include <sdram_mode.h>
 #include <timestamp.h>
+#include <southbridge/intel/i82801dx/i82801dx.h>
 
 #include "raminit.h"
 #include "e7505.h"
@@ -338,20 +339,18 @@ static struct dimm_size sdram_spd_get_page_size(uint16_t dimm_socket_address)
 	pgsz.side2 = 0;
 
 	// Side 1
-	value = spd_read_byte(dimm_socket_address, SPD_NUM_COLUMNS);
+	value = smbus_read_byte(dimm_socket_address, SPD_NUM_COLUMNS);
 	if (value < 0)
 		goto hw_err;
 	pgsz.side1 = value & 0xf;	// # columns in bank 1
 
 	/* Get the module data width and convert it to a power of two */
-	value =
-	    spd_read_byte(dimm_socket_address, SPD_MODULE_DATA_WIDTH_MSB);
+	value = smbus_read_byte(dimm_socket_address, SPD_MODULE_DATA_WIDTH_MSB);
 	if (value < 0)
 		goto hw_err;
 	module_data_width = (value & 0xff) << 8;
 
-	value =
-	    spd_read_byte(dimm_socket_address, SPD_MODULE_DATA_WIDTH_LSB);
+	value = smbus_read_byte(dimm_socket_address, SPD_MODULE_DATA_WIDTH_LSB);
 	if (value < 0)
 		goto hw_err;
 	module_data_width |= (value & 0xff);
@@ -359,7 +358,7 @@ static struct dimm_size sdram_spd_get_page_size(uint16_t dimm_socket_address)
 	pgsz.side1 += log2(module_data_width);
 
 	/* side two */
-	value = spd_read_byte(dimm_socket_address, SPD_NUM_DIMM_BANKS);
+	value = smbus_read_byte(dimm_socket_address, SPD_NUM_DIMM_BANKS);
 	if (value < 0)
 		goto hw_err;
 	if (value > 2)
@@ -367,8 +366,7 @@ static struct dimm_size sdram_spd_get_page_size(uint16_t dimm_socket_address)
 	if (value == 2) {
 
 		pgsz.side2 = pgsz.side1;	// Assume symmetric banks until we know differently
-		value =
-		    spd_read_byte(dimm_socket_address, SPD_NUM_COLUMNS);
+		value = smbus_read_byte(dimm_socket_address, SPD_NUM_COLUMNS);
 		if (value < 0)
 			goto hw_err;
 		if ((value & 0xf0) != 0) {
@@ -399,8 +397,7 @@ static struct dimm_size sdram_spd_get_width(uint16_t dimm_socket_address)
 	width.side1 = 0;
 	width.side2 = 0;
 
-	value =
-	    spd_read_byte(dimm_socket_address, SPD_PRIMARY_SDRAM_WIDTH);
+	value = smbus_read_byte(dimm_socket_address, SPD_PRIMARY_SDRAM_WIDTH);
 	die_on_spd_error(value);
 
 	width.side1 = value & 0x7f;	// Mask off bank 2 flag
@@ -409,8 +406,7 @@ static struct dimm_size sdram_spd_get_width(uint16_t dimm_socket_address)
 		width.side2 = width.side1 << 1;	// Bank 2 exists and is double-width
 	} else {
 		// If bank 2 exists, it's the same width as bank 1
-		value =
-		    spd_read_byte(dimm_socket_address, SPD_NUM_DIMM_BANKS);
+		value = smbus_read_byte(dimm_socket_address, SPD_NUM_DIMM_BANKS);
 		die_on_spd_error(value);
 
 		if (value == 2)
@@ -442,7 +438,7 @@ static struct dimm_size spd_get_dimm_size(unsigned int dimm_socket_address)
 
 	if (sz.side1 > 0) {
 
-		value = spd_read_byte(dimm_socket_address, SPD_NUM_ROWS);
+		value = smbus_read_byte(dimm_socket_address, SPD_NUM_ROWS);
 		die_on_spd_error(value);
 
 		sz.side1 += value & 0xf;
@@ -456,8 +452,7 @@ static struct dimm_size spd_get_dimm_size(unsigned int dimm_socket_address)
 				sz.side2 += value;	// Symmetric
 		}
 
-		value =
-		    spd_read_byte(dimm_socket_address,
+		value = smbus_read_byte(dimm_socket_address,
 				  SPD_NUM_BANKS_PER_SDRAM);
 		die_on_spd_error(value);
 
@@ -486,8 +481,8 @@ static uint8_t are_spd_values_equal(uint8_t spd_byte_number,
 				    uint16_t dimm1_address)
 {
 	uint8_t bEqual = 0;
-	int dimm0_value = spd_read_byte(dimm0_address, spd_byte_number);
-	int dimm1_value = spd_read_byte(dimm1_address, spd_byte_number);
+	int dimm0_value = smbus_read_byte(dimm0_address, spd_byte_number);
+	int dimm1_value = smbus_read_byte(dimm1_address, spd_byte_number);
 
 	if ((dimm0_value >= 0) && (dimm1_value >= 0)
 	    && (dimm0_value == dimm1_value))
@@ -541,25 +536,23 @@ static uint8_t spd_get_supported_dimms(const struct mem_controller *ctrl)
 		if (channel0_dimm == 0)
 			continue;	// No such socket on this mainboard
 
-		if (spd_read_byte(channel0_dimm, SPD_MEMORY_TYPE) !=
+		if (smbus_read_byte(channel0_dimm, SPD_MEMORY_TYPE) !=
 		    SPD_MEMORY_TYPE_SDRAM_DDR)
 			continue;
 
 #ifdef VALIDATE_DIMM_COMPATIBILITY
-		if (spd_read_byte(channel0_dimm, SPD_MODULE_VOLTAGE) !=
+		if (smbus_read_byte(channel0_dimm, SPD_MODULE_VOLTAGE) !=
 		    SPD_VOLTAGE_SSTL2)
 			continue;	// Unsupported voltage
 
 		// E7501 does not support unregistered DIMMs
-		spd_value =
-		    spd_read_byte(channel0_dimm, SPD_MODULE_ATTRIBUTES);
+		spd_value = smbus_read_byte(channel0_dimm, SPD_MODULE_ATTRIBUTES);
 		if (!(spd_value & MODULE_REGISTERED) || (spd_value < 0))
 			continue;
 
 		// Must support burst = 4 for dual-channel operation on E7501
 		// NOTE: for single-channel, burst = 8 is required
-		spd_value =
-		    spd_read_byte(channel0_dimm,
+		spd_value = smbus_read_byte(channel0_dimm,
 				  SPD_SUPPORTED_BURST_LENGTHS);
 		if (!(spd_value & SPD_BURST_LENGTH_4) || (spd_value < 0))
 			continue;
@@ -600,16 +593,14 @@ static uint8_t spd_get_supported_dimms(const struct mem_controller *ctrl)
 		ASSERT(channel1_dimm != 0);	// No such socket on this mainboard??
 
 		// NOTE: unpopulated DIMMs cause read to fail
-		spd_value =
-		    spd_read_byte(channel1_dimm, SPD_MODULE_ATTRIBUTES);
+		spd_value = smbus_read_byte(channel1_dimm, SPD_MODULE_ATTRIBUTES);
 		if (!(spd_value & MODULE_REGISTERED) || (spd_value < 0)) {
 
 			printk(BIOS_DEBUG, "Skipping un-matched DIMMs - only dual-channel operation supported\n");
 			continue;
 		}
 #ifdef VALIDATE_DIMM_COMPATIBILITY
-		spd_value =
-		    spd_read_byte(channel1_dimm,
+		spd_value = smbus_read_byte(channel1_dimm,
 				  SPD_SUPPORTED_BURST_LENGTHS);
 		if (!(spd_value & SPD_BURST_LENGTH_4) || (spd_value < 0))
 			continue;
@@ -942,24 +933,21 @@ static void configure_e7501_dram_timing(const struct mem_controller *ctrl,
 			dimm_socket_address =
 			    ctrl->channel1[i - MAX_DIMM_SOCKETS_PER_CHANNEL];
 
-		value =
-		    spd_read_byte(dimm_socket_address,
+		value = smbus_read_byte(dimm_socket_address,
 				  SPD_MIN_ROW_PRECHARGE_TIME);
 		if (value < 0)
 			goto hw_err;
 		if (value > slowest_row_precharge)
 			slowest_row_precharge = value;
 
-		value =
-		    spd_read_byte(dimm_socket_address,
+		value = smbus_read_byte(dimm_socket_address,
 				  SPD_MIN_RAS_TO_CAS_DELAY);
 		if (value < 0)
 			goto hw_err;
 		if (value > slowest_ras_cas_delay)
 			slowest_ras_cas_delay = value;
 
-		value =
-		    spd_read_byte(dimm_socket_address,
+		value = smbus_read_byte(dimm_socket_address,
 				  SPD_MIN_ACTIVE_TO_PRECHARGE_DELAY);
 		if (value < 0)
 			goto hw_err;
@@ -1075,8 +1063,7 @@ static void configure_e7501_cas_latency(const struct mem_controller *ctrl,
 			dimm_socket_address =
 			    ctrl->channel1[i - MAX_DIMM_SOCKETS_PER_CHANNEL];
 
-		value =
-		    spd_read_byte(dimm_socket_address,
+		value = smbus_read_byte(dimm_socket_address,
 				  SPD_ACCEPTABLE_CAS_LATENCIES);
 		if (value < 0)
 			goto hw_err;
@@ -1086,8 +1073,7 @@ static void configure_e7501_cas_latency(const struct mem_controller *ctrl,
 
 		// Can we support the highest CAS# latency?
 
-		value =
-		    spd_read_byte(dimm_socket_address,
+		value = smbus_read_byte(dimm_socket_address,
 				  SPD_MIN_CYCLE_TIME_AT_CAS_MAX);
 		if (value < 0)
 			goto hw_err;
@@ -1102,8 +1088,7 @@ static void configure_e7501_cas_latency(const struct mem_controller *ctrl,
 
 		current_cas_latency >>= 1;
 		if (current_cas_latency != 0) {
-			value =
-			    spd_read_byte(dimm_socket_address,
+			value = smbus_read_byte(dimm_socket_address,
 					  SPD_SDRAM_CYCLE_TIME_2ND);
 			if (value < 0)
 				goto hw_err;
@@ -1114,8 +1099,7 @@ static void configure_e7501_cas_latency(const struct mem_controller *ctrl,
 		// Can we support the next-highest CAS# latency (max - 1.0)?
 		current_cas_latency >>= 1;
 		if (current_cas_latency != 0) {
-			value =
-			    spd_read_byte(dimm_socket_address,
+			value = smbus_read_byte(dimm_socket_address,
 					  SPD_SDRAM_CYCLE_TIME_3RD);
 			if (value < 0)
 				goto hw_err;
@@ -1247,15 +1231,14 @@ static void configure_e7501_dram_controller_mode(const struct
 		// Disable ECC mode if any one of the DIMMs does not support ECC
 		// SJM: Should we just die here? E7501 datasheet says non-ECC DIMMs aren't supported.
 
-		value =
-		    spd_read_byte(dimm_socket_address,
+		value = smbus_read_byte(dimm_socket_address,
 				  SPD_DIMM_CONFIG_TYPE);
 		die_on_spd_error(value);
 		if (value != ERROR_SCHEME_ECC) {
 			controller_mode &= ~(3 << 20);
 		}
 
-		value = spd_read_byte(dimm_socket_address, SPD_REFRESH);
+		value = smbus_read_byte(dimm_socket_address, SPD_REFRESH);
 		die_on_spd_error(value);
 		value &= 0x7f;	// Mask off self-refresh bit
 		if (value > MAX_SPD_REFRESH_RATE) {
@@ -1281,8 +1264,7 @@ static void configure_e7501_dram_controller_mode(const struct
 
 		// Switch to 2 clocks for address/command if required by any one of the DIMMs
 		// NOTE: At 133 MHz, 1 clock == 7.52 ns
-		value =
-		    spd_read_byte(dimm_socket_address,
+		value = smbus_read_byte(dimm_socket_address,
 				  SPD_CMD_SIGNAL_INPUT_HOLD_TIME);
 		die_on_spd_error(value);
 		if (value >= 0xa0) {	/* At 133MHz this constant should be 0x75 */

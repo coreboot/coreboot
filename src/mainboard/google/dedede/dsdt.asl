@@ -7,6 +7,7 @@
  */
 
 #include <arch/acpi.h>
+#include <variant/ec.h>
 #include <variant/gpio.h>
 
 DefinitionBlock(
@@ -41,4 +42,12 @@ DefinitionBlock(
 	/* Chipset specific sleep states */
 	#include <southbridge/intel/common/acpi/sleepstates.asl>
 
+	/* Chrome OS Embedded Controller */
+	Scope (\_SB.PCI0.LPCB)
+	{
+		/* ACPI code for EC SuperIO functions */
+		#include <ec/google/chromeec/acpi/superio.asl>
+		/* ACPI code for EC functions */
+		#include <ec/google/chromeec/acpi/ec.asl>
+        }
 }

@@ -58,6 +58,9 @@ chip soc/intel/cannonlake
 
 	register "PmTimerDisabled" = "1"
 
+	# Select CPU PL2/PL4 config
+	register "cpu_pl2_4_cfg" = "baseline"
+
 	# VR Settings Configuration for 4 Domains
 	#+----------------+-------+-------+-------+-------+
 	#| Domain/Setting |  SA   |  IA   | GTUS  |  GTS  |
@@ -83,7 +86,7 @@ chip soc/intel/cannonlake
 		.psi4enable = 1,
 		.imon_slope = 0x0,
 		.imon_offset = 0x0,
-		.icc_max = VR_CFG_AMP(6),
+		.icc_max = 0,
 		.voltage_limit = 1520,
 		.ac_loadline = 1030,
 		.dc_loadline = 1030,
@@ -98,7 +101,7 @@ chip soc/intel/cannonlake
 		.psi4enable = 1,
 		.imon_slope = 0x0,
 		.imon_offset = 0x0,
-		.icc_max = VR_CFG_AMP(70),
+		.icc_max = 0,
 		.voltage_limit = 1520,
 		.ac_loadline = 180,
 		.dc_loadline = 180,
@@ -113,7 +116,7 @@ chip soc/intel/cannonlake
 		.psi4enable = 1,
 		.imon_slope = 0x0,
 		.imon_offset = 0x0,
-		.icc_max = VR_CFG_AMP(31),
+		.icc_max = 0,
 		.voltage_limit = 1520,
 		.ac_loadline = 310,
 		.dc_loadline = 310,
@@ -128,7 +131,7 @@ chip soc/intel/cannonlake
 		.psi4enable = 1,
 		.imon_slope = 0x0,
 		.imon_offset = 0x0,
-		.icc_max = VR_CFG_AMP(31),
+		.icc_max = 0,
 		.voltage_limit = 1520,
 		.ac_loadline = 310,
 		.dc_loadline = 310,

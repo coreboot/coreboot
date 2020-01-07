@@ -19,6 +19,28 @@
 
 #include <stdint.h>
 
+/* MKHI Command groups */
+#define MKHI_GROUP_ID_CBM       0x0
+#define MKHI_GROUP_ID_HMRFPO    0x5
+
+/* Global Reset Command ID */
+#define MKHI_CBM_GLOBAL_RESET_REQ   0xb
+
+/* RST Origin  */
+#define GR_ORIGIN_BIOS_POST     0x2
+
+/* HMRFPO Command Ids */
+#define MKHI_HMRFPO_ENABLE      0x1
+#define MKHI_HMRFPO_GET_STATUS  0x3
+
+/* ME Current Working States */
+#define ME_HFS1_CWS_NORMAL      0x5
+
+/* ME Current Operation Modes */
+#define ME_HFS1_COM_NORMAL      0x0
+#define ME_HFS1_COM_SOFT_TEMP_DISABLE   0x3
+#define ME_HFS1_COM_SECOVER_MEI_MSG     0x5
+
 /* HFSTS register offsets in PCI config space */
 enum {
 	PCI_ME_HFSTS1 = 0x40,

@@ -24,7 +24,6 @@ void enable_spd(void);
 void disable_spd(void);
 
 /* Function prototypes. */
-int spd_read_byte(unsigned int device, unsigned int address);
 void sdram_set_registers(void);
 void sdram_set_spd_registers(void);
 void sdram_enable(void);

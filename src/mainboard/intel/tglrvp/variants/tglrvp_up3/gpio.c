@@ -19,7 +19,9 @@
 
 /* Pad configuration in ramstage*/
 static const struct pad_config gpio_table[] = {
-	/* ToDo: Fill gpio configuration */
+	/* PCH M.2 SSD */
+	PAD_CFG_GPO(GPP_B16, 1, PLTRST),
+	PAD_CFG_GPO(GPP_H0, 1, PLTRST),
 };
 
 /* Early pad configuration in bootblock */

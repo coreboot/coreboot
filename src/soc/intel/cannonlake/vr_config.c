@@ -169,6 +169,10 @@ static uint16_t load_table(const struct vr_lookup *tbl,
  *  CML-S                 (35W) GT2 deca   11.1      140(104) 35
  *  CML-S                 (35W) GT2 octa   11.1      140(104) 35
  *  CML-S                 (35W) GT2 hex    11.1      104      35
+ *  CML-S                 (65W) GT2 quad   11.1      102      35
+ *  CML-S                 (35W) GT2 quad   11.1      65       35
+ *  CML-S                 (58W) GT2 dual   11.1      60       35
+ *  CML-S                 (35W) GT2 dual   11.1      55       35
  *
  *  GT0 versions are the same as GT2/GT3, but have GT/GTx set to 0.
  *  The above values in () are for baseline.
@@ -297,6 +301,14 @@ VR_CONFIG_ICC(PCI_DEVICE_ID_INTEL_CML_S_G0G1_P0P1_6_2) {
 	{ 65, value_not_set, VR_CFG_ALL_DOMAINS_ICC(11.1, 140, 35, 35) },
 	{  0, value_not_set, VR_CFG_ALL_DOMAINS_ICC(11.1, 104, 35, 35) },
 };
+VR_CONFIG_ICC(PCI_DEVICE_ID_INTEL_CML_S_G0G1_4) {
+	{ 36, value_not_set, VR_CFG_ALL_DOMAINS_ICC(11.1, 102, 35, 35) },
+	{  0, value_not_set, VR_CFG_ALL_DOMAINS_ICC(11.1, 65, 35, 35) },
+};
+VR_CONFIG_ICC(PCI_DEVICE_ID_INTEL_CML_S_G0G1_2) {
+	{ 36, value_not_set, VR_CFG_ALL_DOMAINS_ICC(11.1, 60, 35, 35) },
+	{  0, value_not_set, VR_CFG_ALL_DOMAINS_ICC(11.1, 55, 35, 35) },
+};
 
 static const struct vr_lookup vr_config_icc[] = {
 	VR_REFITEM_ICC(PCI_DEVICE_ID_INTEL_CNL_ID_U),
@@ -326,6 +338,8 @@ static const struct vr_lookup vr_config_icc[] = {
 	VR_REFITEM_ICC(PCI_DEVICE_ID_INTEL_CML_S_P0P1_8_2),
 	VR_REFITEM_ICC(PCI_DEVICE_ID_INTEL_CML_S_P0P1_10_2),
 	VR_REFITEM_ICC(PCI_DEVICE_ID_INTEL_CML_S_G0G1_P0P1_6_2),
+	VR_REFITEM_ICC(PCI_DEVICE_ID_INTEL_CML_S_G0G1_4),
+	VR_REFITEM_ICC(PCI_DEVICE_ID_INTEL_CML_S_G0G1_2),
 };
 
 VR_CONFIG_LL(PCI_DEVICE_ID_INTEL_CNL_ID_U) {
@@ -415,6 +429,13 @@ VR_CONFIG_LL(PCI_DEVICE_ID_INTEL_CML_S_G0G1_P0P1_6_2) {
 	{125, value_not_set, VR_CFG_ALL_DOMAINS_LOADLINE(10.3, 1.1, 4.0, 4.0) },
 	{  0, value_not_set, VR_CFG_ALL_DOMAINS_LOADLINE(10.3, 1.7, 4.0, 4.0) },
 };
+VR_CONFIG_LL(PCI_DEVICE_ID_INTEL_CML_S_G0G1_4) {
+	{  0, value_not_set, VR_CFG_ALL_DOMAINS_LOADLINE(10.3, 1.7, 4.0, 4.0) },
+};
+VR_CONFIG_LL(PCI_DEVICE_ID_INTEL_CML_S_G0G1_2) {
+	{  0, value_not_set, VR_CFG_ALL_DOMAINS_LOADLINE(10.3, 1.7, 4.0, 4.0) },
+};
+
 
 static const struct vr_lookup vr_config_ll[] = {
 	VR_REFITEM_LL(PCI_DEVICE_ID_INTEL_CNL_ID_U),
@@ -445,6 +466,8 @@ static const struct vr_lookup vr_config_ll[] = {
 	VR_REFITEM_LL(PCI_DEVICE_ID_INTEL_CML_S_P0P1_8_2),
 	VR_REFITEM_LL(PCI_DEVICE_ID_INTEL_CML_S_P0P1_10_2),
 	VR_REFITEM_LL(PCI_DEVICE_ID_INTEL_CML_S_G0G1_P0P1_6_2),
+	VR_REFITEM_LL(PCI_DEVICE_ID_INTEL_CML_S_G0G1_4),
+	VR_REFITEM_LL(PCI_DEVICE_ID_INTEL_CML_S_G0G1_2),
 };
 
 VR_CONFIG_TDC(PCI_DEVICE_ID_INTEL_CFL_ID_S) {
@@ -537,6 +560,14 @@ VR_CONFIG_TDC(PCI_DEVICE_ID_INTEL_CML_S_G0G1_P0P1_6_2) {
 	{ 65, value_not_set, VR_CFG_ALL_DOMAINS_TDC(10, 104, 28, 28) },
 	{  0, value_not_set, VR_CFG_ALL_DOMAINS_TDC(10, 74, 28, 28) },
 };
+VR_CONFIG_TDC(PCI_DEVICE_ID_INTEL_CML_S_G0G1_4) {
+	{ 36, value_not_set, VR_CFG_ALL_DOMAINS_TDC(10, 68, 28, 28) },
+	{  0, value_not_set, VR_CFG_ALL_DOMAINS_TDC(10, 42, 28, 28) },
+};
+VR_CONFIG_TDC(PCI_DEVICE_ID_INTEL_CML_S_G0G1_2) {
+	{ 36, value_not_set, VR_CFG_ALL_DOMAINS_TDC(10, 38, 28, 28) },
+	{  0, value_not_set, VR_CFG_ALL_DOMAINS_TDC(10, 25, 28, 28) },
+};
 
 static const struct vr_lookup vr_config_tdc[] = {
 	VR_REFITEM_TDC(PCI_DEVICE_ID_INTEL_CFL_ID_S),
@@ -558,6 +589,8 @@ static const struct vr_lookup vr_config_tdc[] = {
 	VR_REFITEM_TDC(PCI_DEVICE_ID_INTEL_CML_S_P0P1_8_2),
 	VR_REFITEM_TDC(PCI_DEVICE_ID_INTEL_CML_S_P0P1_10_2),
 	VR_REFITEM_TDC(PCI_DEVICE_ID_INTEL_CML_S_G0G1_P0P1_6_2),
+	VR_REFITEM_TDC(PCI_DEVICE_ID_INTEL_CML_S_G0G1_4),
+	VR_REFITEM_TDC(PCI_DEVICE_ID_INTEL_CML_S_G0G1_2),
 };
 
 static uint16_t get_sku_voltagelimit(int domain)

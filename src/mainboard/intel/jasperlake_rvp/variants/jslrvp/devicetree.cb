@@ -158,9 +158,6 @@ chip soc/intel/tigerlake
 	# Enable DPTF
 	register "dptf_enable" = "1"
 
-	# GPIO for SD card detect
-	register "sdcard_cd_gpio" = "GPP_G5"
-
 	# Enable S0ix
 	register "s0ix_enable" = "0"
 

@@ -146,7 +146,7 @@ static int sdhci_send_command_bounced(struct sd_mmc_ctrlr *ctrlr,
 	sdhci_writel(sdhci_ctrlr, SDHCI_INT_ALL_MASK, SDHCI_INT_STATUS);
 	mask = SDHCI_CMD_INHIBIT | SDHCI_DATA_INHIBIT;
 
-	/* We shouldn't wait for data inihibit for stop commands, even
+	/* We shouldn't wait for data inhibit for stop commands, even
 	   though they might use busy signaling */
 	if (cmd->flags & CMD_FLAG_IGNORE_INHIBIT)
 		mask &= ~SDHCI_DATA_INHIBIT;

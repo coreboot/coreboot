@@ -436,7 +436,7 @@ int mmc_update_capacity(struct storage_media *media)
 	if ((capacity >> 20) > 2 * 1024)
 		media->capacity[MMC_PARTITION_USER] = capacity;
 
-	/* Determine the boot parition sizes */
+	/* Determine the boot partition sizes */
 	hc_erase_size = ext_csd[224] * 512 * KiB;
 	capacity = ext_csd[EXT_CSD_BOOT_SIZE_MULT] * 128 * KiB;
 	media->capacity[MMC_PARTITION_BOOT_1] = capacity;

@@ -199,7 +199,7 @@ int sd_mmc_enter_standby(struct storage_media *media)
 
 	/*
 	 * For MMC cards, set the Relative Address.
-	 * For SD cards, get the Relatvie Address.
+	 * For SD cards, get the Relative Address.
 	 * This also puts the cards into Standby State
 	 */
 	cmd.cmdidx = SD_CMD_SEND_RELATIVE_ADDR;

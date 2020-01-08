@@ -83,6 +83,8 @@ static struct {
 	{ PCI_DEVICE_ID_INTEL_CML_S_G0G1_P0P1_6_2, "CometLake-S G0/G1/P0/P1 (6+2)" },
 	{ PCI_DEVICE_ID_INTEL_CML_S_P0P1_8_2, "CometLake-S P0/P1 (8+2)" },
 	{ PCI_DEVICE_ID_INTEL_CML_S_P0P1_10_2, "CometLake-S P0/P1 (10+2)" },
+	{ PCI_DEVICE_ID_INTEL_CML_S_G0G1_4, "CometLake-S G0/G1 (4+2)" },
+	{ PCI_DEVICE_ID_INTEL_CML_S_G0G1_2, "CometLake-S G0/G1 (2+2)" },
 	{ PCI_DEVICE_ID_INTEL_CML_H, "CometLake-H (6+2)" },
 	{ PCI_DEVICE_ID_INTEL_CML_H_4_2, "CometLake-H (4+2)" },
 	{ PCI_DEVICE_ID_INTEL_CML_H_8_2, "CometLake-H (8+2)" },

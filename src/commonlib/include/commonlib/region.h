@@ -31,7 +31,7 @@
 struct region_device;
 
 /*
- * Returns NULL on error otherwise a buffer is returned with the conents of
+ * Returns NULL on error otherwise a buffer is returned with the contents of
  * the requested data at offset of size.
  */
 void *rdev_mmap(const struct region_device *rd, size_t offset, size_t size);
@@ -173,7 +173,7 @@ struct mem_region_device {
 	struct region_device rdev;
 };
 
-/* Inititalize at runtime a mem_region_device. This would be used when
+/* Initialize at runtime a mem_region_device. This would be used when
  * the base and size are dynamic or can't be known during linking.
  * There are two variants: read-only and read-write. */
 void mem_region_device_ro_init(struct mem_region_device *mdev, void *base,

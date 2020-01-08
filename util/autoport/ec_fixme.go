@@ -22,13 +22,13 @@ func FIXMEEC(ctx Context) {
 	ap.WriteString(
 		`Method(_WAK,1)
 {
-        /* FIXME: EC support  */
+	/* FIXME: EC support  */
 	Return(Package(){0,0})
 }
 
 Method(_PTS,1)
 {
-        /* FIXME: EC support  */
+	/* FIXME: EC support  */
 }
 `)
 

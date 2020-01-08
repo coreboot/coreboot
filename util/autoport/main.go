@@ -77,6 +77,7 @@ type SouthBridger interface {
 }
 
 var SouthBridge SouthBridger
+var BootBlockFiles map[string]string = map[string]string{}
 var ROMStageFiles map[string]string = map[string]string{}
 var RAMStageFiles map[string]string = map[string]string{}
 var SMMFiles map[string]string = map[string]string{}
@@ -154,6 +155,10 @@ func sanitize(inp string) string {
 	return result
 }
 
+func AddBootBlockFile(Name string, Condition string) {
+	BootBlockFiles[Name] = Condition
+}
+
 func AddROMStageFile(Name string, Condition string) {
 	ROMStageFiles[Name] = Condition
 }
@@ -190,8 +195,7 @@ func writeMF(mf *os.File, files map[string]string, category string) {
 		if condition == "" {
 			fmt.Fprintf(mf, "%s-y += %s\n", category, file)
 		} else {
-			fmt.Fprintf(mf, "%s-$(%s) += %s\n", category,
-				condition, file)
+			fmt.Fprintf(mf, "%s-$(%s) += %s\n", category, condition, file)
 		}
 	}
 }
@@ -757,9 +761,10 @@ func main() {
 		AddRAMStageFile("gma-mainboard.ads", "CONFIG_MAINBOARD_USE_LIBGFXINIT")
 	}
 
-	if len(ROMStageFiles) > 0 || len(RAMStageFiles) > 0 || len(SMMFiles) > 0 {
+	if len(BootBlockFiles) > 0 || len(ROMStageFiles) > 0 || len(RAMStageFiles) > 0 || len(SMMFiles) > 0 {
 		mf := Create(ctx, "Makefile.inc")
 		defer mf.Close()
+		writeMF(mf, BootBlockFiles, "bootblock")
 		writeMF(mf, ROMStageFiles, "romstage")
 		writeMF(mf, RAMStageFiles, "ramstage")
 		writeMF(mf, SMMFiles, "smm")
@@ -854,17 +859,18 @@ func main() {
 
 	dsdt.WriteString(
 		`
+
 #include <arch/acpi.h>
+
 DefinitionBlock(
 	"dsdt.aml",
 	"DSDT",
-	0x02,		// DSDT revision: ACPI 2.0 and up
+	0x02,		/* DSDT revision: ACPI 2.0 and up */
 	OEM_ID,
 	ACPI_TABLE_CREATOR,
-	0x20141018	// OEM revision
+	0x20141018	/* OEM revision */
 )
 {
-	/* Some generic macros */
 	#include "acpi/platform.asl"
 `)
 

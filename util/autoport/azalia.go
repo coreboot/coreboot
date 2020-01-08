@@ -20,13 +20,12 @@ const u32 cim_verb_data[] = {
 `)
 
 	for _, codec := range ctx.InfoSource.GetAzaliaCodecs() {
-		fmt.Fprintf(az, "\t0x%08x, /* Codec Vendor / Device ID: %s */\n",
+		fmt.Fprintf(az, "\t0x%08x,\t/* Codec Vendor / Device ID: %s */\n",
 			codec.VendorID, codec.Name)
-		fmt.Fprintf(az, "\t0x%08x, /* Subsystem ID */\n",
+		fmt.Fprintf(az, "\t0x%08x,\t/* Subsystem ID */\n",
 			codec.SubsystemID)
-		fmt.Fprintf(az, "\n\t0x%08x, /* Number of 4 dword sets */\n",
+		fmt.Fprintf(az, "\t%d,\t\t/* Number of 4 dword sets */\n",
 			len(codec.PinConfig)+1)
-		fmt.Fprintf(az, "\t/* NID 0x01: Subsystem ID.  */\n")
 		fmt.Fprintf(az, "\tAZALIA_SUBVENDOR(0x%x, 0x%08x),\n",
 			codec.CodecNo, codec.SubsystemID)
 
@@ -38,10 +37,10 @@ const u32 cim_verb_data[] = {
 		sort.Ints(keys)
 
 		for _, nid := range keys {
-			fmt.Fprintf(az, "\n\t/* NID 0x%02x.  */\n", nid)
 			fmt.Fprintf(az, "\tAZALIA_PIN_CFG(0x%x, 0x%02x, 0x%08x),\n",
 				codec.CodecNo, nid, codec.PinConfig[nid])
 		}
+		az.WriteString("\n");
 	}
 
 	az.WriteString(
@@ -52,7 +51,7 @@ const u32 pc_beep_verbs[0] = {};
 AZALIA_ARRAY_SIZES;
 `)
 
-	PutPCIDev(addr, "Audio controller")
+	PutPCIDev(addr, "")
 }
 
 func init() {

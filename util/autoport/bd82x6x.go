@@ -41,6 +41,7 @@ func (b bd82x6x) GPIO(ctx Context, inteltool InteltoolData) {
 	gpio := Create(ctx, "gpio.c")
 	defer gpio.Close()
 
+	AddBootBlockFile("gpio.c", "")
 	AddROMStageFile("gpio.c", "")
 
 	Add_gpl(gpio)
@@ -279,20 +280,22 @@ func (b bd82x6x) Scan(ctx Context, addr PCIDevData) {
 	PutPCIDevParent(addr, "PCI-LPC bridge", "lpc")
 
 	DSDTIncludes = append(DSDTIncludes, DSDTInclude{
-		File: "southbridge/intel/bd82x6x/acpi/platform.asl",
+		File: "southbridge/intel/common/acpi/platform.asl",
 	})
 	DSDTIncludes = append(DSDTIncludes, DSDTInclude{
-		File:    "southbridge/intel/bd82x6x/acpi/globalnvs.asl",
-		Comment: "global NVS and variables",
+		File:  "southbridge/intel/bd82x6x/acpi/globalnvs.asl",
 	})
 	DSDTIncludes = append(DSDTIncludes, DSDTInclude{
-		File: "southbridge/intel/bd82x6x/acpi/sleepstates.asl",
+		File: "southbridge/intel/common/acpi/sleepstates.asl",
 	})
 	DSDTPCI0Includes = append(DSDTPCI0Includes, DSDTInclude{
 		File: "southbridge/intel/bd82x6x/acpi/pch.asl",
 	})
 
-	sb := Create(ctx, "romstage.c")
+	AddBootBlockFile("early_init.c", "")
+	AddROMStageFile("early_init.c", "")
+
+	sb := Create(ctx, "early_init.c")
 	defer sb.Close()
 	Add_gpl(sb)
 	sb.WriteString(`/* FIXME: Check if all includes are needed. */
@@ -305,25 +308,13 @@ func (b bd82x6x) Scan(ctx Context, addr PCIDevData) {
 #include <device/pci_ops.h>
 #include <device/pnp_ops.h>
 #include <console/console.h>
+#include <bootblock_common.h>
 #include <northbridge/intel/sandybridge/sandybridge.h>
 #include <northbridge/intel/sandybridge/raminit_native.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <southbridge/intel/common/gpio.h>
 
-void pch_enable_lpc(void)
-{
 `)
-	RestorePCI16Simple(sb, addr, 0x82)
-
-	RestorePCI16Simple(sb, addr, 0x80)
-
-	sb.WriteString(`}
-
-void mainboard_rcba_config(void)
-{
-`)
-	sb.WriteString("}\n\n")
-
 	sb.WriteString("const struct southbridge_usb_port mainboard_usb_ports[] = {\n")
 
 	currentMap := map[uint32]int{
@@ -360,13 +351,14 @@ void mainboard_rcba_config(void)
 	guessedMap := GuessSPDMap(ctx)
 
 	sb.WriteString(`
-void mainboard_early_init(int s3resume)
+void bootblock_mainboard_early_init(void)
 {
-}
+`)
+	RestorePCI16Simple(sb, addr, 0x82)
 
-void mainboard_config_superio(void)
-{
-}
+	RestorePCI16Simple(sb, addr, 0x80)
+
+	sb.WriteString(`}
 
 /* FIXME: Put proper SPD map here. */
 void mainboard_get_spd(spd_raw_data *spd, bool id_only)
@@ -394,7 +386,7 @@ void acpi_create_gnvs(global_nvs_t *gnvs)
 	gnvs->s5u0 = 0;
 	gnvs->s5u1 = 0;
 
-	// the lid is open by default.
+	/* The lid is open by default. */
 	gnvs->lids = 1;
 
 	gnvs->tcrt = 100;

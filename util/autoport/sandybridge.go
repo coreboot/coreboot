@@ -8,7 +8,7 @@ func (i sandybridgemc) Scan(ctx Context, addr PCIDevData) {
 
 	/* FIXME:XX Move this somewhere else.  */
 	MainboardIncludes = append(MainboardIncludes, "drivers/intel/gma/int15.h")
-	MainboardEnable += (`	/* FIXME: fix those values*/
+	MainboardEnable += (`	/* FIXME: fix these values. */
 	install_intel_vga_int15_handler(GMA_INT15_ACTIVE_LFP_INT_LVDS,
 					GMA_INT15_PANEL_FIT_DEFAULT,
 					GMA_INT15_BOOT_DISPLAY_DEFAULT, 0);
@@ -37,7 +37,7 @@ func (i sandybridgemc) Scan(ctx Context, addr PCIDevData) {
 	DevTree = DevTreeNode{
 		Chip:          "northbridge/intel/sandybridge",
 		MissingParent: "northbridge",
-		Comment:       "FIXME: check gfx.ndid and gfx.did",
+		Comment:       "FIXME: GPU registers may not always apply.",
 		Registers: map[string]string{
 			"gpu_dp_b_hotplug":                    FormatInt32((inteltool.IGD[0xc4030] >> 2) & 7),
 			"gpu_dp_c_hotplug":                    FormatInt32((inteltool.IGD[0xc4030] >> 10) & 7),
@@ -52,9 +52,6 @@ func (i sandybridgemc) Scan(ctx Context, addr PCIDevData) {
 			"gpu_pch_backlight":                   FormatHex32((inteltool.IGD[0xc8254] >> 16) * 0x10001),
 			"gfx.use_spread_spectrum_clock":       FormatBool((inteltool.IGD[0xc6200]>>12)&1 != 0),
 			"gfx.link_frequency_270_mhz":          FormatBool(link_frequency > 200000),
-			/* FIXME:XX hardcoded.  */
-			"gfx.ndid": "3",
-			"gfx.did":  "{ 0x80000100, 0x80000240, 0x80000410 }",
 		},
 		Children: []DevTreeNode{
 			{
@@ -95,8 +92,8 @@ func (i sandybridgemc) Scan(ctx Context, addr PCIDevData) {
 				ChildPCIBus:   0,
 				PCISlots: []PCISlot{
 					PCISlot{PCIAddr: PCIAddr{Dev: 0x0, Func: 0}, writeEmpty: true, additionalComment: "Host bridge"},
-					PCISlot{PCIAddr: PCIAddr{Dev: 0x1, Func: 0}, writeEmpty: true, additionalComment: "PCIe Bridge for discrete graphics"},
-					PCISlot{PCIAddr: PCIAddr{Dev: 0x2, Func: 0}, writeEmpty: true, additionalComment: "Internal graphics"},
+					PCISlot{PCIAddr: PCIAddr{Dev: 0x1, Func: 0}, writeEmpty: true, additionalComment: "PEG"},
+					PCISlot{PCIAddr: PCIAddr{Dev: 0x2, Func: 0}, writeEmpty: true, additionalComment: "iGPU"},
 				},
 			},
 		},
@@ -134,7 +131,7 @@ func init() {
 		0x0112, 0x0116, 0x0122, 0x0126,
 		0x0152, 0x0156, 0x0162, 0x0166,
 	} {
-		RegisterPCI(0x8086, id, GenericVGA{GenericPCI{Comment: "VGA controller"}})
+		RegisterPCI(0x8086, id, GenericVGA{GenericPCI{}})
 	}
 
 	/* PCIe bridge */

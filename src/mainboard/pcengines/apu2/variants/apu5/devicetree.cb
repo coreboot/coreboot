@@ -64,7 +64,8 @@ chip northbridge/amd/pi/00730F01/root_complex
 						io 0x60 = 0x2e8
 						irq 0x70 = 3
 					end
-					device pnp 2e.8 off end
+					device pnp 2e.008 off end
+					device pnp 2e.108 off end
 					device pnp 2e.f off end
 					device pnp 2e.007 off end
 					device pnp 2e.107 off end

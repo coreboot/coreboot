@@ -62,7 +62,10 @@ chip northbridge/amd/agesa/family14/root_complex
 						io 0x60 = 0x2e8
 						irq 0x70 = 3
 					end
-					device pnp 2e.8 off end
+					device pnp 2e.008 off end
+					device pnp 2e.108 on
+						io 0x60 = 0x220
+					end
 					# GPIO0 and GPIO1 are conditionally turned on
 					device pnp 2e.007 off end
 					device pnp 2e.107 off end

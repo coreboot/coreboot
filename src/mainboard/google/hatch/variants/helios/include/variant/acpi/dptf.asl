@@ -99,8 +99,8 @@ Name (DART, Package () {
 })
 
 Name (DTRT, Package () {
-	/* CPU Throttle Effect on TSR0 */
-	Package () { \_SB.PCI0.TCPU, \_SB.DPTF.TSR0, 100, 60, 0, 0, 0, 0 },
+	/* CPU Throttle Effect on TSR3 */
+	Package () { \_SB.PCI0.TCPU, \_SB.DPTF.TSR3, 100, 60, 0, 0, 0, 0 },
 
 	/* Charger Throttle Effect on TSR0 */
 	Package () { \_SB.DPTF.TCHG, \_SB.DPTF.TSR0, 100, 60, 0, 0, 0, 0 },

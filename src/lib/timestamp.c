@@ -128,7 +128,7 @@ static void timestamp_add_table_entry(struct timestamp_table *ts_table,
 
 	tse = &ts_table->entries[ts_table->num_entries++];
 	tse->entry_id = id;
-	tse->entry_stamp = ts_time - ts_table->base_time;
+	tse->entry_stamp = ts_time;
 
 	if (ts_table->num_entries == ts_table->max_entries)
 		printk(BIOS_ERR, "ERROR: Timestamp table full\n");
@@ -148,6 +148,7 @@ void timestamp_add(enum timestamp_id id, uint64_t ts_time)
 		return;
 	}
 
+	ts_time -= ts_table->base_time;
 	timestamp_add_table_entry(ts_table, id, ts_time);
 
 	if (CONFIG(TIMESTAMPS_ON_CONSOLE))
@@ -206,21 +207,17 @@ static void timestamp_sync_cache_to_cbmem(struct timestamp_table *ts_cbmem_table
 	 *
 	 * If you try to initialize timestamps before ramstage but don't define
 	 * a TIMESTAMP region, all operations will fail (safely), and coreboot
-	 * will behave as if timestamps only get initialized in ramstage.
-	 *
-	 * If timestamps only get initialized in ramstage, the base_time from
-	 * timestamp_init() will get ignored and all timestamps will be 0-based.
+	 * will behave as if timestamps collection was disabled.
 	 */
+
+	/* Inherit cache base_time. */
+	ts_cbmem_table->base_time = ts_cache_table->base_time;
 
 	for (i = 0; i < ts_cache_table->num_entries; i++) {
 		struct timestamp_entry *tse = &ts_cache_table->entries[i];
 		timestamp_add_table_entry(ts_cbmem_table, tse->entry_id,
 					  tse->entry_stamp);
 	}
-
-	/* Freshly added cbmem table has base_time 0. Inherit cache base_time */
-	if (ts_cbmem_table->base_time == 0)
-		ts_cbmem_table->base_time = ts_cache_table->base_time;
 
 	/* Cache no longer required. */
 	ts_cache_table->num_entries = 0;

@@ -1,0 +1,64 @@
+config BOARD_PRODRIVE_HERMES_BASEBOARD
+	def_bool n
+	select SOC_INTEL_COFFEELAKE
+	select BOARD_ROMSIZE_KB_32768
+	select GENERIC_SPD_BIN
+	select HAVE_ACPI_TABLES
+	select SOC_INTEL_CANNONLAKE_PCH_H
+	select SUPERIO_ASPEED_COMMON_PRE_RAM
+	select SUPERIO_ASPEED_AST2400
+	select DRIVERS_ASPEED_AST_COMMON
+	select DRIVERS_ASPEED_AST2050
+	select SOC_INTEL_COMMON_BLOCK_GPIO_LEGACY_MACROS
+	select INTEL_LPSS_UART_FOR_CONSOLE
+	select MAINBOARD_HAS_TPM2
+	select MAINBOARD_HAS_LPC_TPM
+	select INTEL_GMA_HAVE_VBT
+	select SOC_INTEL_COMMON_BLOCK_HDA_VERB
+	select AZALIA_PLUGIN_SUPPORT
+	select ONBOARD_VGA_IS_PRIMARY
+	select DISABLE_ACPI_HIBERNATE
+
+if BOARD_PRODRIVE_HERMES_BASEBOARD
+
+config MAINBOARD_FAMILY
+	string
+	default "PRODRIVE_HERMES_SERIES"
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "Hermes CFL"
+
+config MAINBOARD_DIR
+	string
+	default "prodrive/hermes"
+
+config VARIANT_DIR
+	string
+	default "baseboard"	if BOARD_PRODRIVE_HERMES_BASEBOARD
+
+config MAX_CPUS
+	int
+	default 16
+
+config OVERRIDE_DEVICETREE
+	string
+	default "variants/$(CONFIG_VARIANT_DIR)/overridetree.cb"
+
+config DIMM_SPD_SIZE
+	int
+	default 512
+
+config CONSOLE_POST
+	bool
+	default y
+
+config POST_IO
+	bool
+	default n
+
+config CBFS_SIZE
+	hex
+	default 0x900000
+
+endif # BOARD_PRODRIVE_HERMES_BASEBOARD

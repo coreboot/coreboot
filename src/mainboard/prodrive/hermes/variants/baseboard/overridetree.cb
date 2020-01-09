@@ -1,0 +1,193 @@
+chip soc/intel/cannonlake
+
+	device cpu_cluster 0 on
+		device lapic 0 on end
+	end
+
+	# FSP configuration
+
+	register "SataMode" = "0"		# AHCI
+	register "SataSalpSupport" = "0"
+	register "SataPortsDevSlp[1]" = "1"	# PCH_M2_SATA_DEVSLP1
+
+	register "SataPortsEnable[0]" = "1"
+	register "SataPortsEnable[1]" = "1"	# depends on SATAXPCIE1
+	register "SataPortsEnable[2]" = "0"	# Not used for SATA
+	register "SataPortsEnable[3]" = "0"	# Not used for SATA
+	register "SataPortsEnable[4]" = "1"
+	register "SataPortsEnable[5]" = "1"
+	register "SataPortsEnable[6]" = "1"
+	register "SataPortsEnable[7]" = "1"
+
+	register "PchHdaDspEnable" = "0"
+	register "PchHdaAudioLinkHda" = "1"
+
+	# Enumeration starts at 0 for PCIE1
+	# Ports are not hotplugable
+	register "PcieRpEnable[0]" = "1"	# Slot3 x4
+ 	# Set MaxPayload to 256 bytes
+	register "PcieRpMaxPayload[0]" = "RpMaxPayload_256"
+	# Enable Latency Tolerance Reporting Mechanism
+	register "PcieRpLtrEnable[0]" = "1"
+	# Enable Advanced Error Reporting
+	register "PcieRpAdvancedErrorReporting[0]" = "1"
+	# Disable Aspm
+	register "PcieRpAspm[0]" = "AspmDisabled"
+
+
+	register "PcieRpEnable[4]" = "1"	# PHY ETH3
+	register "PcieRpEnable[5]" = "1"	# PHY ETH4
+	register "PcieRpEnable[6]" = "1"	# PHY ETH2
+	register "PcieRpEnable[7]" = "1"	# PHY ETH1
+	register "PcieRpEnable[8]" = "1"	# M2 Slot M x4, depends on SATAXPCIE1
+	register "PcieRpEnable[13]" = "1"	# PHY ETH0
+	register "PcieRpEnable[14]" = "1"	# BMC
+	register "PcieRpEnable[15]" = "1"	# M2 Slot E x1
+	register "PcieRpEnable[20]" = "1"	# Slot 1 x4
+	# Set MaxPayload to 256 bytes
+        register "PcieRpMaxPayload[20]" = "RpMaxPayload_256"
+        # Enable Latency Tolerance Reporting Mechanism
+        register "PcieRpLtrEnable[20]" = "1"
+        # Enable Advanced Error Reporting
+        register "PcieRpAdvancedErrorReporting[20]" = "1"
+        # Disable Aspm
+        register "PcieRpAspm[20]" = "AspmDisabled"
+
+	# Controls the CLKREQ, not the output directly.
+	# Depends on the CLKREQ to CLK gen mapping below
+	register "PcieClkSrcUsage[0]" = "PCIE_CLK_FREE"		# BMC, PCIe Slot1, Slot2, Slot4, Slot6
+	register "PcieClkSrcUsage[1]" = "PCIE_CLK_FREE"		# PHY3
+	register "PcieClkSrcUsage[2]" = "PCIE_CLK_NOTUSED"
+	register "PcieClkSrcUsage[3]" = "PCIE_CLK_NOTUSED"
+	register "PcieClkSrcUsage[4]" = "PCIE_CLK_FREE"		# RP9 M2 Slot M x4
+	register "PcieClkSrcUsage[5]" = "PCIE_CLK_FREE"		# RP16 M2 Slot E x1
+	register "PcieClkSrcUsage[6]" = "PCIE_CLK_NOTUSED"
+	register "PcieClkSrcUsage[7]" = "PCIE_CLK_NOTUSED"
+	register "PcieClkSrcUsage[8]" = "PCIE_CLK_NOTUSED"
+	register "PcieClkSrcUsage[9]" = "PCIE_CLK_NOTUSED"
+	register "PcieClkSrcUsage[10]" = "PCIE_CLK_NOTUSED"
+	register "PcieClkSrcUsage[11]" = "PCIE_CLK_NOTUSED"
+	register "PcieClkSrcUsage[12]" = "PCIE_CLK_NOTUSED"
+	register "PcieClkSrcUsage[13]" = "PCIE_CLK_FREE"	# PHY 0, PHY 1, PHY 2, PHY 4
+	register "PcieClkSrcUsage[14]" = "PCIE_CLK_FREE"	# PB
+	register "PcieClkSrcUsage[15]" = "PCIE_CLK_FREE"	# PCIe Slot3
+
+	# Only map M2 CLKREQ to CLK gen
+	register "PcieClkSrcClkReq[4]" = "4"	# M2_M_CLK_REQ_n
+	register "PcieClkSrcClkReq[5]" = "5"	# M2_E_CLK_REQ_n
+
+	# USB Config 2.0/3.0
+	# Enumeration starts at 0
+	# USB 3.0
+	# USB OC0: RP1
+	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC0)"
+	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC0)"
+	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC0)"
+	register "usb2_ports[1]" = "USB2_PORT_TYPE_C(OC0)"
+
+	# USB OC1: RP2
+	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC1)"
+	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC1)"
+	register "usb2_ports[2]" = "USB2_PORT_TYPE_C(OC1)"
+	register "usb2_ports[3]" = "USB2_PORT_TYPE_C(OC1)"
+
+	# USB OC2:  Internal Header CN_USB3_HDR
+	register "usb3_ports[4]" = "USB3_PORT_DEFAULT(OC2)"
+	register "usb3_ports[5]" = "USB3_PORT_DEFAULT(OC2)"
+	register "usb2_ports[4]" = "USB2_PORT_TYPE_C(OC2)"
+	register "usb2_ports[5]" = "USB2_PORT_TYPE_C(OC2)"
+
+	# USB 2.0
+	# USB OC3: Internal Header USB2_HDR1
+	register "usb2_ports[6]" = "USB2_PORT_MID(OC3)"
+	register "usb2_ports[7]" = "USB2_PORT_MID(OC3)"
+
+	# USB OC4: Internal Header USB2_HDR2
+	register "usb2_ports[8]" = "USB2_PORT_MID(OC4)"
+	register "usb2_ports[9]" = "USB2_PORT_MID(OC4)"
+
+	# USB OC5-7: not connected
+	# BMC
+	register "usb2_ports[10]" = "USB2_PORT_MID(OC_SKIP)"
+	# unused
+	register "usb2_ports[11]" = "USB2_PORT_EMPTY"
+	# piggy-back
+	register "usb2_ports[12]" = "USB2_PORT_MID(OC_SKIP)"
+	# M2 key E
+	register "usb2_ports[13]" = "USB2_PORT_MID(OC_SKIP)"
+
+	# Thermal
+	register "tcc_offset" = "6"     # TCC of 94C
+
+	# Enable "Intel Speed Shift Technology"
+	register "speed_shift_enable" = "1"
+
+	# HECI
+	register "HeciEnabled" = "1"
+
+	# Internal GFX
+	register "InternalGfx" = "1"
+
+	# Disable S0ix
+	register "s0ix_enable" = "0"
+
+	register "common_soc_config" = "{
+		.gspi[0] = {
+			.speed_mhz = 1,
+			.early_init = 1,
+		},
+	}"
+
+	# VR Power Delivery Design
+	register "VrPowerDeliveryDesign" = "0x12"
+
+	register "SerialIoDevMode" = "{
+		[PchSerialIoIndexI2C0]  = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C1]  = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C2]  = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C3]  = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C4]  = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C5]  = PchSerialIoDisabled,
+		[PchSerialIoIndexSPI0]  = PchSerialIoPci,
+		[PchSerialIoIndexSPI1]  = PchSerialIoDisabled,
+		[PchSerialIoIndexUART0] = PchSerialIoPci,
+		[PchSerialIoIndexUART1] = PchSerialIoPci,
+		[PchSerialIoIndexUART2] = PchSerialIoPci,
+	}"
+
+	register "DisableHeciRetry" = "1"
+
+
+	device domain 0 on
+		device pci 02.0 on  end # Integrated Graphics Device
+		chip drivers/intel/wifi
+			register "wake" = "PME_B0_EN_BIT"
+			device pci 14.3 on  end # CNVi wifi
+		end
+
+		device pci 19.2 on  end # UART #2
+
+		device pci 1b.4 on
+			smbios_slot_desc "SlotTypePciExpressGen3X16" "SlotLengthOther" "SLOT1" "SlotDataBusWidth4X"
+		end # PCIe Slot 1
+		device pci 1c.0 on
+			smbios_slot_desc "SlotTypePciExpressGen3X16" "SlotLengthOther" "SLOT3" "SlotDataBusWidth4X"
+		end # PCIe Slot 3
+		device pci 1c.4 on end # PHY 3
+		device pci 1c.5 on end # PHY 4
+		device pci 1c.6 on end # PHY 2
+		device pci 1c.7 on end # PHY 1
+
+		device pci 1d.0 on
+			smbios_slot_desc "SlotTypePciExpressGen3X16" "SlotLengthOther" "M2 M" "SlotDataBusWidth4X"
+		end # M2 M
+		device pci 1d.5 on end # PHY 0
+		device pci 1d.6 on end # BMC
+
+		device pci 1e.0 on  end # UART #0
+		device pci 1e.1 on  end # UART #1
+		device pci 1e.2 off end # GSPI #0
+		device pci 1e.3 off end # GSPI #1
+
+	end
+end

@@ -117,7 +117,9 @@ static const struct device_operations graphics_ops = {
 	.enable_resources	= pci_dev_enable_resources,
 	.init			= graphics_soc_init,
 	.ops_pci		= &pci_dev_ops_pci,
+#if CONFIG(HAVE_ACPI_TABLES)
 	.write_acpi_tables	= graphics_soc_write_acpi_opregion,
+#endif
 	.scan_bus		= scan_generic_bus,
 };
 

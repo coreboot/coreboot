@@ -3,6 +3,9 @@
 /* Enable ACPI _SWS methods */
 #include <soc/intel/common/acpi/acpi_wake_source.asl>
 
+External (\_SB.MPTS, MethodObj)
+External (\_SB.MWAK, MethodObj)
+
 /*
  * The _PIC method is called by the OS to choose between interrupt
  * routing via the i8259 interrupt controller or the APIC.
@@ -24,11 +27,20 @@ Method (_PIC, 1)
 
 Method (_PTS, 1)
 {
+	If (CondRefOf (\_SB.MPTS))
+	{
+		\_SB.MPTS (Arg0)
+	}
 }
 
 /* The _WAK method is called on system wakeup */
 
 Method (_WAK, 1)
 {
+	If (CondRefOf (\_SB.MWAK))
+	{
+		\_SB.MWAK (Arg0)
+	}
+
 	Return (Package (){ 0, 0 })
 }

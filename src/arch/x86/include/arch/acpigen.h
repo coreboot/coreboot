@@ -389,7 +389,7 @@ void acpigen_write_dsm(const char *uuid, void (**callbacks)(void *),
 void acpigen_write_dsm_uuid_arr(struct dsm_uuid *ids, size_t count);
 
 /*
- * Generate ACPI AML code for _CPC (Continuous Perfmance Control).
+ * Generate ACPI AML code for _CPC (Continuous Performance Control).
  * Execute the package function once to create a global table, then
  * execute the method function within each processor object to
  * create a method that points to the global table.

@@ -1006,7 +1006,7 @@ void acpigen_write_resourcetemplate_header(void)
 	acpigen_emit_byte(WORD_PREFIX);
 	len_stack[ltop++] = acpigen_get_current();
 	/* Add 2 dummy bytes for the ACPI word (keep aligned with
-	   the calclulation in acpigen_write_resourcetemplate() below). */
+	   the calculation in acpigen_write_resourcetemplate() below). */
 	acpigen_emit_byte(0x00);
 	acpigen_emit_byte(0x00);
 }

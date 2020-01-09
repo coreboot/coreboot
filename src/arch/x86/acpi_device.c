@@ -176,7 +176,7 @@ const char *acpi_device_scope(const struct device *dev)
 	return buf;
 }
 
-/* Concatentate the device path and provided name suffix */
+/* Concatenate the device path and provided name suffix */
 const char *acpi_device_path_join(const struct device *dev, const char *name)
 {
 	static char buf[DEVICE_PATH_MAX] = {};

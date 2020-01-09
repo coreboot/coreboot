@@ -224,7 +224,7 @@ config TIMESTAMPS_ON_CONSOLE
 	default n
 	depends on COLLECT_TIMESTAMPS
 	help
-	  Print the timestamps to the debug console if enabled at level spew.
+	  Print the timestamps to the debug console if enabled at level info.
 
 config USE_BLOBS
 	bool "Allow use of binary-only repository"

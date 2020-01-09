@@ -130,9 +130,6 @@ static void timestamp_add_table_entry(struct timestamp_table *ts_table,
 	tse->entry_id = id;
 	tse->entry_stamp = ts_time - ts_table->base_time;
 
-	if (CONFIG(TIMESTAMPS_ON_CONSOLE))
-		printk(BIOS_SPEW, "Timestamp - %s: %llu\n", timestamp_name(id), ts_time);
-
 	if (ts_table->num_entries == ts_table->max_entries)
 		printk(BIOS_ERR, "ERROR: Timestamp table full\n");
 }
@@ -152,6 +149,9 @@ void timestamp_add(enum timestamp_id id, uint64_t ts_time)
 	}
 
 	timestamp_add_table_entry(ts_table, id, ts_time);
+
+	if (CONFIG(TIMESTAMPS_ON_CONSOLE))
+		printk(BIOS_INFO, "Timestamp - %s: %llu\n", timestamp_name(id), ts_time);
 }
 
 void timestamp_add_now(enum timestamp_id id)

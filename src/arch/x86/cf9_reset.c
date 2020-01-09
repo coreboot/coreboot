@@ -35,7 +35,7 @@ void do_system_reset(void)
  * A full reset in terms of the CF9 register triggers a power cycle
  * (i.e. S0 -> S5 -> S0 transition). Thus, it could be called a
  * "cold reset".
- * Note: Not all x86 implementations comply with this defitinion,
+ * Note: Not all x86 implementations comply with this definition,
  *       some may require additional configuration to power cycle.
  */
 void do_full_reset(void)

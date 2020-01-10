@@ -126,6 +126,7 @@ func init() {
 	RegisterPCI(0x8086, 0x0104, sandybridgemc{})
 	RegisterPCI(0x8086, 0x0150, sandybridgemc{})
 	RegisterPCI(0x8086, 0x0154, sandybridgemc{})
+	RegisterPCI(0x8086, 0x0158, sandybridgemc{})
 	for _, id := range []uint16{
 		0x0102, 0x0106, 0x010a,
 		0x0112, 0x0116, 0x0122, 0x0126,

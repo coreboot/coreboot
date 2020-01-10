@@ -22,11 +22,13 @@
 #include <southbridge/amd/pi/hudson/hudson.h>
 #include <southbridge/amd/pi/hudson/pci_devs.h>
 #include <southbridge/amd/pi/hudson/amd_pci_int_defs.h>
+#include <northbridge/amd/agesa/agesa_helper.h>
 #include <northbridge/amd/pi/00730F01/pci_devs.h>
 #include <southbridge/amd/common/amd_pci_util.h>
 #include <superio/nuvoton/nct5104d/nct5104d.h>
 #include <smbios.h>
 #include <string.h>
+#include <AGESA.h>
 #include "gpio_ftns.h"
 
 #define SPD_SIZE  128
@@ -157,6 +159,97 @@ static void config_gpio_mux(void)
 /**********************************************
  * enable the dedicated function in mainboard.
  **********************************************/
+#if CONFIG(GENERATE_SMBIOS_TABLES)
+static int mainboard_smbios_type16(DMI_INFO *agesa_dmi, int *handle,
+				 unsigned long *current)
+{
+	struct smbios_type16 *t;
+	u32 max_capacity;
+	int len = 0;
+
+	t = (struct smbios_type16 *)*current;
+	len = sizeof(struct smbios_type16);
+	memset(t, 0, sizeof(struct smbios_type16));
+	max_capacity = get_spd_offset() ? 4 : 2; /* 4GB or 2GB variant */
+
+	t->type = SMBIOS_PHYS_MEMORY_ARRAY;
+	t->handle = *handle;
+	t->length = len - 2;
+	t->type = SMBIOS_PHYS_MEMORY_ARRAY;
+	t->use = MEMORY_ARRAY_USE_SYSTEM;
+	t->location = MEMORY_ARRAY_LOCATION_SYSTEM_BOARD;
+	t->memory_error_correction = agesa_dmi->T16.MemoryErrorCorrection;
+	t->maximum_capacity = max_capacity * 1024 * 1024;
+	t->memory_error_information_handle = 0xfffe;
+	t->number_of_memory_devices = 1;
+
+	*current += len;
+
+	return len;
+}
+
+static int mainboard_smbios_type17(DMI_INFO *agesa_dmi, int *handle,
+				 unsigned long *current)
+{
+	struct smbios_type17 *t;
+	int len = 0;
+
+	t = (struct smbios_type17 *)*current;
+	memset(t, 0, sizeof(struct smbios_type17));
+
+	t->type = SMBIOS_MEMORY_DEVICE;
+	t->length = sizeof(struct smbios_type17) - 2;
+	t->handle = *handle + 1;
+	t->phys_memory_array_handle = *handle;
+	t->memory_error_information_handle = 0xfffe;
+	t->total_width = agesa_dmi->T17[0][0][0].TotalWidth;
+	t->data_width = agesa_dmi->T17[0][0][0].DataWidth;
+	t->size = agesa_dmi->T17[0][0][0].MemorySize;
+	t->form_factor = agesa_dmi->T17[0][0][0].FormFactor;
+	t->device_set = agesa_dmi->T17[0][0][0].DeviceSet;
+	t->device_locator = smbios_add_string(t->eos,
+				agesa_dmi->T17[0][0][0].DeviceLocator);
+	t->bank_locator = smbios_add_string(t->eos,
+				agesa_dmi->T17[0][0][0].BankLocator);
+	t->memory_type = agesa_dmi->T17[0][0][0].MemoryType;
+	t->type_detail = *(u16 *)&agesa_dmi->T17[0][0][0].TypeDetail;
+	t->speed = agesa_dmi->T17[0][0][0].Speed;
+	t->manufacturer = agesa_dmi->T17[0][0][0].ManufacturerIdCode;
+	t->serial_number = smbios_add_string(t->eos,
+				agesa_dmi->T17[0][0][0].SerialNumber);
+	t->part_number = smbios_add_string(t->eos,
+				agesa_dmi->T17[0][0][0].PartNumber);
+	t->attributes = agesa_dmi->T17[0][0][0].Attributes;
+	t->extended_size = agesa_dmi->T17[0][0][0].ExtSize;
+	t->clock_speed = agesa_dmi->T17[0][0][0].ConfigSpeed;
+	t->minimum_voltage = 1500; /* From SPD: 1.5V */
+	t->maximum_voltage = 1500;
+
+	len = t->length + smbios_string_table_len(t->eos);
+	*current += len;
+
+	return len;
+}
+
+static int mainboard_smbios_data(struct device *dev, int *handle,
+				 unsigned long *current)
+{
+	DMI_INFO *agesa_dmi;
+	int len = 0;
+
+	agesa_dmi = agesawrapper_getlateinitptr(PICK_DMI);
+
+	if (!agesa_dmi)
+		return len;
+
+	len += mainboard_smbios_type16(agesa_dmi, handle, current);
+	len += mainboard_smbios_type17(agesa_dmi, handle, current);
+
+	*handle += 2;
+
+	return len;
+}
+#endif
 
 static void mainboard_enable(struct device *dev)
 {
@@ -176,6 +269,9 @@ static void mainboard_enable(struct device *dev)
 
 	/* Initialize the PIRQ data structures for consumption */
 	pirq_setup();
+#if CONFIG(GENERATE_SMBIOS_TABLES)
+	dev->ops->get_smbios_data = mainboard_smbios_data;
+#endif
 }
 
 static void mainboard_final(void *chip_info)

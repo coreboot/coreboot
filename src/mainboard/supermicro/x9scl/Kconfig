@@ -1,0 +1,55 @@
+if BOARD_SUPERMICRO_X9SCL
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select BOARD_ROMSIZE_KB_8192
+	select HAVE_ACPI_TABLES
+	select NORTHBRIDGE_INTEL_SANDYBRIDGE
+	select USE_NATIVE_RAMINIT
+	select RAMINIT_ENABLE_ECC
+	select SERIRQ_CONTINUOUS_MODE
+	select SOUTHBRIDGE_INTEL_BD82X6X
+	select SUPERIO_NUVOTON_NCT6776
+	select SUPERIO_NUVOTON_NCT6776_COM_A
+	select SUPERIO_NUVOTON_WPCM450
+	select MAINBOARD_USES_IFD_GBE_REGION
+
+config MAINBOARD_DIR
+	string
+	default supermicro/x9scl
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "X9SCL/X9SCM"
+
+config MAX_CPUS
+	int
+	default 8
+
+config USBDEBUG_HCD_INDEX
+	int
+	default 1
+
+config VGA_BIOS_FILE
+	string
+	default "pci102b,0532.rom"
+
+config VGA_BIOS_ID
+	string
+	depends on VGA_BIOS
+	default "102b,0532"
+
+config PXE_ROM_ID
+	string
+	depends on PXE
+	default "8086:10d3"
+
+config CBFS_SIZE
+	hex
+	default 0x400000
+
+#config SUPERMICRO_BOARDID
+#	string
+#	default "0624"
+#
+endif

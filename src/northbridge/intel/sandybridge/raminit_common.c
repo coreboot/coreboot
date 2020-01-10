@@ -497,7 +497,7 @@ void dram_zones(ramctr_timing *ctrl, int training)
 	}
 }
 
-#define HOST_BRIDGE	PCI_DEVFN(0, 0)
+#define HOST_BRIDGE	PCI_DEV(0, 0, 0)
 #define DEFAULT_TCK	TCK_800MHZ
 
 unsigned int get_mem_min_tck(void)
@@ -507,7 +507,7 @@ unsigned int get_mem_min_tck(void)
 	const struct device *dev;
 	const struct northbridge_intel_sandybridge_config *cfg = NULL;
 
-	dev = pcidev_path_on_root(HOST_BRIDGE);
+	dev = pcidev_path_on_root(PCI_DEVFN(0, 0));
 	if (dev)
 		cfg = dev->chip_info;
 
@@ -516,11 +516,11 @@ unsigned int get_mem_min_tck(void)
 		if (CONFIG(NATIVE_RAMINIT_IGNORE_MAX_MEM_FUSES))
 			return TCK_1333MHZ;
 
-		rev = pci_read_config8(PCI_DEV(0, 0, 0), PCI_DEVICE_ID);
+		rev = pci_read_config8(HOST_BRIDGE, PCI_DEVICE_ID);
 
 		if ((rev & BASE_REV_MASK) == BASE_REV_SNB) {
 			/* read Capabilities A Register DMFC bits */
-			reg32 = pci_read_config32(PCI_DEV(0, 0, 0), CAPID0_A);
+			reg32 = pci_read_config32(HOST_BRIDGE, CAPID0_A);
 			reg32 &= 0x7;
 
 			switch (reg32) {
@@ -533,7 +533,7 @@ unsigned int get_mem_min_tck(void)
 			}
 		} else {
 			/* read Capabilities B Register DMFC bits */
-			reg32 = pci_read_config32(PCI_DEV(0, 0, 0), CAPID0_B);
+			reg32 = pci_read_config32(HOST_BRIDGE, CAPID0_B);
 			reg32 = (reg32 >> 4) & 0x7;
 
 			switch (reg32) {
@@ -573,7 +573,7 @@ static unsigned int get_mmio_size(void)
 	const struct device *dev;
 	const struct northbridge_intel_sandybridge_config *cfg = NULL;
 
-	dev = pcidev_path_on_root(HOST_BRIDGE);
+	dev = pcidev_path_on_root(PCI_DEVFN(0, 0));
 	if (dev)
 		cfg = dev->chip_info;
 
@@ -643,97 +643,97 @@ void dram_memorymap(ramctr_timing *ctrl, int me_uma_size)
 	printk(BIOS_DEBUG, "Update PCI-E configuration space:\n");
 
 	// TOM (top of memory)
-	reg = pci_read_config32(PCI_DEV(0, 0, 0), TOM);
+	reg = pci_read_config32(HOST_BRIDGE, TOM);
 	val = tom & 0xfff;
 	reg = (reg & ~0xfff00000) | (val << 20);
 	printk(BIOS_DEBUG, "PCI(0, 0, 0)[%x] = %x\n", TOM, reg);
-	pci_write_config32(PCI_DEV(0, 0, 0), TOM, reg);
+	pci_write_config32(HOST_BRIDGE, TOM, reg);
 
-	reg = pci_read_config32(PCI_DEV(0, 0, 0), TOM + 4);
+	reg = pci_read_config32(HOST_BRIDGE, TOM + 4);
 	val = tom & 0xfffff000;
 	reg = (reg & ~0x000fffff) | (val >> 12);
 	printk(BIOS_DEBUG, "PCI(0, 0, 0)[%x] = %x\n", TOM + 4, reg);
-	pci_write_config32(PCI_DEV(0, 0, 0), TOM + 4, reg);
+	pci_write_config32(HOST_BRIDGE, TOM + 4, reg);
 
 	// TOLUD (top of low used dram)
-	reg = pci_read_config32(PCI_DEV(0, 0, 0), TOLUD);
+	reg = pci_read_config32(HOST_BRIDGE, TOLUD);
 	val = toludbase & 0xfff;
 	reg = (reg & ~0xfff00000) | (val << 20);
 	printk(BIOS_DEBUG, "PCI(0, 0, 0)[%x] = %x\n", TOLUD, reg);
-	pci_write_config32(PCI_DEV(0, 0, 0), TOLUD, reg);
+	pci_write_config32(HOST_BRIDGE, TOLUD, reg);
 
 	// TOUUD LSB (top of upper usable dram)
-	reg = pci_read_config32(PCI_DEV(0, 0, 0), TOUUD);
+	reg = pci_read_config32(HOST_BRIDGE, TOUUD);
 	val = touudbase & 0xfff;
 	reg = (reg & ~0xfff00000) | (val << 20);
 	printk(BIOS_DEBUG, "PCI(0, 0, 0)[%x] = %x\n", TOUUD, reg);
-	pci_write_config32(PCI_DEV(0, 0, 0), TOUUD, reg);
+	pci_write_config32(HOST_BRIDGE, TOUUD, reg);
 
 	// TOUUD MSB
-	reg = pci_read_config32(PCI_DEV(0, 0, 0), TOUUD + 4);
+	reg = pci_read_config32(HOST_BRIDGE, TOUUD + 4);
 	val = touudbase & 0xfffff000;
 	reg = (reg & ~0x000fffff) | (val >> 12);
 	printk(BIOS_DEBUG, "PCI(0, 0, 0)[%x] = %x\n", TOUUD + 4, reg);
-	pci_write_config32(PCI_DEV(0, 0, 0), TOUUD + 4, reg);
+	pci_write_config32(HOST_BRIDGE, TOUUD + 4, reg);
 
 	if (reclaim) {
 		// REMAP BASE
-		pci_write_config32(PCI_DEV(0, 0, 0), REMAPBASE, remapbase << 20);
-		pci_write_config32(PCI_DEV(0, 0, 0), REMAPBASE + 4, remapbase >> 12);
+		pci_write_config32(HOST_BRIDGE, REMAPBASE, remapbase << 20);
+		pci_write_config32(HOST_BRIDGE, REMAPBASE + 4, remapbase >> 12);
 
 		// REMAP LIMIT
-		pci_write_config32(PCI_DEV(0, 0, 0), REMAPLIMIT, remaplimit << 20);
-		pci_write_config32(PCI_DEV(0, 0, 0), REMAPLIMIT + 4, remaplimit >> 12);
+		pci_write_config32(HOST_BRIDGE, REMAPLIMIT, remaplimit << 20);
+		pci_write_config32(HOST_BRIDGE, REMAPLIMIT + 4, remaplimit >> 12);
 	}
 	// TSEG
-	reg = pci_read_config32(PCI_DEV(0, 0, 0), TSEGMB);
+	reg = pci_read_config32(HOST_BRIDGE, TSEGMB);
 	val = tsegbase & 0xfff;
 	reg = (reg & ~0xfff00000) | (val << 20);
 	printk(BIOS_DEBUG, "PCI(0, 0, 0)[%x] = %x\n", TSEGMB, reg);
-	pci_write_config32(PCI_DEV(0, 0, 0), TSEGMB, reg);
+	pci_write_config32(HOST_BRIDGE, TSEGMB, reg);
 
 	// GFX stolen memory
-	reg = pci_read_config32(PCI_DEV(0, 0, 0), BDSM);
+	reg = pci_read_config32(HOST_BRIDGE, BDSM);
 	val = gfxstolenbase & 0xfff;
 	reg = (reg & ~0xfff00000) | (val << 20);
 	printk(BIOS_DEBUG, "PCI(0, 0, 0)[%x] = %x\n", BDSM, reg);
-	pci_write_config32(PCI_DEV(0, 0, 0), BDSM, reg);
+	pci_write_config32(HOST_BRIDGE, BDSM, reg);
 
 	// GTT stolen memory
-	reg = pci_read_config32(PCI_DEV(0, 0, 0), BGSM);
+	reg = pci_read_config32(HOST_BRIDGE, BGSM);
 	val = gttbase & 0xfff;
 	reg = (reg & ~0xfff00000) | (val << 20);
 	printk(BIOS_DEBUG, "PCI(0, 0, 0)[%x] = %x\n", BGSM, reg);
-	pci_write_config32(PCI_DEV(0, 0, 0), BGSM, reg);
+	pci_write_config32(HOST_BRIDGE, BGSM, reg);
 
 	if (me_uma_size) {
-		reg = pci_read_config32(PCI_DEV(0, 0, 0), MESEG_MASK + 4);
+		reg = pci_read_config32(HOST_BRIDGE, MESEG_MASK + 4);
 		val = (0x80000 - me_uma_size) & 0xfffff000;
 		reg = (reg & ~0x000fffff) | (val >> 12);
 		printk(BIOS_DEBUG, "PCI(0, 0, 0)[%x] = %x\n", MESEG_MASK + 4, reg);
-		pci_write_config32(PCI_DEV(0, 0, 0), MESEG_MASK + 4, reg);
+		pci_write_config32(HOST_BRIDGE, MESEG_MASK + 4, reg);
 
 		// ME base
-		reg = pci_read_config32(PCI_DEV(0, 0, 0), MESEG_BASE);
+		reg = pci_read_config32(HOST_BRIDGE, MESEG_BASE);
 		val = mestolenbase & 0xfff;
 		reg = (reg & ~0xfff00000) | (val << 20);
 		printk(BIOS_DEBUG, "PCI(0, 0, 0)[%x] = %x\n", MESEG_BASE, reg);
-		pci_write_config32(PCI_DEV(0, 0, 0), MESEG_BASE, reg);
+		pci_write_config32(HOST_BRIDGE, MESEG_BASE, reg);
 
-		reg = pci_read_config32(PCI_DEV(0, 0, 0), MESEG_BASE + 4);
+		reg = pci_read_config32(HOST_BRIDGE, MESEG_BASE + 4);
 		val = mestolenbase & 0xfffff000;
 		reg = (reg & ~0x000fffff) | (val >> 12);
 		printk(BIOS_DEBUG, "PCI(0, 0, 0)[%x] = %x\n", MESEG_BASE + 4, reg);
-		pci_write_config32(PCI_DEV(0, 0, 0), MESEG_BASE + 4, reg);
+		pci_write_config32(HOST_BRIDGE, MESEG_BASE + 4, reg);
 
 		// ME mask
-		reg = pci_read_config32(PCI_DEV(0, 0, 0), MESEG_MASK);
+		reg = pci_read_config32(HOST_BRIDGE, MESEG_MASK);
 		val = (0x80000 - me_uma_size) & 0xfff;
 		reg = (reg & ~0xfff00000) | (val << 20);
 		reg = reg | ME_STLEN_EN;	// set ME memory enable
 		reg = reg | MELCK;		// set lockbit on ME mem
 		printk(BIOS_DEBUG, "PCI(0, 0, 0)[%x] = %x\n", MESEG_MASK, reg);
-		pci_write_config32(PCI_DEV(0, 0, 0), MESEG_MASK, reg);
+		pci_write_config32(HOST_BRIDGE, MESEG_MASK, reg);
 	}
 }
 

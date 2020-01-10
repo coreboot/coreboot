@@ -56,7 +56,7 @@ int get_line_from_file(FILE * f, char line[], int line_buf_size)
  *
  * We ran out of memory.  Print an error message and die.
  ****************************************************************************/
-_Noreturn void out_of_memory(void)
+noreturn void out_of_memory(void)
 {
 	fprintf(stderr, "%s: Out of memory.\n", prog_name);
 	exit(1);

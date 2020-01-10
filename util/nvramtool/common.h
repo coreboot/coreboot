@@ -69,6 +69,12 @@ int win32_munmap(void *start, size_t length);
 #define MAP_SHARED 1
 #endif
 
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
+#define noreturn _Noreturn
+#else
+#define noreturn
+#endif
+
 /* basename of this program, as reported by argv[0] */
 extern const char prog_name[];
 
@@ -76,7 +82,7 @@ extern const char prog_name[];
 extern const char prog_version[];
 
 int get_line_from_file(FILE * f, char line[], int line_buf_size);
-_Noreturn void out_of_memory(void);
+noreturn void out_of_memory(void);
 void usage(FILE * outfile);
 
 #endif				/* COMMON_H */

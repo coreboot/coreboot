@@ -1233,8 +1233,7 @@ static int does_lane_work(ramctr_timing *ctrl, int channel, int slotrank,
 {
 	u32 timA = ctrl->timings[channel][slotrank].lanes[lane].timA;
 	return ((MCHBAR32(lane_registers[lane] + channel * 0x100 + 4 +
-		  ((timA / 32) & 1) * 4)
-		 >> (timA % 32)) & 1);
+		  ((timA / 32) & 1) * 4) >> (timA % 32)) & 1);
 }
 
 struct run {
@@ -1353,8 +1352,7 @@ static void discover_timA_fine(ramctr_timing *ctrl, int channel, int slotrank,
 	}
 }
 
-static int discover_402x(ramctr_timing *ctrl, int channel, int slotrank,
-			  int *upperA)
+static int discover_402x(ramctr_timing *ctrl, int channel, int slotrank, int *upperA)
 {
 	int works[NUM_LANES];
 	int lane;
@@ -1390,11 +1388,9 @@ static int discover_402x(ramctr_timing *ctrl, int channel, int slotrank,
 			return MAKE_ERR;
 		}
 		FOR_ALL_LANES if (works[lane]) {
-			ctrl->timings[channel][slotrank].lanes[lane].timA +=
-			    128;
+			ctrl->timings[channel][slotrank].lanes[lane].timA += 128;
 			upperA[lane] += 128;
-			printram("increment %d, %d, %d\n", channel,
-			       slotrank, lane);
+			printram("increment %d, %d, %d\n", channel, slotrank, lane);
 		}
 	}
 	return 0;
@@ -1415,13 +1411,11 @@ static void pre_timA_change(ramctr_timing *ctrl, int channel, int slotrank,
 		if (mnmx->timA_min_high >
 		    (ctrl->timings[channel][slotrank].lanes[lane].timA >> 6))
 			mnmx->timA_min_high =
-			    (ctrl->timings[channel][slotrank].lanes[lane].
-			     timA >> 6);
+			    (ctrl->timings[channel][slotrank].lanes[lane].timA >> 6);
 		if (mnmx->timA_max_high <
 		    (ctrl->timings[channel][slotrank].lanes[lane].timA >> 6))
 			mnmx->timA_max_high =
-			    (ctrl->timings[channel][slotrank].lanes[lane].
-			     timA >> 6);
+			    (ctrl->timings[channel][slotrank].lanes[lane].timA >> 6);
 	}
 }
 
@@ -1431,7 +1425,7 @@ static void post_timA_change(ramctr_timing *ctrl, int channel, int slotrank,
 	struct timA_minmax post;
 	int shift_402x = 0;
 
-	/* Get changed maxima.  */
+	/* Get changed maxima. */
 	pre_timA_change(ctrl, channel, slotrank, &post);
 
 	if (mnmx->timA_max_high - mnmx->timA_min_high <
@@ -1450,21 +1444,18 @@ static void post_timA_change(ramctr_timing *ctrl, int channel, int slotrank,
 }
 
 /* Compensate the skew between DQS and DQs.
- * To ease PCB design a small skew between Data Strobe signals and
- * Data Signals is allowed.
- * The controller has to measure and compensate this skew for every byte-lane.
- * By delaying either all DQs signals or DQS signal, a full phase
- * shift can be introduced.
- * It is assumed that one byte-lane's DQs signals have the same routing delay.
+ * To ease PCB design, a small skew between Data Strobe signals and Data Signals is allowed.
+ * The controller has to measure and compensate this skew for every byte-lane. By delaying
+ * either all DQs signals or DQS signal, a full phase shift can be introduced. It is assumed
+ * that one byte-lane's DQs signals have the same routing delay.
  *
- * To measure the actual skew, the DRAM is placed in "read leveling" mode.
- * In read leveling mode the DRAM-chip outputs an alternating periodic pattern.
- * The memory controller iterates over all possible values to do a full phase shift
- * and issues read commands.
- * With DQS and DQs in phase the data read is expected to alternate on every byte:
- * 0xFF 0x00 0xFF ...
- * Once the controller has detected this pattern a bit in the result register is
- * set for the current phase shift.
+ * To measure the actual skew, the DRAM is placed in "read leveling" mode. In read leveling
+ * mode the DRAM-chip outputs an alternating periodic pattern. The memory controller iterates
+ * over all possible values to do a full phase shift and issues read commands. With DQS and
+ * DQs in phase the data read is expected to alternate on every byte:
+ *   0xFF 0x00 0xFF ...
+ * Once the controller has detected this pattern a bit in the result register is set for the
+ * current phase shift.
  */
 int read_training(ramctr_timing *ctrl)
 {
@@ -1498,8 +1489,7 @@ int read_training(ramctr_timing *ctrl)
 		all_high = 1;
 		some_high = 0;
 		FOR_ALL_LANES {
-			if (ctrl->timings[channel][slotrank].lanes[lane].timA >=
-			    0x40)
+			if (ctrl->timings[channel][slotrank].lanes[lane].timA >= 0x40)
 				some_high = 1;
 			else
 				all_high = 0;
@@ -1509,8 +1499,7 @@ int read_training(ramctr_timing *ctrl)
 			ctrl->timings[channel][slotrank].io_latency--;
 			printram("4028--;\n");
 			FOR_ALL_LANES {
-				ctrl->timings[channel][slotrank].lanes[lane].
-				    timA -= 0x40;
+				ctrl->timings[channel][slotrank].lanes[lane].timA -= 0x40;
 				upperA[lane] -= 0x40;
 
 			}
@@ -1659,8 +1648,7 @@ static void timC_threshold_process(int *data, const int count)
 	int threshold = min/2 + max/2;
 	for (i = 0; i < count; i++)
 		data[i] = data[i] > threshold;
-	printram("threshold=%d min=%d max=%d\n",
-		 threshold, min, max);
+	printram("threshold=%d min=%d max=%d\n", threshold, min, max);
 }
 
 static int discover_timC(ramctr_timing *ctrl, int channel, int slotrank)
@@ -1681,8 +1669,7 @@ static int discover_timC(ramctr_timing *ctrl, int channel, int slotrank)
 	MCHBAR32(IOSAV_SEQ_CTL_ch(channel)) = IOSAV_RUN_ONCE(1);
 
 	for (timC = 0; timC <= MAX_TIMC; timC++) {
-		FOR_ALL_LANES ctrl->timings[channel][slotrank].lanes[lane].
-		    timC = timC;
+		FOR_ALL_LANES ctrl->timings[channel][slotrank].lanes[lane].timC = timC;
 		program_timings(ctrl, channel);
 
 		test_timC(ctrl, channel, slotrank);
@@ -1729,8 +1716,7 @@ static int get_precedening_channels(ramctr_timing *ctrl, int target_channel)
 static void fill_pattern0(ramctr_timing *ctrl, int channel, u32 a, u32 b)
 {
 	unsigned int j;
-	unsigned int channel_offset =
-	    get_precedening_channels(ctrl, channel) * 0x40;
+	unsigned int channel_offset = get_precedening_channels(ctrl, channel) * 0x40;
 	for (j = 0; j < 16; j++)
 		write32((void *)(0x04000000 + channel_offset + 4 * j), j & 2 ? b : a);
 	sfence();
@@ -1747,8 +1733,7 @@ static int num_of_channels(const ramctr_timing *ctrl)
 static void fill_pattern1(ramctr_timing *ctrl, int channel)
 {
 	unsigned int j;
-	unsigned int channel_offset =
-	    get_precedening_channels(ctrl, channel) * 0x40;
+	unsigned int channel_offset = get_precedening_channels(ctrl, channel) * 0x40;
 	unsigned int channel_step = 0x40 * num_of_channels(ctrl);
 	for (j = 0; j < 16; j++)
 		write32((void *)(0x04000000 + channel_offset + j * 4), 0xffffffff);
@@ -1763,10 +1748,8 @@ static void precharge(ramctr_timing *ctrl)
 
 	FOR_ALL_POPULATED_CHANNELS {
 		FOR_ALL_POPULATED_RANKS FOR_ALL_LANES {
-			ctrl->timings[channel][slotrank].lanes[lane].falling =
-			    16;
-			ctrl->timings[channel][slotrank].lanes[lane].rising =
-			    16;
+			ctrl->timings[channel][slotrank].lanes[lane].falling = 16;
+			ctrl->timings[channel][slotrank].lanes[lane].rising = 16;
 		}
 
 		program_timings(ctrl, channel);
@@ -1816,10 +1799,8 @@ static void precharge(ramctr_timing *ctrl)
 		}
 
 		FOR_ALL_POPULATED_RANKS FOR_ALL_LANES {
-			ctrl->timings[channel][slotrank].lanes[lane].falling =
-			    48;
-			ctrl->timings[channel][slotrank].lanes[lane].rising =
-			    48;
+			ctrl->timings[channel][slotrank].lanes[lane].falling = 48;
+			ctrl->timings[channel][slotrank].lanes[lane].rising = 48;
 		}
 
 		program_timings(ctrl, channel);
@@ -1872,8 +1853,7 @@ static void precharge(ramctr_timing *ctrl)
 static void test_timB(ramctr_timing *ctrl, int channel, int slotrank)
 {
 	/* enable DQs on this slotrank */
-	write_mrreg(ctrl, channel, slotrank, 1,
-		    0x80 | make_mr1(ctrl, slotrank, channel));
+	write_mrreg(ctrl, channel, slotrank, 1, 0x80 | make_mr1(ctrl, slotrank, channel));
 
 	wait_for_iosav(channel);
 	/* DRAM command NOP */
@@ -1885,8 +1865,7 @@ static void test_timB(ramctr_timing *ctrl, int channel, int slotrank)
 
 	/* DRAM command NOP */
 	MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 1)) = 0x1f107;
-	MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 1)) =
-		0x4000c01 | ((ctrl->CAS + 38) << 16);
+	MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 1)) = 0x4000c01 | ((ctrl->CAS + 38) << 16);
 	MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 1)) = (slotrank << 24) | 4;
 	MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 1)) = 0;
 
@@ -1896,8 +1875,7 @@ static void test_timB(ramctr_timing *ctrl, int channel, int slotrank)
 	wait_for_iosav(channel);
 
 	/* disable DQs on this slotrank */
-	write_mrreg(ctrl, channel, slotrank, 1,
-		    0x1080 | make_mr1(ctrl, slotrank, channel));
+	write_mrreg(ctrl, channel, slotrank, 1, 0x1080 | make_mr1(ctrl, slotrank, channel));
 }
 
 static int discover_timB(ramctr_timing *ctrl, int channel, int slotrank)
@@ -2018,16 +1996,13 @@ static void adjust_high_timB(ramctr_timing *ctrl)
 
 		/* DRAM command PREA */
 		MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 0)) = 0x1f002;
-		MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 0)) =
-			0xc01 | ((ctrl->tRP) << 16);
-		MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 0)) =
-			(slotrank << 24) | 0x60400;
+		MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 0)) = 0xc01 | ((ctrl->tRP) << 16);
+		MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 0)) = (slotrank << 24) | 0x60400;
 		MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 0)) = 0x240;
 
 		/* DRAM command ACT */
 		MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 1)) = 0x1f006;
-		MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 1)) =
-			0xc01 | ((ctrl->tRCD) << 16);
+		MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 1)) = 0xc01 | ((ctrl->tRCD) << 16);
 		MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 1)) = (slotrank << 24) | 0x60000;
 		MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 1)) = 0;
 
@@ -2044,8 +2019,7 @@ static void adjust_high_timB(ramctr_timing *ctrl)
 
 		wait_for_iosav(channel);
 		FOR_ALL_LANES {
-			u64 res = MCHBAR32(lane_registers[lane] +
-				channel * 0x100 + 4);
+			u64 res = MCHBAR32(lane_registers[lane] + channel * 0x100 + 4);
 			res |= ((u64) MCHBAR32(lane_registers[lane] +
 				channel * 0x100 + 8)) << 32;
 			old = ctrl->timings[channel][slotrank].lanes[lane].timB;
@@ -2053,10 +2027,8 @@ static void adjust_high_timB(ramctr_timing *ctrl)
 				get_timB_high_adjust(res) * 64;
 
 			printram("High adjust %d:%016llx\n", lane, res);
-			printram("Bval+: %d, %d, %d, %x -> %x\n", channel,
-				slotrank, lane, old,
-				ctrl->timings[channel][slotrank].lanes[lane].
-				timB);
+			printram("Bval+: %d, %d, %d, %x -> %x\n", channel, slotrank, lane,
+				old, ctrl->timings[channel][slotrank].lanes[lane].timB);
 		}
 	}
 	MCHBAR32(GDCRTRAININGMOD) = 0;
@@ -2276,8 +2248,7 @@ static int test_320c(ramctr_timing *ctrl, int channel, int slotrank)
 static void fill_pattern5(ramctr_timing *ctrl, int channel, int patno)
 {
 	unsigned int i, j;
-	unsigned int channel_offset =
-	    get_precedening_channels(ctrl, channel) * 0x40;
+	unsigned int channel_offset = get_precedening_channels(ctrl, channel) * 0x40;
 	unsigned int channel_step = 0x40 * num_of_channels(ctrl);
 
 	if (patno) {
@@ -2367,8 +2338,7 @@ static int try_cmd_stretch(ramctr_timing *ctrl, int channel, int cmd_stretch)
 	printram("Trying cmd_stretch %d on channel %d\n", cmd_stretch, channel);
 
 	FOR_ALL_POPULATED_RANKS {
-		saved_timings[channel][slotrank] =
-			ctrl->timings[channel][slotrank];
+		saved_timings[channel][slotrank] = ctrl->timings[channel][slotrank];
 	}
 
 	ctrl->cmd_stretch[channel] = cmd_stretch;
@@ -2398,8 +2368,7 @@ static int try_cmd_stretch(ramctr_timing *ctrl, int channel, int cmd_stretch)
 		program_timings(ctrl, channel);
 		reprogram_320c(ctrl);
 		FOR_ALL_POPULATED_RANKS {
-			stat[slotrank][c320c + 127] =
-					test_320c(ctrl, channel, slotrank);
+			stat[slotrank][c320c + 127] = test_320c(ctrl, channel, slotrank);
 		}
 	}
 	FOR_ALL_POPULATED_RANKS {
@@ -2464,8 +2433,7 @@ int command_training(ramctr_timing *ctrl)
 			return err;
 		}
 
-		printram("Using CMD rate %uT on channel %u\n",
-			 cmdrate + 1, channel);
+		printram("Using CMD rate %uT on channel %u\n", cmdrate + 1, channel);
 	}
 
 	FOR_ALL_POPULATED_CHANNELS
@@ -2476,8 +2444,7 @@ int command_training(ramctr_timing *ctrl)
 }
 
 
-static int discover_edges_real(ramctr_timing *ctrl, int channel, int slotrank,
-				int *edges)
+static int discover_edges_real(ramctr_timing *ctrl, int channel, int slotrank, int *edges)
 {
 	int edge;
 	int statistics[NUM_LANES][MAX_EDGE_TIMING + 1];
@@ -2485,10 +2452,8 @@ static int discover_edges_real(ramctr_timing *ctrl, int channel, int slotrank,
 
 	for (edge = 0; edge <= MAX_EDGE_TIMING; edge++) {
 		FOR_ALL_LANES {
-			ctrl->timings[channel][slotrank].lanes[lane].rising =
-			    edge;
-			ctrl->timings[channel][slotrank].lanes[lane].falling =
-			    edge;
+			ctrl->timings[channel][slotrank].lanes[lane].rising = edge;
+			ctrl->timings[channel][slotrank].lanes[lane].falling = edge;
 		}
 		program_timings(ctrl, channel);
 
@@ -2504,8 +2469,7 @@ static int discover_edges_real(ramctr_timing *ctrl, int channel, int slotrank,
 		 * all reads return a predefined pattern */
 		MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 0)) = 0x1f000;
 		MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 0)) = 0xc01 | (ctrl->tMOD << 16);
-		MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 0)) =
-			(slotrank << 24) | 0x360004;
+		MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 0)) = (slotrank << 24) | 0x360004;
 		MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 0)) = 0;
 
 		/* DRAM command RD */
@@ -2516,8 +2480,7 @@ static int discover_edges_real(ramctr_timing *ctrl, int channel, int slotrank,
 
 		/* DRAM command RD */
 		MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 2)) = 0x1f105;
-		MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 2)) =
-			0x1001 | ((ctrl->CAS + 8) << 16);
+		MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 2)) = 0x1001 | ((ctrl->CAS + 8) << 16);
 		MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 2)) = (slotrank << 24) | 0x60000;
 		MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 2)) = 0;
 
@@ -2525,8 +2488,7 @@ static int discover_edges_real(ramctr_timing *ctrl, int channel, int slotrank,
 		 * MR3 disable MPR */
 		MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 3)) = 0x1f000;
 		MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 3)) = 0xc01 | (ctrl->tMOD << 16);
-		MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 3)) =
-			(slotrank << 24) | 0x360000;
+		MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 3)) = (slotrank << 24) | 0x360000;
 		MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 3)) = 0;
 
 		// execute command queue
@@ -2540,8 +2502,7 @@ static int discover_edges_real(ramctr_timing *ctrl, int channel, int slotrank,
 		}
 	}
 	FOR_ALL_LANES {
-		struct run rn =
-		    get_longest_zero_run(statistics[lane], MAX_EDGE_TIMING + 1);
+		struct run rn = get_longest_zero_run(statistics[lane], MAX_EDGE_TIMING + 1);
 		edges[lane] = rn.middle;
 		if (rn.all) {
 			printk(BIOS_EMERG, "edge discovery failed: %d, %d, %d\n",
@@ -2577,10 +2538,8 @@ int discover_edges(ramctr_timing *ctrl)
 		}
 
 		FOR_ALL_POPULATED_RANKS FOR_ALL_LANES {
-			ctrl->timings[channel][slotrank].lanes[lane].falling =
-			    16;
-			ctrl->timings[channel][slotrank].lanes[lane].rising =
-			    16;
+			ctrl->timings[channel][slotrank].lanes[lane].falling = 16;
+			ctrl->timings[channel][slotrank].lanes[lane].rising = 16;
 		}
 
 		program_timings(ctrl, channel);
@@ -2633,10 +2592,8 @@ int discover_edges(ramctr_timing *ctrl)
 		/* XXX: check any measured value ? */
 
 		FOR_ALL_POPULATED_RANKS FOR_ALL_LANES {
-			ctrl->timings[channel][slotrank].lanes[lane].falling =
-			    48;
-			ctrl->timings[channel][slotrank].lanes[lane].rising =
-			    48;
+			ctrl->timings[channel][slotrank].lanes[lane].falling = 48;
+			ctrl->timings[channel][slotrank].lanes[lane].rising = 48;
 		}
 
 		program_timings(ctrl, channel);
@@ -2690,8 +2647,7 @@ int discover_edges(ramctr_timing *ctrl)
 
 		FOR_ALL_LANES {
 			MCHBAR32(IOSAV_By_BW_MASK_ch(channel, lane)) =
-				~MCHBAR32(IOSAV_By_BW_SERROR_ch(channel, lane))
-					& 0xff;
+				~MCHBAR32(IOSAV_By_BW_SERROR_ch(channel, lane)) & 0xff;
 		}
 
 		fill_pattern0(ctrl, channel, 0, 0xffffffff);
@@ -2782,8 +2738,7 @@ static int discover_edges_write_real(ramctr_timing *ctrl, int channel,
 				MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 0)) = 0x1f006;
 				MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 0)) =
 					0x4 | (ctrl->tRCD << 16) |
-					(MAX(ctrl->tRRD, (ctrl->tFAW >> 2) + 1)
-					<< 10);
+					(MAX(ctrl->tRRD, (ctrl->tFAW >> 2) + 1) << 10);
 				MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 0)) =
 					(slotrank << 24) | 0x60000;
 				MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 0)) = 0x240;
@@ -2821,8 +2776,7 @@ static int discover_edges_write_real(ramctr_timing *ctrl, int channel,
 					MCHBAR32(IOSAV_By_ERROR_COUNT_ch(channel, lane));
 				}
 
-				raw_statistics[edge] =
-					MCHBAR32(0x436c + channel * 0x400);
+				raw_statistics[edge] = MCHBAR32(0x436c + channel * 0x400);
 			}
 			FOR_ALL_LANES {
 				struct run rn;
@@ -2906,8 +2860,7 @@ static void test_timC_write(ramctr_timing *ctrl, int channel, int slotrank)
 	/* DRAM command ACT */
 	MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 0)) = 0x1f006;
 	MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 0)) =
-		(MAX((ctrl->tFAW >> 2) + 1, ctrl->tRRD)
-		 << 10) | (ctrl->tRCD << 16) | 4;
+		(MAX((ctrl->tFAW >> 2) + 1, ctrl->tRRD) << 10) | (ctrl->tRCD << 16) | 4;
 	MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 0)) =
 		(slotrank << 24) | 0x60000;
 	MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 0)) = 0x244;
@@ -2921,8 +2874,7 @@ static void test_timC_write(ramctr_timing *ctrl, int channel, int slotrank)
 
 	/* DRAM command RD */
 	MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 2)) = 0x1f105;
-	MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 2)) =
-		0x40011e0 | (MAX(ctrl->tRTP, 8) << 16);
+	MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 2)) = 0x40011e0 | (MAX(ctrl->tRTP, 8) << 16);
 	MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 2)) = slotrank << 24;
 	MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 2)) = 0x242;
 
@@ -3090,8 +3042,7 @@ int channel_test(ramctr_timing *ctrl)
 	slotrank = 0;
 	FOR_ALL_POPULATED_CHANNELS
 		if (MCHBAR32(MC_INIT_STATE_ch(channel)) & 0xa000) {
-			printk(BIOS_EMERG, "Mini channel test failed (1): %d\n",
-			       channel);
+			printk(BIOS_EMERG, "Mini channel test failed (1): %d\n", channel);
 			return MAKE_ERR;
 		}
 	FOR_ALL_POPULATED_CHANNELS {
@@ -3112,29 +3063,25 @@ int channel_test(ramctr_timing *ctrl)
 		/* DRAM command ACT */
 		MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 0)) = 0x0001f006;
 		MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 0)) = 0x0028a004;
-		MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 0)) =
-			0x00060000 | (slotrank << 24);
+		MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 0)) = 0x00060000 | (slotrank << 24);
 		MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 0)) = 0x00000244;
 
 		/* DRAM command WR */
 		MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 1)) = 0x0001f201;
 		MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 1)) = 0x08281064;
-		MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 1)) =
-			0x00000000 | (slotrank << 24);
+		MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 1)) = 0x00000000 | (slotrank << 24);
 		MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 1)) = 0x00000242;
 
 		/* DRAM command RD */
 		MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 2)) = 0x0001f105;
 		MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 2)) = 0x04281064;
-		MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 2)) =
-			0x00000000 | (slotrank << 24);
+		MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 2)) = 0x00000000 | (slotrank << 24);
 		MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 2)) = 0x00000242;
 
 		/* DRAM command PRE */
 		MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 3)) = 0x0001f002;
 		MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 3)) = 0x00280c01;
-		MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 3)) =
-			0x00060400 | (slotrank << 24);
+		MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 3)) = 0x00060400 | (slotrank << 24);
 		MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 3)) = 0x00000240;
 
 		// execute command queue
@@ -3316,13 +3263,10 @@ void final_registers(ramctr_timing *ctrl)
 		t1_ns += 500;
 
 	t2_ns = 10 * ((MCHBAR32(SAPMTIMERS) >> 8) & 0xfff);
-	if (MCHBAR32(SAPMCTL) & 8)
-	{
+	if (MCHBAR32(SAPMCTL) & 8) {
 		t3_ns = 10 * ((MCHBAR32(BANDTIMERS_IVB) >> 8) & 0xfff);
 		t3_ns += 10 * (MCHBAR32(SAPMTIMERS2_IVB) & 0xff);
-	}
-	else
-	{
+	} else {
 		t3_ns = 500;
 	}
 	printk(BIOS_DEBUG, "t123: %d, %d, %d\n",

@@ -1771,8 +1771,7 @@ static void precharge(ramctr_timing *ctrl)
 			/* DRAM command RD */
 			MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 1)) = 0x1f105;
 			MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 1)) = 0x4041003;
-			MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 1)) =
-				(slotrank << 24) | 0;
+			MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 1)) = slotrank << 24;
 			MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 1)) = 0;
 
 			/* DRAM command RD */
@@ -1821,8 +1820,7 @@ static void precharge(ramctr_timing *ctrl)
 			/* DRAM command RD */
 			MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 1)) = 0x1f105;
 			MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 1)) = 0x4041003;
-			MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 1)) =
-				(slotrank << 24) | 0;
+			MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 1)) = slotrank << 24;
 			MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 1)) = 0;
 
 			/* DRAM command RD */
@@ -2562,8 +2560,7 @@ int discover_edges(ramctr_timing *ctrl)
 			/* DRAM command RD */
 			MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 1)) = 0x1f105;
 			MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 1)) = 0x4041003;
-			MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 1)) =
-				(slotrank << 24) | 0;
+			MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 1)) = slotrank << 24;
 			MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 1)) = 0;
 
 			/* DRAM command RD */
@@ -2617,7 +2614,7 @@ int discover_edges(ramctr_timing *ctrl)
 			MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 1)) = 0x1f105;
 			MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 1)) = 0x4041003;
 			MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 1)) =
-				(slotrank << 24) | 0;
+				(slotrank << 24);
 			MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 1)) = 0;
 
 			/* DRAM command RD */
@@ -3069,13 +3066,13 @@ int channel_test(ramctr_timing *ctrl)
 		/* DRAM command WR */
 		MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 1)) = 0x0001f201;
 		MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 1)) = 0x08281064;
-		MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 1)) = 0x00000000 | (slotrank << 24);
+		MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 1)) = slotrank << 24;
 		MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 1)) = 0x00000242;
 
 		/* DRAM command RD */
 		MCHBAR32(IOSAV_n_SP_CMD_CTL_ch(channel, 2)) = 0x0001f105;
 		MCHBAR32(IOSAV_n_SUBSEQ_CTL_ch(channel, 2)) = 0x04281064;
-		MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 2)) = 0x00000000 | (slotrank << 24);
+		MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 2)) = slotrank << 24;
 		MCHBAR32(IOSAV_n_ADDR_UPD_ch(channel, 2)) = 0x00000242;
 
 		/* DRAM command PRE */

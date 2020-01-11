@@ -127,7 +127,7 @@ int spi_flash_cmd_write(const struct spi_slave *spi, const u8 *cmd,
 
 /* Perform the read operation honoring spi controller fifo size, reissuing
  * the read command until the full request completed. */
-static int spi_flash_read_chunked(const struct spi_flash *flash, u32 offset,
+int spi_flash_cmd_read(const struct spi_flash *flash, u32 offset,
 				  size_t len, void *buf)
 {
 	u8 cmd[5];
@@ -465,10 +465,7 @@ int spi_flash_probe(unsigned int bus, unsigned int cs, struct spi_flash *flash)
 int spi_flash_read(const struct spi_flash *flash, u32 offset, size_t len,
 		void *buf)
 {
-	if (flash->ops->read)
-		return flash->ops->read(flash, offset, len, buf);
-
-	return spi_flash_read_chunked(flash, offset, len, buf);
+	return flash->ops->read(flash, offset, len, buf);
 }
 
 int spi_flash_write(const struct spi_flash *flash, u32 offset, size_t len,

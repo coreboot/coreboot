@@ -165,6 +165,7 @@ static const struct gigadevice_spi_flash_params gigadevice_spi_flash_table[] = {
 };
 
 static const struct spi_flash_ops spi_flash_ops = {
+	.read = spi_flash_cmd_read,
 	.write = spi_flash_cmd_write_page_program,
 	.erase = spi_flash_cmd_erase,
 	.status = spi_flash_cmd_status,

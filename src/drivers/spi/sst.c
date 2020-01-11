@@ -55,12 +55,14 @@ static int sst_write_ai(const struct spi_flash *flash, u32 offset, size_t len,
 			const void *buf);
 
 static const struct spi_flash_ops spi_flash_ops_write_ai = {
+	.read = spi_flash_cmd_read,
 	.write = sst_write_ai,
 	.erase = spi_flash_cmd_erase,
 	.status = spi_flash_cmd_status,
 };
 
 static const struct spi_flash_ops spi_flash_ops_write_256 = {
+	.read = spi_flash_cmd_read,
 	.write = spi_flash_cmd_write_page_program,
 	.erase = spi_flash_cmd_erase,
 	.status = spi_flash_cmd_status,

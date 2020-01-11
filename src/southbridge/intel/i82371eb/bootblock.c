@@ -61,4 +61,7 @@ void bootblock_early_southbridge_init(void)
 	reg16 |= LOWER_BIOS_ENABLE | EXT_BIOS_ENABLE | EXT_BIOS_ENABLE_1MB;
 	reg16 &= ~(WRITE_PROTECT_ENABLE);	/* Disable ROM write access. */
 	pci_write_config16(dev, XBCS, reg16);
+
+	/* Enable (RTC and) upper NVRAM bank. */
+	pci_write_config8(dev, RTCCFG, RTC_POS_DECODE | UPPER_RAM_EN | RTC_ENABLE);
 }

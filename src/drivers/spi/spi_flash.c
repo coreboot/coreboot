@@ -312,73 +312,61 @@ out:
 /*
  * The following table holds all device probe functions
  *
- * shift:  number of continuation bytes before the ID
- * idcode: the expected IDCODE or 0xff for non JEDEC devices
+ * idcode: the expected IDCODE
  * probe:  the function to call
- *
- * Non JEDEC devices should be ordered in the table such that
- * the probe functions with best detection algorithms come first.
  *
  * Several matching entries are permitted, they will be tried
  * in sequence until a probe function returns non NULL.
  *
- * IDCODE_CONT_LEN may be redefined if a device needs to declare a
- * larger "shift" value.  IDCODE_PART_LEN generally shouldn't be
- * changed.  This is the max number of bytes probe functions may
- * examine when looking up part-specific identification info.
- *
  * Probe functions will be given the idcode buffer starting at their
- * manu id byte (the "idcode" in the table below).  In other words,
- * all of the continuation bytes will be skipped (the "shift" below).
+ * manu id byte (the "idcode" in the table below).
  */
-#define IDCODE_CONT_LEN 0
-#define IDCODE_PART_LEN 5
 static struct {
-	const u8 shift;
 	const u8 idcode;
 	int (*probe) (const struct spi_slave *spi, u8 *idcode,
 		      struct spi_flash *flash);
 } flashes[] = {
 	/* Keep it sorted by define name */
 #if CONFIG(SPI_FLASH_AMIC)
-	{ 0, VENDOR_ID_AMIC, spi_flash_probe_amic, },
+	{ VENDOR_ID_AMIC, spi_flash_probe_amic, },
 #endif
 #if CONFIG(SPI_FLASH_ATMEL)
-	{ 0, VENDOR_ID_ATMEL, spi_flash_probe_atmel, },
+	{ VENDOR_ID_ATMEL, spi_flash_probe_atmel, },
 #endif
 #if CONFIG(SPI_FLASH_EON)
-	{ 0, VENDOR_ID_EON, spi_flash_probe_eon, },
+	{ VENDOR_ID_EON, spi_flash_probe_eon, },
 #endif
 #if CONFIG(SPI_FLASH_GIGADEVICE)
-	{ 0, VENDOR_ID_GIGADEVICE, spi_flash_probe_gigadevice, },
+	{ VENDOR_ID_GIGADEVICE, spi_flash_probe_gigadevice, },
 #endif
 #if CONFIG(SPI_FLASH_MACRONIX)
-	{ 0, VENDOR_ID_MACRONIX, spi_flash_probe_macronix, },
+	{ VENDOR_ID_MACRONIX, spi_flash_probe_macronix, },
 #endif
 #if CONFIG(SPI_FLASH_SPANSION)
-	{ 0, VENDOR_ID_SPANSION, spi_flash_probe_spansion, },
+	{ VENDOR_ID_SPANSION, spi_flash_probe_spansion, },
 #endif
 #if CONFIG(SPI_FLASH_SST)
-	{ 0, VENDOR_ID_SST, spi_flash_probe_sst, },
+	{ VENDOR_ID_SST, spi_flash_probe_sst, },
 #endif
 #if CONFIG(SPI_FLASH_STMICRO)
-	{ 0, VENDOR_ID_STMICRO, spi_flash_probe_stmicro, },
+	{ VENDOR_ID_STMICRO, spi_flash_probe_stmicro, },
 #endif
 #if CONFIG(SPI_FLASH_WINBOND)
-	{ 0, VENDOR_ID_WINBOND, spi_flash_probe_winbond, },
+	{ VENDOR_ID_WINBOND, spi_flash_probe_winbond, },
 #endif
 	/* Keep it sorted by best detection */
 #if CONFIG(SPI_FLASH_ADESTO)
-	{ 0, VENDOR_ID_ADESTO, spi_flash_probe_adesto, },
+	{ VENDOR_ID_ADESTO, spi_flash_probe_adesto, },
 #endif
 };
-#define IDCODE_LEN (IDCODE_CONT_LEN + IDCODE_PART_LEN)
+#define IDCODE_LEN 5
 
 int spi_flash_generic_probe(const struct spi_slave *spi,
 				struct spi_flash *flash)
 {
-	int ret, i, shift;
-	u8 idcode[IDCODE_LEN], *idp;
+	int ret, i;
+	u8 idcode[IDCODE_LEN];
+	u8 manuf_id;
 
 	/* Read the ID codes */
 	ret = spi_flash_cmd(spi, CMD_READ_ID, idcode, sizeof(idcode));
@@ -392,29 +380,25 @@ int spi_flash_generic_probe(const struct spi_slave *spi,
 		printk(BIOS_SPEW, "\n");
 	}
 
-	/* count the number of continuation bytes */
-	for (shift = 0, idp = idcode; shift < IDCODE_CONT_LEN && *idp == 0x7f;
-	     ++shift, ++idp)
-		continue;
+	manuf_id = idcode[0];
 
-	printk(BIOS_INFO, "Manufacturer: %02x\n", *idp);
+	printk(BIOS_INFO, "Manufacturer: %02x\n", manuf_id);
 
 	/* If no result from RDID command and STMicro parts are enabled attempt
 	   to wake the part from deep sleep and obtain alternative id info. */
-	if (CONFIG(SPI_FLASH_STMICRO) && *idp == 0xff) {
+	if (CONFIG(SPI_FLASH_STMICRO) && manuf_id == 0xff) {
 		if (stmicro_release_deep_sleep_identify(spi, idcode))
 			return -1;
-		idp = idcode;
-		shift = 0;
+		manuf_id = idcode[0];
 	}
 
 	/* search the table for matches in shift and id */
 	for (i = 0; i < (int)ARRAY_SIZE(flashes); ++i)
-		if (flashes[i].shift == shift && flashes[i].idcode == *idp) {
+		if (flashes[i].idcode == manuf_id) {
 			/* we have a match, call probe */
-			if (flashes[i].probe(spi, idp, flash) == 0) {
-				flash->vendor = idp[0];
-				flash->model = (idp[1] << 8) | idp[2];
+			if (flashes[i].probe(spi, idcode, flash) == 0) {
+				flash->vendor = idcode[0];
+				flash->model = (idcode[1] << 8) | idcode[2];
 				return 0;
 			}
 		}

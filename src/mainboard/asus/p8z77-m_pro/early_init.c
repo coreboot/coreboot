@@ -44,8 +44,8 @@ const struct southbridge_usb_port mainboard_usb_ports[] = {
 	{ 1, 2, 4 }, /* Port 9: USB2 internal header USB910, bottom */
 	{ 1, 2, 6 }, /* Port 10: USB2 internal header USB1112, top */
 	{ 1, 2, 5 }, /* Port 11: USB2 internal header USB1112, bottom */
-	{ 0, 2, 5 }, /* Port 12: Unused. Asus propietary DEBUG_PORT ??? */
-	{ 0, 2, 6 }  /* Port 13: Unused. Asus propietary DEBUG_PORT ??? */
+	{ 0, 2, 5 }, /* Port 12: Unused. Asus proprietary DEBUG_PORT ??? */
+	{ 0, 2, 6 }  /* Port 13: Unused. Asus proprietary DEBUG_PORT ??? */
 };
 
 void bootblock_mainboard_early_init(void)
@@ -157,7 +157,7 @@ void mainboard_fill_pei_data(struct pei_data *pei_data)
 		/* ASUS P8Z77-M Pro manual says 1.35v DIMMs are supported */
 		.ddr3lv_support = 1,
 		/* PCIe 3.0 support. As we use Ivy Bridge, let's enable it,
-		 * but might cause some system inestability !
+		 * but might cause some system instability !
 		 */
 		.pcie_init = 1,
 		/* Command Rate. 0=Auto; 1=1N; 2=2N.

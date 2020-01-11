@@ -40,6 +40,11 @@ int smbus_read_byte(u8 device, u8 address);
 
 #define XBCS		0x4e	/* X-Bus chip select register */
 #define GENCFG		0xb0	/* General configuration register */
+#define   GPO2223	(1<<28) /* GPO22/23 */
+#define RTCCFG		0xcb	/* Real time clock configuration register */
+#define   RTC_POS_DECODE (1<<5)
+#define   UPPER_RAM_EN	(1<<2)
+#define   RTC_ENABLE	(1<<0)
 
 /* IDE */
 #define IDETIM_PRI	0x40	/* IDE timing register, primary channel */

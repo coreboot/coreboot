@@ -288,6 +288,7 @@ static const struct spi_flash_ops spi_flash_ops = {
 	.read = spi_flash_cmd_read,
 	.write = spi_flash_cmd_write_page_program,
 	.erase = spi_flash_cmd_erase,
+	.status = spi_flash_cmd_status,
 };
 
 int stmicro_release_deep_sleep_identify(const struct spi_slave *spi, u8 *idcode)
@@ -333,6 +334,7 @@ int spi_flash_probe_stmicro(const struct spi_slave *spi, u8 *idcode,
 	flash->sector_size = params->page_size * params->pages_per_sector;
 	flash->size = flash->sector_size * params->nr_sectors;
 	flash->erase_cmd = params->op_erase;
+	flash->status_cmd = CMD_M25PXX_RDSR;
 	flash->pp_cmd = CMD_M25PXX_PP;
 	flash->wren_cmd = CMD_M25PXX_WREN;
 

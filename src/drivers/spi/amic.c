@@ -123,6 +123,7 @@ static const struct spi_flash_ops spi_flash_ops = {
 	.read = spi_flash_cmd_read,
 	.write = spi_flash_cmd_write_page_program,
 	.erase = spi_flash_cmd_erase,
+	.status = spi_flash_cmd_status,
 };
 
 int spi_flash_probe_amic(const struct spi_slave *spi, u8 *idcode,
@@ -152,6 +153,7 @@ int spi_flash_probe_amic(const struct spi_slave *spi, u8 *idcode,
 	flash->size = flash->sector_size * params->sectors_per_block *
 			params->nr_blocks;
 	flash->erase_cmd = CMD_A25_SE;
+	flash->status_cmd = CMD_A25_RDSR;
 	flash->pp_cmd = CMD_A25_PP;
 	flash->wren_cmd = CMD_A25_WREN;
 

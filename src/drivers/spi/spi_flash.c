@@ -520,13 +520,13 @@ int spi_flash_is_write_protected(const struct spi_flash *flash,
 	if (!region_is_subregion(&flash_region, region))
 		return -1;
 
-	if (!flash->ops->get_write_protection) {
+	if (!flash->prot_ops) {
 		printk(BIOS_WARNING, "SPI: Write-protection gathering not "
 		       "implemented for this vendor.\n");
 		return -1;
 	}
 
-	return flash->ops->get_write_protection(flash, region);
+	return flash->prot_ops->get_write(flash, region);
 }
 
 int spi_flash_set_write_protected(const struct spi_flash *flash,
@@ -545,14 +545,13 @@ int spi_flash_set_write_protected(const struct spi_flash *flash,
 	if (!region_is_subregion(&flash_region, region))
 		return -1;
 
-	if (!flash->ops->set_write_protection) {
+	if (!flash->prot_ops) {
 		printk(BIOS_WARNING, "SPI: Setting write-protection is not "
 		       "implemented for this vendor.\n");
 		return -1;
 	}
 
-	ret = flash->ops->set_write_protection(flash, region, non_volatile,
-					       mode);
+	ret = flash->prot_ops->set_write(flash, region, non_volatile, mode);
 
 	if (ret == 0 && mode != SPI_WRITE_PROTECTION_PRESERVE) {
 		printk(BIOS_INFO, "SPI: SREG lock-down was set to ");

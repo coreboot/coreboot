@@ -615,8 +615,11 @@ static const struct spi_flash_ops spi_flash_ops = {
 	.write = spi_flash_cmd_write_page_program,
 	.erase = spi_flash_cmd_erase,
 	.status = spi_flash_cmd_status,
-	.get_write_protection = winbond_get_write_protection,
-	.set_write_protection = winbond_set_write_protection,
+};
+
+static const struct spi_flash_protection_ops spi_flash_protection_ops = {
+	.get_write = winbond_get_write_protection,
+	.set_write = winbond_set_write_protection,
 };
 
 int spi_flash_probe_winbond(const struct spi_slave *spi, u8 *idcode,
@@ -655,6 +658,7 @@ int spi_flash_probe_winbond(const struct spi_slave *spi, u8 *idcode,
 	flash->flags.dual_spi = params->dual_spi;
 
 	flash->ops = &spi_flash_ops;
+	flash->prot_ops = &spi_flash_protection_ops;
 	flash->driver_private = params;
 
 	return 0;

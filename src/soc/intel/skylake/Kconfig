@@ -77,7 +77,6 @@ config CPU_SPECIFIC_OPTIONS
 	select TSC_SYNC_MFENCE
 	select UDELAY_TSC
 	select UDK_2015_BINDING
-	select SPI_FLASH_DONT_INCLUDE_ALL_DRIVERS
 
 config FSP_HYPERTHREADING
 	bool "Enable Hyper-Threading"

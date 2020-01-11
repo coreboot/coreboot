@@ -100,7 +100,7 @@ static const CODEC_TBL_LIST CodecTableList[] =
  */
 static void oem_fan_control(FCH_DATA_BLOCK *FchParams)
 {
-	/* Enable IMC fan control. the recommand way */
+	/* Enable IMC fan control. the recommend way */
 	if (CONFIG(HUDSON_IMC_FWM)) {
 		imc_reg_init();
 
@@ -156,11 +156,11 @@ static void oem_fan_control(FCH_DATA_BLOCK *FchParams)
 
 		/* NOTE:
 		 * FchInitLateHwm will overwrite the EcStruct with EcDefaultMassege,
-		 * AGESA put EcDefaultMassege as global data in ROM, so we can't overwride it.
-		 * so we remove it from AGESA code. Please Seee FchInitLateHwm.
+		 * AGESA put EcDefaultMassege as global data in ROM, so we can't overwrite it.
+		 * so we remove it from AGESA code. Please See FchInitLateHwm.
 		 */
 	} else {
-		/* HWM fan control, the way not recommand */
+		/* HWM fan control, the way not recommend */
 		FchParams->Imc.ImcEnable = FALSE;
 		FchParams->Hwm.HwMonitorEnable = TRUE;
 		FchParams->Hwm.HwmFchtsiAutoPoll = TRUE;/* 1 enable, 0 disable TSI Auto Polling */

@@ -61,9 +61,14 @@ config BOOT_DEVICE_SPI_FLASH_RW_NOMMAP_EARLY
 	  Include the common implementation in all stages, including the
 	  early ones.
 
+config SPI_FLASH_DONT_INCLUDE_ALL_DRIVERS
+	bool
+	default y if COMMON_CBFS_SPI_WRAPPER
+	default n
+
 config SPI_FLASH_INCLUDE_ALL_DRIVERS
 	bool
-	default n if COMMON_CBFS_SPI_WRAPPER
+	default n if SPI_FLASH_DONT_INCLUDE_ALL_DRIVERS
 	default y
 
 config SPI_FLASH_SMM

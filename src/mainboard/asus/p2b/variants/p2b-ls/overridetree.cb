@@ -1,6 +1,10 @@
 chip northbridge/intel/i440bx		# Northbridge
   device domain 0 on			# PCI domain
     chip southbridge/intel/i82371eb	# Southbridge
+      register "gpo" = "0x7fbfb9ff"
+      register "gpo22_enable" = "1"	# GPO22 controls LVD port termination (0=enabled)
+      					# GPO23 controls SCSI-50 port termination (1=enabled)
+      					# SCSI-68 port is always terminated
       device pci 4.0 on			# ISA bridge
         chip superio/winbond/w83977tf	# Super I/O
           device pnp 3f0.a off		# ACPI

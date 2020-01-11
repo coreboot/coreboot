@@ -21,6 +21,6 @@ void arch_post_code(uint8_t value)
 	if (CONFIG(POST_IO))
 		outb(value, CONFIG_POST_IO_PORT);
 
-	if (CONFIG(CMOS_POST))
+	if (CONFIG(CMOS_POST) && !ENV_SMM)
 		cmos_post_code(value);
 }

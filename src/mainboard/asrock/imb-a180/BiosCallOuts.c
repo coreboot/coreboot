@@ -111,6 +111,6 @@ void board_FCH_InitReset(struct sysinfo *cb_NA, FCH_RESET_DATA_BLOCK *FchParams_
 
 void board_FCH_InitEnv(struct sysinfo *cb_NA, FCH_DATA_BLOCK *FchParams_env)
 {
-	/* Azalia Controller OEM Cqodec Table Pointer */
+	/* Azalia Controller OEM Codec Table Pointer */
 	FchParams_env->Azalia.AzaliaOemCodecTablePtr = (CODEC_TBL_LIST*)CodecTableList;
 }

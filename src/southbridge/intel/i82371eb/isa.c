@@ -28,6 +28,7 @@
 #include <arch/acpigen.h>
 #endif
 #include "i82371eb.h"
+#include "chip.h"
 
 #if CONFIG(IOAPIC)
 static void enable_intel_82093aa_ioapic(void)
@@ -63,6 +64,7 @@ static void enable_intel_82093aa_ioapic(void)
 static void isa_init(struct device *dev)
 {
 	u32 reg32;
+	struct southbridge_intel_i82371eb_config *sb = dev->chip_info;
 
 	/* Initialize the real time clock (RTC). */
 	cmos_init(0);
@@ -80,7 +82,10 @@ static void isa_init(struct device *dev)
 	 */
 	reg32 = pci_read_config32(dev, GENCFG);
 	reg32 |= ISA;	/* Select ISA, not EIO. */
-	pci_write_config16(dev, GENCFG, reg32);
+
+	/* Some boards use GPO22/23. Select it if configured. */
+	reg32 = ONOFF(sb->gpo22_enable, reg32, GPO2223);
+	pci_write_config32(dev, GENCFG, reg32);
 
 	/* Initialize ISA DMA. */
 	isa_dma_init();

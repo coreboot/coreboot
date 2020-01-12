@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <string.h>
 #include <southbridge/intel/bd82x6x/nvs.h>
 #include "thermal.h"
 

@@ -41,154 +41,105 @@ static const struct spi_flash_part_id flash_table[] = {
 		.id = 0x2014,
 		.name = "MX25L8005",
 		.nr_sectors_shift = 8,
-		.sector_size_kib_shift = 2,
 	},
 	{
 		.id = 0x2015,
 		.name = "MX25L1605D",
 		.nr_sectors_shift = 9,
-		.sector_size_kib_shift = 2,
 	},
 	{
 		.id = 0x2016,
 		.name = "MX25L3205D",
 		.nr_sectors_shift = 10,
-		.sector_size_kib_shift = 2,
 	},
 	{
 		.id = 0x2017,
 		.name = "MX25L6405D",
 		.nr_sectors_shift = 11,
-		.sector_size_kib_shift = 2,
 	},
 	{
 		.id = 0x2018,
 		.name = "MX25L12805D",
 		.nr_sectors_shift = 12,
-		.sector_size_kib_shift = 2,
 	},
 	{
 		.id = 0x2019,
 		.name = "MX25L25635F",
 		.nr_sectors_shift = 13,
-		.sector_size_kib_shift = 2,
 	},
 	{
 		.id = 0x201a,
 		.name = "MX66L51235F",
 		.nr_sectors_shift = 14,
-		.sector_size_kib_shift = 2,
 	},
 	{
 		.id = 0x2415,
 		.name = "MX25L1635D",
 		.nr_sectors_shift = 9,
-		.sector_size_kib_shift = 2,
 	},
 	{
 		.id = 0x2515,
 		.name = "MX25L1635E",
 		.nr_sectors_shift = 9,
-		.sector_size_kib_shift = 2,
 	},
 	{
 		.id = 0x2534,
 		.name = "MX25U8032E",
 		.nr_sectors_shift = 8,
-		.sector_size_kib_shift = 2,
 	},
 	{
 		.id = 0x2535,
 		.name = "MX25U1635E",
 		.nr_sectors_shift = 9,
-		.sector_size_kib_shift = 2,
 	},
 	{
 		.id = 0x2536,
 		.name = "MX25U3235E",
 		.nr_sectors_shift = 10,
-		.sector_size_kib_shift = 2,
 	},
 	{
 		.id = 0x2537,
 		.name = "MX25U6435F",
 		.nr_sectors_shift = 11,
-		.sector_size_kib_shift = 2,
 	},
 	{
 		.id = 0x2538,
 		.name = "MX25U12835F",
 		.nr_sectors_shift = 12,
-		.sector_size_kib_shift = 2,
 	},
 	{
 		.id = 0x2539,
 		.name = "MX25U25635F",
 		.nr_sectors_shift = 13,
-		.sector_size_kib_shift = 2,
 	},
 	{
 		.id = 0x253a,
 		.name = "MX25U51245G",
 		.nr_sectors_shift = 14,
-		.sector_size_kib_shift = 2,
 	},
 	{
 		.id = 0x2618,
 		.name = "MX25L12855E",
 		.nr_sectors_shift = 12,
-		.sector_size_kib_shift = 2,
 	},
 	{
 		.id = 0x5e16,
 		.name = "MX25L3235D", /* MX25L3225D/MX25L3236D/MX25L3237D */
 		.nr_sectors_shift = 10,
-		.sector_size_kib_shift = 2,
 	},
 	{
 		.id = 0x9517,
 		.name = "MX25L6495F",
 		.nr_sectors_shift = 11,
-		.sector_size_kib_shift = 2,
 	},
 };
 
-static const struct spi_flash_ops spi_flash_ops = {
-	.read = spi_flash_cmd_read,
-	.write = spi_flash_cmd_write_page_program,
-	.erase = spi_flash_cmd_erase,
-	.status = spi_flash_cmd_status,
+const struct spi_flash_vendor_info spi_flash_macronix_vi = {
+	.id = VENDOR_ID_MACRONIX,
+	.page_size_shift = 8,
+	.sector_size_kib_shift = 2,
+	.match_id_mask = 0xffff,
+	.ids = flash_table,
+	.nr_part_ids = ARRAY_SIZE(flash_table),
+	.desc = &spi_flash_pp_0x20_sector_desc,
 };
-
-int spi_flash_probe_macronix(const struct spi_slave *spi, u8 *idcode,
-			     struct spi_flash *flash)
-{
-	const struct spi_flash_part_id *params;
-	unsigned int i;
-	u16 id = idcode[2] | idcode[1] << 8;
-
-	for (i = 0; i < ARRAY_SIZE(flash_table); i++) {
-		params = &flash_table[i];
-		if (params->id == id)
-			break;
-	}
-
-	if (i == ARRAY_SIZE(flash_table)) {
-		printk(BIOS_WARNING, "SF: Unsupported Macronix ID %04x\n", id);
-		return -1;
-	}
-
-	memcpy(&flash->spi, spi, sizeof(*spi));
-	flash->name = params->name;
-	flash->page_size = 256;
-	flash->sector_size = (1U << params->sector_size_kib_shift) * KiB;
-	flash->size = flash->sector_size * params->nr_sectors_shift;
-	flash->erase_cmd = CMD_MX25XX_SE;
-	flash->status_cmd = CMD_MX25XX_RDSR;
-	flash->pp_cmd = CMD_MX25XX_PP;
-	flash->wren_cmd = CMD_MX25XX_WREN;
-
-	flash->ops = &spi_flash_ops;
-
-	return 0;
-}

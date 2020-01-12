@@ -69,42 +69,70 @@ int spi_flash_cmd_write_page_program(const struct spi_flash *flash, u32 offset,
 /* Read len bytes into buf at offset. */
 int spi_flash_cmd_read(const struct spi_flash *flash, u32 offset, size_t len, void *buf);
 
-/* Manufacturer-specific probe functions */
-int spi_flash_probe_spansion(const struct spi_slave *spi, u8 *idcode,
-			     struct spi_flash *flash);
-int spi_flash_probe_amic(const struct spi_slave *spi, u8 *idcode,
-			 struct spi_flash *flash);
-int spi_flash_probe_atmel(const struct spi_slave *spi, u8 *idcode,
-			  struct spi_flash *flash);
-int spi_flash_probe_eon(const struct spi_slave *spi, u8 *idcode,
-			struct spi_flash *flash);
-int spi_flash_probe_macronix(const struct spi_slave *spi, u8 *idcode,
-			     struct spi_flash *flash);
-int spi_flash_probe_sst(const struct spi_slave *spi, u8 *idcode,
-			struct spi_flash *flash);
-int spi_flash_probe_stmicro(const struct spi_slave *spi, u8 *idcode,
-			    struct spi_flash *flash);
 /* Release from deep sleep an provide alternative rdid information. */
 int stmicro_release_deep_sleep_identify(const struct spi_slave *spi, u8 *idcode);
-int spi_flash_probe_winbond(const struct spi_slave *spi, u8 *idcode,
-			    struct spi_flash *flash);
-int spi_flash_probe_gigadevice(const struct spi_slave *spi, u8 *idcode,
-			       struct spi_flash *flash);
-int spi_flash_probe_adesto(const struct spi_slave *spi, u8 *idcode,
-			   struct spi_flash *flash);
 
 struct spi_flash_part_id {
+	/* rdid command constructs a 32-bit id using the following method
+	 * for matching: 31 | id[3] | id[4] | id[1] | id[2] | 0 */
 	uint32_t id;
 	const char *name;
 	/* Log based 2 total number of sectors. */
 	uint16_t nr_sectors_shift: 4;
-	/* Log based 2 sector size */
-	uint16_t sector_size_kib_shift: 4;
 	uint16_t fast_read_dual_output_support : 1;
-	uint16_t _reserved_for_flags: 7;
+	uint16_t _reserved_for_flags: 3;
 	/* Block protection. Currently used by Winbond. */
 	uint16_t protection_granularity_shift : 5;
 	uint16_t bp_bits : 3;
 };
+
+struct spi_flash_ops_descriptor {
+	uint8_t erase_cmd; /* Sector Erase */
+	uint8_t status_cmd; /* Read Status Register */
+	uint8_t pp_cmd; /* Page program command, if supported. */
+	uint8_t wren_cmd; /* Write Enable command. */
+	struct spi_flash_ops ops;
+};
+
+/* Vendor info represents a common set of organization and commands by a given
+ * vendor. One can implement multiple sets from a single vendor by having
+ * separate objects. */
+struct spi_flash_vendor_info {
+	uint8_t id;
+	uint8_t page_size_shift : 4; /* if page programming oriented. */
+	/* Log based 2 sector size */
+	uint8_t sector_size_kib_shift : 4;
+	uint16_t nr_part_ids;
+	const struct spi_flash_part_id *ids;
+	uint32_t match_id_mask; /* matching bytes of the id for this set*/
+	const struct spi_flash_ops_descriptor *desc;
+	const struct spi_flash_protection_ops *prot_ops;
+	/* Returns 0 on success. !0 otherwise. */
+	int (*after_probe)(const struct spi_flash *flash);
+};
+
+/* Manufacturer-specific probe information */
+extern const struct spi_flash_vendor_info spi_flash_adesto_vi;
+extern const struct spi_flash_vendor_info spi_flash_amic_vi;
+extern const struct spi_flash_vendor_info spi_flash_atmel_vi;
+extern const struct spi_flash_vendor_info spi_flash_eon_vi;
+extern const struct spi_flash_vendor_info spi_flash_gigadevice_vi;
+extern const struct spi_flash_vendor_info spi_flash_macronix_vi;
+/* Probing order matters between the spansion sequence. */
+extern const struct spi_flash_vendor_info spi_flash_spansion_ext1_vi;
+extern const struct spi_flash_vendor_info spi_flash_spansion_ext2_vi;
+extern const struct spi_flash_vendor_info spi_flash_spansion_vi;
+extern const struct spi_flash_vendor_info spi_flash_sst_ai_vi;
+extern const struct spi_flash_vendor_info spi_flash_sst_vi;
+extern const struct spi_flash_vendor_info spi_flash_stmicro1_vi;
+extern const struct spi_flash_vendor_info spi_flash_stmicro2_vi;
+extern const struct spi_flash_vendor_info spi_flash_stmicro3_vi;
+extern const struct spi_flash_vendor_info spi_flash_stmicro4_vi;
+extern const struct spi_flash_vendor_info spi_flash_winbond_vi;
+
+/* Page Programming Command Set with 0x20 Sector Erase command. */
+extern const struct spi_flash_ops_descriptor spi_flash_pp_0x20_sector_desc;
+/* Page Programming Command Set with 0xd8 Sector Erase command. */
+extern const struct spi_flash_ops_descriptor spi_flash_pp_0xd8_sector_desc;
 
 #endif /* SPI_FLASH_INTERNAL_H */

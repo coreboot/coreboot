@@ -84,60 +84,51 @@ static const struct spi_flash_part_id flash_table[] = {
 		.id				= 0x2014,
 		.name				= "W25P80",
 		.nr_sectors_shift		= 8,
-		.sector_size_kib_shift		= 2,
 	},
 	{
 		.id				= 0x2015,
 		.name				= "W25P16",
 		.nr_sectors_shift		= 9,
-		.sector_size_kib_shift		= 2,
 	},
 	{
 		.id				= 0x2016,
 		.name				= "W25P32",
 		.nr_sectors_shift		= 10,
-		.sector_size_kib_shift		= 2,
 	},
 	{
 		.id				= 0x3014,
 		.name				= "W25X80",
 		.nr_sectors_shift		= 8,
-		.sector_size_kib_shift		= 2,
 		.fast_read_dual_output_support	= 1,
 	},
 	{
 		.id				= 0x3015,
 		.name				= "W25X16",
 		.nr_sectors_shift		= 9,
-		.sector_size_kib_shift		= 2,
 		.fast_read_dual_output_support	= 1,
 	},
 	{
 		.id				= 0x3016,
 		.name				= "W25X32",
 		.nr_sectors_shift		= 10,
-		.sector_size_kib_shift		= 2,
 		.fast_read_dual_output_support	= 1,
 	},
 	{
 		.id				= 0x3017,
 		.name				= "W25X64",
 		.nr_sectors_shift		= 11,
-		.sector_size_kib_shift		= 2,
 		.fast_read_dual_output_support	= 1,
 	},
 	{
 		.id				= 0x4014,
 		.name				= "W25Q80_V",
 		.nr_sectors_shift		= 8,
-		.sector_size_kib_shift		= 2,
 		.fast_read_dual_output_support	= 1,
 	},
 	{
 		.id				= 0x4015,
 		.name				= "W25Q16_V",
 		.nr_sectors_shift		= 9,
-		.sector_size_kib_shift		= 2,
 		.fast_read_dual_output_support	= 1,
 		.protection_granularity_shift	= 16,
 		.bp_bits			= 3,
@@ -146,7 +137,6 @@ static const struct spi_flash_part_id flash_table[] = {
 		.id				= 0x6015,
 		.name				= "W25Q16DW",
 		.nr_sectors_shift		= 9,
-		.sector_size_kib_shift		= 2,
 		.fast_read_dual_output_support	= 1,
 		.protection_granularity_shift	= 16,
 		.bp_bits			= 3,
@@ -155,7 +145,6 @@ static const struct spi_flash_part_id flash_table[] = {
 		.id				= 0x4016,
 		.name				= "W25Q32_V",
 		.nr_sectors_shift		= 10,
-		.sector_size_kib_shift		= 2,
 		.fast_read_dual_output_support	= 1,
 		.protection_granularity_shift	= 16,
 		.bp_bits			= 3,
@@ -164,7 +153,6 @@ static const struct spi_flash_part_id flash_table[] = {
 		.id				= 0x6016,
 		.name				= "W25Q32DW",
 		.nr_sectors_shift		= 10,
-		.sector_size_kib_shift		= 2,
 		.fast_read_dual_output_support	= 1,
 		.protection_granularity_shift	= 16,
 		.bp_bits			= 3,
@@ -173,7 +161,6 @@ static const struct spi_flash_part_id flash_table[] = {
 		.id				= 0x4017,
 		.name				= "W25Q64_V",
 		.nr_sectors_shift		= 11,
-		.sector_size_kib_shift		= 2,
 		.fast_read_dual_output_support	= 1,
 		.protection_granularity_shift	= 17,
 		.bp_bits			= 3,
@@ -182,7 +169,6 @@ static const struct spi_flash_part_id flash_table[] = {
 		.id				= 0x6017,
 		.name				= "W25Q64DW",
 		.nr_sectors_shift		= 11,
-		.sector_size_kib_shift		= 2,
 		.fast_read_dual_output_support	= 1,
 		.protection_granularity_shift	= 17,
 		.bp_bits			= 3,
@@ -191,7 +177,6 @@ static const struct spi_flash_part_id flash_table[] = {
 		.id				= 0x4018,
 		.name				= "W25Q128_V",
 		.nr_sectors_shift		= 12,
-		.sector_size_kib_shift		= 2,
 		.fast_read_dual_output_support	= 1,
 		.protection_granularity_shift	= 18,
 		.bp_bits			= 3,
@@ -200,7 +185,6 @@ static const struct spi_flash_part_id flash_table[] = {
 		.id				= 0x6018,
 		.name				= "W25Q128FW",
 		.nr_sectors_shift		= 12,
-		.sector_size_kib_shift		= 2,
 		.fast_read_dual_output_support	= 1,
 		.protection_granularity_shift	= 18,
 		.bp_bits			= 3,
@@ -209,7 +193,6 @@ static const struct spi_flash_part_id flash_table[] = {
 		.id				= 0x7018,
 		.name				= "W25Q128J",
 		.nr_sectors_shift		= 12,
-		.sector_size_kib_shift		= 2,
 		.fast_read_dual_output_support	= 1,
 		.protection_granularity_shift	= 18,
 		.bp_bits			= 3,
@@ -218,7 +201,6 @@ static const struct spi_flash_part_id flash_table[] = {
 		.id				= 0x8018,
 		.name				= "W25Q128JW",
 		.nr_sectors_shift		= 12,
-		.sector_size_kib_shift		= 2,
 		.fast_read_dual_output_support	= 1,
 		.protection_granularity_shift	= 18,
 		.bp_bits			= 3,
@@ -227,7 +209,6 @@ static const struct spi_flash_part_id flash_table[] = {
 		.id				= 0x4019,
 		.name				= "W25Q256_V",
 		.nr_sectors_shift		= 13,
-		.sector_size_kib_shift		= 2,
 		.fast_read_dual_output_support	= 1,
 		.protection_granularity_shift	= 16,
 		.bp_bits			= 4,
@@ -236,7 +217,6 @@ static const struct spi_flash_part_id flash_table[] = {
 		.id				= 0x7019,
 		.name				= "W25Q256J",
 		.nr_sectors_shift		= 13,
-		.sector_size_kib_shift		= 2,
 		.fast_read_dual_output_support	= 1,
 		.protection_granularity_shift	= 16,
 		.bp_bits			= 4,
@@ -266,17 +246,6 @@ static void winbond_bpbits_to_region(const size_t granularity,
 	out->size = protected_size;
 }
 
-static const struct spi_flash_part_id *lookup_part(u16 id)
-{
-	size_t i;
-
-	for (i = 0; i < ARRAY_SIZE(flash_table); i++) {
-		if (flash_table[i].id == id)
-			return &flash_table[i];
-	}
-
-	return NULL;
-}
 /*
  * Available on all devices.
  * Read block protect bits from Status/Status2 Reg.
@@ -296,7 +265,7 @@ static int winbond_get_write_protection(const struct spi_flash *flash,
 	u8 bp, tb;
 	int ret;
 
-	params = lookup_part(flash->model);
+	params = flash->part;
 
 	if (!params)
 		return -1;
@@ -479,7 +448,7 @@ winbond_set_write_protection(const struct spi_flash *flash,
 	if (region_offset(region) != 0 && region_end(region) != flash->size)
 		return -1;
 
-	params = lookup_part(flash->model);
+	params = flash->part;
 
 	if (!params)
 		return -1;
@@ -573,52 +542,18 @@ winbond_set_write_protection(const struct spi_flash *flash,
 	return ret;
 }
 
-static const struct spi_flash_ops spi_flash_ops = {
-	.read = spi_flash_cmd_read,
-	.write = spi_flash_cmd_write_page_program,
-	.erase = spi_flash_cmd_erase,
-	.status = spi_flash_cmd_status,
-};
-
 static const struct spi_flash_protection_ops spi_flash_protection_ops = {
 	.get_write = winbond_get_write_protection,
 	.set_write = winbond_set_write_protection,
 };
 
-int spi_flash_probe_winbond(const struct spi_slave *spi, u8 *idcode,
-			    struct spi_flash *flash)
-{
-	const struct spi_flash_part_id *params;
-	unsigned int i;
-
-	for (i = 0; i < ARRAY_SIZE(flash_table); i++) {
-		params = &flash_table[i];
-		if (params->id == ((idcode[1] << 8) | idcode[2]))
-			break;
-	}
-
-	if (i == ARRAY_SIZE(flash_table)) {
-		printk(BIOS_WARNING, "SF: Unsupported Winbond ID %02x%02x\n",
-				idcode[1], idcode[2]);
-		return -1;
-	}
-
-	memcpy(&flash->spi, spi, sizeof(*spi));
-	flash->name = params->name;
-
-	/* Params are in power-of-two. */
-	flash->page_size = 256;
-	flash->sector_size = (1U << params->sector_size_kib_shift) * KiB;
-	flash->size = flash->sector_size * (1U << params->nr_sectors_shift);
-	flash->erase_cmd = CMD_W25_SE;
-	flash->status_cmd = CMD_W25_RDSR;
-	flash->pp_cmd = CMD_W25_PP;
-	flash->wren_cmd = CMD_W25_WREN;
-
-	flash->flags.dual_spi = params->fast_read_dual_output_support;
-
-	flash->ops = &spi_flash_ops;
-	flash->prot_ops = &spi_flash_protection_ops;
-
-	return 0;
-}
+const struct spi_flash_vendor_info spi_flash_winbond_vi = {
+	.id = VENDOR_ID_WINBOND,
+	.page_size_shift = 8,
+	.sector_size_kib_shift = 2,
+	.match_id_mask = 0xffff,
+	.ids = flash_table,
+	.nr_part_ids = ARRAY_SIZE(flash_table),
+	.desc = &spi_flash_pp_0x20_sector_desc,
+	.prot_ops = &spi_flash_protection_ops,
+};

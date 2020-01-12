@@ -54,55 +54,49 @@ static const struct spi_flash_part_id flash_table_ext[] = {
 		.id = SPSN_ID_S25FL008A,
 		.name = "S25FL008A",
 		.nr_sectors_shift = 4,
-		.sector_size_kib_shift = 6,
 	},
 	{
 		.id = SPSN_ID_S25FL016A,
 		.name = "S25FL016A",
 		.nr_sectors_shift = 5,
-		.sector_size_kib_shift = 6,
 	},
 	{
 		.id = SPSN_ID_S25FL032A,
 		.name = "S25FL032A",
 		.nr_sectors_shift = 6,
-		.sector_size_kib_shift = 6,
 	},
 	{
 		.id = SPSN_ID_S25FL064A,
 		.name = "S25FL064A",
 		.nr_sectors_shift = 7,
-		.sector_size_kib_shift = 6,
 	},
 	{
 		.id = (SPSN_EXT_ID_S25FL128P_64KB << 16) | SPSN_ID_S25FL128P,
 		.name = "S25FL128P_64K",
 		.nr_sectors_shift = 8,
-		.sector_size_kib_shift = 6,
-	},
-	{
-		.id = (SPSN_EXT_ID_S25FL128P_256KB << 16) | SPSN_ID_S25FL128P,
-		.name = "S25FL128P_256K",
-		.nr_sectors_shift = 6,
-		.sector_size_kib_shift = 8,
 	},
 	{
 		.id = (SPSN_EXT_ID_S25FLXXS_64KB << 16) | SPSN_ID_S25FL128S,
 		.name = "S25FL128S_256K",
 		.nr_sectors_shift = 9,
-		.sector_size_kib_shift = 6,
 	},
 	{
 		.id = (SPSN_EXT_ID_S25FL032P << 16) | SPSN_ID_S25FL032A,
 		.name = "S25FL032P",
 		.nr_sectors_shift = 6,
-		.sector_size_kib_shift = 6,
 	},
 	{
 		.id = (SPSN_EXT_ID_S25FLXXS_64KB << 16) | SPSN_ID_S25FL128P,
 		.name = "S25FS128S",
 		.nr_sectors_shift = 8,
-		.sector_size_kib_shift = 6,
+	},
+};
+
+static const struct spi_flash_part_id flash_table_256k_sector[] = {
+	{
+		.id = (SPSN_EXT_ID_S25FL128P_256KB << 16) | SPSN_ID_S25FL128P,
+		.name = "S25FL128P_256K",
+		.nr_sectors_shift = 6,
 	},
 };
 
@@ -111,82 +105,50 @@ static const struct spi_flash_part_id flash_table[] = {
 		.id = SPSN_ID_S25FL208K,
 		.name = "S25FL208K",
 		.nr_sectors_shift = 4,
-		.sector_size_kib_shift = 6,
 	},
 	{
 		.id = SPSN_ID_S25FL116K,
 		.name = "S25FL116K_16M",
 		.nr_sectors_shift = 5,
-		.sector_size_kib_shift = 6,
 	},
 	{
 		.id = SPSN_ID_S25FL132K,
 		.name = "S25FL132K",
 		.nr_sectors_shift = 6,
-		.sector_size_kib_shift = 6,
 	},
 	{
 		.id = SPSN_ID_S25FL164K,
 		.name = "S25FL164K",
 		.nr_sectors_shift = 7,
-		.sector_size_kib_shift = 6,
 	},
 };
 
-static const struct spi_flash_ops spi_flash_ops = {
-	.read = spi_flash_cmd_read,
-	.write = spi_flash_cmd_write_page_program,
-	.erase = spi_flash_cmd_erase,
-	.status = spi_flash_cmd_status,
+const struct spi_flash_vendor_info spi_flash_spansion_ext1_vi = {
+	.id = VENDOR_ID_SPANSION,
+	.page_size_shift = 8,
+	.sector_size_kib_shift = 6,
+	.match_id_mask = 0xffffffff,
+	.ids = flash_table_ext,
+	.nr_part_ids = ARRAY_SIZE(flash_table_ext),
+	.desc = &spi_flash_pp_0xd8_sector_desc,
 };
 
+const struct spi_flash_vendor_info spi_flash_spansion_ext2_vi = {
+	.id = VENDOR_ID_SPANSION,
+	.page_size_shift = 8,
+	.sector_size_kib_shift = 8,
+	.match_id_mask = 0xffffffff,
+	.ids = flash_table_256k_sector,
+	.nr_part_ids = ARRAY_SIZE(flash_table_256k_sector),
+	.desc = &spi_flash_pp_0xd8_sector_desc,
+};
 
-static int match_table(const struct spi_slave *spi, struct spi_flash *flash, u32 id,
-			const struct spi_flash_part_id *parts, size_t num_parts)
-{
-	const struct spi_flash_part_id *params = NULL;
-	unsigned int i;
-
-	for (i = 0; i < num_parts; i++) {
-		if (parts[i].id != id)
-			continue;
-		params = &parts[i];
-		break;
-	}
-
-	if (params == NULL)
-		return -1;
-
-	memcpy(&flash->spi, spi, sizeof(*spi));
-	flash->name = params->name;
-	flash->page_size = 256;
-	flash->sector_size = (1U << params->sector_size_kib_shift) * KiB;
-	flash->size = flash->sector_size * (1U << params->nr_sectors_shift);
-	flash->erase_cmd = CMD_S25FLXX_SE;
-	flash->status_cmd = CMD_S25FLXX_RDSR;
-	flash->pp_cmd = CMD_S25FLXX_PP;
-	flash->wren_cmd = CMD_S25FLXX_WREN;
-
-	flash->ops = &spi_flash_ops;
-
-	return 0;
-}
-
-int spi_flash_probe_spansion(const struct spi_slave *spi, u8 *idcode,
-				struct spi_flash *flash)
-{
-	u32 id;
-
-	id = ((idcode[3] << 8) | idcode[4]) << 16;
-	id |= (idcode[1] << 8) | idcode[2];
-
-	if (!match_table(spi, flash, id, flash_table_ext, ARRAY_SIZE(flash_table_ext)))
-		return 0;
-
-	if (!match_table(spi, flash, id & 0xffff, flash_table, ARRAY_SIZE(flash_table)))
-		return 0;
-
-	printk(BIOS_WARNING, "SF: Unsupported SPANSION ID %08x\n", id);
-
-	return -1;
-}
+const struct spi_flash_vendor_info spi_flash_spansion_vi = {
+	.id = VENDOR_ID_SPANSION,
+	.page_size_shift = 8,
+	.sector_size_kib_shift = 6,
+	.match_id_mask = 0xffff,
+	.ids = flash_table,
+	.nr_part_ids = ARRAY_SIZE(flash_table),
+	.desc = &spi_flash_pp_0xd8_sector_desc,
+};

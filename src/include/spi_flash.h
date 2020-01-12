@@ -91,6 +91,8 @@ struct spi_flash_protection_ops {
 
 };
 
+struct spi_flash_part_id;
+
 struct spi_flash {
 	struct spi_slave spi;
 	u8 vendor;
@@ -113,6 +115,7 @@ struct spi_flash {
 	const struct spi_flash_ops *ops;
 	/* If !NULL all protection callbacks exist. */
 	const struct spi_flash_protection_ops *prot_ops;
+	const struct spi_flash_part_id *part;
 };
 
 void lb_spi_flash(struct lb_header *header);

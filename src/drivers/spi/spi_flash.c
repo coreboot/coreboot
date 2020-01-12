@@ -309,57 +309,114 @@ out:
 	return ret;
 }
 
-/*
- * The following table holds all device probe functions
- *
- * idcode: the expected IDCODE
- * probe:  the function to call
- *
- * Several matching entries are permitted, they will be tried
- * in sequence until a probe function returns non NULL.
- *
- * Probe functions will be given the idcode buffer starting at their
- * manu id byte (the "idcode" in the table below).
- */
-static struct {
-	const u8 idcode;
-	int (*probe) (const struct spi_slave *spi, u8 *idcode,
-		      struct spi_flash *flash);
-} flashes[] = {
-	/* Keep it sorted by define name */
+static const struct spi_flash_vendor_info *spi_flash_vendors[] = {
+#if CONFIG(SPI_FLASH_ADESTO)
+	&spi_flash_adesto_vi,
+#endif
 #if CONFIG(SPI_FLASH_AMIC)
-	{ VENDOR_ID_AMIC, spi_flash_probe_amic, },
+	&spi_flash_amic_vi,
 #endif
 #if CONFIG(SPI_FLASH_ATMEL)
-	{ VENDOR_ID_ATMEL, spi_flash_probe_atmel, },
+	&spi_flash_atmel_vi,
 #endif
 #if CONFIG(SPI_FLASH_EON)
-	{ VENDOR_ID_EON, spi_flash_probe_eon, },
+	&spi_flash_eon_vi,
 #endif
 #if CONFIG(SPI_FLASH_GIGADEVICE)
-	{ VENDOR_ID_GIGADEVICE, spi_flash_probe_gigadevice, },
+	&spi_flash_gigadevice_vi,
 #endif
 #if CONFIG(SPI_FLASH_MACRONIX)
-	{ VENDOR_ID_MACRONIX, spi_flash_probe_macronix, },
+	&spi_flash_macronix_vi,
 #endif
 #if CONFIG(SPI_FLASH_SPANSION)
-	{ VENDOR_ID_SPANSION, spi_flash_probe_spansion, },
+	&spi_flash_spansion_ext1_vi,
+	&spi_flash_spansion_ext2_vi,
+	&spi_flash_spansion_vi,
 #endif
 #if CONFIG(SPI_FLASH_SST)
-	{ VENDOR_ID_SST, spi_flash_probe_sst, },
+	&spi_flash_sst_ai_vi,
+	&spi_flash_sst_vi,
 #endif
 #if CONFIG(SPI_FLASH_STMICRO)
-	{ VENDOR_ID_STMICRO, spi_flash_probe_stmicro, },
+	&spi_flash_stmicro1_vi,
+	&spi_flash_stmicro2_vi,
+	&spi_flash_stmicro3_vi,
+	&spi_flash_stmicro4_vi,
 #endif
 #if CONFIG(SPI_FLASH_WINBOND)
-	{ VENDOR_ID_WINBOND, spi_flash_probe_winbond, },
-#endif
-	/* Keep it sorted by best detection */
-#if CONFIG(SPI_FLASH_ADESTO)
-	{ VENDOR_ID_ADESTO, spi_flash_probe_adesto, },
+	&spi_flash_winbond_vi,
 #endif
 };
 #define IDCODE_LEN 5
+
+static int fill_spi_flash(const struct spi_slave *spi, struct spi_flash *flash,
+	const struct spi_flash_vendor_info *vi,
+	const struct spi_flash_part_id *part)
+{
+	memcpy(&flash->spi, spi, sizeof(*spi));
+	flash->vendor = vi->id;
+	flash->model = part->id;
+	flash->name = part->name;
+
+	flash->page_size = 1U << vi->page_size_shift;
+	flash->sector_size = (1U << vi->sector_size_kib_shift) * KiB;
+	flash->size = flash->sector_size * (1U << part->nr_sectors_shift);
+	flash->erase_cmd = vi->desc->erase_cmd;
+	flash->status_cmd = vi->desc->status_cmd;
+	flash->pp_cmd = vi->desc->pp_cmd;
+	flash->wren_cmd = vi->desc->wren_cmd;
+
+	flash->flags.dual_spi = part->fast_read_dual_output_support;
+
+	flash->ops = &vi->desc->ops;
+	flash->prot_ops = vi->prot_ops;
+	flash->part = part;
+
+	if (vi->after_probe)
+		return vi->after_probe(flash);
+
+	return 0;
+}
+
+static const struct spi_flash_part_id *find_part(const struct spi_flash_vendor_info *vi,
+						uint32_t id)
+{
+	size_t i;
+
+	for (i = 0; i < vi->nr_part_ids; i++) {
+		const struct spi_flash_part_id *part = &vi->ids[i];
+
+		if (part->id == id)
+			return part;
+	}
+
+	return NULL;
+}
+
+static int find_match(const struct spi_slave *spi, struct spi_flash *flash,
+			uint8_t manuf_id, uint32_t id)
+{
+	int i;
+
+	for (i = 0; i < (int)ARRAY_SIZE(spi_flash_vendors); i++) {
+		const struct spi_flash_vendor_info *vi;
+		const struct spi_flash_part_id *part;
+
+		vi = spi_flash_vendors[i];
+
+		if (manuf_id != vi->id)
+			continue;
+
+		part = find_part(vi, id & vi->match_id_mask);
+
+		if (part == NULL)
+			continue;
+
+		return fill_spi_flash(spi, flash, vi, part);
+	}
+
+	return -1;
+}
 
 int spi_flash_generic_probe(const struct spi_slave *spi,
 				struct spi_flash *flash)
@@ -367,6 +424,7 @@ int spi_flash_generic_probe(const struct spi_slave *spi,
 	int ret, i;
 	u8 idcode[IDCODE_LEN];
 	u8 manuf_id;
+	u32 id;
 
 	/* Read the ID codes */
 	ret = spi_flash_cmd(spi, CMD_READ_ID, idcode, sizeof(idcode));
@@ -392,19 +450,9 @@ int spi_flash_generic_probe(const struct spi_slave *spi,
 		manuf_id = idcode[0];
 	}
 
-	/* search the table for matches in shift and id */
-	for (i = 0; i < (int)ARRAY_SIZE(flashes); ++i)
-		if (flashes[i].idcode == manuf_id) {
-			/* we have a match, call probe */
-			if (flashes[i].probe(spi, idcode, flash) == 0) {
-				flash->vendor = idcode[0];
-				flash->model = (idcode[1] << 8) | idcode[2];
-				return 0;
-			}
-		}
+	id = (idcode[3] << 24) | (idcode[4] << 16) | (idcode[1] << 8) | idcode[2];
 
-	/* No match, return error. */
-	return -1;
+	return find_match(spi, flash, manuf_id, id);
 }
 
 int spi_flash_probe(unsigned int bus, unsigned int cs, struct spi_flash *flash)
@@ -701,3 +749,29 @@ int spi_flash_vector_helper(const struct spi_slave *slave,
 
 	return ret;
 }
+
+const struct spi_flash_ops_descriptor spi_flash_pp_0x20_sector_desc = {
+	.erase_cmd = 0x20, /* Sector Erase */
+	.status_cmd = 0x05, /* Read Status */
+	.pp_cmd = 0x02, /* Page Program */
+	.wren_cmd = 0x06, /* Write Enable */
+	.ops = {
+		.read = spi_flash_cmd_read,
+		.write = spi_flash_cmd_write_page_program,
+		.erase = spi_flash_cmd_erase,
+		.status = spi_flash_cmd_status,
+	},
+};
+
+const struct spi_flash_ops_descriptor spi_flash_pp_0xd8_sector_desc = {
+	.erase_cmd = 0xd8, /* Sector Erase */
+	.status_cmd = 0x05, /* Read Status */
+	.pp_cmd = 0x02, /* Page Program */
+	.wren_cmd = 0x06, /* Write Enable */
+	.ops = {
+		.read = spi_flash_cmd_read,
+		.write = spi_flash_cmd_write_page_program,
+		.erase = spi_flash_cmd_erase,
+		.status = spi_flash_cmd_status,
+	},
+};

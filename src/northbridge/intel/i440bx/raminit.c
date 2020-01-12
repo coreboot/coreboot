@@ -22,6 +22,7 @@
 #include <device/pci_ops.h>
 #include <device/pci_def.h>
 #include <console/console.h>
+#include <timestamp.h>
 #include "i440bx.h"
 #include "raminit.h"
 
@@ -1043,6 +1044,7 @@ void __weak disable_spd(void) { }
 
 void sdram_initialize(void)
 {
+	timestamp_add_now(TS_BEFORE_INITRAM);
 	enable_spd();
 
 	dump_spd_registers();
@@ -1051,4 +1053,5 @@ void sdram_initialize(void)
 	sdram_enable();
 
 	disable_spd();
+	timestamp_add_now(TS_AFTER_INITRAM);
 }

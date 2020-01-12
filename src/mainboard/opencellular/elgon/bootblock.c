@@ -39,7 +39,7 @@ void bootblock_mainboard_early_init(void)
 
 static void configure_spi_flash(void)
 {
-	/* The maximum SPI frequency for error free transmission is at 30 Mhz */
+	/* The maximum SPI frequency for error-free transmission is at 30 MHz */
 	spi_init_custom(0, // bus
 			28000000, // speed Hz
 			0, // idle low disabled

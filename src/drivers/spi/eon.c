@@ -55,183 +55,132 @@
 #define EON_ID_EN25S32		0x3816
 #define EON_ID_EN25S64		0x3817
 
-struct eon_spi_flash_params {
-	u16 id;
-	u16 page_size;
-	u16 pages_per_sector;
-	u16 sectors_per_block;
-	u16 nr_sectors;
-	const char *name;
-};
-
-static const struct eon_spi_flash_params eon_spi_flash_table[] = {
+static const struct spi_flash_part_id flash_table[] = {
 	{
 		.id = EON_ID_EN25B80,
-		.page_size = 256,
-		.pages_per_sector = 16,
-		.sectors_per_block = 16,
-		.nr_sectors = 256,
 		.name = "EN25B80",
+		.nr_sectors_shift = 8,
+		.sector_size_kib_shift = 2,
 	},
 	{
 		.id = EON_ID_EN25B16,
-		.page_size = 256,
-		.pages_per_sector = 16,
-		.sectors_per_block = 16,
-		.nr_sectors = 512,
 		.name = "EN25B16",
+		.nr_sectors_shift = 9,
+		.sector_size_kib_shift = 2,
 	},
 	{
 		.id = EON_ID_EN25B32,
-		.page_size = 256,
-		.pages_per_sector = 16,
-		.sectors_per_block = 16,
-		.nr_sectors = 1024,
 		.name = "EN25B32",
+		.nr_sectors_shift = 10,
+		.sector_size_kib_shift = 2,
 	},
 	{
 		.id = EON_ID_EN25B64,
-		.page_size = 256,
-		.pages_per_sector = 16,
-		.sectors_per_block = 16,
-		.nr_sectors = 2048,
 		.name = "EN25B64",
+		.nr_sectors_shift = 11,
+		.sector_size_kib_shift = 2,
 	},
 	{
 		.id = EON_ID_EN25F80,
-		.page_size = 256,
-		.pages_per_sector = 16,
-		.sectors_per_block = 16,
-		.nr_sectors = 256,
 		.name = "EN25F80",
+		.nr_sectors_shift = 8,
+		.sector_size_kib_shift = 2,
 	},
 	{
 		.id = EON_ID_EN25F16,
-		.page_size = 256,
-		.pages_per_sector = 16,
-		.sectors_per_block = 16,
-		.nr_sectors = 512,
 		.name = "EN25F16",
+		.nr_sectors_shift = 9,
+		.sector_size_kib_shift = 2,
 	},
 	{
 		.id = EON_ID_EN25F32,
-		.page_size = 256,
-		.pages_per_sector = 16,
-		.sectors_per_block = 16,
-		.nr_sectors = 1024,
 		.name = "EN25F32",
+		.nr_sectors_shift = 10,
+		.sector_size_kib_shift = 2,
 	},
 	{
 		.id = EON_ID_EN25F64,
-		.page_size = 256,
-		.pages_per_sector = 16,
-		.sectors_per_block = 16,
-		.nr_sectors = 2048,
 		.name = "EN25F64",
+		.nr_sectors_shift = 11,
+		.sector_size_kib_shift = 2,
 	},
 	{
 		.id = EON_ID_EN25Q80,
-		.page_size = 256,
-		.pages_per_sector = 16,
-		.sectors_per_block = 16,
-		.nr_sectors = 256,
 		.name = "EN25Q80(A)",
+		.nr_sectors_shift = 8,
+		.sector_size_kib_shift = 2,
 	},
 	{
 		.id = EON_ID_EN25Q16,
-		.page_size = 256,
-		.pages_per_sector = 16,
-		.sectors_per_block = 16,
-		.nr_sectors = 512,
 		.name = "EN25Q16(D16)",
+		.nr_sectors_shift = 9,
+		.sector_size_kib_shift = 2,
 	},
 	{
 		.id = EON_ID_EN25Q32,
-		.page_size = 256,
-		.pages_per_sector = 16,
-		.sectors_per_block = 16,
-		.nr_sectors = 1024,
 		.name = "EN25Q32(A/B)",
+		.nr_sectors_shift = 10,
+		.sector_size_kib_shift = 2,
 	},
 	{
 		.id = EON_ID_EN25Q64,
-		.page_size = 256,
-		.pages_per_sector = 16,
-		.sectors_per_block = 16,
-		.nr_sectors = 2048,
 		.name = "EN25Q64",
+		.nr_sectors_shift = 11,
+		.sector_size_kib_shift = 2,
 	},
 	{
 		.id = EON_ID_EN25Q128,
-		.page_size = 256,
-		.pages_per_sector = 16,
-		.sectors_per_block = 16,
-		.nr_sectors = 4096,
 		.name = "EN25Q128",
+		.nr_sectors_shift = 12,
+		.sector_size_kib_shift = 2,
 	},
 	{
 		.id = EON_ID_EN25QH16,
-		.page_size = 256,
-		.pages_per_sector = 16,
-		.sectors_per_block = 16,
-		.nr_sectors = 512,
 		.name = "EN25QH16",
+		.nr_sectors_shift = 9,
+		.sector_size_kib_shift = 2,
 	},
 	{
 		.id = EON_ID_EN25QH32,
-		.page_size = 256,
-		.pages_per_sector = 16,
-		.sectors_per_block = 16,
-		.nr_sectors = 1024,
 		.name = "EN25QH32",
+		.nr_sectors_shift = 10,
+		.sector_size_kib_shift = 2,
 	},
 	{
 		.id = EON_ID_EN25QH64,
-		.page_size = 256,
-		.pages_per_sector = 16,
-		.sectors_per_block = 16,
-		.nr_sectors = 2048,
 		.name = "EN25QH64",
+		.nr_sectors_shift = 11,
+		.sector_size_kib_shift = 2,
 	},
 	{
 		.id = EON_ID_EN25QH128,
-		.page_size = 256,
-		.pages_per_sector = 16,
-		.sectors_per_block = 16,
-		.nr_sectors = 4096,
 		.name = "EN25QH128",
+		.nr_sectors_shift = 12,
+		.sector_size_kib_shift = 2,
 	},
 	{
 		.id = EON_ID_EN25S80,
-		.page_size = 256,
-		.pages_per_sector = 16,
-		.sectors_per_block = 16,
-		.nr_sectors = 256,
 		.name = "EN25S80",
+		.nr_sectors_shift = 8,
+		.sector_size_kib_shift = 2,
 	},
 	{
 		.id = EON_ID_EN25S16,
-		.page_size = 256,
-		.pages_per_sector = 16,
-		.sectors_per_block = 16,
-		.nr_sectors = 512,
 		.name = "EN25S16",
+		.nr_sectors_shift = 9,
+		.sector_size_kib_shift = 2,
 	},
 	{
 		.id = EON_ID_EN25S32,
-		.page_size = 256,
-		.pages_per_sector = 16,
-		.sectors_per_block = 16,
-		.nr_sectors = 1024,
 		.name = "EN25S32",
+		.nr_sectors_shift = 10,
+		.sector_size_kib_shift = 2,
 	},
 	{
 		.id = EON_ID_EN25S64,
-		.page_size = 256,
-		.pages_per_sector = 16,
-		.sectors_per_block = 16,
-		.nr_sectors = 2048,
 		.name = "EN25S64",
+		.nr_sectors_shift = 11,
+		.sector_size_kib_shift = 2,
 	},
 };
 
@@ -245,16 +194,16 @@ static const struct spi_flash_ops spi_flash_ops = {
 int spi_flash_probe_eon(const struct spi_slave *spi, u8 *idcode,
 			struct spi_flash *flash)
 {
-	const struct eon_spi_flash_params *params;
+	const struct spi_flash_part_id *params;
 	unsigned int i;
 
-	for (i = 0; i < ARRAY_SIZE(eon_spi_flash_table); ++i) {
-		params = &eon_spi_flash_table[i];
+	for (i = 0; i < ARRAY_SIZE(flash_table); ++i) {
+		params = &flash_table[i];
 		if (params->id == ((idcode[1] << 8) | idcode[2]))
 			break;
 	}
 
-	if (i == ARRAY_SIZE(eon_spi_flash_table)) {
+	if (i == ARRAY_SIZE(flash_table)) {
 		printk(BIOS_WARNING, "SF: Unsupported EON ID %#02x%02x\n",
 		       idcode[1], idcode[2]);
 		return -1;
@@ -263,9 +212,9 @@ int spi_flash_probe_eon(const struct spi_slave *spi, u8 *idcode,
 	memcpy(&flash->spi, spi, sizeof(*spi));
 
 	flash->name = params->name;
-	flash->page_size = params->page_size;
-	flash->sector_size = params->page_size * params->pages_per_sector;
-	flash->size = flash->sector_size * params->nr_sectors;
+	flash->page_size = 256;
+	flash->sector_size = (1U << params->sector_size_kib_shift) * KiB;
+	flash->size = flash->sector_size * (1U << params->nr_sectors_shift);
 	flash->erase_cmd = CMD_EN25_SE;
 	flash->status_cmd = CMD_EN25_RDSR;
 	flash->pp_cmd = CMD_EN25_PP;

@@ -44,13 +44,6 @@
 #define SST_SR_AAI		(1 << 6)	/* Addressing mode */
 #define SST_SR_BPL		(1 << 7)	/* BP bits lock */
 
-struct sst_spi_flash_params {
-	u8 idcode1;
-	u16 nr_sectors;
-	const char *name;
-	const struct spi_flash_ops *ops;
-};
-
 static int sst_write_ai(const struct spi_flash *flash, u32 offset, size_t len,
 			const void *buf);
 
@@ -68,68 +61,71 @@ static const struct spi_flash_ops spi_flash_ops_write_256 = {
 	.status = spi_flash_cmd_status,
 };
 
-#define SST_SECTOR_SIZE (4 * 1024)
-static const struct sst_spi_flash_params sst_spi_flash_table[] = {
+static const struct spi_flash_part_id flash_table_ai[] = {
 	{
-		.idcode1 = 0x8d,
-		.nr_sectors = 128,
+		.id = 0x8d,
 		.name = "SST25VF040B",
-		.ops = &spi_flash_ops_write_ai,
+		.nr_sectors_shift = 7,
+		.sector_size_kib_shift = 2,
 	},{
-		.idcode1 = 0x8e,
-		.nr_sectors = 256,
+		.id = 0x8e,
 		.name = "SST25VF080B",
-		.ops = &spi_flash_ops_write_ai,
+		.nr_sectors_shift = 8,
+		.sector_size_kib_shift = 2,
 	},{
-		.idcode1 = 0x80,
-		.nr_sectors = 256,
+		.id = 0x80,
 		.name = "SST25VF080",
-		.ops = &spi_flash_ops_write_ai,
+		.nr_sectors_shift = 8,
+		.sector_size_kib_shift = 2,
 	},{
-		.idcode1 = 0x41,
-		.nr_sectors = 512,
+		.id = 0x41,
 		.name = "SST25VF016B",
-		.ops = &spi_flash_ops_write_ai,
+		.nr_sectors_shift = 9,
+		.sector_size_kib_shift = 2,
 	},{
-		.idcode1 = 0x4a,
-		.nr_sectors = 1024,
+		.id = 0x4a,
 		.name = "SST25VF032B",
-		.ops = &spi_flash_ops_write_ai,
+		.nr_sectors_shift = 10,
+		.sector_size_kib_shift = 2,
 	},{
-		.idcode1 = 0x4b,
-		.nr_sectors = 2048,
-		.name = "SST25VF064C",
-		.ops = &spi_flash_ops_write_256,
-	},{
-		.idcode1 = 0x01,
-		.nr_sectors = 16,
+		.id = 0x01,
 		.name = "SST25WF512",
-		.ops = &spi_flash_ops_write_ai,
+		.nr_sectors_shift = 4,
+		.sector_size_kib_shift = 2,
 	},{
-		.idcode1 = 0x02,
-		.nr_sectors = 32,
+		.id = 0x02,
 		.name = "SST25WF010",
-		.ops = &spi_flash_ops_write_ai,
+		.nr_sectors_shift = 5,
+		.sector_size_kib_shift = 2,
 	},{
-		.idcode1 = 0x03,
-		.nr_sectors = 64,
+		.id = 0x03,
 		.name = "SST25WF020",
-		.ops = &spi_flash_ops_write_ai,
+		.nr_sectors_shift = 6,
+		.sector_size_kib_shift = 2,
 	},{
-		.idcode1 = 0x04,
-		.nr_sectors = 128,
+		.id = 0x04,
 		.name = "SST25WF040",
-		.ops = &spi_flash_ops_write_ai,
+		.nr_sectors_shift = 7,
+		.sector_size_kib_shift = 2,
 	},{
-		.idcode1 = 0x05,
-		.nr_sectors = 256,
+		.id = 0x05,
 		.name = "SST25WF080",
-		.ops = &spi_flash_ops_write_ai,
+		.nr_sectors_shift = 8,
+		.sector_size_kib_shift = 2,
 	},{
-		.idcode1 = 0x14,
-		.nr_sectors = 256,
+		.id = 0x14,
 		.name = "SST25WF080B",
-		.ops = &spi_flash_ops_write_ai,
+		.nr_sectors_shift = 8,
+		.sector_size_kib_shift = 2,
+	},
+};
+
+static const struct spi_flash_part_id flash_table_pp256[] = {
+	{
+		.id = 0x4b,
+		.name = "SST25VF064C",
+		.nr_sectors_shift = 11,
+		.sector_size_kib_shift = 2,
 	},
 };
 
@@ -273,40 +269,53 @@ sst_unlock(const struct spi_flash *flash)
 	return ret;
 }
 
-int spi_flash_probe_sst(const struct spi_slave *spi, u8 *idcode,
-			struct spi_flash *flash)
+static int match_table(const struct spi_slave *spi, struct spi_flash *flash, u8 id,
+			const struct spi_flash_part_id *parts, size_t num_parts,
+			const struct spi_flash_ops *ops)
 {
-	const struct sst_spi_flash_params *params;
+	const struct spi_flash_part_id *params;
 	size_t i;
 
-	for (i = 0; i < ARRAY_SIZE(sst_spi_flash_table); ++i) {
-		params = &sst_spi_flash_table[i];
-		if (params->idcode1 == idcode[2])
+	for (i = 0; i < num_parts; i++) {
+		params = &parts[i];
+		if (params->id == id)
 			break;
 	}
 
-	if (i == ARRAY_SIZE(sst_spi_flash_table)) {
-		printk(BIOS_WARNING, "SF: Unsupported SST ID %02x\n", idcode[1]);
+	if (i == num_parts)
 		return -1;
-	}
 
 	memcpy(&flash->spi, spi, sizeof(*spi));
 	flash->name = params->name;
-	flash->sector_size = SST_SECTOR_SIZE;
-	flash->size = flash->sector_size * params->nr_sectors;
+	flash->sector_size = (1U << params->sector_size_kib_shift) * KiB;
+	flash->size = flash->sector_size * (1U << params->nr_sectors_shift);
 	flash->erase_cmd = CMD_SST_SE;
 	flash->status_cmd = CMD_SST_RDSR;
 	flash->wren_cmd = CMD_SST_WREN;
 
-	if (params->ops == &spi_flash_ops_write_256) {
-		flash->page_size = 256;
-		flash->pp_cmd = CMD_SST_PP;
-	}
-
-	flash->ops = params->ops;
+	flash->ops = ops;
 
 	/* Flash powers up read-only, so clear BP# bits */
 	sst_unlock(flash);
 
 	return 0;
+}
+
+int spi_flash_probe_sst(const struct spi_slave *spi, u8 *idcode,
+			struct spi_flash *flash)
+{
+	if (!match_table(spi, flash, idcode[2], flash_table_ai,
+			ARRAY_SIZE(flash_table_ai), &spi_flash_ops_write_ai))
+		return 0;
+
+	if (!match_table(spi, flash, idcode[2], flash_table_pp256,
+			ARRAY_SIZE(flash_table_pp256), &spi_flash_ops_write_256)) {
+		flash->page_size = 256;
+		flash->pp_cmd = CMD_SST_PP;
+		return 0;
+	}
+
+	printk(BIOS_WARNING, "SF: Unsupported SST ID %02x\n", idcode[2]);
+
+	return -1;
 }

@@ -39,112 +39,78 @@
 #define CMD_AT25DF_DP		0xb9	/* Deep Power-down */
 #define CMD_AT25DF_RES		0xab	/* Release from DP, and Read Signature */
 
-struct adesto_spi_flash_params {
-	uint16_t	id;
-	/* Log2 of page size in power-of-two mode */
-	uint8_t		l2_page_size;
-	uint16_t	pages_per_sector;
-	uint16_t	sectors_per_block;
-	uint16_t	nr_blocks;
-	const char	*name;
-};
-
-static const struct adesto_spi_flash_params adesto_spi_flash_table[] = {
+static const struct spi_flash_part_id flash_table[] = {
 	{
 		.id			= 0x4218,
-		.l2_page_size		= 8,
-		.pages_per_sector	= 16,
-		.sectors_per_block	= 16,
-		.nr_blocks		= 256,
 		.name			= "AT25SL128A",
+		.nr_sectors_shift	= 12,
+		.sector_size_kib_shift	= 2,
 	},
 	{
 		.id			= 0x4501,
-		.l2_page_size		= 8,
-		.pages_per_sector	= 16,
-		.sectors_per_block	= 16,
-		.nr_blocks		= 16,
 		.name			= "AT25DF081A", /* Yes, 81A id < 81 */
+		.nr_sectors_shift	= 8,
+		.sector_size_kib_shift	= 2,
 	},
 	{
 		.id			= 0x4502,
-		.l2_page_size		= 8,
-		.pages_per_sector	= 16,
-		.sectors_per_block	= 16,
-		.nr_blocks		= 16,
 		.name			= "AT25DF081",
+		.nr_sectors_shift	= 8,
+		.sector_size_kib_shift	= 2,
 	},
 	{
 		.id			= 0x4602,
-		.l2_page_size		= 8,
-		.pages_per_sector	= 16,
-		.sectors_per_block	= 16,
-		.nr_blocks		= 32,
 		.name			= "AT25DF161",
+		.nr_sectors_shift	= 9,
+		.sector_size_kib_shift	= 2,
 	},
 	{
 		.id			= 0x4603,
-		.l2_page_size		= 8,
-		.pages_per_sector	= 16,
-		.sectors_per_block	= 16,
-		.nr_blocks		= 32,
 		.name			= "AT25DL161",
+		.nr_sectors_shift	= 9,
+		.sector_size_kib_shift	= 2,
 	},
 	{
 		.id			= 0x4700,
-		.l2_page_size		= 8,
-		.pages_per_sector	= 16,
-		.sectors_per_block	= 16,
-		.nr_blocks		= 64,
 		.name			= "AT25DF321",
+		.nr_sectors_shift	= 10,
+		.sector_size_kib_shift	= 2,
 	},
 	{
 		.id			= 0x4701,
-		.l2_page_size		= 8,
-		.pages_per_sector	= 16,
-		.sectors_per_block	= 16,
-		.nr_blocks		= 64,
 		.name			= "AT25DF321A",
+		.nr_sectors_shift	= 10,
+		.sector_size_kib_shift	= 2,
 	},
 	{
 		.id			= 0x4800,
-		.l2_page_size		= 8,
-		.pages_per_sector	= 16,
-		.sectors_per_block	= 16,
-		.nr_blocks		= 128,
 		.name			= "AT25DF641",
+		.nr_sectors_shift	= 11,
+		.sector_size_kib_shift	= 2,
 	},
 	{
 		.id			= 0x8501,
-		.l2_page_size		= 8,
-		.pages_per_sector	= 16,
-		.sectors_per_block	= 16,
-		.nr_blocks		= 16,
 		.name			= "AT25SF081",
+		.nr_sectors_shift	= 8,
+		.sector_size_kib_shift	= 2,
 	},
 	{
 		.id			= 0x8600,
-		.l2_page_size		= 8,
-		.pages_per_sector	= 16,
-		.sectors_per_block	= 16,
-		.nr_blocks		= 32,
 		.name			= "AT25DQ161",
+		.nr_sectors_shift	= 9,
+		.sector_size_kib_shift	= 2,
 	},
 	{
 		.id			= 0x8601,
-		.l2_page_size		= 8,
-		.pages_per_sector	= 16,
-		.sectors_per_block	= 16,
-		.nr_blocks		= 32,
 		.name			= "AT25SF161",
+		.nr_sectors_shift	= 9,
+		.sector_size_kib_shift	= 2,
 	},
 	{
 		.id			= 0x8700,
-		.l2_page_size		= 8,
-		.pages_per_sector	= 16,
-		.sectors_per_block	= 16,
-		.nr_blocks		= 64,
 		.name			= "AT25DQ321",
+		.nr_sectors_shift	= 10,
+		.sector_size_kib_shift	= 2,
 	},
 };
 
@@ -158,16 +124,16 @@ static const struct spi_flash_ops spi_flash_ops = {
 int spi_flash_probe_adesto(const struct spi_slave *spi, u8 *idcode,
 			   struct spi_flash *flash)
 {
-	const struct adesto_spi_flash_params *params;
+	const struct spi_flash_part_id *params;
 	unsigned int i;
 
-	for (i = 0; i < ARRAY_SIZE(adesto_spi_flash_table); i++) {
-		params = &adesto_spi_flash_table[i];
+	for (i = 0; i < ARRAY_SIZE(flash_table); i++) {
+		params = &flash_table[i];
 		if (params->id == ((idcode[1] << 8) | idcode[2]))
 			break;
 	}
 
-	if (i == ARRAY_SIZE(adesto_spi_flash_table)) {
+	if (i == ARRAY_SIZE(flash_table)) {
 		printk(BIOS_WARNING, "SF: Unsupported adesto ID %02x%02x\n",
 				idcode[1], idcode[2]);
 		return -1;
@@ -176,10 +142,9 @@ int spi_flash_probe_adesto(const struct spi_slave *spi, u8 *idcode,
 	memcpy(&flash->spi, spi, sizeof(*spi));
 	flash->name = params->name;
 	/* Assuming power-of-two page size initially. */
-	flash->page_size = 1 << params->l2_page_size;
-	flash->sector_size = flash->page_size * params->pages_per_sector;
-	flash->size = flash->sector_size *params->sectors_per_block *
-			params->nr_blocks;
+	flash->page_size = 256;
+	flash->sector_size = (1U << params->sector_size_kib_shift) * KiB;
+	flash->size = flash->sector_size * (1U << params->nr_sectors_shift);
 	flash->erase_cmd = CMD_AT25DF_SE;
 	flash->status_cmd = CMD_AT25DF_RDSR;
 	flash->pp_cmd = CMD_AT25DF_PP;

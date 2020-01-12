@@ -23,19 +23,6 @@
 #include "spi_flash_internal.h"
 #include "spi_winbond.h"
 
-struct winbond_spi_flash_params {
-	uint16_t id;
-	uint8_t dual_spi : 1;
-	uint8_t _reserved_for_flags : 3;
-	uint8_t l2_page_size_shift : 4;
-	uint8_t pages_per_sector_shift : 4;
-	uint8_t sectors_per_block_shift : 4;
-	uint8_t nr_blocks_shift;
-	uint8_t bp_bits : 3;
-	uint8_t protection_granularity_shift : 5;
-	char name[10];
-};
-
 union status_reg1_bp3 {
 	uint8_t u;
 	struct {
@@ -92,205 +79,165 @@ struct status_regs {
 	};
 };
 
-static const struct winbond_spi_flash_params winbond_spi_flash_table[] = {
+static const struct spi_flash_part_id flash_table[] = {
 	{
 		.id				= 0x2014,
-		.l2_page_size_shift		= 8,
-		.pages_per_sector_shift		= 4,
-		.sectors_per_block_shift	= 4,
-		.nr_blocks_shift		= 4,
 		.name				= "W25P80",
+		.nr_sectors_shift		= 8,
+		.sector_size_kib_shift		= 2,
 	},
 	{
 		.id				= 0x2015,
-		.l2_page_size_shift		= 8,
-		.pages_per_sector_shift		= 4,
-		.sectors_per_block_shift	= 4,
-		.nr_blocks_shift		= 5,
 		.name				= "W25P16",
+		.nr_sectors_shift		= 9,
+		.sector_size_kib_shift		= 2,
 	},
 	{
 		.id				= 0x2016,
-		.l2_page_size_shift		= 8,
-		.pages_per_sector_shift		= 4,
-		.sectors_per_block_shift	= 4,
-		.nr_blocks_shift		= 6,
 		.name				= "W25P32",
+		.nr_sectors_shift		= 10,
+		.sector_size_kib_shift		= 2,
 	},
 	{
 		.id				= 0x3014,
-		.l2_page_size_shift		= 8,
-		.pages_per_sector_shift		= 4,
-		.sectors_per_block_shift	= 4,
-		.nr_blocks_shift		= 4,
 		.name				= "W25X80",
-		.dual_spi			= 1,
+		.nr_sectors_shift		= 8,
+		.sector_size_kib_shift		= 2,
+		.fast_read_dual_output_support	= 1,
 	},
 	{
 		.id				= 0x3015,
-		.l2_page_size_shift		= 8,
-		.pages_per_sector_shift		= 4,
-		.sectors_per_block_shift	= 4,
-		.nr_blocks_shift		= 5,
 		.name				= "W25X16",
-		.dual_spi			= 1,
+		.nr_sectors_shift		= 9,
+		.sector_size_kib_shift		= 2,
+		.fast_read_dual_output_support	= 1,
 	},
 	{
 		.id				= 0x3016,
-		.l2_page_size_shift		= 8,
-		.pages_per_sector_shift		= 4,
-		.sectors_per_block_shift	= 4,
-		.nr_blocks_shift		= 6,
 		.name				= "W25X32",
-		.dual_spi			= 1,
+		.nr_sectors_shift		= 10,
+		.sector_size_kib_shift		= 2,
+		.fast_read_dual_output_support	= 1,
 	},
 	{
 		.id				= 0x3017,
-		.l2_page_size_shift		= 8,
-		.pages_per_sector_shift		= 4,
-		.sectors_per_block_shift	= 4,
-		.nr_blocks_shift		= 7,
 		.name				= "W25X64",
-		.dual_spi			= 1,
+		.nr_sectors_shift		= 11,
+		.sector_size_kib_shift		= 2,
+		.fast_read_dual_output_support	= 1,
 	},
 	{
 		.id				= 0x4014,
-		.l2_page_size_shift		= 8,
-		.pages_per_sector_shift		= 4,
-		.sectors_per_block_shift	= 4,
-		.nr_blocks_shift		= 4,
 		.name				= "W25Q80_V",
-		.dual_spi			= 1,
+		.nr_sectors_shift		= 8,
+		.sector_size_kib_shift		= 2,
+		.fast_read_dual_output_support	= 1,
 	},
 	{
 		.id				= 0x4015,
-		.l2_page_size_shift		= 8,
-		.pages_per_sector_shift		= 4,
-		.sectors_per_block_shift	= 4,
-		.nr_blocks_shift		= 5,
 		.name				= "W25Q16_V",
-		.dual_spi			= 1,
+		.nr_sectors_shift		= 9,
+		.sector_size_kib_shift		= 2,
+		.fast_read_dual_output_support	= 1,
 		.protection_granularity_shift	= 16,
 		.bp_bits			= 3,
 	},
 	{
 		.id				= 0x6015,
-		.l2_page_size_shift		= 8,
-		.pages_per_sector_shift		= 4,
-		.sectors_per_block_shift	= 4,
-		.nr_blocks_shift		= 5,
 		.name				= "W25Q16DW",
-		.dual_spi			= 1,
+		.nr_sectors_shift		= 9,
+		.sector_size_kib_shift		= 2,
+		.fast_read_dual_output_support	= 1,
 		.protection_granularity_shift	= 16,
 		.bp_bits			= 3,
 	},
 	{
 		.id				= 0x4016,
-		.l2_page_size_shift		= 8,
-		.pages_per_sector_shift		= 4,
-		.sectors_per_block_shift	= 4,
-		.nr_blocks_shift		= 6,
 		.name				= "W25Q32_V",
-		.dual_spi			= 1,
+		.nr_sectors_shift		= 10,
+		.sector_size_kib_shift		= 2,
+		.fast_read_dual_output_support	= 1,
 		.protection_granularity_shift	= 16,
 		.bp_bits			= 3,
 	},
 	{
 		.id				= 0x6016,
-		.l2_page_size_shift		= 8,
-		.pages_per_sector_shift		= 4,
-		.sectors_per_block_shift	= 4,
-		.nr_blocks_shift		= 6,
 		.name				= "W25Q32DW",
-		.dual_spi			= 1,
+		.nr_sectors_shift		= 10,
+		.sector_size_kib_shift		= 2,
+		.fast_read_dual_output_support	= 1,
 		.protection_granularity_shift	= 16,
 		.bp_bits			= 3,
 	},
 	{
 		.id				= 0x4017,
-		.l2_page_size_shift		= 8,
-		.pages_per_sector_shift		= 4,
-		.sectors_per_block_shift	= 4,
-		.nr_blocks_shift		= 7,
 		.name				= "W25Q64_V",
-		.dual_spi			= 1,
+		.nr_sectors_shift		= 11,
+		.sector_size_kib_shift		= 2,
+		.fast_read_dual_output_support	= 1,
 		.protection_granularity_shift	= 17,
 		.bp_bits			= 3,
 	},
 	{
 		.id				= 0x6017,
-		.l2_page_size_shift		= 8,
-		.pages_per_sector_shift		= 4,
-		.sectors_per_block_shift	= 4,
-		.nr_blocks_shift		= 7,
 		.name				= "W25Q64DW",
-		.dual_spi			= 1,
+		.nr_sectors_shift		= 11,
+		.sector_size_kib_shift		= 2,
+		.fast_read_dual_output_support	= 1,
 		.protection_granularity_shift	= 17,
 		.bp_bits			= 3,
 	},
 	{
 		.id				= 0x4018,
-		.l2_page_size_shift		= 8,
-		.pages_per_sector_shift		= 4,
-		.sectors_per_block_shift	= 4,
-		.nr_blocks_shift		= 8,
 		.name				= "W25Q128_V",
-		.dual_spi			= 1,
+		.nr_sectors_shift		= 12,
+		.sector_size_kib_shift		= 2,
+		.fast_read_dual_output_support	= 1,
 		.protection_granularity_shift	= 18,
 		.bp_bits			= 3,
 	},
 	{
 		.id				= 0x6018,
-		.l2_page_size_shift		= 8,
-		.pages_per_sector_shift		= 4,
-		.sectors_per_block_shift	= 4,
-		.nr_blocks_shift		= 8,
 		.name				= "W25Q128FW",
-		.dual_spi			= 1,
+		.nr_sectors_shift		= 12,
+		.sector_size_kib_shift		= 2,
+		.fast_read_dual_output_support	= 1,
 		.protection_granularity_shift	= 18,
 		.bp_bits			= 3,
 	},
 	{
 		.id				= 0x7018,
-		.l2_page_size_shift		= 8,
-		.pages_per_sector_shift		= 4,
-		.sectors_per_block_shift	= 4,
-		.nr_blocks_shift		= 8,
 		.name				= "W25Q128J",
-		.dual_spi			= 1,
+		.nr_sectors_shift		= 12,
+		.sector_size_kib_shift		= 2,
+		.fast_read_dual_output_support	= 1,
 		.protection_granularity_shift	= 18,
 		.bp_bits			= 3,
 	},
 	{
-		.id                             = 0x8018,
-		.l2_page_size_shift             = 8,
-		.pages_per_sector_shift         = 4,
-		.sectors_per_block_shift        = 4,
-		.nr_blocks_shift                = 8,
-		.name                           = "W25Q128JW",
-		.dual_spi                       = 1,
-		.protection_granularity_shift   = 18,
-		.bp_bits                        = 3,
+		.id				= 0x8018,
+		.name				= "W25Q128JW",
+		.nr_sectors_shift		= 12,
+		.sector_size_kib_shift		= 2,
+		.fast_read_dual_output_support	= 1,
+		.protection_granularity_shift	= 18,
+		.bp_bits			= 3,
 	},
 	{
 		.id				= 0x4019,
-		.l2_page_size_shift		= 8,
-		.pages_per_sector_shift		= 4,
-		.sectors_per_block_shift	= 4,
-		.nr_blocks_shift		= 9,
 		.name				= "W25Q256_V",
-		.dual_spi			= 1,
+		.nr_sectors_shift		= 13,
+		.sector_size_kib_shift		= 2,
+		.fast_read_dual_output_support	= 1,
 		.protection_granularity_shift	= 16,
 		.bp_bits			= 4,
 	},
 	{
 		.id				= 0x7019,
-		.l2_page_size_shift		= 8,
-		.pages_per_sector_shift		= 4,
-		.sectors_per_block_shift	= 4,
-		.nr_blocks_shift		= 9,
 		.name				= "W25Q256J",
-		.dual_spi			= 1,
+		.nr_sectors_shift		= 13,
+		.sector_size_kib_shift		= 2,
+		.fast_read_dual_output_support	= 1,
 		.protection_granularity_shift	= 16,
 		.bp_bits			= 4,
 	},
@@ -319,6 +266,17 @@ static void winbond_bpbits_to_region(const size_t granularity,
 	out->size = protected_size;
 }
 
+static const struct spi_flash_part_id *lookup_part(u16 id)
+{
+	size_t i;
+
+	for (i = 0; i < ARRAY_SIZE(flash_table); i++) {
+		if (flash_table[i].id == id)
+			return &flash_table[i];
+	}
+
+	return NULL;
+}
 /*
  * Available on all devices.
  * Read block protect bits from Status/Status2 Reg.
@@ -332,13 +290,17 @@ static void winbond_bpbits_to_region(const size_t granularity,
 static int winbond_get_write_protection(const struct spi_flash *flash,
 					const struct region *region)
 {
-	const struct winbond_spi_flash_params *params;
+	const struct spi_flash_part_id *params;
 	struct region wp_region;
 	union status_reg2 reg2;
 	u8 bp, tb;
 	int ret;
 
-	params = (const struct winbond_spi_flash_params *)flash->driver_private;
+	params = lookup_part(flash->model);
+
+	if (!params)
+		return -1;
+
 	const size_t granularity = (1 << params->protection_granularity_shift);
 
 	if (params->bp_bits == 3) {
@@ -507,7 +469,7 @@ winbond_set_write_protection(const struct spi_flash *flash,
 			     const bool non_volatile,
 			     const enum spi_flash_status_reg_lockdown mode)
 {
-	const struct winbond_spi_flash_params *params;
+	const struct spi_flash_part_id *params;
 	struct status_regs mask, val;
 	struct region wp_region;
 	u8 cmp, bp, tb;
@@ -517,7 +479,8 @@ winbond_set_write_protection(const struct spi_flash *flash,
 	if (region_offset(region) != 0 && region_end(region) != flash->size)
 		return -1;
 
-	params = (const struct winbond_spi_flash_params *)flash->driver_private;
+	params = lookup_part(flash->model);
+
 	if (!params)
 		return -1;
 
@@ -625,16 +588,16 @@ static const struct spi_flash_protection_ops spi_flash_protection_ops = {
 int spi_flash_probe_winbond(const struct spi_slave *spi, u8 *idcode,
 			    struct spi_flash *flash)
 {
-	const struct winbond_spi_flash_params *params;
+	const struct spi_flash_part_id *params;
 	unsigned int i;
 
-	for (i = 0; i < ARRAY_SIZE(winbond_spi_flash_table); i++) {
-		params = &winbond_spi_flash_table[i];
+	for (i = 0; i < ARRAY_SIZE(flash_table); i++) {
+		params = &flash_table[i];
 		if (params->id == ((idcode[1] << 8) | idcode[2]))
 			break;
 	}
 
-	if (i == ARRAY_SIZE(winbond_spi_flash_table)) {
+	if (i == ARRAY_SIZE(flash_table)) {
 		printk(BIOS_WARNING, "SF: Unsupported Winbond ID %02x%02x\n",
 				idcode[1], idcode[2]);
 		return -1;
@@ -644,22 +607,18 @@ int spi_flash_probe_winbond(const struct spi_slave *spi, u8 *idcode,
 	flash->name = params->name;
 
 	/* Params are in power-of-two. */
-	flash->page_size = 1 << params->l2_page_size_shift;
-	flash->sector_size = flash->page_size *
-			(1 << params->pages_per_sector_shift);
-	flash->size = flash->sector_size *
-			(1 << params->sectors_per_block_shift) *
-			(1 << params->nr_blocks_shift);
+	flash->page_size = 256;
+	flash->sector_size = (1U << params->sector_size_kib_shift) * KiB;
+	flash->size = flash->sector_size * (1U << params->nr_sectors_shift);
 	flash->erase_cmd = CMD_W25_SE;
 	flash->status_cmd = CMD_W25_RDSR;
 	flash->pp_cmd = CMD_W25_PP;
 	flash->wren_cmd = CMD_W25_WREN;
 
-	flash->flags.dual_spi = params->dual_spi;
+	flash->flags.dual_spi = params->fast_read_dual_output_support;
 
 	flash->ops = &spi_flash_ops;
 	flash->prot_ops = &spi_flash_protection_ops;
-	flash->driver_private = params;
 
 	return 0;
 }

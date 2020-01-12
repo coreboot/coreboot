@@ -93,4 +93,18 @@ int spi_flash_probe_gigadevice(const struct spi_slave *spi, u8 *idcode,
 int spi_flash_probe_adesto(const struct spi_slave *spi, u8 *idcode,
 			   struct spi_flash *flash);
 
+struct spi_flash_part_id {
+	uint32_t id;
+	const char *name;
+	/* Log based 2 total number of sectors. */
+	uint16_t nr_sectors_shift: 4;
+	/* Log based 2 sector size */
+	uint16_t sector_size_kib_shift: 4;
+	uint16_t fast_read_dual_output_support : 1;
+	uint16_t _reserved_for_flags: 7;
+	/* Block protection. Currently used by Winbond. */
+	uint16_t protection_granularity_shift : 5;
+	uint16_t bp_bits : 3;
+};
+
 #endif /* SPI_FLASH_INTERNAL_H */

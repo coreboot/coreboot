@@ -34,72 +34,48 @@
 #define CMD_AT25_DP			0xb9	/* Deep Power-down */
 #define CMD_AT25_RES		0xab	/* Release from DP, and Read Signature */
 
-struct atmel_spi_flash_params {
-	uint16_t	id;
-	/* Log2 of page size in power-of-two mode */
-	uint8_t		l2_page_size;
-	uint16_t	pages_per_sector;
-	uint16_t	sectors_per_block;
-	uint16_t	nr_blocks;
-	const char	*name;
-};
-
-static const struct atmel_spi_flash_params atmel_spi_flash_table[] = {
+static const struct spi_flash_part_id flash_table[] = {
 	{
 		.id			= 0x3015,
-		.l2_page_size		= 8,
-		.pages_per_sector	= 16,
-		.sectors_per_block	= 16,
-		.nr_blocks		= 32,
 		.name			= "AT25X16",
+		.nr_sectors_shift	= 9,
+		.sector_size_kib_shift	= 2,
 	},
 	{
 		.id			= 0x47,
-		.l2_page_size		= 8,
-		.pages_per_sector	= 16,
-		.sectors_per_block	= 16,
-		.nr_blocks		= 64,
 		.name			= "AT25DF32",
+		.nr_sectors_shift	= 10,
+		.sector_size_kib_shift	= 2,
 	},
 	{
 		.id			= 0x3017,
-		.l2_page_size		= 8,
-		.pages_per_sector	= 16,
-		.sectors_per_block	= 16,
-		.nr_blocks		= 128,
 		.name			= "AT25X64",
+		.nr_sectors_shift	= 11,
+		.sector_size_kib_shift	= 2,
 	},
 	{
 		.id			= 0x4015,
-		.l2_page_size		= 8,
-		.pages_per_sector	= 16,
-		.sectors_per_block	= 16,
-		.nr_blocks		= 32,
 		.name			= "AT25Q16",
+		.nr_sectors_shift	= 9,
+		.sector_size_kib_shift	= 2,
 	},
 	{
 		.id			= 0x4016,
-		.l2_page_size		= 8,
-		.pages_per_sector	= 16,
-		.sectors_per_block	= 16,
-		.nr_blocks		= 64,
 		.name			= "AT25Q32",
+		.nr_sectors_shift	= 10,
+		.sector_size_kib_shift	= 2,
 	},
 	{
 		.id			= 0x4017,
-		.l2_page_size		= 8,
-		.pages_per_sector	= 16,
-		.sectors_per_block	= 16,
-		.nr_blocks		= 128,
 		.name			= "AT25Q64",
+		.nr_sectors_shift	= 11,
+		.sector_size_kib_shift	= 2,
 	},
 	{
 		.id			= 0x4018,
-		.l2_page_size		= 8,
-		.pages_per_sector	= 16,
-		.sectors_per_block	= 16,
-		.nr_blocks		= 256,
 		.name			= "AT25Q128",
+		.nr_sectors_shift	= 12,
+		.sector_size_kib_shift	= 2,
 	},
 };
 
@@ -113,16 +89,16 @@ static const struct spi_flash_ops spi_flash_ops = {
 int spi_flash_probe_atmel(const struct spi_slave *spi, u8 *idcode,
 			  struct spi_flash *flash)
 {
-	const struct atmel_spi_flash_params *params;
+	const struct spi_flash_part_id *params;
 	unsigned int i;
 
-	for (i = 0; i < ARRAY_SIZE(atmel_spi_flash_table); i++) {
-		params = &atmel_spi_flash_table[i];
+	for (i = 0; i < ARRAY_SIZE(flash_table); i++) {
+		params = &flash_table[i];
 		if (params->id == ((idcode[1] << 8) | idcode[2]))
 			break;
 	}
 
-	if (i == ARRAY_SIZE(atmel_spi_flash_table)) {
+	if (i == ARRAY_SIZE(flash_table)) {
 		printk(BIOS_WARNING, "SF: Unsupported Atmel ID %02x%02x\n",
 				idcode[1], idcode[2]);
 		return -1;
@@ -132,10 +108,9 @@ int spi_flash_probe_atmel(const struct spi_slave *spi, u8 *idcode,
 	flash->name = params->name;
 
 	/* Assuming power-of-two page size initially. */
-	flash->page_size = 1 << params->l2_page_size;
-	flash->sector_size = flash->page_size * params->pages_per_sector;
-	flash->size = flash->sector_size * params->sectors_per_block *
-			params->nr_blocks;
+	flash->page_size = 256;
+	flash->sector_size = (1U << params->sector_size_kib_shift) * KiB;
+	flash->size = flash->sector_size * (1U << params->nr_sectors_shift);
 	flash->erase_cmd = CMD_AT25_SE;
 	flash->status_cmd = CMD_AT25_RDSR;
 	flash->pp_cmd = CMD_AT25_PP;

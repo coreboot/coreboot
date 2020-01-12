@@ -113,7 +113,6 @@ struct spi_flash {
 	const struct spi_flash_ops *ops;
 	/* If !NULL all protection callbacks exist. */
 	const struct spi_flash_protection_ops *prot_ops;
-	const void *driver_private;
 };
 
 void lb_spi_flash(struct lb_header *header);

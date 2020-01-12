@@ -34,133 +34,96 @@
 #define CMD_GD25_DP		0xb9	/* Deep Power-down */
 #define CMD_GD25_RES		0xab	/* Release from DP, and Read Signature */
 
-struct gigadevice_spi_flash_params {
-	uint16_t	id;
-	uint8_t		dual_spi : 1;
-	uint8_t		_reserved_for_flags : 3;
-	uint8_t		l2_page_size_shift : 4;
-	uint8_t		pages_per_sector_shift : 4;
-	uint8_t		sectors_per_block_shift : 4;
-	uint8_t		nr_blocks_shift;
-	const char	name[10];
-};
-
-static const struct gigadevice_spi_flash_params gigadevice_spi_flash_table[] = {
+static const struct spi_flash_part_id flash_table[] = {
 	{
 		.id				= 0x3114,
-		.l2_page_size_shift		= 8,
-		.pages_per_sector_shift		= 4,
-		.sectors_per_block_shift	= 4,
-		.nr_blocks_shift		= 4,
 		.name				= "GD25T80",
+		.nr_sectors_shift		= 8,
+		.sector_size_kib_shift		= 2,
 	},
 	{
 		.id				= 0x4014,
-		.l2_page_size_shift		= 8,
-		.pages_per_sector_shift		= 4,
-		.sectors_per_block_shift	= 4,
-		.nr_blocks_shift		= 4,
-		.dual_spi			= 1,
 		.name				= "GD25Q80",
+		.nr_sectors_shift		= 8,
+		.sector_size_kib_shift		= 2,
+		.fast_read_dual_output_support	= 1,
 	},					/* also GD25Q80B */
 	{
 		.id				= 0x4015,
-		.l2_page_size_shift		= 8,
-		.pages_per_sector_shift		= 4,
-		.sectors_per_block_shift	= 4,
-		.nr_blocks_shift		= 5,
-		.dual_spi			= 1,
 		.name				= "GD25Q16",
+		.nr_sectors_shift		= 9,
+		.sector_size_kib_shift		= 2,
+		.fast_read_dual_output_support	= 1,
 	},					/* also GD25Q16B */
 	{
 		.id				= 0x4016,
-		.l2_page_size_shift		= 8,
-		.pages_per_sector_shift		= 4,
-		.sectors_per_block_shift	= 4,
-		.nr_blocks_shift		= 6,
-		.dual_spi			= 1,
 		.name				= "GD25Q32B",
+		.nr_sectors_shift		= 10,
+		.sector_size_kib_shift		= 2,
+		.fast_read_dual_output_support	= 1,
 	},					/* also GD25Q32B */
 	{
 		.id				= 0x4017,
-		.l2_page_size_shift		= 8,
-		.pages_per_sector_shift		= 4,
-		.sectors_per_block_shift	= 4,
-		.nr_blocks_shift		= 7,
-		.dual_spi			= 1,
 		.name				= "GD25Q64",
+		.nr_sectors_shift		= 11,
+		.sector_size_kib_shift		= 2,
+		.fast_read_dual_output_support	= 1,
 	},					/* also GD25Q64B, GD25B64C */
 	{
 		.id				= 0x4018,
-		.l2_page_size_shift		= 8,
-		.pages_per_sector_shift		= 4,
-		.sectors_per_block_shift	= 4,
-		.nr_blocks_shift		= 8,
-		.dual_spi			= 1,
 		.name				= "GD25Q128",
+		.nr_sectors_shift		= 12,
+		.sector_size_kib_shift		= 2,
+		.fast_read_dual_output_support	= 1,
 	},					/* also GD25Q128B */
 	{
 		.id				= 0x4214,
-		.l2_page_size_shift		= 8,
-		.pages_per_sector_shift		= 4,
-		.sectors_per_block_shift	= 4,
-		.nr_blocks_shift		= 4,
-		.dual_spi			= 1,
 		.name				= "GD25VQ80C",
+		.nr_sectors_shift		= 8,
+		.sector_size_kib_shift		= 2,
+		.fast_read_dual_output_support	= 1,
 	},
 	{
 		.id				= 0x4215,
-		.l2_page_size_shift		= 8,
-		.pages_per_sector_shift		= 4,
-		.sectors_per_block_shift	= 4,
-		.nr_blocks_shift		= 5,
-		.dual_spi			= 1,
 		.name				= "GD25VQ16C",
+		.nr_sectors_shift		= 9,
+		.sector_size_kib_shift		= 2,
+		.fast_read_dual_output_support	= 1,
 	},
 	{
 		.id				= 0x6014,
-		.l2_page_size_shift		= 8,
-		.pages_per_sector_shift		= 4,
-		.sectors_per_block_shift	= 4,
-		.nr_blocks_shift		= 4,
-		.dual_spi			= 1,
 		.name				= "GD25LQ80",
+		.nr_sectors_shift		= 8,
+		.sector_size_kib_shift		= 2,
+		.fast_read_dual_output_support	= 1,
 	},
 	{
 		.id				= 0x6015,
-		.l2_page_size_shift		= 8,
-		.pages_per_sector_shift		= 4,
-		.sectors_per_block_shift	= 4,
-		.nr_blocks_shift		= 5,
-		.dual_spi			= 1,
 		.name				= "GD25LQ16",
+		.nr_sectors_shift		= 9,
+		.sector_size_kib_shift		= 2,
+		.fast_read_dual_output_support	= 1,
 	},
 	{
 		.id				= 0x6016,
-		.l2_page_size_shift		= 8,
-		.pages_per_sector_shift		= 4,
-		.sectors_per_block_shift	= 4,
-		.nr_blocks_shift		= 6,
-		.dual_spi			= 1,
 		.name				= "GD25LQ32",
+		.nr_sectors_shift		= 10,
+		.sector_size_kib_shift		= 2,
+		.fast_read_dual_output_support	= 1,
 	},
 	{
 		.id				= 0x6017,
-		.l2_page_size_shift		= 8,
-		.pages_per_sector_shift		= 4,
-		.sectors_per_block_shift	= 4,
-		.nr_blocks_shift		= 7,
-		.dual_spi			= 1,
 		.name				= "GD25LQ64C",
+		.nr_sectors_shift		= 11,
+		.sector_size_kib_shift		= 2,
+		.fast_read_dual_output_support	= 1,
 	},					/* also GD25LB64C */
 	{
 		.id				= 0x6018,
-		.l2_page_size_shift		= 8,
-		.pages_per_sector_shift		= 4,
-		.sectors_per_block_shift	= 4,
-		.nr_blocks_shift		= 8,
-		.dual_spi			= 1,
 		.name				= "GD25LQ128",
+		.nr_sectors_shift		= 12,
+		.sector_size_kib_shift		= 2,
+		.fast_read_dual_output_support	= 1,
 	},
 };
 
@@ -174,16 +137,16 @@ static const struct spi_flash_ops spi_flash_ops = {
 int spi_flash_probe_gigadevice(const struct spi_slave *spi, u8 *idcode,
 				struct spi_flash *flash)
 {
-	const struct gigadevice_spi_flash_params *params;
+	const struct spi_flash_part_id *params;
 	unsigned int i;
 
-	for (i = 0; i < ARRAY_SIZE(gigadevice_spi_flash_table); i++) {
-		params = &gigadevice_spi_flash_table[i];
+	for (i = 0; i < ARRAY_SIZE(flash_table); i++) {
+		params = &flash_table[i];
 		if (params->id == ((idcode[1] << 8) | idcode[2]))
 			break;
 	}
 
-	if (i == ARRAY_SIZE(gigadevice_spi_flash_table)) {
+	if (i == ARRAY_SIZE(flash_table)) {
 		printk(BIOS_WARNING,
 		       "SF gigadevice.c: Unsupported ID %#02x%02x\n",
 		       idcode[1], idcode[2]);
@@ -194,12 +157,9 @@ int spi_flash_probe_gigadevice(const struct spi_slave *spi, u8 *idcode,
 	flash->name = params->name;
 
 	/* Assuming power-of-two page size initially. */
-	flash->page_size = 1 << params->l2_page_size_shift;
-	flash->sector_size = flash->page_size *
-			     (1 << params->pages_per_sector_shift);
-	flash->size = flash->sector_size *
-		      (1 << params->sectors_per_block_shift) *
-		      (1 << params->nr_blocks_shift);
+	flash->page_size = 256;
+	flash->sector_size = (1U << params->sector_size_kib_shift) * KiB;
+	flash->size = flash->sector_size * (1U << params->nr_sectors_shift);
 	flash->erase_cmd = CMD_GD25_SE;
 	flash->status_cmd = CMD_GD25_RDSR;
 	flash->pp_cmd = CMD_GD25_PP;

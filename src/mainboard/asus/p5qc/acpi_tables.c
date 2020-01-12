@@ -14,8 +14,6 @@
  * GNU General Public License for more details.
  */
 
-#include <stdint.h>
-#include <string.h>
 #include <southbridge/intel/i82801jx/nvs.h>
 
 void acpi_create_gnvs(global_nvs_t *gnvs)

@@ -45,6 +45,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI_APIC(GPP_C7, NONE, PLTRST, LEVEL, INVERT),
 	/* C12 : EN_PP3300_TSP_DX */
 	PAD_CFG_GPO(GPP_C12, 0, DEEP),
+	/* C13 : EC_PCH_INT_L - needs to wake the system */
+	PAD_CFG_GPI_IRQ_WAKE(GPP_C13, NONE, PLTRST, LEVEL, INVERT),
 	/* C15 : EN_PP3300_DIG_DX */
 	PAD_CFG_GPO(GPP_C15, 0, DEEP),
 	/* C23 : UART2_CTS# ==> NC */

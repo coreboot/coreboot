@@ -159,7 +159,7 @@ Method (CGPM, 2, Serialized)
 }
 
 /* GPIO Power Management bits */
-Name(GPMB, Package(TOTAL_GPIO_COMM) {0})
+Name(GPMB, Package(TOTAL_GPIO_COMM) {0, 0, 0, 0, 0})
 
 /*
  * Save GPIO Power Management bits

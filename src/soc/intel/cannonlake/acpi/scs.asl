@@ -107,8 +107,6 @@ Scope (\_SB.PCI0) {
 			If (LEqual (Arg0, ^DSUU)) {
 				/* Check the revision */
 				If (LGreaterEqual (Arg1, Zero)) {
-					/* Switch statement based on the function index. */
-					Switch (ToInteger (Arg2)) {
 					/*
 					 * Function Index 0 the return value is a buffer containing
 					 * one bit for each function index, starting with zero.
@@ -125,10 +123,9 @@ Scope (\_SB.PCI0) {
 					 * For SD we have to support functions to
 					 * set 1.8V signalling and 3.3V signalling [BIT4, BIT3]
 					 */
-					Case (0) {
+					If (LEqual (Arg2, Zero)) {
 						Return (Buffer () { 0x19 })
 					}
-
 					/*
 					 * Function Index 3: Set 1.8v signalling.
 					 * We put a sleep of 100ms in this method to
@@ -136,7 +133,7 @@ Scope (\_SB.PCI0) {
 					 * UHS SD card on PCH. This is to compensate
 					 * for the SD VR slowness.
 					 */
-					Case (3) {
+					If (LEqual (Arg2, 3)) {
 						Sleep (100)
 						Return(Buffer () { 0x00 })
 					}
@@ -147,10 +144,9 @@ Scope (\_SB.PCI0) {
 					 * UHS SD card on PCH. This is to compensate
 					 * for the SD VR slowness.
 					 */
-					Case (4) {
+					If (LEqual (Arg2, 4)) {
 						Sleep (100)
 						Return(Buffer () { 0x00 })
-					}
 					}
 				}
 			}

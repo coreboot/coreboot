@@ -14,6 +14,7 @@
 #include <console/console.h>
 #include <device/pci_ops.h>
 #include <spd.h>
+#include <southbridge/intel/i82371eb/i82371eb.h>
 #include "raminit.h"
 
 void dump_spd_registers(void)
@@ -32,7 +33,7 @@ void dump_spd_registers(void)
 				if ((j & 0xf) == 0) {
 					printk(BIOS_DEBUG, "\n%02x: ", j);
 				}
-				status = spd_read_byte(device, j);
+				status = smbus_read_byte(device, j);
 				if (status < 0) {
 					printk(BIOS_DEBUG, "bad device\n");
 					break;

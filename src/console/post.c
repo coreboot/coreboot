@@ -32,6 +32,7 @@ void post_code(uint8_t value)
 
 		if (CONFIG(CONSOLE_POST))
 			printk(BIOS_EMERG, "POST: 0x%02x\n", value);
+
+		mainboard_post(value);
 	}
-	mainboard_post(value);
 }

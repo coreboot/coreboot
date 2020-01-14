@@ -37,71 +37,71 @@
 void save_mrc_data(struct pei_data *pei_data)
 {
 	/* Save the MRC S3 restore data to cbmem */
-	mrc_cache_stash_data(MRC_TRAINING_DATA, MRC_CACHE_VERSION,
-			pei_data->mrc_output, pei_data->mrc_output_len);
+	mrc_cache_stash_data(MRC_TRAINING_DATA, MRC_CACHE_VERSION, pei_data->mrc_output,
+			     pei_data->mrc_output_len);
 }
 
 static void prepare_mrc_cache(struct pei_data *pei_data)
 {
 	struct region_device rdev;
 
-	// preset just in case there is an error
+	/* Preset just in case there is an error */
 	pei_data->mrc_input = NULL;
 	pei_data->mrc_input_len = 0;
 
 	if (mrc_cache_get_current(MRC_TRAINING_DATA, MRC_CACHE_VERSION, &rdev))
-		/* error message printed in find_current_mrc_cache */
+		/* Error message printed in find_current_mrc_cache */
 		return;
 
 	pei_data->mrc_input = rdev_mmap_full(&rdev);
 	pei_data->mrc_input_len = region_device_sz(&rdev);
 
-	printk(BIOS_DEBUG, "%s: at %p, size %x\n",
-	       __func__, pei_data->mrc_input, pei_data->mrc_input_len);
+	printk(BIOS_DEBUG, "%s: at %p, size %x\n", __func__, pei_data->mrc_input,
+	       pei_data->mrc_input_len);
 }
 
 static const char *ecc_decoder[] = {
 	"inactive",
 	"active on IO",
 	"disabled on IO",
-	"active"
+	"active",
 };
 
-/*
- * Dump in the log memory controller configuration as read from the memory
- * controller registers.
- */
+/* Print out the memory controller configuration, as per the values in its registers. */
 static void report_memory_config(void)
 {
-	u32 addr_decoder_common, addr_decode_ch[2];
+	u32 addr_decoder_common, addr_decode_chan[2];
 	int i;
 
-	addr_decoder_common = MCHBAR32(0x5000);
-	addr_decode_ch[0] = MCHBAR32(0x5004);
-	addr_decode_ch[1] = MCHBAR32(0x5008);
+	addr_decoder_common = MCHBAR32(MAD_CHNL);
+	addr_decode_chan[0] = MCHBAR32(MAD_DIMM_CH0);
+	addr_decode_chan[1] = MCHBAR32(MAD_DIMM_CH1);
 
 	printk(BIOS_DEBUG, "memcfg DDR3 clock %d MHz\n",
-	       (MCHBAR32(0x5e04) * 13333 * 2 + 50)/100);
+	       (MCHBAR32(MC_BIOS_DATA) * 13333 * 2 + 50) / 100);
+
 	printk(BIOS_DEBUG, "memcfg channel assignment: A: %d, B % d, C % d\n",
-	       addr_decoder_common & 3,
+	       (addr_decoder_common >> 0) & 3,
 	       (addr_decoder_common >> 2) & 3,
 	       (addr_decoder_common >> 4) & 3);
 
-	for (i = 0; i < ARRAY_SIZE(addr_decode_ch); i++) {
-		u32 ch_conf = addr_decode_ch[i];
-		printk(BIOS_DEBUG, "memcfg channel[%d] config (%8.8x):\n",
-		       i, ch_conf);
-		printk(BIOS_DEBUG, "   ECC %s\n",
-		       ecc_decoder[(ch_conf >> 24) & 3]);
+	for (i = 0; i < ARRAY_SIZE(addr_decode_chan); i++) {
+		u32 ch_conf = addr_decode_chan[i];
+
+		printk(BIOS_DEBUG, "memcfg channel[%d] config (%8.8x):\n", i, ch_conf);
+		printk(BIOS_DEBUG, "   ECC %s\n", ecc_decoder[(ch_conf >> 24) & 3]);
 		printk(BIOS_DEBUG, "   enhanced interleave mode %s\n",
 		       ((ch_conf >> 22) & 1) ? "on" : "off");
+
 		printk(BIOS_DEBUG, "   rank interleave %s\n",
 		       ((ch_conf >> 21) & 1) ? "on" : "off");
+
 		printk(BIOS_DEBUG, "   DIMMA %d MB width %s %s rank%s\n",
 		       ((ch_conf >> 0) & 0xff) * 256,
 		       ((ch_conf >> 19) & 1) ? "x16" : "x8 or x32",
 		       ((ch_conf >> 17) & 1) ? "dual" : "single",
 		       ((ch_conf >> 16) & 1) ? "" : ", selected");
+
 		printk(BIOS_DEBUG, "   DIMMB %d MB width %s %s rank%s\n",
 		       ((ch_conf >> 8) & 0xff) * 256,
 		       ((ch_conf >> 20) & 1) ? "x16" : "x8 or x32",
@@ -123,14 +123,11 @@ void sdram_initialize(struct pei_data *pei_data)
 
 	printk(BIOS_DEBUG, "Starting UEFI PEI System Agent\n");
 
-	/*
-	 * Do not pass MRC data in for recovery mode boot,
-	 * Always pass it in for S3 resume.
-	 */
+	/* Do not pass MRC data in for recovery mode boot, always pass it in for S3 resume */
 	if (!vboot_recovery_mode_enabled() || pei_data->boot_mode == 2)
 		prepare_mrc_cache(pei_data);
 
-	/* If MRC data is not found we cannot continue S3 resume. */
+	/* If MRC data is not found, we cannot continue S3 resume */
 	if (pei_data->boot_mode == 2 && !pei_data->mrc_input) {
 		post_code(POST_RESUME_FAILURE);
 		printk(BIOS_DEBUG, "Giving up in %s: No MRC data\n", __func__);
@@ -141,21 +138,20 @@ void sdram_initialize(struct pei_data *pei_data)
 	pei_data->tx_byte = do_putchar;
 
 	/*
-	 * Locate and call UEFI System Agent binary. The binary needs to be at
-	 * a fixed offset in the flash and can therefore only reside in the
-	 * COREBOOT fmap region
+	 * Locate and call UEFI System Agent binary. The binary needs to be at a fixed offset
+	 * in the flash and can therefore only reside in the COREBOOT fmap region.
 	 */
 	if (cbfs_locate_file_in_region(&f, "COREBOOT", "mrc.bin", &type) < 0)
 		die("mrc.bin not found!");
+
 	/* We don't care about leaking the mapping */
 	entry = (unsigned long)rdev_mmap_full(&f.data);
 	if (entry) {
 		int rv;
-		asm volatile (
-			      "call *%%ecx\n\t"
+		asm volatile ("call *%%ecx\n\t"
 			      :"=a" (rv) : "c" (entry), "a" (pei_data));
 
-		/* mrc.bin reconfigures USB, so reinit it to have debug */
+		/* The mrc.bin reconfigures USB, so usbdebug needs to be reinitialized */
 		if (CONFIG(USBDEBUG_IN_PRE_RAM))
 			usbdebug_hw_init(true);
 
@@ -177,13 +173,11 @@ void sdram_initialize(struct pei_data *pei_data)
 		die("UEFI PEI System Agent not found.\n");
 	}
 
-	/* For reference print the System Agent version
-	 * after executing the UEFI PEI stage.
-	 */
-	u32 version = MCHBAR32(0x5034);
+	/* For reference, print the System Agent version after executing the UEFI PEI stage */
+	u32 version = MCHBAR32(MRC_REVISION);
 	printk(BIOS_DEBUG, "System Agent Version %d.%d.%d Build %d\n",
-		version >> 24, (version >> 16) & 0xff,
-		(version >> 8) & 0xff, version & 0xff);
+	       (version >> 24) & 0xff, (version >> 16) & 0xff,
+	       (version >>  8) & 0xff, (version >>  0) & 0xff);
 
 	report_memory_config();
 }
@@ -191,24 +185,23 @@ void sdram_initialize(struct pei_data *pei_data)
 void setup_sdram_meminfo(struct pei_data *pei_data)
 {
 	u32 addr_decode_ch[2];
-	struct memory_info* mem_info;
+	struct memory_info *mem_info;
 	struct dimm_info *dimm;
-	int ddr_frequency;
-	int dimm_size;
-	int ch, d_num;
+	int ddr_frequency, dimm_size, ch, d_num;
 	int dimm_cnt = 0;
 
 	mem_info = cbmem_add(CBMEM_ID_MEMINFO, sizeof(struct memory_info));
 	if (!mem_info)
 		die("Failed to add memory info to CBMEM.\n");
+
 	memset(mem_info, 0, sizeof(struct memory_info));
 
-	/* FIXME: Do we need to read MCHBAR32(0x5000) ? */
-	MCHBAR32(0x5000);
-	addr_decode_ch[0] = MCHBAR32(0x5004);
-	addr_decode_ch[1] = MCHBAR32(0x5008);
+	/* FIXME: Do we need to read MCHBAR32(MAD_CHNL) ? (Answer: Nope) */
+	MCHBAR32(MAD_CHNL);
+	addr_decode_ch[0] = MCHBAR32(MAD_DIMM_CH0);
+	addr_decode_ch[1] = MCHBAR32(MAD_DIMM_CH1);
 
-	ddr_frequency = (MCHBAR32(0x5e04) * 13333 * 2 + 50) / 100;
+	ddr_frequency = (MCHBAR32(MC_BIOS_DATA) * 13333 * 2 + 50) / 100;
 
 	for (ch = 0; ch < ARRAY_SIZE(addr_decode_ch); ch++) {
 		u32 ch_conf = addr_decode_ch[ch];
@@ -232,7 +225,7 @@ void setup_sdram_meminfo(struct pei_data *pei_data)
 					SPD_DIMM_PART_LEN);
 				dimm->mod_id =
 					(pei_data->spd_data[dimm_cnt][SPD_DIMM_MOD_ID2] << 8) |
-					(pei_data->spd_data[dimm_cnt][SPD_DIMM_MOD_ID1] & 0xFF);
+					(pei_data->spd_data[dimm_cnt][SPD_DIMM_MOD_ID1] & 0xff);
 				dimm->mod_type = SPD_SODIMM;
 				dimm->bus_width = 0x3;	/* 64-bit */
 				dimm_cnt++;

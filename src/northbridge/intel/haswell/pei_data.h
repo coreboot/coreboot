@@ -101,10 +101,7 @@ struct pei_data
 	/* Data from MRC that should be saved to flash */
 	unsigned char *mrc_output;
 	unsigned int mrc_output_len;
-	/*
-	 * Max frequency DDR3 could be ran at. Could be one of four values: 800,
-	 * 1067, 1333, 1600
-	 */
+	/* Max frequency to run DDR3 at. Can be one of four values: 800, 1067, 1333, 1600 */
 	uint32_t max_ddr3_freq;
 	/* Route all USB ports to XHCI controller in resume path */
 	int usb_xhci_on_resume;

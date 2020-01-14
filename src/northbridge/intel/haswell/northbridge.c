@@ -31,11 +31,9 @@
 #include "chip.h"
 #include "haswell.h"
 
-static int get_pcie_bar(struct device *dev, unsigned int index, u32 *base,
-			u32 *len)
+static int get_pcie_bar(struct device *dev, unsigned int index, u32 *base, u32 *len)
 {
-	u32 pciexbar_reg;
-	u32 mask;
+	u32 pciexbar_reg, mask;
 
 	*base = 0;
 	*len = 0;
@@ -46,18 +44,18 @@ static int get_pcie_bar(struct device *dev, unsigned int index, u32 *base,
 		return 0;
 
 	switch ((pciexbar_reg >> 1) & 3) {
-	case 0: // 256MB
+	case 0: /* 256MB */
 		mask = (1UL << 31) | (1 << 30) | (1 << 29) | (1 << 28);
 		*base = pciexbar_reg & mask;
 		*len = 256 * 1024 * 1024;
 		return 1;
-	case 1: // 128M
+	case 1: /* 128M */
 		mask = (1UL << 31) | (1 << 30) | (1 << 29) | (1 << 28);
 		mask |= (1 << 27);
 		*base = pciexbar_reg & mask;
 		*len = 128 * 1024 * 1024;
 		return 1;
-	case 2: // 64M
+	case 2: /* 64M */
 		mask = (1UL << 31) | (1 << 30) | (1 << 29) | (1 << 28);
 		mask |= (1 << 27) | (1 << 26);
 		*base = pciexbar_reg & mask;
@@ -89,50 +87,47 @@ static const char *northbridge_acpi_name(const struct device *dev)
 	return NULL;
 }
 
-	/* TODO We could determine how many PCIe busses we need in
-	 * the bar. For now that number is hardcoded to a max of 64.
-	 */
+/*
+ * TODO: We could determine how many PCIe busses we need in the bar.
+ *       For now, that number is hardcoded to a max of 64.
+ */
 static struct device_operations pci_domain_ops = {
-	.read_resources   = pci_domain_read_resources,
-	.set_resources    = pci_domain_set_resources,
-	.enable_resources = NULL,
-	.init             = NULL,
-	.scan_bus         = pci_domain_scan_bus,
-	.acpi_name	  = northbridge_acpi_name,
+	.read_resources    = pci_domain_read_resources,
+	.set_resources     = pci_domain_set_resources,
+	.enable_resources  = NULL,
+	.init              = NULL,
+	.scan_bus          = pci_domain_scan_bus,
+	.acpi_name         = northbridge_acpi_name,
 	.write_acpi_tables = northbridge_write_acpi_tables,
 };
 
 static int get_bar(struct device *dev, unsigned int index, u32 *base, u32 *len)
 {
-	u32 bar;
+	u32 bar = pci_read_config32(dev, index);
 
-	bar = pci_read_config32(dev, index);
-
-	/* If not enabled don't report it. */
+	/* If not enabled don't report it */
 	if (!(bar & 0x1))
 		return 0;
 
-	/* Knock down the enable bit. */
+	/* Knock down the enable bit */
 	*base = bar & ~1;
 
 	return 1;
 }
 
-/* There are special BARs that actually are programmed in the MCHBAR. These
- * Intel special features, but they do consume resources that need to be
- * accounted for. */
-static int get_bar_in_mchbar(struct device *dev, unsigned int index,
-			     u32 *base, u32 *len)
+/*
+ * There are special BARs that actually are programmed in the MCHBAR. These Intel special
+ * features, but they do consume resources that need to be accounted for.
+ */
+static int get_bar_in_mchbar(struct device *dev, unsigned int index, u32 *base, u32 *len)
 {
-	u32 bar;
+	u32 bar = MCHBAR32(index);
 
-	bar = MCHBAR32(index);
-
-	/* If not enabled don't report it. */
+	/* If not enabled don't report it */
 	if (!(bar & 0x1))
 		return 0;
 
-	/* Knock down the enable bit. */
+	/* Knock down the enable bit */
 	*base = bar & ~1;
 
 	return 1;
@@ -141,26 +136,22 @@ static int get_bar_in_mchbar(struct device *dev, unsigned int index,
 struct fixed_mmio_descriptor {
 	unsigned int index;
 	u32 size;
-	int (*get_resource)(struct device *dev, unsigned int index,
-			    u32 *base, u32 *size);
+	int (*get_resource)(struct device *dev, unsigned int index, u32 *base, u32 *size);
 	const char *description;
 };
 
-#define SIZE_KB(x) ((x)*1024)
+#define SIZE_KB(x) ((x) * 1024)
 struct fixed_mmio_descriptor mc_fixed_resources[] = {
 	{ PCIEXBAR, SIZE_KB(0),  get_pcie_bar,      "PCIEXBAR" },
 	{ MCHBAR,   SIZE_KB(32), get_bar,           "MCHBAR"   },
 	{ DMIBAR,   SIZE_KB(4),  get_bar,           "DMIBAR"   },
 	{ EPBAR,    SIZE_KB(4),  get_bar,           "EPBAR"    },
-	{ 0x5420,   SIZE_KB(4),  get_bar_in_mchbar, "GDXCBAR"  },
-	{ 0x5408,   SIZE_KB(16), get_bar_in_mchbar, "EDRAMBAR" },
+	{ GDXCBAR,  SIZE_KB(4),  get_bar_in_mchbar, "GDXCBAR"  },
+	{ EDRAMBAR, SIZE_KB(16), get_bar_in_mchbar, "EDRAMBAR" },
 };
 #undef SIZE_KB
 
-/*
- * Add all known fixed MMIO ranges that hang off the host bridge/memory
- * controller device.
- */
+/* Add all known fixed MMIO ranges that hang off the host bridge/memory controller device. */
 static void mc_add_fixed_mmio_resources(struct device *dev)
 {
 	int i;
@@ -173,14 +164,13 @@ static void mc_add_fixed_mmio_resources(struct device *dev)
 
 		size = mc_fixed_resources[i].size;
 		index = mc_fixed_resources[i].index;
-		if (!mc_fixed_resources[i].get_resource(dev, index,
-							&base, &size))
+		if (!mc_fixed_resources[i].get_resource(dev, index, &base, &size))
 			continue;
 
 		resource = new_resource(dev, mc_fixed_resources[i].index);
-		resource->flags = IORESOURCE_MEM | IORESOURCE_FIXED |
-				  IORESOURCE_STORED | IORESOURCE_RESERVE |
-				  IORESOURCE_ASSIGNED;
+		resource->flags = IORESOURCE_MEM | IORESOURCE_FIXED | IORESOURCE_STORED |
+				  IORESOURCE_RESERVE | IORESOURCE_ASSIGNED;
+
 		resource->base = base;
 		resource->size = size;
 		printk(BIOS_DEBUG, "%s: Adding %s @ %x 0x%08lx-0x%08lx.\n",
@@ -205,10 +195,10 @@ static void mc_add_fixed_mmio_resources(struct device *dev)
  * |     Usage DRAM           |
  * +--------------------------+ 0
  *
- * Some of the base registers above can be equal making the size of those
- * regions 0. The reason is because the memory controller internally subtracts
- * the base registers from each other to determine sizes of the regions. In
- * other words, the memory map is in a fixed order no matter what.
+ * Some of the base registers above can be equal, making the size of the regions within 0.
+ * This is because the memory controller internally subtracts the base registers from each
+ * other to determine sizes of the regions. In other words, the memory map regions are always
+ * in a fixed order, no matter what sizes they have.
  */
 
 struct map_entry {
@@ -218,14 +208,13 @@ struct map_entry {
 	const char *description;
 };
 
-static void read_map_entry(struct device *dev, struct map_entry *entry,
-			   uint64_t *result)
+static void read_map_entry(struct device *dev, struct map_entry *entry, uint64_t *result)
 {
 	uint64_t value;
 	uint64_t mask;
 
-	/* All registers are on a 1MiB granularity. */
-	mask = ((1ULL<<20)-1);
+	/* All registers have a 1MiB granularity */
+	mask = ((1ULL << 20) - 1);
 	mask = ~mask;
 
 	value = 0;
@@ -252,12 +241,9 @@ static void read_map_entry(struct device *dev, struct map_entry *entry,
 		.description = desc_,  \
 	}
 
-#define MAP_ENTRY_BASE_64(reg_, desc_) \
-	MAP_ENTRY(reg_, 1, 0, desc_)
-#define MAP_ENTRY_LIMIT_64(reg_, desc_) \
-	MAP_ENTRY(reg_, 1, 1, desc_)
-#define MAP_ENTRY_BASE_32(reg_, desc_) \
-	MAP_ENTRY(reg_, 0, 0, desc_)
+#define MAP_ENTRY_BASE_32(reg_, desc_)	MAP_ENTRY(reg_, 0, 0, desc_)
+#define MAP_ENTRY_BASE_64(reg_, desc_)	MAP_ENTRY(reg_, 1, 0, desc_)
+#define MAP_ENTRY_LIMIT_64(reg_, desc_)	MAP_ENTRY(reg_, 1, 1, desc_)
 
 enum {
 	TOM_REG,
@@ -270,21 +256,21 @@ enum {
 	BGSM_REG,
 	BDSM_REG,
 	TSEG_REG,
-	// Must be last.
-	NUM_MAP_ENTRIES
+	/* Must be last */
+	NUM_MAP_ENTRIES,
 };
 
 static struct map_entry memory_map[NUM_MAP_ENTRIES] = {
-	[TOM_REG] = MAP_ENTRY_BASE_64(TOM, "TOM"),
-	[TOUUD_REG] = MAP_ENTRY_BASE_64(TOUUD, "TOUUD"),
-	[MESEG_BASE_REG] = MAP_ENTRY_BASE_64(MESEG_BASE, "MESEG_BASE"),
+	[TOM_REG]         = MAP_ENTRY_BASE_64(TOM, "TOM"),
+	[TOUUD_REG]       = MAP_ENTRY_BASE_64(TOUUD, "TOUUD"),
+	[MESEG_BASE_REG]  = MAP_ENTRY_BASE_64(MESEG_BASE, "MESEG_BASE"),
 	[MESEG_LIMIT_REG] = MAP_ENTRY_LIMIT_64(MESEG_LIMIT, "MESEG_LIMIT"),
-	[REMAP_BASE_REG] = MAP_ENTRY_BASE_64(REMAPBASE, "REMAP_BASE"),
+	[REMAP_BASE_REG]  = MAP_ENTRY_BASE_64(REMAPBASE, "REMAP_BASE"),
 	[REMAP_LIMIT_REG] = MAP_ENTRY_LIMIT_64(REMAPLIMIT, "REMAP_LIMIT"),
-	[TOLUD_REG] = MAP_ENTRY_BASE_32(TOLUD, "TOLUD"),
-	[BDSM_REG] = MAP_ENTRY_BASE_32(BDSM, "BDSM"),
-	[BGSM_REG] = MAP_ENTRY_BASE_32(BGSM, "BGSM"),
-	[TSEG_REG] = MAP_ENTRY_BASE_32(TSEG, "TESGMB"),
+	[TOLUD_REG]       = MAP_ENTRY_BASE_32(TOLUD, "TOLUD"),
+	[BDSM_REG]        = MAP_ENTRY_BASE_32(BDSM, "BDSM"),
+	[BGSM_REG]        = MAP_ENTRY_BASE_32(BGSM, "BGSM"),
+	[TSEG_REG]        = MAP_ENTRY_BASE_32(TSEG, "TESGMB"),
 };
 
 static void mc_read_map_entries(struct device *dev, uint64_t *values)
@@ -302,51 +288,45 @@ static void mc_report_map_entries(struct device *dev, uint64_t *values)
 		printk(BIOS_DEBUG, "MC MAP: %s: 0x%llx\n",
 		       memory_map[i].description, values[i]);
 	}
-	/* One can validate the BDSM and BGSM against the GGC. */
+	/* One can validate the BDSM and BGSM against the GGC */
 	printk(BIOS_DEBUG, "MC MAP: GGC: 0x%x\n", pci_read_config16(dev, GGC));
 }
 
 static void mc_add_dram_resources(struct device *dev, int *resource_cnt)
 {
-	unsigned long base_k, size_k;
-	unsigned long touud_k;
-	unsigned long index;
+	unsigned long base_k, size_k, touud_k, index;
 	struct resource *resource;
 	uint64_t mc_values[NUM_MAP_ENTRIES];
 
-	/* Read in the MAP registers and report their values. */
+	/* Read in the MAP registers and report their values */
 	mc_read_map_entries(dev, &mc_values[0]);
 	mc_report_map_entries(dev, &mc_values[0]);
 
 	/*
 	 * These are the host memory ranges that should be added:
-	 * - 0 -> 0xa0000: cacheable
-	 * - 0xc0000 -> TSEG : cacheable
-	 * - TESG -> BGSM: cacheable with standard MTRRs and reserved
-	 * - BGSM -> TOLUD: not cacheable with standard MTRRs and reserved
-	 * - 4GiB -> TOUUD: cacheable
+	 * - 0 -> 0xa0000:    cacheable
+	 * - 0xc0000 -> TSEG: cacheable
+	 * - TSEG -> BGSM:    cacheable with standard MTRRs and reserved
+	 * - BGSM -> TOLUD:   not cacheable with standard MTRRs and reserved
+	 * - 4GiB -> TOUUD:   cacheable
 	 *
-	 * The default SMRAM space is reserved so that the range doesn't
-	 * have to be saved during S3 Resume. Once marked reserved the OS
-	 * cannot use the memory. This is a bit of an odd place to reserve
-	 * the region, but the CPU devices don't have dev_ops->read_resources()
-	 * called on them.
+	 * The default SMRAM space is reserved so that the range doesn't have to be saved
+	 * during S3 Resume. Once marked reserved the OS cannot use the memory. This is a
+	 * bit of an odd place to reserve the region, but the CPU devices don't have
+	 * dev_ops->read_resources() called on them.
 	 *
-	 * The range 0xa0000 -> 0xc0000 does not have any resources
-	 * associated with it to handle legacy VGA memory. If this range
-	 * is not omitted the mtrr code will setup the area as cacheable
-	 * causing VGA access to not work.
+	 * The range 0xa0000 -> 0xc0000 does not have any resources associated with it to
+	 * handle legacy VGA memory. If this range is not omitted the mtrr code will setup
+	 * the area as cacheable, causing VGA access to not work.
 	 *
-	 * The TSEG region is mapped as cacheable so that one can perform
-	 * SMRAM relocation faster. Once the SMRR is enabled the SMRR takes
-	 * precedence over the existing MTRRs covering this region.
+	 * The TSEG region is mapped as cacheable so that one can perform SMRAM relocation
+	 * faster. Once the SMRR is enabled, the SMRR takes precedence over the existing
+	 * MTRRs covering this region.
 	 *
-	 * It should be noted that cacheable entry types need to be added in
-	 * order. The reason is that the current MTRR code assumes this and
-	 * falls over itself if it isn't.
+	 * It should be noted that cacheable entry types need to be added in order. The reason
+	 * is that the current MTRR code assumes this and falls over itself if it isn't.
 	 *
-	 * The resource index starts low and should not meet or exceed
-	 * PCI_BASE_ADDRESS_0.
+	 * The resource index starts low and should not meet or exceed PCI_BASE_ADDRESS_0.
 	 */
 	index = *resource_cnt;
 
@@ -364,18 +344,16 @@ static void mc_add_dram_resources(struct device *dev, int *resource_cnt)
 	resource = new_resource(dev, index++);
 	resource->base = mc_values[TSEG_REG];
 	resource->size = mc_values[BGSM_REG] - resource->base;
-	resource->flags = IORESOURCE_MEM | IORESOURCE_FIXED |
-			  IORESOURCE_STORED | IORESOURCE_RESERVE |
-			  IORESOURCE_ASSIGNED | IORESOURCE_CACHEABLE;
+	resource->flags = IORESOURCE_MEM | IORESOURCE_FIXED | IORESOURCE_STORED |
+			  IORESOURCE_RESERVE | IORESOURCE_ASSIGNED | IORESOURCE_CACHEABLE;
 
-	/* BGSM -> TOLUD. If the IGD is disabled, BGSM can equal TOLUD */
+	/* BGSM -> TOLUD. If the IGD is disabled, BGSM can equal TOLUD. */
 	if (mc_values[BGSM_REG] != mc_values[TOLUD_REG]) {
 		resource = new_resource(dev, index++);
 		resource->base = mc_values[BGSM_REG];
 		resource->size = mc_values[TOLUD_REG] - resource->base;
-		resource->flags = IORESOURCE_MEM | IORESOURCE_FIXED |
-				  IORESOURCE_STORED | IORESOURCE_RESERVE |
-				  IORESOURCE_ASSIGNED;
+		resource->flags = IORESOURCE_MEM | IORESOURCE_FIXED | IORESOURCE_STORED |
+				  IORESOURCE_RESERVE | IORESOURCE_ASSIGNED;
 	}
 
 	/* 4GiB -> TOUUD */
@@ -387,16 +365,16 @@ static void mc_add_dram_resources(struct device *dev, int *resource_cnt)
 
 	/* Reserve everything between A segment and 1MB:
 	 *
-	 * 0xa0000 - 0xbffff: legacy VGA
+	 * 0xa0000 - 0xbffff: Legacy VGA
 	 * 0xc0000 - 0xfffff: RAM
 	 */
 	mmio_resource(dev, index++, (0xa0000 >> 10), (0xc0000 - 0xa0000) >> 10);
-	reserved_ram_resource(dev, index++, (0xc0000 >> 10),
-			      (0x100000 - 0xc0000) >> 10);
+	reserved_ram_resource(dev, index++, (0xc0000 >> 10), (0x100000 - 0xc0000) >> 10);
+
 #if CONFIG(CHROMEOS_RAMOOPS)
 	reserved_ram_resource(dev, index++,
 			CONFIG_CHROMEOS_RAMOOPS_RAM_START >> 10,
-			CONFIG_CHROMEOS_RAMOOPS_RAM_SIZE >> 10);
+			CONFIG_CHROMEOS_RAMOOPS_RAM_SIZE  >> 10);
 #endif
 	*resource_cnt = index;
 }
@@ -404,31 +382,27 @@ static void mc_add_dram_resources(struct device *dev, int *resource_cnt)
 static void mc_read_resources(struct device *dev)
 {
 	int index = 0;
-	const bool vtd_capable =
-		!(pci_read_config32(dev, CAPID0_A) & VTD_DISABLE);
+	const bool vtd_capable = !(pci_read_config32(dev, CAPID0_A) & VTD_DISABLE);
 
-	/* Read standard PCI resources. */
+	/* Read standard PCI resources */
 	pci_dev_read_resources(dev);
 
-	/* Add all fixed MMIO resources. */
+	/* Add all fixed MMIO resources */
 	mc_add_fixed_mmio_resources(dev);
 
-	/* Add VT-d MMIO resources if capable */
+	/* Add VT-d MMIO resources, if capable */
 	if (vtd_capable) {
-		mmio_resource(dev, index++, GFXVT_BASE_ADDRESS / KiB,
-			GFXVT_BASE_SIZE / KiB);
-		mmio_resource(dev, index++, VTVC0_BASE_ADDRESS / KiB,
-			VTVC0_BASE_SIZE / KiB);
+		mmio_resource(dev, index++, GFXVT_BASE_ADDRESS / KiB, GFXVT_BASE_SIZE / KiB);
+		mmio_resource(dev, index++, VTVC0_BASE_ADDRESS / KiB, VTVC0_BASE_SIZE / KiB);
 	}
 
-	/* Calculate and add DRAM resources. */
+	/* Calculate and add DRAM resources */
 	mc_add_dram_resources(dev, &index);
 }
 
 /*
- * The Mini-HD audio device is disabled whenever the IGD is. This is
- * because it provides audio over the integrated graphics port(s), which
- * requires the IGD to be functional.
+ * The Mini-HD audio device is disabled whenever the IGD is. This is because it provides
+ * audio over the integrated graphics port(s), which requires the IGD to be functional.
  */
 static void disable_devices(void)
 {
@@ -446,7 +420,7 @@ static void disable_devices(void)
 		{ PCI_DEVFN(7, 0), DEVEN_D7EN, "\"device 7\"" },
 	};
 
-	struct device *host_dev = pcidev_on_root(0x0, 0);
+	struct device *host_dev = pcidev_on_root(0, 0);
 	u32 deven;
 	size_t i;
 
@@ -470,29 +444,29 @@ static void northbridge_init(struct device *dev)
 {
 	u8 bios_reset_cpl, pair;
 
-	/* Enable Power Aware Interrupt Routing */
-	pair = MCHBAR8(0x5418);
+	/* Enable Power Aware Interrupt Routing. */
+	pair = MCHBAR8(INTRDIRCTL);
 	pair &= ~0x7;	/* Clear 2:0 */
 	pair |= 0x4;	/* Fixed Priority */
-	MCHBAR8(0x5418) = pair;
+	MCHBAR8(INTRDIRCTL) = pair;
 
 	disable_devices();
 
 	/*
-	 * Set bits 0+1 of BIOS_RESET_CPL to indicate to the CPU
-	 * that BIOS has initialized memory and power management
+	 * Set bits 0 + 1 of BIOS_RESET_CPL to indicate to the CPU
+	 * that BIOS has initialized memory and power management.
 	 */
 	bios_reset_cpl = MCHBAR8(BIOS_RESET_CPL);
 	bios_reset_cpl |= 3;
 	MCHBAR8(BIOS_RESET_CPL) = bios_reset_cpl;
 	printk(BIOS_DEBUG, "Set BIOS_RESET_CPL\n");
 
-	/* Configure turbo power limits 1ms after reset complete bit */
+	/* Configure turbo power limits 1ms after reset complete bit. */
 	mdelay(1);
 	set_power_limits(28);
 
-	/* Set here before graphics PM init */
-	MCHBAR32(0x5500) = 0x00100001;
+	/* Set here before graphics PM init. */
+	MCHBAR32(MMIO_PAVP_MSG) = 0x00100001;
 }
 
 static struct pci_operations intel_pci_ops = {
@@ -500,13 +474,13 @@ static struct pci_operations intel_pci_ops = {
 };
 
 static struct device_operations mc_ops = {
-	.read_resources   = mc_read_resources,
-	.set_resources    = pci_dev_set_resources,
-	.enable_resources = pci_dev_enable_resources,
-	.init             = northbridge_init,
+	.read_resources           = mc_read_resources,
+	.set_resources            = pci_dev_set_resources,
+	.enable_resources         = pci_dev_enable_resources,
+	.init                     = northbridge_init,
 	.acpi_fill_ssdt_generator = generate_cpu_entries,
-	.scan_bus         = 0,
-	.ops_pci          = &intel_pci_ops,
+	.scan_bus                 = NULL,
+	.ops_pci                  = &intel_pci_ops,
 };
 
 static const unsigned short mc_pci_device_ids[] = {
@@ -528,12 +502,12 @@ static struct device_operations cpu_bus_ops = {
 	.set_resources    = DEVICE_NOOP,
 	.enable_resources = DEVICE_NOOP,
 	.init             = mp_cpu_bus_init,
-	.scan_bus         = 0,
+	.scan_bus         = NULL,
 };
 
 static void enable_dev(struct device *dev)
 {
-	/* Set the operations if it is a special bus type */
+	/* Set the operations if it is a special bus type. */
 	if (dev->path.type == DEVICE_PATH_DOMAIN) {
 		dev->ops = &pci_domain_ops;
 	} else if (dev->path.type == DEVICE_PATH_CPU_CLUSTER) {

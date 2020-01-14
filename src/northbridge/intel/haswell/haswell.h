@@ -26,13 +26,9 @@
 #define IED_SIZE	CONFIG_IED_REGION_SIZE
 
 /* Northbridge BARs */
-#define DEFAULT_MCHBAR		0xfed10000	/* 16 KB */
-#ifndef __ACPI__
-#define DEFAULT_DMIBAR		((u8 *)0xfed18000)	/* 4 KB */
-#else
-#define DEFAULT_DMIBAR		0xfed18000	/* 4 KB */
-#endif
-#define DEFAULT_EPBAR		0xfed19000	/* 4 KB */
+#define DEFAULT_MCHBAR		0xfed10000		/* 16 KB */
+#define DEFAULT_DMIBAR		0xfed18000		/* 4 KB */
+#define DEFAULT_EPBAR		0xfed19000		/* 4 KB */
 
 #define GFXVT_BASE_ADDRESS	0xfed90000ULL
 #define GFXVT_BASE_SIZE		0x1000
@@ -46,6 +42,7 @@
 #ifndef __ACPI__
 
 /* Device 0:0.0 PCI configuration space (Host Bridge) */
+#define HOST_BRIDGE	PCI_DEV(0, 0, 0)
 
 #define EPBAR		0x40
 #define MCHBAR		0x48
@@ -55,9 +52,9 @@
 #define GGC		0x50			/* GMCH Graphics Control */
 #define  GGC_DISABLE_VGA_IO_DECODE	(1 << 1)
 #define  GGC_IGD_MEM_IN_32MB_UNITS(x)	(((x) & 0x1f) << 3)
-#define  GGC_GTT_0MB		(0 << 8)
-#define  GGC_GTT_1MB		(1 << 8)
-#define  GGC_GTT_2MB		(2 << 8)
+#define  GGC_GTT_0MB			(0 << 8)
+#define  GGC_GTT_1MB			(1 << 8)
+#define  GGC_GTT_2MB			(2 << 8)
 
 #define DEVEN		0x54			/* Device Enable */
 #define  DEVEN_D7EN	(1 << 14)
@@ -85,11 +82,11 @@
 #define  G_SMRAME	(1 << 3)
 #define  C_BASE_SEG	((0 << 2) | (1 << 1) | (0 << 0))
 
-#define MESEG_BASE	0x70	/* Management Engine Base. */
-#define MESEG_LIMIT	0x78	/* Management Engine Limit. */
-#define REMAPBASE	0x90	/* Remap base. */
-#define REMAPLIMIT	0x98	/* Remap limit. */
-#define TOM		0xa0	/* Top of DRAM in memory controller space. */
+#define MESEG_BASE	0x70	/* Management Engine Base */
+#define MESEG_LIMIT	0x78	/* Management Engine Limit */
+#define REMAPBASE	0x90	/* Remap base */
+#define REMAPLIMIT	0x98	/* Remap limit */
+#define TOM		0xa0	/* Top of DRAM in memory controller space */
 #define TOUUD		0xa8	/* Top of Upper Usable DRAM */
 #define BDSM		0xb0	/* Base Data Stolen Memory */
 #define BGSM		0xb4	/* Base GTT Stolen Memory */
@@ -117,26 +114,27 @@
  * MCHBAR
  */
 
-#define MCHBAR8(x) *((volatile u8 *)(DEFAULT_MCHBAR + x))
-#define MCHBAR16(x) *((volatile u16 *)(DEFAULT_MCHBAR + x))
-#define MCHBAR32(x) *((volatile u32 *)(DEFAULT_MCHBAR + x))
-#define MCHBAR32_OR(x, or) MCHBAR32(x) = (MCHBAR32(x) | (or))
+#define MCHBAR8(x)  (*((volatile u8  *)(DEFAULT_MCHBAR + (x))))
+#define MCHBAR16(x) (*((volatile u16 *)(DEFAULT_MCHBAR + (x))))
+#define MCHBAR32(x) (*((volatile u32 *)(DEFAULT_MCHBAR + (x))))
+#define MCHBAR8_AND(x,  and) (MCHBAR8(x)  = MCHBAR8(x)  & (and))
+#define MCHBAR16_AND(x, and) (MCHBAR16(x) = MCHBAR16(x) & (and))
+#define MCHBAR32_AND(x, and) (MCHBAR32(x) = MCHBAR32(x) & (and))
+#define MCHBAR8_OR(x,  or) (MCHBAR8(x)  = MCHBAR8(x)  | (or))
+#define MCHBAR16_OR(x, or) (MCHBAR16(x) = MCHBAR16(x) | (or))
+#define MCHBAR32_OR(x, or) (MCHBAR32(x) = MCHBAR32(x) | (or))
+#define MCHBAR8_AND_OR(x,  and, or) (MCHBAR8(x)  = (MCHBAR8(x)  & (and)) | (or))
+#define MCHBAR16_AND_OR(x, and, or) (MCHBAR16(x) = (MCHBAR16(x) & (and)) | (or))
+#define MCHBAR32_AND_OR(x, and, or) (MCHBAR32(x) = (MCHBAR32(x) & (and)) | (or))
 
-#define BIOS_RESET_CPL	0x5da8	/* 8bit */
-#define GFXVTBAR	0x5400
-#define VTVC0BAR	0x5410
-
-/* Some power MSRs are also represented in MCHBAR */
-#define MCH_PKG_POWER_LIMIT_LO	0x59a0
-#define MCH_PKG_POWER_LIMIT_HI	0x59a4
-#define MCH_DDR_POWER_LIMIT_LO	0x58e0
-#define MCH_DDR_POWER_LIMIT_HI	0x58e4
+/* As there are many registers, define them on a separate file */
+#include "mchbar_regs.h"
 
 /*
  * EPBAR - Egress Port Root Complex Register Block
  */
 
-#define EPBAR8(x) *((volatile u8 *)(DEFAULT_EPBAR + x))
+#define EPBAR8(x)  *((volatile u8  *)(DEFAULT_EPBAR + x))
 #define EPBAR16(x) *((volatile u16 *)(DEFAULT_EPBAR + x))
 #define EPBAR32(x) *((volatile u32 *)(DEFAULT_EPBAR + x))
 
@@ -167,7 +165,7 @@
  * DMIBAR
  */
 
-#define DMIBAR8(x) *((volatile u8 *)(DEFAULT_DMIBAR + x))
+#define DMIBAR8(x)  *((volatile u8  *)(DEFAULT_DMIBAR + x))
 #define DMIBAR16(x) *((volatile u16 *)(DEFAULT_DMIBAR + x))
 #define DMIBAR32(x) *((volatile u32 *)(DEFAULT_DMIBAR + x))
 
@@ -215,9 +213,9 @@ void report_platform_info(void);
 #include <device/device.h>
 
 struct acpi_rsdp;
-unsigned long northbridge_write_acpi_tables(struct device *device,
-		unsigned long start, struct acpi_rsdp *rsdp);
+unsigned long northbridge_write_acpi_tables(struct device *device, unsigned long start,
+					    struct acpi_rsdp *rsdp);
 
-#endif
-#endif
+#endif /* __ASSEMBLER__ */
+#endif /* __ACPI__ */
 #endif /* __NORTHBRIDGE_INTEL_HASWELL_HASWELL_H__ */

@@ -37,35 +37,35 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 
 	pciexbar_reg = pci_read_config32(dev, PCIEXBAR);
 
-	// MMCFG not supported or not enabled.
+	/* MMCFG not supported or not enabled. */
 	if (!(pciexbar_reg & (1 << 0)))
 		return current;
 
 	mask = (1UL << 31) | (1 << 30) | (1 << 29) | (1 << 28);
 	switch ((pciexbar_reg >> 1) & 3) {
-	case 0: // 256MB
+	case 0: /* 256MB */
 		pciexbar = pciexbar_reg & mask;
 		max_buses = 256;
 		break;
-	case 1: // 128M
+	case 1: /* 128M */
 		mask |= (1 << 27);
 		pciexbar = pciexbar_reg & mask;
 		max_buses = 128;
 		break;
-	case 2: // 64M
+	case 2: /* 64M */
 		mask |= (1 << 27) | (1 << 26);
 		pciexbar = pciexbar_reg & mask;
 		max_buses = 64;
 		break;
-	default: // RSVD
+	default: /* RSVD */
 		return current;
 	}
 
 	if (!pciexbar)
 		return current;
 
-	current += acpi_create_mcfg_mmconfig((acpi_mcfg_mmconfig_t *) current,
-			pciexbar, 0x0, 0x0, max_buses - 1);
+	current += acpi_create_mcfg_mmconfig((acpi_mcfg_mmconfig_t *) current, pciexbar, 0, 0,
+					     max_buses - 1);
 
 	return current;
 }
@@ -79,8 +79,8 @@ static unsigned long acpi_fill_dmar(unsigned long current)
 	const bool vtvc0en = MCHBAR32(VTVC0BAR) & 0x1;
 
 	/* iGFX has to be enabled; GFXVTBAR set, enabled, in 32-bit space */
-	if (igfx_dev && igfx_dev->enabled && gfxvtbar
-			&& gfxvten && !MCHBAR32(GFXVTBAR + 4)) {
+	if (igfx_dev && igfx_dev->enabled && gfxvtbar && gfxvten && !MCHBAR32(GFXVTBAR + 4)) {
+
 		const unsigned long tmp = current;
 
 		current += acpi_create_dmar_drhd(current, 0, 0, gfxvtbar);
@@ -91,24 +91,23 @@ static unsigned long acpi_fill_dmar(unsigned long current)
 
 	/* VTVC0BAR has to be set, enabled, and in 32-bit space */
 	if (vtvc0bar && vtvc0en && !MCHBAR32(VTVC0BAR + 4)) {
+
 		const unsigned long tmp = current;
-		current += acpi_create_dmar_drhd(current,
-				DRHD_INCLUDE_PCI_ALL, 0, vtvc0bar);
-		current += acpi_create_dmar_ds_ioapic(current,
-				2, PCH_IOAPIC_PCI_BUS, PCH_IOAPIC_PCI_SLOT, 0);
+		current += acpi_create_dmar_drhd(current, DRHD_INCLUDE_PCI_ALL, 0, vtvc0bar);
+		current += acpi_create_dmar_ds_ioapic(current, 2, PCH_IOAPIC_PCI_BUS,
+						      PCH_IOAPIC_PCI_SLOT, 0);
+
 		size_t i;
 		for (i = 0; i < 8; ++i)
-			current += acpi_create_dmar_ds_msi_hpet(current,
-					0, PCH_HPET_PCI_BUS,
-					PCH_HPET_PCI_SLOT, i);
+			current += acpi_create_dmar_ds_msi_hpet(current, 0, PCH_HPET_PCI_BUS,
+								PCH_HPET_PCI_SLOT, i);
 		acpi_dmar_drhd_fixup(tmp, current);
 	}
 
 	return current;
 }
 
-unsigned long northbridge_write_acpi_tables(struct device *const dev,
-					    unsigned long current,
+unsigned long northbridge_write_acpi_tables(struct device *const dev, unsigned long current,
 					    struct acpi_rsdp *const rsdp)
 {
 	/* Create DMAR table only if we have VT-d capability. */

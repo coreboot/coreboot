@@ -97,9 +97,9 @@ static const struct gt_reg haswell_gt_lock[] = {
 	{ 0 },
 };
 
-/* some vga option roms are used for several chipsets but they only have one
- * PCI ID in their header. If we encounter such an option rom, we need to do
- * the mapping ourselves
+/*
+ * Some VGA option roms are used for several chipsets but they only have one PCI ID in their
+ * header. If we encounter such an option rom, we need to do the mapping ourselves.
  */
 
 u32 map_oprom_vendev(u32 vendev)
@@ -129,39 +129,41 @@ u32 map_oprom_vendev(u32 vendev)
 	return new_vendev;
 }
 
-/* GTT is the Global Translation Table for the graphics pipeline.
- * It is used to translate graphics addresses to physical
- * memory addresses. As in the CPU, GTTs map 4K pages.
- * The setgtt function adds a further bit of flexibility:
- * it allows you to set a range (the first two parameters) to point
- * to a physical address (third parameter);the physical address is
- * incremented by a count (fourth parameter) for each GTT in the
- * range.
- * Why do it this way? For ultrafast startup,
- * we can point all the GTT entries to point to one page,
- * and set that page to 0s:
- * memset(physbase, 0, 4096);
- * setgtt(0, 4250, physbase, 0);
- * this takes about 2 ms, and is a win because zeroing
- * the page takes a up to 200 ms.
- * This call sets the GTT to point to a linear range of pages
- * starting at physbase.
+/** FIXME: Seems to be outdated. */
+/*
+ * GTT is the Global Translation Table for the graphics pipeline. It is used to translate
+ * graphics addresses to physical memory addresses. As in the CPU, GTTs map 4K pages.
+ *
+ * The setgtt function adds a further bit of flexibility: it allows you to set a range (the
+ * first two parameters) to point to a physical address (third parameter); the physical address
+ * is incremented by a count (fourth parameter) for each GTT in the range.
+ *
+ * Why do it this way? For ultrafast startup, we can point all the GTT entries to point to one
+ * page, and set that page to 0s:
+ *
+ *   memset(physbase, 0, 4096);
+ *   setgtt(0, 4250, physbase, 0);
+ *
+ * this takes about 2 ms, and is a win because zeroing the page takes up to 200 ms.
+ *
+ * This call sets the GTT to point to a linear range of pages starting at physbase.
  */
 
 #define GTT_PTE_BASE (2 << 20)
 
-void
-set_translation_table(int start, int end, u64 base, int inc)
+void set_translation_table(int start, int end, u64 base, int inc)
 {
 	int i;
 
 	for (i = start; i < end; i++){
-		u64 physical_address = base + i*inc;
+		u64 physical_address = base + i * inc;
+
 		/* swizzle the 32:39 bits to 4:11 */
 		u32 word = physical_address | ((physical_address >> 28) & 0xff0) | 1;
-		/* note: we've confirmed by checking
-		 * the values that mrc does no
-		 * useful setup before we run this.
+
+		/*
+		 * Note: we've confirmed by checking the values that MRC does no useful
+		 * setup before we run this.
 		 */
 		gtt_write(GTT_PTE_BASE + i * 4, word);
 		gtt_read(GTT_PTE_BASE + i * 4);
@@ -211,6 +213,7 @@ int gtt_poll(u32 reg, u32 mask, u32 value)
 		data = gtt_read(reg);
 		if ((data & mask) == value)
 			return 1;
+
 		udelay(10);
 	}
 
@@ -261,10 +264,13 @@ static void gma_pm_init_pre_vbios(struct device *dev)
 
 	/* Wait for Mailbox Ready */
 	gtt_poll(0x138124, (1UL << 31), (0UL << 31));
+
 	/* Mailbox Data - RC6 VIDS */
 	gtt_write(0x138128, 0x00000000);
+
 	/* Mailbox Command */
 	gtt_write(0x138124, 0x80000004);
+
 	/* Wait for Mailbox Ready */
 	gtt_poll(0x138124, (1UL << 31), (0UL << 31));
 
@@ -291,7 +297,7 @@ static void init_display_planes(void)
 		gtt_write(CURBASE_IVB(pipe), 0x00000000);
 	}
 
-	/* Disable primary plane and set surface base address*/
+	/* Disable primary plane and set surface base address */
 	for (plane = PLANE_A; plane <= PLANE_C; plane++) {
 		gtt_write(DSPCNTR(plane), DISPLAY_PLANE_DISABLE);
 		gtt_write(DSPSURF(plane), 0x00000000);
@@ -357,11 +363,12 @@ static void gma_setup_panel(struct device *dev)
 
 	init_display_planes();
 
-	/* DDI-A params set:
-	   bit 0: Display detected (RO)
-	   bit 4: DDI A supports 4 lanes and DDI E is not used
-	   bit 7: DDI buffer is idle
-	*/
+	/*
+	 * DDI-A params set:
+	 * bit 0: Display detected (RO)
+	 * bit 4: DDI A supports 4 lanes and DDI E is not used
+	 * bit 7: DDI buffer is idle
+	 */
 	reg32 = DDI_BUF_IS_IDLE | DDI_INIT_DISPLAY_DETECTED;
 	if (!conf->gpu_ddi_e_connected)
 		reg32 |= DDI_A_4_LANES;
@@ -374,14 +381,14 @@ static void gma_setup_panel(struct device *dev)
 	/* Enable the handshake with PCH display when processing reset */
 	gtt_write(NDE_RSTWRN_OPT, RST_PCH_HNDSHK_EN);
 
-	/* undocumented */
+	/* Undocumented */
 	gtt_write(0x42090, 0x04000000);
-	gtt_write(0x9840, 0x00000000);
+	gtt_write(0x9840,  0x00000000);
 	gtt_write(0x42090, 0xa4000000);
 
 	gtt_write(SOUTH_DSPCLK_GATE_D, PCH_LP_PARTITION_LEVEL_DISABLE);
 
-	/* undocumented */
+	/* Undocumented */
 	gtt_write(0x42080, 0x00004000);
 
 	/* Prepare DDI buffers for DP and FDI */
@@ -393,9 +400,10 @@ static void gma_setup_panel(struct device *dev)
 	/* Enable HPD buffer for digital port D and B */
 	gtt_write(PCH_PORT_HOTPLUG, PORTD_HOTPLUG_ENABLE | PORTB_HOTPLUG_ENABLE);
 
-	/* Bits 4:0 - Power cycle delay (default 0x6 --> 500ms)
-	   Bits 31:8 - Reference divider (0x0004af ----> 24MHz)
-	*/
+	/*
+	 * Bits 4:0 - Power cycle delay (default 0x6 --> 500ms)
+	 * Bits 31:8 - Reference divider (0x0004af ----> 24MHz)
+	 */
 	gtt_write(PCH_PP_DIVISOR, 0x0004af06);
 }
 
@@ -440,12 +448,12 @@ static void gma_enable_swsci(void)
 {
 	u16 reg16;
 
-	/* clear DMISCI status */
+	/* Clear DMISCI status */
 	reg16 = inw(get_pmbase() + TCO1_STS);
 	reg16 &= DMISCI_STS;
 	outw(get_pmbase() + TCO1_STS, reg16);
 
-	/* clear and enable ACPI TCO SCI */
+	/* Clear and enable ACPI TCO SCI */
 	enable_tco_sci();
 }
 
@@ -491,10 +499,9 @@ static void gma_func0_init(struct device *dev)
 	intel_gma_restore_opregion();
 }
 
-const struct i915_gpu_controller_info *
-intel_gma_get_controller_info(void)
+const struct i915_gpu_controller_info *intel_gma_get_controller_info(void)
 {
-	struct device *dev = pcidev_on_root(0x2, 0);
+	struct device *dev = pcidev_on_root(2, 0);
 	if (!dev) {
 		return NULL;
 	}
@@ -512,9 +519,8 @@ static void gma_ssdt(struct device *device)
 	drivers_intel_gma_displays_ssdt_generate(gfx);
 }
 
-static unsigned long
-gma_write_acpi_tables(struct device *const dev, unsigned long current,
-		      struct acpi_rsdp *const rsdp)
+static unsigned long gma_write_acpi_tables(struct device *const dev, unsigned long current,
+					   struct acpi_rsdp *const rsdp)
 {
 	igd_opregion_t *opregion = (igd_opregion_t *)current;
 	global_nvs_t *gnvs;
@@ -538,19 +544,19 @@ gma_write_acpi_tables(struct device *const dev, unsigned long current,
 }
 
 static struct pci_operations gma_pci_ops = {
-	.set_subsystem    = pci_dev_set_subsystem,
+	.set_subsystem = pci_dev_set_subsystem,
 };
 
 static struct device_operations gma_func0_ops = {
-	.read_resources		= pci_dev_read_resources,
-	.set_resources		= pci_dev_set_resources,
-	.enable_resources	= pci_dev_enable_resources,
-	.init			= gma_func0_init,
+	.read_resources           = pci_dev_read_resources,
+	.set_resources            = pci_dev_set_resources,
+	.enable_resources         = pci_dev_enable_resources,
+	.init                     = gma_func0_init,
 	.acpi_fill_ssdt_generator = gma_ssdt,
-	.scan_bus		= 0,
-	.enable			= 0,
-	.ops_pci		= &gma_pci_ops,
-	.write_acpi_tables	= gma_write_acpi_tables,
+	.scan_bus                 = NULL,
+	.enable                   = NULL,
+	.ops_pci                  = &gma_pci_ops,
+	.write_acpi_tables        = gma_write_acpi_tables,
 };
 
 static const unsigned short pci_device_ids[] = {
@@ -570,7 +576,7 @@ static const unsigned short pci_device_ids[] = {
 };
 
 static const struct pci_driver pch_lpc __pci_driver = {
-	.ops	 = &gma_func0_ops,
-	.vendor	 = PCI_VENDOR_ID_INTEL,
+	.ops     = &gma_func0_ops,
+	.vendor  = PCI_VENDOR_ID_INTEL,
 	.devices = pci_device_ids,
 };

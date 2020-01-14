@@ -20,9 +20,9 @@
 
 /*
  * Digital Port Hotplug Enable:
- *  0x04 = Enabled, 2ms short pulse
+ *  0x04 = Enabled, 2ms   short pulse
  *  0x05 = Enabled, 4.5ms short pulse
- *  0x06 = Enabled, 6ms short pulse
+ *  0x06 = Enabled, 6ms   short pulse
  *  0x07 = Enabled, 100ms short pulse
  */
 struct northbridge_intel_haswell_config {

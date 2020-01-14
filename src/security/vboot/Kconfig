@@ -181,6 +181,13 @@ config VBOOT_ALWAYS_ENABLE_DISPLAY
 	help
 	  Set this option to indicate to vboot that display should always be enabled.
 
+config VBOOT_ALWAYS_ALLOW_UDC
+	bool "Always allow UDC"
+	default n
+	depends on !CHROMEOS
+	help
+	  This option allows UDC to be enabled regardless of the vboot state.
+
 config VBOOT_HAS_REC_HASH_SPACE
 	bool
 	default n

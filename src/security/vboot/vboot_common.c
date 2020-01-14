@@ -27,6 +27,10 @@
 /* Check if it is okay to enable USB Device Controller (UDC). */
 int vboot_can_enable_udc(void)
 {
+	/* Allow UDC in all vboot modes. */
+	if (!CONFIG(CHROMEOS) && CONFIG(VBOOT_ALWAYS_ALLOW_UDC))
+		return 1;
+
 	/* Always disable if not in developer mode */
 	if (!vboot_developer_mode_enabled())
 		return 0;

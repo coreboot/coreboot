@@ -1155,7 +1155,8 @@ void program_timings(ramctr_timing *ctrl, int channel)
 		     shift_402x) << (8 * slotrank);
 
 		FOR_ALL_LANES {
-			MCHBAR32(lane_base[lane] + 0x10 + channel * 0x100 + 4 * slotrank) =
+			MCHBAR32(lane_base[lane] +
+				(0x10 + (channel * 0x100) + (slotrank * 4))) =
 			    (((ctrl->timings[channel][slotrank].lanes[lane].
 			       timA + shift) & 0x3f)
 			     |
@@ -1168,7 +1169,8 @@ void program_timings(ramctr_timing *ctrl, int channel)
 			     | ((ctrl->timings[channel][slotrank].lanes[lane].
 				falling + shift) << 20));
 
-			MCHBAR32(lane_base[lane] + 0x20 + channel * 0x100 + 4 * slotrank) =
+			MCHBAR32(lane_base[lane] +
+				(0x20 + (channel * 0x100) + (slotrank * 4))) =
 			    (((ctrl->timings[channel][slotrank].lanes[lane].
 			       timC + shift) & 0x3f)
 			     |
@@ -1228,8 +1230,8 @@ static int does_lane_work(ramctr_timing *ctrl, int channel, int slotrank,
 			  int lane)
 {
 	u32 timA = ctrl->timings[channel][slotrank].lanes[lane].timA;
-	return ((MCHBAR32(lane_base[lane] + channel * 0x100 + 4 +
-		  ((timA / 32) & 1) * 4) >> (timA % 32)) & 1);
+	return ((MCHBAR32(lane_base[lane] + (4 + (channel * 0x100) +
+		  (((timA / 32) & 1) * 4))) >> (timA % 32)) & 1);
 }
 
 struct run {
@@ -1890,8 +1892,8 @@ static int discover_timB(ramctr_timing *ctrl, int channel, int slotrank)
 
 		FOR_ALL_LANES {
 			statistics[lane][timB] =
-			    !((MCHBAR32(lane_base[lane] +
-				channel * 0x100 + 4 + ((timB / 32) & 1) * 4)
+			    !((MCHBAR32(lane_base[lane] + (4 +
+				(channel * 0x100) + (((timB / 32) & 1) * 4)))
 			       >> (timB % 32)) & 1);
 		}
 	}
@@ -2013,8 +2015,9 @@ static void adjust_high_timB(ramctr_timing *ctrl)
 
 		wait_for_iosav(channel);
 		FOR_ALL_LANES {
-			u64 res = MCHBAR32(lane_base[lane] + channel * 0x100 + 4);
-			res |= ((u64) MCHBAR32(lane_base[lane] + channel * 0x100 + 8)) << 32;
+			u64 res = MCHBAR32(lane_base[lane] + 4 + (channel * 0x100) + (0 * 4));
+			res |= ((u64) MCHBAR32(lane_base[lane] +
+				(4 + (channel * 0x100) + (1 * 4)))) << 32;
 			old = ctrl->timings[channel][slotrank].lanes[lane].timB;
 			ctrl->timings[channel][slotrank].lanes[lane].timB +=
 				get_timB_high_adjust(res) * 64;
@@ -3020,9 +3023,9 @@ void write_controller_mr(ramctr_timing *ctrl)
 	int channel, slotrank;
 
 	FOR_ALL_CHANNELS FOR_ALL_POPULATED_RANKS {
-		MCHBAR32(0x0004 + channel * 0x100 + lane_base[slotrank]) =
+		MCHBAR32(lane_base[slotrank] + (0x0004 + (channel * 0x100) + (0 * 4))) =
 			make_mr0(ctrl, slotrank);
-		MCHBAR32(0x0008 + channel * 0x100 + lane_base[slotrank]) =
+		MCHBAR32(lane_base[slotrank] + (0x0004 + (channel * 0x100) + (1 * 4))) =
 			make_mr1(ctrl, slotrank, channel);
 	}
 }

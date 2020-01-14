@@ -29,10 +29,9 @@ static void at24rf08c_init(struct device *dev)
 	if (dev->path.type != DEVICE_PATH_I2C || dev->path.i2c.device != 0x5c)
 		return;
 
-	printk (BIOS_DEBUG, "Locking EEPROM RFID\n");
+	printk(BIOS_DEBUG, "Locking EEPROM RFID\n");
 
-	for (i = 0; i < 8; i++)
-	{
+	for (i = 0; i < 8; i++) {
 		/* After a register write AT24RF08C sometimes stops responding.
 		   Retry several times in case of failure. */
 		for (j = 0; j < 100; j++)
@@ -40,7 +39,7 @@ static void at24rf08c_init(struct device *dev)
 				break;
 	}
 
-	printk (BIOS_DEBUG, "init EEPROM done\n");
+	printk(BIOS_DEBUG, "init EEPROM done\n");
 }
 
 static struct device_operations at24rf08c_operations = {

@@ -133,6 +133,17 @@ enum platform_type {
 #define Cx(r, x)	((r) + ((x) * 0x400))
 #define CxLy(r, x, y)	((r) + ((x) * 0x400) + ((y) * 4))
 
+/* byte lane training register base addresses */
+#define LANEBASE_B0	0x0000
+#define LANEBASE_B1	0x0200
+#define LANEBASE_B2	0x0400
+#define LANEBASE_B3	0x0600
+#define LANEBASE_B4	0x1000
+#define LANEBASE_B5	0x1200
+#define LANEBASE_B6	0x1400
+#define LANEBASE_B7	0x1600
+#define LANEBASE_ECC	0x0800 /* ECC lane is in the middle of the data lanes */
+
 /* Register definitions */
 #define GDCRCLKRANKSUSED_ch(ch)		Gz(0x0c00, ch) /* Indicates which rank is populated */
 #define GDCRCLKCOMP_ch(ch)		Gz(0x0c04, ch) /* RCOMP result register */

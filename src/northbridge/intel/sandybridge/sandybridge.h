@@ -131,10 +131,7 @@ enum platform_type {
 #define Gz(r, z)	((r) + ((z) * 0x100))
 #define Ly(r, y)	((r) + ((y) * 4))
 #define Cx(r, x)	((r) + ((x) * 0x400))
-
-/* FIXME: These two are equivalent, but had to be split for reproducibility reasons. */
 #define CxLy(r, x, y)	((r) + ((x) * 0x400) + ((y) * 4))
-#define LyCx(r, x, y)	((r) + ((y) * 4) + ((x) * 0x400))
 
 /* Register definitions */
 #define GDCRCLKRANKSUSED_ch(ch)		Gz(0x0c00, ch) /* Indicates which rank is populated */
@@ -196,11 +193,11 @@ enum platform_type {
 #define IOSAV_By_BW_SERROR_C_ch(ch, y)	CxLy(0x4140, ch, y) /* IOSAV Bytelane Bit-wise error */
 
 /* IOSAV sub-sequence control registers */
-#define IOSAV_n_SP_CMD_ADDR_ch(ch, y)	LyCx(0x4200, ch, y) /* Special command address. */
-#define IOSAV_n_ADDR_UPD_ch(ch, y)	LyCx(0x4210, ch, y) /* Address update control */
-#define IOSAV_n_SP_CMD_CTL_ch(ch, y)	LyCx(0x4220, ch, y) /* Control of command signals */
-#define IOSAV_n_SUBSEQ_CTL_ch(ch, y)	LyCx(0x4230, ch, y) /* Sub-sequence controls */
-#define IOSAV_n_ADDRESS_LFSR_ch(ch, y)	LyCx(0x4240, ch, y) /* 23-bit LFSR state value */
+#define IOSAV_n_SP_CMD_ADDR_ch(ch, y)	CxLy(0x4200, ch, y) /* Special command address. */
+#define IOSAV_n_ADDR_UPD_ch(ch, y)	CxLy(0x4210, ch, y) /* Address update control */
+#define IOSAV_n_SP_CMD_CTL_ch(ch, y)	CxLy(0x4220, ch, y) /* Control of command signals */
+#define IOSAV_n_SUBSEQ_CTL_ch(ch, y)	CxLy(0x4230, ch, y) /* Sub-sequence controls */
+#define IOSAV_n_ADDRESS_LFSR_ch(ch, y)	CxLy(0x4240, ch, y) /* 23-bit LFSR state value */
 
 #define PM_THML_STAT_ch(ch)	Cx(0x4280, ch) /* Thermal status of each rank */
 #define IOSAV_SEQ_CTL_ch(ch)	Cx(0x4284, ch) /* IOSAV sequence level control */

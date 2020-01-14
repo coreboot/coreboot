@@ -132,6 +132,7 @@ enum platform_type {
 #define Ly(r, y)	((r) + ((y) * 4))
 #define Cx(r, x)	((r) + ((x) * 0x400))
 #define CxLy(r, x, y)	((r) + ((x) * 0x400) + ((y) * 4))
+#define GzLy(r, z, y)	((r) + ((z) * 0x100) + ((y) * 4))
 
 /* byte lane training register base addresses */
 #define LANEBASE_B0	0x0000
@@ -143,6 +144,13 @@ enum platform_type {
 #define LANEBASE_B6	0x1400
 #define LANEBASE_B7	0x1600
 #define LANEBASE_ECC	0x0800 /* ECC lane is in the middle of the data lanes */
+
+/* byte lane register offsets */
+#define GDCRTRAININGRESULT(ch, y)	GzLy(0x0004, ch, y) /* Test results for PI config */
+#define GDCRTRAININGRESULT1(ch)		GDCRTRAININGRESULT(ch, 0) /* 0x0004 */
+#define GDCRTRAININGRESULT2(ch)		GDCRTRAININGRESULT(ch, 1) /* 0x0008 */
+#define GDCRRX(ch, rank)		GzLy(0x10, ch, rank) /* Time setting for lane Rx */
+#define GDCRTX(ch, rank)		GzLy(0x20, ch, rank) /* Time setting for lane Tx */
 
 /* Register definitions */
 #define GDCRCLKRANKSUSED_ch(ch)		Gz(0x0c00, ch) /* Indicates which rank is populated */

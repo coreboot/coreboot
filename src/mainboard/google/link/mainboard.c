@@ -32,20 +32,6 @@
 #include <ec/google/chromeec/ec.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
-/* placeholder for evenual link post. Not sure what we'll
- * do but it will look nice
- */
-void mainboard_post(u8 value)
-{
-	/*
-	 * What you DO NOT want to do: push every post to the EC backlight.
-	 * it seems cute but in practice it looks like a hardware failure.
-	 * I'm leaving this here so we don't make this mistake again later.
-	 * And it seems to break the SMP startup.
-	 * google_chromeec_post(value);
-	 */
-}
-
 #if CONFIG(VGA_ROM_RUN)
 static int int15_handler(void)
 {

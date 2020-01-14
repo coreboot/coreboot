@@ -28,6 +28,11 @@
 #include "chip.h"
 
 /*
+ * Setting minimum length of UCSI_ACPI will ensure this region is placed out of IMD Small.
+ * Having this region out of IMD Small will prevent any memory mapping conflicts.
+ */
+#define UCSI_MIN_ALLOC_REGION_LEN	CBMEM_SM_ROOT_SIZE
+/*
  * The UCSI fields are defined in the UCSI specification at
  * https://www.intel.com/content/www/us/en/io/universal-serial-bus/usb-type-c-ucsi-spec.html
  * https://www.intel.com/content/www/us/en/io/universal-serial-bus/bios-implementation-of-ucsi.html
@@ -175,19 +180,22 @@ static void wilco_ec_fill_ssdt_generator(struct device *dev)
 {
 	struct opregion opreg;
 	void *region_ptr;
+	size_t ucsi_alloc_region_len;
 
 	if (!dev->enabled)
 		return;
 
-	region_ptr = cbmem_add(CBMEM_ID_ACPI_UCSI, ucsi_region_len);
+	ucsi_alloc_region_len = ucsi_region_len < UCSI_MIN_ALLOC_REGION_LEN ?
+		UCSI_MIN_ALLOC_REGION_LEN : ucsi_region_len;
+	region_ptr = cbmem_add(CBMEM_ID_ACPI_UCSI, ucsi_alloc_region_len);
 	if (!region_ptr)
 		return;
-	memset(region_ptr, 0, ucsi_region_len);
+	memset(region_ptr, 0, ucsi_alloc_region_len);
 
 	opreg.name = "UCSM";
 	opreg.regionspace = SYSTEMMEMORY;
 	opreg.regionoffset = (uintptr_t)region_ptr;
-	opreg.regionlen = ucsi_region_len;
+	opreg.regionlen = ucsi_alloc_region_len;
 
 	acpigen_write_scope(acpi_device_path_join(dev, "UCSI"));
 	acpigen_write_name("_CRS");

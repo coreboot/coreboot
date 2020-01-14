@@ -885,6 +885,11 @@ int google_chromeec_cbi_get_sku_id(uint32_t *id)
 	return cbi_get_uint32(id, CBI_TAG_SKU_ID);
 }
 
+int google_chromeec_cbi_get_fw_config(uint32_t *fw_config)
+{
+	return cbi_get_uint32(fw_config, CBI_TAG_FW_CONFIG);
+}
+
 int google_chromeec_cbi_get_oem_id(uint32_t *id)
 {
 	return cbi_get_uint32(id, CBI_TAG_OEM_ID);

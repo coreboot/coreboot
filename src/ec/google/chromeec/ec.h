@@ -77,13 +77,14 @@ int google_chromeec_vstore_write(int slot, uint8_t *data, size_t size);
 int google_chromeec_reboot(int dev_idx, enum ec_reboot_cmd type, uint8_t flags);
 
 /**
- * Get OEM (or SKU) ID from Cros Board Info
+ * Get data from Cros Board Info
  *
- * @param id [OUT] oem/sku id
+ * @param id/fw_config/buf [OUT] value from from CBI.
  * @return 0 on success or negative integer for errors.
  */
 int google_chromeec_cbi_get_oem_id(uint32_t *id);
 int google_chromeec_cbi_get_sku_id(uint32_t *id);
+int google_chromeec_cbi_get_fw_config(uint32_t *fw_config);
 int google_chromeec_cbi_get_dram_part_num(char *buf, size_t bufsize);
 int google_chromeec_cbi_get_oem_name(char *buf, size_t bufsize);
 

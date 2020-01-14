@@ -63,7 +63,7 @@ recommended, since coreboot may not boot on the first try.
 
 Disassemble your computer and find the flash chip(s). Since there could be
 more than one, this guide will refer to "flash chips" as one or more chips.
-Refer to <http://flashrom.org/Technology> as a reference. The flash chip is
+Refer to <https://flashrom.org/Technology> as a reference. The flash chip is
 usually in a `SOIC-8` (2x4 pins, 200mil) or `SOIC-16` (2x8 pins) package. As
 it can be seen on flashrom's wiki, the former package is like any other 8-pin
 chip on the mainboard, but it is slightly larger. The latter package is much
@@ -282,7 +282,7 @@ cannot be detected by autoport. Common entries are:
 
 * `ROM package`, `ROM protocol` and `ROM socketed`:
   These refer to the flash chips you found earlier. You can visit
-  <http://flashrom.org/Technology> for more information.
+  <https://flashrom.org/Technology> for more information.
 
 * `Release year`: Use the power of Internet to find that information.
 * `Category`: This describes the type of mainboard you have.

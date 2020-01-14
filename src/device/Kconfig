@@ -519,6 +519,39 @@ config LINEAR_FRAMEBUFFER_MAX_HEIGHT
 	  Set the maximum height of the framebuffer. This may help with
 	  default fonts too tiny for high-resolution displays.
 
+choice DEFAULT_SCREEN_ROTATION
+	prompt "Default screen orientation"
+	depends on LINEAR_FRAMEBUFFER && MAINBOARD_USE_LIBGFXINIT
+	depends on GFX_GMA_GENERATION = "Broxton" || GFX_GMA_GENERATION = "Skylake"
+	default DEFAULT_SCREEN_ROTATION_NONE
+	help
+	  This allows to configure how the physical screen is mounted in
+	  90 degree steps (counter-clockwise). The framebuffer contents
+	  will then be displayed rotated by the same amount in the other
+	  direction; i.e. if you turn the screen to the left, the picture
+	  has to be rotated to the right to accommodate.
+
+config DEFAULT_SCREEN_ROTATION_NONE
+	bool "Non-rotated"
+
+config DEFAULT_SCREEN_ROTATION_90
+	bool "Rotated 90 degrees (rotate framebuffer to the right)"
+
+config DEFAULT_SCREEN_ROTATION_180
+	bool "Rotated 180 degrees"
+
+config DEFAULT_SCREEN_ROTATION_270
+	bool "Rotated 270 degrees (rotate framebuffer to the left)"
+
+endchoice
+
+config DEFAULT_SCREEN_ROTATION_INT
+	int
+	default  90 if DEFAULT_SCREEN_ROTATION_90
+	default 180 if DEFAULT_SCREEN_ROTATION_180
+	default 270 if DEFAULT_SCREEN_ROTATION_270
+	default 0
+
 endmenu # "Display"
 
 config PCI

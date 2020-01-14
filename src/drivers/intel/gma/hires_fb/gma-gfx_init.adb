@@ -21,6 +21,17 @@ is
    configs : Pipe_Configs;
    ----------------------------------------------------------------------------
 
+   procedure Screen_Rotation (rotation : out Rotation_Type)
+   is
+   begin
+      rotation :=
+        (case Config.DEFAULT_SCREEN_ROTATION_INT is
+            when     90 => Rotated_90,
+            when    180 => Rotated_180,
+            when    270 => Rotated_270,
+            when others => No_Rotation);
+   end Screen_Rotation;
+
    procedure gfxinit (lightup_ok : out Interfaces.C.int)
    is
       use type pos32;
@@ -60,10 +71,21 @@ is
             end loop;
 
             fb := configs (Primary).Framebuffer;
-            fb.Width    := Width_Type (min_h);
-            fb.Height   := Height_Type (min_v);
-            fb.Stride   := Div_Round_Up (fb.Width, 16) * 16;
-            fb.V_Stride := fb.Height;
+            Screen_Rotation (fb.Rotation);
+
+            if fb.Rotation = Rotated_90 or fb.Rotation = Rotated_270 then
+               fb.Width    := Width_Type (min_v);
+               fb.Height   := Height_Type (min_h);
+               fb.Stride   := Div_Round_Up (fb.Width, 32) * 32;
+               fb.V_Stride := Div_Round_Up (fb.Height, 32) * 32;
+               fb.Tiling   := Y_Tiled;
+               fb.Offset   := word32 (GTT_Rotation_Offset) * GTT_Page_Size;
+            else
+               fb.Width    := Width_Type (min_h);
+               fb.Height   := Height_Type (min_v);
+               fb.Stride   := Div_Round_Up (fb.Width, 16) * 16;
+               fb.V_Stride := fb.Height;
+            end if;
 
             for i in Pipe_Index loop
                exit when configs (i).Port = Disabled;

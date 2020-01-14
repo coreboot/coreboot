@@ -16,4 +16,5 @@ struct ppin_req {
 } __packed;
 /* Send CPU0 and CPU1 PPIN to BMC */
 void ipmi_set_ppin(struct ppin_req *req);
+void init_frb2_wdt(void);
 #endif

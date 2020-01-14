@@ -2,11 +2,14 @@
 
 #include <fsp/api.h>
 #include <FspmUpd.h>
+#include <drivers/ipmi/ipmi_kcs.h>
 #include <soc/romstage.h>
 #include <string.h>
 #include <gpio.h>
 #include <soc/lewisburg_pch_gpio_defs.h>
 #include <skxsp_tp_iio.h>
+
+#include "ipmi.h"
 
 static uint8_t iio_table_buf[sizeof(tp_iio_bifur_table)];
 
@@ -49,6 +52,9 @@ static void mainboard_config_iio(FSPM_UPD *mupd)
 
 void mainboard_memory_init_params(FSPM_UPD *mupd)
 {
+	/* It's better to run get BMC selftest result first */
+	if (ipmi_kcs_premem_init(CONFIG_BMC_KCS_BASE, 0) == CB_SUCCESS)
+		init_frb2_wdt();
 	mainboard_config_iio(mupd);
 
 	/* do not configure GPIO controller inside FSP-M */

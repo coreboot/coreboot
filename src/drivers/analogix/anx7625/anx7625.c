@@ -273,7 +273,7 @@ static int anx7625_calculate_m_n(u32 pixelclock,
 		return 1;
 	}
 
-	*m = (unsigned long long)pixelclock * 599 / 600;
+	*m = pixelclock;
 	*n = XTAL_FRQ / post_divider;
 	*pd = post_divider;
 

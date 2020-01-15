@@ -510,6 +510,7 @@ Device (EC0)
 		Return (^TBMD)
 	}
 
+#ifdef EC_ENABLE_MULTIPLE_DPTF_PROFILES
 	/* Read current Device DPTF Profile Number */
 	Method (RCDP, 0, NotSerialized)
 	{
@@ -524,7 +525,7 @@ Device (EC0)
 			Return (Local0)
 		}
 	}
-
+#endif
 #if CONFIG(EC_GOOGLE_CHROMEEC_ACPI_USB_PORT_POWER)
 	/*
 	 * Enable USB Port Power

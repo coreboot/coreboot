@@ -59,10 +59,6 @@ config MAX_CPUS
 	int
 	default 8
 
-config ONBOARD_VGA_IS_PRIMARY
-	bool
-	default y
-
 config DRAM_RESET_GATE_GPIO
 	int
 	default 10

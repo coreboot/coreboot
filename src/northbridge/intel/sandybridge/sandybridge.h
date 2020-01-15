@@ -139,11 +139,11 @@ enum platform_type {
 #define LANEBASE_B1	0x0200
 #define LANEBASE_B2	0x0400
 #define LANEBASE_B3	0x0600
+#define LANEBASE_ECC	0x0800 /* ECC lane is in the middle of the data lanes */
 #define LANEBASE_B4	0x1000
 #define LANEBASE_B5	0x1200
 #define LANEBASE_B6	0x1400
 #define LANEBASE_B7	0x1600
-#define LANEBASE_ECC	0x0800 /* ECC lane is in the middle of the data lanes */
 
 /* byte lane register offsets */
 #define GDCRTRAININGRESULT(ch, y)	GzLy(0x0004, ch, y) /* Test results for PI config */

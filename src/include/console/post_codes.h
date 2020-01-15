@@ -156,7 +156,7 @@
 #define POST_BS_DEV_ENUMERATE			0x72
 
 /**
- * \brief Device Resource Allocatio
+ * \brief Device Resource Allocation
  *
  * Boot State Machine: bs_dev_resources()
  */
@@ -365,7 +365,7 @@
 /**
  * \brief TPM failure
  *
- * An error with the TPM, either unexepcted state or communications failure.
+ * An error with the TPM, either unexpected state or communications failure.
  */
 #define POST_TPM_FAILURE			0xed
 

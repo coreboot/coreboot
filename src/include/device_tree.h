@@ -117,7 +117,7 @@ int fdt_node_name(const void *blob, uint32_t offset, const char **name);
 void fdt_print_node(const void *blob, uint32_t offset);
 int fdt_skip_node(const void *blob, uint32_t offset);
 
-/* Read a flattened device tree into a heirarchical structure which refers to
+/* Read a flattened device tree into a hierarchical structure which refers to
    the contents of the flattened tree in place. Modifying the flat tree
    invalidates the unflattened one. */
 struct device_tree *fdt_unflatten(const void *blob);

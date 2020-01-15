@@ -160,7 +160,7 @@ static inline void stopwatch_tick(struct stopwatch *sw)
 }
 
 /*
- * Tick and check the stopwatch for expiration. Returns non-zero on exipration.
+ * Tick and check the stopwatch for expiration. Returns non-zero on expiration.
  */
 static inline int stopwatch_expired(struct stopwatch *sw)
 {

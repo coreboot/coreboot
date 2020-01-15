@@ -264,7 +264,7 @@ void spi_release_bus(const struct spi_slave *slave);
  *   din:	Pointer to a string of bytes that will be filled in.
  *   bytesin:	How many bytes to read.
  *
- * Note that din and dout are transferred simulataneously in a full duplex
+ * Note that din and dout are transferred simultaneously in a full duplex
  * transaction. The number of clocks within one transaction is calculated
  * as: MAX(bytesout*8, bytesin*8).
  *

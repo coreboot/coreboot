@@ -163,7 +163,51 @@ Method (GRXS, 1, Serialized)
 	{
 		VAL0, 32
 	}
-	And (GPIORXSTATE_MASK, ShiftRight (VAL0, GPIORXSTATE_SHIFT), Local0)
+	Local0 = GPIORXSTATE_MASK & (VAL0 >> GPIORXSTATE_SHIFT)
 
 	Return (Local0)
+}
+
+/*
+ * Get GPIO Tx Value
+ * Arg0 - GPIO Number
+ */
+Method (GTXS, 1, Serialized)
+{
+	OperationRegion (PREG, SystemMemory, GADD (Arg0), 4)
+	Field (PREG, AnyAcc, NoLock, Preserve)
+	{
+		VAL0, 32
+	}
+	Local0 = GPIOTXSTATE_MASK & VAL0
+
+	Return (Local0)
+}
+
+/*
+ * Set GPIO Tx Value
+ * Arg0 - GPIO Number
+ */
+Method (STXS, 1, Serialized)
+{
+	OperationRegion (PREG, SystemMemory, GADD (Arg0), 4)
+	Field (PREG, AnyAcc, NoLock, Preserve)
+	{
+		VAL0, 32
+	}
+	VAL0 |= GPIOTXSTATE_MASK
+}
+
+/*
+ * Clear GPIO Tx Value
+ * Arg0 - GPIO Number
+ */
+Method (CTXS, 1, Serialized)
+{
+	OperationRegion (PREG, SystemMemory, GADD (Arg0), 4)
+	Field (PREG, AnyAcc, NoLock, Preserve)
+	{
+		VAL0, 32
+	}
+	VAL0 &= ~GPIOTXSTATE_MASK
 }

@@ -20,6 +20,9 @@ Name (SSFG, 0x0D)
 #else
 Name (SSFG, 0x09)
 #endif
+If (CONFIG(DISABLE_ACPI_HIBERNATE)) {
+	Store(And(SSFG, 0xF7), SSFG)
+}
 
 /* Supported sleep states: */
 Name(\_S0, Package () {0x00, 0x00, 0x00, 0x00} )	/* (S0) - working state */

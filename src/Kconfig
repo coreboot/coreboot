@@ -525,6 +525,12 @@ config HAVE_ACPI_RESUME
 	default n
 	depends on RELOCATABLE_RAMSTAGE
 
+config DISABLE_ACPI_HIBERNATE
+	bool
+	default n
+	help
+	  Removes S4 from the available sleepstates
+
 config RESUME_PATH_SAME_AS_BOOT
 	bool
 	default y if ARCH_X86

@@ -5,12 +5,12 @@ func NoEC(ctx Context) {
 	defer ap.Close()
 
 	ap.WriteString(
-		`Method(_WAK,1)
+		`Method(_WAK, 1)
 {
-	Return(Package(){0,0})
+	Return(Package() {0, 0})
 }
 
-Method(_PTS,1)
+Method(_PTS, 1)
 {
 }
 `)

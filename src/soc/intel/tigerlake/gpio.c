@@ -14,24 +14,23 @@
  * GNU General Public License for more details.
  */
 
+#include <intelblocks/gpio.h>
+#include <intelblocks/pcr.h>
+#include <soc/pcr_ids.h>
+#include <soc/pmc.h>
+
 /*
  * This file is created based on Intel Tiger Lake Processor PCH Datasheet
  * Document number: 575857
  * Chapter number: 27
  */
 
-#include <intelblocks/gpio.h>
-#include <intelblocks/pcr.h>
-#include <soc/pcr_ids.h>
-#include <soc/pmc.h>
-
 static const struct reset_mapping rst_map[] = {
 	{ .logical = PAD_CFG0_LOGICAL_RESET_RSMRST, .chipset = 0U << 30 },
 	{ .logical = PAD_CFG0_LOGICAL_RESET_DEEP, .chipset = 1U << 30 },
 	{ .logical = PAD_CFG0_LOGICAL_RESET_PLTRST, .chipset = 2U << 30 },
 };
-
-static const struct reset_mapping rst_map_com0[] = {
+static const struct reset_mapping rst_map_com2[] = {
 	{ .logical = PAD_CFG0_LOGICAL_RESET_PWROK, .chipset = 0U << 30 },
 	{ .logical = PAD_CFG0_LOGICAL_RESET_DEEP, .chipset = 1U << 30 },
 	{ .logical = PAD_CFG0_LOGICAL_RESET_PLTRST, .chipset = 2U << 30 },
@@ -39,55 +38,46 @@ static const struct reset_mapping rst_map_com0[] = {
 };
 
 /*
- * The GPIO driver for Tigerlake on Windows/Linux expects 32 GPIOs per pad
- * group, regardless of whether or not there is a physical pad for each
- * exposed GPIO number.
- *
- * This results in the OS having a sparse GPIO map, and devices that need
- * to export an ACPI GPIO must use the OS expected number.
- *
- * Not all pins are usable as GPIO and those groups do not have a pad base.
- *
- * This layout matches the Linux kernel pinctrl map for CNL-LP at:
+ * This layout matches the Linux kernel pinctrl map for TGL-LP at:
  * linux/drivers/pinctrl/intel/pinctrl-tigerlake.c
  */
 static const struct pad_group tgl_community0_groups[] = {
-	INTEL_GPP_BASE(GPP_G0, GPP_G0, GPP_G7, 0),		/* GPP_G */
-	INTEL_GPP_BASE(GPP_G0, GPP_B0, GPP_B23, 32),		/* GPP_B */
-	INTEL_GPP(GPP_G0, GPIO_RSVD_0, GPIO_RSVD_1),
-	INTEL_GPP_BASE(GPP_G0, GPP_A0, GPP_A23, 64),		/* GPP_A */
+	INTEL_GPP(GPP_B0, GPP_B0, GPP_B25),				/* GPP_B */
+	INTEL_GPP(GPP_B0, GPP_T0, GPP_T15),				/* GPP_T */
+	INTEL_GPP(GPP_B0, GPP_A0, GPP_A24),				/* GPP_A */
 };
 
 static const struct pad_group tgl_community1_groups[] = {
-	INTEL_GPP_BASE(GPP_H0, GPP_H0, GPP_H23, 96),		/* GPP_H */
-	INTEL_GPP_BASE(GPP_H0, GPP_D0, GPIO_RSVD_2, 128),	/* GPP_D */
-	INTEL_GPP_BASE(GPP_H0, GPP_F0, GPP_F19, 160),		/* GPP_F */
+	INTEL_GPP(GPP_S0, GPP_S0, GPP_S7),				/* GPP_S */
+	INTEL_GPP(GPP_S0, GPP_H0, GPP_H23),				/* GPP_H */
+	INTEL_GPP(GPP_S0, GPP_D0, GPP_GSPI2_CLK_LOOPBK),		/* GPP_D */
+	INTEL_GPP(GPP_S0, GPP_U0, GPP_GSPI6_CLK_LOOPBK),		/* GPP_U */
+	INTEL_GPP(GPP_S0, CNV_BTEN, vI2S2_RXD),				/* GPP_VGPIO */
 };
 
 /* This community is not visible to the OS */
 static const struct pad_group tgl_community2_groups[] = {
-	INTEL_GPP(GPD0, GPD0, GPD11),				/* GPD */
+	INTEL_GPP(GPD0, GPD0, GPD_DRAM_RESETB),				/* GPD */
 };
-
 
 static const struct pad_group tgl_community4_groups[] = {
-	INTEL_GPP_BASE(GPP_C0, GPP_C0, GPP_C23, 224),		/* GPP_C */
-	INTEL_GPP_BASE(GPP_C0, GPP_E0, GPP_E23, 256),		/* GPP_E */
-	INTEL_GPP(GPP_C0, GPIO_RSVD_3, GPIO_RSVD_8),
+	INTEL_GPP(GPP_C0, GPP_C0, GPP_C23),				/* GPP_C */
+	INTEL_GPP(GPP_C0, GPP_F0, GPP_F_CLK_LOOPBK),			/* GPP_F */
+	INTEL_GPP(GPP_C0, GPP_L_BKLTEN, GPP_MLK_RSTB),			/* GPP_HVCMOS */
+	INTEL_GPP(GPP_C0, GPP_E0, GPP_E_CLK_LOOPBK),			/* GPP_E */
+	INTEL_GPP(GPP_C0, GPP_JTAG_TDO, GPP_DBG_PMODE),			/* GPP_JTAG */
 };
-
 
 static const struct pad_group tgl_community5_groups[] = {
-	INTEL_GPP_BASE(GPP_R0, GPP_R0, GPP_R7, 288),		/* GPP_R */
-	INTEL_GPP_BASE(GPP_C0, GPP_S0, GPP_S7, 320),		/* GPP_S */
+	INTEL_GPP(GPP_R0, GPP_R0, GPP_R7),				/* GPP_R */
+	INTEL_GPP(GPP_R0, GPP_SPI_IO_2, GPP_CLK_LOOPBK),		/* GPP_SPI */
 };
 
-static const struct pad_community tgl_communities[TOTAL_GPIO_COMM] = {
-	/* GPP G, B, A */
-	[COMM_0] = {
+static const struct pad_community tgl_communities[] = {
+	[COMM_0] = { /* GPP B, T, A */
 		.port = PID_GPIOCOM0,
-		.first_pad = GPP_G0,
-		.last_pad = GPP_A23,
+		.first_pad = GPP_B0,
+		.last_pad = GPP_A24,
 		.num_gpi_regs = NUM_GPIO_COM0_GPI_REGS,
 		.pad_cfg_base = PAD_CFG_BASE,
 		.host_own_reg_0 = HOSTSW_OWN_REG_0,
@@ -96,18 +86,17 @@ static const struct pad_community tgl_communities[TOTAL_GPIO_COMM] = {
 		.gpi_smi_sts_reg_0 = GPI_SMI_STS_0,
 		.gpi_smi_en_reg_0 = GPI_SMI_EN_0,
 		.max_pads_per_group = GPIO_MAX_NUM_PER_GROUP,
-		.name = "GPP_GBA",
+		.name = "GPP_BTA",
 		.acpi_path = "\\_SB.PCI0.GPIO",
-		.reset_map = rst_map_com0,
-		.num_reset_vals = ARRAY_SIZE(rst_map_com0),
+		.reset_map = rst_map,
+		.num_reset_vals = ARRAY_SIZE(rst_map),
 		.groups = tgl_community0_groups,
 		.num_groups = ARRAY_SIZE(tgl_community0_groups),
 	},
-	/* GPP H, D, F */
-	[COMM_1] = {
+	[COMM_1] = { /* GPP S, D, H, U, VGPIO */
 		.port = PID_GPIOCOM1,
-		.first_pad = GPP_H0,
-		.last_pad = GPP_F19,
+		.first_pad = GPP_S0,
+		.last_pad = vI2S2_RXD,
 		.num_gpi_regs = NUM_GPIO_COM1_GPI_REGS,
 		.pad_cfg_base = PAD_CFG_BASE,
 		.host_own_reg_0 = HOSTSW_OWN_REG_0,
@@ -116,18 +105,17 @@ static const struct pad_community tgl_communities[TOTAL_GPIO_COMM] = {
 		.gpi_smi_sts_reg_0 = GPI_SMI_STS_0,
 		.gpi_smi_en_reg_0 = GPI_SMI_EN_0,
 		.max_pads_per_group = GPIO_MAX_NUM_PER_GROUP,
-		.name = "GPP_HDF",
+		.name = "GPP_SDHU",
 		.acpi_path = "\\_SB.PCI0.GPIO",
 		.reset_map = rst_map,
 		.num_reset_vals = ARRAY_SIZE(rst_map),
 		.groups = tgl_community1_groups,
 		.num_groups = ARRAY_SIZE(tgl_community1_groups),
 	},
-	 /* GPD */
-	[COMM_2] = {
+	[COMM_2] = { /* GPD */
 		.port = PID_GPIOCOM2,
 		.first_pad = GPD0,
-		.last_pad = GPD11,
+		.last_pad = GPD_DRAM_RESETB,
 		.num_gpi_regs = NUM_GPIO_COM2_GPI_REGS,
 		.pad_cfg_base = PAD_CFG_BASE,
 		.host_own_reg_0 = HOSTSW_OWN_REG_0,
@@ -138,16 +126,15 @@ static const struct pad_community tgl_communities[TOTAL_GPIO_COMM] = {
 		.max_pads_per_group = GPIO_MAX_NUM_PER_GROUP,
 		.name = "GPD",
 		.acpi_path = "\\_SB.PCI0.GPIO",
-		.reset_map = rst_map,
-		.num_reset_vals = ARRAY_SIZE(rst_map),
+		.reset_map = rst_map_com2,
+		.num_reset_vals = ARRAY_SIZE(rst_map_com2),
 		.groups = tgl_community2_groups,
 		.num_groups = ARRAY_SIZE(tgl_community2_groups),
 	},
-	/* GPP C, E */
-	[COMM_3] = {
+	[COMM_4] = { /* GPP F, C, HVCOS, E, JTAG */
 		.port = PID_GPIOCOM4,
 		.first_pad = GPP_C0,
-		.last_pad = GPP_E23,
+		.last_pad = GPP_DBG_PMODE,
 		.num_gpi_regs = NUM_GPIO_COM4_GPI_REGS,
 		.pad_cfg_base = PAD_CFG_BASE,
 		.host_own_reg_0 = HOSTSW_OWN_REG_0,
@@ -156,18 +143,17 @@ static const struct pad_community tgl_communities[TOTAL_GPIO_COMM] = {
 		.gpi_smi_sts_reg_0 = GPI_SMI_STS_0,
 		.gpi_smi_en_reg_0 = GPI_SMI_EN_0,
 		.max_pads_per_group = GPIO_MAX_NUM_PER_GROUP,
-		.name = "GPP_CE",
+		.name = "GPP_FCE",
 		.acpi_path = "\\_SB.PCI0.GPIO",
 		.reset_map = rst_map,
 		.num_reset_vals = ARRAY_SIZE(rst_map),
 		.groups = tgl_community4_groups,
 		.num_groups = ARRAY_SIZE(tgl_community4_groups),
 	},
-	/* GPP R, S */
-	[COMM_4] = {
+	[COMM_5] = { /* GPP R, SPI */
 		.port = PID_GPIOCOM5,
 		.first_pad = GPP_R0,
-		.last_pad = GPP_S7,
+		.last_pad = GPP_CLK_LOOPBK,
 		.num_gpi_regs = NUM_GPIO_COM5_GPI_REGS,
 		.pad_cfg_base = PAD_CFG_BASE,
 		.host_own_reg_0 = HOSTSW_OWN_REG_0,
@@ -176,7 +162,7 @@ static const struct pad_community tgl_communities[TOTAL_GPIO_COMM] = {
 		.gpi_smi_sts_reg_0 = GPI_SMI_STS_0,
 		.gpi_smi_en_reg_0 = GPI_SMI_EN_0,
 		.max_pads_per_group = GPIO_MAX_NUM_PER_GROUP,
-		.name = "GPP_RS",
+		.name = "GPP_CPU_VBPIO",
 		.acpi_path = "\\_SB.PCI0.GPIO",
 		.reset_map = rst_map,
 		.num_reset_vals = ARRAY_SIZE(rst_map),

@@ -46,6 +46,10 @@ chip soc/intel/tigerlake
 	register "PcieClkSrcUsage[0]" = "8"
 	register "PcieClkSrcClkReq[0]" = "0"
 
+	# Enable Optane PCIE 11 using clk 0
+	register "PcieRpEnable[10]" = "1"
+	register "HybridStorageMode" = "1"
+
 	# Enable SD Card PCIE 8 using clk 3
 	register "PcieRpEnable[7]" = "1"
 	register "PcieClkSrcUsage[3]" = "7"
@@ -311,7 +315,7 @@ chip soc/intel/tigerlake
 
 		device pci 1d.0 on  end # RP9				0xA0B0
 		device pci 1d.1 off end # RP10				0xA0B1
-		device pci 1d.2 off end # RP11				0xA0B2
+		device pci 1d.2 on  end # RP11				0xA0B2
 		device pci 1d.3 off end # RP12				0xA0B3
 		device pci 1d.4 off end # RP13				0xA0B4
 		device pci 1d.5 off end # RP14				0xA0B5

@@ -22,10 +22,14 @@
 #define DPTF_CPU_ACTIVE_AC3     60
 #define DPTF_CPU_ACTIVE_AC4     50
 
+#define DPTF_TSR0_SENSOR_ID	0
+#define DPTF_TSR0_SENSOR_NAME	"ITE8528_CPU"
+#define DPTF_TSR0_PASSIVE	DPTF_CPU_PASSIVE
+#define DPTF_TSR0_CRITICAL	DPTF_CPU_CRITICAL
+
 Name (DTRT, Package () {
 	/* CPU Throttle Effect on CPU */
 	Package () { \_SB.PCI0.B0D4, \_SB.PCI0.B0D4, 100, 50, 0, 0, 0, 0 },
-
 })
 
 Name (MPPC, Package ()

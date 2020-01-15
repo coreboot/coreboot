@@ -15,10 +15,59 @@ chip soc/intel/cannonlake
 		[PchSerialIoIndexUART2] = PchSerialIoDisabled,
 	}"
 
-  # USB configuration
-	register "usb2_ports[4]" = "USB2_PORT_SHORT(OC_SKIP)"
+	# USB configuration
+	register "usb2_ports[0]" = "USB2_PORT_MID(OC2)"        # Type-A Port 2
+	register "usb2_ports[1]" = "USB2_PORT_TYPE_C(OC_SKIP)" # Type-C Port
+	register "usb2_ports[2]" = "{
+		.enable = 1,
+		.ocpin = OC3,
+		.tx_bias = USB2_BIAS_0MV,
+		.tx_emp_enable = USB2_PRE_EMP_ON,
+		.pre_emp_bias  = USB2_BIAS_28P15MV,
+		.pre_emp_bit   = USB2_HALF_BIT_PRE_EMP,
+	}" # Type-A Port 3
+	register "usb2_ports[3]" = "{
+		.enable = 1,
+		.ocpin = OC1,
+		.tx_bias = USB2_BIAS_0MV,
+		.tx_emp_enable = USB2_PRE_EMP_ON,
+		.pre_emp_bias  = USB2_BIAS_28P15MV,
+		.pre_emp_bit   = USB2_HALF_BIT_PRE_EMP,
+	}" # Type-A Port 1
+	register "usb2_ports[4]" = "{
+		.enable = 1,
+		.ocpin = OC_SKIP,
+		.tx_bias = USB2_BIAS_0MV,
+		.tx_emp_enable = USB2_PRE_EMP_ON,
+		.pre_emp_bias  = USB2_BIAS_28P15MV,
+		.pre_emp_bit   = USB2_HALF_BIT_PRE_EMP,
+	}" # Type-A Port 4
+	register "usb2_ports[5]" = "{
+		.enable = 1,
+		.ocpin = OC0,
+		.tx_bias = USB2_BIAS_0MV,
+		.tx_emp_enable = USB2_PRE_EMP_ON,
+		.pre_emp_bias  = USB2_BIAS_28P15MV,
+		.pre_emp_bit   = USB2_HALF_BIT_PRE_EMP,
+	}" # Type-A port 0
 	register "usb2_ports[6]" = "USB2_PORT_EMPTY"
-	register "usb3_ports[5]" = "USB3_PORT_DEFAULT(OC_SKIP)"
+	register "usb2_ports[7]" = "USB2_PORT_EMPTY"
+	register "usb2_ports[8]" = "USB2_PORT_EMPTY"
+	register "usb2_ports[9]" = "{
+		.enable = 1,
+		.ocpin = OC_SKIP,
+		.tx_bias = USB2_BIAS_0MV,
+		.tx_emp_enable = USB2_PRE_EMP_ON,
+		.pre_emp_bias  = USB2_BIAS_28P15MV,
+		.pre_emp_bit   = USB2_HALF_BIT_PRE_EMP,
+	}" # BT
+
+	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC2)"     # Type-A Port 2
+	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC3)"     # Type-A Port 3
+	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC1)"     # Type-A Port 1
+	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC_SKIP)" # Type-C
+	register "usb3_ports[4]" = "USB3_PORT_DEFAULT(OC0)"     # Type-A Port 0
+	register "usb3_ports[5]" = "USB3_PORT_DEFAULT(OC_SKIP)" # Type-A Port 4
 
 	# Enable eMMC HS400
 	register "ScsEmmcHs400Enabled" = "1"
@@ -127,6 +176,26 @@ chip soc/intel/cannonlake
 			chip drivers/usb/acpi
 				device usb 0.0 on
 					chip drivers/usb/acpi
+						register "desc" = ""Type-A Port 2""
+						register "type" = "UPC_TYPE_A"
+						device usb 2.0 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""Type-C Port""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						device usb 2.1 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""Type-A Port 3""
+						register "type" = "UPC_TYPE_A"
+						device usb 2.2 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""Type-A Port 1""
+						register "type" = "UPC_TYPE_A"
+						device usb 2.3 on end
+					end
+					chip drivers/usb/acpi
 						register "desc" = ""Type-A Port 4""
 						register "type" = "UPC_TYPE_A"
 						device usb 2.4 on end
@@ -138,6 +207,26 @@ chip soc/intel/cannonlake
 					end
 					chip drivers/usb/acpi
 						device usb 2.6 off end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""Type-A Port 2""
+						register "type" = "UPC_TYPE_USB3_A"
+						device usb 3.0 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""Type-A Port 3""
+						register "type" = "UPC_TYPE_USB3_A"
+						device usb 3.1 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""Type-A Port 1""
+						register "type" = "UPC_TYPE_USB3_A"
+						device usb 3.2 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""Type-C Port""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						device usb 3.3 on end
 					end
 					chip drivers/usb/acpi
 						register "desc" = ""Type-A Port 0""

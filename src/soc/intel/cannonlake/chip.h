@@ -29,6 +29,7 @@
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
 #include <soc/pmc.h>
+#include <soc/sata.h>
 #include <soc/serialio.h>
 #include <soc/usb.h>
 #include <soc/vr_config.h>
@@ -39,6 +40,7 @@
 #endif
 
 #define SOC_INTEL_CML_UART_DEV_MAX 3
+#define SOC_INTEL_CML_SATA_DEV_MAX 8
 
 struct soc_intel_cannonlake_config {
 
@@ -389,6 +391,9 @@ struct soc_intel_cannonlake_config {
 
 	/* SATA Power Optimizer */
 	uint8_t satapwroptimize;
+
+	/* SATA Gen3 Strength */
+	struct sata_port_config sata_port[SOC_INTEL_CML_SATA_DEV_MAX];
 
 	/* Enable or disable eDP device */
 	uint8_t DdiPortEdp;

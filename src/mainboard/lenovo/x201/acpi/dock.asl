@@ -60,6 +60,11 @@ Scope(\_SB.PCI0.LPCB.EC)
 		Notify(\_SB.DOCK, 3)
 	}
 
+	Method(_Q50, 0, NotSerialized)
+	{
+		Notify(\_SB.DOCK, 3)
+	}
+
 	Method(_Q58, 0, NotSerialized)
 	{
 		Notify(\_SB.DOCK, 0)

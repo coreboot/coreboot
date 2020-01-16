@@ -303,6 +303,26 @@ struct acpi_gpio {
 	.pin_count = 1, \
 	.pins = { (gpio) } }
 
+/* Level Triggered Active High GPIO interrupt with wake */
+#define ACPI_GPIO_IRQ_LEVEL_HIGH_WAKE(gpio) { \
+	.type = ACPI_GPIO_TYPE_INTERRUPT, \
+	.pull = ACPI_GPIO_PULL_DEFAULT, \
+	.irq.mode = ACPI_IRQ_LEVEL_TRIGGERED, \
+	.irq.polarity = ACPI_IRQ_ACTIVE_HIGH, \
+	.irq.wake = ACPI_IRQ_WAKE, \
+	.pin_count = 1, \
+	.pins = { (gpio) } }
+
+/* Level Triggered Active Low GPIO interrupt with wake */
+#define ACPI_GPIO_IRQ_LEVEL_LOW_WAKE(gpio) { \
+	.type = ACPI_GPIO_TYPE_INTERRUPT, \
+	.pull = ACPI_GPIO_PULL_DEFAULT, \
+	.irq.mode = ACPI_IRQ_LEVEL_TRIGGERED, \
+	.irq.polarity = ACPI_IRQ_ACTIVE_LOW, \
+	.irq.wake = ACPI_IRQ_WAKE, \
+	.pin_count = 1, \
+	.pins = { (gpio) } }
+
 /* Write GpioIo() or GpioInt() descriptor to SSDT AML output */
 void acpi_device_write_gpio(const struct acpi_gpio *gpio);
 

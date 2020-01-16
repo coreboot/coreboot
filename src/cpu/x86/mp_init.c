@@ -13,6 +13,7 @@
  */
 
 #include <console/console.h>
+#include <stddef.h>
 #include <stdint.h>
 #include <string.h>
 #include <rmodule.h>
@@ -518,11 +519,12 @@ static int bsp_do_flight_plan(struct mp_params *mp_params)
 	int i;
 	int ret = 0;
 	/*
-	 * Set time-out to wait for APs to a huge value (=1 second) since it
-	 * could take a longer time for APs to check-in as the number of APs
-	 * increases (contention for resources like UART also increases).
+	 * Set time out for flight plan to a huge minimum value (>=1 second).
+	 * CPUs with many APs may take longer if there is contention for
+	 * resources such as UART, so scale the time out up by increments of
+	 * 100ms if needed.
 	 */
-	const int timeout_us = 1000000;
+	const int timeout_us = MAX(1000000, 100000 * mp_params->num_cpus);
 	const int step_us = 100;
 	int num_aps = mp_params->num_cpus - 1;
 	struct stopwatch sw;

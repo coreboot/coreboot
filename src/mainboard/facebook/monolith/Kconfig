@@ -87,4 +87,8 @@ config VBOOT_ENABLE_CBFS_FALLBACK
 	default y
 	depends on VBOOT
 
+config VBOOT_ALWAYS_ALLOW_UDC
+	def_bool y
+	depends on VBOOT && !CHROMEOS
+
 endif

@@ -1,0 +1,5 @@
+Board name: TiogaPass
+Category: server
+ROM protocol: SPI
+ROM socketed: yes
+Release year: 2018

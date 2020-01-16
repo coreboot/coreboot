@@ -1,0 +1,16 @@
+if VENDOR_OCP
+
+choice
+	prompt "Mainboard model"
+
+source "src/mainboard/ocp/*/Kconfig.name"
+
+endchoice
+
+source "src/mainboard/ocp/*/Kconfig"
+
+config MAINBOARD_VENDOR
+	string
+	default "Open Compute Project"
+
+endif # VENDOR_OCP

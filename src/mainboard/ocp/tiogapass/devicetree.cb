@@ -1,0 +1,91 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2019 - 2020 Intel Corporation.
+## Copyright (C) 2019 - 2020 Facebook Inc
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; either version 2 of the License, or
+## (at your option) any later version.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+
+chip soc/intel/xeon_sp
+
+	register "pirqa_routing" = "PCH_IRQ11"
+	register "pirqb_routing" = "PCH_IRQ10"
+	register "pirqc_routing" = "PCH_IRQ11"
+	register "pirqd_routing" = "PCH_IRQ11"
+	register "pirqe_routing" = "PCH_IRQ11"
+	register "pirqf_routing" = "PCH_IRQ11"
+	register "pirqg_routing" = "PCH_IRQ11"
+	register "pirqh_routing" = "PCH_IRQ11"
+
+	# configure device interrupt routing
+	register "ir00_routing" = "0x3210" # IR00, Dev31
+	register "ir01_routing" = "0x3210" # IR01, Dev30
+	register "ir02_routing" = "0x3210" # IR02, Dev29
+	register "ir03_routing" = "0x3210" # IR03, Dev28
+	register "ir04_routing" = "0x3210" # IR04, Dev27
+
+	# configure interrupt polarity control
+	register "ipc0" = "0x00ff4000" # IPC0, PIRQA-H (IRQ16-23) should always be ActiveLow
+	register "ipc1" = "0x00000000" # IPC1
+	register "ipc2" = "0x00000000" # IPC2
+	register "ipc3" = "0x00000000" # IPC3
+
+	# configure MSR_TURBO_RATIO_LIMIT, MSR_TURBO_RATIO_LIMIT_CORES msrs
+	# FB production turbo_ratio_limit is 0x1f1f1f2022222325
+	register "turbo_ratio_limit" = "0x1b1b1b1d20222325"
+	# FB production turbo_ratio_limit_cores is 0x1c1812100c080402
+	register "turbo_ratio_limit_cores" = "0x1c1814100c080402"
+
+	# configure PSTATE_REQ_RATIO for MSR_IA32_PERF_CTRL
+	register "pstate_req_ratio" = "0xa"
+
+	# configure VTD
+	register "vtd_support" = "1"
+	register "coherency_support" = "1"
+	register "ats_support" = "1"
+
+	device cpu_cluster 0 on
+	  device lapic 0 on end
+	end
+
+	device domain 0 on
+		device pci 00.0 on end # Host bridge
+		device pci 04.0 on end # Intel Corporation SkyLake-E CBDMA Registers
+		device pci 04.1 on end # Intel Corporation SkyLake-E CBDMA Registers
+		device pci 04.2 on end # Intel Corporation SkyLake-E CBDMA Registers
+		device pci 04.3 on end # Intel Corporation SkyLake-E CBDMA Registers
+		device pci 04.4 on end # Intel Corporation SkyLake-E CBDMA Registers
+		device pci 04.5 on end # Intel Corporation SkyLake-E CBDMA Registers
+		device pci 04.6 on end # Intel Corporation SkyLake-E CBDMA Registers
+		device pci 04.7 on end # Intel Corporation SkyLake-E CBDMA Registers
+		device pci 05.0 on end # Intel Corporation SkyLake-E MM/Vt-d Configuration Registers
+		device pci 05.2 on end # Intel Corporation Device 2025
+		device pci 05.4 on end # Intel Corporation Device 2026
+		device pci 08.0 on end # Intel Corporation SkyLake-E Ubox Registers
+		device pci 08.1 on end # Intel Corporation SkyLake-E Ubox Registers
+		device pci 08.2 on end # Intel Corporation SkyLake-E Ubox Registers
+		device pci 11.0 on end # Intel Corporation C620 Series Chipset Family MROM 0
+		device pci 11.1 on end # Intel Corporation C620 Series Chipset Family MROM 1
+		device pci 11.5 on end # Intel Corporation C620 Series Chipset Family SSATA Controller [AHCI mode]
+		device pci 14.0 on end # Intel Corporation C620 Series Chipset Family USB 3.0 xHCI Controller
+		device pci 16.0 on end # Intel Corporation C620 Series Chipset Family MEI Controller #1
+		device pci 16.1 on end # Intel Corporation C620 Series Chipset Family MEI Controller #2
+		device pci 16.4 on end # Intel Corporation C620 Series Chipset Family MEI Controller #3
+		device pci 17.0 on end # Intel Corporation C620 Series Chipset Family SATA Controller [AHCI mode]
+		device pci 1c.0 on end # PCI bridge: Intel Corporation C620 Series Chipset Family PCI Express Root Port #1
+		device pci 1c.4 on end # PCI bridge: Intel Corporation C620 Series Chipset Family PCI Express Root Port #5
+		device pci 1f.0 on end # Intel Corporation C621 Series Chipset LPC/eSPI Controller
+		device pci 1f.2 on end # Intel Corporation C620 Series Chipset Family Power Management Controller
+		device pci 1f.4 on end # Intel Corporation C620 Series Chipset Family SMBus
+		device pci 1f.5 on end # Intel Corporation C620 Series Chipset Family SPI Controller
+	end
+end

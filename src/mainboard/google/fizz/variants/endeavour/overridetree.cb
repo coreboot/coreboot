@@ -1,5 +1,31 @@
 chip soc/intel/skylake
 
+	# Enable Root port 7(x1) for TPU1
+	register "PcieRpEnable[6]" = "1"
+	# Enable CLKREQ#
+	register "PcieRpClkReqSupport[6]" = "1"
+	# RP 7 uses SRCCLKREQ4#
+	register "PcieRpClkReqNumber[6]" = "4"
+	# RP 7, Enable Advanced Error Reporting
+	register "PcieRpAdvancedErrorReporting[6]" = "1"
+	# RP 7, Enable Latency Tolerance Reporting Mechanism
+	register "PcieRpLtrEnable[6]" = "1"
+	# RP 7 uses uses CLK SRC 4
+	register "PcieRpClkSrcNumber[6]" = "4"
+
+	# Enable Root port 8(x1) for TPU0
+	register "PcieRpEnable[7]" = "1"
+	# Enable CLKREQ#
+	register "PcieRpClkReqSupport[7]" = "1"
+	# RP 8 uses SRCCLKREQ2#
+	register "PcieRpClkReqNumber[7]" = "2"
+	# RP 8, Enable Advanced Error Reporting
+	register "PcieRpAdvancedErrorReporting[7]" = "1"
+	# RP 8, Enable Latency Tolerance Reporting Mechanism
+	register "PcieRpLtrEnable[7]" = "1"
+	# RP 8 uses uses CLK SRC 2
+	register "PcieRpClkSrcNumber[7]" = "2"
+
 	# Enable Root port 9(x4) for i350 LAN
 	register "PcieRpEnable[8]" = "1"
 	# Disable CLKREQ#
@@ -133,6 +159,8 @@ chip soc/intel/skylake
 				device i2c 13 on end
 			end
 		end # I2C #5
+		device pci 1c.6 on end # PCI Express Port 7 for TPU1
+		device pci 1c.7 on end # PCI Express Port 8 for TPU0
 		device pci 1d.0 on end # PCI Express Port 9 for POE LAN
 		device pci 1d.1 off end # PCI Express Port 10
 		device pci 1d.2 off end # PCI Express Port 11

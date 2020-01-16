@@ -43,7 +43,8 @@ DefinitionBlock(
 		}
 	}
 
-	/* Mainboard specific sleep states */
-	#include "acpi/sleepstates.asl"
+	#include <southbridge/intel/common/acpi/sleepstates.asl>
+
+	/* Mainboard specific */
 	#include "acpi/mainboard.asl"
 }

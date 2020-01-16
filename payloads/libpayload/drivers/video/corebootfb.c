@@ -61,13 +61,12 @@ static const u32 vga_colors[] = {
 	(0xFF << 16) | (0xFF << 8) | 0xFF,
 };
 
-/* Addresses for the various components */
-static unsigned long fbinfo;
-static unsigned long fbaddr;
+struct cb_framebuffer fbinfo;
 static unsigned short *chars;
 
-#define FI ((struct cb_framebuffer *) phys_to_virt(fbinfo))
-#define FB ((unsigned char *) phys_to_virt(fbaddr))
+/* Addresses for the various components */
+#define FI (&fbinfo)
+#define FB ((unsigned char *) phys_to_virt(FI->physical_address))
 #define CHARS (chars)
 
 static void corebootfb_scroll_up(void)
@@ -230,12 +229,9 @@ static int corebootfb_init(void)
 	if (lib_sysinfo.framebuffer == NULL)
 		return -1;
 
-	/* We might have been called before relocation (like FILO does). So
-	   just keep the physical address which won't break on relocation. */
-	fbinfo = virt_to_phys(lib_sysinfo.framebuffer);
+	fbinfo = *lib_sysinfo.framebuffer;
 
-	fbaddr = FI->physical_address;
-	if (fbaddr == 0)
+	if (FI->physical_address == 0)
 		return -1;
 
 	font_init(FI->x_resolution);

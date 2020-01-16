@@ -68,14 +68,7 @@ static void pch_finalize(void)
 	/* TCO Lock down */
 	tco_lockdown();
 
-	/*
-	 * Set low maximum temp threshold value used for dynamic thermal sensor
-	 * shutdown consideration.
-	 *
-	 * If Dynamic Thermal Shutdown is enabled then PMC logic shuts down the
-	 * thermal sensor when CPU is in a C-state and DTS Temp <= LTT.
-	 */
-	pch_thermal_configuration();
+	/* TODO: Add Thermal Configuration */
 
 	/*
 	 * Disable ACPI PM timer based on dt policy

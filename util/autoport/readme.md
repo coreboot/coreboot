@@ -155,10 +155,10 @@ the SPD array must be `0x50`. After testing all the slots, your `mainboard_get_s
 should look similar to this:
 
 	void mainboard_get_spd(spd_raw_data *spd) {
-		read_spd (&spd[0], 0x50);
-		read_spd (&spd[1], 0x51);
-		read_spd (&spd[2], 0x52);
-		read_spd (&spd[3], 0x53);
+		read_spd(&spd[0], 0x50);
+		read_spd(&spd[1], 0x51);
+		read_spd(&spd[2], 0x52);
+		read_spd(&spd[3], 0x53);
 	}
 
 Note that there should be one line per memory slot on the mainboard.

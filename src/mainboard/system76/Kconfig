@@ -1,0 +1,16 @@
+if VENDOR_SYSTEM76
+
+choice
+	prompt "Mainboard model"
+
+source "src/mainboard/system76/*/Kconfig.name"
+
+endchoice
+
+source "src/mainboard/system76/*/Kconfig"
+
+config MAINBOARD_VENDOR
+	string
+	default "System76"
+
+endif

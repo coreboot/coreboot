@@ -23,15 +23,6 @@
 #include <soc/soc_chip.h>
 #include <string.h>
 
-/* Debug interface flag */
-enum debug_interface_flag {
-	DEBUG_INTERFACE_RAM  = 0x1,
-	DEBUG_INTERFACE_UART = 0x2,
-	DEBUG_INTERFACE_USB3 = 0x4,
-	DEBUG_INTERFACE_SERIAL_IO  = 0x8,
-	DEBUG_INTERFACE_TRACEHUB = 0x10
-};
-
 static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 		const struct soc_intel_tigerlake_config *config)
 {

@@ -204,6 +204,15 @@ struct soc_intel_tigerlake_config {
 	 */
 	uint8_t SerialIoGSpiCsState[CONFIG_SOC_INTEL_COMMON_BLOCK_GSPI_MAX];
 
+	/* Debug interface selection */
+	enum {
+		DEBUG_INTERFACE_RAM = (1 << 0),
+		DEBUG_INTERFACE_UART = (1 << 1),
+		DEBUG_INTERFACE_USB3 = (1 << 3),
+		DEBUG_INTERFACE_SERIAL_IO = (1 << 4),
+		DEBUG_INTERFACE_TRACEHUB = (1 << 5),
+	} debug_interface_flag;
+
 	/* GPIO SD card detect pin */
 	unsigned int sdcard_cd_gpio;
 

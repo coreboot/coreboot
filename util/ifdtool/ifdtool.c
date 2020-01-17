@@ -1358,11 +1358,12 @@ static void new_layout(const char *filename, char *image, int size,
 		if (new->size > current->size) {
 			/* copy from the end of the current region */
 			copy_size = current->size;
-			offset_new = new->size - current->size;
+			if (i == REGION_BIOS)
+				offset_new = new->size - current->size;
 		}
 
-		if (new->size < current->size) {
-			/* copy to the end of the new region */
+		if ((i == REGION_BIOS) && (new->size < current->size)) {
+			/* copy BIOS region to the end of the new region */
 			offset_current = current->size - new->size;
 		}
 

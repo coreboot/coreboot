@@ -171,6 +171,11 @@ chip soc/intel/cannonlake
 	# GPIO for SD card detect
 	register "sdcard_cd_gpio" = "vSD3_CD_B"
 
+	# SATA port 1 Gen3 Strength
+	# Port1 Tx De-Emphasis = 20*log(0x20/64) = -6dB
+	register "sata_port[1].TxGen3DeEmphEnable" = "1"
+	register "sata_port[1].TxGen3DeEmph" = "0x20"
+
 	device domain 0 on
 		device pci 14.0 on
 			chip drivers/usb/acpi

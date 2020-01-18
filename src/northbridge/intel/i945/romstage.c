@@ -68,7 +68,7 @@ void mainboard_romstage_entry(void)
 
 	mainboard_get_spd_map(spd_map);
 
-	sdram_initialize(s3resume ? 2 : 0, spd_map);
+	sdram_initialize(s3resume ? BOOT_PATH_RESUME : BOOT_PATH_NORMAL, spd_map);
 
 	/* This should probably go away. Until now it is required
 	 * and mainboard specific

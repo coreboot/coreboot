@@ -115,6 +115,11 @@ int psp_notify_dram(void);
  *       MBOX_BIOS_CMD_SMU_FW2 to load SMU FW2 blob.
  * name: cbfs file name
  */
-int psp_load_named_blob(int type, const char *name);
+enum psp_blob_type {
+	BLOB_SMU_FW,
+	BLOB_SMU_FW2,
+};
+
+int psp_load_named_blob(enum psp_blob_type type, const char *name);
 
 #endif /* __AMD_PSP_H__ */

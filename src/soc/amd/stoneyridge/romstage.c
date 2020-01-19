@@ -61,7 +61,7 @@ static void load_smu_fw1(void)
 	cmd |= PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER;
 	pci_write_config32(SOC_PSP_DEV, PCI_COMMAND, cmd);
 
-	psp_load_named_blob(MBOX_BIOS_CMD_SMU_FW, "smu_fw");
+	psp_load_named_blob(BLOB_SMU_FW, "smu_fw");
 }
 
 static void agesa_call(void)

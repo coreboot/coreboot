@@ -160,7 +160,7 @@ static void earliest_ramstage(void *unused)
 	if (!s3_resume) {
 		post_code(0x46);
 		if (CONFIG(SOC_AMD_PSP_SELECTABLE_SMU_FW))
-			psp_load_named_blob(MBOX_BIOS_CMD_SMU_FW2, "smu_fw2");
+			psp_load_named_blob(BLOB_SMU_FW2, "smu_fw2");
 
 		post_code(0x47);
 		do_agesawrapper(AMD_INIT_ENV, "amdinitenv");

@@ -288,53 +288,52 @@ static void psp_notify_boot_done(void *unused)
 /*
  * Tell the PSP to load a firmware blob from a location in the BIOS image.
  */
-static int psp_load_blob(int type, void *addr)
+int psp_load_named_blob(enum psp_blob_type type, const char *name)
 {
 	int cmd_status;
-
-	if (!CONFIG(SOC_AMD_PSP_SELECTABLE_SMU_FW)) {
-		printk(BIOS_ERR, "BUG: Selectable firmware is not supported\n");
-		return PSPSTS_UNSUPPORTED;
-	}
-
-	/* only two types currently supported */
-	if (type != MBOX_BIOS_CMD_SMU_FW && type != MBOX_BIOS_CMD_SMU_FW2) {
-		printk(BIOS_ERR, "BUG: Invalid PSP blob type %x\n", type);
-		return PSPSTS_INVALID_BLOB;
-	}
-
-	printk(BIOS_DEBUG, "PSP: Load blob type %x from @%p... ", type, addr);
-
-	/* Blob commands use the buffer registers as data, not pointer to buf */
-	cmd_status = send_psp_command(type, addr);
-
-	print_cmd_status(cmd_status, NULL);
-
-	return cmd_status;
-}
-
-int psp_load_named_blob(int type, const char *name)
-{
+	u32 command;
 	void *blob;
 	struct cbfsf cbfs_file;
 	struct region_device rdev;
-	int r;
+
+	switch (type) {
+	case BLOB_SMU_FW:
+		command = MBOX_BIOS_CMD_SMU_FW;
+		break;
+	case BLOB_SMU_FW2:
+		command = MBOX_BIOS_CMD_SMU_FW2;
+		break;
+	default:
+		printk(BIOS_ERR, "BUG: Invalid PSP blob type %x\n", type);
+		return -PSPSTS_INVALID_BLOB;
+	}
+
+	/* type can only be BLOB_SMU_FW or BLOB_SMU_FW2 here, so don't re-check for this */
+	if (!CONFIG(SOC_AMD_PSP_SELECTABLE_SMU_FW)) {
+		printk(BIOS_ERR, "BUG: Selectable firmware is not supported\n");
+		return -PSPSTS_UNSUPPORTED;
+	}
 
 	if (cbfs_boot_locate(&cbfs_file, name, NULL)) {
 		printk(BIOS_ERR, "BUG: Cannot locate blob for PSP loading\n");
-		return PSPSTS_INVALID_NAME;
+		return -PSPSTS_INVALID_NAME;
 	}
 
 	cbfs_file_data(&rdev, &cbfs_file);
 	blob = rdev_mmap_full(&rdev);
-	if (blob) {
-		r = psp_load_blob(type, blob);
-		rdev_munmap(&rdev, blob);
-	} else {
+	if (!blob) {
 		printk(BIOS_ERR, "BUG: Cannot map blob for PSP loading\n");
-		return PSPSTS_INVALID_NAME;
+		return -PSPSTS_INVALID_NAME;
 	}
-	return r;
+
+	printk(BIOS_DEBUG, "PSP: Load blob type %x from @%p... ", type, blob);
+
+	/* Blob commands use the buffer registers as data, not pointer to buf */
+	cmd_status = send_psp_command(command, blob);
+	print_cmd_status(cmd_status, NULL);
+
+	rdev_munmap(&rdev, blob);
+	return cmd_status;
 }
 
 BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_BOOT, BS_ON_ENTRY,

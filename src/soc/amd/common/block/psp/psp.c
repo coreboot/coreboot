@@ -226,6 +226,21 @@ static int send_psp_command(u32 command, void *buffer)
 }
 
 /*
+ * Print meaningful status to the console.  Caller only passes a pointer to a
+ * buffer if it's expected to contain its own status.
+ */
+static void print_cmd_status(int cmd_status, struct mbox_default_buffer *buffer)
+{
+	if (buffer && rd_resp_sts(buffer))
+		printk(BIOS_DEBUG, "buffer status=0x%x ", rd_resp_sts(buffer));
+
+	if (cmd_status)
+		printk(BIOS_DEBUG, "%s\n", status_to_string(cmd_status));
+	else
+		printk(BIOS_DEBUG, "OK\n");
+}
+
+/*
  * Notify the PSP that DRAM is present.  Upon receiving this command, the PSP
  * will load its OS into fenced DRAM that is not accessible to the x86 cores.
  */
@@ -243,13 +258,7 @@ int psp_notify_dram(void)
 	cmd_status = send_psp_command(MBOX_BIOS_CMD_DRAM_INFO, &buffer);
 
 	/* buffer's status shouldn't change but report it if it does */
-	if (rd_resp_sts(&buffer))
-		printk(BIOS_DEBUG, "buffer status=0x%x ",
-				rd_resp_sts(&buffer));
-	if (cmd_status)
-		printk(BIOS_DEBUG, "%s\n", status_to_string(cmd_status));
-	else
-		printk(BIOS_DEBUG, "OK\n");
+	print_cmd_status(cmd_status, &buffer);
 
 	return cmd_status;
 }
@@ -273,13 +282,7 @@ static void psp_notify_boot_done(void *unused)
 	cmd_status = send_psp_command(MBOX_BIOS_CMD_BOOT_DONE, &buffer);
 
 	/* buffer's status shouldn't change but report it if it does */
-	if (rd_resp_sts(&buffer))
-		printk(BIOS_DEBUG, "buffer status=0x%x ",
-				rd_resp_sts(&buffer));
-	if (cmd_status)
-		printk(BIOS_DEBUG, "%s\n", status_to_string(cmd_status));
-	else
-		printk(BIOS_DEBUG, "OK\n");
+	print_cmd_status(cmd_status, &buffer);
 }
 
 /*
@@ -305,10 +308,7 @@ static int psp_load_blob(int type, void *addr)
 	/* Blob commands use the buffer registers as data, not pointer to buf */
 	cmd_status = send_psp_command(type, addr);
 
-	if (cmd_status)
-		printk(BIOS_DEBUG, "%s\n", status_to_string(cmd_status));
-	else
-		printk(BIOS_DEBUG, "OK\n");
+	print_cmd_status(cmd_status, NULL);
 
 	return cmd_status;
 }

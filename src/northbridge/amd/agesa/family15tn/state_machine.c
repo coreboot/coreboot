@@ -18,6 +18,8 @@ void platform_BeforeInitEarly(struct sysinfo *cb, AMD_EARLY_PARAMS *Early)
 
 void platform_BeforeInitPost(struct sysinfo *cb, AMD_POST_PARAMS *Post)
 {
+	Post->MemConfig.BottomIo = (UINT16)(MIN(0xE0000000,
+			MAX(0x28000000, CONFIG_BOTTOMIO_POSITION)) >> 24) & 0xF8;
 }
 
 void platform_AfterInitPost(struct sysinfo *cb, AMD_POST_PARAMS *Post)

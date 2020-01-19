@@ -20,6 +20,9 @@ void platform_BeforeInitPost(struct sysinfo *cb, AMD_POST_PARAMS *Post)
 {
 	AGESA_STATUS status;
 
+	Post->MemConfig.BottomIo = (UINT16)(MIN(0xE0000000,
+			MAX(0x28000000, CONFIG_BOTTOMIO_POSITION)) >> 24) & 0xF8;
+
 	if (CONFIG(ENABLE_MRC_CACHE)) {
 		status = OemInitResume(&Post->MemConfig.MemContext);
 		if (status == AGESA_SUCCESS)

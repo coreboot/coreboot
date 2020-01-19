@@ -23,6 +23,7 @@
 #include <arch/acpi.h>
 #include <arch/hlt.h>
 #include <device/pci_def.h>
+#include <smmstore.h>
 #include <soc/smi.h>
 #include <soc/southbridge.h>
 #include <amdblocks/acpimmio.h>
@@ -88,6 +89,25 @@ static void southbridge_smi_gsmi(void)
 	io_smi->rax = gsmi_exec(sub_command, &reg_ebx);
 }
 
+static void southbridge_smi_store(void)
+{
+	u8 sub_command;
+	amd64_smm_state_save_area_t *io_smi;
+	u32 reg_ebx;
+
+	io_smi = find_save_state(APM_CNT_SMMSTORE);
+	if (!io_smi)
+		return;
+	/* Command and return value in EAX */
+	sub_command = (io_smi->rax >> 8) & 0xff;
+
+	/* Parameter buffer in EBX */
+	reg_ebx = io_smi->rbx;
+
+	/* drivers/smmstore/smi.c */
+	io_smi->rax = smmstore_exec(sub_command, (void *)reg_ebx);
+}
+
 static void sb_apmc_smi_handler(void)
 {
 	const uint8_t cmd = inb(pm_acpi_smi_cmd_port());
@@ -102,6 +122,10 @@ static void sb_apmc_smi_handler(void)
 	case APM_CNT_ELOG_GSMI:
 		if (CONFIG(ELOG_GSMI))
 			southbridge_smi_gsmi();
+		break;
+	case APM_CNT_SMMSTORE:
+		if (CONFIG(SMMSTORE))
+			southbridge_smi_store();
 		break;
 	}
 

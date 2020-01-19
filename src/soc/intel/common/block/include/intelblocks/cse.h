@@ -144,8 +144,16 @@ int cse_hmrfpo_get_status(void);
 #define CSE_RESET_ONLY	3
 
 /* HMRFPO Status types */
+/* Host can't access ME region */
 #define MKHI_HMRFPO_DISABLED	0
+
+/*
+ * ME Firmware locked down HMRFPO Feature.
+ * Host can't access ME region.
+ */
 #define MKHI_HMRFPO_LOCKED	1
+
+/* Host can access ME region */
 #define MKHI_HMRFPO_ENABLED	2
 
 /*

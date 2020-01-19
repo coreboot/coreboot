@@ -683,7 +683,7 @@ failed:
 
 /*
  * Sends HMRFPO Get Status command to CSE to get the HMRFPO status.
- * The status can be DISABLES/LOCKED/ENABLED
+ * The status can be DISABLED/LOCKED/ENABLED
  */
 int cse_hmrfpo_get_status(void)
 {
@@ -694,7 +694,7 @@ int cse_hmrfpo_get_status(void)
 	struct hmrfpo_get_status_resp {
 		struct mkhi_hdr hdr;
 		uint8_t status;
-		uint8_t padding[3];
+		uint8_t reserved[3];
 	} __packed;
 
 	struct hmrfpo_get_status_msg msg = {

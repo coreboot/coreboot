@@ -21,7 +21,7 @@ config SMMSTORE_IN_CBFS
 	bool
 	default n
 	help
-	  Select this if you want to the SMMSTORE region in a
+	  Select this if you want to add an SMMSTORE region to a
 	  cbfsfile in a cbfs FMAP region
 
 if SMMSTORE

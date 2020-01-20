@@ -325,7 +325,7 @@ static void dramc_ac_timing_optimize(u8 freq_group)
 {
 	struct optimize_ac_time rf_cab_opt[LP4X_DDRFREQ_MAX] = {
 		[LP4X_DDR1600] = {.rfc = 44, .rfc_05t = 0, .tx_ref_cnt = 62},
-		[LP4X_DDR2400] = {.rfc = 44, .rfc_05t = 0, .tx_ref_cnt = 62},
+		[LP4X_DDR2400] = {.rfc = 72, .rfc_05t = 0, .tx_ref_cnt = 91},
 		[LP4X_DDR3200] = {.rfc = 100, .rfc_05t = 0, .tx_ref_cnt = 119},
 		[LP4X_DDR3600] = {.rfc = 118, .rfc_05t = 1, .tx_ref_cnt = 138},
 	};
@@ -456,9 +456,9 @@ static void dramc_save_result_to_shuffle(u32 src_shuffle, u32 dst_shuffle)
 		value = read32(src_addr) & 0x7f;
 
 		if (dst_shuffle == DRAM_DFS_SHUFFLE_2)
-			clrsetbits32(dst_addr, 0x7f << 0x8, value << 0x8);
+			clrsetbits32(dst_addr, 0x7f << 8, value << 8);
 		else if (dst_shuffle == DRAM_DFS_SHUFFLE_3)
-			clrsetbits32(dst_addr, 0x7f << 0x16, value << 0x16);
+			clrsetbits32(dst_addr, 0x7f << 16, value << 16);
 
 		/* DRAMC-exception-2 */
 		src_addr = (u8 *)&ch[chn].ao.dvfsdll;

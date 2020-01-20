@@ -10,12 +10,12 @@ DEST ?= $(CURDIR)/xgcc
 all all_with_gdb:
 	$(MAKE) build-i386 build-x64 build-arm \
 		build-riscv build-aarch64 build-ppc64 build-nds32le \
-		build_clang build_iasl build_make build_nasm
+		build_clang build_iasl build_nasm
 
 all_without_gdb:
 	$(MAKE) SKIP_GDB=1 build-i386 build-x64 build-arm \
 		build-riscv build-aarch64 build-ppc64 build-nds32le \
-		build_clang build_iasl build_make build_nasm
+		build_clang build_iasl build_nasm
 
 build_tools: build_gcc build_gdb
 

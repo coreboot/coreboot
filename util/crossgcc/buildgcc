@@ -45,7 +45,6 @@ PYTHON_VERSION=3.8.1
 EXPAT_VERSION=2.2.9
 # CLANG version number
 CLANG_VERSION=9.0.0
-MAKE_VERSION=4.2.1
 CMAKE_VERSION=3.16.2
 NASM_VERSION=2.14.02
 
@@ -67,15 +66,13 @@ LLVM_ARCHIVE="https://releases.llvm.org/${CLANG_VERSION}/llvm-${CLANG_VERSION}.s
 CFE_ARCHIVE="https://releases.llvm.org/${CLANG_VERSION}/cfe-${CLANG_VERSION}.src.tar.xz"
 CRT_ARCHIVE="https://releases.llvm.org/${CLANG_VERSION}/compiler-rt-${CLANG_VERSION}.src.tar.xz"
 CTE_ARCHIVE="https://releases.llvm.org/${CLANG_VERSION}/clang-tools-extra-${CLANG_VERSION}.src.tar.xz"
-MAKE_ARCHIVE="https://ftpmirror.gnu.org/make/make-${MAKE_VERSION}.tar.bz2"
 CMAKE_ARCHIVE="https://cmake.org/files/v3.16/cmake-${CMAKE_VERSION}.tar.gz"
 NASM_ARCHIVE="https://www.nasm.us/pub/nasm/releasebuilds/${NASM_VERSION}/nasm-${NASM_VERSION}.tar.bz2"
 
 ALL_ARCHIVES="$GMP_ARCHIVE $MPFR_ARCHIVE $MPC_ARCHIVE \
 	$GCC_ARCHIVE $BINUTILS_ARCHIVE $GDB_ARCHIVE $IASL_ARCHIVE \
 	$PYTHON_ARCHIVE $EXPAT_ARCHIVE $LLVM_ARCHIVE $CFE_ARCHIVE \
-	$CRT_ARCHIVE $CTE_ARCHIVE $MAKE_ARCHIVE $CMAKE_ARCHIVE \
-	$NASM_ARCHIVE"
+	$CRT_ARCHIVE $CTE_ARCHIVE $CMAKE_ARCHIVE $NASM_ARCHIVE"
 
 # GCC toolchain directories
 GMP_DIR="gmp-${GMP_VERSION}"
@@ -94,7 +91,6 @@ LLVM_DIR="llvm-${CLANG_VERSION}.src"
 CFE_DIR="cfe-${CLANG_VERSION}.src"
 CRT_DIR="compiler-rt-${CLANG_VERSION}.src"
 CTE_DIR="clang-tools-extra-${CLANG_VERSION}.src"
-MAKE_DIR="make-${MAKE_VERSION}"
 CMAKE_DIR="cmake-${CMAKE_VERSION}"
 NASM_DIR="nasm-${NASM_VERSION}"
 
@@ -878,19 +874,6 @@ build_LLVM() {
 	done
 }
 
-build_MAKE() {
-	( cd ../${MAKE_DIR}/ && aclocal && autoconf )
-	CC="$(hostcc host)" CXX="$(hostcxx host)" CFLAGS="$HOSTCFLAGS" \
-	../${MAKE_DIR}/configure --prefix="$TARGETDIR" --disable-nls \
-		|| touch .failed
-	$MAKE -k clean
-	# shellcheck disable=SC2086
-	$MAKE $JOBS || touch .failed
-	$MAKE install DESTDIR=$DESTDIR || touch .failed
-
-	normalize_dirs
-}
-
 build_CMAKE() {
 	CC="$(hostcc host)" CXX="$(hostcxx host)" CFLAGS="$HOSTCFLAGS" \
 	../${CMAKE_DIR}/configure --prefix="$TARGETDIR" \
@@ -926,7 +909,6 @@ print_supported() {
 		MPC|mpc)  printf "%s\n" "$MPC_VERSION";;
 		MPFR|mpfr)  printf "%s\n" "$MPFR_VERSION";;
 		PYTHON|python)  printf "%s\n" "$PYTHON_VERSION";;
-		MAKE|make)  printf "%s\n" "$MAKE_VERSION";;
 		NASM|nasm) printf "%s\n" "${NASM_VERSION}";;
 		*) printf "Unknown tool %s\n" "$PRINTSUPPORTED";;
 	esac
@@ -1039,10 +1021,6 @@ case "$PACKAGE" in
 		NAME="IASL ACPI compiler"
 		PACKAGES=IASL
 		;;
-	MAKE|make)
-		NAME="GNU Make"
-		PACKAGES=MAKE
-		;;
 	CMAKE|cmake)
 		NAME="CMake"
 		PACKAGES=CMAKE
@@ -1052,7 +1030,7 @@ case "$PACKAGE" in
 		PACKAGES=NASM
 		;;
 	*)
-		printf "${red}ERROR: Unsupported package $PACKAGE. (Supported packages are GCC, GDB, CLANG, IASL, MAKE, and NASM)${NC}\n\n";
+		printf "${red}ERROR: Unsupported package $PACKAGE. (Supported packages are GCC, GDB, CLANG, IASL, and NASM)${NC}\n\n";
 		exit 1
 		;;
 esac

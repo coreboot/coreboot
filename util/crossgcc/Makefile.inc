@@ -9,7 +9,6 @@ help_toolchain help::
 	@echo  '  crossgcc-clean  - Remove all built coreboot cross-compilers'
 	@echo  '  iasl            - Build coreboot IASL compiler (built by all cross targets)'
 	@echo  '  clang           - Build coreboot clang compiler'
-	@echo  '  gnumake         - Build coreboot make'
 	@echo  '  nasm            - Build coreboot nasm'
 	@echo  '  test-toolchain  - Reports if toolchain components are out of date'
 	@echo  '  crossgcc-ARCH   - Build cross-compiler for specific architecture'
@@ -29,7 +28,7 @@ crossgcc: clean-for-update
 	crossgcc-riscv crossgcc-power8 crossgcc-clean iasl \
 	clang crosstools-i386 crosstools-x64 crosstools-arm \
 	crosstools-aarch64 crosstools-riscv crosstools-power8 \
-	jenkins-build-toolchain gnumake nasm
+	jenkins-build-toolchain nasm
 
 $(foreach arch,$(TOOLCHAIN_ARCHES),crossgcc-$(arch)): clean-for-update
 	$(MAKE) -C util/crossgcc $(patsubst crossgcc-%,build-%,$@) build_iasl SKIP_GDB=1
@@ -42,9 +41,6 @@ iasl: clean-for-update
 
 clang: clean-for-update
 	$(MAKE) -C util/crossgcc build_clang
-
-gnumake: clean-for-update
-	$(MAKE) -C util/crossgcc build_make
 
 nasm: clean-for-update
 	$(MAKE) -C util/crossgcc build_nasm

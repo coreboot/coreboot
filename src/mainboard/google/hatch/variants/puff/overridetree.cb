@@ -181,32 +181,32 @@ chip soc/intel/cannonlake
 			chip drivers/usb/acpi
 				device usb 0.0 on
 					chip drivers/usb/acpi
-						register "desc" = ""Type-A Port 2""
+						register "desc" = ""USB2 Type-A Front Left""
 						register "type" = "UPC_TYPE_A"
 						device usb 2.0 on end
 					end
 					chip drivers/usb/acpi
-						register "desc" = ""Type-C Port""
+						register "desc" = ""USB2 Type-C Port Rear""
 						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
 						device usb 2.1 on end
 					end
 					chip drivers/usb/acpi
-						register "desc" = ""Type-A Port 3""
+						register "desc" = ""USB2 Type-A Front Right""
 						register "type" = "UPC_TYPE_A"
 						device usb 2.2 on end
 					end
 					chip drivers/usb/acpi
-						register "desc" = ""Type-A Port 1""
+						register "desc" = ""USB2 Type-A Rear Right""
 						register "type" = "UPC_TYPE_A"
 						device usb 2.3 on end
 					end
 					chip drivers/usb/acpi
-						register "desc" = ""Type-A Port 4""
+						register "desc" = ""USB2 Type-A Rear Middle""
 						register "type" = "UPC_TYPE_A"
 						device usb 2.4 on end
 					end
 					chip drivers/usb/acpi
-						register "desc" = ""Type-A Port 0""
+						register "desc" = ""USB2 Type-A Rear Left""
 						register "type" = "UPC_TYPE_A"
 						device usb 2.5 on end
 					end
@@ -214,32 +214,32 @@ chip soc/intel/cannonlake
 						device usb 2.6 off end
 					end
 					chip drivers/usb/acpi
-						register "desc" = ""Type-A Port 2""
+						register "desc" = ""USB3 Type-A Front Left""
 						register "type" = "UPC_TYPE_USB3_A"
 						device usb 3.0 on end
 					end
 					chip drivers/usb/acpi
-						register "desc" = ""Type-A Port 3""
+						register "desc" = ""USB3 Type-A Front Right""
 						register "type" = "UPC_TYPE_USB3_A"
 						device usb 3.1 on end
 					end
 					chip drivers/usb/acpi
-						register "desc" = ""Type-A Port 1""
+						register "desc" = ""USB3 Type-A Rear Right""
 						register "type" = "UPC_TYPE_USB3_A"
 						device usb 3.2 on end
 					end
 					chip drivers/usb/acpi
-						register "desc" = ""Type-C Port""
+						register "desc" = ""USB3 Type-C Rear""
 						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
 						device usb 3.3 on end
 					end
 					chip drivers/usb/acpi
-						register "desc" = ""Type-A Port 0""
+						register "desc" = ""USB3 Type-A Rear Left""
 						register "type" = "UPC_TYPE_USB3_A"
 						device usb 3.4 on end
 					end
 					chip drivers/usb/acpi
-						register "desc" = ""Type-A Port 4""
+						register "desc" = ""USB3 Type-A Rear Middle""
 						register "type" = "UPC_TYPE_USB3_A"
 						device usb 3.5 on end
 					end

@@ -24,6 +24,7 @@
 #include <amdblocks/psp.h>
 #include <soc/iomap.h>
 #include <soc/northbridge.h>
+#include "psp_def.h"
 
 static const char *psp_status_nobase = "error: PSP BAR3 not assigned";
 static const char *psp_status_halted = "error: PSP in halted state";

@@ -27,4 +27,7 @@ struct chipset_power_state {
 struct chipset_power_state *get_power_state(void);
 int fill_power_state(void);
 
+/* STM Support */
+uint16_t get_pmbase(void);
+
 #endif /* _SOC_PM_H_ */

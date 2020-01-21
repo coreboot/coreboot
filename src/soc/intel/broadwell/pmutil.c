@@ -458,3 +458,9 @@ int vboot_platform_is_resuming(void)
 
 	return acpi_sleep_from_pm1(inl(ACPI_BASE_ADDRESS + PM1_CNT)) == ACPI_S3;
 }
+
+/* STM Support */
+uint16_t get_pmbase(void)
+{
+	return (uint16_t) ACPI_BASE_ADDRESS;
+}

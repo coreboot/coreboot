@@ -275,3 +275,9 @@ void soc_fill_power_state(struct chipset_power_state *ps)
 	printk(BIOS_DEBUG, "GBLRST_CAUSE: %08x %08x\n",
 	       ps->gblrst_cause[0], ps->gblrst_cause[1]);
 }
+
+/* STM Support */
+uint16_t get_pmbase(void)
+{
+	return ACPI_BASE_ADDRESS;
+}

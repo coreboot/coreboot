@@ -197,4 +197,7 @@ static inline int deep_s5_enabled(void)
 	return !!(deep_s5_pol & (S5DC_GATE_SUS | S5AC_GATE_SUS));
 }
 
+/* STM Support */
+uint16_t get_pmbase(void);
+
 #endif

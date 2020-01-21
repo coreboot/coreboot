@@ -250,4 +250,7 @@ void pch_log_state(void);
 
 void enable_pm_timer_emulation(void);
 
+/* STM Support */
+uint16_t get_pmbase(void);
+
 #endif

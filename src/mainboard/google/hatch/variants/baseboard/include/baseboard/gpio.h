@@ -22,7 +22,7 @@
 
 #define GPIO_PCH_WP	        GPP_C20
 
-/* EC wake pin is LAN_WAKE# */
+/* EC wake pin is routed to GPD2/LAN_WAKE# on PCH */
 #define GPE_EC_WAKE		GPE0_LAN_WAK
 
 /* eSPI virtual wire reporting */

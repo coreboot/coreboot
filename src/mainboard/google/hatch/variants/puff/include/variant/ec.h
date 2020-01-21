@@ -54,7 +54,12 @@
 /* Enable EC backed PD MCU device in ACPI */
 #define EC_ENABLE_PD_MCU_DEVICE
 
-/* Provide wake pin for EC for _PRW WoL method */
+/**
+ * Defines EC wake pin route.
+ * Note that GPE_EC_WAKE is defined, confusingly, as
+ * GPE_LAN_WAK which is GPD2/LAN_WAKE# on the PCH or
+ * as the line EC_PCH_WAKE_ODL on the schematic.
+ */
 #define EC_ENABLE_WAKE_PIN	GPE_EC_WAKE
 
 #define SIO_EC_MEMMAP_ENABLE	/* EC Memory Map Resources */

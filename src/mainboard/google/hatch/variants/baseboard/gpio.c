@@ -377,7 +377,7 @@ static const struct pad_config gpio_table[] = {
 	/* H23 : GPP_H23_STRAP */
 	PAD_NC(GPP_H23, NONE),
 
-	/* GPD2: LAN_WAKE# ==> EC_PCH_WAKE_OD */
+	/* GPD2: LAN_WAKE# ==> EC_PCH_WAKE_ODL */
 	PAD_CFG_NF(GPD2, NONE, DEEP, NF1),
 
 	/* SD card detect VGPIO */

@@ -282,18 +282,16 @@ static void dramc_cmd_bus_training(u8 chn, u8 rank, u8 freq_group,
 	dramc_mode_reg_write_by_rank(chn, rank, 12, final_vref);
 }
 
-static void dramc_read_dbi_onoff(bool on)
+static void dramc_read_dbi_onoff(size_t chn, bool on)
 {
-	for (size_t chn = 0; chn < CHANNEL_MAX; chn++)
-		for (size_t b = 0; b < 2; b++)
-			SET32_BITFIELDS(&ch[chn].phy.shu[0].b[b].dq[7],
-					SHU1_B0_DQ7_R_DMDQMDBI_SHU_B0, on);
+	for (size_t b = 0; b < 2; b++)
+		SET32_BITFIELDS(&ch[chn].phy.shu[0].b[b].dq[7],
+				SHU1_B0_DQ7_R_DMDQMDBI_SHU_B0, on);
 }
 
-static void dramc_write_dbi_onoff(bool onoff)
+static void dramc_write_dbi_onoff(size_t chn, bool onoff)
 {
-	for (size_t chn = 0; chn < CHANNEL_MAX; chn++)
-		SET32_BITFIELDS(&ch[chn].ao.shu[0].wodt, SHU1_WODT_DBIWR, onoff);
+	SET32_BITFIELDS(&ch[chn].ao.shu[0].wodt, SHU1_WODT_DBIWR, onoff);
 }
 
 static void dramc_phy_dcm_2_channel(u8 chn, bool en)
@@ -313,64 +311,61 @@ static void dramc_phy_dcm_2_channel(u8 chn, bool en)
 		((en ? 0x7 : 0) << 16) | ((en ? 0x7 : 0) << 20));
 }
 
-void dramc_enable_phy_dcm(bool en)
+void dramc_enable_phy_dcm(u8 chn, bool en)
 {
-	for (size_t chn = 0; chn < CHANNEL_MAX ; chn++) {
-		clrbits32(&ch[chn].phy.b[0].dll_fine_tune[1], 0x1 << 20);
-		clrbits32(&ch[chn].phy.b[1].dll_fine_tune[1], 0x1 << 20);
-		clrbits32(&ch[chn].phy.ca_dll_fine_tune[1], 0x1 << 20);
+	clrbits32(&ch[chn].phy.b[0].dll_fine_tune[1], 0x1 << 20);
+	clrbits32(&ch[chn].phy.b[1].dll_fine_tune[1], 0x1 << 20);
+	clrbits32(&ch[chn].phy.ca_dll_fine_tune[1], 0x1 << 20);
 
-		for (size_t i = 0; i < DRAM_DFS_SHUFFLE_MAX; i++) {
-			struct ddrphy_ao_shu *shu = &ch[chn].phy.shu[i];
-			setbits32(&shu->b[0].dll[0], 0x1);
-			setbits32(&shu->b[1].dll[0], 0x1);
-			setbits32(&shu->ca_dll[0], 0x1);
-		}
-
-		clrsetbits32(&ch[chn].ao.dramc_pd_ctrl,
-			(0x1 << 0) | (0x1 << 1) | (0x1 << 2) |
-			(0x1 << 5) | (0x1 << 26) | (0x1 << 30) | (0x1 << 31),
-			((en ? 0x1 : 0) << 0) | ((en ? 0x1 : 0) << 1) |
-			((en ? 0x1 : 0) << 2) | ((en ? 0 : 0x1) << 5) |
-			((en ? 0 : 0x1) << 26) | ((en ? 0x1 : 0) << 30) |
-			((en ? 0x1 : 0) << 31));
-
-		/* DCM on: CHANNEL_EMI free run; DCM off: mem_dcm */
-		write32(&ch[chn].phy.misc_cg_ctrl2,
-			0x8060033e | (0x40 << (en ? 0x1 : 0)));
-		write32(&ch[chn].phy.misc_cg_ctrl2,
-			0x8060033f | (0x40 << (en ? 0x1 : 0)));
-		write32(&ch[chn].phy.misc_cg_ctrl2,
-			0x8060033e | (0x40 << (en ? 0x1 : 0)));
-
-		clrsetbits32(&ch[chn].phy.misc_ctrl3, 0x3 << 26,
-			(en ? 0 : 0x3) << 26);
-		for (size_t i = 0; i < DRAM_DFS_SHUFFLE_MAX; i++) {
-			u32 mask = 0x7 << 17;
-			u32 value = (en ? 0x7 : 0) << 17;
-			struct ddrphy_ao_shu *shu = &ch[chn].phy.shu[i];
-
-			clrsetbits32(&shu->b[0].dq[7], mask, value);
-			clrsetbits32(&shu->b[1].dq[7], mask, value);
-			clrsetbits32(&shu->ca_cmd[7], mask, value);
-		}
-
-		dramc_phy_dcm_2_channel(chn, en);
+	for (size_t i = 0; i < DRAM_DFS_SHUFFLE_MAX; i++) {
+		struct ddrphy_ao_shu *shu = &ch[chn].phy.shu[i];
+		setbits32(&shu->b[0].dll[0], 0x1);
+		setbits32(&shu->b[1].dll[0], 0x1);
+		setbits32(&shu->ca_dll[0], 0x1);
 	}
+
+	clrsetbits32(&ch[chn].ao.dramc_pd_ctrl,
+		     (0x1 << 0) | (0x1 << 1) | (0x1 << 2) |
+		     (0x1 << 5) | (0x1 << 26) | (0x1 << 30) | (0x1 << 31),
+		     ((en ? 0x1 : 0) << 0) | ((en ? 0x1 : 0) << 1) |
+		     ((en ? 0x1 : 0) << 2) | ((en ? 0 : 0x1) << 5) |
+		     ((en ? 0 : 0x1) << 26) | ((en ? 0x1 : 0) << 30) |
+		     ((en ? 0x1 : 0) << 31));
+
+	/* DCM on: CHANNEL_EMI free run; DCM off: mem_dcm */
+	write32(&ch[chn].phy.misc_cg_ctrl2,
+		0x8060033e | (0x40 << (en ? 0x1 : 0)));
+	write32(&ch[chn].phy.misc_cg_ctrl2,
+		0x8060033f | (0x40 << (en ? 0x1 : 0)));
+	write32(&ch[chn].phy.misc_cg_ctrl2,
+		0x8060033e | (0x40 << (en ? 0x1 : 0)));
+
+	clrsetbits32(&ch[chn].phy.misc_ctrl3, 0x3 << 26,
+		     (en ? 0 : 0x3) << 26);
+	for (size_t i = 0; i < DRAM_DFS_SHUFFLE_MAX; i++) {
+		u32 mask = 0x7 << 17;
+		u32 value = (en ? 0x7 : 0) << 17;
+		struct ddrphy_ao_shu *shu = &ch[chn].phy.shu[i];
+
+		clrsetbits32(&shu->b[0].dq[7], mask, value);
+		clrsetbits32(&shu->b[1].dq[7], mask, value);
+		clrsetbits32(&shu->ca_cmd[7], mask, value);
+	}
+
+	dramc_phy_dcm_2_channel(chn, en);
 }
 
-static void dramc_reset_delay_chain_before_calibration(void)
+static void dramc_reset_delay_chain_before_calibration(size_t chn)
 {
-	for (size_t chn = 0; chn < CHANNEL_MAX; chn++)
-		for (size_t rank = 0; rank < RANK_MAX; rank++) {
-			struct dramc_ddrphy_regs_shu_rk *rk;
-			rk = &ch[chn].phy.shu[0].rk[rank];
-			clrbits32(&rk->ca_cmd[0], 0xffffff << 0);
-			clrbits32(&rk->b[0].dq[0], 0xfffffff << 0);
-			clrbits32(&rk->b[1].dq[0], 0xfffffff << 0);
-			clrbits32(&rk->b[0].dq[1], 0xf << 0);
-			clrbits32(&rk->b[1].dq[1], 0xf << 0);
-		}
+	for (size_t rank = 0; rank < RANK_MAX; rank++) {
+		struct dramc_ddrphy_regs_shu_rk *rk =
+			&ch[chn].phy.shu[0].rk[rank];
+		clrbits32(&rk->ca_cmd[0], 0xffffff << 0);
+		clrbits32(&rk->b[0].dq[0], 0xfffffff << 0);
+		clrbits32(&rk->b[1].dq[0], 0xfffffff << 0);
+		clrbits32(&rk->b[0].dq[1], 0xf << 0);
+		clrbits32(&rk->b[1].dq[1], 0xf << 0);
+	}
 }
 
 void dramc_hw_gating_onoff(u8 chn, bool on)
@@ -394,29 +389,31 @@ static void dramc_rx_input_delay_tracking_init_by_freq(u8 chn)
 
 void dramc_apply_config_before_calibration(u8 freq_group)
 {
-	dramc_enable_phy_dcm(false);
-	dramc_reset_delay_chain_before_calibration();
+	for (u8 chn = 0; chn < CHANNEL_MAX; chn++) {
+		dramc_enable_phy_dcm(chn, false);
+		dramc_reset_delay_chain_before_calibration(chn);
 
-	setbits32(&ch[0].ao.shu[0].conf[3], 0x1ff << 16);
-	setbits32(&ch[0].ao.spcmdctrl, 0x1 << 24);
-	clrsetbits32(&ch[0].ao.shu[0].scintv, 0x1f << 1, 0x1b << 1);
+		setbits32(&ch[chn].ao.shu[0].conf[3], 0x1ff << 16);
+		setbits32(&ch[chn].ao.spcmdctrl, 0x1 << 24);
+		clrsetbits32(&ch[chn].ao.shu[0].scintv, 0x1f << 1, 0x1b << 1);
 
-	for (size_t shu = DRAM_DFS_SHUFFLE_1; shu < DRAM_DFS_SHUFFLE_MAX; shu++)
-		setbits32(&ch[0].ao.shu[shu].conf[3], 0x1ff << 0);
+		for (u8 shu = DRAM_DFS_SHUFFLE_1; shu < DRAM_DFS_SHUFFLE_MAX;
+		     shu++)
+			setbits32(&ch[chn].ao.shu[shu].conf[3], 0x1ff << 0);
 
-	clrbits32(&ch[0].ao.dramctrl, 0x1 << 18);
-	clrbits32(&ch[0].ao.spcmdctrl, 0x1 << 31);
-	clrbits32(&ch[0].ao.spcmdctrl, 0x1 << 30);
-	clrbits32(&ch[0].ao.dqsoscr, 0x1 << 26);
-	clrbits32(&ch[0].ao.dqsoscr, 0x1 << 25);
+		clrbits32(&ch[chn].ao.dramctrl, 0x1 << 18);
+		clrbits32(&ch[chn].ao.spcmdctrl, 0x1 << 31);
+		clrbits32(&ch[chn].ao.spcmdctrl, 0x1 << 30);
+		clrbits32(&ch[chn].ao.dqsoscr, 0x1 << 26);
+		clrbits32(&ch[chn].ao.dqsoscr, 0x1 << 25);
 
-	dramc_write_dbi_onoff(false);
-	dramc_read_dbi_onoff(false);
+		dramc_write_dbi_onoff(chn, false);
+		dramc_read_dbi_onoff(chn, false);
 
-	for (size_t chn = 0; chn < CHANNEL_MAX; chn++) {
 		setbits32(&ch[chn].ao.spcmdctrl, 0x1 << 29);
 		setbits32(&ch[chn].ao.dqsoscr, 0x1 << 24);
-		for (size_t shu = DRAM_DFS_SHUFFLE_1; shu < DRAM_DFS_SHUFFLE_MAX; shu++)
+		for (u8 shu = DRAM_DFS_SHUFFLE_1; shu < DRAM_DFS_SHUFFLE_MAX;
+		     shu++)
 			setbits32(&ch[chn].ao.shu[shu].scintv, 0x1 << 30);
 
 		clrbits32(&ch[chn].ao.dummy_rd, (0x1 << 7) | (0x7 << 20));
@@ -787,7 +784,6 @@ static void dramc_rx_dqs_gating_cal_pre(u8 chn, u8 rank)
 	SET32_BITFIELDS(&ch[chn].ao.spcmd, SPCMD_DQSGCNTRST, 0);
 	SET32_BITFIELDS(&ch[chn].phy.misc_ctrl1, MISC_CTRL1_R_DMSTBENCMP_RK,
 			rank);
-
 }
 
 static void set_selph_gating_value(uint32_t *addr, u8 dly, u8 dly_p1)

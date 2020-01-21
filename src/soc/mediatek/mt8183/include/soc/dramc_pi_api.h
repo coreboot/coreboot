@@ -113,7 +113,7 @@ void dramc_apply_config_after_calibration(const struct mr_value *mr);
 int dramc_calibrate_all_channels(const struct sdram_params *pams,
 				 u8 freq_group, const struct mr_value *mr);
 void dramc_hw_gating_onoff(u8 chn, bool onoff);
-void dramc_enable_phy_dcm(bool bEn);
+void dramc_enable_phy_dcm(u8 chn, bool bEn);
 void dramc_mode_reg_write(u8 chn, u8 mr_idx, u8 value);
 void dramc_cke_fix_onoff(u8 chn, bool fix_on, bool fix_off);
 u32 get_shu_freq(u8 shu);

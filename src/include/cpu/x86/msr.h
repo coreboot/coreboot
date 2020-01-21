@@ -16,6 +16,7 @@
 /* Page attribute type MSR */
 #define TSC_MSR				0x10
 #define IA32_PLATFORM_ID		0x17
+#define IA32_APIC_BASE_MSR_INDEX	0x1B
 #define IA32_FEATURE_CONTROL		0x3a
 #define  FEATURE_CONTROL_LOCK_BIT	(1 << 0)
 #define  FEATURE_ENABLE_VMX		(1 << 2)
@@ -30,6 +31,10 @@
 #define IA32_BIOS_SIGN_ID		0x8b
 #define IA32_MPERF			0xe7
 #define IA32_APERF			0xe8
+/* STM */
+#define IA32_SMM_MONITOR_CTL_MSR	0x9B
+#define SMBASE_RO_MSR			0x98
+#define  IA32_SMM_MONITOR_VALID		(1 << 0)
 #define IA32_MCG_CAP			0x179
 #define  MCG_CTL_P			(1 << 3)
 #define  MCA_BANKS_MASK			0xff
@@ -44,6 +49,9 @@
 #define  ENERGY_POLICY_NORMAL		6
 #define  ENERGY_POLICY_POWERSAVE	15
 #define IA32_PACKAGE_THERM_INTERRUPT	0x1b2
+#define IA32_PLATFORM_DCA_CAP		0x1f8
+#define SMRR_PHYSBASE_MSR		0x1F2
+#define SMRR_PHYSMASK_MSR		0x1F3
 #define IA32_PLATFORM_DCA_CAP		0x1f8
 #define IA32_PAT			0x277
 #define IA32_MC0_CTL			0x400
@@ -65,6 +73,8 @@
 #define  MCA_STATUS_LO_ERRCODE_EXT_SH	16
 #define  MCA_STATUS_LO_ERRCODE_EXT_MASK	(0x3f << MCA_STATUS_LO_ERRCODE_EXT_SH)
 #define  MCA_STATUS_LO_ERRCODE_MASK	(0xffff << 0)
+#define IA32_VMX_BASIC_MSR              0x480
+#define IA32_VMX_MISC_MSR               0x485
 #define MC0_ADDR			0x402
 #define MC0_MISC			0x403
 #define MC0_CTL_MASK			0xC0010044

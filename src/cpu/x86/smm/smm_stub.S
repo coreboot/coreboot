@@ -44,6 +44,11 @@ smbase:
 .long 0
 save_state_size:
 .long 0
+num_cpus:
+.long 0
+/* allows the STM to bring up SMM in 32-bit mode */
+start32_offset:
+.long smm_trampoline32 - _start
 /* apic_to_cpu_num is a table mapping the default APIC id to CPU num. If the
  * APIC id is found at the given index, the contiguous CPU number is index
  * into the table. */
@@ -90,6 +95,14 @@ smm_relocate_gdt:
 	/* gdt selector 0x10, flat data segment */
 	.word	0xffff, 0x0000
 	.byte	0x00, 0x93, 0xcf, 0x00
+
+	/* gdt selector 0x18, flat code segment (64-bit) */
+	.word	0xffff, 0x0000
+	.byte	0x00, 0x9b, 0xcf, 0x00
+
+	/* gdt selector 0x20 tss segment */
+	.word   0xffff, 0x0000
+	.byte   0x00, 0x8b, 0x80, 0x00
 smm_relocate_gdt_end:
 
 .align 4

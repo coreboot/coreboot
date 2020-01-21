@@ -317,6 +317,16 @@ static void r8168_net_fill_ssdt(struct device *dev)
 	if (dev->chip_ops)
 		acpigen_write_name_string("_DDN", dev->chip_ops->name);
 
+	/* Power Resource */
+	if (config->has_power_resource) {
+		const struct acpi_power_res_params power_res_params = {
+			.stop_gpio = &config->stop_gpio,
+			.stop_delay_ms = config->stop_delay_ms,
+			.stop_off_delay_ms = config->stop_off_delay_ms
+		};
+		acpi_device_add_power_res(&power_res_params);
+	}
+
 	/* Address */
 	address = PCI_SLOT(dev->path.pci.devfn) & 0xffff;
 	address <<= 16;

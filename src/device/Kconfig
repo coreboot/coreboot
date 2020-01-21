@@ -669,14 +669,14 @@ config VGA_BIOS_ID
 	depends on VGA_BIOS
 	default "1106,3230"
 	help
-	  The comma-separated PCI vendor and device ID that would associate
-	  your VGA BIOS to your video card.
+	  The comma-separated PCI vendor and device ID with optional revision if that
+	  feature is enabled that would associate your vBIOS to your video card.
 
-	  Example: 1106,3230
+	  Example: 1106,3230 or 1106,3230,a3
 
 	  In the above example 1106 is the PCI vendor ID (in hex, but without
 	  the "0x" prefix) and 3230 specifies the PCI device ID of the
-	  video card (also in hex, without "0x" prefix).
+	  video card (also in hex, without "0x" prefix). a3 specifies the revision.
 
 	  Under GNU/Linux you can run `lspci -nn` to list the IDs of your PCI devices.
 
@@ -698,16 +698,22 @@ config VGA_BIOS_SECOND_ID
 	string "Graphics device PCI IDs"
 	depends on VGA_BIOS_SECOND
 	help
-	  The comma-separated PCI vendor and device ID that would associate
-	  your vBIOS to your video card.
+	  The comma-separated PCI vendor and device ID with optional revision if that
+	  feature is enabled that would associate your vBIOS to your video card.
 
-	  Example: 1106,3230
+	  Example: 1106,3230 or 1106,3230,a3
 
 	  In the above example 1106 is the PCI vendor ID (in hex, but without
 	  the "0x" prefix) and 3230 specifies the PCI device ID of the
-	  video card (also in hex, without "0x" prefix).
+	  video card (also in hex, without "0x" prefix). a3 specifies the revision.
 
 	  Under GNU/Linux you can run `lspci -nn` to list the IDs of your PCI devices.
+
+config CHECK_REV_IN_OPROM_NAME
+	def_bool n
+	help
+	  Select this in the platform BIOS or chipset if the option rom has a revision
+	  that needs to be checked when searching CBFS.
 
 config VGA_BIOS_DGPU
 	bool "Add a discrete VGA BIOS image"

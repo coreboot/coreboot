@@ -24,6 +24,8 @@
 
 /* Return mapping of option ROM found in boot device. NULL on error. */
 void *cbfs_boot_map_optionrom(uint16_t vendor, uint16_t device);
+/* Return mapping of option ROM with revision number. Returns NULL on error. */
+void *cbfs_boot_map_optionrom_revision(uint16_t vendor, uint16_t device, uint8_t rev);
 /* Locate file by name and optional type. Return 0 on success. < 0 on error. */
 int cbfs_boot_locate(struct cbfsf *fh, const char *name, uint32_t *type);
 /* Map file into memory leaking the mapping. Only should be used when

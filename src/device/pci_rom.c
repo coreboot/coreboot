@@ -27,11 +27,17 @@ u32 __weak map_oprom_vendev(u32 vendev) { return vendev; }
 
 struct rom_header *pci_rom_probe(struct device *dev)
 {
-	struct rom_header *rom_header;
+	struct rom_header *rom_header = NULL;
 	struct pci_data *rom_data;
 
 	/* If it's in FLASH, then don't check device for ROM. */
-	rom_header = cbfs_boot_map_optionrom(dev->vendor, dev->device);
+	if (CONFIG(CHECK_REV_IN_OPROM_NAME)) {
+		uint8_t rev = pci_read_config8(dev, PCI_REVISION_ID);
+		rom_header = cbfs_boot_map_optionrom_revision(dev->vendor, dev->device, rev);
+	}
+
+	if (!rom_header)
+		rom_header = cbfs_boot_map_optionrom(dev->vendor, dev->device);
 
 	u32 vendev = (dev->vendor << 16) | dev->device;
 	u32 mapped_vendev;

@@ -37,6 +37,8 @@
 #include <timer.h>
 #include <thread.h>
 
+#include <security/intel/stm/SmmStm.h>
+
 #define MAX_APIC_IDS 256
 
 struct mp_callback {
@@ -741,6 +743,23 @@ static void asmlinkage smm_do_relocation(void *arg)
 
 	/* Setup code checks this callback for validity. */
 	mp_state.ops.relocation_handler(cpu, curr_smbase, perm_smbase);
+
+	if (CONFIG(STM)) {
+		if (is_smm_enabled()) {
+			uintptr_t mseg;
+
+			mseg = mp_state.perm_smbase +
+				(mp_state.perm_smsize - CONFIG_MSEG_SIZE);
+
+			stm_setup(mseg, p->cpu, runtime->num_cpus,
+					perm_smbase,
+					mp_state.perm_smbase,
+					runtime->start32_offset);
+		} else {
+			printk(BIOS_DEBUG,
+				"STM not loaded because SMM is not enabled!\n");
+		}
+	}
 }
 
 static void adjust_smm_apic_id_map(struct smm_loader_params *smm_params)
@@ -1019,6 +1038,21 @@ static void fill_mp_state(struct mp_state *state, const struct mp_ops *ops)
 	if (ops->get_smm_info != NULL)
 		ops->get_smm_info(&state->perm_smbase, &state->perm_smsize,
 					&state->smm_save_state_size);
+
+	/*
+	 * Make sure there is enough room for the SMM descriptor
+	 */
+	if (CONFIG(STM))
+		state->smm_save_state_size +=
+			sizeof(TXT_PROCESSOR_SMM_DESCRIPTOR);
+
+	/* Currently, the CPU SMM save state size is based on a simplistic
+	 * algorithm. (align on 4K)
+	 * note: In the future, this will need to handle newer x86 processors
+	 * that require alignment of the save state on 32K boundaries.
+	 */
+	state->smm_save_state_size =
+		ALIGN_UP(state->smm_save_state_size, 0x1000);
 
 	/*
 	 * Default to smm_initiate_relocation() if trigger callback isn't

@@ -17,6 +17,7 @@
 #include <cpu/x86/cache.h>
 #include <commonlib/helpers.h>
 #include <console/console.h>
+#include <security/intel/stm/SmmStm.h>
 
 #define FXSAVE_SIZE 512
 
@@ -267,6 +268,7 @@ static int smm_module_setup_stub(void *smbase, struct smm_loader_params *params,
 	stub_params->fxsave_area_size = FXSAVE_SIZE;
 	stub_params->runtime.smbase = (uintptr_t)smbase;
 	stub_params->runtime.save_state_size = params->per_cpu_save_state_size;
+	stub_params->runtime.num_cpus = params->num_concurrent_stacks;
 
 	/* Initialize the APIC id to CPU number table to be 1:1 */
 	for (i = 0; i < params->num_concurrent_stacks; i++)
@@ -313,6 +315,11 @@ int smm_setup_relocation_handler(struct smm_loader_params *params)
  * +-----------------+ <- smram + size
  * |    stacks       |
  * +-----------------+ <- smram + size - total_stack_size
+ * |  fxsave area    |
+ * +-----------------+ <- smram + size - total_stack_size - fxsave_size
+ * | BIOS resource   |
+ * | list (STM)      |
+ * +-----------------+ <- .. - CONFIG_BIOS_RESOURCE_LIST_SIZE
  * |      ...        |
  * +-----------------+ <- smram + handler_size + SMM_DEFAULT_SIZE
  * |    handler      |
@@ -353,7 +360,12 @@ int smm_load_module(void *smram, size_t size, struct smm_loader_params *params)
 
 	/* Stacks start at the top of the region. */
 	base = smram;
-	base += size;
+
+	if (CONFIG(STM))
+		base += size - CONFIG_MSEG_SIZE;     // take out the mseg
+	else
+		base += size;
+
 	params->stack_top = base;
 
 	/* SMM module starts at offset SMM_DEFAULT_SIZE with the load alignment
@@ -382,6 +394,11 @@ int smm_load_module(void *smram, size_t size, struct smm_loader_params *params)
 	/* Does the required amount of memory exceed the SMRAM region size? */
 	total_size = total_stack_size + handler_size;
 	total_size += fxsave_size + SMM_DEFAULT_SIZE;
+
+	// account for the bios resource list
+	if (CONFIG(STM))
+		total_size += CONFIG_BIOS_RESOURCE_LIST_SIZE;
+
 	if (total_size > size)
 		return -1;
 

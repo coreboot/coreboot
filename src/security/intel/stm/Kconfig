@@ -1,0 +1,49 @@
+
+
+config STM
+	bool "Enable STM"
+	default n
+	depends on SMM_TSEG
+	select USE_BLOBS
+
+	help
+	  Enabling the STM will load a simple hypervisor into SMM that will
+	  restrict the actions of the SMI handler, which is the part of BIOS
+	  that functions in system management mode (SMM).  The kernel can
+	  configure the STM to prevent the SMI handler from accessing platform
+	  resources.
+	  The STM closes a vulnerability in Intel TXT (D-RTM)
+	  The SMI handler provides a list of platform resources that it
+	  requires access to the STM during STM startup, which the kernel
+	  cannot override.
+	  An additional capability, called STM-PE, provides a protected
+	  execution capability that allows modules to be executed without
+	  observation and interference. Examples of usage include kernel
+	  introspection and virtualized trusted platform module (vTPM).
+	  Requirement: SMM must be enabled and there must be sufficient room
+	  within the TSEG to fit the MSEG.
+
+if STM
+
+menu "SMI Transfer Monitor (STM)"
+
+config MSEG_SIZE
+	hex "mseg size"
+	default 0x400000
+	help
+		STM only - 0x100000
+		STM/PE   - 0x300000+ depending on the amount of memory needed
+		                     for the protected execution virtual
+		                     machine (VM/PE)
+
+config BIOS_RESOURCE_LIST_SIZE
+	hex "bios_resource_list_size"
+	default 0x1000
+
+config STM_BINARY_FILE
+	string "STM binary file"
+	default "3rdparty/blobs/cpu/intel/stm/stm.bin"
+
+endmenu #STM
+
+endif

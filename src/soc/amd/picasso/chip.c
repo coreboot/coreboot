@@ -13,6 +13,7 @@
 #include <soc/pci_devs.h>
 #include <soc/southbridge.h>
 #include "chip.h"
+#include <fsp/api.h>
 
 /* Supplied by i2c.c */
 extern struct device_operations picasso_i2c_mmio_ops;
@@ -99,6 +100,8 @@ static void enable_dev(struct device *dev)
 
 static void soc_init(void *chip_info)
 {
+	fsp_silicon_init(acpi_is_wakeup_s3());
+
 	southbridge_init(chip_info);
 	setup_bsp_ramtop();
 }

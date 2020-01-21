@@ -199,6 +199,13 @@ config ACPI_BERT
 	  ACPI Boot Error Record Table.  This option reserves an 8MB region
 	  for building the error structures.
 
+config ACPI_BERT_SIZE
+	hex
+	default 0x4000
+	help
+	  Specify the amount of DRAM reserved for gathering the data used to
+	  generate the ACPI table.
+
 config RO_REGION_ONLY
 	string
 	depends on CHROMEOS

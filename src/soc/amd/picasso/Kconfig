@@ -51,6 +51,7 @@ config CPU_SPECIFIC_OPTIONS
 	select PLATFORM_USES_FSP2_0
 	select FSP_USES_CB_STACK
 	select UDK_2017_BINDING
+	select CACHE_MRC_SETTINGS
 	select HAVE_CF9_RESET
 
 config PRERAM_CBMEM_CONSOLE_SIZE
@@ -289,24 +290,23 @@ config AMD_PUBKEY_FILE
 	string
 	default "3rdparty/amd_blobs/picasso/PSP/AmdPubKeyRV.bin"
 
-config PSP_APOB_DESTINATION
+config PSP_APOB_DRAM_ADDRESS
 	hex
 	default 0x9f00000
 	help
 	  Location in DRAM where the PSP will copy the AGESA PSP Output
 	  Block.
 
-config PSP_APOB_NV_ADDRESS
-	hex "Base address of APOB NV"
+# This value is currently the same as the default defined in
+# drivers/mrc_cache/Kconfig. We do this in in case the default
+# changes. The PSP requires this value to be 64KiB.
+config MRC_SETTINGS_CACHE_SIZE
+	hex
+	default 0x10000
 	help
-	  Location in flash where the PSP can find the S3 restore information.
-	  Place this on a boundary that the flash device can erase.
-
-config PSP_APOB_NV_SIZE
-	hex "Size of APOB NV to be reserved"
-	help
-	  Size of the S3 restore information.  Make this a multiple of the
-	  size the flash device can erase.
+	  Size of flash area used to save APOB NV data which occupies the
+	  RW_MRC_CACHE region.  Make this granularity the flash device can
+	  erase.
 
 config USE_PSPSCUREOS
 	bool

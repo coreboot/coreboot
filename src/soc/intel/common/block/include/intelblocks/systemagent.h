@@ -43,13 +43,13 @@ void bootblock_systemagent_early_init(void);
  * Fixed MMIO range
  *   INDEX = Either PCI configuration space registers or MMIO offsets
  *   mapped from REG.
- *   BASE = 32 bit Address.
+ *   BASE = 64 bit Address.
  *   SIZE = base length
  *   DESCRIPTION = Name of the register/offset.
  */
 struct sa_mmio_descriptor {
 	unsigned int index;
-	uintptr_t base;
+	uint64_t base;
 	size_t size;
 	const char *description;
 };

@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2017 Intel Corporation.
+ * Copyright (C) 2017-2020 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,7 +71,7 @@ void sa_set_pci_bar(const struct sa_mmio_descriptor *fixed_set_resources,
 	int i;
 
 	for (i = 0; i < count; i++) {
-		uintptr_t base;
+		uint64_t base;
 		unsigned int index;
 
 		index = fixed_set_resources[i].index;
@@ -83,8 +83,9 @@ void sa_set_pci_bar(const struct sa_mmio_descriptor *fixed_set_resources,
 			return;
 
 		base = fixed_set_resources[i].base;
-
-		pci_write_config32(SA_DEV_ROOT, index, base | 1);
+		if (base >> 32)
+			pci_write_config32(SA_DEV_ROOT, index + 4, base >> 32);
+		pci_write_config32(SA_DEV_ROOT, index, (base & 0xffffffff) | 1);
 	}
 }
 
@@ -99,12 +100,14 @@ void sa_set_mch_bar(const struct sa_mmio_descriptor *fixed_set_resources,
 	int i;
 
 	for (i = 0; i < count; i++) {
-		uintptr_t base;
+		uint64_t base;
 		unsigned int index;
 
 		base = fixed_set_resources[i].base;
 		index = fixed_set_resources[i].index;
-		write32((void *)(MCH_BASE_ADDRESS + index), base | 1);
+		if (base >> 32)
+			write32((void *)(MCH_BASE_ADDRESS + index + 4), base >> 32);
+		write32((void *)(MCH_BASE_ADDRESS + index), (base & 0xffffffff) | 1);
 	}
 }
 

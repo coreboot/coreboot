@@ -98,7 +98,7 @@ struct rom_header *pci_rom_probe(struct device *dev)
 	    || dev->device != rom_data->device)
 	    && (vendev == mapped_vendev)) {
 		printk(BIOS_ERR, "ID mismatch: vendor ID %04x, "
-		       "device ID %04x\n", rom_data->vendor, rom_data->device);
+		       "device ID %04x\n", dev->vendor, dev->device);
 		return NULL;
 	}
 

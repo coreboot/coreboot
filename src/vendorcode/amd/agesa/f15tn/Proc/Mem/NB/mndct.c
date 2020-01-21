@@ -2310,55 +2310,6 @@ MemNChangeFrequencyUnb (
   MemFInitTableDrive (NBPtr, MTAfterFreqChg);
 }
 
-
-/* -----------------------------------------------------------------------------*/
-/**
- *
- *  This function calculates and programs NB P-state dependent registers
- *
- *     @param[in,out]   *NBPtr   - Pointer to the MEM_NB_BLOCK
- *
- */
-
-VOID
-MemNProgramNbPstateDependentRegistersUnb (
-  IN OUT   MEM_NB_BLOCK *NBPtr
-  )
-{
-  UINT8 RdPtrInit;
-
-  RdPtrInit = (NBPtr->DCTPtr->Timings.Speed <= DDR1600_FREQUENCY) ? 6 : 4;
-  MemNBrdcstSetNb (NBPtr, BFRdPtrInit, RdPtrInit);
-  IDS_HDT_CONSOLE (MEM_FLOW, "\t\tRdPtr: %d\n", RdPtrInit);
-
-  MemFInitTableDrive (NBPtr, MTAfterNbPstateChange);
-
-  IDS_HDT_CONSOLE_DEBUG_CODE (
-    RdPtrInit = (UINT8) MemNGetBitFieldNb (NBPtr, BFRdPtrInit);
-  );
-
-  switch (RdPtrInit) {
-  case 4:
-    if (MemNGetBitFieldNb (NBPtr, BFNbPsSel) == 0) {
-      MemNBrdcstSetNb (NBPtr, BFDataTxFifoWrDly, 2);
-    } else {
-      MemNBrdcstSetNb (NBPtr, BFDataTxFifoWrDly, 1);
-    }
-    break;
-  case 5:
-    MemNBrdcstSetNb (NBPtr, BFDataTxFifoWrDly, 1);
-    break;
-  case 6:
-    MemNBrdcstSetNb (NBPtr, BFDataTxFifoWrDly, 0);
-    break;
-  default:
-    ASSERT (FALSE);
-  }
-
-  NBPtr->FamilySpecificHook[OverrideDataTxFifoWrDly] (NBPtr, NBPtr);
-  IDS_OPTION_HOOK (IDS_NBPS_REG_OVERRIDE, NBPtr, &NBPtr->MemPtr->StdHeader);
-}
-
 /* -----------------------------------------------------------------------------*/
 CONST UINT8 PllDivTab[] = {0, 0, 0, 2, 3, 3, 2, 3};
 CONST UINT8 PllMultTab[] = {0, 0, 0, 16, 32, 40, 32, 56};

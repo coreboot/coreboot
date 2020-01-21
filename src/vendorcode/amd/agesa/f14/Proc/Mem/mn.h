@@ -1186,11 +1186,6 @@ MemNChangeFrequencyUnb (
   );
 
 VOID
-MemNProgramNbPstateDependentRegistersUnb (
-  IN OUT   MEM_NB_BLOCK *NBPtr
-  );
-
-VOID
 MemNProgramNbPstateDependentRegistersClientNb (
   IN OUT   MEM_NB_BLOCK *NBPtr
   );

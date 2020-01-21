@@ -18,9 +18,6 @@
 
 #include <device/device.h>
 
-#define SOC_EARLY_VMTRR_FLASH 1
-#define SOC_EARLY_VMTRR_TEMPRAM 2
-
 #define CSTATE_BASE_REG 0xc0010073
 
 void picasso_init_cpus(struct device *dev);

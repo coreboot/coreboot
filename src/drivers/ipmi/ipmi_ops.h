@@ -88,6 +88,7 @@ struct ipmi_add_sel_rsp {
 /* Platform Management FRU Information Storage Definition Spec. */
 #define PRODUCT_MAN_TYPE_LEN_OFFSET 3
 #define BOARD_MAN_TYPE_LEN_OFFSET 6
+#define CHASSIS_TYPE_OFFSET 2
 
 struct ipmi_fru_common_hdr {
 	uint8_t format_version;
@@ -117,9 +118,18 @@ struct fru_board_info {
 	char *part_number;
 };
 
+struct fru_chassis_info {
+	uint8_t chassis_type;
+	char *chassis_partnumber;
+	char *serial_number;
+	char **chassis_custom;
+	int custom_count; /* Number of custom fields */
+};
+
 struct fru_info_str {
 	struct fru_product_info prod_info;
 	struct fru_board_info board_info;
+	struct fru_chassis_info chassis_info;
 };
 
 enum typecode {

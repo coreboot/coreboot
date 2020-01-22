@@ -5853,6 +5853,74 @@ struct ec_response_locate_chip {
 #define EC_CMD_REBOOT_AP_ON_G3 0x0127
 
 /*****************************************************************************/
+/* Get PD port capabilities
+ *
+ * Returns the following static *capabilities* of the given port:
+ * 1) Power role: source, sink, or dual. It is not anticipated that
+ *    future CrOS devices would ever be only a source, so the options are
+ *    sink or dual.
+ * 2) Try-power role: source, sink, or none (practically speaking, I don't
+ *    believe any CrOS device would support Try.SNK, so this would be source
+ *    or none).
+ * 3) Data role: dfp, ufp, or dual. This will probably only be DFP or dual
+ *    for CrOS devices.
+ */
+#define EC_CMD_GET_PD_PORT_CAPS 0x0128
+
+enum ec_pd_power_role_caps {
+	EC_PD_POWER_ROLE_SOURCE = 0,
+	EC_PD_POWER_ROLE_SINK = 1,
+	EC_PD_POWER_ROLE_DUAL = 2,
+};
+
+enum ec_pd_try_power_role_caps {
+	EC_PD_TRY_POWER_ROLE_NONE = 0,
+	EC_PD_TRY_POWER_ROLE_SINK = 1,
+	EC_PD_TRY_POWER_ROLE_SOURCE = 2,
+};
+
+enum ec_pd_data_role_caps {
+	EC_PD_DATA_ROLE_DFP = 0,
+	EC_PD_DATA_ROLE_UFP = 1,
+	EC_PD_DATA_ROLE_DUAL = 2,
+};
+
+/* From: power_manager/power_supply_properties.proto */
+enum ec_pd_port_location {
+	/* The location of the port is unknown, or there's only one port. */
+	EC_PD_PORT_LOCATION_UNKNOWN = 0,
+
+	/*
+	 * Various positions on the device. The first word describes the side of
+	 * the device where the port is located while the second clarifies the
+	 * position. For example, LEFT_BACK means the farthest-back port on the
+	 * left side, while BACK_LEFT means the leftmost port on the back of the
+	 * device.
+	 */
+	EC_PD_PORT_LOCATION_LEFT        = 1,
+	EC_PD_PORT_LOCATION_RIGHT       = 2,
+	EC_PD_PORT_LOCATION_BACK        = 3,
+	EC_PD_PORT_LOCATION_FRONT       = 4,
+	EC_PD_PORT_LOCATION_LEFT_FRONT  = 5,
+	EC_PD_PORT_LOCATION_LEFT_BACK   = 6,
+	EC_PD_PORT_LOCATION_RIGHT_FRONT = 7,
+	EC_PD_PORT_LOCATION_RIGHT_BACK  = 8,
+	EC_PD_PORT_LOCATION_BACK_LEFT   = 9,
+	EC_PD_PORT_LOCATION_BACK_RIGHT  = 10,
+};
+
+struct ec_params_get_pd_port_caps {
+	uint8_t port;		/* Which port to interrogate */
+} __ec_align1;
+
+struct ec_response_get_pd_port_caps {
+	uint8_t pd_power_role_cap;	/* enum ec_pd_power_role_caps */
+	uint8_t pd_try_power_role_cap;	/* enum ec_pd_try_power_role_caps */
+	uint8_t pd_data_role_cap;	/* enum ec_pd_data_role_caps */
+	uint8_t pd_port_location;	/* enum ec_pd_port_location */
+} __ec_align1;
+
+/*****************************************************************************/
 /* The command range 0x200-0x2FF is reserved for Rotor. */
 
 /*****************************************************************************/

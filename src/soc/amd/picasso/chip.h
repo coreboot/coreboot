@@ -31,6 +31,45 @@ struct soc_amd_picasso_config {
 		I2S_PINS_I2S_TDM = 4,
 		I2S_PINS_UNCONF = 7,	/* All pads will be input mode */
 	} acp_pin_cfg;
+
+	/* Options for these are in src/arch/x86/include/arch/acpi.h */
+	uint8_t  fadt_pm_profile;
+	uint16_t fadt_boot_arch;
+	uint32_t fadt_flags;
+
+	/* System config index */
+	uint8_t system_config;
+
+	/* STAPM Configuration */
+	uint32_t fast_ppt_limit;
+	uint32_t slow_ppt_limit;
+	uint32_t slow_ppt_time_constant;
+	uint32_t stapm_time_constant;
+	uint32_t sustained_power_limit;
+
+	/* PROCHOT_L de-assertion Ramp Time */
+	uint32_t prochot_l_deassertion_ramp_time;
+
+	/* Lower die temperature limit */
+	uint32_t thermctl_limit;
+
+	/* FP5 Processor Voltage Supply PSI Currents. 0 indicates use SOC default */
+	uint32_t psi0_current_limit;
+	uint32_t psi0_soc_current_limit;
+	uint32_t vddcr_soc_voltage_margin;
+	uint32_t vddcr_vdd_voltage_margin;
+
+	/* VRM Limits. 0 indicates use SOC default */
+	uint32_t vrm_maximum_current_limit;
+	uint32_t vrm_soc_maximum_current_limit;
+	uint32_t vrm_current_limit;
+	uint32_t vrm_soc_current_limit;
+
+	/* Misc SMU settings */
+	uint8_t sb_tsi_alert_comparator_mode_en;
+	uint8_t core_dldo_bypass;
+	uint8_t min_soc_vid_offset;
+	uint8_t aclk_dpm0_freq_400MHz;
 };
 
 typedef struct soc_amd_picasso_config config_t;

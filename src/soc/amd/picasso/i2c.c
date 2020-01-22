@@ -42,19 +42,6 @@ uintptr_t dw_i2c_base_address(unsigned int bus)
 	return i2c_bus_address[bus - APU_I2C_MIN_BUS];
 }
 
-static const struct soc_amd_picasso_config *get_soc_config(void)
-{
-	const struct device *dev = pcidev_path_on_root(GNB_DEVFN);
-
-	if (!dev || !dev->chip_info) {
-		printk(BIOS_ERR, "%s: Could not find SoC devicetree config!\n",
-			__func__);
-		return NULL;
-	}
-
-	return dev->chip_info;
-}
-
 const struct dw_i2c_bus_config *dw_i2c_get_soc_cfg(unsigned int bus)
 {
 	const struct soc_amd_picasso_config *config;

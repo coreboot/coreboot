@@ -78,6 +78,7 @@ ramstage-y += usb.c
 ramstage-y += tsc_freq.c
 ramstage-y += finalize.c
 
+all-y += cfg_util.c
 all-y += reset.c
 
 smm-y += smihandler.c

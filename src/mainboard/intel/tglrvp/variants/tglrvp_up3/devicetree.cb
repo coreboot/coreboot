@@ -45,6 +45,10 @@ chip soc/intel/tigerlake
 	register "PcieClkSrcUsage[2]" = "0x3"
 	register "PcieClkSrcUsage[3]" = "0x8"
 
+	register "SataSalpSupport" = "1"
+	register "SataPortsEnable[0]" = "1"
+	register "SataPortsEnable[1]" = "1"
+
 	register "SerialIoI2cMode" = "{
 		[PchSerialIoIndexI2C0]  = PchSerialIoPci,
 		[PchSerialIoIndexI2C1]  = PchSerialIoPci,
@@ -122,7 +126,7 @@ chip soc/intel/tigerlake
 		device pci 16.3 off end # CSME			0xA0E3
 		device pci 16.4 off end # HECI3			0xA0E4
 		device pci 16.5 off end # HECI4			0xA0E5
-		device pci 17.0 off end # SATA			0xA0D3
+		device pci 17.0 on  end # SATA			0xA0D3
 		device pci 19.0 off end # I2C4			0xA0C5
 		device pci 19.1 on  end # I2C5			0xA0C6
 		device pci 19.2 on  end # UART2			0xA0C7

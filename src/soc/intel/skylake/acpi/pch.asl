@@ -23,6 +23,9 @@
 #include <soc/gpe.h>
 #include <soc/pcr_ids.h>
 
+/* PCI IRQ assignment */
+#include "pci_irqs.asl"
+
 /* GPIO Controller */
 #include "gpio.asl"
 

@@ -336,6 +336,3 @@ Device (PDRC)
 		Return (BUF0)
 	}
 }
-
-/* PCI IRQ assignment */
-#include "pci_irqs.asl"

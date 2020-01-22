@@ -808,6 +808,17 @@ static int have_bios_tables(amd_bios_entry *table)
 	return 0;
 }
 
+static int find_bios_entry(amd_bios_type type)
+{
+	int i;
+
+	for (i = 0; amd_bios_table[i].type != AMD_BIOS_INVALID; i++) {
+		if (amd_bios_table[i].type == type)
+			return i;
+	}
+	return -1;
+}
+
 static void integrate_bios_firmwares(context *ctx,
 					bios_directory_table *biosdir,
 					bios_directory_table *biosdir2,
@@ -817,6 +828,7 @@ static void integrate_bios_firmwares(context *ctx,
 	ssize_t bytes;
 	unsigned int i, count;
 	int level;
+	int apob_idx;
 
 	/* This function can create a primary table, a secondary table, or a
 	 * flattened table which contains all applicable types.  These if-else
@@ -843,9 +855,6 @@ static void integrate_bios_firmwares(context *ctx,
 				fw_table[i].type != AMD_BIOS_L2_PTR &&
 				fw_table[i].type != AMD_BIOS_BIN))
 			continue;
-		/* APOB_NV needs a size, else no S3 and skip item */
-		if (fw_table[i].type == AMD_BIOS_APOB_NV && !fw_table[i].size)
-			continue;
 
 		/* BIOS Directory items may have additional requirements */
 
@@ -853,6 +862,19 @@ static void integrate_bios_firmwares(context *ctx,
 		if (fw_table[i].type == AMD_BIOS_APOB_NV && fw_table[i].src) {
 			if (!fw_table[i].size) {
 				printf("Error: APOB NV address provided, but no size\n");
+				free(ctx->rom);
+				exit(1);
+			}
+		}
+		/* APOB_NV needs a size, else no choice but to skip the item */
+		if (fw_table[i].type == AMD_BIOS_APOB_NV && !fw_table[i].size) {
+			/* Attempt to determine whether this is an error */
+			apob_idx = find_bios_entry(AMD_BIOS_APOB);
+			if (apob_idx < 0 || !fw_table[apob_idx].dest) {
+				/* APOV NV not expected to be used */
+				continue;
+			} else {
+				printf("Error: APOB NV must have a size\n");
 				free(ctx->rom);
 				exit(1);
 			}

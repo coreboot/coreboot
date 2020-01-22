@@ -65,7 +65,7 @@ chip soc/intel/cannonlake
 	register "PchHdaIDispCodecDisconnect" = "1"
 	register "PchHdaAudioLinkHda" = "1"
 
-	# VR Settings Configuration for 4 Domains
+	# VR Settings Configuration for 2/4 Domains
 	#+----------------+-------+-------+-------+-------+
 	#| Domain/Setting |  SA   |  IA   | GTUS  |  GTS  |
 	#+----------------+-------+-------+-------+-------+
@@ -76,7 +76,7 @@ chip soc/intel/cannonlake
 	#| Psi4Enable     | 1     | 1     | 1     | 1     |
 	#| ImonSlope      | 0     | 0     | 0     | 0     |
 	#| ImonOffset     | 0     | 0     | 0     | 0     |
-	#| IccMax         | 6A    | 70A   | 31A   | 31A   |
+	#| IccMax         | 6A    | 35/70A| 31A   | 31A   |
 	#| VrVoltageLimit | 1.52V | 1.52V | 1.52V | 1.52V |
 	#| AcLoadline     | 10.3  | 1.8   | 3.1   | 3.1   |
 	#| DcLoadline     | 10.3  | 1.8   | 3.1   | 3.1   |
@@ -90,7 +90,7 @@ chip soc/intel/cannonlake
 		.psi4enable = 1,
 		.imon_slope = 0x0,
 		.imon_offset = 0x0,
-		.icc_max = VR_CFG_AMP(6),
+		.icc_max = 0,
 		.voltage_limit = 1520,
 		.ac_loadline = 1030,
 		.dc_loadline = 1030,
@@ -105,7 +105,7 @@ chip soc/intel/cannonlake
 		.psi4enable = 1,
 		.imon_slope = 0x0,
 		.imon_offset = 0x0,
-		.icc_max = VR_CFG_AMP(70),
+		.icc_max = 0,
 		.voltage_limit = 1520,
 		.ac_loadline = 180,
 		.dc_loadline = 180,
@@ -120,7 +120,7 @@ chip soc/intel/cannonlake
 		.psi4enable = 1,
 		.imon_slope = 0x0,
 		.imon_offset = 0x0,
-		.icc_max = VR_CFG_AMP(31),
+		.icc_max = 0,
 		.voltage_limit = 1520,
 		.ac_loadline = 310,
 		.dc_loadline = 310,
@@ -135,7 +135,7 @@ chip soc/intel/cannonlake
 		.psi4enable = 1,
 		.imon_slope = 0x0,
 		.imon_offset = 0x0,
-		.icc_max = VR_CFG_AMP(31),
+		.icc_max = 0,
 		.voltage_limit = 1520,
 		.ac_loadline = 310,
 		.dc_loadline = 310,

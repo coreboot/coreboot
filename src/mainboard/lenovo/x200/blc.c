@@ -23,7 +23,7 @@ static const struct blc_pwm_t blc_entries[] = {
 	/* corrected to 320MHz CDClk, vendor set 753; works fine at both: */
 	{"LTD121EQ3B", 447},
 	{"LTD121EWVB", 165},
-	{"LTD133EQ1B", 264},  /* Found on an X301  */
+	{"LTD133EQ1B", 264},  /* Found on an X301 */
 	{"B121EW03 V6 ", 165},
 	/* datasheets: between 100 and 20k, typical 200 */
 	/* TESTED: works best at 400 */

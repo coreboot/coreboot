@@ -25,7 +25,7 @@ void get_mb_spd_addrmap(u8 *spd_addrmap)
 
 void mb_post_raminit_setup(void)
 {
-	/* FIXME: make a proper SMBUS mux support.  */
+	/* FIXME: make a proper SMBUS mux support. */
 	/* Set the SMBUS mux to the eeprom */
 	set_gpio(42, GPIO_LEVEL_LOW);
 }

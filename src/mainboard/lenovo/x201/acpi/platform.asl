@@ -29,14 +29,14 @@ Method(_PTS,1)
 
 Method(_WAK,1)
 {
-	/* ME may not be up yet.  */
+	/* ME may not be up yet. */
 	Store (0, \_TZ.MEB1)
 	Store (0, \_TZ.MEB2)
 
 	/* Wake the HKEY to init BT/WWAN */
 	\_SB.PCI0.LPCB.EC.HKEY.WAKE (Arg0)
 
-	/* Not implemented.  */
+	/* Not implemented. */
 	Return(Package(){0,0})
 }
 
@@ -69,7 +69,7 @@ Scope(\_SB)
 		 * interrupts can happen
 		 */
 
-		/* TRAP(71) */ /* TODO  */
+		/* TRAP(71) */ /* TODO */
 
 		/* Determine the Operating System and save the value in OSYS.
 		 * We have to do this in order to be able to work around

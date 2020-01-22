@@ -38,4 +38,4 @@
 /* Enable PS/2 Keyboard and Mouse */
 #define SIO_EC_ENABLE_PS2K
 
-#endif /* _MAINBOARD_LENOVO_G505S_MAINBOARD_H   */
+#endif /* _MAINBOARD_LENOVO_G505S_MAINBOARD_H */

@@ -30,7 +30,7 @@
 
 #include <vendorcode/amd/agesa/f15tn/AGESA.h>
 
-/*  Include the files that instantiate the configuration definitions.  */
+/* Include the files that instantiate the configuration definitions. */
 #include <vendorcode/amd/agesa/f15tn/Include/AdvancedApi.h>
 #include <vendorcode/amd/agesa/f15tn/Proc/CPU/cpuFamilyTranslation.h>
 #include <vendorcode/amd/agesa/f15tn/Proc/CPU/Feature/cpuFeatures.h>
@@ -43,13 +43,13 @@
 #include <vendorcode/amd/agesa/f15tn/Proc/Mem/mn.h>
 
 
-/*  Select the CPU family.  */
+/* Select the CPU family. */
 #define INSTALL_FAMILY_10_SUPPORT FALSE
 #define INSTALL_FAMILY_12_SUPPORT FALSE
 #define INSTALL_FAMILY_14_SUPPORT FALSE
 #define INSTALL_FAMILY_15_MODEL_1x_SUPPORT TRUE
 
-/*  Select the CPU socket type.  */
+/* Select the CPU socket type. */
 #define INSTALL_G34_SOCKET_SUPPORT  FALSE
 #define INSTALL_C32_SOCKET_SUPPORT  FALSE
 #define INSTALL_S1G3_SOCKET_SUPPORT FALSE
@@ -182,7 +182,7 @@
 //#define BLDCFG_IGPU_HD_AUDIO_SUBSYSTEM_ID   OEM_IGPU_HD_AUDIO_SSID
 //#define BLFCFG_APU_PCIE_PORTS_SUBSYSTEM_ID  OEM_APU_PCIE_PORTS_SSID
 
-/*  Process the options...
+/* Process the options...
  * This file include MUST occur AFTER the user option selection settings
  */
 /*

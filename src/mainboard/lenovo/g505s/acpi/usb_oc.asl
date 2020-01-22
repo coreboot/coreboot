@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  */
 
-/* USB overcurrent mapping pins.   */
+/* USB overcurrent mapping pins. */
 Name(UOM0, 0)
 Name(UOM1, 2)
 Name(UOM2, 0)

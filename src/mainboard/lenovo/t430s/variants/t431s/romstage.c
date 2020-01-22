@@ -42,7 +42,7 @@ const struct southbridge_usb_port mainboard_usb_ports[] = {
 
 void mainboard_get_spd(spd_raw_data *spd, bool id_only)
 {
-	/* C1S0 is a soldered RAM with no real SPD. Use stored SPD.  */
+	/* C1S0 is a soldered RAM with no real SPD. Use stored SPD. */
 	size_t spd_file_len = 0;
 	void *spd_file = cbfs_boot_map_with_leak("spd.bin", CBFS_TYPE_SPD,
 		&spd_file_len);

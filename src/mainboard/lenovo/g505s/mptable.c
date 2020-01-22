@@ -138,7 +138,7 @@ static void *smp_write_config_table(void *v)
 	PCI_INT(0x0, 0x11, 0x0, intr_data[0x40]);
 	PCI_INT(0x0, 0x11, 0x0, intr_data[0x41]);
 
-	/* on board NIC & Slot PCIE.  */
+	/* on board NIC & Slot PCIE. */
 
 	/* PCI slots */
 	struct device *dev = pcidev_on_root(0x14, 4);

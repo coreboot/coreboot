@@ -21,4 +21,4 @@
 
 void lenovo_g505s_ec_init(void);
 
-#endif /* _MAINBOARD_LENOVO_G505S_EC_H   */
+#endif /* _MAINBOARD_LENOVO_G505S_EC_H */

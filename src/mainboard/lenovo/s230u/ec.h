@@ -25,4 +25,4 @@ void lenovo_s230u_ec_init(void);
 #define ec_mm_set_bit(addr, bit) (ECMM(0x100 + addr) |= 1 << bit)
 #define ec_mm_clr_bit(addr, bit) (ECMM(0x100 + addr) &= ~(1 << bit))
 
-#endif /* _MAINBOARD_LENOVO_S230U_EC_H   */
+#endif /* _MAINBOARD_LENOVO_S230U_EC_H */

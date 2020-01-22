@@ -76,7 +76,7 @@ const u32 cim_verb_data[] = {
 };
 
 const u32 pc_beep_verbs[] = {
-	0x00170500,	/* power up everything (codec, dac, adc, mixers)  */
+	0x00170500,	/* power up everything (codec, dac, adc, mixers) */
 	0x01470740,	/* enable speaker out */
 	0x01470c02,	/* set speaker EAPD pin */
 	0x0143b01f,	/* unmute speaker */

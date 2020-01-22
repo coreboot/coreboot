@@ -66,7 +66,7 @@ DefinitionBlock (
 		/* Describe PCI INT[A-H] for the Southbridge */
 		#include <southbridge/amd/agesa/hudson/acpi/pci_int.asl>
 
-	}   /* End Scope(_SB)  */
+	}   /* End Scope(_SB) */
 
 	Scope(\_SB.PCI0.LIBR) {
 		#include "acpi/ec.asl"

@@ -15,7 +15,7 @@
 
 Method(_WAK,1)
 {
-	/* ME may not be up yet.  */
+	/* ME may not be up yet. */
 	Store (0, \_TZ.MEB1)
 	Store (0, \_TZ.MEB2)
 

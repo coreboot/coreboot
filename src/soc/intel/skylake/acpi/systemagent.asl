@@ -17,8 +17,10 @@
 
 #include <soc/iomap.h>
 
-Name (_HID, EISAID ("PNP0A08"))	/* PCIe */
-Name (_CID, EISAID ("PNP0A03"))	/* PCI */
+Name (_HID, EisaId ("PNP0A08") /* PCI Express Bus */)  // _HID: Hardware ID
+Name (_CID, EisaId ("PNP0A03") /* PCI Bus */)  // _CID: Compatible ID
+Name (_SEG, Zero)  // _SEG: PCI Segment
+Name (_UID, Zero)  // _UID: Unique ID
 
 Device (MCHC)
 {

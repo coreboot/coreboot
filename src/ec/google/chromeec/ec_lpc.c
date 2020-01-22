@@ -458,15 +458,10 @@ static struct pnp_info pnp_dev_info[] = {
 	{ NULL, 0, 0, 0, }
 };
 
-static void enable_dev(struct device *dev)
+void google_ec_enable_extra(struct device *dev)
 {
 	pnp_enable_devices(dev, &ops, ARRAY_SIZE(pnp_dev_info), pnp_dev_info);
 }
-
-struct chip_operations ec_google_chromeec_ops = {
-	CHIP_NAME("Google Chrome EC")
-	.enable_dev = enable_dev,
-};
 
 static int google_chromeec_data_ready(u16 port)
 {

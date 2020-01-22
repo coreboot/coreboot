@@ -18,6 +18,7 @@
 #ifndef _EC_GOOGLE_CHROMEEC_EC_H
 #define _EC_GOOGLE_CHROMEEC_EC_H
 #include <types.h>
+#include <device/device.h>
 #include "ec_commands.h"
 
 /* Fill in base and size of the IO port resources used. */
@@ -328,5 +329,27 @@ struct usb_pd_port_caps {
  */
 int google_chromeec_get_pd_port_caps(int port,
 				struct usb_pd_port_caps *port_caps);
+
+#if CONFIG(HAVE_ACPI_TABLES)
+/**
+ * Writes USB Type-C PD related information to the SSDT
+ *
+ * @param dev			EC device
+ */
+void google_chromeec_fill_ssdt_generator(struct device *dev);
+
+/**
+ * Returns the ACPI name for the EC device.
+ *
+ * @param dev			EC device
+ */
+const char *google_chromeec_acpi_name(const struct device *dev);
+
+#endif /* HAVE_ACPI_TABLES */
+
+/*
+ * Allows bus-specific EC code to perform actions when the device is enabled.
+ */
+void google_ec_enable_extra(struct device *dev);
 
 #endif /* _EC_GOOGLE_CHROMEEC_EC_H */

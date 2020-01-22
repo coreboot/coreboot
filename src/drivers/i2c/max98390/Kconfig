@@ -1,0 +1,4 @@
+config DRIVERS_I2C_MAX98390
+	bool
+	default n
+	depends on HAVE_ACPI_TABLES

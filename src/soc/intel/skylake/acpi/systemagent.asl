@@ -32,26 +32,27 @@ Device (MCHC)
 		Offset(0x40),	/* EPBAR (0:0:0:40) */
 		EPEN, 1,	/* Enable */
 		, 11,
-		EPBR, 20,	/* EPBAR [31:12] */
+		EPBR, 27,	/* EPBAR [38:12] */
 
 		Offset(0x48),	/* MCHBAR (0:0:0:48) */
 		MHEN, 1,	/* Enable */
 		, 14,
-		MHBR, 17,	/* MCHBAR [31:15] */
+		MHBR, 24,	/* MCHBAR [38:15] */
 
 		Offset(0x60),	/* PCIEXBAR (0:0:0:60) */
 		PXEN, 1,	/* Enable */
 		PXSZ, 2,	/* PCI Express Size */
 		, 23,
-		PXBR, 6,	/* PCI Express BAR [31:26] */
+		PXBR, 13,	/* PCI Express BAR [38:26] */
 
 		Offset(0x68),	/* DMIBAR (0:0:0:68) */
 		DIEN, 1,	/* Enable */
 		, 11,
-		DIBR, 20,	/* DMIBAR [31:12] */
+		DIBR, 27,	/* DMIBAR [38:12] */
 
 		Offset (0x70),	/* ME Base Address */
 		MEBA, 64,
+
 		Offset (0xa0),
 		TOM, 64,	/* Top of Used Memory */
 		TUUD, 64,	/* Top of Upper Used Memory */

@@ -292,18 +292,8 @@ Device (PDRC)
 			 */
 			Memory32Fixed (ReadWrite, 0, 0, PCIX)
 
-			/* MISC ICH TTT base address reserved for the
-			 * TxT module use.
-			 */
-			Memory32Fixed (ReadWrite, 0xFED20000, 0x20000)
-
 			/* VTD engine memory range. */
 			Memory32Fixed (ReadOnly, VTD_BASE_ADDRESS, VTD_BASE_SIZE)
-
-			/* MISC ICH. Check if the hard code meets the
-			 * real configuration.
-			 */
-			Memory32Fixed (ReadWrite, 0xFED45000, 0x4B000, TPMM)
 
 			/* FLASH range */
 			Memory32Fixed (ReadOnly, 0, CONFIG_ROM_SIZE, FIOH)

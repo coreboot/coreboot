@@ -121,6 +121,20 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	/* PCH UART selection for FSP Debug */
 	params->SerialIoDebugUartNumber = CONFIG_UART_FOR_CONSOLE;
 
+	/* SATA */
+	dev = pcidev_on_root(PCH_DEV_SLOT_SATA, 0);
+	if (!dev)
+		params->SataEnable = 0;
+	else {
+		params->SataEnable = dev->enabled;
+		params->SataMode = config->SataMode;
+		params->SataSalpSupport = config->SataSalpSupport;
+		memcpy(params->SataPortsEnable, config->SataPortsEnable,
+			sizeof(params->SataPortsEnable));
+		memcpy(params->SataPortsDevSlp, config->SataPortsDevSlp,
+			sizeof(params->SataPortsDevSlp));
+	}
+
 	mainboard_silicon_init_params(params);
 }
 

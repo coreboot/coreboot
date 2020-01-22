@@ -52,6 +52,8 @@ chip soc/intel/apollolake
 	#| I2C5              | Audio                     |
 	#| I2C6              | Trackpad                  |
 	#+-------------------+---------------------------+
+        register "tcc_offset" = "15"
+
 	register "common_soc_config" = "{
 		.gspi[0] = {
 			.speed_mhz = 1,

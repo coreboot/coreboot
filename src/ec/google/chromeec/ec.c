@@ -15,16 +15,18 @@
 
 #include <stdint.h>
 #include <string.h>
-#include <cbmem.h>
-#include <console/console.h>
 #include <assert.h>
 #include <bootmode.h>
 #include <bootstate.h>
+#include <cbmem.h>
+#include <console/console.h>
 #include <delay.h>
+#include <device/device.h>
+#include <device/path.h>
 #include <elog.h>
 #include <rtc.h>
-#include <stdlib.h>
 #include <security/vboot/vboot_common.h>
+#include <stdlib.h>
 #include <timer.h>
 
 #include "chip.h"
@@ -1417,6 +1419,57 @@ enum ec_current_image google_chromeec_get_current_image(void)
 
 	/* Will still be UNKNOWN if command failed */
 	return ec_image_type;
+}
+
+int google_chromeec_get_num_pd_ports(int *num_ports)
+{
+	struct ec_response_charge_port_count resp = {};
+	struct chromeec_command cmd = {
+		.cmd_code = EC_CMD_CHARGE_PORT_COUNT,
+		.cmd_version = 0,
+		.cmd_data_out = &resp,
+		.cmd_size_in = 0,
+		.cmd_size_out = sizeof(resp),
+		.cmd_dev_index = 0,
+	};
+	int rv;
+
+	rv = google_chromeec_command(&cmd);
+	if (rv)
+		return rv;
+
+	*num_ports = resp.port_count;
+	return 0;
+}
+
+int google_chromeec_get_pd_port_caps(int port,
+				struct usb_pd_port_caps *port_caps)
+{
+	struct ec_params_get_pd_port_caps params = {
+		.port = port,
+	};
+	struct ec_response_get_pd_port_caps resp = {};
+	struct chromeec_command cmd = {
+		.cmd_code = EC_CMD_GET_PD_PORT_CAPS,
+		.cmd_version = 0,
+		.cmd_data_in = &params,
+		.cmd_size_in = sizeof(params),
+		.cmd_data_out = &resp,
+		.cmd_size_out = sizeof(resp),
+		.cmd_dev_index = 0,
+	};
+	int rv;
+
+	rv = google_chromeec_command(&cmd);
+	if (rv)
+		return rv;
+
+	port_caps->power_role_cap = resp.pd_power_role_cap;
+	port_caps->try_power_role_cap = resp.pd_try_power_role_cap;
+	port_caps->data_role_cap = resp.pd_data_role_cap;
+	port_caps->port_location = resp.pd_port_location;
+
+	return 0;
 }
 
 void google_chromeec_init(void)

@@ -10,6 +10,7 @@
 
 9elements Agency GmbH
 Advanced Micro Devices, Inc.
+AG Electronics Ltd.
 Alex Züpke
 Alexander Couzens
 Alexandru Gagniuc
@@ -20,20 +21,27 @@ Arthur Heymans
 ASPEED Technology Inc.
 Atheros Corporation
 Atmel Corporation
+BAP - Bruhnspace Advanced Projects
 Carl-Daniel Hailfinger
+Christoph Grenz
 coresystems GmbH
+Corey Osgood
 Damien Zammit
 David Brownell
 David Hendricks
 David Mosberger-Tang
 Denis Dowling
 DENX Software Engineering
+Digital Design Corporation
 DMP Electronics Inc.
 Drew Eckhardt
+Dynon Avionics
+Edward O'Callaghan
 Egbert Eich
 Eltan B.V
 Eric Biederman
 Eswar Nallusamy
+Fabian Kunkel
 Facebook, Inc.
 Felix Held
 Frederic Potter
@@ -41,6 +49,7 @@ Free Software Foundation, Inc.
 Freescale Semiconductor, Inc.
 Gary Jennejohn
 Gerd Hoffmann
+Gergely Kiss
 Google LLC
 Greg Watson
 Idwer Vollering
@@ -53,11 +62,13 @@ Jordan Crouse
 Joseph Smith
 Keith Hui
 Keith Packard
+Kevin Cody-Little
 Kshitij
 Kyösti Mälkki
 Lei Wen
 Li-Ta Lo
 Libra Li
+Libretrend LDA
 Linus Torvalds
 Linux Networx, Inc.
 Luc Verhaegen
@@ -67,34 +78,44 @@ Marius Gröger
 Martin Mares
 Marvell International Ltd.
 Marvell Semiconductor Inc.
+Matt DeVillier
 MediaTek Inc.
+Mondrian Nuessle
 MontaVista Software, Inc.
 Myles Watson
 Network Appliance Inc.
 Nicholas Sielicki
 Nick Barker
 Nico Huber
+Nicola Corna
 Ollie Lo
+Omar Pakker
 Orion Technologies, LLC
 Patrick Georgi
 Patrick Rudolph
+Pavel Sayekat
 PC Engines GmbH
 Per Odlund
 Peter Stuge
+Philipp Degler
+Protectli
 Raptor Engineering, LLC
 Red Hat Inc
 Reinhard Meyer
+Richard Spiegel
 Richard Woodruff
 Ronald G. Minnich
 Rudolf Marek
 Russell King
 Sage Electronic Engineering, LLC
 Samsung Electronics
+Samuel Holland
 SciTech Software, Inc.
 Sebastian Grzywna
 secunet Security Networks AG
 Siemens AG
 Silicon Integrated System Corporation
+Silverback ltd.
 Stefan Reinauer
 Steve Magnani
 ST Microelectronics
@@ -102,16 +123,22 @@ SUSE LINUX AG
 Sven Schnelle
 Syed Mohammed Khasim
 Texas Instruments
+The ChromiumOS Authors
 The Linux Foundation
 Thomas Winischhofer
 Timothy Pearson
+Tobias Diedrich
 Tungsten Graphics, Inc.
 Tyan Computer Corp.
 ucRobotics Inc.
+University of Heidelberg
 Uwe Hermann
 VIA Technologies, Inc
 Vipin Kumar
+Vladimir Serbinenko
+Wang Qing Pei
 Ward Vandewege
+Win Enterprises
 Wolfgang Denk
 Yinghai Lu
 
@@ -125,3 +152,4 @@ src/console
 src/cpu
 src/device
 src/drivers
+src/superio

@@ -64,28 +64,6 @@ across architectures.
 ### Mentors
 * Timothy Pearson <tpearson@raptorengineering.com>
 
-## Support QEMU AArch64
-Having QEMU support for the architectures coreboot can boot helps with
-some (limited) compatibility testing: While QEMU generally doesn't need
-much hardware init, any CPU state changes in the boot flow will likely
-be quite close to reality.
-
-That could be used as a baseline to ensure that changes to architecture
-code doesn't entirely break these architectures
-
-### Requirements
-* coreboot knowledge: Should know the general boot flow in coreboot.
-* other knowledge: This will require knowing how the architecture
-  typically boots, to adapt the coreboot payload interface to be
-  appropriate and, for example, provide a device tree in the platform's
-  typical format.
-* hardware requirements: since QEMU runs practically everywhere and
-  needs no recovery mechanism, these are suitable projects when no special
-  hardware is available.
-
-### Mentors
-* Patrick Georgi <patrick@georgi.software>
-
 ## Add Kernel Address Sanitizer functionality to coreboot
 The Kernel Address Sanitizer (KASAN) is a runtime dynamic memory error detector.
 The idea is to check every memory access (variables) for its validity

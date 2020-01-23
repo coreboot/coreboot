@@ -6,11 +6,12 @@
 
 # Directories requiring SPDX Identifiers only
 util/lint/lint-000-license-headers "src/acpi" SPDX_ONLY
+util/lint/lint-000-license-headers "src/superio" SPDX_ONLY
 
 # Top level
 util/lint/lint-000-license-headers "src/arch src/commonlib src/console \
 	src/cpu src/device src/ec src/mainboard src/northbridge src/soc \
-	src/southbridge src/superio"
+	src/southbridge"
 
 # src/drivers
 util/lint/lint-000-license-headers "src/drivers/ams src/drivers/aspeed src/drivers/dec src/drivers/elog \

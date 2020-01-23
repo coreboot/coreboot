@@ -1,21 +1,5 @@
-/*
- * This file is part of the coreboot project.
- *
- * Copyright (C) 2000 AG Electronics Ltd.
- * Copyright (C) 2003-2004 Linux Networx
- * Copyright (C) 2004 Tyan
- * Copyright (C) 2007 AMD
- * Written by Yinghai Lu <yinghai.lu@amd.com> for AMD.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- */
+/* SPDX-License-Identifier: GPL-2.0-only */
+/* This file is part of the coreboot project. */
 
 #include <device/device.h>
 #include <device/pnp.h>

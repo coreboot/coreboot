@@ -23,9 +23,12 @@ int cbfs_boot_locate(struct cbfsf *fh, const char *name, uint32_t *type);
    NOTE: Since this may return a direct pointer to memory-mapped hardware,
    compressed files are NOT transparently decompressed (unlike cbfs_load()). */
 void *cbfs_map(const char *name, size_t *size_out);
-/* Removes a mapping previously allocated with cbfs_map(). Should try to unmap
-   mappings in strict LIFO order where possible, since mapping backends often
-   don't support more complicated cases. */
+/* Like cbfs_map(), except that it will always read from the read-only CBFS
+   ("COREBOOT" FMAP region), even when CONFIG(VBOOT) is enabled. */
+void *cbfs_ro_map(const char *name, size_t *size_out);
+/* Removes a previously allocated CBFS mapping. Should try to unmap mappings in
+   strict LIFO order where possible, since mapping backends often don't support
+   more complicated cases. */
 int cbfs_unmap(void *mapping);
 /* Locate file in a specific region of fmap. Return 0 on success. < 0 on error*/
 int cbfs_locate_file_in_region(struct cbfsf *fh, const char *region_name,
@@ -34,6 +37,9 @@ int cbfs_locate_file_in_region(struct cbfsf *fh, const char *region_name,
    success or 0 on error. File will get decompressed as necessary. Same
    decompression requirements as cbfs_load_and_decompress(). */
 size_t cbfs_load(const char *name, void *buf, size_t buf_size);
+/* Like cbfs_load(), except that it will always read from the read-only CBFS
+   ("COREBOOT" FMAP region), even when CONFIG(VBOOT) is enabled. */
+size_t cbfs_ro_load(const char *name, void *buf, size_t buf_size);
 /* Load |in_size| bytes from |rdev| at |offset| to the |buffer_size| bytes
  * large |buffer|, decompressing it according to |compression| in the process.
  * Returns the decompressed file size, or 0 on error.

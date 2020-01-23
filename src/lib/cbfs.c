@@ -70,18 +70,28 @@ int cbfs_boot_locate(struct cbfsf *fh, const char *name, uint32_t *type)
 	return 0;
 }
 
-void *cbfs_map(const char *name, size_t *size_out)
+static void *_cbfs_map(const char *name, size_t *size_out, bool force_ro)
 {
 	struct region_device rdev;
 	union cbfs_mdata mdata;
 
-	if (cbfs_boot_lookup(name, false, &mdata, &rdev))
+	if (cbfs_boot_lookup(name, force_ro, &mdata, &rdev))
 		return NULL;
 
 	if (size_out != NULL)
 		*size_out = region_device_sz(&rdev);
 
 	return rdev_mmap_full(&rdev);
+}
+
+void *cbfs_map(const char *name, size_t *size_out)
+{
+	return _cbfs_map(name, size_out, false);
+}
+
+void *cbfs_ro_map(const char *name, size_t *size_out)
+{
+	return _cbfs_map(name, size_out, true);
 }
 
 int cbfs_unmap(void *mapping)
@@ -281,12 +291,13 @@ void *cbfs_boot_map_optionrom_revision(uint16_t vendor, uint16_t device, uint8_t
 	return cbfs_map(name, NULL);
 }
 
-size_t cbfs_load(const char *name, void *buf, size_t buf_size)
+static size_t _cbfs_load(const char *name, void *buf, size_t buf_size,
+			 bool force_ro)
 {
 	struct region_device rdev;
 	union cbfs_mdata mdata;
 
-	if (cbfs_boot_lookup(name, false, &mdata, &rdev))
+	if (cbfs_boot_lookup(name, force_ro, &mdata, &rdev))
 		return 0;
 
 	uint32_t compression = CBFS_COMPRESS_NONE;
@@ -300,6 +311,16 @@ size_t cbfs_load(const char *name, void *buf, size_t buf_size)
 
 	return cbfs_load_and_decompress(&rdev, 0, region_device_sz(&rdev),
 					buf, buf_size, compression);
+}
+
+size_t cbfs_load(const char *name, void *buf, size_t buf_size)
+{
+	return _cbfs_load(name, buf, buf_size, false);
+}
+
+size_t cbfs_ro_load(const char *name, void *buf, size_t buf_size)
+{
+	return _cbfs_load(name, buf, buf_size, true);
 }
 
 int cbfs_prog_stage_load(struct prog *pstage)

@@ -107,9 +107,6 @@ void sdram_initialize(struct pei_data *pei_data)
 {
 	int (*entry)(struct pei_data *pei_data) __attribute__((regparm(1)));
 
-	uint32_t type = CBFS_TYPE_MRC;
-	struct cbfsf f;
-
 	printk(BIOS_DEBUG, "Starting UEFI PEI System Agent\n");
 
 	/*
@@ -130,13 +127,10 @@ void sdram_initialize(struct pei_data *pei_data)
 
 	/*
 	 * Locate and call UEFI System Agent binary. The binary needs to be at a fixed offset
-	 * in the flash and can therefore only reside in the COREBOOT fmap region.
+	 * in the flash and can therefore only reside in the COREBOOT fmap region. We don't care
+	 * about leaking the mapping.
 	 */
-	if (cbfs_locate_file_in_region(&f, "COREBOOT", "mrc.bin", &type) < 0)
-		die("mrc.bin not found!");
-
-	/* We don't care about leaking the mapping */
-	entry = rdev_mmap_full(&f.data);
+	entry = cbfs_ro_map("mrc.bin", NULL);
 	if (entry) {
 		int rv = entry(pei_data);
 

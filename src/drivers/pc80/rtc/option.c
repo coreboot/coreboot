@@ -49,36 +49,28 @@ static enum cb_err get_cmos_value(unsigned long bit, unsigned long length,
 	return CB_SUCCESS;
 }
 
-static enum cb_err locate_cmos_layout(struct region_device *rdev)
+static struct cmos_option_table *get_cmos_layout(void)
 {
-	uint32_t cbfs_type = CBFS_COMPONENT_CMOS_LAYOUT;
-	static struct cbfsf fh;
+	static struct cmos_option_table *ct = NULL;
 
 	/*
 	 * In case VBOOT is enabled and this function is called from SMM,
 	 * we have multiple CMOS layout files and to locate them we'd need to
 	 * include VBOOT into SMM...
 	 *
-	 * Support only one CMOS layout in the 'COREBOOT' region for now.
+	 * Support only one CMOS layout in the RO CBFS for now.
 	 */
-	if (!region_device_sz(&(fh.data))) {
-		if (cbfs_locate_file_in_region(&fh, "COREBOOT", "cmos_layout.bin",
-					       &cbfs_type)) {
-			printk(BIOS_ERR, "RTC: cmos_layout.bin could not be found. "
-						"Options are disabled\n");
-			return CB_CMOS_LAYOUT_NOT_FOUND;
-		}
-	}
-
-	cbfs_file_data(rdev, &fh);
-
-	return CB_SUCCESS;
+	if (!ct)
+		ct = cbfs_ro_map("cmos_layout.bin", NULL);
+	if (!ct)
+		printk(BIOS_ERR, "RTC: cmos_layout.bin could not be found. "
+				 "Options are disabled\n");
+	return ct;
 }
 
 enum cb_err cmos_get_option(void *dest, const char *name)
 {
 	struct cmos_option_table *ct;
-	struct region_device rdev;
 	struct cmos_entries *ce;
 	size_t namelen;
 	int found = 0;
@@ -86,16 +78,9 @@ enum cb_err cmos_get_option(void *dest, const char *name)
 	/* Figure out how long name is */
 	namelen = strnlen(name, CMOS_MAX_NAME_LENGTH);
 
-	if (locate_cmos_layout(&rdev) != CB_SUCCESS) {
+	ct = get_cmos_layout();
+	if (!ct)
 		return CB_CMOS_LAYOUT_NOT_FOUND;
-	}
-	ct = rdev_mmap_full(&rdev);
-	if (!ct) {
-		printk(BIOS_ERR, "RTC: cmos_layout.bin could not be mapped. "
-		       "Options are disabled\n");
-
-		return CB_CMOS_LAYOUT_NOT_FOUND;
-	}
 
 	/* find the requested entry record */
 	ce = (struct cmos_entries *)((unsigned char *)ct + ct->header_length);
@@ -108,19 +93,15 @@ enum cb_err cmos_get_option(void *dest, const char *name)
 	}
 	if (!found) {
 		printk(BIOS_DEBUG, "No CMOS option '%s'.\n", name);
-		rdev_munmap(&rdev, ct);
 		return CB_CMOS_OPTION_NOT_FOUND;
 	}
 
-	if (!cmos_checksum_valid(LB_CKS_RANGE_START, LB_CKS_RANGE_END, LB_CKS_LOC)) {
-		rdev_munmap(&rdev, ct);
+	if (!cmos_checksum_valid(LB_CKS_RANGE_START, LB_CKS_RANGE_END, LB_CKS_LOC))
 		return CB_CMOS_CHECKSUM_INVALID;
-	}
-	if (get_cmos_value(ce->bit, ce->length, dest) != CB_SUCCESS) {
-		rdev_munmap(&rdev, ct);
+
+	if (get_cmos_value(ce->bit, ce->length, dest) != CB_SUCCESS)
 		return CB_CMOS_ACCESS_ERROR;
-	}
-	rdev_munmap(&rdev, ct);
+
 	return CB_SUCCESS;
 }
 
@@ -168,7 +149,6 @@ static enum cb_err set_cmos_value(unsigned long bit, unsigned long length,
 enum cb_err cmos_set_option(const char *name, void *value)
 {
 	struct cmos_option_table *ct;
-	struct region_device rdev;
 	struct cmos_entries *ce;
 	unsigned long length;
 	size_t namelen;
@@ -177,16 +157,9 @@ enum cb_err cmos_set_option(const char *name, void *value)
 	/* Figure out how long name is */
 	namelen = strnlen(name, CMOS_MAX_NAME_LENGTH);
 
-	if (locate_cmos_layout(&rdev) != CB_SUCCESS) {
+	ct = get_cmos_layout();
+	if (!ct)
 		return CB_CMOS_LAYOUT_NOT_FOUND;
-	}
-	ct = rdev_mmap_full(&rdev);
-	if (!ct) {
-		printk(BIOS_ERR, "RTC: cmos_layout.bin could not be mapped. "
-		       "Options are disabled\n");
-
-		return CB_CMOS_LAYOUT_NOT_FOUND;
-	}
 
 	/* find the requested entry record */
 	ce = (struct cmos_entries *)((unsigned char *)ct + ct->header_length);
@@ -199,7 +172,6 @@ enum cb_err cmos_set_option(const char *name, void *value)
 	}
 	if (!found) {
 		printk(BIOS_DEBUG, "WARNING: No CMOS option '%s'.\n", name);
-		rdev_munmap(&rdev, ct);
 		return CB_CMOS_OPTION_NOT_FOUND;
 	}
 
@@ -208,18 +180,13 @@ enum cb_err cmos_set_option(const char *name, void *value)
 		length = MAX(strlen((const char *)value) * 8, ce->length - 8);
 		/* make sure the string is null terminated */
 		if (set_cmos_value(ce->bit + ce->length - 8, 8, &(u8[]){0})
-		    != CB_SUCCESS) {
-			rdev_munmap(&rdev, ct);
+		    != CB_SUCCESS)
 			return CB_CMOS_ACCESS_ERROR;
-		}
 	}
 
-	if (set_cmos_value(ce->bit, length, value) != CB_SUCCESS) {
-		rdev_munmap(&rdev, ct);
+	if (set_cmos_value(ce->bit, length, value) != CB_SUCCESS)
 		return CB_CMOS_ACCESS_ERROR;
-	}
 
-	rdev_munmap(&rdev, ct);
 	return CB_SUCCESS;
 }
 

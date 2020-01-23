@@ -23,6 +23,7 @@
  * 0x0905_0000..0x0907_0000: SMMU (smmu-v3)
  * 0x0a00_0000..0x0a00_0200: MMIO (virtio)
  * 0x0c00_0000..0x0e00_0000: Platform bus
+ * 0x0e00_0000..0x0eff_ffff: Secure SRAM
  * 0x4000_0000..: RAM
  */
 #define VIRT_UART_BASE 0x09000000
@@ -32,3 +33,4 @@
 #define VIRT_SMMU_BASE 0x09050000
 #define VIRT_MMIO_BASE 0x0a000000
 #define VIRT_PLATFORM_BUS_BASE 0x0c000000
+#define VIRT_SECRAM_BASE 0xe000000

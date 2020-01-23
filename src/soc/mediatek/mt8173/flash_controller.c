@@ -240,7 +240,6 @@ int mtk_spi_flash_probe(const struct spi_slave *spi,
 	write32(&mt8173_nor->wrprot, SFLASH_COMMAND_ENABLE);
 	memcpy(&flash->spi, spi, sizeof(*spi));
 
-	flash->name = "mt8173 flash controller";
 	flash->sector_size = 0x1000;
 	flash->erase_cmd = SECTOR_ERASE_CMD;
 	flash->size = CONFIG_ROM_SIZE;

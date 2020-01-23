@@ -932,7 +932,6 @@ static int spi_flash_programmer_probe(const struct spi_slave *spi,
 		return 0;
 
 	memcpy(&flash->spi, spi, sizeof(*spi));
-	flash->name = "Opaque HW-sequencing";
 
 	ich_hwseq_set_addr(0);
 	switch ((cntlr.hsfs >> 3) & 3) {

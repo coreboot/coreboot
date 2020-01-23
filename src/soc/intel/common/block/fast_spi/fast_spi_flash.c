@@ -301,7 +301,6 @@ static int fast_spi_flash_probe(const struct spi_slave *dev,
 	flash->size = (flash_bits >> 3) + 1;
 
 	memcpy(&flash->spi, dev, sizeof(*dev));
-	flash->name = "FAST_SPI Hardware Sequencer";
 
 	/* Can erase both 4 KiB and 64 KiB chunks. Declare the smaller size. */
 	flash->sector_size = 4 * KiB;

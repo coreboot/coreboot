@@ -41,63 +41,63 @@
 
 static const struct spi_flash_part_id flash_table[] = {
 	{
-		.id			= 0x4218,
-		.name			= "AT25SL128A",
+		/* AT25SL128A */
+		.id[0]			= 0x4218,
 		.nr_sectors_shift	= 12,
 	},
 	{
-		.id			= 0x4501,
-		.name			= "AT25DF081A", /* Yes, 81A id < 81 */
+		/* AT25DF081A Yes, 81A id < 81 */
+		.id[0]			= 0x4501,
 		.nr_sectors_shift	= 8,
 	},
 	{
-		.id			= 0x4502,
-		.name			= "AT25DF081",
+		/* AT25DF081 */
+		.id[0]			= 0x4502,
 		.nr_sectors_shift	= 8,
 	},
 	{
-		.id			= 0x4602,
-		.name			= "AT25DF161",
+		/* AT25DF161 */
+		.id[0]			= 0x4602,
 		.nr_sectors_shift	= 9,
 	},
 	{
-		.id			= 0x4603,
-		.name			= "AT25DL161",
+		/* AT25DL161 */
+		.id[0]			= 0x4603,
 		.nr_sectors_shift	= 9,
 	},
 	{
-		.id			= 0x4700,
-		.name			= "AT25DF321",
+		/* AT25DF321 */
+		.id[0]			= 0x4700,
 		.nr_sectors_shift	= 10,
 	},
 	{
-		.id			= 0x4701,
-		.name			= "AT25DF321A",
+		/* AT25DF321A */
+		.id[0]			= 0x4701,
 		.nr_sectors_shift	= 10,
 	},
 	{
-		.id			= 0x4800,
-		.name			= "AT25DF641",
+		/* AT25DF641 */
+		.id[0]			= 0x4800,
 		.nr_sectors_shift	= 11,
 	},
 	{
-		.id			= 0x8501,
-		.name			= "AT25SF081",
+		/* AT25SF081 */
+		.id[0]			= 0x8501,
 		.nr_sectors_shift	= 8,
 	},
 	{
-		.id			= 0x8600,
-		.name			= "AT25DQ161",
+		/* AT25DQ161 */
+		.id[0]			= 0x8600,
 		.nr_sectors_shift	= 9,
 	},
 	{
-		.id			= 0x8601,
-		.name			= "AT25SF161",
+		/* AT25SF161 */
+		.id[0]			= 0x8601,
 		.nr_sectors_shift	= 9,
 	},
 	{
-		.id			= 0x8700,
-		.name			= "AT25DQ321",
+		/* AT25DQ321 */
+		.id[0]			= 0x8700,
 		.nr_sectors_shift	= 10,
 	},
 };
@@ -106,7 +106,7 @@ const struct spi_flash_vendor_info spi_flash_adesto_vi = {
 	.id = VENDOR_ID_ADESTO,
 	.page_size_shift = 8,
 	.sector_size_kib_shift = 2,
-	.match_id_mask = 0xffff,
+	.match_id_mask[0] = 0xffff,
 	.ids = flash_table,
 	.nr_part_ids = ARRAY_SIZE(flash_table),
 	.desc = &spi_flash_pp_0x20_sector_desc,

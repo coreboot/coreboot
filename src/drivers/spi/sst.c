@@ -46,56 +46,56 @@
 
 static const struct spi_flash_part_id flash_table_ai[] = {
 	{
-		.id = 0x8d,
-		.name = "SST25VF040B",
+		/* SST25VF040B */
+		.id[0] = 0x8d,
 		.nr_sectors_shift = 7,
 	},{
-		.id = 0x8e,
-		.name = "SST25VF080B",
+		/* SST25VF080B */
+		.id[0] = 0x8e,
 		.nr_sectors_shift = 8,
 	},{
-		.id = 0x80,
-		.name = "SST25VF080",
+		/* SST25VF080 */
+		.id[0] = 0x80,
 		.nr_sectors_shift = 8,
 	},{
-		.id = 0x41,
-		.name = "SST25VF016B",
+		/* SST25VF016B */
+		.id[0] = 0x41,
 		.nr_sectors_shift = 9,
 	},{
-		.id = 0x4a,
-		.name = "SST25VF032B",
+		/* SST25VF032B */
+		.id[0] = 0x4a,
 		.nr_sectors_shift = 10,
 	},{
-		.id = 0x01,
-		.name = "SST25WF512",
+		/* SST25WF512 */
+		.id[0] = 0x01,
 		.nr_sectors_shift = 4,
 	},{
-		.id = 0x02,
-		.name = "SST25WF010",
+		/* SST25WF010 */
+		.id[0] = 0x02,
 		.nr_sectors_shift = 5,
 	},{
-		.id = 0x03,
-		.name = "SST25WF020",
+		/* SST25WF020 */
+		.id[0] = 0x03,
 		.nr_sectors_shift = 6,
 	},{
-		.id = 0x04,
-		.name = "SST25WF040",
+		/* SST25WF040 */
+		.id[0] = 0x04,
 		.nr_sectors_shift = 7,
 	},{
-		.id = 0x05,
-		.name = "SST25WF080",
+		/* SST25WF080 */
+		.id[0] = 0x05,
 		.nr_sectors_shift = 8,
 	},{
-		.id = 0x14,
-		.name = "SST25WF080B",
+		/* SST25WF080B */
+		.id[0] = 0x14,
 		.nr_sectors_shift = 8,
 	},
 };
 
 static const struct spi_flash_part_id flash_table_pp256[] = {
 	{
-		.id = 0x4b,
-		.name = "SST25VF064C",
+		/* SST25VF064C */
+		.id[0] = 0x4b,
 		.nr_sectors_shift = 11,
 	},
 };
@@ -254,7 +254,7 @@ static const struct spi_flash_ops_descriptor descai = {
 const struct spi_flash_vendor_info spi_flash_sst_ai_vi = {
 	.id = VENDOR_ID_SST,
 	.sector_size_kib_shift = 2,
-	.match_id_mask = 0xff,
+	.match_id_mask[0] = 0xff,
 	.ids = flash_table_ai,
 	.nr_part_ids = ARRAY_SIZE(flash_table_ai),
 	.desc = &descai,
@@ -265,7 +265,7 @@ const struct spi_flash_vendor_info spi_flash_sst_vi = {
 	.id = VENDOR_ID_SST,
 	.page_size_shift = 8,
 	.sector_size_kib_shift = 2,
-	.match_id_mask = 0xff,
+	.match_id_mask[0] = 0xff,
 	.ids = flash_table_pp256,
 	.nr_part_ids = ARRAY_SIZE(flash_table_pp256),
 	.desc = &spi_flash_pp_0x20_sector_desc,

@@ -104,7 +104,6 @@ struct spi_flash {
 		};
 	} flags;
 	u16 model;
-	const char *name;
 	u32 size;
 	u32 sector_size;
 	u32 page_size;

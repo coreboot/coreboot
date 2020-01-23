@@ -38,98 +38,98 @@
 
 static const struct spi_flash_part_id flash_table[] = {
 	{
-		.id = 0x2014,
-		.name = "MX25L8005",
+		/* MX25L8005 */
+		.id[0] = 0x2014,
 		.nr_sectors_shift = 8,
 	},
 	{
-		.id = 0x2015,
-		.name = "MX25L1605D",
+		/* MX25L1605D */
+		.id[0] = 0x2015,
 		.nr_sectors_shift = 9,
 	},
 	{
-		.id = 0x2016,
-		.name = "MX25L3205D",
+		/* MX25L3205D */
+		.id[0] = 0x2016,
 		.nr_sectors_shift = 10,
 	},
 	{
-		.id = 0x2017,
-		.name = "MX25L6405D",
+		/* MX25L6405D */
+		.id[0] = 0x2017,
 		.nr_sectors_shift = 11,
 	},
 	{
-		.id = 0x2018,
-		.name = "MX25L12805D",
+		/* MX25L12805D */
+		.id[0] = 0x2018,
 		.nr_sectors_shift = 12,
 	},
 	{
-		.id = 0x2019,
-		.name = "MX25L25635F",
+		/* MX25L25635F */
+		.id[0] = 0x2019,
 		.nr_sectors_shift = 13,
 	},
 	{
-		.id = 0x201a,
-		.name = "MX66L51235F",
+		/* MX66L51235F */
+		.id[0] = 0x201a,
 		.nr_sectors_shift = 14,
 	},
 	{
-		.id = 0x2415,
-		.name = "MX25L1635D",
+		/* MX25L1635D */
+		.id[0] = 0x2415,
 		.nr_sectors_shift = 9,
 	},
 	{
-		.id = 0x2515,
-		.name = "MX25L1635E",
+		/* MX25L1635E */
+		.id[0] = 0x2515,
 		.nr_sectors_shift = 9,
 	},
 	{
-		.id = 0x2534,
-		.name = "MX25U8032E",
+		/* MX25U8032E */
+		.id[0] = 0x2534,
 		.nr_sectors_shift = 8,
 	},
 	{
-		.id = 0x2535,
-		.name = "MX25U1635E",
+		/* MX25U1635E */
+		.id[0] = 0x2535,
 		.nr_sectors_shift = 9,
 	},
 	{
-		.id = 0x2536,
-		.name = "MX25U3235E",
+		/* MX25U3235E */
+		.id[0] = 0x2536,
 		.nr_sectors_shift = 10,
 	},
 	{
-		.id = 0x2537,
-		.name = "MX25U6435F",
+		/* MX25U6435F */
+		.id[0] = 0x2537,
 		.nr_sectors_shift = 11,
 	},
 	{
-		.id = 0x2538,
-		.name = "MX25U12835F",
+		/* MX25U12835F */
+		.id[0] = 0x2538,
 		.nr_sectors_shift = 12,
 	},
 	{
-		.id = 0x2539,
-		.name = "MX25U25635F",
+		/* MX25U25635F */
+		.id[0] = 0x2539,
 		.nr_sectors_shift = 13,
 	},
 	{
-		.id = 0x253a,
-		.name = "MX25U51245G",
+		/* MX25U51245G */
+		.id[0] = 0x253a,
 		.nr_sectors_shift = 14,
 	},
 	{
-		.id = 0x2618,
-		.name = "MX25L12855E",
+		/* MX25L12855E */
+		.id[0] = 0x2618,
 		.nr_sectors_shift = 12,
 	},
 	{
-		.id = 0x5e16,
-		.name = "MX25L3235D", /* MX25L3225D/MX25L3236D/MX25L3237D */
+		/* MX25L3235D/MX25L3225D/MX25L3236D/MX25L3237D */
+		.id[0] = 0x5e16,
 		.nr_sectors_shift = 10,
 	},
 	{
-		.id = 0x9517,
-		.name = "MX25L6495F",
+		/* MX25L6495F */
+		.id[0] = 0x9517,
 		.nr_sectors_shift = 11,
 	},
 };
@@ -138,7 +138,7 @@ const struct spi_flash_vendor_info spi_flash_macronix_vi = {
 	.id = VENDOR_ID_MACRONIX,
 	.page_size_shift = 8,
 	.sector_size_kib_shift = 2,
-	.match_id_mask = 0xffff,
+	.match_id_mask[0] = 0xffff,
 	.ids = flash_table,
 	.nr_part_ids = ARRAY_SIZE(flash_table),
 	.desc = &spi_flash_pp_0x20_sector_desc,

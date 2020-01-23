@@ -73,10 +73,12 @@ int spi_flash_cmd_read(const struct spi_flash *flash, u32 offset, size_t len, vo
 int stmicro_release_deep_sleep_identify(const struct spi_slave *spi, u8 *idcode);
 
 struct spi_flash_part_id {
-	/* rdid command constructs a 32-bit id using the following method
-	 * for matching: 31 | id[3] | id[4] | id[1] | id[2] | 0 */
-	uint32_t id;
-	const char *name;
+	/* rdid command constructs 2x 16-bit id using the following method
+	 * for matching after reading 5 bytes (1st byte is manuf id):
+	 *    id[0] = (id[1] << 8) | id[2]
+	 *    id[1] = (id[3] << 8) | id[4]
+	 */
+	uint16_t id[2];
 	/* Log based 2 total number of sectors. */
 	uint16_t nr_sectors_shift: 4;
 	uint16_t fast_read_dual_output_support : 1;
@@ -104,7 +106,7 @@ struct spi_flash_vendor_info {
 	uint8_t sector_size_kib_shift : 4;
 	uint16_t nr_part_ids;
 	const struct spi_flash_part_id *ids;
-	uint32_t match_id_mask; /* matching bytes of the id for this set*/
+	uint16_t match_id_mask[2]; /* matching bytes of the id for this set*/
 	const struct spi_flash_ops_descriptor *desc;
 	const struct spi_flash_protection_ops *prot_ops;
 	/* Returns 0 on success. !0 otherwise. */

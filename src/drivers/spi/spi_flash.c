@@ -355,8 +355,7 @@ static int fill_spi_flash(const struct spi_slave *spi, struct spi_flash *flash,
 {
 	memcpy(&flash->spi, spi, sizeof(*spi));
 	flash->vendor = vi->id;
-	flash->model = part->id;
-	flash->name = part->name;
+	flash->model = part->id[0];
 
 	flash->page_size = 1U << vi->page_size_shift;
 	flash->sector_size = (1U << vi->sector_size_kib_shift) * KiB;
@@ -379,14 +378,19 @@ static int fill_spi_flash(const struct spi_slave *spi, struct spi_flash *flash,
 }
 
 static const struct spi_flash_part_id *find_part(const struct spi_flash_vendor_info *vi,
-						uint32_t id)
+						uint16_t id[2])
 {
 	size_t i;
+	const uint16_t lid[2] = {
+		[0] = id[0] & vi->match_id_mask[0],
+		[1] = id[1] & vi->match_id_mask[1],
+	};
+
 
 	for (i = 0; i < vi->nr_part_ids; i++) {
 		const struct spi_flash_part_id *part = &vi->ids[i];
 
-		if (part->id == id)
+		if (part->id[0] == lid[0] && part->id[1] == lid[1])
 			return part;
 	}
 
@@ -394,7 +398,7 @@ static const struct spi_flash_part_id *find_part(const struct spi_flash_vendor_i
 }
 
 static int find_match(const struct spi_slave *spi, struct spi_flash *flash,
-			uint8_t manuf_id, uint32_t id)
+			uint8_t manuf_id, uint16_t id[2])
 {
 	int i;
 
@@ -407,7 +411,7 @@ static int find_match(const struct spi_slave *spi, struct spi_flash *flash,
 		if (manuf_id != vi->id)
 			continue;
 
-		part = find_part(vi, id & vi->match_id_mask);
+		part = find_part(vi, id);
 
 		if (part == NULL)
 			continue;
@@ -424,7 +428,7 @@ int spi_flash_generic_probe(const struct spi_slave *spi,
 	int ret, i;
 	u8 idcode[IDCODE_LEN];
 	u8 manuf_id;
-	u32 id;
+	u16 id[2];
 
 	/* Read the ID codes */
 	ret = spi_flash_cmd(spi, CMD_READ_ID, idcode, sizeof(idcode));
@@ -450,7 +454,8 @@ int spi_flash_generic_probe(const struct spi_slave *spi,
 		manuf_id = idcode[0];
 	}
 
-	id = (idcode[3] << 24) | (idcode[4] << 16) | (idcode[1] << 8) | idcode[2];
+	id[0] = (idcode[1] << 8) | idcode[2];
+	id[1] = (idcode[3] << 8) | idcode[4];
 
 	return find_match(spi, flash, manuf_id, id);
 }
@@ -483,8 +488,8 @@ int spi_flash_probe(unsigned int bus, unsigned int cs, struct spi_flash *flash)
 	if (flash->flags.dual_spi && spi.ctrlr->xfer_dual)
 		mode_string = " (Dual SPI mode)";
 	printk(BIOS_INFO,
-	       "SF: Detected %s with sector size 0x%x, total 0x%x%s\n",
-		flash->name, flash->sector_size, flash->size, mode_string);
+	       "SF: Detected %02x %04x with sector size 0x%x, total 0x%x%s\n",
+		flash->vendor, flash->model, flash->sector_size, flash->size, mode_string);
 	if (bus == CONFIG_BOOT_DEVICE_SPI_FLASH_BUS
 			&& flash->size != CONFIG_ROM_SIZE) {
 		printk(BIOS_ERR, "SF size 0x%x does not correspond to"

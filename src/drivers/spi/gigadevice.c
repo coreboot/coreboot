@@ -36,79 +36,79 @@
 
 static const struct spi_flash_part_id flash_table[] = {
 	{
-		.id				= 0x3114,
-		.name				= "GD25T80",
+		/* GD25T80 */
+		.id[0]				= 0x3114,
 		.nr_sectors_shift		= 8,
 	},
 	{
-		.id				= 0x4014,
-		.name				= "GD25Q80",
+		/* GD25Q80 */
+		.id[0]				= 0x4014,
 		.nr_sectors_shift		= 8,
 		.fast_read_dual_output_support	= 1,
 	},					/* also GD25Q80B */
 	{
-		.id				= 0x4015,
-		.name				= "GD25Q16",
+		/* GD25Q16 */
+		.id[0]				= 0x4015,
 		.nr_sectors_shift		= 9,
 		.fast_read_dual_output_support	= 1,
 	},					/* also GD25Q16B */
 	{
-		.id				= 0x4016,
-		.name				= "GD25Q32B",
+		/* GD25Q32B */
+		.id[0]				= 0x4016,
 		.nr_sectors_shift		= 10,
 		.fast_read_dual_output_support	= 1,
 	},					/* also GD25Q32B */
 	{
-		.id				= 0x4017,
-		.name				= "GD25Q64",
+		/* GD25Q64 */
+		.id[0]				= 0x4017,
 		.nr_sectors_shift		= 11,
 		.fast_read_dual_output_support	= 1,
 	},					/* also GD25Q64B, GD25B64C */
 	{
-		.id				= 0x4018,
-		.name				= "GD25Q128",
+		/* GD25Q128 */
+		.id[0]				= 0x4018,
 		.nr_sectors_shift		= 12,
 		.fast_read_dual_output_support	= 1,
 	},					/* also GD25Q128B */
 	{
-		.id				= 0x4214,
-		.name				= "GD25VQ80C",
+		/* GD25VQ80C */
+		.id[0]				= 0x4214,
 		.nr_sectors_shift		= 8,
 		.fast_read_dual_output_support	= 1,
 	},
 	{
-		.id				= 0x4215,
-		.name				= "GD25VQ16C",
+		/* GD25VQ16C */
+		.id[0]				= 0x4215,
 		.nr_sectors_shift		= 9,
 		.fast_read_dual_output_support	= 1,
 	},
 	{
-		.id				= 0x6014,
-		.name				= "GD25LQ80",
+		/* GD25LQ80 */
+		.id[0]				= 0x6014,
 		.nr_sectors_shift		= 8,
 		.fast_read_dual_output_support	= 1,
 	},
 	{
-		.id				= 0x6015,
-		.name				= "GD25LQ16",
+		/* GD25LQ16 */
+		.id[0]				= 0x6015,
 		.nr_sectors_shift		= 9,
 		.fast_read_dual_output_support	= 1,
 	},
 	{
-		.id				= 0x6016,
-		.name				= "GD25LQ32",
+		/* GD25LQ32 */
+		.id[0]				= 0x6016,
 		.nr_sectors_shift		= 10,
 		.fast_read_dual_output_support	= 1,
 	},
 	{
-		.id				= 0x6017,
-		.name				= "GD25LQ64C",
+		/* GD25LQ64C */
+		.id[0]				= 0x6017,
 		.nr_sectors_shift		= 11,
 		.fast_read_dual_output_support	= 1,
 	},					/* also GD25LB64C */
 	{
-		.id				= 0x6018,
-		.name				= "GD25LQ128",
+		/* GD25LQ128 */
+		.id[0]				= 0x6018,
 		.nr_sectors_shift		= 12,
 		.fast_read_dual_output_support	= 1,
 	},
@@ -118,7 +118,7 @@ const struct spi_flash_vendor_info spi_flash_gigadevice_vi = {
 	.id = VENDOR_ID_GIGADEVICE,
 	.page_size_shift = 8,
 	.sector_size_kib_shift = 2,
-	.match_id_mask = 0xffff,
+	.match_id_mask[0] = 0xffff,
 	.ids = flash_table,
 	.nr_part_ids = ARRAY_SIZE(flash_table),
 	.desc = &spi_flash_pp_0x20_sector_desc,

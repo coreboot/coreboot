@@ -57,108 +57,108 @@
 
 static const struct spi_flash_part_id flash_table[] = {
 	{
-		.id = EON_ID_EN25B80,
-		.name = "EN25B80",
+		/* EN25B80 */
+		.id[0] = EON_ID_EN25B80,
 		.nr_sectors_shift = 8,
 	},
 	{
-		.id = EON_ID_EN25B16,
-		.name = "EN25B16",
+		/* EN25B16 */
+		.id[0] = EON_ID_EN25B16,
 		.nr_sectors_shift = 9,
 	},
 	{
-		.id = EON_ID_EN25B32,
-		.name = "EN25B32",
+		/* EN25B32 */
+		.id[0] = EON_ID_EN25B32,
 		.nr_sectors_shift = 10,
 	},
 	{
-		.id = EON_ID_EN25B64,
-		.name = "EN25B64",
+		/* EN25B64 */
+		.id[0] = EON_ID_EN25B64,
 		.nr_sectors_shift = 11,
 	},
 	{
-		.id = EON_ID_EN25F80,
-		.name = "EN25F80",
+		/* EN25F80 */
+		.id[0] = EON_ID_EN25F80,
 		.nr_sectors_shift = 8,
 	},
 	{
-		.id = EON_ID_EN25F16,
-		.name = "EN25F16",
+		/* EN25F16 */
+		.id[0] = EON_ID_EN25F16,
 		.nr_sectors_shift = 9,
 	},
 	{
-		.id = EON_ID_EN25F32,
-		.name = "EN25F32",
+		/* EN25F32 */
+		.id[0] = EON_ID_EN25F32,
 		.nr_sectors_shift = 10,
 	},
 	{
-		.id = EON_ID_EN25F64,
-		.name = "EN25F64",
+		/* EN25F64 */
+		.id[0] = EON_ID_EN25F64,
 		.nr_sectors_shift = 11,
 	},
 	{
-		.id = EON_ID_EN25Q80,
-		.name = "EN25Q80(A)",
+		/* EN25Q80(A) */
+		.id[0] = EON_ID_EN25Q80,
 		.nr_sectors_shift = 8,
 	},
 	{
-		.id = EON_ID_EN25Q16,
-		.name = "EN25Q16(D16)",
+		/* EN25Q16(D16) */
+		.id[0] = EON_ID_EN25Q16,
 		.nr_sectors_shift = 9,
 	},
 	{
-		.id = EON_ID_EN25Q32,
-		.name = "EN25Q32(A/B)",
+		/* EN25Q32(A/B) */
+		.id[0] = EON_ID_EN25Q32,
 		.nr_sectors_shift = 10,
 	},
 	{
-		.id = EON_ID_EN25Q64,
-		.name = "EN25Q64",
+		/* EN25Q64 */
+		.id[0] = EON_ID_EN25Q64,
 		.nr_sectors_shift = 11,
 	},
 	{
-		.id = EON_ID_EN25Q128,
-		.name = "EN25Q128",
+		/* EN25Q128 */
+		.id[0] = EON_ID_EN25Q128,
 		.nr_sectors_shift = 12,
 	},
 	{
-		.id = EON_ID_EN25QH16,
-		.name = "EN25QH16",
+		/* EN25QH16 */
+		.id[0] = EON_ID_EN25QH16,
 		.nr_sectors_shift = 9,
 	},
 	{
-		.id = EON_ID_EN25QH32,
-		.name = "EN25QH32",
+		/* EN25QH32 */
+		.id[0] = EON_ID_EN25QH32,
 		.nr_sectors_shift = 10,
 	},
 	{
-		.id = EON_ID_EN25QH64,
-		.name = "EN25QH64",
+		/* EN25QH64 */
+		.id[0] = EON_ID_EN25QH64,
 		.nr_sectors_shift = 11,
 	},
 	{
-		.id = EON_ID_EN25QH128,
-		.name = "EN25QH128",
+		/* EN25QH128 */
+		.id[0] = EON_ID_EN25QH128,
 		.nr_sectors_shift = 12,
 	},
 	{
-		.id = EON_ID_EN25S80,
-		.name = "EN25S80",
+		/* EN25S80 */
+		.id[0] = EON_ID_EN25S80,
 		.nr_sectors_shift = 8,
 	},
 	{
-		.id = EON_ID_EN25S16,
-		.name = "EN25S16",
+		/* EN25S16 */
+		.id[0] = EON_ID_EN25S16,
 		.nr_sectors_shift = 9,
 	},
 	{
-		.id = EON_ID_EN25S32,
-		.name = "EN25S32",
+		/* EN25S32 */
+		.id[0] = EON_ID_EN25S32,
 		.nr_sectors_shift = 10,
 	},
 	{
-		.id = EON_ID_EN25S64,
-		.name = "EN25S64",
+		/* EN25S64 */
+		.id[0] = EON_ID_EN25S64,
 		.nr_sectors_shift = 11,
 	},
 };
@@ -167,7 +167,7 @@ const struct spi_flash_vendor_info spi_flash_eon_vi = {
 	.id = VENDOR_ID_EON,
 	.page_size_shift = 8,
 	.sector_size_kib_shift = 2,
-	.match_id_mask = 0xffff,
+	.match_id_mask[0] = 0xffff,
 	.ids = flash_table,
 	.nr_part_ids = ARRAY_SIZE(flash_table),
 	.desc = &spi_flash_pp_0x20_sector_desc,

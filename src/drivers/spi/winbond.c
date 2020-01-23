@@ -81,141 +81,141 @@ struct status_regs {
 
 static const struct spi_flash_part_id flash_table[] = {
 	{
-		.id				= 0x2014,
-		.name				= "W25P80",
+		/* W25P80 */
+		.id[0]				= 0x2014,
 		.nr_sectors_shift		= 8,
 	},
 	{
-		.id				= 0x2015,
-		.name				= "W25P16",
+		/* W25P16 */
+		.id[0]				= 0x2015,
 		.nr_sectors_shift		= 9,
 	},
 	{
-		.id				= 0x2016,
-		.name				= "W25P32",
+		/* W25P32 */
+		.id[0]				= 0x2016,
 		.nr_sectors_shift		= 10,
 	},
 	{
-		.id				= 0x3014,
-		.name				= "W25X80",
+		/* W25X80 */
+		.id[0]				= 0x3014,
 		.nr_sectors_shift		= 8,
 		.fast_read_dual_output_support	= 1,
 	},
 	{
-		.id				= 0x3015,
-		.name				= "W25X16",
+		/* W25X16 */
+		.id[0]				= 0x3015,
 		.nr_sectors_shift		= 9,
 		.fast_read_dual_output_support	= 1,
 	},
 	{
-		.id				= 0x3016,
-		.name				= "W25X32",
+		/* W25X32 */
+		.id[0]				= 0x3016,
 		.nr_sectors_shift		= 10,
 		.fast_read_dual_output_support	= 1,
 	},
 	{
-		.id				= 0x3017,
-		.name				= "W25X64",
+		/* W25X64 */
+		.id[0]				= 0x3017,
 		.nr_sectors_shift		= 11,
 		.fast_read_dual_output_support	= 1,
 	},
 	{
-		.id				= 0x4014,
-		.name				= "W25Q80_V",
+		/* W25Q80_V */
+		.id[0]				= 0x4014,
 		.nr_sectors_shift		= 8,
 		.fast_read_dual_output_support	= 1,
 	},
 	{
-		.id				= 0x4015,
-		.name				= "W25Q16_V",
+		/* W25Q16_V */
+		.id[0]				= 0x4015,
 		.nr_sectors_shift		= 9,
 		.fast_read_dual_output_support	= 1,
 		.protection_granularity_shift	= 16,
 		.bp_bits			= 3,
 	},
 	{
-		.id				= 0x6015,
-		.name				= "W25Q16DW",
+		/* W25Q16DW */
+		.id[0]				= 0x6015,
 		.nr_sectors_shift		= 9,
 		.fast_read_dual_output_support	= 1,
 		.protection_granularity_shift	= 16,
 		.bp_bits			= 3,
 	},
 	{
-		.id				= 0x4016,
-		.name				= "W25Q32_V",
+		/* W25Q32_V */
+		.id[0]				= 0x4016,
 		.nr_sectors_shift		= 10,
 		.fast_read_dual_output_support	= 1,
 		.protection_granularity_shift	= 16,
 		.bp_bits			= 3,
 	},
 	{
-		.id				= 0x6016,
-		.name				= "W25Q32DW",
+		/* W25Q32DW */
+		.id[0]				= 0x6016,
 		.nr_sectors_shift		= 10,
 		.fast_read_dual_output_support	= 1,
 		.protection_granularity_shift	= 16,
 		.bp_bits			= 3,
 	},
 	{
-		.id				= 0x4017,
-		.name				= "W25Q64_V",
-		.nr_sectors_shift		= 11,
-		.fast_read_dual_output_support	= 1,
-		.protection_granularity_shift	= 17,
-		.bp_bits			= 3,
-	},
-	{
-		.id				= 0x6017,
-		.name				= "W25Q64DW",
+		/* W25Q64_V */
+		.id[0]				= 0x4017,
 		.nr_sectors_shift		= 11,
 		.fast_read_dual_output_support	= 1,
 		.protection_granularity_shift	= 17,
 		.bp_bits			= 3,
 	},
 	{
-		.id				= 0x4018,
-		.name				= "W25Q128_V",
+		/* W25Q64DW */
+		.id[0]				= 0x6017,
+		.nr_sectors_shift		= 11,
+		.fast_read_dual_output_support	= 1,
+		.protection_granularity_shift	= 17,
+		.bp_bits			= 3,
+	},
+	{
+		/* W25Q128_V */
+		.id[0]				= 0x4018,
 		.nr_sectors_shift		= 12,
 		.fast_read_dual_output_support	= 1,
 		.protection_granularity_shift	= 18,
 		.bp_bits			= 3,
 	},
 	{
-		.id				= 0x6018,
-		.name				= "W25Q128FW",
+		/* W25Q128FW */
+		.id[0]				= 0x6018,
 		.nr_sectors_shift		= 12,
 		.fast_read_dual_output_support	= 1,
 		.protection_granularity_shift	= 18,
 		.bp_bits			= 3,
 	},
 	{
-		.id				= 0x7018,
-		.name				= "W25Q128J",
+		/* W25Q128J */
+		.id[0]				= 0x7018,
 		.nr_sectors_shift		= 12,
 		.fast_read_dual_output_support	= 1,
 		.protection_granularity_shift	= 18,
 		.bp_bits			= 3,
 	},
 	{
-		.id				= 0x8018,
-		.name				= "W25Q128JW",
+		/* W25Q128JW */
+		.id[0]				= 0x8018,
 		.nr_sectors_shift		= 12,
 		.fast_read_dual_output_support	= 1,
 		.protection_granularity_shift	= 18,
 		.bp_bits			= 3,
 	},
 	{
-		.id				= 0x4019,
-		.name				= "W25Q256_V",
+		/* W25Q256_V */
+		.id[0]				= 0x4019,
 		.nr_sectors_shift		= 13,
 		.fast_read_dual_output_support	= 1,
 		.protection_granularity_shift	= 16,
 		.bp_bits			= 4,
 	},
 	{
-		.id				= 0x7019,
-		.name				= "W25Q256J",
+		/* W25Q256J */
+		.id[0]				= 0x7019,
 		.nr_sectors_shift		= 13,
 		.fast_read_dual_output_support	= 1,
 		.protection_granularity_shift	= 16,
@@ -551,7 +551,7 @@ const struct spi_flash_vendor_info spi_flash_winbond_vi = {
 	.id = VENDOR_ID_WINBOND,
 	.page_size_shift = 8,
 	.sector_size_kib_shift = 2,
-	.match_id_mask = 0xffff,
+	.match_id_mask[0] = 0xffff,
 	.ids = flash_table,
 	.nr_part_ids = ARRAY_SIZE(flash_table),
 	.desc = &spi_flash_pp_0x20_sector_desc,

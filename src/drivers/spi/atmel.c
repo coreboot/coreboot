@@ -36,38 +36,38 @@
 
 static const struct spi_flash_part_id flash_table[] = {
 	{
-		.id			= 0x3015,
-		.name			= "AT25X16",
+		/* AT25X16 */
+		.id[0]			= 0x3015,
 		.nr_sectors_shift	= 9,
 	},
 	{
-		.id			= 0x47,
-		.name			= "AT25DF32",
+		/* AT25DF32 */
+		.id[0]			= 0x47,
 		.nr_sectors_shift	= 10,
 	},
 	{
-		.id			= 0x3017,
-		.name			= "AT25X64",
+		/* AT25X64 */
+		.id[0]			= 0x3017,
 		.nr_sectors_shift	= 11,
 	},
 	{
-		.id			= 0x4015,
-		.name			= "AT25Q16",
+		/* AT25Q16 */
+		.id[0]			= 0x4015,
 		.nr_sectors_shift	= 9,
 	},
 	{
-		.id			= 0x4016,
-		.name			= "AT25Q32",
+		/* AT25Q32 */
+		.id[0]			= 0x4016,
 		.nr_sectors_shift	= 10,
 	},
 	{
-		.id			= 0x4017,
-		.name			= "AT25Q64",
+		/* AT25Q64 */
+		.id[0]			= 0x4017,
 		.nr_sectors_shift	= 11,
 	},
 	{
-		.id			= 0x4018,
-		.name			= "AT25Q128",
+		/* AT25Q128 */
+		.id[0]			= 0x4018,
 		.nr_sectors_shift	= 12,
 	},
 };
@@ -76,7 +76,7 @@ const struct spi_flash_vendor_info spi_flash_atmel_vi = {
 	.id = VENDOR_ID_ATMEL,
 	.page_size_shift = 8,
 	.sector_size_kib_shift = 2,
-	.match_id_mask = 0xffff,
+	.match_id_mask[0] = 0xffff,
 	.ids = flash_table,
 	.nr_part_ids = ARRAY_SIZE(flash_table),
 	.desc = &spi_flash_pp_0x20_sector_desc,

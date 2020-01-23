@@ -36,48 +36,48 @@
 
 static const struct spi_flash_part_id flash_table[] = {
 	{
-		.id			= 0x2015,
-		.name			= "A25L16PU",
+		/* A25L16PU */
+		.id[0]			= 0x2015,
 		.nr_sectors_shift	= 9,
 	},
 	{
-		.id			= 0x2025,
-		.name			= "A25L16PT",
+		/* A25L16PT */
+		.id[0]			= 0x2025,
 		.nr_sectors_shift	= 9,
 	},
 	{
-		.id			= 0x3014,
-		.name			= "A25L080",
+		/* A25L080 */
+		.id[0]			= 0x3014,
 		.nr_sectors_shift	= 8,
 	},
 	{
-		.id			= 0x3015,
-		.name			= "A25L016",
+		/* A25L016 */
+		.id[0]			= 0x3015,
 		.nr_sectors_shift	= 9,
 	},
 	{
-		.id			= 0x3016,
-		.name			= "A25L032",
+		/* A25L032 */
+		.id[0]			= 0x3016,
 		.nr_sectors_shift	= 10,
 	},
 	{
-		.id			= 0x4014,
-		.name			= "A25LQ080",
+		/* A25LQ080 */
+		.id[0]			= 0x4014,
 		.nr_sectors_shift	= 8,
 	},
 	{
-		.id			= 0x4015,
-		.name			= "A25LQ16",
+		/* A25LQ16 */
+		.id[0]			= 0x4015,
 		.nr_sectors_shift	= 9,
 	},
 	{
-		.id			= 0x4016,
-		.name			= "A25LQ032",
+		/* A25LQ032 */
+		.id[0]			= 0x4016,
 		.nr_sectors_shift	= 10,
 	},
 	{
-		.id			= 0x4017,
-		.name			= "A25LQ64",
+		/* A25LQ64 */
+		.id[0]			= 0x4017,
 		.nr_sectors_shift	= 11,
 	},
 };
@@ -86,7 +86,7 @@ const struct spi_flash_vendor_info spi_flash_amic_vi = {
 	.id = VENDOR_ID_AMIC,
 	.page_size_shift = 8,
 	.sector_size_kib_shift = 2,
-	.match_id_mask = 0xffff,
+	.match_id_mask[0] = 0xffff,
 	.ids = flash_table,
 	.nr_part_ids = ARRAY_SIZE(flash_table),
 	.desc = &spi_flash_pp_0x20_sector_desc,

@@ -52,6 +52,8 @@ enum {
 	KB_BIOS_PROGRESS = 0xc2,
 	/* Inform the EC that a fatal error occurred */
 	KB_ERR_CODE = 0x7b,
+	/* Set CPU ID */
+	KB_CPU_ID = 0xbf,
 };
 
 enum ec_ram_addr {
@@ -336,5 +338,19 @@ int wilco_ec_signed_fw(void);
  * @post_code: Post code to save
  */
 void wilco_ec_save_post_code(uint8_t post_code);
+
+/**
+ * wilco_ec_set_cpuid
+ *
+ * Set CPU ID to EC.
+ *
+ * @cpuid:	read CPU ID from cpu_eax(1)
+ * @cpu_cores:	cores of CPU
+ * @gpu_cores:	cores of GPU
+ *
+ * Returns 0 if EC command was successful
+ * Returns -1 if EC command failed
+ */
+int wilco_ec_set_cpuid(uint32_t cpuid, uint8_t cpu_cores, uint8_t gpu_cores);
 
 #endif /* EC_GOOGLE_WILCO_COMMANDS_H */

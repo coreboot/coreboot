@@ -64,11 +64,11 @@ static const u32 vga_colors[] = {
 /* Addresses for the various components */
 static unsigned long fbinfo;
 static unsigned long fbaddr;
-static unsigned long chars;
+static unsigned short *chars;
 
 #define FI ((struct cb_framebuffer *) phys_to_virt(fbinfo))
 #define FB ((unsigned char *) phys_to_virt(fbaddr))
-#define CHARS ((unsigned short *) phys_to_virt(chars))
+#define CHARS (chars)
 
 static void corebootfb_scroll_up(void)
 {
@@ -243,9 +243,10 @@ static int corebootfb_init(void)
 	coreboot_video_console.columns = FI->x_resolution / font_width;
 	coreboot_video_console.rows = FI->y_resolution / font_height;
 
-	/* See setting of fbinfo above. */
-	chars = virt_to_phys(malloc(coreboot_video_console.rows *
-				    coreboot_video_console.columns * 2));
+	chars = malloc(coreboot_video_console.rows *
+		       coreboot_video_console.columns * 2);
+	if (!chars)
+		return -1;
 
 	// clear boot splash screen if there is one.
 	corebootfb_clear();

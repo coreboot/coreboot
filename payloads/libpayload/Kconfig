@@ -315,6 +315,13 @@ config COREBOOT_VIDEO_CONSOLE
 	  Say Y here if coreboot switched to a graphics mode and
 	  your payload wants to use it.
 
+config COREBOOT_VIDEO_CENTERED
+	bool "Center a classic 80x25 console on bigger screens"
+	depends on COREBOOT_VIDEO_CONSOLE
+	help
+	  Say 'y' here if your payload is hardcoded to a 80x25 console. Otherwise
+	  its output would look squeezed into the upper-left corner of the screen.
+
 config FONT_SCALE_FACTOR
 	int "Scale factor for the included font"
 	depends on GEODELX_VIDEO_CONSOLE || COREBOOT_VIDEO_CONSOLE

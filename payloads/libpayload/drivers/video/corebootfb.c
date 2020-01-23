@@ -236,8 +236,16 @@ static int corebootfb_init(void)
 
 	font_init(FI->x_resolution);
 
-	coreboot_video_console.columns = FI->x_resolution / font_width;
-	coreboot_video_console.rows = FI->y_resolution / font_height;
+	/* Draw centered on the framebuffer if requested and feasible, */
+	const int center =
+		IS_ENABLED(CONFIG_LP_COREBOOT_VIDEO_CENTERED)
+		&& coreboot_video_console.columns * font_width <= FI->x_resolution
+		&& coreboot_video_console.rows * font_height <= FI->y_resolution;
+	/* adapt to the framebuffer size, otherwise. */
+	if (!center) {
+		coreboot_video_console.columns = FI->x_resolution / font_width;
+		coreboot_video_console.rows = FI->y_resolution / font_height;
+	}
 
 	chars = malloc(coreboot_video_console.rows *
 		       coreboot_video_console.columns * 2);
@@ -246,6 +254,17 @@ static int corebootfb_init(void)
 
 	// clear boot splash screen if there is one.
 	corebootfb_clear();
+
+	if (center) {
+		FI->physical_address +=
+			(FI->x_resolution - coreboot_video_console.columns * font_width)
+				/ 2 * FI->bits_per_pixel / 8
+			+ (FI->y_resolution - coreboot_video_console.rows * font_height)
+				/ 2 * FI->bytes_per_line;
+		FI->x_resolution = coreboot_video_console.columns * font_width;
+		FI->y_resolution = coreboot_video_console.rows * font_height;
+	}
+
 	return 0;
 }
 

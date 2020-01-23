@@ -35,7 +35,7 @@ chip soc/intel/tigerlake
 	register "PcieRpEnable[2]" = "1"
 	register "PcieRpEnable[3]" = "1"
 	register "PcieRpEnable[8]" = "1"
-	register "PcieRpEnable[9]" = "1"
+	register "PcieRpEnable[10]" = "1"
 
 	register "PcieClkSrcClkReq[1]" = "1"
 	register "PcieClkSrcClkReq[2]" = "2"
@@ -139,8 +139,8 @@ chip soc/intel/tigerlake
 		device pci 1c.6 off end # RP7			0xA0BE
 		device pci 1c.7 off end # RP8			0xA0BF
 		device pci 1d.0 on  end # RP9			0xA0B0
-		device pci 1d.1 on  end # RP10			0xA0B1
-		device pci 1d.2 off end # RP11			0xA0B2
+		device pci 1d.1 off end # RP10			0xA0B1
+		device pci 1d.2 on  end # RP11			0xA0B2
 		device pci 1d.3 off end # RP12			0xA0B3
 		device pci 1e.0 off end # UART0			0xA0A8
 		device pci 1e.1 off end # UART1			0xA0A9

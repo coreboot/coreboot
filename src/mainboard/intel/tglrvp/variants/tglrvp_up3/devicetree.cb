@@ -49,6 +49,12 @@ chip soc/intel/tigerlake
 	register "SataPortsEnable[0]" = "1"
 	register "SataPortsEnable[1]" = "1"
 
+	# enabling EDP in PortA
+	register "DdiPortAConfig" = "1"
+
+	register "DdiPort1Hpd" = "1"
+	register "DdiPort1Ddc" = "1"
+
 	register "SerialIoI2cMode" = "{
 		[PchSerialIoIndexI2C0]  = PchSerialIoPci,
 		[PchSerialIoIndexI2C1]  = PchSerialIoPci,

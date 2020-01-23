@@ -84,6 +84,24 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 	else
 		m_cfg->InternalGfx = 0x1;
 
+	/* DP port config */
+	m_cfg->DdiPortAConfig = config->DdiPortAConfig;
+	m_cfg->DdiPortBConfig = config->DdiPortBConfig;
+	m_cfg->DdiPortAHpd = config->DdiPortAHpd;
+	m_cfg->DdiPortBHpd = config->DdiPortBHpd;
+	m_cfg->DdiPortCHpd = config->DdiPortCHpd;
+	m_cfg->DdiPort1Hpd = config->DdiPort1Hpd;
+	m_cfg->DdiPort2Hpd = config->DdiPort2Hpd;
+	m_cfg->DdiPort3Hpd = config->DdiPort3Hpd;
+	m_cfg->DdiPort4Hpd = config->DdiPort4Hpd;
+	m_cfg->DdiPortADdc = config->DdiPortADdc;
+	m_cfg->DdiPortBDdc = config->DdiPortBDdc;
+	m_cfg->DdiPortCDdc = config->DdiPortCDdc;
+	m_cfg->DdiPort1Ddc = config->DdiPort1Ddc;
+	m_cfg->DdiPort2Ddc = config->DdiPort2Ddc;
+	m_cfg->DdiPort3Ddc = config->DdiPort3Ddc;
+	m_cfg->DdiPort4Ddc = config->DdiPort4Ddc;
+
 	/* Enable Hyper Threading */
 	m_cfg->HyperThreading = 1;
 	/* Disable Lock PCU Thermal Management registers */

@@ -236,6 +236,32 @@ struct soc_intel_tigerlake_config {
 	 * Bit 0: MISCCFG_GPDLCGEN
 	 */
 	uint8_t gpio_pm[TOTAL_GPIO_COMM];
+
+	/* DP config */
+	/*
+	 * Port config
+	 * 0:Disabled, 1:eDP, 2:MIPI DSI
+	 */
+	uint8_t DdiPortAConfig;
+	uint8_t DdiPortBConfig;
+
+	/* Enable(1)/Disable(0) HPD */
+	uint8_t DdiPortAHpd;
+	uint8_t DdiPortBHpd;
+	uint8_t DdiPortCHpd;
+	uint8_t DdiPort1Hpd;
+	uint8_t DdiPort2Hpd;
+	uint8_t DdiPort3Hpd;
+	uint8_t DdiPort4Hpd;
+
+	/* Enable(1)/Disable(0) DDC */
+	uint8_t DdiPortADdc;
+	uint8_t DdiPortBDdc;
+	uint8_t DdiPortCDdc;
+	uint8_t DdiPort1Ddc;
+	uint8_t DdiPort2Ddc;
+	uint8_t DdiPort3Ddc;
+	uint8_t DdiPort4Ddc;
 };
 
 typedef struct soc_intel_tigerlake_config config_t;

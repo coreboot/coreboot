@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 #============================================================================
 #
 #/** @file createxbl.py
@@ -238,9 +238,9 @@ def main():
   target_nonsec = target_base + "_combined_hash.mbn"
 
 
-  #print "Input file 1:", elf_inp_file1
-  #print "Input file 2:", elf_inp_file2
-  #print "Output file:", binary_out
+  #print("Input file 1:", elf_inp_file1)
+  #print("Input file 2:", elf_inp_file2)
+  #print("Output file:", binary_out)
 
   merge_elfs([],
              elf_inp_file1,
@@ -270,7 +270,7 @@ def main():
                                  secure_type = image_header_secflag,
                                  header_version = header_version )
     if rv:
-       raise RuntimeError, "Failed to run pboot_gen_elf"
+       raise RuntimeError("Failed to run pboot_gen_elf")
 
     # Create hash table header
     rv = mbn_tools.image_header([],
@@ -281,7 +281,7 @@ def main():
 				elf_file_name = source_elf,
 				header_version = header_version)
     if rv:
-       raise RuntimeError, "Failed to create image header for hash segment"
+       raise RuntimeError("Failed to create image header for hash segment")
 
     files_to_cat_in_order = [target_hash_hd, target_hash]
     mbn_tools.concat_files (target_nonsec, files_to_cat_in_order)
@@ -369,7 +369,7 @@ def merge_elfs(env,
 
   # Create a new ELF header for the output file
   if is_out_elf_64_bit:
-    out_elf_header = mbn_tools.Elf64_Ehdr('\0' * ELF64_HDR_SIZE)
+    out_elf_header = mbn_tools.Elf64_Ehdr(b'\0' * ELF64_HDR_SIZE)
     out_elf_header.e_phoff     = ELF64_HDR_SIZE
     out_elf_header.e_ehsize    = ELF64_HDR_SIZE
     out_elf_header.e_phentsize = ELF64_PHDR_SIZE
@@ -384,7 +384,7 @@ def merge_elfs(env,
 
     out_elf_header.e_entry     = elf_header1.e_entry
   else:
-    out_elf_header = mbn_tools.Elf32_Ehdr('\0' * ELF32_HDR_SIZE)
+    out_elf_header = mbn_tools.Elf32_Ehdr(b'\0' * ELF32_HDR_SIZE)
     out_elf_header.e_phoff     = ELF32_HDR_SIZE
     out_elf_header.e_ehsize    = ELF32_HDR_SIZE
     out_elf_header.e_phentsize = ELF32_PHDR_SIZE
@@ -401,7 +401,7 @@ def merge_elfs(env,
     # Address needs to be verified that it is not greater than 32 bits
     # as it is possible to go from a 64 bit elf to 32.
     if (elf_header1.e_entry > 0xFFFFFFFF):
-      print "ERROR: File 1's entry point is too large to convert."
+      print("ERROR: File 1's entry point is too large to convert.")
       exit()
     out_elf_header.e_entry     = elf_header1.e_entry
 
@@ -457,7 +457,7 @@ def merge_elfs(env,
     # Copy program header piece by piece to ensure possible conversion success
     if is_out_elf_64_bit == True:
       # Converting from 32 to 64 elf requires no data size validation
-      new_phdr = mbn_tools.Elf64_Phdr('\0' * ELF64_PHDR_SIZE)
+      new_phdr = mbn_tools.Elf64_Phdr(b'\0' * ELF64_PHDR_SIZE)
       new_phdr.p_type   = curr_phdr.p_type
       new_phdr.p_offset = segment_offset
       new_phdr.p_vaddr  = curr_phdr.p_vaddr
@@ -470,7 +470,7 @@ def merge_elfs(env,
       # Converting from 64 to 32 elf requires data size validation
       # Note that there is an option to discard a segment if it is only ZI
       # and its address is greater than 32 bits
-      new_phdr = mbn_tools.Elf32_Phdr('\0' * ELF32_PHDR_SIZE)
+      new_phdr = mbn_tools.Elf32_Phdr(b'\0' * ELF32_PHDR_SIZE)
       new_phdr.p_type   = curr_phdr.p_type
       new_phdr.p_offset = segment_offset
 
@@ -478,7 +478,7 @@ def merge_elfs(env,
         if (zi_oob_enabled == True) and (curr_phdr.p_filesz == 0):
           continue
         else:
-          print "ERROR: File 1 VAddr is too large for conversion."
+          print("ERROR: File 1 VAddr is too large for conversion.")
           exit()
       new_phdr.p_vaddr  = curr_phdr.p_vaddr
 
@@ -486,33 +486,33 @@ def merge_elfs(env,
         if (zi_oob_enabled == True) and (curr_phdr.p_filesz == 0):
           continue
         else:
-          print "ERROR: File 1 PAddr is too large for conversion."
+          print("ERROR: File 1 PAddr is too large for conversion.")
           exit()
       new_phdr.p_paddr  = curr_phdr.p_paddr
 
       if curr_phdr.p_filesz > 0xFFFFFFFF:
-        print "ERROR: File 1 Filesz is too large for conversion."
+        print("ERROR: File 1 Filesz is too large for conversion.")
         exit()
       new_phdr.p_filesz = curr_phdr.p_filesz
 
       if curr_phdr.p_memsz > 0xFFFFFFFF:
-        print "ERROR: File 1 Memsz is too large for conversion."
+        print("ERROR: File 1 Memsz is too large for conversion.")
         exit()
       new_phdr.p_memsz  = curr_phdr.p_memsz
 
       if curr_phdr.p_flags > 0xFFFFFFFF:
-        print "ERROR: File 1 Flags is too large for conversion."
+        print("ERROR: File 1 Flags is too large for conversion.")
         exit()
       new_phdr.p_flags  = curr_phdr.p_flags
 
       if curr_phdr.p_align > 0xFFFFFFFF:
-        print "ERROR: File 1 Align is too large for conversion."
+        print("ERROR: File 1 Align is too large for conversion.")
         exit()
       new_phdr.p_align  = curr_phdr.p_align
 
 
-    #print "i=",i
-    #print "phdr_offset=", phdr_offset
+    #print("i=",i)
+    #print("phdr_offset=", phdr_offset)
 
     # update output file location to next phdr location
     elf_out_fp.seek(phdr_offset)
@@ -521,14 +521,14 @@ def merge_elfs(env,
 
     inp_data_offset = curr_phdr.p_offset # used to read data from input file
 
-#    print "inp_data_offset="
-#    print inp_data_offset
+#    print("inp_data_offset=")
+#    print(inp_data_offset)
 #
-#    print "curr_phdr.p_offset="
-#    print curr_phdr.p_offset
+#    print("curr_phdr.p_offset=")
+#    print(curr_phdr.p_offset)
 #
-#    print "curr_phdr.p_filesz="
-#    print curr_phdr.p_filesz
+#    print("curr_phdr.p_filesz=")
+#    print(curr_phdr.p_filesz)
 
     # output current phdr
     if is_out_elf_64_bit == False:
@@ -555,7 +555,7 @@ def merge_elfs(env,
       # Copy program header piece by piece to ensure possible conversion success
       if is_out_elf_64_bit == True:
         # Converting from 32 to 64 elf requires no data size validation
-        new_phdr = mbn_tools.Elf64_Phdr('\0' * ELF64_PHDR_SIZE)
+        new_phdr = mbn_tools.Elf64_Phdr(b'\0' * ELF64_PHDR_SIZE)
         new_phdr.p_type   = curr_phdr.p_type
         new_phdr.p_offset = segment_offset
         new_phdr.p_vaddr  = curr_phdr.p_vaddr
@@ -568,7 +568,7 @@ def merge_elfs(env,
         # Converting from 64 to 32 elf requires data size validation
         # Note that there is an option to discard a segment if it is only ZI
         # and its address is greater than 32 bits
-        new_phdr = mbn_tools.Elf32_Phdr('\0' * ELF32_PHDR_SIZE)
+        new_phdr = mbn_tools.Elf32_Phdr(b'\0' * ELF32_PHDR_SIZE)
         new_phdr.p_type   = curr_phdr.p_type
         new_phdr.p_offset = segment_offset
 
@@ -576,7 +576,7 @@ def merge_elfs(env,
           if (zi_oob_enabled == True) and (curr_phdr.p_filesz == 0):
             continue
           else:
-            print "ERROR: File 2 VAddr is too large for conversion."
+            print("ERROR: File 2 VAddr is too large for conversion.")
             exit()
         new_phdr.p_vaddr  = curr_phdr.p_vaddr
 
@@ -584,33 +584,33 @@ def merge_elfs(env,
           if (zi_oob_enabled == True) and (curr_phdr.p_filesz == 0):
             continue
           else:
-            print "ERROR: File 2 PAddr is too large for conversion."
+            print("ERROR: File 2 PAddr is too large for conversion.")
             exit()
         new_phdr.p_paddr  = curr_phdr.p_paddr
 
         if curr_phdr.p_filesz > 0xFFFFFFFF:
-          print "ERROR: File 2 Filesz is too large for conversion."
+          print("ERROR: File 2 Filesz is too large for conversion.")
           exit()
         new_phdr.p_filesz = curr_phdr.p_filesz
 
         if curr_phdr.p_memsz > 0xFFFFFFFF:
-          print "ERROR: File 2 Memsz is too large for conversion."
+          print("ERROR: File 2 Memsz is too large for conversion.")
           exit()
         new_phdr.p_memsz  = curr_phdr.p_memsz
 
         if curr_phdr.p_flags > 0xFFFFFFFF:
-          print "ERROR: File 2 Flags is too large for conversion."
+          print("ERROR: File 2 Flags is too large for conversion.")
           exit()
         new_phdr.p_flags  = curr_phdr.p_flags
 
         if curr_phdr.p_align > 0xFFFFFFFF:
-          print "ERROR: File 2 Align is too large for conversion."
+          print("ERROR: File 2 Align is too large for conversion.")
           exit()
         new_phdr.p_align  = curr_phdr.p_align
 
 
-#     print "i=",i
-#     print "phdr_offset=", phdr_offset
+#     print("i=",i)
+#     print("phdr_offset=", phdr_offset)
 
       # update output file location to next phdr location
       elf_out_fp.seek(phdr_offset)
@@ -619,14 +619,14 @@ def merge_elfs(env,
 
       inp_data_offset = curr_phdr.p_offset # used to read data from input file
 
-#     print "inp_data_offset="
-#     print inp_data_offset
+#     print("inp_data_offset=")
+#     print(inp_data_offset)
 #
-#     print "curr_phdr.p_offset="
-#     print curr_phdr.p_offset
+#     print("curr_phdr.p_offset=")
+#     print(curr_phdr.p_offset)
 #
-#     print "curr_phdr.p_filesz="
-#     print curr_phdr.p_filesz
+#     print("curr_phdr.p_filesz=")
+#     print(curr_phdr.p_filesz)
 
       # output current phdr
       if is_out_elf_64_bit == False:
@@ -658,14 +658,14 @@ def merge_elfs(env,
         entry_seg_offset = phdr.p_offset
         break
     if entry_seg_offset == -1:
-      print "Error: Failed to find entry point in any segment!"
+      print("Error: Failed to find entry point in any segment!")
       exit()
     # magical equation for program header's phys and virt addr
     phys_virt_addr = entry_addr - entry_seg_offset
 
     if is_out_elf_64_bit:
       # Converting from 32 to 64 elf requires no data size validation
-      new_phdr = mbn_tools.Elf64_Phdr('\0' * ELF64_PHDR_SIZE)
+      new_phdr = mbn_tools.Elf64_Phdr(b'\0' * ELF64_PHDR_SIZE)
       new_phdr.p_type   = 0x1
       new_phdr.p_offset = segment_offset
       new_phdr.p_vaddr  = phys_virt_addr
@@ -683,7 +683,7 @@ def merge_elfs(env,
       # Converting from 64 to 32 elf requires data size validation
       # Don't discard the segment containing xbl_sec, simply error out
       # if the address is greater than 32 bits
-      new_phdr = mbn_tools.Elf32_Phdr('\0' * ELF32_PHDR_SIZE)
+      new_phdr = mbn_tools.Elf32_Phdr(b'\0' * ELF32_PHDR_SIZE)
       new_phdr.p_type   = 0x1 #
       new_phdr.p_offset = segment_offset
       if header_version >= 5:
@@ -696,13 +696,13 @@ def merge_elfs(env,
 
       if phys_virt_addr > 0xFFFFFFFF:
         if zi_oob_enabled == False or curr_phdr.p_filesz != 0:
-          print "ERROR: File xbl_sec VAddr or PAddr is too big for conversion."
+          print("ERROR: File xbl_sec VAddr or PAddr is too big for conversion.")
           exit()
       new_phdr.p_vaddr  = phys_virt_addr
       new_phdr.p_paddr  = phys_virt_addr
 
       if os.path.getsize(elf_in_file_xbl_sec) > 0xFFFFFFFF:
-        print "ERROR: File xbl_sec Filesz is too big for conversion."
+        print("ERROR: File xbl_sec Filesz is too big for conversion.")
         exit()
       new_phdr.p_filesz = os.path.getsize(elf_in_file_xbl_sec)
       new_phdr.p_memsz  = new_phdr.p_filesz

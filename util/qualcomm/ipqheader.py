@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 #
 # Copyright (c) 2013 The Linux Foundation. All rights reserved.
 #
@@ -97,7 +97,7 @@ def usage(msg=None):
     if msg != None:
         sys.stderr.write("%s: %s\n" % (PROG_NAME, msg))
 
-    print "Usage: %s <base-addr> <input-file> <output-file>" % PROG_NAME
+    print("Usage: %s <base-addr> <input-file> <output-file>" % PROG_NAME)
 
     if msg != None:
         exit(1)

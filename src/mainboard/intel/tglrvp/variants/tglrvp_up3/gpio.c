@@ -50,11 +50,39 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_D18, NONE, PLTRST, NF1),
 	PAD_CFG_NF(GPP_E15, NONE, PLTRST, NF1),
 	PAD_CFG_NF(GPP_E16, NONE, PLTRST, NF1),
+
+	/*Audio */
+	PAD_CFG_NF(GPP_C16, NONE, DEEP, NF1), /* I2C0_SDA */
+	PAD_CFG_NF(GPP_C17, NONE, DEEP, NF1), /* I2C0_SCL */
+	PAD_CFG_GPO(GPP_C5, 1, PLTRST),
+	PAD_CFG_GPI_APIC(GPP_C12, NONE, PLTRST, EDGE_BOTH, INVERT), /* AUDIO JACK IRQ */
+
 };
 
 /* Early pad configuration in bootblock */
 static const struct pad_config early_gpio_table[] = {
-/* ToDo: Fill early gpio configurations for TPM and WWAN */
+
+	/*Audio */
+	PAD_CFG_NF(GPP_R0, NONE, DEEP, NF2),   /* I2S0_HP_SCLK */
+	PAD_CFG_NF(GPP_R1, NONE, DEEP, NF2),   /* I2S0_HP_SFRM */
+	PAD_CFG_NF(GPP_R2, DN_20K, DEEP, NF2), /* I2S0_HP_TX */
+	PAD_CFG_NF(GPP_R3, NONE, DEEP, NF2),   /* I2S0_HP_RX */
+
+	PAD_CFG_NF(GPP_A23, NONE, DEEP, NF1),  /* I2S1_SPKR_SCLK */
+	PAD_CFG_NF(GPP_R5, NONE, DEEP, NF2),   /* I2S1_SPKR_TX */
+	PAD_CFG_NF(GPP_R6, NONE, DEEP, NF2),   /* I2S1_SPKR_RX */
+	PAD_CFG_NF(GPP_R7, NONE, DEEP, NF2),   /* I2S1_SPKR_SFRM */
+
+	PAD_CFG_NF(GPP_S0, NONE, DEEP, NF1),   /* SNDW0_HP_CLK */
+	PAD_CFG_NF(GPP_S1, NONE, DEEP, NF1),   /* SNDW0_HP_DATA */
+	PAD_CFG_NF(GPP_S2, NONE, DEEP, NF1),   /* SNDW1_SPKR_CLK */
+	PAD_CFG_NF(GPP_S3, NONE, DEEP, NF1),   /* SNDW1_SPKR_DATA */
+
+	PAD_CFG_NF(GPP_S4, NONE, DEEP, NF2),   /* DMIC1_CLK */
+	PAD_CFG_NF(GPP_S5, NONE, DEEP, NF2),   /* DMIC1_DATA */
+	PAD_CFG_NF(GPP_S6, NONE, DEEP, NF2),   /* DMIC0_CLK */
+	PAD_CFG_NF(GPP_S7, NONE, DEEP, NF2),   /* DMIC0_DATA */
+
 };
 
 const struct pad_config *variant_gpio_table(size_t *num)

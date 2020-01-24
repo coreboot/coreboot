@@ -13,11 +13,49 @@ fsp blobs	3rdparty/fsp/KabylakeFspBinPkg/Fsp_M.fd
 
 Microcode	3rdparty/intel-microcode/intel-ucode
 
+## Flash components
+
+To create a complete flash image, the flash descriptor, GBE and ME blobs are required. The
+complete image can be used when e.g. a blank flash should be programmed. In other cases (when
+only coreboot needs to be replaced) placeholders can be used for the GBE and ME regions.
+
+These can be extracted from the original flash image as follows:
+1) Read the complete image from flash.
+2) Create a layout file with the following content:
+```
+00000000:00000fff fd
+00700000:00ffffff bios
+00003000:006FFFFF me
+00001000:00002fff gbe
+```
+3) Use `ifdtool -n <layout_file> <flash_image>` to resize the *bios* region from the default 6MB
+   to 9 MB, this is required to create sufficient space for LinuxBoot.
+   NOTE: Please make sure only the firmware descriptor (*fd*) region is changed. Older versions
+   	 of the ifdtool corrupt the *me* region.
+4) Use `ifdtool -x <resized_flash_image>` to extract the components.
+
+The regions extracted can be used to generate a full flash image. The *bios* region is
+not needed as this is replaced by the coreboot image.
+
+NOTE: The gbe region contains the MAC address so be careful. When updating the flash using
+      flashrom it is advisable to leave out the *gbe* area.
+
 ## Flashing coreboot
 
 ### Internal programming
 
 The SPI flash can be accessed using [flashrom].
+
+The descriptor area needs to be updated once to resize the *bios* region.
+`flashrom -p internal --ifd -i fd -w <coreboot.bin>`
+
+After that only the bios area should to be updated.
+`flashrom -p internal --ifd -i bios -w <coreboot.bin>`
+
+The *gbe* and *me* regions should not be updated.
+
+NOTE: As `flashrom --ifd` uses the flash descriptor it is required to update the
+      descriptor and bios regions in the right sequence. Don't update both in one command.
 
 ### External programming
 

@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Add a new variant to the Kconfig and Kconfig.name for the baseboard
+"""Add a new variant to the Kconfig and Kconfig.name
 
-To start a new variant of an existing baseboard, we need to add
-the variant into the Kconfig and Kconfig.name files for the
-baseboard. In Kconfig, we have two sections that need additional
+To start a new variant of an existing reference board, we need to
+add the variant into the Kconfig and Kconfig.name files for the
+reference board. In Kconfig, we have two sections that need additional
 entries, MAINBOARD_PART_NUMBER and VARIANT_DIR.
 
 The MAINBOARD_PART_NUMBER and VARIANT_DIR just use various
@@ -36,13 +36,13 @@ def main():
   parser = argparse.ArgumentParser(
       description='Add strings to coreboot Kconfig for a new board variant')
   parser.add_argument('--board', type=str, required=True,
-                      help='Name of the baseboard')
+                      help='Name of the reference board')
   parser.add_argument('--variant', type=str, required=True,
                       help='Name of the board variant')
   args = parser.parse_args()
 
-  if args.board not in ['hatch', 'volteer']:
-    print('Unsupported baseboard "' + args.board + '"')
+  if args.board not in ['hatch', 'volteer', 'trembyle']:
+    print('Unsupported reference board "' + args.board + '"')
     sys.exit(1)
 
   add_to_Kconfig(args.variant)
@@ -95,13 +95,13 @@ def add_to_Kconfig(variant_name):
         print(line, file=outfile)
 
 
-def add_to_Kconfig_name(baseboard_name, variant_name):
+def add_to_Kconfig_name(refboard_name, variant_name):
   """Add a config section for the variant to the Kconfig.name
 
   Kconfig.name is easier to modify than Kconfig; it only has a block at
   the end with the new variant's details.
 
-  baseboard_name  The name of the baseboard, e.g. 'hatch'
+  refboard_name   The name of the reference board, e.g. 'hatch'
                   We expect the caller to have checked that it is one we support
   variant_name    The name of the board variant, e.g. 'kohaku'
   """
@@ -119,16 +119,21 @@ def add_to_Kconfig_name(baseboard_name, variant_name):
         print(line, file=outfile)
 
       # Now add the new section
-      if baseboard_name == 'hatch':
+      if refboard_name == 'hatch':
         print('\nconfig ' + 'BOARD_GOOGLE_' + uppercase, file=outfile)
         print('\tbool "-> ' + capitalized + '"', file=outfile)
         print('\tselect BOARD_GOOGLE_BASEBOARD_HATCH', file=outfile)
         print('\tselect BOARD_ROMSIZE_KB_16384', file=outfile)
 
-      if baseboard_name == 'volteer':
+      if refboard_name == 'volteer':
         print('\nconfig ' + 'BOARD_GOOGLE_' + uppercase, file=outfile)
         print('\tbool "-> ' + capitalized + '"', file=outfile)
         print('\tselect BOARD_GOOGLE_BASEBOARD_VOLTEER', file=outfile)
+
+      if refboard_name == 'trembyle':
+        print('\nconfig ' + 'BOARD_GOOGLE_' + uppercase, file=outfile)
+        print('\tbool "-> ' + capitalized + '"', file=outfile)
+        print('\tselect BOARD_GOOGLE_BASEBOARD_TREMBYLE', file=outfile)
 
 
 if __name__ == '__main__':

@@ -1,6 +1,6 @@
 /** @file
 
-Copyright (c) 2019, Intel Corporation. All rights reserved.<BR>
+Copyright (c) 2020, Intel Corporation. All rights reserved.<BR>
 
 Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -355,7 +355,17 @@ typedef struct {
 
 /** Offset 0x01B7 - Reserved
 **/
-  UINT8                       Reserved11[178];
+  UINT8                       Reserved11[166];
+
+/** Offset 0x025D - IMGU CLKOUT Configuration
+  The configuration of IMGU CLKOUT, 0: Disable;<b>1: Enable</b>.
+  $EN_DIS
+**/
+  UINT8                       ImguClkOutEn[5];
+
+/** Offset 0x0262 - Reserved
+**/
+  UINT8                       Reserved12[7];
 
 /** Offset 0x0269 - RpClockReqMsgEnable
 **/
@@ -367,7 +377,37 @@ typedef struct {
 
 /** Offset 0x026E - Reserved
 **/
-  UINT8                       Reserved12[8];
+  UINT8                       Reserved13[3];
+
+/** Offset 0x0271 - Program GPIOs for LFP on DDI port-A device
+  0=Disabled,1(Default)=eDP, 2=MIPI DSI
+  0:Disabled, 1:eDP, 2:MIPI DSI
+**/
+  UINT8                       DdiPortAConfig;
+
+/** Offset 0x0272 - Program GPIOs for LFP on DDI port-B device
+  0(Default)=Disabled,1=eDP, 2=MIPI DSI
+  0:Disabled, 1:eDP, 2:MIPI DSI
+**/
+  UINT8                       DdiPortBConfig;
+
+/** Offset 0x0273 - Enable or disable HPD of DDI port A
+  0(Default)=Disable, 1=Enable
+  $EN_DIS
+**/
+  UINT8                       DdiPortAHpd;
+
+/** Offset 0x0274 - Enable or disable HPD of DDI port B
+  0=Disable, 1(Default)=Enable
+  $EN_DIS
+**/
+  UINT8                       DdiPortBHpd;
+
+/** Offset 0x0275 - Enable or disable HPD of DDI port C
+  0(Default)=Disable, 1=Enable
+  $EN_DIS
+**/
+  UINT8                       DdiPortCHpd;
 
 /** Offset 0x0276 - Enable or disable HPD of DDI port 1
   0=Disable, 1(Default)=Enable
@@ -375,9 +415,41 @@ typedef struct {
 **/
   UINT8                       DdiPort1Hpd;
 
-/** Offset 0x0277 - Reserved
+/** Offset 0x0277 - Enable or disable HPD of DDI port 2
+  0(Default)=Disable, 1=Enable
+  $EN_DIS
 **/
-  UINT8                       Reserved13[6];
+  UINT8                       DdiPort2Hpd;
+
+/** Offset 0x0278 - Enable or disable HPD of DDI port 3
+  0(Default)=Disable, 1=Enable
+  $EN_DIS
+**/
+  UINT8                       DdiPort3Hpd;
+
+/** Offset 0x0279 - Enable or disable HPD of DDI port 4
+  0(Default)=Disable, 1=Enable
+  $EN_DIS
+**/
+  UINT8                       DdiPort4Hpd;
+
+/** Offset 0x027A - Enable or disable DDC of DDI port A
+  0(Default)=Disable, 1=Enable
+  $EN_DIS
+**/
+  UINT8                       DdiPortADdc;
+
+/** Offset 0x027B - Enable or disable DDC of DDI port B
+  0=Disable, 1(Default)=Enable
+  $EN_DIS
+**/
+  UINT8                       DdiPortBDdc;
+
+/** Offset 0x027C - Enable or disable DDC of DDI port C
+  0(Default)=Disable, 1=Enable
+  $EN_DIS
+**/
+  UINT8                       DdiPortCDdc;
 
 /** Offset 0x027D - Enable DDC setting of DDI Port 1
   0(Default)=Disable, 1=Enable
@@ -385,9 +457,27 @@ typedef struct {
 **/
   UINT8                       DdiPort1Ddc;
 
-/** Offset 0x027E - Reserved
+/** Offset 0x027E - Enable DDC setting of DDI Port 2
+  0(Default)=Disable, 1=Enable
+  $EN_DIS
 **/
-  UINT8                       Reserved14[129];
+  UINT8                       DdiPort2Ddc;
+
+/** Offset 0x027F - Enable DDC setting of DDI Port 3
+  0(Default)=Disable, 1=Enable
+  $EN_DIS
+**/
+  UINT8                       DdiPort3Ddc;
+
+/** Offset 0x0280 - Enable DDC setting of DDI Port 4
+  0(Default)=Disable, 1=Enable
+  $EN_DIS
+**/
+  UINT8                       DdiPort4Ddc;
+
+/** Offset 0x0281 - Reserved
+**/
+  UINT8                       Reserved14[126];
 
 /** Offset 0x02FF - DMI Gen3 Root port preset values per lane
   Used for programming DMI Gen3 preset values per lane. Range: 0-9, 8 is default for each lane
@@ -507,9 +597,14 @@ typedef struct {
 **/
   UINT8                       PcieClkSrcUsage[16];
 
-/** Offset 0x0587 - Reserved
+/** Offset 0x0587 - ClkReq-to-ClkSrc mapping
+  Number of ClkReq signal assigned to ClkSrc
 **/
-  UINT8                       Reserved25[21];
+  UINT8                       PcieClkSrcClkReq[16];
+
+/** Offset 0x0597 - Reserved
+**/
+  UINT8                       Reserved25[5];
 
 /** Offset 0x059C - Enable PCIE RP Mask
   Enable/disable PCIE Root Ports. 0: disable, 1: enable. One bit for each port, bit0
@@ -737,7 +832,7 @@ typedef struct {
 
 /** Offset 0x0775 - Reserved
 **/
-  UINT8                       Reserved39[315];
+  UINT8                       Reserved39[355];
 } FSP_M_CONFIG;
 
 /** Fsp M UPD Configuration
@@ -756,11 +851,11 @@ typedef struct {
 **/
   FSP_M_CONFIG                FspmConfig;
 
-/** Offset 0x08B0
+/** Offset 0x08D8
 **/
-  UINT8                       UnusedUpdSpace23[6];
+  UINT8                       UnusedUpdSpace24[6];
 
-/** Offset 0x08B6
+/** Offset 0x08DE
 **/
   UINT16                      UpdTerminator;
 } FSPM_UPD;

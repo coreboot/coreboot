@@ -1,6 +1,6 @@
 /** @file
 
-Copyright (c) 2019, Intel Corporation. All rights reserved.<BR>
+Copyright (c) 2020, Intel Corporation. All rights reserved.<BR>
 
 Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -385,7 +385,7 @@ typedef struct {
 
 /** Offset 0x03FE - HECI3 state
   The HECI3 state from Mbp for reference in S3 path or when MbpHob is not installed.
-  0: disable, 1: enable
+  DEPRECATED 0: disable, 1: enable
   $EN_DIS
 **/
   UINT8                       Heci3Enabled;

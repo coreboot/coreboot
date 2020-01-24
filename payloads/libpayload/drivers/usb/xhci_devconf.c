@@ -227,7 +227,7 @@ xhci_set_address (hci_t *controller, usb_speed speed, int hubport, int hubaddr)
 	}
 
 	dev->endpoints[0].maxpacketsize = usb_decode_mps0(speed, buf[7]);
-	if (dev->endpoints[0].maxpacketsize != 8) {
+	if (dev->endpoints[0].maxpacketsize != speed_to_default_mps(speed)) {
 		memset((void *)ic->dev.ep0, 0x00, ctxsize);
 		*ic->add = (1 << 1); /* EP0 Context */
 		EC_SET(MPS, ic->dev.ep0, dev->endpoints[0].maxpacketsize);

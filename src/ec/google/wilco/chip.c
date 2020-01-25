@@ -16,10 +16,13 @@
 #include <arch/acpi.h>
 #include <arch/acpi_device.h>
 #include <arch/acpigen.h>
+#include <arch/cpu.h>
 #include <bootstate.h>
 #include <cbmem.h>
+#include <console/console.h>
 #include <device/pnp.h>
 #include <ec/acpi/ec.h>
+#include <intelblocks/cpulib.h>
 #include <pc80/keyboard.h>
 #include <stdint.h>
 
@@ -124,6 +127,14 @@ static void wilco_ec_resume(void *unused)
 }
 BOOT_STATE_INIT_ENTRY(BS_OS_RESUME, BS_ON_ENTRY, wilco_ec_resume, NULL);
 
+static int wilco_set_cpu_id(void)
+{
+	uint32_t cpu_phy_cores, cpu_virtual_cores;
+
+	cpu_read_topology(&cpu_phy_cores, &cpu_virtual_cores);
+	return wilco_ec_set_cpuid(cpu_get_cpuid(), cpu_phy_cores, 0);
+}
+
 static void wilco_ec_init(struct device *dev)
 {
 	if (!dev->enabled)
@@ -153,6 +164,10 @@ static void wilco_ec_init(struct device *dev)
 
 	/* Turn on camera power */
 	wilco_ec_send(KB_CAMERA, CAMERA_ON);
+
+	/* Set cpu id and phy cores */
+	if (wilco_set_cpu_id())
+		printk(BIOS_ERR, "EC: use default cpu power table\n");
 }
 
 static void wilco_ec_resource(struct device *dev, int index,

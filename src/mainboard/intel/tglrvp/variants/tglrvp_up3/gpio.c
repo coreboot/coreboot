@@ -28,6 +28,10 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPO(GPP_C15, 0, PLTRST),
 	PAD_CFG_GPO(GPP_R6, 0, PLTRST),
 	PAD_CFG_GPO(GPP_H12, 0, PLTRST),
+
+	/* Image clock: IMGCLKOUT_0, IMGCLKOUT_1 */
+	PAD_CFG_NF(GPP_D4, NONE, PLTRST, NF1),
+	PAD_CFG_NF(GPP_H20, NONE, PLTRST, NF1),
 };
 
 /* Early pad configuration in bootblock */

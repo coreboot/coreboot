@@ -3,6 +3,11 @@ chip northbridge/intel/gm45
 	register "gfx.ndid" = "3"
 	register "gfx.did" = "{ 0x80000100, 0x80000240, 0x80000410, 0x80000410, 0x00000005 }"
 
+	register "gpu_panel_power_up_delay" = "250"		# T1+T2: 25ms
+	register "gpu_panel_power_down_delay" = "250"		# T3:    25ms
+	register "gpu_panel_power_backlight_on_delay" = "2500"	# T5:   250ms
+	register "gpu_panel_power_backlight_off_delay" = "2500"	# Tx:   250ms
+	register "gpu_panel_power_cycle_delay" = "3"		# T4:   200ms
 	register "gfx.use_spread_spectrum_clock" = "1"
 
 	device cpu_cluster 0 on

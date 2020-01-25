@@ -102,6 +102,9 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 	m_cfg->DdiPort3Ddc = config->DdiPort3Ddc;
 	m_cfg->DdiPort4Ddc = config->DdiPort4Ddc;
 
+	/* Image clock: disable all clocks for bypassing FSP pin mux */
+	memset(m_cfg->ImguClkOutEn, 0, sizeof(m_cfg->ImguClkOutEn));
+
 	/* Enable Hyper Threading */
 	m_cfg->HyperThreading = 1;
 	/* Disable Lock PCU Thermal Management registers */

@@ -23,6 +23,7 @@ private package GMA.Mainboard is
    ports : constant Port_List :=
      (DP1,
       HDMI1,
+      DP2,
       HDMI2,
       Analog,
       Internal,

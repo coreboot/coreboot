@@ -1087,10 +1087,6 @@ endmenu
 
 source "src/lib/Kconfig"
 
-config ENABLE_APIC_EXT_ID
-	bool
-	default n
-
 config WARNINGS_ARE_ERRORS
 	bool
 	default y

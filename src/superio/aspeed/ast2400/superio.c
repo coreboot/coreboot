@@ -35,7 +35,7 @@ static void ast2400_init(struct device *dev)
 		pnp_enter_conf_mode(dev);
 		pnp_set_logical_device(dev);
 		/* In ESPI mode must write 0 to IRQ level on every LDN */
-		pnp_write_config(dev, 0x70, 0);
+		pnp_write_config(dev, 0x71, 0);
 		pnp_exit_conf_mode(dev);
 	}
 

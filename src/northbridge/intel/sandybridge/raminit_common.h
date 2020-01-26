@@ -136,8 +136,9 @@ typedef struct ramctr_timing_st {
 	dimm_info info;
 } ramctr_timing;
 
-#define SOUTHBRIDGE PCI_DEV(0, 0x1f, 0)
-#define NORTHBRIDGE PCI_DEV(0, 0x0, 0)
+#define HOST_BRIDGE	PCI_DEV(0, 0, 0)
+#define SOUTHBRIDGE	PCI_DEV(0, 0x1f, 0)
+
 #define FOR_ALL_LANES for (lane = 0; lane < NUM_LANES; lane++)
 #define FOR_ALL_CHANNELS for (channel = 0; channel < NUM_CHANNELS; channel++)
 #define FOR_ALL_POPULATED_RANKS for (slotrank = 0; slotrank < NUM_SLOTRANKS; slotrank++) if (ctrl->rankmap[channel] & (1 << slotrank))

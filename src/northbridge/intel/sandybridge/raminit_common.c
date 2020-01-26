@@ -497,7 +497,6 @@ void dram_zones(ramctr_timing *ctrl, int training)
 	}
 }
 
-#define HOST_BRIDGE	PCI_DEV(0, 0, 0)
 #define DEFAULT_TCK	TCK_800MHZ
 
 unsigned int get_mem_min_tck(void)
@@ -595,7 +594,7 @@ void dram_memorymap(ramctr_timing *ctrl, int me_uma_size)
 
 	mmiosize = get_mmio_size();
 
-	ggc = pci_read_config16(NORTHBRIDGE, GGC);
+	ggc = pci_read_config16(HOST_BRIDGE, GGC);
 	if (!(ggc & 2)) {
 		gfxstolen = ((ggc >> 3) & 0x1f) * 32;
 		gttsize = ((ggc >> 8) & 0x3);

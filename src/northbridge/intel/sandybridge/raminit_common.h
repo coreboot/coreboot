@@ -18,6 +18,8 @@
 #ifndef RAMINIT_COMMON_H
 #define RAMINIT_COMMON_H
 
+#include <stdint.h>
+
 #define BASEFREQ 133
 #define tDLLK 512
 

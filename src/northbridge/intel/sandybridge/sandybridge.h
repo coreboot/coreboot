@@ -128,11 +128,11 @@ enum platform_type {
 #define MCHBAR32_AND_OR(x, and, or) (MCHBAR32(x) = (MCHBAR32(x) & (and)) | (or))
 
 /* Indexed register helper macros */
-#define Gz(r, z)	((r) + ((z) * 0x100))
-#define Ly(r, y)	((r) + ((y) * 4))
-#define Cx(r, x)	((r) + ((x) * 0x400))
-#define CxLy(r, x, y)	((r) + ((x) * 0x400) + ((y) * 4))
-#define GzLy(r, z, y)	((r) + ((z) * 0x100) + ((y) * 4))
+#define Gz(r, z)	((r) + ((z) <<  8))
+#define Ly(r, y)	((r) + ((y) <<  2))
+#define Cx(r, x)	((r) + ((x) << 10))
+#define CxLy(r, x, y)	((r) + ((x) << 10) + ((y) << 2))
+#define GzLy(r, z, y)	((r) + ((z) <<  8) + ((y) << 2))
 
 /* byte lane training register base addresses */
 #define LANEBASE_B0	0x0000

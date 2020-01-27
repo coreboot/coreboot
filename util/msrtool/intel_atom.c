@@ -39,7 +39,7 @@ const struct msrdef intel_atom_msrs[] = {
 	{0x2a, MSRTYPE_RDWR, MSR2(0,0), "MSR_EBL_CR_POWERON", "", {
 		{ BITS_EOT }
 	}},
-	{0xcd, MSRTYPE_RDONLY, MSR2(0,0), "MSR_FSB_FREQ", "Scaleable Bus Speed", {
+	{0xcd, MSRTYPE_RDONLY, MSR2(0,0), "MSR_FSB_FREQ", "Scalable Bus Speed", {
 		{ BITS_EOT }
 	}},
 	{0xfe, MSRTYPE_RDWR, MSR2(0,0), "IA32_MTRRCAP", "", {

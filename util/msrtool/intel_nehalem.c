@@ -42,8 +42,8 @@ const struct msrdef intel_nehalem_msrs[] = {
 		{ BITS_EOT }
 	}},
 	/* FIXME: This MSR not documented for Nehalem */
-	{0xcd, MSRTYPE_RDONLY, MSR2(0,0), "MSR_FSB_FREQ", "Scaleable Bus Speed", {
-	/* This field indicates the intended scaleable bus clock speed */
+	{0xcd, MSRTYPE_RDONLY, MSR2(0,0), "MSR_FSB_FREQ", "Scalable Bus Speed", {
+	/* This field indicates the intended scalable bus clock speed */
 		{ BITS_EOT }
 	}},
 	{0xce, MSRTYPE_RDONLY, MSR2(0,0), "MSR_PLATFORM_INFO", "", {

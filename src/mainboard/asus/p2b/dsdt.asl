@@ -166,6 +166,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, OEM_ID, ACPI_TABLE_CREATOR, 1)
 
 			})
 			#include <northbridge/intel/i440bx/acpi/sb_pci0_crs.asl>
+			#include <southbridge/intel/i82371eb/acpi/isabridge.asl>
 
 			/* Begin southbridge block */
 			Device (PX40)
@@ -184,6 +185,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, OEM_ID, ACPI_TABLE_CREATOR, 1)
 				Device (SYSR)
 				{
 					Name (_HID, EisaId ("PNP0C02"))
+					Name (_UID, 0x02)
 					Method (_CRS, 0, NotSerialized)
 					{
 					Name (BUF1, ResourceTemplate ()

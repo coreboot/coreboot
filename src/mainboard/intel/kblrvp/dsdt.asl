@@ -36,8 +36,8 @@ DefinitionBlock(
 	Scope (\_SB) {
 		Device (PCI0)
 		{
-                        /* Image processing unit */
-                        #include <soc/intel/skylake/acpi/ipu.asl>
+			/* Image processing unit */
+			#include <soc/intel/skylake/acpi/ipu.asl>
 			#include <soc/intel/skylake/acpi/systemagent.asl>
 			#include <soc/intel/skylake/acpi/pch.asl>
 		}

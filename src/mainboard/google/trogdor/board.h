@@ -11,7 +11,9 @@
 #define GPIO_AP_EC_INT	GPIO(94)
 #define GPIO_AP_SUSPEND	GPIO(20)
 #define GPIO_WP_STATE	GPIO(42)
-#define GPIO_H1_AP_INT	GPIO(21)
+#define GPIO_H1_AP_INT	(CONFIG(TROGDOR_REV0) ? GPIO(21) : GPIO(42))
+#define GPIO_SD_CD_L	GPIO(69)
+#define GPIO_AMP_ENABLE	GPIO(23)
 
 void setup_chromeos_gpios(void);
 

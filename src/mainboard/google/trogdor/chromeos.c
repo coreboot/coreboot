@@ -28,6 +28,10 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 			"EC interrupt"},
 		{GPIO_H1_AP_INT.addr, ACTIVE_LOW, gpio_get(GPIO_H1_AP_INT),
 			"TPM interrupt"},
+		{GPIO_SD_CD_L.addr, ACTIVE_LOW, gpio_get(GPIO_SD_CD_L),
+			"SD card detect"},
+		{GPIO_AMP_ENABLE.addr, ACTIVE_HIGH, gpio_get(GPIO_AMP_ENABLE),
+			"speaker enable"},
 	};
 
 	lb_add_gpios(gpios, chromeos_gpios, ARRAY_SIZE(chromeos_gpios));

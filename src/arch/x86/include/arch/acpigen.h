@@ -472,4 +472,13 @@ int acpigen_soc_clear_tx_gpio(unsigned int gpio_num);
 int acpigen_enable_tx_gpio(struct acpi_gpio *gpio);
 int acpigen_disable_tx_gpio(struct acpi_gpio *gpio);
 
+/* refer to ACPI 6.4.3.5.3 Word Address Space Descriptor section for details */
+void acpigen_resource_word(u16 res_type, u16 gen_flags, u16 type_flags, u16 gran,
+	u16 range_min, u16 range_max, u16 translation, u16 length);
+/* refer to ACPI 6.4.3.5.2 DWord Address Space Descriptor section for details */
+void acpigen_resource_dword(u16 res_type, u16 gen_flags, u16 type_flags,
+	u32 gran, u32 range_min, u32 range_max, u32 translation, u32 length);
+/* refer to ACPI 6.4.3.5.1 QWord Address Space Descriptor section for details */
+void acpigen_resource_qword(u16 res_type, u16 gen_flags, u16 type_flags,
+	u64 gran, u64 range_min, u64 range_max, u64 translation, u64 length);
 #endif

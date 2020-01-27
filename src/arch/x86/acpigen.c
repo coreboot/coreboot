@@ -1758,3 +1758,78 @@ int acpigen_disable_tx_gpio(struct acpi_gpio *gpio)
 	else
 		return acpigen_soc_clear_tx_gpio(gpio->pins[0]);
 }
+
+/* refer to ACPI 6.4.3.5.3 Word Address Space Descriptor section for details */
+void acpigen_resource_word(u16 res_type, u16 gen_flags, u16 type_flags, u16 gran,
+	u16 range_min, u16 range_max, u16 translation, u16 length)
+{
+	acpigen_emit_byte(0x88);
+	/* Byte 1+2: length (0x000d) */
+	acpigen_emit_byte(0x0d);
+	acpigen_emit_byte(0x00);
+	/* resource type */
+	acpigen_emit_byte(res_type); // 0 - mem, 1 - io, 2 - bus
+	/* general flags */
+	acpigen_emit_byte(gen_flags);
+	/* type flags */
+	// refer to ACPI Table 6-234 (Memory), 6-235 (IO), 6-236 (Bus) for details
+	acpigen_emit_byte(type_flags);
+	/* granularity, min, max, translation, length */
+	acpigen_emit_word(gran);
+	acpigen_emit_word(range_min);
+	acpigen_emit_word(range_max);
+	acpigen_emit_word(translation);
+	acpigen_emit_word(length);
+}
+
+/* refer to ACPI 6.4.3.5.2 DWord Address Space Descriptor section for details */
+void acpigen_resource_dword(u16 res_type, u16 gen_flags, u16 type_flags,
+	u32 gran, u32 range_min, u32 range_max, u32 translation, u32 length)
+{
+	acpigen_emit_byte(0x87);
+	/* Byte 1+2: length (0023) */
+	acpigen_emit_byte(23);
+	acpigen_emit_byte(0x00);
+	/* resource type */
+	acpigen_emit_byte(res_type); // 0 - mem, 1 - io, 2 - bus
+	/* general flags */
+	acpigen_emit_byte(gen_flags);
+	/* type flags */
+	// refer to ACPI Table 6-234 (Memory), 6-235 (IO), 6-236 (Bus) for details
+	acpigen_emit_byte(type_flags);
+	/* granularity, min, max, translation, length */
+	acpigen_emit_dword(gran);
+	acpigen_emit_dword(range_min);
+	acpigen_emit_dword(range_max);
+	acpigen_emit_dword(translation);
+	acpigen_emit_dword(length);
+}
+
+static void acpigen_emit_qword(u64 data)
+{
+	acpigen_emit_dword(data & 0xffffffff);
+	acpigen_emit_dword((data >> 32) & 0xffffffff);
+}
+
+/* refer to ACPI 6.4.3.5.1 QWord Address Space Descriptor section for details */
+void acpigen_resource_qword(u16 res_type, u16 gen_flags, u16 type_flags,
+	u64 gran, u64 range_min, u64 range_max, u64 translation, u64 length)
+{
+	acpigen_emit_byte(0x8a);
+	/* Byte 1+2: length (0x002b) */
+	acpigen_emit_byte(0x2b);
+	acpigen_emit_byte(0x00);
+	/* resource type */
+	acpigen_emit_byte(res_type); // 0 - mem, 1 - io, 2 - bus
+	/* general flags */
+	acpigen_emit_byte(gen_flags);
+	/* type flags */
+	// refer to ACPI Table 6-234 (Memory), 6-235 (IO), 6-236 (Bus) for details
+	acpigen_emit_byte(type_flags);
+	/* granularity, min, max, translation, length */
+	acpigen_emit_qword(gran);
+	acpigen_emit_qword(range_min);
+	acpigen_emit_qword(range_max);
+	acpigen_emit_qword(translation);
+	acpigen_emit_qword(length);
+}

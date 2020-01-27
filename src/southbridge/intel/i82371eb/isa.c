@@ -30,37 +30,6 @@
 #include "i82371eb.h"
 #include "chip.h"
 
-#if CONFIG(IOAPIC)
-static void enable_intel_82093aa_ioapic(void)
-{
-	u16 reg16;
-	u32 reg32;
-	u8 ioapic_id = 2;
-	volatile u32 *ioapic_index = (volatile u32 *)(IO_APIC_ADDR);
-	volatile u32 *ioapic_data = (volatile u32 *)(IO_APIC_ADDR + 0x10);
-	struct device *dev;
-
-	dev = dev_find_device(PCI_VENDOR_ID_INTEL,
-			      PCI_DEVICE_ID_INTEL_82371AB_ISA, 0);
-
-	/* Enable IOAPIC. */
-	reg16 = pci_read_config16(dev, XBCS);
-	reg16 |= (1 << 8); /* APIC Chip Select */
-	pci_write_config16(dev, XBCS, reg16);
-
-	/* Set the IOAPIC ID. */
-	*ioapic_index = 0;
-	*ioapic_data = ioapic_id << 24;
-
-	/* Read back and verify the IOAPIC ID. */
-	*ioapic_index = 0;
-	reg32 = (*ioapic_data >> 24) & 0x0f;
-	printk(BIOS_DEBUG, "IOAPIC ID = %x\n", reg32);
-	if (reg32 != ioapic_id)
-		die("IOAPIC error!\n");
-}
-#endif
-
 static void isa_init(struct device *dev)
 {
 	u32 reg32;
@@ -90,7 +59,6 @@ static void isa_init(struct device *dev)
 	/* Initialize ISA DMA. */
 	isa_dma_init();
 
-#if CONFIG(IOAPIC)
 	/*
 	 * Unlike most other southbridges the 82371EB doesn't have a built-in
 	 * IOAPIC. Instead, 82371EB-based boards that support multiple CPUs
@@ -99,8 +67,28 @@ static void isa_init(struct device *dev)
 	 * Thus, we can/must only enable the IOAPIC if it actually exists,
 	 * i.e. the respective mainboard does "select IOAPIC".
 	 */
-	enable_intel_82093aa_ioapic();
-#endif
+	if (CONFIG(IOAPIC)) {
+		u16 reg16;
+		u8 ioapic_id = 2;
+		volatile u32 *ioapic_index = (volatile u32 *)(IO_APIC_ADDR);
+		volatile u32 *ioapic_data = (volatile u32 *)(IO_APIC_ADDR + 0x10);
+
+		/* Enable IOAPIC. */
+		reg16 = pci_read_config16(dev, XBCS);
+		reg16 |= (1 << 8); /* APIC Chip Select */
+		pci_write_config16(dev, XBCS, reg16);
+
+		/* Set the IOAPIC ID. */
+		*ioapic_index = 0;
+		*ioapic_data = ioapic_id << 24;
+
+		/* Read back and verify the IOAPIC ID. */
+		*ioapic_index = 0;
+		reg32 = (*ioapic_data >> 24) & 0x0f;
+		printk(BIOS_DEBUG, "IOAPIC ID = %x\n", reg32);
+		if (reg32 != ioapic_id)
+			die("IOAPIC error!\n");
+	}
 }
 
 static void sb_read_resources(struct device *dev)

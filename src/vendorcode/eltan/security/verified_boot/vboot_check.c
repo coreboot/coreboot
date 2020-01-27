@@ -13,6 +13,9 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
+
+#define NEED_VB20_INTERNALS
+
 #include <boot_device.h>
 #include <bootmem.h>
 #include <cbfs.h>
@@ -32,12 +35,17 @@
 int verified_boot_check_manifest(void)
 {
 	uint8_t *buffer;
-	uint8_t sig_buffer[1024]; /* used to build vb21_signature */
-	size_t size = 0;
-	struct vb2_public_key key;
-	struct vb2_workbuf wb;
-	struct vb21_signature *vb2_sig_hdr = (struct vb21_signature *)sig_buffer;
-	uint8_t wb_buffer[1024];
+	struct vb2_context *ctx;
+	struct vb2_kernel_preamble *pre;
+	static struct vb2_shared_data *sd;
+	size_t size;
+	uint8_t wb_buffer[2800];
+
+	if (vb2api_init(&wb_buffer, sizeof(wb_buffer), &ctx)) {
+		goto fail;
+	}
+
+	sd = vb2_get_sd(ctx);
 
 	buffer = cbfs_boot_map_with_leak(RSA_PUBLICKEY_FILE_NAME, CBFS_TYPE_RAW, &size);
 	if (!buffer || !size) {
@@ -46,48 +54,61 @@ int verified_boot_check_manifest(void)
 	}
 
 	if ((size != CONFIG_VENDORCODE_ELTAN_VBOOT_KEY_SIZE) ||
-			(buffer != (void *)CONFIG_VENDORCODE_ELTAN_VBOOT_KEY_LOCATION)) {
+	    (buffer != (void *)CONFIG_VENDORCODE_ELTAN_VBOOT_KEY_LOCATION)) {
 		printk(BIOS_ERR, "ERROR: Illegal public key!\n");
 		goto fail;
 	}
 
-	if (vb21_unpack_key(&key, buffer, size)) {
-		printk(BIOS_ERR, "ERROR: Invalid public key!\n");
+	/*
+	 * Check if all items will fit into workbuffer:
+	 * vb2_shared data, Public Key, Preamble data
+	 */
+	if ((sd->workbuf_used + size + sizeof(struct vb2_kernel_preamble) +
+	    ((CONFIG_VENDORCODE_ELTAN_OEM_MANIFEST_ITEMS * DIGEST_SIZE) + (2048/8))) >
+	    sizeof(wb_buffer)) {
+		printk(BIOS_ERR, "ERROR: Work buffer too small\n");
 		goto fail;
 	}
 
+	/* Add public key */
+	sd->data_key_offset = sd->workbuf_used;
+	sd->data_key_size = size;
+	sd->workbuf_used += sd->data_key_size;
+	memcpy((void *)((void *)sd + (long)sd->data_key_offset), (uint8_t *)buffer, size);
+
+	/* Fill preamble area */
+	sd->preamble_size = sizeof(struct vb2_kernel_preamble);
+	sd->preamble_offset = sd->data_key_offset + sd->data_key_size;
+	sd->workbuf_used += sd->preamble_size;
+	pre = (struct vb2_kernel_preamble *)((void *)sd + (long)sd->preamble_offset);
+
+	pre->flags = VB2_FIRMWARE_PREAMBLE_DISALLOW_HWCRYPTO;
+
+	/* Fill body_signature (vb2_structure). RSA2048 key is used */
 	cbfs_boot_map_with_leak("oemmanifest.bin", CBFS_TYPE_RAW, &size);
-	if (size != (CONFIG_VENDORCODE_ELTAN_OEM_MANIFEST_ITEMS * DIGEST_SIZE) +
-			      vb2_rsa_sig_size(VB2_SIG_RSA2048)) {
+	if (size != ((CONFIG_VENDORCODE_ELTAN_OEM_MANIFEST_ITEMS * DIGEST_SIZE) + (2048/8))) {
 		printk(BIOS_ERR, "ERROR: Incorrect manifest size!\n");
 		goto fail;
 	}
-
-	/* prepare work buffer structure */
-	wb.buf = (uint8_t *)&wb_buffer;
-	wb.size = sizeof(wb_buffer);
-
-	/* Build vb2_sig_hdr buffer */
-	vb2_sig_hdr->sig_offset = sizeof(struct vb21_signature) +
-				 (CONFIG_VENDORCODE_ELTAN_OEM_MANIFEST_ITEMS * DIGEST_SIZE);
-	vb2_sig_hdr->sig_alg = VB2_SIG_RSA2048;
-	vb2_sig_hdr->sig_size = vb2_rsa_sig_size(VB2_SIG_RSA2048);
-	vb2_sig_hdr->hash_alg = HASH_ALG;
-	vb2_sig_hdr->data_size = CONFIG_VENDORCODE_ELTAN_OEM_MANIFEST_ITEMS * DIGEST_SIZE;
-	memcpy(&sig_buffer[sizeof(struct vb21_signature)],
+	pre->body_signature.data_size = CONFIG_VENDORCODE_ELTAN_OEM_MANIFEST_ITEMS *
+					DIGEST_SIZE;
+	pre->body_signature.sig_offset = sizeof(struct vb2_signature) +
+					 pre->body_signature.data_size;
+	pre->body_signature.sig_size =  size - pre->body_signature.data_size;
+	sd->workbuf_used += size;
+	memcpy((void *)((void *)&pre->body_signature + (long)sizeof(struct vb2_signature)),
 	       (uint8_t *)CONFIG_VENDORCODE_ELTAN_OEM_MANIFEST_LOC, size);
 
-	if (vb21_verify_data(&sig_buffer[sizeof(struct vb21_signature)], vb2_sig_hdr->data_size,
-			     (struct vb21_signature *)&sig_buffer, &key, &wb)) {
-		printk(BIOS_ERR, "ERROR: Signature verification failed for hash table\n");
+
+	if (vb2api_verify_kernel_data(ctx, (void *)CONFIG_VENDORCODE_ELTAN_OEM_MANIFEST_LOC,
+				      pre->body_signature.data_size))
 		goto fail;
-	}
 
 	printk(BIOS_INFO, "%s: Successfully verified hash_table signature.\n", __func__);
 	return 0;
 
 fail:
-	die("HASH table verification failed!\n");
+	die("ERROR: HASH table verification failed!\n");
 	return -1;
 }
 
@@ -131,20 +152,14 @@ static void verified_boot_check_buffer(const char *name, void *start, size_t siz
 				       uint32_t hash_index, int32_t pcr)
 {
 	uint8_t  digest[DIGEST_SIZE];
-	int hash_algorithm;
 	vb2_error_t status;
 
 	printk(BIOS_DEBUG, "%s: %s HASH verification buffer %p size %d\n", __func__, name,
 	       start, (int)size);
 
 	if (start && size) {
-		if (CONFIG(VENDORCODE_ELTAN_VBOOT_USE_SHA512))
-			hash_algorithm = VB2_HASH_SHA512;
-		else
-			hash_algorithm = VB2_HASH_SHA256;
 
-		status = cb_sha_little_endian(hash_algorithm, (const uint8_t *)start, size,
-					      digest);
+		status = vb2_digest_buffer((const uint8_t *)start, size, HASH_ALG, digest, DIGEST_SIZE);
 		if ((CONFIG(VENDORCODE_ELTAN_VBOOT) && memcmp((void *)(
 		    (uint8_t *)CONFIG_VENDORCODE_ELTAN_OEM_MANIFEST_LOC +
 		    sizeof(digest) * hash_index), digest, sizeof(digest))) || status) {

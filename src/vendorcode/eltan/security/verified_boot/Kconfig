@@ -18,6 +18,7 @@ config VENDORCODE_ELTAN_VBOOT
 	bool "Enable Verified Boot"
 	depends on !VBOOT
 	default n
+	select VBOOT_LIB
 
 config VENDORCODE_ELTAN_VBOOT_SIGNED_MANIFEST
 	bool "Enable Signed Manifest"
@@ -57,11 +58,10 @@ config VENDORCODE_ELTAN_VBOOT_KEY_LOCATION
 config VENDORCODE_ELTAN_VBOOT_KEY_FILE
 	string "Verified boot Key File"
 	depends on VENDORCODE_ELTAN_VBOOT_SIGNED_MANIFEST
-	default "3rdparty/eltan/verified_boot/Keys/key.vbpubk2"
+	default "3rdparty/eltan/verified_boot/Keys/key.vbpubk"
 
 config VENDORCODE_ELTAN_VBOOT_KEY_SIZE
 	int
-	default 610 if VENDORCODE_ELTAN_VBOOT_USE_SHA512
-	default 576
+	default 552
 
 endmenu # Verified Boot (verified_boot)

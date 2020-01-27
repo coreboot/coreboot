@@ -12,7 +12,6 @@
 ## GNU General Public License for more details.
 ##
 
-subdirs-y += lib
 subdirs-y += verified_boot
 subdirs-y += mboot
 

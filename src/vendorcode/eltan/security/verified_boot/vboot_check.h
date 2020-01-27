@@ -23,7 +23,7 @@
 #include <lib.h>
 #include CONFIG_VENDORCODE_ELTAN_VBOOT_MANIFEST
 #include <console/console.h>
-#include <cb_sha.h>
+#include <vb2_sha.h>
 #include <string.h>
 #include <program_loading.h>
 #include <mboot.h>

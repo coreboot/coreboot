@@ -17,7 +17,6 @@ menu "Verified Boot (vboot)"
 
 config VBOOT_LIB
 	bool
-	depends on !VENDORCODE_ELTAN_VBOOT && !VENDORCODE_ELTAN_MBOOT
 	help
 	  Build and link the vboot library. Makes the vboot API accessible across
 	  all coreboot stages, without enabling vboot verification. For verification,

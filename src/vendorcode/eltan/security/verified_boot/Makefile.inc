@@ -17,6 +17,7 @@ ifneq ($(filter y,$(CONFIG_VENDORCODE_ELTAN_VBOOT) $(CONFIG_VENDORCODE_ELTAN_MBO
 
 CPPFLAGS_common += -I$(src)/security/vboot
 
+bootblock-y += ../../../../security/vboot/vboot_logic.c
 bootblock-y += vboot_check.c
 postcar-y += vboot_check.c
 romstage-y += vboot_check.c

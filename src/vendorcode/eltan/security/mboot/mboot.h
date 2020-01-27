@@ -20,7 +20,6 @@
 #include <arch/io.h>
 #include <arch/acpi.h>
 #include <string.h>
-#include <cb_sha.h>
 #include <console/console.h>
 #include <cbfs.h>
 #include <lib.h>

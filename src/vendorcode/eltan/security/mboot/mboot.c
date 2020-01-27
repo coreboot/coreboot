@@ -142,8 +142,8 @@ int mboot_hash_extend_log(uint64_t flags, uint8_t *hashData, uint32_t hashDataLe
 		/* The hash is provided as data */
 		memcpy(digest->digest.sha256, (void *)hashData, hashDataLen);
 	} else {
-		if (cb_sha_little_endian(VB2_HASH_SHA256, hashData, hashDataLen,
-				  digest->digest.sha256))
+		if (vb2_digest_buffer(hashData, hashDataLen, VB2_HASH_SHA256, digest->digest.sha256,
+					VB2_SHA256_DIGEST_SIZE))
 			return TPM_E_IOERROR;
 	}
 

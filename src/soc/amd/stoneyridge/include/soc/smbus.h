@@ -19,12 +19,6 @@
 #include <stdint.h>
 #include <soc/iomap.h>
 
-/*
- * Between 1-10 seconds, We should never timeout normally
- * Longer than this is just painful when a timeout condition occurs.
- */
-#define SMBUS_TIMEOUT (100 * 1000 * 10)
-
 int do_smbus_read_byte(u32 mmio, u8 device, u8 address);
 int do_smbus_write_byte(u32 mmio, u8 device, u8 address, u8 val);
 int do_smbus_recv_byte(u32 mmio, u8 device);

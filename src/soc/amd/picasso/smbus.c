@@ -15,8 +15,8 @@
 
 #include <stdint.h>
 #include <console/console.h>
+#include <device/smbus_host.h>
 #include <amdblocks/acpimmio.h>
-#include <soc/smbus.h>
 #include <soc/southbridge.h>
 
 /*
@@ -25,7 +25,7 @@
  */
 #define SMBUS_TIMEOUT (100 * 1000 * 10)
 
-static u8 controller_read8(u32 base, u8 reg)
+static u8 controller_read8(uintptr_t base, u8 reg)
 {
 	switch (base) {
 	case ACPIMMIO_SMBUS_BASE:
@@ -33,13 +33,13 @@ static u8 controller_read8(u32 base, u8 reg)
 	case ACPIMMIO_ASF_BASE:
 		return asf_read8(reg);
 	default:
-		printk(BIOS_ERR, "Error attempting to read SMBus at address 0x%x\n",
+		printk(BIOS_ERR, "Error attempting to read SMBus at address 0x%lx\n",
 				base);
 	}
 	return 0xff;
 }
 
-static void controller_write8(u32 base, u8 reg, u8 val)
+static void controller_write8(uintptr_t base, u8 reg, u8 val)
 {
 	switch (base) {
 	case ACPIMMIO_SMBUS_BASE:
@@ -49,12 +49,12 @@ static void controller_write8(u32 base, u8 reg, u8 val)
 		asf_write8(reg, val);
 		break;
 	default:
-		printk(BIOS_ERR, "Error attempting to write SMBus at address 0x%x\n",
+		printk(BIOS_ERR, "Error attempting to write SMBus at address 0x%lx\n",
 				base);
 	}
 }
 
-static int smbus_wait_until_ready(u32 mmio)
+static int smbus_wait_until_ready(uintptr_t mmio)
 {
 	u32 loops;
 	loops = SMBUS_TIMEOUT;
@@ -70,7 +70,7 @@ static int smbus_wait_until_ready(u32 mmio)
 	return -2;		/* time out */
 }
 
-static int smbus_wait_until_done(u32 mmio)
+static int smbus_wait_until_done(uintptr_t mmio)
 {
 	u32 loops;
 	loops = SMBUS_TIMEOUT;
@@ -89,7 +89,7 @@ static int smbus_wait_until_done(u32 mmio)
 	return -3;		/* timeout */
 }
 
-int do_smbus_recv_byte(u32 mmio, u8 device)
+int do_smbus_recv_byte(uintptr_t mmio, u8 device)
 {
 	u8 byte;
 
@@ -114,7 +114,7 @@ int do_smbus_recv_byte(u32 mmio, u8 device)
 	return byte;
 }
 
-int do_smbus_send_byte(u32 mmio, u8 device, u8 val)
+int do_smbus_send_byte(uintptr_t mmio, u8 device, u8 val)
 {
 	u8 byte;
 
@@ -139,7 +139,7 @@ int do_smbus_send_byte(u32 mmio, u8 device, u8 val)
 	return 0;
 }
 
-int do_smbus_read_byte(u32 mmio, u8 device, u8 address)
+int do_smbus_read_byte(uintptr_t mmio, u8 device, u8 address)
 {
 	u8 byte;
 
@@ -167,7 +167,7 @@ int do_smbus_read_byte(u32 mmio, u8 device, u8 address)
 	return byte;
 }
 
-int do_smbus_write_byte(u32 mmio, u8 device, u8 address, u8 val)
+int do_smbus_write_byte(uintptr_t mmio, u8 device, u8 address, u8 val)
 {
 	u8 byte;
 

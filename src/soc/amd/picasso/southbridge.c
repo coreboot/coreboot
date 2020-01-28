@@ -29,7 +29,6 @@
 #include <amdblocks/acpi.h>
 #include <soc/cpu.h>
 #include <soc/southbridge.h>
-#include <soc/smbus.h>
 #include <soc/smi.h>
 #include <soc/amd_pci_int_defs.h>
 #include <delay.h>

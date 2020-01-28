@@ -19,6 +19,12 @@
 #include <soc/smbus.h>
 #include <soc/southbridge.h>
 
+/*
+ * Between 1-10 seconds, We should never timeout normally
+ * Longer than this is just painful when a timeout condition occurs.
+ */
+#define SMBUS_TIMEOUT (100 * 1000 * 10)
+
 static u8 controller_read8(u32 base, u8 reg)
 {
 	switch (base) {

@@ -60,3 +60,7 @@ $(obj)/cpu_microcode_blob.bin: $$(wildcard $$(cpu_microcode_bins))
 cpu_microcode_blob.bin-file ?= $(obj)/cpu_microcode_blob.bin
 cpu_microcode_blob.bin-type := microcode
 cpu_microcode_blob.bin-align := 16
+
+ifneq ($(CONFIG_CPU_MICROCODE_CBFS_LOC),)
+cpu_microcode_blob.bin-COREBOOT-position := $(CONFIG_CPU_MICROCODE_CBFS_LOC)
+endif

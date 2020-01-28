@@ -17,8 +17,8 @@
 #include <console/console.h>
 #include <device/pci_def.h>
 #include <device/device.h>
+#include <device/smbus_host.h>
 #include <soc/southbridge.h>
-#include <soc/smbus.h>
 #include <amdblocks/dimm_spd.h>
 
 /*

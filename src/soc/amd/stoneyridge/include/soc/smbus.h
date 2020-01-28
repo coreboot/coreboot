@@ -19,8 +19,6 @@
 #include <stdint.h>
 #include <soc/iomap.h>
 
-#define SMB_SPEED_400KHZ		(66000000 / (400000 * 4))
-
 /*
  * Between 1-10 seconds, We should never timeout normally
  * Longer than this is just painful when a timeout condition occurs.

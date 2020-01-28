@@ -3,15 +3,28 @@
 This page describes how to run coreboot on the Facebook Monolith.
 
 Please note: the coreboot implementation for this boards is in its
-Alpha state and isn't fully tested yet.
+Beta state and isn't fully tested yet.
 
 ## Required blobs
 
-This board currently requires:
-fsp blobs	3rdparty/fsp/KabylakeFspBinPkg/Fsp_M.fd
-		3rdparty/fsp/KabylakeFspBinPkg/Fsp_S.fd
+Mainboard is based on the Intel Kaby Lake U SoC.
+Intel company provides [Firmware Support Package (2.0)](../../soc/intel/fsp/index.md)
+(intel FSP 2.0) to initialize this generation silicon. Please see this
+[document](../../soc/intel/code_development_model/code_development_model.md).
 
-Microcode	3rdparty/intel-microcode/intel-ucode
+FSP Information:
+
+```eval_rst
++-----------------------------+-------------------+-------------------+
+| FSP Project Name            | Directory         | Specification     |
++-----------------------------+-------------------+-------------------+
+| 7th Generation Intel® Core™ | KabylakeFspBinPkg | 2.0               |
+| processors  and chipsets    |                   |                   |
+| (formerly Kaby Lake)        |                   |                   |
++-----------------------------+-------------------+-------------------+
+```
+
+Microcode: 3rdparty/intel-microcode/intel-ucode
 
 ## Flash components
 
@@ -75,25 +88,29 @@ solution. Wires need to be connected to be able to flash using an external progr
 ## Untested
 
 - Hardware monitor
-- SDIO
 - Full Embedded Controller support
-- eMMC
 - SATA
+- xDCI
 
 ## Working
 
 - USB
-- Gigabit Ethernet
+- Gigabit Ethernet (i219 and i210)
 - Graphics (Using FSP GOP)
 - flashrom
-- PCIe
+- PCIe including hotplug on FPGA root port
 - EC serial port
+- EC CPU temperature
 - SMBus
 - Initialization with FSP
 - SeaBIOS payload (commit a5cab58e9a3fb6e168aba919c5669bea406573b4)
 - TianoCore payload (commit a5cab58e9a3fb6e168aba919c5669bea406573b4)
+- LinuxBoot (kernel kernel-4_19_97) (uroot commit 9c9db9dbd6b532f5f91a511a0de885c6562aadd7)
+- eMMC
 
-All of the above has been briefly tested by booting Linux from the TianoCore payload.
+All of the above has been briefly tested by booting Linux from eMMC using the TianoCore payload
+and LinuxBoot.
+
 SeaBios has been checked to the extend that it runs to the boot selection and provides display
 output.
 

@@ -93,15 +93,15 @@ static const CODEC_TBL_LIST CodecTableList[] =
 #define FREQ_14HZ			0xFE
 #define FREQ_11HZ			0xFF
 
-/*  Hardware Monitor Fan Control
+/* Hardware Monitor Fan Control
  * Hardware limitation:
- *  HWM failed to read the input temperture vi I2C,
- *  if other software switch the I2C switch by mistake or intention.
- *  We recommend to using IMC to control Fans, instead of HWM.
+ *  HWM failed to read the input temperature via I2C,
+ *  if other software switches the I2C switch by mistake or intention.
+ *  We recommend using IMC to control Fans, instead of HWM.
  */
 static void oem_fan_control(FCH_DATA_BLOCK *FchParams)
 {
-	/* Enable IMC fan control. the recommand way */
+	/* Enable IMC fan control, the recommended way */
 	if (CONFIG(HUDSON_IMC_FWM)) {
 		imc_reg_init();
 
@@ -156,12 +156,12 @@ static void oem_fan_control(FCH_DATA_BLOCK *FchParams)
 		FchParams->Imc.EcStruct.IMCFUNSupportBitMap = 0x111;//BIT0 | BIT4 |BIT8;
 
 		/* NOTE:
-		 * FchInitLateHwm will overwrite the EcStruct with EcDefaultMassege,
-		 * AGESA put EcDefaultMassege as global data in ROM, so we can't overwride it.
-		 * so we remove it from AGESA code. Please Seee FchInitLateHwm.
+		 * FchInitLateHwm will overwrite the EcStruct with EcDefaultMessage,
+		 * AGESA puts EcDefaultMessage as global data in ROM, so we can't overwrite it.
+		 * So we remove it from AGESA code. Please See FchInitLateHwm.
 		 */
 	} else {
-		/* HWM fan control, the way not recommand */
+		/* HWM fan control, the way not recommended */
 		FchParams->Imc.ImcEnable = FALSE;
 		FchParams->Hwm.HwMonitorEnable = TRUE;
 		FchParams->Hwm.HwmFchtsiAutoPoll = TRUE;/* 1 enable, 0 disable TSI Auto Polling */

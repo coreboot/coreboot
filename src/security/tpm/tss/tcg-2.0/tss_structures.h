@@ -84,6 +84,7 @@ struct tpm_header {
 /* TPM command codes. */
 #define TPM2_Hierarchy_Control ((TPM_CC)0x00000121)
 #define TPM2_Clear             ((TPM_CC)0x00000126)
+#define TPM2_ClearControl      ((TPM_CC)0x00000127)
 #define TPM2_NV_DefineSpace    ((TPM_CC)0x0000012A)
 #define TPM2_NV_Write          ((TPM_CC)0x00000137)
 #define TPM2_NV_WriteLock      ((TPM_CC)0x00000138)
@@ -415,6 +416,10 @@ struct tpm2_nv_write_lock_cmd {
 struct tpm2_pcr_extend_cmd {
 	TPMI_DH_PCR pcrHandle;
 	TPML_DIGEST_VALUES digests;
+};
+
+struct tpm2_clear_control_cmd {
+	TPMI_YES_NO disable;
 };
 
 struct tpm2_hierarchy_control_cmd {

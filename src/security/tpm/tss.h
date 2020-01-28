@@ -171,6 +171,11 @@ uint32_t tlcl_set_nv_locked(void);
 uint32_t tlcl_force_clear(void);
 
 /**
+ * Set Clear Control. The TPM error code is returned.
+ */
+uint32_t tlcl_clear_control(bool disable);
+
+/**
  * Set the bGlobalLock flag, which only a reboot can clear.  The TPM error
  * code is returned.
  */

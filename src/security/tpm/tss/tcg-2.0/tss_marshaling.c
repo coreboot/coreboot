@@ -281,6 +281,24 @@ static int marshal_hierarchy_control(struct obuf *ob,
 	return rc;
 }
 
+static int marshal_clear_control(struct obuf *ob,
+			struct tpm2_clear_control_cmd *command_body)
+{
+	int rc = 0;
+	struct tpm2_session_header session_header;
+
+	tpm_tag = TPM_ST_SESSIONS;
+
+	rc |= marshal_TPM_HANDLE(ob, TPM_RH_PLATFORM);
+	memset(&session_header, 0, sizeof(session_header));
+	session_header.session_handle = TPM_RS_PW;
+	rc |= marshal_session_header(ob, &session_header);
+
+	rc |= obuf_write_be8(ob, command_body->disable);
+
+	return rc;
+}
+
 static int marshal_cr50_vendor_command(struct obuf *ob, void *command_body)
 {
 	int rc = 0;
@@ -381,6 +399,10 @@ int tpm_marshal_command(TPM_CC command, void *tpm_command_body, struct obuf *ob)
 
 	case TPM2_Hierarchy_Control:
 		rc |= marshal_hierarchy_control(ob, tpm_command_body);
+		break;
+
+	case TPM2_ClearControl:
+		rc |= marshal_clear_control(ob, tpm_command_body);
 		break;
 
 	case TPM2_Clear:
@@ -583,6 +605,7 @@ struct tpm2_response *tpm_unmarshal_response(TPM_CC command, struct ibuf *ib)
 
 	case TPM2_Hierarchy_Control:
 	case TPM2_Clear:
+	case TPM2_ClearControl:
 	case TPM2_NV_DefineSpace:
 	case TPM2_NV_Write:
 	case TPM2_NV_WriteLock:

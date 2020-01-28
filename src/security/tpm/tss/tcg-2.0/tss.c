@@ -170,6 +170,23 @@ uint32_t tlcl_force_clear(void)
 	return TPM_SUCCESS;
 }
 
+uint32_t tlcl_clear_control(bool disable)
+{
+	struct tpm2_response *response;
+	struct tpm2_clear_control_cmd cc = {
+		.disable = 0,
+	};
+
+	response = tpm_process_command(TPM2_ClearControl, &cc);
+	printk(BIOS_INFO, "%s: response is %x\n",
+		__func__, response ? response->hdr.tpm_code : -1);
+
+	if (!response || response->hdr.tpm_code)
+		return TPM_E_IOERROR;
+
+	return TPM_SUCCESS;
+}
+
 static uint8_t tlcl_init_done;
 
 /* This function is called directly by vboot, uses vboot return types. */

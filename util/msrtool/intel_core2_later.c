@@ -125,8 +125,8 @@ const struct msrdef intel_core2_later_msrs[] = {
 		{ 0, 1, RESERVED },
 		{ BITS_EOT }
 	}},
-	{0xcd, MSRTYPE_RDONLY, MSR2(0,0), "MSR_FSB_FREQ", "Scaleable Bus Speed", {
-	/* This field indicates the intended scaleable bus clock speed */
+	{0xcd, MSRTYPE_RDONLY, MSR2(0,0), "MSR_FSB_FREQ", "Scalable Bus Speed", {
+	/* This field indicates the intended scalable bus clock speed */
 		{ 63, 61, RESERVED },
 		{ 2, 3, "Speed", "R/O", PRESENT_BIN, {
 			{ MSR1(0), "267 MHz (FSB 1067)" },
@@ -790,7 +790,7 @@ const struct msrdef intel_core2_later_msrs[] = {
 	}},
 	{0x345, MSRTYPE_RDONLY, MSR2(0,0), "IA32_PERF_CAPABILITIES", "", {
 	/* Additional info available at Section 17.4.1 of
-	 * Intel 64 and IA-32 Architecures Software Developer's
+	 * Intel 64 and IA-32 Architectures Software Developer's
 	 * Manual, Volume 3.
 	 */
 		{ 63, 56, RESERVED },

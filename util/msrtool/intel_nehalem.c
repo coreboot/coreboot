@@ -42,8 +42,8 @@ const struct msrdef intel_nehalem_msrs[] = {
 		{ BITS_EOT }
 	}},
 	/* FIXME: This MSR not documented for Nehalem */
-	{0xcd, MSRTYPE_RDONLY, MSR2(0,0), "MSR_FSB_FREQ", "Scaleable Bus Speed", {
-	/* This field indicates the intended scaleable bus clock speed */
+	{0xcd, MSRTYPE_RDONLY, MSR2(0,0), "MSR_FSB_FREQ", "Scalable Bus Speed", {
+	/* This field indicates the intended scalable bus clock speed */
 		{ BITS_EOT }
 	}},
 	{0xce, MSRTYPE_RDONLY, MSR2(0,0), "MSR_PLATFORM_INFO", "", {
@@ -1329,7 +1329,7 @@ const struct msrdef intel_nehalem_msrs[] = {
 	/* if CPUID.01H: ECX[15] = 1 */
 	{0x345, MSRTYPE_RDONLY, MSR2(0,0), "IA32_PERF_CAPABILITIES", "", {
 	/* Additional info available at Section 17.4.1 of
-	 * Intel 64 and IA-32 Architecures Software Developer's
+	 * Intel 64 and IA-32 Architectures Software Developer's
 	 * Manual, Volume 3.
 	 */
 		{ 63, 50, RESERVED },

@@ -39,7 +39,7 @@ const struct msrdef intel_atom_msrs[] = {
 	{0x2a, MSRTYPE_RDWR, MSR2(0,0), "MSR_EBL_CR_POWERON", "", {
 		{ BITS_EOT }
 	}},
-	{0xcd, MSRTYPE_RDONLY, MSR2(0,0), "MSR_FSB_FREQ", "Scaleable Bus Speed", {
+	{0xcd, MSRTYPE_RDONLY, MSR2(0,0), "MSR_FSB_FREQ", "Scalable Bus Speed", {
 		{ BITS_EOT }
 	}},
 	{0xfe, MSRTYPE_RDWR, MSR2(0,0), "IA32_MTRRCAP", "", {
@@ -148,7 +148,7 @@ const struct msrdef intel_atom_msrs[] = {
 	/* if CPUID.01H: ECX[15] = 1 */
 	{0x345, MSRTYPE_RDONLY, MSR2(0,0), "IA32_PERF_CAPABILITIES", "", {
 	/* Additional info available at Section 17.4.1 of
-	 * Intel 64 and IA-32 Architecures Software Developer's
+	 * Intel 64 and IA-32 Architectures Software Developer's
 	 * Manual, Volume 3.
 	 */
 		{ 63, 50, RESERVED },

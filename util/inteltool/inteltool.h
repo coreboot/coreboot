@@ -395,6 +395,9 @@ int print_mchbar(struct pci_dev *nb, struct pci_access *pacc, const char *dump_s
 int print_pmbase(struct pci_dev *sb, struct pci_access *pacc);
 int print_rcba(struct pci_dev *sb);
 int print_gpios(struct pci_dev *sb, int show_all, int show_diffs);
+const struct gpio_community *const *get_gpio_communities(struct pci_dev *const sb,
+						size_t* community_count,
+						size_t* pad_stepping);
 void print_gpio_groups(struct pci_dev *sb);
 int print_epbar(struct pci_dev *nb);
 int print_dmibar(struct pci_dev *nb);

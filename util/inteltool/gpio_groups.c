@@ -96,11 +96,11 @@ static void print_gpio_community(const struct gpio_community *const community,
 	}
 }
 
-void print_gpio_groups(struct pci_dev *const sb)
+const struct gpio_community *const *get_gpio_communities(struct pci_dev *const sb,
+						size_t* community_count,
+						size_t* pad_stepping)
 {
-	size_t community_count;
-	const struct gpio_community *const *communities;
-	size_t pad_stepping = 8;
+	*pad_stepping = 8;
 
 	switch (sb->device_id) {
 	case PCI_DEVICE_ID_INTEL_H110:
@@ -114,10 +114,8 @@ void print_gpio_groups(struct pci_dev *const sb)
 	case PCI_DEVICE_ID_INTEL_QM170:
 	case PCI_DEVICE_ID_INTEL_HM170:
 	case PCI_DEVICE_ID_INTEL_CM236:
-		community_count = ARRAY_SIZE(sunrise_communities);
-		communities = sunrise_communities;
-		pcr_init(sb);
-		break;
+		*community_count = ARRAY_SIZE(sunrise_communities);
+		return sunrise_communities;
 	case PCI_DEVICE_ID_INTEL_SUNRISEPOINT_LP_PRE:
 	case PCI_DEVICE_ID_INTEL_SUNRISEPOINT_LP_U_BASE_SKL:
 	case PCI_DEVICE_ID_INTEL_SUNRISEPOINT_LP_Y_PREM_SKL:
@@ -128,10 +126,8 @@ void print_gpio_groups(struct pci_dev *const sb)
 	case PCI_DEVICE_ID_INTEL_SUNRISEPOINT_LP_U_IHDCP_BASE:
 	case PCI_DEVICE_ID_INTEL_SUNRISEPOINT_LP_U_IHDCP_PREM:
 	case PCI_DEVICE_ID_INTEL_SUNRISEPOINT_LP_Y_IHDCP_PREM:
-		community_count = ARRAY_SIZE(sunrise_lp_communities);
-		communities = sunrise_lp_communities;
-		pcr_init(sb);
-		break;
+		*community_count = ARRAY_SIZE(sunrise_lp_communities);
+		return sunrise_lp_communities;
 	case PCI_DEVICE_ID_INTEL_C621:
 	case PCI_DEVICE_ID_INTEL_C622:
 	case PCI_DEVICE_ID_INTEL_C624:
@@ -145,20 +141,14 @@ void print_gpio_groups(struct pci_dev *const sb)
 	case PCI_DEVICE_ID_INTEL_C621_SUPER:
 	case PCI_DEVICE_ID_INTEL_C627_SUPER_2:
 	case PCI_DEVICE_ID_INTEL_C628_SUPER:
-		community_count = ARRAY_SIZE(lewisburg_communities);
-		communities = lewisburg_communities;
-		pcr_init(sb);
-		break;
+		*community_count = ARRAY_SIZE(lewisburg_communities);
+		return lewisburg_communities;
 	case PCI_DEVICE_ID_INTEL_DNV_LPC:
-		community_count = ARRAY_SIZE(denverton_communities);
-		communities = denverton_communities;
-		pcr_init(sb);
-		break;
+		*community_count = ARRAY_SIZE(denverton_communities);
+		return denverton_communities;
 	case PCI_DEVICE_ID_INTEL_APL_LPC:
-		community_count = ARRAY_SIZE(apl_communities);
-		communities = apl_communities;
-		pcr_init(sb);
-		break;
+		*community_count = ARRAY_SIZE(apl_communities);
+		return apl_communities;
 	case PCI_DEVICE_ID_INTEL_H310:
 	case PCI_DEVICE_ID_INTEL_H370:
 	case PCI_DEVICE_ID_INTEL_Z390:
@@ -169,20 +159,30 @@ void print_gpio_groups(struct pci_dev *const sb)
 	case PCI_DEVICE_ID_INTEL_QM370:
 	case PCI_DEVICE_ID_INTEL_HM370:
 	case PCI_DEVICE_ID_INTEL_CM246:
-		community_count = ARRAY_SIZE(cannonlake_pch_h_communities);
-		communities = cannonlake_pch_h_communities;
-		pad_stepping = 16;
-		pcr_init(sb);
-		break;
+		*community_count = ARRAY_SIZE(cannonlake_pch_h_communities);
+		*pad_stepping = 16;
+		return cannonlake_pch_h_communities;
 	case PCI_DEVICE_ID_INTEL_ICELAKE_LP_U:
-		community_count = ARRAY_SIZE(icelake_pch_h_communities);
-		communities = icelake_pch_h_communities;
-		pad_stepping = 16;
-		pcr_init(sb);
-		break;
+		*community_count = ARRAY_SIZE(icelake_pch_h_communities);
+		*pad_stepping = 16;
+		return icelake_pch_h_communities;
 	default:
-		return;
+		return NULL;
 	}
+}
+
+void print_gpio_groups(struct pci_dev *const sb)
+{
+	size_t community_count;
+	const struct gpio_community *const *communities;
+	size_t pad_stepping;
+
+	communities = get_gpio_communities(sb, &community_count, &pad_stepping);
+
+	if (!communities)
+		return;
+
+	pcr_init(sb);
 
 	printf("\n============= GPIOS =============\n\n");
 

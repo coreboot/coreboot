@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2019 Intel Corporation.
+ * Copyright (C) 2019-2020 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -217,6 +217,10 @@ struct soc_intel_tigerlake_config {
 		FORCE_DISABLE,
 		FORCE_ENABLE,
 	} CnviBtAudioOffload;
+
+	/* Tcss */
+	uint8_t TcssXhciEn;
+	uint8_t TcssXdciEn;
 
 	/*
 	 * Override GPIO PM configuration:

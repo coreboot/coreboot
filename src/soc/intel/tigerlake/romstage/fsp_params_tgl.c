@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2019 Intel Corp.
+ * Copyright (C) 2019-2020 Intel Corp.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -104,6 +104,10 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 
 	/* Image clock: disable all clocks for bypassing FSP pin mux */
 	memset(m_cfg->ImguClkOutEn, 0, sizeof(m_cfg->ImguClkOutEn));
+
+	/* Tcss */
+	m_cfg->TcssXhciEn = config->TcssXhciEn;
+	m_cfg->TcssXdciEn = config->TcssXdciEn;
 
 	/* Enable Hyper Threading */
 	m_cfg->HyperThreading = 1;

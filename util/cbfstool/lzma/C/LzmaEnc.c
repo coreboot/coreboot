@@ -1246,7 +1246,7 @@ static uint32_t GetOptimum(struct CLzmaEnc *p, uint32_t position, uint32_t *back
         startLen = lenTest + 1;
 
       /* if (_maxMode) */
-        {
+      {
           uint32_t lenTest2 = lenTest + 1;
           uint32_t limit = lenTest2 + p->numFastuint8_ts;
           uint32_t nextRepMatchPrice;
@@ -1290,7 +1290,7 @@ static uint32_t GetOptimum(struct CLzmaEnc *p, uint32_t position, uint32_t *back
               }
             }
           }
-        }
+      }
     }
     }
     /* for (uint32_t lenTest = 2; lenTest <= newLen; lenTest++) */

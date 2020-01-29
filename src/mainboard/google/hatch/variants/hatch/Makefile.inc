@@ -19,5 +19,7 @@ SPD_SOURCES += 8G_2666		# 0b011
 SPD_SOURCES += 16G_2400		# 0b100
 SPD_SOURCES += 16G_2666		# 0b101
 
-ramstage-y += gpio.c
 bootblock-y += gpio.c
+
+ramstage-y += gpio.c
+ramstage-y += ramstage.c

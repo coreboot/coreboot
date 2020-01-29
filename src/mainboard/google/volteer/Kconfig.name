@@ -1,0 +1,5 @@
+comment "Volteer"
+
+config BOARD_GOOGLE_VOLTEER
+	bool "-> Volteer"
+	select BOARD_GOOGLE_BASEBOARD_VOLTEER

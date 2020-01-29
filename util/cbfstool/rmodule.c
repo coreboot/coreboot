@@ -223,7 +223,7 @@ static int find_program_segment(struct rmod_context *ctx)
 	}
 
 	if (nsegments != 1) {
-		ERROR("Unexepcted number of loadable segments: %d.\n",
+		ERROR("Unexpected number of loadable segments: %d.\n",
 		      nsegments);
 		return -1;
 	}

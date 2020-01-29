@@ -172,7 +172,7 @@ static inline size_t fit_free_space(struct fit_table *fit,
  * This one is critical, as mentioned in Chapter 1.2.1 "FIT Ordering Rules"
  * "Firmware Interface Table BIOS Specification".
  *
- * We need to use a stable sorting algortihm, as the order of
+ * We need to use a stable sorting algorithm, as the order of
  * FIT_TYPE_BIOS_STARTUP matter for measurements.
  */
 static void sort_fit_table(struct fit_table *fit)

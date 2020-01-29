@@ -387,7 +387,7 @@ static void alloc_buffer(struct buffer *b, size_t s, const char *n)
 
 /*
  * Read header/entry members in little-endian format.
- * Returns the offset upto which the read was performed.
+ * Returns the offset up to which the read was performed.
 */
 static size_t read_member(void *src, size_t offset, size_t size_bytes,
 			  void *dst)
@@ -415,7 +415,7 @@ static size_t read_member(void *src, size_t offset, size_t size_bytes,
 
 /*
  * Convert to little endian format.
- * Returns the offset upto which the fixup was performed.
+ * Returns the offset up to which the fixup was performed.
  */
 static size_t fix_member(void *data, size_t offset, size_t size_bytes)
 {
@@ -677,7 +677,7 @@ static size_t read_subpart_buf(void *data, size_t size, struct bpdt_entry *e,
 
 		/*
 		 * Sub-partitions in IFWI image are not in the same order as
-		 * in BPDT entries. BPDT entires are in header_order whereas
+		 * in BPDT entries. BPDT entries are in header_order whereas
 		 * sub-partition offsets in the image are in pack_order.
 		 */
 		if ((e[i].offset + e[i].size) > max_offset)

@@ -576,7 +576,7 @@ int cbfs_compact_instance(struct cbfs_image *image)
 			continue;
 
 		/* At this point prev is an empty entry. Put the non-empty
-		 * file in prev's location. Then add a new emptry entry. This
+		 * file in prev's location. Then add a new empty entry. This
 		 * essentialy bubbles empty entries towards the end. */
 
 		prev_size = cbfs_file_entry_size(prev);

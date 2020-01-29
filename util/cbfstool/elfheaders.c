@@ -658,7 +658,7 @@ void elf_init_eheader(Elf64_Ehdr *ehdr, int machine, int nbits, int endian)
 	}
 }
 
-/* Arbitray maximum number of sections. */
+/* Arbitrary maximum number of sections. */
 #define MAX_SECTIONS 16
 struct elf_writer_section {
 	Elf64_Shdr shdr;

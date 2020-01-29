@@ -115,7 +115,7 @@ int parse_elf_to_payload(const struct buffer *input, struct buffer *output,
 	}
 
 	/* Now, regular headers - we only care about PT_LOAD headers,
-	 * because thats what we're actually going to load
+	 * because that's what we're actually going to load
 	 */
 
 	for (i = 0; i < headers; i++) {

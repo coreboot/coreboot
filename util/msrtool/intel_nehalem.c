@@ -29,7 +29,7 @@ int intel_nehalem_probe(const struct targetdef *target, const struct cpuid_t *id
 }
 
 const struct msrdef intel_nehalem_msrs[] = {
-	{0x17, MSRTYPE_RDWR, MSR2(0,0), "IA32_PLATFORM_ID Register",
+	{0x17, MSRTYPE_RDWR, MSR2(0, 0), "IA32_PLATFORM_ID Register",
 			"Model Specific Platform ID", {
 		{ 63, 11, RESERVED },
 		{ 52, 3, RESERVED },
@@ -42,11 +42,11 @@ const struct msrdef intel_nehalem_msrs[] = {
 		{ BITS_EOT }
 	}},
 	/* FIXME: This MSR not documented for Nehalem */
-	{0xcd, MSRTYPE_RDONLY, MSR2(0,0), "MSR_FSB_FREQ", "Scalable Bus Speed", {
+	{0xcd, MSRTYPE_RDONLY, MSR2(0, 0), "MSR_FSB_FREQ", "Scalable Bus Speed", {
 	/* This field indicates the intended scalable bus clock speed */
 		{ BITS_EOT }
 	}},
-	{0xce, MSRTYPE_RDONLY, MSR2(0,0), "MSR_PLATFORM_INFO", "", {
+	{0xce, MSRTYPE_RDONLY, MSR2(0, 0), "MSR_PLATFORM_INFO", "", {
 		{ 63, 16, RESERVED },
 		{ 47, 8, "Maximum Efficiency Ratio", "R/O", PRESENT_DEC, {
 			{ BITVAL_EOT }
@@ -72,7 +72,7 @@ const struct msrdef intel_nehalem_msrs[] = {
 		{ 7, 8, RESERVED },
 		{ BITS_EOT }
 	}},
-	{0x11e, MSRTYPE_RDWR, MSR2(0,0), "MSR_BBL_CR_CTL3", "", {
+	{0x11e, MSRTYPE_RDWR, MSR2(0, 0), "MSR_BBL_CR_CTL3", "", {
 		{ BITS_EOT }
 	}},
 	/* FIXME: There is already two 0x1ad MSRs for Nehalem in the
@@ -81,7 +81,7 @@ const struct msrdef intel_nehalem_msrs[] = {
 	 * we can conclude, that it was just typo, and this register
 	 * have address 0x1ac.
 	 */
-	{0x1ac, MSRTYPE_RDWR, MSR2(0,0), "MSR_TURBO_POWER_CURRENT_LIMIT", "", {
+	{0x1ac, MSRTYPE_RDWR, MSR2(0, 0), "MSR_TURBO_POWER_CURRENT_LIMIT", "", {
 		{ 63, 32, RESERVED },
 		{ 31, 1, "TDC Limit Override Enable", "R/W", PRESENT_BIN, {
 			{ MSR1(0), "TDC Limit Override is not active" },
@@ -103,7 +103,7 @@ const struct msrdef intel_nehalem_msrs[] = {
 		}},
 		{ BITS_EOT }
 	}},
-	{0x1ad, MSRTYPE_RDWR, MSR2(0,0), "MSR_TURBO_RATIO_LIMIT",
+	{0x1ad, MSRTYPE_RDWR, MSR2(0, 0), "MSR_TURBO_RATIO_LIMIT",
 			"Maximum Ratio Limit of Turbo Mode", {
 	// "RO" if MSR_PLATFORM_INFO.[28] = 0
 	// "RW" if MSR_PLATFORM_INFO.[23] = 1
@@ -126,7 +126,7 @@ const struct msrdef intel_nehalem_msrs[] = {
 		}},
 		{ BITS_EOT }
 	}},
-	{0x280, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC0_CTL2", "", {
+	{0x280, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MC0_CTL2", "", {
 		{ 63, 33, RESERVED },
 		{ 30, 1, "CMCI_EN", "R/W", PRESENT_BIN, {
 			{ BITVAL_EOT }
@@ -137,7 +137,7 @@ const struct msrdef intel_nehalem_msrs[] = {
 		}},
 		{ BITS_EOT }
 	}},
-	{0x281, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC1_CTL2", "", {
+	{0x281, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MC1_CTL2", "", {
 		{ 63, 33, RESERVED },
 		{ 30, 1, "CMCI_EN", "R/W", PRESENT_BIN, {
 			{ BITVAL_EOT }
@@ -148,7 +148,7 @@ const struct msrdef intel_nehalem_msrs[] = {
 		}},
 		{ BITS_EOT }
 	}},
-	{0x286, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC6_CTL2", "", {
+	{0x286, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MC6_CTL2", "", {
 		{ 63, 33, RESERVED },
 		{ 30, 1, "CMCI_EN", "R/W", PRESENT_BIN, {
 			{ BITVAL_EOT }
@@ -159,7 +159,7 @@ const struct msrdef intel_nehalem_msrs[] = {
 		}},
 		{ BITS_EOT }
 	}},
-	{0x287, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC7_CTL2", "", {
+	{0x287, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MC7_CTL2", "", {
 		{ 63, 33, RESERVED },
 		{ 30, 1, "CMCI_EN", "R/W", PRESENT_BIN, {
 			{ BITVAL_EOT }
@@ -170,7 +170,7 @@ const struct msrdef intel_nehalem_msrs[] = {
 		}},
 		{ BITS_EOT }
 	}},
-	{0x288, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC8_CTL2", "", {
+	{0x288, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MC8_CTL2", "", {
 		{ 63, 33, RESERVED },
 		{ 30, 1, "CMCI_EN", "R/W", PRESENT_BIN, {
 			{ BITVAL_EOT }
@@ -181,7 +181,7 @@ const struct msrdef intel_nehalem_msrs[] = {
 		}},
 		{ BITS_EOT }
 	}},
-	{0x3f8, MSRTYPE_RDONLY, MSR2(0,0), "MSR_PKG_C3_RESIDENCY", "", {
+	{0x3f8, MSRTYPE_RDONLY, MSR2(0, 0), "MSR_PKG_C3_RESIDENCY", "", {
 		{ 63, 64, "Package C3 Residency Counter", "R/O", PRESENT_DEC, {
 		/* Value since last reset that this package is in C3 states.
 		 * Count at the same frequency as the TSC.
@@ -190,46 +190,46 @@ const struct msrdef intel_nehalem_msrs[] = {
 		}},
 		{ BITS_EOT }
 	}},
-	{0x3f9, MSRTYPE_RDONLY, MSR2(0,0), "MSR_PKG_C6_RESIDENCY", "", {
+	{0x3f9, MSRTYPE_RDONLY, MSR2(0, 0), "MSR_PKG_C6_RESIDENCY", "", {
 		{ BITS_EOT }
 	}},
-	{0x3fa, MSRTYPE_RDONLY, MSR2(0,0), "MSR_PKG_C7_RESIDENCY", "", {
+	{0x3fa, MSRTYPE_RDONLY, MSR2(0, 0), "MSR_PKG_C7_RESIDENCY", "", {
 		{ BITS_EOT }
 	}},
-	{0x418, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC6_CTL", "", {
+	{0x418, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MC6_CTL", "", {
 		{ BITS_EOT }
 	}},
-	{0x419, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC6_STATUS", "", {
+	{0x419, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MC6_STATUS", "", {
 		{ BITS_EOT }
 	}},
-	{0x41a, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC6_ADDR", "", {
+	{0x41a, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MC6_ADDR", "", {
 		{ BITS_EOT }
 	}},
-	{0x41b, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC6_MISC", "", {
+	{0x41b, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MC6_MISC", "", {
 		{ BITS_EOT }
 	}},
-	{0x41c, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC7_CTL", "", {
+	{0x41c, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MC7_CTL", "", {
 		{ BITS_EOT }
 	}},
-	{0x41d, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC7_STATUS", "", {
+	{0x41d, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MC7_STATUS", "", {
 		{ BITS_EOT }
 	}},
-	{0x41e, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC7_ADDR", "", {
+	{0x41e, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MC7_ADDR", "", {
 		{ BITS_EOT }
 	}},
-	{0x41f, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC7_MISC", "", {
+	{0x41f, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MC7_MISC", "", {
 		{ BITS_EOT }
 	}},
-	{0x420, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC8_CTL", "", {
+	{0x420, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MC8_CTL", "", {
 		{ BITS_EOT }
 	}},
-	{0x421, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC8_STATUS", "", {
+	{0x421, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MC8_STATUS", "", {
 		{ BITS_EOT }
 	}},
-	{0x422, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC8_ADDR", "", {
+	{0x422, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MC8_ADDR", "", {
 		{ BITS_EOT }
 	}},
-	{0x423, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC8_MISC", "", {
+	{0x423, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MC8_MISC", "", {
 		{ BITS_EOT }
 	}},
 
@@ -238,21 +238,21 @@ const struct msrdef intel_nehalem_msrs[] = {
  * ==========================================================================
  */
 
-	{0x0, MSRTYPE_RDWR, MSR2(0,0), "IA32_P5_MC_ADDR", "Pentium Processor\
-			Machine-Check Exception Address", {
+	{0x0, MSRTYPE_RDWR, MSR2(0, 0), "IA32_P5_MC_ADDR",
+		"Pentium Processor Machine-Check Exception Address", {
 		{ BITS_EOT }
 	}},
-	{0x1, MSRTYPE_RDWR, MSR2(0,0), "IA32_P5_MC_TYPE", "Pentium Processor\
-			Machine-Check Exception Type", {
+	{0x1, MSRTYPE_RDWR, MSR2(0, 0), "IA32_P5_MC_TYPE",
+		"Pentium Processor Machine-Check Exception Type", {
 		{ BITS_EOT }
 	}},
-	{0x6, MSRTYPE_RDWR, MSR2(0,0), "IA32_MONITOR_FILTER_SIZE", "", {
+	{0x6, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MONITOR_FILTER_SIZE", "", {
 		{ BITS_EOT }
 	}},
-	{0x10, MSRTYPE_RDWR, MSR2(0,0), "IA32_TIME_STEP_COUNTER", "TSC", {
+	{0x10, MSRTYPE_RDWR, MSR2(0, 0), "IA32_TIME_STEP_COUNTER", "TSC", {
 		{ BITS_EOT }
 	}},
-	{0x1b, MSRTYPE_RDWR, MSR2(0,0), "IA32_APIC_BASE", "APIC BASE", {
+	{0x1b, MSRTYPE_RDWR, MSR2(0, 0), "IA32_APIC_BASE", "APIC BASE", {
 		/* In Intel's manual there is MAXPHYWID,
 		 * which determine index of highest bit of
 		 * APIC Base itself, so marking it as
@@ -274,7 +274,7 @@ const struct msrdef intel_nehalem_msrs[] = {
 		{ 7, 8, RESERVED },
 		{ BITS_EOT }
 	}},
-	{0x34, MSRTYPE_RDONLY, MSR2(0,0), "MSR_SMI_COUNT", "SMI Counter register", {
+	{0x34, MSRTYPE_RDONLY, MSR2(0, 0), "MSR_SMI_COUNT", "SMI Counter register", {
 		{ 63, 32, RESERVED },
 		{ 31, 32, "SMI Count", "R/O", PRESENT_HEX, {
 			{ BITVAL_EOT }
@@ -282,7 +282,7 @@ const struct msrdef intel_nehalem_msrs[] = {
 		{ BITS_EOT }
 	}},
 	/* if CPUID.01H: ECX[bit 5 or bit 6] = 1 */
-	{0x3a, MSRTYPE_RDWR, MSR2(0,0), "IA32_FEATURE_CONTROL",
+	{0x3a, MSRTYPE_RDWR, MSR2(0, 0), "IA32_FEATURE_CONTROL",
 			"Control features in Intel 64Processor", {
 		{ 63, 48, RESERVED },
 		/* if CPUID.01H: ECX[6] = 1 */
@@ -332,61 +332,61 @@ const struct msrdef intel_nehalem_msrs[] = {
 		}},
 		{ BITS_EOT }
 	}},
-	{0x40, MSRTYPE_RDWR, MSR2(0,0), "MSR_LASTBRANCH_0_FROM_IP", "", {
+	{0x40, MSRTYPE_RDWR, MSR2(0, 0), "MSR_LASTBRANCH_0_FROM_IP", "", {
 		{ BITS_EOT }
 	}},
-	{0x41, MSRTYPE_RDWR, MSR2(0,0), "MSR_LASTBRANCH_1_FROM_IP", "", {
+	{0x41, MSRTYPE_RDWR, MSR2(0, 0), "MSR_LASTBRANCH_1_FROM_IP", "", {
 		{ BITS_EOT }
 	}},
-	{0x42, MSRTYPE_RDWR, MSR2(0,0), "MSR_LASTBRANCH_2_FROM_IP", "", {
+	{0x42, MSRTYPE_RDWR, MSR2(0, 0), "MSR_LASTBRANCH_2_FROM_IP", "", {
 		{ BITS_EOT }
 	}},
-	{0x43, MSRTYPE_RDWR, MSR2(0,0), "MSR_LASTBRANCH_3_FROM_IP", "", {
+	{0x43, MSRTYPE_RDWR, MSR2(0, 0), "MSR_LASTBRANCH_3_FROM_IP", "", {
 		{ BITS_EOT }
 	}},
-	{0x60, MSRTYPE_RDWR, MSR2(0,0), "MSR_LASTBRANCH_0_TO_LIP", "", {
+	{0x60, MSRTYPE_RDWR, MSR2(0, 0), "MSR_LASTBRANCH_0_TO_LIP", "", {
 		{ BITS_EOT }
 	}},
-	{0x61, MSRTYPE_RDWR, MSR2(0,0), "MSR_LASTBRANCH_1_TO_LIP", "", {
+	{0x61, MSRTYPE_RDWR, MSR2(0, 0), "MSR_LASTBRANCH_1_TO_LIP", "", {
 		{ BITS_EOT }
 	}},
-	{0x62, MSRTYPE_RDWR, MSR2(0,0), "MSR_LASTBRANCH_2_TO_LIP", "", {
+	{0x62, MSRTYPE_RDWR, MSR2(0, 0), "MSR_LASTBRANCH_2_TO_LIP", "", {
 		{ BITS_EOT }
 	}},
-	{0x63, MSRTYPE_RDWR, MSR2(0,0), "MSR_LASTBRANCH_3_TO_LIP", "", {
+	{0x63, MSRTYPE_RDWR, MSR2(0, 0), "MSR_LASTBRANCH_3_TO_LIP", "", {
 		{ BITS_EOT }
 	}},
-	{0x79, MSRTYPE_RDWR, MSR2(0,0), "IA32_BIOS_UPDT_TRIG",
+	{0x79, MSRTYPE_RDWR, MSR2(0, 0), "IA32_BIOS_UPDT_TRIG",
 			"BIOS Update Trigger Register (W)", {
 		{ BITS_EOT }
 	}},
-	{0x8b, MSRTYPE_RDWR, MSR2(0,0), "IA32_BIOS_SIGN_ID",
+	{0x8b, MSRTYPE_RDWR, MSR2(0, 0), "IA32_BIOS_SIGN_ID",
 			"BIOS Update Signature ID (RO)", {
 		{ BITS_EOT }
 	}},
-	{0xa0, MSRTYPE_RDWR, MSR2(0,0), "MSR_SMRR_PHYS_BASE", "", {
+	{0xa0, MSRTYPE_RDWR, MSR2(0, 0), "MSR_SMRR_PHYS_BASE", "", {
 		{ BITS_EOT }
 	}},
-	{0xa1, MSRTYPE_RDWR, MSR2(0,0), "MSR_SMRR_PHYS_MASK", "", {
+	{0xa1, MSRTYPE_RDWR, MSR2(0, 0), "MSR_SMRR_PHYS_MASK", "", {
 		{ BITS_EOT }
 	}},
-	{0xc1, MSRTYPE_RDWR, MSR2(0,0), "IA32_PMC0",
+	{0xc1, MSRTYPE_RDWR, MSR2(0, 0), "IA32_PMC0",
 			"Performance counter register", {
 		{ BITS_EOT }
 	}},
-	{0xc2, MSRTYPE_RDWR, MSR2(0,0), "IA32_PMC1",
+	{0xc2, MSRTYPE_RDWR, MSR2(0, 0), "IA32_PMC1",
 			"Performance counter register", {
 		{ BITS_EOT }
 	}},
-	{0xc3, MSRTYPE_RDWR, MSR2(0,0), "IA32_PMC2",
+	{0xc3, MSRTYPE_RDWR, MSR2(0, 0), "IA32_PMC2",
 			"Performance counter register", {
 		{ BITS_EOT }
 	}},
-	{0xc4, MSRTYPE_RDWR, MSR2(0,0), "IA32_PMC3",
+	{0xc4, MSRTYPE_RDWR, MSR2(0, 0), "IA32_PMC3",
 			"Performance counter register", {
 		{ BITS_EOT }
 	}},
-	{0xe2, MSRTYPE_RDWR, MSR2(0,0), "MSR_PKG_CST_CONFIG_CONTROL",
+	{0xe2, MSRTYPE_RDWR, MSR2(0, 0), "MSR_PKG_CST_CONFIG_CONTROL",
 			"C-State Configuration Control", {
 		{ 63, 37, RESERVED },
 		{ 26, 1, "C1 state auto demotion", "R/W", PRESENT_DEC, {
@@ -400,26 +400,26 @@ const struct msrdef intel_nehalem_msrs[] = {
 			{ BITVAL_EOT }
 		}},
 		{ 24, 1, "Interrupt filtering enabled/disabled", "R/W", PRESENT_DEC, {
-			{ MSR1(0), "All CPU cores in deep C-State will wake for an \
-				event message" },
-			{ MSR1(1), "CPU in deep C-State will wake only when the event \
-				message is destined for that core" },
+			{ MSR1(0), "All CPU cores in deep C-State will wake for an "
+				"event message" },
+			{ MSR1(1), "CPU in deep C-State will wake only when the event "
+				"message is destined for that core" },
 			{ BITVAL_EOT }
 		}},
 		{ 23, 8, RESERVED },
 		{ 15, 1, "CFG Lock", "R/WO", PRESENT_DEC, {
-			{ MSR1(0), "[15:0] bits of MSR_PKG_CST_CONFIG_CONTROL(0xe2) \
-				are writeable" },
-			{ MSR1(1), "[15:0] bits of MSR_PKG_CST_CONFIG_CONTROL(0xe2) \
-				are locked until reset" },
+			{ MSR1(0), "[15:0] bits of MSR_PKG_CST_CONFIG_CONTROL(0xe2) "
+				"are writeable" },
+			{ MSR1(1), "[15:0] bits of MSR_PKG_CST_CONFIG_CONTROL(0xe2) "
+				"are locked until reset" },
 			{ BITVAL_EOT }
 		}},
 		{ 14, 4, RESERVED },
 		{ 10, 1, "I/O MWAIT Redirection", "R/W", PRESENT_DEC, {
 			{ MSR1(0), "I/O MWAIT Redirection disabled" },
-			{ MSR1(1), "CPU will map IO_read instructions sent to \
-				IO register specified by MSR_PMG_IO_CAPTURE_BASE \
-				to MWAIT instructions" },
+			{ MSR1(1), "CPU will map IO_read instructions sent to "
+				"IO register specified by MSR_PMG_IO_CAPTURE_BASE "
+				"to MWAIT instructions" },
 			{ BITVAL_EOT }
 		}},
 		{ 9, 7, RESERVED },
@@ -443,7 +443,7 @@ const struct msrdef intel_nehalem_msrs[] = {
 		}},
 		{ BITS_EOT }
 	}},
-	{0xe4, MSRTYPE_RDWR, MSR2(0,0), "MSR_PMG_IO_CAPTURE_BASE",
+	{0xe4, MSRTYPE_RDWR, MSR2(0, 0), "MSR_PMG_IO_CAPTURE_BASE",
 			"Power Management IO Redirection in C-state", {
 		{ 63, 45, RESERVED },
 		{ 18, 3, "C-state Range", "R/W", PRESENT_BIN, {
@@ -467,28 +467,28 @@ const struct msrdef intel_nehalem_msrs[] = {
 		}},
 		{ BITS_EOT }
 	}},
-	{0xe7, MSRTYPE_RDWR, MSR2(0,0), "IA32_MPERF", "", {
+	{0xe7, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MPERF", "", {
 		{ BITS_EOT }
 	}},
-	{0xe8, MSRTYPE_RDWR, MSR2(0,0), "IA32_APERF", "", {
+	{0xe8, MSRTYPE_RDWR, MSR2(0, 0), "IA32_APERF", "", {
 		{ BITS_EOT }
 	}},
-	{0xfe, MSRTYPE_RDWR, MSR2(0,0), "IA32_MTRRCAP", "", {
+	{0xfe, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MTRRCAP", "", {
 		{ BITS_EOT }
 	}},
-	{0x174, MSRTYPE_RDWR, MSR2(0,0), "IA32_SYSENTER_CS", "", {
+	{0x174, MSRTYPE_RDWR, MSR2(0, 0), "IA32_SYSENTER_CS", "", {
 		{ BITS_EOT }
 	}},
-	{0x175, MSRTYPE_RDWR, MSR2(0,0), "IA32_SYSENTER_ESP", "", {
+	{0x175, MSRTYPE_RDWR, MSR2(0, 0), "IA32_SYSENTER_ESP", "", {
 		{ BITS_EOT }
 	}},
-	{0x176, MSRTYPE_RDWR, MSR2(0,0), "IA32_SYSENTER_EIP", "", {
+	{0x176, MSRTYPE_RDWR, MSR2(0, 0), "IA32_SYSENTER_EIP", "", {
 		{ BITS_EOT }
 	}},
-	{0x179, MSRTYPE_RDWR, MSR2(0,0), "IA32_MCG_CAP", "", {
+	{0x179, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MCG_CAP", "", {
 		{ BITS_EOT }
 	}},
-	{0x17a, MSRTYPE_RDWR, MSR2(0,0), "IA32_MCG_STATUS", "", {
+	{0x17a, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MCG_STATUS", "", {
 		{ 63, 61, RESERVED },
 		{ 2, 1, "MCIP", "R/W", PRESENT_BIN, {
 			/* When set, bit indicates that a machine check has been
@@ -524,7 +524,7 @@ const struct msrdef intel_nehalem_msrs[] = {
 		{ BITS_EOT }
 	}},
 	/* if CPUID.0AH: EAX[15:8] > 0 */
-	{0x186, MSRTYPE_RDWR, MSR2(0,0), "IA32_PERFEVTSEL0",
+	{0x186, MSRTYPE_RDWR, MSR2(0, 0), "IA32_PERFEVTSEL0",
 			"Performance Event Select Register 0", {
 		{ 63, 32, RESERVED },
 		{ 31, 8, "CMASK", "R/W", PRESENT_HEX, {
@@ -584,7 +584,7 @@ const struct msrdef intel_nehalem_msrs[] = {
 		{ BITS_EOT }
 	}},
 	/* if CPUID.0AH: EAX[15:8] > 0 */
-	{0x187, MSRTYPE_RDWR, MSR2(0,0), "IA32_PERFEVTSEL1",
+	{0x187, MSRTYPE_RDWR, MSR2(0, 0), "IA32_PERFEVTSEL1",
 			"Performance Event Select Register 1", {
 		{ 63, 32, RESERVED },
 		{ 31, 8, "CMASK", "R/W", PRESENT_HEX, {
@@ -644,7 +644,7 @@ const struct msrdef intel_nehalem_msrs[] = {
 		{ BITS_EOT }
 	}},
 	/* if CPUID.0AH: EAX[15:8] > 0 */
-	{0x188, MSRTYPE_RDWR, MSR2(0,0), "IA32_PERFEVTSEL2",
+	{0x188, MSRTYPE_RDWR, MSR2(0, 0), "IA32_PERFEVTSEL2",
 			"Performance Event Select Register 2", {
 		{ 63, 32, RESERVED },
 		{ 31, 8, "CMASK", "R/W", PRESENT_HEX, {
@@ -704,7 +704,7 @@ const struct msrdef intel_nehalem_msrs[] = {
 		{ BITS_EOT }
 	}},
 	/* if CPUID.0AH: EAX[15:8] > 0 */
-	{0x189, MSRTYPE_RDWR, MSR2(0,0), "IA32_PERFEVTSEL3",
+	{0x189, MSRTYPE_RDWR, MSR2(0, 0), "IA32_PERFEVTSEL3",
 			"Performance Event Select Register 3", {
 		{ 63, 32, RESERVED },
 		{ 31, 8, "CMASK", "R/W", PRESENT_HEX, {
@@ -763,17 +763,17 @@ const struct msrdef intel_nehalem_msrs[] = {
 		}},
 		{ BITS_EOT }
 	}},
-	{0x198, MSRTYPE_RDWR, MSR2(0,0), "IA32_PERF_STATUS", "", {
+	{0x198, MSRTYPE_RDWR, MSR2(0, 0), "IA32_PERF_STATUS", "", {
 		{ 63, 48, RESERVED },
 		{ 15, 16, "Current Performance State Value", "R/O", PRESENT_HEX, {
 			{ BITVAL_EOT }
 		}},
 		{ BITS_EOT }
 	}},
-	{0x199, MSRTYPE_RDWR, MSR2(0,0), "IA32_PERF_CTL", "", {
+	{0x199, MSRTYPE_RDWR, MSR2(0, 0), "IA32_PERF_CTL", "", {
 		{ BITS_EOT }
 	}},
-	{0x19a, MSRTYPE_RDWR, MSR2(0,0), "IA32_CLOCK_MODULATION",
+	{0x19a, MSRTYPE_RDWR, MSR2(0, 0), "IA32_CLOCK_MODULATION",
 			"Clock Modulation", {
 		{ 63, 59, RESERVED },
 		{ 4, 1, "On demand Clock Modulation", "R/W", PRESENT_BIN, {
@@ -787,18 +787,18 @@ const struct msrdef intel_nehalem_msrs[] = {
 		{ 0, 1, RESERVED },
 		{ BITS_EOT }
 	}},
-	{0x19b, MSRTYPE_RDWR, MSR2(0,0), "IA32_THERM_INTERRUPT",
+	{0x19b, MSRTYPE_RDWR, MSR2(0, 0), "IA32_THERM_INTERRUPT",
 			"Thermal Interrupt Control", {
 		{ BITS_EOT }
 	}},
-	{0x19c, MSRTYPE_RDWR, MSR2(0,0), "IA32_THERM_STATUS",
+	{0x19c, MSRTYPE_RDWR, MSR2(0, 0), "IA32_THERM_STATUS",
 			"Thermal Monitor Status", {
 		{ BITS_EOT }
 	}},
-	{0x19d, MSRTYPE_RDWR, MSR2(0,0), "MSR_THERM2_CTL", "", {
+	{0x19d, MSRTYPE_RDWR, MSR2(0, 0), "MSR_THERM2_CTL", "", {
 		{ BITS_EOT }
 	}},
-	{0x1a0, MSRTYPE_RDWR, MSR2(0,0), "IA32_MISC_ENABLE",
+	{0x1a0, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MISC_ENABLE",
 			"Enable miscellaneous processor features", {
 		{ 63, 25, RESERVED },
 		/* Note: [38] bit using for whole package,
@@ -872,7 +872,7 @@ const struct msrdef intel_nehalem_msrs[] = {
 		}},
 		{ BITS_EOT }
 	}},
-	{0x1a2, MSRTYPE_RDWR, MSR2(0,0), "MSR_TEMPERATURE_TARGET", "", {
+	{0x1a2, MSRTYPE_RDWR, MSR2(0, 0), "MSR_TEMPERATURE_TARGET", "", {
 		{ 63, 40, RESERVED },
 		{ 23, 8, "Temperature Target", "R", PRESENT_DEC, {
 			/* The minimum temperature at which PROCHOT# will be
@@ -883,32 +883,32 @@ const struct msrdef intel_nehalem_msrs[] = {
 		{ 15, 16, RESERVED },
 		{ BITS_EOT }
 	}},
-	{0x1a6, MSRTYPE_RDWR, MSR2(0,0), "MSR_OFFCORE_RSP_O",
+	{0x1a6, MSRTYPE_RDWR, MSR2(0, 0), "MSR_OFFCORE_RSP_O",
 			"Offcore Response Event Select Register", {
 		{ BITS_EOT }
 	}},
-	{0x1aa, MSRTYPE_RDWR, MSR2(0,0), "MSR_MISC_PWR_MGMT", "", {
+	{0x1aa, MSRTYPE_RDWR, MSR2(0, 0), "MSR_MISC_PWR_MGMT", "", {
 		{ 63, 62, RESERVED },
 		{ 1, 1, "Energy/Performance Bias Enable", "R/W", PRESENT_BIN, {
 			/* This bit status is also reflected
 			 * by CPUID.(EAX=06h):ECX[3]
 			 */
-			{ MSR1(0), "IA32_ENERGY_PERF_BIAS (0x1b0) is invisible \
-				for Ring 0 software" },
-			{ MSR1(1), "IA32_ENERGY_PERF_BIAS (0x1b0) accessible \
-				by Ring 0 software" },
+			{ MSR1(0), "IA32_ENERGY_PERF_BIAS (0x1b0) is invisible "
+				"for Ring 0 software" },
+			{ MSR1(1), "IA32_ENERGY_PERF_BIAS (0x1b0) accessible "
+				"by Ring 0 software" },
 			{ BITVAL_EOT }
 		}},
 		{ 0, 1, "EIST Hardware Coordination Disable", "R/W", PRESENT_BIN, {
-			{ MSR1(0), "Hardware Coordination of EIST request \
-				from processor cores is enabled" },
-			{ MSR1(1), "Hardware Coordination of EIST request \
-				from processor cores is disabled" },
+			{ MSR1(0), "Hardware Coordination of EIST request "
+				"from processor cores is enabled" },
+			{ MSR1(1), "Hardware Coordination of EIST request "
+				"from processor cores is disabled" },
 			{ BITVAL_EOT }
 		}},
 		{ BITS_EOT }
 	}},
-	{0x1c8, MSRTYPE_RDWR, MSR2(0,0), "MSR_LBR_SELECT",
+	{0x1c8, MSRTYPE_RDWR, MSR2(0, 0), "MSR_LBR_SELECT",
 		"Last Branch Record Filtering Select Register", {
 	/*  "Nehalem support filtering of LBR based on combination of CPL
 	 *  and branch type conditions. When LBR filtering is enabled,
@@ -920,14 +920,14 @@ const struct msrdef intel_nehalem_msrs[] = {
 	 */
 		{ BITS_EOT }
 	}},
-	{0x1c9, MSRTYPE_RDONLY, MSR2(0,0), "MSR_LASTBRANCH_TOS",
+	{0x1c9, MSRTYPE_RDONLY, MSR2(0, 0), "MSR_LASTBRANCH_TOS",
 		"Last Branch Record Stack TOS", {
 	/* Contains an index (bits 0-3) that points to the MSR containing
 	 * the most recent branch record. See also MSR_LASTBRANCH_0_FROM_IP (0x680).
 	 */
 		{ BITS_EOT }
 	}},
-	{0x1d9, MSRTYPE_RDWR, MSR2(0,0), "IA32_DEBUGCTL",
+	{0x1d9, MSRTYPE_RDWR, MSR2(0, 0), "IA32_DEBUGCTL",
 		"Debug/Trace/Profile Resource Control", {
 	/* (MSR_DEBUGCTTLA, MSR_DEBUGCTLB) */
 		{ 63, 49, RESERVED },
@@ -939,15 +939,15 @@ const struct msrdef intel_nehalem_msrs[] = {
 		}},
 		{ 13, 1, "ENABLE_UNCORE_PMI", "R/O", PRESENT_BIN, {
 			{ MSR1(0), "Nothing" },
-			{ MSR1(1), "Logical processor can receive and generate PMI \
-				on behalf of the uncore" },
+			{ MSR1(1), "Logical processor can receive and generate PMI "
+				"on behalf of the uncore" },
 			{ BITVAL_EOT }
 		}},
 		/* Only if CPUID.01H: ECX[15] = 1 and CPUID.0AH: EAX[7:0]>1 */
 		{ 12, 1, "FREEZE_PERFMON_ON_PMI", "R/O", PRESENT_BIN, {
 			{ MSR1(0), "Nothing" },
-			{ MSR1(1), "Each ENABLE bit of the global counter control MSR \
-				are frozen (address 0x3bf) on PMI request" },
+			{ MSR1(1), "Each ENABLE bit of the global counter control MSR "
+				"are frozen (address 0x3bf) on PMI request" },
 			{ BITVAL_EOT }
 		}},
 		/* Only if CPUID.01H: ECX[15] = 1 and CPUID.0AH: EAX[7:0]>1 */
@@ -968,15 +968,15 @@ const struct msrdef intel_nehalem_msrs[] = {
 		}},
 		{ 8, 1, "BTINT", "R/O", PRESENT_BIN, {
 			{ MSR1(0), "BTMs are logged in a BTS buffer in circular fashion" },
-			{ MSR1(1), "An interrupt is generated by the BTS facility \
-				when the BTS buffer is full" },
+			{ MSR1(1), "An interrupt is generated by the BTS facility "
+				"when the BTS buffer is full" },
 			{ BITVAL_EOT }
 		}},
 		{ 7, 1, "BTS", "R/O", PRESENT_BIN, {
-			{ MSR1(0), "Logging of BTMs (branch trace messages) \
-				in BTS buffer is disabled" },
-			{ MSR1(1), "Logging of BTMs (branch trace messages) \
-				in BTS buffer is enabled" },
+			{ MSR1(0), "Logging of BTMs (branch trace messages) "
+				"in BTS buffer is disabled" },
+			{ MSR1(1), "Logging of BTMs (branch trace messages) "
+				"in BTS buffer is enabled" },
 			{ BITVAL_EOT }
 		}},
 		{ 6, 1, "TR", "R/O", PRESENT_BIN, {
@@ -987,19 +987,19 @@ const struct msrdef intel_nehalem_msrs[] = {
 		{ 5, 4, RESERVED },
 		{ 1, 1, "BTF", "R/O", PRESENT_BIN, {
 			{ MSR1(0), "Nothing" },
-			{ MSR1(1), "Enabled treating EFLAGS.TF as single-step on \
-				branches instead of single-step on instructions" },
+			{ MSR1(1), "Enabled treating EFLAGS.TF as single-step on "
+				"branches instead of single-step on instructions" },
 			{ BITVAL_EOT }
 		}},
 		{ 0, 1, "LBR", "R/O", PRESENT_BIN, {
 			{ MSR1(0), "Nothing" },
-			{ MSR1(1), "Enabled recording a running trace of the most \
-				recent branches taken by the processor in the LBR stack" },
+			{ MSR1(1), "Enabled recording a running trace of the most "
+				"recent branches taken by the processor in the LBR stack" },
 			{ BITVAL_EOT }
 		}},
 		{ BITS_EOT }
 	}},
-	{0x1dd, MSRTYPE_RDONLY, MSR2(0,0), "MSR_LER_FROM_LIP",
+	{0x1dd, MSRTYPE_RDONLY, MSR2(0, 0), "MSR_LER_FROM_LIP",
 		"Last Exception Record From Linear IP", {
 	/* Contains a pointer to the last branch instruction
 	 * that the processor executed prior to the last exception
@@ -1007,7 +1007,7 @@ const struct msrdef intel_nehalem_msrs[] = {
 	 */
 		{ BITS_EOT }
 	}},
-	{0x1de, MSRTYPE_RDONLY, MSR2(0,0), "MSR_LER_TO_LIP",
+	{0x1de, MSRTYPE_RDONLY, MSR2(0, 0), "MSR_LER_TO_LIP",
 		"Last Exception Record To Linear IP", {
 	/* This area contains a pointer to the target of the
 	 * last branch instruction that the processor executed
@@ -1016,7 +1016,7 @@ const struct msrdef intel_nehalem_msrs[] = {
 	 */
 		{ BITS_EOT }
 	}},
-	{0x1f2, MSRTYPE_RDONLY, MSR2(0,0), "IA32_SMRR_PHYS_BASE",
+	{0x1f2, MSRTYPE_RDONLY, MSR2(0, 0), "IA32_SMRR_PHYS_BASE",
 		"SMRR Base Address", {
 	/* Base address of SMM memory range.
 	 * Writeable only in SMM, so marking it as read-only */
@@ -1030,7 +1030,7 @@ const struct msrdef intel_nehalem_msrs[] = {
 		}},
 		{ BITS_EOT }
 	}},
-	{0x1f3, MSRTYPE_RDONLY, MSR2(0,0), "IA32_SMRR_PHYS_MASK",
+	{0x1f3, MSRTYPE_RDONLY, MSR2(0, 0), "IA32_SMRR_PHYS_MASK",
 		"SMRR Range Mask", {
 	/* Range Mask of SMM memory range.
 	 * Writeable only in SMM, so marking it as read-only */
@@ -1046,11 +1046,11 @@ const struct msrdef intel_nehalem_msrs[] = {
 		{ 10, 11, RESERVED },
 		{ BITS_EOT }
 	}},
-	{0x1f8, MSRTYPE_RDONLY, MSR2(0,0), "IA32_PLATFORM_DCA_CAP",
+	{0x1f8, MSRTYPE_RDONLY, MSR2(0, 0), "IA32_PLATFORM_DCA_CAP",
 			"DCA Capability", {
 		{ BITS_EOT }
 	}},
-	{0x1f9, MSRTYPE_RDONLY, MSR2(0,0), "IA32_CPU_DCA_CAP",
+	{0x1f9, MSRTYPE_RDONLY, MSR2(0, 0), "IA32_CPU_DCA_CAP",
 		"Support og Prefetch-Hint type", {
 	/* If set, CPU supports Prefetch-Hint type.
 	 * TODO: As it is undocumented, which bit (or bits)
@@ -1059,7 +1059,7 @@ const struct msrdef intel_nehalem_msrs[] = {
 	 */
 		{ BITS_EOT }
 	}},
-	{0x1fa, MSRTYPE_RDWR, MSR2(0,0), "IA32_DCA_0_CAP",
+	{0x1fa, MSRTYPE_RDWR, MSR2(0, 0), "IA32_DCA_0_CAP",
 		"DCA type 0 Status and Control register", {
 	/* This register defined as introduced only
 	 * in 06_2EH Nehalem model (latest), so be careful!
@@ -1103,118 +1103,118 @@ const struct msrdef intel_nehalem_msrs[] = {
 		}},
 		{ BITS_EOT }
 	}},
-	{0x1fc, MSRTYPE_RDWR, MSR2(0,0), "MSR_POWER_CTL",
+	{0x1fc, MSRTYPE_RDWR, MSR2(0, 0), "MSR_POWER_CTL",
 			"Power Control Register", {
 		{ 63, 62, RESERVED },
 		/* Whole package bit */
 		{ 1, 1, "C1E Enable", "R/W", PRESENT_BIN, {
 			{ MSR1(0), "Nothing" },
-			{ MSR1(1), "CPU switch to the Minimum Enhanced Intel \
-				SpeedStep Technology operating point when all \
-				execution cores enter MWAIT (C1)" },
+			{ MSR1(1), "CPU switch to the Minimum Enhanced Intel "
+				"SpeedStep Technology operating point when all "
+				"execution cores enter MWAIT (C1)" },
 			{ BITVAL_EOT }
 		}},
 		{ 0, 1, RESERVED },
 		{ BITS_EOT }
 	}},
-	{0x200, MSRTYPE_RDWR, MSR2(0,0), "IA32_MTRR_PHYS_BASE0", "", {
+	{0x200, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MTRR_PHYS_BASE0", "", {
 		{ BITS_EOT }
 	}},
-	{0x201, MSRTYPE_RDWR, MSR2(0,0), "IA32_MTRR_PHYS_MASK0", "", {
+	{0x201, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MTRR_PHYS_MASK0", "", {
 		{ BITS_EOT }
 	}},
-	{0x202, MSRTYPE_RDWR, MSR2(0,0), "IA32_MTRR_PHYS_BASE1", "", {
+	{0x202, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MTRR_PHYS_BASE1", "", {
 		{ BITS_EOT }
 	}},
-	{0x203, MSRTYPE_RDWR, MSR2(0,0), "IA32_MTRR_PHYS_MASK1", "", {
+	{0x203, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MTRR_PHYS_MASK1", "", {
 		{ BITS_EOT }
 	}},
-	{0x204, MSRTYPE_RDWR, MSR2(0,0), "IA32_MTRR_PHYS_BASE2", "", {
+	{0x204, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MTRR_PHYS_BASE2", "", {
 		{ BITS_EOT }
 	}},
-	{0x205, MSRTYPE_RDWR, MSR2(0,0), "IA32_MTRR_PHYS_MASK2", "", {
+	{0x205, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MTRR_PHYS_MASK2", "", {
 		{ BITS_EOT }
 	}},
-	{0x206, MSRTYPE_RDWR, MSR2(0,0), "IA32_MTRR_PHYS_BASE3", "", {
+	{0x206, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MTRR_PHYS_BASE3", "", {
 		{ BITS_EOT }
 	}},
-	{0x207, MSRTYPE_RDWR, MSR2(0,0), "IA32_MTRR_PHYS_MASK3", "", {
+	{0x207, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MTRR_PHYS_MASK3", "", {
 		{ BITS_EOT }
 	}},
-	{0x208, MSRTYPE_RDWR, MSR2(0,0), "IA32_MTRR_PHYS_BASE4", "", {
+	{0x208, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MTRR_PHYS_BASE4", "", {
 		{ BITS_EOT }
 	}},
-	{0x209, MSRTYPE_RDWR, MSR2(0,0), "IA32_MTRR_PHYS_MASK4", "", {
+	{0x209, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MTRR_PHYS_MASK4", "", {
 		{ BITS_EOT }
 	}},
-	{0x20a, MSRTYPE_RDWR, MSR2(0,0), "IA32_MTRR_PHYS_BASE5", "", {
+	{0x20a, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MTRR_PHYS_BASE5", "", {
 		{ BITS_EOT }
 	}},
-	{0x20b, MSRTYPE_RDWR, MSR2(0,0), "IA32_MTRR_PHYS_MASK5", "", {
+	{0x20b, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MTRR_PHYS_MASK5", "", {
 		{ BITS_EOT }
 	}},
-	{0x20c, MSRTYPE_RDWR, MSR2(0,0), "IA32_MTRR_PHYS_BASE6", "", {
+	{0x20c, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MTRR_PHYS_BASE6", "", {
 		{ BITS_EOT }
 	}},
-	{0x20d, MSRTYPE_RDWR, MSR2(0,0), "IA32_MTRR_PHYS_MASK6", "", {
+	{0x20d, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MTRR_PHYS_MASK6", "", {
 		{ BITS_EOT }
 	}},
-	{0x20e, MSRTYPE_RDWR, MSR2(0,0), "IA32_MTRR_PHYS_BASE7", "", {
+	{0x20e, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MTRR_PHYS_BASE7", "", {
 		{ BITS_EOT }
 	}},
-	{0x20f, MSRTYPE_RDWR, MSR2(0,0), "IA32_MTRR_PHYS_MASK7", "", {
-		{ BITS_EOT }
-	}},
-	/* if IA32_MTRR_CAP[7:0] > 8 */
-	{0x210, MSRTYPE_RDWR, MSR2(0,0), "IA32_MTRR_PHYS_BASE8", "", {
+	{0x20f, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MTRR_PHYS_MASK7", "", {
 		{ BITS_EOT }
 	}},
 	/* if IA32_MTRR_CAP[7:0] > 8 */
-	{0x211, MSRTYPE_RDWR, MSR2(0,0), "IA32_MTRR_PHYS_MASK8", "", {
+	{0x210, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MTRR_PHYS_BASE8", "", {
+		{ BITS_EOT }
+	}},
+	/* if IA32_MTRR_CAP[7:0] > 8 */
+	{0x211, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MTRR_PHYS_MASK8", "", {
 		{ BITS_EOT }
 	}},
 	/* if IA32_MTRR_CAP[7:0] > 9 */
-	{0x212, MSRTYPE_RDWR, MSR2(0,0), "IA32_MTRR_PHYS_BASE9", "", {
+	{0x212, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MTRR_PHYS_BASE9", "", {
 		{ BITS_EOT }
 	}},
 	/* if IA32_MTRR_CAP[7:0] > 9 */
-	{0x213, MSRTYPE_RDWR, MSR2(0,0), "IA32_MTRR_PHYS_MASK9", "", {
+	{0x213, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MTRR_PHYS_MASK9", "", {
 		{ BITS_EOT }
 	}},
-	{0x250, MSRTYPE_RDWR, MSR2(0,0), "IA32_MTRR_FIX64K_00000", "", {
+	{0x250, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MTRR_FIX64K_00000", "", {
 		{ BITS_EOT }
 	}},
-	{0x258, MSRTYPE_RDWR, MSR2(0,0), "IA32_MTRR_FIX16K_80000", "", {
+	{0x258, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MTRR_FIX16K_80000", "", {
 		{ BITS_EOT }
 	}},
-	{0x259, MSRTYPE_RDWR, MSR2(0,0), "IA32_MTRR_FIX16K_A0000", "", {
+	{0x259, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MTRR_FIX16K_A0000", "", {
 		{ BITS_EOT }
 	}},
-	{0x268, MSRTYPE_RDWR, MSR2(0,0), "IA32_MTRR_FIX4K_C0000", "", {
+	{0x268, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MTRR_FIX4K_C0000", "", {
 		{ BITS_EOT }
 	}},
-	{0x269, MSRTYPE_RDWR, MSR2(0,0), "IA32_MTRR_FIX4K_C8000", "", {
+	{0x269, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MTRR_FIX4K_C8000", "", {
 		{ BITS_EOT }
 	}},
-	{0x26a, MSRTYPE_RDWR, MSR2(0,0), "IA32_MTRR_FIX4K_D0000", "", {
+	{0x26a, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MTRR_FIX4K_D0000", "", {
 		{ BITS_EOT }
 	}},
-	{0x26b, MSRTYPE_RDWR, MSR2(0,0), "IA32_MTRR_FIX4K_D8000", "", {
+	{0x26b, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MTRR_FIX4K_D8000", "", {
 		{ BITS_EOT }
 	}},
-	{0x26c, MSRTYPE_RDWR, MSR2(0,0), "IA32_MTRR_FIX4K_E0000", "", {
+	{0x26c, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MTRR_FIX4K_E0000", "", {
 		{ BITS_EOT }
 	}},
-	{0x26d, MSRTYPE_RDWR, MSR2(0,0), "IA32_MTRR_FIX4K_E8000", "", {
+	{0x26d, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MTRR_FIX4K_E8000", "", {
 		{ BITS_EOT }
 	}},
-	{0x26e, MSRTYPE_RDWR, MSR2(0,0), "IA32_MTRR_FIX4K_F0000", "", {
+	{0x26e, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MTRR_FIX4K_F0000", "", {
 		{ BITS_EOT }
 	}},
-	{0x26f, MSRTYPE_RDWR, MSR2(0,0), "IA32_MTRR_FIX4K_F8000", "", {
+	{0x26f, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MTRR_FIX4K_F8000", "", {
 		{ BITS_EOT }
 	}},
-	{0x277, MSRTYPE_RDWR, MSR2(0,0), "IA32_PAT", "IA32_PAT", {
+	{0x277, MSRTYPE_RDWR, MSR2(0, 0), "IA32_PAT", "IA32_PAT", {
 		{ 63, 5, RESERVED },
 		{ 58, 3, "PA7", "R/W", PRESENT_BIN, {
 			{ BITVAL_EOT }
@@ -1249,7 +1249,7 @@ const struct msrdef intel_nehalem_msrs[] = {
 		}},
 		{ BITS_EOT }
 	}},
-	{0x282, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC3_CTL2", "", {
+	{0x282, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MC3_CTL2", "", {
 		{ 63, 33, RESERVED },
 		{ 30, 1, "CMCI_EN", "R/W", PRESENT_BIN, {
 			{ BITVAL_EOT }
@@ -1260,7 +1260,7 @@ const struct msrdef intel_nehalem_msrs[] = {
 		}},
 		{ BITS_EOT }
 	}},
-	{0x283, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC3_CTL2", "", {
+	{0x283, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MC3_CTL2", "", {
 		{ 63, 33, RESERVED },
 		{ 30, 1, "CMCI_EN", "R/W", PRESENT_BIN, {
 			{ BITVAL_EOT }
@@ -1271,7 +1271,7 @@ const struct msrdef intel_nehalem_msrs[] = {
 		}},
 		{ BITS_EOT }
 	}},
-	{0x284, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC4_CTL2", "", {
+	{0x284, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MC4_CTL2", "", {
 		{ 63, 33, RESERVED },
 		{ 30, 1, "CMCI_EN", "R/W", PRESENT_BIN, {
 			{ BITVAL_EOT }
@@ -1282,7 +1282,7 @@ const struct msrdef intel_nehalem_msrs[] = {
 		}},
 		{ BITS_EOT }
 	}},
-	{0x285, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC5_CTL2", "", {
+	{0x285, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MC5_CTL2", "", {
 		{ 63, 33, RESERVED },
 		{ 30, 1, "CMCI_EN", "R/W", PRESENT_BIN, {
 			{ BITVAL_EOT }
@@ -1293,7 +1293,7 @@ const struct msrdef intel_nehalem_msrs[] = {
 		}},
 		{ BITS_EOT }
 	}},
-	{0x2ff, MSRTYPE_RDWR, MSR2(0,0), "IA32_MTRR_DEF_TYPE",
+	{0x2ff, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MTRR_DEF_TYPE",
 			"Default Memory Types", {
 		{ 63, 52, RESERVED },
 		{ 11, 1, "MTRR Enable", "R/W", PRESENT_BIN, {
@@ -1309,25 +1309,25 @@ const struct msrdef intel_nehalem_msrs[] = {
 		{ BITS_EOT }
 	}},
 	/* if CPUID.0AH: EDX[4:0] > 0 */
-	{0x309, MSRTYPE_RDWR, MSR2(0,0), "IA32_FIXED_CTR0", "Fixed-Function \
-			Performance Counter Register 0: Counts Instr_Retired.Any", {
+	{0x309, MSRTYPE_RDWR, MSR2(0, 0), "IA32_FIXED_CTR0", "Fixed-Function "
+			"Performance Counter Register 0: Counts Instr_Retired.Any", {
 		/* Also known as MSR_PERF_FIXED_CTR0 */
 		{ BITS_EOT }
 	}},
 	/* if CPUID.0AH: EDX[4:0] > 1 */
-	{0x30a, MSRTYPE_RDWR, MSR2(0,0), "IA32_FIXED_CTR1", "Fixed-Function \
-			Performance Counter Register 1: Counts CPU_CLK_Unhalted.Core ", {
+	{0x30a, MSRTYPE_RDWR, MSR2(0, 0), "IA32_FIXED_CTR1", "Fixed-Function "
+			"Performance Counter Register 1: Counts CPU_CLK_Unhalted.Core ", {
 		/* Also known as MSR_PERF_FIXED_CTR1 */
 		{ BITS_EOT }
 	}},
 	/* if CPUID.0AH: EDX[4:0] > 2 */
-	{0x30b, MSRTYPE_RDWR, MSR2(0,0), "IA32_FIXED_CTR2", "Fixed-Function \
-			Performance Counter Register 2: Counts CPU_CLK_Unhalted.Ref", {
+	{0x30b, MSRTYPE_RDWR, MSR2(0, 0), "IA32_FIXED_CTR2", "Fixed-Function "
+			"Performance Counter Register 2: Counts CPU_CLK_Unhalted.Ref", {
 		/* Also known as MSR_PERF_FIXED_CTR2 */
 		{ BITS_EOT }
 	}},
 	/* if CPUID.01H: ECX[15] = 1 */
-	{0x345, MSRTYPE_RDONLY, MSR2(0,0), "IA32_PERF_CAPABILITIES", "", {
+	{0x345, MSRTYPE_RDONLY, MSR2(0, 0), "IA32_PERF_CAPABILITIES", "", {
 	/* Additional info available at Section 17.4.1 of
 	 * Intel 64 and IA-32 Architectures Software Developer's
 	 * Manual, Volume 3.
@@ -1358,7 +1358,7 @@ const struct msrdef intel_nehalem_msrs[] = {
 		{ BITS_EOT }
 	}},
 	/* if CPUID.0AH: EAX[7:0] > 1*/
-	{0x38d, MSRTYPE_RDWR, MSR2(0,0), "IA32_FIXED_CTR_CTRL",
+	{0x38d, MSRTYPE_RDWR, MSR2(0, 0), "IA32_FIXED_CTR_CTRL",
 		"Fixed-Function-Counter Control Register", {
 	/* Also known as MSR_PERF_FIXED_CTR_CTRL.
 	 * Counter increments while the results of ANDing respective enable bit
@@ -1372,10 +1372,12 @@ const struct msrdef intel_nehalem_msrs[] = {
 		}},
 		/* if CPUID.0AH EAX[7:0] > 2 */
 		{ 10, 1, "AnyThread 2", "R/W", PRESENT_BIN, {
-			{ MSR1(0), "Counter only increments the associated event \
-				conditions occurring in the logical processor which programmed the MSR" },
-			{ MSR1(1), "Counting the associated event conditions \
-				occurring across all logical processors sharing a processor core" },
+			{ MSR1(0), "Counter only increments the associated event "
+				"conditions occurring in the logical processor "
+				"which programmed the MSR" },
+			{ MSR1(1), "Counting the associated event conditions "
+				"occurring across all logical processors sharing "
+				"a processor core" },
 			{ BITVAL_EOT }
 		}},
 		{ 9, 1, "EN2_Usr", "R/W", PRESENT_BIN, {
@@ -1395,10 +1397,12 @@ const struct msrdef intel_nehalem_msrs[] = {
 		}},
 		/* if CPUID.0AH: EAX[7:0] > 2 */
 		{ 6, 1, "AnyThread 1", "R/W", PRESENT_BIN, {
-			{ MSR1(0), "Counter only increments the associated event \
-				conditions occurring in the logical processor which programmed the MSR" },
-			{ MSR1(1), "Counting the associated event conditions \
-				occurring across all logical processors sharing a processor core" },
+			{ MSR1(0), "Counter only increments the associated event "
+				"conditions occurring in the logical processor "
+				"which programmed the MSR" },
+			{ MSR1(1), "Counting the associated event conditions "
+				"occurring across all logical processors sharing "
+				"a processor core" },
 			{ BITVAL_EOT }
 		}},
 		{ 5, 1, "EN1_Usr", "R/W", PRESENT_BIN, {
@@ -1418,10 +1422,12 @@ const struct msrdef intel_nehalem_msrs[] = {
 		}},
 		/* if CPUID.0AH: EAX[7:0] > 2 */
 		{ 2, 1, "AnyThread 0", "R/W", PRESENT_BIN, {
-			{ MSR1(0), "Counter only increments the associated event \
-				conditions occurring in the logical processor which programmed the MSR" },
-			{ MSR1(1), "Counting the associated event conditions \
-				occurring across all logical processors sharing a processor core" },
+			{ MSR1(0), "Counter only increments the associated event "
+				"conditions occurring in the logical processor "
+				"which programmed the MSR" },
+			{ MSR1(1), "Counting the associated event conditions "
+				"occurring across all logical processors sharing "
+				"a processor core" },
 			{ BITVAL_EOT }
 		}},
 		{ 1, 1, "EN0_Usr", "R/W", PRESENT_BIN, {
@@ -1437,7 +1443,7 @@ const struct msrdef intel_nehalem_msrs[] = {
 		{ BITS_EOT }
 	}},
 	/* if CPUID.0AH: EAX[7:0] > 0 */
-	{0x38e, MSRTYPE_RDONLY, MSR2(0,0), "IA32_PERF_GLOBAL_STATUS",
+	{0x38e, MSRTYPE_RDONLY, MSR2(0, 0), "IA32_PERF_GLOBAL_STATUS",
 			"Global Performance Counter Status", {
 	/* Also known as MSR_PERF_GLOBAL_STATUS */
 		/* if CPUID.0AH: EAX[7:0] > 0 */
@@ -1491,7 +1497,7 @@ const struct msrdef intel_nehalem_msrs[] = {
 		{ BITS_EOT }
 	}},
 	/* if CPUID.0AH: EAX[7:0] > 0 */
-	{0x38f, MSRTYPE_RDWR, MSR2(0,0), "IA32_PERF_GLOBAL_CTL",
+	{0x38f, MSRTYPE_RDWR, MSR2(0, 0), "IA32_PERF_GLOBAL_CTL",
 		"Global Performance Counter Control", {
 	/* Counter increments while the result of ANDing respective
 	 * enable bit in this MSR with corresponding OS or USR bits
@@ -1522,7 +1528,7 @@ const struct msrdef intel_nehalem_msrs[] = {
 		{ BITS_EOT }
 	}},
 	/* if CPUID.0AH: EAX[7:0] > 0 */
-	{0x390, MSRTYPE_RDWR, MSR2(0,0), "IA32_PERF_GLOBAL_OVF_CTL",
+	{0x390, MSRTYPE_RDWR, MSR2(0, 0), "IA32_PERF_GLOBAL_OVF_CTL",
 			"Global Performance Counter Overflow Control", {
 		/* if CPUID.0AH: EAX[7:0] > 0 */
 		{ 63, 1, "Clear CondChg bit", "R/W", PRESENT_BIN, {
@@ -1564,7 +1570,7 @@ const struct msrdef intel_nehalem_msrs[] = {
 	 * Software Developer's Manual, Volume 3,
 	 * "Precise Event Based Sampling (PEBS)".
 	 */
-	{0x3f1, MSRTYPE_RDWR, MSR2(0,0), "IA32_PEBS_ENABLE", "PEBS Control", {
+	{0x3f1, MSRTYPE_RDWR, MSR2(0, 0), "IA32_PEBS_ENABLE", "PEBS Control", {
 		{ 63, 28, RESERVED },
 		{ 35, 1, "Load Latency on IA32_PMC3", "R/W", PRESENT_BIN, {
 			{ MSR1(0), "Disabled" },
@@ -1609,91 +1615,91 @@ const struct msrdef intel_nehalem_msrs[] = {
 		}},
 		{ BITS_EOT }
 	}},
-	{0x3f6, MSRTYPE_RDWR, MSR2(0,0), "MSR_PEBS_LD_LAT", "", {
+	{0x3f6, MSRTYPE_RDWR, MSR2(0, 0), "MSR_PEBS_LD_LAT", "", {
 	/* See Section 18.6.1.2 of Intel's manual
 	 * for additional information.
 	 */
 		{ 63, 28, RESERVED },
 		{ 35, 20, RESERVED },
-		{ 15, 16, "Minimum threshold latency value of tagged \
-				load operation that will be counted", "R/W", PRESENT_DEC, {
+		{ 15, 16, "Minimum threshold latency value of tagged "
+				"load operation that will be counted", "R/W", PRESENT_DEC, {
 			{ BITVAL_EOT }
 		}},
 		{ BITS_EOT }
 	}},
-	{0x400, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC0_CTL", "", {
+	{0x400, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MC0_CTL", "", {
 		{ BITS_EOT }
 	}},
-	{0x401, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC0_STATUS", "", {
+	{0x401, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MC0_STATUS", "", {
 		{ BITS_EOT }
 	}},
-	{0x402, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC0_ADDR", "", {
+	{0x402, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MC0_ADDR", "", {
 		{ BITS_EOT }
 	}},
-	{0x403, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC0_MISC", "", {
+	{0x403, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MC0_MISC", "", {
 		{ BITS_EOT }
 	}},
-	{0x404, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC1_CTL", "", {
+	{0x404, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MC1_CTL", "", {
 		{ BITS_EOT }
 	}},
-	{0x405, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC1_STATUS", "", {
+	{0x405, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MC1_STATUS", "", {
 		{ BITS_EOT }
 	}},
-	{0x406, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC1_ADDR", "", {
+	{0x406, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MC1_ADDR", "", {
 		{ BITS_EOT }
 	}},
-	{0x407, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC1_MISC", "", {
+	{0x407, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MC1_MISC", "", {
 		{ BITS_EOT }
 	}},
-	{0x408, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC2_CTL", "", {
+	{0x408, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MC2_CTL", "", {
 		{ BITS_EOT }
 	}},
-	{0x409, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC2_STATUS", "", {
+	{0x409, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MC2_STATUS", "", {
 		{ BITS_EOT }
 	}},
-	{0x40a, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC2_ADDR", "", {
+	{0x40a, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MC2_ADDR", "", {
 		{ BITS_EOT }
 	}},
-	{0x40b, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC2_MISC", "", {
+	{0x40b, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MC2_MISC", "", {
 		{ BITS_EOT }
 	}},
-	{0x40c, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC3_CTL", "", {
+	{0x40c, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MC3_CTL", "", {
 		{ BITS_EOT }
 	}},
-	{0x40d, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC3_STATUS", "", {
+	{0x40d, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MC3_STATUS", "", {
 		{ BITS_EOT }
 	}},
-	{0x40e, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC3_ADDR", "", {
+	{0x40e, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MC3_ADDR", "", {
 		{ BITS_EOT }
 	}},
-	{0x40f, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC3_MISC", "", {
+	{0x40f, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MC3_MISC", "", {
 		{ BITS_EOT }
 	}},
-	{0x410, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC4_CTL", "", {
+	{0x410, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MC4_CTL", "", {
 		{ BITS_EOT }
 	}},
-	{0x411, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC4_STATUS", "", {
+	{0x411, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MC4_STATUS", "", {
 		{ BITS_EOT }
 	}},
-	{0x412, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC4_ADDR", "", {
+	{0x412, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MC4_ADDR", "", {
 		{ BITS_EOT }
 	}},
-	{0x413, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC4_MISC", "", {
+	{0x413, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MC4_MISC", "", {
 		{ BITS_EOT }
 	}},
-	{0x414, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC5_CTL", "", {
+	{0x414, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MC5_CTL", "", {
 		{ BITS_EOT }
 	}},
-	{0x415, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC5_STATUS", "", {
+	{0x415, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MC5_STATUS", "", {
 		{ BITS_EOT }
 	}},
-	{0x416, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC5_ADDR", "", {
+	{0x416, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MC5_ADDR", "", {
 		{ BITS_EOT }
 	}},
-	{0x417, MSRTYPE_RDWR, MSR2(0,0), "IA32_MC5_MISC", "", {
+	{0x417, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MC5_MISC", "", {
 		{ BITS_EOT }
 	}},
-	{0x480, MSRTYPE_RDONLY, MSR2(0,0), "IA32_VMX_BASIC",
+	{0x480, MSRTYPE_RDONLY, MSR2(0, 0), "IA32_VMX_BASIC",
 			"Reporting Register of Basic VMX Capabilities", {
 		/* Additional info available at
 		 * Appendix A.1, "Basic VMX Information" */
@@ -1717,81 +1723,81 @@ const struct msrdef intel_nehalem_msrs[] = {
 		}},
 		{ BITS_EOT }
 	}},
-	{0x481, MSRTYPE_RDONLY, MSR2(0,0), "IA32_PINBASED_CTLS",
-			"Capability Reporting Register of \
-			Pin-based VM-execution Controls", {
+	{0x481, MSRTYPE_RDONLY, MSR2(0, 0), "IA32_PINBASED_CTLS",
+			"Capability Reporting Register of "
+			"Pin-based VM-execution Controls", {
 		/* Additional info available at Appendix A.3,
 		 * "VM-Execution Controls" */
 		{ BITS_EOT }
 	}},
-	{0x482, MSRTYPE_RDONLY, MSR2(0,0), "IA32_PROCBASED_CTLS",
-			"Capability Reporting Register of \
-			Primary Processor-based VM-execution Controls", {
+	{0x482, MSRTYPE_RDONLY, MSR2(0, 0), "IA32_PROCBASED_CTLS",
+			"Capability Reporting Register of "
+			"Primary Processor-based VM-execution Controls", {
 		/* Additional info available at Appendix A.3,
 		 * "VM-Execution Controls" */
 		{ BITS_EOT }
 	}},
-	{0x483, MSRTYPE_RDONLY, MSR2(0,0), "IA32_VMX_EXIT_CTLS",
+	{0x483, MSRTYPE_RDONLY, MSR2(0, 0), "IA32_VMX_EXIT_CTLS",
 			"Capability Reporting Register of VM-exit Controls", {
 		/* Additional info available at Appendix A.4,
 		 * "VM-Exit Controls" */
 		{ BITS_EOT }
 	}},
-	{0x484, MSRTYPE_RDONLY, MSR2(0,0), "IA32_VMX_ENTRY_CTLS",
+	{0x484, MSRTYPE_RDONLY, MSR2(0, 0), "IA32_VMX_ENTRY_CTLS",
 			"Capability Reporting Register of VM-entry Controls", {
 		/* Additional info available at Appendix A.5,
 		 * "VM-Entry Controls" */
 		{ BITS_EOT }
 	}},
-	{0x485, MSRTYPE_RDONLY, MSR2(0,0), "IA32_VMX_MISC",
+	{0x485, MSRTYPE_RDONLY, MSR2(0, 0), "IA32_VMX_MISC",
 			"Reporting Register of Miscellaneous VMX Capabilities", {
 		/* Additional info available at Appendix A.6,
 		 * "Miscellaneous Data" */
 		{ BITS_EOT }
 	}},
-	{0x486, MSRTYPE_RDONLY, MSR2(0,0), "IA32_VMX_CR0_FIXED0",
+	{0x486, MSRTYPE_RDONLY, MSR2(0, 0), "IA32_VMX_CR0_FIXED0",
 			"Capability Reporting Register of CR0 Bits Fixed to 0", {
 		/* Additional info available at Appendix A.7,
 		 * "VMX-Fixed Bits in CR0" */
 		{ BITS_EOT }
 	}},
-	{0x487, MSRTYPE_RDONLY, MSR2(0,0), "IA32_VMX_CR0_FIXED1",
+	{0x487, MSRTYPE_RDONLY, MSR2(0, 0), "IA32_VMX_CR0_FIXED1",
 			"Capability Reporting Register of CR0 Bits Fixed to 1", {
 		/* Additional info available at Appendix A.7,
 		 * "VMX-Fixed Bits in CR0" */
 		{ BITS_EOT }
 	}},
-	{0x488, MSRTYPE_RDONLY, MSR2(0,0), "IA32_VMX_CR4_FIXED0",
+	{0x488, MSRTYPE_RDONLY, MSR2(0, 0), "IA32_VMX_CR4_FIXED0",
 			"Capability Reporting Register of CR4 Bits Fixed to 0", {
 		/* Additional info available at Appendix A.8,
 		 * "VMX-Fixed Bits in CR4" */
 		{ BITS_EOT }
 	}},
-	{0x489, MSRTYPE_RDONLY, MSR2(0,0), "IA32_VMX_CR4_FIXED1",
+	{0x489, MSRTYPE_RDONLY, MSR2(0, 0), "IA32_VMX_CR4_FIXED1",
 			"Capability Reporting Register of CR4 Bits Fixed to 1", {
 		/* Additional info available at Appendix A.8,
 		 * "VMX-Fixed Bits in CR4" */
 		{ BITS_EOT }
 	}},
-	{0x48a, MSRTYPE_RDONLY, MSR2(0,0), "IA32_VMX_VMCS_ENUM",
+	{0x48a, MSRTYPE_RDONLY, MSR2(0, 0), "IA32_VMX_VMCS_ENUM",
 			"Capability Reporting Register of VMCS Field Enumeration", {
 		/* Additional info available at Appendix A.9,
 		 * "VMCS Enumeration" */
 		{ BITS_EOT }
 	}},
-	{0x48b, MSRTYPE_RDONLY, MSR2(0,0), "IA32_VMX_PROCBASED_CTLS2",
-			"Capability Reporting Register of Secondary \
-			Processor-based VM-execution Controls", {
+	{0x48b, MSRTYPE_RDONLY, MSR2(0, 0), "IA32_VMX_PROCBASED_CTLS2",
+			"Capability Reporting Register of Secondary "
+			"Processor-based VM-execution Controls", {
 		/* Additional info available at Appendix A.3,
 		 * "VM-Execution Controls" */
 		{ BITS_EOT }
 	}},
 	/* Undocumented PECI control register */
-	{0x5a0, MSRTYPE_RDWR, MSR2(0,0), "IA32_PECI_CTL",
+	{0x5a0, MSRTYPE_RDWR, MSR2(0, 0), "IA32_PECI_CTL",
 			"PECI Control Register", {
 		{ BITS_EOT }
 	}},
-	{0x600, MSRTYPE_RDWR, MSR2(0,0), "IA32_DS_AREA", "DS Save Area", {
+	{0x600, MSRTYPE_RDWR, MSR2(0, 0), "IA32_DS_AREA", "DS Save Area", {
 		/* Additional info available at Section 18.10.4 of Intel 64
 		 * and IA-32 Architectures Software Developer's Manual,
 		 * "Debug Store (DS) Mechanism".
@@ -1809,52 +1815,52 @@ const struct msrdef intel_nehalem_msrs[] = {
 	 *              of last branch record registers
 	 *              on the last branch record stack
 	 */
-	{0x680, MSRTYPE_RDWR, MSR2(0,0), "MSR_LASTBRANCH_0_FROM_IP", "R/W", {
+	{0x680, MSRTYPE_RDWR, MSR2(0, 0), "MSR_LASTBRANCH_0_FROM_IP", "R/W", {
 		{ BITS_EOT }
 	}},
-	{0x681, MSRTYPE_RDWR, MSR2(0,0), "MSR_LASTBRANCH_1_FROM_IP", "R/W", {
+	{0x681, MSRTYPE_RDWR, MSR2(0, 0), "MSR_LASTBRANCH_1_FROM_IP", "R/W", {
 		{ BITS_EOT }
 	}},
-	{0x682, MSRTYPE_RDWR, MSR2(0,0), "MSR_LASTBRANCH_2_FROM_IP", "R/W", {
+	{0x682, MSRTYPE_RDWR, MSR2(0, 0), "MSR_LASTBRANCH_2_FROM_IP", "R/W", {
 		{ BITS_EOT }
 	}},
-	{0x683, MSRTYPE_RDWR, MSR2(0,0), "MSR_LASTBRANCH_3_FROM_IP", "R/W", {
+	{0x683, MSRTYPE_RDWR, MSR2(0, 0), "MSR_LASTBRANCH_3_FROM_IP", "R/W", {
 		{ BITS_EOT }
 	}},
-	{0x684, MSRTYPE_RDWR, MSR2(0,0), "MSR_LASTBRANCH_4_FROM_IP", "R/W", {
+	{0x684, MSRTYPE_RDWR, MSR2(0, 0), "MSR_LASTBRANCH_4_FROM_IP", "R/W", {
 		{ BITS_EOT }
 	}},
-	{0x685, MSRTYPE_RDWR, MSR2(0,0), "MSR_LASTBRANCH_5_FROM_IP", "R/W", {
+	{0x685, MSRTYPE_RDWR, MSR2(0, 0), "MSR_LASTBRANCH_5_FROM_IP", "R/W", {
 		{ BITS_EOT }
 	}},
-	{0x686, MSRTYPE_RDWR, MSR2(0,0), "MSR_LASTBRANCH_6_FROM_IP", "R/W", {
+	{0x686, MSRTYPE_RDWR, MSR2(0, 0), "MSR_LASTBRANCH_6_FROM_IP", "R/W", {
 		{ BITS_EOT }
 	}},
-	{0x687, MSRTYPE_RDWR, MSR2(0,0), "MSR_LASTBRANCH_7_FROM_IP", "R/W", {
+	{0x687, MSRTYPE_RDWR, MSR2(0, 0), "MSR_LASTBRANCH_7_FROM_IP", "R/W", {
 		{ BITS_EOT }
 	}},
-	{0x688, MSRTYPE_RDWR, MSR2(0,0), "MSR_LASTBRANCH_8_FROM_IP", "R/W", {
+	{0x688, MSRTYPE_RDWR, MSR2(0, 0), "MSR_LASTBRANCH_8_FROM_IP", "R/W", {
 		{ BITS_EOT }
 	}},
-	{0x689, MSRTYPE_RDWR, MSR2(0,0), "MSR_LASTBRANCH_9_FROM_IP", "R/W", {
+	{0x689, MSRTYPE_RDWR, MSR2(0, 0), "MSR_LASTBRANCH_9_FROM_IP", "R/W", {
 		{ BITS_EOT }
 	}},
-	{0x68a, MSRTYPE_RDWR, MSR2(0,0), "MSR_LASTBRANCH_10_FROM_IP", "R/W", {
+	{0x68a, MSRTYPE_RDWR, MSR2(0, 0), "MSR_LASTBRANCH_10_FROM_IP", "R/W", {
 		{ BITS_EOT }
 	}},
-	{0x68b, MSRTYPE_RDWR, MSR2(0,0), "MSR_LASTBRANCH_11_FROM_IP", "R/W", {
+	{0x68b, MSRTYPE_RDWR, MSR2(0, 0), "MSR_LASTBRANCH_11_FROM_IP", "R/W", {
 		{ BITS_EOT }
 	}},
-	{0x68c, MSRTYPE_RDWR, MSR2(0,0), "MSR_LASTBRANCH_12_FROM_IP", "R/W", {
+	{0x68c, MSRTYPE_RDWR, MSR2(0, 0), "MSR_LASTBRANCH_12_FROM_IP", "R/W", {
 		{ BITS_EOT }
 	}},
-	{0x68d, MSRTYPE_RDWR, MSR2(0,0), "MSR_LASTBRANCH_13_FROM_IP", "R/W", {
+	{0x68d, MSRTYPE_RDWR, MSR2(0, 0), "MSR_LASTBRANCH_13_FROM_IP", "R/W", {
 		{ BITS_EOT }
 	}},
-	{0x68e, MSRTYPE_RDWR, MSR2(0,0), "MSR_LASTBRANCH_14_FROM_IP", "R/W", {
+	{0x68e, MSRTYPE_RDWR, MSR2(0, 0), "MSR_LASTBRANCH_14_FROM_IP", "R/W", {
 		{ BITS_EOT }
 	}},
-	{0x68f, MSRTYPE_RDWR, MSR2(0,0), "MSR_LASTBRANCH_15_FROM_IP", "R/W", {
+	{0x68f, MSRTYPE_RDWR, MSR2(0, 0), "MSR_LASTBRANCH_15_FROM_IP", "R/W", {
 		{ BITS_EOT }
 	}},
 
@@ -1863,62 +1869,62 @@ const struct msrdef intel_nehalem_msrs[] = {
 	 *              of last branch record registers
 	 *              on the last branch record stack
 	 */
-	{0x6c0, MSRTYPE_RDWR, MSR2(0,0), "MSR_LASTBRANCH_0_TO_LIP", "R/W", {
+	{0x6c0, MSRTYPE_RDWR, MSR2(0, 0), "MSR_LASTBRANCH_0_TO_LIP", "R/W", {
 		{ BITS_EOT }
 	}},
-	{0x6c1, MSRTYPE_RDWR, MSR2(0,0), "MSR_LASTBRANCH_1_TO_LIP", "R/W", {
+	{0x6c1, MSRTYPE_RDWR, MSR2(0, 0), "MSR_LASTBRANCH_1_TO_LIP", "R/W", {
 		{ BITS_EOT }
 	}},
-	{0x6c2, MSRTYPE_RDWR, MSR2(0,0), "MSR_LASTBRANCH_2_TO_LIP", "R/W", {
+	{0x6c2, MSRTYPE_RDWR, MSR2(0, 0), "MSR_LASTBRANCH_2_TO_LIP", "R/W", {
 		{ BITS_EOT }
 	}},
-	{0x6c3, MSRTYPE_RDWR, MSR2(0,0), "MSR_LASTBRANCH_3_TO_LIP", "R/W", {
+	{0x6c3, MSRTYPE_RDWR, MSR2(0, 0), "MSR_LASTBRANCH_3_TO_LIP", "R/W", {
 		{ BITS_EOT }
 	}},
-	{0x6c4, MSRTYPE_RDWR, MSR2(0,0), "MSR_LASTBRANCH_4_TO_LIP", "R/W", {
+	{0x6c4, MSRTYPE_RDWR, MSR2(0, 0), "MSR_LASTBRANCH_4_TO_LIP", "R/W", {
 		{ BITS_EOT }
 	}},
-	{0x6c5, MSRTYPE_RDWR, MSR2(0,0), "MSR_LASTBRANCH_5_TO_LIP", "R/W", {
+	{0x6c5, MSRTYPE_RDWR, MSR2(0, 0), "MSR_LASTBRANCH_5_TO_LIP", "R/W", {
 		{ BITS_EOT }
 	}},
-	{0x6c6, MSRTYPE_RDWR, MSR2(0,0), "MSR_LASTBRANCH_6_TO_LIP", "R/W", {
+	{0x6c6, MSRTYPE_RDWR, MSR2(0, 0), "MSR_LASTBRANCH_6_TO_LIP", "R/W", {
 		{ BITS_EOT }
 	}},
-	{0x6c7, MSRTYPE_RDWR, MSR2(0,0), "MSR_LASTBRANCH_7_TO_LIP", "R/W", {
+	{0x6c7, MSRTYPE_RDWR, MSR2(0, 0), "MSR_LASTBRANCH_7_TO_LIP", "R/W", {
 		{ BITS_EOT }
 	}},
-	{0x6c8, MSRTYPE_RDWR, MSR2(0,0), "MSR_LASTBRANCH_8_TO_LIP", "R/W", {
+	{0x6c8, MSRTYPE_RDWR, MSR2(0, 0), "MSR_LASTBRANCH_8_TO_LIP", "R/W", {
 		{ BITS_EOT }
 	}},
-	{0x6c9, MSRTYPE_RDWR, MSR2(0,0), "MSR_LASTBRANCH_9_TO_LIP", "R/W", {
+	{0x6c9, MSRTYPE_RDWR, MSR2(0, 0), "MSR_LASTBRANCH_9_TO_LIP", "R/W", {
 		{ BITS_EOT }
 	}},
-	{0x6ca, MSRTYPE_RDWR, MSR2(0,0), "MSR_LASTBRANCH_10_TO_LIP", "R/W", {
+	{0x6ca, MSRTYPE_RDWR, MSR2(0, 0), "MSR_LASTBRANCH_10_TO_LIP", "R/W", {
 		{ BITS_EOT }
 	}},
-	{0x6cb, MSRTYPE_RDWR, MSR2(0,0), "MSR_LASTBRANCH_11_TO_LIP", "R/W", {
+	{0x6cb, MSRTYPE_RDWR, MSR2(0, 0), "MSR_LASTBRANCH_11_TO_LIP", "R/W", {
 		{ BITS_EOT }
 	}},
-	{0x6cc, MSRTYPE_RDWR, MSR2(0,0), "MSR_LASTBRANCH_12_TO_LIP", "R/W", {
+	{0x6cc, MSRTYPE_RDWR, MSR2(0, 0), "MSR_LASTBRANCH_12_TO_LIP", "R/W", {
 		{ BITS_EOT }
 	}},
-	{0x6cd, MSRTYPE_RDWR, MSR2(0,0), "MSR_LASTBRANCH_13_TO_LIP", "R/W", {
+	{0x6cd, MSRTYPE_RDWR, MSR2(0, 0), "MSR_LASTBRANCH_13_TO_LIP", "R/W", {
 		{ BITS_EOT }
 	}},
-	{0x6ce, MSRTYPE_RDWR, MSR2(0,0), "MSR_LASTBRANCH_14_TO_LIP", "R/W", {
+	{0x6ce, MSRTYPE_RDWR, MSR2(0, 0), "MSR_LASTBRANCH_14_TO_LIP", "R/W", {
 		{ BITS_EOT }
 	}},
-	{0x6cf, MSRTYPE_RDWR, MSR2(0,0), "MSR_LASTBRANCH_15_TO_LIP", "R/W", {
+	{0x6cf, MSRTYPE_RDWR, MSR2(0, 0), "MSR_LASTBRANCH_15_TO_LIP", "R/W", {
 		{ BITS_EOT }
 	}},
 
 	/* x2APIC registers - see Intel 64 Architecture x2APIC Specification */
 
-	{0x802, MSRTYPE_RDONLY, MSR2(0,0), "IA32_X2APIC_APICID",
+	{0x802, MSRTYPE_RDONLY, MSR2(0, 0), "IA32_X2APIC_APICID",
 			"x2APIC ID register", {
 		{ BITS_EOT }
 	}},
-	{0x803, MSRTYPE_RDONLY, MSR2(0,0), "IA32_X2APIC_VERSION",
+	{0x803, MSRTYPE_RDONLY, MSR2(0, 0), "IA32_X2APIC_VERSION",
 	/* Same version between extended and legacy modes.
 	 * Bit 24 is available only to an x2APIC unit. */
 			"x2APIC Version register", {
@@ -1935,7 +1941,7 @@ const struct msrdef intel_nehalem_msrs[] = {
 		}},
 		{ BITS_EOT }
 	}},
-	{0x808, MSRTYPE_RDWR, MSR2(0,0), "IA32_X2APIC_TPR",
+	{0x808, MSRTYPE_RDWR, MSR2(0, 0), "IA32_X2APIC_TPR",
 			"x2APIC Task Priority register", {
 		{ 31, 24, RESERVED },
 		{ 7, 8, "TPR", "R/W", PRESENT_HEX, {
@@ -1943,22 +1949,22 @@ const struct msrdef intel_nehalem_msrs[] = {
 		}},
 		{ BITS_EOT }
 	}},
-	{0x80a, MSRTYPE_RDONLY, MSR2(0,0), "IA32_X2APIC_PPR",
+	{0x80a, MSRTYPE_RDONLY, MSR2(0, 0), "IA32_X2APIC_PPR",
 			"x2APIC Processor Priority register", {
 		{ BITS_EOT }
 	}},
-	{0x80b, MSRTYPE_WRONLY, MSR2(0,0), "IA32_X2APIC_EOI",
+	{0x80b, MSRTYPE_WRONLY, MSR2(0, 0), "IA32_X2APIC_EOI",
 	/* 0 is the only valid value to write. GP fault
 	 * on non-zero write. */
 			"x2APIC EOI register", {
 		{ BITS_EOT }
 	}},
-	{0x80d, MSRTYPE_RDONLY, MSR2(0,0), "IA32_X2APIC_LDR",
+	{0x80d, MSRTYPE_RDONLY, MSR2(0, 0), "IA32_X2APIC_LDR",
 	/* Read Only in x2APIC mode, Read-Write in xAPIC mode. */
 			"x2APIC Logical Destination register", {
 		{ BITS_EOT }
 	}},
-	{0x80f, MSRTYPE_RDWR, MSR2(0,0), "IA32_X2APIC_SIVR",
+	{0x80f, MSRTYPE_RDWR, MSR2(0, 0), "IA32_X2APIC_SIVR",
 			"x2APIC Spurious Interrupt Vector register", {
 		{ 31, 19, RESERVED },
 		{ 12, 1, "EOI Broadcast Disable", "R/W", PRESENT_BIN, {
@@ -1975,103 +1981,103 @@ const struct msrdef intel_nehalem_msrs[] = {
 		}},
 		{ BITS_EOT }
 	}},
-	{0x810, MSRTYPE_RDONLY, MSR2(0,0), "IA32_X2APIC_ISR_0",
+	{0x810, MSRTYPE_RDONLY, MSR2(0, 0), "IA32_X2APIC_ISR_0",
 			"x2APIC In-Service register bits [31:0]", {
 		{ BITS_EOT }
 	}},
-	{0x811, MSRTYPE_RDONLY, MSR2(0,0), "IA32_X2APIC_ISR_1",
+	{0x811, MSRTYPE_RDONLY, MSR2(0, 0), "IA32_X2APIC_ISR_1",
 			"x2APIC In-Service register bits [63:32]", {
 		{ BITS_EOT }
 	}},
-	{0x812, MSRTYPE_RDONLY, MSR2(0,0), "IA32_X2APIC_ISR_2",
+	{0x812, MSRTYPE_RDONLY, MSR2(0, 0), "IA32_X2APIC_ISR_2",
 			"x2APIC In-Service register bits [95:64]", {
 		{ BITS_EOT }
 	}},
-	{0x813, MSRTYPE_RDONLY, MSR2(0,0), "IA32_X2APIC_ISR_3",
+	{0x813, MSRTYPE_RDONLY, MSR2(0, 0), "IA32_X2APIC_ISR_3",
 			"x2APIC In-Service register bits [127:96]", {
 		{ BITS_EOT }
 	}},
-	{0x814, MSRTYPE_RDONLY, MSR2(0,0), "IA32_X2APIC_ISR_4",
+	{0x814, MSRTYPE_RDONLY, MSR2(0, 0), "IA32_X2APIC_ISR_4",
 			"x2APIC In-Service register bits [159:128]", {
 		{ BITS_EOT }
 	}},
-	{0x815, MSRTYPE_RDONLY, MSR2(0,0), "IA32_X2APIC_ISR_5",
+	{0x815, MSRTYPE_RDONLY, MSR2(0, 0), "IA32_X2APIC_ISR_5",
 			"x2APIC In-Service register bits [191:160]", {
 		{ BITS_EOT }
 	}},
-	{0x816, MSRTYPE_RDONLY, MSR2(0,0), "IA32_X2APIC_ISR_6",
+	{0x816, MSRTYPE_RDONLY, MSR2(0, 0), "IA32_X2APIC_ISR_6",
 			"x2APIC In-Service register bits [223:192]", {
 		{ BITS_EOT }
 	}},
-	{0x817, MSRTYPE_RDONLY, MSR2(0,0), "IA32_X2APIC_ISR_7",
+	{0x817, MSRTYPE_RDONLY, MSR2(0, 0), "IA32_X2APIC_ISR_7",
 			"x2APIC In-Service register bits [255:224]", {
 		{ BITS_EOT }
 	}},
-	{0x818, MSRTYPE_RDONLY, MSR2(0,0), "IA32_X2APIC_TMR0",
+	{0x818, MSRTYPE_RDONLY, MSR2(0, 0), "IA32_X2APIC_TMR0",
 			"x2APIC Trigger Mode register bits [31:0]", {
 		{ BITS_EOT }
 	}},
-	{0x819, MSRTYPE_RDONLY, MSR2(0,0), "IA32_X2APIC_TMR1",
+	{0x819, MSRTYPE_RDONLY, MSR2(0, 0), "IA32_X2APIC_TMR1",
 			"x2APIC Trigger Mode register bits [63:32]", {
 		{ BITS_EOT }
 	}},
-	{0x81a, MSRTYPE_RDONLY, MSR2(0,0), "IA32_X2APIC_TMR2",
+	{0x81a, MSRTYPE_RDONLY, MSR2(0, 0), "IA32_X2APIC_TMR2",
 			"x2APIC Trigger Mode register bits [95:64]", {
 		{ BITS_EOT }
 	}},
-	{0x81b, MSRTYPE_RDONLY, MSR2(0,0), "IA32_X2APIC_TMR3",
+	{0x81b, MSRTYPE_RDONLY, MSR2(0, 0), "IA32_X2APIC_TMR3",
 			"x2APIC Trigger Mode register bits [127:96]", {
 		{ BITS_EOT }
 	}},
-	{0x81c, MSRTYPE_RDONLY, MSR2(0,0), "IA32_X2APIC_TMR4",
+	{0x81c, MSRTYPE_RDONLY, MSR2(0, 0), "IA32_X2APIC_TMR4",
 			"x2APIC Trigger Mode register bits [159:128]", {
 		{ BITS_EOT }
 	}},
-	{0x81d, MSRTYPE_RDONLY, MSR2(0,0), "IA32_X2APIC_TMR5",
+	{0x81d, MSRTYPE_RDONLY, MSR2(0, 0), "IA32_X2APIC_TMR5",
 			"x2APIC Trigger Mode register bits [191:160]", {
 		{ BITS_EOT }
 	}},
-	{0x81e, MSRTYPE_RDONLY, MSR2(0,0), "IA32_X2APIC_TMR6",
+	{0x81e, MSRTYPE_RDONLY, MSR2(0, 0), "IA32_X2APIC_TMR6",
 			"x2APIC Trigger Mode register bits [223:192]", {
 		{ BITS_EOT }
 	}},
-	{0x81f, MSRTYPE_RDONLY, MSR2(0,0), "IA32_X2APIC_TMR7",
+	{0x81f, MSRTYPE_RDONLY, MSR2(0, 0), "IA32_X2APIC_TMR7",
 			"x2APIC Trigger Mode register bits [255:224]", {
 		{ BITS_EOT }
 	}},
-	{0x820, MSRTYPE_RDONLY, MSR2(0,0), "IA32_X2APIC_IRR0",
+	{0x820, MSRTYPE_RDONLY, MSR2(0, 0), "IA32_X2APIC_IRR0",
 			"x2APIC Interrupt Request register bits [31:0]", {
 		{ BITS_EOT }
 	}},
-	{0x821, MSRTYPE_RDONLY, MSR2(0,0), "IA32_X2APIC_IRR1",
+	{0x821, MSRTYPE_RDONLY, MSR2(0, 0), "IA32_X2APIC_IRR1",
 			"x2APIC Trigger Mode register bits [63:32]", {
 		{ BITS_EOT }
 	}},
-	{0x822, MSRTYPE_RDONLY, MSR2(0,0), "IA32_X2APIC_IRR2",
+	{0x822, MSRTYPE_RDONLY, MSR2(0, 0), "IA32_X2APIC_IRR2",
 			"x2APIC Trigger Mode register bits [95:64]", {
 		{ BITS_EOT }
 	}},
-	{0x823, MSRTYPE_RDONLY, MSR2(0,0), "IA32_X2APIC_IRR3",
+	{0x823, MSRTYPE_RDONLY, MSR2(0, 0), "IA32_X2APIC_IRR3",
 			"x2APIC Trigger Mode register bits [127:96]", {
 		{ BITS_EOT }
 	}},
-	{0x824, MSRTYPE_RDONLY, MSR2(0,0), "IA32_X2APIC_IRR4",
+	{0x824, MSRTYPE_RDONLY, MSR2(0, 0), "IA32_X2APIC_IRR4",
 			"x2APIC Trigger Mode register bits [159:128]", {
 		{ BITS_EOT }
 	}},
-	{0x825, MSRTYPE_RDONLY, MSR2(0,0), "IA32_X2APIC_IRR5",
+	{0x825, MSRTYPE_RDONLY, MSR2(0, 0), "IA32_X2APIC_IRR5",
 			"x2APIC Trigger Mode register bits [191:160]", {
 		{ BITS_EOT }
 	}},
-	{0x826, MSRTYPE_RDONLY, MSR2(0,0), "IA32_X2APIC_IRR6",
+	{0x826, MSRTYPE_RDONLY, MSR2(0, 0), "IA32_X2APIC_IRR6",
 			"x2APIC Trigger Mode register bits [223:192]", {
 		{ BITS_EOT }
 	}},
-	{0x827, MSRTYPE_RDONLY, MSR2(0,0), "IA32_X2APIC_IRR7",
+	{0x827, MSRTYPE_RDONLY, MSR2(0, 0), "IA32_X2APIC_IRR7",
 			"x2APIC Trigger Mode register bits [255:224]", {
 		{ BITS_EOT }
 	}},
-	{0x828, MSRTYPE_RDWR, MSR2(0,0), "IA32_X2APIC_ESR",
+	{0x828, MSRTYPE_RDWR, MSR2(0, 0), "IA32_X2APIC_ESR",
 	/* GP fault on non-zero writes. */
 			"x2APIC Error Status register", {
 		{ 31, 24, RESERVED },
@@ -2090,11 +2096,11 @@ const struct msrdef intel_nehalem_msrs[] = {
 		{ 3, 4, RESERVED },
 		{ BITS_EOT }
 	}},
-	{0x82f, MSRTYPE_RDWR, MSR2(0,0), "IA32_X2APIC_LVT_CMCI",
+	{0x82f, MSRTYPE_RDWR, MSR2(0, 0), "IA32_X2APIC_LVT_CMCI",
 			"x2APIC LVT Corrected Machine Check Interrupt register", {
 		{ BITS_EOT }
 	}},
-	{0x830, MSRTYPE_RDWR, MSR2(0,0), "IA32_X2APIC_ICR",
+	{0x830, MSRTYPE_RDWR, MSR2(0, 0), "IA32_X2APIC_ICR",
 			"x2APIC Interrupt Command register", {
 		{ 63, 32, "Destination field", "R/W", PRESENT_HEX, {
 			{ BITVAL_EOT }
@@ -2140,43 +2146,43 @@ const struct msrdef intel_nehalem_msrs[] = {
 		}},
 		{ BITS_EOT }
 	}},
-	{0x832, MSRTYPE_RDWR, MSR2(0,0), "IA32_X2APIC_LVT_TIMER",
+	{0x832, MSRTYPE_RDWR, MSR2(0, 0), "IA32_X2APIC_LVT_TIMER",
 			"x2APIC LVT Timer Interrupt register", {
 		{ BITS_EOT }
 	}},
-	{0x833, MSRTYPE_RDWR, MSR2(0,0), "IA32_X2APIC_LVT_THERMAL",
+	{0x833, MSRTYPE_RDWR, MSR2(0, 0), "IA32_X2APIC_LVT_THERMAL",
 			"x2APIC LVT Thermal Sensor Interrupt register", {
 		{ BITS_EOT }
 	}},
-	{0x834, MSRTYPE_RDWR, MSR2(0,0), "IA32_X2APIC_LVT_PMI",
+	{0x834, MSRTYPE_RDWR, MSR2(0, 0), "IA32_X2APIC_LVT_PMI",
 			"x2APIC LVT Performance Monitor register", {
 		{ BITS_EOT }
 	}},
-	{0x835, MSRTYPE_RDWR, MSR2(0,0), "IA32_X2APIC_LVT_LINT0",
+	{0x835, MSRTYPE_RDWR, MSR2(0, 0), "IA32_X2APIC_LVT_LINT0",
 			"x2APIC LVT LINT0 register", {
 		{ BITS_EOT }
 	}},
-	{0x836, MSRTYPE_RDWR, MSR2(0,0), "IA32_X2APIC_LVT_LINT1",
+	{0x836, MSRTYPE_RDWR, MSR2(0, 0), "IA32_X2APIC_LVT_LINT1",
 			"x2APIC LVT LINT1 register", {
 		{ BITS_EOT }
 	}},
-	{0x837, MSRTYPE_RDWR, MSR2(0,0), "IA32_X2APIC_LVT_ERROR",
+	{0x837, MSRTYPE_RDWR, MSR2(0, 0), "IA32_X2APIC_LVT_ERROR",
 			"x2APIC LVT Error register", {
 		{ BITS_EOT }
 	}},
-	{0x838, MSRTYPE_RDONLY, MSR2(0,0), "IA32_X2APIC_INIT_COUNT",
+	{0x838, MSRTYPE_RDONLY, MSR2(0, 0), "IA32_X2APIC_INIT_COUNT",
 			"x2APIC Initial Count register", {
 		{ BITS_EOT }
 	}},
-	{0x839, MSRTYPE_RDONLY, MSR2(0,0), "IA32_X2APIC_CUR_COUNT",
+	{0x839, MSRTYPE_RDONLY, MSR2(0, 0), "IA32_X2APIC_CUR_COUNT",
 			"x2APIC Current Count register", {
 		{ BITS_EOT }
 	}},
-	{0x83e, MSRTYPE_RDWR, MSR2(0,0), "IA32_X2APIC_DIV_CONF",
+	{0x83e, MSRTYPE_RDWR, MSR2(0, 0), "IA32_X2APIC_DIV_CONF",
 			"x2APIC Divide Configuration register", {
 		{ BITS_EOT }
 	}},
-	{0x83f, MSRTYPE_WRONLY, MSR2(0,0), "IA32_X2APIC_SELF_IPI",
+	{0x83f, MSRTYPE_WRONLY, MSR2(0, 0), "IA32_X2APIC_SELF_IPI",
 			"x2APIC Self IPI register", {
 	/* Only in x2APIC mode. */
 		{ 31, 24, RESERVED },
@@ -2185,35 +2191,35 @@ const struct msrdef intel_nehalem_msrs[] = {
 		}},
 		{ BITS_EOT }
 	}},
-	{0x107cc, MSRTYPE_RDWR, MSR2(0,0), "MSR_EMON_L3_CTR_CTL0", "", {
+	{0x107cc, MSRTYPE_RDWR, MSR2(0, 0), "MSR_EMON_L3_CTR_CTL0", "", {
 		{ BITS_EOT }
 	}},
-	{0x107cd, MSRTYPE_RDWR, MSR2(0,0), "MSR_EMON_L3_CTR_CTL1", "", {
+	{0x107cd, MSRTYPE_RDWR, MSR2(0, 0), "MSR_EMON_L3_CTR_CTL1", "", {
 		{ BITS_EOT }
 	}},
-	{0x107ce, MSRTYPE_RDWR, MSR2(0,0), "MSR_EMON_L3_CTR_CTL2", "", {
+	{0x107ce, MSRTYPE_RDWR, MSR2(0, 0), "MSR_EMON_L3_CTR_CTL2", "", {
 		{ BITS_EOT }
 	}},
-	{0x107cf, MSRTYPE_RDWR, MSR2(0,0), "MSR_EMON_L3_CTR_CTL3", "", {
+	{0x107cf, MSRTYPE_RDWR, MSR2(0, 0), "MSR_EMON_L3_CTR_CTL3", "", {
 		{ BITS_EOT }
 	}},
-	{0x107d0, MSRTYPE_RDWR, MSR2(0,0), "MSR_EMON_L3_CTR_CTL4", "", {
+	{0x107d0, MSRTYPE_RDWR, MSR2(0, 0), "MSR_EMON_L3_CTR_CTL4", "", {
 		{ BITS_EOT }
 	}},
-	{0x107d1, MSRTYPE_RDWR, MSR2(0,0), "MSR_EMON_L3_CTR_CTL5", "", {
+	{0x107d1, MSRTYPE_RDWR, MSR2(0, 0), "MSR_EMON_L3_CTR_CTL5", "", {
 		{ BITS_EOT }
 	}},
-	{0x107d2, MSRTYPE_RDWR, MSR2(0,0), "MSR_EMON_L3_CTR_CTL6", "", {
+	{0x107d2, MSRTYPE_RDWR, MSR2(0, 0), "MSR_EMON_L3_CTR_CTL6", "", {
 		{ BITS_EOT }
 	}},
-	{0x107d3, MSRTYPE_RDWR, MSR2(0,0), "MSR_EMON_L3_CTR_CTL7", "", {
+	{0x107d3, MSRTYPE_RDWR, MSR2(0, 0), "MSR_EMON_L3_CTR_CTL7", "", {
 		{ BITS_EOT }
 	}},
-	{0x107d8, MSRTYPE_RDWR, MSR2(0,0), "MSR_EMON_L3_GL_CTL", "", {
+	{0x107d8, MSRTYPE_RDWR, MSR2(0, 0), "MSR_EMON_L3_GL_CTL", "", {
 		{ BITS_EOT }
 	}},
 	/* if CPUID.80000001H: EDX[29] = 1 or CPUID.80000001H: EDX[27] = 1 */
-	{0xc0000080, MSRTYPE_RDWR, MSR2(0,0), "IA32_EFER",
+	{0xc0000080, MSRTYPE_RDWR, MSR2(0, 0), "IA32_EFER",
 			"Extended Feature Enables", {
 		{ 63, 52, RESERVED },
 		{ 11, 1, "Execute Disable Bit", "R/O", PRESENT_BIN, {
@@ -2240,37 +2246,37 @@ const struct msrdef intel_nehalem_msrs[] = {
 		{ BITS_EOT }
 	}},
 	/* if CPUID.80000001H: EDX[29] = 1 */
-	{0xc0000081, MSRTYPE_RDWR, MSR2(0,0), "IA32_STAR",
+	{0xc0000081, MSRTYPE_RDWR, MSR2(0, 0), "IA32_STAR",
 			"System Call Target Address", {
 		{ BITS_EOT }
 	}},
 	/* if CPUID.80000001H: EDX[29] = 1 */
-	{0xc0000082, MSRTYPE_RDWR, MSR2(0,0), "IA32_LSTAR",
+	{0xc0000082, MSRTYPE_RDWR, MSR2(0, 0), "IA32_LSTAR",
 			"IA32e Mode System Call Target Address", {
 		{ BITS_EOT }
 	}},
 	/* if CPUID.80000001H: EDX[29] = 1 */
-	{0xc0000084, MSRTYPE_RDWR, MSR2(0,0), "IA32_FMASK",
+	{0xc0000084, MSRTYPE_RDWR, MSR2(0, 0), "IA32_FMASK",
 			"System Call Flag Mask", {
 		{ BITS_EOT }
 	}},
 	/* if CPUID.80000001H: EDX[29] = 1 */
-	{0xc0000100, MSRTYPE_RDWR, MSR2(0,0), "IA32_FS_BASE",
+	{0xc0000100, MSRTYPE_RDWR, MSR2(0, 0), "IA32_FS_BASE",
 			"Map of BASE Address of FS", {
 		{ BITS_EOT }
 	}},
 	/* if CPUID.80000001H: EDX[29] = 1 */
-	{0xc0000101, MSRTYPE_RDWR, MSR2(0,0), "IA32_GS_BASE",
+	{0xc0000101, MSRTYPE_RDWR, MSR2(0, 0), "IA32_GS_BASE",
 			"Map of BASE Address of GS", {
 		{ BITS_EOT }
 	}},
 	/* if CPUID.80000001H: EDX[29] = 1 */
-	{0xc0000102, MSRTYPE_RDWR, MSR2(0,0), "IA32_KERNEL_GS_BASE",
+	{0xc0000102, MSRTYPE_RDWR, MSR2(0, 0), "IA32_KERNEL_GS_BASE",
 			"Swap Target of BASE Address of GS", {
 		{ BITS_EOT }
 	}},
 	/* if CPUID.80000001H: EDX[27] = 1 */
-	{0xc0000103, MSRTYPE_RDWR, MSR2(0,0), "IA32_TSC_AUX",
+	{0xc0000103, MSRTYPE_RDWR, MSR2(0, 0), "IA32_TSC_AUX",
 			"AUXILIARY TSC Signature", {
 		{ BITS_EOT }
 	}},

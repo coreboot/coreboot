@@ -26,23 +26,23 @@ int via_c7_probe(const struct targetdef *target, const struct cpuid_t *id) {
 }
 
 const struct msrdef via_c7_msrs[] = {
-	{0x10, MSRTYPE_RDWR, MSR2(0,0), "IA32_TIME_STAMP_COUNTER", "", {
+	{0x10, MSRTYPE_RDWR, MSR2(0, 0), "IA32_TIME_STAMP_COUNTER", "", {
 		{ BITS_EOT }
 	}},
-	{0x2a, MSRTYPE_RDWR, MSR2(0,0), "EBL_CR_POWERON", "", {
+	{0x2a, MSRTYPE_RDWR, MSR2(0, 0), "EBL_CR_POWERON", "", {
 		{ BITS_EOT }
 	}},
-	{0xc1, MSRTYPE_RDWR, MSR2(0,0), "PERFCTR0", "", {
+	{0xc1, MSRTYPE_RDWR, MSR2(0, 0), "PERFCTR0", "", {
 		{ BITS_EOT }
 	}},
-	{0xc2, MSRTYPE_RDWR, MSR2(0,0), "PERFCTR1", "", {
+	{0xc2, MSRTYPE_RDWR, MSR2(0, 0), "PERFCTR1", "", {
 		{ BITS_EOT }
 	}},
-	{0x11e, MSRTYPE_RDWR, MSR2(0,0), "BBL_CR_CTL3", "", {
+	{0x11e, MSRTYPE_RDWR, MSR2(0, 0), "BBL_CR_CTL3", "", {
 		{ BITS_EOT }
 	}},
 	/* if CPUID.0AH: EAX[15:8] > 0 */
-	{0x186, MSRTYPE_RDWR, MSR2(0,0), "IA32_PERFEVTSEL0",
+	{0x186, MSRTYPE_RDWR, MSR2(0, 0), "IA32_PERFEVTSEL0",
 			"Performance Event Select Register 0", {
 		{ 63, 32, RESERVED },
 		{ 31, 8, "CMASK", "R/W", PRESENT_HEX, {
@@ -102,7 +102,7 @@ const struct msrdef via_c7_msrs[] = {
 		{ BITS_EOT }
 	}},
 	/* if CPUID.0AH: EAX[15:8] > 0 */
-	{0x187, MSRTYPE_RDWR, MSR2(0,0), "IA32_PERFEVTSEL1",
+	{0x187, MSRTYPE_RDWR, MSR2(0, 0), "IA32_PERFEVTSEL1",
 			"Performance Event Select Register 1", {
 		{ 63, 32, RESERVED },
 		{ 31, 8, "CMASK", "R/W", PRESENT_HEX, {
@@ -161,7 +161,7 @@ const struct msrdef via_c7_msrs[] = {
 		}},
 		{ BITS_EOT }
 	}},
-	{0x198, MSRTYPE_RDWR, MSR2(0,0), "IA32_PERF_STATUS", "", {
+	{0x198, MSRTYPE_RDWR, MSR2(0, 0), "IA32_PERF_STATUS", "", {
 		{ 63, 8, "Lowest Supported Clock Ratio", "R/O", PRESENT_HEX, {
 			{ BITVAL_EOT }
 		}},
@@ -201,7 +201,7 @@ const struct msrdef via_c7_msrs[] = {
 		}},
 		{ BITS_EOT }
 	}},
-	{0x199, MSRTYPE_RDWR, MSR2(0,0), "IA32_PERF_CTL", "", {
+	{0x199, MSRTYPE_RDWR, MSR2(0, 0), "IA32_PERF_CTL", "", {
 		{ 63, 48, RESERVED },
 		{ 15, 8, "Desired Clock Ratio", "R/W", PRESENT_HEX, {
 			{ BITVAL_EOT }
@@ -211,7 +211,7 @@ const struct msrdef via_c7_msrs[] = {
 		}},
 		{ BITS_EOT }
 	}},
-	{0x19a, MSRTYPE_RDWR, MSR2(0,0), "IA32_CLOCK_MODULATION", "", {
+	{0x19a, MSRTYPE_RDWR, MSR2(0, 0), "IA32_CLOCK_MODULATION", "", {
 		{ 63, 59, RESERVED },
 		{ 15, 8, "allows selection of the on-demand clock modulation duty cycle", "R/W", PRESENT_BIN, {
 			{ MSR1(0), "Reserved" },
@@ -227,7 +227,7 @@ const struct msrdef via_c7_msrs[] = {
 		{ 0, 1, RESERVED },
 		{ BITS_EOT }
 	}},
-	{0x19b, MSRTYPE_RDWR, MSR2(0,0), "IA32_THERM_INTERRUPT", "", {
+	{0x19b, MSRTYPE_RDWR, MSR2(0, 0), "IA32_THERM_INTERRUPT", "", {
 		{ 63, 62, RESERVED },
 		{ 1, 1, "Enables APIC LVT interrupt on a low-to-high temp transition", "R/W", PRESENT_BIN, {
 			{ BITVAL_EOT }
@@ -237,7 +237,7 @@ const struct msrdef via_c7_msrs[] = {
 		}},
 		{ BITS_EOT }
 	}},
-	{0x19c, MSRTYPE_RDWR, MSR2(0,0), "IA32_THERM_STATUS", "", {
+	{0x19c, MSRTYPE_RDWR, MSR2(0, 0), "IA32_THERM_STATUS", "", {
 		{ 63, 62, RESERVED },
 		{ 1, 1, "TCC assert detect", "R/O", PRESENT_BIN, {
 			{ MSR1(0), "TCC not asserted" },
@@ -251,7 +251,7 @@ const struct msrdef via_c7_msrs[] = {
 		}},
 		{ BITS_EOT }
 	}},
-	{0x19d, MSRTYPE_RDWR, MSR2(0,0), "MSR_THERM2_CTL", "", {
+	{0x19d, MSRTYPE_RDWR, MSR2(0, 0), "MSR_THERM2_CTL", "", {
 		{ 63, 47, RESERVED },
 		{ 16, 1, "Thermal Monitor enable", "R/W", PRESENT_HEX, {
 			{ MSR1(0), "Thermal Monitor 1 enabled" },
@@ -266,7 +266,7 @@ const struct msrdef via_c7_msrs[] = {
 		}},
 		{ BITS_EOT }
 	}},
-	{0x1a0, MSRTYPE_RDWR, MSR2(0,0), "IA32_MISC_ENABLES", "", {
+	{0x1a0, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MISC_ENABLES", "", {
 		{ 63, 43, RESERVED },
 		{ 20, 1, "PowerSaver lock", "R/W", PRESENT_BIN, {
 			{ MSR1(0), "Bit 16 can be set and cleared." },
@@ -294,91 +294,91 @@ const struct msrdef via_c7_msrs[] = {
 		{ 2, 3, RESERVED },
 		{ BITS_EOT }
 	}},
-	{0x200, MSRTYPE_RDWR, MSR2(0,0), "IA32_MTRR_PHYSBASE0", "", {
+	{0x200, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MTRR_PHYSBASE0", "", {
 		{ BITS_EOT }
 	}},
-	{0x201, MSRTYPE_RDWR, MSR2(0,0), "IA32_MTRR_PHYSMASK0", "", {
+	{0x201, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MTRR_PHYSMASK0", "", {
 		{ BITS_EOT }
 	}},
-	{0x202, MSRTYPE_RDWR, MSR2(0,0), "IA32_MTRR_PHYSBASE1", "", {
+	{0x202, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MTRR_PHYSBASE1", "", {
 		{ BITS_EOT }
 	}},
-	{0x203, MSRTYPE_RDWR, MSR2(0,0), "IA32_MTRR_PHYSMASK1", "", {
+	{0x203, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MTRR_PHYSMASK1", "", {
 		{ BITS_EOT }
 	}},
-	{0x204, MSRTYPE_RDWR, MSR2(0,0), "IA32_MTRR_PHYSBASE2", "", {
+	{0x204, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MTRR_PHYSBASE2", "", {
 		{ BITS_EOT }
 	}},
-	{0x205, MSRTYPE_RDWR, MSR2(0,0), "IA32_MTRR_PHYSMASK2", "", {
+	{0x205, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MTRR_PHYSMASK2", "", {
 		{ BITS_EOT }
 	}},
-	{0x206, MSRTYPE_RDWR, MSR2(0,0), "IA32_MTRR_PHYSBASE3", "", {
+	{0x206, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MTRR_PHYSBASE3", "", {
 		{ BITS_EOT }
 	}},
-	{0x207, MSRTYPE_RDWR, MSR2(0,0), "IA32_MTRR_PHYSMASK3", "", {
+	{0x207, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MTRR_PHYSMASK3", "", {
 		{ BITS_EOT }
 	}},
-	{0x208, MSRTYPE_RDWR, MSR2(0,0), "IA32_MTRR_PHYSBASE4", "", {
+	{0x208, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MTRR_PHYSBASE4", "", {
 		{ BITS_EOT }
 	}},
-	{0x209, MSRTYPE_RDWR, MSR2(0,0), "IA32_MTRR_PHYSMASK4", "", {
+	{0x209, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MTRR_PHYSMASK4", "", {
 		{ BITS_EOT }
 	}},
-	{0x20a, MSRTYPE_RDWR, MSR2(0,0), "IA32_MTRR_PHYSBASE5", "", {
+	{0x20a, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MTRR_PHYSBASE5", "", {
 		{ BITS_EOT }
 	}},
-	{0x20b, MSRTYPE_RDWR, MSR2(0,0), "IA32_MTRR_PHYSMASK5", "", {
+	{0x20b, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MTRR_PHYSMASK5", "", {
 		{ BITS_EOT }
 	}},
-	{0x20c, MSRTYPE_RDWR, MSR2(0,0), "IA32_MTRR_PHYSBASE6", "", {
+	{0x20c, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MTRR_PHYSBASE6", "", {
 		{ BITS_EOT }
 	}},
-	{0x20d, MSRTYPE_RDWR, MSR2(0,0), "IA32_MTRR_PHYSMASK6", "", {
+	{0x20d, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MTRR_PHYSMASK6", "", {
 		{ BITS_EOT }
 	}},
-	{0x20e, MSRTYPE_RDWR, MSR2(0,0), "IA32_MTRR_PHYSBASE7", "", {
+	{0x20e, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MTRR_PHYSBASE7", "", {
 		{ BITS_EOT }
 	}},
-	{0x20f, MSRTYPE_RDWR, MSR2(0,0), "IA32_MTRR_PHYSMASK7", "", {
+	{0x20f, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MTRR_PHYSMASK7", "", {
 		{ BITS_EOT }
 	}},
-	{0x250, MSRTYPE_RDWR, MSR2(0,0), "IA32_MTRR_FIX64K_00000", "", {
+	{0x250, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MTRR_FIX64K_00000", "", {
 		{ BITS_EOT }
 	}},
-	{0x258, MSRTYPE_RDWR, MSR2(0,0), "IA32_MTRR_FIX16K_80000", "", {
+	{0x258, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MTRR_FIX16K_80000", "", {
 		{ BITS_EOT }
 	}},
-	{0x259, MSRTYPE_RDWR, MSR2(0,0), "IA32_MTRR_FIX16K_A0000", "", {
+	{0x259, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MTRR_FIX16K_A0000", "", {
 		{ BITS_EOT }
 	}},
-	{0x268, MSRTYPE_RDWR, MSR2(0,0), "IA32_MTRR_FIX4K_C0000", "", {
+	{0x268, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MTRR_FIX4K_C0000", "", {
 		{ BITS_EOT }
 	}},
-	{0x269, MSRTYPE_RDWR, MSR2(0,0), "IA32_MTRR_FIX4K_C8000", "", {
+	{0x269, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MTRR_FIX4K_C8000", "", {
 		{ BITS_EOT }
 	}},
-	{0x26a, MSRTYPE_RDWR, MSR2(0,0), "IA32_MTRR_FIX4K_D0000", "", {
+	{0x26a, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MTRR_FIX4K_D0000", "", {
 		{ BITS_EOT }
 	}},
-	{0x26b, MSRTYPE_RDWR, MSR2(0,0), "IA32_MTRR_FIX4K_D8000", "", {
+	{0x26b, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MTRR_FIX4K_D8000", "", {
 		{ BITS_EOT }
 	}},
-	{0x26c, MSRTYPE_RDWR, MSR2(0,0), "IA32_MTRR_FIX4K_E0000", "", {
+	{0x26c, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MTRR_FIX4K_E0000", "", {
 		{ BITS_EOT }
 	}},
-	{0x26d, MSRTYPE_RDWR, MSR2(0,0), "IA32_MTRR_FIX4K_E8000", "", {
+	{0x26d, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MTRR_FIX4K_E8000", "", {
 		{ BITS_EOT }
 	}},
-	{0x26e, MSRTYPE_RDWR, MSR2(0,0), "IA32_MTRR_FIX4K_F0000", "", {
+	{0x26e, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MTRR_FIX4K_F0000", "", {
 		{ BITS_EOT }
 	}},
-	{0x26f, MSRTYPE_RDWR, MSR2(0,0), "IA32_MTRR_FIX4K_F8000", "", {
+	{0x26f, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MTRR_FIX4K_F8000", "", {
 		{ BITS_EOT }
 	}},
-	{0x2ff, MSRTYPE_RDWR, MSR2(0,0), "IA32_MTRR_DEF_TYPE", "", {
+	{0x2ff, MSRTYPE_RDWR, MSR2(0, 0), "IA32_MTRR_DEF_TYPE", "", {
 		{ BITS_EOT }
 	}},
-	{0x1107, MSRTYPE_RDWR, MSR2(0,0), "FCR",
+	{0x1107, MSRTYPE_RDWR, MSR2(0, 0), "FCR",
 			"Feature Control Register", {
 		{ 63, 55, RESERVED },
 		{ 8, 1, "Disables L2 Cache", "R/W", PRESENT_BIN, {
@@ -395,7 +395,7 @@ const struct msrdef via_c7_msrs[] = {
 		{ 0, 1, RESERVED },
 		{ BITS_EOT }
 	}},
-	{0x1108, MSRTYPE_RDWR, MSR2(0,0), "FCR2",
+	{0x1108, MSRTYPE_RDWR, MSR2(0, 0), "FCR2",
 			"Feature Control Register 2", {
 		{ 63, 32, "Last 4 characters of Alternate Vendor ID string", "R/W", PRESENT_STR, {
 			{ BITVAL_EOT }
@@ -416,7 +416,7 @@ const struct msrdef via_c7_msrs[] = {
 		{ 3, 4, RESERVED },
 		{ BITS_EOT }
 	}},
-	{0x1109, MSRTYPE_WRONLY, MSR2(0,0), "FCR3",
+	{0x1109, MSRTYPE_WRONLY, MSR2(0, 0), "FCR3",
 			"Feature Control Register 3", {
 		{ 63, 32, "First 4 characters of Alternate Vendor ID string", "W/O", PRESENT_STR, {
 			{ BITVAL_EOT }
@@ -426,10 +426,10 @@ const struct msrdef via_c7_msrs[] = {
 		}},
 		{ BITS_EOT }
 	}},
-	{0x1152, MSRTYPE_RDONLY, MSR2(0,0), "FUSES", "Fuses", {
+	{0x1152, MSRTYPE_RDONLY, MSR2(0, 0), "FUSES", "Fuses", {
 		{ BITS_EOT }
 	}},
-	{0x1153, MSRTYPE_RDONLY, MSR2(0,0), "BRAND",
+	{0x1153, MSRTYPE_RDONLY, MSR2(0, 0), "BRAND",
 			"BRAND_1 XOR BRAND_2, (00b = C7-M, 01b = C7, 10b = Eden, 11b = Reserved)", {
 		{ 63, 42, RESERVED },
 		{ 21, 2, "BRAND_1", "R/O", PRESENT_BIN, {
@@ -441,31 +441,31 @@ const struct msrdef via_c7_msrs[] = {
 		{ 17, 18, RESERVED },
 		{ BITS_EOT }
 	}},
-	{0x1160, MSRTYPE_RDWR, MSR2(0,0), "UNK0", "", {
+	{0x1160, MSRTYPE_RDWR, MSR2(0, 0), "UNK0", "", {
 		{ BITS_EOT }
 	}},
-	{0x1161, MSRTYPE_RDWR, MSR2(0,0), "UNK1", "", {
+	{0x1161, MSRTYPE_RDWR, MSR2(0, 0), "UNK1", "", {
 		{ BITS_EOT }
 	}},
-	{0x1164, MSRTYPE_RDWR, MSR2(0,0), "THERM_THRESH_LOW", "(FUSES[6:4] * 5 + 65)", {
+	{0x1164, MSRTYPE_RDWR, MSR2(0, 0), "THERM_THRESH_LOW", "(FUSES[6:4] * 5 + 65)", {
 		{ BITS_EOT }
 	}},
-	{0x1165, MSRTYPE_RDWR, MSR2(0,0), "THERM_THRESH_HI", "(FUSES[6:4] * 5 + 65) + 5", {
+	{0x1165, MSRTYPE_RDWR, MSR2(0, 0), "THERM_THRESH_HI", "(FUSES[6:4] * 5 + 65) + 5", {
 		{ BITS_EOT }
 	}},
-	{0x1166, MSRTYPE_RDWR, MSR2(0,0), "THERM_THRESH_OVERSTRESS", "", {
+	{0x1166, MSRTYPE_RDWR, MSR2(0, 0), "THERM_THRESH_OVERSTRESS", "", {
 		{ BITS_EOT }
 	}},
-	{0x1167, MSRTYPE_RDWR, MSR2(0,0), "THERM_THRESH_USER_TRIP", "", {
+	{0x1167, MSRTYPE_RDWR, MSR2(0, 0), "THERM_THRESH_USER_TRIP", "", {
 		{ BITS_EOT }
 	}},
-	{0x1168, MSRTYPE_RDWR, MSR2(0,0), "UNK2", "", {
+	{0x1168, MSRTYPE_RDWR, MSR2(0, 0), "UNK2", "", {
 		{ BITS_EOT }
 	}},
-	{0x116a, MSRTYPE_RDWR, MSR2(0,0), "UNK3", "", {
+	{0x116a, MSRTYPE_RDWR, MSR2(0, 0), "UNK3", "", {
 		{ BITS_EOT }
 	}},
-	{0x116b, MSRTYPE_RDWR, MSR2(0,0), "UNK4", "", {
+	{0x116b, MSRTYPE_RDWR, MSR2(0, 0), "UNK4", "", {
 		{ BITS_EOT }
 	}},
 	{ MSR_EOT }

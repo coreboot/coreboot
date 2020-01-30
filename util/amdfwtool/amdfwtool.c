@@ -1439,7 +1439,7 @@ int main(int argc, char **argv)
 
 	integrate_firmwares(&ctx, amd_romsig, amd_fw_table);
 
-	ctx.current = ALIGN(ctx.current, 0x10000U); /* todo: is necessary? */
+	ctx.current = ALIGN(ctx.current, 0x10000U); /* TODO: is necessary? */
 
 	if (multi) {
 		/* Do 2nd PSP directory followed by 1st */

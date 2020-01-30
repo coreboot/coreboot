@@ -631,11 +631,11 @@ static void dump_fmsba(const fmsba_t *fmsba)
 
 static void dump_jid(uint32_t jid)
 {
-	printf("    SPI Componend Vendor ID:            0x%02x\n",
+	printf("    SPI Component Vendor ID:            0x%02x\n",
 		jid & 0xff);
-	printf("    SPI Componend Device ID 0:          0x%02x\n",
+	printf("    SPI Component Device ID 0:          0x%02x\n",
 		(jid >> 8) & 0xff);
-	printf("    SPI Componend Device ID 1:          0x%02x\n",
+	printf("    SPI Component Device ID 1:          0x%02x\n",
 		(jid >> 16) & 0xff);
 }
 

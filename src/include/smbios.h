@@ -50,6 +50,9 @@ const char *smbios_mainboard_bios_version(void);
 const char *smbios_mainboard_asset_tag(void);
 u8 smbios_mainboard_feature_flags(void);
 const char *smbios_mainboard_location_in_chassis(void);
+const char *smbios_chassis_version(void);
+const char *smbios_chassis_serial_number(void);
+const char *smbios_processor_serial_number(void);
 
 #define BIOS_CHARACTERISTICS_PCI_SUPPORTED	(1 << 7)
 #define BIOS_CHARACTERISTICS_PC_CARD		(1 << 8)

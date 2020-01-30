@@ -536,7 +536,7 @@ static int process_enum(FILE * f, int skip_add)
 /****************************************************************************
  * process_checksum_info
  *
- * Get line conatining CMOS checksum information.
+ * Get line containing CMOS checksum information.
  ****************************************************************************/
 static void process_checksum_info(FILE * f)
 {

@@ -53,7 +53,7 @@ typedef uint16_t u16;
 typedef uint8_t u8;
 
 /** These are standard values for the known compression
-    alogrithms that coreboot knows about for stages and
+    algorithms that coreboot knows about for stages and
     payloads.  Of course, other CBFS users can use whatever
     values they want, as long as they understand them. */
 

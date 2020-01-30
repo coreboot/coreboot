@@ -589,7 +589,7 @@ int build_headers(USER_OPTIONS *opt, char *buf_in)
 			   For NAND it should be aligned to 512 bytes boundary
 			   (for ECC)
 			   The image immediately follows the header block,
-			   so if the source addess is undefined, it should be
+			   so if the source address is undefined, it should be
 			   derived from the header size.
 			   The headers size is always  alighed to 4 byte
 			   boundary */

@@ -258,7 +258,7 @@ static int find_cbmem_entry(uint32_t id, uint64_t *addr, size_t *size)
  * passed in memory offset.  Could be called recursively in case a forwarding
  * entry is found.
  *
- * Returns pointer to a memory buffer containg the timestamp table or zero if
+ * Returns pointer to a memory buffer containing the timestamp table or zero if
  * none found.
  */
 

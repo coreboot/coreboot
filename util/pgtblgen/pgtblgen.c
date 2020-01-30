@@ -26,7 +26,7 @@
 static void usage(char *argv[])
 {
 	printf("usage: %s -b <addr> -a <arch> -o <file>\n", argv[0]);
-	printf("  -a\t architecure. Supported: x86_64\n");
+	printf("  -a\t architecture. Supported: x86_64\n");
 	printf("  -b\t base address\n");
 	printf("  -o\t the file to write to\n");
 	printf("  -h\t show this help text\n");

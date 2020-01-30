@@ -91,7 +91,7 @@ extern long int fmap_find(const uint8_t *image, unsigned int len);
  *
  * @map:	raw map data
  *
- * returns 0 to indiciate success
+ * returns 0 to indicate success
  * returns <0 to indicate failure
  */
 extern int fmap_print(const struct fmap *map);

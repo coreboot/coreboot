@@ -9,5 +9,5 @@ fn_ctrl_swap=Disable
 f1_to_f12_as_primary=Enable
 sticky_fn=Disable
 trackpoint=Enable
-backlight=Both
+backlight=Keyboard
 usb_always_on=Disable

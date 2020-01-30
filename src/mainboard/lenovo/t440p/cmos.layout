@@ -103,9 +103,10 @@ enumerations
 8     1     Primary
 9     0     AHCI
 9     1     Compatible
-10    0     Both
-10    1     Keyboard only
-10    2     Thinklight only
+# Haswell ThinkPads have no Thinklight
+#10    0     Both
+10    1     Keyboard
+#10    2     Thinklight only
 10    3     None
 #12    0     Integrated Only
 #12    1     Discrete Only

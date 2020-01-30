@@ -308,12 +308,10 @@ endchoice
 
 config PICASSO_UART_LEGACY
 	bool "Decode legacy I/O range"
-	depends on PICASSO_CONSOLE_UART # TODO: shouldn't depend on this
 	help
-	  Assign I/O 3F8, 2F8, etc. to a Picasso UART.  Only a single UART may
-	  decode legacy addresses and this option enables the one used for the
-	  console.  A UART accessed with I/O does not allow all the features
-	  of MMIO.  The MMIO decode is still present when this option is used.
+	  Assign I/O 3F8, 2F8, etc. to a Picasso UART. A UART accessed with I/O
+	  does not allow all the features of MMIO. The MMIO decode is still
+	  present when this option is used.
 
 config CONSOLE_UART_BASE_ADDRESS
 	depends on CONSOLE_SERIAL && PICASSO_CONSOLE_UART

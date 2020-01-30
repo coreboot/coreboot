@@ -221,10 +221,14 @@
 #define   FCH_AOAC_STAT0		BIT(6)
 #define   FCH_AOAC_STAT1		BIT(7)
 
-#define FCH_UART_LEGACY_DECODE		0xfedc0020
-#define   FCH_LEGACY_3F8_SH		3
-#define   FCH_LEGACY_2F8_SH		1
-#define   FCH_LEGACY_3E8_SH		2
+#define FCH_LEGACY_UART_DECODE		(ALINK_AHB_ADDRESS + 0x20) /* 0xfedc0020 */
+#define   FCH_LEGACY_UART_MAP_SHIFT	8
+#define   FCH_LEGACY_UART_MAP_SIZE	2
+#define   FCH_LEGACY_UART_MAP_MASK	0x3
+#define   FCH_LEGACY_UART_RANGE_2E8	0
+#define   FCH_LEGACY_UART_RANGE_2F8	1
+#define   FCH_LEGACY_UART_RANGE_3E8	2
+#define   FCH_LEGACY_UART_RANGE_3F8	3
 
 #define PM1_LIMIT			16
 #define GPE0_LIMIT			28
@@ -279,6 +283,7 @@ void southbridge_final(void *chip_info);
 void southbridge_init(void *chip_info);
 void fch_pre_init(void);
 void fch_early_init(void);
+void set_uart_legacy_config(unsigned int uart_idx, unsigned int range_idx);
 
 /* Initialize all the i2c buses that are marked with early init. */
 void i2c_soc_early_init(void);

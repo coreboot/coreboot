@@ -26,7 +26,7 @@
 #define HWM_FAN_MODE		0x96
 #define HWM_FAN2_TEMP_MAP_SEL      0xBF
 
-// Fan 2 - 4 Boundries
+// Fan 2 - 4 Boundaries
 #define HWM_FAN2_BOUND1	0xB6
 #define HWM_FAN2_BOUND2	0xB7
 #define HWM_FAN2_BOUND3	0xB8
@@ -66,7 +66,7 @@ void f81866d_hwm_init(struct device *dev)
 	/* Select FAN Mode*/
 	pnp_write_index(port, HWM_FAN_MODE, reg->hwm_fan_mode);
 
-	/* Set Boundries */
+	/* Set Boundaries */
 	pnp_write_index(port, HWM_FAN2_BOUND1, reg->hwm_fan2_bound1);
 	pnp_write_index(port, HWM_FAN2_BOUND2, reg->hwm_fan2_bound2);
 	pnp_write_index(port, HWM_FAN2_BOUND3, reg->hwm_fan2_bound3);

@@ -129,12 +129,12 @@ static void pnp_set_resource(struct device *dev, struct resource *resource)
 		    (resource->index != PNP_IDX_IRQ0) &&
 		    (resource->index != PNP_IDX_IRQ1))
 			printk(BIOS_WARNING, "WARNING: %s %02lx %s size: "
-			       "0x%010llx not assigned\n", dev_path(dev),
+			       "0x%010llx not assigned in devicetree\n", dev_path(dev),
 			       resource->index, resource_type(resource),
 			       resource->size);
 		else
 			printk(BIOS_ERR, "ERROR: %s %02lx %s size: 0x%010llx "
-			       "not assigned\n", dev_path(dev), resource->index,
+			       "not assigned in devicetree\n", dev_path(dev), resource->index,
 			       resource_type(resource), resource->size);
 		return;
 	}

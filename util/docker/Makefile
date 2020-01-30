@@ -193,7 +193,7 @@ help:
 	@echo "  doc.coreboot.org             - Build doc.coreboot.org container"
 	@echo "  clean-coreboot-containers    - Remove all docker coreboot containers"
 	@echo "  clean-coreboot-images        - Remove all docker coreboot images"
-	@echo "  clean-docker                 - Remove docker coreboot containers & images"
+	@echo "  docker-clean                 - Remove docker coreboot containers & images"
 	@echo
 	@echo "Commands for using docker images"
 	@echo "  docker-build-coreboot        - Build coreboot under coreboot-sdk"

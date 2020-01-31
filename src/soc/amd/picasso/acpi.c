@@ -10,6 +10,7 @@
 #include <acpi/acpigen.h>
 #include <device/pci_ops.h>
 #include <arch/ioapic.h>
+#include <arch/smp/mpspec.h>
 #include <cpu/x86/smm.h>
 #include <cbmem.h>
 #include <device/device.h>
@@ -23,6 +24,7 @@
 #include <soc/nvs.h>
 #include <soc/gpio.h>
 #include <version.h>
+#include "chip.h"
 
 unsigned long acpi_fill_mcfg(unsigned long current)
 {
@@ -38,6 +40,11 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 
 unsigned long acpi_fill_madt(unsigned long current)
 {
+	const struct soc_amd_picasso_config *cfg = config_of_soc();
+	unsigned int i;
+	uint8_t irq;
+	uint8_t flags;
+
 	/* create all subtables for processors */
 	current = acpi_create_madt_lapics(current);
 
@@ -51,8 +58,20 @@ unsigned long acpi_fill_madt(unsigned long current)
 	/* 5 mean: 0101 --> Edge-triggered, Active high */
 	current += acpi_create_madt_irqoverride((acpi_madt_irqoverride_t *)
 						current, 0, 0, 2, 0);
-	current += acpi_create_madt_irqoverride((acpi_madt_irqoverride_t *)
-						current, 0, 9, 9, 0xf);
+	current += acpi_create_madt_irqoverride(
+		(acpi_madt_irqoverride_t *)current, 0, 9, 9,
+		MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW);
+
+	for (i = 0; i < ARRAY_SIZE(cfg->irq_override); ++i) {
+		irq = cfg->irq_override[i].irq;
+		flags = cfg->irq_override[i].flags;
+
+		if (!flags)
+			continue;
+
+		current += acpi_create_madt_irqoverride((acpi_madt_irqoverride_t *)current, 0,
+							irq, irq, flags);
+	}
 
 	/* create all subtables for processors */
 	current += acpi_create_madt_lapic_nmi((acpi_madt_lapic_nmi_t *)current,

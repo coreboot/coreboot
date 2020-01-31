@@ -12,6 +12,7 @@
 #include <soc/iomap.h>
 #include <soc/southbridge.h>
 #include <acpi/acpi_device.h>
+#include <arch/smp/mpspec.h>
 
 struct soc_amd_picasso_config {
 	struct soc_amd_common_config common_config;
@@ -33,6 +34,17 @@ struct soc_amd_picasso_config {
 		I2S_PINS_I2S_TDM = 4,
 		I2S_PINS_UNCONF = 7,	/* All pads will be input mode */
 	} acp_pin_cfg;
+
+	/**
+	 * IRQ 0 - 15 have a default trigger of edge and default polarity of high.
+	 * If you have a device that requires a different configuration you can override the
+	 * settings here.
+	 */
+	struct {
+		uint8_t irq;
+		/* See MP_IRQ_* from mpspec.h */
+		uint8_t flags;
+	} irq_override[16];
 
 	/* Options for these are in src/arch/x86/include/acpi/acpi.h */
 	uint8_t  fadt_pm_profile;

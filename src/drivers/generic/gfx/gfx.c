@@ -69,6 +69,9 @@ static void gfx_fill_ssdt_generator(struct device *dev)
 
 	const char *scope = acpi_device_scope(dev);
 
+	if (!scope)
+		return;
+
 	acpigen_write_scope(scope);
 
 	/* Method (_DOD, 0) */

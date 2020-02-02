@@ -11,7 +11,7 @@
 ## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ## GNU General Public License for more details.
 ##
-if BOARD_ASUS_P2B || BOARD_ASUS_P2B_F
+if BOARD_ASUS_P2B || BOARD_ASUS_P2B_F || BOARD_ASUS_P2B_LS
 
 config BOARD_SPECIFIC_OPTIONS
 	def_bool y
@@ -21,7 +21,8 @@ config BOARD_SPECIFIC_OPTIONS
 	select SUPERIO_WINBOND_W83977TF
 	select HAVE_PIRQ_TABLE
 	select BOARD_ROMSIZE_KB_256
-	select HAVE_ACPI_TABLES if BOARD_ASUS_P2B
+	select SDRAMPWR_4DIMM if BOARD_ASUS_P2B_LS
+	select HAVE_ACPI_TABLES if BOARD_ASUS_P2B || BOARD_ASUS_P2B_LS
 
 config MAINBOARD_DIR
 	string
@@ -31,11 +32,13 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "P2B" if BOARD_ASUS_P2B
 	default "P2B-F" if BOARD_ASUS_P2B_F
+	default "P2B-LS" if BOARD_ASUS_P2B_LS
 
 config VARIANT_DIR
 	string
 	default "p2b" if BOARD_ASUS_P2B
 	default "p2b-f" if BOARD_ASUS_P2B_F
+	default "p2b-ls" if BOARD_ASUS_P2B_LS
 
 config DEVICETREE
 	string
@@ -43,6 +46,7 @@ config DEVICETREE
 
 config IRQ_SLOT_COUNT
 	int
+	default 8 if BOARD_ASUS_P2B_LS
 	default 7 if BOARD_ASUS_P2B_F
 	default 6
 

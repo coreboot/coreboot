@@ -29,10 +29,14 @@ config MAINBOARD_DIR
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "P2B"
+	default "P2B" if BOARD_ASUS_P2B
+
+config VARIANT_DIR
+	string
+	default "p2b" if BOARD_ASUS_P2B
 
 config IRQ_SLOT_COUNT
 	int
 	default 6
 
-endif # BOARD_ASUS_P2B
+endif

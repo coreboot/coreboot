@@ -14,15 +14,11 @@
 
 #include <arch/romstage.h>
 #include <cbmem.h>
-#include <console/console.h>
 #include <southbridge/intel/i82371eb/i82371eb.h>
 #include <northbridge/intel/i440bx/raminit.h>
 
 void mainboard_romstage_entry(void)
 {
-	mainboard_enable_serial();
-	console_init();
-
 	i82371eb_early_init();
 
 	sdram_initialize();

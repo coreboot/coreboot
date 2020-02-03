@@ -11,7 +11,7 @@
 ## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ## GNU General Public License for more details.
 ##
-if BOARD_ASUS_P2B || BOARD_ASUS_P2B_D || BOARD_ASUS_P2B_F || BOARD_ASUS_P2B_LS
+if BOARD_ASUS_P2B || BOARD_ASUS_P2B_D || BOARD_ASUS_P2B_DS || BOARD_ASUS_P2B_F || BOARD_ASUS_P2B_LS
 
 config BASE_ASUS_P2B_D
 	def_bool n
@@ -30,7 +30,7 @@ config BOARD_SPECIFIC_OPTIONS
 	select BOARD_ROMSIZE_KB_256
 	select SDRAMPWR_4DIMM if BOARD_ASUS_P2B_LS
 	select HAVE_ACPI_TABLES if BOARD_ASUS_P2B || BOARD_ASUS_P2B_LS
-	select BASE_ASUS_P2B_D if BOARD_ASUS_P2B_D
+	select BASE_ASUS_P2B_D if BOARD_ASUS_P2B_D || BOARD_ASUS_P2B_DS
 
 config MAX_CPUS
 	int
@@ -44,6 +44,7 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "P2B" if BOARD_ASUS_P2B
 	default "P2B-D" if BOARD_ASUS_P2B_D
+	default "P2B-DS" if BOARD_ASUS_P2B_DS
 	default "P2B-F" if BOARD_ASUS_P2B_F
 	default "P2B-LS" if BOARD_ASUS_P2B_LS
 
@@ -51,6 +52,7 @@ config VARIANT_DIR
 	string
 	default "p2b" if BOARD_ASUS_P2B
 	default "p2b-d" if BOARD_ASUS_P2B_D
+	default "p2b-ds" if BOARD_ASUS_P2B_DS
 	default "p2b-f" if BOARD_ASUS_P2B_F
 	default "p2b-ls" if BOARD_ASUS_P2B_LS
 
@@ -61,7 +63,7 @@ config DEVICETREE
 config IRQ_SLOT_COUNT
 	int
 	default 8 if BOARD_ASUS_P2B_LS
-	default 7 if BOARD_ASUS_P2B_F
+	default 7 if BOARD_ASUS_P2B_F || BOARD_ASUS_P2B_DS
 	default 6
 
 endif

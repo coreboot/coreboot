@@ -220,7 +220,7 @@ int sd_change_freq(struct storage_media *media)
 	if (!((ctrlr->caps & DRVR_CAP_HS52) && (ctrlr->caps & DRVR_CAP_HS)))
 		goto out;
 
-	/* Give the card time to recover afer the switch operation.  Wait for
+	/* Give the card time to recover after the switch operation.  Wait for
 	 * 9 (>= 8) clock cycles receiving the switch status.
 	 */
 	delay = (9000000 + ctrlr->bus_hz - 1) / ctrlr->bus_hz;

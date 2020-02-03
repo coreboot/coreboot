@@ -57,7 +57,7 @@
 #define EXT_CSD_DDR_BUS_WIDTH_8		6	/* Card is in 8 bit DDR mode */
 #define EXT_CSD_BUS_WIDTH_STROBE	(1<<7)	/* Enhanced strobe mode */
 
-#define EXT_CSD_TIMING_BC		0	/* Backwards compatility */
+#define EXT_CSD_TIMING_BC		0	/* Backwards compatibility */
 #define EXT_CSD_TIMING_HS		1	/* High speed */
 #define EXT_CSD_TIMING_HS200		2	/* HS200 */
 #define EXT_CSD_TIMING_HS400		3	/* HS400 */

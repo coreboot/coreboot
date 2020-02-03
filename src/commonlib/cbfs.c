@@ -44,7 +44,7 @@ static size_t cbfs_next_offset(const struct region_device *cbfs,
 	if (f == NULL)
 		return 0;
 
-	/* The region_device objects store absolute offets over the whole
+	/* The region_device objects store absolute offsets over the whole
 	 * region. Therefore a relative offset needs to be calculated. */
 	offset = rdev_relative_offset(cbfs, &f->data);
 	offset += region_device_sz(&f->data);

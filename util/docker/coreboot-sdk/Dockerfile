@@ -35,10 +35,12 @@ RUN \
 		gcc \
 		git \
 		gnat \
+		golang \
 		graphviz \
 		libcrypto++-dev \
 		libcurl4 \
 		libcurl4-openssl-dev \
+		libelf-dev \
 		libfreetype6-dev \
 		libftdi-dev \
 		libftdi1-dev \

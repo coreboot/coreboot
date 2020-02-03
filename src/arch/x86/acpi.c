@@ -946,7 +946,7 @@ unsigned long acpi_write_dbg2_pci_uart(acpi_rsdp_t *rsdp, unsigned long current,
 	acpi_addr_t address;
 
 	if (!dev) {
-		printk(BIOS_ERR, "%s: Device not found\n", __func__);
+		printk(BIOS_DEBUG, "%s: Device not found\n", __func__);
 		return current;
 	}
 	if (!dev->enabled) {

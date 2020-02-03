@@ -70,6 +70,8 @@ struct lpc_mmio_range {
  * Output:I/O Enable Bits
  */
 uint16_t lpc_enable_fixed_io_ranges(uint16_t io_enables);
+/* Return the current decode settings */
+uint16_t lpc_get_fixed_io_decode(void);
 /* Open a generic IO window to the LPC bus. Four windows are available. */
 void lpc_open_pmio_window(uint16_t base, uint16_t size);
 /* Close all generic IO windows to the LPC bus. */

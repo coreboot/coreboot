@@ -48,56 +48,23 @@ chip soc/intel/tigerlake
 	register "PchHdaDspEnable" = "1"
 	register "PchHdaAudioLinkHda" = "1"
 
-	register "PcieRpEnable[0]" = "1"
-	register "PcieRpEnable[1]" = "0"
-	register "PcieRpEnable[2]" = "0"
-	register "PcieRpEnable[3]" = "0"
+	# PCIe port 1 for M.2 E-key WLAN
+	register "PcieRpEnable[1]" = "1"
+
+	# RP 1 uses CLK SRC 1
+	register "PcieClkSrcUsage[1]" = "0x01"
+
+	# ClkReq-to-ClkSrc mapping for CLK SRC 1
+	register "PcieClkSrcClkReq[1]" = "0x01"
+
+	# Enable Root Port 4(x4) for NVMe
 	register "PcieRpEnable[4]" = "1"
-	register "PcieRpEnable[5]" = "0"
-	register "PcieRpEnable[6]" = "0"
-	register "PcieRpEnable[7]" = "0"
-	register "PcieRpEnable[8]" = "1"
-	register "PcieRpEnable[9]" = "0"
-	register "PcieRpEnable[10]" = "0"
-	register "PcieRpEnable[11]" = "0"
-	register "PcieRpEnable[12]" = "0"
-	register "PcieRpEnable[13]" = "0"
-	register "PcieRpEnable[14]" = "0"
-	register "PcieRpEnable[15]" = "0"
 
-	register "PcieClkSrcUsage[0]" = "2"
-	register "PcieClkSrcUsage[1]" = "8"
-	register "PcieClkSrcUsage[2]" = "0xC"
-	register "PcieClkSrcUsage[3]" = "0x70"
-	register "PcieClkSrcUsage[4]" = "4"
-	register "PcieClkSrcUsage[5]" = "0xE"
-	register "PcieClkSrcUsage[6]" = "0x80"
-	register "PcieClkSrcUsage[7]" = "0x80"
-	register "PcieClkSrcUsage[8]" = "0x80"
-	register "PcieClkSrcUsage[9]" = "0x80"
-	register "PcieClkSrcUsage[10]" = "0x80"
-	register "PcieClkSrcUsage[11]" = "0x80"
-	register "PcieClkSrcUsage[12]" = "0x80"
-	register "PcieClkSrcUsage[13]" = "0x80"
-	register "PcieClkSrcUsage[14]" = "0x80"
-	register "PcieClkSrcUsage[15]" = "0x80"
+	# RP 4 uses CLK SRC 0
+	register "PcieClkSrcUsage[0]" = "0x04"
 
-	register "PcieClkSrcClkReq[0]" = "0"
-	register "PcieClkSrcClkReq[1]" = "1"
-	register "PcieClkSrcClkReq[2]" = "2"
-	register "PcieClkSrcClkReq[3]" = "3"
-	register "PcieClkSrcClkReq[4]" = "4"
-	register "PcieClkSrcClkReq[5]" = "5"
-	register "PcieClkSrcClkReq[6]" = "6"
-	register "PcieClkSrcClkReq[7]" = "7"
-	register "PcieClkSrcClkReq[8]" = "8"
-	register "PcieClkSrcClkReq[9]" = "9"
-	register "PcieClkSrcClkReq[10]" = "10"
-	register "PcieClkSrcClkReq[11]" = "11"
-	register "PcieClkSrcClkReq[12]" = "12"
-	register "PcieClkSrcClkReq[13]" = "13"
-	register "PcieClkSrcClkReq[14]" = "14"
-	register "PcieClkSrcClkReq[15]" = "15"
+	# ClkReq-to-ClkSrc mapping for CLK SRC 0
+	register "PcieClkSrcClkReq[0]" = "0x00"
 
 	register "SataEnable" = "1"
 	register "SataSalpSupport" = "1"
@@ -294,24 +261,14 @@ chip soc/intel/tigerlake
 		device pci 19.1 off end # I2C #5
 		device pci 19.2 on  end # UART #2
 		device pci 1a.0 on  end # eMMC
-		device pci 1c.0 on
-			chip drivers/intel/wifi
-				register "wake" = "GPE0_PCI_EXP"
-				device pci 00.0 on end
-			end
-		end # PCI Express Port 1 x4 SLOT1
-		device pci 1c.4 on  end # PCI Express Port 5 x1 SLOT2/LAN
-		device pci 1c.5 off end # PCI Express Port 6
-		device pci 1c.6 off end # PCI Express Port 7
-		device pci 1c.7 off end # PCI Express Port 8
-		device pci 1d.0 on  end # PCI Express Port 9
-		device pci 1d.1 off end # PCI Express Port 10
-		device pci 1d.2 off end # PCI Express Port 11
-		device pci 1d.3 off end # PCI Express Port 12
-		device pci 1d.4 off end # PCI Express Port 13
-		device pci 1d.5 off end # PCI Express Port 14
-		device pci 1d.6 off end # PCI Express Port 15
-		device pci 1d.7 off end # PCI Express Port 16
+	        device pci 1c.0 off end # PCI Express Port 1
+	        device pci 1c.1 on  end # PCI Express Port 2
+	        device pci 1c.2 off end # PCI Express Port 3
+	        device pci 1c.3 off end # PCI Express Port 4
+	        device pci 1c.4 on  end # PCI Express Port 5
+	        device pci 1c.5 off end # PCI Express Port 6
+	        device pci 1c.6 off end # PCI Express Port 7
+	        device pci 1c.7 off end # PCI Express Port 8
 		device pci 1e.0 on  end # UART #0
 		device pci 1e.1 off end # UART #1
 		device pci 1e.2 off end # GSPI #0

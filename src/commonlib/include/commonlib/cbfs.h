@@ -24,7 +24,7 @@ struct cbfsf {
 	struct region_device data;
 };
 
-/* Locate file by name and optional type. Returns 0 on succcess else < 0 on
+/* Locate file by name and optional type. Returns 0 on success else < 0 on
  * error.*/
 int cbfs_locate(struct cbfsf *fh, const struct region_device *cbfs,
 		const char *name, uint32_t *type);

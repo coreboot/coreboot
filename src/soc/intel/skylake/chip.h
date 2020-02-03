@@ -79,6 +79,10 @@ struct soc_intel_skylake_config {
 	uint8_t gpe0_dw1; /* GPE0_63_32 STS/EN */
 	uint8_t gpe0_dw2; /* GPE0_95_64 STS/EN */
 
+	/* LPC fixed enables and ranges */
+	uint16_t lpc_iod;
+	uint16_t lpc_ioe;
+
 	/* Generic IO decode ranges */
 	uint32_t gen1_dec;
 	uint32_t gen2_dec;

@@ -127,9 +127,16 @@ void pch_early_iorange_init(void)
 	uint16_t io_enables = LPC_IOE_SUPERIO_2E_2F | LPC_IOE_KBC_60_64 |
 			LPC_IOE_EC_62_66;
 
-	/* IO Decode Range */
-	if (CONFIG(DRIVERS_UART_8250IO))
-		lpc_io_setup_comm_a_b();
+	const config_t *config = config_of_soc();
+
+	if (config->lpc_ioe) {
+		io_enables = config->lpc_ioe & 0x3f0f;
+		lpc_set_fixed_io_ranges(config->lpc_iod, 0x1377);
+	} else {
+		/* IO Decode Range */
+		if (CONFIG(DRIVERS_UART_8250IO))
+			lpc_io_setup_comm_a_b();
+	}
 
 	/* IO Decode Enable */
 	if (pch_check_decode_enable() == 0) {

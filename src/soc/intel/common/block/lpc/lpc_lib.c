@@ -42,6 +42,17 @@ uint16_t lpc_get_fixed_io_decode(void)
 	return pci_read_config16(PCH_DEV_LPC, LPC_IO_DECODE);
 }
 
+uint16_t lpc_set_fixed_io_ranges(uint16_t io_ranges, uint16_t mask)
+{
+	uint16_t reg_io_ranges;
+
+	reg_io_ranges = lpc_get_fixed_io_decode() & ~mask;
+	io_ranges |= reg_io_ranges & mask;
+	pci_write_config16(PCH_DEV_LPC, LPC_IO_DECODE, io_ranges);
+
+	return io_ranges;
+}
+
 /*
  * Find the first unused IO window.
  * Returns -1 if not found, 0 for reg 0x84, 1 for reg 0x88 ...

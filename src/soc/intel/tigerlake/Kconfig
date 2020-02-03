@@ -12,7 +12,7 @@ config SOC_INTEL_TIGERLAKE
 config SOC_INTEL_JASPERLAKE
 	bool
 	select SOC_INTEL_TIGERLAKE_BASE
-	select INTEL_CAR_NEM_ENHANCED
+	select INTEL_CAR_NEM
 	help
 	  Intel Jasperlake support
 
@@ -113,13 +113,13 @@ config HEAP_SIZE
 
 config MAX_ROOT_PORTS
 	int
-	default 16 if SOC_INTEL_JASPERLAKE
+	default 8 if SOC_INTEL_JASPERLAKE
 	default 12 if SOC_INTEL_TIGERLAKE
 
 config MAX_PCIE_CLOCKS
 	int
 	default 7 if SOC_INTEL_TIGERLAKE
-	default 16 if SOC_INTEL_JASPERLAKE
+	default 6 if SOC_INTEL_JASPERLAKE
 
 config SMM_TSEG_SIZE
 	hex

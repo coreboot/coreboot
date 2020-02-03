@@ -37,7 +37,7 @@ static struct {
 	{ CPUID_CANNONLAKE_B0, "Cannonlake B0" },
 	{ CPUID_CANNONLAKE_C0, "Cannonlake C0" },
 	{ CPUID_CANNONLAKE_D0, "Cannonlake D0" },
-	{ CPUID_COFFEELAKE_D0, "Coffeelake D0" },
+	{ CPUID_KABYLAKE_Y0, "Coffeelake D0" },
 	{ CPUID_WHISKEYLAKE_V0, "Whiskeylake V0" },
 	{ CPUID_WHISKEYLAKE_W0, "Whiskeylake W0" },
 	{ CPUID_COFFEELAKE_U0, "Coffeelake U0 (6+2)" },

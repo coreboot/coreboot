@@ -3,6 +3,7 @@
 #include <boot/coreboot_tables.h>
 #include <bootmode.h>
 #include "board.h"
+#include <security/tpm/tis.h>
 
 int get_write_protect_state(void)
 {
@@ -30,4 +31,9 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	};
 
 	lb_add_gpios(gpios, chromeos_gpios, ARRAY_SIZE(chromeos_gpios));
+}
+
+int tis_plat_irq_status(void)
+{
+	return gpio_irq_status(GPIO_H1_AP_INT);
 }

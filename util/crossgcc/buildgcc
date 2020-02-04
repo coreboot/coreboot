@@ -54,11 +54,7 @@ GCC_VERSION=8.3.0
 GCC_AUTOCONF_VERSION=2.69
 BINUTILS_VERSION=2.33.1
 GDB_VERSION=8.3.1
-
-# Conflicting use of _ADR and _HID in coreboot tree needs
-# to be properly addressed before we can upgrade IASL version.
-# Use IASL version 20190703 for now.
-IASL_VERSION=20190703
+IASL_VERSION=20200110
 PYTHON_VERSION=3.8.1
 EXPAT_VERSION=2.2.9
 # CLANG version number

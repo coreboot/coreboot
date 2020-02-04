@@ -83,7 +83,7 @@ uint8_t get_pch_series(void)
 
 	if (lpc_did_hi_byte == 0xA0)
 		return PCH_TGP;
-	else if (lpc_did_hi_byte == 0x38)
+	else if (lpc_did_hi_byte == 0x4d)
 		return PCH_JSP;
 	else
 		return PCH_UNKNOWN_SERIES;

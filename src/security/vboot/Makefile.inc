@@ -16,6 +16,12 @@
 
 ifeq ($(CONFIG_VBOOT_LIB),y)
 
+bootblock-y += vboot_lib.c
+verstage-y += vboot_lib.c
+romstage-y += vboot_lib.c
+ramstage-y += vboot_lib.c
+postcar-y += vboot_lib.c
+
 vboot-fixup-includes = $(patsubst -I%,-I$(top)/%,\
 		       $(patsubst $(src)/%.h,$(top)/$(src)/%.h,\
 		       $(filter-out -I$(obj),$(1))))

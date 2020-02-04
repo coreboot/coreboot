@@ -17,8 +17,6 @@
 #include <assert.h>
 #include <bootmode.h>
 #include <cbmem.h>
-#include <console/console.h>
-#include <console/vtxprintf.h>
 #include <fmap.h>
 #include <string.h>
 #include <timestamp.h>
@@ -36,20 +34,6 @@
 #define TODO_BLOCK_SIZE 1024
 
 /* exports */
-
-void vb2ex_printf(const char *func, const char *fmt, ...)
-{
-	va_list args;
-
-	if (func)
-		printk(BIOS_INFO, "VB2:%s() ", func);
-
-	va_start(args, fmt);
-	vprintk(BIOS_INFO, fmt, args);
-	va_end(args);
-
-	return;
-}
 
 vb2_error_t vb2ex_read_resource(struct vb2_context *ctx,
 				enum vb2_resource_index index,
@@ -81,11 +65,6 @@ vb2_error_t vb2ex_read_resource(struct vb2_context *ctx,
 		return VB2_ERROR_EX_READ_RESOURCE_SIZE;
 
 	return VB2_SUCCESS;
-}
-
-void vb2ex_abort(void)
-{
-	die("vboot has aborted execution; exit\n");
 }
 
 /* No-op stubs that can be overridden by SoCs with hardware crypto support. */

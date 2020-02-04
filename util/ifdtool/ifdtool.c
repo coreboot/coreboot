@@ -1336,11 +1336,18 @@ static void new_layout(const char *filename, char *image, int size,
 			new_extent = new_regions[i].limit;
 	}
 
-	new_extent = next_pow2(new_extent - 1);
-	if (new_extent != size) {
-		printf("The image has changed in size.\n");
-		printf("The old image is %d bytes.\n", size);
-		printf("The new image is %d bytes.\n", new_extent);
+	/* check if the image is actually a Flash Descriptor region */
+	if (size == new_regions[0].size) {
+		printf("The image is a single Flash Descriptor:\n");
+		printf("    Only the descriptor will be modified\n");
+		new_extent = size;
+	} else {
+		new_extent = next_pow2(new_extent - 1);
+		if (new_extent != size) {
+			printf("The image has changed in size.\n");
+			printf("The old image is %d bytes.\n", size);
+			printf("The new image is %d bytes.\n", new_extent);
+		}
 	}
 
 	/* copy regions to a new image */
@@ -1367,6 +1374,12 @@ static void new_layout(const char *filename, char *image, int size,
 			offset_current = current->size - new->size;
 		}
 
+		if (size < current->base + offset_current + copy_size) {
+			printf("Skip descriptor %d (%s) (region missing in the old image)\n", i,
+				region_name(i));
+			continue;
+		};
+
 		printf("Copy Descriptor %d (%s) (%d bytes)\n", i,
 				region_name(i), copy_size);
 		printf("   from %08x+%08x:%08x (%10d)\n", current->base,
@@ -1384,6 +1397,7 @@ static void new_layout(const char *filename, char *image, int size,
 	if (!frba)
 		exit(EXIT_FAILURE);
 
+	printf("Modify Flash Descriptor regions\n");
 	for (i = 1; i < max_regions; i++)
 		set_region(frba, i, &new_regions[i]);
 

@@ -48,7 +48,7 @@ chip northbridge/intel/sandybridge
 			subsystemid 0x17aa 0x21f5
 		end
 
-		chip southbridge/intel/bd82x6x # Intel Series 6 Cougar Point PCH
+		chip southbridge/intel/bd82x6x # Intel Series 6 Panther Point PCH
 			# GPI routing
 			#  0 No effect (default)
 			#  1 SMI# (if corresponding ALT_GPI_SMI_EN bit is also set)

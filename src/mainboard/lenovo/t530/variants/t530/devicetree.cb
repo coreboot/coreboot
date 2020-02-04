@@ -43,7 +43,7 @@ chip northbridge/intel/sandybridge
 		device pci 01.0 on end # PCIe bridge for discrete graphics
 		device pci 02.0 on end # Internal graphics VGA controller
 
-		chip southbridge/intel/bd82x6x # Intel Series 6 Cougar Point PCH
+		chip southbridge/intel/bd82x6x # Intel Series 6 Panther Point PCH
 			# GPI routing
 			#  0 No effect (default)
 			#  1 SMI# (if corresponding ALT_GPI_SMI_EN bit is also set)

@@ -142,6 +142,9 @@ chip soc/intel/cannonlake
 	register "PchPmSlpSusMinAssert" = "1" # 500ms
 	register "PchPmSlpAMinAssert" = "3"   # 2s
 
+	# Enable Audio DSP oscillator qualification for S0ix
+	register "cppmvric2_adsposcdis" = "1"
+
 	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC2)"	# Type-C Port 0
 	register "usb2_ports[1]" = "USB2_PORT_TYPE_C(OC2)"	# Type-C Port 1
 	register "usb2_ports[2]" = "USB2_PORT_SHORT(OC3)"	# Type-A Port 0

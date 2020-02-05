@@ -23,29 +23,34 @@
 #include <arch/acpigen.h>
 
 /* Rmodules don't like weak symbols. */
+void __weak map_oprom_vendev_rev(u32 *vendev, u8 *rev) { return; }
 u32 __weak map_oprom_vendev(u32 vendev) { return vendev; }
 
 struct rom_header *pci_rom_probe(struct device *dev)
 {
 	struct rom_header *rom_header = NULL;
 	struct pci_data *rom_data;
+	u8 rev = pci_read_config8(dev, PCI_REVISION_ID);
+	u8 mapped_rev = rev;
+	u32 vendev = (dev->vendor << 16) | dev->device;
+	u32 mapped_vendev = vendev;
 
-	/* If it's in FLASH, then don't check device for ROM. */
+	/* If the ROM is in flash, then don't check the PCI device for it. */
 	if (CONFIG(CHECK_REV_IN_OPROM_NAME)) {
-		uint8_t rev = pci_read_config8(dev, PCI_REVISION_ID);
 		rom_header = cbfs_boot_map_optionrom_revision(dev->vendor, dev->device, rev);
+		map_oprom_vendev_rev(&mapped_vendev, &mapped_rev);
+	} else {
+		rom_header = cbfs_boot_map_optionrom(dev->vendor, dev->device);
+		mapped_vendev = map_oprom_vendev(vendev);
 	}
 
-	if (!rom_header)
-		rom_header = cbfs_boot_map_optionrom(dev->vendor, dev->device);
-
-	u32 vendev = (dev->vendor << 16) | dev->device;
-	u32 mapped_vendev;
-
-	mapped_vendev = map_oprom_vendev(vendev);
-
 	if (!rom_header) {
-		if (vendev != mapped_vendev) {
+		if (CONFIG(CHECK_REV_IN_OPROM_NAME) &&
+				(vendev != mapped_vendev || rev != mapped_rev)) {
+			rom_header = cbfs_boot_map_optionrom_revision(
+					mapped_vendev >> 16,
+					mapped_vendev & 0xffff, mapped_rev);
+		} else if (vendev != mapped_vendev) {
 			rom_header = cbfs_boot_map_optionrom(
 					mapped_vendev >> 16,
 					mapped_vendev & 0xffff);

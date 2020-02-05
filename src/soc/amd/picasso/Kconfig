@@ -194,14 +194,40 @@ config VERSTAGE_ADDR
 
 config VGA_BIOS_ID
 	string
-	default "1002,15d8"
+	default "1002,15d8,c1"
 	help
 	  The default VGA BIOS PCI vendor/device ID should be set to the
-	  result of the map_oprom_vendev() function in northbridge.c.
+	  result of the map_oprom_vendev_rev() function in northbridge.c.
 
 config VGA_BIOS_FILE
 	string
 	default "3rdparty/amd_blobs/picasso/PicassoGenericVbios.bin"
+
+config VGA_BIOS_SECOND
+	def_bool y
+
+config VGA_BIOS_SECOND_ID
+	string
+	default "1002,15dd,c4"
+	help
+	  Because Dali and Picasso need different video BIOSes, but have the
+	  same vendor/device IDs, we need an alternate method to determine the
+	  correct video BIOS. In map_oprom_vendev_rev(), we look at the cpuid
+	  and decide which rom to load.
+
+	  Even though the hardware has the same vendor/device IDs, the vBIOS
+	  contains a *different* device ID, confusing the situation even more.
+
+config VGA_BIOS_SECOND_FILE
+	string
+	default "3rdparty/amd_blobs/picasso/Raven2GenericVbios.bin"
+
+config CHECK_REV_IN_OPROM_NAME
+	bool
+	default y
+	help
+	  Select this in the platform BIOS or chipset if the option rom has a
+	  revision that needs to be checked when searching CBFS.
 
 config S3_VGA_ROM_RUN
 	bool

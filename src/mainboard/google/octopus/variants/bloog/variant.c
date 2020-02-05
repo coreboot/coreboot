@@ -30,29 +30,34 @@ enum {
 	SKU_50_BLOOGUARD = 50, /* kb blit, USI Stylus */
 	SKU_51_BLOOGUARD = 51, /* no kb blit, no USI Stylus */
 	SKU_52_BLOOGUARD = 52, /* no kb blit, USI Stylus */
+	SKU_53_BIPSHIP = 53, /* no kb blit, TS, 360, no Stylus, no rare-cam */
+	SKU_54_BIPSHIP = 54, /* kb blit, TS, 360, no Stylus, no rare-cam */
 	SKU_65_BLOOGLET = 65, /* TS, kb blit */
 	SKU_66_BLOOGLET = 66, /* TS, no kb blit */
 	SKU_67_BLOOGLET = 67, /* non-TS, kb blit */
 	SKU_68_BLOOGLET = 68, /* non-TS, no kb blit */
+	SKU_255_UNPROVISIONED = 255,
 };
 
 const char *get_wifi_sar_cbfs_filename(void)
 {
 	const char *filename = NULL;
-	uint32_t sku_id;
-	sku_id = get_board_sku();
+	uint32_t sku_id = get_board_sku();
 
-	if (sku_id == SKU_UNKNOWN)
-		return NULL;
-
-	if (sku_id == SKU_33_BLOOG || sku_id == SKU_34_BLOOG ||
-		sku_id == SKU_35_BLOOG || sku_id == SKU_36_BLOOG)
+	switch (sku_id) {
+	case SKU_33_BLOOG:
+	case SKU_34_BLOOG:
+	case SKU_35_BLOOG:
+	case SKU_36_BLOOG:
 		filename = "wifi_sar-bloog.hex";
-
-	if (sku_id == SKU_49_BLOOGUARD || sku_id == SKU_50_BLOOGUARD ||
-		sku_id == SKU_51_BLOOGUARD || sku_id == SKU_52_BLOOGUARD)
+		break;
+	case SKU_49_BLOOGUARD:
+	case SKU_50_BLOOGUARD:
+	case SKU_51_BLOOGUARD:
+	case SKU_52_BLOOGUARD:
 		filename = "wifi_sar-blooguard.hex";
-
+		break;
+	}
 	return filename;
 }
 
@@ -62,11 +67,14 @@ const char *mainboard_vbt_filename(void)
 
 	sku_id = get_board_sku();
 
-	if (sku_id == SKU_49_BLOOGUARD || sku_id == SKU_50_BLOOGUARD ||
-		sku_id == SKU_51_BLOOGUARD || sku_id == SKU_52_BLOOGUARD ||
-		sku_id == SKU_65_BLOOGLET || sku_id == SKU_66_BLOOGLET ||
-		sku_id == SKU_67_BLOOGLET || sku_id == SKU_68_BLOOGLET)
+	switch (sku_id) {
+	case SKU_33_BLOOG:
+	case SKU_34_BLOOG:
+	case SKU_35_BLOOG:
+	case SKU_36_BLOOG:
+	case SKU_255_UNPROVISIONED:
+		return "vbt.bin";
+	default:
 		return "vbt_blooguard.bin";
-
-	return "vbt.bin";
+	}
 }

@@ -69,7 +69,7 @@ entries
 424          1       e       1        f1_to_f12_as_primary
 
 # coreboot config options: northbridge
-#435         2        e       12       hybrid_graphics_mode
+435         1        e       1        enable_dual_graphics
 #437        3        r       0        unused
 440          8       h       0        volume
 
@@ -108,9 +108,6 @@ enumerations
 10    1     Keyboard
 #10    2     Thinklight only
 10    3     None
-#12    0     Integrated Only
-#12    1     Discrete Only
-#12    2     Dual Graphics
 13    0     Disable
 13    1     AC and battery
 13    2     AC only

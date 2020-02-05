@@ -10,4 +10,5 @@ f1_to_f12_as_primary=Enable
 sticky_fn=Disable
 trackpoint=Enable
 backlight=Keyboard
+enable_dual_graphics=Disable
 usb_always_on=Disable

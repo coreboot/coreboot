@@ -5,9 +5,9 @@
 Old versions of stock BIOS for these models have several security issues.
 In order to flash coreboot internally, two of them are of interest.
 
-**First** is the fact the SMM_BWP and BLE are not enabled in BIOS
+**First** is the fact the `SMM_BWP` and `BLE` are not enabled in BIOS
 versions released before 2014. We have tested many versions on T430 and
-X230 and found out that SMM_BWP=1 only since the update, the changelog
+X230 and found out that `SMM_BWP=1` only since the update, the changelog
 of which contains following line:
 
 > (New) Improved the UEFI BIOS security feature.
@@ -159,14 +159,14 @@ chip:
   Configuration Registers. When set to 1, PR0-PR4 registers cannot be
   written. Once set to 1, cannot be changed anymore.
 
-To be able to flash, we need SMM_BWP=0, BIOSWE=1, BLE=0, FLOCKDN=0 or
+To be able to flash, we need `SMM_BWP=0`, `BIOSWE=1`, `BLE=0`, `FLOCKDN=0` or
 SPI protected ranges (PRx) to have a WP bit set to 0.
 
-Let's see what we have. Examine HSFS register:
+Let's see what we have. Examine `HSFS` register:
 
     sudo chipsec_main -m chipsec.modules.common.spi_lock
 
-You should see that FLOCKDN=1:
+You should see that `FLOCKDN=1`:
 
     [x][ =======================================================================
     [x][ Module: SPI Flash Controller Configuration Locks
@@ -181,11 +181,11 @@ You should see that FLOCKDN=1:
         [14] FDV              = 1 << Flash Descriptor Valid
         [15] FLOCKDN          = 1 << Flash Configuration Lock-Down
 
-Then check BIOS_CNTL and PR0-PR4:
+Then check `BIOS_CNTL` and PR0-PR4:
 
     sudo chipsec_main -m common.bios_wp
 
-Good news: on old BIOS versions, SMM_BWP=0 and BLE=0.
+Good news: on old BIOS versions, `SMM_BWP=0` and `BLE=0`.
 
 Bad news: there are 4 write protected SPI ranges:
 
@@ -215,8 +215,8 @@ Other way to examine SPI configuration registers is to just dump SPIBAR:
 
     sudo chipsec_util mmio dump SPIBAR
 
-You will see SPIBAR address (0xFED1F800) and registers (for example,
-00000004 is HSFS):
+You will see `SPIBAR` address (0xFED1F800) and registers (for example,
+`00000004` is `HSFS`):
 
     [mmio] MMIO register range [0x00000000FED1F800:0x00000000FED1F800+00000200]:
     +00000000: 0BFF0500
@@ -224,11 +224,11 @@ You will see SPIBAR address (0xFED1F800) and registers (for example,
     ...
 
 As you can see, the only thing we need is to unset WP bit on PR0-PR4.
-But that cannot be done once FLOCKDN is set to 1.
+But that cannot be done once `FLOCKDN` is set to 1.
 
 Now the fun part!
 
-FLOCKDN may only be cleared by a hardware reset, which includes S3
+`FLOCKDN` may only be cleared by a hardware reset, which includes S3
 state. On S3 resume boot path, the chipset configuration has to be
 restored and it's done by executing so-called S3 Boot Scripts. You can
 dump these scripts by executing:
@@ -236,7 +236,7 @@ dump these scripts by executing:
     sudo chipsec_util uefi s3bootscript
 
 There are many entries. Along them, you can find instructions to write
-to HSFS (remember, we know that SPIBAR is 0xFED1F800):
+to `HSFS` (remember, we know that `SPIBAR` is 0xFED1F800):
 
      Entry at offset 0x2B8F (len = 0x17, header len = 0x0):
      Data:
@@ -251,7 +251,7 @@ to HSFS (remember, we know that SPIBAR is 0xFED1F800):
 
 These scripts are stored in memory. The vulnerability is that we can
 overwrite this memory, change these instructions and they will be
-executed on S3 resume. Once we patch that instruction to not set FLOCKDN
+executed on S3 resume. Once we patch that instruction to not set `FLOCKDN`
 bit, we will be able to write to PR0-PR4 registers.
 
 ## Creating a backup
@@ -274,7 +274,7 @@ brick your machine, because your backup has `FF`s in place of `fd` and
 
 ## Removing protections (practice)
 
-The original boot script writes 0xE009 to HSFS. FLOCKDN is 15th bit, so
+The original boot script writes 0xE009 to `HSFS`. `FLOCKDN` is 15th bit, so
 let's write 0x6009 instead:
 
     sudo chipsec_main -m tools.uefi.s3script_modify -a replace_op,mmio_wr,0xFED1F804,0x6009,0x2
@@ -297,7 +297,7 @@ like this:
      [*] After sleep/resume, check the value of register 0xFED1F804 is 0x6009
      [+] PASSED: The script has been modified. Go to sleep..
 
-Now go to S3, then resume and check FLOCKDN. It should be 0:
+Now go to S3, then resume and check `FLOCKDN`. It should be 0:
 
     sudo chipsec_main -m chipsec.modules.common.spi_lock
 

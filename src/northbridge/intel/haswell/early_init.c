@@ -101,7 +101,7 @@ static void start_peg2_link_training(const pci_devfn_t dev)
 	}
 
 	pci_update_config32(dev, 0xc24, ~(1 << 16), 1 << 5);
-	printk(BIOS_DEBUG, "Started PEG1%d link training.\n", PCI_FUNC(dev));
+	printk(BIOS_DEBUG, "Started PEG1%d link training.\n", PCI_FUNC(PCI_DEV2DEVFN(dev)));
 
 	/*
 	 * The PEG device is hidden while the MRC runs. This is because the
@@ -110,8 +110,8 @@ static void start_peg2_link_training(const pci_devfn_t dev)
 	 * to these configurations.
 	 */
 	pci_update_config32(PCI_DEV(0, 0, 0), DEVEN, ~mask, 0);
-	peg_hidden[PCI_FUNC(dev)] = true;
-	printk(BIOS_DEBUG, "Temporarily hiding PEG1%d.\n", PCI_FUNC(dev));
+	peg_hidden[PCI_FUNC(PCI_DEV2DEVFN(dev))] = true;
+	printk(BIOS_DEBUG, "Temporarily hiding PEG1%d.\n", PCI_FUNC(PCI_DEV2DEVFN(dev)));
 }
 
 void haswell_unhide_peg(void)

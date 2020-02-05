@@ -9,6 +9,7 @@
 bootblock-y += bootblock.c
 
 romstage-$(CONFIG_CHROMEOS) += chromeos.c
+romstage-y += romstage.c
 
 ramstage-$(CONFIG_CHROMEOS) += chromeos.c
 ramstage-y += ec.c

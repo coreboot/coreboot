@@ -40,4 +40,18 @@ union me_hfsts1 {
 	} __packed fields;
 };
 
+/* ME Host Firmware Status Register 3 */
+union me_hfsts3 {
+	u32 data;
+	struct {
+		u32 reserved_0: 4;
+		u32 fw_sku: 3;
+		u32 reserved_7: 2;
+		u32 reserved_9: 2;
+		u32 resered_11: 3;
+		u32 resered_14: 16;
+		u32 reserved_30: 2;
+	} __packed fields;
+};
+
 #endif /* _ICELAKE_ME_H_ */

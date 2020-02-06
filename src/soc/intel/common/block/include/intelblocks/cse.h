@@ -186,4 +186,10 @@ bool cse_is_hfs1_com_secover_mei_msg(void);
  */
 bool cse_is_hfs1_com_soft_temp_disable(void);
 
+/*
+ * Checks CSE's Firmware SKU is Custom or not.
+ * Returns true if CSE's Firmware SKU is Custom, otherwise false
+ */
+bool cse_is_hfs3_fw_sku_custom(void);
+
 #endif // SOC_INTEL_COMMON_CSE_H

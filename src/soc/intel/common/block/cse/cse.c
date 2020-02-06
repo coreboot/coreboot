@@ -270,6 +270,13 @@ bool cse_is_hfs1_com_soft_temp_disable(void)
 	return cse_check_hfs1_com(ME_HFS1_COM_SOFT_TEMP_DISABLE);
 }
 
+bool cse_is_hfs3_fw_sku_custom(void)
+{
+	union me_hfsts3 hfs3;
+	hfs3.data = me_read_config32(PCI_ME_HFSTS3);
+	return hfs3.fields.fw_sku == ME_HFS3_FW_SKU_CUSTOM;
+}
+
 /* Makes the host ready to communicate with CSE */
 void cse_set_host_ready(void)
 {

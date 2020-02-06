@@ -13,7 +13,14 @@
 
 /* Pad configuration in ramstage*/
 static const struct pad_config gpio_table[] = {
-	/* ToDo: Fill gpio configuration */
+	/* GPP_A0 thru GPP_A6 come configured out of reset, do not touch */
+	/* A0  : ESPI_IO0 */
+	/* A1  : ESPI_IO1 */
+	/* A2  : ESPI_IO2 */
+	/* A3  : ESPI_IO3 */
+	/* A4  : ESPI_CS# */
+	/* A5  : ESPI_CLK */
+	/* A6  : ESPI_RESET_L */
 };
 
 /* Early pad configuration in bootblock */

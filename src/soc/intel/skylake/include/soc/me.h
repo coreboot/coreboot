@@ -168,9 +168,6 @@ union me_hfs2 {
 	} __packed fields;
 };
 
-#define  ME_HFS3_FW_SKU_CONSUMER	0x2
-#define  ME_HFS3_FW_SKU_CORPORATE	0x3
-
 union me_hfs3 {
 	u32 data;
 	struct {

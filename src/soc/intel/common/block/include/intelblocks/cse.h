@@ -41,6 +41,11 @@
 #define ME_HFS1_COM_SOFT_TEMP_DISABLE	0x3
 #define ME_HFS1_COM_SECOVER_MEI_MSG	0x5
 
+/* ME Firmware SKU Types */
+#define ME_HFS3_FW_SKU_CONSUMER	0x2
+#define ME_HFS3_FW_SKU_CORPORATE	0x3
+#define ME_HFS3_FW_SKU_CUSTOM	0x5
+
 /* HFSTS register offsets in PCI config space */
 enum {
 	PCI_ME_HFSTS1 = 0x40,

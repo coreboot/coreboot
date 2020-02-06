@@ -713,6 +713,11 @@ int cse_hmrfpo_get_status(void)
 
 	printk(BIOS_INFO, "HECI: Sending Get HMRFPO Status Command\n");
 
+	if (!cse_is_hfs1_cws_normal()) {
+		printk(BIOS_ERR, "HECI: CSE's current working state is not Normal\n");
+		return -1;
+	}
+
 	if (!heci_send_receive(&msg, sizeof(struct hmrfpo_get_status_msg),
 				&resp, &resp_size)) {
 		printk(BIOS_ERR, "HECI: HMRFPO send/receive fail\n");

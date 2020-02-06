@@ -15,7 +15,6 @@
  */
 
 #include <southbridge/intel/i82801gx/nvs.h>
-#include "thermal.h"
 
 void acpi_create_gnvs(global_nvs_t *gnvs)
 {
@@ -23,6 +22,8 @@ void acpi_create_gnvs(global_nvs_t *gnvs)
 	gnvs->cmap = 0x01;
 	gnvs->cmbp = 0x01;
 
-	gnvs->tcrt = CRITICAL_TEMPERATURE;
-	gnvs->tpsv = PASSIVE_TEMPERATURE;
+	/* Temperature at which OS will shutdown */
+	gnvs->tcrt = 100;
+	/* Temperature at which OS will throttle CPU */
+	gnvs->tpsv = 90;
 }

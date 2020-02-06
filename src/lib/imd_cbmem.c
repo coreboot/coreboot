@@ -30,6 +30,8 @@ void *cbmem_top(void)
 	dead_code();
 }
 
+int cbmem_initialized;
+
 static inline const struct cbmem_entry *imd_to_cbmem(const struct imd_entry *e)
 {
 	return (const struct cbmem_entry *)e;
@@ -79,6 +81,8 @@ void cbmem_initialize_empty_id_size(u32 id, u64 size)
 
 	/* Complete migration to CBMEM. */
 	cbmem_run_init_hooks(no_recovery);
+
+	cbmem_initialized = 1;
 }
 
 int cbmem_initialize(void)
@@ -111,6 +115,8 @@ int cbmem_initialize_id_size(u32 id, u64 size)
 
 	/* Complete migration to CBMEM. */
 	cbmem_run_init_hooks(recovery);
+
+	cbmem_initialized = 1;
 
 	/* Recovery successful. */
 	return 0;

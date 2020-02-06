@@ -155,4 +155,18 @@ static inline int cbmem_possibly_online(void)
 	return 1;
 }
 
+/* Returns 1 after running cbmem init hooks, 0 otherwise. */
+static inline int cbmem_online(void)
+{
+	extern int cbmem_initialized;
+
+	if (!cbmem_possibly_online())
+		return 0;
+
+	if (ENV_ROMSTAGE)
+		return cbmem_initialized;
+
+	return 1;
+}
+
 #endif /* _CBMEM_H_ */

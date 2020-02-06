@@ -142,8 +142,7 @@ chip northbridge/intel/gm45
 				end
 
 				chip ec/lenovo/pmh7
-					device pnp ff.1 on # dummy
-					end
+					device pnp ff.1 on end # dummy
 					register "backlight_enable" = "0x01"
 				end
 

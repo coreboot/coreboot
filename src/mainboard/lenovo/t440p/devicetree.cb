@@ -73,8 +73,7 @@ chip northbridge/intel/haswell
 				chip ec/lenovo/pmh7
 					register "backlight_enable" = "0x01"
 					register "dock_event_enable" = "0x01"
-					device pnp ff.1 on # dummy
-					end
+					device pnp ff.1 on end # dummy
 				end
 				chip ec/lenovo/h8
 					register "beepmask0" = "0x00"

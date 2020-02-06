@@ -127,9 +127,7 @@ chip northbridge/intel/i945
 			device pci 1f.0 on # PCI-LPC bridge
 				subsystemid 0x17aa 0x2009
 				chip ec/lenovo/pmh7
-					device pnp ff.1 on # dummy
-					end
-
+					device pnp ff.1 on end # dummy
 					register "backlight_enable" = "0x01"
 					register "dock_event_enable" = "0x01"
 				end
@@ -182,8 +180,7 @@ chip northbridge/intel/i945
 				end
 
 				chip superio/nsc/pc87384
-					device pnp 2e.0 off #FDC
-					end
+					device pnp 2e.0 off end #FDC
 
 					device pnp 2e.1 on # Parallel Port
 						io 0x60 = 0x3bc
@@ -204,8 +201,7 @@ chip northbridge/intel/i945
 						io 0x60 = 0x1620
 					end
 
-					device pnp 2e.a off # WDT
-					end
+					device pnp 2e.a off end # WDT
 				end
 			end
 			device pci 1f.2 on # SATA

@@ -120,6 +120,29 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 	m_cfg->TcssXhciEn = config->TcssXhciEn;
 	m_cfg->TcssXdciEn = config->TcssXdciEn;
 
+	/* USB4/TBT */
+	dev = pcidev_path_on_root(SA_DEVFN_TBT0);
+	if (dev)
+		m_cfg->TcssItbtPcie0En = dev->enabled;
+	else
+		m_cfg->TcssItbtPcie0En = 0;
+	dev = pcidev_path_on_root(SA_DEVFN_TBT1);
+	if (dev)
+		m_cfg->TcssItbtPcie1En = dev->enabled;
+	else
+		m_cfg->TcssItbtPcie1En = 0;
+
+	dev = pcidev_path_on_root(SA_DEVFN_TBT2);
+	if (dev)
+		m_cfg->TcssItbtPcie2En = dev->enabled;
+	else
+		m_cfg->TcssItbtPcie2En = 0;
+	dev = pcidev_path_on_root(SA_DEVFN_TBT3);
+	if (dev)
+		m_cfg->TcssItbtPcie3En = dev->enabled;
+	else
+		m_cfg->TcssItbtPcie3En = 0;
+
 	/* Enable Hyper Threading */
 	m_cfg->HyperThreading = 1;
 	/* Disable Lock PCU Thermal Management registers */

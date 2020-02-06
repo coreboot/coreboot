@@ -23,6 +23,8 @@
 enum {
 	SKU_1_LTE  = 1, /* Wifi + LTE */
 	SKU_2_WIFI = 2, /* Wifi */
+	SKU_3_LTE_2CAM = 3, /* Wifi + LTE + dual camera */
+	SKU_4_WIFI_2CAM = 4, /* Wifi + dual camera */
 };
 
 struct gpio_with_delay {
@@ -63,6 +65,7 @@ void variant_smi_sleep(u8 slp_typ)
 
 	switch (get_board_sku()) {
 	case SKU_1_LTE:
+	case SKU_3_LTE_2CAM:
 		power_off_lte_module(slp_typ);
 		return;
 	default:

@@ -22,6 +22,8 @@
 enum {
 	SKU_1_LTE  = 1, /* Wifi + LTE */
 	SKU_2_WIFI = 2, /* Wifi */
+	SKU_3_LTE_2CAM = 3, /* Wifi + LTE + dual camera */
+	SKU_4_WIFI_2CAM = 4, /* Wifi + dual camera */
 };
 
 static const struct pad_config default_override_table[] = {
@@ -62,6 +64,7 @@ const struct pad_config *variant_override_gpio_table(size_t *num)
 
 	switch (sku_id) {
 	case SKU_1_LTE:
+	case SKU_3_LTE_2CAM:
 		*num = ARRAY_SIZE(lte_override_table);
 		return lte_override_table;
 	default:

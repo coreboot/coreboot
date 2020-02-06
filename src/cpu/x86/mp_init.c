@@ -1044,17 +1044,22 @@ static void fill_mp_state(struct mp_state *state, const struct mp_ops *ops)
 	/*
 	 * Make sure there is enough room for the SMM descriptor
 	 */
-	if (CONFIG(STM))
+	if (CONFIG(STM)) {
 		state->smm_save_state_size +=
 			sizeof(TXT_PROCESSOR_SMM_DESCRIPTOR);
 
-	/* Currently, the CPU SMM save state size is based on a simplistic
-	 * algorithm. (align on 4K)
-	 * note: In the future, this will need to handle newer x86 processors
-	 * that require alignment of the save state on 32K boundaries.
-	 */
-	state->smm_save_state_size =
-		ALIGN_UP(state->smm_save_state_size, 0x1000);
+		/* Currently, the CPU SMM save state size is based on a simplistic
+		 * algorithm. (align on 4K)
+		 * note: In the future, this will need to handle newer x86 processors
+		 * that require alignment of the save state on 32K boundaries.
+		 * The alignment is done here because coreboot has a hard coded
+		 * value of 0x400 for this value.
+		 * Also, this alignment only works on CPUs less than 5 threads
+		 */
+		if (CONFIG(STM))
+			state->smm_save_state_size =
+				ALIGN_UP(state->smm_save_state_size, 0x1000);
+	}
 
 	/*
 	 * Default to smm_initiate_relocation() if trigger callback isn't

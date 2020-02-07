@@ -419,6 +419,96 @@ static uint16_t get_sku_voltagelimit(int domain)
 	return 1520;
 }
 
+static uint16_t get_sku_tdc_powerlimit(int domain)
+{
+	const uint16_t tdp = cpu_get_power_max();
+	const config_t *cfg = config_of_soc();
+
+	static uint16_t mch_id = 0;
+	if (!mch_id) {
+		struct device *dev = pcidev_path_on_root(SA_DEVFN_ROOT);
+		mch_id = dev ? pci_read_config16(dev, PCI_DEVICE_ID) : 0xffff;
+	}
+
+	switch (mch_id) {
+	case PCI_DEVICE_ID_INTEL_CML_ULT:
+	case PCI_DEVICE_ID_INTEL_CML_ULT_6_2: {
+		uint16_t tdc[NUM_VR_DOMAINS] =
+				VR_CFG_ALL_DOMAINS_TDC(4, 58, 22, 22);
+
+		if (cfg->cpu_pl2_4_cfg == baseline)
+			tdc[VR_IA_CORE] = VR_CFG_TDC_AMP(48);
+
+		return tdc[domain];
+	}
+	case PCI_DEVICE_ID_INTEL_CML_ULT_2_2: {
+		const uint16_t tdc[NUM_VR_DOMAINS] =
+				VR_CFG_ALL_DOMAINS_TDC(4, 24, 22, 22);
+		return tdc[domain];
+	}
+	case PCI_DEVICE_ID_INTEL_CML_H_4_2: {
+		uint16_t tdc[NUM_VR_DOMAINS] =
+				VR_CFG_ALL_DOMAINS_TDC(10, 80, 25, 25);
+
+		if (cfg->cpu_pl2_4_cfg == baseline)
+			tdc[VR_IA_CORE] = VR_CFG_TDC_AMP(60);
+
+		return tdc[domain];
+	}
+	case PCI_DEVICE_ID_INTEL_CML_H: {
+		uint16_t tdc[NUM_VR_DOMAINS] =
+				VR_CFG_ALL_DOMAINS_TDC(10, 92, 25, 25);
+
+		if (cfg->cpu_pl2_4_cfg == baseline)
+			tdc[VR_IA_CORE] = VR_CFG_TDC_AMP(80);
+
+		return tdc[domain];
+	}
+	case PCI_DEVICE_ID_INTEL_CML_H_8_2: {
+		uint16_t tdc[NUM_VR_DOMAINS] =
+				VR_CFG_ALL_DOMAINS_TDC(10, 125, 25, 25);
+
+		if (tdp >= 65) /* 65W */
+			tdc[VR_IA_CORE] = (cfg->cpu_pl2_4_cfg == baseline) ?
+					  VR_CFG_TDC_AMP(117) :
+					  VR_CFG_TDC_AMP(146);
+		else /* 45W */
+			tdc[VR_IA_CORE] = (cfg->cpu_pl2_4_cfg == baseline) ?
+					  VR_CFG_TDC_AMP(86) :
+					  VR_CFG_TDC_AMP(125);
+
+		return tdc[domain];
+	}
+	case PCI_DEVICE_ID_INTEL_CML_S_G0G1_P0P1_6_2: {
+		uint16_t tdc[NUM_VR_DOMAINS] =
+				VR_CFG_ALL_DOMAINS_TDC(10, 74, 28, 28);
+
+		if (tdp >= 125) /* 125W */
+			tdc[VR_IA_CORE] = VR_CFG_TDC_AMP(132);
+		else if (tdp >= 65) /* 80W or 65W */
+			tdc[VR_IA_CORE] = VR_CFG_TDC_AMP(104);
+		else /* 35W */
+			tdc[VR_IA_CORE] = VR_CFG_TDC_AMP(74);
+
+		return tdc[domain];
+	}
+	case PCI_DEVICE_ID_INTEL_CML_S_P0P1_8_2:
+	case PCI_DEVICE_ID_INTEL_CML_S_P0P1_10_2: {
+		uint16_t tdc[NUM_VR_DOMAINS] =
+				VR_CFG_ALL_DOMAINS_TDC(10, 100, 28, 28);
+
+		if (tdp > 35) /* 125W or 80W or 65W */
+			tdc[VR_IA_CORE] = VR_CFG_TDC_AMP(175);
+
+		return tdc[domain];
+	}
+	default:
+		printk(BIOS_ERR, "ERROR: Unknown MCH (0x%x) in VR-config\n", mch_id);
+	}
+
+	return 0;
+}
+
 void fill_vr_domain_config(void *params,
 		int domain, const struct vr_config *chip_cfg)
 {
@@ -463,4 +553,11 @@ void fill_vr_domain_config(void *params,
 		vr_params->DcLoadline[domain] = cfg->dc_loadline;
 	else
 		vr_params->DcLoadline[domain] = get_sku_ac_dc_loadline(domain);
+
+	vr_params->TdcEnable[domain] = !cfg->tdc_disable;
+
+	if (cfg->tdc_powerlimit)
+		vr_params->TdcPowerLimit[domain] = cfg->tdc_powerlimit;
+	else
+		vr_params->TdcPowerLimit[domain] = get_sku_tdc_powerlimit(domain);
 }

@@ -53,10 +53,18 @@ struct vr_config {
 	/* AC and DC Loadline in 1/100 mOhms. Range is 0-6249 */
 	uint16_t ac_loadline;
 	uint16_t dc_loadline;
+
+	/* Thermal Design Current (TDC) Power Limit will take effect when
+	   this is set to 0 */
+	uint8_t tdc_disable;
+
+	/* Thermal Design Current (TDC) Power Limit in 1/8 A units */
+	uint16_t tdc_powerlimit;
 };
 
 #define VR_CFG_AMP(i) (uint16_t)((i) * 4)
 #define VR_CFG_MOHMS(i) (uint16_t)((i) * 100)
+#define VR_CFG_TDC_AMP(i) (uint16_t)((i) * 8)
 
 /* VrConfig Settings for 4 domains
  * 0 = System Agent, 1 = IA Core,
@@ -83,6 +91,14 @@ enum vr_domain {
 		[VR_IA_CORE]      = VR_CFG_MOHMS(ia),		\
 		[VR_GT_UNSLICED]  = VR_CFG_MOHMS(gt_unsl),	\
 		[VR_GT_SLICED]    = VR_CFG_MOHMS(gt_sl),	\
+	}
+
+#define VR_CFG_ALL_DOMAINS_TDC(sa, ia, gt_unsl, gt_sl)		\
+	{							\
+		[VR_SYSTEM_AGENT] = VR_CFG_TDC_AMP(sa),		\
+		[VR_IA_CORE]      = VR_CFG_TDC_AMP(ia),		\
+		[VR_GT_UNSLICED]  = VR_CFG_TDC_AMP(gt_unsl),	\
+		[VR_GT_SLICED]    = VR_CFG_TDC_AMP(gt_sl),	\
 	}
 
 void fill_vr_domain_config(void *params,

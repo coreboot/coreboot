@@ -88,7 +88,7 @@ static const struct pad_config gpio_table[] = {
 /* SML0CLK */		PAD_NC(GPP_C3, NONE),
 /* SML0DATA */		PAD_NC(GPP_C4, NONE),
 /* SML0ALERT# */	PAD_CFG_GPI(GPP_C5, NONE, DEEP),
-/* UART0_RTS# */	PAD_CFG_GPO(GPP_C10, 1, PLTRST), /* WWAN_FULL_PWR_EN */
+/* UART0_RTS# */	PAD_CFG_GPO(GPP_C10, 1, DEEP), /* WWAN_FULL_PWR_EN */
 /* UART0_CTS# */	PAD_NC(GPP_C11, NONE),
 /* UART1_RXD */         PAD_NC(GPP_C12, NONE),
 /* UART1_TXD */		PAD_NC(GPP_C13, NONE),

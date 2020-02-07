@@ -202,6 +202,8 @@ static int smm_module_setup_stub(void *smbase, struct smm_loader_params *params,
 	/* Adjust remaining size to account for save state. */
 	total_save_state_size = params->per_cpu_save_state_size *
 				params->num_concurrent_save_states;
+	if (total_save_state_size > size)
+		return -1;
 	size -= total_save_state_size;
 
 	/* The save state size encroached over the first SMM entry point. */

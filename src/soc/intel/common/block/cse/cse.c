@@ -608,6 +608,28 @@ uint32_t me_read_config32(int offset)
 	return pci_read_config32(PCH_DEV_CSE, offset);
 }
 
+static bool cse_is_global_reset_allowed(void)
+{
+	/*
+	 * Allow sending GLOBAL_RESET command only if:
+	 *  - CSE's current working state is Normal and current operation mode is Normal.
+	 *  - (or) CSE's current working state is normal and current operation mode can
+	 *    be Soft Temp Disable or Security Override Mode if CSE's Firmware SKU is
+	 *    Custom.
+	 */
+	if (!cse_is_hfs1_cws_normal())
+		return false;
+
+	if (cse_is_hfs1_com_normal())
+		return true;
+
+	if (cse_is_hfs3_fw_sku_custom()) {
+		if (cse_is_hfs1_com_soft_temp_disable() || cse_is_hfs1_com_secover_mei_msg())
+			return true;
+	}
+	return false;
+}
+
 /*
  * Sends GLOBAL_RESET_REQ cmd to CSE.The reset type can be GLOBAL_RESET/CSE_RESET_ONLY.
  */
@@ -631,8 +653,14 @@ int cse_request_global_reset(enum rst_req_type rst_type)
 	size_t reply_size;
 
 	printk(BIOS_DEBUG, "HECI: Global Reset(Type:%d) Command\n", rst_type);
+
 	if (!(rst_type == GLOBAL_RESET || rst_type == CSE_RESET_ONLY)) {
 		printk(BIOS_ERR, "HECI: Unsupported reset type is requested\n");
+		return 0;
+	}
+
+	if (!cse_is_global_reset_allowed()) {
+		printk(BIOS_ERR, "HECI: CSE does not meet required prerequisites\n");
 		return 0;
 	}
 

@@ -92,3 +92,8 @@ Device(PBR8) {
 		Return (PS8)			/* PIC Mode */
 	} /* end _PRT */
 } /* end PBR8 */
+
+Device(K10M) {
+	Name (_ADR, 0x00180003)
+	#include <northbridge/amd/agesa/family14/acpi/thermal_mixin.asl>
+}

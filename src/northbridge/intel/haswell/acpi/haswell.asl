@@ -16,6 +16,7 @@
 
 #include "../haswell.h"
 #include "hostbridge.asl"
+#include "peg.asl"
 #include <southbridge/intel/common/rcba.h>
 
 /* PCI Device Resource Consumption */

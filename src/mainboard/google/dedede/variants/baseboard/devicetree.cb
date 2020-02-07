@@ -19,6 +19,39 @@ chip soc/intel/tigerlake
 	register "pmc_gpe0_dw1" = "GPP_D"
 	register "pmc_gpe0_dw2" = "GPP_H"
 
+	register "SerialIoI2cMode" = "{
+		[PchSerialIoIndexI2C0]  = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C1]  = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C2]  = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C3]  = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C4]  = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C5]  = PchSerialIoDisabled,
+	}"
+
+	register "SerialIoGSpiMode" = "{
+		[PchSerialIoIndexGSPI0] = PchSerialIoDisabled,
+		[PchSerialIoIndexGSPI1] = PchSerialIoDisabled,
+		[PchSerialIoIndexGSPI2] = PchSerialIoDisabled,
+	}"
+
+	register "SerialIoGSpiCsMode" = "{
+		[PchSerialIoIndexGSPI0] = 0,
+		[PchSerialIoIndexGSPI1] = 0,
+		[PchSerialIoIndexGSPI2] = 0,
+	}"
+
+	register "SerialIoGSpiCsState" = "{
+		[PchSerialIoIndexGSPI0] = 0,
+		[PchSerialIoIndexGSPI1] = 0,
+		[PchSerialIoIndexGSPI2] = 0,
+	}"
+
+	register "SerialIoUartMode" = "{
+		[PchSerialIoIndexUART0] = PchSerialIoDisabled,
+		[PchSerialIoIndexUART1] = PchSerialIoDisabled,
+		[PchSerialIoIndexUART2] = PchSerialIoDisabled,
+	}"
+
 	device domain 0 on
 		device pci 00.0 off end # Host Bridge
 		device pci 02.0 off end # Integrated Graphics Device

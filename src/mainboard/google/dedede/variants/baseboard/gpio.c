@@ -21,11 +21,31 @@ static const struct pad_config gpio_table[] = {
 	/* A4  : ESPI_CS# */
 	/* A5  : ESPI_CLK */
 	/* A6  : ESPI_RESET_L */
+
+	/* B4  : H1_PCH_INT_ODL */
+	PAD_CFG_GPI_APIC(GPP_B4, NONE, PLTRST, LEVEL, INVERT),
+	/* B15 : H1_SLAVE_SPI_CS_L */
+	PAD_CFG_NF(GPP_B15, NONE, DEEP, NF1),
+	/* B16 : H1_SLAVE_SPI_CLK */
+	PAD_CFG_NF(GPP_B16, NONE, DEEP, NF1),
+	/* B17 : H1_SLAVE_SPI_MISO_R */
+	PAD_CFG_NF(GPP_B17, NONE, DEEP, NF1),
+	/* B18 : H1_SLAVE_SPI_MOSI_R */
+	PAD_CFG_NF(GPP_B18, NONE, DEEP, NF1),
 };
 
 /* Early pad configuration in bootblock */
 static const struct pad_config early_gpio_table[] = {
-	/* ToDo: Fill early gpio configuration */
+	/* B4 : H1_PCH_INT_ODL */
+	PAD_CFG_GPI_APIC(GPP_B4, NONE, PLTRST, LEVEL, INVERT),
+	/* B15 : H1_SLAVE_SPI_CS_L */
+	PAD_CFG_NF(GPP_B15, NONE, DEEP, NF1),
+	/* B16 : H1_SLAVE_SPI_CLK */
+	PAD_CFG_NF(GPP_B16, NONE, DEEP, NF1),
+	/* B17 : H1_SLAVE_SPI_MISO_R */
+	PAD_CFG_NF(GPP_B17, NONE, DEEP, NF1),
+	/* B18 : H1_SLAVE_SPI_MOSI_R */
+	PAD_CFG_NF(GPP_B18, NONE, DEEP, NF1),
 };
 
 const struct pad_config *__weak variant_gpio_table(size_t *num)

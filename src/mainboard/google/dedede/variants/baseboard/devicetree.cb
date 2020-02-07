@@ -29,13 +29,13 @@ chip soc/intel/tigerlake
 	}"
 
 	register "SerialIoGSpiMode" = "{
-		[PchSerialIoIndexGSPI0] = PchSerialIoDisabled,
+		[PchSerialIoIndexGSPI0] = PchSerialIoPci,
 		[PchSerialIoIndexGSPI1] = PchSerialIoDisabled,
 		[PchSerialIoIndexGSPI2] = PchSerialIoDisabled,
 	}"
 
 	register "SerialIoGSpiCsMode" = "{
-		[PchSerialIoIndexGSPI0] = 0,
+		[PchSerialIoIndexGSPI0] = 1,
 		[PchSerialIoIndexGSPI1] = 0,
 		[PchSerialIoIndexGSPI2] = 0,
 	}"
@@ -50,6 +50,22 @@ chip soc/intel/tigerlake
 		[PchSerialIoIndexUART0] = PchSerialIoDisabled,
 		[PchSerialIoIndexUART1] = PchSerialIoDisabled,
 		[PchSerialIoIndexUART2] = PchSerialIoDisabled,
+	}"
+
+	# Intel Common SoC Config
+	#+-------------------+---------------------------+
+	#| Field             |  Value                    |
+	#+-------------------+---------------------------+
+	#| GSPI0             | cr50 TPM. Early init is   |
+	#|                   | required to set up a BAR  |
+	#|                   | for TPM communication     |
+	#|                   | before memory is up       |
+	#+-------------------+---------------------------+
+	register "common_soc_config" = "{
+		.gspi[0] = {
+			.speed_mhz = 1,
+			.early_init = 1,
+		},
 	}"
 
 	device domain 0 on
@@ -87,7 +103,14 @@ chip soc/intel/tigerlake
 		device pci 1c.7 off end # PCI Express Root Port 8
 		device pci 1e.0 off end # UART 0
 		device pci 1e.1 off end # UART 1
-		device pci 1e.2 off end # GSPI 0
+		device pci 1e.2 on
+			chip drivers/spi/acpi
+				register "hid" = "ACPI_DT_NAMESPACE_HID"
+				register "compat_string" = ""google,cr50""
+				register "irq" = "ACPI_IRQ_EDGE_LOW(GPP_B4_IRQ)"
+				device spi 0 on end
+			end
+		end # GSPI 0
 		device pci 1e.3 off end # GSPI 1
 		device pci 1f.0 on
 			chip ec/google/chromeec

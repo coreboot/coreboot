@@ -1,9 +1,12 @@
 
+config PLATFORM_SUPPORTS_STM
+	bool
+	depends on SMM_TSEG
 
 config STM
 	bool "Enable STM"
 	default n
-	depends on SMM_TSEG
+	depends on PLATFORM_SUPPORTS_STM
 	select USE_BLOBS
 
 	help

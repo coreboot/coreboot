@@ -4,6 +4,9 @@ config BOARD_GOOGLE_TROGDOR_COMMON  # Umbrella option to be selected by variants
 
 if BOARD_GOOGLE_TROGDOR_COMMON
 
+config TROGDOR_REV0
+	def_bool y
+
 config BOARD_SPECIFIC_OPTIONS
 	def_bool y
 	select BOARD_ROMSIZE_KB_8192
@@ -32,11 +35,13 @@ config MAINBOARD_DIR
 
 config DRIVER_TPM_SPI_BUS
 	hex
-	default 0x6
+	default 0x6 if TROGDOR_REV0
+	default 0x0
 
 config EC_GOOGLE_CHROMEEC_SPI_BUS
 	hex
-	default 0x0
+	default 0x0 if TROGDOR_REV0
+	default 0x6
 
 ##########################################################
 #### Update below when adding a new derivative board. ####

@@ -3,6 +3,7 @@
 #ifndef _COREBOOT_SRC_MAINBOARD_GOOGLE_TROGDOR_BOARD_H_
 #define _COREBOOT_SRC_MAINBOARD_GOOGLE_TROGDOR_BOARD_H_
 
+#include <boardid.h>
 #include <gpio.h>
 #include <soc/gpio.h>
 

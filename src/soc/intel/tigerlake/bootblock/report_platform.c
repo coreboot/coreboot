@@ -46,6 +46,7 @@ static struct {
 } mch_table[] = {
 	{ PCI_DEVICE_ID_INTEL_TGL_ID_U, "Tigerlake-U-4-2" },
 	{ PCI_DEVICE_ID_INTEL_TGL_ID_U_1, "Tigerlake-U-4-3e" },
+	{ PCI_DEVICE_ID_INTEL_TGL_ID_U_2_2, "Tigerlake-U-2-2" },
 	{ PCI_DEVICE_ID_INTEL_TGL_ID_Y, "Tigerlake-Y-4-2" },
 	{ PCI_DEVICE_ID_INTEL_JSL_PRE_PROD, "Jasperlake Pre Prod" },
 	{ PCI_DEVICE_ID_INTEL_JSL_EHL, "Jasperlake Elkhartlake" },

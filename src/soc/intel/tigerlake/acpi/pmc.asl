@@ -14,7 +14,14 @@ Scope (\_SB.PCI0) {
 		 * 64KB (0xFE000000 - 0xFE00FFFF) for PMC MBAR.
 		 */
 		Name (_CRS, ResourceTemplate () {
-			Memory32Fixed (ReadWrite, PCH_PWRM_BASE_ADDRESS, 0x00010000)
+			Memory32Fixed (ReadWrite, PCH_PWRM_BASE_ADDRESS, PCH_PWRM_BASE_SIZE)
 		})
+
+		/* The OS mux driver will be bound to this device node. */
+		Device (MUX)
+		{
+			Name (_HID, "INTC105C")
+			Name (_DDN, "Intel(R) Tiger Lake North Mux-Agent")
+		}
 	}
 }

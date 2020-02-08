@@ -32,6 +32,15 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_B17, NONE, DEEP, NF1),
 	/* B18 : H1_SLAVE_SPI_MOSI_R */
 	PAD_CFG_NF(GPP_B18, NONE, DEEP, NF1),
+
+	/* C20 : UART_DBG_TX_AP_RX */
+	PAD_CFG_NF(GPP_C20, NONE, DEEP, NF1),
+	/* C21 : UART_AP_TX_DBG_RX */
+	PAD_CFG_NF(GPP_C21, NONE, DEEP, NF1),
+	/* C22 : UART2_RTS_N */
+	PAD_NC(GPP_C22, DN_20K),
+	/* C23 : UART2_CTS_N */
+	PAD_NC(GPP_C23, DN_20K),
 };
 
 /* Early pad configuration in bootblock */

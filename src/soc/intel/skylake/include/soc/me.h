@@ -147,7 +147,7 @@ union me_hfsts1 {
 	} __packed fields;
 };
 
-union me_hfs2 {
+union me_hfsts2 {
 	u32 data;
 	struct {
 	u32 reserved1: 3;
@@ -168,7 +168,7 @@ union me_hfs2 {
 	} __packed fields;
 };
 
-union me_hfs3 {
+union me_hfsts3 {
 	u32 data;
 	struct {
 	u32 reserved1: 4;
@@ -184,7 +184,7 @@ union me_hfs3 {
 #define ME_HFS6_FPF_NOT_COMMITTED	0x0
 #define ME_HFS6_FPF_ERROR		0x2
 
-union me_hfs6 {
+union me_hfsts6 {
 	u32 data;
 	struct {
 		u32 reserved1: 30;

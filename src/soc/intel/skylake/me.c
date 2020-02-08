@@ -273,9 +273,9 @@ BOOT_STATE_INIT_ENTRY(BS_DEV_ENABLE, BS_ON_EXIT, print_me_version, NULL);
 void intel_me_status(void)
 {
 	union me_hfsts1 hfs1;
-	union me_hfs2 hfs2;
-	union me_hfs3 hfs3;
-	union me_hfs6 hfs6;
+	union me_hfsts2 hfs2;
+	union me_hfsts3 hfs3;
+	union me_hfsts6 hfs6;
 
 	if (!is_cse_enabled())
 		return;

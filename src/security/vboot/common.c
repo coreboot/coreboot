@@ -86,6 +86,7 @@ int vboot_locate_firmware(struct vb2_context *ctx, struct region_device *fw)
 
 static void vboot_setup_cbmem(int unused)
 {
+	vb2_error_t rv;
 	const size_t cbmem_size = VB2_KERNEL_WORKBUF_RECOMMENDED_SIZE;
 	void *wb_cbmem = cbmem_add(CBMEM_ID_VBOOT_WORKBUF, cbmem_size);
 	assert(wb_cbmem != NULL);
@@ -94,9 +95,17 @@ static void vboot_setup_cbmem(int unused)
 	 * occurs before CBMEM is brought online, using pre-RAM. In order to
 	 * make vboot data structures available downstream, copy vboot workbuf
 	 * from SRAM/CAR into CBMEM.
+	 *
+	 * For platforms where VBOOT_STARTS_IN_ROMSTAGE, verification occurs
+	 * after CBMEM is brought online.  Directly initialize vboot data
+	 * structures in CBMEM, which will also be available downstream.
 	 */
 	if (CONFIG(VBOOT_STARTS_IN_BOOTBLOCK))
-		assert(vb2api_relocate(wb_cbmem, _vboot2_work, cbmem_size,
-				       &vboot_ctx) == VB2_SUCCESS);
+		rv = vb2api_relocate(wb_cbmem, _vboot2_work, cbmem_size,
+				     &vboot_ctx);
+	else
+		rv = vb2api_init(wb_cbmem, cbmem_size, &vboot_ctx);
+
+	assert(rv == VB2_SUCCESS);
 }
 ROMSTAGE_CBMEM_INIT_HOOK(vboot_setup_cbmem)

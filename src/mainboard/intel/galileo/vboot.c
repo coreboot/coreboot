@@ -24,12 +24,6 @@
 #include "gen1.h"
 #include "gen2.h"
 
-int clear_recovery_mode_switch(void)
-{
-	/* Nothing to do */
-	return 0;
-}
-
 int get_recovery_mode_switch(void)
 {
 	return 0;
@@ -39,10 +33,6 @@ int get_write_protect_state(void)
 {
 	/* Not write protected */
 	return 0;
-}
-
-void log_recovery_mode_switch(void)
-{
 }
 
 void verstage_mainboard_init(void)

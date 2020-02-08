@@ -101,14 +101,27 @@ int vboot_recovery_mode_enabled(void)
 
 int __weak clear_recovery_mode_switch(void)
 {
-	// Weak implementation. Nothing to do.
 	return 0;
 }
 
-void __weak log_recovery_mode_switch(void)
+static void do_clear_recovery_mode_switch(void *unused)
 {
-	// Weak implementation. Nothing to do.
+	if (vboot_get_context()->flags & VB2_CONTEXT_FORCE_RECOVERY_MODE)
+		clear_recovery_mode_switch();
 }
+/*
+ * The recovery mode switch (typically backed by EC) is not cleared until
+ * BS_WRITE_TABLES for two reasons:
+ *
+ * (1) On some platforms, FSP initialization may cause a reboot.  Push clearing
+ * the recovery mode switch until after FSP code runs, so that a manual recovery
+ * request (three-finger salute) will function correctly under this condition.
+ *
+ * (2) To give the implementation of clear_recovery_mode_switch a chance to
+ * add an event to elog.  See the function in chromeec/switches.c.
+ */
+BOOT_STATE_INIT_ENTRY(BS_WRITE_TABLES, BS_ON_ENTRY,
+		      do_clear_recovery_mode_switch, NULL);
 
 int __weak get_recovery_mode_retrain_switch(void)
 {

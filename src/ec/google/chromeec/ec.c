@@ -81,41 +81,6 @@ static const struct {
 	},
 };
 
-void log_recovery_mode_switch(void)
-{
-	uint64_t *events;
-
-	if (cbmem_find(CBMEM_ID_EC_HOSTEVENT))
-		return;
-
-	events = cbmem_add(CBMEM_ID_EC_HOSTEVENT, sizeof(*events));
-	if (!events)
-		return;
-
-	*events = google_chromeec_get_events_b();
-}
-
-static void google_chromeec_elog_add_recovery_event(void *unused)
-{
-	uint64_t *events = cbmem_find(CBMEM_ID_EC_HOSTEVENT);
-	uint8_t event_byte = EC_HOST_EVENT_KEYBOARD_RECOVERY;
-
-	if (!events)
-		return;
-
-	if (!(*events & EC_HOST_EVENT_MASK(EC_HOST_EVENT_KEYBOARD_RECOVERY)))
-		return;
-
-	if (*events &
-	    EC_HOST_EVENT_MASK(EC_HOST_EVENT_KEYBOARD_RECOVERY_HW_REINIT))
-		event_byte = EC_HOST_EVENT_KEYBOARD_RECOVERY_HW_REINIT;
-
-	elog_add_event_byte(ELOG_TYPE_EC_EVENT, event_byte);
-}
-
-BOOT_STATE_INIT_ENTRY(BS_WRITE_TABLES, BS_ON_ENTRY,
-		      google_chromeec_elog_add_recovery_event, NULL);
-
 uint8_t google_chromeec_calc_checksum(const uint8_t *data, int size)
 {
 	int csum;

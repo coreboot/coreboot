@@ -62,16 +62,6 @@ int get_recovery_mode_switch(void)
 	return 0;
 }
 
-int clear_recovery_mode_switch(void)
-{
-	if (CONFIG(EC_GOOGLE_CHROMEEC))
-		/* Clear keyboard recovery event. */
-		return google_chromeec_clear_events_b(
-			EC_HOST_EVENT_MASK(EC_HOST_EVENT_KEYBOARD_RECOVERY));
-
-	return 0;
-}
-
 int get_write_protect_state(void)
 {
 	/* No write protect */

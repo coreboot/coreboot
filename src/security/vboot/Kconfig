@@ -156,14 +156,6 @@ config VBOOT_RETURN_FROM_VERSTAGE
 	  reused by the succeeding stage. This is useful if a RAM space is too
 	  small to fit both the verstage and the succeeding stage.
 
-config VBOOT_SAVE_RECOVERY_REASON_ON_REBOOT
-	bool
-	default n
-	help
-	  This option ensures that the recovery request is not lost because of
-	  reboots caused after vboot verification is run. e.g. reboots caused by
-	  FSP components on Intel platforms.
-
 config VBOOT_MUST_REQUEST_DISPLAY
 	bool
 	default y if VGA_ROM_RUN

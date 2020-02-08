@@ -408,8 +408,5 @@ void verstage_main(void)
 	       vboot_is_firmware_slot_a(ctx) ? 'A' : 'B');
 
  verstage_main_exit:
-	/* Save recovery reason in case of unexpected reboots on x86. */
-	vboot_save_recovery_reason_vbnv();
-
 	timestamp_add_now(TS_END_VBOOT);
 }

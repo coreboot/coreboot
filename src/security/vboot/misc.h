@@ -50,11 +50,6 @@ static inline bool vboot_is_gbb_flag_set(enum vb2_gbb_flag flag)
 int vboot_locate_firmware(struct vb2_context *ctx, struct region_device *fw);
 
 /*
- * Source: security/vboot/bootmode.c
- */
-void vboot_save_recovery_reason_vbnv(void);
-
-/*
  * The stage loading code is compiled and entered from multiple stages. The
  * helper functions below attempt to provide more clarity on when certain
  * code should be called. They are implemented inline for better compile-time

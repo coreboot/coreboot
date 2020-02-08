@@ -101,26 +101,6 @@ void save_vbnv(const uint8_t *vbnv_copy)
 	vbnv_initialized = 0;
 }
 
-/* Save a recovery reason into VBNV. */
-void set_recovery_mode_into_vbnv(int recovery_reason)
-{
-	uint8_t vbnv_copy[VBOOT_VBNV_BLOCK_SIZE];
-
-	read_vbnv(vbnv_copy);
-
-	vbnv_copy[RECOVERY_OFFSET] = recovery_reason;
-	vbnv_copy[CRC_OFFSET] = crc8_vbnv(vbnv_copy, CRC_OFFSET);
-
-	save_vbnv(vbnv_copy);
-}
-
-/* Read the recovery reason from VBNV. */
-int get_recovery_mode_from_vbnv(void)
-{
-	vbnv_setup();
-	return vbnv[RECOVERY_OFFSET];
-}
-
 /* Read the USB Device Controller(UDC) enable flag from VBNV. */
 int vbnv_udc_enable_flag(void)
 {

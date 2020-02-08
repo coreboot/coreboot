@@ -192,7 +192,7 @@ static int mainboard_smbios_type17(DMI_INFO *agesa_dmi, int *handle,
 				 unsigned long *current)
 {
 	struct smbios_type17 *t;
-	int len = 0;
+	int len;
 
 	t = (struct smbios_type17 *)*current;
 	memset(t, 0, sizeof(struct smbios_type17));

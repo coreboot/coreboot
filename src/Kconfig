@@ -354,9 +354,13 @@ config RAMPAYLOAD
 	  Skip PCI enumeration logic and only allocate BAR for fixed devices
 	  (bootable devices, TPM over GSPI).
 
+config HAVE_CONFIGURABLE_RAMSTAGE
+	bool
+
 config CONFIGURABLE_RAMSTAGE
 	bool "Enable a configurable ramstage."
 	default y if ARCH_X86
+	depends on HAVE_CONFIGURABLE_RAMSTAGE
 	help
 	  A configurable ramstage allows you to select which parts of the ramstage
 	  to run. Currently, we can only select a minimal PCI scanning step.

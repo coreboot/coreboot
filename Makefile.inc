@@ -159,7 +159,7 @@ ws_to_under=$(shell echo '$1' | tr ' \t' '_')
 #######################################################################
 # Helper functions for ramstage postprocess
 spc :=
-spc +=
+spc := $(spc) $(spc)
 comma := ,
 
 # Returns all files and dirs below `dir` (recursively).

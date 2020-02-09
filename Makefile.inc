@@ -316,15 +316,16 @@ cbfs-files-processor-vsa= \
 # Reduce a .config file to its minimal representation
 # arg1: input
 # arg2: output
-cbfs-files-processor-defconfig= \
+define cbfs-files-processor-defconfig
 	$(eval $(2): $(1) $(obj)/build.h $(objutil)/kconfig/conf; \
 		+printf "    CREATE     $(2) (from $(1))\n"; \
-		printf "\# This image was built using coreboot " > $(2).tmp && \
+		printf "# This image was built using coreboot " > $(2).tmp && \
 		grep "\<COREBOOT_VERSION\>" $(obj)/build.h |cut -d\" -f2 >> $(2).tmp && \
 		$(MAKE) DOTCONFIG=$(1) DEFCONFIG=$(2).tmp2 savedefconfig && \
 		cat $(2).tmp2 >> $(2).tmp && \
 		rm -f $(2).tmp2 && \
 		\mv -f $(2).tmp $(2))
+endef
 
 #######################################################################
 # Compile a C file with a bare struct definition into binary

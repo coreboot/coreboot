@@ -369,9 +369,9 @@ config CONFIGURABLE_RAMSTAGE
 
 config MINIMAL_PCI_SCANNING
 	bool "Enable minimal PCI scanning"
-	depends on CONFIGURABLE_RAMSTAGE
+	depends on CONFIGURABLE_RAMSTAGE && PCI
 	help
-	  If this option is enabled, coreboot will scan only devices
+	  If this option is enabled, coreboot will scan only PCI devices
 	  marked as mandatory in devicetree.cb
 endmenu
 

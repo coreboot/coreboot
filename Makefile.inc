@@ -261,7 +261,16 @@ EMPTY_RESOURCE_TEMPLATE_WARNING = 3150
 # Redundant offset remarks are not useful in any way and are masking useful
 # ones that might indicate an issue so it is better to hide them.
 REDUNDANT_OFFSET_REMARK = 2158
+# Ignore _HID & _ADR coexisting in Intel Lynxpoint and Broadwell ASL code.
+# See cb:38803 & cb:38802
+# "Multiple types (Device object requires either a _HID or _ADR, but not both)"
+MULTIPLE_TYPES_WARNING = 3073
+
+ifeq ($(CONFIG_SOUTHBRIDGE_INTEL_LYNXPOINT)$(CONFIG_SOC_INTEL_BROADWELL),y)
+IGNORED_IASL_WARNINGS = -vw $(EMPTY_RESOURCE_TEMPLATE_WARNING) -vw $(REDUNDANT_OFFSET_REMARK) -vw $(MULTIPLE_TYPES_WARNING)
+else
 IGNORED_IASL_WARNINGS = -vw $(EMPTY_RESOURCE_TEMPLATE_WARNING) -vw $(REDUNDANT_OFFSET_REMARK)
+endif
 
 define asl_template
 $(CONFIG_CBFS_PREFIX)/$(1).aml-file = $(obj)/$(1).aml

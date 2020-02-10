@@ -747,20 +747,15 @@ static void asmlinkage smm_do_relocation(void *arg)
 	mp_state.ops.relocation_handler(cpu, curr_smbase, perm_smbase);
 
 	if (CONFIG(STM)) {
-		if (is_smm_enabled()) {
-			uintptr_t mseg;
+		uintptr_t mseg;
 
-			mseg = mp_state.perm_smbase +
-				(mp_state.perm_smsize - CONFIG_MSEG_SIZE);
+		mseg = mp_state.perm_smbase +
+			(mp_state.perm_smsize - CONFIG_MSEG_SIZE);
 
-			stm_setup(mseg, p->cpu, runtime->num_cpus,
-					perm_smbase,
-					mp_state.perm_smbase,
-					runtime->start32_offset);
-		} else {
-			printk(BIOS_DEBUG,
-				"STM not loaded because SMM is not enabled!\n");
-		}
+		stm_setup(mseg, p->cpu, runtime->num_cpus,
+				perm_smbase,
+				mp_state.perm_smbase,
+				runtime->start32_offset);
 	}
 }
 

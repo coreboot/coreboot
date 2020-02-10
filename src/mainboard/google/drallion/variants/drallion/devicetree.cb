@@ -65,6 +65,9 @@ chip soc/intel/cannonlake
 	register "PchHdaIDispCodecDisconnect" = "1"
 	register "PchHdaAudioLinkHda" = "1"
 
+	# Select CPU PL2/PL4 config
+	register "cpu_pl2_4_cfg" = "baseline"
+
 	# VR Settings Configuration for 2/4 Domains
 	#+----------------+-------+-------+-------+-------+
 	#| Domain/Setting |  SA   |  IA   | GTUS  |  GTS  |

@@ -114,14 +114,8 @@ chip soc/intel/skylake
 						end
 						device pnp 2e.5 off end	# KBC
 						device pnp 2e.7 on end	# GPIO
-						device pnp 2e.b off	# SUART3
-							io 0x60 = 0x3e8
-							irq 0x70 = 4
-						end
-						device pnp 2e.c off	# SUART4
-							io 0x60 = 0x2e8
-							irq 0x70 = 3
-						end
+						device pnp 2e.b off end	# SUART3
+						device pnp 2e.c off end	# SUART4
 						device pnp 2e.d on end	# iLPC2AHB
 						device pnp 2e.e on	# Mailbox
 							io 0x60 = 0xa40

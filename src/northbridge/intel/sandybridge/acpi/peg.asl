@@ -20,8 +20,7 @@ Device (PEGP)
 
 	Method (_STA)
 	{
-		ShiftRight (\_SB.PCI0.MCHC.DVEN, 3, Local0)
-		Return (And (Local0, 1))
+		Return (((\_SB.PCI0.MCHC.DVEN >> 3) & 1) * 0xf)
 	}
 
 	Device (DEV0)
@@ -36,8 +35,7 @@ Device (PEG1)
 
 	Method (_STA)
 	{
-		ShiftRight (\_SB.PCI0.MCHC.DVEN, 2, Local0)
-		Return (And (Local0, 1))
+		Return (((\_SB.PCI0.MCHC.DVEN >> 2) & 1) * 0xf)
 	}
 
 	Device (DEV0)
@@ -52,8 +50,7 @@ Device (PEG2)
 
 	Method (_STA)
 	{
-		ShiftRight (\_SB.PCI0.MCHC.DVEN, 1, Local0)
-		Return (And (Local0, 1))
+		Return (((\_SB.PCI0.MCHC.DVEN >> 1) & 1) * 0xf)
 	}
 
 	Device (DEV0)
@@ -68,8 +65,7 @@ Device (PEG6)
 
 	Method (_STA)
 	{
-		ShiftRight (\_SB.PCI0.MCHC.DVEN, 13, Local0)
-		Return (And (Local0, 1))
+		Return (((\_SB.PCI0.MCHC.DVEN >> 13) & 1) * 0xf)
 	}
 
 	Device (DEV0)

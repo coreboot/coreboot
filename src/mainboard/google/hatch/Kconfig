@@ -99,6 +99,7 @@ config MAINBOARD_PART_NUMBER
 	default "Kindred" if BOARD_GOOGLE_KINDRED
 	default "Kohaku" if BOARD_GOOGLE_KOHAKU
 	default "Mushu" if BOARD_GOOGLE_MUSHU
+	default "Nightfury" if BOARD_GOOGLE_NIGHTFURY
 	default "Puff" if BOARD_GOOGLE_PUFF
 	default "Stryke" if BOARD_GOOGLE_STRYKE
 
@@ -122,6 +123,7 @@ config VARIANT_DIR
 	default "kindred" if BOARD_GOOGLE_KINDRED
 	default "kohaku" if BOARD_GOOGLE_KOHAKU
 	default "mushu" if BOARD_GOOGLE_MUSHU
+	default "nightfury" if BOARD_GOOGLE_NIGHTFURY
 	default "puff" if BOARD_GOOGLE_PUFF
 	default "stryke" if BOARD_GOOGLE_STRYKE
 

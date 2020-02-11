@@ -461,7 +461,7 @@ static struct device_operations mc_ops = {
 };
 
 static const unsigned short pci_device_ids[] = {
-	0x0100, 0x0104,			/* Sandy Bridge */
+	0x0100, 0x0104, 0x0108,		/* Sandy Bridge */
 	0x0150, 0x0154, 0x0158,		/* Ivy Bridge */
 	0
 };

@@ -854,17 +854,11 @@ static void validate_layout(char *image, int size)
 
 static void write_image(const char *filename, char *image, int size)
 {
-	char new_filename[FILENAME_MAX]; // allow long file names
 	int new_fd;
-
-	// - 5: leave room for ".new\0"
-	strncpy(new_filename, filename, FILENAME_MAX - 5);
-	strncat(new_filename, ".new", FILENAME_MAX - strlen(filename));
-
-	printf("Writing new image to %s\n", new_filename);
+	printf("Writing new image to %s\n", filename);
 
 	// Now write out new image
-	new_fd = open(new_filename,
+	new_fd = open(filename,
 			 O_WRONLY | O_CREAT | O_TRUNC | O_BINARY,
 			 S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
 	if (new_fd < 0) {
@@ -1429,6 +1423,7 @@ static void print_usage(const char *name)
 	       "   -x | --extract:                       extract intel fd modules\n"
 	       "   -i | --inject <region>:<module>       inject file <module> into region <region>\n"
 	       "   -n | --newlayout <filename>           update regions using a flashrom layout file\n"
+	       "   -O | --output <filename>              output filename\n"
 	       "   -s | --spifreq <17|20|30|33|48|50>    set the SPI frequency\n"
 	       "   -D | --density <512|1|2|4|8|16|32|64> set chip density (512 in KByte, others in MByte)\n"
 	       "   -C | --chip <0|1|2>                   select spi chip on which to operate\n"
@@ -1460,6 +1455,7 @@ int main(int argc, char *argv[])
 	int mode_altmedisable = 0, altmedisable = 0;
 	char *region_type_string = NULL, *region_fname = NULL;
 	const char *layout_fname = NULL;
+	char *new_filename = NULL;
 	int region_type = -1, inputfreq = 0;
 	unsigned int new_density = 0;
 	enum spi_frequency spifreq = SPI_FREQUENCY_20MHZ;
@@ -1470,6 +1466,7 @@ int main(int argc, char *argv[])
 		{"extract", 0, NULL, 'x'},
 		{"inject", 1, NULL, 'i'},
 		{"newlayout", 1, NULL, 'n'},
+		{"output", 1, NULL, 'O'},
 		{"spifreq", 1, NULL, 's'},
 		{"density", 1, NULL, 'D'},
 		{"chip", 1, NULL, 'C'},
@@ -1484,7 +1481,7 @@ int main(int argc, char *argv[])
 		{0, 0, 0, 0}
 	};
 
-	while ((opt = getopt_long(argc, argv, "df:D:C:M:xi:n:s:p:eluvth?",
+	while ((opt = getopt_long(argc, argv, "df:D:C:M:xi:n:O:s:p:eluvth?",
 				  long_options, &option_index)) != EOF) {
 		switch (opt) {
 		case 'd':
@@ -1539,6 +1536,14 @@ int main(int argc, char *argv[])
 			layout_fname = strdup(optarg);
 			if (!layout_fname) {
 				fprintf(stderr, "No layout file specified\n");
+				print_usage(argv[0]);
+				exit(EXIT_FAILURE);
+			}
+			break;
+		case 'O':
+			new_filename = strdup(optarg);
+			if (!new_filename) {
+				fprintf(stderr, "No output filename specified\n");
 				print_usage(argv[0]);
 				exit(EXIT_FAILURE);
 			}
@@ -1731,6 +1736,18 @@ int main(int argc, char *argv[])
 
 	close(bios_fd);
 
+	// generate new filename
+	if (new_filename == NULL) {
+		new_filename = (char *) malloc((strlen(filename) + 5) * sizeof(char));
+		if (!new_filename) {
+			printf("Out of memory.\n");
+			exit(EXIT_FAILURE);
+		}
+		// - 5: leave room for ".new\0"
+		strcpy(new_filename, filename);
+		strcat(new_filename, ".new");
+	}
+
 	check_ifd_version(image, size);
 
 	if (mode_dump)
@@ -1746,34 +1763,35 @@ int main(int argc, char *argv[])
 		validate_layout(image, size);
 
 	if (mode_inject)
-		inject_region(filename, image, size, region_type,
+		inject_region(new_filename, image, size, region_type,
 				region_fname);
 
 	if (mode_newlayout)
-		new_layout(filename, image, size, layout_fname);
+		new_layout(new_filename, image, size, layout_fname);
 
 	if (mode_spifreq)
-		set_spi_frequency(filename, image, size, spifreq);
+		set_spi_frequency(new_filename, image, size, spifreq);
 
 	if (mode_density)
-		set_chipdensity(filename, image, size, new_density);
+		set_chipdensity(new_filename, image, size, new_density);
 
 	if (mode_em100)
-		set_em100_mode(filename, image, size);
+		set_em100_mode(new_filename, image, size);
 
 	if (mode_locked)
-		lock_descriptor(filename, image, size);
+		lock_descriptor(new_filename, image, size);
 
 	if (mode_unlocked)
-		unlock_descriptor(filename, image, size);
+		unlock_descriptor(new_filename, image, size);
 
 	if (mode_altmedisable) {
 		fpsba_t *fpsba = find_fpsba(image, size);
 		fmsba_t *fmsba = find_fmsba(image, size);
 		fpsba_set_altmedisable(fpsba, fmsba, altmedisable);
-		write_image(filename, image, size);
+		write_image(new_filename, image, size);
 	}
 
+	free(new_filename);
 	free(image);
 
 	return 0;

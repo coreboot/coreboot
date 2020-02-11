@@ -52,7 +52,9 @@ Device (EC)
 	OperationRegion (ERAM, EmbeddedControl, Zero, 0xFF)
 	Field (ERAM, ByteAcc, Lock, Preserve)
 	{
-		Offset (0x15),
+		Offset (0x13),
+		RTMP, 8,
+		, 8,
 		BSTS, 2,	/* Battery Status */
 		, 3,
 		BTEX, 1,	/* Battery Present */
@@ -230,4 +232,24 @@ Device (EC)
 
 	#include "ac.asl"
 	#include "battery.asl"
+}
+
+Scope (\_TZ)
+{
+	ThermalZone (TZ0)
+	{
+		/* _TMP: Temperature */
+		Method (_TMP, 0, Serialized)
+		{
+			Local0 = (0x0AAC + (\_SB.PCI0.LPCB.EC.RTMP * 0x0A))
+			Return (Local0)
+		}
+
+		/* _CRT: Critical Temperature */
+		Method (_CRT, 0, Serialized)
+		{
+			/* defined in board ec.asl */
+			Return (CRIT_TEMP)
+		}
+	}
 }

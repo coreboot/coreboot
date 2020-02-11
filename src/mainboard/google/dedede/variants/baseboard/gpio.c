@@ -33,6 +33,14 @@ static const struct pad_config gpio_table[] = {
 	/* B18 : H1_SLAVE_SPI_MOSI_R */
 	PAD_CFG_NF(GPP_B18, NONE, DEEP, NF1),
 
+	/* C16 : AP_I2C_TRACKPAD_SDA_3V3 */
+	PAD_CFG_NF(GPP_C16, NONE, DEEP, NF1),
+	/* C17 : AP_I2C_TRACKPAD_SCL_3V3 */
+	PAD_CFG_NF(GPP_C17, NONE, DEEP, NF1),
+	/* C18 : AP_I2C_EMR_SDA */
+	PAD_CFG_NF(GPP_C18, NONE, DEEP, NF1),
+	/* C19 : AP_I2C_EMR_SCL */
+	PAD_CFG_NF(GPP_C19, NONE, DEEP, NF1),
 	/* C20 : UART_DBG_TX_AP_RX */
 	PAD_CFG_NF(GPP_C20, NONE, DEEP, NF1),
 	/* C21 : UART_AP_TX_DBG_RX */
@@ -41,6 +49,19 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_C22, DN_20K),
 	/* C23 : UART2_CTS_N */
 	PAD_NC(GPP_C23, DN_20K),
+
+	/* H4  : AP_I2C_TS_SDA */
+	PAD_CFG_NF(GPP_H4, NONE, DEEP, NF1),
+	/* H5  : AP_I2C_TS_SCL */
+	PAD_CFG_NF(GPP_H5, NONE, DEEP, NF1),
+	/* H6  : AP_I2C_CAM_SDA */
+	PAD_CFG_NF(GPP_H6, NONE, DEEP, NF1),
+	/* H7  : AP_I2C_CAM_SCL */
+	PAD_CFG_NF(GPP_H7, NONE, DEEP, NF1),
+	/* H8  : AP_I2C_AUDIO_SDA */
+	PAD_CFG_NF(GPP_H8, NONE, DEEP, NF1),
+	/* H9  : AP_I2C_AUDIO_SCL */
+	PAD_CFG_NF(GPP_H9, NONE, DEEP, NF1),
 };
 
 /* Early pad configuration in bootblock */

@@ -62,7 +62,7 @@ Device (PDRC)
 		XBR0 = \_SB.PCI0.MCHC.PXBR << 26
 
 		CreateDwordField (PDRS, ^PCIX._LEN, XSZ0)
-		XSZ0 = 0x10000000 << \_SB.PCI0.MCHC.PXSZ
+		XSZ0 = 0x10000000 >> \_SB.PCI0.MCHC.PXSZ
 
 		Return(PDRS)
 	}

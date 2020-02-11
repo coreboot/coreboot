@@ -20,7 +20,7 @@
 #include <soc/dsi.h>
 #include <timer.h>
 
-void mtk_dsi_configure_mipi_tx(int data_rate, u32 lanes)
+void mtk_dsi_configure_mipi_tx(u32 data_rate, u32 lanes)
 {
 	u32 txdiv0, txdiv1;
 	u64 pcw;
@@ -51,21 +51,21 @@ void mtk_dsi_configure_mipi_tx(int data_rate, u32 lanes)
 
 	clrbits32(&mipi_tx0->dsi_pll_con0, RG_DSI0_MPPLL_PLL_EN);
 
-	if (data_rate > 500) {
+	if (data_rate > 500 * MHz) {
 		txdiv0 = 0;
 		txdiv1 = 0;
-	} else if (data_rate >= 250) {
+	} else if (data_rate >= 250 * MHz) {
 		txdiv0 = 1;
 		txdiv1 = 0;
-	} else if (data_rate >= 125) {
+	} else if (data_rate >= 125 * MHz) {
 		txdiv0 = 2;
 		txdiv1 = 0;
-	} else if (data_rate >= 62) {
+	} else if (data_rate >= 62 * MHz) {
 		txdiv0 = 2;
 		txdiv1 = 1;
 	} else {
 		/* MIN = 50 */
-		assert(data_rate >= MTK_DSI_DATA_RATE_MIN_MHZ);
+		assert(data_rate >= MTK_DSI_DATA_RATE_MIN_MHZ * MHz);
 		txdiv0 = 2;
 		txdiv1 = 2;
 	}
@@ -83,7 +83,7 @@ void mtk_dsi_configure_mipi_tx(int data_rate, u32 lanes)
 	 * Ref_clk is 26MHz
 	 */
 	pcw = (u64)(data_rate * (1 << txdiv0) * (1 << txdiv1)) << 24;
-	pcw /= 13;
+	pcw /= 13 * MHz;
 	write32(&mipi_tx0->dsi_pll_con2, pcw);
 
 	setbits32(&mipi_tx0->dsi_pll_con1, RG_DSI0_MPPLL_SDM_FRA_EN);

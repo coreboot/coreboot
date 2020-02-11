@@ -26,6 +26,7 @@ ramstage-y += chromeos.c
 ramstage-y += mainboard.c
 ramstage-y += memlayout.ld
 ramstage-$(CONFIG_BOARD_GOOGLE_FLAPJACK) += panel_flapjack.c
+ramstage-$(CONFIG_BOARD_GOOGLE_KAKADU) += panel_kakadu.c
 ramstage-$(CONFIG_BOARD_GOOGLE_KODAMA) += panel_kodama.c
 ramstage-$(CONFIG_BOARD_GOOGLE_KRANE) += panel_krane.c
 ramstage-$(CONFIG_BOARD_GOOGLE_KUKUI) += panel_kukui.c

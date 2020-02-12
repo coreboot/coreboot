@@ -55,6 +55,8 @@ const char *get_wifi_sar_cbfs_filename(void)
 	case SKU_50_BLOOGUARD:
 	case SKU_51_BLOOGUARD:
 	case SKU_52_BLOOGUARD:
+	case SKU_53_BIPSHIP:
+	case SKU_54_BIPSHIP:
 		filename = "wifi_sar-blooguard.hex";
 		break;
 	}

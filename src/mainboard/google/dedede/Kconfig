@@ -44,11 +44,16 @@ config MAINBOARD_FAMILY
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "dedede" if BOARD_GOOGLE_DEDEDE
+	default "Dedede" if BOARD_GOOGLE_DEDEDE
+	default "Waddledoo" if BOARD_GOOGLE_WADDLEDOO
 
 config MAX_CPUS
 	int
 	default 4
+
+config OVERRIDE_DEVICETREE
+	string
+	default "variants/$(CONFIG_VARIANT_DIR)/overridetree.cb" if !BOARD_GOOGLE_DEDEDE
 
 config TPM_TIS_ACPI_INTERRUPT
 	int
@@ -61,5 +66,6 @@ config UART_FOR_CONSOLE
 config VARIANT_DIR
 	string
 	default "dedede" if BOARD_GOOGLE_DEDEDE
+	default "waddledoo" if BOARD_GOOGLE_WADDLEDOO
 
 endif #BOARD_GOOGLE_BASEBOARD_DEDEDE

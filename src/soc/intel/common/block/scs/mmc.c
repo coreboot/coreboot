@@ -85,6 +85,7 @@ static struct device_operations dev_ops = {
 
 static const unsigned short pci_device_ids[] = {
 	PCI_DEVICE_ID_INTEL_CMP_EMMC,
+	PCI_DEVICE_ID_INTEL_JSP_EMMC,
 	0
 };
 

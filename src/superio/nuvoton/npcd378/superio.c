@@ -10,6 +10,8 @@
 #include <superio/conf_mode.h>
 #include <arch/acpi.h>
 #include <arch/acpigen.h>
+#include <superio/common/ssdt.h>
+#include <stdlib.h>
 
 #include "npcd378.h"
 
@@ -87,62 +89,351 @@ static void npcd378_init(struct device *dev)
 }
 
 #if CONFIG(HAVE_ACPI_TABLES)
-static void npcd378_ssdt(struct device *dev)
+/* Provide ACPI HIDs for generic Super I/O SSDT */
+static const char *npcd378_acpi_hid(const struct device *dev)
 {
-	struct resource *res;
+	/* Sanity checks */
+	if (dev->path.type != DEVICE_PATH_PNP)
+		return NULL;
+	if (dev->path.pnp.port == 0)
+		return NULL;
+	if ((dev->path.pnp.device & 0xff) > NPCD378_GPIOA)
+		return NULL;
 
-	const char *scope = acpi_device_path(dev);
-	if (!scope) {
-		printk(BIOS_ERR, "%s: Missing ACPI scope\n", dev_path(dev));
-		return;
-	}
-
-	switch (dev->path.pnp.device) {
-	case NPCD378_PWR: {
-		res = find_resource(dev, PNP_IDX_IO0);
-		if (!res || !res->base) {
-			printk(BIOS_ERR, "NPCD378: LDN%u IOBASE not set.\n",
-			       NPCD378_PWR);
-			break;
-		}
-
-		acpigen_write_scope(scope);
-		acpigen_write_name_integer("SWB", res->base);
-		acpigen_write_name_integer("SWL", res->size);
-		acpigen_pop_len(); /* pop scope */
-
-		res = find_resource(dev, PNP_IDX_IO1);
-		if (!res || !res->base) {
-			printk(BIOS_ERR, "NPCD378: LDN%u IOBASE2 not set.\n",
-			       NPCD378_PWR);
-			break;
-		}
-
-		acpigen_write_scope(scope);
-		acpigen_write_name_integer("RNB", res->base);
-		acpigen_write_name_integer("RNL", res->size);
-		acpigen_pop_len(); /* pop scope */
-		break;
-	}
+	switch (dev->path.pnp.device & 0xff) {
+	case NPCD378_FDC:
+		return ACPI_HID_FDC;
+	case NPCD378_PP:
+		return ACPI_HID_LPT;
+	case NPCD378_SP1: /* fallthrough */
+	case NPCD378_SP2:
+		return ACPI_HID_COM;
+	case NPCD378_AUX:
+		return ACPI_HID_MOUSE;
+	case NPCD378_KBC:
+		return ACPI_HID_KEYBOARD;
+	default:
+		return ACPI_HID_PNP;
 	}
 }
 
-static const char *npcd378_acpi_name(const struct device *dev)
+static void npcd378_ssdt_aux(struct device *dev)
 {
-	return "SIO0";
+	/* Scope */
+	acpigen_write_scope(acpi_device_path(dev));
+
+	acpigen_write_method("_PSW", 1);
+	acpigen_write_store();
+	acpigen_emit_byte(ARG0_OP);
+	acpigen_emit_namestring("^^MSFG");
+	acpigen_pop_len();		/* Pop Method */
+
+	acpigen_write_PRW(8, 3);
+
+	acpigen_pop_len();		/* Pop Scope */
+}
+
+static void npcd378_ssdt_kbc(struct device *dev)
+{
+	/* Scope */
+	acpigen_write_scope(acpi_device_path(dev));
+
+	acpigen_write_method("_PSW", 1);
+	acpigen_write_store();
+	acpigen_emit_byte(ARG0_OP);
+	acpigen_emit_namestring("^^KBFG");
+	acpigen_pop_len();		/* Pop Method */
+
+	acpigen_write_PRW(8, 3);
+
+	acpigen_pop_len();		/* Pop Scope */
+}
+
+static void npcd378_ssdt_pwr(struct device *dev)
+{
+	const char *name = acpi_device_path(dev);
+	const char *scope = acpi_device_scope(dev);
+	char *tmp_name;
+
+	/* Scope */
+	acpigen_write_scope(name);
+
+	acpigen_emit_ext_op(OPREGION_OP);
+	acpigen_emit_namestring("SWCR");
+	acpigen_emit_byte(SYSTEMIO);
+	acpigen_emit_namestring("IO0B");
+	acpigen_emit_namestring("IO0S");
+
+	struct fieldlist l1[] = {
+		FIELDLIST_OFFSET(0),
+		FIELDLIST_NAMESTR("LEDC", 8),
+		FIELDLIST_NAMESTR("SWCC", 8),
+	};
+
+	acpigen_write_field("SWCR", l1, ARRAY_SIZE(l1), FIELD_BYTEACC |
+				FIELD_NOLOCK | FIELD_PRESERVE);
+
+	acpigen_emit_ext_op(OPREGION_OP);
+	acpigen_emit_namestring("RNTR");
+	acpigen_emit_byte(SYSTEMIO);
+	acpigen_emit_namestring("IO1B");
+	acpigen_emit_namestring("IO1S");
+
+	struct fieldlist l2[] = {
+		FIELDLIST_OFFSET(0),
+		FIELDLIST_NAMESTR("GPES", 8),
+		FIELDLIST_NAMESTR("GPEE", 8),
+		FIELDLIST_OFFSET(8),
+		FIELDLIST_NAMESTR("GPS0", 8),
+		FIELDLIST_NAMESTR("GPS1", 8),
+		FIELDLIST_NAMESTR("GPS2", 8),
+		FIELDLIST_NAMESTR("GPS3", 8),
+		FIELDLIST_NAMESTR("GPE0", 8),
+		FIELDLIST_NAMESTR("GPE1", 8),
+		FIELDLIST_NAMESTR("GPE2", 8),
+		FIELDLIST_NAMESTR("GPE3", 8),
+	};
+
+	acpigen_write_field("RNTR", l2, ARRAY_SIZE(l2), FIELD_BYTEACC |
+				FIELD_NOLOCK | FIELD_PRESERVE);
+
+	/* Method (SIOW, 1, NotSerialized) */
+	acpigen_write_method("SIOW", 1);
+	acpigen_write_store();
+	acpigen_emit_namestring("^GPS2");
+	acpigen_emit_namestring("^^PMFG");
+
+	acpigen_write_store();
+	acpigen_emit_byte(ZERO_OP);
+	acpigen_emit_namestring("^GPEE");
+
+	acpigen_write_store();
+	acpigen_emit_byte(ZERO_OP);
+	acpigen_emit_namestring("^GPE0");
+
+	acpigen_write_store();
+	acpigen_emit_byte(ZERO_OP);
+	acpigen_emit_namestring("^GPE1");
+
+	acpigen_emit_byte(AND_OP);
+	acpigen_emit_namestring("^LEDC");
+	acpigen_write_integer(0xE0);
+	acpigen_emit_byte(LOCAL0_OP);
+
+	acpigen_emit_byte(OR_OP);
+	acpigen_emit_byte(LOCAL0_OP);
+	acpigen_write_integer(0x1E);
+	acpigen_emit_namestring("^LEDC");
+
+	acpigen_emit_byte(AND_OP);
+	acpigen_emit_namestring("^SWCC");
+	acpigen_write_integer(0xBF);
+	acpigen_emit_namestring("^SWCC");
+
+	acpigen_pop_len();		/* SIOW method */
+
+	/* Method (SIOS, 1, NotSerialized) */
+	acpigen_write_method("SIOS", 1);
+
+	acpigen_write_if();
+	acpigen_emit_byte(LNOT_OP);
+	acpigen_emit_byte(LEQUAL_OP);
+	acpigen_emit_byte(ARG0_OP);
+	acpigen_write_integer(5);
+
+	acpigen_write_if();
+	acpigen_emit_byte(LEQUAL_OP);
+	acpigen_emit_namestring("^^KBFG");
+	acpigen_emit_byte(ONE_OP);
+
+		acpigen_emit_byte(OR_OP);
+		acpigen_emit_namestring("^GPE2");
+		acpigen_write_integer(0xE8);
+		acpigen_emit_namestring("^GPE2");
+
+	acpigen_pop_len();		/* Pop If */
+	acpigen_write_else();
+
+		acpigen_emit_byte(AND_OP);
+		acpigen_emit_namestring("^GPE2");
+		acpigen_write_integer(0x17);
+		acpigen_emit_namestring("^GPE2");
+
+	acpigen_pop_len();		/* Pop Else */
+
+	acpigen_write_if();
+	acpigen_emit_byte(LEQUAL_OP);
+	acpigen_emit_namestring("^^MSFG");
+	acpigen_emit_byte(ONE_OP);
+
+		acpigen_emit_byte(OR_OP);
+		acpigen_emit_namestring("^GPE2");
+		acpigen_write_integer(0x10);
+		acpigen_emit_namestring("^GPE2");
+
+	acpigen_pop_len();		/* Pop If */
+	acpigen_write_else();
+
+		acpigen_emit_byte(AND_OP);
+		acpigen_emit_namestring("^GPE2");
+		acpigen_write_integer(0xEF);
+		acpigen_emit_namestring("^GPE2");
+
+	acpigen_pop_len();		/* Pop Else */
+
+	/* Enable wake on GPE */
+	acpigen_write_store();
+	acpigen_emit_byte(ONE_OP);
+	acpigen_emit_namestring("^GPEE");
+
+	acpigen_write_if();
+	acpigen_emit_byte(LEQUAL_OP);
+	acpigen_emit_byte(ARG0_OP);
+	acpigen_write_integer(3);
+
+		acpigen_emit_byte(AND_OP);
+		acpigen_emit_namestring("^LEDC");
+		acpigen_write_integer(0xE0);
+		acpigen_emit_byte(LOCAL0_OP);
+
+		acpigen_emit_byte(OR_OP);
+		acpigen_emit_byte(LOCAL0_OP);
+		acpigen_write_integer(0x1C);
+		acpigen_emit_namestring("^LEDC");
+
+		acpigen_emit_byte(AND_OP);
+		acpigen_emit_namestring("^SWCC");
+		acpigen_write_integer(0xBF);
+		acpigen_emit_byte(LOCAL0_OP);
+
+		acpigen_emit_byte(OR_OP);
+		acpigen_emit_byte(LOCAL0_OP);
+		acpigen_write_integer(0x40);
+		acpigen_emit_namestring("^SWCC");
+
+	acpigen_pop_len();		/* Pop If */
+
+	acpigen_pop_len();		/* Pop If */
+
+	acpigen_write_store();
+	acpigen_write_integer(0x10);
+	acpigen_emit_namestring("^GPE0");
+
+	acpigen_write_store();
+	acpigen_write_integer(0x20);
+	acpigen_emit_namestring("^GPE1");
+
+	acpigen_pop_len();		/* Pop SIOS method */
+
+	acpigen_pop_len();		/* Pop Scope */
+
+	/* Inject into parent: */
+	acpigen_write_scope(acpi_device_scope(dev));
+
+	acpigen_write_name_integer("MSFG", 1);
+	acpigen_write_name_integer("KBFG", 1);
+	acpigen_write_name_integer("PMFG", 0);
+
+	/* DSDT must call SIOW on _WAK */
+	/* Method (SIOW, 1, NotSerialized) */
+	acpigen_write_method("SIOW", 1);
+	acpigen_emit_byte(RETURN_OP);
+	tmp_name = strconcat(name, ".SIOW");
+	acpigen_emit_namestring(tmp_name);
+	free(tmp_name);
+
+	acpigen_emit_byte(ARG0_OP);
+	acpigen_pop_len();
+
+	/* DSDT must call SIOS on _PTS */
+	/* Method (SIOS, 1, NotSerialized) */
+	acpigen_write_method("SIOS", 1);
+	acpigen_emit_byte(RETURN_OP);
+	tmp_name = strconcat(name, ".SIOS");
+	acpigen_emit_namestring(tmp_name);
+	free(tmp_name);
+	acpigen_emit_byte(ARG0_OP);
+	acpigen_pop_len();		/* Pop Method */
+
+	acpigen_pop_len();		/* Scope */
+
+	acpigen_write_scope("\\_GPE");
+
+	/* Method (SIOH, 0, NotSerialized) */
+	acpigen_write_method("_L08", 0);
+	acpigen_emit_byte(AND_OP);
+	tmp_name = strconcat(scope, ".PMFG");
+	acpigen_emit_namestring(tmp_name);
+	free(tmp_name);
+	acpigen_write_integer(0xE8);
+	acpigen_emit_byte(LOCAL0_OP);
+
+	acpigen_write_if();
+	acpigen_emit_byte(LGREATER_OP);
+	acpigen_emit_byte(LOCAL0_OP);
+	acpigen_emit_byte(ZERO_OP);
+
+	acpigen_emit_byte(NOTIFY_OP);
+	tmp_name = strconcat(scope, ".L060");
+	acpigen_emit_namestring(tmp_name);
+	free(tmp_name);
+	acpigen_write_integer(2);
+
+	acpigen_pop_len();		/* Pop If */
+
+	acpigen_emit_byte(AND_OP);
+	tmp_name = strconcat(scope, ".PMFG");
+	acpigen_emit_namestring(tmp_name);
+	free(tmp_name);
+	acpigen_write_integer(0x10);
+	acpigen_emit_byte(LOCAL0_OP);
+
+	acpigen_write_if();
+	acpigen_emit_byte(LGREATER_OP);
+	acpigen_emit_byte(LOCAL0_OP);
+	acpigen_emit_byte(ZERO_OP);
+
+	acpigen_emit_byte(NOTIFY_OP);
+	tmp_name = strconcat(scope, ".L050");
+	acpigen_emit_namestring(tmp_name);
+	free(tmp_name);
+	acpigen_write_integer(2);
+	acpigen_pop_len();		/* Pop If */
+
+	acpigen_pop_len();		/* Pop Method */
+
+	acpigen_pop_len();		/* Scope */
+}
+
+static void npcd378_fill_ssdt_generator(struct device *dev)
+{
+	superio_common_fill_ssdt_generator(dev);
+
+	switch (dev->path.pnp.device) {
+	case NPCD378_PWR:
+		npcd378_ssdt_pwr(dev);
+		break;
+	case NPCD378_AUX:
+		npcd378_ssdt_aux(dev);
+		break;
+	case NPCD378_KBC:
+		npcd378_ssdt_kbc(dev);
+		break;
+	}
 }
 #endif
 
 static struct device_operations ops = {
-	.read_resources   = pnp_read_resources,
-	.set_resources    = pnp_set_resources,
-	.enable_resources = pnp_enable_resources,
-	.enable           = pnp_alt_enable,
-	.init             = npcd378_init,
-	.ops_pnp_mode     = &pnp_conf_mode_8787_aa,
+	.read_resources             = pnp_read_resources,
+	.set_resources              = pnp_set_resources,
+	.enable_resources           = pnp_enable_resources,
+	.enable                     = pnp_alt_enable,
+	.init                       = npcd378_init,
+	.ops_pnp_mode               = &pnp_conf_mode_8787_aa,
 #if CONFIG(HAVE_ACPI_TABLES)
-	.acpi_fill_ssdt_generator = npcd378_ssdt,
-	.acpi_name = npcd378_acpi_name,
+	.acpi_fill_ssdt_generator   = npcd378_fill_ssdt_generator,
+	.acpi_name                  = superio_common_ldn_acpi_name,
+	.acpi_hid                   = npcd378_acpi_hid,
 #endif
 };
 

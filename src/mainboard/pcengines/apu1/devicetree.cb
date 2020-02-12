@@ -68,7 +68,6 @@ chip northbridge/amd/agesa/family14/root_complex
 					device pnp 2e.007 off end
 					device pnp 2e.107 off end
 					device pnp 2e.607 off end
-					device pnp 2e.e off end
 					device pnp 2e.f on end
 				end
 				chip drivers/pc80/tpm

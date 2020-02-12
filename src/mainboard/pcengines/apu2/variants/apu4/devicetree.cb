@@ -71,7 +71,6 @@ chip northbridge/amd/pi/00730F01/root_complex
 					device pnp 2e.007 on end
 					device pnp 2e.107 on end
 					device pnp 2e.607 off end
-					device pnp 2e.e off end
 					device pnp 2e.f on end
 				end # SIO NCT5104D
 			end # LPC 0x439d

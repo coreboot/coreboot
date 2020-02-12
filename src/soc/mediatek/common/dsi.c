@@ -28,9 +28,9 @@ static unsigned int mtk_dsi_get_bits_per_pixel(u32 format)
 	switch (format) {
 	case MIPI_DSI_FMT_RGB565:
 		return 16;
-	case MIPI_DSI_FMT_RGB666:
 	case MIPI_DSI_FMT_RGB666_PACKED:
 		return 18;
+	case MIPI_DSI_FMT_RGB666:
 	case MIPI_DSI_FMT_RGB888:
 		return 24;
 	}

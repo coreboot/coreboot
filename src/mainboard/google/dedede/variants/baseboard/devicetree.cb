@@ -69,6 +69,9 @@ chip soc/intel/tigerlake
 		[PchSerialIoIndexUART2] = PchSerialIoSkipInit,
 	}"
 
+	# Enable EMMC HS400 mode
+	register "ScsEmmcHs400Enabled" = "1"
+
 	# Intel Common SoC Config
 	#+-------------------+---------------------------+
 	#| Field             |  Value                    |
@@ -129,7 +132,7 @@ chip soc/intel/tigerlake
 		device pci 19.0 on  end # I2C 4
 		device pci 19.1 off end # I2C 5
 		device pci 19.2 on  end # UART 2
-		device pci 1a.0 off end # eMMC
+		device pci 1a.0 on  end # eMMC
 		device pci 1c.0 off end # PCI Express Root Port 1
 		device pci 1c.1 off end # PCI Express Root Port 2
 		device pci 1c.2 off end # PCI Express Root Port 3

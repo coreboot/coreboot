@@ -119,8 +119,6 @@ operating system (only Linux at this time). `C`
 * __util_readme__ - Creates README.md of description files in `./util`
 subdirectories `Bash`
 * __vgabios__ - emulated vga driver for qemu `C`
-* __viatool__ - Extract certain configuration bits on VIA chipsets and
-CPUs. `C`
 * __x86__ - Generates 32-bit PAE page tables based on a CSV input file.
 `Go`
 * __xcompile__ - Cross compile setup `Bash`

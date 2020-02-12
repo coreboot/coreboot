@@ -118,7 +118,6 @@ util/pmh7tool/pmh7tool
 util/runfw/googlesnow
 util/superiotool/superiotool
 util/vgabios/testbios
-util/viatool/viatool
 util/autoport/autoport
 util/kbc1126/kbc1126_ec_dump
 util/kbc1126/kbc1126_ec_insert

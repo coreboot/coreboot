@@ -66,8 +66,7 @@ futility \
 inteltool \
 intelvbttool \
 nvramtool \
-superiotool \
-viatool
+superiotool
 
 TEST_PAYLOADLIST_INTERNAL= \
 coreinfo \

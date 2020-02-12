@@ -74,6 +74,7 @@
 #define  MCA_STATUS_LO_ERRCODE_EXT_MASK	(0x3f << MCA_STATUS_LO_ERRCODE_EXT_SH)
 #define  MCA_STATUS_LO_ERRCODE_MASK	(0xffff << 0)
 #define IA32_VMX_BASIC_MSR              0x480
+#define  VMX_BASIC_HI_DUAL_MONITOR      (1UL << (49 - 32))
 #define IA32_VMX_MISC_MSR               0x485
 #define MC0_ADDR			0x402
 #define MC0_MISC			0x403

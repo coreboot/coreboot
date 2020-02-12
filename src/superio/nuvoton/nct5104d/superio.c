@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 /* This file is part of the coreboot project. */
 
+#include <stdlib.h>
 #include <console/console.h>
 #include <device/pnp.h>
 #include <device/device.h>
@@ -98,42 +99,45 @@ static void route_pins_to_uart(struct device *dev, bool to_uart)
 static void reset_gpio_default_in(struct device *dev)
 {
 	pnp_set_logical_device(dev);
-
-	/* Soft reset GPIOs to default state: IN */
-	switch (dev->path.pnp.device) {
-	case NCT5104D_GPIO0:
-		pnp_write_config(dev, NCT5104D_GPIO0_IO, 0xFF);
-		break;
-	case NCT5104D_GPIO1:
-		pnp_write_config(dev, NCT5104D_GPIO1_IO, 0xFF);
-		break;
-	case NCT5104D_GPIO6:
-		pnp_write_config(dev, NCT5104D_GPIO6_IO, 0xFF);
-		break;
-	default:
-		break;
-	}
+	/*
+	 * Soft reset GPIOs to default state: IN.
+	 * The main GPIO LDN holds registers that configure the pins as output
+	 * or input. These registers are located at offset 0xE0 plus the GPIO
+	 * bank number multiplied by 4: 0xE0 for GPIO0, 0xE4 for GPIO1 and
+	 * 0xF8 for GPIO6.
+	 */
+	pnp_write_config(dev, NCT5104D_GPIO0_IO + (dev->path.pnp.device >> 8) * 4, 0xFF);
 }
 
 static void reset_gpio_default_od(struct device *dev)
 {
 	struct device *gpio0, *gpio1, *gpio6;
 
+	pnp_set_logical_device(dev);
+
 	gpio0 = dev_find_slot_pnp(dev->path.pnp.port, NCT5104D_GPIO0);
 	gpio1 = dev_find_slot_pnp(dev->path.pnp.port, NCT5104D_GPIO1);
 	gpio6 = dev_find_slot_pnp(dev->path.pnp.port, NCT5104D_GPIO6);
 
-	pnp_set_logical_device(dev);
-
-	/* Soft reset GPIOs to default state: Open-drain */
+	/*
+	 * Soft reset GPIOs to default state: Open-drain.
+	 * The NCT5104D_GPIO_PP_OD LDN holds registers (1 for each GPIO bank)
+	 * that configure each GPIO pin to be open dain or push pull. System
+	 * reset is known to not reset the values in this register. The
+	 * registers are located at offsets begginign from 0xE0 plus GPIO bank
+	 * number, i.e. 0xE0 for GPIO0, 0xE1 for GPIO1 and 0xE6 for GPIO6.
+	 */
 	if (gpio0 && gpio0->enabled)
-		pnp_write_config(dev, NCT5104D_GPIO0_PP_OD, 0xFF);
+		pnp_write_config(dev,
+				 (gpio0->path.pnp.device >> 8) + NCT5104D_GPIO0_PP_OD, 0xFF);
 
 	if (gpio1 && gpio1->enabled)
-		pnp_write_config(dev, NCT5104D_GPIO1_PP_OD, 0xFF);
+		pnp_write_config(dev,
+				 (gpio1->path.pnp.device >> 8) + NCT5104D_GPIO0_PP_OD, 0xFF);
 
 	if (gpio6 && gpio6->enabled)
-		pnp_write_config(dev, NCT5104D_GPIO6_PP_OD, 0xFF);
+		pnp_write_config(dev,
+				 (gpio6->path.pnp.device >> 8) + NCT5104D_GPIO0_PP_OD, 0xFF);
 }
 
 static void disable_gpio_io_port(struct device *dev)
@@ -181,13 +185,14 @@ static void nct5104d_init(struct device *dev)
 	case NCT5104D_GPIO0:
 	case NCT5104D_GPIO1:
 		route_pins_to_uart(dev, false);
-		reset_gpio_default_in(dev);
-		break;
+		/* FALLTHROUGH */
 	case NCT5104D_GPIO6:
-		reset_gpio_default_in(dev);
+		if (conf->reset_gpios)
+			reset_gpio_default_in(dev);
 		break;
 	case NCT5104D_GPIO_PP_OD:
-		reset_gpio_default_od(dev);
+		if (conf->reset_gpios)
+			reset_gpio_default_od(dev);
 		break;
 	case NCT5104D_GPIO_IO:
 		disable_gpio_io_port(dev);

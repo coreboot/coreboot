@@ -41,6 +41,7 @@ chip northbridge/amd/agesa/family14/root_complex
 			device pci 14.3 on # LPC		0x439d
 				chip superio/nuvoton/nct5104d
 					register "irq_trigger_type" = "0"
+					register "reset_gpios" = "1"
 					device pnp 2e.0 off end
 					device pnp 2e.2 on
 						io 0x60 = 0x3f8

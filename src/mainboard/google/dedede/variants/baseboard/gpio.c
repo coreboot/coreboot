@@ -21,6 +21,14 @@ static const struct pad_config gpio_table[] = {
 	/* A4  : ESPI_CS# */
 	/* A5  : ESPI_CLK */
 	/* A6  : ESPI_RESET_L */
+	/* A12 : USB_OC1_N */
+	PAD_NC(GPP_A12, NONE),
+	/* A13 : USB_OC2_N */
+	PAD_NC(GPP_A13, NONE),
+	/* A14 : USB_OC3_N */
+	PAD_NC(GPP_A14, NONE),
+	/* A18 : USB_OC0_N */
+	PAD_NC(GPP_A18, NONE),
 
 	/* B4  : H1_PCH_INT_ODL */
 	PAD_CFG_GPI_APIC(GPP_B4, NONE, PLTRST, LEVEL, INVERT),

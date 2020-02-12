@@ -19,6 +19,23 @@ chip soc/intel/tigerlake
 	register "pmc_gpe0_dw1" = "GPP_D"
 	register "pmc_gpe0_dw2" = "GPP_H"
 
+	# USB Port Configuration
+	register "usb2_ports[0]" = "USB2_PORT_MID(OC_SKIP)"	# Type-C Port C0
+	register "usb2_ports[1]" = "USB2_PORT_MID(OC_SKIP)"	# Type-C Port C1
+	register "usb2_ports[2]" = "USB2_PORT_MID(OC_SKIP)"	# Type-A Port A0
+	register "usb2_ports[3]" = "USB2_PORT_MID(OC_SKIP)"	# Type-A Port A1
+	register "usb2_ports[4]" = "USB2_PORT_MID(OC_SKIP)"	# Bluetooth
+	register "usb2_ports[5]" = "USB2_PORT_EMPTY"		# Not Used
+	register "usb2_ports[6]" = "USB2_PORT_EMPTY"		# Not Used
+	register "usb2_ports[7]" = "USB2_PORT_EMPTY"		# Not Used
+
+	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# USB3/2 Type-C Port C0
+	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# USB3/2 Type-C Port C1
+	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# USB3/1 Type-A Port A0
+	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# USB3/1 Type-A Port A1
+	register "usb3_ports[4]" = "USB3_PORT_EMPTY"		# Not Used
+	register "usb3_ports[5]" = "USB3_PORT_EMPTY"		# Not Used
+
 	register "SerialIoI2cMode" = "{
 		[PchSerialIoIndexI2C0]  = PchSerialIoPci,
 		[PchSerialIoIndexI2C1]  = PchSerialIoPci,
@@ -95,7 +112,7 @@ chip soc/intel/tigerlake
 		device pci 05.0 off end # IPU
 		device pci 09.0 off end # Intel Trace Hub
 		device pci 12.6 off end # GSPI 2
-		device pci 14.0 off end # USB xHCI
+		device pci 14.0 on  end # USB xHCI
 		device pci 14.1 off end # USB xDCI (OTG)
 		device pci 14.2 off end # PMC SRAM
 		device pci 14.3 off end # CNVi wifi

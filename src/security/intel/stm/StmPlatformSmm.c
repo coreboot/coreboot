@@ -159,9 +159,20 @@ void stm_setup(uintptr_t mseg, int cpu, int num_cpus, uintptr_t smbase,
 {
 	msr_t InitMseg;
 	msr_t MsegChk;
+	msr_t vmx_basic;
+
 	uintptr_t addr_calc;  // used to calculate the stm resource heap area
 
 	printk(BIOS_DEBUG, "STM: set up for cpu %d/%d\n", cpu, num_cpus);
+
+	vmx_basic = rdmsr(IA32_VMX_BASIC_MSR);
+
+	// Does this processor support an STM?
+	if ((vmx_basic.hi & VMX_BASIC_HI_DUAL_MONITOR) != VMX_BASIC_HI_DUAL_MONITOR) {
+		printk(BIOS_WARNING, "STM: not supported on CPU %d\n", cpu);
+		return;
+	}
+
 	if (cpu == 0) {
 
 		// need to create the BIOS resource list once

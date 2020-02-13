@@ -50,7 +50,7 @@ uint32_t tspi_init_crtm(void);
  */
 int tspi_measure_cache_to_pcr(void);
 
-#if CONFIG(TPM_MEASURED_BOOT)
+#if !ENV_SMM && CONFIG(TPM_MEASURED_BOOT)
 /*
  * Measures cbfs data via hook (cbfs)
  * fh is the cbfs file handle to measure

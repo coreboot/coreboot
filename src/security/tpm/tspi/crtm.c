@@ -133,10 +133,14 @@ uint32_t tspi_measure_cbfs_hook(struct cbfsf *fh, const char *name)
 	cbfs_file_data(&rdev, fh);
 
 	switch (cbfs_type) {
-	case CBFS_TYPE_MRC:
 	case CBFS_TYPE_MRC_CACHE:
 		pcr_index = TPM_RUNTIME_DATA_PCR;
 		break;
+	/*
+	 * mrc.bin is code executed on CPU, so it
+	 * should not be considered runtime data
+	 */
+	case CBFS_TYPE_MRC:
 	case CBFS_TYPE_STAGE:
 	case CBFS_TYPE_SELF:
 	case CBFS_TYPE_FIT:

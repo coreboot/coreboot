@@ -56,7 +56,10 @@ int cbfs_boot_locate(struct cbfsf *fh, const char *name, uint32_t *type)
 		 * Files can be added to the RO_REGION_ONLY config option to use this feature.
 		 */
 		printk(BIOS_DEBUG, "Fall back to RO region for %s\n", name);
-		ret = cbfs_locate_file_in_region(fh, "COREBOOT", name, type);
+		if (fmap_locate_area_as_rdev("COREBOOT", &rdev))
+			ERROR("RO region not found\n");
+		else
+			ret = cbfs_locate(fh, &rdev, name, type);
 	}
 
 	if (!ret)
@@ -86,14 +89,18 @@ int cbfs_locate_file_in_region(struct cbfsf *fh, const char *region_name,
 			       const char *name, uint32_t *type)
 {
 	struct region_device rdev;
-
+	int ret = 0;
 	if (fmap_locate_area_as_rdev(region_name, &rdev)) {
 		LOG("%s region not found while looking for %s\n",
 		    region_name, name);
 		return -1;
 	}
 
-	return cbfs_locate(fh, &rdev, name, type);
+	ret = cbfs_locate(fh, &rdev, name, type);
+	if (!ret)
+		if (tspi_measure_cbfs_hook(fh, name))
+			return -1;
+	return ret;
 }
 
 size_t cbfs_load_and_decompress(const struct region_device *rdev, size_t offset,

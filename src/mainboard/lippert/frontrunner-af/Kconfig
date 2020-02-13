@@ -13,14 +13,10 @@
 # GNU General Public License for more details.
 #
 
-config BOARD_LIPPERT_FRONTRUNNER_AF
-	def_bool n
-
 if BOARD_LIPPERT_FRONTRUNNER_AF
 
 config BOARD_SPECIFIC_OPTIONS
 	def_bool y
-	#select ROMCC_BOOTBLOCK
 	select CPU_AMD_AGESA_FAMILY14
 	select NORTHBRIDGE_AMD_AGESA_FAMILY14
 	select SOUTHBRIDGE_AMD_CIMX_SB800

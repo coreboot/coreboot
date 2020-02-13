@@ -1,2 +1,2 @@
-#config BOARD_HP_ABM
-#	bool"ABM"
+config BOARD_HP_ABM
+	bool "ABM"

@@ -162,11 +162,32 @@ static const char *name_from_hid(const char *hid)
 
 void superio_common_fill_ssdt_generator(struct device *dev)
 {
+	if (!dev || !dev->bus || !dev->bus->dev) {
+		printk(BIOS_CRIT, "BUG: Invalid argument in %s!\n", __func__);
+		return;
+	}
+
 	const char *scope = acpi_device_scope(dev);
 	const char *name = acpi_device_name(dev);
 	const u8 ldn = dev->path.pnp.device & 0xff;
 	const u8 vldn = (dev->path.pnp.device >> 8) & 0x7;
 	const char *hid;
+
+	/* Validate devicetree settings */
+	bool bug = false;
+	if (dev->bus->dev->path.type != DEVICE_PATH_PNP) {
+		bug = true;
+		printk(BIOS_CRIT, "BUG: Parent of device %s is not a PNP device\n",
+			dev_path(dev));
+	} else if (dev->bus->dev->path.pnp.port != dev->path.pnp.port) {
+		bug = true;
+		printk(BIOS_CRIT, "BUG: Parent of device %s has wrong I/O port\n",
+			dev_path(dev));
+	}
+	if (bug) {
+		printk(BIOS_CRIT, "BUG: Check your devicetree!\n");
+		return;
+	}
 
 	if (!scope || !name) {
 		printk(BIOS_ERR, "%s: Missing ACPI path/scope\n", dev_path(dev));

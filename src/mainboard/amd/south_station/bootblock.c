@@ -13,15 +13,13 @@
  * GNU General Public License for more details.
  */
 
-#include <northbridge/amd/agesa/state_machine.h>
+#include <bootblock_common.h>
 #include <superio/fintek/common/fintek.h>
 #include <superio/fintek/f81865f/f81865f.h>
-#include <sb_cimx.h>
 
 #define SERIAL_DEV PNP_DEV(0x4e, F81865F_SP1)
 
-void board_BeforeAgesa(struct sysinfo *cb)
+void bootblock_mainboard_early_init(void)
 {
-	sb_Poweron_Init();
 	fintek_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 }

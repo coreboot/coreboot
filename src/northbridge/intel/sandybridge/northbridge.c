@@ -460,34 +460,16 @@ static struct device_operations mc_ops = {
 	.acpi_fill_ssdt_generator = generate_cpu_entries,
 };
 
-static const struct pci_driver mc_driver_0100 __pci_driver = {
-	.ops    = &mc_ops,
-	.vendor = PCI_VENDOR_ID_INTEL,
-	.device = 0x0100,
+static const unsigned short pci_device_ids[] = {
+	0x0100, 0x0104,			/* Sandy Bridge */
+	0x0150, 0x0154, 0x0158,		/* Ivy Bridge */
+	0
 };
 
 static const struct pci_driver mc_driver __pci_driver = {
 	.ops    = &mc_ops,
 	.vendor = PCI_VENDOR_ID_INTEL,
-	.device = 0x0104, /* Sandy bridge */
-};
-
-static const struct pci_driver mc_driver_150 __pci_driver = {
-	.ops    = &mc_ops,
-	.vendor = PCI_VENDOR_ID_INTEL,
-	.device = 0x0150, /* Ivy bridge */
-};
-
-static const struct pci_driver mc_driver_1 __pci_driver = {
-	.ops    = &mc_ops,
-	.vendor = PCI_VENDOR_ID_INTEL,
-	.device = 0x0154, /* Ivy bridge */
-};
-
-static const struct pci_driver mc_driver_158 __pci_driver = {
-	.ops    = &mc_ops,
-	.vendor = PCI_VENDOR_ID_INTEL,
-	.device = 0x0158, /* Ivy bridge */
+	.devices = pci_device_ids,
 };
 
 static struct device_operations cpu_bus_ops = {

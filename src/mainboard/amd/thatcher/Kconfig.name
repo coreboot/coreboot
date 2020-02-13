@@ -1,2 +1,2 @@
-#config BOARD_AMD_THATCHER
-#	bool"Thatcher"
+config BOARD_AMD_THATCHER
+	bool "Thatcher"

@@ -13,6 +13,8 @@
 # GNU General Public License for more details.
 #
 
+bootblock-y += bootblock.c
+
 romstage-y += buildOpts.c
 romstage-y += BiosCallOuts.c
 romstage-y += OemCustomize.c

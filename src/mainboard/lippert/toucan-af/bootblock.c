@@ -13,15 +13,13 @@
  * GNU General Public License for more details.
  */
 
-#include <northbridge/amd/agesa/state_machine.h>
+#include <bootblock_common.h>
 #include <superio/winbond/common/winbond.h>
 #include <superio/winbond/w83627dhg/w83627dhg.h>
-#include <sb_cimx.h>
 
 #define SERIAL_DEV PNP_DEV(0x4e, W83627DHG_SP1)
 
-void board_BeforeAgesa(struct sysinfo *cb)
+void bootblock_mainboard_early_init(void)
 {
-	sb_Poweron_Init();
 	winbond_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 }

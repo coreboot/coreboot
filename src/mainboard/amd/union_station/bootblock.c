@@ -13,10 +13,8 @@
  * GNU General Public License for more details.
  */
 
-#include <northbridge/amd/agesa/state_machine.h>
-#include <sb_cimx.h>
+#include <bootblock_common.h>
 
-void board_BeforeAgesa(struct sysinfo *cb)
+void bootblock_mainboard_early_init(void)
 {
-	sb_Poweron_Init();
 }

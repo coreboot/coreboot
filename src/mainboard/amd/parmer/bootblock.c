@@ -13,14 +13,9 @@
  * GNU General Public License for more details.
  */
 
+#include <bootblock_common.h>
 #include <device/pci_ops.h>
-#include <northbridge/amd/agesa/state_machine.h>
-#include <southbridge/amd/agesa/hudson/hudson.h>
 
-void board_BeforeAgesa(struct sysinfo *cb)
+void bootblock_mainboard_early_init(void)
 {
-	pci_devfn_t dev = PCI_DEV(0, 0x14, 3);
-
-	/* For serial port option, plug-in card on LPC. */
-	pci_write_config32(dev, 0x44, 0xff03ffd5);
 }

@@ -13,8 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#define NEED_VB20_INTERNALS  /* Peeking into vb2_shared_data */
-
 #include <assert.h>
 #include <bootmode.h>
 #include <bootstate.h>
@@ -31,8 +29,7 @@
 
 int vboot_check_recovery_request(void)
 {
-	/* TODO: Expose vb2api_recovery_reason() and vb2api_need_train_and_reboot(). */
-	return vb2_get_sd(vboot_get_context())->recovery_reason;
+	return vb2api_get_recovery_reason(vboot_get_context());
 }
 
 int vboot_recovery_mode_enabled(void)

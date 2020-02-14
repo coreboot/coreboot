@@ -58,10 +58,6 @@ config DCACHE_BSP_STACK_SIZE
 	  The amount of anticipated stack usage in CAR by bootblock and
 	  other stages.
 
-config MRC_CACHE_SIZE
-	hex
-	default 0x10000
-
 config MMCONF_BASE_ADDRESS
 	hex
 	default 0xe0000000

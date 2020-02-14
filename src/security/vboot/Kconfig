@@ -114,8 +114,8 @@ config VBOOT_STARTS_IN_ROMSTAGE
 	depends on !VBOOT_STARTS_IN_BOOTBLOCK
 	help
 	  Firmware verification happens during the end of romstage (after
-	  memory initialization). This implies that vboot working data is
-	  allocated in CBMEM.
+	  memory initialization). This implies that the vboot work buffer is
+	  in CBMEM from the start and doesn't need to be reserved in memlayout.
 
 config VBOOT_MOCK_SECDATA
 	bool "Mock secdata for firmware verification"

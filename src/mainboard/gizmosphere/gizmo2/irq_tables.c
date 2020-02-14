@@ -14,6 +14,7 @@
  */
 
 #include <console/console.h>
+#include <device/pci_def.h>
 #include <string.h>
 #include <stdint.h>
 #include <arch/pirq_routing.h>

@@ -17,8 +17,7 @@
 
 #include <commonlib/region.h>
 #include <stdint.h>
-#include <vboot_api.h>
-#include <vboot_struct.h>
+#include <vb2_api.h>
 
 /*
  * Function to check if there is a request to enter recovery mode. Returns

@@ -18,9 +18,7 @@
 
 #include <assert.h>
 #include <security/vboot/vboot_common.h>
-
-struct vb2_context;
-struct vb2_shared_data;
+#include <vb2_api.h>
 
 /*
  * Source: security/vboot/common.c

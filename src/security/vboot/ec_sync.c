@@ -23,6 +23,7 @@
 #include <timer.h>
 #include <timestamp.h>
 #include <vb2_api.h>
+#include <vboot_api.h>
 
 #define _EC_FILENAME(select, suffix) \
 	(select == VB_SELECT_FIRMWARE_READONLY ? "ecro" suffix : "ecrw" suffix)

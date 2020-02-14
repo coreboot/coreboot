@@ -26,7 +26,7 @@ const u32 cim_verb_data[] = {
 			codec.SubsystemID)
 		fmt.Fprintf(az, "\t%d,\t\t/* Number of 4 dword sets */\n",
 			len(codec.PinConfig)+1)
-		fmt.Fprintf(az, "\tAZALIA_SUBVENDOR(0x%x, 0x%08x),\n",
+		fmt.Fprintf(az, "\tAZALIA_SUBVENDOR(%d, 0x%08x),\n",
 			codec.CodecNo, codec.SubsystemID)
 
 		keys := []int{}
@@ -37,7 +37,7 @@ const u32 cim_verb_data[] = {
 		sort.Ints(keys)
 
 		for _, nid := range keys {
-			fmt.Fprintf(az, "\tAZALIA_PIN_CFG(0x%x, 0x%02x, 0x%08x),\n",
+			fmt.Fprintf(az, "\tAZALIA_PIN_CFG(%d, 0x%02x, 0x%08x),\n",
 				codec.CodecNo, nid, codec.PinConfig[nid])
 		}
 		az.WriteString("\n");

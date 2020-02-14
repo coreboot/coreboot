@@ -154,9 +154,9 @@ chip soc/intel/cannonlake
 	register "usb2_ports[9]" = "USB2_PORT_MID(OC_SKIP)"	# Bluetooth
 
 	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# Left Type-C Port
-	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# Left Type-C Port 2
-	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC0)"	# Right Type-A Port 1
-	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC1)"	# Right Type-A Port 2
+	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC0)"	# Right Type-A Port 1
+	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC1)"	# Right Type-A Port 2
+	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# Left Type-C Port 2
 	register "usb3_ports[4]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# WWAN
 	register "usb3_ports[5]" = "USB3_PORT_EMPTY"
 

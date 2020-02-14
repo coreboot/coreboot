@@ -304,30 +304,6 @@ static uint32_t is_mmu_enabled(void)
 }
 
 /*
- * Func: mmu_disable
- * Desc: Invalidate caches and disable mmu
- */
-void mmu_disable(void)
-{
-	uint32_t sctlr;
-
-	sctlr = raw_read_sctlr_el2();
-	sctlr &= ~(SCTLR_C | SCTLR_M | SCTLR_I);
-
-	tlbiall_el2();
-	dcache_clean_invalidate_all();
-
-	dsb();
-	isb();
-
-	raw_write_sctlr_el2(sctlr);
-
-	dcache_clean_invalidate_all();
-	dsb();
-	isb();
-}
-
-/*
  * Func: mmu_enable
  * Desc: Initialize MAIR, TCR, TTBR and enable MMU by setting appropriate bits
  * in SCTLR

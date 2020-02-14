@@ -30,10 +30,28 @@
 #ifndef __ARCH_LIB_HELPERS_H__
 #define __ARCH_LIB_HELPERS_H__
 
+#define SCTLR_M		(1 << 0)	/* MMU enable			*/
+#define SCTLR_A		(1 << 1)	/* Alignment check enable	*/
+#define SCTLR_C		(1 << 2)	/* Data/unified cache enable	*/
+#define SCTLR_SA	(1 << 3)	/* Stack alignment check enable	*/
+#define SCTLR_NAA	(1 << 6)	/* non-aligned access STA/LDR	*/
+#define SCTLR_I		(1 << 12)	/* Instruction cache enable	*/
+#define SCTLR_ENDB	(1 << 13)	/* Pointer auth (data B)	*/
+#define SCTLR_WXN	(1 << 19)	/* Write permission implies XN	*/
+#define SCTLR_IESB	(1 << 21)	/* Implicit error sync event	*/
+#define SCTLR_EE	(1 << 25)	/* Exception endianness	(BE)	*/
+#define SCTLR_ENDA	(1 << 27)	/* Pointer auth (data A)	*/
+#define SCTLR_ENIB	(1 << 30)	/* Pointer auth (insn B)	*/
+#define SCTLR_ENIA	(1 << 31)	/* Pointer auth (insn A)	*/
+#define SCTLR_RES1           ((0x3 << 4) | (0x1 << 11) | (0x1 << 16) |	\
+			      (0x1 << 18) | (0x3 << 22) | (0x3 << 28))
+
 #define DAIF_DBG_BIT      (1 << 3)
 #define DAIF_ABT_BIT      (1 << 2)
 #define DAIF_IRQ_BIT      (1 << 1)
 #define DAIF_FIQ_BIT      (1 << 0)
+
+#ifndef __ASSEMBLER__
 
 #include <stdint.h>
 
@@ -272,5 +290,7 @@ static inline void tlbivaa_el1(uint64_t va)
 #define dmb() dmb_opt(sy)
 #define dsb() dsb_opt(sy)
 #define isb() isb_opt()
+
+#endif	/* __ASSEMBLER__ */
 
 #endif /* __ARCH_LIB_HELPERS_H__ */

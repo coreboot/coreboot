@@ -29,6 +29,7 @@
  */
 
 #include <arch/asm.h>
+#include <arch/lib_helpers.h>
 
 .macro	dcache_apply_all crm
 	dsb	sy
@@ -96,3 +97,17 @@ ENDPROC(dcache_clean_all)
 ENTRY(dcache_clean_invalidate_all)
 	dcache_apply_all crm=cisw
 ENDPROC(dcache_clean_invalidate_all)
+
+/* This must be implemented in assembly to ensure there are no accesses to
+   memory (e.g. the stack) in between disabling and flushing the cache. */
+ENTRY(mmu_disable)
+	str	x30, [sp, #-0x8]
+	mrs	x0, sctlr_el2
+	mov	x1, #~(SCTLR_C | SCTLR_M)
+	and	x0, x0, x1
+	msr	sctlr_el2, x0
+	isb
+	bl	dcache_clean_invalidate_all
+	ldr	x30, [sp, #-0x8]
+	ret
+ENDPROC(mmu_disable)

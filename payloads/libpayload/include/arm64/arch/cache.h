@@ -35,38 +35,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-/* SCTLR bits */
-#define SCTLR_M		(1 << 0)	/* MMU enable			*/
-#define SCTLR_A		(1 << 1)	/* Alignment check enable	*/
-#define SCTLR_C		(1 << 2)	/* Data/unified cache enable	*/
-/* Bits 4:3 are reserved */
-#define SCTLR_CP15BEN	(1 << 5)	/* CP15 barrier enable		*/
-/* Bit 6 is reserved */
-#define SCTLR_B		(1 << 7)	/* Endianness			*/
-/* Bits 9:8 */
-#define SCTLR_SW	(1 << 10)	/* SWP and SWPB enable		*/
-#define SCTLR_Z		(1 << 11)	/* Branch prediction enable	*/
-#define SCTLR_I		(1 << 12)	/* Instruction cache enable	*/
-#define SCTLR_V		(1 << 13)	/* Low/high exception vectors 	*/
-#define SCTLR_RR  	(1 << 14)	/* Round Robin select		*/
-/* Bits 16:15 are reserved */
-#define SCTLR_HA	(1 << 17)	/* Hardware Access flag enable	*/
-/* Bit 18 is reserved */
-/* Bits 20:19 reserved virtualization not supported */
-#define SCTLR_WXN	(1 << 19)	/* Write permission implies XN	*/
-#define SCTLR_UWXN	(1 << 20)	/* Unprivileged write permission
-					   implies PL1 XN		*/
-#define SCTLR_FI	(1 << 21)	/* Fast interrupt config enable	*/
-#define SCTLR_U		(1 << 22)	/* Unaligned access behavior	*/
-#define SCTLR_VE	(1 << 24)	/* Interrupt vectors enable	*/
-#define SCTLR_EE	(1 << 25)	/* Exception endianness		*/
-/* Bit 26 is reserved */
-#define SCTLR_NMFI	(1 << 27)	/* Non-maskable FIQ support	*/
-#define SCTLR_TRE	(1 << 28)	/* TEX remap enable		*/
-#define SCTLR_AFE	(1 << 29)	/* Access flag enable		*/
-#define SCTLR_TE	(1 << 30)	/* Thumb exception enable	*/
-/* Bit 31 is reserved */
-
 /*
  * Cache maintenance API
  */

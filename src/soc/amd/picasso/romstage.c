@@ -74,6 +74,10 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	mcfg->core_dldo_bypass = config->core_dldo_bypass;
 	mcfg->min_soc_vid_offset = config->min_soc_vid_offset;
 	mcfg->aclk_dpm0_freq_400MHz = config->aclk_dpm0_freq_400MHz;
+	mcfg->telemetry_vddcr_vdd_slope = config->telemetry_vddcr_vdd_slope;
+	mcfg->telemetry_vddcr_vdd_offset = config->telemetry_vddcr_vdd_offset;
+	mcfg->telemetry_vddcr_soc_slope = config->telemetry_vddcr_soc_slope;
+	mcfg->telemetry_vddcr_soc_offset = config->telemetry_vddcr_soc_offset;
 }
 
 asmlinkage void car_stage_entry(void)

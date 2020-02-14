@@ -14,13 +14,12 @@
  * GNU General Public License for more details.
  */
 
-#define NEED_VB20_INTERNALS
-
 #include <boot_device.h>
 #include <bootmem.h>
 #include <cbfs.h>
 #include <vboot_check.h>
 #include <vboot_common.h>
+#include <vb2_internals_please_do_not_use.h>
 
 #define RSA_PUBLICKEY_FILE_NAME "vboot_public_key.bin"
 

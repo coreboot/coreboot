@@ -77,6 +77,7 @@ The boards in this section are not real mainboards, but emulators.
 
 ### GM45 series
 
+- [X200 / T400 / T500 / X301 common](lenovo/montevina_series.md)
 - [X301](lenovo/x301.md)
 
 ### Sandy Bridge series

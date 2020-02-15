@@ -355,9 +355,9 @@ Types are:
 
 ## `c*_acpower` and `c*_battery`
 
-Which mwait states to match to which ACPI levels. Normall, there is no
-need to modify anything unless your device has very special power
-saving requirements.
+Which mwait states to match to which ACPI levels. Normally, there is no
+need to modify anything unless your device has very special power saving
+requirements.
 
 ## `install_intel_vga_int15_handler`
 

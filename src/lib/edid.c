@@ -1138,8 +1138,6 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 	    .conformant = EDID_CONFORMANT,
 	};
 
-	memset(out, 0, sizeof(*out));
-
 	if (!edid) {
 		printk(BIOS_ERR, "No EDID found\n");
 		return EDID_ABSENT;
@@ -1151,6 +1149,8 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 		printk(BIOS_ERR, "No header found\n");
 		return EDID_ABSENT;
 	}
+
+	memset(out, 0, sizeof(*out));
 
 	if (manufacturer_name(edid + 0x08, out->manufacturer_name))
 		c.manufacturer_name_well_formed = 1;

@@ -24,7 +24,7 @@ private package GMA.Mainboard is
      (DP1, -- MiniDP
       DP2, -- dock, DP2-1 (DP/HDMI) and DP2-2 (DP/DVI)
       Analog,
-      Internal,
+      eDP,
       others => Disabled);
 
 end GMA.Mainboard;

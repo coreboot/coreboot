@@ -20,6 +20,6 @@ use HW.GFX.GMA.Display_Probing;
 
 private package GMA.Mainboard is
 
-   ports : constant Port_List := (Internal, HDMI3, others => Disabled);
+   ports : constant Port_List := (eDP, HDMI3, others => Disabled);
 
 end GMA.Mainboard;

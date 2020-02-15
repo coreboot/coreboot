@@ -22,7 +22,7 @@ private package GMA.Mainboard is
    ports : constant Port_List :=
      (HDMI1,
       Analog,
-      Internal,
+      LVDS,
       others => Disabled);
 
 end GMA.Mainboard;

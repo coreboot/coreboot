@@ -21,7 +21,7 @@ use HW.GFX.GMA.Display_Probing;
 private package GMA.Mainboard is
 
    ports : constant Port_List :=
-     (Internal,
+     (eDP,
       HDMI1,
       DP1,
       DP2,

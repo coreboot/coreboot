@@ -24,7 +24,6 @@ private package GMA.Mainboard is
      (HDMI1,
       HDMI2,
       Analog,
-      Internal,
       others => Disabled);
 
 end GMA.Mainboard;

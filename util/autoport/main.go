@@ -931,7 +931,8 @@ private package GMA.Mainboard is
       HDMI2,
       HDMI3,
       Analog,
-      Internal);
+      LVDS,
+      eDP);
 
 end GMA.Mainboard;
 `)

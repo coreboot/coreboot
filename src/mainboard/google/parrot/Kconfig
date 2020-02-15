@@ -19,7 +19,7 @@ config BOARD_SPECIFIC_OPTIONS
 	# Workaround for EC/KBC IRQ1.
 	select SERIRQ_CONTINUOUS_MODE
 	# This board also feature sandy-bridge CPU's so must have LVDS
-	select GFX_GMA_INTERNAL_IS_LVDS
+	select GFX_GMA_PANEL_1_ON_LVDS
 	select MAINBOARD_HAS_LIBGFXINIT
 	select SANDYBRIDGE_VBOOT_IN_ROMSTAGE
 

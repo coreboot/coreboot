@@ -26,7 +26,7 @@ private package GMA.Mainboard is
       DP2,
       HDMI2,
       Analog,
-      Internal,
+      LVDS,
       others => Disabled);
 
 end GMA.Mainboard;

@@ -24,7 +24,7 @@ private package GMA.Mainboard is
      (DP2, -- DP++ connector on the dock
       HDMI2,
       Analog,
-      Internal,
+      LVDS,
       others => Disabled);
 
 end GMA.Mainboard;

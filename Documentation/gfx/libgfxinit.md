@@ -65,11 +65,20 @@ board can initialize graphics through *libgfxinit*:
     select MAINBOARD_HAS_LIBGFXINIT
 
 Internal ports share some hardware blocks (e.g. backlight, panel
-power sequencer). Therefore, each board has to select either eDP
-or LVDS as the internal port, if any:
+power sequencer). Therefore, each system with an integrated panel
+should set `GFX_GMA_PANEL_1_PORT` to the respective port, e.g.:
 
-    select GFX_GMA_INTERNAL_IS_EDP	# the default, or
-    select GFX_GMA_INTERNAL_IS_LVDS
+    config GFX_GMA_PANEL_1_PORT
+            default "DP3"
+
+For the most common cases, LVDS and eDP, exists a shorthand, one
+can select either:
+
+    select GFX_GMA_PANEL_1_ON_EDP	# the default, or
+    select GFX_GMA_PANEL_1_ON_LVDS
+
+Some newer chips feature a second block of panel control logic.
+For this, `GFX_GMA_PANEL_2_PORT` can be set.
 
 Boards with a DVI-I connector share the DDC (I2C) pins for both
 analog and digital displays. In this case, *libgfxinit* needs to
@@ -96,7 +105,8 @@ You can select from the following Ports:
 
     type Port_Type is
       (Disabled,	-- optionally terminates the list
-       Internal,	-- either eDP or LVDS as selected in Kconfig
+       LVDS,
+       eDP,
        DP1,
        DP2,
        DP3,
@@ -112,8 +122,7 @@ both DPx and HDMIx should be listed.
 
 A good example is the mainboard Kontron/KTQM77, it features two
 DP++ ports (DP2/HDMI2, DP3/HDMI3), one DVI-I port (HDMI1/Analog),
-eDP and LVDS. Due to the constraints mentioned above, only one of
-eDP and LVDS can be enabled. It defines `ports` as follows:
+eDP and LVDS. It defines `ports` as follows:
 
     ports : constant Port_List :=
       (DP2,
@@ -122,7 +131,8 @@ eDP and LVDS can be enabled. It defines `ports` as follows:
        HDMI2,
        HDMI3,
        Analog,
-       Internal,
+       LVDS,
+       eDP,
        others => Disabled);
 
 The `GMA.gfxinit()` procedure probes for display EDIDs in the

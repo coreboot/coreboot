@@ -285,7 +285,7 @@ usb_hub_init(usbdev_t *const dev)
 		return;
 	}
 
-	/* Get number of ports from hub decriptor */
+	/* Get number of ports from hub descriptor */
 	int type = is_usb_speed_ss(dev->speed) ? 0x2a : 0x29; /* similar enough */
 	hub_descriptor_t desc;	/* won't fit the whole thing, we don't care */
 	if (get_descriptor(dev, gen_bmRequestType(device_to_host, class_type,

@@ -349,7 +349,7 @@ static int set_scancode_set(void)
 
 	/*
 	 * Set default parameters.
-	 * Fix for broken QEMU ps/2 make scancodes.
+	 * Fix for broken QEMU PS/2 make scancodes.
 	 */
 	ret = keyboard_cmd(I8042_KBCMD_SET_DEFAULT);
 	if (!ret) {

@@ -509,7 +509,7 @@ static int draw_bitmap_v3(const struct vector *top_left,
 	 * When d hits the right bottom corner, s0 also hits the right bottom
 	 * corner of the pixel array because that's how scale->x and scale->y
 	 * have been set. Since the pixel array size is already validated in
-	 * parse_bitmap_header_v3, s0 is guranteed not to exceed pixel array
+	 * parse_bitmap_header_v3, s0 is guaranteed not to exceed pixel array
 	 * boundary.
 	 */
 	struct vector s0, s1, d;

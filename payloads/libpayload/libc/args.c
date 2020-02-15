@@ -52,7 +52,7 @@ int string_argc;
  *
  * @param caller to be used as argv[0] (may be NULL to ignore)
  * @param string to process
- * @return 0 if no error occured.
+ * @return 0 if no error occurred.
  */
 int string_to_args(char *caller, char *string)
 {
@@ -66,7 +66,7 @@ int string_to_args(char *caller, char *string)
 
 	/* Terminate if the string ends */
 	while (string && *string) {
-		/* whitespace occured? */
+		/* whitespace occurred? */
 		if ((*string == ' ') || (*string == '\t')) {
 			/* skip all whitespace (and null it) */
 			while (*string == ' ' || *string == '\t')

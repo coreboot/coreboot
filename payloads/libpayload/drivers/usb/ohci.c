@@ -66,7 +66,7 @@ dump_td (td_t *cur)
 	usb_debug("|:|   C   | Condition Code               |   [%02ld] |:|\n", (cur->config & (0xFUL << 28)) >> 28);
 	usb_debug("|:|   O   | Direction/PID                |    [%ld] |:|\n", (cur->config & (3UL << 19)) >> 19);
 	usb_debug("|:|   N   | Buffer Rounding              |    [%ld] |:|\n", (cur->config & (1UL << 18)) >> 18);
-	usb_debug("|:|   F   | Delay Intterrupt             |    [%ld] |:|\n", (cur->config & (7UL << 21)) >> 21);
+	usb_debug("|:|   F   | Delay Interrupt              |    [%ld] |:|\n", (cur->config & (7UL << 21)) >> 21);
 	usb_debug("|:|   I   | Data Toggle                  |    [%ld] |:|\n", (cur->config & (3UL << 24)) >> 24);
 	usb_debug("|:|   G   | Error Count                  |    [%ld] |:|\n", (cur->config & (3UL << 26)) >> 26);
 	usb_debug("|:+-----------------------------------------------+:|\n");
@@ -879,7 +879,7 @@ ohci_process_done_queue(ohci_t *const ohci, const int spew_debug)
 			intrq_td_t *const td = INTRQ_TD_FROM_TD(done_td);
 			intr_queue_t *const intrq = td->intrq;
 			/* Check if the corresponding interrupt
-			   queue is still beeing processed. */
+			   queue is still being processed. */
 			if (intrq->destroy) {
 				/* Free this TD, and */
 				free(td);

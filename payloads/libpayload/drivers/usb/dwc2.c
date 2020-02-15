@@ -233,7 +233,7 @@ dwc2_do_xfer(endpoint_t *ep, int size, int pid, ep_dir_t dir,
 	packet_size = ep->maxpacketsize;
 	packet_cnt = ALIGN_UP(size, packet_size) / packet_size;
 	inpkt_length = packet_cnt * packet_size;
-	/* At least 1 packet should be programed */
+	/* At least 1 packet should be programmed */
 	packet_cnt = (packet_cnt == 0) ? 1 : packet_cnt;
 
 	/*

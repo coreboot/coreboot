@@ -129,7 +129,7 @@ char *readline(const char *prompt)
 			if (ch < 0x20)
 				break;
 
-			/* ignore unprintables */
+			/* ignore unprintable characters */
 			if (ch >= 0x7f)
 				break;
 

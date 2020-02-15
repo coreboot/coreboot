@@ -538,7 +538,7 @@ usb_msc_test_unit_ready (usbdev_t *dev)
 	time_t start_time_secs;
 	struct timeval tv;
 	/* SCSI/ATA specs say we have to wait up to 30s, but most devices
-	 * are ready much sooner. Use a 5 sec timeout to better accomodate
+	 * are ready much sooner. Use a 5 sec timeout to better accommodate
 	 * devices which fail to respond. */
 	const int timeout_secs = 5;
 
@@ -569,7 +569,7 @@ usb_msc_test_unit_ready (usbdev_t *dev)
 		MSC_INST (dev)->ready = USB_MSC_NOT_READY;
 	}
 
-	/* Don't bother spinning up the stroage device if the device is not
+	/* Don't bother spinning up the storage device if the device is not
 	 * ready. This can happen when empty card readers are present.
 	 * Polling will pick it back up if readiness changes. */
 	if (!MSC_INST (dev)->ready)

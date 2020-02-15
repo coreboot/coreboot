@@ -318,7 +318,7 @@ void *realloc(void *ptr, size_t size)
 
 struct align_region_t
 {
-	/* If alignment is 0 then the region reqpresents a large region which
+	/* If alignment is 0 then the region represents a large region which
 	 * has no metadata for tracking subelements. */
 	int alignment;
 	/* start in memory, and size in bytes */

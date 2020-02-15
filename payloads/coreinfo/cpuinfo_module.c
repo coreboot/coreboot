@@ -233,7 +233,7 @@ static int cpuinfo_module_redraw(WINDOW *win)
 	}
 
 	if (cpu_khz != 0)
-		mvwprintw(win, row++, 1, "CPU Speed: %d Mhz", cpu_khz / 1000);
+		mvwprintw(win, row++, 1, "CPU Speed: %d MHz", cpu_khz / 1000);
 	else
 		mvwprintw(win, row++, 1, "CPU Speed: Error");
 

@@ -253,7 +253,7 @@ static void dwc2_halt_ep(struct usbdev_ctrl *this, int ep, int in_dir)
 
 	usb_debug("dwc2_halt_ep ep %d-%d\n", ep, in_dir);
 	depctl.d32 = readl(&ep_reg->depctl);
-	/*Alread disabled*/
+	/* Already disabled */
 	if (!depctl.epena)
 		return;
 	/* First step: disable EP */
@@ -558,7 +558,7 @@ static void dwc2_outep_intr(struct usbdev_ctrl *this, dwc2_ep_t *ep)
 		writel(DXEPINT_AHBERR, &ep->ep_regs->depint);
 	}
 
-	/* Handle Setup Phase Done (Contorl Ep) */
+	/* Handle Setup Phase Done (Control Ep) */
 	if (depint.setup) {
 		usb_debug("DEPINT_SETUP\n");
 		writel(DXEPINT_SETUP, &ep->ep_regs->depint);

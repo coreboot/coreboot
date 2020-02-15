@@ -268,7 +268,7 @@ size_t strlcat(char *d, const char *s, size_t n)
  *
  * @param s The string.
  * @param c The character.
- * @return A pointer to the first occurence of the character in the
+ * @return A pointer to the first occurrence of the character in the
  * string, or NULL if the character was not encountered within the string.
  */
 char *strchr(const char *s, int c)
@@ -288,7 +288,7 @@ char *strchr(const char *s, int c)
  *
  * @param s The string.
  * @param c The character.
- * @return A pointer to the last occurence of the character in the
+ * @return A pointer to the last occurrence of the character in the
  * string, or NULL if the character was not encountered within the string.
  */
 
@@ -327,7 +327,7 @@ char *strdup(const char *s)
  *
  * @param h The haystack string.
  * @param n The needle string (substring).
- * @return A pointer to the first occurence of the substring in
+ * @return A pointer to the first occurrence of the substring in
  * the string, or NULL if the substring was not encountered within the string.
  */
 char *strstr(const char *h, const char *n)

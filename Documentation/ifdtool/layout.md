@@ -14,14 +14,26 @@ The names of the IFD regions in the FMAP should follow the convention of
 starting with the prefix `SI_` which stands for `silicon initialization` as a
 way to categorize anything required by the SoC but not provided by coreboot.
 
-|IFD Region index|IFD Region name|FMAP Name|Notes|
-|---|---|---|---|
-|0|Flash Descriptor|SI_DESC|Always the top 4KB of flash|
-|1|BIOS|SI_BIOS|This is the region that contains coreboot|
-|2|Intel ME|SI_ME||
-|3|Gigabit Ethernet|SI_GBE||
-|4|Platform Data|SI_PDR||
-|8|EC Firmware|SI_EC|Most Chrome OS devices do not use this region; EC firmware is stored BIOS region of flash|
+```eval_rst
++------------+------------------+-----------+-------------------------------------------+
+| IFD Region | IFD Region name  | FMAP Name | Notes                                     |
+| index      |                  |           |                                           |
++============+==================+===========+===========================================+
+| 0          | Flash Descriptor | SI_DESC   | Always the top 4KB of flash               |
++------------+------------------+-----------+-------------------------------------------+
+| 1          | BIOS             | SI_BIOS   | This is the region that contains coreboot |
++------------+------------------+-----------+-------------------------------------------+
+| 2          | Intel ME         | SI_ME     |                                           |
++------------+------------------+-----------+-------------------------------------------+
+| 3          | Gigabit Ethernet | SI_GBE    |                                           |
++------------+------------------+-----------+-------------------------------------------+
+| 4          | Platform Data    | SI_PDR    |                                           |
++------------+------------------+-----------+-------------------------------------------+
+| 8          | EC Firmware      | SI_EC     | Most Chrome OS devices do not use this    |
+|            |                  |           | region; EC firmware is stored in BIOS     |
+|            |                  |           | region of flash                           |
++------------+------------------+-----------+-------------------------------------------+
+```
 
 ## Validation
 

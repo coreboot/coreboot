@@ -291,12 +291,12 @@ static void soc_memory_init_params(FSPM_UPD *mupd)
 
 static void parse_devicetree_setting(FSPM_UPD *m_upd)
 {
-#if CONFIG(SOC_INTEL_GLK)
 	DEVTREE_CONST struct device *dev = pcidev_path_on_root(PCH_DEVFN_NPK);
-	if (!dev)
-		return;
 
-	m_upd->FspmConfig.TraceHubEn = dev->enabled;
+#if CONFIG(SOC_INTEL_GLK)
+	m_upd->FspmConfig.TraceHubEn = dev ? dev->enabled : 0;
+#else
+	m_upd->FspmConfig.NpkEn = dev ? dev->enabled : 0;
 #endif
 }
 

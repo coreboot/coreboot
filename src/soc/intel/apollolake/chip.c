@@ -425,6 +425,12 @@ static void soc_final(void *data)
 static void disable_dev(struct device *dev, FSP_S_CONFIG *silconfig)
 {
 	switch (dev->path.pci.devfn) {
+	case PCH_DEVFN_NPK:
+		/*
+		 * Disable this device in the parse_devicetree_setting() function
+		 * in romstage.c
+		 */
+		break;
 	case PCH_DEVFN_ISH:
 		silconfig->IshEnable = 0;
 		break;

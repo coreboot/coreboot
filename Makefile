@@ -82,6 +82,7 @@ Q:=@
 ifneq ($(V),1)
 ifneq ($(Q),)
 .SILENT:
+MAKEFLAGS += -s
 endif
 endif
 

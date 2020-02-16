@@ -1,5 +1,7 @@
 # Lenovo Ivy Bridge series
 
+This information is valid for all supported models, except T430s and T431s.
+
 ## Flashing coreboot
 ```eval_rst
 +---------------------+--------------------------------+
@@ -72,5 +74,5 @@ region. The update is then written into the EC once.
 
 ![][fl]
 
-[fl]: flashlayout_xx30.svg
+[fl]: flashlayout_Ivy_Bridge.svg
 

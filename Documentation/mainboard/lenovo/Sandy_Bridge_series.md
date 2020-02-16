@@ -44,5 +44,5 @@ region. The update is then written into the EC once.
 
 ![][fl]
 
-[fl]: flashlayout_xx20.svg
+[fl]: flashlayout_Sandy_Bridge.svg
 

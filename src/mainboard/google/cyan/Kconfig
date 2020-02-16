@@ -78,7 +78,7 @@ config VGA_BIOS_FILE
 	depends on VGA_BIOS
 	default "3rdparty/blobs/mainboard/intel/strago/vgabios.bin"
 	help
-	  The C0 version of the video bios gets computed from this name
+	  The C0 version of the video BIOS gets computed from this name
 	  so that they can both be added.  Only the correct one for the
 	  system will be run.
 
@@ -87,7 +87,7 @@ config VGA_BIOS_ID
 	depends on VGA_BIOS
 	default "8086,22b0"
 	help
-	  The VGA_BIOS_ID for the C0 version of the video bios is hardcoded
+	  The VGA_BIOS_ID for the C0 version of the video BIOS is hardcoded
 	  in soc/intel/braswell/Makefile.inc as 8086,22b1
 
 config CBFS_SIZE

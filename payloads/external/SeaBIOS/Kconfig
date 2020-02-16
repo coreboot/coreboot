@@ -125,7 +125,7 @@ config SEABIOS_DEBUG_LEVEL
 	  level 1  - Basic output, interrupts 5, 18h, 19h, 40h, SMP, PNP, PMM
 	  level 2  - AHCI, Floppy, Basic ps2, interrupts 11h, 12h, 14h, 17h
 	  level 3  - bootsplash, initializations, SeaBIOS VGA BIOS interrupts
-	  level 4  - bios tables, more optionrom
+	  level 4  - BIOS tables, more optionrom
 	  level 5  - Extra bootsplash, more XHCI
 	  level 6  - ATA commands, extra optionrom
 	  level 7  - extra ps2 commands, more OHCI & EHCI

@@ -733,7 +733,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *silupd)
 	/* Enable Audio clk gate and power gate */
 	silconfig->HDAudioClkGate = cfg->hdaudio_clk_gate_enable;
 	silconfig->HDAudioPwrGate = cfg->hdaudio_pwr_gate_enable;
-	/* Bios config lockdown Audio clk and power gate */
+	/* BIOS config lockdown Audio clk and power gate */
 	silconfig->BiosCfgLockDown = cfg->hdaudio_bios_config_lockdown;
 	if (CONFIG(SOC_INTEL_GLK))
 		glk_fsp_silicon_init_params_cb(cfg, silconfig);

@@ -47,10 +47,10 @@ static int int15_handler(void)
 		 *  bit 2 = Graphics Stretching
 		 *  bit 1 = Text Stretching
 		 *  bit 0 = Centering (do not set with bit1 or bit2)
-		 *  0     = video bios default
+		 *  0     = video BIOS default
 		 */
 		X86_AX = 0x005f;
-		X86_CL = 0x00; /* Use video bios default */
+		X86_CL = 0x00; /* Use video BIOS default */
 		res = 1;
 		break;
 	case 0x5f35:
@@ -66,7 +66,7 @@ static int int15_handler(void)
 		 *  bit 7 = LFP2
 		 */
 		X86_AX = 0x005f;
-		X86_CX = 0x0000; /* Use video bios default */
+		X86_CX = 0x0000; /* Use video BIOS default */
 		res = 1;
 		break;
 	case 0x5f51:

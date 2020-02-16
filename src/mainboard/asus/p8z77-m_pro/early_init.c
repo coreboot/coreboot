@@ -115,7 +115,7 @@ void mainboard_fill_pei_data(struct pei_data *pei_data)
 		.tseg_size = CONFIG_SMM_TSEG_SIZE,
 		.spd_addresses = { 0xa0, 0xa2, 0xa4, 0xa6 }, /* SMBus mul 2 */
 		.ts_addresses = { 0x00, 0x00, 0x00, 0x00 },
-		.ec_present = 0, /* Asus 2203 bios shows XUECA016, but no EC */
+		.ec_present = 0, /* Asus 2203 BIOS shows XUECA016, but no EC */
 		.gbe_enable = 0, /* Board uses no Intel GbE but a RTL8111F */
 		.dimm_channel0_disabled = 0, /* Both DIMM enabled */
 		.dimm_channel1_disabled = 0, /* Both DIMM enabled */

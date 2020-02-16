@@ -396,7 +396,7 @@ int smm_load_module(void *smram, size_t size, struct smm_loader_params *params)
 	/* Does the required amount of memory exceed the SMRAM region size? */
 	total_size = total_stack_size + handler_size;
 	total_size += fxsave_size + SMM_DEFAULT_SIZE;
-	// account for the bios resource list
+	// account for the BIOS resource list
 	if (CONFIG(STM))
 		total_size += CONFIG_BIOS_RESOURCE_LIST_SIZE;
 

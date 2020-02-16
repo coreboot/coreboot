@@ -48,7 +48,7 @@ static void hybrid_graphics_init(void)
 	pci_write_config32(PCI_DEV(0, 0, 0), DEVEN, reg32);
 }
 
-// OC3 set in bios to port 2-7, OC7 set in bios to port 10-13
+// OC3 set in BIOS to port 2-7, OC7 set in BIOS to port 10-13
 const struct southbridge_usb_port mainboard_usb_ports[] = {
 	{ 1, 1,  0 }, /* P0: system port 4, OC0 */
 	{ 1, 1,  1 }, /* P1: system port 2 (EHCI debug), OC 1 */

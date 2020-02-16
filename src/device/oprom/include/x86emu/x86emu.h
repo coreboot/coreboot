@@ -170,7 +170,7 @@ void 	X86EMU_halt_sys(void);
 #define DEBUG_SVC_F             0x000020
 #define DEBUG_FS_F              0x000080
 #define DEBUG_PROC_F            0x000100
-#define DEBUG_SYSINT_F          0x000200 /* bios system interrupts. */
+#define DEBUG_SYSINT_F          0x000200 /* BIOS system interrupts. */
 #define DEBUG_TRACECALL_F       0x000400
 #define DEBUG_INSTRUMENT_F      0x000800
 #define DEBUG_MEM_TRACE_F       0x001000

@@ -237,7 +237,7 @@ void fast_spi_cache_bios_region(void)
 
 	/* LOCAL APIC default address is 0xFEE0000, bios_size over 16MB will
 	 * cause memory type conflict when setting memory type to write
-	 * protection, so limit the cached bios region to be no more than 16MB.
+	 * protection, so limit the cached BIOS region to be no more than 16MB.
 	 * */
 	bios_size = MIN(bios_size, 16 * MiB);
 	if (bios_size <= 0)

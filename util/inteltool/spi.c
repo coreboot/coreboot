@@ -22,7 +22,7 @@ static const io_register_t pch_bios_cntl_registers[] = {
 	{ 0x1, 1, "BLE - lock enable" },
 	{ 0x2, 2, "SPI Read configuration" },
 	{ 0x4, 1, "TopSwapStatus" },
-	{ 0x5, 1, "SMM Bios Write Protect Disable" },
+	{ 0x5, 1, "SMM BIOS Write Protect Disable" },
 	{ 0x6, 2, "reserved" },
 };
 

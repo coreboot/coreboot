@@ -173,7 +173,7 @@ Here's the command line instruction broken down:
 This starts the QEMU emulator with the i440FX host PCI bridge and PIIX3 PCI to
 ISA bridge.
 * `-bios build/coreboot.rom`
-Use the bios rom image that we just built. If this flag is left out, the
+Use the coreboot rom image that we just built. If this flag is left out, the
 standard SeaBIOS image that comes with QEMU is used.
 * `-serial stdio`
 Send the serial output to the console. This allows you to view the coreboot

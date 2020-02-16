@@ -40,7 +40,7 @@ possible
 
 Lenovo mainboards
 -----------------
-* Started integration of VBT (Video Bios Table) binary files to
+* Started integration of VBT (Video BIOS Table) binary files to
 support native graphics initialisation
 
 Internal changes

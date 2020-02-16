@@ -69,12 +69,12 @@ static void fast_spi_lockdown_cfg(int chipset_lockdown)
 	/* Lock FAST_SPIBAR */
 	fast_spi_lock_bar();
 
-	/* Set Bios Interface Lock, Bios Lock */
+	/* Set BIOS Interface Lock, BIOS Lock */
 	if (chipset_lockdown == CHIPSET_LOCKDOWN_COREBOOT) {
-		/* Bios Interface Lock */
+		/* BIOS Interface Lock */
 		fast_spi_set_bios_interface_lock_down();
 
-		/* Bios Lock */
+		/* BIOS Lock */
 		fast_spi_set_lock_enable();
 	}
 }

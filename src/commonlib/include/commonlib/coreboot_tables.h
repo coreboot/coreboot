@@ -431,15 +431,15 @@ struct lb_macs {
 
 #define MAX_SERIALNO_LENGTH	32
 
-/* The following structures are for the cmos definitions table */
-/* cmos header record */
+/* The following structures are for the CMOS definitions table */
+/* CMOS header record */
 struct cmos_option_table {
 	uint32_t tag;               /* CMOS definitions table type */
 	uint32_t size;               /* size of the entire table */
 	uint32_t header_length;      /* length of header */
 };
 
-/* cmos entry record
+/* CMOS entry record
  * This record is variable length.  The name field may be
  * shorter than CMOS_MAX_NAME_LENGTH. The entry may start
  * anywhere in the byte, but can not span bytes unless it
@@ -459,7 +459,7 @@ struct cmos_entries {
 };
 
 
-/* cmos enumerations record
+/* CMOS enumerations record
  * This record is variable length.  The text field may be
  * shorter than CMOS_MAX_TEXT_LENGTH.
  */
@@ -473,8 +473,8 @@ struct cmos_enums {
 						variable length int aligned */
 };
 
-/* cmos defaults record
- * This record contains default settings for the cmos ram.
+/* CMOS defaults record
+ * This record contains default settings for the CMOS ram.
  */
 struct cmos_defaults {
 	uint32_t tag;                /* default type */

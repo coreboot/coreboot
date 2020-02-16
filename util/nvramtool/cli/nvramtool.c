@@ -126,7 +126,7 @@ int main(int argc, char *argv[])
 		if (!nvramtool_op_modifiers[NVRAMTOOL_MOD_USE_CMOS_FILE].found) {
 			cmos_default = cbfs_find_file("cmos.default", CBFS_COMPONENT_CMOS_DEFAULT, NULL);
 			if (cmos_default == NULL) {
-				fprintf(stderr, "Need a cmos.default in the CBFS image or separate cmos file (-D).\n");
+				fprintf(stderr, "Need a cmos.default in the CBFS image or separate CMOS file (-D).\n");
 				exit(1);
 			}
 		}

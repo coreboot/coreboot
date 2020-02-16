@@ -160,7 +160,7 @@ static void cmos_init_vbnv(bool invalid)
 	   occurred with !CONFIG_USE_OPTION_TABLE. However, __cmos_init() may
 	   clear vbnv data for other internal reasons. For that, always back up
 	   the vbnv contents and conditionally save them when __cmos_init()
-	   indicates cmos was cleared. */
+	   indicates CMOS was cleared. */
 	read_vbnv_cmos(vbnv);
 
 	if (__cmos_init(invalid))
@@ -204,7 +204,7 @@ void cmos_check_update_date(void)
 	year = cmos_read(RTC_CLK_YEAR);
 
 	/*
-	 * TODO: If century is 0xFF, 100% that the cmos is cleared.
+	 * TODO: If century is 0xFF, 100% that the CMOS is cleared.
 	 * Other than that, so far rtc_year is the only entry to check
 	 * if the date is valid.
 	 */

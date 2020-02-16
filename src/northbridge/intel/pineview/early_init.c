@@ -43,7 +43,7 @@ static void early_graphics_setup(void)
 
 	pci_write_config8(D0F0, DEVEN, BOARD_DEVEN);
 
-	/* vram size from cmos option */
+	/* vram size from CMOS option */
 	if (get_option(&reg8, "gfx_uma_size") != CB_SUCCESS)
 		reg8 = 0;	/* 0 for 8MB */
 	/* make sure no invalid setting is used */

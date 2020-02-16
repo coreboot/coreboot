@@ -505,7 +505,7 @@ static uintptr_t write_coreboot_table(uintptr_t rom_table_end)
 			 * lb_record...
 			 */
 			memcpy(rec_dest,  option_table, option_table->size);
-			/* Create cmos checksum entry in coreboot table */
+			/* Create CMOS checksum entry in coreboot table */
 			lb_cmos_checksum(head);
 		} else {
 			printk(BIOS_ERR,

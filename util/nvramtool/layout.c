@@ -93,7 +93,7 @@ static cmos_layout_get_fn_t cmos_layout_get_fn = default_cmos_layout_get_fn;
 /****************************************************************************
  * entries_overlap
  *
- * Return 1 if cmos entries 'p' and 'q' overlap.  Else return 0.
+ * Return 1 if CMOS entries 'p' and 'q' overlap.  Else return 0.
  ****************************************************************************/
 static inline int entries_overlap(const cmos_entry_t * p,
 				  const cmos_entry_t * q)

@@ -293,7 +293,7 @@ $(obj)/$(1).aml: $(src)/mainboard/$(MAINBOARDDIR)/$(1).asl $(obj)/config.h
 endef
 
 #######################################################################
-# Parse plaintext cmos defaults into binary format
+# Parse plaintext CMOS defaults into binary format
 # arg1: source file
 # arg2: binary file name
 cbfs-files-processor-nvramtool= \

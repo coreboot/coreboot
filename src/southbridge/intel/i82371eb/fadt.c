@@ -80,7 +80,7 @@ void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
 	fadt->flush_stride = 0;
 	fadt->duty_offset = 1; /* bit 1:3 in PCNTRL reg (pmbase+0x10) */
 	fadt->duty_width = 3; /* this width is in bits */
-	fadt->day_alrm = 0x0d; /* rtc cmos RAM offset */
+	fadt->day_alrm = 0x0d; /* rtc CMOS RAM offset */
 	fadt->mon_alrm = 0x0; /* not supported */
 	fadt->century = 0x0; /* not supported */
 	/*

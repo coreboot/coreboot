@@ -56,8 +56,8 @@ void x4x_early_init(void)
 		/* Enable internal GFX */
 		pci_write_config32(d0f0, D0F0_DEVEN, BOARD_DEVEN);
 
-		/* Set preallocated IGD size from cmos */
-		u8 gfxsize = 6; /* 6 for 64MiB, default if not set in cmos */
+		/* Set preallocated IGD size from CMOS */
+		u8 gfxsize = 6; /* 6 for 64MiB, default if not set in CMOS */
 		get_option(&gfxsize, "gfx_uma_size");
 		if (gfxsize > 12)
 			gfxsize = 6;

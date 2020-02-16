@@ -71,8 +71,8 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	Offset (0xb4),
 	ASLB,	32,	// 0xb4 - IGD OpRegion Base Address
 	IBTT,	 8,	// 0xb8 - IGD boot panel device
-	IPAT,	 8,	// 0xb9 - IGD panel type cmos option
-	ITVF,	 8,	// 0xba - IGD TV format cmos option
+	IPAT,	 8,	// 0xb9 - IGD panel type CMOS option
+	ITVF,	 8,	// 0xba - IGD TV format CMOS option
 	ITVM,	 8,	// 0xbb - IGD TV minor format option
 	IPSC,	 8,	// 0xbc - IGD panel scaling
 	IBLC,	 8,	// 0xbd - IGD BLC config

@@ -26,7 +26,7 @@
 
 /*
  * This routine returns the value of the requested bits.
- * input bit = bit count from the beginning of the cmos image
+ * input bit = bit count from the beginning of the CMOS image
  * length = number of bits to include in the value
  * ret = a character pointer to where the value is to be returned
  * returns CB_SUCCESS = successful, cb_err code if an error occurred

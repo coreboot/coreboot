@@ -205,7 +205,7 @@ config INCLUDE_CONFIG_FILE
 	    Alignment: 64 bytes
 
 	    Name                           Offset     Type         Size
-	    cmos_layout.bin                0x0        cmos layout  1159
+	    cmos_layout.bin                0x0        CMOS layout  1159
 	    fallback/romstage              0x4c0      stage        339756
 	    fallback/ramstage              0x53440    stage        186664
 	    fallback/payload               0x80dc0    payload      51526

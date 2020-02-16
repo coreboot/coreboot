@@ -81,13 +81,13 @@ void save_vbnv_cmos(const uint8_t *vbnv_copy)
 
 void vbnv_init_cmos(uint8_t *vbnv_copy)
 {
-	/* If no cmos failure just defer to the normal read path for checking
+	/* If no CMOS failure just defer to the normal read path for checking
 	   vbnv contents' integrity. */
 	if (!vbnv_cmos_failed())
 		return;
 
-	/* In the case of cmos failure force the backup. If backup wasn't used
-	   force the vbnv cmos to be reset. */
+	/* In the case of CMOS failure force the backup. If backup wasn't used
+	   force the vbnv CMOS to be reset. */
 	if (!restore_from_backup(vbnv_copy)) {
 		vbnv_reset(vbnv_copy);
 		/* This parallels the vboot_reference implementation. */

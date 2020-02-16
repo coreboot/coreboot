@@ -1293,7 +1293,7 @@ static void program_memory_map(const dimminfo_t *const dimms, const channel_mode
 		MCHBAR32(DCC_MCHBAR) &= ~DCC_INTERLEAVED;
 		break;
 	case CHANNEL_MODE_DUAL_ASYNC:
-		printk(BIOS_DEBUG, "Memory configured in dual-channel assymetric mode.\n");
+		printk(BIOS_DEBUG, "Memory configured in dual-channel asymmetric mode.\n");
 		MCHBAR32(DCC_MCHBAR) &= ~DCC_INTERLEAVED;
 		break;
 	case CHANNEL_MODE_DUAL_INTERLEAVED:

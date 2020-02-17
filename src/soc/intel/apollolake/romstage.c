@@ -198,6 +198,7 @@ void mainboard_romstage_entry(void)
 	const void *new_var_data;
 
 	soc_early_romstage_init();
+	report_platform_info();
 
 	s3wake = pmc_fill_power_state(ps) == ACPI_S3;
 	fsp_memory_init(s3wake);

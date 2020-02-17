@@ -24,6 +24,7 @@ bootblock-y += uart.c
 romstage-y += car.c
 romstage-y += ../../../cpu/intel/car/romstage.c
 romstage-y += romstage.c
+romstage-y += report_platform.c
 romstage-y += gspi.c
 romstage-y += heci.c
 romstage-y += i2c.c

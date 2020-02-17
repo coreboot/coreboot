@@ -12,4 +12,5 @@
 ##
 
 bootblock-y += name.c
+romstage-y += name.c
 ramstage-y += name.c

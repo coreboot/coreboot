@@ -75,7 +75,7 @@ The boards in this section are not real mainboards, but emulators.
 
 - [LT1000](libretrend/lt1000.md)
 
-### Nehalem series
+### Arrandale series
 
 - [T410](lenovo/t410.md)
 

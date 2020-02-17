@@ -263,10 +263,10 @@ static struct device_operations mc_ops = {
 	.ops_pci = &intel_pci_ops,
 };
 
-static const struct pci_driver mc_driver_44 __pci_driver = {
+static const struct pci_driver mc_driver_ard __pci_driver = {
 	.ops = &mc_ops,
 	.vendor = PCI_VENDOR_ID_INTEL,
-	.device = 0x0044,	/* Nehalem */
+	.device = 0x0044,	/* Arrandale DRAM controller */
 };
 
 static struct device_operations cpu_bus_ops = {
@@ -288,7 +288,7 @@ static void enable_dev(struct device *dev)
 }
 
 struct chip_operations northbridge_intel_ironlake_ops = {
-	CHIP_NAME("Intel i7 (Nehalem) integrated Northbridge")
+	CHIP_NAME("Intel i7 (Arrandale) integrated Northbridge")
 	.enable_dev = enable_dev,
 	.init = ironlake_init,
 };

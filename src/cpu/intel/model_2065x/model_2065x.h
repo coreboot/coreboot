@@ -15,7 +15,7 @@
 #ifndef _CPU_INTEL_MODEL_2065X_H
 #define _CPU_INTEL_MODEL_2065X_H
 
-/* Nehalem bus clock is fixed at 133MHz */
+/* Arrandale bus clock is fixed at 133MHz */
 #define IRONLAKE_BCLK		133
 
 #define MSR_CORE_THREAD_COUNT		0x35

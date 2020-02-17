@@ -20,7 +20,7 @@
 
 /* Intel Revision 30101 SMM State-Save Area
  * The following processor architectures use this:
- * - Nehalem
+ * - Westmere
  * - SandyBridge
  * - IvyBridge
  * - Haswell

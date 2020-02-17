@@ -48,7 +48,7 @@ static int get_fsb_tsc(int *fsb, int *ratio)
 			*fsb = core2_fsb[rdmsr(MSR_FSB_FREQ).lo & 7];
 			*ratio = (rdmsr(IA32_PERF_STATUS).hi >> 8) & 0x1f;
 			break;
-		case 0x25: /* Nehalem BCLK fixed at 133MHz */
+		case 0x25: /* Arrandale BCLK fixed at 133MHz */
 			*fsb = 133;
 			*ratio = (rdmsr(MSR_PLATFORM_INFO).lo >> 8) & 0xff;
 			break;

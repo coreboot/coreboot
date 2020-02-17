@@ -338,5 +338,5 @@ void generate_cpu_entries(struct device *device)
 }
 
 struct chip_operations cpu_intel_model_2065x_ops = {
-	CHIP_NAME("Intel Nehalem CPU")
+	CHIP_NAME("Intel Arrandale CPU")
 };

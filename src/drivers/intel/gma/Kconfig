@@ -39,7 +39,7 @@ config INTEL_GMA_SSC_ALTERNATE_REF
 	  To be set by northbridge or mainboard Kconfig.  For most platforms,
 	  there is no choice, i.e. for i945 and gm45 the SSC reference always
 	  differs from the display reference clock (i945: 66Mhz SSC vs. 48MHz
-	  DREF; gm45: 100MHz SSC vs. 96Mhz DREF), for Nehalem and newer, it's
+	  DREF; gm45: 100MHz SSC vs. 96Mhz DREF), for Arrandale and newer, it's
 	  the same frequency for SSC/non-SSC (120MHz).  The only, currently
 	  supported platform with a choice seems to be Pineview, where the
 	  alternative is 100MHz vs. the default 96MHz.

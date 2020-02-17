@@ -216,7 +216,7 @@ static void generate_P_state_entries(int core, int cores_per_package)
 		/* Max Non-Turbo Ratio */
 		ratio_max = (msr.lo >> 8) & 0xff;
 	}
-	clock_max = ratio_max * NEHALEM_BCLK + ratio_max / 3;
+	clock_max = ratio_max * IRONLAKE_BCLK + ratio_max / 3;
 
 	/* Calculate CPU TDP in mW */
 	power_max = 25000;
@@ -277,7 +277,7 @@ static void generate_P_state_entries(int core, int cores_per_package)
 
 		/* Calculate power at this ratio */
 		power = calculate_power(power_max, ratio_max, ratio);
-		clock = ratio * NEHALEM_BCLK + ratio / 3;
+		clock = ratio * IRONLAKE_BCLK + ratio / 3;
 
 		acpigen_write_PSS_package(
 			clock,			/*MHz*/

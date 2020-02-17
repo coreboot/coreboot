@@ -39,7 +39,7 @@ DefinitionBlock(
 	Scope (\_SB) {
 		Device (PCI0)
 		{
-			#include <northbridge/intel/nehalem/acpi/nehalem.asl>
+			#include <northbridge/intel/ironlake/acpi/ironlake.asl>
 			#include <southbridge/intel/bd82x6x/acpi/pch.asl>
 
 			#include <drivers/intel/gma/acpi/default_brightness_levels.asl>

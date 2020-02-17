@@ -13,7 +13,7 @@
 # GNU General Public License for more details.
 #
 
-ifeq ($(CONFIG_NORTHBRIDGE_INTEL_NEHALEM),y)
+ifeq ($(CONFIG_NORTHBRIDGE_INTEL_IRONLAKE),y)
 
 bootblock-y += bootblock.c
 

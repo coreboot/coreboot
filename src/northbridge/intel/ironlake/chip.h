@@ -13,8 +13,8 @@
  * GNU General Public License for more details.
  */
 
-#ifndef NORTHBRIDGE_INTEL_NEHALEM_CHIP_H
-#define NORTHBRIDGE_INTEL_NEHALEM_CHIP_H
+#ifndef NORTHBRIDGE_INTEL_IRONLAKE_CHIP_H
+#define NORTHBRIDGE_INTEL_IRONLAKE_CHIP_H
 
 #include <drivers/intel/gma/i915.h>
 
@@ -25,7 +25,7 @@
  *  0x06 = Enabled, 6ms short pulse
  *  0x07 = Enabled, 100ms short pulse
  */
-struct northbridge_intel_nehalem_config {
+struct northbridge_intel_ironlake_config {
 	u8 gpu_dp_b_hotplug; /* Digital Port B Hotplug Config */
 	u8 gpu_dp_c_hotplug; /* Digital Port C Hotplug Config */
 	u8 gpu_dp_d_hotplug; /* Digital Port D Hotplug Config */
@@ -48,4 +48,4 @@ struct northbridge_intel_nehalem_config {
 	u16 pci_mmio_size;
 };
 
-#endif /* NORTHBRIDGE_INTEL_NEHALEM_CHIP_H */
+#endif /* NORTHBRIDGE_INTEL_IRONLAKE_CHIP_H */

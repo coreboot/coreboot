@@ -19,7 +19,7 @@
 #include <stdint.h>
 #include <device/pci_ops.h>
 #include <device/smbus_host.h>
-#include <northbridge/intel/nehalem/nehalem.h>
+#include <northbridge/intel/ironlake/ironlake.h>
 #include <southbridge/intel/ibexpeak/pch.h>
 #include <southbridge/intel/common/gpio.h>
 
@@ -47,7 +47,7 @@ void early_pch_init(void)
 	early_gpio_init();
 	enable_smbus();
 	/* TODO, make this configurable */
-	pch_setup_cir(NEHALEM_MOBILE);
+	pch_setup_cir(IRONLAKE_MOBILE);
 	southbridge_configure_default_intmap();
 	pch_default_disable();
 	early_usb_init(mainboard_usb_ports);

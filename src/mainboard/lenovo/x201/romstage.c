@@ -21,7 +21,7 @@
 #include <ec/acpi/ec.h>
 
 #include <southbridge/intel/ibexpeak/pch.h>
-#include <northbridge/intel/nehalem/nehalem.h>
+#include <northbridge/intel/ironlake/ironlake.h>
 
 const struct southbridge_usb_port mainboard_usb_ports[] = {
 	/* Enabled, Current table lookup index, OC map */

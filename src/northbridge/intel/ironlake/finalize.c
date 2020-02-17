@@ -14,11 +14,11 @@
  * GNU General Public License for more details.
  */
 
-#include "nehalem.h"
+#include "ironlake.h"
 
 #define PCI_DEV_SNB PCI_DEV(0, 0, 0)
 
-void intel_nehalem_finalize_smm(void)
+void intel_ironlake_finalize_smm(void)
 {
 	MCHBAR32_OR(0x5500, 1 << 0);	/* PAVP */
 	MCHBAR32_OR(0x5f00, 1 << 31);	/* SA PM */

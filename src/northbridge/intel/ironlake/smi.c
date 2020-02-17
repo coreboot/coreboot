@@ -16,7 +16,7 @@
 #include <types.h>
 #include <device/device.h>
 #include <device/pci_ops.h>
-#include "nehalem.h"
+#include "ironlake.h"
 
 #include <cpu/intel/smm_reloc.h>
 

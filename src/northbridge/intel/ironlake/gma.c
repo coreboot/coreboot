@@ -33,7 +33,7 @@
 #include <types.h>
 
 #include "chip.h"
-#include "nehalem.h"
+#include "ironlake.h"
 
 /* some vga option roms are used for several chipsets but they only have one
  * PCI ID in their header. If we encounter such an option rom, we need to do
@@ -93,7 +93,7 @@ void gma_set_gnvs_aslb(void *gnvs, uintptr_t aslb)
 
 static void gma_pm_init_post_vbios(struct device *dev)
 {
-	struct northbridge_intel_nehalem_config *conf = dev->chip_info;
+	struct northbridge_intel_ironlake_config *conf = dev->chip_info;
 	u32 reg32;
 
 	printk(BIOS_DEBUG, "GT Power Management Init (post VBIOS)\n");
@@ -177,7 +177,7 @@ static void gma_func0_init(struct device *dev)
 
 	if (!acpi_is_wakeup_s3() &&
 	    CONFIG(MAINBOARD_USE_LIBGFXINIT)) {
-		struct northbridge_intel_nehalem_config *conf = dev->chip_info;
+		struct northbridge_intel_ironlake_config *conf = dev->chip_info;
 		int lightup_ok;
 		printk(BIOS_SPEW, "Initializing VGA without OPROM.");
 
@@ -223,7 +223,7 @@ intel_gma_get_controller_info(void)
 	if (!dev) {
 		return NULL;
 	}
-	struct northbridge_intel_nehalem_config *chip = dev->chip_info;
+	struct northbridge_intel_ironlake_config *chip = dev->chip_info;
 	return &chip->gfx;
 }
 

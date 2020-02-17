@@ -26,7 +26,7 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include "chip.h"
-#include "nehalem.h"
+#include "ironlake.h"
 #include <cpu/intel/smm_reloc.h>
 
 static int bridge_revision_id = -1;
@@ -228,7 +228,7 @@ static void northbridge_init(struct device *dev)
 }
 
 /* Disable unused PEG devices based on devicetree before PCI enumeration */
-static void nehalem_init(void *const chip_info)
+static void ironlake_init(void *const chip_info)
 {
 	u32 deven_mask = UINT32_MAX;
 	const struct device *dev;
@@ -287,8 +287,8 @@ static void enable_dev(struct device *dev)
 	}
 }
 
-struct chip_operations northbridge_intel_nehalem_ops = {
+struct chip_operations northbridge_intel_ironlake_ops = {
 	CHIP_NAME("Intel i7 (Nehalem) integrated Northbridge")
 	.enable_dev = enable_dev,
-	.init = nehalem_init,
+	.init = ironlake_init,
 };

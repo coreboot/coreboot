@@ -19,7 +19,7 @@
 #include <stdint.h>
 
 #include <southbridge/intel/ibexpeak/pch.h>
-#include <northbridge/intel/nehalem/nehalem.h>
+#include <northbridge/intel/ironlake/ironlake.h>
 
 /* Seems copied from Lenovo Thinkpad x201, might be wrong */
 const struct southbridge_usb_port mainboard_usb_ports[] = {

@@ -22,12 +22,12 @@
 #include <cpu/x86/lapic.h>
 #include <timestamp.h>
 #include <romstage_handoff.h>
-#include "nehalem.h"
+#include "ironlake.h"
 #include <arch/romstage.h>
 #include <device/pci_def.h>
 #include <device/device.h>
-#include <northbridge/intel/nehalem/chip.h>
-#include <northbridge/intel/nehalem/raminit.h>
+#include <northbridge/intel/ironlake/chip.h>
+#include <northbridge/intel/ironlake/raminit.h>
 #include <southbridge/intel/common/pmclib.h>
 #include <southbridge/intel/ibexpeak/pch.h>
 #include <southbridge/intel/ibexpeak/me.h>
@@ -44,7 +44,7 @@ void mainboard_romstage_entry(void)
 	enable_lapic();
 
 	/* TODO, make this configurable */
-	nehalem_early_initialization(NEHALEM_MOBILE);
+	ironlake_early_initialization(IRONLAKE_MOBILE);
 
 	early_pch_init();
 

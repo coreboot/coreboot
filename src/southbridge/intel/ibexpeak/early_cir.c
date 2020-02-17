@@ -14,7 +14,7 @@
 #include <console/console.h>
 #include <device/pci_ops.h>
 #include <device/pci_def.h>
-#include <northbridge/intel/nehalem/nehalem.h>
+#include <northbridge/intel/ironlake/ironlake.h>
 #include "pch.h"
 
 /* This sets up magic Chipset Initialization Registers */
@@ -53,7 +53,7 @@ void pch_setup_cir(int chipset_type)
 
 	/* Intel 5 Series Chipset and Intel 3400 Series Chipset
 	   External Design Specification (EDS) 13.8.1.1 */
-	if (chipset_type == NEHALEM_DESKTOP)
+	if (chipset_type == IRONLAKE_DESKTOP)
 		pci_or_config32(PCH_LPC_DEV, GEN_PMCON_1, 1 << 3);
 
 	pci_write_config8(PCH_LPC_DEV, CIR4, 0x45);

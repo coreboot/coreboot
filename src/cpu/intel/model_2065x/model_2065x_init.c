@@ -197,7 +197,7 @@ static void set_max_ratio(void)
 	wrmsr(IA32_PERF_CTL, perf_ctl);
 
 	printk(BIOS_DEBUG, "model_x06ax: frequency set to %d\n",
-	       ((perf_ctl.lo >> 8) & 0xff) * NEHALEM_BCLK);
+	       ((perf_ctl.lo >> 8) & 0xff) * IRONLAKE_BCLK);
 }
 
 static void set_energy_perf_bias(u8 policy)

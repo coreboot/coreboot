@@ -21,7 +21,7 @@
 #include <types.h>
 #include <device/device.h>
 #include <device/pci_ops.h>
-#include "nehalem.h"
+#include "ironlake.h"
 
 unsigned long acpi_fill_mcfg(unsigned long current)
 {

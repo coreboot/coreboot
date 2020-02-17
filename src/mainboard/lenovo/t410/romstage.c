@@ -20,7 +20,7 @@
 #include <device/pci_ops.h>
 #include <southbridge/intel/ibexpeak/pch.h>
 #include <drivers/lenovo/hybrid_graphics/hybrid_graphics.h>
-#include <northbridge/intel/nehalem/nehalem.h>
+#include <northbridge/intel/ironlake/ironlake.h>
 
 const struct southbridge_usb_port mainboard_usb_ports[] = {
 	/* Enabled, Current table lookup index, OC map */

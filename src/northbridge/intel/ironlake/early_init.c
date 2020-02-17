@@ -26,9 +26,9 @@
 #include <cpu/intel/turbo.h>
 #include <arch/cpu.h>
 
-#include "nehalem.h"
+#include "ironlake.h"
 
-static void nehalem_setup_bars(void)
+static void ironlake_setup_bars(void)
 {
 	/* Setting up Southbridge. In the northbridge code. */
 	printk(BIOS_DEBUG, "Setting up static southbridge registers...");
@@ -114,7 +114,7 @@ static void early_cpu_init (void)
 	wrmsr(IA32_MISC_ENABLE, m);
 }
 
-void nehalem_early_initialization(int chipset_type)
+void ironlake_early_initialization(int chipset_type)
 {
 	u32 capid0_a;
 	u8 reg8;
@@ -126,14 +126,14 @@ void nehalem_early_initialization(int chipset_type)
 		reg8 = pci_read_config8(PCI_DEV(0, 0, 0), 0xf3);
 		reg8 &= ~7;	/* Clear 2:0 */
 
-		if (chipset_type == NEHALEM_MOBILE)
+		if (chipset_type == IRONLAKE_MOBILE)
 			reg8 |= 1;	/* Set bit 0 */
 
 		pci_write_config8(PCI_DEV(0, 0, 0), 0xf3, reg8);
 	}
 
 	/* Setup all BARs required for early PCIe and raminit */
-	nehalem_setup_bars();
+	ironlake_setup_bars();
 
 	s3_resume = (inw(DEFAULT_PMBASE + PM1_STS) & WAK_STS) &&
 	    (((inl(DEFAULT_PMBASE + PM1_CNT) >> 10) & 7) == SLP_TYP_S3);

@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  */
 
-#include "../nehalem.h"
+#include "../ironlake.h"
 #include "hostbridge.asl"
 #include <southbridge/intel/common/rcba.h>
 

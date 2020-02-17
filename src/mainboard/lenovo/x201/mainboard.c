@@ -18,7 +18,7 @@
 
 #include <device/device.h>
 #include <ec/acpi/ec.h>
-#include <northbridge/intel/nehalem/nehalem.h>
+#include <northbridge/intel/ironlake/ironlake.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 #include "dock.h"
 #include <drivers/intel/gma/int15.h>

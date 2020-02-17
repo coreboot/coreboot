@@ -16,7 +16,7 @@
 #define _CPU_INTEL_MODEL_2065X_H
 
 /* Nehalem bus clock is fixed at 133MHz */
-#define NEHALEM_BCLK		133
+#define IRONLAKE_BCLK		133
 
 #define MSR_CORE_THREAD_COUNT		0x35
 #define MSR_FEATURE_CONFIG		0x13c

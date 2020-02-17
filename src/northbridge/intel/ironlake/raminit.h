@@ -16,7 +16,7 @@
 #ifndef RAMINIT_H
 #define RAMINIT_H
 
-#include "nehalem.h"
+#include "ironlake.h"
 
 void chipset_init(const int s3resume);
 /* spd_addrmap is array of 4 elements:

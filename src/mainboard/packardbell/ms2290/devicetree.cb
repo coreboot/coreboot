@@ -15,7 +15,7 @@
 ## GNU General Public License for more details.
 ##
 
-chip northbridge/intel/nehalem
+chip northbridge/intel/ironlake
 	# IGD Displays
 	register "gfx.ndid" = "3"
 	register "gfx.did" = "{ 0x80000100, 0x80000240, 0x80000410, 0x80000410, 0x00000005 }"

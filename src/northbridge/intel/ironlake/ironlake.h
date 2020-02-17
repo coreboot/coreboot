@@ -15,8 +15,8 @@
  * GNU General Public License for more details.
  */
 
-#ifndef __NORTHBRIDGE_INTEL_NEHALEM_NEHALEM_H__
-#define __NORTHBRIDGE_INTEL_NEHALEM_NEHALEM_H__
+#ifndef __NORTHBRIDGE_INTEL_IRONLAKE_IRONLAKE_H__
+#define __NORTHBRIDGE_INTEL_IRONLAKE_IRONLAKE_H__
 
 #ifndef __ASSEMBLER__
 
@@ -99,9 +99,9 @@ typedef struct {
 #define D1F0_VC0RCTL 0x114
 
 /* Chipset types */
-#define NEHALEM_MOBILE	0
-#define NEHALEM_DESKTOP	1
-#define NEHALEM_SERVER	2
+#define IRONLAKE_MOBILE	0
+#define IRONLAKE_DESKTOP	1
+#define IRONLAKE_SERVER	2
 
 /* Device ID for SandyBridge and IvyBridge */
 #define BASE_REV_SNB	0x00
@@ -249,14 +249,14 @@ typedef struct {
 #define PCI_DEVICE_ID_SB 0x0104
 #define PCI_DEVICE_ID_IB 0x0154
 
-void intel_nehalem_finalize_smm(void);
+void intel_ironlake_finalize_smm(void);
 
 int bridge_silicon_revision(void);
-void nehalem_early_initialization(int chipset_type);
-void nehalem_late_initialization(void);
+void ironlake_early_initialization(int chipset_type);
+void ironlake_late_initialization(void);
 void mainboard_pre_raminit(void);
 void mainboard_get_spd_map(u8 *spd_addrmap);
 
 #endif
 #endif
-#endif /* __NORTHBRIDGE_INTEL_NEHALEM_NEHALEM_H__ */
+#endif /* __NORTHBRIDGE_INTEL_IRONLAKE_IRONLAKE_H__ */

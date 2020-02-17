@@ -19,7 +19,7 @@
 #include <device/pci_ops.h>
 #include <southbridge/intel/ibexpeak/nvs.h>
 #include <southbridge/intel/common/pmutil.h>
-#include <northbridge/intel/nehalem/nehalem.h>
+#include <northbridge/intel/ironlake/ironlake.h>
 #include <ec/acpi/ec.h>
 
 void mainboard_smi_gpi(u32 gpi_sts)

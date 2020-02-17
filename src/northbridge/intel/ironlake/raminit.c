@@ -41,7 +41,7 @@
 #include <types.h>
 
 #include "chip.h"
-#include "nehalem.h"
+#include "ironlake.h"
 #include "raminit.h"
 #include "raminit_tables.h"
 
@@ -1362,7 +1362,7 @@ static void program_board_delay(struct raminfo *info)
 static unsigned int get_mmio_size(void)
 {
 	const struct device *dev;
-	const struct northbridge_intel_nehalem_config *cfg = NULL;
+	const struct northbridge_intel_ironlake_config *cfg = NULL;
 
 	dev = pcidev_path_on_root(HOST_BRIDGE);
 	if (dev)

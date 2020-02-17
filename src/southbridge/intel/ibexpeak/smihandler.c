@@ -34,7 +34,7 @@
  *  1. the chipset can do it
  *  2. we don't need to worry about how we leave 0xcf8/0xcfc behind
  */
-#include <northbridge/intel/nehalem/nehalem.h>
+#include <northbridge/intel/ironlake/ironlake.h>
 #include <southbridge/intel/common/gpio.h>
 #include <southbridge/intel/common/pmutil.h>
 
@@ -185,6 +185,6 @@ void southbridge_finalize_all(void)
 {
 	intel_me_finalize_smm();
 	intel_pch_finalize_smm();
-	intel_nehalem_finalize_smm();
+	intel_ironlake_finalize_smm();
 	intel_model_2065x_finalize_smm();
 }

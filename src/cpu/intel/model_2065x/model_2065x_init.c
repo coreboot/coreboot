@@ -342,9 +342,13 @@ static struct device_operations cpu_dev_ops = {
 	.init     = model_2065x_init,
 };
 
+/* Arrandale / Clarkdale CPU IDs */
 static const struct cpu_device_id cpu_table[] = {
-	{ X86_VENDOR_INTEL, 0x20652 }, /* Intel Nehalem */
-	{ X86_VENDOR_INTEL, 0x20655 }, /* Intel Nehalem */
+	{ X86_VENDOR_INTEL, 0x20650 },
+	{ X86_VENDOR_INTEL, 0x20651 },
+	{ X86_VENDOR_INTEL, 0x20652 },
+	{ X86_VENDOR_INTEL, 0x20654 },
+	{ X86_VENDOR_INTEL, 0x20655 },
 	{ 0, 0 },
 };
 

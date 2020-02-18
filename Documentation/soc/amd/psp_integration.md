@@ -37,38 +37,40 @@ any of the eligible locations.  Below are typical definitions within the
 structure (for all families combined).  Individual features supported vary by
 family and model.
 
-    +--------------+---------------+------------------+----------------------------+
-    |  Field Name  |  Offset (Hex) |  Size (In Bytes) |    Description/Purpose     |
-    +--------------+---------------+------------------+----------------------------+
-    |  Signature   | 0x00          | 4                | 0x55aa55aa                 |
-    |--------------|---------------|------------------|----------------------------|
-    |  IMC FW      | 0x04          | 4                | Integrated Micro           |
-    |              |               |                  | Controller: unsupported    |
-    |              |               |                  | but functional in some     |
-    |              |               |                  | systems                    |
-    |--------------|---------------|------------------|----------------------------|
-    | GbE FW       | 0x08          | 4                | Gigabit Ethernet           |
-    |--------------|---------------|------------------|----------------------------|
-    | xHCI FW      | 0x0c          | 4                | xHCI firmware              |
-    |--------------|---------------|------------------|----------------------------|
-    | PSP Dir Tbl  | 0x10          | 4                | Pointer to PSP Directory   |
-    |              |               |                  | Table (early devices)      |
-    |--------------|---------------|------------------|----------------------------|
-    | PSP Dir Tbl  | 0x14          | 4                | Pointer to PSP Directory   |
-    |              |               |                  | Table (later devices and   |
-    |              |               |                  | is combo capable)          |
-    |--------------|---------------|------------------|----------------------------|
-    | BIOS Dir Tbl | 0x18          | 4                | Pointer to BIOS Directory  |
-    |              |               |                  | Table for models n*        |
-    |--------------|---------------|------------------|----------------------------|
-    | BIOS Dir Tbl | 0x1c          | 4                | Pointer to BIOS Directory  |
-    |              |               |                  | Table for models nn        |
-    |--------------|---------------|------------------|----------------------------|
-    | BIOS Dir Tbl | 0x20          | 4                | Pointer to BIOS Directory  |
-    |              |               |                  | Table for models nnn       |
-    |--------------|---------------|------------------|----------------------------|
-    | …            |               |                  | ...                        |
-    +--------------+---------------+------------------+----------------------------+
+```eval_rst
++--------------+---------------+------------------+----------------------------+
+|  Field Name  |  Offset (Hex) |  Size (In Bytes) |    Description/Purpose     |
++==============+===============+==================+============================+
+|  Signature   | 0x00          | 4                | 0x55aa55aa                 |
++--------------+---------------+------------------+----------------------------+
+|  IMC FW      | 0x04          | 4                | Integrated Micro           |
+|              |               |                  | Controller: unsupported    |
+|              |               |                  | but functional in some     |
+|              |               |                  | systems                    |
++--------------+---------------+------------------+----------------------------+
+| GbE FW       | 0x08          | 4                | Gigabit Ethernet           |
++--------------+---------------+------------------+----------------------------+
+| xHCI FW      | 0x0c          | 4                | xHCI firmware              |
++--------------+---------------+------------------+----------------------------+
+| PSP Dir Tbl  | 0x10          | 4                | Pointer to PSP Directory   |
+|              |               |                  | Table (early devices)      |
++--------------+---------------+------------------+----------------------------+
+| PSP Dir Tbl  | 0x14          | 4                | Pointer to PSP Directory   |
+|              |               |                  | Table (later devices and   |
+|              |               |                  | is combo capable)          |
++--------------+---------------+------------------+----------------------------+
+| BIOS Dir Tbl | 0x18          | 4                | Pointer to BIOS Directory  |
+|              |               |                  | Table for models n*        |
++--------------+---------------+------------------+----------------------------+
+| BIOS Dir Tbl | 0x1c          | 4                | Pointer to BIOS Directory  |
+|              |               |                  | Table for models nn        |
++--------------+---------------+------------------+----------------------------+
+| BIOS Dir Tbl | 0x20          | 4                | Pointer to BIOS Directory  |
+|              |               |                  | Table for models nnn       |
++--------------+---------------+------------------+----------------------------+
+| …            |               |                  | ...                        |
++--------------+---------------+------------------+----------------------------+
+```
 
 * The Embedded Firmware Structure may support pointers to multiple generations
   of devices, e.g. Family 17h Models 00h-0Fh, Family 17h Models 10h-1Fh, etc.
@@ -83,46 +85,47 @@ allowing secondary tables to be referenced by device ID.  No coreboot
 implementations currently use combo tables.
 
 ### PSP Directory Table Header
-
-    +--------------+---------------+------------------+----------------------------+
-    |  Field Name  |  Offset (Hex) |  Size (In Bytes) |    Description/Purpose     |
-    +--------------+---------------+------------------+----------------------------+
-    | PSP Cookie   | 0x00          | 4                | PSP cookie "$PSP" to       |
-    |              |               |                  | recognize the header.      |
-    |              |               |                  | Cookie “$PL2” for level 2  |
-    |--------------|---------------|------------------|----------------------------|
-    | Checksum     | 0x04          | 4                | 32-bit CRC value of header |
-    |              |               |                  | below this field and       |
-    |              |               |                  | including all entries      |
-    |--------------|---------------|------------------|----------------------------|
-    | Total Entries| 0x08          | 4                | Number of PSP Directory    |
-    |              |               |                  | entries in the table       |
-    |--------------|---------------|------------------|----------------------------|
-    | Reserved     | 0x0C          | 4                | Reserved - Set to zero     |
-    +--------------+---------------+------------------+----------------------------+
+```eval_rst
++--------------+---------------+------------------+----------------------------+
+|  Field Name  |  Offset (Hex) |  Size (In Bytes) |    Description/Purpose     |
++==============+===============+==================+============================+
+| PSP Cookie   | 0x00          | 4                | PSP cookie "$PSP" to       |
+|              |               |                  | recognize the header.      |
+|              |               |                  | Cookie “$PL2” for level 2  |
++--------------+---------------+------------------+----------------------------+
+| Checksum     | 0x04          | 4                | 32-bit CRC value of header |
+|              |               |                  | below this field and       |
+|              |               |                  | including all entries      |
++--------------+---------------+------------------+----------------------------+
+| Total Entries| 0x08          | 4                | Number of PSP Directory    |
+|              |               |                  | entries in the table       |
++--------------+---------------+------------------+----------------------------+
+| Reserved     | 0x0C          | 4                | Reserved - Set to zero     |
++--------------+---------------+------------------+----------------------------+
+```
 
 ### PSP Directory Table Entries
-
-    +--------------+---------------+------------------+----------------------------+
-    |  Field Name  |  Offset (Hex) |  Size (In Bits)  |    Description/Purpose     |
-    +--------------+---------------+------------------+----------------------------+
-    | Type         | 0x00          | 8                | Entry type (see below)     |
-    |--------------|---------------|------------------|----------------------------|
-    | Sub Program  | 0x01          | 8                | Specifies sub program      |
-    |--------------|---------------|------------------|----------------------------|
-    | Reserved     | 0x02          | 16               | Reserved - set to 0        |
-    |--------------|---------------|------------------|----------------------------|
-    | Size         | 0x04          | 32               | Size of PSP entry in bytes |
-    |--------------|---------------|------------------|----------------------------|
-    | Location /   | 0x08          | 64               | Location: Physical Address |
-    | Value        |               |                  | of SPIROM location where   |
-    |              |               |                  | corresponding PSP entry    |
-    |              |               |                  | located.                   |
-    |              |               |                  |                            |
-    |              |               |                  | Value: 64-bit value for the|
-    |              |               |                  | PSP Entry                  |
-    +--------------+---------------+------------------+----------------------------+
-
+```eval_rst
++--------------+---------------+------------------+----------------------------+
+|  Field Name  |  Offset (Hex) |  Size (In Bits)  |    Description/Purpose     |
++==============+===============+==================+============================+
+| Type         | 0x00          | 8                | Entry type (see below)     |
++--------------+---------------+------------------+----------------------------+
+| Sub Program  | 0x01          | 8                | Specifies sub program      |
++--------------+---------------+------------------+----------------------------+
+| Reserved     | 0x02          | 16               | Reserved - set to 0        |
++--------------+---------------+------------------+----------------------------+
+| Size         | 0x04          | 32               | Size of PSP entry in bytes |
++--------------+---------------+------------------+----------------------------+
+| Location /   | 0x08          | 64               | Location: Physical Address |
+| Value        |               |                  | of SPIROM location where   |
+|              |               |                  | corresponding PSP entry    |
+|              |               |                  | located.                   |
+|              |               |                  |                            |
+|              |               |                  | Value: 64-bit value for the|
+|              |               |                  | PSP Entry                  |
++--------------+---------------+------------------+----------------------------+
+```
 ### PSP Directory Table Types
 
 **0x00**: AMD public key
@@ -248,68 +251,72 @@ The BIOS Directory table structure is slightly different from the PSP Directory:
 
 ### BIOS Directory Table Header
 
-    +--------------+---------------+------------------+----------------------------+
-    |  Field Name  |  Offset (Hex) |  Size (In Bytes) |    Description/Purpose     |
-    +--------------+---------------+------------------+----------------------------+
-    | BIOS Cookie  | 0x00          | 4                | BIOS cookie "$BHD" to      |
-    |              |               |                  | recognize the header.      |
-    |              |               |                  | Cookie “$BL2” for level 2  |
-    |--------------|---------------|------------------|----------------------------|
-    | Checksum     | 0x04          | 4                | 32 bit CRC value of header |
-    |              |               |                  | below this field and       |
-    |              |               |                  | including all entries      |
-    |--------------|---------------|------------------|----------------------------|
-    | Total Entries| 0x08          | 4                | Number of BIOS Directory   |
-    |              |               |                  | entries in the table       |
-    |--------------|---------------|------------------|----------------------------|
-    | Reserved     | 0x0C          | 4                | Reserved - Set to zero     |
-    +--------------+---------------+------------------+----------------------------+
+```eval_rst
++--------------+---------------+------------------+----------------------------+
+|  Field Name  |  Offset (Hex) |  Size (In Bytes) |    Description/Purpose     |
++==============+===============+==================+============================+
+| BIOS Cookie  | 0x00          | 4                | BIOS cookie "$BHD" to      |
+|              |               |                  | recognize the header.      |
+|              |               |                  | Cookie “$BL2” for level 2  |
++--------------+---------------+------------------+----------------------------+
+| Checksum     | 0x04          | 4                | 32 bit CRC value of header |
+|              |               |                  | below this field and       |
+|              |               |                  | including all entries      |
++--------------+---------------+------------------+----------------------------+
+| Total Entries| 0x08          | 4                | Number of BIOS Directory   |
+|              |               |                  | entries in the table       |
++--------------+---------------+------------------+----------------------------+
+| Reserved     | 0x0C          | 4                | Reserved - Set to zero     |
++--------------+---------------+------------------+----------------------------+
+```
 
 ### BIOS Directory Table Entries
 
-    +--------------+---------------+------------------+----------------------------+
-    |  Field Name  |  Offset (Hex) |  Size (In Bits)  |    Description/Purpose     |
-    +--------------+---------------+------------------+----------------------------+
-    | Type         | 0x00          | 8                | Entry type (see below)     |
-    |--------------|---------------|------------------|----------------------------|
-    | Region Type  | 0x01          | 8                | Setup the memory region's  |
-    |              |               |                  | security attribute for the |
-    |              |               |                  | BIOS entry                 |
-    |--------------|---------------|------------------|----------------------------|
-    | Reset Image  | 0x02[0]       | 1                | Boolean value to define the|
-    |              |               |                  | BIOS entry is a reset      |
-    |              |               |                  | binary image               |
-    |--------------|---------------|------------------|----------------------------|
-    | Copy Image   | 0x02[1]       | 1                | Define the binary image of |
-    |              |               |                  | the BIOS entry is for      |
-    |              |               |                  | copying over to the memory |
-    |              |               |                  | region                     |
-    |--------------|---------------|------------------|----------------------------|
-    | Read Only    | 0x02[2]       | 1                | Setup the memory region for|
-    |              |               |                  | the BIOS entry to read only|
-    |--------------|---------------|------------------|----------------------------|
-    | Compressed   | 0x02[3]       | 1                | Compressed using zlib      |
-    |              |               |                  |                            |
-    |--------------|---------------|------------------|----------------------------|
-    | Instance     | 0x02[7:4]     | 4                | Specify the Instance of an |
-    |              |               |                  | entry                      |
-    |--------------|---------------|------------------|----------------------------|
-    | SubProgram   | 0x03[2:0]     | 3                | Specify the SubProgram     |
-    |--------------|---------------|------------------|----------------------------|
-    | Reserved     | 0x03[7:3]     | 5                | Reserved - Set to zero     |
-    |--------------|---------------|------------------|----------------------------|
-    | Size         | 0x04          | 32               | Memory Region Size         |
-    |--------------|---------------|------------------|----------------------------|
-    | Source       | 0x08          | 64               | Physical Address of SPIROM |
-    | Address      |               |                  | location where the data for|
-    |              |               |                  | the corresponding entry is |
-    |              |               |                  | located                    |
-    |--------------|---------------|------------------|----------------------------|
-    | Destination  | 0x10          | 64               | Destination Address of     |
-    | Address      |               |                  | memory location where the  |
-    |              |               |                  | data for the corresponding |
-    |              |               |                  | BIOS Entry is copied       |
-    +--------------+---------------+------------------+----------------------------+
+```eval_rst
++--------------+---------------+------------------+----------------------------+
+|  Field Name  |  Offset (Hex) |  Size (In Bits)  |    Description/Purpose     |
++==============+===============+==================+============================+
+| Type         | 0x00          | 8                | Entry type (see below)     |
++--------------+---------------+------------------+----------------------------+
+| Region Type  | 0x01          | 8                | Setup the memory region's  |
+|              |               |                  | security attribute for the |
+|              |               |                  | BIOS entry                 |
++--------------+---------------+------------------+----------------------------+
+| Reset Image  | 0x02[0]       | 1                | Boolean value to define the|
+|              |               |                  | BIOS entry is a reset      |
+|              |               |                  | binary image               |
++--------------+---------------+------------------+----------------------------+
+| Copy Image   | 0x02[1]       | 1                | Define the binary image of |
+|              |               |                  | the BIOS entry is for      |
+|              |               |                  | copying over to the memory |
+|              |               |                  | region                     |
++--------------+---------------+------------------+----------------------------+
+| Read Only    | 0x02[2]       | 1                | Setup the memory region for|
+|              |               |                  | the BIOS entry to read only|
++--------------+---------------+------------------+----------------------------+
+| Compressed   | 0x02[3]       | 1                | Compressed using zlib      |
+|              |               |                  |                            |
++--------------+---------------+------------------+----------------------------+
+| Instance     | 0x02[7:4]     | 4                | Specify the Instance of an |
+|              |               |                  | entry                      |
++--------------+---------------+------------------+----------------------------+
+| SubProgram   | 0x03[2:0]     | 3                | Specify the SubProgram     |
++--------------+---------------+------------------+----------------------------+
+| Reserved     | 0x03[7:3]     | 5                | Reserved - Set to zero     |
++--------------+---------------+------------------+----------------------------+
+| Size         | 0x04          | 32               | Memory Region Size         |
++--------------+---------------+------------------+----------------------------+
+| Source       | 0x08          | 64               | Physical Address of SPIROM |
+| Address      |               |                  | location where the data for|
+|              |               |                  | the corresponding entry is |
+|              |               |                  | located                    |
++--------------+---------------+------------------+----------------------------+
+| Destination  | 0x10          | 64               | Destination Address of     |
+| Address      |               |                  | memory location where the  |
+|              |               |                  | data for the corresponding |
+|              |               |                  | BIOS Entry is copied       |
++--------------+---------------+------------------+----------------------------+
+```
 
 ### BIOS Directory Table Entry Types
 

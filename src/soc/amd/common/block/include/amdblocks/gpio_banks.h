@@ -303,7 +303,7 @@ uintptr_t gpio_get_address(gpio_t gpio_num);
 void program_gpios(const struct soc_amd_gpio *gpio_list_ptr, size_t size);
 /* Return the interrupt status and clear if set. */
 int gpio_interrupt_status(gpio_t gpio);
-/* Implemented by soc, provides table of avaialable GPIO mapping to Gevents */
+/* Implemented by soc, provides table of available GPIO mapping to Gevents */
 void soc_get_gpio_event_table(const struct soc_amd_event **table, size_t *items);
 /* May be implemented by soc to handle special cases */
 void soc_gpio_hook(uint8_t gpio, uint8_t mux);

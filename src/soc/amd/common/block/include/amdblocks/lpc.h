@@ -103,7 +103,7 @@
 #define LPC_MEM_PORT0			0x60
 
 /* Register 0x64 is 32-bit, composed by two 16-bit sub-registers.
-   For ease of access, each sub-register is declared separetely. */
+   For ease of access, each sub-register is declared separately. */
 #define LPC_WIDEIO_GENERIC_PORT		0x64
 #define LPC_WIDEIO1_GENERIC_PORT	0x66
 #define ROM_ADDRESS_RANGE1_START	0x68

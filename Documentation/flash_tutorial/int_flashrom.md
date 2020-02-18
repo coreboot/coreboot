@@ -5,7 +5,7 @@
 
 ## Using flashrom
 This method does only work on Linux, if it isn't locked down.
-You may also need to boot with 'iomem=relaxed' in the kernel command
+You may also need to boot with `iomem=relaxed` in the kernel command
 line if CONFIG_IO_STRICT_DEVMEM is set.
 
 

@@ -270,17 +270,6 @@ static void lpc_set_gen_decode_range(
 			gen_io_dec[i]);
 }
 
-static void pch_lpc_interrupt_init(void)
-{
-	const struct device *dev;
-
-	dev = pcidev_on_root(PCH_DEV_SLOT_LPC, 0);
-	if (!dev)
-		return;
-
-	soc_pch_pirq_init(dev);
-}
-
 void pch_enable_lpc(void)
 {
 	/* Lookup device tree in romstage */
@@ -295,7 +284,7 @@ void pch_enable_lpc(void)
 	lpc_set_gen_decode_range(gen_io_dec);
 	soc_setup_dmi_pcr_io_dec(gen_io_dec);
 	if (ENV_PAYLOAD_LOADER)
-		pch_lpc_interrupt_init();
+		soc_pch_pirq_init(dev);
 }
 
 void lpc_enable_pci_clk_cntl(void)

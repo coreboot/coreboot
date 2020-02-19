@@ -10,6 +10,7 @@
 #include <device/device.h>
 #include <ec/google/chromeec/ec.h>
 #include <edid.h>
+#include <framebuffer_info.h>
 #include <gpio.h>
 #include <soc/ddp.h>
 #include <soc/dsi.h>
@@ -168,8 +169,10 @@ static bool configure_display(void)
 		return false;
 	}
 	mtk_ddp_mode_set(edid);
-	set_vbe_mode_info_valid(edid, 0);
-	set_vbe_framebuffer_orientation(panel->s->orientation);
+	struct fb_info *info = set_vbe_mode_info_valid(edid, 0);
+	if (info)
+		fb_set_orientation(info, panel->s->orientation);
+
 	return true;
 }
 

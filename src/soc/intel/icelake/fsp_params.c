@@ -96,10 +96,6 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 		params->PeiGraphicsPeimInit = 1;
 	else
 		params->PeiGraphicsPeimInit = 0;
-	if (dev && dev->enabled) {
-		params->GtFreqMax = 2;
-		params->CdClock = 3;
-	}
 
 	/* Unlock upper 8 bytes of RTC RAM */
 	params->PchLockDownRtcMemoryLock = 0;

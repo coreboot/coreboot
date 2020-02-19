@@ -569,7 +569,7 @@ BOOLEAN MemFS3DefConstructorRet (
     #define PLAT_SP_ON_FF_SDIMM3    MemPConstructPsUDef,
     #define PLAT_SP_ON_FF_UDIMM3    MemPConstructPsUDef,
   #endif
-  MEM_PLAT_SPEC_CFG* memPlatSpecFFInstalledON[] = {
+  MEM_PLAT_SPEC_CFG* memPlatSpecFFInstalledON[MAX_FF_TYPES] = {
     PLAT_SP_ON_FF_SDIMM3
     PLAT_SP_ON_FF_UDIMM3
     NULL

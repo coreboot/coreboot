@@ -349,8 +349,8 @@ int draw_rounded_box(const struct scale *pos_rel, const struct scale *dim_rel,
 	/* Use 64 bits to avoid overflow */
 	int32_t x, y;
 	uint64_t yy;
-	const uint64_t rrx = r.x * r.x, rry = r.y * r.y;
-	const uint64_t ssx = s.x * s.x, ssy = s.y * s.y;
+	const uint64_t rrx = (uint64_t)r.x * r.x, rry = (uint64_t)r.y * r.y;
+	const uint64_t ssx = (uint64_t)s.x * s.x, ssy = (uint64_t)s.y * s.y;
 	x_begin = 0;
 	x_end = 0;
 	for (y = r.y - 1; y >= 0; y--) {
@@ -358,7 +358,7 @@ int draw_rounded_box(const struct scale *pos_rel, const struct scale *dim_rel,
 		 * The inequality is valid in the beginning of each iteration:
 		 * y^2 + x_end^2 < r^2
 		 */
-		yy = y * y;
+		yy = (uint64_t)y * y;
 		/* Check yy/ssy + xx/ssx < 1 */
 		while (yy * ssx + x_begin * x_begin * ssy < ssx * ssy)
 			x_begin++;

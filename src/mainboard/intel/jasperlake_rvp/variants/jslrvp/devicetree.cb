@@ -66,25 +66,7 @@ chip soc/intel/tigerlake
 	# ClkReq-to-ClkSrc mapping for CLK SRC 0
 	register "PcieClkSrcClkReq[0]" = "0x00"
 
-	register "SataEnable" = "1"
-	register "SataSalpSupport" = "1"
-	register "SataPortsEnable[0]" = "1"
-	register "SataPortsEnable[1]" = "1"
-	register "SataPortsEnable[2]" = "1"
-	register "SataPortsEnable[3]" = "1"
-	register "SataPortsEnable[4]" = "1"
-	register "SataPortsEnable[5]" = "1"
-	register "SataPortsEnable[6]" = "1"
-	register "SataPortsEnable[7]" = "1"
-
-	register "SataPortsDevSlp[0]" = "1"
-	register "SataPortsDevSlp[1]" = "1"
-	register "SataPortsDevSlp[2]" = "1"
-	register "SataPortsDevSlp[3]" = "1"
-	register "SataPortsDevSlp[4]" = "1"
-	register "SataPortsDevSlp[5]" = "1"
-	register "SataPortsDevSlp[6]" = "1"
-	register "SataPortsDevSlp[7]" = "1"
+	register "SataEnable" = "0"
 
 	register "SerialIoI2cMode" = "{
 		[PchSerialIoIndexI2C0]  = PchSerialIoPci,
@@ -256,7 +238,7 @@ chip soc/intel/tigerlake
 		device pci 16.3 off end # Management Engine KT Redirection
 		device pci 16.4 off end # Management Engine Interface 3
 		device pci 16.5 off end # Management Engine Interface 4
-		device pci 17.0 on  end # SATA
+		device pci 17.0 off end # SATA
 		device pci 19.0 on  end # I2C #4
 		device pci 19.1 off end # I2C #5
 		device pci 19.2 on  end # UART #2

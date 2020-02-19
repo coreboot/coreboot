@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2019 Intel Corporation.
+ * Copyright (C) 2019-2020 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,11 @@
 
 /* Board/FAB ID Command */
 #define EC_FAB_ID_CMD	0x0D
+
+/* TGL-U Board IDs */
+#define TGL_U_LP4_SAMSUNG	0x3
+#define TGL_U_LP4_HYNIX		0xB
+#define TGL_U_LP4_MICRON	0x13
 
 /*
  * Returns board information (board id[15:8] and

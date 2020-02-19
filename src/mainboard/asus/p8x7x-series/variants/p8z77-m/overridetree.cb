@@ -1,0 +1,81 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+chip northbridge/intel/sandybridge
+	device domain 0 on
+		subsystemid 0x1043 0x84ca inherit
+		chip southbridge/intel/bd82x6x # Intel Series 7 Panther Point PCH
+			register "gen1_dec" = "0x000c0291"
+
+			device pci 1c.0 on  end	# PCIe Port #1 (PCIe x4 slot)
+			device pci 1c.1 off end # PCIe Port #2
+			device pci 1c.2 off end # PCIe Port #3
+			device pci 1c.3 off end # PCIe Port #4
+			device pci 1c.4 on  end	# PCIe Port #5 (PCIe x1 slot)
+			device pci 1c.5 on  end	# PCIe Port #6
+			device pci 1c.6 on  end	# PCIe Port #7 (PCI slot via ASM1083)
+			device pci 1c.7 off end # PCIe Port #8
+			device pci 1f.0 on # LPC bridge
+				chip superio/nuvoton/nct6779d
+					device pnp 2e.1 off end		# Parallel
+					device pnp 2e.2 on		# UART A
+						io 0x60 = 0x3f8		# COM1 address
+						irq 0x70 = 4
+					# Below are global config settings to replicate OEM
+						drq 0x26 = 0x10		# Before accessing CR10/11/13/14, CR26:4 must be set to 1
+						drq 0x13 = 0xff		# IRQs 0-15 active low
+						drq 0x14 = 0xff
+						drq 0x1a = 0x02
+						drq 0x1b = 0x60
+						drq 0x2c = 0x00		# GP27, 3VSBSW#, No TSI
+					end
+					device pnp 2e.3 off end		# UART B, IR
+					device pnp 2e.5 on		# PS2 KBC
+						io  0x60 = 0x0060	# KBC1 base
+						io  0x62 = 0x0064	# KBC2 base
+						irq 0x70 = 1		# Keyboard IRQ
+						irq 0x72 = 12		# Mouse IRQ
+						drq 0xf0 = 0x82		# KBC 12Mhz/A20 speed/sw KBRST
+						drq 0x2a = 0x48		# UART A, PS/2 mouse, PS/2 keyboard
+						drq 0x22 = 0xd7		# Power down UART B and LPT
+					end
+					device pnp 2e.6 off end		# CIR
+					device pnp 2e.8 on		# WDT1
+						drq 0xe0 = 0x7f		# GP07 output
+						drq 0xe1 = 0x80		# GP07 high
+					end
+					device pnp 2e.a on		# ACPI
+						drq 0xe7 = 0x11		# HWM reset by LRESET#, 0.5s S3 delay for compatibility
+						drq 0xf2 = 0x5d		# Enable RSTOUT[0-2]# and PME
+					end
+					device pnp 2e.b on		# HWM, front panel LED
+						io 0x60 = 0x290		# HWM address
+						io 0x62 = 0		# SB-TSI address (not used)
+						drq 0xe4 = 0xf9		# GP50, GP52, PWROK#
+						drq 0xf0 = 0x3e		# Enable all fan input debouncers
+					end
+					device pnp 2e.e off end		# CIR wake-up
+					device pnp 2e.f on		# GPIO PP/OD select
+						drq 0xe4 = 0xfc		# GP50,GP51 PP
+						drq 0xe6 = 0x7f		# GP7x OD
+					end
+					device pnp 2e.9 off end		# GPIO 8
+					device pnp 2e.308 on end	# GPIO by I/O
+					device pnp 2e.108 on end	# GPIO 0
+					device pnp 2e.109 on end	# GPIO 1
+					device pnp 2e.209 on		# GPIO 2
+						drq 0xe0 = 0xbf		# GP26 output
+						drq 0xe1 = 0xc0		# GP26 high
+					end
+					device pnp 2e.309 off end	# GPIO 3
+					device pnp 2e.409 off end	# GPIO 4
+					device pnp 2e.509 on		# GPIO 5
+						drq 0xf4 = 0xfc		# GP50,GP51 output
+						drq 0xf5 = 0xc4		# GP50,GP51 low
+					end
+					device pnp 2e.609 off end	# GPIO 6
+					device pnp 2e.709 off end	# GPIO 7
+				end
+			end
+		end
+	end
+end

@@ -1,0 +1,11 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+boot_option=Fallback
+debug_level=Debug
+gfx_uma_size=224M
+nmi=Disable
+sata_mode=AHCI
+#usb3_xxxx options are only used with MRC blob, ignored otherwise
+usb3_mode=Enable
+usb3_drv=Enable
+usb3_streams=Enable

@@ -20,6 +20,7 @@
 #include <soc/iomap.h>
 #include <console/console.h>
 #include <cpu/x86/mtrr.h>
+#include <intelblocks/lpc_lib.h>
 
 const FSPT_UPD temp_ram_init_params = {
 	.FspUpdHeader = {
@@ -52,6 +53,7 @@ asmlinkage void bootblock_c_entry(uint64_t base_timestamp)
 void bootblock_soc_early_init(void)
 {
 	fast_spi_early_init(SPI_BASE_ADDRESS);
+	pch_enable_lpc();
 }
 
 void bootblock_soc_init(void)

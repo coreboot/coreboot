@@ -24,6 +24,7 @@ subdirs-y += ../../../cpu/x86/cache
 subdirs-$(CONFIG_HAVE_SMI_HANDLER) += ../../../cpu/x86/smm
 
 bootblock-y += bootblock/bootblock.c
+bootblock-y += lpc.c
 bootblock-y += spi.c
 
 postcar-y += soc_util.c

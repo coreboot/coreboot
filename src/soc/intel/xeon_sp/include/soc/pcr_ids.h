@@ -18,5 +18,6 @@
 
 #define PID_ITSS      0xC4
 #define PID_RTC       0xC3
+#define PID_DMI       0xEF
 
 #endif	/* _PCR_IDS_H_ */

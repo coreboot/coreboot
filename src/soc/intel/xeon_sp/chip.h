@@ -76,6 +76,12 @@ struct soc_intel_xeon_sp_config {
 	uint32_t vtd_support;
 	uint32_t coherency_support;
 	uint32_t ats_support;
+
+	/* Generic IO decode ranges */
+	uint32_t gen1_dec;
+	uint32_t gen2_dec;
+	uint32_t gen3_dec;
+	uint32_t gen4_dec;
 };
 
 extern struct chip_operations soc_intel_xeon_sp_ops;

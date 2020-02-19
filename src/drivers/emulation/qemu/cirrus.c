@@ -1,13 +1,13 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include <stdint.h>
-#include <edid.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ops.h>
 #include <pc80/vga.h>
 #include <pc80/vga_io.h>
+#include <framebuffer_info.h>
 
 static int width  = CONFIG_DRIVERS_EMULATION_QEMU_BOCHS_XRES;
 static int height = CONFIG_DRIVERS_EMULATION_QEMU_BOCHS_YRES;
@@ -299,13 +299,7 @@ static void cirrus_init_linear_fb(struct device *dev)
 	vga_sr_write (CIRRUS_SR_EXTENDED_MODE, sr_ext);
 	write_hidden_dac (hidden_dac);
 
-	struct edid edid;
-	edid.mode.ha = width;
-	edid.mode.va = height;
-	edid.panel_bits_per_color = 8;
-	edid.panel_bits_per_pixel = 24;
-	edid_set_framebuffer_bits_per_pixel(&edid, 32, 0);
-	set_vbe_mode_info_valid(&edid, addr);
+	fb_add_framebuffer_info(addr, width, height, 4 * width, 32);
 }
 
 static void cirrus_init_text_mode(struct device *dev)

@@ -6,6 +6,7 @@
 #include <device/device.h>
 #include <device/i2c_simple.h>
 #include <drivers/ti/sn65dsi86bridge/sn65dsi86bridge.h>
+#include <framebuffer_info.h>
 #include <soc/display/mipi_dsi.h>
 #include <soc/display/mdssreg.h>
 #include <soc/qupv3_config.h>
@@ -105,7 +106,7 @@ static void display_startup(void)
 		/* Configure backlight */
 		gpio_output(GPIO_BACKLIGHT_ENABLE, 1);
 		display_init(&ed);
-		set_vbe_mode_info_valid(&ed, (uintptr_t)0);
+		fb_new_framebuffer_info_from_edid(&ed, (uintptr_t)0);
 	} else
 		printk(BIOS_INFO, "Skipping display init.\n");
 }

@@ -18,6 +18,7 @@
 #include <soc/mipi.h>
 #include <soc/soc.h>
 #include <soc/vop.h>
+#include <framebuffer_info.h>
 
 #include "chip.h"
 
@@ -160,7 +161,7 @@ retry_edp:
 		break;
 	}
 	mainboard_power_on_backlight();
-	set_vbe_mode_info_valid(&edid, (uintptr_t)0);
+	fb_new_framebuffer_info_from_edid(&edid, (uintptr_t)0);
 
 	return;
 }

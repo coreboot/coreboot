@@ -18,6 +18,7 @@
 #include <soc/pll.h>
 #include <soc/usb.h>
 #include <vendorcode/google/chromeos/chromeos.h>
+#include <framebuffer_info.h>
 
 enum {
 	CODEC_I2C_BUS = 0,
@@ -224,7 +225,7 @@ static void display_startup(void)
 	}
 
 	mtk_ddp_mode_set(&edid);
-	set_vbe_mode_info_valid(&edid, (uintptr_t)0);
+	fb_new_framebuffer_info_from_edid(&edid, (uintptr_t)0);
 }
 
 static void mainboard_init(struct device *dev)

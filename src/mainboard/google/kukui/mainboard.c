@@ -169,7 +169,7 @@ static bool configure_display(void)
 		return false;
 	}
 	mtk_ddp_mode_set(edid);
-	struct fb_info *info = set_vbe_mode_info_valid(edid, 0);
+	struct fb_info *info = fb_new_framebuffer_info_from_edid(edid, 0);
 	if (info)
 		fb_set_orientation(info, panel->s->orientation);
 

@@ -8,6 +8,7 @@
 #include <device/mmio.h>
 #include <drivers/analogix/anx7625/anx7625.h>
 #include <edid.h>
+#include <framebuffer_info.h>
 #include <gpio.h>
 #include <soc/ddp.h>
 #include <soc/dpm.h>
@@ -124,7 +125,7 @@ static bool configure_display(void)
 		return false;
 	}
 	mtk_ddp_mode_set(&edid);
-	set_vbe_mode_info_valid(&edid, 0);
+	fb_new_framebuffer_info_from_edid(&edid, (uintptr_t)0);
 	return true;
 }
 

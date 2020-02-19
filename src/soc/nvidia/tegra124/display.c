@@ -14,6 +14,7 @@
 #include <soc/nvidia/tegra/pwm.h>
 #include <stdint.h>
 #include <string.h>
+#include <framebuffer_info.h>
 
 #include "chip.h"
 
@@ -312,10 +313,9 @@ void display_startup(struct device *dev)
 
 	/* tell depthcharge ...
 	 */
-	struct edid edid;
-	edid.mode.va = config->yres;
-	edid.mode.ha = config->xres;
-	edid_set_framebuffer_bits_per_pixel(&edid,
-		config->framebuffer_bits_per_pixel, 32);
-	set_vbe_mode_info_valid(&edid, (uintptr_t)(framebuffer_base_mb*MiB));
+	const uint32_t bytes_per_line = ALIGN_UP(config->xres *
+		DIV_ROUND_UP(config->framebuffer_bits_per_pixel, 8), 32);
+
+	fb_add_framebuffer_info(framebuffer_base_mb*MiB, config->xres, config->yres,
+				bytes_per_line, config->framebuffer_bits_per_pixel);
 }

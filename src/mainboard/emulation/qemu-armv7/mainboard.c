@@ -4,15 +4,14 @@
 #include <device/device.h>
 #include <cbmem.h>
 #include <halt.h>
-#include <edid.h>
 #include <device/mmio.h>
 #include <ramdetect.h>
 #include <symbols.h>
+#include <framebuffer_info.h>
 
 static void init_gfx(void)
 {
 	uint32_t *pl111;
-	struct edid edid;
 	/* width is at most 4096 */
 	/* height is at most 1024 */
 	int width = 800, height = 600;
@@ -28,12 +27,7 @@ static void init_gfx(void)
 	write32(pl111 + 10, 0xff);
 	write32(pl111 + 6, (5 << 1) | 0x801);
 
-	edid.framebuffer_bits_per_pixel = 32;
-	edid.bytes_per_line = width * 4;
-	edid.x_resolution = width;
-	edid.y_resolution = height;
-
-	set_vbe_mode_info_valid(&edid, framebuffer);
+	fb_add_framebuffer_info(framebuffer, width, height, 4 * width, 32);
 }
 
 static void mainboard_enable(struct device *dev)

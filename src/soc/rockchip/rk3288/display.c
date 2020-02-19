@@ -17,6 +17,7 @@
 #include <soc/grf.h>
 #include <soc/soc.h>
 #include <soc/vop.h>
+#include <framebuffer_info.h>
 
 #include "chip.h"
 
@@ -124,5 +125,5 @@ void rk_display_init(struct device *dev, u32 lcdbase, unsigned long fb_size)
 		break;
 	}
 
-	set_vbe_mode_info_valid(&edid, (uintptr_t)lcdbase);
+	fb_new_framebuffer_info_from_edid(&edid, (uintptr_t)lcdbase);
 }

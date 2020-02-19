@@ -7,7 +7,6 @@
 #include <device/device.h>
 #include <device/i2c_simple.h>
 #include <drivers/ti/tps65090/tps65090.h>
-#include <edid.h>
 #include <soc/clk.h>
 #include <soc/dp.h>
 #include <soc/dp-core.h>
@@ -18,6 +17,7 @@
 #include <soc/tmu.h>
 #include <soc/usb.h>
 #include <symbols.h>
+#include <framebuffer_info.h>
 
 #include "exynos5250.h"
 
@@ -27,15 +27,6 @@
 #define DRAM_START	((uintptr_t)_dram/MiB)
 #define DRAM_SIZE	CONFIG_DRAM_SIZE_MB
 #define DRAM_END	(DRAM_START + DRAM_SIZE)	/* plus one... */
-
-static struct edid edid = {
-	.mode.ha = 1366,
-	.mode.va = 768,
-	.framebuffer_bits_per_pixel = 16,
-	.x_resolution = 1366,
-	.y_resolution = 768,
-	.bytes_per_line = 2 * 1366
-};
 
 /* TODO: transplanted DP stuff, clean up once we have something that works */
 static enum exynos5_gpio_pin dp_pd_l = GPIO_Y25;	/* active low */
@@ -263,7 +254,7 @@ static void mainboard_init(struct device *dev)
 
 	sdmmc_vdd();
 
-	set_vbe_mode_info_valid(&edid, (uintptr_t)fb_addr);
+	fb_add_framebuffer_info((uintptr_t)fb_addr, 1366, 768, 2 * 1366, 16);
 
 	lcd_vdd();
 

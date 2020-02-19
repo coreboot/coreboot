@@ -3,10 +3,10 @@
 #include <console/console.h>
 #include <device/mmio.h>
 #include <stdint.h>
-#include <edid.h>
 #include <device/device.h>
 #include <soc/nvidia/tegra/dc.h>
 #include <soc/display.h>
+#include <framebuffer_info.h>
 
 #include "chip.h"
 
@@ -212,19 +212,9 @@ int tegra_dc_init(struct display_controller *disp_ctrl)
 void pass_mode_info_to_payload(
 			struct soc_nvidia_tegra210_config *config)
 {
-	struct edid edid;
-
-	edid.mode.va = config->display_yres;
-	edid.mode.ha = config->display_xres;
-	edid_set_framebuffer_bits_per_pixel(&edid,
-		config->framebuffer_bits_per_pixel, 64);
-
-	printk(BIOS_INFO, "%s: bytes_per_line: %d, bits_per_pixel: %d\n "
-			"               x_res x y_res: %d x %d, size: %d\n",
-			 __func__, edid.bytes_per_line,
-			edid.framebuffer_bits_per_pixel,
-			edid.x_resolution, edid.y_resolution,
-			(edid.bytes_per_line * edid.y_resolution));
-
-	set_vbe_mode_info_valid(&edid, 0);
+	const uint32_t bytes_per_line = ALIGN_UP(config->display_xres *
+		DIV_ROUND_UP(config->framebuffer_bits_per_pixel, 8), 64);
+	/* The framebuffer address is zero to let the payload allocate it */
+	fb_add_framebuffer_info(0, config->display_xres, config->display_yres,
+					bytes_per_line, config->framebuffer_bits_per_pixel);
 }

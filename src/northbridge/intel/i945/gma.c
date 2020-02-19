@@ -19,6 +19,7 @@
 #include <pc80/vga_io.h>
 #include <commonlib/helpers.h>
 #include <types.h>
+#include <framebuffer_info.h>
 
 #include "i945.h"
 #include "chip.h"
@@ -358,7 +359,7 @@ static int intel_gma_init_lvds(struct northbridge_intel_i945_config *conf,
 			(void *)pgfx, hactive * vactive * 4);
 		memset((void *)pgfx, 0x00, hactive * vactive * 4);
 
-		set_vbe_mode_info_valid(&edid, pgfx);
+		fb_new_framebuffer_info_from_edid(&edid, pgfx);
 	} else {
 		vga_misc_write(0x67);
 

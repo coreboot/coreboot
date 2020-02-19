@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <stdint.h>
-#include <edid.h>
 #include <arch/io.h>
 #include <console/console.h>
 #include <device/device.h>
@@ -10,6 +9,7 @@
 #include <device/pci_ids.h>
 #include <pc80/vga.h>
 #include <pc80/vga_io.h>
+#include <framebuffer_info.h>
 
 /* VGA init. We use the Bochs VESA VBE extensions  */
 #define VBE_DISPI_IOPORT_INDEX          0x01CE
@@ -82,7 +82,6 @@ static struct resource res_legacy = {
 
 static void bochs_init_linear_fb(struct device *dev)
 {
-	struct edid edid;
 	struct resource *res_fb, *res_io;
 	int id, mem, bar;
 
@@ -139,13 +138,8 @@ static void bochs_init_linear_fb(struct device *dev)
 
 	bochs_vga_write(res_io, 0, 0x20);	/* disable blanking */
 
-	/* setup coreboot framebuffer */
-	edid.mode.ha = width;
-	edid.mode.va = height;
-	edid.panel_bits_per_color = 8;
-	edid.panel_bits_per_pixel = 24;
-	edid_set_framebuffer_bits_per_pixel(&edid, 32, 0);
-	set_vbe_mode_info_valid(&edid, res_fb->base);
+	/* Advertise new mode */
+	fb_add_framebuffer_info(res_fb->base, width, height, 4 * width, 32);
 }
 
 static void bochs_init_text_mode(struct device *dev)

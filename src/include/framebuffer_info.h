@@ -19,4 +19,8 @@ struct fb_info *fb_add_framebuffer_info(uintptr_t fb_addr, uint32_t x_resolution
 void fb_set_orientation(struct fb_info *info,
 			enum lb_fb_orientation orientation);
 
+struct edid;
+struct fb_info *fb_new_framebuffer_info_from_edid(const struct edid *edid,
+						  uintptr_t fb_addr);
+
 #endif /* __FRAMEBUFFER_INFO_H_ */

@@ -153,7 +153,8 @@ void fb_set_orientation(struct fb_info *info, enum lb_fb_orientation orientation
 /*
  * Take an edid, and create a framebuffer.
  */
-struct fb_info *set_vbe_mode_info_valid(const struct edid *edid, uintptr_t fb_addr)
+struct fb_info *fb_new_framebuffer_info_from_edid(const struct edid *edid,
+							 uintptr_t fb_addr)
 {
 	return fb_add_framebuffer_info(fb_addr, edid->x_resolution, edid->y_resolution,
 		edid->bytes_per_line, edid->framebuffer_bits_per_pixel);

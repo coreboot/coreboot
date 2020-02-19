@@ -5,14 +5,6 @@ config MISSING_BOARD_RESET
 	  implementation. This activates a stub that logs the missing
 	  board reset and halts execution.
 
-config NO_EDID_FILL_FB
-	bool
-	default y if !MAINBOARD_DO_NATIVE_VGA_INIT
-	help
-	  Don't include default fill_lb_framebuffer() implementation. Select
-	  this if your drivers uses MAINBOARD_DO_NATIVE_VGA_INIT but provides
-	  its own fill_lb_framebuffer() implementation.
-
 config RAMSTAGE_ADA
 	bool
 	help

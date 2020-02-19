@@ -13,28 +13,14 @@ is
 
    ----------------------------------------------------------------------------
 
-   type lb_framebuffer is record
-      tag                  : word32;
-      size                 : word32;
+   function c_fb_add_framebuffer_info
+     (fb_addr: Interfaces.C.size_t;
+      x_resolution : word32;
+      y_resolution : word32;
+      bytes_per_line : word32;
+      bits_per_pixel : word8)
+      return Interfaces.C.size_t;
 
-      physical_address     : word64;
-      x_resolution         : word32;
-      y_resolution         : word32;
-      bytes_per_line       : word32;
-      bits_per_pixel       : word8;
-      red_mask_pos         : word8;
-      red_mask_size        : word8;
-      green_mask_pos       : word8;
-      green_mask_size      : word8;
-      blue_mask_pos        : word8;
-      blue_mask_size       : word8;
-      reserved_mask_pos    : word8;
-      reserved_mask_size   : word8;
-   end record;
-
-   function fill_lb_framebuffer
-     (framebuffer : in out lb_framebuffer)
-      return Interfaces.C.int;
-   pragma Export (C, fill_lb_framebuffer, "fill_lb_framebuffer");
+   pragma import (C, c_fb_add_framebuffer_info, "fb_add_framebuffer_info");
 
 end GMA.GFX_Init;

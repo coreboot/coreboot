@@ -88,7 +88,6 @@ const void *fsp_get_hob_list(void);
 void *fsp_get_hob_list_ptr(void);
 const void *fsp_find_extension_hob_by_guid(const uint8_t *guid, size_t *size);
 const void *fsp_find_nv_storage_data(size_t *size);
-enum cb_err fsp_fill_lb_framebuffer(struct lb_framebuffer *framebuffer);
 int fsp_find_range_hob(struct range_entry *re, const uint8_t guid[16]);
 void fsp_display_fvi_version_hob(void);
 void fsp_find_reserved_memory(struct range_entry *re);
@@ -122,9 +121,6 @@ struct fsp_load_descriptor {
 /* Load the FSP component described by fsp_load_descriptor from cbfs. The FSP
  * header object will be validated and filled in on successful load. */
 enum cb_err fsp_load_component(struct fsp_load_descriptor *fspld, struct fsp_header *hdr);
-
-/* Get igd framebuffer bar from SoC */
-uintptr_t fsp_soc_get_igd_bar(void);
 
 /*
  * Handle FSP reboot request status. Chipset/soc is expected to provide

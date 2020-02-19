@@ -33,6 +33,7 @@
  *****************************************************************************/
 
 #include <boot/coreboot_tables.h>
+#include <framebuffer_info.h>
 #include <string.h>
 #include <types.h>
 
@@ -162,11 +163,6 @@ vbe_info(vbe_info_t * info)
 }
 
 static int mode_info_valid;
-
-static int vbe_mode_info_valid(void)
-{
-	return mode_info_valid;
-}
 
 // VBE Function 01h
 static u8
@@ -747,33 +743,25 @@ void vbe_set_graphics(void)
 	mode_info.video_mode = (1 << 14) | CONFIG_FRAMEBUFFER_VESA_MODE;
 	vbe_get_mode_info(&mode_info);
 	vbe_set_mode(&mode_info);
-}
 
-int fill_lb_framebuffer(struct lb_framebuffer *framebuffer)
-{
-	if (!vbe_mode_info_valid())
-		return -1;
+	const struct lb_framebuffer fb = {
+		.physical_address    = mode_info.vesa.phys_base_ptr,
+		.x_resolution        = le16_to_cpu(mode_info.vesa.x_resolution),
+		.y_resolution        = le16_to_cpu(mode_info.vesa.y_resolution),
+		.bytes_per_line      = le16_to_cpu(mode_info.vesa.bytes_per_scanline),
+		.bits_per_pixel      = mode_info.vesa.bits_per_pixel,
+		.red_mask_pos        = mode_info.vesa.red_mask_pos,
+		.red_mask_size       = mode_info.vesa.red_mask_size,
+		.green_mask_pos      = mode_info.vesa.green_mask_pos,
+		.green_mask_size     = mode_info.vesa.green_mask_size,
+		.blue_mask_pos       = mode_info.vesa.blue_mask_pos,
+		.blue_mask_size      = mode_info.vesa.blue_mask_size,
+		.reserved_mask_pos   = mode_info.vesa.reserved_mask_pos,
+		.reserved_mask_size  = mode_info.vesa.reserved_mask_size,
+		.orientation         = LB_FB_ORIENTATION_NORMAL,
+	};
 
-	framebuffer->physical_address = le32_to_cpu(mode_info.vesa.phys_base_ptr);
-
-	framebuffer->x_resolution = le16_to_cpu(mode_info.vesa.x_resolution);
-	framebuffer->y_resolution = le16_to_cpu(mode_info.vesa.y_resolution);
-	framebuffer->bytes_per_line = le16_to_cpu(mode_info.vesa.bytes_per_scanline);
-	framebuffer->bits_per_pixel = mode_info.vesa.bits_per_pixel;
-
-	framebuffer->red_mask_pos = mode_info.vesa.red_mask_pos;
-	framebuffer->red_mask_size = mode_info.vesa.red_mask_size;
-
-	framebuffer->green_mask_pos = mode_info.vesa.green_mask_pos;
-	framebuffer->green_mask_size = mode_info.vesa.green_mask_size;
-
-	framebuffer->blue_mask_pos = mode_info.vesa.blue_mask_pos;
-	framebuffer->blue_mask_size = mode_info.vesa.blue_mask_size;
-
-	framebuffer->reserved_mask_pos = mode_info.vesa.reserved_mask_pos;
-	framebuffer->reserved_mask_size = mode_info.vesa.reserved_mask_size;
-
-	return 0;
+	fb_add_framebuffer_info_ex(&fb);
 }
 
 void vbe_textmode_console(void)

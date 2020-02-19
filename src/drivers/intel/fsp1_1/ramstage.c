@@ -5,6 +5,7 @@
 #include <console/console.h>
 #include <fsp/ramstage.h>
 #include <fsp/util.h>
+#include <framebuffer_info.h>
 #include <lib.h>
 #include <stage_cache.h>
 #include <string.h>
@@ -115,6 +116,28 @@ void fsp_run_silicon_init(FSP_INFO_HEADER *fsp_info_header, int is_s3_wakeup)
 	if (silicon_init_params.GraphicsConfigPtr)
 		gfx_set_init_done(1);
 #endif
+
+	if (CONFIG(RUN_FSP_GOP)) {
+		const EFI_GUID vbt_guid = EFI_PEI_GRAPHICS_INFO_HOB_GUID;
+		u32 *vbt_hob;
+
+		void *hob_list_ptr = get_hob_list();
+		vbt_hob = get_next_guid_hob(&vbt_guid, hob_list_ptr);
+		if (vbt_hob == NULL) {
+			printk(BIOS_ERR, "FSP_ERR: Graphics Data HOB is not present\n");
+		} else {
+			EFI_PEI_GRAPHICS_INFO_HOB *gop;
+
+			printk(BIOS_DEBUG, "FSP_DEBUG: Graphics Data HOB present\n");
+			gop = GET_GUID_HOB_DATA(vbt_hob);
+
+			fb_add_framebuffer_info(gop->FrameBufferBase,
+						gop->GraphicsMode.HorizontalResolution,
+						gop->GraphicsMode.VerticalResolution,
+						gop->GraphicsMode.PixelsPerScanLine * 4,
+						32);
+		}
+	}
 
 	display_hob_info(fsp_info_header);
 	soc_after_silicon_init();

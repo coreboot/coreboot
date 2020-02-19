@@ -2,9 +2,11 @@
 
 #include <boot/coreboot_tables.h>
 #include <console/console.h>
+#include <fsp/graphics.h>
 #include <fsp/util.h>
 #include <soc/intel/common/vbt.h>
 #include <types.h>
+#include <framebuffer_info.h>
 
 enum pixel_format {
 	pixel_rgbx_8bpc = 0,
@@ -46,75 +48,54 @@ static const struct fsp_framebuffer {
 	[pixel_bgrx_8bpc] = { {16, 8}, {8, 8}, {0, 8}, {24, 8} },
 };
 
-enum cb_err fsp_fill_lb_framebuffer(struct lb_framebuffer *framebuffer)
+
+void fsp_report_framebuffer_info(const uintptr_t framebuffer_bar)
 {
 	size_t size;
 	const struct hob_graphics_info *ginfo;
 	const struct fsp_framebuffer *fbinfo;
 
+	/*
+	 * Pci enumeration happens after silicon init.
+	 * After enumeration graphic framebuffer base may be relocated.
+	 */
+	if (!framebuffer_bar) {
+		printk(BIOS_ALERT, "Framebuffer BAR invalid\n");
+		return;
+	}
+
 	ginfo = fsp_find_extension_hob_by_guid(fsp_graphics_info_guid, &size);
 
 	if (!ginfo) {
 		printk(BIOS_ALERT, "Graphics hand-off block not found\n");
-		return CB_ERR;
+		return;
 	}
 
 	if (ginfo->pixel_format >= ARRAY_SIZE(fsp_framebuffer_format_map)) {
 		printk(BIOS_ALERT, "FSP set unknown framebuffer format: %d\n",
 		       ginfo->pixel_format);
-		return CB_ERR;
+		return;
 	}
 
 	fbinfo = fsp_framebuffer_format_map + ginfo->pixel_format;
 
-	framebuffer->physical_address = ginfo->framebuffer_base;
-	framebuffer->x_resolution = ginfo->horizontal_resolution;
-	framebuffer->y_resolution = ginfo->vertical_resolution;
-	framebuffer->bytes_per_line = ginfo->pixels_per_scanline * 4;
-	framebuffer->bits_per_pixel = 32;
-	framebuffer->red_mask_pos = fbinfo->red.pos;
-	framebuffer->red_mask_size = fbinfo->red.size;
-	framebuffer->green_mask_pos = fbinfo->green.pos;
-	framebuffer->green_mask_size = fbinfo->green.size;
-	framebuffer->blue_mask_pos = fbinfo->blue.pos;
-	framebuffer->blue_mask_size = fbinfo->blue.size;
-	framebuffer->reserved_mask_pos = fbinfo->rsvd.pos;
-	framebuffer->reserved_mask_size = fbinfo->rsvd.pos;
+	const struct lb_framebuffer fb = {
+		.physical_address    = framebuffer_bar,
+		.x_resolution        = ginfo->horizontal_resolution,
+		.y_resolution        = ginfo->vertical_resolution,
+		.bytes_per_line      = ginfo->pixels_per_scanline * 4,
+		.bits_per_pixel      = fbinfo->rsvd.size + fbinfo->red.size +
+				       fbinfo->green.size + fbinfo->blue.size,
+		.red_mask_pos        = fbinfo->red.pos,
+		.red_mask_size       = fbinfo->red.size,
+		.green_mask_pos      = fbinfo->green.pos,
+		.green_mask_size     = fbinfo->green.size,
+		.blue_mask_pos       = fbinfo->blue.pos,
+		.blue_mask_size      = fbinfo->blue.size,
+		.reserved_mask_pos   = fbinfo->rsvd.pos,
+		.reserved_mask_size  = fbinfo->rsvd.size,
+		.orientation         = LB_FB_ORIENTATION_NORMAL,
+	};
 
-	return CB_SUCCESS;
-}
-
-int fill_lb_framebuffer(struct lb_framebuffer *framebuffer)
-{
-	enum cb_err ret;
-	uintptr_t framebuffer_bar;
-
-	/* Pci enumeration happens after silicon init.
-	 * After enumeration graphic framebuffer base may be relocated.
-	 * Get framebuffer base from soc.
-	 */
-	framebuffer_bar = fsp_soc_get_igd_bar();
-
-	if (!framebuffer_bar) {
-		printk(BIOS_ALERT, "Framebuffer BAR invalid\n");
-		return -1;
-	}
-
-	ret = fsp_fill_lb_framebuffer(framebuffer);
-	if (ret != CB_SUCCESS) {
-		printk(BIOS_ALERT, "FSP did not return a valid framebuffer\n");
-		return -1;
-	}
-
-	/* Resource allocator can move the BAR around after FSP configures it */
-	framebuffer->physical_address = framebuffer_bar;
-	printk(BIOS_DEBUG, "Graphics framebuffer located at 0x%llx\n",
-		framebuffer->physical_address);
-
-	return 0;
-}
-
-__weak uintptr_t fsp_soc_get_igd_bar(void)
-{
-	return 0;
+	fb_add_framebuffer_info_ex(&fb);
 }

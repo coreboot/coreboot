@@ -11,6 +11,7 @@
 #include <drivers/intel/gma/libgfxinit.h>
 #include <drivers/intel/gma/opregion.h>
 #include <intelblocks/graphics.h>
+#include <fsp/graphics.h>
 #include <soc/pci_devs.h>
 #include <types.h>
 
@@ -46,13 +47,15 @@ static void gma_init(struct device *const dev)
 	/*
 	 * GFX PEIM module inside FSP binary is taking care of graphics
 	 * initialization based on RUN_FSP_GOP Kconfig option and input
-	 * VBT file.
+	 * VBT file. Need to report the framebuffer info after PCI enumeration.
 	 *
 	 * In case of non-FSP solution, SoC need to select another
 	 * Kconfig to perform GFX initialization.
 	 */
-	if (CONFIG(RUN_FSP_GOP))
+	if (CONFIG(RUN_FSP_GOP)) {
+		fsp_report_framebuffer_info(graphics_get_memory_base());
 		return;
+	}
 
 	if (!CONFIG(NO_GFX_INIT))
 		pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_MASTER);
@@ -153,16 +156,6 @@ void graphics_gtt_rmw(unsigned long reg, uint32_t andmask, uint32_t ormask)
 	val &= andmask;
 	val |= ormask;
 	graphics_gtt_write(reg, val);
-}
-
-/*
- * fsp_soc_get_igd_bar() is declared in <fsp/util.h>,
- * but that draws incompatible UDK headers in.
- */
-uintptr_t fsp_soc_get_igd_bar(void);
-uintptr_t fsp_soc_get_igd_bar(void)
-{
-	return graphics_get_memory_base();
 }
 
 static const struct device_operations graphics_ops = {

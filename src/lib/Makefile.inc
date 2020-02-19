@@ -144,9 +144,7 @@ ramstage-$(CONFIG_BOOTSPLASH) += jpeg.c
 ramstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 ramstage-$(CONFIG_COVERAGE) += libgcov.c
 ramstage-y += edid.c
-ifneq ($(CONFIG_NO_EDID_FILL_FB),y)
 ramstage-y += edid_fill_fb.c
-endif
 ramstage-y += memrange.c
 ramstage-$(CONFIG_COOP_MULTITASKING) += thread.c
 ramstage-$(CONFIG_TIMER_QUEUE) += timer_queue.c

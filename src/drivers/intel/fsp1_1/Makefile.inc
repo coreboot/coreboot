@@ -18,7 +18,6 @@ romstage-y += raminit.c
 romstage-y += romstage.c
 romstage-$(CONFIG_MMA) += mma_core.c
 
-ramstage-$(CONFIG_RUN_FSP_GOP) += fsp_gop.c
 ramstage-y += fsp_relocate.c
 ramstage-y += fsp_util.c
 ramstage-y += hob.c

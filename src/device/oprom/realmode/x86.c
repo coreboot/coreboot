@@ -12,6 +12,7 @@
 #include <pc80/i8254.h>
 #include <string.h>
 #include <vbe.h>
+#include <framebuffer_info.h>
 
 /* we use x86emu's register file representation */
 #include <x86emu/regs.h>
@@ -208,11 +209,6 @@ static void setup_realmode_idt(void)
 static vbe_mode_info_t mode_info;
 static int mode_info_valid;
 
-static int vbe_mode_info_valid(void)
-{
-	return mode_info_valid;
-}
-
 const vbe_mode_info_t *vbe_mode_info(void)
 {
 	if (!mode_info_valid || !mode_info.vesa.phys_base_ptr)
@@ -351,6 +347,24 @@ void vbe_set_graphics(void)
 	}
 
 	vbe_set_mode(&mode_info);
+	const struct lb_framebuffer fb = {
+		.physical_address    = mode_info.vesa.phys_base_ptr,
+		.x_resolution        = le16_to_cpu(mode_info.vesa.x_resolution),
+		.y_resolution        = le16_to_cpu(mode_info.vesa.y_resolution),
+		.bytes_per_line      = le16_to_cpu(mode_info.vesa.bytes_per_scanline),
+		.bits_per_pixel      = mode_info.vesa.bits_per_pixel,
+		.red_mask_pos        = mode_info.vesa.red_mask_pos,
+		.red_mask_size       = mode_info.vesa.red_mask_size,
+		.green_mask_pos      = mode_info.vesa.green_mask_pos,
+		.green_mask_size     = mode_info.vesa.green_mask_size,
+		.blue_mask_pos       = mode_info.vesa.blue_mask_pos,
+		.blue_mask_size      = mode_info.vesa.blue_mask_size,
+		.reserved_mask_pos   = mode_info.vesa.reserved_mask_pos,
+		.reserved_mask_size  = mode_info.vesa.reserved_mask_size,
+		.orientation         = LB_FB_ORIENTATION_NORMAL,
+	};
+
+	fb_add_framebuffer_info_ex(&fb);
 }
 
 void vbe_textmode_console(void)
@@ -360,34 +374,6 @@ void vbe_textmode_console(void)
 				0x0000, 0x0000, 0x0000);
 	if (vbe_check_for_failure(X86_AH))
 		die("\nError: In %s function\n", __func__);
-}
-
-int fill_lb_framebuffer(struct lb_framebuffer *framebuffer)
-{
-	if (!vbe_mode_info_valid())
-		return -1;
-
-	framebuffer->physical_address = mode_info.vesa.phys_base_ptr;
-
-	framebuffer->x_resolution = le16_to_cpu(mode_info.vesa.x_resolution);
-	framebuffer->y_resolution = le16_to_cpu(mode_info.vesa.y_resolution);
-	framebuffer->bytes_per_line =
-				le16_to_cpu(mode_info.vesa.bytes_per_scanline);
-	framebuffer->bits_per_pixel = mode_info.vesa.bits_per_pixel;
-
-	framebuffer->red_mask_pos = mode_info.vesa.red_mask_pos;
-	framebuffer->red_mask_size = mode_info.vesa.red_mask_size;
-
-	framebuffer->green_mask_pos = mode_info.vesa.green_mask_pos;
-	framebuffer->green_mask_size = mode_info.vesa.green_mask_size;
-
-	framebuffer->blue_mask_pos = mode_info.vesa.blue_mask_pos;
-	framebuffer->blue_mask_size = mode_info.vesa.blue_mask_size;
-
-	framebuffer->reserved_mask_pos = mode_info.vesa.reserved_mask_pos;
-	framebuffer->reserved_mask_size = mode_info.vesa.reserved_mask_size;
-
-	return 0;
 }
 
 #endif

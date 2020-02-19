@@ -101,7 +101,7 @@ static void exynos_spi_init(struct exynos_spi *regs)
 	// CPOL: Active high.
 	clrbits32(&regs->ch_cfg, SPI_CH_CPOL_L);
 
-	// Clear rx and tx channel if set priveously.
+	// Clear rx and tx channel if set previously.
 	clrbits32(&regs->ch_cfg, SPI_RX_CH_ON | SPI_TX_CH_ON);
 
 	setbits32(&regs->swap_cfg,

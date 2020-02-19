@@ -104,7 +104,7 @@ static void configure_pll(u32 *reg, const struct pll_settings *s)
  * Set coreclk according to the SiFive FU540-C000 Manual
  * https://www.sifive.com/documentation/chips/freedom-u540-c000-manual/
  *
- * Section 7.1 recommends a frequency of 1.0 GHz (up to 1.5 Ghz is possible)
+ * Section 7.1 recommends a frequency of 1.0 GHz (up to 1.5 GHz is possible)
  *
  * Section 7.4.2 provides the necessary values:
  * For example, to setup COREPLL for 1 GHz operation, program divr = 0 (x1),

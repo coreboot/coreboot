@@ -155,8 +155,8 @@ PSPRCVR_FILE=$(top)/$(FIRMWARE_LOCATE)/PspRecoveryBootLoader_prod_$(FIRMWARE_TYP
 ###4
 PSPNVRAM_FILE=$(top)/$(FIRMWARE_LOCATE)/PspNvram$(FIRMWARE_TYPE).bin
 
-###8 - Check for SMU firmware named either *.sbin or *.csbin
-###    TODO: Remove *.sbin section after the blobs repo is updated.
+###8 - Check for SMU firmware named either *.sbin or *.csbin.  Both "signed" and
+###    "compressed signed" are used by generations supported by this file.
 SMUFWM_FILE=$(top)/$(FIRMWARE_LOCATE)/SmuFirmware_$(FIRMWARE_TYPE).csbin
 SMUFWM_FN_FILE=$(top)/$(FIRMWARE_LOCATE)/SmuFirmware_$(FIRMWARE_TYPE)_FN.csbin
 ifeq ("$(wildcard $(SMUFWM_FILE))","")

@@ -32,7 +32,7 @@ enum {
 };
 
 /* Host Firmware Status Register 2 */
-union hfsts2 {
+union me_hfsts2 {
 	uint32_t raw;
 	struct {
 		uint32_t nftp_load_failure	: 1;
@@ -55,13 +55,8 @@ union hfsts2 {
 	} __packed fields;
 };
 
-/* Host Firmware Status Register 3 */
-union hfsts3 {
-	uint32_t raw;
-};
-
 /* Host Firmware Status Register 4 */
-union hfsts4 {
+union me_hfsts4 {
 	uint32_t raw;
 	struct {
 		uint32_t rsvd0			: 9;
@@ -77,7 +72,7 @@ union hfsts4 {
 };
 
 /* Host Firmware Status Register 5 */
-union hfsts5 {
+union me_hfsts5 {
 	uint32_t raw;
 	struct {
 		uint32_t acm_active		: 1;
@@ -96,7 +91,7 @@ union hfsts5 {
 };
 
 /* Host Firmware Status Register 6 */
-union hfsts6 {
+union me_hfsts6 {
 	uint32_t raw;
 	struct {
 		uint32_t force_boot_guard_acm	: 1;
@@ -193,18 +188,18 @@ BOOT_STATE_INIT_ENTRY(BS_DEV_ENABLE, BS_ON_EXIT, print_me_version, NULL);
 void dump_me_status(void *unused)
 {
 	union me_hfsts1 hfsts1;
-	union hfsts2 hfsts2;
-	union hfsts3 hfsts3;
-	union hfsts4 hfsts4;
-	union hfsts5 hfsts5;
-	union hfsts6 hfsts6;
+	union me_hfsts2 hfsts2;
+	union me_hfsts3 hfsts3;
+	union me_hfsts4 hfsts4;
+	union me_hfsts5 hfsts5;
+	union me_hfsts6 hfsts6;
 
 	if (!is_cse_enabled())
 		return;
 
 	hfsts1.data = me_read_config32(PCI_ME_HFSTS1);
 	hfsts2.raw = me_read_config32(PCI_ME_HFSTS2);
-	hfsts3.raw = me_read_config32(PCI_ME_HFSTS3);
+	hfsts3.data = me_read_config32(PCI_ME_HFSTS3);
 	hfsts4.raw = me_read_config32(PCI_ME_HFSTS4);
 	hfsts5.raw = me_read_config32(PCI_ME_HFSTS5);
 	hfsts6.raw = me_read_config32(PCI_ME_HFSTS6);
@@ -214,7 +209,7 @@ void dump_me_status(void *unused)
 	printk(BIOS_DEBUG, "ME: HFSTS2                  : 0x%08X\n",
 		hfsts2.raw);
 	printk(BIOS_DEBUG, "ME: HFSTS3                  : 0x%08X\n",
-		hfsts3.raw);
+		hfsts3.data);
 	printk(BIOS_DEBUG, "ME: HFSTS4                  : 0x%08X\n",
 		hfsts4.raw);
 	printk(BIOS_DEBUG, "ME: HFSTS5                  : 0x%08X\n",

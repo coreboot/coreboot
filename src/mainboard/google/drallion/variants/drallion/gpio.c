@@ -184,9 +184,9 @@ static const struct pad_config gpio_table[] = {
 /* SD_DATA0 */		PAD_NC(GPP_G1, NONE), /* ANT_CONFIG (nostuff) */
 /* SD_DATA1 */		PAD_NC(GPP_G2, NONE),
 /* SD_DATA2 */		PAD_NC(GPP_G3, NONE),
-/* SD_DATA3 */		PAD_CFG_GPI(GPP_G4, NONE, PLTRST), /* CTLESS_DET# */
+/* SD_DATA3 */		PAD_NC(GPP_G4, NONE), /* CTLESS_DET# */
 /* SD_CD# */		PAD_CFG_GPO(GPP_G5, 1, PLTRST), /* HOST_SD_WP# */
-/* SD_CLK */		PAD_CFG_GPO(GPP_G6, 1, PLTRST), /* AUD_PWR_EN */
+/* SD_CLK */		PAD_NC(GPP_G6, NONE), /* AUD_PWR_EN */
 /* SD_WP */		PAD_CFG_GPI(GPP_G7, NONE, PLTRST), /* SPK_DET# */
 
 /* I2S2_SCLK */		PAD_NC(GPP_H0, NONE),

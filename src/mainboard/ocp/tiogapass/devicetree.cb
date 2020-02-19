@@ -51,6 +51,8 @@ chip soc/intel/xeon_sp
 	register "coherency_support" = "1"
 	register "ats_support" = "1"
 
+	register "gen2_dec" = "0x000c0ca1" # IPMI KCS
+
 	device cpu_cluster 0 on
 	  device lapic 0 on end
 	end
@@ -81,7 +83,13 @@ chip soc/intel/xeon_sp
 		device pci 17.0 on end # Intel Corporation C620 Series Chipset Family SATA Controller [AHCI mode]
 		device pci 1c.0 on end # PCI bridge: Intel Corporation C620 Series Chipset Family PCI Express Root Port #1
 		device pci 1c.4 on end # PCI bridge: Intel Corporation C620 Series Chipset Family PCI Express Root Port #5
-		device pci 1f.0 on end # Intel Corporation C621 Series Chipset LPC/eSPI Controller
+		device pci 1f.0 on
+			chip drivers/ipmi # BMC KCS
+				device pnp ca2.0 on end
+				register "bmc_i2c_address" = "0x20"
+				register "bmc_boot_timeout" = "60"
+			end
+		end # Intel Corporation C621 Series Chipset LPC/eSPI Controller
 		device pci 1f.2 on end # Intel Corporation C620 Series Chipset Family Power Management Controller
 		device pci 1f.4 on end # Intel Corporation C620 Series Chipset Family SMBus
 		device pci 1f.5 on end # Intel Corporation C620 Series Chipset Family SPI Controller

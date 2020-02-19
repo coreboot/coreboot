@@ -99,7 +99,7 @@ F14GetCurrentNbFrequency (
   IN       AMD_CONFIG_PARAMS *StdHeader
   );
 
-AGESA_STATUS
+BOOLEAN
 F14GetNbCofVidUpdate (
   IN       CPU_SPECIFIC_SERVICES *FamilySpecificServices,
   IN       PCI_ADDR *PciAddress,

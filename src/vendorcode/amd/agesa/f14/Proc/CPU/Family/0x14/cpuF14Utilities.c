@@ -384,7 +384,7 @@ F14IsNbPstateEnabled (
  *
  *  @retval      AGESA_SUCCESS           Always succeeds.
  */
-AGESA_STATUS
+BOOLEAN
 F14GetNbCofVidUpdate (
   IN       CPU_SPECIFIC_SERVICES *FamilySpecificServices,
   IN       PCI_ADDR *PciAddress,
@@ -393,7 +393,7 @@ F14GetNbCofVidUpdate (
   )
 {
   *NbCofVidUpdateRequired = FALSE;
-  return (AGESA_SUCCESS);
+  return FALSE;
 }
 
 /*---------------------------------------------------------------------------------------*/

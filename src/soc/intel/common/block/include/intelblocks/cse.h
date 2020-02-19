@@ -22,6 +22,7 @@
 /* MKHI Command groups */
 #define MKHI_GROUP_ID_CBM	0x0
 #define MKHI_GROUP_ID_HMRFPO	0x5
+#define MKHI_GROUP_ID_GEN	0xff
 
 /* Global Reset Command ID */
 #define MKHI_CBM_GLOBAL_RESET_REQ	0xb
@@ -32,6 +33,9 @@
 /* HMRFPO Command Ids */
 #define MKHI_HMRFPO_ENABLE	0x1
 #define MKHI_HMRFPO_GET_STATUS	0x3
+
+/* Get Firmware Version Command Id */
+#define MKHI_GEN_GET_FW_VERSION	0x2
 
 /* ME Current Working States */
 #define ME_HFS1_CWS_NORMAL	0x5
@@ -162,6 +166,11 @@ int cse_hmrfpo_get_status(void);
 
 /* Host can access ME region */
 #define MKHI_HMRFPO_ENABLED	2
+
+/*
+ * Queries and logs ME firmware version
+ */
+void print_me_fw_version(void *unused);
 
 /*
  * Checks current working operation state is normal or not.

@@ -192,10 +192,6 @@ union me_hfsts6 {
 	} __packed fields;
 };
 
-#define MKHI_GEN_GROUP_ID	0xff
-
-#define MKHI_GET_FW_VERSION	0x02
-
 void intel_me_status(void);
 int send_global_reset(void);
 

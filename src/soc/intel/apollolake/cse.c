@@ -36,9 +36,6 @@
 #define   READ_FILE_FLAG_EMULATED		(1 << 2)
 #define   READ_FILE_FLAG_HW			(1 << 3)
 
-#define MKHI_GROUP_ID_GEN			0xff
-#define GET_FW_VERSION				0x02
-
 #define MCA_MAX_FILE_PATH_SIZE			64
 
 #define FUSE_LOCK_FILE				"/fpf/intel/SocCfgLock"
@@ -180,59 +177,6 @@ static uint32_t dump_status(int index, int reg_addr)
 	return reg;
 }
 
-static void dump_cse_version(void *unused)
-{
-	int res;
-	size_t reply_size;
-	struct mkhi_hdr msg;
-	struct version {
-		uint16_t minor;
-		uint16_t major;
-		uint16_t build;
-		uint16_t hotfix;
-	} __packed;
-
-	struct fw_version_response {
-		struct mkhi_hdr hdr;
-		struct version code;
-		struct version nftp;
-		struct version fitc;
-	} __packed rsp;
-
-	/*
-	 * Print ME version only if UART debugging is enabled. Else, it takes
-	 * ~0.6 second to talk to ME and get this information.
-	 */
-	if (!CONFIG(CONSOLE_SERIAL))
-		return;
-
-	msg.group_id = MKHI_GROUP_ID_GEN;
-	msg.command = GET_FW_VERSION;
-
-	res = heci_send(&msg, sizeof(msg), BIOS_HOST_ADDR, HECI_MKHI_ADDR);
-
-	if (!res) {
-		printk(BIOS_ERR, "Failed to send HECI message.\n");
-		return;
-	}
-
-	reply_size = sizeof(rsp);
-	res = heci_receive(&rsp, &reply_size);
-
-	if (!res) {
-		printk(BIOS_ERR, "Failed to receive HECI reply.\n");
-		return;
-	}
-
-	if (rsp.hdr.result != 0) {
-		printk(BIOS_ERR, "Failed to get ME version.\n");
-		return;
-	}
-
-	printk(BIOS_DEBUG, "ME: Version: %d.%d.%d.%d\n", rsp.code.major,
-	       rsp.code.minor, rsp.code.hotfix, rsp.code.build);
-}
-
 static void dump_cse_state(void)
 {
 	uint32_t fwsts1;
@@ -289,4 +233,4 @@ void heci_cse_lockdown(void)
 }
 
 BOOT_STATE_INIT_ENTRY(BS_DEV_INIT, BS_ON_ENTRY, fpf_blown, NULL);
-BOOT_STATE_INIT_ENTRY(BS_DEV_INIT, BS_ON_EXIT, dump_cse_version, NULL);
+BOOT_STATE_INIT_ENTRY(BS_DEV_INIT, BS_ON_EXIT, print_me_fw_version, NULL);

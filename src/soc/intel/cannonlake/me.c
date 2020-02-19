@@ -23,14 +23,6 @@
 #include <soc/pci_devs.h>
 #include <stdint.h>
 
-/* Miscellaneous constants */
-enum {
-	MKHI_GEN_GROUP_ID	= 0xFF,
-	MKHI_GET_FW_VERSION	= 0x02,
-	ME_OPMODE_NORMAL	= 0x00,
-	ME_WSTATE_NORMAL	= 0x05,
-};
-
 /* Host Firmware Status Register 2 */
 union me_hfsts2 {
 	uint32_t raw;
@@ -115,76 +107,6 @@ union me_hfsts6 {
 	} __packed fields;
 };
 
-/*
- * From reading the documentation, this should work for both WHL and CML
- * platforms.  Also, calling this function from dump_me_status() does not
- * work, as the ME does not respond and the command times out.
- */
-static void print_me_version(void *unused)
-{
-	struct version {
-		uint16_t minor;
-		uint16_t major;
-		uint16_t build;
-		uint16_t hotfix;
-	} __packed;
-
-	struct fw_ver_resp {
-		struct mkhi_hdr hdr;
-		struct version code;
-		struct version rec;
-		struct version fitc;
-	} __packed;
-
-	union me_hfsts1 hfsts1;
-	const struct mkhi_hdr fw_ver_msg = {
-		.group_id = MKHI_GEN_GROUP_ID,
-		.command = MKHI_GET_FW_VERSION,
-	};
-	struct fw_ver_resp resp;
-	size_t resp_size = sizeof(resp);
-
-	/* Ignore if UART debugging is disabled */
-	if (!CONFIG(CONSOLE_SERIAL))
-		return;
-
-	if (!is_cse_enabled())
-		return;
-
-	hfsts1.data = me_read_config32(PCI_ME_HFSTS1);
-
-	/*
-	 * Prerequisites:
-	 * 1) HFSTS1 Current Working State is Normal
-	 * 2) HFSTS1 Current Operation Mode is Normal
-	 * 3) It's after DRAM INIT DONE message (taken care of by calling it
-	 *    during ramstage
-	 */
-	if ((hfsts1.fields.working_state != ME_WSTATE_NORMAL) ||
-		(hfsts1.fields.operation_mode != ME_OPMODE_NORMAL))
-		goto fail;
-
-	heci_reset();
-
-	if (!heci_send(&fw_ver_msg, sizeof(fw_ver_msg), BIOS_HOST_ADDR,
-			HECI_MKHI_ADDR))
-		goto fail;
-
-	if (!heci_receive(&resp, &resp_size))
-		goto fail;
-
-	if (resp.hdr.result)
-		goto fail;
-
-	printk(BIOS_DEBUG, "ME: Version: %d.%d.%d.%d\n", resp.code.major,
-		resp.code.minor, resp.code.hotfix, resp.code.build);
-	return;
-
-fail:
-	printk(BIOS_DEBUG, "ME: Version: Unavailable\n");
-}
-BOOT_STATE_INIT_ENTRY(BS_DEV_ENABLE, BS_ON_EXIT, print_me_version, NULL);
-
 void dump_me_status(void *unused)
 {
 	union me_hfsts1 hfsts1;
@@ -250,5 +172,5 @@ void dump_me_status(void *unused)
 	printk(BIOS_DEBUG, "ME: TXT Support             : %s\n",
 		hfsts6.fields.txt_support ? "YES" : "NO");
 }
-
+BOOT_STATE_INIT_ENTRY(BS_DEV_ENABLE, BS_ON_EXIT, print_me_fw_version, NULL);
 BOOT_STATE_INIT_ENTRY(BS_OS_RESUME_CHECK, BS_ON_EXIT, dump_me_status, NULL);

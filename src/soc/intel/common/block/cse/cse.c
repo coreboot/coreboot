@@ -754,6 +754,67 @@ int cse_hmrfpo_get_status(void)
 	return resp.status;
 }
 
+void print_me_fw_version(void *unused)
+{
+	struct version {
+		uint16_t minor;
+		uint16_t major;
+		uint16_t build;
+		uint16_t hotfix;
+	} __packed;
+
+	struct fw_ver_resp {
+		struct mkhi_hdr hdr;
+		struct version code;
+		struct version rec;
+		struct version fitc;
+	} __packed;
+
+	const struct mkhi_hdr fw_ver_msg = {
+		.group_id = MKHI_GROUP_ID_GEN,
+		.command = MKHI_GEN_GET_FW_VERSION,
+	};
+
+	struct fw_ver_resp resp;
+	size_t resp_size = sizeof(resp);
+
+	/* Ignore if UART debugging is disabled */
+	if (!CONFIG(CONSOLE_SERIAL))
+		return;
+
+	/*
+	 * Ignore if ME Firmware SKU type is custom since
+	 * print_boot_partition_info() logs RO(BP1) and RW(BP2) versions.
+	 */
+	if (cse_is_hfs3_fw_sku_custom())
+		return;
+
+	/*
+	 * Prerequisites:
+	 * 1) HFSTS1 Current Working State is Normal
+	 * 2) HFSTS1 Current Operation Mode is Normal
+	 * 3) It's after DRAM INIT DONE message (taken care of by calling it
+	 *    during ramstage
+	 */
+	if (!cse_is_hfs1_cws_normal() || !cse_is_hfs1_com_normal())
+		goto fail;
+
+	heci_reset();
+
+	if (!heci_send_receive(&fw_ver_msg, sizeof(fw_ver_msg), &resp, &resp_size))
+		goto fail;
+
+	if (resp.hdr.result)
+		goto fail;
+
+	printk(BIOS_DEBUG, "ME: Version: %d.%d.%d.%d\n", resp.code.major,
+			resp.code.minor, resp.code.hotfix, resp.code.build);
+	return;
+
+fail:
+	printk(BIOS_DEBUG, "ME: Version: Unavailable\n");
+}
+
 #if ENV_RAMSTAGE
 
 static void update_sec_bar(struct device *dev)

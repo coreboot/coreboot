@@ -7,7 +7,7 @@
 
 size_t mainboard_get_hsio_config(BL_HSIO_INFORMATION **p_hsio_config)
 {
-    uint8_t boardid = board_id();
+    uint32_t boardid = board_id();
     size_t num;
     switch (boardid) {
     case BoardIdHarcuvar:

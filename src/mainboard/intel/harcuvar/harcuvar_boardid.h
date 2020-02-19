@@ -8,6 +8,6 @@
 
 #define BoardIdHarcuvar 0x52
 
-uint8_t board_id(void);
+uint32_t board_id(void);
 
 #endif /* MAINBOARD_BOARD_H */

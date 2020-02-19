@@ -5,7 +5,7 @@
 
 #include "harcuvar_boardid.h"
 
-uint8_t board_id(void)
+uint32_t board_id(void)
 {
 	int id = BoardIdHarcuvar;
 

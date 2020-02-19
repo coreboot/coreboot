@@ -88,7 +88,7 @@ void mainboard_config_gpios(void)
 {
 	size_t num;
 	const struct dnv_pad_config *table;
-	uint8_t boardid = board_id();
+	uint32_t boardid = board_id();
 
 	/* Configure pads prior to SiliconInit() in case there's any
 	* dependencies during hardware initialization.

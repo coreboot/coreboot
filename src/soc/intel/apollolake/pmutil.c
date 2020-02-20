@@ -57,27 +57,27 @@ uint32_t *soc_pmc_etr_addr(void)
 const char *const *soc_smi_sts_array(size_t *a)
 {
 	static const char *const smi_sts_bits[] = {
-		[BIOS_SMI_STS] = "BIOS",
-		[LEGACY_USB_SMI_STS] = "LEGACY USB",
-		[SLP_SMI_STS] = "SLP_SMI",
-		[APM_SMI_STS] = "APM",
-		[SWSMI_TMR_SMI_STS] = "SWSMI_TMR",
-		[FAKE_PM1_SMI_STS] = "PM1",
-		[GPIO_SMI_STS] = "GPIO_SMI",
-		[GPIO_UNLOCK_SMI_STS] = "GPIO_UNLOCK_SSMI",
-		[MC_SMI_STS] = "MCSMI",
-		[TCO_SMI_STS] = "TCO",
-		[PERIODIC_SMI_STS] = "PERIODIC",
-		[SERIRQ_SMI_STS] = "SERIRQ",
-		[SMBUS_SMI_STS] = "SMBUS_SMI",
-		[XHCI_SMI_STS] = "XHCI",
-		[HSMBUS_SMI_STS] = "HOST_SMBUS",
-		[SCS_SMI_STS] = "SCS",
-		[PCIE_SMI_STS] = "PCI_EXP_SMI",
-		[SCC2_SMI_STS] = "SCC2",
-		[SPI_SSMI_STS] = "SPI_SSMI",
-		[SPI_SMI_STS] = "SPI",
-		[PMC_OCP_SMI_STS] = "OCP_CSE",
+		[BIOS_STS_BIT] = "BIOS",
+		[LEGACY_USB_STS_BIT] = "LEGACY USB",
+		[SMI_ON_SLP_EN_STS_BIT] = "SLP_SMI",
+		[APM_STS_BIT] = "APM",
+		[SWSMI_TMR_STS_BIT] = "SWSMI_TMR",
+		[PM1_STS_BIT] = "PM1",
+		[GPIO_STS_BIT] = "GPIO_SMI",
+		[GPIO_UNLOCK_SMI_STS_BIT] = "GPIO_UNLOCK_SSMI",
+		[MC_SMI_STS_BIT] = "MCSMI",
+		[TCO_STS_BIT] = "TCO",
+		[PERIODIC_STS_BIT] = "PERIODIC",
+		[SERIRQ_SMI_STS_BIT] = "SERIRQ",
+		[SMBUS_SMI_STS_BIT] = "SMBUS_SMI",
+		[XHCI_SMI_STS_BIT] = "XHCI",
+		[SCS_SMI_STS_BIT] = "HOST_SMBUS",
+		[SCS_SMI_STS_BIT] = "SCS",
+		[PCI_EXP_SMI_STS_BIT] = "PCI_EXP_SMI",
+		[SCC2_SMI_STS_BIT] = "SCC2",
+		[SPI_SSMI_STS_BIT] = "SPI_SSMI",
+		[SPI_SMI_STS_BIT] = "SPI",
+		[PMC_OCP_SMI_STS_BIT] = "OCP_CSE",
 	};
 
 	*a = ARRAY_SIZE(smi_sts_bits);
@@ -98,7 +98,7 @@ uint32_t soc_get_smi_status(uint32_t generic_sts)
 
 		/* Fake PM1 status bit if power button pressed. */
 		if (pm1_sts & PWRBTN_STS)
-			generic_sts |= (1 << FAKE_PM1_SMI_STS);
+			generic_sts |= (1 << PM1_STS_BIT);
 	}
 
 	return generic_sts;

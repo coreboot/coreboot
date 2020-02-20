@@ -38,19 +38,19 @@ const struct smm_save_state_ops *get_smm_save_state_ops(void)
 uint32_t smihandler_soc_get_sci_mask(void)
 {
 	uint32_t sci_mask =
-		SMI_HANDLER_SCI_EN(APM_SMI_STS) |
-		SMI_HANDLER_SCI_EN(SLP_SMI_STS);
+		SMI_HANDLER_SCI_EN(APM_STS_BIT) |
+		SMI_HANDLER_SCI_EN(SMI_ON_SLP_EN_STS_BIT);
 
 	return sci_mask;
 }
 
 const smi_handler_t southbridge_smi[32] = {
-	[SLP_SMI_STS] = smihandler_southbridge_sleep,
-	[APM_SMI_STS] = smihandler_southbridge_apmc,
-	[FAKE_PM1_SMI_STS] = smihandler_southbridge_pm1,
-	[GPIO_SMI_STS] = smihandler_southbridge_gpi,
-	[TCO_SMI_STS] = smihandler_southbridge_tco,
-	[PERIODIC_SMI_STS] = smihandler_southbridge_periodic,
+	[SMI_ON_SLP_EN_STS_BIT] = smihandler_southbridge_sleep,
+	[APM_STS_BIT] = smihandler_southbridge_apmc,
+	[PM1_STS_BIT] = smihandler_southbridge_pm1,
+	[GPIO_STS_BIT] = smihandler_southbridge_gpi,
+	[TCO_STS_BIT] = smihandler_southbridge_tco,
+	[PERIODIC_STS_BIT] = smihandler_southbridge_periodic,
 #if CONFIG(SOC_ESPI)
 	[ESPI_SMI_STS_BIT] = smihandler_southbridge_espi,
 #endif

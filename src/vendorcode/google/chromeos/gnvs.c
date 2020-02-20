@@ -22,7 +22,6 @@
 #include <fmap.h>
 #include <security/vboot/vbnv.h>
 #include <security/vboot/vboot_common.h>
-#include <vboot_struct.h>
 
 #include "chromeos.h"
 #include "gnvs.h"

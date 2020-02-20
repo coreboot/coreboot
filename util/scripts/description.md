@@ -3,6 +3,8 @@ __scripts__
               line `Bash`
   * _cross-repo-cherrypick_ - Pull in patches from another tree from a
                               gerrit repository. `Shell`
+  * _decode_spd.sh_ - Decodes Serial Presence Detect (SPD) files into
+                      various human readable formats.
   * _dts-to-fmd.sh_ -Converts a depthcharge fmap.dts into an fmaptool
                      compatible .fmd format `Bash`
   * _find-unused-kconfig-symbols.sh_ - Points out Kconfig variables

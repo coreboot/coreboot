@@ -156,8 +156,8 @@ static const struct timestamp_id_to_name {
 	/* Marker to report base_time. */
 	{ 0,			"1st timestamp" },
 	{ TS_START_ROMSTAGE,	"start of romstage" },
-	{ TS_BEFORE_INITRAM,	"before ram initialization" },
-	{ TS_AFTER_INITRAM,	"after ram initialization" },
+	{ TS_BEFORE_INITRAM,	"before RAM initialization" },
+	{ TS_AFTER_INITRAM,	"after RAM initialization" },
 	{ TS_END_ROMSTAGE,	"end of romstage" },
 	{ TS_START_VBOOT,	"start of verified boot" },
 	{ TS_END_VBOOT,		"end of verified boot" },

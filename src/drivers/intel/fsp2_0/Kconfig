@@ -61,7 +61,7 @@ config FSP_USE_REPO
 	  and FSP_FD_PATH correctly so FSP splitting works.
 
 config FSP_T_FILE
-	string "Intel FSP-T (temp ram init) binary path and filename"
+	string "Intel FSP-T (temp RAM init) binary path and filename"
 	depends on FSP_CAR
 	default "$(obj)/Fsp_T.fd" if FSP_USE_REPO
 	help

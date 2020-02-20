@@ -58,12 +58,12 @@ void fill_postcar_frame(struct postcar_frame *pcf)
 
 	top_of_ram = (uintptr_t)cbmem_top();
 	/* Cache 8MiB below the top of ram. On sandybridge systems the top of
-	 * ram under 4GiB is the start of the TSEG region. It is required to
+	 * RAM under 4GiB is the start of the TSEG region. It is required to
 	 * be 8MiB aligned. Set this area as cacheable so it can be used later
 	 * for ramstage before setting up the entire RAM as cacheable. */
 	postcar_frame_add_mtrr(pcf, top_of_ram - 8*MiB, 8*MiB, MTRR_TYPE_WRBACK);
 
-	/* Cache 8MiB at the top of ram. Top of ram on sandybridge systems
+	/* Cache 8MiB at the top of ram. Top of RAM on sandybridge systems
 	 * is where the TSEG region resides. However, it is not restricted
 	 * to SMM mode until SMM has been relocated. By setting the region
 	 * to cacheable it provides faster access when relocating the SMM

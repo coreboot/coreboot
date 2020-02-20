@@ -1636,7 +1636,7 @@ static void set_dradrb(struct sysinfo *s)
 		dual_channel_size = MIN(size_ch0, size_ch1) * 2;
 	} else {
 		if (size_ch0 == 0) {
-			/* ME needs ram on CH0 */
+			/* ME needs RAM on CH0 */
 			size_me = 0;
 			/* TOTEST: bailout? */
 		} else {

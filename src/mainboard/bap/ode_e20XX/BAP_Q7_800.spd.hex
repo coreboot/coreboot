@@ -15,7 +15,7 @@
 # GNU General Public License for more details.
 
 # Memory chip: Hynix H5TQ4G63MFR-PBC with ECC
-# BAP ODE E20XX has 2GB ram soldered down on the Q7
+# BAP ODE E20XX has 2GB RAM soldered down on the Q7
 # Memory setting for DDR-800
 
 #	0 Number of SPD Bytes used / Total SPD Size / CRC Coverage

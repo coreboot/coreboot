@@ -17,7 +17,7 @@
 chipset_teardown_car:
 
 	pop	%ebx
-	/* Move the stack pointer to real ram */
+	/* Move the stack pointer to real RAM */
 	movl	post_car_stack_top, %esp
 	/* Align the stack 16 bytes */
 	andl	$0xfffffff0, %esp

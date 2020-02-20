@@ -4,4 +4,4 @@ config MICROCODE_UPDATE_PRE_RAM
 	default y
 	help
 	  Select this option if you want to update the microcode
-	  during the cache as ram setup.
+	  during the cache as RAM setup.

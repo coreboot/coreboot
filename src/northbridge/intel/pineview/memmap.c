@@ -149,8 +149,8 @@ void fill_postcar_frame(struct postcar_frame *pcf)
 {
 	uintptr_t top_of_ram;
 
-	/* Cache 8 MiB region below the top of ram and 2 MiB above top of
-	 * ram to cover both cbmem as the TSEG region.
+	/* Cache 8 MiB region below the top of RAM and 2 MiB above top of
+	 * RAM to cover both cbmem as the TSEG region.
 	 */
 	top_of_ram = (uintptr_t)cbmem_top();
 	postcar_frame_add_mtrr(pcf, top_of_ram - 8*MiB, 8*MiB,

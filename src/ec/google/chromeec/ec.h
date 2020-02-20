@@ -89,6 +89,9 @@ int google_chromeec_cbi_get_fw_config(uint32_t *fw_config);
 int google_chromeec_cbi_get_dram_part_num(char *buf, size_t bufsize);
 int google_chromeec_cbi_get_oem_name(char *buf, size_t bufsize);
 
+uint32_t google_chromeec_get_board_sku(void);
+const char *google_chromeec_smbios_system_sku(void);
+
 /* MEC uses 0x800/0x804 as register/index pair, thus an 8-byte resource. */
 #define MEC_EMI_BASE		0x800
 #define MEC_EMI_SIZE		8

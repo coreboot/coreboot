@@ -135,7 +135,7 @@ static void rk_edp_init_analog_func(struct rk_edp *edp)
 
 static void rk_edp_init_aux(struct rk_edp *edp)
 {
-	/* Clear inerrupts related to AUX channel */
+	/* Clear interrupts related to AUX channel */
 	write32(&edp->regs->dp_int_sta, AUX_FUNC_EN_N);
 
 	/* Disable AUX channel module */

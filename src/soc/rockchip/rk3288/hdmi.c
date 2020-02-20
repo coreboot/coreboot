@@ -733,7 +733,7 @@ static int hdmi_read_edid(int block, u8 *buff)
 	u32 trytime = 5;
 	u32 n, j, val;
 
-	/* set ddc i2c clk which devided from ddc_clk to 100khz */
+	/* set ddc i2c clk which derived from ddc_clk to 100kHz */
 	write32(&hdmi_regs->i2cm_ss_scl_hcnt_0_addr, 0x7a);
 	write32(&hdmi_regs->i2cm_ss_scl_lcnt_0_addr, 0x8d);
 	clrsetbits32(&hdmi_regs->i2cm_div, HDMI_I2CM_DIV_FAST_STD_MODE,

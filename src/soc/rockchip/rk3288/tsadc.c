@@ -100,7 +100,7 @@ void tsadc_init(void)
 
 	/*
 	  tsadc iomux must be set after the tshut polarity setting,
-	  since the tshut polarity defalut low active,
+	  since the tshut polarity default low active,
 	  so if you enable tsadc iomux,it will output high
 	 */
 	setbits32(&rk3288_pmu->iomux_tsadc_int, IOMUX_TSADC_INT);

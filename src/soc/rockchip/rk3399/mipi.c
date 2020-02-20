@@ -319,7 +319,7 @@ static int rk_mipi_dsi_get_lane_bps(struct rk_mipi_dsi *dsi,
 	min_prediv = DIV_ROUND_UP(fref, 40 * MHz);
 	max_prediv = fref / (5 * MHz);
 
-	/* constraint: 80MHz <= Fvco <= 1500Mhz */
+	/* constraint: 80MHz <= Fvco <= 1500MHz */
 	fvco_min = 80 * MHz;
 	fvco_max = 1500 * MHz;
 	min_delta = 1500 * MHz;

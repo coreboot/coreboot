@@ -112,7 +112,7 @@ void tsadc_init(uint32_t polarity)
 
 	/* setup the automatic mode:
 	 * AUTO_PERIOD: interleave between every two accessing of TSADC
-	 * AUTO_DEBOUNCE: only generate interrupt or TSHUT when temprature
+	 * AUTO_DEBOUNCE: only generate interrupt or TSHUT when temperature
 	 *                is higher than COMP_INT for "debounce" times
 	 * AUTO_PERIOD_HT: the interleave between every two accessing after the
 	 *                 temperature is higher than COMP_SHUT or COMP_INT
@@ -123,7 +123,7 @@ void tsadc_init(uint32_t polarity)
 	write32(&rk3399_tsadc->hight_int_debounce, AUTO_DEBOUNCE);
 	write32(&rk3399_tsadc->auto_period_ht, AUTO_PERIOD_HT);
 	write32(&rk3399_tsadc->hight_tshut_debounce, AUTO_DEBOUNCE_HT);
-	/* Enable the src0, negative temprature coefficient */
+	/* Enable the src0, negative temperature coefficient */
 	setbits32(&rk3399_tsadc->auto_con, Q_SEL | SRC0_EN);
 	udelay(100);
 	setbits32(&rk3399_tsadc->auto_con, AUTO_EN);

@@ -48,8 +48,6 @@ DefinitionBlock(
 	#include <vendorcode/google/chromeos/acpi/chromeos.asl>
 	/* VPD support */
 	#include <vendorcode/google/chromeos/acpi/vpd.asl>
-	/* MAC address passthru */
-	#include <vendorcode/google/chromeos/acpi/amac.asl>
 #endif
 
 	#include <southbridge/intel/common/acpi/sleepstates.asl>

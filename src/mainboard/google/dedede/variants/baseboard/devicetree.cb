@@ -11,13 +11,14 @@ chip soc/intel/tigerlake
 	#   - GPP_B3 - TRACKPAD_INT_ODL
 	#   - GPP_B4 - H1_AP_INT_ODL
 	# DW1 is used by:
-	#   - GPP_D3 - WLAN_PCIE_WAKE_ODL
+	#   - GPP_C12 - AP_PEN_DET_ODL
 	# DW2 is used by:
-	#   - GPP_H16 - WWAN_HOST_WAKE
+	#   - GPP_D0 - WWAN_HOST_WAKE
+	#   - GPP_D3 - WLAN_PCIE_WAKE_ODL
 	# EC_AP_WAKE_ODL is routed to LAN_WAKE#/GPD02 & is part of DW3.
 	register "pmc_gpe0_dw0" = "GPP_B"
-	register "pmc_gpe0_dw1" = "GPP_D"
-	register "pmc_gpe0_dw2" = "GPP_H"
+	register "pmc_gpe0_dw1" = "GPP_C"
+	register "pmc_gpe0_dw2" = "GPP_D"
 
 	# USB Port Configuration
 	register "usb2_ports[0]" = "USB2_PORT_MID(OC_SKIP)"	# Type-C Port C0

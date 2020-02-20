@@ -864,7 +864,7 @@ static void cpu_bus_scan(struct device *dev)
 			 * in LocalApicInitializationAtEarly() function.
 			 * And reference GetLocalApicIdForCore()
 			 *
-			 * Apply apic enumeration rules
+			 * Apply APIC enumeration rules
 			 * For systems with >= 16 APICs, put the IO-APICs at 0..n and
 			 * put the local-APICs at m..z
 			 *

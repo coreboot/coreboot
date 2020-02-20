@@ -196,49 +196,49 @@
 	  .io_sel    = GPIO_DIR_INPUT, \
 	  .is_gpio   = 1 }
 
-/* Direct / dedicated IRQ input - pass signal directly to apic */
+/* Direct / dedicated IRQ input - pass signal directly to APIC */
 #define GPIO_DIRQ \
 	{ .pad_conf0 = PAD_PU_20K | PAD_PULL_DISABLE | PAD_CONFIG0_DEFAULT \
 		     | PAD_FUNC0 | PAD_IRQ_EN | PAD_TPE_IRQ | PAD_LEVEL_IRQ, \
 	  .pad_conf1 = PAD_CONFIG1_DEFAULT, \
 	  .pad_val   = PAD_VAL_INPUT, }
 
-/* Direct / dedicated IRQ input - pass signal directly to apic */
+/* Direct / dedicated IRQ input - pass signal directly to APIC */
 #define GPIO_DIRQ_LEVELHIGH_NO_PULL \
 	{ .pad_conf0 = PAD_PULL_DISABLE | PAD_CONFIG0_DEFAULT \
 		     | PAD_FUNC0 | PAD_IRQ_EN | PAD_TPE_IRQ | PAD_LEVEL_IRQ, \
 	  .pad_conf1 = PAD_CONFIG1_DEFAULT, \
 	  .pad_val   = PAD_VAL_INPUT, }
 
-/* Direct / dedicated IRQ input - pass signal directly to apic */
+/* Direct / dedicated IRQ input - pass signal directly to APIC */
 #define GPIO_DIRQ_LEVELLOW_PU_20K \
 	{ .pad_conf0 = PAD_PU_20K | PAD_PULL_UP | PAD_CONFIG0_DEFAULT \
 		     | PAD_FUNC0 | PAD_IRQ_EN | PAD_TNE_IRQ | PAD_LEVEL_IRQ, \
 	  .pad_conf1 = PAD_CONFIG1_DEFAULT, \
 	  .pad_val   = PAD_VAL_INPUT, }
 
-/* Direct / dedicated IRQ input - pass signal directly to apic */
+/* Direct / dedicated IRQ input - pass signal directly to APIC */
 #define GPIO_DIRQ_EDGELOW_PU_20K \
 	{ .pad_conf0 = PAD_PU_20K | PAD_PULL_UP | PAD_CONFIG0_DEFAULT \
 		     | PAD_FUNC0 | PAD_IRQ_EN | PAD_TNE_IRQ | PAD_EDGE_IRQ, \
 	  .pad_conf1 = PAD_CONFIG1_DEFAULT, \
 	  .pad_val   = PAD_VAL_INPUT, }
 
-/* Direct / dedicated IRQ input - pass signal directly to apic */
+/* Direct / dedicated IRQ input - pass signal directly to APIC */
 #define GPIO_DIRQ_EDGEHIGH_PD_20K \
 	{ .pad_conf0 = PAD_PU_20K | PAD_PULL_DOWN | PAD_CONFIG0_DEFAULT \
 		     | PAD_FUNC0 | PAD_IRQ_EN | PAD_TPE_IRQ | PAD_EDGE_IRQ, \
 	  .pad_conf1 = PAD_CONFIG1_DEFAULT, \
 	  .pad_val   = PAD_VAL_INPUT, }
 
-/* Direct / dedicated IRQ input - pass signal directly to apic */
+/* Direct / dedicated IRQ input - pass signal directly to APIC */
 #define GPIO_DIRQ_EDGELOW_PD_20K \
 	{ .pad_conf0 = PAD_PU_20K | PAD_PULL_DOWN | PAD_CONFIG0_DEFAULT \
 		     | PAD_FUNC0 | PAD_IRQ_EN | PAD_TNE_IRQ | PAD_EDGE_IRQ, \
 	  .pad_conf1 = PAD_CONFIG1_DEFAULT, \
 	  .pad_val   = PAD_VAL_INPUT, }
 
-/* Direct / dedicated IRQ input - pass signal directly to apic */
+/* Direct / dedicated IRQ input - pass signal directly to APIC */
 #define GPIO_DIRQ_EDGEBOTH_PU_20K \
 	{ .pad_conf0 = PAD_PU_20K | PAD_PULL_UP | PAD_CONFIG0_DEFAULT \
 		     | PAD_FUNC0 | PAD_IRQ_EN | PAD_TPE_IRQ| PAD_TNE_IRQ | PAD_EDGE_IRQ, \

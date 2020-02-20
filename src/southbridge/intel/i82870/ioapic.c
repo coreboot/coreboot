@@ -43,8 +43,8 @@ static void p64h2_ioapic_init(struct device *dev)
 	uint32_t memoryBase;
 	int apic_index, apic_id;
 
-	volatile uint32_t *pIndexRegister;    /* io apic io memory space command address */
-	volatile uint32_t *pWindowRegister;    /* io apic io memory space data address */
+	volatile uint32_t *pIndexRegister;    /* io APIC io memory space command address */
+	volatile uint32_t *pWindowRegister;    /* io APIC io memory space data address */
 
 	apic_index = num_p64h2_ioapics;
 	num_p64h2_ioapics++;

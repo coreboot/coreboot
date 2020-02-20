@@ -11,7 +11,7 @@
  * GNU General Public License for more details.
  */
 
-/* for io apic 1461 */
+/* for io APIC 1461 */
 #define MBAR		0x10
 #define ABAR		0x40
 

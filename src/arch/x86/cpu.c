@@ -211,7 +211,7 @@ static void set_cpu_ops(struct device *cpu)
 	cpu->ops = driver ? driver->ops : NULL;
 }
 
-/* Keep track of default apic ids for SMM. */
+/* Keep track of default APIC ids for SMM. */
 static int cpus_default_apic_id[CONFIG_MAX_CPUS];
 
 /*

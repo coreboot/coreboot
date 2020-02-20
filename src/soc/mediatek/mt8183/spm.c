@@ -274,7 +274,7 @@ static int spm_load_firmware(enum dyna_load_pcm_index index,
 	offset += copy_size;
 
 	/* version */
-	/* The termintating character should be contained in the spm binary */
+	/* The terminating character should be contained in the spm binary */
 	assert(spm_bin[file_size - 1] == '\0');
 	assert(offset < file_size);
 	printk(BIOS_DEBUG, "SPM: version = %s\n", spm_bin + offset);

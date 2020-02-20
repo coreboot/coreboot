@@ -125,7 +125,7 @@ struct mt8173_pwrap_regs {
 
 check_member(mt8173_pwrap_regs, dcm_dbc_prd, 0x148);
 
-/* dewrapper regsister */
+/* dewrapper register */
 enum {
 	DEW_EVENT_OUT_EN   = DEW_BASE + 0x0,
 	DEW_DIO_EN         = DEW_BASE + 0x2,

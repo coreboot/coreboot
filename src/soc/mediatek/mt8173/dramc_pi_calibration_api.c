@@ -971,9 +971,9 @@ void perbit_window_cal(u32 channel, u8 type)
 		dqdqs_perbit_dly[i].best_last_dqsdly_pass = -2;
 	}
 
-	/* 1. delay DQ,find the pass widnow (left boundary)
+	/* 1. delay DQ,find the pass window (left boundary)
 	 * 2. delay DQS find the pass window (right boundary)
-	 * 3. find the best DQ / DQS to satify the middle value
+	 * 3. find the best DQ / DQS to satisfy the middle value
 	 *    of the overall pass window per bit
 	 * 4. set DQS delay to the max per byte, delay DQ to de-skew
 	 */

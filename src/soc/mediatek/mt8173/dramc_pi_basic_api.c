@@ -450,7 +450,7 @@ static void dramc_set_mrs_value(int channel, int rank,
 	mrs_write(channel, rank, sdram_params->mrs_set.mrs_63, 10);
 	/* MR10 -> ZQ Init, tZQINIT>=1us */
 	mrs_write(channel, rank, sdram_params->mrs_set.mrs_10, 1);
-	/* MR3 driving stregth set to max */
+	/* MR3 driving strength set to max */
 	mrs_write(channel, rank, sdram_params->mrs_set.mrs_3, 1);
 	/* MR1 */
 	mrs_write(channel, rank, sdram_params->mrs_set.mrs_1, 1);

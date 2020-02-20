@@ -69,7 +69,7 @@ static inline s32 pwrap_write_nochk(u16 addr, u16 wdata)
 	return pwrap_wacs2(1, addr, wdata, 0, 0);
 }
 
-/* dewrapper defaule value */
+/* dewrapper default value */
 enum {
 	DEFAULT_VALUE_READ_TEST  = 0x5aa5,
 	WRITE_TEST_VALUE         = 0xa55a
@@ -81,7 +81,7 @@ enum {
 	TIMEOUT_WAIT_IDLE_US   = 255
 };
 
-/* manual commnd */
+/* manual command */
 enum {
 	OP_WR    = 0x1,
 	OP_CSH   = 0x0,

@@ -148,7 +148,7 @@ size_t sdram_size(void)
 		       9;
 
 	/* check if row address */
-	/*00 is 13 bits, 01 is 14 bits, 10 is 15bits, 11 is 16 bits */
+	/* 00 is 13 bits, 01 is 14 bits, 10 is 15bits, 11 is 16 bits */
 	bit_counter += ((value & ROW_ADDR_BITS_MASK) >> ROW_ADDR_BITS_SHIFT) +
 		       13;
 
@@ -159,7 +159,7 @@ size_t sdram_size(void)
 	/* add bank address bit, LPDDR3 is 8 banks =2^3 */
 	bit_counter += 3;
 
-	/*transfor bits to bytes */
+	/* transform bits to bytes */
 	return ((size_t)1 << (bit_counter - 3));
 }
 

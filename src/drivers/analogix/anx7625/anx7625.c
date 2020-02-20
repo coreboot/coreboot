@@ -381,7 +381,7 @@ static int anx7625_dsi_video_config(uint8_t bus, struct display_timing *dt)
 	ret |= anx7625_reg_write(bus, RX_P1_ADDR, MIPI_PLL_N_NUM_7_0,
 				 (n & 0xff));
 	/* diff */
-	ret |= anx7625_reg_write(bus, RX_P1_ADDR, MIPI_DIGITAL_ADJ_1, 0x37);
+	ret |= anx7625_reg_write(bus, RX_P1_ADDR, MIPI_DIGITAL_ADJ_1, 0x3d);
 
 	ret |= anx7625_odfc_config(bus, post_divider - 1);
 

@@ -28,7 +28,7 @@ $(objgenerated)/microcode.bin: $(call strip_quotes,$(CONFIG_CPU_MICROCODE_HEADER
 endif
 
 ifeq ($(CONFIG_CPU_MICROCODE_CBFS_EXTERNAL_BINS),y)
-cpu_microcode_bins := $(call strip_quotes,$(CONFIG_CPU_UCODE_BINARIES))
+$(obj)/cpu_microcode_blob.bin: cpu_microcode_bins := $(call strip_quotes,$(CONFIG_CPU_UCODE_BINARIES))
 endif
 # otherwise `cpu_microcode_bins` should be filled by platform makefiles
 

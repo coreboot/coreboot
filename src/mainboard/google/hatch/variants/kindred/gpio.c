@@ -17,6 +17,7 @@
 #include <baseboard/gpio.h>
 #include <baseboard/variants.h>
 #include <commonlib/helpers.h>
+#include <ec/google/chromeec/ec.h>
 
 static const struct pad_config ssd_sku_gpio_table[] = {
 	/* A0  : SAR0_INT_ODL */
@@ -191,7 +192,7 @@ static const struct pad_config gpio_table[] = {
 
 const struct pad_config *override_gpio_table(size_t *num)
 {
-	uint32_t sku_id = get_board_sku();
+	uint32_t sku_id = google_chromeec_get_board_sku();
 	/* For SSD SKU */
 	if (sku_id == 1 || sku_id == 3 || sku_id == 23 || sku_id == 24) {
 		*num = ARRAY_SIZE(ssd_sku_gpio_table);

@@ -28,7 +28,7 @@ void variant_devtree_update(void)
 	ssd_host = pcidev_path_on_root(PCH_DEVFN_SATA);
 
 	/* SKU ID 1/3/23/24 doesn't have a eMMC device, hence disable it. */
-	sku_id = get_board_sku();
+	sku_id = google_chromeec_get_board_sku();
 	if (sku_id == 1 || sku_id == 3 || sku_id == 23 || sku_id == 24) {
 		if (emmc_host == NULL)
 			return;

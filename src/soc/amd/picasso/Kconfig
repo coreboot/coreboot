@@ -341,9 +341,19 @@ config HAVE_PSP_WHITELIST_FILE
 	  If unsure, answer 'n'
 
 config PSP_WHITELIST_FILE
-	string "Debug whitelist file name"
+	string "Debug whitelist file path"
 	depends on HAVE_PSP_WHITELIST_FILE
 	default "3rdparty/amd_blobs/picasso/PSP/wtl-rvn.sbin"
+
+config PSP_BOOTLOADER_FILE
+	string "Specify the PSP Bootloader file path"
+	default "3rdparty/amd_blobs/picasso/PSP/PspBootLoader_WL_RV.sbin" if HAVE_PSP_WHITELIST_FILE
+	default "3rdparty/amd_blobs/picasso/PSP/PspBootLoader_prod_RV.sbin"
+	help
+	  Supply the name of the PSP bootloader file.
+
+	  Note that this option may conflict with the whitelist file if a
+	  different PSP bootloader binary is specified.
 
 config PSP_UNLOCK_SECURE_DEBUG
 	bool "Unlock secure debug"

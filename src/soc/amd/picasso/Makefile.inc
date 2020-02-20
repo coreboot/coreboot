@@ -105,11 +105,11 @@ PICASSO_FWM_POSITION=$(call int-add, \
 FIRMWARE_LOCATE=$(dir $(call strip_quotes, $(CONFIG_AMD_PUBKEY_FILE)))
 
 # type = 0x1
-ifeq ($(CONFIG_HAVE_PSP_WHITELIST_FILE),y)
-PSPBTLDR_FILE=$(top)/$(FIRMWARE_LOCATE)/PspBootLoader_WL_RV.sbin
-else
-PSPBTLDR_FILE=$(top)/$(FIRMWARE_LOCATE)/PspBootLoader_prod_RV.sbin
+ifeq ($(CONFIG_PSP_BOOTLOADER_FILE),)
+$(error CONFIG_PSP_BOOTLOADER_FILE was not defined)
 endif
+PSPBTLDR_FILE=$(realpath $(call strip_quotes, $(CONFIG_PSP_BOOTLOADER_FILE)))
+$(info Adding PSP $(shell md5sum $(PSPBTLDR_FILE)))
 
 # types = 0x8 and 0x12
 PSP_SMUFW1_SUB1_FILE=$(top)/$(FIRMWARE_LOCATE)/SmuFirmwareRV2.csbin

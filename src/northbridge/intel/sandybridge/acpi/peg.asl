@@ -27,6 +27,11 @@ Device (PEGP)
 	{
 		Name(_ADR, 0x00000000)
 	}
+
+	Method (_PRT)
+	{
+		Return (\_SB.PCI0.IRQM (1))
+	}
 }
 
 Device (PEG1)
@@ -41,6 +46,11 @@ Device (PEG1)
 	Device (DEV0)
 	{
 		Name(_ADR, 0x00000000)
+	}
+
+	Method (_PRT)
+	{
+		Return (\_SB.PCI0.IRQM (2))
 	}
 }
 
@@ -57,6 +67,11 @@ Device (PEG2)
 	{
 		Name(_ADR, 0x00000000)
 	}
+
+	Method (_PRT)
+	{
+		Return (\_SB.PCI0.IRQM (3))
+	}
 }
 
 Device (PEG6)
@@ -71,5 +86,10 @@ Device (PEG6)
 	Device (DEV0)
 	{
 		Name(_ADR, 0x00000000)
+	}
+
+	Method (_PRT)
+	{
+		Return (\_SB.PCI0.IRQM (4))
 	}
 }

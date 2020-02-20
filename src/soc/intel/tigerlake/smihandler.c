@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2019 Intel Corp.
+ * Copyright (C) 2019-2020 Intel Corp.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,24 +15,18 @@
 
 #include <console/console.h>
 #include <device/pci_def.h>
-#include <intelblocks/fast_spi.h>
+#include <intelblocks/cse.h>
 #include <intelblocks/p2sb.h>
 #include <intelblocks/pcr.h>
 #include <intelblocks/smihandler.h>
-#include <soc/p2sb.h>
+#include <soc/soc_chip.h>
 #include <soc/pci_devs.h>
 #include <soc/pcr_ids.h>
 #include <soc/pm.h>
-#include <soc/soc_chip.h>
 
 #define CSME0_FBE	0xf
 #define CSME0_BAR	0x0
 #define CSME0_FID	0xb0
-
-const struct smm_save_state_ops *get_smm_save_state_ops(void)
-{
-	return &em64t101_smm_ops;
-}
 
 static void pch_disable_heci(void)
 {
@@ -80,36 +74,6 @@ void smihandler_soc_at_finalize(void)
 
 	if (!config->HeciEnabled && CONFIG(HECI_DISABLE_USING_SMM))
 		pch_disable_heci();
-}
-
-void smihandler_soc_check_illegal_access(uint32_t tco_sts)
-{
-	if (!((tco_sts & (1 << 8)) && CONFIG(SPI_FLASH_SMM)
-			&& fast_spi_wpd_status()))
-		return;
-
-	/*
-	 * BWE is RW, so the SMI was caused by a
-	 * write to BWE, not by a write to the BIOS
-	 *
-	 * This is the place where we notice someone
-	 * is trying to tinker with the BIOS. We are
-	 * trying to be nice and just ignore it. A more
-	 * resolute answer would be to power down the
-	 * box.
-	 */
-	printk(BIOS_DEBUG, "Switching back to RO\n");
-	fast_spi_enable_wp();
-}
-
-/* SMI handlers that should be serviced in SCI mode too. */
-uint32_t smihandler_soc_get_sci_mask(void)
-{
-	uint32_t sci_mask =
-		SMI_HANDLER_SCI_EN(APM_STS_BIT) |
-		SMI_HANDLER_SCI_EN(SMI_ON_SLP_EN_STS_BIT);
-
-	return sci_mask;
 }
 
 const smi_handler_t southbridge_smi[SMI_STS_BITS] = {

@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2008-2009 coresystems GmbH
  * Copyright (C) 2014 Google Inc.
- * Copyright (C) 2015-2017 Intel Corporation.
+ * Copyright (C) 2015-2020 Intel Corporation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,45 +15,8 @@
  * GNU General Public License for more details.
  */
 
-#include <console/console.h>
-#include <intelblocks/fast_spi.h>
 #include <intelblocks/smihandler.h>
 #include <soc/pm.h>
-
-const struct smm_save_state_ops *get_smm_save_state_ops(void)
-{
-	return &em64t101_smm_ops;
-}
-
-void smihandler_soc_check_illegal_access(uint32_t tco_sts)
-{
-	if (!((tco_sts & (1 << 8)) && CONFIG(SPI_FLASH_SMM)
-			&& fast_spi_wpd_status()))
-		return;
-
-	/*
-	 * BWE is RW, so the SMI was caused by a
-	 * write to BWE, not by a write to the BIOS
-	 *
-	 * This is the place where we notice someone
-	 * is trying to tinker with the BIOS. We are
-	 * trying to be nice and just ignore it. A more
-	 * resolute answer would be to power down the
-	 * box.
-	 */
-	printk(BIOS_DEBUG, "Switching back to RO\n");
-	fast_spi_enable_wp();
-}
-
-/* SMI handlers that should be serviced in SCI mode too. */
-uint32_t smihandler_soc_get_sci_mask(void)
-{
-	uint32_t sci_mask =
-		SMI_HANDLER_SCI_EN(APM_STS_BIT) |
-		SMI_HANDLER_SCI_EN(SMI_ON_SLP_EN_STS_BIT);
-
-	return sci_mask;
-}
 
 const smi_handler_t southbridge_smi[SMI_STS_BITS] = {
 	[SMI_ON_SLP_EN_STS_BIT] = smihandler_southbridge_sleep,

@@ -156,15 +156,6 @@ void smihandler_soc_at_finalize(void);
  */
 int smihandler_soc_disable_busmaster(pci_devfn_t dev);
 
-/* SMI handlers that should be serviced in SCI mode too. */
-uint32_t smihandler_soc_get_sci_mask(void);
-
-/*
- * SoC needs to implement the mechanism to know if an illegal attempt
- * has been made to write to the BIOS area.
- */
-void smihandler_soc_check_illegal_access(uint32_t tco_sts);
-
 /* Mainboard overrides. */
 
 /* Mainboard handler for GPI SMIs */

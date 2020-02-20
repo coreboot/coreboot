@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2013 Google Inc.
- * Copyright (C) 2015-2016 Intel Corp.
+ * Copyright (C) 2015-2020 Intel Corp.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,16 +32,6 @@ int smihandler_soc_disable_busmaster(pci_devfn_t dev)
 const struct smm_save_state_ops *get_smm_save_state_ops(void)
 {
 	return &em64t100_smm_ops;
-}
-
-/* SMI handlers that should be serviced in SCI mode too. */
-uint32_t smihandler_soc_get_sci_mask(void)
-{
-	uint32_t sci_mask =
-		SMI_HANDLER_SCI_EN(APM_STS_BIT) |
-		SMI_HANDLER_SCI_EN(SMI_ON_SLP_EN_STS_BIT);
-
-	return sci_mask;
 }
 
 const smi_handler_t southbridge_smi[32] = {

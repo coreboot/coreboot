@@ -299,8 +299,10 @@ static void emi_init2(const struct sdram_params *params)
 
 	setbits32(&emi_mpu->mpu_ctrl_d[1], 0x1 << 4);
 	setbits32(&emi_mpu->mpu_ctrl_d[7], 0x1 << 4);
-
-	write32(&emi_regs->bwct0, 0x0a000705);
+	if (CONFIG(MT8183_DRAM_EMCP))
+		write32(&emi_regs->bwct0, 0x0d000705);
+	else
+		write32(&emi_regs->bwct0, 0x0a000705);
 	write32(&emi_regs->bwct0_3rd, 0x0);
 
 	/* EMI QoS 0.5 */

@@ -18,6 +18,7 @@
 #include <gpio.h>
 #include <soc/gpio.h>
 #include <variant/sku.h>
+#include <ec/google/chromeec/ec.h>
 
 static const struct pad_config default_override_table[] = {
 	PAD_NC(GPIO_104, UP_20K),
@@ -44,7 +45,7 @@ static const struct pad_config hdmi_sku_override_table[] = {
 const struct pad_config *variant_override_gpio_table(size_t *num)
 {
 	uint32_t sku_id;
-	sku_id = get_board_sku();
+	sku_id = google_chromeec_get_board_sku();
 
 	switch (sku_id) {
 	case SKU_33_DORP:

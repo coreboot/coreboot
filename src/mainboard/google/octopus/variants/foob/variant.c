@@ -30,7 +30,7 @@ void variant_update_devtree(struct device *dev)
 		return;
 
 	/* SKU ID 1 does not have a touchscreen device, hence disable it. */
-	sku_id = get_board_sku();
+	sku_id = google_chromeec_get_board_sku();
 	if (no_touchscreen_sku(sku_id))
 		touchscreen_i2c_host->enabled = 0;
 }

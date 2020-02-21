@@ -54,7 +54,7 @@ const char *mainboard_vbt_filename(void)
 {
 	uint32_t sku_id;
 
-	sku_id = get_board_sku();
+	sku_id = google_chromeec_get_board_sku();
 
 	switch (sku_id) {
 	case SKU_9_HDMI:
@@ -72,7 +72,7 @@ void variant_smi_sleep(u8 slp_typ)
 	if (slp_typ != ACPI_S5)
 		return;
 
-	switch (get_board_sku()) {
+	switch (google_chromeec_get_board_sku()) {
 	case SKU_17_LTE:
 	case SKU_18_LTE_TS:
 		power_off_lte_module(slp_typ);

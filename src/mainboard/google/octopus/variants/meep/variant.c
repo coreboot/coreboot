@@ -22,7 +22,7 @@
 const char *get_wifi_sar_cbfs_filename(void)
 {
 	const char *filename = NULL;
-	uint32_t sku_id = get_board_sku();
+	uint32_t sku_id = google_chromeec_get_board_sku();
 
 	switch (sku_id) {
 	case SKU_1_MEEP:
@@ -45,7 +45,7 @@ const char *mainboard_vbt_filename(void)
 {
 	uint32_t sku_id;
 
-	sku_id = get_board_sku();
+	sku_id = google_chromeec_get_board_sku();
 
 	switch (sku_id) {
 	case SKU_33_DORP:

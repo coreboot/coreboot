@@ -19,6 +19,7 @@
 #include <baseboard/variants.h>
 #include <delay.h>
 #include <gpio.h>
+#include <ec/google/chromeec/ec.h>
 
 enum {
 	SKU_1_LTE  = 1, /* Wifi + LTE */
@@ -63,7 +64,7 @@ void variant_smi_sleep(u8 slp_typ)
 	if (slp_typ != ACPI_S5)
 		return;
 
-	switch (get_board_sku()) {
+	switch (google_chromeec_get_board_sku()) {
 	case SKU_1_LTE:
 	case SKU_3_LTE_2CAM:
 		power_off_lte_module(slp_typ);

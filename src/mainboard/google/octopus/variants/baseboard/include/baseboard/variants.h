@@ -35,8 +35,6 @@ extern const struct lpddr4_swizzle_cfg baseboard_lpddr4_swizzle;
 const struct lpddr4_cfg *variant_lpddr4_config(void);
 /* Return memory SKU for the board. */
 size_t variant_memory_sku(void);
-/* Return board SKU */
-uint32_t get_board_sku(void);
 /* Return ChromeOS gpio table and fill in number of entries. */
 const struct cros_gpio *variant_cros_gpios(size_t *num);
 

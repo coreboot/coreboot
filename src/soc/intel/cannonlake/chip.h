@@ -242,6 +242,9 @@ struct soc_intel_cannonlake_config {
 	 * Setting to 0 (default) disables Heci1 and hides the device from OS */
 	uint8_t HeciEnabled;
 
+	/* Enables support for Teton Glacier hybrid storage device */
+	uint8_t TetonGlacierMode;
+
 	/* PL1 Override value in Watts */
 	uint32_t tdp_pl1_override;
 	/* PL2 Override value in Watts */

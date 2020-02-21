@@ -374,6 +374,9 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 #endif
 	params->Device4Enable = config->Device4Enable;
 
+	/* Teton Glacier hybrid storage support */
+	params->TetonGlacierMode = config->TetonGlacierMode;
+
 	/* VrConfig Settings for 5 domains
 	 * 0 = System Agent, 1 = IA Core, 2 = Ring,
 	 * 3 = GT unsliced,  4 = GT sliced */

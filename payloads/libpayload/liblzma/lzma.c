@@ -28,6 +28,11 @@ unsigned long ulzman(const unsigned char *src, unsigned long srcn,
 	SizeT mallocneeds;
 	unsigned char *scratchpad;
 
+	if (srcn < data_offset) {
+		printf("lzma: Input too small.\n");
+		return 0;
+	}
+
 	memcpy(properties, src, LZMA_PROPERTIES_SIZE);
 	memcpy(&outSize, src + LZMA_PROPERTIES_SIZE, sizeof(outSize));
 	if (outSize > dstn)

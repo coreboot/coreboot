@@ -57,10 +57,16 @@ config PAYLOAD_FILE
 choice
 	prompt "Payload compression algorithm"
 	default COMPRESSED_PAYLOAD_LZMA
+	default COMPRESSED_PAYLOAD_NONE if PAYLOAD_LINUX || PAYLOAD_LINUXBOOT || PAYLOAD_FIT
 	depends on !PAYLOAD_NONE && !PAYLOAD_LINUX && !PAYLOAD_LINUXBOOT && !PAYLOAD_FIT
 	help
 	  Choose the compression algorithm for the chosen payloads.
-	  You can choose between LZMA and LZ4.
+	  You can choose between None, LZMA, or LZ4.
+
+config COMPRESSED_PAYLOAD_NONE
+	bool "Use no compression for payloads"
+	help
+	  Do not compress the payload.
 
 config COMPRESSED_PAYLOAD_LZMA
 	bool "Use LZMA compression for payloads"

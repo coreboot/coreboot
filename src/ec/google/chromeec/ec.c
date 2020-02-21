@@ -1181,6 +1181,11 @@ int google_chromeec_get_pd_port_caps(int port,
 void google_chromeec_init(void)
 {
 	google_chromeec_log_uptimeinfo();
+
+	/* Enable automatic fan control */
+	if (CONFIG(EC_GOOGLE_CHROMEEC_AUTO_FAN_CTRL)) {
+		ec_cmd_thermal_auto_fan_ctrl(PLAT_EC);
+	}
 }
 
 int google_ec_running_ro(void)

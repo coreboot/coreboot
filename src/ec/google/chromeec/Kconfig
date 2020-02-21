@@ -206,4 +206,10 @@ config EC_GOOGLE_CHROMEEC_INCLUDE_SSFC_IN_FW_CONFIG
 	  Fetch Second Source Factory Cache from CBI EEPROM and add it in the most significant
 	  32 bits of firmware configuration.
 
+config EC_GOOGLE_CHROMEEC_AUTO_FAN_CTRL
+	depends on EC_GOOGLE_CHROMEEC
+	bool "Enable automatic fan control"
+	help
+	  Put the fan in auto mode at boot.
+
 source "src/ec/google/chromeec/*/Kconfig"

@@ -26,7 +26,7 @@
 
 static void privacy_screen_detect_cb(void *arg)
 {
-	struct drivers_generic_gfx_privacy_screen_config *config = arg;
+	struct drivers_gfx_generic_privacy_screen_config *config = arg;
 
 	acpigen_write_store();
 	acpigen_emit_namestring(config->detect_function);
@@ -37,20 +37,20 @@ static void privacy_screen_detect_cb(void *arg)
 }
 static void privacy_screen_get_status_cb(void *arg)
 {
-	struct drivers_generic_gfx_privacy_screen_config *config = arg;
+	struct drivers_gfx_generic_privacy_screen_config *config = arg;
 
 	acpigen_emit_byte(RETURN_OP);
 	acpigen_emit_namestring(config->status_function);
 }
 static void privacy_screen_enable_cb(void *arg)
 {
-	struct drivers_generic_gfx_privacy_screen_config *config = arg;
+	struct drivers_gfx_generic_privacy_screen_config *config = arg;
 
 	acpigen_emit_namestring(config->enable_function);
 }
 static void privacy_screen_disable_cb(void *arg)
 {
-	struct drivers_generic_gfx_privacy_screen_config *config = arg;
+	struct drivers_gfx_generic_privacy_screen_config *config = arg;
 
 	acpigen_emit_namestring(config->disable_function);
 }
@@ -65,7 +65,7 @@ static void (*privacy_screen_callbacks[])(void *) = {
 static void gfx_fill_ssdt_generator(struct device *dev)
 {
 	size_t i;
-	struct drivers_generic_gfx_config *config = dev->chip_info;
+	struct drivers_gfx_generic_config *config = dev->chip_info;
 
 	const char *scope = acpi_device_scope(dev);
 
@@ -103,7 +103,7 @@ static void gfx_fill_ssdt_generator(struct device *dev)
 
 static const char *gfx_acpi_name(const struct device *dev)
 {
-	struct drivers_generic_gfx_config *config = dev->chip_info;
+	struct drivers_gfx_generic_config *config = dev->chip_info;
 
 	return config->name ? : "GFX0";
 }
@@ -115,7 +115,7 @@ static struct device_operations gfx_ops = {
 
 static void gfx_enable(struct device *dev)
 {
-	struct drivers_generic_gfx_config *config = dev->chip_info;
+	struct drivers_gfx_generic_config *config = dev->chip_info;
 
 	if (!config)
 		return;
@@ -123,7 +123,7 @@ static void gfx_enable(struct device *dev)
 	dev->ops = &gfx_ops;
 }
 
-struct chip_operations drivers_generic_gfx_ops = {
-	CHIP_NAME("Graphics Device")
+struct chip_operations drivers_gfx_generic_ops = {
+	CHIP_NAME("Generic Graphics Device")
 	.enable_dev = gfx_enable
 };

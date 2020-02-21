@@ -13,11 +13,11 @@
  * GNU General Public License for more details.
  */
 
-#ifndef __DRIVERS_GENERIC_GFX_CHIP_H__
-#define __DRIVERS_GENERIC_GFX_CHIP_H__
+#ifndef __DRIVERS_GFX_GENERIC_CHIP_H__
+#define __DRIVERS_GFX_GENERIC_CHIP_H__
 
 /* Config for electronic privacy screen */
-struct drivers_generic_gfx_privacy_screen_config {
+struct drivers_gfx_generic_privacy_screen_config {
 	/* Is privacy screen available on this graphics device */
 	int enabled;
 	/* ACPI namespace path to privacy screen detection function */
@@ -31,17 +31,17 @@ struct drivers_generic_gfx_privacy_screen_config {
 };
 
 /* Config for an output device as defined in section A.5 of the ACPI spec */
-struct drivers_generic_gfx_device_config {
+struct drivers_gfx_generic_device_config {
 	/* ACPI device name of the output device */
 	const char *name;
 	/* The address of the output device. See section A.3.2 */
 	unsigned int addr;
 	/* Electronic privacy screen specific config */
-	struct drivers_generic_gfx_privacy_screen_config privacy;
+	struct drivers_gfx_generic_privacy_screen_config privacy;
 };
 
 /* Config for an ACPI video device defined in Appendix A of the ACPI spec */
-struct drivers_generic_gfx_config {
+struct drivers_gfx_generic_config {
 	/*
 	 * ACPI device name of the graphics card, "GFX0" will be used if name is
 	 * not set
@@ -50,7 +50,7 @@ struct drivers_generic_gfx_config {
 	/* The number of output devices defined */
 	int device_count;
 	/* Config for output devices */
-	struct drivers_generic_gfx_device_config device[5];
+	struct drivers_gfx_generic_device_config device[5];
 };
 
-#endif /* __DRIVERS_GENERIC_GFX_CHIP_H__ */
+#endif /* __DRIVERS_GFX_GENERIC_CHIP_H__ */

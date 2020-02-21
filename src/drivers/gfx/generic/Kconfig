@@ -1,4 +1,4 @@
-config DRIVERS_GENERIC_GFX
+config DRIVERS_GFX_GENERIC
 	bool
 	default n
 	depends on HAVE_ACPI_TABLES

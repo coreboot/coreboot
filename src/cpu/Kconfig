@@ -27,15 +27,13 @@ config	MMX
 	bool
 	help
 	  Select MMX in your socket or model Kconfig if your CPU has MMX
-	  streaming SIMD instructions. ROMCC can build more efficient
-	  code if it can spill to MMX registers.
+	  streaming SIMD instructions.
 
 config SSE
 	bool
 	help
 	  Select SSE in your socket or model Kconfig if your CPU has SSE
-	  streaming SIMD instructions. ROMCC can build more efficient
-	  code if it can spill to SSE (aka XMM) registers.
+	  streaming SIMD instructions.
 
 config SSE2
 	bool

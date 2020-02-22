@@ -30,6 +30,9 @@ config VBOOT_VBNV_OFFSET
 	hex
 	default 0x2a
 
+config CBFS_SIZE
+	default 0x570000
+
 config MAINBOARD_DIR
 	string
 	default "hp/z220_sff_workstation"

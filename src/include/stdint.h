@@ -14,10 +14,6 @@
 #ifndef STDINT_H
 #define STDINT_H
 
-/* romcc does not support long long, _Static_assert, or _Bool, so we must ifdef that code out.
-   Also, GCC can provide its own implementation of stdint.h, so in theory we could use that
-   instead of this custom file once romcc is no more. */
-
 /* Fixed width integer types */
 typedef signed char        int8_t;
 typedef unsigned char      uint8_t;

@@ -29,6 +29,11 @@ size_t ulzman(const void *src, size_t srcn, void *dst, size_t dstn)
 	MAYBE_STATIC_BSS unsigned char scratchpad[15980];
 	const unsigned char *cp;
 
+	if (srcn < data_offset) {
+		printk(BIOS_WARNING, "lzma: Input too small.\n");
+		return 0;
+	}
+
 	memcpy(properties, src, LZMA_PROPERTIES_SIZE);
 	/* The outSize in LZMA stream is a 64bit integer stored in little-endian
 	 * (ref: lzma.cc@LZMACompress: put_64). To prevent accessing by

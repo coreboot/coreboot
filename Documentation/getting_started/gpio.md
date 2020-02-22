@@ -25,7 +25,7 @@ how to appropriately set these registers. In addition, some mainboards are
 based on a baseboard/variant model, where several variant mainboards may share a
 lot of their circuitry and ICs and the commonality between the boards is
 collected into a virtual ``baseboard.`` In that case, the GPIOs which are shared
-between multiple boards are placed in the baseboard's ``gpio.c` file, while the
+between multiple boards are placed in the baseboard's ``gpio.c`` file, while the
 ones that are board-specific go into each variant's ``gpio.c`` file.
 
 ## Intel SoCs

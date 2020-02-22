@@ -53,4 +53,12 @@ config HPET_MIN_TICKS
 	hex
 	default 0x80
 
+config HIDE_MEI_ON_ERROR
+	bool "Hide MEI device on error"
+	default n
+	help
+	  If you enable this option, the Management Engine Interface
+	  device will be hidden when ME is in an inoperable mode, e.g.
+	  if me_cleaner was used.
+
 endif

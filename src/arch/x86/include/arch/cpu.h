@@ -261,7 +261,6 @@ static inline struct cpu_info *cpu_info(void)
 	return ci;
 }
 
-/* romcc is segfaulting in some cases. */
 struct cpuinfo_x86 {
 	uint8_t	x86;		/* CPU family */
 	uint8_t	x86_vendor;	/* CPU vendor */
@@ -281,7 +280,6 @@ static inline void get_fms(struct cpuinfo_x86 *c, uint32_t tfms)
 
 }
 
-/* romcc does not understand regparm. */
 #define asmlinkage __attribute__((regparm(0)))
 
 /*

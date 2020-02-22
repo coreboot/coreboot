@@ -108,7 +108,8 @@ void board_FCH_InitEnv(struct sysinfo *cb_NA, FCH_DATA_BLOCK *FchParams_env)
 	FchParams_env->Hwm.HwmFchtsiAutoPoll = FALSE;/* 1 enable, 0 disable TSI Auto Polling */
 
 	FchParams_env->Sata.SataClass = CONFIG_HUDSON_SATA_MODE;
-	switch ((SATA_CLASS)CONFIG_HUDSON_SATA_MODE) { // code from olivehillplus (ft3b) - only one place where sata is configured
+
+	switch ((SATA_CLASS)CONFIG_HUDSON_SATA_MODE) {
 	case SataLegacyIde:
 	case SataRaid:
 	case SataAhci:

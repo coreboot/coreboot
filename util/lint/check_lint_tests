@@ -36,7 +36,7 @@ sed -i "s/for more details./for more details.\n \* You${SPACE}should${SPACE}have
 git add ${TESTFILE009}
 
 #lint-stable-010-asm-syntax
-TESTFILE010=src/arch/x86/bootblock_romcc.S
+TESTFILE010=src/arch/x86/bootblock_crt0.S
 sed -i "1s/^/.att${UNDERSCORE}syntax noprefix\n/" ${TESTFILE010}
 git add ${TESTFILE010}
 

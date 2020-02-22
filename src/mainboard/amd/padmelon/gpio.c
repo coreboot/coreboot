@@ -24,7 +24,7 @@
  * ramstage.
  */
 static const struct soc_amd_gpio gpio_set_stage_reset[] = {
-	/* GFX presense detect */
+	/* GFX presence detect */
 	PAD_GPI(GPIO_9, PULL_DOWN),
 	/* VDDP_VCTRL */
 	PAD_GPO(GPIO_40, HIGH),

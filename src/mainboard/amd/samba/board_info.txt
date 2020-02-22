@@ -1,8 +1,0 @@
-Category: half
-Board name: Samba
-Board URL: http://www.amd.com/Documents/40631a_epic_rdk_pb.pdf
-ROM package: SOIC8
-ROM protocol: SPI
-ROM socketed: n
-Flashrom support: n
-Clone of: lippert/hurricane-lx

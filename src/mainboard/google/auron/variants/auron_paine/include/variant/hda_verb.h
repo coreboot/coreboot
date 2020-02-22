@@ -72,7 +72,7 @@ const u32 cim_verb_data[] = {
 	/* Pin Complex (NID 0x1D) PCBeep */
 	// eapd low on ex-amp, laptop, custom enable
 	// mute spkr on hpout
-	// pcbeep en able, checksum
+	// pcbeep enable, checksum
 	// no physical, Internal, Location N/A
 	AZALIA_PIN_CFG(0, 0x1D, 0x4015812d),
 

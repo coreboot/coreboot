@@ -179,7 +179,7 @@ void lan_init(void)
 		/*
 		 * Battery life time - LAN PCIe should enter ASPM L1 to save
 		 * power when LAN connection is idle.
-		 * enable CLKREQ: LAN pci config space 0x81h=01
+		 * enable CLKREQ: LAN PCI config space 0x81h=01
 		 */
 		pci_write_config8(ethernet_dev, 0x81, 0x01);
 	}

@@ -85,7 +85,7 @@ const u32 cim_verb_data[] = {
 	/* Pin Complex (NID 0x1D)  PCBeep */
 	0x01d71c2d, // eapd low on ex-amp, laptop, custom enable
 	0x01d71d81, // mute spkr on hpout
-	0x01d71e15, // pcbeep en able, checksum
+	0x01d71e15, // pcbeep enable, checksum
 	0x01d71f40, // no physical, Internal, Location N/A
 
 	/* Pin Complex (NID 0x1E)  SPDIF-OUT - Disabled*/

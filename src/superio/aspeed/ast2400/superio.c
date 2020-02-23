@@ -75,7 +75,7 @@ static struct device_operations ops = {
 static struct pnp_info pnp_dev_info[] = {
 	{ NULL, AST2400_SUART1,   PNP_IO0 | PNP_IRQ0 | PNP_MSC0, 0xfff8, },
 	{ NULL, AST2400_SUART2,   PNP_IO0 | PNP_IRQ0 | PNP_MSC0, 0xfff8, },
-	{ NULL, AST2400_SWAK,     PNP_IO0 | PNP_IO1 | PNP_IO2 | PNP_IO3
+	{ NULL, AST2400_SWC,      PNP_IO0 | PNP_IO1 | PNP_IO2 | PNP_IO3
 		| PNP_IRQ0, 0xfff8, 0xfff8, 0xfff8, 0xfff8, },
 	{ NULL, AST2400_KBC,      PNP_IO0 | PNP_IO1 | PNP_IRQ0 | PNP_IRQ1
 		| PNP_MSC0, 0xffff, 0xffff, },

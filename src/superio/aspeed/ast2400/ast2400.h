@@ -6,7 +6,7 @@
 
 #define AST2400_SUART1	0x2 /* Com1 */
 #define AST2400_SUART2	0x3 /* Com2 */
-#define AST2400_SWAK	0x4 /* System Wake-Up control */
+#define AST2400_SWC	0x4 /* System Wake-Up Control */
 #define AST2400_KBC	0x5 /* Keyboard controller */
 #define AST2400_GPIO	0x7 /* GPIO */
 #define AST2400_SUART3	0xB /* Com3 */

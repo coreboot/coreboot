@@ -41,30 +41,20 @@ static void pch_log_gpio_gpe(u32 gpe0_sts, u32 gpe0_en, int start)
 }
 
 struct pme_status_info {
-#ifdef __SIMPLE_DEVICE__
-	pci_devfn_t dev;
-#else
-	struct device *dev;
-#endif
+	pci_devfn_t devfn;
 	uint8_t reg_offset;
 	uint32_t elog_event;
 };
 
 #define PME_STS_BIT		(1 << 15)
 
-#ifdef __SIMPLE_DEVICE__
-static void pch_log_add_elog_event(const struct pme_status_info *info,
-				   pci_devfn_t dev)
-#else
-static void pch_log_add_elog_event(const struct pme_status_info *info,
-				   struct device *dev)
-#endif
+static void pch_log_add_elog_event(const struct pme_status_info *info)
 {
 	/*
 	 * If wake source is XHCI, check for detailed wake source events on
 	 * USB2/3 ports.
 	 */
-	if ((info->dev == PCH_DEV_XHCI) &&
+	if ((info->devfn == PCH_DEVFN_XHCI) &&
 			pch_xhci_update_wake_event(soc_get_xhci_usb_info()))
 		return;
 
@@ -74,34 +64,28 @@ static void pch_log_add_elog_event(const struct pme_status_info *info,
 static void pch_log_pme_internal_wake_source(void)
 {
 	size_t i;
-#ifdef __SIMPLE_DEVICE__
-	pci_devfn_t dev;
-#else
-	struct device *dev;
-#endif
 	uint16_t val;
 	bool dev_found = false;
 
 	struct pme_status_info pme_status_info[] = {
-		{ PCH_DEV_HDA, 0x54, ELOG_WAKE_SOURCE_PME_HDA },
-		{ PCH_DEV_GBE, 0xcc, ELOG_WAKE_SOURCE_PME_GBE },
-		{ PCH_DEV_SATA, 0x74, ELOG_WAKE_SOURCE_PME_SATA },
-		{ PCH_DEV_CSE, 0x54, ELOG_WAKE_SOURCE_PME_CSE },
-		{ PCH_DEV_XHCI, 0x74, ELOG_WAKE_SOURCE_PME_XHCI },
-		{ PCH_DEV_USBOTG, 0x84, ELOG_WAKE_SOURCE_PME_XDCI },
+		{ PCH_DEVFN_HDA, 0x54, ELOG_WAKE_SOURCE_PME_HDA },
+		{ PCH_DEVFN_GBE, 0xcc, ELOG_WAKE_SOURCE_PME_GBE },
+		{ PCH_DEVFN_SATA, 0x74, ELOG_WAKE_SOURCE_PME_SATA },
+		{ PCH_DEVFN_CSE, 0x54, ELOG_WAKE_SOURCE_PME_CSE },
+		{ PCH_DEVFN_XHCI, 0x74, ELOG_WAKE_SOURCE_PME_XHCI },
+		{ PCH_DEVFN_USBOTG, 0x84, ELOG_WAKE_SOURCE_PME_XDCI },
 	};
 
 	for (i = 0; i < ARRAY_SIZE(pme_status_info); i++) {
-		dev = pme_status_info[i].dev;
-		if (!dev)
-			continue;
+		pci_devfn_t dev = PCI_DEV(0, PCI_SLOT(pme_status_info[i].devfn),
+					  PCI_FUNC(pme_status_info[i].devfn));
 
-		val = pci_read_config16(dev, pme_status_info[i].reg_offset);
+		val = pci_s_read_config16(dev, pme_status_info[i].reg_offset);
 
 		if ((val == 0xFFFF) || !(val & PME_STS_BIT))
 			continue;
 
-		pch_log_add_elog_event(&pme_status_info[i], dev);
+		pch_log_add_elog_event(&pme_status_info[i]);
 		dev_found = true;
 	}
 
@@ -123,49 +107,42 @@ static void pch_log_pme_internal_wake_source(void)
 static void pch_log_rp_wake_source(void)
 {
 	size_t i, maxports;
-#ifdef __SIMPLE_DEVICE__
-	pci_devfn_t dev;
-#else
-	struct device *dev;
-#endif
 	uint32_t val;
 
 	struct pme_status_info pme_status_info[] = {
-		{ PCH_DEV_PCIE1, 0x60, ELOG_WAKE_SOURCE_PME_PCIE1 },
-		{ PCH_DEV_PCIE2, 0x60, ELOG_WAKE_SOURCE_PME_PCIE2 },
-		{ PCH_DEV_PCIE3, 0x60, ELOG_WAKE_SOURCE_PME_PCIE3 },
-		{ PCH_DEV_PCIE4, 0x60, ELOG_WAKE_SOURCE_PME_PCIE4 },
-		{ PCH_DEV_PCIE5, 0x60, ELOG_WAKE_SOURCE_PME_PCIE5 },
-		{ PCH_DEV_PCIE6, 0x60, ELOG_WAKE_SOURCE_PME_PCIE6 },
-		{ PCH_DEV_PCIE7, 0x60, ELOG_WAKE_SOURCE_PME_PCIE7 },
-		{ PCH_DEV_PCIE8, 0x60, ELOG_WAKE_SOURCE_PME_PCIE8 },
-		{ PCH_DEV_PCIE9, 0x60, ELOG_WAKE_SOURCE_PME_PCIE9 },
-		{ PCH_DEV_PCIE10, 0x60, ELOG_WAKE_SOURCE_PME_PCIE10 },
-		{ PCH_DEV_PCIE11, 0x60, ELOG_WAKE_SOURCE_PME_PCIE11 },
-		{ PCH_DEV_PCIE12, 0x60, ELOG_WAKE_SOURCE_PME_PCIE12 },
-		{ PCH_DEV_PCIE13, 0x60, ELOG_WAKE_SOURCE_PME_PCIE13 },
-		{ PCH_DEV_PCIE14, 0x60, ELOG_WAKE_SOURCE_PME_PCIE14 },
-		{ PCH_DEV_PCIE15, 0x60, ELOG_WAKE_SOURCE_PME_PCIE15 },
-		{ PCH_DEV_PCIE16, 0x60, ELOG_WAKE_SOURCE_PME_PCIE16 },
-		{ PCH_DEV_PCIE17, 0x60, ELOG_WAKE_SOURCE_PME_PCIE17 },
-		{ PCH_DEV_PCIE18, 0x60, ELOG_WAKE_SOURCE_PME_PCIE18 },
-		{ PCH_DEV_PCIE19, 0x60, ELOG_WAKE_SOURCE_PME_PCIE19 },
-		{ PCH_DEV_PCIE20, 0x60, ELOG_WAKE_SOURCE_PME_PCIE20 },
-		{ PCH_DEV_PCIE21, 0x60, ELOG_WAKE_SOURCE_PME_PCIE21 },
-		{ PCH_DEV_PCIE22, 0x60, ELOG_WAKE_SOURCE_PME_PCIE22 },
-		{ PCH_DEV_PCIE23, 0x60, ELOG_WAKE_SOURCE_PME_PCIE23 },
-		{ PCH_DEV_PCIE24, 0x60, ELOG_WAKE_SOURCE_PME_PCIE24 },
+		{ PCH_DEVFN_PCIE1, 0x60, ELOG_WAKE_SOURCE_PME_PCIE1 },
+		{ PCH_DEVFN_PCIE2, 0x60, ELOG_WAKE_SOURCE_PME_PCIE2 },
+		{ PCH_DEVFN_PCIE3, 0x60, ELOG_WAKE_SOURCE_PME_PCIE3 },
+		{ PCH_DEVFN_PCIE4, 0x60, ELOG_WAKE_SOURCE_PME_PCIE4 },
+		{ PCH_DEVFN_PCIE5, 0x60, ELOG_WAKE_SOURCE_PME_PCIE5 },
+		{ PCH_DEVFN_PCIE6, 0x60, ELOG_WAKE_SOURCE_PME_PCIE6 },
+		{ PCH_DEVFN_PCIE7, 0x60, ELOG_WAKE_SOURCE_PME_PCIE7 },
+		{ PCH_DEVFN_PCIE8, 0x60, ELOG_WAKE_SOURCE_PME_PCIE8 },
+		{ PCH_DEVFN_PCIE9, 0x60, ELOG_WAKE_SOURCE_PME_PCIE9 },
+		{ PCH_DEVFN_PCIE10, 0x60, ELOG_WAKE_SOURCE_PME_PCIE10 },
+		{ PCH_DEVFN_PCIE11, 0x60, ELOG_WAKE_SOURCE_PME_PCIE11 },
+		{ PCH_DEVFN_PCIE12, 0x60, ELOG_WAKE_SOURCE_PME_PCIE12 },
+		{ PCH_DEVFN_PCIE13, 0x60, ELOG_WAKE_SOURCE_PME_PCIE13 },
+		{ PCH_DEVFN_PCIE14, 0x60, ELOG_WAKE_SOURCE_PME_PCIE14 },
+		{ PCH_DEVFN_PCIE15, 0x60, ELOG_WAKE_SOURCE_PME_PCIE15 },
+		{ PCH_DEVFN_PCIE16, 0x60, ELOG_WAKE_SOURCE_PME_PCIE16 },
+		{ PCH_DEVFN_PCIE17, 0x60, ELOG_WAKE_SOURCE_PME_PCIE17 },
+		{ PCH_DEVFN_PCIE18, 0x60, ELOG_WAKE_SOURCE_PME_PCIE18 },
+		{ PCH_DEVFN_PCIE19, 0x60, ELOG_WAKE_SOURCE_PME_PCIE19 },
+		{ PCH_DEVFN_PCIE20, 0x60, ELOG_WAKE_SOURCE_PME_PCIE20 },
+		{ PCH_DEVFN_PCIE21, 0x60, ELOG_WAKE_SOURCE_PME_PCIE21 },
+		{ PCH_DEVFN_PCIE22, 0x60, ELOG_WAKE_SOURCE_PME_PCIE22 },
+		{ PCH_DEVFN_PCIE23, 0x60, ELOG_WAKE_SOURCE_PME_PCIE23 },
+		{ PCH_DEVFN_PCIE24, 0x60, ELOG_WAKE_SOURCE_PME_PCIE24 },
 	};
 
 	maxports = MIN(CONFIG_MAX_ROOT_PORTS, ARRAY_SIZE(pme_status_info));
 
 	for (i = 0; i < maxports; i++) {
-		dev = pme_status_info[i].dev;
+		pci_devfn_t dev = PCI_DEV(0, PCI_SLOT(pme_status_info[i].devfn),
+					  PCI_FUNC(pme_status_info[i].devfn));
 
-		if (!dev)
-			continue;
-
-		val = pci_read_config32(dev, pme_status_info[i].reg_offset);
+		val = pci_s_read_config32(dev, pme_status_info[i].reg_offset);
 
 		if ((val == 0xFFFFFFFF) || !(val & RP_PME_STS_BIT))
 			continue;
@@ -174,7 +151,7 @@ static void pch_log_rp_wake_source(void)
 		 * Linux kernel uses PME STS bit information. So do not clear
 		 * this bit.
 		 */
-		pch_log_add_elog_event(&pme_status_info[i], dev);
+		pch_log_add_elog_event(&pme_status_info[i]);
 	}
 }
 

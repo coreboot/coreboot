@@ -180,6 +180,11 @@ chip soc/intel/skylake
 	# SATA
 	register "EnableSata" = "1"
 	register "SataSalpSupport" = "1"
+	# SATA4 and SATA5 are located in the lower right corner of the board,
+	# but they are not populated. This is because the same PCB is used to
+	# make boards with better PCHs, which can have up to six SATA ports.
+	# However, the H110 PCH only has four SATA ports, which explains why
+	# two connectors are missing.
 	register "SataPortsEnable" = "{ \
 		[0]     = 1, \
 		[1]     = 1, \
@@ -190,8 +195,6 @@ chip soc/intel/skylake
 		[6]     = 0, \
 		[7]     = 0, \
 	}"
-	# SATA4 and SATA5 are located in the lower right corner
-	# of the board, but there is no connector for this
 
 	# PCH UART, SPI, I2C
 	register "SerialIoDevMode" = "{ \

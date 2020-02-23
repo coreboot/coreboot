@@ -100,10 +100,12 @@ chip soc/intel/skylake
 						device pnp 2e.2 on	# SUART1
 							io 0x60 = 0x3f8
 							irq 0x70 = 4
+							drq 0xf0 = 0x00
 						end
 						device pnp 2e.3 on	# SUART2
 							io 0x60 = 0x2f8
 							irq 0x70 = 3
+							drq 0xf0 = 0x00
 						end
 						device pnp 2e.4 on	# SWC
 							io 0x60 = 0xa00

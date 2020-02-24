@@ -200,7 +200,7 @@ Scope(\_SB) {
 		/* Package(){0x00140005, 1, 0, 17 }, */
 		/* Package(){0x00140006, 1, 0, 17 }, */
 
-		/* TODO: pcie */
+		/* TODO: PCIe */
 		Package(){0x0015FFFF, 0, 0, 16 },
 		Package(){0x0015FFFF, 1, 0, 17 },
 		Package(){0x0015FFFF, 2, 0, 18 },

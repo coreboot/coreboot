@@ -226,7 +226,7 @@ struct soc_intel_skylake_config {
 	u8 PchDciEn;
 
 	/*
-	 * Pcie Root Port configuration:
+	 * PCIe Root Port configuration:
 	 * each element of array corresponds to
 	 * respective PCIe root port.
 	 */

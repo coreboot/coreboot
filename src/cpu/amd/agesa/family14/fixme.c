@@ -100,7 +100,7 @@ void amd_initenv(void)
 	PciValue |= 0x80000000;
 	LibAmdPciWrite(AccessWidth32, PciAddress, &PciValue, &AmdParamStruct.StdHeader);
 
-	/* Initialize GMM Base Address for Pcie Mode
+	/* Initialize GMM Base Address for PCIe Mode
 	 *      Modify B0D1F0x18
 	 */
 	PciAddress.Address.Bus = 0;
@@ -112,7 +112,7 @@ void amd_initenv(void)
 	PciValue |= 0x96000000;
 	LibAmdPciWrite(AccessWidth32, PciAddress, &PciValue, &AmdParamStruct.StdHeader);
 
-	/* Initialize FB Base Address for Pcie Mode
+	/* Initialize FB Base Address for PCIe Mode
 	 *      Modify B0D1F0x10
 	 */
 	PciAddress.Address.Register = 0x10;

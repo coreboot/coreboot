@@ -138,7 +138,7 @@ typedef struct global_nvs_t {
 	u8	pavp; /* 0xe9 - IGD PAVP data */
 	u8	rsvd12; /* 0xea - rsvd */
 	u8	oscc; /* 0xeb - PCIe OSC control */
-	u8	npce; /* 0xec - native pcie support */
+	u8	npce; /* 0xec - native PCIe support */
 	u8	plfl; /* 0xed - platform flavor */
 	u8	brev; /* 0xee - board revision */
 	u8	dpbm; /* 0xef - digital port b mode */

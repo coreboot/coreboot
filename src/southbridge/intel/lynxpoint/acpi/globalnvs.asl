@@ -161,7 +161,7 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	PAVP,	 8,	// 0xe9 - IGD PAVP data
 	Offset (0xeb),
 	OSCC,	 8,	// 0xeb - PCIe OSC control
-	NPCE,	 8,	// 0xec - native pcie support
+	NPCE,	 8,	// 0xec - native PCIe support
 	PLFL,	 8,	// 0xed - platform flavor
 	BREV,	 8,	// 0xee - board revision
 	DPBM,	 8,	// 0xef - digital port b mode

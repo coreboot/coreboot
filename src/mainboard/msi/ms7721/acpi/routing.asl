@@ -71,7 +71,7 @@
 		/* Bus 0, Dev 17 - SATA controller */
 		Package(){0x0011FFFF, 0, INTD, 0 },
 
-		/* Bus 0, Dev 21 Pcie Bridge */
+		/* Bus 0, Dev 21 PCIe Bridge */
 		Package(){0x0015FFFF, 0, INTA, 0 },
 		Package(){0x0015FFFF, 1, INTB, 0 },
 		Package(){0x0015FFFF, 2, INTC, 0 },

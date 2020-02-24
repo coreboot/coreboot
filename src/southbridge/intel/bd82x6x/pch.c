@@ -351,8 +351,8 @@ static void pch_pcie_enable(struct device *dev)
 		 * If PCIe 0-3 disabled set Function 0 0xE2[0] = 1
 		 * If PCIe 4-7 disabled set Function 4 0xE2[0] = 1
 		 *
-		 * This check is done here instead of pcie driver
-		 * because the pcie driver enable() handler is not
+		 * This check is done here instead of PCIe driver
+		 * because the PCIe driver enable() handler is not
 		 * called unless the device is enabled.
 		 */
 		if ((PCI_FUNC(dev->path.pci.devfn) == 0 ||

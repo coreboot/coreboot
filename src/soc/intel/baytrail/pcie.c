@@ -163,7 +163,7 @@ static u8 all_ports_no_dev_present(struct device *dev)
 		dev->path.pci.devfn &= ~0x7;
 		dev->path.pci.devfn |= func;
 
-		/* is pcie device there */
+		/* is PCIe device there */
 		if (pci_read_config32(dev, 0) == 0xFFFFFFFF)
 			continue;
 

@@ -184,7 +184,7 @@ static uint8_t board_oem_id(void)
 
 const char *smbios_system_sku(void)
 {
-	static char sku_str[5]; /* sku{0..7} */
+	static char sku_str[7]; /* sku{0..255} */
 
 	snprintf(sku_str, sizeof(sku_str), "sku%d", board_oem_id());
 

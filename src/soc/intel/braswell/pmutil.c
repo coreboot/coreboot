@@ -15,6 +15,7 @@
 #include <arch/acpi.h>
 #include <arch/io.h>
 #include <assert.h>
+#include <bootmode.h>
 #include <device/device.h>
 #include <device/mmio.h>
 #include <device/pci.h>
@@ -26,7 +27,6 @@
 #include <soc/pm.h>
 #include <stdint.h>
 #include <security/vboot/vbnv.h>
-#include <security/vboot/vboot_common.h>
 
 #if defined(__SIMPLE_DEVICE__)
 
@@ -380,7 +380,7 @@ int vbnv_cmos_failed(void)
 	return rtc_failure();
 }
 
-int vboot_platform_is_resuming(void)
+int platform_is_resuming(void)
 {
 	if (!(inw(ACPI_BASE_ADDRESS + PM1_STS) & WAK_STS))
 		return 0;

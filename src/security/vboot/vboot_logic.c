@@ -113,7 +113,7 @@ static int handle_digest_result(void *slot_hash, size_t slot_hash_sz)
 	if (!CONFIG(VBOOT_STARTS_IN_BOOTBLOCK))
 		return 0;
 
-	is_resume = vboot_platform_is_resuming();
+	is_resume = platform_is_resuming();
 
 	if (is_resume > 0) {
 		uint8_t saved_hash[VBOOT_MAX_HASH_SIZE];
@@ -272,7 +272,7 @@ void verstage_main(void)
 	 * does verification of memory init and thus must ensure it resumes with
 	 * the same slot that it booted from. */
 	if (CONFIG(RESUME_PATH_SAME_AS_BOOT) &&
-		vboot_platform_is_resuming())
+		platform_is_resuming())
 		ctx->flags |= VB2_CONTEXT_S3_RESUME;
 
 	/* Read secdata from TPM. Initialize TPM if secdata not found. We don't

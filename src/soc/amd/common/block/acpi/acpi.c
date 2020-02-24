@@ -12,15 +12,17 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/acpi.h>
-#include <cbmem.h>
-#include <elog.h>
-#include <console/console.h>
-#include <soc/southbridge.h>
 #include <amdblocks/acpimmio.h>
 #include <amdblocks/acpi.h>
+#include <arch/acpi.h>
+#include <bootmode.h>
+#include <cbmem.h>
+#include <console/console.h>
+#include <elog.h>
 #include <halt.h>
 #include <security/vboot/vboot_common.h>
+#include <soc/southbridge.h>
+#include <halt.h>
 
 void poweroff(void)
 {
@@ -136,7 +138,7 @@ int acpi_get_sleep_type(void)
 	return acpi_sleep_from_pm1(acpi_read16(MMIO_ACPI_PM1_CNT_BLK));
 }
 
-int vboot_platform_is_resuming(void)
+int platform_is_resuming(void)
 {
 	if (!(acpi_read16(MMIO_ACPI_PM1_STS) & WAK_STS))
 		return 0;

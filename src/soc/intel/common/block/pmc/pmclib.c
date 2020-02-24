@@ -13,6 +13,7 @@
  */
 
 #include <arch/io.h>
+#include <bootmode.h>
 #include <device/mmio.h>
 #include <cbmem.h>
 #include <console/console.h>
@@ -21,11 +22,12 @@
 #include <intelblocks/gpio.h>
 #include <intelblocks/tco.h>
 #include <option.h>
+#include <pc80/mc146818rtc.h>
+#include <security/vboot/vboot_common.h>
 #include <soc/pm.h>
 #include <stdint.h>
 #include <string.h>
 #include <timer.h>
-#include <security/vboot/vboot_common.h>
 
 static struct chipset_power_state power_state;
 
@@ -440,7 +442,7 @@ void pmc_global_reset_enable(bool enable)
 }
 #endif // CONFIG_PMC_GLOBAL_RESET_ENABLE_LOCK
 
-int vboot_platform_is_resuming(void)
+int platform_is_resuming(void)
 {
 	if (!(inw(ACPI_BASE_ADDRESS + PM1_STS) & WAK_STS))
 		return 0;

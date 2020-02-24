@@ -14,6 +14,7 @@
 
 #include <boot_device.h>
 #include <bootmem.h>
+#include <bootmode.h>
 #include <cbfs.h>
 #include <vboot_check.h>
 #include <vboot_common.h>
@@ -290,7 +291,7 @@ void verified_boot_early_check(void)
 
 	if (CONFIG(VENDORCODE_ELTAN_MBOOT)) {
 		printk(BIOS_DEBUG, "mb_measure returned 0x%x\n",
-		mb_measure(vboot_platform_is_resuming()));
+		mb_measure(platform_is_resuming()));
 	}
 
 	printk(BIOS_SPEW, "%s: process early verify list\n", __func__);

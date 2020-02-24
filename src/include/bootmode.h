@@ -29,4 +29,10 @@ int display_init_required(void);
 int gfx_get_init_done(void);
 void gfx_set_init_done(int done);
 
+/*
+ * Determine if the platform is resuming from suspend. Returns 0 when
+ * not resuming, > 0 if resuming, and < 0 on error.
+ */
+int platform_is_resuming(void);
+
 #endif /* __BOOTMODE_H__ */

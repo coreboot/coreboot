@@ -48,12 +48,6 @@ int vboot_save_hash(void *digest, size_t digest_size);
  */
 int vboot_retrieve_hash(void *digest, size_t digest_size);
 
-/*
- * Determine if the platform is resuming from suspend. Returns 0 when
- * not resuming, > 0 if resuming, and < 0 on error.
- */
-int vboot_platform_is_resuming(void);
-
 /* ============================= VERSTAGE ================================== */
 /*
  * Main logic for verified boot. verstage_main() is just the core vboot logic.

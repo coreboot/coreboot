@@ -19,6 +19,7 @@
 
 #include <arch/acpi.h>
 #include <arch/io.h>
+#include <bootmode.h>
 #include <device/pci_ops.h>
 #include <device/device.h>
 #include <device/pci.h>
@@ -30,7 +31,6 @@
 #include <soc/pm.h>
 #include <soc/gpio.h>
 #include <security/vboot/vbnv.h>
-#include <security/vboot/vboot_common.h>
 
 /* Print status bits with descriptive names */
 static void print_status_bits(u32 status, const char *bit_names[])
@@ -450,7 +450,7 @@ int acpi_sci_irq(void)
 	return sci_irq;
 }
 
-int vboot_platform_is_resuming(void)
+int platform_is_resuming(void)
 {
 	if (!(inw(ACPI_BASE_ADDRESS + PM1_STS) & WAK_STS))
 		return 0;

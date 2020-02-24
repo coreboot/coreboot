@@ -167,7 +167,7 @@ void mainboard_get_spd(spd_raw_data *spd, bool id_only)
 }
 
 const struct southbridge_usb_port mainboard_usb_ports[] = {
-	/* enabled power  usb oc pin  */
+	/* enabled power  USB oc pin  */
 	{ 1, 1, 0 }, /* P0: Front port  (OC0) */
 	{ 1, 0, 1 }, /* P1: Back port   (OC1) */
 	{ 1, 0, -1 }, /* P2: MINIPCIE1   (no OC) */

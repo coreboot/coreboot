@@ -26,7 +26,7 @@ static struct usb_board_data usb1_board_data = {
 
 static void setup_usb(void)
 {
-	/* Setting Secondary usb controller */
+	/* Setting Secondary USB controller */
 	setup_usb_host(HSUSB_HS_PORT_1, &usb1_board_data);
 }
 

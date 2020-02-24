@@ -104,7 +104,7 @@ static int check_ip_clk_status(void)
 
 	do {
 		if (stopwatch_expired(&sw)) {
-			u3p_err("usb clocks are not stable!!!\n");
+			u3p_err("USB clocks are not stable!!!\n");
 			return -1;
 		}
 

@@ -52,7 +52,7 @@ pci_devfn_t pci_ehci_dbg_dev(unsigned hcd_idx)
 
 void pci_ehci_dbg_set_port(pci_devfn_t dev, unsigned int port)
 {
-	/* claim usb debug port */
+	/* claim USB debug port */
 	const unsigned long dbgctl_addr =
 		((unsigned long)ehci_bar) + CONFIG_EHCI_DEBUG_OFFSET;
 	write32(dbgctl_addr, read32(dbgctl_addr) | (1 << 30));

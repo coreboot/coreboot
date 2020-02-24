@@ -26,9 +26,9 @@
 const struct southbridge_usb_port mainboard_usb_ports[] = {
 	{ 1, 0, 0 },  /* SSP1: right */
 	{ 1, 0, 1 },  /* SSP2: left, EHCI Debug */
-	{ 1, 1, 3 },  /* SSP3: dock usb3 */
-	{ 1, 1, -1 }, /* B0P4: wwan usb */
-	{ 1, 1, 2 },  /* B0P5: dock usb2 */
+	{ 1, 1, 3 },  /* SSP3: dock USB3 */
+	{ 1, 1, -1 }, /* B0P4: wwan USB */
+	{ 1, 1, 2 },  /* B0P5: dock USB2 */
 	{ 0, 0, -1 }, /* B0P6 */
 	{ 0, 0, -1 }, /* B0P7 */
 	{ 1, 2, -1 }, /* B0P8: unknown */
@@ -36,7 +36,7 @@ const struct southbridge_usb_port mainboard_usb_ports[] = {
 	{ 0, 2, 5 },  /* B1P2 */
 	{ 1, 1, -1 }, /* B1P3: fingerprint reader */
 	{ 0, 0, -1 }, /* B1P4 */
-	{ 1, 1, -1 }, /* B1P5: wlan usb */
+	{ 1, 1, -1 }, /* B1P5: wlan USB */
 	{ 1, 1, -1 }, /* B1P6: Camera */
 };
 

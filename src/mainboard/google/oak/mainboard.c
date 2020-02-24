@@ -145,7 +145,7 @@ static void configure_usb(void)
 
 static void configure_usb_hub(void)
 {
-	/* set usb hub reset pin (low active) to high */
+	/* set USB hub reset pin (low active) to high */
 	if (board_id() + CONFIG_BOARD_ID_ADJUSTMENT > 4)
 		gpio_output(GPIO(UTXD3), 1);
 }

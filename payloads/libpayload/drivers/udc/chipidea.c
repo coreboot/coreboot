@@ -81,7 +81,7 @@ static int chipidea_hw_init(struct usbdev_ctrl *this, void *_opreg,
 	memcpy(&this->device_descriptor, dd, sizeof(*dd));
 
 	if (p->qhlist == NULL)
-		die("failed to allocate memory for usb device mode");
+		die("failed to allocate memory for USB device mode");
 
 	memset(p->qhlist, 0, sizeof(struct qh) * CI_QHELEMENTS);
 
@@ -102,7 +102,7 @@ static int chipidea_hw_init(struct usbdev_ctrl *this, void *_opreg,
 	p->qhlist[1].config = QH_MPS(64) | QH_NO_AUTO_ZLT | QH_IOS;
 
 	do {
-		debug("waiting for usb phy clk valid: %x\n",
+		debug("waiting for USB phy clk valid: %x\n",
 			readl(&p->opreg->susp_ctrl));
 		mdelay(1);
 	} while ((readl(&p->opreg->susp_ctrl) & (1 << 7)) == 0);

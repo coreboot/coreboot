@@ -67,7 +67,7 @@ void mainboard_late_rcba_config(void)
 }
 
 const struct southbridge_usb_port mainboard_usb_ports[] = {
-	/* enabled power  usb oc pin  */
+	/* enabled power  USB oc pin  */
 	{ 1, 0, -1 }, /* P0: Right USB 3.0 #1 (no OC) */
 	{ 1, 0, -1 }, /* P1: Right USB 3.0 #2 (no OC) */
 	{ 1, 0, -1 }, /* P2: Camera (no OC) */
@@ -120,7 +120,7 @@ void mainboard_fill_pei_data(struct pei_data *pei_data)
 		.dimm_channel1_disabled = 2,
 		.max_ddr3_freq = 1600,
 		.usb_port_config = {
-			/* enabled   usb oc pin    length */
+			/* enabled   USB oc pin    length */
 			{ 1, 0, 0x0040 }, /* P0: Right USB 3.0 #1 (no OC) */
 			{ 1, 0, 0x0040 }, /* P1: Right USB 3.0 #2 (no OC) */
 			{ 1, 0, 0x0040 }, /* P2: Camera (no OC) */

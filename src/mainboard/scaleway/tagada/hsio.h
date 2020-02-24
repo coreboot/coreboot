@@ -38,7 +38,7 @@ const BL_HSIO_INFORMATION tagada_hsio_config[] = {
 	 *    Lane[19]->USB3 rear I/O panel connector
 	 */
 
-	/* SKU HSIO 20 (pcie [12-15] sata [8-11,12,14] usb [19]) */
+	/* SKU HSIO 20 (pcie [12-15] sata [8-11,12,14] USB [19]) */
 	{BL_SKU_HSIO_20,
 	{PCIE_BIF_CTRL_x4x4, PCIE_BIF_CTRL_x2x2x2x2},
 	{/* ME_FIA_MUX_CONFIG */
@@ -155,7 +155,7 @@ const BL_HSIO_INFORMATION tagada_hsio_config[] = {
 		    BL_ME_FIA_PCIE_ROOT_PORT_LINK_WIDTH_BICTRL,
 		    BL_FIA_PCIE_ROOT_PORT_7)} } },
 
-	/* SKU HSIO 12 (pcie [12-15] sata [8-11,12,14] usb [19]) */
+	/* SKU HSIO 12 (pcie [12-15] sata [8-11,12,14] USB [19]) */
 	{BL_SKU_HSIO_12,
 	{PCIE_BIF_CTRL_x4x4, PCIE_BIF_CTRL_x2x2x2x2},
 	{/* ME_FIA_MUX_CONFIG */
@@ -273,7 +273,7 @@ const BL_HSIO_INFORMATION tagada_hsio_config[] = {
 		    BL_ME_FIA_PCIE_ROOT_PORT_LINK_WIDTH_BICTRL,
 		    BL_FIA_PCIE_ROOT_PORT_7)} } },
 
-	/* SKU HSIO 10 (pcie [12-15] sata [8-11,12,14] usb [19]) */
+	/* SKU HSIO 10 (pcie [12-15] sata [8-11,12,14] USB [19]) */
 	{BL_SKU_HSIO_10,
 	{PCIE_BIF_CTRL_x4x4, PCIE_BIF_CTRL_x2x2x2x2},
 	{/* ME_FIA_MUX_CONFIG */
@@ -391,7 +391,7 @@ const BL_HSIO_INFORMATION tagada_hsio_config[] = {
 		    BL_ME_FIA_PCIE_ROOT_PORT_LINK_WIDTH_BICTRL,
 		    BL_FIA_PCIE_ROOT_PORT_7)} } },
 
-	/* SKU HSIO 8 (pcie [12-14] sata [8-11,12,14] usb [19]) */
+	/* SKU HSIO 8 (pcie [12-14] sata [8-11,12,14] USB [19]) */
 	{BL_SKU_HSIO_08,
 	{PCIE_BIF_CTRL_x4x4, PCIE_BIF_CTRL_x2x2x2x2},
 	{/* ME_FIA_MUX_CONFIG */
@@ -509,7 +509,7 @@ const BL_HSIO_INFORMATION tagada_hsio_config[] = {
 		    BL_ME_FIA_PCIE_ROOT_PORT_LINK_WIDTH_BICTRL,
 		    BL_FIA_PCIE_ROOT_PORT_7)} } },
 
-	/* SKU HSIO 6 (pcie [12,14] sata [8-11,12,14] usb []) */
+	/* SKU HSIO 6 (pcie [12,14] sata [8-11,12,14] USB []) */
 	{BL_SKU_HSIO_06,
 	{PCIE_BIF_CTRL_x4x4, PCIE_BIF_CTRL_x2x2x2x2},
 	{/* ME_FIA_MUX_CONFIG */

@@ -99,7 +99,7 @@ void mainboard_fill_pei_data(struct pei_data *pei_data)
 		.dimm_channel1_disabled = 2,
 		.max_ddr3_freq = 1600,
 		.usb_port_config = {
-			 /* enabled   usb oc pin    length */
+			 /* enabled   USB oc pin    length */
 			{ 1, 0, 0x0040 }, /* P0: lower left USB 3.0 (OC0) */
 			{ 1, 0, 0x0040 }, /* P1: upper left USB 3.0 (OC0) */
 			{ 1, 0, 0x0040 }, /* P2: lower right USB 3.0 (OC0) */
@@ -127,7 +127,7 @@ void mainboard_fill_pei_data(struct pei_data *pei_data)
 }
 
 const struct southbridge_usb_port mainboard_usb_ports[] = {
-	/* enabled power  usb oc pin  */
+	/* enabled power  USB oc pin  */
 	{ 1, 0, 0 }, /* P0: lower left USB 3.0 (OC0) */
 	{ 1, 0, 0 }, /* P1: upper left USB 3.0 (OC0) */
 	{ 1, 0, 0 }, /* P2: lower right USB 3.0 (OC0) */

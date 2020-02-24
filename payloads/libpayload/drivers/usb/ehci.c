@@ -291,7 +291,7 @@ static int ehci_set_async_schedule(ehci_t *ehcic, int enable)
 
 	/* Memory barrier to ensure that all memory accesses before we set the
 	 * async schedule are complete. It was observed especially in the case of
-	 * arm64, that netboot and usb stuff resulted in lots of errors possibly
+	 * arm64, that netboot and USB stuff resulted in lots of errors possibly
 	 * due to CPU reordering. Hence, enforcing strict CPU ordering.
 	 */
 	mb();

@@ -126,7 +126,7 @@ enum {
 	 * MSC commands can be
 	 *   successful,
 	 *   fail with proper response or
-	 *   fail totally, which results in detaching of the usb device
+	 *   fail totally, which results in detaching of the USB device
 	 *   and immediate cleanup of the usbdev_t structure.
 	 * In the latter case the caller has to make sure, that he won't
 	 * use the device any more.
@@ -703,14 +703,14 @@ usb_msc_poll (usbdev_t *dev)
 		return;
 
 	if (!prev_ready && msc->ready) {
-		usb_debug ("usb msc: not ready -> ready (lun %d)\n", msc->lun);
+		usb_debug ("USB msc: not ready -> ready (lun %d)\n", msc->lun);
 		usb_msc_create_disk (dev);
 	} else if (prev_ready && !msc->ready) {
-		usb_debug ("usb msc: ready -> not ready (lun %d)\n", msc->lun);
+		usb_debug ("USB msc: ready -> not ready (lun %d)\n", msc->lun);
 		usb_msc_remove_disk (dev);
 	} else if (!prev_ready && !msc->ready) {
 		u8 new_lun = (msc->lun + 1) % msc->num_luns;
-		usb_debug("usb msc: not ready (lun %d) -> lun %d\n", msc->lun,
+		usb_debug("USB msc: not ready (lun %d) -> lun %d\n", msc->lun,
 			  new_lun);
 		msc->lun = new_lun;
 	}

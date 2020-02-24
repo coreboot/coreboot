@@ -214,7 +214,7 @@ static struct device_operations usb_ops = {
 };
 
 /*
- * The pci id of usb ctrl 0 and 1 are the same.
+ * The pci id of USB ctrl 0 and 1 are the same.
  */
 static const struct pci_driver usb_ohci123_driver __pci_driver = {
 	.ops = &usb_ops,

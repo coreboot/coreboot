@@ -634,14 +634,14 @@ set_address (hci_t *controller, usb_speed speed, int hubport, int hubaddr)
 
 /*
  * Should be called by the hub drivers whenever a physical detach occurs
- * and can be called by usb class drivers if they are unsatisfied with a
+ * and can be called by USB class drivers if they are unsatisfied with a
  * malfunctioning device.
  */
 void
 usb_detach_device(hci_t *controller, int devno)
 {
 	/* check if device exists, as we may have
-	   been called yet by the usb class driver */
+	   been called yet by the USB class driver */
 	if (controller->devices[devno]) {
 		controller->devices[devno]->destroy (controller->devices[devno]);
 

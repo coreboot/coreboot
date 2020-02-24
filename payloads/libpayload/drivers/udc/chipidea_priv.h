@@ -47,7 +47,7 @@ struct chipidea_opreg {
 	uint32_t portsc; // 0x174
 	uint32_t pad178[15];
 	uint32_t devlc; // 0x1b4
-		/* 25:26: host-desired usb version
+		/* 25:26: host-desired USB version
 		 * 23: force full speed */
 	uint32_t pad1b8[16];
 	uint32_t usbmode; // 0x1f8

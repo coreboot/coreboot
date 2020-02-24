@@ -842,7 +842,7 @@ void platform_fsp_notify_status(enum fsp_notify_phase phase)
 
 		/*
 		 * Override GLK xhci clock gating register(XHCLKGTEN) to
-		 * mitigate usb device suspend and resume failure.
+		 * mitigate USB device suspend and resume failure.
 		 */
 		if (CONFIG(SOC_INTEL_GLK)) {
 			uint32_t *cfg;

@@ -99,7 +99,7 @@ void i82801gx_early_init(void)
 	reg8 &= ~RTC_BATTERY_DEAD;
 	pci_write_config8(PCI_DEV(0, 0x1f, 0), GEN_PMCON_3, reg8);
 
-	/* usb transient disconnect */
+	/* USB transient disconnect */
 	reg8 = pci_read_config8(PCI_DEV(0, 0x1f, 0), 0xad);
 	reg8 |= (3 << 0);
 	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0xad, reg8);

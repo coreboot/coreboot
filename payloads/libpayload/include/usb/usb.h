@@ -217,7 +217,7 @@ struct usbdev {
 	hci_t *controller;
 	endpoint_t endpoints[32];
 	int num_endp;
-	int address;		// usb address
+	int address;		// USB address
 	int hub;		// hub, device is attached to
 	int port;		// port where device is attached
 	usb_speed speed;
@@ -263,7 +263,7 @@ struct usbdev_hc {
 	u8* (*poll_intr_queue) (void *queue);
 	void *instance;
 
-	/* set_address():		Tell the usb device its address (xHCI
+	/* set_address():		Tell the USB device its address (xHCI
 					controllers want to do this by
 					themselves). Also, allocate the usbdev
 					structure, initialize enpoint 0

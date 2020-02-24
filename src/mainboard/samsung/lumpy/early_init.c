@@ -178,7 +178,7 @@ void mainboard_fill_pei_data(struct pei_data *pei_data)
 }
 
 const struct southbridge_usb_port mainboard_usb_ports[] = {
-	/* enabled power  usb oc pin  */
+	/* enabled power  USB oc pin  */
 	{ 1, 1, 0 }, /* P0: Port 0      (OC0) */
 	{ 1, 1, 1 }, /* P1: Port 1      (OC1) */
 	{ 1, 0, -1 }, /* P2: MINIPCIE1   (no OC) */

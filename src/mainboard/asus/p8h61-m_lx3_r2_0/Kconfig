@@ -1,0 +1,34 @@
+## SPDX-License-Identifier: GPL-2.0-only
+## This file is part of the coreboot project.
+
+if BOARD_ASUS_P8H61_M_LX3_R2_0
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select BOARD_ROMSIZE_KB_8192
+	select HAVE_ACPI_RESUME
+	select HAVE_ACPI_TABLES
+	select INTEL_GMA_HAVE_VBT
+	select MAINBOARD_HAS_LIBGFXINIT
+	select NO_UART_ON_SUPERIO
+	select NORTHBRIDGE_INTEL_SANDYBRIDGE
+	select REALTEK_8168_RESET
+	select RT8168_SET_LED_MODE
+	select SERIRQ_CONTINUOUS_MODE
+	select SOUTHBRIDGE_INTEL_BD82X6X
+	select SUPERIO_NUVOTON_NCT6779D
+	select USE_NATIVE_RAMINIT
+
+config MAINBOARD_DIR
+	string
+	default asus/p8h61-m_lx3_r2_0
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "P8H61-M LX3 R2.0"
+
+config MAX_CPUS
+	int
+	default 8
+
+endif

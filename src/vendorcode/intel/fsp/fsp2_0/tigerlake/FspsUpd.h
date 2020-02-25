@@ -187,7 +187,16 @@ typedef struct {
 
 /** Offset 0x00CA - Reserved
 **/
-  UINT8                       Reserved4[74];
+  UINT8                       Reserved4[65];
+
+/** Offset 0x010B - Enables UART hardware flow control, CTS and RTS lines
+  Enables UART hardware flow control, CTS and RTS lines.
+**/
+  UINT8                       SerialIoUartAutoFlow[7];
+
+/** Offset 0x0112 - Reserved
+**/
+  UINT8                       Reserved5[2];
 
 /** Offset 0x0114 - SerialIoUartRtsPinMuxPolicy
   Select SerialIo Uart Rts pin muxing. Refer to GPIO_*_MUXING_SERIALIO_UARTx_RTS*
@@ -223,7 +232,7 @@ typedef struct {
 
 /** Offset 0x0185 - Reserved
 **/
-  UINT8                       Reserved5[7];
+  UINT8                       Reserved6[7];
 
 /** Offset 0x018C - I2Cn Device Mode
   Selects I2c operation mode. N represents controller index: I2c0, I2c1, ... Available
@@ -245,7 +254,7 @@ typedef struct {
 
 /** Offset 0x01D4 - Reserved
 **/
-  UINT8                       Reserved6[192];
+  UINT8                       Reserved7[192];
 
 /** Offset 0x0294 - USB Per Port HS Preemphasis Bias
   USB Per Port HS Preemphasis Bias. 000b-0mV, 001b-11.25mV, 010b-16.9mV, 011b-28.15mV,
@@ -297,7 +306,7 @@ typedef struct {
 
 /** Offset 0x02FC - Reserved
 **/
-  UINT8                       Reserved7[80];
+  UINT8                       Reserved8[80];
 
 /** Offset 0x034C - Enable LAN
   Enable/disable LAN controller.
@@ -307,7 +316,7 @@ typedef struct {
 
 /** Offset 0x034D - Reserved
 **/
-  UINT8                       Reserved8[11];
+  UINT8                       Reserved9[11];
 
 /** Offset 0x0358 - PCIe PTM enable/disable
   Enable/disable Precision Time Measurement for PCIE Root Ports.
@@ -316,7 +325,7 @@ typedef struct {
 
 /** Offset 0x0370 - Reserved
 **/
-  UINT8                       Reserved9[73];
+  UINT8                       Reserved10[73];
 
 /** Offset 0x03B9 - Transition time in microseconds from Low Current Mode Voltage to High Current Mode Voltage
   This field has 1us resolution. When value is 0 PCH will not transition VCCIN_AUX
@@ -332,7 +341,7 @@ typedef struct {
 
 /** Offset 0x03BB - Reserved
 **/
-  UINT8                       Reserved10;
+  UINT8                       Reserved11;
 
 /** Offset 0x03BC - Transition time in microseconds from Off (0V) to High Current Mode Voltage
   This field has 1us resolution. When value is 0 Transition to 0V is disabled.
@@ -341,7 +350,7 @@ typedef struct {
 
 /** Offset 0x03BE - Reserved
 **/
-  UINT8                       Reserved11[38];
+  UINT8                       Reserved12[38];
 
 /** Offset 0x03E4 - CNVi Configuration
   This option allows for automatic detection of Connectivity Solution. [Auto Detection]
@@ -364,7 +373,7 @@ typedef struct {
 
 /** Offset 0x03E7 - Reserved
 **/
-  UINT8                       Reserved12;
+  UINT8                       Reserved13;
 
 /** Offset 0x03E8 - CNVi RF_RESET pin muxing
   Select CNVi RF_RESET# pin depending on board routing. TGP-LP: GPP_A8 = 0x2942E408(default)
@@ -381,18 +390,18 @@ typedef struct {
 
 /** Offset 0x03F0 - Reserved
 **/
-  UINT8                       Reserved13[14];
+  UINT8                       Reserved14[14];
 
 /** Offset 0x03FE - HECI3 state
   The HECI3 state from Mbp for reference in S3 path or when MbpHob is not installed.
-  DEPRECATED 0: disable, 1: enable
+  0: disable, 1: enable
   $EN_DIS
 **/
   UINT8                       Heci3Enabled;
 
 /** Offset 0x03FF - Reserved
 **/
-  UINT8                       Reserved14[141];
+  UINT8                       Reserved15[141];
 
 /** Offset 0x048C - CdClock Frequency selection
   0 (Default) Auto (Max based on reference clock frequency),  0: 192, 1: 307.2, 2:
@@ -410,7 +419,7 @@ typedef struct {
 
 /** Offset 0x048E - Reserved
 **/
-  UINT8                       Reserved15[2];
+  UINT8                       Reserved16[2];
 
 /** Offset 0x0490 - TypeC port GPIO setting
   GPIO Ping number for Type C Aux Oritation setting, use the GpioPad that is defined
@@ -421,7 +430,7 @@ typedef struct {
 
 /** Offset 0x04B0 - Reserved
 **/
-  UINT8                       Reserved16[30];
+  UINT8                       Reserved17[30];
 
 /** Offset 0x04CE - TCSS Aux Orientation Override Enable
   Bits 0, 2, ... 10 control override enables, bits 1, 3, ... 11 control overrides
@@ -435,7 +444,7 @@ typedef struct {
 
 /** Offset 0x04D2 - Reserved
 **/
-  UINT8                       Reserved17[2];
+  UINT8                       Reserved18[2];
 
 /** Offset 0x04D4 - ITBT Root Port Enable
   ITBT Root Port Enable, 0:Disable, 1:Enable
@@ -445,7 +454,7 @@ typedef struct {
 
 /** Offset 0x04D8 - Reserved
 **/
-  UINT8                      Reserved18[11];
+  UINT8                      Reserved19[11];
 
 /** Offset 0x04E3 - Enable/Disable PTM
   This policy will enable/disable Precision Time Measurement for TCSS PCIe Root Ports
@@ -455,7 +464,7 @@ typedef struct {
 
 /** Offset 0x04E7 - Reserved
 **/
-  UINT8                       Reserved19[194];
+  UINT8                       Reserved20[194];
 
 /** Offset 0x05A9 - Skip Multi-Processor Initialization
   When this is skipped, boot loader must initialize processors before SilicionInit
@@ -466,7 +475,7 @@ typedef struct {
 
 /** Offset 0x05AA - Reserved
 **/
-  UINT8                      Reserved20[60];
+  UINT8                      Reserved21[60];
 
 /** Offset 0x05E6 - Enable Power Optimizer
   Enable DMI Power Optimizer on PCH side.
@@ -476,7 +485,7 @@ typedef struct {
 
 /** Offset 0x05E7 - Reserved
 **/
-  UINT8                       Reserved21[36];
+  UINT8                       Reserved22[36];
 
 /** Offset 0x060B - Enable PCH ISH SPI Cs0 pins assigned
   Set if ISH SPI Cs0 pins are to be enabled by BIOS. 0: Disable; 1: Enable.
@@ -485,7 +494,7 @@ typedef struct {
 
 /** Offset 0x060C - Reserved
 **/
-  UINT8                       Reserved22[2];
+  UINT8                       Reserved23[2];
 
 /** Offset 0x060E - Enable PCH ISH SPI pins assigned
   Set if ISH SPI native pins are to be enabled by BIOS. 0: Disable; 1: Enable.
@@ -509,7 +518,7 @@ typedef struct {
 
 /** Offset 0x061C - Reserved
 **/
-  UINT8                       Reserved23[2];
+  UINT8                       Reserved24[2];
 
 /** Offset 0x061E - Enable LOCKDOWN BIOS LOCK
   Enable the BIOS Lock feature and set EISS bit (D31:F5:RegDCh[5]) for the BIOS region
@@ -520,7 +529,7 @@ typedef struct {
 
 /** Offset 0x061F - Reserved
 **/
-  UINT8                       Reserved24[75];
+  UINT8                       Reserved25[75];
 
 /** Offset 0x066A - Enable PCIE RP Clk Req Detect
   Probe CLKREQ# signal before enabling CLKREQ# based power management.
@@ -534,7 +543,7 @@ typedef struct {
 
 /** Offset 0x069A - Reserved
 **/
-  UINT8                       Reserved25[168];
+  UINT8                       Reserved26[168];
 
 /** Offset 0x0742 - PCIE RP Max Payload
   Max Payload Size supported, Default 128B, see enum PCH_PCIE_MAX_PAYLOAD.
@@ -543,7 +552,7 @@ typedef struct {
 
 /** Offset 0x075A - Reserved
 **/
-  UINT8                       Reserved26[86];
+  UINT8                       Reserved27[86];
 
 /** Offset 0x07B0 - PCIE RP Aspm
   The ASPM configuration of the root port (see: PCH_PCIE_ASPM_CONTROL). Default is
@@ -564,7 +573,7 @@ typedef struct {
 
 /** Offset 0x07F8 - Reserved
 **/
-  UINT8                       Reserved27[98];
+  UINT8                       Reserved28[98];
 
 /** Offset 0x085A - PCH Sata Pwr Opt Enable
   SATA Power Optimizer on PCH side.
@@ -574,7 +583,7 @@ typedef struct {
 
 /** Offset 0x085B - Reserved
 **/
-  UINT8                       Reserved28[50];
+  UINT8                       Reserved29[50];
 
 /** Offset 0x088D - Enable SATA Port DmVal
   DITO multiplier. Default is 15.
@@ -583,7 +592,7 @@ typedef struct {
 
 /** Offset 0x0895 - Reserved
 **/
-  UINT8                       Reserved29;
+  UINT8                       Reserved30;
 
 /** Offset 0x0896 - Enable SATA Port DmVal
   DEVSLP Idle Timeout (DITO), Default is 625.
@@ -592,7 +601,7 @@ typedef struct {
 
 /** Offset 0x08A6 - Reserved
 **/
-  UINT8                       Reserved30[72];
+  UINT8                       Reserved31[72];
 
 /** Offset 0x08EE - USB2 Port Over Current Pin
   Describe the specific over current pin number of USB 2.0 Port N.
@@ -606,7 +615,27 @@ typedef struct {
 
 /** Offset 0x0908 - Reserved
 **/
-  UINT8                       Reserved31[456];
+  UINT8                       Reserved32[16];
+
+/** Offset 0x0918 - Enable 8254 Static Clock Gating
+  Set 8254CGE=1 is required for SLP_S0 support. However, set 8254CGE=1 in POST time
+  might fail to boot legacy OS using 8254 timer. Make sure it is disabled to support
+  legacy OS using 8254 timer. Also enable this while S0ix is enabled.
+  $EN_DIS
+**/
+  UINT8                       Enable8254ClockGating;
+
+/** Offset 0x0919 - Enable 8254 Static Clock Gating On S3
+  This is only applicable when Enable8254ClockGating is disabled. FSP will do the
+  8254 CGE programming on S3 resume when Enable8254ClockGatingOnS3 is enabled. This
+  avoids the SMI requirement for the programming.
+  $EN_DIS
+**/
+  UINT8                       Enable8254ClockGatingOnS3;
+
+/** Offset 0x091A - Reserved
+**/
+  UINT8                       Reserved33[438];
 
 /** Offset 0x0AD0 - RpPtmBytes
 **/
@@ -614,7 +643,7 @@ typedef struct {
 
 /** Offset 0x0AD4 - Reserved
 **/
-  UINT8                      Reserved32[101];
+  UINT8                      Reserved34[101];
 
 /** Offset 0x0B39 - GT Frequency Limit
   0xFF: Auto(Default), 2: 100 Mhz, 3: 150 Mhz, 4: 200 Mhz, 5: 250 Mhz, 6: 300 Mhz,
@@ -632,7 +661,7 @@ typedef struct {
 
 /** Offset 0x0B3A - Reserved
 **/
-  UINT8                       Reserved33[264];
+  UINT8                       Reserved35[264];
 
 /** Offset 0x0C42 - PCIE RP Ltr Max Snoop Latency
   Latency Tolerance Reporting, Max Snoop Latency.
@@ -646,7 +675,7 @@ typedef struct {
 
 /** Offset 0x0CA2 - Reserved
 **/
-  UINT8                       Reserved34[269];
+  UINT8                       Reserved36[269];
 
 /** Offset 0x0DAF - LpmStateEnableMask
 **/
@@ -654,7 +683,7 @@ typedef struct {
 
 /** Offset 0x0DB0 - Reserved
 **/
-  UINT8                       Reserved35[80];
+  UINT8                       Reserved37[80];
 } FSP_S_CONFIG;
 
 /** Fsp S UPD Configuration

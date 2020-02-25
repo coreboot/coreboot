@@ -20,6 +20,12 @@ chip soc/intel/tigerlake
 	register "pmc_gpe0_dw1" = "GPP_C"
 	register "pmc_gpe0_dw2" = "GPP_D"
 
+	# EC host command ranges are in 0x800-0x8ff & 0x200-0x20f
+	register "gen1_dec" = "0x00fc0801"
+	register "gen2_dec" = "0x000c0201"
+	# EC memory map range is 0x900-0x9ff
+	register "gen3_dec" = "0x00fc0901"
+
 	# USB Port Configuration
 	register "usb2_ports[0]" = "USB2_PORT_MID(OC_SKIP)"	# Type-C Port C0
 	register "usb2_ports[1]" = "USB2_PORT_MID(OC_SKIP)"	# Type-C Port C1

@@ -140,7 +140,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 
 	/* Legacy 8254 timer support */
 	params->Enable8254ClockGating = !CONFIG_USE_LEGACY_8254_TIMER;
-	params->Enable8254ClockGatingOnS3 = 1;
+	params->Enable8254ClockGatingOnS3 = !CONFIG_USE_LEGACY_8254_TIMER;
 
 	/* S0ix */
 	params->PchPmSlpS0Enable = config->s0ix_enable;

@@ -49,9 +49,9 @@ TIMER=-DUSE_HPET_TIMER
 endif
 
 ifeq ($(CONFIG_TIANOCORE_TARGET_IA32), y)
-	BUILD_STR=-a IA32 -t COREBOOT -p $(bootloader)/$(bootloader)Ia32.dsc -b $(BUILD_TYPE) $(TIMER) $(build_flavor)
+	BUILD_STR=-q -a IA32 -t COREBOOT -p $(bootloader)/$(bootloader)Ia32.dsc -b $(BUILD_TYPE) $(TIMER) $(build_flavor)
 else
-	BUILD_STR=-a IA32 -a X64 -t COREBOOT -p $(bootloader)/$(bootloader)Ia32X64.dsc -b $(BUILD_TYPE) $(TIMER) $(build_flavor)
+	BUILD_STR=-q -a IA32 -a X64 -t COREBOOT -p $(bootloader)/$(bootloader)Ia32X64.dsc -b $(BUILD_TYPE) $(TIMER) $(build_flavor)
 endif
 
 all: clean build

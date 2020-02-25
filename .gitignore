@@ -115,7 +115,6 @@ util/nvramtool/.dependencies
 util/nvramtool/nvramtool
 util/optionlist/Options.wiki
 util/pmh7tool/pmh7tool
-util/romcc/build
 util/runfw/googlesnow
 util/superiotool/superiotool
 util/vgabios/testbios

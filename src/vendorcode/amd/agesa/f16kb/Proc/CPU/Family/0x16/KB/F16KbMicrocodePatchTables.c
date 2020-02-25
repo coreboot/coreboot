@@ -65,7 +65,7 @@ RDATA_GROUP (G3_DXE)
  *                  T Y P E D E F S     A N D     S T R U C T U R E S
  *----------------------------------------------------------------------------------------
  */
-extern CONST MICROCODE_PATCHES_4K ROMDATA *CpuF16KbMicroCodePatchArray[];
+extern CONST UINT8 ROMDATA *CpuF16KbMicroCodePatchArray[];
 extern CONST UINT8 ROMDATA CpuF16KbNumberOfMicrocodePatches;
 
 /*----------------------------------------------------------------------------------------

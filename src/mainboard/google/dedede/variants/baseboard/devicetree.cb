@@ -109,7 +109,7 @@ chip soc/intel/tigerlake
 	}"
 
 	device domain 0 on
-		device pci 00.0 off end # Host Bridge
+		device pci 00.0 on end # Host Bridge
 		device pci 02.0 off end # Integrated Graphics Device
 		device pci 04.0 off end # SA Thermal device
 		device pci 05.0 off end # IPU

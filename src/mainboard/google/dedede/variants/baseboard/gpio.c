@@ -45,6 +45,14 @@ static const struct pad_config gpio_table[] = {
 	/* B23 : EC_AP_USB_C1_HDMI_HPD */
 	PAD_CFG_NF(GPP_B23, NONE, DEEP, NF1),
 
+	/* C0  : RAM_STRAP_0 */
+	PAD_CFG_GPI(GPP_C0, NONE, DEEP),
+	/* C3  : RAM_STRAP_1 */
+	PAD_CFG_GPI(GPP_C3, NONE, DEEP),
+	/* C4  : RAM_STRAP_2 */
+	PAD_CFG_GPI(GPP_C4, NONE, DEEP),
+	/* C5  : RAM_STRAP_3 */
+	PAD_CFG_GPI(GPP_C5, NONE, DEEP),
 	/* C16 : AP_I2C_TRACKPAD_SDA_3V3 */
 	PAD_CFG_NF(GPP_C16, NONE, DEEP, NF1),
 	/* C17 : AP_I2C_TRACKPAD_SCL_3V3 */
@@ -113,6 +121,15 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_NF(GPP_B17, NONE, DEEP, NF1),
 	/* B18 : H1_SLAVE_SPI_MOSI_R */
 	PAD_CFG_NF(GPP_B18, NONE, DEEP, NF1),
+
+	/* C0  : RAM_STRAP_0 */
+	PAD_CFG_GPI(GPP_C0, NONE, DEEP),
+	/* C3  : RAM_STRAP_1 */
+	PAD_CFG_GPI(GPP_C3, NONE, DEEP),
+	/* C4  : RAM_STRAP_2 */
+	PAD_CFG_GPI(GPP_C4, NONE, DEEP),
+	/* C5  : RAM_STRAP_3 */
+	PAD_CFG_GPI(GPP_C5, NONE, DEEP),
 };
 
 const struct pad_config *__weak variant_gpio_table(size_t *num)

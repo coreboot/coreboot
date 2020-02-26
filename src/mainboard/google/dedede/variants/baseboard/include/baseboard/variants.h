@@ -28,4 +28,10 @@ const struct cros_gpio *variant_cros_gpios(size_t *num);
  */
 int board_info_get_fw_config(uint32_t *fw_config);
 
+/* Return memory configuration structure. */
+const struct mb_cfg *variant_memcfg_config(void);
+
+/* Return memory SKU for the variant */
+int variant_memory_sku(void);
+
 #endif /*__BASEBOARD_VARIANTS_H__ */

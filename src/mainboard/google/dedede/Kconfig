@@ -6,6 +6,7 @@ config BOARD_GOOGLE_BASEBOARD_DEDEDE
 	select EC_GOOGLE_CHROMEEC
 	select EC_GOOGLE_CHROMEEC_BOARDID
 	select EC_GOOGLE_CHROMEEC_ESPI
+	select GENERIC_SPD_BIN
 	select HAVE_ACPI_RESUME
 	select HAVE_ACPI_TABLES
 	select INTEL_LPSS_UART_FOR_CONSOLE
@@ -30,6 +31,10 @@ config CHROMEOS
 config DEVICETREE
 	string
 	default "variants/baseboard/devicetree.cb"
+
+config DIMM_SPD_SIZE
+	int
+	default 512
 
 config DRIVER_TPM_SPI_BUS
 	default 0x1

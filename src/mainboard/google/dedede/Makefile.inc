@@ -13,6 +13,8 @@ ramstage-y += board_info.c
 smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c
 
 subdirs-y += variants/baseboard
+subdirs-y += spd
+
 CPPFLAGS_common += -I$(src)/mainboard/$(MAINBOARDDIR)/variants/baseboard/include
 
 VARIANT_DIR:=$(call strip_quotes,$(CONFIG_VARIANT_DIR))

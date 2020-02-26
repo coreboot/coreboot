@@ -80,14 +80,4 @@ void mainboard_silicon_init_params(FSP_S_CONFIG *silconfig)
 	silconfig->PcieRpTransmitterHalfSwing[5] = 0x0; // 0x1
 	silconfig->PcieRpLtrMaxNonSnoopLatency[5] = 0x1003;	// 0x0
 	silconfig->PcieRpLtrMaxSnoopLatency[5] = 0x1003;	// 0x0
-
-	silconfig->PortUs30bOverCurrentPin[0] = 0x0;	// 0x1
-
-	silconfig->PortUs20bOverCurrentPin[1] = 0x1;	// 0x0
-	silconfig->PortUs20bOverCurrentPin[2] = 0x1;	// 0x0
-	silconfig->PortUs20bOverCurrentPin[3] = 0x1;	// 0x0
-	silconfig->PortUs20bOverCurrentPin[4] = 0x1;	// 0x0
-	silconfig->PortUs20bOverCurrentPin[5] = 0x1;	// 0x0
-	silconfig->PortUs20bOverCurrentPin[6] = 0x2;	// 0x0
-	silconfig->PortUs20bOverCurrentPin[7] = 0x2;	// 0x0
 }

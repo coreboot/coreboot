@@ -33,9 +33,7 @@
   usable by coreboot.
 * ROM chip size should be set to 8MiB.
 
-```eval_rst
-Please also have a look at :doc:`../../flash_tutorial/index`.
-```
+Please also have a look at the [flashing tutorial]
 
 ## Flash layout
 There's one 8MiB flash which contains IFD, GBE, ME and BIOS regions.
@@ -46,3 +44,26 @@ region. The update is then written into the EC once.
 
 [fl]: flashlayout_Sandy_Bridge.svg
 
+## Reducing Intel Managment Engine firmware size
+
+It is possible to reduce the Intel ME firmware size to free additional
+space for the `bios` region. This is usually refered to as *cleaning the ME* or
+*stripping the ME*.
+After reducing the Intel ME firmware size you must modify the original IFD
+and then write a full ROM using an [external programmer].
+Have a look at the [me_cleaner] for more information.
+
+Tests on Lenovo X220 showed no issues with a stripped ME firmware.
+
+**Modified flash layout:**
+
+![][fl2]
+
+[fl2]: flashlayout_Sandy_Bridge_stripped_me.svg
+
+The overall size of the `gbe`, `me,` `ifd` region is less than 128KiB, leaving
+the remaining space for the `bios` partition.
+
+
+[me_cleaner]: ../../northbridge/intel/sandybridge/me_cleaner.md
+[external programmer]: ../../flash_tutorial/index.md

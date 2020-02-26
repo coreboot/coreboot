@@ -1,6 +1,6 @@
 /** @file
 
-Copyright (c) 2019, Intel Corporation. All rights reserved.<BR>
+Copyright (c) 2020, Intel Corporation. All rights reserved.<BR>
 
 Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -283,9 +283,21 @@ typedef struct {
 **/
   UINT8                       SerialIoI2cMode[8];
 
-/** Offset 0x0250 - Reserved
+/** Offset 0x0250 - Serial IO I2C SDA Pin Muxing
+  Select SerialIo I2c Sda pin muxing. Refer to GPIO_*_MUXING_SERIALIO_I2Cx_SDA* for
+  possible values.
 **/
-  UINT8                      Reserved7[72];
+  UINT32                      PchSerialIoI2cSdaPinMux[8];
+
+/** Offset 0x0270 - Serial IO I2C SCL Pin Muxing
+  Select SerialIo I2c Scl pin muxing. Refer to GPIO_*_MUXING_SERIALIO_I2Cx_SCL* for
+  possible values.
+**/
+  UINT32                      PchSerialIoI2cSclPinMux[8];
+
+/** Offset 0x0290 - Reserved
+**/
+  UINT8                       Reserved7[8];
 
 /** Offset 0x0298 - USB Per Port HS Preemphasis Bias
   USB Per Port HS Preemphasis Bias. 000b-0mV, 001b-11.25mV, 010b-16.9mV, 011b-28.15mV,
@@ -422,20 +434,9 @@ typedef struct {
 
 /** Offset 0x0384 - Reserved
 **/
-  UINT8                       Reserved14[6];
+  UINT8                       Reserved14[146];
 
-/** Offset 0x038A - HECI3 state
-  The HECI3 state from Mbp for reference in S3 path or when MbpHob is not installed.
-  0: disable, 1: enable
-  $EN_DIS
-**/
-  UINT8                       Heci3Enabled;
-
-/** Offset 0x038B - Reserved
-**/
-  UINT8                       Reserved15[141];
-
-/** Offset 0x0418 - CdClock Frequency selection
+/** Offset 0x0416 - CdClock Frequency selection
   0: (Default) Auto (Max based on reference clock frequency), 1: 172.8 Mhz, 2: 180
   Mhz, 3: 190 Mhz, 4: 307.2 Mhz, 5: 312 Mhz, 6: 552 Mhz, 7: 556.8 Mhz, 8: 648 Mhz,
   9: 652.8 Mhz
@@ -444,109 +445,109 @@ typedef struct {
 **/
   UINT8                       CdClock;
 
-/** Offset 0x0419 - Enable/Disable PeiGraphicsPeimInit
+/** Offset 0x0417 - Enable/Disable PeiGraphicsPeimInit
   Enable: Enable PeiGraphicsPeimInit, Disable(Default): Disable PeiGraphicsPeimInit
   $EN_DIS
 **/
   UINT8                       PeiGraphicsPeimInit;
 
-/** Offset 0x041A - Reserved
+/** Offset 0x0418 - Reserved
 **/
-  UINT8                       Reserved16[160];
+  UINT8                       Reserved15[152];
 
-/** Offset 0x04BA - Skip Multi-Processor Initialization
+/** Offset 0x04B0 - Skip Multi-Processor Initialization
   When this is skipped, boot loader must initialize processors before SilicionInit
   API. </b>0: Initialize; <b>1: Skip
   $EN_DIS
 **/
   UINT8                       SkipMpInit;
 
-/** Offset 0x04BB - Reserved
+/** Offset 0x04B1 - Reserved
 **/
-  UINT8                       Reserved17[9];
+  UINT8                       Reserved16[11];
 
-/** Offset 0x04C4 - CpuMpPpi
+/** Offset 0x04BC - CpuMpPpi
   Pointer for CpuMpPpi
 **/
   UINT32                      CpuMpPpi;
 
-/** Offset 0x04C8 - Reserved
+/** Offset 0x04C0 - Reserved
 **/
-  UINT8                      Reserved18[86];
+  UINT8                      Reserved17[86];
 
-/** Offset 0x051E - RTC Cmos Memory Lock
+/** Offset 0x0516 - RTC Cmos Memory Lock
   Enable RTC lower and upper 128 byte Lock bits to lock Bytes 38h-3Fh in the upper
   and and lower 128-byte bank of RTC RAM.
   $EN_DIS
 **/
   UINT8                       RtcMemoryLock;
 
-/** Offset 0x051F - Reserved
+/** Offset 0x0517 - Reserved
 **/
-  UINT8                       Reserved19[24];
+  UINT8                       Reserved18[24];
 
-/** Offset 0x0537 - Enable PCIE RP Pm Sci
+/** Offset 0x052F - Enable PCIE RP Pm Sci
   Indicate whether the root port power manager SCI is enabled.
 **/
   UINT8                       PcieRpPmSci[24];
 
-/** Offset 0x054F - Reserved
+/** Offset 0x0547 - Reserved
 **/
-  UINT8                       Reserved20[24];
+  UINT8                       Reserved19[24];
 
-/** Offset 0x0567 - Enable PCIE RP Clk Req Detect
+/** Offset 0x055F - Enable PCIE RP Clk Req Detect
   Probe CLKREQ# signal before enabling CLKREQ# based power management.
 **/
   UINT8                       PcieRpClkReqDetect[24];
 
-/** Offset 0x057F - Reserved
+/** Offset 0x0577 - Reserved
 **/
-  UINT8                       Reserved21[455];
+  UINT8                       Reserved20[455];
 
-/** Offset 0x0746 - PCH Pm Slp S3 Min Assert
+/** Offset 0x073E - PCH Pm Slp S3 Min Assert
   SLP_S3 Minimum Assertion Width Policy. Default is PchSlpS350ms.
 **/
   UINT8                       PchPmSlpS3MinAssert;
 
-/** Offset 0x0747 - Reserved
+/** Offset 0x073F - Reserved
 **/
-  UINT8                       Reserved22;
+  UINT8                       Reserved21;
 
-/** Offset 0x0748 - PCH Pm Slp Sus Min Assert
+/** Offset 0x0740 - PCH Pm Slp Sus Min Assert
   SLP_SUS Minimum Assertion Width Policy. Default is PchSlpSus4s.
 **/
   UINT8                       PchPmSlpSusMinAssert;
 
-/** Offset 0x0749 - PCH Pm Slp A Min Assert
+/** Offset 0x0741 - PCH Pm Slp A Min Assert
   SLP_A Minimum Assertion Width Policy. Default is PchSlpA2s.
 **/
   UINT8                       PchPmSlpAMinAssert;
 
-/** Offset 0x074A - Reserved
+/** Offset 0x0742 - Reserved
 **/
-  UINT8                       Reserved23[11];
+  UINT8                       Reserved22[11];
 
-/** Offset 0x0755 - PCH Sata Pwr Opt Enable
+/** Offset 0x074D - PCH Sata Pwr Opt Enable
   SATA Power Optimizer on PCH side.
   $EN_DIS
 **/
   UINT8                       SataPwrOptEnable;
 
-/** Offset 0x0756 - Reserved
+/** Offset 0x074E - Reserved
 **/
-  UINT8                       Reserved24[146];
+  UINT8                       Reserved23[146];
 
-/** Offset 0x07E8 - USB2 Port Over Current Pin
+/** Offset 0x07E0 - USB2 Port Over Current Pin
   Describe the specific over current pin number of USB 2.0 Port N.
 **/
   UINT8                       Usb2OverCurrentPin[16];
 
-/** Offset 0x07F8 - USB3 Port Over Current Pin
+/** Offset 0x07F0 - USB3 Port Over Current Pin
   Describe the specific over current pin number of USB 3.0 Port N.
 **/
   UINT8                       Usb3OverCurrentPin[10];
 
-/** Offset 0x0802 - Enable 8254 Static Clock Gating
+/** Offset 0x07FA - Enable 8254 Static Clock Gating
   Set 8254CGE=1 is required for SLP_S0 support. However, set 8254CGE=1 in POST time
   might fail to boot legacy OS using 8254 timer. Make sure it is disabled to support
   legacy OS using 8254 timer. Also enable this while S0ix is enabled.
@@ -554,7 +555,7 @@ typedef struct {
 **/
   UINT8                       Enable8254ClockGating;
 
-/** Offset 0x0803 - Enable 8254 Static Clock Gating On S3
+/** Offset 0x07FB - Enable 8254 Static Clock Gating On S3
   This is only applicable when Enable8254ClockGating is disabled. FSP will do the
   8254 CGE programming on S3 resume when Enable8254ClockGatingOnS3 is enabled. This
   avoids the SMI requirement for the programming.
@@ -562,21 +563,21 @@ typedef struct {
 **/
   UINT8                       Enable8254ClockGatingOnS3;
 
-/** Offset 0x0804 - Reserved
+/** Offset 0x07FC - Reserved
 **/
-  UINT8                       Reserved25[531];
+  UINT8                       Reserved24[511];
 
-/** Offset 0x0A17 - Enable/Disable IGFX PmSupport
+/** Offset 0x09FB - Enable/Disable IGFX PmSupport
   Enable(Default): Enable IGFX PmSupport, Disable: Disable IGFX PmSupport
   $EN_DIS
 **/
   UINT8                       PmSupport;
 
-/** Offset 0x0A18 - Reserved
+/** Offset 0x09FC - Reserved
 **/
-  UINT8                       Reserved26[32];
+  UINT8                       Reserved25[32];
 
-/** Offset 0x0A38 - TCC Activation Offset
+/** Offset 0x0A1C - TCC Activation Offset
   TCC Activation Offset. Offset from factory set TCC activation temperature at which
   the Thermal Control Circuit must be activated. TCC will be activated at TCC Activation
   Temperature, in volts.For SKL Y SKU, the recommended default for this policy is
@@ -584,50 +585,50 @@ typedef struct {
 **/
   UINT8                       TccActivationOffset;
 
-/** Offset 0x0A39 - Reserved
+/** Offset 0x0A1D - Reserved
 **/
-  UINT8                       Reserved27[34];
+  UINT8                       Reserved26[34];
 
-/** Offset 0x0A5B - Enable or Disable CPU power states (C-states)
+/** Offset 0x0A3F - Enable or Disable CPU power states (C-states)
   Enable or Disable CPU power states (C-states). 0: Disable; <b>1: Enable</b>
   $EN_DIS
 **/
   UINT8                       Cx;
 
-/** Offset 0x0A5C - Reserved
+/** Offset 0x0A40 - Reserved
 **/
-  UINT8                       Reserved28[74];
+  UINT8                       Reserved27[74];
 
-/** Offset 0x0AA6 - Platform Power Pmax
+/** Offset 0x0A8A - Platform Power Pmax
   PCODE MMIO Mailbox: Platform Power Pmax. <b>0 - Auto</b> Specified in 1/8 Watt increments.
   Range 0-1024 Watts. Value of 800 = 100W
 **/
   UINT16                      PsysPmax;
 
-/** Offset 0x0AA8 - Reserved
+/** Offset 0x0A8C - Reserved
 **/
-  UINT8                      Reserved29[116];
+  UINT8                      Reserved28[116];
 
-/** Offset 0x0B1C - End of Post message
+/** Offset 0x0B00 - End of Post message
   Test, Send End of Post message. Disable(0x0): Disable EOP message, Send in PEI(0x1):
   EOP send in PEI, Send in DXE(0x2)(Default): EOP send in DXE
   0:Disable, 1:Send in PEI, 2:Send in DXE, 3:Reserved
 **/
   UINT8                       EndOfPostMessage;
 
-/** Offset 0x0B1D - Reserved
+/** Offset 0x0B01 - Reserved
 **/
-  UINT8                       Reserved30[3];
+  UINT8                       Reserved29[3];
 
-/** Offset 0x0B20 - Unlock all GPIO pads
+/** Offset 0x0B04 - Unlock all GPIO pads
   Force all GPIO pads to be unlocked for debug purpose.
   $EN_DIS
 **/
   UINT8                       PchUnlockGpioPads;
 
-/** Offset 0x0B21 - Reserved
+/** Offset 0x0B05 - Reserved
 **/
-  UINT8                       Reserved31[447];
+  UINT8                       Reserved30[451];
 } FSP_S_CONFIG;
 
 /** Fsp S UPD Configuration
@@ -642,11 +643,11 @@ typedef struct {
 **/
   FSP_S_CONFIG                FspsConfig;
 
-/** Offset 0x0CE0
+/** Offset 0x0CC8
 **/
-  UINT8                       UnusedUpdSpace37[6];
+  UINT8                       UnusedUpdSpace36[6];
 
-/** Offset 0x0CE6
+/** Offset 0x0CCE
 **/
   UINT16                      UpdTerminator;
 } FSPS_UPD;

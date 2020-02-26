@@ -31,6 +31,8 @@ static const struct pad_config gpio_table[] = {
 	 * using this pin, expose this pin to driver.
 	 */
 	PAD_CFG_GPO(GPP_C15, 1, DEEP),
+	/* E0 : View Angle Management */
+	PAD_CFG_GPO(GPP_E0, 0, DEEP),
 	/* F3  : MEM_STRAP_3 */
 	PAD_CFG_GPI(GPP_F3, NONE, PLTRST),
 	/* F10 : MEM_STRAP_2 */

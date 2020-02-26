@@ -87,6 +87,13 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 
 	m_cfg->SerialIoUartDebugControllerNumber = CONFIG_UART_FOR_CONSOLE;
 
+	/* Display */
+	m_cfg->DdiPortAConfig = config->DdiPortAConfig;
+	m_cfg->DdiPortBHpd = config->DdiPortBHpd;
+	m_cfg->DdiPortCHpd = config->DdiPortCHpd;
+	m_cfg->DdiPortBDdc = config->DdiPortBDdc;
+	m_cfg->DdiPortCDdc = config->DdiPortCDdc;
+
 	/* Audio */
 	m_cfg->PchHdaEnable = pcidev_path_on_root(PCH_DEVFN_HDA) ? dev->enabled : 0;
 

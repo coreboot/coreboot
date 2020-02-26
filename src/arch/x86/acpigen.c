@@ -1203,6 +1203,15 @@ void acpigen_write_or(uint8_t arg1, uint8_t arg2, uint8_t res)
 	acpigen_emit_byte(res);
 }
 
+/* Xor (arg1, arg2, res) */
+void acpigen_write_xor(uint8_t arg1, uint8_t arg2, uint8_t res)
+{
+	acpigen_emit_byte(XOR_OP);
+	acpigen_emit_byte(arg1);
+	acpigen_emit_byte(arg2);
+	acpigen_emit_byte(res);
+}
+
 /* And (arg1, arg2, res) */
 void acpigen_write_and(uint8_t arg1, uint8_t arg2, uint8_t res)
 {
@@ -1757,6 +1766,14 @@ int acpigen_disable_tx_gpio(struct acpi_gpio *gpio)
 		return acpigen_soc_set_tx_gpio(gpio->pins[0]);
 	else
 		return acpigen_soc_clear_tx_gpio(gpio->pins[0]);
+}
+
+void acpigen_get_rx_gpio(struct acpi_gpio *gpio)
+{
+	acpigen_soc_read_rx_gpio(gpio->pins[0]);
+
+	if (gpio->polarity == ACPI_GPIO_ACTIVE_LOW)
+		acpigen_write_xor(LOCAL0_OP, 1, LOCAL0_OP);
 }
 
 /* refer to ACPI 6.4.3.5.3 Word Address Space Descriptor section for details */

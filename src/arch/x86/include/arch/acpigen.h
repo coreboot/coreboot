@@ -361,6 +361,7 @@ void acpigen_write_sleep(uint64_t sleep_ms);
 void acpigen_write_store(void);
 void acpigen_write_store_ops(uint8_t src, uint8_t dst);
 void acpigen_write_or(uint8_t arg1, uint8_t arg2, uint8_t res);
+void acpigen_write_xor(uint8_t arg1, uint8_t arg2, uint8_t res);
 void acpigen_write_and(uint8_t arg1, uint8_t arg2, uint8_t res);
 void acpigen_write_not(uint8_t arg, uint8_t res);
 void acpigen_write_debug_string(const char *str);
@@ -472,6 +473,14 @@ int acpigen_soc_clear_tx_gpio(unsigned int gpio_num);
 int acpigen_enable_tx_gpio(struct acpi_gpio *gpio);
 int acpigen_disable_tx_gpio(struct acpi_gpio *gpio);
 
+/*
+ *  Helper function for getting a RX GPIO value based on the GPIO polarity.
+ *  The return value is stored in Local0 variable.
+ *  This function ends up calling acpigen_soc_get_rx_gpio to make callbacks
+ *  into SoC acpigen code
+ */
+void acpigen_get_rx_gpio(struct acpi_gpio *gpio);
+
 /* refer to ACPI 6.4.3.5.3 Word Address Space Descriptor section for details */
 void acpigen_resource_word(u16 res_type, u16 gen_flags, u16 type_flags, u16 gran,
 	u16 range_min, u16 range_max, u16 translation, u16 length);
@@ -481,4 +490,5 @@ void acpigen_resource_dword(u16 res_type, u16 gen_flags, u16 type_flags,
 /* refer to ACPI 6.4.3.5.1 QWord Address Space Descriptor section for details */
 void acpigen_resource_qword(u16 res_type, u16 gen_flags, u16 type_flags,
 	u64 gran, u64 range_min, u64 range_max, u64 translation, u64 length);
+
 #endif

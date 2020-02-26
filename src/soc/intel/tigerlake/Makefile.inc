@@ -26,6 +26,7 @@ bootblock-y += p2sb.c
 romstage-y += espi.c
 romstage-y += gpio.c
 romstage-$(CONFIG_SOC_INTEL_TIGERLAKE) += meminit_tgl.c
+romstage-$(CONFIG_SOC_INTEL_JASPERLAKE) += meminit_jsl.c
 romstage-y += reset.c
 
 ramstage-y += acpi.c

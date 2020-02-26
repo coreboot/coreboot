@@ -73,6 +73,17 @@ chip soc/intel/tigerlake
 	# Enable EMMC HS400 mode
 	register "ScsEmmcHs400Enabled" = "1"
 
+	# Display related UPDs
+	# Select eDP for port A
+	register "DdiPortAConfig" = "1"
+
+	# Enable HPD for DDI ports B/C
+	register "DdiPortBHpd" = "1"
+	register "DdiPortCHpd" = "1"
+	# Enable DDC for DDI ports B/C
+	register "DdiPortBDdc" = "1"
+	register "DdiPortCDdc" = "1"
+
 	# Intel Common SoC Config
 	#+-------------------+---------------------------+
 	#| Field             |  Value                    |
@@ -111,7 +122,7 @@ chip soc/intel/tigerlake
 
 	device domain 0 on
 		device pci 00.0 on end # Host Bridge
-		device pci 02.0 off end # Integrated Graphics Device
+		device pci 02.0 on end # Integrated Graphics Device
 		device pci 04.0 off end # SA Thermal device
 		device pci 05.0 off end # IPU
 		device pci 09.0 off end # Intel Trace Hub

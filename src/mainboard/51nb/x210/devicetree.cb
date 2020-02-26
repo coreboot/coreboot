@@ -99,17 +99,20 @@ chip soc/intel/skylake
 	register "PcieRpLtrEnable[3]" = "1"
 
 	register "PcieRpEnable[8]" = "1" # NVMe controller
-	register "PcieRpClkReqSupport[8]" = "0"
-	register "PcieRpClkReqNumber[8]" = "2"
-	register "PcieRpClkSrcNumber[8]" = "2"
+	register "PcieRpClkReqSupport[8]" = "1"
+	register "PcieRpClkReqNumber[8]" = "4"
+	register "PcieRpClkSrcNumber[8]" = "4"
 	register "PcieRpAdvancedErrorReporting[8]" = "1"
 	register "PcieRpLtrEnable[8]" = "1"
 
 	register "usb2_ports[0]" = "USB2_PORT_MID(OC1)"		# Type-A Port (left)
 	register "usb2_ports[1]" = "USB2_PORT_MID(OC1)"		# Type-A Port (left)
+	register "usb2_ports[2]" = "USB2_PORT_FLEX(OC1)" 	# FPR
+	register "usb2_ports[3]" = "USB2_PORT_FLEX(OC1)" 	# SD
+	register "usb2_ports[4]" = "USB2_PORT_FLEX(OC1)" 	# INT
 	register "usb2_ports[5]" = "USB2_PORT_MID(OC1)"		# Type-A Port (right)
 	register "usb2_ports[6]" = "USB2_PORT_FLEX(OC2)"	# Webcam
-	register "usb2_ports[7]" = "USB2_PORT_FLEX(OC2)"	# WiFi PCIe port USB
+	register "usb2_ports[7]" = "USB2_PORT_FLEX(OC2)"	# M.2-2230 USB (BT)
 
 	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC1)"	# Type-A Port (left)
 	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC1)"	# Type-A Port (left)

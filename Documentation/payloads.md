@@ -40,3 +40,15 @@ availability of well-tested, battle-hardened drivers (as compared to
 firmware project drivers that often reinvent the wheel) and the ability to
 define boot policy with familiar tools, no matter if those are shell scripts
 or compiled userland programs written in C, Go or other programming languages.
+
+## Heads
+
+[Heads] is a distribution that bundles coreboot, Linux, busybox and custom
+tools to provide reproducible ROMs. [Heads] aims to provide a secure and
+flexible boot environment for laptops and servers.
+It supports features like measured boot, kexec, GPG, OTP, TLS, firmware
+updates, but only works on a limited amount of mainboards.
+For more details have a look at [heads-wiki].
+
+[Heads]: https://github.com/osresearch/heads
+[heads-wiki]: http://osresearch.net/

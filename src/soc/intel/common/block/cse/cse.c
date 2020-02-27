@@ -609,8 +609,7 @@ uint32_t me_read_config32(int offset)
 }
 
 /*
- * Sends GLOBAL_RESET_REQ cmd to CSE.The reset type can be GLOBAL_RESET/
- * HOST_RESET_ONLY/CSE_RESET_ONLY.
+ * Sends GLOBAL_RESET_REQ cmd to CSE.The reset type can be GLOBAL_RESET/CSE_RESET_ONLY.
  */
 int cse_request_global_reset(enum rst_req_type rst_type)
 {
@@ -632,8 +631,7 @@ int cse_request_global_reset(enum rst_req_type rst_type)
 	size_t reply_size;
 
 	printk(BIOS_DEBUG, "HECI: Global Reset(Type:%d) Command\n", rst_type);
-	if (!((rst_type == GLOBAL_RESET) ||
-		(rst_type == HOST_RESET_ONLY) || (rst_type == CSE_RESET_ONLY))) {
+	if (!(rst_type == GLOBAL_RESET || rst_type == CSE_RESET_ONLY)) {
 		printk(BIOS_ERR, "HECI: Unsupported reset type is requested\n");
 		return 0;
 	}

@@ -121,7 +121,6 @@ uint8_t cse_wait_sec_override_mode(void);
 
 enum rst_req_type {
 	GLOBAL_RESET = 1,
-	HOST_RESET_ONLY = 2,
 	CSE_RESET_ONLY = 3,
 };
 

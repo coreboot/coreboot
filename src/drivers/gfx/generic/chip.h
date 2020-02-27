@@ -16,6 +16,8 @@
 #ifndef __DRIVERS_GFX_GENERIC_CHIP_H__
 #define __DRIVERS_GFX_GENERIC_CHIP_H__
 
+#include <arch/acpi_device.h>
+
 /* Config for electronic privacy screen */
 struct drivers_gfx_generic_privacy_screen_config {
 	/* Is privacy screen available on this graphics device */
@@ -28,6 +30,12 @@ struct drivers_gfx_generic_privacy_screen_config {
 	const char *enable_function;
 	/* ACPI namespace path to privacy screen disable function */
 	const char *disable_function;
+	/*
+	 * GPIO used for controlling the privacy screen. If provided,
+	 * the gpio mechanism takes preference over the functions ptrs
+	 * above, if any (GPIO functions override the function ptrs).
+	 */
+	struct acpi_gpio gpio;
 };
 
 /* Config for an output device as defined in section A.5 of the ACPI spec */
@@ -52,5 +60,7 @@ struct drivers_gfx_generic_config {
 	/* Config for output devices */
 	struct drivers_gfx_generic_device_config device[5];
 };
+
+extern struct device *find_gfx_dev(void);
 
 #endif /* __DRIVERS_GFX_GENERIC_CHIP_H__ */

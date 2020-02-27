@@ -186,6 +186,22 @@ config FSP_FD_PATH
 	depends on FSP_USE_REPO
 	default "3rdparty/fsp/IceLakeFspBinPkg/Fsp.fd"
 
+config SOC_INTEL_ICELAKE_DEBUG_CONSENT
+	int "Debug Consent for ICL"
+	# USB DBC is more common for developers so make this default to 3 if
+	# SOC_INTEL_DEBUG_CONSENT=y
+	default 3 if SOC_INTEL_DEBUG_CONSENT
+	default 0
+	help
+	  This is to control debug interface on SOC.
+	  Setting non-zero value will allow to use DBC or DCI to debug SOC.
+	  PlatformDebugConsent in FspmUpd.h has the details.
+
+	  Desired platform debug types are
+	  0:Disabled, 1:Enabled (DCI OOB+[DbC]), 2:Enabled (DCI OOB),
+	  3:Enabled (USB3 DbC), 4:Enabled (XDP/MIPI60), 5:Enabled (USB2 DbC),
+	  6:Enable (2-wire DCI OOB), 7:Manual
+
 config ENABLE_DISPLAY_OVER_EXT_PCIE_GFX
 	bool "Enable display over external PCIE GFX card"
 	select ALWAYS_LOAD_OPROM

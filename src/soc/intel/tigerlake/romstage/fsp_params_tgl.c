@@ -109,7 +109,7 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 	/* Enable SMBus controller based on config */
 	m_cfg->SmbusEnable = config->SmbusEnable;
 	/* Set debug probe type */
-	m_cfg->PlatformDebugConsent = config->DebugConsent;
+	m_cfg->PlatformDebugConsent = CONFIG_SOC_INTEL_TIGERLAKE_DEBUG_CONSENT;
 
 	/* Audio: HDAUDIO_LINK_MODE I2S/SNDW */
 	m_cfg->PchHdaDspEnable = config->PchHdaDspEnable;

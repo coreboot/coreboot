@@ -169,17 +169,6 @@ struct soc_intel_tigerlake_config {
 	 */
 	uint32_t PrmrrSize;
 	uint8_t PmTimerDisabled;
-	/* Desired platform debug type. */
-	enum {
-		DebugConsent_Disabled,
-		DebugConsent_DCI_DBC,
-		DebugConsent_DCI,
-		DebugConsent_USB3_DBC,
-		DebugConsent_XDP, /* XDP/Mipi60 */
-		DebugConsent_USB2_DBC,
-		DebugConsent_2WIRE_DCI,
-		DebugConsent_Manual,
-	} DebugConsent;
 	/*
 	 * SerialIO device mode selection:
 	 * PchSerialIoDisabled,

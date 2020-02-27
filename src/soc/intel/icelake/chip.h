@@ -203,15 +203,6 @@ struct soc_intel_icelake_config {
 
 	uint8_t PmTimerDisabled;
 
-	/* Desired platform debug type. */
-	enum {
-		DebugConsent_Disabled,
-		DebugConsent_DCI_DBC,
-		DebugConsent_DCI,
-		DebugConsent_USB3_DBC,
-		DebugConsent_XDP, /* XDP/Mipi60 */
-		DebugConsent_USB2_DBC,
-	} DebugConsent;
 	/*
 	 * SerialIO device mode selection:
 	 * PchSerialIoDisabled,

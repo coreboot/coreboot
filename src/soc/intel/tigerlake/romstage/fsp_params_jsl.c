@@ -80,7 +80,7 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 	m_cfg->SmbusEnable = config->SmbusEnable;
 
 	/* Set debug probe type */
-	m_cfg->PlatformDebugConsent = config->DebugConsent;
+	m_cfg->PlatformDebugConsent = CONFIG_SOC_INTEL_TIGERLAKE_DEBUG_CONSENT;
 
 	/* VT-d config */
 	m_cfg->VtdDisable = 0;

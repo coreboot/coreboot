@@ -87,7 +87,7 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	/* Enable SMBus controller based on config */
 	m_cfg->SmbusEnable = config->SmbusEnable;
 	/* Set debug probe type */
-	m_cfg->PlatformDebugConsent = config->DebugConsent;
+	m_cfg->PlatformDebugConsent = CONFIG_SOC_INTEL_ICELAKE_DEBUG_CONSENT;
 
 	/* Vt-D config */
 	m_cfg->VtdDisable = 0;

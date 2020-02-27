@@ -157,3 +157,30 @@ Scope (\_SB.PCI0)
 	}
 }
 #endif
+
+#ifdef SIO_EC_ENABLE_PS2M
+Scope (\_SB.PCI0)
+{
+	Device (PS2M)		// Mouse
+	{
+		Name (_UID, 0)
+		Name (_HID, "GOOG0015")
+		Name (_CID, Package() { EISAID("PNP0F13") } )
+
+		Method (_STA, 0, NotSerialized) {
+			Return (0x0F)
+		}
+
+		Name (_CRS, ResourceTemplate()
+		{
+			IO (Decode16, 0x60, 0x60, 0x01, 0x01)
+			IO (Decode16, 0x64, 0x64, 0x01, 0x01)
+#ifdef SIO_EC_PS2M_IRQ
+			SIO_EC_PS2M_IRQ
+#else
+			IRQ (Edge, ActiveHigh, Exclusive) {12}
+#endif
+		})
+	}
+}
+#endif

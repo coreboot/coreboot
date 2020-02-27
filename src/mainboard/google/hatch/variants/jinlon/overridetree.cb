@@ -65,6 +65,17 @@ chip soc/intel/cannonlake
 	register "ScsEmmcHs400Enabled" = "1"
 
 	device domain 0 on
+		device pci 02.0 on
+			chip drivers/gfx/generic
+				register "device_count" = "1"
+				register "device[0].name" = ""LCD""
+				# Internal panel on the first port of the graphics chip
+				register "device[0].addr" = "0x80010400"
+				register "device[0].privacy.enabled" = "1"
+				register "device[0].privacy.gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_E0)"
+				device generic 0 on end
+			end
+		end # Integrated Graphics Device
 		device pci 15.0 on
 			chip drivers/i2c/generic
 				register "hid" = ""ELAN0000""

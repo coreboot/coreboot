@@ -25,4 +25,5 @@ SPD_SOURCES += 16G_3200_4bg   # 0b1001
 
 bootblock-y += gpio.c
 ramstage-y += gpio.c
+ramstage-y += mainboard.c
 ramstage-y += ramstage.c

@@ -74,6 +74,7 @@ The boards in this section are not real mainboards, but emulators.
 - [R60](lenovo/r60.md)
 - [T4xx common](lenovo/t4xx_series.md)
 - [X2xx common](lenovo/x2xx_series.md)
+- [VBOOT](lenovo/vboot.md)
 
 ### Arrandale series
 

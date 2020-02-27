@@ -12,8 +12,6 @@
 ## GNU General Public License for more details.
 ##
 
-romstage-y += spd_util.c
-
 SPD_BIN = $(obj)/spd.bin
 
-SPD_SOURCES = empty	# 0b000
+SPD_SOURCES = jslrvp	# 0b000

@@ -1,6 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
+ * Copyright 2020 The coreboot project Authors
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +30,10 @@ static uint32_t get_board_id_via_ext_ec(void)
 	return id;
 }
 
-/* Get Board ID via EC I/O port write/read */
+/*
+ * Get Board ID via EC I/O port write/read
+ * Board id is 5 bit, so mask other bits while returning board id.
+ */
 int get_board_id(void)
 {
 	MAYBE_STATIC_NONZERO int id = -1;
@@ -47,5 +51,6 @@ int get_board_id(void)
 			}
 		}
 	}
-	return id;
+
+	return (id & 0x1f);
 }

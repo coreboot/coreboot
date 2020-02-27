@@ -17,11 +17,6 @@
 #include <vendorcode/google/chromeos/chromeos.h>
 #include <variant/gpio.h>
 
-const char *smbios_system_sku(void)
-{
-	return google_chromeec_smbios_system_sku();
-}
-
 static void mainboard_init(struct device *dev)
 {
 	mainboard_ec_init();

@@ -21,11 +21,6 @@
 #include <string.h>
 #include <stdint.h>
 
-const char *smbios_system_sku(void)
-{
-	return google_chromeec_smbios_system_sku();
-}
-
 const char *smbios_mainboard_manufacturer(void)
 {
 	static char oem_name[32];

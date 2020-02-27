@@ -11,6 +11,7 @@
 #include <ec/google/chromeec/ec.h>
 #include <console/console.h>
 #include <string.h>
+#include <smbios.h>
 
 #define SKU_UNKNOWN		0xFFFFFFFF
 
@@ -33,4 +34,9 @@ const char *google_chromeec_smbios_system_sku(void)
 	uint32_t sku_id = google_chromeec_get_board_sku();
 	snprintf(sku_str, sizeof(sku_str), "sku%u", sku_id);
 	return sku_str;
+}
+
+const char *smbios_system_sku(void)
+{
+	return google_chromeec_smbios_system_sku();
 }

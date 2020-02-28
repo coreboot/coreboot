@@ -208,8 +208,63 @@ struct mdss_clock_config {
 	uintptr_t cbcr;
 };
 
+/* CPU PLL */
+#define L_VAL_1516P8MHz		0x4F
+#define L_VAL_1209P6MHz		0x3F
+
+struct sc7180_apss_pll {
+	u32 mode;
+	u32 l_val;
+	u32 alpha_val;
+	u32 user_ctl;
+	u32 config_ctl_lo;
+	u32 config_ctl_hi;
+	u32 config_ctl_u1;
+	u32 test_ctl_lo;
+	u32 test_ctl_hi;
+	u32 test_ctl_u1;
+	u32 opmode;
+	u8 _res0[0x38 - 0x2c];
+	u32 status;
+};
+
+struct sc7180_apss_clock {
+	struct sc7180_apss_pll pll;
+	u8 _res0[0x88 - 0x40];
+	u32 cfg_gfmux;
+};
+
+enum pll_config_ctl_lo {
+	CTUNE_SHFT =	2,
+	K_I_SHFT =	4,
+	K_P_SHFT =	7,
+	PFA_MSB_SHFT =	10,
+	REF_CONT_SHFT =	28,
+};
+
+enum pll_config_ctl_hi {
+	CUR_ADJ_SHFT =  0,
+	DMET_SHFT =	4,
+	RES_SHFT =	6,
+};
+
+enum pll_mode {
+	LOCK_DET_BMSK =	0x80000000,
+	RUN_MODE =      1,
+	OUTCTRL_SHFT =	0,
+	BYPASSNL_SHFT =	1,
+	RESET_SHFT =    2,
+};
+
+enum apss_gfmux {
+	GFMUX_SRC_SEL_BMSK = 0x3,
+	APCS_SRC_EARLY	=    0x2,
+};
+
 static struct sc7180_gcc *const gcc = (void *)GCC_BASE;
 static struct sc7180_aoss *const aoss = (void *)AOSS_CC_BASE;
+static struct sc7180_apss_clock *const apss_silver = (void *)SILVER_PLL_BASE;
+static struct sc7180_apss_clock *const apss_l3 = (void *)L3_PLL_BASE;
 
 void clock_init(void);
 void clock_reset_aop(void);

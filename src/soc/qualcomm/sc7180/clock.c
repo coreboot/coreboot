@@ -2,8 +2,10 @@
 
 #include <assert.h>
 #include <commonlib/helpers.h>
+#include <delay.h>
 #include <device/mmio.h>
 #include <soc/clock.h>
+#include <timer.h>
 #include <types.h>
 
 #define DIV(div) (2 * div - 1)
@@ -273,6 +275,54 @@ void clock_enable_qup(int qup)
 							clk_en_off);
 }
 
+static int pll_init_and_set(struct sc7180_apss_clock *apss, u32 l_val)
+{
+	u32 gfmux_val;
+
+	/* Configure and Enable PLL */
+	write32(&apss->pll.config_ctl_lo, 0x0);
+	setbits32(&apss->pll.config_ctl_lo, 0x2 << CTUNE_SHFT |
+		    0x2 << K_I_SHFT | 0x5 << K_P_SHFT |
+		    0x2 << PFA_MSB_SHFT | 0x2 << REF_CONT_SHFT);
+
+	write32(&apss->pll.config_ctl_hi, 0x0);
+	setbits32(&apss->pll.config_ctl_hi, 0x2 << CUR_ADJ_SHFT |
+		    BIT(DMET_SHFT) | 0xF << RES_SHFT);
+
+	write32(&apss->pll.config_ctl_u1, 0x0);
+	write32(&apss->pll.l_val, l_val);
+
+	setbits32(&apss->pll.mode, BIT(BYPASSNL_SHFT));
+	udelay(5);
+	setbits32(&apss->pll.mode, BIT(RESET_SHFT));
+
+	setbits32(&apss->pll.opmode, RUN_MODE);
+
+	if (!wait_us(100, read32(&apss->pll.mode) & LOCK_DET_BMSK)) {
+		printk(BIOS_ERR, "ERROR: PLL did not lock!\n");
+		return -1;
+	}
+
+	setbits32(&apss->pll.mode, BIT(OUTCTRL_SHFT));
+
+	gfmux_val = read32(&apss->cfg_gfmux) & ~GFMUX_SRC_SEL_BMSK;
+	gfmux_val |= APCS_SRC_EARLY;
+	write32(&apss->cfg_gfmux, gfmux_val);
+
+	return 0;
+}
+
+static void speed_up_boot_cpu(void)
+{
+	/* 1516.8 MHz */
+	if (!pll_init_and_set(apss_silver, L_VAL_1516P8MHz))
+		printk(BIOS_DEBUG, "Silver Frequency bumped to 1.5168(GHz)\n");
+
+	/* 1209.6 MHz */
+	if (!pll_init_and_set(apss_l3, L_VAL_1209P6MHz))
+		printk(BIOS_DEBUG, "L3 Frequency bumped to 1.2096(GHz)\n");
+}
+
 void clock_init(void)
 {
 	clock_configure_gpll0();
@@ -302,4 +352,5 @@ void clock_init(void)
 	clock_enable_vote(&gcc->qup_wrap1_s_ahb_cbcr,
 				&gcc->apcs_clk_br_en1,
 				QUPV3_WRAP_1_S_AHB_CLK_ENA);
+	speed_up_boot_cpu();
 }

@@ -78,7 +78,7 @@ postcar-y += i2c.c
 postcar-y += heci.c
 postcar-y += reset.c
 postcar-y += uart.c
-postcar-$(CONFIG_VBOOT_MEASURED_BOOT) += gspi.c
+postcar-y += gspi.c
 
 verstage-y += car.c
 verstage-y += i2c.c

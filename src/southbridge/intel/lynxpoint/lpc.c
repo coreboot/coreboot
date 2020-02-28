@@ -852,25 +852,17 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	fadt->x_pm_tmr_blk.addrh = 0x0;
 
 	/*
-	 * We don't set `fadt->x_gpe0_blk` for Lynx Point LP since the correct
-	 * bit width is 128 * 2, which is too large for an 8 bit unsigned int.
-	 * The OSPM can instead use the values in `fadt->gpe0_blk{,_len}`.
+	 * Windows 10 requires x_gpe0_blk to be set starting with FADT revision 5.
+	 * The bit_width field intentionally overflows here.
+	 * The OSPM can instead use the values in `fadt->gpe0_blk{,_len}`, which
+	 * seems to work fine on Linux 5.0 and Windows 10.
 	 */
-	if (!pch_is_lp()) {
-		fadt->x_gpe0_blk.space_id = ACPI_ADDRESS_SPACE_IO;
-		fadt->x_gpe0_blk.bit_width = 2 * 64;
-		fadt->x_gpe0_blk.bit_offset = 0;
-		fadt->x_gpe0_blk.access_size = ACPI_ACCESS_SIZE_BYTE_ACCESS;
-		fadt->x_gpe0_blk.addrl = pmbase + GPE0_STS;
-		fadt->x_gpe0_blk.addrh = 0x0;
-	} else {
-		fadt->x_gpe0_blk.space_id = ACPI_ADDRESS_SPACE_IO;
-		fadt->x_gpe0_blk.bit_width = 0;
-		fadt->x_gpe0_blk.bit_offset = 0;
-		fadt->x_gpe0_blk.access_size = 0;
-		fadt->x_gpe0_blk.addrl = 0x0;
-		fadt->x_gpe0_blk.addrh = 0x0;
-	}
+	fadt->x_gpe0_blk.space_id = ACPI_ADDRESS_SPACE_IO;
+	fadt->x_gpe0_blk.bit_width = fadt->gpe0_blk_len * 8;
+	fadt->x_gpe0_blk.bit_offset = 0;
+	fadt->x_gpe0_blk.access_size = ACPI_ACCESS_SIZE_DWORD_ACCESS;
+	fadt->x_gpe0_blk.addrl = fadt->gpe0_blk;
+	fadt->x_gpe0_blk.addrh = 0x0;
 
 	fadt->x_gpe1_blk.space_id = ACPI_ADDRESS_SPACE_IO;
 	fadt->x_gpe1_blk.bit_width = 0;

@@ -546,8 +546,8 @@ typedef struct acpi_fadt {
 	u32 flags;
 	acpi_addr_t reset_reg;
 	u8 reset_value;
-	u16 ARM_boot_arch;
-	u8 FADT_MinorVersion;
+	u16 ARM_boot_arch;	/* Revision 6 only, Revision 5: Must be zero */
+	u8 FADT_MinorVersion;	/* Revision 6 only, Revision 5: Must be zero */
 	u32 x_firmware_ctl_l;
 	u32 x_firmware_ctl_h;
 	u32 x_dsdt_l;
@@ -560,6 +560,11 @@ typedef struct acpi_fadt {
 	acpi_addr_t x_pm_tmr_blk;
 	acpi_addr_t x_gpe0_blk;
 	acpi_addr_t x_gpe1_blk;
+	/* Revision 5 */
+	acpi_addr_t sleep_control_reg;
+	acpi_addr_t sleep_status_reg;
+	/* Revision 6 */
+	u64 hypervisor_vendor_identity;
 } __packed acpi_fadt_t;
 
 /* FADT TABLE Revision values */

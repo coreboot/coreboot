@@ -1554,7 +1554,7 @@ int get_acpi_table_revision(enum acpi_tables table)
 {
 	switch (table) {
 	case FADT:
-		return ACPI_FADT_REV_ACPI_3_0;
+		return ACPI_FADT_REV_ACPI_6_0;
 	case MADT: /* ACPI 3.0: 2, ACPI 4.0/5.0: 3, ACPI 6.2b/6.3: 5 */
 		return 2;
 	case MCFG:

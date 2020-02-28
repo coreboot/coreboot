@@ -122,6 +122,11 @@
 		/* Find value closest to BCLV in BRIG (which must be ordered) */
 		Method (XBQC, 0, NotSerialized)
 		{
+			/* Prevent DivideByZero if backlight control isn't enabled */
+			If (BCLM == 0)
+			{
+				Return (Zero)
+			}
 			/* Local0: current percentage */
 			Store (DRCL (Multiply (BCLV, 100), BCLM), Local0)
 

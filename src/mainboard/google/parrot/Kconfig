@@ -21,6 +21,7 @@ config BOARD_SPECIFIC_OPTIONS
 	# This board also feature sandy-bridge CPU's so must have LVDS
 	select GFX_GMA_INTERNAL_IS_LVDS
 	select MAINBOARD_HAS_LIBGFXINIT
+	select SANDYBRIDGE_VBOOT_IN_ROMSTAGE
 
 config VBOOT
 	select VBOOT_VBNV_CMOS

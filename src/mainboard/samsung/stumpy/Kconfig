@@ -19,6 +19,7 @@ config BOARD_SPECIFIC_OPTIONS
 # not on board, should be made selectable.
 	select SUPERIO_SMSC_LPC47N207
 	select INTEL_INT15
+	select SANDYBRIDGE_VBOOT_IN_ROMSTAGE
 
 config VBOOT
 	select VBOOT_VBNV_CMOS

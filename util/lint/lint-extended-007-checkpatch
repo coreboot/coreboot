@@ -21,9 +21,7 @@ src/cpu/armltd src/cpu/qemu-power8 src/cpu/qemu-x86 \
 src/drivers/dec src/drivers/gic src/drivers/ti \
 src/ec/purism \
 src/include/boot src/include/superio src/include/sys \
-src/mainboard/adlink src/mainboard/linutop \
-src/mainboard/purism src/mainboard/ti \
-src/soc/rdc \
+src/mainboard/adlink src/mainboard/purism src/mainboard/ti \
 src/superio/acpi src/superio/common \
 "
 

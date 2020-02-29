@@ -64,8 +64,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_B6, NONE),
 	/* B7  : PCIE_CLKREQ2_N */
 	PAD_NC(GPP_B7, NONE),
-	/* B8  : PCIE_CLKREQ3_N */
-	PAD_NC(GPP_B8, NONE),
+	/* B8  : WLAN_CLKREQ_ODL */
+	PAD_CFG_NF(GPP_B8, NONE, DEEP, NF1),
 	/* B9  : PCIE_CLKREQ4_N */
 	PAD_NC(GPP_B9, NONE),
 	/* B10 : PCIE_CLKREQ5_N */
@@ -149,11 +149,11 @@ static const struct pad_config gpio_table[] = {
 	/* D0  : WWAN_HOST_WAKE */
 	PAD_NC(GPP_D0, NONE),
 	/* D1  : WLAN_PERST_L */
-	PAD_NC(GPP_D1, NONE),
+	PAD_CFG_GPO(GPP_D1, 1, DEEP),
 	/* D2  : WLAN_INT_L */
 	PAD_NC(GPP_D2, NONE),
 	/* D3  : WLAN_PCIE_WAKE_ODL */
-	PAD_NC(GPP_D3, NONE),
+	PAD_CFG_GPI_SCI_LOW(GPP_D3, NONE, DEEP, EDGE_SINGLE),
 	/* D4  : TOUCH_INT_ODL */
 	PAD_NC(GPP_D4, NONE),
 	/* D5  : TOUCH_RESET_L */
@@ -185,11 +185,11 @@ static const struct pad_config gpio_table[] = {
 	/* D18 : I2S_MCLK */
 	PAD_NC(GPP_D18, NONE),
 	/* D19 : WWAN_WLAN_COEX1 */
-	PAD_NC(GPP_D19, NONE),
+	PAD_CFG_NF(GPP_D19, NONE, DEEP, NF1),
 	/* D20 : WWAN_WLAN_COEX2 */
-	PAD_NC(GPP_D20, NONE),
+	PAD_CFG_NF(GPP_D20, NONE, DEEP, NF1),
 	/* D21 : WWAN_WLAN_COEX3 */
-	PAD_NC(GPP_D21, NONE),
+	PAD_CFG_NF(GPP_D21, NONE, DEEP, NF1),
 	/* D22 : AP_I2C_SUB_SDA*/
 	PAD_NC(GPP_D22, NONE),
 	/* D23 : AP_I2C_SUB_SCL */
@@ -236,17 +236,17 @@ static const struct pad_config gpio_table[] = {
 	/* E19 : GPP_E19/IMGCLKOUT_5/PCIE_LNK_DOWN */
 	PAD_NC(GPP_E19, NONE),
 	/* E20 : CNV_BRI_DT_R */
-	PAD_NC(GPP_E20, NONE),
+	PAD_CFG_NF(GPP_E20, NONE, DEEP, NF1),
 	/* E21 : CNV_BRI_RSP */
-	PAD_NC(GPP_E21, NONE),
+	PAD_CFG_NF(GPP_E21, NONE, DEEP, NF1),
 	/* E22 : CNV_RGI_DT_R */
-	PAD_NC(GPP_E22, NONE),
+	PAD_CFG_NF(GPP_E22, NONE, DEEP, NF1),
 	/* E23 : CNV_RGI_RSP */
-	PAD_NC(GPP_E23, NONE),
+	PAD_CFG_NF(GPP_E23, NONE, DEEP, NF1),
 
 
 	/* F4  : CNV_RF_RST_L */
-	PAD_NC(GPP_F4, NONE),
+	PAD_CFG_NF(GPP_F4, NONE, DEEP, NF1),
 	/* F7  : EMMC_CMD */
 	PAD_CFG_NF(GPP_F7, NONE, DEEP, NF1),
 	/* F8  : EMMC_DATA0 */
@@ -294,7 +294,7 @@ static const struct pad_config gpio_table[] = {
 	/* H1  : EN_PP3300_SD_U */
 	PAD_NC(GPP_H1, NONE),
 	/* H2  : CNV_CLKREQ0 */
-	PAD_NC(GPP_H2, NONE),
+	PAD_CFG_NF(GPP_H2, NONE, DEEP, NF3),
 	/* H3  : GPP_H03/SX_EXIT_HOLDOFF_N */
 	PAD_NC(GPP_H3, NONE),
 	/* H4  : AP_I2C_TS_SDA */
@@ -326,7 +326,7 @@ static const struct pad_config gpio_table[] = {
 	/* H17 : WWAN_RST_L */
 	PAD_NC(GPP_H17, NONE),
 	/* H18 : WLAN_DISABLE_L */
-	PAD_NC(GPP_H18, NONE),
+	PAD_CFG_GPO(GPP_H18, 1, DEEP),
 	/* H19 : BT_DISABLE_L */
 	PAD_CFG_GPO(GPP_H19, 1, DEEP),
 
@@ -409,6 +409,9 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_GPI(GPP_C4, NONE, DEEP),
 	/* C5  : RAM_STRAP_3 */
 	PAD_CFG_GPI(GPP_C5, NONE, DEEP),
+
+	/* D1  : WLAN_PERST_L */
+	PAD_CFG_GPO(GPP_D1, 1, DEEP),
 
 	/* H19 : BT_DISABLE_L */
 	PAD_CFG_GPO(GPP_H19, 0, DEEP),

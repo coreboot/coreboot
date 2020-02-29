@@ -84,12 +84,14 @@ chip soc/intel/tigerlake
 	register "PcieRpEnable[4]" = "0"
 	register "PcieRpEnable[5]" = "0"
 	register "PcieRpEnable[6]" = "0"
-	register "PcieRpEnable[7]" = "0"
+	# PCIe Root Port 8 (index 7) hosts M.2 E-key WLAN.
+	register "PcieRpEnable[7]" = "1"
 
 	register "PcieClkSrcUsage[0]" = "0xff"
 	register "PcieClkSrcUsage[1]" = "0xff"
 	register "PcieClkSrcUsage[2]" = "0xff"
-	register "PcieClkSrcUsage[3]" = "0xff"
+	# PCIe Clock Source 4 (index 3) is used by WLAN on PCIe Root Port 8 (index 7)
+	register "PcieClkSrcUsage[3]" = "7"
 	register "PcieClkSrcUsage[4]" = "0xff"
 	register "PcieClkSrcUsage[5]" = "0xff"
 
@@ -222,7 +224,10 @@ chip soc/intel/tigerlake
 		end # USB xHCI
 		device pci 14.1 off end # USB xDCI (OTG)
 		device pci 14.2 off end # PMC SRAM
-		device pci 14.3 off end # CNVi wifi
+		chip drivers/intel/wifi
+			register "wake" = "GPE0_PME_B0"
+			device pci 14.3 on  end # CNVi wifi
+		end
 		device pci 14.5 off end # SDCard
 		device pci 15.0 on  end # I2C 0
 		device pci 15.1 on  end # I2C 1
@@ -240,11 +245,12 @@ chip soc/intel/tigerlake
 		device pci 1c.0 off end # PCI Express Root Port 1
 		device pci 1c.1 off end # PCI Express Root Port 2
 		device pci 1c.2 off end # PCI Express Root Port 3
-		device pci 1c.3 off end # PCI Express Root Port 4 - WLAN
+		device pci 1c.3 off end # PCI Express Root Port 4
 		device pci 1c.4 off end # PCI Express Root Port 5
 		device pci 1c.5 off end # PCI Express Root Port 6
 		device pci 1c.6 off end # PCI Express Root Port 7
-		device pci 1c.7 off end # PCI Express Root Port 8
+		# External PCIe port 4 is mapped to PCIe Root port 8
+		device pci 1c.7 on  end # PCI Express Root Port 8 - WLAN
 		device pci 1e.0 off end # UART 0
 		device pci 1e.1 off end # UART 1
 		device pci 1e.2 on

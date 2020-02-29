@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <assert.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
@@ -120,6 +121,8 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 
 	/* PCH UART selection for FSP Debug */
 	params->SerialIoDebugUartNumber = CONFIG_UART_FOR_CONSOLE;
+	ASSERT(ARRAY_SIZE(params->SerialIoUartAutoFlow) > CONFIG_UART_FOR_CONSOLE);
+	params->SerialIoUartAutoFlow[CONFIG_UART_FOR_CONSOLE] = 0;
 
 	/* SATA */
 	dev = pcidev_on_root(PCH_DEV_SLOT_SATA, 0);

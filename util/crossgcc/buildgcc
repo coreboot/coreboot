@@ -114,13 +114,15 @@ NASM_DIR="nasm-${NASM_VERSION}"
 
 unset MAKELEVEL MAKEFLAGS
 
-red='\033[0;31m'
-RED='\033[1;31m'
-green='\033[0;32m'
-GREEN='\033[1;32m'
-blue='\033[0;34m'
-CYAN='\033[1;36m'
-NC='\033[0m' # No Color
+if [ -z "${NO_COLOR}" ]; then
+	red='\033[0;31m'
+	RED='\033[1;31m'
+	green='\033[0;32m'
+	GREEN='\033[1;32m'
+	blue='\033[0;34m'
+	CYAN='\033[1;36m'
+	NC='\033[0m' # No Color
+fi
 
 UNAME=$(if uname | grep -iq cygwin; then echo Cygwin; else uname; fi)
 HALT_FOR_TOOLS=0

@@ -6,7 +6,7 @@ UNDERSCORE='_'
 
 #lint-stable-000-license-headers
 TESTFILE000a=src/arch/x86/thread.c
-TESTFILE000b=src/arch/ppc64/misc.c
+TESTFILE000b=src/arch/riscv/misc.c
 sed -i.bak 's/^[[:space:]]\*[[:space:]].*//' ${TESTFILE000a}
 sed -i.bak 's/^[[:space:]]\*[[:space:]]but WITHOUT ANY WARRANTY;//' ${TESTFILE000b}
 
@@ -20,12 +20,10 @@ sed -i.bak 's/^done:/ done:/' ${TESTFILE004}
 
 #lint-stable-005-board-status
 TESTFILE005a=src/mainboard/google/storm/board_info.txt
-TESTFILE005b=src/mainboard/aaeon/pfm-540i_revb/board_info.txt
-rm -f ${TESTFILE005a}
-sed -i.bak 's/^Category:.*/Category: lint/' ${TESTFILE005b}
+sed -i.bak 's/^Category:.*/Category: lint/' ${TESTFILE005a}
 
 #lint-stable-006-board-name
-TESTFILE006=src/mainboard/amd/bettong/Kconfig.name
+TESTFILE006=src/mainboard/ibase/mb899/Kconfig.name
 rm -f ${TESTFILE006}
 
 #lint-stable-008-kconfig

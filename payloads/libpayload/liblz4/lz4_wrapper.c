@@ -141,6 +141,9 @@ size_t ulz4fn(const void *src, size_t srcn, void *dst, size_t dstn)
 	}
 
 	while (1) {
+		if ((size_t)(in - src) + sizeof(struct lz4_block_header) > srcn)
+			break;          /* input overrun */
+
 		struct lz4_block_header b = { .raw = le32toh(*(uint32_t *)in) };
 		in += sizeof(struct lz4_block_header);
 

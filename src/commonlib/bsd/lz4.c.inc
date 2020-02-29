@@ -150,6 +150,7 @@ FORCE_INLINE int LZ4_decompress_generic(
         if ((length=(token>>ML_BITS)) == RUN_MASK)
         {
             unsigned s;
+            if ((endOnInput) && unlikely(ip>=iend-RUN_MASK)) goto _output_error;   /* overflow detection */
             do
             {
                 s = *ip++;

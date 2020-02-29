@@ -61,7 +61,8 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 
 	/* UART Debug Log */
 	m_cfg->PcdDebugInterfaceFlags = CONFIG(DRIVERS_UART_8250IO) ?
-			DEBUG_INTERFACE_UART : DEBUG_INTERFACE_TRACEHUB;
+			DEBUG_INTERFACE_UART|DEBUG_INTERFACE_TRACEHUB :
+			DEBUG_INTERFACE_SERIAL_IO|DEBUG_INTERFACE_TRACEHUB;
 	m_cfg->PcdIsaSerialUartBase = 0x0;
 	m_cfg->SerialIoUartDebugControllerNumber = CONFIG_UART_FOR_CONSOLE;
 

@@ -19,7 +19,6 @@ DefinitionBlock(
 	0x20110725	// OEM revision
 )
 {
-	// Some generic macros
 	#include <soc/intel/tigerlake/acpi/platform.asl>
 
 	// global NVS and variables

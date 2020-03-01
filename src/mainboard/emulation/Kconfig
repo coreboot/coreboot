@@ -11,7 +11,7 @@ endchoice
 config BOARD_EMULATION_QEMU_X86
 	bool
 	default y
-	depends on BOARD_EMULATION_QEMU_X86_I440FX || BOARD_EMULATION_QEMU_X86_Q35
+	depends on CPU_QEMU_X86
 
 source "src/mainboard/emulation/*/Kconfig"
 

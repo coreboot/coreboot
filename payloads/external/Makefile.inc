@@ -78,7 +78,7 @@ etc/grub.cfg-required := the GRUB runtime configuration file ($(CONFIG_GRUB2_RUN
 # SeaBIOS
 
 SEABIOS_CC_OFFSET=$(if $(filter %ccache,$(HOSTCC)),2,1)
-payloads/external/SeaBIOS/seabios/out/bios.bin.elf seabios: $(DOTCONFIG)
+payloads/external/SeaBIOS/seabios/out/bios.bin.elf: $(DOTCONFIG)
 	$(MAKE) -C payloads/external/SeaBIOS \
 			HOSTCC="$(HOSTCC)" \
 			CC=$(word $(SEABIOS_CC_OFFSET),$(CC_x86_32)) \
@@ -104,7 +104,7 @@ payloads/external/SeaBIOS/seabios/out/bios.bin.elf seabios: $(DOTCONFIG)
 			CONFIG_ENABLE_HSUART=$(CONFIG_ENABLE_HSUART) \
 			CONFIG_CONSOLE_UART_BASE_ADDRESS=$(CONFIG_CONSOLE_UART_BASE_ADDRESS)
 
-payloads/external/SeaBIOS/seabios/out/vgabios.bin: seabios
+payloads/external/SeaBIOS/seabios/out/vgabios.bin: payloads/external/SeaBIOS/seabios/out/bios.bin.elf
 payloads/external/SeaBIOS/seabios/.config: payloads/external/SeaBIOS/seabios/out/bios.bin.elf
 payloads/external/SeaBIOS/seabios/out/autoversion.h: payloads/external/SeaBIOS/seabios/out/bios.bin.elf
 

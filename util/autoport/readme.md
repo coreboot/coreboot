@@ -342,7 +342,7 @@ on laptops (desktops have no "lid"!) but it makes sense to proofread it.
 ## `gfx.ndid` and `gfx.did`
 
 Those describe which video outputs are declared in ACPI tables.
-Normally, there is no need to adjust these values, but if you miss some
+Normally, there is no need to have these values, but if you miss some
 non-standard video output, you can declare it there. Bit 31 is set to
 indicate the presence of the output. Byte 1 is the type and byte 0 is
 used for disambigution so that ID composed of byte 1 and 0 is unique.

@@ -1,7 +1,4 @@
 chip northbridge/intel/sandybridge
-	# IGD Displays
-	register "gfx.ndid" = "3"
-	register "gfx.did" = "{ 0x80000100, 0x80000240, 0x80000410 }"
 
 	device cpu_cluster 0 on
 		chip cpu/intel/model_206ax

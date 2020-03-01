@@ -280,7 +280,7 @@ config CONSOLE_SPI_FLASH_BUFFER_SIZE
 
 config CONSOLE_QEMU_DEBUGCON
 	bool "QEMU debug console output"
-	depends on BOARD_EMULATION_QEMU_X86
+	depends on CPU_QEMU_X86
 	default y
 	help
 	  Send coreboot debug output to QEMU's isa-debugcon device:

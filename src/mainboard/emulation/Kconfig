@@ -8,11 +8,6 @@ source "src/mainboard/emulation/*/Kconfig.name"
 
 endchoice
 
-config BOARD_EMULATION_QEMU_X86
-	bool
-	default y
-	depends on CPU_QEMU_X86
-
 source "src/mainboard/emulation/*/Kconfig"
 
 config MAINBOARD_VENDOR

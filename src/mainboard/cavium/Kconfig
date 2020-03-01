@@ -12,6 +12,7 @@
 ## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ## GNU General Public License for more details.
 ##
+
 if VENDOR_CAVIUM
 
 choice
@@ -24,7 +25,6 @@ endchoice
 source "src/mainboard/cavium/*/Kconfig"
 
 config MAINBOARD_VENDOR
-	string "Mainboard Vendor"
 	default "Cavium"
 
 endif # VENDOR_CAVIUM

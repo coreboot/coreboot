@@ -10,7 +10,6 @@ endchoice
 source "src/mainboard/intel/*/Kconfig"
 
 config MAINBOARD_VENDOR
-	string
 	default "Intel"
 
 endif # VENDOR_INTEL

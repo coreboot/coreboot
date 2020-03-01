@@ -10,7 +10,6 @@ endchoice
 source "src/mainboard/sapphire/*/Kconfig"
 
 config MAINBOARD_VENDOR
-	string
 	default "Sapphire"
 
 endif # VENDOR_SAPPHIRE

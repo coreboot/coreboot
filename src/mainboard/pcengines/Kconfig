@@ -10,7 +10,6 @@ endchoice
 source "src/mainboard/pcengines/*/Kconfig"
 
 config MAINBOARD_VENDOR
-	string
 	default "PC Engines"
 
 endif # VENDOR_PCENGINES

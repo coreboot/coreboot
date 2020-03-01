@@ -10,7 +10,6 @@ endchoice
 source "src/mainboard/sifive/*/Kconfig"
 
 config MAINBOARD_VENDOR
-	string
 	default "SiFive"
 
 endif # VENDOR_SIFIVE

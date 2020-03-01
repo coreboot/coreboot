@@ -29,7 +29,6 @@ endchoice
 source "src/mainboard/bap/*/Kconfig"
 
 config MAINBOARD_VENDOR
-	string
 	default "BAP"
 
 endif # VENDOR_BAP

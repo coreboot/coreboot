@@ -10,7 +10,6 @@ endchoice
 source "src/mainboard/compulab/*/Kconfig"
 
 config MAINBOARD_VENDOR
-	string
 	default "CompuLab"
 
 endif # VENDOR_COMPULAB

@@ -10,7 +10,6 @@ endchoice
 source "src/mainboard/samsung/*/Kconfig"
 
 config MAINBOARD_VENDOR
-	string
 	default "SAMSUNG"
 
 endif # VENDOR_SAMSUNG

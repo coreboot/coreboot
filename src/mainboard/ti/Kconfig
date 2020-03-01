@@ -26,7 +26,6 @@ endchoice
 source "src/mainboard/ti/*/Kconfig"
 
 config MAINBOARD_VENDOR
-	string
 	default "TI"
 
 endif # VENDOR_TI

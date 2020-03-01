@@ -10,7 +10,6 @@ endchoice
 source "src/mainboard/facebook/*/Kconfig"
 
 config MAINBOARD_VENDOR
-	string
 	default "Facebook"
 
 endif # VENDOR_FACEBOOK

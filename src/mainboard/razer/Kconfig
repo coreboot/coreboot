@@ -1,4 +1,3 @@
-
 if VENDOR_RAZER
 
 choice
@@ -11,7 +10,6 @@ endchoice
 source "src/mainboard/razer/*/Kconfig"
 
 config MAINBOARD_VENDOR
-	string "Mainboard Vendor"
 	default "RAZER"
 
 endif

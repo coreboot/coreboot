@@ -10,7 +10,6 @@ endchoice
 source "src/mainboard/supermicro/*/Kconfig"
 
 config MAINBOARD_VENDOR
-	string
 	default "Supermicro"
 
 endif # VENDOR_SUPERMICRO

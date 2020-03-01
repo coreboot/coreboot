@@ -12,6 +12,7 @@
 ## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ## GNU General Public License for more details.
 ##
+
 if VENDOR_ASUS
 
 choice
@@ -24,7 +25,6 @@ endchoice
 source "src/mainboard/asus/*/Kconfig"
 
 config MAINBOARD_VENDOR
-	string
 	default "ASUS"
 
 endif # VENDOR_ASUS

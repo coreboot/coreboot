@@ -16,7 +16,6 @@ config BOARD_EMULATION_QEMU_X86
 source "src/mainboard/emulation/*/Kconfig"
 
 config MAINBOARD_VENDOR
-	string
 	default "Emulation"
 
 endif # VENDOR_EMULATION

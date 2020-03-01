@@ -15,7 +15,6 @@ endchoice
 source "src/mainboard/lippert/*/Kconfig"
 
 config MAINBOARD_VENDOR
-	string
 	default "LiPPERT"
 
 endif # VENDOR_LIPPERT

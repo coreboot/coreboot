@@ -12,6 +12,7 @@
 ## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ## GNU General Public License for more details.
 ##
+
 if VENDOR_GETAC
 
 choice
@@ -24,7 +25,6 @@ endchoice
 source "src/mainboard/getac/*/Kconfig"
 
 config MAINBOARD_VENDOR
-	string
 	default "Getac"
 
 endif # VENDOR_GETAC

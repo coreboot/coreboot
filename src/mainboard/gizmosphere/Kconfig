@@ -25,7 +25,6 @@ endchoice
 source "src/mainboard/gizmosphere/*/Kconfig"
 
 config MAINBOARD_VENDOR
-	string
 	default "GizmoSphere"
 
 endif # VENDOR_GIZMOSPHERE

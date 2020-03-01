@@ -25,7 +25,6 @@ endchoice
 source "src/mainboard/purism/*/Kconfig"
 
 config MAINBOARD_VENDOR
-	string "Mainboard Vendor"
 	default "Purism"
 
 endif # VENDOR_PURISM

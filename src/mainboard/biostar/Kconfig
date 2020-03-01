@@ -13,6 +13,7 @@
 ## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ## GNU General Public License for more details.
 ##
+
 if VENDOR_BIOSTAR
 
 choice
@@ -26,7 +27,6 @@ source "src/mainboard/biostar/*/Kconfig"
 
 
 config MAINBOARD_VENDOR
-	string
 	default "Biostar"
 
 endif # VENDOR_BIOSTAR

@@ -10,7 +10,6 @@ endchoice
 source "src/mainboard/scaleway/*/Kconfig"
 
 config MAINBOARD_VENDOR
-	string
 	default "Scaleway"
 
 endif # VENDOR_SCALEWAY

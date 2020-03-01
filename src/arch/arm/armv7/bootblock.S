@@ -62,14 +62,43 @@ init_stack_loop:
 	cmp	r0, r1
 	bne	init_stack_loop
 
+	/* Set stackpointer in internal RAM */
+	ldr	sp, =_estack
+
+	/*
+	 * For platforms where the flash is memory mapped (qemu), check if the
+	 * bootblock needs to relocate itself.
+	 */
+check_position:
+	adr	r0, check_position
+	ldr	r1, =check_position
+
+	cmp	r0, r1
+	beq	call_bootblock
+
+	/* Calculate source */
+	ldr	r2, =_program
+	sub	r1, r1, r2
+	sub	r1, r0, r1
+	/* Get destination */
+	ldr	r0, =_program
+	/* Get size */
+	ldr	r2, =_eprogram
+	sub	r2, r2, r0
+
+	bl	memcpy
+
+	/* Get absolute address */
+	ldr	lr, =call_bootblock
+	/* Directly modify pc as branch instruction changes the state */
+	mov	pc, lr
+
 call_bootblock:
 
 	/* Restore parameter passed in by maskrom/vendor firmware. */
 	ldr	r0, =maskrom_param
 	str	r10, [r0]
 
-	/* Set stackpointer in internal RAM to call bootblock main() */
-	ldr	sp, =_estack
 	ldr	r0,=0x00000000
 	/*
 	 * The current design of cpu_info places the struct at the top of the

@@ -132,9 +132,7 @@ void raminit(struct mrc_params *mp, int prev_sleep_state)
 	if (!mp->io_hole_mb)
 		mp->io_hole_mb = 2048;
 
-	if (vboot_recovery_mode_enabled()) {
-		printk(BIOS_DEBUG, "Recovery mode: not using MRC cache.\n");
-	} else if (!mrc_cache_get_current(MRC_TRAINING_DATA, 0, &rdev)) {
+	if (!mrc_cache_get_current(MRC_TRAINING_DATA, 0, &rdev)) {
 		mp->saved_data_size = region_device_sz(&rdev);
 		mp->saved_data = rdev_mmap_full(&rdev);
 		/* Assume boot device is memory mapped. */

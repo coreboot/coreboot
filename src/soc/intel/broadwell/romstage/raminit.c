@@ -36,7 +36,8 @@ void raminit(struct pei_data *pei_data)
 
 	broadwell_fill_pei_data(pei_data);
 
-	if (vboot_recovery_mode_enabled()) {
+	if (CONFIG(BROADWELL_VBOOT_IN_BOOTBLOCK) &&
+	    vboot_recovery_mode_enabled()) {
 		/* Recovery mode does not use MRC cache */
 		printk(BIOS_DEBUG, "Recovery mode: not using MRC cache.\n");
 	} else if (!mrc_cache_get_current(MRC_TRAINING_DATA, 0, &rdev)) {

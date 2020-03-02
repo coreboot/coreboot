@@ -139,7 +139,8 @@ void sdram_initialize(struct pei_data *pei_data)
 	 * Do not pass MRC data in for recovery mode boot,
 	 * Always pass it in for S3 resume.
 	 */
-	if (!vboot_recovery_mode_enabled() || pei_data->boot_mode == 2)
+	if (!(CONFIG(SANDYBRIDGE_VBOOT_IN_BOOTBLOCK) && vboot_recovery_mode_enabled()) ||
+	    pei_data->boot_mode == 2)
 		prepare_mrc_cache(pei_data);
 
 	/* If MRC data is not found we cannot continue S3 resume. */

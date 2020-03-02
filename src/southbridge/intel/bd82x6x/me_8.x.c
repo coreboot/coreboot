@@ -403,38 +403,6 @@ static void __unused me_print_fwcaps(mbp_fw_caps *caps_section)
 	print_cap("Wireless LAN (WLAN)", cap->wlan);
 }
 
-#if CONFIG(CHROMEOS) && 0 /* DISABLED */
-/* Tell ME to issue a global reset */
-static int mkhi_global_reset(void)
-{
-	struct me_global_reset reset = {
-		.request_origin	= GLOBAL_RESET_BIOS_POST,
-		.reset_type	= CBM_RR_GLOBAL_RESET,
-	};
-	struct mkhi_header mkhi = {
-		.group_id	= MKHI_GROUP_ID_CBM,
-		.command	= MKHI_GLOBAL_RESET,
-	};
-	struct mei_header mei = {
-		.is_complete	= 1,
-		.length		= sizeof(mkhi) + sizeof(reset),
-		.host_address	= MEI_HOST_ADDRESS,
-		.client_address	= MEI_ADDRESS_MKHI,
-	};
-
-	/* Send request and wait for response */
-	printk(BIOS_NOTICE, "ME: %s\n", __FUNCTION__);
-	if (mei_sendrecv(&mei, &mkhi, &reset, NULL, 0) < 0) {
-		/* No response means reset will happen shortly... */
-		halt();
-	}
-
-	/* If the ME responded it rejected the reset request */
-	printk(BIOS_ERR, "ME: Global Reset failed\n");
-	return -1;
-}
-#endif
-
 /* Send END OF POST message to the ME */
 static int __unused mkhi_end_of_post(void)
 {
@@ -682,20 +650,6 @@ static void intel_me_init(struct device *dev)
 
 		if (intel_me_read_mbp(&mbp_data))
 			break;
-
-#if CONFIG(CHROMEOS) && 0 /* DISABLED */
-		/*
-		 * Unlock ME in recovery mode.
-		 */
-		if (vboot_recovery_mode_enabled()) {
-			/* Unlock ME flash region */
-			mkhi_hmrfpo_enable();
-
-			/* Issue global reset */
-			mkhi_global_reset();
-			return;
-		}
-#endif
 
 		if (CONFIG_DEFAULT_CONSOLE_LOGLEVEL >= BIOS_DEBUG) {
 			me_print_fw_version(&mbp_data.fw_version_name);

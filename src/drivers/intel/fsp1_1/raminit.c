@@ -12,7 +12,6 @@
 #include <lib.h> /* hexdump */
 #include <string.h>
 #include <timestamp.h>
-#include <security/vboot/vboot_common.h>
 
 void raminit(struct romstage_params *params)
 {
@@ -246,11 +245,10 @@ void raminit(struct romstage_params *params)
 
 	/* Locate the memory configuration data to speed up the next reboot */
 	mrc_hob = get_next_guid_hob(&mrc_guid, hob_list_ptr);
-	if (mrc_hob == NULL)
+	if (mrc_hob == NULL) {
 		printk(BIOS_DEBUG,
 			"Memory Configuration Data Hob not present\n");
-	else if (!vboot_recovery_mode_enabled()) {
-		/* Do not save MRC data in recovery path */
+	} else {
 		params->data_to_save = GET_GUID_HOB_DATA(mrc_hob);
 		params->data_to_save_size = ALIGN_UP(
 			((u32)GET_HOB_LENGTH(mrc_hob)), 16);

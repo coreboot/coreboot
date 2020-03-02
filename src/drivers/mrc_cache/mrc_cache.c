@@ -95,7 +95,7 @@ static const struct cache_region *lookup_region_type(int type)
 	int i;
 	int flags;
 
-	if (vboot_recovery_mode_enabled())
+	if (CONFIG(VBOOT_STARTS_IN_BOOTBLOCK) && vboot_recovery_mode_enabled())
 		flags = RECOVERY_FLAG;
 	else
 		flags = NORMAL_FLAG;

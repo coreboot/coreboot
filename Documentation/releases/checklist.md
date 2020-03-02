@@ -68,6 +68,7 @@ be more frequent than was needed, so we scaled it back to twice a year.
 - [ ] Test the commit selected for release.
 - [ ] Update release notes with actual commit id, push to repo.
 - [ ] Run release script.
+- [ ] Run vboot_list script.
 - [ ] Test the release from the actual release tarballs.
 - [ ] Push signed Tag to repo.
 - [ ] Announce that the release tag is done on IRC.

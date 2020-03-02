@@ -1,0 +1,223 @@
+# VBOOT enabled devices
+
+## Emulation
+- QEMU x86 i440fx/piix4 (aka qemu -M pc)
+- QEMU x86 q35/ich9 (aka qemu -M q35, since v1.4)
+
+## Facebook
+- Facebook Monolith
+
+## Google
+- Auron_Paine (Acer C740 Chromebook)
+- Auron_Yuna (Acer Chromebook 15 (C910/CB5-531))
+- Buddy (Acer Chromebase 24)
+- Gandof (Toshiba Chromebook 2 (2015))
+- Lulu (Dell Chromebook 13 7310)
+- Samus (Google Chromebook Pixel (2015))
+- Mccloud (Acer Chromebox CXI)
+- Monroe (LG Chromebase 22CV241 & 22CB25S)
+- Panther (ASUS Chromebox CN60)
+- Tricky (Dell Chromebox 3010)
+- Zako (HP Chromebox G1)
+- Butterfly (HP Pavilion Chromebook 14)
+- Cheza
+- Banon (Acer Chromebook 15 (CB3-532))
+- Celes (Samsung Chromebook 3)
+- Cyan (Acer Chromebook R11 (C738T))
+- Edgar (Acer Chromebook 14 (CB3-431))
+- Kefka (Dell Chromebook 11 3180/3189)
+- Reks (Lenovo N22/N42 Chromebook)
+- Relm
+- Setzer (HP Chromebook 11 G5)
+- Terra (ASUS Chromebook C202SA/C300SA/C301SA)
+- Ultima (Lenovo Yoga 11e G3)
+- Wizpig
+- Daisy (Samsung Chromebook (2012))
+- DragonEgg
+- Drallion
+- Eve (Google Pixelbook)
+- Fizz
+- Karma
+- Endeavour
+- Foster
+- Gale (Google WiFi)
+- Asuka (Dell Chromebook 13 3380)
+- Caroline (Samsung Chromebook Pro)
+- Cave (Asus Chromebook Flip C302SA)
+- Chell (HP Chromebook 13 G1)
+- Glados Skylake Reference Board
+- Lars (Acer Chromebook 14 for Work (CP5-471))
+- Sentry (Lenovo Thinkpad 13 Chromebook)
+- Kevin (Samsung Chromebook Plus)
+- Gru
+- Bob (Asus Chromebook Flip C101PA)
+- Scarlet
+- Nefario
+- Rainier
+- Akemi
+- Dratini
+- Hatch
+- Jinlon
+- Kohaku
+- Kindred
+- Helios
+- Mushu
+- Palkia
+- Nightfury
+- Puff
+- Helios_Diskswap
+- Stryke
+- Guado (ASUS Chromebox CN62)
+- Jecht
+- Rikku (Acer Chromebox CXI2)
+- Tidus (Lenovo ThinkCentre Chromebox)
+- Aleena
+- Careena
+- Grunt
+- Liara
+- Nuwani
+- Treeya
+- Kukui
+- Krane
+- Kodama
+- Kakadu
+- Flapjack
+- Jacuzzi
+- Juniper
+- Kappa
+- Damu
+- Link (Google Chromebook Pixel (2013))
+- Mistral
+- Nyan
+- Nyan Big (Acer Chromebook 13 (CB5-311))
+- Nyan Blaze (HP Chromebook 14 G3)
+- Oak
+- Elm (Acer Chromebook R13)
+- Hana (Lenovo N23 Yoga Chromebook)
+- Parrot (Acer C7/C710 Chromebook)
+- Peach Pit (Samsung Chromebook 2 11\")
+- Atlas
+- Poppy
+- Nami
+- Nautilus
+- Nocturne
+- Rammus
+- Soraka
+- Banjo (Acer Chromebook 15 (CB3-531))
+- Candy (Dell Chromebook 11 3120)
+- Clapper (Lenovo N20 Chromebook)
+- Enguarde
+- Glimmer (Lenovo ThinkPad 11e Chromebook)
+- Gnawty (Acer Chromebook 11 (CB3-111/131,C730/C730E/C735))
+- Heli (Haier Chromebook G2)
+- Kip (HP Chromebook 11 G3 / G4 / G4 EE)
+- Ninja (AOpen Chromebox Commercial)
+- Orco (Lenovo 100S Chromebook)
+- Quawks (ASUS Chromebook C300)
+- Squawks (ASUS Chromebook C200)
+- Rambi
+- Sumo (AOpen Chromebase Commercial)
+- Swanky (Toshiba Chromebook 2)
+- Winky (Samsung Chromebook 2 (XE500C12))
+- Reef/Electro (Acer Chromebook Spin 11 R751T)
+- Pyro (Lenovo Thinkpad (Yoga) 11e Chromebook)
+- Sand (Acer Chromebook 15 CB515-1HT/1H)
+- Snappy (HP Chromebook x360 11 G1 EE)
+- Nasher
+- Coral
+- Arcada
+- Sarien
+- Falco (HP Chromebook 14)
+- Leon (Toshiba Chromebook)
+- Peppy (Acer C720/C720P Chromebook)
+- Wolf (Dell Chromebook 11)
+- Smaug (Google Pixel C)
+- Storm (OnHub Router TGR1900)
+- Stout (Lenovo Thinkpad X131e Chromebook)
+- Trogdor
+- Veyron_Jaq (Haier Chromebook 11)
+- Veyron_Jerry (Hisense Chromebook 11)
+- Veyron_Mighty (Haier Chromebook 11(edu))
+- Veyron_Minnie (ASUS Chromebook Flip C100)
+- Veyron_Speedy (ASUS C201 Chromebook)
+- Veyron_Mickey (Asus Chromebit CS10)
+- Veyron_Rialto
+
+## HP
+- Z220 SFF Workstation
+
+## Intel
+- Basking Ridge CRB
+- Cannonlake U LPDDR4 RVP
+- Cannonlake Y LPDDR4 RVP
+- Coffeelake U SO-DIMM DDR4 RVP
+- Coffeelake H SO-DIMM DDR4 RVP11
+- Whiskeylake U DDR4 RVP
+- Coffeelake S U-DIMM DDR4 RVP8
+- Cometlake U DDR4 RVP
+- Emerald Lake 2 CRB
+- Galileo
+- Glkrvp
+- Icelake U DDR4/LPDDR4 RVP
+- Icelake Y LPDDR4 RVP
+- Jasperlake DDR4/LPDDR4 RVP
+- Jasperlake DDR4/LPDDR4 RVP with Chrome EC
+- Kabylake LPDDR3 RVP3
+- Kabylake DDR3L RVP7
+- Kabylake DDR4 RVP8
+- Kabylake DDR4 RVP11
+- Kunimitsu
+- Strago
+- Tigerlake UP3 RVP
+- Tigerlake UP4 RVP
+- Whitetip Mountain 2 CRB
+
+## Lenovo
+- ThinkPad T400
+- ThinkPad T500
+- ThinkPad R400
+- ThinkPad R500
+- ThinkPad W500
+- ThinkPad T410
+- ThinkPad T420
+- ThinkPad T420s
+- ThinkPad T430
+- ThinkPad T430s
+- ThinkPad T431s
+- ThinkPad T440p
+- ThinkPad T520
+- ThinkPad W520
+- ThinkPad T530
+- ThinkPad W530
+- ThinkPad X131e
+- ThinkPad X1 carbon gen 1
+- ThinkPad X200 / X200s / X200t
+- ThinkPad X301
+- ThinkPad X201 / X201i / X201s / X201t
+- ThinkPad X220
+- ThinkPad X220i
+- ThinkPad X1
+- ThinkPad X230
+- ThinkPad X230t
+
+## OpenCellular
+- Elgon (GBCv2)
+
+## SAMSUNG
+- Lumpy
+- Stumpy
+
+## Siemens
+- MC APL1
+- MC APL2
+- MC APL3
+- MC APL4
+- MC APL5
+- MC APL6
+
+## Supermicro
+- X11SSH-TF
+- X11SSM-F
+
+## UP
+- Squared

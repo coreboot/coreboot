@@ -22,9 +22,6 @@ config BOARD_GOOGLE_BASEBOARD_DRALLION
 	select SYSTEM_TYPE_LAPTOP
 	select TPM2
 	select MAINBOARD_USES_IFD_EC_REGION
-	select USE_SAR
-	select SAR_ENABLE
-	select DSAR_ENABLE
 
 if BOARD_GOOGLE_BASEBOARD_DRALLION
 
@@ -35,6 +32,14 @@ config CHROMEOS
 	select GBB_FLAG_FORCE_DEV_BOOT_USB
 	select GBB_FLAG_FORCE_DEV_BOOT_LEGACY
 	select GBB_FLAG_DISABLE_EC_SOFTWARE_SYNC
+
+config CHROMEOS_WIFI_SAR
+	bool "Enable SAR options for Chrome OS build"
+	depends on CHROMEOS
+	select DSAR_ENABLE
+	select SAR_ENABLE
+	select USE_SAR
+	select WIFI_SAR_CBFS
 
 config DIMM_MAX
 	int

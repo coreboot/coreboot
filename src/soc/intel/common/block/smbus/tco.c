@@ -74,13 +74,13 @@ uint32_t tco_reset_status(void)
 	uint16_t tco1_sts;
 	uint16_t tco2_sts;
 
-	/* TCO Status 2 register */
-	tco2_sts = tco_read_reg(TCO2_STS);
-	tco2_sts |= TCO_STS_SECOND_TO;
-	tco_write_reg(TCO2_STS, tco2_sts);
-
 	/* TCO Status 1 register */
 	tco1_sts = tco_read_reg(TCO1_STS);
+	tco_write_reg(TCO1_STS, tco1_sts);
+
+	/* TCO Status 2 register */
+	tco2_sts = tco_read_reg(TCO2_STS);
+	tco_write_reg(TCO2_STS, tco2_sts | TCO_STS_SECOND_TO);
 
 	return (tco2_sts << 16) | tco1_sts;
 }

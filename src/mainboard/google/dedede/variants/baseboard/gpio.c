@@ -55,7 +55,7 @@ static const struct pad_config gpio_table[] = {
 	/* B2  : PROCHOT_ODL */
 	PAD_NC(GPP_B2, NONE),
 	/* B3  : TRACKPAD_INT_ODL */
-	PAD_NC(GPP_B3, NONE),
+	PAD_CFG_GPI_IRQ_WAKE(GPP_B3, NONE, PLTRST, LEVEL, INVERT),
 	/* B4  : H1_PCH_INT_ODL */
 	PAD_CFG_GPI_APIC(GPP_B4, NONE, PLTRST, LEVEL, INVERT),
 	/* B5  : PCIE_CLKREQ0_N */

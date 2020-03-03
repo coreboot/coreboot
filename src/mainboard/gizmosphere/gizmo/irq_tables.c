@@ -97,7 +97,7 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 		pirq->checksum = sum;
 	}
 
-	printk(BIOS_INFO, "write_pirq_routing_table done.\n");
+	printk(BIOS_INFO, "%s done.\n", __func__);
 
 	return (unsigned long)pirq_info;
 

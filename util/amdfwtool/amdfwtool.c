@@ -364,11 +364,33 @@ static amd_bios_entry amd_bios_table[] = {
 	{ .type = AMD_BIOS_APCB, .inst = 2, .level = BDT_BOTH },
 	{ .type = AMD_BIOS_APCB, .inst = 3, .level = BDT_BOTH },
 	{ .type = AMD_BIOS_APCB, .inst = 4, .level = BDT_BOTH },
+	{ .type = AMD_BIOS_APCB, .inst = 5, .level = BDT_BOTH },
+	{ .type = AMD_BIOS_APCB, .inst = 6, .level = BDT_BOTH },
+	{ .type = AMD_BIOS_APCB, .inst = 7, .level = BDT_BOTH },
+	{ .type = AMD_BIOS_APCB, .inst = 8, .level = BDT_BOTH },
+	{ .type = AMD_BIOS_APCB, .inst = 9, .level = BDT_BOTH },
+	{ .type = AMD_BIOS_APCB, .inst = 10, .level = BDT_BOTH },
+	{ .type = AMD_BIOS_APCB, .inst = 11, .level = BDT_BOTH },
+	{ .type = AMD_BIOS_APCB, .inst = 12, .level = BDT_BOTH },
+	{ .type = AMD_BIOS_APCB, .inst = 13, .level = BDT_BOTH },
+	{ .type = AMD_BIOS_APCB, .inst = 14, .level = BDT_BOTH },
+	{ .type = AMD_BIOS_APCB, .inst = 15, .level = BDT_BOTH },
 	{ .type = AMD_BIOS_APCB_BK, .inst = 0, .level = BDT_BOTH },
 	{ .type = AMD_BIOS_APCB_BK, .inst = 1, .level = BDT_BOTH },
 	{ .type = AMD_BIOS_APCB_BK, .inst = 2, .level = BDT_BOTH },
 	{ .type = AMD_BIOS_APCB_BK, .inst = 3, .level = BDT_BOTH },
 	{ .type = AMD_BIOS_APCB_BK, .inst = 4, .level = BDT_BOTH },
+	{ .type = AMD_BIOS_APCB_BK, .inst = 5, .level = BDT_BOTH },
+	{ .type = AMD_BIOS_APCB_BK, .inst = 6, .level = BDT_BOTH },
+	{ .type = AMD_BIOS_APCB_BK, .inst = 7, .level = BDT_BOTH },
+	{ .type = AMD_BIOS_APCB_BK, .inst = 8, .level = BDT_BOTH },
+	{ .type = AMD_BIOS_APCB_BK, .inst = 9, .level = BDT_BOTH },
+	{ .type = AMD_BIOS_APCB_BK, .inst = 10, .level = BDT_BOTH },
+	{ .type = AMD_BIOS_APCB_BK, .inst = 11, .level = BDT_BOTH },
+	{ .type = AMD_BIOS_APCB_BK, .inst = 12, .level = BDT_BOTH },
+	{ .type = AMD_BIOS_APCB_BK, .inst = 13, .level = BDT_BOTH },
+	{ .type = AMD_BIOS_APCB_BK, .inst = 14, .level = BDT_BOTH },
+	{ .type = AMD_BIOS_APCB_BK, .inst = 15, .level = BDT_BOTH },
 	{ .type = AMD_BIOS_APOB, .level = BDT_BOTH },
 	{ .type = AMD_BIOS_BIN,
 			.reset = 1, .copy = 1, .zlib = 1, .level = BDT_BOTH },
@@ -470,7 +492,7 @@ typedef struct _bios_directory_table {
 	bios_directory_entry entries[];
 } bios_directory_table;
 
-#define MAX_BIOS_ENTRIES 0x1f
+#define MAX_BIOS_ENTRIES 0x22
 
 typedef struct _context {
 	char *rom;		/* target buffer, size of flash device */
@@ -1004,7 +1026,8 @@ static void integrate_bios_firmwares(context *ctx,
 	}
 
 	if (count > MAX_BIOS_ENTRIES) {
-		printf("Error: BIOS entries exceeds max allowed items\n");
+		printf("Error: BIOS entries (%d) exceeds max allowed items "
+			"(%d)\n", count, MAX_BIOS_ENTRIES);
 		free(ctx->rom);
 		exit(1);
 	}

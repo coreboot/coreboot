@@ -19,6 +19,7 @@
 #include <device/pci.h>
 #include <device/pci_def.h>
 #include <intelblocks/pcr.h>
+#include <intelblocks/pmclib.h>
 #include <intelblocks/tco.h>
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>
@@ -96,6 +97,18 @@ static void tco_timer_disable(void)
 	tco_write_reg(TCO1_CNT, tcocnt);
 }
 
+/* Enable and initialize TCO intruder SMI */
+static void tco_intruder_smi_enable(void)
+{
+	uint16_t tcocnt;
+
+	/* Make TCO issue an SMI on INTRD_DET assertion */
+	tcocnt = tco_read_reg(TCO2_CNT);
+	tcocnt &= ~TCO_INTRD_SEL_MASK;
+	tcocnt |= TCO_INTRD_SEL_SMI;
+	tco_write_reg(TCO2_CNT, tcocnt);
+}
+
 /* Enable TCO BAR using SMBUS TCO base to access TCO related register */
 static void tco_enable_bar(void)
 {
@@ -137,4 +150,8 @@ void tco_configure(void)
 		tco_enable_bar();
 
 	tco_timer_disable();
+
+	/* Enable intruder interrupt if TCO interrupts are enabled*/
+	if (CONFIG(SOC_INTEL_COMMON_BLOCK_SMM_TCO_ENABLE))
+		tco_intruder_smi_enable();
 }

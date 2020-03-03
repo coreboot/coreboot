@@ -37,6 +37,9 @@ chip soc/intel/tigerlake
 	register "PcieRpEnable[8]" = "1"
 	register "PcieRpEnable[10]" = "1"
 
+	# Hybrid storage mode
+	register "HybridStorageMode" = "1"
+
 	register "PcieClkSrcClkReq[1]" = "1"
 	register "PcieClkSrcClkReq[2]" = "2"
 	register "PcieClkSrcClkReq[3]" = "3"

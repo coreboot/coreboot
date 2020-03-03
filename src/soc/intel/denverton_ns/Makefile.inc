@@ -92,4 +92,6 @@ $(call strip_quotes,$(CONFIG_FSP_T_CBFS))-options := -b $(CONFIG_FSP_T_ADDR) --x
 $(call strip_quotes,$(CONFIG_FSP_M_CBFS))-options := -b $(CONFIG_FSP_M_ADDR) --xip
 $(call strip_quotes,$(CONFIG_FSP_S_CBFS))-options := -b $(CONFIG_FSP_S_ADDR) --xip
 
+cpu_microcode_bins += 3rdparty/intel-microcode/intel-ucode/06-5f-01
+
 endif ## CONFIG_SOC_INTEL_DENVERTON_NS

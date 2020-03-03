@@ -132,8 +132,8 @@
  *  - on writes to GBL_RLS (bios commands)
  *  - on eSPI events (does nothing on LPC systems)
  * No SMIs:
+ *  - on TCO events, unless enabled in common code
  *  - on microcontroller writes (io 0x62/0x66)
- *  - on TCO events
  */
 #define ENABLE_SMI_PARAMS \
 	(APMC_EN | SLP_SMI_EN | GBL_SMI_EN | ESPI_SMI_EN | EOS)

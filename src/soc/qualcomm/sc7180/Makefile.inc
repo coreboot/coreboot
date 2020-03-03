@@ -59,6 +59,8 @@ ramstage-y += usb.c
 ramstage-y += qupv3_config.c
 ramstage-y += qcom_qup_se.c
 ramstage-$(CONFIG_DRIVERS_UART) += qupv3_uart.c
+ramstage-$(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT) += display/dsi_phy_pll.c
+ramstage-$(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT) += display/dsi_phy.c
 
 ################################################################################
 

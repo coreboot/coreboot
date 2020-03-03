@@ -91,7 +91,7 @@ static int dbgp_wait_until_complete(struct ehci_dbg_port *ehci_debug)
 	} while (++loop < DBGP_MICROFRAME_TIMEOUT_LOOPS);
 
 	if (! (ctrl & DBGP_DONE)) {
-		dprintk(BIOS_ERR, "dbgp_wait_until_complete: retry timeout.\n");
+		dprintk(BIOS_ERR, "%s: retry timeout.\n", __func__);
 		return -DBGP_ERR_SIGNAL;
 	}
 

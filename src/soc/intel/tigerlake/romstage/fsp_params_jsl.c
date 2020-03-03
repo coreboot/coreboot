@@ -95,7 +95,11 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 	m_cfg->DdiPortCDdc = config->DdiPortCDdc;
 
 	/* Audio */
-	m_cfg->PchHdaEnable = pcidev_path_on_root(PCH_DEVFN_HDA) ? dev->enabled : 0;
+	dev = pcidev_path_on_root(PCH_DEVFN_HDA);
+	if (!dev)
+		m_cfg->PchHdaEnable = 0;
+	else
+		m_cfg->PchHdaEnable = dev->enabled;
 
 	m_cfg->PchHdaDspEnable = config->PchHdaDspEnable;
 	m_cfg->PchHdaAudioLinkHdaEnable = config->PchHdaAudioLinkHdaEnable;

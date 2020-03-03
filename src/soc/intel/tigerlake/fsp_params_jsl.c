@@ -158,9 +158,14 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 
 	/* Enable xDCI controller if enabled in devicetree and allowed */
 	dev = pcidev_path_on_root(PCH_DEVFN_USBOTG);
-	if (!dev || !xdci_can_enable())
-		dev->enabled = 0;
-	params->XdciEnable = dev->enabled;
+	if (dev) {
+		if (!xdci_can_enable())
+			dev->enabled = 0;
+
+		params->XdciEnable = dev->enabled;
+	} else {
+		params->XdciEnable = 0;
+	}
 
 	/* Provide correct UART number for FSP debug logs */
 	params->SerialIoDebugUartNumber = CONFIG_UART_FOR_CONSOLE;

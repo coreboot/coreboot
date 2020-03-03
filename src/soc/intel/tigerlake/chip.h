@@ -266,6 +266,11 @@ struct soc_intel_tigerlake_config {
 	uint8_t DdiPort2Ddc;
 	uint8_t DdiPort3Ddc;
 	uint8_t DdiPort4Ddc;
+
+	/* Hybrid storage mode enable (1) / disable (0)
+	 * This mode makes FSP detect Optane and NVME and set PCIe lane mode
+	 * accordingly */
+	uint8_t HybridStorageMode;
 };
 
 typedef struct soc_intel_tigerlake_config config_t;

@@ -157,6 +157,9 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	params->Enable8254ClockGating = !CONFIG_USE_LEGACY_8254_TIMER;
 	params->Enable8254ClockGatingOnS3 = !CONFIG_USE_LEGACY_8254_TIMER;
 
+	/* Enable Hybrid storage auto detection */
+	params->HybridStorageMode = config->HybridStorageMode;
+
 	mainboard_silicon_init_params(params);
 }
 

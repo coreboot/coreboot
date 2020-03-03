@@ -28,6 +28,7 @@
 #include <intelblocks/fast_spi.h>
 #include <intelblocks/pmclib.h>
 #include <intelblocks/smihandler.h>
+#include <intelblocks/tco.h>
 #include <intelblocks/uart.h>
 #include <smmstore.h>
 #include <soc/nvs.h>
@@ -452,6 +453,14 @@ void smihandler_southbridge_tco(
 	if (tco_sts & TCO_TIMEOUT) { /* TIMEOUT */
 		/* Handle TCO timeout */
 		printk(BIOS_DEBUG, "TCO Timeout.\n");
+	}
+
+	if (tco_sts & (TCO_INTRD_DET << 16)) { /* INTRUDER# assertion */
+		/*
+		 * Handle intrusion event
+		 * If we ever get here, probably the case has been opened.
+		 */
+		printk(BIOS_CRIT, "Case intrusion detected.\n");
 	}
 }
 

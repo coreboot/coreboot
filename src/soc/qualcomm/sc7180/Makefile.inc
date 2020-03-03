@@ -62,6 +62,7 @@ ramstage-$(CONFIG_DRIVERS_UART) += qupv3_uart.c
 ramstage-$(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT) += display/dsi_phy_pll.c
 ramstage-$(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT) += display/dsi_phy.c
 ramstage-$(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT) += display/dsi.c
+ramstage-$(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT) += display/mdss.c
 
 ################################################################################
 

@@ -68,6 +68,8 @@ CPPFLAGS_common += -I$(call strip_quotes,$(CONFIG_FSP_HEADER_PATH))
 
 CPPFLAGS_common += -I3rdparty/blobs/mainboard/$(MAINBOARDDIR)
 
+cpu_microcode_bins += $(wildcard 3rdparty/intel-microcode/intel-ucode/06-4c-*)
+
 ifneq ($(CONFIG_VGA_BIOS_FILE),)
 #we will assume that the vbios names will remain as they are now: vgabios.bin and vgabios_c0.bin
 BRASWELL_C0_VBIOS= $(subst .bin,_c0.bin,$(call strip_quotes,$(CONFIG_VGA_BIOS_FILE)))

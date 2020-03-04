@@ -18,6 +18,16 @@
 #include <device/device.h>
 #include <soc/gpio.h>
 #include <vendorcode/google/chromeos/chromeos.h>
+#include <smbios.h>
+
+const char *smbios_system_sku(void)
+{
+	static char sku_str[7] = ""; /* sku{0..255} */
+	uint32_t sku_id = 255;
+
+	snprintf(sku_str, sizeof(sku_str), "sku%u", sku_id);
+	return sku_str;
+}
 
 static void mainboard_init(void *chip_info)
 {

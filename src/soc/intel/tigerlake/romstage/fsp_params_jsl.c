@@ -69,8 +69,18 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 
 	/* Set CPU Ratio */
 	m_cfg->CpuRatio = 0;
+
+	/* Set debug interface flags */
 	m_cfg->PcdDebugInterfaceFlags = CONFIG(DRIVERS_UART_8250IO) ?
-			DEBUG_INTERFACE_UART : DEBUG_INTERFACE_TRACEHUB;
+			DEBUG_INTERFACE_UART : DEBUG_INTERFACE_SERIAL_IO;
+
+	/* TraceHub configuration */
+	dev = pcidev_path_on_root(PCH_DEVFN_TRACEHUB);
+	if (dev && dev->enabled && config->TraceHubMode) {
+		m_cfg->PcdDebugInterfaceFlags |= DEBUG_INTERFACE_TRACEHUB;
+		m_cfg->PchTraceHubMode = config->TraceHubMode;
+		m_cfg->CpuTraceHubMode = config->TraceHubMode;
+	}
 
 	/* Change VmxEnable UPD value according to ENABLE_VMX Kconfig */
 	m_cfg->VmxEnable = CONFIG(ENABLE_VMX);

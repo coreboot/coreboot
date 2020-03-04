@@ -193,6 +193,12 @@ struct soc_intel_tigerlake_config {
 	 */
 	uint8_t SerialIoGSpiCsState[CONFIG_SOC_INTEL_COMMON_BLOCK_GSPI_MAX];
 
+	/*
+	 * TraceHubMode config
+	 * 0: Disable, 1: Target Debugger Mode, 2: Host Debugger Mode
+	 */
+	uint8_t TraceHubMode;
+
 	/* Debug interface selection */
 	enum {
 		DEBUG_INTERFACE_RAM = (1 << 0),

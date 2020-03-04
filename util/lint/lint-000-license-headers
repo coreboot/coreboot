@@ -111,6 +111,13 @@ check_for_license 'SPDX-License-Identifier: ISC'
 check_for_license 'SPDX-License-Identifier: MIT'
 check_for_license 'SPDX-License-Identifier: X11'
 
+# This is 4 clause ("with advertising") but the University of Berkeley
+# declared that 4th clause void, see
+# ftp://ftp.cs.berkeley.edu/pub/4bsd/README.Impt.License.Change
+# With this, BSD-4-Clause-UC becomes GPLv2 compatible, and so SPDX doesn't
+# differentiate between this license with or without advertising.
+check_for_license 'SPDX-License-Identifier: BSD-4-Clause-UC'
+
 if [ ! "${SPDX_ONLY}" = "1" ]; then
 check_for_license "under the terms of the GNU General Public License" \
 		"WITHOUT ANY WARRANTY"

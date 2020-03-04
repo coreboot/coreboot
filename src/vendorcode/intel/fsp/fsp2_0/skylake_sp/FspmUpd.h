@@ -45,6 +45,51 @@ are permitted provided that the following conditions are met:
 #define MAX_CHANNEL               6     /* Maximum Number of Memory Channels    */
 #define MAX_DIMM                  2     /* Maximum Number of DIMMs per Channel  */
 
+#define HIDE                      1
+#define NOT_HIDE                  0
+
+#define IIO_BIFURCATE_AUTO      0xFF
+
+/* Ports 1D-1A, 2D-2A, 3D-3A */
+#define IIO_BIFURCATE_x4x4x4x4  0
+#define IIO_BIFURCATE_x4x4xxx8  1
+#define IIO_BIFURCATE_xxx8x4x4  2
+#define IIO_BIFURCATE_xxx8xxx8  3
+#define IIO_BIFURCATE_xxxxxx16  4
+#define IIO_BIFURCATE_xxxxxxxx  0xF
+
+
+typedef enum {
+	IioPortA = 0,
+	IioPortB = 1,
+	IioPortC = 2,
+	IioPortD = 3
+} IIO_PORTS;
+
+/**
+ * Enums and Macro definitions needed for reference RVP and CRB
+ * table declarations
+**/
+typedef enum {
+	Iio_Socket0 = 0,
+	Iio_Socket1,
+	Iio_Socket2,
+	Iio_Socket3,
+	Iio_Socket4,
+	Iio_Socket5,
+	Iio_Socket6,
+	Iio_Socket7
+} IIO_SOCKETS;
+
+typedef enum {
+	Iio_Iou0 = 0,
+	Iio_Iou1,
+	Iio_Iou2,
+	Iio_Mcp0,
+	Iio_Mcp1,
+	Iio_IouMax
+} IIO_IOUS;
+
 /**
  IIO PCIe Ports
  **/

@@ -71,7 +71,7 @@ to_matches="$(git log ${common_base}..${to} | \
 	cut -d: -f2-)"
 
 # start rebase process, but fail immediately by enforcing an invalid todo
-GIT_SEQUENCE_EDITOR="echo foo >" \
+GIT_SEQUENCE_EDITOR="echo Ignore this error, it's intentional>" \
 	git rebase -i --onto ${to} ${from} ${to} 2>/dev/null
 
 # write new rebase todo

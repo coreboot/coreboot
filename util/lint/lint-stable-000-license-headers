@@ -8,9 +8,10 @@
 util/lint/lint-000-license-headers "src/acpi" SPDX_ONLY
 util/lint/lint-000-license-headers "src/superio" SPDX_ONLY
 util/lint/lint-000-license-headers "src/arch/arm" SPDX_ONLY
+util/lint/lint-000-license-headers "src/arch/arm64" SPDX_ONLY
 
 # Top level
-util/lint/lint-000-license-headers "src/arch/arm64 src/arch/ppc64 \
+util/lint/lint-000-license-headers "src/arch/ppc64 \
 	src/arch/riscv src/arch/x86 src/commonlib src/console \
 	src/cpu src/device src/ec src/mainboard src/northbridge src/soc \
 	src/southbridge"

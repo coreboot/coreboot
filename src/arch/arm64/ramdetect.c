@@ -1,8 +1,5 @@
-/*
- * This file is part of the coreboot project.
- *
- * SPDX-License-Identifier: GPL-2.0-or-later
- */
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+/* This file is part of the coreboot project. */
 
 #include <types.h>
 #include <device/mmio.h>

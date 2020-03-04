@@ -260,6 +260,14 @@ config VBOOT_EARLY_EC_SYNC
 	  significantly impact boot time, as this operation will be performed
 	  later in the boot flow if it is disabled here.
 
+config VBOOT_EC_EFS
+	bool "Early firmware selection (EFS) EC"
+	default n
+	help
+	  CrosEC can support EFS: Early Firmware Selection. If it's enabled,
+	  software sync needs to also support it. This setting tells vboot to
+	  perform EFS software sync.
+
 menu "GBB configuration"
 
 config GBB_HWID

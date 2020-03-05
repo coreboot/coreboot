@@ -102,15 +102,22 @@ static void meminit_channels(FSP_M_CONFIG *mem_cfg, const struct mb_cfg *board_c
 void memcfg_init(FSP_M_CONFIG *mem_cfg, const struct mb_cfg *board_cfg,
 			const struct spd_info *spd_info, bool half_populated)
 {
-	size_t spd_data_len;
-	uintptr_t spd_data_ptr;
 
-	memset(&mem_cfg->SpdAddressTable, 0, sizeof(mem_cfg->SpdAddressTable));
-	get_spd_data(spd_info, &spd_data_ptr, &spd_data_len);
-	print_spd_info((unsigned char *)spd_data_ptr);
+	if (spd_info->read_type == READ_SMBUS) {
+		for (int i = 0; i < NUM_DIMM_SLOT; i++)
+			mem_cfg->SpdAddressTable[i] = spd_info->spd_spec.spd_smbus_address[i];
 
-	mem_cfg->MemorySpdDataLen = spd_data_len;
-	meminit_channels(mem_cfg, board_cfg, spd_data_ptr, half_populated);
+		meminit_dq_dqs_map(mem_cfg, board_cfg, half_populated);
+	} else {
+		uintptr_t spd_data_ptr = 0;
+		size_t spd_data_len = 0;
+		memset(&mem_cfg->SpdAddressTable, 0, sizeof(mem_cfg->SpdAddressTable));
+		get_spd_data(spd_info, &spd_data_ptr, &spd_data_len);
+		print_spd_info((unsigned char *)spd_data_ptr);
+
+		mem_cfg->MemorySpdDataLen = spd_data_len;
+		meminit_channels(mem_cfg, board_cfg, spd_data_ptr, half_populated);
+	}
 
 	/* Early Command Training Enabled */
 	mem_cfg->ECT = board_cfg->ect;

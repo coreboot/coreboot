@@ -27,6 +27,9 @@
 /* Number of DQ byte mappings */
 #define DDR_NUM_BYTE_MAPPINGS 6
 
+/* Number of memory DIMM slots available on Jasper Lake */
+#define NUM_DIMM_SLOT 4
+
 /* 64-bit Channel identification */
 enum {
 	DDR_CH0,
@@ -40,17 +43,21 @@ struct spd_by_pointer {
 };
 
 enum mem_info_read_type {
-	READ_SPD_CBFS,	/* Find spd file in CBFS. */
-	READ_SPD_MEMPTR	/* Find spd data from pointer. */
+	READ_SPD_CBFS,	/* Find SPD file in CBFS. */
+	READ_SMBUS,	/* Read on-module SPD by SMBUS. */
+	READ_SPD_MEMPTR	/* Find SPD data from pointer. */
 };
 
 struct spd_info {
 	enum mem_info_read_type read_type;
 	union spd_data_by {
-		/* To identify spd file when read_type is READ_SPD_CBFS. */
+		/* To read on-module SPD when read_type is READ_SMBUS. */
+		uint8_t spd_smbus_address[NUM_DIMM_SLOT];
+
+		/* To identify SPD file when read_type is READ_SPD_CBFS. */
 		int spd_index;
 
-		/* To find spd data when read_type is READ_SPD_MEMPTR. */
+		/* To find SPD data when read_type is READ_SPD_MEMPTR. */
 		struct spd_by_pointer spd_data_ptr_info;
 	} spd_spec;
 };

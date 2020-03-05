@@ -479,7 +479,7 @@ typedef struct _bios_directory_table {
 	bios_directory_entry entries[];
 } bios_directory_table;
 
-#define MAX_BIOS_ENTRIES 0x22
+#define MAX_BIOS_ENTRIES 0x2e
 
 typedef struct _context {
 	char *rom;		/* target buffer, size of flash device */

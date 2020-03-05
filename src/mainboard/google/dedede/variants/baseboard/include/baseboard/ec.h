@@ -79,4 +79,7 @@
 #define SIO_EC_HOST_ENABLE       /* EC Host Interface Resources */
 #define SIO_EC_ENABLE_PS2K       /* Enable PS/2 Keyboard */
 
+/* Enable EC SYNC IRQ, EC_SYNC_IRQ is defined in baseboard/gpio.h */
+#define EC_ENABLE_SYNC_IRQ
+
 #endif /* __BASEBOARD_EC_H__ */

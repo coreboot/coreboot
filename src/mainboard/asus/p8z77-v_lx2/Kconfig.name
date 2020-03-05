@@ -1,0 +1,2 @@
+config BOARD_ASUS_P8Z77_V_LX2
+	bool "P8Z77-V LX2"

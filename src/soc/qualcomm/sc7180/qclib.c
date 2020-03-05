@@ -11,15 +11,15 @@ int qclib_soc_blob_load(void)
 	size_t size;
 
 	/* Attempt to load PMICCFG Blob */
-	size = cbfs_boot_load_file(CONFIG_CBFS_PREFIX "/pmiccfg",
-			_pmic, REGION_SIZE(pmic), CBFS_TYPE_RAW);
+	size = cbfs_load(CONFIG_CBFS_PREFIX "/pmiccfg",
+			_pmic, REGION_SIZE(pmic));
 	if (!size)
 		return -1;
 	qclib_add_if_table_entry(QCLIB_TE_PMIC_SETTINGS, _pmic, size, 0);
 
 	/* Attempt to load DCB Blob */
-	size = cbfs_boot_load_file(CONFIG_CBFS_PREFIX "/dcb",
-			_dcb, REGION_SIZE(dcb), CBFS_TYPE_RAW);
+	size = cbfs_load(CONFIG_CBFS_PREFIX "/dcb",
+			_dcb, REGION_SIZE(dcb));
 	if (!size)
 		return -1;
 	qclib_add_if_table_entry(QCLIB_TE_DCB_SETTINGS, _dcb, size, 0);

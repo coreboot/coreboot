@@ -30,8 +30,7 @@ static void agesa_locate_image(AMD_CONFIG_PARAMS *StdHeader)
 	const void *agesa, *image;
 	size_t file_size;
 
-	agesa = cbfs_boot_map_with_leak((const char *)CONFIG_AGESA_CBFS_NAME,
-			CBFS_TYPE_RAW, &file_size);
+	agesa = cbfs_map((const char *)CONFIG_AGESA_CBFS_NAME, &file_size);
 	if (agesa == NULL)
 		return;
 

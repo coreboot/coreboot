@@ -126,9 +126,7 @@ const void *intel_microcode_find(void)
 	unsigned int x86_model, x86_family;
 	msr_t msr;
 
-	ucode_updates = cbfs_boot_map_with_leak(MICROCODE_CBFS_FILE,
-						CBFS_TYPE_MICROCODE,
-						&microcode_len);
+	ucode_updates = cbfs_map(MICROCODE_CBFS_FILE, &microcode_len);
 	if (ucode_updates == NULL)
 		return NULL;
 

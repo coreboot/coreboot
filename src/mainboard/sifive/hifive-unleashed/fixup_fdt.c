@@ -72,7 +72,7 @@ static void fixup_fdt(void *unused)
 	struct device_tree *tree;
 
 	/* load flat dt from cbfs */
-	fdt_rom = cbfs_boot_map_with_leak("fallback/DTB", CBFS_TYPE_RAW, NULL);
+	fdt_rom = cbfs_map("fallback/DTB", NULL);
 
 	if (fdt_rom == NULL) {
 		printk(BIOS_ERR, "Unable to load fallback/DTB from CBFS\n");

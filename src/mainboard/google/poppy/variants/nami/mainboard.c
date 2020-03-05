@@ -155,9 +155,8 @@ const char *smbios_mainboard_manufacturer(void)
 	if (oem_id == OEM_UNKNOWN)
 		return CONFIG_MAINBOARD_SMBIOS_MANUFACTURER;
 
-	oem_data_size = cbfs_boot_load_file("oem.bin", oem_bin_data,
-					    sizeof(oem_bin_data),
-					    CBFS_TYPE_RAW);
+	oem_data_size = cbfs_load("oem.bin", oem_bin_data,
+				  sizeof(oem_bin_data));
 
 	while ((curr < oem_data_size) &&
 	       ((oem_data_size - curr) >= sizeof(*oem_entry))) {

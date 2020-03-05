@@ -221,10 +221,9 @@ static void txt_initialize_heap(void)
 	data.bdr.no_logical_procs = dev_count_cpu();
 
 	void *sinit_base = (void *)(uintptr_t)read64((void *)TXT_SINIT_BASE);
-	data.bdr.bios_sinit_size = cbfs_boot_load_file(CONFIG_INTEL_TXT_CBFS_SINIT_ACM,
-						       sinit_base,
-						       read64((void *)TXT_SINIT_SIZE),
-						       CBFS_TYPE_RAW);
+	data.bdr.bios_sinit_size = cbfs_load(CONFIG_INTEL_TXT_CBFS_SINIT_ACM,
+					     sinit_base,
+					     read64((void *)TXT_SINIT_SIZE));
 
 	if (data.bdr.bios_sinit_size) {
 		printk(BIOS_INFO, "TEE-TXT: Placing SINIT ACM in memory.\n");
@@ -277,9 +276,7 @@ static void txt_initialize_heap(void)
 		data.heap_acm.num_acms = 1;
 	}
 	data.heap_acm.acm_addrs[0] =
-		(uintptr_t)cbfs_boot_map_with_leak(CONFIG_INTEL_TXT_CBFS_BIOS_ACM,
-						   CBFS_TYPE_RAW,
-						   NULL);
+		(uintptr_t)cbfs_map(CONFIG_INTEL_TXT_CBFS_BIOS_ACM, NULL);
 	/* Extended elements - End marker */
 	data.end.type = HEAP_EXTDATA_TYPE_END;
 	data.end.size = sizeof(data.end);

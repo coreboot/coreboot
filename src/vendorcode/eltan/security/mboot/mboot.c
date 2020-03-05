@@ -234,7 +234,7 @@ int mb_measure_log_worker(const char *name, uint32_t type, uint32_t pcr,
 	size_t size;
 
 	printk(BIOS_DEBUG, "%s: Measure %s\n", __func__, name);
-	base = cbfs_boot_map_with_leak(name, type, &size);
+	base = cbfs_map(name, &size);
 
 	if (base == NULL) {
 		printk(BIOS_DEBUG, "%s: CBFS locate fail: %s\n", __func__, name);

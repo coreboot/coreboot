@@ -88,7 +88,7 @@ void mainboard_fill_spd_data(struct pei_data *pei_data)
 	       spd_bits[3], spd_gpio[3], spd_bits[2], spd_gpio[2],
 	       spd_bits[1], spd_gpio[1], spd_bits[0], spd_gpio[0]);
 
-	spd_file = cbfs_boot_map_with_leak("spd.bin", 0xab, &spd_file_len);
+	spd_file = cbfs_map("spd.bin", &spd_file_len);
 	if (!spd_file)
 		die("SPD data not found.");
 

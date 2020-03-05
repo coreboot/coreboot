@@ -22,8 +22,7 @@ static void *load_ipq_blob(const char *file_name)
 	void *blob_dest;
 	size_t blob_size;
 
-	blob_mbn = cbfs_boot_map_with_leak(file_name, CBFS_TYPE_RAW,
-						&blob_size);
+	blob_mbn = cbfs_map(file_name, &blob_size);
 	if (!blob_mbn)
 		return NULL;
 

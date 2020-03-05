@@ -385,7 +385,9 @@ static vb2_error_t ec_get_expected_hash(enum vb2_firmware_selection select,
 {
 	size_t size;
 	const char *filename = EC_HASH_FILENAME(select);
-	const uint8_t *file = cbfs_boot_map_with_leak(filename, CBFS_TYPE_RAW, &size);
+
+	/* vboot has no API to return this memory, so must permanently leak a mapping here. */
+	const uint8_t *file = cbfs_map(filename, &size);
 
 	if (file == NULL)
 		return VB2_ERROR_UNKNOWN;

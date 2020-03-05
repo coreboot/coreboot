@@ -28,8 +28,7 @@ void mainboard_get_spd(spd_raw_data *spd, bool id_only)
 {
 	/* C1S0 is a soldered RAM with no real SPD. Use stored SPD. */
 	size_t spd_file_len = 0;
-	void *spd_file = cbfs_boot_map_with_leak("spd.bin", CBFS_TYPE_SPD,
-		&spd_file_len);
+	void *spd_file = cbfs_map("spd.bin", &spd_file_len);
 
 	if (!spd_file || spd_file_len < sizeof(spd_raw_data))
 		die("SPD data for C1S0 not found.");

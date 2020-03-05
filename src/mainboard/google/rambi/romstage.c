@@ -48,8 +48,7 @@ void mainboard_fill_mrc_params(struct mrc_params *mp)
 	void *spd_file;
 	size_t spd_fsize;
 
-	spd_file = cbfs_boot_map_with_leak("spd.bin", CBFS_TYPE_SPD,
-						&spd_fsize);
+	spd_file = cbfs_map("spd.bin", &spd_fsize);
 	if (!spd_file)
 		die("SPD data not found.");
 

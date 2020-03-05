@@ -18,7 +18,7 @@ int legacy_romstage_selector(struct prog *romstage)
 	const char *boot_candidate;
 	size_t stages_len;
 
-	boot_candidate = cbfs_boot_map_with_leak("coreboot-stages", CBFS_TYPE_RAW, &stages_len);
+	boot_candidate = cbfs_map("coreboot-stages", &stages_len);
 	if (!boot_candidate)
 		boot_candidate = default_filenames;
 

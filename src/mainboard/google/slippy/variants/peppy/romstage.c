@@ -24,8 +24,7 @@ void copy_spd(struct pei_data *peid)
 	uint32_t board_version = PEPPY_BOARD_VERSION_PROTO;
 
 	printk(BIOS_DEBUG, "SPD index %d\n", spd_index);
-	spd_file = cbfs_boot_map_with_leak("spd.bin", CBFS_TYPE_SPD,
-						&spd_file_len);
+	spd_file = cbfs_map("spd.bin", &spd_file_len);
 	if (!spd_file)
 		die("SPD data not found.");
 

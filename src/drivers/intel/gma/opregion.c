@@ -34,8 +34,7 @@ void *locate_vbt(size_t *vbt_size)
 
 	const char *filename = mainboard_vbt_filename();
 
-	size_t file_size = cbfs_boot_load_file(filename,
-		vbt_data, sizeof(vbt_data), CBFS_TYPE_RAW);
+	size_t file_size = cbfs_load(filename, vbt_data, sizeof(vbt_data));
 
 	if (file_size == 0)
 		return NULL;

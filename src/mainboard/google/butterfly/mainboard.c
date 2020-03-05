@@ -180,8 +180,7 @@ static void mainboard_init(struct device *dev)
 			}
 		}
 	} else {
-		vpd_file = cbfs_boot_map_with_leak("vpd.bin", CBFS_TYPE_RAW,
-							&search_length);
+		vpd_file = cbfs_map("vpd.bin", &search_length);
 		if (vpd_file) {
 			search_address = (unsigned long)vpd_file;
 		} else {

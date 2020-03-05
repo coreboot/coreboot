@@ -13,10 +13,7 @@ static uint8_t sspm_bin[BUF_SIZE] __aligned(8);
 void sspm_init(void)
 {
 	const char *file_name = "sspm.bin";
-	size_t fw_size = cbfs_boot_load_file(file_name,
-					     sspm_bin,
-					     sizeof(sspm_bin),
-					     CBFS_TYPE_RAW);
+	size_t fw_size = cbfs_load(file_name, sspm_bin, sizeof(sspm_bin));
 
 	if (fw_size == 0)
 		die("SSPM file :sspm.bin not found.");

@@ -43,8 +43,7 @@ const struct sdram_params *get_sdram_config(void)
 	if (ramcode < ARRAY_SIZE(sdram_configs))
 		name = sdram_configs[ramcode];
 
-	if (!name || cbfs_boot_load_file(name, &params, sizeof(params),
-					 CBFS_TYPE_STRUCT) != sizeof(params))
+	if (!name || cbfs_load(name, &params, sizeof(params)) != sizeof(params))
 		die("Cannot load SDRAM parameter file for RAM code %#02x: %s!",
 		    ramcode, name ? name : "unknown");
 

@@ -16,8 +16,7 @@ void set_bootsplash(unsigned char *framebuffer, unsigned int x_resolution,
 	printk(BIOS_INFO, "Setting up bootsplash in %dx%d@%d\n", x_resolution, y_resolution,
 	       fb_resolution);
 	struct jpeg_decdata *decdata;
-	unsigned char *jpeg =
-		cbfs_boot_map_with_leak("bootsplash.jpg", CBFS_TYPE_BOOTSPLASH, NULL);
+	unsigned char *jpeg = cbfs_map("bootsplash.jpg", NULL);
 	if (!jpeg) {
 		printk(BIOS_ERR, "Could not find bootsplash.jpg\n");
 		return;
@@ -31,6 +30,7 @@ void set_bootsplash(unsigned char *framebuffer, unsigned int x_resolution,
 	decdata = malloc(sizeof(*decdata));
 	int ret = jpeg_decode(jpeg, framebuffer, x_resolution, y_resolution, fb_resolution,
 			      decdata);
+	cbfs_unmap(jpeg);
 	if (ret != 0) {
 		printk(BIOS_ERR, "Bootsplash could not be decoded. jpeg_decode returned %d.\n",
 		       ret);

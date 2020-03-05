@@ -334,8 +334,7 @@ static void soc_init_atf(void)
 
 	size_t size = 0;
 
-	void *ptr = cbfs_boot_map_with_leak("sff8104-linux.dtb",
-					    CBFS_TYPE_RAW, &size);
+	void *ptr = cbfs_map("sff8104-linux.dtb", &size);
 	if (ptr)
 		memcpy(_sff8104, ptr, size);
 	/* Point to devicetree in secure memory */

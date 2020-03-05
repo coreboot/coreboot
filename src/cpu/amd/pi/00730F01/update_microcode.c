@@ -115,8 +115,7 @@ void amd_update_microcode_from_cbfs(void)
 	size_t ucode_len;
 	uint16_t equivalent_processor_rev_id = get_equivalent_processor_rev_id();
 
-	ucode = cbfs_boot_map_with_leak("cpu_microcode_blob.bin",
-					CBFS_TYPE_MICROCODE, &ucode_len);
+	ucode = cbfs_map("cpu_microcode_blob.bin", &ucode_len);
 	if (!ucode) {
 		printk(BIOS_WARNING, "cpu_microcode_blob.bin not found. Skipping updates.\n");
 		return;

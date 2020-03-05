@@ -1340,9 +1340,7 @@ unsigned long write_acpi_tables(unsigned long start)
 		return fw;
 	}
 
-	dsdt_file = cbfs_boot_map_with_leak(
-				     CONFIG_CBFS_PREFIX "/dsdt.aml",
-				     CBFS_TYPE_RAW, &dsdt_size);
+	dsdt_file = cbfs_map(CONFIG_CBFS_PREFIX "/dsdt.aml", &dsdt_size);
 	if (!dsdt_file) {
 		printk(BIOS_ERR, "No DSDT file, skipping ACPI tables\n");
 		return current;
@@ -1355,8 +1353,7 @@ unsigned long write_acpi_tables(unsigned long start)
 		return current;
 	}
 
-	slic_file = cbfs_boot_map_with_leak(CONFIG_CBFS_PREFIX "/slic",
-				     CBFS_TYPE_RAW, &slic_size);
+	slic_file = cbfs_map(CONFIG_CBFS_PREFIX "/slic", &slic_size);
 	if (slic_file
 	    && (slic_file->length > slic_size
 		|| slic_file->length < sizeof(acpi_header_t)

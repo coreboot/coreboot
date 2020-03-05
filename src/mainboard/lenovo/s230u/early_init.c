@@ -70,8 +70,7 @@ void mainboard_get_spd(spd_raw_data *spd, bool id_only)
 		spd_index, mainboard_spd_names[spd_index]);
 
 	/* C0S0 is a soldered RAM with no real SPD. Use stored SPD. */
-	spd_file = cbfs_boot_map_with_leak("spd.bin", CBFS_TYPE_SPD,
-		&spd_file_len);
+	spd_file = cbfs_map("spd.bin", &spd_file_len);
 
 	if (!spd_file || spd_file_len < SPD_LEN * spd_index + SPD_LEN)
 		die("SPD data not found.");

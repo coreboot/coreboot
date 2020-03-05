@@ -113,7 +113,7 @@ int mma_locate_param(struct mma_config_param *mma_cfg)
 	printk(BIOS_DEBUG, "MMA: Entry %s\n", __func__);
 
 	if (cbfs_locate_file_in_region(&metadata_fh, MMA_CBFS_REGION,
-				MMA_TEST_METADATA_FILENAME, &mma_type)) {
+				MMA_TEST_METADATA_FILENAME)) {
 		printk(BIOS_DEBUG, "MMA: Failed to locate %s\n",
 				MMA_TEST_METADATA_FILENAME);
 		return -1;
@@ -154,7 +154,7 @@ int mma_locate_param(struct mma_config_param *mma_cfg)
 			test_filename, test_param_filename);
 
 	if (cbfs_locate_file_in_region(&test_content_fh, MMA_CBFS_REGION,
-				test_filename, &efi_type)) {
+				test_filename)) {
 		printk(BIOS_DEBUG, "MMA: Failed to locate %s\n",
 				test_filename);
 		return -1;
@@ -163,7 +163,7 @@ int mma_locate_param(struct mma_config_param *mma_cfg)
 	cbfs_file_data(&mma_cfg->test_content, &test_content_fh);
 
 	if (cbfs_locate_file_in_region(&test_param_fh, MMA_CBFS_REGION,
-				test_param_filename, &mma_type)) {
+				test_param_filename)) {
 		printk(BIOS_DEBUG, "MMA: Failed to locate %s\n",
 				test_param_filename);
 		return -1;

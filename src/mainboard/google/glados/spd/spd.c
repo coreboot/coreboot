@@ -79,8 +79,7 @@ void spd_memory_init_params(FSPM_UPD *mupd, int spd_index)
 	printk(BIOS_INFO, "SPD index %d\n", spd_index);
 
 	/* Load SPD data from CBFS */
-	spd_file = cbfs_boot_map_with_leak("spd.bin", CBFS_TYPE_SPD,
-		&spd_file_len);
+	spd_file = cbfs_map("spd.bin", &spd_file_len);
 	if (!spd_file)
 		die("SPD data not found.");
 

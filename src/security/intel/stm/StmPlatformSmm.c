@@ -35,8 +35,7 @@ int load_stm_image(uintptr_t mseg)
 
 	memset((void *)mseg_base, 0, CONFIG_MSEG_SIZE); // clear the mseg
 
-	stm_image_size = cbfs_boot_load_file("stm.bin", mseg_base,
-					     stm_buffer_size, CBFS_TYPE_RAW);
+	stm_image_size = cbfs_load("stm.bin", mseg_base, stm_buffer_size);
 	printk(BIOS_DEBUG, "STM:loaded into mseg: 0x%p size: %u\n", mseg_base,
 	       stm_image_size);
 	/* status is number of bytes loaded */

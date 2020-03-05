@@ -237,8 +237,7 @@ void sanitize_cmos(void)
 	size_t i;
 
 	if (CONFIG(TPM_MEASURED_BOOT) || cmos_need_reset) {
-		cmos_default = cbfs_boot_map_with_leak("cmos.default",
-			CBFS_COMPONENT_CMOS_DEFAULT, &length);
+		cmos_default = cbfs_map("cmos.default", &length);
 
 		if (!cmos_default || !cmos_need_reset)
 			return;

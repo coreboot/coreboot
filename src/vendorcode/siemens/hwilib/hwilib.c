@@ -469,7 +469,7 @@ enum cb_err hwilib_find_blocks (const char *hwi_filename)
 		return CB_SUCCESS;
 	}
 
-	ptr = cbfs_boot_map_with_leak(hwi_filename, CBFS_TYPE_RAW, &filesize);
+	ptr = cbfs_map(hwi_filename, &filesize);
 	if (!ptr) {
 		printk(BIOS_ERR,"HWILIB: Missing file \"%s\" in cbfs.\n",
 			hwi_filename);

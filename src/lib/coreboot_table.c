@@ -455,8 +455,7 @@ static uintptr_t write_coreboot_table(uintptr_t rom_table_end)
 #if CONFIG(USE_OPTION_TABLE)
 	{
 		struct cmos_option_table *option_table =
-			cbfs_boot_map_with_leak("cmos_layout.bin",
-				CBFS_COMPONENT_CMOS_LAYOUT, NULL);
+			cbfs_map("cmos_layout.bin", NULL);
 		if (option_table) {
 			struct lb_record *rec_dest = lb_new_record(head);
 			/* Copy the option config table, it's already a

@@ -17,8 +17,7 @@ const struct sdram_info *get_sdram_config(void)
 	uint32_t ramcode = ram_code();
 
 	if (ramcode >= ARRAY_SIZE(sdram_configs) ||
-	    cbfs_boot_load_file(sdram_configs[ramcode], &params, sizeof(params),
-				CBFS_TYPE_STRUCT) != sizeof(params))
+	    cbfs_load(sdram_configs[ramcode], &params, sizeof(params)) != sizeof(params))
 		die("Cannot load SDRAM parameter file for RAM code: %#x", ramcode);
 
 	return &params;

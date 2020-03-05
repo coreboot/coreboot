@@ -231,8 +231,7 @@ static int spm_load_firmware(enum dyna_load_pcm_index index,
 
 	stopwatch_init(&sw);
 
-	size_t file_size = cbfs_boot_load_file(file_name, spm_bin,
-					       sizeof(spm_bin), CBFS_TYPE_RAW);
+	size_t file_size = cbfs_load(file_name, spm_bin, sizeof(spm_bin));
 
 	if (file_size == 0) {
 		printk(BIOS_ERR, "SPM binary %s not found\n", file_name);

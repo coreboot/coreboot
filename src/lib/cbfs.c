@@ -70,20 +70,27 @@ int cbfs_boot_locate(struct cbfsf *fh, const char *name, uint32_t *type)
 	return 0;
 }
 
-void *cbfs_boot_map_with_leak(const char *name, uint32_t type, size_t *size)
+void *cbfs_map(const char *name, size_t *size_out)
 {
 	struct cbfsf fh;
 	size_t fsize;
 
-	if (cbfs_boot_locate(&fh, name, &type))
+	if (cbfs_boot_locate(&fh, name, NULL))
 		return NULL;
 
 	fsize = region_device_sz(&fh.data);
 
-	if (size != NULL)
-		*size = fsize;
+	if (size_out != NULL)
+		*size_out = fsize;
 
 	return rdev_mmap(&fh.data, 0, fsize);
+}
+
+int cbfs_unmap(void *mapping)
+{
+	/* This works because munmap() only works on the root rdev and never
+	   cares about which chained subregion something was mapped from. */
+	return rdev_munmap(boot_device_ro(), mapping);
 }
 
 int cbfs_locate_file_in_region(struct cbfsf *fh, const char *region_name,
@@ -262,7 +269,7 @@ void *cbfs_boot_map_optionrom(uint16_t vendor, uint16_t device)
 	tohex16(vendor, name + 3);
 	tohex16(device, name + 8);
 
-	return cbfs_boot_map_with_leak(name, CBFS_TYPE_OPTIONROM, NULL);
+	return cbfs_map(name, NULL);
 }
 
 void *cbfs_boot_map_optionrom_revision(uint16_t vendor, uint16_t device, uint8_t rev)
@@ -273,17 +280,16 @@ void *cbfs_boot_map_optionrom_revision(uint16_t vendor, uint16_t device, uint8_t
 	tohex16(device, name + 8);
 	tohex8(rev, name + 13);
 
-	return cbfs_boot_map_with_leak(name, CBFS_TYPE_OPTIONROM, NULL);
+	return cbfs_map(name, NULL);
 }
 
-size_t cbfs_boot_load_file(const char *name, void *buf, size_t buf_size,
-			   uint32_t type)
+size_t cbfs_load(const char *name, void *buf, size_t buf_size)
 {
 	struct cbfsf fh;
 	uint32_t compression_algo;
 	size_t decompressed_size;
 
-	if (cbfs_boot_locate(&fh, name, &type) < 0)
+	if (cbfs_boot_locate(&fh, name, NULL) < 0)
 		return 0;
 
 	if (cbfsf_decompression_info(&fh, &compression_algo,

@@ -129,9 +129,7 @@ static void program_mac_address(u16 io_base)
 				search_length = region_device_sz(&rdev);
 		}
 	} else {
-		search_address = cbfs_boot_map_with_leak("vpd.bin",
-							CBFS_TYPE_RAW,
-							&search_length);
+		search_address = cbfs_map("vpd.bin", &search_length);
 	}
 
 	if (search_address == NULL)

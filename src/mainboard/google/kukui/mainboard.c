@@ -112,8 +112,7 @@ struct panel_description *get_panel_from_cbfs(struct panel_description *desc)
 		return NULL;
 
 	snprintf(cbfs_name, sizeof(cbfs_name), "panel-%s", desc->name);
-	if (cbfs_boot_load_file(cbfs_name, buffer.raw, sizeof(buffer),
-				CBFS_TYPE_STRUCT))
+	if (cbfs_load(cbfs_name, buffer.raw, sizeof(buffer)))
 		desc->s = &buffer.s;
 	else
 		printk(BIOS_ERR, "Missing %s in CBFS.\n", cbfs_name);

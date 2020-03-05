@@ -442,8 +442,7 @@ void sch5545_update_ec_firmware(uint16_t ec_version)
 	uint32_t *ec_fw_file;
 	size_t ec_fw_file_size;
 
-	ec_fw_file = cbfs_boot_map_with_leak("sch5545_ecfw.bin", CBFS_TYPE_RAW,
-					     &ec_fw_file_size);
+	ec_fw_file = cbfs_map("sch5545_ecfw.bin", &ec_fw_file_size);
 
 	if (!ec_fw_file || ec_fw_file_size != 0x1750) {
 		printk(BIOS_ERR, "EC firmware file not found in CBFS!\n");

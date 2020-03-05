@@ -149,6 +149,10 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	else
 		params->PchLanEnable = dev->enabled;
 
+	/* CNVi */
+	params->CnviMode = config->CnviMode;
+	params->CnviBtCore = config->CnviBtCore;
+
 	/* Legacy 8254 timer support */
 	params->Enable8254ClockGating = !CONFIG_USE_LEGACY_8254_TIMER;
 	params->Enable8254ClockGatingOnS3 = !CONFIG_USE_LEGACY_8254_TIMER;

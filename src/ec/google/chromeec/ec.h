@@ -350,9 +350,4 @@ const char *google_chromeec_acpi_name(const struct device *dev);
 
 #endif /* HAVE_ACPI_TABLES */
 
-/*
- * Allows bus-specific EC code to perform actions when the device is enabled.
- */
-void google_ec_enable_extra(struct device *dev);
-
 #endif /* _EC_GOOGLE_CHROMEEC_EC_H */

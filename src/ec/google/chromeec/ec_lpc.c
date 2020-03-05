@@ -451,17 +451,26 @@ static struct device_operations ops = {
 	.init             = lpc_ec_init,
 	.read_resources   = lpc_ec_read_resources,
 	.enable_resources = DEVICE_NOOP,
-	.set_resources    = DEVICE_NOOP
+	.set_resources    = DEVICE_NOOP,
+#if CONFIG(HAVE_ACPI_TABLES)
+	.acpi_name			= google_chromeec_acpi_name,
+	.acpi_fill_ssdt_generator	= google_chromeec_fill_ssdt_generator,
+#endif
 };
 
 static struct pnp_info pnp_dev_info[] = {
 	{ NULL, 0, 0, 0, }
 };
 
-void google_ec_enable_extra(struct device *dev)
+static void enable_dev(struct device *dev)
 {
 	pnp_enable_devices(dev, &ops, ARRAY_SIZE(pnp_dev_info), pnp_dev_info);
 }
+
+struct chip_operations ec_google_chromeec_ops = {
+	CHIP_NAME("Google Chrome EC")
+	.enable_dev = enable_dev,
+};
 
 static int google_chromeec_data_ready(u16 port)
 {

@@ -3,3 +3,7 @@ comment "Volteer"
 config BOARD_GOOGLE_VOLTEER
 	bool "-> Volteer"
 	select BOARD_GOOGLE_BASEBOARD_VOLTEER
+
+config BOARD_GOOGLE_RIPTO
+	bool "-> Ripto"
+	select BOARD_GOOGLE_BASEBOARD_VOLTEER

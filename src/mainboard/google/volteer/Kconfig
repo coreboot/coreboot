@@ -51,10 +51,11 @@ config MAINBOARD_DIR
 
 config MAINBOARD_FAMILY
 	string
-	default "Google_Volteer" if BOARD_GOOGLE_VOLTEER
+	default "Google_Volteer"
 
 config MAINBOARD_PART_NUMBER
 	string
+	default "Ripto" if BOARD_GOOGLE_RIPTO
 	default "Volteer" if BOARD_GOOGLE_VOLTEER
 
 config MAX_CPUS
@@ -67,6 +68,7 @@ config TPM_TIS_ACPI_INTERRUPT
 
 config VARIANT_DIR
 	string
+	default "ripto" if BOARD_GOOGLE_RIPTO
 	default "volteer" if BOARD_GOOGLE_VOLTEER
 
 endif # BOARD_GOOGLE_BASEBOARD_VOLTEER

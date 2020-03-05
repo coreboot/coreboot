@@ -66,6 +66,7 @@ config VARIANT_DIR
 	default "careena" if BOARD_GOOGLE_CAREENA
 	default "grunt" if BOARD_GOOGLE_GRUNT
 	default "liara" if BOARD_GOOGLE_LIARA
+	default "nuwani" if BOARD_GOOGLE_NUWANI
 	default "treeya" if BOARD_GOOGLE_TREEYA
 
 config MAINBOARD_PART_NUMBER

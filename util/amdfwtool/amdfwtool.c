@@ -575,7 +575,8 @@ static ssize_t copy_blob(void *dest, const char *src_file, size_t room)
 
 	fd = open(src_file, O_RDONLY);
 	if (fd < 0) {
-		printf("Error: %s\n", strerror(errno));
+		printf("Error opening file: %s: %s\n",
+		       src_file, strerror(errno));
 		return -1;
 	}
 

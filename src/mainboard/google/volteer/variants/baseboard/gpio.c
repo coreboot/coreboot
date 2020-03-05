@@ -452,7 +452,7 @@ const struct pad_config *__weak variant_override_gpio_table(size_t *num)
 	return NULL;
 }
 
-const struct pad_config *variant_early_gpio_table(size_t *num)
+const struct pad_config *__weak variant_early_gpio_table(size_t *num)
 {
 	*num = ARRAY_SIZE(early_gpio_table);
 	return early_gpio_table;

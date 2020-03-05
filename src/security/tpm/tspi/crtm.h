@@ -41,13 +41,13 @@ int tspi_measure_cache_to_pcr(void);
 #if !ENV_SMM && CONFIG(TPM_MEASURED_BOOT)
 /*
  * Measures cbfs data via hook (cbfs)
- * fh is the cbfs file handle to measure
+ * rdev covers the file data (not metadata)
  * return 0 if successful, else an error
  */
-uint32_t tspi_measure_cbfs_hook(struct cbfsf *fh, const char *name);
-
+uint32_t tspi_measure_cbfs_hook(const struct region_device *rdev,
+				const char *name, uint32_t cbfs_type);
 #else
-#define tspi_measure_cbfs_hook(fh, name) 0
+#define tspi_measure_cbfs_hook(rdev, name, cbfs_type) 0
 #endif
 
 #endif /* __SECURITY_TSPI_CRTM_H__ */

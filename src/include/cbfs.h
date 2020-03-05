@@ -42,6 +42,12 @@ size_t cbfs_load_and_decompress(const struct region_device *rdev, size_t offset,
 /* Load stage into memory filling in prog. Return 0 on success. < 0 on error. */
 int cbfs_prog_stage_load(struct prog *prog);
 
+/*
+ * Data structure that represents "a" CBFS boot device, with optional metadata
+ * cache. Generally we only have one of these, or two (RO and RW) when
+ * CONFIG(VBOOT) is set. The region device stored here must always be a
+ * subregion of boot_device_ro().
+ */
 struct cbfs_boot_device {
 	struct region_device rdev;
 	void *mcache;

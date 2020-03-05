@@ -3,8 +3,8 @@
 #include <assert.h>
 #include <boot_device.h>
 #include <cbfs.h>
+#include <cbfs_private.h>
 #include <cbmem.h>
-#include <commonlib/bsd/cbfs_private.h>
 #include <commonlib/bsd/compression.h>
 #include <commonlib/endian.h>
 #include <console/console.h>
@@ -17,52 +17,55 @@
 #include <symbols.h>
 #include <timestamp.h>
 
-static cb_err_t cbfs_boot_lookup(const struct cbfs_boot_device *cbd,
-		const char *name, union cbfs_mdata *mdata, size_t *data_offset)
+cb_err_t cbfs_boot_lookup(const char *name, bool force_ro,
+			  union cbfs_mdata *mdata, struct region_device *rdev)
 {
+	const struct cbfs_boot_device *cbd = cbfs_get_boot_device(force_ro);
+	if (!cbd)
+		return CB_ERR;
+
+	size_t data_offset;
 	cb_err_t err = CB_CBFS_CACHE_FULL;
 	if (!CONFIG(NO_CBFS_MCACHE) && !ENV_SMM)
 		err = cbfs_mcache_lookup(cbd->mcache, cbd->mcache_size,
-					  name, mdata, data_offset);
+					  name, mdata, &data_offset);
 	if (err == CB_CBFS_CACHE_FULL)
-		err = cbfs_lookup(&cbd->rdev, name, mdata, data_offset, NULL);
-	return err;
+		err = cbfs_lookup(&cbd->rdev, name, mdata, &data_offset, NULL);
+
+	if (CONFIG(VBOOT_ENABLE_CBFS_FALLBACK) && !force_ro &&
+	    err == CB_CBFS_NOT_FOUND) {
+		printk(BIOS_INFO, "CBFS: Fall back to RO region for %s\n",
+		       name);
+		return cbfs_boot_lookup(name, true, mdata, rdev);
+	}
+	if (err)
+		return err;
+
+	if (rdev_chain(rdev, &cbd->rdev, data_offset, be32toh(mdata->h.len)))
+		return CB_ERR;
+
+	if (tspi_measure_cbfs_hook(rdev, name, be32toh(mdata->h.type)))
+		return CB_ERR;
+
+	return CB_SUCCESS;
 }
 
 int cbfs_boot_locate(struct cbfsf *fh, const char *name, uint32_t *type)
 {
-	const struct cbfs_boot_device *cbd = cbfs_get_boot_device(false);
-	if (!cbd)
-		return -1;
-
-	size_t data_offset;
-	cb_err_t err = cbfs_boot_lookup(cbd, name, &fh->mdata, &data_offset);
-
-	if (CONFIG(VBOOT_ENABLE_CBFS_FALLBACK) && err == CB_CBFS_NOT_FOUND) {
-		printk(BIOS_INFO, "CBFS: Fall back to RO region for %s\n",
-		       name);
-		if (!(cbd = cbfs_get_boot_device(true)))
-			return -1;
-		err = cbfs_boot_lookup(cbd, name, &fh->mdata, &data_offset);
-	}
-	if (err)
+	if (cbfs_boot_lookup(name, false, &fh->mdata, &fh->data))
 		return -1;
 
 	size_t msize = be32toh(fh->mdata.h.offset);
 	if (rdev_chain(&fh->metadata, &addrspace_32bit.rdev,
-		       (uintptr_t)&fh->mdata, msize) ||
-	    rdev_chain(&fh->data, &cbd->rdev, data_offset,
-		       be32toh(fh->mdata.h.len)))
+		       (uintptr_t)&fh->mdata, msize))
 		return -1;
+
 	if (type) {
 		if (!*type)
 			*type = be32toh(fh->mdata.h.type);
 		else if (*type != be32toh(fh->mdata.h.type))
 			return -1;
 	}
-
-	if (tspi_measure_cbfs_hook(fh, name))
-		return -1;
 
 	return 0;
 }
@@ -94,9 +97,13 @@ int cbfs_locate_file_in_region(struct cbfsf *fh, const char *region_name,
 		return -1;
 	}
 
+	uint32_t dummy_type = 0;
+	if (!type)
+		type = &dummy_type;
+
 	ret = cbfs_locate(fh, &rdev, name, type);
 	if (!ret)
-		if (tspi_measure_cbfs_hook(fh, name))
+		if (tspi_measure_cbfs_hook(&rdev, name, *type))
 			return -1;
 	return ret;
 }

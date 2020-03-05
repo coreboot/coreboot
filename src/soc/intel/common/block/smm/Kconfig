@@ -15,6 +15,12 @@ config SOC_INTEL_COMMON_BLOCK_SMM_ESPI_DISABLE
 	  Disable eSPI SMI source to prevent the embedded controller
 	  from asserting SMI while in firmware.
 
+config SOC_INTEL_COMMON_BLOCK_SMM_TCO_ENABLE
+	bool "Enable TCO SMI"
+	default n
+	help
+	  Enable TCO SMI source to e.g. handle case instrusion.
+
 config SOC_INTEL_COMMON_BLOCK_SMM_S5_DELAY_MS
 	int
 	default 100 if CHROMEOS

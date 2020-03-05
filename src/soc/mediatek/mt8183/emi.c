@@ -63,6 +63,8 @@ const u8 phy_mapping[CHANNEL_MAX][16] = {
 struct optimize_ac_time {
 	u8 rfc;
 	u8 rfc_05t;
+	u8 rfc_pb;
+	u8 rfrc_pb05t;
 	u16 tx_ref_cnt;
 };
 
@@ -332,19 +334,27 @@ static void dramc_init_pre_settings(void)
 static void dramc_ac_timing_optimize(u8 freq_group)
 {
 	struct optimize_ac_time rf_cab_opt[LP4X_DDRFREQ_MAX] = {
-		[LP4X_DDR1600] = {.rfc = 44, .rfc_05t = 0, .tx_ref_cnt = 62},
-		[LP4X_DDR2400] = {.rfc = 72, .rfc_05t = 0, .tx_ref_cnt = 91},
-		[LP4X_DDR3200] = {.rfc = 100, .rfc_05t = 0, .tx_ref_cnt = 119},
-		[LP4X_DDR3600] = {.rfc = 118, .rfc_05t = 1, .tx_ref_cnt = 138},
+		[LP4X_DDR1600] = {.rfc = 44, .rfc_05t = 0, .rfc_pb = 16,
+			.rfrc_pb05t = 0, .tx_ref_cnt = 62},
+		[LP4X_DDR2400] = {.rfc = 72, .rfc_05t = 0, .rfc_pb = 30,
+			.rfrc_pb05t = 0, .tx_ref_cnt = 91},
+		[LP4X_DDR3200] = {.rfc = 100, .rfc_05t = 0, .rfc_pb = 44,
+			.rfrc_pb05t = 0, .tx_ref_cnt = 119},
+		[LP4X_DDR3600] = {.rfc = 118, .rfc_05t = 1, .rfc_pb = 53,
+			.rfrc_pb05t = 1, .tx_ref_cnt = 138},
 	};
 
 	for (size_t chn = 0; chn < CHANNEL_MAX; chn++) {
 		clrsetbits32(&ch[chn].ao.shu[0].actim[3],
 			0xff << 16, rf_cab_opt[freq_group].rfc << 16);
-		clrbits32(&ch[chn].ao.shu[0].ac_time_05t,
-			rf_cab_opt[freq_group].rfc_05t << 2);
+		clrsetbits32(&ch[chn].ao.shu[0].ac_time_05t,
+			0x1 << 2, rf_cab_opt[freq_group].rfc_05t << 2);
 		clrsetbits32(&ch[chn].ao.shu[0].actim[4],
 			0x3ff << 0, rf_cab_opt[freq_group].tx_ref_cnt << 0);
+		clrsetbits32(&ch[chn].ao.shu[0].actim[3],
+			0xff << 0, rf_cab_opt[freq_group].rfc_pb << 0);
+		clrsetbits32(&ch[chn].ao.shu[0].ac_time_05t,
+			0x1 << 1, rf_cab_opt[freq_group].rfrc_pb05t << 1);
 	}
 }
 

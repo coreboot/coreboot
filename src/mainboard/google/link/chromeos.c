@@ -22,9 +22,6 @@
 void fill_lb_gpios(struct lb_gpios *gpios)
 {
 	struct lb_gpio chromeos_gpios[] = {
-		/* Write Protect: GPIO57 = PCH_SPI_WP_D */
-		{57, ACTIVE_HIGH, get_write_protect_state(), "write protect"},
-
 		/* Lid: the "switch" comes from the EC */
 		{-1, ACTIVE_HIGH, get_lid_switch(), "lid"},
 

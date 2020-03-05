@@ -38,8 +38,6 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 			"EC in RW"},
 		{GPIO_AP_EC_INT.addr, ACTIVE_LOW, gpio_get(GPIO_AP_EC_INT),
 			"EC interrupt"},
-		{GPIO_WP_STATE.addr, ACTIVE_LOW, !get_write_protect_state(),
-			"write protect"},
 		{GPIO_H1_AP_INT.addr, ACTIVE_LOW, gpio_get(GPIO_H1_AP_INT),
 			"TPM interrupt"},
 	};

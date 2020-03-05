@@ -32,8 +32,6 @@ int get_write_protect_state(void)
 void fill_lb_gpios(struct lb_gpios *gpios)
 {
 	struct lb_gpio chromeos_gpios[] = {
-		{GPIO_WP.raw, wp_polarity,
-		 get_write_protect_state() ^ !wp_polarity, "write protect"},
 #if CONFIG(GRU_BASEBOARD_SCARLET)
 		{GPIO_BACKLIGHT.raw, ACTIVE_HIGH, -1, "backlight"},
 #endif

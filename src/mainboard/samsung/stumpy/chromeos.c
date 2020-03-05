@@ -33,10 +33,6 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	u16 gen_pmcon_1 = pci_s_read_config32(dev, GEN_PMCON_1);
 
 	struct lb_gpio chromeos_gpios[] = {
-		/* Write Protect: GPIO68 = CHP3_SPI_WP */
-		{GPIO_SPI_WP, ACTIVE_HIGH, get_write_protect_state(),
-		 "write protect"},
-
 		/* Recovery: GPIO42 = CHP3_REC_MODE# */
 		{GPIO_REC_MODE, ACTIVE_LOW, !get_recovery_mode_switch(),
 		 "presence"},

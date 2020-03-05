@@ -31,9 +31,6 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	u16 gen_pmcon_1 = pci_s_read_config32(dev, GEN_PMCON_1);
 
 	struct lb_gpio chromeos_gpios[] = {
-		/* Write Protect: GPIO70 active high */
-		{70, ACTIVE_LOW, !get_write_protect_state(), "write protect"},
-
 		/* Lid switch GPIO active high (open). */
 		{15, ACTIVE_HIGH, get_lid_switch(), "lid"},
 

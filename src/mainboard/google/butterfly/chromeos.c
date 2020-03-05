@@ -31,10 +31,6 @@
 void fill_lb_gpios(struct lb_gpios *gpios)
 {
 	struct lb_gpio chromeos_gpios[] = {
-		/* Write Protect: GPIO active Low */
-		{WP_GPIO, ACTIVE_LOW, !get_write_protect_state(),
-		 "write protect"},
-
 		/* lid switch value from EC */
 		{-1, ACTIVE_HIGH, get_lid_switch(), "lid"},
 

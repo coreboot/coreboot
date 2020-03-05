@@ -23,9 +23,6 @@
 void fill_lb_gpios(struct lb_gpios *gpios)
 {
 	struct lb_gpio chromeos_gpios[] = {
-		/* Write Protect: GPIO22 */
-		{0, ACTIVE_LOW, !get_write_protect_state(), "write protect"},
-
 		/* Recovery: GPIO69 - SV_DETECT - J8E3 (silkscreen: J8E2) */
 		{69, ACTIVE_HIGH, get_recovery_mode_switch(), "presence"},
 

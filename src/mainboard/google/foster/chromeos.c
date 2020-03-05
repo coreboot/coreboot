@@ -24,9 +24,6 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 {
 	/* TBD(twarren@nvidia.com): Any analogs for these on Foster-FFD? */
 	struct lb_gpio chromeos_gpios[] = {
-		/* Write Protect: active low */
-		{-1, ACTIVE_LOW, !get_write_protect_state(), "write protect"},
-
 		/* TODO: Power: active low / high depending on board id */
 		{GPIO(X5), ACTIVE_LOW, -1, "power"},
 

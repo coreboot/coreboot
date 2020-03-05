@@ -3,7 +3,18 @@ config SOC_AMD_COMMON_BLOCK_PSP
 	default n
 	help
 	  This option builds in the Platform Security Processor initialization
-	  functions.
+	  functions. Do not select this directly in SoC code, select
+	  SOC_AMD_COMMON_BLOCK_PSP_GENx instead.
+
+config SOC_AMD_COMMON_BLOCK_PSP_GEN1
+	bool
+	default n
+	select SOC_AMD_COMMON_BLOCK_PSP
+
+config SOC_AMD_COMMON_BLOCK_PSP_GEN2
+	bool
+	default n
+	select SOC_AMD_COMMON_BLOCK_PSP
 
 config SOC_AMD_PSP_SELECTABLE_SMU_FW
 	bool

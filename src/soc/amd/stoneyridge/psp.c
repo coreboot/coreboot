@@ -30,7 +30,7 @@ void soc_enable_psp_early(void)
 	pci_write_config32(SOC_PSP_DEV, PCI_COMMAND, cmd);
 };
 
-struct psp_mbox *soc_get_mbox_address(void)
+void *soc_get_mbox_address(void)
 {
 	uintptr_t psp_mmio;
 
@@ -54,5 +54,5 @@ struct psp_mbox *soc_get_mbox_address(void)
 				~PCI_BASE_ADDRESS_MEM_ATTR_MASK;
 	}
 
-	return (struct psp_mbox *)(psp_mmio + PSP_MAILBOX_OFFSET);
+	return (void *)(psp_mmio + PSP_MAILBOX_OFFSET);
 }

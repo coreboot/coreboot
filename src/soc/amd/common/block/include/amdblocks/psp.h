@@ -5,7 +5,7 @@
 #define __AMD_PSP_H__
 
 /* Get the mailbox base address - specific to family of device. */
-struct psp_mbox *soc_get_mbox_address(void);
+void *soc_get_mbox_address(void);
 
 /* BIOS-to-PSP functions return 0 if successful, else negative value */
 #define PSPSTS_SUCCESS      0

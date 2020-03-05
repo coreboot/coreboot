@@ -5,6 +5,7 @@
 #define __AMD_PSP_DEF_H__
 
 #include <types.h>
+#include <commonlib/helpers.h>
 
 /* x86 to PSP commands */
 #define MBOX_BIOS_CMD_DRAM_INFO    0x01
@@ -20,22 +21,40 @@
 #define MBOX_BIOS_CMD_SMU_FW2      0x1a
 #define MBOX_BIOS_CMD_ABORT        0xfe
 
-/* generic PSP interface status */
-#define STATUS_INITIALIZED         0x1
-#define STATUS_ERROR               0x2
-#define STATUS_TERMINATED          0x4
-#define STATUS_HALT                0x8
-#define STATUS_RECOVERY            0x10
+/* generic PSP interface status, v1 */
+#define PSPV1_STATUS_INITIALIZED	BIT(0)
+#define PSPV1_STATUS_ERROR		BIT(1)
+#define PSPV1_STATUS_TERMINATED		BIT(2)
+#define PSPV1_STATUS_HALT		BIT(3)
+#define PSPV1_STATUS_RECOVERY		BIT(4)
+
+/* generic PSP interface status, v2 */
+#define PSPV2_STATUS_ERROR		BIT(30)
+#define PSPV2_STATUS_RECOVERY		BIT(31)
 
 /* psp_mbox consists of hardware registers beginning at PSPx000070
  *   mbox_command: BIOS->PSP command, cleared by PSP when complete
  *   mbox_status:  BIOS->PSP interface status
  *   cmd_response: pointer to command/response buffer
  */
-struct psp_mbox {
+struct pspv1_mbox {
 	u32 mbox_command;
 	u32 mbox_status;
 	u64 cmd_response; /* definition conflicts w/BKDG but matches agesa */
+} __packed;
+
+struct pspv2_mbox {
+	union {
+		u32 val;
+		struct pspv2_mbox_cmd_fields {
+			u16 mbox_status;
+			u8 mbox_command;
+			u32 reserved:6;
+			u32 recovery:1;
+			u32 ready:1;
+		} __packed fields;
+	};
+	u64 cmd_response;
 } __packed;
 
 /* command/response format, BIOS builds this in memory
@@ -69,5 +88,8 @@ struct mbox_cmd_sx_info_buffer {
 
 #define PSP_INIT_TIMEOUT 10000 /* 10 seconds */
 #define PSP_CMD_TIMEOUT 1000 /* 1 second */
+
+/* This command needs to be implemented by the generation specific code. */
+int send_psp_command(u32 command, void *buffer);
 
 #endif /* __AMD_PSP_DEF_H__ */

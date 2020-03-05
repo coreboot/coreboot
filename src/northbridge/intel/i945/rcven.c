@@ -64,7 +64,7 @@ static void set_receive_enable(int channel_offset, u8 medium, u8 coarse)
 {
 	u32 reg32;
 
-	printk(BIOS_SPEW, "    set_receive_enable() medium=0x%x, coarse=0x%x\n", medium, coarse);
+	printk(BIOS_SPEW, "    %s() medium=0x%x, coarse=0x%x\n", __func__, medium, coarse);
 
 	reg32 = MCHBAR32(C0DRT1 + channel_offset);
 	reg32 &= 0xf0ffffff;
@@ -73,7 +73,7 @@ static void set_receive_enable(int channel_offset, u8 medium, u8 coarse)
 
 	/* This should never happen: */
 	if (coarse > 0x0f)
-		printk(BIOS_DEBUG, "set_receive_enable: coarse overflow: 0x%02x.\n", coarse);
+		printk(BIOS_DEBUG, "%s: coarse overflow: 0x%02x.\n", __func__, coarse);
 
 	/* medium control
 	 *
@@ -99,7 +99,7 @@ static void set_receive_enable(int channel_offset, u8 medium, u8 coarse)
 
 static int normalize(int channel_offset, u8 *mediumcoarse, u8 *fine)
 {
-	printk(BIOS_SPEW, "  normalize()\n");
+	printk(BIOS_SPEW, "  %s()\n", __func__);
 
 	if (*fine < 0x80)
 		return 0;
@@ -126,7 +126,7 @@ static int find_preamble(int channel_offset, u8 *mediumcoarse,
 	/* find start of the data phase */
 	u32 reg32;
 
-	printk(BIOS_SPEW, "  find_preamble()\n");
+	printk(BIOS_SPEW, "  %s()\n", __func__);
 
 	do {
 		if (*mediumcoarse < 4) {
@@ -156,7 +156,7 @@ static int find_preamble(int channel_offset, u8 *mediumcoarse,
 
 static int add_quarter_clock(int channel_offset, u8 *mediumcoarse, u8 *fine)
 {
-	printk(BIOS_SPEW, "  add_quarter_clock() mediumcoarse=%02x fine=%02x\n",
+	printk(BIOS_SPEW, "  %s() mediumcoarse=%02x fine=%02x\n", __func__,
 			*mediumcoarse, *fine);
 	if (*fine >= 0x80) {
 		*fine -= 0x80;
@@ -183,7 +183,7 @@ static int find_strobes_low(int channel_offset, u8 *mediumcoarse, u8 *fine,
 {
 	u32 rcvenmt;
 
-	printk(BIOS_SPEW, "  find_strobes_low()\n");
+	printk(BIOS_SPEW, "  %s()\n", __func__);
 
 	for (;;) {
 		MCHBAR8(C0WL0REOST + channel_offset) = *fine;
@@ -219,7 +219,7 @@ static int find_strobes_edge(int channel_offset, u8 *mediumcoarse, u8 *fine,
 	int counter;
 	u32 rcvenmt;
 
-	printk(BIOS_SPEW, "  find_strobes_edge()\n");
+	printk(BIOS_SPEW, "  %s()\n", __func__);
 
 	counter = 8;
 	set_receive_enable(channel_offset, *mediumcoarse & 3,
@@ -283,8 +283,7 @@ static int receive_enable_autoconfig(int channel_offset,
 	u8 mediumcoarse;
 	u8 fine;
 
-	printk(BIOS_SPEW, "receive_enable_autoconfig() for channel %d\n",
-		    channel_offset ? 1 : 0);
+	printk(BIOS_SPEW, "%s() for channel %d\n", __func__, channel_offset ? 1 : 0);
 
 	/* Set initial values */
 	mediumcoarse = (sysinfo->cas << 2) | 3;

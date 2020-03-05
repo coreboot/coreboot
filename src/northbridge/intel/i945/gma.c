@@ -88,9 +88,9 @@ static int gtt_setup(u8 *mmiobase)
 
 	/* verify */
 	if (read32(mmiobase + PGETBL_CTL) & PGETBL_ENABLED) {
-		printk(BIOS_DEBUG, "gtt_setup is enabled.\n");
+		printk(BIOS_DEBUG, "%s is enabled.\n", __func__);
 	} else {
-		printk(BIOS_DEBUG, "gtt_setup failed!!!\n");
+		printk(BIOS_DEBUG, "%s failed!!!\n", __func__);
 		return 1;
 	}
 	write32(mmiobase + GFX_FLSH_CNTL, 0);

@@ -111,7 +111,7 @@ static int memclk(void)
 	case 2: return 533;
 	case 3: return 667;
 	default:
-		printk(BIOS_DEBUG, "memclk: unknown register value %x\n",
+		printk(BIOS_DEBUG, "%s: unknown register value %x\n", __func__,
 			((MCHBAR32(CLKCFG) >> 4) & 7) - offset);
 	}
 	return -1;
@@ -125,7 +125,7 @@ static u16 fsbclk(void)
 		case 1: return 533;
 		case 3: return 667;
 		default:
-			printk(BIOS_DEBUG, "fsbclk: unknown register value %x\n",
+			printk(BIOS_DEBUG, "%s: unknown register value %x\n", __func__,
 				MCHBAR32(CLKCFG) & 7);
 		}
 		return 0xffff;
@@ -135,7 +135,7 @@ static u16 fsbclk(void)
 		case 1: return 533;
 		case 2: return 800;
 		default:
-			printk(BIOS_DEBUG, "fsbclk: unknown register value %x\n",
+			printk(BIOS_DEBUG, "%s: unknown register value %x\n", __func__,
 				MCHBAR32(CLKCFG) & 7);
 		}
 		return 0xffff;

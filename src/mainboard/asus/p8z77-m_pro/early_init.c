@@ -154,7 +154,7 @@ void mainboard_fill_pei_data(struct pei_data *pei_data)
 			 */
 			usb3_streams
 		},
-		/* ASUS P8Z77-M Pro manual says 1.35v DIMMs are supported */
+		/* ASUS P8Z77-M PRO manual says 1.35v DIMMs are supported */
 		.ddr3lv_support = 1,
 		/* PCIe 3.0 support. As we use Ivy Bridge, let's enable it,
 		 * but might cause some system instability !

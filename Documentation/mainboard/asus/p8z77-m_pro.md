@@ -163,6 +163,6 @@ easy to remove and reflash.
 
 - [Flash chip datasheet][W25Q64FVA1Q]
 
-[ASUS P8Z88-M Pro]: https://www.asus.com/Motherboards/P8Z77M_PRO/
+[ASUS P8Z77-M Pro]: https://www.asus.com/Motherboards/P8Z77M_PRO/
 [W25Q64FVA1Q]: https://www.winbond.com/resource-files/w25q64fv%20revs%2007182017.pdf
 [flashrom]: https://flashrom.org/Flashrom

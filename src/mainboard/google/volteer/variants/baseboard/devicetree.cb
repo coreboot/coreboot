@@ -153,7 +153,7 @@ chip soc/intel/tigerlake
 	#|                   | required to set up a BAR  |
 	#|                   | for TPM communication     |
 	#|                   | before memory is up       |
-	#| GSPI1             | Fingerprint MCU
+	#| GSPI1             | Fingerprint MCU           |
 	#| I2C0              | Audio                     |
 	#| I2C1              | Touchscreen               |
 	#| I2C2              | WLAN, SAR0                |
@@ -329,7 +329,16 @@ chip soc/intel/tigerlake
 				device spi 0 on end
 			end
 		end # GSPI0				0xA0AA
-		device pci 1e.3 on  end # GSPI1				0xA0AB
+		device pci 1e.3 on
+			chip drivers/spi/acpi
+				register "name" = ""CRFP""
+				register "hid" = "ACPI_DT_NAMESPACE_HID"
+				register "uid" = "1"
+				register "compat_string" = ""google,cros-ec-spi""
+				register "irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW_WAKE(GPP_C20)"
+				device spi 0 on end
+			end # FPMCU
+		end # GSPI1				0xA0AB
 
 		device pci 1f.0 on  end # eSPI				0xA080 - A09F
 		device pci 1f.1 off end # P2SB				0xA0A0

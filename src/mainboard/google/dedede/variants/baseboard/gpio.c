@@ -42,7 +42,7 @@ static const struct pad_config gpio_table[] = {
 	/* A16 : EC_AP_USB_C0_HPD */
 	PAD_CFG_NF(GPP_A16, NONE, DEEP, NF1),
 	/* A17 : EDP_HPD */
-	PAD_NC(GPP_A17, NONE),
+	PAD_CFG_NF(GPP_A17, NONE, DEEP, NF1),
 	/* A18 : USB_OC0_N */
 	PAD_NC(GPP_A18, NONE),
 	/* A19 : PCHHOT_N */

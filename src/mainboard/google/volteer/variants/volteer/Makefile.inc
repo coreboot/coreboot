@@ -8,3 +8,4 @@
 
 ## Memory Options
 SPD_SOURCES = samsung-K4U6E3S4AA-MGCL		# 0b0000
+SPD_SOURCES += samsung-K4UBE3D4AA-MGCR		# 0b0001

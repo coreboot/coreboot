@@ -635,7 +635,18 @@ typedef struct {
 
 /** Offset 0x091A - Reserved
 **/
-  UINT8                       Reserved33[438];
+  UINT8                       Reserved33[3];
+
+/** Offset 0x091D - Hybrid Storage Detection and Configuration Mode
+  Enables support for Hybrid storage devices. 0: Disabled; 1: Dynamic Configuration.
+  Default is 0: Disabled
+  0: Disabled, 1: Dynamic Configuration
+**/
+  UINT8                       HybridStorageMode;
+
+/** Offset 0x091E - Reserved
+**/
+  UINT8                       Reserved34[434];
 
 /** Offset 0x0AD0 - RpPtmBytes
 **/
@@ -643,7 +654,7 @@ typedef struct {
 
 /** Offset 0x0AD4 - Reserved
 **/
-  UINT8                      Reserved34[101];
+  UINT8                      Reserved35[101];
 
 /** Offset 0x0B39 - GT Frequency Limit
   0xFF: Auto(Default), 2: 100 Mhz, 3: 150 Mhz, 4: 200 Mhz, 5: 250 Mhz, 6: 300 Mhz,
@@ -661,7 +672,7 @@ typedef struct {
 
 /** Offset 0x0B3A - Reserved
 **/
-  UINT8                       Reserved35[264];
+  UINT8                       Reserved36[264];
 
 /** Offset 0x0C42 - PCIE RP Ltr Max Snoop Latency
   Latency Tolerance Reporting, Max Snoop Latency.
@@ -675,7 +686,7 @@ typedef struct {
 
 /** Offset 0x0CA2 - Reserved
 **/
-  UINT8                       Reserved36[269];
+  UINT8                       Reserved37[269];
 
 /** Offset 0x0DAF - LpmStateEnableMask
 **/
@@ -683,7 +694,7 @@ typedef struct {
 
 /** Offset 0x0DB0 - Reserved
 **/
-  UINT8                       Reserved37[80];
+  UINT8                       Reserved38[80];
 } FSP_S_CONFIG;
 
 /** Fsp S UPD Configuration

@@ -179,24 +179,6 @@ void *cbfs_boot_map_optionrom(uint16_t vendor, uint16_t device)
 	return cbfs_boot_map_with_leak(name, CBFS_TYPE_OPTIONROM, NULL);
 }
 
-void *cbfs_boot_load_stage_by_name(const char *name)
-{
-	struct cbfsf fh;
-	struct prog stage = PROG_INIT(PROG_UNKNOWN, name);
-	uint32_t type = CBFS_TYPE_STAGE;
-
-	if (cbfs_boot_locate(&fh, name, &type))
-		return NULL;
-
-	/* Chain data portion in the prog. */
-	cbfs_file_data(prog_rdev(&stage), &fh);
-
-	if (cbfs_prog_stage_load(&stage))
-		return NULL;
-
-	return prog_entry(&stage);
-}
-
 size_t cbfs_boot_load_file(const char *name, void *buf, size_t buf_size,
 			   uint32_t type)
 {
@@ -215,18 +197,6 @@ size_t cbfs_boot_load_file(const char *name, void *buf, size_t buf_size,
 
 	return cbfs_load_and_decompress(&fh.data, 0, region_device_sz(&fh.data),
 					buf, buf_size, compression_algo);
-}
-
-size_t cbfs_prog_stage_section(struct prog *pstage, uintptr_t *base)
-{
-	struct cbfs_stage stage;
-	const struct region_device *fh = prog_rdev(pstage);
-
-	if (rdev_readat(fh, &stage, 0, sizeof(stage)) != sizeof(stage))
-		return 0;
-
-	*base = (uintptr_t)stage.load;
-	return stage.memlen;
 }
 
 int cbfs_prog_stage_load(struct prog *pstage)

@@ -15,6 +15,7 @@
 #include <security/vboot/antirollback.h>
 #include <arch/symbols.h>
 #include <assert.h>
+#include <bootmode.h>
 #include <cbfs.h>
 #include <cbmem.h>
 #include <cf9_reset.h>
@@ -120,7 +121,7 @@ static void fsp_fill_mrc_cache(FSPM_ARCH_UPD *arch_upd, uint32_t fsp_version)
 	if (vboot_recovery_mode_enabled()) {
 		if (!CONFIG(HAS_RECOVERY_MRC_CACHE))
 			return;
-		if (vboot_recovery_mode_memory_retrain())
+		if (get_recovery_mode_retrain_switch())
 			return;
 	}
 

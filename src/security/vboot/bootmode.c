@@ -71,11 +71,6 @@ int __weak get_recovery_mode_retrain_switch(void)
 	return 0;
 }
 
-int vboot_recovery_mode_memory_retrain(void)
-{
-	return get_recovery_mode_retrain_switch();
-}
-
 #if CONFIG(VBOOT_NO_BOARD_SUPPORT)
 /**
  * TODO: Create flash protection interface which implements get_write_protect_state.

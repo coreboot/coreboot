@@ -14,6 +14,7 @@
  */
 
 #include <assert.h>
+#include <bootmode.h>
 #include <cbfs.h>
 #include <console/console.h>
 #include <ip_checksum.h>
@@ -174,7 +175,7 @@ static void mt_mem_init_run(struct dramc_param_ops *dparam_ops)
 	/* Load calibration params from flash and run fast calibration */
 	if (recovery_mode) {
 		printk(BIOS_WARNING, "Skip loading cached calibration data\n");
-		if (vboot_recovery_mode_memory_retrain() ||
+		if (get_recovery_mode_retrain_switch() ||
 		    vboot_check_recovery_request() == VB2_RECOVERY_TRAIN_AND_REBOOT) {
 			printk(BIOS_WARNING, "Retrain memory in next boot\n");
 			/* Use 0xFF as erased flash data. */

@@ -55,7 +55,7 @@ static int spd_get_banks(const uint8_t spd[], int dram_type)
 	static const int ddr4_banks[10] = { 4, 8, -1, -1, 8, 16, -1, -1, 16, 32 };
 	int index = (spd[SPD_DENSITY_BANKS] >> 4) & 0xf;
 	switch (dram_type) {
-	/* DDR3 and LPDDR3 has the same bank definition */
+	/* DDR3 and LPDDR3 have the same bank definition */
 	case SPD_DRAM_DDR3:
 	case SPD_DRAM_LPDDR3_INTEL:
 	case SPD_DRAM_LPDDR3_JEDEC:

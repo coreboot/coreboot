@@ -177,7 +177,7 @@ void print_spd_info(uint8_t spd[])
 	/* Module Part Number */
 	spd_get_name(spd, spd_name, type);
 
-	printk(BIOS_INFO, "SPD: module part is %s\n", spd_name);
+	printk(BIOS_INFO, "SPD: module part number is %s\n", spd_name);
 
 	printk(BIOS_INFO,
 		"SPD: banks %d, ranks %d, rows %d, columns %d, density %d Mb\n",

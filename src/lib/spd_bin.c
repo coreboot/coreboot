@@ -45,6 +45,8 @@ static const char *spd_get_module_type_string(int dram_type)
 		return "LPDDR3";
 	case SPD_DRAM_DDR4:
 		return "DDR4";
+	case SPD_DRAM_LPDDR4:
+		return "LPDDR4";
 	}
 	return "UNKNOWN";
 }
@@ -62,7 +64,9 @@ static int spd_get_banks(const uint8_t spd[], int dram_type)
 		if (index >= ARRAY_SIZE(ddr3_banks))
 			return -1;
 		return ddr3_banks[index];
+	/* DDR4 and LPDDR4 has the same bank definition */
 	case SPD_DRAM_DDR4:
+	case SPD_DRAM_LPDDR4:
 		if (index >= ARRAY_SIZE(ddr4_banks))
 			return -1;
 		return ddr4_banks[index];
@@ -73,7 +77,8 @@ static int spd_get_banks(const uint8_t spd[], int dram_type)
 
 static int spd_get_capmb(const uint8_t spd[])
 {
-	static const int spd_capmb[10] = { 1, 2, 4, 8, 16, 32, 64, 128, 48, 96 };
+	static const int spd_capmb[13] = { 1, 2, 4, 8, 16, 32, 64,
+					   128, 48, 96, 12, 24, 72 };
 	int index = spd[SPD_DENSITY_BANKS] & 0xf;
 	if (index >= ARRAY_SIZE(spd_capmb))
 		return -1;
@@ -145,6 +150,7 @@ static void spd_get_name(const uint8_t spd[], char spd_name[], int dram_type)
 		spd_name[LPDDR3_SPD_PART_LEN] = 0;
 		break;
 	case SPD_DRAM_DDR4:
+	case SPD_DRAM_LPDDR4:
 		memcpy(spd_name, &spd[DDR4_SPD_PART_OFF], DDR4_SPD_PART_LEN);
 		spd_name[DDR4_SPD_PART_LEN] = 0;
 		break;

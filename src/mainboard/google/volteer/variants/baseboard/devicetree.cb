@@ -110,6 +110,9 @@ chip soc/intel/tigerlake
 		[PchSerialIoIndexUART2] = PchSerialIoDisabled,
 	}"
 
+	# TCSS USB3
+	register "TcssXhciEn" = "1"
+
 	# DP port
 	register "DdiPortAConfig" = "1"	# eDP
 	register "DdiPortBConfig" = "0"

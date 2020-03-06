@@ -43,13 +43,8 @@ static struct device_operations thermal_ops = {
 	.ops_pci = &pci_ops,
 };
 
-static const unsigned short pci_device_ids[] = {
-	PCI_DID_INTEL_IBEXPEAK_THERMAL,
-	0
-};
-
 static const struct pci_driver pch_thermal __pci_driver = {
 	.ops = &thermal_ops,
 	.vendor = PCI_VENDOR_ID_INTEL,
-	.devices = pci_device_ids,
+	.device = PCI_DID_INTEL_IBEXPEAK_THERMAL,
 };

@@ -860,9 +860,6 @@ static const struct superio_registers reg_table[] = {
 		{EOT}}},
 	{0x83, "SCH5514D", {	/* From sensors-detect */
 		{EOT}}},
-	{0x85, "SCH5317", {	/* From sensors-detect */
-		/* The SCH5317 can have either 0x85 or 0x8c as device ID. */
-		{EOT}}},
 	{0x86, "SCH5127", {	/* From sensors-detect, dump from datasheet */
 		{NOLDN, NULL,
 			{0x02,0x03,0x21,0x22,0x23,0x24,0x26,0x27,

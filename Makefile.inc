@@ -444,6 +444,7 @@ ADAFLAGS_common += -pipe -g -nostdinc
 ADAFLAGS_common += -Wstrict-aliasing -Wshadow
 ADAFLAGS_common += -fno-common -fomit-frame-pointer
 ADAFLAGS_common += -ffunction-sections -fdata-sections
+ADAFLAGS_common += -fno-pie
 # Ada warning options:
 #
 #  a   Activate most optional warnings.

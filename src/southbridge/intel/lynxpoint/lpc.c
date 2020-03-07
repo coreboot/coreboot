@@ -509,7 +509,7 @@ static void pch_fixups(struct device *dev)
 
 static void lpc_init(struct device *dev)
 {
-	printk(BIOS_DEBUG, "pch: lpc_init\n");
+	printk(BIOS_DEBUG, "pch: %s\n", __func__);
 
 	/* Set the value for PCI command register. */
 	pci_write_config16(dev, PCI_COMMAND, 0x000f);

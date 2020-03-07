@@ -446,7 +446,7 @@ static void pch_spi_init(const struct device *const dev)
 {
 	const config_t *const config = dev->chip_info;
 
-	printk(BIOS_DEBUG, "pch_spi_init\n");
+	printk(BIOS_DEBUG, "%s\n", __func__);
 
 	if (config->spi_uvscc)
 		RCBA32(0x3800 + 0xc8) = config->spi_uvscc;
@@ -526,7 +526,7 @@ static void report_pch_info(struct device *dev)
 
 static void lpc_init(struct device *dev)
 {
-	printk(BIOS_DEBUG, "pch: lpc_init\n");
+	printk(BIOS_DEBUG, "pch: %s\n", __func__);
 
 	/* Print detected platform */
 	report_pch_info(dev);

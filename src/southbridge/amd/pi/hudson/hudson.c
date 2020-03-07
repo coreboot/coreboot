@@ -26,7 +26,7 @@ int acpi_get_sleep_type(void)
 
 void hudson_enable(struct device *dev)
 {
-	printk(BIOS_DEBUG, "hudson_enable()\n");
+	printk(BIOS_DEBUG, "%s()\n", __func__);
 	switch (dev->path.pci.devfn) {
 	case PCI_DEVFN(0x14, 7): /* SD */
 		if (dev->enabled == 0) {

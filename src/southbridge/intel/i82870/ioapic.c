@@ -72,13 +72,13 @@ static void p64h2_ioapic_init(struct device *dev)
 	*pWindowRegister = (*pWindowRegister & ~(0x0f << 24)) | apic_id;   // Set the ID
 
 	if ((*pWindowRegister & (0x0f << 24)) != apic_id)
-		die("p64h2_ioapic_init failed");
+		die("%s failed", __func__);
 
 	*pIndexRegister  = 3;   // Select Boot Configuration register
 	*pWindowRegister |= 1;  // Use Processor System Bus to deliver interrupts
 
 	if (!(*pWindowRegister & 1))
-		die("p64h2_ioapic_init failed");
+		die("%s failed", __func__);
 }
 
 static struct device_operations ioapic_ops = {

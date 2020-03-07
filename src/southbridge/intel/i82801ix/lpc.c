@@ -366,7 +366,7 @@ static void i82801ix_set_acpi_mode(struct device *dev)
 
 static void lpc_init(struct device *dev)
 {
-	printk(BIOS_DEBUG, "i82801ix: lpc_init\n");
+	printk(BIOS_DEBUG, "i82801ix: %s\n", __func__);
 
 	/* Set the value for PCI command register. */
 	pci_write_config16(dev, PCI_COMMAND, 0x000f);

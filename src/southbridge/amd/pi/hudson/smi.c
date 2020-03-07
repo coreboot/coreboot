@@ -12,7 +12,7 @@
 
 void smm_setup_structures(void *gnvs, void *tcg, void *smi1)
 {
-	printk(BIOS_DEBUG, "smm_setup_structures STUB!!!\n");
+	printk(BIOS_DEBUG, "%s STUB!!!\n", __func__);
 }
 
 /** Set the EOS bit and enable SMI generation from southbridge */

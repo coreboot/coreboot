@@ -11,7 +11,7 @@ void lpc_read_resources(struct device *dev)
 {
 	struct resource *res;
 
-	printk(BIOS_DEBUG, "SB800 - Lpc.c - lpc_read_resources - Start.\n");
+	printk(BIOS_DEBUG, "SB800 - Lpc.c - %s - Start.\n", __func__);
 	/* Get the normal pci resources of this device */
 	pci_dev_read_resources(dev);	/* We got one for APIC, or one more for TRAP */
 
@@ -37,14 +37,14 @@ void lpc_read_resources(struct device *dev)
 	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 
 	compact_resources(dev);
-	printk(BIOS_DEBUG, "SB800 - Lpc.c - lpc_read_resources - End.\n");
+	printk(BIOS_DEBUG, "SB800 - Lpc.c - %s - End.\n", __func__);
 }
 
 void lpc_set_resources(struct device *dev)
 {
 	struct resource *res;
 
-	printk(BIOS_DEBUG, "SB800 - Lpc.c - lpc_set_resources - Start.\n");
+	printk(BIOS_DEBUG, "SB800 - Lpc.c - %s - Start.\n", __func__);
 
 	/* Special case. SPI Base Address. The SpiRomEnable should STAY set. */
 	res = find_resource(dev, 2);
@@ -52,7 +52,7 @@ void lpc_set_resources(struct device *dev)
 
 	pci_dev_set_resources(dev);
 
-	printk(BIOS_DEBUG, "SB800 - Lpc.c - lpc_set_resources - End.\n");
+	printk(BIOS_DEBUG, "SB800 - Lpc.c - %s - End.\n", __func__);
 }
 
 /**
@@ -68,7 +68,7 @@ void lpc_enable_childrens_resources(struct device *dev)
 	int var_num = 0;
 	u16 reg_var[3];
 
-	printk(BIOS_DEBUG, "SB800 - Lpc.c - lpc_enable_childrens_resources - Start.\n");
+	printk(BIOS_DEBUG, "SB800 - Lpc.c - %s - Start.\n", __func__);
 	reg = pci_read_config32(dev, 0x44);
 	reg_x = pci_read_config32(dev, 0x48);
 
@@ -166,5 +166,5 @@ void lpc_enable_childrens_resources(struct device *dev)
 		//pci_write_config16(dev, 0x64, reg_var[0]); //cause filo can not find sata
 		break;
 	}
-	printk(BIOS_DEBUG, "SB800 - Lpc.c - lpc_enable_childrens_resources - End.\n");
+	printk(BIOS_DEBUG, "SB800 - Lpc.c - %s - End.\n", __func__);
 }

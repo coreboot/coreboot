@@ -30,9 +30,22 @@ void dump_spd_info(struct spd_block *blk)
 		}
 }
 
-static bool is_memory_type_ddr4(int dram_type)
+static bool use_ddr4_params(int dram_type)
 {
-	return (dram_type == SPD_DRAM_DDR4);
+	switch (dram_type) {
+	case SPD_DRAM_DDR3:
+	case SPD_DRAM_LPDDR3_INTEL:
+		return false;
+	/* LPDDR3, LPDDR4 and DDR4 share the same attributes */
+	case SPD_DRAM_LPDDR3_JEDEC:
+	case SPD_DRAM_DDR4:
+	case SPD_DRAM_LPDDR4:
+		return true;
+	default:
+		printk(BIOS_ERR, "Defaulting to using DDR4 params. Please add dram_type check for %d to %s\n",
+			dram_type, __func__);
+		return true;
+	}
 }
 
 static const char *spd_get_module_type_string(int dram_type)
@@ -57,14 +70,14 @@ static int spd_get_banks(const uint8_t spd[], int dram_type)
 	static const int ddr4_banks[10] = { 4, 8, -1, -1, 8, 16, -1, -1, 16, 32 };
 	int index = (spd[SPD_DENSITY_BANKS] >> 4) & 0xf;
 	switch (dram_type) {
-	/* DDR3 and LPDDR3 have the same bank definition */
+	/* DDR3 and LPDDR3_Intel have the same bank definition */
 	case SPD_DRAM_DDR3:
 	case SPD_DRAM_LPDDR3_INTEL:
-	case SPD_DRAM_LPDDR3_JEDEC:
 		if (index >= ARRAY_SIZE(ddr3_banks))
 			return -1;
 		return ddr3_banks[index];
-	/* DDR4 and LPDDR4 has the same bank definition */
+	/* LPDDR3, LPDDR4 and DDR4 have the same bank definition */
+	case SPD_DRAM_LPDDR3_JEDEC:
 	case SPD_DRAM_DDR4:
 	case SPD_DRAM_LPDDR4:
 		if (index >= ARRAY_SIZE(ddr4_banks))
@@ -106,8 +119,8 @@ static int spd_get_cols(const uint8_t spd[])
 static int spd_get_ranks(const uint8_t spd[], int dram_type)
 {
 	static const int spd_ranks[8] = { 1, 2, 3, 4, 5, 6, 7, 8 };
-	int organ_offset = is_memory_type_ddr4(dram_type) ? DDR4_ORGANIZATION
-							: DDR3_ORGANIZATION;
+	int organ_offset = use_ddr4_params(dram_type) ? DDR4_ORGANIZATION
+						      : DDR3_ORGANIZATION;
 	int index = (spd[organ_offset] >> 3) & 7;
 	if (index >= ARRAY_SIZE(spd_ranks))
 		return -1;
@@ -117,8 +130,8 @@ static int spd_get_ranks(const uint8_t spd[], int dram_type)
 static int spd_get_devw(const uint8_t spd[], int dram_type)
 {
 	static const int spd_devw[4]  = { 4, 8, 16, 32 };
-	int organ_offset = is_memory_type_ddr4(dram_type) ? DDR4_ORGANIZATION
-							: DDR3_ORGANIZATION;
+	int organ_offset = use_ddr4_params(dram_type) ? DDR4_ORGANIZATION
+						      : DDR3_ORGANIZATION;
 	int index = spd[organ_offset] & 7;
 	if (index >= ARRAY_SIZE(spd_devw))
 		return -1;
@@ -128,8 +141,8 @@ static int spd_get_devw(const uint8_t spd[], int dram_type)
 static int spd_get_busw(const uint8_t spd[], int dram_type)
 {
 	static const int spd_busw[4]  = { 8, 16, 32, 64 };
-	int busw_offset = is_memory_type_ddr4(dram_type) ? DDR4_BUS_DEV_WIDTH
-							: DDR3_BUS_DEV_WIDTH;
+	int busw_offset = use_ddr4_params(dram_type) ? DDR4_BUS_DEV_WIDTH
+						     : DDR3_BUS_DEV_WIDTH;
 	int index = spd[busw_offset] & 7;
 	if (index >= ARRAY_SIZE(spd_busw))
 		return -1;
@@ -144,11 +157,12 @@ static void spd_get_name(const uint8_t spd[], char spd_name[], int dram_type)
 		spd_name[DDR3_SPD_PART_LEN] = 0;
 		break;
 	case SPD_DRAM_LPDDR3_INTEL:
-	case SPD_DRAM_LPDDR3_JEDEC:
 		memcpy(spd_name, &spd[LPDDR3_SPD_PART_OFF],
 			LPDDR3_SPD_PART_LEN);
 		spd_name[LPDDR3_SPD_PART_LEN] = 0;
 		break;
+	/* LPDDR3, LPDDR4 and DDR4 have the same part number offset */
+	case SPD_DRAM_LPDDR3_JEDEC:
 	case SPD_DRAM_DDR4:
 	case SPD_DRAM_LPDDR4:
 		memcpy(spd_name, &spd[DDR4_SPD_PART_OFF], DDR4_SPD_PART_LEN);

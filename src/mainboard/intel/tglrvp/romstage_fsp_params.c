@@ -32,13 +32,16 @@ static uintptr_t mainboard_get_spd_index(void)
 	printk(BIOS_INFO, "board id is 0x%x\n", board_id);
 
 	switch (board_id) {
-	case TGL_U_LP4_MICRON:
+	case TGL_UP3_LP4_MICRON:
+	case TGL_UP4_LP4_MICRON:
 		spd_index = SPD_ID_MICRON;
 		break;
-	case TGL_U_LP4_SAMSUNG:
+	case TGL_UP3_LP4_SAMSUNG:
+	case TGL_UP4_LP4_SAMSUNG:
 		spd_index = SPD_ID_SAMSUNG;
 		break;
-	case TGL_U_LP4_HYNIX:
+	case TGL_UP3_LP4_HYNIX:
+	case TGL_UP4_LP4_HYNIX:
 		spd_index = SPD_ID_HYNIX;
 		break;
 	default:

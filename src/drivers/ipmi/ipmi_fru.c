@@ -319,7 +319,7 @@ static void read_fru_product_info_area(const int port, const uint8_t id,
 				goto out;
 			}
 		if (!data2str((const uint8_t *)data_ptr, info->asset_tag, length))
-			free(info->serial_number);
+			free(info->asset_tag);
 	}
 
 out:

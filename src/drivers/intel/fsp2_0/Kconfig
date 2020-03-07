@@ -56,7 +56,7 @@ config FSP_USE_REPO
 	depends on SOC_INTEL_APOLLOLAKE || SOC_INTEL_SKYLAKE || \
 		SOC_INTEL_KABYLAKE || SOC_INTEL_COFFEELAKE || \
 		SOC_INTEL_ICELAKE  || SOC_INTEL_WHISKEYLAKE || \
-		SOC_INTEL_DENVERTON_NS
+		SOC_INTEL_DENVERTON_NS || SOC_INTEL_COMETLAKE
 	help
 	  When selecting this option, the SoC must set FSP_HEADER_PATH
 	  and FSP_FD_PATH correctly so FSP splitting works.

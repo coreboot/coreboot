@@ -205,9 +205,6 @@ void payload_load(void);
 /* Run the loaded payload. */
 void payload_run(void);
 
-/* Mirror the payload to be loaded. */
-void mirror_payload(struct prog *payload);
-
 /*
  * selfload() and selfload_check() load payloads into memory.
  * selfload() does not check the payload to see if it targets memory.

@@ -170,10 +170,6 @@ fail:
 static struct prog global_payload =
 	PROG_INIT(PROG_PAYLOAD, CONFIG_CBFS_PREFIX "/payload");
 
-void __weak mirror_payload(struct prog *payload)
-{
-}
-
 void payload_load(void)
 {
 	struct prog *payload = &global_payload;
@@ -182,8 +178,6 @@ void payload_load(void)
 
 	if (prog_locate(payload))
 		goto out;
-
-	mirror_payload(payload);
 
 	switch (prog_cbfs_type(payload)) {
 	case CBFS_TYPE_SELF: /* Simple ELF */

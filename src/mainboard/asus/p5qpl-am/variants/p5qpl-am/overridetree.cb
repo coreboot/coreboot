@@ -22,9 +22,6 @@ chip northbridge/intel/x4x		# Northbridge
 				chip superio/winbond/w83627dhg
 					device pnp 2e.0 off end		# Floppy
 					device pnp 2e.1 on		# Parallel port
-						# global
-						irq 0x2c = 0x92
-						# parallel port
 						io 0x60 = 0x378
 						irq 0x70 = 7
 						drq 0x74 = 3
@@ -40,16 +37,12 @@ chip northbridge/intel/x4x		# Northbridge
 						irq 0x70 = 1
 						irq 0x72 = 12
 					end
-					device pnp 2e.6 off end		# SPI
-					device pnp 2e.7 on  end		# GPIO6 (all input)
-					device pnp 2e.8 off end		# WDT0#, PLED
-					device pnp 2e.9 off end		# GPIO2
-					device pnp 2e.109 on		# GPIO3
-						irq 0xf0 = 0xf3
-					end
-					device pnp 2e.209 on		# GPIO4
-						irq 0xf4 = 0x00
-					end
+					device pnp 2e.6   off end	# SPI
+					device pnp 2e.7   on  end	# GPIO6 (all input)
+					device pnp 2e.8   off end	# WDT0#, PLED
+					device pnp 2e.9   off end	# GPIO2
+					device pnp 2e.109 on  end	# GPIO3
+					device pnp 2e.209 on  end	# GPIO4
 					device pnp 2e.309 off end	# GPIO5
 					device pnp 2e.a on		# ACPI
 						irq 0x70 = 0

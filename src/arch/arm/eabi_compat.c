@@ -9,7 +9,7 @@
 int raise(int signum) __attribute__((used));
 int raise(int signum)
 {
-	printk(BIOS_CRIT, "raise: Signal # %d caught\n", signum);
+	printk(BIOS_CRIT, "%s: Signal # %d caught\n", __func__, signum);
 	return 0;
 }
 

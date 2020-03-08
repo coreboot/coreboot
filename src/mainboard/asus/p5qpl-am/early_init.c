@@ -114,7 +114,7 @@ static int setup_sio_gpio(void)
 		need_reset = (reg != old_reg);
 		pnp_write_config(GPIO_DEV, 0x30, 0x05);
 		pnp_write_config(GPIO_DEV, 0xf6, 0x08); /* invert GPIO43 */
-		pnp_write_config(GPIO_DEV, 0xf4, 0x00); /* GPIO4 direction */
+		pnp_write_config(GPIO_DEV, 0xf4, 0xa4); /* GPIO4 direction */
 
 		const int gpio43 = (bsel & 2) >> 1;
 		const int gpio44 = (bsel & 4) >> 2;

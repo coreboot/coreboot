@@ -59,7 +59,8 @@ static void lpc_init(struct device *dev)
 
 	cmos_check_update_date();
 
-	/* Initialize the real time clock.
+	/*
+	 * Initialize the real time clock.
 	 * The 0 argument tells cmos_init not to
 	 * update CMOS unless it is invalid.
 	 * 1 tells cmos_init to always initialize the CMOS.

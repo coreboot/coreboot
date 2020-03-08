@@ -37,7 +37,6 @@ config CPU_SPECIFIC_OPTIONS
 	select FSP_PLATFORM_MEMORY_SETTINGS_VERSIONS
 	select FSP_T_XIP
 	select FSP_M_XIP
-	select FSP_USE_REPO
 	select POSTCAR_STAGE
 	select IOAPIC
 	select PARALLEL_MP
@@ -55,6 +54,7 @@ config CPU_SPECIFIC_OPTIONS
 	select TSC_MONOTONIC_TIMER
 	select UDELAY_TSC
 	select SUPPORT_CPU_UCODE_IN_CBFS
+	select MICROCODE_BLOB_NOT_HOOKED_UP
 	select CPU_INTEL_FIRMWARE_INTERFACE_TABLE
 
 config MAINBOARD_USES_FSP2_0
@@ -68,14 +68,6 @@ config USE_FSP2_0_DRIVER
 	  select UDK_2015_BINDING
 	  select POSTCAR_CONSOLE
 	  select POSTCAR_STAGE
-
-# Fake FSP binary is used, as the current FSP binary for SKX-SP
-# is an engineering build. It is not available to the public
-# for now.
-config FSP_FD_PATH
-	  string "Location of FSP binary"
-	  depends on FSP_USE_REPO
-	  default "3rdparty/fsp/KabylakeFspBinPkg/Fsp.fd"
 
 config FSP_HEADER_PATH
 	  string "Location of FSP headers"

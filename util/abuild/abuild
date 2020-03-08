@@ -526,16 +526,13 @@ function build_target
 			build_dir=$TARGET/${BUILD_NAME}
 			build_config "$MAINBOARD" "$build_dir" "$BUILD_NAME" "$config"
 			remove_target "$BUILD_NAME"
-
 		done
-	else
-		echo "Building board $MAINBOARD (using default config)"
-		build_dir=$TARGET/${MAINBOARD}
-
-		build_config "$MAINBOARD" "$build_dir" "$MAINBOARD"
-		remove_target "$MAINBOARD"
 	fi
 
+	echo "Building board $MAINBOARD (using default config)"
+	build_dir=$TARGET/${MAINBOARD}
+	build_config "$MAINBOARD" "$build_dir" "$MAINBOARD"
+	remove_target "$MAINBOARD"
 }
 
 function remove_target

@@ -68,10 +68,10 @@ static void lpc_init(struct device *dev)
 	cmos_init(0);
 
 	/* Initialize i8259 pic */
-	setup_i8259 ();
+	setup_i8259();
 
 	/* Initialize i8254 timers */
-	setup_i8254 ();
+	setup_i8254();
 }
 
 static void hudson_lpc_read_resources(struct device *dev)

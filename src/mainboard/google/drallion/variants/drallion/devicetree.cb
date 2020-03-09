@@ -175,6 +175,9 @@ chip soc/intel/cannonlake
 
 	register "tcc_offset" = "1"
 
+	# PCH Thermal Trip Temperature in deg C
+	register "common_soc_config.pch_thermal_trip" = "77"
+
 	register "common_soc_config" = "{
 		.chipset_lockdown = CHIPSET_LOCKDOWN_COREBOOT,
 		.i2c[0] = {

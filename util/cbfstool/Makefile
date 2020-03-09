@@ -10,6 +10,7 @@ INSTALL ?= /usr/bin/env install
 OBJCOPY ?= objcopy
 
 VBOOT_SOURCE ?= $(top)/3rdparty/vboot
+VBOOT_HOST_BUILD ?= $(abspath $(objutil)/vboot_lib)
 
 .PHONY: all
 all: cbfstool ifittool fmaptool rmodtool ifwitool cbfs-compression-tool
@@ -35,6 +36,7 @@ clean:
 	$(RM) $(objutil)/cbfstool/ifwitool $(ifwiobj)
 	$(RM) $(objutil)/cbfstool/ifittool $(ifitobj)
 	$(RM) $(objutil)/cbfstool/cbfs-compression-tool $(cbfscompobj)
+	$(RM) -r $(VBOOT_HOST_BUILD)
 
 linux_trampoline.c: linux_trampoline.S
 	rm -f linux_trampoline.c

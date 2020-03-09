@@ -27,11 +27,6 @@ cbfsobj += cbfs.o
 cbfsobj += fsp_relocate.o
 cbfsobj += mem_pool.o
 cbfsobj += region.o
-# CRYPTOLIB
-cbfsobj += 2sha_utility.o
-cbfsobj += 2sha1.o
-cbfsobj += 2sha256.o
-cbfsobj += 2sha512.o
 # FMAP
 cbfsobj += fmap.o
 cbfsobj += kv_pair.o
@@ -81,11 +76,6 @@ ifitobj += rmodule.o
 ifitobj += cbfs.o
 ifitobj += mem_pool.o
 ifitobj += region.o
-# CRYPTOLIB
-ifitobj += 2sha_utility.o
-ifitobj += 2sha1.o
-ifitobj += 2sha256.o
-ifitobj += 2sha512.o
 # FMAP
 ifitobj += fmap.o
 ifitobj += kv_pair.o
@@ -136,6 +126,17 @@ else
 TOOLCFLAGS+=-std=c11
 endif
 
+VBOOT_HOSTLIB = $(VBOOT_HOST_BUILD)/libvboot_host.a
+
+$(VBOOT_HOSTLIB):
+	printf "    MAKE       $(subst $(objutil)/,,$(@))\n"
+	unset CFLAGS LDFLAGS; $(MAKE) -C $(VBOOT_SOURCE) \
+		BUILD=$(VBOOT_HOST_BUILD) \
+		CC="$(HOSTCC)" \
+		$(if $(HOSTPKGCONFIG), PKG_CONFIG="$(HOSTPKGCONFIG)") \
+		V=$(V) \
+		hostlib
+
 $(objutil)/cbfstool/%.o: $(objutil)/cbfstool/%.c
 	printf "    HOSTCC     $(subst $(objutil)/,,$(@))\n"
 	$(HOSTCC) $(TOOLCPPFLAGS) $(TOOLCFLAGS) $(HOSTCFLAGS) -c -o $@ $<
@@ -156,10 +157,6 @@ $(objutil)/cbfstool/%.o: $(top)/util/cbfstool/lzma/C/%.c
 	printf "    HOSTCC     $(subst $(objutil)/,,$(@))\n"
 	$(HOSTCC) $(TOOLCPPFLAGS) $(TOOLCFLAGS) $(HOSTCFLAGS) -c -o $@ $<
 
-$(objutil)/cbfstool/%.o: $(VBOOT_SOURCE)/firmware/2lib/%.c
-	printf "    HOSTCC     $(subst $(objutil)/,,$(@))\n"
-	$(HOSTCC) $(TOOLCPPFLAGS) $(TOOLCFLAGS) $(HOSTCFLAGS) -c -o $@ $<
-
 $(objutil)/cbfstool/%.o: $(top)/src/commonlib/%.c
 	printf "    HOSTCC     $(subst $(objutil)/,,$(@))\n"
 	$(HOSTCC) $(TOOLCPPFLAGS) $(TOOLCFLAGS) $(HOSTCFLAGS) -c -o $@ $<
@@ -172,9 +169,9 @@ $(objutil)/cbfstool/%.o: $(top)/util/cbfstool/lz4/lib/%.c
 	printf "    HOSTCC     $(subst $(objutil)/,,$(@))\n"
 	$(HOSTCC) $(TOOLCPPFLAGS) $(TOOLCFLAGS) $(HOSTCFLAGS) -c -o $@ $<
 
-$(objutil)/cbfstool/cbfstool: $(addprefix $(objutil)/cbfstool/,$(cbfsobj))
+$(objutil)/cbfstool/cbfstool: $(addprefix $(objutil)/cbfstool/,$(cbfsobj)) $(VBOOT_HOSTLIB)
 	printf "    HOSTCC     $(subst $(objutil)/,,$(@)) (link)\n"
-	$(HOSTCC) $(TOOLLDFLAGS) -o $@ $(addprefix $(objutil)/cbfstool/,$(cbfsobj))
+	$(HOSTCC) -v $(TOOLLDFLAGS) -o $@ $(addprefix $(objutil)/cbfstool/,$(cbfsobj)) $(VBOOT_HOSTLIB)
 
 $(objutil)/cbfstool/fmaptool: $(addprefix $(objutil)/cbfstool/,$(fmapobj))
 	printf "    HOSTCC     $(subst $(objutil)/,,$(@)) (link)\n"
@@ -188,9 +185,9 @@ $(objutil)/cbfstool/ifwitool: $(addprefix $(objutil)/cbfstool/,$(ifwiobj))
 	printf "    HOSTCC     $(subst $(objutil)/,,$(@)) (link)\n"
 	$(HOSTCC) $(TOOLLDFLAGS) -o $@ $(addprefix $(objutil)/cbfstool/,$(ifwiobj))
 
-$(objutil)/cbfstool/ifittool: $(addprefix $(objutil)/cbfstool/,$(ifitobj))
+$(objutil)/cbfstool/ifittool: $(addprefix $(objutil)/cbfstool/,$(ifitobj)) $(VBOOT_HOSTLIB)
 	printf "    HOSTCC     $(subst $(objutil)/,,$(@)) (link)\n"
-	$(HOSTCC) $(TOOLLDFLAGS) -o $@ $(addprefix $(objutil)/cbfstool/,$(ifitobj))
+	$(HOSTCC) $(TOOLLDFLAGS) -o $@ $(addprefix $(objutil)/cbfstool/,$(ifitobj)) $(VBOOT_HOSTLIB)
 
 $(objutil)/cbfstool/cbfs-compression-tool: $(addprefix $(objutil)/cbfstool/,$(cbfscompobj))
 	printf "    HOSTCC     $(subst $(objutil)/,,$(@)) (link)\n"
@@ -208,9 +205,6 @@ $(objutil)/cbfstool/fmd_scanner.o: TOOLCFLAGS += -Wno-redundant-decls
 $(objutil)/cbfstool/fmd_scanner.o: TOOLCFLAGS += -Wno-unused-function
 # Tolerate lzma sdk warnings
 $(objutil)/cbfstool/LzmaEnc.o: TOOLCFLAGS += -Wno-sign-compare -Wno-cast-qual
-# Tolerate vboot warnings
-$(objutil)/cbfstool/2sha_utility.o: TOOLCFLAGS += -Wno-sign-compare
-$(objutil)/cbfstool/2sha1.o: TOOLCFLAGS += -Wno-cast-qual
 # Tolerate commonlib warnings
 $(objutil)/cbfstool/region.o: TOOLCFLAGS += -Wno-sign-compare -Wno-cast-qual
 $(objutil)/cbfstool/cbfs.o: TOOLCFLAGS += -Wno-sign-compare -Wno-cast-qual

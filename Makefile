@@ -42,6 +42,8 @@ objutil ?= $(obj)/util
 objk := $(objutil)/kconfig
 absobj := $(abspath $(obj))
 
+VBOOT_HOST_BUILD ?= $(abspath $(objutil)/vboot_lib)
+
 COREBOOT_EXPORTS := COREBOOT_EXPORTS
 COREBOOT_EXPORTS += top src srck obj objutil objk
 

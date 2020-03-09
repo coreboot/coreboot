@@ -4,6 +4,7 @@ RM ?= rm
 
 HOSTCC ?= $(CC)
 VBOOT_SOURCE ?= $(top)/3rdparty/vboot
+VBOOT_HOST_BUILD ?= $(abspath $(objutil)/vboot_lib)
 
 .PHONY: all
 all: $(objutil)/futility/futility

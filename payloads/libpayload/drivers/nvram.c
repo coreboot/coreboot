@@ -135,8 +135,9 @@ void rtc_read_clock(struct tm *time)
 			time->tm_hour = bcd2dec(reg8 & 0x7f);
 			time->tm_hour += (reg8 & 0x80) ? 12 : 0;
 			time->tm_hour %= 24;
-		} else
+		} else {
 			time->tm_hour = bcd2dec(nvram_read(NVRAM_RTC_HOURS));
+		}
 		time->tm_year = bcd2dec(nvram_read(NVRAM_RTC_YEAR));
 	} else {
 		time->tm_mon = nvram_read(NVRAM_RTC_MONTH) - 1;
@@ -148,8 +149,9 @@ void rtc_read_clock(struct tm *time)
 			time->tm_hour = reg8 & 0x7f;
 			time->tm_hour += (reg8 & 0x80) ? 12 : 0;
 			time->tm_hour %= 24;
-		} else
+		} else {
 			time->tm_hour = nvram_read(NVRAM_RTC_HOURS);
+		}
 		time->tm_year = nvram_read(NVRAM_RTC_YEAR);
 	}
 
@@ -192,8 +194,9 @@ void rtc_write_clock(const struct tm *time)
 				reg8 = dec2bcd(time->tm_hour - 12) | 0x80;
 			else
 				reg8 = dec2bcd(time->tm_hour);
-		} else
+		} else {
 			reg8 = dec2bcd(time->tm_hour);
+		}
 		nvram_write(reg8, NVRAM_RTC_HOURS);
 		nvram_write(dec2bcd(year), NVRAM_RTC_YEAR);
 	} else {
@@ -206,8 +209,9 @@ void rtc_write_clock(const struct tm *time)
 				reg8 = (time->tm_hour - 12) | 0x80;
 			else
 				reg8 = time->tm_hour;
-		} else
+		} else {
 			reg8 = time->tm_hour;
+		}
 		nvram_write(reg8, NVRAM_RTC_HOURS);
 		nvram_write(year, NVRAM_RTC_YEAR);
 	}

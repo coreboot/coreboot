@@ -51,6 +51,9 @@
  * ACPI related definitions for ASL code.
  */
 
+/* Enable cros_ec_keyb device */
+#define EC_ENABLE_MKBP_DEVICE
+
 /* Enable EC backed PD MCU device in ACPI */
 #define EC_ENABLE_PD_MCU_DEVICE
 

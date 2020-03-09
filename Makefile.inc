@@ -421,6 +421,7 @@ CFLAGS_common += -pipe -g -nostdinc -std=gnu11
 CFLAGS_common += -nostdlib -Wall -Wundef -Wstrict-prototypes -Wmissing-prototypes
 CFLAGS_common += -Wwrite-strings -Wredundant-decls -Wno-trigraphs -Wimplicit-fallthrough
 CFLAGS_common += -Wstrict-aliasing -Wshadow -Wdate-time -Wtype-limits -Wvla
+CFLAGS_common += -Wlogical-op -Wduplicated-cond -Wdangling-else
 CFLAGS_common += -fno-common -ffreestanding -fno-builtin -fomit-frame-pointer
 CFLAGS_common += -ffunction-sections -fdata-sections -fno-pie
 ifeq ($(CONFIG_COMPILER_GCC),y)

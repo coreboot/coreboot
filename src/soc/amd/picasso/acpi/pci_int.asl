@@ -103,12 +103,13 @@
 		P3PR, 1,
 	}
 
-	Method(_PIC, 0x01, NotSerialized)
+	Method(\_PIC, 0x01, NotSerialized)
 	{
 		If (Arg0)
 		{
 			\_SB.CIRQ()
 		}
+		printf("PIC MODE: %o", Arg0)
 		Store(Arg0, PMOD)
 	}
 

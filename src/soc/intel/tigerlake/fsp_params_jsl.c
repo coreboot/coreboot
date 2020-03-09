@@ -143,7 +143,11 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	}
 
 	/* SDCard related configuration */
-	params->ScsSdCardEnabled = pcidev_path_on_root(PCH_DEVFN_SDCARD) ? dev->enabled : 0;
+	dev = pcidev_path_on_root(PCH_DEVFN_SDCARD);
+	if (!dev)
+		params->ScsSdCardEnabled = 0;
+	else
+		params->ScsSdCardEnabled = dev->enabled;
 
 	params->Device4Enable = config->Device4Enable;
 

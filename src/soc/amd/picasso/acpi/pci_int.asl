@@ -116,342 +116,101 @@
 	Method(CIRQ, 0x00, NotSerialized){
 	}
 
-	Name(IRQB, ResourceTemplate(){
-		IRQ(Level,ActiveLow,Shared){15}
+	/* PIC Possible Resource Values */
+	Name(IRQP, ResourceTemplate() {
+		Interrupt(ResourceConsumer, Level, ActiveLow, Exclusive, , , PIC){
+			1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 15
+		}
 	})
 
-	Name(IRQP, ResourceTemplate(){
-		IRQ(Level,ActiveLow,Exclusive){3, 4, 5, 7, 10, 11, 12, 15}
+	/* IO-APIC Possible Resource Values */
+	Name(IRQI, ResourceTemplate() {
+		Interrupt (ResourceConsumer, Level, ActiveLow, Exclusive, , , APIC) {
+			16, 17, 18, 19, 20, 21, 22, 23
+		}
 	})
 
-	Name(PITF, ResourceTemplate(){
-		IRQ(Level,ActiveLow,Exclusive){9}
-	})
+#define PCI_LINK(DEV_NAME, PIC_REG, APIC_REG) \
+	Device(DEV_NAME) { \
+		Name(_HID, EISAID("PNP0C0F")) \
+		Name(_UID, 1) \
+\
+		Method(_STA, 0) { \
+			If (PMOD) { \
+				local0=APIC_REG \
+			} Else { \
+				local0=PIC_REG \
+			} \
+\
+			If (local0 != 0x1f) { \
+				printf("PCI: \\_SB.%s._STA: %o, Enabled", #DEV_NAME, local0) \
+				/* Present, Enabled, Functional */ \
+				Return(0x0b) \
+			} else { \
+				printf("PCI: \\_SB.%s._STA: %o, Disabled", #DEV_NAME, local0) \
+				/* Present, Functional */ \
+				Return(0x09) \
+			} \
+		} \
+\
+		Method(_DIS ,0) { \
+			If(PMOD) { \
+				printf("PCI: \\_SB.%s._DIS APIC", #DEV_NAME) \
+				APIC_REG=0x1f \
+			} Else { \
+				printf("PCI: \\_SB.%s._DIS PIC", #DEV_NAME) \
+				PIC_REG=0x1f \
+			} \
+		} \
+\
+		Method(_PRS ,0) { \
+			If(PMOD) { \
+				printf("PCI: \\_SB.%s._PRS => APIC", #DEV_NAME) \
+				Return(IRQI) \
+			} Else { \
+				printf("PCI: \\_SB.%s._PRS => PIC", #DEV_NAME) \
+				Return(IRQP) \
+			} \
+		} \
+\
+		Method(_CRS ,0) { \
+			local0=ResourceTemplate(){ \
+				Interrupt ( \
+					ResourceConsumer, \
+					Level, \
+					ActiveLow, \
+					Exclusive, , , NUMB) \
+				{ 0 } \
+			} \
+			CreateDWordField(local0, NUMB._INT, IRQN) \
+			If(PMOD) { \
+				printf("PCI: \\_SB.%s._CRS APIC: %o", #DEV_NAME, APIC_REG) \
+				IRQN=APIC_REG \
+			} Else { \
+				printf("PCI: \\_SB.%s._CRS PIC: %o", #DEV_NAME, PIC_REG) \
+				IRQN=PIC_REG \
+			} \
+			If (IRQN == 0x1f) { \
+				Return(ResourceTemplate(){}) \
+			} Else { \
+				Return(local0) \
+			} \
+		} \
+\
+		Method(_SRS, 1) { \
+			CreateWordField(ARG0, 0x5, IRQN) \
+\
+			If(PMOD) { \
+				printf("PCI: \\_SB.%s._SRS APIC: %o", #DEV_NAME, IRQN) \
+				APIC_REG=IRQN \
+			} Else { \
+				printf("PCI: \\_SB.%s._SRS PIC: %o", #DEV_NAME, IRQN) \
+				PIC_REG=IRQN \
+			} \
+		} \
+	}
 
-	Device(INTA) {
-		Name(_HID, EISAID("PNP0C0F"))
-		Name(_UID, 1)
-
-		Method(_STA, 0) {
-			if (PIRA) {
-				Return(0x0b) /* sata is invisible */
-			} else {
-				Return(0x09) /* sata is disabled */
-			}
-		} /* End Method(_SB.INTA._STA) */
-
-		Method(_DIS ,0) {
-			/* DBGO("\\_SB\\LNKA\\_DIS\n") */
-		} /* End Method(_SB.INTA._DIS) */
-
-		Method(_PRS ,0) {
-			/* DBGO("\\_SB\\LNKA\\_PRS\n") */
-			Return(IRQP)
-		} /* Method(_SB.INTA._PRS) */
-
-		Method(_CRS ,0) {
-			/* DBGO("\\_SB\\LNKA\\_CRS\n") */
-			CreateWordField(IRQB, 0x1, IRQN)
-			ShiftLeft(1, PIRA, IRQN)
-			Return(IRQB)
-		} /* Method(_SB.INTA._CRS) */
-
-		Method(_SRS, 1) {
-			/* DBGO("\\_SB\\LNKA\\_SRS\n") */
-			CreateWordField(ARG0, 1, IRQM)
-
-			/* Use lowest available IRQ */
-			FindSetRightBit(IRQM, Local0)
-			if (Local0) {
-				Decrement(Local0)
-			}
-			Store(Local0, PIRA)
-		} /* End Method(_SB.INTA._SRS) */
-	} /* End Device(INTA) */
-
-	Device(INTB) {
-		Name(_HID, EISAID("PNP0C0F"))
-		Name(_UID, 2)
-
-		Method(_STA, 0) {
-			if (PIRB) {
-				Return(0x0b) /* sata is invisible */
-			} else {
-				Return(0x09) /* sata is disabled */
-			}
-		} /* End Method(_SB.INTB._STA) */
-
-		Method(_DIS ,0) {
-			/* DBGO("\\_SB\\LNKB\\_DIS\n") */
-		} /* End Method(_SB.INTB._DIS) */
-
-		Method(_PRS ,0) {
-			/* DBGO("\\_SB\\LNKB\\_PRS\n") */
-			Return(IRQP)
-		} /* Method(_SB.INTB._PRS) */
-
-		Method(_CRS ,0) {
-			/* DBGO("\\_SB\\LNKB\\_CRS\n") */
-			CreateWordField(IRQB, 0x1, IRQN)
-			ShiftLeft(1, PIRB, IRQN)
-			Return(IRQB)
-		} /* Method(_SB.INTB._CRS) */
-
-		Method(_SRS, 1) {
-			/* DBGO("\\_SB\\LNKB\\_CRS\n") */
-			CreateWordField(ARG0, 1, IRQM)
-
-			/* Use lowest available IRQ */
-			FindSetRightBit(IRQM, Local0)
-			if (Local0) {
-				Decrement(Local0)
-			}
-			Store(Local0, PIRB)
-		} /* End Method(_SB.INTB._SRS) */
-	} /* End Device(INTB)  */
-
-	Device(INTC) {
-		Name(_HID, EISAID("PNP0C0F"))
-		Name(_UID, 3)
-
-		Method(_STA, 0) {
-			if (PIRC) {
-				Return(0x0b) /* sata is invisible */
-			} else {
-				Return(0x09) /* sata is disabled */
-			}
-		} /* End Method(_SB.INTC._STA) */
-
-		Method(_DIS ,0) {
-			/* DBGO("\\_SB\\LNKC\\_DIS\n") */
-		} /* End Method(_SB.INTC._DIS) */
-
-		Method(_PRS ,0) {
-			/* DBGO("\\_SB\\LNKC\\_PRS\n") */
-			Return(IRQP)
-		} /* Method(_SB.INTC._PRS) */
-
-		Method(_CRS ,0) {
-			/* DBGO("\\_SB\\LNKC\\_CRS\n") */
-			CreateWordField(IRQB, 0x1, IRQN)
-			ShiftLeft(1, PIRC, IRQN)
-			Return(IRQB)
-		} /* Method(_SB.INTC._CRS) */
-
-		Method(_SRS, 1) {
-			/* DBGO("\\_SB\\LNKC\\_CRS\n") */
-			CreateWordField(ARG0, 1, IRQM)
-
-			/* Use lowest available IRQ */
-			FindSetRightBit(IRQM, Local0)
-			if (Local0) {
-				Decrement(Local0)
-			}
-			Store(Local0, PIRC)
-		} /* End Method(_SB.INTC._SRS) */
-	} /* End Device(INTC)  */
-
-	Device(INTD) {
-		Name(_HID, EISAID("PNP0C0F"))
-		Name(_UID, 4)
-
-		Method(_STA, 0) {
-			if (PIRD) {
-				Return(0x0b) /* sata is invisible */
-			} else {
-				Return(0x09) /* sata is disabled */
-			}
-		} /* End Method(_SB.INTD._STA) */
-
-		Method(_DIS ,0) {
-			/* DBGO("\\_SB\\LNKD\\_DIS\n") */
-		} /* End Method(_SB.INTD._DIS) */
-
-		Method(_PRS ,0) {
-			/* DBGO("\\_SB\\LNKD\\_PRS\n") */
-			Return(IRQP)
-		} /* Method(_SB.INTD._PRS) */
-
-		Method(_CRS ,0) {
-			/* DBGO("\\_SB\\LNKD\\_CRS\n") */
-			CreateWordField(IRQB, 0x1, IRQN)
-			ShiftLeft(1, PIRD, IRQN)
-			Return(IRQB)
-		} /* Method(_SB.INTD._CRS) */
-
-		Method(_SRS, 1) {
-			/* DBGO("\\_SB\\LNKD\\_CRS\n") */
-			CreateWordField(ARG0, 1, IRQM)
-
-			/* Use lowest available IRQ */
-			FindSetRightBit(IRQM, Local0)
-			if (Local0) {
-				Decrement(Local0)
-			}
-			Store(Local0, PIRD)
-		} /* End Method(_SB.INTD._SRS) */
-	} /* End Device(INTD)  */
-
-	Device(INTE) {
-		Name(_HID, EISAID("PNP0C0F"))
-		Name(_UID, 5)
-
-		Method(_STA, 0) {
-			if (PIRE) {
-				Return(0x0b) /* sata is invisible */
-			} else {
-				Return(0x09) /* sata is disabled */
-			}
-		} /* End Method(_SB.INTE._STA) */
-
-		Method(_DIS ,0) {
-			/* DBGO("\\_SB\\LNKE\\_DIS\n") */
-		} /* End Method(_SB.INTE._DIS) */
-
-		Method(_PRS ,0) {
-			/* DBGO("\\_SB\\LNKE\\_PRS\n") */
-			Return(IRQP)
-		} /* Method(_SB.INTE._PRS) */
-
-		Method(_CRS ,0) {
-			/* DBGO("\\_SB\\LNKE\\_CRS\n") */
-			CreateWordField(IRQB, 0x1, IRQN)
-			ShiftLeft(1, PIRE, IRQN)
-			Return(IRQB)
-		} /* Method(_SB.INTE._CRS) */
-
-		Method(_SRS, 1) {
-			/* DBGO("\\_SB\\LNKE\\_CRS\n") */
-			CreateWordField(ARG0, 1, IRQM)
-
-			/* Use lowest available IRQ */
-			FindSetRightBit(IRQM, Local0)
-			if (Local0) {
-				Decrement(Local0)
-			}
-			Store(Local0, PIRE)
-		} /* End Method(_SB.INTE._SRS) */
-	} /* End Device(INTE)  */
-
-	Device(INTF) {
-		Name(_HID, EISAID("PNP0C0F"))
-		Name(_UID, 6)
-
-		Method(_STA, 0) {
-			if (PIRF) {
-				Return(0x0b) /* sata is invisible */
-			} else {
-				Return(0x09) /* sata is disabled */
-			}
-		} /* End Method(_SB.INTF._STA) */
-
-		Method(_DIS ,0) {
-			/* DBGO("\\_SB\\LNKF\\_DIS\n") */
-		} /* End Method(_SB.INTF._DIS) */
-
-		Method(_PRS ,0) {
-			/* DBGO("\\_SB\\LNKF\\_PRS\n") */
-			Return(PITF)
-		} /* Method(_SB.INTF._PRS) */
-
-		Method(_CRS ,0) {
-			/* DBGO("\\_SB\\LNKF\\_CRS\n") */
-			CreateWordField(IRQB, 0x1, IRQN)
-			ShiftLeft(1, PIRF, IRQN)
-			Return(IRQB)
-		} /* Method(_SB.INTF._CRS) */
-
-		Method(_SRS, 1) {
-			/* DBGO("\\_SB\\LNKF\\_CRS\n") */
-			CreateWordField(ARG0, 1, IRQM)
-
-			/* Use lowest available IRQ */
-			FindSetRightBit(IRQM, Local0)
-			if (Local0) {
-				Decrement(Local0)
-			}
-			Store(Local0, PIRF)
-		} /*  End Method(_SB.INTF._SRS) */
-	} /* End Device(INTF)  */
-
-	Device(INTG) {
-		Name(_HID, EISAID("PNP0C0F"))
-		Name(_UID, 7)
-
-		Method(_STA, 0) {
-			if (PIRG) {
-				Return(0x0b) /* sata is invisible */
-			} else {
-				Return(0x09) /* sata is disabled */
-			}
-		} /* End Method(_SB.INTG._STA)  */
-
-		Method(_DIS ,0) {
-			/* DBGO("\\_SB\\LNKG\\_DIS\n") */
-		} /* End Method(_SB.INTG._DIS)  */
-
-		Method(_PRS ,0) {
-			/* DBGO("\\_SB\\LNKG\\_PRS\n") */
-			Return(IRQP)
-		} /* Method(_SB.INTG._CRS)  */
-
-		Method(_CRS ,0) {
-			/* DBGO("\\_SB\\LNKG\\_CRS\n") */
-			CreateWordField(IRQB, 0x1, IRQN)
-			ShiftLeft(1, PIRG, IRQN)
-			Return(IRQB)
-		} /* Method(_SB.INTG._CRS)  */
-
-		Method(_SRS, 1) {
-			/* DBGO("\\_SB\\LNKG\\_CRS\n") */
-			CreateWordField(ARG0, 1, IRQM)
-
-			/* Use lowest available IRQ */
-			FindSetRightBit(IRQM, Local0)
-			if (Local0) {
-				Decrement(Local0)
-			}
-			Store(Local0, PIRG)
-		} /* End Method(_SB.INTG._SRS)  */
-	} /* End Device(INTG)  */
-
-	Device(INTH) {
-		Name(_HID, EISAID("PNP0C0F"))
-		Name(_UID, 8)
-
-		Method(_STA, 0) {
-			if (PIRH) {
-				Return(0x0b) /* sata is invisible */
-			} else {
-				Return(0x09) /* sata is disabled */
-			}
-		} /* End Method(_SB.INTH._STA)  */
-
-		Method(_DIS ,0) {
-			/* DBGO("\\_SB\\LNKH\\_DIS\n") */
-		} /* End Method(_SB.INTH._DIS)  */
-
-		Method(_PRS ,0) {
-			/* DBGO("\\_SB\\LNKH\\_PRS\n") */
-			Return(IRQP)
-		} /* Method(_SB.INTH._CRS)  */
-
-		Method(_CRS ,0) {
-			/* DBGO("\\_SB\\LNKH\\_CRS\n") */
-			CreateWordField(IRQB, 0x1, IRQN)
-			ShiftLeft(1, PIRH, IRQN)
-			Return(IRQB)
-		} /* Method(_SB.INTH._CRS)  */
-
-		Method(_SRS, 1) {
-			/* DBGO("\\_SB\\LNKH\\_CRS\n") */
-			CreateWordField(ARG0, 1, IRQM)
-
-			/* Use lowest available IRQ */
-			FindSetRightBit(IRQM, Local0)
-			if (Local0) {
-				Decrement(Local0)
-			}
-			Store(Local0, PIRH)
-		} /* End Method(_SB.INTH._SRS)  */
-	} /* End Device(INTH)   */
+PCI_LINK(INTA, PIRA, IORA)
+PCI_LINK(INTB, PIRB, IORB)
+PCI_LINK(INTC, PIRC, IORC)
+PCI_LINK(INTD, PIRD, IORD)

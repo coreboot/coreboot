@@ -7,14 +7,25 @@
 		PRQD, 0x00000008,  /* Offset: 1h */
 	}
 	IndexField(PRQI, PRQD, ByteAcc, NoLock, Preserve) {
-		PIRA, 0x00000008,	/* Index 0 */
-		PIRB, 0x00000008,	/* Index 1 */
-		PIRC, 0x00000008,	/* Index 2 */
-		PIRD, 0x00000008,	/* Index 3 */
-		PIRE, 0x00000008,	/* Index 4 */
-		PIRF, 0x00000008,	/* Index 5 */
-		PIRG, 0x00000008,	/* Index 6 */
-		PIRH, 0x00000008,	/* Index 7 */
+		PIRA, 0x00000008,	/* Index 0: INTA */
+		PIRB, 0x00000008,	/* Index 1: INTB */
+		PIRC, 0x00000008,	/* Index 2: INTC */
+		PIRD, 0x00000008,	/* Index 3: INTD */
+		PIRE, 0x00000008,	/* Index 4: INTE */
+		PIRF, 0x00000008,	/* Index 5: INTF */
+		PIRG, 0x00000008,	/* Index 6: INTG */
+		PIRH, 0x00000008,	/* Index 7: INTH */
+
+		/* IO-APIC IRQs */
+		Offset (0x80),
+		IORA, 0x00000008,	/* Index 0x80: INTA */
+		IORB, 0x00000008,	/* Index 0x81: INTB */
+		IORC, 0x00000008,	/* Index 0x82: INTC */
+		IORD, 0x00000008,	/* Index 0x83: INTD */
+		IORE, 0x00000008,	/* Index 0x84: INTE */
+		IORF, 0x00000008,	/* Index 0x85: INTF */
+		IORG, 0x00000008,	/* Index 0x86: INTG */
+		IORH, 0x00000008,	/* Index 0x87: INTH */
 	}
 
 	/* PCI Error control register */

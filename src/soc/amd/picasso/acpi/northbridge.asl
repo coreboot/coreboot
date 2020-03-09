@@ -18,60 +18,38 @@ Method(_STA, 0, NotSerialized)
 	Return(0x0B)	/* Status is visible */
 }
 
+/* PCI Routing Table */
+Name(PR0, Package(){
+	/* Bus 0, Dev 0x00 - F2: IOMMU */
+	Package() { 0x0000FFFF, 0, INTA, 0 },
+	Package() { 0x0000FFFF, 0, INTB, 0 },
+	Package() { 0x0000FFFF, 0, INTC, 0 },
+	Package() { 0x0000FFFF, 0, INTD, 0 },
+
+	/* Bus 0, Dev 0x01 - F[1-7]: GPP PCI Bridges */
+	Package() { 0x0001FFFF, 0, INTA, 0 },
+	Package() { 0x0001FFFF, 1, INTB, 0 },
+	Package() { 0x0001FFFF, 2, INTC, 0 },
+	Package() { 0x0001FFFF, 3, INTD, 0 },
+
+	/* Bus 0, Dev 0x08 - F[1:PCI Bridge to Bus A, 2: PCI Bridge to Bus B] */
+	Package() { 0x0008FFFF, 0, INTA, 0 },
+	Package() { 0x0008FFFF, 1, INTB, 0 },
+	Package() { 0x0008FFFF, 2, INTC, 0 },
+	Package() { 0x0008FFFF, 3, INTD, 0 },
+
+	/* Bus 0, Dev 0x14 - F[0:SMBus 3:LPC] */
+	Package() { 0x0014FFFF, 0, INTA, 0 },
+	Package() { 0x0014FFFF, 1, INTB, 0 },
+	Package() { 0x0014FFFF, 2, INTC, 0 },
+	Package() { 0x0014FFFF, 3, INTD, 0 },
+})
+
 Method(_PRT,0, NotSerialized)
 {
-	If(PMOD)
-	{
-		Return(APR0)	/* APIC mode */
-	}
-	Return (PR0)		/* PIC Mode */
+	Return(PR0)
 }
 
 Device(AMRT) {
 	Name(_ADR, 0x00000000)
 } /* end AMRT */
-
-/* Gpp 0 */
-Device(PBR4) {
-	Name(_ADR, 0x00020001)
-	Method(_PRT,0) {
-		If(PMOD){ Return(APS4) }	/* APIC mode */
-		Return (PS4)			/* PIC Mode */
-	} /* end _PRT */
-} /* end PBR4 */
-
-/* Gpp 1 */
-Device(PBR5) {
-	Name(_ADR, 0x00020002)
-	Method(_PRT,0) {
-		If(PMOD){ Return(APS5) }	/* APIC mode */
-		Return (PS5)			/* PIC Mode */
-	} /* end _PRT */
-} /* end PBR5 */
-
-/* Gpp 2 */
-Device(PBR6) {
-	Name(_ADR, 0x00020003)
-	Method(_PRT,0) {
-		If(PMOD){ Return(APS6) }	/* APIC mode */
-		Return (PS6)			/* PIC Mode */
-	} /* end _PRT */
-} /* end PBR6 */
-
-/* Gpp 3 */
-Device(PBR7) {
-	Name(_ADR, 0x00020004)
-	Method(_PRT,0) {
-		If(PMOD){ Return(APS7) }	/* APIC mode */
-		Return (PS7)			/* PIC Mode */
-	} /* end _PRT */
-} /* end PBR7 */
-
-/* Gpp 4 */
-Device(PBR8) {
-	Name(_ADR, 0x00020005)
-	Method(_PRT,0) {
-		If(PMOD){ Return(APS8) }	/* APIC mode */
-		Return (PS8)			/* PIC Mode */
-	} /* end _PRT */
-} /* end PBR8 */

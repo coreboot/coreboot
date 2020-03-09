@@ -31,8 +31,8 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 		return current;
 
 	max_buses = length >> 20;
-	current += acpi_create_mcfg_mmconfig((acpi_mcfg_mmconfig_t *) current,
-			pciexbar, 0x0, 0x0, max_buses - 1);
+	current += acpi_create_mcfg_mmconfig((acpi_mcfg_mmconfig_t *) current, pciexbar, 0, 0,
+			max_buses - 1);
 
 	return current;
 }

@@ -20,6 +20,6 @@
 
 void bootblock_early_northbridge_init(void)
 {
-	pci_io_write_config32(PCI_DEV(0,0,0), PCIEXBAR,
+	pci_io_write_config32(HOST_BRIDGE, PCIEXBAR,
 		CONFIG_MMCONF_BASE_ADDRESS | MMCONF_256_BUSSES | ENABLE);
 }

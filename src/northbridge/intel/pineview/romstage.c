@@ -13,10 +13,6 @@
  * GNU General Public License for more details.
  */
 
-/* Platform has no romstage entry point under mainboard directory,
- * so this one is named with prefix mainboard.
- */
-
 #include <timestamp.h>
 #include <console/console.h>
 #include <device/pci_ops.h>
@@ -32,7 +28,7 @@
 
 static void rcba_config(void)
 {
-	/* Set up virtual channel 0 */
+	/* Set up Virtual Channel 0 */
 	RCBA32(0x0014) = 0x80000001;
 	RCBA32(0x001c) = 0x03128010;
 }
@@ -41,8 +37,7 @@ __weak void mb_pirq_setup(void)
 {
 }
 
-#define LPC_DEV PCI_DEV(0x0, 0x1f, 0x0)
-
+/* The romstage entry point for this platform is not mainboard-specific, hence the name. */
 void mainboard_romstage_entry(void)
 {
 	u8 spd_addrmap[4] = {};
@@ -51,11 +46,9 @@ void mainboard_romstage_entry(void)
 
 	enable_lapic();
 
-	/* Perform some early chipset initialization required
-	 * before RAM initialization can work
-	 */
+	/* Do some early chipset init, necessary for RAM init to work */
 	i82801gx_early_init();
-	pineview_early_initialization();
+	pineview_early_init();
 
 	post_code(0x30);
 
@@ -64,7 +57,7 @@ void mainboard_romstage_entry(void)
 	if (s3resume) {
 		boot_path = BOOT_PATH_RESUME;
 	} else {
-		if (MCHBAR32(0xf14) & (1 << 8)) /* HOT RESET */
+		if (MCHBAR32(PMSTS) & (1 << 8)) /* HOT RESET */
 			boot_path = BOOT_PATH_RESET;
 		else
 			boot_path = BOOT_PATH_NORMAL;

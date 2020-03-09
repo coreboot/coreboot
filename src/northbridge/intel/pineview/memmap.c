@@ -32,7 +32,7 @@ u8 decode_pciebar(u32 *const base, u32 *const len)
 {
 	*base = 0;
 	*len = 0;
-	const pci_devfn_t dev = PCI_DEV(0,0,0);
+	const pci_devfn_t dev = HOST_BRIDGE;
 	u32 pciexbar = 0;
 	u32 pciexbar_reg;
 	u32 reg32;
@@ -49,7 +49,7 @@ u8 decode_pciebar(u32 *const base, u32 *const len)
 
 	pciexbar_reg = pci_read_config32(dev, PCIEXBAR);
 
-	// MMCFG not supported or not enabled.
+	/* MMCFG not supported or not enabled */
 	if (!(pciexbar_reg & (1 << 0))) {
 		printk(BIOS_WARNING, "WARNING: MMCONF not set\n");
 		return 0;
@@ -72,9 +72,7 @@ u8 decode_pciebar(u32 *const base, u32 *const len)
 /** Decodes used Graphics Mode Select (GMS) to kilobytes. */
 u32 decode_igd_memory_size(const u32 gms)
 {
-	const u32 gmssize[] = {
-		0, 1, 4, 8, 16, 32, 48, 64, 128, 256
-	};
+	const u32 gmssize[] = {0, 1, 4, 8, 16, 32, 48, 64, 128, 256};
 
 	if (gms > 9) {
 		printk(BIOS_DEBUG, "Bad Graphics Mode Select (GMS) value.\n");
@@ -86,9 +84,7 @@ u32 decode_igd_memory_size(const u32 gms)
 /** Decodes used Graphics Stolen Memory (GSM) to kilobytes. */
 u32 decode_igd_gtt_size(const u32 gsm)
 {
-	const u8 gsmsize[] = {
-		0, 1, 0, 0,
-	};
+	const u8 gsmsize[] = {0, 1, 0, 0};
 
 	if (gsm > 3) {
 		printk(BIOS_DEBUG, "Bad Graphics Stolen Memory (GSM) value.\n");
@@ -118,43 +114,42 @@ static u32 decode_tseg_size(const u32 esmramc)
 
 static size_t northbridge_get_tseg_size(void)
 {
-	const u8 esmramc = pci_read_config8(PCI_DEV(0, 0, 0), ESMRAMC);
+	const u8 esmramc = pci_read_config8(HOST_BRIDGE, ESMRAMC);
 	return decode_tseg_size(esmramc);
 }
 
 static uintptr_t northbridge_get_tseg_base(void)
 {
-	return pci_read_config32(PCI_DEV(0, 0, 0), TSEG);
+	return pci_read_config32(HOST_BRIDGE, TSEG);
 }
 
 
-/* Depending of UMA and TSEG configuration, TSEG might start at any
- * 1 MiB alignment. As this may cause very greedy MTRR setup, push
- * CBMEM top downwards to 4 MiB boundary.
+/*
+ * Depending of UMA and TSEG configuration, TSEG might start at any 1 MiB alignment.
+ * As this may cause very greedy MTRR setup, push CBMEM top downwards to 4 MiB boundary.
  */
 void *cbmem_top_chipset(void)
 {
-	uintptr_t top_of_ram = ALIGN_DOWN(northbridge_get_tseg_base(), 4*MiB);
-	return (void *) top_of_ram;
+	return (void *) ALIGN_DOWN(northbridge_get_tseg_base(), 4 * MiB);
 
 }
 
 void smm_region(uintptr_t *start, size_t *size)
 {
 	*start = northbridge_get_tseg_base();
-	*size = northbridge_get_tseg_size();
+	*size  = northbridge_get_tseg_size();
 }
 
 void fill_postcar_frame(struct postcar_frame *pcf)
 {
 	uintptr_t top_of_ram;
 
-	/* Cache 8 MiB region below the top of RAM and 2 MiB above top of
-	 * RAM to cover both cbmem as the TSEG region.
+	/*
+	 * Cache 8 MiB region below the top of RAM and 2 MiB above top of RAM to cover both
+	 * CBMEM and the TSEG region.
 	 */
 	top_of_ram = (uintptr_t)cbmem_top();
-	postcar_frame_add_mtrr(pcf, top_of_ram - 8*MiB, 8*MiB,
-			MTRR_TYPE_WRBACK);
-	postcar_frame_add_mtrr(pcf, northbridge_get_tseg_base(),
-			       northbridge_get_tseg_size(), MTRR_TYPE_WRBACK);
+	postcar_frame_add_mtrr(pcf, top_of_ram - 8 * MiB, 8 * MiB, MTRR_TYPE_WRBACK);
+	postcar_frame_add_mtrr(pcf, northbridge_get_tseg_base(), northbridge_get_tseg_size(),
+			       MTRR_TYPE_WRBACK);
 }

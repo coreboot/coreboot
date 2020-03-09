@@ -56,12 +56,8 @@ chip soc/intel/tigerlake
 	register "PcieClkSrcUsage[1]" = "6"
 	register "PcieClkSrcClkReq[1]" = "1"
 
-	# Enable WWAN PCIE 6 using clk 2
-	register "PcieRpEnable[5]" = "1"
-	register "PcieClkSrcUsage[2]" = "5"
-	register "PcieClkSrcClkReq[2]" = "2"
-
 	# Mark SRCCLKREQ pins as unused that are routed for a Non-Clkreq functionality
+	register "PcieClkSrcUsage[2]" = "0xFF"
 	register "PcieClkSrcUsage[4]" = "0xFF"
 	register "PcieClkSrcUsage[5]" = "0xFF"
 	register "PcieClkSrcUsage[6]" = "0xFF"
@@ -309,7 +305,7 @@ chip soc/intel/tigerlake
 		device pci 1c.2 off end # RP3				0xA0BA
 		device pci 1c.3 off end # RP4				0xA0BB
 		device pci 1c.4 off end # RP5				0xA0BC
-		device pci 1c.5 on  end # WWAN RP6			0xA0BD
+		device pci 1c.5 off end # WWAN RP6			0xA0BD
 		device pci 1c.6 on  end # RP7				0xA0BE
 		device pci 1c.7 on  end # SD Card RP8			0xA0BF
 

@@ -170,7 +170,7 @@ static const struct pad_config gpio_table[] = {
 	/* D6  : SRCCLKREQ1# ==> WLAN_CLKREQ_ODL */
 	PAD_CFG_NF(GPP_D6, NONE, DEEP, NF1),
 	/* D7  : SRCCLKREQ2# ==> WWAN_CLKREQ_ODL */
-	PAD_CFG_NF(GPP_D7, NONE, DEEP, NF1),
+	PAD_NC(GPP_D7, NONE),
 	/* D8  : SRCCLKREQ3# ==> SD_CLKREQ_ODL */
 	PAD_CFG_NF(GPP_D8, NONE, DEEP, NF1),
 	/* D9  : ISH_SPI_CS# ==> PCH_GSPI2_CVF_CS_L */

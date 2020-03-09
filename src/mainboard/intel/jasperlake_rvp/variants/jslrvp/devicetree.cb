@@ -30,22 +30,20 @@ chip soc/intel/jasperlake
 	register "DdiPortBDdc" = "1"
 	register "DdiPortCDdc" = "1"
 
-	register "usb2_ports[0]" = "USB2_PORT_MID(OC0)"	# USB3/2 Type A port1
-	register "usb2_ports[1]" = "USB2_PORT_MID(OC_SKIP)"	# USB2 WWAN
-	register "usb2_ports[2]" = "USB2_PORT_MID(OC_SKIP)"	# USB2 Bluetooth
-	register "usb2_ports[3]" = "USB2_PORT_MID(OC0)"	# Type-C Port1
-	register "usb2_ports[4]" = "USB2_PORT_MID(OC0)"	# Type-C Port2
-	register "usb2_ports[5]" = "USB2_PORT_MID(OC3)"	# Type-C Port3
-	register "usb2_ports[6]" = "USB2_PORT_MID(OC3)"	# Type-C Port4
-	register "usb2_ports[7]" = "USB2_PORT_MID(OC0)"	# USB3/2 Type A port2
-	register "usb2_ports[8]" = "USB2_PORT_MID(OC3)"	# USB2 Type A port1
-	register "usb2_ports[9]" = "USB2_PORT_MID(OC3)"	# USB2 Type A port2
+	register "usb2_ports[0]" = "USB2_PORT_MID(OC_SKIP)"	# Type-C Port1
+	register "usb2_ports[1]" = "USB2_PORT_MID(OC2)"		# USB2 Type A port1
+	register "usb2_ports[2]" = "USB2_PORT_MID(OC_SKIP)"	# Type-C Port2
+	register "usb2_ports[3]" = "USB2_PORT_MID(OC0)"		# USB2 Type A port2
+	register "usb2_ports[4]" = "USB2_PORT_MID(OC_SKIP)"	# USB2 Bluetooth
+	register "usb2_ports[5]" = "USB2_PORT_MID(OC_SKIP)"	# USB2 WWAN
+	register "usb2_ports[6]" = "USB2_PORT_MID(OC2)"		# USB2 Type A port3
+	register "usb2_ports[7]" = "USB2_PORT_MID(OC3)"		# USB2 Type A port4
 
-	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC0)"	# USB3/2 Type A port1
-	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC0)"	# USB3/2 Type A port2
-	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# USB3 WLAN
-	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# UNUSED
-	register "usb3_ports[4]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# UNUSED
+	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# Type-C Port1
+	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# Type-C Port2
+	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# USB3/2 Type A port1
+	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC2)"	# USB3 WWAN
+	register "usb3_ports[4]" = "USB3_PORT_DEFAULT(OC2)"	# UNUSED
 	register "usb3_ports[5]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# UNUSED
 
 	# Enable Pch iSCLK
@@ -194,16 +192,6 @@ chip soc/intel/jasperlake
 						register "desc" = ""USB3/2 Type-A Left Upper""
 						register "type" = "UPC_TYPE_A"
 						device usb 2.7 on end
-					end
-					chip drivers/usb/acpi
-						register "desc" = ""USB2 Type-A Right Lower""
-						register "type" = "UPC_TYPE_A"
-						device usb 2.8 on end
-					end
-					chip drivers/usb/acpi
-						register "desc" = ""USB2 Type-A Right Upper""
-						register "type" = "UPC_TYPE_A"
-						device usb 2.9 on end
 					end
 					chip drivers/usb/acpi
 						register "desc" = ""USB3/2 Type-A Left Lower""

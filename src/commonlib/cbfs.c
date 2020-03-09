@@ -18,9 +18,6 @@
 #include <string.h>
 #include <vb2_sha.h>
 
-#if !defined(ERROR)
-#define ERROR(x...) printk(BIOS_ERR, "CBFS: " x)
-#endif
 #if !defined(LOG)
 #define LOG(x...) printk(BIOS_INFO, "CBFS: " x)
 #endif

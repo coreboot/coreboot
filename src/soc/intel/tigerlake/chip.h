@@ -122,6 +122,14 @@ struct soc_intel_tigerlake_config {
 	 * clksrc. */
 	uint8_t PcieClkSrcClkReq[CONFIG_MAX_PCIE_CLOCKS];
 
+	/* PCIe RP L1 substate */
+	enum L1_substates_control {
+		L1_SS_FSP_DEFAULT,
+		L1_SS_DISABLED,
+		L1_SS_L1_1,
+		L1_SS_L1_2,
+	} PcieRpL1Substates[CONFIG_MAX_ROOT_PORTS];
+
 	/* SMBus */
 	uint8_t SmbusEnable;
 

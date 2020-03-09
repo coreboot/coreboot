@@ -24,6 +24,10 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPO(GPP_H0, 1, PLTRST),
 
 	/* Camera */
+	PAD_CFG_NF(GPP_H6, NONE, PLTRST, NF1), /* I2C3_SDA */
+	PAD_CFG_NF(GPP_H7, NONE, PLTRST, NF1), /* I2C3_SCL */
+	PAD_CFG_NF(GPP_B9, NONE, PLTRST, NF1), /* I2C5_SDA */
+	PAD_CFG_NF(GPP_B10, NONE, PLTRST, NF1), /* I2C5_SCL */
 	PAD_CFG_GPO(GPP_B23, 0, PLTRST),
 	PAD_CFG_GPO(GPP_C15, 0, PLTRST),
 	PAD_CFG_GPO(GPP_E22, 0, PLTRST),
@@ -83,6 +87,15 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_NF(GPP_S6, NONE, DEEP, NF2),   /* DMIC0_CLK */
 	PAD_CFG_NF(GPP_S7, NONE, DEEP, NF2),   /* DMIC0_DATA */
 
+	/* DP */
+	PAD_CFG_NF(GPP_L_BKLTEN, NONE, PLTRST, NF1), /* L_BKLTEN */
+	PAD_CFG_NF(GPP_L_BKLTCTL, NONE, PLTRST, NF1), /* L_BKLTCTL */
+	PAD_CFG_NF(GPP_L_VDDEN, NONE, PLTRST, NF1), /* L_VDDEN */
+	PAD_CFG_NF(GPP_E14, NONE, PLTRST, NF1), /* HPD_A */
+	PAD_CFG_NF(GPP_A18, NONE, PLTRST, NF1), /* HPD_B */
+	PAD_CFG_NF(GPP_A19, NONE, PLTRST, NF1), /* HPD_1 */
+	PAD_CFG_NF(GPP_E18, NONE, PLTRST, NF1), /* DDP_1_CTRCLK */
+	PAD_CFG_NF(GPP_E19, NONE, PLTRST, NF1), /* DDP_1_CTRDATA */
 };
 
 const struct pad_config *variant_gpio_table(size_t *num)

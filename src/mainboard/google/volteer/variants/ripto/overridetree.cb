@@ -1,5 +1,10 @@
 chip soc/intel/tigerlake
 
+	# NVMe warm reboot workaround
+	# Limit L1.1 (value:2) for RP9, RP11
+	register "PcieRpL1Substates[8]" = "2"
+	register "PcieRpL1Substates[10]" = "2"
+
 	device domain 0 on
 	end
 

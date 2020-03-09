@@ -323,6 +323,12 @@ M:	Michał Żygowski <michal.zygowski@3mdeb.com>
 S:	Supported
 F:	src/mainboard/pcengines/
 
+PROTECTLI ALL MAINBOARDS
+M:	Piotr Król <piotr.krol@3mdeb.com>
+M:	Michał Żygowski <michal.zygowski@3mdeb.com>
+S:	Maintained
+F:	src/mainboard/protectli/
+
 SIEMENS MC_xxxx MAINBOARDS
 M:	Werner Zeh <werner.zeh@siemens.com>
 S:	Maintained

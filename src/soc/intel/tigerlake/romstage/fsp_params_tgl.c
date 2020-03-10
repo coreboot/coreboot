@@ -28,6 +28,7 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 {
 	unsigned int i;
 	uint32_t mask = 0;
+	const struct device *dev;
 
 	/* Set IGD stolen size to 60MB. */
 	m_cfg->IgdDvmt50PreAlloc = 0xFE;
@@ -70,7 +71,7 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 	 * Skip IGD initialization in FSP if device
 	 * is disable in devicetree.cb.
 	 */
-	const struct device *dev = pcidev_path_on_root(SA_DEVFN_IGD);
+	dev = pcidev_path_on_root(SA_DEVFN_IGD);
 	if (!dev || !dev->enabled)
 		m_cfg->InternalGfx = 0;
 	else
@@ -113,6 +114,12 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 	m_cfg->PlatformDebugConsent = CONFIG_SOC_INTEL_TIGERLAKE_DEBUG_CONSENT;
 
 	/* Audio: HDAUDIO_LINK_MODE I2S/SNDW */
+	dev = pcidev_path_on_root(PCH_DEVFN_HDA);
+	if (!dev)
+		m_cfg->PchHdaEnable = 0;
+	else
+		m_cfg->PchHdaEnable = dev->enabled;
+
 	m_cfg->PchHdaDspEnable = config->PchHdaDspEnable;
 	m_cfg->PchHdaAudioLinkHdaEnable = config->PchHdaAudioLinkHdaEnable;
 	memcpy(m_cfg->PchHdaAudioLinkDmicEnable, config->PchHdaAudioLinkDmicEnable,

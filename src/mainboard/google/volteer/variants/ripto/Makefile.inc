@@ -13,7 +13,7 @@
 ## GNU General Public License for more details.
 ##
 
-SPD_SOURCES = samsung-K4U6E3S4AA-MGCL           # 0b0000
+SPD_SOURCES = SPD_LPDDR4X_200b_8bank_1Rx16_16Gb_DDP_4267   # 0b0000
 
 bootblock-y += gpio.c
 

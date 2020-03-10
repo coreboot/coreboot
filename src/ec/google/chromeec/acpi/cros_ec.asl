@@ -60,6 +60,10 @@ Device (CREC)
 		Name (_DDN, "EC Base Switch Device")
 	}
 #endif
+
+#ifdef EC_ENABLE_PD_MCU_DEVICE
+	#include "pd.asl"
+#endif
 	Method(_STA, 0)
 	{
 		Return (0xB)

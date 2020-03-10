@@ -344,7 +344,7 @@ Device (EC0)
 	Method (_Q16, 0, NotSerialized)
 	{
 		Store ("EC: GOT PD EVENT", Debug)
-		Notify (ECPD, 0x80)
+		Notify (\_SB.PCI0.LPCB.EC0.CREC.ECPD, 0x80)
 	}
 #endif
 
@@ -556,10 +556,6 @@ Device (EC0)
 
 #ifdef EC_ENABLE_KEYBOARD_BACKLIGHT
 	#include "keyboard_backlight.asl"
-#endif
-
-#ifdef EC_ENABLE_PD_MCU_DEVICE
-	#include "pd.asl"
 #endif
 
 #ifdef EC_ENABLE_TBMC_DEVICE

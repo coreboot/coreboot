@@ -17,7 +17,7 @@
 #include "i945.h"
 #include "raminit.h"
 
-int fixup_i945_errata(void)
+int fixup_i945gm_errata(void)
 {
 	u32 reg32;
 

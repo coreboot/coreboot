@@ -1,3 +1,0 @@
-# Disabled
-#config BOARD_AMD_DB_FT3B_LC
-#	bool "DB-FT3b-LC"

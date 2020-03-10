@@ -1,6 +1,0 @@
-Board name: DB-FT3b-LC
-Board URL: http://wwwd.amd.com/amd/devsite.nsf/platforms/db-ft3-lc.htm
-Category: eval
-ROM protocol: SPI
-ROM socketed: n
-Flashrom support: y

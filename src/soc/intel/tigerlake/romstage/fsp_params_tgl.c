@@ -145,6 +145,9 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 	m_cfg->VtdBaseAddress[4] = TBT1_BASE_ADDRESS;
 	m_cfg->VtdBaseAddress[5] = TBT2_BASE_ADDRESS;
 	m_cfg->VtdBaseAddress[6] = TBT3_BASE_ADDRESS;
+
+	/* Change VmxEnable UPD value according to ENABLE_VMX Kconfig */
+	m_cfg->VmxEnable = CONFIG(ENABLE_VMX);
 }
 
 void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)

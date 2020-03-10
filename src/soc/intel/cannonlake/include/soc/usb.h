@@ -120,6 +120,17 @@ struct usb3_port_config {
 	uint8_t ocpin;
 	uint8_t tx_de_emp;
 	uint8_t tx_downscale_amp;
+	uint8_t gen2_tx_rate0_uniq_tran_enable;
+	uint8_t gen2_tx_rate0_uniq_tran;
+	uint8_t gen2_tx_rate1_uniq_tran_enable;
+	uint8_t gen2_tx_rate1_uniq_tran;
+	uint8_t gen2_tx_rate2_uniq_tran_enable;
+	uint8_t gen2_tx_rate2_uniq_tran;
+	uint8_t gen2_tx_rate3_uniq_tran_enable;
+	uint8_t gen2_tx_rate3_uniq_tran;
+	uint8_t gen2_rx_tuning_enable;
+	uint8_t gen2_rx_tuning_params;
+	uint8_t gen2_rx_filter_sel;
 };
 
 #define USB3_PORT_EMPTY { \
@@ -127,6 +138,17 @@ struct usb3_port_config {
 	.ocpin            = OC_SKIP, \
 	.tx_de_emp        = 0x00, \
 	.tx_downscale_amp = 0x00, \
+	.gen2_tx_rate0_uniq_tran_enable = 0, \
+	.gen2_tx_rate0_uniq_tran = 0x00, \
+	.gen2_tx_rate1_uniq_tran_enable = 0, \
+	.gen2_tx_rate1_uniq_tran = 0x00, \
+	.gen2_tx_rate2_uniq_tran_enable = 0, \
+	.gen2_tx_rate2_uniq_tran = 0x00, \
+	.gen2_tx_rate3_uniq_tran_enable = 0, \
+	.gen2_tx_rate3_uniq_tran = 0x00, \
+	.gen2_rx_tuning_enable = 0, \
+	.gen2_rx_tuning_params = 0x00, \
+	.gen2_rx_filter_sel = 0x00, \
 }
 
 #define USB3_PORT_DEFAULT(pin) { \
@@ -134,6 +156,35 @@ struct usb3_port_config {
 	.ocpin            = (pin), \
 	.tx_de_emp        = 0x0, \
 	.tx_downscale_amp = 0x00, \
+	.gen2_tx_rate0_uniq_tran_enable = 0, \
+	.gen2_tx_rate0_uniq_tran = 0x00, \
+	.gen2_tx_rate1_uniq_tran_enable = 0, \
+	.gen2_tx_rate1_uniq_tran = 0x00, \
+	.gen2_tx_rate2_uniq_tran_enable = 0, \
+	.gen2_tx_rate2_uniq_tran = 0x00, \
+	.gen2_tx_rate3_uniq_tran_enable = 0, \
+	.gen2_tx_rate3_uniq_tran = 0x00, \
+	.gen2_rx_tuning_enable = 0, \
+	.gen2_rx_tuning_params = 0x00, \
+	.gen2_rx_filter_sel = 0x00, \
+}
+
+#define USB3_PORT_GEN2_DEFAULT(pin) { \
+	.enable           = 1, \
+	.ocpin            = (pin), \
+	.tx_de_emp        = 0x0, \
+	.tx_downscale_amp = 0x00, \
+	.gen2_tx_rate0_uniq_tran_enable = 0, \
+	.gen2_tx_rate0_uniq_tran = 0x00, \
+	.gen2_tx_rate1_uniq_tran_enable = 0, \
+	.gen2_tx_rate1_uniq_tran = 0x00, \
+	.gen2_tx_rate2_uniq_tran_enable = 1, \
+	.gen2_tx_rate2_uniq_tran = 0x4C, \
+	.gen2_tx_rate3_uniq_tran_enable = 0, \
+	.gen2_tx_rate3_uniq_tran = 0x00, \
+	.gen2_rx_tuning_enable = 0x0F, \
+	.gen2_rx_tuning_params = 0x15, \
+	.gen2_rx_filter_sel = 0x44, \
 }
 
 /*

@@ -3,6 +3,7 @@
 #ifndef SOC_MEDIATEK_COMMON_GPIO_H
 #define SOC_MEDIATEK_COMMON_GPIO_H
 
+#include <soc/addressmap.h>
 #include <soc/gpio_base.h>
 #include <stddef.h>
 #include <stdint.h>

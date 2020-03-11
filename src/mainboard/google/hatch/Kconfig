@@ -130,7 +130,8 @@ config VARIANT_DIR
 config VBOOT
 	select HAS_RECOVERY_MRC_CACHE
 	select MRC_CLEAR_NORMAL_CACHE_ON_RECOVERY_RETRAIN
-	select VBOOT_EARLY_EC_SYNC
+	# FIXME: allow kconfig to select on a subset of boards only
+	select VBOOT_EARLY_EC_SYNC if !BOARD_GOOGLE_PUFF
 	select VBOOT_LID_SWITCH
 
 endif # BOARD_GOOGLE_BASEBOARD_HATCH

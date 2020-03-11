@@ -232,6 +232,15 @@ struct soc_intel_tigerlake_config {
 	uint8_t TcssXdciEn;
 
 	/*
+	 * SOC Aux orientation override:
+	 * This is a bitfield that corresponds to up to 4 TCSS ports on TGL.
+	 * Even numbered bits (0, 2, 4, 6) control the retimer being handled by SOC.
+	 * Odd numbered bits (1, 3, 5, 7) control the orientation of the physical aux lines
+	 * on the motherboard.
+	 */
+	uint16_t TcssAuxOri;
+
+	/*
 	 * Override GPIO PM configuration:
 	 * 0: Use FSP default GPIO PM program,
 	 * 1: coreboot to override GPIO PM program

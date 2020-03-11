@@ -104,6 +104,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	else
 		params->PeiGraphicsPeimInit = 0;
 
+	params->TcssAuxOri = config->TcssAuxOri;
 	for (i = 0; i < 8; i++)
 		params->IomTypeCPortPadCfg[i] = 0x09000000;
 

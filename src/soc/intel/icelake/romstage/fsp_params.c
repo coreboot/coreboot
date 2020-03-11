@@ -30,10 +30,7 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 	uint32_t mask = 0;
 
 	if (!dev || !dev->enabled) {
-		/*
-		 * Skip IGD initialization in FSP if device
-		 * is disabled in devicetree.cb.
-		 */
+		/* Skip IGD initialization in FSP if device is disabled in devicetree.cb. */
 		m_cfg->InternalGfx = 0;
 		m_cfg->IgdDvmt50PreAlloc = 0;
 	} else {

@@ -27,7 +27,7 @@ First of all create a backup of your ROM with an external programmer:
 # flashrom -p YOUR_PROGRAMMER -r backup.rom
 ```
 
-Then, split the IFD regions into separate filse with ifdtool. You will need
+Then, split the IFD regions into separate files with ifdtool. You will need
 `flashregion_3_gbe.bin` later.
 ```console
 $ ifdtool -x backup.rom

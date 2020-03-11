@@ -58,6 +58,7 @@ smm-y += pmutil.c
 smm-y += smihandler.c
 smm-y += uart.c
 
+verstage-$(CONFIG_SOC_INTEL_TIGERLAKE) += gpio_tgl.c
 
 CPPFLAGS_common += -I$(src)/soc/intel/tigerlake
 CPPFLAGS_common += -I$(src)/soc/intel/tigerlake/include

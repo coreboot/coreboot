@@ -103,6 +103,9 @@ chip soc/intel/tigerlake
 		[PchSerialIoIndexUART2] = PchSerialIoPci,
 	}"
 
+	# TCSS USB3
+	register "TcssAuxOri" = "0"
+
 	#HD Audio
 	register "PchHdaDspEnable" = "1"
 	register "PchHdaAudioLinkHdaEnable" = "0"

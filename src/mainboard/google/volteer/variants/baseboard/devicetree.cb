@@ -127,6 +127,7 @@ chip soc/intel/tigerlake
 
 	# TCSS USB3
 	register "TcssXhciEn" = "1"
+	register "TcssAuxOri" = "0"
 
 	# DP port
 	register "DdiPortAConfig" = "1"	# eDP

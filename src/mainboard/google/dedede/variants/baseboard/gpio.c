@@ -328,7 +328,7 @@ static const struct pad_config gpio_table[] = {
 	/* H18 : WLAN_DISABLE_L */
 	PAD_NC(GPP_H18, NONE),
 	/* H19 : BT_DISABLE_L */
-	PAD_NC(GPP_H19, NONE),
+	PAD_CFG_GPO(GPP_H19, 1, DEEP),
 
 	/* R0  : I2S_HP_BCLK */
 	PAD_NC(GPP_R0, NONE),
@@ -409,6 +409,9 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_GPI(GPP_C4, NONE, DEEP),
 	/* C5  : RAM_STRAP_3 */
 	PAD_CFG_GPI(GPP_C5, NONE, DEEP),
+
+	/* H19 : BT_DISABLE_L */
+	PAD_CFG_GPO(GPP_H19, 0, DEEP),
 };
 
 const struct pad_config *__weak variant_gpio_table(size_t *num)

@@ -26,7 +26,9 @@ const smi_handler_t southbridge_smi[SMI_STS_BITS] = {
 	[GPIO_STS_BIT] = smihandler_southbridge_gpi,
 	[ESPI_SMI_STS_BIT] = smihandler_southbridge_espi,
 	[MCSMI_STS_BIT] = smihandler_southbridge_mc,
+#if CONFIG(SOC_INTEL_COMMON_BLOCK_SMM_TCO_ENABLE)
 	[TCO_STS_BIT] = smihandler_southbridge_tco,
+#endif
 	[PERIODIC_STS_BIT] = smihandler_southbridge_periodic,
 	[MONITOR_STS_BIT] = smihandler_southbridge_monitor,
 };

@@ -39,7 +39,9 @@ const smi_handler_t southbridge_smi[32] = {
 	[APM_STS_BIT] = smihandler_southbridge_apmc,
 	[PM1_STS_BIT] = smihandler_southbridge_pm1,
 	[GPIO_STS_BIT] = smihandler_southbridge_gpi,
+#if CONFIG(SOC_INTEL_COMMON_BLOCK_SMM_TCO_ENABLE)
 	[TCO_STS_BIT] = smihandler_southbridge_tco,
+#endif
 	[PERIODIC_STS_BIT] = smihandler_southbridge_periodic,
 #if CONFIG(SOC_ESPI)
 	[ESPI_SMI_STS_BIT] = smihandler_southbridge_espi,

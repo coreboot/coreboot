@@ -27,6 +27,7 @@ Debiab||Debian
 FTBS||FTBFS
 POSIX-complient||POSIX-compliant
 READEME||README
+SuperIO||Super I/O
 aaccessibility||accessibility
 aaccession||accession
 abailable||available

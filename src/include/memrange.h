@@ -24,6 +24,8 @@ struct memranges {
 	/* coreboot doesn't have a free() function. Therefore, keep a cache of
 	 * free'd entries.  */
 	struct range_entry *free_list;
+	/* Alignment for base and end addresses of the range. (Must be power of 2). */
+	size_t align;
 };
 
 /* Each region within a memranges structure is represented by a
@@ -86,17 +88,32 @@ static inline void range_entry_update_tag(struct range_entry *r,
 #define memranges_each_entry(r, ranges) \
 	for (r = (ranges)->entries; r != NULL; r = r->next)
 
+
 /* Initialize memranges structure providing an optional array of range_entry
- * to use as the free list. */
-void memranges_init_empty(struct memranges *ranges, struct range_entry *free,
-			  size_t num_free);
+ * to use as the free list. Additionally, it accepts an align parameter that
+ * determines the alignment of addresses. (Alignment must be a power of 2). */
+void memranges_init_empty_with_alignment(struct memranges *ranges,
+					 struct range_entry *free,
+					 size_t num_free, size_t align);
 
 /* Initialize and fill a memranges structure according to the
  * mask and match type for all memory resources. Tag each entry with the
- * specified type. */
-void memranges_init(struct memranges *ranges,
+ * specified type. Additionally, it accepts an align parameter that
+ * determines the alignment of addresses. (Alignment must be a power of 2). */
+void memranges_init_with_alignment(struct memranges *ranges,
 		    unsigned long mask, unsigned long match,
-		    unsigned long tag);
+		    unsigned long tag, size_t align);
+
+/* Initialize memranges structure providing an optional array of range_entry
+ * to use as the free list. Addresses are default aligned to 4KiB. */
+#define memranges_init_empty(__ranges, __free, __num_free)	\
+	memranges_init_empty_with_alignment(__ranges, __free, __num_free, 4 * KiB)
+
+/* Initialize and fill a memranges structure according to the
+ * mask and match type for all memory resources. Tag each entry with the
+ * specified type. Addresses are default aligned to 4KiB. */
+#define memranges_init(__ranges, __mask, __match, __tag)	\
+	memranges_init_with_alignment(__ranges, __mask, __match, __tag, 4 * KiB)
 
 /* Clone a memrange. The new memrange has the same entries as the old one. */
 void memranges_clone(struct memranges *newranges, struct memranges *oldranges);

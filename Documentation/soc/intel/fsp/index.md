@@ -45,6 +45,11 @@ those are fixed. If possible a workaround is described here as well.
   * Workaround: Disable internal UART manually after calling FSP
   * Issue on public tracker: [Issue 10]
 
+### CoffeeLakeFsp
+* Disabling the internal graphics causes a crash in FSP-M
+  * 7.0.68.40 and older version
+  * Workaround: Set "tconfig->PanelPowerEnable = 0"
+  * Issue on public tracker: [Issue 49]
 
 ## Open Source Intel FSP specification
 
@@ -72,4 +77,5 @@ those are fixed. If possible a workaround is described here as well.
 [Issue 22]: https://github.com/IntelFsp/FSP/issues/22
 [Issue 35]: https://github.com/IntelFsp/FSP/issues/35
 [Issue 41]: https://github.com/IntelFsp/FSP/issues/41
+[Issue 49]: https://github.com/IntelFsp/FSP/issues/49
 

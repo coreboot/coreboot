@@ -2,6 +2,8 @@
 /* This file is part of the coreboot project. */
 
 #include <assert.h>
+#include <device/pci_def.h>
+#include <device/pci.h>
 #include <cpu/x86/msr.h>
 #include <console/console.h>
 #include <fsp/util.h>
@@ -15,14 +17,28 @@
 
 #include "../chip.h"
 
-static void soc_memory_init_params(FSP_M_CONFIG *m_cfg, const config_t *config)
+static void soc_memory_init_params(FSPM_UPD *mupd, const config_t *config)
 {
+	FSP_M_CONFIG *m_cfg = &mupd->FspmConfig;
+	FSP_M_TEST_CONFIG *tconfig = &mupd->FspmTestConfig;
+
 	unsigned int i;
 	uint32_t mask = 0;
-	const struct device *dev = pcidev_path_on_root(PCH_DEVFN_ISH);
+	const struct device *dev = pcidev_path_on_root(SA_DEVFN_IGD);
 
-	/* Set IGD stolen size to 64MB. */
-	m_cfg->IgdDvmt50PreAlloc = 2;
+	/*
+	 * Probe for no IGD and disable InternalGfx and panel power to prevent a
+	 * crash in FSP-M.
+	 */
+	if (dev && dev->enabled && pci_read_config16(SA_DEV_IGD, PCI_VENDOR_ID) != 0xffff) {
+		/* Set IGD stolen size to 64MB. */
+		m_cfg->InternalGfx = 1;
+		m_cfg->IgdDvmt50PreAlloc = 2;
+	} else {
+		m_cfg->InternalGfx = 0;
+		m_cfg->IgdDvmt50PreAlloc = 0;
+		tconfig->PanelPowerEnable = 0;
+	}
 	m_cfg->TsegSize = CONFIG_SMM_TSEG_SIZE;
 	m_cfg->IedSize = CONFIG_IED_REGION_SIZE;
 	m_cfg->SaGv = config->SaGv;
@@ -71,6 +87,7 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg, const config_t *config)
 		m_cfg->CpuRatio = (flex_ratio.lo >> 8) & 0xff;
 	}
 
+	dev = pcidev_path_on_root(PCH_DEVFN_ISH);
 	/* If ISH is enabled, enable ISH elements */
 	if (!dev)
 		m_cfg->PchIshEnable = 0;
@@ -122,7 +139,7 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	FSP_M_CONFIG *m_cfg = &mupd->FspmConfig;
 	FSP_M_TEST_CONFIG *tconfig = &mupd->FspmTestConfig;
 
-	soc_memory_init_params(m_cfg, config);
+	soc_memory_init_params(mupd, config);
 
 	/* Enable SMBus controller based on config */
 	if (!smbus)

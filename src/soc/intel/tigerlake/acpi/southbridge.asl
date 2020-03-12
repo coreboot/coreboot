@@ -49,6 +49,9 @@
 /* SMBus 0:1f.4 */
 #include "smbus.asl"
 
+/* ISH 0:12.0 */
+#include "ish.asl"
+
 /* USB XHCI 0:14.0 */
 #include "xhci.asl"
 

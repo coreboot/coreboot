@@ -89,6 +89,13 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 	else
 		m_cfg->InternalGfx = 0x1;
 
+	/* ISH */
+	dev = pcidev_path_on_root(PCH_DEVFN_ISH);
+	if (!dev || !dev->enabled)
+		m_cfg->PchIshEnable = 0;
+	else
+		m_cfg->PchIshEnable = 1;
+
 	/* DP port config */
 	m_cfg->DdiPortAConfig = config->DdiPortAConfig;
 	m_cfg->DdiPortBConfig = config->DdiPortBConfig;

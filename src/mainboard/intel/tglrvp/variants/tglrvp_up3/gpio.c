@@ -61,6 +61,10 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPO(GPP_C5, 1, DEEP),
 	PAD_CFG_GPI_APIC(GPP_C12, NONE, DEEP, EDGE_BOTH, INVERT), /* AUDIO JACK IRQ */
 
+	/* CNVi */
+	PAD_CFG_NF(GPP_F4, NONE, DEEP, NF1),  /* CNV_RF_RST_L */
+	PAD_CFG_NF(GPP_F5, NONE, DEEP, NF3),  /* CNV_CLKREQ0 */
+
 };
 
 /* Early pad configuration in bootblock */

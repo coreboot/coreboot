@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2019 Intel Corp.
+ * Copyright (C) 2019-2020 Intel Corp.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,6 +39,9 @@
 
 /* PCIE Ports */
 #include "pcie.asl"
+
+/* pmc 0:1f.2 */
+#include "pmc.asl"
 
 /* Serial IO */
 #include "serialio.asl"

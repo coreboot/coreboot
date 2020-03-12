@@ -391,3 +391,58 @@ struct range_entry *memranges_next_entry(struct memranges *ranges,
 {
 	return r->next;
 }
+
+/* Find a range entry that satisfies the given constraints to fit a hole that matches the
+ * required alignment, is big enough, does not exceed the limit and has a matching tag. */
+static const struct range_entry *memranges_find_entry(struct memranges *ranges,
+						      resource_t limit, resource_t size,
+						      size_t align, unsigned long tag)
+{
+	const struct range_entry *r;
+	resource_t base, end;
+
+	if (size == 0)
+		return NULL;
+
+	if (!IS_POWER_OF_2(align))
+		return NULL;
+
+	if (!IS_ALIGNED(align, ranges->align))
+		return NULL;
+
+	memranges_each_entry(r, ranges) {
+
+		if (r->tag != tag)
+			continue;
+
+		base = ALIGN_UP(r->begin, align);
+		end = base + size - 1;
+
+		if (end > r->end)
+			continue;
+
+		if (end > limit)
+			continue;
+
+		return r;
+	}
+
+	return NULL;
+}
+
+bool memranges_steal(struct memranges *ranges, resource_t limit, resource_t size, size_t align,
+		     unsigned long tag, resource_t *stolen_base)
+{
+	resource_t base;
+	const struct range_entry *r = memranges_find_entry(ranges, limit, size, align, tag);
+
+	if (r == NULL)
+		return false;
+
+	base = ALIGN_UP(r->begin, align);
+
+	memranges_create_hole(ranges, base, size);
+	*stolen_base = base;
+
+	return true;
+}

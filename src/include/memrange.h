@@ -16,6 +16,7 @@
 #define MEMRANGE_H_
 
 #include <device/resource.h>
+#include <stdbool.h>
 
 /* A memranges structure consists of a list of range_entry(s). The structure
  * is exposed so that a memranges can be used on the stack if needed. */
@@ -166,4 +167,18 @@ void memranges_update_tag(struct memranges *ranges, unsigned long old_tag,
 /* Returns next entry after the provided entry. NULL if r is last. */
 struct range_entry *memranges_next_entry(struct memranges *ranges,
 					 const struct range_entry *r);
+
+/* Steals memory from the available list in given ranges as per the constraints:
+ * limit = Upper bound for the memory range to steal.
+ * size  = Requested size for the stolen memory.
+ * align = Alignment requirements for the starting address of the stolen memory.
+ *         (Alignment must be a power of 2).
+ * tag   = Use a range that matches the given tag.
+ *
+ * If the constraints can be satisfied, this function creates a hole in the memrange,
+ * writes the base address of that hole to stolen_base and returns true. Otherwise it returns
+ * false. */
+bool memranges_steal(struct memranges *ranges, resource_t limit, resource_t size, size_t align,
+		     unsigned long tag, resource_t *stolen_base);
+
 #endif /* MEMRANGE_H_ */

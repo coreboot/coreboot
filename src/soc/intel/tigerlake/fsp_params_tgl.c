@@ -174,8 +174,11 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 		params->PchLanEnable = dev->enabled;
 
 	/* CNVi */
-	params->CnviMode = config->CnviMode;
-	params->CnviBtCore = config->CnviBtCore;
+	dev = pcidev_path_on_root(PCH_DEVFN_CNVI_WIFI);
+	if (dev)
+		params->CnviMode = dev->enabled;
+	else
+		params->CnviMode = 0;
 
 	/* Legacy 8254 timer support */
 	params->Enable8254ClockGating = !CONFIG_USE_LEGACY_8254_TIMER;

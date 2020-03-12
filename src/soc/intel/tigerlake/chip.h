@@ -222,10 +222,6 @@ struct soc_intel_tigerlake_config {
 	/* Enable Pch iSCLK */
 	uint8_t pch_isclk;
 
-	/* CNVi */
-	uint8_t CnviMode;
-	uint8_t CnviBtCore;
-
 	/* CNVi BT Audio Offload: Enable/Disable BT Audio Offload. */
 	enum {
 		FORCE_DISABLE,

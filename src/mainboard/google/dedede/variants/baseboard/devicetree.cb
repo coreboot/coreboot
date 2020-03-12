@@ -31,10 +31,10 @@ chip soc/intel/tigerlake
 	register "usb2_ports[1]" = "USB2_PORT_MID(OC_SKIP)"	# Type-C Port C1
 	register "usb2_ports[2]" = "USB2_PORT_MID(OC_SKIP)"	# Type-A Port A0
 	register "usb2_ports[3]" = "USB2_PORT_MID(OC_SKIP)"	# Type-A Port A1
-	register "usb2_ports[4]" = "USB2_PORT_MID(OC_SKIP)"	# Bluetooth
+	register "usb2_ports[4]" = "USB2_PORT_MID(OC_SKIP)"	# Discrete Bluetooth
 	register "usb2_ports[5]" = "USB2_PORT_EMPTY"		# Not Used
 	register "usb2_ports[6]" = "USB2_PORT_EMPTY"		# Not Used
-	register "usb2_ports[7]" = "USB2_PORT_EMPTY"		# Not Used
+	register "usb2_ports[7]" = "USB2_PORT_MID(OC_SKIP)"	# Integrated Bluetooth
 
 	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# USB3/2 Type-C Port C0
 	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# USB3/2 Type-C Port C1
@@ -190,10 +190,16 @@ chip soc/intel/tigerlake
 						device usb 2.3 on end
 					end
 					chip drivers/usb/acpi
-						register "desc" = ""Bluetooth""
+						register "desc" = ""Discrete Bluetooth""
 						register "type" = "UPC_TYPE_INTERNAL"
 						register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_H19)"
 						device usb 2.4 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""Integrated Bluetooth""
+						register "type" = "UPC_TYPE_INTERNAL"
+						register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_H19)"
+						device usb 2.7 on end
 					end
 					chip drivers/usb/acpi
 						register "desc" = ""Left Type-C Port""

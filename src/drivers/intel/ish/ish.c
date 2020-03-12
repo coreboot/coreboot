@@ -65,6 +65,7 @@ static const struct device_operations pci_ish_device_ops = {
 static const unsigned short pci_device_ids[] = {
 	PCI_DEVICE_ID_INTEL_CNL_ISHB,
 	PCI_DEVICE_ID_INTEL_CML_ISHB,
+	PCI_DEVICE_ID_INTEL_TGL_ISHB,
 	0
 };
 

@@ -133,7 +133,12 @@ chip soc/intel/tigerlake
 		device pci 10.2 on end # CNVi: BT		0xA0F5 - A0F7
 		device pci 10.6 off end # THC0			0xA0D0
 		device pci 10.7 off end # THC1			0xA0D1
-		device pci 12.0 off end # SensorHUB		0xA0FC
+		device pci 12.0 on      # SensorHUB		0xA0FC
+			chip drivers/intel/ish
+				register "firmware_name" = ""tglrvp_ish.bin""
+				device generic 0 on end
+			end
+		end
 		device pci 12.6 off end # GSPI2			0x34FB
 		device pci 13.0 off end # GSPI3			0xA0FD
 		device pci 14.0 on  end # USB3.1 xHCI 		0xA0ED

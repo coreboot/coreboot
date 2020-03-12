@@ -24,6 +24,7 @@
 #include <soc/pci_devs.h>
 #include <soc/soc_util.h>
 #include <soc/pm.h>
+#include <string.h>
 #include "chip.h"
 
 static int acpi_sci_irq(void)

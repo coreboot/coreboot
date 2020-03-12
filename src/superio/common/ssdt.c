@@ -10,6 +10,7 @@
 #include <device/pnp_def.h>
 #include <console/console.h>
 #include <types.h>
+#include <string.h>
 
 struct superio_dev {
 	const char *acpi_hid;

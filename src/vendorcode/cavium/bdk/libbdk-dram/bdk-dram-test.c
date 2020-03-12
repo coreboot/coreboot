@@ -37,6 +37,7 @@
 * ARISING OUT OF USE OR PERFORMANCE OF THE SOFTWARE LIES WITH YOU.
 ***********************license end**************************************/
 #include <bdk.h>
+#include <string.h>
 #include "libbdk-arch/bdk-csrs-gti.h"
 #include "libbdk-arch/bdk-csrs-ocx.h"
 

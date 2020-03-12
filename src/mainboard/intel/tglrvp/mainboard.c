@@ -18,6 +18,7 @@
 #include <soc/gpio.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 #include <smbios.h>
+#include <string.h>
 
 const char *smbios_system_sku(void)
 {

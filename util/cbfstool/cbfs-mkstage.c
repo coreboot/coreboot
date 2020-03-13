@@ -73,7 +73,7 @@ static Elf64_Shdr *find_ignored_section_header(struct parsed_elf *pelf,
 	return NULL;
 }
 
-static void fill_cbfs_stage(struct buffer *outheader, enum comp_algo algo,
+static void fill_cbfs_stage(struct buffer *outheader, enum cbfs_compression algo,
 				uint64_t entry, uint64_t loadaddr,
 				uint32_t filesize, uint32_t memsize)
 {
@@ -93,7 +93,7 @@ static void fill_cbfs_stage(struct buffer *outheader, enum comp_algo algo,
  * works for all elf files, not just the restricted set.
  */
 int parse_elf_to_stage(const struct buffer *input, struct buffer *output,
-		       enum comp_algo algo, uint32_t *location,
+		       enum cbfs_compression algo, uint32_t *location,
 		       const char *ignore_section)
 {
 	struct parsed_elf pelf;

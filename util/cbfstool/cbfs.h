@@ -4,234 +4,58 @@
 #define __CBFS_H
 
 #include "common.h"
-#include <stdint.h>
-
-#include <vb2_api.h>
-
-/* cbfstool will fail when trying to build a cbfs_file header that's larger
- * than MAX_CBFS_FILE_HEADER_BUFFER. 1K should give plenty of room. */
-#define MAX_CBFS_FILE_HEADER_BUFFER 1024
-
-/* create a magic number in host-byte order.
- * b3 is the high order byte.
- * in the coreboot tools, we go with the 32-bit
- * magic number convention.
- * This was an inline func but that breaks anything
- * that uses it in a case statement.
- */
-
-#define makemagic(b3, b2, b1, b0)\
-	(((b3)<<24) | ((b2) << 16) | ((b1) << 8) | (b0))
+#include <commonlib/bsd/cbfs_serialized.h>
 
 /* To make CBFS more friendly to ROM, fill -1 (0xFF) instead of zero. */
 #define CBFS_CONTENT_DEFAULT_VALUE	(-1)
 
-// Alignment (in bytes) to be used when no master header is present
-#define CBFS_ENTRY_ALIGNMENT 64
-
-#define CBFS_HEADER_MAGIC  0x4F524243
 #define CBFS_HEADPTR_ADDR_X86 0xFFFFFFFC
-#define CBFS_HEADER_VERSION1 0x31313131
-#define CBFS_HEADER_VERSION2 0x31313132
-#define CBFS_HEADER_VERSION  CBFS_HEADER_VERSION2
 
-#define CBFS_ALIGNMENT 64
-
-struct cbfs_header {
-	uint32_t magic;
-	uint32_t version;
-	uint32_t romsize;
-	uint32_t bootblocksize;
-	uint32_t align; /* hard coded to 64 byte */
-	uint32_t offset;
-	uint32_t architecture;	/* Version 2 */
-	uint32_t pad[1];
-} __packed;
-
-#define CBFS_ARCHITECTURE_UNKNOWN  0xFFFFFFFF
-#define CBFS_ARCHITECTURE_X86      0x00000001
-#define CBFS_ARCHITECTURE_ARM      0x00000010
-#define CBFS_ARCHITECTURE_AARCH64  0x0000aa64
-#define CBFS_ARCHITECTURE_MIPS     0x00000100	/* deprecated */
-#define CBFS_ARCHITECTURE_RISCV    0xc001d0de
-#define CBFS_ARCHITECTURE_PPC64    0x407570ff
-
-#define CBFS_FILE_MAGIC "LARCHIVE"
-
-struct cbfs_file {
-	uint8_t magic[8];
-	/* length of file data */
-	uint32_t len;
+struct typedesc_t {
 	uint32_t type;
-	/* offset to struct cbfs_file_attribute or 0 */
-	uint32_t attributes_offset;
-	/* length of header incl. variable data */
-	uint32_t offset;
-	char filename[];
-} __packed;
+	const char *name;
+};
 
-#if defined __GNUC__ && (__GNUC__ * 100 + __GNUC_MINOR__) >= 406
-_Static_assert(sizeof(struct cbfs_file) == 24, "cbfs_file size mismatch");
-#endif
-
-/* The common fields of extended cbfs file attributes.
-   Attributes are expected to start with tag/len, then append their
-   specific fields. */
-struct cbfs_file_attribute {
-	uint32_t tag;
-	/* len covers the whole structure, incl. tag and len */
-	uint32_t len;
-	uint8_t data[0];
-} __packed;
-
-/* Depending on how the header was initialized, it may be backed with 0x00 or
- * 0xff. Support both. */
-#define CBFS_FILE_ATTR_TAG_UNUSED 0
-#define CBFS_FILE_ATTR_TAG_UNUSED2 0xffffffff
-#define CBFS_FILE_ATTR_TAG_COMPRESSION 0x42435a4c
-#define CBFS_FILE_ATTR_TAG_HASH 0x68736148
-#define CBFS_FILE_ATTR_TAG_POSITION 0x42435350 /* PSCB */
-#define CBFS_FILE_ATTR_TAG_ALIGNMENT 0x42434c41 /* ALCB */
-#define CBFS_FILE_ATTR_TAG_PADDING 0x47444150 /* PDNG */
-#define CBFS_FILE_ATTR_TAG_IBB 0x32494242 /* Initial BootBlock */
-
-struct cbfs_file_attr_compression {
-	uint32_t tag;
-	uint32_t len;
-	/* whole file compression format. 0 if no compression. */
-	uint32_t compression;
-	uint32_t decompressed_size;
-} __packed;
-
-struct cbfs_file_attr_hash {
-	uint32_t tag;
-	uint32_t len;
-	uint32_t hash_type;
-	/* hash_data is len - sizeof(struct) bytes */
-	uint8_t  hash_data[];
-} __packed;
-
-struct cbfs_file_attr_position {
-	uint32_t tag;
-	uint32_t len;
-	uint32_t position;
-} __packed;
-
-struct cbfs_file_attr_align {
-	uint32_t tag;
-	uint32_t len;
-	uint32_t alignment;
-} __packed;
-
-struct cbfs_stage {
-	uint32_t compression;
-	uint64_t entry;
-	uint64_t load;
-	uint32_t len;
-	uint32_t memlen;
-} __packed;
-
-#define PAYLOAD_SEGMENT_CODE	makemagic('C', 'O', 'D', 'E')
-#define PAYLOAD_SEGMENT_DATA	makemagic('D', 'A', 'T', 'A')
-#define PAYLOAD_SEGMENT_BSS	makemagic('B', 'S', 'S', ' ')
-#define PAYLOAD_SEGMENT_PARAMS	makemagic('P', 'A', 'R', 'A')
-#define PAYLOAD_SEGMENT_ENTRY	makemagic('E', 'N', 'T', 'R')
-
-struct cbfs_payload_segment {
-	uint32_t type;
-	uint32_t compression;
-	uint32_t offset;
-	uint64_t load_addr;
-	uint32_t len;
-	uint32_t mem_len;
-} __packed;
-
-struct cbfs_payload {
-	struct cbfs_payload_segment segments;
-} __packed;
-
-/** These are standard component types for well known
-    components (i.e - those that coreboot needs to consume.
-    Users are welcome to use any other value for their
-    components */
-
-#define CBFS_COMPONENT_BOOTBLOCK  0x01
-#define CBFS_COMPONENT_CBFSHEADER 0x02
-#define CBFS_COMPONENT_STAGE      0x10
-#define CBFS_COMPONENT_SELF       0x20
-#define CBFS_COMPONENT_FIT        0x21
-#define CBFS_COMPONENT_OPTIONROM  0x30
-#define CBFS_COMPONENT_BOOTSPLASH 0x40
-#define CBFS_COMPONENT_RAW        0x50
-#define CBFS_COMPONENT_VSA        0x51
-#define CBFS_COMPONENT_MBI        0x52
-#define CBFS_COMPONENT_MICROCODE  0x53
-#define CBFS_COMPONENT_FSP        0x60
-#define CBFS_COMPONENT_MRC        0x61
-#define CBFS_COMPONENT_MMA	  0x62
-#define CBFS_COMPONENT_EFI	  0x63
-#define CBFS_COMPONENT_STRUCT	  0x70
-#define CBFS_COMPONENT_CMOS_DEFAULT 0xaa
-#define CBFS_COMPONENT_SPD          0xab
-#define CBFS_COMPONENT_MRC_CACHE    0xac
-#define CBFS_COMPONENT_CMOS_LAYOUT 0x01aa
-
-/* The deleted type is chosen to be a value
- * that can be written in a FLASH from all other
- * values.
- */
-#define CBFS_COMPONENT_DELETED 0
-
-/* for all known FLASH, this value can be changed
- * to all other values. This allows NULL files to be
- * changed without a block erase
- */
-#define CBFS_COMPONENT_NULL 0xFFFFFFFF
+static const struct typedesc_t types_cbfs_compression[] = {
+	{CBFS_COMPRESS_NONE, "none"},
+	{CBFS_COMPRESS_LZMA, "LZMA"},
+	{CBFS_COMPRESS_LZ4, "LZ4"},
+	{0, NULL},
+};
 
 static struct typedesc_t filetypes[] unused = {
-	{CBFS_COMPONENT_BOOTBLOCK, "bootblock"},
-	{CBFS_COMPONENT_CBFSHEADER, "cbfs header"},
-	{CBFS_COMPONENT_STAGE, "stage"},
-	{CBFS_COMPONENT_SELF, "simple elf"},
-	{CBFS_COMPONENT_FIT, "fit"},
-	{CBFS_COMPONENT_OPTIONROM, "optionrom"},
-	{CBFS_COMPONENT_BOOTSPLASH, "bootsplash"},
-	{CBFS_COMPONENT_RAW, "raw"},
-	{CBFS_COMPONENT_VSA, "vsa"},
-	{CBFS_COMPONENT_MBI, "mbi"},
-	{CBFS_COMPONENT_MICROCODE, "microcode"},
-	{CBFS_COMPONENT_FSP, "fsp"},
-	{CBFS_COMPONENT_MRC, "mrc"},
-	{CBFS_COMPONENT_CMOS_DEFAULT, "cmos_default"},
-	{CBFS_COMPONENT_CMOS_LAYOUT, "cmos_layout"},
-	{CBFS_COMPONENT_SPD, "spd"},
-	{CBFS_COMPONENT_MRC_CACHE, "mrc_cache"},
-	{CBFS_COMPONENT_MMA, "mma"},
-	{CBFS_COMPONENT_EFI, "efi"},
-	{CBFS_COMPONENT_STRUCT, "struct"},
-	{CBFS_COMPONENT_DELETED, "deleted"},
-	{CBFS_COMPONENT_NULL, "null"},
+	{CBFS_TYPE_BOOTBLOCK, "bootblock"},
+	{CBFS_TYPE_CBFSHEADER, "cbfs header"},
+	{CBFS_TYPE_STAGE, "stage"},
+	{CBFS_TYPE_SELF, "simple elf"},
+	{CBFS_TYPE_FIT, "fit"},
+	{CBFS_TYPE_OPTIONROM, "optionrom"},
+	{CBFS_TYPE_BOOTSPLASH, "bootsplash"},
+	{CBFS_TYPE_RAW, "raw"},
+	{CBFS_TYPE_VSA, "vsa"},
+	{CBFS_TYPE_MBI, "mbi"},
+	{CBFS_TYPE_MICROCODE, "microcode"},
+	{CBFS_TYPE_FSP, "fsp"},
+	{CBFS_TYPE_MRC, "mrc"},
+	{CBFS_TYPE_CMOS_DEFAULT, "cmos_default"},
+	{CBFS_TYPE_CMOS_LAYOUT, "cmos_layout"},
+	{CBFS_TYPE_SPD, "spd"},
+	{CBFS_TYPE_MRC_CACHE, "mrc_cache"},
+	{CBFS_TYPE_MMA, "mma"},
+	{CBFS_TYPE_EFI, "efi"},
+	{CBFS_TYPE_STRUCT, "struct"},
+	{CBFS_TYPE_DELETED, "deleted"},
+	{CBFS_TYPE_NULL, "null"},
 	{0, NULL}
 };
-
-static const struct typedesc_t types_cbfs_hash[] unused = {
-	{VB2_HASH_INVALID, "none"},
-	{VB2_HASH_SHA1, "sha1"},
-	{VB2_HASH_SHA256, "sha256"},
-	{VB2_HASH_SHA512, "sha512"},
-	{0, NULL}
-};
-
-static size_t widths_cbfs_hash[] unused = {
-	[VB2_HASH_INVALID] = 0,
-	[VB2_HASH_SHA1] = 20,
-	[VB2_HASH_SHA256] = 32,
-	[VB2_HASH_SHA512] = 64,
-};
-
-#define CBFS_NUM_SUPPORTED_HASHES ARRAY_SIZE(widths_cbfs_hash)
 
 #define CBFS_SUBHEADER(_p) ( (void *) ((((uint8_t *) (_p)) + ntohl((_p)->offset))) )
+
+static inline size_t cbfs_file_attr_hash_size(enum vb2_hash_algorithm algo)
+{
+	return offsetof(struct cbfs_file_attr_hash, hash.raw) +
+	       vb2_digest_size(algo);
+}
 
 /* cbfs_image.c */
 uint32_t get_cbfs_entry_type(const char *name, uint32_t default_value);

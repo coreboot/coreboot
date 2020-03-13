@@ -17,6 +17,7 @@
 #include <commonlib/fsp.h>
 #include <commonlib/endian.h>
 #include <commonlib/helpers.h>
+#include <vboot_host.h>
 
 #define SECTION_WITH_FIT_TABLE	"BOOTBLOCK"
 
@@ -70,7 +71,7 @@ static struct param {
 	bool machine_parseable;
 	bool unprocessed;
 	bool ibb;
-	enum comp_algo compression;
+	enum cbfs_compression compression;
 	int precompression;
 	enum vb2_hash_algorithm hash;
 	/* For linux payloads */
@@ -194,7 +195,7 @@ static int do_cbfs_locate(int32_t *cbfs_addr, size_t metadata_size,
 
 	/* Take care of the hash attribute if it is used */
 	if (param.hash != VB2_HASH_INVALID)
-		metadata_size += sizeof(struct cbfs_file_attr_hash);
+		metadata_size += cbfs_file_attr_hash_size(param.hash);
 
 	int32_t address = cbfs_locate_entry(&image, data_size, param.pagesize,
 						param.alignment, metadata_size);
@@ -246,7 +247,7 @@ static int cbfs_add_integer_component(const char *name,
 		offset = convert_to_from_top_aligned(param.image_region,
 								-offset);
 
-	header = cbfs_create_file_header(CBFS_COMPONENT_RAW,
+	header = cbfs_create_file_header(CBFS_TYPE_RAW,
 		buffer.size, name);
 	if (cbfs_add_entry(&image, &buffer, offset, header, 0) != 0) {
 		ERROR("Failed to add %llu into ROM image as '%s'.\n",
@@ -347,7 +348,7 @@ static int cbfs_add_master_header(void)
 	 *    image is at 4GB == 0.
 	 */
 	h->bootblocksize = htonl(4);
-	h->align = htonl(CBFS_ENTRY_ALIGNMENT);
+	h->align = htonl(CBFS_ALIGNMENT);
 	/* The offset and romsize fields within the master header are absolute
 	 * values within the boot media. As such, romsize needs to relfect
 	 * the end 'offset' for a CBFS. To achieve that the current buffer
@@ -361,7 +362,7 @@ static int cbfs_add_master_header(void)
 	h->offset = htonl(offset);
 	h->architecture = htonl(CBFS_ARCHITECTURE_UNKNOWN);
 
-	header = cbfs_create_file_header(CBFS_COMPONENT_CBFSHEADER,
+	header = cbfs_create_file_header(CBFS_TYPE_CBFSHEADER,
 		buffer_size(&buffer), name);
 	if (cbfs_add_entry(&image, &buffer, 0, header, 0) != 0) {
 		ERROR("Failed to add cbfs master header into ROM image.\n");
@@ -483,7 +484,7 @@ static int cbfs_add_component(const char *filename,
 	 * Check if Intel CPU topswap is specified this will require a
 	 * second bootblock to be added.
 	 */
-	if (type == CBFS_COMPONENT_BOOTBLOCK && param.topswap_size)
+	if (type == CBFS_TYPE_BOOTBLOCK && param.topswap_size)
 		if (add_topswap_bootblock(&buffer, &offset))
 			return 1;
 
@@ -518,10 +519,10 @@ static int cbfs_add_component(const char *filename,
 			/* care about the additional metadata that is added */
 			/* to the cbfs file and therefore set the position  */
 			/* the real beginning of the data. */
-			if (type == CBFS_COMPONENT_STAGE)
+			if (type == CBFS_TYPE_STAGE)
 				attrs->position = htonl(offset +
 					sizeof(struct cbfs_stage));
-			else if (type == CBFS_COMPONENT_SELF)
+			else if (type == CBFS_TYPE_SELF)
 				attrs->position = htonl(offset +
 					sizeof(struct cbfs_payload));
 			else
@@ -756,7 +757,7 @@ static int cbfstool_convert_mkpayload(struct buffer *buffer,
 	if (ret != 0) {
 		ret = parse_fit_to_payload(buffer, &output, param.compression);
 		if (ret == 0)
-			header->type = htonl(CBFS_COMPONENT_FIT);
+			header->type = htonl(CBFS_TYPE_FIT);
 	}
 
 	/* If it's not an FIT, see if it's a UEFI FV */
@@ -814,7 +815,7 @@ static int cbfs_add(void)
 
 	/* Set the alignment to 4KiB minimum for FSP blobs when no base address
 	 * is provided so that relocation can occur. */
-	if (param.type == CBFS_COMPONENT_FSP) {
+	if (param.type == CBFS_TYPE_FSP) {
 		if (!param.baseaddress_assigned)
 			param.alignment = 4*1024;
 		convert = cbfstool_convert_fsp;
@@ -855,7 +856,7 @@ static int cbfs_add_stage(void)
 
 	return cbfs_add_component(param.filename,
 				  param.name,
-				  CBFS_COMPONENT_STAGE,
+				  CBFS_TYPE_STAGE,
 				  param.baseaddress,
 				  param.headeroffset,
 				  cbfstool_convert_mkstage);
@@ -865,7 +866,7 @@ static int cbfs_add_payload(void)
 {
 	return cbfs_add_component(param.filename,
 				  param.name,
-				  CBFS_COMPONENT_SELF,
+				  CBFS_TYPE_SELF,
 				  param.baseaddress,
 				  param.headeroffset,
 				  cbfstool_convert_mkpayload);
@@ -885,7 +886,7 @@ static int cbfs_add_flat_binary(void)
 	}
 	return cbfs_add_component(param.filename,
 				  param.name,
-				  CBFS_COMPONENT_SELF,
+				  CBFS_TYPE_SELF,
 				  param.baseaddress,
 				  param.headeroffset,
 				  cbfstool_convert_mkflatpayload);
@@ -1576,10 +1577,7 @@ int main(int argc, char **argv)
 				break;
 			}
 			case 'A': {
-				int algo = cbfs_parse_hash_algo(optarg);
-				if (algo >= 0)
-					param.hash = algo;
-				else {
+				if (!vb2_lookup_hash_alg(optarg, &param.hash)) {
 					ERROR("Unknown hash algorithm '%s'.\n",
 						optarg);
 					return 1;

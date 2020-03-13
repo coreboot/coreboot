@@ -101,6 +101,7 @@ TOOLCPPFLAGS += -I$(top)/src/commonlib/include -I$(top)/src/commonlib/bsd/includ
 TOOLCPPFLAGS += -include $(top)/src/commonlib/bsd/include/commonlib/bsd/compiler.h
 TOOLCPPFLAGS += -I$(VBOOT_SOURCE)/firmware/include
 TOOLCPPFLAGS += -I$(VBOOT_SOURCE)/firmware/2lib/include
+TOOLCPPFLAGS += -I$(VBOOT_SOURCE)/host/include
 # UEFI header file support. It's not pretty, but that's what we currently
 # have right now.
 TOOLCPPFLAGS += -I$(top)/src

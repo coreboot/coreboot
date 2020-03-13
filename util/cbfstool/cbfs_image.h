@@ -42,7 +42,7 @@ int cbfs_image_create(struct cbfs_image *image, size_t entries_size);
 /* Creates an empty CBFS image by given size, and description to its content
  * (bootblock, align, header location, starting offset of CBFS entries).
  * The output image will contain a valid cbfs_header, with one cbfs_file
- * entry with type CBFS_COMPONENT_NULL, with max available size.
+ * entry with type CBFS_TYPE_NULL, with max available size.
  * Only call this if you want a legacy CBFS with a master header.
  * Returns 0 on success, otherwise nonzero. */
 int cbfs_legacy_image_create(struct cbfs_image *image,

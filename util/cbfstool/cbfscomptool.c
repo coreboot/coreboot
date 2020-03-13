@@ -7,6 +7,7 @@
 #include <strings.h>
 #include <time.h>
 
+#include "cbfs.h"
 #include "common.h"
 
 const char *usage_text = "cbfs-compression-tool benchmark\n"

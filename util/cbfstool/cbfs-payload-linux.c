@@ -34,14 +34,14 @@ struct bzpayload {
 	struct buffer cmdline;
 	struct buffer initrd;
 	/* Output variables. */
-	enum comp_algo algo;
+	enum cbfs_compression algo;
 	comp_func_ptr compress;
 	struct buffer output;
 	size_t offset;
 	struct cbfs_payload_segment *out_seg;
 };
 
-static int bzp_init(struct bzpayload *bzp, enum comp_algo algo)
+static int bzp_init(struct bzpayload *bzp, enum cbfs_compression algo)
 {
 	memset(bzp, 0, sizeof(*bzp));
 
@@ -186,7 +186,7 @@ static void bzp_output_segment(struct bzpayload *bzp, struct buffer *b,
  */
 int parse_bzImage_to_payload(const struct buffer *input,
 			     struct buffer *output, const char *initrd_name,
-			     char *cmdline, enum comp_algo algo)
+			     char *cmdline, enum cbfs_compression algo)
 {
 	struct bzpayload bzp;
 	unsigned int initrd_base = 64*1024*1024;

@@ -335,7 +335,7 @@ int cbfs_vb2_hash_contents(const struct region_device *cbfs,
 		if (cbfsf_file_type(fh, &ftype))
 			return VB2_ERROR_UNKNOWN;
 
-		if (ftype == CBFS_TYPE_DELETED || ftype == CBFS_TYPE_DELETED2)
+		if (ftype == CBFS_TYPE_DELETED || ftype == CBFS_TYPE_NULL)
 			continue;
 
 		rv = cbfs_extend_hash_with_offset(&ctx, cbfs, &fh->data);

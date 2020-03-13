@@ -46,7 +46,7 @@ cb_err_t cbfs_walk(cbfs_dev_t dev, cb_err_t (*walker)(cbfs_dev_t dev, size_t off
 		const uint32_t data_offset = be32toh(mdata.h.offset);
 		const uint32_t data_length = be32toh(mdata.h.len);
 		const uint32_t type = be32toh(mdata.h.type);
-		const bool empty = (type == CBFS_TYPE_DELETED || type == CBFS_TYPE_DELETED2);
+		const bool empty = (type == CBFS_TYPE_DELETED || type == CBFS_TYPE_NULL);
 
 		DEBUG("Found CBFS header @%#zx (type %d, attr +%#x, data +%#x, length %#x)\n",
 		      offset, type, attr_offset, data_offset, data_length);
@@ -75,7 +75,7 @@ cb_err_t cbfs_walk(cbfs_dev_t dev, cb_err_t (*walker)(cbfs_dev_t dev, size_t off
 		if (cbfs_dev_read(dev, mdata.raw + sizeof(mdata.h),
 				  offset + sizeof(mdata.h), todo) != todo)
 			return CB_CBFS_IO;
-		DEBUG("File name: '%s'\n", mdata.filename);
+		DEBUG("File name: '%s'\n", mdata.h.filename);
 
 		if (do_hash && !empty && vb2_digest_extend(&dc, mdata.raw, data_offset))
 			return CB_ERR;
@@ -134,10 +134,9 @@ static cb_err_t lookup_walker(cbfs_dev_t dev, size_t offset, const union cbfs_md
 			      size_t already_read, void *arg)
 {
 	struct cbfs_lookup_args *args = arg;
-
 	/* Check if the name we're looking for could fit, then we can safely memcmp() it. */
-	if (args->namesize > already_read - offsetof(union cbfs_mdata, filename) ||
-	    memcmp(args->name, mdata->filename, args->namesize) != 0)
+	if (args->namesize > already_read - offsetof(union cbfs_mdata, h.filename) ||
+	    memcmp(args->name, mdata->h.filename, args->namesize) != 0)
 		return CB_CBFS_NOT_FOUND;
 
 	LOG("Found '%s' @%#zx size %#x\n", args->name, offset, be32toh(mdata->h.len));
@@ -175,13 +174,13 @@ const void *cbfs_find_attr(const union cbfs_mdata *mdata, uint32_t attr_tag, siz
 
 		if (offset + len > end) {
 			ERROR("Attribute %s[%u] overflows end of metadata\n",
-			      mdata->filename, tag);
+			      mdata->h.filename, tag);
 			return NULL;
 		}
 		if (tag == attr_tag) {
 			if (size_check && len != size_check) {
 				ERROR("Attribute %s[%u] size mismatch: %u != %zu\n",
-				      mdata->filename, tag, len, size_check);
+				      mdata->h.filename, tag, len, size_check);
 				return NULL;
 			}
 			return attr;

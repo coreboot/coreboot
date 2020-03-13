@@ -51,7 +51,7 @@ void xdr_get_seg(struct cbfs_payload_segment *out,
 }
 
 int parse_elf_to_payload(const struct buffer *input, struct buffer *output,
-			 enum comp_algo algo)
+			 enum cbfs_compression algo)
 {
 	Elf64_Phdr *phdr;
 	Elf64_Ehdr ehdr;
@@ -232,7 +232,7 @@ int parse_flat_binary_to_payload(const struct buffer *input,
 				 struct buffer *output,
 				 uint32_t loadaddress,
 				 uint32_t entrypoint,
-				 enum comp_algo algo)
+				 enum cbfs_compression algo)
 {
 	comp_func_ptr compress;
 	struct cbfs_payload_segment segs[2] = { {0} };
@@ -277,7 +277,7 @@ int parse_flat_binary_to_payload(const struct buffer *input,
 }
 
 int parse_fv_to_payload(const struct buffer *input, struct buffer *output,
-			enum comp_algo algo)
+			enum cbfs_compression algo)
 {
 	comp_func_ptr compress;
 	struct cbfs_payload_segment segs[2] = { {0} };
@@ -405,7 +405,7 @@ int parse_fv_to_payload(const struct buffer *input, struct buffer *output,
 }
 
 int parse_fit_to_payload(const struct buffer *input, struct buffer *output,
-			 enum comp_algo algo)
+			 enum cbfs_compression algo)
 {
 	struct fdt_header *fdt_h;
 

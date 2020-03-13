@@ -48,12 +48,8 @@
  * avoid byte-order confusion, fields should always and only be converted to host byte order at
  * exactly the time they are read from one of these structures into their own separate variable.
  */
-#define CBFS_METADATA_MAX_SIZE 256
 union cbfs_mdata {
-	struct {
-		struct cbfs_file h;
-		char filename[];
-	};
+	struct cbfs_file h;
 	uint8_t raw[CBFS_METADATA_MAX_SIZE];
 };
 

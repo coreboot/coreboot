@@ -66,7 +66,7 @@ static int none_decompress(char *in, int in_len, char *out, unused int out_len,
 	return 0;
 }
 
-comp_func_ptr compression_function(enum comp_algo algo)
+comp_func_ptr compression_function(enum cbfs_compression algo)
 {
 	comp_func_ptr compress;
 	switch (algo) {
@@ -86,7 +86,7 @@ comp_func_ptr compression_function(enum comp_algo algo)
 	return compress;
 }
 
-decomp_func_ptr decompression_function(enum comp_algo algo)
+decomp_func_ptr decompression_function(enum cbfs_compression algo)
 {
 	decomp_func_ptr decompress;
 	switch (algo) {

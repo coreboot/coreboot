@@ -26,6 +26,7 @@ CFLAGS  ?= -O2 -g -Wall -Wextra -Wmissing-prototypes
 LDFLAGS += -lpci -lz
 
 CPPFLAGS += -I$(top)/src/commonlib/include -I$(top)/src/commonlib/bsd/include
+CPPFLAGS += -I$(top)/src/arch/x86/include
 
 
 OBJS = inteltool.o pcr.o cpu.o gpio.o gpio_groups.o rootcmplx.o powermgt.o \

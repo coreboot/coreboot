@@ -285,6 +285,18 @@ struct soc_intel_tigerlake_config {
 	 * This mode makes FSP detect Optane and NVME and set PCIe lane mode
 	 * accordingly */
 	uint8_t HybridStorageMode;
+
+	/*
+	 * Override CPU flex ratio value:
+	 * CPU ratio value controls the maximum processor non-turbo ratio.
+	 * Valid Range 0 to 63.
+	 * In general descriptor provides option to set default cpu flex ratio.
+	 * Default cpu flex ratio 0 ensures booting with non-turbo max frequency.
+	 * That's the reason FSP skips cpu_ratio override if cpu_ratio is 0.
+	 * Only override CPU flex ratio to not boot with non-turbo max.
+	 */
+	uint8_t cpu_ratio_override;
+
 };
 
 typedef struct soc_intel_tigerlake_config config_t;

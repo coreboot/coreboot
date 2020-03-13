@@ -15,9 +15,11 @@
 
 #include <assert.h>
 #include <console/console.h>
+#include <cpu/x86/msr.h>
 #include <fsp/util.h>
 #include <soc/gpio_soc_defs.h>
 #include <soc/iomap.h>
+#include <soc/msr.h>
 #include <soc/pci_devs.h>
 #include <soc/romstage.h>
 #include <soc/soc_chip.h>
@@ -37,6 +39,16 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 	m_cfg->SaGv = config->SaGv;
 	m_cfg->UserBd = BOARD_TYPE_ULT_ULX;
 	m_cfg->RMT = config->RMT;
+
+	/* CpuRatio Settings */
+	if (config->cpu_ratio_override) {
+		m_cfg->CpuRatio = config->cpu_ratio_override;
+	} else {
+		/* Set CpuRatio to match existing MSR value */
+		msr_t flex_ratio;
+		flex_ratio = rdmsr(MSR_FLEX_RATIO);
+		m_cfg->CpuRatio = (flex_ratio.lo >> 8) & 0xff;
+	}
 
 	for (i = 0; i < ARRAY_SIZE(config->PcieRpEnable); i++) {
 		if (config->PcieRpEnable[i])

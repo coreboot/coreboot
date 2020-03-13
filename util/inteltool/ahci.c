@@ -59,7 +59,7 @@ static void print_port(const uint8_t *const mmio, size_t port)
 
 int print_ahci(struct pci_dev *ahci)
 {
-	size_t mmio_size, i;
+	size_t ahci_registers_size = 0, i;
 
 	if (!ahci) {
 		puts("No SATA device found");
@@ -67,15 +67,19 @@ int print_ahci(struct pci_dev *ahci)
 	}
 	printf("\n============= AHCI Registers ==============\n\n");
 
-	if (ahci->device_id == PCI_DEVICE_ID_INTEL_SUNRISEPOINT_SATA ||
-	    ahci->device_id == PCI_DEVICE_ID_INTEL_SUNRISEPOINT_LP_SATA)
-		mmio_size = 0x800;
-	else
-		mmio_size = 0x400;
+	switch (ahci->device_id) {
+	case PCI_DEVICE_ID_INTEL_SUNRISEPOINT_SATA:
+	case PCI_DEVICE_ID_INTEL_SUNRISEPOINT_LP_SATA:
+		ahci_registers_size = 0x800;
+		break;
+	default:
+		ahci_registers_size = 0x400;
+	}
 
-	const pciaddr_t mmio_phys = ahci->base_addr[5] & ~0x7ULL;
-	printf("ABAR = 0x%08llx (MEM)\n\n", (unsigned long long)mmio_phys);
-	const uint8_t *const mmio = map_physical(mmio_phys, mmio_size);
+	const pciaddr_t ahci_phys = ahci->base_addr[5] & ~0x7ULL;
+	printf("\n============= ABAR ==============\n\n");
+	printf("ABAR = 0x%08llx (MEM)\n\n", (unsigned long long)ahci_phys);
+	const uint8_t *const mmio = map_physical(ahci_phys, ahci_registers_size);
 	if (mmio == NULL) {
 		perror("Error mapping MMIO");
 		exit(1);
@@ -91,21 +95,18 @@ int print_ahci(struct pci_dev *ahci)
 		}
 	}
 
-	const size_t max_ports = (mmio_size - 0x100) / 0x80;
+	const size_t max_ports = (ahci_registers_size - 0x100) / 0x80;
 	for (i = 0; i < max_ports; i++) {
 		if (MMIO(0x0c) & 1 << i)
 			print_port(mmio, i);
 	}
 
-	if (ahci->device_id == PCI_DEVICE_ID_INTEL_SUNRISEPOINT_SATA ||
-	    ahci->device_id == PCI_DEVICE_ID_INTEL_SUNRISEPOINT_LP_SATA) {
-		puts("\nOther registers:");
-		for (i = 0x500; i < mmio_size; i += 4) {
-			if (MMIO(i))
-				printf("0x%03zx: 0x%08x\n", i, MMIO(i));
-		}
+	puts("\nOther registers:");
+	for (i = 0x500; i < ahci_registers_size; i += 4) {
+		if (MMIO(i))
+			printf("0x%03zx: 0x%08x\n", i, MMIO(i));
 	}
 
-	unmap_physical((void *)mmio, mmio_size);
+	unmap_physical((void *)mmio, ahci_registers_size);
 	return 0;
 }

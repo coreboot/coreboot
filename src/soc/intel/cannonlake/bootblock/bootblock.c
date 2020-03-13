@@ -2,6 +2,7 @@
 /* This file is part of the coreboot project. */
 
 #include <bootblock_common.h>
+#include <cpu/x86/mtrr.h>
 #include <intelblocks/gspi.h>
 #include <intelblocks/uart.h>
 #include <soc/bootblock.h>
@@ -28,12 +29,14 @@ const FSPT_UPD temp_ram_init_params = {
 		 * even before hitting CPU reset vector. Hence skipping FSP-T loading
 		 * microcode after CPU reset by passing '0' value to
 		 * FSPT_UPD.MicrocodeRegionBase and FSPT_UPD.MicrocodeRegionSize.
+		 *
+		 * Note: CodeRegionSize must be smaller than or equal to 16MiB to not
+		 * overlap with LAPIC or the CAR area at 0xfef00000.
 		 */
 		.MicrocodeRegionBase = 0,
 		.MicrocodeRegionSize = 0,
-		.CodeRegionBase =
-			(uint32_t)(0x100000000ULL - CONFIG_ROM_SIZE),
-		.CodeRegionSize = (uint32_t)CONFIG_ROM_SIZE,
+		.CodeRegionBase = (uint32_t)0x100000000ULL - CACHE_ROM_SIZE,
+		.CodeRegionSize = (uint32_t)CACHE_ROM_SIZE,
 	},
 };
 #endif

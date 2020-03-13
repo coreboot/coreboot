@@ -52,14 +52,14 @@ Device (COM2) {
 
 	Name (_CRS, ResourceTemplate ()
 	{
-		FixedIO (0x02F8, 0x08)
+		FixedIO (0x03E8, 0x08)
 		IRQNoFlags () {3}
 	})
 
 	Name (_PRS, ResourceTemplate ()
 	{
 		StartDependentFn (0, 0) {
-			FixedIO (0x02F8, 0x08)
+			FixedIO (0x03E8, 0x08)
 			IRQNoFlags () {3}
 		}
 		EndDependentFn ()

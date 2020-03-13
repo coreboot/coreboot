@@ -12,6 +12,12 @@ chip soc/intel/skylake
 	register "gpe0_dw1" = "GPP_D"
 	register "gpe0_dw2" = "GPP_E"
 
+	# Set the fixed lpc ranges
+	# enable COMA at 3f8 and COMB at 3e8 (instead of the default 2f8)
+	# enable the embedded controller
+	register "lpc_iod" = "0x0070"
+	register "lpc_ioe" = "LPC_IOE_COMA_EN | LPC_IOE_COMB_EN | LPC_IOE_EC_62_66"
+
 	# CPLD host command ranges are in 0x280-0x2BF
 	# EC PNP registers are at 0x6e and 0x6f
 	register "gen1_dec" = "0x003c0281"

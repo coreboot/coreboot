@@ -9,6 +9,7 @@
 #include <device/pci_ops.h>
 #include <bootmode.h>
 #include <console/console.h>
+#include <cpu/cpu.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
@@ -433,7 +434,7 @@ void pci_domain_read_resources(struct device *dev)
 
 	/* Initialize the system-wide memory resources constraints. */
 	res = new_resource(dev, IOINDEX_SUBTRACTIVE(1, 0));
-	res->limit = 0xffffffffULL;
+	res->limit = (1ULL << cpu_phys_address_size()) - 1;
 	res->flags = IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE |
 		     IORESOURCE_ASSIGNED;
 }

@@ -55,6 +55,7 @@ config MAINBOARD_FAMILY
 
 config MAINBOARD_PART_NUMBER
 	string
+	default "Halvor" if BOARD_GOOGLE_HALVOR
 	default "Ripto" if BOARD_GOOGLE_RIPTO
 	default "Volteer" if BOARD_GOOGLE_VOLTEER
 
@@ -68,6 +69,7 @@ config TPM_TIS_ACPI_INTERRUPT
 
 config VARIANT_DIR
 	string
+	default "halvor" if BOARD_GOOGLE_HALVOR
 	default "ripto" if BOARD_GOOGLE_RIPTO
 	default "volteer" if BOARD_GOOGLE_VOLTEER
 

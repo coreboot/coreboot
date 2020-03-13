@@ -36,10 +36,11 @@ static bool use_ddr4_params(int dram_type)
 	case SPD_DRAM_DDR3:
 	case SPD_DRAM_LPDDR3_INTEL:
 		return false;
-	/* LPDDR3, LPDDR4 and DDR4 share the same attributes */
+	/* Below DDR type share the same attributes */
 	case SPD_DRAM_LPDDR3_JEDEC:
 	case SPD_DRAM_DDR4:
 	case SPD_DRAM_LPDDR4:
+	case SPD_DRAM_LPDDR4X:
 		return true;
 	default:
 		printk(BIOS_ERR, "Defaulting to using DDR4 params. Please add dram_type check for %d to %s\n",
@@ -60,6 +61,12 @@ static const char *spd_get_module_type_string(int dram_type)
 		return "DDR4";
 	case SPD_DRAM_LPDDR4:
 		return "LPDDR4";
+	case SPD_DRAM_LPDDR4X:
+		return "LPDDR4X";
+	case SPD_DRAM_DDR5:
+		return "DDR5";
+	case SPD_DRAM_LPDDR5:
+		return "LPDDR5";
 	}
 	return "UNKNOWN";
 }

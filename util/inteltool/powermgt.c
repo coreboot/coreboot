@@ -669,7 +669,7 @@ static const io_register_t i63xx_pm_registers[] = {
 
 int print_pmbase(struct pci_dev *sb, struct pci_access *pacc)
 {
-	size_t i, size = 0;
+	size_t i, pm_registers_size = 0;
 	uint16_t pmbase;
 	const io_register_t *pm_registers;
 	uint64_t pwrmbase_phys = 0;
@@ -757,13 +757,13 @@ int print_pmbase(struct pci_dev *sb, struct pci_access *pacc)
 	case PCI_DEVICE_ID_INTEL_SUNRISEPOINT_LP_Y_IHDCP_PREM:
 		pmbase = pci_read_word(sb, 0x40) & 0xff80;
 		pm_registers = pch_pm_registers;
-		size = ARRAY_SIZE(pch_pm_registers);
+		pm_registers_size = ARRAY_SIZE(pch_pm_registers);
 		break;
 	case PCI_DEVICE_ID_INTEL_ICH10:
 	case PCI_DEVICE_ID_INTEL_ICH10R:
 		pmbase = pci_read_word(sb, 0x40) & 0xff80;
 		pm_registers = ich10_pm_registers;
-		size = ARRAY_SIZE(ich10_pm_registers);
+		pm_registers_size = ARRAY_SIZE(ich10_pm_registers);
 		break;
 	case PCI_DEVICE_ID_INTEL_ICH7:
 	case PCI_DEVICE_ID_INTEL_ICH7M:
@@ -772,7 +772,7 @@ int print_pmbase(struct pci_dev *sb, struct pci_access *pacc)
 	case PCI_DEVICE_ID_INTEL_NM10:
 		pmbase = pci_read_word(sb, 0x40) & 0xfffc;
 		pm_registers = ich7_pm_registers;
-		size = ARRAY_SIZE(ich7_pm_registers);
+		pm_registers_size = ARRAY_SIZE(ich7_pm_registers);
 		break;
 	case PCI_DEVICE_ID_INTEL_ICH9DH:
 	case PCI_DEVICE_ID_INTEL_ICH9DO:
@@ -782,39 +782,39 @@ int print_pmbase(struct pci_dev *sb, struct pci_access *pacc)
 	case PCI_DEVICE_ID_INTEL_ICH9ME:
 		pmbase = pci_read_word(sb, 0x40) & 0xfffc;
 		pm_registers = ich9_pm_registers;
-		size = ARRAY_SIZE(ich9_pm_registers);
+		pm_registers_size = ARRAY_SIZE(ich9_pm_registers);
 		break;
 	case PCI_DEVICE_ID_INTEL_ICH8:
 	case PCI_DEVICE_ID_INTEL_ICH8M:
 	case PCI_DEVICE_ID_INTEL_ICH8ME:
 		pmbase = pci_read_word(sb, 0x40) & 0xfffc;
 		pm_registers = ich8_pm_registers;
-		size = ARRAY_SIZE(ich8_pm_registers);
+		pm_registers_size = ARRAY_SIZE(ich8_pm_registers);
 		break;
 	case PCI_DEVICE_ID_INTEL_ICH6:
 		pmbase = pci_read_word(sb, 0x40) & 0xfffc;
 		pm_registers = ich6_pm_registers;
-		size = ARRAY_SIZE(ich6_pm_registers);
+		pm_registers_size = ARRAY_SIZE(ich6_pm_registers);
 		break;
 	case PCI_DEVICE_ID_INTEL_ICH5:
 		pmbase = pci_read_word(sb, 0x40) & 0xfffc;
 		pm_registers = ich5_pm_registers;
-		size = ARRAY_SIZE(ich5_pm_registers);
+		pm_registers_size = ARRAY_SIZE(ich5_pm_registers);
 		break;
 	case PCI_DEVICE_ID_INTEL_ICH4:
 		pmbase = pci_read_word(sb, 0x40) & 0xfffc;
 		pm_registers = ich4_pm_registers;
-		size = ARRAY_SIZE(ich4_pm_registers);
+		pm_registers_size = ARRAY_SIZE(ich4_pm_registers);
 		break;
 	case PCI_DEVICE_ID_INTEL_ICH2:
 		pmbase = pci_read_word(sb, 0x40) & 0xfffc;
 		pm_registers = ich2_pm_registers;
-		size = ARRAY_SIZE(ich2_pm_registers);
+		pm_registers_size = ARRAY_SIZE(ich2_pm_registers);
 		break;
 	case PCI_DEVICE_ID_INTEL_ICH0:
 		pmbase = pci_read_word(sb, 0x40) & 0xfffc;
 		pm_registers = ich0_pm_registers;
-		size = ARRAY_SIZE(ich0_pm_registers);
+		pm_registers_size = ARRAY_SIZE(ich0_pm_registers);
 		break;
 	case PCI_DEVICE_ID_INTEL_82371XX:
 		acpi = pci_get_dev(pacc, sb->domain, sb->bus, sb->dev, 3);
@@ -826,13 +826,13 @@ int print_pmbase(struct pci_dev *sb, struct pci_access *pacc)
 		pci_free_dev(acpi);
 
 		pm_registers = i82371xx_pm_registers;
-		size = ARRAY_SIZE(i82371xx_pm_registers);
+		pm_registers_size = ARRAY_SIZE(i82371xx_pm_registers);
 		break;
 
 	case PCI_DEVICE_ID_INTEL_I63XX:
 		pmbase = pci_read_word(sb, 0x40) & 0xfffc;
 		pm_registers = i63xx_pm_registers;
-		size = ARRAY_SIZE(i63xx_pm_registers);
+		pm_registers_size = ARRAY_SIZE(i63xx_pm_registers);
 		break;
 
 	case PCI_DEVICE_ID_INTEL_CM236:
@@ -847,7 +847,7 @@ int print_pmbase(struct pci_dev *sb, struct pci_access *pacc)
 		pci_free_dev(acpi);
 
 		pm_registers = sunrise_pm_registers;
-		size = ARRAY_SIZE(sunrise_pm_registers);
+		pm_registers_size = ARRAY_SIZE(sunrise_pm_registers);
 		break;
 	default:
 		printf("Error: Dumping PMBASE on this southbridge is not (yet) supported.\n");
@@ -856,7 +856,7 @@ int print_pmbase(struct pci_dev *sb, struct pci_access *pacc)
 
 	printf("PMBASE = 0x%04x (IO)\n\n", pmbase);
 
-	for (i = 0; i < size; i++) {
+	for (i = 0; i < pm_registers_size; i++) {
 		switch (pm_registers[i].size) {
 		case 8:
 			printf("pmbase+0x%04x: 0x%08x (%s)\n"

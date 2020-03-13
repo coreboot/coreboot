@@ -17,6 +17,7 @@
 #ifndef INTELTOOL_H
 #define INTELTOOL_H 1
 
+#include <arch/mmio.h>
 #include <commonlib/helpers.h>
 
 #include <stdint.h>

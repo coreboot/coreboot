@@ -946,9 +946,9 @@ int print_pmbase(struct pci_dev *sb, struct pci_access *pacc)
 		printf("PWRMBASE = 0x%08" PRIx64 " (MEM)\n\n", pwrmbase_phys);
 
 		for (i = 0; i < pwrmbase_size; i += 4) {
-			if (*(uint32_t *)(pwrmbase + i))
+			if (read32(pwrmbase + i))
 				printf("0x%04zx: 0x%08"PRIx32"\n",
-				       i, *(uint32_t *)(pwrmbase + i));
+				       i, read32(pwrmbase + i));
 		}
 
 		unmap_physical((void *)pwrmbase, pwrmbase_size);

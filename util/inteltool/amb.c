@@ -20,11 +20,11 @@
 
 #define AMB_CONFIG_SPACE_SIZE 0x20000
 
-#define AMB_ADDR(base, fn, reg) (base | ((fn & 7) << 8) | ((reg & 0xff)))
+#define AMB_ADDR(fn, reg) (((fn & 7) << 8) | ((reg & 0xff)))
 
 static uint32_t amb_read_config32(volatile void *base, int fn, int reg)
 {
-	return *(uint32_t *)(AMB_ADDR((intptr_t)base, fn, reg));
+	return read32(base + AMB_ADDR(fn, reg));
 }
 
 static void amb_printreg32(volatile void *base, int fn, int reg,
@@ -38,7 +38,7 @@ static void amb_printreg32(volatile void *base, int fn, int reg,
 
 static uint16_t amb_read_config16(volatile void *base, int fn, int reg)
 {
-	return *(uint16_t *)(AMB_ADDR((intptr_t)base, fn, reg));
+	return read16(base + AMB_ADDR(fn, reg));
 }
 
 static void amb_printreg16(volatile void *base, int fn, int reg,
@@ -53,7 +53,7 @@ static void amb_printreg16(volatile void *base, int fn, int reg,
 
 static uint8_t amb_read_config8(volatile void *base, int fn, int reg)
 {
-	return *(uint8_t *)(AMB_ADDR((intptr_t)base, fn, reg));
+	return read8(base + AMB_ADDR(fn, reg));
 }
 
 static void amb_printreg8(volatile void *base, int fn, int reg,

@@ -84,9 +84,6 @@ static const io_register_t sunrise_ahci_sir_registers[] = {
 #define NUM_GHC (sizeof(ghc_regs)/sizeof(ghc_regs[0]))
 #define NUM_PORTCTL (sizeof(port_ctl_regs)/sizeof(port_ctl_regs[0]))
 
-#define MMIO(offset) (*(uint32_t *)(mmio + offset))
-#define MMIO_PORT(offset) (*(uint32_t *)(mmio_port + offset))
-
 static void print_port(const uint8_t *const mmio, size_t port)
 {
 	size_t i;
@@ -96,10 +93,11 @@ static void print_port(const uint8_t *const mmio, size_t port)
 		if (i / 4 < NUM_PORTCTL) {
 			printf("0x%03zx: 0x%08x (%s)\n",
 			       (size_t)(mmio_port - mmio) + i,
-			       MMIO_PORT(i), port_ctl_regs[i / 4]);
-		} else if (MMIO_PORT(i)) {
+			       read32(mmio_port + i), port_ctl_regs[i / 4]);
+		} else if (read32(mmio_port + i)) {
 			printf("0x%03zx: 0x%08x (Reserved)\n",
-			       (size_t)(mmio_port - mmio) + i, MMIO_PORT(i));
+			       (size_t)(mmio_port - mmio) + i,
+			       read32(mmio_port + i));
 		}
 	}
 }
@@ -195,22 +193,23 @@ int print_ahci(struct pci_dev *ahci)
 	for (i = 0; i < 0x100; i += 4) {
 		if (i / 4 < NUM_GHC) {
 			printf("0x%03zx: 0x%08x (%s)\n",
-			       i, MMIO(i), ghc_regs[i / 4]);
-		} else if (MMIO(i)) {
-			printf("0x%03zx: 0x%08x (Reserved)\n", i, MMIO(i));
+			       i, read32(mmio + i), ghc_regs[i / 4]);
+		} else if (read32(mmio + i)) {
+			printf("0x%03zx: 0x%08x (Reserved)\n", i,
+			       read32(mmio + i));
 		}
 	}
 
 	const size_t max_ports = (ahci_registers_size - 0x100) / 0x80;
 	for (i = 0; i < max_ports; i++) {
-		if (MMIO(0x0c) & 1 << i)
+		if (read32(mmio + 0x0c) & 1 << i)
 			print_port(mmio, i);
 	}
 
 	puts("\nOther registers:");
 	for (i = 0x500; i < ahci_registers_size; i += 4) {
-		if (MMIO(i))
-			printf("0x%03zx: 0x%08x\n", i, MMIO(i));
+		if (read32(mmio + i))
+			printf("0x%03zx: 0x%08x\n", i, read32(mmio + i));
 	}
 
 	unmap_physical((void *)mmio, ahci_registers_size);

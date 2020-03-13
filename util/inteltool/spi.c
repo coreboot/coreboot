@@ -364,17 +364,17 @@ static int print_spibar(struct pci_dev *sb) {
 	for (i = 0; i < size; i++) {
 		switch(spi_register[i].size) {
 			case 1:
-				printf("0x%08x = %s\n", *(uint8_t *)(rcba + spibaroffset + spi_register[i].addr), spi_register[i].name);
+				printf("0x%08x = %s\n", read8(rcba + spibaroffset + spi_register[i].addr), spi_register[i].name);
 				break;
 			case 2:
-				printf("0x%08x = %s\n", *(uint16_t *)(rcba + spibaroffset + spi_register[i].addr), spi_register[i].name);
+				printf("0x%08x = %s\n", read16(rcba + spibaroffset + spi_register[i].addr), spi_register[i].name);
 				break;
 			case 4:
-				printf("0x%08x = %s\n", *(uint32_t *)(rcba + spibaroffset + spi_register[i].addr), spi_register[i].name);
+				printf("0x%08x = %s\n", read32(rcba + spibaroffset + spi_register[i].addr), spi_register[i].name);
 				break;
 			case 8:
-				printf("0x%08x%08x = %s\n",  *(uint32_t *)(rcba + spibaroffset + spi_register[i].addr + 4),
-					*(uint32_t *)(rcba + spibaroffset + spi_register[i].addr), spi_register[i].name);
+				printf("0x%08x%08x = %s\n",  read32(rcba + spibaroffset + spi_register[i].addr + 4),
+					read32(rcba + spibaroffset + spi_register[i].addr), spi_register[i].name);
 				break;
 		}
 	}

@@ -147,8 +147,8 @@ int print_rcba(struct pci_dev *sb)
 	printf("RCBA = 0x%08x (MEM)\n\n", rcba_phys);
 
 	for (i = 0; i < size; i += 4) {
-		if (*(uint32_t *)(rcba + i))
-			printf("0x%04x: 0x%08x\n", i, *(uint32_t *)(rcba + i));
+		if (read32(rcba + i))
+			printf("0x%04x: 0x%08x\n", i, read32(rcba + i));
 	}
 
 	unmap_physical((void *)rcba, size);

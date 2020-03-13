@@ -39,8 +39,8 @@ int print_gfx(struct pci_dev *gfx)
 		exit(1);
 	}
 	for (i = 0; i < MMIO_SIZE; i += 4) {
-		if (*(uint32_t *)(mmio + i))
-			printf("0x%06x: 0x%08x\n", i, *(uint32_t *)(mmio + i));
+		if (read32(mmio + i))
+			printf("0x%06x: 0x%08x\n", i, read32(mmio + i));
 	}
 	unmap_physical((void *)mmio, MMIO_SIZE);
 	return 0;

@@ -298,8 +298,8 @@ int print_epbar(struct pci_dev *nb)
 
 	printf("EPBAR = 0x%08" PRIx64 " (MEM)\n\n", epbar_phys);
 	for (i = 0; i < size; i += 4) {
-		if (*(uint32_t *)(epbar + i))
-			printf("0x%04x: 0x%08x\n", i, *(uint32_t *)(epbar+i));
+		if (read32(epbar + i))
+			printf("0x%04x: 0x%08x\n", i, read32(epbar+i));
 	}
 
 	unmap_physical((void *)epbar, size);
@@ -428,27 +428,27 @@ int print_dmibar(struct pci_dev *nb)
 				case 4:
 					printf("dmibase+0x%04x: 0x%08x (%s)\n",
 						dmi_registers[i].addr,
-						*(uint32_t *)(dmibar+dmi_registers[i].addr),
+						read32(dmibar+dmi_registers[i].addr),
 						dmi_registers[i].name);
 					break;
 				case 2:
 					printf("dmibase+0x%04x: 0x%04x     (%s)\n",
 						dmi_registers[i].addr,
-						*(uint16_t *)(dmibar+dmi_registers[i].addr),
+						read16(dmibar+dmi_registers[i].addr),
 						dmi_registers[i].name);
 					break;
 				case 1:
 					printf("dmibase+0x%04x: 0x%02x       (%s)\n",
 						dmi_registers[i].addr,
-						*(uint8_t *)(dmibar+dmi_registers[i].addr),
+						read8(dmibar+dmi_registers[i].addr),
 						dmi_registers[i].name);
 					break;
 			}
 		}
 	} else {
 		for (i = 0; i < size; i += 4) {
-			if (*(uint32_t *)(dmibar + i))
-				printf("0x%04x: 0x%08x\n", i, *(uint32_t *)(dmibar+i));
+			if (read32(dmibar + i))
+				printf("0x%04x: 0x%08x\n", i, read32(dmibar+i));
 		}
 	}
 
@@ -567,12 +567,12 @@ int print_pciexbar(struct pci_dev *nb)
 			for (fn = 0; fn < 8; fn++) {
 				devbase = (bus * 1024 * 1024) + (dev * 32 * 1024) + (fn * 4 * 1024);
 
-				if (*(uint16_t *)(pciexbar + devbase) == 0xffff)
+				if (read16(pciexbar + devbase) == 0xffff)
 					continue;
 
 				/* This is a heuristics. Anyone got a better check? */
-				if( (*(uint32_t *)(pciexbar + devbase + 256) == 0xffffffff) &&
-					(*(uint32_t *)(pciexbar + devbase + 512) == 0xffffffff) ) {
+				if( (read32(pciexbar + devbase + 256) == 0xffffffff) &&
+					(read32(pciexbar + devbase + 512) == 0xffffffff) ) {
 #if DEBUG
 					printf("Skipped non-PCIe device %02x:%02x.%01x\n", bus, dev, fn);
 #endif

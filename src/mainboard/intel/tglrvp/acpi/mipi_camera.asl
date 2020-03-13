@@ -177,7 +177,7 @@ Scope (\_SB.PCI0.I2C3)
 			If ((STA == Zero))
 			{
 				/* Enable CLK0 with 19.2MHz */
-				MCCT(0,1,1)
+				MCON(0,1)
 				/* Pull PWREN(GPIO B23) high */
 				STXS(GPP_B23)
 				Sleep(5)
@@ -200,7 +200,7 @@ Scope (\_SB.PCI0.I2C3)
 				/* Pull PWREN low */
 				CTXS(GPP_B23)
 				/* Disable CLK0 */
-				MCCT(0,0,1)
+				MCOF(0)
 				Store(0,STA)
 			}
 		}
@@ -380,7 +380,7 @@ Scope (\_SB.PCI0.I2C5)
 			If ((STA == Zero))
 			{
 				/* Enable CLK1 with 19.2MHz */
-				MCCT(1,1,1)
+				MCON(1,1)
 				/* Pull PWREN(GPIO R6) high */
 				STXS(GPP_R6)
 				Sleep(5)
@@ -403,7 +403,7 @@ Scope (\_SB.PCI0.I2C5)
 				/* Pull PWREN low */
 				CTXS(GPP_R6)
 				/* Disable CLK1 */
-				MCCT(1,0,1)
+				MCOF(1)
 				Store(0,STA)
 			}
 		}

@@ -34,6 +34,53 @@ static const char *port_ctl_regs[] = {
 	"PxFBS", "PxDEVSLP", "Reserved"
 };
 
+static const io_register_t sunrise_ahci_cfg_registers[] = {
+	{0x0, 4, "ID"},
+	{0x4, 2, "CMD"},
+	{0x6, 2, "STS"},
+	{0x8, 1, "RID"},
+	{0x9, 1, "PI"},
+	{0xa, 2, "CC"},
+	{0xc, 1, "CLS"},
+	{0xd, 1, "MLT"},
+	{0xe, 1, "HTYPE"},
+	{0x10, 4, "MXTBA"},
+	{0x14, 4, "MXPBA"},
+	{0x20, 4, "AIDPBA"},
+	{0x24, 4, "ABAR"},
+	{0x2c, 4, "SS"},
+	{0x34, 1, "CAP"},
+	{0x3c, 2, "INTR"},
+	{0x70, 2, "PID"},
+	{0x72, 2, "PC"},
+	{0x74, 2, "PMCS"},
+	{0x80, 2, "MID"},
+	{0x82, 2, "MC"},
+	{0x84, 4, "MA"},
+	{0x88, 2, "MD"},
+	{0x90, 4, "MAP"},
+	{0x94, 4, "PCS"},
+	{0x9c, 4, "SATAGC"},
+	{0xa0, 1, "SIRI"},
+	{0xa4, 4, "SIRD"},
+	{0xa8, 4, "SATACR0"},
+	{0xac, 4, "SATACR1"},
+	{0xc0, 4, "SP"},
+	{0xd0, 2, "MXID"},
+	{0xd2, 2, "MXC"},
+	{0xd4, 4, "MXT"},
+	{0xd8, 4, "MXP"},
+	{0xe0, 4, "BFCS"},
+	{0xe4, 4, "BFTD1"},
+	{0xe8, 4, "BFTD2"},
+};
+
+static const io_register_t sunrise_ahci_sir_registers[] = {
+	{0x80, 4, "SQUELCH"},
+	{0x90, 4, "SATA_MPHY_PG"},
+	{0xa4, 4, "OOBRETR"},
+};
+
 #define NUM_GHC (sizeof(ghc_regs)/sizeof(ghc_regs[0]))
 #define NUM_PORTCTL (sizeof(port_ctl_regs)/sizeof(port_ctl_regs[0]))
 
@@ -76,6 +123,11 @@ int print_ahci(struct pci_dev *ahci)
 	case PCI_DEVICE_ID_INTEL_SUNRISEPOINT_SATA:
 	case PCI_DEVICE_ID_INTEL_SUNRISEPOINT_LP_SATA:
 		ahci_registers_size = 0x800;
+		ahci_sir_offset = 0xa0;
+		ahci_cfg_registers = sunrise_ahci_cfg_registers;
+		ahci_cfg_registers_size = ARRAY_SIZE(sunrise_ahci_cfg_registers);
+		ahci_sir_registers = sunrise_ahci_sir_registers;
+		ahci_sir_registers_size = ARRAY_SIZE(sunrise_ahci_sir_registers);
 		break;
 	default:
 		ahci_registers_size = 0x400;

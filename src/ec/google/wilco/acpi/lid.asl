@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  */
 
-Device (LID)
+Device (LID0)
 {
 	Name (_HID, EisaId ("PNP0C0D"))
 	Name (_UID, 1)
@@ -22,6 +22,7 @@ Device (LID)
 
 	Method (_LID, 0, NotSerialized)
 	{
-		Return (R (P1LC))
+		Store (R (P1LC), \LIDS)
+		Return (\LIDS)
 	}
 }

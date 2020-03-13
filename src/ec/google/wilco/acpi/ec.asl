@@ -60,6 +60,9 @@ Device (EC0)
 
 		/* Initialize UCSI */
 		^UCSI.INIT ()
+
+		// Initialize LID switch state
+		Store (R (P1LC), \LIDS)
 	}
 
 	/*

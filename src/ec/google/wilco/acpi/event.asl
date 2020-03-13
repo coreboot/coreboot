@@ -57,7 +57,7 @@ Method (ECQ1, 1, Serialized)
 	/* LID state changed */
 	If (EBIT (E1LD, Arg0)) {
 		Printf ("Lid State Changed")
-		Notify (^LID, 0x80)
+		Notify (^LID0, 0x80)
 	}
 
 	/* Power Event */

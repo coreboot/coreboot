@@ -19,6 +19,15 @@ static const struct pad_config gpio_table[] = {
 	/* I2S_MCLK */
 	PAD_CFG_NF(GPP_D18, NONE, DEEP, NF1),
 
+	/* SD_CD# */
+	PAD_CFG_NF(GPP_G5, UP_20K, PWROK, NF1),
+
+	/* SD_WP */
+	PAD_CFG_NF(GPP_G7, DN_20K, PWROK, NF1),
+
+	/* virtual GPIO for SD card detect */
+	PAD_CFG_GPI_GPIO_DRIVER(VGPIO_39, NONE, DEEP),
+
 	/* I2S1_SCLK */
 	PAD_CFG_NF(GPP_H15, NONE, DEEP, NF1),
 

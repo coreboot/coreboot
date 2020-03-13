@@ -669,7 +669,7 @@ static const io_register_t i63xx_pm_registers[] = {
 
 int print_pmbase(struct pci_dev *sb, struct pci_access *pacc)
 {
-	size_t i, size;
+	size_t i, size = 0;
 	uint16_t pmbase;
 	const io_register_t *pm_registers;
 	uint64_t pwrmbase_phys = 0;

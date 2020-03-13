@@ -76,22 +76,15 @@ static int spd_get_banks(const uint8_t spd[], int dram_type)
 	static const int ddr3_banks[4] = { 8, 16, 32, 64 };
 	static const int ddr4_banks[10] = { 4, 8, -1, -1, 8, 16, -1, -1, 16, 32 };
 	int index = (spd[SPD_DENSITY_BANKS] >> 4) & 0xf;
-	switch (dram_type) {
-	/* DDR3 and LPDDR3_Intel have the same bank definition */
-	case SPD_DRAM_DDR3:
-	case SPD_DRAM_LPDDR3_INTEL:
-		if (index >= ARRAY_SIZE(ddr3_banks))
-			return -1;
-		return ddr3_banks[index];
-	/* LPDDR3, LPDDR4 and DDR4 have the same bank definition */
-	case SPD_DRAM_LPDDR3_JEDEC:
-	case SPD_DRAM_DDR4:
-	case SPD_DRAM_LPDDR4:
+
+	if (use_ddr4_params(dram_type)) {
 		if (index >= ARRAY_SIZE(ddr4_banks))
 			return -1;
 		return ddr4_banks[index];
-	default:
-		return -1;
+	} else {
+		if (index >= ARRAY_SIZE(ddr3_banks))
+			return -1;
+		return ddr3_banks[index];
 	}
 }
 

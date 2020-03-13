@@ -396,6 +396,7 @@ unsigned int cpuid(unsigned int op);
 int print_intel_core_msrs(void);
 int print_mchbar(struct pci_dev *nb, struct pci_access *pacc, const char *dump_spd_file);
 int print_pmbase(struct pci_dev *sb, struct pci_access *pacc);
+int print_lpc(struct pci_dev *sb, struct pci_access *pacc);
 int print_rcba(struct pci_dev *sb);
 int print_gpios(struct pci_dev *sb, int show_all, int show_diffs);
 const struct gpio_community *const *get_gpio_communities(struct pci_dev *const sb,

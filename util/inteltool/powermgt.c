@@ -670,12 +670,14 @@ static const io_register_t i63xx_pm_registers[] = {
 int print_pmbase(struct pci_dev *sb, struct pci_access *pacc)
 {
 	size_t i, pm_registers_size = 0;
+	size_t pm_cfg_registers_size = 0;
 	uint16_t pmbase;
 	const io_register_t *pm_registers;
+	const io_register_t *pm_cfg_registers;
 	uint64_t pwrmbase_phys = 0;
-	struct pci_dev *acpi;
+	struct pci_dev *acpi = NULL;
 
-	printf("\n========== PMBASE/ABASE =========\n\n");
+	printf("\n========== ACPI/PMC =========\n\n");
 
 	switch (sb->device_id) {
 	case PCI_DEVICE_ID_INTEL_3400:
@@ -813,7 +815,6 @@ int print_pmbase(struct pci_dev *sb, struct pci_access *pacc)
 			return 1;
 		}
 		pmbase = pci_read_word(acpi, 0x40) & 0xfffc;
-		pci_free_dev(acpi);
 
 		pm_registers = i82371xx_pm_registers;
 		pm_registers_size = ARRAY_SIZE(i82371xx_pm_registers);
@@ -855,7 +856,6 @@ int print_pmbase(struct pci_dev *sb, struct pci_access *pacc)
 		}
 		pmbase = pci_read_word(acpi, 0x40) & ~0xff;
 		pwrmbase_phys = pci_read_long(acpi, 0x48) & ~0xfff;
-		pci_free_dev(acpi);
 
 		pm_registers = sunrise_pm_registers;
 		pm_registers_size = ARRAY_SIZE(sunrise_pm_registers);
@@ -865,6 +865,41 @@ int print_pmbase(struct pci_dev *sb, struct pci_access *pacc)
 		return 1;
 	}
 
+	for (i = 0; i < pm_cfg_registers_size; i++) {
+		switch (pm_cfg_registers[i].size) {
+		case 8:
+			printf("0x%04x: 0x%08x (%s)\n"
+			       "        0x%08x\n",
+				pm_cfg_registers[i].addr,
+				pci_read_long(acpi, pm_cfg_registers[i].addr),
+				pm_cfg_registers[i].name,
+				pci_read_long(acpi, pm_cfg_registers[i].addr+4));
+			break;
+		case 4:
+			printf("0x%04x: 0x%08x (%s)\n",
+				pm_cfg_registers[i].addr,
+				pci_read_long(acpi, pm_cfg_registers[i].addr),
+				pm_cfg_registers[i].name);
+			break;
+		case 2:
+			printf("0x%04x: 0x%04x     (%s)\n",
+				pm_cfg_registers[i].addr,
+				pci_read_word(acpi, pm_cfg_registers[i].addr),
+				pm_cfg_registers[i].name);
+			break;
+		case 1:
+			printf("0x%04x: 0x%02x       (%s)\n",
+				pm_cfg_registers[i].addr,
+				pci_read_byte(acpi, pm_cfg_registers[i].addr),
+				pm_cfg_registers[i].name);
+			break;
+		}
+	}
+
+	if (acpi)
+		pci_free_dev(acpi);
+
+	printf("\n========== ABASE/PMBASE =========\n\n");
 	printf("PMBASE = 0x%04x (IO)\n\n", pmbase);
 
 	for (i = 0; i < pm_registers_size; i++) {

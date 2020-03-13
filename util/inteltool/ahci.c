@@ -60,6 +60,11 @@ static void print_port(const uint8_t *const mmio, size_t port)
 int print_ahci(struct pci_dev *ahci)
 {
 	size_t ahci_registers_size = 0, i;
+	size_t ahci_cfg_registers_size = 0;
+	const io_register_t *ahci_cfg_registers;
+	size_t ahci_sir_offset = 0;
+	size_t ahci_sir_registers_size = 0;
+	const io_register_t *ahci_sir_registers;
 
 	if (!ahci) {
 		puts("No SATA device found");
@@ -74,6 +79,55 @@ int print_ahci(struct pci_dev *ahci)
 		break;
 	default:
 		ahci_registers_size = 0x400;
+	}
+
+	printf("\n============= AHCI Configuration Registers ==============\n\n");
+	for (i = 0; i < ahci_cfg_registers_size; i++) {
+		switch (ahci_cfg_registers[i].size) {
+		case 4:
+			printf("0x%04x: 0x%08x (%s)\n",
+				ahci_cfg_registers[i].addr,
+				pci_read_long(ahci, ahci_cfg_registers[i].addr),
+				ahci_cfg_registers[i].name);
+			break;
+		case 2:
+			printf("0x%04x: 0x%04x     (%s)\n",
+				ahci_cfg_registers[i].addr,
+				pci_read_word(ahci, ahci_cfg_registers[i].addr),
+				ahci_cfg_registers[i].name);
+			break;
+		case 1:
+			printf("0x%04x: 0x%02x       (%s)\n",
+				ahci_cfg_registers[i].addr,
+				pci_read_byte(ahci, ahci_cfg_registers[i].addr),
+				ahci_cfg_registers[i].name);
+			break;
+		}
+	}
+
+	printf("\n============= SATA Initialization Registers ==============\n\n");
+	for (i = 0; i < ahci_sir_registers_size; i++) {
+		pci_write_byte(ahci, ahci_sir_offset, ahci_sir_registers[i].addr);
+		switch (ahci_sir_registers[i].size) {
+		case 4:
+			printf("0x%02x: 0x%08x (%s)\n",
+				ahci_sir_registers[i].addr,
+				pci_read_long(ahci, ahci_sir_offset),
+				ahci_sir_registers[i].name);
+			break;
+		case 2:
+			printf("0x%02x: 0x%04x     (%s)\n",
+				ahci_sir_registers[i].addr,
+				pci_read_word(ahci, ahci_sir_offset),
+				ahci_sir_registers[i].name);
+			break;
+		case 1:
+			printf("0x%02x: 0x%02x       (%s)\n",
+				ahci_sir_registers[i].addr,
+				pci_read_byte(ahci, ahci_sir_offset),
+				ahci_sir_registers[i].name);
+			break;
+		}
 	}
 
 	const pciaddr_t ahci_phys = ahci->base_addr[5] & ~0x7ULL;

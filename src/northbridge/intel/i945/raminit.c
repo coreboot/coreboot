@@ -2437,8 +2437,8 @@ static void sdram_on_die_termination(struct sys_info *sysinfo)
 	reg32 |= (1 << 14) | (1 << 6) | (2 << 16);
 	MCHBAR32(ODTC) = reg32;
 
-	if (!(sysinfo->dimm[0] != SYSINFO_DIMM_NOT_POPULATED &&
-			sysinfo->dimm[1] != SYSINFO_DIMM_NOT_POPULATED)) {
+	if (sysinfo->dimm[0] == SYSINFO_DIMM_NOT_POPULATED ||
+			sysinfo->dimm[1] == SYSINFO_DIMM_NOT_POPULATED) {
 		printk(BIOS_DEBUG, "one dimm per channel config..\n");
 
 		reg32 = MCHBAR32(C0ODT);

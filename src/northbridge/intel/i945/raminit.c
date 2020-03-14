@@ -2029,7 +2029,7 @@ static void sdram_enhanced_addressing_mode(struct sys_info *sysinfo)
 	u32 chan0 = 0, chan1 = 0;
 	int chan0_dualsided, chan1_dualsided, chan0_populated, chan1_populated;
 
-	chan0_populated =  (sysinfo->dimm[0] != SYSINFO_DIMM_NOT_POPULATED ||
+	chan0_populated = (sysinfo->dimm[0] != SYSINFO_DIMM_NOT_POPULATED ||
 			sysinfo->dimm[1] != SYSINFO_DIMM_NOT_POPULATED);
 	chan1_populated = (sysinfo->dimm[2] != SYSINFO_DIMM_NOT_POPULATED ||
 			sysinfo->dimm[3] != SYSINFO_DIMM_NOT_POPULATED);

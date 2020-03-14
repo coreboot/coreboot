@@ -284,6 +284,8 @@ static inline uint32_t inl(unsigned port)
 #define PCI_DEVICE_ID_INTEL_CORE_4TH_GEN_U	0x0a04 /* Haswell-ULT */
 #define PCI_DEVICE_ID_INTEL_CORE_5TH_GEN_U	0x1604 /* Broadwell-ULT */
 #define PCI_DEVICE_ID_INTEL_CORE_6TH_GEN_D2	0x190f /* Skylake (Desktop) */
+#define PCI_DEVICE_ID_INTEL_CORE_6TH_GEN_U	0x1904 /* Skylake (Mobile) */
+#define PCI_DEVICE_ID_INTEL_CORE_6TH_GEN_Y	0x190c /* Skylake (Mobile) */
 #define PCI_DEVICE_ID_INTEL_CORE_6TH_GEN_M	0x1910 /* Skylake (Mobile) */
 #define PCI_DEVICE_ID_INTEL_CORE_6TH_GEN_WST	0x1918 /* Skylake (Workstation) */
 #define PCI_DEVICE_ID_INTEL_CORE_6TH_GEN_D	0x191f /* Skylake (Desktop) */

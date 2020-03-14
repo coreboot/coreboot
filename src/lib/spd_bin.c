@@ -175,7 +175,7 @@ static void spd_get_name(const uint8_t spd[], char spd_name[], int dram_type)
 
 void print_spd_info(uint8_t spd[])
 {
-	char spd_name[DDR4_SPD_PART_LEN+1] = { 0 };
+	char spd_name[DDR4_SPD_PART_LEN + 1] = { 0 };
 	int type  = spd[SPD_DRAM_TYPE];
 	int banks = spd_get_banks(spd, type);
 	int capmb = spd_get_capmb(spd);

@@ -264,6 +264,14 @@ struct soc_intel_skylake_config {
 		AspmAutoConfig,
 	} PcieRpAspm[CONFIG_MAX_ROOT_PORTS];
 
+	/* PCIe RP L1 substate */
+	enum {
+		L1SS_Default,
+		L1SS_Disabled,
+		L1SS_L1_1,
+		L1SS_L1_2,
+	} pcie_rp_l1substates[CONFIG_MAX_ROOT_PORTS];
+
 	/* USB related */
 	struct usb2_port_config usb2_ports[16];
 	struct usb3_port_config usb3_ports[10];

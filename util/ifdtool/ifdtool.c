@@ -210,6 +210,7 @@ static int is_platform_ifd_2(void)
 		PLATFORM_ICL,
 		PLATFORM_TGL,
 		PLATFORM_JSL,
+		PLATFORM_ADL,
 	};
 	unsigned int i;
 
@@ -1018,6 +1019,7 @@ static void lock_descriptor(const char *filename, char *image, int size)
 	case PLATFORM_SKLKBL:
 	case PLATFORM_TGL:
 	case PLATFORM_JSL:
+	case PLATFORM_ADL:
 		/* CPU/BIOS can read descriptor and BIOS. */
 		fmba->flmstr1 |= (1 << REGION_DESC) << rd_shift;
 		fmba->flmstr1 |= (1 << REGION_BIOS) << rd_shift;
@@ -1689,6 +1691,8 @@ int main(int argc, char *argv[])
 				platform = PLATFORM_SKLKBL;
 			} else if (!strcmp(optarg, "tgl")) {
 				platform = PLATFORM_TGL;
+			} else if (!strcmp(optarg, "adl")) {
+				platform = PLATFORM_ADL;
 			} else {
 				fprintf(stderr, "Unknown platform: %s\n", optarg);
 				exit(EXIT_FAILURE);

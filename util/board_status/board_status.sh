@@ -426,6 +426,13 @@ else
 
 	echo "Getting coreboot boot log"
 	cmd $LOCAL "$cbmem_cmd -1" "${tmpdir}/${results}/coreboot_console.txt"
+	if [ $(grep -- -dirty "${tmpdir}/${results}/coreboot_console.txt") ]; then
+		echo "coreboot or the payload are built from a source tree in a" \
+		"dirty state, making it hard to reproduce the result. Please" \
+		"check in your source tree with 'git status'."
+		exit $EXIT_FAILURE
+	fi
+
 	echo "Getting timestamp data"
 	cmd_nonfatal $LOCAL "$cbmem_cmd -t" "${tmpdir}/${results}/coreboot_timestamps.txt"
 

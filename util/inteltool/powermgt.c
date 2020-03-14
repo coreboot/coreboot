@@ -849,10 +849,6 @@ int print_pmbase(struct pci_dev *sb, struct pci_access *pacc)
 		pm_registers = sunrise_pm_registers;
 		size = ARRAY_SIZE(sunrise_pm_registers);
 		break;
-
-	case 0x1234: // Dummy for non-existent functionality
-		printf("This southbridge does not have PMBASE.\n");
-		return 1;
 	default:
 		printf("Error: Dumping PMBASE on this southbridge is not (yet) supported.\n");
 		return 1;

@@ -1076,9 +1076,6 @@ int print_gpios(struct pci_dev *sb, int show_all, int show_diffs)
 	case PCI_DEVICE_ID_INTEL_82371XX:
 		printf("This southbridge has GPIOs in the PM unit.\n");
 		return 1;
-	case 0x1234: // Dummy for non-existent functionality
-		printf("This southbridge does not have GPIOBASE.\n");
-		return 1;
 	default:
 		printf("Error: Dumping GPIOs on this southbridge is not (yet) supported.\n");
 		return 1;

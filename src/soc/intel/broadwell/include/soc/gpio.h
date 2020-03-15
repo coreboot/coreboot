@@ -175,7 +175,6 @@ struct gpio_config {
 } __packed;
 
 /* Configure GPIOs with mainboard provided settings */
-void init_one_gpio(int gpio_num, struct gpio_config *config);
 void init_gpios(const struct gpio_config config[]);
 
 /* Get GPIO pin value */

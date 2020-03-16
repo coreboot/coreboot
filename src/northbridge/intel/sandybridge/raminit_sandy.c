@@ -18,116 +18,105 @@
 #include "raminit_native.h"
 #include "raminit_common.h"
 
-/* Frequency multiplier.  */
+/* Frequency multiplier */
 static u32 get_FRQ(u32 tCK)
 {
-	u32 FRQ;
-	FRQ = 256000 / (tCK * BASEFREQ);
+	const u32 FRQ = 256000 / (tCK * BASEFREQ);
+
 	if (FRQ > 8)
 		return 8;
 	if (FRQ < 3)
 		return 3;
+
 	return FRQ;
 }
 
+/* Get REFI based on MC frequency */
 static u32 get_REFI(u32 tCK)
 {
-	/* Get REFI based on MCU frequency using the following rule:
-	 *        _________________________________________
-	 * FRQ : | 3    | 4    | 5    | 6    | 7    | 8    |
-	 * REFI: | 3120 | 4160 | 5200 | 6240 | 7280 | 8320 |
-	 */
-	static const u32 frq_refi_map[] =
-	    { 3120, 4160, 5200, 6240, 7280, 8320 };
+	static const u32 frq_refi_map[] = {
+	/* FRQ:    3,    4,    5,    6,    7,    8, */
+		3120, 4160, 5200, 6240, 7280, 8320,
+	};
 	return frq_refi_map[get_FRQ(tCK) - 3];
 }
 
+/* Get XSOffset based on MC frequency */
 static u8 get_XSOffset(u32 tCK)
 {
-	/* Get XSOffset based on MCU frequency using the following rule:
-	 *             _________________________
-	 * FRQ      : | 3 | 4 | 5 | 6 | 7  | 8  |
-	 * XSOffset : | 4 | 6 | 7 | 8 | 10 | 11 |
-	 */
-	static const u8 frq_xs_map[] = { 4, 6, 7, 8, 10, 11 };
+	static const u8 frq_xs_map[] = {
+	/* FRQ: 3,  4,  5,  6,  7,  8, */
+		4,  6,  7,  8, 10, 11,
+	};
 	return frq_xs_map[get_FRQ(tCK) - 3];
 }
 
+/* Get MOD based on MC frequency */
 static u8 get_MOD(u32 tCK)
 {
-	/* Get MOD based on MCU frequency using the following rule:
-	 *        _____________________________
-	 * FRQ : | 3  | 4  | 5  | 6  | 7  | 8  |
-	 * MOD : | 12 | 12 | 12 | 12 | 15 | 16 |
-	 */
-	static const u8 frq_mod_map[] = { 12, 12, 12, 12, 15, 16 };
+	static const u8 frq_mod_map[] = {
+	/* FRQ:  3,  4,  5,  6,  7,  8, */
+		12, 12, 12, 12, 15, 16,
+	};
 	return frq_mod_map[get_FRQ(tCK) - 3];
 }
 
+/* Get Write Leveling Output delay based on MC frequency */
 static u8 get_WLO(u32 tCK)
 {
-	/* Get WLO based on MCU frequency using the following rule:
-	 *        _______________________
-	 * FRQ : | 3 | 4 | 5 | 6 | 7 | 8 |
-	 * WLO : | 4 | 5 | 6 | 6 | 8 | 8 |
-	 */
-	static const u8 frq_wlo_map[] = { 4, 5, 6, 6, 8, 8 };
+	static const u8 frq_wlo_map[] = {
+	/* FRQ: 3, 4, 5, 6, 7, 8, */
+		4, 5, 6, 6, 8, 8,
+	};
 	return frq_wlo_map[get_FRQ(tCK) - 3];
 }
 
+/* Get CKE based on MC frequency */
 static u8 get_CKE(u32 tCK)
 {
-	/* Get CKE based on MCU frequency using the following rule:
-	 *        _______________________
-	 * FRQ : | 3 | 4 | 5 | 6 | 7 | 8 |
-	 * CKE : | 3 | 3 | 4 | 4 | 5 | 6 |
-	 */
-	static const u8 frq_cke_map[] = { 3, 3, 4, 4, 5, 6 };
+	static const u8 frq_cke_map[] = {
+	/* FRQ: 3, 4, 5, 6, 7, 8, */
+		3, 3, 4, 4, 5, 6,
+	};
 	return frq_cke_map[get_FRQ(tCK) - 3];
 }
 
+/* Get XPDLL based on MC frequency */
 static u8 get_XPDLL(u32 tCK)
 {
-	/* Get XPDLL based on MCU frequency using the following rule:
-	 *          _____________________________
-	 * FRQ   : | 3  | 4  | 5  | 6  | 7  | 8  |
-	 * XPDLL : | 10 | 13 | 16 | 20 | 23 | 26 |
-	 */
-	static const u8 frq_xpdll_map[] = { 10, 13, 16, 20, 23, 26 };
+	static const u8 frq_xpdll_map[] = {
+	/* FRQ:  3,  4,  5,  6,  7,  8, */
+		10, 13, 16, 20, 23, 26,
+	};
 	return frq_xpdll_map[get_FRQ(tCK) - 3];
 }
 
+/* Get XP based on MC frequency */
 static u8 get_XP(u32 tCK)
 {
-	/* Get XP based on MCU frequency using the following rule:
-	 *        _______________________
-	 * FRQ : | 3 | 4 | 5 | 6 | 7 | 8 |
-	 * XP  : | 3 | 4 | 4 | 5 | 6 | 7 |
-	 */
-	static const u8 frq_xp_map[] = { 3, 4, 4, 5, 6, 7 };
+	static const u8 frq_xp_map[] = {
+	/* FRQ: 3, 4, 5, 6, 7, 8, */
+		3, 4, 4, 5, 6, 7,
+	};
 	return frq_xp_map[get_FRQ(tCK) - 3];
 }
 
+/* Get AONPD based on MC frequency */
 static u8 get_AONPD(u32 tCK)
 {
-	/* Get AONPD based on MCU frequency using the following rule:
-	 *          ________________________
-	 * FRQ   : | 3 | 4 | 5 | 6 | 7 | 8  |
-	 * AONPD : | 4 | 5 | 6 | 8 | 8 | 10 |
-	 */
-	static const u8 frq_aonpd_map[] = { 4, 5, 6, 8, 8, 10 };
+	static const u8 frq_aonpd_map[] = {
+	/* FRQ: 3,  4,  5,  6,  7,  8, */
+		4,  5,  6,  8,  8, 10,
+	};
 	return frq_aonpd_map[get_FRQ(tCK) - 3];
 }
 
+/* Get COMP2 based on MC frequency */
 static u32 get_COMP2(u32 tCK)
 {
-	/* Get COMP2 based on MCU frequency using the following rule:
-	 *         ___________________________________________________________
-	 * FRQ  : | 3       | 4       | 5       | 6       | 7       | 8       |
-	 * COMP : | D6BEDCC | CE7C34C | CA57A4C | C6369CC | C42514C | C21410C |
-	 */
-	static const u32 frq_comp2_map[] = { 0xD6BEDCC, 0xCE7C34C, 0xCA57A4C,
-		0xC6369CC, 0xC42514C, 0xC21410C
+	static const u32 frq_comp2_map[] = {
+	/* FRQ:          3,          4,          5,          6,          7,          8, */
+		0x0D6BEDCC, 0x0CE7C34C, 0x0CA57A4C, 0x0C6369CC, 0x0C42514C, 0x0C21410C,
 	};
 	return frq_comp2_map[get_FRQ(tCK) - 3];
 }
@@ -154,21 +143,23 @@ static void snb_normalize_tclk(u32 *tclk)
 static void find_cas_tck(ramctr_timing *ctrl)
 {
 	u8 val;
-	u32 val32;
 
 	/* Find CAS latency */
 	while (1) {
-		/* Normalising tCK before computing clock could potentially
-		 * results in lower selected CAS, which is desired.
+		/*
+		 * Normalising tCK before computing clock could potentially
+		 * result in a lower selected CAS, which is desired.
 		 */
 		snb_normalize_tclk(&(ctrl->tCK));
 		if (!(ctrl->tCK))
 			die("Couldn't find compatible clock / CAS settings\n");
+
 		val = DIV_ROUND_UP(ctrl->tAA, ctrl->tCK);
 		printk(BIOS_DEBUG, "Trying CAS %u, tCK %u.\n", val, ctrl->tCK);
 		for (; val <= MAX_CAS; val++)
 			if ((ctrl->cas_supported >> (val - MIN_CAS)) & 1)
 				break;
+
 		if (val == (MAX_CAS + 1)) {
 			ctrl->tCK++;
 			continue;
@@ -178,18 +169,17 @@ static void find_cas_tck(ramctr_timing *ctrl)
 		}
 	}
 
-	val32 = NS2MHZ_DIV256 / ctrl->tCK;
-	printk(BIOS_DEBUG, "Selected DRAM frequency: %u MHz\n", val32);
-
+	printk(BIOS_DEBUG, "Selected DRAM frequency: %u MHz\n", NS2MHZ_DIV256 / ctrl->tCK);
 	printk(BIOS_DEBUG, "Selected CAS latency   : %uT\n", val);
 	ctrl->CAS = val;
 }
 
 static void dram_timing(ramctr_timing *ctrl)
 {
-	/* Maximum supported DDR3 frequency is 1066MHz (DDR3 2133) so make sure
-	 * we cap it if we have faster DIMMs.
-	 * Then, align it to the closest JEDEC standard frequency */
+	/*
+	 * On Sandy Bridge, the maximum supported DDR3 frequency is 1066MHz (DDR3 2133).
+	 * Cap it for faster DIMMs, and align it to the closest JEDEC standard frequency.
+	 */
 	if (ctrl->tCK == TCK_1066MHZ) {
 		ctrl->edge_offset[0] = 16;
 		ctrl->edge_offset[1] = 7;
@@ -198,6 +188,7 @@ static void dram_timing(ramctr_timing *ctrl)
 		ctrl->timC_offset[1] = 7;
 		ctrl->timC_offset[2] = 7;
 		ctrl->pi_coding_threshold = 13;
+
 	} else if (ctrl->tCK == TCK_933MHZ) {
 		ctrl->edge_offset[0] = 14;
 		ctrl->edge_offset[1] = 6;
@@ -206,6 +197,7 @@ static void dram_timing(ramctr_timing *ctrl)
 		ctrl->timC_offset[1] = 6;
 		ctrl->timC_offset[2] = 6;
 		ctrl->pi_coding_threshold = 15;
+
 	} else if (ctrl->tCK == TCK_800MHZ) {
 		ctrl->edge_offset[0] = 13;
 		ctrl->edge_offset[1] = 5;
@@ -214,6 +206,7 @@ static void dram_timing(ramctr_timing *ctrl)
 		ctrl->timC_offset[1] = 5;
 		ctrl->timC_offset[2] = 5;
 		ctrl->pi_coding_threshold = 15;
+
 	} else if (ctrl->tCK == TCK_666MHZ) {
 		ctrl->edge_offset[0] = 10;
 		ctrl->edge_offset[1] = 4;
@@ -222,6 +215,7 @@ static void dram_timing(ramctr_timing *ctrl)
 		ctrl->timC_offset[1] = 4;
 		ctrl->timC_offset[2] = 4;
 		ctrl->pi_coding_threshold = 16;
+
 	} else if (ctrl->tCK == TCK_533MHZ) {
 		ctrl->edge_offset[0] = 8;
 		ctrl->edge_offset[1] = 3;
@@ -230,6 +224,7 @@ static void dram_timing(ramctr_timing *ctrl)
 		ctrl->timC_offset[1] = 3;
 		ctrl->timC_offset[2] = 3;
 		ctrl->pi_coding_threshold = 17;
+
 	} else  {
 		ctrl->tCK = TCK_400MHZ;
 		ctrl->edge_offset[0] = 6;
@@ -251,13 +246,14 @@ static void dram_timing(ramctr_timing *ctrl)
 		ctrl->CWL = DIV_ROUND_UP(ctrl->tCWL, ctrl->tCK);
 	else
 		ctrl->CWL = get_CWL(ctrl->tCK);
+
 	printk(BIOS_DEBUG, "Selected CWL latency   : %uT\n", ctrl->CWL);
 
 	/* Find tRCD */
 	ctrl->tRCD = DIV_ROUND_UP(ctrl->tRCD, ctrl->tCK);
 	printk(BIOS_DEBUG, "Selected tRCD          : %uT\n", ctrl->tRCD);
 
-	ctrl->tRP = DIV_ROUND_UP(ctrl->tRP, ctrl->tCK);
+	ctrl->tRP  = DIV_ROUND_UP(ctrl->tRP,  ctrl->tCK);
 	printk(BIOS_DEBUG, "Selected tRP           : %uT\n", ctrl->tRP);
 
 	/* Find tRAS */
@@ -265,7 +261,7 @@ static void dram_timing(ramctr_timing *ctrl)
 	printk(BIOS_DEBUG, "Selected tRAS          : %uT\n", ctrl->tRAS);
 
 	/* Find tWR */
-	ctrl->tWR = DIV_ROUND_UP(ctrl->tWR, ctrl->tCK);
+	ctrl->tWR  = DIV_ROUND_UP(ctrl->tWR,  ctrl->tCK);
 	printk(BIOS_DEBUG, "Selected tWR           : %uT\n", ctrl->tWR);
 
 	/* Find tFAW */
@@ -285,25 +281,25 @@ static void dram_timing(ramctr_timing *ctrl)
 	printk(BIOS_DEBUG, "Selected tWTR          : %uT\n", ctrl->tWTR);
 
 	/* Refresh-to-Active or Refresh-to-Refresh (tRFC) */
-	ctrl->tRFC = DIV_ROUND_UP(ctrl->tRFC, ctrl->tCK - 1);
+	ctrl->tRFC = DIV_ROUND_UP(ctrl->tRFC, ctrl->tCK - 1);	/* FIXME: Why the -1 ? */
 	printk(BIOS_DEBUG, "Selected tRFC          : %uT\n", ctrl->tRFC);
 
-	ctrl->tREFI = get_REFI(ctrl->tCK);
-	ctrl->tMOD = get_MOD(ctrl->tCK);
+	ctrl->tREFI     =     get_REFI(ctrl->tCK);
+	ctrl->tMOD      =      get_MOD(ctrl->tCK);
 	ctrl->tXSOffset = get_XSOffset(ctrl->tCK);
-	ctrl->tWLO = get_WLO(ctrl->tCK);
-	ctrl->tCKE = get_CKE(ctrl->tCK);
-	ctrl->tXPDLL = get_XPDLL(ctrl->tCK);
-	ctrl->tXP = get_XP(ctrl->tCK);
-	ctrl->tAONPD = get_AONPD(ctrl->tCK);
+	ctrl->tWLO      =      get_WLO(ctrl->tCK);
+	ctrl->tCKE      =      get_CKE(ctrl->tCK);
+	ctrl->tXPDLL    =    get_XPDLL(ctrl->tCK);
+	ctrl->tXP       =       get_XP(ctrl->tCK);
+	ctrl->tAONPD    =    get_AONPD(ctrl->tCK);
 }
 
 static void dram_freq(ramctr_timing *ctrl)
 {
-
 	if (ctrl->tCK > TCK_400MHZ) {
-		printk(BIOS_ERR, "DRAM frequency is under lowest supported "
-			"frequency (400 MHz). Increasing to 400 MHz as last resort");
+		printk(BIOS_ERR,
+			"DRAM frequency is under lowest supported frequency (400 MHz). "
+			"Increasing to 400 MHz as last resort");
 		ctrl->tCK = TCK_400MHZ;
 	}
 
@@ -311,13 +307,15 @@ static void dram_freq(ramctr_timing *ctrl)
 		u8 val2;
 		u32 reg1 = 0;
 
+		/* Step 1 - Set target PCU frequency */
 		find_cas_tck(ctrl);
 
-		/* Frequency multiplier.  */
-		u32 FRQ = get_FRQ(ctrl->tCK);
+		/* Frequency multiplier */
+		const u32 FRQ = get_FRQ(ctrl->tCK);
 
-		/* The PLL will never lock if the required frequency is
-		 * already set. Exit early to prevent a system hang.
+		/*
+		 * The PLL will never lock if the required frequency is already set.
+		 * Exit early to prevent a system hang.
 		 */
 		reg1 = MCHBAR32(MC_BIOS_DATA);
 		val2 = (u8) reg1;
@@ -326,7 +324,7 @@ static void dram_freq(ramctr_timing *ctrl)
 
 		/* Step 1 - Select frequency in the MCU */
 		reg1 = FRQ;
-		reg1 |= 0x80000000;	// set running bit
+		reg1 |= 0x80000000;	/* set running bit */
 		MCHBAR32(MC_BIOS_REQ) = reg1;
 		int i=0;
 		printk(BIOS_DEBUG, "PLL busy... ");
@@ -352,61 +350,57 @@ static void dram_freq(ramctr_timing *ctrl)
 
 static void dram_ioregs(ramctr_timing *ctrl)
 {
-	u32 reg, comp2;
+	u32 reg;
 
 	int channel;
 
-	// IO clock
+	/* IO clock */
 	FOR_ALL_CHANNELS {
 		MCHBAR32(GDCRCLKRANKSUSED_ch(channel)) = ctrl->rankmap[channel];
 	}
 
-	// IO command
+	/* IO command */
 	FOR_ALL_CHANNELS {
 		MCHBAR32(GDCRCTLRANKSUSED_ch(channel)) = ctrl->rankmap[channel];
 	}
 
-	// IO control
+	/* IO control */
 	FOR_ALL_POPULATED_CHANNELS {
 		program_timings(ctrl, channel);
 	}
 
-	// Rcomp
+	/* Perform RCOMP */
 	printram("RCOMP...");
-	reg = 0;
-	while (reg == 0) {
-		reg = MCHBAR32(RCOMP_TIMER) & 0x10000;
-	}
+	while (!(MCHBAR32(RCOMP_TIMER) & (1 << 16)))
+		;
+
 	printram("done\n");
 
-	// Set comp2
-	comp2 = get_COMP2(ctrl->tCK);
-	MCHBAR32(CRCOMPOFST2) = comp2;
+	/* Set COMP2 */
+	MCHBAR32(CRCOMPOFST2) = get_COMP2(ctrl->tCK);
 	printram("COMP2 done\n");
 
-	// Set comp1
+	/* Set COMP1 */
 	FOR_ALL_POPULATED_CHANNELS {
-		reg = MCHBAR32(CRCOMPOFST1_ch(channel));	//ch0
-		reg = (reg & ~0xe00) | (1 << 9);	//odt
-		reg = (reg & ~0xe00000) | (1 << 21);	//clk drive up
-		reg = (reg & ~0x38000000) | (1 << 27);	//ctl drive up
+		reg = MCHBAR32(CRCOMPOFST1_ch(channel));
+		reg = (reg & ~0x00000e00) | (1 <<  9);	/* ODT */
+		reg = (reg & ~0x00e00000) | (1 << 21);	/* clk drive up */
+		reg = (reg & ~0x38000000) | (1 << 27);	/* ctl drive up */
 		MCHBAR32(CRCOMPOFST1_ch(channel)) = reg;
 	}
 	printram("COMP1 done\n");
 
 	printram("FORCE RCOMP and wait 20us...");
-	MCHBAR32(M_COMP) |= 0x100;
+	MCHBAR32(M_COMP) |= (1 << 8);
 	udelay(20);
 	printram("done\n");
 }
 
-int try_init_dram_ddr3_sandy(ramctr_timing *ctrl, int fast_boot,
-		int s3_resume, int me_uma_size)
+int try_init_dram_ddr3_snb(ramctr_timing *ctrl, int fast_boot, int s3_resume, int me_uma_size)
 {
 	int err;
 
-	printk(BIOS_DEBUG, "Starting SandyBridge RAM training (%d).\n",
-		   fast_boot);
+	printk(BIOS_DEBUG, "Starting SandyBridge RAM training (%d).\n", fast_boot);
 
 	if (!fast_boot) {
 		/* Find fastest common supported parameters */
@@ -415,7 +409,7 @@ int try_init_dram_ddr3_sandy(ramctr_timing *ctrl, int fast_boot,
 		dram_dimm_mapping(ctrl);
 	}
 
-	/* Set MCU frequency */
+	/* Set MC frequency */
 	dram_freq(ctrl);
 
 	if (!fast_boot) {
@@ -424,7 +418,7 @@ int try_init_dram_ddr3_sandy(ramctr_timing *ctrl, int fast_boot,
 	}
 
 	/* Set version register */
-	MCHBAR32(MRC_REVISION) = 0xC04EB002;
+	MCHBAR32(MRC_REVISION) = 0xc04eb002;
 
 	/* Enable crossover */
 	dram_xover(ctrl);
@@ -438,11 +432,11 @@ int try_init_dram_ddr3_sandy(ramctr_timing *ctrl, int fast_boot,
 	/* Set scheduler chicken bits */
 	MCHBAR32(SCHED_CBIT) = 0x10100005;
 
-	/* Set CPU specific register */
-	set_4f8c();
+	/* Set up watermarks and starvation counter */
+	set_wmm_behavior();
 
 	/* Clear IO reset bit */
-	MCHBAR32(MC_INIT_STATE_G) &= ~0x20;
+	MCHBAR32(MC_INIT_STATE_G) &= ~(1 << 5);
 
 	/* Set MAD-DIMM registers */
 	dram_dimm_set_mapping(ctrl);
@@ -464,7 +458,7 @@ int try_init_dram_ddr3_sandy(ramctr_timing *ctrl, int fast_boot,
 	if (fast_boot) {
 		restore_timings(ctrl);
 	} else {
-		/* Do jedec ddr3 reset sequence */
+		/* Do JEDEC DDR3 reset sequence */
 		dram_jedecreset(ctrl);
 		printk(BIOS_DEBUG, "Done jedec reset\n");
 
@@ -508,7 +502,7 @@ int try_init_dram_ddr3_sandy(ramctr_timing *ctrl, int fast_boot,
 		normalize_training(ctrl);
 	}
 
-	set_4008c(ctrl);
+	set_read_write_timings(ctrl);
 
 	write_controller_mr(ctrl);
 

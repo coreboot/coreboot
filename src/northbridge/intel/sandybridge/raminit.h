@@ -29,4 +29,4 @@ void save_mrc_data(struct pei_data *pei_data);
 void mainboard_fill_pei_data(struct pei_data *pei_data);
 int fixup_sandybridge_errata(void);
 
-#endif				/* RAMINIT_H */
+#endif /* RAMINIT_H */

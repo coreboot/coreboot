@@ -19,9 +19,9 @@
 
 /*
  * Digital Port Hotplug Enable:
- *  0x04 = Enabled, 2ms short pulse
+ *  0x04 = Enabled, 2ms   short pulse
  *  0x05 = Enabled, 4.5ms short pulse
- *  0x06 = Enabled, 6ms short pulse
+ *  0x06 = Enabled, 6ms   short pulse
  *  0x07 = Enabled, 100ms short pulse
  */
 struct northbridge_intel_sandybridge_config {
@@ -48,7 +48,7 @@ struct northbridge_intel_sandybridge_config {
 	struct i915_gpu_controller_info gfx;
 
 	/*
-	 * Maximum PCI mmio size in MiB.
+	 * Maximum PCI MMIO size in MiB.
 	 */
 	u16 pci_mmio_size;
 
@@ -63,7 +63,8 @@ struct northbridge_intel_sandybridge_config {
 	bool ec_present;
 	bool ddr3lv_support;
 
-	/* N mode functionality. Leave this setting at 0.
+	/*
+	 * N mode functionality. Leave this setting at 0.
 	 * 0 Auto
 	 * 1 1N
 	 * 2 2N
@@ -74,12 +75,13 @@ struct northbridge_intel_sandybridge_config {
 		DDR_NMODE_2N,
 	} nmode;
 
-	/* DDR refresh rate config. JEDEC Standard No.21-C Annex K allows
-	 * for DIMM SPD data to specify whether double-rate is required for
-	 * extended operating temperature range.
-	 * 0 Enable double rate based upon temperature thresholds
-	 * 1 Normal rate
-	 * 2 Always enable double rate
+	/*
+	 * DDR refresh rate config. JEDEC Standard No.21-C Annex K allows for DIMM SPD data to
+	 * specify whether double-rate is required for extended operating temperature range.
+	 *
+	 *   0 Enable double rate based upon temperature thresholds
+	 *   1 Normal rate
+	 *   2 Always enable double rate
 	 */
 	enum {
 		DDR_REFRESH_RATE_TEMP_THRES = 0,
@@ -93,7 +95,7 @@ struct northbridge_intel_sandybridge_config {
 	 *  [1] = overcurrent pin
 	 *  [2] = length
 	 *
-	 * Ports 0-7 can be mapped to OC0-OC3
+	 * Ports 0-7  can be mapped to OC0-OC3
 	 * Ports 8-13 can be mapped to OC4-OC7
 	 *
 	 * Port Length

@@ -54,9 +54,9 @@ static const char *pcie_acpi_name(const struct device *dev)
 	if (dev->path.pci.devfn == PCI_DEVFN(0, 0) &&
 	    port->bus->secondary == 0 &&
 	    (port->path.pci.devfn == PCI_DEVFN(1, 0) ||
-	    port->path.pci.devfn == PCI_DEVFN(1, 1) ||
-	    port->path.pci.devfn == PCI_DEVFN(1, 2) ||
-	    port->path.pci.devfn == PCI_DEVFN(6, 0)))
+	     port->path.pci.devfn == PCI_DEVFN(1, 1) ||
+	     port->path.pci.devfn == PCI_DEVFN(1, 2) ||
+	     port->path.pci.devfn == PCI_DEVFN(6, 0)))
 		return "DEV0";
 
 	return NULL;
@@ -81,9 +81,11 @@ static struct device_operations device_ops = {
 #endif
 };
 
-static const unsigned short pci_device_ids[] = { 0x0101, 0x0105, 0x0109, 0x010d,
-						 0x0151, 0x0155, 0x0159, 0x015d,
-						 0 };
+static const unsigned short pci_device_ids[] = {
+	0x0101, 0x0105, 0x0109, 0x010d,
+	0x0151, 0x0155, 0x0159, 0x015d,
+	0,
+};
 
 static const struct pci_driver pch_pcie __pci_driver = {
 	.ops		= &device_ops,

@@ -35,11 +35,9 @@ static uint64_t uma_memory_size = 0;
 int bridge_silicon_revision(void)
 {
 	if (bridge_revision_id < 0) {
-		uint8_t stepping = cpuid_eax(1) & 0xf;
-		uint8_t bridge_id = pci_read_config16(
-			pcidev_on_root(0, 0),
-			PCI_DEVICE_ID) & 0xf0;
-		bridge_revision_id = bridge_id | stepping;
+		uint8_t stepping = cpuid_eax(1) & 0x0f;
+		uint8_t bridge_id = pci_read_config16(pcidev_on_root(0, 0), PCI_DEVICE_ID);
+		bridge_revision_id = (bridge_id & 0xf0) | stepping;
 	}
 	return bridge_revision_id;
 }
@@ -66,18 +64,19 @@ static int get_pcie_bar(u32 *base)
 
 	pciexbar_reg = pci_read_config32(dev, PCIEXBAR);
 
+	/* MMCFG not supported or not enabled */
 	if (!(pciexbar_reg & (1 << 0)))
 		return 0;
 
 	switch ((pciexbar_reg >> 1) & 3) {
-	case 0: // 256MB
-		*base = pciexbar_reg & ((1 << 31)|(1 << 30)|(1 << 29)|(1 << 28));
+	case 0: /* 256MB */
+		*base = pciexbar_reg & (0xffffffffULL << 28);
 		return 256;
-	case 1: // 128M
-		*base = pciexbar_reg & ((1 << 31)|(1 << 30)|(1 << 29)|(1 << 28)|(1 << 27));
+	case 1: /* 128M */
+		*base = pciexbar_reg & (0xffffffffULL << 27);
 		return 128;
-	case 2: // 64M
-		*base = pciexbar_reg & ((1 << 31)|(1 << 30)|(1 << 29)|(1 << 28)|(1 << 27)|(1 << 26));
+	case 2: /* 64M */
+		*base = pciexbar_reg & (0xffffffffULL << 26);
 		return 64;
 	}
 
@@ -88,15 +87,14 @@ static void add_fixed_resources(struct device *dev, int index)
 {
 	mmio_resource(dev, index++, uma_memory_base >> 10, uma_memory_size >> 10);
 
-	mmio_resource(dev, index++, legacy_hole_base_k,
-			(0xc0000 >> 10) - legacy_hole_base_k);
-	reserved_ram_resource(dev, index++, 0xc0000 >> 10,
-			(0x100000 - 0xc0000) >> 10);
+	mmio_resource(dev, index++, legacy_hole_base_k, (0xc0000 >> 10) - legacy_hole_base_k);
+
+	reserved_ram_resource(dev, index++, 0xc0000 >> 10, (0x100000 - 0xc0000) >> 10);
 
 #if CONFIG(CHROMEOS_RAMOOPS)
 	reserved_ram_resource(dev, index++,
 			CONFIG_CHROMEOS_RAMOOPS_RAM_START >> 10,
-			CONFIG_CHROMEOS_RAMOOPS_RAM_SIZE >> 10);
+			CONFIG_CHROMEOS_RAMOOPS_RAM_SIZE  >> 10);
 #endif
 
 	if ((bridge_silicon_revision() & BASE_REV_MASK) == BASE_REV_SNB) {
@@ -106,10 +104,10 @@ static void add_fixed_resources(struct device *dev, int index)
 	}
 
 	/* Reserve IOMMU BARs */
-	const u32 capid0_a = pci_read_config32(dev, 0xe4);
+	const u32 capid0_a = pci_read_config32(dev, CAPID0_A);
 	if (!(capid0_a & (1 << 23))) {
-		mmio_resource(dev, index++, IOMMU_BASE1 >> 10, 4);
-		mmio_resource(dev, index++, IOMMU_BASE2 >> 10, 4);
+		mmio_resource(dev, index++, GFXVT_BASE >> 10, 4);
+		mmio_resource(dev, index++, VTVC0_BASE >> 10, 4);
 	}
 }
 
@@ -149,7 +147,7 @@ static void pci_domain_set_resources(struct device *dev)
 	struct device *mch = pcidev_on_root(0, 0);
 
 	/* Top of Upper Usable DRAM, including remap */
-	touud = pci_read_config32(mch, TOUUD+4);
+	touud  = pci_read_config32(mch, TOUUD + 4);
 	touud <<= 32;
 	touud |= pci_read_config32(mch, TOUUD);
 
@@ -157,17 +155,17 @@ static void pci_domain_set_resources(struct device *dev)
 	tolud = pci_read_config32(mch, TOLUD);
 
 	/* Top of Memory - does not account for any UMA */
-	tom = pci_read_config32(mch, 0xa4);
+	tom  = pci_read_config32(mch, TOM + 4);
 	tom <<= 32;
-	tom |= pci_read_config32(mch, 0xa0);
+	tom |= pci_read_config32(mch, TOM);
 
 	printk(BIOS_DEBUG, "TOUUD 0x%llx TOLUD 0x%08x TOM 0x%llx\n",
 	       touud, tolud, tom);
 
-	/* ME UMA needs excluding if total memory <4GB */
-	me_base = pci_read_config32(mch, 0x74);
+	/* ME UMA needs excluding if total memory < 4GB */
+	me_base  = pci_read_config32(mch, MESEG_BASE + 4);
 	me_base <<= 32;
-	me_base |= pci_read_config32(mch, 0x70);
+	me_base |= pci_read_config32(mch, MESEG_BASE);
 
 	printk(BIOS_DEBUG, "MEBASE 0x%llx\n", me_base);
 
@@ -206,30 +204,28 @@ static void pci_domain_set_resources(struct device *dev)
 	}
 
 	/* Calculate TSEG size from its base which must be below GTT */
-	tseg_base = pci_read_config32(mch, 0xb8);
+	tseg_base = pci_read_config32(mch, TSEGMB);
 	uma_size = (uma_memory_base - tseg_base) >> 10;
 	tomk -= uma_size;
 	uma_memory_base = tomk * 1024ULL;
 	uma_memory_size += uma_size * 1024ULL;
-	printk(BIOS_DEBUG, "TSEG base 0x%08x size %uM\n",
-	       tseg_base, uma_size >> 10);
+	printk(BIOS_DEBUG, "TSEG base 0x%08x size %uM\n", tseg_base, uma_size >> 10);
 
 	printk(BIOS_INFO, "Available memory below 4GB: %lluM\n", tomk >> 10);
 
 	/* Report the memory regions */
 	ram_resource(dev, 3, 0, legacy_hole_base_k);
 	ram_resource(dev, 4, legacy_hole_base_k + legacy_hole_size_k,
-	     (tomk - (legacy_hole_base_k + legacy_hole_size_k)));
+		    (tomk - (legacy_hole_base_k + legacy_hole_size_k)));
 
 	/*
-	 * If >= 4GB installed then memory from TOLUD to 4GB
-	 * is remapped above TOM, TOUUD will account for both
+	 * If >= 4GB installed, then memory from TOLUD to 4GB is remapped above TOM.
+	 * TOUUD will account for both memory chunks.
 	 */
 	touud >>= 10; /* Convert to KB */
 	if (touud > 4096 * 1024) {
 		ram_resource(dev, 5, 4096 * 1024, touud - (4096 * 1024));
-		printk(BIOS_INFO, "Available memory above 4GB: %lluM\n",
-		       (touud >> 10) - 4096);
+		printk(BIOS_INFO, "Available memory above 4GB: %lluM\n", (touud >> 10) - 4096);
 	}
 
 	add_fixed_resources(dev, 6);
@@ -253,17 +249,18 @@ static const char *northbridge_acpi_name(const struct device *dev)
 	return NULL;
 }
 
-	/* TODO We could determine how many PCIe busses we need in
-	 * the bar. For now that number is hardcoded to a max of 64.
-	 */
+/*
+ * TODO We could determine how many PCIe busses we need in the bar.
+ * For now, that number is hardcoded to a max of 64.
+ */
 static struct device_operations pci_domain_ops = {
-	.read_resources   = pci_domain_read_resources,
-	.set_resources    = pci_domain_set_resources,
-	.enable_resources = NULL,
-	.init             = NULL,
-	.scan_bus         = pci_domain_scan_bus,
+	.read_resources    = pci_domain_read_resources,
+	.set_resources     = pci_domain_set_resources,
+	.enable_resources  = NULL,
+	.init              = NULL,
+	.scan_bus          = pci_domain_scan_bus,
 	.write_acpi_tables = northbridge_write_acpi_tables,
-	.acpi_name        = northbridge_acpi_name,
+	.acpi_name         = northbridge_acpi_name,
 };
 
 static void mc_read_resources(struct device *dev)
@@ -291,7 +288,7 @@ static void northbridge_dmi_init(struct device *dev)
 	/* Steps prior to DMI ASPM */
 	if ((bridge_silicon_revision() & BASE_REV_MASK) == BASE_REV_SNB) {
 		reg32 = DMIBAR32(0x250);
-		reg32 &= ~((1 << 22)|(1 << 20));
+		reg32 &= ~((1 << 22) | (1 << 20));
 		reg32 |= (1 << 21);
 		DMIBAR32(0x250) = reg32;
 	}
@@ -304,6 +301,7 @@ static void northbridge_dmi_init(struct device *dev)
 		reg32 = DMIBAR32(0x1f8);
 		reg32 |= (1 << 16);
 		DMIBAR32(0x1f8) = reg32;
+
 	} else if (bridge_silicon_revision() >= SNB_STEP_D1) {
 		reg32 = DMIBAR32(0x1f8);
 		reg32 &= ~(1 << 26);
@@ -374,10 +372,15 @@ static void disable_peg(void)
 
 	dev = pcidev_on_root(0, 0);
 	pci_write_config32(dev, DEVEN, reg);
+
 	if (!(reg & (DEVEN_PEG60 | DEVEN_PEG10 | DEVEN_PEG11 | DEVEN_PEG12))) {
-		/* Set the PEG clock gating bit.
-		 * Disables the IO clock on all PEG devices. */
-		MCHBAR32(0x7010) = MCHBAR32(0x7010) | 0x01;
+		/*
+		 * Set the PEG clock gating bit. Disables the IO clock on all PEG devices.
+		 *
+		 * FIXME: If not clock gating, this register still needs to be written to once,
+		 *        to lock it down. Also, never clock gate on Ivy Bridge stepping A0!
+		 */
+		MCHBAR32_OR(PEGCTL, 1);
 		printk(BIOS_DEBUG, "Disabling PEG IO clock.\n");
 	}
 }
@@ -394,10 +397,10 @@ static void northbridge_init(struct device *dev)
 
 	if ((bridge_silicon_revision() & BASE_REV_MASK) == BASE_REV_IVB) {
 		/* Enable Power Aware Interrupt Routing */
-		u8 pair = MCHBAR8(PAIR_CTL);
-		pair &= ~0xf;	/* Clear 3:0 */
-		pair |= 0x4;	/* Fixed Priority */
-		MCHBAR8(PAIR_CTL) = pair;
+		u8 pair = MCHBAR8(INTRDIRCTL);
+		pair &= ~0x0f;	/* Clear 3:0 */
+		pair |=  0x04;	/* Fixed Priority */
+		MCHBAR8(INTRDIRCTL) = pair;
 
 		/* 30h for IvyBridge */
 		bridge_type |= 0x30;
@@ -407,9 +410,7 @@ static void northbridge_init(struct device *dev)
 	}
 	MCHBAR32(SAPMTIMERS) = bridge_type;
 
-	/* Turn off unused devices. Has to be done before
-	 * setting BIOS_RESET_CPL.
-	 */
+	/* Turn off unused devices. Has to be done before setting BIOS_RESET_CPL. */
 	disable_peg();
 
 	/*
@@ -426,17 +427,17 @@ static void northbridge_init(struct device *dev)
 	set_power_limits(28);
 
 	/*
-	 * CPUs with configurable TDP also need power limits set
-	 * in MCHBAR.  Use same values from MSR_PKG_POWER_LIMIT.
+	 * CPUs with configurable TDP also need power limits set in MCHBAR.
+	 * Use the same values from MSR_PKG_POWER_LIMIT.
 	 */
 	if (cpu_config_tdp_levels()) {
 		msr_t msr = rdmsr(MSR_PKG_POWER_LIMIT);
-		MCHBAR32(MC_TURBO_PL1) = msr.lo;
-		MCHBAR32(MC_TURBO_PL2) = msr.hi;
+		MCHBAR32(MCH_PKG_POWER_LIMIT_LO) = msr.lo;
+		MCHBAR32(MCH_PKG_POWER_LIMIT_HI) = msr.hi;
 	}
 
 	/* Set here before graphics PM init */
-	MCHBAR32(MMIO_PAVP_CTL) = 0x00100001;
+	MCHBAR32(PAVP_MSG) = 0x00100001;
 }
 
 void northbridge_write_smram(u8 smram)
@@ -445,16 +446,16 @@ void northbridge_write_smram(u8 smram)
 }
 
 static struct pci_operations intel_pci_ops = {
-	.set_subsystem    = pci_dev_set_subsystem,
+	.set_subsystem = pci_dev_set_subsystem,
 };
 
 static struct device_operations mc_ops = {
-	.read_resources   = mc_read_resources,
-	.set_resources    = pci_dev_set_resources,
-	.enable_resources = pci_dev_enable_resources,
-	.init             = northbridge_init,
-	.scan_bus         = 0,
-	.ops_pci          = &intel_pci_ops,
+	.read_resources           = mc_read_resources,
+	.set_resources            = pci_dev_set_resources,
+	.enable_resources         = pci_dev_enable_resources,
+	.init                     = northbridge_init,
+	.scan_bus                 = NULL,
+	.ops_pci                  = &intel_pci_ops,
 	.acpi_fill_ssdt_generator = generate_cpu_entries,
 };
 
@@ -465,8 +466,8 @@ static const unsigned short pci_device_ids[] = {
 };
 
 static const struct pci_driver mc_driver __pci_driver = {
-	.ops    = &mc_ops,
-	.vendor = PCI_VENDOR_ID_INTEL,
+	.ops     = &mc_ops,
+	.vendor  = PCI_VENDOR_ID_INTEL,
 	.devices = pci_device_ids,
 };
 

@@ -28,6 +28,7 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	lb_add_gpios(gpios, chromeos_gpios, ARRAY_SIZE(chromeos_gpios));
 }
 
+#if !CONFIG(EC_GOOGLE_CHROMEEC_SWITCHES)
 int get_lid_switch(void)
 {
 	/* Lid always open */
@@ -38,6 +39,8 @@ int get_recovery_mode_switch(void)
 {
 	return 0;
 }
+
+#endif /*!CONFIG(EC_GOOGLE_CHROMEEC_SWITCHES) */
 
 int get_write_protect_state(void)
 {

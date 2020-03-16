@@ -56,3 +56,6 @@
 
 /* PCI _OSC */
 #include <soc/intel/common/acpi/pci_osc.asl>
+
+/* PMC Core*/
+#include <soc/intel/common/block/acpi/acpi/pmc.asl>

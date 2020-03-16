@@ -267,26 +267,26 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_F18, NONE, DEEP, NF1),
 
 	/* G0  : SD_CMD */
-	PAD_NC(GPP_G0, NONE),
+	PAD_CFG_NF(GPP_G0, NATIVE, DEEP, NF1),
 	/* G1  : SD_DATA0 */
-	PAD_NC(GPP_G1, NONE),
+	PAD_CFG_NF(GPP_G1, NATIVE, DEEP, NF1),
 	/* G2  : SD_DATA1 */
-	PAD_NC(GPP_G2, NONE),
+	PAD_CFG_NF(GPP_G2, NATIVE, DEEP, NF1),
 	/* G3  : SD_DATA2 */
-	PAD_NC(GPP_G3, NONE),
+	PAD_CFG_NF(GPP_G3, NATIVE, DEEP, NF1),
 	/* G4  : SD_DATA3 */
-	PAD_NC(GPP_G4, NONE),
+	PAD_CFG_NF(GPP_G4, NATIVE, DEEP, NF1),
 	/* G5  : SD_CD_ODL */
-	PAD_NC(GPP_G5, NONE),
+	PAD_CFG_NF(GPP_G5, NONE, PLTRST, NF1),
 	/* G6  : SD_CLK */
-	PAD_NC(GPP_G6, NONE),
+	PAD_CFG_NF(GPP_G6, NATIVE, DEEP, NF1),
 	/* G7  : SD_SDIO_WP */
-	PAD_NC(GPP_G7, NONE),
+	PAD_CFG_NF(GPP_G7, DN_20K, DEEP, NF1),
 
 	/* H0  : WWAN_PERST */
 	PAD_NC(GPP_H0, NONE),
 	/* H1  : EN_PP3300_SD_U */
-	PAD_NC(GPP_H1, NONE),
+	PAD_CFG_NF(GPP_H1, NONE, DEEP, NF1),
 	/* H2  : CNV_CLKREQ0 */
 	PAD_CFG_NF(GPP_H2, NONE, DEEP, NF3),
 	/* H3  : GPP_H03/SX_EXIT_HOLDOFF_N */
@@ -382,6 +382,10 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPD9, NONE),
 	/* GPD10 : AP_SLP_S5_L */
 	PAD_NC(GPD10, NONE),
+
+	/* SD card detect virtual GPIO */
+	PAD_CFG_GPI_GPIO_DRIVER(VGPIO_39, NONE, PLTRST),
+
 };
 
 /* Early pad configuration in bootblock */

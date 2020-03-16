@@ -207,6 +207,7 @@ chip soc/intel/cannonlake
 		end # GSPI #1
 		device pci 1f.3 on
 			chip drivers/generic/max98357a
+				register "hid" = ""MX98357A""
 				register "sdmode_gpio" =  "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_H3)"
 				register "sdmode_delay" = "5"
 				device generic 0 on end

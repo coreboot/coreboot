@@ -23,7 +23,6 @@
 #if CONFIG(HAVE_ACPI_TABLES)
 
 #define MAX98357A_ACPI_NAME	"MAXM"
-#define MAX98357A_ACPI_HID	"MX98357A"
 
 static void max98357a_fill_ssdt(struct device *dev)
 {
@@ -42,7 +41,13 @@ static void max98357a_fill_ssdt(struct device *dev)
 	/* Device */
 	acpigen_write_scope(scope);
 	acpigen_write_device(name);
-	acpigen_write_name_string("_HID", MAX98357A_ACPI_HID);
+
+	if (!config->hid) {
+		printk(BIOS_ERR, "%s: ERROR: _HID required\n", dev_path(dev));
+		return;
+	}
+
+	acpigen_write_name_string("_HID", config->hid);
 	acpigen_write_name_integer("_UID", 0);
 	acpigen_write_name_string("_DDN", dev->chip_ops->name);
 	acpigen_write_STA(acpi_device_status(dev));

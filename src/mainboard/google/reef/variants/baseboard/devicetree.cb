@@ -131,6 +131,7 @@ chip soc/intel/apollolake
 		device pci 0d.3 on  end	# - Shared SRAM
 		device pci 0e.0 on	# - Audio
 			chip drivers/generic/max98357a
+				register "hid" = ""MX98357A""
 				register "sdmode_gpio" =  "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_76)"
 				register "sdmode_delay" = "5"
 				device generic 0 on end

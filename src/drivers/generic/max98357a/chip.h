@@ -14,6 +14,10 @@
 #include <arch/acpi_device.h>
 
 struct drivers_generic_max98357a_config {
+
+	/* ACPI _HID */
+	const char *hid;
+
 	/* SDMODE GPIO */
 	struct acpi_gpio sdmode_gpio;
 

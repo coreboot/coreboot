@@ -24,6 +24,7 @@
 
 #define GPIO_NUM_GROUPS		12
 #define GPIO_MAX_NUM_PER_GROUP	24
+#define SD_PWR_EN_PIN		GPP_H1
 
 /*
  * GPIOs are ordered monotonically increasing to match ACPI/OS driver.

@@ -103,6 +103,14 @@ chip soc/intel/tigerlake
 	register "PcieClkSrcClkReq[4]" = "4"
 	register "PcieClkSrcClkReq[5]" = "5"
 
+	# Audio related configurations
+	register "PchHdaDspEnable" = "1"
+	register "PchHdaAudioLinkHdaEnable" = "1"
+	register "PchHdaAudioLinkSspEnable[0]" = "1"
+	register "PchHdaAudioLinkSspEnable[1]" = "1"
+	register "PchHdaAudioLinkDmicEnable[0]" = "1"
+	register "PchHdaAudioLinkDmicEnable[1]" = "1"
+
 	# Enable EMMC HS400 mode
 	register "ScsEmmcHs400Enabled" = "1"
 

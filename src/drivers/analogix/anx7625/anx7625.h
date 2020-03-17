@@ -1,9 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright(c) 2016, Analogix Semiconductor. All rights reserved.
- *
- */
-
 
 #include <edid.h>
 #include <types.h>

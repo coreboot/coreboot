@@ -1,8 +1,6 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (c) 2013-2014, ARM Limited and Contributors. All rights reserved.
- * Copyright 2018-present Facebook, Inc.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */

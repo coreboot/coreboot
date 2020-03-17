@@ -19,8 +19,6 @@
  * such modified SOFTWARE should be clearly marked, so as not to confuse
  * it with the version available from LANL.
  *
- * Copyright (C) 2000, Ron Minnich rminnich@lanl.gov
- *                     Advanced Computing Lab, LANL
  */
 
 

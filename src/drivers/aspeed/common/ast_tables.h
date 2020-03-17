@@ -1,7 +1,6 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (c) 2005 ASPEED Technology Inc.
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that

@@ -1,10 +1,6 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2007-2010 coresystems GmbH
- * Copyright (C) 2015 secunet Security Networks AG
- * Copyright (C) 2011 Google Inc
- * Copyright (C) 2018 Patrick Rudolph <patrick.rudolph@9elements.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

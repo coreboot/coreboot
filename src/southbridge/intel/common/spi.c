@@ -1,8 +1,4 @@
 /*
- * Copyright (c) 2011 The Chromium OS Authors.
- * Copyright (C) 2009, 2010 Carl-Daniel Hailfinger
- * Copyright (C) 2011 Stefan Tauner
- * Copyright (C) 2018 Siemens AG
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as

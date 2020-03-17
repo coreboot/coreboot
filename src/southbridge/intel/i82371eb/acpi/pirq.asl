@@ -1,7 +1,6 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2010 Tobias Diedrich <ranma+coreboot@tdiedrich.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

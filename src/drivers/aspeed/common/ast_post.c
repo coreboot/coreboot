@@ -1,8 +1,6 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright 2012 Red Hat Inc.
- * Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the

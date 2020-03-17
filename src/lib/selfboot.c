@@ -1,9 +1,6 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2003 Eric W. Biederman <ebiederm@xmission.com>
- * Copyright (C) 2009 Ron Minnich <rminnich@gmail.com>
- * Copyright (C) 2016 George Trudeau <george.trudeau@usherbrooke.ca>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

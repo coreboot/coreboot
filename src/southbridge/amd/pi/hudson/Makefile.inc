@@ -1,9 +1,5 @@
 #*****************************************************************************
 #
-# Copyright (c) 2012, 2016   Advanced Micro Devices, Inc.
-#               2013 - 2014, Sage Electronic Engineering, LLC
-# All rights reserved.
-#
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
 #     * Redistributions of source code must retain the above copyright

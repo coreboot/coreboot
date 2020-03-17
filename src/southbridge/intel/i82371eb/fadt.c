@@ -3,8 +3,6 @@
  *
  * Based on src/southbridge/via/vt8237r/vt8237_fadt.c
  *
- * Copyright (C) 2004 Nick Barker <nick.barker9@btinternet.com>
- * Copyright (C) 2007, 2009 Rudolf Marek <r.marek@assembler.cz>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

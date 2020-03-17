@@ -1,5 +1,4 @@
 /*
- * Copyright (C) 2012 Samsung Electronics
  *
  * Author: Donghwa Lee <dh09.lee@samsung.com>
  *

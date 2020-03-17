@@ -3,8 +3,6 @@
  *
  * drivers/video/tegra/dc/dp.c
  *
- * Copyright (c) 2011-2013, NVIDIA Corporation.
- * Copyright 2014 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

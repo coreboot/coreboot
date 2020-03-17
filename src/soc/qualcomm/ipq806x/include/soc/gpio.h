@@ -1,8 +1,6 @@
 /*
- * Copyright (c) 2012 The Linux Foundation. All rights reserved.*
    Source : APQ8064 LK Boot
 
- * Copyright (c) 2011-2012, Code Aurora Forum. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are

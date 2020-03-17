@@ -1,8 +1,6 @@
 /*
  * This file is part of the coreboot project.
  *
- * (C) Copyright 2002
- * David Mueller, ELSOFT AG, d.mueller@elsoft.ch
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

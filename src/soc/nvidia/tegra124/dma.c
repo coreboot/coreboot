@@ -1,9 +1,6 @@
 /*
  * This file is part of the coreboot project.
  *
- * (C) Copyright 2010,2011
- * NVIDIA Corporation <www.nvidia.com>
- * Copyright 2013 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

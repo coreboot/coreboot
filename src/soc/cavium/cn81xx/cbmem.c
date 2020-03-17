@@ -1,8 +1,6 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright 2014 Rockchip Inc.
- * Copyright 2019 9Elements GmbH <patrick.rudolph@9elements.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

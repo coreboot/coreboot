@@ -1,6 +1,5 @@
 /** @file
  * Header file for QuarkSCSocId Ioh.
- * Copyright (c) 2013-2017 Intel Corporation.
  *
  * This program and the accompanying materials are licensed and made available
  * under the terms and conditions of the BSD License which accompanies this

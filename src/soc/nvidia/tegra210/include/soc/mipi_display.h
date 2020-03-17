@@ -1,7 +1,6 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright 2014 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,8 +15,6 @@
  * Defines for Mobile Industry Processor Interface (MIPI(R))
  * Display Working Group standards: DSI, DCS, DBI, DPI
  *
- * Copyright (C) 2010 Guennadi Liakhovetski <g.liakhovetski@gmx.de>
- * Copyright (C) 2006 Nokia Corporation
  * Author: Imre Deak <imre.deak@nokia.com>
  *
  * This program is free software; you can redistribute it and/or modify

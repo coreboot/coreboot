@@ -1,10 +1,6 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2015-2017 Intel Corp.
- * Copyright (C) 2017-2019 Siemens AG
- * (Written by Andrey Petrov <andrey.petrov@intel.com> for Intel Corp.)
- * (Written by Alexandru Gagniuc <alexandrux.gagniuc@intel.com> for Intel Corp.)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

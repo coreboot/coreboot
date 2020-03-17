@@ -1,6 +1,4 @@
 /*
- * Copyright 2013 Google Inc.
- * Copyright (C) 2012 Samsung Electronics
  *
  * Author: InKi Dae <inki.dae@samsung.com>
  * Author: Donghwa Lee <dh09.lee@samsung.com>

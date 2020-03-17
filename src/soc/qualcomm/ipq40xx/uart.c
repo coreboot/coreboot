@@ -1,5 +1,4 @@
 /*
- * Copyright (c) 2012 The Linux Foundation. All rights reserved.
  * Source : APQ8064 LK boot
  *
  * Redistribution and use in source and binary forms, with or without

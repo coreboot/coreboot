@@ -3,7 +3,6 @@
  *
  * DDR3 mem setup file for EXYNOS5 based board
  *
- * Copyright (C) 2012 Samsung Electronics
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as

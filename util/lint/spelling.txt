@@ -7,10 +7,15 @@
 # The format of each line is:
 # mistake||correction
 #
-# Note that "sepc" and "acknowledgement" have been commented out.
-
+# Some entries may trigger false-positives, and have been commented out:
+#
+# Reason: Both spellings are correct.
 #acknowledgement||acknowledgment
+#
+# Reason: On RISC-V, `SEPC` is the name of a register.
 #sepc||spec
+#
+
 ACII||ASCII
 Debiab||Debian
 FTBS||FTBFS

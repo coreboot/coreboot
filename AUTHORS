@@ -8,28 +8,43 @@
 # To see a list of contributors: git log --pretty=format:%an | sort | uniq
 # For patches adding or removing a name: git log -i -S "NAME" --source --all
 
+3mdeb Embedded Systems Consulting
 9elements Agency GmbH
+Abhinav Hardikar
+Advanced Computing Lab, LANL
 Advanced Micro Devices, Inc.
+AdaCore
 AG Electronics Ltd.
 Alex Züpke
 Alexander Couzens
 Alexandru Gagniuc
 Analog Devices Inc.
+Analogix Semiconductor
+Andre Heider
 Andy Fleming
+Angel Pons
 ARM Limited and Contributors
 Arthur Heymans
+Asami Doi
 ASPEED Technology Inc.
 Atheros Corporation
 Atmel Corporation
 BAP - Bruhnspace Advanced Projects
+Bill Xie
+Bitland Tech Inc.
 Carl-Daniel Hailfinger
+Cavium Inc.
 Christoph Grenz
+Code Aurora Forum
 coresystems GmbH
 Corey Osgood
 Damien Zammit
+Dave Airlie
 David Brownell
+David Greenman
 David Hendricks
 David Mosberger-Tang
+David Mueller
 Denis Dowling
 DENX Software Engineering
 Digital Design Corporation
@@ -38,49 +53,78 @@ Drew Eckhardt
 Dynon Avionics
 Edward O'Callaghan
 Egbert Eich
+ELSOFT AG
 Eltan B.V
+Elyes Haouas
 Eric Biederman
 Eswar Nallusamy
+Evgeny Zinoviev
 Fabian Kunkel
+Fabrice Bellard
 Facebook, Inc.
 Felix Held
+Felix Singer
 Frederic Potter
 Free Software Foundation, Inc.
 Freescale Semiconductor, Inc.
 Gary Jennejohn
+George Trudeau
 Gerd Hoffmann
 Gergely Kiss
 Google LLC
 Greg Watson
+Guennadi Liakhovetski
+Hal Martin
 HardenedLinux
+Hewlett-Packard Development Company, L.P.
+Hewlett Packard Enterprise Development LP
+Huaqin Telecom Inc.
+IBM Corporation
 Idwer Vollering
+Igor Pavlov
 Imagination Technologies
 Infineon Technologies
 Intel Corporation
+Iru Cai
+Isaku Yamahata
+Ivan Vatlin
+James Ye
 Jason Zhao
+Johanna Schander
+Jonas 'Sortie' Termansen
 Jonathan Neuschäfer
 Jordan Crouse
 Joseph Smith
 Keith Hui
 Keith Packard
 Kevin Cody-Little
+Kevin O'Connor
+Kontron Europe GmbH
 Kshitij
 Kyösti Mälkki
 Lei Wen
 Li-Ta Lo
 Libra Li
 Libretrend LDA
+Linaro Limited
 Linus Torvalds
 Linux Networx, Inc.
+LiPPERT ADLINK Technology GmbH
 Luc Verhaegen
+Maciej Matuszczyk
+Marc Bertens
 Marc Jones
 Marek Vasut
 Marius Gröger
 Martin Mares
+Martin Renters
 Marvell International Ltd.
 Marvell Semiconductor Inc.
 Matt DeVillier
+Maxim Polyakov
 MediaTek Inc.
+Michael Schroeder
+Mika Westerberg
 Mondrian Nuessle
 MontaVista Software, Inc.
 Myles Watson
@@ -88,23 +132,35 @@ Network Appliance Inc.
 Nicholas Sielicki
 Nick Barker
 Nico Huber
+Nico Rikken
 Nicola Corna
+Nokia Corporation
+NVIDIA Corporation
 Ollie Lo
 Omar Pakker
+Online SAS
 Orion Technologies, LLC
 Patrick Georgi
 Patrick Rudolph
+Pattrick Hueper
+Paulo Alcantara
 Pavel Sayekat
 PC Engines GmbH
 Per Odlund
 Peter Stuge
 Philipp Degler
+Philipp Hug
 Protectli
+Purism SPC
+Qualcomm Technologies
 Raptor Engineering, LLC
-Red Hat Inc
+Red Hat, Inc
 Reinhard Meyer
+Renze Nicolai
 Richard Spiegel
 Richard Woodruff
+Robert Reeves
+Rockchip, Inc.
 Ronald G. Minnich
 Rudolf Marek
 Russell King
@@ -114,15 +170,19 @@ Samuel Holland
 SciTech Software, Inc.
 Sebastian Grzywna
 secunet Security Networks AG
+Sergej Ivanov
 Siemens AG
+SiFive, Inc
 Silicon Integrated System Corporation
-Silverback ltd.
+Silverback Ltd.
 Stefan Reinauer
+Stefan Tauner
 Steve Magnani
 ST Microelectronics
 SUSE LINUX AG
 Sven Schnelle
 Syed Mohammed Khasim
+System76
 Texas Instruments
 The ChromiumOS Authors
 The Linux Foundation
@@ -130,6 +190,7 @@ The Regents of the University of California
 Thomas Winischhofer
 Timothy Pearson
 Tobias Diedrich
+Tristan Corrick
 Tungsten Graphics, Inc.
 Tyan Computer Corp.
 ucRobotics Inc.
@@ -138,10 +199,13 @@ Uwe Hermann
 VIA Technologies, Inc
 Vipin Kumar
 Vladimir Serbinenko
+Vlado Cibic
 Wang Qing Pei
 Ward Vandewege
 Win Enterprises
+Wiwynn Corp.
 Wolfgang Denk
+Yann Collet
 Yinghai Lu
 
 

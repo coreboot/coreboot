@@ -6,6 +6,7 @@
 
 #include <types.h>
 #include <commonlib/helpers.h>
+#include <amdblocks/psp.h>
 
 /* x86 to PSP commands */
 #define MBOX_BIOS_CMD_DRAM_INFO    0x01
@@ -79,6 +80,24 @@ struct mbox_buffer_header {
 
 struct mbox_default_buffer {	/* command-response buffer unused by command */
 	struct mbox_buffer_header header;
+} __attribute__((packed, aligned(32)));
+
+struct smm_req_buffer {
+	uint64_t smm_base;		/* TSEG base */
+	uint64_t smm_mask;		/* TSEG mask */
+	uint64_t psp_smm_data_region;	/* PSP region in SMM space */
+	uint64_t psp_smm_data_length;	/* PSP region length in SMM space */
+	struct smm_trigger_info smm_trig_info;
+#if CONFIG(SOC_AMD_COMMON_BLOCK_PSP_GEN2)
+	struct smm_register_info smm_reg_info;
+#endif
+	uint64_t psp_mbox_smm_buffer_address;
+	uint64_t psp_mbox_smm_flag_address;
+} __packed;
+
+struct mbox_cmd_smm_info_buffer {
+	struct mbox_buffer_header header;
+	struct smm_req_buffer req;
 } __attribute__((packed, aligned(32)));
 
 struct mbox_cmd_sx_info_buffer {

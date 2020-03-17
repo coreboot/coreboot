@@ -26,6 +26,7 @@
 #include <soc/southbridge.h>
 #include <amdblocks/acpimmio.h>
 #include <amdblocks/acpi.h>
+#include <amdblocks/psp.h>
 #include <elog.h>
 
 /* bits in smm_io_trap   */
@@ -124,6 +125,9 @@ static void sb_apmc_smi_handler(void)
 	case APM_CNT_SMMSTORE:
 		if (CONFIG(SMMSTORE))
 			southbridge_smi_store();
+		break;
+	case APM_CNT_SMMINFO:
+		psp_notify_smm();
 		break;
 	}
 

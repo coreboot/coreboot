@@ -7,20 +7,55 @@
 /* Get the mailbox base address - specific to family of device. */
 void *soc_get_mbox_address(void);
 
+#define SMM_TRIGGER_IO		0
+#define SMM_TRIGGER_MEM		1
+
+#define SMM_TRIGGER_BYTE	0
+#define SMM_TRIGGER_WORD	1
+#define SMM_TRIGGER_DWORD	2
+
+struct smm_trigger_info {
+	uint64_t address;	/* Memory or IO address */
+	uint32_t address_type;	/* 0=I/O, 1=memory */
+	uint32_t value_width;	/* 0=byte, 1=word, 2=qword */
+	uint32_t value_and_mask;
+	uint32_t value_or_mask;
+} __packed;
+
+struct smm_register {
+	uint64_t address;	/* Memory or IO address */
+	uint32_t address_type;	/* 0=I/O, 1=memory */
+	uint32_t value_width;	/* 0=byte, 1=word, 2=qword */
+	uint32_t reg_bit_mask;
+	uint32_t expect_value;
+} __packed;
+
+struct smm_register_info {
+	struct smm_register smi_enb;
+	struct smm_register eos;
+	struct smm_register psp_smi_en;
+	struct smm_register reserved[5];
+} __packed;
+
+void soc_fill_smm_trig_info(struct smm_trigger_info *trig);
+void soc_fill_smm_reg_info(struct smm_register_info *reg); /* v2 only */
+
 /* BIOS-to-PSP functions return 0 if successful, else negative value */
-#define PSPSTS_SUCCESS      0
-#define PSPSTS_NOBASE       1
-#define PSPSTS_HALTED       2
-#define PSPSTS_RECOVERY     3
-#define PSPSTS_SEND_ERROR   4
-#define PSPSTS_INIT_TIMEOUT 5
-#define PSPSTS_CMD_TIMEOUT  6
+#define PSPSTS_SUCCESS		0
+#define PSPSTS_NOBASE		1
+#define PSPSTS_HALTED		2
+#define PSPSTS_RECOVERY		3
+#define PSPSTS_SEND_ERROR	4
+#define PSPSTS_INIT_TIMEOUT	5
+#define PSPSTS_CMD_TIMEOUT	6
 /* other error codes */
-#define PSPSTS_UNSUPPORTED  7
-#define PSPSTS_INVALID_NAME 8
-#define PSPSTS_INVALID_BLOB 9
+#define PSPSTS_UNSUPPORTED	7
+#define PSPSTS_INVALID_NAME	8
+#define PSPSTS_INVALID_BLOB	9
 
 int psp_notify_dram(void);
+
+int psp_notify_smm(void);
 
 /*
  * type: identical to the corresponding PSP command, e.g. pass

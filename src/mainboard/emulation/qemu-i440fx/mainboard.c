@@ -1,8 +1,6 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2004 Stefan Reinauer <stefan.reinauer@coreboot.org>
- * Copyright (C) 2010 Kevin O'Connor <kevin@koconnor.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

@@ -1,9 +1,6 @@
 /*
  * This file is part of the coreboot project.
  *
- * Written by Stefan Reinauer <stepan@openbios.org>
- *  (C) 2005 Stefan Reinauer
- *  (C) 2005 Digital Design Corporation
  *
  * Ported to Intel XE7501DEVKIT by Agami Aruma
  * Ported to AOpen DXPL Plus-U by Kyösti Mälkki

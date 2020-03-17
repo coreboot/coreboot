@@ -1,9 +1,6 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2016 secunet Security Networks AG
- * Copyright (C) 2017 Tobias Diedrich <ranma+coreboot@tdiedrich.de>
- * Copyright (C) 2018 Iru Cai <mytbk920423@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

@@ -1,8 +1,6 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2018 Tristan Corrick <tristan@corrick.kiwi>
- * Copyright (C) 2019 Maxim Polyakov <max.senia.poliak@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

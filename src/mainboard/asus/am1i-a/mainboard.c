@@ -1,10 +1,6 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2012 Advanced Micro Devices, Inc.
- * Copyright (C) 2014 Sage Electronic Engineering, LLC
- * Copyright (C) 2015 Sergej Ivanov <getinaks@gmail.com>
- * Copyright (C) 2018 Gergely Kiss <mail.gery@gmail.com>
  *
  * All Rights Reserved
  *

@@ -1,8 +1,6 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright 2017-2018 Facebook, Inc.
- * Copyright 2003-2017 Cavium Inc. (support@cavium.com)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

@@ -12,6 +12,9 @@
 # Reason: Both spellings are correct.
 #acknowledgement||acknowledgment
 #
+# Reason: AFE means `Analog Front-End`, and appears on register names.
+#afe||safe
+#
 # Reason: On RISC-V, `SEPC` is the name of a register.
 #sepc||spec
 #
@@ -343,7 +346,6 @@ advertisment||advertisement
 adviced||advised
 afecting||affecting
 afer||after
-afe||safe
 affortable||affordable
 afforts||affords
 affort||afford

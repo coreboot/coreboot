@@ -118,17 +118,20 @@ static struct cmd_desc *allocate_descriptor(void)
 	next->direction = MASTER_READ;
 	next->multi_io_mode = 0;
 	next->reserved1 = 0;
-	next->fragment = 0;
+	/*
+	 * QSPI controller doesn't support transfer starts with read segment.
+	 * So to support read transfers that are not preceded by write, set
+	 * transfer fragment bit = 1
+	 */
+	next->fragment = 1;
 	next->reserved2 = 0;
 	next->length = 0;
 	next->bounce_src = 0;
 	next->bounce_dst = 0;
 	next->bounce_length = 0;
 
-	if (current) {
+	if (current)
 		current->next_descriptor = (uint32_t)(uintptr_t) next;
-		current->fragment = 1;
-	}
 
 	return next;
 }

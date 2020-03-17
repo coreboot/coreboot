@@ -15,14 +15,17 @@ Advanced Computing Lab, LANL
 Advanced Micro Devices, Inc.
 AdaCore
 AG Electronics Ltd.
+Alex Thiessen
 Alex Züpke
 Alexander Couzens
 Alexandru Gagniuc
 Analog Devices Inc.
 Analogix Semiconductor
 Andre Heider
+Andriy Gapon
 Andy Fleming
 Angel Pons
+Anton Kochkov
 ARM Limited and Contributors
 Arthur Heymans
 Asami Doi
@@ -32,12 +35,14 @@ Atmel Corporation
 BAP - Bruhnspace Advanced Projects
 Bill Xie
 Bitland Tech Inc.
+Boris Barbulovski
 Carl-Daniel Hailfinger
 Cavium Inc.
 Christoph Grenz
 Code Aurora Forum
 coresystems GmbH
 Corey Osgood
+Curt Brune
 Damien Zammit
 Dave Airlie
 David Brownell
@@ -45,8 +50,10 @@ David Greenman
 David Hendricks
 David Mosberger-Tang
 David Mueller
+Denis 'GNUtoo' Carikli
 Denis Dowling
 DENX Software Engineering
+Derek Waldner
 Digital Design Corporation
 DMP Electronics Inc.
 Drew Eckhardt
@@ -90,8 +97,10 @@ Isaku Yamahata
 Ivan Vatlin
 James Ye
 Jason Zhao
+Joe Pillow
 Johanna Schander
 Jonas 'Sortie' Termansen
+Jonathan A. Kollasch
 Jonathan Neuschäfer
 Jordan Crouse
 Joseph Smith
@@ -102,6 +111,7 @@ Kevin O'Connor
 Kontron Europe GmbH
 Kshitij
 Kyösti Mälkki
+Leah Rowe
 Lei Wen
 Li-Ta Lo
 Libra Li
@@ -110,6 +120,7 @@ Linaro Limited
 Linus Torvalds
 Linux Networx, Inc.
 LiPPERT ADLINK Technology GmbH
+Lubomir Rintel
 Luc Verhaegen
 Maciej Matuszczyk
 Marc Bertens
@@ -118,12 +129,14 @@ Marek Vasut
 Marius Gröger
 Martin Mares
 Martin Renters
+Martin Roth
 Marvell International Ltd.
 Marvell Semiconductor Inc.
 Matt DeVillier
 Maxim Polyakov
 MediaTek Inc.
 Michael Schroeder
+Michael Niewöhner
 Mika Westerberg
 Mondrian Nuessle
 MontaVista Software, Inc.
@@ -134,8 +147,11 @@ Nick Barker
 Nico Huber
 Nico Rikken
 Nicola Corna
+Nils Jacobs
+Nir Tzachar
 Nokia Corporation
 NVIDIA Corporation
+Olivier Langlois
 Ollie Lo
 Omar Pakker
 Online SAS
@@ -149,6 +165,7 @@ PC Engines GmbH
 Per Odlund
 Peter Stuge
 Philipp Degler
+Philipp Deppenwiese
 Philipp Hug
 Protectli
 Purism SPC
@@ -159,17 +176,24 @@ Reinhard Meyer
 Renze Nicolai
 Richard Spiegel
 Richard Woodruff
+Rob Landley
 Robert Reeves
+Robinson P. Tryon
 Rockchip, Inc.
+Romain Lievin
+Roman Zippel
 Ronald G. Minnich
 Rudolf Marek
 Russell King
+Ruud Schramp
 Sage Electronic Engineering, LLC
+Sam Ravnborg
 Samsung Electronics
 Samuel Holland
 SciTech Software, Inc.
 Sebastian Grzywna
 secunet Security Networks AG
+Sencore Inc
 Sergej Ivanov
 Siemens AG
 SiFive, Inc
@@ -178,12 +202,14 @@ Silverback Ltd.
 Stefan Reinauer
 Stefan Tauner
 Steve Magnani
+Steve Shenton
 ST Microelectronics
 SUSE LINUX AG
 Sven Schnelle
 Syed Mohammed Khasim
 System76
 Texas Instruments
+The Android Open Source Project
 The ChromiumOS Authors
 The Linux Foundation
 The Regents of the University of California
@@ -197,25 +223,17 @@ ucRobotics Inc.
 University of Heidelberg
 Uwe Hermann
 VIA Technologies, Inc
+Vikram Narayanan
 Vipin Kumar
 Vladimir Serbinenko
 Vlado Cibic
 Wang Qing Pei
 Ward Vandewege
+Wilbert Duijvenvoorde
 Win Enterprises
 Wiwynn Corp.
 Wolfgang Denk
+YADRO
 Yann Collet
 Yinghai Lu
-
-
-
-# Directories transferred
-src/acpi
-src/arch
-src/commonlib
-src/console
-src/cpu
-src/device
-src/drivers
-src/superio
+Zachary Yedidia

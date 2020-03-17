@@ -1,10 +1,6 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2007-2010 coresystems GmbH
- * Copyright (C) 2015 Google Inc.
- * Copyright (C) 2015 Intel Corporation
- * Copyright (C) 2017 Purism SPC.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

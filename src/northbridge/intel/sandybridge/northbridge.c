@@ -377,11 +377,12 @@ static void disable_peg(void)
 		/*
 		 * Set the PEG clock gating bit. Disables the IO clock on all PEG devices.
 		 *
-		 * FIXME: If not clock gating, this register still needs to be written to once,
-		 *        to lock it down. Also, never clock gate on Ivy Bridge stepping A0!
+		 * FIXME: Never clock gate on Ivy Bridge stepping A0!
 		 */
 		MCHBAR32_OR(PEGCTL, 1);
 		printk(BIOS_DEBUG, "Disabling PEG IO clock.\n");
+	} else {
+		MCHBAR32_AND(PEGCTL, ~1);
 	}
 }
 

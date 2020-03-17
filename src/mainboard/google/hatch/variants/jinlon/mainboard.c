@@ -1,7 +1,6 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright 2020 Google LLC
  *
  * SPDX-License-Identifier: GPL-2.0-or-later
  */

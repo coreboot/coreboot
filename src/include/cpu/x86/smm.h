@@ -25,6 +25,7 @@
 #define APM_CNT_GNVS_UPDATE	0xea
 #define APM_CNT_FINALIZE	0xcb
 #define APM_CNT_LEGACY		0xcc
+#define APM_CNT_SMMINFO		0xec
 #define APM_CNT_SMMSTORE	0xed
 #define APM_CNT_ELOG_GSMI	0xef
 #define APM_STS		0xb3

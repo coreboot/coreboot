@@ -76,3 +76,18 @@ region. The update is then written into the EC once.
 
 [fl]: flashlayout_Ivy_Bridge.svg
 
+## Reducing Intel Managment Engine firmware size
+
+It is possible to reduce the Intel ME firmware size to free additional
+space for the `bios` region. This is usually referred to as *cleaning the ME* or
+*stripping the ME*.
+After reducing the Intel ME firmware size you must modify the original IFD,
+[split the resulting coreboot ROM](#splitting-the-coreboot-rom) and then write
+each ROM using an [external programmer].
+Have a look at [me_cleaner] for more information.
+
+Tests on Lenovo W530 showed no issues with a stripped and shrunken ME firmware.
+
+
+[me_cleaner]: ../../northbridge/intel/sandybridge/me_cleaner.md
+[external programmer]: ../../flash_tutorial/index.md

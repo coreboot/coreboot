@@ -47,11 +47,11 @@ region. The update is then written into the EC once.
 ## Reducing Intel Managment Engine firmware size
 
 It is possible to reduce the Intel ME firmware size to free additional
-space for the `bios` region. This is usually refered to as *cleaning the ME* or
+space for the `bios` region. This is usually referred to as *cleaning the ME* or
 *stripping the ME*.
 After reducing the Intel ME firmware size you must modify the original IFD
 and then write a full ROM using an [external programmer].
-Have a look at the [me_cleaner] for more information.
+Have a look at [me_cleaner] for more information.
 
 Tests on Lenovo X220 showed no issues with a stripped ME firmware.
 

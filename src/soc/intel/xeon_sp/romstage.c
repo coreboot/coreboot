@@ -18,9 +18,9 @@
 #include <intelblocks/rtc.h>
 #include <console/console.h>
 #include <cpu/x86/mtrr.h>
+#include <fsp/util.h>
 #include <soc/romstage.h>
-#include <soc/soc_util.h>
-#include "chip.h"
+#include <soc/util.h>
 
 asmlinkage void car_stage_entry(void)
 {
@@ -54,28 +54,4 @@ asmlinkage void car_stage_entry(void)
 	postcar_frame_add_romcache(&pcf, MTRR_TYPE_WRPROT);
 
 	run_postcar_phase(&pcf);
-}
-
-static void soc_memory_init_params(FSP_M_CONFIG *m_cfg)
-{
-}
-
-void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
-{
-	const config_t *config = config_of_soc();
-	FSP_M_CONFIG *m_cfg = &mupd->FspmConfig;
-
-	mupd->FspmUpdVersion = FSP_UPD_VERSION;
-
-	// ErrorLevel - 0 (disable) to 8 (verbose)
-	m_cfg->PcdFspMrcDebugPrintErrorLevel = 0;
-	m_cfg->PcdFspKtiDebugPrintErrorLevel = 0;
-
-	soc_memory_init_params(m_cfg);
-
-	mainboard_memory_init_params(mupd);
-
-	m_cfg->VTdConfig.VTdSupport = config->vtd_support;
-	m_cfg->VTdConfig.CoherencySupport = config->coherency_support;
-	m_cfg->VTdConfig.ATS = config->ats_support;
 }

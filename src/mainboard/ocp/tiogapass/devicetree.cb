@@ -13,7 +13,7 @@
 ## GNU General Public License for more details.
 ##
 
-chip soc/intel/xeon_sp
+chip soc/intel/xeon_sp/skx
 
 	register "pirqa_routing" = "PCH_IRQ11"
 	register "pirqb_routing" = "PCH_IRQ10"

@@ -21,7 +21,7 @@
 #include <intelblocks/cfg.h>
 #include <soc/irq.h>
 
-struct soc_intel_xeon_sp_config {
+struct soc_intel_xeon_sp_skx_config {
 	/* Common struct containing soc config data required by common code */
 	struct soc_intel_common_config common_soc_config;
 
@@ -86,6 +86,6 @@ struct soc_intel_xeon_sp_config {
 
 extern struct chip_operations soc_intel_xeon_sp_ops;
 
-typedef struct soc_intel_xeon_sp_config config_t;
+typedef struct soc_intel_xeon_sp_skx_config config_t;
 
 #endif

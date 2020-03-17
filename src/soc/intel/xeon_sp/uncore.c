@@ -21,7 +21,8 @@
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>
 #include <soc/ramstage.h>
-#include <soc/soc_util.h>
+#include <soc/util.h>
+#include <fsp/util.h>
 
 struct map_entry {
 	uint32_t    reg;

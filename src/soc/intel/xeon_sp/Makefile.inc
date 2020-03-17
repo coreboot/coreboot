@@ -13,46 +13,16 @@
 ## GNU General Public License for more details.
 ##
 
-ifeq ($(CONFIG_SOC_INTEL_XEON_SP),y)
+ifeq ($(CONFIG_XEON_SP_COMMON_BASE),y)
 
-subdirs-y += ../../../cpu/intel/microcode
-subdirs-y += ../../../cpu/intel/turbo
-subdirs-y += ../../../cpu/x86/lapic
-subdirs-y += ../../../cpu/x86/mtrr
-subdirs-y += ../../../cpu/x86/tsc
-subdirs-y += ../../../cpu/x86/cache
-subdirs-$(CONFIG_HAVE_SMI_HANDLER) += ../../../cpu/x86/smm
+subdirs-$(CONFIG_SOC_INTEL_SKYLAKE_SP) += skx
 
-bootblock-y += bootblock/bootblock.c
-bootblock-y += lpc.c
-bootblock-y += spi.c
-
-postcar-y += soc_util.c
+bootblock-y += bootblock.c spi.c lpc.c
+romstage-y += romstage.c reset.c util.c spi.c
+ramstage-y += uncore.c reset.c util.c lpc.c spi.c
 postcar-y += spi.c
-
-romstage-y += soc_util.c
-romstage-y += reset.c
-romstage-y += romstage.c
-romstage-y += soc_util.c
-romstage-y += spi.c
-romstage-y += hob_display.c
-romstage-$(CONFIG_DISPLAY_UPD_DATA) += upd_display.c
-romstage-$(CONFIG_DISPLAY_HOBS) += hob_display.c
-
-ramstage-y += soc_util.c
-ramstage-y += uncore.c
-ramstage-y += reset.c
-ramstage-y += chip.c
-ramstage-y += soc_util.c
-ramstage-y += lpc.c
-ramstage-y += cpu.c
-ramstage-y += spi.c
-ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi.c
-ramstage-$(CONFIG_DISPLAY_UPD_DATA) += upd_display.c
-ramstage-$(CONFIG_DISPLAY_HOBS) += hob_display.c
-ramstage-y += hob_display.c
 
 CPPFLAGS_common += -I$(src)/soc/intel/xeon_sp/include
 CPPFLAGS_common += -I$(CONFIG_FSP_HEADER_PATH)
 
-endif ## CONFIG_SOC_INTEL_XEON_SP
+endif ## XEON_SP_COMMON_BASE

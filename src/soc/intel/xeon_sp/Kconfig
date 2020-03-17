@@ -13,14 +13,20 @@
 ## GNU General Public License for more details.
 ##
 
-config SOC_INTEL_XEON_SP
+source "src/soc/intel/xeon_sp/skx/Kconfig"
+
+config XEON_SP_COMMON_BASE
 	bool
+
+config SOC_INTEL_SKYLAKE_SP
+	bool
+	select XEON_SP_COMMON_BASE
 	help
-	  Intel Xeon SP support
+	  Intel Skylake-SP support
 
-if SOC_INTEL_XEON_SP
+if XEON_SP_COMMON_BASE
 
-config CPU_SPECIFIC_OPTIONS
+config	CPU_SPECIFIC_OPTIONS
 	def_bool y
 	select ARCH_BOOTBLOCK_X86_32
 	select ARCH_RAMSTAGE_X86_32
@@ -54,6 +60,7 @@ config CPU_SPECIFIC_OPTIONS
 	select SUPPORT_CPU_UCODE_IN_CBFS
 	select MICROCODE_BLOB_NOT_HOOKED_UP
 	select CPU_INTEL_FIRMWARE_INTERFACE_TABLE
+	select FSP_CAR
 
 config MAINBOARD_USES_FSP2_0
 	  bool
@@ -66,11 +73,6 @@ config USE_FSP2_0_DRIVER
 	  select UDK_2015_BINDING
 	  select POSTCAR_CONSOLE
 	  select POSTCAR_STAGE
-
-config FSP_HEADER_PATH
-	  string "Location of FSP headers"
-	  depends on MAINBOARD_USES_FSP2_0
-	  default "src/vendorcode/intel/fsp/fsp2_0/skylake_sp"
 
 config MAX_SOCKET
 	int
@@ -88,14 +90,6 @@ config PCR_BASE_ADDRESS
 	help
 	  This option allows you to select MMIO Base Address of sideband bus.
 
-config DCACHE_RAM_BASE
-	hex
-	default 0xfe800000
-
-config DCACHE_RAM_SIZE
-	hex
-	default 0x200000
-
 config DCACHE_BSP_STACK_SIZE
 	hex
 	default 0x10000
@@ -104,14 +98,6 @@ config MMCONF_BASE_ADDRESS
 	hex
 	default 0x80000000
 
-config CPU_MICROCODE_CBFS_LOC
-	hex
-	default 0xfff0fdc0
-
-config CPU_MICROCODE_CBFS_LEN
-	hex
-	default 0x7C00
-
 config C_ENV_BOOTBLOCK_SIZE
 	hex
 	default 0xC000
@@ -119,6 +105,5 @@ config C_ENV_BOOTBLOCK_SIZE
 config HEAP_SIZE
 	hex
 	default 0x80000
-
 
 endif ## SOC_INTEL_XEON_SP

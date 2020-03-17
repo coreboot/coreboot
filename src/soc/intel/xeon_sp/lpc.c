@@ -17,11 +17,10 @@
 #include <arch/ioapic.h>
 #include <intelblocks/lpc_lib.h>
 #include <intelblocks/pcr.h>
-#include <soc/soc_util.h>
 #include <soc/iomap.h>
 #include <soc/pcr_ids.h>
 
-#include "chip.h"
+#include <chip.h>
 
 static const struct lpc_mmio_range xeon_lpc_fixed_mmio_ranges[] = {
 	{ 0, 0 }

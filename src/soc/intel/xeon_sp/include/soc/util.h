@@ -13,13 +13,14 @@
  * GNU General Public License for more details.
  */
 
+#ifndef _XEON_SP_SOC_UTIL_H_
+#define _XEON_SP_SOC_UTIL_H_
 
-#ifndef _SOC_UTIL_H_
-#define _SOC_UTIL_H_
+#include <console/console.h>
 
-#include <hob_iiouds.h>
-#include <hob_memmap.h>
-#include <arch/acpi.h>
+void get_cpubusnos(uint32_t *bus0, uint32_t *bus1, uint32_t *bus2, uint32_t *bus3);
+void unlock_pam_regions(void);
+void get_stack_busnos(uint32_t *bus);
 
 #define LOG_MEM_RESOURCE(type, dev, index, base_kb, size_kb) \
 	printk(BIOS_SPEW, "%s:%d res: %s, dev: %s, index: 0x%x, base: 0x%llx, " \
@@ -46,34 +47,4 @@
 #define FUNC_EXIT() \
 	printk(BIOS_SPEW, "%s:%s:%d: EXIT\n", __FILE__, __func__, __LINE__)
 
-struct iiostack_resource {
-	uint8_t     no_of_stacks;
-	STACK_RES   res[CONFIG_MAX_SOCKET * MAX_IIO_STACK];
-};
-
-uintptr_t get_tolm(uint32_t bus);
-void get_tseg_base_lim(uint32_t bus, uint32_t *base, uint32_t *limit);
-uintptr_t get_cha_mmcfg_base(uint32_t bus);
-uint32_t top_of_32bit_ram(void); // Top of 32bit usable memory
-
-uint32_t pci_read_mmio_reg(int bus, uint32_t dev, uint32_t func, int offset);
-
-void get_stack_busnos(uint32_t *bus);
-void get_cpubusnos(uint32_t *bus0, uint32_t *bus1, uint32_t *bus2, uint32_t *bus3);
-uint32_t get_socket_stack_busno(uint32_t socket, uint32_t stack);
-void get_iiostack_info(struct iiostack_resource *info);
-
-int get_threads_per_package(void);
-int get_platform_thread_count(void);
-void get_core_thread_bits(uint32_t *core_bits, uint32_t *thread_bits);
-
-unsigned int get_srat_memory_entries(acpi_srat_mem_t *srat_mem);
-void get_cpu_info_from_apicid(uint32_t apicid, uint32_t core_bits,
-	uint32_t thread_bits, uint8_t *package, uint8_t *core, uint8_t *thread);
-
-void unlock_pam_regions(void);
-void xeonsp_init_cpu_config(void);
-void set_bios_init_completion(void);
-void config_reset_cpl3_csrs(void);
-
-#endif /* _SOC_UTIL_H_ */
+#endif

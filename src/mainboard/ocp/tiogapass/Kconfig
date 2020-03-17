@@ -19,10 +19,9 @@ config BOARD_SPECIFIC_OPTIONS
 	def_bool y
 	select BOARD_ROMSIZE_KB_32768
 	select HAVE_ACPI_TABLES
-	select SOC_INTEL_XEON_SP
 	select MAINBOARD_USES_FSP2_0
-	select FSP_CAR
 	select IPMI_KCS
+	select SOC_INTEL_SKYLAKE_SP
 
 config MAINBOARD_DIR
 	string

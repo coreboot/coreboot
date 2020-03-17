@@ -1,0 +1,69 @@
+##
+## SPDX-License-Identifier: GPL-2.0-only
+## This file is part of the coreboot project.
+##
+
+if SOC_INTEL_SKYLAKE_SP
+
+config MAINBOARD_USES_FSP2_0
+	  bool
+	  default y
+
+config USE_FSP2_0_DRIVER
+	  def_bool y
+	  depends on MAINBOARD_USES_FSP2_0
+	  select PLATFORM_USES_FSP2_0
+	  select UDK_2015_BINDING
+	  select POSTCAR_CONSOLE
+	  select POSTCAR_STAGE
+
+config FSP_HEADER_PATH
+	  string "Location of FSP headers"
+	  depends on MAINBOARD_USES_FSP2_0
+	  default "src/vendorcode/intel/fsp/fsp2_0/skylake_sp"
+
+config MAX_SOCKET
+	int
+	default 2
+
+# For 2S config, the number of cpus could be as high as
+# 2 threads * 20 cores * 2 sockets
+config MAX_CPUS
+	int
+	default 80
+
+config PCR_BASE_ADDRESS
+	hex
+	default 0xfd000000
+	help
+	  This option allows you to select MMIO Base Address of sideband bus.
+
+config DCACHE_RAM_BASE
+	hex
+	default 0xfe800000
+
+config DCACHE_RAM_SIZE
+	hex
+	default 0x200000
+
+config DCACHE_BSP_STACK_SIZE
+	hex
+	default 0x10000
+
+config CPU_MICROCODE_CBFS_LOC
+	hex
+	default 0xfff0fdc0
+
+config CPU_MICROCODE_CBFS_LEN
+	hex
+	default 0x7C00
+
+config C_ENV_BOOTBLOCK_SIZE
+	hex
+	default 0xC000
+
+config HEAP_SIZE
+	hex
+	default 0x80000
+
+endif

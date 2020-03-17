@@ -236,6 +236,7 @@ void early_init_dmi(void);
 void mainboard_early_init(int s3resume);
 int mainboard_should_reset_usb(int s3resume);
 void perform_raminit(int s3resume);
+void report_memory_config(void);
 enum platform_type get_platform_type(void);
 
 #include <device/device.h>

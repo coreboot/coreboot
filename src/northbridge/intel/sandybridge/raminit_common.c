@@ -3236,11 +3236,4 @@ void restore_timings(ramctr_timing *ctrl)
 		MCHBAR32_AND(GDCRCMDDEBUGMUXCFG_Cz_S(channel), ~0x3f000000);
 		udelay(2);
 	}
-
-	/*
-	 * Disable IOSAV_n_SPECIAL_COMMAND_ADDR optimization.
-	 * FIXME: This must only be done on Ivy Bridge. Moreover, this instance seems to be
-	 *        spurious, because nothing else enabled this optimization before.
-	 */
-	MCHBAR32(MCMNTS_SPARE) = 0;
 }

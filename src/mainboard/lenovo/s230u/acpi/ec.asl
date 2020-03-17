@@ -1,9 +1,6 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (c) 2011 Sven Schnelle <svens@stackframe.org>
- * Copyright (c) 2013 Vladimir Serbinenko <phcoder@gmail.com>
- * Copyright (c) 2017 Tobias Diedrich <ranma+coreboot@tdiedrich.de>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as

@@ -3,7 +3,6 @@
  *
  * Based on the example of Mika Westerberg: https://lwn.net/Articles/612062/
  *
- * Copyright (C) 2015 Tobias Diedrich, Mika Westerberg
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

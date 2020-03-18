@@ -322,4 +322,10 @@ config MAX_PIRQ_LINKS
 	  table specifies links greater than 4, pirq_route_irqs will not
 	  function properly, unless this variable is correctly set.
 
+config MAX_ACPI_TABLE_SIZE_KB
+	int
+	default 144
+	help
+	  Set the maximum size of all ACPI tables in KiB.
+
 endif

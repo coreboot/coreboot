@@ -78,8 +78,7 @@ static unsigned long write_mptable(unsigned long rom_table_end)
 static unsigned long write_acpi_table(unsigned long rom_table_end)
 {
 	unsigned long high_table_pointer;
-
-#define MAX_ACPI_SIZE (144 * 1024)
+	const size_t max_acpi_size = CONFIG_MAX_ACPI_TABLE_SIZE_KB * KiB;
 
 	post_code(0x9c);
 
@@ -96,7 +95,7 @@ static unsigned long write_acpi_table(unsigned long rom_table_end)
 	 * how far we get.
 	 */
 	high_table_pointer = (unsigned long)cbmem_add(CBMEM_ID_ACPI,
-		MAX_ACPI_SIZE);
+		max_acpi_size);
 	if (high_table_pointer) {
 		unsigned long acpi_start = high_table_pointer;
 		unsigned long new_high_table_pointer;
@@ -104,7 +103,7 @@ static unsigned long write_acpi_table(unsigned long rom_table_end)
 		rom_table_end = ALIGN_UP(rom_table_end, 16);
 		new_high_table_pointer = write_acpi_tables(high_table_pointer);
 		if (new_high_table_pointer > (high_table_pointer
-			+ MAX_ACPI_SIZE))
+			+ max_acpi_size))
 			printk(BIOS_ERR, "ERROR: Increase ACPI size\n");
 		printk(BIOS_DEBUG, "ACPI tables: %ld bytes.\n",
 				new_high_table_pointer - high_table_pointer);

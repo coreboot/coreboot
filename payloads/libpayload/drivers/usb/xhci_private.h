@@ -274,7 +274,6 @@ typedef volatile struct epctx {
 } epctx_t;
 
 #define NUM_EPS 32
-#define CTXSIZE(xhci) ((xhci)->capreg->csz ? 64 : 32)
 
 typedef union devctx {
 	/* set of pointers, so we can dynamically adjust Slot/EP context size */
@@ -321,66 +320,65 @@ typedef struct erst_entry {
 	u32 rsvd;
 } erst_entry_t;
 
+#define CAP_CAPLEN_FIELD		hciparams
+#define CAP_CAPLEN_START		0
+#define CAP_CAPLEN_LEN			8
+#define CAP_CAPVER_FIELD		hciparams
+#define CAP_CAPVER_START		16
+#define CAP_CAPVER_LEN			16
+#define CAP_CAPVER_HI_FIELD		hciparams
+#define CAP_CAPVER_HI_START		24
+#define CAP_CAPVER_HI_LEN		8
+#define CAP_CAPVER_LO_FIELD		hciparams
+#define CAP_CAPVER_LO_START		16
+#define CAP_CAPVER_LO_LEN		8
+#define CAP_MAXSLOTS_FIELD		hcsparams1
+#define CAP_MAXSLOTS_START		0
+#define CAP_MAXSLOTS_LEN		7
+#define CAP_MAXINTRS_FIELD		hcsparams1
+#define CAP_MAXINTRS_START		7
+#define CAP_MAXINTRS_LEN		11
+#define CAP_MAXPORTS_FIELD		hcsparams1
+#define CAP_MAXPORTS_START		24
+#define CAP_MAXPORTS_LEN		8
+#define CAP_IST_FIELD			hcsparams2
+#define CAP_IST_START			0
+#define CAP_IST_LEN			4
+#define CAP_ERST_MAX_FIELD		hcsparams2
+#define CAP_ERST_MAX_START		4
+#define CAP_ERST_MAX_LEN		4
+#define CAP_MAX_SCRATCH_BUFS_HI_FIELD	hcsparams2
+#define CAP_MAX_SCRATCH_BUFS_HI_START	21
+#define CAP_MAX_SCRATCH_BUFS_HI_LEN	5
+#define CAP_MAX_SCRATCH_BUFS_LO_FIELD	hcsparams2
+#define CAP_MAX_SCRATCH_BUFS_LO_START	27
+#define CAP_MAX_SCRATCH_BUFS_LO_LEN	5
+#define CAP_U1_LATENCY_FIELD		hcsparams3
+#define CAP_U1_LATENCY_START		0
+#define CAP_U1_LATENCY_LEN		8
+#define CAP_U2_LATENCY_FIELD		hcsparams3
+#define CAP_U2_LATENCY_START		16
+#define CAP_U2_LATENCY_LEN		16
+#define CAP_CSZ_FIELD			hccparams
+#define CAP_CSZ_START			2
+#define CAP_CSZ_LEN			1
+
+#define CAP_MASK(tok)		MASK(CAP_##tok##_START, CAP_##tok##_LEN)
+#define CAP_GET(tok, cap)	(((cap).CAP_##tok##_FIELD & CAP_MASK(tok)) \
+				 >> CAP_##tok##_START)
+
+#define CTXSIZE(xhci) (CAP_GET(CSZ, (xhci)->capreg) ? 64 : 32)
+
 typedef struct xhci {
-	/* capreg is read-only, so no need for volatile,
-	   and thus 32bit accesses can be assumed. */
 	struct capreg {
-		u8 caplength; /* 0x00 */
-		u8 res1; /* 0x01 */
-		union { /* 0x02 */
-			u16 hciversion;
-			struct {
-				u8 hciver_lo;
-				u8 hciver_hi;
-			} __packed;
-		} __packed;
-		union { /* 0x04 */
-			u32 hcsparams1;
-			struct {
-				unsigned long MaxSlots:7;
-				unsigned long MaxIntrs:11;
-				unsigned long:6;
-				unsigned long MaxPorts:8;
-			} __packed;
-		} __packed;
-		union { /* 0x08 */
-			u32 hcsparams2;
-			struct {
-				unsigned long IST:4;
-				unsigned long ERST_Max:4;
-				unsigned long:13;
-				unsigned long Max_Scratchpad_Bufs_Hi:5;
-				unsigned long SPR:1;
-				unsigned long Max_Scratchpad_Bufs_Lo:5;
-			} __packed;
-		} __packed;
-		union { /* 0x0C */
-			u32 hcsparams3;
-			struct {
-				unsigned long u1latency:8;
-				unsigned long:8;
-				unsigned long u2latency:16;
-			} __packed;
-		} __packed;
-		union { /* 0x10 */
-			u32 hccparams;
-			struct {
-				unsigned long ac64:1;
-				unsigned long bnc:1;
-				unsigned long csz:1;
-				unsigned long ppc:1;
-				unsigned long pind:1;
-				unsigned long lhrc:1;
-				unsigned long ltc:1;
-				unsigned long nss:1;
-				unsigned long:4;
-				unsigned long MaxPSASize:4;
-				unsigned long xECP:16;
-			} __packed;
-		} __packed;
-		u32 dboff; /* 0x14 */
-		u32 rtsoff; /* 0x18 */
-	} __packed *capreg;
+		u32 hciparams;
+		u32 hcsparams1;
+		u32 hcsparams2;
+		u32 hcsparams3;
+		u32 hccparams;
+		u32 dboff;
+		u32 rtsoff;
+	} __packed capreg;
 
 	/* opreg is R/W is most places, so volatile access is necessary.
 	   volatile means that the compiler seeks byte writes if possible,

@@ -160,7 +160,7 @@ xhci_rh_init (usbdev_t *dev)
 	dev->port = -1;
 
 	const int num_ports = /* TODO: maybe we need to read extended caps */
-		(XHCI_INST(dev->controller)->capreg->hcsparams1 >> 24) & 0xff;
+		CAP_GET(MAXPORTS, XHCI_INST(dev->controller)->capreg);
 	generic_hub_init(dev, num_ports, &xhci_rh_ops);
 
 	usb_debug("xHCI: root hub init done\n");

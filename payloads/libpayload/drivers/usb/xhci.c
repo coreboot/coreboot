@@ -185,26 +185,27 @@ xhci_init (unsigned long physical_bar)
 		goto _free_xhci;
 	}
 
-	xhci->capreg	= phys_to_virt(physical_bar);
-	xhci->opreg	= ((void *)xhci->capreg) + xhci->capreg->caplength;
-	xhci->hcrreg	= ((void *)xhci->capreg) + xhci->capreg->rtsoff;
-	xhci->dbreg	= ((void *)xhci->capreg) + xhci->capreg->dboff;
+	memcpy(&xhci->capreg, phys_to_virt(physical_bar), sizeof(xhci->capreg));
+	xhci->opreg = phys_to_virt(physical_bar) + CAP_GET(CAPLEN, xhci->capreg);
+	xhci->hcrreg = phys_to_virt(physical_bar) + xhci->capreg.rtsoff;
+	xhci->dbreg = phys_to_virt(physical_bar) + xhci->capreg.dboff;
+
 	xhci_debug("regbase: 0x%"PRIx32"\n", physical_bar);
-	xhci_debug("caplen:  0x%"PRIx32"\n", xhci->capreg->caplength);
-	xhci_debug("rtsoff:  0x%"PRIx32"\n", xhci->capreg->rtsoff);
-	xhci_debug("dboff:   0x%"PRIx32"\n", xhci->capreg->dboff);
+	xhci_debug("caplen:  0x%"PRIx32"\n", CAP_GET(CAPLEN, xhci->capreg));
+	xhci_debug("rtsoff:  0x%"PRIx32"\n", xhci->capreg.rtsoff);
+	xhci_debug("dboff:   0x%"PRIx32"\n", xhci->capreg.dboff);
 
 	xhci_debug("hciversion: %"PRIx8".%"PRIx8"\n",
-		   xhci->capreg->hciver_hi, xhci->capreg->hciver_lo);
-	if ((xhci->capreg->hciversion < 0x96) ||
-			(xhci->capreg->hciversion > 0x110)) {
+		   CAP_GET(CAPVER_HI, xhci->capreg), CAP_GET(CAPVER_LO, xhci->capreg));
+	if ((CAP_GET(CAPVER, xhci->capreg) < 0x96) ||
+	    (CAP_GET(CAPVER, xhci->capreg) > 0x110)) {
 		xhci_debug("Unsupported xHCI version\n");
 		goto _free_xhci;
 	}
 
 	xhci_debug("context size: %dB\n", CTXSIZE(xhci));
-	xhci_debug("maxslots: 0x%02lx\n", xhci->capreg->MaxSlots);
-	xhci_debug("maxports: 0x%02lx\n", xhci->capreg->MaxPorts);
+	xhci_debug("maxslots: 0x%02lx\n", CAP_GET(MAXSLOTS, xhci->capreg));
+	xhci_debug("maxports: 0x%02lx\n", CAP_GET(MAXPORTS, xhci->capreg));
 	const unsigned pagesize = xhci->opreg->pagesize << 12;
 	xhci_debug("pagesize: 0x%04x\n", pagesize);
 
@@ -213,7 +214,8 @@ xhci_init (unsigned long physical_bar)
 	 * structures at first and can still chicken out easily if we run out
 	 * of memory.
 	 */
-	xhci->max_slots_en = xhci->capreg->MaxSlots & CONFIG_LP_MASK_MaxSlotsEn;
+	xhci->max_slots_en = CAP_GET(MAXSLOTS, xhci->capreg) &
+		CONFIG_LP_MASK_MaxSlotsEn;
 	xhci->dcbaa = xhci_align(64, (xhci->max_slots_en + 1) * sizeof(u64));
 	xhci->dev = malloc((xhci->max_slots_en + 1) * sizeof(*xhci->dev));
 	if (!xhci->dcbaa || !xhci->dev) {
@@ -227,8 +229,9 @@ xhci_init (unsigned long physical_bar)
 	 * Let dcbaa[0] point to another array of pointers, sp_ptrs.
 	 * The pointers therein point to scratchpad buffers (pages).
 	 */
-	const size_t max_sp_bufs = xhci->capreg->Max_Scratchpad_Bufs_Hi << 5 |
-				   xhci->capreg->Max_Scratchpad_Bufs_Lo;
+	const size_t max_sp_bufs =
+		CAP_GET(MAX_SCRATCH_BUFS_HI, xhci->capreg) << 5 |
+		CAP_GET(MAX_SCRATCH_BUFS_LO, xhci->capreg);
 	xhci_debug("max scratchpad bufs: 0x%zx\n", max_sp_bufs);
 	if (max_sp_bufs) {
 		const size_t sp_ptrs_size = max_sp_bufs * sizeof(u64);
@@ -376,7 +379,8 @@ xhci_reinit (hci_t *controller)
 	xhci_debug("event ring @%p (0x%08x)\n",
 		   xhci->er.ring, virt_to_phys(xhci->er.ring));
 	xhci_debug("ERST Max: 0x%lx ->  0x%lx entries\n",
-		   xhci->capreg->ERST_Max, 1 << xhci->capreg->ERST_Max);
+		   CAP_GET(ERST_MAX, xhci->capreg),
+		   1 << CAP_GET(ERST_MAX, xhci->capreg));
 	memset((void*)xhci->ev_ring_table, 0x00, sizeof(erst_entry_t));
 	xhci->ev_ring_table[0].seg_base_lo = virt_to_phys(xhci->er.ring);
 	xhci->ev_ring_table[0].seg_base_hi = 0;
@@ -432,8 +436,9 @@ xhci_shutdown(hci_t *const controller)
 #endif
 
 	if (xhci->sp_ptrs) {
-		size_t max_sp_bufs = xhci->capreg->Max_Scratchpad_Bufs_Hi << 5 |
-				     xhci->capreg->Max_Scratchpad_Bufs_Lo;
+		const size_t max_sp_bufs =
+			CAP_GET(MAX_SCRATCH_BUFS_HI, xhci->capreg) << 5 |
+			CAP_GET(MAX_SCRATCH_BUFS_LO, xhci->capreg);
 		for (i = 0; i < max_sp_bufs; ++i) {
 			if (xhci->sp_ptrs[i])
 				free(phys_to_virt(xhci->sp_ptrs[i]));

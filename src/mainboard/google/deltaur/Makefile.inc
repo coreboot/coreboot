@@ -8,6 +8,7 @@ bootblock-y += bootblock.c
 bootblock-$(CONFIG_CHROMEOS) += chromeos.c
 bootblock-y += ec.c
 
+romstage-y += romstage.c
 romstage-$(CONFIG_CHROMEOS) += chromeos.c
 romstage-y += ec.c
 

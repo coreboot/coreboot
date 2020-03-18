@@ -27,6 +27,8 @@
 #define GPIO_MEM_CONFIG_3	GPP_F14
 #define GPIO_MEM_CONFIG_4	GPP_F15
 
+/* DQ Memory Interleaved */
+#define MEMORY_INTERLEAVED	GPP_E3
 
 const struct pad_config *override_gpio_table(size_t *num);
 const struct pad_config *override_early_gpio_table(size_t *num);

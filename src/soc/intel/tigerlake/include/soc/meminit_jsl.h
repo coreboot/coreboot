@@ -15,8 +15,7 @@
 #ifndef _SOC_JASPERLAKE_MEMCFG_INIT_H_
 #define _SOC_JASPERLAKE_MEMCFG_INIT_H_
 
-#include <stddef.h>
-#include <stdint.h>
+#include <types.h>
 #include <fsp/soc_binding.h>
 
 /* Number of dq bits controlled per dqs */

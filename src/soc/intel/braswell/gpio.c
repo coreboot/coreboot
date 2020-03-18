@@ -57,39 +57,39 @@ static const u8 gpecommunity_gpio_to_pad[GP_EAST_COUNT] = {
 
 /* GPIO Community descriptions */
 static const struct gpio_bank gpnorth_community = {
-	.gpio_count = GP_NORTH_COUNT,
+	.gpio_count  = GP_NORTH_COUNT,
 	.gpio_to_pad = gpncommunity_gpio_to_pad,
-	.pad_base = COMMUNITY_GPNORTH_BASE,
-	.has_gpe_en = GPE_CAPABLE,
+	.pad_base    = COMMUNITY_GPNORTH_BASE,
+	.has_gpe_en  = GPE_CAPABLE,
 	.has_wake_en = 1,
 };
 
 static const struct gpio_bank gpsoutheast_community = {
-	.gpio_count = GP_SOUTHEAST_COUNT,
+	.gpio_count  = GP_SOUTHEAST_COUNT,
 	.gpio_to_pad = gpsecommunity_gpio_to_pad,
-	.pad_base = COMMUNITY_GPSOUTHEAST_BASE,
-	.has_gpe_en = GPE_CAPABLE_NONE,
+	.pad_base    = COMMUNITY_GPSOUTHEAST_BASE,
+	.has_gpe_en  = GPE_CAPABLE_NONE,
 	.has_wake_en = 1,
 };
 
 static const struct gpio_bank gpsouthwest_community = {
-	.gpio_count = GP_SOUTHWEST_COUNT,
+	.gpio_count  = GP_SOUTHWEST_COUNT,
 	.gpio_to_pad = gpswcommunity_gpio_to_pad,
-	.pad_base = COMMUNITY_GPSOUTHWEST_BASE,
-	.has_gpe_en = GPE_CAPABLE,
+	.pad_base    = COMMUNITY_GPSOUTHWEST_BASE,
+	.has_gpe_en  = GPE_CAPABLE,
 	.has_wake_en = 1,
 };
 
 static const struct gpio_bank gpeast_community = {
-	.gpio_count = GP_EAST_COUNT,
+	.gpio_count  = GP_EAST_COUNT,
 	.gpio_to_pad = gpecommunity_gpio_to_pad,
-	.pad_base = COMMUNITY_GPEAST_BASE,
-	.has_gpe_en = GPE_CAPABLE_NONE,
+	.pad_base    = COMMUNITY_GPEAST_BASE,
+	.has_gpe_en  = GPE_CAPABLE_NONE,
 	.has_wake_en = 1,
 };
 
 static void setup_gpio_route(const struct soc_gpio_map *sw_gpios,
-				const struct soc_gpio_map *n_gpios)
+			     const struct soc_gpio_map *n_gpios)
 {
 	const struct soc_gpio_map *n_config;
 	const struct soc_gpio_map *sw_config;
@@ -104,82 +104,72 @@ static void setup_gpio_route(const struct soc_gpio_map *sw_gpios,
 	for (sw_config = sw_gpios, n_config = n_gpios;
 		(!north_done || !south_done); sw_config++, n_config++, gpio++) {
 
-		/* when north config is done */
-		if ((gpio > GP_NORTH_COUNT) ||
-		    (n_config->pad_conf0 == GPIO_LIST_END))
+		/* When north config is done */
+		if ((gpio > GP_NORTH_COUNT) || (n_config->pad_conf0 == GPIO_LIST_END))
 			north_done = 1;
 
-		/* when sw is done */
-		if ((gpio > GP_SOUTHWEST_COUNT) ||
-		    (sw_config->pad_conf0 == GPIO_LIST_END))
+		/* When southwest config is done */
+		if ((gpio > GP_SOUTHWEST_COUNT) || (sw_config->pad_conf0 == GPIO_LIST_END))
 			south_done = 1;
 
-		/* route north gpios */
+		/* Route north gpios */
 		if (!north_done) {
 			 /* Int select from 8 to 15 */
 			int_selection = ((n_config->pad_conf0 >> 28) & 0xf);
+
 			if (n_config->gpe == SMI) {
-				/*
-				 * Set the corresponding bits (01) as
-				 *  per the interrupt line
-				 */
+				/* Set the corresponding bits (01) as per the interrupt line */
 				route_reg |= (1 << ((int_selection - 8) * 2));
-				/* reset the higher bit */
-				route_reg &=
-					~(1 << ((int_selection - 8) * 2 + 1));
-				alt_gpio_smi |= (1 << (int_selection + 8));
+
+				/* Reset the higher bit */
+				route_reg    &= ~(1 << ((int_selection - 8) * 2 + 1));
+				alt_gpio_smi |=  (1 <<  (int_selection + 8));
+
 			} else if (n_config->gpe == SCI) {
-				/*
-				 * Set the corresponding bits as per the
-				 * interrupt line
-				 */
-				route_reg |=
-					(1 << (((int_selection - 8) * 2) + 1));
-				/* reset the bit */
+				/* Set the corresponding bits as per the interrupt line */
+				route_reg |= (1 << (((int_selection - 8) * 2) + 1));
+
+				/* Reset the bit */
 				route_reg &= ~(1 << ((int_selection - 8) * 2));
-				gpe0a_en |= (1 << (int_selection + 8));
+				gpe0a_en  |=  (1 <<  (int_selection + 8));
 			}
 		}
 
-		/* route southwest gpios */
+		/* Route southwest gpios */
 		if (!south_done) {
 			 /* Int select from 8 to 15 */
 			int_selection = ((sw_config->pad_conf0 >> 28) & 0xf);
+
 			if (sw_config->gpe == SMI) {
-				/*
-				 * Set the corresponding bits (10) as
-				 * per the interrupt line
-				 */
-				route_reg |= (1 << (int_selection * 2));
-				route_reg &= ~(1 << (int_selection * 2 + 1));
-				alt_gpio_smi |= (1 << (int_selection + 16));
+				/* Set the corresponding bits (10) as per the interrupt line */
+				route_reg    |=  (1 << (int_selection * 2));
+				route_reg    &= ~(1 << (int_selection * 2 + 1));
+				alt_gpio_smi |=  (1 << (int_selection + 16));
+
 			} else if (sw_config->gpe == SCI) {
-				/*
-				 * Set the corresponding bits as
-				 * per the interrupt line
-				 */
+				/* Set the corresponding bits as per the interrupt line */
 				route_reg |= (1 << ((int_selection * 2) + 1));
-				/* reset the bit */
+
+				/* Reset the bit */
 				route_reg &= ~(1 << (int_selection * 2));
-				gpe0a_en |= (1 << (int_selection + 16));
+				gpe0a_en  |=  (1 << (int_selection + 16));
 			}
 		}
 	}
 
-	/* enable gpe bits in GPE0A_EN_REG */
+	/* Enable gpe bits in GPE0A_EN_REG */
 	outl(gpe0a_en, ACPI_BASE_ADDRESS + GPE0A_EN_REG);
 
 #ifdef GPIO_DEBUG
 	printk(BIOS_DEBUG, "gpio_rout = %x alt_gpio_smi = %x  gpe0a_en = %x\n",
 	route_reg, alt_gpio_smi, gpe0a_en);
 #endif
-	/* Save as an smm param */
+	/* Save as an SMM param */
 	smm_southcluster_save_param(SMM_SAVE_PARAM_GPIO_ROUTE, route_reg);
 }
 
 
-static void setup_gpios(const struct soc_gpio_map *gpios,
-			const struct gpio_bank *community)
+static void setup_gpios(const struct soc_gpio_map *gpios, const struct gpio_bank *community)
 {
 	const struct soc_gpio_map *config;
 	int gpio = 0;
@@ -191,38 +181,31 @@ static void setup_gpios(const struct soc_gpio_map *gpios,
 
 	if (!gpios)
 		return;
-	for (config = gpios; config->pad_conf0 != GPIO_LIST_END;
-	     config++, gpio++) {
+
+	for (config = gpios; config->pad_conf0 != GPIO_LIST_END; config++, gpio++) {
 		if (gpio > community->gpio_count)
 			break;
 
 		/* Pad configuration registers */
 		family = community->gpio_to_pad[gpio] / MAX_FAMILY_PAD_GPIO_NO;
-		internal_pad_num = community->gpio_to_pad[gpio] %
-				   MAX_FAMILY_PAD_GPIO_NO;
+		internal_pad_num = community->gpio_to_pad[gpio] % MAX_FAMILY_PAD_GPIO_NO;
 
 		/*
-		 * Calculate the MMIO Address for specific GPIO pin
-		 * control register pointed by index.
-		 * REG = (IOBASE + COMMUNITY_BASE + (0X04400)) +
-		 * (0X400*FAMILY_NUM) + (8 * PAD_NUM)
+		 * Calculate the MMIO Address for GPIO pin control register pointed by index.
+		 * REG = IOBASE + COMMUNITY_BASE + 0x4400 + (0x400 * FAMILY_NUM) + (8 * PAD_NUM)
 		 */
-		mmio_addr = FAMILY_PAD_REGS_OFF
-			  + (FAMILY_PAD_REGS_SIZE * family)
-			  + (GPIO_REGS_SIZE * internal_pad_num);
+		mmio_addr = FAMILY_PAD_REGS_OFF + (FAMILY_PAD_REGS_SIZE * family) +
+				(GPIO_REGS_SIZE * internal_pad_num);
 
 		reg = community->pad_base + mmio_addr;
 
-		/* get int selection value */
+		/* Get int selection value */
 		int_selection = ((config->pad_conf0 >> 28) & 0xf);
 
-		/* get int mask register value */
+		/* Get int mask register value */
 		gpio_int_mask |= (config->int_mask << int_selection);
 
-		/*
-		 * wake capable programming
-		 * some communities have 2 wake regs
-		 */
+		/* Wake capable programming, some communities have 2 wake regs */
 		if (gpio > 31)
 			gpio_wake1 |= config->wake_mask << (gpio % 32);
 		else
@@ -235,50 +218,38 @@ static void setup_gpios(const struct soc_gpio_map *gpios,
 				reg, config->pad_conf0, config->pad_conf1,
 				community->gpio_to_pad[gpio], gpio);
 #endif
-			/*
-			 * write pad configurations to conf0 and conf1 register
-			 */
-			write32((void *)(reg + PAD_CONF0_REG),
-				config->pad_conf0);
-			write32((void *)(reg + PAD_CONF1_REG),
-				config->pad_conf1);
+			/* Write pad configurations to conf0 and conf1 register */
+			write32((void *)(reg + PAD_CONF0_REG), config->pad_conf0);
+			write32((void *)(reg + PAD_CONF1_REG), config->pad_conf1);
 		}
 	}
 
 #ifdef GPIO_DEBUG
-	printk(BIOS_DEBUG,
-		"gpio_wake_mask0 = %x gpio_wake_mask1 = %x gpio_int_mask = %x\n",
+	printk(BIOS_DEBUG, "gpio_wake_mask0 = %x gpio_wake_mask1 = %x gpio_int_mask = %x\n",
 		gpio_wake0, gpio_wake1, gpio_int_mask);
 #endif
 
 	/* Wake */
-	write32((void *)(community->pad_base + GPIO_WAKE_MASK_REG0),
-		gpio_wake0);
+	write32((void *)(community->pad_base + GPIO_WAKE_MASK_REG0), gpio_wake0);
 
-	/* wake mask config for communities with 2 regs */
+	/* Wake mask config for communities with 2 regs */
 	if (community->gpio_count > 32)
-		write32((void *)(community->pad_base + GPIO_WAKE_MASK_REG1),
-		gpio_wake1);
+		write32((void *)(community->pad_base + GPIO_WAKE_MASK_REG1), gpio_wake1);
 
 	/* Interrupt */
-	write32((void *)(community->pad_base + GPIO_INTERRUPT_MASK),
-		gpio_int_mask);
-
+	write32((void *)(community->pad_base + GPIO_INTERRUPT_MASK), gpio_int_mask);
 }
 
 
 void setup_soc_gpios(struct soc_gpio_config *config, u8 enable_xdp_tap)
 {
-
 	if (config) {
 
 		/*
-		 * Write the default value 0xffffff to the SW
-		 * write_access_policy_interrupt_reg to allow the SW interrupt
-		 * mask register to be set
+		 * Write the default value 0xffffff to the SW write_access_policy_interrupt_reg
+		 * to allow the SW interrupt mask register to be set
 		 */
-		write32((void *)(COMMUNITY_GPSOUTHWEST_BASE + 0x108),
-			0xffffffff);
+		write32((void *)(COMMUNITY_GPSOUTHWEST_BASE + 0x108), 0xffffffff);
 
 		printk(BIOS_DEBUG, "north\n");
 		setup_gpios(config->north, &gpnorth_community);
@@ -297,8 +268,8 @@ void setup_soc_gpios(struct soc_gpio_config *config, u8 enable_xdp_tap)
 	}
 
 	/*
-	 * Set on die termination feature with pull up value and
-	 * drive the pad high for TAP_TDO and TAP_TMS
+	 * Set on die termination feature with pull up value
+	 * and drive the pad high for TAP_TDO and TAP_TMS
 	 */
 	if (!enable_xdp_tap)
 		printk(BIOS_DEBUG, "Tri-state TDO and TMS\n");

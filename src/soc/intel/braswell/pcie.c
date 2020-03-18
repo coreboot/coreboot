@@ -40,8 +40,7 @@ static inline int is_first_port(struct device *dev)
 
 static void pcie_init(struct device *dev)
 {
-	printk(BIOS_SPEW, "%s/%s (%s)\n",
-			__FILE__, __func__, dev_name(dev));
+	printk(BIOS_SPEW, "%s/%s (%s)\n", __FILE__, __func__, dev_name(dev));
 }
 
 static const struct reg_script no_dev_behind_port[] = {
@@ -86,14 +85,12 @@ static void check_device_present(struct device *dev)
 	static struct device *port1_dev;
 
 	/*
-	 * The SOC has 4 ROOT ports defined with MAX_ROOT_PORTS_BSW.
-	 * For each port initial assumption is that, each port will have
-	 * devices connected to it. Later we will scan each PORT and if
-	 * the device is not attached to that port we will update
-	 * rootports_in_use. If none of the root port is in use we will
-	 * disable PORT1 otherwise we will keep PORT1 enabled per spec.
-	 * In future if the Soc has more number of PCIe Root ports then
-	 * change MAX_ROOT_PORTS_BSW value accordingly.
+	 * The SOC has 4 ROOT ports defined with MAX_ROOT_PORTS_BSW. For each port initial
+	 * assumption is that, each port will have devices connected to it. Later we will
+	 * scan each PORT and if the device is not attached to that port we will update
+	 * rootports_in_use. If none of the root port is in use we will disable PORT1
+	 * otherwise we will keep PORT1 enabled per spec. In future if the SoC has more
+	 * number of PCIe Root ports then change MAX_ROOT_PORTS_BSW value accordingly.
 	 */
 
 	static uint32_t rootports_in_use = MAX_ROOT_PORTS_BSW;
@@ -109,9 +106,9 @@ static void check_device_present(struct device *dev)
 		printk(BIOS_DEBUG, "No PCIe device present.");
 
 		/*
-		 * Defer PORT1 disabling for now. When we are at Last port
-		 * we will check rootports_in_use and disable PORT1 if none
-		 * of the port has any device connected
+		 * Defer PORT1 disabling for now. When we are at Last port we will check
+		 * rootports_in_use and disable PORT1 if none of the ports have any device
+		 * connected to it.
 		 */
 		if (!is_first_port(dev)) {
 			reg_script_run_on_dev(dev, no_dev_behind_port);
@@ -119,8 +116,8 @@ static void check_device_present(struct device *dev)
 		} else
 			port1_dev = dev;
 		/*
-		 * If none of the ROOT PORT has devices connected then
-		 * disable PORT1 else keep the PORT1 enable
+		 * If none of the ROOT PORT has devices connected then disable PORT1.
+		 * Else, keep the PORT1 enabled.
 		 */
 		if (!rootports_in_use) {
 			reg_script_run_on_dev(port1_dev, no_dev_behind_port);
@@ -136,8 +133,8 @@ static void check_device_present(struct device *dev)
 
 static void pcie_enable(struct device *dev)
 {
-	printk(BIOS_SPEW, "%s/%s (%s)\n",
-			__FILE__, __func__, dev_name(dev));
+	printk(BIOS_SPEW, "%s/%s (%s)\n", __FILE__, __func__, dev_name(dev));
+
 	if (is_first_port(dev)) {
 		struct soc_intel_braswell_config *config = config_of(dev);
 		uint32_t reg = pci_read_config32(dev, PHYCTL2_IOSFBCTL);
@@ -146,8 +143,7 @@ static void pcie_enable(struct device *dev)
 		strpfusecfg = pci_read_config32(dev, STRPFUSECFG);
 
 		if (config->pcie_wake_enable)
-			smm_southcluster_save_param(
-				SMM_SAVE_PARAM_PCIE_WAKE_ENABLE, 1);
+			smm_southcluster_save_param(SMM_SAVE_PARAM_PCIE_WAKE_ENABLE, 1);
 	}
 
 	/* Check if device is enabled in strapping. */

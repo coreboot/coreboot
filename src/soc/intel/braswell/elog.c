@@ -51,9 +51,9 @@ static void log_power_and_resets(const struct chipset_power_state *ps)
 
 static void log_wake_events(const struct chipset_power_state *ps)
 {
-	const uint32_t pcie_wake_mask = PCI_EXP_STS | PCIE_WAKE3_STS |
-					PCIE_WAKE2_STS | PCIE_WAKE1_STS |
-					PCIE_WAKE0_STS;
+	const uint32_t pcie_wake_mask = PCIE_WAKE3_STS | PCIE_WAKE2_STS |
+					PCIE_WAKE1_STS | PCIE_WAKE0_STS | PCI_EXP_STS;
+
 	uint32_t gpe0_sts;
 	uint32_t gpio_mask;
 	int i;

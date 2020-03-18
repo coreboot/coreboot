@@ -35,8 +35,8 @@
 static const struct reg_script core_msr_script[] = {
 	/* Dynamic L2 shrink enable and threshold, clear SINGLE_PCTL bit 11 */
 	REG_MSR_RMW(MSR_PKG_CST_CONFIG_CONTROL, ~0x3f080f, 0xe0008),
-	REG_MSR_RMW(MSR_POWER_MISC,
-		    ~(ENABLE_ULFM_AUTOCM_MASK | ENABLE_INDP_AUTOCM_MASK), 0),
+	REG_MSR_RMW(MSR_POWER_MISC, ~(ENABLE_ULFM_AUTOCM_MASK | ENABLE_INDP_AUTOCM_MASK), 0),
+
 	/* Disable C1E */
 	REG_MSR_RMW(MSR_POWER_CTL, ~0x2, 0),
 	REG_MSR_OR(MSR_POWER_MISC, 0x44),
@@ -53,10 +53,9 @@ static void soc_core_init(struct device *cpu)
 	setup_lapic();
 
 	/*
-	 * The turbo disable bit is actually scoped at building
-	 * block level -- not package. For non-bsp cores that are within a
-	 * building block enable turbo. The cores within the BSP's building
-	 * block will just see it already enabled and move on.
+	 * The turbo disable bit is actually scoped at building block level -- not package.
+	 * For non-BSP cores that are within a building block, enable turbo. The cores within
+	 * the BSP's building block will just see it already enabled and move on.
 	 */
 	if (lapicid())
 		enable_turbo();
@@ -76,9 +75,9 @@ static struct device_operations cpu_dev_ops = {
 };
 
 static const struct cpu_device_id cpu_table[] = {
-	{ X86_VENDOR_INTEL, 0x406C4 },
-	{ X86_VENDOR_INTEL, 0x406C3 },
-	{ X86_VENDOR_INTEL, 0x406C2 },
+	{ X86_VENDOR_INTEL, 0x406c4 },
+	{ X86_VENDOR_INTEL, 0x406c3 },
+	{ X86_VENDOR_INTEL, 0x406c2 },
 	{ 0, 0 },
 };
 
@@ -115,9 +114,8 @@ static void pre_mp_init(void)
 	x86_mtrr_check();
 
 	/*
-	 * Configure the BUNIT to allow dirty cache line evictions in non-SMM
-	 * mode for the lines that were dirtied while in SMM mode. Otherwise
-	 * the writes would be silently dropped.
+	 * Configure the BUNIT to allow dirty cache line evictions in non-SMM mode for lines
+	 * that were dirtied while in SMM mode. Otherwise the writes would be silently dropped.
 	 */
 	bsmrwac = iosf_bunit_read(BUNIT_SMRWAC) | SAI_IA_UNTRUSTED;
 	iosf_bunit_write(BUNIT_SMRWAC, bsmrwac);
@@ -190,8 +188,7 @@ static void per_cpu_smm_trigger(void)
 	intel_microcode_load_unlocked(pattrs->microcode_patch);
 }
 
-static void relocation_handler(int cpu, uintptr_t curr_smbase,
-				uintptr_t staggered_smbase)
+static void relocation_handler(int cpu, uintptr_t curr_smbase, uintptr_t staggered_smbase)
 {
 	struct smm_relocation_params *relo_params = &smm_reloc_params;
 	em64t100_smm_state_save_area_t *smm_state;
@@ -205,22 +202,21 @@ static void relocation_handler(int cpu, uintptr_t curr_smbase,
 }
 
 static const struct mp_ops mp_ops = {
-	.pre_mp_init = pre_mp_init,
-	.get_cpu_count = get_cpu_count,
-	.get_smm_info = get_smm_info,
-	.get_microcode_info = get_microcode_info,
-	.pre_mp_smm_init = smm_southbridge_clear_state,
+	.pre_mp_init         = pre_mp_init,
+	.get_cpu_count       = get_cpu_count,
+	.get_smm_info        = get_smm_info,
+	.get_microcode_info  = get_microcode_info,
+	.pre_mp_smm_init     = smm_southbridge_clear_state,
 	.per_cpu_smm_trigger = per_cpu_smm_trigger,
-	.relocation_handler = relocation_handler,
-	.post_mp_init = smm_southbridge_enable_smi,
+	.relocation_handler  = relocation_handler,
+	.post_mp_init        = smm_southbridge_enable_smi,
 };
 
 void soc_init_cpus(struct device *dev)
 {
 	struct bus *cpu_bus = dev->link_list;
 
-	printk(BIOS_SPEW, "%s/%s (%s)\n",
-			__FILE__, __func__, dev_name(dev));
+	printk(BIOS_SPEW, "%s/%s (%s)\n", __FILE__, __func__, dev_name(dev));
 
 	if (mp_init_with_smm(cpu_bus, &mp_ops))
 		printk(BIOS_ERR, "MP initialization failure.\n");

@@ -32,9 +32,10 @@ static const unsigned int cpu_bus_clk_freq_table[] = {
 unsigned int cpu_bus_freq_khz(void)
 {
 	msr_t clk_info = rdmsr(MSR_BSEL_CR_OVERCLOCK_CONTROL);
-	if ((clk_info.lo & 0xF)
-		< (sizeof(cpu_bus_clk_freq_table) / sizeof(unsigned int)))
-		return cpu_bus_clk_freq_table[clk_info.lo & 0xF];
+
+	if ((clk_info.lo & 0xf) < (sizeof(cpu_bus_clk_freq_table) / sizeof(unsigned int)))
+		return cpu_bus_clk_freq_table[clk_info.lo & 0xf];
+
 	return 0;
 }
 
@@ -55,7 +56,7 @@ void set_max_freq(void)
 	msr_t perf_ctl;
 	msr_t msr;
 
-	/* Enable speed step. */
+	/* Enable Intel SpeedStep */
 	msr = rdmsr(IA32_MISC_ENABLE);
 	msr.lo |= (1 << 16);
 	wrmsr(IA32_MISC_ENABLE, msr);
@@ -65,19 +66,13 @@ void set_max_freq(void)
 	msr.hi = 0;
 	wrmsr(IA32_MISC_ENABLE, msr);
 
-	/*
-	 * Set guranteed ratio [21:16] from IACORE_RATIOS to bits [15:8] of
-	 * the PERF_CTL.
-	 */
+	/* Set guaranteed ratio [21:16] from IACORE_RATIOS to bits [15:8] of the PERF_CTL */
 	msr = rdmsr(MSR_IACORE_TURBO_RATIOS);
-	perf_ctl.lo = (msr.lo & 0x3f0000) >> 8;
+	perf_ctl.lo = (msr.lo & 0x003f0000) >> 8;
 
-	/*
-	 * Set guranteed vid [21:16] from IACORE_VIDS to bits [7:0] of
-	 * the PERF_CTL.
-	 */
+	/* Set guaranteed vid [21:16] from IACORE_VIDS to bits [7:0] of the PERF_CTL */
 	msr = rdmsr(MSR_IACORE_TURBO_VIDS);
-	perf_ctl.lo |= (msr.lo & 0x7f0000) >> 16;
+	perf_ctl.lo |= (msr.lo & 0x007f0000) >> 16;
 	perf_ctl.hi = 0;
 
 	wrmsr(IA32_PERF_CTL, perf_ctl);

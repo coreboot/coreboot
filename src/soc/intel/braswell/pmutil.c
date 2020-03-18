@@ -53,8 +53,7 @@ uint16_t get_pmbase(void)
 	return pci_read_config16(get_pcu_dev(), ABASE) & 0xfff8;
 }
 
-static void print_num_status_bits(int num_bits, uint32_t status,
-				  const char *const bit_names[])
+static void print_num_status_bits(int num_bits, uint32_t status, const char *const bit_names[])
 {
 	int i;
 
@@ -310,16 +309,16 @@ static uint32_t print_alt_sts(uint32_t alt_gpio_smi)
 {
 	uint32_t alt_gpio_sts;
 	static const char *const alt_gpio_smi_sts_bits[] = {
-		[0] = "SUS_GPIO_0",
-		[1] = "SUS_GPIO_1",
-		[2] = "SUS_GPIO_2",
-		[3] = "SUS_GPIO_3",
-		[4] = "SUS_GPIO_4",
-		[5] = "SUS_GPIO_5",
-		[6] = "SUS_GPIO_6",
-		[7] = "SUS_GPIO_7",
-		[8] = "CORE_GPIO_0",
-		[9] = "CORE_GPIO_1",
+		[0]  = "SUS_GPIO_0",
+		[1]  = "SUS_GPIO_1",
+		[2]  = "SUS_GPIO_2",
+		[3]  = "SUS_GPIO_3",
+		[4]  = "SUS_GPIO_4",
+		[5]  = "SUS_GPIO_5",
+		[6]  = "SUS_GPIO_6",
+		[7]  = "SUS_GPIO_7",
+		[8]  = "CORE_GPIO_0",
+		[9]  = "CORE_GPIO_1",
 		[10] = "CORE_GPIO_2",
 		[11] = "CORE_GPIO_3",
 		[12] = "CORE_GPIO_4",

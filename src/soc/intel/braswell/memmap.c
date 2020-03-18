@@ -19,7 +19,7 @@
 static size_t smm_region_size(void)
 {
 	u32 smm_size;
-	smm_size = iosf_bunit_read(BUNIT_SMRRH) & 0xFFFF;
+	smm_size =  iosf_bunit_read(BUNIT_SMRRH) & 0xFFFF;
 	smm_size -= iosf_bunit_read(BUNIT_SMRRL) & 0xFFFF;
 	smm_size = (smm_size + 1) << 20;
 	return smm_size;

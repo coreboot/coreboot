@@ -87,12 +87,15 @@ static void fill_in_pattrs(void)
     if (attrs->revid >= RID_D_STEPPING_START) {
 		attrs->stepping = (attrs->revid - RID_D_STEPPING_START) / 2;
 		attrs->stepping += STEP_D1;
+
     } else if (attrs->revid >= RID_C_STEPPING_START) {
 		attrs->stepping = (attrs->revid - RID_C_STEPPING_START) / 2;
 		attrs->stepping += STEP_C0;
+
 	} else if (attrs->revid >= RID_B_STEPPING_START) {
 		attrs->stepping = (attrs->revid - RID_B_STEPPING_START) / 2;
 		attrs->stepping += STEP_B0;
+
 	} else {
 		attrs->stepping = (attrs->revid - RID_A_STEPPING_START) / 2;
 		attrs->stepping += STEP_A0;
@@ -114,15 +117,15 @@ static void fill_in_pattrs(void)
 
 	/* Set IA core speed ratio and voltages */
 	fill_in_msr(&msr, MSR_IACORE_RATIOS);
-	attrs->iacore_ratios[IACORE_MIN] = msr.lo & 0x7f;
-	attrs->iacore_ratios[IACORE_LFM] = (msr.lo >> 8) & 0x7f;
+	attrs->iacore_ratios[IACORE_MIN] = (msr.lo >>  0) & 0x7f;
+	attrs->iacore_ratios[IACORE_LFM] = (msr.lo >>  8) & 0x7f;
 	attrs->iacore_ratios[IACORE_MAX] = (msr.lo >> 16) & 0x7f;
 	fill_in_msr(&msr, MSR_IACORE_TURBO_RATIOS);
 	attrs->iacore_ratios[IACORE_TURBO] = (msr.lo & 0xff); /* 1 core max */
 
 	fill_in_msr(&msr, MSR_IACORE_VIDS);
-	attrs->iacore_vids[IACORE_MIN] = msr.lo & 0x7f;
-	attrs->iacore_vids[IACORE_LFM] = (msr.lo >> 8) & 0x7f;
+	attrs->iacore_vids[IACORE_MIN] = (msr.lo >>  0) & 0x7f;
+	attrs->iacore_vids[IACORE_LFM] = (msr.lo >>  8) & 0x7f;
 	attrs->iacore_vids[IACORE_MAX] = (msr.lo >> 16) & 0x7f;
 	fill_in_msr(&msr, MSR_IACORE_TURBO_VIDS);
 	attrs->iacore_vids[IACORE_TURBO] = (msr.lo & 0xff); /* 1 core max */

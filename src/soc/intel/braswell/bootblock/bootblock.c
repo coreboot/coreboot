@@ -90,11 +90,8 @@ static void soc_rtc_init(void)
 	int rtc_failed = rtc_failure();
 
 	if (rtc_failed) {
-		printk(BIOS_ERR,
-			"RTC Failure detected. Resetting date to %x/%x/%x%x\n",
-			COREBOOT_BUILD_MONTH_BCD,
-			COREBOOT_BUILD_DAY_BCD,
-			0x20,
+		printk(BIOS_ERR, "RTC Failure detected. Resetting date to %x/%x/%x%x\n",
+			COREBOOT_BUILD_MONTH_BCD, COREBOOT_BUILD_DAY_BCD, 0x20,
 			COREBOOT_BUILD_YEAR_BCD);
 	}
 
@@ -106,10 +103,9 @@ static void setup_mmconfig(void)
 	uint32_t reg;
 
 	/*
-	 * Set up the MMCONF range. The register lives in the BUNIT. The
-	 * IO variant of the config access needs to be used initially to
-	 * properly configure as the IOSF access registers live in PCI
-	 * config space.
+	 * Set up the MMCONF range. The register lives in the BUNIT. The IO variant of the
+	 * config access needs to be used initially to properly configure as the IOSF access
+	 * registers live in PCI config space.
 	 */
 	reg = 0;
 	/* Clear the extended register. */
@@ -124,7 +120,7 @@ static void setup_mmconfig(void)
 
 void bootblock_soc_early_init(void)
 {
-	/* Allow memory-mapped PCI config access. */
+	/* Allow memory-mapped PCI config access */
 	setup_mmconfig();
 
 	/* Early chipset initialization */

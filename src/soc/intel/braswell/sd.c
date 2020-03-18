@@ -25,23 +25,21 @@
 #include <soc/ramstage.h>
 #include "chip.h"
 
-#define CAP_OVERRIDE_LOW 0xa0
-#define CAP_OVERRIDE_HIGH 0xa4
-# define USE_CAP_OVERRIDES (1 << 31)
+#define CAP_OVERRIDE_LOW	0xa0
+#define CAP_OVERRIDE_HIGH	0xa4
+#define USE_CAP_OVERRIDES	(1 << 31)
 
 static void sd_init(struct device *dev)
 {
 	struct soc_intel_braswell_config *config = config_of(dev);
 
-	printk(BIOS_SPEW, "%s/%s (%s)\n",
-			__FILE__, __func__, dev_name(dev));
+	printk(BIOS_SPEW, "%s/%s (%s)\n", __FILE__, __func__, dev_name(dev));
 
 	if (config->sdcard_cap_low != 0 || config->sdcard_cap_high != 0) {
 		printk(BIOS_DEBUG, "Overriding SD Card controller caps.\n");
-		pci_write_config32(dev, CAP_OVERRIDE_LOW,
-				   config->sdcard_cap_low);
-		pci_write_config32(dev, CAP_OVERRIDE_HIGH,
-				   config->sdcard_cap_high | USE_CAP_OVERRIDES);
+		pci_write_config32(dev, CAP_OVERRIDE_LOW, config->sdcard_cap_low);
+		pci_write_config32(dev, CAP_OVERRIDE_HIGH, config->sdcard_cap_high |
+							   USE_CAP_OVERRIDES);
 	}
 
 	if (config->sd_acpi_mode)

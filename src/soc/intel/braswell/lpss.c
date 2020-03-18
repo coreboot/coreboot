@@ -27,16 +27,15 @@
 
 #include "chip.h"
 
-static void dev_enable_acpi_mode(struct device *dev,
-				 int iosf_reg, int nvs_index)
+static void dev_enable_acpi_mode(struct device *dev, int iosf_reg, int nvs_index)
 {
 	struct reg_script ops[] = {
 		/* Disable PCI interrupt, enable Memory and Bus Master */
-		REG_PCI_OR32(PCI_COMMAND,
-			     PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER | (1<<10)),
+		REG_PCI_OR32(PCI_COMMAND, PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER | (1 << 10)),
 		/* Enable ACPI mode */
 		REG_IOSF_OR(IOSF_PORT_LPSS, iosf_reg,
 			    LPSS_CTL_PCI_CFG_DIS | LPSS_CTL_ACPI_INT_EN),
+
 		REG_SCRIPT_END
 	};
 	struct resource *bar;
@@ -65,16 +64,17 @@ static void dev_enable_acpi_mode(struct device *dev,
 	reg_script_run_on_dev(dev, ops);
 }
 
-static void dev_ctl_reg(struct device *dev, int *iosf_reg, int *nvs_index)
-{
-	*iosf_reg = -1;
-	*nvs_index = -1;
 #define SET_IOSF_REG(name_) \
 	case PCI_DEVFN(name_ ## _DEV, name_ ## _FUNC): \
 		do { \
 			*iosf_reg = LPSS_ ## name_ ## _CTL; \
 			*nvs_index = LPSS_NVS_ ## name_; \
 		} while (0)
+
+static void dev_ctl_reg(struct device *dev, int *iosf_reg, int *nvs_index)
+{
+	*iosf_reg = -1;
+	*nvs_index = -1;
 
 	switch (dev->path.pci.devfn) {
 	SET_IOSF_REG(SIO_DMA1);
@@ -108,6 +108,8 @@ static void dev_ctl_reg(struct device *dev, int *iosf_reg, int *nvs_index)
 	}
 }
 
+#define CASE_I2C(name_) case PCI_DEVFN(name_ ## _DEV, name_ ## _FUNC)
+
 static void i2c_disable_resets(struct device *dev)
 {
 	/* Release the I2C devices from reset. */
@@ -115,9 +117,6 @@ static void i2c_disable_resets(struct device *dev)
 		REG_RES_WRITE32(PCI_BASE_ADDRESS_0, 0x804, 0x3),
 		REG_SCRIPT_END,
 	};
-
-#define CASE_I2C(name_) \
-	case PCI_DEVFN(name_ ## _DEV, name_ ## _FUNC)
 
 	switch (dev->path.pci.devfn) {
 	CASE_I2C(I2C1) :
@@ -140,19 +139,15 @@ static void lpss_init(struct device *dev)
 	struct soc_intel_braswell_config *config = config_of(dev);
 	int iosf_reg, nvs_index;
 
-	printk(BIOS_SPEW, "%s/%s (%s)\n",
-			__FILE__, __func__, dev_name(dev));
-	printk(BIOS_SPEW, "%s - %s\n",
-			get_pci_class_name(dev),
-			get_pci_subclass_name(dev));
+	printk(BIOS_SPEW, "%s/%s (%s)\n", __FILE__, __func__, dev_name(dev));
+	printk(BIOS_SPEW, "%s - %s\n", get_pci_class_name(dev), get_pci_subclass_name(dev));
 
 	dev_ctl_reg(dev, &iosf_reg, &nvs_index);
 
 	if (iosf_reg < 0) {
 		int slot = PCI_SLOT(dev->path.pci.devfn);
 		int func = PCI_FUNC(dev->path.pci.devfn);
-		printk(BIOS_DEBUG, "Could not find iosf_reg for %02x.%01x\n",
-		       slot, func);
+		printk(BIOS_DEBUG, "Could not find iosf_reg for %02x.%01x\n", slot, func);
 		return;
 	}
 

@@ -42,15 +42,16 @@
 
 static void sc_set_serial_irqs_mode(struct device *dev, enum serirq_mode mode)
 {
-	u8 *ilb_base = (u8 *)(pci_read_config32(dev, IBASE) & ~0xF);
+	u8 *ilb_base = (u8 *)(pci_read_config32(dev, IBASE) & ~0xf);
 
 	switch (mode) {
 	case SERIRQ_CONTINUOUS:
 		break;
+
 	case SERIRQ_OFF:
-		write32(ilb_base + ILB_OIC, read32(ilb_base + ILB_OIC) &
-			~SIRQEN);
+		write32(ilb_base + ILB_OIC, read32(ilb_base + ILB_OIC) & ~SIRQEN);
 		break;
+
 	case SERIRQ_QUIET:
 	default:
 		write8(ilb_base + SCNT, read8(ilb_base + SCNT) & ~SCNT_MODE);
@@ -58,19 +59,19 @@ static void sc_set_serial_irqs_mode(struct device *dev, enum serirq_mode mode)
 	}
 }
 
-static inline void
-add_mmio_resource(struct device *dev, int i, unsigned long addr,
-		  unsigned long size)
+static inline void add_mmio_resource(struct device *dev, int i, unsigned long addr,
+				     unsigned long size)
 {
 	printk(BIOS_SPEW, "%s/%s (%s, 0x%016lx, 0x%016lx)\n",
 			__FILE__, __func__, dev_name(dev), addr, size);
+
 	mmio_resource(dev, i, addr >> 10, size >> 10);
 }
 
 static void sc_add_mmio_resources(struct device *dev)
 {
-	printk(BIOS_SPEW, "%s/%s (%s)\n",
-			__FILE__, __func__, dev_name(dev));
+	printk(BIOS_SPEW, "%s/%s (%s)\n", __FILE__, __func__, dev_name(dev));
+
 	add_mmio_resource(dev, 0xfeb, ABORT_BASE_ADDRESS, ABORT_BASE_SIZE);
 	add_mmio_resource(dev, PBASE, PMC_BASE_ADDRESS, PMC_BASE_SIZE);
 	add_mmio_resource(dev, IOBASE, IO_BASE_ADDRESS, IO_BASE_SIZE);
@@ -79,9 +80,9 @@ static void sc_add_mmio_resources(struct device *dev)
 	add_mmio_resource(dev, MPBASE, MPHY_BASE_ADDRESS, MPHY_BASE_SIZE);
 	add_mmio_resource(dev, PUBASE, PUNIT_BASE_ADDRESS, PUNIT_BASE_SIZE);
 	add_mmio_resource(dev, RCBA, RCBA_BASE_ADDRESS, RCBA_BASE_SIZE);
-	add_mmio_resource(dev, 0xfff,
-		0xffffffff - (CONFIG_COREBOOT_ROMSIZE_KB*KiB) + 1,
-		(CONFIG_COREBOOT_ROMSIZE_KB*KiB));	/* BIOS ROM */
+	add_mmio_resource(dev, 0xfff, 0xffffffff - (CONFIG_COREBOOT_ROMSIZE_KB * KiB) + 1,
+			(CONFIG_COREBOOT_ROMSIZE_KB * KiB));	/* BIOS ROM */
+
 	add_mmio_resource(dev, 0xfec, IO_APIC_ADDR, 0x00001000); /* IOAPIC */
 }
 
@@ -99,17 +100,16 @@ static void sc_enable_serial_irqs(struct device *dev)
 }
 
 /*
- * Write PCI config space IRQ assignments.  PCI devices have the INT_LINE
- * (0x3C) and INT_PIN (0x3D) registers which report interrupt routing
- * information to operating systems and drivers.  The INT_PIN register is
- * generally read only and reports which interrupt pin A - D it uses.  The
- * INT_LINE register is configurable and reports which IRQ (generally the
- * PIC IRQs 1 - 15) it will use.  This needs to take interrupt pin swizzling
- * on devices that are downstream on a PCI bridge into account.
+ * Write PCI config space IRQ assignments. PCI devices have the INT_LINE (0x3c) and INT_PIN
+ * (0x3d) registers which report interrupt routing information to operating systems and drivers.
+ * The INT_PIN register is generally read only and reports which interrupt pin A - D it uses.
+ * The INT_LINE register is configurable and reports which IRQ (generally the PIC IRQs 1 - 15)
+ * it will use. This needs to take interrupt pin swizzling on devices that are downstream on
+ * a PCI bridge into account.
  *
- * This function will loop through all enabled PCI devices and program the
- * INT_LINE register with the correct PIC IRQ number for the INT_PIN that it
- * uses.  It then configures each interrupt in the pic to be level triggered.
+ * This function will loop through all enabled PCI devices and program the INT_LINE register
+ * with the correct PIC IRQ number for the INT_PIN that it uses.  It then configures each
+ * interrupt in the PIC to be level triggered.
  */
 static void write_pci_config_irqs(void)
 {
@@ -125,16 +125,14 @@ static void write_pci_config_irqs(void)
 	const struct soc_irq_route *ir = &global_soc_irq_route;
 
 	if (ir == NULL) {
-		printk(BIOS_WARNING, "Warning: Can't write PCI IRQ assignments"
-			" because 'global_braswell_irq_route' structure does"
-			" not exist\n");
+		printk(BIOS_WARNING, "Warning: Can't write PCI IRQ assignments "
+			"because 'global_braswell_irq_route' structure does not exist\n");
 		return;
 	}
 
 	/*
-	 * Loop through all enabled devices and program their
-	 * INT_LINE, INT_PIN registers from values taken from
-	 * the Interrupt Route registers in the ILB
+	 * Loop through all enabled devices and program their INT_LINE, INT_PIN registers from
+	 * values taken from the Interrupt Route registers in the ILB
 	 */
 	printk(BIOS_DEBUG, "PCI_CFG IRQ: Write PIRQ assignments\n");
 	for (irq_dev = all_devices; irq_dev; irq_dev = irq_dev->next) {
@@ -164,8 +162,8 @@ static void write_pci_config_irqs(void)
 
 		if (ir->pcidev[device_num] == 0) {
 			printk(BIOS_WARNING,
-				"Warning: PCI Device %d does not have an IRQ "
-				"entry, skipping it\n", device_num);
+				"Warning: PCI Device %d does not have an IRQ entry, "
+				"skipping it\n", device_num);
 			continue;
 		}
 
@@ -178,28 +176,24 @@ static void write_pci_config_irqs(void)
 
 		if (int_line != PIRQ_PIC_IRQDISABLE) {
 			/* Set this IRQ to level triggered */
-			i8259_configure_irq_trigger(int_line,
-				IRQ_LEVEL_TRIGGERED);
+			i8259_configure_irq_trigger(int_line, IRQ_LEVEL_TRIGGERED);
+
 			/* Set the Interrupt Line register */
-			pci_write_config8(irq_dev, PCI_INTERRUPT_LINE,
-				int_line);
+			pci_write_config8(irq_dev, PCI_INTERRUPT_LINE, int_line);
 		} else {
-			/*
-			 * Set the Interrupt line register as 'unknown' or
-			 * 'unused'
-			 */
-			pci_write_config8(irq_dev, PCI_INTERRUPT_LINE,
-				PIRQ_PIC_UNKNOWN_UNUSED);
+			/* Set the Interrupt line register as 'unknown' or 'unused' */
+			pci_write_config8(irq_dev, PCI_INTERRUPT_LINE, PIRQ_PIC_UNKNOWN_UNUSED);
 		}
 
-		printk(BIOS_SPEW, "\tINT_PIN\t\t: %d (%s)\n",
-			original_int_pin, pin_to_str(original_int_pin));
+		printk(BIOS_SPEW, "\tINT_PIN\t\t: %d (%s)\n", original_int_pin,
+			pin_to_str(original_int_pin));
+
 		if (parent_bdf != current_bdf)
-			printk(BIOS_SPEW, "\tSwizzled to\t: %d (%s)\n",
-				new_int_pin, pin_to_str(new_int_pin));
-		printk(BIOS_SPEW, "\tPIRQ\t\t: %c\n"
-					"\tINT_LINE\t: 0x%X (IRQ %d)\n",
-					'A' + pirq, int_line, int_line);
+			printk(BIOS_SPEW, "\tSwizzled to\t: %d (%s)\n", new_int_pin,
+				pin_to_str(new_int_pin));
+
+		printk(BIOS_SPEW, "\tPIRQ\t\t: %c\n\tINT_LINE\t: 0x%X (IRQ %d)\n",
+			'A' + pirq, int_line, int_line);
 	}
 	printk(BIOS_DEBUG, "PCI_CFG IRQ: Finished writing PIRQ assignments\n");
 }
@@ -211,11 +205,10 @@ static inline int io_range_in_default(int base, int size)
 		return 0;
 
 	/* Is it entirely contained? */
-	if (base >= LPC_DEFAULT_IO_RANGE_LOWER &&
-	    (base + size) < LPC_DEFAULT_IO_RANGE_UPPER)
+	if (base >= LPC_DEFAULT_IO_RANGE_LOWER && (base + size) < LPC_DEFAULT_IO_RANGE_UPPER)
 		return 1;
 
-	/* This will return not in range for partial overlaps. */
+	/* This will return not in range for partial overlaps */
 	return 0;
 }
 
@@ -223,8 +216,7 @@ static inline int io_range_in_default(int base, int size)
  * Note: this function assumes there is no overlap with the default LPC device's
  * claimed range: LPC_DEFAULT_IO_RANGE_LOWER -> LPC_DEFAULT_IO_RANGE_UPPER.
  */
-static void sc_add_io_resource(struct device *dev, int base, int size,
-			       int index)
+static void sc_add_io_resource(struct device *dev, int base, int size, int index)
 {
 	struct resource *res;
 
@@ -244,8 +236,7 @@ static void sc_add_io_resources(struct device *dev)
 {
 	struct resource *res;
 
-	printk(BIOS_SPEW, "%s/%s (%s)\n",
-			__FILE__, __func__, dev_name(dev));
+	printk(BIOS_SPEW, "%s/%s (%s)\n", __FILE__, __func__, dev_name(dev));
 
 	/* Add the default claimed IO range for the LPC device. */
 	res = new_resource(dev, 0);
@@ -262,8 +253,7 @@ static void sc_add_io_resources(struct device *dev)
 
 static void sc_read_resources(struct device *dev)
 {
-	printk(BIOS_SPEW, "%s/%s (%s)\n",
-			__FILE__, __func__, dev_name(dev));
+	printk(BIOS_SPEW, "%s/%s (%s)\n", __FILE__, __func__, dev_name(dev));
 
 	/* Get the normal PCI resources of this device. */
 	pci_dev_read_resources(dev);
@@ -278,20 +268,19 @@ static void sc_read_resources(struct device *dev)
 static void sc_init(struct device *dev)
 {
 	int i;
-	const unsigned long pr_base = ILB_BASE_ADDRESS + 0x08;
-	const unsigned long ir_base = ILB_BASE_ADDRESS + 0x20;
 	const unsigned long ilb_base = ILB_BASE_ADDRESS;
+	const unsigned long pr_base  = ILB_BASE_ADDRESS + 0x08;
+	const unsigned long ir_base  = ILB_BASE_ADDRESS + 0x20;
+
 	void *gen_pmcon1 = (void *)(PMC_BASE_ADDRESS + GEN_PMCON1);
 	const struct soc_irq_route *ir = &global_soc_irq_route;
 	struct soc_intel_braswell_config *config = config_of(dev);
 
-	printk(BIOS_SPEW, "%s/%s (%s)\n",
-			__FILE__, __func__, dev_name(dev));
+	printk(BIOS_SPEW, "%s/%s (%s)\n", __FILE__, __func__, dev_name(dev));
 
 	/* Set the value for PCI command register. */
 	pci_write_config16(dev, PCI_COMMAND,
-		PCI_COMMAND_IO | PCI_COMMAND_MEMORY |
-		PCI_COMMAND_MASTER | PCI_COMMAND_SPECIAL);
+		PCI_COMMAND_IO | PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER | PCI_COMMAND_SPECIAL);
 
 	/* Use IRQ9 for SCI Interrupt */
 	write32((void *)(ilb_base + ACTL), 0);
@@ -302,13 +291,11 @@ static void sc_init(struct device *dev)
 
 	/* Set up the PIRQ PIC routing based on static config. */
 	for (i = 0; i < NUM_PIRQS; i++)
-		write8((void *)(pr_base + i*sizeof(ir->pic[i])),
-			ir->pic[i]);
+		write8((void *)(pr_base + i*sizeof(ir->pic[i])), ir->pic[i]);
 
 	/* Set up the per device PIRQ routing base on static config. */
 	for (i = 0; i < NUM_IR_DEVS; i++)
-		write16((void *)(ir_base + i*sizeof(ir->pcidev[i])),
-			ir->pcidev[i]);
+		write16((void *)(ir_base + i*sizeof(ir->pcidev[i])), ir->pcidev[i]);
 
 	/* Interrupt 9 should be level triggered (SCI) */
 	i8259_configure_irq_trigger(9, 1);
@@ -320,11 +307,10 @@ static void sc_init(struct device *dev)
 
 	if (config->disable_slp_x_stretch_sus_fail) {
 		printk(BIOS_DEBUG, "Disabling slp_x stretching.\n");
-		write32(gen_pmcon1,
-			read32(gen_pmcon1) | DIS_SLP_X_STRCH_SUS_UP);
+		write32(gen_pmcon1, read32(gen_pmcon1) | DIS_SLP_X_STRCH_SUS_UP);
+
 	} else {
-		write32(gen_pmcon1,
-			read32(gen_pmcon1) & ~DIS_SLP_X_STRCH_SUS_UP);
+		write32(gen_pmcon1, read32(gen_pmcon1) & ~DIS_SLP_X_STRCH_SUS_UP);
 	}
 
 	/* Write IRQ assignments to PCI config space */
@@ -347,17 +333,17 @@ static void sc_init(struct device *dev)
 /* Set bit in function disable register to hide this device. */
 static void sc_disable_devfn(struct device *dev)
 {
-	void *func_dis = (void *)(PMC_BASE_ADDRESS + FUNC_DIS);
+	void *func_dis  = (void *)(PMC_BASE_ADDRESS + FUNC_DIS);
 	void *func_dis2 = (void *)(PMC_BASE_ADDRESS + FUNC_DIS2);
-	uint32_t mask = 0;
+	uint32_t mask  = 0;
 	uint32_t mask2 = 0;
 
-	printk(BIOS_SPEW, "%s/%s (%s)\n",
-			__FILE__, __func__, dev_name(dev));
+	printk(BIOS_SPEW, "%s/%s (%s)\n", __FILE__, __func__, dev_name(dev));
 
 #define SET_DIS_MASK(name_) \
 	case PCI_DEVFN(name_ ## _DEV, name_ ## _FUNC): \
 		mask |= name_ ## _DIS
+
 #define SET_DIS_MASK2(name_) \
 	case PCI_DEVFN(name_ ## _DEV, name_ ## _FUNC): \
 		mask2 |= name_ ## _DIS
@@ -423,13 +409,13 @@ static void sc_disable_devfn(struct device *dev)
 
 	if (mask != 0) {
 		write32(func_dis, read32(func_dis) | mask);
-		/* Ensure posted write hits. */
+		/* Ensure posted write hits */
 		read32(func_dis);
 	}
 
 	if (mask2 != 0) {
 		write32(func_dis2, read32(func_dis2) | mask2);
-		/* Ensure posted write hits. */
+		/* Ensure posted write hits */
 		read32(func_dis2);
 	}
 }
@@ -447,23 +433,21 @@ static inline void set_d3hot_bits(struct device *dev, int offset)
 }
 
 /*
- * Parts of the audio subsystem are powered by the HDA device. Therefore, one
- * cannot put HDA into D3Hot. Instead perform this workaround to make some of
- * the audio paths work for LPE audio.
+ * Parts of the audio subsystem are powered by the HDA device. Thus, one cannot put HDA into
+ * D3Hot. Instead, perform this workaround to make some of the audio paths work for LPE audio.
  */
 static void hda_work_around(struct device *dev)
 {
 	void *gctl = (void *)(TEMP_BASE_ADDRESS + 0x8);
 
-	printk(BIOS_SPEW, "%s/%s (%s)\n",
-			__FILE__, __func__, dev_name(dev));
+	printk(BIOS_SPEW, "%s/%s (%s)\n", __FILE__, __func__, dev_name(dev));
 
 	/* Need to set magic register 0x43 to 0xd7 in config space. */
 	pci_write_config8(dev, 0x43, 0xd7);
 
 	/*
-	 * Need to set bit 0 of GCTL to take the device out of reset. However,
-	 * that requires setting up the 64-bit BAR.
+	 * Need to set bit 0 of GCTL to take the device out of reset.
+	 * However, that requires setting up the 64-bit BAR.
 	 */
 	pci_write_config32(dev, PCI_BASE_ADDRESS_0, TEMP_BASE_ADDRESS);
 	pci_write_config32(dev, PCI_BASE_ADDRESS_1, 0);
@@ -477,8 +461,7 @@ static int place_device_in_d3hot(struct device *dev)
 {
 	unsigned int offset;
 
-	printk(BIOS_SPEW, "%s/%s (%s)\n",
-			__FILE__, __func__, dev_name(dev));
+	printk(BIOS_SPEW, "%s/%s (%s)\n", __FILE__, __func__, dev_name(dev));
 
 	/*
 	 * Parts of the HDA block are used for LPE audio as well.
@@ -497,8 +480,8 @@ static int place_device_in_d3hot(struct device *dev)
 	}
 
 	/*
-	 * For some reason some of the devices don't have the capability
-	 * pointer set correctly. Work around this by hard coding the offset.
+	 * For some reason some of the devices don't have the capability pointer set correctly.
+	 * Work around this by hard coding the offset.
 	 */
 #define DEV_CASE(name_) \
 	case PCI_DEVFN(name_ ## _DEV, name_ ## _FUNC)
@@ -556,8 +539,8 @@ void southcluster_enable_dev(struct device *dev)
 {
 	uint32_t reg32;
 
-	printk(BIOS_SPEW, "%s/%s (%s)\n",
-			__FILE__, __func__, dev_name(dev));
+	printk(BIOS_SPEW, "%s/%s (%s)\n", __FILE__, __func__, dev_name(dev));
+
 	if (!dev->enabled) {
 		int slot = PCI_SLOT(dev->path.pci.devfn);
 		int func = PCI_FUNC(dev->path.pci.devfn);
@@ -566,8 +549,7 @@ void southcluster_enable_dev(struct device *dev)
 
 		/* Ensure memory, io, and bus master are all disabled */
 		reg32 = pci_read_config32(dev, PCI_COMMAND);
-		reg32 &= ~(PCI_COMMAND_MASTER |
-			   PCI_COMMAND_MEMORY | PCI_COMMAND_IO);
+		reg32 &= ~(PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY | PCI_COMMAND_IO);
 		pci_write_config32(dev, PCI_COMMAND, reg32);
 
 		/* Place device in D3Hot */
@@ -588,15 +570,15 @@ void southcluster_enable_dev(struct device *dev)
 }
 
 static struct device_operations device_ops = {
-	.read_resources		= sc_read_resources,
-	.set_resources		= pci_dev_set_resources,
-	.enable_resources	= NULL,
-	.acpi_inject_dsdt_generator = southcluster_inject_dsdt,
-	.write_acpi_tables	= southcluster_write_acpi_tables,
-	.init			= sc_init,
-	.enable			= southcluster_enable_dev,
-	.scan_bus		= scan_static_bus,
-	.ops_pci		= &soc_pci_ops,
+	.read_resources			= sc_read_resources,
+	.set_resources			= pci_dev_set_resources,
+	.enable_resources		= NULL,
+	.acpi_inject_dsdt_generator	= southcluster_inject_dsdt,
+	.write_acpi_tables		= southcluster_write_acpi_tables,
+	.init				= sc_init,
+	.enable				= southcluster_enable_dev,
+	.scan_bus			= scan_static_bus,
+	.ops_pci			= &soc_pci_ops,
 };
 
 static const struct pci_driver southcluster __pci_driver = {
@@ -612,21 +594,21 @@ static void finalize_chipset(void *unused)
 	void *gen_pmcon2 = (void *)(PMC_BASE_ADDRESS + GEN_PMCON2);
 	void *etr = (void *)(PMC_BASE_ADDRESS + ETR);
 	uint8_t *spi = (uint8_t *)SPI_BASE_ADDRESS;
+
 	struct vscc_config cfg;
 
-	printk(BIOS_SPEW, "%s/%s (%p)\n",
-			__FILE__, __func__, unused);
+	printk(BIOS_SPEW, "%s/%s (%p)\n", __FILE__, __func__, unused);
 
-	/* Set the lock enable on the BIOS control register. */
+	/* Set the lock enable on the BIOS control register */
 	write32(bcr, read32(bcr) | BCR_LE);
 
-	/* Set BIOS lock down bit controlling boot block size and swapping. */
+	/* Set BIOS lock down bit controlling boot block size and swapping */
 	write32(gcs, read32(gcs) | BILD);
 
-	/* Lock sleep stretching policy and set SMI lock. */
+	/* Lock sleep stretching policy and set SMI lock */
 	write32(gen_pmcon2, read32(gen_pmcon2) | SLPSX_STR_POL_LOCK | SMI_LOCK);
 
-	/*  Set the CF9 lock. */
+	/*  Set the CF9 lock */
 	write32(etr, read32(etr) | CF9LOCK);
 
 	spi_finalize_ops();

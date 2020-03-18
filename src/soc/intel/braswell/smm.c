@@ -75,6 +75,7 @@ static void smm_southcluster_route_gpios(void)
 	for (i = 0; i < 16; i++) {
 		if ((route_reg & ROUTE_MASK) == ROUTE_SMI)
 			alt_gpio_reg |= (1 << i);
+
 		route_reg >>= 2;
 	}
 	printk(BIOS_DEBUG, "ALT_GPIO_SMI = %08x\n", alt_gpio_reg);
@@ -89,6 +90,7 @@ void smm_southbridge_enable_smi(void)
 	printk(BIOS_DEBUG, "Enabling SMIs.\n");
 	if (!smm_save_params[SMM_SAVE_PARAM_PCIE_WAKE_ENABLE])
 		pm1_events |= PCIEXPWAK_DIS;
+
 	enable_pm1(pm1_events);
 	disable_gpe(PME_B0_EN);
 

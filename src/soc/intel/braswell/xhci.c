@@ -35,12 +35,10 @@ static void xhci_init(struct device *dev)
 
 	if (config->usb_comp_bg) {
 		struct reg_script ops[] = {
-			REG_IOSF_WRITE(IOSF_PORT_USBPHY, USBPHY_COMPBG,
-				config->usb_comp_bg),
+			REG_IOSF_WRITE(IOSF_PORT_USBPHY, USBPHY_COMPBG, config->usb_comp_bg),
 			REG_SCRIPT_END
 		};
-		printk(BIOS_INFO, "Override USB2_COMPBG to: 0x%X\n",
-			config->usb_comp_bg);
+		printk(BIOS_INFO, "Override USB2_COMPBG to: 0x%X\n", config->usb_comp_bg);
 		reg_script_run(ops);
 	}
 }

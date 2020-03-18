@@ -32,38 +32,34 @@ static const struct reg_script gpu_pre_vbios_script[] = {
 
 static const struct reg_script gfx_post_vbios_script[] = {
 	/* Set Lock bits */
-	REG_PCI_RMW32(GGC, 0xffffffff, GGC_GGCLCK),
+	REG_PCI_RMW32(GGC,      0xffffffff, GGC_GGCLCK),
 	REG_PCI_RMW32(GSM_BASE, 0xffffffff, GSM_BDSM_LOCK),
 	REG_PCI_RMW32(GTT_BASE, 0xffffffff, GTT_BGSM_LOCK),
 	REG_SCRIPT_END
 };
 
-static inline void gfx_run_script(struct device *dev,
-				  const struct reg_script *ops)
+static inline void gfx_run_script(struct device *dev, const struct reg_script *ops)
 {
 	reg_script_run_on_dev(dev, ops);
 }
 
 static void gfx_pre_vbios_init(struct device *dev)
 {
-	printk(BIOS_SPEW, "%s/%s (%s)\n",
-			__FILE__, __func__, dev_name(dev));
+	printk(BIOS_SPEW, "%s/%s (%s)\n", __FILE__, __func__, dev_name(dev));
 	printk(BIOS_INFO, "GFX: Pre VBIOS Init\n");
 	gfx_run_script(dev, gpu_pre_vbios_script);
 }
 
 static void gfx_post_vbios_init(struct device *dev)
 {
-	printk(BIOS_SPEW, "%s/%s (%s)\n",
-			__FILE__, __func__, dev_name(dev));
+	printk(BIOS_SPEW, "%s/%s (%s)\n", __FILE__, __func__, dev_name(dev));
 	printk(BIOS_INFO, "GFX: Post VBIOS Init\n");
 	gfx_run_script(dev, gfx_post_vbios_script);
 }
 
 static void gfx_init(struct device *dev)
 {
-	printk(BIOS_SPEW, "%s/%s (%s)\n",
-			__FILE__, __func__, dev_name(dev));
+	printk(BIOS_SPEW, "%s/%s (%s)\n", __FILE__, __func__, dev_name(dev));
 
 	if (!CONFIG(RUN_FSP_GOP)) {
 		/* Pre VBIOS Init */

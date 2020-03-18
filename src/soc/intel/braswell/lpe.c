@@ -31,7 +31,6 @@
 #include <soc/ramstage.h>
 #include "chip.h"
 
-
 /*
  * The LPE audio devices needs 1MiB of memory reserved aligned to a 512MiB
  * address. Just take 1MiB @ 512MiB.
@@ -58,12 +57,12 @@ static void lpe_enable_acpi_mode(struct device *dev)
 	static const struct reg_script ops[] = {
 		/* Disable PCI interrupt, enable Memory and Bus Master */
 		REG_PCI_OR32(PCI_COMMAND,
-			     PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER
-			     | PCI_COMMAND_INT_DISABLE),
+			     PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER | PCI_COMMAND_INT_DISABLE),
+
 		/* Enable ACPI mode */
 		REG_IOSF_OR(IOSF_PORT_0x58, LPE_PCICFGCTR1,
-			    LPE_PCICFGCTR1_PCI_CFG_DIS |
-			    LPE_PCICFGCTR1_ACPI_INT_EN),
+			    LPE_PCICFGCTR1_PCI_CFG_DIS | LPE_PCICFGCTR1_ACPI_INT_EN),
+
 		REG_SCRIPT_END
 	};
 	global_nvs_t *gnvs;
@@ -101,11 +100,13 @@ static void setup_codec_clock(struct device *dev)
 		freq_str = "19.2MHz External Crystal";
 		reg = CLK_SRC_XTAL;
 		break;
+
 	case LPE_CLK_SRC_PLL:
 		/* PLL driven bit2=1 */
 		freq_str = "19.2MHz PLL";
 		reg = CLK_SRC_PLL;
 		break;
+
 	default:
 		reg = CLK_SRC_XTAL;
 		printk(BIOS_DEBUG, "LPE codec clock default to using Crystal\n");
@@ -118,7 +119,7 @@ static void setup_codec_clock(struct device *dev)
 
 	printk(BIOS_DEBUG, "LPE Audio codec clock set to %sMHz.\n", freq_str);
 
-	clk_reg = (u32 *) (PMC_BASE_ADDRESS + PLT_CLK_CTL_0);
+	clk_reg = (u32 *)(PMC_BASE_ADDRESS + PLT_CLK_CTL_0);
 
 	write32(clk_reg, (read32(clk_reg) & ~0x7) | reg);
 }
@@ -136,15 +137,13 @@ static void lpe_stash_firmware_info(struct device *dev)
 	printk(BIOS_DEBUG, "LPE FW Resource: 0x%08x\n", (u32) res->base);
 
 	/* Continue using old way of informing firmware address / size. */
-	pci_write_config32(dev, FIRMWARE_PCI_REG_BASE, res->base);
+	pci_write_config32(dev, FIRMWARE_PCI_REG_BASE,   res->base);
 	pci_write_config32(dev, FIRMWARE_PCI_REG_LENGTH, res->size);
 
 	/* Also put the address in MMIO space like on C0 BTM */
 	mmio = find_resource(dev, PCI_BASE_ADDRESS_0);
-	write32((void *)(uintptr_t)(mmio->base + FIRMWARE_REG_BASE_C0),
-		res->base);
-	write32((void *)(uintptr_t)(mmio->base + FIRMWARE_REG_LENGTH_C0),
-		res->size);
+	write32((void *)(uintptr_t)(mmio->base + FIRMWARE_REG_BASE_C0),   res->base);
+	write32((void *)(uintptr_t)(mmio->base + FIRMWARE_REG_LENGTH_C0), res->size);
 }
 
 
@@ -152,8 +151,7 @@ static void lpe_init(struct device *dev)
 {
 	struct soc_intel_braswell_config *config = config_of(dev);
 
-	printk(BIOS_SPEW, "%s/%s (%s)\n",
-			__FILE__, __func__, dev_name(dev));
+	printk(BIOS_SPEW, "%s/%s (%s)\n", __FILE__, __func__, dev_name(dev));
 
 	lpe_stash_firmware_info(dev);
 	setup_codec_clock(dev);
@@ -168,7 +166,7 @@ static void lpe_read_resources(struct device *dev)
 	pci_dev_read_resources(dev);
 
 	/*
-	 * Allocate the BAR1 resource at index 2 to fulfil the Windows driver
+	 * Allocate the BAR1 resource at index 2 to fulfill the Windows driver
 	 * interface requirements even though the PCI device has only one BAR
 	 */
 	res = new_resource(dev, PCI_BASE_ADDRESS_2);
@@ -179,8 +177,7 @@ static void lpe_read_resources(struct device *dev)
 	res->align = 12;
 	res->flags = IORESOURCE_MEM;
 
-	reserved_ram_resource(dev, FIRMWARE_PCI_REG_BASE,
-			      FIRMWARE_PHYS_BASE >> 10,
+	reserved_ram_resource(dev, FIRMWARE_PCI_REG_BASE, FIRMWARE_PHYS_BASE >> 10,
 			      FIRMWARE_PHYS_LENGTH >> 10);
 }
 

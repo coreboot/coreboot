@@ -51,6 +51,11 @@ config MMCONF_BASE_ADDRESS
 	hex
 	default 0xb0000000
 
+# fw_cfg tables can be larger than the default when TPM is enabled
+config MAX_ACPI_TABLE_SIZE_KB
+	int
+	default 224
+
 # Skip the first 64KiB as coreboot table pointer is installed
 # at address 0
 config DCACHE_RAM_BASE

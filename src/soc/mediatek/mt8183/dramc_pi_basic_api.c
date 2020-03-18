@@ -485,9 +485,10 @@ void dramc_runtime_config(void)
 
 		/* DRAM DRS DISABLE */
 		clrsetbits32(&ch[chn].ao.drsctrl,
-			(0x1 << 21) | (0x3f << 12) | (0xf << 8) | (0x1 << 6),
-			(0x1 << 19) | (0x3 << 12) | (0x8 << 8) |
-			(0x3 << 4) | (0x1 << 2) | (0x1 << 0));
+			(0x1 << 0) | (0x1 << 2) | (0x1 << 4) | (0x1 << 5) | (0x1 << 6) |
+			(0xf << 8) | (0x7f << 12) | (0x1 << 19) | (0x1 << 21),
+			(0x1 << 0) | (0x0 << 2) | (0x0 << 4) | (0x1 << 5) | (0x0 << 6) |
+			(0x8 << 8) | (0x3 << 12) | (0x1 << 19) | (0x0 << 21));
 		setbits32(&ch[chn].ao.dummy_rd, 0x3 << 26);
 	}
 	dramc_dqs_precalculation_preset();

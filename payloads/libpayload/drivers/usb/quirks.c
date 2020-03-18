@@ -59,6 +59,30 @@ usb_quirks_t usb_quirks[] = {
 	 */
 };
 
+#if CONFIG(LP_USB_PCI)
+usb_quirks_t pci_quirks[] = {
+	/* QEMU XHCI root hub does not implement port change detect */
+	{ 0x1b36, 0x000d, USB_QUIRK_HUB_NO_USBSTS_PCD, 0 },
+};
+
+u32 pci_quirk_check(pcidev_t controller)
+{
+	int i;
+	u16 vendor = pci_read_config16(controller, REG_VENDOR_ID);
+	u16 device = pci_read_config16(controller, REG_DEVICE_ID);
+
+	for (i = 0; i < ARRAY_SIZE(pci_quirks); i++) {
+		if ((pci_quirks[i].vendor == vendor) &&
+		    (pci_quirks[i].device == device)) {
+			printf("PCI quirks enabled: %08x\n", pci_quirks[i].quirks);
+			return pci_quirks[i].quirks;
+		}
+	}
+
+	return USB_QUIRK_NONE;
+}
+#endif
+
 u32 usb_quirk_check(u16 vendor, u16 device)
 {
 	int i;

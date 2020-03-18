@@ -314,9 +314,13 @@ xhci_pci_init (pcidev_t addr)
 
 	controller = xhci_init((unsigned long)reg_addr);
 	if (controller) {
+		xhci_t *xhci = controller->instance;
 		controller->pcidev = addr;
 
 		xhci_switch_ppt_ports(addr);
+
+		/* Set up any quirks for controller root hub */
+		xhci->roothub->quirks = pci_quirk_check(addr);
 	}
 
 	return controller;

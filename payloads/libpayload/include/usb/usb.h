@@ -318,6 +318,7 @@ void usb_detach_device(hci_t *controller, int devno);
 int usb_attach_device(hci_t *controller, int hubaddress, int port,
 		      usb_speed speed);
 
+u32 pci_quirk_check(pcidev_t controller);
 u32 usb_quirk_check(u16 vendor, u16 device);
 int usb_interface_check(u16 vendor, u16 device);
 
@@ -330,6 +331,7 @@ int usb_interface_check(u16 vendor, u16 device);
 #define USB_QUIRK_MSC_FORCE_TRANS_CBI_I		(1 <<  6)
 #define USB_QUIRK_MSC_NO_TEST_UNIT_READY	(1 <<  7)
 #define USB_QUIRK_MSC_SHORT_INQUIRY		(1 <<  8)
+#define USB_QUIRK_HUB_NO_USBSTS_PCD		(1 <<  9)
 #define USB_QUIRK_TEST				(1 << 31)
 #define USB_QUIRK_NONE				 0
 

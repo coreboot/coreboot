@@ -218,9 +218,11 @@ generic_hub_poll(usbdev_t *const dev)
 	if (!hub)
 		return;
 
-	if (hub->ops->hub_status_changed &&
-			hub->ops->hub_status_changed(dev) != 1)
+	if (!(dev->quirks & USB_QUIRK_HUB_NO_USBSTS_PCD) &&
+	    hub->ops->hub_status_changed &&
+	    hub->ops->hub_status_changed(dev) != 1) {
 		return;
+	}
 
 	int port;
 	for (port = 1; port <= hub->num_ports; ++port) {

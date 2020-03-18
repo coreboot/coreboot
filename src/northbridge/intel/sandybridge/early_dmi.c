@@ -20,179 +20,184 @@ void early_init_dmi(void)
 {
 	int i;
 
-	DMIBAR32(0x0914) |= 0x80000000;
-	DMIBAR32(0x0934) |= 0x80000000;
+	for (i = 0; i < 2; i++) {
+		DMIBAR32(0x0914 + (i << 5)) |= (1 << 31);
+	}
 
 	for (i = 0; i < 4; i++) {
-		DMIBAR32(0x0a00 + (i << 4)) &= 0xf3ffffff;
-		DMIBAR32(0x0a04 + (i << 4)) |= 0x800;
+		DMIBAR32(0x0a00 + (i << 4)) &= ~0x0c000000;
+		DMIBAR32(0x0a04 + (i << 4)) |= (1 << 11);
 	}
-	DMIBAR32(0x0c30) = (DMIBAR32(0x0c30) & 0xfffffff) | 0x40000000;
+	DMIBAR32(0x0c30) = (DMIBAR32(0x0c30) & 0x0fffffff) | (1 << 30);
 
 	for (i = 0; i < 2; i++) {
-		DMIBAR32(0x0904 + (i << 5)) &= 0xfe3fffff;
-		DMIBAR32(0x090c + (i << 5)) &= 0xfff1ffff;
+		DMIBAR32(0x0904 + (i << 5)) &= ~0x01c00000;
+		DMIBAR32(0x090c + (i << 5)) &= ~0x000e0000;
 	}
 
-	DMIBAR32(0x090c) &= 0xfe1fffff;
-	DMIBAR32(0x092c) &= 0xfe1fffff;
 
-	DMIBAR32(0x0904);	// !!! = 0x7a1842ec
-	DMIBAR32(0x0904) = 0x7a1842ec;
-	DMIBAR32(0x090c);	// !!! = 0x00000208
-	DMIBAR32(0x090c) = 0x00000128;
-	DMIBAR32(0x0924);	// !!! = 0x7a1842ec
-	DMIBAR32(0x0924) = 0x7a1842ec;
-	DMIBAR32(0x092c);	// !!! = 0x00000208
-	DMIBAR32(0x092c) = 0x00000128;
-	DMIBAR32(0x0700);	// !!! = 0x46139008
-	DMIBAR32(0x0700) = 0x46139008;
-	DMIBAR32(0x0720);	// !!! = 0x46139008
-	DMIBAR32(0x0720) = 0x46139008;
+	for (i = 0; i < 2; i++) {
+		DMIBAR32(0x090c + (i << 5)) &= ~0x01e00000;
+	}
+
+	for (i = 0; i < 2; i++) {
+		DMIBAR32(0x0904 + (i << 5));	// !!! = 0x7a1842ec
+		DMIBAR32(0x0904 + (i << 5)) = 0x7a1842ec;
+		DMIBAR32(0x090c + (i << 5));	// !!! = 0x00000208
+		DMIBAR32(0x090c + (i << 5)) = 0x00000128;
+	}
+
+	for (i = 0; i < 2; i++) {
+		DMIBAR32(0x0700 + (i << 5));	// !!! = 0x46139008
+		DMIBAR32(0x0700 + (i << 5)) = 0x46139008;
+	}
+
 	DMIBAR32(0x0c04);	// !!! = 0x2e680008
 	DMIBAR32(0x0c04) = 0x2e680008;
-	DMIBAR32(0x0904);	// !!! = 0x7a1842ec
-	DMIBAR32(0x0904) = 0x3a1842ec;
-	DMIBAR32(0x0924);	// !!! = 0x7a1842ec
-	DMIBAR32(0x0924) = 0x3a1842ec;
-	DMIBAR32(0x0910);	// !!! = 0x00006300
-	DMIBAR32(0x0910) = 0x00004300;
-	DMIBAR32(0x0930);	// !!! = 0x00006300
-	DMIBAR32(0x0930) = 0x00004300;
-	DMIBAR32(0x0a00);	// !!! = 0x03042010
-	DMIBAR32(0x0a00) = 0x03042018;
-	DMIBAR32(0x0a10);	// !!! = 0x03042010
-	DMIBAR32(0x0a10) = 0x03042018;
-	DMIBAR32(0x0a20);	// !!! = 0x03042010
-	DMIBAR32(0x0a20) = 0x03042018;
-	DMIBAR32(0x0a30);	// !!! = 0x03042010
-	DMIBAR32(0x0a30) = 0x03042018;
+
+	for (i = 0; i < 2; i++) {
+		DMIBAR32(0x0904 + (i << 5));	// !!! = 0x7a1842ec
+		DMIBAR32(0x0904 + (i << 5)) = 0x3a1842ec;
+	}
+
+	for (i = 0; i < 2; i++) {
+		DMIBAR32(0x0910 + (i << 5));	// !!! = 0x00006300
+		DMIBAR32(0x0910 + (i << 5)) = 0x00004300;
+	}
+
+	for (i = 0; i < 4; i++) {
+		DMIBAR32(0x0a00 + (i << 4));	// !!! = 0x03042010
+		DMIBAR32(0x0a00 + (i << 4)) = 0x03042018;
+	}
+
 	DMIBAR32(0x0c00);	// !!! = 0x29700c08
 	DMIBAR32(0x0c00) = 0x29700c08;
-	DMIBAR32(0x0a04);	// !!! = 0x0c0708f0
-	DMIBAR32(0x0a04) = 0x0c0718f0;
-	DMIBAR32(0x0a14);	// !!! = 0x0c0708f0
-	DMIBAR32(0x0a14) = 0x0c0718f0;
-	DMIBAR32(0x0a24);	// !!! = 0x0c0708f0
-	DMIBAR32(0x0a24) = 0x0c0718f0;
-	DMIBAR32(0x0a34);	// !!! = 0x0c0708f0
-	DMIBAR32(0x0a34) = 0x0c0718f0;
-	DMIBAR32(0x0900);	// !!! = 0x50000000
-	DMIBAR32(0x0900) = 0x50000000;
-	DMIBAR32(0x0920);	// !!! = 0x50000000
-	DMIBAR32(0x0920) = 0x50000000;
-	DMIBAR32(0x0908);	// !!! = 0x51ffffff
-	DMIBAR32(0x0908) = 0x51ffffff;
-	DMIBAR32(0x0928);	// !!! = 0x51ffffff
-	DMIBAR32(0x0928) = 0x51ffffff;
-	DMIBAR32(0x0a00);	// !!! = 0x03042018
-	DMIBAR32(0x0a00) = 0x03042018;
-	DMIBAR32(0x0a10);	// !!! = 0x03042018
-	DMIBAR32(0x0a10) = 0x03042018;
-	DMIBAR32(0x0a20);	// !!! = 0x03042018
-	DMIBAR32(0x0a20) = 0x03042018;
-	DMIBAR32(0x0a30);	// !!! = 0x03042018
-	DMIBAR32(0x0a30) = 0x03042018;
-	DMIBAR32(0x0700);	// !!! = 0x46139008
-	DMIBAR32(0x0700) = 0x46139008;
-	DMIBAR32(0x0720);	// !!! = 0x46139008
-	DMIBAR32(0x0720) = 0x46139008;
-	DMIBAR32(0x0904);	// !!! = 0x3a1842ec
-	DMIBAR32(0x0904) = 0x3a1846ec;
-	DMIBAR32(0x0924);	// !!! = 0x3a1842ec
-	DMIBAR32(0x0924) = 0x3a1846ec;
-	DMIBAR32(0x0a00);	// !!! = 0x03042018
-	DMIBAR32(0x0a00) = 0x03042018;
-	DMIBAR32(0x0a10);	// !!! = 0x03042018
-	DMIBAR32(0x0a10) = 0x03042018;
-	DMIBAR32(0x0a20);	// !!! = 0x03042018
-	DMIBAR32(0x0a20) = 0x03042018;
-	DMIBAR32(0x0a30);	// !!! = 0x03042018
-	DMIBAR32(0x0a30) = 0x03042018;
-	DMIBAR32(0x0908);	// !!! = 0x51ffffff
-	DMIBAR32(0x0908) = 0x51ffffff;
-	DMIBAR32(0x0928);	// !!! = 0x51ffffff
-	DMIBAR32(0x0928) = 0x51ffffff;
+
+	for (i = 0; i < 4; i++) {
+		DMIBAR32(0x0a04 + (i << 4));	// !!! = 0x0c0708f0
+		DMIBAR32(0x0a04 + (i << 4)) = 0x0c0718f0;
+	}
+
+	for (i = 0; i < 2; i++) {
+		DMIBAR32(0x0900 + (i << 5));	// !!! = 0x50000000
+		DMIBAR32(0x0900 + (i << 5)) = 0x50000000;
+	}
+
+	for (i = 0; i < 2; i++) {
+		DMIBAR32(0x0908 + (i << 5));	// !!! = 0x51ffffff
+		DMIBAR32(0x0908 + (i << 5)) = 0x51ffffff;
+	}
+
+	for (i = 0; i < 4; i++) {
+		DMIBAR32(0x0a00 + (i << 4));	// !!! = 0x03042018
+		DMIBAR32(0x0a00 + (i << 4)) = 0x03042018;
+	}
+
+	for (i = 0; i < 2; i++) {
+		DMIBAR32(0x0700 + (i << 5));	// !!! = 0x46139008
+		DMIBAR32(0x0700 + (i << 5)) = 0x46139008;
+	}
+
+	for (i = 0; i < 2; i++) {
+		DMIBAR32(0x0904 + (i << 5));	// !!! = 0x3a1842ec
+		DMIBAR32(0x0904 + (i << 5)) = 0x3a1846ec;
+	}
+
+	for (i = 0; i < 4; i++) {
+		DMIBAR32(0x0a00 + (i << 4));	// !!! = 0x03042018
+		DMIBAR32(0x0a00 + (i << 4)) = 0x03042018;
+	}
+
+	for (i = 0; i < 2; i++) {
+		DMIBAR32(0x0908 + (i << 5));	// !!! = 0x51ffffff
+		DMIBAR32(0x0908 + (i << 5)) = 0x51ffffff;
+	}
+
 	DMIBAR32(0x0c00);	// !!! = 0x29700c08
 	DMIBAR32(0x0c00) = 0x29700c08;
+
 	DMIBAR32(0x0c0c);	// !!! = 0x16063400
 	DMIBAR32(0x0c0c) = 0x00063400;
-	DMIBAR32(0x0700);	// !!! = 0x46139008
-	DMIBAR32(0x0700) = 0x46339008;
-	DMIBAR32(0x0720);	// !!! = 0x46139008
-	DMIBAR32(0x0720) = 0x46339008;
-	DMIBAR32(0x0700);	// !!! = 0x46339008
-	DMIBAR32(0x0700) = 0x45339008;
-	DMIBAR32(0x0720);	// !!! = 0x46339008
-	DMIBAR32(0x0720) = 0x45339008;
-	DMIBAR32(0x0700);	// !!! = 0x45339008
-	DMIBAR32(0x0700) = 0x453b9008;
-	DMIBAR32(0x0720);	// !!! = 0x45339008
-	DMIBAR32(0x0720) = 0x453b9008;
-	DMIBAR32(0x0700);	// !!! = 0x453b9008
-	DMIBAR32(0x0700) = 0x45bb9008;
-	DMIBAR32(0x0720);	// !!! = 0x453b9008
-	DMIBAR32(0x0720) = 0x45bb9008;
-	DMIBAR32(0x0700);	// !!! = 0x45bb9008
-	DMIBAR32(0x0700) = 0x45fb9008;
-	DMIBAR32(0x0720);	// !!! = 0x45bb9008
-	DMIBAR32(0x0720) = 0x45fb9008;
-	DMIBAR32(0x0914);	// !!! = 0x9021a080
-	DMIBAR32(0x0914) = 0x9021a280;
-	DMIBAR32(0x0934);	// !!! = 0x9021a080
-	DMIBAR32(0x0934) = 0x9021a280;
-	DMIBAR32(0x0914);	// !!! = 0x9021a280
-	DMIBAR32(0x0914) = 0x9821a280;
-	DMIBAR32(0x0934);	// !!! = 0x9021a280
-	DMIBAR32(0x0934) = 0x9821a280;
-	DMIBAR32(0x0a00);	// !!! = 0x03042018
-	DMIBAR32(0x0a00) = 0x03242018;
-	DMIBAR32(0x0a10);	// !!! = 0x03042018
-	DMIBAR32(0x0a10) = 0x03242018;
-	DMIBAR32(0x0a20);	// !!! = 0x03042018
-	DMIBAR32(0x0a20) = 0x03242018;
-	DMIBAR32(0x0a30);	// !!! = 0x03042018
-	DMIBAR32(0x0a30) = 0x03242018;
+
+	for (i = 0; i < 2; i++) {
+		DMIBAR32(0x0700 + (i << 5));	// !!! = 0x46139008
+		DMIBAR32(0x0700 + (i << 5)) = 0x46339008;
+	}
+
+	for (i = 0; i < 2; i++) {
+		DMIBAR32(0x0700 + (i << 5));	// !!! = 0x46339008
+		DMIBAR32(0x0700 + (i << 5)) = 0x45339008;
+	}
+
+	for (i = 0; i < 2; i++) {
+		DMIBAR32(0x0700 + (i << 5));	// !!! = 0x45339008
+		DMIBAR32(0x0700 + (i << 5)) = 0x453b9008;
+	}
+
+	for (i = 0; i < 2; i++) {
+		DMIBAR32(0x0700 + (i << 5));	// !!! = 0x453b9008
+		DMIBAR32(0x0700 + (i << 5)) = 0x45bb9008;
+	}
+
+	for (i = 0; i < 2; i++) {
+		DMIBAR32(0x0700 + (i << 5));	// !!! = 0x45bb9008
+		DMIBAR32(0x0700 + (i << 5)) = 0x45fb9008;
+	}
+
+	for (i = 0; i < 2; i++) {
+		DMIBAR32(0x0914 + (i << 5));	// !!! = 0x9021a080
+		DMIBAR32(0x0914 + (i << 5)) = 0x9021a280;
+	}
+
+	for (i = 0; i < 2; i++) {
+		DMIBAR32(0x0914 + (i << 5));	// !!! = 0x9021a080
+		DMIBAR32(0x0914 + (i << 5)) = 0x9821a280;
+	}
+
+	for (i = 0; i < 4; i++) {
+		DMIBAR32(0x0a00 + (i << 4));	// !!! = 0x03042018
+		DMIBAR32(0x0a00 + (i << 4)) = 0x03242018;
+	}
+
 	DMIBAR32(0x0258);	// !!! = 0x40000600
 	DMIBAR32(0x0258) = 0x60000600;
-	DMIBAR32(0x0904);	// !!! = 0x3a1846ec
-	DMIBAR32(0x0904) = 0x2a1846ec;
-	DMIBAR32(0x0914);	// !!! = 0x9821a280
-	DMIBAR32(0x0914) = 0x98200280;
-	DMIBAR32(0x0924);	// !!! = 0x3a1846ec
-	DMIBAR32(0x0924) = 0x2a1846ec;
-	DMIBAR32(0x0934);	// !!! = 0x9821a280
-	DMIBAR32(0x0934) = 0x98200280;
+
+	for (i = 0; i < 2; i++) {
+		DMIBAR32(0x0904 + (i << 5));	// !!! = 0x3a1846ec
+		DMIBAR32(0x0904 + (i << 5)) = 0x2a1846ec;
+		DMIBAR32(0x0914 + (i << 5));	// !!! = 0x9821a280
+		DMIBAR32(0x0914 + (i << 5)) = 0x98200280;
+	}
+
 	DMIBAR32(0x022c);	// !!! = 0x00c26460
 	DMIBAR32(0x022c) = 0x00c2403c;
 
 	early_pch_init_native_dmi_pre();
 
-	/* Write once settings. */
+	/* Write once settings */
 	DMIBAR32(DMILCAP) = (DMIBAR32(DMILCAP) & ~0x3f00f) |
-			    (2 << 0) |  // 5GT/s
-			    (2 << 12) | // L0s 128 ns to less than 256 ns
-			    (2 << 15);  // L1 2 us to less than 4 us
+			    (2 <<  0) |	// 5GT/s
+			    (2 << 12) |	// L0s 128 ns to less than 256 ns
+			    (2 << 15);	// L1 2 us to less than 4 us
 
-	DMIBAR8(DMILCTL) |= 0x20; // Retrain link
+	DMIBAR8(DMILCTL) |= (1 << 5);	// Retrain link
 	while (DMIBAR16(DMILSTS) & TXTRN)
 		;
 
-	DMIBAR8(DMILCTL) |= 0x20; // Retrain link
+	DMIBAR8(DMILCTL) |= (1 << 5);	// Retrain link
 	while (DMIBAR16(DMILSTS) & TXTRN)
 		;
 
-	const u8 w = (DMIBAR16(DMILSTS) >> 4) & 0x1f;
-	const u16 t = (DMIBAR16(DMILSTS) & 0xf) * 2500;
+	const u8  w = (DMIBAR16(DMILSTS) >> 4) & 0x1f;
+	const u16 t = (DMIBAR16(DMILSTS) & 0x0f) * 2500;
 
 	printk(BIOS_DEBUG, "DMI: Running at X%x @ %dMT/s\n", w, t);
 	/*
 	 * Virtual Channel resources must match settings in RCBA!
 	 *
-	 * Channel Vp and Vm are documented in
-	 * "Desktop 4th Generation Intel Core Processor Family, Desktop Intel
-	 * Pentium Processor Family, and Desktop Intel Celeron Processor Family
-	 * Vol. 2"
+	 * Channel Vp and Vm are documented in:
+	 * "Desktop 4th Generation Intel Core Processor Family, Desktop Intel Pentium
+	 *  Processor Family, and Desktop Intel Celeron Processor Family Vol. 2"
 	 */
 
 	/* Channel 0: Enable, Set ID to 0, map TC0 and TC3 and TC4 to VC0. */

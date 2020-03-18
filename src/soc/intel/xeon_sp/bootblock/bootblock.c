@@ -19,6 +19,7 @@
 #include <intelblocks/fast_spi.h>
 #include <soc/iomap.h>
 #include <console/console.h>
+#include <cpu/x86/mtrr.h>
 
 const FSPT_UPD temp_ram_init_params = {
 	.FspUpdHeader = {
@@ -29,8 +30,8 @@ const FSPT_UPD temp_ram_init_params = {
 	.FsptCoreUpd = {
 		.MicrocodeRegionBase = (UINT32)CONFIG_CPU_MICROCODE_CBFS_LOC,
 		.MicrocodeRegionLength = (UINT32)CONFIG_CPU_MICROCODE_CBFS_LEN,
-		.CodeRegionBase = (uint32_t)(0x100000000ULL - CONFIG_ROM_SIZE),
-		.CodeRegionLength = (UINT32)CONFIG_ROM_SIZE,
+		.CodeRegionBase = (UINT32)CACHE_ROM_BASE,
+		.CodeRegionLength = (UINT32)CACHE_ROM_SIZE,
 		.Reserved1 = {0},
 	},
 	.FsptConfig = {

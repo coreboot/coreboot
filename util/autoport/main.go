@@ -212,25 +212,10 @@ func Create(ctx Context, name string) *os.File {
 	return mf
 }
 
-func Add_gpl(fp *os.File) {
-	fp.WriteString(`/*
- * This file is part of the coreboot project.
- *
- * Copyright (C) 2008-2009 coresystems GmbH
- * Copyright (C) 2014 Vladimir Serbinenko
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; version 2 of
- * the License.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- */
-
-`)
+func Add_gpl(f *os.File) {
+	fmt.Fprintln(f, "/* SPDX-License-Identifier: GPL-2.0-only */")
+	fmt.Fprintln(f, "/* This file is part of the coreboot project. */")
+	fmt.Fprintln(f)
 }
 
 func RestorePCI16Simple(f *os.File, pcidev PCIDevData, addr uint16) {
@@ -900,19 +885,8 @@ DefinitionBlock(
 		gma := Create(ctx, "gma-mainboard.ads")
 		defer gma.Close()
 
-		gma.WriteString(`--
+		gma.WriteString(`-- SPDX-License-Identifier: GPL-2.0-or-later
 -- This file is part of the coreboot project.
---
--- This program is free software; you can redistribute it and/or modify
--- it under the terms of the GNU General Public License as published by
--- the Free Software Foundation; either version 2 of the License, or
--- (at your option) any later version.
---
--- This program is distributed in the hope that it will be useful,
--- but WITHOUT ANY WARRANTY; without even the implied warranty of
--- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
--- GNU General Public License for more details.
---
 
 with HW.GFX.GMA;
 with HW.GFX.GMA.Display_Probing;

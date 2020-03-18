@@ -148,11 +148,11 @@ testas() {
 	[ "$obj_arch" = "$full_arch" ] || return 1
 
 	unset ASFLAGS LDFLAGS
-	unset CFLAGS_GCC CFLAGS_CLANG
+	unset FLAGS_GCC CFLAGS_GCC CFLAGS_CLANG
 
 	if [ -n "$use_dash_twidth" ]; then
 		ASFLAGS="--$twidth"
-		CFLAGS_GCC="-m$twidth"
+		FLAGS_GCC="-m$twidth"
 		CFLAGS_CLANG="-m$twidth"
 		LDFLAGS="-b $full_arch"
 
@@ -162,7 +162,7 @@ testas() {
 	[ -n "$use_dash_twidth" ] && case "$full_arch" in
 		"elf32-i386" )
 			LDFLAGS="$LDFLAGS -melf_i386"
-			CFLAGS_GCC="$CFLAGS_GCC -Wl,-b,elf32-i386 -Wl,-melf_i386"
+			FLAGS_GCC="$FLAGS_GCC -Wl,-b,elf32-i386 -Wl,-melf_i386"
 			CFLAGS_CLANG="$CFLAGS_CLANG -Wl,-b,elf32-i386 -Wl,-melf_i386"
 			;;
 	esac
@@ -173,19 +173,19 @@ testas() {
 detect_special_flags() {
 	local architecture="$1"
 	# Check for an operational -m32/-m64
-	testcc "$GCC"      "$CFLAGS_GCC -m$TWIDTH " &&
-		CFLAGS_GCC="$CFLAGS_GCC -m$TWIDTH "
+	testcc "$GCC"     "$FLAGS_GCC -m$TWIDTH " &&
+		FLAGS_GCC="$FLAGS_GCC -m$TWIDTH "
 
 	# Use bfd linker instead of gold if available:
-	testcc "$GCC"      "$CFLAGS_GCC -fuse-ld=bfd" &&
-		CFLAGS_GCC="$CFLAGS_GCC -fuse-ld=bfd" && LINKER_SUFFIX='.bfd'
+	testcc "$GCC"     "$FLAGS_GCC -fuse-ld=bfd" &&
+		FLAGS_GCC="$FLAGS_GCC -fuse-ld=bfd" && LINKER_SUFFIX='.bfd'
 
-	testcc "$GCC"      "$CFLAGS_GCC -fno-stack-protector" &&
-		CFLAGS_GCC="$CFLAGS_GCC -fno-stack-protector"
-	testcc "$GCC"      "$CFLAGS_GCC -Wl,--build-id=none" &&
-		CFLAGS_GCC="$CFLAGS_GCC -Wl,--build-id=none"
+	testcc "$GCC"     "$FLAGS_GCC -fno-stack-protector" &&
+		FLAGS_GCC="$FLAGS_GCC -fno-stack-protector"
+	testcc "$GCC"     "$FLAGS_GCC -Wl,--build-id=none" &&
+		FLAGS_GCC="$FLAGS_GCC -Wl,--build-id=none"
 
-	testcc "$GCC"      "$CFLAGS_GCC -Wno-address-of-packed-member" &&
+	testcc "$GCC"      "$CFLAGS_GCC -Wno-address-of-packed-member $FLAGS_GCC" &&
 		CFLAGS_GCC="$CFLAGS_GCC -Wno-address-of-packed-member"
 	case "$architecture" in
 	x86)
@@ -193,7 +193,7 @@ detect_special_flags() {
 	x64)
 		;;
 	arm64)
-		testld "$GCC" "$CFLAGS_GCC" "${GCCPREFIX}ld${LINKER_SUFFIX}" \
+		testld "$GCC" "$FLAGS_GCC" "${GCCPREFIX}ld${LINKER_SUFFIX}" \
 		  "$LDFLAGS --fix-cortex-a53-843419" && \
 		  LDFLAGS_ARM64_A53_ERRATUM_843419+=" --fix-cortex-a53-843419"
 		;;
@@ -202,7 +202,7 @@ detect_special_flags() {
 
 detect_compiler_runtime() {
 	test -z "$GCC" || \
-	CC_RT_GCC="$(${GCC} ${CFLAGS_GCC} -print-libgcc-file-name)"
+	CC_RT_GCC="$(${GCC} ${CFLAGS_GCC} ${FLAGS_GCC} -print-libgcc-file-name)"
 	if [ ${CLANG_RUNTIME} = "libgcc" ]; then
 		CC_RT_CLANG=${CC_RT_GCC}
 	else
@@ -219,10 +219,10 @@ SUBARCH_SUPPORTED+=${TSUPP-${TARCH}}
 
 # GCC
 GCC_CC_${TARCH}:=${GCC}
-GCC_CFLAGS_${TARCH}:=${CFLAGS_GCC}
+GCC_CFLAGS_${TARCH}:=${CFLAGS_GCC} ${FLAGS_GCC}
 # Generally available for GCC's cc1:
 GCC_CFLAGS_${TARCH}+=-fno-delete-null-pointer-checks -Wlogical-op
-GCC_ADAFLAGS_${TARCH}:=${CFLAGS_GCC}
+GCC_ADAFLAGS_${TARCH}:=${FLAGS_GCC}
 GCC_COMPILER_RT_${TARCH}:=${CC_RT_GCC}
 GCC_COMPILER_RT_FLAGS_${TARCH}:=${CC_RT_EXTRA_GCC}
 
@@ -425,7 +425,7 @@ test_architecture() {
 					"" "$endian" ||
 				testas "$gccprefix" "$TWIDTH" "$TBFDARCH" \
 					"TRUE" "$endian" ; } && \
-				testcc "${gccprefix}gcc" "$CFLAGS_GCC" && \
+				testcc "${gccprefix}gcc" "$CFLAGS_GCC" "$FLAGS_GCC" && \
 				GCCPREFIX="$gccprefix" && \
 				break 3
 			done

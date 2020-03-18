@@ -229,6 +229,20 @@ static int qemu_get_smbios_data(struct device *dev, int *handle, unsigned long *
 	return len;
 }
 #endif
+
+#if CONFIG(HAVE_ACPI_TABLES)
+static const char *qemu_acpi_name(const struct device *dev)
+{
+	if (dev->path.type == DEVICE_PATH_DOMAIN)
+		return "PCI0";
+
+	if (dev->path.type != DEVICE_PATH_PCI || dev->bus->secondary != 0)
+		return NULL;
+
+	return NULL;
+}
+#endif
+
 static struct device_operations pci_domain_ops = {
 	.read_resources		= cpu_pci_domain_read_resources,
 	.set_resources		= cpu_pci_domain_set_resources,
@@ -237,6 +251,9 @@ static struct device_operations pci_domain_ops = {
 	.scan_bus		= pci_domain_scan_bus,
 #if CONFIG(GENERATE_SMBIOS_TABLES)
 	.get_smbios_data	= qemu_get_smbios_data,
+#endif
+#if CONFIG(HAVE_ACPI_TABLES)
+	.acpi_name		= qemu_acpi_name,
 #endif
 };
 

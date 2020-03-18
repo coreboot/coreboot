@@ -129,6 +129,12 @@ static void cpu_pci_domain_read_resources(struct device *dev)
 				   "debugcon");
 	}
 
+	/* A segment is legacy VGA region */
+	mmio_resource(dev, idx++, 0xa0000 / KiB, (0xc0000 - 0xa0000) / KiB);
+
+	/* C segment to 1MB is reserved RAM (low tables) */
+	reserved_ram_resource(dev, idx++, 0xc0000 / KiB, (1 * MiB - 0xc0000) / KiB);
+
 	if (q35 && ((tomk * 1024) < 0xb0000000)) {
 		/*
 		 * Reserve the region between top-of-ram and the

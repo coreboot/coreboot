@@ -6,6 +6,7 @@
 
 #include <arch/acpi.h>
 #include <baseboard/variants.h>
+#include <baseboard/gpio.h>
 #include <boot/coreboot_tables.h>
 #include <gpio.h>
 #include <soc/gpio.h>
@@ -16,7 +17,6 @@
 #include <intelblocks/pmclib.h>
 #include <soc/pmc.h>
 #include <soc/pci_devs.h>
-
 
 enum rec_mode_state {
 	REC_MODE_UNINITIALIZED,

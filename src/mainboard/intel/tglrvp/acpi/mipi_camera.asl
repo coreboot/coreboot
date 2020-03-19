@@ -390,10 +390,10 @@ Scope (\_SB.PCI0.I2C5)
 				CTXS(GPP_H12)
 
 				/* Pull PWREN high */
-#if CONFIG_BOARD_INTEL_TIGERLAKE_RVPY
-                                STXS(GPP_E22)
+#if CONFIG(BOARD_INTEL_TGLRVP_UP4)
+				STXS(GPP_E22)
 #else
-                                STXS(GPP_R6)
+				STXS(GPP_R6)
 #endif
 				Sleep(2) /* reset pulse width */
 
@@ -416,8 +416,8 @@ Scope (\_SB.PCI0.I2C5)
 				CTXS(GPP_H12)
 
 				/* Pull PWREN low */
-#if CONFIG_BOARD_INTEL_TIGERLAKE_RVPY
-                                CTXS(GPP_E22)
+#if CONFIG(BOARD_INTEL_TGLRVP_UP4)
+				CTXS(GPP_E22)
 #else
 				CTXS(GPP_R6)
 #endif

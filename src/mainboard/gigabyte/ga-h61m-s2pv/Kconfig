@@ -46,9 +46,9 @@ config MAINBOARD_PART_NUMBER
 	default "GA-H61M-DS2V" if BOARD_GIGABYTE_GA_H61M_DS2V
 	default "GA-H61MA-D3V" if BOARD_GIGABYTE_GA_H61MA_D3V
 
-config DEVICETREE
+config OVERRIDE_DEVICETREE
 	string
-	default "variants/$(CONFIG_VARIANT_DIR)/devicetree.cb"
+	default "variants/$(CONFIG_VARIANT_DIR)/overridetree.cb"
 
 config MAX_CPUS
 	int

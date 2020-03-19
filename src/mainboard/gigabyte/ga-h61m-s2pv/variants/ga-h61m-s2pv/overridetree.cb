@@ -1,0 +1,58 @@
+## SPDX-License-Identifier: GPL-2.0-only
+## This file is part of the coreboot project.
+
+chip northbridge/intel/sandybridge
+	device domain 0 on
+
+		chip southbridge/intel/bd82x6x # Intel Series 6 Cougar Point PCH
+
+			device pci 1c.0 on  end	# RP #1: PCIe x1 Port (PCIEX1)
+			device pci 1c.1 off end	# RP #2:
+			device pci 1c.2 off end	# RP #3:
+			device pci 1c.3 off end	# RP #4:
+			device pci 1c.4 on  end	# RP #5: Realtek RTL8111F GbE NIC
+			device pci 1c.5 on  end	# RP #6: ITE IT8892F PCIe to PCI bridge
+
+			device pci 1f.0 on	# LPC bridge
+				chip superio/ite/it8728f
+					device pnp 2e.0 off end		# Floppy
+					device pnp 2e.1 on		# COM1
+						io  0x60 = 0x03f8
+						irq 0x70 = 4
+					end
+					device pnp 2e.2 off end		# COM2
+					device pnp 2e.3 on		# Parallel port
+						io  0x60 = 0x0378
+						irq 0x70 = 7
+						drq 0x74 = 4
+					end
+					device pnp 2e.4 on		# Environment Controller
+						io  0x60 = 0x0a30
+						irq 0x70 = 9
+						io  0x62 = 0x0a20
+					end
+					device pnp 2e.5 on		# Keyboard
+						io  0x60 = 0x60
+						irq 0x70 = 1
+						io  0x62 = 0x64
+					end
+					device pnp 2e.6 on		# Mouse
+						irq 0x70 = 12
+					end
+					device pnp 2e.7 on		# GPIO
+						irq 0x25 = 0x40
+						irq 0x27 = 0x10
+						irq 0x2c = 0x80
+						io  0x60 = 0x0000
+						io  0x62 = 0x0a00
+						io  0x64 = 0x0000
+						irq 0x70 = 0x00
+						irq 0xcb = 0x00
+						irq 0xf1 = 0x40
+					end
+					device pnp 2e.a off end		# CIR
+				end
+			end
+		end
+	end
+end

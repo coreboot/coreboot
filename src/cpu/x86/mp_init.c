@@ -927,7 +927,7 @@ static int run_ap_work(struct mp_callback *val, long expire_us)
 			return 0;
 	} while (expire_us <= 0 || !stopwatch_expired(&sw));
 
-	printk(BIOS_CRIT, "CIRTICAL ERROR: AP call expired. %d/%d CPUs accepted.\n",
+	printk(BIOS_CRIT, "CRITICAL ERROR: AP call expired. %d/%d CPUs accepted.\n",
 		cpus_accepted, global_num_aps);
 	return -1;
 }

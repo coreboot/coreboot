@@ -36,14 +36,17 @@ DefinitionBlock(
 
 #if CONFIG(EC_GOOGLE_CHROMEEC)
 	/* Chrome OS Embedded Controller */
-		Scope (\_SB.PCI0.LPCB)
-		{
-			/* ACPI code for EC SuperIO functions */
-			#include <ec/google/chromeec/acpi/superio.asl>
-			/* ACPI code for EC functions */
-			#include <ec/google/chromeec/acpi/ec.asl>
-		}
+	Scope (\_SB.PCI0.LPCB)
+	{
+		/* ACPI code for EC SuperIO functions */
+		#include <ec/google/chromeec/acpi/superio.asl>
+		/* ACPI code for EC functions */
+		#include <ec/google/chromeec/acpi/ec.asl>
+	}
 #endif
+
+	/* Camera */
+	#include <variant/acpi/camera.asl>
 
 	#include <southbridge/intel/common/acpi/sleepstates.asl>
 

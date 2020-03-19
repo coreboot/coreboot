@@ -72,5 +72,13 @@
 	"ssdid" = 0x20ee,
 	"ssvid" = 0x17aa,
 	"did" = 0x10f5,
-	"vid" = 0x8086
+	"vid" = 0x8086,
+
+	# This example sets MAC address to 00:11:22:33:44:55
+	"macaddress0" = 0x00,
+	"macaddress1" = 0x11,
+	"macaddress2" = 0x22,
+	"macaddress3" = 0x33,
+	"macaddress4" = 0x44,
+	"macaddress5" = 0x55
 }

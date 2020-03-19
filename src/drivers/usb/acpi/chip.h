@@ -14,6 +14,7 @@
 #ifndef __USB_ACPI_CHIP_H__
 #define __USB_ACPI_CHIP_H__
 
+#include <arch/acpi_device.h>
 #include <arch/acpi.h>
 #include <arch/acpi_pld.h>
 

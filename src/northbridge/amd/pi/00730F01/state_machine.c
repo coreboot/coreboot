@@ -19,6 +19,7 @@
 #include <device/device.h>
 #include <northbridge/amd/agesa/state_machine.h>
 #include <northbridge/amd/agesa/agesa_helper.h>
+#include <northbridge/amd/pi/nb_common.h>
 
 void platform_BeforeInitReset(struct sysinfo *cb, AMD_RESET_PARAMS *Reset)
 {
@@ -63,7 +64,7 @@ void platform_BeforeInitMid(struct sysinfo *cb, AMD_MID_PARAMS *Mid)
 
 	/* 0 iGpuVgaAdapter, 1 iGpuVgaNonAdapter; */
 	Mid->GnbMidConfiguration.iGpuVgaMode = 0;
-	Mid->GnbMidConfiguration.GnbIoapicAddress = 0xFEC20000;
+	Mid->GnbMidConfiguration.GnbIoapicAddress = IO_APIC2_ADDR;
 }
 
 void platform_BeforeInitLate(struct sysinfo *cb, AMD_LATE_PARAMS *Late)

@@ -71,4 +71,7 @@
 /* Enable EC sync interrupt, EC_SYNC_IRQ is defined in variant/gpio.h */
 #define EC_ENABLE_SYNC_IRQ
 
+/* Enable EC backed PD MCU device in ACPI */
+#define EC_ENABLE_PD_MCU_DEVICE
+
 #endif /* __MAINBOARD_EC_H__ */

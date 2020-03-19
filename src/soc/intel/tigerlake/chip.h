@@ -292,6 +292,8 @@ struct soc_intel_tigerlake_config {
 	 */
 	uint8_t cpu_ratio_override;
 
+	/* HyperThreadingDisable : Yes (1) / No (0) */
+	uint8_t HyperThreadingDisable;
 };
 
 typedef struct soc_intel_tigerlake_config config_t;

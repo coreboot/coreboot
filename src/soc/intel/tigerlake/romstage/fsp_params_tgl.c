@@ -143,8 +143,9 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 	else
 		m_cfg->TcssItbtPcie3En = 0;
 
-	/* Enable Hyper Threading */
-	m_cfg->HyperThreading = 1;
+	/* Hyper Threading */
+	m_cfg->HyperThreading = !config->HyperThreadingDisable;
+
 	/* Disable Lock PCU Thermal Management registers */
 	m_cfg->LockPTMregs = 0;
 	/* Channel Hash Mask:0x0001=BIT6 set(Minimal), 0x3FFF=BIT[19:6] set(Maximum) */

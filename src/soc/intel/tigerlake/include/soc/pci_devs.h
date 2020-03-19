@@ -67,7 +67,7 @@
 
 #define PCH_DEV_SLOT_SIO1	0x11
 #define  PCH_DEVFN_UART3	_PCH_DEVFN(SIO1, 0)
-#define  PCH_DEV_UART3          _PCH_DEVFN(SIO1, 0)
+#define  PCH_DEV_UART3          _PCH_DEV(SIO1, 0)
 
 #define PCH_DEV_SLOT_ISH	0x12
 #define  PCH_DEVFN_ISH		_PCH_DEVFN(ISH, 0)

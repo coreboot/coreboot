@@ -220,6 +220,8 @@ static void sb_slp_typ_handler(void)
 						reg32);
 		} /* if (CONFIG(ELOG_GSMI)) */
 
+		psp_notify_sx_info(slp_typ);
+
 		/*
 		 * An IO cycle is required to trigger the STPCLK/STPGNT
 		 * handshake when the Pm1 write is reissued.

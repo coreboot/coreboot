@@ -60,7 +60,7 @@ $ flashrom -p internal --ifd -i bios -w coreboot.rom --noverify-all
 2. Make sure power supply is disconnected from board.
 3. Connect Dediprog SF600 to header at J7H1.
 4. Ensure that "currently working on" is in "application memory chip 1"
-5. Go to "file" and select the .rom file (16 MB) to program chip1.
+5. Go to "file" and select the .rom file (16 MiB) to program chip1.
 6. Execute the batch operation to erase and program the chip.
 
 ## Technology

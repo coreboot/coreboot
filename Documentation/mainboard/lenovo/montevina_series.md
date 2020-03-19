@@ -53,7 +53,7 @@ the `new_layout.txt` file:
 
 ```eval_rst
 +---------------------------+---------------------------+---------------------------+
-| 4 MB chip                 | 8 MB chip                 | 16 MB chip                |
+| 4 MiB chip                | 8 MiB chip                | 16 MiB chip               |
 +===========================+===========================+===========================+
 | .. code-block:: none      | .. code-block:: none      | .. code-block:: none      |
 |                           |                           |                           |
@@ -97,12 +97,12 @@ $ cd util/bincfg
 $ make
 ```
 
-If your flash is not 8 MB, you need to change values of `flcomp_density1` and
+If your flash is not 8 MiB, you need to change values of `flcomp_density1` and
 `flreg1_limit` in the `ifd-x200.set` file according to following table:
 
 ```eval_rst
 +-----------------+-------+-------+--------+
-|                 | 4 MB  | 8 MB  | 16 MB  |
+|                 | 4 MiB | 8 MiB | 16 MiB |
 +=================+=======+=======+========+
 | flcomp_density1 | 0x3   | 0x4   | 0x5    |
 +-----------------+-------+-------+--------+
@@ -123,7 +123,7 @@ to flash descriptor and gbe dump.
 ```
 Mainboard --->
     ROM chip size (8192 KB (8 MB)) # According to your chip
-    (0x7fd000) Size of CBFS filesystem in ROM # or 0x3fd000 for 4 MB chip / 0x1ffd000 for 16 MB chip
+    (0x7fd000) Size of CBFS filesystem in ROM # or 0x3fd000 for 4 MiB chip / 0x1ffd000 for 16 MiB chip
 
 Chipset --->
     [*] Add Intel descriptor.bin file
@@ -142,7 +142,7 @@ The flash layouts of the OEM firmware are as follows:
 
 ```eval_rst
 +---------------------------------+---------------------------------+
-| 4 MB chip                       | 8 MB chip                       |
+| 4 MiB chip                      | 8 MiB chip                      |
 +=================================+=================================+
 | .. code-block:: none            | .. code-block:: none            |
 |                                 |                                 |
@@ -159,6 +159,6 @@ The flash layouts of the OEM firmware are as follows:
 On each boot of vendor BIOS `ec` area in flash is checked for having firmware
 there, and if there is one, it proceedes to update firmware on H8S/2116 (when
 both external power and main battery are attached). Once update is performed,
-first 64 KB of `ec` area is erased. Visit
+first 64 KiB of `ec` area is erased. Visit
 [thinkpad-ec repository](https://github.com/hamishcoleman/thinkpad-ec) to learn
 more about how to extract EC firmware from vendor updates.

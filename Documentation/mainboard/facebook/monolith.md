@@ -41,8 +41,8 @@ These can be extracted from the original flash image as follows:
 00003000:006FFFFF me
 00001000:00002fff gbe
 ```
-3) Use `ifdtool -n <layout_file> <flash_image>` to resize the *bios* region from the default 6MB
-   to 9 MB, this is required to create sufficient space for LinuxBoot.
+3) Use `ifdtool -n <layout_file> <flash_image>` to resize the *bios* region from the default 6 MiB
+   to 9 MiB, this is required to create sufficient space for LinuxBoot.
    NOTE: Please make sure only the firmware descriptor (*fd*) region is changed. Older versions
    	 of the ifdtool corrupt the *me* region.
 4) Use `ifdtool -x <resized_flash_image>` to extract the components.

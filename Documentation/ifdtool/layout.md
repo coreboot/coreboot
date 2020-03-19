@@ -19,7 +19,7 @@ way to categorize anything required by the SoC but not provided by coreboot.
 | IFD Region | IFD Region name  | FMAP Name | Notes                                     |
 | index      |                  |           |                                           |
 +============+==================+===========+===========================================+
-| 0          | Flash Descriptor | SI_DESC   | Always the top 4KB of flash               |
+| 0          | Flash Descriptor | SI_DESC   | Always the top 4 KiB of flash             |
 +------------+------------------+-----------+-------------------------------------------+
 | 1          | BIOS             | SI_BIOS   | This is the region that contains coreboot |
 +------------+------------------+-----------+-------------------------------------------+
@@ -40,9 +40,9 @@ way to categorize anything required by the SoC but not provided by coreboot.
 The ifdtool can be used to manipulate a firmware image with a IFD. This tool
 will not take into account the FMAP while modifying the image which can lead to
 unexpected and hard to debug issues with the firmware image. For example if the
-ME region is defined at 6 MB in the IFD but the FMAP only allocates 4 MB for the
-ME, then when the ME is added by the ifdtool 6 MB will be written which could
-overwrite 2 MB of the BIOS.
+ME region is defined at 6 MiB in the IFD but the FMAP only allocates 4 MiB for
+the ME, then when the ME is added by the ifdtool 6 MiB will be written which
+could overwrite 2 MiB of the BIOS.
 
 In order to validate that the FMAP and the IFD are compatible the ifdtool
 provides --validate (-t) option. `ifdtool -t` will read both the IFD and the

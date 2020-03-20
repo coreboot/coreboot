@@ -886,11 +886,16 @@ static void lpc_tpm_fill_ssdt(struct device *dev)
 	acpigen_write_scope(path);
 	acpigen_write_device(acpi_device_name(dev));
 
-	acpigen_write_name("_HID");
-	acpigen_emit_eisaid("PNP0C31");
+	if (CONFIG(TPM2)) {
+		acpigen_write_name_string("_HID", "MSFT0101");
+		acpigen_write_name_string("_CID", "MSFT0101");
+	} else {
+		acpigen_write_name("_HID");
+		acpigen_emit_eisaid("PNP0C31");
 
-	acpigen_write_name("_CID");
-	acpigen_emit_eisaid("PNP0C31");
+		acpigen_write_name("_CID");
+		acpigen_emit_eisaid("PNP0C31");
+	}
 
 	acpi_device_write_uid(dev);
 

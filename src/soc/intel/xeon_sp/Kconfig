@@ -14,6 +14,7 @@
 ##
 
 source "src/soc/intel/xeon_sp/skx/Kconfig"
+source "src/soc/intel/xeon_sp/cpx/Kconfig"
 
 config XEON_SP_COMMON_BASE
 	bool
@@ -23,6 +24,12 @@ config SOC_INTEL_SKYLAKE_SP
 	select XEON_SP_COMMON_BASE
 	help
 	  Intel Skylake-SP support
+
+config SOC_INTEL_COOPERLAKE_SP
+	bool
+	select XEON_SP_COMMON_BASE
+	help
+	  Intel Cooperlake-SP support
 
 if XEON_SP_COMMON_BASE
 

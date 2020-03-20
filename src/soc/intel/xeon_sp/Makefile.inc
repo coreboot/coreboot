@@ -16,6 +16,7 @@
 ifeq ($(CONFIG_XEON_SP_COMMON_BASE),y)
 
 subdirs-$(CONFIG_SOC_INTEL_SKYLAKE_SP) += skx
+subdirs-$(CONFIG_SOC_INTEL_COOPERLAKE_SP) += cpx
 
 bootblock-y += bootblock.c spi.c lpc.c
 romstage-y += romstage.c reset.c util.c spi.c

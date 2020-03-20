@@ -35,6 +35,11 @@ bool h8_wwan_nv_enable(void);
 bool h8_has_wwan(const struct device *dev);
 
 void h8_ssdt_generator(const struct device *dev);
+/*
+ * boards needing specific h8-related inits could override it
+ */
+void h8_mb_init(void);
+
 
 /* EC registers */
 #define H8_CONFIG0 0x00

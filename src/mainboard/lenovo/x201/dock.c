@@ -7,13 +7,14 @@
 #include <ec/lenovo/h8/h8.h>
 #include <ec/acpi/ec.h>
 
-void init_dock(void)
+void h8_mb_init(void)
 {
 	if (dock_present()) {
 		printk(BIOS_DEBUG, "dock is connected\n");
 		dock_connect();
-	} else
+	} else {
 		printk(BIOS_DEBUG, "dock is not connected\n");
+	}
 }
 
 void dock_connect(void)

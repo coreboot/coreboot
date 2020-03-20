@@ -221,6 +221,8 @@ struct device_operations h8_dev_ops = {
 	.init = h8_init,
 };
 
+void __weak h8_mb_init(void){ /* NOOP */ }
+
 static void h8_enable(struct device *dev)
 {
 	struct ec_lenovo_h8_config *conf = dev->chip_info;
@@ -340,6 +342,7 @@ static void h8_enable(struct device *dev)
 	h8_charge_priority(val);
 
 	h8_set_audio_mute(0);
+	h8_mb_init();
 }
 
 struct chip_operations ec_lenovo_h8_ops = {

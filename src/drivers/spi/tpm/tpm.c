@@ -104,47 +104,51 @@ static int tpm_sync(void)
  */
 static int start_transaction(int read_write, size_t bytes, unsigned int addr)
 {
-	spi_frame_header header;
+	spi_frame_header header, header_resp;
 	uint8_t byte;
 	int i;
+	int ret;
 	struct stopwatch sw;
 	static int tpm_sync_needed;
 	static struct stopwatch wake_up_sw;
-	/*
-	 * First Cr50 access in each coreboot stage where TPM is used will be
-	 * prepended by a wake up pulse on the CS line.
-	 */
-	int wakeup_needed = 1;
 
-	/* Wait for TPM to finish previous transaction if needed */
-	if (tpm_sync_needed) {
-		tpm_sync();
+	if (CONFIG(TPM_CR50)) {
 		/*
-		 * During the first invocation of this function on each stage
-		 * this if () clause code does not run (as tpm_sync_needed
-		 * value is zero), during all following invocations the
-		 * stopwatch below is guaranteed to be started.
+		 * First Cr50 access in each coreboot stage where TPM is used will be
+		 * prepended by a wake up pulse on the CS line.
 		 */
-		if (!stopwatch_expired(&wake_up_sw))
-			wakeup_needed = 0;
-	} else {
-		tpm_sync_needed = 1;
-	}
+		int wakeup_needed = 1;
 
-	if (wakeup_needed) {
-		/* Just in case Cr50 is asleep. */
-		spi_claim_bus(&spi_slave);
-		udelay(1);
-		spi_release_bus(&spi_slave);
-		udelay(100);
-	}
+		/* Wait for TPM to finish previous transaction if needed */
+		if (tpm_sync_needed) {
+			tpm_sync();
+			/*
+			 * During the first invocation of this function on each stage
+			 * this if () clause code does not run (as tpm_sync_needed
+			 * value is zero), during all following invocations the
+			 * stopwatch below is guaranteed to be started.
+			 */
+			if (!stopwatch_expired(&wake_up_sw))
+				wakeup_needed = 0;
+		} else {
+			tpm_sync_needed = 1;
+		}
 
-	/*
-	 * The Cr50 on H1 does not go to sleep for 1 second after any
-	 * SPI slave activity, let's be conservative and limit the
-	 * window to 900 ms.
-	 */
-	stopwatch_init_msecs_expire(&wake_up_sw, 900);
+		if (wakeup_needed) {
+			/* Just in case Cr50 is asleep. */
+			spi_claim_bus(&spi_slave);
+			udelay(1);
+			spi_release_bus(&spi_slave);
+			udelay(100);
+		}
+
+		/*
+		 * The Cr50 on H1 does not go to sleep for 1 second after any
+		 * SPI slave activity, let's be conservative and limit the
+		 * window to 900 ms.
+		 */
+		stopwatch_init_msecs_expire(&wake_up_sw, 900);
+	}
 
 	/*
 	 * The first byte of the frame header encodes the transaction type
@@ -181,16 +185,30 @@ static int start_transaction(int read_write, size_t bytes, unsigned int addr)
 	 * transmitted by the TPM during the transaction's last byte.
 	 *
 	 * We know that cr50 is guaranteed to set the flow control bit to 0
-	 * during the header transfer, but real TPM2 might be fast enough not
-	 * to require to stall the master, this would present an issue.
+	 * during the header transfer. Real TPM2 are fast enough to not require
+	 * to stall the master. They might still use this feature, so test the
+	 * last bit after shifting in the address bytes.
 	 * crosbug.com/p/52132 has been opened to track this.
 	 */
-	spi_xfer(&spi_slave, header.body, sizeof(header.body), NULL, 0);
+
+	header_resp.body[3] = 0;
+	if (CONFIG(TPM_CR50))
+		ret = spi_xfer(&spi_slave, header.body, sizeof(header.body), NULL, 0);
+	else
+		ret = spi_xfer(&spi_slave, header.body, sizeof(header.body),
+			       header_resp.body, sizeof(header_resp.body));
+	if (ret) {
+		printk(BIOS_ERR, "SPI-TPM: transfer error\n");
+		spi_release_bus(&spi_slave);
+		return 0;
+	}
+
+	if (header_resp.body[3] & 1)
+		return 1;
 
 	/*
 	 * Now poll the bus until TPM removes the stall bit. Give it up to 100
-	 * ms to sort it out - it could be saving stuff in nvram at some
-	 * point.
+	 * ms to sort it out - it could be saving stuff in nvram at some point.
 	 */
 	stopwatch_init_msecs_expire(&sw, 100);
 	do {
@@ -201,6 +219,7 @@ static int start_transaction(int read_write, size_t bytes, unsigned int addr)
 		}
 		spi_xfer(&spi_slave, NULL, 0, &byte, 1);
 	} while (!(byte & 1));
+
 	return 1;
 }
 
@@ -408,7 +427,8 @@ static int tpm2_claim_locality(void)
 
 /* Device/vendor ID values of the TPM devices this driver supports. */
 static const uint32_t supported_did_vids[] = {
-	0x00281ae0  /* H1 based Cr50 security chip. */
+	0x00281ae0,  /* H1 based Cr50 security chip. */
+	0x0000104a   /* ST33HTPH2E32 */
 };
 
 int tpm2_init(struct spi_slave *spi_if)
@@ -454,7 +474,8 @@ int tpm2_init(struct spi_slave *spi_if)
 
 	printk(BIOS_INFO, " done!\n");
 
-	if (ENV_SEPARATE_VERSTAGE || ENV_BOOTBLOCK)
+	// FIXME: Move this to tpm_setup()
+	if (ENV_SEPARATE_VERSTAGE || ENV_BOOTBLOCK || !CONFIG(VBOOT))
 		/*
 		 * Claim locality 0, do it only during the first
 		 * initialization after reset.
@@ -462,7 +483,10 @@ int tpm2_init(struct spi_slave *spi_if)
 		if (!tpm2_claim_locality())
 			return -1;
 
-	read_tpm_sts(&status);
+	if (!read_tpm_sts(&status)) {
+		printk(BIOS_ERR, "Reading status reg failed\n");
+		return -1;
+	}
 	if ((status & TPM_STS_FAMILY_MASK) != TPM_STS_FAMILY_TPM_2_0) {
 		printk(BIOS_ERR, "unexpected TPM family value, status: %#x\n",
 		       status);

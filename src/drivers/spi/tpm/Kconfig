@@ -16,6 +16,13 @@ config DRIVER_TPM_SPI_CHIP
 config MAINBOARD_HAS_SPI_TPM_CR50
 	bool
 	default n
+	select MAINBOARD_HAS_SPI_TPM
+	help
+	  Board has a CR50 SPI TPM
+
+config MAINBOARD_HAS_SPI_TPM
+	bool
+	default n
 	select SPI_TPM
 	help
 	  Board has SPI TPM support

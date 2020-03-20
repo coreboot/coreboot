@@ -7,7 +7,57 @@
 
 /* Pad configuration in ramstage*/
 static const struct pad_config gpio_table[] = {
-	/* ToDo: Fill gpio configuration */
+	/* ToDo: Fill other gpio configuration */
+
+	/* Audio related GPIOs */
+	/* I2C0_SDA */
+	PAD_CFG_NF(GPP_C16, UP_2K, DEEP, NF1),
+
+	/* I2C0_SCL */
+	PAD_CFG_NF(GPP_C17, UP_2K, DEEP, NF1),
+
+	/* I2S_MCLK */
+	PAD_CFG_NF(GPP_D18, NONE, DEEP, NF1),
+
+	/* I2S1_SCLK */
+	PAD_CFG_NF(GPP_H15, NONE, DEEP, NF1),
+
+	/* Audio Jack Detection */
+	PAD_CFG_GPI_INT(GPP_H16, NONE, PLTRST, EDGE_BOTH),
+
+	/* I2S0_SCLK */
+	PAD_CFG_NF(GPP_R0, NONE, DEEP, NF2),
+
+	/* I2S0_SFRM */
+	PAD_CFG_NF(GPP_R1, NONE, DEEP, NF2),
+
+	/* I2S0_TXD */
+	PAD_CFG_NF(GPP_R2, NONE, DEEP, NF2),
+
+	/* I2S0_RXD */
+	PAD_CFG_NF(GPP_R3, NONE, DEEP, NF2),
+
+	/* I2S1_RXD */
+	PAD_CFG_NF(GPP_R5, NONE, DEEP, NF2),
+
+	/* I2S1_SFRM */
+	PAD_CFG_NF(GPP_R6, NONE, DEEP, NF2),
+
+	/* I2S1_TXD */
+	PAD_CFG_NF(GPP_R7, NONE, DEEP, NF2),
+
+	/* DMIC_CLK_1 */
+	PAD_CFG_NF(GPP_S2, UP_20K, DEEP, NF2),
+
+	/* DMIC_DATA_1 */
+	PAD_CFG_NF(GPP_S3, UP_20K, DEEP, NF2),
+
+	/* DMIC_CLK_0 */
+	PAD_CFG_NF(GPP_S6, UP_20K, DEEP, NF2),
+
+	/* DMIC_DATA_0 */
+	PAD_CFG_NF(GPP_S7, UP_20K, DEEP, NF2),
+
 };
 
 /* Early pad configuration in bootblock */

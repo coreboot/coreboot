@@ -21,7 +21,7 @@
 #include <arch/acpi.h>
 DefinitionBlock ("DSDT.AML", "DSDT", 0x01, OEM_ID, ACPI_TABLE_CREATOR, 0x00010001)
 	{
-	Scope (\_PR) {
+	Scope (\_SB) {
 		Device (CPU0) {
 		Name (_HID, "ACPI0007")
 		Name (_UID, 0)

@@ -488,7 +488,7 @@ static void sb_init_acpi_ports(void)
 	pm_write16(PM1_CNT_BLK, ACPI_PM1_CNT_BLK);
 	pm_write16(PM_TMR_BLK, ACPI_PM_TMR_BLK);
 	pm_write16(PM_GPE0_BLK, ACPI_GPE0_BLK);
-	/* CpuControl is in \_PR.CP00, 6 bytes */
+	/* CpuControl is in \_SB.CP00, 6 bytes */
 	pm_write16(PM_CPU_CTRL, ACPI_CPU_CONTROL);
 
 	if (CONFIG(HAVE_SMI_HANDLER)) {

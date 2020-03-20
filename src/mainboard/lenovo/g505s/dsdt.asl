@@ -36,7 +36,7 @@ DefinitionBlock (
 	/* PCI IRQ mapping for the Southbridge */
 	#include <southbridge/amd/agesa/hudson/acpi/pcie.asl>
 
-	/* Describe the processor tree (\_PR) */
+	/* Describe the processor tree (\_SB) */
 	#include <cpu/amd/agesa/family15tn/acpi/cpu.asl>
 
 	/* Describe the supported Sleep States for this Southbridge */

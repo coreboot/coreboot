@@ -15,7 +15,7 @@
  * Processor Object
  *
  */
-Scope (\_PR) {/* define processor scope */
+Scope (\_SB) {/* define processor scope */
 	Device (P000) {
 	Name(_HID, "ACPI0007")
 	Name(_UID, 0)
@@ -55,4 +55,4 @@ Scope (\_PR) {/* define processor scope */
 	Name(_HID, "ACPI0007")
 	Name(_UID, 7)
 	}
-} /* End _PR scope */
+} /* End _SB scope */

@@ -710,6 +710,21 @@ static unsigned long acpi_fill_hest(acpi_hest_t *hest)
 	return (unsigned long)current;
 }
 
+static void patch_ssdt_processor_scope(acpi_header_t *ssdt)
+{
+	unsigned int len = ssdt->length - sizeof(acpi_header_t);
+	unsigned int i;
+
+	for (i = sizeof(acpi_header_t); i < len; i++) {
+		/* Search for _PR_ scope and replace it with _SB_ */
+		if (*(uint32_t *)((unsigned long)ssdt + i) == 0x5f52505f)
+			*(uint32_t *)((unsigned long)ssdt + i) = 0x5f42535f;
+	}
+	/* Recalculate checksum */
+	ssdt->checksum = 0;
+	ssdt->checksum = acpi_checksum((void *)ssdt, ssdt->length);
+}
+
 static unsigned long agesa_write_acpi_tables(struct device *device,
 					     unsigned long current,
 					     acpi_rsdp_t *rsdp)
@@ -774,6 +789,9 @@ static unsigned long agesa_write_acpi_tables(struct device *device,
 	printk(BIOS_DEBUG, "ACPI:  * AGESA SSDT Pstate at %lx\n", current);
 	ssdt = (acpi_header_t *)agesawrapper_getlateinitptr (PICK_PSTATE);
 	if (ssdt != NULL) {
+		hexdump(ssdt, ssdt->length);
+		patch_ssdt_processor_scope(ssdt);
+		hexdump(ssdt, ssdt->length);
 		memcpy((void *)current, ssdt, ssdt->length);
 		ssdt = (acpi_header_t *) current;
 		current += ssdt->length;

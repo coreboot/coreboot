@@ -37,7 +37,7 @@ DefinitionBlock (
 	/* PCI IRQ mapping for the Southbridge */
 	#include <pcie.asl>
 
-	/* Describe the processor tree (\_PR) */
+	/* Describe the processor tree (\_SB) */
 	#include <cpu.asl>
 
 	/* Contains the supported sleep states for this chipset */

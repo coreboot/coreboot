@@ -23,7 +23,7 @@
 #include <arch/acpi.h>
 DefinitionBlock ("DSDT.aml", "DSDT", 2, OEM_ID, ACPI_TABLE_CREATOR, 1)
 {
-	/* \_PR scope defining the main processor is generated in SSDT. */
+	/* \_SB scope defining the main processor is generated in SSDT. */
 
 	OperationRegion(X80, SystemIO, 0x80, 1)
 	Field(X80, ByteAcc, NoLock, Preserve)

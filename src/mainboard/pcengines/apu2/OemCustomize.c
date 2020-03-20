@@ -33,7 +33,9 @@ static const PCIe_PORT_DESCRIPTOR PortList[] = {
 				HotplugDisabled,
 				PcieGenMaxSupported,
 				PcieGenMaxSupported,
-				AspmDisabled, PCIE_PORT3_RESET_ID, 0)
+				AspmL0sL1,
+				PCIE_PORT3_RESET_ID,
+				ClkPmSupportEnabled)
 	},
 	/* Initialize Port descriptor (PCIe port, Lanes 1, PCI Device Number 2, ...) */
 	{
@@ -43,7 +45,9 @@ static const PCIe_PORT_DESCRIPTOR PortList[] = {
 				HotplugDisabled,
 				PcieGenMaxSupported,
 				PcieGenMaxSupported,
-				AspmDisabled, PCIE_NIC_RESET_ID, 0)
+				AspmL0sL1,
+				PCIE_NIC_RESET_ID,
+				ClkPmSupportEnabled)
 	},
 	/* Initialize Port descriptor (PCIe port, Lanes 2, PCI Device Number 2, ...) */
 	{
@@ -53,7 +57,9 @@ static const PCIe_PORT_DESCRIPTOR PortList[] = {
 				HotplugDisabled,
 				PcieGenMaxSupported,
 				PcieGenMaxSupported,
-				AspmDisabled, PCIE_NIC_RESET_ID, 0)
+				AspmL0sL1,
+				PCIE_NIC_RESET_ID,
+				ClkPmSupportEnabled)
 	},
 	/* Initialize Port descriptor (PCIe port, Lanes 3, PCI Device Number 2, ...) */
 	{
@@ -63,7 +69,9 @@ static const PCIe_PORT_DESCRIPTOR PortList[] = {
 				HotplugDisabled,
 				PcieGenMaxSupported,
 				PcieGenMaxSupported,
-				AspmDisabled, PCIE_NIC_RESET_ID, 0)
+				AspmL0sL1,
+				PCIE_NIC_RESET_ID,
+				ClkPmSupportEnabled)
 	},
 	/* Initialize Port descriptor (PCIe port, Lanes 4-7, PCI Device Number 4, ...) */
 	{
@@ -73,7 +81,9 @@ static const PCIe_PORT_DESCRIPTOR PortList[] = {
 				HotplugDisabled,
 				PcieGenMaxSupported,
 				PcieGenMaxSupported,
-				AspmDisabled, PCIE_GFX_RESET_ID, 0)
+				AspmL0sL1,
+				PCIE_GFX_RESET_ID,
+				ClkPmSupportEnabled)
 	}
 };
 

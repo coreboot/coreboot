@@ -12,7 +12,7 @@ void set_feature_ctrl_lock(void);
 /*
  * Init CPPC block with MSRs for Intel Enhanced Speed Step Technology.
  * Version 2 is suggested--this function's implementation of version 3
- * may have room for improvment.
+ * may have room for improvement.
  */
 struct cppc_config;
 void cpu_init_cppc_config(struct cppc_config *config, u32 version);

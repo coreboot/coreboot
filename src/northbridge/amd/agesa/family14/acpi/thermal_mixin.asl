@@ -35,7 +35,7 @@
  */
 
 #ifndef K10TEMP_HOT_OFFSET
-# define K10TEMP_HOT_OFFSET	100
+# define K10TEMP_HOT_OFFSET	50
 #endif
 
 #define K10TEMP_KELVIN_OFFSET	2732
@@ -71,7 +71,11 @@ ThermalZone (TZ00) {
 		Return (Add (Local0, K10TEMP_KELVIN_OFFSET))
 	}
 
-	Method (_CRT) {	/* Critical temp in tenths degree Kelvin. */
+	/*
+	 * TLMT indicates threshold where HTC become active. That is the processor will limit
+	 * P-State and power consumption in order to cool down.
+	 */
+	Method (_PSV) {	/* Passive temp in tenths degree Kelvin. */
 		Multiply (TLMT, 10, Local0)
 		ShiftRight (Local0, 1, Local0)
 		Add (Local0, K10TEMP_TLIMIT_OFFSET, Local0)
@@ -79,6 +83,10 @@ ThermalZone (TZ00) {
 	}
 
 	Method (_HOT) {	/* Hot temp in tenths degree Kelvin. */
-		Return (Subtract (_CRT, K10TEMP_HOT_OFFSET))
+		Return (Add (_PSV, K10TEMP_HOT_OFFSET))
+	}
+
+	Method (_CRT) {	/* Critical temp in tenths degree Kelvin. */
+		Return (Add (_HOT, K10TEMP_HOT_OFFSET))
 	}
 }

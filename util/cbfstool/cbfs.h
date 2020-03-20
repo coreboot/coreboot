@@ -72,4 +72,9 @@ void xdr_segs(struct buffer *output,
 void xdr_get_seg(struct cbfs_payload_segment *out,
 		struct cbfs_payload_segment *in);
 
+/* platform_fixups.c */
+typedef int (*platform_fixup_func)(struct buffer *buffer, size_t offset);
+platform_fixup_func platform_fixups_probe(struct buffer *buffer, size_t offset,
+					  const char *region_name);
+
 #endif

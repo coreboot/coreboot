@@ -561,6 +561,8 @@ typedef struct
 #define PF_W		(1 << 1)	/* Segment is writable */
 #define PF_R		(1 << 2)	/* Segment is readable */
 #define PF_MASKOS	0x0ff00000	/* OS-specific */
+#define PF_QC_SG_MASK	0x07000000	/* Qualcomm "segment" types */
+#define PF_QC_SG_HASH	0x02000000	/* Qualcomm hash segment */
 #define PF_MASKPROC	0xf0000000	/* Processor-specific */
 
 /* Legal values for note segment descriptor types for core files. */

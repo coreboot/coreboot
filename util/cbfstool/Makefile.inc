@@ -22,6 +22,7 @@ cbfsobj += elfheaders.o
 cbfsobj += rmodule.o
 cbfsobj += xdr.o
 cbfsobj += partitioned_file.o
+cbfsobj += platform_fixups.o
 # COMMONLIB
 cbfsobj += cbfs_private.o
 cbfsobj += fsp_relocate.o

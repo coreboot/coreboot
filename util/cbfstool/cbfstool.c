@@ -129,6 +129,7 @@ struct mh_cache {
 	const char *region;
 	size_t offset;
 	struct vb2_hash cbfs_hash;
+	platform_fixup_func fixup;
 	bool initialized;
 };
 
@@ -185,6 +186,8 @@ static struct mh_cache *get_mh_cache(void)
 		}
 		mhc.cbfs_hash = anchor->cbfs_hash;
 		mhc.offset = (void *)anchor - buffer_get(&buffer);
+		mhc.fixup = platform_fixups_probe(&buffer, mhc.offset,
+						  mhc.region);
 		return &mhc;
 	}
 
@@ -223,6 +226,8 @@ static int update_anchor(struct mh_cache *mhc, uint8_t *fmap_hash)
 				metadata_hash_anchor_fmap_hash(anchor), fmap_hash,
 				vb2_digest_size(anchor->cbfs_hash.algo));
 	}
+	if (mhc->fixup && mhc->fixup(&buffer, mhc->offset) != 0)
+		return -1;
 	if (!partitioned_file_write_region(param.image_file, &buffer))
 		return -1;
 	return 0;

@@ -84,11 +84,13 @@ config DCACHE_RAM_SIZE
 
 config DCACHE_BSP_STACK_SIZE
 	hex
-	default 0x30400
+	default 0x40400 if SOC_INTEL_TIGERLAKE
+	default 0x30400 if SOC_INTEL_JASPERLAKE
 	help
 	  The amount of anticipated stack usage in CAR by bootblock and
 	  other stages. In the case of FSP_USES_CB_STACK default value will be
-	  sum of FSP-M stack requirement (192KiB) and CB romstage stack requirement (~1KiB).
+	  sum of FSP-M stack requirement (256KiB for TGL, 192KiB for JSL) and CB romstage
+	  stack requirement (~1KiB).
 
 config FSP_TEMP_RAM_SIZE
 	hex

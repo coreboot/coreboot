@@ -15,6 +15,15 @@
 #include <AGESA.h>
 #include <northbridge/amd/agesa/state_machine.h>
 
+#define PCIE_NIC_RESET_ID	1
+
+#if CONFIG(BOARD_PCENGINES_APU2)
+#define	PCIE_GFX_RESET_ID	55
+#define PCIE_PORT3_RESET_ID	51
+#else
+#define	PCIE_GFX_RESET_ID	PCIE_NIC_RESET_ID
+#define PCIE_PORT3_RESET_ID	PCIE_NIC_RESET_ID
+#endif
 
 static const PCIe_PORT_DESCRIPTOR PortList[] = {
 	{
@@ -24,7 +33,7 @@ static const PCIe_PORT_DESCRIPTOR PortList[] = {
 				HotplugDisabled,
 				PcieGenMaxSupported,
 				PcieGenMaxSupported,
-				AspmDisabled, 0x01, 0)
+				AspmDisabled, PCIE_PORT3_RESET_ID, 0)
 	},
 	/* Initialize Port descriptor (PCIe port, Lanes 1, PCI Device Number 2, ...) */
 	{
@@ -34,7 +43,7 @@ static const PCIe_PORT_DESCRIPTOR PortList[] = {
 				HotplugDisabled,
 				PcieGenMaxSupported,
 				PcieGenMaxSupported,
-				AspmDisabled, 0x02, 0)
+				AspmDisabled, PCIE_NIC_RESET_ID, 0)
 	},
 	/* Initialize Port descriptor (PCIe port, Lanes 2, PCI Device Number 2, ...) */
 	{
@@ -44,7 +53,7 @@ static const PCIe_PORT_DESCRIPTOR PortList[] = {
 				HotplugDisabled,
 				PcieGenMaxSupported,
 				PcieGenMaxSupported,
-				AspmDisabled, 0x03, 0)
+				AspmDisabled, PCIE_NIC_RESET_ID, 0)
 	},
 	/* Initialize Port descriptor (PCIe port, Lanes 3, PCI Device Number 2, ...) */
 	{
@@ -54,7 +63,7 @@ static const PCIe_PORT_DESCRIPTOR PortList[] = {
 				HotplugDisabled,
 				PcieGenMaxSupported,
 				PcieGenMaxSupported,
-				AspmDisabled, 0x04, 0)
+				AspmDisabled, PCIE_NIC_RESET_ID, 0)
 	},
 	/* Initialize Port descriptor (PCIe port, Lanes 4-7, PCI Device Number 4, ...) */
 	{
@@ -64,7 +73,7 @@ static const PCIe_PORT_DESCRIPTOR PortList[] = {
 				HotplugDisabled,
 				PcieGenMaxSupported,
 				PcieGenMaxSupported,
-				AspmDisabled, 0x05, 0)
+				AspmDisabled, PCIE_GFX_RESET_ID, 0)
 	}
 };
 

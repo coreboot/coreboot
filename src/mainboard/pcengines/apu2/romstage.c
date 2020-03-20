@@ -38,6 +38,15 @@ void board_BeforeAgesa(struct sysinfo *cb)
 
 	/* Release GPIO32/33 for other uses. */
 	pm_write8(0xea, 1);
+
+	/*
+	 * Assert resets on the PCIe slots, since AGESA calls deassert callout
+	 * only. Only apu2 uses GPIOs to reset PCIe slots.
+	 */
+	if (CONFIG(BOARD_PCENGINES_APU2)) {
+		gpio1_write8(0xa, gpio1_read8(0xa) & ~(1 << 6));
+		gpio1_write8(0xe, gpio1_read8(0xe) & ~(1 << 6));
+	}
 }
 
 static void early_lpc_init(void)

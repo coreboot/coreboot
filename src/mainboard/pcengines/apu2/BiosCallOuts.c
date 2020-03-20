@@ -13,6 +13,7 @@
  */
 
 #include <AGESA.h>
+#include <amdblocks/acpimmio.h>
 #include <console/console.h>
 #include <spd_bin.h>
 #include <northbridge/amd/agesa/BiosCallOuts.h>
@@ -24,6 +25,7 @@
 #include "hudson.h"
 
 static AGESA_STATUS board_ReadSpd_from_cbfs(UINT32 Func, UINTN Data, VOID *ConfigPtr);
+static AGESA_STATUS board_GnbPciExSlotReset(UINT32 Func, UINTN Data, VOID *ConfigPtr);
 
 const BIOS_CALLOUT_STRUCT BiosCallouts[] =
 {
@@ -32,6 +34,7 @@ const BIOS_CALLOUT_STRUCT BiosCallouts[] =
 	{AGESA_READ_SPD_RECOVERY,        agesa_NoopUnsupported },
 	{AGESA_RUNFUNC_ONAP,             agesa_RunFuncOnAp },
 	{AGESA_GET_IDS_INIT_DATA,        agesa_EmptyIdsInitData },
+	{AGESA_GNB_PCIE_SLOT_RESET,      board_GnbPciExSlotReset },
 	{AGESA_HOOKBEFORE_DQS_TRAINING,  agesa_NoopSuccess },
 	{AGESA_HOOKBEFORE_EXIT_SELF_REF, agesa_NoopSuccess }
 };
@@ -138,4 +141,72 @@ static AGESA_STATUS board_ReadSpd_from_cbfs(UINT32 Func, UINTN Data, VOID *Confi
 		die("No SPD data\n");
 
 	return AGESA_SUCCESS;
+}
+
+/* PCIE slot reset control */
+static AGESA_STATUS board_GnbPciExSlotReset(UINT32 Func, UINTN Data, VOID *ConfigPtr)
+{
+	AGESA_STATUS		Status;
+	PCIe_SLOT_RESET_INFO	*ResetInfo;
+	uint32_t		GpioData;
+	uint8_t			GpioValue;
+
+	ResetInfo = ConfigPtr;
+	Status = AGESA_UNSUPPORTED;
+
+	switch (ResetInfo->ResetId) {
+	/*
+	 * ResetID 1 = PCIE_RST# affects all PCIe slots on all boards except
+	 * apu2. ResetID 1 does not need any GPIO.
+	 */
+	case 1:
+		Status = AGESA_SUCCESS;
+		break;
+	case 51: /* GPIO51 resets mPCIe1 slot on apu2 */
+		switch (ResetInfo->ResetControl) {
+		case AssertSlotReset:
+			GpioData = gpio1_read32(0x8);
+			printk(BIOS_DEBUG, "%s: ResetID %u assert %08x\n",
+				__func__, ResetInfo->ResetId, GpioData);
+			GpioValue = gpio1_read8(0xa);
+			GpioValue &= ~BIT6;
+			gpio1_write8(0xa, GpioValue);
+			Status = AGESA_SUCCESS;
+			break;
+		case DeassertSlotReset:
+			GpioData = gpio1_read32(0x8);
+			printk(BIOS_DEBUG, "%s: ResetID %u deassert %08x\n",
+				__func__, ResetInfo->ResetId, GpioData);
+			GpioValue = gpio1_read8(0xa);
+			GpioValue |= BIT6;
+			gpio1_write8(0xa, GpioValue);
+			Status = AGESA_SUCCESS;
+			break;
+		}
+		break;
+	case 55: /* GPIO51 resets mPCIe2 slot on apu2 */
+		switch (ResetInfo->ResetControl) {
+		case AssertSlotReset:
+			GpioData = gpio1_read32(0xc);
+			printk(BIOS_DEBUG, "%s: ResetID %u assert %08x\n",
+				__func__, ResetInfo->ResetId, GpioData);
+			GpioValue = gpio1_read8(0xe);
+			GpioValue &= ~BIT6;
+			gpio1_write8(0xa, GpioValue);
+			Status = AGESA_SUCCESS;
+			break;
+		case DeassertSlotReset:
+			GpioData = gpio1_read32(0xc);
+			printk(BIOS_DEBUG, "%s: ResetID %u deassert %08x\n",
+				__func__, ResetInfo->ResetId, GpioData);
+			GpioValue = gpio1_read8(0xe);
+			GpioValue |= BIT6;
+			gpio1_write8(0xa, GpioValue);
+			Status = AGESA_SUCCESS;
+			break;
+		}
+		break;
+	}
+
+	return Status;
 }

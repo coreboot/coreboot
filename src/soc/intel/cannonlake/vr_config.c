@@ -202,6 +202,7 @@ static uint16_t get_sku_icc_max(int domain)
 
 		return icc_max[domain];
 	}
+	case PCI_DEVICE_ID_INTEL_CFL_ID_S_DT_8: /* fallthrough */
 	case PCI_DEVICE_ID_INTEL_CFL_ID_S_S_8: {
 		uint16_t icc_max[NUM_VR_DOMAINS] = VR_CFG_ALL_DOMAINS_ICC(11.1, 193, 45, 45);
 
@@ -356,6 +357,7 @@ static uint16_t get_sku_ac_dc_loadline(const int domain)
 		}
 		return loadline[domain];
 	}
+	case PCI_DEVICE_ID_INTEL_CFL_ID_S_DT_8: /* fallthrough */
 	case PCI_DEVICE_ID_INTEL_CFL_ID_S_S_8: {
 		/* FIXME: Loadline isn't specified for S-series, using H-series default */
 		const uint16_t loadline[NUM_VR_DOMAINS] =

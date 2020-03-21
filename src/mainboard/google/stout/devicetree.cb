@@ -1,7 +1,6 @@
 chip northbridge/intel/sandybridge
 	# IGD Displays
-	register "gfx.ndid" = "3"
-	register "gfx.did" = "{ 0x80000100, 0x80000240, 0x80000410, 0x80000410, 0x00000005 }"
+	register "gfx" = "GMA_STATIC_DISPLAYS(0)"
 
 	# Enable DisplayPort Hotplug with 6ms pulse
 	register "gpu_dp_d_hotplug" = "0x06"
@@ -15,7 +14,6 @@ chip northbridge/intel/sandybridge
 	register "gpu_panel_power_backlight_off_delay" = "2100" # TD: 210ms
 
 	# For native gfx
-	register "gfx.use_spread_spectrum_clock" = "0"
 	register "gpu_cpu_backlight" = "0x1155"
 	register "gpu_pch_backlight" = "0x06100610"
 

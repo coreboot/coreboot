@@ -1,6 +1,5 @@
 chip northbridge/intel/haswell
-	register "gfx.did" = "{ 0x80000100, 0x80000240, 0x80000410 }"
-	register "gfx.ndid" = "3"
+	register "gfx" = "GMA_STATIC_DISPLAYS(0)"
 	register "gpu_ddi_e_connected" = "1"
 	register "gpu_dp_b_hotplug" = "4"
 	register "gpu_dp_c_hotplug" = "4"

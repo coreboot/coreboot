@@ -1,7 +1,5 @@
 chip northbridge/intel/sandybridge
-	register "gfx.did" = "{ 0x80000100, 0x80000240, 0x80000410, 0x80000410, 0x00000005 }"
-	register "gfx.ndid" = "3"
-	register "gfx.use_spread_spectrum_clock" = "0"
+	register "gfx" = "GMA_STATIC_DISPLAYS(0)"
 	register "gpu_cpu_backlight" = "0x00000000"
 	register "gpu_dp_b_hotplug" = "0"
 	register "gpu_dp_c_hotplug" = "0"

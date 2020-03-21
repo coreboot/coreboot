@@ -1,7 +1,6 @@
 chip northbridge/intel/haswell
 	# IGD Displays
-	register "gfx.ndid" = "3"
-	register "gfx.did" = "{ 0x80000100, 0x80000240, 0x80000410, 0x80000410, 0x00000005 }"
+	register "gfx" = "GMA_STATIC_DISPLAYS(0)"
 
 	# Enable DisplayPort 1 Hotplug with 6ms pulse
 	register "gpu_dp_d_hotplug" = "0x06"

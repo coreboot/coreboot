@@ -15,8 +15,7 @@
 
 chip northbridge/intel/i945
 	# IGD Displays
-	register "gfx.ndid" = "3"
-	register "gfx.did" = "{ 0x80000100, 0x80000240, 0x80000410, 0x80000410, 0x00000005 }"
+	register "gfx" = "GMA_STATIC_DISPLAYS(0)"
 
 	register "gpu_hotplug" = "0x00000220"
 	register "gpu_lvds_use_spread_spectrum_clock" = "1"

@@ -15,8 +15,7 @@
 
 chip northbridge/intel/ironlake
 	# IGD Displays
-	register "gfx.ndid" = "3"
-	register "gfx.did" = "{ 0x80000100, 0x80000240, 0x80000410, 0x80000410, 0x00000005 }"
+	register "gfx" = "GMA_STATIC_DISPLAYS(1)"
 
 
 	# Enable DisplayPort Hotplug with 6ms pulse
@@ -31,7 +30,6 @@ chip northbridge/intel/ironlake
 	register "gpu_panel_power_backlight_off_delay" = "2500"
 	register "gpu_cpu_backlight" = "0x58d"
 	register "gpu_pch_backlight" = "0x061a061a"
-	register "gfx.use_spread_spectrum_clock" = "1"
 
 	device cpu_cluster 0 on
 		chip cpu/intel/model_2065x

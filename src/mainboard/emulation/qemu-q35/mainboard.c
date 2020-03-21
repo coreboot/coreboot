@@ -25,12 +25,7 @@ static const unsigned char qemu_q35_irqs[] = {
 	10, 10, 11, 11,
 };
 
-struct i915_gpu_controller_info gfx_controller_info = {
-	.ndid = 3,
-	.did = {
-		0x80000100, 0x80000240, 0x80000410, 0x80000410, 0x00000005
-	}
-};
+struct i915_gpu_controller_info gfx_controller_info = GMA_STATIC_DISPLAYS(0);
 
 const struct i915_gpu_controller_info *
 intel_gma_get_controller_info(void)

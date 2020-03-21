@@ -10,9 +10,8 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-chip northbridge/intel/sandybridge # FIXME: check gfx.ndid and gfx.did
-	register "gfx.did" = "{ 0x80000100, 0x80000240, 0x80000410, 0x80000410, 0x00000005 }"
-	register "gfx.ndid" = "3"
+chip northbridge/intel/sandybridge # FIXME: check gfx
+	register "gfx" = "GMA_STATIC_DISPLAYS(0)"
 	register "gpu_dp_b_hotplug" = "4"
 	register "gpu_dp_c_hotplug" = "4"
 	register "gpu_dp_d_hotplug" = "4"

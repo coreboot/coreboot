@@ -6,6 +6,7 @@
 #include <delay.h>
 #include "raminit_native.h"
 #include "raminit_common.h"
+#include "raminit_tables.h"
 
 /* Frequency multiplier */
 static u32 get_FRQ(u32 tCK)
@@ -23,91 +24,55 @@ static u32 get_FRQ(u32 tCK)
 /* Get REFI based on MC frequency */
 static u32 get_REFI(u32 tCK)
 {
-	static const u32 frq_refi_map[] = {
-	/* FRQ:    3,    4,    5,    6,    7,    8, */
-		3120, 4160, 5200, 6240, 7280, 8320,
-	};
-	return frq_refi_map[get_FRQ(tCK) - 3];
+	return frq_refi_map[0][get_FRQ(tCK) - 3];
 }
 
 /* Get XSOffset based on MC frequency */
 static u8 get_XSOffset(u32 tCK)
 {
-	static const u8 frq_xs_map[] = {
-	/* FRQ: 3,  4,  5,  6,  7,  8, */
-		4,  6,  7,  8, 10, 11,
-	};
-	return frq_xs_map[get_FRQ(tCK) - 3];
+	return frq_xs_map[0][get_FRQ(tCK) - 3];
 }
 
 /* Get MOD based on MC frequency */
 static u8 get_MOD(u32 tCK)
 {
-	static const u8 frq_mod_map[] = {
-	/* FRQ:  3,  4,  5,  6,  7,  8, */
-		12, 12, 12, 12, 15, 16,
-	};
-	return frq_mod_map[get_FRQ(tCK) - 3];
+	return frq_mod_map[0][get_FRQ(tCK) - 3];
 }
 
 /* Get Write Leveling Output delay based on MC frequency */
 static u8 get_WLO(u32 tCK)
 {
-	static const u8 frq_wlo_map[] = {
-	/* FRQ: 3, 4, 5, 6, 7, 8, */
-		4, 5, 6, 6, 8, 8,
-	};
-	return frq_wlo_map[get_FRQ(tCK) - 3];
+	return frq_wlo_map[0][get_FRQ(tCK) - 3];
 }
 
 /* Get CKE based on MC frequency */
 static u8 get_CKE(u32 tCK)
 {
-	static const u8 frq_cke_map[] = {
-	/* FRQ: 3, 4, 5, 6, 7, 8, */
-		3, 3, 4, 4, 5, 6,
-	};
-	return frq_cke_map[get_FRQ(tCK) - 3];
+	return frq_cke_map[0][get_FRQ(tCK) - 3];
 }
 
 /* Get XPDLL based on MC frequency */
 static u8 get_XPDLL(u32 tCK)
 {
-	static const u8 frq_xpdll_map[] = {
-	/* FRQ:  3,  4,  5,  6,  7,  8, */
-		10, 13, 16, 20, 23, 26,
-	};
-	return frq_xpdll_map[get_FRQ(tCK) - 3];
+	return frq_xpdll_map[0][get_FRQ(tCK) - 3];
 }
 
 /* Get XP based on MC frequency */
 static u8 get_XP(u32 tCK)
 {
-	static const u8 frq_xp_map[] = {
-	/* FRQ: 3, 4, 5, 6, 7, 8, */
-		3, 4, 4, 5, 6, 7,
-	};
-	return frq_xp_map[get_FRQ(tCK) - 3];
+	return frq_xp_map[0][get_FRQ(tCK) - 3];
 }
 
 /* Get AONPD based on MC frequency */
 static u8 get_AONPD(u32 tCK)
 {
-	static const u8 frq_aonpd_map[] = {
-	/* FRQ: 3,  4,  5,  6,  7,  8, */
-		4,  5,  6,  8,  8, 10,
-	};
-	return frq_aonpd_map[get_FRQ(tCK) - 3];
+	return frq_aonpd_map[0][get_FRQ(tCK) - 3];
 }
 
 /* Get COMP2 based on MC frequency */
 static u32 get_COMP2(u32 tCK)
 {
-	static const u32 frq_comp2_map[] = {
-	/* FRQ:          3,          4,          5,          6,          7,          8, */
-		0x0D6BEDCC, 0x0CE7C34C, 0x0CA57A4C, 0x0C6369CC, 0x0C42514C, 0x0C21410C,
-	};
-	return frq_comp2_map[get_FRQ(tCK) - 3];
+	return frq_comp2_map[0][get_FRQ(tCK) - 3];
 }
 
 static void snb_normalize_tclk(u32 *tclk)

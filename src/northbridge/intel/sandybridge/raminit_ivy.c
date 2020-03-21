@@ -7,6 +7,7 @@
 #include <device/pci_ops.h>
 #include "raminit_native.h"
 #include "raminit_common.h"
+#include "raminit_tables.h"
 
 /* Frequency multiplier */
 static u32 get_FRQ(u32 tCK, u8 base_freq)
@@ -31,175 +32,91 @@ static u32 get_FRQ(u32 tCK, u8 base_freq)
 /* Get REFI based on MC frequency, tREFI = 7.8usec */
 static u32 get_REFI(u32 tCK, u8 base_freq)
 {
-	if (base_freq == 100) {
-		static const u32 frq_xs_map[] = {
-		/* FRQ:    7,     8,     9,    10,    11,    12, */
-			5460,  6240,  7020,  7800,  8580,  9360,
-		};
-		return frq_xs_map[get_FRQ(tCK, 100) - 7];
+	if (base_freq == 100)
+		return frq_refi_map[1][get_FRQ(tCK, 100) - 7];
 
-	} else {
-		static const u32 frq_refi_map[] = {
-		/* FRQ:    3,     4,     5,     6,     7,     8,     9,    10, */
-			3120,  4160,  5200,  6240,  7280,  8320,  9360, 10400,
-		};
-		return frq_refi_map[get_FRQ(tCK, 133) - 3];
-	}
+	else
+		return frq_refi_map[0][get_FRQ(tCK, 133) - 3];
 }
 
 /* Get XSOffset based on MC frequency, tXS-Offset: tXS = tRFC + 10ns */
 static u8 get_XSOffset(u32 tCK, u8 base_freq)
 {
-	if (base_freq == 100) {
-		static const u8 frq_xs_map[] = {
-		/* FRQ: 7,  8,  9, 10, 11, 12, */
-			7,  8,  9, 10, 11, 12,
-		};
-		return frq_xs_map[get_FRQ(tCK, 100) - 7];
+	if (base_freq == 100)
+		return frq_xs_map[1][get_FRQ(tCK, 100) - 7];
 
-	} else {
-		static const u8 frq_xs_map[] = {
-		/* FRQ: 3,  4,  5,  6,  7,  8,  9, 10, */
-			4,  6,  7,  8, 10, 11, 12, 14,
-		};
-		return frq_xs_map[get_FRQ(tCK, 133) - 3];
-	}
+	else
+		return frq_xs_map[0][get_FRQ(tCK, 133) - 3];
 }
 
 /* Get MOD based on MC frequency */
 static u8 get_MOD(u32 tCK, u8 base_freq)
 {
-	if (base_freq == 100) {
-		static const u8 frq_mod_map[] = {
-		/* FRQ:  7,  8,  9, 10, 11, 12, */
-			12, 12, 14, 15, 17, 18,
-		};
-		return frq_mod_map[get_FRQ(tCK, 100) - 7];
+	if (base_freq == 100)
+		return frq_mod_map[1][get_FRQ(tCK, 100) - 7];
 
-	} else {
-		static const u8 frq_mod_map[] = {
-		/* FRQ:  3,  4,  5,  6,  7,  8,  9, 10, */
-			12, 12, 12, 12, 15, 16, 18, 20,
-		};
-		return frq_mod_map[get_FRQ(tCK, 133) - 3];
-	}
+	else
+		return frq_mod_map[0][get_FRQ(tCK, 133) - 3];
 }
 
 /* Get Write Leveling Output delay based on MC frequency */
 static u8 get_WLO(u32 tCK, u8 base_freq)
 {
-	if (base_freq == 100) {
-		static const u8 frq_wlo_map[] = {
-		/* FRQ: 7,  8,  9, 10, 11, 12, */
-			6,  6,  7,  8,  9,  9,
-		};
-		return frq_wlo_map[get_FRQ(tCK, 100) - 7];
+	if (base_freq == 100)
+		return frq_wlo_map[1][get_FRQ(tCK, 100) - 7];
 
-	} else {
-		static const u8 frq_wlo_map[] = {
-		/* FRQ: 3,  4,  5,  6,  7,  8,  9, 10, */
-			4,  5,  6,  6,  8,  8,  9, 10,
-		};
-		return frq_wlo_map[get_FRQ(tCK, 133) - 3];
-	}
+	else
+		return frq_wlo_map[0][get_FRQ(tCK, 133) - 3];
 }
 
 /* Get CKE based on MC frequency */
 static u8 get_CKE(u32 tCK, u8 base_freq)
 {
-	if (base_freq == 100) {
-		static const u8 frq_cke_map[] = {
-		/* FRQ: 7,  8,  9, 10, 11, 12, */
-			4,  4,  5,  5,  6,  6,
-		};
-		return frq_cke_map[get_FRQ(tCK, 100) - 7];
+	if (base_freq == 100)
+		return frq_cke_map[1][get_FRQ(tCK, 100) - 7];
 
-	} else {
-		static const u8 frq_cke_map[] = {
-		/* FRQ: 3,  4,  5,  6,  7,  8,  9, 10, */
-			3,  3,  4,  4,  5,  6,  6,  7,
-		};
-		return frq_cke_map[get_FRQ(tCK, 133) - 3];
-	}
+	else
+		return frq_cke_map[0][get_FRQ(tCK, 133) - 3];
 }
 
 /* Get XPDLL based on MC frequency */
 static u8 get_XPDLL(u32 tCK, u8 base_freq)
 {
-	if (base_freq == 100) {
-		static const u8 frq_xpdll_map[] = {
-		/* FRQ:  7,  8,  9, 10, 11, 12, */
-			17, 20, 22, 24, 27, 32,
-		};
-		return frq_xpdll_map[get_FRQ(tCK, 100) - 7];
+	if (base_freq == 100)
+		return frq_xpdll_map[1][get_FRQ(tCK, 100) - 7];
 
-	} else {
-		static const u8 frq_xpdll_map[] = {
-		/* FRQ:  3,  4,  5,  6,  7,  8,  9, 10, */
-			10, 13, 16, 20, 23, 26, 29, 32,
-		};
-		return frq_xpdll_map[get_FRQ(tCK, 133) - 3];
-	}
+	else
+		return frq_xpdll_map[0][get_FRQ(tCK, 133) - 3];
 }
 
 /* Get XP based on MC frequency */
 static u8 get_XP(u32 tCK, u8 base_freq)
 {
-	if (base_freq == 100) {
-		static const u8 frq_xp_map[] = {
-		/* FRQ: 7,  8,  9, 10, 11, 12, */
-			5,  5,  6,  6,  7,  8,
-		};
-		return frq_xp_map[get_FRQ(tCK, 100) - 7];
-	} else {
+	if (base_freq == 100)
+		return frq_xp_map[1][get_FRQ(tCK, 100) - 7];
 
-		static const u8 frq_xp_map[] = {
-		/* FRQ: 3,  4,  5,  6,  7,  8,  9, 10, */
-			3, 4, 4, 5, 6, 7, 8, 8
-		};
-		return frq_xp_map[get_FRQ(tCK, 133) - 3];
-	}
+	else
+		return frq_xp_map[0][get_FRQ(tCK, 133) - 3];
 }
 
 /* Get AONPD based on MC frequency */
 static u8 get_AONPD(u32 tCK, u8 base_freq)
 {
-	if (base_freq == 100) {
-		static const u8 frq_aonpd_map[] = {
-		/* FRQ: 7,  8,  9, 10, 11, 12, */
-			6,  8,  8,  9, 10, 11,
-		};
-		return frq_aonpd_map[get_FRQ(tCK, 100) - 7];
+	if (base_freq == 100)
+		return frq_aonpd_map[1][get_FRQ(tCK, 100) - 7];
 
-	} else {
-		static const u8 frq_aonpd_map[] = {
-		/* FRQ: 3,  4,  5,  6,  7,  8,  9, 10, */
-			4,  5,  6,  8,  8, 10, 11, 12,
-		};
-		return frq_aonpd_map[get_FRQ(tCK, 133) - 3];
-	}
+	else
+		return frq_aonpd_map[0][get_FRQ(tCK, 133) - 3];
 }
 
 /* Get COMP2 based on MC frequency */
 static u32 get_COMP2(u32 tCK, u8 base_freq)
 {
-	if (base_freq == 100) {
-		static const u32 frq_comp2_map[] = {
-		// FRQ:          7,          8,          9,         10,         11,         12,
-			0x0CA8C264, 0x0C6671E4, 0x0C6671E4, 0x0C446964, 0x0C235924, 0x0C235924,
-		};
-		return frq_comp2_map[get_FRQ(tCK, 100) - 7];
+	if (base_freq == 100)
+		return frq_comp2_map[1][get_FRQ(tCK, 100) - 7];
 
-	} else {
-		static const u32 frq_comp2_map[] = {
-		/* FRQ:          3,          4,          5,          6, */
-			0x0D6FF5E4, 0x0CEBDB64, 0x0CA8C264, 0x0C6671E4,
-
-		/* FRQ:          7,          8,          9,         10, */
-			0x0C446964, 0x0C235924, 0x0C235924, 0x0C235924,
-		};
-		return frq_comp2_map[get_FRQ(tCK, 133) - 3];
-	}
+	else
+		return frq_comp2_map[0][get_FRQ(tCK, 133) - 3];
 }
 
 static void ivb_normalize_tclk(ramctr_timing *ctrl, bool ref_100mhz_support)

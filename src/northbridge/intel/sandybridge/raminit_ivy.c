@@ -29,94 +29,94 @@ static u32 get_FRQ(u32 tCK, u8 base_freq)
 	return FRQ;
 }
 
-/* Get REFI based on MC frequency, tREFI = 7.8usec */
-static u32 get_REFI(u32 tCK, u8 base_freq)
+/* Get REFI based on frequency index, tREFI = 7.8usec */
+static u32 get_REFI(u32 FRQ, u8 base_freq)
 {
 	if (base_freq == 100)
-		return frq_refi_map[1][get_FRQ(tCK, 100) - 7];
+		return frq_refi_map[1][FRQ - 7];
 
 	else
-		return frq_refi_map[0][get_FRQ(tCK, 133) - 3];
+		return frq_refi_map[0][FRQ - 3];
 }
 
-/* Get XSOffset based on MC frequency, tXS-Offset: tXS = tRFC + 10ns */
-static u8 get_XSOffset(u32 tCK, u8 base_freq)
+/* Get XSOffset based on frequency index, tXS-Offset: tXS = tRFC + 10ns */
+static u8 get_XSOffset(u32 FRQ, u8 base_freq)
 {
 	if (base_freq == 100)
-		return frq_xs_map[1][get_FRQ(tCK, 100) - 7];
+		return frq_xs_map[1][FRQ - 7];
 
 	else
-		return frq_xs_map[0][get_FRQ(tCK, 133) - 3];
+		return frq_xs_map[0][FRQ - 3];
 }
 
-/* Get MOD based on MC frequency */
-static u8 get_MOD(u32 tCK, u8 base_freq)
+/* Get MOD based on frequency index */
+static u8 get_MOD(u32 FRQ, u8 base_freq)
 {
 	if (base_freq == 100)
-		return frq_mod_map[1][get_FRQ(tCK, 100) - 7];
+		return frq_mod_map[1][FRQ - 7];
 
 	else
-		return frq_mod_map[0][get_FRQ(tCK, 133) - 3];
+		return frq_mod_map[0][FRQ - 3];
 }
 
-/* Get Write Leveling Output delay based on MC frequency */
-static u8 get_WLO(u32 tCK, u8 base_freq)
+/* Get Write Leveling Output delay based on frequency index */
+static u8 get_WLO(u32 FRQ, u8 base_freq)
 {
 	if (base_freq == 100)
-		return frq_wlo_map[1][get_FRQ(tCK, 100) - 7];
+		return frq_wlo_map[1][FRQ - 7];
 
 	else
-		return frq_wlo_map[0][get_FRQ(tCK, 133) - 3];
+		return frq_wlo_map[0][FRQ - 3];
 }
 
-/* Get CKE based on MC frequency */
-static u8 get_CKE(u32 tCK, u8 base_freq)
+/* Get CKE based on frequency index */
+static u8 get_CKE(u32 FRQ, u8 base_freq)
 {
 	if (base_freq == 100)
-		return frq_cke_map[1][get_FRQ(tCK, 100) - 7];
+		return frq_cke_map[1][FRQ - 7];
 
 	else
-		return frq_cke_map[0][get_FRQ(tCK, 133) - 3];
+		return frq_cke_map[0][FRQ - 3];
 }
 
-/* Get XPDLL based on MC frequency */
-static u8 get_XPDLL(u32 tCK, u8 base_freq)
+/* Get XPDLL based on frequency index */
+static u8 get_XPDLL(u32 FRQ, u8 base_freq)
 {
 	if (base_freq == 100)
-		return frq_xpdll_map[1][get_FRQ(tCK, 100) - 7];
+		return frq_xpdll_map[1][FRQ - 7];
 
 	else
-		return frq_xpdll_map[0][get_FRQ(tCK, 133) - 3];
+		return frq_xpdll_map[0][FRQ - 3];
 }
 
-/* Get XP based on MC frequency */
-static u8 get_XP(u32 tCK, u8 base_freq)
+/* Get XP based on frequency index */
+static u8 get_XP(u32 FRQ, u8 base_freq)
 {
 	if (base_freq == 100)
-		return frq_xp_map[1][get_FRQ(tCK, 100) - 7];
+		return frq_xp_map[1][FRQ - 7];
 
 	else
-		return frq_xp_map[0][get_FRQ(tCK, 133) - 3];
+		return frq_xp_map[0][FRQ - 3];
 }
 
-/* Get AONPD based on MC frequency */
-static u8 get_AONPD(u32 tCK, u8 base_freq)
+/* Get AONPD based on frequency index */
+static u8 get_AONPD(u32 FRQ, u8 base_freq)
 {
 	if (base_freq == 100)
-		return frq_aonpd_map[1][get_FRQ(tCK, 100) - 7];
+		return frq_aonpd_map[1][FRQ - 7];
 
 	else
-		return frq_aonpd_map[0][get_FRQ(tCK, 133) - 3];
+		return frq_aonpd_map[0][FRQ - 3];
 }
 
-/* Get COMP2 based on MC frequency */
-static u32 get_COMP2(u32 tCK, u8 base_freq)
+/* Get COMP2 based on frequency index */
+static u32 get_COMP2(u32 FRQ, u8 base_freq)
 {
 	if (base_freq == 100)
-		return frq_comp2_map[1][get_FRQ(tCK, 100) - 7];
+		return frq_comp2_map[1][FRQ - 7];
 
 	else
-		return frq_comp2_map[0][get_FRQ(tCK, 133) - 3];
+		return frq_comp2_map[0][FRQ - 3];
 }
 
 static void ivb_normalize_tclk(ramctr_timing *ctrl, bool ref_100mhz_support)
@@ -363,14 +363,16 @@ static void dram_timing(ramctr_timing *ctrl)
 	ctrl->tRFC = DIV_ROUND_UP(ctrl->tRFC, ctrl->tCK);
 	printk(BIOS_DEBUG, "Selected tRFC          : %uT\n", ctrl->tRFC);
 
-	ctrl->tREFI     =     get_REFI(ctrl->tCK, ctrl->base_freq);
-	ctrl->tMOD      =      get_MOD(ctrl->tCK, ctrl->base_freq);
-	ctrl->tXSOffset = get_XSOffset(ctrl->tCK, ctrl->base_freq);
-	ctrl->tWLO      =      get_WLO(ctrl->tCK, ctrl->base_freq);
-	ctrl->tCKE      =      get_CKE(ctrl->tCK, ctrl->base_freq);
-	ctrl->tXPDLL    =    get_XPDLL(ctrl->tCK, ctrl->base_freq);
-	ctrl->tXP       =       get_XP(ctrl->tCK, ctrl->base_freq);
-	ctrl->tAONPD    =    get_AONPD(ctrl->tCK, ctrl->base_freq);
+	const u32 FRQ  = get_FRQ(ctrl->tCK, ctrl->base_freq);
+
+	ctrl->tREFI     =     get_REFI(FRQ, ctrl->base_freq);
+	ctrl->tMOD      =      get_MOD(FRQ, ctrl->base_freq);
+	ctrl->tXSOffset = get_XSOffset(FRQ, ctrl->base_freq);
+	ctrl->tWLO      =      get_WLO(FRQ, ctrl->base_freq);
+	ctrl->tCKE      =      get_CKE(FRQ, ctrl->base_freq);
+	ctrl->tXPDLL    =    get_XPDLL(FRQ, ctrl->base_freq);
+	ctrl->tXP       =       get_XP(FRQ, ctrl->base_freq);
+	ctrl->tAONPD    =    get_AONPD(FRQ, ctrl->base_freq);
 }
 
 static void dram_freq(ramctr_timing *ctrl)
@@ -432,6 +434,7 @@ static void dram_freq(ramctr_timing *ctrl)
 
 static void dram_ioregs(ramctr_timing *ctrl)
 {
+	const u32 FRQ = get_FRQ(ctrl->tCK, ctrl->base_freq);
 	u32 reg;
 
 	int channel;
@@ -459,7 +462,7 @@ static void dram_ioregs(ramctr_timing *ctrl)
 	printram("done\n");
 
 	/* Set COMP2 */
-	MCHBAR32(CRCOMPOFST2) = get_COMP2(ctrl->tCK, ctrl->base_freq);
+	MCHBAR32(CRCOMPOFST2) = get_COMP2(FRQ, ctrl->base_freq);
 	printram("COMP2 done\n");
 
 	/* Set COMP1 */

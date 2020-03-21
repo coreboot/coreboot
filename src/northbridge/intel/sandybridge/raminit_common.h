@@ -44,7 +44,7 @@
 /*
  * WARNING: Do not forget to increase MRC_CACHE_VERSION when the saved data is changed!
  */
-#define MRC_CACHE_VERSION 1
+#define MRC_CACHE_VERSION 2
 
 typedef struct odtmap_st {
 	u16 rttwr;
@@ -82,7 +82,9 @@ struct ram_rank_timings {
 /* WARNING: Do not forget to increase MRC_CACHE_VERSION when this struct is changed! */
 typedef struct ramctr_timing_st {
 	u16 spd_crc[NUM_CHANNELS][NUM_SLOTS];
-	int sandybridge;
+
+	/* CPUID value */
+	u32 cpu;
 
 	/* DDR base_freq = 100 Mhz / 133 Mhz */
 	u8 base_freq;

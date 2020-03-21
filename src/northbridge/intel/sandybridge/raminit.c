@@ -227,20 +227,19 @@ static void save_timings(ramctr_timing *ctrl)
 
 static int try_init_dram_ddr3(ramctr_timing *ctrl, int fast_boot, int s3resume, int me_uma_size)
 {
-	if (ctrl->sandybridge)
+	if (IS_SANDY_CPU(ctrl->cpu))
 		return try_init_dram_ddr3_snb(ctrl, fast_boot, s3resume, me_uma_size);
 	else
 		return try_init_dram_ddr3_ivb(ctrl, fast_boot, s3resume, me_uma_size);
 }
 
-static void init_dram_ddr3(int min_tck, int s3resume)
+static void init_dram_ddr3(int min_tck, int s3resume, const u32 cpuid)
 {
 	int me_uma_size, cbmem_was_inited, fast_boot, err;
 	ramctr_timing ctrl;
 	spd_raw_data spds[4];
 	struct region_device rdev;
 	ramctr_timing *ctrl_cached;
-	u32 cpu;
 
 	MCHBAR32(SAPMCTL) |= 1;
 
@@ -313,8 +312,7 @@ static void init_dram_ddr3(int min_tck, int s3resume)
 		ctrl.tCK = min_tck;
 
 		/* Get architecture */
-		cpu = cpu_get_cpuid();
-		ctrl.sandybridge = IS_SANDY_CPU(cpu);
+		ctrl.cpu = cpuid;
 
 		/* Get DDR3 SPD data */
 		memset(spds, 0, sizeof(spds));
@@ -334,8 +332,7 @@ static void init_dram_ddr3(int min_tck, int s3resume)
 		ctrl.tCK = min_tck;
 
 		/* Get architecture */
-		cpu = cpu_get_cpuid();
-		ctrl.sandybridge = IS_SANDY_CPU(cpu);
+		ctrl.cpu = cpuid;
 
 		/* Reset DDR3 frequency */
 		dram_find_spds_ddr3(spds, &ctrl);
@@ -385,5 +382,5 @@ void perform_raminit(int s3resume)
 
 	timestamp_add_now(TS_BEFORE_INITRAM);
 
-	init_dram_ddr3(get_mem_min_tck(), s3resume);
+	init_dram_ddr3(get_mem_min_tck(), s3resume, cpu_get_cpuid());
 }

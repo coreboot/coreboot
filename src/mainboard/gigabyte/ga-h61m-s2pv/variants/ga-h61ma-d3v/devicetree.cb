@@ -34,7 +34,6 @@ chip northbridge/intel/sandybridge
 		chip southbridge/intel/bd82x6x # Intel Series 6 Cougar Point PCH
 			register "c2_latency" = "0x0065"
 			register "gen1_dec" = "0x003c0a01"
-			register "pcie_port_coalesce" = "1"
 			register "sata_interface_speed_support" = "0x3"
 			register "sata_port_map" = "0x33"
 			register "spi_lvscc" = "0x2005"
@@ -43,12 +42,14 @@ chip northbridge/intel/sandybridge
 			device pci 16.1 off end	# Management Engine Interface 2
 			device pci 1a.0 on  end	# USB2 EHCI #2
 			device pci 1b.0 on  end	# High Definition Audio Audio controller
-			device pci 1c.0 on  end	# PCIe Port #1
-			device pci 1c.1 on  end	# PCIe Port #2
-			device pci 1c.2 on  end	# PCIe Port #3
-			device pci 1c.3 on  end	# PCIe Port #4
-			device pci 1c.4 on  end	# PCIe Port #5
-			device pci 1c.5 on  end	# PCIe Port #6
+
+			device pci 1c.0 on  end	# RP #1: PCIe x1 Port (PCIEX1_3)
+			device pci 1c.1 on  end	# RP #2: PCIe x1 Port (PCIEX1_1)
+			device pci 1c.2 on  end	# RP #3: Etron EJ168 USB 3.0
+			device pci 1c.3 on  end	# RP #4: Marvell 88SE9172 SATA
+			device pci 1c.4 on  end	# RP #5: Realtek RTL8111F GbE NIC
+			device pci 1c.5 on  end	# RP #6: PCIe x1 Port (PCIEX1_2)
+
 			device pci 1d.0 on  end	# USB2 EHCI #1
 			device pci 1e.0 off end	# PCI bridge
 			device pci 1f.0 on	# LPC bridge

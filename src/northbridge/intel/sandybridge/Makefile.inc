@@ -36,6 +36,7 @@ romstage-y += raminit.c
 romstage-y += raminit_common.c
 romstage-y += raminit_sandy.c
 romstage-y += raminit_ivy.c
+romstage-y += raminit_tables.c
 romstage-y += ../../../device/dram/ddr3.c
 else
 romstage-y += raminit_mrc.c

@@ -1,18 +1,7 @@
-/*
- * This file is part of the coreboot project.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; version 2 of the License.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- */
+/* SPDX-License-Identifier: GPL-2.0-only */
+/* This file is part of the coreboot project. */
 
-#ifndef SANDYBRIDGE_RAMINIT_PATTERNS_H
-#define SANDYBRIDGE_RAMINIT_PATTERNS_H
+#include "raminit_tables.h"
 
 const u32 pattern[32][16] = {
 	{0x00000000, 0x00000000, 0xffffffff, 0xffffffff,
@@ -654,5 +643,3 @@ const u8 invert[63][32] = {
 	 0x88, 0xa4, 0x1c, 0xea, 0x11, 0x8c, 0xfb, 0xbe,
 	 0x70, 0x62, 0xec, 0x4e, 0x00, 0x56, 0x0e, 0xa9},
 };
-
-#endif /* SANDYBRIDGE_RAMINIT_PATTERNS_H */

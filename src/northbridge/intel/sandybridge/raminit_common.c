@@ -24,6 +24,7 @@
 
 #include "raminit_native.h"
 #include "raminit_common.h"
+#include "raminit_tables.h"
 #include "sandybridge.h"
 
 /* FIXME: no ECC support */
@@ -2099,8 +2100,6 @@ static int test_320c(ramctr_timing *ctrl, int channel, int slotrank)
 
 	return lanes_ok != ((1 << NUM_LANES) - 1);
 }
-
-#include "raminit_patterns.h"
 
 static void fill_pattern5(ramctr_timing *ctrl, int channel, int patno)
 {

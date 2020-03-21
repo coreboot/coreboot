@@ -35,11 +35,6 @@
 	/* Display Output Switching */
 	Method (_DOS, 1)
 	{
-		/* Windows 2000 and Windows XP call _DOS to enable/disable
-		 * Display Output Switching during init and while a switch
-		 * is already active
-		 */
-		Store (And(Arg0, 7), DSEN)
 	}
 
 	/*
@@ -78,35 +73,5 @@
 				Increment (Local0)
 			}
 			XBCM (DerefOf (Index (BRIG, Local0)))
-		}
-	}
-
-	/* Device Current Status */
-	Method(XDCS, 1)
-	{
-		TRAP(1)
-		If (And(CSTE, ShiftLeft (1, Arg0))) {
-			Return (0x1f)
-		}
-		Return(0x1d)
-	}
-
-	/* Query Device Graphics State */
-	Method(XDGS, 1)
-	{
-		If (And(NSTE, ShiftLeft (1, Arg0))) {
-			Return(1)
-		}
-		Return(0)
-	}
-
-	/* Device Set State */
-	Method(XDSS, 1)
-	{
-		/* If Parameter Arg0 is (1 << 31) | (1 << 30), the
-		 * display switch was completed
-		 */
-		If (LEqual(And(Arg0, 0xc0000000), 0xc0000000)) {
-			Store (NSTE, CSTE)
 		}
 	}

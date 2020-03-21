@@ -102,39 +102,38 @@ drivers_intel_gma_displays_ssdt_generate(const struct i915_gpu_controller_info *
 		}
 
 		/*
-		Method(_DCS, 0)
-		{
-			Return (^^XDCS(<device number>))
-		}
+		 * _DCS, _DGS and _DSS are required by specification. However,
+		 * we never implemented them properly, and no OS driver com-
+		 * plained yet. So we stub them out and keep the traditional
+		 * behavior in case an OS driver checks for their existence.
+		 */
+
+		/*
+		  Method(_DCS, 0)
+		  {
+			Return (0x1d)
+		  }
 		*/
 		acpigen_write_method("_DCS", 0);
-		acpigen_emit_byte(0xa4); /* ReturnOp.  */
-		acpigen_emit_namestring("^^XDCS");
-		acpigen_write_byte(i);
+		acpigen_write_return_integer(0x1d);
 		acpigen_pop_len();
 
 		/*
-		Method(_DGS, 0)
-		{
-			Return (^^XDGS(<device number>))
-		}
+		  Method(_DGS, 0)
+		  {
+			Return (0)
+		  }
 		*/
 		acpigen_write_method("_DGS", 0);
-		acpigen_emit_byte(0xa4); /* ReturnOp.  */
-		acpigen_emit_namestring("^^XDGS");
-		acpigen_write_byte(i);
+		acpigen_write_return_integer(0);
 		acpigen_pop_len();
 
 		/*
-		Method(_DSS, 1)
-		{
-			^^XDSS(0x5a, Arg0)
-		}
+		  Method(_DSS, 1)
+		  {
+		  }
 		*/
 		acpigen_write_method("_DSS", 1);
-		acpigen_emit_namestring("^^XDSS");
-		acpigen_write_byte(i);
-		acpigen_emit_byte(0x68); /* Arg0Op.  */
 		acpigen_pop_len();
 
 		acpigen_pop_len();

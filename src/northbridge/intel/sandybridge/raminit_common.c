@@ -168,15 +168,14 @@ void dram_xover(ramctr_timing *ctrl)
 
 static void dram_odt_stretch(ramctr_timing *ctrl, int channel)
 {
-	u32 addr, cpu, stretch;
+	u32 addr, stretch;
 
 	stretch = ctrl->ref_card_offset[channel];
 	/*
 	 * ODT stretch:
 	 * Delay ODT signal by stretch value. Useful for multi DIMM setups on the same channel.
 	 */
-	cpu = cpu_get_cpuid();
-	if (IS_SANDY_CPU(cpu) && IS_SANDY_CPU_C(cpu)) {
+	if (IS_SANDY_CPU(ctrl->cpu) && IS_SANDY_CPU_C(ctrl->cpu)) {
 		if (stretch == 2)
 			stretch = 3;
 
@@ -2992,10 +2991,8 @@ void set_scrambling_seed(ramctr_timing *ctrl)
 	}
 }
 
-void set_wmm_behavior(void)
+void set_wmm_behavior(const u32 cpu)
 {
-	u32 cpu = cpu_get_cpuid();
-
 	if (IS_SANDY_CPU(cpu) && (IS_SANDY_CPU_D0(cpu) || IS_SANDY_CPU_D1(cpu))) {
 		MCHBAR32(SC_WDBWM) = 0x141d1519;
 	} else {

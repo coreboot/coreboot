@@ -609,7 +609,7 @@ int try_init_dram_ddr3_ivb(ramctr_timing *ctrl, int fast_boot, int s3_resume, in
 	MCHBAR32(SCHED_CBIT) = 0x10100005;
 
 	/* Set up watermarks and starvation counter */
-	set_wmm_behavior();
+	set_wmm_behavior(ctrl->cpu);
 
 	/* Clear IO reset bit */
 	MCHBAR32(MC_INIT_STATE_G) &= ~(1 << 5);

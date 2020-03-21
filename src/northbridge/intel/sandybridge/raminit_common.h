@@ -181,7 +181,7 @@ void normalize_training(ramctr_timing *ctrl);
 void write_controller_mr(ramctr_timing *ctrl);
 int channel_test(ramctr_timing *ctrl);
 void set_scrambling_seed(ramctr_timing *ctrl);
-void set_wmm_behavior(void);
+void set_wmm_behavior(const u32 cpu);
 void prepare_training(ramctr_timing *ctrl);
 void set_read_write_timings(ramctr_timing *ctrl);
 void set_normal_operation(ramctr_timing *ctrl);

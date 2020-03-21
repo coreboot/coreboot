@@ -239,7 +239,7 @@ static void init_dram_ddr3(int min_tck, int s3resume, const u32 cpuid)
 	ramctr_timing ctrl;
 	spd_raw_data spds[4];
 	struct region_device rdev;
-	ramctr_timing *ctrl_cached;
+	ramctr_timing *ctrl_cached = NULL;
 
 	MCHBAR32(SAPMCTL) |= 1;
 
@@ -266,14 +266,25 @@ static void init_dram_ddr3(int min_tck, int s3resume, const u32 cpuid)
 
 	/* Try to find timings in MRC cache */
 	err = mrc_cache_get_current(MRC_TRAINING_DATA, MRC_CACHE_VERSION, &rdev);
-	if (err || (region_device_sz(&rdev) < sizeof(ctrl))) {
-		if (s3resume) {
-			/* Failed S3 resume, reset to come up cleanly */
-			system_reset();
-		}
-		ctrl_cached = NULL;
-	} else {
+
+	if (!err && !(region_device_sz(&rdev) < sizeof(ctrl)))
 		ctrl_cached = rdev_mmap_full(&rdev);
+
+	/* Before reusing training data, assert that the CPU has not been replaced */
+	if (ctrl_cached && cpuid != ctrl_cached->cpu) {
+
+		/* It is not really worrying on a cold boot, but fatal when resuming from S3 */
+		printk(s3resume ? BIOS_ALERT : BIOS_NOTICE,
+				"CPUID %x differs from stored CPUID %x, CPU was replaced!\n",
+				cpuid, ctrl_cached->cpu);
+
+		/* Invalidate the stored data, it likely does not apply to the current CPU */
+		ctrl_cached = NULL;
+	}
+
+	if (s3resume && !ctrl_cached) {
+		/* S3 resume is impossible, reset to come up cleanly */
+		system_reset();
 	}
 
 	/* Verify MRC cache for fast boot */

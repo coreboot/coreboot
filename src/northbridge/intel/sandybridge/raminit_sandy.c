@@ -281,7 +281,7 @@ static void dram_timing(ramctr_timing *ctrl)
 	printk(BIOS_DEBUG, "Selected tWTR          : %uT\n", ctrl->tWTR);
 
 	/* Refresh-to-Active or Refresh-to-Refresh (tRFC) */
-	ctrl->tRFC = DIV_ROUND_UP(ctrl->tRFC, ctrl->tCK - 1);	/* FIXME: Why the -1 ? */
+	ctrl->tRFC = DIV_ROUND_UP(ctrl->tRFC, ctrl->tCK);
 	printk(BIOS_DEBUG, "Selected tRFC          : %uT\n", ctrl->tRFC);
 
 	ctrl->tREFI     =     get_REFI(ctrl->tCK);

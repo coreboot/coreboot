@@ -29,39 +29,45 @@ drivers_intel_gma_displays_ssdt_generate(const struct i915_gpu_controller_info *
 	acpigen_write_scope("\\_SB.PCI0.GFX0");
 
 	/*
-	Method (_DOD, 0)
-	{
+	  Method (_DOD, 0)
+	  {
 		Return (Package() {
 				0x5a5a5a5a,
 				0x5a5a5a5a,
 				0x5a5a5a5a
 			})
-	}
+	  }
 	*/
 	acpigen_write_method("_DOD", 0);
-	acpigen_emit_byte(0xa4); /* ReturnOp.  */
-	acpigen_write_package(conf->ndid);
 
+	acpigen_emit_byte(RETURN_OP);
+	acpigen_write_package(conf->ndid);
 	for (i = 0; i < conf->ndid; i++) {
 		acpigen_write_dword (conf->did[i] | 0x80010000);
 	}
 	acpigen_pop_len(); /* End Package. */
+
 	acpigen_pop_len(); /* End Method. */
 
 	for (i = 0; i < conf->ndid; i++) {
 		char name[10];
 		char *ptr;
 		int kind;
+
 		kind = (conf->did[i] >> 8) & 0xf;
 		if (kind >= ARRAY_SIZE(names)) {
 			kind = 0;
 		}
+
 		strcpy(name, names[kind]);
 		for (ptr = name; *ptr; ptr++);
 		*ptr++ = counters[kind] + '0';
 		*ptr++ = '\0';
 		counters[kind]++;
+
+		/* Device (LCD0) */
 		acpigen_write_device(name);
+
 		/* Name (_ADR, 0x0410) */
 		acpigen_write_name_dword("_ADR", conf->did[i] & 0xffff);
 
@@ -74,7 +80,7 @@ drivers_intel_gma_displays_ssdt_generate(const struct i915_gpu_controller_info *
 			  }
 			*/
 			acpigen_write_method("_BCL", 0);
-			acpigen_emit_byte(0xa4); /* ReturnOp.  */
+			acpigen_emit_byte(RETURN_OP);
 			acpigen_emit_namestring("^^XBCL");
 			acpigen_pop_len();
 
@@ -86,7 +92,7 @@ drivers_intel_gma_displays_ssdt_generate(const struct i915_gpu_controller_info *
 			*/
 			acpigen_write_method("_BCM", 1);
 			acpigen_emit_namestring("^^XBCM");
-			acpigen_emit_byte(0x68); /* Arg0Op.  */
+			acpigen_emit_byte(ARG0_OP);
 			acpigen_pop_len();
 
 			/*
@@ -96,7 +102,7 @@ drivers_intel_gma_displays_ssdt_generate(const struct i915_gpu_controller_info *
 			  }
 			*/
 			acpigen_write_method("_BQC", 0);
-			acpigen_emit_byte(0xa4); /* ReturnOp.  */
+			acpigen_emit_byte(RETURN_OP);
 			acpigen_emit_namestring("^^XBQC");
 			acpigen_pop_len();
 		}
@@ -136,8 +142,8 @@ drivers_intel_gma_displays_ssdt_generate(const struct i915_gpu_controller_info *
 		acpigen_write_method("_DSS", 1);
 		acpigen_pop_len();
 
-		acpigen_pop_len();
+		acpigen_pop_len(); /* End Device. */
 	}
 
-	acpigen_pop_len();
+	acpigen_pop_len(); /* End Scope. */
 }

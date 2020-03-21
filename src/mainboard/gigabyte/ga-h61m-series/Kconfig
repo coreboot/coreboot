@@ -32,7 +32,7 @@ config BOARD_SPECIFIC_OPTIONS
 
 config MAINBOARD_DIR
 	string
-	default "gigabyte/ga-h61m-s2pv"
+	default "gigabyte/ga-h61m-series"
 
 config VARIANT_DIR
 	string

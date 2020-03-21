@@ -50,8 +50,7 @@ drivers_intel_gma_displays_ssdt_generate(const struct i915_gpu_controller_info *
 	acpigen_pop_len(); /* End Method. */
 
 	for (i = 0; i < conf->ndid; i++) {
-		char name[10];
-		char *ptr;
+		char name[5];
 		int kind;
 
 		kind = (conf->did[i] >> 8) & 0xf;
@@ -59,10 +58,7 @@ drivers_intel_gma_displays_ssdt_generate(const struct i915_gpu_controller_info *
 			kind = 0;
 		}
 
-		strcpy(name, names[kind]);
-		for (ptr = name; *ptr; ptr++);
-		*ptr++ = counters[kind] + '0';
-		*ptr++ = '\0';
+		snprintf(name, sizeof(name), "%s%d", names[kind], counters[kind]);
 		counters[kind]++;
 
 		/* Device (LCD0) */

@@ -41,15 +41,22 @@
    performant and even 1 seems to be enough in practice.  */
 #define NUM_PATTERNS	4
 
+/*
+ * WARNING: Do not forget to increase MRC_CACHE_VERSION when the saved data is changed!
+ */
+#define MRC_CACHE_VERSION 1
+
 typedef struct odtmap_st {
 	u16 rttwr;
 	u16 rttnom;
 } odtmap;
 
+/* WARNING: Do not forget to increase MRC_CACHE_VERSION when this struct is changed! */
 typedef struct dimm_info_st {
 	dimm_attr dimm[NUM_CHANNELS][NUM_SLOTS];
 } dimm_info;
 
+/* WARNING: Do not forget to increase MRC_CACHE_VERSION when this struct is changed! */
 struct ram_rank_timings {
 	/* ROUNDT_LAT register: One byte per slotrank */
 	u8 roundtrip_latency;
@@ -72,6 +79,7 @@ struct ram_rank_timings {
 	} lanes[NUM_LANES];
 };
 
+/* WARNING: Do not forget to increase MRC_CACHE_VERSION when this struct is changed! */
 typedef struct ramctr_timing_st {
 	u16 spd_crc[NUM_CHANNELS][NUM_SLOTS];
 	int sandybridge;

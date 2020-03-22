@@ -14,7 +14,6 @@ chip northbridge/intel/sandybridge
 	register "gpu_panel_power_backlight_on_delay" = "2000"	# T3: 200ms
 	register "gpu_panel_power_backlight_off_delay" = "2000"	# T4: 200ms
 	register "gfx.use_spread_spectrum_clock" = "1"
-	register "gfx.link_frequency_270_mhz" = "1"
 	register "gpu_cpu_backlight" = "0x1155"
 	register "gpu_pch_backlight" = "0x06100610"
 

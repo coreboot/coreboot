@@ -1,5 +1,4 @@
 chip northbridge/intel/sandybridge
-	register "gfx.link_frequency_270_mhz" = "0"
 	device cpu_cluster 0x0 on
 		chip cpu/intel/model_206ax
 			register "c1_acpower" = "1"

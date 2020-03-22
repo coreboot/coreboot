@@ -12,7 +12,6 @@
 
 chip northbridge/intel/sandybridge # FIXME: check gfx.ndid and gfx.did
 	register "gfx.did" = "{ 0x80000100, 0x80000240, 0x80000410, 0x80000410, 0x00000005 }"
-	register "gfx.link_frequency_270_mhz" = "1"
 	register "gfx.ndid" = "3"
 	register "gpu_dp_b_hotplug" = "4"
 	register "gpu_dp_c_hotplug" = "4"

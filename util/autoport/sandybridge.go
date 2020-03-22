@@ -14,26 +14,6 @@ func (i sandybridgemc) Scan(ctx Context, addr PCIDevData) {
 					GMA_INT15_BOOT_DISPLAY_DEFAULT, 0);
 `)
 
-	pchLVDS := inteltool.IGD[0xe1180]
-	dualChannel := pchLVDS&(3<<2) == (3 << 2)
-	pipe := (pchLVDS >> 30) & 1
-	link_m1 := inteltool.IGD[0x60040+0x1000*pipe]
-	link_n1 := inteltool.IGD[0x60044+0x1000*pipe]
-	link_factor := float32(link_m1) / float32(link_n1)
-	fp0 := inteltool.IGD[0xc6040+8*pipe]
-	dpll := inteltool.IGD[0xc6014+4*pipe]
-	pixel_m2 := fp0 & 0xff
-	pixel_m1 := (fp0>>8)&0xff + 2
-	pixel_p1 := uint32(1)
-	for i := dpll & 0x1ffff; i != 0 && i&1 == 0; i >>= 1 {
-		pixel_p1++
-	}
-	pixel_n := ((fp0 >> 16) & 0xff) + 2
-	pixel_frequency := float32(120000*(5*pixel_m1+pixel_m2)) / float32(pixel_n*pixel_p1*7.0)
-	if !dualChannel {
-		pixel_frequency /= 2
-	}
-	link_frequency := pixel_frequency / link_factor
 	DevTree = DevTreeNode{
 		Chip:          "northbridge/intel/sandybridge",
 		MissingParent: "northbridge",
@@ -51,7 +31,6 @@ func (i sandybridgemc) Scan(ctx Context, addr PCIDevData) {
 			"gpu_cpu_backlight":                   FormatHex32(inteltool.IGD[0x48254]),
 			"gpu_pch_backlight":                   FormatHex32((inteltool.IGD[0xc8254] >> 16) * 0x10001),
 			"gfx.use_spread_spectrum_clock":       FormatBool((inteltool.IGD[0xc6200]>>12)&1 != 0),
-			"gfx.link_frequency_270_mhz":          FormatBool(link_frequency > 200000),
 		},
 		Children: []DevTreeNode{
 			{

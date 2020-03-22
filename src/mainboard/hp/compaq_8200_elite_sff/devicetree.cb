@@ -14,7 +14,6 @@
 ##
 
 chip northbridge/intel/sandybridge
-	register "gfx.link_frequency_270_mhz" = "0"
 	register "gfx.use_spread_spectrum_clock" = "0"
 	register "gpu_dp_b_hotplug" = "0"
 	register "gpu_dp_c_hotplug" = "0"

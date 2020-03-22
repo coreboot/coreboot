@@ -32,7 +32,6 @@ chip northbridge/intel/ironlake
 	register "gpu_cpu_backlight" = "0x58d"
 	register "gpu_pch_backlight" = "0x061a061a"
 	register "gfx.use_spread_spectrum_clock" = "0"
-	register "gfx.link_frequency_270_mhz" = "1"
 
 	device cpu_cluster 0 on
 		chip cpu/intel/model_2065x

@@ -72,12 +72,12 @@ IndexField (PNP_ADDR_REG, PNP_DATA_REG, ByteAcc, NoLock, Preserve)
 #define PNP_EXIT_MAGIC_1ST      0xaa
 #include <superio/acpi/pnp_config.asl>
 
-/* PM: indicate IPD (Immediate Power Down) bit state as D0/D2 */
+/* PM: indicate IPD (Immediate Power Down) bit state as D0/D3 */
 Method (_PSC) {
 	ENTER_CONFIG_MODE (0xFF)
 	Store (IPD, Local0)
 	EXIT_CONFIG_MODE ()
-	If (Local0) { Return (2) }
+	If (Local0) { Return (3) }
 	Else { Return (0) }
 }
 

@@ -166,12 +166,12 @@ Device(SIO) {
 		Release (CRMX)
 	}
 
-	/* PM: indicate IPD (Immediate Power Down) bit state as D0/D2 */
+	/* PM: indicate IPD (Immediate Power Down) bit state as D0/D3 */
 	Method (_PSC) {
 		ENCM (0xFF)
 		Store (IPD, Local0)
 		EXCM ()
-		If (Local0) { Return (2) }
+		If (Local0) { Return (3) }
 		Else { Return (0) }
 	}
 
@@ -182,8 +182,8 @@ Device(SIO) {
 		EXCM ()
 	}
 
-	/* PM: Switch to D2 by setting IPD high  */
-	Method (_PS2) {
+	/* PM: Switch to D3 by setting IPD high  */
+	Method (_PS3) {
 		ENCM (0xFF)
 		Store (One, IPD)
 		EXCM ()
@@ -220,7 +220,7 @@ Device(SIO) {
 			ENCM (0xFF)
 			Store (FDPW, Local0)
 			EXCM ()
-			If (Local0) { Return (1) }
+			If (Local0) { Return (3) }
 			Else { Return (0) }
 		}
 		/* Disable power saving mode */
@@ -230,7 +230,7 @@ Device(SIO) {
 			EXCM ()
 		}
 		/* Enable power saving mode */
-		Method (_PS1) {
+		Method (_PS3) {
 			ENCM (0xFF)
 			Store (Zero, FDPW)
 			EXCM ()
@@ -441,7 +441,7 @@ Device(SIO) {
 			ENCM (0xFF)
 			Store (PRPW, Local0)
 			EXCM ()
-			If (Local0) { Return (1) }
+			If (Local0) { Return (3) }
 			Else { Return (0) }
 		}
 		Method (_PS0) {
@@ -449,7 +449,7 @@ Device(SIO) {
 			Store (One, PRPW)
 			EXCM ()
 		}
-		Method (_PS1) {
+		Method (_PS3) {
 			ENCM (0xFF)
 			Store (Zero, PRPW)
 			EXCM ()
@@ -618,7 +618,7 @@ Device(SIO) {
 			ENCM (0xFF)
 			Store (UAPW, Local0)
 			EXCM ()
-			If (Local0) { Return (1) }
+			If (Local0) { Return (3) }
 			Else { Return (0) }
 		}
 		Method (_PS0) {
@@ -626,7 +626,7 @@ Device(SIO) {
 			Store (One, UAPW)
 			EXCM ()
 		}
-		Method (_PS1) {
+		Method (_PS3) {
 			ENCM (0xFF)
 			Store (Zero, UAPW)
 			EXCM ()
@@ -743,7 +743,7 @@ Device(SIO) {
 			ENCM (0xFF)
 			Store (UBPW, Local0)
 			EXCM ()
-			If (Local0) { Return (1) }
+			If (Local0) { Return (3) }
 			Else { Return (0) }
 		}
 		Method (_PS0) {
@@ -751,7 +751,7 @@ Device(SIO) {
 			Store (One, UBPW)
 			EXCM ()
 		}
-		Method (_PS1) {
+		Method (_PS3) {
 			ENCM (0xFF)
 			Store (Zero, UBPW)
 			EXCM ()
@@ -868,7 +868,7 @@ Device(SIO) {
 			ENCM (0xFF)
 			Store (UBPW, Local0)
 			EXCM ()
-			If (Local0) { Return (1) }
+			If (Local0) { Return (3) }
 			Else { Return (0) }
 		}
 		Method (_PS0) {
@@ -876,7 +876,7 @@ Device(SIO) {
 			Store (One, UBPW)
 			EXCM ()
 		}
-		Method (_PS1) {
+		Method (_PS3) {
 			ENCM (0xFF)
 			Store (Zero, UBPW)
 			EXCM ()
@@ -1391,7 +1391,7 @@ Device(SIO) {
 			ENCM (0xFF)
 			Store (HWPW, Local0)
 			EXCM ()
-			If (Local0) { Return (1) }
+			If (Local0) { Return (3) }
 			Else { Return (0) }
 		}
 
@@ -1402,7 +1402,7 @@ Device(SIO) {
 			EXCM ()
 		}
 
-		Method (_PS1)
+		Method (_PS3)
 		{
 			ENCM (0xFF)
 			Store (Zero, HWPW)

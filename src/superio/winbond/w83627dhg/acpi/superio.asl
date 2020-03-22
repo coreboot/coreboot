@@ -109,12 +109,12 @@ Device(SUPERIO_DEV) {
 	#define PNP_EXIT_MAGIC_1ST	0xaa
 	#include <superio/acpi/pnp_config.asl>
 
-	/* PM: indicate IPD (Immediate Power Down) bit state as D0/D2 */
+	/* PM: indicate IPD (Immediate Power Down) bit state as D0/D3 */
 	Method (_PSC) {
 		ENTER_CONFIG_MODE (PNP_NO_LDN_CHANGE)
 		  Store (IPD, Local0)
 		EXIT_CONFIG_MODE ()
-		If (Local0) { Return (2) }
+		If (Local0) { Return (3) }
 		Else { Return (0) }
 	}
 
@@ -125,8 +125,8 @@ Device(SUPERIO_DEV) {
 		EXIT_CONFIG_MODE ()
 	}
 
-	/* PM: Switch to D2 by setting IPD high  */
-	Method (_PS2) {
+	/* PM: Switch to D3 by setting IPD high  */
+	Method (_PS3) {
 		ENTER_CONFIG_MODE (PNP_NO_LDN_CHANGE)
 		  Store (One, IPD)
 		EXIT_CONFIG_MODE ()

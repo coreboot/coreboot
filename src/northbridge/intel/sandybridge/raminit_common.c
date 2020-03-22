@@ -2501,7 +2501,10 @@ int discover_edges(ramctr_timing *ctrl)
 		MCHBAR32(IOSAV_DATA_CTL_ch(channel)) = 0;
 	}
 
-	/* FIXME: under some conditions (older chipsets?) vendor BIOS sets both edges to the same value.  */
+	/*
+	 * FIXME: Under some conditions, vendor BIOS sets both edges to the same value. It will
+	 *        also use a single loop. It would seem that it is a debugging configuration.
+	 */
 	MCHBAR32(IOSAV_DC_MASK) = 0x300;
 	printram("discover falling edges:\n[%x] = %x\n", IOSAV_DC_MASK, 0x300);
 

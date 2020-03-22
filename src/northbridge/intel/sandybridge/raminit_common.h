@@ -72,8 +72,6 @@ struct ram_rank_timings {
 	} lanes[NUM_LANES];
 };
 
-struct ramctr_timing_st;
-
 typedef struct ramctr_timing_st {
 	u16 spd_crc[NUM_CHANNELS][NUM_SLOTS];
 	int sandybridge;

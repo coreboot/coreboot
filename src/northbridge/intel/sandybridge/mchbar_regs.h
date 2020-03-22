@@ -215,6 +215,10 @@
 #define TC_RAP_ch(ch)			Cx(0x4004, ch) /* Timings: Regular access */
 #define TC_RWP_ch(ch)			Cx(0x4008, ch) /* Timings: Read / Write */
 #define TC_OTHP_ch(ch)			Cx(0x400c, ch) /* Timings: Other parameters */
+
+/** WARNING: Only applies to Ivy Bridge! */
+#define TC_DTP_ch(ch)			Cx(0x4014, ch) /** Timings: Debug parameters */
+
 #define SCHED_SECOND_CBIT_ch(ch)	Cx(0x401c, ch) /* More chicken bits */
 #define SCHED_CBIT_ch(ch)		Cx(0x4020, ch) /* Chicken bits in scheduler */
 #define SC_ROUNDT_LAT_ch(ch)		Cx(0x4024, ch) /* Round-trip latency per rank */
@@ -280,6 +284,10 @@
 #define TC_RAP			0x4c04 /* Timings: Regular access */
 #define TC_RWP			0x4c08 /* Timings: Read / Write */
 #define TC_OTHP			0x4c0c /* Timings: Other parameters */
+
+/** WARNING: Only applies to Ivy Bridge! */
+#define TC_DTP			0x4c14 /** Timings: Debug parameters */
+
 #define SCHED_SECOND_CBIT	0x4c1c /* More chicken bits */
 #define SCHED_CBIT		0x4c20 /* Chicken bits in scheduler */
 #define SC_ROUNDT_LAT		0x4c24 /* Round-trip latency per rank */

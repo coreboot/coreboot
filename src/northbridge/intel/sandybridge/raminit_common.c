@@ -216,8 +216,8 @@ void dram_timing_regs(ramctr_timing *ctrl)
 		printram("OTHP [%x] = %x\n", addr, reg);
 		MCHBAR32(addr) = reg;
 
-		/* FIXME: This register might as well not exist */
-		MCHBAR32(0x4014 + channel * 0x400) = 0;
+		/* FIXME: This register only exists on Ivy Bridge! */
+		MCHBAR32(TC_DTP_ch(channel)) = 0;
 
 		MCHBAR32_OR(addr, 0x00020000);
 

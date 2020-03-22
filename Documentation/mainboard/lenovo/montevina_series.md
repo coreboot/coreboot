@@ -112,8 +112,10 @@ If your flash is not 8 MiB, you need to change values of `flcomp_density1` and
 
 Then create the flash descriptor:
 ```console
-$ ./bincfg ifd-x200.spec ifd-x200.set ifd.bin
+$ make gen-ifd-x200
 ```
+
+It will be saved to the `flashregion_0_fd.bin` file.
 
 #### Configuring coreboot
 
@@ -127,7 +129,7 @@ Mainboard --->
 
 Chipset --->
     [*] Add Intel descriptor.bin file
-    # Note: if you used bincfg, specify path to generated util/bincfg/ifd.bin
+    # Note: if you used bincfg, specify path to generated util/bincfg/flashregion_0_fd.bin
     (/path/to/flashregion_0_flashdescriptor.bin) Path and filename of the descriptor.bin file
 
     [*] Add gigabit ethernet configuration

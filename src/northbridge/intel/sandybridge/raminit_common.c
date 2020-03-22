@@ -2626,7 +2626,7 @@ static int discover_edges_write_real(ramctr_timing *ctrl, int channel, int slotr
 				}
 
 				/* FIXME: This register only exists on Ivy Bridge */
-				raw_stats[edge] = MCHBAR32(0x436c + channel * 0x400);
+				raw_stats[edge] = MCHBAR32(IOSAV_BYTE_SERROR_C_ch(channel));
 			}
 
 			FOR_ALL_LANES {
@@ -2797,8 +2797,8 @@ int discover_timC_write(ramctr_timing *ctrl)
 						test_timC_write (ctrl, channel, slotrank);
 
 						/* FIXME: Another IVB-only register! */
-						raw_stats[timC] =
-							MCHBAR32(0x436c + channel * 0x400);
+						raw_stats[timC] = MCHBAR32(
+							IOSAV_BYTE_SERROR_C_ch(channel));
 					}
 					FOR_ALL_LANES {
 						struct run rn;

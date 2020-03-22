@@ -67,14 +67,13 @@
  *   [2]        !WE  signal.
  *   [4..7]     CKE, per rank and channel.
  *   [8..11]    ODT, per rank and channel.
- *   [12]       Chip Select mode control.
- *   [13..16]   Chip select, per rank and channel. It works as follows:
+ *   [12..15]   Chip select, per rank and channel. It works as follows:
  *
  *          entity CS_BLOCK is
  *              port (
- *                  MODE    : in  std_logic;                -- Mode select at [12]
+ *                  MODE    : in  std_logic;                -- Mode select at [16]
  *                  RANKSEL : in  std_logic_vector(0 to 3); -- Decoded "ranksel" value
- *                  CS_CTL  : in  std_logic_vector(0 to 3); -- Chip select control at [13..16]
+ *                  CS_CTL  : in  std_logic_vector(0 to 3); -- Chip select control at [12..15]
  *                  CS_Q    : out std_logic_vector(0 to 3)  -- CS signals
  *              );
  *          end entity CS_BLOCK;
@@ -88,6 +87,7 @@
  *              end if;
  *          end architecture RTL;
  *
+ *   [16]       Chip Select mode control.
  *   [17]       Auto Precharge. Only valid when using 10 row bits!
  *
  * IOSAV_n_SUBSEQ_CTRL_ch(channel, index)

@@ -13,6 +13,7 @@
 ## GNU General Public License for more details.
 ##
 
+bootblock-y += bootblock.c
 ramstage-y += ramstage.c
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += fadt.c
 

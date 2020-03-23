@@ -26,6 +26,16 @@
 #define NUM_SLOTS	2
 #define NUM_LANES	8
 
+#define NO_RANKSEL		(~(1 << 16))
+#define IOSAV_MRS		(0x1f000)
+#define IOSAV_PRE		(0x1f002)
+#define IOSAV_ZQCS		(0x1f003)
+#define IOSAV_ACT		(0x1f006)
+#define IOSAV_RD		(0x1f105)
+#define IOSAV_NOP_ALT		(0x1f107)
+#define IOSAV_WR		(0x1f201)
+#define IOSAV_NOP		(0x1f207)
+
 /* FIXME: Vendor BIOS uses 64 but our algorithms are less
    performant and even 1 seems to be enough in practice.  */
 #define NUM_PATTERNS	4

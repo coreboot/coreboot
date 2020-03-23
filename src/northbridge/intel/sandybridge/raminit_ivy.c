@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 /* This file is part of the coreboot project. */
 
+#include <commonlib/clamp.h>
 #include <console/console.h>
 #include <console/usb.h>
 #include <delay.h>
@@ -9,24 +10,25 @@
 #include "raminit_common.h"
 #include "raminit_tables.h"
 
-/* Frequency multiplier */
-static u32 get_FRQ(u32 tCK, u8 base_freq)
-{
-	const u32 FRQ = 256000 / (tCK * base_freq);
+#define IVB_MIN_DCLK_133_MULT	3
+#define IVB_MAX_DCLK_133_MULT	10
+#define IVB_MIN_DCLK_100_MULT	7
+#define IVB_MAX_DCLK_100_MULT	12
 
-	if (base_freq == 100) {
-		if (FRQ > 12)
-			return 12;
-		if (FRQ < 7)
-			return 7;
-	} else {
-		if (FRQ > 10)
-			return 10;
-		if (FRQ < 3)
-			return 3;
+/* Frequency multiplier */
+static u32 get_FRQ(const ramctr_timing *ctrl)
+{
+	const u32 FRQ = 256000 / (ctrl->tCK * ctrl->base_freq);
+
+	if (IS_IVY_CPU(ctrl->cpu)) {
+		if (ctrl->base_freq == 100)
+			return clamp_u32(IVB_MIN_DCLK_100_MULT, FRQ, IVB_MAX_DCLK_100_MULT);
+
+		if (ctrl->base_freq == 133)
+			return clamp_u32(IVB_MIN_DCLK_133_MULT, FRQ, IVB_MAX_DCLK_133_MULT);
 	}
 
-	return FRQ;
+	die("Unsupported CPU or base frequency.");
 }
 
 /* Get REFI based on frequency index, tREFI = 7.8usec */
@@ -204,7 +206,7 @@ static void find_cas_tck(ramctr_timing *ctrl)
 	}
 
 	/* Frequency multiplier */
-	ctrl->FRQ = get_FRQ(ctrl->tCK, ctrl->base_freq);
+	ctrl->FRQ = get_FRQ(ctrl);
 
 	printk(BIOS_DEBUG, "Selected DRAM frequency: %u MHz\n", NS2MHZ_DIV256 / ctrl->tCK);
 	printk(BIOS_DEBUG, "Selected CAS latency   : %uT\n", val);

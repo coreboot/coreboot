@@ -5,8 +5,8 @@
  * SPDX-License-Identifier: GPL-2.0-or-later
  */
 
-#ifndef _SOC_MEMINIT_TGL_H_
-#define _SOC_MEMINIT_TGL_H_
+#ifndef _SOC_TIGERLAKE_MEMINIT_H_
+#define _SOC_TIGERLAKE_MEMINIT_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -66,4 +66,4 @@ void meminit_lpddr4x_dimm0(FSP_M_CONFIG *mem_cfg,
 			   const struct spd_info *spd,
 			   bool half_populated);
 
-#endif /* _SOC_MEMINIT_TGL_H_ */
+#endif /* _SOC_TIGERLAKE_MEMINIT_H_ */

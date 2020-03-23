@@ -17,7 +17,7 @@
 #include <soc/romstage.h>
 #include <spd_bin.h>
 #include <string.h>
-#include <soc/meminit_tgl.h>
+#include <soc/meminit.h>
 #include <baseboard/variants.h>
 #include <cbfs.h>
 #include "board_id.h"

@@ -17,10 +17,6 @@
 
 #include <stdint.h>
 
-#define PCH_TGP				1
-#define PCH_JSP				2
-#define PCH_UNKNOWN_SERIES		0xFF
-
 #define PCIE_CLK_NOTUSED		0xFF
 #define PCIE_CLK_LAN			0x70
 #define PCIE_CLK_FREE			0x80

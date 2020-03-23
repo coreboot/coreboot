@@ -39,8 +39,7 @@
 #include <soc/pcr_ids.h>
 #include <soc/pm.h>
 
-#define PCR_PSF3_TO_SHDW_PMC_REG_BASE_TGP	0x1100
-#define PCR_PSF3_TO_SHDW_PMC_REG_BASE_JSP	0xA00
+#define PCR_PSF3_TO_SHDW_PMC_REG_BASE	0x1100
 #define PCR_PSFX_TO_SHDW_BAR0	0
 #define PCR_PSFX_TO_SHDW_BAR1	0x4
 #define PCR_PSFX_TO_SHDW_BAR2	0x8
@@ -59,20 +58,6 @@
 
 #define PCR_DMI_LPCIOD		0x2770
 #define PCR_DMI_LPCIOE		0x2774
-
-static uint32_t get_pmc_reg_base(void)
-{
-	uint8_t pch_series;
-
-	pch_series = get_pch_series();
-
-	if (pch_series == PCH_TGP)
-		return PCR_PSF3_TO_SHDW_PMC_REG_BASE_TGP;
-	else if (pch_series == PCH_JSP)
-		return PCR_PSF3_TO_SHDW_PMC_REG_BASE_JSP;
-	else
-		return 0;
-}
 
 static void soc_config_pwrmbase(void)
 {
@@ -116,11 +101,7 @@ void bootblock_pch_early_init(void)
 static void soc_config_acpibase(void)
 {
 	uint32_t pmc_reg_value;
-	uint32_t pmc_base_reg;
-
-	pmc_base_reg = get_pmc_reg_base();
-	if (!pmc_base_reg)
-		die_with_post_code(POST_HW_INIT_FAILURE, "Invalid PMC base address\n");
+	uint32_t pmc_base_reg = PCR_PSF3_TO_SHDW_PMC_REG_BASE;
 
 	pmc_reg_value = pcr_read32(PID_PSF3, pmc_base_reg + PCR_PSFX_TO_SHDW_BAR4);
 

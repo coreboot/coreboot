@@ -8,7 +8,7 @@
 #include <baseboard/variants.h>
 #include <gpio.h>
 #include <soc/gpio.h>
-#include <soc/meminit_tgl.h>
+#include <soc/meminit.h>
 #include <soc/romstage.h>
 #include <variant/gpio.h>
 

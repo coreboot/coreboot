@@ -37,7 +37,6 @@ static struct {
 	const char *name;
 } cpu_table[] = {
 	{ CPUID_TIGERLAKE_A0, "Tigerlake A0" },
-	{ CPUID_JASPERLAKE_A0, "Jasperlake A0" },
 };
 
 static struct {
@@ -48,7 +47,6 @@ static struct {
 	{ PCI_DEVICE_ID_INTEL_TGL_ID_U_1, "Tigerlake-U-4-3e" },
 	{ PCI_DEVICE_ID_INTEL_TGL_ID_U_2_2, "Tigerlake-U-2-2" },
 	{ PCI_DEVICE_ID_INTEL_TGL_ID_Y, "Tigerlake-Y-4-2" },
-	{ PCI_DEVICE_ID_INTEL_JSL_ID_1, "Jasperlake-1" },
 	{ PCI_DEVICE_ID_INTEL_JSL_EHL, "Jasperlake Elkhartlake" },
 	{ PCI_DEVICE_ID_INTEL_EHL_ID_1, "Elkhartlake-1" },
 };
@@ -89,7 +87,6 @@ static struct {
 	{ PCI_DEVICE_ID_INTEL_TGP_ESPI_24, "Tigerlake-Base SKU" },
 	{ PCI_DEVICE_ID_INTEL_TGP_ESPI_25, "Tigerlake-Base SKU" },
 	{ PCI_DEVICE_ID_INTEL_TGP_ESPI_26, "Tigerlake-Base SKU" },
-	{ PCI_DEVICE_ID_INTEL_JSP_SUPER_ESPI, "Jasperlake Super" },
 	{ PCI_DEVICE_ID_INTEL_MCC_ESPI_0, "Elkhartlake-0" },
 	{ PCI_DEVICE_ID_INTEL_MCC_ESPI_1, "Elkhartlake-1" },
 	{ PCI_DEVICE_ID_INTEL_MCC_BASE_ESPI, "Elkhartlake Base" },
@@ -105,8 +102,6 @@ static struct {
 	{ PCI_DEVICE_ID_INTEL_TGL_GT2_ULT, "Tigerlake U GT2" },
 	{ PCI_DEVICE_ID_INTEL_TGL_GT2_ULX, "Tigerlake Y GT2" },
 	{ PCI_DEVICE_ID_INTEL_TGL_GT3_ULT, "Tigerlake U GT3" },
-	{ PCI_DEVICE_ID_INTEL_JSL_GT1, "Jasperlake GT1" },
-	{ PCI_DEVICE_ID_INTEL_JSL_GT2, "Jasperlake GT2" },
 	{ PCI_DEVICE_ID_INTEL_EHL_GT1_1, "Elkhartlake GT1 1" },
 	{ PCI_DEVICE_ID_INTEL_EHL_GT2_1, "Elkhartlake GT2 1" },
 	{ PCI_DEVICE_ID_INTEL_EHL_GT1_2, "Elkhartlake GT1 2" },

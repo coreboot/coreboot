@@ -9,7 +9,7 @@
 #define __BASEBOARD_VARIANTS_H__
 
 #include <soc/gpio.h>
-#include <soc/meminit_tgl.h>
+#include <soc/meminit.h>
 #include <stddef.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 

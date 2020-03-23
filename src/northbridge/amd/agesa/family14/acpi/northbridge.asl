@@ -124,7 +124,6 @@ Device(PE23) {
 /* Northbridge function 3 */
 Device(NBF3) {
 	Name(_ADR, 0x00180003)
-
 	/* k10temp thermal zone */
-	#include "thermal_mixin.asl"
+	#include <soc/amd/common/acpi/thermal_zone.asl>
 } /* end NBF3 */

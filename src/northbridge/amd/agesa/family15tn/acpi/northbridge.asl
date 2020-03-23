@@ -95,5 +95,5 @@ Device(PBR7) {
 
 Device(K10M) {
 	Name (_ADR, 0x00180003)
-	#include <northbridge/amd/agesa/family14/acpi/thermal_mixin.asl>
+	#include <soc/amd/common/acpi/thermal_zone.asl>
 }

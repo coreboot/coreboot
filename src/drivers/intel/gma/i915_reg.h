@@ -3580,6 +3580,7 @@
 #define SOUTH_CHICKEN2		0xc2004
 #define  FDI_MPHY_IOSFSB_RESET_STATUS	(1<<13)
 #define  FDI_MPHY_IOSFSB_RESET_CTL	(1<<12)
+#define  LPT_PWM_GRANULARITY		(1<<5)
 #define  DPLS_EDP_PPS_FIX_DIS		(1<<0)
 
 #define _FDI_RXA_CHICKEN         0xc200c

@@ -12,9 +12,8 @@ chip northbridge/intel/haswell
 	# Enable HDMI Hotplug with 6ms pulse
 	register "gpu_dp_b_hotplug" = "0x06"
 
-	# Set backlight PWM values for eDP
-	register "gpu_cpu_backlight" = "0x00000200"
-	register "gpu_pch_backlight" = "0x04000000"
+	# Set backlight PWM value for eDP
+	register "gpu_pch_backlight_pwm_hz" = "200"
 
 	# Enable Panel and configure power delays
 	register "gpu_panel_port_select" = "1"			# eDP

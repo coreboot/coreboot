@@ -176,9 +176,11 @@ static void find_cas_tck(ramctr_timing *ctrl)
 
 	/* 100 MHz reference clock supported */
 	reg32 = pci_read_config32(HOST_BRIDGE, CAPID0_B);
-	ref_100mhz_support = !!((reg32 >> 21) & 0x7);
+	ref_100mhz_support = (reg32 >> 21) & 0x7;
 	printk(BIOS_DEBUG, "100MHz reference clock support: %s\n", ref_100mhz_support ? "yes"
 										      : "no");
+
+	printk(BIOS_DEBUG, "PLL_REF100_CFG value: 0x%x\n", ref_100mhz_support);
 
 	/* Find CAS latency */
 	while (1) {

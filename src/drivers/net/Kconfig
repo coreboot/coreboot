@@ -19,6 +19,14 @@ config RT8168_GET_MAC_FROM_VPD
 	default n
 	select REALTEK_8168_RESET
 
+config RT8168_SUPPORT_LEGACY_VPD_MAC
+	bool
+	default n
+	help
+	  Previously VPD expected that device_indexes set to zero were
+	  special cased. Selecting this Kconfig restores the legacy
+	  VPD format and behaviour. If unsure, you likely do not need this!
+
 config RT8168_SET_LED_MODE
 	bool
 	default n

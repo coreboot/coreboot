@@ -141,16 +141,10 @@ static enum cb_err fetch_mac_vpd_dev_idx(u8 *macstrbuf, u8 device_index)
 	char key[] = "ethernet_mac "; /* Leave a space at tail to stuff an index */
 
 	/*
-	 * The device_index 0 is treated as an special case matching to
-	 * "ethernet_mac" with single NIC on DUT. When there are mulitple
-	 * NICs on DUT, they are mapping to "ethernet_macN", where
-	 * N is [0-9].
+	 * Map each NIC on the DUT to "ethernet_macN", where N is [0-9].
+	 * Translate index number from integer to ascii by adding '0' char.
 	 */
-	if (device_index == 0)
-		key[DEVICE_INDEX_BYTE] = '\0';
-	else
-		/* Translate index number from integer to ascii */
-		key[DEVICE_INDEX_BYTE] = (device_index - 1) + '0';
+	key[DEVICE_INDEX_BYTE] = device_index + '0';
 
 	return fetch_mac_vpd_key(macstrbuf, key);
 }
@@ -167,12 +161,16 @@ static void fetch_mac_string_vpd(struct drivers_net_config *config, u8 *macstrbu
 		return;
 	}
 
-	/* check "ethernet_mac" first when the device index is 1 */
-	if (config->device_index == 1 &&
-		fetch_mac_vpd_dev_idx(macstrbuf, 0) == CB_SUCCESS)
+	if (fetch_mac_vpd_dev_idx(macstrbuf, config->device_index) == CB_SUCCESS)
 		return;
 
-	if (fetch_mac_vpd_dev_idx(macstrbuf, config->device_index) != CB_SUCCESS)
+	if (!CONFIG(RT8168_SUPPORT_LEGACY_VPD_MAC)) {
+		printk(BIOS_ERR, "r8168: mac address not found in VPD,"
+						 " using default 00:e0:4c:00:c0:b0\n");
+		return;
+	}
+
+	if (fetch_mac_vpd_key(macstrbuf, "ethernet_mac ") != CB_SUCCESS)
 		printk(BIOS_ERR, "r8168: mac address not found in VPD,"
 					 " using default 00:e0:4c:00:c0:b0\n");
 }

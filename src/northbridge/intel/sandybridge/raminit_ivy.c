@@ -203,6 +203,9 @@ static void find_cas_tck(ramctr_timing *ctrl)
 		}
 	}
 
+	/* Frequency multiplier */
+	ctrl->FRQ = get_FRQ(ctrl->tCK, ctrl->base_freq);
+
 	printk(BIOS_DEBUG, "Selected DRAM frequency: %u MHz\n", NS2MHZ_DIV256 / ctrl->tCK);
 	printk(BIOS_DEBUG, "Selected CAS latency   : %uT\n", val);
 	ctrl->CAS = val;
@@ -363,16 +366,14 @@ static void dram_timing(ramctr_timing *ctrl)
 	ctrl->tRFC = DIV_ROUND_UP(ctrl->tRFC, ctrl->tCK);
 	printk(BIOS_DEBUG, "Selected tRFC          : %uT\n", ctrl->tRFC);
 
-	const u32 FRQ  = get_FRQ(ctrl->tCK, ctrl->base_freq);
-
-	ctrl->tREFI     =     get_REFI(FRQ, ctrl->base_freq);
-	ctrl->tMOD      =      get_MOD(FRQ, ctrl->base_freq);
-	ctrl->tXSOffset = get_XSOffset(FRQ, ctrl->base_freq);
-	ctrl->tWLO      =      get_WLO(FRQ, ctrl->base_freq);
-	ctrl->tCKE      =      get_CKE(FRQ, ctrl->base_freq);
-	ctrl->tXPDLL    =    get_XPDLL(FRQ, ctrl->base_freq);
-	ctrl->tXP       =       get_XP(FRQ, ctrl->base_freq);
-	ctrl->tAONPD    =    get_AONPD(FRQ, ctrl->base_freq);
+	ctrl->tREFI     =     get_REFI(ctrl->FRQ, ctrl->base_freq);
+	ctrl->tMOD      =      get_MOD(ctrl->FRQ, ctrl->base_freq);
+	ctrl->tXSOffset = get_XSOffset(ctrl->FRQ, ctrl->base_freq);
+	ctrl->tWLO      =      get_WLO(ctrl->FRQ, ctrl->base_freq);
+	ctrl->tCKE      =      get_CKE(ctrl->FRQ, ctrl->base_freq);
+	ctrl->tXPDLL    =    get_XPDLL(ctrl->FRQ, ctrl->base_freq);
+	ctrl->tXP       =       get_XP(ctrl->FRQ, ctrl->base_freq);
+	ctrl->tAONPD    =    get_AONPD(ctrl->FRQ, ctrl->base_freq);
 }
 
 static void dram_freq(ramctr_timing *ctrl)
@@ -391,9 +392,6 @@ static void dram_freq(ramctr_timing *ctrl)
 		/* Step 1 - Set target PCU frequency */
 		find_cas_tck(ctrl);
 
-		/* Frequency multiplier */
-		const u32 FRQ = get_FRQ(ctrl->tCK, ctrl->base_freq);
-
 		/*
 		 * The PLL will never lock if the required frequency is already set.
 		 * Exit early to prevent a system hang.
@@ -404,7 +402,7 @@ static void dram_freq(ramctr_timing *ctrl)
 			return;
 
 		/* Step 2 - Select frequency in the MCU */
-		reg1 = FRQ;
+		reg1 = ctrl->FRQ;
 		if (ctrl->base_freq == 100)
 			reg1 |= 0x100;	/* Enable 100Mhz REF clock */
 
@@ -422,7 +420,7 @@ static void dram_freq(ramctr_timing *ctrl)
 		/* Step 3 - Verify lock frequency */
 		reg1 = MCHBAR32(MC_BIOS_DATA);
 		val2 = (u8) reg1;
-		if (val2 >= FRQ) {
+		if (val2 >= ctrl->FRQ) {
 			printk(BIOS_DEBUG, "MCU frequency is set at : %d MHz\n",
 			       (1000 << 8) / ctrl->tCK);
 			return;
@@ -434,7 +432,6 @@ static void dram_freq(ramctr_timing *ctrl)
 
 static void dram_ioregs(ramctr_timing *ctrl)
 {
-	const u32 FRQ = get_FRQ(ctrl->tCK, ctrl->base_freq);
 	u32 reg;
 
 	int channel;
@@ -462,7 +459,7 @@ static void dram_ioregs(ramctr_timing *ctrl)
 	printram("done\n");
 
 	/* Set COMP2 */
-	MCHBAR32(CRCOMPOFST2) = get_COMP2(FRQ, ctrl->base_freq);
+	MCHBAR32(CRCOMPOFST2) = get_COMP2(ctrl->FRQ, ctrl->base_freq);
 	printram("COMP2 done\n");
 
 	/* Set COMP1 */

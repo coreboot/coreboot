@@ -33,7 +33,7 @@
 /*
  * WARNING: Do not forget to increase MRC_CACHE_VERSION when the saved data is changed!
  */
-#define MRC_CACHE_VERSION 2
+#define MRC_CACHE_VERSION 3
 
 typedef struct odtmap_st {
 	u16 rttwr;
@@ -77,6 +77,9 @@ typedef struct ramctr_timing_st {
 
 	/* DDR base_freq = 100 Mhz / 133 Mhz */
 	u8 base_freq;
+
+	/* Frequency index */
+	u32 FRQ;
 
 	u16 cas_supported;
 	/* Latencies are in units of ns, scaled by x256 */

@@ -348,10 +348,10 @@ static void igd_setup_panel(struct device *dev)
 		south_chicken2 = gtt_read(SOUTH_CHICKEN2);
 		if (conf->gpu_pch_backlight_pwm_hz > hz_limit) {
 			pwm_increment = 16;
-			south_chicken2 &= ~(1 << 5);
+			south_chicken2 |= 1 << 5;
 		} else {
 			pwm_increment = 128;
-			south_chicken2 |= 1 << 5;
+			south_chicken2 &= ~(1 << 5);
 		}
 		gtt_write(SOUTH_CHICKEN2, south_chicken2);
 

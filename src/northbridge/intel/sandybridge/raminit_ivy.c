@@ -10,6 +10,8 @@
 #include "raminit_common.h"
 #include "raminit_tables.h"
 
+#define SNB_MIN_DCLK_133_MULT	3
+#define SNB_MAX_DCLK_133_MULT	8
 #define IVB_MIN_DCLK_133_MULT	3
 #define IVB_MAX_DCLK_133_MULT	10
 #define IVB_MIN_DCLK_100_MULT	7
@@ -26,6 +28,10 @@ static u32 get_FRQ(const ramctr_timing *ctrl)
 
 		if (ctrl->base_freq == 133)
 			return clamp_u32(IVB_MIN_DCLK_133_MULT, FRQ, IVB_MAX_DCLK_133_MULT);
+
+	} else if (IS_SANDY_CPU(ctrl->cpu)) {
+		if (ctrl->base_freq == 133)
+			return clamp_u32(SNB_MIN_DCLK_133_MULT, FRQ, SNB_MAX_DCLK_133_MULT);
 	}
 
 	die("Unsupported CPU or base frequency.");
@@ -121,7 +127,7 @@ static u32 get_COMP2(u32 FRQ, u8 base_freq)
 		return frq_comp2_map[0][FRQ - 3];
 }
 
-static void ivb_normalize_tclk(ramctr_timing *ctrl, bool ref_100mhz_support)
+static void normalize_tclk(ramctr_timing *ctrl, bool ref_100mhz_support)
 {
 	if (ctrl->tCK <= TCK_1200MHZ) {
 		ctrl->tCK = TCK_1200MHZ;
@@ -164,7 +170,7 @@ static void ivb_normalize_tclk(ramctr_timing *ctrl, bool ref_100mhz_support)
 	if (!ref_100mhz_support && ctrl->base_freq == 100) {
 		/* Skip unsupported frequency */
 		ctrl->tCK++;
-		ivb_normalize_tclk(ctrl, ref_100mhz_support);
+		normalize_tclk(ctrl, ref_100mhz_support);
 	}
 }
 
@@ -188,7 +194,7 @@ static void find_cas_tck(ramctr_timing *ctrl)
 		 * Normalising tCK before computing clock could potentially
 		 * result in a lower selected CAS, which is desired.
 		 */
-		ivb_normalize_tclk(ctrl, ref_100mhz_support);
+		normalize_tclk(ctrl, ref_100mhz_support);
 		if (!(ctrl->tCK))
 			die("Couldn't find compatible clock / CAS settings\n");
 
@@ -218,6 +224,10 @@ static void find_cas_tck(ramctr_timing *ctrl)
 
 static void dram_timing(ramctr_timing *ctrl)
 {
+	/*
+	 * On Sandy Bridge, the maximum supported DDR3 frequency is 1066MHz (DDR3 2133).
+	 * Cap it for faster DIMMs, and align it to the closest JEDEC standard frequency.
+	 */
 	/*
 	 * On Ivy Bridge, the maximum supported DDR3 frequency is 1400MHz (DDR3 2800).
 	 * Cap it at 1200MHz (DDR3 2400), and align it to the closest JEDEC standard frequency.
@@ -482,11 +492,13 @@ static void dram_ioregs(ramctr_timing *ctrl)
 	printram("done\n");
 }
 
-int try_init_dram_ddr3_ivb(ramctr_timing *ctrl, int fast_boot, int s3_resume, int me_uma_size)
+int try_init_dram_ddr3(ramctr_timing *ctrl, int fast_boot, int s3resume, int me_uma_size)
 {
 	int err;
 
-	printk(BIOS_DEBUG, "Starting Ivybridge RAM training (%d).\n", fast_boot);
+	printk(BIOS_DEBUG, "Starting %s Bridge RAM training (%s).\n",
+			IS_SANDY_CPU(ctrl->cpu) ? "Sandy" : "Ivy",
+			fast_boot ? "fast boot" : "full initialization");
 
 	if (!fast_boot) {
 		/* Find fastest common supported parameters */
@@ -592,7 +604,7 @@ int try_init_dram_ddr3_ivb(ramctr_timing *ctrl, int fast_boot, int s3_resume, in
 
 	write_controller_mr(ctrl);
 
-	if (!s3_resume) {
+	if (!s3resume) {
 		err = channel_test(ctrl);
 		if (err)
 			return err;

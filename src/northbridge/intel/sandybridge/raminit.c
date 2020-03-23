@@ -214,14 +214,6 @@ static void save_timings(ramctr_timing *ctrl)
 	mrc_cache_stash_data(MRC_TRAINING_DATA, MRC_CACHE_VERSION, ctrl, sizeof(*ctrl));
 }
 
-static int try_init_dram_ddr3(ramctr_timing *ctrl, int fast_boot, int s3resume, int me_uma_size)
-{
-	if (IS_SANDY_CPU(ctrl->cpu))
-		return try_init_dram_ddr3_snb(ctrl, fast_boot, s3resume, me_uma_size);
-	else
-		return try_init_dram_ddr3_ivb(ctrl, fast_boot, s3resume, me_uma_size);
-}
-
 static void init_dram_ddr3(int min_tck, int s3resume, const u32 cpuid)
 {
 	int me_uma_size, cbmem_was_inited, fast_boot, err;

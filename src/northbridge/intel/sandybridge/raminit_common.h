@@ -179,8 +179,8 @@ void set_read_write_timings(ramctr_timing *ctrl);
 void set_normal_operation(ramctr_timing *ctrl);
 void final_registers(ramctr_timing *ctrl);
 void restore_timings(ramctr_timing *ctrl);
+int try_init_dram_ddr3(ramctr_timing *ctrl, int fast_boot, int s3resume, int me_uma_size);
 
 int try_init_dram_ddr3_snb(ramctr_timing *ctrl, int fast_boot, int s3_resume, int me_uma_size);
-int try_init_dram_ddr3_ivb(ramctr_timing *ctrl, int fast_boot, int s3_resume, int me_uma_size);
 
 #endif

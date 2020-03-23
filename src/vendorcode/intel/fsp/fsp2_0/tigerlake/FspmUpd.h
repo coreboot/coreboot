@@ -356,9 +356,41 @@ typedef struct {
 **/
   UINT8                       RMT;
 
-/** Offset 0x0194 - Reserved
+/** Offset 0x0194 - DisableDimmCh0
 **/
-  UINT8                       Reserved8[10];
+  UINT8                       DisableDimmCh0;
+
+/** Offset 0x0195 - DisableDimmCh1
+**/
+  UINT8                       DisableDimmCh1;
+
+/** Offset 0x0196 - DisableDimmCh2
+**/
+  UINT8                       DisableDimmCh2;
+
+/** Offset 0x0197 - DisableDimmCh3
+**/
+  UINT8                       DisableDimmCh3;
+
+/** Offset 0x0198 - DisableDimmCh4
+**/
+  UINT8                       DisableDimmCh4;
+
+/** Offset 0x0199 - DisableDimmCh5
+**/
+  UINT8                       DisableDimmCh5;
+
+/** Offset 0x019A - DisableDimmCh6
+**/
+  UINT8                       DisableDimmCh6;
+
+/** Offset 0x019B - DisableDimmCh7
+**/
+  UINT8                       DisableDimmCh7;
+
+/** Offset 0x019C - Reserved
+**/
+  UINT8                       Reserved8[2];
 
 /** Offset 0x019E - Memory Reference Clock
   100MHz, 133MHz.
@@ -861,7 +893,7 @@ typedef struct {
 
 /** Offset 0x0775 - Reserved
 **/
-  UINT8                       Reserved38[355];
+  UINT8                       Reserved38[315];
 } FSP_M_CONFIG;
 
 /** Fsp M UPD Configuration
@@ -880,11 +912,11 @@ typedef struct {
 **/
   FSP_M_CONFIG                FspmConfig;
 
-/** Offset 0x08D8
+/** Offset 0x08B0
 **/
-  UINT8                       UnusedUpdSpace24[6];
+  UINT8                       UnusedUpdSpace23[6];
 
-/** Offset 0x08DE
+/** Offset 0x08B6
 **/
   UINT16                      UpdTerminator;
 } FSPM_UPD;

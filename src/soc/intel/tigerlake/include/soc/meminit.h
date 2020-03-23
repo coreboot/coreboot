@@ -87,7 +87,44 @@ struct lpddr4x_cfg {
 	 * the array represents DQ pin# on the memory part.
 	 */
 	uint8_t dqs_map[LPDDR4X_CHANNELS][LPDDR4X_BYTES_PER_CHANNEL];
+	/*
+	 * Early Command Training Enable/Disable Control
+	 * 1 = enable, 0 = disable
+	 */
+	uint8_t ect;
+};
 
+/* Board-specific memory configuration information for DDR4 memory variant */
+struct mb_ddr4_cfg {
+	/*
+	 * DQ CPU<>DRAM map:
+	 * DDR4 memory interface has 8 DQs per channel. Each DQ consists of 8 bits(1
+	 * byte). Thus, dq_map is represented as DDR[1-0]_DQ[7-0][7:0], where
+	 * DDR[1-0] : DDR4 channel #
+	 * DQ[7-0]  : DQ # within the channel
+	 * [7:0]    : Bits within the DQ
+	 *
+	 * Index of the array represents DQ pin# on the CPU, whereas value in
+	 * the array represents DQ pin# on the memory part.
+	 */
+	uint8_t dq_map[DDR4_CHANNELS][DDR4_BYTES_PER_CHANNEL][BITS_PER_BYTE];
+	/*
+	 * DQS CPU<>DRAM map:
+	 * DDR4 memory interface has 8 DQS pairs per channel. Thus, dqs_map is represented as
+	 * DDR[1-0]_DQS[7-0], where
+	 * DDR[1-0]  : DDR4 channel #
+	 * DQS[7-0]  : DQS # within the channel
+	 *
+	 * Index of the array represents DQS pin# on the CPU, whereas value in
+	 * the array represents DQS pin# on the memory part.
+	 */
+	uint8_t dqs_map[DDR4_CHANNELS][DDR4_BYTES_PER_CHANNEL];
+	/*
+	 * Indicates whether memory is interleaved.
+	 * Set to 1 for an interleaved design,
+	 * set to 0 for non-interleaved design.
+	 */
+	uint8_t dq_pins_interleaved;
 	/*
 	 * Early Command Training Enable/Disable Control
 	 * 1 = enable, 0 = disable
@@ -97,5 +134,7 @@ struct lpddr4x_cfg {
 
 void meminit_lpddr4x(FSP_M_CONFIG *mem_cfg, const struct lpddr4x_cfg *board_cfg,
 		const struct spd_info *spd, bool half_populated);
-
+/* Initialize DDR4 memory configurations */
+void meminit_ddr4(FSP_M_CONFIG *mem_cfg, const struct mb_ddr4_cfg *board_cfg,
+			  const struct spd_info *spd, const bool half_populated);
 #endif /* _SOC_TIGERLAKE_MEMINIT_H_ */

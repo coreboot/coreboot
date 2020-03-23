@@ -296,3 +296,135 @@ void meminit_lpddr4x(FSP_M_CONFIG *mem_cfg, const struct lpddr4x_cfg *board_cfg,
 				      board_cfg->dqs_map[i][1]);
 	}
 }
+
+static void read_sodimm_spd(const struct spd_info *info, struct spd_block *blk)
+{
+	unsigned int i;
+
+	blk->addr_map[0] = info->smbus_info[0].addr_dimm0;
+	blk->addr_map[1] = info->smbus_info[0].addr_dimm1;
+	blk->addr_map[2] = info->smbus_info[1].addr_dimm0;
+	blk->addr_map[3] = info->smbus_info[1].addr_dimm1;
+
+	get_spd_smbus(blk);
+
+	for (i = 0; i < ARRAY_SIZE(blk->addr_map); i++) {
+		if (blk->addr_map[i])
+			print_spd_info((unsigned char *)blk->spd_array[i]);
+	}
+}
+
+static void ddr4_get_spd(unsigned int channel, const uintptr_t *spd_md_data,
+			 const struct spd_block *spd_sodimm_blk,
+			 const struct spd_info *info,
+			 const bool half_populated, uintptr_t *spd_dimm0,
+			 uintptr_t *spd_dimm1)
+{
+	if (channel == 0) {
+		/* For mixed topology, channel 0 can only be Memory_Down */
+		if ((info->topology == MEMORY_DOWN) || (info->topology == MIXED)) {
+			*spd_dimm0 = *spd_md_data;
+			*spd_dimm1 = 0;
+		} else if (info->topology == SODIMM) {
+			*spd_dimm0 = (uintptr_t)spd_sodimm_blk->spd_array[0];
+			*spd_dimm1 = (uintptr_t)spd_sodimm_blk->spd_array[1];
+		} else
+			die("Undefined memory topology on Channel 0.\n");
+	} else if (channel == 1) {
+		if (half_populated) {
+			*spd_dimm0 = *spd_dimm1 = 0;
+		} else if (info->topology == MEMORY_DOWN) {
+			*spd_dimm0 = *spd_md_data;
+			*spd_dimm1 = 0;
+		/* For mixed topology, channel 1 can only be SODIMM */
+		} else if ((info->topology == SODIMM) || (info->topology == MIXED)) {
+			*spd_dimm0 = (uintptr_t)spd_sodimm_blk->spd_array[2];
+			*spd_dimm1 = (uintptr_t)spd_sodimm_blk->spd_array[3];
+		} else
+			die("Undefined memory topology on channel 1.\n");
+	} else
+		die("Unsupported channels.\n");
+}
+
+/* Initialize DDR4 memory configurations */
+void meminit_ddr4(FSP_M_CONFIG *mem_cfg, const struct mb_ddr4_cfg *board_cfg,
+			  const struct spd_info *info, const bool half_populated)
+{
+	uintptr_t spd_md_data;
+	size_t spd_md_len;
+	uintptr_t spd_dimm0 = 0;
+	uintptr_t spd_dimm1 = 0;
+	struct spd_block spd_sodimm_blk;
+	unsigned int i;
+	unsigned int index = 0;
+
+	/* Early Command Training Enabled */
+	mem_cfg->ECT = board_cfg->ect;
+	mem_cfg->DqPinsInterleaved = board_cfg->dq_pins_interleaved;
+
+	if ((info->topology == MEMORY_DOWN) || (info->topology == MIXED)) {
+		read_md_spd(info, &spd_md_data, &spd_md_len);
+		mem_cfg->MemorySpdDataLen = spd_md_len;
+	}
+
+	if ((info->topology == SODIMM) || (info->topology == MIXED)) {
+		read_sodimm_spd(info, &spd_sodimm_blk);
+		if ((info->topology == MIXED) &&
+		    (mem_cfg->MemorySpdDataLen != spd_sodimm_blk.len))
+			die("Mixed topology has incorrect length.\n");
+		else
+			mem_cfg->MemorySpdDataLen = spd_sodimm_blk.len;
+	}
+
+	for (i = 0; i < DDR4_CHANNELS; i++) {
+		ddr4_get_spd(i, &spd_md_data, &spd_sodimm_blk, info,
+			     half_populated, &spd_dimm0, &spd_dimm1);
+		init_spd_upds(mem_cfg, i, spd_dimm0, spd_dimm1);
+	}
+
+	/*
+	 * DDR4 memory interface has 8 DQs per channel. Each DQ consists of 8 bits (1
+	 * byte). However, FSP UPDs for DQ Map expect a DQ pair (i.e. mapping for 2 bytes) in
+	 * each UPD.
+	 *
+	 * Thus, init_dq_upds() needs to be called for every dq pair of each channel.
+	 * DqMapCpu2DramCh0 --> dq_map[CHAN=0][0-1]
+	 * DqMapCpu2DramCh1 --> dq_map[CHAN=0][2-3]
+	 * DqMapCpu2DramCh2 --> dq_map[CHAN=0][4-5]
+	 * DqMapCpu2DramCh3 --> dq_map[CHAN=0][6-7]
+	 * DqMapCpu2DramCh4 --> dq_map[CHAN=1][0-1]
+	 * DqMapCpu2DramCh5 --> dq_map[CHAN=1][2-3]
+	 * DqMapCpu2DramCh6 --> dq_map[CHAN=1][4-5]
+	 * DqMapCpu2DramCh7 --> dq_map[CHAN=1][6-7]
+	 */
+
+	/*
+	 * DDR4 memory interface has 8 DQS pairs per channel. FSP UPDs for DQS Map expect a
+	 * pair in each UPD.
+	 *
+	 * Thus, init_dqs_upds() needs to be called for every dqs pair of each channel.
+	 * DqsMapCpu2DramCh0 --> dqs_map[CHAN=0][0-1]
+	 * DqsMapCpu2DramCh1 --> dqs_map[CHAN=0][2-3]
+	 * DqsMapCpu2DramCh2 --> dqs_map[CHAN=0][4-5]
+	 * DqsMapCpu2DramCh3 --> dqs_map[CHAN=0][6-7]
+	 * DqsMapCpu2DramCh4 --> dqs_map[CHAN=1][0-1]
+	 * DqsMapCpu2DramCh5 --> dqs_map[CHAN=1][2-3]
+	 * DqsMapCpu2DramCh6 --> dqs_map[CHAN=1][4-5]
+	 * DqsMapCpu2DramCh7 --> dqs_map[CHAN=1][6-7]
+	 */
+
+	for (i = 0; i < DDR4_CHANNELS; i++) {
+		for (int b = 0; b < DDR4_BYTES_PER_CHANNEL; b += 2) {
+			if (half_populated && (i == 1)) {
+				init_dq_upds_empty(mem_cfg, index);
+				init_dqs_upds_empty(mem_cfg, index);
+			} else {
+				init_dq_upds(mem_cfg, index, board_cfg->dq_map[i][b],
+				     board_cfg->dq_map[i][b+1]);
+				init_dqs_upds(mem_cfg, index, board_cfg->dqs_map[i][b],
+				      board_cfg->dqs_map[i][b+1]);
+			}
+			index++;
+		}
+	}
+}

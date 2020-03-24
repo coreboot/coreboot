@@ -226,11 +226,10 @@ static void save_timings(ramctr_timing *ctrl)
 	mrc_cache_stash_data(MRC_TRAINING_DATA, MRC_CACHE_VERSION, ctrl, sizeof(*ctrl));
 }
 
-static void reinit_ctrl(ramctr_timing *ctrl, int min_tck, const u32 cpuid)
+static void reinit_ctrl(ramctr_timing *ctrl, const u32 cpuid)
 {
 	/* Reset internal state */
 	memset(ctrl, 0, sizeof(*ctrl));
-	ctrl->tCK = min_tck;
 
 	/* Get architecture */
 	ctrl->cpu = cpuid;
@@ -243,7 +242,7 @@ static void reinit_ctrl(ramctr_timing *ctrl, int min_tck, const u32 cpuid)
 			ctrl->ecc_forced ? "yes" : "no");
 }
 
-static void init_dram_ddr3(int min_tck, int s3resume, const u32 cpuid)
+static void init_dram_ddr3(int s3resume, const u32 cpuid)
 {
 	int me_uma_size, cbmem_was_inited, fast_boot, err;
 	ramctr_timing ctrl;
@@ -329,7 +328,7 @@ static void init_dram_ddr3(int min_tck, int s3resume, const u32 cpuid)
 	}
 	if (!fast_boot) {
 		/* Reset internal state */
-		reinit_ctrl(&ctrl, min_tck, cpuid);
+		reinit_ctrl(&ctrl, cpuid);
 
 		printk(BIOS_INFO, "ECC RAM %s.\n", ctrl.ecc_forced ? "required" :
 			ctrl.ecc_supported ? "supported" : "unsupported");
@@ -348,7 +347,7 @@ static void init_dram_ddr3(int min_tck, int s3resume, const u32 cpuid)
 		printram("Disable failing channel.\n");
 
 		/* Reset internal state */
-		reinit_ctrl(&ctrl, min_tck, cpuid);
+		reinit_ctrl(&ctrl, cpuid);
 
 		/* Reset DDR3 frequency */
 		dram_find_spds_ddr3(spds, &ctrl);
@@ -398,5 +397,5 @@ void perform_raminit(int s3resume)
 
 	timestamp_add_now(TS_BEFORE_INITRAM);
 
-	init_dram_ddr3(get_mem_min_tck(), s3resume, cpu_get_cpuid());
+	init_dram_ddr3(s3resume, cpu_get_cpuid());
 }

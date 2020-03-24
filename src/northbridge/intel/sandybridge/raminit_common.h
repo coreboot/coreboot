@@ -174,7 +174,6 @@ void dram_timing_regs(ramctr_timing *ctrl);
 void dram_dimm_mapping(ramctr_timing *ctrl);
 void dram_dimm_set_mapping(ramctr_timing *ctrl, int training);
 void dram_zones(ramctr_timing *ctrl, int training);
-unsigned int get_mem_min_tck(void);
 void dram_memorymap(ramctr_timing *ctrl, int me_uma_size);
 void dram_jedecreset(ramctr_timing *ctrl);
 int read_training(ramctr_timing *ctrl);

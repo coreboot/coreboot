@@ -5,7 +5,10 @@
 #include <console/console.h>
 #include <console/usb.h>
 #include <delay.h>
+#include <device/device.h>
+#include <device/pci_def.h>
 #include <device/pci_ops.h>
+#include <northbridge/intel/sandybridge/chip.h>
 #include "raminit_native.h"
 #include "raminit_common.h"
 #include "raminit_tables.h"
@@ -174,6 +177,78 @@ static void normalize_tclk(ramctr_timing *ctrl, bool ref_100mhz_support)
 	}
 }
 
+#define DEFAULT_TCK	TCK_800MHZ
+
+static unsigned int get_mem_min_tck(void)
+{
+	u32 reg32;
+	u8 rev;
+	const struct northbridge_intel_sandybridge_config *cfg = NULL;
+
+	/* Actually, config of MCH or Host Bridge */
+	cfg = config_of_soc();
+
+	/* If non-zero, it was set in the devicetree */
+	if (cfg->max_mem_clock_mhz) {
+
+		if (cfg->max_mem_clock_mhz >= 1066)
+			return TCK_1066MHZ;
+
+		else if (cfg->max_mem_clock_mhz >= 933)
+			return TCK_933MHZ;
+
+		else if (cfg->max_mem_clock_mhz >= 800)
+			return TCK_800MHZ;
+
+		else if (cfg->max_mem_clock_mhz >= 666)
+			return TCK_666MHZ;
+
+		else if (cfg->max_mem_clock_mhz >= 533)
+			return TCK_533MHZ;
+
+		else
+			return TCK_400MHZ;
+	}
+
+	if (CONFIG(NATIVE_RAMINIT_IGNORE_MAX_MEM_FUSES))
+		return TCK_1333MHZ;
+
+	rev = pci_read_config8(HOST_BRIDGE, PCI_DEVICE_ID);
+
+	if ((rev & BASE_REV_MASK) == BASE_REV_SNB) {
+		/* Read Capabilities A Register DMFC bits */
+		reg32 = pci_read_config32(HOST_BRIDGE, CAPID0_A);
+		reg32 &= 0x7;
+
+		switch (reg32) {
+		case 7: return TCK_533MHZ;
+		case 6: return TCK_666MHZ;
+		case 5: return TCK_800MHZ;
+		/* Reserved */
+		default:
+			break;
+		}
+	} else {
+		/* Read Capabilities B Register DMFC bits */
+		reg32 = pci_read_config32(HOST_BRIDGE, CAPID0_B);
+		reg32 = (reg32 >> 4) & 0x7;
+
+		switch (reg32) {
+		case 7: return TCK_533MHZ;
+		case 6: return TCK_666MHZ;
+		case 5: return TCK_800MHZ;
+		case 4: return TCK_933MHZ;
+		case 3: return TCK_1066MHZ;
+		case 2: return TCK_1200MHZ;
+		case 1: return TCK_1333MHZ;
+		/* Reserved */
+		default:
+			break;
+		}
+	}
+	return DEFAULT_TCK;
+}
+
 static void find_cas_tck(ramctr_timing *ctrl)
 {
 	u8 val;
@@ -187,6 +262,8 @@ static void find_cas_tck(ramctr_timing *ctrl)
 										      : "no");
 
 	printk(BIOS_DEBUG, "PLL_REF100_CFG value: 0x%x\n", ref_100mhz_support);
+
+	ctrl->tCK = get_mem_min_tck();
 
 	/* Find CAS latency */
 	while (1) {

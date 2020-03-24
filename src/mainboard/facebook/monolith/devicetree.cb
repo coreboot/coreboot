@@ -95,7 +95,7 @@ chip soc/intel/skylake
 	#| Psi4Enable     | 1     | 1     | 1     | 1     |
 	#| ImonSlope      | 0     | 0     | 0     | 0     |
 	#| ImonOffset     | 0     | 0     | 0     | 0     |
-	#| IccMax         | 5.1A  | 32A   | 35A   | 35A   |
+	#| IccMax         | 5.1A  | 32A   | 35A   | 31A   |
 	#| VrVoltageLimit | 1.52V | 1.52V | 1.52V | 1.52V |
 	#+----------------+-------+-------+-------+-------+
 	register "domain_vr_config[VR_SYSTEM_AGENT]" = "{
@@ -146,7 +146,7 @@ chip soc/intel/skylake
 		.psi4enable = 1, \
 		.imon_slope = 0, \
 		.imon_offset = 0, \
-		.icc_max = VR_CFG_AMP(35), \
+		.icc_max = VR_CFG_AMP(31), \
 		.voltage_limit = 1520 \
 	}"
 

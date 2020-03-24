@@ -107,16 +107,15 @@ chip soc/intel/skylake
 
 	register "usb2_ports[0]" = "USB2_PORT_MID(OC1)"		# Type-A Port (left)
 	register "usb2_ports[1]" = "USB2_PORT_MID(OC1)"		# Type-A Port (left)
-	register "usb2_ports[2]" = "USB2_PORT_FLEX(OC1)" 	# FPR
-	register "usb2_ports[3]" = "USB2_PORT_FLEX(OC1)" 	# SD
-	register "usb2_ports[4]" = "USB2_PORT_FLEX(OC1)" 	# INT
+	register "usb2_ports[2]" = "USB2_PORT_FLEX(OC_SKIP)" 	# FPR
+	register "usb2_ports[3]" = "USB2_PORT_FLEX(OC_SKIP)" 	# SD
+	register "usb2_ports[4]" = "USB2_PORT_FLEX(OC_SKIP)" 	# INT
 	register "usb2_ports[5]" = "USB2_PORT_MID(OC1)"		# Type-A Port (right)
-	register "usb2_ports[6]" = "USB2_PORT_FLEX(OC2)"	# Webcam
-	register "usb2_ports[7]" = "USB2_PORT_FLEX(OC2)"	# M.2-2230 USB (BT)
+	register "usb2_ports[6]" = "USB2_PORT_FLEX(OC_SKIP)"	# Webcam
+	register "usb2_ports[7]" = "USB2_PORT_MID(OC_SKIP)"	# mPCIe / WiFi Port
+	register "usb2_ports[8]" = "USB2_PORT_MID(OC_SKIP)"	# mSATA / WWAN Port
 
 	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC1)"	# Type-A Port (left)
-	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC1)"	# Type-A Port (left)
-	register "usb3_ports[5]" = "USB3_PORT_DEFAULT(OC1)"	# Type-A Port (right)
 
 	# PL1 override 25W
 	register "tdp_pl1_override" = "25"

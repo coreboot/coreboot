@@ -7,10 +7,7 @@
 #include <soc/gpio_defs.h>
 #include <intelblocks/gpio.h>
 
-#define CROS_GPIO_NAME		"INT34C5"
-#define CROS_GPIO_COMM0_NAME    "INT34C5:00"
-#define CROS_GPIO_COMM1_NAME    "INT34C5:01"
-#define CROS_GPIO_COMM4_NAME    "INT34C5:02"
-#define CROS_GPIO_COMM5_NAME    "INT34C5:03"
+
+#define CROS_GPIO_DEVICE_NAME	"INT34C5:00"
 
 #endif

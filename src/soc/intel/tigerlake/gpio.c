@@ -37,21 +37,30 @@ static const struct reset_mapping rst_map_com2[] = {
 };
 
 /*
- * This layout matches the Linux kernel pinctrl map for TGL-LP at:
+ * The GPIO pinctrl driver for Tiger Lake on Linux expects 32 GPIOs per pad
+ * group, regardless of whether or not there is a physical pad for each
+ * exposed GPIO number.
+ *
+ * This results in the OS having a sparse GPIO map, and devices that need
+ * to export an ACPI GPIO must use the OS expected number.
+ *
+ * Not all pins are usable as GPIO and those groups do not have a pad base.
+ *
+ * This layout matches the Linux kernel pinctrl map for TGL at:
  * linux/drivers/pinctrl/intel/pinctrl-tigerlake.c
  */
 static const struct pad_group tgl_community0_groups[] = {
-	INTEL_GPP(GPP_B0, GPP_B0, GPP_B25),				/* GPP_B */
-	INTEL_GPP(GPP_B0, GPP_T0, GPP_T15),				/* GPP_T */
-	INTEL_GPP(GPP_B0, GPP_A0, GPP_A24),				/* GPP_A */
+	INTEL_GPP_BASE(GPP_B0, GPP_B0, GPP_B25, 0),			/* GPP_B */
+	INTEL_GPP_BASE(GPP_B0, GPP_T0, GPP_T15, 32),			/* GPP_T */
+	INTEL_GPP_BASE(GPP_B0, GPP_A0, GPP_A24, 64),			/* GPP_A */
 };
 
 static const struct pad_group tgl_community1_groups[] = {
-	INTEL_GPP(GPP_S0, GPP_S0, GPP_S7),				/* GPP_S */
-	INTEL_GPP(GPP_S0, GPP_H0, GPP_H23),				/* GPP_H */
-	INTEL_GPP(GPP_S0, GPP_D0, GPP_GSPI2_CLK_LOOPBK),		/* GPP_D */
-	INTEL_GPP(GPP_S0, GPP_U0, GPP_GSPI6_CLK_LOOPBK),		/* GPP_U */
-	INTEL_GPP(GPP_S0, CNV_BTEN, vI2S2_RXD),				/* GPP_VGPIO */
+	INTEL_GPP_BASE(GPP_S0, GPP_S0, GPP_S7, 96),			/* GPP_S */
+	INTEL_GPP_BASE(GPP_S0, GPP_H0, GPP_H23, 128),			/* GPP_H */
+	INTEL_GPP_BASE(GPP_S0, GPP_D0, GPP_GSPI2_CLK_LOOPBK, 160),	/* GPP_D */
+	INTEL_GPP_BASE(GPP_S0, GPP_U0, GPP_GSPI6_CLK_LOOPBK, 192),	/* GPP_U */
+	INTEL_GPP_BASE(GPP_S0, CNV_BTEN, vI2S2_RXD, 224),		/* GPP_VGPIO */
 };
 
 /* This community is not visible to the OS */
@@ -60,15 +69,15 @@ static const struct pad_group tgl_community2_groups[] = {
 };
 
 static const struct pad_group tgl_community4_groups[] = {
-	INTEL_GPP(GPP_C0, GPP_C0, GPP_C23),				/* GPP_C */
-	INTEL_GPP(GPP_C0, GPP_F0, GPP_F_CLK_LOOPBK),			/* GPP_F */
+	INTEL_GPP_BASE(GPP_C0, GPP_C0, GPP_C23, 256),			/* GPP_C */
+	INTEL_GPP_BASE(GPP_C0, GPP_F0, GPP_F_CLK_LOOPBK, 288),		/* GPP_F */
 	INTEL_GPP(GPP_C0, GPP_L_BKLTEN, GPP_MLK_RSTB),			/* GPP_HVCMOS */
-	INTEL_GPP(GPP_C0, GPP_E0, GPP_E_CLK_LOOPBK),			/* GPP_E */
+	INTEL_GPP_BASE(GPP_C0, GPP_E0, GPP_E_CLK_LOOPBK, 320),		/* GPP_E */
 	INTEL_GPP(GPP_C0, GPP_JTAG_TDO, GPP_DBG_PMODE),			/* GPP_JTAG */
 };
 
 static const struct pad_group tgl_community5_groups[] = {
-	INTEL_GPP(GPP_R0, GPP_R0, GPP_R7),				/* GPP_R */
+	INTEL_GPP_BASE(GPP_R0, GPP_R0, GPP_R7, 352),			/* GPP_R */
 	INTEL_GPP(GPP_R0, GPP_SPI_IO_2, GPP_CLK_LOOPBK),		/* GPP_SPI */
 };
 

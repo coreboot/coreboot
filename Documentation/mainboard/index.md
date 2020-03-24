@@ -144,6 +144,10 @@ The boards in this section are not real mainboards, but emulators.
 - [X11 LGA1151 series](supermicro/x11-lga1151-series/x11-lga1151-series.md)
 - [Flashing using the BMC](supermicro/flashing_on_vendorbmc.md)
 
+## System76
+
+- [Lemur Pro](system76/lemp9.md)
+
 ## UP
 
 - [Squared](up/squared/index.md)

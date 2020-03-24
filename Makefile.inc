@@ -1112,6 +1112,7 @@ ifeq ($(CONFIG_SEABIOS_ADD_SERCON_PORT_FILE),y)
 	$(CBFSTOOL) $@.tmp add-int -i $(CONFIG_SEABIOS_SERCON_PORT_ADDR) -n etc/sercon-port
 endif
 ifeq ($(CONFIG_CPU_INTEL_FIRMWARE_INTERFACE_TABLE),y)
+ifneq ($(CONFIG_UPDATE_IMAGE),y) # never update the bootblock
 ifeq ($(CONFIG_CPU_MICROCODE_CBFS_EXTERNAL_HEADER),y)
 	@printf "    UPDATE-FIT\n"
 	$(IFITTOOL) -f $@.tmp -a -n cpu_microcode_blob.bin -t 1 -s $(CONFIG_CPU_INTEL_NUM_FIT_ENTRIES) \
@@ -1146,7 +1147,8 @@ endif
 
 endif
 
-endif
+endif # !CONFIG_UPDATE_IMAGE
+endif # CONFIG_CPU_INTEL_FIRMWARE_INTERFACE_TABLE
 	mv $@.tmp $@
 	@printf "    CBFSLAYOUT  $(subst $(obj)/,,$(@))\n\n"
 	$(CBFSTOOL) $@ layout

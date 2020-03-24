@@ -466,6 +466,26 @@ typedef struct acpi_madt_irqoverride {
 	u16 flags;			/* MPS INTI flags */
 } __packed acpi_madt_irqoverride_t;
 
+/* MADT: Processor Local x2APIC Structure */
+typedef struct acpi_madt_lx2apic {
+	u8 type;			/* Type (9) */
+	u8 length;			/* Length in bytes (16) */
+	u16 reserved;
+	u32 x2apic_id;			/* Local x2APIC ID */
+	u32 flags;			/* Same as Local APIC flags */
+	u32 processor_id;		/* ACPI processor ID */
+} __packed acpi_madt_lx2apic_t;
+
+/* MADT: Processor Local x2APIC NMI Structure */
+typedef struct acpi_madt_lx2apic_nmi {
+	u8 type;			/* Type (10) */
+	u8 length;			/* Length in bytes (12) */
+	u16 flags;			/* Same as MPS INTI flags */
+	u32 processor_id;		/* ACPI processor ID */
+	u8 lint;			/* Local APIC LINT# */
+	u8 reserved[3];
+} __packed acpi_madt_lx2apic_nmi_t;
+
 #define ACPI_DBG2_PORT_SERIAL			0x8000
 #define  ACPI_DBG2_PORT_SERIAL_16550		0x0000
 #define  ACPI_DBG2_PORT_SERIAL_16550_DBGP	0x0001
@@ -871,7 +891,9 @@ void acpi_create_madt(acpi_madt_t *madt);
 unsigned long acpi_create_madt_lapics(unsigned long current);
 unsigned long acpi_create_madt_lapic_nmis(unsigned long current, u16 flags,
 					  u8 lint);
-
+int acpi_create_madt_lx2apic(acpi_madt_lx2apic_t *lapic, u32 cpu, u32 apic);
+int acpi_create_madt_lx2apic_nmi(acpi_madt_lx2apic_nmi_t *lapic_nmi, u32 cpu,
+				 u16 flags, u8 lint);
 int acpi_create_srat_lapic(acpi_srat_lapic_t *lapic, u8 node, u8 apic);
 int acpi_create_srat_mem(acpi_srat_mem_t *mem, u8 node, u32 basek, u32 sizek,
 			 u32 flags);

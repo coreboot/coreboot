@@ -127,6 +127,18 @@ int acpi_create_madt_lapic(acpi_madt_lapic_t *lapic, u8 cpu, u8 apic)
 	return lapic->length;
 }
 
+int acpi_create_madt_lx2apic(acpi_madt_lx2apic_t *lapic, u32 cpu, u32 apic)
+{
+	lapic->type = LOCAL_X2APIC; /* Local APIC structure */
+	lapic->reserved = 0;
+	lapic->length = sizeof(acpi_madt_lx2apic_t);
+	lapic->flags = (1 << 0); /* Processor/LAPIC enabled */
+	lapic->processor_id = cpu;
+	lapic->x2apic_id = apic;
+
+	return lapic->length;
+}
+
 unsigned long acpi_create_madt_lapics(unsigned long current)
 {
 	struct device *cpu;
@@ -146,8 +158,12 @@ unsigned long acpi_create_madt_lapics(unsigned long current)
 	if (num_cpus > 1)
 		bubblesort(apic_ids, num_cpus, NUM_ASCENDING);
 	for (index = 0; index < num_cpus; index++) {
-		current += acpi_create_madt_lapic((acpi_madt_lapic_t *)current,
-				index, apic_ids[index]);
+		if (apic_ids[index] < 0xff)
+			current += acpi_create_madt_lapic((acpi_madt_lapic_t *)current,
+					index, apic_ids[index]);
+		else
+			current += acpi_create_madt_lx2apic((acpi_madt_lx2apic_t *)current,
+					index, apic_ids[index]);
 	}
 
 	return current;
@@ -187,6 +203,21 @@ int acpi_create_madt_lapic_nmi(acpi_madt_lapic_nmi_t *lapic_nmi, u8 cpu,
 	lapic_nmi->flags = flags;
 	lapic_nmi->processor_id = cpu;
 	lapic_nmi->lint = lint;
+
+	return lapic_nmi->length;
+}
+
+int acpi_create_madt_lx2apic_nmi(acpi_madt_lx2apic_nmi_t *lapic_nmi, u32 cpu,
+				 u16 flags, u8 lint)
+{
+	lapic_nmi->type = LOCAL_X2APIC_NMI; /* Local APIC NMI structure */
+	lapic_nmi->length = sizeof(acpi_madt_lx2apic_nmi_t);
+	lapic_nmi->flags = flags;
+	lapic_nmi->processor_id = cpu;
+	lapic_nmi->lint = lint;
+	lapic_nmi->reserved[0] = 0;
+	lapic_nmi->reserved[1] = 0;
+	lapic_nmi->reserved[2] = 0;
 
 	return lapic_nmi->length;
 }
@@ -1556,7 +1587,7 @@ int get_acpi_table_revision(enum acpi_tables table)
 	case FADT:
 		return ACPI_FADT_REV_ACPI_6_0;
 	case MADT: /* ACPI 3.0: 2, ACPI 4.0/5.0: 3, ACPI 6.2b/6.3: 5 */
-		return 2;
+		return 3;
 	case MCFG:
 		return 1;
 	case TCPA:

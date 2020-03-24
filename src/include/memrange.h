@@ -24,8 +24,8 @@ struct memranges {
 	/* coreboot doesn't have a free() function. Therefore, keep a cache of
 	 * free'd entries.  */
 	struct range_entry *free_list;
-	/* Alignment for base and end addresses of the range. (Must be power of 2). */
-	size_t align;
+	/* Alignment(log 2) for base and end addresses of the range. */
+	unsigned char align;
 };
 
 /* Each region within a memranges structure is represented by a
@@ -96,29 +96,29 @@ static inline bool memranges_is_empty(struct memranges *ranges)
 
 /* Initialize memranges structure providing an optional array of range_entry
  * to use as the free list. Additionally, it accepts an align parameter that
- * determines the alignment of addresses. (Alignment must be a power of 2). */
+ * represents the required alignment(log 2) of addresses. */
 void memranges_init_empty_with_alignment(struct memranges *ranges,
 					 struct range_entry *free,
-					 size_t num_free, size_t align);
+					 size_t num_free, unsigned char align);
 
 /* Initialize and fill a memranges structure according to the
  * mask and match type for all memory resources. Tag each entry with the
  * specified type. Additionally, it accepts an align parameter that
- * determines the alignment of addresses. (Alignment must be a power of 2). */
+ * represents the required alignment(log 2) of addresses. */
 void memranges_init_with_alignment(struct memranges *ranges,
 		    unsigned long mask, unsigned long match,
-		    unsigned long tag, size_t align);
+		    unsigned long tag, unsigned char align);
 
 /* Initialize memranges structure providing an optional array of range_entry
- * to use as the free list. Addresses are default aligned to 4KiB. */
+ * to use as the free list. Addresses are default aligned to 4KiB(2^12). */
 #define memranges_init_empty(__ranges, __free, __num_free)	\
-	memranges_init_empty_with_alignment(__ranges, __free, __num_free, 4 * KiB)
+	memranges_init_empty_with_alignment(__ranges, __free, __num_free, 12);
 
 /* Initialize and fill a memranges structure according to the
  * mask and match type for all memory resources. Tag each entry with the
- * specified type. Addresses are default aligned to 4KiB. */
+ * specified type. Addresses are default aligned to 4KiB(2^12). */
 #define memranges_init(__ranges, __mask, __match, __tag)	\
-	memranges_init_with_alignment(__ranges, __mask, __match, __tag, 4 * KiB)
+	memranges_init_with_alignment(__ranges, __mask, __match, __tag, 12);
 
 /* Clone a memrange. The new memrange has the same entries as the old one. */
 void memranges_clone(struct memranges *newranges, struct memranges *oldranges);
@@ -175,14 +175,13 @@ struct range_entry *memranges_next_entry(struct memranges *ranges,
 /* Steals memory from the available list in given ranges as per the constraints:
  * limit = Upper bound for the memory range to steal.
  * size  = Requested size for the stolen memory.
- * align = Alignment requirements for the starting address of the stolen memory.
- *         (Alignment must be a power of 2).
+ * align = Required alignment(log 2) for the starting address of the stolen memory.
  * tag   = Use a range that matches the given tag.
  *
  * If the constraints can be satisfied, this function creates a hole in the memrange,
  * writes the base address of that hole to stolen_base and returns true. Otherwise it returns
  * false. */
-bool memranges_steal(struct memranges *ranges, resource_t limit, resource_t size, size_t align,
-		     unsigned long tag, resource_t *stolen_base);
+bool memranges_steal(struct memranges *ranges, resource_t limit, resource_t size,
+			unsigned char align, unsigned long tag, resource_t *stolen_base);
 
 #endif /* MEMRANGE_H_ */

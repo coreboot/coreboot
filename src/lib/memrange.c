@@ -230,12 +230,12 @@ static void do_action(struct memranges *ranges,
 	if (size == 0)
 		return;
 
-	/* The addresses are aligned to 4096 bytes: the begin address is
+	/* The addresses are aligned to (1ULL << ranges->align): the begin address is
 	 * aligned down while the end address is aligned up to be conservative
 	 * about the full range covered. */
-	begin = ALIGN_DOWN(base, ranges->align);
+	begin = ALIGN_DOWN(base, POWER_OF_2(ranges->align));
 	end = begin + size + (base - begin);
-	end = ALIGN_UP(end, ranges->align) - 1;
+	end = ALIGN_UP(end, POWER_OF_2(ranges->align)) - 1;
 	action(ranges, begin, end, tag);
 }
 
@@ -294,12 +294,9 @@ void memranges_add_resources(struct memranges *ranges,
 
 void memranges_init_empty_with_alignment(struct memranges *ranges,
 					 struct range_entry *to_free,
-					 size_t num_free, size_t align)
+					 size_t num_free, unsigned char align)
 {
 	size_t i;
-
-	/* Alignment must be a power of 2. */
-	assert(IS_POWER_OF_2(align));
 
 	ranges->entries = NULL;
 	ranges->free_list = NULL;
@@ -311,7 +308,7 @@ void memranges_init_empty_with_alignment(struct memranges *ranges,
 
 void memranges_init_with_alignment(struct memranges *ranges,
 				   unsigned long mask, unsigned long match,
-				   unsigned long tag, size_t align)
+				   unsigned long tag, unsigned char align)
 {
 	memranges_init_empty_with_alignment(ranges, NULL, 0, align);
 	memranges_add_resources(ranges, mask, match, tag);
@@ -395,7 +392,7 @@ struct range_entry *memranges_next_entry(struct memranges *ranges,
  * required alignment, is big enough, does not exceed the limit and has a matching tag. */
 static const struct range_entry *memranges_find_entry(struct memranges *ranges,
 						      resource_t limit, resource_t size,
-						      size_t align, unsigned long tag)
+						      unsigned char align, unsigned long tag)
 {
 	const struct range_entry *r;
 	resource_t base, end;
@@ -403,18 +400,12 @@ static const struct range_entry *memranges_find_entry(struct memranges *ranges,
 	if (size == 0)
 		return NULL;
 
-	if (!IS_POWER_OF_2(align))
-		return NULL;
-
-	if (!IS_ALIGNED(align, ranges->align))
-		return NULL;
-
 	memranges_each_entry(r, ranges) {
 
 		if (r->tag != tag)
 			continue;
 
-		base = ALIGN_UP(r->begin, align);
+		base = ALIGN_UP(r->begin, POWER_OF_2(align));
 		end = base + size - 1;
 
 		if (end > r->end)
@@ -429,8 +420,8 @@ static const struct range_entry *memranges_find_entry(struct memranges *ranges,
 	return NULL;
 }
 
-bool memranges_steal(struct memranges *ranges, resource_t limit, resource_t size, size_t align,
-		     unsigned long tag, resource_t *stolen_base)
+bool memranges_steal(struct memranges *ranges, resource_t limit, resource_t size,
+			unsigned char align, unsigned long tag, resource_t *stolen_base)
 {
 	resource_t base;
 	const struct range_entry *r = memranges_find_entry(ranges, limit, size, align, tag);
@@ -438,7 +429,7 @@ bool memranges_steal(struct memranges *ranges, resource_t limit, resource_t size
 	if (r == NULL)
 		return false;
 
-	base = ALIGN_UP(r->begin, align);
+	base = ALIGN_UP(r->begin, POWER_OF_2(align));
 
 	memranges_create_hole(ranges, base, size);
 	*stolen_base = base;

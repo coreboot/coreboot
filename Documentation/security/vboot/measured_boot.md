@@ -120,12 +120,12 @@ PCR-7 are left empty.
 ### PCR-0
 _Hash:_ SHA1
 
-_Description:_ Google VBoot GBB flags.
+_Description:_ Google vboot GBB flags.
 
 ### PCR-1
 _Hash:_ SHA1/SHA256
 
-_Description:_ Google VBoot GBB HWID.
+_Description:_ Google vboot GBB HWID.
 
 ### PCR-2
 _Hash:_ SHA1/SHA256

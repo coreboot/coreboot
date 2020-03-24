@@ -73,7 +73,7 @@ Areas with significant updates
 
 ### Vendorcode
 * AMD (14 commits) - Cleanup, add libagesa.a builds, remove unused code.
-* Google (22 commits) - VBoot2 updates and cleanup
+* Google (22 commits) - vboot2 updates and cleanup
 * Intel (86 commits) - Add Intel FSP 2.0, update Broadwell DE support
 
 ### Payloads (37 commits)

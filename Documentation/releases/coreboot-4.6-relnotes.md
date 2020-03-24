@@ -180,7 +180,7 @@ SuperIO (12 commits)
 * Add 2 new chips
 * Consolidate code to use common routines
 
-Vboot (23 commits)
+vboot (23 commits)
 * Add support for recovery hash space in TPM
 
 RISC-V (25 commits)

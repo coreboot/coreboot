@@ -22,7 +22,7 @@ The API provides append-only semantics for key/value pairs.
 
 By default SMMSTORE will operate on a separate FMAP region called
 `SMMSTORE`. The default generated FMAP will include such a region.
-On systems with a locked FMAP, e.g. in an existing VBOOT setup
+On systems with a locked FMAP, e.g. in an existing vboot setup
 with a locked RO region, the option exists to add a cbfsfile
 called `smm_store` in the `RW_LEGACY` (if CHROMEOS) or in the
 `COREBOOT` FMAP regions. It is recommended for new builds using

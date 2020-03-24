@@ -52,4 +52,4 @@ do
 done
 }
 
-(echo "# VBOOT enabled devices"; generate_vboot_list) > $OUTPUT_FILE
+(echo "# vboot-enabled devices"; generate_vboot_list) > $OUTPUT_FILE

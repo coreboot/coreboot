@@ -3,18 +3,18 @@
 By default a single instance of coreboot is present in the firmware flash,
 no verification is done and the flash is not write-protected, so as to allow
 firmware updates from the OS.
-The verified boot mechanism also called [VBOOT] allows secure firmware
+The verified boot mechanism also called [vboot] allows secure firmware
 updates using an A/B partitioning scheme once enabled.
 
-## Enabling VBOOT
-You can enable [VBOOT] in Kconfig's *Security* section. Besides a verified
+## Enabling vboot
+You can enable [vboot] in Kconfig's *Security* section. Besides a verified
 boot you can also enable a measured boot by setting
 `CONFIG_VBOOT_MEASURED_BOOT`. Both options need a working TPM, which is
 present on all recent Lenovo devices.
 
 ## Updating and recovery
 As the A/B partition is writeable you can still update them from the OS.
-By using the [VBOOT] mechanism you store a copy of coreboot in the `RO`
+By using the [vboot] mechanism you store a copy of coreboot in the `RO`
 partition that acts as failsafe in case the regular firmware update, that
 goes to the `A` or `B` partition fails.
 
@@ -32,8 +32,8 @@ default FMAP. They are missing the `B` partition, due to size constaints.
 You can still provide your own FMAP if you need `RO`+`A`+`B` partitions.
 
 ## CMOS
-[VBOOT] on *Lenovo* devices uses the CMOS to store configuration data, like
+[vboot] on *Lenovo* devices uses the CMOS to store configuration data, like
 boot failures and the last successfully booted partition.
 
-[VBOOT]: ../../security/vboot/index.md
 [CB:32705]: https://review.coreboot.org/32705
+[vboot]: ../../security/vboot/index.md

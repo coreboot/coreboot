@@ -175,7 +175,7 @@ of becoming more generally useful.
 Payload integration has been updated, coreinfo learned to cope with
 UPPER CASE commands and libpayload knows how to deal with USB3 hubs.
 
-### Added VBOOT support to the following platforms:
+### Added vboot support to the following platforms:
 
 * intel/gm45
 * intel/nehalem

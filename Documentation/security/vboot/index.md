@@ -196,7 +196,7 @@ not into the read/write coreboot file systems in *FW_MAIN_A* and *FW_MAIN_B*.
 **VBOOT_ENABLE_CBFS_FALLBACK**  
 
 Normally coreboot will use the active read/write coreboot file system for all
-of it's file access when VBOOT is active and is not in recovery mode.
+of it's file access when vboot is active and is not in recovery mode.
 
 When the `VBOOT_ENABLE_CBFS_FALLBACK` option is enabled the cbfs file system will
 first try to locate a file in the active read/write file system. If the file

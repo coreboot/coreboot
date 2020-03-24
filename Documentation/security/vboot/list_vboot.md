@@ -1,4 +1,4 @@
-# VBOOT enabled devices
+# vboot-enabled devices
 
 ## Emulation
 - QEMU x86 i440fx/piix4 (aka qemu -M pc)

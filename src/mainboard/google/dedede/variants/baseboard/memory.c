@@ -8,7 +8,7 @@
 #include <baseboard/variants.h>
 #include <baseboard/gpio.h>
 #include <gpio.h>
-#include <soc/meminit_jsl.h>
+#include <soc/meminit.h>
 #include <soc/romstage.h>
 
 static const struct mb_cfg baseboard_memcfg_cfg = {

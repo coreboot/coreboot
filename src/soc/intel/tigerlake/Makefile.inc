@@ -1,4 +1,4 @@
-ifeq ($(CONFIG_SOC_INTEL_TIGERLAKE_BASE),y)
+ifeq ($(CONFIG_SOC_INTEL_TIGERLAKE),y)
 
 subdirs-y += romstage
 subdirs-y += ../../../cpu/intel/microcode

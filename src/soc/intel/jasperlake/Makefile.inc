@@ -1,4 +1,4 @@
-ifeq ($(CONFIG_SOC_INTEL_JASPERLAKE_COPY),y)
+ifeq ($(CONFIG_SOC_INTEL_JASPERLAKE),y)
 
 subdirs-y += romstage
 subdirs-y += ../../../cpu/intel/microcode

@@ -14,7 +14,7 @@
  */
 #include <baseboard/variants.h>
 #include <console/console.h>
-#include <soc/meminit_jsl.h>
+#include <soc/meminit.h>
 #include <soc/romstage.h>
 #include "board_id.h"
 

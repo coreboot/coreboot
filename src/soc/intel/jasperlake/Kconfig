@@ -1,9 +1,9 @@
-config SOC_INTEL_JASPERLAKE_COPY
+config SOC_INTEL_JASPERLAKE
 	bool
 	help
 	  Intel Jasperlake support
 
-if SOC_INTEL_JASPERLAKE_COPY
+if SOC_INTEL_JASPERLAKE
 
 config CPU_SPECIFIC_OPTIONS
 	def_bool y
@@ -192,7 +192,7 @@ config FSP_FD_PATH
 	depends on FSP_USE_REPO
 	default "3rdparty/fsp/JasperLakeFspBinPkg/Fsp.fd"
 
-config SOC_INTEL_JASPERLAKE_COPY_DEBUG_CONSENT
+config SOC_INTEL_JASPERLAKE_DEBUG_CONSENT
 	int "Debug Consent for JSL"
 	# USB DBC is more common for developers so make this default to 3 if
 	# SOC_INTEL_DEBUG_CONSENT=y

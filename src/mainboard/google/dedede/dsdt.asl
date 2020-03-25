@@ -18,7 +18,7 @@ DefinitionBlock(
 	0x20110725	/* OEM revision */
 )
 {
-	#include <soc/intel/tigerlake/acpi/platform.asl>
+	#include <soc/intel/jasperlake/acpi/platform.asl>
 
 	/* global NVS and variables */
 	#include <soc/intel/common/block/acpi/acpi/globalnvs.asl>
@@ -30,7 +30,7 @@ DefinitionBlock(
 		Device (PCI0)
 		{
 			#include <soc/intel/common/block/acpi/acpi/northbridge.asl>
-			#include <soc/intel/tigerlake/acpi/southbridge.asl>
+			#include <soc/intel/jasperlake/acpi/southbridge.asl>
 		}
 	}
 

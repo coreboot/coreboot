@@ -6,7 +6,7 @@
  */
 
 #include <baseboard/variants.h>
-#include <soc/meminit_jsl.h>
+#include <soc/meminit.h>
 #include <soc/romstage.h>
 
 void mainboard_memory_init_params(FSPM_UPD *memupd)

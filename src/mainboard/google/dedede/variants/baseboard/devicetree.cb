@@ -1,4 +1,4 @@
-chip soc/intel/tigerlake
+chip soc/intel/jasperlake
 	device cpu_cluster 0 on
 		device lapic 0 on end
 	end

@@ -16,6 +16,7 @@
 #include <chip.h>
 #include <soc/pci_devs.h>
 #include <ec/google/chromeec/ec.h>
+#include <sar.h>
 
 void variant_devtree_update(void)
 {
@@ -45,4 +46,14 @@ void variant_devtree_update(void)
 		cfg->SataPortsDevSlp[1] = 0;
 		cfg->satapwroptimize = 0;
 	}
+}
+
+const char *get_wifi_sar_cbfs_filename(void)
+{
+	const char *filename = NULL;
+	uint32_t sku_id = google_chromeec_get_board_sku();
+
+	if (sku_id == 1 || sku_id == 2 || sku_id == 3 || sku_id == 4)
+		filename = "wifi_sar-kled.hex";
+	return filename;
 }

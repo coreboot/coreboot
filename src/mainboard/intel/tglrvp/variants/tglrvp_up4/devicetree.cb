@@ -4,6 +4,14 @@ chip soc/intel/tigerlake
 		device lapic 0 on end
 	end
 
+	# GPE configuration
+	# Note that GPE events called out in ASL code rely on this
+	# route. i.e. If this route changes then the affected GPE
+	# offset bits also need to be changed.
+	register "pmc_gpe0_dw0" = "GPP_B"
+	register "pmc_gpe0_dw1" = "GPP_D"
+	register "pmc_gpe0_dw2" = "GPP_E"
+
 	# FSP configuration
 	register "SaGv" = "SaGv_Disabled"
 	register "SmbusEnable" = "1"

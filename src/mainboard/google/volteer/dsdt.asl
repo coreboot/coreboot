@@ -48,6 +48,6 @@ DefinitionBlock(
 
 	#include <southbridge/intel/common/acpi/sleepstates.asl>
 	/* Camera */
-        #include <soc/intel/tigerlake/acpi/ipu.asl>
+	#include <soc/intel/tigerlake/acpi/ipu.asl>
 	#include "acpi/mipi_camera.asl"
 }

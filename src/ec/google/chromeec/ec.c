@@ -1120,9 +1120,9 @@ int google_chromeec_set_usb_charge_mode(uint8_t port_id, enum usb_charge_mode mo
 	return google_chromeec_command(&cmd);
 }
 
-/* Get charger power info in Watts.  Also returns type of charger */
+/* Get charger voltage and current.  Also returns type of charger */
 int google_chromeec_get_usb_pd_power_info(enum usb_chg_type *type,
-					  uint32_t *max_watts)
+					  uint16_t *current_max, uint16_t *voltage_max)
 {
 	struct ec_params_usb_pd_power_info params = {
 		.port = PD_POWER_CHARGING_PORT,
@@ -1147,8 +1147,8 @@ int google_chromeec_get_usb_pd_power_info(enum usb_chg_type *type,
 	/* values are given in milliAmps and milliVolts */
 	*type = resp.type;
 	m = resp.meas;
-	*max_watts = (m.current_max * m.voltage_max) / 1000000;
-
+	*voltage_max = m.voltage_max;
+	*current_max = m.current_max;
 	return 0;
 }
 

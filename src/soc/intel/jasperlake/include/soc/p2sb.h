@@ -12,14 +12,8 @@
  * GNU General Public License for more details.
  */
 
-/*
- * This file is created based on Intel Tiger Lake Processor PCH Datasheet
- * Document number: 575857
- * Chapter number: 3
- */
-
-#ifndef _SOC_TIGERLAKE_P2SB_H_
-#define _SOC_TIGERLAKE_P2SB_H_
+#ifndef _SOC_JASPERLAKE_P2SB_H_
+#define _SOC_JASPERLAKE_P2SB_H_
 
 #define HPTC_OFFSET			0x60
 #define HPTC_ADDR_ENABLE_BIT		(1 << 7)

@@ -12,12 +12,6 @@
  * GNU General Public License for more details.
  */
 
-/*
- * This file is created based on Intel Tiger Lake Processor SA Datasheet
- * Document number: 571131
- * Chapter number: 3
- */
-
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ops.h>

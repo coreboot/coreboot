@@ -12,14 +12,8 @@
  * GNU General Public License for more details.
  */
 
-/*
- * This file is created based on Intel Tiger Lake Processor PCH Datasheet
- * Document number: 575857
- * Chapter number: 31-35
- */
-
-#ifndef SOC_TIGERLAKE_PCR_H
-#define SOC_TIGERLAKE_PCR_H
+#ifndef SOC_JASPERLAKE_PCR_H
+#define SOC_JASPERLAKE_PCR_H
 /*
  * Port ids
  */

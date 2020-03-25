@@ -12,12 +12,6 @@
  * GNU General Public License for more details.
  */
 
-/*
- * This file is created based on Intel Tiger Lake Processor CPU Datasheet
- * Document number: 575683
- * Chapter number: 15
- */
-
 #include <arch/cpu.h>
 #include <console/console.h>
 #include <device/pci.h>

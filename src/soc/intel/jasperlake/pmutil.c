@@ -17,13 +17,6 @@
  * and the differences between PCH variants.
  */
 
-/*
- * This file is created based on Intel Tiger Lake Processor PCH Datasheet
- * Document number: 575857
- * Chapter number: 4
- */
-
-
 #define __SIMPLE_DEVICE__
 
 #include <device/mmio.h>
@@ -183,7 +176,7 @@ uint32_t *soc_pmc_etr_addr(void)
 
 void soc_get_gpi_gpe_configs(uint8_t *dw0, uint8_t *dw1, uint8_t *dw2)
 {
-	DEVTREE_CONST struct soc_intel_tigerlake_config *config;
+	DEVTREE_CONST struct soc_intel_jasperlake_config *config;
 
 	config = config_of_soc();
 

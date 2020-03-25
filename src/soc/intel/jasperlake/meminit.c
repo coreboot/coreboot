@@ -15,7 +15,7 @@
 #include <assert.h>
 #include <console/console.h>
 #include <fsp/util.h>
-#include <soc/meminit_jsl.h>
+#include <soc/meminit.h>
 #include <spd_bin.h>
 #include <string.h>
 

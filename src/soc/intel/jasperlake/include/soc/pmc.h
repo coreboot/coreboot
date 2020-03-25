@@ -12,8 +12,8 @@
  * GNU General Public License for more details.
  */
 
-#ifndef _SOC_TIGERLAKE_PMC_H_
-#define _SOC_TIGERLAKE_PMC_H_
+#ifndef _SOC_JASPERLAKE_PMC_H_
+#define _SOC_JASPERLAKE_PMC_H_
 
 /* PCI Configuration Space (D31:F2): PMC */
 #define  PWRMBASE		0x10
@@ -114,35 +114,16 @@
 #define  GPE0_DWX_MASK			0xf
 #define  GPE0_DW_SHIFT(x)		(4*(x))
 
-#if CONFIG(SOC_INTEL_TIGERLAKE_COPY)
-
-	#define  PMC_GPP_B			0x0
-	#define  PMC_GPP_T			0x1
-	#define  PMC_GPP_A			0x2
-	#define  PMC_GPP_R			0x3
-	#define  PMC_GPD			0x4
-	#define  PMC_GPP_S			0x5
-	#define  PMC_GPP_H			0x6
-	#define  PMC_GPP_D			0x7
-	#define  PMC_GPP_U			0x8
-	#define  PMC_GPP_F			0xA
-	#define  PMC_GPP_C			0xB
-	#define  PMC_GPP_E			0xC
-
-#elif CONFIG(SOC_INTEL_JASPERLAKE_COPY)
-
-	#define  PMC_GPP_A			0x0
-	#define  PMC_GPP_B			0x1
-	#define  PMC_GPP_F			0x2
-	#define  PMC_GPD			0x3
-	#define  PMC_GPP_R			0x4
-	#define  PMC_GPP_S			0x6
-	#define  PMC_GPP_D			0x7
-	#define  PMC_GPP_C			0x8
-	#define  PMC_GPP_H			0xA
-	#define  PMC_GPP_E			0xF
-
-#endif
+#define  PMC_GPP_A			0x0
+#define  PMC_GPP_B			0x1
+#define  PMC_GPP_F			0x2
+#define  PMC_GPD			0x3
+#define  PMC_GPP_R			0x4
+#define  PMC_GPP_S			0x6
+#define  PMC_GPP_D			0x7
+#define  PMC_GPP_C			0x8
+#define  PMC_GPP_H			0xA
+#define  PMC_GPP_E			0xF
 
 #define GBLRST_CAUSE0			0x1924
 #define   GBLRST_CAUSE0_THERMTRIP	(1 << 5)

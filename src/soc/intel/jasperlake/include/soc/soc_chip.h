@@ -12,9 +12,9 @@
  * GNU General Public License for more details.
  */
 
-#ifndef _SOC_TIGERLAKE_SOC_CHIP_H_
-#define _SOC_TIGERLAKE_SOC_CHIP_H_
+#ifndef _SOC_JASPERLAKE_SOC_CHIP_H_
+#define _SOC_JASPERLAKE_SOC_CHIP_H_
 
 #include "../../chip.h"
 
-#endif /* _SOC_TIGERLAKE_SOC_CHIP_H_ */
+#endif /* _SOC_JASPERLAKE_SOC_CHIP_H_ */

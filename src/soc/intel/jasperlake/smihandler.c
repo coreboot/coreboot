@@ -24,12 +24,12 @@
  * Specific SOC SMI handler during ramstage finalize phase
  *
  * BIOS can't make CSME function disable as is due to POSTBOOT_SAI
- * restriction in place from TGP chipset. Hence create SMI Handler to
+ * restriction in place from JSP chipset. Hence create SMI Handler to
  * perform CSME function disabling logic during SMM mode.
  */
 void smihandler_soc_at_finalize(void)
 {
-	const struct soc_intel_tigerlake_config *config;
+	const struct soc_intel_jasperlake_config *config;
 
 	config = config_of_soc();
 

@@ -12,8 +12,8 @@
  * GNU General Public License for more details.
  */
 
-#ifndef _SOC_TIGERLAKE_CPU_H_
-#define _SOC_TIGERLAKE_CPU_H_
+#ifndef _SOC_JASPERLAKE_CPU_H_
+#define _SOC_JASPERLAKE_CPU_H_
 
 #include <intelblocks/msr.h>
 

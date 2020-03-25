@@ -12,14 +12,8 @@
  * GNU General Public License for more details.
  */
 
-/*
- * This file is created based on Intel Tiger Lake Processor PCH Datasheet
- * Document number: 575857
- * Chapter number: 6
- */
-
-#ifndef _SOC_TIGERLAKE_SMBUS_H_
-#define _SOC_TIGERLAKE_SMBUS_H_
+#ifndef _SOC_JASPERLAKE_SMBUS_H_
+#define _SOC_JASPERLAKE_SMBUS_H_
 
 /* IO and MMIO registers under primary BAR */
 

@@ -12,12 +12,6 @@
  * GNU General Public License for more details.
  */
 
-/*
- * This file is created based on Intel Tiger Lake Processor PCH Datasheet
- * Document number: 575857
- * Chapter number: 13
- */
-
 #include <device/device.h>
 #include <drivers/i2c/designware/dw_i2c.h>
 #include <soc/pci_devs.h>

@@ -13,12 +13,6 @@
  * GNU General Public License for more details.
  */
 
-/*
- * This file is created based on Intel Tiger Lake Processor PCH Datasheet
- * Document number: 575857
- * Chapter number: 7
- */
-
 #include <intelblocks/spi.h>
 #include <soc/pci_devs.h>
 

@@ -12,14 +12,8 @@
  * GNU General Public License for more details.
  */
 
-/*
- * This file is created based on Intel Tiger Lake Processor PCH Datasheet
- * Document number: 575857
- * Chapter number: 2
- */
-
-#ifndef _SOC_TIGERLAKE_ESPI_H_
-#define _SOC_TIGERLAKE_ESPI_H_
+#ifndef _SOC_JASPERLAKE_ESPI_H_
+#define _SOC_JASPERLAKE_ESPI_H_
 
 #include <stdint.h>
 
@@ -43,16 +37,5 @@
 #define LGMR			0x98 /* ESPI Generic Memory Range */
 #define PCCTL			0xE0 /* PCI Clock Control */
 #define   CLKRUN_EN		(1 << 0)
-
-/*
- * This function will help to differentiate between 2 PCH on single type of soc.
- * Since same soc may have LP series pch or H series PCH, we need to
- * differentiate by reading upper 8 bits of PCH device ids.
- *
- * Return:
- *	Return PCH_LP or PCH_H macro in case of respective device ID found.
- *	PCH_UNKNOWN_SERIES in case of invalid device ID.
- */
-uint8_t get_pch_series(void);
 
 #endif

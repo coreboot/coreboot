@@ -13,12 +13,6 @@
  * GNU General Public License for more details.
  */
 
-/*
- * This file is created based on Intel Tiger Lake Processor SA Datasheet
- * Document number: 571131
- * Chapter number: 4
- */
-
 #include <arch/acpi.h>
 #include <console/console.h>
 #include <fsp/util.h>

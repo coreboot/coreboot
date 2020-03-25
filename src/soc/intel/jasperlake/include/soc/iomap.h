@@ -12,14 +12,8 @@
  * GNU General Public License for more details.
  */
 
-/*
- * This file is created based on Intel Tiger Lake Firmware Architecture Specification
- * Document number: 608531
- * Chapter number: 4
- */
-
-#ifndef _SOC_TIGERLAKE_IOMAP_H_
-#define _SOC_TIGERLAKE_IOMAP_H_
+#ifndef _SOC_JASPERLAKE_IOMAP_H_
+#define _SOC_JASPERLAKE_IOMAP_H_
 
 /*
  * Memory-mapped I/O registers.
@@ -91,18 +85,6 @@
 #define ABOVE_4GB_MEM_BASE_ADDRESS	(256ULL * GiB)
 #define ABOVE_4GB_MEM_BASE_SIZE	(256ULL * GiB)
 
-#if CONFIG(SOC_INTEL_TIGERLAKE_COPY)
-
-#define MCH_BASE_ADDRESS	0xfedc0000
-#define MCH_BASE_SIZE		0x20000
-
-#define EARLY_GSPI_BASE_ADDRESS 0xfe030000
-
-#define EARLY_I2C_BASE_ADDRESS	0xfe020000
-#define EARLY_I2C_BASE(x)	(EARLY_I2C_BASE_ADDRESS + (0x2000 * (x)))
-
-#else /* CONFIG_SOC_INTEL_JASPERLAKE_COPY */
-
 #define MCH_BASE_ADDRESS	0xfea80000
 #define MCH_BASE_SIZE		0x8000
 
@@ -110,8 +92,6 @@
 
 #define EARLY_I2C_BASE_ADDRESS	0xfe040000
 #define EARLY_I2C_BASE(x)	(EARLY_I2C_BASE_ADDRESS + (0x1000 * (x)))
-
-#endif
 
 /*
  * I/O port address space

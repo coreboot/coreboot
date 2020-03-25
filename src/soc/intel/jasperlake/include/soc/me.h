@@ -12,8 +12,8 @@
  * GNU General Public License for more details.
  */
 
-#ifndef _TIGERLAKE_ME_H_
-#define _TIGERLAKE_ME_H_
+#ifndef _JASPERLAKE_ME_H_
+#define _JASPERLAKE_ME_H_
 
 /* ME Host Firmware Status register 1 */
 union me_hfsts1 {
@@ -52,4 +52,4 @@ union me_hfsts3 {
 		u32 reserved_30: 2;
 	} __packed fields;
 };
-#endif /* _TIGERLAKE_ME_H_ */
+#endif /* _JASPERLAKE_ME_H_ */

@@ -12,8 +12,8 @@
  * GNU General Public License for more details.
  */
 
-#ifndef _SOC_JASPERLAKE_MEMCFG_INIT_H_
-#define _SOC_JASPERLAKE_MEMCFG_INIT_H_
+#ifndef _SOC_JASPERLAKE_MEMINIT_H_
+#define _SOC_JASPERLAKE_MEMINIT_H_
 
 #include <types.h>
 #include <fsp/soc_binding.h>
@@ -121,4 +121,4 @@ struct mb_cfg {
 void memcfg_init(FSP_M_CONFIG *mem_cfg, const struct mb_cfg *board_cfg,
 			const struct spd_info *spd_info, bool half_populated);
 
-#endif /* _SOC_JASPERLAKE_MEMCFG_INIT_H_ */
+#endif /* _SOC_JASPERLAKE_MEMINIT_H_ */

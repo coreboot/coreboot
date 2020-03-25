@@ -42,7 +42,7 @@ static const pci_devfn_t serial_io_dev[] = {
 
 static void parse_devicetree(FSP_S_CONFIG *params)
 {
-	const struct soc_intel_tigerlake_config *config = config_of_soc();
+	const struct soc_intel_jasperlake_config *config = config_of_soc();
 
 	/* LPSS controllers configuration */
 
@@ -81,7 +81,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	unsigned int i;
 	struct device *dev;
 	FSP_S_CONFIG *params = &supd->FspsConfig;
-	struct soc_intel_tigerlake_config *config = config_of_soc();
+	struct soc_intel_jasperlake_config *config = config_of_soc();
 
 	/* Parse device tree and fill in FSP UPDs */
 	parse_devicetree(params);

@@ -21,7 +21,7 @@
 #include <string.h>
 
 static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
-		const struct soc_intel_tigerlake_config *config)
+		const struct soc_intel_jasperlake_config *config)
 {
 	unsigned int i;
 	const struct device *dev = pcidev_path_on_root(SA_DEVFN_IGD);
@@ -89,7 +89,7 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 	m_cfg->SmbusEnable = config->SmbusEnable;
 
 	/* Set debug probe type */
-	m_cfg->PlatformDebugConsent = CONFIG_SOC_INTEL_TIGERLAKE_COPY_DEBUG_CONSENT;
+	m_cfg->PlatformDebugConsent = CONFIG_SOC_INTEL_JASPERLAKE_COPY_DEBUG_CONSENT;
 
 	/* VT-d config */
 	m_cfg->VtdDisable = 0;
@@ -131,7 +131,7 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 
 void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 {
-	const struct soc_intel_tigerlake_config *config = config_of_soc();
+	const struct soc_intel_jasperlake_config *config = config_of_soc();
 	FSP_M_CONFIG *m_cfg = &mupd->FspmConfig;
 
 	soc_memory_init_params(m_cfg, config);

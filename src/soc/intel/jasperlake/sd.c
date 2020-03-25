@@ -12,12 +12,6 @@
  * GNU General Public License for more details.
  */
 
-/*
- * This file is created based on Intel Tiger Lake Processor PCH Datasheet
- * Document number: 575857
- * Chapter number: 26
- */
-
 #include <intelblocks/sd.h>
 #include <soc/soc_chip.h>
 

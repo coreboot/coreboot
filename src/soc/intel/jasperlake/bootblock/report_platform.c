@@ -12,12 +12,6 @@
  * GNU General Public License for more details.
  */
 
-/*
- * This file is created based on Intel Tiger Lake Platform Stepping and IDs
- * Document number: 605534
- * Chapter number: 2, 4, 5, 6
- */
-
 #include <arch/cpu.h>
 #include <device/pci_ops.h>
 #include <console/console.h>
@@ -36,7 +30,6 @@ static struct {
 	u32 cpuid;
 	const char *name;
 } cpu_table[] = {
-	{ CPUID_TIGERLAKE_A0, "Tigerlake A0" },
 	{ CPUID_JASPERLAKE_A0, "Jasperlake A0" },
 };
 
@@ -44,75 +37,22 @@ static struct {
 	u16 mchid;
 	const char *name;
 } mch_table[] = {
-	{ PCI_DEVICE_ID_INTEL_TGL_ID_U, "Tigerlake-U-4-2" },
-	{ PCI_DEVICE_ID_INTEL_TGL_ID_U_1, "Tigerlake-U-4-3e" },
-	{ PCI_DEVICE_ID_INTEL_TGL_ID_U_2_2, "Tigerlake-U-2-2" },
-	{ PCI_DEVICE_ID_INTEL_TGL_ID_Y, "Tigerlake-Y-4-2" },
 	{ PCI_DEVICE_ID_INTEL_JSL_ID_1, "Jasperlake-1" },
-	{ PCI_DEVICE_ID_INTEL_JSL_EHL, "Jasperlake Elkhartlake" },
-	{ PCI_DEVICE_ID_INTEL_EHL_ID_1, "Elkhartlake-1" },
 };
 
 static struct {
 	u16 espiid;
 	const char *name;
 } pch_table[] = {
-	{ PCI_DEVICE_ID_INTEL_TGP_ESPI_0, "Tigerlake-Base SKU" },
-	{ PCI_DEVICE_ID_INTEL_TGP_SUPER_U_ESPI, "Tigerlake-U Super SKU" },
-	{ PCI_DEVICE_ID_INTEL_TGP_PREMIUM_U_ESPI, "Tigerlake-U Premium SKU" },
-	{ PCI_DEVICE_ID_INTEL_TGP_BASE_U_ESPI, "Tigerlake-U Base SKU" },
-	{ PCI_DEVICE_ID_INTEL_TGP_ESPI_1, "Tigerlake-Base SKU" },
-	{ PCI_DEVICE_ID_INTEL_TGP_ESPI_2, "Tigerlake-Base SKU" },
-	{ PCI_DEVICE_ID_INTEL_TGP_SUPER_Y_ESPI, "Tigerlake-Y Super SKU" },
-	{ PCI_DEVICE_ID_INTEL_TGP_PREMIUM_Y_ESPI, "Tigerlake-Y Premium SKU" },
-	{ PCI_DEVICE_ID_INTEL_TGP_ESPI_3, "Tigerlake-Base SKU" },
-	{ PCI_DEVICE_ID_INTEL_TGP_ESPI_4, "Tigerlake-Base SKU" },
-	{ PCI_DEVICE_ID_INTEL_TGP_ESPI_5, "Tigerlake-Base SKU" },
-	{ PCI_DEVICE_ID_INTEL_TGP_ESPI_6, "Tigerlake-Base SKU" },
-	{ PCI_DEVICE_ID_INTEL_TGP_ESPI_7, "Tigerlake-Base SKU" },
-	{ PCI_DEVICE_ID_INTEL_TGP_ESPI_8, "Tigerlake-Base SKU" },
-	{ PCI_DEVICE_ID_INTEL_TGP_ESPI_9, "Tigerlake-Base SKU" },
-	{ PCI_DEVICE_ID_INTEL_TGP_ESPI_10, "Tigerlake-Base SKU" },
-	{ PCI_DEVICE_ID_INTEL_TGP_ESPI_11, "Tigerlake-Base SKU" },
-	{ PCI_DEVICE_ID_INTEL_TGP_ESPI_12, "Tigerlake-Base SKU" },
-	{ PCI_DEVICE_ID_INTEL_TGP_ESPI_13, "Tigerlake-Base SKU" },
-	{ PCI_DEVICE_ID_INTEL_TGP_ESPI_14, "Tigerlake-Base SKU" },
-	{ PCI_DEVICE_ID_INTEL_TGP_ESPI_15, "Tigerlake-Base SKU" },
-	{ PCI_DEVICE_ID_INTEL_TGP_ESPI_16, "Tigerlake-Base SKU" },
-	{ PCI_DEVICE_ID_INTEL_TGP_ESPI_17, "Tigerlake-Base SKU" },
-	{ PCI_DEVICE_ID_INTEL_TGP_ESPI_18, "Tigerlake-Base SKU" },
-	{ PCI_DEVICE_ID_INTEL_TGP_ESPI_19, "Tigerlake-Base SKU" },
-	{ PCI_DEVICE_ID_INTEL_TGP_ESPI_20, "Tigerlake-Base SKU" },
-	{ PCI_DEVICE_ID_INTEL_TGP_ESPI_21, "Tigerlake-Base SKU" },
-	{ PCI_DEVICE_ID_INTEL_TGP_ESPI_22, "Tigerlake-Base SKU" },
-	{ PCI_DEVICE_ID_INTEL_TGP_ESPI_23, "Tigerlake-Base SKU" },
-	{ PCI_DEVICE_ID_INTEL_TGP_ESPI_24, "Tigerlake-Base SKU" },
-	{ PCI_DEVICE_ID_INTEL_TGP_ESPI_25, "Tigerlake-Base SKU" },
-	{ PCI_DEVICE_ID_INTEL_TGP_ESPI_26, "Tigerlake-Base SKU" },
 	{ PCI_DEVICE_ID_INTEL_JSP_SUPER_ESPI, "Jasperlake Super" },
-	{ PCI_DEVICE_ID_INTEL_MCC_ESPI_0, "Elkhartlake-0" },
-	{ PCI_DEVICE_ID_INTEL_MCC_ESPI_1, "Elkhartlake-1" },
-	{ PCI_DEVICE_ID_INTEL_MCC_BASE_ESPI, "Elkhartlake Base" },
-	{ PCI_DEVICE_ID_INTEL_MCC_PREMIUM_ESPI, "Elkhartlake Premium" },
-	{ PCI_DEVICE_ID_INTEL_MCC_SUPER_ESPI, "Elkhartlake Super" },
 };
 
 static struct {
 	u16 igdid;
 	const char *name;
 } igd_table[] = {
-	{ PCI_DEVICE_ID_INTEL_TGL_GT0, "Tigerlake U GT0" },
-	{ PCI_DEVICE_ID_INTEL_TGL_GT2_ULT, "Tigerlake U GT2" },
-	{ PCI_DEVICE_ID_INTEL_TGL_GT2_ULX, "Tigerlake Y GT2" },
-	{ PCI_DEVICE_ID_INTEL_TGL_GT3_ULT, "Tigerlake U GT3" },
 	{ PCI_DEVICE_ID_INTEL_JSL_GT1, "Jasperlake GT1" },
 	{ PCI_DEVICE_ID_INTEL_JSL_GT2, "Jasperlake GT2" },
-	{ PCI_DEVICE_ID_INTEL_EHL_GT1_1, "Elkhartlake GT1 1" },
-	{ PCI_DEVICE_ID_INTEL_EHL_GT2_1, "Elkhartlake GT2 1" },
-	{ PCI_DEVICE_ID_INTEL_EHL_GT1_2, "Elkhartlake GT1 2" },
-	{ PCI_DEVICE_ID_INTEL_EHL_GT2_2, "Elkhartlake GT2 2" },
-	{ PCI_DEVICE_ID_INTEL_EHL_GT1_3, "Elkhartlake GT1 3" },
-	{ PCI_DEVICE_ID_INTEL_EHL_GT2_3, "Elkhartlake GT2 3" },
 };
 
 static inline uint8_t get_dev_revision(pci_devfn_t dev)

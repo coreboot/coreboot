@@ -12,19 +12,13 @@
  * GNU General Public License for more details.
  */
 
-/*
- * This file is created based on Intel Tiger Lake Processor PCH Datasheet
- * Document number: 575857
- * Chapter number: 6
- */
-
 #include <intelblocks/fast_spi.h>
 #include <soc/bootblock.h>
 
 void bootblock_cpu_init(void)
 {
 	/*
-	 * Tigerlake platform doesn't support booting from any other media
+	 * Jasperlake platform doesn't support booting from any other media
 	 * (like eMMC on APL/GLK platform) than only booting from SPI device
 	 * and on IA platform SPI is memory mapped hence enabling temporarily
 	 * cacheing on memory-mapped spi boot media.

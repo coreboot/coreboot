@@ -12,14 +12,8 @@
  * GNU General Public License for more details.
  */
 
-/*
- * This file is created based on Intel Tiger Lake Processor SA Datasheet
- * Document number: 571131
- * Chapter number: 3
- */
-
-#ifndef SOC_TIGERLAKE_SYSTEMAGENT_H
-#define SOC_TIGERLAKE_SYSTEMAGENT_H
+#ifndef SOC_JASPERLAKE_SYSTEMAGENT_H
+#define SOC_JASPERLAKE_SYSTEMAGENT_H
 
 #include <intelblocks/systemagent.h>
 

@@ -1,22 +1,9 @@
-config SOC_INTEL_TIGERLAKE_BASE_COPY
-	bool
-
-config SOC_INTEL_TIGERLAKE_COPY
-	bool
-	select SOC_INTEL_TIGERLAKE_BASE_COPY
-	#TODO - Enable INTEL_CAR_NEM_ENHANCED
-	select INTEL_CAR_NEM
-	help
-	  Intel Tigerlake support
-
 config SOC_INTEL_JASPERLAKE_COPY
 	bool
-	select SOC_INTEL_TIGERLAKE_BASE_COPY
-	select INTEL_CAR_NEM
 	help
 	  Intel Jasperlake support
 
-if SOC_INTEL_TIGERLAKE_BASE_COPY
+if SOC_INTEL_JASPERLAKE_COPY
 
 config CPU_SPECIFIC_OPTIONS
 	def_bool y
@@ -36,6 +23,7 @@ config CPU_SPECIFIC_OPTIONS
 	select INTEL_DESCRIPTOR_MODE_CAPABLE
 	select HAVE_SMI_HANDLER
 	select IDT_IN_EVERY_STAGE
+	select INTEL_CAR_NEM #TODO - Enable INTEL_CAR_NEM_ENHANCED
 	select INTEL_GMA_ACPI
 	select INTEL_GMA_ADD_VBT if RUN_FSP_GOP
 	select IOAPIC
@@ -84,13 +72,12 @@ config DCACHE_RAM_SIZE
 
 config DCACHE_BSP_STACK_SIZE
 	hex
-	default 0x40400 if SOC_INTEL_TIGERLAKE_COPY
-	default 0x30400 if SOC_INTEL_JASPERLAKE_COPY
+	default 0x30400
 	help
 	  The amount of anticipated stack usage in CAR by bootblock and
-	  other stages. In the case of FSP_USES_CB_STACK default value will be
-	  sum of FSP-M stack requirement (256KiB for TGL, 192KiB for JSL) and CB romstage
-	  stack requirement (~1KiB).
+	  other stages. In the case of FSP_USES_CB_STACK default value
+	  will be sum of FSP-M stack requirement(192 KiB) and CB romstage
+	  stack requirement(~1KiB).
 
 config FSP_TEMP_RAM_SIZE
 	hex
@@ -102,8 +89,7 @@ config FSP_TEMP_RAM_SIZE
 
 config IFD_CHIPSET
 	string
-	default "jsl" if SOC_INTEL_JASPERLAKE_COPY
-	default "tgl" if SOC_INTEL_TIGERLAKE_COPY
+	default "jsl"
 
 config IED_REGION_SIZE
 	hex
@@ -115,13 +101,11 @@ config HEAP_SIZE
 
 config MAX_ROOT_PORTS
 	int
-	default 8 if SOC_INTEL_JASPERLAKE_COPY
-	default 12 if SOC_INTEL_TIGERLAKE_COPY
+	default 8
 
 config MAX_PCIE_CLOCKS
 	int
-	default 7 if SOC_INTEL_TIGERLAKE_COPY
-	default 6 if SOC_INTEL_JASPERLAKE_COPY
+	default 6
 
 config SMM_TSEG_SIZE
 	hex
@@ -155,8 +139,7 @@ config DRIVERS_I2C_DESIGNWARE_CLOCK_MHZ
 
 config SOC_INTEL_COMMON_BLOCK_GSPI_MAX
 	int
-	default 3 if SOC_INTEL_JASPERLAKE_COPY
-	default 4 if SOC_INTEL_TIGERLAKE_COPY
+	default 3
 
 config SOC_INTEL_I2C_DEV_MAX
 	int
@@ -173,17 +156,14 @@ config CONSOLE_UART_BASE_ADDRESS
 
 # Clock divider parameters for 115200 baud rate
 # Baudrate = (UART source clcok * M) /(N *16)
-# TGL UART source clock: 120MHz
 # JSL UART source clock: 100MHz
 config SOC_INTEL_COMMON_LPSS_UART_CLK_M_VAL
 	hex
-	default 0x30 if SOC_INTEL_JASPERLAKE_COPY
-	default 0x25a if SOC_INTEL_TIGERLAKE_COPY
+	default 0x30
 
 config SOC_INTEL_COMMON_LPSS_UART_CLK_N_VAL
 	hex
-	default 0xc35 if SOC_INTEL_JASPERLAKE_COPY
-	default 0x7fff if SOC_INTEL_TIGERLAKE_COPY
+	default 0xc35
 
 config CHROMEOS
 	select CHROMEOS_RAMOOPS_DYNAMIC
@@ -205,17 +185,15 @@ config CBFS_SIZE
 
 config FSP_HEADER_PATH
 	string "Location of FSP headers"
-	default "src/vendorcode/intel/fsp/fsp2_0/jasperlake/" if SOC_INTEL_JASPERLAKE_COPY
-	default "src/vendorcode/intel/fsp/fsp2_0/tigerlake/" if SOC_INTEL_TIGERLAKE_COPY
+	default "src/vendorcode/intel/fsp/fsp2_0/jasperlake/"
 
 config FSP_FD_PATH
 	string
 	depends on FSP_USE_REPO
-	default "3rdparty/fsp/JasperLakeFspBinPkg/Fsp.fd" if SOC_INTEL_JASPERLAKE_COPY
-	default "3rdparty/fsp/TigerLakeFspBinPkg/Fsp.fd" if SOC_INTEL_TIGERLAKE_COPY
+	default "3rdparty/fsp/JasperLakeFspBinPkg/Fsp.fd"
 
-config SOC_INTEL_TIGERLAKE_COPY_DEBUG_CONSENT
-	int "Debug Consent for TGL"
+config SOC_INTEL_JASPERLAKE_COPY_DEBUG_CONSENT
+	int "Debug Consent for JSL"
 	# USB DBC is more common for developers so make this default to 3 if
 	# SOC_INTEL_DEBUG_CONSENT=y
 	default 3 if SOC_INTEL_DEBUG_CONSENT

@@ -12,12 +12,6 @@
  * GNU General Public License for more details.
  */
 
-/*
- * This file is created based on Intel Tiger Lake Processor SA Datasheet
- * Document number: 571131
- * Chapter number: 3
- */
-
 #include <intelblocks/systemagent.h>
 #include <soc/iomap.h>
 #include <soc/romstage.h>

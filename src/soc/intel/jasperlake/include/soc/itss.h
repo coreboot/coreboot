@@ -12,8 +12,8 @@
  * GNU General Public License for more details.
  */
 
-#ifndef SOC_INTEL_TGL_ITSS_H
-#define SOC_INTEL_TGL_ITSS_H
+#ifndef SOC_INTEL_JSL_ITSS_H
+#define SOC_INTEL_JSL_ITSS_H
 
 #define GPIO_IRQ_START	50
 #define GPIO_IRQ_END	ITSS_MAX_IRQ
@@ -22,4 +22,4 @@
 #define IRQS_PER_IPC	32
 #define NUM_IPC_REGS	((ITSS_MAX_IRQ + IRQS_PER_IPC - 1)/IRQS_PER_IPC)
 
-#endif	/* SOC_INTEL_TGL_ITSS_H */
+#endif	/* SOC_INTEL_JSL_ITSS_H */

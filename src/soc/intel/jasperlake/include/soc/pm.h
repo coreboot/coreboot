@@ -12,12 +12,6 @@
  * GNU General Public License for more details.
  */
 
-/*
- * This file is created based on Intel Tiger Lake Processor PCH Datasheet
- * Document number: 575857
- * Chapter number: 4
- */
-
 #ifndef _SOC_PM_H_
 #define _SOC_PM_H_
 

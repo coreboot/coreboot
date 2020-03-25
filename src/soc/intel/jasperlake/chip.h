@@ -33,7 +33,7 @@
 #define MAX_HD_AUDIO_SNDW_LINKS 4
 #define MAX_HD_AUDIO_SSP_LINKS  6
 
-struct soc_intel_tigerlake_config {
+struct soc_intel_jasperlake_config {
 
 	/* Common struct containing soc config data required by common code */
 	struct soc_intel_common_config common_soc_config;
@@ -294,6 +294,6 @@ struct soc_intel_tigerlake_config {
 
 };
 
-typedef struct soc_intel_tigerlake_config config_t;
+typedef struct soc_intel_jasperlake_config config_t;
 
 #endif

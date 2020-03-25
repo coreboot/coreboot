@@ -12,12 +12,6 @@
  * GNU General Public License for more details.
  */
 
-/*
- * This file is created based on Intel Tiger Lake Processor PCH Datasheet
- * Document number: 575857
- * Chapter number: 2
- */
-
 #include <device/device.h>
 #include <device/pci.h>
 #include <pc80/isa-dma.h>
@@ -41,14 +35,14 @@
 * certain memory range as reserved range for BIOS usage.
 * For this SOC, the range will be from 0FC800000h till FE7FFFFFh"
 */
-static const struct lpc_mmio_range tgl_lpc_fixed_mmio_ranges[] = {
+static const struct lpc_mmio_range jsl_lpc_fixed_mmio_ranges[] = {
 	{ PCH_PRESERVED_BASE_ADDRESS, PCH_PRESERVED_BASE_SIZE },
 	{ 0, 0 }
 };
 
 const struct lpc_mmio_range *soc_get_fixed_mmio_ranges()
 {
-	return tgl_lpc_fixed_mmio_ranges;
+	return jsl_lpc_fixed_mmio_ranges;
 }
 
 void soc_get_gen_io_dec_range(const struct device *dev, uint32_t *gen_io_dec)
@@ -68,24 +62,6 @@ void soc_setup_dmi_pcr_io_dec(uint32_t *gen_io_dec)
 	pcr_write32(PID_DMI, PCR_DMI_LPCLGIR2, gen_io_dec[1]);
 	pcr_write32(PID_DMI, PCR_DMI_LPCLGIR3, gen_io_dec[2]);
 	pcr_write32(PID_DMI, PCR_DMI_LPCLGIR4, gen_io_dec[3]);
-}
-
-uint8_t get_pch_series(void)
-{
-	uint16_t lpc_did_hi_byte;
-
-	/*
-	 * Fetch upper 8 bits on ESPI device ID to determine PCH type
-	 * Adding 1 to the offset to fetch upper 8 bits
-	 */
-	lpc_did_hi_byte = pci_read_config8(PCH_DEV_ESPI, PCI_DEVICE_ID + 1);
-
-	if (lpc_did_hi_byte == 0xA0)
-		return PCH_TGP;
-	else if (lpc_did_hi_byte == 0x4d)
-		return PCH_JSP;
-	else
-		return PCH_UNKNOWN_SERIES;
 }
 
 #if ENV_RAMSTAGE

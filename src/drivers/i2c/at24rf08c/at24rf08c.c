@@ -4,7 +4,6 @@
 #include <types.h>
 #include <device/device.h>
 #include <device/smbus.h>
-#include <smbios.h>
 #include <console/console.h>
 
 static void at24rf08c_init(struct device *dev)

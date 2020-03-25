@@ -12,7 +12,6 @@
 #include <ec/ec.h>
 #include <ec/google/chromeec/ec.h>
 #include <soc/gpio.h>
-#include <smbios.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 #include <variant/gpio.h>
 

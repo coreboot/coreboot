@@ -14,7 +14,6 @@
 #include <fsp/util.h>
 #include <intelblocks/lpc_lib.h>
 #include <soc/pci_devs.h>
-#include <smbios.h>
 
 #define SVID_CONFIG1		1
 #define SVID_CONFIG3		3

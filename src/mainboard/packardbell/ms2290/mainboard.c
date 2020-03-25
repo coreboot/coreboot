@@ -9,7 +9,6 @@
 #include <drivers/intel/gma/int15.h>
 #include <pc80/keyboard.h>
 #include <cpu/x86/lapic.h>
-#include <smbios.h>
 
 static void mainboard_enable(struct device *dev)
 {

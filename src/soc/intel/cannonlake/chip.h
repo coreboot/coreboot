@@ -9,7 +9,6 @@
 #include <intelblocks/gpio.h>
 #include <intelblocks/gspi.h>
 #include <intelblocks/lpc_lib.h>
-#include <smbios.h>
 #include <stdint.h>
 #include <soc/gpio.h>
 #include <soc/pch.h>

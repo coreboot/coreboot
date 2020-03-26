@@ -22,6 +22,12 @@
 	0x8d, 0x09, 0x11, 0xcf, 0x8b, 0x9f, 0x03, 0x23	\
 }
 
+bool __weak mainboard_get_dram_part_num(const char **part_num, size_t *len)
+{
+	/* Default weak implementation, no need to override part number. */
+	return false;
+}
+
 /* Save the DIMM information for SMBIOS table 17 */
 static void save_dimm_info(void)
 {
@@ -36,6 +42,9 @@ static void save_dimm_info(void)
 	const uint8_t smbios_memory_info_guid[16] =
 			FSP_SMBIOS_MEMORY_INFO_GUID;
 	const uint8_t *serial_num;
+	const char *dram_part_num = NULL;
+	size_t dram_part_num_len;
+	bool is_dram_part_overridden = false;
 
 	/* Locate the memory info HOB, presence validated by raminit */
 	meminfo_hob = fsp_find_extension_hob_by_guid(
@@ -57,6 +66,10 @@ static void save_dimm_info(void)
 	}
 	memset(mem_info, 0, sizeof(*mem_info));
 
+	/* Allow mainboard to override DRAM part number. */
+	is_dram_part_overridden = mainboard_get_dram_part_num(&dram_part_num,
+							&dram_part_num_len);
+
 	/* Save available DIMM information */
 	index = 0;
 	dimm_max = ARRAY_SIZE(mem_info->dimm);
@@ -75,6 +88,14 @@ static void save_dimm_info(void)
 				if (src_dimm->Status != DIMM_PRESENT)
 					continue;
 
+				/* If there is no DRAM part number overridden by
+				 * mainboard then use original one. */
+				if (!is_dram_part_overridden) {
+					dram_part_num_len = sizeof(src_dimm->ModulePartNum);
+					dram_part_num = (const char *)
+								&src_dimm->ModulePartNum[0];
+				}
+
 				u8 memProfNum = meminfo_hob->MemoryProfile;
 				serial_num = src_dimm->SpdSave +
 						SPD_SAVE_OFFSET_SERIAL;
@@ -87,8 +108,8 @@ static void save_dimm_info(void)
 					src_dimm->RankInDimm,
 					channel_info->ChannelId,
 					src_dimm->DimmId,
-					(const char *)src_dimm->ModulePartNum,
-					sizeof(src_dimm->ModulePartNum),
+					dram_part_num,
+					dram_part_num_len,
 					serial_num,
 					meminfo_hob->DataWidth,
 					meminfo_hob->VddVoltage[memProfNum],

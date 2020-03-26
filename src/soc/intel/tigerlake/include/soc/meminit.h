@@ -17,8 +17,13 @@
 #define LPDDR4X_CHANNELS		8
 #define LPDDR4X_BYTES_PER_CHANNEL	2
 
+#define DDR4_CHANNELS			2
+#define DDR4_BYTES_PER_CHANNEL		8
+
 enum mem_topology {
 	MEMORY_DOWN,	/* Supports reading SPD from CBFS or in-memory pointer. */
+	SODIMM,		/* Supports reading SPD using SMBus (only for DDR4). */
+	MIXED,		/* CH0 = MD, CH1 = SODIMM (only for DDR4). */
 };
 
 enum md_spd_loc {
@@ -43,6 +48,17 @@ struct spd_info {
 			size_t data_len;
 		};
 	};
+
+	/*
+	 * SPD info for SODIMM topology.
+	 * Leave addr_dimmN as 0 for any DIMMs that are not populated.
+	 */
+	struct {
+		/* SMBus address for DIMM0 within the channel. */
+		uint8_t addr_dimm0;
+		/* SMBus address for DIMM1 within the channel. */
+		uint8_t addr_dimm1;
+	} smbus_info[DDR4_CHANNELS];
 };
 
 /* Board-specific memory configuration information */

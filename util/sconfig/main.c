@@ -832,6 +832,8 @@ static void pass1(FILE *fil, FILE *head, struct device *ptr, struct device *next
 		fprintf(fil, "\t.link_list = NULL,\n");
 	if (ptr->sibling)
 		fprintf(fil, "\t.sibling = &%s,\n", ptr->sibling->name);
+	else
+		fprintf(fil, "\t.sibling = NULL,\n");
 	fprintf(fil, "#if !DEVTREE_EARLY\n");
 	for (pin = 0; pin < 4; pin++) {
 		if (ptr->pci_irq_info[pin].ioapic_irq_pin > 0)

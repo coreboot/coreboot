@@ -74,7 +74,7 @@ static __attribute__((noinline)) void do_ram_command(u32 command)
 
 	PRINTK_DEBUG("   Sending RAM command 0x%08x", reg32);
 
-	MCHBAR32(DCC) = reg32;  /* This is the actual magic */
+	MCHBAR32(DCC) = reg32;	/* This is the actual magic */
 
 	PRINTK_DEBUG("...done\n");
 
@@ -205,7 +205,7 @@ static int sdram_capabilities_enhanced_addressing_xor(void)
 	return (!reg8);
 }
 
-// TODO check if we ever need this function
+/* TODO check if we ever need this function */
 #if 0
 static int sdram_capabilities_MEM4G_disable(void)
 {
@@ -447,7 +447,7 @@ static void gather_common_timing(struct sys_info *sysinfo,
 			sysinfo->package = SYSINFO_PACKAGE_STACKED;
 
 		if (!dimm_info.flags.bl8)
-			die("Only DDR-II RAM with burst length 8 is supported by this chipset.\n");
+			die("Only DDR-II RAM with burst length 8 is supported.\n");
 
 		if (dimm_info.ranksize_mb < 128)
 			die("DDR-II rank size smaller than 128MB is not supported.\n");
@@ -495,7 +495,7 @@ static void gather_common_timing(struct sys_info *sysinfo,
 		die("No memory installed.\n");
 
 	if (!(dimm_mask & ((1 << DIMM_SOCKETS) - 1)))
-		/* Possibly does not boot in this case */
+		/* FIXME: Possibly does not boot in this case */
 		printk(BIOS_INFO, "Channel 0 has no memory populated.\n");
 }
 
@@ -809,9 +809,9 @@ static const u32 *slew_group_lookup(int dual_channel, int index)
 	const u8 *slew_group;
 	/* Dual Channel needs different tables. */
 	if (dual_channel)
-		slew_group   = dual_channel_slew_group_lookup;
+		slew_group = dual_channel_slew_group_lookup;
 	else
-		slew_group   = single_channel_slew_group_lookup;
+		slew_group = single_channel_slew_group_lookup;
 
 	switch (slew_group[index]) {
 	case DQ2030:	return dq2030;
@@ -950,7 +950,7 @@ static void sdram_rcomp_buffer_strength_and_slew(struct sys_info *sysinfo)
 		printk(BIOS_DEBUG, "Programming Dual Channel RCOMP\n");
 		strength_multiplier = dual_channel_strength_multiplier;
 		dual_channel = 1;
-		idx = 5 * sysinfo->dimm[0] +  sysinfo->dimm[2];
+		idx = 5 * sysinfo->dimm[0] + sysinfo->dimm[2];
 	} else {
 		printk(BIOS_DEBUG, "Programming Single Channel RCOMP\n");
 		strength_multiplier = single_channel_strength_multiplier;
@@ -1202,7 +1202,7 @@ static int sdram_program_row_boundaries(struct sys_info *sysinfo)
 	if (sysinfo->interleaved)
 		tolud = (cum0 + cum1) << 1;
 	else
-		tolud = (cum1 ? cum1 : cum0)  << 1;
+		tolud = (cum1 ? cum1 : cum0) << 1;
 
 	/* The TOM register has a different format */
 	tom = tolud >> 3;
@@ -1342,7 +1342,7 @@ static void sdram_program_cke_tristate(struct sys_info *sysinfo)
 	reg32 |= (1 << 11);
 	MCHBAR32(C0DRC1) = reg32;
 
-	/* Do we have to do this if we're in Single Channel Mode?  */
+	/* Do we have to do this if we're in Single Channel Mode? */
 	reg32 = MCHBAR32(C1DRC1);
 
 	for (i = 4; i < 8; i++) {
@@ -1444,12 +1444,16 @@ static void sdram_set_timing_and_control(struct sys_info *sysinfo)
 	 */
 	tRD_min = sysinfo->cas;
 	switch (sysinfo->fsb_frequency) {
-	case 533: break;
-	case 667: tRD_min += 1;
+	case 533:
 		break;
-	case 800: tRD_min += 2;
+	case 667:
+		tRD_min += 1;
 		break;
-	case 1066: tRD_min += 3;
+	case 800:
+		tRD_min += 2;
+		break;
+	case 1066:
+		tRD_min += 3;
 		break;
 	}
 
@@ -1557,10 +1561,10 @@ static void sdram_set_channel_mode(struct sys_info *sysinfo)
 	printk(BIOS_DEBUG, "Setting mode of operation for memory channels...");
 
 	if (sdram_capabilities_interleave() &&
-		    ((sysinfo->banksize[0] + sysinfo->banksize[1] +
-			sysinfo->banksize[2] + sysinfo->banksize[3]) ==
-		      (sysinfo->banksize[4] + sysinfo->banksize[5] +
-			sysinfo->banksize[6] + sysinfo->banksize[7]))) {
+	    ((sysinfo->banksize[0] + sysinfo->banksize[1] +
+	      sysinfo->banksize[2] + sysinfo->banksize[3]) ==
+	     (sysinfo->banksize[4] + sysinfo->banksize[5] +
+	      sysinfo->banksize[6] + sysinfo->banksize[7]))) {
 		/* Both channels equipped with DIMMs of the same size */
 		sysinfo->interleaved = 1;
 	} else {
@@ -1624,9 +1628,9 @@ static void sdram_program_pll_settings(struct sys_info *sysinfo)
 
 static void sdram_program_graphics_frequency(struct sys_info *sysinfo)
 {
-	u8  reg8;
+	u8 reg8;
 	u16 reg16;
-	u8  freq, second_vco, voltage;
+	u8 freq, second_vco, voltage;
 
 #define CRCLK_166MHz	0x00
 #define CRCLK_200MHz	0x01
@@ -1699,7 +1703,7 @@ static void sdram_program_graphics_frequency(struct sys_info *sysinfo)
 
 	if (voltage == VOLTAGE_1_50) {
 		second_vco = 1;
-	} else if ((i945_silicon_revision() > 0) && (freq == CRCLK_250MHz))  {
+	} else if ((i945_silicon_revision() > 0) && (freq == CRCLK_250MHz)) {
 		u16 mem = sysinfo->memory_frequency;
 		u16 fsb = sysinfo->fsb_frequency;
 
@@ -2507,7 +2511,7 @@ static void sdram_enable_memory_clocks(struct sys_info *sysinfo)
 }
 
 #define RTT_ODT_NONE	0
-#define RTT_ODT_50_OHM  ((1 << 9) | (1 << 5))
+#define RTT_ODT_50_OHM	((1 << 9) | (1 << 5))
 #define RTT_ODT_75_OHM	(1 << 5)
 #define RTT_ODT_150_OHM	(1 << 9)
 
@@ -2541,13 +2545,15 @@ static void sdram_jedec_enable(struct sys_info *sysinfo)
 			if (sysinfo->interleaved && nonzero < 4 && i >= 4) {
 				bankaddr = 0x40;
 			} else {
-				printk(BIOS_DEBUG, "bankaddr from bank size of rank %d\n", nonzero);
+				printk(BIOS_DEBUG, "bankaddr from bank size of rank %d\n",
+					nonzero);
 				bankaddr += sysinfo->banksize[nonzero] <<
 					(sysinfo->interleaved ? 26 : 25);
 			}
 		}
 
-		/* We have a bank with a non-zero size.. Remember it
+		/*
+		 * We have a bank with a non-zero size... Remember it
 		 * for the next offset we have to calculate
 		 */
 		nonzero = i;

@@ -468,3 +468,8 @@ const struct pad_config *__weak variant_early_gpio_table(size_t *num)
 	*num = ARRAY_SIZE(early_gpio_table);
 	return early_gpio_table;
 }
+
+int __weak has_360_sensor_board(void)
+{
+	return 0;
+}

@@ -7,5 +7,6 @@
 bootblock-y += gpio.c
 
 ramstage-y += gpio.c
+ramstage-y += sku.c
 
 verstage-y += gpio.c

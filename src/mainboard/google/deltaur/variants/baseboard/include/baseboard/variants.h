@@ -25,4 +25,13 @@ const struct cros_gpio *variant_cros_gpios(size_t *num);
 const struct lpddr4x_cfg *variant_memory_params(void);
 void variant_memory_init(FSP_M_CONFIG *mem_cfg);
 
+/* SKU ID structure */
+typedef struct {
+	int id;
+	const char *name;
+} sku_info;
+
+/* Check if the device has a 360 sensor board present */
+int has_360_sensor_board(void);
+
 #endif /* __BASEBOARD_VARIANTS_H__ */

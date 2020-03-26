@@ -117,6 +117,7 @@ static enum cb_err fetch_mac_vpd_key(u8 *macstrbuf, const char *vpd_key)
 	if (offset == search_length) {
 		printk(BIOS_ERR,
 		       "Error: Could not locate '%s' in VPD\n", vpd_key);
+		rdev_munmap(&rdev, search_address);
 		return CB_ERR;
 	}
 	printk(BIOS_DEBUG, "Located '%s' in VPD\n", vpd_key);
@@ -124,10 +125,12 @@ static enum cb_err fetch_mac_vpd_key(u8 *macstrbuf, const char *vpd_key)
 	offset += strlen(vpd_key) + 1;	/* move to next character */
 
 	if (offset + MACLEN > search_length) {
+		rdev_munmap(&rdev, search_address);
 		printk(BIOS_ERR, "Search result too small!\n");
 		return CB_ERR;
 	}
 	memcpy(macstrbuf, search_address + offset, MACLEN);
+	rdev_munmap(&rdev, search_address);
 
 	return CB_SUCCESS;
 }

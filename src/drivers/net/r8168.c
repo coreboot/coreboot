@@ -170,7 +170,7 @@ static void fetch_mac_string_vpd(struct drivers_net_config *config, u8 *macstrbu
 		return;
 	}
 
-	if (fetch_mac_vpd_key(macstrbuf, "ethernet_mac ") != CB_SUCCESS)
+	if (fetch_mac_vpd_key(macstrbuf, "ethernet_mac") != CB_SUCCESS)
 		printk(BIOS_ERR, "r8168: mac address not found in VPD,"
 					 " using default 00:e0:4c:00:c0:b0\n");
 }

@@ -103,6 +103,7 @@ config MAINBOARD_PART_NUMBER
 	default "Nightfury" if BOARD_GOOGLE_NIGHTFURY
 	default "Puff" if BOARD_GOOGLE_PUFF
 	default "Stryke" if BOARD_GOOGLE_STRYKE
+	default "Sushi" if BOARD_GOOGLE_SUSHI
 
 config OVERRIDE_DEVICETREE
 	string
@@ -128,6 +129,7 @@ config VARIANT_DIR
 	default "nightfury" if BOARD_GOOGLE_NIGHTFURY
 	default "puff" if BOARD_GOOGLE_PUFF
 	default "stryke" if BOARD_GOOGLE_STRYKE
+	default "sushi" if BOARD_GOOGLE_SUSHI
 
 config VBOOT
 	select HAS_RECOVERY_MRC_CACHE

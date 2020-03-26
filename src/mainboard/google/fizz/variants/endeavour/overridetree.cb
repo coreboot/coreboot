@@ -137,7 +137,7 @@ chip soc/intel/skylake
 				register "hid" = "ACPI_DT_NAMESPACE_HID"
 				register "desc" = ""Chrontel 7322""
 				register "uid" = "1"
-				register "compat_string" = ""chrontel,7322""
+				register "compat_string" = ""chrontel,ch7322""
 				register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_HIGH(GPP_A18)"
 				device i2c 75 on end
 			end
@@ -145,7 +145,7 @@ chip soc/intel/skylake
 				register "hid" = "ACPI_DT_NAMESPACE_HID"
 				register "desc" = ""Chrontel 7322""
 				register "uid" = "2"
-				register "compat_string" = ""chrontel,7322""
+				register "compat_string" = ""chrontel,ch7322""
 				register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_HIGH(GPP_A20)"
 				device i2c 76 on end
 			end

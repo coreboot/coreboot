@@ -56,13 +56,14 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 {
 	FSP_M_CONFIG *mem_cfg = &mupd->FspmConfig;
 
-	const struct mb_lpddr4x_cfg *mem_config = variant_memory_params();
+	const struct lpddr4x_cfg *mem_config = variant_memory_params();
 	const struct spd_info spd_info = {
-		.read_type = READ_SPD_CBFS,
-		.spd_spec.spd_index = mainboard_get_spd_index(),
+		.topology = MEMORY_DOWN,
+		.md_spd_loc = SPD_CBFS,
+		.cbfs_index = mainboard_get_spd_index(),
 	};
 	bool half_populated = false;
 
-	meminit_lpddr4x_dimm0(mem_cfg, mem_config, &spd_info, half_populated);
+	meminit_lpddr4x(mem_cfg, mem_config, &spd_info, half_populated);
 
 }

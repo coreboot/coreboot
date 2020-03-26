@@ -12,46 +12,65 @@
 #include <stdint.h>
 #include <fsp/soc_binding.h>
 
-#define BYTES_PER_CHANNEL	2
-#define BITS_PER_BYTE		8
-#define DQS_PER_CHANNEL		2
-#define NUM_CHANNELS		8
+#define BITS_PER_BYTE			8
 
-struct spd_by_pointer {
-	size_t spd_data_len;
-	uintptr_t spd_data_ptr;
+#define LPDDR4X_CHANNELS		8
+#define LPDDR4X_BYTES_PER_CHANNEL	2
+
+enum mem_topology {
+	MEMORY_DOWN,	/* Supports reading SPD from CBFS or in-memory pointer. */
 };
 
-enum mem_info_read_type {
-	NOT_EXISTING,	/* No memory in this channel */
-	READ_SPD_CBFS,	/* Find spd file in CBFS. */
-	READ_SPD_MEMPTR	/* Find spd data from pointer. */
+enum md_spd_loc {
+	 /* Read SPD from pointer provided to memory location. */
+	SPD_MEMPTR,
+	/* Read SPD using index into spd.bin in CBFS.  */
+	SPD_CBFS,
 };
 
 struct spd_info {
-	enum mem_info_read_type read_type;
-	union spd_data_by {
-		/* To identify spd file when read_type is READ_SPD_CBFS. */
-		int spd_index;
+	enum mem_topology topology;
 
-		/* To find spd data when read_type is READ_SPD_MEMPTR. */
-		struct spd_by_pointer spd_data_ptr_info;
-	} spd_spec;
+	/* SPD info for Memory down topology */
+	enum md_spd_loc md_spd_loc;
+	union {
+		/* Used for SPD_CBFS */
+		uint8_t cbfs_index;
+
+		struct {
+			/* Used for SPD_MEMPTR */
+			uintptr_t data_ptr;
+			size_t data_len;
+		};
+	};
 };
 
 /* Board-specific memory configuration information */
-struct mb_lpddr4x_cfg {
-	/* DQ mapping */
-	uint8_t dq_map[NUM_CHANNELS][BYTES_PER_CHANNEL * BITS_PER_BYTE];
+struct lpddr4x_cfg {
+	/*
+	 * DQ CPU<>DRAM map:
+	 * LPDDR4x memory interface has 2 DQs per channel. Each DQ consists of 8 bits(1
+	 * byte). Thus, dq_map is represented as DDR[7-0]_DQ[1-0][7:0], where
+	 * DDR[7-0] : LPDDR4x channel #
+	 * DQ[1-0]  : DQ # within the channel
+	 * [7:0]    : Bits within the DQ
+	 *
+	 * Index of the array represents DQ pin# on the CPU, whereas value in
+	 * the array represents DQ pin# on the memory part.
+	 */
+	uint8_t dq_map[LPDDR4X_CHANNELS][LPDDR4X_BYTES_PER_CHANNEL][BITS_PER_BYTE];
 
 	/*
-	 * DQS CPU<>DRAM map.  Each array entry represents a
-	 * mapping of a dq bit on the CPU to the bit it's connected to on
-	 * the memory part.  The array index represents the dqs bit number
-	 * on the memory part, and the values in the array represent which
-	 * pin on the CPU that DRAM pin connects to.
+	 * DQS CPU<>DRAM map:
+	 * LPDDR4x memory interface has 2 DQS pairs(P/N) per channel. Thus, dqs_map is
+	 * represented as DDR[7-0]_DQS[1:0], where
+	 * DDR[7-0]  : LPDDR4x channel #
+	 * DQS[1-0]  : DQS # within the channel
+	 *
+	 * Index of the array represents DQS pin# on the CPU, whereas value in
+	 * the array represents DQ pin# on the memory part.
 	 */
-	uint8_t dqs_map[NUM_CHANNELS][DQS_PER_CHANNEL];
+	uint8_t dqs_map[LPDDR4X_CHANNELS][LPDDR4X_BYTES_PER_CHANNEL];
 
 	/*
 	 * Early Command Training Enable/Disable Control
@@ -60,10 +79,7 @@ struct mb_lpddr4x_cfg {
 	uint8_t ect;
 };
 
-/* Initialize default memory configurations for dimm0-only lpddr4x */
-void meminit_lpddr4x_dimm0(FSP_M_CONFIG *mem_cfg,
-			   const struct mb_lpddr4x_cfg *board_cfg,
-			   const struct spd_info *spd,
-			   bool half_populated);
+void meminit_lpddr4x(FSP_M_CONFIG *mem_cfg, const struct lpddr4x_cfg *board_cfg,
+		const struct spd_info *spd, bool half_populated);
 
 #endif /* _SOC_TIGERLAKE_MEMINIT_H_ */

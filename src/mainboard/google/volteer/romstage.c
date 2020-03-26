@@ -17,12 +17,13 @@
 void mainboard_memory_init_params(FSPM_UPD *mupd)
 {
 	FSP_M_CONFIG *mem_cfg = &mupd->FspmConfig;
-	const struct mb_lpddr4x_cfg *board_cfg = variant_memory_params();
+	const struct lpddr4x_cfg *board_cfg = variant_memory_params();
 	const struct spd_info spd_info = {
-		.read_type = READ_SPD_CBFS,
-		.spd_spec.spd_index = variant_memory_sku(),
+		.topology = MEMORY_DOWN,
+		.md_spd_loc = SPD_CBFS,
+		.cbfs_index = variant_memory_sku(),
 	};
 	bool half_populated = gpio_get(GPIO_MEM_CH_SEL);
 
-	meminit_lpddr4x_dimm0(mem_cfg, board_cfg, &spd_info, half_populated);
+	meminit_lpddr4x(mem_cfg, board_cfg, &spd_info, half_populated);
 }

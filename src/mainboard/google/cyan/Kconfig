@@ -6,7 +6,6 @@ config BOARD_GOOGLE_BASEBOARD_CYAN
 	select EC_GOOGLE_CHROMEEC_LPC
 	select EC_GOOGLE_CHROMEEC_MEC
 	select EC_GOOGLE_CHROMEEC_ACPI_MEMMAP
-	select ENABLE_BUILTIN_COM1
 	select HAVE_ACPI_TABLES
 	select HAVE_OPTION_TABLE
 	select INTEL_GMA_HAVE_VBT
@@ -73,23 +72,6 @@ config DEVICETREE
 	string
 	default "variants/$(CONFIG_VARIANT_DIR)/devicetree.cb"
 
-config VGA_BIOS_FILE
-	string
-	depends on VGA_BIOS
-	default "3rdparty/blobs/mainboard/intel/strago/vgabios.bin"
-	help
-	  The C0 version of the video BIOS gets computed from this name
-	  so that they can both be added.  Only the correct one for the
-	  system will be run.
-
-config VGA_BIOS_ID
-	string
-	depends on VGA_BIOS
-	default "8086,22b0"
-	help
-	  The VGA_BIOS_ID for the C0 version of the video BIOS is hardcoded
-	  in soc/intel/braswell/Makefile.inc as 8086,22b1
-
 config CBFS_SIZE
 	hex
 	default 0x200000
@@ -97,5 +79,11 @@ config CBFS_SIZE
 config MAINBOARD_SMBIOS_MANUFACTURER
 	string
 	default "GOOGLE"
+
+config CONSOLE_SERIAL
+	default n
+
+config ENABLE_BUILTIN_COM1
+	default y if CONSOLE_SERIAL
 
 endif # BOARD_GOOGLE_BASEBOARD_CYAN

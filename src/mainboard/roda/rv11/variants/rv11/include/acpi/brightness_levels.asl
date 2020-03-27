@@ -11,6 +11,8 @@
  * GNU General Public License for more details.
  */
 
+#include <drivers/intel/gma/acpi/gma.asl>
+
 Scope (GFX0)
 {
 	Name (BRIG, Package (13)

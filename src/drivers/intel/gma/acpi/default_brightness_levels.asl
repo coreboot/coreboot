@@ -1,3 +1,5 @@
+#include "gma.asl"
+
 Scope (GFX0)
 {
 	Name (BRIG, Package (0x12)

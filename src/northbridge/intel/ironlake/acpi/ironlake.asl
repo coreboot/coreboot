@@ -49,6 +49,3 @@ Device (PDRC)
 		Return(PDRS)
 	}
 }
-
-// Integrated graphics 0:2.0
-#include <drivers/intel/gma/acpi/gma.asl>

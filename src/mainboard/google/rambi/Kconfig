@@ -77,6 +77,11 @@ config MAINBOARD_SMBIOS_MANUFACTURER
 	default "GOOGLE"
 
 config CONSOLE_SERIAL
+	bool
+	default n
+
+config SEABIOS_HARDWARE_IRQ
+	bool
 	default n
 
 endif # BOARD_GOOGLE_BASEBOARD_RAMBI

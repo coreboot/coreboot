@@ -72,6 +72,9 @@ endif
 ifneq ($(CONFIG_SEABIOS_DEBUG_LEVEL),-1)
 	echo "CONFIG_DEBUG_LEVEL=$(CONFIG_SEABIOS_DEBUG_LEVEL)" >> seabios/.config
 endif
+ifneq ($(CONFIG_SEABIOS_HARDWARE_IRQ),y)
+	echo "# CONFIG_HARDWARE_IRQ is not set" >> seabios/.config
+endif
 #	This shows how to force a previously set .config option *off*
 #	echo "# CONFIG_SMBIOS is not set" >> seabios/.config
 	$(MAKE) -C seabios olddefconfig OUT=out/

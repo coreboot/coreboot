@@ -31,8 +31,6 @@ make distclean
 touch .config
 ./util/scripts/config --enable VENDOR_ASROCK
 ./util/scripts/config --enable BOARD_ASROCK_H110M_DVS
-./util/scripts/config --enable CONFIG_ADD_FSP_BINARIES
-./util/scripts/config --enable CONFIG_FSP_USE_REPO
 ./util/scripts/config --set-str REALTEK_8168_MACADDRESS "xx:xx:xx:xx:xx:xx"
 make olddefconfig
 ```

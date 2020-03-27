@@ -31,11 +31,19 @@ config PLATFORM_USES_FSP2_1
 
 if PLATFORM_USES_FSP2_0
 
-config ADD_FSP_BINARIES
-	bool "Add Intel FSP 2.0 binaries to CBFS"
+config FSP_USE_REPO
+	bool "Use binaries of the Intel FSP repository on GitHub"
+	depends on HAVE_INTEL_FSP_REPO
+	default y
 	help
-	  Add the FSP-M and FSP-S binaries to CBFS. Currently coreboot does not
-	  use the FSP-T binary and it is not added.
+	  When selecting this option, the SoC must set FSP_HEADER_PATH
+	  and FSP_FD_PATH correctly so FSP splitting works.
+
+config ADD_FSP_BINARIES
+	bool "Add Intel FSP 2.0 binaries to CBFS" if !FSP_USE_REPO
+	default y if FSP_USE_REPO
+	help
+	  Add the FSP-M and FSP-S binaries to CBFS.
 
 config FSP_T_CBFS
 	string "Name of FSP-T in CBFS"
@@ -50,31 +58,23 @@ config FSP_M_CBFS
 	string "Name of FSP-M in CBFS"
 	default "fspm.bin"
 
-config FSP_USE_REPO
-	bool "Use the IntelFSP based binaries"
-	depends on ADD_FSP_BINARIES
-	depends on HAVE_INTEL_FSP_REPO
-	default y
-	help
-	  When selecting this option, the SoC must set FSP_HEADER_PATH
-	  and FSP_FD_PATH correctly so FSP splitting works.
-
 config FSP_T_FILE
-	string "Intel FSP-T (temp RAM init) binary path and filename"
+	string "Intel FSP-T (temp RAM init) binary path and filename" if !FSP_USE_REPO
+	depends on ADD_FSP_BINARIES
 	depends on FSP_CAR
 	default "$(obj)/Fsp_T.fd" if FSP_USE_REPO
 	help
-	  The path and filename of the Intel FSP-M binary for this platform.
+	  The path and filename of the Intel FSP-T binary for this platform.
 
 config FSP_M_FILE
-	string "Intel FSP-M (memory init) binary path and filename"
+	string "Intel FSP-M (memory init) binary path and filename" if !FSP_USE_REPO
 	depends on ADD_FSP_BINARIES
 	default "$(obj)/Fsp_M.fd" if FSP_USE_REPO
 	help
 	  The path and filename of the Intel FSP-M binary for this platform.
 
 config FSP_S_FILE
-	string "Intel FSP-S (silicon init) binary path and filename"
+	string "Intel FSP-S (silicon init) binary path and filename" if !FSP_USE_REPO
 	depends on ADD_FSP_BINARIES
 	default "$(obj)/Fsp_S.fd" if FSP_USE_REPO
 	help

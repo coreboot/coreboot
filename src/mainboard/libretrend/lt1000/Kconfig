@@ -44,12 +44,4 @@ config CBFS_SIZE
 	hex
 	default 0x600000
 
-config ADD_FSP_BINARIES
-	bool
-	default y
-
-config FSP_USE_REPO
-	bool
-	default y
-
 endif

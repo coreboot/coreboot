@@ -77,18 +77,6 @@ config INCLUDE_NHLT_BLOBS
 	select NHLT_DMIC_2CH
 	select NHLT_NAU88L25
 
-config EC_GOOGLE_CHROMEEC_BOARDNAME
-	string
-	default "chell" if BOARD_GOOGLE_CHELL
-	default "glados" if BOARD_GOOGLE_GLADOS
-	default ""
-
-config EC_GOOGLE_CHROMEEC_PD_BOARDNAME
-	string
-	default "chell_pd" if BOARD_GOOGLE_CHELL
-	default "glados_pd" if BOARD_GOOGLE_GLADOS
-	default ""
-
 config UART_FOR_CONSOLE
 	int
 	default 2

@@ -3,7 +3,6 @@ config STM
 	default n
 	depends on ENABLE_VMX
 	depends on SMM_TSEG
-	select USE_BLOBS
 
 	help
 	  Enabling the STM will load a simple hypervisor into SMM that will

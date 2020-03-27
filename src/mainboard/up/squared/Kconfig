@@ -2,7 +2,6 @@ if BOARD_UP_SQUARED
 
 config BOARD_SPECIFIC_OPTIONS
 	def_bool y
-	select USE_BLOBS
 	select HAVE_ACPI_TABLES
 	select HAVE_ACPI_RESUME
 	select INTEL_GMA_HAVE_VBT

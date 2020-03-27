@@ -1,0 +1,3 @@
+The necessary tools for building APCBs are not available for use by coreboot.
+This tool allows patching an existing APCB binary with specific SPDs
+and GPIO selection pins.

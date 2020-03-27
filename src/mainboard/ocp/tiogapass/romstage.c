@@ -16,9 +16,28 @@
 #include <fsp/api.h>
 #include <FspmUpd.h>
 #include <soc/romstage.h>
+#include <string.h>
+#include <gpio.h>
+#include <soc/lewisburg_pch_gpio_defs.h>
 
 #include "skxsp_tp_gpio.h"
 #include "skxsp_tp_iio.h"
+
+static uint8_t iio_table_buf[sizeof(tp_iio_bifur_table)];
+
+static void oem_update_iio(FSPM_UPD *mupd)
+{
+	/* Read GPIO to decide IIO bifurcation at run-time. */
+	int slot_config0 = gpio_get(GPP_C15);
+	int slot_config1 = gpio_get(GPP_C16);
+
+	/* It's a single side 3 slots riser card, to tell which AICs are on each slot requires
+	   reading the GPIO expander PCA9555 via SMBUS, and then configure the bifurcation
+	   accordingly is left for future work.	*/
+	if (!slot_config0 && slot_config1)
+		mupd->FspmConfig.IioBifurcationConfig.IIoBifurcationTable[Skt0_Iou0].Bifurcation
+			= IIO_BIFURCATE_xxx8xxx8;
+}
 
 /*
 * Configure GPIO depend on platform
@@ -32,8 +51,9 @@ static void mainboard_config_gpios(FSPM_UPD *mupd)
 
 static void mainboard_config_iio(FSPM_UPD *mupd)
 {
+	memcpy(iio_table_buf, tp_iio_bifur_table, sizeof(tp_iio_bifur_table));
 	mupd->FspmConfig.IioBifurcationConfig.IIoBifurcationTable =
-		(UPD_IIO_BIFURCATION_DATA_ENTRY *) tp_iio_bifur_table;
+		(UPD_IIO_BIFURCATION_DATA_ENTRY *) iio_table_buf;
 	mupd->FspmConfig.IioBifurcationConfig.NumberOfEntries =
 		ARRAY_SIZE(tp_iio_bifur_table);
 
@@ -49,6 +69,7 @@ static void mainboard_config_iio(FSPM_UPD *mupd)
 
 	mupd->FspmConfig.PchPciConfig.RootPortFunctionSwapping = 0x00;
 	mupd->FspmConfig.PchPciConfig.PciePllSsc = 0x00;
+	oem_update_iio(mupd);
 }
 
 void mainboard_memory_init_params(FSPM_UPD *mupd)

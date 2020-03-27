@@ -19,6 +19,19 @@
 #include <FspmUpd.h>
 #include <soc/pci_devs.h>
 
+enum tp_iio_bifur_table_index {
+	Skt0_Iou0 = 0,
+	Skt0_Iou1,
+	Skt0_Iou2,
+	Skt0_Mcp0,
+	Skt0_Mcp1,
+	Skt1_Iou0,
+	Skt1_Iou1,
+	Skt1_Iou2,
+	Skt1_Mcp0,
+	Skt1_Mcp1
+};
+
 /*
  * Standard Tioga Pass Iio Bifurcation Table
  * This is SS 2x16 config. As documented in OCP TP spec, there are

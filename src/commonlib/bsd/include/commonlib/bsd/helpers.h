@@ -52,6 +52,8 @@
 	(_power_local_x & (_power_local_x - 1)) == 0; \
 })
 
+#define POWER_OF_2(x)		(1ULL << (x))
+
 #define DIV_ROUND_UP(x, y) ({ \
 	__typeof__(x) _div_local_x = (x); \
 	__typeof__(y) _div_local_y = (y); \

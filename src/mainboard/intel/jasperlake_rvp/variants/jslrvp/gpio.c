@@ -9,7 +9,18 @@
 static const struct pad_config gpio_table[] = {
 	/* ToDo: Fill other gpio configuration */
 
-	/* Audio related GPIOs */
+	/* WWAN_WAKE_N */
+	PAD_CFG_GPI_SCI(GPP_A10, NONE, DEEP, LEVEL, INVERT),
+
+	/* M.2_WWAN_DISABLE_N */
+	PAD_CFG_GPO(GPP_A19, 1, PLTRST),
+
+	/* WWAN_PERST_N */
+	PAD_CFG_GPO(GPP_C0, 0, PLTRST),
+
+	/* M2_WWAN_SSD_SKT2_CFG2 */
+	PAD_CFG_GPI(GPP_C3, NONE, PLTRST),
+
 	/* I2C0_SDA */
 	PAD_CFG_NF(GPP_C16, UP_2K, DEEP, NF1),
 
@@ -19,14 +30,11 @@ static const struct pad_config gpio_table[] = {
 	/* I2S_MCLK */
 	PAD_CFG_NF(GPP_D18, NONE, DEEP, NF1),
 
-	/* SD_CD# */
-	PAD_CFG_NF(GPP_G5, UP_20K, PWROK, NF1),
+	/* WWAN_FCP_OFF_N */
+	PAD_CFG_GPO(GPP_E3, 1, PLTRST),
 
-	/* SD_WP */
-	PAD_CFG_NF(GPP_G7, DN_20K, PWROK, NF1),
-
-	/* virtual GPIO for SD card detect */
-	PAD_CFG_GPI_GPIO_DRIVER(VGPIO_39, NONE, DEEP),
+	/* WWAN EN GPIO */
+	PAD_CFG_GPO(GPP_H7, 1, PLTRST),
 
 	/* I2S1_SCLK */
 	PAD_CFG_NF(GPP_H15, NONE, DEEP, NF1),
@@ -55,6 +63,9 @@ static const struct pad_config gpio_table[] = {
 	/* I2S1_TXD */
 	PAD_CFG_NF(GPP_R7, NONE, DEEP, NF2),
 
+	/* WWAN RST_N */
+	PAD_CFG_GPO(GPP_S0, 1, DEEP),
+
 	/* DMIC_CLK_1 */
 	PAD_CFG_NF(GPP_S2, UP_20K, DEEP, NF2),
 
@@ -71,7 +82,7 @@ static const struct pad_config gpio_table[] = {
 
 /* Early pad configuration in bootblock */
 static const struct pad_config early_gpio_table[] = {
-/* ToDo: Fill early gpio configurations for TPM and WWAN */
+	/* ToDo: Fill early gpio configurations for TPM */
 };
 
 const struct pad_config *variant_gpio_table(size_t *num)

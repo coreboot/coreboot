@@ -33,6 +33,7 @@
 #define I801_BYTE		(1 << 2)
 #define I801_BYTE_DATA		(2 << 2)
 #define I801_WORD_DATA		(3 << 2)
+#define I801_PROCESS_CALL	(4 << 2)
 #define I801_BLOCK_DATA		(5 << 2)
 #define I801_I2C_BLOCK_DATA	(6 << 2) /* ICH5 and later */
 
@@ -387,6 +388,42 @@ int do_smbus_block_read(uintptr_t base, u8 device, u8 cmd, size_t max_bytes, u8 
 	slave_bytes = host_inb(base, SMBHSTDAT0);
 	if (ret < slave_bytes)
 		return SMBUS_ERROR;
+
+	return ret;
+}
+
+/*
+ * The caller is responsible of settings HOSTC I2C_EN bit prior to making this
+ * call!
+ */
+int do_smbus_process_call(uintptr_t base, u8 device, u8 cmd, u16 data, u16 *buf)
+{
+	int ret;
+
+	/* Set up for process call */
+	ret = setup_command(base, I801_PROCESS_CALL, XMIT_WRITE(device));
+	if (ret < 0)
+		return ret;
+
+	/* cmd will only be send if I2C_EN is zero */
+	host_outb(base, SMBHSTCMD, cmd);
+
+	host_outb(base, SMBHSTDAT0, data & 0x00ff);
+	host_outb(base, SMBHSTDAT1, (data & 0xff00) >> 8);
+
+	/* Start the command */
+	ret = execute_command(base);
+	if (ret < 0)
+		return ret;
+
+	/* Poll for transaction completion */
+	ret = complete_command(base);
+	if (ret < 0)
+		return ret;
+
+	/* Read results of transaction */
+	*buf = host_inb(base, SMBHSTDAT0);
+	*buf |= (host_inb(base, SMBHSTDAT1) << 8);
 
 	return ret;
 }

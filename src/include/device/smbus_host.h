@@ -17,6 +17,7 @@ int do_smbus_write_word(uintptr_t base, u8 device, u8 address, u16 data);
 
 int do_smbus_block_read(uintptr_t base, u8 device, u8 cmd, size_t max_bytes, u8 *buf);
 int do_smbus_block_write(uintptr_t base, u8 device, u8 cmd, size_t bytes, const u8 *buf);
+int do_smbus_process_call(uintptr_t base, u8 device, u8 cmd, u16 data, u16 *buf);
 
 /* For Intel, implemented since ICH5. */
 int do_i2c_eeprom_read(uintptr_t base, u8 device, u8 offset, size_t bytes, u8 *buf);

@@ -112,4 +112,8 @@ chip soc/intel/apollolake
 			end
 		end	# - I2C 6
 	end
+
+	# Disable compliance mode
+
+	register "DisableComplianceMode" = "1"
 end

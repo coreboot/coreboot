@@ -59,6 +59,16 @@ config HAVE_BOOTBLOCK
 	bool
 	default n
 
+config AMD_FP5
+	def_bool y if !AMD_FT5
+	help
+	  The FP5 package supports higher-wattage parts and dual channel DDR4 memory.
+
+config AMD_FT5
+	def_bool n
+	help
+	  The FT5 package supports low-power parts and single-channel DDR4 memory.
+
 config PRERAM_CBMEM_CONSOLE_SIZE
 	hex
 	default 0x1600

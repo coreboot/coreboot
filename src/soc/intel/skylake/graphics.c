@@ -19,6 +19,7 @@
 #include <device/pci.h>
 #include <device/pci_ops.h>
 #include <device/resource.h>
+#include <drivers/intel/gma/i915.h>
 #include <drivers/intel/gma/i915_reg.h>
 #include <drivers/intel/gma/libgfxinit.h>
 #include <intelblocks/graphics.h>
@@ -184,4 +185,11 @@ uintptr_t graphics_soc_write_acpi_opregion(struct device *device,
 
 	printk(BIOS_DEBUG, "current = %lx\n", current);
 	return current;
+}
+
+const struct i915_gpu_controller_info *
+intel_igd_get_controller_info(struct device *device)
+{
+	struct soc_intel_skylake_config *chip = device->chip_info;
+	return &chip->gfx;
 }

@@ -29,7 +29,7 @@ static void enable_espi_lpc_io_windows(void)
 
 	/* Enable com1 (0x3f8), com2 (02f8) and superio (0x2e) */
 	pci_mmio_write_config32(PCH_DEV_LPC, 0x80,
-		(1<<28) | (1<<16) | (1<<17) | (0 << 0) | (1 << 4));
+		(1 << 28) | (1 << 16) | (1 << 17) | (0 << 0) | (1 << 4));
 }
 
 static uint8_t com_to_ast_sio(uint8_t com)

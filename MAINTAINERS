@@ -223,7 +223,7 @@ F:	src/mainboard/google/slippy/
 F:	src/mainboard/google/stout/
 
 OPENCELLULAR MAINBOARDS
-M:	Philipp Deppenwiese <zaolin.daisuki@gmail.com>
+M:	Christian Walter <christian.walter@9elements.com>
 M:	Patrick Rudolph <patrick.rudolph@9elements.com>
 S:	Supported
 F:	src/mainboard/opencellular/elgon/
@@ -455,7 +455,7 @@ M:	Stefan Reinauer <stefan.reinauer@coreboot.org>
 F:	util/inteltool/
 
 INTELMETOOL
-M:	Philipp Deppenwiese <zaolin.daisuki@gmail.com>
+M:	Christian Walter <christian.walter@9elements.com>
 F:	util/intelmetool/
 
 ME_CLEANER
@@ -535,7 +535,7 @@ M:	Martin Roth <gaumless@gmail.com>
 F:	payloads/external
 
 LINUXBOOT PAYLOAD INTEGRATION
-M:	Philipp Deppenwiese <zaolin.daisuki@gmail.com>
+M:	Christian Walter <christian.walter@9elements.com>
 M:	Marcello Sylvester Bauer <info@marcellobauer.com>
 S:	Supported
 F:	payloads/external/LinuxBoot
@@ -545,10 +545,9 @@ M:	Aaron Durbin <adurbin@chromium.org>
 F:	src/security/vboot/
 
 TPM SUPPORT
-M:	Philipp Deppenwiese <zaolin.daisuki@gmail.com>
+M:	Christian Walter <christian.walter@9elements.com>
 S:	Supported
 F:	src/drivers/*/tpm/
-F:	src/security/vboot/vboot_crtm.*
 F:	src/security/tpm
 
 DOCKER
@@ -608,11 +607,11 @@ MISSING: SPI
 #	Backups:
 
 # Website
-#	Owners: Martin, Philipp
+#	Owners: Martin
 #	Backups: Patrick, Stefan
 
 # Documentation Website
-#	Owners: Patrick, Philipp
+#	Owners: Patrick
 #	Backups:
 
 CODE OF CONDUCT

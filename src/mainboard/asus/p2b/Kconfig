@@ -56,9 +56,9 @@ config VARIANT_DIR
 	default "p2b-f" if BOARD_ASUS_P2B_F
 	default "p2b-ls" if BOARD_ASUS_P2B_LS
 
-config DEVICETREE
+config OVERRIDE_DEVICETREE
 	string
-	default "variants/$(CONFIG_VARIANT_DIR)/devicetree.cb" if ! BOARD_ASUS_P2B
+	default "variants/$(CONFIG_VARIANT_DIR)/overridetree.cb"
 
 config IRQ_SLOT_COUNT
 	int

@@ -1,0 +1,15 @@
+chip northbridge/intel/i440bx		# Northbridge
+  device domain 0 on		# PCI domain
+    chip southbridge/intel/i82371eb	# Southbridge
+      register "gpo" = "0x7fffbbff"
+      device pci 4.0 on			# ISA bridge
+        chip superio/winbond/w83977tf	# Super I/O
+          device pnp 3f0.9 on		# GPIO 3
+          end
+          device pnp 3f0.a on		# ACPI
+          end
+        end
+      end
+    end
+  end
+end

@@ -37,10 +37,6 @@ chip northbridge/intel/i440bx		# Northbridge
           end
           device pnp 3f0.8 on		# GPIO 2
           end
-          device pnp 3f0.9 on		# GPIO 3
-          end
-          device pnp 3f0.a on		# ACPI
-          end
         end
       end
       device pci 4.1 on	end		# IDE
@@ -56,7 +52,6 @@ chip northbridge/intel/i440bx		# Northbridge
       register "ide1_drive1_udma33_enable" = "0"
       register "thrm_polarity" = "1"
       register "lid_polarity" = "1"
-      register "gpo" = "0x7fffbbff"
     end
   end
 end

@@ -69,7 +69,7 @@ choice
 	default VGA_ROM_RUN if VGA_BIOS
 	default MAINBOARD_DO_NATIVE_VGA_INIT
 	default MAINBOARD_USE_LIBGFXINIT
-	default RUN_FSP_GOP if INTEL_GMA_ADD_VBT
+	default RUN_FSP_GOP if INTEL_GMA_HAVE_VBT
 
 config MAINBOARD_DO_NATIVE_VGA_INIT
 	bool "Use native graphics init"

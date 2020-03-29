@@ -74,7 +74,7 @@ IndexField (PNP_ADDR_REG, PNP_DATA_REG, ByteAcc, NoLock, Preserve)
 
 /* PM: indicate IPD (Immediate Power Down) bit state as D0/D3 */
 Method (_PSC) {
-	ENTER_CONFIG_MODE (0xFF)
+	ENTER_CONFIG_MODE (PNP_NO_LDN_CHANGE)
 	Store (IPD, Local0)
 	EXIT_CONFIG_MODE ()
 	If (Local0) { Return (3) }

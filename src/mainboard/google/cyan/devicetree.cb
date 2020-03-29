@@ -1,5 +1,8 @@
 chip soc/intel/braswell
 
+	# IGD Displays
+	register "gfx" = "GMA_STATIC_DISPLAYS(0)"
+
 	############################################################
 	# Set the parameters for MemoryInit
 	############################################################

@@ -1,0 +1,54 @@
+chip northbridge/intel/haswell
+
+	# Enable Panel and configure power delays
+	register "gpu_panel_port_select" = "1"			# eDP
+	register "gpu_panel_power_cycle_delay" = "5"		# 400ms
+	register "gpu_panel_power_up_delay" = "400"		# 40ms
+	register "gpu_panel_power_down_delay" = "150"		# 15ms
+	register "gpu_panel_power_backlight_on_delay" = "2100"	# 210ms
+	register "gpu_panel_power_backlight_off_delay" = "2100"	# 210ms
+
+	device domain 0 on
+
+		chip southbridge/intel/lynxpoint
+
+			register "sata_devslp_disable" = "0x1"
+
+			# DTLE DATA / EDGE values
+			register "sata_port0_gen3_dtle" = "0x5"
+			register "sata_port1_gen3_dtle" = "0x5"
+
+			# Disable PCIe CLKOUT 2-5 and CLKOUT_XDP
+			register "icc_clock_disable" = "0x013c0000"
+
+			device pci 1f.3 on # SMBus
+				chip drivers/i2c/rtd2132
+					# Panel Power Timings (1 ms units)
+					# Note: the panel Tx timings are very
+					# different from the LVDS bridge
+					# Tx timing settings. Below is a mapping
+					# for RTD2132 -> Panel timings.
+					# T1 = T2
+					# T2 = T8 + T10 + T12
+					# T3 = T14
+					# T4 = T15
+					# T5 = T9 + T11 + T13
+					# T6 = T3
+					# T7 = T4
+					register "t1" = "0x14"
+					register "t2" = "0xdc"
+					register "t3" = "0x0e"
+					register "t4" = "0x02"
+					register "t5" = "0xdc"
+					register "t6" = "0x14"
+					register "t7" = "0x208"
+					# LVDS Swap settings are normal.
+					register "lvds_swap" = "0"
+					# Enable Spread Sprectrum at 0.5%
+					register "sscg_percent" = "0x05"
+					device i2c 35 on end # (8bit address: 0x6A)
+				end # rtd2132
+			end # SMBus
+		end
+	end
+end

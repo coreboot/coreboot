@@ -1,0 +1,25 @@
+chip northbridge/intel/haswell
+
+	# Enable Panel and configure power delays
+	register "gpu_panel_port_select" = "1"			# eDP
+	register "gpu_panel_power_cycle_delay" = "6"		# 500ms (T11+T12)
+	register "gpu_panel_power_up_delay" = "2000"		# 200ms (T3)
+	register "gpu_panel_power_down_delay" = "500"		# 50ms (T10)
+	register "gpu_panel_power_backlight_on_delay" = "10"	# 1ms (T8)
+	register "gpu_panel_power_backlight_off_delay" = "2000"	# 200ms (T9)
+
+	device domain 0 on
+
+		chip southbridge/intel/lynxpoint
+
+			register "sata_devslp_disable" = "0x1"
+
+			# DTLE DATA / EDGE values
+			register "sata_port0_gen3_dtle" = "0x5"
+			register "sata_port1_gen3_dtle" = "0x5"
+
+			# Disable PCIe CLKOUT 2-5 and CLKOUT_XDP
+			register "icc_clock_disable" = "0x013c0000"
+		end
+	end
+end

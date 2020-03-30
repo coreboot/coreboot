@@ -55,7 +55,7 @@ Device (SUPERIO_DEV) {
 	Field (CREG, ByteAcc, NoLock, Preserve)
 	{
 		PNP_ADDR_REG,	8,
-		PNP_DATA_REG,   8
+		PNP_DATA_REG,	8
 	}
 	IndexField (PNP_ADDR_REG, PNP_DATA_REG, ByteAcc, NoLock, Preserve)
 	{
@@ -83,8 +83,7 @@ Device (SUPERIO_DEV) {
 	{
 		/* Announce the used i/o ports to the OS */
 		Return (ResourceTemplate () {
-			IO (Decode16, SUPERIO_PNP_BASE, SUPERIO_PNP_BASE,
-			    0x01, 0x02)
+			IO (Decode16, SUPERIO_PNP_BASE, SUPERIO_PNP_BASE, 0x01, 0x02)
 		})
 	}
 

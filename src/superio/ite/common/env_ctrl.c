@@ -81,8 +81,7 @@ static void enable_tmpin(const u16 base, const u8 tmpin,
 		reg |= ITE_EC_ADC_TEMP_RESISTOR_MODE(tmpin);
 		break;
 	default:
-		printk(BIOS_WARNING,
-		       "Unsupported thermal mode 0x%x on TMPIN%d\n",
+		printk(BIOS_WARNING, "Unsupported thermal mode 0x%x on TMPIN%d\n",
 		       conf->mode, tmpin);
 		return;
 	}
@@ -185,8 +184,7 @@ static void enable_fan(const u16 base, const u8 fan,
 		pnp_write_hwm5_index(base, ITE_EC_FAN_CTL_MODE, reg);
 	}
 
-	if (CONFIG(SUPERIO_ITE_ENV_CTRL_FAN16_CONFIG)
-	    && conf->mode >= FAN_MODE_ON) {
+	if (CONFIG(SUPERIO_ITE_ENV_CTRL_FAN16_CONFIG) && conf->mode >= FAN_MODE_ON) {
 		reg = pnp_read_hwm5_index(base, ITE_EC_FAN_TAC_COUNTER_ENABLE);
 		reg |= ITE_EC_FAN_TAC_16BIT_ENABLE(fan);
 		pnp_write_hwm5_index(base, ITE_EC_FAN_TAC_COUNTER_ENABLE, reg);

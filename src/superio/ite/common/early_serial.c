@@ -8,12 +8,12 @@
 #include "ite.h"
 
 /* Global configuration registers. */
-#define ITE_CONFIG_REG_CC        0x02 /* Configure Control (write-only). */
-#define ITE_CONFIG_REG_LDN       0x07 /* Logical Device Number. */
-#define ITE_CONFIG_REG_CLOCKSEL  0x23 /* Clock Selection. */
-#define ITE_CONFIG_REG_SWSUSP    0x24 /* Software Suspend, Flash I/F. */
-#define ITE_CONFIG_REG_MFC       0x2a /* multi function pin */
-#define ITE_CONFIG_REG_WATCHDOG  0x72 /* watchdog config */
+#define ITE_CONFIG_REG_CC	0x02 /* Configure Control (write-only). */
+#define ITE_CONFIG_REG_LDN	0x07 /* Logical Device Number. */
+#define ITE_CONFIG_REG_CLOCKSEL	0x23 /* Clock Selection. */
+#define ITE_CONFIG_REG_SWSUSP	0x24 /* Software Suspend, Flash I/F. */
+#define ITE_CONFIG_REG_MFC	0x2a /* multi function pin */
+#define ITE_CONFIG_REG_WATCHDOG	0x72 /* watchdog config */
 
 /* Helper procedure */
 static void ite_sio_write(pnp_devfn_t dev, u8 reg, u8 value)

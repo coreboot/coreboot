@@ -17,6 +17,7 @@
 #define SOC_INTEL_COMMON_CSE_H
 
 #include <stdint.h>
+#include <types.h>
 
 /* MKHI Command groups */
 #define MKHI_GROUP_ID_CBM	0x0

@@ -26,7 +26,7 @@
 #define NCT5104D_FDC        0x00 /* FDC - not pinned out */
 #define NCT5104D_SP1        0x02 /* UARTA */
 #define NCT5104D_SP2        0x03 /* UARTB */
-#define NCT5104D_GPIO_PP_OD 0x0F /* GPIO Push-Pull / Open drain select  */
+#define NCT5104D_GPIO_PP_OD 0x0F /* GPIO Push-Pull / Open drain select */
 #define NCT5104D_SP3        0x10 /* UARTC */
 #define NCT5104D_SP4        0x11 /* UARTD */
 #define NCT5104D_PORT80     0x14 /* PORT 80 */

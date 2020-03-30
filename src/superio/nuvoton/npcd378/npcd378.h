@@ -31,8 +31,7 @@ uint8_t npcd378_hwm_read(const uint16_t iobase, const uint16_t reg);
  * @param reg MSB is page, LSB sets the offset in selected page
  * @param val The value to write to HWM register
  */
-void npcd378_hwm_write(const uint16_t iobase, const uint16_t reg,
-		       const uint8_t val);
+void npcd378_hwm_write(const uint16_t iobase, const uint16_t reg, const uint8_t val);
 
 /*
  * Notify SuperIO a host-to-device transfer is ongoing.

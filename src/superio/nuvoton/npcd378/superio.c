@@ -26,8 +26,7 @@ uint8_t npcd378_hwm_read(const uint16_t iobase, const uint16_t reg)
 	return reg8;
 }
 
-void npcd378_hwm_write(const uint16_t iobase, const uint16_t reg,
-		       const uint8_t val)
+void npcd378_hwm_write(const uint16_t iobase, const uint16_t reg, const uint8_t val)
 {
 	outb((reg >> 8) & 0xf, iobase + 0xff);
 	outb(val, iobase + (reg & 0xff));
@@ -65,8 +64,7 @@ static void npcd378_init(struct device *dev)
 	case NPCD378_HWM:
 		res = find_resource(dev, PNP_IDX_IO0);
 		if (!res || !res->base) {
-			printk(BIOS_ERR, "NPCD378: LDN%u IOBASE not set.\n",
-			       NPCD378_HWM);
+			printk(BIOS_ERR, "NPCD378: LDN%u IOBASE not set.\n", NPCD378_HWM);
 			break;
 		}
 

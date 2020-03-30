@@ -37,8 +37,7 @@ static void generic_ssdt(struct device *dev)
 	const char *name = acpi_device_name(dev);
 
 	if (!scope || !name) {
-		printk(BIOS_ERR, "%s: Missing ACPI path/scope\n",
-		       dev_path(dev));
+		printk(BIOS_ERR, "%s: Missing ACPI path/scope\n", dev_path(dev));
 		return;
 	}
 

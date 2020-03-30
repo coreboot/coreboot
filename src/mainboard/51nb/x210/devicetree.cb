@@ -116,6 +116,7 @@ chip soc/intel/skylake
 	register "usb2_ports[8]" = "USB2_PORT_MID(OC_SKIP)"	# mSATA / WWAN Port
 
 	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC1)"	# Type-A Port (left)
+	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC1)"	# Type-A Port (left)
 
 	# PL1 override 25W
 	register "tdp_pl1_override" = "25"

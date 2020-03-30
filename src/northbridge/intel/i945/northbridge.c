@@ -96,8 +96,7 @@ static void mch_domain_read_resources(struct device *dev)
 	delta_cbmem = tomk_stolen - cbmem_topk;
 	tomk_stolen -= delta_cbmem;
 
-	printk(BIOS_DEBUG, "Unused RAM between cbmem_top and TOM: 0x%xK\n",
-	       delta_cbmem);
+	printk(BIOS_DEBUG, "Unused RAM between cbmem_top and TOM: 0x%xK\n", delta_cbmem);
 
 
 	/* The following needs to be 2 lines, otherwise the second

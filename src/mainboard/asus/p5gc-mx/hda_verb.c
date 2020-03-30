@@ -5,9 +5,9 @@
 
 const u32 cim_verb_data[] = {
 	/* coreboot specific header */
-	0x10ec0883,     /* Vendor ID */
-	0x104382c7,     /* Subsystem ID */
-	0x0000000c,     /* Number of entries */
+	0x10ec0883,	/* Vendor ID */
+	0x104382c7,	/* Subsystem ID */
+	0x0000000c,	/* Number of entries */
 
 	/* Pin Widget Verb Table */
 	AZALIA_PIN_CFG(0, 0x14, 0x01014010),

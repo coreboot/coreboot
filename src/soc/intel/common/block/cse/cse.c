@@ -827,6 +827,10 @@ void print_me_fw_version(void *unused)
 	if (!CONFIG(CONSOLE_SERIAL))
 		return;
 
+	/* Ignore if CSE is disabled */
+	if (!is_cse_enabled())
+		return;
+
 	/*
 	 * Ignore if ME Firmware SKU type is custom since
 	 * print_boot_partition_info() logs RO(BP1) and RW(BP2) versions.

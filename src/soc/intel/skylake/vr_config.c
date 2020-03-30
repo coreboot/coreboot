@@ -21,15 +21,15 @@
 #include <console/console.h>
 #include <intelblocks/cpulib.h>
 
-/* Default values for domain configuration. PSI3 and PSI4 are disabled. */
+/* Default values for domain configuration. */
 static const struct vr_config default_configs[NUM_VR_DOMAINS] = {
 	[VR_SYSTEM_AGENT] = {
 		.vr_config_enable = 1,
 		.psi1threshold = VR_CFG_AMP(20),
 		.psi2threshold = VR_CFG_AMP(4),
 		.psi3threshold = VR_CFG_AMP(1),
-		.psi3enable = 0,
-		.psi4enable = 0,
+		.psi3enable = 1,
+		.psi4enable = 1,
 		.imon_slope = 0,
 		.imon_offset = 0,
 		.icc_max = 0,
@@ -40,8 +40,8 @@ static const struct vr_config default_configs[NUM_VR_DOMAINS] = {
 		.psi1threshold = VR_CFG_AMP(20),
 		.psi2threshold = VR_CFG_AMP(5),
 		.psi3threshold = VR_CFG_AMP(1),
-		.psi3enable = 0,
-		.psi4enable = 0,
+		.psi3enable = 1,
+		.psi4enable = 1,
 		.imon_slope = 0,
 		.imon_offset = 0,
 		.icc_max = 0,
@@ -52,8 +52,8 @@ static const struct vr_config default_configs[NUM_VR_DOMAINS] = {
 		.psi1threshold = VR_CFG_AMP(20),
 		.psi2threshold = VR_CFG_AMP(5),
 		.psi3threshold = VR_CFG_AMP(1),
-		.psi3enable = 0,
-		.psi4enable = 0,
+		.psi3enable = 1,
+		.psi4enable = 1,
 		.imon_slope = 0,
 		.imon_offset = 0,
 		.icc_max = 0,
@@ -64,8 +64,8 @@ static const struct vr_config default_configs[NUM_VR_DOMAINS] = {
 		.psi1threshold = VR_CFG_AMP(20),
 		.psi2threshold = VR_CFG_AMP(5),
 		.psi3threshold = VR_CFG_AMP(1),
-		.psi3enable = 0,
-		.psi4enable = 0,
+		.psi3enable = 1,
+		.psi4enable = 1,
 		.imon_slope = 0,
 		.imon_offset = 0,
 		.icc_max = 0,

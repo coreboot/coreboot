@@ -14,29 +14,29 @@
 
 /* Register addresses */
 // Choose between AMD and Intel
-#define HWM_AMD_TSI_ADDR             0x08
-#define HWM_AMD_TSI_CONTROL_REG      0x0A
+#define HWM_AMD_TSI_ADDR		0x08
+#define HWM_AMD_TSI_CONTROL_REG		0x0A
 
 // Set temp sensors type
-#define TEMP_SENS_TYPE_REG	0x6B
+#define TEMP_SENS_TYPE_REG		0x6B
 
 // FAN prog sel
-#define HWM_FAN3_CONTROL	0x9A
-#define HWM_FAN_SEL		0x94
-#define HWM_FAN_MODE		0x96
-#define HWM_FAN2_TEMP_MAP_SEL      0xBF
+#define HWM_FAN3_CONTROL		0x9A
+#define HWM_FAN_SEL			0x94
+#define HWM_FAN_MODE			0x96
+#define HWM_FAN2_TEMP_MAP_SEL		0xBF
 
 // Fan 2 - 4 Boundaries
-#define HWM_FAN2_BOUND1	0xB6
-#define HWM_FAN2_BOUND2	0xB7
-#define HWM_FAN2_BOUND3	0xB8
-#define HWM_FAN2_BOUND4	0xB9
+#define HWM_FAN2_BOUND1			0xB6
+#define HWM_FAN2_BOUND2			0xB7
+#define HWM_FAN2_BOUND3			0xB8
+#define HWM_FAN2_BOUND4			0xB9
 // Fan 2 - 5 Segment speeds
-#define HWM_FAN2_SEG1_SPEED_COUNT  0xBA
-#define HWM_FAN2_SEG2_SPEED_COUNT  0xBB
-#define HWM_FAN2_SEG3_SPEED_COUNT  0xBC
-#define HWM_FAN2_SEG4_SPEED_COUNT  0xBD
-#define HWM_FAN2_SEG5_SPEED_COUNT  0xBE
+#define HWM_FAN2_SEG1_SPEED_COUNT	0xBA
+#define HWM_FAN2_SEG2_SPEED_COUNT	0xBB
+#define HWM_FAN2_SEG3_SPEED_COUNT	0xBC
+#define HWM_FAN2_SEG4_SPEED_COUNT	0xBD
+#define HWM_FAN2_SEG5_SPEED_COUNT	0xBE
 
 
 void f81866d_hwm_init(struct device *dev)

@@ -19,7 +19,7 @@
   #define F81803A_WDT			0x07	/* Watch Dog Timer */
   #define F81803A_PME			0x0a	/* Power Management Events (PME) */
 
-/*  Global Control Registers */
+/* Global Control Registers */
 #define CLOCK_SELECT_REG		0x26
 #define   FUNC_PROG_SELECT		(1<<3)
 #define PORT_SELECT_REG			0x27

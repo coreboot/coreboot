@@ -36,13 +36,13 @@ void f81866d_uart_init(struct device *dev)
 	pnp_write_config(dev, PORT_SELECT_REGISTER, tmp & 0xFE);
 
 	// Set UART 3 function (Bit 4/5), otherwise pin 36-43 are GPIO
-	if (dev->path.pnp.device ==  F81866D_SP3) {
+	if (dev->path.pnp.device == F81866D_SP3) {
 		tmp = pnp_read_config(dev, MULTI_FUNC_SEL3_REG);
 		pnp_write_config(dev, MULTI_FUNC_SEL3_REG, tmp | 0x30);
 	}
 
 	// Set UART 4 function (Bit 6/7), otherwise pin 44-51 are GPIO
-	if (dev->path.pnp.device ==  F81866D_SP4) {
+	if (dev->path.pnp.device == F81866D_SP4) {
 		tmp = pnp_read_config(dev, MULTI_FUNC_SEL3_REG);
 		pnp_write_config(dev, MULTI_FUNC_SEL3_REG, tmp | 0xC0);
 	}

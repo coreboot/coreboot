@@ -7,11 +7,11 @@
 #include <device/pnp_type.h>
 
 /* Logical Device Numbers (LDN). */
-#define F81216H_SP1    0x00	/* UART1 (+CIR mode) */
-#define F81216H_SP2    0x01	/* UART2 */
-#define F81216H_SP3    0x02	/* UART3 */
-#define F81216H_SP4    0x03	/* UART4 */
-#define F81216H_WDT    0x08	/* WDT   */
+#define F81216H_SP1	0x00	/* UART1 (+CIR mode) */
+#define F81216H_SP2	0x01	/* UART2 */
+#define F81216H_SP3	0x02	/* UART3 */
+#define F81216H_SP4	0x03	/* UART4 */
+#define F81216H_WDT	0x08	/* WDT   */
 
 /**
  * The PNP config entry key is parameterised

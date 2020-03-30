@@ -128,7 +128,7 @@ static int check_value_seq(u8 *values, u8 count)
 	u8 current_value, i;
 	for (i = 0; i < count; i++) {
 		current_value = values[i];
-		if (current_value  > CPU_DAMAGE_TEMP)
+		if (current_value > CPU_DAMAGE_TEMP)
 			return STATUS_INVALID_VALUE;
 		if (current_value >= last_value)
 			return STATUS_INVALID_ORDER;

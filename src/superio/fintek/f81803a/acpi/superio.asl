@@ -237,13 +237,13 @@ Device(SUPERIO_DEV) {
 	{
 		Offset(0x00), /*Control Reg 5 */
 		, 7,
-		PSIN, 1 /* PSIN_FLAG  */
+		PSIN, 1 /* PSIN_FLAG */
 	}
 
 	/* routine to clear PSIN_FLAG in ACPI_CONTROL_REG_5 of SIO */
 	Method(CPSI, 0, Serialized)
 	{
-		/*   DBG0("SIO CPSI")*/
+		/* DBG0("SIO CPSI") */
 		ENTER_CONFIG_MODE(SUPERIO_PME_LDN)
 		Store(1, PSIN)
 		EXIT_CONFIG_MODE()

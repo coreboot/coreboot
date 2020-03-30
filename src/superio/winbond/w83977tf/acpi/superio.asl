@@ -67,9 +67,9 @@ IndexField (PNP_ADDR_REG, PNP_DATA_REG, ByteAcc, NoLock, Preserve)
 	OPT1,			8
 }
 
-#define PNP_ENTER_MAGIC_1ST     0x87
-#define PNP_ENTER_MAGIC_2ND     0x87
-#define PNP_EXIT_MAGIC_1ST      0xaa
+#define PNP_ENTER_MAGIC_1ST	0x87
+#define PNP_ENTER_MAGIC_2ND	0x87
+#define PNP_EXIT_MAGIC_1ST	0xaa
 #include <superio/acpi/pnp_config.asl>
 
 /* PM: indicate IPD (Immediate Power Down) bit state as D0/D3 */
@@ -84,13 +84,13 @@ Method (_PSC) {
 #ifdef SUPERIO_SHOW_FDC
 Device (FDC0)
 {
-	Name (_HID, EisaId ("PNP0700"))  // _HID: Hardware ID
-	Method (_STA, 0, NotSerialized)  // _STA: Status
+	Name (_HID, EisaId ("PNP0700")) // _HID: Hardware ID
+	Method (_STA, 0, NotSerialized) // _STA: Status
 	{
 		PNP_GENERIC_STA(W83977TF_FDC)
 	}
 
-	Method (_DIS, 0, NotSerialized)  // _DIS: Disable Device
+	Method (_DIS, 0, NotSerialized) // _DIS: Disable Device
 	{
 		PNP_GENERIC_DIS(W83977TF_FDC)
 	}
@@ -300,7 +300,7 @@ Device (ECP)
 		Return (BUF6)
 	}
 
-	Name (_PRS, ResourceTemplate ()  // _PRS: Possible Resource Settings
+	Name (_PRS, ResourceTemplate () // _PRS: Possible Resource Settings
 	{
 		StartDependentFn (0x01, 0x01)
 		{
@@ -326,7 +326,7 @@ Device (ECP)
 		EndDependentFn ()
 	})
 
-	Method (_SRS, 1, NotSerialized)  // _SRS: Set Resource Settings
+	Method (_SRS, 1, NotSerialized) // _SRS: Set Resource Settings
 	{
 		CreateByteField (Arg0, 0x02, IOLO)
 		CreateByteField (Arg0, 0x03, IOHI)
@@ -366,5 +366,5 @@ Device (ECP)
  */
 
 #define SUPERIO_KBC_LDN W83977TF_KBC
-#define SUPERIO_KBC_PS2M  /* Mouse shares same LDN */
+#define SUPERIO_KBC_PS2M /* Mouse shares same LDN */
 #include <superio/acpi/pnp_kbc.asl>

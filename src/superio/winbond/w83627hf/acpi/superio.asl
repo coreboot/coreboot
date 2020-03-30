@@ -57,83 +57,83 @@ Device(SIO) {
 	OperationRegion (CREG, SystemIO, SUPERIO_PNP_BASE, 0x02)
 	Field (CREG, ByteAcc, NoLock, Preserve)
 	{
-		PNP_ADDR_REG,   8,
-		PNP_DATA_REG,   8
+		PNP_ADDR_REG,	8,
+		PNP_DATA_REG,	8
 	}
 	IndexField (PNP_ADDR_REG, PNP_DATA_REG, ByteAcc, NoLock, Preserve)
 	{
 		Offset (0x02),
-		RST,    1,     /* Soft reset */
-		,       7,
+		RST,	1,	/* Soft reset */
+		,	7,
 		Offset (0x07),
-		LDN,    8,     /* Logical device selector */
+		LDN,	8,	/* Logical device selector */
 		Offset (0x20),
-		DID,    8,     /* Device ID */
-		DREV,   8,     /* Device Revision */
-		FDPW,   1,     /* FDC Power Down */
-		,       2,
-		PRPW,   1,     /* PRT Power Down */
-		UAPW,   1,     /* UART A Power Down */
-		UBPW,   1,     /* UART B Power Down */
-		HWPW,   1,     /* HWM Power Down */
-		,       1,
-		IPD,    1,     /* Immediate Chip Power Down */
-		,       7,
-		PNPS,   1,     /* PnP Address Select Register Default Value Mode */
-		,       1,
-		KBCR,   1,     /* KBC enabled after system reset (read-only) */
-		,       3,
-		CLKS,   1,     /* Clock select */
-		AQ16,   1,     /* 16bit Address Qualification */
-		FDCT,   1,     /* Tristate FDC (?) */
-		,       2,
-		PRTT,   1,     /* Tristate parallel port (?) */
-		URAT,   1,     /* Tristate UART A (?) */
-		URBT,   1,     /* Tristate UART B (?) */
-		,       2,
-		URAI,   1,     /* UART A Legacy IRQ Select Disable */
-		URBI,   1,     /* UART B Legacy IRQ Select Disable */
-		PRTI,   1,     /* Parallel Port Legacy IRQ/DRQ Select Disable */
-		FDCI,   1,     /* FDC Legacy IRQ/DRQ Select Disable */
-		,       1,
-		LCKC,   1,     /* Lock Configuration Registers */
+		DID,	8,	/* Device ID */
+		DREV,	8,	/* Device Revision */
+		FDPW,	1,	/* FDC Power Down */
+		,	2,
+		PRPW,	1,	/* PRT Power Down */
+		UAPW,	1,	/* UART A Power Down */
+		UBPW,	1,	/* UART B Power Down */
+		HWPW,	1,	/* HWM Power Down */
+		,	1,
+		IPD,	1,	/* Immediate Chip Power Down */
+		,	7,
+		PNPS,	1,	/* PnP Address Select Register Default Value Mode */
+		,	1,
+		KBCR,	1,	/* KBC enabled after system reset (read-only) */
+		,	3,
+		CLKS,	1,	/* Clock select */
+		AQ16,	1,	/* 16bit Address Qualification */
+		FDCT,	1,	/* Tristate FDC (?) */
+		,	2,
+		PRTT,	1,	/* Tristate parallel port (?) */
+		URAT,	1,	/* Tristate UART A (?) */
+		URBT,	1,	/* Tristate UART B (?) */
+		,	2,
+		URAI,	1,	/* UART A Legacy IRQ Select Disable */
+		URBI,	1,	/* UART B Legacy IRQ Select Disable */
+		PRTI,	1,	/* Parallel Port Legacy IRQ/DRQ Select Disable */
+		FDCI,	1,	/* FDC Legacy IRQ/DRQ Select Disable */
+		,	1,
+		LCKC,	1,	/* Lock Configuration Registers */
 		Offset (0x29),
-		IO3S,   8,     /* GPIO3 pin selection register */
+		IO3S,	8,	/* GPIO3 pin selection register */
 		Offset (0x30),
-		ACTR,   1,     /* Logical device activation */
-		ACT1,   1,     /* Logical part activation 1 (mostly unused) */
-		ACT2,   1,     /* Logical part activation 2 (mostly unused) */
-		,       5,
+		ACTR,	1,	/* Logical device activation */
+		ACT1,	1,	/* Logical part activation 1 (mostly unused) */
+		ACT2,	1,	/* Logical part activation 2 (mostly unused) */
+		,	5,
 		Offset (0x60),
-		IO1H,   8,      /* First I/O port base - high byte */
-		IO1L,   8,      /* First I/O port base - low byte */
-		IO2H,   8,      /* Second I/O port base - high byte */
-		IO2L,   8,      /* Second I/O port base - low byte */
+		IO1H,	8,	/* First I/O port base - high byte */
+		IO1L,	8,	/* First I/O port base - low byte */
+		IO2H,	8,	/* Second I/O port base - high byte */
+		IO2L,	8,	/* Second I/O port base - low byte */
 		Offset (0x70),
-		IRQ0,   8,      /* First IRQ */
+		IRQ0,	8,	/* First IRQ */
 		Offset (0x72),
-		IRQ1,   8,      /* First IRQ */
+		IRQ1,	8,	/* First IRQ */
 		Offset (0x74),
-		DMA0,   8,      /* DMA */
+		DMA0,	8,	/* DMA */
 		Offset (0xE0),
 		/* CRE0-CRE4: function logical device dependant, seems to be reserved for ACPI settings */
-		CRE0,   8,
-		CRE1,   8,
-		CRE2,   8,
-		CRE3,   8,
-		CRE4,   8,
+		CRE0,	8,
+		CRE1,	8,
+		CRE2,	8,
+		CRE3,	8,
+		CRE4,	8,
 		Offset (0xF0),
 		/* OPT1-OPTA aka CRF0-CRF9: function logical device dependant */
-		OPT1,   8,
-		OPT2,   8,
-		OPT3,   8,
-		OPT4,   8,
-		OPT5,   8,
-		OPT6,   8,
-		OPT7,   8,
-		OPT8,   8,
-		OPT9,   8,
-		OPTA,   8
+		OPT1,	8,
+		OPT2,	8,
+		OPT3,	8,
+		OPT4,	8,
+		OPT5,	8,
+		OPT6,	8,
+		OPT7,	8,
+		OPT8,	8,
+		OPT9,	8,
+		OPTA,	8
 	}
 
 	Method (_CRS)
@@ -177,14 +177,14 @@ Device(SIO) {
 		Else { Return (0) }
 	}
 
-	/* PM: Switch to D0 by setting IPD low  */
+	/* PM: Switch to D0 by setting IPD low */
 	Method (_PS0) {
 		ENTER_CONFIG_MODE (PNP_NO_LDN_CHANGE)
 		Store (Zero, IPD)
 		EXIT_CONFIG_MODE ()
 	}
 
-	/* PM: Switch to D3 by setting IPD high  */
+	/* PM: Switch to D3 by setting IPD high */
 	Method (_PS3) {
 		ENTER_CONFIG_MODE (PNP_NO_LDN_CHANGE)
 		Store (One, IPD)
@@ -315,23 +315,23 @@ Device(SIO) {
 			Field (FIO1, ByteAcc, NoLock, Preserve)
 			{
 				Offset(0x02),
-				SELE,  2,
-				RSTL,  1,
-				IDMA,  1,
-				ACT1,  1,
-				ACT2,  1,
-				ACT3,  1,
-				ACT4,  1,
+				SELE,	2,
+				RSTL,	1,
+				IDMA,	1,
+				ACT1,	1,
+				ACT2,	1,
+				ACT3,	1,
+				ACT4,	1,
 				Offset(0x04),
-				BSY1,  1,
-				BSY2,  1,
-				BSY3,  1,
-				BSY4,  1,
-				BUSY,  1,
-				NDMA,  1,
-				IODI,  1,
-				RDY,   1,
-				DATA,  8,
+				BSY1,	1,
+				BSY2,	1,
+				BSY3,	1,
+				BSY4,	1,
+				BUSY,	1,
+				NDMA,	1,
+				IODI,	1,
+				RDY,	1,
+				DATA,	8,
 			}
 			OperationRegion (FIO2, SystemIO, 0x3F7, 0x01)
 			Field (FIO2, ByteAcc, NoLock, Preserve)
@@ -567,7 +567,7 @@ Device(SIO) {
 
 			If (LEqual(IOAL, 4)) {
 				Store(0x0, Local2)
-			} else  {
+			} else {
 				Store(0x1, Local2)
 			}
 

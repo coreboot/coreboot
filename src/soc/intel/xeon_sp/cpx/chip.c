@@ -7,6 +7,7 @@
 #include <cpu/x86/lapic.h>
 #include <device/pci.h>
 #include <fsp/api.h>
+#include <soc/cpu.h>
 #include <soc/ramstage.h>
 #include <soc/pm.h>
 
@@ -29,16 +30,11 @@ static struct device_operations pci_domain_ops = {
 	.scan_bus = &pci_domain_scan_bus,
 };
 
-static void init_cpus(struct device *dev)
-{
-	/* not implemented yet */
-}
-
 static struct device_operations cpu_bus_ops = {
 	.read_resources = DEVICE_NOOP,
 	.set_resources = DEVICE_NOOP,
 	.enable_resources = DEVICE_NOOP,
-	.init = init_cpus,
+	.init = cpx_init_cpus,
 	.scan_bus = NULL,
 };
 

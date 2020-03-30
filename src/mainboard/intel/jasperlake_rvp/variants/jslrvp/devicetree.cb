@@ -63,22 +63,19 @@ chip soc/intel/jasperlake
 	register "PchHdaAudioLinkDmicEnable[1]" = "1"
 
 	# PCIe port 1 for M.2 E-key WLAN
-	register "PcieRpEnable[1]" = "1"
-
-	# RP 1 uses CLK SRC 1
-	register "PcieClkSrcUsage[1]" = "0x01"
-
-	# ClkReq-to-ClkSrc mapping for CLK SRC 1
-	register "PcieClkSrcClkReq[1]" = "0x01"
-
 	# Enable Root Port 4(x4) for NVMe
+	register "PcieRpEnable[1]" = "1"
 	register "PcieRpEnable[4]" = "1"
 
-	# RP 4 uses CLK SRC 0
 	register "PcieClkSrcUsage[0]" = "0x04"
+	register "PcieClkSrcUsage[1]" = "0x01"
 
-	# ClkReq-to-ClkSrc mapping for CLK SRC 0
 	register "PcieClkSrcClkReq[0]" = "0x00"
+	register "PcieClkSrcClkReq[1]" = "0x01"
+	register "PcieClkSrcClkReq[2]" = "0x02"
+	register "PcieClkSrcClkReq[3]" = "0x03"
+	register "PcieClkSrcClkReq[4]" = "0x04"
+	register "PcieClkSrcClkReq[5]" = "0x05"
 
 	register "SataEnable" = "0"
 
@@ -285,12 +282,12 @@ chip soc/intel/jasperlake
 		device pci 19.1 off end # I2C #5
 		device pci 19.2 on  end # UART #2
 		device pci 1a.0 on  end # eMMC
-	        device pci 1c.0 off end # PCI Express Port 1
-	        device pci 1c.1 on  end # PCI Express Port 2
+	        device pci 1c.0 on  end # PCI Express Port 1
+	        device pci 1c.1 off end # PCI Express Port 2
 	        device pci 1c.2 off end # PCI Express Port 3
 	        device pci 1c.3 off end # PCI Express Port 4
-	        device pci 1c.4 on  end # PCI Express Port 5
-	        device pci 1c.5 off end # PCI Express Port 6
+	        device pci 1c.4 off end # PCI Express Port 5
+	        device pci 1c.5 on  end # PCI Express Port 6
 	        device pci 1c.6 off end # PCI Express Port 7
 	        device pci 1c.7 off end # PCI Express Port 8
 		device pci 1e.0 on  end # UART #0

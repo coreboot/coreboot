@@ -15,6 +15,9 @@ static const struct pad_config gpio_table[] = {
 	/* M.2_WWAN_DISABLE_N */
 	PAD_CFG_GPO(GPP_A19, 1, PLTRST),
 
+	/* M.2_WLAN_PERST_N */
+	PAD_CFG_GPO(GPP_B17, 1, PLTRST),
+
 	/* WWAN_PERST_N */
 	PAD_CFG_GPO(GPP_C0, 0, PLTRST),
 
@@ -27,6 +30,12 @@ static const struct pad_config gpio_table[] = {
 	/* I2C0_SCL */
 	PAD_CFG_NF(GPP_C17, UP_2K, DEEP, NF1),
 
+	/* WIFI_RF_KILL_N */
+	PAD_CFG_GPO(GPP_D0, 1, PLTRST),
+
+	/* BT_RF_KILL_N */
+	PAD_CFG_GPO(GPP_D1, 1, PLTRST),
+
 	/* I2S_MCLK */
 	PAD_CFG_NF(GPP_D18, NONE, DEEP, NF1),
 
@@ -36,11 +45,20 @@ static const struct pad_config gpio_table[] = {
 	/* WWAN EN GPIO */
 	PAD_CFG_GPO(GPP_H7, 1, PLTRST),
 
+	/* M.2_BT_I2S2_SCLK */
+	PAD_CFG_GPI(GPP_H11, NONE, PLTRST),
+
+	/* M.2_BT_I2S2_RXD */
+	PAD_CFG_GPI(GPP_H14, NONE, PLTRST),
+
 	/* I2S1_SCLK */
 	PAD_CFG_NF(GPP_H15, NONE, DEEP, NF1),
 
 	/* Audio Jack Detection */
 	PAD_CFG_GPI_INT(GPP_H16, NONE, PLTRST, EDGE_BOTH),
+
+	/* M2_CNVI_EN_N */
+	PAD_CFG_GPO(GPP_H19, 0, PLTRST),
 
 	/* I2S0_SCLK */
 	PAD_CFG_NF(GPP_R0, NONE, DEEP, NF2),

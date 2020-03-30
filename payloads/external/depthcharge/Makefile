@@ -10,6 +10,7 @@ libpayload_dir=$(abspath $(CURDIR)/../../libpayload)
 libpayload_install_dir=$(output_dir)/lp_$(BOARD)
 
 VBOOT_SOURCE ?= $(abspath $(CURDIR)/../../../3rdparty/vboot)
+EC_HEADERS ?= $(abspath $(CURDIR)/../../../3rdparty/chromeec/include)
 
 TAG-$(DEPTHCHARGE_MASTER)=origin/master
 TAG-$(DEPTHCHARGE_STABLE)=$(STABLE_COMMIT_ID)
@@ -79,13 +80,15 @@ config: $(project_dir)/.version_$(TAG-y) $(libpayload_install_dir)
 	cd $(project_dir) && \
 		$(MAKE) BOARD=$(BOARD) \
 		LIBPAYLOAD_DIR=$(libpayload_install_dir)/libpayload \
-		VB_SOURCE=$(VBOOT_SOURCE) defconfig
+		VB_SOURCE=$(VBOOT_SOURCE) \
+		EC_HEADERS=$(EC_HEADERS) defconfig
 
 build: config
 	echo "    MAKE       $(project_name) $(TAG-y)"
 	$(MAKE) -C $(project_dir) depthcharge BOARD=$(BOARD) \
 		LIBPAYLOAD_DIR=$(libpayload_install_dir)/libpayload \
 		VB_SOURCE=$(VBOOT_SOURCE) \
+		EC_HEADERS=$(EC_HEADERS) \
 		PATH="$(abspath ../../../build/util/cbfstool):$$PATH"
 
 clean:

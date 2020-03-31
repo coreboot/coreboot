@@ -13,6 +13,9 @@ drivers_intel_gma_displays_ssdt_generate(const struct i915_gpu_controller_info *
 	const char *names[] = { "UNK", "VGA", "TV", "DVI", "LCD" };
 	int counters[ARRAY_SIZE(names)] = { 0 };
 
+	if (!conf->ndid)
+		return;
+
 	acpigen_write_scope("\\_SB.PCI0.GFX0");
 
 	/*

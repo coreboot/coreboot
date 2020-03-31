@@ -31,7 +31,6 @@
 #include "nvs.h"
 #include "pch.h"
 #include <arch/acpigen.h>
-#include <drivers/intel/gma/i915.h>
 #include <southbridge/intel/common/acpi_pirq_gen.h>
 #include <southbridge/intel/common/rtc.h>
 #include <southbridge/intel/common/spi.h>
@@ -724,8 +723,6 @@ static void southbridge_inject_dsdt(struct device *dev)
 	}
 
 	if (gnvs) {
-		const struct i915_gpu_controller_info *gfx = intel_gma_get_controller_info();
-
 		acpi_create_gnvs(gnvs);
 
 		gnvs->apic = 1;
@@ -738,11 +735,6 @@ static void southbridge_inject_dsdt(struct device *dev)
 
 		/* Update the mem console pointer. */
 		gnvs->cbmc = (u32)cbmem_find(CBMEM_ID_CONSOLE);
-
-		if (gfx) {
-			gnvs->ndid = gfx->ndid;
-			memcpy(gnvs->did, gfx->did, sizeof(gnvs->did));
-		}
 
 		/* And tell SMI about it */
 		smm_setup_structures(gnvs, NULL, NULL);

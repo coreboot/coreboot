@@ -1,0 +1,91 @@
+chip soc/intel/skylake
+
+	register "ScsSdCardEnabled" = "2"
+
+	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC0)"	# Type-C Port 1
+	register "usb2_ports[1]" = "USB2_PORT_TYPE_C(OC1)"	# Type-C Port 2
+	register "usb2_ports[2]" = "USB2_PORT_MID(OC_SKIP)"	# Bluetooth
+	register "usb2_ports[4]" = "USB2_PORT_MID(OC2)"		# Type-A Port (card)
+	register "usb2_ports[6]" = "USB2_PORT_FLEX(OC_SKIP)"	# Camera
+	register "usb2_ports[8]" = "USB2_PORT_LONG(OC3)"	# Type-A Port (board)
+
+	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC0)" # Type-C Port 1
+	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC1)" # Type-C Port 2
+	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC2)" # Type-A Port (card)
+	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC3)" # Type-A Port (board)
+
+	# I2C0 is 3.3V
+	register "i2c_voltage[0]" = "I2C_VOLTAGE_3V3"
+
+	# Use default SD card detect GPIO configuration
+	register "sdcard_cd_gpio_default" = "GPP_A7"
+
+	device domain 0 on
+		device pci 15.0 on
+			chip drivers/i2c/generic
+				register "hid" = ""RAYD0001""
+				register "desc" = ""Raydium Touchscreen""
+				register "irq" = "ACPI_IRQ_EDGE_LOW(GPP_E7_IRQ)"
+				device i2c 39 on end
+			end
+		end # I2C #0
+		device pci 15.1 on
+			chip drivers/i2c/generic
+				register "hid" = ""ELAN0000""
+				register "desc" = ""ELAN Touchpad""
+				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPP_B3_IRQ)"
+				register "wake" = "GPE0_DW0_05"
+				device i2c 15 on end
+			end
+		end # I2C #1
+		device pci 19.2 on
+			chip drivers/i2c/nau8825
+				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPP_F10_IRQ)"
+				register "jkdet_enable" = "1"
+				register "jkdet_pull_enable" = "1"
+				register "jkdet_pull_up" = "1"
+				register "jkdet_polarity" = "1"		# ActiveLow
+				register "vref_impedance" = "2"		# 125kOhm
+				register "micbias_voltage" = "6"	# 2.754
+				register "sar_threshold_num" = "4"
+				register "sar_threshold[0]" = "0x08"
+				register "sar_threshold[1]" = "0x12"
+				register "sar_threshold[2]" = "0x26"
+				register "sar_threshold[3]" = "0x73"
+				register "sar_hysteresis" = "0"
+				register "sar_voltage" = "6"
+				register "sar_compare_time" = "1"	# 1us
+				register "sar_sampling_time" = "1"	# 4us
+				register "short_key_debounce" = "3"	# 30ms
+				register "jack_insert_debounce" = "7"	# 512ms
+				register "jack_eject_debounce" = "0"
+				device i2c 1a on end
+			end
+			chip drivers/i2c/generic
+				register "hid" = ""INT343B""
+				register "desc" = ""SSM4567 Left Speaker Amp""
+				register "uid" = "0"
+				register "device_present_gpio" = "GPP_E3"
+				device i2c 34 on end
+			end
+			chip drivers/i2c/generic
+				register "hid" = ""INT343B""
+				register "desc" = ""SSM4567 Right Speaker Amp""
+				register "uid" = "1"
+				register "device_present_gpio" = "GPP_E3"
+				device i2c 35 on end
+			end
+		end # I2C #4
+		device pci 1e.6 on  end # SDCard
+		device pci 1f.3 on
+			chip drivers/generic/max98357a
+				register "hid" = ""MX98357A""
+				register "sdmode_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_E3)"
+				register "device_present_gpio" = "GPP_E3"
+				register "device_present_gpio_invert" = "1"
+				register "sdmode_delay" = "5"
+				device generic 0 on end
+			end
+		end # Intel HDA
+	end
+end

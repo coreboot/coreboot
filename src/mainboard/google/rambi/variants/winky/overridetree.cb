@@ -1,0 +1,13 @@
+chip soc/intel/baytrail
+
+	register "usb2_per_port_lane0" = "0x0004C209"
+	register "usb2_per_port_lane3" = "0x0004B209"
+	register "usb2_comp_bg"        = "0x4680"
+
+	# Allow PCIe devices to wake system from suspend
+	register "pcie_wake_enable" = "1"
+
+	device domain 0 on
+		device pci 1c.1 on  end # PCIE_PORT2
+	end
+end

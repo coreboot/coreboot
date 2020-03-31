@@ -1,0 +1,13 @@
+chip soc/intel/baytrail
+
+	register "usb2_comp_bg" = "0x4700"
+
+	# Allow PCIe devices to wake system from suspend
+	register "pcie_wake_enable" = "1"
+
+	device domain 0 on
+		device pci 18.6 on  end # I2C6
+		device pci 1c.2 on  end # PCIE_PORT3
+		device pci 1c.3 on  end # PCIE_PORT4
+	end
+end

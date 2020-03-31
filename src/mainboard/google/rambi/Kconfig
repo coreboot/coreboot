@@ -64,9 +64,9 @@ config MAINBOARD_PART_NUMBER
 	default "Swanky" if BOARD_GOOGLE_SWANKY
 	default "Winky" if BOARD_GOOGLE_WINKY
 
-config DEVICETREE
+config OVERRIDE_DEVICETREE
 	string
-	default "variants/$(CONFIG_VARIANT_DIR)/devicetree.cb"
+	default "variants/$(CONFIG_VARIANT_DIR)/overridetree.cb"
 
 config EC_GOOGLE_CHROMEEC_BOARDNAME
 	string

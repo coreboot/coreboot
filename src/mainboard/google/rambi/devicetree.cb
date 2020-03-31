@@ -13,7 +13,6 @@ chip soc/intel/baytrail
 	register "usb3_port_disable_mask" = "0x0"
 
 	# USB PHY settings
-	# TODO: These values are from Baytrail and need tuned for Enguarde board
 	register "usb2_per_port_lane0" = "0x00049a09"
 	register "usb2_per_port_rcomp_hs_pullup0" = "0x0300401d"
 	register "usb2_per_port_lane1" = "0x00049a09"
@@ -35,9 +34,6 @@ chip soc/intel/baytrail
 	register "lpe_acpi_mode" = "1"
 	register "lpss_acpi_mode" = "1"
 	register "scc_acpi_mode" = "1"
-
-	# Allow PCIe devices to wake system from suspend
-	register "pcie_wake_enable" = "1"
 
 	# Enable PIPEA as DP_C
 	register "gpu_pipea_port_select" = "2"		# DP_C
@@ -77,7 +73,7 @@ chip soc/intel/baytrail
 		device pci 1a.0 off end # TXE
 		device pci 1b.0 on  end # HDA
 		device pci 1c.0 on  end # PCIE_PORT1
-		device pci 1c.1 on  end # PCIE_PORT2
+		device pci 1c.1 off end # PCIE_PORT2
 		device pci 1c.2 off end # PCIE_PORT3
 		device pci 1c.3 off end # PCIE_PORT4
 		device pci 1d.0 on  end # EHCI

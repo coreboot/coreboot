@@ -1,0 +1,6 @@
+chip soc/intel/baytrail
+
+	device domain 0 on
+		device pci 1c.1 on  end # PCIE_PORT2
+	end
+end

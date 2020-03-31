@@ -14,22 +14,22 @@
 
 chip northbridge/intel/i945
 
-        device cpu_cluster 0 on
-                chip cpu/intel/socket_441
-                        device lapic 0 on end
-                end
-        end
+	device cpu_cluster 0 on
+		chip cpu/intel/socket_441
+			device lapic 0 on end
+		end
+	end
 
 	register "pci_mmio_size" = "768"
 
-        device domain 0 on
-                subsystemid 0x8086 0x464c inherit
-                device pci 00.0 on end # host bridge
+	device domain 0 on
+		subsystemid 0x8086 0x464c inherit
+		device pci 00.0 on  end # host bridge
 		device pci 01.0 off end # i945 PCIe root port
-		device pci 02.0 on end # vga controller
-		device pci 02.1 on end # display controller
+		device pci 02.0 on  end # vga controller
+		device pci 02.1 on  end # display controller
 
-                chip southbridge/intel/i82801gx
+		chip southbridge/intel/i82801gx
 			register "pirqa_routing" = "0x05"
 			register "pirqb_routing" = "0x07"
 			register "pirqc_routing" = "0x05"
@@ -46,60 +46,56 @@ chip northbridge/intel/i945
 			register "gpi13_routing" = "1"
 			register "gpe0_en" = "0x20000601"
 
-                        register "ide_enable_primary" = "0x1"
-                        register "ide_enable_secondary" = "0x0"
+			register "ide_enable_primary" = "0x1"
+			register "ide_enable_secondary" = "0x0"
 			register "c3_latency" = "85"
 			register "p_cnt_throttling_supported" = "0"
 
-			register "gen1_dec" = "0x0007c0681" # SuperIO Power Management
+			register "gen1_dec" = "0x0007c0681"	# SuperIO Power Management
 
-			device pci 1b.0 on end # High Definition Audio
-			device pci 1c.0 on end # PCIe port 1
+			device pci 1b.0 on  end # High Definition Audio
+			device pci 1c.0 on  end # PCIe port 1
 			device pci 1c.1 off end # PCIe port 2
-			device pci 1c.2 on end # PCIe port 3
-			device pci 1c.3 on end # PCIe port 4
-			device pci 1d.0 on end # USB UHCI
-			device pci 1d.1 on end # USB UHCI
-			device pci 1d.2 on end # USB UHCI
+			device pci 1c.2 on  end # PCIe port 3
+			device pci 1c.3 on  end # PCIe port 4
+			device pci 1d.0 on  end # USB UHCI
+			device pci 1d.1 on  end # USB UHCI
+			device pci 1d.2 on  end # USB UHCI
 			device pci 1d.3 off end # USB UHCI
-			device pci 1d.7 on end # USB2 EHCI
-			device pci 1e.0 on end # PCI bridge
+			device pci 1d.7 on  end # USB2 EHCI
+			device pci 1e.0 on  end # PCI bridge
 			device pci 1e.2 off end # AC'97 Audio
 			device pci 1e.3 off end # AC'97 Modem
-                        device pci 1f.0 on # LPC bridge
-                                chip superio/smsc/lpc47m15x
-					device pnp 2e.0 off		# Floppy
+			device pci 1f.0 on # LPC bridge
+				chip superio/smsc/lpc47m15x
+					device pnp 2e.0 off end	# Floppy
+					device pnp 2e.3 off end	# Parport
+					device pnp 2e.4 on
+						 io 0x60 = 0x3f8
+						irq 0x70 = 4
 					end
-					device pnp 2e.3 off		# Parport
-					end
-                                        device pnp 2e.4 on
-                                                 io 0x60 = 0x3f8
-                                                irq 0x70 = 4
-                                        end
-                                        device pnp 2e.5 on
-                                                 io 0x60 = 0x2f8
-                                                irq 0x70 = 3
+					device pnp 2e.5 on
+						 io 0x60 = 0x2f8
+						irq 0x70 = 3
 						irq 0xf1 = 4 # set IRMODE 0 # XXX not an irq
-                                        end
-					device pnp 2e.7 on		# Keyboard+Mouse
+					end
+					device pnp 2e.7 on	# Keyboard+Mouse
 						 io 0x60 = 0x60
 						 io 0x62 = 0x64
 						irq 0x70 = 1
 						irq 0x72 = 12
-						irq 0xf0 = 0x82		# HW accel A20.
+						irq 0xf0 = 0x82	# HW accel A20.
 					end
-					device pnp 2e.8 on		# GAME
+					device pnp 2e.8 on	# GAME
 						# all default
 					end
-					device pnp 2e.a on		# PME
-					end
-					device pnp 2e.b on		# MPU
-					end
-                                end
-                        end
+					device pnp 2e.a on end	# PME
+					device pnp 2e.b on end	# MPU
+				end
+			end
 			device pci 1f.1 off end # IDE
-                        device pci 1f.2 on end  # SATA
-                        device pci 1f.3 on end  # SMBus
-                end
-        end
+			device pci 1f.2 on  end # SATA
+			device pci 1f.3 on  end # SMBus
+		end
+	end
 end

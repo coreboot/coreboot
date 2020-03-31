@@ -30,7 +30,6 @@
 #include <arch/smp/mpspec.h>
 #include <cbmem.h>
 #include <string.h>
-#include <drivers/intel/gma/i915.h>
 #include <southbridge/intel/common/acpi_pirq_gen.h>
 #include <southbridge/intel/common/pmbase.h>
 #include <southbridge/intel/common/spi.h>
@@ -642,19 +641,12 @@ static void southbridge_inject_dsdt(struct device *dev)
 	global_nvs_t *gnvs = cbmem_add(CBMEM_ID_ACPI_GNVS, sizeof(*gnvs));
 
 	if (gnvs) {
-		const struct i915_gpu_controller_info *gfx = intel_gma_get_controller_info();
-
 		memset(gnvs, 0, sizeof(*gnvs));
 
 		gnvs->apic = 1;
 		gnvs->mpen = 1; /* Enable Multi Processing */
 
 		acpi_create_gnvs(gnvs);
-
-		if (gfx) {
-			gnvs->ndid = gfx->ndid;
-			memcpy(gnvs->did, gfx->did, sizeof(gnvs->did));
-		}
 
 		/* And tell SMI about it */
 		smm_setup_structures(gnvs, NULL, NULL);

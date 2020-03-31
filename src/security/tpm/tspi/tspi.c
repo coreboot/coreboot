@@ -104,8 +104,18 @@ static uint32_t tpm_setup_epilogue(uint32_t result)
 static int tpm_is_setup;
 static inline int tspi_tpm_is_setup(void)
 {
-	if (CONFIG(VBOOT))
-		return vboot_logic_executed() || tpm_is_setup;
+	/*
+	 * vboot_logic_executed() only starts returning true at the end of
+	 * verstage, but the vboot logic itself already wants to extend PCRs
+	 * before that. So in the stage where verification actually runs, we
+	 * need to check tpm_is_setup. Skip that check in all other stages so
+	 * this whole function can be evaluated at compile time.
+	 */
+	if (CONFIG(VBOOT)) {
+		if (verification_should_run())
+			return tpm_is_setup;
+		return vboot_logic_executed();
+	}
 
 	if (ENV_RAMSTAGE)
 		return tpm_is_setup;

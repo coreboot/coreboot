@@ -290,9 +290,16 @@
 #define   SPI_RD4DW_EN_HOST		BIT(15)
 
 /* Platform Security Processor D8F0 */
+void soc_enable_psp_early(void);
+
 #define PSP_MAILBOX_BAR			PCI_BASE_ADDRESS_4 /* BKDG: "BAR3" */
+#define PSP_MAILBOX_OFFSET		0x70 /* offset from BAR3 value */
+
 #define PSP_BAR_ENABLES			0x48
 #define  PSP_MAILBOX_BAR_EN		0x10
+
+#define MSR_CU_CBBCFG			0xc00110a2 /* PSP Pvt Blk Base Addr */
+#define   BAR3HIDE			BIT(12) /* Bit to hide BAR3 addr */
 
 /* IO 0xcf9 - Reset control port*/
 #define   FULL_RST			BIT(3)

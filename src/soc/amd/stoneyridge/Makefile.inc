@@ -59,6 +59,7 @@ romstage-$(CONFIG_STONEYRIDGE_UART) += uart.c
 romstage-y += tsc_freq.c
 romstage-y += southbridge.c
 romstage-$(CONFIG_HAVE_SMI_HANDLER) += smi_util.c
+romstage-y += psp.c
 
 verstage-y += gpio.c
 verstage-y += i2c.c
@@ -93,6 +94,7 @@ ramstage-$(CONFIG_STONEYRIDGE_UART) += uart.c
 ramstage-y += usb.c
 ramstage-y += tsc_freq.c
 ramstage-y += finalize.c
+ramstage-y += psp.c
 
 all-y += reset.c
 
@@ -102,6 +104,7 @@ smm-y += smi_util.c
 smm-y += tsc_freq.c
 smm-$(CONFIG_DEBUG_SMI) += uart.c
 smm-y += gpio.c
+smm-y += psp.c
 
 CPPFLAGS_common += -I$(src)/soc/amd/stoneyridge
 CPPFLAGS_common += -I$(src)/soc/amd/stoneyridge/include

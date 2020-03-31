@@ -1,0 +1,8 @@
+chip soc/intel/braswell
+
+	register "PcdEnableI2C0" = "1"		# Touchscreen
+
+	device domain 0 on
+		device pci 18.1 on  end	# 8086 22c1 - I2C Port 1: Touchscreen
+	end
+end

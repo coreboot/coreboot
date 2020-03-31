@@ -19,7 +19,7 @@ chip soc/intel/braswell
 	# Set the parameters for SiliconInit
 	############################################################
 
-	register "PcdSdcardMode" = "PCH_DISABLED"
+	register "PcdSdcardMode" = "PCH_ACPI_MODE"
 	register "PcdEnableHsuart0" = "0"
 	register "PcdEnableHsuart1" = "1"
 	register "PcdEnableAzalia" = "1"
@@ -27,12 +27,12 @@ chip soc/intel/braswell
 	register "PcdEnableLpe" = "1"
 	register "PcdEnableDma0" = "1"
 	register "PcdEnableDma1" = "1"
-	register "PcdEnableI2C0" = "0"
-	register "PcdEnableI2C1" = "0"
+	register "PcdEnableI2C0" = "0"		# Touchscreen
+	register "PcdEnableI2C1" = "1"		# PMIC (or Maxim Audio)
 	register "PcdEnableI2C2" = "0"
 	register "PcdEnableI2C3" = "0"
-	register "PcdEnableI2C4" = "1"
-	register "PcdEnableI2C5" = "1"
+	register "PcdEnableI2C4" = "1"		# Realtek Audio
+	register "PcdEnableI2C5" = "1"		# Touchpad
 	register "PcdEnableI2C6" = "0"
 	register "PunitPwrConfigDisable" = "0"	# Enable SVID
 	register "ChvSvidConfig" = "SVID_PMIC_CONFIG"
@@ -54,11 +54,11 @@ chip soc/intel/braswell
 	register "Usb2Port2IUsbTxEmphasisEn" = "2"
 	register "Usb2Port2PerPortTxPeHalf" = "1"
 	register "Usb2Port3PerPortPeTxiSet" = "7"
-	register "Usb2Port3PerPortTxiSet" = "6"
-	register "Usb2Port3IUsbTxEmphasisEn" = "3"
+	register "Usb2Port3PerPortTxiSet" = "3"
+	register "Usb2Port3IUsbTxEmphasisEn" = "2"
 	register "Usb2Port3PerPortTxPeHalf" = "1"
 	register "Usb2Port4PerPortPeTxiSet" = "7"
-	register "Usb2Port4PerPortTxiSet" = "0"
+	register "Usb2Port4PerPortTxiSet" = "3"
 	register "Usb2Port4IUsbTxEmphasisEn" = "2"
 	register "Usb2Port4PerPortTxPeHalf" = "1"
 	register "Usb3Lane0Ow2tapgen2deemph3p5" = "0x3a"
@@ -66,13 +66,20 @@ chip soc/intel/braswell
 	register "Usb3Lane2Ow2tapgen2deemph3p5" = "0x64"
 	register "Usb3Lane3Ow2tapgen2deemph3p5" = "0x3a"
 	register "PcdSataInterfaceSpeed" = "3"
-	register "PcdPchSsicEnable" = "0"
-	register "PcdPchUsbHsicPort" = "0"
-	register "PcdRtcLock" = "0"	# Disable RTC access locking to NVRAM
+	register "PcdPchSsicEnable" = "1"
+	register "PcdRtcLock" = "0"		# Disable RTC access locking to NVRAM
 	register "PMIC_I2CBus" = "1"
 	register "ISPEnable" = "0"		# Disable IUNIT
 	register "ISPPciDevConfig" = "3"
-	register "PcdSdDetectChk" = "0" # Disable SD card detect
+	register "PcdSdDetectChk" = "0"		# Disable SD card detect
+
+	register "I2C0Frequency" = "1"
+	register "I2C1Frequency" = "2"		# Set the PMIC clock speed to 1Mhz
+	register "I2C2Frequency" = "1"
+	register "I2C3Frequency" = "1"
+	register "I2C4Frequency" = "1"
+	register "I2C5Frequency" = "1"
+	register "I2C6Frequency" = "1"
 
 	# LPE audio codec settings
 	register "lpe_codec_clk_src" = "LPE_CLK_SRC_XTAL" # 19.2MHz clock
@@ -94,37 +101,37 @@ chip soc/intel/braswell
 	end
 	device domain 0 on
 					# EDS Table 24-4, Figure 24-5
-		device pci 00.0 on end	# 8086 2280 - SoC transaction router
-		device pci 02.0 on end	# 8086 22b0/22b1 - B1/C0 stepping Graphics and Display
+		device pci 00.0 on  end	# 8086 2280 - SoC transaction router
+		device pci 02.0 on  end	# 8086 22b0/22b1 - B1/C0 stepping Graphics and Display
 		device pci 03.0 off end	# 8086 22b8 - Camera and Image Processor
-		device pci 0b.0 on end	# 8086 22dc - ?
-		device pci 10.0 on end	# 8086 2294 - MMC Port
+		device pci 0b.0 on  end	# 8086 22dc - Signal Processing Controller
+		device pci 10.0 on  end	# 8086 2294 - MMC Port
 		device pci 11.0 off end	# 8086 0F15 - SDIO Port
-		device pci 12.0 off end	# 8086 0F16 - SD Port
+		device pci 12.0 on  end	# 8086 0F16 - SD Port
 		device pci 13.0 off end	# 8086 22a3 - Sata controller
-		device pci 14.0 on end	# 8086 22b5 - USB XHCI - Only 1 USB controller at a time
-		device pci 15.0 on end	# 8086 22a8 - LP Engine Audio
+		device pci 14.0 on  end	# 8086 22b5 - USB XHCI
+		device pci 15.0 on  end	# 8086 22a8 - LP Engine Audio
 		device pci 16.0 off end	# 8086 22b7 - USB device
-		device pci 18.0 on end	# 8086 22c0 - SIO - DMA
-		device pci 18.1 off end	# 8086 22c1 -   I2C Port 1
-		device pci 18.2 on end	# 8086 22c2 -   I2C Port 2
+		device pci 18.0 on  end	# 8086 22c0 - SIO - DMA
+		device pci 18.1 off end	# 8086 22c1 -   I2C Port 1: Touchscreen
+		device pci 18.2 on  end	# 8086 22c2 -   I2C Port 2: PMIC
 		device pci 18.3 off end	# 8086 22c3 -   I2C Port 3
 		device pci 18.4 off end	# 8086 22c4 -   I2C Port 4
-		device pci 18.5 on end	# 8086 22c5 -   I2C Port 5
-		device pci 18.6 on end	# 8086 22c6 -   I2C Port 6
+		device pci 18.5 on  end	# 8086 22c5 -   I2C Port 5: Realtek Audio
+		device pci 18.6 on  end	# 8086 22c6 -   I2C Port 6: Touchpad
 		device pci 18.7 off end	# 8086 22c7 -   I2C Port 7
 		device pci 1a.0 off end	# 8086 0F18 - Trusted Execution Engine
-		device pci 1b.0 on end	# 8086 0F04 - HD Audio
-		device pci 1c.0 on end	# 8086 0000 - PCIe Root Port 1
-		device pci 1c.1 off end	# 8086 0000 - PCIe Root Port 2
-		device pci 1c.2 on end	# 8086 0000 - PCIe Root Port 3
-		device pci 1c.3 off end	# 8086 0000 - PCIe Root Port 4
-		device pci 1e.0 on end	# 8086 2286 - SIO - DMA
+		device pci 1b.0 on  end	# 8086 2284 - HD Audio
+		device pci 1c.0 on  end	# 8086 22c8 - PCIe Root Port 1
+		device pci 1c.1 off end	# 8086 22ca - PCIe Root Port 2
+		device pci 1c.2 on  end	# 8086 22cc - PCIe Root Port 3: WiFi
+		device pci 1c.3 off end	# 8086 22ce - PCIe Root Port 4
+		device pci 1e.0 on  end	# 8086 2286 - SIO - DMA
 		device pci 1e.1 off end	# 8086 0F08 -   PWM 1
 		device pci 1e.2 off end	# 8086 0F09 -   PWM 2
-		device pci 1e.3 on end	# 8086 228a -   HSUART 1
+		device pci 1e.3 on  end	# 8086 228a -   HSUART 1
 		device pci 1e.4 off end	# 8086 228c -   HSUART 2
-		device pci 1e.5 on end	# 8086 228e -   SPI 1
+		device pci 1e.5 on  end	# 8086 228e -   SPI 1
 		device pci 1e.6 off end	# 8086 2290 -   SPI 2
 		device pci 1e.7 off end	# 8086 22ac -   SPI 3
 		device pci 1f.0 on	# 8086 229c - LPC bridge

@@ -1,0 +1,8 @@
+chip soc/intel/braswell
+
+	register "PcdPchSsicEnable" = "0"
+	register "PcdPchUsbHsicPort" = "0"
+
+	device domain 0 on end
+
+end

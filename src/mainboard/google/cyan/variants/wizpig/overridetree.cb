@@ -1,0 +1,32 @@
+chip soc/intel/braswell
+
+	register "PcdEnableI2C0" = "1"		# Touchscreen
+
+	register "Usb2Port0PerPortPeTxiSet" = "7"
+	register "Usb2Port0PerPortTxiSet" = "0"
+	register "Usb2Port0IUsbTxEmphasisEn" = "2"
+	register "Usb2Port0PerPortTxPeHalf" = "1"
+	register "Usb2Port1PerPortPeTxiSet" = "7"
+	register "Usb2Port1PerPortTxiSet" = "0"
+	register "Usb2Port1IUsbTxEmphasisEn" = "2"
+	register "Usb2Port1PerPortTxPeHalf" = "1"
+	register "Usb2Port2PerPortPeTxiSet" = "7"
+	register "Usb2Port2PerPortTxiSet" = "0"
+	register "Usb2Port2IUsbTxEmphasisEn" = "2"
+	register "Usb2Port2PerPortTxPeHalf" = "1"
+	register "Usb2Port3PerPortPeTxiSet" = "7"
+	register "Usb2Port3PerPortTxiSet" = "0"
+	register "Usb2Port3IUsbTxEmphasisEn" = "2"
+	register "Usb2Port3PerPortTxPeHalf" = "1"
+	register "Usb2Port4PerPortPeTxiSet" = "7"
+	register "Usb2Port4PerPortTxiSet" = "3"
+	register "Usb2Port4IUsbTxEmphasisEn" = "2"
+	register "Usb2Port4PerPortTxPeHalf" = "1"
+
+	register "PcdPchSsicEnable" = "0"
+	register "PcdPchUsbHsicPort" = "0"
+
+	device domain 0 on
+		device pci 18.1 on  end	# 8086 22c1 - I2C Port 1: Touchscreen
+	end
+end

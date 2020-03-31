@@ -1,0 +1,18 @@
+chip soc/intel/braswell
+
+	register "PcdCaMirrorEn" = "0"
+
+	register "PcdEnableI2C0" = "1"	# Touchscreen
+	register "PcdEnableI2C4" = "0"	# No Realtek Audio
+
+	register "ChvSvidConfig" = "SVID_CONFIG1"
+
+	register "PMIC_I2CBus" = "0"
+
+	register "I2C1Frequency" = "1"
+
+	device domain 0 on
+		device pci 18.1 on  end	# 8086 22c1 - I2C Port 1: Touchscreen
+		device pci 18.5 off end	# 8086 22c5 - I2C Port 5: Realtek Audio
+	end
+end

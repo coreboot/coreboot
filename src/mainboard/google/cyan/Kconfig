@@ -68,9 +68,9 @@ config MAINBOARD_PART_NUMBER
 	default "Ultima" if BOARD_GOOGLE_ULTIMA
 	default "Wizpig" if BOARD_GOOGLE_WIZPIG
 
-config DEVICETREE
+config OVERRIDE_DEVICETREE
 	string
-	default "variants/$(CONFIG_VARIANT_DIR)/devicetree.cb"
+	default "variants/$(CONFIG_VARIANT_DIR)/overridetree.cb"
 
 config CBFS_SIZE
 	hex

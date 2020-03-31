@@ -1,0 +1,26 @@
+chip soc/intel/braswell
+
+	register "Usb2Port0PerPortPeTxiSet" = "7"
+	register "Usb2Port0PerPortTxiSet" = "6"
+	register "Usb2Port0IUsbTxEmphasisEn" = "3"
+	register "Usb2Port0PerPortTxPeHalf" = "1"
+	register "Usb2Port1PerPortPeTxiSet" = "7"
+	register "Usb2Port1PerPortTxiSet" = "6"
+	register "Usb2Port1IUsbTxEmphasisEn" = "3"
+	register "Usb2Port1PerPortTxPeHalf" = "1"
+	register "Usb2Port2PerPortPeTxiSet" = "7"
+	register "Usb2Port2PerPortTxiSet" = "6"
+	register "Usb2Port2IUsbTxEmphasisEn" = "3"
+	register "Usb2Port2PerPortTxPeHalf" = "1"
+	register "Usb2Port3PerPortPeTxiSet" = "7"
+	register "Usb2Port3PerPortTxiSet" = "6"
+	register "Usb2Port3IUsbTxEmphasisEn" = "3"
+	register "Usb2Port3PerPortTxPeHalf" = "1"
+	register "Usb2Port4PerPortPeTxiSet" = "7"
+	register "Usb2Port4PerPortTxiSet" = "6"
+	register "Usb2Port4IUsbTxEmphasisEn" = "3"
+	register "Usb2Port4PerPortTxPeHalf" = "1"
+
+	device domain 0 on end
+
+end

@@ -33,9 +33,6 @@ void acpi_create_gnvs(global_nvs_t *gnvs)
 	/* Enable both COM ports */
 	gnvs->cmap = 0x01;
 	gnvs->cmbp = 0x01;
-
-	/* IGD Displays */
-	gnvs->ndid = 0; /* Will use default of 0x00000400. */
 }
 
 

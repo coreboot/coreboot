@@ -289,17 +289,6 @@ static void gma_func0_init(struct device *dev)
 	intel_gma_restore_opregion();
 }
 
-const struct i915_gpu_controller_info *intel_gma_get_controller_info(void)
-{
-	struct device *dev = pcidev_on_root(2, 0);
-	if (!dev) {
-		printk(BIOS_WARNING, "WARNING: Can't find IGD (0,2,0)\n");
-		return NULL;
-	}
-	struct northbridge_intel_pineview_config *chip = dev->chip_info;
-	return &chip->gfx;
-}
-
 static unsigned long gma_write_acpi_tables(struct device *const dev, unsigned long current,
 					   struct acpi_rsdp *const rsdp)
 {

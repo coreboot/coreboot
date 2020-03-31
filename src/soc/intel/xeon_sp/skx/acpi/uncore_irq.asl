@@ -19,7 +19,7 @@
  * The mapping fields ae Address, Pin, Source, Source Index.
  */
 
-#define GEN_PCIE_LEGACY_IRQ() 								\
+#define GEN_PCIE_LEGACY_IRQ()								\
 		Package (0x04) { 0x0000FFFF, 0x00, LNKA, 0x00 },	\
 		Package (0x04) { 0x0001FFFF, 0x00, LNKA, 0x00 },	\
 		Package (0x04) { 0x0002FFFF, 0x00, LNKA, 0x00 },	\

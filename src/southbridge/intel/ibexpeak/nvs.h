@@ -74,10 +74,7 @@ typedef struct global_nvs_t {
 	u8	tlst; /* 0x3d - Display Toggle List Pointer */
 	u8	cadl; /* 0x3e - currently attached devices */
 	u8	padl; /* 0x3f - previously attached devices */
-	u16	rsvd14[3];
-	u8	ndid; /* 0x46 - number of device ids */
-	u32	did[5]; /* 0x47 - 5b device id 1..5 */
-	u8	rsvd5[0x9];
+	u8	rsvd5[36];
 	/* Backlight Control */
 	u8	blcs; /* 0x64 - Backlight Control possible */
 	u8	brtl;

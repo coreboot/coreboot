@@ -9,6 +9,8 @@ chip soc/intel/skylake
 	register "gpu_pch_backlight_pwm_hz"	  = "1000"
 
 	# Enable deep Sx states
+	register "deep_s3_enable_ac" = "0"
+	register "deep_s3_enable_dc" = "0"
 	register "deep_s5_enable_ac" = "1"
 	register "deep_s5_enable_dc" = "1"
 	register "deep_sx_config" = "DSX_EN_LAN_WAKE_PIN"
@@ -32,13 +34,23 @@ chip soc/intel/skylake
 	register "dptf_enable" = "1"
 
 	# FSP Configuration
+	register "ProbelessTrace" = "0"
+	register "EnableLan" = "0"
+	register "EnableSata" = "0"
+	register "SataSalpSupport" = "0"
+	register "SataMode" = "0"
+	register "SataPortsEnable[0]" = "0"
 	register "EnableAzalia" = "1"
 	register "DspEnable" = "1"
 	register "IoBufferOwnership" = "3"
+	register "EnableTraceHub" = "0"
+	register "SsicPortEnable" = "0"
 	register "SmbusEnable" = "1"
+	register "Cio2Enable" = "0"
 	register "ScsEmmcEnabled" = "1"
 	register "ScsEmmcHs400Enabled" = "1"
 	register "ScsSdCardEnabled" = "0"
+	register "PttSwitch" = "0"
 	register "SkipExtGfxScan" = "1"
 	register "Device4Enable" = "1"
 	register "HeciEnabled" = "0"
@@ -124,7 +136,7 @@ chip soc/intel/skylake
 		.voltage_limit = 1520,
 	}"
 
-	# Enable Root port 1.
+	# Enable Root port 1
 	register "PcieRpEnable[0]" = "1"
 	# Enable CLKREQ#
 	register "PcieRpClkReqSupport[0]" = "1"
@@ -143,8 +155,6 @@ chip soc/intel/skylake
 	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC2)"	# Type-A Port (card)
 	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC3)"	# Type-A Port (board)
 
-	register "i2c_voltage[4]" = "I2C_VOLTAGE_1V8"  # I2C4 is 1.8V
-
 	# Must leave UART0 enabled or SD/eMMC will not work as PCI
 	register "SerialIoDevMode" = "{
 		[PchSerialIoIndexI2C0]  = PchSerialIoPci,
@@ -159,6 +169,9 @@ chip soc/intel/skylake
 		[PchSerialIoIndexUart1] = PchSerialIoDisabled,
 		[PchSerialIoIndexUart2] = PchSerialIoSkipInit,
 	}"
+
+	# I2C4 is 1.8V
+	register "i2c_voltage[4]" = "I2C_VOLTAGE_1V8"
 
 	# PL2 override 25W
 	register "tdp_pl2_override" = "25"

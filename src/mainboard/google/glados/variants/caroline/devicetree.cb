@@ -61,8 +61,14 @@ chip soc/intel/skylake
 	register "PmConfigSlpAMinAssert" = "3"         # 2s
 	register "PmTimerDisabled" = "1"
 
-	# TCC offset
-	register "tcc_offset" = "10"
+	register "pirqa_routing" = "PCH_IRQ11"
+	register "pirqb_routing" = "PCH_IRQ10"
+	register "pirqc_routing" = "PCH_IRQ11"
+	register "pirqd_routing" = "PCH_IRQ11"
+	register "pirqe_routing" = "PCH_IRQ11"
+	register "pirqf_routing" = "PCH_IRQ11"
+	register "pirqg_routing" = "PCH_IRQ11"
+	register "pirqh_routing" = "PCH_IRQ11"
 
 	# VR Slew rate setting for improving audible noise
 	register "AcousticNoiseMitigation" = "1"
@@ -137,7 +143,7 @@ chip soc/intel/skylake
 		.voltage_limit = 1520,
 	}"
 
-	# Enable Root port 1.
+	# Enable Root port 1
 	register "PcieRpEnable[0]" = "1"
 	# Enable CLKREQ#
 	register "PcieRpClkReqSupport[0]" = "1"
@@ -160,7 +166,7 @@ chip soc/intel/skylake
 	register "SerialIoDevMode" = "{
 		[PchSerialIoIndexI2C0]  = PchSerialIoPci,
 		[PchSerialIoIndexI2C1]  = PchSerialIoPci,
-		[PchSerialIoIndexI2C2]  = PchSerialIoPci,
+		[PchSerialIoIndexI2C2]  = PchSerialIoDisabled,
 		[PchSerialIoIndexI2C3]  = PchSerialIoDisabled,
 		[PchSerialIoIndexI2C4]  = PchSerialIoPci,
 		[PchSerialIoIndexI2C5]  = PchSerialIoDisabled,
@@ -177,9 +183,15 @@ chip soc/intel/skylake
 	# PL2 override 15W
 	register "tdp_pl2_override" = "15"
 
+	# Send an extra VR mailbox command for the supported MPS IMVP8 model
+	register "SendVrMbxCmd" = "1"
+
+	# TCC of 90C
+	register "tcc_offset" = "10"
+
 	# Lock Down
 	register "common_soc_config" = "{
-		.chipset_lockdown = CHIPSET_LOCKDOWN_COREBOOT
+		.chipset_lockdown = CHIPSET_LOCKDOWN_COREBOOT,
 	}"
 
 	device cpu_cluster 0 on
@@ -208,7 +220,7 @@ chip soc/intel/skylake
 				device i2c 4a on end
 			end
 		end # I2C #1
-		device pci 15.2 on  end # I2C #2
+		device pci 15.2 off end # I2C #2
 		device pci 15.3 off end # I2C #3
 		device pci 16.0 on  end # Management Engine Interface 1
 		device pci 16.1 off end # Management Engine Interface 2

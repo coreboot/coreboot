@@ -136,7 +136,7 @@ chip soc/intel/skylake
 		.voltage_limit = 1520,
 	}"
 
-	# Enable Root port 1.
+	# Enable Root port 1
 	register "PcieRpEnable[0]" = "1"
 	# Enable CLKREQ#
 	register "PcieRpClkReqSupport[0]" = "1"
@@ -155,8 +155,6 @@ chip soc/intel/skylake
 	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC0)" # Type-A Port 1
 	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC1)" # Type-A Port 2
 
-	register "i2c_voltage[4]" = "I2C_VOLTAGE_1V8"  # I2C4 is 1.8V
-
 	# Must leave UART0 enabled or SD/eMMC will not work as PCI
 	register "SerialIoDevMode" = "{
 		[PchSerialIoIndexI2C0]  = PchSerialIoPci,
@@ -169,14 +167,20 @@ chip soc/intel/skylake
 		[PchSerialIoIndexSpi1]  = PchSerialIoDisabled,
 		[PchSerialIoIndexUart0] = PchSerialIoPci,
 		[PchSerialIoIndexUart1] = PchSerialIoDisabled,
-		[PchSerialIoIndexUart2] = PchSerialIoPci,
+		[PchSerialIoIndexUart2] = PchSerialIoSkipInit,
 	}"
+
+	# I2C4 is 1.8V
+	register "i2c_voltage[4]" = "I2C_VOLTAGE_1V8"
 
 	# PL2 override 15W
 	register "tdp_pl2_override" = "15"
 
 	# Send an extra VR mailbox command for the supported MPS IMVP8 model
 	register "SendVrMbxCmd" = "1"
+
+	# TCC of 90C
+	register "tcc_offset" = "10"
 
 	# Lock Down
 	register "common_soc_config" = "{

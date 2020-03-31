@@ -219,25 +219,11 @@ static void gma_func0_init(struct device *dev)
 	intel_gma_restore_opregion();
 }
 
-const struct i915_gpu_controller_info *
-intel_gma_get_controller_info(void)
+static void gma_generate_ssdt(struct device *device)
 {
-	struct device *dev = pcidev_on_root(0x2, 0);
-	if (!dev) {
-		return NULL;
-	}
-	struct northbridge_intel_gm45_config *chip = dev->chip_info;
-	return &chip->gfx;
-}
+	const struct northbridge_intel_gm45_config *chip = device->chip_info;
 
-static void gma_ssdt(struct device *device)
-{
-	const struct i915_gpu_controller_info *gfx = intel_gma_get_controller_info();
-	if (!gfx) {
-		return;
-	}
-
-	drivers_intel_gma_displays_ssdt_generate(gfx);
+	drivers_intel_gma_displays_ssdt_generate(&chip->gfx);
 }
 
 static unsigned long
@@ -276,16 +262,16 @@ static struct pci_operations gma_pci_ops = {
 };
 
 static struct device_operations gma_func0_ops = {
-	.read_resources = pci_dev_read_resources,
-	.set_resources = pci_dev_set_resources,
-	.enable_resources = pci_dev_enable_resources,
-	.acpi_fill_ssdt = gma_ssdt,
-	.init = gma_func0_init,
-	.scan_bus = 0,
-	.enable = 0,
-	.ops_pci = &gma_pci_ops,
-	.acpi_name = gma_acpi_name,
-	.write_acpi_tables = gma_write_acpi_tables,
+	.read_resources		= pci_dev_read_resources,
+	.set_resources		= pci_dev_set_resources,
+	.enable_resources	= pci_dev_enable_resources,
+	.acpi_fill_ssdt		= gma_generate_ssdt,
+	.init			= gma_func0_init,
+	.scan_bus		= 0,
+	.enable			= 0,
+	.ops_pci		= &gma_pci_ops,
+	.acpi_name		= gma_acpi_name,
+	.write_acpi_tables	= gma_write_acpi_tables,
 };
 
 static const unsigned short pci_device_ids[] =

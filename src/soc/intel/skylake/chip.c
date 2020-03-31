@@ -111,7 +111,7 @@ static struct device_operations cpu_bus_ops = {
 	.enable_resources = DEVICE_NOOP,
 	.init             = DEVICE_NOOP,
 #if CONFIG(HAVE_ACPI_TABLES)
-	.acpi_fill_ssdt_generator = generate_cpu_entries,
+	.acpi_fill_ssdt   = generate_cpu_entries,
 #endif
 };
 

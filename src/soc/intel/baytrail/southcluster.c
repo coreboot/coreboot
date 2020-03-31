@@ -521,7 +521,7 @@ static void southcluster_inject_dsdt(struct device *device)
 static struct device_operations device_ops = {
 	.read_resources		= sc_read_resources,
 	.set_resources		= pci_dev_set_resources,
-	.acpi_inject_dsdt_generator = southcluster_inject_dsdt,
+	.acpi_inject_dsdt	= southcluster_inject_dsdt,
 	.write_acpi_tables      = acpi_write_hpet,
 	.enable_resources	= NULL,
 	.init			= sc_init,

@@ -489,7 +489,7 @@ static struct device_operations cpu_bus_ops = {
 	.scan_bus = NULL,
 #if CONFIG(HAVE_ACPI_TABLES)
 	/* defined in src/soc/intel/common/block/acpi/acpi.c */
-	.acpi_fill_ssdt_generator = generate_cpu_entries,
+	.acpi_fill_ssdt = generate_cpu_entries,
 #endif
 };
 

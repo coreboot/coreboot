@@ -288,7 +288,7 @@ static struct device_operations mmapvtd_ops = {
 	.init              = mmapvtd_init,
 	.ops_pci           = &soc_pci_ops,
 #if CONFIG(HAVE_ACPI_TABLES)
-	.acpi_inject_dsdt_generator = NULL,
+	.acpi_inject_dsdt  = NULL,
 #endif
 };
 

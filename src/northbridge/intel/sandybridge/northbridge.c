@@ -440,13 +440,13 @@ static struct pci_operations intel_pci_ops = {
 };
 
 static struct device_operations mc_ops = {
-	.read_resources           = mc_read_resources,
-	.set_resources            = pci_dev_set_resources,
-	.enable_resources         = pci_dev_enable_resources,
-	.init                     = northbridge_init,
-	.scan_bus                 = NULL,
-	.ops_pci                  = &intel_pci_ops,
-	.acpi_fill_ssdt_generator = generate_cpu_entries,
+	.read_resources         = mc_read_resources,
+	.set_resources          = pci_dev_set_resources,
+	.enable_resources       = pci_dev_enable_resources,
+	.init                   = northbridge_init,
+	.scan_bus               = NULL,
+	.ops_pci                = &intel_pci_ops,
+	.acpi_fill_ssdt		= generate_cpu_entries,
 };
 
 static const unsigned short pci_device_ids[] = {

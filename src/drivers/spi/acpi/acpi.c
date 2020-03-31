@@ -200,11 +200,11 @@ static const char *spi_acpi_name(const struct device *dev)
 }
 
 static struct device_operations spi_acpi_ops = {
-	.read_resources		  = DEVICE_NOOP,
-	.set_resources		  = DEVICE_NOOP,
-	.enable_resources	  = DEVICE_NOOP,
-	.acpi_name		  = spi_acpi_name,
-	.acpi_fill_ssdt_generator = spi_acpi_fill_ssdt_generator,
+	.read_resources		= DEVICE_NOOP,
+	.set_resources		= DEVICE_NOOP,
+	.enable_resources	= DEVICE_NOOP,
+	.acpi_name		= spi_acpi_name,
+	.acpi_fill_ssdt		= spi_acpi_fill_ssdt_generator,
 };
 
 static void spi_acpi_enable(struct device *dev)

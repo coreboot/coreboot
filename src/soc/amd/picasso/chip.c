@@ -34,7 +34,7 @@ struct device_operations cpu_bus_ops = {
 	.set_resources	  = DEVICE_NOOP,
 	.enable_resources = DEVICE_NOOP,
 	.init		  = picasso_init_cpus,
-	.acpi_fill_ssdt_generator = generate_cpu_entries,
+	.acpi_fill_ssdt   = generate_cpu_entries,
 };
 
 const char *soc_acpi_name(const struct device *dev)

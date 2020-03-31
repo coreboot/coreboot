@@ -50,9 +50,9 @@ static struct device_operations ops = {
 	.init             = nct6791d_init,
 	.ops_pnp_mode     = &pnp_conf_mode_8787_aa,
 #if CONFIG(HAVE_ACPI_TABLES)
-	.acpi_fill_ssdt_generator = superio_common_fill_ssdt_generator,
-	.acpi_name = superio_common_ldn_acpi_name,
-	.acpi_hid = nct6791d_acpi_hid,
+	.acpi_fill_ssdt   = superio_common_fill_ssdt_generator,
+	.acpi_name        = superio_common_ldn_acpi_name,
+	.acpi_hid         = nct6791d_acpi_hid,
 #endif
 };
 

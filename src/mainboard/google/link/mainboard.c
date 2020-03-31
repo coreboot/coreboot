@@ -184,7 +184,7 @@ static void mainboard_enable(struct device *dev)
 {
 	dev->ops->init = mainboard_init;
 	dev->ops->get_smbios_data = link_onboard_smbios_data;
-	dev->ops->acpi_inject_dsdt_generator = chromeos_dsdt_generator;
+	dev->ops->acpi_inject_dsdt = chromeos_dsdt_generator;
 #if CONFIG(VGA_ROM_RUN)
 	/* Install custom int15 handler for VGA OPROM */
 	mainboard_interrupt_handlers(0x15, &int15_handler);

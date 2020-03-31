@@ -66,7 +66,7 @@ static struct device_operations ops = {
 	.init = ast2400_init,
 	.ops_pnp_mode = &pnp_conf_mode_a5a5_aa,
 #if CONFIG(HAVE_ACPI_TABLES)
-	.acpi_fill_ssdt_generator = superio_common_fill_ssdt_generator,
+	.acpi_fill_ssdt = superio_common_fill_ssdt_generator,
 	.acpi_name = superio_common_ldn_acpi_name,
 	.acpi_hid = ast2400_acpi_hid,
 #endif

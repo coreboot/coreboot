@@ -452,8 +452,8 @@ static struct device_operations ops = {
 	.enable_resources = DEVICE_NOOP,
 	.set_resources    = DEVICE_NOOP,
 #if CONFIG(HAVE_ACPI_TABLES)
-	.acpi_name			= google_chromeec_acpi_name,
-	.acpi_fill_ssdt_generator	= google_chromeec_fill_ssdt_generator,
+	.acpi_name        = google_chromeec_acpi_name,
+	.acpi_fill_ssdt   = google_chromeec_fill_ssdt_generator,
 #endif
 };
 

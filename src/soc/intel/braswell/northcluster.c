@@ -166,9 +166,9 @@ static void nc_read_resources(struct device *dev)
 }
 
 static struct device_operations nc_ops = {
-	.acpi_fill_ssdt_generator = generate_cpu_entries,
-	.read_resources           = nc_read_resources,
-	.ops_pci                  = &soc_pci_ops,
+	.acpi_fill_ssdt	= generate_cpu_entries,
+	.read_resources	= nc_read_resources,
+	.ops_pci	= &soc_pci_ops,
 };
 
 static const struct pci_driver nc_driver __pci_driver = {

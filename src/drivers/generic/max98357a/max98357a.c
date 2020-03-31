@@ -80,12 +80,12 @@ static const char *max98357a_acpi_name(const struct device *dev)
 #endif
 
 static struct device_operations max98357a_ops = {
-	.read_resources		  = DEVICE_NOOP,
-	.set_resources		  = DEVICE_NOOP,
-	.enable_resources	  = DEVICE_NOOP,
+	.read_resources		= DEVICE_NOOP,
+	.set_resources		= DEVICE_NOOP,
+	.enable_resources	= DEVICE_NOOP,
 #if CONFIG(HAVE_ACPI_TABLES)
-	.acpi_name                = max98357a_acpi_name,
-	.acpi_fill_ssdt_generator = max98357a_fill_ssdt,
+	.acpi_name		= max98357a_acpi_name,
+	.acpi_fill_ssdt		= max98357a_fill_ssdt,
 #endif
 };
 

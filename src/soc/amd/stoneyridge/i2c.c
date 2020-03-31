@@ -141,7 +141,7 @@ struct device_operations stoneyridge_i2c_mmio_ops = {
 	.enable_resources = DEVICE_NOOP,
 	.scan_bus = scan_smbus,
 	.acpi_name = i2c_acpi_name,
-	.acpi_fill_ssdt_generator = dw_i2c_acpi_fill_ssdt,
+	.acpi_fill_ssdt = dw_i2c_acpi_fill_ssdt,
 };
 
 /*

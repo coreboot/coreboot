@@ -430,8 +430,8 @@ void acpi_create_ssdt_generator(acpi_header_t *ssdt, const char *oem_table_id)
 	{
 		struct device *dev;
 		for (dev = all_devices; dev; dev = dev->next)
-			if (dev->ops && dev->ops->acpi_fill_ssdt_generator)
-				dev->ops->acpi_fill_ssdt_generator(dev);
+			if (dev->ops && dev->ops->acpi_fill_ssdt)
+				dev->ops->acpi_fill_ssdt(dev);
 		current = (unsigned long) acpigen_get_current();
 	}
 
@@ -1366,8 +1366,8 @@ unsigned long write_acpi_tables(unsigned long start)
 
 		acpigen_set_current((char *) current);
 		for (dev = all_devices; dev; dev = dev->next)
-			if (dev->ops && dev->ops->acpi_inject_dsdt_generator)
-				dev->ops->acpi_inject_dsdt_generator(dev);
+			if (dev->ops && dev->ops->acpi_inject_dsdt)
+				dev->ops->acpi_inject_dsdt(dev);
 		current = (unsigned long) acpigen_get_current();
 		memcpy((char *)current,
 		       (char *)dsdt_file + sizeof(acpi_header_t),

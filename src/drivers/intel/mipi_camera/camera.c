@@ -78,11 +78,11 @@ static const char *camera_acpi_name(const struct device *dev)
 }
 
 static struct device_operations camera_ops = {
-	.read_resources			= DEVICE_NOOP,
-	.set_resources			= DEVICE_NOOP,
-	.enable_resources		= DEVICE_NOOP,
-	.acpi_name			= camera_acpi_name,
-	.acpi_fill_ssdt_generator	= camera_fill_ssdt,
+	.read_resources		= DEVICE_NOOP,
+	.set_resources		= DEVICE_NOOP,
+	.enable_resources	= DEVICE_NOOP,
+	.acpi_name		= camera_acpi_name,
+	.acpi_fill_ssdt		= camera_fill_ssdt,
 };
 
 static void camera_enable(struct device *dev)

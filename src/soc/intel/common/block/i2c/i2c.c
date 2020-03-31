@@ -175,15 +175,15 @@ static void dw_i2c_device_init(struct device *dev)
 }
 
 static struct device_operations i2c_dev_ops = {
-	.read_resources			= pci_dev_read_resources,
-	.set_resources			= pci_dev_set_resources,
-	.enable_resources		= pci_dev_enable_resources,
-	.scan_bus			= scan_smbus,
-	.ops_i2c_bus			= &dw_i2c_bus_ops,
-	.ops_pci			= &pci_dev_ops_pci,
-	.init				= dw_i2c_device_init,
+	.read_resources		= pci_dev_read_resources,
+	.set_resources		= pci_dev_set_resources,
+	.enable_resources	= pci_dev_enable_resources,
+	.scan_bus		= scan_smbus,
+	.ops_i2c_bus		= &dw_i2c_bus_ops,
+	.ops_pci		= &pci_dev_ops_pci,
+	.init			= dw_i2c_device_init,
 #if CONFIG(HAVE_ACPI_TABLES)
-	.acpi_fill_ssdt_generator	= dw_i2c_acpi_fill_ssdt,
+	.acpi_fill_ssdt		= dw_i2c_acpi_fill_ssdt,
 #endif
 };
 

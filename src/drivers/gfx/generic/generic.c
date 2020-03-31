@@ -151,8 +151,8 @@ static const char *gfx_acpi_name(const struct device *dev)
 }
 
 static struct device_operations gfx_ops = {
-	.acpi_name		  = gfx_acpi_name,
-	.acpi_fill_ssdt_generator = gfx_fill_ssdt_generator,
+	.acpi_name	= gfx_acpi_name,
+	.acpi_fill_ssdt	= gfx_fill_ssdt_generator,
 };
 
 static void gfx_enable(struct device *dev)

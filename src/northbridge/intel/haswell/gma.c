@@ -573,15 +573,15 @@ static struct pci_operations gma_pci_ops = {
 };
 
 static struct device_operations gma_func0_ops = {
-	.read_resources           = pci_dev_read_resources,
-	.set_resources            = pci_dev_set_resources,
-	.enable_resources         = pci_dev_enable_resources,
-	.init                     = gma_func0_init,
-	.acpi_fill_ssdt_generator = gma_ssdt,
-	.scan_bus                 = NULL,
-	.enable                   = NULL,
-	.ops_pci                  = &gma_pci_ops,
-	.write_acpi_tables        = gma_write_acpi_tables,
+	.read_resources         = pci_dev_read_resources,
+	.set_resources          = pci_dev_set_resources,
+	.enable_resources       = pci_dev_enable_resources,
+	.init                   = gma_func0_init,
+	.acpi_fill_ssdt		= gma_ssdt,
+	.scan_bus               = NULL,
+	.enable                 = NULL,
+	.ops_pci                = &gma_pci_ops,
+	.write_acpi_tables      = gma_write_acpi_tables,
 };
 
 static const unsigned short pci_device_ids[] = {

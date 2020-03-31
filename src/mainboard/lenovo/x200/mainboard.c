@@ -28,7 +28,7 @@ static void mainboard_enable(struct device *dev)
 					GMA_INT15_PANEL_FIT_CENTERING,
 					GMA_INT15_BOOT_DISPLAY_DEFAULT, 2);
 
-	dev->ops->acpi_fill_ssdt_generator = fill_ssdt;
+	dev->ops->acpi_fill_ssdt = fill_ssdt;
 	if (CONFIG(BOARD_LENOVO_X200))
 		init_dock();
 }

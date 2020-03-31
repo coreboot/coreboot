@@ -230,7 +230,7 @@ static void mainboard_enable(struct device *dev)
 	mainboard_set_power_limits(conf);
 
 	dev->ops->init = mainboard_init;
-	dev->ops->acpi_inject_dsdt_generator = chromeos_dsdt_generator;
+	dev->ops->acpi_inject_dsdt = chromeos_dsdt_generator;
 	dev->ops->write_acpi_tables = mainboard_write_acpi_tables;
 }
 

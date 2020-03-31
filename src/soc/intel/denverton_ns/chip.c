@@ -48,7 +48,7 @@ static struct device_operations cpu_bus_ops = {
 	.init = denverton_init_cpus,
 	.scan_bus = NULL,
 #if CONFIG(HAVE_ACPI_TABLES)
-	.acpi_fill_ssdt_generator = generate_cpu_entries,
+	.acpi_fill_ssdt = generate_cpu_entries,
 #endif
 };
 

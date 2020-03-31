@@ -73,7 +73,7 @@ static struct device_operations gpio_regulator_ops = {
 	.set_resources = DEVICE_NOOP,
 	.enable_resources = DEVICE_NOOP,
 	.acpi_name = gpio_regulator_acpi_name,
-	.acpi_fill_ssdt_generator = gpio_regulator_fill_ssdt_generator,
+	.acpi_fill_ssdt = gpio_regulator_fill_ssdt_generator,
 };
 
 static void gpio_regulator_enable(struct device *dev)

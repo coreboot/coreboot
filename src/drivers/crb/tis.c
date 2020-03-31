@@ -141,7 +141,7 @@ static struct device_operations __unused crb_ops = {
 	.set_resources = DEVICE_NOOP,
 #if CONFIG(HAVE_ACPI_TABLES)
 	.acpi_name = crb_tpm_acpi_name,
-	.acpi_fill_ssdt_generator = crb_tpm_fill_ssdt,
+	.acpi_fill_ssdt = crb_tpm_fill_ssdt,
 #endif
 
 };

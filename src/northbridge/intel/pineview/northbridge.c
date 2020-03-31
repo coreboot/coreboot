@@ -184,12 +184,12 @@ static const char *northbridge_acpi_name(const struct device *dev)
 }
 
 static struct device_operations pci_domain_ops = {
-	.read_resources           = mch_domain_read_resources,
-	.set_resources            = mch_domain_set_resources,
-	.init                     = mch_domain_init,
-	.scan_bus                 = pci_domain_scan_bus,
-	.acpi_fill_ssdt_generator = generate_cpu_entries,
-	.acpi_name                = northbridge_acpi_name,
+	.read_resources	= mch_domain_read_resources,
+	.set_resources	= mch_domain_set_resources,
+	.init		= mch_domain_init,
+	.scan_bus	= pci_domain_scan_bus,
+	.acpi_fill_ssdt	= generate_cpu_entries,
+	.acpi_name	= northbridge_acpi_name,
 };
 
 static struct device_operations cpu_bus_ops = {

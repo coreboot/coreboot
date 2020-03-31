@@ -119,7 +119,7 @@ static void fill_ssdt(struct device *device)
 static void mainboard_enable(struct device *dev)
 {
 	dev->ops->init = mainboard_init;
-	dev->ops->acpi_fill_ssdt_generator = fill_ssdt;
+	dev->ops->acpi_fill_ssdt = fill_ssdt;
 }
 
 struct chip_operations mainboard_ops = {

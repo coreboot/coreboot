@@ -112,11 +112,11 @@ static const char *gpio_keys_acpi_name(const struct device *dev)
 }
 
 static struct device_operations gpio_keys_ops = {
-	.read_resources			= DEVICE_NOOP,
-	.set_resources			= DEVICE_NOOP,
-	.enable_resources		= DEVICE_NOOP,
-	.acpi_name			= gpio_keys_acpi_name,
-	.acpi_fill_ssdt_generator	= gpio_keys_fill_ssdt_generator,
+	.read_resources		= DEVICE_NOOP,
+	.set_resources		= DEVICE_NOOP,
+	.enable_resources	= DEVICE_NOOP,
+	.acpi_name		= gpio_keys_acpi_name,
+	.acpi_fill_ssdt		= gpio_keys_fill_ssdt_generator,
 };
 
 static void gpio_keys_enable(struct device *dev)

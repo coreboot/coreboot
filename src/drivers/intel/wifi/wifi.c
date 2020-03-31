@@ -90,17 +90,17 @@ static struct pci_operations pci_ops = {
 };
 
 struct device_operations device_ops = {
-	.read_resources           = pci_dev_read_resources,
-	.set_resources            = pci_dev_set_resources,
-	.enable_resources         = pci_dev_enable_resources,
-	.init                     = wifi_pci_dev_init,
+	.read_resources   = pci_dev_read_resources,
+	.set_resources    = pci_dev_set_resources,
+	.enable_resources = pci_dev_enable_resources,
+	.init             = wifi_pci_dev_init,
 #if CONFIG(GENERATE_SMBIOS_TABLES)
-	.get_smbios_data          = smbios_write_wifi,
+	.get_smbios_data  = smbios_write_wifi,
 #endif
-	.ops_pci                  = &pci_ops,
+	.ops_pci          = &pci_ops,
 #if CONFIG(HAVE_ACPI_TABLES)
-	.acpi_name                = generic_wifi_acpi_name,
-	.acpi_fill_ssdt_generator = intel_wifi_fill_ssdt,
+	.acpi_name        = generic_wifi_acpi_name,
+	.acpi_fill_ssdt   = intel_wifi_fill_ssdt,
 #endif
 };
 

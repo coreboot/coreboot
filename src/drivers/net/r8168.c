@@ -374,8 +374,8 @@ static struct device_operations r8168_ops  = {
 	.init             = r8168_init,
 	.scan_bus         = 0,
 #if CONFIG(HAVE_ACPI_TABLES)
-	.acpi_name                = r8168_net_acpi_name,
-	.acpi_fill_ssdt_generator = r8168_net_fill_ssdt,
+	.acpi_name        = r8168_net_acpi_name,
+	.acpi_fill_ssdt   = r8168_net_fill_ssdt,
 #endif
 };
 

@@ -362,7 +362,7 @@ static struct device_operations ops = {
 	.init             = ipmi_kcs_init,
 #if CONFIG(HAVE_ACPI_TABLES)
 	.write_acpi_tables = ipmi_write_acpi_tables,
-	.acpi_fill_ssdt_generator = ipmi_ssdt,
+	.acpi_fill_ssdt    = ipmi_ssdt,
 #endif
 #if CONFIG(GENERATE_SMBIOS_TABLES)
 	.get_smbios_data = ipmi_smbios_data,

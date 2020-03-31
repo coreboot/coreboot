@@ -169,7 +169,7 @@ static void kahlee_enable(struct device *dev)
 	/* Initialize the PIRQ data structures for consumption */
 	pirq_setup();
 
-	dev->ops->acpi_inject_dsdt_generator = chromeos_dsdt_generator;
+	dev->ops->acpi_inject_dsdt = chromeos_dsdt_generator;
 }
 
 

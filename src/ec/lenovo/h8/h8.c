@@ -227,7 +227,7 @@ struct device_operations h8_dev_ops = {
 	.get_smbios_strings = h8_smbios_strings,
 #endif
 #if CONFIG(HAVE_ACPI_TABLES)
-	.acpi_fill_ssdt_generator = h8_ssdt_generator,
+	.acpi_fill_ssdt = h8_ssdt_generator,
 	.acpi_name = h8_acpi_name,
 #endif
 	.init = h8_init,

@@ -99,7 +99,7 @@ static struct device_operations rt1011_ops = {
 	.set_resources = DEVICE_NOOP,
 	.enable_resources = DEVICE_NOOP,
 	.acpi_name = rt1011_acpi_name,
-	.acpi_fill_ssdt_generator = rt1011_fill_ssdt,
+	.acpi_fill_ssdt = rt1011_fill_ssdt,
 };
 
 static void rt1011_enable(struct device *dev)

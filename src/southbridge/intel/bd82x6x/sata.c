@@ -255,8 +255,7 @@ static struct device_operations sata_ops = {
 	.read_resources		= pci_dev_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
-	.acpi_fill_ssdt_generator
-				= sata_fill_ssdt,
+	.acpi_fill_ssdt		= sata_fill_ssdt,
 	.init			= sata_init,
 	.enable			= sata_enable,
 	.scan_bus		= 0,

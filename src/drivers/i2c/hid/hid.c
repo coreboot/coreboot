@@ -47,12 +47,12 @@ static const char *i2c_hid_acpi_name(const struct device *dev)
 #endif
 
 static struct device_operations i2c_hid_ops = {
-	.read_resources		  = DEVICE_NOOP,
-	.set_resources		  = DEVICE_NOOP,
-	.enable_resources	  = DEVICE_NOOP,
+	.read_resources		= DEVICE_NOOP,
+	.set_resources		= DEVICE_NOOP,
+	.enable_resources	= DEVICE_NOOP,
 #if CONFIG(HAVE_ACPI_TABLES)
-	.acpi_name		  = i2c_hid_acpi_name,
-	.acpi_fill_ssdt_generator = i2c_hid_fill_ssdt_generator,
+	.acpi_name		= i2c_hid_acpi_name,
+	.acpi_fill_ssdt		= i2c_hid_fill_ssdt_generator,
 #endif
 };
 

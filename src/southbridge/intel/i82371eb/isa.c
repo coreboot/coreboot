@@ -130,8 +130,8 @@ static const struct device_operations isa_ops = {
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
 #if CONFIG(HAVE_ACPI_TABLES)
-	.write_acpi_tables      = acpi_write_hpet,
-	.acpi_fill_ssdt_generator = southbridge_acpi_fill_ssdt_generator,
+	.write_acpi_tables	= acpi_write_hpet,
+	.acpi_fill_ssdt		= southbridge_acpi_fill_ssdt_generator,
 #endif
 	.init			= isa_init,
 	.scan_bus		= scan_static_bus,

@@ -807,7 +807,7 @@ static struct device_operations northbridge_operations = {
 	.read_resources = nb_read_resources,
 	.set_resources = nb_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.acpi_fill_ssdt_generator = northbridge_fill_ssdt_generator,
+	.acpi_fill_ssdt = northbridge_fill_ssdt_generator,
 	.write_acpi_tables = agesa_write_acpi_tables,
 	.init = northbridge_init,
 	.enable = 0,.ops_pci = 0,

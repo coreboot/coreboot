@@ -29,7 +29,7 @@ static void fill_ssdt(struct device *device)
 
 static void mainboard_enable(struct device *dev)
 {
-	dev->ops->acpi_fill_ssdt_generator = fill_ssdt;
+	dev->ops->acpi_fill_ssdt = fill_ssdt;
 
 	/* If we're resuming from suspend, blink suspend LED */
 	if (acpi_is_wakeup_s3())

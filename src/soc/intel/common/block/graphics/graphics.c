@@ -126,16 +126,16 @@ void graphics_gtt_rmw(unsigned long reg, uint32_t andmask, uint32_t ormask)
 }
 
 static const struct device_operations graphics_ops = {
-	.read_resources			= pci_dev_read_resources,
-	.set_resources			= pci_dev_set_resources,
-	.enable_resources		= pci_dev_enable_resources,
-	.init				= graphics_soc_init,
-	.ops_pci			= &pci_dev_ops_pci,
+	.read_resources		= pci_dev_read_resources,
+	.set_resources		= pci_dev_set_resources,
+	.enable_resources	= pci_dev_enable_resources,
+	.init			= graphics_soc_init,
+	.ops_pci		= &pci_dev_ops_pci,
 #if CONFIG(HAVE_ACPI_TABLES)
-	.write_acpi_tables		= graphics_soc_write_acpi_opregion,
-	.acpi_fill_ssdt_generator	= gma_generate_ssdt,
+	.write_acpi_tables	= graphics_soc_write_acpi_opregion,
+	.acpi_fill_ssdt		= gma_generate_ssdt,
 #endif
-	.scan_bus			= scan_generic_bus,
+	.scan_bus		= scan_generic_bus,
 };
 
 static const unsigned short pci_device_ids[] = {

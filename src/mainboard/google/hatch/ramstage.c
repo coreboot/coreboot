@@ -48,7 +48,7 @@ static void mainboard_init(struct device *dev)
 static void mainboard_enable(struct device *dev)
 {
 	dev->ops->init = mainboard_init;
-	dev->ops->acpi_inject_dsdt_generator = chromeos_dsdt_generator;
+	dev->ops->acpi_inject_dsdt = chromeos_dsdt_generator;
 	variant_mainboard_enable(dev);
 }
 

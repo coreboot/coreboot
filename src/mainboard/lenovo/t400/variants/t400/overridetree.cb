@@ -23,9 +23,9 @@ chip northbridge/intel/gm45
 					register "has_thinker1" = "0"
 				end
 			end
- 			device pci 1f.3 on # SMBus
- 				subsystemid 0x17aa 0x20f9
- 				ioapic_irq 2 INTC 0x12
+			device pci 1f.3 on # SMBus
+				subsystemid 0x17aa 0x20f9
+				ioapic_irq 2 INTC 0x12
 				# eeprom, 8 virtual devices, same chip
 				chip drivers/i2c/at24rf08c
 					device i2c 54 on end
@@ -37,7 +37,7 @@ chip northbridge/intel/gm45
 					device i2c 5e on end
 					device i2c 5f on end
 				end
- 			end
+			end
 		end
 	end
 end

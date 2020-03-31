@@ -74,11 +74,11 @@ chip soc/intel/cannonlake
 	# USB2
 	register "usb2_ports[0]" = "USB2_PORT_MID(OC_SKIP)"		# Type-A port 1
 	register "usb2_ports[1]" = "USB2_PORT_TYPE_C(OC_SKIP)"		# Type-C port 2
-	register "usb2_ports[2]" = "USB2_PORT_MID(OC_SKIP)"	    	# Type-A port 3
-	register "usb2_ports[3]" = "USB2_PORT_EMPTY"            	# NC
+	register "usb2_ports[2]" = "USB2_PORT_MID(OC_SKIP)"		# Type-A port 3
+	register "usb2_ports[3]" = "USB2_PORT_EMPTY"			# NC
 	register "usb2_ports[4]" = "USB2_PORT_EMPTY"			# NC
 	register "usb2_ports[5]" = "USB2_PORT_EMPTY"			# NC
-	register "usb2_ports[6]" = "USB2_PORT_MAX(OC_SKIP)"     	# Camera
+	register "usb2_ports[6]" = "USB2_PORT_MAX(OC_SKIP)"		# Camera
 	register "usb2_ports[7]" = "USB2_PORT_EMPTY"			# NC
 	register "usb2_ports[8]" = "USB2_PORT_EMPTY"			# NC
 	register "usb2_ports[9]" = "USB2_PORT_MID(OC_SKIP)"		# Bluetooth
@@ -90,7 +90,7 @@ chip soc/intel/cannonlake
 	register "usb2_ports[15]" = "USB2_PORT_EMPTY"			# NC
 
 	# USB3
-	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC_SKIP)" 	# Type-A port 1
+	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC_SKIP)"		# Type-A port 1
 	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)"		# Type-C port 2
 	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC_SKIP)"		# Type-A port 3
 	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC_SKIP)"		# NC

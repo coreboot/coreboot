@@ -107,9 +107,9 @@ chip soc/intel/skylake
 
 	register "usb2_ports[0]" = "USB2_PORT_MID(OC1)"		# Type-A Port (left)
 	register "usb2_ports[1]" = "USB2_PORT_MID(OC1)"		# Type-A Port (left)
-	register "usb2_ports[2]" = "USB2_PORT_FLEX(OC_SKIP)" 	# FPR
-	register "usb2_ports[3]" = "USB2_PORT_FLEX(OC_SKIP)" 	# SD
-	register "usb2_ports[4]" = "USB2_PORT_FLEX(OC_SKIP)" 	# INT
+	register "usb2_ports[2]" = "USB2_PORT_FLEX(OC_SKIP)"	# FPR
+	register "usb2_ports[3]" = "USB2_PORT_FLEX(OC_SKIP)"	# SD
+	register "usb2_ports[4]" = "USB2_PORT_FLEX(OC_SKIP)"	# INT
 	register "usb2_ports[5]" = "USB2_PORT_MID(OC1)"		# Type-A Port (right)
 	register "usb2_ports[6]" = "USB2_PORT_FLEX(OC_SKIP)"	# Webcam
 	register "usb2_ports[7]" = "USB2_PORT_MID(OC_SKIP)"	# mPCIe / WiFi Port

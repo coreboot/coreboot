@@ -281,7 +281,7 @@ Scope (\_SB.PCI0.I2C3)
 					"endpoint",
 					Zero
 				},
- 				Package (0x02)
+				Package (0x02)
 				{
 					"clock-lanes",
 					Zero

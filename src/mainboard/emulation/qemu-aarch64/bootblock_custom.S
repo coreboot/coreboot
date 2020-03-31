@@ -24,7 +24,7 @@ ENTRY(_start)
 	dmb     sy
 
 	/* Calculate relocation offset between bootblock in flash and in DRAM. */
- 	ldr	x0, =_flash
+	ldr	x0, =_flash
 	ldr	x1, =_bootblock
 	sub	x1, x1, x0
 

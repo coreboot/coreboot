@@ -12,11 +12,11 @@ chip soc/intel/skylake
 	register "gen2_dec" = "0x000c0ca1"	# IPMI KCS
 
 	# PCIe configuration
-	register "PcieRpEnable[0]" 	= "1"	# Enable PCH PCIe Port 1 / PCH SLOT4
-	register "PcieRpEnable[4]" 	= "1"	# Enable PCH PCIe Port 5 / PCH SLOT5
-	register "PcieRpEnable[8]" 	= "1"	# Enable PCH PCIe Port 9 / GbE 1
-	register "PcieRpEnable[9]" 	= "1"	# Enable PCH PCIe Port 10 / GbE 2
-	register "PcieRpEnable[10]" 	= "1"	# Enable PCH PCIe Port 11 / Aspeed 2400 VGA
+	register "PcieRpEnable[0]"	= "1"	# Enable PCH PCIe Port 1 / PCH SLOT4
+	register "PcieRpEnable[4]"	= "1"	# Enable PCH PCIe Port 5 / PCH SLOT5
+	register "PcieRpEnable[8]"	= "1"	# Enable PCH PCIe Port 9 / GbE 1
+	register "PcieRpEnable[9]"	= "1"	# Enable PCH PCIe Port 10 / GbE 2
+	register "PcieRpEnable[10]"	= "1"	# Enable PCH PCIe Port 11 / Aspeed 2400 VGA
 
 	# USB configuration
 	# USB0/1

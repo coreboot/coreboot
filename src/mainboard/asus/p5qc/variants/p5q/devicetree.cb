@@ -55,7 +55,7 @@ chip northbridge/intel/x4x		# Northbridge
 			device pci 1d.2 on  end		# USB
 			device pci 1d.7 on  end		# USB
 			device pci 1e.0 on  end		# PCI bridge
-			device pci 1f.0 on   		# LPC bridge
+			device pci 1f.0 on		# LPC bridge
 				chip superio/winbond/w83667hg-a	# Super I/O
 					device pnp 2e.0 on		# FDC
 						# Global registers

@@ -5,8 +5,8 @@ chip northbridge/intel/gm45
 			register "sata_clock_request"	= "1"
 			# Enable PCIe ports 1,2,4,5,6 as slots (Mini * PCIe).
 			register "pcie_slot_implemented"	= "0x3b"
- 			# Set power limits to 10 * 10^0 watts.
- 			# Maybe we should set less for Mini PCIe.
+			# Set power limits to 10 * 10^0 watts.
+			# Maybe we should set less for Mini PCIe.
 			register "pcie_power_limits" = "{ { 41, 0 }, { 41, 0 }, { 0, 0 }, { 41, 0 }, { 41, 0 }, { 41, 0 } }"
 			register "pcie_hotplug_map" = "{ 0, 0, 0, 0, 0, 1, 0, 0 }"
 			device pci 19.0 off end # LAN
@@ -29,9 +29,9 @@ chip northbridge/intel/gm45
 					register "eventb_enable" = "0x00"
 				end
 			end
- 			device pci 1f.3 on # SMBus
- 				subsystemid 0x17aa 0x20f9
- 				ioapic_irq 2 INTC 0x12
+			device pci 1f.3 on # SMBus
+				subsystemid 0x17aa 0x20f9
+				ioapic_irq 2 INTC 0x12
 				# eeprom, 4 virtual devices, same chip
 				chip drivers/i2c/at24rf08c
 					device i2c 54 on end
@@ -39,7 +39,7 @@ chip northbridge/intel/gm45
 					device i2c 56 on end
 					device i2c 57 on end
 				end
- 			end
+			end
 		end
 	end
 end

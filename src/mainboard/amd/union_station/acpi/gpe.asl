@@ -51,7 +51,7 @@ Scope(\_GPE) {	/* Start Scope GPE */
 		/* DBGO("\\_GPE\\_L1B\n") */
 		Notify(\_SB.PCI0.AZHD, 0x02) /* NOTIFY_DEVICE_WAKE */
 	}
-} 	/* End Scope GPE */
+}	/* End Scope GPE */
 
 /* Contains the GPEs for USB overcurrent */
 #include "usb_oc.asl"

@@ -76,3 +76,31 @@ int psp_notify_smm(void)
 
 	return cmd_status;
 }
+
+/* Notify PSP the system is going to a sleep state. */
+void psp_notify_sx_info(u8 sleep_type)
+{
+	int cmd_status;
+	struct mbox_cmd_sx_info_buffer *buffer;
+
+	/* PSP verifies that this buffer is at the address specified in psp_notify_smm() */
+	buffer = (struct mbox_cmd_sx_info_buffer *)c2p_buffer.buffer;
+	memset(buffer, 0, sizeof(*buffer));
+	buffer->header.size = sizeof(*buffer);
+
+	if (sleep_type > MBOX_BIOS_CMD_SX_INFO_SLEEP_TYPE_MAX) {
+		printk(BIOS_ERR, "PSP: BUG: invalid sleep type 0x%x requested\n", sleep_type);
+		return;
+	}
+
+	printk(BIOS_DEBUG, "PSP: Prepare to enter sleep state %d... ", sleep_type);
+
+	buffer->sleep_type = sleep_type;
+
+	set_smm_flag();
+	cmd_status = send_psp_command(MBOX_BIOS_CMD_SX_INFO, buffer);
+	clear_smm_flag();
+
+	/* buffer's status shouldn't change but report it if it does */
+	psp_print_cmd_status(cmd_status, (struct mbox_default_buffer *)buffer);
+}

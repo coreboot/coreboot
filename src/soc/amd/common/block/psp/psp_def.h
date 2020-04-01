@@ -9,18 +9,19 @@
 #include <amdblocks/psp.h>
 
 /* x86 to PSP commands */
-#define MBOX_BIOS_CMD_DRAM_INFO    0x01
-#define MBOX_BIOS_CMD_SMM_INFO     0x02
-#define MBOX_BIOS_CMD_SX_INFO      0x03
-#define MBOX_BIOS_CMD_RSM_INFO     0x04
-#define MBOX_BIOS_CMD_PSP_QUERY    0x05
-#define MBOX_BIOS_CMD_BOOT_DONE    0x06
-#define MBOX_BIOS_CMD_CLEAR_S3_STS 0x07
-#define MBOX_BIOS_CMD_S3_DATA_INFO 0x08
-#define MBOX_BIOS_CMD_NOP          0x09
-#define MBOX_BIOS_CMD_SMU_FW       0x19
-#define MBOX_BIOS_CMD_SMU_FW2      0x1a
-#define MBOX_BIOS_CMD_ABORT        0xfe
+#define MBOX_BIOS_CMD_DRAM_INFO			0x01
+#define MBOX_BIOS_CMD_SMM_INFO			0x02
+#define MBOX_BIOS_CMD_SX_INFO			0x03
+#define   MBOX_BIOS_CMD_SX_INFO_SLEEP_TYPE_MAX	0x07
+#define MBOX_BIOS_CMD_RSM_INFO			0x04
+#define MBOX_BIOS_CMD_PSP_QUERY			0x05
+#define MBOX_BIOS_CMD_BOOT_DONE			0x06
+#define MBOX_BIOS_CMD_CLEAR_S3_STS		0x07
+#define MBOX_BIOS_CMD_S3_DATA_INFO		0x08
+#define MBOX_BIOS_CMD_NOP			0x09
+#define MBOX_BIOS_CMD_SMU_FW			0x19
+#define MBOX_BIOS_CMD_SMU_FW2			0x1a
+#define MBOX_BIOS_CMD_ABORT			0xfe
 
 /* generic PSP interface status, v1 */
 #define PSPV1_STATUS_INITIALIZED	BIT(0)

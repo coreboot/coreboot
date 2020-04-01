@@ -23,7 +23,7 @@ write the ASL (ACPI Source Language) code yourself.
 ## Device drivers
 
 Let's take a look at an example entry from
-``src/mainboard/google/hatch/variant/hatch/overridetree.cb``:
+``src/mainboard/google/hatch/variants/hatch/overridetree.cb``:
 
 ```
 device pci 15.0 on

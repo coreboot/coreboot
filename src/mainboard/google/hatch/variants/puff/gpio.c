@@ -28,6 +28,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPO(GPP_C10, 1, DEEP),
 	/* C11 : PCH_PCON_PDB_ODL */
 	PAD_CFG_GPO(GPP_C11, 1, DEEP),
+	/* C15  : WLAN_OFF_L */
+	PAD_CFG_GPO(GPP_C15, 1, DEEP),
 
 	/* E2  : EN_PP_MST_OD */
 	PAD_CFG_GPO(GPP_E2, 1, DEEP),

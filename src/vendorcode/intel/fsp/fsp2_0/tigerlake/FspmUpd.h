@@ -259,7 +259,18 @@ typedef struct {
 
 /** Offset 0x014D - Reserved
 **/
-  UINT8                       Reserved3[14];
+  UINT8                       Reserved3[4];
+
+/** Offset 0x0151 - PCH Trace Hub Mode
+  Select 'Host Debugger' if Trace Hub is used with host debugger tool or 'Target Debugger'
+  if Trace Hub is used by target debugger software or 'Disable' trace hub functionality.
+  0: Disable, 1: Target Debugger Mode, 2: Host Debugger Mode
+**/
+  UINT8                       PchTraceHubMode;
+
+/** Offset 0x0152 - Reserved
+**/
+  UINT8                       Reserved4[9];
 
 /** Offset 0x015B - State of X2APIC_OPT_OUT bit in the DMAR table
   0=Disable/Clear, 1=Enable/Set
@@ -269,7 +280,7 @@ typedef struct {
 
 /** Offset 0x015C - Reserved
 **/
-  UINT8                       Reserved4[4];
+  UINT8                       Reserved5[4];
 
 /** Offset 0x0160 - Base addresses for VT-d function MMIO access
   Base addresses for VT-d MMIO access per VT-d engine
@@ -326,7 +337,7 @@ typedef struct {
 
 /** Offset 0x018B - Reserved
 **/
-  UINT8                       Reserved5;
+  UINT8                       Reserved6;
 
 /** Offset 0x018C - Board Type
   MrcBoardType, Options are 0=Mobile/Mobile Halo, 1=Desktop/DT Halo, 5=ULT/ULX/Mobile
@@ -337,7 +348,7 @@ typedef struct {
 
 /** Offset 0x018D - Reserved
 **/
-  UINT8                       Reserved6[3];
+  UINT8                       Reserved7[3];
 
 /** Offset 0x0190 - SA GV
   System Agent dynamic frequency support and when enabled memory will be training
@@ -348,7 +359,7 @@ typedef struct {
 
 /** Offset 0x0191 - Reserved
 **/
-  UINT8                       Reserved7[2];
+  UINT8                       Reserved8[2];
 
 /** Offset 0x0193 - Rank Margin Tool
   Enable/disable Rank Margin Tool.
@@ -390,7 +401,7 @@ typedef struct {
 
 /** Offset 0x019C - Reserved
 **/
-  UINT8                       Reserved8[2];
+  UINT8                       Reserved9[2];
 
 /** Offset 0x019E - Memory Reference Clock
   100MHz, 133MHz.
@@ -400,7 +411,7 @@ typedef struct {
 
 /** Offset 0x019F - Reserved
 **/
-  UINT8                       Reserved9[22];
+  UINT8                       Reserved10[22];
 
 /** Offset 0x01B5 - Enable Intel HD Audio (Azalia)
   0: Disable, 1: Enable (Default) Azalia controller
@@ -414,9 +425,16 @@ typedef struct {
 **/
   UINT8                       PchIshEnable;
 
-/** Offset 0x01B7 - Reserved
+/** Offset 0x01B7 - CPU Trace Hub Mode
+  Select 'Host Debugger' if Trace Hub is used with host debugger tool or 'Target Debugger'
+  if Trace Hub is used by target debugger software or 'Disable' trace hub functionality.
+  0: Disable, 1:Target Debugger Mode, 2:Host Debugger Mode
 **/
-  UINT8                       Reserved10[166];
+  UINT8                       CpuTraceHubMode;
+
+/** Offset 0x01B8 - Reserved
+**/
+  UINT8                       Reserved11[165];
 
 /** Offset 0x025D - IMGU CLKOUT Configuration
   The configuration of IMGU CLKOUT, 0: Disable;<b>1: Enable</b>.
@@ -426,7 +444,17 @@ typedef struct {
 
 /** Offset 0x0263 - Reserved
 **/
-  UINT8                       Reserved11[6];
+  UINT8                       Reserved12;
+
+/** Offset 0x0264 - Enable PCIE RP Mask
+  Enable/disable PCIE Root Ports. 0: disable, 1: enable. One bit for each port, bit0
+  for port1, bit1 for port2, and so on.
+**/
+  UINT32                      CpuPcieRpEnableMask;
+
+/** Offset 0x0268 - Reserved
+**/
+  UINT8                       Reserved13;
 
 /** Offset 0x0269 - RpClockReqMsgEnable
 **/
@@ -438,7 +466,7 @@ typedef struct {
 
 /** Offset 0x026E - Reserved
 **/
-  UINT8                       Reserved12[3];
+  UINT8                       Reserved14[3];
 
 /** Offset 0x0271 - Program GPIOs for LFP on DDI port-A device
   0=Disabled,1(Default)=eDP, 2=MIPI DSI
@@ -538,7 +566,7 @@ typedef struct {
 
 /** Offset 0x0281 - Reserved
 **/
-  UINT8                       Reserved13[126];
+  UINT8                       Reserved15[126];
 
 /** Offset 0x02FF - DMI Gen3 Root port preset values per lane
   Used for programming DMI Gen3 preset values per lane. Range: 0-9, 8 is default for each lane
@@ -547,7 +575,7 @@ typedef struct {
 
 /** Offset 0x0307 - Reserved
 **/
-  UINT8                       Reserved14[22];
+  UINT8                       Reserved16[22];
 
 /** Offset 0x031D - C6DRAM power gating feature
   This policy indicates whether or not BIOS should allocate PRMRR memory for C6DRAM
@@ -559,7 +587,7 @@ typedef struct {
 
 /** Offset 0x031E - Reserved
 **/
-  UINT8                       Reserved15[5];
+  UINT8                       Reserved17[5];
 
 /** Offset 0x0323 - Hyper Threading Enable/Disable
   Enable or Disable Hyper Threading; 0: Disable; <b>1: Enable</b>
@@ -569,7 +597,7 @@ typedef struct {
 
 /** Offset 0x0324 - Reserved
 **/
-  UINT8                       Reserved16;
+  UINT8                       Reserved18;
 
 /** Offset 0x0325 - CPU ratio value
   CPU ratio value. Valid Range 0 to 63
@@ -578,7 +606,7 @@ typedef struct {
 
 /** Offset 0x0326 - Reserved
 **/
-  UINT8                       Reserved17[2];
+  UINT8                       Reserved19[2];
 
 /** Offset 0x0328 - Processor Early Power On Configuration FCLK setting
   <b>0: 800 MHz (ULT/ULX)</b>. <b>1: 1 GHz (DT/Halo)</b>. Not supported on ULT/ULX.-
@@ -589,7 +617,7 @@ typedef struct {
 
 /** Offset 0x0329 - Reserved
 **/
-  UINT8                       Reserved18;
+  UINT8                       Reserved20;
 
 /** Offset 0x032A - Enable or Disable VMX
   Enable or Disable VMX; 0: Disable; <b>1: Enable</b>.
@@ -599,7 +627,7 @@ typedef struct {
 
 /** Offset 0x032B - Reserved
 **/
-  UINT8                       Reserved19[31];
+  UINT8                       Reserved21[31];
 
 /** Offset 0x034A - BiosGuard
   Enable/Disable. 0: Disable, Enable/Disable BIOS Guard feature, 1: enable
@@ -613,7 +641,7 @@ typedef struct {
 
 /** Offset 0x034C - Reserved
 **/
-  UINT8                       Reserved20[4];
+  UINT8                       Reserved22[4];
 
 /** Offset 0x0350 - PrmrrSize
   Enable/Disable. 0: Disable, define default value of PrmrrSize , 1: enable
@@ -627,7 +655,7 @@ typedef struct {
 
 /** Offset 0x0358 - Reserved
 **/
-  UINT8                      Reserved21[8];
+  UINT8                      Reserved23[8];
 
 /** Offset 0x0360 - TxtHeapMemorySize
   Enable/Disable. 0: Disable, define default value of TxtHeapMemorySize , 1: enable
@@ -641,7 +669,7 @@ typedef struct {
 
 /** Offset 0x0368 - Reserved
 **/
-  UINT8                      Reserved22[522];
+  UINT8                      Reserved24[522];
 
 /** Offset 0x0572 - Number of RsvdSmbusAddressTable.
   The number of elements in the RsvdSmbusAddressTable.
@@ -650,7 +678,7 @@ typedef struct {
 
 /** Offset 0x0573 - Reserved
 **/
-  UINT8                       Reserved23[4];
+  UINT8                       Reserved25[4];
 
 /** Offset 0x0577 - Usage type for ClkSrc
   0-23: PCH rootport, 0x40-0x43: PEG port, 0x70:LAN, 0x80: unspecified but in use
@@ -665,7 +693,7 @@ typedef struct {
 
 /** Offset 0x0597 - Reserved
 **/
-  UINT8                       Reserved24[5];
+  UINT8                       Reserved26[5];
 
 /** Offset 0x059C - Enable PCIE RP Mask
   Enable/disable PCIE Root Ports. 0: disable, 1: enable. One bit for each port, bit0
@@ -688,7 +716,7 @@ typedef struct {
 
 /** Offset 0x05A2 - Reserved
 **/
-  UINT8                       Reserved25[14];
+  UINT8                       Reserved27[14];
 
 /** Offset 0x05B0 - ISA Serial Base selection
   Select ISA Serial Base address. Default is 0x3F8.
@@ -698,7 +726,7 @@ typedef struct {
 
 /** Offset 0x05B1 - Reserved
 **/
-  UINT8                       Reserved26[4];
+  UINT8                       Reserved28[4];
 
 /** Offset 0x05B5 - MRC Safe Config
   Enables/Disable MRC Safe Config
@@ -744,7 +772,7 @@ typedef struct {
 
 /** Offset 0x05BC - Reserved
 **/
-  UINT8                       Reserved27[4];
+  UINT8                       Reserved29[4];
 
 /** Offset 0x05C0 - Early Command Training
   Enables/Disable Early Command Training
@@ -754,7 +782,7 @@ typedef struct {
 
 /** Offset 0x05C1 - Reserved
 **/
-  UINT8                       Reserved28[109];
+  UINT8                       Reserved30[109];
 
 /** Offset 0x062E - Ch Hash Mask
   Set the BIT(s) to be included in the XOR function. NOTE BIT mask corresponds to
@@ -764,7 +792,7 @@ typedef struct {
 
 /** Offset 0x0630 - Reserved
 **/
-  UINT8                      Reserved29[62];
+  UINT8                      Reserved31[62];
 
 /** Offset 0x066E - PcdSerialDebugLevel
   Serial Debug Message Level. 0:Disable, 1:Error Only, 2:Error & Warnings, 3:Load,
@@ -777,7 +805,7 @@ typedef struct {
 
 /** Offset 0x066F - Reserved
 **/
-  UINT8                       Reserved30[2];
+  UINT8                       Reserved32[2];
 
 /** Offset 0x0671 - Safe Mode Support
   This option configures the varous items in the IO and MC to be more conservative.(def=Disable)
@@ -787,7 +815,7 @@ typedef struct {
 
 /** Offset 0x0672 - Reserved
 **/
-  UINT8                       Reserved31[2];
+  UINT8                       Reserved33[2];
 
 /** Offset 0x0674 - TCSS USB Port Enable
   Bitmap for per port enabling
@@ -796,7 +824,7 @@ typedef struct {
 
 /** Offset 0x0675 - Reserved
 **/
-  UINT8                       Reserved32[80];
+  UINT8                       Reserved34[80];
 
 /** Offset 0x06C5 - Skip external display device scanning
   Enable: Do not scan for external display device, Disable (Default): Scan external
@@ -807,7 +835,7 @@ typedef struct {
 
 /** Offset 0x06C6 - Reserved
 **/
-  UINT8                       Reserved33[2];
+  UINT8                       Reserved35[2];
 
 /** Offset 0x06C8 - Lock PCU Thermal Management registers
   Lock PCU Thermal Management registers. Enable(Default)=1, Disable=0
@@ -817,7 +845,7 @@ typedef struct {
 
 /** Offset 0x06C9 - Reserved
 **/
-  UINT8                       Reserved34[122];
+  UINT8                       Reserved36[122];
 
 /** Offset 0x0743 - Enable HD Audio Link
   Enable/disable HD Audio Link. Muxed with SSP0/SSP1/SNDW1.
@@ -827,7 +855,7 @@ typedef struct {
 
 /** Offset 0x0744 - Reserved
 **/
-  UINT8                       Reserved35[3];
+  UINT8                       Reserved37[3];
 
 /** Offset 0x0747 - Enable HD Audio DMIC_N Link
   Enable/disable HD Audio DMIC1 link. Muxed with SNDW3.
@@ -836,7 +864,7 @@ typedef struct {
 
 /** Offset 0x0749 - Reserved
 **/
-  UINT8                       Reserved36[3];
+  UINT8                       Reserved38[3];
 
 /** Offset 0x074C - DMIC<N> ClkA Pin Muxing (N - DMIC number)
   Determines DMIC<N> ClkA Pin muxing. See  GPIO_*_MUXING_DMIC<N>_CLKA_*
@@ -856,7 +884,7 @@ typedef struct {
 
 /** Offset 0x075D - Reserved
 **/
-  UINT8                       Reserved37[3];
+  UINT8                       Reserved39[3];
 
 /** Offset 0x0760 - DMIC<N> Data Pin Muxing
   Determines DMIC<N> Data Pin muxing. See GPIO_*_MUXING_DMIC<N>_DATA_*
@@ -893,7 +921,7 @@ typedef struct {
 
 /** Offset 0x0775 - Reserved
 **/
-  UINT8                       Reserved38[315];
+  UINT8                       Reserved40[315];
 } FSP_M_CONFIG;
 
 /** Fsp M UPD Configuration
@@ -914,7 +942,7 @@ typedef struct {
 
 /** Offset 0x08B0
 **/
-  UINT8                       UnusedUpdSpace23[6];
+  UINT8                       UnusedUpdSpace22[6];
 
 /** Offset 0x08B6
 **/

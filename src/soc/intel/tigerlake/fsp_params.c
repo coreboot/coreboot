@@ -184,6 +184,15 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 			sizeof(params->SataPortsDevSlp));
 	}
 
+	/*
+	 * Power Optimizer for DMI and SATA.
+	 * DmiPwrOptimizeDisable and SataPwrOptimizeDisable is default to 0.
+	 * Boards not needing the optimizers explicitly disables them by setting
+	 * these disable variables to 1 in devicetree overrides.
+	 */
+	params->PchPwrOptEnable = !(config->DmiPwrOptimizeDisable);
+	params->SataPwrOptEnable = !(config->SataPwrOptimizeDisable);
+
 	/* LAN */
 	dev = pcidev_path_on_root(PCH_DEVFN_GBE);
 	if (!dev)

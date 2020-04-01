@@ -288,6 +288,18 @@ struct soc_intel_tigerlake_config {
 
 	/* HyperThreadingDisable : Yes (1) / No (0) */
 	uint8_t HyperThreadingDisable;
+
+	/*
+	 * Enable(0)/Disable(1) DMI Power Optimizer on PCH side.
+	 * Default 0. Setting this to 1 disables the DMI Power Optimizer.
+	 */
+	uint8_t DmiPwrOptimizeDisable;
+
+	/*
+	 * Enable(0)/Disable(1) SATA Power Optimizer on PCH side.
+	 * Default 0. Setting this to 1 disables the SATA Power Optimizer.
+	 */
+	uint8_t SataPwrOptimizeDisable;
 };
 
 typedef struct soc_intel_tigerlake_config config_t;

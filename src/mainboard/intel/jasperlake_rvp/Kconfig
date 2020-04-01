@@ -25,11 +25,11 @@ config VARIANT_DIR
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "blackwall"
+	default "jslrvp"
 
 config MAINBOARD_FAMILY
 	string
-	default "Intel_jasperlake_rvp"
+	default "Intel_jslrvp"
 
 config MAX_CPUS
 	int

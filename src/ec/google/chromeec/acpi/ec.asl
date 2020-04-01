@@ -355,6 +355,15 @@ Device (EC0)
 		Notify (CREC, 0x80)
 	}
 
+#ifdef EC_ENABLE_PD_MCU_DEVICE
+	// USB MUX Interrupt
+	Method (_Q1C, 0, NotSerialized)
+	{
+		Store ("EC: USB MUX", Debug)
+		Notify (\_SB.PCI0.LPCB.EC0.CREC.ECPD, 0x80)
+	}
+#endif
+
 	// TABLET mode switch Event
 	Method (_Q1D, 0, NotSerialized)
 	{

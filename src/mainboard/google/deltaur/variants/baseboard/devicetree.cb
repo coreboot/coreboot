@@ -59,11 +59,6 @@ chip soc/intel/tigerlake
 	register "PcieClkSrcUsage[4]" = "6"
 	register "PcieClkSrcClkReq[4]" = "4"
 
-	# PCIe port root 8 (LAN), clock 3
-	register "PcieRpEnable[7]" = "1"
-	register "PcieClkSrcUsage[3]" = "PCIE_CLK_LAN"
-	register "PcieClkSrcClkReq[3]" = "3"
-
 	# PCIe root port 9 (NVMe), clock 2
 	register "PcieRpEnable[8]" = "1"
 	register "PcieClkSrcUsage[2]" = "8"
@@ -332,7 +327,7 @@ chip soc/intel/tigerlake
 		device pci 1f.3 on  end # Intel HDA
 		device pci 1f.4 on  end # SMBus
 		device pci 1f.5 on  end # PCH SPI Flash Controller
-		device pci 1f.6 on  end # GbE Controller
+		device pci 1f.6 off end # GbE Controller
 		device pci 1f.7 off end # Intel Trace Hub
 	end
 end

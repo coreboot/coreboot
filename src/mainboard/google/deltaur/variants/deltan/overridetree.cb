@@ -1,6 +1,12 @@
 chip soc/intel/tigerlake
 
+	# PCIe Port 8 for LAN
+	register "PcieRpEnable[7]" = "1"
+	register "PcieClkSrcUsage[3]" = "PCIE_CLK_LAN"
+	register "PcieClkSrcClkReq[3]" = "3"
+
 	device domain 0 on
+		device pci 1f.6 on end # GbE			0x15FC
 	end
 
 end

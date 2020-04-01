@@ -52,7 +52,7 @@ static const struct lpddr4x_cfg malefor_memcfg = {
 		[7] = { 0, 1 },  /* DDR7_DQS[1:0] */
 	},
 
-	.ect = 0, /* Disable Early Command Training */
+	.ect = 1, /* Enable Early Command Training */
 };
 
 const struct lpddr4x_cfg *variant_memory_params(void)

@@ -235,7 +235,7 @@ static unsigned long soc_fill_dmar(unsigned long current)
 			unsigned long tmp = current;
 
 			current += acpi_create_dmar_drhd(current, 0, 0, tbtbar);
-			current += acpi_create_dmar_ds_pci(current, 0, 7, i);
+			current += acpi_create_dmar_ds_pci_br(current, 0, 7, i);
 
 			acpi_dmar_drhd_fixup(tmp, current);
 		}

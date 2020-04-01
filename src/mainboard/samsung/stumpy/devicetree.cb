@@ -1,6 +1,4 @@
 chip northbridge/intel/sandybridge
-	# IGD Displays
-	register "gfx" = "GMA_STATIC_DISPLAYS(0)"
 
 	# Enable DisplayPort 1 Hotplug with 6ms pulse
 	register "gpu_dp_d_hotplug" = "0x06"

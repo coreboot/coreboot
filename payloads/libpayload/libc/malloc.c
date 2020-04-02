@@ -310,8 +310,9 @@ void *realloc(void *ptr, size_t size)
 	if (ret == NULL || ret == ptr)
 		return ret;
 
-	/* Copy the memory to the new location. */
-	memcpy(ret, ptr, osize > size ? size : osize);
+	/* Move the memory to the new location. Might be before the old location
+	   and overlap since the free() above includes a _consolidate(). */
+	memmove(ret, ptr, osize > size ? size : osize);
 
 	return ret;
 }

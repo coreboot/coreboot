@@ -8,6 +8,7 @@
 #include <arch/acpi.h>
 #include <arch/acpi_device.h>
 #include <arch/acpigen.h>
+#include <arch/acpigen_ps2_keybd.h>
 #include <console/console.h>
 #include <drivers/usb/acpi/chip.h>
 #include <stdlib.h>
@@ -178,14 +179,19 @@ static void add_usb_port_references(struct acpi_dp *dsd, int port_number)
 	}
 }
 
-static void fill_ssdt_typec_device(int num_ports)
+static void fill_ssdt_typec_device(struct device *dev)
 {
 	struct usb_pd_port_caps port_caps;
 	char con_name[] = "CONx";
 	struct acpi_dp *dsd;
 	int rv;
-	int i;
+	int i, num_ports;
 
+	if (google_chromeec_get_num_pd_ports(&num_ports))
+		return;
+
+	/* Add TypeC device under the existing device + ".CREC" scope */
+	acpigen_write_scope(acpi_device_path_join(dev, GOOGLE_CHROMEEC_USBC_DEVICE_PARENT));
 	acpigen_write_device(GOOGLE_CHROMEEC_USBC_DEVICE_NAME);
 	acpigen_write_name_string("_HID", GOOGLE_CHROMEEC_USBC_DEVICE_HID);
 	acpigen_write_name_string("_DDN", "ChromeOS EC Embedded Controller "
@@ -212,16 +218,59 @@ static void fill_ssdt_typec_device(int num_ports)
 	}
 
 	acpigen_pop_len(); /* Device GOOGLE_CHROMEEC_USBC_DEVICE_NAME */
+	acpigen_pop_len(); /* Scope */
+}
+
+static const enum ps2_action_key ps2_enum_val[] = {
+	[TK_ABSENT] = PS2_KEY_ABSENT,
+	[TK_BACK] = PS2_KEY_BACK,
+	[TK_FORWARD] = PS2_KEY_FORWARD,
+	[TK_REFRESH] = PS2_KEY_REFRESH,
+	[TK_FULLSCREEN] = PS2_KEY_FULLSCREEN,
+	[TK_OVERVIEW] = PS2_KEY_OVERVIEW,
+	[TK_BRIGHTNESS_DOWN] = PS2_KEY_BRIGHTNESS_DOWN,
+	[TK_BRIGHTNESS_UP] = PS2_KEY_BRIGHTNESS_UP,
+	[TK_VOL_MUTE] = PS2_KEY_VOL_MUTE,
+	[TK_VOL_DOWN] = PS2_KEY_VOL_DOWN,
+	[TK_VOL_UP] = PS2_KEY_VOL_UP,
+	[TK_SNAPSHOT] = PS2_KEY_SNAPSHOT,
+	[TK_PRIVACY_SCRN_TOGGLE] = PS2_KEY_PRIVACY_SCRN_TOGGLE,
+	[TK_KBD_BKLIGHT_DOWN] = PS2_KEY_KBD_BKLIGHT_DOWN,
+	[TK_KBD_BKLIGHT_UP] = PS2_KEY_KBD_BKLIGHT_UP,
+	[TK_PLAY_PAUSE] = PS2_KEY_PLAY_PAUSE,
+	[TK_NEXT_TRACK] = PS2_KEY_NEXT_TRACK,
+	[TK_PREV_TRACK] = PS2_KEY_PREV_TRACK,
+};
+
+static void fill_ssdt_ps2_keyboard(struct device *dev)
+{
+	uint8_t i;
+	struct ec_response_keybd_config keybd = {};
+	enum ps2_action_key ps2_action_keys[MAX_TOP_ROW_KEYS] = {};
+
+	if (google_chromeec_get_keybd_config(&keybd) ||
+	    !keybd.num_top_row_keys ||
+	    keybd.num_top_row_keys > MAX_TOP_ROW_KEYS) {
+		printk(BIOS_ERR, "PS2K: Bad resp from EC. Vivaldi disabled!\n");
+		return;
+	}
+
+	/* Convert enum action_key values to enum ps2_action_key values */
+	for (i = 0; i < keybd.num_top_row_keys; i++)
+		ps2_action_keys[i] = ps2_enum_val[keybd.action_keys[i]];
+
+	acpigen_ps2_keyboard_dsd("_SB.PCI0.PS2K", keybd.num_top_row_keys,
+				 ps2_action_keys,
+				 !!(keybd.capabilities & KEYBD_CAP_FUNCTION_KEYS),
+				 !!(keybd.capabilities & KEYBD_CAP_NUMERIC_KEYPAD),
+				 !!(keybd.capabilities & KEYBD_CAP_SCRNLOCK_KEY));
 }
 
 void google_chromeec_fill_ssdt_generator(struct device *dev)
 {
-	int num_ports;
-	if (google_chromeec_get_num_pd_ports(&num_ports))
+	if (!dev->enabled)
 		return;
 
-	/* Add TypeC device under the existing device + ".CREC" scope */
-	acpigen_write_scope(acpi_device_path_join(dev, GOOGLE_CHROMEEC_USBC_DEVICE_PARENT));
-	fill_ssdt_typec_device(num_ports);
-	acpigen_pop_len(); /* Scope */
+	fill_ssdt_typec_device(dev);
+	fill_ssdt_ps2_keyboard(dev);
 }

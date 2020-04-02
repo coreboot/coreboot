@@ -454,7 +454,7 @@ int cbfs_expand_to_region(struct buffer *region)
 		cbfs_create_empty_entry(entry, CBFS_TYPE_NULL,
 			last_entry_size, "");
 		/* If the last entry was an empty file, merge them. */
-		cbfs_walk(&image, cbfs_merge_empty_entry, NULL);
+		cbfs_legacy_walk(&image, cbfs_merge_empty_entry, NULL);
 	}
 
 	return 0;
@@ -606,7 +606,7 @@ int cbfs_compact_instance(struct cbfs_image *image)
 					prev_size, "");
 
 		/* Merge any potential empty entries together. */
-		cbfs_walk(image, cbfs_merge_empty_entry, NULL);
+		cbfs_legacy_walk(image, cbfs_merge_empty_entry, NULL);
 
 		/*
 		 * Since current switched to an empty file keep track of it.
@@ -745,7 +745,7 @@ int cbfs_add_entry(struct cbfs_image *image, struct buffer *buffer,
 
 	// Merge empty entries.
 	DEBUG("(trying to merge empty entries...)\n");
-	cbfs_walk(image, cbfs_merge_empty_entry, NULL);
+	cbfs_legacy_walk(image, cbfs_merge_empty_entry, NULL);
 
 	for (entry = cbfs_find_first_entry(image);
 	     entry && cbfs_is_valid_entry(image, entry);
@@ -1365,7 +1365,7 @@ int cbfs_remove_entry(struct cbfs_image *image, const char *name)
 	DEBUG("cbfs_remove_entry: Removed %s @ 0x%x\n",
 	      entry->filename, cbfs_get_entry_addr(image, entry));
 	entry->type = htonl(CBFS_TYPE_DELETED);
-	cbfs_walk(image, cbfs_merge_empty_entry, NULL);
+	cbfs_legacy_walk(image, cbfs_merge_empty_entry, NULL);
 	return 0;
 }
 
@@ -1582,7 +1582,7 @@ int cbfs_print_directory(struct cbfs_image *image)
 	if (cbfs_is_legacy_cbfs(image))
 		cbfs_print_header_info(image);
 	printf("%-30s %-10s %-12s   Size   Comp\n", "Name", "Offset", "Type");
-	cbfs_walk(image, cbfs_print_entry_info, NULL);
+	cbfs_legacy_walk(image, cbfs_print_entry_info, NULL);
 	return 0;
 }
 
@@ -1602,7 +1602,7 @@ int cbfs_print_parseable_directory(struct cbfs_image *image)
 	for (i = 0; i < ARRAY_SIZE(header) - 1; i++)
 		fprintf(stdout, "%s%s", header[i], sep);
 	fprintf(stdout, "%s\n", header[i]);
-	cbfs_walk(image, cbfs_print_parseable_entry_info, stdout);
+	cbfs_legacy_walk(image, cbfs_print_parseable_entry_info, stdout);
 	return 0;
 }
 
@@ -1645,7 +1645,7 @@ int cbfs_merge_empty_entry(struct cbfs_image *image, struct cbfs_file *entry,
 	return 0;
 }
 
-int cbfs_walk(struct cbfs_image *image, cbfs_entry_callback callback,
+int cbfs_legacy_walk(struct cbfs_image *image, cbfs_entry_callback callback,
 	      void *arg)
 {
 	int count = 0;
@@ -1955,7 +1955,7 @@ int32_t cbfs_locate_entry(struct cbfs_image *image, size_t size,
 	need_len = metadata_size + size;
 
 	// Merge empty entries to build get max available space.
-	cbfs_walk(image, cbfs_merge_empty_entry, NULL);
+	cbfs_legacy_walk(image, cbfs_merge_empty_entry, NULL);
 
 	/* Three cases of content location on memory page:
 	 * case 1.

@@ -117,16 +117,18 @@ int cbfs_create_empty_entry(struct cbfs_file *entry, int type,
 int32_t cbfs_locate_entry(struct cbfs_image *image, size_t size,
 			  size_t page_size, size_t align, size_t metadata_size);
 
-/* Callback function used by cbfs_walk.
+/* Callback function used by cbfs_legacy_walk.
  * Returns 0 on success, or non-zero to stop further iteration. */
 typedef int (*cbfs_entry_callback)(struct cbfs_image *image,
 				   struct cbfs_file *file,
 				   void *arg);
 
 /* Iterates through all entries in CBFS image, and invoke with callback.
- * Stops if callback returns non-zero values.
+ * Stops if callback returns non-zero values. Unlike the commonlib cbfs_walk(),
+ * this can deal with different alignments in legacy CBFS (with master header).
  * Returns number of entries invoked. */
-int cbfs_walk(struct cbfs_image *image, cbfs_entry_callback callback, void *arg);
+int cbfs_legacy_walk(struct cbfs_image *image, cbfs_entry_callback callback,
+		     void *arg);
 
 /* Primitive CBFS utilities */
 

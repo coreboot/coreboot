@@ -40,45 +40,53 @@ static uint8_t get_dimm_cfg(uintptr_t dimm0, uintptr_t dimm1)
 static void init_spd_upds(FSP_M_CONFIG *mem_cfg, int channel, uintptr_t spd_dimm0,
 			  uintptr_t spd_dimm1)
 {
-	mem_cfg->Reserved9[channel] = get_dimm_cfg(spd_dimm0, spd_dimm1);
+	uint8_t dimm_cfg = get_dimm_cfg(spd_dimm0, spd_dimm1);
 
 	switch (channel) {
 	case 0:
+		mem_cfg->DisableDimmCh0 = dimm_cfg;
 		mem_cfg->MemorySpdPtr00 = spd_dimm0;
 		mem_cfg->MemorySpdPtr01 = spd_dimm1;
 		break;
 
 	case 1:
+		mem_cfg->DisableDimmCh1 = dimm_cfg;
 		mem_cfg->MemorySpdPtr02 = spd_dimm0;
 		mem_cfg->MemorySpdPtr03 = spd_dimm1;
 		break;
 
 	case 2:
+		mem_cfg->DisableDimmCh2 = dimm_cfg;
 		mem_cfg->MemorySpdPtr04 = spd_dimm0;
 		mem_cfg->MemorySpdPtr05 = spd_dimm1;
 		break;
 
 	case 3:
+		mem_cfg->DisableDimmCh3 = dimm_cfg;
 		mem_cfg->MemorySpdPtr06 = spd_dimm0;
 		mem_cfg->MemorySpdPtr07 = spd_dimm1;
 		break;
 
 	case 4:
+		mem_cfg->DisableDimmCh4 = dimm_cfg;
 		mem_cfg->MemorySpdPtr08 = spd_dimm0;
 		mem_cfg->MemorySpdPtr09 = spd_dimm1;
 		break;
 
 	case 5:
+		mem_cfg->DisableDimmCh5 = dimm_cfg;
 		mem_cfg->MemorySpdPtr10 = spd_dimm0;
 		mem_cfg->MemorySpdPtr11 = spd_dimm1;
 		break;
 
 	case 6:
+		mem_cfg->DisableDimmCh6 = dimm_cfg;
 		mem_cfg->MemorySpdPtr12 = spd_dimm0;
 		mem_cfg->MemorySpdPtr13 = spd_dimm1;
 		break;
 
 	case 7:
+		mem_cfg->DisableDimmCh7 = dimm_cfg;
 		mem_cfg->MemorySpdPtr14 = spd_dimm0;
 		mem_cfg->MemorySpdPtr15 = spd_dimm1;
 		break;

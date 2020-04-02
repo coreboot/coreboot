@@ -2,11 +2,3 @@ config SOC_INTEL_COMMON_BLOCK_GRAPHICS
 	bool
 	help
 	  Intel Processor common Graphics support
-
-config SKIP_GRAPHICS_ENABLING
-	bool
-	depends on SOC_INTEL_COMMON_BLOCK_GRAPHICS
-	default n
-	help
-	  Skip GT specific programming in coreboot to support
-	  early parts without GT enable.

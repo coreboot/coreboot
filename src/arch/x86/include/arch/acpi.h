@@ -290,6 +290,33 @@ typedef struct acpi_ivrs {
 	struct acpi_ivrs_ivhd ivhd;
 } __packed acpi_ivrs_t;
 
+/* IVHD Type 11h IOMMU Attributes */
+typedef struct ivhd11_iommu_attr {
+	uint32_t reserved1 : 13;
+	uint32_t perf_counters : 4;
+	uint32_t perf_counter_banks : 6;
+	uint32_t msi_num_ppr : 5;
+	uint32_t reserved2 : 4;
+} __packed ivhd11_iommu_attr_t;
+
+/* IVRS IVHD (I/O Virtualization Hardware Definition Block) Type 11h */
+typedef struct acpi_ivrs_ivhd_11 {
+	uint8_t type;
+	uint8_t flags;
+	uint16_t length;
+	uint16_t device_id;
+	uint16_t capability_offset;
+	uint32_t iommu_base_low;
+	uint32_t iommu_base_high;
+	uint16_t pci_segment_group;
+	uint16_t iommu_info;
+	struct ivhd11_iommu_attr iommu_attributes;
+	uint32_t efr_reg_image_low;
+	uint32_t efr_reg_image_high;
+	uint32_t reserved[2];
+	uint8_t entry[0];
+} __packed acpi_ivrs_ivhd11_t;
+
 enum dev_scope_type {
 	SCOPE_PCI_ENDPOINT = 1,
 	SCOPE_PCI_SUB = 2,

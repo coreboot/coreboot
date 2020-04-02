@@ -107,4 +107,37 @@
 #define IVHD_UID_INT				0x01
 #define IVHD_UID_STRING				0x02
 
+/* IVHD (I/O Virtualization Hardware Definition Block) 4-byte entry */
+typedef struct ivrs_ivhd_generic {
+	uint8_t type;
+	uint16_t dev_id;
+	uint8_t dte_setting;
+} __packed ivrs_ivhd_generic_t;
+
+/* IVHD (I/O Virtualization Hardware Definition Block) 8-byte entries */
+typedef struct ivrs_ivhd_alias {
+	uint8_t type;
+	uint16_t dev_id;
+	uint8_t dte_setting;
+	uint8_t reserved1;
+	uint16_t source_dev_id;
+	uint8_t reserved2;
+} __packed ivrs_ivhd_alias_t;
+
+typedef struct ivrs_ivhd_extended {
+	uint8_t type;
+	uint16_t dev_id;
+	uint8_t dte_setting;
+	uint32_t extended_dte_setting;
+} __packed ivrs_ivhd_extended_t;
+
+typedef struct ivrs_ivhd_special {
+	uint8_t type;
+	uint16_t reserved;
+	uint8_t dte_setting;
+	uint8_t handle;
+	uint16_t source_dev_id;
+	uint8_t variety;
+} __packed ivrs_ivhd_special_t;
+
 #endif

@@ -7,6 +7,9 @@
 
 #define CPUID_COOPERLAKE_SP_A0			0x05065a
 
+/* CPU bus clock is fixed at 100MHz */
+#define CPU_BCLK 100
+
 void cpx_init_cpus(struct device *dev);
 
 #endif

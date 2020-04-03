@@ -4,6 +4,7 @@
 #define _XEON_SP_SOC_UTIL_H_
 
 #include <console/console.h>
+#include <hob_iiouds.h>
 
 void get_cpubusnos(uint32_t *bus0, uint32_t *bus1, uint32_t *bus2, uint32_t *bus3);
 void unlock_pam_regions(void);

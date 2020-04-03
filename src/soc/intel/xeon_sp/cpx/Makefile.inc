@@ -8,7 +8,7 @@ subdirs-y += ../../../../cpu/x86/tsc
 subdirs-y += ../../../../cpu/intel/microcode
 
 romstage-y += romstage.c
-ramstage-y += chip.c acpi.c cpu.c
+ramstage-y += chip.c acpi.c cpu.c soc_util.c
 
 CPPFLAGS_common += -I$(src)/soc/intel/xeon_sp/cpx/include -I$(src)/soc/intel/xeon_sp/cpx
 

@@ -61,7 +61,6 @@ static inline void vboot_run_logic(void) {}
 static inline int vboot_locate_cbfs(struct region_device *rdev) { return -1; }
 #endif
 
-void vboot_save_nvdata_only(struct vb2_context *ctx);
 void vboot_save_data(struct vb2_context *ctx);
 
 /*

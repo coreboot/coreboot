@@ -7,6 +7,7 @@
 #include <cbmem.h>
 #include <fmap.h>
 #include <security/tpm/tspi/crtm.h>
+#include <security/tpm/tss/vendor/cr50/cr50.h>
 #include <security/vboot/misc.h>
 #include <security/vboot/vbnv.h>
 #include <security/vboot/tpm_common.h>
@@ -207,10 +208,21 @@ static vb2_error_t hash_body(struct vb2_context *ctx,
 	return VB2_SUCCESS;
 }
 
-void vboot_save_nvdata_only(struct vb2_context *ctx)
+void vboot_save_data(struct vb2_context *ctx)
 {
-	assert(!(ctx->flags & (VB2_CONTEXT_SECDATA_FIRMWARE_CHANGED |
-			       VB2_CONTEXT_SECDATA_KERNEL_CHANGED)));
+	if (ctx->flags & VB2_CONTEXT_SECDATA_FIRMWARE_CHANGED &&
+	    (CONFIG(VBOOT_MOCK_SECDATA) || tlcl_lib_init() == VB2_SUCCESS)) {
+		printk(BIOS_INFO, "Saving secdata firmware\n");
+		antirollback_write_space_firmware(ctx);
+		ctx->flags &= ~VB2_CONTEXT_SECDATA_FIRMWARE_CHANGED;
+	}
+
+	if (ctx->flags & VB2_CONTEXT_SECDATA_KERNEL_CHANGED &&
+	    (CONFIG(VBOOT_MOCK_SECDATA) || tlcl_lib_init() == VB2_SUCCESS)) {
+		printk(BIOS_INFO, "Saving secdata kernel\n");
+		antirollback_write_space_kernel(ctx);
+		ctx->flags &= ~VB2_CONTEXT_SECDATA_KERNEL_CHANGED;
+	}
 
 	if (ctx->flags & VB2_CONTEXT_NVDATA_CHANGED) {
 		printk(BIOS_INFO, "Saving nvdata\n");
@@ -219,21 +231,55 @@ void vboot_save_nvdata_only(struct vb2_context *ctx)
 	}
 }
 
-void vboot_save_data(struct vb2_context *ctx)
-{
-	if (ctx->flags & VB2_CONTEXT_SECDATA_FIRMWARE_CHANGED) {
-		printk(BIOS_INFO, "Saving secdata\n");
-		antirollback_write_space_firmware(ctx);
-		ctx->flags &= ~VB2_CONTEXT_SECDATA_FIRMWARE_CHANGED;
-	}
-
-	vboot_save_nvdata_only(ctx);
-}
-
 static uint32_t extend_pcrs(struct vb2_context *ctx)
 {
 	return vboot_extend_pcr(ctx, 0, BOOT_MODE_PCR) ||
 		   vboot_extend_pcr(ctx, 1, HWID_DIGEST_PCR);
+}
+
+#define EC_EFS_BOOT_MODE_NORMAL		0x00
+#define EC_EFS_BOOT_MODE_NO_BOOT	0x01
+
+static const char *get_boot_mode_string(uint8_t boot_mode)
+{
+	if (boot_mode == EC_EFS_BOOT_MODE_NORMAL)
+		return "NORMAL";
+	else if (boot_mode == EC_EFS_BOOT_MODE_NO_BOOT)
+		return "NO_BOOT";
+	else
+		return "UNDEFINED";
+}
+
+static void check_boot_mode(struct vb2_context *ctx)
+{
+	uint8_t boot_mode;
+	int rv;
+
+	rv = tlcl_cr50_get_boot_mode(&boot_mode);
+	switch (rv) {
+	case TPM_E_NO_SUCH_COMMAND:
+		printk(BIOS_WARNING, "Cr50 does not support GET_BOOT_MODE.\n");
+		/* Proceed to legacy boot model. */
+		return;
+	case TPM_SUCCESS:
+		break;
+	default:
+		printk(BIOS_ERR,
+		       "Communication error in getting Cr50 boot mode.\n");
+		if (ctx->flags & VB2_CONTEXT_RECOVERY_MODE)
+			/* Continue to boot in recovery mode */
+			return;
+		vb2api_fail(ctx, VB2_RECOVERY_CR50_BOOT_MODE, rv);
+		vboot_save_data(ctx);
+		vboot_reboot();
+		return;
+	}
+
+	printk(BIOS_INFO, "Cr50 says boot_mode is %s(0x%02x).\n",
+	       get_boot_mode_string(boot_mode), boot_mode);
+
+	if (boot_mode == EC_EFS_BOOT_MODE_NO_BOOT)
+		ctx->flags |= VB2_CONTEXT_NO_BOOT;
 }
 
 /**
@@ -268,8 +314,10 @@ void verstage_main(void)
 	 * check the return value here because vb2api_fw_phase1 will catch
 	 * invalid secdata and tell us what to do (=reboot). */
 	timestamp_add_now(TS_START_TPMINIT);
-	if (vboot_setup_tpm(ctx) == TPM_SUCCESS)
+	if (vboot_setup_tpm(ctx) == TPM_SUCCESS) {
 		antirollback_read_space_firmware(ctx);
+		antirollback_read_space_kernel(ctx);
+	}
 	timestamp_add_now(TS_END_TPMINIT);
 
 	if (get_recovery_mode_switch()) {
@@ -358,6 +406,9 @@ void verstage_main(void)
 		}
 		timestamp_add_now(TS_END_TPMPCR);
 	}
+
+	if (CONFIG(TPM_CR50))
+		check_boot_mode(ctx);
 
 	/* Lock TPM */
 

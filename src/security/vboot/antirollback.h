@@ -72,6 +72,12 @@ uint32_t antirollback_read_space_firmware(struct vb2_context *ctx);
 uint32_t antirollback_write_space_firmware(struct vb2_context *ctx);
 
 /**
+ * Read and write kernel space in TPM.
+ */
+uint32_t antirollback_read_space_kernel(struct vb2_context *ctx);
+uint32_t antirollback_write_space_kernel(struct vb2_context *ctx);
+
+/**
  * Lock must be called.
  */
 uint32_t antirollback_lock_space_firmware(void);

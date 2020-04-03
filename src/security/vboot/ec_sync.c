@@ -50,7 +50,7 @@ void vboot_sync_ec(void)
 	ctx->flags |= VB2_CONTEXT_EC_SYNC_SUPPORTED;
 
 	retval = vb2api_ec_sync(ctx);
-	vboot_save_nvdata_only(ctx);
+	vboot_save_data(ctx);
 
 	switch (retval) {
 	case VB2_SUCCESS:

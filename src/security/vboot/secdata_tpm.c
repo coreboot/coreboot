@@ -80,6 +80,22 @@ static uint32_t read_space_firmware(struct vb2_context *ctx)
 	return TPM_E_CORRUPTED_STATE;
 }
 
+uint32_t antirollback_read_space_kernel(struct vb2_context *ctx)
+{
+	uint8_t size = VB2_SECDATA_KERNEL_MIN_SIZE;
+
+	RETURN_ON_FAILURE(tlcl_read(KERNEL_NV_INDEX, ctx->secdata_kernel,
+				    size));
+
+	if (vb2api_secdata_kernel_check(ctx, &size)
+	    == VB2_ERROR_SECDATA_KERNEL_INCOMPLETE)
+		/* Re-read. vboot will run the check and handle errors. */
+		RETURN_ON_FAILURE(tlcl_read(KERNEL_NV_INDEX,
+					    ctx->secdata_kernel, size));
+
+	return TPM_SUCCESS;
+}
+
 static uint32_t read_space_rec_hash(uint8_t *data)
 {
 	RETURN_ON_FAILURE(tlcl_read(REC_HASH_NV_INDEX, data,
@@ -438,6 +454,15 @@ uint32_t antirollback_write_space_firmware(struct vb2_context *ctx)
 		tlcl_cr50_enable_nvcommits();
 	return write_secdata(FIRMWARE_NV_INDEX, ctx->secdata_firmware,
 			     VB2_SECDATA_FIRMWARE_SIZE);
+}
+
+uint32_t antirollback_write_space_kernel(struct vb2_context *ctx)
+{
+	/* Learn the expected size. */
+	uint8_t size = VB2_SECDATA_KERNEL_MIN_SIZE;
+	vb2api_secdata_kernel_check(ctx, &size);
+
+	return write_secdata(KERNEL_NV_INDEX, ctx->secdata_kernel, size);
 }
 
 uint32_t antirollback_read_space_rec_hash(uint8_t *data, uint32_t size)

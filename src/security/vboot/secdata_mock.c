@@ -53,6 +53,17 @@ vb2_error_t antirollback_write_space_firmware(struct vb2_context *ctx)
 	return VB2_SUCCESS;
 }
 
+vb2_error_t antirollback_read_space_kernel(struct vb2_context *ctx)
+{
+	vb2api_secdata_kernel_create(ctx);
+	return VB2_SUCCESS;
+}
+
+vb2_error_t antirollback_write_space_kernel(struct vb2_context *ctx)
+{
+	return VB2_SUCCESS;
+}
+
 vb2_error_t antirollback_lock_space_firmware(void)
 {
 	return VB2_SUCCESS;

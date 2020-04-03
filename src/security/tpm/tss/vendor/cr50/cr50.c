@@ -107,6 +107,31 @@ uint32_t tlcl_cr50_get_tpm_mode(uint8_t *tpm_mode)
 	return TPM_SUCCESS;
 }
 
+uint32_t tlcl_cr50_get_boot_mode(uint8_t *boot_mode)
+{
+	struct tpm2_response *response;
+	uint16_t mode_command = TPM2_CR50_SUB_CMD_GET_BOOT_MODE;
+
+	printk(BIOS_DEBUG, "Reading cr50 boot mode\n");
+
+	response = tpm_process_command(TPM2_CR50_VENDOR_COMMAND, &mode_command);
+
+	if (!response)
+		return TPM_E_IOERROR;
+
+	if (response->hdr.tpm_code == VENDOR_RC_NO_SUCH_COMMAND)
+		/* Explicitly inform caller when command is not supported */
+		return TPM_E_NO_SUCH_COMMAND;
+
+	if (response->hdr.tpm_code)
+		/* Unexpected return code from Cr50 */
+		return TPM_E_IOERROR;
+
+	*boot_mode = response->vcr.boot_mode;
+
+	return TPM_SUCCESS;
+}
+
 uint32_t tlcl_cr50_immediate_reset(uint16_t timeout_ms)
 {
 	struct tpm2_response *response;

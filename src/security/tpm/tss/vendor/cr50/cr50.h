@@ -15,6 +15,7 @@
 #define TPM2_CR50_SUB_CMD_TURN_UPDATE_ON (24)
 #define TPM2_CR50_SUB_CMD_GET_REC_BTN (29)
 #define TPM2_CR50_SUB_CMD_TPM_MODE (40)
+#define TPM2_CR50_SUB_CMD_GET_BOOT_MODE (52)
 
 /* Cr50 vendor-specific error codes. */
 #define VENDOR_RC_ERR              0x00000500
@@ -77,6 +78,14 @@ uint32_t tlcl_cr50_get_recovery_button(uint8_t *recovery_button_state);
  * Other returns value indicate a failure accessing the TPM.
  */
 uint32_t tlcl_cr50_get_tpm_mode(uint8_t *tpm_mode);
+
+/**
+ * CR50 specific TPM command sequence to query the current boot mode.
+ *
+ * Returns TPM_SUCCESS if boot mode is successfully retrieved.
+ * Returns TPM_E_* for errors.
+ */
+uint32_t tlcl_cr50_get_boot_mode(uint8_t *boot_mode);
 
 /**
  * CR50 specific TPM command sequence to trigger an immediate reset to the Cr50

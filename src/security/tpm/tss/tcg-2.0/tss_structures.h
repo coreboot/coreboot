@@ -349,6 +349,7 @@ struct vendor_command_response {
 		uint8_t num_restored_headers;
 		uint8_t recovery_button_state;
 		uint8_t tpm_mode;
+		uint8_t boot_mode;
 	};
 };
 

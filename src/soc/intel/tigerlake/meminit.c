@@ -239,7 +239,6 @@ void meminit_lpddr4x(FSP_M_CONFIG *mem_cfg, const struct lpddr4x_cfg *board_cfg,
 	/* LPDDR4x does not allow interleaved memory */
 	mem_cfg->DqPinsInterleaved = 0;
 	mem_cfg->ECT = board_cfg->ect;
-	mem_cfg->MrcSafeConfig = 0x1;
 
 	read_md_spd(info, &spd_data, &spd_len);
 	mem_cfg->MemorySpdDataLen = spd_len;

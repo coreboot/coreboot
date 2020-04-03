@@ -124,6 +124,26 @@ chip soc/intel/tigerlake
 	# Not disconnected/enumerable
 	register "PchHdaIDispCodecDisconnect" = "0"
 
+	# Intel Common SoC Config
+	register "common_soc_config" = "{
+		.chipset_lockdown = CHIPSET_LOCKDOWN_COREBOOT,
+		.i2c[0] = {
+			.speed = I2C_SPEED_FAST,
+		},
+		.i2c[1] = {
+			.speed = I2C_SPEED_FAST,
+		},
+		.i2c[2] = {
+			.speed = I2C_SPEED_FAST,
+		},
+		.i2c[3] = {
+			.speed = I2C_SPEED_FAST,
+		},
+		.i2c[5] = {
+			.speed = I2C_SPEED_FAST,
+		},
+	}"
+
 	device domain 0 on
 		#From EDS(575683)
 		device pci 00.0 on  end # Host Bridge		0x9A14:U/0x9A12:Y

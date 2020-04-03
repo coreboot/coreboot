@@ -15,6 +15,7 @@
 #include <amdblocks/acpi.h>
 #include <amdblocks/psp.h>
 #include <elog.h>
+#include <soc/smu.h>
 
 /* bits in smm_io_trap   */
 #define SMM_IO_TRAP_PORT_OFFSET		16
@@ -209,11 +210,9 @@ static void sb_slp_typ_handler(void)
 
 		psp_notify_sx_info(slp_typ);
 
-		/*
-		 * An IO cycle is required to trigger the STPCLK/STPGNT
-		 * handshake when the Pm1 write is reissued.
-		 */
-		outw(pm1cnt | SLP_EN, pm_read16(PM1_CNT_BLK));
+		smu_sx_entry(); /* Leave SlpTypeEn clear, SMU will set */
+		printk(BIOS_ERR, "Error: System did not go to sleep\n");
+
 		hlt();
 	}
 }

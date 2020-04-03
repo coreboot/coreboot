@@ -15,6 +15,10 @@ config DCACHE_RAM_SIZE
 config DCACHE_BSP_STACK_SIZE
 	hex
 
+config EARLYRAM_BSP_STACK_SIZE
+	depends on RESET_VECTOR_IN_RAM
+	hex
+
 config SMP
 	bool
 	default y if MAX_CPUS != 1

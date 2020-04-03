@@ -9,6 +9,13 @@
  * continue with C code execution one needs to set stack pointer and
  * clear .bss variables that are stage specific.
  */
+
+#if CONFIG(RESET_VECTOR_IN_RAM)
+	#define _STACK_TOP _eearlyram_stack
+#else
+	#define _STACK_TOP _ecar_stack
+#endif
+
 .section ".text._start", "ax", @progbits
 .global _start
 _start:
@@ -16,8 +23,8 @@ _start:
 	/* Migrate GDT to this text segment */
 	call	gdt_init
 
-	/* reset stack pointer to CAR stack */
-	mov	$_ecar_stack, %esp
+	/* reset stack pointer to CAR/EARLYRAM stack */
+	mov	$_STACK_TOP, %esp
 
 	/* clear .bss section as it is not shared */
 	cld

@@ -89,9 +89,10 @@ config X86_RESET_VECTOR
 config RESET_VECTOR_IN_RAM
 	bool
 	depends on ARCH_X86
+	select NO_XIP_EARLY_STAGES
 	help
-	  Select this option if the x86 soc implements custom code to handle the
-	  reset vector in RAM instead of the traditional 0xfffffff0 location.
+	  Select this option if the x86 processor's reset vector is in
+	  preinitialized DRAM instead of the traditional 0xfffffff0 location.
 
 # Aligns 16bit entry code in bootblock so that hyper-threading CPUs
 # can boot AP CPUs to enable their shared caches.
@@ -206,6 +207,7 @@ config VERSTAGE_ADDR
 config POSTCAR_STAGE
 	def_bool y
 	depends on ARCH_X86
+	depends on !RESET_VECTOR_IN_RAM
 
 config VERSTAGE_DEBUG_SPINLOOP
 	bool

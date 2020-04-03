@@ -11,7 +11,7 @@ chip soc/intel/tigerlake
 
 	# TODO: Figure out GPE DW1&2
 	register "pmc_gpe0_dw0" = "GPP_C"
-	#register "pmc_gpe0_dw1" = "??"
+	register "pmc_gpe0_dw1" = "GPP_E"
 	#register "pmc_gpe0_dw2" = "??"
 
 	# Wilco EC host command ranges

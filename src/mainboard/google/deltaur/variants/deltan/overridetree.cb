@@ -28,4 +28,16 @@ chip soc/intel/tigerlake
 			device i2c 34 on end
 		end
 	end # I2C #0
+
+	device pci 15.1 on
+		chip drivers/i2c/hid
+		        register "generic.hid" = ""PNP0C50""
+			register "generic.desc" = ""Cirque Touchpad""
+			register "generic.irq" = "ACPI_IRQ_WAKE_EDGE_LOW(GPP_E7_IRQ)"
+			register "generic.probed" = "1"
+			register "generic.wake" = "GPE0_DW1_07"
+			register "hid_desc_reg_offset" = "0x20"
+			device i2c 2c on end
+		end
+	end # I2C #1
 end

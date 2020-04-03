@@ -75,10 +75,6 @@ The boards in this section are not real mainboards, but emulators.
 - [T4xx common](lenovo/t4xx_series.md)
 - [X2xx common](lenovo/x2xx_series.md)
 
-## Libretrend
-
-- [LT1000](libretrend/lt1000.md)
-
 ### Arrandale series
 
 - [T410](lenovo/t410.md)
@@ -106,6 +102,10 @@ The boards in this section are not real mainboards, but emulators.
 ### Haswell series
 
 - [T440p](lenovo/t440p.md)
+
+## Libretrend
+
+- [LT1000](libretrend/lt1000.md)
 
 ## MSI
 

@@ -31,13 +31,36 @@ config PLATFORM_USES_FSP2_1
 
 if PLATFORM_USES_FSP2_0
 
+config HAVE_INTEL_FSP_REPO
+	bool
+	help
+	  Select this, if the FSP binaries for the platform are public
+	  and available in 3rdparty/fsp/. When selecting this option, the
+	  platform must also set FSP_HEADER_PATH and FSP_FD_PATH correctly.
+
 config FSP_USE_REPO
 	bool "Use binaries of the Intel FSP repository on GitHub"
 	depends on HAVE_INTEL_FSP_REPO
 	default y
 	help
-	  When selecting this option, the SoC must set FSP_HEADER_PATH
-	  and FSP_FD_PATH correctly so FSP splitting works.
+	  Select this option to use the default FSP headers and binaries
+	  found in the IntelFsp GitHub repository at
+
+	    https://github.com/IntelFsp/FSP/
+
+	  If unsure, say Y.
+
+config FSP_HEADER_PATH
+	string "Location of FSP headers" if !FSP_USE_REPO
+	help
+	  Include directory with the FSP ABI header files.
+
+config FSP_FD_PATH
+	string
+	depends on FSP_USE_REPO
+	help
+	  Path to the FSP FD file that contains the individual FSP-T, FSP-M
+	  and FSP-S binaries.
 
 config ADD_FSP_BINARIES
 	bool "Add Intel FSP 2.0 binaries to CBFS" if !FSP_USE_REPO

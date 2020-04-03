@@ -222,14 +222,11 @@ config NHLT_DA7219
 	  Include DSP firmware settings for DA7219 headset codec.
 
 config FSP_HEADER_PATH
-	string "Location of FSP headers"
 	# Use KabylakeFsp for both Skylake and Kabylake as it supports both.
 	# SkylakeFsp is FSP 1.1 and therefore incompatible.
 	default "3rdparty/fsp/KabylakeFspBinPkg/Include/"
 
 config FSP_FD_PATH
-	string
-	depends on FSP_USE_REPO
 	default "3rdparty/fsp/KabylakeFspBinPkg/Fsp.fd"
 
 config MAX_ROOT_PORTS

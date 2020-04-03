@@ -179,12 +179,9 @@ config CBFS_SIZE
 	default 0x200000
 
 config FSP_HEADER_PATH
-	string "Location of FSP headers"
 	default "3rdparty/fsp/IceLakeFspBinPkg/Include"
 
 config FSP_FD_PATH
-	string
-	depends on FSP_USE_REPO
 	default "3rdparty/fsp/IceLakeFspBinPkg/Fsp.fd"
 
 config SOC_INTEL_ICELAKE_DEBUG_CONSENT

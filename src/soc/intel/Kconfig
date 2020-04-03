@@ -38,9 +38,3 @@ config INTEL_TOP_SWAP_FIT_ENTRY_FMAP_REG
 	  than the one in non-topswap bootblock. This string will be passed
 	  onto ifittool (-A -n option). ifittool will not parse the region for MCU
 	  entries, and only locate the region and insert its address into FIT.
-
-config HAVE_INTEL_FSP_REPO
-	bool
-	help
-	  Select this, if the FSP binaries for the platform are public available
-	  in 3rdparty/fsp.

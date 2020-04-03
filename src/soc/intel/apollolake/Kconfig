@@ -182,13 +182,10 @@ config VERSTAGE_ADDR
 	  The base address (in CAR) where verstage should be linked
 
 config FSP_HEADER_PATH
-	string "Location of FSP headers"
 	default "src/vendorcode/intel/fsp/fsp2_0/glk" if SOC_INTEL_GLK
 	default "3rdparty/fsp/ApolloLakeFspBinPkg/Include/"
 
 config FSP_FD_PATH
-	string
-	depends on FSP_USE_REPO
 	default "3rdparty/fsp/ApolloLakeFspBinPkg/FspBin/Fsp.fd"
 
 config FSP_M_ADDR

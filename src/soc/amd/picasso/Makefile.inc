@@ -11,6 +11,15 @@ subdirs-y += ../../../cpu/x86/mtrr
 subdirs-y += ../../../cpu/x86/pae
 subdirs-y += ../../../cpu/x86/smm
 
+bootblock-y += bootblock/pre_c.S
+bootblock-y += bootblock/bootblock.c
+bootblock-y += southbridge.c
+bootblock-y += i2c.c
+bootblock-$(CONFIG_PICASSO_UART) += uart.c
+bootblock-y += tsc_freq.c
+bootblock-y += gpio.c
+bootblock-y += smi_util.c
+
 romstage-y += i2c.c
 romstage-y += romstage.c
 romstage-y += gpio.c
@@ -28,12 +37,6 @@ verstage-y += i2c.c
 verstage-y += pmutil.c
 verstage-$(CONFIG_PICASSO_UART) += uart.c
 verstage-y += tsc_freq.c
-
-postcar-y += monotonic_timer.c
-postcar-$(CONFIG_PICASSO_UART) += uart.c
-postcar-y += memmap.c
-postcar-$(CONFIG_VBOOT_MEASURED_BOOT) += i2c.c
-postcar-y += tsc_freq.c
 
 ramstage-y += i2c.c
 ramstage-y += chip.c
@@ -179,8 +182,12 @@ PSP_APOB_BASE=$(CONFIG_PSP_APOB_DESTINATION)
 
 # type = 0x62
 PSP_BIOSBIN_FILE=$(obj)/amd_biospsp.img
-PSP_BIOSBIN_DEST=$(CONFIG_ROMSTAGE_ADDR)
-PSP_BIOSBIN_SIZE=$(CONFIG_RAM_RESET_VECTOR_STAGE_SIZE)
+PSP_ELF_FILE=$(objcbfs)/bootblock.elf
+# TODO(b/154957411): Refactor amdfwtool to extract the address and size from
+# the elf file.
+PSP_BIOSBIN_SIZE=$(CONFIG_C_ENV_BOOTBLOCK_SIZE)
+# This address must match the BOOTBLOCK logic in arch/x86/memlayout.ld.
+PSP_BIOSBIN_DEST=$(shell printf "%x" $(call int-subtract, $(call int-add, $(CONFIG_X86_RESET_VECTOR) 0x10) $(PSP_BIOSBIN_SIZE)))
 
 # type = 0x63
 ifeq ($(CONFIG_HAVE_ACPI_RESUME),y)
@@ -368,11 +375,10 @@ $(obj)/amdfw.rom:	$(call strip_quotes, $(CONFIG_AMD_PUBKEY_FILE)) \
 		--location $(shell printf "0x%x" $(PICASSO_FWM_POSITION)) \
 		--output	$@
 
-USE_BIOS_FILE=$(obj)/cbfs/fallback/romstage.elf
-$(PSP_BIOSBIN_FILE): $(obj)/cbfs/fallback/romstage.elf $(AMDCOMPRESS)
+$(PSP_BIOSBIN_FILE): $(PSP_ELF_FILE) $(AMDCOMPRESS)
 	rm -f $@
 	@printf "    AMDCOMPRS  $(subst $(obj)/,,$(@))\n"
-	$(AMDCOMPRESS) --infile $(USE_BIOS_FILE) --outfile $@ --compress \
+	$(AMDCOMPRESS) --infile $(PSP_ELF_FILE) --outfile $@ --compress \
 		--maxsize $(PSP_BIOSBIN_SIZE)
 
 ifeq ($(CONFIG_AMDFW_OUTSIDE_CBFS),y)

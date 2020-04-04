@@ -75,4 +75,7 @@ config PS2K_EISAID
 config PS2M_EISAID
 	default "LEN0015"
 
+config THINKPADEC_HKEY_EISAID
+	default "LEN0068"
+
 endif

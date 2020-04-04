@@ -8,7 +8,7 @@ Device (HKEY)
 	External (\HKBL, IntObj)
 	External (\HUWB, IntObj)
 
-	Name (_HID, EisaId ("IBM0068"))
+	Name (_HID, EisaId (CONFIG_THINKPADEC_HKEY_EISAID))
 
 	Name (BTN, 0)
 

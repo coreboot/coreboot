@@ -44,4 +44,11 @@ config H8_HAS_PRIMARY_FN_KEYS
 	bool
 	default n
 
+config THINKPADEC_HKEY_EISAID
+	string
+	default "IBM0068"
+	help
+	  Motherboards of newer thinkpad models can override the default to match
+	  vendor drivers and quirks.
+
 endif # EC_LENOVO_H8

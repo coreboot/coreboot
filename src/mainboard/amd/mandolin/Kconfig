@@ -1,0 +1,94 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+if BOARD_AMD_MANDOLIN
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select SOC_AMD_COMMON_BLOCK_USE_ESPI
+	select SOC_AMD_PICASSO
+	select HAVE_ACPI_TABLES
+	select BOARD_ROMSIZE_KB_8192
+	select AZALIA_PLUGIN_SUPPORT
+	select HAVE_ACPI_RESUME
+
+config FMDFILE
+	string
+	default "src/mainboard/amd/mandolin/mandolin.fmd"
+
+config AMD_LPC_DEBUG_CARD
+	bool "Enable LPC-Serial debug card on the debug header"
+	default n
+	select PICASSO_LPC_IOMUX
+	select SUPERIO_SMSC_SIO1036
+	help
+	  AMD's debug card contains an SMSC SIO1036 device which provides
+	  an I/O-based UART in the system.  This feature is not compatible with
+	  CONFIG_HUDSON_UART enabling the memory-mapped UART in the chipset.
+	  Note that Kconfig does not currently enforce this restriction.
+
+config CBFS_SIZE
+	default 0x780000
+	help
+	  TODO: Adjust this to maximize CBFS size
+
+config MAINBOARD_DIR
+	string
+	default amd/mandolin
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "MANDOLIN"
+
+config MAX_CPUS
+	int
+	default 8
+
+config IRQ_SLOT_COUNT
+	int
+	default 11
+
+config ONBOARD_VGA_IS_PRIMARY
+	bool
+	default y
+
+config AMD_FWM_POSITION_INDEX
+	int
+	default 3
+	help
+	  TODO: might need to be adapted for better placement of files in cbfs
+
+config MANDOLIN_HAVE_MCHP_FW
+	bool "Have Microchip EC firmware?"
+	default n
+
+config MANDOLIN_MCHP_FW_FILE
+	string
+	depends on MANDOLIN_HAVE_MCHP_FW
+	default "3rdparty/blobs/mainboard/amd/mandolin/mchp.bin"
+
+if !AMD_LPC_DEBUG_CARD
+choice MANDOLIN_LPC_IOMUX
+	prompt "State of IOMux for LPC/eMMC signals"
+	default MANDOLIN_IOMUX_USE_EMMC
+	help
+	  Mandolin is designed to use either LPC or eMMC signals.  Use this
+	  selection to determine which are configured for this image.
+
+config MANDOLIN_IOMUX_USE_LPC
+	bool "LPC signals"
+	help
+
+config MANDOLIN_IOMUX_USE_EMMC
+	bool "eMMC signals"
+
+endchoice
+endif # !AMD_LPC_DEBUG_CARD
+
+config PICASSO_LPC_IOMUX
+	bool
+	default y if MANDOLIN_IOMUX_USE_LPC
+	help
+	  Picasso's LPC bus signals are MUXed with some of the EMMC signals.
+	  Select this option if LPC signals are required.
+
+endif # BOARD_AMD_MANDOLIN

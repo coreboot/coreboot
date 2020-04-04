@@ -243,7 +243,6 @@ static struct device_operations ac97_audio_ops = {
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
 	.init			= ac97_audio_init,
-	.scan_bus		= 0,
 	.enable			= i82801gx_enable,
 	.ops_pci		= &ac97_pci_ops,
 };
@@ -253,7 +252,6 @@ static struct device_operations ac97_modem_ops = {
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
 	.init			= ac97_modem_init,
-	.scan_bus		= 0,
 	.enable			= i82801gx_enable,
 	.ops_pci		= &ac97_pci_ops,
 };

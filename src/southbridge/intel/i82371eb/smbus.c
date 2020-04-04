@@ -113,7 +113,6 @@ static const struct device_operations smbus_ops = {
 	.read_resources		= pwrmgt_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
-	.init			= 0,
 	.scan_bus		= scan_smbus,
 	.enable			= pwrmgt_enable,
 	.ops_pci		= 0, /* No subsystem IDs on 82371EB! */

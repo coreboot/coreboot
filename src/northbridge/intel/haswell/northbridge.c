@@ -92,8 +92,6 @@ static const char *northbridge_acpi_name(const struct device *dev)
 static struct device_operations pci_domain_ops = {
 	.read_resources    = pci_domain_read_resources,
 	.set_resources     = pci_domain_set_resources,
-	.enable_resources  = NULL,
-	.init              = NULL,
 	.scan_bus          = pci_domain_scan_bus,
 	.acpi_name         = northbridge_acpi_name,
 	.write_acpi_tables = northbridge_write_acpi_tables,
@@ -477,7 +475,6 @@ static struct device_operations mc_ops = {
 	.enable_resources       = pci_dev_enable_resources,
 	.init                   = northbridge_init,
 	.acpi_fill_ssdt		= generate_cpu_entries,
-	.scan_bus               = NULL,
 	.ops_pci                = &intel_pci_ops,
 };
 
@@ -500,7 +497,6 @@ static struct device_operations cpu_bus_ops = {
 	.set_resources    = DEVICE_NOOP,
 	.enable_resources = DEVICE_NOOP,
 	.init             = mp_cpu_bus_init,
-	.scan_bus         = NULL,
 };
 
 static void enable_dev(struct device *dev)

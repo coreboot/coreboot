@@ -162,7 +162,6 @@ static struct device_operations atl1e_ops  = {
 	.set_resources    = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.init             = atl1e_init,
-	.scan_bus         = 0,
 };
 
 static const struct pci_driver atl1e_driver __pci_driver = {

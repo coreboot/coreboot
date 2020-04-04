@@ -106,7 +106,6 @@ static struct device_operations minihd_ops = {
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
 	.init			= minihd_init,
-	.scan_bus		= NULL,
 	.ops_pci		= &minihd_pci_ops,
 };
 

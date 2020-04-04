@@ -67,7 +67,6 @@ static struct device_operations aspeed_ast2050_ops  = {
 	.set_resources    = aspeed_ast2050_set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.init             = aspeed_ast2050_init,
-	.scan_bus         = 0,
 };
 
 static const struct pci_driver aspeed_ast2050_driver __pci_driver = {

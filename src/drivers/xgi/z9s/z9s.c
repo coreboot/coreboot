@@ -50,7 +50,6 @@ static struct device_operations xgi_z9s_ops  = {
 	.set_resources    = xgi_z9s_set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.init             = xgi_z9s_init,
-	.scan_bus         = 0,
 };
 
 static const struct pci_driver xgi_z9s_driver __pci_driver = {

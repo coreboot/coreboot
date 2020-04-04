@@ -167,8 +167,6 @@ void northbridge_write_smram(u8 smram)
 static struct device_operations pci_domain_ops = {
 	.read_resources   = mch_domain_read_resources,
 	.set_resources    = mch_domain_set_resources,
-	.enable_resources = NULL,
-	.init             = NULL,
 	.scan_bus         = pci_domain_scan_bus,
 	.acpi_name        = northbridge_acpi_name,
 };
@@ -196,7 +194,6 @@ static struct device_operations mc_ops = {
 	.set_resources    = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.acpi_fill_ssdt   = generate_cpu_entries,
-	.scan_bus         = 0,
 	.ops_pci          = &intel_pci_ops,
 };
 
@@ -216,7 +213,6 @@ static struct device_operations cpu_bus_ops = {
 	.set_resources    = DEVICE_NOOP,
 	.enable_resources = DEVICE_NOOP,
 	.init             = mp_cpu_bus_init,
-	.scan_bus         = 0,
 };
 
 static void enable_dev(struct device *dev)

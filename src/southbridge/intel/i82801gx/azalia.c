@@ -300,7 +300,6 @@ static struct device_operations azalia_ops = {
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
 	.init			= azalia_init,
-	.scan_bus		= 0,
 	.enable			= i82801gx_enable,
 	.ops_pci		= &azalia_pci_ops,
 };

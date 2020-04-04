@@ -317,8 +317,6 @@ static struct device_operations ne2k_ops  = {
 	.read_resources   = read_resources,
 	.set_resources    = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.init             = 0,
-	.scan_bus         = 0,
 };
 
 static const struct pci_driver ne2k_driver __pci_driver = {

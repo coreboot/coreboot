@@ -87,7 +87,6 @@ static struct device_operations ioapic_ops = {
 	.set_resources    = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.init     = p64h2_ioapic_init,
-	.scan_bus = 0,
 	.enable   = p64h2_ioapic_enable,
 };
 

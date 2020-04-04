@@ -251,6 +251,5 @@ struct device_operations default_azalia_audio_ops = {
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
 	.init			= azalia_audio_init,
-	.scan_bus		= 0,
 	.ops_pci		= &azalia_audio_pci_ops,
 };

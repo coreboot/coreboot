@@ -58,7 +58,6 @@ struct device_operations southbridge_ti_pci1x2x_pciops = {
 	.set_resources    = pci_dev_set_resources,
 	.enable_resources = cardbus_enable_resources,
 	.init             = ti_pci1x2y_init,
-	.scan_bus         = 0,
 	.ops_pci          = &ti_pci1x2y_pci_ops,
 };
 

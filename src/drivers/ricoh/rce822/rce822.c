@@ -58,7 +58,6 @@ static struct device_operations rce822_ops = {
 	.enable_resources	= pci_dev_enable_resources,
 	.init			= rce822_init,
 	.enable			= rce822_enable,
-	.scan_bus		= 0,
 	.ops_pci		= &lops_pci,
 };
 

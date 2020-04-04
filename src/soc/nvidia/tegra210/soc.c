@@ -65,7 +65,6 @@ static struct device_operations soc_ops = {
 	.set_resources    = DEVICE_NOOP,
 	.enable_resources = DEVICE_NOOP,
 	.init             = DEVICE_NOOP,
-	.scan_bus         = NULL,
 };
 
 static void enable_tegra210_dev(struct device *dev)

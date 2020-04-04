@@ -212,7 +212,6 @@ static struct device_operations sata_ops = {
 	.enable_resources	= pci_dev_enable_resources,
 	.init			= sata_init,
 	.enable			= sata_enable,
-	.scan_bus		= NULL,
 	.ops_pci		= &soc_pci_ops,
 };
 

@@ -229,7 +229,6 @@ static struct device_operations sata_ops = {
 	.init = sata_init,
 	.enable = sata_enable,
 	.acpi_fill_ssdt = sata_fill_ssdt,
-	.scan_bus = 0,
 	.ops_pci = &sata_pci_ops,
 };
 

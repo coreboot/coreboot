@@ -358,8 +358,6 @@ static struct device_operations northbridge_operations = {
 	.init		  = northbridge_init,
 	.acpi_fill_ssdt   = northbridge_fill_ssdt_generator,
 	.write_acpi_tables = agesa_write_acpi_tables,
-	.enable		  = 0,
-	.ops_pci	  = 0,
 };
 
 static const unsigned short pci_device_ids[] = {

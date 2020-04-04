@@ -557,8 +557,6 @@ static struct device_operations northbridge_operations = {
 	.init		  = DEVICE_NOOP,
 	.acpi_fill_ssdt   = northbridge_fill_ssdt_generator,
 	.write_acpi_tables = agesa_write_acpi_tables,
-	.enable		  = 0,
-	.ops_pci	  = 0,
 };
 
 static const struct pci_driver family15_northbridge __pci_driver = {
@@ -775,7 +773,6 @@ static struct device_operations pci_domain_ops = {
 	.read_resources	  = domain_read_resources,
 	.set_resources	  = domain_set_resources,
 	.enable_resources = domain_enable_resources,
-	.init		  = NULL,
 	.scan_bus	  = pci_domain_scan_bus,
 };
 

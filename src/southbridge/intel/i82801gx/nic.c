@@ -17,7 +17,6 @@ static struct device_operations nic_ops = {
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
 	.init			= nic_init,
-	.scan_bus		= 0,
 };
 
 /* 82801GB/GR/GDH/GBM/GHM (ICH7/ICH7R/ICH7DH/ICH7-M/ICH7-M DH) */

@@ -137,11 +137,6 @@ static void nc_read_resources(struct device *dev)
 static struct device_operations nc_ops = {
 	.read_resources   = nc_read_resources,
 	.acpi_fill_ssdt   = generate_cpu_entries,
-	.set_resources    = NULL,
-	.enable_resources = NULL,
-	.init             = NULL,
-	.enable           = NULL,
-	.scan_bus         = NULL,
 	.ops_pci          = &soc_pci_ops,
 };
 

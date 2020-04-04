@@ -157,8 +157,6 @@ struct device_operations default_cardbus_ops_bus = {
 	.read_resources   = cardbus_read_resources,
 	.set_resources    = pci_dev_set_resources,
 	.enable_resources = cardbus_enable_resources,
-	.init             = 0,
 	.scan_bus         = pci_scan_bridge,
-	.enable           = 0,
 	.reset_bus        = pci_bus_reset,
 };

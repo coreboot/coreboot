@@ -104,7 +104,6 @@ static struct device_operations pmc_ops = {
 	.read_resources = pci_pmc_read_resources,
 	.set_resources = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.scan_bus = 0,
 	.init = pmc_init,
 	.ops_pci = &soc_pci_ops,
 };

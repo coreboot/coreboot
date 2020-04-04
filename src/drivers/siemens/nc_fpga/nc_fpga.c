@@ -158,8 +158,6 @@ static struct device_operations nc_fpga_ops  = {
 	.set_resources    = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.init             = nc_fpga_init,
-	.scan_bus         = 0,
-	.ops_pci          = 0,
 };
 
 static const unsigned short nc_fpga_device_ids[] = { 0x4080, 0x4091, 0 };

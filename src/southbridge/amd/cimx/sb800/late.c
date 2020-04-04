@@ -170,7 +170,6 @@ static struct device_operations sata_ops = {
 	.set_resources = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.init = ahci_raid_init,
-	.scan_bus = 0,
 	.ops_pci = &lops_pci,
 };
 
@@ -195,8 +194,6 @@ static struct device_operations usb_ops = {
 	.read_resources = pci_ehci_read_resources,
 	.set_resources = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.init = 0,
-	.scan_bus = 0,
 	.ops_pci = &lops_pci,
 };
 
@@ -226,8 +223,6 @@ static struct device_operations azalia_ops = {
 	.read_resources = pci_dev_read_resources,
 	.set_resources = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.init = 0,
-	.scan_bus = 0,
 	.ops_pci = &lops_pci,
 };
 
@@ -242,8 +237,6 @@ static struct device_operations gec_ops = {
 	.read_resources = pci_dev_read_resources,
 	.set_resources = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.init = 0,
-	.scan_bus = 0,
 	.ops_pci = &lops_pci,
 };
 

@@ -157,7 +157,6 @@ static struct device_operations cpu_ops = {
 	.set_resources    = DEVICE_NOOP,
 	.enable_resources = cpu_enable,
 	.init             = cpu_init,
-	.scan_bus         = 0,
 };
 
 static void enable_exynos5420_dev(struct device *dev)

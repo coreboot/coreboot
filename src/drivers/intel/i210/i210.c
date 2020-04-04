@@ -228,8 +228,6 @@ static struct device_operations i210_ops  = {
 	.set_resources    = set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.init             = init,
-	.scan_bus         = 0,
-	.ops_pci          = 0,
 };
 
 static const unsigned short i210_device_ids[] = { 0x1537, 0x1538, 0x1533, 0 };

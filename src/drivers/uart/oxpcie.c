@@ -52,7 +52,6 @@ static struct device_operations oxford_oxpcie_ops = {
 	.set_resources    = oxford_oxpcie_set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.init             = oxford_oxpcie_enable,
-	.scan_bus         = 0,
 };
 
 static const struct pci_driver oxford_oxpcie_driver __pci_driver = {

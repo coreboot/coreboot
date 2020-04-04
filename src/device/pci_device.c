@@ -761,8 +761,6 @@ struct device_operations default_pci_ops_dev = {
 	.acpi_fill_ssdt    = pci_rom_ssdt,
 #endif
 	.init             = pci_dev_init,
-	.scan_bus         = 0,
-	.enable           = 0,
 	.ops_pci          = &pci_dev_ops_pci,
 };
 
@@ -775,9 +773,7 @@ struct device_operations default_pci_ops_bus = {
 	.read_resources   = pci_bus_read_resources,
 	.set_resources    = pci_dev_set_resources,
 	.enable_resources = pci_bus_enable_resources,
-	.init             = 0,
 	.scan_bus         = pci_scan_bridge,
-	.enable           = 0,
 	.reset_bus        = pci_bus_reset,
 	.ops_pci          = &pci_bus_ops_pci,
 };

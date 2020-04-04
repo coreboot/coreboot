@@ -320,8 +320,6 @@ static void ecam0_init(struct device *dev)
 }
 
 struct device_operations pci_domain_ops_ecam0 = {
-	.set_resources    = NULL,
-	.enable_resources = NULL,
 	.read_resources   = ecam0_read_resources,
 	.init             = ecam0_init,
 	.scan_bus         = pci_domain_scan_bus,

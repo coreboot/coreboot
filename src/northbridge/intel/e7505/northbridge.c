@@ -80,8 +80,6 @@ static struct pci_operations intel_pci_ops = {
 static struct device_operations pci_domain_ops = {
 	.read_resources   = mch_domain_read_resources,
 	.set_resources    = mch_domain_set_resources,
-	.enable_resources = NULL,
-	.init             = NULL,
 	.scan_bus         = pci_domain_scan_bus,
 	.ops_pci          = &intel_pci_ops,
 };
@@ -96,7 +94,6 @@ static struct device_operations cpu_bus_ops = {
 	.set_resources    = DEVICE_NOOP,
 	.enable_resources = DEVICE_NOOP,
 	.init             = cpu_bus_init,
-	.scan_bus         = 0,
 };
 
 static void enable_dev(struct device *dev)

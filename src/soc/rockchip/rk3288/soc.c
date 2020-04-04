@@ -38,7 +38,6 @@ static struct device_operations soc_ops = {
 	.read_resources   = DEVICE_NOOP,
 	.set_resources    = DEVICE_NOOP,
 	.init             = soc_init,
-	.scan_bus         = 0,
 };
 
 static void enable_rk3288_dev(struct device *dev)

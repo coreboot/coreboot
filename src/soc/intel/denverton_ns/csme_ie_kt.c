@@ -69,8 +69,6 @@ static struct device_operations csme_ie_kt_ops = {
 	.read_resources = pci_csme_ie_kt_read_resources,
 	.set_resources = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.scan_bus = 0,
-	.init = 0,
 	.ops_pci = &soc_pci_ops,
 };
 

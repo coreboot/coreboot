@@ -241,7 +241,6 @@ static struct device_operations ac97_audio_ops  = {
 	.enable_resources = pci_dev_enable_resources,
 	.enable           = i82801dx_enable,
 	.init             = ac97_audio_init,
-	.scan_bus         = 0,
 };
 
 static struct device_operations ac97_modem_ops  = {
@@ -250,7 +249,6 @@ static struct device_operations ac97_modem_ops  = {
 	.enable_resources = pci_dev_enable_resources,
 	.enable           = i82801dx_enable,
 	.init             = ac97_modem_init,
-	.scan_bus         = 0,
 };
 
 /* 82801DB/DBL/DBM (ICH4/ICH4-L/ICH4-M) */

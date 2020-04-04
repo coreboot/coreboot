@@ -197,8 +197,6 @@ static const struct device_operations device_ops = {
 	.set_resources		= lpe_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
 	.init			= lpe_init,
-	.enable			= NULL,
-	.scan_bus		= NULL,
 	.ops_pci		= &soc_pci_ops,
 };
 

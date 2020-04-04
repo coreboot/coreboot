@@ -205,8 +205,6 @@ static struct device_operations northbridge_operations = {
 	.enable_resources = pci_dev_enable_resources,
 	.acpi_fill_ssdt   = northbridge_fill_ssdt_generator,
 	.write_acpi_tables = agesa_write_acpi_tables,
-	.enable		  = 0,
-	.ops_pci	  = 0,
 };
 
 static const struct pci_driver family15_northbridge __pci_driver = {

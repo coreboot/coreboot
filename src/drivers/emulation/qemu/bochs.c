@@ -140,7 +140,6 @@ static struct device_operations qemu_graph_ops = {
 	.set_resources	  = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.init		  = bochs_init,
-	.scan_bus	  = 0,
 };
 
 static const struct pci_driver qemu_stdvga_driver __pci_driver = {

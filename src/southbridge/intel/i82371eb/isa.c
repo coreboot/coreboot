@@ -135,7 +135,6 @@ static const struct device_operations isa_ops = {
 #endif
 	.init			= isa_init,
 	.scan_bus		= scan_static_bus,
-	.enable			= 0,
 	.ops_pci		= 0, /* No subsystem IDs on 82371EB! */
 };
 

@@ -394,7 +394,6 @@ static struct device_operations soc_ops = {
 	.enable_resources = DEVICE_NOOP,
 	.init             = soc_init,
 	.final            = soc_final,
-	.scan_bus         = NULL,
 };
 
 static void enable_soc_dev(struct device *dev)

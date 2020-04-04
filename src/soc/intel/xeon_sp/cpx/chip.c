@@ -35,7 +35,6 @@ static struct device_operations cpu_bus_ops = {
 	.set_resources = DEVICE_NOOP,
 	.enable_resources = DEVICE_NOOP,
 	.init = cpx_init_cpus,
-	.scan_bus = NULL,
 };
 
 static void chip_enable_dev(struct device *dev)

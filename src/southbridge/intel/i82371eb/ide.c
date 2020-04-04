@@ -146,8 +146,6 @@ static const struct device_operations ide_ops_fb_sb = {
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
 	.init			= ide_init_i82371fb_sb,
-	.scan_bus		= 0,
-	.enable			= 0,
 	.ops_pci		= 0, /* No subsystem IDs on 82371XX! */
 };
 
@@ -157,8 +155,6 @@ static const struct device_operations ide_ops_ab_eb_mb = {
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
 	.init			= ide_init_i82371ab_eb_mb,
-	.scan_bus		= 0,
-	.enable			= 0,
 	.ops_pci		= 0, /* No subsystem IDs on 82371XX! */
 };
 

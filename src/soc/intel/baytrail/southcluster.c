@@ -523,7 +523,6 @@ static struct device_operations device_ops = {
 	.set_resources		= pci_dev_set_resources,
 	.acpi_inject_dsdt	= southcluster_inject_dsdt,
 	.write_acpi_tables      = acpi_write_hpet,
-	.enable_resources	= NULL,
 	.init			= sc_init,
 	.enable			= southcluster_enable_dev,
 	.scan_bus		= scan_static_bus,

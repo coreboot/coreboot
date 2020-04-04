@@ -816,8 +816,6 @@ static struct device_operations gma_func0_ops = {
 	.enable_resources	= pci_dev_enable_resources,
 	.init			= gma_func0_init,
 	.acpi_fill_ssdt		= gma_generate_ssdt,
-	.scan_bus		= 0,
-	.enable			= 0,
 	.disable		= gma_func0_disable,
 	.ops_pci		= &gma_pci_ops,
 	.acpi_name		= gma_acpi_name,
@@ -830,8 +828,6 @@ static struct device_operations gma_func1_ops = {
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
 	.init			= gma_func1_init,
-	.scan_bus		= 0,
-	.enable			= 0,
 	.ops_pci		= &gma_pci_ops,
 };
 

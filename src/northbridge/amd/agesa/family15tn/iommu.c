@@ -56,8 +56,6 @@ static struct device_operations iommu_ops = {
 	.read_resources = iommu_read_resources,
 	.set_resources = iommu_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.init = 0,
-	.scan_bus = 0,
 	.ops_pci = &lops_pci,
 };
 

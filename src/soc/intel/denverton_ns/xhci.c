@@ -39,7 +39,6 @@ static struct device_operations usb_xhci_ops = {
 	.enable_resources = pci_dev_enable_resources,
 	.init = usb_xhci_init,
 	.enable = pci_dev_enable_resources,
-	.scan_bus = 0,
 	.ops_pci = &soc_pci_ops,
 };
 

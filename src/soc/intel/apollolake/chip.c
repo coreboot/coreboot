@@ -214,8 +214,6 @@ static void pci_domain_set_resources(struct device *dev)
 static struct device_operations pci_domain_ops = {
 	.read_resources = pci_domain_read_resources,
 	.set_resources = pci_domain_set_resources,
-	.enable_resources = NULL,
-	.init = NULL,
 	.scan_bus = pci_domain_scan_bus,
 	.acpi_name = &soc_acpi_name,
 };
@@ -225,7 +223,6 @@ static struct device_operations cpu_bus_ops = {
 	.set_resources = DEVICE_NOOP,
 	.enable_resources = DEVICE_NOOP,
 	.init = apollolake_init_cpus,
-	.scan_bus = NULL,
 	.acpi_fill_ssdt = generate_cpu_entries,
 };
 

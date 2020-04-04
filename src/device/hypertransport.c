@@ -495,9 +495,7 @@ struct device_operations default_ht_ops_bus = {
 	.read_resources   = pci_bus_read_resources,
 	.set_resources    = pci_dev_set_resources,
 	.enable_resources = pci_bus_enable_resources,
-	.init             = 0,
 	.scan_bus         = ht_scan_bridge,
-	.enable           = 0,
 	.reset_bus        = pci_bus_reset,
 	.ops_pci          = &ht_bus_ops_pci,
 };

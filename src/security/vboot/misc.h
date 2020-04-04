@@ -53,7 +53,7 @@ static inline int verification_should_run(void)
 	else if (CONFIG(VBOOT_STARTS_IN_BOOTBLOCK))
 		return ENV_BOOTBLOCK;
 	else
-		dead_code();
+		dead_code(_in_vboot_misc_h);
 }
 
 static inline int verstage_should_load(void)
@@ -82,7 +82,7 @@ static inline int vboot_logic_executed(void)
 		/* Post-RAM stages are "after the romstage" */
 		return !ENV_ROMSTAGE_OR_BEFORE;
 	} else {
-		dead_code();
+		dead_code(_in_vboot_misc_h);
 	}
 }
 

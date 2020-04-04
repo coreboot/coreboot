@@ -31,7 +31,7 @@ static void usb_init(struct device *dev)
 }
 
 static struct pci_operations usb_pci_ops = {
-	.set_subsystem    = pci_dev_set_subsystem,
+	.set_subsystem = pci_dev_set_subsystem,
 };
 
 static struct device_operations usb_ops = {

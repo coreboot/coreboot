@@ -34,8 +34,7 @@ static int lsmbus_write_byte(struct device *dev, u8 address, u8 data)
 	return do_smbus_write_byte(res->base, device, address, data);
 }
 
-static int lsmbus_block_write(struct device *dev, u8 cmd, u8 bytes,
-			      const u8 *buf)
+static int lsmbus_block_write(struct device *dev, u8 cmd, u8 bytes, const u8 *buf)
 {
 	u16 device;
 	struct resource *res;
@@ -62,9 +61,9 @@ static int lsmbus_block_read(struct device *dev, u8 cmd, u8 bytes, u8 *buf)
 
 static struct smbus_bus_operations lops_smbus_bus = {
 	.read_byte	= lsmbus_read_byte,
-	.write_byte     = lsmbus_write_byte,
-	.block_read     = lsmbus_block_read,
-	.block_write    = lsmbus_block_write,
+	.write_byte	= lsmbus_write_byte,
+	.block_read	= lsmbus_block_read,
+	.block_write	= lsmbus_block_write,
 };
 
 static struct pci_operations smbus_pci_ops = {

@@ -28,8 +28,7 @@ static u8 get_ich7_sata_ports(void)
 	case 0x27bc:
 		return 0x3;
 	default:
-		printk(BIOS_ERR,
-			"i82801gx_sata: error: cannot determine port config\n");
+		printk(BIOS_ERR, "i82801gx_sata: error: cannot determine port config\n");
 		return 0;
 	}
 }
@@ -54,11 +53,9 @@ void sata_enable(struct device *dev)
 					      & AHCI_UNSUPPORTED);
 
 		if (!ahci_supported) {
-			/* Fallback to IDE PLAIN for sata for the rest of the
-			   initialization */
+			/* Fallback to IDE PLAIN for sata for the rest of the initialization */
 			config->sata_mode = SATA_MODE_IDE_PLAIN;
-			printk(BIOS_DEBUG,
-			       "AHCI not supported, falling back to plain mode.\n");
+			printk(BIOS_DEBUG, "AHCI not supported, falling back to plain mode.\n");
 		}
 
 	}
@@ -66,12 +63,10 @@ void sata_enable(struct device *dev)
 	if (config->sata_mode == SATA_MODE_AHCI) {
 		/* Set map to ahci */
 		pci_write_config8(dev, SATA_MAP,
-				  (pci_read_config8(dev, SATA_MAP)
-				   & ~0xc3) | 0x40);
+				  (pci_read_config8(dev, SATA_MAP) & ~0xc3) | 0x40);
 	} else {
 	/* Set map to ide */
-		pci_write_config8(dev, SATA_MAP,
-				  pci_read_config8(dev, SATA_MAP) & ~0xc3);
+		pci_write_config8(dev, SATA_MAP, pci_read_config8(dev, SATA_MAP) & ~0xc3);
 	}
 	/* At this point, the new pci id will appear on the bus */
 }
@@ -143,8 +138,7 @@ static void sata_init(struct device *dev)
 		struct resource *ahci_res = find_resource(dev, PCI_BASE_ADDRESS_5);
 		if (ahci_res != NULL)
 			/* write AHCI GHC_PI register */
-			write32(res2mmio(ahci_res, 0xc, 0),
-				config->sata_ports_implemented);
+			write32(res2mmio(ahci_res, 0xc, 0), config->sata_ports_implemented);
 		break;
 	default:
 	case SATA_MODE_IDE_PLAIN:
@@ -219,7 +213,7 @@ static void sata_init(struct device *dev)
 }
 
 static struct pci_operations sata_pci_ops = {
-	.set_subsystem    = pci_dev_set_subsystem,
+	.set_subsystem = pci_dev_set_subsystem,
 };
 
 static struct device_operations sata_ops = {

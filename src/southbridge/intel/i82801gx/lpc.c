@@ -52,8 +52,7 @@ static void i82801gx_enable_ioapic(struct device *dev)
 static void i82801gx_enable_serial_irqs(struct device *dev)
 {
 	/* Set packet length and toggle silent mode bit for one frame. */
-	pci_write_config8(dev, SERIRQ_CNTL,
-			  (1 << 7) | (1 << 6) | ((21 - 17) << 2) | (0 << 0));
+	pci_write_config8(dev, SERIRQ_CNTL, (1 << 7) | (1 << 6) | ((21 - 17) << 2) | (0 << 0));
 }
 
 /* PIRQ[n]_ROUT[3:0] - PIRQ Routing Control
@@ -129,9 +128,7 @@ static void i82801gx_gpi_routing(struct device *dev)
 	config_t *config = dev->chip_info;
 	u32 reg32 = 0;
 
-	/* An array would be much nicer here, or some
-	 * other method of doing this.
-	 */
+	/* An array would be much nicer here, or some other method of doing this. */
 	reg32 |= (config->gpi0_routing & 0x03) << 0;
 	reg32 |= (config->gpi1_routing & 0x03) << 2;
 	reg32 |= (config->gpi2_routing & 0x03) << 4;
@@ -411,8 +408,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 	current = acpi_create_madt_lapics(current);
 
 	/* IOAPIC */
-	current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *) current,
-				2, IO_APIC_ADDR, 0);
+	current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *) current, 2, IO_APIC_ADDR, 0);
 
 	/* LAPIC_NMI */
 	current += acpi_create_madt_lapic_nmi((acpi_madt_lapic_nmi_t *)
@@ -675,14 +671,13 @@ static struct device_operations device_ops = {
 	.final			= lpc_final,
 };
 
-/* 27b0: 82801GH (ICH7 DH) */
-/* 27b8: 82801GB/GR (ICH7/ICH7R) */
-/* 27b9: 82801GBM/GU (ICH7-M/ICH7-U) */
-/* 27bc: 82NM10 (NM10) */
-/* 27bd: 82801GHM (ICH7-M DH) */
-
 static const unsigned short pci_device_ids[] = {
-	0x27b0, 0x27b8, 0x27b9, 0x27bc, 0x27bd, 0
+	0x27b0, /* 82801GH (ICH7 DH) */
+	0x27b8, /* 82801GB/GR (ICH7/ICH7R) */
+	0x27b9, /* 82801GBM/GU (ICH7-M/ICH7-U) */
+	0x27bc, /* 82NM10 (NM10) */
+	0x27bd, /* 82801GHM (ICH7-M DH) */
+	0
 };
 
 static const struct pci_driver ich7_lpc __pci_driver = {

@@ -21,8 +21,7 @@ int smbus_enable_iobar(uintptr_t base)
 		return -1;
 
 	/* Set SMBus I/O base. */
-	pci_write_config32(dev, SMB_BASE,
-			   base | PCI_BASE_ADDRESS_SPACE_IO);
+	pci_write_config32(dev, SMB_BASE, base | PCI_BASE_ADDRESS_SPACE_IO);
 
 	/* Set SMBus enable. */
 	pci_write_config8(dev, HOSTC, HST_EN);
@@ -48,8 +47,7 @@ int smbus_block_read(unsigned int device, unsigned int cmd, u8 bytes, u8 *buf)
 	return do_smbus_block_read(SMBUS_IO_BASE, device, cmd, bytes, buf);
 }
 
-int smbus_block_write(unsigned int device, unsigned int cmd, u8 bytes,
-		const u8 *buf)
+int smbus_block_write(unsigned int device, unsigned int cmd, u8 bytes, const u8 *buf)
 {
 	return do_smbus_block_write(SMBUS_IO_BASE, device, cmd, bytes, buf);
 }

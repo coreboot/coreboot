@@ -61,8 +61,7 @@ void i82801gx_enable(struct device *dev)
 
 		/* Ensure memory, io, and bus master are all disabled */
 		reg32 = pci_read_config32(dev, PCI_COMMAND);
-		reg32 &= ~(PCI_COMMAND_MASTER |
-			   PCI_COMMAND_MEMORY | PCI_COMMAND_IO);
+		reg32 &= ~(PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY | PCI_COMMAND_IO);
 		pci_write_config32(dev, PCI_COMMAND, reg32);
 
 		/* Hide this device if possible */

@@ -18,15 +18,11 @@
 
 #include "nvs.h"
 
-/* While we read PMBASE dynamically in case it changed, let's
- * initialize it with a sane value
- */
+/* While we read PMBASE dynamically in case it changed, let's initialize it with a sane value */
 u16 pmbase = DEFAULT_PMBASE;
 u8 smm_initialized = 0;
 
-/* GNVS needs to be updated by an 0xEA PM Trap (B2) after it has been located
- * by coreboot.
- */
+/* GNVS needs to be updated by an 0xEA PM Trap (B2) after it has been located by coreboot. */
 global_nvs_t *gnvs = (global_nvs_t *)0x0;
 
 void southbridge_update_gnvs(u8 apm_cnt, int *smm_done)

@@ -60,7 +60,7 @@ static const uint32_t refresh_rate_map[] = {
 	1, 5, 5, 2, 3, 4
 };
 
-/* Table format: register, bitmask, value. */
+/* Table format: register, value. */
 static const u8 register_values[] = {
 	/* NBXCFG - NBX Configuration Register
 	 * 0x50 - 0x53
@@ -122,11 +122,11 @@ static const u8 register_values[] = {
 	 *         0 = A7# is sampled asserted (i.e., 0)
 	 * [01:00] Reserved
 	 */
-	NBXCFG + 0, 0x00, 0x0c,
+	NBXCFG + 0, 0x0c,
 	// TODO: Bit 15 should be 0 for multiprocessor boards
-	NBXCFG + 1, 0x00, 0x80,
-	NBXCFG + 2, 0x00, 0x00,
-	NBXCFG + 3, 0x00, 0xff,
+	NBXCFG + 1, 0x80,
+	NBXCFG + 2, 0x00,
+	NBXCFG + 3, 0xff,
 
 	/* DRAMC - DRAM Control Register
 	 * 0x57
@@ -156,7 +156,7 @@ static const u8 register_values[] = {
 	 *       111 = Reserved
 	 */
 	/* Choose SDRAM (not registered), and disable refresh for now. */
-	DRAMC, 0x00, 0x08,
+	DRAMC, 0x08,
 
 	/*
 	 * PAM[6:0] - Programmable Attribute Map Registers
@@ -190,13 +190,13 @@ static const u8 register_values[] = {
 	 * registers are not set here appropriately, the RAM in that region
 	 * will not be accessible, thus a RAM check of it will also fail.
 	 */
-	PAM0, 0x00, 0x30,
-	PAM1, 0x00, 0x33,
-	PAM2, 0x00, 0x33,
-	PAM3, 0x00, 0x33,
-	PAM4, 0x00, 0x33,
-	PAM5, 0x00, 0x33,
-	PAM6, 0x00, 0x33,
+	PAM0, 0x30,
+	PAM1, 0x33,
+	PAM2, 0x33,
+	PAM3, 0x33,
+	PAM4, 0x33,
+	PAM5, 0x33,
+	PAM6, 0x33,
 
 	/* DRB[0:7] - DRAM Row Boundary Registers
 	 * 0x60 - 0x67
@@ -214,14 +214,6 @@ static const u8 register_values[] = {
 	 * 0x67 DRB7 = Total memory in row0+1+2+3+4+5+6+7 (in 8 MB)
 	 */
 	/* DRBs will be set later. */
-	DRB0, 0x00, 0x00,
-	DRB1, 0x00, 0x00,
-	DRB2, 0x00, 0x00,
-	DRB3, 0x00, 0x00,
-	DRB4, 0x00, 0x00,
-	DRB5, 0x00, 0x00,
-	DRB6, 0x00, 0x00,
-	DRB7, 0x00, 0x00,
 
 	/* FDHC - Fixed DRAM Hole Control Register
 	 * 0x68
@@ -236,7 +228,7 @@ static const u8 register_values[] = {
 	 * [5:0] Reserved
 	 */
 	/* No memory holes. */
-	FDHC, 0x00, 0x00,
+	FDHC, 0x00,
 
 	/* RPS - SDRAM Row Page Size Register
 	 * 0x74 - 0x75
@@ -261,8 +253,6 @@ static const u8 register_values[] = {
 	 * [15:14]  DRB[7], row 7
 	 */
 	/* Power on defaults to 2KB. Will be set later. */
-	// RPS + 0, 0x00, 0x00,
-	// RPS + 1, 0x00, 0x00,
 
 	/* SDRAMC - SDRAM Control Register
 	 * 0x76 - 0x77
@@ -298,9 +288,9 @@ static const u8 register_values[] = {
 	 *         1 = 2 clocks of RAS# precharge
 	 */
 #if CONFIG(SDRAMPWR_4DIMM)
-	SDRAMC + 0, 0x00, 0x10, /* The board has 4 DIMM slots. */
+	SDRAMC, 0x10, /* The board has 4 DIMM slots. */
 #else
-	SDRAMC + 0, 0x00, 0x00, /* The board has 3 DIMM slots. */
+	SDRAMC, 0x00, /* The board has 3 DIMM slots. */
 #endif
 
 	/* PGPOL - Paging Policy Register
@@ -325,40 +315,38 @@ static const u8 register_values[] = {
 	 *         0111 = 32 clocks
 	 *         1xxx = Infinite (pages are not closed for idle condition)
 	 */
-	PGPOL + 0, 0x00, 0x00,
-	PGPOL + 1, 0x00, 0xff,
+	/* PGPOL will be set later. */
 
 	/* PMCR - Power Management Control Register
 	 * 0x7a
 	 *
-	 * [07:07] Power Down SDRAM Enable (PDSE)
-	 *         1 = Enable
-	 *         0 = Disable
-	 * [06:06] ACPI Control Register Enable (SCRE)
-	 *         1 = Enable
-	 *         0 = Disable (default)
-	 * [05:05] Suspend Refresh Type (SRT)
-	 *         1 = Self refresh mode
-	 *         0 = CBR fresh mode
-	 * [04:04] Normal Refresh Enable (NREF_EN)
-	 *         1 = Enable
-	 *         0 = Disable
-	 * [03:03] Quick Start Mode (QSTART)
-	 *         1 = Quick start mode for the processor is enabled
-	 * [02:02] Gated Clock Enable (GCLKEN)
-	 *         1 = Enable
-	 *         0 = Disable
-	 * [01:01] AGP Disable (AGP_DIS)
-	 *         1 = Disable
-	 *         0 = Enable
-	 * [00:00] CPU reset without PCIRST enable (CRst_En)
-	 *         1 = Enable
-	 *         0 = Disable
+	 * [7] Power Down SDRAM Enable (PDSE)
+	 *     1 = Enable
+	 *     0 = Disable
+	 * [6] ACPI Control Register Enable (SCRE)
+	 *     1 = Enable
+	 *     0 = Disable (default)
+	 * [5] Suspend Refresh Type (SRT)
+	 *     1 = Self refresh mode
+	 *     0 = CBR fresh mode
+	 * [4] Normal Refresh Enable (NREF_EN)
+	 *     1 = Enable
+	 *     0 = Disable
+	 * [3] Quick Start Mode (QSTART)
+	 *     1 = Quick start mode for the processor is enabled
+	 * [2] Gated Clock Enable (GCLKEN)
+	 *     1 = Enable
+	 *     0 = Disable
+	 * [1] AGP Disable (AGP_DIS)
+	 *     1 = AGP disabled (Hardware strap)
+	 * [0] CPU reset without PCIRST enable (CRst_En)
+	 *     1 = Enable
+	 *     0 = Disable
 	 */
 	/* PMCR will be set later. */
 
 	/* Enable SCRR.SRRAEN and let BX choose the SRR. */
-	SCRR + 1, 0x00, 0x10,
+	SCRR + 1, 0x10,
 };
 
 /*-----------------------------------------------------------------------------
@@ -666,7 +654,6 @@ Public interface.
 static void sdram_set_registers(void)
 {
 	int i, max;
-	uint8_t reg;
 
 	PRINT_DEBUG("Northbridge prior to SDRAM init:\n");
 	DUMPNORTH();
@@ -674,12 +661,8 @@ static void sdram_set_registers(void)
 	max = ARRAY_SIZE(register_values);
 
 	/* Set registers as specified in the register_values[] array. */
-	for (i = 0; i < max; i += 3) {
-		reg = pci_read_config8(NB, register_values[i]);
-		reg &= register_values[i + 1];
-		reg |= register_values[i + 2] & ~(register_values[i + 1]);
-		pci_write_config8(NB, register_values[i], reg);
-	}
+	for (i = 0; i < max; i += 2)
+		pci_write_config8(NB, register_values[i], register_values[i + 1]);
 }
 
 struct dimm_size {

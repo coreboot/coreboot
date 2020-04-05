@@ -70,8 +70,8 @@ static void usb_acpi_fill_ssdt_generator(struct device *dev)
 }
 
 static struct device_operations usb_acpi_ops = {
-	.read_resources		= DEVICE_NOOP,
-	.set_resources		= DEVICE_NOOP,
+	.read_resources		= noop_read_resources,
+	.set_resources		= noop_set_resources,
 	.scan_bus		= scan_static_bus,
 	.acpi_fill_ssdt		= usb_acpi_fill_ssdt_generator,
 };

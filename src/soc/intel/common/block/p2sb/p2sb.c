@@ -124,7 +124,7 @@ static void read_resources(struct device *dev)
 
 static const struct device_operations device_ops = {
 	.read_resources		= read_resources,
-	.set_resources		= DEVICE_NOOP,
+	.set_resources		= noop_set_resources,
 	.ops_pci		= &pci_dev_ops_pci,
 };
 

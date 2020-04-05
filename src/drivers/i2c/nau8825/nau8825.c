@@ -86,8 +86,8 @@ static const char *nau8825_acpi_name(const struct device *dev)
 #endif
 
 static struct device_operations nau8825_ops = {
-	.read_resources		= DEVICE_NOOP,
-	.set_resources		= DEVICE_NOOP,
+	.read_resources		= noop_read_resources,
+	.set_resources		= noop_set_resources,
 #if CONFIG(HAVE_ACPI_TABLES)
 	.acpi_name              = nau8825_acpi_name,
 	.acpi_fill_ssdt		= nau8825_fill_ssdt,

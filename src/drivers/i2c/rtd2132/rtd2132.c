@@ -225,8 +225,8 @@ static void rtd2132_init(struct device *dev)
 }
 
 static struct device_operations rtd2132_operations = {
-	.read_resources		= DEVICE_NOOP,
-	.set_resources		= DEVICE_NOOP,
+	.read_resources		= noop_read_resources,
+	.set_resources		= noop_set_resources,
 	.init			= rtd2132_init,
 };
 

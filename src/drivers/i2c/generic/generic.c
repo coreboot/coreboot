@@ -180,8 +180,8 @@ static const char *i2c_generic_acpi_name(const struct device *dev)
 #endif
 
 static struct device_operations i2c_generic_ops = {
-	.read_resources		= DEVICE_NOOP,
-	.set_resources		= DEVICE_NOOP,
+	.read_resources		= noop_read_resources,
+	.set_resources		= noop_set_resources,
 #if CONFIG(HAVE_ACPI_TABLES)
 	.acpi_name		= i2c_generic_acpi_name,
 	.acpi_fill_ssdt		= i2c_generic_fill_ssdt_generator,

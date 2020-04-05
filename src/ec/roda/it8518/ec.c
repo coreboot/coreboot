@@ -35,7 +35,7 @@ static void it8518_init(struct device *dev)
 
 static struct device_operations ops = {
 	.init             = it8518_init,
-	.read_resources   = DEVICE_NOOP,
+	.read_resources   = noop_read_resources,
 };
 
 static struct pnp_info pnp_dev_info[] = {

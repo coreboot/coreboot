@@ -66,8 +66,8 @@ struct device_operations {
 /**
  * Standard device operations function pointers shims.
  */
-static inline void device_noop(struct device *dev) {}
-#define DEVICE_NOOP device_noop
+static inline void noop_read_resources(struct device *dev) {}
+static inline void noop_set_resources(struct device *dev) {}
 
 struct bus {
 

@@ -79,8 +79,8 @@ static const char *i2c_sx9310_acpi_name(const struct device *dev)
 }
 
 static struct device_operations i2c_sx9310_ops = {
-	.read_resources		= DEVICE_NOOP,
-	.set_resources		= DEVICE_NOOP,
+	.read_resources		= noop_read_resources,
+	.set_resources		= noop_set_resources,
 	.acpi_name		= i2c_sx9310_acpi_name,
 	.acpi_fill_ssdt		= i2c_sx9310_fill_ssdt,
 };

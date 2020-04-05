@@ -68,8 +68,8 @@ static const char *generic_dev_acpi_name(const struct device *dev)
 }
 
 static struct device_operations generic_dev_ops = {
-	.read_resources		= DEVICE_NOOP,
-	.set_resources		= DEVICE_NOOP,
+	.read_resources		= noop_read_resources,
+	.set_resources		= noop_set_resources,
 	.acpi_name		= generic_dev_acpi_name,
 	.acpi_fill_ssdt		= generic_dev_fill_ssdt_generator,
 };

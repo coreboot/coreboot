@@ -24,8 +24,8 @@ static struct device_operations pci_domain_ops = {
 };
 
 static struct device_operations cpu_bus_ops = {
-	.read_resources   = DEVICE_NOOP,
-	.set_resources    = DEVICE_NOOP,
+	.read_resources   = noop_read_resources,
+	.set_resources    = noop_set_resources,
 	.init             = soc_init_cpus
 };
 

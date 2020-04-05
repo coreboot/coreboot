@@ -30,8 +30,8 @@ static void ish_fill_ssdt_generator(struct device *dev)
 }
 
 static struct device_operations intel_ish_ops = {
-	.read_resources		= DEVICE_NOOP,
-	.set_resources		= DEVICE_NOOP,
+	.read_resources		= noop_read_resources,
+	.set_resources		= noop_set_resources,
 	.acpi_fill_ssdt		= ish_fill_ssdt_generator,
 };
 

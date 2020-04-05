@@ -219,7 +219,7 @@ static const char *wilco_ec_acpi_name(const struct device *dev)
 static struct device_operations ops = {
 	.init			= wilco_ec_init,
 	.read_resources		= wilco_ec_read_resources,
-	.set_resources		= DEVICE_NOOP,
+	.set_resources		= noop_set_resources,
 	.acpi_fill_ssdt		= wilco_ec_fill_ssdt_generator,
 	.acpi_name		= wilco_ec_acpi_name,
 };

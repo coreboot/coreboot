@@ -184,7 +184,6 @@ static struct device_operations pci_domain_ops = {
 static struct device_operations cpu_bus_ops = {
 	.read_resources   = DEVICE_NOOP,
 	.set_resources    = DEVICE_NOOP,
-	.enable_resources = DEVICE_NOOP,
 	.init             = mp_cpu_bus_init,
 };
 

@@ -167,7 +167,6 @@ static void rx6110sa_init(struct device *dev)
 static struct device_operations rx6110sa_ops = {
 	.read_resources		= DEVICE_NOOP,
 	.set_resources		= DEVICE_NOOP,
-	.enable_resources	= DEVICE_NOOP,
 	.init			= rx6110sa_init,
 	.final			= rx6110sa_final
 };

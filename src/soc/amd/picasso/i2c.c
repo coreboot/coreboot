@@ -128,7 +128,6 @@ struct device_operations picasso_i2c_mmio_ops = {
 	/* TODO(teravest): Move I2C resource info here. */
 	.read_resources = DEVICE_NOOP,
 	.set_resources = DEVICE_NOOP,
-	.enable_resources = DEVICE_NOOP,
 	.scan_bus = scan_smbus,
 	.acpi_name = i2c_acpi_name,
 	.acpi_fill_ssdt = dw_i2c_acpi_fill_ssdt,

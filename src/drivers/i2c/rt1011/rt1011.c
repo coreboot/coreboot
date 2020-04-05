@@ -86,7 +86,6 @@ static const char *rt1011_acpi_name(const struct device *dev)
 static struct device_operations rt1011_ops = {
 	.read_resources = DEVICE_NOOP,
 	.set_resources = DEVICE_NOOP,
-	.enable_resources = DEVICE_NOOP,
 	.acpi_name = rt1011_acpi_name,
 	.acpi_fill_ssdt = rt1011_fill_ssdt,
 };

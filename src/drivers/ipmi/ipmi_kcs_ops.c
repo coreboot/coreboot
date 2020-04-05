@@ -347,7 +347,6 @@ static void ipmi_read_resources(struct device *dev)
 static struct device_operations ops = {
 	.read_resources   = ipmi_read_resources,
 	.set_resources    = ipmi_set_resources,
-	.enable_resources = DEVICE_NOOP,
 	.init             = ipmi_kcs_init,
 #if CONFIG(HAVE_ACPI_TABLES)
 	.write_acpi_tables = ipmi_write_acpi_tables,

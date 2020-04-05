@@ -97,8 +97,6 @@ static struct device_operations pci_domain_ops = {
 static struct device_operations cpu_bus_ops = {
 	.read_resources   = DEVICE_NOOP,
 	.set_resources    = DEVICE_NOOP,
-	.enable_resources = DEVICE_NOOP,
-	.init             = DEVICE_NOOP,
 #if CONFIG(HAVE_ACPI_TABLES)
 	.acpi_fill_ssdt   = generate_cpu_entries,
 #endif

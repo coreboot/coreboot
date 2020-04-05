@@ -275,7 +275,6 @@ static void cpu_bus_scan(struct device *bus)
 static struct device_operations cpu_bus_ops = {
 	.read_resources   = DEVICE_NOOP,
 	.set_resources    = DEVICE_NOOP,
-	.enable_resources = DEVICE_NOOP,
 	.init             = cpu_bus_init,
 	.scan_bus         = cpu_bus_scan,
 };

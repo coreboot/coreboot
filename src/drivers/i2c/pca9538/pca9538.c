@@ -41,9 +41,7 @@ static void pca9538_init(struct device *dev)
 static struct device_operations pca9538_ops = {
 	.read_resources		= DEVICE_NOOP,
 	.set_resources		= DEVICE_NOOP,
-	.enable_resources	= DEVICE_NOOP,
 	.init			= pca9538_init,
-	.final			= DEVICE_NOOP
 };
 
 static void pca9538_enable(struct device *dev)

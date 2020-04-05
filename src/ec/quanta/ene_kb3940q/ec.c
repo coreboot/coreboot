@@ -133,7 +133,6 @@ static void ene_kb3940q_init(struct device *dev)
 static struct device_operations ops = {
 	.init             = ene_kb3940q_init,
 	.read_resources   = DEVICE_NOOP,
-	.enable_resources = DEVICE_NOOP,
 };
 
 static struct pnp_info pnp_dev_info[] = {

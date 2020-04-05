@@ -35,7 +35,6 @@ static void at24rf08c_init(struct device *dev)
 static struct device_operations at24rf08c_operations = {
 	.read_resources = DEVICE_NOOP,
 	.set_resources = DEVICE_NOOP,
-	.enable_resources = DEVICE_NOOP,
 	.init = at24rf08c_init,
 };
 

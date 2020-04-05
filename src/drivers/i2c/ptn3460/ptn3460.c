@@ -129,9 +129,7 @@ __weak int mb_adjust_cfg(struct ptn_3460_config *cfg_ptr)
 static struct device_operations ptn3460_ops = {
 	.read_resources		= DEVICE_NOOP,
 	.set_resources		= DEVICE_NOOP,
-	.enable_resources	= DEVICE_NOOP,
 	.init			= ptn3460_init,
-	.final			= DEVICE_NOOP
 };
 
 static void ptn3460_enable(struct device *dev)

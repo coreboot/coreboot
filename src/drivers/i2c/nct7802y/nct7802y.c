@@ -22,7 +22,6 @@ static void nct7802y_init(struct device *const dev)
 static struct device_operations nct7802y_ops = {
 	.read_resources		= DEVICE_NOOP,
 	.set_resources		= DEVICE_NOOP,
-	.enable_resources	= DEVICE_NOOP,
 	.init			= nct7802y_init,
 };
 

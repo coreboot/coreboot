@@ -80,7 +80,6 @@ static void adt7463_init(struct device *adt7463)
 static struct device_operations adt7463_operations = {
 	.read_resources = DEVICE_NOOP,
 	.set_resources = DEVICE_NOOP,
-	.enable_resources = DEVICE_NOOP,
 	.init = adt7463_init,
 };
 

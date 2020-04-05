@@ -61,7 +61,6 @@ static const char *gpio_regulator_acpi_name(const struct device *dev)
 static struct device_operations gpio_regulator_ops = {
 	.read_resources = DEVICE_NOOP,
 	.set_resources = DEVICE_NOOP,
-	.enable_resources = DEVICE_NOOP,
 	.acpi_name = gpio_regulator_acpi_name,
 	.acpi_fill_ssdt = gpio_regulator_fill_ssdt_generator,
 };

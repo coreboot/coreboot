@@ -543,7 +543,6 @@ static struct device_operations northbridge_operations = {
 	.read_resources	  = read_resources,
 	.set_resources	  = set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.init		  = DEVICE_NOOP,
 	.acpi_fill_ssdt   = northbridge_fill_ssdt_generator,
 	.write_acpi_tables = agesa_write_acpi_tables,
 };
@@ -897,7 +896,6 @@ static void cpu_bus_init(struct device *dev)
 static struct device_operations cpu_bus_ops = {
 	.read_resources	  = DEVICE_NOOP,
 	.set_resources	  = DEVICE_NOOP,
-	.enable_resources = DEVICE_NOOP,
 	.init		  = cpu_bus_init,
 	.scan_bus	  = cpu_bus_scan,
 };

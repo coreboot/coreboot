@@ -129,8 +129,6 @@ static const char *root_dev_acpi_name(const struct device *dev)
 struct device_operations default_dev_ops_root = {
 	.read_resources   = DEVICE_NOOP,
 	.set_resources    = DEVICE_NOOP,
-	.enable_resources = DEVICE_NOOP,
-	.init             = DEVICE_NOOP,
 	.scan_bus         = scan_static_bus,
 	.reset_bus        = root_dev_reset,
 #if CONFIG(HAVE_ACPI_TABLES)

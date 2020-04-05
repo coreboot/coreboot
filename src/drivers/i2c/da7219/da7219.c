@@ -100,7 +100,6 @@ static const char *da7219_acpi_name(const struct device *dev)
 static struct device_operations da7219_ops = {
 	.read_resources		= DEVICE_NOOP,
 	.set_resources		= DEVICE_NOOP,
-	.enable_resources	= DEVICE_NOOP,
 #if CONFIG(HAVE_ACPI_TABLES)
 	.acpi_name		= da7219_acpi_name,
 	.acpi_fill_ssdt		= da7219_fill_ssdt,

@@ -120,7 +120,6 @@ static void pcf8523_init(struct device *dev)
 static struct device_operations pcf8523c_ops = {
 	.read_resources		= DEVICE_NOOP,
 	.set_resources		= DEVICE_NOOP,
-	.enable_resources	= DEVICE_NOOP,
 	.init			= pcf8523_init,
 	.final			= pcf8523_final
 };

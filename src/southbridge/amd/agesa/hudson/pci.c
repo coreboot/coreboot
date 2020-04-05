@@ -36,7 +36,6 @@ static struct device_operations pci_ops = {
 	.read_resources = pci_bus_read_resources,
 	.set_resources = pci_dev_set_resources,
 	.enable_resources = pci_bus_enable_resources,
-	.init = DEVICE_NOOP,
 	.scan_bus = pci_scan_bridge,
 	.reset_bus = pci_bus_reset,
 	.ops_pci = &lops_pci,

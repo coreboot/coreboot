@@ -72,7 +72,7 @@ void mainboard_chromeos_acpi_generate(void);
 #if CONFIG(CHROMEOS)
 void chromeos_dsdt_generator(struct device *dev);
 #else
-#define chromeos_dsdt_generator DEVICE_NOOP
+#define chromeos_dsdt_generator NULL
 #endif
 
 enum {

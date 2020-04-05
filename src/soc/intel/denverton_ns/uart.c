@@ -53,7 +53,6 @@ static struct device_operations uart_ops = {
 	.set_resources = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.init = pci_dev_init,
-	.enable = DEVICE_NOOP
 };
 
 static const struct pci_driver uart_driver __pci_driver = {

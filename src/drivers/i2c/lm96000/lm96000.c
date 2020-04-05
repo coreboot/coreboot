@@ -207,7 +207,6 @@ static void lm96000_init(struct device *const dev)
 static struct device_operations lm96000_ops = {
 	.read_resources		= DEVICE_NOOP,
 	.set_resources		= DEVICE_NOOP,
-	.enable_resources	= DEVICE_NOOP,
 	.init			= lm96000_init,
 };
 

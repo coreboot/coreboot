@@ -498,10 +498,10 @@ static void i945_setup_pci_express_x16(void)
 	u32 timeout;
 	u32 reg32;
 	u16 reg16;
-	pci_devfn_t p2peg = PCI_DEV(0, 0x01, 0);
+	const pci_devfn_t p2peg = PCI_DEV(0, 0x01, 0);
 
 	u8 tmp_secondary = 0x0a;
-	pci_devfn_t peg_plugin = PCI_DEV(tmp_secondary, 0, 0);
+	const pci_devfn_t peg_plugin = PCI_DEV(tmp_secondary, 0, 0);
 
 	printk(BIOS_DEBUG, "Enabling PCI Express x16 Link\n");
 
@@ -761,7 +761,7 @@ disable_pciexpress_x16_link:
 static void i945_setup_root_complex_topology(void)
 {
 	u32 reg32;
-	pci_devfn_t p2peg = PCI_DEV(0, 0x01, 0);
+	const pci_devfn_t p2peg = PCI_DEV(0, 0x01, 0);
 
 	printk(BIOS_DEBUG, "Setting up Root Complex Topology\n");
 	/* Egress Port Root Topology */

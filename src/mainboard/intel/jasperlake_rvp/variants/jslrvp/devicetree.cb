@@ -124,7 +124,7 @@ chip soc/intel/jasperlake
 	register "dptf_enable" = "1"
 
 	# Enable S0ix
-	register "s0ix_enable" = "0"
+	register "s0ix_enable" = "1"
 
 	register "common_soc_config" = "{
 		.chipset_lockdown = CHIPSET_LOCKDOWN_COREBOOT,

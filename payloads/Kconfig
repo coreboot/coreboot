@@ -132,7 +132,8 @@ config MEMTEST_SECONDARY_PAYLOAD
 config NVRAMCUI_SECONDARY_PAYLOAD
 	bool "Load nvramcui as a secondary payload"
 	default n
-	depends on ARCH_X86
+	depends on ARCH_X86 && HAVE_OPTION_TABLE
+	select USE_OPTION_TABLE
 	help
 	  nvramcui can be loaded as a secondary payload under SeaBIOS, GRUB,
 	  or any other payload that can load additional payloads.

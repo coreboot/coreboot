@@ -5,6 +5,7 @@
 #include <arch/acpi.h>
 #include <console/console.h>
 #include <delay.h>
+#include <device/device.h>
 #include <drivers/i2c/designware/dw_i2c.h>
 #include <amdblocks/acpimmio.h>
 #include <soc/iomap.h>
@@ -37,9 +38,8 @@ const struct dw_i2c_bus_config *dw_i2c_get_soc_cfg(unsigned int bus)
 	if (bus < APU_I2C_MIN_BUS || bus > APU_I2C_MAX_BUS)
 		return NULL;
 
-	config = get_soc_config();
-	if (config == NULL)
-		return NULL;
+	/* config is not NULL; if it was, config_of_soc calls die() internally */
+	config = config_of_soc();
 
 	return &config->i2c[bus];
 }
@@ -80,10 +80,8 @@ static void dw_i2c_soc_init(bool is_early_init)
 	uint32_t pad_ctrl;
 	int misc_reg;
 
-	config = get_soc_config();
-
-	if (config == NULL)
-		return;
+	/* config is not NULL; if it was, config_of_soc calls die() internally */
+	config = config_of_soc();
 
 	for (i = 0; i < ARRAY_SIZE(config->i2c); i++) {
 		const struct dw_i2c_bus_config *cfg  = &config->i2c[i];

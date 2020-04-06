@@ -18,3 +18,18 @@ config IPMI_FRU_SINGLE_RW_SZ
 	  IPMB messages are limited to 32-bytes total. When the
 	  data size is larger than this value, IPMI can complete
 	  reading/writing the data over multiple commands.
+
+config IPMI_KCS_ROMSTAGE
+	bool
+	default n
+	depends on IPMI_KCS
+	help
+	  IPMI KCS support in romstage.
+
+config BMC_KCS_BASE
+	hex
+	default 0xca2
+	depends on IPMI_KCS
+	help
+	  The PNP base address of BMC KCS. It must be equal to the
+	  pnp port value defined in devicetree for chip drivers/ipmi.

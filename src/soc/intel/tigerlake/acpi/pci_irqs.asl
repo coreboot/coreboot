@@ -16,7 +16,7 @@
 #include <soc/irq.h>
 
 Name (PICP, Package () {
-	/* D31:HSA, SMBUS, TraceHUB */
+	/* D31:HDA, SMBUS, TraceHUB */
 	Package(){0x001FFFFF, 3, 0, HDA_IRQ },
 	Package(){0x001FFFFF, 4, 0, SMBUS_IRQ },
 	Package(){0x001FFFFF, 7, 0, TRACEHUB_IRQ },
@@ -89,7 +89,7 @@ Name (PICP, Package () {
 })
 
 Name (PICN, Package () {
-	/* D31:HSA, SMBUS, TraceHUB*/
+	/* D31:HDA, SMBUS, TraceHUB*/
 	Package () { 0x001FFFFF, 3, 0, 11 },
 	Package () { 0x001FFFFF, 4, 0, 11 },
 	Package () { 0x001FFFFF, 7, 0, 11 },

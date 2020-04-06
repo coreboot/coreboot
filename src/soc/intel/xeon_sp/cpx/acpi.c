@@ -10,7 +10,10 @@
 #include <cpu/x86/smm.h>
 #include <device/pci.h>
 #include <intelblocks/acpi.h>
+#include <hob_iiouds.h>
+#include <hob_memmap.h>
 #include <soc/acpi.h>
+#include <soc/cpu.h>
 #include <soc/iomap.h>
 #include <soc/nvs.h>
 #include <soc/pci_devs.h>
@@ -21,8 +24,8 @@
 
 #define SCI_INT_NUM		9
 
-unsigned long southbridge_write_acpi_tables(const struct device *device, unsigned long current,
-						struct acpi_rsdp *rsdp)
+unsigned long southbridge_write_acpi_tables(const struct device *device,
+	unsigned long current, struct acpi_rsdp *rsdp)
 {
 	current = acpi_write_hpet(device, current, rsdp);
 	current = (ALIGN(current, 16));
@@ -150,16 +153,79 @@ static unsigned long acpi_madt_irq_overrides(unsigned long current)
 	/* SCI */
 	current += acpi_create_madt_irqoverride((void *)current, 0, sci, sci, flags);
 
+	current +=
+		acpi_create_madt_lapic_nmi((acpi_madt_lapic_nmi_t *) current, 0xff, 0x0d, 1);
+
+	return current;
+}
+
+static unsigned long xeonsp_acpi_create_madt_lapics(unsigned long current)
+{
+	struct device *cpu;
+	uint8_t num_cpus = 0;
+
+	for (cpu = all_devices; cpu; cpu = cpu->next) {
+		if ((cpu->path.type != DEVICE_PATH_APIC) ||
+			(cpu->bus->dev->path.type != DEVICE_PATH_CPU_CLUSTER)) {
+			continue;
+		}
+		if (!cpu->enabled)
+			continue;
+		current += acpi_create_madt_lapic((acpi_madt_lapic_t *)current,
+			num_cpus, cpu->path.apic.apic_id);
+		num_cpus++;
+	}
+
 	return current;
 }
 
 unsigned long acpi_fill_madt(unsigned long current)
 {
-	/* Local APICs */
-	current = acpi_create_madt_lapics(current);
+	int cur_index;
+	struct iiostack_resource stack_info = {0};
 
-	/* IOAPIC */
-	current += acpi_create_madt_ioapic((void *)current, 2, IO_APIC_ADDR, 0);
+	int gsi_bases[] = { 0, 0x18, 0x20, 0x28, 0x30, 0x48, 0x50, 0x58, 0x60 };
+	int ioapic_ids[] = { 0x8, 0x9, 0xa, 0xb, 0xc, 0xf, 0x10, 0x11, 0x12 };
+
+	/* Local APICs */
+	current = xeonsp_acpi_create_madt_lapics(current);
+
+	cur_index = 0;
+	get_iiostack_info(&stack_info);
+
+	for (int stack = 0; stack < stack_info.no_of_stacks; ++stack) {
+		const STACK_RES *ri = &stack_info.res[stack];
+		assert(cur_index < ARRAY_SIZE(ioapic_ids));
+		assert(cur_index < ARRAY_SIZE(gsi_bases));
+		int ioapic_id = ioapic_ids[cur_index];
+		int gsi_base = gsi_bases[cur_index];
+		printk(BIOS_DEBUG, "Adding MADT IOAPIC for stack: %d, ioapic_id: 0x%x, "
+			"ioapic_base: 0x%x, gsi_base: 0x%x\n",
+			stack,  ioapic_id, ri->IoApicBase, gsi_base);
+		current += acpi_create_madt_ioapic(
+			(acpi_madt_ioapic_t *)current,
+			ioapic_id, ri->IoApicBase, gsi_base);
+		++cur_index;
+
+		/*
+		 * Stack 0 has non-PCH IOAPIC and PCH IOAPIC.
+		 * Add entry for PCH IOAPIC.
+		 */
+		if (stack == 0) { /* PCH IOAPIC */
+			assert(cur_index < ARRAY_SIZE(ioapic_ids));
+			assert(cur_index < ARRAY_SIZE(gsi_bases));
+			ioapic_id = ioapic_ids[cur_index];
+			gsi_base = gsi_bases[cur_index];
+			printk(BIOS_DEBUG, "Adding MADT IOAPIC for stack: %d, ioapic_id: 0x%x, "
+				"ioapic_base: 0x%x, gsi_base: 0x%x\n",
+				stack,  ioapic_id,
+				ri->IoApicBase + 0x1000, gsi_base);
+			current += acpi_create_madt_ioapic(
+				(acpi_madt_ioapic_t *)current,
+				ioapic_id, ri->IoApicBase + 0x1000, gsi_base);
+			++cur_index;
+		}
+	}
 
 	return acpi_madt_irq_overrides(current);
 }

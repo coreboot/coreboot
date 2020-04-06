@@ -44,9 +44,9 @@
 #define VTD_CAP_HIGH			0x0C
 #define VTD_EXT_CAP_HIGH		0x14
 
-#define MMAP_VTD_CFG_REG_DEVID		0x2024
-#define VTD_DEV				5
-#define VTD_FUNC			0
+#define MMAP_VTD_CFG_REG_DEVID	0x2024
+#define VTD_DEV			5
+#define VTD_FUNC		0
 
 #define VMD_DEV_NUM             0x05
 #define VMD_FUNC_NUM            0x05
@@ -71,7 +71,35 @@
 #define HPET_DEV_NUM            PCH_DEV_SLOT_LPC
 #define HPET0_FUNC_NUM          0x00
 
-// ==================== IOAPIC Definitions for DMAR/ACPI ====================
+#define MMAP_VTD_CFG_REG_DEVID		0x2024
+#define VTD_DEV				5
+#define VTD_FUNC			0
+
+#define PCH_DEV_SLOT_LPC        0x1f
+#define  PCH_DEVFN_LPC          _PCH_DEVFN(LPC, 0)
+#define  PCH_DEVFN_P2SB         _PCH_DEVFN(LPC, 1)
+#define  PCH_DEVFN_PMC          _PCH_DEVFN(LPC, 2)
+#define  PCH_DEVFN_SPI          _PCH_DEVFN(LPC, 5)
+#define  PCH_DEV_LPC            _PCH_DEV(LPC, 0)
+#define  PCH_DEV_P2SB           _PCH_DEV(LPC, 1)
+#define  PCH_DEV_PMC            _PCH_DEV(LPC, 2)
+#define  PCH_DEV_SPI            _PCH_DEV(LPC, 5)
+
+
+#define CBDMA_DEV_NUM           0x04
+#define IIO_CBDMA_MMIO_SIZE     0x10000 //64kB for one CBDMA function
+
+#define VMD_DEV_NUM             0x05
+#define VMD_FUNC_NUM            0x05
+
+#define APIC_DEV_NUM            0x05
+#define APIC_FUNC_NUM           0x04
+
+#define PCH_IOAPIC_BUS_NUMBER   0x00
+#define PCH_IOAPIC_DEV_NUM      0x1F
+#define PCH_IOAPIC_FUNC_NUM     0x00
+
+// ========== IOAPIC Definitions for DMAR/ACPI ========
 #define PCH_IOAPIC_ID                   0x08
 #define PC00_IOAPIC_ID                  0x09
 #define PC01_IOAPIC_ID                  0x0A
@@ -85,15 +113,5 @@
 #define PC09_IOAPIC_ID                  0x12
 #define PC10_IOAPIC_ID                  0x13
 #define PC11_IOAPIC_ID                  0x14
-
-#define PCH_DEV_SLOT_LPC        0x1f
-#define  PCH_DEVFN_LPC          _PCH_DEVFN(LPC, 0)
-#define  PCH_DEVFN_P2SB         _PCH_DEVFN(LPC, 1)
-#define  PCH_DEVFN_PMC          _PCH_DEVFN(LPC, 2)
-#define  PCH_DEVFN_SPI          _PCH_DEVFN(LPC, 5)
-#define  PCH_DEV_LPC            _PCH_DEV(LPC, 0)
-#define  PCH_DEV_P2SB           _PCH_DEV(LPC, 1)
-#define  PCH_DEV_PMC            _PCH_DEV(LPC, 2)
-#define  PCH_DEV_SPI            _PCH_DEV(LPC, 5)
 
 #endif /* _SOC_PCI_DEVS_H_ */

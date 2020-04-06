@@ -103,7 +103,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 
 	params->TcssAuxOri = config->TcssAuxOri;
 	for (i = 0; i < 8; i++)
-		params->IomTypeCPortPadCfg[i] = 0x09000000;
+		params->IomTypeCPortPadCfg[i] = config->IomTypeCPortPadCfg[i];
 
 	/* Chipset Lockdown */
 	if (get_lockdown_config() == CHIPSET_LOCKDOWN_COREBOOT) {

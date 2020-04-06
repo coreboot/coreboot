@@ -222,6 +222,19 @@ struct soc_intel_tigerlake_config {
 	uint8_t TcssDma1En;
 
 	/*
+	 * IOM Port Config
+	 * If a port orientation needs to be controlled by the SOC this setting must be
+	 * updated to reflect the correct GPIOs being used for the SOC port flipping.
+	 * There are 4 ports each with a pair of GPIOs for Pull Up and Pull Down
+	 * 0,1 are pull up and pull down for port 0
+	 * 2,3 are pull up and pull down for port 1
+	 * 4,5 are pull up and pull down for port 2
+	 * 6,7 are pull up and pull down for port 3
+	 * values to be programmed correspond to the GPIO family and offsets
+	 */
+	uint32_t IomTypeCPortPadCfg[8];
+
+	/*
 	 * SOC Aux orientation override:
 	 * This is a bitfield that corresponds to up to 4 TCSS ports on TGL.
 	 * Even numbered bits (0, 2, 4, 6) control the retimer being handled by SOC.

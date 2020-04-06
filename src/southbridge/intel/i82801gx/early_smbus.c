@@ -14,7 +14,7 @@ uintptr_t smbus_base(void)
 int smbus_enable_iobar(uintptr_t base)
 {
 	/* Set the SMBus device statically. */
-	pci_devfn_t dev = PCI_DEV(0x0, 0x1f, 0x3);
+	const pci_devfn_t dev = PCI_DEV(0x0, 0x1f, 0x3);
 
 	/* Check to make sure we've got the right device. */
 	if (pci_read_config16(dev, 0x2) != 0x27da)

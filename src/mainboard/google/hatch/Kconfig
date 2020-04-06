@@ -95,6 +95,7 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "Akemi" if BOARD_GOOGLE_AKEMI
 	default "Dratini" if BOARD_GOOGLE_DRATINI
+	default "Duffy" if BOARD_GOOGLE_DUFFY
 	default "Hatch" if BOARD_GOOGLE_HATCH
 	default "Helios" if BOARD_GOOGLE_HELIOS
 	default "Helios_Diskswap" if BOARD_GOOGLE_HELIOS_DISKSWAP
@@ -121,6 +122,7 @@ config VARIANT_DIR
 	string
 	default "akemi" if BOARD_GOOGLE_AKEMI
 	default "dratini" if BOARD_GOOGLE_DRATINI
+	default "duffy" if BOARD_GOOGLE_DUFFY
 	default "hatch" if BOARD_GOOGLE_HATCH
 	default "helios" if BOARD_GOOGLE_HELIOS
 	default "helios" if BOARD_GOOGLE_HELIOS_DISKSWAP

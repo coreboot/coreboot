@@ -59,3 +59,6 @@
 
 /* PMC Core*/
 #include <soc/intel/common/block/acpi/acpi/pmc.asl>
+
+/* EMMC/SD card */
+#include "scs.asl"

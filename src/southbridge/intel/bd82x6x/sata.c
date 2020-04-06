@@ -114,10 +114,7 @@ static void sata_init(struct device *dev)
 	        /* IDE */
 		printk(BIOS_DEBUG, "SATA: Controller in plain mode.\n");
 
-		/* No AHCI: clear AHCI base */
-		pci_write_config32(dev, 0x24, 0x00000000);
-
-		/* And without AHCI BAR no memory decoding */
+		/* Without AHCI BAR no memory decoding */
 		reg16 = pci_read_config16(dev, PCI_COMMAND);
 		reg16 &= ~PCI_COMMAND_MEMORY;
 		pci_write_config16(dev, PCI_COMMAND, reg16);

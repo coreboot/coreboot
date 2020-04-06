@@ -58,10 +58,6 @@ static void sata_init(struct device *dev)
 
 		printk(BIOS_DEBUG, "SATA: Controller in AHCI mode.\n");
 
-		/* Set Interrupt Line */
-		/* Interrupt Pin is set by D31IP.PIP */
-		pci_write_config8(dev, INTR_LN, 0x0a);
-
 		/* Set timings */
 		pci_write_config16(dev, IDE_TIM_PRI, IDE_DECODE_ENABLE |
 				IDE_ISP_3_CLOCKS | IDE_RCT_1_CLOCKS |
@@ -130,10 +126,6 @@ static void sata_init(struct device *dev)
 		 * or'ed with enabled (0x50) = 0xf
 		 */
 		pci_write_config8(dev, 0x09, 0x8f);
-
-		/* Set Interrupt Line */
-		/* Interrupt Pin is set by D31IP.PIP */
-		pci_write_config8(dev, INTR_LN, 0xff);
 
 		/* Set timings */
 		pci_write_config16(dev, IDE_TIM_PRI, IDE_DECODE_ENABLE |

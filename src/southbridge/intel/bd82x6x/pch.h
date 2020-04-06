@@ -167,7 +167,6 @@ void early_usb_init(const struct southbridge_usb_port *portmap);
 #define PCH_IDE_DEV		PCI_DEV(0, 0x1f, 1)
 #define PCH_SATA_DEV		PCI_DEV(0, 0x1f, 2)
 #define PCH_SATA2_DEV		PCI_DEV(0, 0x1f, 5)
-#define INTR_LN			0x3c
 #define IDE_TIM_PRI		0x40	/* IDE timings, primary */
 #define   IDE_DECODE_ENABLE	(1 << 15)
 #define   IDE_SITRE		(1 << 14)

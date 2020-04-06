@@ -186,6 +186,11 @@ static void sata_init(struct device *dev)
 
 	pch_iobp_update(0xea004001, 0x3fffffff, 0xc0000000);
 	pch_iobp_update(0xea00408a, 0xfffffcff, 0x00000100);
+
+	pci_update_config32(dev, 0x98,
+		~(1 << 16 | 0x3f << 7 | 3 << 5 | 3 << 3),
+		1 << 24 | 1 << 22 | 1 << 20 | 1 << 19 |
+		1 << 18 | 1 << 14 | 0x04 << 7 | 1 << 3);
 }
 
 static void sata_enable(struct device *dev)

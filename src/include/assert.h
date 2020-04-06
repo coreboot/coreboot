@@ -52,15 +52,10 @@
  * The error message when this hits will look like this:
  *
  * ramstage/lib/bootmode.o: In function `display_init_required':
- * bootmode.c:42: undefined reference to `dead_code_assertion_failed_at_line_42'
+ * bootmode.c:42: undefined reference to `_dead_code_assertion_failed'
  */
-#define __dead_code(tag, line) do { \
-	extern void dead_code_assertion_failed##tag##_at_line_##line(void) \
-		__attribute__((noreturn)); \
-	dead_code_assertion_failed##tag##_at_line_##line(); \
-} while (0)
-#define _dead_code(tag, line) __dead_code(tag, line)
-#define dead_code(tag) _dead_code(tag, __LINE__)
+extern void _dead_code_assertion_failed(void) __attribute__((noreturn));
+#define dead_code() _dead_code_assertion_failed()
 
 /* This can be used in the context of an expression of type 'type'. */
 #define dead_code_t(type) ({ \

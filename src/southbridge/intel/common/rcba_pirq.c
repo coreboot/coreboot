@@ -16,8 +16,7 @@ static const u32 pirq_dir_route_reg[MAX_SLOT - MIN_SLOT + 1] = {
 	D26IR, D27IR, D28IR, D29IR, D30IR, D31IR,
 };
 
-enum pirq intel_common_map_pirq(const struct device *dev,
-				const enum pci_pin pci_pin)
+enum pirq intel_common_map_pirq(const struct device *dev, const enum pci_pin pci_pin)
 {
 	u8 slot = PCI_SLOT(dev->path.pci.devfn);
 	u8 shift = 4 * (pci_pin - PCI_INT_A);
@@ -25,8 +24,7 @@ enum pirq intel_common_map_pirq(const struct device *dev,
 	u16 reg;
 
 	if (pci_pin < PCI_INT_A || pci_pin > PCI_INT_D) {
-		printk(BIOS_ERR,
-			"ACPI_PIRQ_GEN: Slot %d PCI pin %d out of bounds\n",
+		printk(BIOS_ERR, "ACPI_PIRQ_GEN: Slot %d PCI pin %d out of bounds\n",
 			slot, pci_pin);
 		return PIRQ_NONE;
 	}

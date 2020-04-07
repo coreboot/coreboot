@@ -5,6 +5,7 @@
 #include <arch/acpi.h>
 #include <console/console.h>
 #include <delay.h>
+#include <device/device.h>
 #include <drivers/i2c/designware/dw_i2c.h>
 #include <amdblocks/acpimmio.h>
 #include <soc/iomap.h>
@@ -34,19 +35,6 @@ uintptr_t dw_i2c_base_address(unsigned int bus)
 	return bus < I2C_DEVICE_COUNT ? i2c_bus_address[bus] : 0;
 }
 
-static const struct soc_amd_stoneyridge_config *get_soc_config(void)
-{
-	const struct device *dev = pcidev_path_on_root(GNB_DEVFN);
-
-	if (!dev || !dev->chip_info) {
-		printk(BIOS_ERR, "%s: Could not find SoC devicetree config!\n",
-			__func__);
-		return NULL;
-	}
-
-	return dev->chip_info;
-}
-
 const struct dw_i2c_bus_config *dw_i2c_get_soc_cfg(unsigned int bus)
 {
 	const struct soc_amd_stoneyridge_config *config;
@@ -54,9 +42,8 @@ const struct dw_i2c_bus_config *dw_i2c_get_soc_cfg(unsigned int bus)
 	if (bus >= ARRAY_SIZE(i2c_bus_address))
 		return NULL;
 
-	config = get_soc_config();
-	if (config == NULL)
-		return NULL;
+	/* config is not NULL; if it was, config_of_soc calls die() internally */
+	config = config_of_soc();
 
 	return &config->i2c[bus];
 }
@@ -97,10 +84,8 @@ static void dw_i2c_soc_init(bool is_early_init)
 	size_t i;
 	const struct soc_amd_stoneyridge_config *config;
 
-	config = get_soc_config();
-
-	if (config == NULL)
-		return;
+	/* config is not NULL; if it was, config_of_soc calls die() internally */
+	config = config_of_soc();
 
 	for (i = 0; i < ARRAY_SIZE(config->i2c); i++) {
 		const struct dw_i2c_bus_config *cfg  = &config->i2c[i];

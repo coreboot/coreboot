@@ -127,12 +127,6 @@ struct soc_intel_tigerlake_config {
 	/* SMBus */
 	uint8_t SmbusEnable;
 
-	/* eMMC and SD */
-	uint8_t ScsEmmcHs400Enabled;
-
-	/* Enable if SD Card Power Enable Signal is Active High */
-	uint8_t SdCardPowerEnableActiveHigh;
-
 	/* Integrated Sensor */
 	uint8_t PchIshEnable;
 
@@ -209,9 +203,6 @@ struct soc_intel_tigerlake_config {
 		DEBUG_INTERFACE_SERIAL_IO = (1 << 4),
 		DEBUG_INTERFACE_TRACEHUB = (1 << 5),
 	} debug_interface_flag;
-
-	/* GPIO SD card detect pin */
-	unsigned int sdcard_cd_gpio;
 
 	/* Enable Pch iSCLK */
 	uint8_t pch_isclk;

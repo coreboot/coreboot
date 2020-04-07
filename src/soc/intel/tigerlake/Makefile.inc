@@ -43,7 +43,6 @@ ramstage-y += pmc.c
 ramstage-y += reset.c
 ramstage-y += smmrelocate.c
 ramstage-y += systemagent.c
-ramstage-y += sd.c
 ramstage-y += me.c
 
 smm-y += gpio.c

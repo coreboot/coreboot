@@ -1,0 +1,19 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+/* This file is part of the coreboot project. */
+
+/*
+ * Configure GPIO Power Management bits
+ *
+ * Arg0: GPIO community (0-5)
+ * Arg1: PM bits in MISCCFG
+ */
+Method (CGPM, 2, Serialized)
+{
+	Local0 = GPID (Arg0)
+	If (Local0 != 0) {
+		/* Mask off current PM bits */
+		PCRA (Local0, GPIO_MISCCFG, ~MISCCFG_ENABLE_GPIO_PM_CONFIG)
+		/* Mask in requested bits */
+		PCRO (Local0, GPIO_MISCCFG,  Arg1 & MISCCFG_ENABLE_GPIO_PM_CONFIG)
+	}
+}

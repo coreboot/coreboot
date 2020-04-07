@@ -32,10 +32,16 @@ DefinitionBlock(
 			#include <soc/intel/common/block/acpi/acpi/northbridge.asl>
 			#include <soc/intel/tigerlake/acpi/southbridge.asl>
 		}
+		/* Mainboard hooks */
+		#include "mainboard.asl"
 	}
 
 	// Chrome OS specific
 	#include <vendorcode/google/chromeos/acpi/chromeos.asl>
+
+	/* Include Low power idle table for a short term workaround to enable
+	   S0ix. Once cr50 pulse width is fixed, this can be removed. */
+	#include <soc/intel/common/acpi/lpit.asl>
 
 	// Chrome OS Embedded Controller
 	Scope (\_SB.PCI0.LPCB)

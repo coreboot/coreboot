@@ -18,7 +18,9 @@ romstage-y += ../common/timer.c
 romstage-y += ../common/uart.c
 
 ramstage-y += ../common/gpio.c gpio.c
+ramstage-y += emi.c
 ramstage-$(CONFIG_SPI_FLASH) += ../common/spi.c spi.c
+ramstage-y += soc.c
 ramstage-y += ../common/timer.c
 ramstage-y += ../common/uart.c
 

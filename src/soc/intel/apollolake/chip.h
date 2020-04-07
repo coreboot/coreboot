@@ -184,6 +184,14 @@ struct soc_intel_apollolake_config {
 	 * the Upd parameter VtdEnable.
 	 */
 	uint8_t enable_vtd;
+
+	/* Options to disable the LFPS periodic sampling for USB3 Ports.
+	 * Default value of PMCTRL_REG bits[7:4] is 9 which means periodic sampling
+	 * interval is 9ms.
+	 * Set 1 to update XHCI host MMIO BAR + PMCTRL_REG (0x80A4 bits[7:4]) to 0
+	 * 0:Enable (default), 1:Disable.
+	 */
+	uint8_t disable_xhci_lfps_pm;
 };
 
 typedef struct soc_intel_apollolake_config config_t;

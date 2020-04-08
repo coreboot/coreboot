@@ -84,9 +84,9 @@ chip northbridge/intel/sandybridge
 			device pci 1c.3 on
 				smbios_slot_desc "7" "3" "ExpressCard Slot" "8"
 			end # PCIe Port #4 ExpressCard
-			device pci 1c.4 off end # PCIe Port #5
+			device pci 1c.4 on end # PCIe Port #5 NEC Corporation uPD720200A USB 3.0 Host Controller
 			device pci 1c.5 off end # PCIe Port #6 Intel Gigabit Ethernet PHY (not PCIe)
-			device pci 1c.6 on end # PCIe Port #7 NEC Corporation uPD720200A USB 3.0 Host Controller
+			device pci 1c.6 off end # PCIe Port #7
 			device pci 1c.7 off end # PCIe Port #8
 			device pci 1d.0 on end # USB Enhanced Host Controller #1
 			device pci 1e.0 off end # PCI bridge

@@ -39,12 +39,13 @@
 extern "C" {
 #endif
 
+#ifdef CHROMIUM_EC
 /*
  * CHROMIUM_EC is defined by the Makefile system of Chromium EC repository.
  * It is used to not include macros that may cause conflicts in foreign
  * projects (refer to crbug.com/984623).
  */
-#ifdef CHROMIUM_EC
+
 /*
  * Include common.h for CONFIG_HOSTCMD_ALIGNED, if it's defined. This
  * generates more efficient code for accessing request/response structures on
@@ -54,8 +55,18 @@ extern "C" {
 #include "compile_time_macros.h"
 
 #else
-
 #define BUILD_ASSERT(_cond)
+#endif  /* CHROMIUM_EC */
+
+#ifdef __KERNEL__
+#include <linux/limits.h>
+#else
+/*
+ * Defines macros that may be needed but are for sure defined by the linux
+ * kernel. This section is removed when cros_ec_commands.h is generated (by
+ * util/make_linux_ec_commands_h.sh).
+ * cros_ec_commands.h looks more integrated to the kernel.
+ */
 
 #ifndef BIT
 #define BIT(nr)         (1UL << (nr))
@@ -65,7 +76,7 @@ extern "C" {
 #define BIT_ULL(nr)     (1ULL << (nr))
 #endif
 
-#endif  /* CHROMIUM_EC */
+#endif  /* __KERNEL__ */
 
 /*
  * Current version of this protocol
@@ -1073,10 +1084,22 @@ struct ec_response_hello {
 /* Get version number */
 #define EC_CMD_GET_VERSION 0x0002
 
-enum ec_current_image {
+#if !defined(CHROMIUM_EC) && !defined(__KERNEL__)
+/*
+ * enum ec_current_image is deprecated and replaced by enum ec_image. This
+ * macro exists for backwards compatibility of external projects until they
+ * have been updated: b/149987779.
+ */
+#define ec_current_image ec_image
+#endif
+
+enum ec_image {
 	EC_IMAGE_UNKNOWN = 0,
 	EC_IMAGE_RO,
-	EC_IMAGE_RW
+	EC_IMAGE_RW,
+	EC_IMAGE_RW_A = EC_IMAGE_RW,
+	EC_IMAGE_RO_B,
+	EC_IMAGE_RW_B
 };
 
 /**
@@ -1084,7 +1107,7 @@ enum ec_current_image {
  * @version_string_ro: Null-terminated RO firmware version string.
  * @version_string_rw: Null-terminated RW firmware version string.
  * @reserved: Unused bytes; was previously RW-B firmware version string.
- * @current_image: One of ec_current_image.
+ * @current_image: One of ec_image.
  */
 struct ec_response_get_version {
 	char version_string_ro[32];
@@ -1390,6 +1413,12 @@ enum ec_feature_code {
 	 * MOTIONSENSE_CMD_TABLET_MODE_LID_ANGLE.
 	 */
 	EC_FEATURE_REFINED_TABLET_MODE_HYSTERESIS = 37,
+	/*
+	 * Early Firmware Selection ver.2. Enabled by CONFIG_VBOOT_EFS2.
+	 * Note this is a RO feature. So, a query (EC_CMD_GET_FEATURES) should
+	 * be sent to RO to be precise.
+	 */
+	EC_FEATURE_EFS2 = 38,
 	/* The MCU is a System Companion Processor (SCP). */
 	EC_FEATURE_SCP = 39,
 	/* The MCU is an Integrated Sensor Hub */
@@ -1807,6 +1836,68 @@ struct ec_response_rand_num {
 } __ec_align4;
 
 BUILD_ASSERT(sizeof(struct ec_response_rand_num) == 0);
+
+/**
+ * Get information about the key used to sign the RW firmware.
+ * For more details on the fields, see "struct vb21_packed_key".
+ */
+#define EC_CMD_RWSIG_INFO 0x001B
+#define EC_VER_RWSIG_INFO 0
+
+#define VBOOT2_KEY_ID_BYTES 20
+
+#ifdef CHROMIUM_EC
+/* Don't force external projects to depend on the vboot headers. */
+#include "vb21_struct.h"
+BUILD_ASSERT(sizeof(struct vb2_id) == VBOOT2_KEY_ID_BYTES);
+#endif
+
+struct ec_response_rwsig_info {
+	/**
+	 * Signature algorithm used by the key
+	 * (enum vb2_signature_algorithm).
+	 */
+	uint16_t sig_alg;
+
+	/**
+	 * Hash digest algorithm used with the key
+	 * (enum vb2_hash_algorithm).
+	 */
+	uint16_t hash_alg;
+
+	/** Key version. */
+	uint32_t key_version;
+
+	/** Key ID (struct vb2_id). */
+	uint8_t key_id[VBOOT2_KEY_ID_BYTES];
+
+	uint8_t key_is_valid;
+
+	/** Alignment padding. */
+	uint8_t reserved[3];
+} __ec_align4;
+
+BUILD_ASSERT(sizeof(struct ec_response_rwsig_info) == 32);
+
+/**
+ * Get information about the system, such as reset flags, locked state, etc.
+ */
+#define EC_CMD_SYSINFO 0x001C
+#define EC_VER_SYSINFO 0
+
+enum sysinfo_flags {
+	SYSTEM_IS_LOCKED = BIT(0),
+	SYSTEM_IS_FORCE_LOCKED = BIT(1),
+	SYSTEM_JUMP_ENABLED = BIT(2),
+	SYSTEM_JUMPED_TO_CURRENT_IMAGE = BIT(3),
+	SYSTEM_REBOOT_AT_SHUTDOWN = BIT(4)
+};
+
+struct ec_response_sysinfo {
+	uint32_t reset_flags;		/**< EC_RESET_FLAG_* flags */
+	uint32_t current_image;		/**< enum ec_current_image */
+	uint32_t flags;			/**< enum sysinfo_flags */
+} __ec_align4;
 
 /*****************************************************************************/
 /* PWM commands */
@@ -2412,7 +2503,7 @@ enum motionsense_command {
 
 	/*
 	 * Sensor Offset command is a setter/getter command for the offset
-	 * used for calibration.
+	 * used for factory calibration.
 	 * The offsets can be calculated by the host, or via
 	 * PERFORM_CALIB command.
 	 */
@@ -2456,6 +2547,11 @@ enum motionsense_command {
 	 * scale.
 	 */
 	MOTIONSENSE_CMD_SENSOR_SCALE = 18,
+
+	/*
+	 * Read the current online calibration values (if available).
+	 */
+	MOTIONSENSE_CMD_ONLINE_CALIB_READ = 19,
 
 	/* Number of motionsense sub-commands. */
 	MOTIONSENSE_NUM_CMDS
@@ -2508,6 +2604,7 @@ enum motionsensor_chip {
 	MOTIONSENSE_CHIP_TCS3400 = 20,
 	MOTIONSENSE_CHIP_LIS2DW12 = 21,
 	MOTIONSENSE_CHIP_LIS2DWL = 22,
+	MOTIONSENSE_CHIP_LIS2DS = 23,
 	MOTIONSENSE_CHIP_MAX,
 };
 
@@ -2539,6 +2636,12 @@ struct ec_response_motion_sensor_data {
 		};
 	};
 } __ec_todo_packed;
+
+/* Response to AP reporting calibration data for a given sensor. */
+struct ec_response_online_calibration_data {
+	/** The calibration values. */
+	int16_t data[3];
+};
 
 /* Note: used in ec_response_get_next_data */
 struct ec_response_motion_sense_fifo_info {
@@ -2653,7 +2756,7 @@ struct ec_params_motion_sense {
 		 */
 		struct __ec_todo_unpacked {
 			uint8_t sensor_num;
-		} info, info_3, data, fifo_flush, list_activities;
+		} info, info_3, info_4, data, fifo_flush, list_activities;
 
 		/*
 		 * Used for MOTIONSENSE_CMD_PERFORM_CALIB:
@@ -2663,6 +2766,7 @@ struct ec_params_motion_sense {
 			uint8_t sensor_num;
 			uint8_t enable;
 		} perform_calib;
+
 		/*
 		 * Used for MOTIONSENSE_CMD_EC_RATE, MOTIONSENSE_CMD_SENSOR_ODR
 		 * and MOTIONSENSE_CMD_SENSOR_RANGE.
@@ -2795,6 +2899,15 @@ struct ec_params_motion_sense {
 			 */
 			int16_t hys_degree;
 		} tablet_mode_threshold;
+
+		/*
+		 * Used for MOTIONSENSE_CMD_ONLINE_CALIB_READ:
+		 * Allow reading a single sensor's online calibration value.
+		 */
+		struct __ec_todo_unpacked {
+			uint8_t sensor_num;
+		} online_calib_read;
+
 	};
 } __ec_todo_packed;
 
@@ -2914,6 +3027,8 @@ struct ec_response_motion_sense {
 		struct ec_response_motion_sense_fifo_info fifo_info, fifo_flush;
 
 		struct ec_response_motion_sense_fifo_data fifo_read;
+
+		struct ec_response_online_calibration_data online_calib_read;
 
 		struct __ec_todo_packed {
 			uint16_t reserved;
@@ -3571,6 +3686,9 @@ enum ec_mkbp_event {
 
 	/* We have entered DisplayPort Alternate Mode on a Type-C port. */
 	EC_MKBP_EVENT_DP_ALT_MODE_ENTERED = 10,
+
+	/* New online calibration values are available. */
+	EC_MKBP_EVENT_ONLINE_CALIBRATION = 11,
 
 	/* Number of MKBP events */
 	EC_MKBP_EVENT_COUNT,
@@ -5220,27 +5338,24 @@ enum pd_cc_states {
 	PD_CC_NONE = 0,			/* No port partner attached */
 
 	/* From DFP perspective */
+	PD_CC_UFP_NONE = 1,		/* No UFP accessory connected */
 	PD_CC_UFP_AUDIO_ACC = 2,	/* UFP Audio accessory connected */
 	PD_CC_UFP_DEBUG_ACC = 3,	/* UFP Debug accessory connected */
 	PD_CC_UFP_ATTACHED = 4,		/* Plain UFP attached */
 
 	/* From UFP perspective */
-	PD_CC_DFP_DEBUG_ACC = 6,	/* DFP debug accessory connected */
 	PD_CC_DFP_ATTACHED = 5,		/* Plain DFP attached */
+	PD_CC_DFP_DEBUG_ACC = 6,	/* DFP debug accessory connected */
 };
 
-#define USBC_CABLE_TYPE_UNDEF   0 /* Undefined */
-#define USBC_CABLE_TYPE_PASSIVE 3 /* Passive cable attached */
-#define USBC_CABLE_TYPE_ACTIVE  4 /* Active cable attached */
-
 /* Active/Passive Cable */
-#define USB_PD_MUX_TBT_ACTIVE_CABLE BIT(0)
+#define USB_PD_CTRL_ACTIVE_CABLE        BIT(0)
 /* Optical/Non-optical cable */
-#define USB_PD_MUX_TBT_CABLE_TYPE   BIT(1)
+#define USB_PD_CTRL_OPTICAL_CABLE       BIT(1)
 /* 3rd Gen TBT device (or AMA)/2nd gen tbt Adapter */
-#define USB_PD_MUX_TBT_ADAPTER      BIT(2)
-/* Active Link enabled/disabled */
-#define USB_PD_MUX_TBT_LINK         BIT(3)
+#define USB_PD_CTRL_TBT_LEGACY_ADAPTER  BIT(2)
+/* Active Link Uni-Direction */
+#define USB_PD_CTRL_ACTIVE_LINK_UNIDIR  BIT(3)
 
 /*
  * Underdevelopement :
@@ -5253,10 +5368,10 @@ struct ec_response_usb_pd_control_v2 {
 	char state[32];
 	uint8_t cc_state;	/* enum pd_cc_states representing cc state */
 	uint8_t dp_mode;	/* Current DP pin mode (MODE_DP_PIN_[A-E]) */
-	uint8_t cable_type;	/* USBC_CABLE_TYPE_*cable_type */
-	uint8_t control_flags;	/* USB_PD_MUX_*flags */
-	uint8_t cable_speed;
-	uint8_t cable_gen;	/* rounded_support */
+	uint8_t reserved;	/* Reserved for future use */
+	uint8_t control_flags;	/* USB_PD_CTRL_*flags */
+	uint8_t cable_speed;	/* TBT_SS_* cable speed */
+	uint8_t cable_gen;	/* TBT_GEN3_* cable rounded support */
 } __ec_align1;
 
 #define EC_CMD_USB_PD_PORTS 0x0102
@@ -5352,7 +5467,7 @@ struct ec_params_usb_pd_rw_hash_entry {
 				  * TODO(rspangler) but it's not aligned!
 				  * Should have been reserved[2].
 				  */
-	uint32_t current_image;  /* One of ec_current_image */
+	uint32_t current_image;  /* One of ec_image */
 } __ec_align1;
 
 /* Read USB-PD Accessory info */
@@ -5546,6 +5661,10 @@ struct ec_params_usb_pd_mux_info {
 #define USB_PD_MUX_HPD_LVL            BIT(4) /* HPD level is asserted */
 #define USB_PD_MUX_SAFE_MODE          BIT(5) /* DP is in safe mode */
 #define USB_PD_MUX_TBT_COMPAT_ENABLED BIT(6) /* TBT compat enabled */
+#define USB_PD_MUX_USB4_ENABLED       BIT(7) /* USB4 enabled */
+
+/* USB-C Dock connected */
+#define USB_PD_MUX_DOCK		(USB_PD_MUX_USB_ENABLED | USB_PD_MUX_DP_ENABLED)
 
 struct ec_response_usb_pd_mux_info {
 	uint8_t flags; /* USB_PD_MUX_*-encoded USB mux state */
@@ -5633,6 +5752,7 @@ enum cbi_data_tag {
 	CBI_TAG_OEM_NAME = 4,      /* variable length ascii, nul terminated. */
 	CBI_TAG_MODEL_ID = 5,      /* uint32_t or smaller */
 	CBI_TAG_FW_CONFIG = 6,     /* uint32_t bit field */
+	CBI_TAG_PCB_SUPPLIER = 7,  /* uint32_t or smaller */
 	CBI_TAG_COUNT,
 };
 
@@ -5694,6 +5814,9 @@ struct ec_params_set_cbi {
 #define EC_RESET_FLAG_RBOX        BIT(16)  /* Fixed Reset Functionality */
 #define EC_RESET_FLAG_SECURITY    BIT(17)  /* Security threat */
 #define EC_RESET_FLAG_AP_WATCHDOG BIT(18)  /* AP experienced a watchdog reset */
+#define EC_RESET_FLAG_STAY_IN_RO  BIT(19)  /* Do not select RW in EFS. This
+					    * enables PD in RO for Chromebox.
+					    */
 
 struct ec_response_uptime_info {
 	/*
@@ -5919,6 +6042,43 @@ struct ec_response_get_pd_port_caps {
 	uint8_t pd_data_role_cap;	/* enum ec_pd_data_role_caps */
 	uint8_t pd_port_location;	/* enum ec_pd_port_location */
 } __ec_align1;
+
+/*****************************************************************************/
+/*
+ * Button press simulation
+ *
+ * This command is used to simulate a button press.
+ * Supported commands are vup(volume up) vdown(volume down) & rec(recovery)
+ * Time duration for which button needs to be pressed is an optional parameter.
+ *
+ * NOTE: This is only available on unlocked devices for testing purposes only.
+ */
+#define EC_CMD_BUTTON 0x0129
+
+struct ec_params_button {
+	/* Button mask aligned to enum keyboard_button_type */
+	uint32_t  btn_mask;
+
+	/* Duration in milliseconds button needs to be pressed */
+	uint32_t  press_ms;
+} __ec_align1;
+
+enum keyboard_button_type {
+	KEYBOARD_BUTTON_POWER       = 0,
+	KEYBOARD_BUTTON_VOLUME_DOWN = 1,
+	KEYBOARD_BUTTON_VOLUME_UP   = 2,
+	KEYBOARD_BUTTON_RECOVERY    = 3,
+	KEYBOARD_BUTTON_CAPSENSE_1  = 4,
+	KEYBOARD_BUTTON_CAPSENSE_2  = 5,
+	KEYBOARD_BUTTON_CAPSENSE_3  = 6,
+	KEYBOARD_BUTTON_CAPSENSE_4  = 7,
+	KEYBOARD_BUTTON_CAPSENSE_5  = 8,
+	KEYBOARD_BUTTON_CAPSENSE_6  = 9,
+	KEYBOARD_BUTTON_CAPSENSE_7  = 10,
+	KEYBOARD_BUTTON_CAPSENSE_8  = 11,
+
+	KEYBOARD_BUTTON_COUNT
+};
 
 /*****************************************************************************/
 /* The command range 0x200-0x2FF is reserved for Rotor. */

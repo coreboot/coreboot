@@ -1337,9 +1337,9 @@ static void google_chromeec_log_uptimeinfo(void)
 }
 
 /* Cache and retrieve the EC image type (ro or rw) */
-enum ec_current_image google_chromeec_get_current_image(void)
+enum ec_image google_chromeec_get_current_image(void)
 {
-	MAYBE_STATIC_BSS enum ec_current_image ec_image_type = EC_IMAGE_UNKNOWN;
+	MAYBE_STATIC_BSS enum ec_image ec_image_type = EC_IMAGE_UNKNOWN;
 
 	if (ec_image_type != EC_IMAGE_UNKNOWN)
 		return ec_image_type;

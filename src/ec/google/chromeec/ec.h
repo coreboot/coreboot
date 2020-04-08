@@ -25,7 +25,7 @@ uint8_t google_chromeec_get_event(void);
 /* Check if EC supports feature EC_FEATURE_UNIFIED_WAKE_MASKS */
 bool google_chromeec_is_uhepi_supported(void);
 int google_ec_running_ro(void);
-enum ec_current_image google_chromeec_get_current_image(void);
+enum ec_image google_chromeec_get_current_image(void);
 void google_chromeec_init(void);
 int google_chromeec_pd_get_amode(uint16_t svid);
 int google_chromeec_wait_for_displayport(long timeout);

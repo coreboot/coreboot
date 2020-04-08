@@ -24,8 +24,8 @@ static void sbxxx_enable_48mhzout(void)
 
 static void superio_init_m(void)
 {
-	pnp_devfn_t uart = PNP_DEV(0x2e, IT8728F_SP1);
-	pnp_devfn_t gpio = PNP_DEV(0x2e, IT8728F_GPIO);
+	const pnp_devfn_t uart = PNP_DEV(0x2e, IT8728F_SP1);
+	const pnp_devfn_t gpio = PNP_DEV(0x2e, IT8728F_GPIO);
 
 	ite_kill_watchdog(gpio);
 	ite_enable_serial(uart, CONFIG_TTYS0_BASE);
@@ -34,7 +34,7 @@ static void superio_init_m(void)
 
 static void superio_init_m_pro(void)
 {
-	pnp_devfn_t uart = PNP_DEV(0x2e, NCT6779D_SP1);
+	const pnp_devfn_t uart = PNP_DEV(0x2e, NCT6779D_SP1);
 
 	nuvoton_enable_serial(uart, CONFIG_TTYS0_BASE);
 }

@@ -22,7 +22,7 @@ void mainboard_lpc_decode(void)
 static void early_superio_config(void)
 {
 	int timeout = 100000;
-	pnp_devfn_t dev = PNP_DEV(0x2e, 3);
+	const pnp_devfn_t dev = PNP_DEV(0x2e, 3);
 
 	pnp_write_config(dev, 0x29, 0x06);
 

@@ -35,9 +35,7 @@ void mainboard_lpc_decode(void)
 
 void bootblock_mainboard_early_init(void)
 {
-	pnp_devfn_t dev;
-
-	dev = PNP_DEV(0x2e, 0x00);
+	const pnp_devfn_t dev = PNP_DEV(0x2e, 0x00);
 
 	pnp_enter_conf_state(dev);
 	pnp_write_config(dev, 0x01, 0x94); /* Extended Parport modes */

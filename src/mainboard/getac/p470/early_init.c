@@ -66,9 +66,7 @@ static void pnp_exit_ext_func_mode(pnp_devfn_t dev)
 
 void bootblock_mainboard_early_init(void)
 {
-	pnp_devfn_t dev;
-
-	dev = PNP_DEV(0x4e, 0x00);
+	const pnp_devfn_t dev = PNP_DEV(0x4e, 0x00);
 
 	pnp_enter_ext_func_mode(dev);
 	pnp_write_config(dev, 0x02, 0x0e); // UART power

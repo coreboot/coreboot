@@ -102,7 +102,7 @@ Replace the last line (`command.com`) with this (change path to the
 
 Save the file, then unmount the partition:
 
-    sudo unmount /mnt
+    sudo umount /mnt
 
 Write this image to a USB drive (replace `/dev/sdX` with your USB drive
 device name):

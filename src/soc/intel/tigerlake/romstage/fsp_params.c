@@ -165,9 +165,6 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 			sizeof(m_cfg->PchHdaAudioLinkSspEnable));
 	memcpy(m_cfg->PchHdaAudioLinkSndwEnable, config->PchHdaAudioLinkSndwEnable,
 			sizeof(m_cfg->PchHdaAudioLinkSndwEnable));
-	m_cfg->PchHdaIDispLinkTmode = config->PchHdaIDispLinkTmode;
-	m_cfg->PchHdaIDispLinkFrequency = config->PchHdaIDispLinkFrequency;
-	m_cfg->PchHdaIDispCodecDisconnect = config->PchHdaIDispCodecDisconnect;
 
 	/* Vt-D config */
 	m_cfg->VtdDisable = 0;

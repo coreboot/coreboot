@@ -122,10 +122,13 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	}
 
 	/* RP Configs */
-	for (i = 0; i < CONFIG_MAX_ROOT_PORTS; i++)
+	for (i = 0; i < CONFIG_MAX_ROOT_PORTS; i++) {
 		params->PcieRpL1Substates[i] =
 			get_l1_substate_control(config->PcieRpL1Substates[i]);
-
+		params->PcieRpLtrEnable[i] = config->PcieRpLtrEnable[i];
+		params->PcieRpAdvancedErrorReporting[i] =
+			config->PcieRpAdvancedErrorReporting[i];
+	}
 	/* Enable xDCI controller if enabled in devicetree and allowed */
 	dev = pcidev_on_root(PCH_DEV_SLOT_XHCI, 1);
 	if (dev) {

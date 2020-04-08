@@ -118,6 +118,12 @@ struct soc_intel_tigerlake_config {
 		L1_SS_L1_2,
 	} PcieRpL1Substates[CONFIG_MAX_ROOT_PORTS];
 
+	/* PCIe LTR: Enable (1) / Disable (0) */
+	uint8_t PcieRpLtrEnable[CONFIG_MAX_ROOT_PORTS];
+
+	/* PCIE RP Advanced Error Report: Enable (1) / Disable (0) */
+	uint8_t PcieRpAdvancedErrorReporting[CONFIG_MAX_ROOT_PORTS];
+
 	/* SMBus */
 	uint8_t SmbusEnable;
 

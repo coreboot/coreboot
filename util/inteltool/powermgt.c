@@ -28,6 +28,44 @@ static const io_register_t sunrise_pm_registers[] = {
 	{ 0x9c, 4, "GPE0_EN_127_96" },
 };
 
+static const io_register_t lynxpoint_lp_pm_registers[] = {
+	{ 0x00, 2, "PM1_STS" }, /* PM1 Status;  ACPI pointer: PM1a_EVT_BLK   */
+	{ 0x02, 2, "PM1_EN" },  /* PM1 Enables; ACPI pointer: PM1a_EVT_BLK+2 */
+	{ 0x04, 4, "PM1_CNT" }, /* PM1 Control; ACPI pointer: PM1a_CNT_BLK   */
+	{ 0x08, 4, "PM1_TMR" }, /* PM1 Timer;   ACPI pointer: PMTMR_BLK      */
+	{ 0x30, 4, "SMI_EN" },
+	{ 0x34, 4, "SMI_STS" },
+	{ 0x42, 1, "GPE_CNTL" },
+	{ 0x44, 2, "DEVACT_STS" }, /* Device Activity Status */
+	{ 0x50, 1, "PM2_CNT" }, /* PM2 Control; ACPI pointer: PM2a_CNT_BLK   */
+	/* The TCO registers start here. */
+	{ 0x60, 2, "TCO_RLD" },
+	{ 0x62, 1, "TCO_DAT_IN" },
+	{ 0x63, 1, "TCO_DAT_OUT" },
+	{ 0x64, 2, "TCO1_STS" },
+	{ 0x66, 2, "TCO2_STS" },
+	{ 0x68, 2, "TCO1_CNT" },
+	{ 0x6a, 2, "TCO2_CNT" },
+	{ 0x6c, 2, "TCO_MESSAGE" },
+	{ 0x6e, 1, "TCO_WDCNT" },
+	{ 0x6f, 1, "RESERVED" },
+	{ 0x70, 1, "SW_IRQ_GEN" },
+	{ 0x71, 1, "RESERVED" },
+	{ 0x72, 2, "TCO_TMR" },
+	{ 0x74, 4, "RESERVED" },
+	{ 0x78, 4, "RESERVED" },
+	{ 0x7c, 4, "RESERVED" },
+	/* The TCO registers end here. */
+	{ 0x80, 4, "GPE0_STS_31_0" },
+	{ 0x84, 4, "GPE0_STS_63_32" },
+	{ 0x88, 4, "GPE0_STS_94_64" },
+	{ 0x8c, 4, "GPE0_STS_127_96" },
+	{ 0x90, 4, "GPE0_EN_31_0" },
+	{ 0x94, 4, "GPE0_EN_63_32" },
+	{ 0x98, 4, "GPE0_EN_94_64" },
+	{ 0x9c, 4, "GPE0_EN_127_96" },
+};
+
 static const io_register_t pch_pm_registers[] = {
 	{ 0x00, 2, "PM1_STS" }, // PM1 Status; ACPI pointer: PM1a_EVT_BLK
 	{ 0x02, 2, "PM1_EN" },  // PM1 Enables; ACPI pointer: PM1a_EVT_BLK+2
@@ -712,11 +750,6 @@ int print_pmbase(struct pci_dev *sb, struct pci_access *pacc)
 	case PCI_DEVICE_ID_INTEL_HM76:
 	case PCI_DEVICE_ID_INTEL_HM75:
 	case PCI_DEVICE_ID_INTEL_HM70:
-	case PCI_DEVICE_ID_INTEL_LYNXPOINT_LP_FULL:
-	case PCI_DEVICE_ID_INTEL_LYNXPOINT_LP_PREM:
-	case PCI_DEVICE_ID_INTEL_LYNXPOINT_LP_BASE:
-	case PCI_DEVICE_ID_INTEL_WILDCATPOINT_LP_PREM:
-	case PCI_DEVICE_ID_INTEL_WILDCATPOINT_LP:
 	case PCI_DEVICE_ID_INTEL_BAYTRAIL_LPC:
 	case PCI_DEVICE_ID_INTEL_C8_MOBILE:
 	case PCI_DEVICE_ID_INTEL_C8_DESKTOP:
@@ -736,6 +769,15 @@ int print_pmbase(struct pci_dev *sb, struct pci_access *pacc)
 		pmbase = pci_read_word(sb, 0x40) & 0xff80;
 		pm_registers = pch_pm_registers;
 		pm_registers_size = ARRAY_SIZE(pch_pm_registers);
+		break;
+	case PCI_DEVICE_ID_INTEL_LYNXPOINT_LP_FULL:
+	case PCI_DEVICE_ID_INTEL_LYNXPOINT_LP_PREM:
+	case PCI_DEVICE_ID_INTEL_LYNXPOINT_LP_BASE:
+	case PCI_DEVICE_ID_INTEL_WILDCATPOINT_LP_PREM:
+	case PCI_DEVICE_ID_INTEL_WILDCATPOINT_LP:
+		pmbase = pci_read_word(sb, 0x40) & 0xff80;
+		pm_registers = lynxpoint_lp_pm_registers;
+		pm_registers_size = ARRAY_SIZE(lynxpoint_lp_pm_registers);
 		break;
 	case PCI_DEVICE_ID_INTEL_ICH10:
 	case PCI_DEVICE_ID_INTEL_ICH10R:

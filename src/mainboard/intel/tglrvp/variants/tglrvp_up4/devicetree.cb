@@ -45,6 +45,12 @@ chip soc/intel/tigerlake
 	register "PcieRpEnable[8]" = "1"
 	register "PcieRpEnable[10]" = "1"
 
+	# Enable PR LTR
+	register "PcieRpLtrEnable[2]" = "1"
+	register "PcieRpLtrEnable[3]" = "1"
+	register "PcieRpLtrEnable[8]" = "1"
+	register "PcieRpLtrEnable[10]" = "1"
+
 	# Hybrid storage mode
 	register "HybridStorageMode" = "1"
 

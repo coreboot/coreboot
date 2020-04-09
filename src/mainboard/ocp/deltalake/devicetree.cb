@@ -1,0 +1,80 @@
+## SPDX-License-Identifier: GPL-2.0-or-later
+
+chip soc/intel/xeon_sp/cpx
+
+	register "pirqa_routing" = "PCH_IRQ11"
+	register "pirqb_routing" = "PCH_IRQ10"
+	register "pirqc_routing" = "PCH_IRQ11"
+	register "pirqd_routing" = "PCH_IRQ11"
+	register "pirqe_routing" = "PCH_IRQ11"
+	register "pirqf_routing" = "PCH_IRQ11"
+	register "pirqg_routing" = "PCH_IRQ11"
+	register "pirqh_routing" = "PCH_IRQ11"
+
+	# configure device interrupt routing
+	register "ir00_routing" = "0x3210" # IR00, Dev31
+	register "ir01_routing" = "0x3210" # IR01, Dev30
+	register "ir02_routing" = "0x3210" # IR02, Dev29
+	register "ir03_routing" = "0x3210" # IR03, Dev28
+	register "ir04_routing" = "0x3210" # IR04, Dev27
+
+	# configure interrupt polarity control
+	register "ipc0" = "0x00ff4000" # IPC0, PIRQA-H (IRQ16-23) should always be ActiveLow
+	register "ipc1" = "0x00000000" # IPC1
+	register "ipc2" = "0x00000000" # IPC2
+	register "ipc3" = "0x00000000" # IPC3
+
+	# configure MSR_TURBO_RATIO_LIMIT, MSR_TURBO_RATIO_LIMIT_CORES msrs
+	# FB production turbo_ratio_limit is 0x1f1f1f2022222325
+	register "turbo_ratio_limit" = "0x1b1b1b1d20222325"
+	# FB production turbo_ratio_limit_cores is 0x1c1812100c080402
+	register "turbo_ratio_limit_cores" = "0x1c1814100c080402"
+
+	# configure PSTATE_REQ_RATIO for MSR_IA32_PERF_CTRL
+	register "pstate_req_ratio" = "0xa"
+
+	register "coherency_support" = "0"
+	register "ats_support" = "0"
+
+	device cpu_cluster 0 on
+	  device lapic 0 on end
+	end
+
+	device domain 0 on
+		device pci 00.0 on end # Host bridge
+		device pci 04.0 on end # Intel SkyLake-E CBDMA Registers
+		device pci 04.1 on end # Intel SkyLake-E CBDMA Registers
+		device pci 04.2 on end # Intel SkyLake-E CBDMA Registers
+		device pci 04.3 on end # Intel SkyLake-E CBDMA Registers
+		device pci 04.4 on end # Intel SkyLake-E CBDMA Registers
+		device pci 04.5 on end # Intel SkyLake-E CBDMA Registers
+		device pci 04.6 on end # Intel SkyLake-E CBDMA Registers
+		device pci 04.7 on end # Intel SkyLake-E CBDMA Registers
+		device pci 05.0 on end # Intel SkyLake-E MM/Vt-d Configuration Registers
+		device pci 05.2 on end # Intel SkyLake-E RAS
+		device pci 05.4 on end # Intel SkyLake-E IOAPIC
+		device pci 08.0 on end # System peripheral: Intel SkyLake-E Ubox Registers
+		device pci 08.1 on end # Performance counters: Intel SkyLake-E Ubox Registers
+		device pci 08.2 on end # System peripheral: Intel SkyLake-E Ubox Registers
+		device pci 11.0 on end # Intel Device a26c: PCU
+
+		# PCH devices
+		device pci 11.5 on end # Intel C620 Series Chipset Family SSATA Controller [AHCI mode]
+		device pci 14.0 on end # Intel C620 Series Chipset Family USB 3.0 xHCI Controller
+
+		device pci 14.2 on end # Signal processing controller: Intel Device a231
+		device pci 16.0 on end # Communication controller: Intel Device a23a
+		device pci 16.1 on end # Communication controller: Intel Device a23b
+		device pci 16.4 on end # Communication controller: Intel Device a23e
+		device pci 1c.0 on end # PCI bridge: Intel Device a210
+		device pci 1c.4 on end # PCI bridge: Intel Device a214
+		device pci 1c.5 on end # PCI bridge: Intel Device a215
+		device pci 1d.0 on end # PCI bridge: Intel Device a218
+		device pci 1f.0 on end # ISA bridge: Intel Device a245
+		device pci 1f.1 on end # p2sb
+		device pci 1f.2 on end # Memory controller: Intel Device a221
+		device pci 1f.3 on end # Audio device: Intel Device a270
+		device pci 1f.4 on end # Intel C620 Series Chipset Family SMBus
+		device pci 1f.5 on end # Intel C620 Series Chipset Family SPI Controller
+	end
+end

@@ -1,0 +1,32 @@
+if BOARD_OCP_DELTALAKE
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select BOARD_ROMSIZE_KB_65536
+	select FSP_CAR
+	select HAVE_ACPI_TABLES
+	select MAINBOARD_USES_FSP2_0
+	select SOC_INTEL_COOPERLAKE_SP
+	select SUPERIO_ASPEED_AST2400
+
+config MAINBOARD_DIR
+	string
+	default "ocp/deltalake"
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "DeltaLake"
+
+config MAINBOARD_FAMILY
+	string
+	default "DeltaLake"
+
+config MAX_SOCKET
+	int
+	default 1
+
+config FMDFILE
+	string
+	default "src/mainboard/$(CONFIG_MAINBOARD_DIR)/board.fmd"
+
+endif # BOARD_OCP_DELTALAKE

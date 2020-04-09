@@ -121,7 +121,6 @@ unsigned long long cmos_read(const cmos_entry_t * e)
 	unsigned char value;
 
 	assert(!verify_cmos_op(bit, length, e->config));
-	result = 0;
 
 	if (e->config == CMOS_ENTRY_STRING) {
 		int strsz = (length + 7) / 8 + 1;

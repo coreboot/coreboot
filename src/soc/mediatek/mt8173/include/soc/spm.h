@@ -11,8 +11,10 @@ enum {
 };
 
 enum {
+	DISP_PWR_STA_MASK	= 0x1 << 3,
 	DISP_SRAM_PDN_MASK	= 0xf << 8,
 	DISP_SRAM_ACK_MASK	= 0x1 << 12,
+	AUDIO_PWR_STA_MASK	= 0x1 << 24,
 	AUDIO_SRAM_PDN_MASK	= 0xf << 8,
 	AUDIO_SRAM_ACK_MASK	= 0xf << 12,
 };

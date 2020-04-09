@@ -50,6 +50,42 @@ struct ipmi_read_fru_data_rsp {
 	uint8_t data[CONFIG_IPMI_FRU_SINGLE_RW_SZ];
 } __packed;
 
+struct standard_spec_sel_rec {
+	uint32_t timestamp;
+	uint16_t gen_id;
+	uint8_t evm_rev;
+	uint8_t sensor_type;
+	uint8_t sensor_num;
+	uint8_t event_dir_type;
+	uint8_t event_data[3];
+};
+
+struct oem_ts_spec_sel_rec {
+	uint32_t timestamp;
+	uint8_t manf_id[3];
+	uint8_t oem_defined[6];
+};
+
+struct oem_nots_spec_sel_rec {
+	uint8_t oem_defined[13];
+};
+
+/* SEL Event Record */
+struct sel_event_record {
+	uint16_t record_id;
+	uint8_t record_type;
+	union{
+		struct standard_spec_sel_rec standard_type;
+		struct oem_ts_spec_sel_rec oem_ts_type;
+		struct oem_nots_spec_sel_rec oem_nots_type;
+	} sel_type;
+} __packed;
+
+struct ipmi_add_sel_rsp {
+	struct ipmi_rsp resp;
+	uint16_t record_id;
+} __packed;
+
 /* Platform Management FRU Information Storage Definition Spec. */
 #define PRODUCT_MAN_TYPE_LEN_OFFSET 3
 #define BOARD_MAN_TYPE_LEN_OFFSET 6
@@ -123,4 +159,8 @@ void read_fru_areas(const int port, uint8_t id, uint16_t offset,
 /* Read a particular FRU inventory area into fru_info_str. */
 void read_fru_one_area(const int port, uint8_t id, uint16_t offset,
 		struct fru_info_str *fru_info_str, enum fru_area fru_area);
+
+/* Add a SEL record entry, returns CB_SUCCESS on success and CB_ERR
+ * if an error occurred */
+enum cb_err ipmi_add_sel(const int port, struct sel_event_record *sel);
 #endif

@@ -467,6 +467,7 @@ BOOT_STATE_INIT_ENTRY(BS_OS_RESUME, BS_ON_ENTRY, set_nvs_sws, NULL);
 
 void southbridge_init(void *chip_info)
 {
+	i2c_soc_init();
 	sb_init_acpi_ports();
 	acpi_clear_pm1_status();
 }

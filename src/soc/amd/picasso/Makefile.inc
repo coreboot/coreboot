@@ -58,6 +58,7 @@ ramstage-y += tsc_freq.c
 ramstage-y += finalize.c
 ramstage-y += soc_util.c
 ramstage-y += psp.c
+ramstage-y += fsp_params.c
 
 all-y += reset.c
 

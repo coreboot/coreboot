@@ -91,53 +91,57 @@ enum {
 
 /* I2C Controller MMIO register space */
 struct dw_i2c_regs {
-	uint32_t control;
-	uint32_t target_addr;
-	uint32_t slave_addr;
-	uint32_t master_addr;
-	uint32_t cmd_data;
-	uint32_t ss_scl_hcnt;
-	uint32_t ss_scl_lcnt;
-	uint32_t fs_scl_hcnt;
-	uint32_t fs_scl_lcnt;
-	uint32_t hs_scl_hcnt;
-	uint32_t hs_scl_lcnt;
-	uint32_t intr_stat;
-	uint32_t intr_mask;
-	uint32_t raw_intr_stat;
-	uint32_t rx_thresh;
-	uint32_t tx_thresh;
-	uint32_t clear_intr;
-	uint32_t clear_rx_under_intr;
-	uint32_t clear_rx_over_intr;
-	uint32_t clear_tx_over_intr;
-	uint32_t clear_rd_req_intr;
-	uint32_t clear_tx_abrt_intr;
-	uint32_t clear_rx_done_intr;
-	uint32_t clear_activity_intr;
-	uint32_t clear_stop_det_intr;
-	uint32_t clear_start_det_intr;
-	uint32_t clear_gen_call_intr;
-	uint32_t enable;
-	uint32_t status;
-	uint32_t tx_level;
-	uint32_t rx_level;
-	uint32_t sda_hold;
-	uint32_t tx_abort_source;
-	uint32_t slv_data_nak_only;
-	uint32_t dma_cr;
-	uint32_t dma_tdlr;
-	uint32_t dma_rdlr;
-	uint32_t sda_setup;
-	uint32_t ack_general_call;
-	uint32_t enable_status;
-	uint32_t fs_spklen;
-	uint32_t hs_spklen;
-	uint32_t clr_restart_det;
-	uint32_t comp_param1;
-	uint32_t comp_version;
-	uint32_t comp_type;
+	uint32_t control;		/* 0x0 */
+	uint32_t target_addr;		/* 0x4 */
+	uint32_t slave_addr;		/* 0x8 */
+	uint32_t master_addr;		/* 0xc */
+	uint32_t cmd_data;		/* 0x10 */
+	uint32_t ss_scl_hcnt;		/* 0x14 */
+	uint32_t ss_scl_lcnt;		/* 0x18 */
+	uint32_t fs_scl_hcnt;		/* 0x1c */
+	uint32_t fs_scl_lcnt;		/* 0x20 */
+	uint32_t hs_scl_hcnt;		/* 0x24 */
+	uint32_t hs_scl_lcnt;		/* 0x28 */
+	uint32_t intr_stat;		/* 0x2c */
+	uint32_t intr_mask;		/* 0x30 */
+	uint32_t raw_intr_stat;		/* 0x34 */
+	uint32_t rx_thresh;		/* 0x38 */
+	uint32_t tx_thresh;		/* 0x3c */
+	uint32_t clear_intr;		/* 0x40 */
+	uint32_t clear_rx_under_intr;	/* 0x44 */
+	uint32_t clear_rx_over_intr;	/* 0x48 */
+	uint32_t clear_tx_over_intr;	/* 0x4c */
+	uint32_t clear_rd_req_intr;	/* 0x50 */
+	uint32_t clear_tx_abrt_intr;	/* 0x54 */
+	uint32_t clear_rx_done_intr;	/* 0x58 */
+	uint32_t clear_activity_intr;	/* 0x5c */
+	uint32_t clear_stop_det_intr;	/* 0x60 */
+	uint32_t clear_start_det_intr;	/* 0x64 */
+	uint32_t clear_gen_call_intr;	/* 0x68 */
+	uint32_t enable;		/* 0x6c */
+	uint32_t status;		/* 0x70 */
+	uint32_t tx_level;		/* 0x74 */
+	uint32_t rx_level;		/* 0x78 */
+	uint32_t sda_hold;		/* 0x7c */
+	uint32_t tx_abort_source;	/* 0x80 */
+	uint32_t slv_data_nak_only;	/* 0x84 */
+	uint32_t dma_cr;		/* 0x88 */
+	uint32_t dma_tdlr;		/* 0x8c */
+	uint32_t dma_rdlr;		/* 0x90 */
+	uint32_t sda_setup;		/* 0x94 */
+	uint32_t ack_general_call;	/* 0x98 */
+	uint32_t enable_status;		/* 0x9c */
+	uint32_t fs_spklen;		/* 0xa0 */
+	uint32_t hs_spklen;		/* 0xa4 */
+	uint32_t clr_restart_det;	/* 0xa8 */
+	uint32_t reserved[18];		/* 0xac - 0xf0 */
+	uint32_t comp_param1;		/* 0xf4 */
+	uint32_t comp_version;		/* 0xf8 */
+	uint32_t comp_type;		/* 0xfc */
 } __packed;
+
+/* Constant value defined in the DesignWare DW_apb_i2c Databook. */
+#define DW_I2C_COMP_TYPE	0x44570140
 
 static const struct i2c_descriptor {
 	enum i2c_speed speed;
@@ -716,6 +720,14 @@ int dw_i2c_init(unsigned int bus, const struct dw_i2c_bus_config *bcfg)
 		printk(BIOS_ERR, "I2C bus %u base address not found\n", bus);
 		return -1;
 	}
+
+	if (read32(&regs->comp_type) != DW_I2C_COMP_TYPE) {
+		printk(BIOS_ERR, "I2C bus %u has unknown type 0x%x.\n", bus,
+		       read32(&regs->comp_type));
+		return -1;
+	}
+
+	printk(BIOS_DEBUG, "I2C bus %u version 0x%x\n", bus, read32(&regs->comp_version));
 
 	if (dw_i2c_disable(regs) < 0) {
 		printk(BIOS_ERR, "I2C timeout disabling bus %u\n", bus);

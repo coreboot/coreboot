@@ -53,7 +53,7 @@ config MAINBOARD_PART_NUMBER
 	default "Kukui" if BOARD_GOOGLE_KUKUI
 	default "Krane" if BOARD_GOOGLE_KRANE
 	default "Kodama" if BOARD_GOOGLE_KODAMA
-	default "Kadadu" if BOARD_GOOGLE_KAKADU
+	default "Kakadu" if BOARD_GOOGLE_KAKADU
 	default "Flapjack" if BOARD_GOOGLE_FLAPJACK
 	default "Jacuzzi" if BOARD_GOOGLE_JACUZZI
 	default "Juniper" if BOARD_GOOGLE_JUNIPER

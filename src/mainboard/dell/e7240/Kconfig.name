@@ -1,0 +1,4 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+config BOARD_DELL_LATITUDE_E7240
+	bool "Latitude E7240"

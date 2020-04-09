@@ -76,6 +76,7 @@ N130WU / N131WU <clevo/n130wu/index.md>
 ```{toctree}
 :maxdepth: 1
 
+Latitude E7240 <dell/e7240.md>
 OptiPlex 9010 SFF <dell/optiplex_9010.md>
 ```
 

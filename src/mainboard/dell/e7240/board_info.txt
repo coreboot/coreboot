@@ -1,0 +1,7 @@
+Category: laptop
+Board URL: https://www.dell.com/support/home/en-us/product-support/product/latitude-e7240-ultrabook/docs
+ROM protocol: SPI
+ROM package: SOIC-8
+ROM socketed: n
+Flashrom support: y
+Release year: 2013

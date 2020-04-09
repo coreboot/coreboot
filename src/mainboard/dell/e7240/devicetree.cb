@@ -1,0 +1,82 @@
+## SPDX-License-Identifier: GPL-2.0-or-later
+
+chip northbridge/intel/haswell
+	register "ec_present" = "true"
+
+	chip cpu/intel/haswell
+		device cpu_cluster 0 on ops haswell_cpu_bus_ops end
+	end
+
+	device domain 0x0 on
+		ops haswell_pci_domain_ops
+		subsystemid  0x1028 0x05ca inherit
+
+		device pci 00.0 on end # Host bridge
+		device pci 02.0 on # Internal graphics VGA controller
+			register "gfx" = "GMA_STATIC_DISPLAYS(0)"
+			register "gpu_ddi_e_connected" = "0"
+			register "gpu_dp_b_hotplug" = "4"
+			register "gpu_dp_c_hotplug" = "4"
+			register "gpu_dp_d_hotplug" = "4"
+			register "panel_cfg" = "{
+				.up_delay_ms		= 200,
+				.down_delay_ms		=  50,
+				.cycle_delay_ms		= 500,
+				.backlight_on_delay_ms	=   1,
+				.backlight_off_delay_ms	=   1,
+				.backlight_pwm_hz	= 200,
+			}"
+		end
+		device pci 03.0 on end # Mini-HD audio
+
+		chip southbridge/intel/lynxpoint # Intel Series 8 Lynx Point PCH
+			register "docking_supported" = "1"
+			register "alt_gp_smi_en" = "0x00002000"
+			register "gpe0_en_1" = "0x00000100"
+			register "gpe0_en_2" = "0x00000080"
+			register "gpe0_en_4" = "0x00000042"
+
+			device pci 13.0 off end # Smart Sound Audio DSP
+			device pci 14.0 on  end # xHCI Controller
+			device pci 15.0 off end # Serial I/O DMA
+			device pci 15.1 off end # I2C0
+			device pci 15.2 off end # I2C1
+			device pci 15.3 off end # GSPI0
+			device pci 15.4 off end # GSPI1
+			device pci 15.5 off end # UART0
+			device pci 15.6 off end # UART1
+			device pci 16.0 on  end # Management Engine Interface 1
+			device pci 16.1 off end # Management Engine Interface 2
+			device pci 16.2 off end # Management Engine IDE-R
+			device pci 16.3 off end # Management Engine KT
+			device pci 17.0 off end # SDIO
+			device pci 19.0 on  end # Intel Gigabit Ethernet
+			device pci 1b.0 on  end # High Definition Audio
+			device pci 1c.0 on  end # PCIe Port #1
+			device pci 1c.1 off end # PCIe Port #2
+			device pci 1c.2 off end # PCIe Port #3
+			device pci 1c.3 on  end # PCIe Port #4, WLAN
+			device pci 1c.4 on  end # PCIe Port #5, SD/MMC Card Reader
+			# PCIe Port #6 Can be muxed between PCIe and SATA
+			device pci 1c.5 on  end # PCIe Port #6
+			device pci 1d.0 on  end # USB2 EHCI #1
+			device pci 1f.0 on      # LPC bridge
+				register "gen1_dec" = "0x007c0681"
+				register "gen2_dec" = "0x005c0921"
+				register "gen3_dec" = "0x003c07e1"
+				# Enable 0x910 and 0x911 for early init and EC driver
+				register "gen4_dec" = "0x007c0901"
+
+				chip ec/dell/mec5035
+					device pnp ff.0 on end
+                                end
+			end
+			device pci 1f.2 on # SATA Controller (AHCI)
+				# 0(eSATA on dock), 1(mSATA near the fan), 3(mSATA near WLAN)
+				register "sata_port_map" = "0x0b"
+			end
+			device pci 1f.3 on  end # SMBus
+			device pci 1f.6 off end # Thermal
+		end
+	end
+end

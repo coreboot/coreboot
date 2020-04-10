@@ -330,6 +330,14 @@ struct usb_pd_port_caps {
 int google_chromeec_get_pd_port_caps(int port,
 				struct usb_pd_port_caps *port_caps);
 
+/**
+ * Get the keyboard configuration / layout information from EC
+ *
+ * @param *keybd	If successful, this is filled with EC filled parameters
+ * @return		0 on success, -1 on error
+ */
+int google_chromeec_get_keybd_config(struct ec_response_keybd_config *keybd);
+
 #if CONFIG(HAVE_ACPI_TABLES)
 /**
  * Writes USB Type-C PD related information to the SSDT

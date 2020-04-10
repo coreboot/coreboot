@@ -1518,3 +1518,21 @@ int google_chromeec_wait_for_displayport(long timeout)
 
 	return 1;
 }
+
+int google_chromeec_get_keybd_config(struct ec_response_keybd_config *keybd)
+{
+	struct chromeec_command cmd = {
+		.cmd_code = EC_CMD_GET_KEYBD_CONFIG,
+		.cmd_version = 0,
+		.cmd_data_in = NULL,
+		.cmd_size_in = 0,
+		.cmd_data_out = keybd,
+		.cmd_size_out = sizeof(*keybd),
+		.cmd_dev_index = 0,
+	};
+
+	if (google_chromeec_command(&cmd))
+		return -1;
+
+	return 0;
+}

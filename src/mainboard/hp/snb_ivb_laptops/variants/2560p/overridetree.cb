@@ -1,0 +1,52 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+
+chip northbridge/intel/sandybridge
+	register "gpu_cpu_backlight" = "0x00000155"
+	register "gpu_pch_backlight" = "0x02880288"
+
+	device domain 0 on
+		subsystemid 0x103c 0x162b inherit
+
+		device pci 01.0 off end # PEG
+		device pci 02.0 on  end # iGPU
+
+		chip southbridge/intel/bd82x6x # Intel Series 6 Cougar Point PCH
+			# mailbox at 0x200/0x201 and PM1 at 0x220
+			register "gen1_dec" = "0x007c0201"
+			register "gen2_dec" = "0x000c0101"
+			register "gen3_dec" = "0x00fcfe01"
+			register "gen4_dec" = "0x000402e9"
+			register "gpi6_routing" = "2"
+			register "pcie_hotplug_map" = "{ 0, 1, 0, 0, 0, 0, 0, 0 }"
+			# HDD(0), ODD(1), eSATA(4), dock eSATA(5)
+			register "sata_port_map" = "0x33"
+
+			device pci 1c.0 off end # PCIe Port #1
+			device pci 1c.1 on      # PCIe Port #2, ExpressCard
+				smbios_slot_desc "SlotTypePcmcia" "SlotLengthShort"
+					"ExpressCard Slot" "SlotDataBusWidth1X"
+			end
+			device pci 1c.2 on  end # PCIe Port #3, SD/MMC Host Controller
+			device pci 1c.3 on      # PCIe Port #4, WLAN
+				smbios_slot_desc "SlotTypePciExpressMini52pinWithoutBSKO"
+					"SlotLengthShort" "Mini PCIe" "SlotDataBusWidth1X"
+			end
+			device pci 1c.4 off end # PCIe Port #5
+			device pci 1c.5 off end # PCIe Port #6
+			device pci 1c.6 on      # PCIe Port #7, WWAN
+				smbios_slot_desc "SlotTypePciExpressMini52pinWithoutBSKO"
+					"SlotLengthLong" "Mini PCIe" "SlotDataBusWidth1X"
+			end
+			device pci 1c.7 off end # PCIe Port #8
+			device pci 1f.0 on	# LPC bridge
+				chip ec/hp/kbc1126
+					register "ec_data_port" = "0x60"
+					register "ec_cmd_port"  = "0x64"
+					register "ec_ctrl_reg"  = "0xca"
+					register "ec_fan_ctrl_value" = "0x6b"
+					device pnp ff.1 off end
+				end
+			end
+		end
+	end
+end

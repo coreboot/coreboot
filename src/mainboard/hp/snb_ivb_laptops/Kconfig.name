@@ -1,5 +1,17 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
+config BOARD_HP_2560P
+	bool "EliteBook 2560p"
+
+	select BOARD_HP_SNB_IVB_LAPTOPS
+	select BOARD_ROMSIZE_KB_8192
+	select GFX_GMA_PANEL_1_ON_LVDS
+	select INTEL_GMA_HAVE_VBT
+	select INTEL_INT15
+	select MAINBOARD_HAS_LIBGFXINIT
+	select MAINBOARD_USES_IFD_GBE_REGION
+	select SOUTHBRIDGE_INTEL_BD82X6X
+
 config BOARD_HP_2570P
 	bool "EliteBook 2570p"
 

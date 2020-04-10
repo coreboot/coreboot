@@ -79,6 +79,9 @@ int google_chromeec_cbi_get_fw_config(uint32_t *fw_config);
 int google_chromeec_cbi_get_dram_part_num(char *buf, size_t bufsize);
 int google_chromeec_cbi_get_oem_name(char *buf, size_t bufsize);
 
+#define CROS_SKU_UNKNOWN	0xFFFFFFFF
+#define CROS_SKU_UNPROVISIONED	0x7FFFFFFF
+/* Returns CROS_SKU_UNKNOWN on failure. */
 uint32_t google_chromeec_get_board_sku(void);
 const char *google_chromeec_smbios_system_sku(void);
 

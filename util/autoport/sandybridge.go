@@ -1,5 +1,7 @@
 package main
 
+import "fmt"
+
 type sandybridgemc struct {
 }
 
@@ -30,7 +32,7 @@ func (i sandybridgemc) Scan(ctx Context, addr PCIDevData) {
 			"gpu_panel_power_cycle_delay":         FormatInt32(inteltool.IGD[0xc7210] & 0xff),
 			"gpu_cpu_backlight":                   FormatHex32(inteltool.IGD[0x48254]),
 			"gpu_pch_backlight":                   FormatHex32((inteltool.IGD[0xc8254] >> 16) * 0x10001),
-			"gfx.use_spread_spectrum_clock":       FormatBool((inteltool.IGD[0xc6200]>>12)&1 != 0),
+			"gfx": fmt.Sprintf("GMA_STATIC_DISPLAYS(%d)", (inteltool.IGD[0xc6200] >> 12) & 1),
 		},
 		Children: []DevTreeNode{
 			{

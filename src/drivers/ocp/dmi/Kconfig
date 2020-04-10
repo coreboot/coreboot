@@ -1,0 +1,12 @@
+config OCP_DMI
+	bool
+	default n
+	depends on IPMI_KCS && GENERATE_SMBIOS_TABLES && XEON_SP_COMMON_BASE
+	help
+	  It implements the SMBIOS IPMI FRU mapping table defined in
+	  https://www.opencompute.org/documents/facebook-xeon-motherboard-v31
+	  22.3 SMBIOS FRU mapping table
+
+config FRU_DEVICE_ID
+	int
+	default 0

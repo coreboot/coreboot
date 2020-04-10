@@ -5,6 +5,7 @@
 #include <device/resource.h>
 #include <device/path.h>
 #include <device/pci_type.h>
+#include <smbios.h>
 #include <types.h>
 
 struct device;
@@ -29,7 +30,6 @@ struct chip_operations {
 
 struct bus;
 
-struct smbios_type11;
 struct acpi_rsdp;
 
 struct device_operations {

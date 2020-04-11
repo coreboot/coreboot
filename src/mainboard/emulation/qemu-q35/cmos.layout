@@ -1,11 +1,15 @@
 entries
 
 0          384       r       0        reserved_memory
+
 384          1       e       4        boot_option
 388          4       h       0        reboot_counter
-#392          3       r       0        unused
-400          1       e       1        power_on_after_fail
-412          4       e       6        debug_level
+
+400          8       r       0        reserved_century
+440          8       r       0        reserved_ibm_ps2_century
+
+448          1       e       1        power_on_after_fail
+452          4       e       6        debug_level
 456          1       e       1        ECC_memory
 
 # VBOOT
@@ -29,4 +33,4 @@ enumerations
 
 checksums
 
-checksum 392 463 1008
+checksum 448 463 1008

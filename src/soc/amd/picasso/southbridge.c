@@ -360,6 +360,9 @@ void fch_early_init(void)
 {
 	sb_print_pmxc0_status();
 	i2c_soc_early_init();
+
+	if (CONFIG(DISABLE_SPI_FLASH_ROM_SHARING))
+		lpc_disable_spi_rom_sharing();
 }
 
 void sb_enable(struct device *dev)

@@ -15,6 +15,7 @@ go_version_minor=$(shell echo $(go_version) |  sed -nr 's/^([0-9]+)\.([0-9]+)\.?
 
 uroot_args+=-build=$(CONFIG_LINUXBOOT_UROOT_FORMAT)
 uroot_args+=-initcmd $(CONFIG_LINUXBOOT_UROOT_INITCMD)
+uroot_args+=-uinitcmd=$(CONFIG_LINUXBOOT_UROOT_UINITCMD)
 uroot_args+=-defaultsh $(CONFIG_LINUXBOOT_UROOT_SHELL)
 ifneq (CONFIG_LINUXBOOT_UROOT_FILES,)
 uroot_args+=$(foreach file,$(CONFIG_LINUXBOOT_UROOT_FILES),-files $(PWD)/$(file))

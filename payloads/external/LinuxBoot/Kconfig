@@ -258,6 +258,61 @@ config LINUXBOOT_UROOT_COMMANDS
 	  List of additional modules to include,
 	  separated by space. (default "boot coreboot-app")
 
+if LINUXBOOT_UROOT_MAIN
+
+choice
+	prompt "Choose a specific bootloader"
+	default SPECIFIC_BOOTLOADER_NONE
+	help
+	  Specify a bootloader which starts after u-root init. It will be a symlink
+	  to /bin/uinit. Default: None
+
+config SPECIFIC_BOOTLOADER_NONE
+	bool "none"
+	help
+	  Leave u-root to decide which bootloaders to load first after init, if
+	  any at all. Most likely u-root will start into the defined u-root shell.
+
+config SPECIFIC_BOOTLOADER_SYSTEMBOOT
+	bool "systemboot"
+	help
+	  If systemboot has been used as a bootloader wrapper in the past,
+	  enable this option. It will invoke -uinitcmd=systemboot and result in
+	  a BIOS/UEFI BDS boot behavior.
+
+config SPECIFIC_BOOTLOADER_BOOT2
+	bool "boot2"
+
+config SPECIFIC_BOOTLOADER_PXEBOOT
+	bool "pxeboot"
+
+config SPECIFIC_BOOTLOADER_STBOOT
+	bool "stboot"
+
+config SPECIFIC_BOOTLOADER_CUSTOM
+	bool "custom"
+
+endchoice
+
+config SPECIFIC_BOOTLOADER_CUSTOM_CMD
+	string "Specify a custom program to start"
+	depends on SPECIFIC_BOOTLOADER_CUSTOM
+	help
+	  This option will symlink the input to /bin/unit which will set it as the
+	  first boot program after the u-root init. Program flags are not
+	  symlinkable.
+
+config LINUXBOOT_UROOT_UINITCMD
+	string
+	default "" if SPECIFIC_BOOTLOADER_NONE
+	default "systemboot" if SPECIFIC_BOOTLOADER_SYSTEMBOOT
+	default "boot2" if SPECIFIC_BOOTLOADER_BOOT2
+	default "pxeboot" if SPECIFIC_BOOTLOADER_PXEBOOT
+	default "stboot" if SPECIFIC_BOOTLOADER_STBOOT
+	default SPECIFIC_BOOTLOADER_CUSTOM_CMD if SPECIFIC_BOOTLOADER_CUSTOM
+
+endif #LINUXBOOT_UROOT_MAIN
+
 endif #LINUXBOOT_UROOT
 
 endif #LINUXBOOT_BUILD_INITRAMFS

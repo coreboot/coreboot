@@ -37,3 +37,22 @@ const char *smbios_system_sku(void)
 {
 	return google_chromeec_smbios_system_sku();
 }
+
+const char *smbios_mainboard_manufacturer(void)
+{
+	static char oem_name[32];
+	static const char *manuf;
+
+	if (manuf)
+		return manuf;
+
+	if (google_chromeec_cbi_get_oem_name(&oem_name[0],
+			ARRAY_SIZE(oem_name)) < 0) {
+		printk(BIOS_ERR, "Couldn't obtain OEM name from CBI\n");
+		manuf = CONFIG_MAINBOARD_SMBIOS_MANUFACTURER;
+	} else {
+		manuf = &oem_name[0];
+	}
+
+	return manuf;
+}

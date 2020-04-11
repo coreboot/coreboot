@@ -139,25 +139,6 @@ void mainboard_devtree_update(struct device *dev)
 	variant_update_devtree(dev);
 }
 
-const char *smbios_mainboard_manufacturer(void)
-{
-	static char oem_name[32];
-	static const char *manuf;
-
-	if (manuf)
-		return manuf;
-
-	if (google_chromeec_cbi_get_oem_name(&oem_name[0],
-			ARRAY_SIZE(oem_name)) < 0) {
-		printk(BIOS_ERR, "Couldn't obtain OEM name from CBI\n");
-		manuf = CONFIG_MAINBOARD_SMBIOS_MANUFACTURER;
-	} else {
-		manuf = &oem_name[0];
-	}
-
-	return manuf;
-}
-
 bool __weak variant_ext_usb_status(unsigned int port_type, unsigned int port_id)
 {
 	/* All externally visible USB ports are present */

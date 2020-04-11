@@ -58,7 +58,7 @@ The boards in this section are not real mainboards, but emulators.
 
 ### EliteBook series
 
-- [EliteBook common](hp/elitebook_series.md)
+- [HP Laptops with KBC1126 EC](hp/hp_kbc1126_laptops.md)
 - [EliteBook 8760w](hp/8760w.md)
 
 ## Intel

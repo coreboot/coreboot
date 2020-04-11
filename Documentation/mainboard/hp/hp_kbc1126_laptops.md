@@ -1,13 +1,14 @@
-# HP EliteBook series
+# HP Laptops with KBC1126 Embedded Controller
 
 This document is about HP EliteBook series laptops up to Ivy Bridge era
 which use SMSC KBC1126 as embedded controller.
 
-## EC
+SMSC KBC1126 (and older similar chips like KBC1098) has been used in
+HP EliteBooks for many generations.  BIOS and EC firmware share an SPI
+flash chip in these laptops, so we need to put firmware blobs for the
+EC to the coreboot image.
 
-SMSC KBC1098/KBC1126 has been used in HP EliteBooks for many generations.
-They use similar EC firmware that will load other code and data from the
-SPI flash chip, so we need to put some firmware blobs to the coreboot image.
+## EC firmware extraction and coreboot building
 
 The following document takes EliteBook 2760p as an example.
 
@@ -32,18 +33,15 @@ Chipset --->
       (2760p-fw2.bin) KBC1126 filename #2 path and filename
 ```
 
-## Super I/O
+## Porting guide for HP laptops with KBC1126
 
-EliteBook 8000 series laptops have SMSC LPC47n217 Super I/O to provide
-a serial port and a parallel port, you can debug the laptop via this
-serial port.
-
-## porting
-
-To port coreboot to an HP EliteBook laptop, you need to do the following:
+To port coreboot to an HP laptop with KBC1126, you need to do the
+following:
 
 - select Kconfig option `EC_HP_KBC1126`
-- select Kconfig option `SUPERIO_SMSC_LPC47N217` if there is LPC47n217 Super I/O
+- select Kconfig option `SUPERIO_SMSC_LPC47N217` if there is LPC47n217
+  Super I/O, usually in EliteBook 8000 series, which can be used for
+  debugging via serial port
 - initialize EC and Super I/O in romstage
 - add EC and Super I/O support to devicetree.cb
 
@@ -51,8 +49,8 @@ To get the related values for EC in devicetree.cb, you need to extract the EFI
 module EcThermalInit from the vendor UEFI firmware with [UEFITool]. Usually,
 `ec_data_port`, `ec_cmd_port` and `ec_ctrl_reg` has the following values:
 
-- For xx60 series: 0x60, 0x64, 0xca
-- For xx70 series: 0x62, 0x66, 0x81
+- For EliteBook xx60 series: 0x60, 0x64, 0xca
+- For EliteBook xx70 series: 0x62, 0x66, 0x81
 
 You can use [radare2] and the following [r2pipe] Python script to find
 these values from the EcThermalInit EFI module:

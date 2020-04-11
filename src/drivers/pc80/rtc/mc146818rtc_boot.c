@@ -2,6 +2,7 @@
 /* This file is part of the coreboot project. */
 
 #include <stdint.h>
+#include <console/console.h>
 #include <option.h>
 #include <pc80/mc146818rtc.h>
 #include <fallback.h>
@@ -35,9 +36,8 @@ int do_normal_boot(void)
 	unsigned char byte;
 
 	if (cmos_error() || (CONFIG(USE_OPTION_TABLE) && !cmos_lb_cks_valid())) {
-		/* Invalid CMOS checksum detected!
-		 * Force fallback boot...
-		 */
+		printk(BIOS_WARNING,
+		       "Invalid CMOS checksum detected! Force fallback boot...\n");
 		byte = cmos_read(RTC_BOOT_BYTE);
 		byte &= boot_set_fallback(byte) & 0x0f;
 		byte |= 0xf << 4;

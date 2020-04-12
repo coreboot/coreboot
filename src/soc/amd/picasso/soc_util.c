@@ -10,6 +10,10 @@ int soc_is_pollock(void)
 	return soc_is_zen_plus() && CONFIG(AMD_FT5);
 }
 
+/*
+ * TODO: This detection works for the Dali SKUs used in Chrome-devices, but fails for other
+ * Dali SKUs, since other Dali SKUs have a Zen+ CPUID and not a Raven2 one.
+ */
 int soc_is_dali(void)
 {
 	return soc_is_raven2() && CONFIG(AMD_FP5);

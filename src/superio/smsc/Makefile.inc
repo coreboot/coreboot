@@ -16,3 +16,4 @@ subdirs-y += mec1308
 subdirs-y += smscsuperio
 subdirs-y += sio1036
 subdirs-y += sch4037
+subdirs-y += sch5545

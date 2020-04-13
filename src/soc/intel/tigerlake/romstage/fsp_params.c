@@ -20,8 +20,17 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 	uint32_t mask = 0;
 	const struct device *dev;
 
-	/* Set IGD stolen size to 60MB. */
-	m_cfg->IgdDvmt50PreAlloc = 0xFE;
+	dev = pcidev_path_on_root(SA_DEVFN_IGD);
+	if (!dev || !dev->enabled) {
+		/* Skip IGD initialization in FSP if device is disabled in devicetree.cb */
+		m_cfg->InternalGfx = 0;
+		m_cfg->IgdDvmt50PreAlloc = 0;
+	} else {
+		m_cfg->InternalGfx = 1;
+		/* Set IGD stolen size to 60MB. */
+		m_cfg->IgdDvmt50PreAlloc = 0xFE;
+	}
+
 	m_cfg->TsegSize = CONFIG_SMM_TSEG_SIZE;
 	m_cfg->IedSize = CONFIG_IED_REGION_SIZE;
 	m_cfg->SaGv = config->SaGv;
@@ -60,22 +69,19 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 	/* Disable BIOS Guard */
 	m_cfg->BiosGuard = 0;
 
-	/* UART Debug Log */
+	/* Set debug interface flags */
 	m_cfg->PcdDebugInterfaceFlags = CONFIG(DRIVERS_UART_8250IO) ?
-			DEBUG_INTERFACE_UART|DEBUG_INTERFACE_TRACEHUB :
-			DEBUG_INTERFACE_SERIAL_IO|DEBUG_INTERFACE_TRACEHUB;
-	m_cfg->PcdIsaSerialUartBase = 0x0;
-	m_cfg->SerialIoUartDebugControllerNumber = CONFIG_UART_FOR_CONSOLE;
+		DEBUG_INTERFACE_UART : DEBUG_INTERFACE_SERIAL_IO;
 
-	/*
-	 * Skip IGD initialization in FSP if device
-	 * is disable in devicetree.cb.
-	 */
-	dev = pcidev_path_on_root(SA_DEVFN_IGD);
-	if (!dev || !dev->enabled)
-		m_cfg->InternalGfx = 0;
-	else
-		m_cfg->InternalGfx = 0x1;
+	/* TraceHub configuration */
+	dev = pcidev_path_on_root(PCH_DEVFN_TRACEHUB);
+	if (dev && dev->enabled && config->TraceHubMode) {
+		m_cfg->PcdDebugInterfaceFlags |= DEBUG_INTERFACE_TRACEHUB;
+		m_cfg->PchTraceHubMode = config->TraceHubMode;
+		m_cfg->CpuTraceHubMode = config->TraceHubMode;
+	}
+
+	m_cfg->SerialIoUartDebugControllerNumber = CONFIG_UART_FOR_CONSOLE;
 
 	/* ISH */
 	dev = pcidev_path_on_root(PCH_DEVFN_ISH);

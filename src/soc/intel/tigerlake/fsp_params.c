@@ -6,6 +6,7 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <fsp/api.h>
+#include <fsp/ppi/mp_service_ppi.h>
 #include <fsp/util.h>
 #include <intelblocks/lpss.h>
 #include <intelblocks/xdci.h>
@@ -86,13 +87,20 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	/* Load VBT before devicetree-specific config. */
 	params->GraphicsConfigPtr = (uintptr_t)vbt_get();
 
-	params->SkipMpInit = !CONFIG_USE_INTEL_FSP_MP_INIT;
-
+	/* Check if IGD is present and fill Graphics init param accordingly */
 	dev = pcidev_path_on_root(SA_DEVFN_IGD);
 	if (CONFIG(RUN_FSP_GOP) && dev && dev->enabled)
 		params->PeiGraphicsPeimInit = 1;
 	else
 		params->PeiGraphicsPeimInit = 0;
+
+	/* Use coreboot MP PPI services if Kconfig is enabled */
+	if (CONFIG(USE_INTEL_FSP_TO_CALL_COREBOOT_PUBLISH_MP_PPI)) {
+		params->CpuMpPpi = (uintptr_t) mp_fill_ppi_services_data();
+		params->SkipMpInit = 0;
+	} else {
+		params->SkipMpInit = !CONFIG_USE_INTEL_FSP_MP_INIT;
+	}
 
 	params->TcssAuxOri = config->TcssAuxOri;
 	for (i = 0; i < 8; i++)
@@ -144,7 +152,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 			config->PcieRpAdvancedErrorReporting[i];
 	}
 	/* Enable xDCI controller if enabled in devicetree and allowed */
-	dev = pcidev_on_root(PCH_DEV_SLOT_XHCI, 1);
+	dev = pcidev_path_on_root(PCH_DEVFN_USBOTG);
 	if (dev) {
 		if (!xdci_can_enable())
 			dev->enabled = 0;
@@ -159,7 +167,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	params->SerialIoUartAutoFlow[CONFIG_UART_FOR_CONSOLE] = 0;
 
 	/* SATA */
-	dev = pcidev_on_root(PCH_DEV_SLOT_SATA, 0);
+	dev = pcidev_path_on_root(PCH_DEVFN_SATA);
 	if (!dev)
 		params->SataEnable = 0;
 	else {
@@ -173,7 +181,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	}
 
 	/* LAN */
-	dev = pcidev_on_root(PCH_DEV_SLOT_ESPI, 6);
+	dev = pcidev_path_on_root(PCH_DEVFN_GBE);
 	if (!dev)
 		params->PchLanEnable = 0;
 	else

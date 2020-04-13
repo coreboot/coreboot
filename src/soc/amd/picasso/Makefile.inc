@@ -79,6 +79,7 @@ ramstage-y += update_microcode.c
 ramstage-y += graphics.c
 ramstage-y += pcie_gpp.c
 ramstage-y += xhci.c
+ramstage-y += dmi.c
 
 smm-y += smihandler.c
 smm-y += smi_util.c

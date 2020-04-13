@@ -20,6 +20,7 @@
 #include "chip.h"
 #include "pch.h"
 #include "nvs.h"
+#include <northbridge/intel/sandybridge/sandybridge.h>
 #include <southbridge/intel/common/pciehp.h>
 #include <southbridge/intel/common/acpi_pirq_gen.h>
 #include <southbridge/intel/common/pmutil.h>
@@ -373,7 +374,12 @@ static void enable_clock_gating(struct device *dev)
 	RCBA32_AND_OR(DMIC, ~0UL, 0xf);
 
 	reg16 = pci_read_config16(dev, GEN_PMCON_1);
-	reg16 |= (1 << 2) | (1 << 11);
+	reg16 &= ~(3 << 2); /* Clear CLKRUN bits for mobile and desktop */
+	if (get_platform_type() == PLATFORM_MOBILE)
+		reg16 |= (1 << 2); /* CLKRUN_EN for mobile */
+	else if (get_platform_type() == PLATFORM_DESKTOP_SERVER)
+		reg16 |= (1 << 3); /* PSEUDO_CLKRUN_EN for desktop */
+	reg16 |= (1 << 11);
 	pci_write_config16(dev, GEN_PMCON_1, reg16);
 
 	pch_iobp_update(0xEB007F07, ~0UL, (1 << 31));

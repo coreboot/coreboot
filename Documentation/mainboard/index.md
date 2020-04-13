@@ -26,6 +26,10 @@ This section contains documentation about coreboot on specific mainboards.
 
 - [CN81XX EVB SFF](cavium/cn8100_sff_evb.md)
 
+## Dell
+
+- [OptiPlex 9010 SFF](dell/optiplex_9010.md)
+
 ## Emulation
 
 The boards in this section are not real mainboards, but emulators.

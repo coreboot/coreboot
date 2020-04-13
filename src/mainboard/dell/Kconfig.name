@@ -1,0 +1,2 @@
+config VENDOR_DELL
+	bool "Dell Inc."

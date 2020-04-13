@@ -1,0 +1,69 @@
+if BOARD_DELL_OPTIPLEX_9010
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select BOARD_ROMSIZE_KB_12288
+	select HAVE_ACPI_RESUME
+	select HAVE_ACPI_TABLES
+	select INTEL_INT15
+	select NORTHBRIDGE_INTEL_SANDYBRIDGE
+	select SERIRQ_CONTINUOUS_MODE
+	select SOUTHBRIDGE_INTEL_C216
+	select USE_NATIVE_RAMINIT
+	select MAINBOARD_HAS_LPC_TPM
+	select MAINBOARD_HAS_TPM1
+	select MAINBOARD_USES_IFD_GBE_REGION
+	select SUPERIO_SMSC_SCH5545
+	select MAINBOARD_HAS_LIBGFXINIT
+	select INTEL_GMA_HAVE_VBT
+	select HAVE_OPTION_TABLE
+	select HAVE_CMOS_DEFAULT
+	select PCIEXP_L1_SUB_STATE
+
+config MAINBOARD_DIR
+	string
+	default dell/optiplex_9010
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "OptiPlex 9010"
+
+config VGA_BIOS_FILE
+	string
+	default "pci8086,0162.rom"
+
+config VGA_BIOS_ID
+	string
+	default "8086,0162"
+
+config DRAM_RESET_GATE_GPIO
+	int
+	default 60
+
+config MAX_CPUS
+	int
+	default 8
+
+config USBDEBUG_HCD_INDEX
+	int
+	default 2
+
+config CBFS_SIZE
+	hex
+	default 0x600000
+
+config INCLUDE_SMSC_SCH5545_EC_FW
+	bool "Include SMSC SCH5545 EC firmware binary"
+	default n
+	help
+	  This option allows to add the SMSC SCH5545 Environmental Controller
+	  firmware binary. The firmware must be loaded after each power failure
+	  in order to properly initialize the fan control, because EC loses its
+	  configuration when power is cut off. Otherwise the fans will keep
+	  running at full speed after power failure.
+
+config SMSC_SCH5545_EC_FW_FILE
+	string "File path to the SMSC SCH5545 EC firmware binary"
+	depends on INCLUDE_SMSC_SCH5545_EC_FW
+
+endif

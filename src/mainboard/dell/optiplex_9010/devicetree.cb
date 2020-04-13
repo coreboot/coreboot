@@ -1,0 +1,99 @@
+chip northbridge/intel/sandybridge
+	device cpu_cluster 0 on
+		chip cpu/intel/model_206ax
+			register "c1_acpower" = "1"
+			register "c1_battery" = "1"
+			register "c2_acpower" = "3"
+			register "c2_battery" = "3"
+			register "c3_acpower" = "5"
+			register "c3_battery" = "5"
+			register "tcc_offset" = "5" # TCC of 95C
+			device lapic 0 on end
+			device lapic 0xacac off end
+		end
+	end
+	device domain 0x0 on
+		subsystemid 0x1028 0x052c inherit
+
+		device pci 00.0 on end	# Host bridge Host bridge
+		device pci 01.0 on	# PEG1 (blue slot1)
+			smbios_slot_desc "0xB6" "4" "SLOT1" "0x0D"
+		end
+		device pci 02.0 on  end # Internal graphics VGA controller
+		device pci 06.0 off end # PEG2
+
+		chip southbridge/intel/bd82x6x # Intel Series 7 Panther Point PCH
+			register "gpe0_en" = "0x00000146"
+			register "alt_gp_smi_en" = "0x0004"
+			register "gpi2_routing" = "1"
+			register "gpi12_routing" = "2"
+			register "c2_latency" = "0x0065"
+			register "gen1_dec" = "0x007c0a01"
+			register "gen2_dec" = "0x007c0901"
+			register "gen3_dec" = "0x003c07e1"
+			register "gen4_dec" = "0x001c0901"
+			register "pcie_port_coalesce" = "1"
+			register "sata_interface_speed_support" = "0x3"
+			register "sata_port_map" = "0x7"
+			register "spi_lvscc" = "0x2005"
+			register "spi_uvscc" = "0x2005"
+			register "superspeed_capable_ports" = "0x0000000f"
+			register "xhci_overcurrent_mapping" = "0x08040201"
+			register "xhci_switchable_ports" = "0x0000000f"
+			device pci 14.0 on  end	# USB 3.0 Controller
+			device pci 16.0 off end	# Management Engine Interface 1
+			device pci 16.1 off end	# Management Engine Interface 2
+			device pci 16.2 off end	# Management Engine IDE-R
+			device pci 16.3 off end	# Management Engine KT
+			device pci 19.0 on  end	# Intel Gigabit Ethernet
+			device pci 1a.0 on  end	# USB2 EHCI #2
+			device pci 1b.0 on  end	# High Definition Audio controller
+			device pci 1c.0 off end	# PCIe Port #1
+			device pci 1c.1 off end	# PCIe Port #2
+			device pci 1c.2 off end	# PCIe Port #3
+			device pci 1c.3 off end	# PCIe Port #4
+			device pci 1c.4 on	# PCIe Port #5
+				smbios_slot_desc "0xB6" "4" "SLOT2" "0x0A"
+			end
+			device pci 1c.5 on  end	# PCIe Port #6
+			device pci 1c.6 on  end	# PCIe Port #7
+			device pci 1c.7 on  end	# PCIe Port #8
+			device pci 1d.0 on  end	# USB2 EHCI #1
+			device pci 1e.0 off end	# PCI bridge
+			device pci 1f.0 on	# LPC bridge
+				chip drivers/pc80/tpm
+					device pnp 0c31.0 on end
+				end
+				chip superio/smsc/sch5545
+					device pnp 2e.c on # LPC
+						io 0x60 = 0x2e
+					end
+					device pnp 2e.0 on # EMI
+						io 0x60 = 0xa40
+					end
+					device pnp 2e.1 on # KBC/PS2M
+						io 0x60 = 0x60
+						irq 0x70 = 1
+						irq 0x72 = 12
+					end
+					device pnp 2e.7 on # UART1
+						io 0x60 = 0x3f8
+						irq 0x70 = 4
+						irq 0xf0 = 0x02
+					end
+					device pnp 2e.8 off end # UART2
+					device pnp 2e.a on # Runtime registers
+						io 0x60 = 0xa00
+						irq 0x70 = 9 # PME
+					end
+					device pnp 2e.b  off end # Floppy
+					device pnp 2e.11 off end # PP
+				end
+			end
+			device pci 1f.2 on  end	# SATA Controller 1
+			device pci 1f.3 on  end	# SMBus
+			device pci 1f.5 off end	# SATA Controller 2
+			device pci 1f.6 on  end	# Thermal
+		end
+	end
+end

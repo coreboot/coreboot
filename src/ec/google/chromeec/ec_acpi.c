@@ -16,8 +16,9 @@
 #include "ec.h"
 #include "ec_commands.h"
 
-#define GOOGLE_CHROMEEC_USBC_DEVICE_HID  "GOOG0014"
-#define GOOGLE_CHROMEEC_USBC_DEVICE_NAME "USBC"
+#define GOOGLE_CHROMEEC_USBC_DEVICE_PARENT	"CREC"
+#define GOOGLE_CHROMEEC_USBC_DEVICE_HID		"GOOG0014"
+#define GOOGLE_CHROMEEC_USBC_DEVICE_NAME	"USBC"
 
 const char *google_chromeec_acpi_name(const struct device *dev)
 {
@@ -219,8 +220,8 @@ void google_chromeec_fill_ssdt_generator(struct device *dev)
 	if (google_chromeec_get_num_pd_ports(&num_ports))
 		return;
 
-	/* Reference the existing device's scope */
-	acpigen_write_scope(acpi_device_path(dev));
+	/* Add TypeC device under the existing device + ".CREC" scope */
+	acpigen_write_scope(acpi_device_path_join(dev, GOOGLE_CHROMEEC_USBC_DEVICE_PARENT));
 	fill_ssdt_typec_device(num_ports);
 	acpigen_pop_len(); /* Scope */
 }

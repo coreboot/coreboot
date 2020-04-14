@@ -848,6 +848,11 @@ int google_chromeec_cbi_get_oem_id(uint32_t *id)
 	return cbi_get_uint32(id, CBI_TAG_OEM_ID);
 }
 
+int google_chromeec_cbi_get_board_version(uint32_t *version)
+{
+	return cbi_get_uint32(version, CBI_TAG_BOARD_VERSION);
+}
+
 static int cbi_get_string(char *buf, size_t bufsize, uint32_t tag)
 {
 	struct ec_params_get_cbi params = {

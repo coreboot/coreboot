@@ -78,6 +78,9 @@ int google_chromeec_cbi_get_sku_id(uint32_t *id);
 int google_chromeec_cbi_get_fw_config(uint32_t *fw_config);
 int google_chromeec_cbi_get_dram_part_num(char *buf, size_t bufsize);
 int google_chromeec_cbi_get_oem_name(char *buf, size_t bufsize);
+/* version may be stored in CBI as a smaller integer width, but the EC code
+   handles it correctly. */
+int google_chromeec_cbi_get_board_version(uint32_t *version);
 
 #define CROS_SKU_UNKNOWN	0xFFFFFFFF
 #define CROS_SKU_UNPROVISIONED	0x7FFFFFFF

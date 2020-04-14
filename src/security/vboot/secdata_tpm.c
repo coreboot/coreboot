@@ -60,21 +60,10 @@ static uint32_t safe_write(uint32_t index, const void *data, uint32_t length);
 
 static uint32_t read_space_firmware(struct vb2_context *ctx)
 {
-	int attempts = 3;
-
-	while (attempts--) {
-		RETURN_ON_FAILURE(tlcl_read(FIRMWARE_NV_INDEX,
-					    ctx->secdata_firmware,
-					    VB2_SECDATA_FIRMWARE_SIZE));
-
-		if (vb2api_secdata_firmware_check(ctx) == VB2_SUCCESS)
-			return TPM_SUCCESS;
-
-		VBDEBUG("TPM: %s() - bad CRC\n", __func__);
-	}
-
-	VBDEBUG("TPM: %s() - too many bad CRCs, giving up\n", __func__);
-	return TPM_E_CORRUPTED_STATE;
+	RETURN_ON_FAILURE(tlcl_read(FIRMWARE_NV_INDEX,
+				    ctx->secdata_firmware,
+				    VB2_SECDATA_FIRMWARE_SIZE));
+	return TPM_SUCCESS;
 }
 
 uint32_t antirollback_read_space_kernel(struct vb2_context *ctx)
@@ -98,39 +87,6 @@ static uint32_t read_space_rec_hash(uint8_t *data)
 	RETURN_ON_FAILURE(tlcl_read(REC_HASH_NV_INDEX, data,
 				    REC_HASH_NV_SIZE));
 	return TPM_SUCCESS;
-}
-
-static uint32_t write_secdata(uint32_t index,
-			      const uint8_t *secdata,
-			      uint32_t len)
-{
-	uint8_t sd[MAX(VB2_SECDATA_KERNEL_SIZE, VB2_SECDATA_FIRMWARE_SIZE)];
-	uint32_t rv;
-	int attempts = 3;
-
-	if (len > sizeof(sd)) {
-		VBDEBUG("TPM: %s() - data is too large\n", __func__);
-		return TPM_E_WRITE_FAILURE;
-	}
-
-	while (attempts--) {
-		rv = safe_write(index, secdata, len);
-		/* Can't write, not gonna try again */
-		if (rv != TPM_SUCCESS)
-			return rv;
-
-		/* Read it back to be sure it got the right values. */
-		rv = tlcl_read(index, sd, len);
-		if (rv == TPM_SUCCESS && memcmp(secdata, sd, len) == 0)
-			return rv;
-
-		VBDEBUG("TPM: %s() failed. trying again\n", __func__);
-		/* Try writing it again. Maybe it was garbled on the way out. */
-	}
-
-	VBDEBUG("TPM: %s() - too many failures, giving up\n", __func__);
-
-	return TPM_E_CORRUPTED_STATE;
 }
 
 /*
@@ -201,7 +157,7 @@ static uint32_t set_space(const char *name, uint32_t index, const void *data,
 	if (rv != TPM_SUCCESS)
 		return rv;
 
-	return write_secdata(index, data, length);
+	return safe_write(index, data, length);
 }
 
 static uint32_t set_firmware_space(const void *firmware_blob)
@@ -300,8 +256,8 @@ static uint32_t set_rec_hash_space(const uint8_t *data)
 					    TPM_NV_PER_GLOBALLOCK |
 					    TPM_NV_PER_PPWRITE,
 					    REC_HASH_NV_SIZE));
-	RETURN_ON_FAILURE(write_secdata(REC_HASH_NV_INDEX, data,
-					REC_HASH_NV_SIZE));
+	RETURN_ON_FAILURE(safe_write(REC_HASH_NV_INDEX, data,
+				     REC_HASH_NV_SIZE));
 
 	return TPM_SUCCESS;
 }
@@ -347,17 +303,17 @@ static uint32_t _factory_initialize_tpm(struct vb2_context *ctx)
 	RETURN_ON_FAILURE(safe_define_space(KERNEL_NV_INDEX,
 					    TPM_NV_PER_PPWRITE,
 					    VB2_SECDATA_KERNEL_SIZE_V02));
-	RETURN_ON_FAILURE(write_secdata(KERNEL_NV_INDEX,
-					ctx->secdata_kernel,
-					VB2_SECDATA_KERNEL_SIZE_V02));
+	RETURN_ON_FAILURE(safe_write(KERNEL_NV_INDEX,
+				     ctx->secdata_kernel,
+				     VB2_SECDATA_KERNEL_SIZE_V02));
 
 	/* Define and write secdata_firmware space. */
 	RETURN_ON_FAILURE(safe_define_space(FIRMWARE_NV_INDEX,
 					    TPM_NV_PER_GLOBALLOCK |
 					    TPM_NV_PER_PPWRITE,
 					    VB2_SECDATA_FIRMWARE_SIZE));
-	RETURN_ON_FAILURE(write_secdata(FIRMWARE_NV_INDEX,
-					ctx->secdata_firmware,
+	RETURN_ON_FAILURE(safe_write(FIRMWARE_NV_INDEX,
+				     ctx->secdata_firmware,
 					VB2_SECDATA_FIRMWARE_SIZE));
 
 	/* Define and set rec hash space, if available. */
@@ -449,8 +405,8 @@ uint32_t antirollback_write_space_firmware(struct vb2_context *ctx)
 {
 	if (CONFIG(CR50_IMMEDIATELY_COMMIT_FW_SECDATA))
 		tlcl_cr50_enable_nvcommits();
-	return write_secdata(FIRMWARE_NV_INDEX, ctx->secdata_firmware,
-			     VB2_SECDATA_FIRMWARE_SIZE);
+	return safe_write(FIRMWARE_NV_INDEX, ctx->secdata_firmware,
+			  VB2_SECDATA_FIRMWARE_SIZE);
 }
 
 uint32_t antirollback_write_space_kernel(struct vb2_context *ctx)
@@ -498,7 +454,7 @@ uint32_t antirollback_write_space_rec_hash(const uint8_t *data, uint32_t size)
 	if (rv != TPM_SUCCESS)
 		return rv;
 
-	return write_secdata(REC_HASH_NV_INDEX, data, size);
+	return safe_write(REC_HASH_NV_INDEX, data, size);
 }
 
 vb2_error_t vb2ex_tpm_clear_owner(struct vb2_context *ctx)

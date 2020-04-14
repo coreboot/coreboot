@@ -56,9 +56,6 @@
 		}							\
 	} while (0)
 
-#define TPM_PCR_GBB_FLAGS_NAME "GBB flags"
-#define TPM_PCR_GBB_HWID_NAME "GBB HWID"
-
 static uint32_t safe_write(uint32_t index, const void *data, uint32_t length);
 
 static uint32_t read_space_firmware(struct vb2_context *ctx)

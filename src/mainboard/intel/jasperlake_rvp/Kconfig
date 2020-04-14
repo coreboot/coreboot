@@ -63,4 +63,7 @@ config UART_FOR_CONSOLE
 	default 2 if INTEL_LPSS_UART_FOR_CONSOLE
 	default 0
 
+config TPM_TIS_ACPI_INTERRUPT
+	int
+	default 45  # GPE0_DW1_13 (GPP_H13)
 endif

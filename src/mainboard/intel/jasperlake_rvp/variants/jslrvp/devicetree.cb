@@ -9,7 +9,7 @@ chip soc/intel/jasperlake
 	# route. i.e. If this route changes then the affected GPE
 	# offset bits also need to be changed.
 	register "pmc_gpe0_dw0" = "GPP_B"
-	register "pmc_gpe0_dw1" = "GPP_D"
+	register "pmc_gpe0_dw1" = "GPP_H"
 	register "pmc_gpe0_dw2" = "GPP_E"
 
 	# FSP configuration
@@ -297,7 +297,7 @@ chip soc/intel/jasperlake
 			chip drivers/spi/acpi
 				register "hid" = "ACPI_DT_NAMESPACE_HID"
 				register "compat_string" = ""google,cr50""
-				register "irq" = "ACPI_IRQ_EDGE_LOW(GPP_D16_IRQ)"
+				register "irq" = "ACPI_IRQ_EDGE_LOW(GPP_H13_IRQ)"
 				device spi 0 on end
 			end
 		end # GSPI #1

@@ -18,11 +18,29 @@ static const struct pad_config gpio_table[] = {
 	/* M.2_WLAN_PERST_N */
 	PAD_CFG_GPO(GPP_B17, 1, PLTRST),
 
+	/* GSPI1_CS# */
+	PAD_CFG_NF(GPP_B19, NONE, DEEP, NF1),
+
+	/* GSPI1_CLK */
+	PAD_CFG_NF(GPP_B20, NONE, DEEP, NF1),
+
+	/* GSPI1_MISO */
+	PAD_CFG_NF(GPP_B21, NONE, DEEP, NF1),
+
+	/* GSPI1_MOSI */
+	PAD_CFG_NF(GPP_B22, NONE, DEEP, NF1),
+
+	/*PCH_INT_ODL*/
+	PAD_CFG_NF(GPP_B23, NONE, DEEP, NF1),
+
 	/* WWAN_PERST_N */
 	PAD_CFG_GPO(GPP_C0, 0, PLTRST),
 
 	/* M2_WWAN_SSD_SKT2_CFG2 */
 	PAD_CFG_GPI(GPP_C3, NONE, PLTRST),
+
+	/*SLP_LAN_N*/
+	PAD_CFG_GPO(GPP_C7, 0, PLTRST),
 
 	/* I2C0_SDA */
 	PAD_CFG_NF(GPP_C16, UP_2K, DEEP, NF1),
@@ -36,17 +54,26 @@ static const struct pad_config gpio_table[] = {
 	/* BT_RF_KILL_N */
 	PAD_CFG_GPO(GPP_D1, 1, PLTRST),
 
+	/*LAN_RST_N*/
+	PAD_CFG_GPO(GPP_D6, 1, PLTRST),
+
 	/* I2S_MCLK */
 	PAD_CFG_NF(GPP_D18, NONE, DEEP, NF1),
 
 	/* WWAN_FCP_OFF_N */
 	PAD_CFG_GPO(GPP_E3, 1, PLTRST),
 
+	/*FPS_INT*/
+	PAD_CFG_GPI_APIC(GPP_H0, NONE, PLTRST, LEVEL, INVERT),
+
 	/* WWAN EN GPIO */
 	PAD_CFG_GPO(GPP_H7, 1, PLTRST),
 
 	/* M.2_BT_I2S2_SCLK */
 	PAD_CFG_GPI(GPP_H11, NONE, PLTRST),
+
+	/*PCH_INT_ODL*/
+	PAD_CFG_GPI_APIC(GPP_H13, NONE, DEEP, EDGE_SINGLE, INVERT),
 
 	/* M.2_BT_I2S2_RXD */
 	PAD_CFG_GPI(GPP_H14, NONE, PLTRST),
@@ -100,7 +127,21 @@ static const struct pad_config gpio_table[] = {
 
 /* Early pad configuration in bootblock */
 static const struct pad_config early_gpio_table[] = {
-	/* ToDo: Fill early gpio configurations for TPM */
+
+	/* GSPI1_CS# */
+	PAD_CFG_NF(GPP_B19, NONE, DEEP, NF1),
+
+	/* GSPI1_CLK */
+	PAD_CFG_NF(GPP_B20, NONE, DEEP, NF1),
+
+	/* GSPI1_MISO */
+	PAD_CFG_NF(GPP_B21, NONE, DEEP, NF1),
+
+	/* GSPI1_MOSI */
+	PAD_CFG_NF(GPP_B22, NONE, DEEP, NF1),
+
+	/*PCH_INT_ODL*/
+	PAD_CFG_GPI_APIC(GPP_H13, NONE, DEEP, EDGE_SINGLE, INVERT),
 };
 
 const struct pad_config *variant_gpio_table(size_t *num)

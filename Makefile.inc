@@ -896,52 +896,42 @@ FMAP_BIOS_SIZE := $(call int-align-down, $(shell echo $(CONFIG_CBFS_SIZE) | tr A
 # X86 CONSOLE FMAP region
 #
 # position, size and entry line of CONSOLE relative to BIOS_BASE, if enabled
-FMAP_CONSOLE_BASE := 0
+
+FMAP_CURRENT_BASE := 0
+
 ifeq ($(CONFIG_CONSOLE_SPI_FLASH),y)
+FMAP_CONSOLE_BASE := $(FMAP_CURRENT_BASE)
 FMAP_CONSOLE_SIZE := $(CONFIG_CONSOLE_SPI_FLASH_BUFFER_SIZE)
 FMAP_CONSOLE_ENTRY := CONSOLE@$(FMAP_CONSOLE_BASE) $(FMAP_CONSOLE_SIZE)
-else # ifeq ($(CONFIG_CONSOLE_SPI_FLASH),y)
-FMAP_CONSOLE_SIZE := 0
+FMAP_CURRENT_BASE := $(call int-add, $(FMAP_CONSOLE_BASE) $(FMAP_CONSOLE_SIZE))
+else
 FMAP_CONSOLE_ENTRY :=
-endif # ifeq ($(CONFIG_CONSOLE_SPI_FLASH),y)
+endif
 
-#
-# X86 RW_MRC_CACHE FMAP region
-#
-# position, size and entry line of MRC_CACHE relative to BIOS_BASE, if enabled
 ifeq ($(CONFIG_CACHE_MRC_SETTINGS),y)
-FMAP_MRC_CACHE_BASE := $(call int-align, $(call int-add,  $(FMAP_CONSOLE_BASE) \
-	$(FMAP_CONSOLE_SIZE)), 0x10000)
+FMAP_MRC_CACHE_BASE := $(call int-align, $(FMAP_CURRENT_BASE), 0x10000)
 FMAP_MRC_CACHE_SIZE := $(CONFIG_MRC_SETTINGS_CACHE_SIZE)
 FMAP_MRC_CACHE_ENTRY := RW_MRC_CACHE@$(FMAP_MRC_CACHE_BASE) $(FMAP_MRC_CACHE_SIZE)
-else # ifeq ($(CONFIG_CACHE_MRC_SETTINGS),y)
-FMAP_MRC_CACHE_BASE := 0
-FMAP_MRC_CACHE_SIZE := 0
+FMAP_CURRENT_BASE := $(call int-add, $(FMAP_MRC_CACHE_BASE) $(FMAP_MRC_CACHE_SIZE))
+else
 FMAP_MRC_CACHE_ENTRY :=
-endif # ifeq ($(CONFIG_CACHE_MRC_SETTINGS),y)
+endif
 
-#
-# X86 SMMSTORE FMAP region
-#
-# position, size and entry line of SMMSTORE relative to BIOS_BASE, if enabled
 ifeq ($(CONFIG_SMMSTORE),y)
-FMAP_SMMSTORE_BASE := $(call int-align, $(call int-add, $(FMAP_CONSOLE_BASE) \
-	$(FMAP_CONSOLE_SIZE) $(FMAP_MRC_CACHE_SIZE)), 0x10000)
+FMAP_SMMSTORE_BASE := $(call int-align, $(FMAP_CURRENT_BASE), 0x10000)
 FMAP_SMMSTORE_SIZE := $(CONFIG_SMMSTORE_SIZE)
 FMAP_SMMSTORE_ENTRY := SMMSTORE@$(FMAP_SMMSTORE_BASE) $(FMAP_SMMSTORE_SIZE)
-else # ifeq ($(CONFIG_SMMSTORE),y)
-FMAP_SMMSTORE_BASE := 0
-FMAP_SMMSTORE_SIZE := 0
+FMAP_CURRENT_BASE := $(call int-add, $(FMAP_SMMSTORE_BASE) $(FMAP_SMMSTORE_SIZE))
+else
 FMAP_SMMSTORE_ENTRY :=
-endif # ifeq ($(CONFIG_CACHE_MRC_SETTINGS),y)
+endif
 
 #
 # X86 FMAP region
 #
 #
 # position, size
-FMAP_FMAP_BASE := $(call int-add, $(FMAP_CONSOLE_BASE) $(FMAP_CONSOLE_SIZE) \
-	$(FMAP_MRC_CACHE_SIZE) $(FMAP_SMMSTORE_SIZE))
+FMAP_FMAP_BASE := $(FMAP_CURRENT_BASE)
 FMAP_FMAP_SIZE := 0x200
 
 #
@@ -950,7 +940,9 @@ FMAP_FMAP_SIZE := 0x200
 # position and size of CBFS, relative to BIOS_BASE
 FMAP_CBFS_BASE := $(call int-add, $(FMAP_FMAP_BASE) $(FMAP_FMAP_SIZE))
 FMAP_CBFS_SIZE := $(call int-subtract, $(FMAP_BIOS_SIZE) $(FMAP_CBFS_BASE))
+
 else # ifeq ($(CONFIG_ARCH_X86),y)
+
 DEFAULT_FLASHMAP:=$(top)/util/cbfstool/default.fmd
 # entire flash
 FMAP_ROM_ADDR := 0
@@ -963,47 +955,41 @@ FMAP_BIOS_SIZE := $(CONFIG_CBFS_SIZE)
 FMAP_FMAP_BASE := 0x20000
 FMAP_FMAP_SIZE := 0x100
 
+FMAP_CURRENT_BASE := $(call int-add, $(FMAP_FMAP_BASE) $(FMAP_FMAP_SIZE))
+
 #
 # NON-X86 CONSOLE FMAP region
 #
 # position, size and entry line of CONSOLE relative to BIOS_BASE, if enabled
 ifeq ($(CONFIG_CONSOLE_SPI_FLASH),y)
-FMAP_CONSOLE_BASE := $(call int-add, $(FMAP_FMAP_BASE) $(FMAP_FMAP_SIZE))
+FMAP_CONSOLE_BASE := $(FMAP_CURRENT_BASE)
 FMAP_CONSOLE_SIZE := $(CONFIG_CONSOLE_SPI_FLASH_BUFFER_SIZE)
 FMAP_CONSOLE_ENTRY := CONSOLE@$(FMAP_CONSOLE_BASE) $(FMAP_CONSOLE_SIZE)
-else # ifeq ($(CONFIG_CONSOLE_SPI_FLASH),y)
-FMAP_CONSOLE_BASE := 0
-FMAP_CONSOLE_SIZE := 0
+FMAP_CURRENT_BASE := $(call int-add, $(FMAP_CONSOLE_BASE) $(FMAP_CONSOLE_SIZE))
+else
 FMAP_CONSOLE_ENTRY :=
-endif # ifeq ($(CONFIG_CONSOLE_SPI_FLASH),y)
+endif
 
 #
 # NON-X86 RW_MRC_CACHE FMAP region
 #
 # position, size and entry line of MRC_CACHE relative to BIOS_BASE, if enabled
 ifeq ($(CONFIG_CACHE_MRC_SETTINGS),y)
-ifeq ($(CONFIG_CONSOLE_SPI_FLASH),y)
-FMAP_MRC_CACHE_BASE := $(call int-align, $(call int-add, $(FMAP_CONSOLE_BASE) \
-	$(FMAP_CONSOLE_SIZE)), 0x10000)
-else
-FMAP_MRC_CACHE_BASE := $(call int-align, $(call int-add, $(FMAP_FMAP_BASE) \
-	$(FMAP_FMAP_SIZE)), 0x10000)
-endif
+FMAP_MRC_CACHE_BASE := $(call int-align, $(FMAP_CURRENT_BASE), 0x10000)
 FMAP_MRC_CACHE_SIZE := $(CONFIG_MRC_SETTINGS_CACHE_SIZE)
 FMAP_MRC_CACHE_ENTRY := RW_MRC_CACHE@$(FMAP_MRC_CACHE_BASE) $(FMAP_MRC_CACHE_SIZE)
-else # ifeq ($(CONFIG_CACHE_MRC_SETTINGS),y)
-FMAP_MRC_CACHE_BASE := 0
-FMAP_MRC_CACHE_SIZE := 0
+FMAP_CURRENT_BASE := $(call int-add, $(FMAP_MRC_CACHE_BASE) $(FMAP_MRC_CACHE_SIZE))
+else
 FMAP_MRC_CACHE_ENTRY :=
-endif # ifeq ($(CONFIG_CACHE_MRC_SETTINGS),y)
+endif
 
 #
 # NON-X86 COREBOOT default cbfs FMAP region
 #
 # position and size of CBFS, relative to BIOS_BASE
-FMAP_CBFS_BASE := $(call int-add,$(FMAP_FMAP_BASE) $(FMAP_FMAP_SIZE) $(FMAP_CONSOLE_SIZE) \
-	$(FMAP_MRC_CACHE_SIZE))
+FMAP_CBFS_BASE := $(FMAP_CURRENT_BASE)
 FMAP_CBFS_SIZE := $(call int-subtract,$(FMAP_BIOS_SIZE) $(FMAP_CBFS_BASE))
+
 endif # ifeq ($(CONFIG_ARCH_X86),y)
 
 $(obj)/fmap.fmd: $(top)/Makefile.inc $(DEFAULT_FLASHMAP) $(obj)/config.h

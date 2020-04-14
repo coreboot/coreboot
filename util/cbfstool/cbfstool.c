@@ -1295,7 +1295,9 @@ static const struct command commands[] = {
 
 enum {
 	/* begin after ASCII characters */
-	LONGOPT_IBB = 256,
+	LONGOPT_START = 256,
+	LONGOPT_IBB = LONGOPT_START,
+	LONGOPT_END,
 };
 
 static struct option long_options[] = {
@@ -1491,6 +1493,23 @@ static void usage(char *name)
 	     );
 }
 
+static bool valid_opt(size_t i, int c)
+{
+	/* Check if it is one of the optstrings supported by the command. */
+	if (strchr(commands[i].optstring, c))
+		return true;
+
+	/*
+	 * Check if it is one of the non-ASCII characters. Currently, the
+	 * non-ASCII characters are only checked against the valid list
+	 * irrespective of the command.
+	 */
+	if (c >= LONGOPT_START && c < LONGOPT_END)
+		return true;
+
+	return false;
+}
+
 int main(int argc, char **argv)
 {
 	size_t i;
@@ -1525,9 +1544,8 @@ int main(int argc, char **argv)
 			}
 
 			/* Filter out illegal long options */
-			if (strchr(commands[i].optstring, c) == NULL) {
-				/* TODO maybe print actual long option instead */
-				ERROR("%s: invalid option -- '%c'\n",
+			if (!valid_opt(i, c)) {
+				ERROR("%s: invalid option -- '%d'\n",
 				      argv[0], c);
 				c = '?';
 			}

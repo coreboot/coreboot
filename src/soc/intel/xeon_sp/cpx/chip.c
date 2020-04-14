@@ -585,6 +585,8 @@ static void chip_enable_dev(struct device *dev)
 static void chip_final(void *data)
 {
 	p2sb_hide();
+
+	set_bios_init_completion();
 }
 
 static void chip_init(void *data)

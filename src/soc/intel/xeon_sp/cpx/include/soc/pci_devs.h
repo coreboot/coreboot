@@ -4,6 +4,7 @@
 #define _SOC_PCI_DEVS_H_
 
 #include <device/pci_def.h>
+#include <types.h>
 
 #define _SA_DEVFN(slot)         PCI_DEVFN(SA_DEV_SLOT_ ## slot, 0)
 #define _PCH_DEVFN(slot, func)  PCI_DEVFN(PCH_DEV_SLOT_ ## slot, func)
@@ -22,6 +23,32 @@
 #define SAD_ALL_FUNC			0
 #define SAD_ALL_PAM0123_CSR		0x40
 #define SAD_ALL_PAM456_CSR		0x44
+
+#define PCU_IIO_STACK                   1
+#define PCU_DEV                         30
+#define PCU_CR1_FUN                     1
+
+#define PCU_CR1_BIOS_MB_DATA_REG                           0x8c
+
+#define PCU_CR1_BIOS_MB_INTERFACE_REG                      0x90
+#define   BIOS_MB_RUN_BUSY_MASK                            BIT(31)
+#define   BIOS_MB_CMD_MASK                                 0xff
+#define   BIOS_CMD_READ_PCU_MISC_CFG                       0x5
+#define   BIOS_CMD_WRITE_PCU_MISC_CFG                      0x6
+#define   BIOS_ERR_INVALID_CMD                             0x01
+
+#define PCU_CR1_BIOS_RESET_CPL_REG                         0x94
+#define   RST_CPL1_MASK                                    BIT(1)
+#define   RST_CPL2_MASK                                    BIT(2)
+#define   RST_CPL3_MASK                                    BIT(3)
+#define   RST_CPL4_MASK                                    BIT(4)
+#define   PCODE_INIT_DONE1_MASK                            BIT(9)
+#define   PCODE_INIT_DONE2_MASK                            BIT(10)
+#define   PCODE_INIT_DONE3_MASK                            BIT(11)
+#define   PCODE_INIT_DONE4_MASK                            BIT(12)
+
+#define PCU_CR1_DESIRED_CORES_CFG2_REG                     0xa0
+#define PCU_CR1_DESIRED_CORES_CFG2_REG_LOCK_MASK           BIT(31)
 
 #define UBOX_DECS_BUS			0
 #define UBOX_DECS_DEV			8

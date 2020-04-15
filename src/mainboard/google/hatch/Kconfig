@@ -100,6 +100,7 @@ config MAINBOARD_PART_NUMBER
 	default "Helios" if BOARD_GOOGLE_HELIOS
 	default "Helios_Diskswap" if BOARD_GOOGLE_HELIOS_DISKSWAP
 	default "Jinlon" if BOARD_GOOGLE_JINLON
+	default "Kaisa" if BOARD_GOOGLE_KAISA
 	default "Kindred" if BOARD_GOOGLE_KINDRED
 	default "Kohaku" if BOARD_GOOGLE_KOHAKU
 	default "Mushu" if BOARD_GOOGLE_MUSHU
@@ -127,6 +128,7 @@ config VARIANT_DIR
 	default "helios" if BOARD_GOOGLE_HELIOS
 	default "helios" if BOARD_GOOGLE_HELIOS_DISKSWAP
 	default "jinlon" if BOARD_GOOGLE_JINLON
+	default "kaisa" if BOARD_GOOGLE_KAISA
 	default "kindred" if BOARD_GOOGLE_KINDRED
 	default "kohaku" if BOARD_GOOGLE_KOHAKU
 	default "mushu" if BOARD_GOOGLE_MUSHU

@@ -16,6 +16,10 @@ chip soc/intel/apollolake
 
 	register "enable_vtd" = "1"
 
+	# Override eMMC MaxHostSpeed
+	# 0:HS400 (Default) 1:HS200 2:DDR50
+	register "emmc_host_max_speed" = "1"
+
 	device cpu_cluster 0 on
 		device lapic 0 on end
 	end

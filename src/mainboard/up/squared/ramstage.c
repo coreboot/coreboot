@@ -30,7 +30,6 @@ void mainboard_silicon_init_params(FSP_S_CONFIG *silconfig)
 	silconfig->IoApicBdfValid = 0x1;		// 0x0
 	silconfig->IoApicDeviceNumber = 0x1F;		// 0xf
 	silconfig->LPSS_S0ixEnable = 0x1;		// 0x0
-	silconfig->eMMCHostMaxSpeed = 0x2;		// 0x0
 	silconfig->Usb30Mode = 0x1;			// 0x0
 	silconfig->HdAudioDspUaaCompliance = 0x1;	// 0x0
 	silconfig->InitS3Cpu = 0x1;			// 0x0

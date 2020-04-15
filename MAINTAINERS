@@ -198,10 +198,10 @@ M:	Damien Zammit <damien@zamaudio.com>
 S:	Odd Fixes
 F:	src/mainboard/gigabyte/ga-g41m-es2l
 
-GIGABYTE GA-H61M-S2PV MAINBOARD
+GIGABYTE GA-H61M SERIES MAINBOARDS
 M:	Angel Pons <th3fanbus@gmail.com>
 S:	Maintained
-F:	src/mainboard/gigabyte/ga-h61m-s2pv
+F:	src/mainboard/gigabyte/ga-h61m-series
 
 GOOGLE PANTHER MAINBOARD
 M:	Stefan Reinauer <stefan.reinauer@coreboot.org>

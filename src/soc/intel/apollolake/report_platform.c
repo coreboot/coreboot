@@ -46,7 +46,7 @@ static struct {
 	const char *name;
 } igd_table[] = {
 	{ PCI_DEVICE_ID_INTEL_APL_IGD_HD_505, "Apollolake HD 505" },
-	{ PCI_DEVICE_ID_INTEL_APL_IGD_HD_500, "Aplollolake HD 500" },
+	{ PCI_DEVICE_ID_INTEL_APL_IGD_HD_500, "Apollolake HD 500" },
 	{ PCI_DEVICE_ID_INTEL_GLK_IGD, "Geminilake" },
 	{ PCI_DEVICE_ID_INTEL_GLK_IGD_EU12, "Geminilake EU12" },
 };

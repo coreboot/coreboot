@@ -374,10 +374,6 @@ S:	Supported
 F:	src/drivers/aspeed/common/
 F:	src/drivers/aspeed/ast2050/
 
-ATI MACH64 Driver
-S:	Orphan
-F:	src/drivers/ati/mach64/
-
 ABUILD
 M:	Patrick Georgi <patrick@georgi-clan.de>
 M:	Martin Roth <gaumless@gmail.com>
@@ -409,13 +405,10 @@ F:	util/rockchip/
 
 ORPHANED ARM SOCS
 S:	Orphaned
-F:	src/cpu/allwinner/
 F:	src/cpu/armltd/
 F:	src/cpu/ti/
-F:	src/soc/marvell/
 F:	src/soc/qualcomm/
 F:	src/soc/samsung/
-F:	util/arm_boot_tools/
 F:	util/exynos/
 F:	util/ipqheader/
 
@@ -517,14 +510,10 @@ F:	src/drivers/uart/
 
 NVRAM
 F:	util/nvramtool/
-F:	util/optionlist/
 F:	payloads/nvramcui/
 
 LIBPAYLOAD
 F:	payloads/libpayload/
-
-BAYOU PAYLOAD
-F:	payloads/bayou/
 
 COREINFO PAYLOAD
 F:	payloads/coreinfo/

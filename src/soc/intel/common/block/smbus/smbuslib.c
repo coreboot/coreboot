@@ -79,3 +79,51 @@ void get_spd_smbus(struct spd_block *blk)
 
 	update_spd_len(blk);
 }
+
+/*
+ * get_spd_sn returns the SODIMM serial number. It only supports DDR3 and DDR4.
+ *  return CB_SUCCESS, sn is the serial number and sn=0xffffffff if the dimm is not present.
+ *  return CB_ERR, if dram_type is not supported or addr is a zero.
+ */
+enum cb_err get_spd_sn(u8 addr, u32 *sn)
+{
+	u8 i;
+	u8 dram_type;
+	int smbus_ret;
+
+	/* addr is not a zero. */
+	if (addr == 0x0)
+		return CB_ERR;
+
+	/* If dimm is not present, set sn to 0xff. */
+	smbus_ret = do_smbus_read_byte(SMBUS_IO_BASE, addr, SPD_DRAM_TYPE);
+	if (smbus_ret < 0) {
+		printk(BIOS_INFO, "No memory dimm at address %02X\n", addr);
+		*sn = 0xffffffff;
+		return CB_SUCCESS;
+	}
+
+	dram_type = smbus_ret & 0xff;
+
+	/* Check if module is DDR4, DDR4 spd is 512 byte. */
+	if (dram_type == SPD_DRAM_DDR4 && CONFIG_DIMM_SPD_SIZE > SPD_PAGE_LEN) {
+		/* Switch to page 1 */
+		do_smbus_write_byte(SMBUS_IO_BASE, SPD_PAGE_1, 0, 0);
+
+		for (i = 0; i < SPD_SN_LEN; i++)
+			*((u8 *)sn + i) = do_smbus_read_byte(SMBUS_IO_BASE, addr,
+						i + DDR4_SPD_SN_OFF);
+
+		/* Restore to page 0 */
+		do_smbus_write_byte(SMBUS_IO_BASE, SPD_PAGE_0, 0, 0);
+	} else if (dram_type == SPD_DRAM_DDR3) {
+		for (i = 0; i < SPD_SN_LEN; i++)
+			*((u8 *)sn + i) = do_smbus_read_byte(SMBUS_IO_BASE, addr,
+							i + DDR3_SPD_SN_OFF);
+	} else {
+		printk(BIOS_ERR, "Unsupported dram_type\n");
+		return CB_ERR;
+	}
+
+	return CB_SUCCESS;
+}

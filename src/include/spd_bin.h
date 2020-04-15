@@ -21,16 +21,19 @@
 #define  SPD_DRAM_LPDDR5	0x13
 #define SPD_DENSITY_BANKS	4
 #define SPD_ADDRESSING		5
+#define SPD_SN_LEN		4
 #define DDR3_ORGANIZATION	7
 #define DDR3_BUS_DEV_WIDTH	8
 #define DDR4_ORGANIZATION	12
 #define DDR4_BUS_DEV_WIDTH	13
 #define DDR3_SPD_PART_OFF	128
 #define DDR3_SPD_PART_LEN	18
+#define DDR3_SPD_SN_OFF		122
 #define LPDDR3_SPD_PART_OFF	128
 #define LPDDR3_SPD_PART_LEN	18
 #define DDR4_SPD_PART_OFF	329
 #define DDR4_SPD_PART_LEN	20
+#define DDR4_SPD_SN_OFF		325
 
 struct spd_block {
 	u8 addr_map[CONFIG_DIMM_MAX]; /* 7 bit I2C addresses */
@@ -44,6 +47,13 @@ void print_spd_info(uint8_t spd[]);
 int get_spd_cbfs_rdev(struct region_device *spd_rdev, u8 spd_index);
 void dump_spd_info(struct spd_block *blk);
 void get_spd_smbus(struct spd_block *blk);
+
+/*
+ * get_spd_sn returns the SODIMM serial number. It only supports DDR3 and DDR4.
+ *  return CB_SUCCESS, sn is the serial number and sn=0xffffffff if the dimm is not present.
+ *  return CB_ERR, if dram_type is not supported or addr is a zero.
+ */
+enum cb_err get_spd_sn(u8 addr, u32 *sn);
 
 /* expects SPD size to be 128 bytes, reads from "spd.bin" in CBFS and
    verifies the checksum. Only available if CONFIG_DIMM_SPD_SIZE == 128. */

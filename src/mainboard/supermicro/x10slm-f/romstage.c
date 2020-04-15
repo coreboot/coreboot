@@ -33,8 +33,6 @@ void mainboard_romstage_entry(void)
 		.epbar = DEFAULT_EPBAR,
 		.pciexbar = CONFIG_MMCONF_BASE_ADDRESS,
 		.smbusbar = SMBUS_IO_BASE,
-		.wdbbar = 0x4000000,
-		.wdbsize = 0x1000,
 		.hpet_address = HPET_ADDR,
 		.rcba = (uintptr_t)DEFAULT_RCBA,
 		.pmbase = DEFAULT_PMBASE,

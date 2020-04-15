@@ -73,8 +73,9 @@ struct pei_data
 	uint32_t epbar;
 	uint32_t pciexbar;
 	uint16_t smbusbar;
-	uint32_t wdbbar;
-	uint32_t wdbsize;
+	/* Unused by HSW MRC, but changes to the memory layout of this struct break the ABI */
+	uint32_t _unused_wdbbar;
+	uint32_t _unused_wdbsize;
 	uint32_t hpet_address;
 	uint32_t rcba;
 	uint32_t pmbase;

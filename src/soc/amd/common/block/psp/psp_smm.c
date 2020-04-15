@@ -72,7 +72,7 @@ int psp_notify_smm(void)
 	clear_smm_flag();
 
 	/* buffer's status shouldn't change but report it if it does */
-	psp_print_cmd_status(cmd_status, (struct mbox_default_buffer *)&buffer);
+	psp_print_cmd_status(cmd_status, &buffer.header);
 
 	return cmd_status;
 }
@@ -102,5 +102,5 @@ void psp_notify_sx_info(u8 sleep_type)
 	clear_smm_flag();
 
 	/* buffer's status shouldn't change but report it if it does */
-	psp_print_cmd_status(cmd_status, (struct mbox_default_buffer *)buffer);
+	psp_print_cmd_status(cmd_status, &buffer->header);
 }

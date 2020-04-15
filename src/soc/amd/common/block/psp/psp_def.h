@@ -109,7 +109,7 @@ struct mbox_cmd_sx_info_buffer {
 #define PSP_INIT_TIMEOUT 10000 /* 10 seconds */
 #define PSP_CMD_TIMEOUT 1000 /* 1 second */
 
-void psp_print_cmd_status(int cmd_status, struct mbox_default_buffer *buffer);
+void psp_print_cmd_status(int cmd_status, struct mbox_buffer_header *header);
 
 /* This command needs to be implemented by the generation specific code. */
 int send_psp_command(u32 command, void *buffer);

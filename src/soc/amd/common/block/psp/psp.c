@@ -39,19 +39,19 @@ static const char *status_to_string(int err)
 	}
 }
 
-static u32 rd_resp_sts(struct mbox_default_buffer *buffer)
+static u32 rd_resp_sts(struct mbox_buffer_header *header)
 {
-	return read32(&buffer->header.status);
+	return read32(&header->status);
 }
 
 /*
  * Print meaningful status to the console.  Caller only passes a pointer to a
- * buffer if it's expected to contain its own status.
+ * buffer header if it's expected to contain its own status.
  */
-void psp_print_cmd_status(int cmd_status, struct mbox_default_buffer *buffer)
+void psp_print_cmd_status(int cmd_status, struct mbox_buffer_header *header)
 {
-	if (buffer && rd_resp_sts(buffer))
-		printk(BIOS_DEBUG, "buffer status=0x%x ", rd_resp_sts(buffer));
+	if (header && rd_resp_sts(header))
+		printk(BIOS_DEBUG, "buffer status=0x%x ", rd_resp_sts(header));
 
 	if (cmd_status)
 		printk(BIOS_DEBUG, "%s\n", status_to_string(cmd_status));
@@ -77,7 +77,7 @@ int psp_notify_dram(void)
 	cmd_status = send_psp_command(MBOX_BIOS_CMD_DRAM_INFO, &buffer);
 
 	/* buffer's status shouldn't change but report it if it does */
-	psp_print_cmd_status(cmd_status, &buffer);
+	psp_print_cmd_status(cmd_status, &buffer.header);
 
 	return cmd_status;
 }
@@ -101,7 +101,7 @@ static void psp_notify_boot_done(void *unused)
 	cmd_status = send_psp_command(MBOX_BIOS_CMD_BOOT_DONE, &buffer);
 
 	/* buffer's status shouldn't change but report it if it does */
-	psp_print_cmd_status(cmd_status, &buffer);
+	psp_print_cmd_status(cmd_status, &buffer.header);
 }
 
 BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_BOOT, BS_ON_ENTRY,

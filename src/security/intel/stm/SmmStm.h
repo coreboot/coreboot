@@ -28,7 +28,7 @@
 int load_stm_image(uintptr_t mseg);
 
 void stm_setup(
-	uintptr_t mseg, int cpu, int num_cpus, uintptr_t smbase,
+	uintptr_t mseg, int cpu, uintptr_t smbase,
 	uintptr_t smbase_base, uint32_t offset32);
 
 /*

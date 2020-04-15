@@ -318,13 +318,13 @@ int smm_setup_relocation_handler(struct smm_loader_params *params)
 /* The SMM module is placed within the provided region in the following
  * manner:
  * +-----------------+ <- smram + size
- * |    stacks       |
- * +-----------------+ <- smram + size - total_stack_size
- * |  fxsave area    |
- * +-----------------+ <- smram + size - total_stack_size - fxsave_size
  * | BIOS resource   |
  * | list (STM)      |
- * +-----------------+ <- .. - CONFIG_BIOS_RESOURCE_LIST_SIZE
+ * +-----------------+ <- smram + size - CONFIG_BIOS_RESOURCE_LIST_SIZE
+ * |    stacks       |
+ * +-----------------+ <- .. - total_stack_size
+ * |  fxsave area    |
+ * +-----------------+ <- .. - total_stack_size - fxsave_size
  * |      ...        |
  * +-----------------+ <- smram + handler_size + SMM_DEFAULT_SIZE
  * |    handler      |
@@ -365,11 +365,10 @@ int smm_load_module(void *smram, size_t size, struct smm_loader_params *params)
 
 	/* Stacks start at the top of the region. */
 	base = smram;
+	base += size;
 
 	if (CONFIG(STM))
-		base += size - CONFIG_MSEG_SIZE;     // take out the mseg
-	else
-		base += size;
+		base -= CONFIG_MSEG_SIZE + CONFIG_BIOS_RESOURCE_LIST_SIZE;
 
 	params->stack_top = base;
 
@@ -399,10 +398,6 @@ int smm_load_module(void *smram, size_t size, struct smm_loader_params *params)
 	/* Does the required amount of memory exceed the SMRAM region size? */
 	total_size = total_stack_size + handler_size;
 	total_size += fxsave_size + SMM_DEFAULT_SIZE;
-
-	// account for the bios resource list
-	if (CONFIG(STM))
-		total_size += CONFIG_BIOS_RESOURCE_LIST_SIZE;
 
 	if (total_size > size)
 		return -1;

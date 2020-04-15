@@ -177,12 +177,7 @@ void stm_setup(uintptr_t mseg, int cpu, int num_cpus, uintptr_t smbase,
 
 		// need to create the BIOS resource list once
 		// first calculate the location in SMRAM
-		addr_calc = (mseg - (CONFIG_SMM_MODULE_STACK_SIZE * num_cpus));
-
-		if (CONFIG(SSE))
-			addr_calc -= FXSAVE_SIZE * num_cpus;
-
-		addr_calc -= CONFIG_BIOS_RESOURCE_LIST_SIZE;
+		addr_calc = mseg - CONFIG_BIOS_RESOURCE_LIST_SIZE;
 		stm_resource_heap = (uint8_t *) addr_calc;
 		printk(BIOS_DEBUG, "STM: stm_resource_heap located at %p\n",
 				stm_resource_heap);

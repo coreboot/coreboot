@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <acpi/acpi.h>
+#include <acpi/acpigen.h>
 #include <acpi/acpi_gnvs.h>
 #include <console/uart.h>
 #include <device/device.h>
@@ -12,7 +13,9 @@
 #include <intelblocks/uart.h>
 #include <soc/pci_devs.h>
 #include <soc/iomap.h>
+#include <soc/irq.h>
 #include <soc/nvs.h>
+#include "chip.h"
 
 #define UART_PCI_ENABLE	(PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER)
 #define UART_CONSOLE_INVALID_INDEX	0xFF
@@ -225,11 +228,156 @@ static void uart_common_enable_resources(struct device *dev)
 	}
 }
 
+static void uart_acpi_write_irq(const struct device *dev)
+{
+	struct acpi_irq irq;
+
+	switch (dev->path.pci.devfn) {
+	case PCH_DEVFN_UART0:
+		irq = (struct acpi_irq)ACPI_IRQ_LEVEL_LOW(LPSS_UART0_IRQ);
+		break;
+	case PCH_DEVFN_UART1:
+		irq = (struct acpi_irq)ACPI_IRQ_LEVEL_LOW(LPSS_UART1_IRQ);
+		break;
+	case PCH_DEVFN_UART2:
+		irq = (struct acpi_irq)ACPI_IRQ_LEVEL_LOW(LPSS_UART2_IRQ);
+		break;
+	default:
+		return;
+	}
+
+	acpi_device_write_interrupt(&irq);
+}
+
+/*
+ * Generate an ACPI entry if the device is enabled in devicetree for the ACPI
+ * LPSS driver. In this mode the device and vendor ID reads as 0xffff, but the
+ * PCI device is still there.
+ */
+static void uart_fill_ssdt(const struct device *dev)
+{
+	const char *scope = acpi_device_scope(dev);
+	const char *hid = acpi_device_hid(dev);
+	struct resource *res;
+
+	/* In ACPI mode the device is "invisible" */
+	if (!dev->hidden)
+		return;
+
+	if (!scope || !hid)
+		return;
+
+	res = probe_resource(dev, PCI_BASE_ADDRESS_0);
+	if (!res)
+		return;
+
+	/* Scope */
+	acpigen_write_scope(scope);
+
+	/* Device */
+	acpigen_write_device(acpi_device_name(dev));
+	acpigen_write_name_string("_HID", hid);
+	/*
+	 * Advertise compatibility to Sunrise Point, as the Linux kernel doesn't support
+	 * CannonPoint yet...
+	 */
+	if (strcmp(hid, "INT34B8") == 0)
+		acpigen_write_name_string("_CID", "INT3448");
+	else if (strcmp(hid, "INT34B9") == 0)
+		acpigen_write_name_string("_CID", "INT3449");
+	else if (strcmp(hid, "INT34BA") == 0)
+		acpigen_write_name_string("_CID", "INT344A");
+
+	acpi_device_write_uid(dev);
+	acpigen_write_name_string("_DDN", "LPSS ACPI UART");
+	acpigen_write_STA(acpi_device_status(dev));
+
+	/* Resources */
+	acpigen_write_name("_CRS");
+	acpigen_write_resourcetemplate_header();
+
+	uart_acpi_write_irq(dev);
+	acpigen_write_mem32fixed(1, res->base, res->size);
+
+	acpigen_write_resourcetemplate_footer();
+
+	acpigen_pop_len(); /* Device */
+	acpigen_pop_len(); /* Scope */
+}
+
+static const char *uart_acpi_hid(const struct device *dev)
+{
+	switch (dev->device) {
+	case PCI_DEVICE_ID_INTEL_APL_UART0:
+		return "80865abc";
+	case PCI_DEVICE_ID_INTEL_APL_UART1:
+		return "80865abe";
+	case PCI_DEVICE_ID_INTEL_APL_UART2:
+		return "80865ac0";
+	case PCI_DEVICE_ID_INTEL_GLK_UART0:
+		return  "808631bc";
+	case PCI_DEVICE_ID_INTEL_GLK_UART1:
+		return  "808631be";
+	case PCI_DEVICE_ID_INTEL_GLK_UART2:
+		return  "808631c0";
+	case PCI_DEVICE_ID_INTEL_GLK_UART3:
+		return  "808631ee";
+	case PCI_DEVICE_ID_INTEL_SPT_UART0:
+	case PCI_DEVICE_ID_INTEL_SPT_H_UART0:
+		return "INT3448";
+	case PCI_DEVICE_ID_INTEL_SPT_UART1:
+	case PCI_DEVICE_ID_INTEL_SPT_H_UART1:
+		return "INT3449";
+	case PCI_DEVICE_ID_INTEL_SPT_UART2:
+	case PCI_DEVICE_ID_INTEL_SPT_H_UART2:
+		return "INT344A";
+	case PCI_DEVICE_ID_INTEL_CNP_H_UART0:
+		return "INT34B8";
+	case PCI_DEVICE_ID_INTEL_CNP_H_UART1:
+		return "INT34B9";
+	case PCI_DEVICE_ID_INTEL_CNP_H_UART2:
+		return "INT34BA";
+	default:
+		return NULL;
+	}
+}
+
+static const char *uart_acpi_name(const struct device *dev)
+{
+	switch (dev->device) {
+	case PCI_DEVICE_ID_INTEL_APL_UART0:
+	case PCI_DEVICE_ID_INTEL_GLK_UART0:
+	case PCI_DEVICE_ID_INTEL_SPT_UART0:
+	case PCI_DEVICE_ID_INTEL_SPT_H_UART0:
+	case PCI_DEVICE_ID_INTEL_CNP_H_UART0:
+		return "UAR0";
+	case PCI_DEVICE_ID_INTEL_APL_UART1:
+	case PCI_DEVICE_ID_INTEL_GLK_UART1:
+	case PCI_DEVICE_ID_INTEL_SPT_UART1:
+	case PCI_DEVICE_ID_INTEL_SPT_H_UART1:
+	case PCI_DEVICE_ID_INTEL_CNP_H_UART1:
+		return "UAR1";
+	case PCI_DEVICE_ID_INTEL_APL_UART2:
+	case PCI_DEVICE_ID_INTEL_GLK_UART2:
+	case PCI_DEVICE_ID_INTEL_SPT_UART2:
+	case PCI_DEVICE_ID_INTEL_SPT_H_UART2:
+	case PCI_DEVICE_ID_INTEL_CNP_H_UART2:
+		return "UAR2";
+	case PCI_DEVICE_ID_INTEL_GLK_UART3:
+		return "UAR3";
+	default:
+		return NULL;
+	}
+}
+
 static struct device_operations device_ops = {
 	.read_resources		= uart_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= uart_common_enable_resources,
 	.ops_pci		= &pci_dev_ops_pci,
+	.acpi_fill_ssdt		= uart_fill_ssdt,
+	.acpi_hid		= uart_acpi_hid,
+	.acpi_name		= uart_acpi_name,
 };
 
 static const unsigned short pci_device_ids[] = {
@@ -296,4 +444,17 @@ static const struct pci_driver pch_uart __pci_driver = {
 	.vendor		= PCI_VENDOR_ID_INTEL,
 	.devices	= pci_device_ids,
 };
+
+static void uart_enable(struct device *dev)
+{
+	struct soc_intel_common_block_uart_config *conf = dev->chip_info;
+	dev->ops = &device_ops;
+	dev->device = conf ? conf->devid : 0;
+}
+
+struct chip_operations soc_intel_common_block_uart_ops = {
+	CHIP_NAME("LPSS UART in ACPI mode")
+	.enable_dev = uart_enable
+};
+
 #endif /* ENV_RAMSTAGE */

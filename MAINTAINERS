@@ -596,7 +596,7 @@ MISSING: ELOG
 
 MISSING: SPI
 
-# *** Infrastructure Owners***
+# *** Infrastructure Owners ***
 # This is intended to let people know who they should contact for issues with various infrastructure pieces.
 # Hardware
 #	Owners: Stefan, Patrick

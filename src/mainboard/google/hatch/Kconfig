@@ -79,10 +79,19 @@ config DRIVER_TPM_SPI_BUS
 config UART_FOR_CONSOLE
 	default 0
 
+if ROMSTAGE_SPD_CBFS
 config FMDFILE
 	string
 	default "src/mainboard/$(CONFIG_MAINBOARD_DIR)/chromeos-16MiB.fmd" if BOARD_ROMSIZE_KB_16384
 	default "src/mainboard/$(CONFIG_MAINBOARD_DIR)/chromeos.fmd" if BOARD_ROMSIZE_KB_32768
+endif
+
+if ROMSTAGE_SPD_SMBUS
+config FMDFILE
+	string
+	default "src/mainboard/$(CONFIG_MAINBOARD_DIR)/chromeos-16MiB-spd.fmd" if BOARD_ROMSIZE_KB_16384
+	default "src/mainboard/$(CONFIG_MAINBOARD_DIR)/chromeos-spd.fmd" if BOARD_ROMSIZE_KB_32768
+endif
 
 config MAINBOARD_DIR
 	string

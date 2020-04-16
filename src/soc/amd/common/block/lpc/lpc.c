@@ -324,7 +324,7 @@ static struct device_operations lpc_ops = {
 static const unsigned short pci_device_ids[] = {
 	PCI_DEVICE_ID_AMD_SB900_LPC,
 	PCI_DEVICE_ID_AMD_CZ_LPC,
-	PCI_DEVICE_ID_AMD_PCO_LPC,
+	PCI_DEVICE_ID_AMD_FAM17H_LPC,
 	0
 };
 static const struct pci_driver lpc_driver __pci_driver = {

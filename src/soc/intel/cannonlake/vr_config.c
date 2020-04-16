@@ -305,7 +305,7 @@ static uint16_t get_sku_icc_max(int domain)
 		return icc_max[domain];
 	}
 	default:
-		printk(BIOS_ERR, "ERROR: Unknown MCH (0x%x) in VR-config\n", mch_id);
+		printk(BIOS_ERR, "ERROR: Unknown MCH (0x%x) in %s\n", mch_id, __func__);
 	}
 	return 0;
 }
@@ -398,7 +398,7 @@ static uint16_t get_sku_ac_dc_loadline(const int domain)
 		return loadline[domain];
 	}
 	default:
-		printk(BIOS_ERR, "ERROR: Unknown MCH (0x%x) in VR-config\n", mch_id);
+		printk(BIOS_ERR, "ERROR: Unknown MCH (0x%x) in %s\n", mch_id, __func__);
 	}
 	return 0;
 }
@@ -492,7 +492,7 @@ static uint16_t get_sku_tdc_powerlimit(int domain)
 		return tdc[domain];
 	}
 	default:
-		printk(BIOS_ERR, "ERROR: Unknown MCH (0x%x) in VR-config\n", mch_id);
+		printk(BIOS_ERR, "ERROR: Unknown MCH (0x%x) in %s\n", mch_id, __func__);
 	}
 
 	return 0;

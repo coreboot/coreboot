@@ -2,6 +2,7 @@
 
 #include <bootstate.h>
 #include <cpu/amd/mtrr.h>
+#include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <drivers/i2c/designware/dw_i2c.h>
@@ -50,30 +51,58 @@ const char *soc_acpi_name(const struct device *dev)
 	if (dev->path.type != DEVICE_PATH_PCI)
 		return NULL;
 
-	switch (dev->path.pci.devfn) {
-	case PCIE0_DEVFN:
-		return "PBR4";
-	case PCIE1_DEVFN:
-		return "PBR5";
-	case PCIE2_DEVFN:
-		return "PBR6";
-	case PCIE3_DEVFN:
-		return "PBR7";
-	case PCIE4_DEVFN:
-		return "PBR8";
-	case HDA1_DEVFN:
-		return "AZHD";
-	case LPC_DEVFN:
-		return "LPCB";
-	case SMBUS_DEVFN:
-		return "SBUS";
-	case XHCI0_DEVFN:
-		return "XHC0";
-	case XHCI1_DEVFN:
-		return "XHC1";
-	default:
-		return NULL;
+	if (dev->bus->dev->path.type == DEVICE_PATH_DOMAIN) {
+		switch (dev->path.pci.devfn) {
+		case GNB_DEVFN:
+			return "GNB";
+		case IOMMU_DEVFN:
+			return "IOMM";
+		case PCIE_GPP_0_DEVFN:
+			return "PBR0";
+		case PCIE_GPP_1_DEVFN:
+			return "PBR1";
+		case PCIE_GPP_2_DEVFN:
+			return "PBR2";
+		case PCIE_GPP_3_DEVFN:
+			return "PBR3";
+		case PCIE_GPP_4_DEVFN:
+			return "PBR4";
+		case PCIE_GPP_5_DEVFN:
+			return "PBR5";
+		case PCIE_GPP_6_DEVFN:
+			return "PBR6";
+		case PCIE_GPP_A_DEVFN:
+			return "PBRA";
+		case PCIE_GPP_B_DEVFN:
+			return "PBRB";
+		case LPC_DEVFN:
+			return "LPCB";
+		case SMBUS_DEVFN:
+			return "SBUS";
+		default:
+			printk(BIOS_WARNING, "Unknown root PCI device: dev: %d, fn: %d\n",
+			       PCI_SLOT(dev->path.pci.devfn), PCI_FUNC(dev->path.pci.devfn));
+			return NULL;
+		}
 	}
+
+	if (dev->bus->dev->path.type == DEVICE_PATH_PCI
+	    && dev->bus->dev->path.pci.devfn == PCIE_GPP_A_DEVFN) {
+		switch (dev->path.pci.devfn) {
+		case XHCI0_DEVFN:
+			return "XHC0";
+		case XHCI1_DEVFN:
+			return "XHC1";
+		default:
+			printk(BIOS_WARNING, "Unknown Bus A PCI device: dev: %d, fn: %d\n",
+			       PCI_SLOT(dev->path.pci.devfn), PCI_FUNC(dev->path.pci.devfn));
+			return NULL;
+		}
+	}
+
+	printk(BIOS_WARNING, "Unknown PCI device: dev: %d, fn: %d\n",
+	       PCI_SLOT(dev->path.pci.devfn), PCI_FUNC(dev->path.pci.devfn));
+	return NULL;
 };
 
 struct device_operations pci_domain_ops = {

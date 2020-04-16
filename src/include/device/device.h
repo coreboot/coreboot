@@ -293,6 +293,10 @@ DEVTREE_CONST struct device *pcidev_path_on_root(pci_devfn_t devfn);
 DEVTREE_CONST struct device *pcidev_path_on_bus(unsigned int bus, pci_devfn_t devfn);
 DEVTREE_CONST struct device *pcidev_on_root(uint8_t dev, uint8_t fn);
 DEVTREE_CONST struct bus *pci_root_bus(void);
+/* Find PCI device with given D#:F# sitting behind the given PCI-to-PCI bridge device. */
+DEVTREE_CONST struct device *pcidev_path_behind_pci2pci_bridge(
+							const struct device *bridge,
+							pci_devfn_t devfn);
 
 /* To be deprecated, avoid using.
  *

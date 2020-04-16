@@ -232,6 +232,19 @@ DEVTREE_CONST struct device *pcidev_on_root(uint8_t dev, uint8_t fn)
 	return pcidev_path_on_root(PCI_DEVFN(dev, fn));
 }
 
+DEVTREE_CONST struct device *pcidev_path_behind_pci2pci_bridge(
+							const struct device *bridge,
+							pci_devfn_t devfn)
+{
+	if (!bridge || (bridge->path.type != DEVICE_PATH_PCI)) {
+		assert(0);
+		/* Return NULL in case asserts are non-fatal. */
+		return NULL;
+	}
+
+	return pcidev_path_behind(bridge->link_list, devfn);
+}
+
 DEVTREE_CONST struct device *pcidev_path_on_root_debug(pci_devfn_t devfn, const char *func)
 {
 	DEVTREE_CONST struct device *dev = pcidev_path_on_root(devfn);

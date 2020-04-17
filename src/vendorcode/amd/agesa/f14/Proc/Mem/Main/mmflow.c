@@ -64,6 +64,7 @@
 #include "mm.h"
 #include "mn.h"
 #include "mt.h"
+#include "mtspd3.h"
 #include "mu.h"
 #include "heapManager.h"
 #include "Filecode.h"
@@ -100,6 +101,16 @@ STATIC
 MemSPDDataProcess (
   IN OUT   MEM_DATA_STRUCT *MemPtr
   );
+
+#if (CONFIG(CPU_AMD_AGESA_OPENSOURCE_MEM_CUSTOM))
+
+VOID
+STATIC
+AgesaCustomMemoryProfileSPD (
+  IN OUT   UINT8 *Buffer
+  );
+
+#endif
 
 /*----------------------------------------------------------------------------
  *                            EXPORTED FUNCTIONS
@@ -293,6 +304,60 @@ AmdMemAuto (
   return Retval;
 }
 
+#if (CONFIG(CPU_AMD_AGESA_OPENSOURCE_MEM_CUSTOM))
+
+/* -----------------------------------------------------------------------------*/
+/**
+ *
+ *
+ *  This function modifies a SPD buffer with the custom SPD values set up in coreboot's config.
+ *
+ *     @param[in,out]   *Buffer   - Pointer to the UINT8
+ *
+ */
+
+VOID
+STATIC
+AgesaCustomMemoryProfileSPD (
+  IN OUT   UINT8 *Buffer
+  )
+{
+  UINT16 Offset;
+  //
+  // Modify a SPD buffer.
+  //
+  Buffer[SPD_DIVIDENT]   = CONFIG_CUSTOM_SPD_DIVIDENT;
+  Buffer[SPD_DIVISOR]    = CONFIG_CUSTOM_SPD_DIVISOR;
+  Buffer[SPD_TCK]        = CONFIG_CUSTOM_SPD_TCK;
+  Buffer[SPD_CASLO]      = CONFIG_CUSTOM_SPD_CASLO;
+  Buffer[SPD_CASHI]      = CONFIG_CUSTOM_SPD_CASHI;
+  Buffer[SPD_TAA]        = CONFIG_CUSTOM_SPD_TAA;
+  Buffer[SPD_TWR]        = CONFIG_CUSTOM_SPD_TWR;
+  Buffer[SPD_TRCD]       = CONFIG_CUSTOM_SPD_TRCD;
+  Buffer[SPD_TRRD]       = CONFIG_CUSTOM_SPD_TRRD;
+  Buffer[SPD_TRP]        = CONFIG_CUSTOM_SPD_TRP;
+  //
+  // SPD_UPPER_TRC and SPD_UPPER_TRAS are the same index but different bits:
+  // SPD_UPPER_TRC - [7:4], SPD_UPPER_TRAS - [3:0].
+  //
+  Buffer[SPD_UPPER_TRAS] = (CONFIG_CUSTOM_SPD_UPPER_TRC << 4) + CONFIG_CUSTOM_SPD_UPPER_TRAS;
+  Buffer[SPD_TRAS]       = CONFIG_CUSTOM_SPD_TRAS;
+  Buffer[SPD_TRC]        = CONFIG_CUSTOM_SPD_TRC;
+  Buffer[SPD_TWTR]       = CONFIG_CUSTOM_SPD_TWTR;
+  Buffer[SPD_TRTP]       = CONFIG_CUSTOM_SPD_TRTP;
+  Buffer[SPD_UPPER_TFAW] = CONFIG_CUSTOM_SPD_UPPER_TFAW;
+  Buffer[SPD_TFAW]       = CONFIG_CUSTOM_SPD_TFAW;
+  //
+  // Print a SPD buffer.
+  //
+  printk(BIOS_SPEW, "***** SPD BUFFER *****\n");
+  for (Offset = 0; Offset < 256; Offset++) {
+    printk(BIOS_SPEW, "Buffer[%d] = 0x%02X\n", Offset, Buffer[Offset]);
+  }
+  printk(BIOS_SPEW, "**********************\n");
+}
+
+#endif
 
 /* -----------------------------------------------------------------------------*/
 /**
@@ -369,6 +434,9 @@ MemSPDDataProcess (
           if (AgesaStatus == AGESA_SUCCESS) {
             DimmSPDPtr->DimmPresent = TRUE;
             IDS_HDT_CONSOLE (MEM_FLOW, "SPD Socket %d Channel %d Dimm %d: %08x\n", Socket, Channel, Dimm, SpdParam.Buffer);
+            #if (CONFIG(CPU_AMD_AGESA_OPENSOURCE_MEM_CUSTOM))
+                AgesaCustomMemoryProfileSPD(SpdParam.Buffer);
+            #endif
           } else {
             DimmSPDPtr->DimmPresent = FALSE;
           }

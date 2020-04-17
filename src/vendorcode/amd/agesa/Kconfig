@@ -25,4 +25,117 @@ config CPU_AMD_AGESA_OPENSOURCE_MEM_XMP_2
 	help
 	  XMP 2 memory profile. Check that it exists on ALL of your RAM sticks!
 
+config CPU_AMD_AGESA_OPENSOURCE_MEM_CUSTOM
+	bool "CUSTOM"
+	help
+	  Custom memory profile. Use the XMP SPD values as the base, if available.
+
+if CPU_AMD_AGESA_OPENSOURCE_MEM_CUSTOM
+
+config CUSTOM_SPD_DIVIDENT
+	int "[10]: Medium Timebase (MTB) Dividend"
+	default 1
+	range 1 255
+
+config CUSTOM_SPD_DIVISOR
+	int "[11]: Medium Timebase (MTB) Divisor"
+	default 14
+	range 1 255
+
+config CUSTOM_SPD_TCK
+	int "[12]: SDRAM Minimum Cycle Time, tCK"
+	default 15
+	range 1 255
+
+config CUSTOM_SPD_CASLO
+	int "[14]: CAS Latencies Supported, Lower Byte"
+	default 124
+	range 0 255
+
+config CUSTOM_SPD_CASHI
+	int "[15]: CAS Latencies Supported, Higher Byte"
+	default 0
+	range 0 255
+
+config CUSTOM_SPD_TAA
+	int "[16]: Min CAS Latency Time, tAA"
+	default 132
+	range 1 255
+
+config CUSTOM_SPD_TWR
+	int "[17]: Min Write Recovery Time, tWR"
+	default 210
+	range 1 255
+
+config CUSTOM_SPD_TRCD
+	int "[18]: Min RAS# to CAS# Delay Time, tRCD"
+	default 132
+	range 1 255
+
+config CUSTOM_SPD_TRRD
+	int "[19]: Min Row Active to Row Active Delay Time, tRRD"
+	default 84
+	range 1 255
+
+config CUSTOM_SPD_TRP
+	int "[20]: Min Row Precharge Delay Time, tRP"
+	default 132
+	range 1 255
+
+config CUSTOM_SPD_UPPER_TRC
+	int "[21][7:4]: Min Active to Active/Refresh Delay, UPPER tRC"
+	default 2
+	range 0 16
+
+config CUSTOM_SPD_UPPER_TRAS
+	int "[21][3:0]: Min Active to Precharge Delay Time, UPPER tRAS"
+	default 1
+	range 0 16
+
+config CUSTOM_SPD_TRAS
+	int "[22]: Min Active to Precharge Delay Time, LOWER tRAS"
+	default 138
+	range 1 255
+
+config CUSTOM_SPD_TRC
+	int "[23]: Min Active to Active/Refresh Delay, LOWER tRC"
+	default 181
+	range 1 255
+
+if CPU_AMD_AGESA_FAMILY16_KB
+
+config CUSTOM_SPD_TRFC_LO
+	int "[24]: Min Refresh Recovery Delay Time, LOWER tRFC"
+	default 56
+	range 1 255
+
+config CUSTOM_SPD_TRFC_HI
+	int "[25]: Min Refresh Recovery Delay Time, UPPER tRFC"
+	default 14
+	range 0 255
+
+endif
+
+config CUSTOM_SPD_TWTR
+	int "[26]: Min Internal Write to Read Command Delay, tWTR"
+	default 105
+	range 1 255
+
+config CUSTOM_SPD_TRTP
+	int "[27]: Min Internal Read to Precharge Command Delay, tRTP"
+	default 105
+	range 1 255
+
+config CUSTOM_SPD_UPPER_TFAW
+	int "[28][3:0]: Min Four Activate Window Delay, UPPER tFAW"
+	default 1
+	range 0 16
+
+config CUSTOM_SPD_TFAW
+	int "[29]: Min Four Activate Window Delay Time, tFAW"
+	default 164
+	range 1 255
+
+endif
+
 endchoice

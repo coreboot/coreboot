@@ -6,8 +6,10 @@
  */
 
 #include <baseboard/variants.h>
+#include <gpio.h>
 #include <soc/meminit.h>
 #include <soc/romstage.h>
+#include <variant/gpio.h>
 
 void mainboard_memory_init_params(FSPM_UPD *memupd)
 {
@@ -16,7 +18,7 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 		.read_type = READ_SPD_CBFS,
 		.spd_spec.spd_index = variant_memory_sku(),
 	};
-	/* TODO: Read the resistor strap to get number of memory segments. */
-	bool half_populated = 0;
+	bool half_populated = !gpio_get(GPIO_MEM_CH_SEL);
+
 	memcfg_init(&memupd->FspmConfig, board_cfg, &spd_info, half_populated);
 }

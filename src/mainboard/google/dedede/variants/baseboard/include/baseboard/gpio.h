@@ -26,4 +26,7 @@
 #define GPIO_MEM_CONFIG_2	GPP_C4
 #define GPIO_MEM_CONFIG_3	GPP_C5
 
+/* Memory channel select strap - 0: half-populated, 1: fully-populated */
+#define GPIO_MEM_CH_SEL		GPP_S0
+
 #endif /* __BASEBOARD_GPIO_H__ */

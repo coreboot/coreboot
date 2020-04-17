@@ -230,7 +230,7 @@ static void read_md_spd(const struct spd_info *info, uintptr_t *data, size_t *le
 		die("Not a valid location(%d) for Memory-down SPD!\n", info->md_spd_loc);
 	}
 
-	print_spd_info((unsigned char *)data);
+	print_spd_info((uint8_t *) *data);
 }
 
 void meminit_lpddr4x(FSP_M_CONFIG *mem_cfg, const struct lpddr4x_cfg *board_cfg,
@@ -317,7 +317,7 @@ static void read_sodimm_spd(const struct spd_info *info, struct spd_block *blk)
 
 	for (i = 0; i < ARRAY_SIZE(blk->addr_map); i++) {
 		if (blk->addr_map[i])
-			print_spd_info((unsigned char *)blk->spd_array[i]);
+			print_spd_info((uint8_t *)blk->spd_array[i]);
 	}
 }
 

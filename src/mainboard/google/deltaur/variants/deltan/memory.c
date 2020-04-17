@@ -47,6 +47,7 @@ static const struct mb_ddr4_cfg baseboard_memcfg = {
 void variant_memory_init(FSP_M_CONFIG *mem_cfg)
 {
 	const struct spd_info spd_info = {
+		.topology = SODIMM,
 		.smbus_info[0] = {.addr_dimm0 = 0xa0,
 				  .addr_dimm1 = 0 },
 		.smbus_info[1] = {.addr_dimm0 = 0xa4,

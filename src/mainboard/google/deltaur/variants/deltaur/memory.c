@@ -83,6 +83,7 @@ void variant_memory_init(FSP_M_CONFIG *mem_cfg)
 {
 	const struct lpddr4x_cfg *board_cfg = variant_memory_params();
 	const struct spd_info spd_info = {
+		.topology = MEMORY_DOWN,
 		.md_spd_loc = SPD_CBFS,
 		.cbfs_index = variant_memory_sku(),
 	};

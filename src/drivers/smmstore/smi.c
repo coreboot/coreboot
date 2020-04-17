@@ -23,8 +23,7 @@ static int range_check(void *start, size_t size)
 	return 0;
 }
 
-/* Param is usually EBX, ret in EAX */
-uint32_t smmstore_exec(uint8_t command, void *param)
+static uint32_t smmstorev1_exec(uint8_t command, void *param)
 {
 	uint32_t ret = SMMSTORE_RET_FAILURE;
 
@@ -66,13 +65,89 @@ uint32_t smmstore_exec(uint8_t command, void *param)
 			ret = SMMSTORE_RET_SUCCESS;
 		break;
 	}
-
 	default:
 		printk(BIOS_DEBUG,
-			"Unknown SMM store command: 0x%02x\n", command);
+		       "Unknown SMM store v1 command: 0x%02x\n", command);
 		ret = SMMSTORE_RET_UNSUPPORTED;
 		break;
 	}
 
 	return ret;
+}
+
+static uint32_t smmstorev2_exec(uint8_t command, void *param)
+{
+	uint32_t ret = SMMSTORE_RET_FAILURE;
+
+	switch (command) {
+	case SMMSTORE_CMD_INIT: {
+		printk(BIOS_DEBUG, "Init SMM store\n");
+		struct smmstore_params_init *params = param;
+
+		if (range_check(params, sizeof(*params)) != 0)
+			break;
+
+		void *buf = (void *)(uintptr_t)params->com_buffer;
+
+		if (range_check(buf, params->com_buffer_size) != 0)
+			break;
+
+		if (smmstore_init(buf, params->com_buffer_size) == 0)
+			ret = SMMSTORE_RET_SUCCESS;
+		break;
+	}
+	case SMMSTORE_CMD_RAW_READ: {
+		printk(BIOS_DEBUG, "Raw read from SMM store, param = %p\n", param);
+		struct smmstore_params_raw_read *params = param;
+
+		if (range_check(params, sizeof(*params)) != 0)
+			break;
+
+		if (smmstore_rawread_region(params->block_id, params->bufoffset,
+					    params->bufsize) == 0)
+			ret = SMMSTORE_RET_SUCCESS;
+		break;
+	}
+	case SMMSTORE_CMD_RAW_WRITE: {
+		printk(BIOS_DEBUG, "Raw write to SMM store, param = %p\n", param);
+		struct smmstore_params_raw_write *params = param;
+
+		if (range_check(params, sizeof(*params)) != 0)
+			break;
+
+		if (smmstore_rawwrite_region(params->block_id, params->bufoffset,
+					     params->bufsize) == 0)
+			ret = SMMSTORE_RET_SUCCESS;
+		break;
+	}
+	case SMMSTORE_CMD_RAW_CLEAR: {
+		printk(BIOS_DEBUG, "Raw clear SMM store, param = %p\n", param);
+		struct smmstore_params_raw_clear *params = param;
+
+		if (range_check(params, sizeof(*params)) != 0)
+			break;
+
+		if (smmstore_rawclear_region(params->block_id) == 0)
+			ret = SMMSTORE_RET_SUCCESS;
+		break;
+	}
+	default:
+		printk(BIOS_DEBUG,
+			"Unknown SMM store v2 command: 0x%02x\n", command);
+		ret = SMMSTORE_RET_UNSUPPORTED;
+		break;
+	}
+
+	return ret;
+}
+
+uint32_t smmstore_exec(uint8_t command, void *param)
+{
+	if (!param)
+		return SMMSTORE_RET_FAILURE;
+
+	if (CONFIG(SMMSTORE_V2))
+		return smmstorev2_exec(command, param);
+	else
+		return smmstorev1_exec(command, param);
 }

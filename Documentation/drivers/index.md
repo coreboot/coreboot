@@ -7,3 +7,4 @@ they allow to easily reuse existing code accross platforms.
 * [IPMI KCS](ipmi_kcs.md)
 * [SMMSTORE](smmstore.md)
 * [SoundWire](soundwire.md)
+* [SMMSTOREv2](smmstorev2.md)

@@ -80,6 +80,7 @@ enum {
 	LB_TAG_TCPA_LOG			= 0x0036,
 	LB_TAG_FMAP			= 0x0037,
 	LB_TAG_PLATFORM_BLOB_VERSION	= 0x0038,
+	LB_TAG_SMMSTOREV2		= 0x0039,
 	LB_TAG_CMOS_OPTION_TABLE	= 0x00c8,
 	LB_TAG_OPTION			= 0x00c9,
 	LB_TAG_OPTION_ENUM		= 0x00ca,
@@ -482,6 +483,22 @@ struct	cmos_checksum {
 	uint32_t type;		/* Checksum algorithm that is used */
 #define CHECKSUM_NONE	0
 #define CHECKSUM_PCBIOS	1
+};
+
+/* SMMSTOREv2 record
+ * This record contains information to use SMMSTOREv2.
+ */
+
+struct lb_smmstorev2 {
+	uint32_t tag;
+	uint32_t size;
+	uint32_t num_blocks;		/* Number of writeable blocks in SMM */
+	uint32_t block_size;		/* Size of a block in byte. Default: 64 KiB */
+	uint32_t mmap_addr;		/* MMIO address of the store for read only access */
+	uint32_t com_buffer;		/* Physical address of the communication buffer */
+	uint32_t com_buffer_size;	/* Size of the communication buffer in bytes */
+	uint8_t apm_cmd;		/* The command byte to write to the APM I/O port */
+	uint8_t unused[3];		/* Set to zero */
 };
 
 #endif

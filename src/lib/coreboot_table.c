@@ -20,6 +20,8 @@
 #include <spi_flash.h>
 #include <security/vboot/misc.h>
 #include <security/vboot/vbnv_layout.h>
+#include <smmstore.h>
+
 #if CONFIG(USE_OPTION_TABLE)
 #include <option_table.h>
 #endif
@@ -547,6 +549,10 @@ static uintptr_t write_coreboot_table(uintptr_t rom_table_end)
 		lb_spi_flash(head);
 
 	add_cbmem_pointers(head);
+
+	/* SMMSTORE v2 */
+	if (CONFIG(SMMSTORE_V2))
+		lb_smmstorev2(head);
 
 	/* Add board-specific table entries, if any. */
 	lb_board(head);

@@ -68,6 +68,7 @@
 #define CBMEM_ID_ROM3		0x524f4d33
 #define CBMEM_ID_FMAP		0x464d4150
 #define CBMEM_ID_FSP_LOGO	0x4c4f474f
+#define CBMEM_ID_SMM_COMBUFFER	0x53534d32
 
 #define CBMEM_ID_TO_NAME_TABLE				 \
 	{ CBMEM_ID_ACPI,		"ACPI       " }, \

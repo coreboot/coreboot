@@ -303,14 +303,14 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI(GPP_H4, NONE, DEEP),
 	/* H5  : GPP_H5 ==> DDR_CHB_EN_1P8 */
 	PAD_CFG_GPI(GPP_H5, NONE, DEEP),
-	/* H6  : GPP_H6 ==> SPK_DET1 */
-	PAD_CFG_GPI(GPP_H6, NONE, PLTRST),
-	/* H7  : GPP_H7 ==> NC */
-	PAD_NC(GPP_H7, NONE),
-	/* H8  : GPP_H8 ==> I2C_SDA_PCH_H1 */
-	PAD_CFG_NF(GPP_H8, NONE, DEEP, NF1),
-	/* H9  : GPP_H9 ==> I2C_SCL_PCH_H1 */
-	PAD_CFG_NF(GPP_H9, NONE, DEEP, NF1),
+	/* H6  : GPP_H6 ==> I2C_SDA_PCH_H1 */
+	PAD_CFG_NF(GPP_H6, NONE, DEEP, NF1),
+	/* H7  : GPP_H7 ==> I2C_SCL_PCH_H1 */
+	PAD_CFG_NF(GPP_H7, NONE, DEEP, NF1),
+	/* H8  : GPP_H8 ==> NC */
+	PAD_NC(GPP_H8, NONE),
+	/* H9  : GPP_H9 ==> NC */
+	PAD_NC(GPP_H9, NONE),
 	/* H10 : GPP_H10 ==> CLKREQ_PCIE#4 */
 	PAD_CFG_NF(GPP_H10, NONE, DEEP, NF1),
 	/* H11 : GPP_H11 ==> CLKREQ_PCIE#5 */
@@ -436,10 +436,10 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_GPI(GPP_H4, NONE, DEEP),
 	/* H5  : GPP_H5 ==> DDR_CHB_EN_1P8 */
 	PAD_CFG_GPI(GPP_H5, NONE, DEEP),
-	/* H8  : GPP_H8 ==> I2C_SDA_PCH_H1 */
-	PAD_CFG_NF(GPP_H8, NONE, DEEP, NF1),
-	/* H9  : GPP_H9 ==> I2C_SCL_PCH_H1 */
-	PAD_CFG_NF(GPP_H9, NONE, DEEP, NF1),
+	/* H6  : GPP_H6 ==> I2C_SDA_PCH_H1 */
+	PAD_CFG_NF(GPP_H6, NONE, DEEP, NF1),
+	/* H7  : GPP_H7 ==> I2C_SCL_PCH_H1 */
+	PAD_CFG_NF(GPP_H7, NONE, DEEP, NF1),
 	/* GPD3: GPD3 ==> SIO_PWRBTN# */
 	PAD_CFG_NF(GPD3, UP_20K, DEEP, NF1),
 };

@@ -1,0 +1,28 @@
+# SPDX-License-Identifier: GPL-2.0-only
+# This file is part of the coreboot project.
+
+choice
+	prompt "DDR3 memory profile"
+	default CPU_AMD_AGESA_OPENSOURCE_MEM_JEDEC
+	help
+	  Choose the DDR3 memory profile to use for your RAM sticks, e.g. XMP 1.
+	  XMP support is experimental, and your PC will fail booting if you choose
+	  a profile which does not exist on ANY of your RAM sticks! If in doubt
+	  check their SPD Data using a coreboot's great fork of memtest86+ 5.01.
+
+config CPU_AMD_AGESA_OPENSOURCE_MEM_JEDEC
+	bool "JEDEC"
+	help
+	  JEDEC memory profile, standard and stable. Is guaranteed to be working.
+
+config CPU_AMD_AGESA_OPENSOURCE_MEM_XMP_1
+	bool "XMP 1"
+	help
+	  XMP 1 memory profile. Check that it exists on ALL of your RAM sticks!
+
+config CPU_AMD_AGESA_OPENSOURCE_MEM_XMP_2
+	bool "XMP 2"
+	help
+	  XMP 2 memory profile. Check that it exists on ALL of your RAM sticks!
+
+endchoice

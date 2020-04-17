@@ -30,6 +30,10 @@ config CPU_AMD_AGESA_OPENSOURCE
 
 endchoice
 
+if CPU_AMD_AGESA_OPENSOURCE
+source "src/vendorcode/amd/agesa/Kconfig"
+endif
+
 if CPU_AMD_AGESA_BINARY_PI
 source "src/vendorcode/amd/pi/Kconfig"
 endif

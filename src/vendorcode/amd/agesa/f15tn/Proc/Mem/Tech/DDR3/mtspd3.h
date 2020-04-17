@@ -94,6 +94,8 @@
 
 #define SPD_FTB          9
 
+#if CONFIG(CPU_AMD_AGESA_OPENSOURCE_MEM_JEDEC)
+
 #define SPD_DIVIDENT    10
 #define SPD_DIVISOR     11
 
@@ -102,18 +104,70 @@
 #define SPD_CASHI       15
 #define SPD_TAA         16
 
-#define SPD_TRP         20
-#define SPD_TRRD        19
-#define SPD_TRCD        18
-#define SPD_TRAS        22
 #define SPD_TWR         17
+#define SPD_TRCD        18
+#define SPD_TRRD        19
+#define SPD_TRP         20
+#define SPD_UPPER_TRC   21    /* bits 7:4 */
+#define SPD_UPPER_TRAS  21    /* bits 3:0 */
+#define SPD_TRAS        22
+#define SPD_TRC         23
 #define SPD_TWTR        26
 #define SPD_TRTP        27
-#define SPD_TRC         23
-#define SPD_UPPER_TRC   21              /* bit 7:4 */
-#define SPD_UPPER_TRAS  21              /* bit 3:0 */
+#define SPD_UPPER_TFAW  28    /* bits 3:0 */
 #define SPD_TFAW        29
-#define SPD_UPPER_TFAW  28              /* bit 3:0 */
+
+#endif
+
+#if CONFIG(CPU_AMD_AGESA_OPENSOURCE_MEM_XMP_1)
+
+#define SPD_DIVIDENT    180
+#define SPD_DIVISOR     181
+
+#define SPD_TCK         186
+#define SPD_CASLO       188
+#define SPD_CASHI       189
+#define SPD_TAA         187
+
+#define SPD_TWR         193
+#define SPD_TRCD        192
+#define SPD_TRRD        202
+#define SPD_TRP         191
+#define SPD_UPPER_TRC   194    /* bits 7:4 */
+#define SPD_UPPER_TRAS  194    /* bits 3:0 */
+#define SPD_TRAS        195
+#define SPD_TRC         196
+#define SPD_TWTR        205
+#define SPD_TRTP        201
+#define SPD_UPPER_TFAW  203    /* bits 3:0 */
+#define SPD_TFAW        204
+
+#endif
+
+#if CONFIG(CPU_AMD_AGESA_OPENSOURCE_MEM_XMP_2)
+
+#define SPD_DIVIDENT    182
+#define SPD_DIVISOR     183
+
+#define SPD_TCK         221
+#define SPD_CASLO       223
+#define SPD_CASHI       224
+#define SPD_TAA         222
+
+#define SPD_TWR         228
+#define SPD_TRCD        227
+#define SPD_TRRD        237
+#define SPD_TRP         226
+#define SPD_UPPER_TRC   229    /* bits 7:4 */
+#define SPD_UPPER_TRAS  229    /* bits 3:0 */
+#define SPD_TRAS        230
+#define SPD_TRC         231
+#define SPD_TWTR        240
+#define SPD_TRTP        236
+#define SPD_UPPER_TFAW  238    /* bits 3:0 */
+#define SPD_TFAW        239
+
+#endif
 
 #define SPD_TCK_FTB     34
 #define SPD_TAA_FTB     35

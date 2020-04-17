@@ -123,8 +123,11 @@ static const u8 register_values[] = {
 	 * [01:00] Reserved
 	 */
 	NBXCFG + 0, 0x0c,
-	// TODO: Bit 15 should be 0 for multiprocessor boards
+#if CONFIG(SMP)
+	NBXCFG + 1, 0x00,
+#else
 	NBXCFG + 1, 0x80,
+#endif
 	NBXCFG + 2, 0x00,
 	NBXCFG + 3, 0xff,
 

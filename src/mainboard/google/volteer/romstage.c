@@ -6,13 +6,15 @@
  */
 
 #include <baseboard/variants.h>
+#include <ec/google/chromeec/ec.h>
+#include <fsp/soc_binding.h>
 #include <gpio.h>
+#include <memory_info.h>
 #include <soc/gpio.h>
 #include <soc/meminit.h>
 #include <soc/romstage.h>
 #include <variant/gpio.h>
 
-#include <fsp/soc_binding.h>
 
 void mainboard_memory_init_params(FSPM_UPD *mupd)
 {
@@ -26,4 +28,18 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 	bool half_populated = gpio_get(GPIO_MEM_CH_SEL);
 
 	meminit_lpddr4x(mem_cfg, board_cfg, &spd_info, half_populated);
+}
+
+bool mainboard_get_dram_part_num(const char **part_num, size_t *len)
+{
+	static char part_num_store[DIMM_INFO_PART_NUMBER_SIZE];
+
+	if (google_chromeec_cbi_get_dram_part_num(part_num_store,
+			sizeof(part_num_store)) < 0) {
+		printk(BIOS_ERR, "ERROR: Couldn't obtain DRAM part number from CBI\n");
+		return false;
+	}
+	*part_num = part_num_store;
+	*len = strlen(part_num_store);
+	return true;
 }

@@ -80,4 +80,10 @@ config VARIANT_DIR
 	default "waddledee" if BOARD_GOOGLE_WADDLEDEE
 	default "wheelie" if BOARD_GOOGLE_WHEELIE
 
+config VARIANT_HAS_CAMERA_ACPI
+	bool
+	default n
+	help
+	  Select this option to enable camera ACPI support on the variant.
+
 endif #BOARD_GOOGLE_BASEBOARD_DEDEDE

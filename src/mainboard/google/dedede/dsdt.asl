@@ -34,6 +34,11 @@ DefinitionBlock(
 		}
 	}
 
+#if CONFIG(VARIANT_HAS_CAMERA_ACPI)
+	/* Camera */
+	#include <variant/acpi/camera.asl>
+#endif
+
 	/* Chrome OS specific */
 	#include <vendorcode/google/chromeos/acpi/chromeos.asl>
 

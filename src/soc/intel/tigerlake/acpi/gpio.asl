@@ -4,6 +4,7 @@
 #include <soc/irq.h>
 #include <soc/pcr_ids.h>
 #include <intelblocks/gpio.h>
+#include <soc/intel/common/acpi/gpio.asl>
 #include "gpio_op.asl"
 
 Device (GCM0)
@@ -141,4 +142,36 @@ Method (GADD, 1, NotSerialized)
 
 	Local2 = PCRB(Local0) + PAD_CFG_BASE + (Local1 * 16)
 	Return (Local2)
+}
+
+/*
+ * Return PCR Port ID of GPIO Communities
+ *
+ * Arg0: GPIO Community (0-5)
+ */
+Method (GPID, 1, Serialized)
+{
+	Switch (ToInteger (Arg0))
+	{
+		Case (0) {
+			Local0 = PID_GPIOCOM0
+		}
+		Case (1) {
+			Local0 = PID_GPIOCOM1
+		}
+		Case (2) {
+			Local0 = PID_GPIOCOM2
+		}
+		Case (4) {
+			Local0 = PID_GPIOCOM4
+		}
+		Case (5) {
+			Local0 = PID_GPIOCOM5
+		}
+		Default {
+			Return (0)
+		}
+	}
+
+	Return (Local0)
 }

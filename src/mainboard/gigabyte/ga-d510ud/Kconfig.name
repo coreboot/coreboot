@@ -1,0 +1,2 @@
+config BOARD_GIGABYTE_GA_D510UD
+	bool "GA-D510UD"

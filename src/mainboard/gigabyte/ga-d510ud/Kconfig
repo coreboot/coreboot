@@ -1,0 +1,27 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+if BOARD_GIGABYTE_GA_D510UD
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select BOARD_ROMSIZE_KB_512
+	select CPU_INTEL_SOCKET_FCBGA559
+	select HAVE_ACPI_RESUME
+	select HAVE_ACPI_TABLES
+	select HAVE_CMOS_DEFAULT
+	select HAVE_OPTION_TABLE
+	select INTEL_GMA_HAVE_VBT
+	select NORTHBRIDGE_INTEL_PINEVIEW
+	select REALTEK_8168_RESET
+	select SOUTHBRIDGE_INTEL_I82801GX
+	select SUPERIO_ITE_IT8720F
+
+config MAINBOARD_DIR
+	string
+	default "gigabyte/ga-d510ud"
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "GA-D510UD"
+
+endif # BOARD_GIGABYTE_GA_D510UD

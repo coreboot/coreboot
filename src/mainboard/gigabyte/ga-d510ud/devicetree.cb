@@ -1,0 +1,80 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+chip northbridge/intel/pineview
+	register "use_crt"  = "1"
+
+	device cpu_cluster 0 on
+		chip cpu/intel/socket_FCBGA559
+			device lapic 0 on end
+		end
+	end
+	device domain 0 on
+		subsystemid 0x105b 0x0d55 inherit
+		device pci 0.0 on  end		# Host Bridge
+		device pci 2.0 on  end		# iGPU
+		device pci 2.1 off end		# iGPU 2
+
+		chip southbridge/intel/i82801gx
+			register "pirqa_routing" = "0x0b"
+			register "pirqb_routing" = "0x0b"
+			register "pirqc_routing" = "0x0b"
+			register "pirqd_routing" = "0x0b"
+			register "pirqe_routing" = "0x0b"
+			register "pirqf_routing" = "0x0b"
+			register "pirqg_routing" = "0x0b"
+			register "pirqh_routing" = "0x0b"
+
+			register "sata_ports_implemented" = "0x3"
+			register "gpe0_en" = "0x441"
+
+			register "gen1_dec" = "0x00040291" # Environment Controller
+
+			device pci 1b.0 on  end		# HD Audio
+			device pci 1c.0 on  end		# PCIe 1: Realtek GbE NIC
+			device pci 1c.1 on  end		# PCIe 2: JMB363 SATA/IDE
+			device pci 1c.2 off end		# PCIe 3
+			device pci 1c.3 off end		# PCIe 4
+			device pci 1d.0 on  end		# UHCI
+			device pci 1d.1 on  end		# UHCI
+			device pci 1d.2 on  end		# UHCI
+			device pci 1d.3 on  end		# UHCI
+			device pci 1d.7 on  end		# EHCI
+			device pci 1e.0 on  end		# PCI bridge
+			device pci 1f.0 on		# LPC bridge
+				chip superio/ite/it8720f
+					device pnp 2e.0 off end	# Floppy
+					device pnp 2e.1 on	# COM1
+						io  0x60 = 0x3f8
+						irq 0x70 = 4
+					end
+					device pnp 2e.2 on	# COM2
+						io  0x60 = 0x2f8
+						irq 0x70 = 3
+					end
+					device pnp 2e.3 on	 # PP
+						io  0x60 = 0x378
+						io  0x62 = 0
+						irq 0x70 = 7
+					end
+					device pnp 2e.4 on	# EC
+						io  0x60 = 0x0290
+						io  0x62 = 0
+						irq 0x70 = 0
+					end
+					device pnp 2e.5 on	# PS/2 keyboard
+						io  0x60 = 0x60
+						io  0x62 = 0x64
+						irq 0x70 = 1
+					end
+					device pnp 2e.6 on	# PS/2 mouse
+						irq 0x70 = 12
+					end
+					device pnp 2e.7 off end	# GPIO
+					device pnp 2e.a off end	# CIR
+				end
+			end
+			device pci 1f.2 on  end		# SATA
+			device pci 1f.3 on  end		# SMbus
+		end
+	end
+end

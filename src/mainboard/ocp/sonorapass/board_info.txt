@@ -1,0 +1,5 @@
+Board name: SonoraPass
+Category: server
+ROM protocol: SPI
+ROM socketed: y
+Flashrom support: y

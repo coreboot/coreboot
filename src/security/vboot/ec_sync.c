@@ -56,7 +56,7 @@ void vboot_sync_ec(void)
 	case VB2_SUCCESS:
 		break;
 
-	case VBERROR_EC_REBOOT_TO_RO_REQUIRED:
+	case VB2_REQUEST_REBOOT_EC_TO_RO:
 		printk(BIOS_INFO, "EC Reboot requested. Doing cold reboot\n");
 		if (google_chromeec_reboot(0, EC_REBOOT_COLD, 0))
 			printk(BIOS_EMERG, "Failed to get EC to cold reboot\n");
@@ -65,7 +65,7 @@ void vboot_sync_ec(void)
 		break;
 
 	/* Only for EC-EFS */
-	case VBERROR_EC_REBOOT_TO_SWITCH_RW:
+	case VB2_REQUEST_REBOOT_EC_SWITCH_RW:
 		printk(BIOS_INFO, "Switch EC slot requested. Doing cold reboot\n");
 		if (google_chromeec_reboot(0, EC_REBOOT_COLD,
 						EC_REBOOT_FLAG_SWITCH_RW_SLOT))
@@ -74,7 +74,7 @@ void vboot_sync_ec(void)
 		halt();
 		break;
 
-	case VBERROR_REBOOT_REQUIRED:
+	case VB2_REQUEST_REBOOT:
 		printk(BIOS_INFO, "Reboot requested. Doing warm reboot\n");
 		vboot_reboot();
 		break;
@@ -203,7 +203,7 @@ static vb2_error_t ec_protect_flash(enum vb2_firmware_selection select, int enab
 	if (!enable) {
 		/* If protection is still enabled, need reboot */
 		if (resp.flags & protected_region)
-			return VBERROR_EC_REBOOT_TO_RO_REQUIRED;
+			return VB2_REQUEST_REBOOT_EC_TO_RO;
 
 		return VB2_SUCCESS;
 	}
@@ -222,7 +222,7 @@ static vb2_error_t ec_protect_flash(enum vb2_firmware_selection select, int enab
 
 	/* If RW will be protected at boot but not now, need a reboot */
 	if (resp.flags & EC_FLASH_PROTECT_ALL_AT_BOOT)
-		return VBERROR_EC_REBOOT_TO_RO_REQUIRED;
+		return VB2_REQUEST_REBOOT_EC_TO_RO;
 
 	/* Otherwise, it's an error */
 	return VB2_ERROR_UNKNOWN;
@@ -479,7 +479,7 @@ vb2_error_t vb2ex_ec_vboot_done(struct vb2_context *ctx)
 	if (limit_power) {
 		printk(BIOS_INFO,
 		       "EC requests limited power usage. Request shutdown.\n");
-		return VBERROR_SHUTDOWN_REQUESTED;
+		return VB2_REQUEST_SHUTDOWN;
 	} else {
 		printk(BIOS_INFO, "Waited %luus to clear limit power flag.\n",
 			stopwatch_duration_usecs(&sw));

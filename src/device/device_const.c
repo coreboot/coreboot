@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 /* This file is part of the coreboot project. */
 
+#include <assert.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/path.h>
@@ -86,6 +87,13 @@ static int path_eq(const struct device_path *path1,
 {
 	int equal = 0;
 
+	if (!path1 || !path2) {
+		assert(path1);
+		assert(path2);
+		/* Return 0 in case assert is considered non-fatal. */
+		return 0;
+	}
+
 	if (path1->type != path2->type)
 		return 0;
 
@@ -156,6 +164,13 @@ DEVTREE_CONST struct device *find_dev_path(
 	const struct bus *parent, const struct device_path *path)
 {
 	DEVTREE_CONST struct device *child;
+
+	if (!parent) {
+		assert(0);
+		/* Return NULL in case asserts are considered non-fatal. */
+		return NULL;
+	}
+
 	for (child = parent->children; child; child = child->sibling) {
 		if (path_eq(path, &child->path))
 			break;

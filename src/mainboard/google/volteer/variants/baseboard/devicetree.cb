@@ -348,8 +348,11 @@ chip soc/intel/tigerlake
 				device spi 0 on end
 			end # FPMCU
 		end # GSPI1				0xA0AB
-
-		device pci 1f.0 on  end # eSPI				0xA080 - A09F
+		device pci 1f.0 on
+			chip ec/google/chromeec
+				device pnp 0c09.0 on end
+			end
+		end # eSPI				0xA080 - A09F
 		device pci 1f.1 off end # P2SB				0xA0A0
 		device pci 1f.2 on  end # PMC				0xA0A1
 		device pci 1f.3 on

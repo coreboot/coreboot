@@ -27,9 +27,6 @@
 #include <stdint.h>
 #include "aspeed.h"
 
-#define ASPEED_ENTRY_KEY 0xA5
-#define ASPEED_EXIT_KEY 0xAA
-
 /* Enable configuration: pass entry key '0xA5' into index port dev. */
 void pnp_enter_conf_state(pnp_devfn_t dev)
 {

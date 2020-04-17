@@ -40,7 +40,7 @@ AGESA_STATUS AmdMemoryReadSPD (UINT32 unused1, UINTN unused2, AGESA_READ_SPD_PAR
 	if (spdAddress == 0)
 		return AGESA_ERROR;
 
-	int err = smbus_readSpd(spdAddress, (void *) info->Buffer, 128);
+	int err = smbus_readSpd(spdAddress, (void *) info->Buffer, 256);
 	if (err)
 		return AGESA_ERROR;
 	return AGESA_SUCCESS;

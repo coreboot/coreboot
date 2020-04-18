@@ -10,8 +10,6 @@ available targets. `bash`
 * __amdtools__ - A set of tools to compare extended) K8 memory
 settings. `Perl`
 * __archive__ - Concatenate files and create an archive `C`
-* __mksunxiboot__ - A simple tool to generate bootable image for sunxi
-platform. `C`
 * __autoport__ - Automated porting coreboot to Sandy Bridge/Ivy Bridge
 platforms `Go`
 * __bincfg__ - Compiler/Decompiler for data blobs with specs `Lex`
@@ -26,11 +24,11 @@ file `Python`
 	* _fmaptool_ - Converts plaintext fmd files into fmap blobs `C`
 	* _rmodtool_ - Creates rmodules `C`
 	* _ifwitool_ - For manipulating IFWI `C`
-* __cbmem__ - Cbmem console log reader `C`
-* __checklist__ - Board implementation checklist generator `Make`
-* __chromeos__ - These scripts can be used to extract System Agent
-reference code and other blobs (e.g. mrc.bin, refcode, VGA option roms)
-from a Chrome OS recovery image. `C`
+* __cbmem__ - CBMEM parser to read e.g. timestamps and console log `C`
+* __chromeos__ - These scripts can be used to access Chrome OS
+resources, for example to extract System Agent reference code and other
+blobs (e.g. mrc.bin, refcode, VGA option roms) from a Chrome OS
+recovery image. `C`
 * __crossgcc__ - A cross toolchain builder for -elf toolchains (ie. no
 libc support)
 * __docker__ - Dockerfiles for _coreboot-sdk_, _coreboot-jenkins-node_,
@@ -62,8 +60,6 @@ specified base and size `Python`
 	* _mbncat.py_ - Generate ipq8064 uber SBL `Python`
 	* *mbn_tools.py* - Contains all MBN Utilities for image
 generation `Python`
-* __k8resdump__ - This program will dump the IO/memory/PCI resources
-from the K8 memory controller `C`
 * __kbc1126__ - Tools used to dump the two blobs from the factory
 firmware of many HP laptops with 8051-based SMSC KBC1098/KBC1126
 embedded controller and insert them to the firmware image. `C`
@@ -78,6 +74,8 @@ partial deblobbing of Intel ME/TXE firmware images `Python`
 * __nvidia__ - nvidia blob parsers
 * __nvramtool__ - Reads and writes coreboot parameters and displaying
 information from the coreboot table in CMOS/NVRAM. `C`
+* __pgtblgen__ - Generates page tables based on fixed physical address.
+`C`
 * __pmh7tool__ - Dumps, reads and writes PMH7 registers on Lenovo
 ThinkPads. PMH7 is used for switching on and off the power of some
 devices on the board such as dGPU. `C`
@@ -91,14 +89,14 @@ can be passed to SPIKE, the RISC-V reference emulator.`Bash`
 	* _sifive-gpt.py_ - Wraps the bootblock in a GPT partition for
 SiFive's bootrom. `Python3`
 * __rockchip__ - Generate Rockchip idblock bootloader. `Python2`
-* __romcc__ - Compile a C source file generating a binary that does not
-implicitly use RAM. `C`
 * __sconfig__ - coreboot device tree compiler `Lex` `Yacc`
 * __scripts__
 	* _config_ - Manipulate options in a .config file from the
 command line `Bash`
 	* _cross-repo-cherrypick_ - Pull in patches from another tree
 from a gerrit repository. `Shell`
+	* _decode_spd.sh_ - Decodes Serial Presence Detect (SPD) files
+into various human readable formats.
 	* _dts-to-fmd.sh_ -Converts a depthcharge fmap.dts into an
 fmaptool compatible .fmd format `Bash`
 	* _find-unused-kconfig-symbols.sh_ - Points out Kconfig
@@ -116,15 +114,21 @@ file `Perl`
 	* _ucode_h_to_bin.sh_ - Microcode conversion tool `Bash`
 	* _update_submodules_ - Check all submodules for updates `Bash`
 * __showdevicetree__ - Compile and dump the device tree `C`
+* __spdtool__ - Dumps SPD ROMs from a given blob to separate files
+using known patterns and reserved bits. Useful for analysing firmware
+that holds SPDs on boards that have soldered down DRAM. `python`
 * __spkmodem_recv__ - Decode spkmodem signals `C`
 * __superiotool__ - A user-space utility to detect Super I/O of a
 mainboard and provide detailed information about the register contents
 of the Super I/O. `C`
+* __smcbiosinfo__ - Generates SMC biosinfo for BMC BIOS updates `C`
 * __testing__ - coreboot test targets `Make`
 * __uio_usbdebug__ - Debug coreboot's usbdebug driver inside a running
 operating system (only Linux at this time). `C`
 * __util_readme__ - Creates README.md of description files in `./util`
 subdirectories `Bash`
+* __vboot_list__ - Tools to generate a list of vboot enabled devices to
+the documentation `Bash`
 * __vgabios__ - emulated vga driver for qemu `C`
 * __x86__ - Generates 32-bit PAE page tables based on a CSV input file.
 `Go`

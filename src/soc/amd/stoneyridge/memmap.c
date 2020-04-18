@@ -32,7 +32,7 @@ void bert_reserved_region(void **start, size_t *size)
 	if (CONFIG(ACPI_BERT))
 		*start = cbmem_top();
 	else
-		start = NULL;
+		*start = NULL;
 	*size = BERT_REGION_MAX_SIZE;
 }
 

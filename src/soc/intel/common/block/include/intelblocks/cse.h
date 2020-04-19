@@ -27,6 +27,7 @@
 /* Boot partition info and set boot partition info command ids */
 #define MKHI_BUP_COMMON_GET_BOOT_PARTITION_INFO	0x1c
 #define MKHI_BUP_COMMON_SET_BOOT_PARTITION_INFO	0x1d
+#define MKHI_BUP_COMMON_DATA_CLEAR		0x20
 
 /* ME Current Working States */
 #define ME_HFS1_CWS_NORMAL	0x5

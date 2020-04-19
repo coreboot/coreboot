@@ -20,13 +20,6 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, OEM_ID, ACPI_TABLE_CREATOR, 1)
 	}
 
 	/*
-	 * For now only define 2 power states:
-	 *  - S0 which is fully on
-	 *  - S5 which is soft off
-	 * Any others would involve declaring the wake up methods.
-	 */
-
-	/*
 	 * Intel 82371EB (PIIX4E) datasheet, section 7.2.3, page 142
 	 *
 	 * 0: soft off/suspend to disk					S5
@@ -43,15 +36,9 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, OEM_ID, ACPI_TABLE_CREATOR, 1)
 	 * 6: reserved
 	 * 7: reserved
 	 */
-	/* Guard these entries for the purpose of variant validation. They will be aligned later. */
 	Name (\_S0, Package () { 0x05, 0x05, 0x00, 0x00 })
-#if CONFIG(BOARD_ASUS_P2B)
 	Name (\_S1, Package () { 0x03, 0x03, 0x00, 0x00 })
 	Name (\_S5, Package () { 0x00, 0x00, 0x00, 0x00 })
-#endif
-#if CONFIG(BOARD_ASUS_P2B_LS)
-	Name (\_S5, Package () { 0x00, 0x06, 0x00, 0x00 })
-#endif
 
 	OperationRegion (GPOB, SystemIO, DEFAULT_PMBASE+DEVCTL, 0x10)
 	Field (GPOB, ByteAcc, NoLock, Preserve)

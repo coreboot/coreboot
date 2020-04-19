@@ -12,3 +12,6 @@ config BOARD_ASUS_P2B_F
 
 config BOARD_ASUS_P2B_LS
 	bool "P2B-LS"
+
+config BOARD_ASUS_P3B_F
+	bool "P3B-F"

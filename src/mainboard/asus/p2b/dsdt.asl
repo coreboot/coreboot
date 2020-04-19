@@ -141,6 +141,17 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, OEM_ID, ACPI_TABLE_CREATOR, 1)
 				Package (0x04) { 0x000CFFFF, 2, LNKC, 0 },
 				Package (0x04) { 0x000CFFFF, 3, LNKD, 0 },
 
+#if CONFIG(BOARD_ASUS_P3B_F)
+				Package (0x04) { 0x000DFFFF, 0, LNKD, 0 },
+				Package (0x04) { 0x000DFFFF, 1, LNKA, 0 },
+				Package (0x04) { 0x000DFFFF, 2, LNKB, 0 },
+				Package (0x04) { 0x000DFFFF, 3, LNKC, 0 },
+
+				Package (0x04) { 0x000EFFFF, 0, LNKC, 0 },
+				Package (0x04) { 0x000EFFFF, 1, LNKD, 0 },
+				Package (0x04) { 0x000EFFFF, 2, LNKA, 0 },
+				Package (0x04) { 0x000EFFFF, 3, LNKB, 0 },
+#endif
 			})
 			#include <northbridge/intel/i440bx/acpi/sb_pci0_crs.asl>
 			#include <southbridge/intel/i82371eb/acpi/isabridge.asl>

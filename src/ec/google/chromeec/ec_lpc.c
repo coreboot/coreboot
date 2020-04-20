@@ -439,6 +439,7 @@ static struct device_operations ops = {
 	.init             = lpc_ec_init,
 	.read_resources   = lpc_ec_read_resources,
 	.set_resources    = noop_set_resources,
+	.scan_bus         = scan_static_bus,
 #if CONFIG(HAVE_ACPI_TABLES)
 	.acpi_name        = google_chromeec_acpi_name,
 	.acpi_fill_ssdt   = google_chromeec_fill_ssdt_generator,

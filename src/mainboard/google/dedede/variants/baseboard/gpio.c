@@ -348,7 +348,7 @@ static const struct pad_config gpio_table[] = {
 
 
 	/* S0  : RAM_STRAP_4 */
-	PAD_CFG_GPI(GPP_S0, UP_5K, DEEP),
+	PAD_CFG_GPI(GPP_S0, NONE, DEEP),
 	/* S1  : RSVD_STRAP */
 	PAD_NC(GPP_S1, NONE),
 	/* S2  : DMIC1_CLK */
@@ -418,7 +418,7 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_GPO(GPP_H19, 0, DEEP),
 
 	/* S0  : RAM_STRAP_4 */
-	PAD_CFG_GPI(GPP_S0, UP_5K, DEEP),
+	PAD_CFG_GPI(GPP_S0, NONE, DEEP),
 };
 
 const struct pad_config *__weak variant_gpio_table(size_t *num)

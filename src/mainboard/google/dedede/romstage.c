@@ -18,7 +18,7 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 		.read_type = READ_SPD_CBFS,
 		.spd_spec.spd_index = variant_memory_sku(),
 	};
-	bool half_populated = !gpio_get(GPIO_MEM_CH_SEL);
+	bool half_populated = variant_mem_is_half_populated();
 
 	memcfg_init(&memupd->FspmConfig, board_cfg, &spd_info, half_populated);
 }

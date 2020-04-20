@@ -109,6 +109,9 @@ struct fru_product_info {
 	char *product_version;
 	char *serial_number;
 	char *asset_tag;
+	char *fru_file_id;
+	char **product_custom;
+	int custom_count; /* Number of custom fields */
 };
 
 struct fru_board_info {
@@ -116,6 +119,9 @@ struct fru_board_info {
 	char *product_name;
 	char *serial_number;
 	char *part_number;
+	char *fru_file_id;
+	char **board_custom;
+	int custom_count;
 };
 
 struct fru_chassis_info {
@@ -123,7 +129,7 @@ struct fru_chassis_info {
 	char *chassis_partnumber;
 	char *serial_number;
 	char **chassis_custom;
-	int custom_count; /* Number of custom fields */
+	int custom_count;
 };
 
 struct fru_info_str {
@@ -172,4 +178,7 @@ void read_fru_one_area(const int port, uint8_t id, uint16_t offset,
 /* Add a SEL record entry, returns CB_SUCCESS on success and CB_ERR
  * if an error occurred */
 enum cb_err ipmi_add_sel(const int port, struct sel_event_record *sel);
+
+/* Print all IPMI read FRU data */
+void print_fru_areas(struct fru_info_str *fru_info_str);
 #endif

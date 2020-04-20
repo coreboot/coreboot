@@ -213,40 +213,44 @@ out:
 	return ret;
 }
 
-static void read_fru_board_info_area(const int port, const uint8_t id,
+static enum cb_err read_fru_board_info_area(const int port, const uint8_t id,
 				uint8_t offset, struct fru_board_info *info)
 {
 	uint8_t length;
 	struct ipmi_read_fru_data_req req;
-	uint8_t *data_ptr;
+	uint8_t *data_ptr, *end, *custom_data_ptr;
+	int ret = CB_SUCCESS;
+
+	if (!offset)
+		return CB_ERR;
 
 	offset = offset * OFFSET_LENGTH_MULTIPLIER;
-	if (!offset)
-		return;
 	req.fru_device_id = id;
 	/* Read Board Info Area length first. */
 	req.fru_offset = offset + 1;
 	req.count = sizeof(length);
 	if (ipmi_read_fru(port, &req, &length) != CB_SUCCESS || !length) {
 		printk(BIOS_ERR, "%s failed, length: %d\n", __func__, length);
-		return;
+		return CB_ERR;
 	}
 	length = length * OFFSET_LENGTH_MULTIPLIER;
 	data_ptr = (uint8_t *)malloc(length);
 	if (!data_ptr) {
 		printk(BIOS_ERR, "malloc %d bytes for board info failed\n", length);
-		return;
+		return CB_ERR;
 	}
-
+	end = data_ptr + length;
 	/* Read Board Info Area data. */
 	req.fru_offset = offset;
 	req.count = length;
 	if (ipmi_read_fru(port, &req, data_ptr) != CB_SUCCESS) {
 		printk(BIOS_ERR, "%s failed to read fru\n", __func__);
+		ret = CB_ERR;
 		goto out;
 	}
 	if (checksum(data_ptr, length)) {
 		printk(BIOS_ERR, "Bad FRU board info checksum.\n");
+		ret = CB_ERR;
 		goto out;
 	}
 	printk(BIOS_DEBUG, "Read board manufacturer string\n");
@@ -265,45 +269,87 @@ static void read_fru_board_info_area(const int port, const uint8_t id,
 	data_ptr += length + 1;
 	length = read_data_string(data_ptr, &info->part_number);
 
+	printk(BIOS_DEBUG, "Read board FRU file ID string.\n");
+	data_ptr += length + 1;
+	length = read_data_string(data_ptr, &info->fru_file_id);
+
+	/* Check how many valid custom fields first. */
+	data_ptr += length + 1;
+	info->custom_count = 0;
+	custom_data_ptr = data_ptr;
+	while ((data_ptr < end) && ((data_ptr[0] != FRU_END_OF_FIELDS))) {
+		length = NUM_DATA_BYTES(data_ptr[0]);
+		if (length > 0)
+			info->custom_count++;
+		data_ptr += length + 1;
+	}
+	if (!info->custom_count)
+		goto out;
+
+	info->board_custom = malloc(info->custom_count * sizeof(char *));
+	if (!info->board_custom) {
+		printk(BIOS_ERR, "%s failed to malloc %ld bytes for "
+			"board custom data array.\n", __func__,
+			info->custom_count * sizeof(char *));
+		ret = CB_ERR;
+		goto out;
+	}
+
+	/* Start reading custom board data. */
+	data_ptr = custom_data_ptr;
+	int count = 0;
+	while ((data_ptr < end) && ((data_ptr[0] != FRU_END_OF_FIELDS))) {
+		length = NUM_DATA_BYTES(data_ptr[0]);
+		if (length > 0) {
+			length = read_data_string(data_ptr, info->board_custom + count);
+			count++;
+		}
+		data_ptr += length + 1;
+	}
+
 out:
 	free(data_ptr);
+	return ret;
 }
 
-static void read_fru_product_info_area(const int port, const uint8_t id,
+static enum cb_err read_fru_product_info_area(const int port, const uint8_t id,
 				uint8_t offset, struct fru_product_info *info)
 {
 	uint8_t length;
 	struct ipmi_read_fru_data_req req;
-	uint8_t *data_ptr;
+	uint8_t *data_ptr, *end, *custom_data_ptr;
+	int ret = CB_SUCCESS;
+
+	if (!offset)
+		return CB_ERR;
 
 	offset = offset * OFFSET_LENGTH_MULTIPLIER;
-	if (!offset)
-		return;
-
 	req.fru_device_id = id;
 	/* Read Product Info Area length first. */
 	req.fru_offset = offset + 1;
 	req.count = sizeof(length);
 	if (ipmi_read_fru(port, &req, &length) != CB_SUCCESS || !length) {
 		printk(BIOS_ERR, "%s failed, length: %d\n", __func__, length);
-		return;
+		return CB_ERR;
 	}
 	length = length * OFFSET_LENGTH_MULTIPLIER;
 	data_ptr = (uint8_t *)malloc(length);
 	if (!data_ptr) {
 		printk(BIOS_ERR, "malloc %d bytes for product info failed\n", length);
-		return;
+		return CB_ERR;
 	}
-
+	end = data_ptr + length;
 	/* Read Product Info Area data. */
 	req.fru_offset = offset;
 	req.count = length;
 	if (ipmi_read_fru(port, &req, data_ptr) != CB_SUCCESS) {
 		printk(BIOS_ERR, "%s failed to read fru\n", __func__);
+		ret = CB_ERR;
 		goto out;
 	}
 	if (checksum(data_ptr, length)) {
 		printk(BIOS_ERR, "Bad FRU product info checksum.\n");
+		ret = CB_ERR;
 		goto out;
 	}
 	printk(BIOS_DEBUG, "Read product manufacturer string.\n");
@@ -330,8 +376,47 @@ static void read_fru_product_info_area(const int port, const uint8_t id,
 	printk(BIOS_DEBUG, "Read asset tag string.\n");
 	length = read_data_string(data_ptr, &info->asset_tag);
 
+	printk(BIOS_DEBUG, "Read product FRU file ID string.\n");
+	data_ptr += length + 1;
+	length = read_data_string(data_ptr, &info->fru_file_id);
+
+	/* Check how many valid custom fields first. */
+	data_ptr += length + 1;
+	info->custom_count = 0;
+	custom_data_ptr = data_ptr;
+	while ((data_ptr < end) && ((data_ptr[0] != FRU_END_OF_FIELDS))) {
+		length = NUM_DATA_BYTES(data_ptr[0]);
+		if (length > 0)
+			info->custom_count++;
+		data_ptr += length + 1;
+	}
+	if (!info->custom_count)
+		goto out;
+
+	info->product_custom = malloc(info->custom_count * sizeof(char *));
+	if (!info->product_custom) {
+		printk(BIOS_ERR, "%s failed to malloc %ld bytes for "
+			"product custom data array.\n", __func__,
+			info->custom_count * sizeof(char *));
+		ret = CB_ERR;
+		goto out;
+	}
+
+	/* Start reading custom product data. */
+	data_ptr = custom_data_ptr;
+	int count = 0;
+	while ((data_ptr < end) && ((data_ptr[0] != FRU_END_OF_FIELDS))) {
+		length = NUM_DATA_BYTES(data_ptr[0]);
+		if (length > 0) {
+			length = read_data_string(data_ptr, info->product_custom + count);
+			count++;
+		}
+		data_ptr += length + 1;
+	}
+
 out:
 	free(data_ptr);
+	return ret;
 }
 
 void read_fru_areas(const int port, const uint8_t id, uint16_t offset,
@@ -421,4 +506,70 @@ void read_fru_one_area(const int port, const uint8_t id, uint16_t offset,
 		printk(BIOS_ERR, "Invalid fru_area: %d\n", fru_area);
 		break;
 	}
+}
+
+void print_fru_areas(struct fru_info_str *fru_info_str)
+{
+	int count = 0;
+	if (fru_info_str == NULL) {
+		printk(BIOS_ERR, "FRU data is null pointer\n");
+		return;
+	}
+	struct fru_product_info prod_info = fru_info_str->prod_info;
+	struct fru_board_info board_info = fru_info_str->board_info;
+	struct fru_chassis_info chassis_info = fru_info_str->chassis_info;
+
+	printk(BIOS_DEBUG, "Printing Product Info Area...\n");
+	if (prod_info.manufacturer != NULL)
+		printk(BIOS_DEBUG, "manufacturer: %s\n", prod_info.manufacturer);
+	if (prod_info.product_name != NULL)
+		printk(BIOS_DEBUG, "product name: %s\n", prod_info.product_name);
+	if (prod_info.product_partnumber != NULL)
+		printk(BIOS_DEBUG, "product part numer: %s\n", prod_info.product_partnumber);
+	if (prod_info.product_version != NULL)
+		printk(BIOS_DEBUG, "product version: %s\n", prod_info.product_version);
+	if (prod_info.serial_number != NULL)
+		printk(BIOS_DEBUG, "serial number: %s\n", prod_info.serial_number);
+	if (prod_info.asset_tag != NULL)
+		printk(BIOS_DEBUG, "asset tag: %s\n", prod_info.asset_tag);
+	if (prod_info.fru_file_id != NULL)
+		printk(BIOS_DEBUG, "FRU file ID: %s\n", prod_info.fru_file_id);
+
+	for (count = 0; count < prod_info.custom_count; count++) {
+		if (*(prod_info.product_custom + count) != NULL)
+			printk(BIOS_DEBUG, "product custom data %i: %s\n", count,
+				*(prod_info.product_custom + count));
+	}
+
+	printk(BIOS_DEBUG, "Printing Board Info Area...\n");
+	if (board_info.manufacturer != NULL)
+		printk(BIOS_DEBUG, "manufacturer: %s\n", board_info.manufacturer);
+	if (board_info.product_name != NULL)
+		printk(BIOS_DEBUG, "product name: %s\n", board_info.product_name);
+	if (board_info.serial_number != NULL)
+		printk(BIOS_DEBUG, "serial number: %s\n", board_info.serial_number);
+	if (board_info.part_number != NULL)
+		printk(BIOS_DEBUG, "part number: %s\n", board_info.part_number);
+	if (board_info.fru_file_id != NULL)
+		printk(BIOS_DEBUG, "FRU file ID: %s\n", board_info.fru_file_id);
+
+	for (count = 0; count < board_info.custom_count; count++) {
+		if (*(board_info.board_custom + count) != NULL)
+			printk(BIOS_DEBUG, "board custom data %i: %s\n", count,
+				*(board_info.board_custom + count));
+	}
+
+	printk(BIOS_DEBUG, "Printing Chassis Info Area...\n");
+	printk(BIOS_DEBUG, "chassis type: 0x%x\n", chassis_info.chassis_type);
+	if (chassis_info.chassis_partnumber != NULL)
+		printk(BIOS_DEBUG, "part number: %s\n", chassis_info.chassis_partnumber);
+	if (chassis_info.serial_number != NULL)
+		printk(BIOS_DEBUG, "serial number: %s\n", chassis_info.serial_number);
+
+	for (count = 0; count < chassis_info.custom_count; count++) {
+		if (*(chassis_info.chassis_custom + count) != NULL)
+			printk(BIOS_DEBUG, "chassis custom data %i: %s\n", count,
+				*(chassis_info.chassis_custom + count));
+	}
+
 }

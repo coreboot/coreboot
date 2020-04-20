@@ -96,4 +96,13 @@
 #define EPB_ENERGY_POLICY_SHIFT      3
 #define EPB_ENERGY_POLICY_MASK       (0xf << EPB_ENERGY_POLICY_SHIFT)
 
+/* MSR Protected Processor Inventory Number */
+#define MSR_PPIN_CTL		     0x04e
+#define MSR_PPIN_CTL_LOCK	     0x1
+#define MSR_PPIN_CTL_ENABLE_SHIFT    1
+#define MSR_PPIN_CTL_ENABLE	     (0x1 << MSR_PPIN_CTL_ENABLE_SHIFT)
+#define MSR_PPIN		     0x04f
+#define MSR_PPIN_CAP_SHIFT	     23
+#define MSR_PPIN_CAP		     (0x1 << MSR_PPIN_CAP_SHIFT)
+
 #endif /* _SOC_MSR_H_ */

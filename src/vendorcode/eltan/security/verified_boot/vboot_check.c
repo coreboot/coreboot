@@ -81,7 +81,7 @@ int verified_boot_check_manifest(void)
 					DIGEST_SIZE;
 	pre->body_signature.sig_offset = sizeof(struct vb2_signature) +
 					 pre->body_signature.data_size;
-	pre->body_signature.sig_size =  size - pre->body_signature.data_size;
+	pre->body_signature.sig_size = size - pre->body_signature.data_size;
 	sd->workbuf_used += size;
 	memcpy((void *)((void *)&pre->body_signature + (long)sizeof(struct vb2_signature)),
 	       (uint8_t *)CONFIG_VENDORCODE_ELTAN_OEM_MANIFEST_LOC, size);
@@ -146,7 +146,8 @@ static void verified_boot_check_buffer(const char *name, void *start, size_t siz
 
 	if (start && size) {
 
-		status = vb2_digest_buffer((const uint8_t *)start, size, HASH_ALG, digest, DIGEST_SIZE);
+		status = vb2_digest_buffer((const uint8_t *)start, size, HASH_ALG, digest,
+					   DIGEST_SIZE);
 		if ((CONFIG(VENDORCODE_ELTAN_VBOOT) && memcmp((void *)(
 		    (uint8_t *)CONFIG_VENDORCODE_ELTAN_OEM_MANIFEST_LOC +
 		    sizeof(digest) * hash_index), digest, sizeof(digest))) || status) {

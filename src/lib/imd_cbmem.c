@@ -19,7 +19,7 @@ static struct imd imd;
 void *cbmem_top(void)
 {
 	if (ENV_ROMSTAGE) {
-		MAYBE_STATIC_BSS void *top = NULL;
+		static void *top;
 		if (top)
 			return top;
 		top = cbmem_top_chipset();

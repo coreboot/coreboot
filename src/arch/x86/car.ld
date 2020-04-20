@@ -62,13 +62,11 @@
 
 	. = ALIGN(ARCH_POINTER_ALIGN_SIZE);
 	_bss = .;
-#if ENV_STAGE_HAS_BSS_SECTION
 	/* Allow global uninitialized variables for stages without CAR teardown. */
 	*(.bss)
 	*(.bss.*)
 	*(.sbss)
 	*(.sbss.*)
-#endif
 	. = ALIGN(ARCH_POINTER_ALIGN_SIZE);
 	_ebss = .;
 	_car_unallocated_start = .;

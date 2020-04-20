@@ -252,12 +252,9 @@
 #define ENV_CACHE_AS_RAM		(ENV_ROMSTAGE_OR_BEFORE && !CONFIG(RESET_VECTOR_IN_RAM))
 /* No .data sections with execute-in-place from ROM.  */
 #define ENV_STAGE_HAS_DATA_SECTION	!ENV_CACHE_AS_RAM
-/* No .bss sections for stage with CAR teardown. */
-#define ENV_STAGE_HAS_BSS_SECTION	1
 #else
 /* Both .data and .bss, sometimes SRAM not DRAM. */
 #define ENV_STAGE_HAS_DATA_SECTION	1
-#define ENV_STAGE_HAS_BSS_SECTION	1
 #define ENV_CACHE_AS_RAM		0
 #endif
 

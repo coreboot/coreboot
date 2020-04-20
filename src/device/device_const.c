@@ -227,7 +227,7 @@ DEVTREE_CONST struct device *pcidev_path_on_bus(unsigned int bus, pci_devfn_t de
 DEVTREE_CONST struct bus *pci_root_bus(void)
 {
 	DEVTREE_CONST struct device *pci_domain;
-	MAYBE_STATIC_BSS DEVTREE_CONST struct bus *pci_root = NULL;
+	static DEVTREE_CONST struct bus *pci_root;
 
 	if (pci_root)
 		return pci_root;

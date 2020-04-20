@@ -41,12 +41,6 @@ typedef unsigned int wint_t;
 #define MAYBE_STATIC_NONZERO
 #endif
 
-#if ENV_STAGE_HAS_BSS_SECTION
-#define MAYBE_STATIC_BSS static
-#else
-#define MAYBE_STATIC_BSS
-#endif
-
 /* Provide a pointer to address 0 that thwarts any "accessing this is
  * undefined behaviour and do whatever" trickery in compilers.
  * Use when you _really_ need to read32(zeroptr) (ie. read address 0).

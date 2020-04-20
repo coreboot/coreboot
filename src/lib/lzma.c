@@ -26,7 +26,7 @@ size_t ulzman(const void *src, size_t srcn, void *dst, size_t dstn)
 	int res;
 	CLzmaDecoderState state;
 	SizeT mallocneeds;
-	MAYBE_STATIC_BSS unsigned char scratchpad[15980];
+	static unsigned char scratchpad[15980];
 	const unsigned char *cp;
 
 	if (srcn < data_offset) {

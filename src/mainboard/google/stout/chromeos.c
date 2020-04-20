@@ -53,8 +53,8 @@ int get_lid_switch(void)
  */
 int get_recovery_mode_switch(void)
 {
-	MAYBE_STATIC_BSS int ec_in_rec_mode = 0;
-	MAYBE_STATIC_BSS int ec_rec_flag_good = 0;
+	static int ec_in_rec_mode;
+	static int ec_rec_flag_good;
 
 	if (ec_rec_flag_good)
 		return ec_in_rec_mode;

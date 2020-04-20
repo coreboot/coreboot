@@ -112,7 +112,7 @@
 }
 #endif
 
-#if ENV_STAGE_HAS_BSS_SECTION && !ENV_CACHE_AS_RAM
+#if !ENV_CACHE_AS_RAM
 .bss . : {
 	. = ALIGN(ARCH_POINTER_ALIGN_SIZE);
 	_bss = .;

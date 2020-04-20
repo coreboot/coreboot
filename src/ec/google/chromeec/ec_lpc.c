@@ -387,7 +387,7 @@ void google_chromeec_ioport_range(uint16_t *out_base, size_t *out_size)
 
 int google_chromeec_command(struct chromeec_command *cec_command)
 {
-	MAYBE_STATIC_BSS int command_version = 0;
+	static int command_version;
 
 	if (command_version <= 0)
 		command_version = google_chromeec_command_version();

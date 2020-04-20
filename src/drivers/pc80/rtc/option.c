@@ -52,7 +52,7 @@ static enum cb_err get_cmos_value(unsigned long bit, unsigned long length,
 static enum cb_err locate_cmos_layout(struct region_device *rdev)
 {
 	uint32_t cbfs_type = CBFS_COMPONENT_CMOS_LAYOUT;
-	MAYBE_STATIC_BSS struct cbfsf fh = {};
+	static struct cbfsf fh;
 
 	/*
 	 * In case VBOOT is enabled and this function is called from SMM,

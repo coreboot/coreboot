@@ -17,13 +17,21 @@
 #include "ec.h"
 #include "ec_commands.h"
 
-#define GOOGLE_CHROMEEC_USBC_DEVICE_PARENT	"CREC"
 #define GOOGLE_CHROMEEC_USBC_DEVICE_HID		"GOOG0014"
 #define GOOGLE_CHROMEEC_USBC_DEVICE_NAME	"USBC"
 
 const char *google_chromeec_acpi_name(const struct device *dev)
 {
-	return "EC0";
+	/*
+	 * Chrome EC device (CREC - GOOG0004) is really a child of EC device (EC - PNP0C09) in
+	 * ACPI tables. However, in coreboot device tree, there is no separate chip/device for
+	 * EC0. Thus, Chrome EC device needs to return "EC0.CREC" as the ACPI name so that the
+	 * callers can get the correct acpi device path/scope for this device.
+	 *
+	 * If we ever enable a separate driver for generating AML for EC0 device, then this
+	 * function needs to be updated to return "CREC".
+	 */
+	return "EC0.CREC";
 }
 
 static const char *power_role_to_str(enum ec_pd_power_role_caps power_role)
@@ -190,8 +198,7 @@ static void fill_ssdt_typec_device(struct device *dev)
 	if (google_chromeec_get_num_pd_ports(&num_ports))
 		return;
 
-	/* Add TypeC device under the existing device + ".CREC" scope */
-	acpigen_write_scope(acpi_device_path_join(dev, GOOGLE_CHROMEEC_USBC_DEVICE_PARENT));
+	acpigen_write_scope(acpi_device_path(dev));
 	acpigen_write_device(GOOGLE_CHROMEEC_USBC_DEVICE_NAME);
 	acpigen_write_name_string("_HID", GOOGLE_CHROMEEC_USBC_DEVICE_HID);
 	acpigen_write_name_string("_DDN", "ChromeOS EC Embedded Controller "

@@ -90,8 +90,9 @@ static void mainboard_set_power_limits(config_t *conf)
 {
 	enum usb_chg_type type;
 	u32 watts;
+	u16 volts_mv, current_ma;
 	u32 psyspl2 = PUFF_PSYSPL2; // default barrel jack value for U22
-	int rv = google_chromeec_get_usb_pd_power_info(&type, &watts);
+	int rv = google_chromeec_get_usb_pd_power_info(&type, &current_ma, &volts_mv);
 
 	/* use SoC default value for PsysPL3 and PL4 unless we're on USB-PD*/
 	conf->tdp_psyspl3 = 0;
@@ -99,6 +100,7 @@ static void mainboard_set_power_limits(config_t *conf)
 
 	if (rv == 0 && type == USB_CHG_TYPE_PD) {
 		/* Detected USB-PD.  Base on max value of adapter */
+		watts = ((u32)current_ma * volts_mv) / 1000000;
 		psyspl2 = watts;
 		conf->tdp_psyspl3 = SET_PSYSPL2(psyspl2);
 		/* set max possible time window */

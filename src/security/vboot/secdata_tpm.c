@@ -415,7 +415,7 @@ uint32_t antirollback_write_space_kernel(struct vb2_context *ctx)
 	uint8_t size = VB2_SECDATA_KERNEL_MIN_SIZE;
 	vb2api_secdata_kernel_check(ctx, &size);
 
-	return write_secdata(KERNEL_NV_INDEX, ctx->secdata_kernel, size);
+	return safe_write(KERNEL_NV_INDEX, ctx->secdata_kernel, size);
 }
 
 uint32_t antirollback_read_space_rec_hash(uint8_t *data, uint32_t size)

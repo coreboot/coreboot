@@ -48,9 +48,9 @@ void variant_memory_init(FSP_M_CONFIG *mem_cfg)
 {
 	const struct spd_info spd_info = {
 		.topology = SODIMM,
-		.smbus_info[0] = {.addr_dimm0 = 0xa0,
+		.smbus_info[0] = {.addr_dimm0 = 0x50,
 				  .addr_dimm1 = 0 },
-		.smbus_info[1] = {.addr_dimm0 = 0xa4,
+		.smbus_info[1] = {.addr_dimm0 = 0x52,
 				  .addr_dimm1 = 0 },
 	};
 	const bool half_populated = false;

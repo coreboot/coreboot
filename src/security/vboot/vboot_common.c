@@ -12,6 +12,31 @@
 #include <security/vboot/vbnv.h>
 #include <vb2_api.h>
 
+#include "antirollback.h"
+
+void vboot_save_data(struct vb2_context *ctx)
+{
+	if (ctx->flags & VB2_CONTEXT_SECDATA_FIRMWARE_CHANGED &&
+			(CONFIG(VBOOT_MOCK_SECDATA) || tlcl_lib_init() == VB2_SUCCESS)) {
+		printk(BIOS_INFO, "Saving secdata firmware\n");
+		antirollback_write_space_firmware(ctx);
+		ctx->flags &= ~VB2_CONTEXT_SECDATA_FIRMWARE_CHANGED;
+	}
+
+	if (ctx->flags & VB2_CONTEXT_SECDATA_KERNEL_CHANGED &&
+			(CONFIG(VBOOT_MOCK_SECDATA) || tlcl_lib_init() == VB2_SUCCESS)) {
+		printk(BIOS_INFO, "Saving secdata kernel\n");
+		antirollback_write_space_kernel(ctx);
+		ctx->flags &= ~VB2_CONTEXT_SECDATA_KERNEL_CHANGED;
+	}
+
+	if (ctx->flags & VB2_CONTEXT_NVDATA_CHANGED) {
+		printk(BIOS_INFO, "Saving nvdata\n");
+		save_vbnv(ctx->nvdata);
+		ctx->flags &= ~VB2_CONTEXT_NVDATA_CHANGED;
+	}
+}
+
 /* Check if it is okay to enable USB Device Controller (UDC). */
 int vboot_can_enable_udc(void)
 {

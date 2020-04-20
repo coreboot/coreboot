@@ -209,28 +209,6 @@ static vb2_error_t hash_body(struct vb2_context *ctx,
 	return VB2_SUCCESS;
 }
 
-void vboot_save_data(struct vb2_context *ctx)
-{
-	if (ctx->flags & VB2_CONTEXT_SECDATA_FIRMWARE_CHANGED &&
-	    (CONFIG(VBOOT_MOCK_SECDATA) || tlcl_lib_init() == VB2_SUCCESS)) {
-		printk(BIOS_INFO, "Saving secdata firmware\n");
-		antirollback_write_space_firmware(ctx);
-		ctx->flags &= ~VB2_CONTEXT_SECDATA_FIRMWARE_CHANGED;
-	}
-
-	if (ctx->flags & VB2_CONTEXT_SECDATA_KERNEL_CHANGED &&
-	    (CONFIG(VBOOT_MOCK_SECDATA) || tlcl_lib_init() == VB2_SUCCESS)) {
-		printk(BIOS_INFO, "Saving secdata kernel\n");
-		antirollback_write_space_kernel(ctx);
-		ctx->flags &= ~VB2_CONTEXT_SECDATA_KERNEL_CHANGED;
-	}
-
-	if (ctx->flags & VB2_CONTEXT_NVDATA_CHANGED) {
-		printk(BIOS_INFO, "Saving nvdata\n");
-		save_vbnv(ctx->nvdata);
-		ctx->flags &= ~VB2_CONTEXT_NVDATA_CHANGED;
-	}
-}
 
 static uint32_t extend_pcrs(struct vb2_context *ctx)
 {

@@ -112,16 +112,17 @@ verstage-$(CONFIG_VBOOT_SEPARATE_VERSTAGE) += verstage.c
 ifeq (${CONFIG_VBOOT_MOCK_SECDATA},y)
 verstage-y += secdata_mock.c
 romstage-y += secdata_mock.c
+ramstage-y += secdata_mock.c
 else
 verstage-y += secdata_tpm.c
 romstage-y += secdata_tpm.c
+ramstage-y += secdata_tpm.c
 endif
 
 ifneq ($(CONFIG_TPM1)$(CONFIG_TPM2),)
 verstage-y += tpm_common.c
 endif
 
-romstage-y += vboot_logic.c
 romstage-y += common.c
 
 ramstage-y += common.c

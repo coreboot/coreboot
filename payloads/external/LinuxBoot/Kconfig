@@ -262,10 +262,10 @@ if LINUXBOOT_UROOT_MAIN
 
 choice
 	prompt "Choose a specific bootloader"
-	default SPECIFIC_BOOTLOADER_NONE
+	default SPECIFIC_BOOTLOADER_SYSTEMBOOT
 	help
 	  Specify a bootloader which starts after u-root init. It will be a symlink
-	  to /bin/uinit. Default: None
+	  to /bin/uinit. Default: systemboot
 
 config SPECIFIC_BOOTLOADER_NONE
 	bool "none"

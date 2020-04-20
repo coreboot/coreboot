@@ -220,9 +220,7 @@ static void dramc_write_leveling(u8 chn, u8 rank, u8 freq_group,
 {
 	dramc_auto_refresh_switch(chn, false);
 
-	if (rank == RANK_0 && (freq_group == LP4X_DDR3600 ||
-			       freq_group == LP4X_DDR1600 ||
-			       freq_group == LP4X_DDR2400))
+	if (rank == RANK_0)
 		write_leveling_move_dqs_instead_of_clk(chn);
 
 	SET32_BITFIELDS(&ch[chn].phy.shu[0].rk[rank].ca_cmd[9],
@@ -265,8 +263,11 @@ static void dramc_cmd_bus_training(u8 chn, u8 rank, u8 freq_group,
 	SET32_BITFIELDS(&ch[chn].phy.shu[0].rk[rank].ca_cmd[9],
 			SHU1_R0_CA_CMD9_RG_RK0_ARPI_CS, cs_dly);
 
+	final_vref |= (1 << 6);
+
 	/* CBT set vref */
 	dramc_mode_reg_write_by_rank(chn, rank, 12, final_vref);
+	dramc_dbg("final_vref: %#x\n", final_vref);
 }
 
 static void dramc_read_dbi_onoff(size_t chn, bool on)
@@ -1822,7 +1823,7 @@ static u8 dramc_window_perbit_cal(u8 chn, u8 rank, u8 freq_group,
 			vref_end = vref_begin + 1;
 			dramc_dbg("bypass RX vref: %d\n", vref_begin);
 		} else if (type == TX_WIN_DQ_ONLY) {
-			vref_begin = params->tx_vref[chn][rank];
+			vref_begin = params->tx_vref[chn][rank] | (vref_range << 6);
 			vref_end = vref_begin + 1;
 			dramc_dbg("bypass TX vref: %d\n", vref_begin);
 		}

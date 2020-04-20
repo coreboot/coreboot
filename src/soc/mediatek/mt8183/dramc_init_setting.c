@@ -1218,8 +1218,8 @@ static void dramc_setting(const struct sdram_params *params, u8 freq_group,
 		 (0x7 << 0) | (0x7 << 4) | (0x7 << 8) | (0x7 << 12)  |
 		 (0x7 << 16) | (0x7 << 20) | (0x7 << 24) | (0x7 << 28));
 	clrbits32(&ch[0].ao.shu[0].selph_ca5, 0x7 << 8);
-	clrsetbits32(&ch[0].ao.shu[0].selph_dqs0, 0x77777777, SELPH_DQS0);
-	clrsetbits32(&ch[0].ao.shu[0].selph_dqs1, 0x77777777, SELPH_DQS1);
+	clrsetbits32(&ch[0].ao.shu[0].selph_dqs0, 0x77777777, SELPH_DQS0_3200);
+	clrsetbits32(&ch[0].ao.shu[0].selph_dqs1, 0x77777777, SELPH_DQS1_3200);
 
 	for (size_t rank = 0; rank < 2; rank++) {
 		clrsetbits32(&ch[0].ao.shu[0].rk[rank].selph_dq[0],
@@ -1373,6 +1373,9 @@ static void dramc_setting(const struct sdram_params *params, u8 freq_group,
 	setbits32(&ch[0].phy.shu[0].b[1].dq[7], (0x1 << 12) | (0x1 << 13));
 	clrbits32(&ch[0].ao.shu[0].dqs2dq_tx, 0x1f << 0);
 
+	/* The default dramc init settings were tuned at frequency of 3200Mbps.
+	   For other frequencies uses dramc_setting_DDRxxx() to overwrite
+	   the default settings. */
 	switch (freq_group) {
 	case LP4X_DDR1600:
 		dramc_setting_DDR1600();

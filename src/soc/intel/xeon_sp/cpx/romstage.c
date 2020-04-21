@@ -3,6 +3,7 @@
 
 #include <arch/romstage.h>
 #include <fsp/api.h>
+#include <soc/romstage.h>
 #include "chip.h"
 
 void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
@@ -10,4 +11,6 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	FSP_M_CONFIG *m_cfg = &mupd->FspmConfig;
 
 	(void)m_cfg;
+
+	mainboard_memory_init_params(mupd);
 }

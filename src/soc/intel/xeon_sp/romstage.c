@@ -55,3 +55,8 @@ asmlinkage void car_stage_entry(void)
 
 	run_postcar_phase(&pcf);
 }
+
+__weak void mainboard_memory_init_params(FSPM_UPD *mupd)
+{
+	printk(BIOS_SPEW, "WARNING: using default FSP-M parameters!\n");
+}

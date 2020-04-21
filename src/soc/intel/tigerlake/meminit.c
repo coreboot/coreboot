@@ -315,8 +315,13 @@ static void read_sodimm_spd(const struct spd_info *info, struct spd_block *blk)
 
 	get_spd_smbus(blk);
 
+	/*
+	 * SPD gets printed only if:
+	 * a) mainboard provides a non-zero SMBus address and
+	 * b) SPD is successfully read using the SMBus address
+	 */
 	for (i = 0; i < ARRAY_SIZE(blk->addr_map); i++) {
-		if (blk->addr_map[i])
+		if (blk->spd_array[i] != NULL)
 			print_spd_info((uint8_t *)blk->spd_array[i]);
 	}
 }

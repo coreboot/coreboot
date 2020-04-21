@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 /* This file is part of the coreboot project. */
 
-#define DPTF_CPU_PASSIVE	70
+#define DPTF_CPU_PASSIVE	77
 #define DPTF_CPU_CRITICAL	105
 #define DPTF_CPU_ACTIVE_AC0	70
 #define DPTF_CPU_ACTIVE_AC1	65
@@ -11,13 +11,17 @@
 
 #define DPTF_TSR0_SENSOR_ID	0
 #define DPTF_TSR0_SENSOR_NAME	"Thermal Sensor 1"
-#define DPTF_TSR0_PASSIVE	62
+#define DPTF_TSR0_PASSIVE	58
 #define DPTF_TSR0_CRITICAL	105
+#define DPTF_TSR0_TABLET_PASSIVE	58
+#define DPTF_TSR0_TABLET_CRITICAL	105
 
 #define DPTF_TSR1_SENSOR_ID	1
 #define DPTF_TSR1_SENSOR_NAME	"Thermal Sensor 2"
-#define DPTF_TSR1_PASSIVE	54
-#define DPTF_TSR1_CRITICAL	105
+#define DPTF_TSR1_PASSIVE	57
+#define DPTF_TSR1_CRITICAL	86
+#define DPTF_TSR1_TABLET_PASSIVE	49
+#define DPTF_TSR1_TABLET_CRITICAL	86
 
 #define DPTF_ENABLE_CHARGER
 
@@ -31,13 +35,13 @@ Name (CHPS, Package () {
 
 Name (DTRT, Package () {
 	/* CPU Throttle Effect on CPU */
-	Package () { \_SB.PCI0.TCPU, \_SB.PCI0.TCPU, 100, 50, 0, 0, 0, 0 },
+	Package () { \_SB.PCI0.TCPU, \_SB.PCI0.TCPU, 100, 300, 0, 0, 0, 0 },
 
-	/* CPU Throttle Effect on Ambient (TSR0) */
-	Package () { \_SB.PCI0.TCPU, \_SB.DPTF.TSR0, 100, 60, 0, 0, 0, 0 },
+	/* CPU Throttle Effect on Ambient (TSR1) */
+	Package () { \_SB.PCI0.TCPU, \_SB.DPTF.TSR1, 100, 300, 0, 0, 0, 0 },
 
-	/* Charger Throttle Effect on Charger (TSR1) */
-	Package () { \_SB.DPTF.TCHG, \_SB.DPTF.TSR1, 100, 60, 0, 0, 0, 0 },
+	/* Charger Throttle Effect on Charger (TSR0) */
+	Package () { \_SB.DPTF.TCHG, \_SB.DPTF.TSR0, 100, 300, 0, 0, 0, 0 },
 })
 
 Name (MPPC, Package ()
@@ -45,7 +49,7 @@ Name (MPPC, Package ()
 	0x2,		/* Revision */
 	Package () {	/* Power Limit 1 */
 		0,	/* PowerLimitIndex, 0 for Power Limit 1 */
-		12000,	/* PowerLimitMinimum */
+		3000,	/* PowerLimitMinimum */
 		15000,	/* PowerLimitMaximum */
 		28000,	/* TimeWindowMinimum */
 		32000,	/* TimeWindowMaximum */

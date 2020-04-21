@@ -47,7 +47,10 @@ DefinitionBlock(
 	}
 
 	#include <southbridge/intel/common/acpi/sleepstates.asl>
+
+#if CONFIG(VARIANT_HAS_MIPI_CAMERA)
 	/* Camera */
 	#include <soc/intel/tigerlake/acpi/ipu.asl>
-	#include "acpi/mipi_camera.asl"
+	#include <variant/acpi/mipi_camera.asl>
+#endif /* VARIANT_HAS_MIPI_CAMERA */
 }

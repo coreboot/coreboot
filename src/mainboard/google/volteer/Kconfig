@@ -76,4 +76,8 @@ config VARIANT_DIR
 	default "ripto" if BOARD_GOOGLE_RIPTO
 	default "volteer" if BOARD_GOOGLE_VOLTEER
 
+config VARIANT_HAS_MIPI_CAMERA
+	bool
+	default n
+
 endif # BOARD_GOOGLE_BASEBOARD_VOLTEER

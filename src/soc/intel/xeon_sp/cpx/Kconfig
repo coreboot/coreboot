@@ -16,7 +16,6 @@ config USE_FSP2_0_DRIVER
 	  select UDK_2015_BINDING
 	  select POSTCAR_CONSOLE
 	  select POSTCAR_STAGE
-	  select FSP_USES_CB_STACK
 
 config FSP_HEADER_PATH
 	  string "Location of FSP headers"
@@ -40,11 +39,11 @@ config PCR_BASE_ADDRESS
 # currently FSP hardcodes [0fe800000;fe930000] for its heap
 config DCACHE_RAM_BASE
 	hex
-	default 0xfe930000
+	default 0xfe9a0000
 
 config DCACHE_RAM_SIZE
 	hex
-	default 0xd0000
+	default 0x60000
 
 config DCACHE_BSP_STACK_SIZE
 	hex

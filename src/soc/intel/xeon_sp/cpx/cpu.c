@@ -28,7 +28,7 @@ const void *intel_mp_current_microcode(void)
 
 static void each_cpu_init(struct device *cpu)
 {
-	printk(BIOS_INFO, "%s dev: %s, cpu: %d, apic_id: 0x%x\n",
+	printk(BIOS_SPEW, "%s dev: %s, cpu: %d, apic_id: 0x%x\n",
 		__func__, dev_path(cpu), cpu_index(), cpu->path.apic.apic_id);
 
 	setup_lapic();

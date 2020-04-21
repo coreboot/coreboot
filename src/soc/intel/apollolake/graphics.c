@@ -74,3 +74,10 @@ void graphics_soc_panel_init(struct device *const dev)
 	for (i = 0; i < ARRAY_SIZE(conf->panel_cfg); ++i)
 		graphics_configure_backlight(&conf->panel_cfg[i], mmio, i);
 }
+
+const struct i915_gpu_controller_info *
+intel_igd_get_controller_info(const struct device *device)
+{
+	struct soc_intel_apollolake_config *chip = device->chip_info;
+	return &chip->gfx;
+}

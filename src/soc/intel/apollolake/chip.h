@@ -41,6 +41,9 @@ struct soc_intel_apollolake_config {
 	 */
 	struct i915_gpu_panel_config panel_cfg[2];
 
+	/* i915 struct for GMA backlight control */
+	struct i915_gpu_controller_info gfx;
+
 	/*
 	 * Mapping from PCIe root port to CLKREQ input on the SOC. The SOC has
 	 * four CLKREQ inputs, but six root ports. Root ports without an

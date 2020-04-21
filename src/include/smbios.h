@@ -54,6 +54,12 @@ const char *smbios_chassis_version(void);
 const char *smbios_chassis_serial_number(void);
 const char *smbios_processor_serial_number(void);
 
+/* Used by mainboard to add port information of type 8 */
+struct port_information;
+int smbios_write_type8(unsigned long *current, int *handle,
+			const struct port_information *port,
+			size_t num_ports);
+
 #define BIOS_CHARACTERISTICS_PCI_SUPPORTED	(1 << 7)
 #define BIOS_CHARACTERISTICS_PC_CARD		(1 << 8)
 #define BIOS_CHARACTERISTICS_PNP		(1 << 9)
@@ -211,6 +217,7 @@ typedef enum {
 	SMBIOS_SYSTEM_ENCLOSURE = 3,
 	SMBIOS_PROCESSOR_INFORMATION = 4,
 	SMBIOS_CACHE_INFORMATION = 7,
+	SMBIOS_PORT_CONNECTOR_INFORMATION = 8,
 	SMBIOS_SYSTEM_SLOTS = 9,
 	SMBIOS_OEM_STRINGS = 11,
 	SMBIOS_EVENT_LOG = 15,
@@ -482,6 +489,115 @@ struct smbios_type7 {
 	u8 associativity;
 	u32 max_cache_size2;
 	u32 installed_size2;
+	u8 eos[2];
+} __packed;
+
+/* enum for connector types */
+typedef enum {
+	CONN_NONE = 0x00,
+	CONN_CENTRONICS = 0x01,
+	CONN_MINI_CENTRONICS = 0x02,
+	CONN_PROPRIETARY = 0x03,
+	CONN_DB_25_PIN_MALE = 0x04,
+	CONN_DB_25_PIN_FEMALE = 0x05,
+	CONN_DB_15_PIN_MALE = 0x06,
+	CONN_DB_15_PIN_FEMALE = 0x07,
+	CONN_DB_9_PIN_MALE = 0x08,
+	CONN_DB_9_PIN_FEMALE = 0x09,
+	CONN_RJ_11 = 0x0A,
+	CONN_RJ_45 = 0x0B,
+	CONN_50_PIN_MINI_SCSI = 0x0C,
+	CONN_MINI_DIN = 0x0D,
+	CONN_MICRO_DIN = 0x0E,
+	CONN_PS_2 = 0x0F,
+	CONN_INFRARED = 0x10,
+	CONN_HP_HIL = 0x11,
+	CONN_ACCESS_BUS_USB = 0x12,
+	CONN_SSA_SCSI = 0x13,
+	CONN_CIRCULAR_DIN_8_MALE = 0x14,
+	CONN_CIRCULAR_DIN_8_FEMALE = 0x15,
+	CONN_ON_BOARD_IDE = 0x16,
+	CONN_ON_BOARD_FLOPPY = 0x17,
+	CONN_9_PIN_DUAL_INLINE = 0x18,
+	CONN_25_PIN_DUAL_INLINE = 0x19,
+	CONN_50_PIN_DUAL_INLINE = 0x1A,
+	CONN_68_PIN_DUAL_INLINE = 0x1B,
+	CONN_ON_BOARD_SOUND_INPUT_FROM_CD_ROM = 0x1C,
+	CONN_MINI_CENTRONICS_TYPE14 = 0x1D,
+	CONN_MINI_CENTRONICS_TYPE26 = 0x1E,
+	CONN_MINI_JACK_HEADPHONES = 0x1F,
+	CONN_BNC = 0x20,
+	CONN_1394 = 0x21,
+	CONN_SAS_SATA = 0x22,
+	CONN_USB_TYPE_C = 0x23,
+	CONN_PC_98 = 0xA0,
+	CONN_PC_98_HIRESO = 0xA1,
+	CONN_PC_H98 = 0xA2,
+	CONN_PC98_NOTE = 0xA3,
+	CONN_PC_98_FULL = 0xA4,
+	CONN_OTHER = 0xFF,
+} type8_connector_types;
+
+/* enum for port types */
+typedef enum {
+	TYPE_NONE = 0x00,
+	TYPE_PARALLEL_PORT_XT_AT_COMPATIBLE = 0x01,
+	TYPE_PARALLEL_PORT_PS_2 = 0x02,
+	TYPE_PARALLEL_PORT_ECP = 0x03,
+	TYPE_PARALLEL_PORT_EPP = 0x04,
+	TYPE_PARALLEL_PORT_ECP_EPP = 0x05,
+	TYPE_SERIAL_PORT_XT_AT_COMPATIBLE = 0x06,
+	TYPE_SERIAL_PORT_16450_COMPATIBLE = 0x07,
+	TYPE_SERIAL_PORT_16550_COMPATIBLE = 0x08,
+	TYPE_SERIAL_PORT_16550A_COMPATIBLE = 0x09,
+	TYPE_SCSI_PORT = 0x0A,
+	TYPE_MIDI_PORT = 0x0B,
+	TYPE_JOY_STICK_PORT = 0x0C,
+	TYPE_KEYBOARD_PORT = 0x0D,
+	TYPE_MOUSE_PORT = 0x0E,
+	TYPE_SSA_SCSI = 0x0F,
+	TYPE_USB = 0x10,
+	TYPE_FIREWIRE_IEEE_P1394 = 0x11,
+	TYPE_PCMCIA_TYPE_I = 0x12,
+	TYPE_PCMCIA_TYPE_II = 0x13,
+	TYPE_PCMCIA_TYPE_III = 0x14,
+	TYPE_CARDBUS = 0x15,
+	TYPE_ACCESS_BUS_PORT = 0x16,
+	TYPE_SCSI_II = 0x17,
+	TYPE_SCSI_WIDE = 0x18,
+	TYPE_PC_98 = 0x19,
+	TYPE_PC_98_HIRESO = 0x1A,
+	TYPE_PC_H98 = 0x1B,
+	TYPE_VIDEO_PORT = 0x1C,
+	TYPE_AUDIO_PORT = 0x1D,
+	TYPE_MODEM_PORT = 0x1E,
+	TYPE_NETWORK_PORT = 0x1F,
+	TYPE_SATA = 0x20,
+	TYPE_SAS = 0x21,
+	TYPE_MFDP = 0x22,
+	TYPE_THUNDERBOLT = 0x23,
+	TYPE_8251_COMPATIBLE = 0xA0,
+	TYPE_8251_FIFO_COMPATIBLE = 0xA1,
+	TYPE_OTHER = 0xFF,
+} type8_port_types;
+
+struct port_information {
+	const char *internal_reference_designator;
+	type8_connector_types internal_connector_type;
+	const char *external_reference_designator;
+	type8_connector_types external_connector_type;
+	type8_port_types port_type;
+};
+
+struct smbios_type8 {
+	u8 type;
+	u8 length;
+	u16 handle;
+	u8 internal_reference_designator;
+	u8 internal_connector_type;
+	u8 external_reference_designator;
+	u8 external_connector_type;
+	u8 port_type;
 	u8 eos[2];
 } __packed;
 

@@ -964,6 +964,34 @@ static int smbios_write_type7_cache_parameters(unsigned long *current,
 
 	return len;
 }
+
+int smbios_write_type8(unsigned long *current, int *handle,
+				const struct port_information *port,
+				size_t num_ports)
+{
+	int len = sizeof(struct smbios_type8);
+	unsigned int totallen = 0, i;
+
+	for (i = 0; i < num_ports; i++, port++) {
+		struct smbios_type8 *t = (struct smbios_type8 *)*current;
+		memset(t, 0, sizeof(struct smbios_type8));
+		t->type = SMBIOS_PORT_CONNECTOR_INFORMATION;
+		t->handle = *handle;
+		t->length = len - 2;
+		t->internal_reference_designator =
+			smbios_add_string(t->eos, port->internal_reference_designator);
+		t->internal_connector_type = port->internal_connector_type;
+		t->external_reference_designator =
+			smbios_add_string(t->eos, port->external_reference_designator);
+		t->external_connector_type = port->external_connector_type;
+		t->port_type = port->port_type;
+		*handle += 1;
+		*current += t->length + smbios_string_table_len(t->eos);
+		totallen += t->length + smbios_string_table_len(t->eos);
+	}
+	return totallen;
+}
+
 int smbios_write_type9(unsigned long *current, int *handle,
 			const char *name, const enum misc_slot_type type,
 			const enum slot_data_bus_bandwidth bandwidth,

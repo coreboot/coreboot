@@ -21,6 +21,9 @@ chip soc/intel/cannonlake
 	}"
 
 	# USB configuration
+	# NOTE: This only applies to Puff,
+	# usb2_ports[1] and usb2_ports[3] were swapped on
+	# reference schematics after Puff has been built.
 	register "usb2_ports[0]" = "USB2_PORT_MID(OC2)"        # Type-A Port 2
 	register "usb2_ports[1]" = "USB2_PORT_TYPE_C(OC_SKIP)" # Type-C Port
 	register "usb2_ports[2]" = "{

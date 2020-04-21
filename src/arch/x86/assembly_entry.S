@@ -28,7 +28,7 @@ _start:
 	shrl	$2, %ecx
 	rep	stosl
 
-#if ((ENV_VERSTAGE && CONFIG(VERSTAGE_DEBUG_SPINLOOP)) \
+#if ((ENV_SEPARATE_VERSTAGE && CONFIG(VERSTAGE_DEBUG_SPINLOOP)) \
 	|| (ENV_ROMSTAGE && CONFIG(ROMSTAGE_DEBUG_SPINLOOP)))
 
 	/* Wait for a JTAG debugger to break in and set EBX non-zero */

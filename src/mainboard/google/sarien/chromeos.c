@@ -82,7 +82,7 @@ int get_recovery_mode_switch(void)
 	 * The TPM recovery request is passed between stages through vboot data
 	 * or cbmem depending on stage.
 	 */
-	if (ENV_VERSTAGE &&
+	if (ENV_SEPARATE_VERSTAGE &&
 	    tlcl_cr50_get_recovery_button(&cr50_state) == TPM_SUCCESS &&
 	    cr50_state)
 		state = REC_MODE_REQUESTED;

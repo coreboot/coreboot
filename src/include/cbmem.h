@@ -161,7 +161,7 @@ static inline int cbmem_possibly_online(void)
 	if (ENV_BOOTBLOCK)
 		return 0;
 
-	if (ENV_VERSTAGE && CONFIG(VBOOT_STARTS_IN_BOOTBLOCK))
+	if (ENV_SEPARATE_VERSTAGE && CONFIG(VBOOT_STARTS_IN_BOOTBLOCK))
 		return 0;
 
 	return 1;

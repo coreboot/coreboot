@@ -55,7 +55,7 @@ static inline struct ehci_debug_info *dbgp_ehci_info(void)
 {
 	if (glob_dbg_info_p == NULL) {
 		struct ehci_debug_info *info;
-		if (ENV_BOOTBLOCK || ENV_VERSTAGE || ENV_ROMSTAGE) {
+		if (ENV_BOOTBLOCK || ENV_SEPARATE_VERSTAGE || ENV_ROMSTAGE) {
 			/* The message likely does not show if we hit this. */
 			if (sizeof(*info) > _car_ehci_dbg_info_size)
 				die("BUG: Increase ehci_dbg_info reserve in CAR");

@@ -106,7 +106,7 @@ size_t cbfs_load_and_decompress(const struct region_device *rdev, size_t offset,
 		return in_size;
 
 	case CBFS_COMPRESS_LZ4:
-		if ((ENV_BOOTBLOCK || ENV_VERSTAGE) &&
+		if ((ENV_BOOTBLOCK || ENV_SEPARATE_VERSTAGE) &&
 			!CONFIG(COMPRESS_PRERAM_STAGES))
 			return 0;
 
@@ -125,7 +125,7 @@ size_t cbfs_load_and_decompress(const struct region_device *rdev, size_t offset,
 
 	case CBFS_COMPRESS_LZMA:
 		/* We assume here romstage and postcar are never compressed. */
-		if (ENV_BOOTBLOCK || ENV_VERSTAGE)
+		if (ENV_BOOTBLOCK || ENV_SEPARATE_VERSTAGE)
 			return 0;
 		if (ENV_ROMSTAGE && CONFIG(POSTCAR_STAGE))
 			return 0;
@@ -236,8 +236,8 @@ int cbfs_prog_stage_load(struct prog *pstage)
 
 	/* Hacky way to not load programs over read only media. The stages
 	 * that would hit this path initialize themselves. */
-	if ((ENV_BOOTBLOCK || ENV_VERSTAGE) && !CONFIG(NO_XIP_EARLY_STAGES) &&
-		CONFIG(BOOT_DEVICE_MEMORY_MAPPED)) {
+	if ((ENV_BOOTBLOCK || ENV_SEPARATE_VERSTAGE) &&
+	    !CONFIG(NO_XIP_EARLY_STAGES) && CONFIG(BOOT_DEVICE_MEMORY_MAPPED)) {
 		void *mapping = rdev_mmap(fh, foffset, fsize);
 		rdev_munmap(fh, mapping);
 		if (mapping == load)

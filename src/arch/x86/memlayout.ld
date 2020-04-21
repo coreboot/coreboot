@@ -32,7 +32,7 @@ SECTIONS
 	ROMSTAGE(CONFIG_ROMSTAGE_ADDR, 1M)
 
 	#include EARLY_MEMLAYOUT
-#elif ENV_VERSTAGE
+#elif ENV_SEPARATE_VERSTAGE
 	/* The 1M size is not allocated. It's just for basic size checking.
 	 * Link at 32MiB address and rely on cbfstool to relocate to XIP. */
 	VERSTAGE(CONFIG_VERSTAGE_ADDR, 1M)

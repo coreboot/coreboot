@@ -47,7 +47,7 @@ int vboot_locate_firmware(struct vb2_context *ctx, struct region_device *fw);
 static inline int verification_should_run(void)
 {
 	if (CONFIG(VBOOT_SEPARATE_VERSTAGE))
-		return ENV_VERSTAGE;
+		return ENV_SEPARATE_VERSTAGE;
 	else if (CONFIG(VBOOT_STARTS_IN_ROMSTAGE))
 		return ENV_ROMSTAGE;
 	else if (CONFIG(VBOOT_STARTS_IN_BOOTBLOCK))

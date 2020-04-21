@@ -51,8 +51,8 @@ static inline void *uart_platform_baseptr(int idx)
 void oxford_remap(unsigned int new_base);
 
 #define __CONSOLE_SERIAL_ENABLE__	(CONFIG(CONSOLE_SERIAL) && \
-	(ENV_BOOTBLOCK || ENV_ROMSTAGE || ENV_RAMSTAGE || ENV_VERSTAGE || \
-	ENV_POSTCAR || (ENV_SMM && CONFIG(DEBUG_SMI))))
+	(ENV_BOOTBLOCK || ENV_ROMSTAGE || ENV_RAMSTAGE || ENV_SEPARATE_VERSTAGE \
+	 || ENV_POSTCAR || (ENV_SMM && CONFIG(DEBUG_SMI))))
 
 #if __CONSOLE_SERIAL_ENABLE__
 static inline void __uart_init(void)

@@ -14,7 +14,7 @@
 #define ENV_ROMSTAGE 0
 #define ENV_RAMSTAGE 0
 #define ENV_SMM 0
-#define ENV_VERSTAGE 0
+#define ENV_SEPARATE_VERSTAGE 0
 #define ENV_RMODULE 0
 #define ENV_POSTCAR 0
 #define ENV_LIBAGESA 0
@@ -26,7 +26,7 @@
 #define ENV_ROMSTAGE 0
 #define ENV_RAMSTAGE 0
 #define ENV_SMM 0
-#define ENV_VERSTAGE 0
+#define ENV_SEPARATE_VERSTAGE 0
 #define ENV_RMODULE 0
 #define ENV_POSTCAR 0
 #define ENV_LIBAGESA 0
@@ -38,7 +38,7 @@
 #define ENV_ROMSTAGE 1
 #define ENV_RAMSTAGE 0
 #define ENV_SMM 0
-#define ENV_VERSTAGE 0
+#define ENV_SEPARATE_VERSTAGE 0
 #define ENV_RMODULE 0
 #define ENV_POSTCAR 0
 #define ENV_LIBAGESA 0
@@ -50,19 +50,26 @@
 #define ENV_ROMSTAGE 0
 #define ENV_RAMSTAGE 0
 #define ENV_SMM 1
-#define ENV_VERSTAGE 0
+#define ENV_SEPARATE_VERSTAGE 0
 #define ENV_RMODULE 0
 #define ENV_POSTCAR 0
 #define ENV_LIBAGESA 0
 #define ENV_STRING "smm"
 
+/*
+ * NOTE: "verstage" code may either run as a separate stage or linked into the
+ * bootblock/romstage, depending on the setting of CONFIG_SEPARATE_VERSTAGE. The
+ * ENV_SEPARATE_VERSTAGE macro will only return true for "verstage" code when
+ * CONFIG_SEPARATE_VERSTAGE=y, otherwise that code will have ENV_BOOTBLOCK or
+ * ENV_ROMSTAGE set (depending on the CONFIG_VBOOT_STARTS_IN_... options).
+ */
 #elif defined(__VERSTAGE__)
 #define ENV_DECOMPRESSOR 0
 #define ENV_BOOTBLOCK 0
 #define ENV_ROMSTAGE 0
 #define ENV_RAMSTAGE 0
 #define ENV_SMM 0
-#define ENV_VERSTAGE 1
+#define ENV_SEPARATE_VERSTAGE 1
 #define ENV_RMODULE 0
 #define ENV_POSTCAR 0
 #define ENV_LIBAGESA 0
@@ -74,7 +81,7 @@
 #define ENV_ROMSTAGE 0
 #define ENV_RAMSTAGE 1
 #define ENV_SMM 0
-#define ENV_VERSTAGE 0
+#define ENV_SEPARATE_VERSTAGE 0
 #define ENV_RMODULE 0
 #define ENV_POSTCAR 0
 #define ENV_LIBAGESA 0
@@ -86,7 +93,7 @@
 #define ENV_ROMSTAGE 0
 #define ENV_RAMSTAGE 0
 #define ENV_SMM 0
-#define ENV_VERSTAGE 0
+#define ENV_SEPARATE_VERSTAGE 0
 #define ENV_RMODULE 1
 #define ENV_POSTCAR 0
 #define ENV_LIBAGESA 0
@@ -98,7 +105,7 @@
 #define ENV_ROMSTAGE 0
 #define ENV_RAMSTAGE 0
 #define ENV_SMM 0
-#define ENV_VERSTAGE 0
+#define ENV_SEPARATE_VERSTAGE 0
 #define ENV_RMODULE 0
 #define ENV_POSTCAR 1
 #define ENV_LIBAGESA 0
@@ -110,7 +117,7 @@
 #define ENV_ROMSTAGE 0
 #define ENV_RAMSTAGE 0
 #define ENV_SMM 0
-#define ENV_VERSTAGE 0
+#define ENV_SEPARATE_VERSTAGE 0
 #define ENV_RMODULE 0
 #define ENV_POSTCAR 0
 #define ENV_LIBAGESA 1
@@ -126,7 +133,7 @@
 #define ENV_ROMSTAGE 0
 #define ENV_RAMSTAGE 0
 #define ENV_SMM 0
-#define ENV_VERSTAGE 0
+#define ENV_SEPARATE_VERSTAGE 0
 #define ENV_RMODULE 0
 #define ENV_POSTCAR 0
 #define ENV_LIBAGESA 0
@@ -239,7 +246,7 @@
 
 #define ENV_ROMSTAGE_OR_BEFORE \
 	(ENV_DECOMPRESSOR || ENV_BOOTBLOCK || ENV_ROMSTAGE || \
-	(ENV_VERSTAGE && CONFIG(VBOOT_STARTS_IN_BOOTBLOCK)))
+	(ENV_SEPARATE_VERSTAGE && CONFIG(VBOOT_STARTS_IN_BOOTBLOCK)))
 
 #if CONFIG(ARCH_X86)
 /* Indicates memory layout is determined with arch/x86/car.ld. */

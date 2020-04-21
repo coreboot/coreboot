@@ -502,7 +502,7 @@ int tpm_vendor_init(struct tpm_chip *chip, unsigned int bus, uint32_t dev_addr)
 	if (cr50_i2c_probe(chip, &did_vid))
 		return -1;
 
-	if (ENV_VERSTAGE || ENV_BOOTBLOCK)
+	if (ENV_SEPARATE_VERSTAGE || ENV_BOOTBLOCK)
 		if (process_reset(chip))
 			return -1;
 

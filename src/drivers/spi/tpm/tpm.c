@@ -454,7 +454,7 @@ int tpm2_init(struct spi_slave *spi_if)
 
 	printk(BIOS_INFO, " done!\n");
 
-	if (ENV_VERSTAGE || ENV_BOOTBLOCK)
+	if (ENV_SEPARATE_VERSTAGE || ENV_BOOTBLOCK)
 		/*
 		 * Claim locality 0, do it only during the first
 		 * initialization after reset.

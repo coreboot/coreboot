@@ -152,7 +152,7 @@
 	REGION(tpm_tcpa_log, addr, size, 16) \
 	_ = ASSERT(size >= 2K, "tpm tcpa log buffer must be at least 2K!");
 
-#if ENV_VERSTAGE
+#if ENV_SEPARATE_VERSTAGE
 	#define VERSTAGE(addr, sz) \
 		SYMBOL(verstage, addr) \
 		_everstage = _verstage + sz; \

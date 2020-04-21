@@ -38,14 +38,14 @@ static void smbus_read_spd(u8 *spd, u8 addr)
 	}
 }
 
-static void get_spd(u8 *spd, u8 addr)
+/* return -1 if SMBus errors otherwise return 0 */
+static int get_spd(u8 *spd, u8 addr)
 {
-	if (do_smbus_read_byte(SMBUS_IO_BASE, addr, 0) == 0xff) {
+	/* If address is not 0, it will return CB_ERR(-1) if no dimm */
+	if (do_smbus_read_byte(SMBUS_IO_BASE, addr, 0) < 0) {
 		printk(BIOS_INFO, "No memory dimm at address %02X\n",
 			addr << 1);
-		/* Make sure spd is zeroed if dimm doesn't exist. */
-		memset(spd, 0, CONFIG_DIMM_SPD_SIZE);
-		return;
+		return -1;
 	}
 	smbus_read_spd(spd, addr);
 
@@ -58,6 +58,7 @@ static void get_spd(u8 *spd, u8 addr)
 		/* Restore to page 0 */
 		do_smbus_write_byte(SMBUS_IO_BASE, SPD_PAGE_0, 0, 0);
 	}
+	return 0;
 }
 
 static u8 spd_data[CONFIG_DIMM_MAX * CONFIG_DIMM_SPD_SIZE];
@@ -66,9 +67,15 @@ void get_spd_smbus(struct spd_block *blk)
 {
 	u8 i;
 	for (i = 0 ; i < CONFIG_DIMM_MAX; i++) {
-		get_spd(&spd_data[i * CONFIG_DIMM_SPD_SIZE],
-			blk->addr_map[i]);
-		blk->spd_array[i] = &spd_data[i * CONFIG_DIMM_SPD_SIZE];
+		if (blk->addr_map[i] == 0) {
+			blk->spd_array[i] = NULL;
+			continue;
+		}
+
+		if (get_spd(&spd_data[i * CONFIG_DIMM_SPD_SIZE], blk->addr_map[i]) == 0)
+			blk->spd_array[i] = &spd_data[i * CONFIG_DIMM_SPD_SIZE];
+		else
+			blk->spd_array[i] = NULL;
 	}
 
 	update_spd_len(blk);

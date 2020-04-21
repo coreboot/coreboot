@@ -197,4 +197,9 @@ uint32_t tlcl_extend(int pcr_num, const uint8_t *in_digest,
  */
 uint32_t tlcl_disable_platform_hierarchy(void);
 
+/**
+ * Get the permission bits for the NVRAM space with |index|.
+ */
+uint32_t tlcl_get_permissions(uint32_t index, uint32_t *permissions);
+
 #endif /* TSS_H_ */

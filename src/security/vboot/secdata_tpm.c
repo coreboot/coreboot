@@ -36,6 +36,8 @@
 #include <security/vboot/tpm_common.h>
 #include <string.h>
 #include <security/tpm/tspi.h>
+#include <security/tpm/tss.h>
+#include <security/tpm/tss/tcg-1.2/tss_structures.h>
 #include <vb2_api.h>
 #include <console/console.h>
 
@@ -68,6 +70,26 @@ static uint32_t read_space_firmware(struct vb2_context *ctx)
 
 uint32_t antirollback_read_space_kernel(struct vb2_context *ctx)
 {
+	if (!CONFIG(TPM2)) {
+		/*
+		 * Before reading the kernel space, verify its permissions. If
+		 * the kernel space has the wrong permission, we give up. This
+		 * will need to be fixed by the recovery kernel. We will have
+		 * to worry about this because at any time (even with PP turned
+		 * off) the TPM owner can remove and redefine a PP-protected
+		 * space (but not write to it).
+		 */
+		uint32_t perms;
+
+		RETURN_ON_FAILURE(tlcl_get_permissions(KERNEL_NV_INDEX,
+						       &perms));
+		if (perms != TPM_NV_PER_PPWRITE) {
+			printk(BIOS_ERR,
+			       "TPM: invalid secdata_kernel permissions\n");
+			return TPM_E_CORRUPTED_STATE;
+		}
+	}
+
 	uint8_t size = VB2_SECDATA_KERNEL_MIN_SIZE;
 
 	RETURN_ON_FAILURE(tlcl_read(KERNEL_NV_INDEX, ctx->secdata_kernel,

@@ -359,3 +359,22 @@ uint32_t tlcl_extend(int pcr_num, const uint8_t *in_digest,
 		       kPcrDigestLength);
 	return result;
 }
+
+uint32_t tlcl_get_permissions(uint32_t index, uint32_t *permissions)
+{
+	struct s_tpm_getpermissions_cmd cmd;
+	uint8_t response[TPM_LARGE_ENOUGH_COMMAND_SIZE];
+	uint8_t *nvdata;
+	uint32_t result;
+	uint32_t size;
+
+	memcpy(&cmd, &tpm_getpermissions_cmd, sizeof(cmd));
+	to_tpm_uint32(cmd.buffer + tpm_getpermissions_cmd.index, index);
+	result = tlcl_send_receive(cmd.buffer, response, sizeof(response));
+	if (result != TPM_SUCCESS)
+		return result;
+
+	nvdata = response + kTpmResponseHeaderLength + sizeof(size);
+	from_tpm_uint32(nvdata + kNvDataPublicPermissionsOffset, permissions);
+	return result;
+}

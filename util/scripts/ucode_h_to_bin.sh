@@ -49,7 +49,7 @@ include_file() {
 	fi
 }
 
-for UCODE in "${@:2}"; do
+for UCODE in ${@:2}; do
 	if [ -d "$UCODE" ]; then
 		for f in "$UCODE/"*.inc
 		do

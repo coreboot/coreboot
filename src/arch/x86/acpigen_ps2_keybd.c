@@ -110,6 +110,7 @@ static uint32_t rest_of_keymaps[] = {
 	KEYMAP(0x0b, KEY_0),
 	KEYMAP(0x0c, KEY_MINUS),
 	KEYMAP(0x0d, KEY_EQUAL),
+	KEYMAP(0x7d, KEY_YEN),		/* JP keyboards only */
 	KEYMAP(0x0e, KEY_BACKSPACE),
 	/* Row-2 */
 	KEYMAP(0x0f, KEY_TAB),
@@ -127,7 +128,7 @@ static uint32_t rest_of_keymaps[] = {
 	KEYMAP(0x1b, KEY_RIGHTBRACE),
 	KEYMAP(0x2b, KEY_BACKSLASH),
 	/* Row-3 */
-	KEYMAP(0xdb, KEY_LEFTMETA),
+	KEYMAP(0xdb, KEY_LEFTMETA),	/* Search Key */
 	KEYMAP(0x1e, KEY_A),
 	KEYMAP(0x1f, KEY_S),
 	KEYMAP(0x20, KEY_D),
@@ -142,6 +143,7 @@ static uint32_t rest_of_keymaps[] = {
 	KEYMAP(0x1c, KEY_ENTER),
 	/* Row-4 */
 	KEYMAP(0x2a, KEY_LEFTSHIFT),
+	KEYMAP(0x56, KEY_102ND),	/* UK keyboards only */
 	KEYMAP(0x2c, KEY_Z),
 	KEYMAP(0x2d, KEY_X),
 	KEYMAP(0x2e, KEY_C),
@@ -152,11 +154,14 @@ static uint32_t rest_of_keymaps[] = {
 	KEYMAP(0x33, KEY_COMMA),
 	KEYMAP(0x34, KEY_DOT),
 	KEYMAP(0x35, KEY_SLASH),
+	KEYMAP(0x73, KEY_RO),		/* JP keyboards only */
 	KEYMAP(0x36, KEY_RIGHTSHIFT),
 	/* Row-5 */
 	KEYMAP(0x1d, KEY_LEFTCTRL),
 	KEYMAP(0x38, KEY_LEFTALT),
+	KEYMAP(0x7b, KEY_MUHENKAN),	/* JP keyboards only */
 	KEYMAP(0x39, KEY_SPACE),
+	KEYMAP(0x79, KEY_HENKAN),	/* JP keyboards only */
 	KEYMAP(0xb8, KEY_RIGHTALT),
 	KEYMAP(0x9d, KEY_RIGHTCTRL),
 	/* Arrow keys */

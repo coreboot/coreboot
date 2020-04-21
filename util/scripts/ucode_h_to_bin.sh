@@ -42,7 +42,7 @@ EOF
 
 include_file() {
 	if [ "${1: -4}" == ".inc" ]; then
-		awk '{gsub( /h.*$/, "", $2 ); print "0x" $2 ","; }' "$1" \
+		sed '/^;/d' <"$1" | awk '{gsub( /h.*$/, "", $2 ); print "0x" $2 ","; }' \
 			>> "${TMPFILE}.c"
 	else
 		echo "#include \"$1\"" >> "${TMPFILE}.c"

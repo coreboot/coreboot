@@ -41,23 +41,23 @@ unsigned int microcode[] = {
 EOF
 
 include_file() {
-    if [ "${1: -4}" == ".inc" ]; then
-        awk '{gsub( /h.*$/, "", $2 ); print "0x" $2 ","; }' "$1" \
-            >> "${TMPFILE}.c"
-    else
-        echo "#include \"$1\"" >> "${TMPFILE}.c"
-    fi
+	if [ "${1: -4}" == ".inc" ]; then
+		awk '{gsub( /h.*$/, "", $2 ); print "0x" $2 ","; }' "$1" \
+			>> "${TMPFILE}.c"
+	else
+		echo "#include \"$1\"" >> "${TMPFILE}.c"
+	fi
 }
 
 for UCODE in "${@:2}"; do
-    if [ -d "$UCODE" ]; then
-        for f in "$UCODE/"*.inc
-        do
-            include_file "$f"
-        done
-    else
-        include_file "$UCODE"
-    fi
+	if [ -d "$UCODE" ]; then
+		for f in "$UCODE/"*.inc
+		do
+			include_file "$f"
+		done
+	else
+		include_file "$UCODE"
+	fi
 done
 
 cat >> "${TMPFILE}.c" << EOF

@@ -28,7 +28,7 @@ config MAX_SOCKET
 
 config MAX_CPUS
 	int
-	default 80
+	default 255
 
 config PCR_BASE_ADDRESS
 	hex

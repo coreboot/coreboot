@@ -77,6 +77,7 @@ chip soc/intel/tigerlake
 	register "SataPortsEnable[0]" = "0"
 	register "SataPortsEnable[1]" = "1"
 	register "SataPortsDevSlp[0]" = "0"
+	register "SataPortsDevSlp[1]" = "1"
 
 	register "SerialIoI2cMode" = "{
 		[PchSerialIoIndexI2C0]  = PchSerialIoPci,

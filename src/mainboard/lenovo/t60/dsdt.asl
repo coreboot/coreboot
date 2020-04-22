@@ -47,4 +47,6 @@ DefinitionBlock(
 
 	// Dock support code
 	#include "acpi/dock.asl"
+
+	#include <ec/lenovo/h8/acpi/thinklight.asl>
 }

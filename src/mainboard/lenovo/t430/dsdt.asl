@@ -30,4 +30,5 @@ DefinitionBlock(
 			#include <southbridge/intel/bd82x6x/acpi/pch.asl>
 		}
 	}
+	#include <ec/lenovo/h8/acpi/thinklight.asl>
 }

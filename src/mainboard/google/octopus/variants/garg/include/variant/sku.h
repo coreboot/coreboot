@@ -13,6 +13,8 @@ enum {
 	SKU_20_2A2C_TS = 20,
 	SKU_37_2A2C_360 = 37,
 	SKU_38_2A2C_360_TS_NO_STYLUES = 38,
+	SKU_49_2A2C_TS = 49,
+	SKU_50_HDMI = 50,
 };
 
 #endif /* __MAINBOARD_SKU_H__ */

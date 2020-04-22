@@ -163,8 +163,7 @@ static void mt_mem_init_run(struct dramc_param_ops *dparam_ops)
 	/* Load calibration params from flash and run fast calibration */
 	if (recovery_mode) {
 		printk(BIOS_WARNING, "Skip loading cached calibration data\n");
-		if (get_recovery_mode_retrain_switch() ||
-		    vboot_check_recovery_request() == VB2_RECOVERY_TRAIN_AND_REBOOT) {
+		if (get_recovery_mode_retrain_switch()) {
 			printk(BIOS_WARNING, "Retrain memory in next boot\n");
 			/* Use 0xFF as erased flash data. */
 			memset(dparam, 0xff, sizeof(*dparam));

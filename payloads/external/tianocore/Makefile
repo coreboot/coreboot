@@ -70,12 +70,13 @@ update: $(project_dir)
 			echo "    $(TAG) is not a valid git reference"; \
 			exit 1; \
 		fi; \
-		if git describe --all --dirty | grep -qv dirty; then \
+		if git status --ignore-submodules=dirty | grep -qv clean; then \
 			echo "    Checking out $(project_name) revision $(TAG)"; \
 			git checkout --detach $(TAG); \
 		else \
 			echo "    Working directory not clean; will not overwrite"; \
-		fi
+		fi; \
+		git submodule update --init --recursive
 
 checktools:
 	echo "Checking uuid-dev..."

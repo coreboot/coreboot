@@ -60,10 +60,9 @@ void hudson_pci_port80(void)
 void hudson_lpc_port80(void)
 {
 	u8 byte;
-	pci_devfn_t dev;
 
 	/* Enable port 80 LPC decode in pci function 3 configuration space. */
-	dev = PCI_DEV(0, 0x14, 3);
+	const pci_devfn_t dev = PCI_DEV(0, 0x14, 3);
 	byte = pci_read_config8(dev, 0x4a);
 	byte |= 1 << 5; /* enable port 80 */
 	pci_write_config8(dev, 0x4a, byte);
@@ -71,13 +70,12 @@ void hudson_lpc_port80(void)
 
 void hudson_lpc_decode(void)
 {
-	pci_devfn_t dev;
 	u32 tmp;
 
 	/* Enable LPC controller */
 	pm_write8(0xec, pm_read8(0xec) | 0x01);
 
-	dev = PCI_DEV(0, 0x14, 3);
+	const pci_devfn_t dev = PCI_DEV(0, 0x14, 3);
 	/* Serial port enumeration on Hudson:
 	 * PORT0 - 0x3f8
 	 * PORT1 - 0x2f8

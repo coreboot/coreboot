@@ -83,7 +83,6 @@ config TIANOCORE_USE_8254_TIMER
 
 config TIANOCORE_BOOTSPLASH_IMAGE
 	bool "Use a custom bootsplash image"
-	depends on TIANOCORE_COREBOOTPAYLOAD
 	help
 	  Select this option if you have a bootsplash image that you would
 	  like to be used. If this option is not selected, the default
@@ -92,7 +91,6 @@ config TIANOCORE_BOOTSPLASH_IMAGE
 config TIANOCORE_BOOTSPLASH_FILE
 	string "Tianocore Bootsplash path and filename"
 	depends on TIANOCORE_BOOTSPLASH_IMAGE
-	depends on TIANOCORE_COREBOOTPAYLOAD
 	default "bootsplash.bmp"
 	help
 	  The path and filename of the file to use as graphical bootsplash

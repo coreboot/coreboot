@@ -9,7 +9,6 @@
 void enable_spd(void);
 void disable_spd(void);
 void sdram_initialize(int s3resume);
-void mainboard_enable_serial(void);
 
 /* Debug */
 #if CONFIG(DEBUG_RAM_SETUP)

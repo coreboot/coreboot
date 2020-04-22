@@ -19,7 +19,7 @@ static const struct pad_config gpio_table[] = {
 	/* A7  : I2S2_SCLK ==> EN_PP3300_TRACKPAD */
 	PAD_CFG_GPO(GPP_A7, 1, DEEP),
 	/* A8  : I2S2_SFRM ==> EN_PP3300_TOUCHSCREEN */
-	PAD_CFG_GPO(GPP_A8, 1, DEEP),
+	PAD_CFG_GPO(GPP_A8, 0, DEEP),
 	/* A9  : I2S2_TXD ==> EC_IN_RW_OD */
 	PAD_CFG_GPI(GPP_A9, NONE, DEEP),
 	/* A10 : I2S2_RXD ==> EN_SPKR_PA */
@@ -121,7 +121,7 @@ static const struct pad_config gpio_table[] = {
 	/* C9  : UART0_TXD ==> UART_PCH_TX_DEBUG_RX */
 	PAD_CFG_NF(GPP_C9, NONE, DEEP, NF1),
 	/* C10 : UART0_RTS# ==> USI_RST_L */
-	PAD_CFG_GPO(GPP_C10, 1, DEEP),
+	PAD_CFG_GPO(GPP_C10, 0, DEEP),
 	/* C11 : UART0_CTS# ==> NOT USED */
 	PAD_NC(GPP_C11, NONE),
 	/* C12 : UART1_RXD ==> MEM_STRAP_0 */
@@ -205,7 +205,7 @@ static const struct pad_config gpio_table[] = {
 	/* E6  : THC0_SPI1_RST# ==> GPPE6_STRAP */
 	PAD_NC(GPP_E6, NONE),
 	/* E7  : CPU_GP1 ==> USI_INT */
-	PAD_CFG_GPI(GPP_E7, NONE, DEEP),
+	PAD_CFG_GPI_APIC(GPP_E7, NONE, PLTRST, LEVEL, NONE),
 	/* E8  : SPI1_CS1# ==> SLP_S0IX */
 	PAD_CFG_GPO(GPP_E8, 0, DEEP),
 	/* E9  : USB2_OC0# ==> USB_C1_OC_ODL */

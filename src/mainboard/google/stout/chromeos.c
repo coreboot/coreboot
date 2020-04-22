@@ -60,7 +60,7 @@ int get_recovery_mode_switch(void)
 	if (ec_rec_flag_good)
 		return ec_in_rec_mode;
 
-	pci_devfn_t dev = PCI_DEV(0, 0x1f, 0);
+	const pci_devfn_t dev = PCI_DEV(0, 0x1f, 0);
 	u8 reg8 = pci_s_read_config8(dev, GEN_PMCON_3);
 
 	u8 ec_status = ec_read(EC_STATUS_REG);

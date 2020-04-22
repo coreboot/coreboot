@@ -35,7 +35,7 @@ void bootblock_mainboard_early_init(void)
 	pm_io_write8(0x24, 1);
 
 	/* Set LPC decode enables. */
-	pci_devfn_t dev = PCI_DEV(0, 0x14, 3);
+	const pci_devfn_t dev = PCI_DEV(0, 0x14, 3);
 	pci_write_config32(dev, 0x44, 0xff03ffd5);
 
 	/* enable SIO LPC decode */

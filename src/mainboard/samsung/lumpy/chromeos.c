@@ -21,7 +21,7 @@
 
 void fill_lb_gpios(struct lb_gpios *gpios)
 {
-	pci_devfn_t dev = PCI_DEV(0, 0x1f, 0);
+	const pci_devfn_t dev = PCI_DEV(0, 0x1f, 0);
 	u16 gen_pmcon_1 = pci_s_read_config32(dev, GEN_PMCON_1);
 	u8 lid = ec_read(0x83);
 
@@ -44,20 +44,20 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 
 int get_write_protect_state(void)
 {
-	pci_devfn_t dev = PCI_DEV(0, 0x1f, 2);
+	const pci_devfn_t dev = PCI_DEV(0, 0x1f, 2);
 	return (pci_s_read_config32(dev, SATA_SP) >> FLAG_SPI_WP) & 1;
 }
 
 int get_recovery_mode_switch(void)
 {
-	pci_devfn_t dev = PCI_DEV(0, 0x1f, 2);
+	const pci_devfn_t dev = PCI_DEV(0, 0x1f, 2);
 	return (pci_s_read_config32(dev, SATA_SP) >> FLAG_REC_MODE) & 1;
 }
 
 void init_bootmode_straps(void)
 {
 	u32 flags = 0;
-	pci_devfn_t dev = PCI_DEV(0, 0x1f, 2);
+	const pci_devfn_t dev = PCI_DEV(0, 0x1f, 2);
 
 	/* Write Protect: GPIO24 = KBC3_SPI_WP#, active high */
 	if (get_gpio(GPIO_SPI_WP))

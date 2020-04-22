@@ -15,7 +15,7 @@
 
 void fill_lb_gpios(struct lb_gpios *gpios)
 {
-	pci_devfn_t dev = PCI_DEV(0, 0x1f, 0);
+	const pci_devfn_t dev = PCI_DEV(0, 0x1f, 0);
 	u16 gen_pmcon_1 = pci_s_read_config32(dev, GEN_PMCON_1);
 
 	struct lb_gpio chromeos_gpios[] = {

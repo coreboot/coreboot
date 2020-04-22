@@ -16,6 +16,14 @@
 #define LPDDR4X_CHANNEL_UNPOPULATED(ch, half_populated)		\
 	((half_populated) && ((ch) >= (LPDDR4X_CHANNELS / 2)))
 
+/*
+ * Translate DDR4 channel # to FSP UPD index # for the channel.
+ * Channel 0 -> Index 0
+ * Channel 1 -> Index 4
+ * Index 1-3 and 5-7 are unused.
+ */
+#define DDR4_FSP_UPD_CHANNEL_IDX(x)		((x) * 4)
+
 enum dimm_enable_options {
 	ENABLE_BOTH_DIMMS = 0,
 	DISABLE_DIMM0 = 1,
@@ -378,7 +386,7 @@ void meminit_ddr4(FSP_M_CONFIG *mem_cfg, const struct mb_ddr4_cfg *board_cfg,
 	for (i = 0; i < DDR4_CHANNELS; i++) {
 		ddr4_get_spd(i, &spd_md_data, &spd_sodimm_blk, info,
 			     half_populated, &spd_dimm0, &spd_dimm1);
-		init_spd_upds(mem_cfg, i, spd_dimm0, spd_dimm1);
+		init_spd_upds(mem_cfg, DDR4_FSP_UPD_CHANNEL_IDX(i), spd_dimm0, spd_dimm1);
 	}
 
 	/*

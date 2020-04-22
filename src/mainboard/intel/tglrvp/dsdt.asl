@@ -27,6 +27,7 @@ DefinitionBlock(
 		{
 			#include <soc/intel/common/block/acpi/acpi/northbridge.asl>
 			#include <soc/intel/tigerlake/acpi/southbridge.asl>
+			#include <soc/intel/tigerlake/acpi/tcss.asl>
 		}
 	}
 

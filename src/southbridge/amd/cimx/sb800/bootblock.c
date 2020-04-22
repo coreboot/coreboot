@@ -9,9 +9,7 @@ static void enable_rom(void)
 {
 	u16 word;
 	u32 dword;
-	pci_devfn_t dev;
-
-	dev = PCI_DEV(0, 0x14, 0x03);
+	const pci_devfn_t dev = PCI_DEV(0, 0x14, 0x03);
 	/* SB800 LPC Bridge 0:20:3:44h.
 	 * BIT6: Port Enable for serial port 0x3f8-0x3ff
 	 * BIT29: Port Enable for KBC port 0x60 and 0x64
@@ -43,7 +41,7 @@ static void enable_rom(void)
 static void enable_prefetch(void)
 {
 	u32 dword;
-	pci_devfn_t dev = PCI_DEV(0, 0x14, 0x03);
+	const pci_devfn_t dev = PCI_DEV(0, 0x14, 0x03);
 
 	/* Enable PrefetchEnSPIFromHost */
 	dword = pci_s_read_config32(dev, 0xb8);
@@ -53,7 +51,7 @@ static void enable_prefetch(void)
 static void enable_spi_fast_mode(void)
 {
 	u32 dword;
-	pci_devfn_t dev = PCI_DEV(0, 0x14, 0x03);
+	const pci_devfn_t dev = PCI_DEV(0, 0x14, 0x03);
 
 	// set temp MMIO base
 	volatile u32 *spi_base = (void *)0xa0000000;

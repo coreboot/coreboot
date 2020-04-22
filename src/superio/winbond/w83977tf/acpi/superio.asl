@@ -62,8 +62,14 @@ IndexField (PNP_ADDR_REG, PNP_DATA_REG, ByteAcc, NoLock, Preserve)
 	PNP_IRQ1,		8,
 	Offset (0x74),
 	PNP_DMA0,		8,
+	/* MSWK and KBWK are for ACPI logical device, LDN 0xA */
+	Offset (0xE0),
+	MSWK,			8,
+	Offset (0xE4),
+	KBWK,			8,
 	Offset (0xF0),
-	OPT1,			8
+	OPT1,			8,
+	OPT2,			8
 }
 
 #define PNP_ENTER_MAGIC_1ST	0x87

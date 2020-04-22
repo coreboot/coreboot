@@ -33,7 +33,7 @@ void init_iommu()
 	/* clear GTT */
 	u16 gtt = pci_read_config16(PCI_DEV(0, 0, 0), D0F0_GGC);
 	if (gtt & 0x400) { /* VT mode */
-		pci_devfn_t igd = PCI_DEV(0, 2, 0);
+		const pci_devfn_t igd = PCI_DEV(0, 2, 0);
 
 		/* setup somewhere */
 		u8 cmd = pci_read_config8(igd, PCI_COMMAND);
@@ -52,7 +52,7 @@ void init_iommu()
 
 	if (stepping == STEPPING_B3) {
 		MCHBAR8(0xffc) |= 1 << 4;
-		pci_devfn_t peg = PCI_DEV(0, 1, 0);
+		const pci_devfn_t peg = PCI_DEV(0, 1, 0);
 		/* FIXME: proper test? */
 		if (pci_read_config8(peg, PCI_CLASS_REVISION) != 0xff) {
 			int val = pci_read_config32(peg, 0xfc) | (1 << 15);

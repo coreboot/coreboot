@@ -14,6 +14,18 @@
 #include <soc/soc_chip.h>
 #include <string.h>
 
+/*
+ * ME End of Post configuration
+ * 0 - Disable EOP.
+ * 1 - Send in PEI (Applicable for FSP in API mode)
+ * 2 - Send in DXE (Not applicable for FSP in API mode)
+ */
+enum {
+	EOP_DISABLE,
+	EOP_PEI,
+	EOP_DXE,
+} EndOfPost;
+
 static const pci_devfn_t serial_io_dev[] = {
 	PCH_DEVFN_I2C0,
 	PCH_DEVFN_I2C1,
@@ -96,6 +108,9 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 
 	/* Unlock upper 8 bytes of RTC RAM */
 	params->RtcMemoryLock = 0;
+
+	/* Enable End of Post in PEI phase */
+	params->EndOfPostMessage = EOP_PEI;
 
 	/* Legacy 8254 timer support */
 	params->Enable8254ClockGating = !CONFIG_USE_LEGACY_8254_TIMER;

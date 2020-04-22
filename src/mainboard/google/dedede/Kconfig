@@ -55,6 +55,7 @@ config MAINBOARD_PART_NUMBER
 	default "Dedede" if BOARD_GOOGLE_DEDEDE
 	default "Waddledoo" if BOARD_GOOGLE_WADDLEDOO
 	default "Waddledee" if BOARD_GOOGLE_WADDLEDEE
+	default "Wheelie" if BOARD_GOOGLE_WHEELIE
 
 config MAX_CPUS
 	int
@@ -77,5 +78,6 @@ config VARIANT_DIR
 	default "dedede" if BOARD_GOOGLE_DEDEDE
 	default "waddledoo" if BOARD_GOOGLE_WADDLEDOO
 	default "waddledee" if BOARD_GOOGLE_WADDLEDEE
+	default "wheelie" if BOARD_GOOGLE_WHEELIE
 
 endif #BOARD_GOOGLE_BASEBOARD_DEDEDE

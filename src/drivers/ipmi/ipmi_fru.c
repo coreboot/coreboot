@@ -91,6 +91,35 @@ static uint8_t data2str(const uint8_t *frudata, char *stringdata, uint8_t length
 	return length;
 }
 
+/*
+ * Read data string from data_ptr and store it to string, return the
+ * length of the string or 0 when it's failed.
+ */
+static int read_data_string(const uint8_t *data_ptr, char **string)
+{
+	uint8_t length;
+
+	length = NUM_DATA_BYTES(data_ptr[0]);
+	if (length == 0) {
+		printk(BIOS_DEBUG, "%s:%d - failed due to length is zero\n", __func__,
+			__LINE__);
+		return 0;
+	}
+
+	*string = malloc(length + 1);
+	if (!*string) {
+		printk(BIOS_ERR, "%s failed to malloc %d bytes for string data.\n", __func__,
+			length + 1);
+		return 0;
+	}
+	if (!data2str((const uint8_t *)data_ptr, *string, length)) {
+		printk(BIOS_ERR, "%s:%d - data2str failed\n", __func__, __LINE__);
+		free(*string);
+		return 0;
+	}
+
+	return length;
+}
 static void read_fru_board_info_area(const int port, const uint8_t id,
 				uint8_t offset, struct fru_board_info *info)
 {
@@ -127,61 +156,21 @@ static void read_fru_board_info_area(const int port, const uint8_t id,
 		printk(BIOS_ERR, "Bad FRU board info checksum.\n");
 		goto out;
 	}
-	/* Read manufacturer string, bit[5:0] is the string length. */
-	length = NUM_DATA_BYTES(data_ptr[BOARD_MAN_TYPE_LEN_OFFSET]);
-	data_ptr += BOARD_MAN_TYPE_LEN_OFFSET;
-	if (length > 0) {
-		info->manufacturer = malloc(length + 1);
-		if (!info->manufacturer) {
-			printk(BIOS_ERR, "%s failed to malloc %d bytes for "
-				"manufacturer.\n", __func__, length + 1);
-			goto out;
-		}
-		if (!data2str((const uint8_t *)data_ptr, info->manufacturer, length))
-			free(info->manufacturer);
-	}
+	printk(BIOS_DEBUG, "Read board manufacturer string\n");
+	length = read_data_string(data_ptr + BOARD_MAN_TYPE_LEN_OFFSET,
+		&info->manufacturer);
 
-	/* Read product name string. */
-	data_ptr += length + 1;
-	length = NUM_DATA_BYTES(data_ptr[0]);
-	if (length > 0) {
-		info->product_name = malloc(length+1);
-		if (!info->product_name) {
-			printk(BIOS_ERR, "%s failed to malloc %d bytes for "
-				"product_name.\n", __func__, length + 1);
-			goto out;
-		}
-		if (!data2str((const uint8_t *)data_ptr, info->product_name, length))
-			free(info->product_name);
-	}
+	printk(BIOS_DEBUG, "Read board product name string.\n");
+	data_ptr += BOARD_MAN_TYPE_LEN_OFFSET + length + 1;
+	length = read_data_string(data_ptr, &info->product_name);
 
-	/* Read serial number string. */
+	printk(BIOS_DEBUG, "Read board serial number string.\n");
 	data_ptr += length + 1;
-	length = NUM_DATA_BYTES(data_ptr[0]);
-	if (length > 0) {
-		info->serial_number = malloc(length + 1);
-		if (!info->serial_number) {
-			printk(BIOS_ERR, "%s failed to malloc %d bytes for "
-				"serial_number.\n", __func__, length + 1);
-			goto out;
-		}
-		if (!data2str((const uint8_t *)data_ptr, info->serial_number, length))
-			free(info->serial_number);
-	}
+	length = read_data_string(data_ptr, &info->serial_number);
 
-	/* Read part number string. */
+	printk(BIOS_DEBUG, "Read board part number string.\n");
 	data_ptr += length + 1;
-	length = NUM_DATA_BYTES(data_ptr[0]);
-	if (length > 0) {
-		info->part_number = malloc(length + 1);
-		if (!info->part_number) {
-			printk(BIOS_ERR, "%s failed to malloc %d bytes for "
-				"part_number.\n", __func__, length + 1);
-			goto out;
-		}
-		if (!data2str((const uint8_t *)data_ptr, info->part_number, length))
-			free(info->part_number);
-	}
+	length = read_data_string(data_ptr, &info->part_number);
 
 out:
 	free(data_ptr);
@@ -224,89 +213,29 @@ static void read_fru_product_info_area(const int port, const uint8_t id,
 		printk(BIOS_ERR, "Bad FRU product info checksum.\n");
 		goto out;
 	}
-	/* Read manufacturer string, bit[5:0] is the string length. */
-	length = NUM_DATA_BYTES(data_ptr[PRODUCT_MAN_TYPE_LEN_OFFSET]);
-	data_ptr += PRODUCT_MAN_TYPE_LEN_OFFSET;
-	if (length > 0) {
-		info->manufacturer = malloc(length + 1);
-		if (!info->manufacturer) {
-			printk(BIOS_ERR, "%s failed to malloc %d bytes for "
-				"manufacturer.\n", __func__, length + 1);
-			goto out;
-		}
-		if (!data2str((const uint8_t *)data_ptr, info->manufacturer, length))
-			free(info->manufacturer);
-	}
+	printk(BIOS_DEBUG, "Read product manufacturer string.\n");
+	length = read_data_string(data_ptr + PRODUCT_MAN_TYPE_LEN_OFFSET,
+		&info->manufacturer);
 
-	/* Read product_name string. */
-	data_ptr += length + 1;
-	length = NUM_DATA_BYTES(data_ptr[0]);
-	if (length > 0) {
-		info->product_name = malloc(length + 1);
-		if (!info->product_name) {
-			printk(BIOS_ERR, "%s failed to malloc %d bytes for "
-				"product_name.\n", __func__, length + 1);
-			goto out;
-		}
-		if (!data2str((const uint8_t *)data_ptr, info->product_name, length))
-			free(info->product_name);
-	}
+	data_ptr += PRODUCT_MAN_TYPE_LEN_OFFSET + length + 1;
+	printk(BIOS_DEBUG, "Read product_name string.\n");
+	length = read_data_string(data_ptr, &info->product_name);
 
-	/* Read product part/model number. */
 	data_ptr += length + 1;
-	length = NUM_DATA_BYTES(data_ptr[0]);
-	if (length > 0) {
-		info->product_partnumber = malloc(length + 1);
-		if (!info->product_partnumber) {
-			printk(BIOS_ERR, "%s failed to malloc %d bytes for "
-				"product_partnumber.\n",	__func__, length + 1);
-			goto out;
-		}
-		if (!data2str((const uint8_t *)data_ptr, info->product_partnumber, length))
-			free(info->product_partnumber);
-	}
+	printk(BIOS_DEBUG, "Read product part/model number.\n");
+	length = read_data_string(data_ptr, &info->product_partnumber);
 
-	/* Read product version string. */
 	data_ptr += length + 1;
-	length = NUM_DATA_BYTES(data_ptr[0]);
-	if (length > 0) {
-		info->product_version = malloc(length + 1);
-		if (!info->product_version) {
-			printk(BIOS_ERR, "%s failed to malloc %d bytes for "
-				"product_version.\n", __func__, length + 1);
-			goto out;
-		}
-		if (!data2str((const uint8_t *)data_ptr, info->product_version, length))
-			free(info->product_version);
-	}
+	printk(BIOS_DEBUG, "Read product version string.\n");
+	length = read_data_string(data_ptr, &info->product_version);
 
-	/* Read serial number string. */
 	data_ptr += length + 1;
-	length = NUM_DATA_BYTES(data_ptr[0]);
-	if (length > 0) {
-		info->serial_number = malloc(length + 1);
-		if (!info->serial_number) {
-			printk(BIOS_ERR, "%s failed to malloc %d bytes for "
-				"serial_number.\n", __func__, length + 1);
-			goto out;
-		}
-		if (!data2str((const uint8_t *)data_ptr, info->serial_number, length))
-			free(info->serial_number);
-	}
+	printk(BIOS_DEBUG, "Read serial number string.\n");
+	length = read_data_string(data_ptr, &info->serial_number);
 
-	/* Read asset tag string. */
 	data_ptr += length + 1;
-	length = NUM_DATA_BYTES(data_ptr[0]);
-	if (length > 0) {
-		info->asset_tag = malloc(length + 1);
-		if (!info->asset_tag) {
-			printk(BIOS_ERR, "%s failed to malloc %d bytes for "
-				"asset_tag.\n", __func__, length + 1);
-				goto out;
-			}
-		if (!data2str((const uint8_t *)data_ptr, info->asset_tag, length))
-			free(info->asset_tag);
-	}
+	printk(BIOS_DEBUG, "Read asset tag string.\n");
+	length = read_data_string(data_ptr, &info->asset_tag);
 
 out:
 	free(data_ptr);

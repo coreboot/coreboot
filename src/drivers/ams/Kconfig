@@ -1,5 +1,5 @@
 config DRIVERS_AS3722_RTC
-	bool "AS3722 RTC support"
+	bool
 	default n
 	select RTC
 

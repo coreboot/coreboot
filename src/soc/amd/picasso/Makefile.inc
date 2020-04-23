@@ -72,6 +72,7 @@ smm-y += tsc_freq.c
 smm-$(CONFIG_DEBUG_SMI) += uart.c
 smm-y += gpio.c
 smm-y += psp.c
+smm-y += smu.c
 smm-y += config.c
 
 CPPFLAGS_common += -I$(src)/soc/amd/picasso

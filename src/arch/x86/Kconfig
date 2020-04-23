@@ -186,10 +186,6 @@ config HPET_ADDRESS
 	hex
 	default 0xfed00000 if !HPET_ADDRESS_OVERRIDE
 
-config ID_SECTION_OFFSET
-	hex
-	default 0x80
-
 # 64KiB default bootblock size
 config C_ENV_BOOTBLOCK_SIZE
 	hex

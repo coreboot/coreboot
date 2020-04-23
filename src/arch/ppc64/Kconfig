@@ -17,3 +17,7 @@ config ARCH_ROMSTAGE_PPC64
 config ARCH_RAMSTAGE_PPC64
 	bool
 	select ARCH_PPC64
+
+config ID_SECTION_OFFSET
+	hex
+	default 0x80

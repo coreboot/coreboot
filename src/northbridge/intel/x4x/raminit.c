@@ -17,7 +17,6 @@
 #include <cbmem.h>
 #include <cf9_reset.h>
 #include <console/console.h>
-#include <cpu/x86/cache.h>
 #include <cpu/x86/mtrr.h>
 #include <arch/cpu.h>
 #if CONFIG(SOUTHBRIDGE_INTEL_I82801GX)

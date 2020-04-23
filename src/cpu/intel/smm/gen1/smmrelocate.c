@@ -9,7 +9,6 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <commonlib/helpers.h>
-#include <cpu/x86/cache.h>
 #include <cpu/x86/mp.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>

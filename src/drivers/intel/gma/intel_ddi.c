@@ -35,7 +35,6 @@
 #include <device/pci.h>
 #include <ec/google/chromeec/ec.h>
 #include <cpu/x86/tsc.h>
-#include <cpu/x86/cache.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/msr.h>
 #include <edid.h>

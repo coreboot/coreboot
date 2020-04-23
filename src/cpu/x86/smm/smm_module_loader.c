@@ -4,7 +4,6 @@
 #include <string.h>
 #include <rmodule.h>
 #include <cpu/x86/smm.h>
-#include <cpu/x86/cache.h>
 #include <commonlib/helpers.h>
 #include <console/console.h>
 #include <security/intel/stm/SmmStm.h>

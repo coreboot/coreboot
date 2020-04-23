@@ -7,7 +7,6 @@
 #include <commonlib/helpers.h>
 #include <cpu/amd/mtrr.h>
 #include <cpu/cpu.h>
-#include <cpu/x86/cache.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
 #include <northbridge/amd/agesa/agesa_helper.h>

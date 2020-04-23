@@ -6,7 +6,6 @@
 #include <console/console.h>
 #include <cbmem.h>
 #include "../chip.h"
-#include <cpu/x86/cache.h>
 #include <fsp/util.h>
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>

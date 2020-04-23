@@ -18,7 +18,6 @@
 #include <console/console.h>
 #include "chip.h"
 #include <cpu/cpu.h>
-#include <cpu/x86/cache.h>
 #include <cpu/x86/lapic.h>
 #include <cpu/x86/mp.h>
 #include <cpu/intel/microcode.h>

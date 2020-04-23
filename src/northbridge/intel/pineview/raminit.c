@@ -18,7 +18,6 @@
 #include <device/pci_ops.h>
 #include <commonlib/helpers.h>
 #include <console/console.h>
-#include <cpu/x86/cache.h>
 #include <delay.h>
 #include <lib.h>
 #include "pineview.h"

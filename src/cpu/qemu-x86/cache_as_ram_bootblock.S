@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 /* This file is part of the coreboot project. */
 
-#include <cpu/x86/cache.h>
 #include <cpu/x86/post_code.h>
 
 .global bootblock_pre_c_entry

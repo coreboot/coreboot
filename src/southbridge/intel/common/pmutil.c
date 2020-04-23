@@ -3,7 +3,6 @@
 
 #include <types.h>
 #include <console/console.h>
-#include <cpu/x86/cache.h>
 #include <device/pci_def.h>
 #include <cpu/x86/smm.h>
 #include <southbridge/intel/common/pmbase.h>

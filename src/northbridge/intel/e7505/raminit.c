@@ -21,7 +21,6 @@
 #include <commonlib/helpers.h>
 #include <console/console.h>
 #include <cpu/x86/mtrr.h>
-#include <cpu/x86/cache.h>
 #include <cpu/x86/msr.h>
 #include <assert.h>
 #include <spd.h>

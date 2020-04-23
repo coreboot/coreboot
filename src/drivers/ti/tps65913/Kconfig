@@ -11,14 +11,9 @@
 ## GNU General Public License for more details.
 ##
 
-config DRIVERS_TI_TPS65913
-	bool "TI TPS65913 support"
-	default n
-
 config DRIVERS_TI_TPS65913_RTC
-	bool "TI TPS65913 RTC support"
+	bool
 	default n
-	select DRIVERS_TI_TPS65913
 	select RTC
 
 config DRIVERS_TI_TPS65913_RTC_BUS

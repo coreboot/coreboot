@@ -26,6 +26,7 @@ config BOARD_SPECIFIC_OPTIONS
 	select SPI_FLASH
 	select SPI_FLASH_GIGADEVICE
 	select SPI_FLASH_WINBOND
+	select DRIVERS_AS3722_RTC
 
 config VBOOT
 	select EC_GOOGLE_CHROMEEC_SWITCHES
@@ -76,5 +77,13 @@ config DRIVER_TPM_I2C_BUS
 config DRIVER_TPM_I2C_ADDR
 	hex
 	default 0x20
+
+config DRIVERS_AS3722_RTC_BUS
+	int
+	default 4
+
+config DRIVERS_AS3722_RTC_ADDR
+	hex
+	default 0x40
 
 endif # BOARD_GOOGLE_NYAN

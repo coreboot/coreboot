@@ -63,7 +63,14 @@ static int get_thread_count(void)
 
 	cpu_read_topology(&num_phys, &num_virts);
 	printk(BIOS_SPEW, "Detected %u cores and %u threads\n", num_phys, num_virts);
-	return num_virts;
+	/*
+	 * Currently we do not know a way to figure out how many CPUs we have total
+	 * on multi-socketed. So we pretend all sockets are populated with CPUs with
+	 * same thread/core fusing.
+	 * TODO: properly figure out number of active sockets OR refactor MPinit code
+	 * to remove requirements of having to know total number of CPUs in advance.
+	 */
+	return num_virts * CONFIG_MAX_SOCKET;
 }
 
 static const struct mp_ops mp_ops = {

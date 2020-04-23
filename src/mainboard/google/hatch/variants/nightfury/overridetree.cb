@@ -23,7 +23,7 @@ chip soc/intel/cannonlake
 	# Enable DMIC1
 	register "PchHdaAudioLinkDmic1" = "1"
 
-	register "usb2_ports[0]" = "USB2_PORT_LONG(OC2)"	# Type-C Port 0
+	register "usb2_ports[0]" = "USB2_PORT_SHORT(OC2)"	# Type-C Port 0
 	register "usb2_ports[1]" = "USB2_PORT_LONG(OC2)"	# Type-C Port 1
 	register "usb2_ports[2]" = "USB2_PORT_EMPTY"
 	register "usb2_ports[3]" = "USB2_PORT_EMPTY"

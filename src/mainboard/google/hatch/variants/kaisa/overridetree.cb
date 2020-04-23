@@ -21,7 +21,14 @@ chip soc/intel/cannonlake
 	}"
 
 	# USB configuration
-	register "usb2_ports[0]" = "USB2_PORT_MID(OC2)"        # Type-A Port 2
+	register "usb2_ports[0]" = "{
+		.enable = 1,
+		.ocpin = OC2,
+		.tx_bias = USB2_BIAS_0MV,
+		.tx_emp_enable = USB2_PRE_EMP_ON,
+		.pre_emp_bias  = USB2_BIAS_11P25MV,
+		.pre_emp_bit   = USB2_HALF_BIT_PRE_EMP,
+	}" # Type-A Port 2
 	register "usb2_ports[1]" = "{
 		.enable = 1,
 		.ocpin = OC1,

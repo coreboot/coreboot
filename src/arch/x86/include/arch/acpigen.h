@@ -8,6 +8,7 @@
 #include <arch/acpi.h>
 #include <arch/acpi_device.h>
 #include <arch/acpi_pld.h>
+#include <device/pci_type.h>
 
 /* Values that can be returned for ACPI Device _STA method */
 #define ACPI_STATUS_DEVICE_PRESENT	(1 << 0)
@@ -369,6 +370,9 @@ void acpigen_write_return_singleton_buffer(uint8_t arg);
 void acpigen_write_return_byte(uint8_t arg);
 void acpigen_write_upc(enum acpi_upc_type type);
 void acpigen_write_pld(const struct acpi_pld *pld);
+void acpigen_write_ADR(uint64_t adr);
+void acpigen_write_ADR_pci_devfn(pci_devfn_t devfn);
+void acpigen_write_ADR_pci_device(const struct device *dev);
 /*
  * Generate ACPI AML code for _DSM method.
  * This function takes as input uuid for the device, set of callbacks and

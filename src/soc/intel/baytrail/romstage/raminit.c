@@ -8,6 +8,7 @@
 #include <cbmem.h>
 #include <cf9_reset.h>
 #include <console/console.h>
+#include <device/dram/ddr3.h>
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
 #include <device/smbus_host.h>
@@ -55,7 +56,23 @@ static void ABI_X86 send_to_console(unsigned char b)
 	do_putchar(b);
 }
 
-static void print_dram_info(void)
+static void populate_smbios_tables(void *dram_data, int speed, int num_channels)
+{
+	dimm_attr dimm;
+	enum spd_status status;
+
+	/* Decode into dimm_attr struct */
+	status = spd_decode_ddr3(&dimm, *(spd_raw_data *)dram_data);
+
+	/* Some SPDs have bad CRCs, nothing we can do about it */
+	if (status == SPD_STATUS_OK || status == SPD_STATUS_CRC_ERROR) {
+		/* Add table 17 entry for each channel */
+		for (int i = 0; i < num_channels; i++)
+			spd_add_smbios17(i, 0, speed, &dimm);
+	}
+}
+
+static void print_dram_info(void *dram_data)
 {
 	const int mrc_ver_reg = 0xf0;
 	const uint32_t soc_dev = PCI_DEV(0, SOC_DEV, SOC_FUNC);
@@ -95,6 +112,8 @@ static void print_dram_info(void)
 		speed = 1600; break;
 	}
 	printk(BIOS_INFO, "%dMHz\n", speed);
+
+	populate_smbios_tables(dram_data, speed, num_channels);
 }
 
 void raminit(struct mrc_params *mp, int prev_sleep_state)
@@ -147,8 +166,6 @@ void raminit(struct mrc_params *mp, int prev_sleep_state)
 
 	ret = mrc_entry(mp);
 
-	print_dram_info();
-
 	if (prev_sleep_state != ACPI_S3) {
 		cbmem_initialize_empty();
 	} else if (cbmem_initialize()) {
@@ -158,6 +175,8 @@ void raminit(struct mrc_params *mp, int prev_sleep_state)
 		system_reset();
 	#endif
 	}
+
+	print_dram_info(mp->mainboard.dram_data[0]);
 
 	printk(BIOS_DEBUG, "MRC Wrapper returned %d\n", ret);
 	printk(BIOS_DEBUG, "MRC data at %p %d bytes\n", mp->data_to_save,

@@ -119,6 +119,10 @@
 #define GBLRST_CAUSE0			0x1924
 #define   GBLRST_CAUSE0_THERMTRIP	(1 << 5)
 #define GBLRST_CAUSE1			0x1928
+#define HPR_CAUSE0			0x192C
+#define   HPR_CAUSE0_MI_HRPD		(1 << 10)
+#define   HPR_CAUSE0_MI_HRPC		(1 << 9)
+#define   HPR_CAUSE0_MI_HR		(1 << 8)
 
 #define CPPMVRIC			0x1B1C
 #define   XTALSDQDIS			(1 << 22)

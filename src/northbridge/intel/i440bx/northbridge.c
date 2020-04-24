@@ -8,7 +8,6 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <cpu/cpu.h>
-#include "northbridge.h"
 #include "i440bx.h"
 
 static void northbridge_init(struct device *dev)

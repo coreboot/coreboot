@@ -111,9 +111,8 @@ PSP_SMUFW2_SUB2_FILE=$(top)/$(FIRMWARE_LOCATE)/SmuFirmware2PCO.csbin
 
 # type = 0x9
 PSP_SEC_DBG_KEY_FILE=$(top)/$(FIRMWARE_LOCATE)/RavenSecureDebug_PublicKey.bin
-
-# type = 0xb - See #55758 (NDA) for bit definitions.
-PSP_SOFTFUSE="0x0000000010000001"
+# Enable secure debug unlock
+PSP_SOFTFUSE_BITS += 0
 
 ifeq ($(CONFIG_USE_PSPSCUREOS),y)
 # types = 0x2
@@ -137,7 +136,8 @@ PSP_MP2FW2_FILE=$(top)/$(FIRMWARE_LOCATE)/MP2I2CFWPCO.sbin
 # BIOS type = 0x6a
 PSP_MP2CFG_FILE=$(top)/$(FIRMWARE_LOCATE)/MP2FWConfig.sbin
 else
-PSP_SOFTFUSE="0x0000000030000001"
+# Disable MP2 firmware loading
+PSP_SOFTFUSE_BITS += 29
 endif
 
 # type = 0x28
@@ -205,6 +205,14 @@ PSP_PMUD_FILE4=$(top)/$(FIRMWARE_LOCATE)/Appb_Rv2_2D_ddr4_Udimm_Dmem.csbin
 PSP_UCODE_FILE1=$(top)/$(FIRMWARE_LOCATE)/UcodePatch_PCO_B1.bin
 PSP_UCODE_FILE2=$(top)/$(FIRMWARE_LOCATE)/UcodePatch_PCO_B0.bin
 PSP_UCODE_FILE3=$(top)/$(FIRMWARE_LOCATE)/UcodePatch_RV2_A0.bin
+
+# type = 0xb - See #55758 (NDA) for bit definitions.
+PSP_SOFTFUSE_BITS += 28
+
+# Helper function to return a value with given bit set
+set-bit=$(call int-shift-left, 1 $(call _toint,$1))
+PSP_SOFTFUSE=$(shell A=$(call int-add, \
+		$(foreach bit,$(PSP_SOFTFUSE_BITS),$(call set-bit,$(bit)))); printf "0x%x" $$A)
 
 #
 # Build the arguments to amdfwtool (order is unimportant).  Missing file names

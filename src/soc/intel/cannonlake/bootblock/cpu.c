@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <intelblocks/cpulib.h>
 #include <intelblocks/fast_spi.h>
 #include <soc/bootblock.h>
 

@@ -103,9 +103,6 @@ else
 PSPBTLDR_FILE=$(top)/$(FIRMWARE_LOCATE)/PspBootLoader_prod_RV.sbin
 endif
 
-# type = 0x5
-PUBSIGNEDKEY_FILE=$(top)/$(FIRMWARE_LOCATE)/RtmPubSignedRV.key
-
 # types = 0x8 and 0x18
 PSP_SMUFW1_SUB1_FILE=$(top)/$(FIRMWARE_LOCATE)/SmuFirmwareRV2.csbin
 PSP_SMUFW1_SUB2_FILE=$(top)/$(FIRMWARE_LOCATE)/SmuFirmwarePCO.csbin
@@ -220,7 +217,6 @@ add_opt_prefix=$(if $(call strip_quotes, $(1)), $(2) $(call strip_quotes, $(1)),
 OPT_AMD_PUBKEY_FILE=$(call add_opt_prefix, $(CONFIG_AMD_PUBKEY_FILE), --pubkey)
 OPT_PSPBTLDR_FILE=$(call add_opt_prefix, $(PSPBTLDR_FILE), --bootloader)
 OPT_PSPNVRAM_FILE=$(call add_opt_prefix, $(PSPNVRAM_FILE), --nvram)
-OPT_PUBSIGNEDKEY_FILE=$(call add_opt_prefix, $(PUBSIGNEDKEY_FILE), --rtmpubkey)
 OPT_SMUFW1_SUB1_FILE=$(call add_opt_prefix, $(PSP_SMUFW1_SUB1_FILE), --subprogram 1 --smufirmware)
 OPT_SMUFW1_SUB2_FILE=$(call add_opt_prefix, $(PSP_SMUFW1_SUB2_FILE), --subprogram 2 --smufirmware)
 OPT_SMUFW2_SUB1_FILE=$(call add_opt_prefix, $(PSP_SMUFW2_SUB1_FILE), --subprogram 1 --smufirmware2)
@@ -272,7 +268,6 @@ OPT_PSP_UCODE_FILE3=$(call add_opt_prefix, $(PSP_UCODE_FILE3), --instance 2 --uc
 OPT_MP2CFG_FILE=$(call add_opt_prefix, $(PSP_MP2CFG_FILE), --mp2-config)
 
 $(obj)/amdfw.rom:	$(call strip_quotes, $(CONFIG_AMD_PUBKEY_FILE)) \
-			$(call strip_quotes, $(PUBSIGNEDKEY_FILE)) \
 			$(call strip_quotes, $(PSPBTLDR_FILE)) \
 			$(call strip_quotes, $(PSPSCUREOS_FILE)) \
 			$(call strip_quotes, $(PSP_SEC_DBG_KEY_FILE)) \
@@ -320,7 +315,6 @@ $(obj)/amdfw.rom:	$(call strip_quotes, $(CONFIG_AMD_PUBKEY_FILE)) \
 	$(AMDFWTOOL) \
 		$(OPT_AMD_PUBKEY_FILE) \
 		$(OPT_PSPBTLDR_FILE) \
-		$(OPT_PUBSIGNEDKEY_FILE) \
 		$(OPT_PSPSCUREOS_FILE) \
 		$(OPT_PSP_SEC_DBG_KEY_FILE) \
 		$(OPT_PSPTRUSTLETS_FILE) \

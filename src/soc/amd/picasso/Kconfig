@@ -357,6 +357,12 @@ config PSP_WHITELIST_FILE
 	depends on HAVE_PSP_WHITELIST_FILE
 	default "3rdparty/blobs/soc/amd/picasso/PSP/wtl-rvn.sbin"
 
+config PSP_UNLOCK_SECURE_DEBUG
+	bool "Unlock secure debug"
+	default n
+	help
+	  Select this item to enable secure debug options in PSP.
+
 endmenu
 
 endif # SOC_AMD_PICASSO

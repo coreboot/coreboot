@@ -40,7 +40,7 @@ void soc_write_sci_irq_select(uint32_t scis);
  * Calls acpi_write_hpet which creates and fills HPET table and
  * adds it to the RSDT (and XSDT) structure.
  */
-unsigned long southbridge_write_acpi_tables(struct device *device,
+unsigned long southbridge_write_acpi_tables(const struct device *device,
 					    unsigned long current,
 					    struct acpi_rsdp *rsdp);
 
@@ -80,7 +80,7 @@ uint32_t acpi_fill_soc_wake(uint32_t generic_pm1_en,
 void soc_fill_fadt(acpi_fadt_t *fadt);
 
 /* Chipset specific settings for filling up dmar table */
-unsigned long sa_write_acpi_tables(struct device *dev,
+unsigned long sa_write_acpi_tables(const struct device *dev,
 				   unsigned long current,
 				   struct acpi_rsdp *rsdp);
 

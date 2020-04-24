@@ -882,7 +882,7 @@ static void southbridge_fill_ssdt(struct device *dev)
 	intel_acpi_gen_def_acpi_pirq(dev);
 }
 
-static unsigned long southbridge_write_acpi_tables(struct device *device,
+static unsigned long southbridge_write_acpi_tables(const struct device *device,
 						   unsigned long start,
 						   struct acpi_rsdp *rsdp)
 {

@@ -394,7 +394,7 @@ static void gma_generate_ssdt(struct device *dev)
 }
 
 static unsigned long
-gma_write_acpi_tables(struct device *const dev,
+gma_write_acpi_tables(const struct device *const dev,
 		      unsigned long current,
 		      struct acpi_rsdp *const rsdp)
 {

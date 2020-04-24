@@ -34,12 +34,12 @@ struct  pci_data {
 	uint16_t	reserved_2;
 };
 
-struct rom_header *pci_rom_probe(struct device *dev);
+struct rom_header *pci_rom_probe(const struct device *dev);
 struct rom_header *pci_rom_load(struct device *dev,
 	struct rom_header *rom_header);
 
 unsigned long
-pci_rom_write_acpi_tables(struct device *device,
+pci_rom_write_acpi_tables(const struct device *device,
 						  unsigned long current,
 						  struct acpi_rsdp *rsdp);
 

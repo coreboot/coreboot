@@ -238,7 +238,7 @@ void generate_cpu_entries(struct device *device)
 	}
 }
 
-unsigned long southbridge_write_acpi_tables(struct device *device,
+unsigned long southbridge_write_acpi_tables(const struct device *device,
 		unsigned long current,
 		struct acpi_rsdp *rsdp)
 {

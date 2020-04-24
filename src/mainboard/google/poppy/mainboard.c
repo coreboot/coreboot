@@ -16,7 +16,7 @@ static void mainboard_init(struct device *dev)
 	mainboard_ec_init();
 }
 
-static unsigned long mainboard_write_acpi_tables(struct device *device,
+static unsigned long mainboard_write_acpi_tables(const struct device *device,
 	unsigned long current, acpi_rsdp_t *rsdp)
 {
 	uintptr_t start_addr;

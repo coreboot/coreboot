@@ -16,7 +16,7 @@
 void __weak map_oprom_vendev_rev(u32 *vendev, u8 *rev) { return; }
 u32 __weak map_oprom_vendev(u32 vendev) { return vendev; }
 
-struct rom_header *pci_rom_probe(struct device *dev)
+struct rom_header *pci_rom_probe(const struct device *dev)
 {
 	struct rom_header *rom_header = NULL;
 	struct pci_data *rom_data;
@@ -174,7 +174,7 @@ struct rom_header *pci_rom_load(struct device *dev,
 #if CONFIG(HAVE_ACPI_TABLES)
 
 /* VBIOS may be modified after oprom init so use the copy if present. */
-static struct rom_header *check_initialized(struct device *dev)
+static struct rom_header *check_initialized(const struct device *dev)
 {
 	struct rom_header *run_rom;
 	struct pci_data *rom_data;
@@ -198,7 +198,7 @@ static struct rom_header *check_initialized(struct device *dev)
 }
 
 static unsigned long
-pci_rom_acpi_fill_vfct(struct device *device, acpi_vfct_t *vfct_struct,
+pci_rom_acpi_fill_vfct(const struct device *device, acpi_vfct_t *vfct_struct,
 		       unsigned long current)
 {
 	acpi_vfct_image_hdr_t *header = &vfct_struct->image_hdr;
@@ -233,7 +233,7 @@ pci_rom_acpi_fill_vfct(struct device *device, acpi_vfct_t *vfct_struct,
 }
 
 unsigned long
-pci_rom_write_acpi_tables(struct device *device, unsigned long current,
+pci_rom_write_acpi_tables(const struct device *device, unsigned long current,
 			  struct acpi_rsdp *rsdp)
 {
 	/* Only handle VGA devices */

@@ -469,7 +469,7 @@ static int update_igd_opregion(igd_opregion_t *opregion)
 	return 0;
 }
 
-unsigned long southcluster_write_acpi_tables(struct device *device, unsigned long current,
+unsigned long southcluster_write_acpi_tables(const struct device *device, unsigned long current,
 					     struct acpi_rsdp *rsdp)
 {
 	acpi_header_t *ssdt2;

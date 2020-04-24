@@ -30,7 +30,7 @@ void graphics_soc_init(struct device *dev);
  * End address of graphics opregion so that the called
  * can use the same for future calls to write_acpi_tables
  */
-uintptr_t graphics_soc_write_acpi_opregion(struct device *device,
+uintptr_t graphics_soc_write_acpi_opregion(const struct device *device,
 		uintptr_t current, struct acpi_rsdp *rsdp);
 
 /* i915 controller info for ACPI backlight controls */

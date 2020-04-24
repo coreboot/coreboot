@@ -147,7 +147,7 @@ static void update_igd_opregion(igd_opregion_t *opregion)
 	/* FIXME: Add platform specific mailbox initialization */
 }
 
-uintptr_t graphics_soc_write_acpi_opregion(struct device *device,
+uintptr_t graphics_soc_write_acpi_opregion(const struct device *device,
 		uintptr_t current, struct acpi_rsdp *rsdp)
 {
 	igd_opregion_t *opregion;

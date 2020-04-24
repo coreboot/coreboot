@@ -906,13 +906,13 @@ void acpi_create_srat(acpi_srat_t *srat,
 void acpi_create_slit(acpi_slit_t *slit,
 		      unsigned long (*acpi_fill_slit)(unsigned long current));
 
-void acpi_create_vfct(struct device *device,
+void acpi_create_vfct(const struct device *device,
 		      acpi_vfct_t *vfct,
-		      unsigned long (*acpi_fill_vfct)(struct device *device,
+		      unsigned long (*acpi_fill_vfct)(const struct device *device,
 				acpi_vfct_t *vfct_struct,
 				unsigned long current));
 
-void acpi_create_ipmi(struct device *device,
+void acpi_create_ipmi(const struct device *device,
 		      struct acpi_spmi *spmi,
 		      const u16 ipmi_revision,
 		      const acpi_addr_t *addr,
@@ -926,7 +926,7 @@ void acpi_create_ivrs(acpi_ivrs_t *ivrs,
 		      unsigned long current));
 
 void acpi_create_hpet(acpi_hpet_t *hpet);
-unsigned long acpi_write_hpet(struct device *device, unsigned long start,
+unsigned long acpi_write_hpet(const struct device *device, unsigned long start,
 			      acpi_rsdp_t *rsdp);
 
 /* cpu/intel/speedstep/acpi.c */

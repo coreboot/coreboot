@@ -34,7 +34,7 @@ __weak int soc_get_uncore_prmmr_base_and_mask(uint64_t *base,
 	return -1;
 }
 
-__weak unsigned long sa_write_acpi_tables(struct device *dev,
+__weak unsigned long sa_write_acpi_tables(const struct device *dev,
 					  unsigned long current,
 					  struct acpi_rsdp *rsdp)
 {

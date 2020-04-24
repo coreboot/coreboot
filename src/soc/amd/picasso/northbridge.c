@@ -180,7 +180,7 @@ static void northbridge_fill_ssdt_generator(struct device *device)
 	acpigen_pop_len();
 }
 
-static unsigned long agesa_write_acpi_tables(struct device *device,
+static unsigned long agesa_write_acpi_tables(const struct device *device,
 					     unsigned long current,
 					     acpi_rsdp_t *rsdp)
 {

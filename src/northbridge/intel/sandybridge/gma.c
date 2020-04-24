@@ -647,7 +647,8 @@ static void gma_generate_ssdt(struct device *device)
 	drivers_intel_gma_displays_ssdt_generate(&chip->gfx);
 }
 
-static unsigned long gma_write_acpi_tables(struct device *const dev, unsigned long current,
+static unsigned long gma_write_acpi_tables(const struct device *const dev,
+					   unsigned long current,
 					   struct acpi_rsdp *const rsdp)
 {
 	igd_opregion_t *opregion = (igd_opregion_t *)current;

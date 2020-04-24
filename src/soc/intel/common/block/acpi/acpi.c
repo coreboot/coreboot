@@ -181,7 +181,7 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	soc_fill_fadt(fadt);
 }
 
-unsigned long southbridge_write_acpi_tables(struct device *device,
+unsigned long southbridge_write_acpi_tables(const struct device *device,
 					    unsigned long current,
 					    struct acpi_rsdp *rsdp)
 {

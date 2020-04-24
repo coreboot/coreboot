@@ -278,7 +278,8 @@ static void gma_func0_init(struct device *dev)
 	intel_gma_restore_opregion();
 }
 
-static unsigned long gma_write_acpi_tables(struct device *const dev, unsigned long current,
+static unsigned long gma_write_acpi_tables(const struct device *const dev,
+					   unsigned long current,
 					   struct acpi_rsdp *const rsdp)
 {
 	igd_opregion_t *opregion = (igd_opregion_t *)current;

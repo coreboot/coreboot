@@ -232,7 +232,7 @@ static void patch_ssdt_processor_scope(acpi_header_t *ssdt)
 }
 
 
-static unsigned long agesa_write_acpi_tables(struct device *device,
+static unsigned long agesa_write_acpi_tables(const struct device *device,
 					     unsigned long current,
 					     acpi_rsdp_t *rsdp)
 {

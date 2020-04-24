@@ -264,7 +264,7 @@ int soc_madt_sci_irq_polarity(int sci)
 		return MP_IRQ_POLARITY_HIGH;
 }
 
-unsigned long southcluster_write_acpi_tables(struct device *device,
+unsigned long southcluster_write_acpi_tables(const struct device *device,
 					     unsigned long current,
 					     struct acpi_rsdp *rsdp)
 {

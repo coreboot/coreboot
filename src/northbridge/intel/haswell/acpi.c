@@ -93,7 +93,8 @@ static unsigned long acpi_fill_dmar(unsigned long current)
 	return current;
 }
 
-unsigned long northbridge_write_acpi_tables(struct device *const dev, unsigned long current,
+unsigned long northbridge_write_acpi_tables(const struct device *const dev,
+					    unsigned long current,
 					    struct acpi_rsdp *const rsdp)
 {
 	/* Create DMAR table only if we have VT-d capability. */

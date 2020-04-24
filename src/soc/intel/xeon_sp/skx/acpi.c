@@ -498,7 +498,7 @@ int soc_madt_sci_irq_polarity(int sci)
 		return MP_IRQ_POLARITY_HIGH;
 }
 
-unsigned long southbridge_write_acpi_tables(struct device *device,
+unsigned long southbridge_write_acpi_tables(const struct device *device,
 					     unsigned long current,
 					     struct acpi_rsdp *rsdp)
 {
@@ -871,7 +871,7 @@ static unsigned long acpi_fill_dmar(unsigned long current)
 	return current;
 }
 
-unsigned long northbridge_write_acpi_tables(struct device *device,
+unsigned long northbridge_write_acpi_tables(const struct device *device,
 					    unsigned long current,
 					    struct acpi_rsdp *rsdp)
 {

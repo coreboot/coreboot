@@ -596,7 +596,7 @@ static void southcluster_inject_dsdt(struct device *device)
 	}
 }
 
-static unsigned long broadwell_write_acpi_tables(struct device *device,
+static unsigned long broadwell_write_acpi_tables(const struct device *device,
 						 unsigned long current,
 						 struct acpi_rsdp *rsdp)
 {

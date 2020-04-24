@@ -18,7 +18,7 @@
 
 #define SCI_INT_NUM		9
 
-unsigned long southbridge_write_acpi_tables(struct device *device, unsigned long current,
+unsigned long southbridge_write_acpi_tables(const struct device *device, unsigned long current,
 						struct acpi_rsdp *rsdp)
 {
 	current = acpi_write_hpet(device, current, rsdp);

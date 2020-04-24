@@ -588,7 +588,7 @@ static unsigned long acpi_fill_dmar(unsigned long current)
 	return current;
 }
 
-unsigned long northbridge_write_acpi_tables(struct device *const dev,
+unsigned long northbridge_write_acpi_tables(const struct device *const dev,
 					    unsigned long current,
 					    struct acpi_rsdp *const rsdp)
 {
@@ -630,7 +630,7 @@ unsigned long acpi_madt_irq_overrides(unsigned long current)
 	return current;
 }
 
-unsigned long southbridge_write_acpi_tables(struct device *device,
+unsigned long southbridge_write_acpi_tables(const struct device *device,
 					     unsigned long current,
 					     struct acpi_rsdp *rsdp)
 {

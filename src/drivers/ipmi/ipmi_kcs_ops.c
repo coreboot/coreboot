@@ -165,7 +165,7 @@ static void ipmi_kcs_init(struct device *dev)
 static uint32_t uid_cnt = 0;
 
 static unsigned long
-ipmi_write_acpi_tables(struct device *dev, unsigned long current,
+ipmi_write_acpi_tables(const struct device *dev, unsigned long current,
 		       struct acpi_rsdp *rsdp)
 {
 	struct drivers_ipmi_config *conf = NULL;

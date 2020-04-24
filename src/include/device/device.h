@@ -48,7 +48,7 @@ struct device_operations {
 	void (*get_smbios_strings)(struct device *dev, struct smbios_type11 *t);
 #endif
 #if CONFIG(HAVE_ACPI_TABLES)
-	unsigned long (*write_acpi_tables)(struct device *dev,
+	unsigned long (*write_acpi_tables)(const struct device *dev,
 		unsigned long start, struct acpi_rsdp *rsdp);
 	void (*acpi_fill_ssdt)(struct device *dev);
 	void (*acpi_inject_dsdt)(struct device *dev);

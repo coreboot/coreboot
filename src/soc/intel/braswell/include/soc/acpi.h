@@ -12,7 +12,7 @@ void acpi_fill_in_fadt(acpi_fadt_t *fadt);
 unsigned long acpi_madt_irq_overrides(unsigned long current);
 void acpi_init_gnvs(global_nvs_t *gnvs);
 void southcluster_inject_dsdt(struct device *device);
-unsigned long southcluster_write_acpi_tables(struct device *device,
+unsigned long southcluster_write_acpi_tables(const struct device *device,
 	unsigned long current, struct acpi_rsdp *rsdp);
 
 #endif /* _SOC_ACPI_H_ */

@@ -335,7 +335,7 @@ static unsigned long soc_fill_dmar(unsigned long current)
 	return current;
 }
 
-unsigned long sa_write_acpi_tables(struct device *dev, unsigned long current,
+unsigned long sa_write_acpi_tables(const struct device *dev, unsigned long current,
 				   struct acpi_rsdp *rsdp)
 {
 	acpi_dmar_t *const dmar = (acpi_dmar_t *)current;

@@ -74,7 +74,7 @@ void graphics_soc_init(struct device *dev)
 	}
 }
 
-uintptr_t graphics_soc_write_acpi_opregion(struct device *device,
+uintptr_t graphics_soc_write_acpi_opregion(const struct device *device,
 		uintptr_t current, struct acpi_rsdp *rsdp)
 {
 	igd_opregion_t *opregion;

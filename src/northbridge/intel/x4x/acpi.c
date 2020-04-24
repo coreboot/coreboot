@@ -22,7 +22,7 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 	return current;
 }
 
-unsigned long northbridge_write_acpi_tables(struct device *device,
+unsigned long northbridge_write_acpi_tables(const struct device *device,
 					    unsigned long start,
 					    struct acpi_rsdp *rsdp)
 {

@@ -758,9 +758,9 @@ void acpi_create_hpet(acpi_hpet_t *hpet)
 	header->checksum = acpi_checksum((void *)hpet, sizeof(acpi_hpet_t));
 }
 
-void acpi_create_vfct(struct device *device,
+void acpi_create_vfct(const struct device *device,
 		      acpi_vfct_t *vfct,
-		      unsigned long (*acpi_fill_vfct)(struct device *device,
+		      unsigned long (*acpi_fill_vfct)(const struct device *device,
 		      acpi_vfct_t *vfct_struct, unsigned long current))
 {
 	acpi_header_t *header = &(vfct->header);
@@ -791,7 +791,7 @@ void acpi_create_vfct(struct device *device,
 	header->checksum = acpi_checksum((void *)vfct, header->length);
 }
 
-void acpi_create_ipmi(struct device *device,
+void acpi_create_ipmi(const struct device *device,
 		      struct acpi_spmi *spmi,
 		      const u16 ipmi_revision,
 		      const acpi_addr_t *addr,
@@ -871,7 +871,7 @@ void acpi_create_ivrs(acpi_ivrs_t *ivrs,
 	header->checksum = acpi_checksum((void *)ivrs, header->length);
 }
 
-unsigned long acpi_write_hpet(struct device *device, unsigned long current,
+unsigned long acpi_write_hpet(const struct device *device, unsigned long current,
 	acpi_rsdp_t *rsdp)
 {
 	acpi_hpet_t *hpet;

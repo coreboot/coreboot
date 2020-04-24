@@ -195,6 +195,12 @@ struct elog_event_mem_cache_update {
 /* Cr50 reset to enable TPM */
 #define ELOG_TYPE_CR50_NEED_RESET         0xb2
 
+/* CSME-Initiated Host Reset */
+#define ELOG_TYPE_MI_HRPD                 0xb3
+#define ELOG_TYPE_MI_HRPC                 0xb4
+#define ELOG_TYPE_MI_HR                   0xb5
+
+
 struct elog_event_extended_event {
 	u8 event_type;
 	u32 event_complement;

@@ -59,6 +59,7 @@ config MAINBOARD_PART_NUMBER
 	default "Halvor" if BOARD_GOOGLE_HALVOR
 	default "Malefor" if BOARD_GOOGLE_MALEFOR
 	default "Ripto" if BOARD_GOOGLE_RIPTO
+	default "Trondo" if BOARD_GOOGLE_TRONDO
 	default "Volteer" if BOARD_GOOGLE_VOLTEER
 
 config MAX_CPUS
@@ -74,6 +75,7 @@ config VARIANT_DIR
 	default "halvor" if BOARD_GOOGLE_HALVOR
 	default "malefor" if BOARD_GOOGLE_MALEFOR
 	default "ripto" if BOARD_GOOGLE_RIPTO
+	default "trondo" if BOARD_GOOGLE_TRONDO
 	default "volteer" if BOARD_GOOGLE_VOLTEER
 
 config VARIANT_HAS_MIPI_CAMERA

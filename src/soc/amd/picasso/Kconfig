@@ -330,11 +330,11 @@ config USE_PSPSCUREOS
 
 config PSP_LOAD_MP2_FW
 	bool "Include MP2 blobs in PSP build"
-	default y
+	default n
 	help
 	  Include the MP2 firmwares and configuration into the PSP build.
 
-	  If unsure, answer 'y'
+	  If unsure, answer 'n'
 
 config PSP_LOAD_S0I3_FW
 	bool "Include S0I3 blob in PSP build"

@@ -116,9 +116,8 @@ PSP_SEC_DBG_KEY_FILE=$(top)/$(FIRMWARE_LOCATE)/RavenSecureDebug_PublicKey.bin
 PSP_SOFTFUSE="0x0000000010000001"
 
 ifeq ($(CONFIG_USE_PSPSCUREOS),y)
-# types = 0x2, 0xc
+# types = 0x2
 PSPSCUREOS_FILE=$(top)/$(FIRMWARE_LOCATE)/psp_os_combined_prod_RV.sbin
-PSPTRUSTLETS_FILE=$(top)/$(FIRMWARE_LOCATE)/dr_ftpm_prod_RV.csbin
 endif
 
 # type = 0x13
@@ -223,7 +222,6 @@ OPT_SMUFW2_SUB2_FILE=$(call add_opt_prefix, $(PSP_SMUFW2_SUB2_FILE), --subprogra
 OPT_PSP_SEC_DBG_KEY_FILE=$(call add_opt_prefix, $(PSP_SEC_DBG_KEY_FILE), --securedebug)
 OPT_PSP_SOFTFUSE=$(call add_opt_prefix, $(PSP_SOFTFUSE), --soft-fuse)
 OPT_PSPSCUREOS_FILE=$(call add_opt_prefix, $(PSPSCUREOS_FILE), --secureos)
-OPT_PSPTRUSTLETS_FILE=$(call add_opt_prefix, $(PSPTRUSTLETS_FILE), --trustlets)
 OPT_SEC_DEBUG_FILE=$(call add_opt_prefix, $(PSP_SEC_DEBUG_FILE), --secdebug)
 OPT_IKEK_FILE=$(call add_opt_prefix, $(PSP_IKEK_FILE), --ikek)
 OPT_SECG1_FILE=$(call add_opt_prefix, $(PSP_SECG1_FILE), --subprog 1 --sec-gasket)
@@ -270,7 +268,6 @@ $(obj)/amdfw.rom:	$(call strip_quotes, $(CONFIG_AMD_PUBKEY_FILE)) \
 			$(call strip_quotes, $(PSPBTLDR_FILE)) \
 			$(call strip_quotes, $(PSPSCUREOS_FILE)) \
 			$(call strip_quotes, $(PSP_SEC_DBG_KEY_FILE)) \
-			$(call strip_quotes, $(PSPTRUSTLETS_FILE)) \
 			$(call strip_quotes, $(PSP_APCB0_FILE)) \
 			$(call strip_quotes, $(PSP_APCB1_FILE)) \
 			$(call strip_quotes, $(PSP_APCB2_FILE)) \
@@ -316,7 +313,6 @@ $(obj)/amdfw.rom:	$(call strip_quotes, $(CONFIG_AMD_PUBKEY_FILE)) \
 		$(OPT_PSPBTLDR_FILE) \
 		$(OPT_PSPSCUREOS_FILE) \
 		$(OPT_PSP_SEC_DBG_KEY_FILE) \
-		$(OPT_PSPTRUSTLETS_FILE) \
 		$(OPT_SMUFW1_SUB2_FILE) \
 		$(OPT_SMUFW2_SUB2_FILE) \
 		$(OPT_SMUFW1_SUB1_FILE) \

@@ -338,6 +338,7 @@ config PSP_LOAD_MP2_FW
 
 config PSP_LOAD_S0I3_FW
 	bool "Include S0I3 blob in PSP build"
+	default n
 	help
 	  Select this item to include the S0i3 file into the PSP build.
 

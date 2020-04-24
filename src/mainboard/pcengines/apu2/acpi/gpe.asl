@@ -5,7 +5,6 @@ Scope(\_GPE) {	/* Start Scope GPE */
 	/*  General event 3  */
 	Method(_L03) {
 		/* DBGO("\\_GPE\\_L00\n") */
-		Notify(\_SB.PWRB, 0x02) /* NOTIFY_DEVICE_WAKE */
 	}
 
 	/*  Legacy PM event  */
@@ -29,7 +28,6 @@ Scope(\_GPE) {	/* Start Scope GPE */
 		Notify(\_SB.PCI0.UOH5, 0x02) /* NOTIFY_DEVICE_WAKE */
 		Notify(\_SB.PCI0.UOH6, 0x02) /* NOTIFY_DEVICE_WAKE */
 		Notify(\_SB.PCI0.XHC0, 0x02) /* NOTIFY_DEVICE_WAKE */
-		Notify(\_SB.PWRB, 0x02) /* NOTIFY_DEVICE_WAKE */
 	}
 
 	/*  ExtEvent0 SCI event  */
@@ -49,6 +47,5 @@ Scope(\_GPE) {	/* Start Scope GPE */
 		Notify(\_SB.PCI0.PBR5, 0x02) /* NOTIFY_DEVICE_WAKE */
 		Notify(\_SB.PCI0.PBR6, 0x02) /* NOTIFY_DEVICE_WAKE */
 		Notify(\_SB.PCI0.PBR7, 0x02) /* NOTIFY_DEVICE_WAKE */
-		Notify(\_SB.PWRB, 0x02) /* NOTIFY_DEVICE_WAKE */
 	}
 }	/* End Scope GPE */

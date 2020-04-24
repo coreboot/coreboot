@@ -71,13 +71,13 @@ _start16bit:
 	 *
 	 * One way to work around this is to have the linker do the
 	 * math instead of the assembler.  This solves the very
-	 * pratical problem of being able to write code that can
+	 * practical problem of being able to write code that can
 	 * be relocated.
 	 *
 	 * An lgdt call before we have memory enabled cannot be
 	 * position independent, as we cannot execute a call
 	 * instruction to get our current instruction pointer.
-	 * So while this code is relocateable it isn't arbitrarily
+	 * So while this code is relocatable it isn't arbitrarily
 	 * relocatable.
 	 *
 	 * The criteria for relocation have been relaxed to their

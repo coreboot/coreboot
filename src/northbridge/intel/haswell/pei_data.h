@@ -81,7 +81,8 @@ struct pei_data
 	uint32_t pmbase;
 	uint32_t gpiobase;
 	uint32_t temp_mmio_base;
-	uint32_t system_type; // 0 Mobile, 1 Desktop/Server
+	/* System type: 0 => Mobile, 1 => Desktop/Server, 5 => ULT, Others => Reserved */
+	uint32_t system_type;
 	uint32_t tseg_size;
 	uint8_t spd_addresses[4];
 	int boot_mode;

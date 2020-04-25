@@ -10,7 +10,7 @@
 #include <console/console.h>
 
 #if CONFIG(HAVE_ACPI_TABLES)
-static void i2c_hid_fill_dsm(struct device *dev)
+static void i2c_hid_fill_dsm(const struct device *dev)
 {
 	struct drivers_i2c_hid_config *config = dev->chip_info;
 	struct dsm_i2c_hid_config dsm_config = {

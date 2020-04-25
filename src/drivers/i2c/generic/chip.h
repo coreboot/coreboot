@@ -77,7 +77,7 @@ struct drivers_i2c_generic_config {
  * config: Pointer to drivers_i2c_generic_config structure
  */
 void i2c_generic_fill_ssdt(struct device *dev,
-			void (*callback)(struct device *dev),
+			void (*callback)(const struct device *dev),
 			struct drivers_i2c_generic_config *config);
 
 #endif /* __I2C_GENERIC_CHIP_H__ */

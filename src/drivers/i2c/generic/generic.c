@@ -44,7 +44,7 @@ static int i2c_generic_write_gpio(struct acpi_gpio *gpio, int *curr_index)
 }
 
 void i2c_generic_fill_ssdt(struct device *dev,
-			void (*callback)(struct device *dev),
+			void (*callback)(const struct device *dev),
 			struct drivers_i2c_generic_config *config)
 {
 	const char *scope = acpi_device_scope(dev);

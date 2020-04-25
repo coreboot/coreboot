@@ -34,7 +34,7 @@ __weak void graphics_soc_init(struct device *dev)
 }
 
 __weak const struct i915_gpu_controller_info *
-intel_igd_get_controller_info(struct device *device)
+intel_igd_get_controller_info(const struct device *device)
 {
 	return NULL;
 }

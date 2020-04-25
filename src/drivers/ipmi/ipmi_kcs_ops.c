@@ -212,7 +212,7 @@ ipmi_write_acpi_tables(const struct device *dev, unsigned long current,
 	acpi_create_ipmi(dev, spmi, (ipmi_revision_major << 8) |
 			 (ipmi_revision_minor << 4), &addr,
 			 IPMI_INTERFACE_KCS, gpe_interrupt, apic_interrupt,
-			 dev->command);
+			 conf->uid);
 
 	acpi_add_table(rsdp, spmi);
 
@@ -236,14 +236,14 @@ static void ipmi_ssdt(struct device *dev)
 		conf = dev->chip_info;
 
 	/* Use command to pass UID to ipmi_write_acpi_tables */
-	dev->command = uid_cnt++;
+	conf->uid = uid_cnt++;
 
 	/* write SPMI device */
 	acpigen_write_scope(scope);
 	acpigen_write_device("SPMI");
 	acpigen_write_name_string("_HID", "IPI0001");
 	acpigen_write_name_unicode("_STR", "IPMI_KCS");
-	acpigen_write_name_byte("_UID", dev->command);
+	acpigen_write_name_byte("_UID", conf->uid);
 	acpigen_write_STA(0xf);
 	acpigen_write_name("_CRS");
 	acpigen_write_resourcetemplate_header();

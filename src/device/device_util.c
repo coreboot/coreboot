@@ -225,7 +225,7 @@ const char *dev_path(const struct device *dev)
 	return buffer;
 }
 
-const char *dev_name(struct device *dev)
+const char *dev_name(const struct device *dev)
 {
 	if (dev->name)
 		return dev->name;

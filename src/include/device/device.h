@@ -182,7 +182,7 @@ void dev_finalize_chips(void);
 int reset_bus(struct bus *bus);
 void scan_bridges(struct bus *bus);
 void assign_resources(struct bus *bus);
-const char *dev_name(struct device *dev);
+const char *dev_name(const struct device *dev);
 const char *dev_path(const struct device *dev);
 u32 dev_path_encode(const struct device *dev);
 const char *bus_path(struct bus *bus);

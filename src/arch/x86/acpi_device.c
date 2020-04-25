@@ -95,7 +95,7 @@ const char *acpi_device_hid(const struct device *dev)
  * Generate unique ID based on the ACPI path.
  * Collisions on the same _HID are possible but very unlikely.
  */
-uint32_t acpi_device_uid(struct device *dev)
+uint32_t acpi_device_uid(const struct device *dev)
 {
 	const char *path = acpi_device_path(dev);
 	if (!path)
@@ -200,7 +200,7 @@ int acpi_device_status(const struct device *dev)
 
 
 /* Write the unique _UID based on ACPI device path. */
-void acpi_device_write_uid(struct device *dev)
+void acpi_device_write_uid(const struct device *dev)
 {
 	acpigen_write_name_integer("_UID", acpi_device_uid(dev));
 }

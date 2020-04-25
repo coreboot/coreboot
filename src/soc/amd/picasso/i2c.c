@@ -63,7 +63,7 @@ const char *i2c_acpi_name(const struct device *dev)
 	}
 }
 
-int dw_i2c_soc_dev_to_bus(struct device *dev)
+int dw_i2c_soc_dev_to_bus(const struct device *dev)
 {
 	switch (dev->path.mmio.addr) {
 	case APU_I2C2_BASE:

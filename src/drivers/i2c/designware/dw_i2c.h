@@ -129,7 +129,7 @@ int dw_i2c_transfer(unsigned int bus,
  * -1 = failure
  * >=0 = logical bus number
  */
-int dw_i2c_soc_dev_to_bus(struct device *dev);
+int dw_i2c_soc_dev_to_bus(const struct device *dev);
 
 /*
  * Common device_operations implementation to initialize the i2c host

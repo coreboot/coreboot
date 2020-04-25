@@ -14,7 +14,7 @@
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>
 
-int dw_i2c_soc_dev_to_bus(struct device *dev)
+int dw_i2c_soc_dev_to_bus(const struct device *dev)
 {
 	pci_devfn_t devfn = dev->path.pci.devfn;
 	return dw_i2c_soc_devfn_to_bus(devfn);

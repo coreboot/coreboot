@@ -19,6 +19,7 @@ Name (PICP, Package () {
 	/* D31:HDA, SMBUS, TraceHUB */
 	Package(){0x001FFFFF, 3, 0, HDA_IRQ },
 	Package(){0x001FFFFF, 4, 0, SMBUS_IRQ },
+	Package(){0x001FFFFF, 6, 0, GBE_IRQ },
 	Package(){0x001FFFFF, 7, 0, TRACEHUB_IRQ },
 	/* D30: UART0, UART1, SPI0, SPI1 */
 	Package(){0x001EFFFF, 0, 0, LPSS_UART0_IRQ },
@@ -64,8 +65,7 @@ Name (PICP, Package () {
 	/* D18: ISH, SPI2 */
 	Package(){0x0012FFFF, 0, 0, ISH_IRQ },
 	Package(){0x0012FFFF, 6, 0, LPSS_SPI2_IRQ },
-	/* D16: CNVI_BT, TCH0, TCH1 */
-	Package(){0x0010FFFF, 2, 0, CNVI_BT_IRQ },
+	/* D16: TCH0, TCH1 */
 	Package(){0x0010FFFF, 6, 0, THC0_IRQ },
 	Package(){0x0010FFFF, 7, 0, THC1_IRQ },
 	/* D13: xHCI, xDCI */

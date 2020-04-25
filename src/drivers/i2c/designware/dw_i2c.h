@@ -141,7 +141,7 @@ void dw_i2c_dev_init(struct device *dev);
  * Common device_operations implementation to fill ACPI SSDT table for i2c
  * host controller.
  */
-void dw_i2c_acpi_fill_ssdt(struct device *dev);
+void dw_i2c_acpi_fill_ssdt(const struct device *dev);
 
 /*
  * Common device_operations implementation for i2c host controller ops.

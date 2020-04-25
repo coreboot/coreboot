@@ -16,7 +16,7 @@
 
 #define RT1011_DP_INT(key, val) acpi_dp_add_integer(dp, "realtek," key, (val))
 
-static void rt1011_fill_ssdt(struct device *dev)
+static void rt1011_fill_ssdt(const struct device *dev)
 {
 	struct drivers_i2c_rt1011_config *config = dev->chip_info;
 	const char *scope = acpi_device_scope(dev);

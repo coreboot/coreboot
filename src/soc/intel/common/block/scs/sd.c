@@ -7,7 +7,7 @@
 #include <intelblocks/sd.h>
 
 #if CONFIG(HAVE_ACPI_TABLES)
-static void sd_fill_ssdt(struct device *dev)
+static void sd_fill_ssdt(const struct device *dev)
 {
 	const char *path;
 	struct acpi_gpio default_gpio = { 0 };

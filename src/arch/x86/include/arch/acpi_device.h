@@ -508,6 +508,6 @@ void acpi_dp_write(struct acpi_dp *table);
  * scope in DSDT. So, if there are any references to this PCI device scope required from static
  * asl files, do not use this function and instead add the device to DSDT as well.
  */
-void acpi_device_write_pci_dev(struct device *dev);
+void acpi_device_write_pci_dev(const struct device *dev);
 
 #endif

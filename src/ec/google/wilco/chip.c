@@ -179,7 +179,7 @@ static void wilco_ec_read_resources(struct device *dev)
 	wilco_ec_resource(dev, 2, CONFIG_EC_BASE_PACKET, 16);
 }
 
-static void wilco_ec_fill_ssdt_generator(struct device *dev)
+static void wilco_ec_fill_ssdt_generator(const struct device *dev)
 {
 	struct opregion opreg;
 	void *region_ptr;

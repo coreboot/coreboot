@@ -203,7 +203,7 @@ static void gma_read_resources(struct device *dev)
 	res->size = (resource_t) 0x10000000;
 }
 
-static void gma_generate_ssdt(struct device *device)
+static void gma_generate_ssdt(const struct device *device)
 {
 	const struct northbridge_intel_ironlake_config *chip = device->chip_info;
 

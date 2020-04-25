@@ -43,7 +43,7 @@ pci_rom_write_acpi_tables(const struct device *device,
 						  unsigned long current,
 						  struct acpi_rsdp *rsdp);
 
-void pci_rom_ssdt(struct device *device);
+void pci_rom_ssdt(const struct device *device);
 
 void map_oprom_vendev_rev(u32 *vendev, u8 *rev);
 u32 map_oprom_vendev(u32 vendev);

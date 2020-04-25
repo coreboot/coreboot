@@ -101,7 +101,7 @@ static void gfx_fill_privacy_screen_dsm(
 		privacy);
 }
 
-static void gfx_fill_ssdt_generator(struct device *dev)
+static void gfx_fill_ssdt_generator(const struct device *dev)
 {
 	size_t i;
 	struct drivers_gfx_generic_config *config = dev->chip_info;

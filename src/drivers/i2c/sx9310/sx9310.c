@@ -18,7 +18,7 @@
 					I2C_SX9310_ACPI_ID "," #NAME, \
 					config->NAME)
 
-static void i2c_sx9310_fill_ssdt(struct device *dev)
+static void i2c_sx9310_fill_ssdt(const struct device *dev)
 {
 	struct drivers_i2c_sx9310_config *config = dev->chip_info;
 	const char *scope = acpi_device_scope(dev);

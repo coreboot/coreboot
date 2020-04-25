@@ -14,7 +14,7 @@
 
 #define MAX98357A_ACPI_NAME	"MAXM"
 
-static void max98357a_fill_ssdt(struct device *dev)
+static void max98357a_fill_ssdt(const struct device *dev)
 {
 	struct drivers_generic_max98357a_config *config = dev->chip_info;
 	const char *path;

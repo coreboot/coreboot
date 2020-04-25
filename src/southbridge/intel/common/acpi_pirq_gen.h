@@ -24,7 +24,7 @@ enum pirq {
 	PIRQ_H,
 };
 
-void intel_acpi_gen_def_acpi_pirq(struct device *dev);
+void intel_acpi_gen_def_acpi_pirq(const struct device *dev);
 enum pirq intel_common_map_pirq(const struct device *dev,
 				const enum pci_pin pci_pin);
 

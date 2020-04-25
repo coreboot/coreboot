@@ -805,7 +805,7 @@ void dw_i2c_dev_init(struct device *dev)
  * Generate I2C timing information into the SSDT for the OS driver to consume,
  * optionally applying override values provided by the caller.
  */
-void dw_i2c_acpi_fill_ssdt(struct device *dev)
+void dw_i2c_acpi_fill_ssdt(const struct device *dev)
 {
 	const struct dw_i2c_bus_config *bcfg;
 	uintptr_t dw_i2c_addr;

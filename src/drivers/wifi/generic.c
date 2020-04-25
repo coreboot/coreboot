@@ -171,7 +171,7 @@ static void emit_sar_acpi_structures(void)
 	acpigen_pop_len();
 }
 
-void generic_wifi_fill_ssdt(struct device *dev,
+void generic_wifi_fill_ssdt(const struct device *dev,
 			    const struct generic_wifi_config *config)
 {
 	const char *path;

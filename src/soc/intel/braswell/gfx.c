@@ -77,7 +77,7 @@ void gma_set_gnvs_aslb(void *gnvs, uintptr_t aslb)
 		gnvs_ptr->aslb = aslb;
 }
 
-static void gma_generate_ssdt(struct device *dev)
+static void gma_generate_ssdt(const struct device *dev)
 {
 	const struct soc_intel_braswell_config *chip = dev->chip_info;
 

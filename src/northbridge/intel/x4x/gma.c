@@ -80,7 +80,7 @@ static void gma_func0_disable(struct device *dev)
 	pci_write_config16(dev_host, D0F0_GGC, ggc);
 }
 
-static void gma_generate_ssdt(struct device *device)
+static void gma_generate_ssdt(const struct device *device)
 {
 	const struct northbridge_intel_x4x_config *chip = device->chip_info;
 

@@ -43,7 +43,7 @@ static int i2c_generic_write_gpio(struct acpi_gpio *gpio, int *curr_index)
 	return ret;
 }
 
-void i2c_generic_fill_ssdt(struct device *dev,
+void i2c_generic_fill_ssdt(const struct device *dev,
 			void (*callback)(const struct device *dev),
 			struct drivers_i2c_generic_config *config)
 {
@@ -159,7 +159,7 @@ void i2c_generic_fill_ssdt(struct device *dev,
 	       config->desc ? : dev->chip_ops->name, dev_path(dev));
 }
 
-static void i2c_generic_fill_ssdt_generator(struct device *dev)
+static void i2c_generic_fill_ssdt_generator(const struct device *dev)
 {
 	i2c_generic_fill_ssdt(dev, NULL, dev->chip_info);
 }

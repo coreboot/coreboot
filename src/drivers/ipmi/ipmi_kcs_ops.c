@@ -221,7 +221,7 @@ ipmi_write_acpi_tables(const struct device *dev, unsigned long current,
 	return current;
 }
 
-static void ipmi_ssdt(struct device *dev)
+static void ipmi_ssdt(const struct device *dev)
 {
 	const char *scope = acpi_device_scope(dev);
 	struct drivers_ipmi_config *conf = NULL;

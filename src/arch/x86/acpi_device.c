@@ -941,7 +941,7 @@ struct acpi_dp *acpi_dp_add_gpio(struct acpi_dp *dp, const char *name,
  *    }
  * }
  */
-void acpi_device_write_pci_dev(struct device *dev)
+void acpi_device_write_pci_dev(const struct device *dev)
 {
 	const char *scope = acpi_device_scope(dev);
 	const char *name = acpi_device_name(dev);

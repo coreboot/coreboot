@@ -59,7 +59,7 @@ static int smbios_write_wifi(struct device *dev, int *handle,
 #endif
 
 #if CONFIG(HAVE_ACPI_TABLES)
-static void intel_wifi_fill_ssdt(struct device *dev)
+static void intel_wifi_fill_ssdt(const struct device *dev)
 {
 	struct drivers_intel_wifi_config *config = dev->chip_info;
 	struct generic_wifi_config generic_config;

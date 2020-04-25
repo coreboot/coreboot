@@ -29,7 +29,7 @@ static const struct superio_dev superio_devs[] = {
 static const u8 io_idx[] = {PNP_IDX_IO0, PNP_IDX_IO1, PNP_IDX_IO2, PNP_IDX_IO3};
 static const u8 irq_idx[] = {PNP_IDX_IRQ0, PNP_IDX_IRQ1};
 
-static const struct superio_dev *superio_guess_function(struct device *dev)
+static const struct superio_dev *superio_guess_function(const struct device *dev)
 {
 	for (size_t i = 0; i < ARRAY_SIZE(io_idx); i++) {
 		struct resource *res = probe_resource(dev, io_idx[i]);
@@ -62,7 +62,7 @@ static const struct superio_dev *superio_guess_function(struct device *dev)
 }
 
 /* Return true if there are resources to report */
-static bool has_resources(struct device *dev)
+static bool has_resources(const struct device *dev)
 {
 	for (size_t i = 0; i < ARRAY_SIZE(io_idx); i++) {
 		struct resource *res = probe_resource(dev, io_idx[i]);
@@ -80,7 +80,7 @@ static bool has_resources(struct device *dev)
 }
 
 /* Add IO and IRQ resources for _CRS or _PRS */
-static void ldn_gen_resources(struct device *dev)
+static void ldn_gen_resources(const struct device *dev)
 {
 	uint16_t irq = 0;
 	for (size_t i = 0; i < ARRAY_SIZE(io_idx); i++) {
@@ -109,7 +109,7 @@ static void ldn_gen_resources(struct device *dev)
 }
 
 /* Add resource base and size for additional SuperIO code */
-static void ldn_gen_resources_use(struct device *dev)
+static void ldn_gen_resources_use(const struct device *dev)
 {
 	char name[5];
 	for (size_t i = 0; i < ARRAY_SIZE(io_idx); i++) {
@@ -161,7 +161,7 @@ static const char *name_from_hid(const char *hid)
 	return "Generic device";
 }
 
-void superio_common_fill_ssdt_generator(struct device *dev)
+void superio_common_fill_ssdt_generator(const struct device *dev)
 {
 	if (!dev || !dev->bus || !dev->bus->dev) {
 		printk(BIOS_CRIT, "BUG: Invalid argument in %s!\n", __func__);

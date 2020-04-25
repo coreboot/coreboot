@@ -17,7 +17,7 @@
 #define DA7219_ACPI_NAME	"DLG7"
 #define DA7219_ACPI_HID		"DLGS7219"
 
-static void da7219_fill_ssdt(struct device *dev)
+static void da7219_fill_ssdt(const struct device *dev)
 {
 	struct drivers_i2c_da7219_config *config = dev->chip_info;
 	const char *scope = acpi_device_scope(dev);

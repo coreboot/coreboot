@@ -513,7 +513,7 @@ static void gma_func0_init(struct device *dev)
 	intel_gma_restore_opregion();
 }
 
-static void gma_generate_ssdt(struct device *dev)
+static void gma_generate_ssdt(const struct device *dev)
 {
 	const struct northbridge_intel_haswell_config *chip = dev->chip_info;
 

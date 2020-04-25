@@ -25,7 +25,7 @@ static int determine_total_number_of_cores(void)
 	return count;
 }
 
-void generate_cpu_entries(struct device *device)
+void generate_cpu_entries(const struct device *device)
 {
 	int cpu, pcontrol_blk=DEFAULT_PMBASE+PCNTRL, plen=6;
 	int numcpus = determine_total_number_of_cores();

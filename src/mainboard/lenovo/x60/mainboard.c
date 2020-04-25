@@ -99,7 +99,7 @@ static void mainboard_init(struct device *dev)
 	}
 }
 
-static void fill_ssdt(struct device *device)
+static void fill_ssdt(const struct device *device)
 {
 	drivers_lenovo_serial_ports_ssdt_generate("\\_SB.PCI0.LPCB", 1);
 }

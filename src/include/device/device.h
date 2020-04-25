@@ -50,7 +50,7 @@ struct device_operations {
 #if CONFIG(HAVE_ACPI_TABLES)
 	unsigned long (*write_acpi_tables)(const struct device *dev,
 		unsigned long start, struct acpi_rsdp *rsdp);
-	void (*acpi_fill_ssdt)(struct device *dev);
+	void (*acpi_fill_ssdt)(const struct device *dev);
 	void (*acpi_inject_dsdt)(struct device *dev);
 	const char *(*acpi_name)(const struct device *dev);
 	/* Returns the optional _HID (Hardware ID) */

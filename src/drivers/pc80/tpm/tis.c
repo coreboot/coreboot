@@ -872,7 +872,7 @@ static void (*tpm_mci_callbacks[])(void *) = {
 	tpm_mci_func1_cb,
 };
 
-static void lpc_tpm_fill_ssdt(struct device *dev)
+static void lpc_tpm_fill_ssdt(const struct device *dev)
 {
 	const char *path = acpi_device_path(dev->bus->dev);
 	u32 arg;

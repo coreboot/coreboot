@@ -344,7 +344,7 @@ int google_chromeec_get_keybd_config(struct ec_response_keybd_config *keybd);
  *
  * @param dev			EC device
  */
-void google_chromeec_fill_ssdt_generator(struct device *dev);
+void google_chromeec_fill_ssdt_generator(const struct device *dev);
 
 /**
  * Returns the ACPI name for the EC device.

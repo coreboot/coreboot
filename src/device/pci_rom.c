@@ -261,7 +261,7 @@ pci_rom_write_acpi_tables(const struct device *device, unsigned long current,
 	return current;
 }
 
-void pci_rom_ssdt(struct device *device)
+void pci_rom_ssdt(const struct device *device)
 {
 	static size_t ngfx;
 

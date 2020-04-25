@@ -14,7 +14,7 @@
 #define ADAU7002_ACPI_NAME	"ADAU"
 #define ADAU7002_ACPI_HID	"ADAU7002"
 
-static void adau7002_fill_ssdt(struct device *dev)
+static void adau7002_fill_ssdt(const struct device *dev)
 {
 	struct drivers_generic_adau7002_config *config;
 	struct acpi_dp *dp;

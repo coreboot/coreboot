@@ -652,7 +652,7 @@ static const char *lpc_acpi_name(const struct device *dev)
 	return "LPCB";
 }
 
-static void southbridge_fill_ssdt(struct device *device)
+static void southbridge_fill_ssdt(const struct device *device)
 {
 	struct device *dev = pcidev_on_root(0x1f, 0);
 	config_t *chip = dev->chip_info;

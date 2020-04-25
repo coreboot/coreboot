@@ -20,7 +20,7 @@ static void i2c_hid_fill_dsm(const struct device *dev)
 	acpigen_write_dsm_i2c_hid(&dsm_config);
 }
 
-static void i2c_hid_fill_ssdt_generator(struct device *dev)
+static void i2c_hid_fill_ssdt_generator(const struct device *dev)
 {
 	struct drivers_i2c_hid_config *config = dev->chip_info;
 	config->generic.cid = I2C_HID_CID;

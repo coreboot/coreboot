@@ -21,7 +21,7 @@ static bool usb_acpi_add_gpios_to_crs(struct drivers_usb_acpi_config *cfg)
 	return true;
 }
 
-static void usb_acpi_fill_ssdt_generator(struct device *dev)
+static void usb_acpi_fill_ssdt_generator(const struct device *dev)
 {
 	struct drivers_usb_acpi_config *config = dev->chip_info;
 	const char *path = acpi_device_path(dev);

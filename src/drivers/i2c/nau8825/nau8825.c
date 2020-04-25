@@ -19,7 +19,7 @@
 #define NAU8825_DP_INT(key,val) \
 	acpi_dp_add_integer(dp, "nuvoton," key, (val))
 
-static void nau8825_fill_ssdt(struct device *dev)
+static void nau8825_fill_ssdt(const struct device *dev)
 {
 	struct drivers_i2c_nau8825_config *config = dev->chip_info;
 	const char *scope = acpi_device_scope(dev);

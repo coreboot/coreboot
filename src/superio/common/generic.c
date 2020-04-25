@@ -31,7 +31,7 @@ static void generic_read_resources(struct device *dev)
 }
 
 #if CONFIG(HAVE_ACPI_TABLES)
-static void generic_ssdt(struct device *dev)
+static void generic_ssdt(const struct device *dev)
 {
 	const char *scope = acpi_device_scope(dev);
 	const char *name = acpi_device_name(dev);

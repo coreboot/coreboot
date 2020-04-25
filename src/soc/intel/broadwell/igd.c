@@ -616,7 +616,7 @@ gma_write_acpi_tables(const struct device *const dev, unsigned long current,
 	return current;
 }
 
-static void gma_generate_ssdt(struct device *dev)
+static void gma_generate_ssdt(const struct device *dev)
 {
 	const struct soc_intel_broadwell_config *chip = dev->chip_info;
 

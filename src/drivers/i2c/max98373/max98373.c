@@ -14,7 +14,7 @@
 #define MAX98373_ACPI_NAME	"MAXI"
 #define MAX98373_ACPI_HID	"MX98373"
 
-static void max98373_fill_ssdt(struct device *dev)
+static void max98373_fill_ssdt(const struct device *dev)
 {
 	struct drivers_i2c_max98373_config *config = dev->chip_info;
 	const char *scope = acpi_device_scope(dev);

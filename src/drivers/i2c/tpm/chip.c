@@ -11,7 +11,7 @@
 #include "tpm.h"
 #include "chip.h"
 
-static void i2c_tpm_fill_ssdt(struct device *dev)
+static void i2c_tpm_fill_ssdt(const struct device *dev)
 {
 	struct drivers_i2c_tpm_config *config = dev->chip_info;
 	const char *scope = acpi_device_scope(dev);

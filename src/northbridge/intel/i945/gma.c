@@ -744,7 +744,7 @@ static void gma_func1_init(struct device *dev)
 		pci_write_config8(dev, 0xf4, 0xff);
 }
 
-static void gma_generate_ssdt(struct device *device)
+static void gma_generate_ssdt(const struct device *device)
 {
 	const struct northbridge_intel_i945_config *chip = device->chip_info;
 

@@ -93,7 +93,7 @@ int tis_sendrecv(const uint8_t *sendbuf, size_t sbuf_size, uint8_t *recvbuf, siz
 	return 0;
 }
 
-static void crb_tpm_fill_ssdt(struct device *dev)
+static void crb_tpm_fill_ssdt(const struct device *dev)
 {
 	const char *path = acpi_device_path(dev);
 	if (!path) {

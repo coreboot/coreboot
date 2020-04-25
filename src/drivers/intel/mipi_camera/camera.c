@@ -10,7 +10,7 @@
 #include <device/path.h>
 #include "chip.h"
 
-static void camera_fill_ssdt(struct device *dev)
+static void camera_fill_ssdt(const struct device *dev)
 {
 	struct drivers_intel_mipi_camera_config *config = dev->chip_info;
 	const char *scope = acpi_device_scope(dev);

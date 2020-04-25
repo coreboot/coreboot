@@ -208,7 +208,7 @@ static void gma_func0_init(struct device *dev)
 	intel_gma_restore_opregion();
 }
 
-static void gma_generate_ssdt(struct device *device)
+static void gma_generate_ssdt(const struct device *device)
 {
 	const struct northbridge_intel_gm45_config *chip = device->chip_info;
 

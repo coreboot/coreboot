@@ -386,7 +386,7 @@ static void gfx_init(struct device *dev)
 	intel_gma_restore_opregion();
 }
 
-static void gma_generate_ssdt(struct device *dev)
+static void gma_generate_ssdt(const struct device *dev)
 {
 	const struct soc_intel_baytrail_config *chip = dev->chip_info;
 

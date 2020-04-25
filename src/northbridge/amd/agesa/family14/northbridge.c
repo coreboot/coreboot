@@ -658,7 +658,7 @@ static void cpu_bus_init(struct device *dev)
 
 /* North Bridge Structures */
 
-static void northbridge_fill_ssdt_generator(struct device *device)
+static void northbridge_fill_ssdt_generator(const struct device *device)
 {
 	msr_t msr;
 	char pscope[] = "\\_SB.PCI0";

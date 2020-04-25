@@ -930,7 +930,7 @@ unsigned long acpi_write_hpet(const struct device *device, unsigned long start,
 			      acpi_rsdp_t *rsdp);
 
 /* cpu/intel/speedstep/acpi.c */
-void generate_cpu_entries(struct device *device);
+void generate_cpu_entries(const struct device *device);
 
 void acpi_create_mcfg(acpi_mcfg_t *mcfg);
 

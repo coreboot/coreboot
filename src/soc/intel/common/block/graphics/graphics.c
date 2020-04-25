@@ -39,7 +39,7 @@ intel_igd_get_controller_info(const struct device *device)
 	return NULL;
 }
 
-static void gma_generate_ssdt(struct device *device)
+static void gma_generate_ssdt(const struct device *device)
 {
 	const struct i915_gpu_controller_info *gfx = intel_igd_get_controller_info(device);
 

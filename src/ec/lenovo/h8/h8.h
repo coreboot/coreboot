@@ -35,7 +35,7 @@ void h8_wwan_enable(int on);
 bool h8_wwan_nv_enable(void);
 bool h8_has_wwan(const struct device *dev);
 
-void h8_ssdt_generator(struct device *dev);
+void h8_ssdt_generator(const struct device *dev);
 
 /* EC registers */
 #define H8_CONFIG0 0x00

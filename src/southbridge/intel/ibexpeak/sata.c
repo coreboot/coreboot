@@ -212,7 +212,7 @@ static void sata_enable(struct device *dev)
 	pci_write_config16(dev, 0x90, map);
 }
 
-static void sata_fill_ssdt(struct device *dev)
+static void sata_fill_ssdt(const struct device *dev)
 {
 	config_t *config = dev->chip_info;
 	generate_sata_ssdt_ports("\\_SB_.PCI0.SATA", config->sata_port_map);

@@ -187,7 +187,7 @@ static void add_usb_port_references(struct acpi_dp *dsd, int port_number)
 	}
 }
 
-static void fill_ssdt_typec_device(struct device *dev)
+static void fill_ssdt_typec_device(const struct device *dev)
 {
 	struct usb_pd_port_caps port_caps;
 	char con_name[] = "CONx";
@@ -249,7 +249,7 @@ static const enum ps2_action_key ps2_enum_val[] = {
 	[TK_PREV_TRACK] = PS2_KEY_PREV_TRACK,
 };
 
-static void fill_ssdt_ps2_keyboard(struct device *dev)
+static void fill_ssdt_ps2_keyboard(const struct device *dev)
 {
 	uint8_t i;
 	struct ec_response_keybd_config keybd = {};
@@ -273,7 +273,7 @@ static void fill_ssdt_ps2_keyboard(struct device *dev)
 				 !!(keybd.capabilities & KEYBD_CAP_SCRNLOCK_KEY));
 }
 
-void google_chromeec_fill_ssdt_generator(struct device *dev)
+void google_chromeec_fill_ssdt_generator(const struct device *dev)
 {
 	if (!dev->enabled)
 		return;

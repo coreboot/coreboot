@@ -200,7 +200,7 @@ void generate_p_state_entries(int core, int cores_per_package)
 {
 }
 
-void generate_cpu_entries(struct device *device)
+void generate_cpu_entries(const struct device *device)
 {
 	int core_id, cpu_id, pcontrol_blk = ACPI_BASE_ADDRESS;
 	int plen = 6;

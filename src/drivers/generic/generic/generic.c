@@ -10,7 +10,7 @@
 #include <string.h>
 #include "chip.h"
 
-static void generic_dev_fill_ssdt_generator(struct device *dev)
+static void generic_dev_fill_ssdt_generator(const struct device *dev)
 {
 	struct acpi_dp *dsd;
 	struct drivers_generic_generic_config *config = dev->chip_info;

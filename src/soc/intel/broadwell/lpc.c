@@ -573,7 +573,7 @@ static void pch_lpc_read_resources(struct device *dev)
 		memset(gnvs, 0, sizeof(global_nvs_t));
 }
 
-static void southcluster_inject_dsdt(struct device *device)
+static void southcluster_inject_dsdt(const struct device *device)
 {
 	global_nvs_t *gnvs;
 

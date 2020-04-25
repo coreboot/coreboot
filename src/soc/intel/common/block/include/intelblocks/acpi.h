@@ -48,7 +48,7 @@ unsigned long southbridge_write_acpi_tables(const struct device *device,
  * Creates acpi gnvs and adds it to the DSDT table.
  * GNVS creation is chipset specific and is done in soc specific acpi.c file.
  */
-void southbridge_inject_dsdt(struct device *device);
+void southbridge_inject_dsdt(const struct device *device);
 
 /*
  * This function populates the gnvs structure in acpi table.

@@ -987,7 +987,7 @@ void uncore_inject_dsdt(void)
 	acpigen_pop_len();
 }
 
-void southbridge_inject_dsdt(struct device *device)
+void southbridge_inject_dsdt(const struct device *device)
 {
 	global_nvs_t *gnvs;
 

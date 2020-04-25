@@ -661,7 +661,7 @@ static void pch_lpc_enable(struct device *dev)
 	pch_enable(dev);
 }
 
-static void southbridge_inject_dsdt(struct device *dev)
+static void southbridge_inject_dsdt(const struct device *dev)
 {
 	global_nvs_t *gnvs = cbmem_add (CBMEM_ID_ACPI_GNVS, sizeof(*gnvs));
 

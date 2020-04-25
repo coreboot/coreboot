@@ -34,7 +34,7 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 	return current;
 }
 
-void southbridge_inject_dsdt(struct device *device)
+void southbridge_inject_dsdt(const struct device *device)
 {
 	global_nvs_t *gnvs;
 

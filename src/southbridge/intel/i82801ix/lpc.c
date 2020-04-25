@@ -470,7 +470,7 @@ static void i82801ix_lpc_read_resources(struct device *dev)
 	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 }
 
-static void southbridge_inject_dsdt(struct device *dev)
+static void southbridge_inject_dsdt(const struct device *dev)
 {
 	global_nvs_t *gnvs = cbmem_add (CBMEM_ID_ACPI_GNVS, sizeof(*gnvs));
 

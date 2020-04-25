@@ -483,7 +483,7 @@ void southcluster_enable_dev(struct device *dev)
 	}
 }
 
-static void southcluster_inject_dsdt(struct device *device)
+static void southcluster_inject_dsdt(const struct device *device)
 {
 	global_nvs_t *gnvs;
 

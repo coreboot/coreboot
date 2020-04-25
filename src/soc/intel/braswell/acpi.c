@@ -512,7 +512,7 @@ unsigned long southcluster_write_acpi_tables(const struct device *device, unsign
 	return current;
 }
 
-void southcluster_inject_dsdt(struct device *device)
+void southcluster_inject_dsdt(const struct device *device)
 {
 	global_nvs_t *gnvs;
 

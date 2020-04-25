@@ -267,7 +267,7 @@ static void acpi_create_gnvs(struct global_nvs_t *gnvs)
 	gnvs->pcnt = dev_count_cpu();
 }
 
-void southbridge_inject_dsdt(struct device *device)
+void southbridge_inject_dsdt(const struct device *device)
 {
 	struct global_nvs_t *gnvs;
 

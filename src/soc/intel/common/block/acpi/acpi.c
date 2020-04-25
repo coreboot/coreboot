@@ -243,7 +243,7 @@ __weak void acpi_create_gnvs(struct global_nvs_t *gnvs)
 {
 }
 
-void southbridge_inject_dsdt(struct device *device)
+void southbridge_inject_dsdt(const struct device *device)
 {
 	struct global_nvs_t *gnvs;
 

@@ -16,7 +16,7 @@
 void acpi_fill_in_fadt(acpi_fadt_t *fadt);
 unsigned long acpi_madt_irq_overrides(unsigned long current);
 void acpi_mainboard_gnvs(global_nvs_t *gnvs);
-void southbridge_inject_dsdt(struct device *device);
+void southbridge_inject_dsdt(const struct device *device);
 unsigned long southbridge_write_acpi_tables(const struct device *device,
 	unsigned long current, struct acpi_rsdp *rsdp);
 unsigned long northbridge_write_acpi_tables(const struct device *,

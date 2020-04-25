@@ -620,7 +620,7 @@ static void lpc_final(struct device *dev)
 	outb(POST_OS_BOOT, 0x80);
 }
 
-static void southbridge_inject_dsdt(struct device *dev)
+static void southbridge_inject_dsdt(const struct device *dev)
 {
 	global_nvs_t *gnvs = cbmem_add(CBMEM_ID_ACPI_GNVS, sizeof(*gnvs));
 

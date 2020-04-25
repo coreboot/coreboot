@@ -25,7 +25,7 @@ void h8_bluetooth_enable(int on)
 /*
  * Detect BDC on supported MBs.
  */
-bool h8_has_bdc(struct device *dev)
+bool h8_has_bdc(const struct device *dev)
 {
 	struct ec_lenovo_h8_config *conf = dev->chip_info;
 

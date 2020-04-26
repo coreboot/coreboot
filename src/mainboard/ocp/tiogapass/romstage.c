@@ -20,7 +20,6 @@
 #include <gpio.h>
 #include <soc/lewisburg_pch_gpio_defs.h>
 
-#include "skxsp_tp_gpio.h"
 #include "skxsp_tp_iio.h"
 
 static uint8_t iio_table_buf[sizeof(tp_iio_bifur_table)];
@@ -37,16 +36,6 @@ static void oem_update_iio(FSPM_UPD *mupd)
 	if (!slot_config0 && slot_config1)
 		mupd->FspmConfig.IioBifurcationConfig.IIoBifurcationTable[Skt0_Iou0].Bifurcation
 			= IIO_BIFURCATE_xxx8xxx8;
-}
-
-/*
-* Configure GPIO depend on platform
-*/
-static void mainboard_config_gpios(FSPM_UPD *mupd)
-{
-	mupd->FspmConfig.GpioConfig.GpioTable = (UPD_GPIO_INIT_CONFIG *) tp_gpio_table;
-	mupd->FspmConfig.GpioConfig.NumberOfEntries =
-		sizeof(tp_gpio_table)/sizeof(UPD_GPIO_INIT_CONFIG);
 }
 
 static void mainboard_config_iio(FSPM_UPD *mupd)
@@ -74,6 +63,9 @@ static void mainboard_config_iio(FSPM_UPD *mupd)
 
 void mainboard_memory_init_params(FSPM_UPD *mupd)
 {
-	mainboard_config_gpios(mupd);
 	mainboard_config_iio(mupd);
+
+	/* do not configure GPIO controller inside FSP-M */
+	mupd->FspmConfig.GpioConfig.GpioTable = NULL;
+	mupd->FspmConfig.GpioConfig.NumberOfEntries = 0;
 }

@@ -10,6 +10,7 @@
 #include <soc/pcr_ids.h>
 #include <superio/aspeed/ast2400/ast2400.h>
 #include <superio/aspeed/common/aspeed.h>
+#include "gpio.h"
 
 /* these are defined in intelblocks/lpc_lib.h but we can't use them yet */
 #define PCR_DMI_LPCIOD 0x2770
@@ -53,6 +54,9 @@ static uint8_t com_to_ast_sio(uint8_t com)
 
 void bootblock_mainboard_early_init(void)
 {
+	/* pre-configure Lewisburg PCH GPIO pads */
+	gpio_configure_pads(gpio_table, ARRAY_SIZE(gpio_table));
+
 	/* Open IO windows */
 	enable_espi_lpc_io_windows();
 

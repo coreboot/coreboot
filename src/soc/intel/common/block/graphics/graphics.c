@@ -12,6 +12,7 @@
 #include <drivers/intel/gma/opregion.h>
 #include <intelblocks/graphics.h>
 #include <soc/pci_devs.h>
+#include <types.h>
 
 /* SoC Overrides */
 __weak void graphics_soc_init(struct device *dev)
@@ -152,6 +153,16 @@ void graphics_gtt_rmw(unsigned long reg, uint32_t andmask, uint32_t ormask)
 	val &= andmask;
 	val |= ormask;
 	graphics_gtt_write(reg, val);
+}
+
+/*
+ * fsp_soc_get_igd_bar() is declared in <fsp/util.h>,
+ * but that draws incompatible UDK headers in.
+ */
+uintptr_t fsp_soc_get_igd_bar(void);
+uintptr_t fsp_soc_get_igd_bar(void)
+{
+	return graphics_get_memory_base();
 }
 
 static const struct device_operations graphics_ops = {

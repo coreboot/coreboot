@@ -36,7 +36,6 @@ ramstage-y += cpu.c
 ramstage-y += elog.c
 ramstage-y += finalize.c
 ramstage-y += fsp_params.c
-ramstage-y += graphics.c
 ramstage-y += gspi.c
 ramstage-y += i2c.c
 ramstage-y += lockdown.c

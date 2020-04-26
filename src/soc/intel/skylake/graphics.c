@@ -10,11 +10,6 @@
 #include <soc/ramstage.h>
 #include <types.h>
 
-uintptr_t fsp_soc_get_igd_bar(void)
-{
-	return graphics_get_memory_base();
-}
-
 void graphics_soc_init(struct device *dev)
 {
 	struct soc_intel_skylake_config *conf = config_of(dev);

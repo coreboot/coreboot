@@ -18,20 +18,6 @@
  */
 void graphics_soc_init(struct device *dev);
 
-/*
- * Write ASL entry for Graphics opregion
- * Input:
- * struct device *device: device structure
- * current: start address of graphics opregion
- * rsdp: pointer to RSDT (and XSDT) structure
- *
- * Output:
- * End address of graphics opregion so that the called
- * can use the same for future calls to write_acpi_tables
- */
-uintptr_t graphics_soc_write_acpi_opregion(const struct device *device,
-		uintptr_t current, struct acpi_rsdp *rsdp);
-
 /* i915 controller info for ACPI backlight controls */
 const struct i915_gpu_controller_info *
 intel_igd_get_controller_info(const struct device *device);

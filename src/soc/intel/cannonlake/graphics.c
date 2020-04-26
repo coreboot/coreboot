@@ -22,6 +22,8 @@ void graphics_soc_init(struct device *dev)
 {
 	uint32_t ddi_buf_ctl;
 
+	intel_gma_init_igd_opregion();
+
 	/*
 	 * Enable DDI-A (eDP) 4-lane operation if the link is not up yet.
 	 * This will allow the kernel to use 4-lane eDP links properly
@@ -58,20 +60,4 @@ void graphics_soc_init(struct device *dev)
 		/* Initialize PCI device, load/execute BIOS Option ROM */
 		pci_dev_init(dev);
 	}
-}
-
-uintptr_t graphics_soc_write_acpi_opregion(const struct device *device,
-		uintptr_t current, struct acpi_rsdp *rsdp)
-{
-	igd_opregion_t *opregion;
-
-	printk(BIOS_DEBUG, "ACPI:    * IGD OpRegion\n");
-	opregion = (igd_opregion_t *)current;
-
-	if (intel_gma_init_igd_opregion(opregion) != CB_SUCCESS)
-		return current;
-
-	current += sizeof(igd_opregion_t);
-
-	return acpi_align_current(current);
 }

@@ -104,33 +104,6 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	GTF2,	56,	// 0xa4 - GTF task file buffer for port 2
 	IDEM,	 8,	// 0xab - IDE mode (compatible / enhanced)
 	IDET,	 8,	// 0xac - IDE
-	/* IGD OpRegion */
-	Offset (0xb4),
-	ASLB,	32,	// 0xb4 - IGD OpRegion Base Address
-	IBTT,	 8,	// 0xb8 - IGD boot panel device
-	IPAT,	 8,	// 0xb9 - IGD panel type CMOS option
-	ITVF,	 8,	// 0xba - IGD TV format CMOS option
-	ITVM,	 8,	// 0xbb - IGD TV minor format option
-	IPSC,	 8,	// 0xbc - IGD panel scaling
-	IBLC,	 8,	// 0xbd - IGD BLC config
-	IBIA,	 8,	// 0xbe - IGD BIA config
-	ISSC,	 8,	// 0xbf - IGD SSC config
-	I409,	 8,	// 0xc0 - IGD 0409 modified settings
-	I509,	 8,	// 0xc1 - IGD 0509 modified settings
-	I609,	 8,	// 0xc2 - IGD 0609 modified settings
-	I709,	 8,	// 0xc3 - IGD 0709 modified settings
-	IDMM,	 8,	// 0xc4 - IGD DVMT Mode
-	IDMS,	 8,	// 0xc5 - IGD DVMT memory size
-	IF1E,	 8,	// 0xc6 - IGD function 1 enable
-	HVCO,	 8,	// 0xc7 - IGD HPLL VCO
-	NXD1,	32,	// 0xc8 - IGD _DGS next DID1
-	NXD2,	32,	// 0xcc - IGD _DGS next DID2
-	NXD3,	32,	// 0xd0 - IGD _DGS next DID3
-	NXD4,	32,	// 0xd4 - IGD _DGS next DID4
-	NXD5,	32,	// 0xd8 - IGD _DGS next DID5
-	NXD6,	32,	// 0xdc - IGD _DGS next DID6
-	NXD7,	32,	// 0xe0 - IGD _DGS next DID7
-	NXD8,	32,	// 0xe4 - IGD _DGS next DID8
 	/* Mainboard Specific (TODO move elsewhere) */
 	Offset (0xf0),
 	DOCK,	 8,	// 0xf0 - Docking Status

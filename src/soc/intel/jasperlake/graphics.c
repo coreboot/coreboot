@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
-#include <acpi/acpi.h>
 #include <console/console.h>
 #include <fsp/util.h>
 #include <device/device.h>
@@ -17,6 +16,8 @@ uintptr_t fsp_soc_get_igd_bar(void)
 
 void graphics_soc_init(struct device *dev)
 {
+	intel_gma_init_igd_opregion();
+
 	/*
 	 * GFX PEIM module inside FSP binary is taking care of graphics
 	 * initialization based on RUN_FSP_GOP Kconfig
@@ -36,20 +37,4 @@ void graphics_soc_init(struct device *dev)
 
 	/* Initialize PCI device, load/execute BIOS Option ROM */
 	pci_dev_init(dev);
-}
-
-uintptr_t graphics_soc_write_acpi_opregion(const struct device *device,
-		uintptr_t current, struct acpi_rsdp *rsdp)
-{
-	igd_opregion_t *opregion;
-
-	printk(BIOS_DEBUG, "ACPI:    * IGD OpRegion\n");
-	opregion = (igd_opregion_t *)current;
-
-	if (intel_gma_init_igd_opregion(opregion) != CB_SUCCESS)
-		return current;
-
-	current += sizeof(igd_opregion_t);
-
-	return acpi_align_current(current);
 }

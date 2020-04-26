@@ -9,7 +9,6 @@
 #include <drivers/intel/gma/i915.h>
 #include <reg_script.h>
 #include <soc/gfx.h>
-#include <soc/nvs.h>
 #include <soc/pci_devs.h>
 #include <soc/ramstage.h>
 
@@ -50,6 +49,8 @@ static void gfx_init(struct device *dev)
 {
 	printk(BIOS_SPEW, "%s/%s (%s)\n", __FILE__, __func__, dev_name(dev));
 
+	intel_gma_init_igd_opregion();
+
 	if (!CONFIG(RUN_FSP_GOP)) {
 		/* Pre VBIOS Init */
 		gfx_pre_vbios_init(dev);
@@ -60,20 +61,6 @@ static void gfx_init(struct device *dev)
 		/* Post VBIOS Init */
 		gfx_post_vbios_init(dev);
 	}
-	intel_gma_restore_opregion();
-}
-
-uintptr_t gma_get_gnvs_aslb(const void *gnvs)
-{
-	const global_nvs_t *gnvs_ptr = gnvs;
-	return (uintptr_t)(gnvs_ptr ? gnvs_ptr->aslb : 0);
-}
-
-void gma_set_gnvs_aslb(void *gnvs, uintptr_t aslb)
-{
-	global_nvs_t *gnvs_ptr = gnvs;
-	if (gnvs_ptr)
-		gnvs_ptr->aslb = aslb;
 }
 
 static void gma_generate_ssdt(const struct device *dev)

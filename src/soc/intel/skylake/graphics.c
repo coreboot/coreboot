@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <bootmode.h>
-#include <cbmem.h>
 #include <commonlib/helpers.h>
 #include <console/console.h>
 #include <device/pci.h>
@@ -12,7 +11,6 @@
 #include <drivers/intel/gma/libgfxinit.h>
 #include <intelblocks/graphics.h>
 #include <drivers/intel/gma/opregion.h>
-#include <soc/nvs.h>
 #include <soc/ramstage.h>
 #include <types.h>
 
@@ -85,6 +83,8 @@ void graphics_soc_init(struct device *dev)
 {
 	u32 ddi_buf_ctl;
 
+	intel_gma_init_igd_opregion();
+
 	graphics_setup_panel(dev);
 
 	/*
@@ -123,56 +123,6 @@ void graphics_soc_init(struct device *dev)
 		/* Initialize PCI device, load/execute BIOS Option ROM */
 		pci_dev_init(dev);
 	}
-
-	intel_gma_restore_opregion();
-}
-
-uintptr_t gma_get_gnvs_aslb(const void *gnvs)
-{
-	const global_nvs_t *gnvs_ptr = gnvs;
-	return (uintptr_t)(gnvs_ptr ? gnvs_ptr->aslb : 0);
-}
-
-void gma_set_gnvs_aslb(void *gnvs, uintptr_t aslb)
-{
-	global_nvs_t *gnvs_ptr = gnvs;
-	if (gnvs_ptr)
-		gnvs_ptr->aslb = aslb;
-}
-
-/* Initialize IGD OpRegion, called from ACPI code */
-static void update_igd_opregion(igd_opregion_t *opregion)
-{
-	/* FIXME: Add platform specific mailbox initialization */
-}
-
-uintptr_t graphics_soc_write_acpi_opregion(const struct device *device,
-		uintptr_t current, struct acpi_rsdp *rsdp)
-{
-	igd_opregion_t *opregion;
-	global_nvs_t *gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
-
-	/* If GOP is not used, exit here */
-	if (!CONFIG(INTEL_GMA_ADD_VBT))
-		return current;
-
-	/* If IGD is disabled, exit here */
-	if (pci_read_config16(device, PCI_VENDOR_ID) == 0xFFFF)
-		return current;
-
-	printk(BIOS_DEBUG, "ACPI: * IGD OpRegion\n");
-	opregion = (igd_opregion_t *)current;
-
-	if (intel_gma_init_igd_opregion(opregion) != CB_SUCCESS)
-		return current;
-	if (gnvs)
-		gnvs->aslb = (u32)(uintptr_t)opregion;
-	update_igd_opregion(opregion);
-	current += sizeof(igd_opregion_t);
-	current = acpi_align_current(current);
-
-	printk(BIOS_DEBUG, "current = %lx\n", current);
-	return current;
 }
 
 const struct i915_gpu_controller_info *

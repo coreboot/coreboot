@@ -12,8 +12,6 @@
 #include <drivers/intel/gma/intel_bios.h>
 #include <drivers/intel/gma/i915.h>
 #include <drivers/intel/gma/opregion.h>
-#include <southbridge/intel/i82801gx/nvs.h>
-#include <cbmem.h>
 #include <pc80/vga.h>
 #include <pc80/vga_io.h>
 #include <types.h>
@@ -41,19 +39,6 @@
 
 static struct resource *gtt_res  = NULL;
 static struct resource *mmio_res = NULL;
-
-uintptr_t gma_get_gnvs_aslb(const void *gnvs)
-{
-	const global_nvs_t *gnvs_ptr = gnvs;
-	return (uintptr_t)(gnvs_ptr ? gnvs_ptr->aslb : 0);
-}
-
-void gma_set_gnvs_aslb(void *gnvs, uintptr_t aslb)
-{
-	global_nvs_t *gnvs_ptr = gnvs;
-	if (gnvs_ptr)
-		gnvs_ptr->aslb = aslb;
-}
 
 static int gtt_setup(u8 *mmiobase)
 {
@@ -235,6 +220,8 @@ static void gma_func0_init(struct device *dev)
 {
 	u32 reg32;
 
+	intel_gma_init_igd_opregion();
+
 	/* IGD needs to be Bus Master */
 	reg32 = pci_read_config32(dev, PCI_COMMAND);
 	reg32 |= PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY | PCI_COMMAND_IO;
@@ -273,33 +260,6 @@ static void gma_func0_init(struct device *dev)
 		/* Linux relies on VBT for panel info.  */
 		generate_fake_intel_oprom(&conf->gfx, dev, "$VBT PINEVIEW");
 	}
-
-	intel_gma_restore_opregion();
-}
-
-static unsigned long gma_write_acpi_tables(const struct device *const dev,
-					   unsigned long current,
-					   struct acpi_rsdp *const rsdp)
-{
-	igd_opregion_t *opregion = (igd_opregion_t *)current;
-	global_nvs_t *gnvs;
-
-	if (intel_gma_init_igd_opregion(opregion) != CB_SUCCESS)
-		return current;
-
-	current += sizeof(igd_opregion_t);
-
-	/* GNVS has been already set up */
-	gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
-	if (gnvs) {
-		/* IGD OpRegion Base Address */
-		gma_set_gnvs_aslb(gnvs, (uintptr_t)opregion);
-	} else {
-		printk(BIOS_ERR, "Error: GNVS table not found.\n");
-	}
-
-	current = acpi_align_current(current);
-	return current;
 }
 
 static const char *gma_acpi_name(const struct device *dev)
@@ -318,7 +278,6 @@ static struct device_operations gma_func0_ops = {
 	.init                   = gma_func0_init,
 	.ops_pci                = &gma_pci_ops,
 	.acpi_name              = gma_acpi_name,
-	.write_acpi_tables      = gma_write_acpi_tables,
 };
 
 static const unsigned short pci_device_ids[] =

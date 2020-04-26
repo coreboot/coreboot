@@ -119,7 +119,6 @@ static const struct device_operations graphics_ops = {
 	.init			= graphics_soc_init,
 	.ops_pci		= &pci_dev_ops_pci,
 #if CONFIG(HAVE_ACPI_TABLES)
-	.write_acpi_tables	= graphics_soc_write_acpi_opregion,
 	.acpi_fill_ssdt		= gma_generate_ssdt,
 #endif
 	.scan_bus		= scan_generic_bus,

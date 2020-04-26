@@ -20,6 +20,8 @@ uintptr_t fsp_soc_get_igd_bar(void)
 
 void graphics_soc_init(struct device *const dev)
 {
+	intel_gma_init_igd_opregion();
+
 	if (CONFIG(RUN_FSP_GOP))
 		return;
 
@@ -37,21 +39,4 @@ void graphics_soc_init(struct device *const dev)
 		/* Initialize PCI device, load/execute BIOS Option ROM */
 		pci_dev_init(dev);
 	}
-}
-
-uintptr_t graphics_soc_write_acpi_opregion(const struct device *device,
-		uintptr_t current, struct acpi_rsdp *rsdp)
-{
-	igd_opregion_t *opregion;
-
-	printk(BIOS_DEBUG, "ACPI:    * IGD OpRegion\n");
-	opregion = (igd_opregion_t *)current;
-
-	if (intel_gma_init_igd_opregion(opregion) != CB_SUCCESS)
-		return current;
-
-	/* FIXME: Add platform specific mailbox initialization */
-
-	current += sizeof(igd_opregion_t);
-	return acpi_align_current(current);
 }

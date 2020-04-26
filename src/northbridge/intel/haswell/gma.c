@@ -4,7 +4,6 @@
 #include <arch/io.h>
 #include <device/mmio.h>
 #include <device/pci_ops.h>
-#include <cbmem.h>
 #include <console/console.h>
 #include <bootmode.h>
 #include <delay.h>
@@ -16,7 +15,6 @@
 #include <drivers/intel/gma/libgfxinit.h>
 #include <cpu/intel/haswell/haswell.h>
 #include <drivers/intel/gma/opregion.h>
-#include <southbridge/intel/lynxpoint/nvs.h>
 #include <string.h>
 #include <types.h>
 
@@ -207,19 +205,6 @@ int gtt_poll(u32 reg, u32 mask, u32 value)
 
 	printk(BIOS_ERR, "GT init timeout\n");
 	return 0;
-}
-
-uintptr_t gma_get_gnvs_aslb(const void *gnvs)
-{
-	const global_nvs_t *gnvs_ptr = gnvs;
-	return (uintptr_t)(gnvs_ptr ? gnvs_ptr->aslb : 0);
-}
-
-void gma_set_gnvs_aslb(void *gnvs, uintptr_t aslb)
-{
-	global_nvs_t *gnvs_ptr = gnvs;
-	if (gnvs_ptr)
-		gnvs_ptr->aslb = aslb;
 }
 
 static void power_well_enable(void)
@@ -475,6 +460,8 @@ static void gma_func0_init(struct device *dev)
 	int lightup_ok = 0;
 	u32 reg32;
 
+	intel_gma_init_igd_opregion();
+
 	/* IGD needs to be Bus Master */
 	reg32 = pci_read_config32(dev, PCI_COMMAND);
 	reg32 |= PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY | PCI_COMMAND_IO;
@@ -509,7 +496,6 @@ static void gma_func0_init(struct device *dev)
 	gma_pm_init_post_vbios(dev);
 
 	gma_enable_swsci();
-	intel_gma_restore_opregion();
 }
 
 static void gma_generate_ssdt(const struct device *dev)
@@ -517,31 +503,6 @@ static void gma_generate_ssdt(const struct device *dev)
 	const struct northbridge_intel_haswell_config *chip = dev->chip_info;
 
 	drivers_intel_gma_displays_ssdt_generate(&chip->gfx);
-}
-
-static unsigned long gma_write_acpi_tables(const struct device *const dev,
-					   unsigned long current,
-					   struct acpi_rsdp *const rsdp)
-{
-	igd_opregion_t *opregion = (igd_opregion_t *)current;
-	global_nvs_t *gnvs;
-
-	if (intel_gma_init_igd_opregion(opregion) != CB_SUCCESS)
-		return current;
-
-	current += sizeof(igd_opregion_t);
-
-	/* GNVS has been already set up */
-	gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
-	if (gnvs) {
-		/* IGD OpRegion Base Address */
-		gma_set_gnvs_aslb(gnvs, (uintptr_t)opregion);
-	} else {
-		printk(BIOS_ERR, "Error: GNVS table not found.\n");
-	}
-
-	current = acpi_align_current(current);
-	return current;
 }
 
 static struct pci_operations gma_pci_ops = {
@@ -555,7 +516,6 @@ static struct device_operations gma_func0_ops = {
 	.init			= gma_func0_init,
 	.acpi_fill_ssdt		= gma_generate_ssdt,
 	.ops_pci		= &gma_pci_ops,
-	.write_acpi_tables	= gma_write_acpi_tables,
 };
 
 static const unsigned short pci_device_ids[] = {

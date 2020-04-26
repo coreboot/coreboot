@@ -19,8 +19,7 @@
 #include <string.h>
 #include <gpio.h>
 #include <soc/lewisburg_pch_gpio_defs.h>
-
-#include "skxsp_tp_iio.h"
+#include <skxsp_tp_iio.h>
 
 static uint8_t iio_table_buf[sizeof(tp_iio_bifur_table)];
 

@@ -10,7 +10,7 @@
 #include <soc/pcr_ids.h>
 #include <superio/aspeed/ast2400/ast2400.h>
 #include <superio/aspeed/common/aspeed.h>
-#include "gpio.h"
+#include <tp_pch_gpio.h>
 
 /* these are defined in intelblocks/lpc_lib.h but we can't use them yet */
 #define PCR_DMI_LPCIOD 0x2770

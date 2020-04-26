@@ -102,7 +102,7 @@ chip northbridge/intel/sandybridge
 					device pnp 2e.f on		# GPIO Push-Pull or Open-drain
 						irq 0xf0 = 0x9d
 					end
-					device pnp 2e.14 on end		# SVID
+					device pnp 2e.14 off end	# SVID
 					device pnp 2e.16 on		# Deep Sleep
 						io 0x30 = 0x20
 					end

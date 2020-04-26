@@ -1,11 +1,14 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include <assert.h>
+#include <bootmode.h>
 #include <console/console.h>
 #include <device/mmio.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <drivers/intel/gma/i915.h>
+#include <drivers/intel/gma/libgfxinit.h>
+#include <drivers/intel/gma/opregion.h>
 #include <intelblocks/graphics.h>
 #include <soc/pci_devs.h>
 
@@ -15,15 +18,48 @@ __weak void graphics_soc_init(struct device *dev)
 	/*
 	 * User needs to implement SoC override in case wishes
 	 * to perform certain specific graphics initialization
-	 * along with pci_dev_init(dev)
 	 */
-	pci_dev_init(dev);
 }
 
 __weak const struct i915_gpu_controller_info *
 intel_igd_get_controller_info(const struct device *device)
 {
 	return NULL;
+}
+
+static void gma_init(struct device *const dev)
+{
+	intel_gma_init_igd_opregion();
+
+	/* SoC specific configuration. */
+	graphics_soc_init(dev);
+
+	/*
+	 * GFX PEIM module inside FSP binary is taking care of graphics
+	 * initialization based on RUN_FSP_GOP Kconfig option and input
+	 * VBT file.
+	 *
+	 * In case of non-FSP solution, SoC need to select another
+	 * Kconfig to perform GFX initialization.
+	 */
+	if (CONFIG(RUN_FSP_GOP))
+		return;
+
+	/* IGD needs to Bus Master */
+	u32 reg32 = pci_read_config32(dev, PCI_COMMAND);
+	reg32 |= PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY | PCI_COMMAND_IO;
+	pci_write_config32(dev, PCI_COMMAND, reg32);
+
+	if (CONFIG(MAINBOARD_USE_LIBGFXINIT)) {
+		if (!acpi_is_wakeup_s3() && display_init_required()) {
+			int lightup_ok;
+			gma_gfxinit(&lightup_ok);
+			gfx_set_init_done(lightup_ok);
+		}
+	} else {
+		/* Initialize PCI device, load/execute BIOS Option ROM */
+		pci_dev_init(dev);
+	}
 }
 
 static void gma_generate_ssdt(const struct device *device)
@@ -116,7 +152,7 @@ static const struct device_operations graphics_ops = {
 	.read_resources		= pci_dev_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
-	.init			= graphics_soc_init,
+	.init			= gma_init,
 	.ops_pci		= &pci_dev_ops_pci,
 #if CONFIG(HAVE_ACPI_TABLES)
 	.acpi_fill_ssdt		= gma_generate_ssdt,

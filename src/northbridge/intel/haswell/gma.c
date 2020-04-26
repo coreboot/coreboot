@@ -458,20 +458,17 @@ static void gma_enable_swsci(void)
 static void gma_func0_init(struct device *dev)
 {
 	int lightup_ok = 0;
-	u32 reg32;
 
 	intel_gma_init_igd_opregion();
-
-	/* IGD needs to be Bus Master */
-	reg32 = pci_read_config32(dev, PCI_COMMAND);
-	reg32 |= PCI_COMMAND_MASTER;
-	pci_write_config32(dev, PCI_COMMAND, reg32);
 
 	/* Init graphics power management */
 	gma_pm_init_pre_vbios(dev);
 
 	/* Pre panel init */
 	gma_setup_panel(dev);
+
+	if (!CONFIG(NO_GFX_INIT))
+		pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_MASTER);
 
 	int vga_disable = (pci_read_config16(dev, GGC) & 2) >> 1;
 

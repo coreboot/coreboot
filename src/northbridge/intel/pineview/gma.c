@@ -218,14 +218,10 @@ static void intel_gma_init(const struct northbridge_intel_pineview_config *info,
 
 static void gma_func0_init(struct device *dev)
 {
-	u32 reg32;
-
 	intel_gma_init_igd_opregion();
 
-	/* IGD needs to be Bus Master */
-	reg32 = pci_read_config32(dev, PCI_COMMAND);
-	reg32 |= PCI_COMMAND_MASTER;
-	pci_write_config32(dev, PCI_COMMAND, reg32);
+	if (!CONFIG(NO_GFX_INIT))
+		pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_MASTER);
 
 	if (!CONFIG(MAINBOARD_DO_NATIVE_VGA_INIT)) {
 		/* PCI init, will run VBIOS */

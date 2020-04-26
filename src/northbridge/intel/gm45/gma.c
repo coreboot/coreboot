@@ -144,7 +144,6 @@ static void gma_pm_init_post_vbios(struct device *const dev,
 
 static void gma_func0_init(struct device *dev)
 {
-	u32 reg32;
 	u8 *mmio;
 	u8 edid_data_lvds[128];
 	struct edid edid_lvds;
@@ -152,16 +151,13 @@ static void gma_func0_init(struct device *dev)
 
 	intel_gma_init_igd_opregion();
 
-	/* IGD needs to be Bus Master */
-	reg32 = pci_read_config32(dev, PCI_COMMAND);
-	reg32 |= PCI_COMMAND_MASTER;
-	pci_write_config32(dev, PCI_COMMAND, reg32);
-
 	gtt_res = find_resource(dev, PCI_BASE_ADDRESS_0);
 	if (gtt_res == NULL)
 		return;
 	mmio = res2mmio(gtt_res, 0, 0);
 
+	if (!CONFIG(NO_GFX_INIT))
+		pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_MASTER);
 
 	if (!CONFIG(MAINBOARD_USE_LIBGFXINIT)) {
 		/* PCI Init, will run VBIOS */

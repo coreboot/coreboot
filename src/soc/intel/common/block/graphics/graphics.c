@@ -45,10 +45,8 @@ static void gma_init(struct device *const dev)
 	if (CONFIG(RUN_FSP_GOP))
 		return;
 
-	/* IGD needs to Bus Master */
-	u32 reg32 = pci_read_config32(dev, PCI_COMMAND);
-	reg32 |= PCI_COMMAND_MASTER;
-	pci_write_config32(dev, PCI_COMMAND, reg32);
+	if (!CONFIG(NO_GFX_INIT))
+		pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_MASTER);
 
 	if (CONFIG(MAINBOARD_USE_LIBGFXINIT)) {
 		if (!acpi_is_wakeup_s3() && display_init_required()) {

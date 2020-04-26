@@ -660,8 +660,6 @@ static void gma_ngi(struct device *const dev)
 
 static void gma_func0_init(struct device *dev)
 {
-	u32 reg32;
-
 	intel_gma_init_igd_opregion();
 
 	/* Unconditionally reset graphics */
@@ -672,9 +670,8 @@ static void gma_func0_init(struct device *dev)
 	while (pci_read_config8(dev, GDRST) & 1)
 		;
 
-	/* IGD needs to be Bus Master */
-	reg32 = pci_read_config32(dev, PCI_COMMAND);
-	pci_write_config32(dev, PCI_COMMAND, reg32 | PCI_COMMAND_MASTER);
+	if (!CONFIG(NO_GFX_INIT))
+		pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_MASTER);
 
 	if (CONFIG(MAINBOARD_DO_NATIVE_VGA_INIT)) {
 		int vga_disable = (pci_read_config16(dev, GGC) & 2) >> 1;
@@ -713,12 +710,10 @@ static void gma_func0_disable(struct device *dev)
 
 static void gma_func1_init(struct device *dev)
 {
-	u32 reg32;
 	u8 val;
 
-	/* IGD needs to be Bus Master */
-	reg32 = pci_read_config32(dev, PCI_COMMAND);
-	pci_write_config32(dev, PCI_COMMAND, reg32 | PCI_COMMAND_MASTER);
+	if (!CONFIG(NO_GFX_INIT))
+		pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_MASTER);
 
 	if (get_option(&val, "tft_brightness") == CB_SUCCESS)
 		pci_write_config8(dev, 0xf4, val);

@@ -496,14 +496,12 @@ static void igd_init(struct device *dev)
 
 	intel_gma_init_igd_opregion();
 
-	/* IGD needs to be Bus Master */
-	u32 reg32 = pci_read_config32(dev, PCI_COMMAND);
-	reg32 |= PCI_COMMAND_MASTER;
-	pci_write_config32(dev, PCI_COMMAND, reg32);
-
 	gtt_res = find_resource(dev, PCI_BASE_ADDRESS_0);
 	if (!gtt_res || !gtt_res->base)
 		return;
+
+	if (!CONFIG(NO_GFX_INIT))
+		pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_MASTER);
 
 	/* Wait for any configured pre-graphics delay */
 	if (!acpi_is_wakeup_s3()) {

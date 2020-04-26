@@ -22,14 +22,10 @@
 
 static void gma_func0_init(struct device *dev)
 {
-	u32 reg32;
-
 	intel_gma_init_igd_opregion();
 
-	/* IGD needs to be Bus Master */
-	reg32 = pci_read_config32(dev, PCI_COMMAND);
-	reg32 |= PCI_COMMAND_MASTER;
-	pci_write_config32(dev, PCI_COMMAND, reg32);
+	if (!CONFIG(NO_GFX_INIT))
+		pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_MASTER);
 
 	/* configure GMBUSFREQ */
 	pci_update_config16(dev, 0xcc, ~0x1ff, 0xbc);

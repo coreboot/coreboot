@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
+#include <acpi/acpi.h>
 #include <assert.h>
 #include <bootmode.h>
 #include <console/console.h>
@@ -33,6 +34,13 @@ static void gma_init(struct device *const dev)
 
 	/* SoC specific configuration. */
 	graphics_soc_init(dev);
+
+	if (CONFIG(SOC_INTEL_CONFIGURE_DDI_A_4_LANES) && !acpi_is_wakeup_s3()) {
+		const u32 ddi_buf_ctl = graphics_gtt_read(DDI_BUF_CTL_A);
+		/* Only program if the buffer is not enabled yet. */
+		if (!(ddi_buf_ctl & DDI_BUF_CTL_ENABLE))
+			graphics_gtt_write(DDI_BUF_CTL_A, ddi_buf_ctl | DDI_A_4_LANES);
+	}
 
 	/*
 	 * GFX PEIM module inside FSP binary is taking care of graphics

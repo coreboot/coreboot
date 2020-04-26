@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <acpi/acpi.h>
 #include <commonlib/helpers.h>
 #include <console/console.h>
 #include <device/mmio.h>
@@ -16,7 +15,7 @@ uintptr_t fsp_soc_get_igd_bar(void)
 	return graphics_get_memory_base();
 }
 
-static void graphics_setup_panel(struct device *dev)
+void graphics_soc_init(struct device *dev)
 {
 	struct soc_intel_skylake_config *conf = config_of(dev);
 	struct resource *mmio_res;
@@ -73,24 +72,6 @@ static void graphics_setup_panel(struct device *dev)
 		write32(base + BLC_PWM_PCH_CTL1,
 			!!conf->gpu_pch_backlight_polarity << 29 |
 			BLM_PCH_PWM_ENABLE);
-	}
-}
-
-void graphics_soc_init(struct device *dev)
-{
-	u32 ddi_buf_ctl;
-
-	graphics_setup_panel(dev);
-
-	/*
-	 * Enable DDI-A (eDP) 4-lane operation if the link is not up yet.
-	 * This will allow the kernel to use 4-lane eDP links properly
-	 * if the VBIOS or GOP driver does not execute.
-	 */
-	ddi_buf_ctl = graphics_gtt_read(DDI_BUF_CTL_A);
-	if (!acpi_is_wakeup_s3() && !(ddi_buf_ctl & DDI_BUF_CTL_ENABLE)) {
-		ddi_buf_ctl |= DDI_A_4_LANES;
-		graphics_gtt_write(DDI_BUF_CTL_A, ddi_buf_ctl);
 	}
 }
 

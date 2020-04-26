@@ -2,3 +2,8 @@ config SOC_INTEL_COMMON_BLOCK_GRAPHICS
 	bool
 	help
 	  Intel Processor common Graphics support
+
+config SOC_INTEL_CONFIGURE_DDI_A_4_LANES
+	bool
+	help
+	  Selected by platforms that require DDI-A bifurcation setup.

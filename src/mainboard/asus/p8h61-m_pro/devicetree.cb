@@ -95,7 +95,7 @@ chip northbridge/intel/sandybridge
 					end
 					device pnp 2e.b on		# HWM, LED
 						io 0x60 = 0x0290
-						io 0x62 = 0x0200
+						io 0x62 = 0x0000
 					end
 					device pnp 2e.d on  end		# VID
 					device pnp 2e.e off end		# CIR WAKE-UP

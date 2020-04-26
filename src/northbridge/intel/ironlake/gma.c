@@ -141,7 +141,7 @@ static void gma_func0_init(struct device *dev)
 
 	/* IGD needs to be Bus Master */
 	reg32 = pci_read_config32(dev, PCI_COMMAND);
-	reg32 |= PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY | PCI_COMMAND_IO;
+	reg32 |= PCI_COMMAND_MASTER;
 	pci_write_config32(dev, PCI_COMMAND, reg32);
 
 	gtt_res = find_resource(dev, PCI_BASE_ADDRESS_0);

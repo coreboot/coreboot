@@ -674,8 +674,7 @@ static void gma_func0_init(struct device *dev)
 
 	/* IGD needs to be Bus Master */
 	reg32 = pci_read_config32(dev, PCI_COMMAND);
-	pci_write_config32(dev, PCI_COMMAND, reg32 | PCI_COMMAND_MASTER
-		 | PCI_COMMAND_IO | PCI_COMMAND_MEMORY);
+	pci_write_config32(dev, PCI_COMMAND, reg32 | PCI_COMMAND_MASTER);
 
 	if (CONFIG(MAINBOARD_DO_NATIVE_VGA_INIT)) {
 		int vga_disable = (pci_read_config16(dev, GGC) & 2) >> 1;
@@ -717,10 +716,9 @@ static void gma_func1_init(struct device *dev)
 	u32 reg32;
 	u8 val;
 
-	/* IGD needs to be Bus Master, also enable IO access */
+	/* IGD needs to be Bus Master */
 	reg32 = pci_read_config32(dev, PCI_COMMAND);
-	pci_write_config32(dev, PCI_COMMAND, reg32 |
-			PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY | PCI_COMMAND_IO);
+	pci_write_config32(dev, PCI_COMMAND, reg32 | PCI_COMMAND_MASTER);
 
 	if (get_option(&val, "tft_brightness") == CB_SUCCESS)
 		pci_write_config8(dev, 0xf4, val);

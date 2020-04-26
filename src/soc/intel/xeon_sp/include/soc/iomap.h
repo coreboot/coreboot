@@ -33,5 +33,6 @@
 #define PCH_PWRM_BASE_SIZE	0x10000
 
 #define P2SB_BAR                     CONFIG_PCR_BASE_ADDRESS
+#define GPIO_BASE_SIZE               0x10000
 
 #endif /* _SOC_IOMAP_H_ */

@@ -65,8 +65,6 @@ const char *soc_acpi_name(const struct device *dev)
 		return "AZHD";
 	case LPC_DEVFN:
 		return "LPCB";
-	case SATA_DEVFN:
-		return "STCR";
 	case SMBUS_DEVFN:
 		return "SBUS";
 	case XHCI0_DEVFN:

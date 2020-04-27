@@ -23,11 +23,6 @@ Method(_OSC,4)
 
 /* Describe the Southbridge devices */
 
-/* 0:11.0 - SATA */
-Device(STCR) {
-	Name(_ADR, 0x00110000)
-} /* end STCR */
-
 /* 0:14.0 - SMBUS */
 Device(SBUS) {
 	Name(_ADR, 0x00140000)

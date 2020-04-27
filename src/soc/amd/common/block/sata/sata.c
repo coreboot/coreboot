@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 /* This file is part of the coreboot project. */
 
+#include <arch/acpigen.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
@@ -19,6 +20,7 @@ static struct device_operations sata_ops = {
 	.enable_resources	= pci_dev_enable_resources,
 	.init			= soc_enable_sata_features,
 	.acpi_name		= sata_acpi_name,
+	.acpi_fill_ssdt		= acpi_device_write_pci_dev,
 };
 
 static const unsigned short pci_device_ids[] = {

@@ -110,6 +110,9 @@ struct soc_intel_jasperlake_config {
 	 * clksrc. */
 	uint8_t PcieClkSrcClkReq[CONFIG_MAX_PCIE_CLOCKS];
 
+	/* Probe CLKREQ# signal before enabling CLKREQ# based power management.*/
+	uint8_t PcieRpClkReqDetect[CONFIG_MAX_ROOT_PORTS];
+
 	/* PCIe RP L1 substate */
 	enum L1_substates_control {
 		L1_SS_FSP_DEFAULT,

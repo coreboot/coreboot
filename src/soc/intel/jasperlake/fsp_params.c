@@ -104,6 +104,10 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	/* disable Legacy PME */
 	memset(params->PcieRpPmSci, 0, sizeof(params->PcieRpPmSci));
 
+	/* Enable ClkReqDetect for enabled port */
+	memcpy(params->PcieRpClkReqDetect, config->PcieRpClkReqDetect,
+		sizeof(config->PcieRpClkReqDetect));
+
 	/* USB configuration */
 	for (i = 0; i < ARRAY_SIZE(config->usb2_ports); i++) {
 

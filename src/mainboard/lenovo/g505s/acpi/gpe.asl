@@ -23,7 +23,6 @@ Scope(\_GPE) {	/* Start Scope GPE */
 		Notify(\_SB.PCI0.UOH4, 0x02)
 		Notify(\_SB.PCI0.XHC0, 0x02)
 		Notify(\_SB.PCI0.UEH1, 0x02)
-		Notify(\_SB.PWRB, 0x02)
 	}
 
 	/* ExtEvent0 SCI event */
@@ -58,6 +57,5 @@ Scope(\_GPE) {	/* Start Scope GPE */
 	Method(_L1B) {
 		/* DBGO("\\_GPE\\_L1B\n") */
 		Notify(\_SB.PCI0.AZHD, 0x02) /* NOTIFY_DEVICE_WAKE */
-		Notify(\_SB.PWRB, 0x02) /* NOTIFY_DEVICE_WAKE */
 	}
 }	/* End Scope GPE */

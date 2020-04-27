@@ -38,13 +38,6 @@ DefinitionBlock (
 		/* Describe IRQ Routing mapping for this platform (within the \_SB scope) */
 		#include "acpi/routing.asl"
 
-		Device(PWRB) {
-			Name(_HID, EISAID("PNP0C0C"))
-			Name(_UID, 0xAA)
-			Name(_PRW, Package () {3, 0x04})
-			Name(_STA, 0x0B)
-		}
-
 		Device(PCI0) {
 			/* Describe the AMD Northbridge */
 			#include <northbridge/amd/agesa/family15tn/acpi/northbridge.asl>

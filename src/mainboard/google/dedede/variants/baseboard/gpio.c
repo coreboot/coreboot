@@ -119,7 +119,7 @@ static const struct pad_config gpio_table[] = {
 	/* C10 : GPP_C10/UART0_RTSB */
 	PAD_NC(GPP_C10, NONE),
 	/* C11 : AP_WP_OD */
-	PAD_NC(GPP_C11, NONE),
+	PAD_CFG_GPI(GPP_C11, NONE, DEEP),
 	/* C12 : AP_PEN_DET_ODL */
 	PAD_NC(GPP_C12, NONE),
 	/* C13 : GPP_C13/UART1_TXD */
@@ -444,6 +444,8 @@ const struct pad_config *__weak variant_sleep_gpio_table(size_t *num)
 }
 
 static const struct cros_gpio cros_gpios[] = {
+	CROS_GPIO_REC_AL(CROS_GPIO_VIRTUAL, CROS_GPIO_COMM0_NAME),
+	CROS_GPIO_WP_AH(GPIO_PCH_WP, CROS_GPIO_COMM0_NAME),
 };
 
 const struct cros_gpio *__weak variant_cros_gpios(size_t *num)

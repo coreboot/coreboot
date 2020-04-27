@@ -23,8 +23,7 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 
 int get_write_protect_state(void)
 {
-	/* No write protect */
-	return 0;
+	return gpio_get(GPIO_PCH_WP);
 }
 
 void mainboard_chromeos_acpi_generate(void)

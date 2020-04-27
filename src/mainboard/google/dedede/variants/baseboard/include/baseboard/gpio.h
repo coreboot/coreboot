@@ -14,6 +14,8 @@
 /* eSPI virtual wire reporting */
 #define EC_SCI_GPI	GPE0_ESPI
 
+#define GPIO_PCH_WP	GPP_C11
+
 /* EC wake is LAN_WAKE# which is a special DeepSX wake pin */
 #define GPE_EC_WAKE	GPE0_LAN_WAK
 

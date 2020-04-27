@@ -111,10 +111,10 @@ verstage-y += common.c
 verstage-$(CONFIG_VBOOT_SEPARATE_VERSTAGE) += verstage.c
 ifeq (${CONFIG_VBOOT_MOCK_SECDATA},y)
 verstage-y += secdata_mock.c
-romstage-$(CONFIG_VBOOT_SEPARATE_VERSTAGE) += secdata_mock.c
+romstage-y += secdata_mock.c
 else
 verstage-y += secdata_tpm.c
-romstage-$(CONFIG_VBOOT_SEPARATE_VERSTAGE) += secdata_tpm.c
+romstage-y += secdata_tpm.c
 endif
 
 ifneq ($(CONFIG_TPM1)$(CONFIG_TPM2),)

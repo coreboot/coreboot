@@ -8,11 +8,17 @@
 
 void __weak soc_enable_sata_features(struct device *dev) { }
 
+static const char *sata_acpi_name(const struct device *dev)
+{
+	return "STCR";
+}
+
 static struct device_operations sata_ops = {
 	.read_resources		= pci_dev_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
 	.init			= soc_enable_sata_features,
+	.acpi_name		= sata_acpi_name,
 };
 
 static const unsigned short pci_device_ids[] = {

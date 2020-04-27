@@ -62,11 +62,11 @@ static int usb_controller_initialize(int bus, int dev, int func)
 
 	/* enable busmaster */
 	if (devclass == 0xc03) {
-		u32 pci_command;
+		u16 pci_command;
 
-		pci_command = pci_read_config32(pci_device, PCI_COMMAND);
+		pci_command = pci_read_config16(pci_device, PCI_COMMAND);
 		pci_command |= PCI_COMMAND_MASTER;
-		pci_write_config32(pci_device, PCI_COMMAND, pci_command);
+		pci_write_config16(pci_device, PCI_COMMAND, pci_command);
 
 		usb_debug("%02x:%02x.%x %04x:%04x.%d ", bus, dev, func,
 			pciid >> 16, pciid & 0xFFFF, func);

@@ -42,3 +42,17 @@ void set_var_mtrr(
 	maskm.hi = (1 << (cpu_phys_address_size() - 32)) - 1;
 	wrmsr(MTRR_PHYS_MASK(reg), maskm);
 }
+
+void clear_all_var_mtrr(void)
+{
+	msr_t mtrr = {0, 0};
+	int vcnt;
+	int i;
+
+	vcnt = get_var_mtrr_count();
+
+	for (i = 0; i < vcnt; i++) {
+		wrmsr(MTRR_PHYS_MASK(i), mtrr);
+		wrmsr(MTRR_PHYS_BASE(i), mtrr);
+	}
+}

@@ -107,6 +107,7 @@ static inline int get_var_mtrr_count(void)
 void set_var_mtrr(unsigned int reg, unsigned int base, unsigned int size,
 	unsigned int type);
 int get_free_var_mtrr(void);
+void clear_all_var_mtrr(void);
 
 asmlinkage void display_mtrrs(void);
 

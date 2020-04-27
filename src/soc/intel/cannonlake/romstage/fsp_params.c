@@ -128,6 +128,10 @@ static void soc_memory_init_params(FSPM_UPD *mupd, const config_t *config)
 				config->sata_port[i].TxGen3DeEmph;
 		}
 	}
+#if !CONFIG(SOC_INTEL_COMETLAKE)
+	if (config->DisableHeciRetry)
+		tconfig->DisableHeciRetry = config->DisableHeciRetry;
+#endif
 }
 
 void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)

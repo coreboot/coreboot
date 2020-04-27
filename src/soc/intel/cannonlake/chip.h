@@ -194,6 +194,7 @@ struct soc_intel_cannonlake_config {
 
 	/* Heci related */
 	uint8_t Heci3Enabled;
+	uint8_t DisableHeciRetry;
 
 	/* Gfx related */
 	uint8_t IgdDvmt50PreAlloc;

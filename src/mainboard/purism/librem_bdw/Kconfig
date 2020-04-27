@@ -21,11 +21,6 @@ config DEVICETREE
 	string
 	default "variants/$(CONFIG_VARIANT_DIR)/devicetree.cb"
 
-config DRIVERS_PS2_KEYBOARD
-	def_bool y
-	help
-	  Default PS/2 Keyboard to enabled on this board.
-
 config DRIVERS_UART_8250IO
 	def_bool n
 	help

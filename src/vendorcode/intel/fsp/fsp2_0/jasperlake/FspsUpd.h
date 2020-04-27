@@ -172,7 +172,13 @@ typedef struct {
 
 /** Offset 0x0075 - Reserved
 **/
-  UINT8                       Reserved2[136];
+  UINT8                       Reserved2[135];
+
+/** Offset 0x00FC - Turbo Mode
+  Enable/Disable Turbo mode. 0: disable, 1: enable
+  $EN_DIS
+**/
+  UINT8                       TurboMode;
 
 /** Offset 0x00FD - Enable SATA SALP Support
   Enable/disable SATA Aggressive Link Power Management.
@@ -355,7 +361,16 @@ typedef struct {
 
 /** Offset 0x0301 - Reserved
 **/
-  UINT8                       Reserved8[83];
+  UINT8                       Reserved8[81];
+
+/** Offset 0x0352 - Mask to enable the usage of external V1p05 VR rail in specific S0ix or Sx states
+  Enable External V1P05 Rail in: BIT0:S0i1/S0i2, BIT1:S0i3, BIT2:S3, BIT3:S4, BIT5:S5
+**/
+  UINT8                       PchFivrExtV1p05RailEnabledStates;
+
+/** Offset 0x0353 - Reserved
+**/
+  UINT8                       Reserved9;
 
 /** Offset 0x0354 - External V1P05 Voltage Value that will be used in S0i2/S0i3 states
   Value is given in 2.5mV increments (0=0mV, 1=2.5mV, 2=5mV...)
@@ -369,7 +384,7 @@ typedef struct {
 
 /** Offset 0x0357 - Reserved
 **/
-  UINT8                       Reserved9;
+  UINT8                       Reserved10;
 
 /** Offset 0x0358 - External Vnn Voltage Value that will be used in S0ix/Sx states
   Value is given in 2.5mV increments (0=0mV, 1=2.5mV, 2=5mV...)
@@ -381,9 +396,11 @@ typedef struct {
 **/
   UINT8                       PchFivrExtVnnRailIccMax;
 
-/** Offset 0x035B - Reserved
+/** Offset 0x035B - Mask to enable the usage of external Vnn VR rail in Sx states
+  Use only if Ext Vnn Rail config is different in Sx. Enable External Vnn Rail in
+  Sx: BIT0-1:Reserved, BIT2:S3, BIT3:S4, BIT5:S5
 **/
-  UINT8                       Reserved10;
+  UINT8                       PchFivrExtVnnRailSxEnabledStates;
 
 /** Offset 0x035C - External Vnn Voltage Value that will be used in Sx states
   Use only if Ext Vnn Rail config is different in Sx. Value is given in 2.5mV increments
@@ -397,9 +414,23 @@ typedef struct {
 **/
   UINT8                       PchFivrExtVnnRailSxIccMax;
 
-/** Offset 0x035F - Reserved
+/** Offset 0x035F - Transition time in microseconds from Low Current Mode Voltage to High Current Mode Voltage
+  This field has 1us resolution. When value is 0 PCH will not transition VCCIN_AUX
+  to low current mode voltage.
 **/
-  UINT8                       Reserved11[3];
+  UINT8                       PchFivrVccinAuxLowToHighCurModeVolTranTime;
+
+/** Offset 0x0360 - Transition time in microseconds from Retention Mode Voltage to High Current Mode Voltage
+  This field has 1us resolution. When value is 0 PCH will not transition VCCIN_AUX
+  to retention mode voltage.
+**/
+  UINT8                       PchFivrVccinAuxRetToHighCurModeVolTranTime;
+
+/** Offset 0x0361 - Transition time in microseconds from Retention Mode Voltage to Low Current Mode Voltage
+  This field has 1us resolution. When value is 0 PCH will not transition VCCIN_AUX
+  to retention mode voltage.
+**/
+  UINT8                       PchFivrVccinAuxRetToLowCurModeVolTranTime;
 
 /** Offset 0x0362 - Transition time in microseconds from Off (0V) to High Current Mode Voltage
   This field has 1us resolution. When value is 0 Transition to 0V is disabled.
@@ -408,7 +439,20 @@ typedef struct {
 
 /** Offset 0x0364 - Reserved
 **/
-  UINT8                      Reserved12[22];
+  UINT8                      Reserved11[20];
+
+/** Offset 0x0378 - CNVi Configuration
+  This option allows for automatic detection of Connectivity Solution. [Auto Detection]
+  assumes that CNVi will be enabled when available, [Disable] allows for disabling CNVi.
+  0:Disable, 1:Auto
+**/
+  UINT8                       CnviMode;
+
+/** Offset 0x0379 - CNVi BT Core
+  Enable/Disable CNVi BT Core, Default is ENABLE. 0: DISABLE, 1: ENABLE
+  $EN_DIS
+**/
+  UINT8                       CnviBtCore;
 
 /** Offset 0x037A - CNVi BT Audio Offload
   Enable/Disable BT Audio Offload, Default is DISABLE. 0: DISABLE, 1: ENABLE
@@ -418,7 +462,7 @@ typedef struct {
 
 /** Offset 0x037B - Reserved
 **/
-  UINT8                       Reserved13;
+  UINT8                       Reserved12;
 
 /** Offset 0x037C - CNVi RF_RESET pin muxing
   Select CNVi RF_RESET# pin depending on board routing. ICP-N: GPP_H12 = 0x2746E40C(default)
@@ -434,7 +478,13 @@ typedef struct {
 
 /** Offset 0x0384 - Reserved
 **/
-  UINT8                       Reserved14[146];
+  UINT8                       Reserved13[145];
+
+/** Offset 0x0415 - Enable/Disable PavpEnable
+  Enable(Default): Enable PavpEnable, Disable: Disable PavpEnable
+  $EN_DIS
+**/
+  UINT8                       PavpEnable;
 
 /** Offset 0x0416 - CdClock Frequency selection
   0: (Default) Auto (Max based on reference clock frequency), 1: 172.8 Mhz, 2: 180
@@ -446,14 +496,15 @@ typedef struct {
   UINT8                       CdClock;
 
 /** Offset 0x0417 - Enable/Disable PeiGraphicsPeimInit
-  Enable: Enable PeiGraphicsPeimInit, Disable(Default): Disable PeiGraphicsPeimInit
+  Enable: FSP will initialize the framebuffer and provide it via EFI_PEI_GRAPHICS_INFO_HOB.
+  <b>Disable(Default):</b> FSP will NOT initialize the framebuffer.
   $EN_DIS
 **/
   UINT8                       PeiGraphicsPeimInit;
 
 /** Offset 0x0418 - Reserved
 **/
-  UINT8                       Reserved15[152];
+  UINT8                       Reserved14[152];
 
 /** Offset 0x04B0 - Skip Multi-Processor Initialization
   When this is skipped, boot loader must initialize processors before SilicionInit
@@ -464,16 +515,29 @@ typedef struct {
 
 /** Offset 0x04B1 - Reserved
 **/
-  UINT8                       Reserved16[11];
+  UINT8                       Reserved15[11];
 
 /** Offset 0x04BC - CpuMpPpi
-  Pointer for CpuMpPpi
+  <b>Optional</b> pointer to the boot loader's implementation of EFI_PEI_MP_SERVICES_PPI.
+  If not NULL, FSP will use the boot loader's implementation of multiprocessing.
+  See section 5.1.4 of the FSP Integration Guide for more details.
 **/
   UINT32                      CpuMpPpi;
 
 /** Offset 0x04C0 - Reserved
 **/
-  UINT8                      Reserved17[86];
+  UINT8                      Reserved16[83];
+
+/** Offset 0x0513 - Enable LOCKDOWN BIOS LOCK
+  Enable the BIOS Lock feature and set EISS bit (D31:F5:RegDCh[5]) for the BIOS region
+  protection.
+  $EN_DIS
+**/
+  UINT8                       PchLockDownBiosLock;
+
+/** Offset 0x0514 - Reserved
+**/
+  UINT8                       Reserved17[2];
 
 /** Offset 0x0516 - RTC Cmos Memory Lock
   Enable RTC lower and upper 128 byte Lock bits to lock Bytes 38h-3Fh in the upper
@@ -565,19 +629,19 @@ typedef struct {
 
 /** Offset 0x07FC - Reserved
 **/
-  UINT8                       Reserved24[511];
+  UINT8                       Reserved24[487];
 
-/** Offset 0x09FB - Enable/Disable IGFX PmSupport
+/** Offset 0x09E3 - Enable/Disable IGFX PmSupport
   Enable(Default): Enable IGFX PmSupport, Disable: Disable IGFX PmSupport
   $EN_DIS
 **/
   UINT8                       PmSupport;
 
-/** Offset 0x09FC - Reserved
+/** Offset 0x09E4 - Reserved
 **/
   UINT8                       Reserved25[32];
 
-/** Offset 0x0A1C - TCC Activation Offset
+/** Offset 0x0A04 - TCC Activation Offset
   TCC Activation Offset. Offset from factory set TCC activation temperature at which
   the Thermal Control Circuit must be activated. TCC will be activated at TCC Activation
   Temperature, in volts.For SKL Y SKU, the recommended default for this policy is
@@ -585,50 +649,62 @@ typedef struct {
 **/
   UINT8                       TccActivationOffset;
 
-/** Offset 0x0A1D - Reserved
+/** Offset 0x0A05 - Reserved
 **/
   UINT8                       Reserved26[34];
 
-/** Offset 0x0A3F - Enable or Disable CPU power states (C-states)
+/** Offset 0x0A27 - Enable or Disable CPU power states (C-states)
   Enable or Disable CPU power states (C-states). 0: Disable; <b>1: Enable</b>
   $EN_DIS
 **/
   UINT8                       Cx;
 
-/** Offset 0x0A40 - Reserved
+/** Offset 0x0A28 - Reserved
 **/
   UINT8                       Reserved27[74];
 
-/** Offset 0x0A8A - Platform Power Pmax
+/** Offset 0x0A72 - Platform Power Pmax
   PCODE MMIO Mailbox: Platform Power Pmax. <b>0 - Auto</b> Specified in 1/8 Watt increments.
   Range 0-1024 Watts. Value of 800 = 100W
 **/
   UINT16                      PsysPmax;
 
-/** Offset 0x0A8C - Reserved
+/** Offset 0x0A74 - Reserved
 **/
-  UINT8                      Reserved28[116];
+  UINT8                      Reserved28[115];
 
-/** Offset 0x0B00 - End of Post message
+/** Offset 0x0AE7 - End of Post message
   Test, Send End of Post message. Disable(0x0): Disable EOP message, Send in PEI(0x1):
   EOP send in PEI, Send in DXE(0x2)(Default): EOP send in DXE
   0:Disable, 1:Send in PEI, 2:Send in DXE, 3:Reserved
 **/
   UINT8                       EndOfPostMessage;
 
-/** Offset 0x0B01 - Reserved
+/** Offset 0x0AE8 - Reserved
 **/
-  UINT8                       Reserved29[3];
+  UINT8                       Reserved29;
 
-/** Offset 0x0B04 - Unlock all GPIO pads
+/** Offset 0x0AE9 - Enable LOCKDOWN SMI
+  Enable SMI_LOCK bit to prevent writes to the Global SMI Enable bit.
+  $EN_DIS
+**/
+  UINT8                       PchLockDownGlobalSmi;
+
+/** Offset 0x0AEA - Enable LOCKDOWN BIOS Interface
+  Enable BIOS Interface Lock Down bit to prevent writes to the Backup Control Register.
+  $EN_DIS
+**/
+  UINT8                       PchLockDownBiosInterface;
+
+/** Offset 0x0AEB - Unlock all GPIO pads
   Force all GPIO pads to be unlocked for debug purpose.
   $EN_DIS
 **/
   UINT8                       PchUnlockGpioPads;
 
-/** Offset 0x0B05 - Reserved
+/** Offset 0x0AEC - Reserved
 **/
-  UINT8                       Reserved30[451];
+  UINT8                       Reserved30[452];
 } FSP_S_CONFIG;
 
 /** Fsp S UPD Configuration
@@ -643,11 +719,11 @@ typedef struct {
 **/
   FSP_S_CONFIG                FspsConfig;
 
-/** Offset 0x0CC8
+/** Offset 0x0CB0
 **/
   UINT8                       UnusedUpdSpace36[6];
 
-/** Offset 0x0CCE
+/** Offset 0x0CB6
 **/
   UINT16                      UpdTerminator;
 } FSPS_UPD;

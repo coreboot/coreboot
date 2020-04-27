@@ -136,35 +136,29 @@ typedef struct {
 **/
   UINT8                       Reserved2[6];
 
-/** Offset 0x009C - Intel Enhanced Debug
-  Intel Enhanced Debug (IED): 0=Disabled, 0x400000=Enabled and 4MB SMRAM occupied
-  0 : Disable, 0x400000 : Enable
-**/
-  UINT32                      IedSize;
-
-/** Offset 0x00A0 - Tseg Size
+/** Offset 0x009C - Tseg Size
   Size of SMRAM memory reserved. 0x400000 for Release build and 0x1000000 for Debug build
   0x0400000:4MB, 0x01000000:16MB
 **/
   UINT32                      TsegSize;
 
-/** Offset 0x00A4 - Reserved
+/** Offset 0x00A0 - Reserved
 **/
   UINT8                      Reserved3[6];
 
-/** Offset 0x00AA - Enable SMBus
+/** Offset 0x00A6 - Enable SMBus
   Enable/disable SMBus controller.
   $EN_DIS
 **/
   UINT8                       SmbusEnable;
 
-/** Offset 0x00AB - Spd Address Tabl
+/** Offset 0x00A7 - Spd Address Tabl
   Specify SPD Address table for CH0D0/CH0D1/CH1D0&CH1D1. MemorySpdPtr will be used
   if SPD Address is 00
 **/
   UINT8                       SpdAddressTable[4];
 
-/** Offset 0x00AF - Platform Debug Consent
+/** Offset 0x00AB - Platform Debug Consent
   To 'opt-in' for debug, please select 'Enabled' with the desired debug probe type.
   Enabling this BIOS option may alter the default value of other debug-related BIOS
   options.\Manual: Do not use Platform Debug Consent to override other debug-relevant
@@ -175,42 +169,42 @@ typedef struct {
 **/
   UINT8                       PlatformDebugConsent;
 
-/** Offset 0x00B0 - Reserved
+/** Offset 0x00AC - Reserved
 **/
   UINT8                       Reserved4[2];
 
-/** Offset 0x00B2 - Enable DCI ModPHY Pwoer Gate
+/** Offset 0x00AE - Enable DCI ModPHY Pwoer Gate
   Enable ModPHY Pwoer Gate when DCI is enabled
   $EN_DIS
 **/
   UINT8                       DciModphyPg;
 
-/** Offset 0x00B3 - Reserved
+/** Offset 0x00AF - Reserved
 **/
   UINT8                       Reserved5;
 
-/** Offset 0x00B4 - PCH Trace Hub Mode
+/** Offset 0x00B0 - PCH Trace Hub Mode
   Select 'Host Debugger' if Trace Hub is used with host debugger tool or 'Target Debugger'
   if Trace Hub is used by target debugger software or 'Disable' trace hub functionality.
   0: Disable, 1: Target Debugger Mode, 2: Host Debugger Mode
 **/
   UINT8                       PchTraceHubMode;
 
-/** Offset 0x00B5 - Reserved
+/** Offset 0x00B1 - Reserved
 **/
   UINT8                       Reserved6[47];
 
-/** Offset 0x00E4 - Disable VT-d
+/** Offset 0x00E0 - Disable VT-d
   0=Enable/FALSE(VT-d enabled), 1=Disable/TRUE (VT-d disabled)
   $EN_DIS
 **/
   UINT8                       VtdDisable;
 
-/** Offset 0x00E5 - Reserved
+/** Offset 0x00E1 - Reserved
 **/
   UINT8                       Reserved7[3];
 
-/** Offset 0x00E8 - Internal Graphics Pre-allocated Memory
+/** Offset 0x00E4 - Internal Graphics Pre-allocated Memory
   Size of memory preallocated for internal graphics.
   0x00:0MB, 0x01:32MB, 0x02:64MB, 0x03:96MB, 0x04:128MB, 0x05:160MB, 0xF0:4MB, 0xF1:8MB,
   0xF2:12MB, 0xF3:16MB, 0xF4:20MB, 0xF5:24MB, 0xF6:28MB, 0xF7:32MB, 0xF8:36MB, 0xF9:40MB,
@@ -218,147 +212,135 @@ typedef struct {
 **/
   UINT8                       IgdDvmt50PreAlloc;
 
-/** Offset 0x00E9 - Internal Graphics
+/** Offset 0x00E5 - Internal Graphics
   Enable/disable internal graphics.
   $EN_DIS
 **/
   UINT8                       InternalGfx;
 
-/** Offset 0x00EA - Reserved
+/** Offset 0x00E6 - Reserved
 **/
   UINT8                       Reserved8;
 
-/** Offset 0x00EB - Board Type
+/** Offset 0x00E7 - Board Type
   MrcBoardType, Options are 0=Mobile/Mobile Halo, 1=Desktop/DT Halo, 5=ULT/ULX/Mobile
   Halo, 7=UP Server
   0:Mobile/Mobile Halo, 1:Desktop/DT Halo, 5:ULT/ULX/Mobile Halo, 7:UP Server
 **/
   UINT8                       UserBd;
 
-/** Offset 0x00EC - Reserved
+/** Offset 0x00E8 - Reserved
 **/
   UINT8                      Reserved9[2];
 
-/** Offset 0x00EE - SA GV
+/** Offset 0x00EA - SA GV
   System Agent dynamic frequency support and when enabled memory will be training
   at three different frequencies.
   0:Disabled, 1:FixedLow, 2:FixedMid, 3:FixedHigh, 4:Enabled
 **/
   UINT8                       SaGv;
 
-/** Offset 0x00EF - Reserved
+/** Offset 0x00EB - Reserved
 **/
   UINT8                       Reserved10[5];
 
-/** Offset 0x00F4 - Rank Margin Tool
+/** Offset 0x00F0 - Rank Margin Tool
   Enable/disable Rank Margin Tool.
   $EN_DIS
 **/
   UINT8                       RMT;
 
-/** Offset 0x00F5 - Reserved
+/** Offset 0x00F1 - Reserved
 **/
   UINT8                       Reserved11[24];
 
-/** Offset 0x010D - Memory Reference Clock
+/** Offset 0x0109 - Memory Reference Clock
   100MHz, 133MHz.
   0:133MHz, 1:100MHz
 **/
   UINT8                       RefClk;
 
-/** Offset 0x010E - Reserved
+/** Offset 0x010A - Reserved
 **/
   UINT8                      Reserved12[26];
 
-/** Offset 0x0128 - Enable Intel HD Audio (Azalia)
+/** Offset 0x0124 - Enable Intel HD Audio (Azalia)
   0: Disable, 1: Enable (Default) Azalia controller
   $EN_DIS
 **/
   UINT8                       PchHdaEnable;
 
-/** Offset 0x0129 - CPU Trace Hub Mode
+/** Offset 0x0125 - CPU Trace Hub Mode
   Select 'Host Debugger' if Trace Hub is used with host debugger tool or 'Target Debugger'
   if Trace Hub is used by target debugger software or 'Disable' trace hub functionality.
   0: Disable, 1:Target Debugger Mode, 2:Host Debugger Mode
 **/
   UINT8                       CpuTraceHubMode;
 
-/** Offset 0x012A - Reserved
+/** Offset 0x0126 - Reserved
 **/
   UINT8                       Reserved13[98];
 
-/** Offset 0x018C - Program GPIOs for LFP on DDI port-A device
+/** Offset 0x0188 - Program GPIOs for LFP on DDI port-A device
   0=Disabled,1(Default)=eDP, 2=MIPI DSI
   0:Disabled, 1:eDP, 2:MIPI DSI
 **/
   UINT8                       DdiPortAConfig;
 
-/** Offset 0x018D - Reserved
+/** Offset 0x0189 - Reserved
 **/
   UINT8                       Reserved14[2];
 
-/** Offset 0x018F - Enable or disable HPD of DDI port B
+/** Offset 0x018B - Enable or disable HPD of DDI port B
   0=Disable, 1(Default)=Enable
   $EN_DIS
 **/
   UINT8                       DdiPortBHpd;
 
-/** Offset 0x0190 - Enable or disable HPD of DDI port C
+/** Offset 0x018C - Enable or disable HPD of DDI port C
   0(Default)=Disable, 1=Enable
   $EN_DIS
 **/
   UINT8                       DdiPortCHpd;
 
-/** Offset 0x0191 - Reserved
+/** Offset 0x018D - Reserved
 **/
   UINT8                       Reserved15[5];
 
-/** Offset 0x0196 - Enable or disable DDC of DDI port B
+/** Offset 0x0192 - Enable or disable DDC of DDI port B
   0=Disable, 1(Default)=Enable
   $EN_DIS
 **/
   UINT8                       DdiPortBDdc;
 
-/** Offset 0x0197 - Enable or disable DDC of DDI port C
+/** Offset 0x0193 - Enable or disable DDC of DDI port C
   0(Default)=Disable, 1=Enable
   $EN_DIS
 **/
   UINT8                       DdiPortCDdc;
 
-/** Offset 0x0198 - Reserved
+/** Offset 0x0194 - Reserved
 **/
-  UINT8                       Reserved16[165];
+  UINT8                       Reserved16[176];
 
-/** Offset 0x023D - C6DRAM power gating feature
-  This policy indicates whether or not BIOS should allocate PRMRR memory for C6DRAM
-  power gating feature.- 0: Don't allocate any PRMRR memory for C6DRAM power gating
-  feature.- <b>1: Allocate PRMRR memory for C6DRAM power gating feature</b>.
-  $EN_DIS
-**/
-  UINT8                       EnableC6Dram;
-
-/** Offset 0x023E - Reserved
-**/
-  UINT8                       Reserved17[7];
-
-/** Offset 0x0245 - CPU ratio value
+/** Offset 0x0244 - CPU ratio value
   CPU ratio value. Valid Range 0 to 63
 **/
   UINT8                       CpuRatio;
 
-/** Offset 0x0246 - Reserved
+/** Offset 0x0245 - Reserved
 **/
-  UINT8                       Reserved18[4];
+  UINT8                       Reserved17[4];
 
-/** Offset 0x024A - Enable or Disable VMX
+/** Offset 0x0249 - Enable or Disable VMX
   Enable or Disable VMX; 0: Disable; <b>1: Enable</b>.
   $EN_DIS
 **/
   UINT8                       VmxEnable;
 
-/** Offset 0x024B - Reserved
+/** Offset 0x024A - Reserved
 **/
-  UINT8                       Reserved19[31];
+  UINT8                       Reserved18[32];
 
 /** Offset 0x026A - BiosGuard
   Enable/Disable. 0: Disable, Enable/Disable BIOS Guard feature, 1: enable
@@ -368,7 +350,7 @@ typedef struct {
 
 /** Offset 0x026B - Reserved
 **/
-  UINT8                       Reserved20[5];
+  UINT8                       Reserved19[5];
 
 /** Offset 0x0270 - PrmrrSize
   Enable/Disable. 0: Disable, define default value of PrmrrSize , 1: enable
@@ -382,7 +364,7 @@ typedef struct {
 
 /** Offset 0x0278 - Reserved
 **/
-  UINT8                      Reserved21[543];
+  UINT8                      Reserved20[543];
 
 /** Offset 0x0497 - Usage type for ClkSrc
   0-23: PCH rootport, 0x40-0x43: PEG port, 0x70:LAN, 0x80: unspecified but in use
@@ -397,7 +379,7 @@ typedef struct {
 
 /** Offset 0x04B7 - Reserved
 **/
-  UINT8                       Reserved22[5];
+  UINT8                       Reserved21[5];
 
 /** Offset 0x04BC - Enable PCIE RP Mask
   Enable/disable PCIE Root Ports. 0: disable, 1: enable. One bit for each port, bit0
@@ -420,7 +402,7 @@ typedef struct {
 
 /** Offset 0x04C2 - Reserved
 **/
-  UINT8                       Reserved23[22];
+  UINT8                       Reserved22[22];
 
 /** Offset 0x04D8 - Early Command Training
   Enables/Disable Early Command Training
@@ -430,7 +412,7 @@ typedef struct {
 
 /** Offset 0x04D9 - Reserved
 **/
-  UINT8                       Reserved24[2];
+  UINT8                       Reserved23[2];
 
 /** Offset 0x04DB - Read MPR Training
   Enables/Disable Read MPR Training
@@ -440,7 +422,7 @@ typedef struct {
 
 /** Offset 0x04DC - Reserved
 **/
-  UINT8                       Reserved25[7];
+  UINT8                       Reserved24[7];
 
 /** Offset 0x04E3 - Dimm ODT Training
   Enables/Disable Dimm ODT Training
@@ -456,7 +438,7 @@ typedef struct {
 
 /** Offset 0x04E5 - Reserved
 **/
-  UINT8                       Reserved26;
+  UINT8                       Reserved25;
 
 /** Offset 0x04E6 - Write Slew Rate Training
   Enables/Disable Write Slew Rate Training
@@ -484,7 +466,7 @@ typedef struct {
 
 /** Offset 0x04EA - Reserved
 **/
-  UINT8                       Reserved27[3];
+  UINT8                       Reserved26[3];
 
 /** Offset 0x04ED - Read Voltage Centering 2D
   Enables/Disable Read Voltage Centering 2D
@@ -494,7 +476,7 @@ typedef struct {
 
 /** Offset 0x04EE - Reserved
 **/
-  UINT8                       Reserved28[3];
+  UINT8                       Reserved27[3];
 
 /** Offset 0x04F1 - Turn Around Timing Training
   Enables/Disable Turn Around Timing Training
@@ -504,7 +486,7 @@ typedef struct {
 
 /** Offset 0x04F2 - Reserved
 **/
-  UINT8                       Reserved29[6];
+  UINT8                       Reserved28[6];
 
 /** Offset 0x04F8 - Receive Enable Centering 1D
   Enables/Disable Receive Enable Centering 1D
@@ -520,7 +502,7 @@ typedef struct {
 
 /** Offset 0x04FA - Reserved
 **/
-  UINT8                       Reserved30[60];
+  UINT8                       Reserved29[60];
 
 /** Offset 0x0536 - RAPL PL 1 WindowX
   Power PL 1 time window X value, (1/1024)*(1+(x/4))*(2^y) (0=Def)
@@ -534,7 +516,7 @@ typedef struct {
 
 /** Offset 0x0538 - Reserved
 **/
-  UINT8                      Reserved31[2];
+  UINT8                      Reserved30[2];
 
 /** Offset 0x053A - RAPL PL 1 Power
   range[0;2^14-1]= [2047.875;0]in W, (224= Def)
@@ -543,7 +525,7 @@ typedef struct {
 
 /** Offset 0x053C - Reserved
 **/
-  UINT8                       Reserved32[68];
+  UINT8                       Reserved31[68];
 
 /** Offset 0x0580 - LpDdrDqDqsReTraining
   Enables/Disable LpDdrDqDqsReTraining
@@ -553,7 +535,7 @@ typedef struct {
 
 /** Offset 0x0581 - Reserved
 **/
-  UINT8                       Reserved33[172];
+  UINT8                       Reserved32[172];
 
 /** Offset 0x062D - Enable HD Audio Link
   Enable/disable HD Audio Link. Muxed with SSP0/SSP1/SNDW1.
@@ -563,7 +545,7 @@ typedef struct {
 
 /** Offset 0x062E - Reserved
 **/
-  UINT8                       Reserved34[3];
+  UINT8                       Reserved33[3];
 
 /** Offset 0x0631 - Enable HD Audio DMIC_N Link
   Enable/disable HD Audio DMIC1 link. Muxed with SNDW3.
@@ -572,7 +554,7 @@ typedef struct {
 
 /** Offset 0x0633 - Reserved
 **/
-  UINT8                       Reserved35[17];
+  UINT8                       Reserved34[17];
 
 /** Offset 0x0644 - Enable HD Audio DSP
   Enable/disable HD Audio DSP feature.
@@ -582,7 +564,7 @@ typedef struct {
 
 /** Offset 0x0645 - Reserved
 **/
-  UINT8                       Reserved36[11];
+  UINT8                       Reserved35[11];
 
 /** Offset 0x0650 - Enable HD Audio SSP0 Link
   Enable/disable HD Audio SSP_N/I2S link. Muxed with HDA. N-number 0-5
@@ -596,7 +578,7 @@ typedef struct {
 
 /** Offset 0x065A - Reserved
 **/
-  UINT8                       Reserved37[7];
+  UINT8                       Reserved36[7];
 
 /** Offset 0x0661 - Skip MBP HOB
   Test, 0: disable, 1: enable, Enable/Disable MOB HOB.
@@ -606,7 +588,7 @@ typedef struct {
 
 /** Offset 0x0662 - Reserved
 **/
-  UINT8                       Reserved38[22];
+  UINT8                       Reserved37[22];
 } FSP_M_CONFIG;
 
 /** Fsp M UPD Configuration

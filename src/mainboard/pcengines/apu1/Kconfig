@@ -72,10 +72,6 @@ config SB800_AHCI_ROM
 	bool
 	default n
 
-config DRIVERS_PS2_KEYBOARD
-	bool
-	default n
-
 choice
 	prompt "J19 pins 1-10"
 	default APU1_PINMUX_OFF_C

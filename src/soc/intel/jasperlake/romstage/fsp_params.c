@@ -26,7 +26,6 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 	}
 
 	m_cfg->TsegSize = CONFIG_SMM_TSEG_SIZE;
-	m_cfg->IedSize = CONFIG_IED_REGION_SIZE;
 	m_cfg->SaGv = config->SaGv;
 	m_cfg->RMT = config->RMT;
 
@@ -49,7 +48,6 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 			sizeof(config->PcieClkSrcClkReq));
 
 	m_cfg->PrmrrSize = config->PrmrrSize;
-	m_cfg->EnableC6Dram = config->enable_c6dram;
 
 	/* Disable BIOS Guard */
 	m_cfg->BiosGuard = 0;

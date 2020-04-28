@@ -15,15 +15,15 @@ static const unsigned short pci_device_ids[] = {
 };
 
 static struct device_operations hda_audio_ops = {
-	.read_resources = pci_dev_read_resources,
-	.set_resources = pci_dev_set_resources,
-	.enable_resources = pci_dev_enable_resources,
-	.ops_pci = &pci_dev_ops_pci,
+	.read_resources		= pci_dev_read_resources,
+	.set_resources		= pci_dev_set_resources,
+	.enable_resources	= pci_dev_enable_resources,
+	.ops_pci		= &pci_dev_ops_pci,
 };
 
 static const struct pci_driver hdaaudio_driver __pci_driver = {
-	.ops = CONFIG(AZALIA_PLUGIN_SUPPORT) ?
-			&default_azalia_audio_ops : &hda_audio_ops,
-	.vendor = PCI_VENDOR_ID_AMD,
-	.devices = pci_device_ids,
+	.ops			= CONFIG(AZALIA_PLUGIN_SUPPORT) ?
+				&default_azalia_audio_ops : &hda_audio_ops,
+	.vendor			= PCI_VENDOR_ID_AMD,
+	.devices		= pci_device_ids,
 };

@@ -30,10 +30,8 @@ static void usb_ehci_init(struct device *dev)
 	pci_write_config32(dev, 0xfc, 0x205b1708);
 #endif
 
-	reg32 = pci_read_config32(dev, PCI_COMMAND);
-	reg32 |= PCI_COMMAND_MASTER;
-	//reg32 |= PCI_COMMAND_SERR;
-	pci_write_config32(dev, PCI_COMMAND, reg32);
+	pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_MASTER);
+	//pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_SERR);
 
 	/* For others, done in MRC.  */
 #if CONFIG(USE_NATIVE_RAMINIT)

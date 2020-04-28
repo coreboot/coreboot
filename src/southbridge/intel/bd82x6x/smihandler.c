@@ -93,7 +93,7 @@ void southbridge_gate_memory_reset(void)
 
 static void xhci_sleep(u8 slp_typ)
 {
-	u32 reg32, xhci_bar;
+	u32 xhci_bar;
 	u16 reg16;
 
 	switch (slp_typ) {
@@ -103,9 +103,8 @@ static void xhci_sleep(u8 slp_typ)
 		reg16 &= ~0x03UL;
 		pci_write_config32(PCH_XHCI_DEV, 0x74, reg16);
 
-		reg32 = pci_read_config32(PCH_XHCI_DEV, PCI_COMMAND);
-		reg32 |= (PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY);
-		pci_write_config32(PCH_XHCI_DEV, PCI_COMMAND, reg32);
+		pci_or_config16(PCH_XHCI_DEV, PCI_COMMAND, PCI_COMMAND_MASTER |
+				PCI_COMMAND_MEMORY);
 
 		xhci_bar = pci_read_config32(PCH_XHCI_DEV,
 				              PCI_BASE_ADDRESS_0) & ~0xFUL;
@@ -119,9 +118,9 @@ static void xhci_sleep(u8 slp_typ)
 		if ((xhci_bar + 0x4F0) & 1)
 			pch_iobp_update(0xEC000382, ~0UL, (3 << 2));
 
-		reg32 = pci_read_config32(PCH_XHCI_DEV, PCI_COMMAND);
-		reg32 &= ~(PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY);
-		pci_write_config32(PCH_XHCI_DEV, PCI_COMMAND, reg32);
+		reg16 = pci_read_config16(PCH_XHCI_DEV, PCI_COMMAND);
+		reg16 &= ~(PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY);
+		pci_write_config16(PCH_XHCI_DEV, PCI_COMMAND, reg16);
 
 		reg16 = pci_read_config16(PCH_XHCI_DEV, 0x74);
 		reg16 |= 0x03;

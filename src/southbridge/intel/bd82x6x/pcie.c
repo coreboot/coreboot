@@ -205,15 +205,12 @@ static void pch_pcie_pm_late(struct device *dev)
 static void pci_init(struct device *dev)
 {
 	u16 reg16;
-	u32 reg32;
 	struct southbridge_intel_bd82x6x_config *config = dev->chip_info;
 
 	printk(BIOS_DEBUG, "Initializing PCH PCIe bridge.\n");
 
 	/* Enable Bus Master */
-	reg32 = pci_read_config32(dev, PCI_COMMAND);
-	reg32 |= PCI_COMMAND_MASTER;
-	pci_write_config32(dev, PCI_COMMAND, reg32);
+	pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_MASTER);
 
 	/* Set Cache Line Size to 0x10 */
 	// This has no effect but the OS might expect it
@@ -225,6 +222,7 @@ static void pci_init(struct device *dev)
 	pci_write_config16(dev, PCI_BRIDGE_CONTROL, reg16);
 
 #ifdef EVEN_MORE_DEBUG
+	u32 reg32;
 	reg32 = pci_read_config32(dev, 0x20);
 	printk(BIOS_SPEW, "    MBL    = 0x%08x\n", reg32);
 	reg32 = pci_read_config32(dev, 0x24);

@@ -301,7 +301,7 @@ static void pch_pcie_devicetree_update(
 static void pch_pcie_enable(struct device *dev)
 {
 	struct southbridge_intel_bd82x6x_config *config = dev->chip_info;
-	u32 reg32;
+	u16 reg16;
 
 	if (!config)
 		return;
@@ -358,10 +358,10 @@ static void pch_pcie_enable(struct device *dev)
 		}
 
 		/* Ensure memory, io, and bus master are all disabled */
-		reg32 = pci_read_config32(dev, PCI_COMMAND);
-		reg32 &= ~(PCI_COMMAND_MASTER |
+		reg16 = pci_read_config16(dev, PCI_COMMAND);
+		reg16 &= ~(PCI_COMMAND_MASTER |
 			   PCI_COMMAND_MEMORY | PCI_COMMAND_IO);
-		pci_write_config32(dev, PCI_COMMAND, reg32);
+		pci_write_config16(dev, PCI_COMMAND, reg16);
 
 		/* Do not claim downstream transactions for PCIe ports */
 		new_rpfn |= RPFN_HIDE(PCI_FUNC(dev->path.pci.devfn));
@@ -388,9 +388,7 @@ static void pch_pcie_enable(struct device *dev)
 		}
 
 		/* Enable SERR */
-		reg32 = pci_read_config32(dev, PCI_COMMAND);
-		reg32 |= PCI_COMMAND_SERR;
-		pci_write_config32(dev, PCI_COMMAND, reg32);
+		pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_SERR);
 	}
 
 	/*
@@ -410,7 +408,7 @@ static void pch_pcie_enable(struct device *dev)
 
 void pch_enable(struct device *dev)
 {
-	u32 reg32;
+	u16 reg16;
 
 	/* PCH PCIe Root Ports get special handling */
 	if (PCI_SLOT(dev->path.pci.devfn) == PCH_PCIE_DEV_SLOT)
@@ -420,18 +418,16 @@ void pch_enable(struct device *dev)
 		printk(BIOS_DEBUG, "%s: Disabling device\n",  dev_path(dev));
 
 		/* Ensure memory, io, and bus master are all disabled */
-		reg32 = pci_read_config32(dev, PCI_COMMAND);
-		reg32 &= ~(PCI_COMMAND_MASTER |
+		reg16 = pci_read_config16(dev, PCI_COMMAND);
+		reg16 &= ~(PCI_COMMAND_MASTER |
 			   PCI_COMMAND_MEMORY | PCI_COMMAND_IO);
-		pci_write_config32(dev, PCI_COMMAND, reg32);
+		pci_write_config16(dev, PCI_COMMAND, reg16);
 
 		/* Hide this device if possible */
 		pch_hide_devfn(dev->path.pci.devfn);
 	} else {
 		/* Enable SERR */
-		reg32 = pci_read_config32(dev, PCI_COMMAND);
-		reg32 |= PCI_COMMAND_SERR;
-		pci_write_config32(dev, PCI_COMMAND, reg32);
+		pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_SERR);
 	}
 }
 

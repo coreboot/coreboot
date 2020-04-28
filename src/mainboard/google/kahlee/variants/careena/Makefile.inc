@@ -6,6 +6,7 @@
 
 subdirs-y += ./spd
 
+bootblock-y += variant.c
 romstage-y += variant.c
 
 ramstage-y += ../baseboard/mainboard.c

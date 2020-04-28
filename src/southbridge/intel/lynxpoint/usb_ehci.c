@@ -16,7 +16,6 @@
 void usb_ehci_disable(pci_devfn_t dev)
 {
 	u16 reg16;
-	u32 reg32;
 
 	/* Set 0xDC[0]=1 */
 	pci_or_config32(dev, 0xdc, (1 << 0));
@@ -29,9 +28,9 @@ void usb_ehci_disable(pci_devfn_t dev)
 
 	/* Clear memory and bus master */
 	pci_write_config32(dev, PCI_BASE_ADDRESS_0, 0);
-	reg32 = pci_read_config32(dev, PCI_COMMAND);
-	reg32 &= ~(PCI_COMMAND_IO | PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER);
-	pci_write_config32(dev, PCI_COMMAND, reg32);
+	reg16 = pci_read_config16(dev, PCI_COMMAND);
+	reg16 &= ~(PCI_COMMAND_IO | PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER);
+	pci_write_config16(dev, PCI_COMMAND, reg16);
 
 	/* Disable device */
 	switch (dev) {
@@ -56,7 +55,7 @@ void usb_ehci_sleep_prepare(pci_devfn_t dev, u8 slp_typ)
 	bar0_base = (u8 *)pci_read_config32(dev, PCI_BASE_ADDRESS_0);
 	if (bar0_base == 0 || bar0_base == (u8 *)0xffffffff)
 		return;
-	pci_cmd = pci_read_config32(dev, PCI_COMMAND);
+	pci_cmd = pci_read_config16(dev, PCI_COMMAND);
 
 	switch (slp_typ) {
 	case ACPI_S4:

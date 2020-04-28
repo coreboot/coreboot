@@ -134,14 +134,11 @@ static void serialio_init(struct device *dev)
 	struct southbridge_intel_lynxpoint_config *config = dev->chip_info;
 	struct resource *bar0, *bar1;
 	int sio_index = -1;
-	u32 reg32;
 
 	printk(BIOS_DEBUG, "Initializing Serial IO device\n");
 
 	/* Ensure memory and bus master are enabled */
-	reg32 = pci_read_config32(dev, PCI_COMMAND);
-	reg32 |= PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY;
-	pci_write_config32(dev, PCI_COMMAND, reg32);
+	pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_MEMORY);
 
 	/* Find BAR0 and BAR1 */
 	bar0 = find_resource(dev, PCI_BASE_ADDRESS_0);

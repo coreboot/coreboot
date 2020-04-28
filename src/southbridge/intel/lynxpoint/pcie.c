@@ -277,7 +277,7 @@ static void root_port_commit_config(void)
 
 	for (i = 0; i < rpc.num_ports; i++) {
 		struct device *dev;
-		u32 reg32;
+		u16 reg16;
 
 		dev = rpc.ports[i];
 
@@ -292,10 +292,9 @@ static void root_port_commit_config(void)
 		printk(BIOS_DEBUG, "%s: Disabling device\n",  dev_path(dev));
 
 		/* Ensure memory, io, and bus master are all disabled */
-		reg32 = pci_read_config32(dev, PCI_COMMAND);
-		reg32 &= ~(PCI_COMMAND_MASTER |
-			   PCI_COMMAND_MEMORY | PCI_COMMAND_IO);
-		pci_write_config32(dev, PCI_COMMAND, reg32);
+		reg16 = pci_read_config16(dev, PCI_COMMAND);
+		reg16 &= ~(PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY | PCI_COMMAND_IO);
+		pci_write_config16(dev, PCI_COMMAND, reg16);
 
 		/* Disable this device if possible */
 		pch_disable_devfn(dev);
@@ -654,19 +653,14 @@ static void pch_pcie_early(struct device *dev)
 static void pci_init(struct device *dev)
 {
 	u16 reg16;
-	u32 reg32;
 
 	printk(BIOS_DEBUG, "Initializing PCH PCIe bridge.\n");
 
 	/* Enable SERR */
-	reg32 = pci_read_config32(dev, PCI_COMMAND);
-	reg32 |= PCI_COMMAND_SERR;
-	pci_write_config32(dev, PCI_COMMAND, reg32);
+	pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_SERR);
 
 	/* Enable Bus Master */
-	reg32 = pci_read_config32(dev, PCI_COMMAND);
-	reg32 |= PCI_COMMAND_MASTER;
-	pci_write_config32(dev, PCI_COMMAND, reg32);
+	pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_MASTER);
 
 	/* Set Cache Line Size to 0x10 */
 	// This has no effect but the OS might expect it

@@ -10,11 +10,8 @@
 
 static void usb2_init(struct device *dev)
 {
-	u32 cmd;
 	printk(BIOS_DEBUG, "USB: Setting up controller.. ");
-	cmd = pci_read_config32(dev, PCI_COMMAND);
-	pci_write_config32(dev, PCI_COMMAND,
-			   cmd | PCI_COMMAND_IO | PCI_COMMAND_MEMORY |
+	pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_IO | PCI_COMMAND_MEMORY |
 			   PCI_COMMAND_MASTER | PCI_COMMAND_INVALIDATE);
 	printk(BIOS_DEBUG, "done.\n");
 }

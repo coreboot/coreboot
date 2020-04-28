@@ -18,8 +18,8 @@ By using the [vboot] mechanism you store a copy of coreboot in the `RO`
 partition that acts as failsafe in case the regular firmware update, that
 goes to the `A` or `B` partition fails.
 
-**Note:** The `RO` partition isn't write-protected by default. There's a patch
-pending on gerrit [CB:32705] that write-protects the `RO` partition.
+**Note:** The `RO` partition isn't write-protected by default, therefore you
+have to enable the protection in the security Kconfig menu by yourself.
 
 On *Lenovo* devices you can enable the *Fn* key as recovery mode switch, by
 enabling `CONFIG_H8_FN_KEY_AS_VBOOT_RECOVERY_SW`.
@@ -35,5 +35,4 @@ You can still provide your own FMAP if you need `RO`+`A`+`B` partitions.
 [vboot] on *Lenovo* devices uses the CMOS to store configuration data, like
 boot failures and the last successfully booted partition.
 
-[CB:32705]: https://review.coreboot.org/32705
 [vboot]: ../../security/vboot/index.md

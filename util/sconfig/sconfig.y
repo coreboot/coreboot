@@ -37,7 +37,7 @@ devtree: { cur_parent = root_parent; } chip;
 
 chipchildren: chipchildren device | chipchildren chip | chipchildren registers | /* empty */ ;
 
-devicechildren: devicechildren device | devicechildren chip | devicechildren resource | devicechildren subsystemid | devicechildren ioapic_irq | devicechildren smbios_slot_desc | /* empty */ ;
+devicechildren: devicechildren device | devicechildren chip | devicechildren resource | devicechildren subsystemid | devicechildren ioapic_irq | devicechildren smbios_slot_desc | devicechildren registers | /* empty */ ;
 
 chip: CHIP STRING /* == path */ {
 	$<chip_instance>$ = new_chip_instance($<string>2);

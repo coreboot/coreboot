@@ -166,7 +166,7 @@ static void root_port_commit_config(struct device *dev)
 	int coalesce = 0;
 
 	if (dev->chip_info != NULL) {
-		struct southbridge_intel_i82801gx_config *config = dev->chip_info;
+		const struct southbridge_intel_i82801gx_config *config = dev->chip_info;
 		coalesce = config->pcie_port_coalesce;
 	}
 

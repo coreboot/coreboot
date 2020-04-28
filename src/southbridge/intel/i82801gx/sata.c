@@ -9,8 +9,6 @@
 #include "i82801gx.h"
 #include "sata.h"
 
-typedef struct southbridge_intel_i82801gx_config config_t;
-
 static u8 get_ich7_sata_ports(void)
 {
 	struct device *lpc;
@@ -77,7 +75,7 @@ static void sata_init(struct device *dev)
 	u8 ports;
 
 	/* Get the chip configuration */
-	config_t *config = dev->chip_info;
+	const struct southbridge_intel_i82801gx_config *config = dev->chip_info;
 
 	printk(BIOS_DEBUG, "i82801gx_sata: initializing...\n");
 

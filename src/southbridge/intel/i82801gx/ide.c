@@ -8,8 +8,6 @@
 #include "chip.h"
 #include "i82801gx.h"
 
-typedef struct southbridge_intel_i82801gx_config config_t;
-
 static void ide_init(struct device *dev)
 {
 	u16 ideTimingConfig;
@@ -17,7 +15,7 @@ static void ide_init(struct device *dev)
 	u32 enable_primary, enable_secondary;
 
 	/* Get the chip configuration */
-	config_t *config = dev->chip_info;
+	const struct southbridge_intel_i82801gx_config *config = dev->chip_info;
 
 	printk(BIOS_DEBUG, "i82801gx_ide: initializing...");
 	if (config == NULL) {

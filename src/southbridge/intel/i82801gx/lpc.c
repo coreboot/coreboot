@@ -27,8 +27,6 @@
 
 #define NMI_OFF	0
 
-typedef struct southbridge_intel_i82801gx_config config_t;
-
 /**
  * Set miscellaneous static southbridge features.
  *
@@ -79,7 +77,7 @@ static void i82801gx_pirq_init(struct device *dev)
 {
 	struct device *irq_dev;
 	/* Get the chip configuration */
-	config_t *config = dev->chip_info;
+	const struct southbridge_intel_i82801gx_config *config = dev->chip_info;
 
 	pci_write_config8(dev, PIRQA_ROUT, config->pirqa_routing);
 	pci_write_config8(dev, PIRQB_ROUT, config->pirqb_routing);
@@ -124,7 +122,7 @@ static void i82801gx_pirq_init(struct device *dev)
 static void i82801gx_gpi_routing(struct device *dev)
 {
 	/* Get the chip configuration */
-	config_t *config = dev->chip_info;
+	const struct southbridge_intel_i82801gx_config *config = dev->chip_info;
 	u32 reg32 = 0;
 
 	/* An array would be much nicer here, or some other method of doing this. */
@@ -155,7 +153,7 @@ static void i82801gx_power_options(struct device *dev)
 	u32 reg32;
 	const char *state;
 	/* Get the chip configuration */
-	config_t *config = dev->chip_info;
+	const struct southbridge_intel_i82801gx_config *config = dev->chip_info;
 
 	int pwr_on = CONFIG_MAINBOARD_POWER_FAILURE_STATE;
 	int nmi_option;
@@ -422,7 +420,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 void acpi_fill_fadt(acpi_fadt_t *fadt)
 {
 	struct device *dev = pcidev_on_root(0x1f, 0);
-	config_t *chip = dev->chip_info;
+	const struct southbridge_intel_i82801gx_config *chip = dev->chip_info;
 	u16 pmbase = lpc_get_pmbase();
 
 	fadt->pm1a_evt_blk = pmbase;

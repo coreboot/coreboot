@@ -39,6 +39,9 @@ config VBOOT_VBNV_OFFSET
 	hex
 	default 0x2a
 
+config CBFS_SIZE
+	default 0x300000
+
 config FMDFILE
 	string
 	default "src/mainboard/$(CONFIG_MAINBOARD_DIR)/vboot-rwa.fmd" if VBOOT

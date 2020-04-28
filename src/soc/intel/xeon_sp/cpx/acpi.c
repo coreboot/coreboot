@@ -135,9 +135,9 @@ void southbridge_inject_dsdt(const struct device *device)
 
 void acpi_create_gnvs(struct global_nvs_t *gnvs)
 {
-	config_t *config = config_of_soc();
-	(void) config;
-	/* not implemented yet */
+	/* CPU core count */
+	gnvs->pcnt = dev_count_cpu();
+	printk(BIOS_DEBUG, "%s gnvs->pcnt: %d\n", __func__, gnvs->pcnt);
 }
 
 static unsigned long acpi_madt_irq_overrides(unsigned long current)

@@ -14,11 +14,17 @@ static const unsigned short pci_device_ids[] = {
 	0
 };
 
+static const char *hda_acpi_name(const struct device *dev)
+{
+	return "AZHD";
+}
+
 static struct device_operations hda_audio_ops = {
 	.read_resources		= pci_dev_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
 	.ops_pci		= &pci_dev_ops_pci,
+	.acpi_name		= hda_acpi_name,
 };
 
 static const struct pci_driver hdaaudio_driver __pci_driver = {

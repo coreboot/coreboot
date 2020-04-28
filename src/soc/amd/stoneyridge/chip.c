@@ -81,8 +81,6 @@ const char *soc_acpi_name(const struct device *dev)
 		return "PBR7";
 	case PCIE4_DEVFN:
 		return "PBR8";
-	case HDA1_DEVFN:
-		return "AZHD";
 	case EHCI1_DEVFN:
 		return "EHC0";
 	case LPC_DEVFN:

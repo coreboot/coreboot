@@ -13,12 +13,8 @@ typedef struct southbridge_intel_i82801jx_config config_t;
 
 static void i82801jx_enable_device(struct device *dev)
 {
-	u32 reg32;
-
 	/* Enable SERR */
-	reg32 = pci_read_config32(dev, PCI_COMMAND);
-	reg32 |= PCI_COMMAND_SERR;
-	pci_write_config32(dev, PCI_COMMAND, reg32);
+	pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_SERR);
 }
 
 static void i82801jx_early_settings(const config_t *const info)

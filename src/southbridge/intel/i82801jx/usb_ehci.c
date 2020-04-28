@@ -11,12 +11,8 @@
 
 static void usb_ehci_init(struct device *dev)
 {
-	u32 reg32;
-
 	printk(BIOS_DEBUG, "EHCI: Setting up controller.. ");
-	reg32 = pci_read_config32(dev, PCI_COMMAND);
-	reg32 |= PCI_COMMAND_MASTER;
-	pci_write_config32(dev, PCI_COMMAND, reg32);
+	pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_MASTER);
 
 	printk(BIOS_DEBUG, "done.\n");
 }

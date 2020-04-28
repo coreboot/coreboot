@@ -247,8 +247,7 @@ static void azalia_init(struct device *dev)
 	pci_write_config32(dev, 0x120, reg32);
 
 	/* Set Bus Master */
-	reg32 = pci_read_config32(dev, PCI_COMMAND);
-	pci_write_config32(dev, PCI_COMMAND, reg32 | PCI_COMMAND_MASTER);
+	pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_MASTER);
 
 	reg8 = pci_read_config8(dev, 0x4d); // Docking Status
 	reg8 &= ~(1 << 7); // Docking not supported

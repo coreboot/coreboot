@@ -14,6 +14,6 @@
 
 subdirs-y += ./spd
 
-romstage-y += ../baseboard/romstage.c
+romstage-y += variant.c
 
 ramstage-y += ../baseboard/mainboard.c

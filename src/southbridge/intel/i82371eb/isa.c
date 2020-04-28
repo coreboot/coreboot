@@ -27,9 +27,7 @@ static void isa_init(struct device *dev)
 	/*
 	 * Enable special cycles, needed for soft poweroff.
 	 */
-	reg32 = pci_read_config16(dev, PCI_COMMAND);
-	reg32 |= PCI_COMMAND_SPECIAL;
-	pci_write_config16(dev, PCI_COMMAND, reg32);
+	pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_SPECIAL);
 
 	/*
 	 * The PIIX4 can support the full ISA bus, or the Extended I/O (EIO)

@@ -76,7 +76,3 @@ Device(PBR8) {
 		Return (PS8)			/* PIC Mode */
 	} /* end _PRT */
 } /* end PBR8 */
-
-Device(AZHD) {	/* 0:9.2 - HD Audio */
-	Name(_ADR, 0x00090002)
-} /* end AZHD */

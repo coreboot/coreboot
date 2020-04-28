@@ -1,6 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 /* This file is part of the coreboot project. */
 
+External (\_SB.PCI0.AZHD, DeviceObj)
+
 Scope(\_GPE) {	/* Start Scope GPE */
 
 	/*  General event 3  */

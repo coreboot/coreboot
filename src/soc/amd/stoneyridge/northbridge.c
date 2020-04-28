@@ -1,7 +1,9 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 /* This file is part of the coreboot project. */
 
+#include <assert.h>
 #include <amdblocks/biosram.h>
+#include <amdblocks/hda.h>
 #include <device/pci_ops.h>
 #include <arch/ioapic.h>
 #include <arch/acpi.h>
@@ -500,4 +502,56 @@ void SetNbMidParams(GNB_MID_CONFIGURATION *params)
 	/* 0=Primary and decode all VGA resources, 1=Secondary - decode none */
 	params->iGpuVgaMode = 0;
 	params->GnbIoapicAddress = IO_APIC2_ADDR;
+}
+
+void hda_soc_ssdt_quirks(const struct device *dev)
+{
+	const char *scope = acpi_device_path(dev);
+	static const struct fieldlist list[] = {
+		FIELDLIST_OFFSET(0x42),
+		FIELDLIST_NAMESTR("NSDI", 1),
+		FIELDLIST_NAMESTR("NSDO", 1),
+		FIELDLIST_NAMESTR("NSEN", 1),
+	};
+	struct opregion opreg = OPREGION("AZPD", PCI_CONFIG, 0x0, 0x100);
+
+	assert(scope);
+
+	acpigen_write_scope(scope);
+
+	/*
+	 * OperationRegion(AZPD, PCI_Config, 0x00, 0x100)
+	 * Field (AZPD, AnyAcc, NoLock, Preserve) {
+	 *	Offset (0x42),
+	 *	NSDI, 1,
+	 *	NSDO, 1,
+	 *	NSEN, 1,
+	 * }
+	 */
+	acpigen_write_opregion(&opreg);
+	acpigen_write_field(opreg.name, list, ARRAY_SIZE(list),
+			    FIELD_ANYACC | FIELD_NOLOCK | FIELD_PRESERVE);
+
+	/*
+	 * Method (_INI, 0, NotSerialized) {
+	 *	If (LEqual (OSVR, 0x03)) {
+	 *		Store (Zero, NSEN)
+	 *		Store (One, NSDO)
+	 *		Store (One, NSDI)
+	 *	}
+	 * }
+	 */
+	acpigen_write_method("_INI", 0);
+
+	acpigen_write_if_lequal_namestr_int("OSVR", 0x03);
+
+	acpigen_write_store_op_to_namestr(ONE_OP, "NSEN");
+	acpigen_write_store_op_to_namestr(ZERO_OP, "NSDO");
+	acpigen_write_store_op_to_namestr(ZERO_OP, "NSDI");
+
+	acpigen_pop_len(); /* If */
+
+	acpigen_pop_len(); /* Method _INI */
+
+	acpigen_pop_len(); /* Scope */
 }

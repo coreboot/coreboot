@@ -98,7 +98,7 @@ static void ahci_raid_init(struct device *dev)
 	}
 
 	dev->command |= PCI_COMMAND_MASTER;
-	pci_write_config8(dev, PCI_COMMAND, dev->command);
+	pci_write_config16(dev, PCI_COMMAND, dev->command);
 	printk(BIOS_DEBUG, "AHCI/RAID controller initialized\n");
 }
 

@@ -574,7 +574,7 @@ int mkhi_debug_me_memory(void *physaddr)
 uint32_t intel_mei_setup(struct pci_dev *dev)
 {
 	struct mei_csr host;
-	uint32_t reg32;
+	uint16_t reg16;
 	uint32_t pagerounded;
 
 	mei_base_address = dev->base_addr[0] & ~0xf;
@@ -588,9 +588,9 @@ uint32_t intel_mei_setup(struct pci_dev *dev)
 	}
 
 	/* Ensure Memory and Bus Master bits are set */
-	reg32 = pci_read_long(dev, PCI_COMMAND);
-	reg32 |= PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY;
-	pci_write_long(dev, PCI_COMMAND, reg32);
+	reg16 = pci_read_word(dev, PCI_COMMAND);
+	reg16 |= PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY;
+	pci_write_word(dev, PCI_COMMAND, reg16);
 
 	/* Clean up status for next message */
 	read_host_csr(&host);

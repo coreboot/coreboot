@@ -426,7 +426,7 @@ void acpigen_write_release(const char *name);
  * Generate ACPI AML code for Field
  * This function takes input region name, fieldlist, count & flags.
  */
-void acpigen_write_field(const char *name, struct fieldlist *l, size_t count,
+void acpigen_write_field(const char *name, const struct fieldlist *l, size_t count,
 			 uint8_t flags);
 /*
  * Generate ACPI AML code for IndexField

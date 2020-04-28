@@ -514,7 +514,7 @@ static void acpigen_write_field_name(const char *name, uint32_t size)
  *		PMCS,   2
  *	}
  */
-void acpigen_write_field(const char *name, struct fieldlist *l, size_t count,
+void acpigen_write_field(const char *name, const struct fieldlist *l, size_t count,
 			 uint8_t flags)
 {
 	uint16_t i;

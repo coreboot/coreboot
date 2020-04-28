@@ -65,11 +65,10 @@ void *cbmem_top_chipset(void)
 	return (void *) top_of_ram;
 }
 
-/** Decodes used Graphics Mode Select (GMS) to kilobytes. */
+/* Decodes used Graphics Mode Select (GMS) to kilobytes. */
 u32 decode_igd_memory_size(const u32 gms)
 {
-	static const u16 ggc2uma[] = { 0, 1, 4, 8, 16, 32,
-			48, 64 };
+	static const u16 ggc2uma[] = { 0, 1, 4, 8, 16, 32, 48, 64 };
 
 	if (gms >= ARRAY_SIZE(ggc2uma))
 		die("Bad Graphics Mode Select (GMS) setting.\n");
@@ -91,9 +90,7 @@ void fill_postcar_frame(struct postcar_frame *pcf)
 	 * RAM to cover both cbmem as the TSEG region.
 	 */
 	top_of_ram = (uintptr_t)cbmem_top();
-	postcar_frame_add_mtrr(pcf, top_of_ram - 8*MiB, 8*MiB,
-			MTRR_TYPE_WRBACK);
+	postcar_frame_add_mtrr(pcf, top_of_ram - 8*MiB, 8*MiB, MTRR_TYPE_WRBACK);
 	postcar_frame_add_mtrr(pcf, northbridge_get_tseg_base(),
 			       northbridge_get_tseg_size(), MTRR_TYPE_WRBACK);
-
 }

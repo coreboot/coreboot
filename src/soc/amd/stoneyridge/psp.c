@@ -12,7 +12,8 @@
 
 void soc_enable_psp_early(void)
 {
-	u32 base, limit, cmd;
+	u32 base, limit;
+	u16 cmd;
 
 	/* Open a posted hole from 0x80000000 : 0xfed00000-1 */
 	base = (0x80000000 >> 8) | MMIO_WE | MMIO_RE;
@@ -25,9 +26,9 @@ void soc_enable_psp_early(void)
 	pci_write_config32(SOC_PSP_DEV, PSP_BAR_ENABLES, PSP_MAILBOX_BAR_EN);
 
 	/* Enable memory access and master */
-	cmd = pci_read_config32(SOC_PSP_DEV, PCI_COMMAND);
+	cmd = pci_read_config16(SOC_PSP_DEV, PCI_COMMAND);
 	cmd |= PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER;
-	pci_write_config32(SOC_PSP_DEV, PCI_COMMAND, cmd);
+	pci_write_config16(SOC_PSP_DEV, PCI_COMMAND, cmd);
 };
 
 void *soc_get_mbox_address(void)

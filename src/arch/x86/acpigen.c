@@ -1186,6 +1186,14 @@ void acpigen_write_store_ops(uint8_t src, uint8_t dst)
 	acpigen_emit_byte(dst);
 }
 
+/* Store (src, "namestr") */
+void acpigen_write_store_op_to_namestr(uint8_t src, const char *dst)
+{
+	acpigen_write_store();
+	acpigen_emit_byte(src);
+	acpigen_emit_namestring(dst);
+}
+
 /* Or (arg1, arg2, res) */
 void acpigen_write_or(uint8_t arg1, uint8_t arg2, uint8_t res)
 {
@@ -1271,6 +1279,20 @@ void acpigen_write_if_lequal_op_int(uint8_t op, uint64_t val)
 	acpigen_write_if();
 	acpigen_emit_byte(LEQUAL_OP);
 	acpigen_emit_byte(op);
+	acpigen_write_integer(val);
+}
+
+/*
+ * Generates ACPI code for checking if operand1 and operand2 are equal, where,
+ * operand1 is namestring and operand2 is an integer.
+ *
+ * If (Lequal ("namestr", val))
+ */
+void acpigen_write_if_lequal_namestr_int(const char *namestr, uint64_t val)
+{
+	acpigen_write_if();
+	acpigen_emit_byte(LEQUAL_OP);
+	acpigen_emit_namestring(namestr);
 	acpigen_write_integer(val);
 }
 

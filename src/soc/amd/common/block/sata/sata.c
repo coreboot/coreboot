@@ -19,6 +19,7 @@ static struct device_operations sata_ops = {
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
 	.init			= soc_enable_sata_features,
+	.ops_pci		= &pci_dev_ops_pci,
 	.acpi_name		= sata_acpi_name,
 	.acpi_fill_ssdt		= acpi_device_write_pci_dev,
 };

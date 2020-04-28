@@ -1084,12 +1084,16 @@ static int cbfs_print(void)
 	if (cbfs_image_from_buffer(&image, param.image_region,
 							param.headeroffset))
 		return 1;
-	if (param.machine_parseable)
-		return cbfs_print_parseable_directory(&image);
-	else {
+	if (param.machine_parseable) {
+		if (verbose)
+			printf("[FMAP REGION]\t%s\n", param.region_name);
+		cbfs_print_parseable_directory(&image);
+	} else {
 		printf("FMAP REGION: %s\n", param.region_name);
-		return cbfs_print_directory(&image);
+		cbfs_print_directory(&image);
 	}
+
+	return 0;
 }
 
 static int cbfs_extract(void)

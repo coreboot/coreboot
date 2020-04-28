@@ -1488,6 +1488,9 @@ int cbfs_print_entry_info(struct cbfs_image *image, struct cbfs_file *entry,
 			decompressed_size
 			);
 
+	if (!verbose)
+		return 0;
+
 	struct cbfs_file_attr_hash *attr = NULL;
 	while ((attr = cbfs_file_get_next_hash(entry, attr)) != NULL) {
 		size_t hash_len = vb2_digest_size(attr->hash.algo);
@@ -1506,9 +1509,6 @@ int cbfs_print_entry_info(struct cbfs_image *image, struct cbfs_file *entry,
 			hash_str, valid_str);
 		free(hash_str);
 	}
-
-	if (!verbose)
-		return 0;
 
 	DEBUG(" cbfs_file=0x%x, offset=0x%x, content_address=0x%x+0x%x\n",
 	      cbfs_get_entry_addr(image, entry), ntohl(entry->offset),
@@ -1572,21 +1572,45 @@ static int cbfs_print_parseable_entry_info(struct cbfs_image *image,
 	fprintf(fp, "%s%s", type, sep);
 	fprintf(fp, "0x%zx%s", metadata_size, sep);
 	fprintf(fp, "0x%zx%s", data_size, sep);
-	fprintf(fp, "0x%zx\n", metadata_size + data_size);
+	fprintf(fp, "0x%zx", metadata_size + data_size);
+
+	if (verbose) {
+		unsigned int decompressed_size = 0;
+		unsigned int compression = cbfs_file_get_compression_info(entry,
+			&decompressed_size);
+		if (compression != CBFS_COMPRESS_NONE)
+			fprintf(fp, "%scomp:%s:0x%x", sep, lookup_name_by_type(
+				types_cbfs_compression, compression, "????"),
+				decompressed_size);
+
+		struct cbfs_file_attr_hash *attr = NULL;
+		while ((attr = cbfs_file_get_next_hash(entry, attr)) != NULL) {
+			size_t hash_len = vb2_digest_size(attr->hash.algo);
+			if (!hash_len)
+				continue;
+			char *hash_str = bintohex(attr->hash.raw, hash_len);
+			int valid = vb2_hash_verify(CBFS_SUBHEADER(entry),
+				ntohl(entry->len), &attr->hash) == VB2_SUCCESS;
+			fprintf(fp, "%shash:%s:%s:%s", sep,
+				vb2_get_hash_algorithm_name(attr->hash.algo),
+				hash_str, valid ? "valid" : "invalid");
+			free(hash_str);
+		}
+	}
+	fprintf(fp, "\n");
 
 	return 0;
 }
 
-int cbfs_print_directory(struct cbfs_image *image)
+void cbfs_print_directory(struct cbfs_image *image)
 {
 	if (cbfs_is_legacy_cbfs(image))
 		cbfs_print_header_info(image);
 	printf("%-30s %-10s %-12s   Size   Comp\n", "Name", "Offset", "Type");
 	cbfs_legacy_walk(image, cbfs_print_entry_info, NULL);
-	return 0;
 }
 
-int cbfs_print_parseable_directory(struct cbfs_image *image)
+void cbfs_print_parseable_directory(struct cbfs_image *image)
 {
 	size_t i;
 	const char *header[] = {
@@ -1603,7 +1627,6 @@ int cbfs_print_parseable_directory(struct cbfs_image *image)
 		fprintf(stdout, "%s%s", header[i], sep);
 	fprintf(stdout, "%s\n", header[i]);
 	cbfs_legacy_walk(image, cbfs_print_parseable_entry_info, stdout);
-	return 0;
 }
 
 int cbfs_merge_empty_entry(struct cbfs_image *image, struct cbfs_file *entry,

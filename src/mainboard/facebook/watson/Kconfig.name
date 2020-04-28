@@ -1,2 +1,5 @@
 config BOARD_FACEBOOK_WATSON
 	bool "Watson_v1"
+
+config BOARD_FACEBOOK_WATSON_V2
+	bool "Watson_v2"

@@ -1,4 +1,12 @@
-if BOARD_FACEBOOK_WATSON
+if BOARD_FACEBOOK_WATSON || BOARD_FACEBOOK_WATSON_V2
+
+config VBOOT
+	select VBOOT_VBNV_CMOS
+	select VBOOT_NO_BOARD_SUPPORT
+	select GBB_FLAG_DISABLE_LID_SHUTDOWN
+	select GBB_FLAG_DISABLE_PD_SOFTWARE_SYNC
+	select GBB_FLAG_DISABLE_EC_SOFTWARE_SYNC
+	select GBB_FLAG_DISABLE_FWMP
 
 config BOARD_SPECIFIC_OPTIONS
 	def_bool y
@@ -11,15 +19,11 @@ config BOARD_SPECIFIC_OPTIONS
 	select MAINBOARD_USES_IFD_GBE_REGION
 	select MAINBOARD_HAS_LPC_TPM
 	select MAINBOARD_HAS_TPM1 if BOARD_FACEBOOK_WATSON
+	select MAINBOARD_HAS_TPM2 if BOARD_FACEBOOK_WATSON_V2
 	select NO_UART_ON_SUPERIO
-
-config VBOOT
-	select VBOOT_VBNV_CMOS
-	select VBOOT_NO_BOARD_SUPPORT
-	select GBB_FLAG_DISABLE_LID_SHUTDOWN
-	select GBB_FLAG_DISABLE_PD_SOFTWARE_SYNC
-	select GBB_FLAG_DISABLE_EC_SOFTWARE_SYNC
-	select GBB_FLAG_DISABLE_FWMP
+	select VBOOT if BOARD_FACEBOOK_WATSON_V2
+	select VBOOT_MEASURED_BOOT if BOARD_FACEBOOK_WATSON_V2
+	select VBOOT_STARTS_IN_ROMSTAGE if BOARD_FACEBOOK_WATSON_V2
 
 config MAINBOARD_DIR
 	string
@@ -37,6 +41,55 @@ config CBFS_SIZE
 	hex
 	default 0x00800000
 
+config VBOOT_FWID_MODEL
+	string
+	default "$(CONFIG_MAINBOARD_VENDOR)_$(CONFIG_MAINBOARD_PART_NUMBER)"
+
+config VBOOT_FIRMWARE_PRIVKEY
+	string
+	depends on BOARD_FACEBOOK_WATSON_V2
+	default "$(VBOOT_SOURCE)/tests/devkeys/firmware_data_key.vbprivk"
+
+config VBOOT_FWID_VERSION
+	string
+	depends on BOARD_FACEBOOK_WATSON_V2
+	default ".$(KERNELVERSION)"
+
+config VBOOT_KERNEL_KEY
+	string
+	depends on BOARD_FACEBOOK_WATSON_V2
+	default "$(VBOOT_SOURCE)/tests/devkeys/kernel_subkey.vbpubk"
+
+config VBOOT_KEYBLOCK
+	string
+	depends on BOARD_FACEBOOK_WATSON_V2
+	default "$(VBOOT_SOURCE)/tests/devkeys/firmware.keyblock"
+
+config VBOOT_KEYBLOCK_VERSION
+	int
+	depends on BOARD_FACEBOOK_WATSON_V2
+	default 1
+
+config VBOOT_KEYBLOCK_PREAMBLE_FLAGS
+	hex
+	depends on BOARD_FACEBOOK_WATSON_V2
+	default 0x0
+
+config VBOOT_RECOVERY_KEY
+	string
+	depends on BOARD_FACEBOOK_WATSON_V2
+	default "$(VBOOT_SOURCE)/tests/devkeys/recovery_key.vbpubk"
+
+config VBOOT_ROOT_KEY
+	string
+	depends on BOARD_FACEBOOK_WATSON_V2
+	default "$(VBOOT_SOURCE)/tests/devkeys/root_key.vbpubk"
+
+config VBOOT_VBNV_OFFSET
+	hex
+	depends on BOARD_FACEBOOK_WATSON_V2
+	default 0x26
+
 config VIRTUAL_ROM_SIZE
 	hex
 	# Set to CONFIG_ROM_SIZE*2 if using concatenated flash chips.
@@ -48,7 +101,8 @@ config DRIVERS_UART_8250IO
 
 config FMDFILE
 	string
-	default "src/mainboard/$(CONFIG_MAINBOARD_DIR)/board.fmd"
+	default "src/mainboard/$(CONFIG_MAINBOARD_DIR)/board.fmd" if BOARD_FACEBOOK_WATSON
+	default "src/mainboard/$(CONFIG_MAINBOARD_DIR)/vboot-ro.fmd" if BOARD_FACEBOOK_WATSON_V2
 
 config ENABLE_TURBO
 	bool "Enable turbo frequency"

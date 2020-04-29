@@ -42,7 +42,7 @@ config DEVICETREE
 
 config OVERRIDE_DEVICETREE
 	string
-	default "variants/$(CONFIG_VARIANT_DIR)/overridetree.cb" if !BOARD_GOOGLE_VOLTEER
+	default "variants/$(CONFIG_VARIANT_DIR)/overridetree.cb"
 
 config DRIVER_TPM_SPI_BUS
 	default 0x1

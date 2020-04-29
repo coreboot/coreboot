@@ -18,15 +18,24 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 
 	/* Access memory info through SMBUS. */
 	get_spd_smbus(&blk);
-	memcfg.spd[0].read_type = READ_SPD_MEMPTR;
-	memcfg.spd[0].spd_spec.spd_data_ptr_info.spd_data_len = blk.len;
-	memcfg.spd[0].spd_spec.spd_data_ptr_info.spd_data_ptr = (uintptr_t)blk.spd_array[0];
+
+	if (blk.spd_array[0] == NULL) {
+		memcfg.spd[0].read_type = NOT_EXISTING;
+	} else {
+		memcfg.spd[0].read_type = READ_SPD_MEMPTR;
+		memcfg.spd[0].spd_spec.spd_data_ptr_info.spd_data_len = blk.len;
+		memcfg.spd[0].spd_spec.spd_data_ptr_info.spd_data_ptr = (uintptr_t)blk.spd_array[0];
+	}
 
 	memcfg.spd[1].read_type = NOT_EXISTING;
 
-	memcfg.spd[2].read_type = READ_SPD_MEMPTR;
-	memcfg.spd[2].spd_spec.spd_data_ptr_info.spd_data_len = blk.len;
-	memcfg.spd[2].spd_spec.spd_data_ptr_info.spd_data_ptr = (uintptr_t)blk.spd_array[1];
+	if (blk.spd_array[1] == NULL) {
+		memcfg.spd[2].read_type = NOT_EXISTING;
+	} else {
+		memcfg.spd[2].read_type = READ_SPD_MEMPTR;
+		memcfg.spd[2].spd_spec.spd_data_ptr_info.spd_data_len = blk.len;
+		memcfg.spd[2].spd_spec.spd_data_ptr_info.spd_data_ptr = (uintptr_t)blk.spd_array[1];
+	}
 
 	memcfg.spd[3].read_type = NOT_EXISTING;
 	dump_spd_info(&blk);

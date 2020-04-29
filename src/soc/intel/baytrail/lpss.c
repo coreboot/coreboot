@@ -21,7 +21,7 @@ static void dev_enable_acpi_mode(struct device *dev, int iosf_reg,
 {
 	struct reg_script ops[] = {
 		/* Disable PCI interrupt, enable Memory and Bus Master */
-		REG_PCI_OR32(PCI_COMMAND,
+		REG_PCI_OR16(PCI_COMMAND,
 			     PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER | (1<<10)),
 		/* Enable ACPI mode */
 		REG_IOSF_OR(IOSF_PORT_LPSS, iosf_reg,

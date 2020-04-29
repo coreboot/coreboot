@@ -118,6 +118,7 @@ typedef struct acpi_gen_regaddr {
 #define ACPI_HID_COM "PNP0501"
 #define ACPI_HID_LPT "PNP0400"
 #define ACPI_HID_PNP "PNP0C02"
+#define ACPI_HID_CONTAINER "PNP0A05"
 
 /* Generic ACPI header, provided by (almost) all tables */
 typedef struct acpi_table_header {

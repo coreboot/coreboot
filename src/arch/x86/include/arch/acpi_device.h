@@ -482,7 +482,7 @@ struct acpi_dp *acpi_dp_add_array(struct acpi_dp *dp, struct acpi_dp *array);
 
 /* Add an array of integers Device Property */
 struct acpi_dp *acpi_dp_add_integer_array(struct acpi_dp *dp, const char *name,
-					  uint64_t *array, int len);
+					  const uint64_t *array, int len);
 
 /* Add a GPIO binding Device Property */
 struct acpi_dp *acpi_dp_add_gpio(struct acpi_dp *dp, const char *name,

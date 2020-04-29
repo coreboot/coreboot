@@ -879,7 +879,7 @@ struct acpi_dp *acpi_dp_add_array(struct acpi_dp *dp, struct acpi_dp *array)
 }
 
 struct acpi_dp *acpi_dp_add_integer_array(struct acpi_dp *dp, const char *name,
-					  uint64_t *array, int len)
+					  const uint64_t *array, int len)
 {
 	struct acpi_dp *dp_array;
 	int i;

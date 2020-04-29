@@ -23,6 +23,7 @@
 #include <soc/pci_devs.h>
 #include <soc/nvs.h>
 #include <types.h>
+#include "chip.h"
 
 #define FCH_AOAC_UART_FOR_CONSOLE \
 		(CONFIG_UART_FOR_CONSOLE == 0 ? FCH_AOAC_DEV_UART0 \
@@ -237,8 +238,11 @@ void sb_read_mode(u32 mode)
 
 static void sb_spi_config_modes(void)
 {
-	sb_set_spi100(SPI_SPEED_33M, SPI_SPEED_33M,
-		      SPI_SPEED_16M, SPI_SPEED_16M);
+	const struct soc_amd_picasso_config *cfg = config_of_soc();
+
+	sb_read_mode(cfg->spi_read_mode);
+	sb_set_spi100(cfg->spi_normal_speed, cfg->spi_fast_speed, cfg->spi_altio_speed,
+		      cfg->spi_tpm_speed);
 }
 
 static void sb_spi_init(void)

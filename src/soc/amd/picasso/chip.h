@@ -10,6 +10,7 @@
 #include <drivers/i2c/designware/dw_i2c.h>
 #include <soc/i2c.h>
 #include <soc/iomap.h>
+#include <soc/southbridge.h>
 #include <arch/acpi_device.h>
 
 struct soc_amd_picasso_config {
@@ -70,6 +71,21 @@ struct soc_amd_picasso_config {
 	uint8_t core_dldo_bypass;
 	uint8_t min_soc_vid_offset;
 	uint8_t aclk_dpm0_freq_400MHz;
+
+	/*
+	 * SPI config
+	 * Default values if not overridden by mainboard:
+	 * Read mode - Normal 33MHz
+	 * Normal speed - 66MHz
+	 * Fast speed - 66MHz
+	 * Alt speed - 66MHz
+	 * TPM speed - 66MHz
+	 */
+	enum spi_read_mode spi_read_mode;
+	enum spi100_speed spi_normal_speed;
+	enum spi100_speed spi_fast_speed;
+	enum spi100_speed spi_altio_speed;
+	enum spi100_speed spi_tpm_speed;
 };
 
 typedef struct soc_amd_picasso_config config_t;

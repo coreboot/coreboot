@@ -1,9 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 /* This file is part of the coreboot project. */
 
-#define BRIGHTNESS_UP \_SB.PCI0.GFX0.INCB
-#define BRIGHTNESS_DOWN \_SB.PCI0.GFX0.DECB
-
 #include <acpi/acpi.h>
 DefinitionBlock(
 	"dsdt.aml",

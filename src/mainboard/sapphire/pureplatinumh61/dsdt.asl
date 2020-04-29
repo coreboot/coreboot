@@ -13,9 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#define BRIGHTNESS_UP \_SB.PCI0.GFX0.INCB
-#define BRIGHTNESS_DOWN \_SB.PCI0.GFX0.DECB
-
 #include <acpi/acpi.h>
 DefinitionBlock(
 	"dsdt.aml",

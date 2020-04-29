@@ -1004,7 +1004,7 @@ static void sdram_enable(void)
 void __weak enable_spd(void) { }
 void __weak disable_spd(void) { }
 
-void sdram_initialize(void)
+void sdram_initialize(int s3resume)
 {
 	timestamp_add_now(TS_BEFORE_INITRAM);
 	enable_spd();

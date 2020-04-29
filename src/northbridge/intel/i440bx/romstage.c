@@ -10,6 +10,6 @@ void mainboard_romstage_entry(void)
 {
 	i82371eb_early_init();
 
-	sdram_initialize();
+	sdram_initialize(0);
 	cbmem_initialize_empty();
 }

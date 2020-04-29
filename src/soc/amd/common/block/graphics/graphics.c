@@ -5,7 +5,7 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 
-static void graphics_fill_ssdt(struct device *dev)
+static void graphics_fill_ssdt(const struct device *dev)
 {
 	acpi_device_write_pci_dev(dev);
 	pci_rom_ssdt(dev);

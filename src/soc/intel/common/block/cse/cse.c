@@ -75,7 +75,7 @@ void heci_init(uintptr_t tempbar)
 #else
 	struct device *dev = PCH_DEV_CSE;
 #endif
-	u8 pcireg;
+	u16 pcireg;
 
 	/* Assume it is already initialized, nothing else to do */
 	if (cse.sec_bar)
@@ -87,18 +87,16 @@ void heci_init(uintptr_t tempbar)
 
 	/* Assign Resources to HECI1 */
 	/* Clear BIT 1-2 of Command Register */
-	pcireg = pci_read_config8(dev, PCI_COMMAND);
+	pcireg = pci_read_config16(dev, PCI_COMMAND);
 	pcireg &= ~(PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY);
-	pci_write_config8(dev, PCI_COMMAND, pcireg);
+	pci_write_config16(dev, PCI_COMMAND, pcireg);
 
 	/* Program Temporary BAR for HECI1 */
 	pci_write_config32(dev, PCI_BASE_ADDRESS_0, tempbar);
 	pci_write_config32(dev, PCI_BASE_ADDRESS_1, 0x0);
 
 	/* Enable Bus Master and MMIO Space */
-	pcireg = pci_read_config8(dev, PCI_COMMAND);
-	pcireg |= PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY;
-	pci_write_config8(dev, PCI_COMMAND, pcireg);
+	pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY);
 
 	cse.sec_bar = tempbar;
 }

@@ -260,22 +260,20 @@ void fast_spi_early_init(uintptr_t spi_base_address)
 #else
 	struct device *dev = PCH_DEV_SPI;
 #endif
-	uint8_t pcireg;
+	uint16_t pcireg;
 
 	/* Assign Resources to SPI Controller */
 	/* Clear BIT 1-2 SPI Command Register */
-	pcireg = pci_read_config8(dev, PCI_COMMAND);
+	pcireg = pci_read_config16(dev, PCI_COMMAND);
 	pcireg &= ~(PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY);
-	pci_write_config8(dev, PCI_COMMAND, pcireg);
+	pci_write_config16(dev, PCI_COMMAND, pcireg);
 
 	/* Program Temporary BAR for SPI */
 	pci_write_config32(dev, PCI_BASE_ADDRESS_0,
 		spi_base_address | PCI_BASE_ADDRESS_SPACE_MEMORY);
 
 	/* Enable Bus Master and MMIO Space */
-	pcireg = pci_read_config8(dev, PCI_COMMAND);
-	pcireg |= PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY;
-	pci_write_config8(dev, PCI_COMMAND, pcireg);
+	pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY);
 
 	/* Initialize SPI to allow BIOS to write/erase on flash. */
 	fast_spi_init();

@@ -69,7 +69,7 @@ static int lpss_i2c_early_init_bus(unsigned int bus)
 	/* Prepare early base address for access before memory */
 	base = dw_i2c_get_soc_early_base(bus);
 	pci_write_config32(dev, PCI_BASE_ADDRESS_0, base);
-	pci_write_config32(dev, PCI_COMMAND,
+	pci_write_config16(dev, PCI_COMMAND,
 			   PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER);
 
 	/* Take device out of reset */

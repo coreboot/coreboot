@@ -34,8 +34,7 @@ static void sata_final(struct device *dev)
 	u8 port_impl, temp;
 
 	/* Set Bus Master */
-	temp = pci_read_config32(dev, PCI_COMMAND);
-	pci_write_config32(dev, PCI_COMMAND, temp | PCI_COMMAND_MASTER);
+	pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_MASTER);
 
 	/* Read Ports Implemented (GHC_PI) */
 	port_impl = read8(ahcibar + SATA_ABAR_PORT_IMPLEMENTED);

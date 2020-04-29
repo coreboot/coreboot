@@ -23,7 +23,7 @@ void p2sb_enable_bar(void)
 	pci_write_config32(PCH_DEV_P2SB, PCI_BASE_ADDRESS_1, 0);
 
 	/* Enable P2SB MSE */
-	pci_write_config8(PCH_DEV_P2SB, PCI_COMMAND,
+	pci_write_config16(PCH_DEV_P2SB, PCI_COMMAND,
 			  PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY);
 }
 

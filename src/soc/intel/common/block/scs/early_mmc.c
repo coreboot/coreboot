@@ -32,14 +32,14 @@ static void enable_mmc_controller_bar(void)
 {
 	pci_write_config32(PCH_DEV_EMMC, PCI_BASE_ADDRESS_0,
 				PRERAM_MMC_BASE_ADDRESS);
-	pci_write_config32(PCH_DEV_EMMC, PCI_COMMAND,
+	pci_write_config16(PCH_DEV_EMMC, PCI_COMMAND,
 				PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY);
 }
 
 static void disable_mmc_controller_bar(void)
 {
 	pci_write_config32(PCH_DEV_EMMC, PCI_BASE_ADDRESS_0, 0);
-	pci_write_config32(PCH_DEV_EMMC, PCI_COMMAND,
+	pci_write_config16(PCH_DEV_EMMC, PCI_COMMAND,
 				~(PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY));
 }
 

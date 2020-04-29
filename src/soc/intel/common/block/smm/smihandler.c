@@ -139,7 +139,7 @@ static void busmaster_disable_on_bus(int bus)
 
 	for (slot = 0; slot < 0x20; slot++) {
 		for (func = 0; func < 8; func++) {
-			u32 reg32;
+			u16 reg16;
 
 			pci_devfn_t dev = PCI_DEV(bus, slot, func);
 
@@ -152,9 +152,9 @@ static void busmaster_disable_on_bus(int bus)
 				continue;
 
 			/* Disable Bus Mastering for this one device */
-			reg32 = pci_read_config32(dev, PCI_COMMAND);
-			reg32 &= ~PCI_COMMAND_MASTER;
-			pci_write_config32(dev, PCI_COMMAND, reg32);
+			reg16 = pci_read_config16(dev, PCI_COMMAND);
+			reg16 &= ~PCI_COMMAND_MASTER;
+			pci_write_config16(dev, PCI_COMMAND, reg16);
 
 			/* If it's not a bridge, move on. */
 			hdr = pci_read_config8(dev, PCI_HEADER_TYPE);

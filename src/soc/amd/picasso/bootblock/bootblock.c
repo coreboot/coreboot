@@ -60,5 +60,4 @@ void bootblock_soc_init(void)
 	printk(BIOS_DEBUG, "Family_Model: %08x\n", val);
 
 	fch_early_init();
-	i2c_soc_early_init();
 }

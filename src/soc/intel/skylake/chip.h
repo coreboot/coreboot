@@ -567,9 +567,6 @@ struct soc_intel_skylake_config {
 	 */
 	u8 IslVrCmd;
 
-	/* Enable/Disable Sata power optimization */
-	u8 SataPwrOptEnable;
-
 	/* Enable/Disable Sata test mode */
 	u8 SataTestMode;
 

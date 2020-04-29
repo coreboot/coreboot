@@ -258,8 +258,14 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	params->SataEnable = config->EnableSata;
 	params->SataMode = config->SataMode;
 	params->SataSpeedLimit = config->SataSpeedLimit;
-	params->SataPwrOptEnable = config->SataPwrOptEnable;
 	params->EnableTcoTimer = !config->PmTimerDisabled;
+
+	/*
+	 * For unknown reasons FSP skips writing some essential SATA init registers (SIR) when
+	 * SataPwrOptEnable=0. This results in link errors, "unaligned write" errors and others.
+	 * Enabling this option solves these problems.
+	 */
+	params->SataPwrOptEnable = 1;
 
 	tconfig->PchLockDownGlobalSmi = config->LockDownConfigGlobalSmi;
 	tconfig->PchLockDownRtcLock = config->LockDownConfigRtcLock;

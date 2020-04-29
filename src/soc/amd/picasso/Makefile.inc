@@ -105,7 +105,7 @@ PICASSO_FWM_POSITION=$(call int-add, \
 #
 
 # type = 0x0
-FIRMWARE_LOCATE=$(dir $(call strip_quotes, $(CONFIG_AMD_PUBKEY_FILE)))
+FIRMWARE_LOCATE=$(realpath $(dir $(call strip_quotes, $(CONFIG_AMD_PUBKEY_FILE))))
 
 # type = 0x1
 ifeq ($(CONFIG_PSP_BOOTLOADER_FILE),)
@@ -115,16 +115,16 @@ PSPBTLDR_FILE=$(realpath $(call strip_quotes, $(CONFIG_PSP_BOOTLOADER_FILE)))
 $(info Adding PSP $(shell md5sum $(PSPBTLDR_FILE)))
 
 # types = 0x8 and 0x12
-PSP_SMUFW1_SUB1_FILE=$(top)/$(FIRMWARE_LOCATE)/SmuFirmwareRV2.csbin
-PSP_SMUFW1_SUB2_FILE=$(top)/$(FIRMWARE_LOCATE)/SmuFirmwarePCO.csbin
-PSP_SMUFW2_SUB1_FILE=$(top)/$(FIRMWARE_LOCATE)/SmuFirmware2RV2.csbin
-PSP_SMUFW2_SUB2_FILE=$(top)/$(FIRMWARE_LOCATE)/SmuFirmware2PCO.csbin
+PSP_SMUFW1_SUB1_FILE=$(FIRMWARE_LOCATE)/SmuFirmwareRV2.csbin
+PSP_SMUFW1_SUB2_FILE=$(FIRMWARE_LOCATE)/SmuFirmwarePCO.csbin
+PSP_SMUFW2_SUB1_FILE=$(FIRMWARE_LOCATE)/SmuFirmware2RV2.csbin
+PSP_SMUFW2_SUB2_FILE=$(FIRMWARE_LOCATE)/SmuFirmware2PCO.csbin
 
 ifeq ($(CONFIG_PSP_UNLOCK_SECURE_DEBUG),y)
 # type = 0x9
-PSP_SEC_DBG_KEY_FILE=$(top)/$(FIRMWARE_LOCATE)/RavenSecureDebug_PublicKey.bin
+PSP_SEC_DBG_KEY_FILE=$(FIRMWARE_LOCATE)/RavenSecureDebug_PublicKey.bin
 # type = 0x13
-PSP_SEC_DEBUG_FILE=$(top)/$(FIRMWARE_LOCATE)/secure_unlock_prod_RV.sbin
+PSP_SEC_DEBUG_FILE=$(FIRMWARE_LOCATE)/secure_unlock_prod_RV.sbin
 # Enable secure debug unlock
 PSP_SOFTFUSE_BITS += 0
 PSP_TOKEN_UNLOCK="--token-unlock"
@@ -132,43 +132,43 @@ endif
 
 ifeq ($(CONFIG_USE_PSPSCUREOS),y)
 # types = 0x2
-PSPSCUREOS_FILE=$(top)/$(FIRMWARE_LOCATE)/psp_os_combined_prod_RV.sbin
+PSPSCUREOS_FILE=$(FIRMWARE_LOCATE)/psp_os_combined_prod_RV.sbin
 endif
 
 # type = 0x21
-PSP_IKEK_FILE=$(top)/$(FIRMWARE_LOCATE)/PspIkekRV.bin
+PSP_IKEK_FILE=$(FIRMWARE_LOCATE)/PspIkekRV.bin
 
 # type = 0x24
-PSP_SECG1_FILE=$(top)/$(FIRMWARE_LOCATE)/security_policy_RV2_FP5_AM4.sbin
-PSP_SECG2_FILE=$(top)/$(FIRMWARE_LOCATE)/security_policy_PCO_FP5_AM4.sbin
+PSP_SECG1_FILE=$(FIRMWARE_LOCATE)/security_policy_RV2_FP5_AM4.sbin
+PSP_SECG2_FILE=$(FIRMWARE_LOCATE)/security_policy_PCO_FP5_AM4.sbin
 
 ifeq ($(CONFIG_PSP_LOAD_MP2_FW),y)
 # type = 0x25
-PSP_MP2FW1_FILE=$(top)/$(FIRMWARE_LOCATE)/MP2I2CFWRV2.sbin
-PSP_MP2FW2_FILE=$(top)/$(FIRMWARE_LOCATE)/MP2I2CFWPCO.sbin
+PSP_MP2FW1_FILE=$(FIRMWARE_LOCATE)/MP2I2CFWRV2.sbin
+PSP_MP2FW2_FILE=$(FIRMWARE_LOCATE)/MP2I2CFWPCO.sbin
 # BIOS type = 0x6a
-PSP_MP2CFG_FILE=$(top)/$(FIRMWARE_LOCATE)/MP2FWConfig.sbin
+PSP_MP2CFG_FILE=$(FIRMWARE_LOCATE)/MP2FWConfig.sbin
 else
 # Disable MP2 firmware loading
 PSP_SOFTFUSE_BITS += 29
 endif
 
 # type = 0x28
-PSP_DRIVERS_FILE=$(top)/$(FIRMWARE_LOCATE)/drv_sys_prod_RV.sbin
+PSP_DRIVERS_FILE=$(FIRMWARE_LOCATE)/drv_sys_prod_RV.sbin
 
 ifeq ($(CONFIG_PSP_LOAD_S0I3_FW),y)
-PSP_S0I3_FILE=$(top)/$(FIRMWARE_LOCATE)/dr_agesa_prod_RV.sbin
+PSP_S0I3_FILE=$(FIRMWARE_LOCATE)/dr_agesa_prod_RV.sbin
 endif
 
 # types = 0x30 - 0x37
-PSP_ABL0_FILE=$(top)/$(FIRMWARE_LOCATE)/AgesaBootloader0_prod_RV.csbin
-PSP_ABL1_FILE=$(top)/$(FIRMWARE_LOCATE)/AgesaBootloader1_prod_RV.csbin
-PSP_ABL2_FILE=$(top)/$(FIRMWARE_LOCATE)/AgesaBootloader2_prod_RV.csbin
-PSP_ABL3_FILE=$(top)/$(FIRMWARE_LOCATE)/AgesaBootloader3_prod_RV.csbin
-PSP_ABL4_FILE=$(top)/$(FIRMWARE_LOCATE)/AgesaBootloader4_prod_RV.csbin
-PSP_ABL5_FILE=$(top)/$(FIRMWARE_LOCATE)/AgesaBootloader5_prod_RV.csbin
-PSP_ABL6_FILE=$(top)/$(FIRMWARE_LOCATE)/AgesaBootloader6_prod_RV.csbin
-PSP_ABL7_FILE=$(top)/$(FIRMWARE_LOCATE)/AgesaBootloader7_prod_RV.csbin
+PSP_ABL0_FILE=$(FIRMWARE_LOCATE)/AgesaBootloader0_prod_RV.csbin
+PSP_ABL1_FILE=$(FIRMWARE_LOCATE)/AgesaBootloader1_prod_RV.csbin
+PSP_ABL2_FILE=$(FIRMWARE_LOCATE)/AgesaBootloader2_prod_RV.csbin
+PSP_ABL3_FILE=$(FIRMWARE_LOCATE)/AgesaBootloader3_prod_RV.csbin
+PSP_ABL4_FILE=$(FIRMWARE_LOCATE)/AgesaBootloader4_prod_RV.csbin
+PSP_ABL5_FILE=$(FIRMWARE_LOCATE)/AgesaBootloader5_prod_RV.csbin
+PSP_ABL6_FILE=$(FIRMWARE_LOCATE)/AgesaBootloader6_prod_RV.csbin
+PSP_ABL7_FILE=$(FIRMWARE_LOCATE)/AgesaBootloader7_prod_RV.csbin
 
 # type = 0x3a
 ifeq ($(CONFIG_HAVE_PSP_WHITELIST_FILE),y)
@@ -208,19 +208,19 @@ _GET_APOBNV_BASE=grep "RW_MRC_CACHE" | sed 's/.*@//' | sed 's/ .*//'
 _GET_APOBNV_SIZE=grep "RW_MRC_CACHE" | sed 's/.*@//' | sed 's/.* //'
 
 # type2 = 0x64, 0x65
-PSP_PMUI_FILE1=$(top)/$(FIRMWARE_LOCATE)/Appb_Rv_1D_Ddr4_Udimm_Imem.csbin
-PSP_PMUI_FILE2=$(top)/$(FIRMWARE_LOCATE)/Appb_Rv_2D_Ddr4_Imem.csbin
-PSP_PMUI_FILE3=$(top)/$(FIRMWARE_LOCATE)/Appb_Rv2_1D_ddr4_Udimm_Imem.csbin
-PSP_PMUI_FILE4=$(top)/$(FIRMWARE_LOCATE)/Appb_Rv2_2D_ddr4_Udimm_Imem.csbin
-PSP_PMUD_FILE1=$(top)/$(FIRMWARE_LOCATE)/Appb_Rv_1D_Ddr4_Udimm_Dmem.csbin
-PSP_PMUD_FILE2=$(top)/$(FIRMWARE_LOCATE)/Appb_Rv_2D_Ddr4_Dmem.csbin
-PSP_PMUD_FILE3=$(top)/$(FIRMWARE_LOCATE)/Appb_Rv2_1D_ddr4_Udimm_Dmem.csbin
-PSP_PMUD_FILE4=$(top)/$(FIRMWARE_LOCATE)/Appb_Rv2_2D_ddr4_Udimm_Dmem.csbin
+PSP_PMUI_FILE1=$(FIRMWARE_LOCATE)/Appb_Rv_1D_Ddr4_Udimm_Imem.csbin
+PSP_PMUI_FILE2=$(FIRMWARE_LOCATE)/Appb_Rv_2D_Ddr4_Imem.csbin
+PSP_PMUI_FILE3=$(FIRMWARE_LOCATE)/Appb_Rv2_1D_ddr4_Udimm_Imem.csbin
+PSP_PMUI_FILE4=$(FIRMWARE_LOCATE)/Appb_Rv2_2D_ddr4_Udimm_Imem.csbin
+PSP_PMUD_FILE1=$(FIRMWARE_LOCATE)/Appb_Rv_1D_Ddr4_Udimm_Dmem.csbin
+PSP_PMUD_FILE2=$(FIRMWARE_LOCATE)/Appb_Rv_2D_Ddr4_Dmem.csbin
+PSP_PMUD_FILE3=$(FIRMWARE_LOCATE)/Appb_Rv2_1D_ddr4_Udimm_Dmem.csbin
+PSP_PMUD_FILE4=$(FIRMWARE_LOCATE)/Appb_Rv2_2D_ddr4_Udimm_Dmem.csbin
 
 # type = 0x66
-PSP_UCODE_FILE1=$(top)/$(FIRMWARE_LOCATE)/UcodePatch_PCO_B1.bin
-PSP_UCODE_FILE2=$(top)/$(FIRMWARE_LOCATE)/UcodePatch_PCO_B0.bin
-PSP_UCODE_FILE3=$(top)/$(FIRMWARE_LOCATE)/UcodePatch_RV2_A0.bin
+PSP_UCODE_FILE1=$(FIRMWARE_LOCATE)/UcodePatch_PCO_B1.bin
+PSP_UCODE_FILE2=$(FIRMWARE_LOCATE)/UcodePatch_PCO_B0.bin
+PSP_UCODE_FILE3=$(FIRMWARE_LOCATE)/UcodePatch_RV2_A0.bin
 
 # type = 0xb - See #55758 (NDA) for bit definitions.
 PSP_SOFTFUSE_BITS += 28

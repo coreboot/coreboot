@@ -24,8 +24,8 @@ ramstage-y +=  usb.c
 ramstage-y +=  smbus.c
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += fadt.c
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi_tables.c
-ramstage-$(CONFIG_HAVE_ACPI_RESUME) += wakeup.c
 
+romstage-$(CONFIG_HAVE_ACPI_RESUME) += wakeup.c
 romstage-y += early_pm.c
 romstage-y += early_smbus.c
 

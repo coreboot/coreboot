@@ -1,8 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 /* This file is part of the coreboot project. */
 
-#define ACPI_VIDEO_DEVICE \_SB.PCI0.GFX0
-
 #include <acpi/acpi.h>
 
 DefinitionBlock(

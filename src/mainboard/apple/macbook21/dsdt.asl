@@ -3,7 +3,6 @@
 
 #define BRIGHTNESS_UP \DSPC.BRTU
 #define BRIGHTNESS_DOWN \DSPC.BRTD
-#define ACPI_VIDEO_DEVICE \_SB.PCI0.GFX0
 
 #include <acpi/acpi.h>
 DefinitionBlock(

@@ -294,21 +294,12 @@ func (b bd82x6x) Scan(ctx Context, addr PCIDevData) {
 	sb := Create(ctx, "early_init.c")
 	defer sb.Close()
 	Add_gpl(sb)
-	sb.WriteString(`/* FIXME: Check if all includes are needed. */
+	sb.WriteString(`
 
-#include <stdint.h>
-#include <string.h>
-#include <timestamp.h>
-#include <arch/byteorder.h>
-#include <device/mmio.h>
-#include <device/pci_ops.h>
-#include <device/pnp_ops.h>
-#include <console/console.h>
 #include <bootblock_common.h>
 #include <northbridge/intel/sandybridge/sandybridge.h>
 #include <northbridge/intel/sandybridge/raminit_native.h>
 #include <southbridge/intel/bd82x6x/pch.h>
-#include <southbridge/intel/common/gpio.h>
 
 `)
 	sb.WriteString("const struct southbridge_usb_port mainboard_usb_ports[] = {\n")

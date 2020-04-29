@@ -18,6 +18,7 @@
 #include <device/device.h>
 #include <device/pci_def.h>
 #include <device/pci_type.h>
+#include <device/soundwire.h>
 
 static char *gencurrent;
 
@@ -1884,4 +1885,31 @@ void acpigen_write_ADR_pci_device(const struct device *dev)
 {
 	assert(dev->path.type == DEVICE_PATH_PCI);
 	acpigen_write_ADR_pci_devfn(dev->path.pci.devfn);
+}
+
+/**
+ * acpigen_write_ADR_soundwire_device() - SoundWire ACPI Device Address Encoding.
+ * @address: SoundWire device address properties.
+ *
+ * From SoundWire Discovery and Configuration Specification Version 1.0 Table 3.
+ *
+ *   63..52 - Reserved (0)
+ *   51..48 - Zero-based SoundWire Link ID, relative to the immediate parent.
+ *            Used when a Controller has multiple master devices, each producing a
+ *            separate SoundWire Link.  Set to 0 for single-link controllers.
+ *   47..0  - SoundWire Device ID Encoding from specification version 1.2 table 88
+ *   47..44 - SoundWire specification version that this device supports
+ *   43..40 - Unique ID for multiple devices
+ *   39..24 - MIPI standard manufacturer code
+ *   23..08 - Vendor defined part ID
+ *   07..00 - MIPI class encoding
+ */
+void acpigen_write_ADR_soundwire_device(const struct soundwire_address *address)
+{
+	acpigen_write_ADR((((uint64_t)address->link_id & 0xf) << 48) |
+			  (((uint64_t)address->version & 0xf) << 44) |
+			  (((uint64_t)address->unique_id & 0xf) << 40) |
+			  (((uint64_t)address->manufacturer_id & 0xffff) << 24) |
+			  (((uint64_t)address->part_id & 0xffff) << 8) |
+			  (((uint64_t)address->class & 0xff)));
 }

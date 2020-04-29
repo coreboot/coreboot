@@ -374,6 +374,8 @@ void acpigen_write_pld(const struct acpi_pld *pld);
 void acpigen_write_ADR(uint64_t adr);
 void acpigen_write_ADR_pci_devfn(pci_devfn_t devfn);
 void acpigen_write_ADR_pci_device(const struct device *dev);
+struct soundwire_address;
+void acpigen_write_ADR_soundwire_device(const struct soundwire_address *address);
 /*
  * Generate ACPI AML code for _DSM method.
  * This function takes as input uuid for the device, set of callbacks and

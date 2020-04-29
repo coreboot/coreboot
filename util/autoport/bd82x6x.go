@@ -192,10 +192,6 @@ func (b bd82x6x) Scan(ctx Context, addr PCIDevData) {
 		DSDTDefine{
 			Key:   "BRIGHTNESS_DOWN",
 			Value: "\\_SB.PCI0.GFX0.DECB",
-		},
-		DSDTDefine{
-			Key:   "ACPI_VIDEO_DEVICE",
-			Value: "\\_SB.PCI0.GFX0",
 		})
 
 	/* SPI init */

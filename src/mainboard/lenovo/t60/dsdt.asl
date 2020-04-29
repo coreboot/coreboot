@@ -4,7 +4,6 @@
 #define THINKPAD_EC_GPE 28
 #define BRIGHTNESS_UP \BRTU
 #define BRIGHTNESS_DOWN \BRTD
-#define ACPI_VIDEO_DEVICE \_SB.PCI0.GFX0
 
 #include <acpi/acpi.h>
 DefinitionBlock(

@@ -42,6 +42,7 @@ ramstage-y += p2sb.c
 ramstage-y += pmc.c
 ramstage-y += reset.c
 ramstage-y += smmrelocate.c
+ramstage-y += soundwire.c
 ramstage-y += systemagent.c
 ramstage-y += me.c
 

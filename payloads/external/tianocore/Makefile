@@ -94,7 +94,7 @@ checktools:
 build: update checktools
 	unset CC; $(MAKE) -C $(project_dir)/BaseTools
 	echo " build $(project_name) $(TAG)"
-	if [ -n $(CONFIG_TIANOCORE_BOOTSPLASH_FILE) ]; then \
+	if [ -n "$(CONFIG_TIANOCORE_BOOTSPLASH_FILE)" ]; then \
 		echo "    Copying custom bootsplash image"; \
 		case "$(CONFIG_TIANOCORE_BOOTSPLASH_FILE)" in \
 			/*) cp $(CONFIG_TIANOCORE_BOOTSPLASH_FILE) \

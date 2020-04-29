@@ -18,4 +18,8 @@
 #define MIPI_MFG_ID_TI				0x0102
 #define MIPI_MFG_ID_TOSHIBA			0x0126
 
+/* Contributing Members */
+#define MIPI_MFG_ID_MAXIM			0x019f
+#define MIPI_DEV_ID_MAXIM_MAX98373		0x8373
+
 #endif /* __DEVICE_MIPI_IDS_H__ */

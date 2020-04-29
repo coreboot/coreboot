@@ -1,0 +1,2 @@
+config DRIVERS_SOUNDWIRE_MAX98373
+	bool

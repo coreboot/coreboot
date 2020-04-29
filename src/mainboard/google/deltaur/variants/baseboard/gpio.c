@@ -32,7 +32,7 @@ static const struct pad_config gpio_table[] = {
 	/* A12 : GPP_A12 ==> M2280_PCIE_SATA# */
 	PAD_CFG_NF(GPP_A12, NONE, DEEP, NF1),
 	/* A13 : GPP_A13 ==> PCH_BT_RADIO_DIS# */
-	PAD_CFG_GPO(GPP_A13, 0, DEEP),
+	PAD_CFG_GPO(GPP_A13, 1, DEEP),
 	/* A14 : GPP_A14 ==> USB_OC1# */
 	PAD_CFG_NF(GPP_A14, NONE, DEEP, NF1),
 	/* A15 : GPP_A15 ==> USB_OC2# */

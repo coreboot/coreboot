@@ -665,7 +665,7 @@ void acpi_dp_write(struct acpi_dp *table)
 	char *dp_count, *prop_count = NULL;
 	int child_count = 0;
 
-	if (!table || table->type != ACPI_DP_TYPE_TABLE)
+	if (!table || table->type != ACPI_DP_TYPE_TABLE || !table->next)
 		return;
 
 	/* Name (name) */

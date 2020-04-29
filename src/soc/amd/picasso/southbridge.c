@@ -236,13 +236,27 @@ void sb_read_mode(u32 mode)
 	write32((void *)(base + SPI_CNTRL0), val | SPI_READ_MODE(mode));
 }
 
-static void sb_spi_config_modes(void)
+static void sb_spi_config_mb_modes(void)
 {
 	const struct soc_amd_picasso_config *cfg = config_of_soc();
 
 	sb_read_mode(cfg->spi_read_mode);
 	sb_set_spi100(cfg->spi_normal_speed, cfg->spi_fast_speed, cfg->spi_altio_speed,
 		      cfg->spi_tpm_speed);
+}
+
+static void sb_spi_config_em100_modes(void)
+{
+	sb_read_mode(SPI_READ_MODE_NORMAL33M);
+	sb_set_spi100(SPI_SPEED_16M, SPI_SPEED_16M, SPI_SPEED_16M, SPI_SPEED_16M);
+}
+
+static void sb_spi_config_modes(void)
+{
+	if (CONFIG(EM100))
+		sb_spi_config_em100_modes();
+	else
+		sb_spi_config_mb_modes();
 }
 
 static void sb_spi_init(void)

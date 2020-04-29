@@ -22,6 +22,6 @@ void bootblock_soc_init(void)
 {
 	sc7180_mmu_init();
 	clock_init();
-	quadspi_init(25 * MHz);
+	quadspi_init(37500 * KHz);
 	qupv3_fw_init();
 }

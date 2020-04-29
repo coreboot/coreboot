@@ -147,12 +147,8 @@ static void mch_domain_set_resources(struct device *dev)
 
 static void mch_domain_init(struct device *dev)
 {
-	u32 reg32;
-
 	/* Enable SERR */
-	reg32 = pci_read_config32(dev, PCI_COMMAND);
-	reg32 |= PCI_COMMAND_SERR;
-	pci_write_config32(dev, PCI_COMMAND, reg32);
+	pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_SERR);
 }
 
 static const char *northbridge_acpi_name(const struct device *dev)

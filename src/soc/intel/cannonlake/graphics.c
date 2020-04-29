@@ -48,9 +48,8 @@ void graphics_soc_init(struct device *dev)
 	}
 
 	/* IGD needs to Bus Master */
-	uint32_t reg32 = pci_read_config32(dev, PCI_COMMAND);
-	reg32 |= PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY | PCI_COMMAND_IO;
-	pci_write_config32(dev, PCI_COMMAND, reg32);
+	pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY |
+			PCI_COMMAND_IO);
 
 	/*
 	 * GFX PEIM module inside FSP binary is taking care of graphics

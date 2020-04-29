@@ -50,7 +50,6 @@ asmlinkage void bootblock_c_entry(uint64_t base_timestamp)
 
 void bootblock_soc_early_init(void)
 {
-	sb_reset_i2c_slaves();
 	fch_pre_init();
 }
 

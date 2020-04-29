@@ -1,25 +1,18 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 /* This file is part of the coreboot project. */
 
-/* FIXME: Check if all includes are needed. */
-
 #include <stdint.h>
-#include <string.h>
-#include <timestamp.h>
-#include <arch/byteorder.h>
-#include <device/mmio.h>
 #include <device/pci_ops.h>
 #include <device/pnp_def.h>
 #include <device/pnp_ops.h>
-#include <console/console.h>
 #include <bootblock_common.h>
 #include <northbridge/intel/sandybridge/sandybridge.h>
 #include <northbridge/intel/sandybridge/raminit_native.h>
 #include <southbridge/intel/bd82x6x/pch.h>
-#include <southbridge/intel/common/gpio.h>
 #include <superio/nuvoton/common/nuvoton.h>
 #include <superio/nuvoton/nct6776/nct6776.h>
 #include <superio/nuvoton/wpcm450/wpcm450.h>
+
 #include "x9scl.h"
 
 #define SERIAL_DEV PNP_DEV(X9SCL_NCT6776_PNP_BASE, NCT6776_SP1)

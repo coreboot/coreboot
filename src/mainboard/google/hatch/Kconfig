@@ -106,11 +106,13 @@ config MAINBOARD_PART_NUMBER
 	default "Akemi" if BOARD_GOOGLE_AKEMI
 	default "Dratini" if BOARD_GOOGLE_DRATINI
 	default "Duffy" if BOARD_GOOGLE_DUFFY
+	default "Duffy" if BOARD_GOOGLE_DUFFY_LEGACY
 	default "Hatch" if BOARD_GOOGLE_HATCH
 	default "Helios" if BOARD_GOOGLE_HELIOS
 	default "Helios_Diskswap" if BOARD_GOOGLE_HELIOS_DISKSWAP
 	default "Jinlon" if BOARD_GOOGLE_JINLON
 	default "Kaisa" if BOARD_GOOGLE_KAISA
+	default "Kaisa" if BOARD_GOOGLE_KAISA_LEGACY
 	default "Kindred" if BOARD_GOOGLE_KINDRED
 	default "Kohaku" if BOARD_GOOGLE_KOHAKU
 	default "Mushu" if BOARD_GOOGLE_MUSHU
@@ -134,11 +136,13 @@ config VARIANT_DIR
 	default "akemi" if BOARD_GOOGLE_AKEMI
 	default "dratini" if BOARD_GOOGLE_DRATINI
 	default "duffy" if BOARD_GOOGLE_DUFFY
+	default "duffy" if BOARD_GOOGLE_DUFFY_LEGACY
 	default "hatch" if BOARD_GOOGLE_HATCH
 	default "helios" if BOARD_GOOGLE_HELIOS
 	default "helios" if BOARD_GOOGLE_HELIOS_DISKSWAP
 	default "jinlon" if BOARD_GOOGLE_JINLON
 	default "kaisa" if BOARD_GOOGLE_KAISA
+	default "kaisa" if BOARD_GOOGLE_KAISA_LEGACY
 	default "kindred" if BOARD_GOOGLE_KINDRED
 	default "kohaku" if BOARD_GOOGLE_KOHAKU
 	default "mushu" if BOARD_GOOGLE_MUSHU

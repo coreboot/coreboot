@@ -440,9 +440,9 @@ static void hda_work_around(struct device *dev)
 	 */
 	pci_write_config32(dev, PCI_BASE_ADDRESS_0, TEMP_BASE_ADDRESS);
 	pci_write_config32(dev, PCI_BASE_ADDRESS_1, 0);
-	pci_write_config8(dev, PCI_COMMAND, PCI_COMMAND_MEMORY);
+	pci_write_config16(dev, PCI_COMMAND, PCI_COMMAND_MEMORY);
 	write32(gctl, read32(gctl) | 0x1);
-	pci_write_config8(dev, PCI_COMMAND, 0);
+	pci_write_config16(dev, PCI_COMMAND, 0);
 	pci_write_config32(dev, PCI_BASE_ADDRESS_0, 0);
 }
 
@@ -526,7 +526,7 @@ static int place_device_in_d3hot(struct device *dev)
 /* Common PCI device function disable. */
 void southcluster_enable_dev(struct device *dev)
 {
-	uint32_t reg32;
+	uint16_t reg16;
 
 	printk(BIOS_SPEW, "%s/%s (%s)\n", __FILE__, __func__, dev_name(dev));
 
@@ -537,9 +537,9 @@ void southcluster_enable_dev(struct device *dev)
 		       dev_path(dev), slot, func);
 
 		/* Ensure memory, io, and bus master are all disabled */
-		reg32 = pci_read_config32(dev, PCI_COMMAND);
-		reg32 &= ~(PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY | PCI_COMMAND_IO);
-		pci_write_config32(dev, PCI_COMMAND, reg32);
+		reg16 = pci_read_config16(dev, PCI_COMMAND);
+		reg16 &= ~(PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY | PCI_COMMAND_IO);
+		pci_write_config16(dev, PCI_COMMAND, reg16);
 
 		/* Place device in D3Hot */
 		if (place_device_in_d3hot(dev) < 0) {
@@ -552,9 +552,7 @@ void southcluster_enable_dev(struct device *dev)
 		sc_disable_devfn(dev);
 	} else {
 		/* Enable SERR */
-		reg32 = pci_read_config32(dev, PCI_COMMAND);
-		reg32 |= PCI_COMMAND_SERR;
-		pci_write_config32(dev, PCI_COMMAND, reg32);
+		pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_SERR);
 	}
 }
 

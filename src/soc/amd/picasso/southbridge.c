@@ -214,11 +214,8 @@ static uintptr_t sb_init_spi_base(void)
 void sb_set_spi100(u16 norm, u16 fast, u16 alt, u16 tpm)
 {
 	uintptr_t base = sb_init_spi_base();
-	write16((void *)(base + SPI100_SPEED_CONFIG),
-				(norm << SPI_NORM_SPEED_NEW_SH) |
-				(fast << SPI_FAST_SPEED_NEW_SH) |
-				(alt << SPI_ALT_SPEED_NEW_SH) |
-				(tpm << SPI_TPM_SPEED_NEW_SH));
+
+	write16((void *)(base + SPI100_SPEED_CONFIG), SPI_SPEED_CFG(norm, fast, alt, tpm));
 	write16((void *)(base + SPI100_ENABLE), SPI_USE_SPI100);
 }
 
@@ -233,9 +230,9 @@ void sb_disable_4dw_burst(void)
 void sb_read_mode(u32 mode)
 {
 	uintptr_t base = sb_init_spi_base();
-	write32((void *)(base + SPI_CNTRL0),
-			(read32((void *)(base + SPI_CNTRL0))
-					& ~SPI_READ_MODE_MASK) | mode);
+	uint32_t val = (read32((void *)(base + SPI_CNTRL0)) & ~SPI_READ_MODE_MASK);
+
+	write32((void *)(base + SPI_CNTRL0), val | SPI_READ_MODE(mode));
 }
 
 static void fch_smbus_init(void)

@@ -84,7 +84,6 @@ static void hda_init(struct device *dev)
 	u8 *base;
 	struct resource *res;
 	u32 codec_mask;
-	u32 reg32;
 
 	/* Find base address */
 	res = find_resource(dev, PCI_BASE_ADDRESS_0);
@@ -95,8 +94,7 @@ static void hda_init(struct device *dev)
 	printk(BIOS_DEBUG, "HDA: base = %p\n", base);
 
 	/* Set Bus Master */
-	reg32 = pci_read_config32(dev, PCI_COMMAND);
-	pci_write_config32(dev, PCI_COMMAND, reg32 | PCI_COMMAND_MASTER);
+	pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_MASTER);
 
 	hda_pch_init(dev, base);
 
@@ -110,7 +108,7 @@ static void hda_init(struct device *dev)
 
 static void hda_enable(struct device *dev)
 {
-	u32 reg32;
+	u16 reg16;
 	u8 reg8;
 
 	reg8 = pci_read_config8(dev, 0x43);
@@ -126,10 +124,10 @@ static void hda_enable(struct device *dev)
 		printk(BIOS_INFO, "HDA disabled, I/O buffers routed to ADSP\n");
 
 		/* Ensure memory, io, and bus master are all disabled */
-		reg32 = pci_read_config32(dev, PCI_COMMAND);
-		reg32 &= ~(PCI_COMMAND_MASTER |
+		reg16 = pci_read_config16(dev, PCI_COMMAND);
+		reg16 &= ~(PCI_COMMAND_MASTER |
 			   PCI_COMMAND_MEMORY | PCI_COMMAND_IO);
-		pci_write_config32(dev, PCI_COMMAND, reg32);
+		pci_write_config16(dev, PCI_COMMAND, reg16);
 
 		/* Disable this device */
 		pch_disable_devfn(dev);

@@ -2,7 +2,6 @@ chip soc/intel/skylake
 
 	register "deep_s5_enable_ac" = "0"
 	register "deep_s5_enable_dc" = "0"
-	register "deep_sx_config" = "DSX_EN_LAN_WAKE_PIN"
 
 	# Enable "Intel Speed Shift Technology"
 	register "speed_shift_enable" = "1"

@@ -235,6 +235,20 @@ void sb_read_mode(u32 mode)
 	write32((void *)(base + SPI_CNTRL0), val | SPI_READ_MODE(mode));
 }
 
+static void sb_spi_config_modes(void)
+{
+	sb_set_spi100(SPI_SPEED_33M, SPI_SPEED_33M,
+		      SPI_SPEED_16M, SPI_SPEED_16M);
+}
+
+static void sb_spi_init(void)
+{
+	lpc_enable_spi_prefetch();
+	sb_init_spi_base();
+	sb_disable_4dw_burst();
+	sb_spi_config_modes();
+}
+
 static void fch_smbus_init(void)
 {
 	/* 400 kHz smbus speed. */
@@ -260,11 +274,7 @@ void fch_pre_init(void)
 	if (CONFIG(POST_IO) && (CONFIG_POST_IO_PORT == 0x80)
 					&& CONFIG(PICASSO_LPC_IOMUX))
 		lpc_enable_port80();
-	lpc_enable_spi_prefetch();
-	sb_init_spi_base();
-	sb_disable_4dw_burst();
-	sb_set_spi100(SPI_SPEED_33M, SPI_SPEED_33M,
-			SPI_SPEED_16M, SPI_SPEED_16M);
+	sb_spi_init();
 	enable_acpimmio_decode_pm04();
 	fch_smbus_init();
 	sb_enable_cf9_io();

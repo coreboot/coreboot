@@ -19,6 +19,9 @@
 #define MIPI_MFG_ID_TOSHIBA			0x0126
 
 /* Contributing Members */
+#define MIPI_MFG_ID_REALTEK			0x025d
+#define MIPI_DEV_ID_REALTEK_ALC5682		0x5682
+
 #define MIPI_MFG_ID_MAXIM			0x019f
 #define MIPI_DEV_ID_MAXIM_MAX98373		0x8373
 

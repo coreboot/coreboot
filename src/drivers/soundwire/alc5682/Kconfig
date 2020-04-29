@@ -1,0 +1,2 @@
+config DRIVERS_SOUNDWIRE_ALC5682
+	bool

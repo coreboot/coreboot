@@ -116,6 +116,10 @@ The boards in this section are not real mainboards, but emulators.
 
 - [MS-7707](msi/ms7707/ms7707.md)
 
+## OCP
+
+- [Tioga Pass](ocp/tiogapass.md)
+
 ## Open Cellular
 
 - [Elgon](opencellular/elgon.md)

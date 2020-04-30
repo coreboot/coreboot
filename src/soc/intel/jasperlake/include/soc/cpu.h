@@ -5,13 +5,13 @@
 
 #include <intelblocks/msr.h>
 
-/* Latency times in units of 32768ns */
-#define C_STATE_LATENCY_CONTROL_0_LIMIT	0x9d
-#define C_STATE_LATENCY_CONTROL_1_LIMIT	0x9d
-#define C_STATE_LATENCY_CONTROL_2_LIMIT	0x9d
-#define C_STATE_LATENCY_CONTROL_3_LIMIT	0x9d
-#define C_STATE_LATENCY_CONTROL_4_LIMIT	0x9d
-#define C_STATE_LATENCY_CONTROL_5_LIMIT	0x9d
+/* Latency times in us */
+#define C1_LATENCY	1
+#define C6_LATENCY	127
+#define C7_LATENCY	253
+#define C8_LATENCY	260
+#define C9_LATENCY	487
+#define C10_LATENCY	1048
 
 /* Power in units of mW */
 #define C1_POWER	0x3e8

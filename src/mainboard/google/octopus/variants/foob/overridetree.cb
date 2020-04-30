@@ -162,4 +162,7 @@ chip soc/intel/apollolake
 			end
 		end	# - I2C 7
 	end
+
+	# Disable xHCI compliance mode
+	register "DisableComplianceMode" = "1"
 end

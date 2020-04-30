@@ -28,8 +28,6 @@ chip soc/intel/broadwell
 	# Port tuning for link stability
 	register "sata_port0_gen3_dtle" = "7"
 	register "sata_port1_gen3_dtle" = "9"
-	register "sata_port2_gen3_dtle" = "9"
-	register "sata_port3_gen3_dtle" = "7"
 
 	device cpu_cluster 0 on
 		device lapic 0 on end

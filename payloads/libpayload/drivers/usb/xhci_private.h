@@ -364,7 +364,7 @@ typedef struct erst_entry {
 #define CAP_CSZ_LEN			1
 
 #define CAP_MASK(tok)		MASK(CAP_##tok##_START, CAP_##tok##_LEN)
-#define CAP_GET(tok, cap)	(((cap).CAP_##tok##_FIELD & CAP_MASK(tok)) \
+#define CAP_GET(tok, cap)	(((cap)->CAP_##tok##_FIELD & CAP_MASK(tok)) \
 				 >> CAP_##tok##_START)
 
 #define CTXSIZE(xhci) (CAP_GET(CSZ, (xhci)->capreg) ? 64 : 32)
@@ -378,7 +378,7 @@ typedef struct xhci {
 		u32 hccparams;
 		u32 dboff;
 		u32 rtsoff;
-	} __packed capreg;
+	} __packed *capreg;
 
 	/* opreg is R/W is most places, so volatile access is necessary.
 	   volatile means that the compiler seeks byte writes if possible,

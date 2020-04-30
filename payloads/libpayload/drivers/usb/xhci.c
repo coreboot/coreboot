@@ -185,15 +185,15 @@ xhci_init (unsigned long physical_bar)
 		goto _free_xhci;
 	}
 
-	memcpy(&xhci->capreg, phys_to_virt(physical_bar), sizeof(xhci->capreg));
+	xhci->capreg = phys_to_virt(physical_bar) + sizeof(xhci->capreg);
 	xhci->opreg = phys_to_virt(physical_bar) + CAP_GET(CAPLEN, xhci->capreg);
-	xhci->hcrreg = phys_to_virt(physical_bar) + xhci->capreg.rtsoff;
-	xhci->dbreg = phys_to_virt(physical_bar) + xhci->capreg.dboff;
+	xhci->hcrreg = phys_to_virt(physical_bar) + xhci->capreg->rtsoff;
+	xhci->dbreg = phys_to_virt(physical_bar) + xhci->capreg->dboff;
 
 	xhci_debug("regbase: 0x%"PRIx32"\n", physical_bar);
 	xhci_debug("caplen:  0x%"PRIx32"\n", CAP_GET(CAPLEN, xhci->capreg));
-	xhci_debug("rtsoff:  0x%"PRIx32"\n", xhci->capreg.rtsoff);
-	xhci_debug("dboff:   0x%"PRIx32"\n", xhci->capreg.dboff);
+	xhci_debug("rtsoff:  0x%"PRIx32"\n", xhci->capreg->rtsoff);
+	xhci_debug("dboff:   0x%"PRIx32"\n", xhci->capreg->dboff);
 
 	xhci_debug("hciversion: %"PRIx8".%"PRIx8"\n",
 		   CAP_GET(CAPVER_HI, xhci->capreg), CAP_GET(CAPVER_LO, xhci->capreg));

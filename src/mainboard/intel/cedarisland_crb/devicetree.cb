@@ -28,10 +28,10 @@ chip soc/intel/xeon_sp/cpx
 		device pci 17.0 on end
 		device pci 1c.0 on end
 		device pci 1c.4 on end
+		device pci 1f.1 on end
 		device pci 1f.2 on end
 		device pci 1f.4 on end
 		device pci 1f.5 on end
-
 		device pci 1f.0 on	# LPC/eSPI Interface
 			chip superio/common
 				device pnp 2e.0 on

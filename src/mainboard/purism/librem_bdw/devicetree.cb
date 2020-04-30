@@ -21,14 +21,6 @@ chip soc/intel/broadwell
 	register "gen1_dec" = "0x00000381"
 	register "gen2_dec" = "0x000c0081"
 
-	# Port 0 is HDD
-	# Port 3 is M.2 NGFF
-	register "sata_port_map" = "0x9"
-
-	# Port 0 tuning for link stability
-	register "sata_port0_gen3_dtle" = "9"
-	register "sata_port3_gen3_dtle" = "9"
-
 	device cpu_cluster 0 on
 		device lapic 0 on end
 	end
@@ -54,7 +46,7 @@ chip soc/intel/broadwell
 		device pci 1b.0 on  end # High Definition Audio
 		device pci 1c.0 on  end # PCIe Port #1
 		device pci 1c.1 off end # PCIe Port #2
-		device pci 1c.2 on  end # PCIe Port #3 - LAN
+		device pci 1c.2 off end # PCIe Port #3 - LAN
 		device pci 1c.3 on  end # PCIe Port #4 - WiFi
 		device pci 1c.4 on  end # PCIe Port #5
 		device pci 1c.5 on  end # PCIe Port #6 - M.2 NVMe

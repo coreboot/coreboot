@@ -17,9 +17,9 @@ config VARIANT_DIR
 	default "librem13v1" if BOARD_PURISM_LIBREM13_V1
 	default "librem15v2" if BOARD_PURISM_LIBREM15_V2
 
-config DEVICETREE
+config OVERRIDE_DEVICETREE
 	string
-	default "variants/$(CONFIG_VARIANT_DIR)/devicetree.cb"
+	default "variants/$(CONFIG_VARIANT_DIR)/overridetree.cb"
 
 config DRIVERS_UART_8250IO
 	def_bool n

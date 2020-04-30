@@ -100,4 +100,7 @@ config PRERAM_CBMEM_CONSOLE_SIZE
 	default 0xe00 if CHROMEOS
 	default 0xc00
 
+config FMDFILE
+	default "src/mainboard/$(CONFIG_MAINBOARD_DIR)/default.fmd" if !CHROMEOS
+
 endif # BOARD_GOOGLE_REEF

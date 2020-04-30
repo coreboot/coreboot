@@ -1,0 +1,28 @@
+FLASH 16M {
+	SI_DESC@0x0 0x1000
+	SI_BIOS@0x1000 0xf6f000 {
+		IFWI@0x0 0x1ff000
+		# SMMSTORE requires 64k alignment
+		SMMSTORE@0xa5e000 0x40000
+		UNIFIED_MRC_CACHE 0x21000 {
+			RECOVERY_MRC_CACHE@0x0 0x10000
+			RW_MRC_CACHE 0x10000
+			RW_VAR_MRC_CACHE 0x1000
+		}
+		FMAP 0x300
+		COREBOOT(CBFS)
+		BIOS_UNUSABLE 0x4f000
+	}
+	DEVICE_EXTENSION@0xf7f000 0x80000
+	# Currently, it is required that the BIOS region be a multiple of 8KiB.
+	# This is required so that the recovery mechanism can find SIGN_CSE
+	# region aligned to 4K at the center of BIOS region. Since the
+	# descriptor at the beginning uses 4K and BIOS starts at an offset of
+	# 4K, a hole of 4K is created towards the end of the flash to compensate
+	# for the size requirement of BIOS region.
+	# FIT tool thus creates descriptor with following regions:
+	# Descriptor --> 0 to 4K
+	# BIOS       --> 4K to 0xf7f000
+	# Device ext --> 0xf7f000 to 0xfff000
+	UNUSED_HOLE@0xfff000 0x1000
+}

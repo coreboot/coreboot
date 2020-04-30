@@ -394,7 +394,7 @@ typedef struct {
 
 /** Offset 0x03FE - HECI3 state
   The HECI3 state from Mbp for reference in S3 path or when MbpHob is not installed.
-  0: disable, 1: enable
+  DEPRECATED 0: disable, 1: enable
   $EN_DIS
 **/
   UINT8                       Heci3Enabled;
@@ -412,7 +412,8 @@ typedef struct {
   UINT8                       CdClock;
 
 /** Offset 0x048D - Enable/Disable PeiGraphicsPeimInit
-  Enable(Default): Enable PeiGraphicsPeimInit, Disable: Disable PeiGraphicsPeimInit
+  <b>Enable(Default):</b> FSP will initialize the framebuffer and provide it via EFI_PEI_GRAPHICS_INFO_HOB.
+  Disable: FSP will NOT initialize the framebuffer.
   $EN_DIS
 **/
   UINT8                       PeiGraphicsPeimInit;
@@ -494,7 +495,9 @@ typedef struct {
   UINT8                      Reserved22[10];
 
 /** Offset 0x05B4 - CpuMpPpi
-  Pointer for CpuMpPpi
+  <b>Optional</b> pointer to the boot loader's implementation of EFI_PEI_MP_SERVICES_PPI.
+  If not NULL, FSP will use the boot loader's implementation of multiprocessing.
+  See section 5.1.4 of the FSP Integration Guide for more details.
 **/
   UINT32                      CpuMpPpi;
 
@@ -565,7 +568,16 @@ typedef struct {
 
 /** Offset 0x0622 - Reserved
 **/
-  UINT8                       Reserved28[72];
+  UINT8                       Reserved28[24];
+
+/** Offset 0x063A - Enable PCIE RP Pm Sci
+  Indicate whether the root port power manager SCI is enabled.
+**/
+  UINT8                       PcieRpPmSci[24];
+
+/** Offset 0x0652 - Reserved
+**/
+  UINT8                       Reserved29[24];
 
 /** Offset 0x066A - Enable PCIE RP Clk Req Detect
   Probe CLKREQ# signal before enabling CLKREQ# based power management.
@@ -579,7 +591,7 @@ typedef struct {
 
 /** Offset 0x069A - Reserved
 **/
-  UINT8                       Reserved29[168];
+  UINT8                       Reserved30[168];
 
 /** Offset 0x0742 - PCIE RP Max Payload
   Max Payload Size supported, Default 128B, see enum PCH_PCIE_MAX_PAYLOAD.
@@ -594,7 +606,7 @@ typedef struct {
 
 /** Offset 0x075B - Reserved
 **/
-  UINT8                       Reserved30[5];
+  UINT8                       Reserved31[5];
 
 /** Offset 0x0760 - Touch Host Controller Port 1 Assignment
   Assign THC Port 1
@@ -604,7 +616,7 @@ typedef struct {
 
 /** Offset 0x0761 - Reserved
 **/
-  UINT8                       Reserved31[79];
+  UINT8                       Reserved32[79];
 
 /** Offset 0x07B0 - PCIE RP Aspm
   The ASPM configuration of the root port (see: PCH_PCIE_ASPM_CONTROL). Default is
@@ -625,7 +637,30 @@ typedef struct {
 
 /** Offset 0x07F8 - Reserved
 **/
-  UINT8                       Reserved32[98];
+  UINT8                       Reserved33[79];
+
+/** Offset 0x0847 - PCH Pm WoW lan Enable
+  Determine if WLAN wake from Sx, corresponds to the HOST_WLAN_PP_EN bit in the PWRM_CFG3 register.
+  $EN_DIS
+**/
+  UINT8                       PchPmWoWlanEnable;
+
+/** Offset 0x0848 - PCH Pm WoW lan DeepSx Enable
+  Determine if WLAN wake from DeepSx, corresponds to the DSX_WLAN_PP_EN bit in the
+  PWRM_CFG3 register.
+  $EN_DIS
+**/
+  UINT8                       PchPmWoWlanDeepSxEnable;
+
+/** Offset 0x0849 - PCH Pm Lan Wake From DeepSx
+  Determine if enable LAN to wake from deep Sx.
+  $EN_DIS
+**/
+  UINT8                       PchPmLanWakeFromDeepSx;
+
+/** Offset 0x084A - Reserved
+**/
+  UINT8                       Reserved34[16];
 
 /** Offset 0x085A - PCH Sata Pwr Opt Enable
   SATA Power Optimizer on PCH side.
@@ -635,7 +670,7 @@ typedef struct {
 
 /** Offset 0x085B - Reserved
 **/
-  UINT8                       Reserved33[50];
+  UINT8                       Reserved35[50];
 
 /** Offset 0x088D - Enable SATA Port DmVal
   DITO multiplier. Default is 15.
@@ -644,7 +679,7 @@ typedef struct {
 
 /** Offset 0x0895 - Reserved
 **/
-  UINT8                       Reserved34;
+  UINT8                       Reserved36;
 
 /** Offset 0x0896 - Enable SATA Port DmVal
   DEVSLP Idle Timeout (DITO), Default is 625.
@@ -653,7 +688,7 @@ typedef struct {
 
 /** Offset 0x08A6 - Reserved
 **/
-  UINT8                       Reserved35[72];
+  UINT8                       Reserved37[72];
 
 /** Offset 0x08EE - USB2 Port Over Current Pin
   Describe the specific over current pin number of USB 2.0 Port N.
@@ -667,7 +702,7 @@ typedef struct {
 
 /** Offset 0x0908 - Reserved
 **/
-  UINT8                       Reserved36[16];
+  UINT8                       Reserved38[16];
 
 /** Offset 0x0918 - Enable 8254 Static Clock Gating
   Set 8254CGE=1 is required for SLP_S0 support. However, set 8254CGE=1 in POST time
@@ -687,7 +722,7 @@ typedef struct {
 
 /** Offset 0x091A - Reserved
 **/
-  UINT8                       Reserved37[3];
+  UINT8                       Reserved39[3];
 
 /** Offset 0x091D - Hybrid Storage Detection and Configuration Mode
   Enables support for Hybrid storage devices. 0: Disabled; 1: Dynamic Configuration.
@@ -698,7 +733,7 @@ typedef struct {
 
 /** Offset 0x091E - Reserved
 **/
-  UINT8                       Reserved38[434];
+  UINT8                       Reserved40[434];
 
 /** Offset 0x0AD0 - RpPtmBytes
 **/
@@ -706,7 +741,7 @@ typedef struct {
 
 /** Offset 0x0AD4 - Reserved
 **/
-  UINT8                      Reserved39[101];
+  UINT8                      Reserved41[101];
 
 /** Offset 0x0B39 - GT Frequency Limit
   0xFF: Auto(Default), 2: 100 Mhz, 3: 150 Mhz, 4: 200 Mhz, 5: 250 Mhz, 6: 300 Mhz,
@@ -724,7 +759,7 @@ typedef struct {
 
 /** Offset 0x0B3A - Reserved
 **/
-  UINT8                       Reserved40[260];
+  UINT8                       Reserved42[260];
 
 /** Offset 0x0C3E - Enable LOCKDOWN SMI
   Enable SMI_LOCK bit to prevent writes to the Global SMI Enable bit.
@@ -746,7 +781,7 @@ typedef struct {
 
 /** Offset 0x0C41 - Reserved
 **/
-  UINT8                       Reserved41;
+  UINT8                       Reserved43;
 
 /** Offset 0x0C42 - PCIE RP Ltr Max Snoop Latency
   Latency Tolerance Reporting, Max Snoop Latency.
@@ -760,7 +795,7 @@ typedef struct {
 
 /** Offset 0x0CA2 - Reserved
 **/
-  UINT8                       Reserved42[269];
+  UINT8                       Reserved44[269];
 
 /** Offset 0x0DAF - LpmStateEnableMask
 **/
@@ -768,7 +803,7 @@ typedef struct {
 
 /** Offset 0x0DB0 - Reserved
 **/
-  UINT8                       Reserved43[176];
+  UINT8                       Reserved45[224];
 } FSP_S_CONFIG;
 
 /** Fsp S UPD Configuration
@@ -783,11 +818,11 @@ typedef struct {
 **/
   FSP_S_CONFIG                FspsConfig;
 
-/** Offset 0x0E60
+/** Offset 0x0E90
 **/
-  UINT8                       UnusedUpdSpace34[6];
+  UINT8                       UnusedUpdSpace36[6];
 
-/** Offset 0x0E66
+/** Offset 0x0E96
 **/
   UINT16                      UpdTerminator;
 } FSPS_UPD;

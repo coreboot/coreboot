@@ -219,7 +219,7 @@ typedef struct {
   UINT8                       Reserved1[7];
 
 /** Offset 0x0130 - Intel Enhanced Debug
-  Intel Enhanced Debug (IED): 0=Disabled, 0x400000=Enabled and 4MB SMRAM occupied
+  DEPRECATED
   0 : Disable, 0x400000 : Enable
 **/
   UINT32                      IedSize;
@@ -604,9 +604,16 @@ typedef struct {
 **/
   UINT8                       CpuRatio;
 
-/** Offset 0x0326 - Reserved
+/** Offset 0x0326 - Boot frequency
+  Sets the boot frequency starting from reset vector.- 0: Maximum battery performance.
+  1: Maximum non-turbo performance. <b>2: Turbo performance </b>
+  0:0, 1:1, 2:2
 **/
-  UINT8                       Reserved19[2];
+  UINT8                       BootFrequency;
+
+/** Offset 0x0327 - Reserved
+**/
+  UINT8                       Reserved19;
 
 /** Offset 0x0328 - Processor Early Power On Configuration FCLK setting
   <b>0: 800 MHz (ULT/ULX)</b>. <b>1: 1 GHz (DT/Halo)</b>. Not supported on ULT/ULX.-
@@ -921,7 +928,18 @@ typedef struct {
 
 /** Offset 0x0775 - Reserved
 **/
-  UINT8                       Reserved40[315];
+  UINT8                       Reserved40[297];
+
+/** Offset 0x089E - Serial Io Uart Debug Mode
+  Select SerialIo Uart Controller mode
+  0:SerialIoUartDisabled, 1:SerialIoUartPci, 2:SerialIoUartHidden, 3:SerialIoUartCom,
+  4:SerialIoUartSkipInit
+**/
+  UINT8                       SerialIoUartDebugMode;
+
+/** Offset 0x089F - Reserved
+**/
+  UINT8                       Reserved41[121];
 } FSP_M_CONFIG;
 
 /** Fsp M UPD Configuration
@@ -940,11 +958,11 @@ typedef struct {
 **/
   FSP_M_CONFIG                FspmConfig;
 
-/** Offset 0x08B0
+/** Offset 0x0918
 **/
-  UINT8                       UnusedUpdSpace22[6];
+  UINT8                       UnusedUpdSpace24[6];
 
-/** Offset 0x08B6
+/** Offset 0x091E
 **/
   UINT16                      UpdTerminator;
 } FSPM_UPD;

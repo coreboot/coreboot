@@ -74,4 +74,7 @@ config FSP_TEMP_RAM_SIZE
 	  Refer to Platform FSP integration guide document to know
 	  the exact FSP requirement for Heap setup.
 
+config SOC_INTEL_COMMON_BLOCK_P2SB
+	def_bool y
+
 endif

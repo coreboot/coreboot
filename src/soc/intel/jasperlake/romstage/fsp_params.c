@@ -60,7 +60,7 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 
 	/* Set debug interface flags */
 	m_cfg->PcdDebugInterfaceFlags = CONFIG(DRIVERS_UART_8250IO) ?
-			DEBUG_INTERFACE_UART : DEBUG_INTERFACE_SERIAL_IO;
+		DEBUG_INTERFACE_UART_8250IO : DEBUG_INTERFACE_LPSS_SERIAL_IO;
 
 	/* TraceHub configuration */
 	dev = pcidev_path_on_root(PCH_DEVFN_TRACEHUB);

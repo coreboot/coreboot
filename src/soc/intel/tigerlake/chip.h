@@ -198,9 +198,9 @@ struct soc_intel_tigerlake_config {
 	/* Debug interface selection */
 	enum {
 		DEBUG_INTERFACE_RAM = (1 << 0),
-		DEBUG_INTERFACE_UART = (1 << 1),
+		DEBUG_INTERFACE_UART_8250IO = (1 << 1),
 		DEBUG_INTERFACE_USB3 = (1 << 3),
-		DEBUG_INTERFACE_SERIAL_IO = (1 << 4),
+		DEBUG_INTERFACE_LPSS_SERIAL_IO = (1 << 4),
 		DEBUG_INTERFACE_TRACEHUB = (1 << 5),
 	} debug_interface_flag;
 

@@ -7,6 +7,7 @@
 #include <cpu/x86/lapic.h>
 #include <device/pci.h>
 #include <fsp/api.h>
+#include <intelblocks/p2sb.h>
 #include <soc/cpu.h>
 #include <soc/ramstage.h>
 #include <soc/pm.h>
@@ -73,7 +74,7 @@ struct pci_operations soc_pci_ops = {
 
 static void chip_final(void *data)
 {
-	/* nothing implemented yet */
+	p2sb_hide();
 }
 
 static void chip_init(void *data)
@@ -82,6 +83,7 @@ static void chip_init(void *data)
 	fsp_silicon_init(false);
 	pch_enable_ioapic(NULL);
 	setup_lapic();
+	p2sb_unhide();
 }
 
 struct chip_operations soc_intel_xeon_sp_cpx_ops = {

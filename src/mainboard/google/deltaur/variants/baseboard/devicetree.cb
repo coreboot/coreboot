@@ -48,6 +48,8 @@ chip soc/intel/tigerlake
 
 	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC0)"	# Ext USB Port 1
 	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC1)"	# Ext USB Port 2
+	register "usb3_ports[2]" = "USB3_PORT_EMPTY"
+	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# WWAN
 
 	# PCIe root port 6 (WLAN), clock 1
 	register "PcieRpEnable[5]" = "1"
@@ -232,33 +234,21 @@ chip soc/intel/tigerlake
 						device usb 2.9 on end
 					end
 					chip drivers/usb/acpi
-						register "desc" = ""Type-C Port 1""
-						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "desc" = ""Type-A Port 1""
+						register "type" = "UPC_TYPE_USB3_A"
 						register "group" = "ACPI_PLD_GROUP(1, 1)"
 						device usb 3.0 on end
 					end
 					chip drivers/usb/acpi
-						register "desc" = ""Type-C Port 2""
-						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "desc" = ""Type-A Port 2""
+						register "type" = "UPC_TYPE_USB3_A"
 						register "group" = "ACPI_PLD_GROUP(2, 1)"
 						device usb 3.1 on end
 					end
 					chip drivers/usb/acpi
-						register "desc" = ""Type-A Port 1 (Right)""
-						register "type" = "UPC_TYPE_USB3_A"
-						register "group" = "ACPI_PLD_GROUP(2, 2)"
-						device usb 3.2 on end
-					end
-					chip drivers/usb/acpi
-						register "desc" = ""Type-A Port 2 (Left)""
-						register "type" = "UPC_TYPE_USB3_A"
-						register "group" = "ACPI_PLD_GROUP(1, 2)"
-						device usb 3.3 on end
-					end
-					chip drivers/usb/acpi
 						register "desc" = ""WWAN""
 						register "type" = "UPC_TYPE_INTERNAL"
-						device usb 3.4 on end
+						device usb 3.2 on end
 					end
 				end
 			end
@@ -297,7 +287,7 @@ chip soc/intel/tigerlake
 		device pci 1c.0 on  end # PCIe Root Port #1 (USB)
 		device pci 1c.1 on  end # PCIe Root Port #2 (USB)
 		device pci 1c.2 off end # PCIe Root Port #3 ()
-		device pci 1c.3 on  end # PCIe Root Port #4 (WWAN)
+		device pci 1c.3 off  end # PCIe Root Port #4 (WWAN)
 		device pci 1c.4 on  end # PCIe Root Port #5 (LTE)
 		device pci 1c.5 on  end # PCIe Root Port #6 (WiFi)
 		device pci 1c.6 on  end # PCIe Root Port #7 (Card reader)

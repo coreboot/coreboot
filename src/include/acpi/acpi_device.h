@@ -1,8 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 /* This file is part of the coreboot project. */
 
-#ifndef __ACPI_DEVICE_H
-#define __ACPI_DEVICE_H
+#ifndef __ACPI_ACPI_DEVICE_H__
+#define __ACPI_ACPI_DEVICE_H__
 
 #include <device/i2c.h>
 #include <stdint.h>
@@ -510,4 +510,4 @@ void acpi_dp_write(struct acpi_dp *table);
  */
 void acpi_device_write_pci_dev(const struct device *dev);
 
-#endif
+#endif /* __ACPI_ACPI_DEVICE_H__ */

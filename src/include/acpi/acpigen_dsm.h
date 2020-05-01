@@ -1,8 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 /* This file is part of the coreboot project. */
 
-#ifndef __ARCH_ACPIGEN_DSM_H__
-#define __ARCH_ACPIGEN_DSM_H__
+#ifndef __ACPI_ACPIGEN_DSM_H__
+#define __ACPI_ACPIGEN_DSM_H__
 
 #include <stdint.h>
 
@@ -12,4 +12,4 @@ struct dsm_i2c_hid_config {
 
 void acpigen_write_dsm_i2c_hid(struct dsm_i2c_hid_config *config);
 
-#endif /* __ARCH_ACPIGEN_DSM_H__ */
+#endif /* __ACPI_ACPIGEN_DSM_H__ */

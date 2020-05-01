@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: GPL-2.0-or-later
  */
 
-#ifndef __ACPIGEN_PS2_KEYBD_H__
-#define __ACPIGEN_PS2_KEYBD_H__
+#ifndef __ACPI_ACPIGEN_PS2_KEYBD_H__
+#define __ACPI_ACPIGEN_PS2_KEYBD_H__
 
 #include <types.h>
 
@@ -38,4 +38,4 @@ void acpigen_ps2_keyboard_dsd(const char *scope, uint8_t num_top_row_keys,
 			      bool can_send_function_keys,
 			      bool has_numeric_keypad, bool has_scrnlock_key);
 
-#endif /* __ACPIGEN_PS2_KEYBD_H__ */
+#endif /* __ACPI_ACPIGEN_PS2_KEYBD_H__ */

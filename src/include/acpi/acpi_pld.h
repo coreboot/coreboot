@@ -1,8 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 /* This file is part of the coreboot project. */
 
-#ifndef __ACPI_PLD_H
-#define __ACPI_PLD_H
+#ifndef __ACPI_ACPI_PLD_H__
+#define __ACPI_ACPI_PLD_H__
 
 #include <acpi/acpi.h>
 #include <stdint.h>
@@ -116,4 +116,4 @@ int acpi_pld_fill_usb(struct acpi_pld *pld, enum acpi_upc_type type,
 /* Turn PLD structure into a 20 byte ACPI buffer */
 int acpi_pld_to_buffer(const struct acpi_pld *pld, uint8_t *buf, int buf_len);
 
-#endif
+#endif /* __ACPI_ACPI_PLD_H__ */

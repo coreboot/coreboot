@@ -9,8 +9,8 @@
  * I/O Virtualization Reporting Structure (IVRS)
  */
 
-#ifndef __ARCH_ACPI_IVRS_H
-#define __ARCH_ACPI_IVRS_H
+#ifndef __ACPI_ACPI_IVRS_H__
+#define __ACPI_ACPI_IVRS_H__
 
 /* I/O Virtualization Reporting Structure (IVRS) */
 #define IVHD_BLOCK_TYPE_LEGACY__FIXED		0x10
@@ -140,4 +140,4 @@ typedef struct ivrs_ivhd_special {
 	uint8_t variety;
 } __packed ivrs_ivhd_special_t;
 
-#endif
+#endif /* __ACPI_ACPI_IVRS_H__ */

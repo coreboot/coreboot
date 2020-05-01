@@ -5,8 +5,8 @@
  * coreboot ACPI support - headers and defines.
  */
 
-#ifndef __ASM_ACPI_H
-#define __ASM_ACPI_H
+#ifndef __ACPI_ACPI_H__
+#define __ACPI_ACPI_H__
 
 /*
  * The type and enable fields are common in ACPI, but the
@@ -1049,4 +1049,4 @@ int get_acpi_table_revision(enum acpi_tables table);
 
 #endif  // !defined(__ASSEMBLER__) && !defined(__ACPI__) && !defined(__ROMC__)
 
-#endif  /* __ASM_ACPI_H */
+#endif  /* __ACPI_ACPI_H__ */

@@ -1,8 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 /* This file is part of the coreboot project. */
 
-#ifndef LIBACPI_H
-#define LIBACPI_H
+#ifndef __ACPI_ACPIGEN_H__
+#define __ACPI_ACPIGEN_H__
 
 #include <stdint.h>
 #include <acpi/acpi.h>
@@ -487,4 +487,4 @@ void acpigen_resource_dword(u16 res_type, u16 gen_flags, u16 type_flags,
 void acpigen_resource_qword(u16 res_type, u16 gen_flags, u16 type_flags,
 	u64 gran, u64 range_min, u64 range_max, u64 translation, u64 length);
 
-#endif
+#endif /* __ACPI_ACPIGEN_H__ */

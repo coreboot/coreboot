@@ -198,6 +198,9 @@ config ACPI_BERT_SIZE
 	  Specify the amount of DRAM reserved for gathering the data used to
 	  generate the ACPI table.
 
+config CHROMEOS
+	select CHROMEOS_RAMOOPS_DYNAMIC
+
 config RO_REGION_ONLY
 	string
 	depends on CHROMEOS

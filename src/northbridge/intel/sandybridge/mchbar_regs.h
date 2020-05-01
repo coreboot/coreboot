@@ -4,75 +4,100 @@
 #define __SANDYBRIDGE_MCHBAR_REGS_H__
 
 /*
- * ### IOSAV command queue notes ###
+ * ### IOSAV memory controller interface poking state machine notes ###
  *
- * Intel provides a command queue of depth four.
- * Every command is configured by using multiple MCHBAR registers.
- * On executing the command queue, you have to specify its depth (number of commands).
+ * IOSAV brings batch processing to memory training algorithms.
  *
- * The macros for these registers can take some integer parameters, within these bounds:
- *   channel:   [0..1]
- *   index:     [0..3]
- *   lane:      [0..8]
+ * The hardware is capable of executing a sequence of DRAM commands,
+ * which can be composed of up to four sub-sequences.
  *
- * Note that these ranges are 'closed': both endpoints are included.
+ * A sub-sequence (from now on, subseq) consists of executing the same
+ * DRAM command for a configurable number of times, with adjustable
+ * delay between the commands, as well as an address auto-increment
+ * value, which is added after a given number of command executions.
+ *
+ * There are four groups of registers in MCHBAR, one for each subseq.
+ * When firing up IOSAV, one needs to specify the number of subseqs it
+ * should use.
+ *
+ * The macros for these registers can take some integer parameters.
+ * Valid values are:
+ *   channel:   0..1 or 3 to broadcast to all channels.
+ *   index:     0..3
+ *   lane:      0..8
+ *
+ * These ranges are inclusive: both upper and lower bounds are valid.
  *
  *
  *
- * ### Register description ###
+ * ### Register descriptions ###
  *
  * IOSAV_n_SP_CMD_ADDR_ch(channel, index)
- *   Sub-sequence command addresses. Controls the address, bank address and slotrank signals.
+ *   Configures the row/column, bank and rank addresses. When a subseq
+ *   begins to execute, the address fields define the address of the
+ *   first command in the subseq. The address is updated after each
+ *   command as configured in the "IOSAV_n_ADDR_UPDATE" registers,
+ *   and the updated address is then written back into this register.
  *
  *   Bitfields:
- *   [0..15]    Row / Column Address.
- *   [16..18]   The result of (10 + [16..18]) is the number of valid row bits.
- *                  Note: Value 1 is not implemented. Not that it really matters, though.
- *                        Value 7 is reserved, as the hardware does not support it.
- *   [20..22]   Bank Address.
- *   [24..25]   Rank select. Let's call it "ranksel", as it is mentioned later.
+ *   [15..0]    Row / Column Address. Defines the ADDR pins when
+ *              issuing a DRAM command.
+ *
+ *   [18..16]   The number of valid row bits is this value, plus 10.
+ *                  Note: Value 1 is not implemented.
+ *                        Value 7 is unsupported, and thus reserved.
+ *
+ *   [22..20]   Bank select.
+ *   [25..24]   Rank select. It is later referred to as "ranksel".
  *
  * IOSAV_n_ADDR_UPDATE_ch(channel, index)
- *   How the address shall be updated after executing the sub-sequence command.
+ *   How the address updates after executing a command in the subseq.
  *
  *   Bitfields:
- *   [0]        Increment CAS/RAS by 1.
- *   [1]        Increment CAS/RAS by 8.
+ *   [0]        Increment row/column address by 1.
+ *   [1]        Increment row/column address by 8.
  *   [2]        Increment bank select by 1.
- *   [3..4]     Increment rank select by 1, 2 or 3.
- *   [5..9]     Known as "addr_wrap". Address bits will wrap around the [addr_wrap..0] range.
- *   [10..11]   LFSR update:
+ *   [4..3]     Increment rank select by 1, 2 or 3.
+ *   [9..5]     Known as "addr_wrap", it limits the address increments.
+ *              Address bits will wrap around the [addr_wrap..0] range.
+ *
+ *   [11..10]   LFSR update:
  *                  00: Do not use the LFSR function.
  *                  01: Undefined, treat as Reserved.
  *                  10: Apply LFSR on the [addr_wrap..0] bit range.
  *                  11: Apply LFSR on the [addr_wrap..3] bit range.
  *
- *   [12..15]   Update rate. The number of command runs between address updates. For example:
+ *   [15..12]   Update rate. The number of command runs between address updates. For example:
  *                  0: Update every command run.
  *                  1: Update every second command run. That is, half of the command rate.
  *                  N: Update after N command runs without updates.
  *
- *   [16..17]   LFSR behavior on the deselect cycles (when no sub-seq command is issued):
+ *   [17..16]   LFSR behavior on the deselect cycles (when no subseq command is issued):
  *                  0: No change w.r.t. the last issued command.
  *                  1: LFSR XORs with address & command (excluding CS), but does not update.
  *                  2: LFSR XORs with address & command (excluding CS), and updates.
  *
  * IOSAV_n_SP_CMD_CTRL_ch(channel, index)
- *   Special command control register. Controls the DRAM command signals.
+ *   Configures how the DRAM command lines will be driven in each
+ *   command of the subseq.
  *
  *   Bitfields:
- *   [0]        !RAS signal.
- *   [1]        !CAS signal.
- *   [2]        !WE  signal.
- *   [4..7]     CKE, per rank and channel.
- *   [8..11]    ODT, per rank and channel.
- *   [12..15]   Chip select, per rank and channel. It works as follows:
+ *   [0]        !RAS signal (as driven electrically).
+ *   [1]        !CAS signal (as driven electrically).
+ *   [2]        !WE  signal (as driven electrically).
+ *
+ *   [4]        CKE, for DIMM 0 Rank 0.
+ *   [5]        CKE, for DIMM 0 Rank 1.
+ *   [6]        CKE, for DIMM 1 Rank 0.
+ *   [7]        CKE, for DIMM 1 Rank 1.
+ *   [11..8]    ODT, per DIMM & Rank (same encoding as CKE).
+ *   [15..12]   Chip select, per DIMM and Rank. It works as follows:
  *
  *          entity CS_BLOCK is
  *              port (
  *                  MODE    : in  std_logic;                -- Mode select at [16]
  *                  RANKSEL : in  std_logic_vector(0 to 3); -- Decoded "ranksel" value
- *                  CS_CTL  : in  std_logic_vector(0 to 3); -- Chip select control at [12..15]
+ *                  CS_CTL  : in  std_logic_vector(0 to 3); -- Chip select control at [15..12]
  *                  CS_Q    : out std_logic_vector(0 to 3)  -- CS signals
  *              );
  *          end entity CS_BLOCK;
@@ -90,41 +115,45 @@
  *   [17]       Auto Precharge. Only valid when using 10 row bits!
  *
  * IOSAV_n_SUBSEQ_CTRL_ch(channel, index)
- *   Sub-sequence parameters. Controls repetititons, delays and data orientation.
+ *   The parameters of the subseq: number of repetitions of the command,
+ *   the delay between command executions, wait cycles after completing
+ *   this subseq and before the next one, and the data direction of the
+ *   command (read, write, neither, or both read and write).
  *
  *   Bitfields:
- *   [0..8]     Number of repetitions of the sub-sequence command.
- *   [10..14]   Gap, number of clock-cycles to wait before sending the next command.
- *   [16..24]   Number of clock-cycles to idle between sub-sequence commands.
- *   [26..27]   The direction of the data.
- *                  00: None, does not handle data
+ *   [8..0]     Number of repetitions of the DRAM command in this subseq.
+ *   [14..10]   Number of DCLK cycles to wait between two successive DRAM commands.
+ *   [24..16]   Number of DCLK cycles to idle after this subseq and before the next subseq.
+ *   [27..26]   The direction of the data:
+ *                  00: None (non-data command)
  *                  01: Read
  *                  10: Write
  *                  11: Read & Write
  *
  * IOSAV_n_ADDRESS_LFSR_ch(channel, index)
- *   23-bit LFSR state register. It is written into the LFSR when the sub-sequence is loaded,
- *   and then read back from the LFSR when the sub-sequence is done.
+ *   23-bit LFSR state. It is written into the LFSR when the subseq is
+ *   loaded, and then read back from the LFSR when the subseq is done.
  *
  *   Bitfields:
- *   [0..22]    LFSR state.
+ *   [22..0]    LFSR state.
  *
  * IOSAV_SEQ_CTL_ch(channel)
- *   Control the sequence level in IOSAV: number of sub-sequences, iterations, maintenance...
+ *   IOSAV full sequence settings: number of subseqs, iterations, stop
+ *   on error, maintenance cycles...
  *
  *   Bitfields:
- *   [0..7]     Number of full sequence executions. When this field becomes non-zero, then the
+ *   [7..0]     Number of full sequence executions. When this field becomes non-zero, then the
  *              sequence starts running immediately. This value is decremented after completing
  *              a full sequence iteration. When it is zero, the sequence is done. No decrement
  *              is done if this field is set to 0xff. This is the "infinite repeat" mode, and
  *              it is manually aborted by clearing this field.
  *
- *   [8..16]    Number of wait cycles after each sequence iteration. This wait's purpose is to
+ *   [16..8]    Number of wait cycles after each sequence iteration. This wait's purpose is to
  *              allow performing maintenance in infinite loops. When non-zero, RCOMP, refresh
  *              and ZQXS operations can take place.
  *
  *   [17]       Stop-on-error mode: Whether to stop sequence execution when an error occurs.
- *   [18..19]   Number of sub-sequences. The programmed value is the index of the last sub-seq.
+ *   [19..18]   Number of subseqs. The programmed value is the index of the last valid subseq.
  *   [20]       If set, keep refresh disabled until the next sequence execution.
  *                  DANGER: Refresh must be re-enabled within the (9 * tREFI) period!
  *
@@ -132,20 +161,22 @@
  *              bit [20] is also set, or was set on the previous sequence. This bit exists so
  *              that the sequence machine can be used as a timer without affecting the memory.
  *
- *   [23]       If set, a output pin is asserted on the first detected error. This output can
- *              be used as a trigger for an oscilloscope or a logic analyzer, which is handy.
+ *   [23]       If set, an output pin is asserted on the first detected error. This output can
+ *              be used as a trigger for an oscilloscope or a logic analyzer, which is pretty
+ *              useful for debugging (if you have the equipment and know where this pin is).
  *
  * IOSAV_DATA_CTL_ch(channel)
  *   Data-related controls in IOSAV mode.
  *
  *   Bitfields:
- *   [0..7]     WDB (Write Data Buffer) pattern length: [0..7] = (length / 8) - 1;
- *   [8..15]    WDB read pointer. Points at the data used for IOSAV write transactions.
- *   [16..23]   Comparison pointer. Used to compare data from IOSAV read transactions.
+ *   [7..0]     WDB (Write Data Buffer) pattern length: [7..0] = (length / 8) - 1;
+ *   [15..8]    WDB read pointer. Points at the data used for IOSAV write transactions.
+ *   [23..16]   Comparison pointer. Used to compare data from IOSAV read transactions.
  *   [24]       If set, increment pointers only when micro-breakpoint is active.
  *
  * IOSAV_STATUS_ch(channel)
- *   State of the IOSAV sequence machine. Should be polled after sending an IOSAV sequence.
+ *   Provides feedback on the state of the IOSAV sequence machine.
+ *   Should be polled after submitting an IOSAV sequence for execution.
  *
  *   Bitfields:
  *   [0]        IDLE:  IOSAV is sleeping.
@@ -155,7 +186,6 @@
  *   [4]        PANIC: The refresh machine issued a Panic Refresh, and IOSAV was aborted.
  *   [5]        RCOMP: RComp failure. Unused, consider Reserved.
  *   [6]        Cleared with a new sequence, and set when done and refresh counter is drained.
- *
  */
 
 /* Temporary IOSAV register macros to verifiably split bitfields */

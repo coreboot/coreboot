@@ -527,7 +527,7 @@ void acpi_device_write_spi(const struct acpi_spi *spi)
 /* PowerResource() with Enable and/or Reset control */
 void acpi_device_add_power_res(const struct acpi_power_res_params *params)
 {
-	static const char *power_res_dev_states[] = { "_PR0", "_PR3" };
+	static const char * const power_res_dev_states[] = { "_PR0", "_PR3" };
 	unsigned int reset_gpio = params->reset_gpio ? params->reset_gpio->pins[0] : 0;
 	unsigned int enable_gpio = params->enable_gpio ? params->enable_gpio->pins[0] : 0;
 	unsigned int stop_gpio = params->stop_gpio ? params->stop_gpio->pins[0] : 0;

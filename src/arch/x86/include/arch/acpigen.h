@@ -347,7 +347,7 @@ void acpigen_write_mainboard_resources(const char *scope, const char *name);
 void acpigen_write_irq(u16 mask);
 void acpigen_write_uuid(const char *uuid);
 void acpigen_write_power_res(const char *name, uint8_t level, uint16_t order,
-			     const char *dev_states[], size_t dev_states_count);
+			     const char * const dev_states[], size_t dev_states_count);
 void acpigen_write_sleep(uint64_t sleep_ms);
 void acpigen_write_store(void);
 void acpigen_write_store_ops(uint8_t src, uint8_t dst);

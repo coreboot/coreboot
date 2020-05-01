@@ -1147,7 +1147,7 @@ void acpigen_write_uuid(const char *uuid)
  * PowerResource (name, level, order)
  */
 void acpigen_write_power_res(const char *name, uint8_t level, uint16_t order,
-			     const char *dev_states[], size_t dev_states_count)
+			     const char * const dev_states[], size_t dev_states_count)
 {
 	size_t i;
 	for (i = 0; i < dev_states_count; i++) {

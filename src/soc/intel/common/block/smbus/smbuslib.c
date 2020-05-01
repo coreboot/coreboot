@@ -2,6 +2,7 @@
 
 #include <console/console.h>
 #include <spd_bin.h>
+#include <device/smbus_def.h>
 #include <device/smbus_host.h>
 #include <string.h>
 #include "smbuslib.h"
@@ -46,14 +47,23 @@ static int get_spd(u8 *spd, u8 addr)
 			addr << 1);
 		return -1;
 	}
-	smbus_read_spd(spd, addr);
+
+	if (do_i2c_eeprom_read(SMBUS_IO_BASE, addr, 0, SPD_PAGE_LEN, spd) == SMBUS_ERROR) {
+		printk(BIOS_INFO, "do_i2c_eeprom_read failed, using fallback\n");
+		smbus_read_spd(spd, addr);
+	}
 
 	/* Check if module is DDR4, DDR4 spd is 512 byte. */
 	if (spd[SPD_DRAM_TYPE] == SPD_DRAM_DDR4 &&
 		CONFIG_DIMM_SPD_SIZE > SPD_PAGE_LEN) {
 		/* Switch to page 1 */
 		do_smbus_write_byte(SMBUS_IO_BASE, SPD_PAGE_1, 0, 0);
-		smbus_read_spd(spd + SPD_PAGE_LEN, addr);
+
+		if (do_i2c_eeprom_read(SMBUS_IO_BASE, addr, 0, SPD_PAGE_LEN,
+				       spd + SPD_PAGE_LEN) == SMBUS_ERROR) {
+			printk(BIOS_INFO, "do_i2c_eeprom_read failed, using fallback\n");
+			smbus_read_spd(spd + SPD_PAGE_LEN, addr);
+		}
 		/* Restore to page 0 */
 		do_smbus_write_byte(SMBUS_IO_BASE, SPD_PAGE_0, 0, 0);
 	}

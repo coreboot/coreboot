@@ -6,6 +6,7 @@
 void cpu_initialize(unsigned int cpu_index);
 /* Returns default APIC id based on logical_cpu number or < 0 on failure. */
 int cpu_get_apic_id(int logical_cpu);
+uintptr_t cpu_get_lapic_addr(void);
 /* Function to keep track of cpu default apic_id */
 void cpu_add_map_entry(unsigned int index);
 struct bus;

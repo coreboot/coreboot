@@ -22,7 +22,6 @@
 #include <device/pci.h>
 #include <cbmem.h>
 #include <commonlib/helpers.h>
-#include <cpu/x86/lapic_def.h>
 #include <cpu/cpu.h>
 #include <cbfs.h>
 #include <version.h>
@@ -222,6 +221,15 @@ int acpi_create_madt_lx2apic_nmi(acpi_madt_lx2apic_nmi_t *lapic_nmi, u32 cpu,
 	return lapic_nmi->length;
 }
 
+__weak uintptr_t cpu_get_lapic_addr(void)
+{
+	/*
+	 * If an architecture does not support LAPIC, this weak implementation returns LAPIC
+	 * addr as 0.
+	 */
+	return 0;
+}
+
 void acpi_create_madt(acpi_madt_t *madt)
 {
 	acpi_header_t *header = &(madt->header);
@@ -242,7 +250,7 @@ void acpi_create_madt(acpi_madt_t *madt)
 	header->length = sizeof(acpi_madt_t);
 	header->revision = get_acpi_table_revision(MADT);
 
-	madt->lapic_addr = LOCAL_APIC_ADDR;
+	madt->lapic_addr = cpu_get_lapic_addr();
 	if (CONFIG(ACPI_HAVE_PCAT_8259))
 		madt->flags |= 1;
 

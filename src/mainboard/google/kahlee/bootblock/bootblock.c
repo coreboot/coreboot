@@ -17,6 +17,9 @@ void bootblock_mainboard_early_init(void)
 	/* Enable the EC as soon as we have visibility */
 	mainboard_ec_init();
 
+	gpios = variant_wlan_rst_early_gpio_table(&num_gpios);
+	program_gpios(gpios, num_gpios);
+
 	gpios = variant_early_gpio_table(&num_gpios);
 	program_gpios(gpios, num_gpios);
 }

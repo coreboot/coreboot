@@ -42,9 +42,6 @@ static const struct soc_amd_gpio gpio_set_stage_reset[] = {
 	/* GPIO_40 - EMMC_BRIDGE_RST */
 	PAD_GPO(GPIO_40, LOW),
 
-	/* GPIO_70 - WLAN_PE_RST_L */
-	PAD_GPO(GPIO_70, HIGH),
-
 	/* GPIO_74 - LPC_CLK0_EC_R */
 	PAD_NF(GPIO_74, LPCCLK0, PULL_DOWN),
 
@@ -75,6 +72,11 @@ static const struct soc_amd_gpio gpio_set_stage_reset[] = {
 
 	/* GPIO_142 - CONFIG_STRAP2 */
 	PAD_GPI(GPIO_142, PULL_NONE),
+};
+
+static const struct soc_amd_gpio gpio_wlan_rst_early_reset[] = {
+	/* GPIO_70 - WLAN_PE_RST_L */
+	PAD_GPO(GPIO_70, HIGH),
 };
 
 static const struct soc_amd_gpio gpio_set_stage_rom[] = {
@@ -245,6 +247,13 @@ struct soc_amd_gpio *variant_early_gpio_table(size_t *size)
 {
 	*size = ARRAY_SIZE(gpio_set_stage_reset);
 	return gpio_set_stage_reset;
+}
+
+const __weak
+struct soc_amd_gpio *variant_wlan_rst_early_gpio_table(size_t *size)
+{
+	*size = ARRAY_SIZE(gpio_wlan_rst_early_reset);
+	return gpio_wlan_rst_early_reset;
 }
 
 const __weak

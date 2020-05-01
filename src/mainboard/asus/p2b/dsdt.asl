@@ -97,15 +97,6 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, OEM_ID, ACPI_TABLE_CREATOR, 1)
 	/* Root of the bus hierarchy */
 	Scope (\_SB)
 	{
-		Device (PWRB)
-		{
-			/* Power Button Device */
-			Name (_HID, EisaId ("PNP0C0C"))
-			Method (_STA, 0, NotSerialized)
-			{
-				Return (0x0B)
-			}
-		}
 		#include <southbridge/intel/i82371eb/acpi/intx.asl>
 
 		PCI_INTX_DEV(LNKA, \_SB.PCI0.PX40.PIRA, 1)

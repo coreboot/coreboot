@@ -10,6 +10,8 @@
 /* PCI registers for D14F3 */
 #define LPC_PCI_CONTROL			0x40
 #define   LEGACY_DMA_EN			BIT(2)
+#define   VW_ROM_SHARING_EN		BIT(3)
+#define   EXT_ROM_SHARING_EN		BIT(4)
 
 #define LPC_IO_PORT_DECODE_ENABLE	0x44
 #define   DECODE_ENABLE_PARALLEL_PORT0	BIT(0)
@@ -148,6 +150,7 @@ void lpc_tpm_decode(void);
 void lpc_tpm_decode_spi(void);
 void lpc_enable_rom(void);
 void lpc_enable_spi_prefetch(void);
+void lpc_disable_spi_rom_sharing(void);
 
 /**
  * @brief Find the size of a particular wide IO

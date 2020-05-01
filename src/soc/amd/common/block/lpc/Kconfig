@@ -3,3 +3,9 @@ config SOC_AMD_COMMON_BLOCK_LPC
 	default n
 	help
 	  Select this option to use the traditional LPC-ISA bridge at D14F3.
+
+config PROVIDES_ROM_SHARING
+	bool
+	default n
+	help
+	  Select this option if the LPC bridge supports ROM sharing.

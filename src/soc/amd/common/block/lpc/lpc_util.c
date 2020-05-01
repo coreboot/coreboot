@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 /* This file is part of the coreboot project. */
 
+#include <assert.h>
 #include <stdint.h>
 #include <device/device.h>
 #include <device/pci_ops.h>
@@ -298,6 +299,19 @@ void lpc_enable_spi_prefetch(void)
 	dword = pci_read_config32(_LPCB_DEV, LPC_ROM_DMA_EC_HOST_CONTROL);
 	dword |= SPI_FROM_HOST_PREFETCH_EN | SPI_FROM_USB_PREFETCH_EN;
 	pci_write_config32(_LPCB_DEV, LPC_ROM_DMA_EC_HOST_CONTROL, dword);
+}
+
+void lpc_disable_spi_rom_sharing(void)
+{
+	u8 byte;
+
+	if (!CONFIG(PROVIDES_ROM_SHARING))
+		dead_code();
+
+	byte = pci_read_config8(_LPCB_DEV, LPC_PCI_CONTROL);
+	byte &= ~VW_ROM_SHARING_EN;
+	byte &= ~EXT_ROM_SHARING_EN;
+	pci_write_config8(_LPCB_DEV, LPC_PCI_CONTROL, byte);
 }
 
 uintptr_t lpc_get_spibase(void)

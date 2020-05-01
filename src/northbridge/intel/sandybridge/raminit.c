@@ -416,9 +416,40 @@ static void init_dram_ddr3(int s3resume, const u32 cpuid)
 
 	set_scrambling_seed(&ctrl);
 
+	if (!s3resume && ctrl.ecc_enabled)
+		channel_scrub(&ctrl);
+
 	set_normal_operation(&ctrl);
 
 	final_registers(&ctrl);
+
+	/* can't do this earlier because it needs to be done in normal operation */
+	if (CONFIG(DEBUG_RAM_SETUP) && !s3resume && ctrl.ecc_enabled) {
+		uint32_t i, tseg = pci_read_config32(HOST_BRIDGE, TSEGMB);
+
+		printk(BIOS_INFO, "RAMINIT: ECC scrub test on first channel up to 0x%x\n",
+		       tseg);
+
+		/*
+		 * This test helps to debug the ECC scrubbing.
+		 * It likely tests every channel/rank, as rank interleave and enhanced
+		 * interleave are enabled, but there's no guarantee for it.
+		 */
+
+		/* Skip first MB to avoid special case for A-seg and test up to TSEG */
+		for (i = 1; i < tseg >> 20; i++) {
+			for (int j = 0; j < 1 * MiB; j += 4096) {
+				uintptr_t addr = i * MiB + j;
+				if (read32((u32 *)addr) == 0)
+					continue;
+
+				printk(BIOS_ERR, "RAMINIT: ECC scrub: DRAM not cleared at"
+				       " addr 0x%lx\n", addr);
+				break;
+			}
+		}
+		printk(BIOS_INFO, "RAMINIT: ECC scrub test done.\n");
+	}
 
 	/* Zone config */
 	dram_zones(&ctrl, 0);

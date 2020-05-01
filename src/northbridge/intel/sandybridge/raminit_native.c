@@ -687,9 +687,6 @@ int try_init_dram_ddr3(ramctr_timing *ctrl, int fast_boot, int s3resume, int me_
 		err = channel_test(ctrl);
 		if (err)
 			return err;
-
-		if (ctrl->ecc_enabled)
-			channel_scrub(ctrl);
 	}
 
 	/* Set MAD-DIMM registers */

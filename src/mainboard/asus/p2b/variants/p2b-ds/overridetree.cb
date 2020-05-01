@@ -18,14 +18,6 @@ chip northbridge/intel/i440bx		# Northbridge
         end
       end
       device pci 6.0 on end		# Onboard SCSI
-      register "ide0_enable" = "1"
-      register "ide1_enable" = "1"
-      register "ide_legacy_enable" = "1"
-      # Enable UDMA/33 for higher speed if your IDE device(s) support it.
-      register "ide0_drive0_udma33_enable" = "1"
-      register "ide0_drive1_udma33_enable" = "1"
-      register "ide1_drive0_udma33_enable" = "1"
-      register "ide1_drive1_udma33_enable" = "1"
     end
   end
 end

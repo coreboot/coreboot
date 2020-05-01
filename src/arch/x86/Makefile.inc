@@ -230,12 +230,6 @@ $(CONFIG_CBFS_PREFIX)/postcar-compression := none
 
 ifeq ($(CONFIG_ARCH_RAMSTAGE_X86_32)$(CONFIG_ARCH_RAMSTAGE_X86_64),y)
 
-ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi.c
-ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpigen.c
-ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpigen_dsm.c
-ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi_device.c
-ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi_pld.c
-ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpigen_ps2_keybd.c
 ramstage-$(CONFIG_HAVE_ACPI_RESUME) += acpi_s3.c
 ramstage-$(CONFIG_ACPI_BERT) += acpi_bert_storage.c
 ramstage-y += c_start.S

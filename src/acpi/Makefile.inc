@@ -4,12 +4,11 @@
 ifeq ($(CONFIG_HAVE_ACPI_TABLES),y)
 
 ramstage-y += acpi.c
-ramstage-y += acpi_device.c
-ramstage-y += acpi_pld.c
 ramstage-y += acpigen.c
 ramstage-y += acpigen_dsm.c
 ramstage-y += acpigen_ps2_keybd.c
-
+ramstage-y += device.c
+ramstage-y += pld.c
 ramstage-y += sata.c
 
 ifneq ($(wildcard src/mainboard/$(MAINBOARDDIR)/acpi_tables.c),)

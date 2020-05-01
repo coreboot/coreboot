@@ -22,7 +22,8 @@ ifeq ($(shell test -d $(project_dir) && \
 	git -C $(project_dir) checkout -f $(TAG-y)
 else
 	echo "WARNING: index/tree not clean, skipping update / force checkout."
-	echo "         Checkout manually with `git -C $(project_dir) checkout -f`."
+	echo "         Checkout manually with "\
+	     "\`git -C payloads/external/GRUB2/$(project_dir) checkout -f\`."
 endif
 
 grub2/build/config.h: $(CONFIG_DEP) | checkout

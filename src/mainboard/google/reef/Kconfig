@@ -12,6 +12,7 @@ config BOARD_GOOGLE_BASEBOARD_REEF
 	select EC_GOOGLE_CHROMEEC_LPC
 	select HAVE_ACPI_RESUME
 	select HAVE_ACPI_TABLES
+	select INTEL_GMA_HAVE_VBT
 	select INTEL_LPSS_UART_FOR_CONSOLE
 	select MAINBOARD_HAS_CHROMEOS
 	select MAINBOARD_HAS_I2C_TPM_CR50
@@ -102,5 +103,9 @@ config PRERAM_CBMEM_CONSOLE_SIZE
 
 config FMDFILE
 	default "src/mainboard/$(CONFIG_MAINBOARD_DIR)/default.fmd" if !CHROMEOS
+
+# Override the default behavior, since the data.vbt is the same for all variants
+config INTEL_GMA_VBT_FILE
+	default "src/mainboard/$(MAINBOARDDIR)/data.vbt"
 
 endif # BOARD_GOOGLE_REEF

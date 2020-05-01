@@ -185,7 +185,7 @@ xhci_init (unsigned long physical_bar)
 		goto _free_xhci;
 	}
 
-	xhci->capreg = phys_to_virt(physical_bar) + sizeof(xhci->capreg);
+	xhci->capreg = phys_to_virt(physical_bar);
 	xhci->opreg = phys_to_virt(physical_bar) + CAP_GET(CAPLEN, xhci->capreg);
 	xhci->hcrreg = phys_to_virt(physical_bar) + xhci->capreg->rtsoff;
 	xhci->dbreg = phys_to_virt(physical_bar) + xhci->capreg->dboff;

@@ -362,6 +362,16 @@ M:	Wim Vervoorn <wvervoorn@eltan.com>
 S:	Maintained
 F:	src/mainboard/facebook/monolith/
 
+OCP TIOGAPASS MAINBOARD
+M:	Jonathan Zhang <jonzhang@fb.com>
+M:	Reddy Chagam <anjaneya.chagam@intel.com>
+M:	Johnny Lin <Johnny_Lin@wiwynn.com>
+M:	Morgan Jang <Morgan_Jang@wiwynn.com>
+M:	Ryback Hung <<Ryback.Hung@quantatw.com>
+M:	Bryant Ou <Bryant.Ou@quantatw.com>
+S:	Maintained
+F:	src/mainboard/ocp/tiogapass
+
 PORTWELL PQ-M107 MAINBOARD
 M:	Frans Hendriks <fhendriks@eltan.com>
 M:	Wim Vervoorn <wvervoorn@eltan.com>

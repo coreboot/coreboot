@@ -319,8 +319,14 @@ void dram_dimm_mapping(ramctr_timing *ctrl)
 			reg |= (dimmB->width / 8 - 1) << 20;
 		}
 
-		reg |= 1 << 21; /* Rank interleave */
-		reg |= 1 << 22; /* Enhanced interleave */
+		/*
+		 * Rank interleave: Bit 16 of the physical address space sets
+		 * the rank to use in a dual single rank DIMM configuration.
+		 * That results in every 64KiB being interleaved between two ranks.
+		 */
+		reg |= 1 << 21;
+		/* Enhanced interleave */
+		reg |= 1 << 22;
 
 		if ((dimmA && (dimmA->ranks > 0)) || (dimmB && (dimmB->ranks > 0))) {
 			ctrl->mad_dimm[channel] = reg;

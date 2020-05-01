@@ -167,8 +167,8 @@ chip soc/intel/skylake
 	register "PcieRpEnable[4]" = "1"
 	register "PcieRpEnable[8]" = "1"
 	# Enable CLKREQ# for RP9
-	register "PcieRpClkReqSupport[8]" = "0"
-	# ClkReq for NVMe - Bruteforced (no other value works)
+	register "PcieRpClkReqSupport[8]" = "1"
+	# SRCCLKREQ2# for NVMe per schematic
 	register "PcieRpClkReqNumber[8]" = "2"
 
 	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC_SKIP)"	# Type-C Port

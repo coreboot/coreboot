@@ -1,10 +1,9 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 /* This file is part of the coreboot project. */
 
-#include "sata.h"
-
 #include <acpi/acpi.h>
 #include <acpi/acpigen.h>
+#include <acpi/acpi_sata.h>
 
 /* e.g.
  * generate_sata_ssdt_ports("\_SB.PCI0.SATA", 0x3);

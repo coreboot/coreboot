@@ -8,7 +8,7 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <option.h>
-#include <acpi/sata.h>
+#include <acpi/acpi_sata.h>
 #include <types.h>
 
 #include "chip.h"

@@ -624,12 +624,6 @@ config GFXUMA
 	help
 	  Enable Unified Memory Architecture for graphics.
 
-config HAVE_ACPI_TABLES
-	bool
-	help
-	  This variable specifies whether a given board has ACPI table support.
-	  It is usually set in mainboard/*/Kconfig.
-
 config HAVE_MP_TABLE
 	bool
 	help
@@ -655,12 +649,6 @@ config ACPI_NHLT
 	default n
 	help
 	  Build support for NHLT (non HD Audio) ACPI table generation.
-
-config ACPI_BERT
-	bool
-	depends on HAVE_ACPI_TABLES
-	help
-	  Build an ACPI Boot Error Record Table.
 
 #These Options are here to avoid "undefined" warnings.
 #The actual selection and help texts are in the following menu.

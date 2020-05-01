@@ -1,14 +1,37 @@
 # SPDX-License-Identifier: GPL-2.0-only
 # This file is part of the coreboot project.
 
+config ACPI_AMD_HARDWARE_SLEEP_VALUES
+	def_bool n
+	help
+	  Provide common definitions for AMD hardware PM1_CNT register sleep
+	  values.
+
+config ACPI_CPU_STRING
+	string
+	default "\\_SB.CP%02d"
+	depends on HAVE_ACPI_TABLES
+	help
+	  Sets the ACPI name string in the processor scope as written by
+	  the acpigen function. Default is \_SB.CPxx. Note that you need
+	  the \ escape character in the string.
+
+config ACPI_HAVE_PCAT_8259
+	def_bool y if !ACPI_NO_PCAT_8259
+
 config ACPI_INTEL_HARDWARE_SLEEP_VALUES
 	def_bool n
 	help
 	  Provide common definitions for Intel hardware PM1_CNT register sleep
 	  values.
 
-config ACPI_AMD_HARDWARE_SLEEP_VALUES
-	def_bool n
+config ACPI_NO_PCAT_8259
+	bool
 	help
-	  Provide common definitions for AMD hardware PM1_CNT register sleep
-	  values.
+	  Selected by platforms that don't expose a PC/AT 8259 PIC pair.
+
+config HAVE_ACPI_TABLES
+	bool
+	help
+	  This variable specifies whether a given board has ACPI table support.
+	  It is usually set in mainboard/*/Kconfig.

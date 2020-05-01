@@ -246,22 +246,11 @@ config SKIP_MAX_REBOOT_CNT_CLEAR
 	  Note that it is the responsibility of the payload to reset the
 	  normal boot bit to 1 after each successful boot.
 
-config ACPI_NO_PCAT_8259
+config ACPI_BERT
 	bool
-	help
-	  Selected by platforms that don't expose a PC/AT 8259 PIC pair.
-
-config ACPI_HAVE_PCAT_8259
-	def_bool y if !ACPI_NO_PCAT_8259
-
-config ACPI_CPU_STRING
-	string
-	default "\\_SB.CP%02d"
 	depends on HAVE_ACPI_TABLES
 	help
-	  Sets the ACPI name string in the processor scope as written by
-	  the acpigen function. Default is \_SB.CPxx. Note that you need
-	  the \ escape character in the string.
+	  Build an ACPI Boot Error Record Table.
 
 config COLLECT_TIMESTAMPS_NO_TSC
 	bool

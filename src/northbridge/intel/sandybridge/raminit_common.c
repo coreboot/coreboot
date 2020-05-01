@@ -344,7 +344,8 @@ void dram_dimm_set_mapping(ramctr_timing *ctrl, int training)
 		MCHBAR32(MAD_DIMM(channel)) = ctrl->mad_dimm[channel] | ecc;
 	}
 
-	//udelay(10); /* TODO: Might be needed for ECC configurations; so far works without. */
+	if (ctrl->ecc_enabled)
+		udelay(10);
 }
 
 void dram_zones(ramctr_timing *ctrl, int training)
@@ -4260,98 +4261,126 @@ int channel_test(ramctr_timing *ctrl)
 void channel_scrub(ramctr_timing *ctrl)
 {
 	int channel, slotrank, row, rowsize;
+	u8 bank;
 
+	FOR_ALL_POPULATED_CHANNELS {
+		wait_for_iosav(channel);
+		fill_pattern0(ctrl, channel, 0, 0);
+		MCHBAR32(IOSAV_DATA_CTL_ch(channel)) = 0;
+	}
+
+	/*
+	 * During runtime the "scrubber" will periodically scan through the memory in the
+	 * physical address space, to identify and fix CRC errors.
+	 * The following loops writes to every DRAM address, setting the ECC bits to the
+	 * correct value. A read from this location will no longer return a CRC error,
+	 * except when a bit has toggled due to external events.
+	 * The same could be accieved by writing to the physical memory map, but it's
+	 * much more difficult due to SMM remapping, ME stolen memory, GFX stolen memory,
+	 * and firmware running in x86_32.
+	 */
 	FOR_ALL_POPULATED_CHANNELS FOR_ALL_POPULATED_RANKS {
 		rowsize = 1 << ctrl->info.dimm[channel][slotrank >> 1].row_bits;
-		for (row = 0; row < rowsize; row += 16) {
+		for (bank = 0; bank < 8; bank++) {
+			for (row = 0; row < rowsize; row += 16) {
 
-			wait_for_iosav(channel);
+				/*
+				 * DRAM command ACT
+				 *  Opens the row for writing.
+				 */
+				{
+					u8 gap = MAX((ctrl->tFAW >> 2) + 1, ctrl->tRRD);
+					const struct iosav_ssq ssq = {
+						.sp_cmd_ctrl = {
+							.command    = IOSAV_ACT,
+							.ranksel_ap = 1,
+						},
+						.subseq_ctrl = {
+							.cmd_executions = 1,
+							.cmd_delay_gap  = gap,
+							.post_ssq_wait  = ctrl->tRCD,
+							.data_direction = SSQ_NA,
+						},
+						.sp_cmd_addr = {
+							.address = row,
+							.rowbits = 6,
+							.bank    = bank,
+							.rank    = slotrank,
+						},
+						.addr_update = {
+							.inc_addr_1 = 1,
+							.addr_wrap  = 18,
+						},
+					};
+					iosav_write_ssq(channel, &ssq);
+				}
 
-			/* DRAM command ACT */
-			{
-				const struct iosav_ssq ssq = {
-					.sp_cmd_ctrl = {
-						.command    = IOSAV_ACT,
-						.ranksel_ap = 1,
-					},
-					.subseq_ctrl = {
-						.cmd_executions = 1,
-						.cmd_delay_gap  = MAX((ctrl->tFAW >> 2) + 1,
-									ctrl->tRRD),
-						.post_ssq_wait  = ctrl->tRCD,
-						.data_direction = SSQ_NA,
-					},
-					.sp_cmd_addr = {
-						.address = row,
-						.rowbits = 6,
-						.bank    = 0,
-						.rank    = slotrank,
-					},
-					.addr_update = {
-						.inc_addr_1 = 1,
-						.addr_wrap  = 18,
-					},
-				};
-				iosav_write_ssq(channel, &ssq);
+				/*
+				 * DRAM command WR
+				 *  Writes (128 + 1) * 8 (burst length) * 8 (bus width)
+				 *  bytes.
+				 */
+				{
+					const struct iosav_ssq ssq = {
+						.sp_cmd_ctrl = {
+							.command    = IOSAV_WR,
+							.ranksel_ap = 1,
+						},
+						.subseq_ctrl = {
+							.cmd_executions = 129,
+							.cmd_delay_gap  = 4,
+							.post_ssq_wait  = ctrl->tWTR +
+									  ctrl->CWL + 8,
+							.data_direction = SSQ_WR,
+						},
+						.sp_cmd_addr = {
+							.address = row,
+							.rowbits = 0,
+							.bank    = bank,
+							.rank    = slotrank,
+						},
+						.addr_update = {
+							.inc_addr_8 = 1,
+							.addr_wrap  = 9,
+						},
+					};
+					iosav_write_ssq(channel, &ssq);
+				}
+
+				/*
+				 * DRAM command PRE
+				 *  Closes the row.
+				 */
+				{
+					const struct iosav_ssq ssq = {
+						.sp_cmd_ctrl = {
+							.command    = IOSAV_PRE,
+							.ranksel_ap = 1,
+						},
+						.subseq_ctrl = {
+							.cmd_executions = 1,
+							.cmd_delay_gap  = 4,
+							.post_ssq_wait  = ctrl->tRP,
+							.data_direction = SSQ_NA,
+						},
+						.sp_cmd_addr = {
+							.address = 0,
+							.rowbits = 6,
+							.bank    = bank,
+							.rank    = slotrank,
+						},
+						.addr_update = {
+							.addr_wrap  = 18,
+						},
+					};
+					iosav_write_ssq(channel, &ssq);
+				}
+
+				/* Execute command queue */
+				iosav_run_queue(channel, 16, 0);
+
+				wait_for_iosav(channel);
 			}
-
-			/* DRAM command WR */
-			{
-				const struct iosav_ssq ssq = {
-					.sp_cmd_ctrl = {
-						.command    = IOSAV_WR,
-						.ranksel_ap = 1,
-					},
-					.subseq_ctrl = {
-						.cmd_executions = 129,
-						.cmd_delay_gap  = 4,
-						.post_ssq_wait  = 40,
-						.data_direction = SSQ_WR,
-					},
-					.sp_cmd_addr = {
-						.address = row,
-						.rowbits = 0,
-						.bank    = 0,
-						.rank    = slotrank,
-					},
-					.addr_update = {
-						.inc_addr_8 = 1,
-						.addr_wrap  = 18,
-					},
-				};
-				iosav_write_ssq(channel, &ssq);
-			}
-
-			/* DRAM command PRE */
-			{
-				const struct iosav_ssq ssq = {
-					.sp_cmd_ctrl = {
-						.command    = IOSAV_PRE,
-						.ranksel_ap = 1,
-					},
-					.subseq_ctrl = {
-						.cmd_executions = 1,
-						.cmd_delay_gap  = 3,
-						.post_ssq_wait  = 40,
-						.data_direction = SSQ_NA,
-					},
-					.sp_cmd_addr = {
-						.address = 1024,
-						.rowbits = 6,
-						.bank    = 0,
-						.rank    = slotrank,
-					},
-					.addr_update = {
-						.addr_wrap  = 18,
-					},
-				};
-				iosav_write_ssq(channel, &ssq);
-			}
-
-			/* execute command queue */
-			iosav_run_once(channel);
-
-			wait_for_iosav(channel);
 		}
 	}
 }

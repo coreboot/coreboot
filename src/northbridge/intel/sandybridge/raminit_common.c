@@ -18,11 +18,15 @@
 /* FIXME: no support for 3-channel chipsets */
 
 /* length:      [1..4] */
-/* FIXME: replace with proper functions later */
-#define iosav_run_queue(ch, loops, length, as_timer) \
-	MCHBAR32(IOSAV_SEQ_CTL_ch(ch)) = ((loops) | (((length) - 1) << 18) | ((as_timer) << 22))
+static void iosav_run_queue(const int ch, const u8 loops, const u8 length, const u8 as_timer)
+{
+	MCHBAR32(IOSAV_SEQ_CTL_ch(ch)) = loops | ((length - 1) << 18) | (as_timer << 22);
+}
 
-#define iosav_run_once(ch, length) iosav_run_queue(ch, 1, length, 0)
+static void iosav_run_once(const int ch, const u8 length)
+{
+	iosav_run_queue(ch, 1, length, 0);
+}
 
 static void sfence(void)
 {

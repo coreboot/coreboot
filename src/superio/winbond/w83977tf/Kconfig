@@ -4,3 +4,9 @@
 config SUPERIO_WINBOND_W83977TF
 	bool
 	select SUPERIO_WINBOND_COMMON_PRE_RAM
+
+config W83977TF_HAVE_SEPARATE_IR_DEVICE
+	bool
+	help
+	  Mainboard should select this option if it contains an old
+	  version of W83977TF with a separate IR logical device.

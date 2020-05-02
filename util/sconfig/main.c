@@ -128,7 +128,6 @@ static struct chip mainboard_chip = {
 static struct chip_instance mainboard_instance = {
 	.id = 0,
 	.chip = &mainboard_chip,
-	.ref_count = 2,
 };
 
 /* This is the parent of all devices added by parsing the devicetree file. */
@@ -337,54 +336,6 @@ struct chip_instance *new_chip_instance(char *path)
 	return instance;
 }
 
-static void delete_chip_instance(struct chip_instance *ins)
-{
-
-	if (ins->ref_count == 0) {
-		printf("ERROR: ref count for chip instance is zero!!\n");
-		exit(1);
-	}
-
-	if (--ins->ref_count)
-		return;
-
-	struct chip *c = ins->chip;
-
-	/* Get pointer to first instance of the chip. */
-	struct chip_instance *i = c->instance;
-
-	/*
-	 * If chip instance to be deleted is the first instance, then update
-	 * instance pointer of the chip as well.
-	 */
-	if (i == ins) {
-		c->instance = ins->next;
-		free(ins);
-		return;
-	}
-
-	/*
-	 * Loop through the instances list of the chip to find and remove the
-	 * given instance.
-	 */
-	while (1) {
-		if (i == NULL) {
-			printf("ERROR: chip instance not found!\n");
-			exit(1);
-		}
-
-		if (i->next != ins) {
-			i = i->next;
-			continue;
-		}
-
-		i->next = ins->next;
-		break;
-	}
-
-	free(ins);
-}
-
 /*
  * Allocate a new bus for the provided device.
  *   - If this is the first bus being allocated under this device, then its id
@@ -504,7 +455,6 @@ struct device *new_device(struct bus *parent,
 	new_d->hidden = (status >> 1) & 0x01;
 	new_d->mandatory = (status >> 2) & 0x01;
 	new_d->chip_instance = chip_instance;
-	chip_instance->ref_count++;
 
 	set_new_child(parent, new_d);
 
@@ -780,6 +730,13 @@ static void pass1(FILE *fil, FILE *head, struct device *ptr, struct device *next
 	struct chip_instance *chip_ins = ptr->chip_instance;
 	int has_children = dev_has_children(ptr);
 
+	/*
+	 * If the chip instance of device has base_chip_instance pointer set, then follow that
+	 * to update the chip instance for current device.
+	 */
+	if (chip_ins->base_chip_instance)
+		chip_ins = chip_ins->base_chip_instance;
+
 	if (ptr == &base_root_dev)
 		fprintf(fil, "DEVTREE_CONST struct device %s = {\n", ptr->name);
 	else
@@ -993,8 +950,14 @@ static void emit_chips(FILE *fil)
 		chip_id = 1;
 		instance = chip->instance;
 		while (instance) {
-			instance->id = chip_id++;
-			emit_chip_instance(fil, instance);
+			/*
+			 * Emit this chip instance only if there is no forwarding pointer to the
+			 * base tree chip instance.
+			 */
+			if (instance->base_chip_instance == NULL) {
+				instance->id = chip_id++;
+				emit_chip_instance(fil, instance);
+			}
 			instance = instance->next;
 		}
 	}
@@ -1079,29 +1042,6 @@ static int res_match(struct resource *a, struct resource *b)
 {
 	return ((a->type == b->type) &&
 		(a->index == b->index));
-}
-
-/*
- * Walk through the override subtree in breadth-first manner starting at node to
- * see if chip_instance pointer of the node is same as chip_instance pointer of
- * override parent that is passed into the function. If yes, then update the
- * chip_instance pointer of the node to chip_instance pointer of the base
- * parent.
- */
-static void update_chip_pointers(struct device *node,
-				 struct chip_instance *base_parent_ci,
-				 struct chip_instance *override_parent_ci)
-{
-	struct queue_entry *q_head = NULL;
-
-	enqueue_tail(&q_head, node);
-
-	while ((node = dequeue_head(&q_head))) {
-		if (node->chip_instance != override_parent_ci)
-			continue;
-		node->chip_instance = base_parent_ci;
-		add_children_to_queue(&q_head, node);
-	}
 }
 
 /*
@@ -1287,6 +1227,12 @@ static void update_device(struct device *base_dev, struct device *override_dev)
 	}
 
 	/*
+	 * Update base_chip_instance member in chip instance of override tree to forward it to
+	 * the chip instance in base tree.
+	 */
+	override_dev->chip_instance->base_chip_instance = base_dev->chip_instance;
+
+	/*
 	 * Now that the device properties are all copied over, look at each bus
 	 * of the override device and run override_devicetree in a recursive
 	 * manner. The assumption here is that first bus of override device
@@ -1312,9 +1258,6 @@ static void update_device(struct device *base_dev, struct device *override_dev)
 		override_bus = override_bus->next_bus;
 		base_bus = base_bus->next_bus;
 	}
-
-	delete_chip_instance(override_dev->chip_instance);
-	override_dev->chip_instance = NULL;
 }
 
 /*
@@ -1359,14 +1302,6 @@ static void override_devicetree(struct bus *base_parent,
 			 * as a new child of base_parent.
 			 */
 			set_new_child(base_parent, override_child);
-			/*
-			 * Ensure all nodes in override tree pointing to
-			 * override parent chip_instance now point to base
-			 * parent chip_instance.
-			 */
-			update_chip_pointers(override_child,
-					base_parent->dev->chip_instance,
-					override_parent->dev->chip_instance);
 		}
 
 		override_child = next_child;

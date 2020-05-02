@@ -56,10 +56,16 @@ struct chip_instance {
 	struct chip_instance *next;
 
 	/*
-	 * Reference count - Indicates how many devices hold pointer to this
-	 * chip instance.
+	 * Pointer to corresponding chip instance in base devicetree.
+	 * a) If the chip instance belongs to the base devicetree, then this pointer is set to
+	 * NULL.
+	 * b) If the chip instance belongs to override tree, then this pointer is set to its
+	 * corresponding chip instance in base devicetree (if it exists), else to NULL.
+	 *
+	 * This is useful when generating chip instances and chip_ops for a device to determine
+	 * if this is the instance to emit or if there is a base chip instance to use instead.
 	 */
-	int ref_count;
+	struct chip_instance *base_chip_instance;
 };
 
 struct chip {

@@ -188,64 +188,6 @@
  *   [6]        Cleared with a new sequence, and set when done and refresh counter is drained.
  */
 
-/* Temporary IOSAV register macros to verifiably split bitfields */
-#define SUBSEQ_CTRL(reps, gap, post, dir)	(((reps) <<  0) | \
-						 ((gap)  << 10) | \
-						 ((post) << 16) | \
-						 ((dir)  << 26))
-
-#define SSQ_NA		0 /* Non-data */
-#define SSQ_RD		1 /* Read */
-#define SSQ_WR		2 /* Write */
-#define SSQ_RW		3 /* Read and write */
-
-#define SP_CMD_ADDR(addr, rowbits, bank, rank)	(((addr)    <<  0) | \
-						 ((rowbits) << 16) | \
-						 ((bank)    << 20) | \
-						 ((rank)    << 24))
-
-#define ADDR_UPDATE(addr_1, addr_8, bank, rank, wrap, lfsr, rate, xors)	(((addr_1) <<  0) | \
-									 ((addr_8) <<  1) | \
-									 ((bank)   <<  2) | \
-									 ((rank)   <<  3) | \
-									 ((wrap)   <<  5) | \
-									 ((lfsr)   << 10) | \
-									 ((rate)   << 12) | \
-									 ((xors)   << 16))
-
-#define IOSAV_SUBSEQUENCE(ch, n, cmd, ranksel, reps, gap, post, dir, addr, row_bits, bank_addr, rank_addr, addr_1, addr_8, upd_bank, upd_rank, wrap, lfsr, rate, xors) \
-	do {						\
-		const struct iosav_ssq ssq = {		\
-			.sp_cmd_ctrl = {		\
-				.command    = cmd,	\
-				.ranksel_ap = ranksel,	\
-			},				\
-			.subseq_ctrl = {		\
-				.cmd_executions = reps,	\
-				.cmd_delay_gap  = gap,	\
-				.post_ssq_wait  = post,	\
-				.data_direction = dir,	\
-			},				\
-			.sp_cmd_addr = {		\
-				.address = addr,	\
-				.rowbits = row_bits,	\
-				.bank    = bank_addr,	\
-				.rank    = rank_addr,	\
-			},				\
-			.addr_update = {		\
-				.inc_addr_1 = addr_1,	\
-				.inc_addr_8 = addr_8,	\
-				.inc_bank   = upd_bank,	\
-				.inc_rank   = upd_rank,	\
-				.addr_wrap  = wrap,	\
-				.lfsr_upd   = lfsr,	\
-				.upd_rate   = rate,	\
-				.lfsr_xors  = xors,	\
-			},				\
-		};					\
-		iosav_write_ssq(ch, &ssq);		\
-	} while (0)
-
 /* Indexed register helper macros */
 #define Gz(r, z)	((r) + ((z) <<  8))
 #define Ly(r, y)	((r) + ((y) <<  2))

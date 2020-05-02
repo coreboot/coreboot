@@ -25,6 +25,7 @@
 #define NUM_SLOTS	2
 #define NUM_LANES	9
 
+/* IOSAV_n_SP_CMD_CTRL DRAM commands */
 #define IOSAV_MRS		(0xf000)
 #define IOSAV_PRE		(0xf002)
 #define IOSAV_ZQCS		(0xf003)
@@ -33,6 +34,12 @@
 #define IOSAV_NOP_ALT		(0xf107)
 #define IOSAV_WR		(0xf201)
 #define IOSAV_NOP		(0xf207)
+
+/* IOSAV_n_SUBSEQ_CTRL data direction */
+#define SSQ_NA			0 /* Non-data */
+#define SSQ_RD			1 /* Read */
+#define SSQ_WR			2 /* Write */
+#define SSQ_RW			3 /* Read and write */
 
 struct iosav_ssq {
 	/* IOSAV_n_SP_CMD_CTRL */

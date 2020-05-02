@@ -854,7 +854,7 @@ void dram_mrscommands(ramctr_timing *ctrl)
 		/* DRAM command ZQCS */
 		IOSAV_SUBSEQUENCE(channel, 0,
 			IOSAV_ZQCS, 0,
-			1, 36, 101, SSQ_NA,
+			1, 4, 101, SSQ_NA,
 			0, 6, 0, slotrank,
 			0, 0, 0, 0, 31, 0, 0, 0);
 
@@ -1976,7 +1976,7 @@ int write_training(ramctr_timing *ctrl)
 		/* DRAM command ZQCS */
 		IOSAV_SUBSEQUENCE(channel, 0,
 			IOSAV_ZQCS, 0,
-			1, 36, 101, SSQ_NA,
+			1, 4, 101, SSQ_NA,
 			0, 6, 0, 0,
 			0, 0, 0, 0, 31, 0, 0, 0);
 
@@ -2935,7 +2935,7 @@ int channel_test(ramctr_timing *ctrl)
 		/* DRAM command ACT */
 		IOSAV_SUBSEQUENCE(channel, 0,
 			IOSAV_ACT, 1,
-			4, 40, 40, SSQ_NA,
+			4, 8, 40, SSQ_NA,
 			0, 6, 0, slotrank,
 			0, 0, 1, 0, 18, 0, 0, 0);
 

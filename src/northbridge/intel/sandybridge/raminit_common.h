@@ -34,6 +34,63 @@
 #define IOSAV_WR		(0xf201)
 #define IOSAV_NOP		(0xf207)
 
+struct iosav_ssq {
+	/* IOSAV_n_SP_CMD_CTRL */
+	union {
+		struct {
+			u32 command    : 16;
+			u32 ranksel_ap :  2;
+			u32            : 14;
+		};
+		u32 raw;
+	} sp_cmd_ctrl;
+
+	/* IOSAV_n_SUBSEQ_CTRL */
+	union {
+		struct {
+			u32 cmd_executions : 9;
+			u32                : 1;
+			u32 cmd_delay_gap  : 5;
+			u32                : 1;
+			u32 post_ssq_wait  : 9;
+			u32                : 1;
+			u32 data_direction : 2;
+			u32                : 4;
+		};
+		u32 raw;
+	} subseq_ctrl;
+
+	/* IOSAV_n_SP_CMD_ADDR */
+	union {
+		struct {
+			u32 address : 16;
+			u32 rowbits :  3;
+			u32         :  1;
+			u32 bank    :  3;
+			u32         :  1;
+			u32 rank    :  2;
+			u32         :  6;
+		};
+		u32 raw;
+	} sp_cmd_addr;
+
+	/* IOSAV_n_ADDR_UPDATE */
+	union {
+		struct {
+			u32 inc_addr_1 :  1;
+			u32 inc_addr_8 :  1;
+			u32 inc_bank   :  1;
+			u32 inc_rank   :  2;
+			u32 addr_wrap  :  5;
+			u32 lfsr_upd   :  2;
+			u32 upd_rate   :  4;
+			u32 lfsr_xors  :  2;
+			u32            : 14;
+		};
+		u32 raw;
+	} addr_update;
+};
+
 /* FIXME: Vendor BIOS uses 64 but our algorithms are less
    performant and even 1 seems to be enough in practice.  */
 #define NUM_PATTERNS	4

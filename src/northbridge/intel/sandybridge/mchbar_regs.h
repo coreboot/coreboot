@@ -213,12 +213,37 @@
 									 ((rate)   << 12) | \
 									 ((xors)   << 16))
 
-#define IOSAV_SUBSEQUENCE(ch, n, cmd, ranksel, reps, gap, post, dir, addr, rowbits, bank, rank, addr_1, addr_8, upd_bank, upd_rank, wrap, lfsr, rate, xors) \
-	do { \
-		MCHBAR32(IOSAV_n_SP_CMD_CTRL_ch(ch, n)) = (cmd) | ((ranksel) << 16); \
-		MCHBAR32(IOSAV_n_SUBSEQ_CTRL_ch(ch, n)) = SUBSEQ_CTRL(reps, gap, post, dir); \
-		MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(ch, n)) = SP_CMD_ADDR(addr, rowbits, bank, rank); \
-		MCHBAR32(IOSAV_n_ADDR_UPDATE_ch(ch, n)) = ADDR_UPDATE(addr_1, addr_8, upd_bank, upd_rank, wrap, lfsr, rate, xors); \
+#define IOSAV_SUBSEQUENCE(ch, n, cmd, ranksel, reps, gap, post, dir, addr, row_bits, bank_addr, rank_addr, addr_1, addr_8, upd_bank, upd_rank, wrap, lfsr, rate, xors) \
+	do {						\
+		const struct iosav_ssq ssq = {		\
+			.sp_cmd_ctrl = {		\
+				.command    = cmd,	\
+				.ranksel_ap = ranksel,	\
+			},				\
+			.subseq_ctrl = {		\
+				.cmd_executions = reps,	\
+				.cmd_delay_gap  = gap,	\
+				.post_ssq_wait  = post,	\
+				.data_direction = dir,	\
+			},				\
+			.sp_cmd_addr = {		\
+				.address = addr,	\
+				.rowbits = row_bits,	\
+				.bank    = bank_addr,	\
+				.rank    = rank_addr,	\
+			},				\
+			.addr_update = {		\
+				.inc_addr_1 = addr_1,	\
+				.inc_addr_8 = addr_8,	\
+				.inc_bank   = upd_bank,	\
+				.inc_rank   = upd_rank,	\
+				.addr_wrap  = wrap,	\
+				.lfsr_upd   = lfsr,	\
+				.upd_rate   = rate,	\
+				.lfsr_xors  = xors,	\
+			},				\
+		};					\
+		iosav_write_ssq(ch, n, &ssq);		\
 	} while (0)
 
 /* Indexed register helper macros */

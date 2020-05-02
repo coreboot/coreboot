@@ -98,7 +98,6 @@ static struct bus base_root_bus = {
 
 static struct device base_root_dev = {
 	.name = "dev_root",
-	.id = 0,
 	.chip_instance = &mainboard_instance,
 	.path = " .type = DEVICE_PATH_ROOT ",
 	.parent = &base_root_bus,
@@ -113,7 +112,6 @@ static struct bus override_root_bus = {
 
 static struct device override_root_dev = {
 	.name = "override_root",
-	.id = 0,
 	/*
 	 * Override tree root device points to the same mainboard chip instance
 	 * as the base tree root device. It should not cause any side-effects
@@ -429,7 +427,6 @@ static struct device *alloc_dev(struct bus *parent)
 {
 	struct device *dev = S_ALLOC(sizeof(*dev));
 
-	dev->id = ++count;
 	dev->parent = parent;
 	dev->subsystem_vendor = -1;
 	dev->subsystem_device = -1;
@@ -509,10 +506,6 @@ struct device *new_device(struct bus *parent,
 
 	new_d->path_a = path_a;
 	new_d->path_b = path_b;
-
-	char *name = S_ALLOC(10);
-	sprintf(name, "_dev%d", new_d->id);
-	new_d->name = name;
 
 	new_d->enabled = status & 0x01;
 	new_d->hidden = (status >> 1) & 0x01;
@@ -699,11 +692,17 @@ static int dev_has_children(struct device *dev)
 
 static void pass0(FILE *fil, FILE *head, struct device *ptr, struct device *next)
 {
+	static int dev_id;
+
 	if (ptr == &base_root_dev) {
 		fprintf(fil, "STORAGE struct bus %s_links[];\n",
 			ptr->name);
 		return;
 	}
+
+	char *name = S_ALLOC(10);
+	sprintf(name, "_dev%d", dev_id++);
+	ptr->name = name;
 
 	fprintf(fil, "STORAGE struct device %s;\n", ptr->name);
 	if (ptr->res)

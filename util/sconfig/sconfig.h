@@ -43,10 +43,7 @@ struct pci_irq_info {
 
 struct chip;
 struct chip_instance {
-	/*
-	 * Monotonically increasing ID for each newly allocated
-	 * node(chip/device).
-	 */
+	/* Monotonically increasing ID for each chip instance. */
 	int id;
 
 	/* Pointer to registers for this chip. */
@@ -98,9 +95,6 @@ struct bus {
 };
 
 struct device {
-	/* Monotonically increasing ID for the device. */
-	int id;
-
 	/* Indicates device status (enabled / hidden or not). */
 	int enabled;
 	int hidden;

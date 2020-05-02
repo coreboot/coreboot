@@ -209,6 +209,12 @@
 
 #define CRCOMPOFST2			0x3714 /* CMD DRV, SComp and Static Leg controls */
 
+/*
+ * The register bank that would correspond to Channel 3 are actually "broadcast" registers.
+ * They can be used to write values to all channels. Use this macro instead of a literal '3'.
+ */
+#define BROADCAST_CH	3
+
 /* MC per-channel registers */
 #define TC_DBP_ch(ch)			Cx(0x4000, ch) /* Timings: BIN */
 #define TC_RAP_ch(ch)			Cx(0x4004, ch) /* Timings: Regular access */
@@ -314,12 +320,6 @@
 #define WMM_READ_CONFIG		0x4cd4 /** WARNING: Only exists on IVB! */
 
 #define IOSAV_By_BW_SERROR_C(y)	Ly(0x4d40, y) /* IOSAV Bytelane Bit-wise error */
-
-#define IOSAV_n_SP_CMD_ADDR(n)	Ly(0x4e00, n) /* Sub-sequence special command address */
-#define IOSAV_n_ADDR_UPDATE(n)	Ly(0x4e10, n) /* Address update after command execution */
-#define IOSAV_n_SP_CMD_CTRL(n)	Ly(0x4e20, n) /* Command signals in sub-sequence command */
-#define IOSAV_n_SUBSEQ_CTRL(n)	Ly(0x4e30, n) /* Sub-sequence command parameter control */
-#define IOSAV_n_ADDRESS_LFSR(n)	Ly(0x4e40, n) /* 23-bit LFSR value of the sequence */
 
 #define PM_THML_STAT		0x4e80 /* Thermal status of each rank */
 #define IOSAV_SEQ_CTL		0x4e84 /* IOSAV sequence level control */

@@ -243,7 +243,7 @@
 				.lfsr_xors  = xors,	\
 			},				\
 		};					\
-		iosav_write_ssq(ch, n, &ssq);		\
+		iosav_write_ssq(ch, &ssq);		\
 	} while (0)
 
 /* Indexed register helper macros */

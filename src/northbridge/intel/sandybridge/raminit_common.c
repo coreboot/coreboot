@@ -20,7 +20,7 @@
 /* Number of programmed IOSAV subsequences. */
 static unsigned int ssq_count = 0;
 
-static void iosav_write_ssq(const int ch, const int n, const struct iosav_ssq *ssq)
+static void iosav_write_ssq(const int ch, const struct iosav_ssq *ssq)
 {
 	MCHBAR32(IOSAV_n_SP_CMD_CTRL_ch(ch, ssq_count)) = ssq->sp_cmd_ctrl.raw;
 	MCHBAR32(IOSAV_n_SUBSEQ_CTRL_ch(ch, ssq_count)) = ssq->subseq_ctrl.raw;
@@ -30,17 +30,16 @@ static void iosav_write_ssq(const int ch, const int n, const struct iosav_ssq *s
 	ssq_count++;
 }
 
-/* length:      [1..4] */
-static void iosav_run_queue(const int ch, const u8 loops, const u8 length, const u8 as_timer)
+static void iosav_run_queue(const int ch, const u8 loops, const u8 as_timer)
 {
 	MCHBAR32(IOSAV_SEQ_CTL_ch(ch)) = loops | ((ssq_count - 1) << 18) | (as_timer << 22);
 
 	ssq_count = 0;
 }
 
-static void iosav_run_once(const int ch, const u8 length)
+static void iosav_run_once(const int ch)
 {
-	iosav_run_queue(ch, 1, length, 0);
+	iosav_run_queue(ch, 1, 0);
 }
 
 static void sfence(void)
@@ -606,7 +605,7 @@ static void write_reset(ramctr_timing *ctrl)
 	 *
 	 * This is actually using the IOSAV state machine as a timer, so refresh is allowed.
 	 */
-	iosav_run_queue(channel, 1, 1, true);
+	iosav_run_queue(channel, 1, 1);
 
 	wait_for_iosav(channel);
 }
@@ -709,7 +708,7 @@ static void write_mrreg(ramctr_timing *ctrl, int channel, int slotrank, int reg,
 		0, 0, 0, 0, 0, 0, 0, 0);
 
 	/* Execute command queue */
-	iosav_run_once(channel, 3);
+	iosav_run_once(channel);
 }
 
 static u32 make_mr0(ramctr_timing *ctrl, u8 rank)
@@ -846,7 +845,7 @@ void dram_mrscommands(ramctr_timing *ctrl)
 		0, 0, 0, 1, 20, 0, 0, 0);
 
 	/* Execute command queue on all channels. Do it four times. */
-	iosav_run_queue(BROADCAST_CH, 4, 2, false);
+	iosav_run_queue(BROADCAST_CH, 4, 0);
 
 	FOR_ALL_CHANNELS {
 		/* Wait for ref drained */
@@ -874,7 +873,7 @@ void dram_mrscommands(ramctr_timing *ctrl)
 			0, 0, 0, 0, 31, 0, 0, 0);
 
 		/* Execute command queue */
-		iosav_run_once(channel, 1);
+		iosav_run_once(channel);
 
 		/* Drain */
 		wait_for_iosav(channel);
@@ -1064,7 +1063,7 @@ static void test_timA(ramctr_timing *ctrl, int channel, int slotrank)
 		0, 0, 0, 0, 0, 0, 0, 0);
 
 	/* Execute command queue */
-	iosav_run_once(channel, 4);
+	iosav_run_once(channel);
 
 	wait_for_iosav(channel);
 }
@@ -1330,7 +1329,7 @@ int read_training(ramctr_timing *ctrl)
 			0, 0, 0, 0, 0, 0, 0, 0);
 
 		/* Execute command queue */
-		iosav_run_once(channel, 1);
+		iosav_run_once(channel);
 
 		MCHBAR32(GDCRTRAININGMOD) = (slotrank << 2) | 0x8001;
 
@@ -1452,7 +1451,7 @@ static void test_timC(ramctr_timing *ctrl, int channel, int slotrank)
 		0, 0, 0, 0, 31, 0, 0, 0);
 
 	/* Execute command queue */
-	iosav_run_once(channel, 4);
+	iosav_run_once(channel);
 
 	wait_for_iosav(channel);
 
@@ -1485,7 +1484,7 @@ static void test_timC(ramctr_timing *ctrl, int channel, int slotrank)
 		0, 0, 0, 0, 18, 0, 0, 0);
 
 	/* Execute command queue */
-	iosav_run_once(channel, 4);
+	iosav_run_once(channel);
 
 	wait_for_iosav(channel);
 }
@@ -1525,7 +1524,7 @@ static int discover_timC(ramctr_timing *ctrl, int channel, int slotrank)
 		0, 0, 0, 0, 18, 0, 0, 0);
 
 	/* Execute command queue */
-	iosav_run_once(channel, 1);
+	iosav_run_once(channel);
 
 	for (timC = 0; timC <= MAX_TIMC; timC++) {
 		FOR_ALL_LANES ctrl->timings[channel][slotrank].lanes[lane].timC = timC;
@@ -1654,7 +1653,7 @@ static void precharge(ramctr_timing *ctrl)
 				0, 0, 0, 0, 0, 0, 0, 0);
 
 			/* Execute command queue */
-			iosav_run_once(channel, 4);
+			iosav_run_once(channel);
 
 			wait_for_iosav(channel);
 		}
@@ -1701,7 +1700,7 @@ static void precharge(ramctr_timing *ctrl)
 				0, 0, 0, 0, 0, 0, 0, 0);
 
 			/* Execute command queue */
-			iosav_run_once(channel, 4);
+			iosav_run_once(channel);
 
 			wait_for_iosav(channel);
 		}
@@ -1729,7 +1728,7 @@ static void test_timB(ramctr_timing *ctrl, int channel, int slotrank)
 		0, 0, 0, 0, 0, 0, 0, 0);
 
 	/* Execute command queue */
-	iosav_run_once(channel, 2);
+	iosav_run_once(channel);
 
 	wait_for_iosav(channel);
 
@@ -1853,7 +1852,7 @@ static void adjust_high_timB(ramctr_timing *ctrl)
 			0, 0, 0, 0, 31, 0, 0, 0);
 
 		/* Execute command queue */
-		iosav_run_once(channel, 4);
+		iosav_run_once(channel);
 
 		wait_for_iosav(channel);
 
@@ -1881,7 +1880,7 @@ static void adjust_high_timB(ramctr_timing *ctrl)
 			0, 0, 0, 0, 0, 0, 0, 0);
 
 		/* Execute command queue */
-		iosav_run_once(channel, 3);
+		iosav_run_once(channel);
 
 		wait_for_iosav(channel);
 		FOR_ALL_LANES {
@@ -1917,7 +1916,7 @@ static void write_op(ramctr_timing *ctrl, int channel)
 		0, 0, 0, 0, 31, 0, 0, 0);
 
 	/* Execute command queue */
-	iosav_run_once(channel, 1);
+	iosav_run_once(channel);
 
 	wait_for_iosav(channel);
 }
@@ -1996,7 +1995,7 @@ int write_training(ramctr_timing *ctrl)
 			0, 0, 0, 0, 31, 0, 0, 0);
 
 		/* Execute command queue */
-		iosav_run_once(channel, 1);
+		iosav_run_once(channel);
 
 		wait_for_iosav(channel);
 	}
@@ -2091,7 +2090,7 @@ static int test_320c(ramctr_timing *ctrl, int channel, int slotrank)
 			0, 0, 0, 0, 18, 0, 0, 0);
 
 		/* Execute command queue */
-		iosav_run_once(channel, 4);
+		iosav_run_once(channel);
 
 		wait_for_iosav(channel);
 		FOR_ALL_LANES {
@@ -2158,7 +2157,7 @@ static void reprogram_320c(ramctr_timing *ctrl)
 			0, 0, 0, 0, 31, 0, 0, 0);
 
 		/* Execute command queue */
-		iosav_run_once(channel, 1);
+		iosav_run_once(channel);
 
 		wait_for_iosav(channel);
 		MCHBAR32_OR(SCHED_CBIT_ch(channel), 0x200000);
@@ -2180,7 +2179,7 @@ static void reprogram_320c(ramctr_timing *ctrl)
 			0, 0, 0, 0, 31, 0, 0, 0);
 
 		/* Execute command queue */
-		iosav_run_once(channel, 1);
+		iosav_run_once(channel);
 
 		wait_for_iosav(channel);
 	}
@@ -2367,7 +2366,7 @@ static int discover_edges_real(ramctr_timing *ctrl, int channel, int slotrank, i
 			0, 0, 0, 0, 0, 0, 0, 0);
 
 		/* Execute command queue */
-		iosav_run_once(channel, 4);
+		iosav_run_once(channel);
 
 		wait_for_iosav(channel);
 
@@ -2456,7 +2455,7 @@ int discover_edges(ramctr_timing *ctrl)
 				0, 0, 0, 0, 0, 0, 0, 0);
 
 			/* Execute command queue */
-			iosav_run_once(channel, 4);
+			iosav_run_once(channel);
 
 			wait_for_iosav(channel);
 		}
@@ -2507,7 +2506,7 @@ int discover_edges(ramctr_timing *ctrl)
 				0, 0, 0, 0, 0, 0, 0, 0);
 
 			/* Execute command queue */
-			iosav_run_once(channel, 4);
+			iosav_run_once(channel);
 
 			wait_for_iosav(channel);
 		}
@@ -2635,7 +2634,7 @@ static int discover_edges_write_real(ramctr_timing *ctrl, int channel, int slotr
 					0, 0, 0, 0, 0, 0, 0, 0);
 
 				/* Execute command queue */
-				iosav_run_once(channel, 4);
+				iosav_run_once(channel);
 
 				wait_for_iosav(channel);
 				FOR_ALL_LANES {
@@ -2759,7 +2758,7 @@ static void test_timC_write(ramctr_timing *ctrl, int channel, int slotrank)
 		0, 0, 0, 0, 0, 0, 0, 0);
 
 	/* Execute command queue */
-	iosav_run_once(channel, 4);
+	iosav_run_once(channel);
 
 	wait_for_iosav(channel);
 }
@@ -2976,7 +2975,7 @@ int channel_test(ramctr_timing *ctrl)
 			0, 0, 0, 0, 18, 0, 0, 0);
 
 		/* Execute command queue */
-		iosav_run_once(channel, 4);
+		iosav_run_once(channel);
 
 		wait_for_iosav(channel);
 		FOR_ALL_LANES
@@ -3021,7 +3020,7 @@ void channel_scrub(ramctr_timing *ctrl)
 				0, 0, 0, 0, 18, 0, 0, 0);
 
 			/* execute command queue */
-			iosav_run_once(channel, 3);
+			iosav_run_once(channel);
 
 			wait_for_iosav(channel);
 		}

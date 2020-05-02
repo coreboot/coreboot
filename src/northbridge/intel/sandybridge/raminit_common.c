@@ -673,7 +673,7 @@ static void write_mrreg(ramctr_timing *ctrl, int channel, int slotrank, int reg,
 
 	/* DRAM command MRS */
 	IOSAV_SUBSEQUENCE(channel, 1,
-		IOSAV_MRS,
+		IOSAV_MRS | RANKSEL,
 		1, 4, 4, SSQ_NA,
 		val, 6, reg, slotrank,
 		ADDR_UPDATE_NONE);
@@ -817,7 +817,7 @@ void dram_mrscommands(ramctr_timing *ctrl)
 
 	/* DRAM command ZQCL */
 	IOSAV_SUBSEQUENCE(BROADCAST_CH, 1,
-		IOSAV_ZQCS,
+		IOSAV_ZQCS | RANKSEL,
 		1, 4, 400, SSQ_NA,
 		1024, 6, 0, 0,
 		ADDR_UPDATE(0, 0, 0, 1, 20, 0, 0, 0));
@@ -1013,21 +1013,21 @@ static void test_timA(ramctr_timing *ctrl, int channel, int slotrank)
 	   in this mode only RD and RDA are allowed
 	   all reads return a predefined pattern */
 	IOSAV_SUBSEQUENCE(channel, 0,
-		IOSAV_MRS,
+		IOSAV_MRS | RANKSEL,
 		1, 3, ctrl->tMOD, SSQ_NA,
 		4, 6, 3, slotrank,
 		ADDR_UPDATE_NONE);
 
 	/* DRAM command RD */
 	IOSAV_SUBSEQUENCE(channel, 1,
-		IOSAV_RD,
+		IOSAV_RD | RANKSEL,
 		1, 3, 4, SSQ_RD,
 		0, 0, 0, slotrank,
 		ADDR_UPDATE_NONE);
 
 	/* DRAM command RD */
 	IOSAV_SUBSEQUENCE(channel, 2,
-		IOSAV_RD,
+		IOSAV_RD | RANKSEL,
 		15, 4, ctrl->CAS + 36, SSQ_NA,
 		0, 6, 0, slotrank,
 		ADDR_UPDATE_NONE);
@@ -1035,7 +1035,7 @@ static void test_timA(ramctr_timing *ctrl, int channel, int slotrank)
 	/* DRAM command MRS
 	   write MR3 MPR disable */
 	IOSAV_SUBSEQUENCE(channel, 3,
-		IOSAV_MRS,
+		IOSAV_MRS | RANKSEL,
 		1, 3, ctrl->tMOD, SSQ_NA,
 		0, 6, 3, slotrank,
 		ADDR_UPDATE_NONE);
@@ -1301,7 +1301,7 @@ int read_training(ramctr_timing *ctrl)
 
 		/* DRAM command PREA */
 		IOSAV_SUBSEQUENCE(channel, 0,
-			IOSAV_PRE,
+			IOSAV_PRE | RANKSEL,
 			1, 3, ctrl->tRP, SSQ_NA,
 			1024, 6, 0, slotrank,
 			ADDR_UPDATE_NONE);
@@ -1402,28 +1402,28 @@ static void test_timC(ramctr_timing *ctrl, int channel, int slotrank)
 
 	/* DRAM command ACT */
 	IOSAV_SUBSEQUENCE(channel, 0,
-		IOSAV_ACT,
+		IOSAV_ACT | RANKSEL,
 		4, MAX(ctrl->tRRD, (ctrl->tFAW >> 2) + 1), ctrl->tRCD, SSQ_NA,
 		0, 6, 0, slotrank,
 		ADDR_UPDATE(0, 0, 1, 0, 18, 0, 0, 0));
 
 	/* DRAM command NOP */
 	IOSAV_SUBSEQUENCE(channel, 1,
-		IOSAV_NOP,
+		IOSAV_NOP | RANKSEL,
 		1, 4, 4, SSQ_WR,
 		8, 0, 0, slotrank,
 		ADDR_UPDATE_WRAP(31));
 
 	/* DRAM command WR */
 	IOSAV_SUBSEQUENCE(channel, 2,
-		IOSAV_WR,
+		IOSAV_WR | RANKSEL,
 		500, 4, 4, SSQ_WR,
 		0, 0, 0, slotrank,
 		ADDR_UPDATE(0, 1, 0, 0, 18, 0, 0, 0));
 
 	/* DRAM command NOP */
 	IOSAV_SUBSEQUENCE(channel, 3,
-		IOSAV_NOP,
+		IOSAV_NOP | RANKSEL,
 		1, 3, ctrl->CWL + ctrl->tWTR + 5, SSQ_WR,
 		8, 0, 0, slotrank,
 		ADDR_UPDATE_WRAP(31));
@@ -1435,28 +1435,28 @@ static void test_timC(ramctr_timing *ctrl, int channel, int slotrank)
 
 	/* DRAM command PREA */
 	IOSAV_SUBSEQUENCE(channel, 0,
-		IOSAV_PRE,
+		IOSAV_PRE | RANKSEL,
 		1, 3, ctrl->tRP, SSQ_NA,
 		1024, 6, 0, slotrank,
 		ADDR_UPDATE(0, 0, 0, 0, 18, 0, 0, 0));
 
 	/* DRAM command ACT */
 	IOSAV_SUBSEQUENCE(channel, 1,
-		IOSAV_ACT,
+		IOSAV_ACT | RANKSEL,
 		8, MAX(ctrl->tRRD, (ctrl->tFAW >> 2) + 1), ctrl->CAS, SSQ_NA,
 		0, 6, 0, slotrank,
 		ADDR_UPDATE(0, 0, 1, 0, 18, 0, 0, 0));
 
 	/* DRAM command RD */
 	IOSAV_SUBSEQUENCE(channel, 2,
-		IOSAV_RD,
+		IOSAV_RD | RANKSEL,
 		500, 4, MAX(ctrl->tRTP, 8), SSQ_RD,
 		0, 0, 0, slotrank,
 		ADDR_UPDATE(0, 1, 0, 0, 18, 0, 0, 0));
 
 	/* DRAM command PREA */
 	IOSAV_SUBSEQUENCE(channel, 3,
-		IOSAV_PRE,
+		IOSAV_PRE | RANKSEL,
 		1, 3, ctrl->tRP, SSQ_NA,
 		1024, 6, 0, slotrank,
 		ADDR_UPDATE(0, 0, 0, 0, 18, 0, 0, 0));
@@ -1496,7 +1496,7 @@ static int discover_timC(ramctr_timing *ctrl, int channel, int slotrank)
 
 	/* DRAM command PREA */
 	IOSAV_SUBSEQUENCE(channel, 0,
-		IOSAV_PRE,
+		IOSAV_PRE | RANKSEL,
 		1, 3, ctrl->tRP, SSQ_NA,
 		1024, 6, 0, slotrank,
 		ADDR_UPDATE(0, 0, 0, 0, 18, 0, 0, 0));
@@ -1603,21 +1603,21 @@ static void precharge(ramctr_timing *ctrl)
 			   in this mode only RD and RDA are allowed
 			   all reads return a predefined pattern */
 			IOSAV_SUBSEQUENCE(channel, 0,
-				IOSAV_MRS,
+				IOSAV_MRS | RANKSEL,
 				1, 3, ctrl->tMOD, SSQ_NA,
 				4, 6, 3, slotrank,
 				ADDR_UPDATE_NONE);
 
 			/* DRAM command RD */
 			IOSAV_SUBSEQUENCE(channel, 1,
-				IOSAV_RD,
+				IOSAV_RD | RANKSEL,
 				3, 4, 4, SSQ_RD,
 				0, 0, 0, slotrank,
 				ADDR_UPDATE_NONE);
 
 			/* DRAM command RD */
 			IOSAV_SUBSEQUENCE(channel, 2,
-				IOSAV_RD,
+				IOSAV_RD | RANKSEL,
 				1, 4, ctrl->CAS + 8, SSQ_NA,
 				0, 6, 0, slotrank,
 				ADDR_UPDATE_NONE);
@@ -1625,7 +1625,7 @@ static void precharge(ramctr_timing *ctrl)
 			/* DRAM command MRS
 			 * write MR3 MPR disable */
 			IOSAV_SUBSEQUENCE(channel, 3,
-				IOSAV_MRS,
+				IOSAV_MRS | RANKSEL,
 				1, 3, ctrl->tMOD, SSQ_NA,
 				0, 6, 3, slotrank,
 				ADDR_UPDATE_NONE);
@@ -1650,21 +1650,21 @@ static void precharge(ramctr_timing *ctrl)
 			 * in this mode only RD and RDA are allowed
 			 * all reads return a predefined pattern */
 			IOSAV_SUBSEQUENCE(channel, 0,
-				IOSAV_MRS,
+				IOSAV_MRS | RANKSEL,
 				1, 3, ctrl->tMOD, SSQ_NA,
 				4, 6, 3, slotrank,
 				ADDR_UPDATE_NONE);
 
 			/* DRAM command RD */
 			IOSAV_SUBSEQUENCE(channel, 1,
-				IOSAV_RD,
+				IOSAV_RD | RANKSEL,
 				3, 4, 4, SSQ_RD,
 				0, 0, 0, slotrank,
 				ADDR_UPDATE_NONE);
 
 			/* DRAM command RD */
 			IOSAV_SUBSEQUENCE(channel, 2,
-				IOSAV_RD,
+				IOSAV_RD | RANKSEL,
 				1, 4, ctrl->CAS + 8, SSQ_NA,
 				0, 6, 0, slotrank,
 				ADDR_UPDATE_NONE);
@@ -1672,7 +1672,7 @@ static void precharge(ramctr_timing *ctrl)
 			/* DRAM command MRS
 			 * write MR3 MPR disable */
 			IOSAV_SUBSEQUENCE(channel, 3,
-				IOSAV_MRS,
+				IOSAV_MRS | RANKSEL,
 				1, 3, ctrl->tMOD, SSQ_NA,
 				0, 6, 3, slotrank,
 				ADDR_UPDATE_NONE);
@@ -1693,14 +1693,14 @@ static void test_timB(ramctr_timing *ctrl, int channel, int slotrank)
 	wait_for_iosav(channel);
 	/* DRAM command NOP */
 	IOSAV_SUBSEQUENCE(channel, 0,
-		IOSAV_NOP,
+		IOSAV_NOP | RANKSEL,
 		1, 3, ctrl->CWL + ctrl->tWLO, SSQ_WR,
 		8, 0, 0, slotrank,
 		ADDR_UPDATE_NONE);
 
 	/* DRAM command NOP */
 	IOSAV_SUBSEQUENCE(channel, 1,
-		IOSAV_NOP_ALT,
+		IOSAV_NOP_ALT | RANKSEL,
 		1, 3, ctrl->CAS + 38, SSQ_RD,
 		4, 0, 0, slotrank,
 		ADDR_UPDATE_NONE);
@@ -1803,28 +1803,28 @@ static void adjust_high_timB(ramctr_timing *ctrl)
 
 		/* DRAM command ACT */
 		IOSAV_SUBSEQUENCE(channel, 0,
-			IOSAV_ACT,
+			IOSAV_ACT | RANKSEL,
 			1, 3, ctrl->tRCD, SSQ_NA,
 			0, 6, 0, slotrank,
 			ADDR_UPDATE_NONE);
 
 		/* DRAM command NOP */
 		IOSAV_SUBSEQUENCE(channel, 1,
-			IOSAV_NOP,
+			IOSAV_NOP | RANKSEL,
 			1, 3, 4, SSQ_WR,
 			8, 0, 0, slotrank,
 			ADDR_UPDATE_WRAP(31));
 
 		/* DRAM command WR */
 		IOSAV_SUBSEQUENCE(channel, 2,
-			IOSAV_WR,
+			IOSAV_WR | RANKSEL,
 			3, 4, 4, SSQ_WR,
 			0, 0, 0, slotrank,
 			ADDR_UPDATE(0, 1, 0, 0, 31, 0, 0, 0));
 
 		/* DRAM command NOP */
 		IOSAV_SUBSEQUENCE(channel, 3,
-			IOSAV_NOP,
+			IOSAV_NOP | RANKSEL,
 			1, 3, ctrl->CWL + ctrl->tWTR + 5, SSQ_WR,
 			8, 0, 0, slotrank,
 			ADDR_UPDATE_WRAP(31));
@@ -1836,14 +1836,14 @@ static void adjust_high_timB(ramctr_timing *ctrl)
 
 		/* DRAM command PREA */
 		IOSAV_SUBSEQUENCE(channel, 0,
-			IOSAV_PRE,
+			IOSAV_PRE | RANKSEL,
 			1, 3, ctrl->tRP, SSQ_NA,
 			1024, 6, 0, slotrank,
 			ADDR_UPDATE(0, 0, 0, 0, 18, 0, 0, 0));
 
 		/* DRAM command ACT */
 		IOSAV_SUBSEQUENCE(channel, 1,
-			IOSAV_ACT,
+			IOSAV_ACT | RANKSEL,
 			1, 3, ctrl->tRCD, SSQ_NA,
 			0, 6, 0, slotrank,
 			ADDR_UPDATE_NONE);
@@ -2037,14 +2037,14 @@ static int test_320c(ramctr_timing *ctrl, int channel, int slotrank)
 		wait_for_iosav(channel);
 		/* DRAM command ACT */
 		IOSAV_SUBSEQUENCE(channel, 0,
-			IOSAV_ACT,
+			IOSAV_ACT | RANKSEL,
 			8, MAX(ctrl->tRRD, (ctrl->tFAW >> 2) + 1), ctrl->tRCD, SSQ_NA,
 			ctr, 6, 0, slotrank,
 			ADDR_UPDATE(0, 0, 1, 0, 18, 0, 0, 0));
 
 		/* DRAM command WR */
 		IOSAV_SUBSEQUENCE(channel, 1,
-			IOSAV_WR,
+			IOSAV_WR | RANKSEL,
 			32, 4, ctrl->CWL + ctrl->tWTR + 8, SSQ_WR,
 			0, 0, 0, slotrank,
 			ADDR_UPDATE(0, 1, 0, 0, 18, 3, 0, 2));
@@ -2053,7 +2053,7 @@ static int test_320c(ramctr_timing *ctrl, int channel, int slotrank)
 
 		/* DRAM command RD */
 		IOSAV_SUBSEQUENCE(channel, 2,
-			IOSAV_RD,
+			IOSAV_RD | RANKSEL,
 			32, 4, MAX(ctrl->tRTP, 8), SSQ_RD,
 			0, 0, 0, slotrank,
 			ADDR_UPDATE(0, 1, 0, 0, 18, 3, 0, 2));
@@ -2062,7 +2062,7 @@ static int test_320c(ramctr_timing *ctrl, int channel, int slotrank)
 
 		/* DRAM command PRE */
 		IOSAV_SUBSEQUENCE(channel, 3,
-			IOSAV_PRE,
+			IOSAV_PRE | RANKSEL,
 			1, 4, 15, SSQ_NA,
 			1024, 6, 0, slotrank,
 			ADDR_UPDATE(0, 0, 0, 0, 18, 0, 0, 0));
@@ -2316,21 +2316,21 @@ static int discover_edges_real(ramctr_timing *ctrl, int channel, int slotrank, i
 		   in this mode only RD and RDA are allowed
 		   all reads return a predefined pattern */
 		IOSAV_SUBSEQUENCE(channel, 0,
-			IOSAV_MRS,
+			IOSAV_MRS | RANKSEL,
 			1, 3, ctrl->tMOD, SSQ_NA,
 			4, 6, 3, slotrank,
 			ADDR_UPDATE_NONE);
 
 		/* DRAM command RD */
 		IOSAV_SUBSEQUENCE(channel, 1,
-			IOSAV_RD,
+			IOSAV_RD | RANKSEL,
 			500, 4, 4, SSQ_RD,
 			0, 0, 0, slotrank,
 			ADDR_UPDATE_NONE);
 
 		/* DRAM command RD */
 		IOSAV_SUBSEQUENCE(channel, 2,
-			IOSAV_RD,
+			IOSAV_RD | RANKSEL,
 			1, 4, ctrl->CAS + 8, SSQ_NA,
 			0, 6, 0, slotrank,
 			ADDR_UPDATE_NONE);
@@ -2338,7 +2338,7 @@ static int discover_edges_real(ramctr_timing *ctrl, int channel, int slotrank, i
 		/* DRAM command MRS
 		   MR3 disable MPR */
 		IOSAV_SUBSEQUENCE(channel, 3,
-			IOSAV_MRS,
+			IOSAV_MRS | RANKSEL,
 			1, 3, ctrl->tMOD, SSQ_NA,
 			0, 6, 3, slotrank,
 			ADDR_UPDATE_NONE);
@@ -2405,21 +2405,21 @@ int discover_edges(ramctr_timing *ctrl)
 			   in this mode only RD and RDA are allowed
 			   all reads return a predefined pattern */
 			IOSAV_SUBSEQUENCE(channel, 0,
-				IOSAV_MRS,
+				IOSAV_MRS | RANKSEL,
 				1, 3, ctrl->tMOD, SSQ_NA,
 				4, 6, 3, slotrank,
 				ADDR_UPDATE_NONE);
 
 			/* DRAM command RD */
 			IOSAV_SUBSEQUENCE(channel, 1,
-				IOSAV_RD,
+				IOSAV_RD | RANKSEL,
 				3, 4, 4, SSQ_RD,
 				0, 0, 0, slotrank,
 				ADDR_UPDATE_NONE);
 
 			/* DRAM command RD */
 			IOSAV_SUBSEQUENCE(channel, 2,
-				IOSAV_RD,
+				IOSAV_RD | RANKSEL,
 				1, 4, ctrl->CAS + 8, SSQ_NA,
 				0, 6, 0, slotrank,
 				ADDR_UPDATE_NONE);
@@ -2427,7 +2427,7 @@ int discover_edges(ramctr_timing *ctrl)
 			/* DRAM command MRS
 			 * MR3 disable MPR */
 			IOSAV_SUBSEQUENCE(channel, 3,
-				IOSAV_MRS,
+				IOSAV_MRS | RANKSEL,
 				1, 3, ctrl->tMOD, SSQ_NA,
 				0, 6, 3, slotrank,
 				ADDR_UPDATE_NONE);
@@ -2456,21 +2456,21 @@ int discover_edges(ramctr_timing *ctrl)
 			   in this mode only RD and RDA are allowed
 			   all reads return a predefined pattern */
 			IOSAV_SUBSEQUENCE(channel, 0,
-				IOSAV_MRS,
+				IOSAV_MRS | RANKSEL,
 				1, 3, ctrl->tMOD, SSQ_NA,
 				4, 6, 3, slotrank,
 				ADDR_UPDATE_NONE);
 
 			/* DRAM command RD */
 			IOSAV_SUBSEQUENCE(channel, 1,
-				IOSAV_RD,
+				IOSAV_RD | RANKSEL,
 				3, 4, 4, SSQ_RD,
 				0, 0, 0, slotrank,
 				ADDR_UPDATE_NONE);
 
 			/* DRAM command RD */
 			IOSAV_SUBSEQUENCE(channel, 2,
-				IOSAV_RD,
+				IOSAV_RD | RANKSEL,
 				1, 4, ctrl->CAS + 8, SSQ_NA,
 				0, 6, 0, slotrank,
 				ADDR_UPDATE_NONE);
@@ -2478,7 +2478,7 @@ int discover_edges(ramctr_timing *ctrl)
 			/* DRAM command MRS
 			 * MR3 disable MPR */
 			IOSAV_SUBSEQUENCE(channel, 3,
-				IOSAV_MRS,
+				IOSAV_MRS | RANKSEL,
 				1, 3, ctrl->tMOD, SSQ_NA,
 				0, 6, 3, slotrank,
 				ADDR_UPDATE_NONE);
@@ -2585,28 +2585,28 @@ static int discover_edges_write_real(ramctr_timing *ctrl, int channel, int slotr
 
 				/* DRAM command ACT */
 				IOSAV_SUBSEQUENCE(channel, 0,
-					IOSAV_ACT,
+					IOSAV_ACT | RANKSEL,
 					4, MAX(ctrl->tRRD, (ctrl->tFAW >> 2) + 1), ctrl->tRCD, SSQ_NA,
 					0, 6, 0, slotrank,
 					ADDR_UPDATE(0, 0, 0, 0, 18, 0, 0, 0));
 
 				/* DRAM command WR */
 				IOSAV_SUBSEQUENCE(channel, 1,
-					IOSAV_WR,
+					IOSAV_WR | RANKSEL,
 					32, 20, ctrl->tWTR + ctrl->CWL + 8, SSQ_WR,
 					0, 0, 0, slotrank,
 					ADDR_UPDATE(0, 1, 0, 0, 18, 0, 0, 0));
 
 				/* DRAM command RD */
 				IOSAV_SUBSEQUENCE(channel, 2,
-					IOSAV_RD,
+					IOSAV_RD | RANKSEL,
 					32, 20, MAX(ctrl->tRTP, 8), SSQ_RD,
 					0, 0, 0, slotrank,
 					ADDR_UPDATE(0, 1, 0, 0, 18, 0, 0, 0));
 
 				/* DRAM command PRE */
 				IOSAV_SUBSEQUENCE(channel, 3,
-					IOSAV_PRE,
+					IOSAV_PRE | RANKSEL,
 					1, 3, ctrl->tRP, SSQ_NA,
 					1024, 6, 0, slotrank,
 					ADDR_UPDATE_NONE);
@@ -2709,28 +2709,28 @@ static void test_timC_write(ramctr_timing *ctrl, int channel, int slotrank)
 
 	/* DRAM command ACT */
 	IOSAV_SUBSEQUENCE(channel, 0,
-		IOSAV_ACT,
+		IOSAV_ACT | RANKSEL,
 		4, MAX((ctrl->tFAW >> 2) + 1, ctrl->tRRD), ctrl->tRCD, SSQ_NA,
 		0, 6, 0, slotrank,
 		ADDR_UPDATE(0, 0, 1, 0, 18, 0, 0, 0));
 
 	/* DRAM command WR */
 	IOSAV_SUBSEQUENCE(channel, 1,
-		IOSAV_WR,
+		IOSAV_WR | RANKSEL,
 		480, 4, ctrl->tWTR + ctrl->CWL + 8, SSQ_WR,
 		0, 0, 0, slotrank,
 		ADDR_UPDATE(0, 1, 0, 0, 18, 0, 0, 0));
 
 	/* DRAM command RD */
 	IOSAV_SUBSEQUENCE(channel, 2,
-		IOSAV_RD,
+		IOSAV_RD | RANKSEL,
 		480, 4, MAX(ctrl->tRTP, 8), SSQ_RD,
 		0, 0, 0, slotrank,
 		ADDR_UPDATE(0, 1, 0, 0, 18, 0, 0, 0));
 
 	/* DRAM command PRE */
 	IOSAV_SUBSEQUENCE(channel, 3,
-		IOSAV_PRE,
+		IOSAV_PRE | RANKSEL,
 		1, 4, ctrl->tRP, SSQ_NA,
 		1024, 6, 0, slotrank,
 		ADDR_UPDATE_NONE);
@@ -2926,28 +2926,28 @@ int channel_test(ramctr_timing *ctrl)
 
 		/* DRAM command ACT */
 		IOSAV_SUBSEQUENCE(channel, 0,
-			IOSAV_ACT,
+			IOSAV_ACT | RANKSEL,
 			4, 40, 40, SSQ_NA,
 			0, 6, 0, slotrank,
 			ADDR_UPDATE(0, 0, 1, 0, 18, 0, 0, 0));
 
 		/* DRAM command WR */
 		IOSAV_SUBSEQUENCE(channel, 1,
-			IOSAV_WR,
+			IOSAV_WR | RANKSEL,
 			100, 4, 40, SSQ_WR,
 			0, 0, 0, slotrank,
 			ADDR_UPDATE(0, 1, 0, 0, 18, 0, 0, 0));
 
 		/* DRAM command RD */
 		IOSAV_SUBSEQUENCE(channel, 2,
-			IOSAV_RD,
+			IOSAV_RD | RANKSEL,
 			100, 4, 40, SSQ_RD,
 			0, 0, 0, slotrank,
 			ADDR_UPDATE(0, 1, 0, 0, 18, 0, 0, 0));
 
 		/* DRAM command PRE */
 		IOSAV_SUBSEQUENCE(channel, 3,
-			IOSAV_PRE,
+			IOSAV_PRE | RANKSEL,
 			1, 3, 40, SSQ_NA,
 			1024, 6, 0, slotrank,
 			ADDR_UPDATE(0, 0, 0, 0, 18, 0, 0, 0));
@@ -2978,21 +2978,21 @@ void channel_scrub(ramctr_timing *ctrl)
 
 			/* DRAM command ACT */
 			IOSAV_SUBSEQUENCE(channel, 0,
-				IOSAV_ACT,
+				IOSAV_ACT | RANKSEL,
 				1, MAX((ctrl->tFAW >> 2) + 1, ctrl->tRRD), ctrl->tRCD, SSQ_NA,
 				row, 6, 0, slotrank,
 				ADDR_UPDATE(1, 0, 0, 0, 18, 0, 0, 0));
 
 			/* DRAM command WR */
 			IOSAV_SUBSEQUENCE(channel, 1,
-				IOSAV_WR,
+				IOSAV_WR | RANKSEL,
 				129, 4, 40, SSQ_WR,
 				row, 0, 0, slotrank,
 				ADDR_UPDATE(0, 1, 0, 0, 18, 0, 0, 0));
 
 			/* DRAM command PRE */
 			IOSAV_SUBSEQUENCE(channel, 2,
-				IOSAV_PRE,
+				IOSAV_PRE | RANKSEL,
 				1, 3, 40, SSQ_NA,
 				1024, 6, 0, slotrank,
 				ADDR_UPDATE(0, 0, 0, 0, 18, 0, 0, 0));

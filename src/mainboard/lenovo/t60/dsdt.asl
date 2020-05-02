@@ -6,7 +6,7 @@
 #define BRIGHTNESS_DOWN \BRTD
 #define ACPI_VIDEO_DEVICE \_SB.PCI0.GFX0
 
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 DefinitionBlock(
 	"dsdt.aml",
 	"DSDT",

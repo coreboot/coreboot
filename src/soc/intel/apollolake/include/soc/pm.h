@@ -17,7 +17,7 @@
 #define _SOC_APOLLOLAKE_PM_H_
 
 #include <stdint.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <soc/gpe.h>
 #include <soc/iomap.h>
 

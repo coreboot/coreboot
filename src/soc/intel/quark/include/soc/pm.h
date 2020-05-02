@@ -5,7 +5,7 @@
 #define _SOC_PM_H_
 
 #include <stdint.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 
 struct chipset_power_state {
 	uint32_t prev_sleep_state;

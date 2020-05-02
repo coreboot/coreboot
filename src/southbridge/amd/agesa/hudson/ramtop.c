@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 #include <arch/io.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include "hudson.h"
 
 int acpi_get_sleep_type(void)

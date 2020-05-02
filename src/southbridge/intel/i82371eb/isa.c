@@ -23,8 +23,8 @@
 #include <pc80/mc146818rtc.h>
 #include <arch/ioapic.h>
 #if CONFIG(HAVE_ACPI_TABLES)
-#include <arch/acpi.h>
-#include <arch/acpigen.h>
+#include <acpi/acpi.h>
+#include <acpi/acpigen.h>
 #endif
 #include "i82371eb.h"
 #include "chip.h"

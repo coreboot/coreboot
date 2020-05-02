@@ -2,7 +2,7 @@
 /* This file is part of the coreboot project. */
 
 #include <device/device.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <drivers/intel/gma/int15.h>
 #include "dock.h"
 

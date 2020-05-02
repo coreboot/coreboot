@@ -13,9 +13,9 @@
 #include <device/mmio.h>
 #include <device/pci_ops.h>
 #include <arch/ioapic.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <elog.h>
-#include <arch/acpigen.h>
+#include <acpi/acpigen.h>
 #include <cbmem.h>
 #include <string.h>
 #include <cpu/x86/smm.h>

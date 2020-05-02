@@ -12,7 +12,7 @@
 #ifndef I82801DX_H
 #define I82801DX_H
 
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 
 #if !defined(__ASSEMBLER__)
 

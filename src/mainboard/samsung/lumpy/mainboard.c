@@ -5,7 +5,7 @@
 #include <string.h>
 #include <device/device.h>
 #include <drivers/intel/gma/int15.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <ec/smsc/mec1308/ec.h>
 #include "ec.h"
 #include "onboard.h"

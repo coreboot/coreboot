@@ -4,7 +4,7 @@
 #define MAINBOARD_HAS_SPEAKER 1
 
 /* DefinitionBlock Statement */
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 DefinitionBlock (
 	"DSDT.AML",	/* Output filename */
 	"DSDT",		/* Signature */

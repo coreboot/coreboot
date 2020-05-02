@@ -2,7 +2,7 @@
 /* This file is part of the coreboot project. */
 
 #include <stddef.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <assert.h>
 #include <console/console.h>
 #include <cbmem.h>

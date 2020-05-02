@@ -7,7 +7,7 @@
 #define ACPI_VIDEO_DEVICE \_SB.PCI0.GFX0
 #define EC_LENOVO_H8_ME_WORKAROUND 1
 
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 DefinitionBlock(
 	"dsdt.aml",
 	"DSDT",

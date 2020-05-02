@@ -4,7 +4,7 @@
 #ifndef __DRIVERS_I2C_SX9310_CHIP_H__
 #define __DRIVERS_I2C_SX9310_CHIP_H__
 
-#include <arch/acpi_device.h>
+#include <acpi/acpi_device.h>
 #include <device/i2c_simple.h>
 
 #define REGISTER(NAME) uint8_t NAME

@@ -4,7 +4,7 @@
 #ifndef SOC_INTEL_COMMON_BLOCK_SD_H
 #define SOC_INTEL_COMMON_BLOCK_SD_H
 
-#include <arch/acpi_device.h>
+#include <acpi/acpi_device.h>
 
 /*
  * Fill the GPIO Interrupt or I/O information that will be used for the

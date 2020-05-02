@@ -4,7 +4,7 @@
 #ifndef __DRIVERS_GENERIC_GPIO_REGULATOR_H__
 #define __DRIVERS_GENERIC_GPIO_REGULATOR_H__
 
-#include <arch/acpi_device.h>
+#include <acpi/acpi_device.h>
 
 struct drivers_generic_gpio_regulator_config {
 	const char *name;

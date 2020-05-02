@@ -11,7 +11,7 @@
 #include <arch/io.h>
 #include <device/pci_ops.h>
 #include <arch/ioapic.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <cpu/x86/smm.h>
 #include <cbmem.h>
 #include <reg_script.h>
@@ -27,7 +27,7 @@
 #include <soc/ramstage.h>
 #include <soc/rcba.h>
 #include <soc/intel/broadwell/chip.h>
-#include <arch/acpigen.h>
+#include <acpi/acpigen.h>
 #include <southbridge/intel/common/rtc.h>
 
 static void pch_enable_ioapic(struct device *dev)

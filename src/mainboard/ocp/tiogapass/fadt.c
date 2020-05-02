@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <soc/acpi.h>
 
 void motherboard_fill_fadt(acpi_fadt_t *fadt)

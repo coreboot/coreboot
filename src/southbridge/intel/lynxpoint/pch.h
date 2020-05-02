@@ -4,7 +4,7 @@
 #ifndef SOUTHBRIDGE_INTEL_LYNXPOINT_PCH_H
 #define SOUTHBRIDGE_INTEL_LYNXPOINT_PCH_H
 
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 
 #define CROS_GPIO_DEVICE_NAME	"LynxPoint"
 

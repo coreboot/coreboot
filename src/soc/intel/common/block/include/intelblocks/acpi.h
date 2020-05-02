@@ -16,7 +16,7 @@
 #ifndef SOC_INTEL_COMMON_BLOCK_ACPI_H
 #define SOC_INTEL_COMMON_BLOCK_ACPI_H
 
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <device/device.h>
 #include <intelblocks/cpulib.h>
 #include <stdint.h>

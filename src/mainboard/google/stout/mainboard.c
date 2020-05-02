@@ -5,7 +5,7 @@
 #include <device/device.h>
 #include <device/pci_ops.h>
 #include <drivers/intel/gma/int15.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <ec/quanta/it8518/ec.h>
 #include <vendorcode/google/chromeos/chromeos.h>

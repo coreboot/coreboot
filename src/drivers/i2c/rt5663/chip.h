@@ -5,7 +5,7 @@
  * Realtek RT5663 audio codec devicetree bindings
  */
 
-#include <arch/acpi_device.h>
+#include <acpi/acpi_device.h>
 #include <stdint.h>
 
 struct drivers_i2c_rt5663_config {

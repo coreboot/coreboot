@@ -4,7 +4,7 @@
 #ifndef __DRIVERS_GENERIC_GPIO_KEYS_H__
 #define __DRIVERS_GENERIC_GPIO_KEYS_H__
 
-#include <arch/acpi_device.h>
+#include <acpi/acpi_device.h>
 #include <stdint.h>
 
 /* Linux input type */

@@ -3,7 +3,7 @@
 
 #include <commonlib/helpers.h>
 #include <console/console.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <stdint.h>
 #include <delay.h>
 #include <cpu/intel/haswell/haswell.h>

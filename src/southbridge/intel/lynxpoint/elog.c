@@ -2,7 +2,7 @@
 /* This file is part of the coreboot project. */
 
 #include <arch/io.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ops.h>

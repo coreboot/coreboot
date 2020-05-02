@@ -3,7 +3,7 @@
 
 #include <string.h>
 #include <arch/ioapic.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <arch/smp/mpspec.h>
 #include <device/device.h>
 #include <southbridge/intel/i82801ix/nvs.h>

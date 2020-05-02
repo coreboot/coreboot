@@ -14,7 +14,7 @@
  */
 
 #include <stdint.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <arch/io.h>
 #include <console/console.h>
 #include "i82371eb.h"

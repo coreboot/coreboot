@@ -14,7 +14,7 @@
  */
 
 #include <assert.h>
-#include <arch/acpigen.h>
+#include <acpi/acpigen.h>
 #include <arch/smp/mpspec.h>
 #include <intelblocks/acpi.h>
 #include <device/pci.h>

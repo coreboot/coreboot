@@ -13,7 +13,7 @@
 #include <pc80/isa-dma.h>
 #include <arch/io.h>
 #include <arch/ioapic.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <pc80/i8254.h>
 #include <pc80/i8259.h>
 #include "hudson.h"

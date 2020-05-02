@@ -8,7 +8,7 @@
 #include <console/console.h>
 #include <drivers/intel/gma/int15.h>
 #include <fmap.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <arch/io.h>
 #include "onboard.h"
 #include "ec.h"

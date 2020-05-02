@@ -8,7 +8,7 @@
 #define EC_LENOVO_H8_ME_WORKAROUND 1
 #define EC_LENOVO_H8_ALT_FN_F2F3_LAYOUT 1
 
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 DefinitionBlock(
 	"dsdt.aml",
 	"DSDT",

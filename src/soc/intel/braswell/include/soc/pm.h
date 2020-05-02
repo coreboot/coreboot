@@ -4,7 +4,7 @@
 #ifndef _SOC_PM_H_
 #define _SOC_PM_H_
 
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 
 #define IOCOM1		0x3f8
 

@@ -2,7 +2,7 @@
 /* This file is part of the coreboot project. */
 
 #include <arch/ioapic.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <soc/acpi.h>
 #include <soc/nvs.h>
 #include <variant/thermal.h>

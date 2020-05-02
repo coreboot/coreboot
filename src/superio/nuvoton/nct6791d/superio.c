@@ -6,7 +6,7 @@
 #include <pc80/keyboard.h>
 #include <superio/conf_mode.h>
 #include <superio/common/ssdt.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include "nct6791d.h"
 
 static void nct6791d_init(struct device *dev)

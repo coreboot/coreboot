@@ -7,7 +7,7 @@
 #include <security/vboot/vboot_common.h>
 
 #if CONFIG(HAVE_ACPI_RESUME)
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #endif
 
 static void elog_add_boot_reason(void *unused)

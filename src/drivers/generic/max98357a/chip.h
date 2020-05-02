@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 /* This file is part of the coreboot project. */
 
-#include <arch/acpi_device.h>
+#include <acpi/acpi_device.h>
 
 struct drivers_generic_max98357a_config {
 

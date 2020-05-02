@@ -2,7 +2,7 @@
 /* This file is part of the coreboot project. */
 
 #include <device/mmio.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <console/console.h>
 #include <delay.h>
 #include <device/device.h>

@@ -21,7 +21,7 @@
 #include <boot/tables.h>
 #include <program_loading.h>
 #if CONFIG(HAVE_ACPI_RESUME)
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #endif
 #include <timer.h>
 #include <timestamp.h>

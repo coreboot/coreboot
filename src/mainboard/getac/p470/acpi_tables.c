@@ -4,7 +4,7 @@
 #include <types.h>
 #include <string.h>
 #include <console/console.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <device/device.h>
 #include <southbridge/intel/i82801gx/nvs.h>
 

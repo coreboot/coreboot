@@ -4,7 +4,7 @@
 #ifndef __SPI_ACPI_CHIP_H__
 #define __SPI_ACPI_CHIP_H__
 
-#include <arch/acpi_device.h>
+#include <acpi/acpi_device.h>
 
 struct drivers_spi_acpi_config {
 	const char *hid;		/* ACPI _HID (required) */

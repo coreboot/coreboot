@@ -30,7 +30,7 @@
 #include <device/device.h>
 #include <device/pci_def.h>
 #include <console/console.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <device/pci.h>
 #include <ec/google/chromeec/ec.h>
 #include <cpu/x86/tsc.h>

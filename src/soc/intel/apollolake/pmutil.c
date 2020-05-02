@@ -15,7 +15,7 @@
 
 #define __SIMPLE_DEVICE__
 
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <arch/io.h>
 #include <device/mmio.h>
 #include <cbmem.h>

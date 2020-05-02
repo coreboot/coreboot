@@ -157,7 +157,7 @@ Note that the ACPI_IRQ_WAKE_EDGE_LOW macro informs the platform that the GPIO
 will be routed through SCI (ACPI's System Control Interrupt) for use as a wake
 source.  Also note that the IRQ names are SoC-specific, and you will need to
 find the names in your SoC's header file.  The ACPI_* macros are defined in
-``src/arch/x86/include/arch/acpi_device.h``.
+``src/arch/x86/include/acpi/acpi_device.h``.
 
 Using a GPIO as an IRQ requires that it is configured in coreboot correctly.
 This is often done in a mainboard-specific file named ``gpio.c``.

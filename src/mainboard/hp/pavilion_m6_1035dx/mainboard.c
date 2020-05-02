@@ -3,7 +3,7 @@
 
 #include "ec.h"
 
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <console/console.h>
 #include <device/device.h>
 

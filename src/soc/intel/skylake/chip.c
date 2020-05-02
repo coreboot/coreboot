@@ -5,7 +5,7 @@
 #include <bootstate.h>
 #include <cbmem.h>
 #include <fsp/api.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci_ids.h>

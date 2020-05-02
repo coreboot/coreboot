@@ -12,7 +12,7 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <types.h>
 #include <string.h>
 #include <cbfs.h>

@@ -7,7 +7,7 @@
 #include <cpu/x86/name.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/lapic.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <arch/bert_storage.h>
 #include <string.h>
 

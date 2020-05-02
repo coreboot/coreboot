@@ -5,7 +5,7 @@
 #define __DRIVERS_R8168_CHIP_H__
 
 #include <stdint.h>
-#include <arch/acpi_device.h>
+#include <acpi/acpi_device.h>
 
 struct drivers_net_config {
 	uint16_t customized_leds;

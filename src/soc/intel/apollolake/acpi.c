@@ -13,8 +13,8 @@
  * GNU General Public License for more details.
  */
 
-#include <arch/acpi.h>
-#include <arch/acpigen.h>
+#include <acpi/acpi.h>
+#include <acpi/acpigen.h>
 #include <console/console.h>
 #include <device/mmio.h>
 #include <arch/smp/mpspec.h>

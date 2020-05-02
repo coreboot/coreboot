@@ -16,9 +16,9 @@
 
 #include <console/console.h>
 #include <string.h>
-#include <arch/acpi.h>
-#include <arch/acpi_ivrs.h>
-#include <arch/acpigen.h>
+#include <acpi/acpi.h>
+#include <acpi/acpi_ivrs.h>
+#include <acpi/acpigen.h>
 #include <device/pci.h>
 #include <cbmem.h>
 #include <commonlib/helpers.h>

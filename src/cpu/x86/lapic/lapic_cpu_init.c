@@ -5,7 +5,7 @@
 #include <cpu/x86/gdt.h>
 #include <cpu/x86/lapic.h>
 #include <cpu/x86/smi_deprecated.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <delay.h>
 #include <halt.h>
 #include <lib.h>

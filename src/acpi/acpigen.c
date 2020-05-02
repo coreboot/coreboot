@@ -13,7 +13,7 @@
 
 #include <lib.h>
 #include <string.h>
-#include <arch/acpigen.h>
+#include <acpi/acpigen.h>
 #include <assert.h>
 #include <console/console.h>
 #include <device/device.h>

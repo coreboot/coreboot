@@ -3,7 +3,7 @@
 
 #include <string.h>
 #include <device/pci_ops.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <version.h>
 
 /* FIXME: This needs to go into a separate .h file

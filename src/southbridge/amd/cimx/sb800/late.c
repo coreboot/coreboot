@@ -14,7 +14,7 @@
 #include <pc80/i8254.h>
 #include <pc80/i8259.h>
 #include <console/console.h>	/* printk */
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <device/pci_ehci.h>
 #include "lpc.h"		/* lpc_read_resources */
 #include "SBPLATFORM.h"		/* Platform Specific Definitions */

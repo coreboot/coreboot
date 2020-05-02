@@ -4,7 +4,7 @@
 #define ENABLE_TPM
 #undef  ENABLE_FDC	// There is no Floppy for this laptop
 
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 DefinitionBlock(
 	"dsdt.aml",
 	"DSDT",

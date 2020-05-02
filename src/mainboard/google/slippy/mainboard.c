@@ -5,7 +5,7 @@
 #include <smbios.h>
 #include <device/device.h>
 #include <drivers/intel/gma/int15.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <arch/io.h>
 #include <southbridge/intel/lynxpoint/pch.h>
 #include <vendorcode/google/chromeos/chromeos.h>

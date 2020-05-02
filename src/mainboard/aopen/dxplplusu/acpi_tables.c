@@ -6,7 +6,7 @@
  * Ported to AOpen DXPL Plus-U by Kyösti Mälkki
  */
 
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <device/pci_def.h>
 
 #define IOAPIC_ICH4		2

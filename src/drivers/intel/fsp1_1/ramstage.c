@@ -2,7 +2,7 @@
 /* This file is part of the coreboot project. */
 
 #include <bootmode.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <console/console.h>
 #include <cpu/x86/smm.h>
 #include <fsp/ramstage.h>

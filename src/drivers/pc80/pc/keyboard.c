@@ -7,7 +7,7 @@
 #include <arch/io.h>
 #include <delay.h>
 #include <types.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 
 #define KBD_DATA	0x60
 #define KBD_COMMAND	0x64

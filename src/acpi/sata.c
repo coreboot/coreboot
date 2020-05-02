@@ -3,8 +3,8 @@
 
 #include "sata.h"
 
-#include <arch/acpi.h>
-#include <arch/acpigen.h>
+#include <acpi/acpi.h>
+#include <acpi/acpigen.h>
 
 /* e.g.
  * generate_sata_ssdt_ports("\_SB.PCI0.SATA", 0x3);

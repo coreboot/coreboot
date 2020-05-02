@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 /* This file is part of the coreboot project. */
 
-#include <arch/acpigen.h>
+#include <acpi/acpigen.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <intelblocks/sd.h>

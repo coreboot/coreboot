@@ -9,7 +9,7 @@
 #define SUPERIO_SHOW_FDC
 #define SUPERIO_SHOW_LPT
 
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 DefinitionBlock ("DSDT.aml", "DSDT", 2, OEM_ID, ACPI_TABLE_CREATOR, 1)
 {
 	/* \_SB scope defining the main processor is generated in SSDT. */

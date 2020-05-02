@@ -6,7 +6,7 @@
 #include <superio/conf_mode.h>
 #include <pc80/keyboard.h>
 #include <superio/common/ssdt.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include "ast2400.h"
 #include "chip.h"
 

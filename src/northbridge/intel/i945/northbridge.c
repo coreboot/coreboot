@@ -8,7 +8,7 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <cpu/intel/smm_reloc.h>
 #include "i945.h"
 

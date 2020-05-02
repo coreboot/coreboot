@@ -3,7 +3,7 @@
 
 #include <device/device.h>
 #include <device/pnp.h>
-#include <arch/acpigen.h>
+#include <acpi/acpigen.h>
 #include <console/console.h>
 
 static void generic_set_resources(struct device *dev)

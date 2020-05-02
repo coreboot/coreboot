@@ -4,7 +4,7 @@
 #ifndef __SOC_PICASSO_ACPI_H__
 #define __SOC_PICASSO_ACPI_H__
 
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 
 #ifndef FADT_PM_PROFILE
 	#define FADT_PM_PROFILE PM_UNSPECIFIED

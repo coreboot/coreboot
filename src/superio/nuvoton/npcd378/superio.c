@@ -8,8 +8,8 @@
 #include <option.h>
 #include <pc80/keyboard.h>
 #include <superio/conf_mode.h>
-#include <arch/acpi.h>
-#include <arch/acpigen.h>
+#include <acpi/acpi.h>
+#include <acpi/acpigen.h>
 #include <superio/common/ssdt.h>
 #include <stdlib.h>
 

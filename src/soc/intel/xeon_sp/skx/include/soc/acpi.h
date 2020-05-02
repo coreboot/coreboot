@@ -17,7 +17,7 @@
 #ifndef _SOC_ACPI_H_
 #define _SOC_ACPI_H_
 
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <soc/nvs.h>
 
 #define MEM_BLK_COUNT      0x140

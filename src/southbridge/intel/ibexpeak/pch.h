@@ -4,7 +4,7 @@
 #ifndef SOUTHBRIDGE_INTEL_BD82X6X_PCH_H
 #define SOUTHBRIDGE_INTEL_BD82X6X_PCH_H
 
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 
 /* PCH types */
 #define PCH_TYPE_CPT	   0x1c /* CougarPoint */

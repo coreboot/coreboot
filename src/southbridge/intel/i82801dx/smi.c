@@ -5,7 +5,7 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <console/console.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <arch/io.h>
 #include <device/pci_ops.h>
 #include <cpu/x86/cache.h>

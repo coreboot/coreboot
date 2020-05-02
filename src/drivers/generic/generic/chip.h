@@ -6,7 +6,7 @@
 
 #if CONFIG(HAVE_ACPI_TABLES)
 
-#include <arch/acpi_device.h>
+#include <acpi/acpi_device.h>
 
 #define MAX_GENERIC_PROPERTY_LIST 10
 

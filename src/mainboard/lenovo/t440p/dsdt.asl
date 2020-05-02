@@ -19,7 +19,7 @@
 #define EC_LENOVO_H8_ME_WORKAROUND 1
 #define THINKPAD_EC_GPE 17
 
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 DefinitionBlock(
 	"dsdt.aml",
 	"DSDT",

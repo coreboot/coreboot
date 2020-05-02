@@ -2,7 +2,7 @@
 /* This file is part of the coreboot project. */
 
 #if CONFIG(HAVE_ACPI_RESUME)
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #endif
 #include <bootstate.h>
 #include <cbmem.h>

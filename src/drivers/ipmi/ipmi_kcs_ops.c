@@ -13,8 +13,8 @@
 #include <device/device.h>
 #include <device/pnp.h>
 #if CONFIG(HAVE_ACPI_TABLES)
-#include <arch/acpi.h>
-#include <arch/acpigen.h>
+#include <acpi/acpi.h>
+#include <acpi/acpigen.h>
 #endif
 #if CONFIG(GENERATE_SMBIOS_TABLES)
 #include <smbios.h>

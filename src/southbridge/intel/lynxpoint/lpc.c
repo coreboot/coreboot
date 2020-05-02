@@ -11,14 +11,14 @@
 #include <pc80/i8259.h>
 #include <arch/io.h>
 #include <arch/ioapic.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <cpu/x86/smm.h>
 #include <cbmem.h>
 #include <string.h>
 #include "chip.h"
 #include "nvs.h"
 #include "pch.h"
-#include <arch/acpigen.h>
+#include <acpi/acpigen.h>
 #include <southbridge/intel/common/acpi_pirq_gen.h>
 #include <southbridge/intel/common/rtc.h>
 #include <southbridge/intel/common/spi.h>

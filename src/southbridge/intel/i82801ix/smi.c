@@ -9,7 +9,7 @@
 #include <console/console.h>
 #include <arch/io.h>
 #include <device/pci_ops.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/smm.h>
 #include <cpu/x86/smi_deprecated.h>

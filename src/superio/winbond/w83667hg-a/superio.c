@@ -6,7 +6,7 @@
 #include <device/pnp.h>
 #include <pc80/keyboard.h>
 #include <option.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <superio/conf_mode.h>
 
 #include "w83667hg-a.h"

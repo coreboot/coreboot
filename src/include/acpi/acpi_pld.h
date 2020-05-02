@@ -4,7 +4,7 @@
 #ifndef __ACPI_PLD_H
 #define __ACPI_PLD_H
 
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <stdint.h>
 
 enum acpi_pld_panel {

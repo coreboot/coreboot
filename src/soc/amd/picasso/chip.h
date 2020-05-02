@@ -11,7 +11,7 @@
 #include <soc/i2c.h>
 #include <soc/iomap.h>
 #include <soc/southbridge.h>
-#include <arch/acpi_device.h>
+#include <acpi/acpi_device.h>
 
 struct soc_amd_picasso_config {
 	/*
@@ -33,7 +33,7 @@ struct soc_amd_picasso_config {
 		I2S_PINS_UNCONF = 7,	/* All pads will be input mode */
 	} acp_pin_cfg;
 
-	/* Options for these are in src/arch/x86/include/arch/acpi.h */
+	/* Options for these are in src/arch/x86/include/acpi/acpi.h */
 	uint8_t  fadt_pm_profile;
 	uint16_t fadt_boot_arch;
 	uint32_t fadt_flags;

@@ -11,7 +11,7 @@
 #include <cpu/x86/lapic.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/cache.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <northbridge/amd/agesa/agesa_helper.h>
 
 static void model_16_init(struct device *dev)

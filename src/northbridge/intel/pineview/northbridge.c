@@ -8,7 +8,7 @@
 #include <stdint.h>
 #include <device/device.h>
 #include <boot/tables.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <northbridge/intel/pineview/pineview.h>
 #include <cpu/intel/smm_reloc.h>
 

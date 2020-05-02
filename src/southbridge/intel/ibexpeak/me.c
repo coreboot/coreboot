@@ -9,7 +9,7 @@
  * not used unless the console loglevel is high enough.
  */
 
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/mmio.h>

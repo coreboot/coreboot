@@ -2,7 +2,7 @@
 /* This file is part of the coreboot project. */
 
 #include <arch/ioapic.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <arch/smp/mpspec.h>
 #include <device/device.h>
 #include <device/pci.h>

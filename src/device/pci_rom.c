@@ -10,7 +10,7 @@
 #include <string.h>
 #include <cbfs.h>
 #include <cbmem.h>
-#include <arch/acpigen.h>
+#include <acpi/acpigen.h>
 
 /* Rmodules don't like weak symbols. */
 void __weak map_oprom_vendev_rev(u32 *vendev, u8 *rev) { return; }

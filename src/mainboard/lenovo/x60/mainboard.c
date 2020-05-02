@@ -12,7 +12,7 @@
 #include "dock.h"
 #include <drivers/intel/gma/int15.h>
 #include <drivers/lenovo/lenovo.h>
-#include <arch/acpigen.h>
+#include <acpi/acpigen.h>
 
 #define PANEL INT15_5F35_CL_DISPLAY_DEFAULT
 

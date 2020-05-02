@@ -4,8 +4,8 @@
 #include <commonlib/helpers.h>
 #include <console/console.h>
 #include <device/pci_ops.h>
-#include <arch/acpi.h>
-#include <arch/acpi_ivrs.h>
+#include <acpi/acpi.h>
+#include <acpi/acpi_ivrs.h>
 #include <arch/ioapic.h>
 #include <stdint.h>
 #include <device/device.h>
@@ -22,7 +22,7 @@
 #include <cpu/x86/lapic.h>
 #include <cpu/amd/msr.h>
 #include <cpu/amd/mtrr.h>
-#include <arch/acpigen.h>
+#include <acpi/acpigen.h>
 #include <northbridge/amd/pi/nb_common.h>
 #include <northbridge/amd/agesa/agesa_helper.h>
 #include <southbridge/amd/pi/hudson/pci_devs.h>

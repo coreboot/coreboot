@@ -6,7 +6,7 @@
  * PCI Bus Services, see include/linux/pci.h for further explanation.
  */
 
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <device/pci_ops.h>
 #include <bootmode.h>
 #include <console/console.h>

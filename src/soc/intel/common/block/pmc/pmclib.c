@@ -439,7 +439,7 @@ int platform_is_resuming(void)
 	return acpi_sleep_from_pm1(pmc_read_pm1_control()) == ACPI_S3;
 }
 
-/* Read and clear GPE status (defined in arch/acpi.h) */
+/* Read and clear GPE status (defined in acpi/acpi.h) */
 int acpi_get_gpe(int gpe)
 {
 	int bank;

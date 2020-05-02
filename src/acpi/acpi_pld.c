@@ -3,8 +3,8 @@
 
 #include <stdint.h>
 #include <string.h>
-#include <arch/acpi.h>
-#include <arch/acpi_pld.h>
+#include <acpi/acpi.h>
+#include <acpi/acpi_pld.h>
 
 int acpi_pld_fill_usb(struct acpi_pld *pld, enum acpi_upc_type type,
 		      struct acpi_pld_group *group)

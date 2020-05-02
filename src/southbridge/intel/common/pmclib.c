@@ -2,7 +2,7 @@
 /* This file is part of the coreboot project. */
 
 #include <stdint.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <console/console.h>
 
 #include "pmclib.h"

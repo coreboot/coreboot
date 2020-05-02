@@ -15,9 +15,9 @@
 #include <string.h>
 #include <delay.h>
 #include <device/mmio.h>
-#include <arch/acpi.h>
-#include <arch/acpigen.h>
-#include <arch/acpi_device.h>
+#include <acpi/acpi.h>
+#include <acpi/acpigen.h>
+#include <acpi/acpi_device.h>
 #include <device/device.h>
 #include <console/console.h>
 #include <security/tpm/tis.h>

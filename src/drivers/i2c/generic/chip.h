@@ -4,7 +4,7 @@
 #ifndef __I2C_GENERIC_CHIP_H__
 #define __I2C_GENERIC_CHIP_H__
 
-#include <arch/acpi_device.h>
+#include <acpi/acpi_device.h>
 #include <device/i2c_simple.h>
 
 #define MAX_GENERIC_PROPERTY_LIST 10

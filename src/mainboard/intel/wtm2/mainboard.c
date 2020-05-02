@@ -4,7 +4,7 @@
 #include <types.h>
 #include <device/device.h>
 #include <drivers/intel/gma/int15.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <arch/io.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 

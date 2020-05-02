@@ -3,7 +3,7 @@
 
 #define ENABLE_TPM
 
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 DefinitionBlock(
 	"dsdt.aml",
 	"DSDT",

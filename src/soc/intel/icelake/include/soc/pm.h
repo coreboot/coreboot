@@ -127,7 +127,7 @@
 
 #if !defined(__ACPI__)
 
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <soc/gpe.h>
 #include <soc/iomap.h>
 #include <soc/smbus.h>

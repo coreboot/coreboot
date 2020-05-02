@@ -9,7 +9,7 @@
 
 #if CONFIG(HAVE_ACPI_TABLES)
 #include <superio/common/ssdt.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #endif
 
 static void nct5539d_init(struct device *dev)

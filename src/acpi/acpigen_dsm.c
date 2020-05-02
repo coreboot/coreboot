@@ -1,8 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 /* This file is part of the coreboot project. */
 
-#include <arch/acpigen.h>
-#include <arch/acpigen_dsm.h>
+#include <acpi/acpigen.h>
+#include <acpi/acpigen_dsm.h>
 
 /* -------------------  I2C HID DSM ---------------------------- */
 

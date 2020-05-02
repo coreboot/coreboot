@@ -2,7 +2,7 @@
 #define PCI_ROM_H
 #include <endian.h>
 #include <stddef.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 
 #define PCI_ROM_HDR 0xAA55
 #define PCI_DATA_HDR ((uint32_t) (('R' << 24) | ('I' << 16) | ('C' << 8) | 'P'))

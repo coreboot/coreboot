@@ -4,7 +4,7 @@
 #ifndef __SOC_STONEYRIDGE_ACPI_H__
 #define __SOC_STONEYRIDGE_ACPI_H__
 
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 
 #if CONFIG(STONEYRIDGE_LEGACY_FREE)
 	#define FADT_BOOT_ARCH ACPI_FADT_LEGACY_FREE

@@ -26,7 +26,7 @@
 #endif
 #if CONFIG(CHROMEOS)
 #if CONFIG(HAVE_ACPI_TABLES)
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #endif
 #include <vendorcode/google/chromeos/chromeos.h>
 #include <vendorcode/google/chromeos/gnvs.h>

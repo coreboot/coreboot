@@ -19,7 +19,7 @@
  * Based on acpi-dsdt.dsl, but heavily modified for q35 chipset.
  */
 
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 DefinitionBlock (
 	"dsdt.aml",         // Output Filename
 	"DSDT",             // Signature

@@ -3,7 +3,7 @@
 
 #include <southbridge/intel/i82801jx/i82801jx.h>
 
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 DefinitionBlock(
 	"dsdt.aml",
 	"DSDT",

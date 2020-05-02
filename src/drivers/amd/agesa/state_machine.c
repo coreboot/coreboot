@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 #include <string.h>
-#include <arch/acpi.h>
+#include <acpi/acpi.h>
 #include <bootstate.h>
 #include <cbfs.h>
 #include <cbmem.h>

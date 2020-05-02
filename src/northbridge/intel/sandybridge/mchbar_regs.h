@@ -213,18 +213,12 @@
 									 ((rate)   << 12) | \
 									 ((xors)   << 16))
 
-/* Marker macro for IOSAV_n_ADDR_UPDATE */
-#define ADDR_UPDATE_NONE	0
-
-/* Only programming the wraparound without any triggers is suspicious */
-#define ADDR_UPDATE_WRAP(wrap)	((wrap) << 5)
-
-#define IOSAV_SUBSEQUENCE(ch, n, sp_cmd_ctrl, reps, gap, post, dir, addr, rowbits, bank, rank, addr_update) \
+#define IOSAV_SUBSEQUENCE(ch, n, cmd, ranksel, reps, gap, post, dir, addr, rowbits, bank, rank, addr_1, addr_8, upd_bank, upd_rank, wrap, lfsr, rate, xors) \
 	do { \
-		MCHBAR32(IOSAV_n_SP_CMD_CTRL_ch(ch, n)) = sp_cmd_ctrl; \
+		MCHBAR32(IOSAV_n_SP_CMD_CTRL_ch(ch, n)) = (cmd) | ((ranksel) << 16); \
 		MCHBAR32(IOSAV_n_SUBSEQ_CTRL_ch(ch, n)) = SUBSEQ_CTRL(reps, gap, post, dir); \
 		MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(ch, n)) = SP_CMD_ADDR(addr, rowbits, bank, rank); \
-		MCHBAR32(IOSAV_n_ADDR_UPDATE_ch(ch, n)) = addr_update; \
+		MCHBAR32(IOSAV_n_ADDR_UPDATE_ch(ch, n)) = ADDR_UPDATE(addr_1, addr_8, upd_bank, upd_rank, wrap, lfsr, rate, xors); \
 	} while (0)
 
 /* Indexed register helper macros */

@@ -25,8 +25,6 @@
 #define NUM_SLOTS	2
 #define NUM_LANES	9
 
-#define NO_RANKSEL		(~0)
-#define RANKSEL			(1 << 16)
 #define IOSAV_MRS		(0xf000)
 #define IOSAV_PRE		(0xf002)
 #define IOSAV_ZQCS		(0xf003)

@@ -667,21 +667,21 @@ static void write_mrreg(ramctr_timing *ctrl, int channel, int slotrank, int reg,
 	MCHBAR32(IOSAV_n_SP_CMD_CTRL_ch(channel, 0)) = IOSAV_MRS & NO_RANKSEL;
 	MCHBAR32(IOSAV_n_SUBSEQ_CTRL_ch(channel, 0)) = 0x41001;
 	MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 0)) =
-		(slotrank << 24) | (reg << 20) | val | 0x60000;
+		val | 0x60000 | (reg << 20) | (slotrank << 24);
 	MCHBAR32(IOSAV_n_ADDR_UPDATE_ch(channel, 0)) = 0;
 
 	/* DRAM command MRS */
 	MCHBAR32(IOSAV_n_SP_CMD_CTRL_ch(channel, 1)) = IOSAV_MRS;
 	MCHBAR32(IOSAV_n_SUBSEQ_CTRL_ch(channel, 1)) = 0x41001;
 	MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 1)) =
-		(slotrank << 24) | (reg << 20) | val | 0x60000;
+		val | 0x60000 | (reg << 20) | (slotrank << 24);
 	MCHBAR32(IOSAV_n_ADDR_UPDATE_ch(channel, 1)) = 0;
 
 	/* DRAM command MRS */
 	MCHBAR32(IOSAV_n_SP_CMD_CTRL_ch(channel, 2)) = IOSAV_MRS & NO_RANKSEL;
 	MCHBAR32(IOSAV_n_SUBSEQ_CTRL_ch(channel, 2)) = 0x1001 | (ctrl->tMOD << 16);
 	MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 2)) =
-		(slotrank << 24) | (reg << 20) | val | 0x60000;
+		val | 0x60000 | (reg << 20) | (slotrank << 24);
 	MCHBAR32(IOSAV_n_ADDR_UPDATE_ch(channel, 2)) = 0;
 
 	/* Execute command queue */

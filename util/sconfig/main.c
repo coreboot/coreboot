@@ -30,12 +30,6 @@ extern int linenum;
  */
 static struct chip chip_header;
 
-/*
- * This is intentionally shared between chip and device structure ids because it
- * is easier to track the order of parsing for chip and device.
- */
-static int count = 0;
-
 typedef enum {
 	UNSLASH,
 	SPLIT_1ST,
@@ -336,7 +330,6 @@ struct chip_instance *new_chip_instance(char *path)
 	struct chip *chip = get_chip(path);
 	struct chip_instance *instance = S_ALLOC(sizeof(*instance));
 
-	instance->id = ++count;
 	instance->chip = chip;
 	instance->next = chip->instance;
 	chip->instance = instance;
@@ -987,6 +980,7 @@ static void emit_chips(FILE *fil)
 {
 	struct chip *chip = chip_header.next;
 	struct chip_instance *instance;
+	int chip_id;
 
 	emit_chip_headers(fil, chip);
 
@@ -996,8 +990,10 @@ static void emit_chips(FILE *fil)
 		if (!chip->chiph_exists)
 			continue;
 
+		chip_id = 1;
 		instance = chip->instance;
 		while (instance) {
+			instance->id = chip_id++;
 			emit_chip_instance(fil, instance);
 			instance = instance->next;
 		}

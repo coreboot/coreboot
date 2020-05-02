@@ -117,7 +117,7 @@ static const struct cache_region *lookup_region(struct region *r, int type)
 
 	if (cr == NULL) {
 		printk(BIOS_ERR, "MRC: failed to locate region type %d.\n",
-			type);
+		       type);
 		return NULL;
 	}
 
@@ -311,18 +311,30 @@ void *mrc_cache_current_mmap_leak(int type, uint32_t version,
 }
 
 static bool mrc_cache_needs_update(const struct region_device *rdev,
-				const struct cbmem_entry *to_be_updated)
+				   const struct mrc_metadata *new_md,
+				   const void *new_data, size_t new_data_size)
 {
-	void *mapping;
+	void *mapping, *data_mapping;
 	size_t size = region_device_sz(rdev);
 	bool need_update = false;
 
-	if (cbmem_entry_size(to_be_updated) != size)
+	if (new_data_size != size)
 		return true;
 
 	mapping = rdev_mmap_full(rdev);
+	if (mapping == NULL) {
+		printk(BIOS_ERR, "MRC: cannot mmap existing cache.\n");
+		return true;
+	}
+	data_mapping = mapping + sizeof(struct mrc_metadata);
 
-	if (memcmp(cbmem_entry_start(to_be_updated), mapping, size))
+	/* we need to compare the md and the data separately */
+	/* check the mrc_metadata */
+	if (memcmp(new_md, mapping, sizeof(struct mrc_metadata)))
+		need_update = true;
+
+	/* check the data */
+	if (!need_update && memcmp(new_data, data_mapping, new_data_size))
 		need_update = true;
 
 	rdev_munmap(rdev, mapping);
@@ -357,7 +369,10 @@ static void log_event_cache_update(uint8_t slot, enum result res)
  * read and write. The read assumes a memory-mapped boot device that can be used
  * to quickly locate and compare the up-to-date data. However, when an update
  * is required it uses the writeable region access to perform the update. */
-static void update_mrc_cache_by_type(int type)
+static void update_mrc_cache_by_type(int type,
+				     struct mrc_metadata *new_md,
+				     const void *new_data,
+				     size_t new_data_size)
 {
 	const struct cache_region *cr;
 	struct region region;
@@ -365,7 +380,6 @@ static void update_mrc_cache_by_type(int type)
 	struct region_device write_rdev;
 	struct region_file cache_file;
 	struct mrc_metadata md;
-	const struct cbmem_entry *to_be_updated;
 	struct incoherent_rdev backing_irdev;
 	const struct region_device *backing_rdev;
 	struct region_device latest_rdev;
@@ -375,13 +389,6 @@ static void update_mrc_cache_by_type(int type)
 
 	if (cr == NULL)
 		return;
-
-	to_be_updated = cbmem_entry_find(cr->cbmem_id);
-	if (to_be_updated == NULL) {
-		printk(BIOS_ERR, "MRC: No data in cbmem for '%s'.\n",
-			cr->name);
-		return;
-	}
 
 	printk(BIOS_DEBUG, "MRC: Checking cached data update for '%s'.\n",
 		cr->name);
@@ -411,7 +418,8 @@ static void update_mrc_cache_by_type(int type)
 
 		return;
 
-	if (!mrc_cache_needs_update(&latest_rdev, to_be_updated)) {
+	if (!mrc_cache_needs_update(&latest_rdev,
+				    new_md, new_data, new_data_size)) {
 		printk(BIOS_DEBUG, "MRC: '%s' does not need update.\n", cr->name);
 		log_event_cache_update(cr->elog_slot, ALREADY_UPTODATE);
 		return;
@@ -419,10 +427,18 @@ static void update_mrc_cache_by_type(int type)
 
 	printk(BIOS_DEBUG, "MRC: cache data '%s' needs update.\n", cr->name);
 
-	if (region_file_update_data(&cache_file,
-				cbmem_entry_start(to_be_updated),
-				cbmem_entry_size(to_be_updated)) < 0) {
-		printk(BIOS_DEBUG, "MRC: failed to update '%s'.\n", cr->name);
+	struct update_region_file_entry entries[] = {
+		[0] = {
+			.size = sizeof(struct mrc_metadata),
+			.data = new_md,
+		},
+		[1] = {
+			.size = new_data_size,
+			.data = new_data,
+		},
+	};
+	if (region_file_update_data_arr(&cache_file, entries, ARRAY_SIZE(entries)) < 0) {
+		printk(BIOS_ERR, "MRC: failed to update '%s'.\n", cr->name);
 		log_event_cache_update(cr->elog_slot, UPDATE_FAILURE);
 	} else {
 		printk(BIOS_DEBUG, "MRC: updated '%s'.\n", cr->name);
@@ -548,12 +564,46 @@ static void invalidate_normal_cache(void)
 		printk(BIOS_ERR, "MRC: invalidation failed for '%s'.\n", name);
 }
 
-static void update_mrc_cache(void *unused)
+static void update_mrc_cache_from_cbmem(int type)
 {
-	update_mrc_cache_by_type(MRC_TRAINING_DATA);
+	const struct cache_region *cr;
+	struct region region;
+	const struct cbmem_entry *to_be_updated;
 
-	if (CONFIG(MRC_SETTINGS_VARIABLE_DATA))
-		update_mrc_cache_by_type(MRC_VARIABLE_DATA);
+	cr = lookup_region(&region, type);
+
+	if (cr == NULL) {
+		printk(BIOS_ERR, "MRC: could not find cache_region type %d\n", type);
+		return;
+	}
+
+	to_be_updated = cbmem_entry_find(cr->cbmem_id);
+
+	if (to_be_updated == NULL) {
+		printk(BIOS_INFO, "MRC: No data in cbmem for '%s'.\n",
+		       cr->name);
+		return;
+	}
+
+	update_mrc_cache_by_type(type,
+				 /* pointer to mrc_cache entry metadata header */
+				 cbmem_entry_start(to_be_updated),
+				 /* pointer to start of mrc_cache entry data */
+				 cbmem_entry_start(to_be_updated) +
+					sizeof(struct mrc_metadata),
+				 /* size of just data portion of the entry */
+				 cbmem_entry_size(to_be_updated) -
+					sizeof(struct mrc_metadata));
+}
+
+static void finalize_mrc_cache(void *unused)
+{
+	if (CONFIG(MRC_STASH_TO_CBMEM)) {
+		update_mrc_cache_from_cbmem(MRC_TRAINING_DATA);
+
+		if (CONFIG(MRC_SETTINGS_VARIABLE_DATA))
+			update_mrc_cache_from_cbmem(MRC_VARIABLE_DATA);
+	}
 
 	if (CONFIG(MRC_CLEAR_NORMAL_CACHE_ON_RECOVERY_RETRAIN))
 		invalidate_normal_cache();
@@ -562,11 +612,9 @@ static void update_mrc_cache(void *unused)
 }
 
 int mrc_cache_stash_data(int type, uint32_t version, const void *data,
-			size_t size)
+			 size_t size)
 {
 	const struct cache_region *cr;
-	size_t cbmem_size;
-	struct mrc_metadata *md;
 
 	cr = lookup_region_type(type);
 	if (cr == NULL) {
@@ -575,24 +623,36 @@ int mrc_cache_stash_data(int type, uint32_t version, const void *data,
 		return -1;
 	}
 
-	cbmem_size = sizeof(*md) + size;
+	struct mrc_metadata md = {
+		.signature = MRC_DATA_SIGNATURE,
+		.data_size = size,
+		.version = version,
+		.data_checksum = compute_ip_checksum(data, size),
+	};
+	md.header_checksum =
+		compute_ip_checksum(&md, sizeof(struct mrc_metadata));
 
-	md = cbmem_add(cr->cbmem_id, cbmem_size);
+	if (CONFIG(MRC_STASH_TO_CBMEM)) {
+		/* Store data in cbmem for use in ramstage */
+		struct mrc_metadata *cbmem_md;
+		size_t cbmem_size;
+		cbmem_size = sizeof(*cbmem_md) + size;
 
-	if (md == NULL) {
-		printk(BIOS_ERR, "MRC: failed to add '%s' to cbmem.\n",
-			cr->name);
-		return -1;
+		cbmem_md = cbmem_add(cr->cbmem_id, cbmem_size);
+
+		if (cbmem_md == NULL) {
+			printk(BIOS_ERR, "MRC: failed to add '%s' to cbmem.\n",
+			       cr->name);
+			return -1;
+		}
+
+		memcpy(cbmem_md, &md, sizeof(*cbmem_md));
+		/* cbmem_md + 1 is the pointer to the mrc_cache data */
+		memcpy(cbmem_md + 1, data, size);
+	} else {
+		/* Otherwise store to mrc_cache right away */
+		update_mrc_cache_by_type(type, &md, data, size);
 	}
-
-	memset(md, 0, sizeof(*md));
-	md->signature = MRC_DATA_SIGNATURE;
-	md->data_size = size;
-	md->version = version;
-	md->data_checksum = compute_ip_checksum(data, size);
-	md->header_checksum = compute_ip_checksum(md, sizeof(*md));
-	memcpy(&md[1], data, size);
-
 	return 0;
 }
 
@@ -600,9 +660,8 @@ int mrc_cache_stash_data(int type, uint32_t version, const void *data,
  * Ensures MRC training data is stored into SPI after PCI enumeration is done.
  * Some implementations may require this to be later than others.
  */
-
 #if CONFIG(MRC_WRITE_NV_LATE)
-BOOT_STATE_INIT_ENTRY(BS_OS_RESUME_CHECK, BS_ON_ENTRY, update_mrc_cache, NULL);
+BOOT_STATE_INIT_ENTRY(BS_OS_RESUME_CHECK, BS_ON_ENTRY, finalize_mrc_cache, NULL);
 #else
-BOOT_STATE_INIT_ENTRY(BS_DEV_ENUMERATE, BS_ON_EXIT, update_mrc_cache, NULL);
+BOOT_STATE_INIT_ENTRY(BS_DEV_ENUMERATE, BS_ON_EXIT, finalize_mrc_cache, NULL);
 #endif

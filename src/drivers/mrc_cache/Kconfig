@@ -35,4 +35,18 @@ config MRC_WRITE_NV_LATE
 	  normal, select this item.  This will cause the write to occur at
 	  BS_OS_RESUME_CHECK-ENTRY.
 
+config MRC_STASH_TO_CBMEM
+	bool
+	default y if MRC_WRITE_NV_LATE || BOOT_DEVICE_SPI_FLASH_NO_EARLY_WRITES
+	default n
+	help
+	  Instead of writing back MRC_CACHE training data back to the
+	  MRC_CACHE right away, stash the data into cbmem.  This data
+	  will be written back later to MRC_CACHE.  This is selected
+	  for platforms which either do not support writes to SPI
+	  flash in early stages
+	  (BOOT_DEVICE_SPI_FLASH_NO_EARLY_WRITES) or the platforms
+	  that need to write back the MRC data in late ramstage boot
+	  states (MRC_WRITE_NV_LATE).
+
 endif # CACHE_MRC_SETTINGS

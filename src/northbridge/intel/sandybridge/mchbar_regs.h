@@ -158,6 +158,45 @@
  *
  */
 
+/* Temporary IOSAV register macros to verifiably split bitfields */
+#define SUBSEQ_CTRL(reps, gap, post, dir)	(((reps) <<  0) | \
+						 ((gap)  << 10) | \
+						 ((post) << 16) | \
+						 ((dir)  << 26))
+
+#define SSQ_NA		0 /* Non-data */
+#define SSQ_RD		1 /* Read */
+#define SSQ_WR		2 /* Write */
+#define SSQ_RW		3 /* Read and write */
+
+#define SP_CMD_ADDR(addr, rowbits, bank, rank)	(((addr)    <<  0) | \
+						 ((rowbits) << 16) | \
+						 ((bank)    << 20) | \
+						 ((rank)    << 24))
+
+#define ADDR_UPDATE(addr_1, addr_8, bank, rank, wrap, lfsr, rate, xors)	(((addr_1) <<  0) | \
+									 ((addr_8) <<  1) | \
+									 ((bank)   <<  2) | \
+									 ((rank)   <<  3) | \
+									 ((wrap)   <<  5) | \
+									 ((lfsr)   << 10) | \
+									 ((rate)   << 12) | \
+									 ((xors)   << 16))
+
+/* Marker macro for IOSAV_n_ADDR_UPDATE */
+#define ADDR_UPDATE_NONE	0
+
+/* Only programming the wraparound without any triggers is suspicious */
+#define ADDR_UPDATE_WRAP(wrap)	((wrap) << 5)
+
+#define IOSAV_SUBSEQUENCE(ch, n, sp_cmd_ctrl, reps, gap, post, dir, addr, rowbits, bank, rank, addr_update) \
+	do { \
+		MCHBAR32(IOSAV_n_SP_CMD_CTRL_ch(ch, n)) = sp_cmd_ctrl; \
+		MCHBAR32(IOSAV_n_SUBSEQ_CTRL_ch(ch, n)) = SUBSEQ_CTRL(reps, gap, post, dir); \
+		MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(ch, n)) = SP_CMD_ADDR(addr, rowbits, bank, rank); \
+		MCHBAR32(IOSAV_n_ADDR_UPDATE_ch(ch, n)) = addr_update; \
+	} while (0)
+
 /* Indexed register helper macros */
 #define Gz(r, z)	((r) + ((z) <<  8))
 #define Ly(r, y)	((r) + ((y) <<  2))

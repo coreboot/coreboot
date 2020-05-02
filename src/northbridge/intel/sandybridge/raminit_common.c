@@ -2030,16 +2030,16 @@ static int test_320c(ramctr_timing *ctrl, int channel, int slotrank)
 		MCHBAR32(IOSAV_n_SUBSEQ_CTRL_ch(channel, 1)) =
 			0x8001020 | ((ctrl->CWL + ctrl->tWTR + 8) << 16);
 		MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 1)) = (slotrank << 24);
-		MCHBAR32(IOSAV_n_ADDRESS_LFSR_ch(channel, 1)) = 0x389abcd;
 		MCHBAR32(IOSAV_n_ADDR_UPDATE_ch(channel, 1)) = 0x20e42;
+		MCHBAR32(IOSAV_n_ADDRESS_LFSR_ch(channel, 1)) = 0x389abcd;
 
 		/* DRAM command RD */
 		MCHBAR32(IOSAV_n_SP_CMD_CTRL_ch(channel, 2)) = IOSAV_RD;
 		MCHBAR32(IOSAV_n_SUBSEQ_CTRL_ch(channel, 2)) =
 			0x4001020 | (MAX(ctrl->tRTP, 8) << 16);
 		MCHBAR32(IOSAV_n_SP_CMD_ADDR_ch(channel, 2)) = (slotrank << 24);
-		MCHBAR32(IOSAV_n_ADDRESS_LFSR_ch(channel, 2)) = 0x389abcd;
 		MCHBAR32(IOSAV_n_ADDR_UPDATE_ch(channel, 2)) = 0x20e42;
+		MCHBAR32(IOSAV_n_ADDRESS_LFSR_ch(channel, 2)) = 0x389abcd;
 
 		/* DRAM command PRE */
 		MCHBAR32(IOSAV_n_SP_CMD_CTRL_ch(channel, 3)) = IOSAV_PRE;

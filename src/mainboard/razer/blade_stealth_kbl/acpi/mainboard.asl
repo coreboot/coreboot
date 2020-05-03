@@ -24,16 +24,4 @@ Scope (\_SB)
 		}
 	}
 
-	Device (PWRB)
-	{
-		Name (_HID, EisaId ("PNP0C0C"))
-
-		Method (_STA)
-		{
-			Return (0xF)
-		}
-
-		Name (_PRW, Package () { 27, 4 })
-	}
-
 }

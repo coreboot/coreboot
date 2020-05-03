@@ -115,7 +115,7 @@ static void adsp_init(struct device *dev)
 		printk(BIOS_INFO, "ADSP: Enable PCI Mode IRQ23\n");
 
 		/* Configure for PCI mode */
-		pci_write_config32(dev, PCI_INTERRUPT_LINE, ADSP_PCI_IRQ);
+		pci_write_config8(dev, PCI_INTERRUPT_LINE, ADSP_PCI_IRQ);
 
 		/* Clear ACPI Interrupt Enable Bit */
 		pch_iobp_update(ADSP_IOBP_PCICFGCTL,

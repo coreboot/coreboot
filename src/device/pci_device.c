@@ -1643,4 +1643,9 @@ void pci_assign_irqs(struct device *dev, const unsigned char pIntAtoD[4])
 #endif
 	}
 }
+
+void pci_dev_disable_bus_master(const struct device *dev)
+{
+	pci_update_config16(dev, PCI_COMMAND, ~PCI_COMMAND_MASTER, 0x0);
+}
 #endif

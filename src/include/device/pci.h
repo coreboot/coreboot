@@ -127,6 +127,7 @@ static inline int pci_base_address_is_memory_space(unsigned int attr)
 	return (attr & PCI_BASE_ADDRESS_SPACE) == PCI_BASE_ADDRESS_SPACE_MEMORY;
 }
 
+void pci_dev_disable_bus_master(const struct device *dev);
 #endif /* CONFIG_PCI */
 
 void pci_early_bridge_init(void);

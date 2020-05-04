@@ -18,8 +18,7 @@ static void *vboot_get_workbuf(void)
 	if (cbmem_possibly_online())
 		wb = cbmem_find(CBMEM_ID_VBOOT_WORKBUF);
 
-	if (wb == NULL && CONFIG(VBOOT_STARTS_IN_BOOTBLOCK) &&
-	    preram_symbols_available())
+	if (wb == NULL && !CONFIG(VBOOT_STARTS_IN_ROMSTAGE) && preram_symbols_available())
 		wb = _vboot2_work;
 
 	assert(wb != NULL);
@@ -76,6 +75,11 @@ static void vboot_setup_cbmem(int unused)
 	void *wb_cbmem = cbmem_add(CBMEM_ID_VBOOT_WORKBUF, cbmem_size);
 	assert(wb_cbmem != NULL);
 	/*
+	 * On platforms where VBOOT_STARTS_BEFORE_BOOTBLOCK, the verification
+	 * occurs before the main processor starts running.  The vboot data-
+	 * structure is available in the _vboot2_work memory area as soon
+	 * as the main processor is released.
+	 *
 	 * For platforms where VBOOT_STARTS_IN_BOOTBLOCK, vboot verification
 	 * occurs before CBMEM is brought online, using pre-RAM. In order to
 	 * make vboot data structures available downstream, copy vboot workbuf
@@ -85,7 +89,7 @@ static void vboot_setup_cbmem(int unused)
 	 * after CBMEM is brought online.  Directly initialize vboot data
 	 * structures in CBMEM, which will also be available downstream.
 	 */
-	if (CONFIG(VBOOT_STARTS_IN_BOOTBLOCK))
+	if (!CONFIG(VBOOT_STARTS_IN_ROMSTAGE))
 		rv = vb2api_relocate(wb_cbmem, _vboot2_work, cbmem_size,
 				     &vboot_ctx);
 	else

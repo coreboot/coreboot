@@ -71,6 +71,13 @@ config VBOOT_VBNV_FLASH
 	help
 	  VBNV is stored in flash storage
 
+config VBOOT_STARTS_BEFORE_BOOTBLOCK
+	def_bool n
+	select VBOOT_SEPARATE_VERSTAGE
+	help
+	  Firmware verification happens before the main processor is brought
+	  online.
+
 config VBOOT_STARTS_IN_BOOTBLOCK
 	bool
 	default n
@@ -109,7 +116,7 @@ config VBOOT_DISABLE_DEV_ON_RECOVERY
 config VBOOT_SEPARATE_VERSTAGE
 	bool
 	default n
-	depends on VBOOT_STARTS_IN_BOOTBLOCK
+	depends on VBOOT_STARTS_IN_BOOTBLOCK || VBOOT_STARTS_BEFORE_BOOTBLOCK
 	help
 	  If this option is set, vboot verification runs in a standalone stage
 	  that is loaded from the bootblock and exits into romstage. If it is

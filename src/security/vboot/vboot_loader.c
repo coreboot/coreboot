@@ -10,11 +10,12 @@
 
 /* Ensure vboot configuration is valid: */
 _Static_assert(CONFIG(VBOOT_STARTS_IN_BOOTBLOCK) +
+	       CONFIG(VBOOT_STARTS_BEFORE_BOOTBLOCK) +
 	       CONFIG(VBOOT_STARTS_IN_ROMSTAGE) == 1,
-	       "vboot must either start in bootblock or romstage (not both!)");
-_Static_assert(!CONFIG(VBOOT_SEPARATE_VERSTAGE) ||
-	       CONFIG(VBOOT_STARTS_IN_BOOTBLOCK),
-	       "stand-alone verstage must start in (i.e. after) bootblock");
+	       "vboot must start in bootblock, PSP or romstage (but only one!)");
+_Static_assert(!CONFIG(VBOOT_SEPARATE_VERSTAGE) || CONFIG(VBOOT_STARTS_IN_BOOTBLOCK) ||
+	       CONFIG(VBOOT_STARTS_BEFORE_BOOTBLOCK),
+	       "stand-alone verstage must start in or before bootblock ");
 _Static_assert(!CONFIG(VBOOT_RETURN_FROM_VERSTAGE) ||
 	       CONFIG(VBOOT_SEPARATE_VERSTAGE),
 	       "return from verstage only makes sense for separate verstages");

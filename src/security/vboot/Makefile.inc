@@ -96,7 +96,9 @@ postcar-y += vboot_common.c
 bootblock-y += common.c
 verstage-y += vboot_logic.c
 verstage-y += common.c
+ifeq ($(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK),)
 verstage-$(CONFIG_VBOOT_SEPARATE_VERSTAGE) += verstage.c
+endif
 ifeq (${CONFIG_VBOOT_MOCK_SECDATA},y)
 verstage-y += secdata_mock.c
 romstage-y += secdata_mock.c
@@ -122,10 +124,12 @@ ifeq ($(CONFIG_VBOOT_SEPARATE_VERSTAGE),y)
 
 $(eval $(call vboot-for-stage,verstage))
 
+ifeq ($(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK),)
 cbfs-files-$(CONFIG_VBOOT_SEPARATE_VERSTAGE) += $(CONFIG_CBFS_PREFIX)/verstage
 $(CONFIG_CBFS_PREFIX)/verstage-file := $(objcbfs)/verstage.elf
 $(CONFIG_CBFS_PREFIX)/verstage-type := stage
 $(CONFIG_CBFS_PREFIX)/verstage-compression := $(CBFS_PRERAM_COMPRESS_FLAG)
+endif	# CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK
 
 ifeq ($(CONFIG_ARCH_VERSTAGE_X86_32)$(CONFIG_ARCH_VERSTAGE_X86_64),y)
 $(CONFIG_CBFS_PREFIX)/verstage-options := -a 64 -S ".car.data"
@@ -167,8 +171,8 @@ endif
 # Use $(sort) to cut down on extra spaces that would be translated to commas
 regions-for-file = $(subst $(spc),$(comma),$(sort \
 	$(if $(filter \
-		$(if $(filter y,$(CONFIG_VBOOT_STARTS_IN_BOOTBLOCK)),, \
-			%/romstage) \
+		$(if $(filter y,$(CONFIG_VBOOT_STARTS_IN_ROMSTAGE)), \
+			%/romstage,) \
 		mts \
 		%/verstage \
 		locales \

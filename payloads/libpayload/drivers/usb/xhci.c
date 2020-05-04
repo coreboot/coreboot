@@ -198,7 +198,7 @@ xhci_init (unsigned long physical_bar)
 	xhci_debug("hciversion: %"PRIx8".%"PRIx8"\n",
 		   CAP_GET(CAPVER_HI, xhci->capreg), CAP_GET(CAPVER_LO, xhci->capreg));
 	if ((CAP_GET(CAPVER, xhci->capreg) < 0x96) ||
-	    (CAP_GET(CAPVER, xhci->capreg) > 0x110)) {
+	    (CAP_GET(CAPVER, xhci->capreg) > 0x120)) {
 		xhci_debug("Unsupported xHCI version\n");
 		goto _free_xhci;
 	}

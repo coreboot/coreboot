@@ -36,6 +36,8 @@ chip soc/intel/xeon_sp/cpx
 	register "coherency_support" = "0"
 	register "ats_support" = "0"
 
+	register "gen2_dec" = "0x000c0ca1" # IPMI KCS
+
 	device cpu_cluster 0 on
 	  device lapic 0 on end
 	end
@@ -70,7 +72,13 @@ chip soc/intel/xeon_sp/cpx
 		device pci 1c.4 on end # PCI bridge: Intel Device a214
 		device pci 1c.5 on end # PCI bridge: Intel Device a215
 		device pci 1d.0 on end # PCI bridge: Intel Device a218
-		device pci 1f.0 on end # ISA bridge: Intel Device a245
+		device pci 1f.0 on
+			chip drivers/ipmi # BMC KCS
+				device pnp ca2.0 on end
+				register "bmc_i2c_address" = "0x20"
+				register "bmc_boot_timeout" = "60"
+			end
+		end # ISA bridge: Intel Device a245
 		device pci 1f.1 on end # p2sb
 		device pci 1f.2 on end # Memory controller: Intel Device a221
 		device pci 1f.3 on end # Audio device: Intel Device a270

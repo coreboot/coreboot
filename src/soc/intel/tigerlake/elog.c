@@ -61,6 +61,18 @@ static void pch_log_power_and_resets(struct chipset_power_state *ps)
 	if (ps->gblrst_cause[0] & GBLRST_CAUSE0_THERMTRIP)
 		elog_add_event(ELOG_TYPE_THERM_TRIP);
 
+	/* CSME-Initiated Host Reset with power down */
+	if (ps->hpr_cause0 & HPR_CAUSE0_MI_HRPD)
+		elog_add_event(ELOG_TYPE_MI_HRPD);
+
+	/* CSME-Initiated Host Reset with power cycle */
+	if (ps->hpr_cause0 & HPR_CAUSE0_MI_HRPC)
+		elog_add_event(ELOG_TYPE_MI_HRPC);
+
+	/* CSME-Initiated Host Reset without power cycle */
+	if (ps->hpr_cause0 & HPR_CAUSE0_MI_HR)
+		elog_add_event(ELOG_TYPE_MI_HR);
+
 	/* PWR_FLR Power Failure */
 	if (ps->gen_pmcon_a & PWR_FLR)
 		elog_add_event(ELOG_TYPE_POWER_FAIL);

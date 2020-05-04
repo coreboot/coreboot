@@ -148,6 +148,26 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 		}
 	}
 
+	/* SATA */
+	dev = pcidev_path_on_root(PCH_DEVFN_SATA);
+	if (dev) {
+		params->SataEnable = dev->enabled;
+		params->SataMode = config->SataMode;
+		params->SataSalpSupport = config->SataSalpSupport;
+
+		_Static_assert(ARRAY_SIZE(params->SataPortsEnable) >=
+				ARRAY_SIZE(config->SataPortsEnable), "copy buffer overflow!");
+		memcpy(params->SataPortsEnable, config->SataPortsEnable,
+				sizeof(params->SataPortsEnable));
+
+		_Static_assert(ARRAY_SIZE(params->SataPortsDevSlp) >=
+				ARRAY_SIZE(config->SataPortsDevSlp), "copy buffer overflow!");
+		memcpy(params->SataPortsDevSlp, config->SataPortsDevSlp,
+				sizeof(params->SataPortsDevSlp));
+	} else {
+		params->SataEnable = 0;
+	}
+
 	/* SDCard related configuration */
 	dev = pcidev_path_on_root(PCH_DEVFN_SDCARD);
 	if (!dev) {

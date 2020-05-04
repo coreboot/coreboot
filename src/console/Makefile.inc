@@ -11,12 +11,14 @@ smm-$(CONFIG_DEBUG_SMI) += init.c console.c vtxprintf.c printk.c
 smm-y += die.c
 smm-y += post.c
 
-verstage-y += init.c
+ifneq ($(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK),y)
 verstage-y += printk.c
-verstage-y += vtxprintf.c vsprintf.c
 verstage-y += console.c
+endif
 verstage-y += post.c
 verstage-y += die.c
+verstage-y += init.c
+verstage-y += vtxprintf.c vsprintf.c
 
 romstage-y += vtxprintf.c printk.c vsprintf.c
 romstage-y += init.c console.c

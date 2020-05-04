@@ -78,7 +78,7 @@ const char *soc_acpi_name(const struct device *dev)
 
 struct device_operations pci_domain_ops = {
 	.read_resources	  = pci_domain_read_resources,
-	.set_resources	  = domain_set_resources,
+	.set_resources	  = pci_domain_set_resources,
 	.scan_bus	  = pci_domain_scan_bus,
 	.acpi_name	  = soc_acpi_name,
 };

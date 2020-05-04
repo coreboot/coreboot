@@ -8,11 +8,6 @@
 #include <soc/ramstage.h>
 #include "chip.h"
 
-static void pci_domain_set_resources(struct device *dev)
-{
-	assign_resources(dev->link_list);
-}
-
 static struct device_operations pci_domain_ops = {
 	.read_resources   = pci_domain_read_resources,
 	.set_resources    = pci_domain_set_resources,

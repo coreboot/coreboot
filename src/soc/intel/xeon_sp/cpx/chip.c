@@ -14,11 +14,6 @@
 /* C620 IOAPIC has 120 redirection entries */
 #define C620_IOAPIC_REDIR_ENTRIES		120
 
-static void pci_domain_set_resources(struct device *dev)
-{
-	assign_resources(dev->link_list);
-}
-
 void platform_fsp_silicon_init_params_cb(FSPS_UPD *silupd)
 {
 	/* not implemented yet */

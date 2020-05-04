@@ -132,11 +132,6 @@ void soc_init_pre_device(void *chip_info)
 	soc_fill_gpio_pm_configuration();
 }
 
-static void pci_domain_set_resources(struct device *dev)
-{
-	assign_resources(dev->link_list);
-}
-
 static struct device_operations pci_domain_ops = {
 	.read_resources   = &pci_domain_read_resources,
 	.set_resources    = &pci_domain_set_resources,

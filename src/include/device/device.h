@@ -256,6 +256,7 @@ void show_all_devs_resources(int debug_level, const char *msg);
 
 extern struct device_operations default_dev_ops_root;
 void pci_domain_read_resources(struct device *dev);
+void pci_domain_set_resources(struct device *dev);
 void pci_domain_scan_bus(struct device *dev);
 
 void fixed_io_resource(struct device *dev, unsigned long index,

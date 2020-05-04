@@ -67,11 +67,6 @@ static void add_fixed_resources(struct device *dev, int index)
 #endif
 }
 
-static void pci_domain_set_resources(struct device *dev)
-{
-	assign_resources(dev->link_list);
-}
-
 #if CONFIG(HAVE_ACPI_TABLES)
 static const char *northbridge_acpi_name(const struct device *dev)
 {

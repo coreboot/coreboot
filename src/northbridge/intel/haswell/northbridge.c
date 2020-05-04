@@ -52,11 +52,6 @@ static int get_pcie_bar(struct device *dev, unsigned int index, u32 *base, u32 *
 	return 0;
 }
 
-static void pci_domain_set_resources(struct device *dev)
-{
-	assign_resources(dev->link_list);
-}
-
 static const char *northbridge_acpi_name(const struct device *dev)
 {
 	if (dev->path.type == DEVICE_PATH_DOMAIN)

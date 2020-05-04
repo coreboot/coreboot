@@ -99,7 +99,7 @@ static void add_fixed_resources(struct device *dev, int index)
 	}
 }
 
-static void pci_domain_set_resources(struct device *dev)
+static void pci_domain_set_resources_sandybridge(struct device *dev)
 {
 	uint64_t tom, me_base, touud;
 	uint32_t tseg_base, uma_size, tolud;
@@ -243,7 +243,7 @@ static const char *northbridge_acpi_name(const struct device *dev)
  */
 static struct device_operations pci_domain_ops = {
 	.read_resources    = pci_domain_read_resources,
-	.set_resources     = pci_domain_set_resources,
+	.set_resources     = pci_domain_set_resources_sandybridge,
 	.scan_bus          = pci_domain_scan_bus,
 	.write_acpi_tables = northbridge_write_acpi_tables,
 	.acpi_name         = northbridge_acpi_name,

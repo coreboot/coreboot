@@ -439,6 +439,11 @@ void pci_domain_read_resources(struct device *dev)
 		     IORESOURCE_ASSIGNED;
 }
 
+void pci_domain_set_resources(struct device *dev)
+{
+	assign_resources(dev->link_list);
+}
+
 static void pci_set_resource(struct device *dev, struct resource *resource)
 {
 	resource_t base, end;

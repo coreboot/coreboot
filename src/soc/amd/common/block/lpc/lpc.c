@@ -14,6 +14,7 @@
 #include <pc80/i8254.h>
 #include <pc80/i8259.h>
 #include <amdblocks/acpimmio.h>
+#include <amdblocks/espi.h>
 #include <amdblocks/lpc.h>
 #include <soc/acpi.h>
 #include <soc/southbridge.h>
@@ -278,6 +279,18 @@ static void configure_child_lpc_windows(struct device *dev, struct device *child
 	pci_write_config32(dev, LPC_IO_OR_MEM_DECODE_ENABLE, reg_x);
 }
 
+static void configure_child_espi_windows(struct device *child)
+{
+	struct resource *res;
+
+	for (res = child->resource_list; res; res = res->next) {
+		if (res->flags & IORESOURCE_IO)
+			espi_open_io_window(res->base, res->size);
+		else if (res->flags & IORESOURCE_MEM)
+			espi_open_mmio_window(res->base, res->size);
+	}
+}
+
 static void lpc_enable_children_resources(struct device *dev)
 {
 	struct bus *link;
@@ -289,7 +302,10 @@ static void lpc_enable_children_resources(struct device *dev)
 				continue;
 			if (child->path.type != DEVICE_PATH_PNP)
 				continue;
-			configure_child_lpc_windows(dev, child);
+			if (CONFIG(SOC_AMD_COMMON_BLOCK_USE_ESPI))
+				configure_child_espi_windows(child);
+			else
+				configure_child_lpc_windows(dev, child);
 		}
 	}
 }

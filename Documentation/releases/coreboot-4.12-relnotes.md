@@ -80,4 +80,13 @@ Significant changes
 
 See [smmstore](../drivers/smmstore.md) for the documentation on the API.
 
+### Unit testing infrastructure
+
+Unit testing of coreboot is now possible in a more structured way, with new
+build subsystem and adoption of [Cmocka](https://cmocka.org/) framework. Tree
+has new directory `tests/`, which comprises infrastructure and examples of unit
+tests. See
+[Unit testing coreboot](../technotes/2020-03-unit-testing-coreboot.md) for the
+design document.
+
 ### Add significant changes here

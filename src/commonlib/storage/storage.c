@@ -9,7 +9,8 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ */
+/*
  * MultiMediaCard (MMC), eMMC and Secure Digital (SD) common code which
  * transitions the card from the standby state to the transfer state.  The
  * common code supports read operations, erase and write operations are in

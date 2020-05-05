@@ -1,9 +1,5 @@
+/* Taken from depthcharge: src/boot/fit.h */
 /*
- * Copyright 2013 Google Inc.
- * Copyright 2018-present Facebook, Inc.
- *
- * Taken from depthcharge: src/boot/fit.h
- *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 2 of

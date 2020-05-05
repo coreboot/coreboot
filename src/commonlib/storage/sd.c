@@ -9,7 +9,8 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ */
+/*
  * Secure Digital (SD) card specific support code
  * This code is controller independent
  */

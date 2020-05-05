@@ -9,7 +9,8 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ */
+/*
  * MultiMediaCard (MMC), eMMC and Secure Digital (SD) common initialization
  * code which brings the card into the standby state.  This code is controller
  * independent.

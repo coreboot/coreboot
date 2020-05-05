@@ -1,7 +1,5 @@
-/* intelmetool
- *
- * Copyright (C) 2013-2016 Philipp Deppenwiese <zaolin@das-labor.org>
- * Copyright (C) 2013-2016 Alexander Couzens <lynxis@fe80.eu>
+/* intelmetool */
+/*
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as

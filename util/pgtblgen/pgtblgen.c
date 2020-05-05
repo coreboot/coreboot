@@ -1,7 +1,5 @@
+/* This file is part of pgtblgen. */
 /*
- * This file is part of pgtblgen.
- *
- * Copyright (c) 2019 Patrick Rudolph <siro@das-labor.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as

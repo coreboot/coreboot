@@ -1,8 +1,5 @@
+/* ahci.c: dump AHCI registers */
 /*
- * ahci.c: dump AHCI registers
- *
- * Copyright (C) 2016 Iru Cai
- * Copyright (C) 2017 secunet Security Networks AG
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as

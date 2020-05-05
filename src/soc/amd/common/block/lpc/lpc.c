@@ -145,13 +145,17 @@ static void lpc_set_resources(struct device *dev)
 	pci_dev_set_resources(dev);
 }
 
-static void set_child_resource(struct device *dev, struct device *child,
-				u32 *reg, u32 *reg_x)
+static void configure_child_lpc_windows(struct device *dev, struct device *child)
 {
 	struct resource *res;
 	u32 base, end;
 	u32 rsize = 0, set = 0, set_x = 0;
 	int wideio_index;
+	u32 reg, reg_x;
+
+	reg = pci_read_config32(dev, LPC_IO_PORT_DECODE_ENABLE);
+	reg_x = pci_read_config32(dev, LPC_IO_OR_MEM_DECODE_ENABLE);
+
 
 	/*
 	 * Be a bit relaxed, tolerate that LPC region might be bigger than
@@ -248,16 +252,15 @@ static void set_child_resource(struct device *dev, struct device *child,
 		}
 		/* check if region found and matches the enable */
 		if (res->size <= rsize) {
-			*reg |= set;
-			*reg_x |= set_x;
+			reg |= set;
+			reg_x |= set_x;
 		/* check if we can fit resource in variable range */
 		} else {
 			wideio_index = lpc_set_wideio_range(base, res->size);
 			if (wideio_index != WIDEIO_RANGE_ERROR) {
 				/* preserve wide IO related bits. */
-				*reg_x = pci_read_config32(dev,
+				reg_x = pci_read_config32(dev,
 					LPC_IO_OR_MEM_DECODE_ENABLE);
-
 				printk(BIOS_DEBUG,
 					"Range assigned to wide IO %d\n",
 					wideio_index);
@@ -270,39 +273,31 @@ static void set_child_resource(struct device *dev, struct device *child,
 			}
 		}
 	}
-}
 
-/**
- * @brief Enable resources for children devices
- *
- * @param dev the device whose children's resources are to be enabled
- *
- */
-static void lpc_enable_childrens_resources(struct device *dev)
-{
-	struct bus *link;
-	u32 reg, reg_x;
-
-	reg = pci_read_config32(dev, LPC_IO_PORT_DECODE_ENABLE);
-	reg_x = pci_read_config32(dev, LPC_IO_OR_MEM_DECODE_ENABLE);
-
-	for (link = dev->link_list; link; link = link->next) {
-		struct device *child;
-		for (child = link->children; child;
-		     child = child->sibling) {
-			if (child->enabled
-			    && (child->path.type == DEVICE_PATH_PNP))
-				set_child_resource(dev, child, &reg, &reg_x);
-		}
-	}
 	pci_write_config32(dev, LPC_IO_PORT_DECODE_ENABLE, reg);
 	pci_write_config32(dev, LPC_IO_OR_MEM_DECODE_ENABLE, reg_x);
+}
+
+static void lpc_enable_children_resources(struct device *dev)
+{
+	struct bus *link;
+	struct device *child;
+
+	for (link = dev->link_list; link; link = link->next) {
+		for (child = link->children; child; child = child->sibling) {
+			if (!child->enabled)
+				continue;
+			if (child->path.type != DEVICE_PATH_PNP)
+				continue;
+			configure_child_lpc_windows(dev, child);
+		}
+	}
 }
 
 static void lpc_enable_resources(struct device *dev)
 {
 	pci_dev_enable_resources(dev);
-	lpc_enable_childrens_resources(dev);
+	lpc_enable_children_resources(dev);
 }
 
 static struct device_operations lpc_ops = {

@@ -1,6 +1,5 @@
+/* This file is part of the coreboot project. */
 /*
- * This file is part of the coreboot project.
- *
  * Copyright (C) 2019 9elements Agency GmbH <patrick.rudolph@9elements.com>
  *
  * This program is free software; you can redistribute it and/or modify

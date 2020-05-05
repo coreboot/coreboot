@@ -1,6 +1,5 @@
+/* This file is part of the coreboot project. */
 /*
- * This file is part of the coreboot project.
- *
  * Based on src/southbridge/via/vt8237r/vt8237_fadt.c
  *
  *

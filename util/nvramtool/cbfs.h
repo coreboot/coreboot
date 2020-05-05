@@ -1,6 +1,5 @@
+/* This file is part of the coreboot project. */
 /*
- * This file is part of the coreboot project.
- *
  * Copyright (C) 2008 Jordan Crouse <jordan@cosmicpenguin.net>
  *
  * This file is dual-licensed. You can choose between:

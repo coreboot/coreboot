@@ -1,6 +1,5 @@
+/* This file is part of the coreboot project. */
 /*
- * This file is part of the coreboot project.
- *
  * Copyright (C) 2018 Evgeny Zinoviev <me@ch1p.com>
  *
  * This program is free software; you can redistribute it and/or modify

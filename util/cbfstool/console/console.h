@@ -1,6 +1,5 @@
+/* This file is part of the coreboot project. */
 /*
- * This file is part of the coreboot project.
- *
  * Copyright 2015 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify

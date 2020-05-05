@@ -1,6 +1,5 @@
+/* This file is part of the coreboot project. */
 /*
- * This file is part of the coreboot project.
- *
  * DDR3 mem setup file for EXYNOS5 based board
  *
  *

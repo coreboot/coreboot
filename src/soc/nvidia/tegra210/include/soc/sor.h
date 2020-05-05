@@ -1,6 +1,5 @@
+/* This file is part of the coreboot project. */
 /*
- * This file is part of the coreboot project.
- *
  * drivers/video/tegra/dc/sor_regs.h
  *
  *

@@ -1,6 +1,5 @@
+/* This file is part of the coreboot project. */
 /*
- * This file is part of the coreboot project.
- *
  * Copyright (C) 2008 Jordan Crouse <jordan@cosmicpenguin.net>
  * Copyright (C) 2011 secunet Security Networks AG
  *     (Written by Patrick Georgi <patrick.georgi@secunet.com>)

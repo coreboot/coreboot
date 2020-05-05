@@ -214,6 +214,13 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	else
 		params->CnviMode = 0;
 
+	/* VMD */
+	dev = pcidev_path_on_root(SA_DEVFN_VMD);
+	if (dev)
+		params->VmdEnable = dev->enabled;
+	else
+		params->VmdEnable = 0;
+
 	/* Legacy 8254 timer support */
 	params->Enable8254ClockGating = !CONFIG_USE_LEGACY_8254_TIMER;
 	params->Enable8254ClockGatingOnS3 = !CONFIG_USE_LEGACY_8254_TIMER;

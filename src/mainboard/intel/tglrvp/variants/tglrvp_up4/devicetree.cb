@@ -160,7 +160,7 @@ chip soc/intel/tigerlake
 		device pci 0d.1 on  end # USB xDCI (OTG)	0x9A15
 		device pci 0d.2 off end # TBT DMA0		0x9A1B
 		device pci 0d.3 off end # TBT DMA1		0x9A1D
-		device pci 0e.0 on  end # VMD			0x9A0B
+		device pci 0e.0 off end # VMD			0x9A0B
 
 		# From PCH EDS(576591)
 		device pci 10.2 off end # CNVi: BT		0xA0F5 - A0F7

@@ -4,6 +4,7 @@
 #ifndef __AMDBLOCKS_CHIP_H__
 #define __AMDBLOCKS_CHIP_H__
 
+#include <amdblocks/espi.h>
 #include <amdblocks/spi.h>
 
 struct soc_amd_common_config {
@@ -17,6 +18,9 @@ struct soc_amd_common_config {
 	 * TPM speed - 66MHz
 	 */
 	struct spi_config spi_config;
+
+	/* eSPI configuration */
+	struct espi_config espi_config;
 };
 
 /*

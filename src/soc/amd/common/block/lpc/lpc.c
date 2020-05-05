@@ -306,10 +306,6 @@ static void lpc_enable_resources(struct device *dev)
 	lpc_enable_childrens_resources(dev);
 }
 
-static struct pci_operations lops_pci = {
-	.set_subsystem = pci_dev_set_subsystem,
-};
-
 static struct device_operations lpc_ops = {
 	.read_resources = lpc_read_resources,
 	.set_resources = lpc_set_resources,
@@ -318,7 +314,7 @@ static struct device_operations lpc_ops = {
 	.write_acpi_tables = southbridge_write_acpi_tables,
 	.init = lpc_init,
 	.scan_bus = scan_static_bus,
-	.ops_pci = &lops_pci,
+	.ops_pci = &pci_dev_ops_pci,
 };
 
 static const unsigned short pci_device_ids[] = {

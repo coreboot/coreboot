@@ -1,11 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <stdarg.h>
-#include <stddef.h>
-#include <setjmp.h>
-#include <cmocka.h>
-
 #include <string.h>
+#include <tests/test.h>
 
 /*
  * Important note: In every particular test, don't use any string-related

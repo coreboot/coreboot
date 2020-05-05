@@ -1,5 +1,6 @@
 # SPDX-License-Identifier: GPL-2.0-only
 
+testsrc = $(top)/tests
 testobj = $(obj)/tests
 
 TEST_DEFAULT_CONFIG = $(top)/configs/config.emulation_qemu_x86_i440fx
@@ -10,12 +11,12 @@ TEST_KCONFIG_DEPENDENCIES := $(testobj)/auto.conf.cmd
 TEST_KCONFIG_SPLITCONFIG := $(testobj)/config
 TEST_KCONFIG_TRISTATE := $(testobj)/tristate.conf
 
-TEST_CFLAGS = -include$(src)/include/kconfig.h \
-	-include$(src)/commonlib/bsd/include/commonlib/bsd/compiler.h \
-	-include $(src)/include/rules.h \
+TEST_CFLAGS = -include $(src)/include/kconfig.h \
+	-include $(src)/commonlib/bsd/include/commonlib/bsd/compiler.h \
+	-include $(src)/include/rules.h
 
 # Include generic test mock headers, before original ones
-TEST_CFLAGS += -Itests/include/mocks
+TEST_CFLAGS += -I$(testsrc)/include/mocks -I$(testsrc)/include
 
 TEST_CFLAGS += -I$(src)/include -I$(src)/commonlib/include \
 	-I$(src)/commonlib/bsd/include -I$(src)/arch/x86/include \
@@ -24,10 +25,10 @@ TEST_CFLAGS += -I$(src)/include -I$(src)/commonlib/include \
 TEST_CFLAGS += -I$(dir $(TEST_KCONFIG_AUTOHEADER))
 
 TEST_CFLAGS += -std=gnu11 -Os -ffunction-sections -fdata-sections \
-	-Wl,--gc-sections -fno-builtin
+	-fno-builtin
 
 # Link against Cmocka
-TEST_LDFLAGS = -lcmocka
+TEST_LDFLAGS = -lcmocka -Wl,--gc-sections
 
 # Extra attributes for unit tests, declared per test
 attributes:= srcs cflags mocks stage

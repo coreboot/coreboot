@@ -1,12 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <stdarg.h>
-#include <stddef.h>
-#include <setjmp.h>
-#include <limits.h>
-#include <cmocka.h>
-
 #include <device/i2c_simple.h>
+#include <limits.h>
+#include <tests/test.h>
 
 /* Simulate two i2c devices, both on bus 0, each with three uint8_t regs
    implemented. */

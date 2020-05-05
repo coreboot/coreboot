@@ -80,6 +80,7 @@ const char *soc_acpi_name(const struct device *dev)
 	case PCH_DEVFN_PCIE10:	return "RP10";
 	case PCH_DEVFN_PCIE11:	return "RP11";
 	case PCH_DEVFN_PCIE12:	return "RP12";
+	case PCH_DEVFN_PMC:	return "PMC";
 	case PCH_DEVFN_UART0:	return "UAR0";
 	case PCH_DEVFN_UART1:	return "UAR1";
 	case PCH_DEVFN_UART2:	return "UAR2";

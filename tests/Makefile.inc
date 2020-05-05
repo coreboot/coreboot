@@ -24,8 +24,7 @@ TEST_CFLAGS += -I$(src)/include -I$(src)/commonlib/include \
 # Path for Kconfig autoheader
 TEST_CFLAGS += -I$(dir $(TEST_KCONFIG_AUTOHEADER))
 
-TEST_CFLAGS += -std=gnu11 -Os -ffunction-sections -fdata-sections \
-	-fno-builtin
+TEST_CFLAGS += -std=gnu11 -Os -ffunction-sections -fdata-sections -fno-builtin
 
 # Link against Cmocka
 TEST_LDFLAGS = -lcmocka -Wl,--gc-sections

@@ -69,7 +69,7 @@ static inline void range_entry_update_tag(struct range_entry *r,
 	r->tag = new_tag;
 }
 
-static inline bool memranges_is_empty(struct memranges *ranges)
+static inline bool memranges_is_empty(const struct memranges *ranges)
 {
 	return ranges->entries == NULL;
 }

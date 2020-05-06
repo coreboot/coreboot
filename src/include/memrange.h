@@ -162,7 +162,7 @@ struct range_entry *memranges_next_entry(struct memranges *ranges,
 					 const struct range_entry *r);
 
 /* Steals memory from the available list in given ranges as per the constraints:
- * limit = Upper bound for the memory range to steal.
+ * limit = Upper bound for the memory range to steal (Inclusive).
  * size  = Requested size for the stolen memory.
  * align = Required alignment(log 2) for the starting address of the stolen memory.
  * tag   = Use a range that matches the given tag.

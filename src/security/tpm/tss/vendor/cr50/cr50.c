@@ -89,7 +89,8 @@ uint32_t tlcl_cr50_get_tpm_mode(uint8_t *tpm_mode)
 		return TPM_E_MUST_REBOOT;
 	}
 
-	if (response->hdr.tpm_code == VENDOR_RC_NO_SUCH_COMMAND) {
+	if (response->hdr.tpm_code == VENDOR_RC_NO_SUCH_COMMAND ||
+	    response->hdr.tpm_code == VENDOR_RC_NO_SUCH_SUBCOMMAND) {
 		/*
 		 * Explicitly inform caller when command is not supported
 		 */
@@ -119,7 +120,8 @@ uint32_t tlcl_cr50_get_boot_mode(uint8_t *boot_mode)
 	if (!response)
 		return TPM_E_IOERROR;
 
-	if (response->hdr.tpm_code == VENDOR_RC_NO_SUCH_COMMAND)
+	if (response->hdr.tpm_code == VENDOR_RC_NO_SUCH_COMMAND ||
+	    response->hdr.tpm_code == VENDOR_RC_NO_SUCH_SUBCOMMAND)
 		/* Explicitly inform caller when command is not supported */
 		return TPM_E_NO_SUCH_COMMAND;
 

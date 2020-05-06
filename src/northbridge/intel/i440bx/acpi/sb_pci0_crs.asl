@@ -9,6 +9,8 @@ Device (NB)
 	{
 		Offset (0x67),	// DRB7
 		DRB7,	8,
+		Offset (0x7A),	// PMCR
+		PMCR,	8
 	}
 	Method(TOM1, 0) {
 		/* Multiply by 8MB to get TOM */

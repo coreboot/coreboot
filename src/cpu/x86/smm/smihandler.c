@@ -2,6 +2,7 @@
 
 #include <arch/io.h>
 #include <console/console.h>
+#include <commonlib/region.h>
 #include <cpu/x86/smm.h>
 #include <cpu/x86/smi_deprecated.h>
 #include <cpu/amd/amd64_save_state.h>
@@ -119,6 +120,13 @@ static inline void *smm_save_state(uintptr_t base, int arch_offset, int node)
 	return (void *)base;
 }
 
+bool smm_region_overlaps_handler(const struct region *r)
+{
+	const struct region r_smm = {SMM_BASE, SMM_DEFAULT_SIZE};
+
+	return region_overlap(&r_smm, r);
+}
+
 /**
  * @brief Interrupt handler for SMI#
  *
@@ -129,7 +137,7 @@ void smi_handler(u32 smm_revision)
 {
 	unsigned int node;
 	smm_state_save_area_t state_save;
-	u32 smm_base = 0xa0000; /* ASEG */
+	u32 smm_base = SMM_BASE; /* ASEG */
 
 	/* Are we ok to execute the handler? */
 	if (!smi_obtain_lock()) {

@@ -2,6 +2,7 @@
 
 #include <arch/io.h>
 #include <console/console.h>
+#include <commonlib/region.h>
 #include <cpu/x86/smm.h>
 #include <rmodule.h>
 
@@ -101,6 +102,14 @@ void *smm_get_save_state(int cpu)
 	base -= (cpu + 1) * smm_runtime->save_state_size;
 
 	return base;
+}
+
+bool smm_region_overlaps_handler(const struct region *r)
+{
+	const struct region r_smm = {smm_runtime->smbase, smm_runtime->smm_size};
+	const struct region r_aseg = {SMM_BASE, SMM_DEFAULT_SIZE};
+
+	return region_overlap(&r_smm, r) || region_overlap(&r_aseg, r);
 }
 
 asmlinkage void smm_handler_start(void *arg)

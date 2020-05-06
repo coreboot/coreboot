@@ -5,7 +5,7 @@ storage driver.
 
 ## SMMSTORE
 
-SMMSTORE is a SMM mediated driver to read from, write to and erase a
+SMMSTORE is a [SMM] mediated driver to read from, write to and erase a
 predefined region in flash. It can be enabled by setting
 `CONFIG_SMMSTORE=y` in menuconfig.
 
@@ -117,7 +117,18 @@ INPUT:
 - `val`: pointer to the value data
 - `valsize`: size of the value data
 
+#### Security
+
+Pointers provided by the payload or OS are checked to not overlap with the SMM.
+That protects the SMM handler from being manipulated.
+
+*However there's no validation done on the source or destination pointing to
+DRAM. A malicious application that is able to issue SMIs could extract arbitrary
+data or modify the currently running kernel.*
+
 ## External links
 
 * [A Tour Beyond BIOS Implementing UEFI Authenticated Variables in SMM with EDKI](https://software.intel.com/sites/default/files/managed/cf/ea/a_tour_beyond_bios_implementing_uefi_authenticated_variables_in_smm_with_edkii.pdf)
 Note, this differs significantly from coreboot's implementation.
+
+[SMM]: ../security/smm.md

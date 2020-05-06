@@ -413,6 +413,10 @@ struct soc_intel_cannonlake_config {
 	uint8_t LanWakeFromDeepSx;
 	uint8_t WolEnableOverride;
 
+#if !CONFIG(SOC_INTEL_COMETLAKE)
+	uint32_t VrPowerDeliveryDesign;
+#endif
+
 	/*
 	 * Override GPIO PM configuration:
 	 * 0: Use FSP default GPIO PM program,

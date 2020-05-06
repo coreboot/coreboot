@@ -81,7 +81,9 @@ extern int yydebug;
     GENERIC = 287,
     SPI = 288,
     USB = 289,
-    MMIO = 290
+    MMIO = 290,
+    LPC = 291,
+    ESPI = 292
   };
 #endif
 

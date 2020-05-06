@@ -493,6 +493,14 @@ struct device *new_device(struct bus *parent,
 	case MMIO:
 		new_d->path = ".type=DEVICE_PATH_MMIO,{.mmio={ .addr = 0x%x }}";
 		break;
+
+	case ESPI:
+		new_d->path = ".type=DEVICE_PATH_ESPI,{.espi={ .addr = 0x%x }}";
+		break;
+
+	case LPC:
+		new_d->path = ".type=DEVICE_PATH_LPC,{.lpc={ .addr = 0x%x }}";
+		break;
 	}
 
 	return new_d;

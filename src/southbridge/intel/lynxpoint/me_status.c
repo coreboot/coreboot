@@ -107,7 +107,7 @@ static const char *me_progress_bup_values[] = {
 
 /* Progress Code 3 states */
 static const char *me_progress_policy_values[] = {
-	[ME_HFS2_STATE_POLICY_ENTRY] = "Entery into Policy Module",
+	[ME_HFS2_STATE_POLICY_ENTRY] = "Entry into Policy Module",
 	[ME_HFS2_STATE_POLICY_RCVD_S3] = "Received S3 entry",
 	[ME_HFS2_STATE_POLICY_RCVD_S4] = "Received S4 entry",
 	[ME_HFS2_STATE_POLICY_RCVD_S5] = "Received S5 entry",

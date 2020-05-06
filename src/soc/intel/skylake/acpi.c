@@ -654,7 +654,6 @@ void southbridge_inject_dsdt(const struct device *device)
 
 	if (gnvs) {
 		acpi_create_gnvs(gnvs);
-		acpi_mainboard_gnvs(gnvs);
 		/* And tell SMI about it */
 		smm_setup_structures(gnvs, NULL, NULL);
 
@@ -705,10 +704,6 @@ int soc_fill_acpi_wake(uint32_t *pm1, uint32_t **gpe0)
 	gpe0_sts[last_index] = ps->gpe0_sts[last_index] & gpe0_std;
 
 	return GPE0_REG_MAX;
-}
-
-__weak void acpi_mainboard_gnvs(global_nvs_t *gnvs)
-{
 }
 
 const char *soc_acpi_name(const struct device *dev)

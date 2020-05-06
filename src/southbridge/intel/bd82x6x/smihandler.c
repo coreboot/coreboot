@@ -4,6 +4,7 @@
 #include <arch/io.h>
 #include <device/pci_ops.h>
 #include <console/console.h>
+#include <commonlib/region.h>
 #include <device/pci_def.h>
 #include <cpu/x86/smm.h>
 #include <cpu/intel/em64t101_save_state.h>
@@ -103,6 +104,7 @@ static void xhci_sleep(u8 slp_typ)
 
 		xhci_bar = pci_read_config32(PCH_XHCI_DEV, PCI_BASE_ADDRESS_0) & ~0xFUL;
 
+		/* FIXME: This looks broken (conditions are always false) */
 		if ((xhci_bar + 0x4C0) & 1)
 			pch_iobp_update(0xEC000082, ~0UL, (3 << 2));
 		if ((xhci_bar + 0x4D0) & 1)
@@ -191,6 +193,11 @@ void southbridge_update_gnvs(u8 apm_cnt, int *smm_done)
 	if (state) {
 		/* EBX in the state save contains the GNVS pointer */
 		gnvs = (struct global_nvs *)((u32)state->rbx);
+		struct region r = {(uintptr_t)gnvs, sizeof(struct global_nvs)};
+		if (smm_region_overlaps_handler(&r)) {
+			printk(BIOS_ERR, "SMI#: ERROR: GNVS overlaps SMM\n");
+			return;
+		}
 		*smm_done = 1;
 		printk(BIOS_DEBUG, "SMI#: Setting GNVS to %p\n", gnvs);
 	}

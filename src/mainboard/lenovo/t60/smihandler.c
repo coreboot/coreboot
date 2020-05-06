@@ -2,6 +2,7 @@
 
 #include <arch/io.h>
 #include <device/pci_ops.h>
+#include <device/pci_def.h>
 #include <console/console.h>
 #include <cpu/x86/smm.h>
 #include <southbridge/intel/i82801gx/nvs.h>
@@ -16,24 +17,32 @@
 
 static void mainboard_smi_brightness_down(void)
 {
-	u8 *bar;
-	if ((bar = (u8 *)pci_read_config32(PCI_DEV(1, 0, 0), 0x18))) {
-		printk(BIOS_DEBUG, "bar: %08X, level %02X\n",  (unsigned int)bar, *(bar+LVTMA_BL_MOD_LEVEL));
-		*(bar+LVTMA_BL_MOD_LEVEL) &= 0xf0;
-		if (*(bar+LVTMA_BL_MOD_LEVEL) > 0x10)
-			*(bar+LVTMA_BL_MOD_LEVEL) -= 0x10;
-	}
+	uint32_t reg32 = pci_read_config32(PCI_DEV(1, 0, 0), PCI_BASE_ADDRESS_2) & ~0xf;
+	u8 *bar = (void *)(uintptr_t)reg32;
+
+	/* Validate pointer before using it */
+	if (!bar || smm_points_to_smram(bar, LVTMA_BL_MOD_LEVEL + sizeof(uint8_t)))
+		return;
+
+	printk(BIOS_DEBUG, "bar: %p, level %02X\n", bar, *(bar+LVTMA_BL_MOD_LEVEL));
+	*(bar+LVTMA_BL_MOD_LEVEL) &= 0xf0;
+	if (*(bar+LVTMA_BL_MOD_LEVEL) > 0x10)
+		*(bar+LVTMA_BL_MOD_LEVEL) -= 0x10;
 }
 
 static void mainboard_smi_brightness_up(void)
 {
-	u8 *bar;
-	if ((bar = (u8 *)pci_read_config32(PCI_DEV(1, 0, 0), 0x18))) {
-		printk(BIOS_DEBUG, "bar: %08X, level %02X\n",  (unsigned int)bar, *(bar+LVTMA_BL_MOD_LEVEL));
-		*(bar+LVTMA_BL_MOD_LEVEL) |= 0x0f;
-		if (*(bar+LVTMA_BL_MOD_LEVEL) < 0xf0)
-			*(bar+LVTMA_BL_MOD_LEVEL) += 0x10;
-	}
+	uint32_t reg32 = pci_read_config32(PCI_DEV(1, 0, 0), PCI_BASE_ADDRESS_2) & ~0xf;
+	u8 *bar = (void *)(uintptr_t)reg32;
+
+	/* Validate pointer before using it */
+	if (!bar || smm_points_to_smram(bar, LVTMA_BL_MOD_LEVEL + sizeof(uint8_t)))
+		return;
+
+	printk(BIOS_DEBUG, "bar: %p, level %02X\n", bar, *(bar+LVTMA_BL_MOD_LEVEL));
+	*(bar+LVTMA_BL_MOD_LEVEL) |= 0x0f;
+	if (*(bar+LVTMA_BL_MOD_LEVEL) < 0xf0)
+		*(bar+LVTMA_BL_MOD_LEVEL) += 0x10;
 }
 
 int mainboard_io_trap_handler(int smif)

@@ -100,6 +100,10 @@ static void backlight_off(void)
 	reg_base = (void *)((uintptr_t)pci_read_config32(SA_DEV_IGD,
 		PCI_BASE_ADDRESS_0) & ~0xf);
 
+	/* Validate pointer before using it */
+	if (smm_points_to_smram(reg_base, PCH_PP_OFF_DELAYS + sizeof(uint32_t)))
+		return;
+
 	/* Check if backlight is enabled */
 	pp_ctrl = read32(reg_base + PCH_PP_CONTROL);
 	if (!(pp_ctrl & EDP_BLC_ENABLE))
@@ -341,6 +345,10 @@ static void southbridge_smi_apmc(void)
 		if (state) {
 			/* EBX in the state save contains the GNVS pointer */
 			gnvs = (struct global_nvs *)((u32)state->rbx);
+			if (smm_points_to_smram(gnvs, sizeof(*gnvs))) {
+				printk(BIOS_ERR, "SMI#: ERROR: GNVS overlaps SMM\n");
+				return;
+			}
 			smm_initialized = 1;
 			printk(BIOS_DEBUG, "SMI#: Setting GNVS to %p\n", gnvs);
 		}

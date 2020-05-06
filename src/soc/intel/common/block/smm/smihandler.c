@@ -373,6 +373,10 @@ void smihandler_southbridge_apmc(
 			/* EBX in the state save contains the GNVS pointer */
 			uint32_t reg_ebx = save_state_ops->get_reg(state, RBX);
 			gnvs = (struct global_nvs *)(uintptr_t)reg_ebx;
+			if (smm_points_to_smram(gnvs, sizeof(*gnvs))) {
+				printk(BIOS_ERR, "SMI#: ERROR: GNVS overlaps SMM\n");
+				return;
+			}
 			smm_initialized = 1;
 			printk(BIOS_DEBUG, "SMI#: Setting GNVS to %p\n", gnvs);
 		}

@@ -400,8 +400,13 @@ static const struct range_entry *memranges_find_entry(struct memranges *ranges,
 		if (end > r->end)
 			continue;
 
+		/*
+		 * If end for the hole in the current range entry goes beyond the requested
+		 * limit, then none of the following ranges can satisfy this request because all
+		 * range entries are maintained in increasing order.
+		 */
 		if (end > limit)
-			continue;
+			break;
 
 		return r;
 	}

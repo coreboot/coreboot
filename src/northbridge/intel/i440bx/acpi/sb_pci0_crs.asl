@@ -62,6 +62,7 @@ Method(_CRS, 0) {
 	 */
 	MM1B = \_SB.PCI0.NB.TOM1
 	Local0 = 0x10000000 << 4
+	Local0 -= CONFIG_ROM_SIZE
 	MM1L = Local0 - MM1B
 
 	Return(TMP)

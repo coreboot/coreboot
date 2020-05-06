@@ -323,8 +323,3 @@ void soc_update_memory_params_for_mma(FSP_M_CONFIG *memory_cfg,
 	memory_cfg->MrcFastBoot = 0x00;
 	memory_cfg->SaGv = 0x02;
 }
-
-__weak void mainboard_memory_init_params(FSPM_UPD *mupd)
-{
-	/* Do nothing */
-}

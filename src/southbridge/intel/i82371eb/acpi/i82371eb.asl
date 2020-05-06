@@ -30,10 +30,6 @@ Device (PX40)
 		{
 			Name (BUF1, ResourceTemplate ()
 			{
-				/* PM register ports */
-				IO (Decode16, 0x0000, 0x0000, 0x01, 0x40, _Y06)
-				/* SMBus register ports */
-				IO (Decode16, 0x0000, 0x0000, 0x01, 0x10, _Y07)
 				/* PIIX4E ports */
 				/* Aliased DMA ports */
 				IO (Decode16, 0x0010, 0x0010, 0x01, 0x10, )
@@ -51,14 +47,6 @@ Device (PX40)
 				IO (Decode16, 0x03F0, 0x03F0, 0x01, 0x02, )
 				IO (Decode16, 0x04D0, 0x04D0, 0x01, 0x02, )
 			})
-			CreateWordField (BUF1, _Y06._MIN, PMLO)
-			CreateWordField (BUF1, _Y06._MAX, PMRL)
-			CreateWordField (BUF1, _Y07._MIN, SBLO)
-			CreateWordField (BUF1, _Y07._MAX, SBRL)
-			And (\_SB.PCI0.PX43.PM00, 0xFFFE, PMLO)
-			And (\_SB.PCI0.PX43.SB00, 0xFFFE, SBLO)
-			Store (PMLO, PMRL)
-			Store (SBLO, SBRL)
 			Return (BUF1)
 		}
 	}
@@ -144,17 +132,5 @@ Device (PX43)
 			IO (Decode16, SMBUS_IO_BASE, SMBUS_IO_BASE, 0x01, 0x10, )
 		})
 		Return (BUF1)
-	}
-
-	OperationRegion (IPMU, PCI_Config, PMBA, 0x02)
-	Field (IPMU, ByteAcc, NoLock, Preserve)
-	{
-	    PM00,   16
-	}
-
-	OperationRegion (ISMB, PCI_Config, SMBBA, 0x02)
-	Field (ISMB, ByteAcc, NoLock, Preserve)
-	{
-	    SB00,   16
 	}
 }

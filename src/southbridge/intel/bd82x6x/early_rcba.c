@@ -5,8 +5,7 @@
 #include <northbridge/intel/sandybridge/sandybridge.h>
 #include "pch.h"
 
-void
-southbridge_configure_default_intmap(void)
+void southbridge_configure_default_intmap(void)
 {
 	/*
 	 * For the PCH internal PCI functions, provide a reasonable
@@ -83,8 +82,7 @@ southbridge_configure_default_intmap(void)
 	(void) RCBA16(OIC);
 }
 
-void
-southbridge_rcba_config(void)
+void southbridge_rcba_config(void)
 {
 	RCBA32(FD) = PCH_DISABLE_ALWAYS;
 }

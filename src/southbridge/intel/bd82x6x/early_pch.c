@@ -19,15 +19,13 @@
 
 #define SOUTHBRIDGE PCI_DEV(0, 0x1f, 0)
 
-static void
-wait_iobp(void)
+static void wait_iobp(void)
 {
 	while (RCBA8(IOBPS) & 1)
 		; // implement timeout?
 }
 
-static u32
-read_iobp(u32 address)
+static u32 read_iobp(u32 address)
 {
 	u32 ret;
 
@@ -40,8 +38,7 @@ read_iobp(u32 address)
 	return ret;
 }
 
-static void
-write_iobp(u32 address, u32 val)
+static void write_iobp(u32 address, u32 val)
 {
 	/* this function was probably pch_iobp_update with the andvalue
 	 * being 0. So either the IOBP read can be removed or this function
@@ -137,11 +134,9 @@ void early_pch_init_native_dmi_post(void)
 		;
 }
 
-void
-early_pch_init_native (void)
+void early_pch_init_native(void)
 {
-	pci_write_config8 (SOUTHBRIDGE, 0xa6,
-			    pci_read_config8 (SOUTHBRIDGE, 0xa6) | 2);
+	pci_write_config8(SOUTHBRIDGE, 0xa6, pci_read_config8(SOUTHBRIDGE, 0xa6) | 2);
 
 	RCBA32(CIR1) = 0x00109000;
 	RCBA32(REC); // !!! = 0x00000000
@@ -278,9 +273,8 @@ static void pch_enable_lpc_decode(void)
 	 * - 0x3f8-0x3ff COMA
 	 */
 	pci_write_config16(PCH_LPC_DEV, LPC_IO_DEC, 0x0010);
-	pci_write_config16(PCH_LPC_DEV, LPC_EN, CNF2_LPC_EN | CNF1_LPC_EN
-		| MC_LPC_EN | KBC_LPC_EN | FDD_LPC_EN | LPT_LPC_EN
-		| COMB_LPC_EN | COMA_LPC_EN);
+	pci_write_config16(PCH_LPC_DEV, LPC_EN, CNF2_LPC_EN | CNF1_LPC_EN | MC_LPC_EN
+		| KBC_LPC_EN | FDD_LPC_EN | LPT_LPC_EN | COMB_LPC_EN | COMA_LPC_EN);
 
 	const struct device *dev = pcidev_on_root(0x1f, 0);
 	const struct southbridge_intel_bd82x6x_config *config = NULL;

@@ -32,6 +32,7 @@ config DCACHE_BSP_STACK_SIZE
 
 config C_ENV_BOOTBLOCK_SIZE
 	hex
+	default 0x4000 if BOOTBLOCK_CONSOLE
 	default 0x2000
 
 endif

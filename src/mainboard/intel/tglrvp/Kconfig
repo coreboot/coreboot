@@ -18,6 +18,7 @@ config BOARD_SPECIFIC_OPTIONS
 	select EC_ACPI
 	select PCIEXP_HOTPLUG
 	select GENERIC_SPD_BIN
+	select SOC_INTEL_CSE_LITE_SKU
 
 config CHROMEOS
 	bool

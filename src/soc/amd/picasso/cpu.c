@@ -12,7 +12,7 @@
 #include <device/pci_ops.h>
 #include <soc/pci_devs.h>
 #include <soc/cpu.h>
-#include <soc/northbridge.h>
+#include <soc/reset.h>
 #include <soc/smi.h>
 #include <soc/iomap.h>
 #include <console/console.h>

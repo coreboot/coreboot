@@ -2,8 +2,8 @@
 
 #include <arch/io.h>
 #include <reset.h>
-#include <soc/northbridge.h>
 #include <soc/pci_devs.h>
+#include <soc/reset.h>
 #include <device/pci_ops.h>
 #include <soc/southbridge.h>
 #include <amdblocks/acpimmio.h>

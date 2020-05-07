@@ -161,6 +161,14 @@ chip soc/intel/skylake
 	register "PcieRpEnable[2]" = "1"
 	# Disable CLKREQ#
 	register "PcieRpClkReqSupport[2]" = "0"
+	# Set MaxPayload to 256 bytes
+	register "PcieRpMaxPayload[2]" = "RpMaxPayload_256"
+	# Enable Latency Tolerance Reporting Mechanism
+	register "PcieRpLtrEnable[2]" = "1"
+	# Enable Advanced Error Reporting
+	register "PcieRpAdvancedErrorReporting[2]" = "1"
+	# Disable Aspm
+	register "PcieRpAspm[2]" = "AspmDisabled"
 
 	# PCIE Port 4 disabled
 	# PCIE Port 5 x1 -> MODULE i219
@@ -168,6 +176,14 @@ chip soc/intel/skylake
 	# PCIE Port 6 x1 -> BASEBOARD x1 i210 : Mapped to PCIe 4 on the baseboard
 	register "PcieRpEnable[5]" = "1"
 	register "PcieRpClkReqSupport[5]" = "0"
+	# Set MaxPayload to 256 bytes
+	register "PcieRpMaxPayload[5]" = "RpMaxPayload_256"
+	# Enable Latency Tolerance Reporting Mechanism
+	register "PcieRpLtrEnable[5]" = "1"
+	# Enable Advanced Error Reporting
+	register "PcieRpAdvancedErrorReporting[5]" = "1"
+	# Disable Aspm
+	register "PcieRpAspm[5]" = "AspmDisabled"
 
 	# PCIE Port 7 Disabled
 	# PCIE Port 8 Disabled
@@ -178,6 +194,14 @@ chip soc/intel/skylake
 	register "PcieRpClkReqSupport[8]" = "0"
 	# Use Hot Plug subsystem
 	register "PcieRpHotPlug[8]" = "1"
+	# Set MaxPayload to 256 bytes
+	register "PcieRpMaxPayload[8]" = "RpMaxPayload_256"
+	# Enable Latency Tolerance Reporting Mechanism
+	register "PcieRpLtrEnable[8]" = "1"
+	# Enable Advanced Error Reporting
+	register "PcieRpAdvancedErrorReporting[8]" = "1"
+	# Disable Aspm
+	register "PcieRpAspm[8]" = "AspmDisabled"
 
 	# USB 2.0 Enable all ports
 	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC_SKIP)"	# USB-C Port 2

@@ -1,0 +1,5 @@
+config SOC_INTEL_COMMON_BLOCK_POWER_LIMIT
+	bool
+	default n
+	help
+	  This option allows to configure processor power limit values.

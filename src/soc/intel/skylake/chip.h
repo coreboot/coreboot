@@ -289,6 +289,16 @@ struct soc_intel_skylake_config {
 		RpMaxPayload_256,
 	} PcieRpMaxPayload[CONFIG_MAX_ROOT_PORTS];
 
+	/* PCIE RP ASPM, ASPM support for the root port */
+	enum {
+		AspmDefault,
+		AspmDisabled,
+		AspmL0s,
+		AspmL1,
+		AspmL0sL1,
+		AspmAutoConfig,
+	} PcieRpAspm[CONFIG_MAX_ROOT_PORTS];
+
 	/* USB related */
 	struct usb2_port_config usb2_ports[16];
 	struct usb3_port_config usb3_ports[10];

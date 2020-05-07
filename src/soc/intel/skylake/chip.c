@@ -182,8 +182,11 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	       sizeof(params->PcieRpLtrEnable));
 	memcpy(params->PcieRpHotPlug, config->PcieRpHotPlug,
 	       sizeof(params->PcieRpHotPlug));
-	for (i = 0; i < CONFIG_MAX_ROOT_PORTS; i++)
+	for (i = 0; i < CONFIG_MAX_ROOT_PORTS; i++) {
 		params->PcieRpMaxPayload[i] = config->PcieRpMaxPayload[i];
+		if (config->PcieRpAspm[i])
+			params->PcieRpAspm[i] = config->PcieRpAspm[i] - 1;
+	}
 
 	/*
 	 * PcieRpClkSrcNumber UPD is set to clock source number(0-6) for

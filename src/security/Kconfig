@@ -1,5 +1,9 @@
 # SPDX-License-Identifier: GPL-2.0-only
 
+# These features are implemented in src/lib/cbfs.c, but they are security
+# features so sort them in here for menuconfig.
+source "src/lib/Kconfig.cbfs_verification"
+
 source "src/security/vboot/Kconfig"
 source "src/security/tpm/Kconfig"
 source "src/security/memory/Kconfig"

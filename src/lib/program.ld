@@ -18,6 +18,7 @@
 #if !ENV_X86 && (ENV_DECOMPRESSOR || ENV_BOOTBLOCK && !CONFIG(COMPRESS_BOOTBLOCK))
 	KEEP(*(.id));
 #endif
+	KEEP(*(.metadata_hash_anchor));
 	*(.text);
 	*(.text.*);
 

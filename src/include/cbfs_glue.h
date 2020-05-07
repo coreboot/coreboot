@@ -5,8 +5,19 @@
 
 #include <commonlib/region.h>
 #include <console/console.h>
+#include <rules.h>
 
-#define CBFS_ENABLE_HASHING 0
+/*
+ * This flag prevents linking hashing functions into stages where they're not required. We don't
+ * need them at all if verification is disabled. If verification is enabled without TOCTOU
+ * safety, we only need to verify the metadata hash in the initial stage and can assume it stays
+ * valid in later stages. If TOCTOU safety is required, we may need them in every stage to
+ * reverify metadata that had to be reloaded from flash (e.g. because it didn't fit the mcache).
+ * Note that this only concerns metadata hashing -- file access functions may still link hashing
+ * routines independently for file data hashing.
+ */
+#define CBFS_ENABLE_HASHING (CONFIG(CBFS_VERIFICATION) && \
+			     (CONFIG(TOCTOU_SAFETY) || ENV_INITIAL_STAGE))
 
 #define ERROR(...) printk(BIOS_ERR, "CBFS ERROR: " __VA_ARGS__)
 #define LOG(...) printk(BIOS_ERR, "CBFS: " __VA_ARGS__)

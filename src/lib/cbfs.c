@@ -10,6 +10,7 @@
 #include <console/console.h>
 #include <fmap.h>
 #include <lib.h>
+#include <metadata_hash.h>
 #include <security/tpm/tspi/crtm.h>
 #include <security/vboot/vboot_common.h>
 #include <stdlib.h>
@@ -29,8 +30,21 @@ cb_err_t cbfs_boot_lookup(const char *name, bool force_ro,
 	if (!CONFIG(NO_CBFS_MCACHE) && !ENV_SMM)
 		err = cbfs_mcache_lookup(cbd->mcache, cbd->mcache_size,
 					  name, mdata, &data_offset);
-	if (err == CB_CBFS_CACHE_FULL)
-		err = cbfs_lookup(&cbd->rdev, name, mdata, &data_offset, NULL);
+	if (err == CB_CBFS_CACHE_FULL) {
+		struct vb2_hash *metadata_hash = NULL;
+		if (CONFIG(TOCTOU_SAFETY)) {
+			if (ENV_SMM)  /* Cannot provide TOCTOU safety for SMM */
+				dead_code();
+			/* We can only reach this for the RW CBFS -- an mcache
+			   overflow in the RO CBFS would have been caught when
+			   building the mcache in cbfs_get_boot_device().
+			   (Note that TOCTOU_SAFETY implies !NO_CBFS_MCACHE.) */
+			assert(cbd == vboot_get_cbfs_boot_device());
+			/* TODO: set metadata_hash to RW metadata hash here. */
+		}
+		err = cbfs_lookup(&cbd->rdev, name, mdata, &data_offset,
+				  metadata_hash);
+	}
 
 	if (CONFIG(VBOOT_ENABLE_CBFS_FALLBACK) && !force_ro &&
 	    err == CB_CBFS_NOT_FOUND) {
@@ -405,6 +419,26 @@ void cbfs_boot_device_find_mcache(struct cbfs_boot_device *cbd, uint32_t id)
 	}
 }
 
+cb_err_t cbfs_init_boot_device(const struct cbfs_boot_device *cbd,
+			       struct vb2_hash *metadata_hash)
+{
+	/* If we have an mcache, mcache_build() will also check mdata hash. */
+	if (!CONFIG(NO_CBFS_MCACHE) && !ENV_SMM && cbd->mcache_size > 0)
+		return cbfs_mcache_build(&cbd->rdev, cbd->mcache,
+					 cbd->mcache_size, metadata_hash);
+
+	/* No mcache and no verification means we have nothing special to do. */
+	if (!CONFIG(CBFS_VERIFICATION) || !metadata_hash)
+		return CB_SUCCESS;
+
+	/* Verification only: use cbfs_walk() without a walker() function to
+	   just run through the CBFS once, will return NOT_FOUND by default. */
+	cb_err_t err = cbfs_walk(&cbd->rdev, NULL, NULL, metadata_hash, 0);
+	if (err == CB_CBFS_NOT_FOUND)
+		err = CB_SUCCESS;
+	return err;
+}
+
 const struct cbfs_boot_device *cbfs_get_boot_device(bool force_ro)
 {
 	static struct cbfs_boot_device ro;
@@ -426,15 +460,18 @@ const struct cbfs_boot_device *cbfs_get_boot_device(bool force_ro)
 		return &ro;
 
 	if (fmap_locate_area_as_rdev("COREBOOT", &ro.rdev))
-		return NULL;
+		die("Cannot locate primary CBFS");
 
 	cbfs_boot_device_find_mcache(&ro, CBMEM_ID_CBFS_RO_MCACHE);
 
-	if (ENV_INITIAL_STAGE && !CONFIG(NO_CBFS_MCACHE)) {
-		cb_err_t err = cbfs_mcache_build(&ro.rdev, ro.mcache,
-						 ro.mcache_size, NULL);
-		if (err && err != CB_CBFS_CACHE_FULL)
-			die("Failed to build RO mcache");
+	if (ENV_INITIAL_STAGE) {
+		cb_err_t err = cbfs_init_boot_device(&ro, metadata_hash_get());
+		if (err == CB_CBFS_HASH_MISMATCH)
+			die("RO CBFS metadata hash verification failure");
+		else if (CONFIG(TOCTOU_SAFETY) && err == CB_CBFS_CACHE_FULL)
+			die("RO mcache overflow breaks TOCTOU safety!\n");
+		else if (err && err != CB_CBFS_CACHE_FULL)
+			die("RO CBFS initialization error: %d", err);
 	}
 
 	return &ro;

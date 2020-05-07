@@ -47,6 +47,7 @@ bootblock-y += prog_ops.c
 bootblock-y += cbfs.c
 bootblock-$(CONFIG_GENERIC_GPIO_LIB) += gpio.c
 bootblock-y += libgcc.c
+bootblock-$(CONFIG_CBFS_VERIFICATION) += metadata_hash.c
 bootblock-$(CONFIG_GENERIC_UDELAY) += timer.c
 
 bootblock-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c

@@ -25,18 +25,17 @@ _Static_assert(!CONFIG(VBOOT_RETURN_FROM_VERSTAGE) ||
 
 int vboot_executed;
 
-static void build_rw_mcache(void)
+static void after_verstage(void)
 {
-	if (CONFIG(NO_CBFS_MCACHE))
-		return;
+	vboot_executed = 1;	/* Mark verstage execution complete. */
 
 	const struct cbfs_boot_device *cbd = vboot_get_cbfs_boot_device();
-	if (!cbd)	/* Don't build RW mcache in recovery mode. */
+	if (!cbd)	/* Can't initialize RW CBFS in recovery mode. */
 		return;
-	cb_err_t err = cbfs_mcache_build(&cbd->rdev, cbd->mcache,
-					 cbd->mcache_size, NULL);
-	if (err && err != CB_CBFS_CACHE_FULL)
-		die("Failed to build RW mcache.");	/* TODO: -> recovery? */
+
+	cb_err_t err = cbfs_init_boot_device(cbd, NULL); /* TODO: RW hash */
+	if (err && err != CB_CBFS_CACHE_FULL)	/* TODO: -> recovery? */
+		die("RW CBFS initialization failure: %d", err);
 }
 
 void vboot_run_logic(void)
@@ -44,8 +43,7 @@ void vboot_run_logic(void)
 	if (verification_should_run()) {
 		/* Note: this path is not used for VBOOT_RETURN_FROM_VERSTAGE */
 		verstage_main();
-		vboot_executed = 1;
-		build_rw_mcache();
+		after_verstage();
 	} else if (verstage_should_load()) {
 		struct cbfsf file;
 		struct prog verstage =
@@ -72,8 +70,7 @@ void vboot_run_logic(void)
 		if (!CONFIG(VBOOT_RETURN_FROM_VERSTAGE))
 			return;
 
-		vboot_executed = 1;
-		build_rw_mcache();
+		after_verstage();
 	}
 }
 

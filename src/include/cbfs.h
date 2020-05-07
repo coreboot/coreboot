@@ -7,6 +7,7 @@
 #include <commonlib/cbfs.h>
 #include <program_loading.h>
 #include <types.h>
+#include <vb2_sha.h>
 
 /***********************************************
  * Perform CBFS operations on the boot device. *
@@ -73,5 +74,14 @@ void cbfs_boot_device_find_mcache(struct cbfs_boot_device *cbd, uint32_t id);
  * Returns NULL on error (e.g. boot device IO error).
  */
 const struct cbfs_boot_device *cbfs_get_boot_device(bool force_ro);
+
+/*
+ * Builds the mcache (if |cbd->mcache| is set) and verifies |metadata_hash| (if
+ * it is not NULL). If CB_CBFS_CACHE_FULL is returned, the mcache is incomplete
+ * but still valid and the metadata hash was still verified. Should be called
+ * once per *boot* (not once per stage) before the first CBFS access.
+ */
+cb_err_t cbfs_init_boot_device(const struct cbfs_boot_device *cbd,
+			       struct vb2_hash *metadata_hash);
 
 #endif

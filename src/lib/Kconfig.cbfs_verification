@@ -1,0 +1,57 @@
+# SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0-or-later
+#
+# This file is part of the coreboot project.
+#
+# This file is sourced from src/security/Kconfig for menuconfig convenience.
+
+#menu "CBFS verification"	# TODO: enable once it works
+
+config CBFS_VERIFICATION
+	bool	# TODO: make user selectable once it works
+	depends on !COMPRESS_BOOTBLOCK	# TODO: figure out decompressor anchor
+	depends on !VBOOT_STARTS_BEFORE_BOOTBLOCK # this is gonna get tricky...
+	select VBOOT_LIB
+	help
+	  Work in progress. Do not use (yet).
+
+config TOCTOU_SAFETY
+	bool
+	depends on CBFS_VERIFICATION
+	depends on !NO_FMAP_CACHE
+	depends on !NO_CBFS_MCACHE
+	help
+	  Work in progress. Not actually TOCTOU safe yet. Do not use.
+
+	  Design idea here is that mcache overflows in this mode are only legal
+	  for the RW CBFS, because it's relatively easy to retrieve the RW
+	  metadata hash from persistent vboot context at any time, but the RO
+	  metadata hash is lost after the bootblock is unloaded. This avoids the
+	  need to carry yet another piece forward through the stages. Mcache
+	  overflows are mostly a concern for RW updates (if an update adds more
+	  files than originally planned for), for the RO section it should
+	  always be possible to dimension the mcache correctly beforehand, so
+	  this should be an acceptable limitation.
+
+config CBFS_HASH_ALGO
+	int
+	default 1 if CBFS_HASH_SHA1
+	default 2 if CBFS_HASH_SHA256
+	default 3 if CBFS_HASH_SHA512
+
+choice
+	prompt "--> hash type"
+	depends on CBFS_VERIFICATION
+	default CBFS_HASH_SHA256
+
+config CBFS_HASH_SHA1
+	bool "SHA-1"
+
+config CBFS_HASH_SHA256
+	bool "SHA-256"
+
+config CBFS_HASH_SHA512
+	bool "SHA-512"
+
+endchoice
+
+#endmenu

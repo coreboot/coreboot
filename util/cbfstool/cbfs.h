@@ -11,6 +11,11 @@
 
 #define CBFS_HEADPTR_ADDR_X86 0xFFFFFFFC
 
+/* cbfstool is allowed to use this constant freely since it's not part of the
+   CBFS image, so make an alias for the name that's a little less aggressive. */
+#define METADATA_HASH_ANCHOR_MAGIC \
+	DO_NOT_USE_METADATA_HASH_ANCHOR_MAGIC_DO_NOT_USE
+
 struct typedesc_t {
 	uint32_t type;
 	const char *name;

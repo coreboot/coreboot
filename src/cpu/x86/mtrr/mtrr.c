@@ -1,15 +1,7 @@
 /* This file is part of the coreboot project. */
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+
 /*
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
- *
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
- *
  * mtrr.c: setting MTRR to decent values for cache initialization on P6
  * Derived from intel_set_mtrr in intel_subr.c and mtrr.c in linux kernel
  *

@@ -6,7 +6,6 @@
 #include <device/i2c_simple.h>
 #include <device/device.h>
 #include <device/path.h>
-#include <stdint.h>
 #include "tpm.h"
 #include "chip.h"
 

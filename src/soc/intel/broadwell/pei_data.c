@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <stdint.h>
 #include <console/streams.h>
 #include <soc/iomap.h>
 #include <soc/pei_data.h>

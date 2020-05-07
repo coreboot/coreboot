@@ -9,7 +9,6 @@
 #include <soc/iomap.h>
 #include <soc/me.h>
 #include <soc/pci_devs.h>
-#include <stdint.h>
 
 
 /* HFSTS1[3:0] Current Working State Values */

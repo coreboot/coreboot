@@ -2,7 +2,6 @@
 
 #include <acpi/acpigen_dsm.h>
 #include <device/device.h>
-#include <stdint.h>
 #include <string.h>
 #include "chip.h"
 #include <gpio.h>

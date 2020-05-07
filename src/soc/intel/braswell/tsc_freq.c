@@ -3,7 +3,6 @@
 #include <cpu/x86/msr.h>
 #include <cpu/x86/tsc.h>
 #include <soc/msr.h>
-#include <stdint.h>
 
 static const unsigned int cpu_bus_clk_freq_table[] = {
 	83333,

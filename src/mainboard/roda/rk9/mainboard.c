@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <stdint.h>
 #include <arch/io.h>
 #include <device/device.h>
 #include <drivers/intel/gma/int15.h>

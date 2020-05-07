@@ -2,7 +2,6 @@
 
 #include <arch/smp/mpspec.h>
 #include <arch/ioapic.h>
-#include <stdint.h>
 
 static void *smp_write_config_table(void *v)
 {

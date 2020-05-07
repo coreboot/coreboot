@@ -3,7 +3,6 @@
  * cache.c: Cache maintenance routines for ARMv7-M
  */
 
-#include <stdint.h>
 
 #include <arch/cache.h>
 

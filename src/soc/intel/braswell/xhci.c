@@ -4,7 +4,6 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <stdint.h>
 #include <reg_script.h>
 
 #include <soc/iomap.h>

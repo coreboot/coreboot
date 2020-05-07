@@ -3,7 +3,6 @@
 #include <acpi/acpi.h>
 #include <console/console.h>
 #include <device/pci_ops.h>
-#include <stdint.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <cpu/cpu.h>

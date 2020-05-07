@@ -5,7 +5,6 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <device/path.h>
-#include <stdint.h>
 #include "chip.h"
 
 #if CONFIG(HAVE_ACPI_TABLES)

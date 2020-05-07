@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <stdint.h>
 #include <southbridge/intel/bd82x6x/nvs.h>
 #include <vendorcode/google/chromeos/gnvs.h>
 #include "thermal.h"

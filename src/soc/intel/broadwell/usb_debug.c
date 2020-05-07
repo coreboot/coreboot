@@ -3,7 +3,6 @@
 // Use simple device model for this file even in ramstage
 #define __SIMPLE_DEVICE__
 
-#include <stdint.h>
 #include <device/pci_ehci.h>
 #include <device/pci_def.h>
 

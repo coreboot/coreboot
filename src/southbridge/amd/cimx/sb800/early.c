@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <stdint.h>
 #include <amdblocks/acpimmio.h>
 #include "SBPLATFORM.h"
 #include "sb_cimx.h"

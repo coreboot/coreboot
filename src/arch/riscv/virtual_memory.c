@@ -5,7 +5,6 @@
 
 #include <arch/cpu.h>
 #include <arch/encoding.h>
-#include <stdint.h>
 #include <vm.h>
 
 /* Delegate controls which traps are delegated to the payload. If you

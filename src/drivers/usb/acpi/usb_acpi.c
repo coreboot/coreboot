@@ -6,7 +6,6 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <device/path.h>
-#include <stdint.h>
 #include "chip.h"
 
 static bool usb_acpi_add_gpios_to_crs(struct drivers_usb_acpi_config *cfg)

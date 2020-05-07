@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <stdint.h>
 #include <commonlib/helpers.h>
 #include <northbridge/intel/gm45/gm45.h>
 

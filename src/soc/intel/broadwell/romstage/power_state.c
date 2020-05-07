@@ -8,7 +8,6 @@
 #include <device/pci.h>
 #include <device/pci_def.h>
 #include <reg_script.h>
-#include <stdint.h>
 #include <string.h>
 #include <soc/iomap.h>
 #include <soc/lpc.h>

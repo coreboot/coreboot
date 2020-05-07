@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <stddef.h>
 
 #include <device/mmio.h>
 #include <soc/mtcmos.h>

@@ -9,7 +9,6 @@
 #include <soc/i2c.h>
 #include <soc/periph.h>
 #include <soc/pinmux.h>
-#include <stddef.h>
 #include <timer.h>
 
 struct __packed i2c_regs

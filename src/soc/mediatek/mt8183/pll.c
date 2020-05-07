@@ -2,7 +2,6 @@
 
 #include <device/mmio.h>
 #include <delay.h>
-#include <stddef.h>
 
 #include <soc/addressmap.h>
 #include <soc/infracfg.h>

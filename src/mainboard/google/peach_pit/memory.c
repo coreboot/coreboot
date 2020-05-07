@@ -4,7 +4,6 @@
 #include <soc/dmc.h>
 #include <soc/gpio.h>
 #include <soc/setup.h>
-#include <stddef.h>
 
 const struct mem_timings mem_timings = {
 		.mem_manuf = MEM_MANUF_SAMSUNG,

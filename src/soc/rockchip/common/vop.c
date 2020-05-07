@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <device/mmio.h>
-#include <stddef.h>
 #include <soc/addressmap.h>
 #include <soc/clock.h>
 #include <soc/edp.h>

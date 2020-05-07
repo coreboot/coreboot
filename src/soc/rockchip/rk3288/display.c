@@ -7,7 +7,6 @@
 #include <delay.h>
 #include <edid.h>
 #include <gpio.h>
-#include <stddef.h>
 #include <string.h>
 #include <soc/addressmap.h>
 #include <soc/clock.h>

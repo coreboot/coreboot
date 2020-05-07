@@ -8,7 +8,6 @@
 #include <soc/cpu.h>
 #include <soc/dp-core.h>
 #include <soc/fimd.h>
-#include <stddef.h>
 #include <string.h>
 
 #include "chip.h"

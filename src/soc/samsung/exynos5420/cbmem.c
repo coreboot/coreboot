@@ -2,7 +2,6 @@
 
 #include <cbmem.h>
 #include <soc/cpu.h>
-#include <stddef.h>
 
 void *cbmem_top_chipset(void)
 {

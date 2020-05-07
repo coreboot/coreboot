@@ -2,7 +2,6 @@
 
 #include <boardid.h>
 #include <string.h>
-#include <stddef.h>
 #include <fsp/soc_binding.h>
 #include <soc/romstage.h>
 #include <console/console.h>

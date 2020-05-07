@@ -7,7 +7,6 @@
 #include <cpu/x86/smm.h>
 #include <cpu/x86/msr.h>
 
-#include <stddef.h>
 #include <cbfs.h>
 #include <console/console.h>
 #include <lib.h>

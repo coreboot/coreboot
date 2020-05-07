@@ -9,7 +9,6 @@
 #include <soc/fimd.h>
 #include <soc/cpu.h>
 #include <soc/clk.h>
-#include <stddef.h>
 #include <string.h>
 
 #include "chip.h"

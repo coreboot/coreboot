@@ -3,7 +3,6 @@
 #include <console/console.h>
 #include <ip_checksum.h>
 #include <pc80/mc146818rtc.h>
-#include <stddef.h>
 #include <stdint.h>
 #include <elog.h>
 

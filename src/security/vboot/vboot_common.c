@@ -5,7 +5,6 @@
 #include <console/cbmem_console.h>
 #include <fmap.h>
 #include <reset.h>
-#include <stddef.h>
 #include <security/vboot/misc.h>
 #include <security/vboot/vboot_common.h>
 #include <security/vboot/vbnv.h>

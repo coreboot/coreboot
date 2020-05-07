@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <stddef.h>
 #include <stdint.h>
 #include <arch/romstage.h>
 #include <bootmode.h>

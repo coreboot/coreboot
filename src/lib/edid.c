@@ -8,7 +8,6 @@
 
 #include <assert.h>
 #include <commonlib/helpers.h>
-#include <stddef.h>
 #include <console/console.h>
 #include <ctype.h>
 #include <stdint.h>

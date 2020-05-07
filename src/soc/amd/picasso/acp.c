@@ -6,9 +6,9 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include "chip.h"
+#include <soc/acp.h>
 #include <soc/acpi.h>
 #include <soc/pci_devs.h>
-#include <soc/northbridge.h>
 #include <soc/southbridge.h>
 #include <amdblocks/acpimmio.h>
 #include <commonlib/helpers.h>

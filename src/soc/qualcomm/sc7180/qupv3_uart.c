@@ -71,7 +71,7 @@ void uart_init(unsigned int idx)
 	/* sc7180 requires 16 clock pulses to sample 1 bit of data */
 	uart_freq = baud_rate * 16;
 
-	div = DIV_ROUND_CLOSEST(QUPV3_UART_SRC_HZ, uart_freq);
+	div = DIV_ROUND_CLOSEST(SRC_XO_HZ, uart_freq);
 	write32(&regs->geni_ser_m_clk_cfg, (div << 4) | 1);
 	write32(&regs->geni_ser_s_clk_cfg, (div << 4) | 1);
 
@@ -147,7 +147,7 @@ void uart_fill_lb(void *data)
 	serial.baseaddr = (uint32_t)uart_platform_base(CONFIG_UART_FOR_CONSOLE);
 	serial.baud = get_uart_baudrate();
 	serial.regwidth = 4;
-	serial.input_hertz = QUPV3_UART_SRC_HZ;
+	serial.input_hertz = SRC_XO_HZ;
 
 	lb_add_serial(&serial, data);
 }

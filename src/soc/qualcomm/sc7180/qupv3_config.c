@@ -54,10 +54,7 @@ void qupv3_se_fw_load_and_init(unsigned int bus, unsigned int protocol,
 
 
 	/* HPG section 3.1.7.1 */
-	if (protocol == SE_PROTOCOL_UART) {
-		/* To maintain Div=4 for QcLib, configure clock to 7372800Hz for sc7180 */
-		clock_configure_qup(bus, QUPV3_UART_SRC_HZ);
-	} else {
+	if (protocol != SE_PROTOCOL_UART) {
 		setbits_le32(&regs->geni_dfs_if_cfg,
 				GENI_DFS_IF_CFG_DFS_IF_EN_BMSK);
 		/* configure clock dfsr */

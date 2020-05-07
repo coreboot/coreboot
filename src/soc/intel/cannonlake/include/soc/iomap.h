@@ -54,7 +54,6 @@
 
 #define HECI1_BASE_ADDRESS	0xfeda2000
 
-#define ABOVE_4GB_MEM_BASE_ADDRESS	(256ULL * GiB)
 #define ABOVE_4GB_MEM_BASE_SIZE	(256ULL * GiB)
 
 /* PTT registers */

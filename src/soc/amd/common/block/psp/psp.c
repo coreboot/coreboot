@@ -7,7 +7,6 @@
 #include <console/console.h>
 #include <amdblocks/psp.h>
 #include <soc/iomap.h>
-#include <soc/northbridge.h>
 #include "psp_def.h"
 
 static const char *psp_status_nobase = "error: PSP BAR3 not assigned";

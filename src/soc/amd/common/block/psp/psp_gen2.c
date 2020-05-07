@@ -5,7 +5,6 @@
 #include <bootstate.h>
 #include <amdblocks/psp.h>
 #include <soc/iomap.h>
-#include <soc/northbridge.h>
 #include "psp_def.h"
 
 static u16 rd_mbox_sts(struct pspv2_mbox *mbox)

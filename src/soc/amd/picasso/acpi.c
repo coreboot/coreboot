@@ -20,10 +20,21 @@
 #include <soc/pci_devs.h>
 #include <soc/cpu.h>
 #include <soc/southbridge.h>
-#include <soc/northbridge.h>
 #include <soc/nvs.h>
 #include <soc/gpio.h>
 #include <version.h>
+
+unsigned long acpi_fill_mcfg(unsigned long current)
+{
+
+	current += acpi_create_mcfg_mmconfig((acpi_mcfg_mmconfig_t *)current,
+					     CONFIG_MMCONF_BASE_ADDRESS,
+					     0,
+					     0,
+					     CONFIG_MMCONF_BUS_NUMBER);
+
+	return current;
+}
 
 unsigned long acpi_fill_madt(unsigned long current)
 {

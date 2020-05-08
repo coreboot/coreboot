@@ -1,14 +1,5 @@
 /* Compile and dump the device tree */
-/*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; version 2 of the License.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- */
+/* SPDX-License-Identifier: GPL-2.0-only */
 #include  <stdio.h>
 /* you can't include string.h due to conflicts with coreboot prototypes. */
 void *memcpy(void *m1, void *m2, size_t s);

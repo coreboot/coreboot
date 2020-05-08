@@ -124,7 +124,7 @@ Scope (\_SB.PCI0.IPU0)
 			Package (0x02)
 			{
 				"data-lanes",
-				Package (0x04)
+				Package (0x02)
 				{
 					One,
 					0x02
@@ -582,7 +582,7 @@ Scope (\_SB.PCI0.I2C2)
 					"link-frequencies",
 					Package (0x01)
 					{
-						0xABA9500
+						0x15752A00
 					}
 				},
 				Package (0x02)

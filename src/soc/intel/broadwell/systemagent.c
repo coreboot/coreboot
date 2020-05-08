@@ -8,6 +8,7 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
+#include <intelblocks/power_limit.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 #include <soc/cpu.h>
 #include <soc/iomap.h>
@@ -404,6 +405,7 @@ static void systemagent_read_resources(struct device *dev)
 
 static void systemagent_init(struct device *dev)
 {
+	struct soc_power_limits_config *config;
 	u8 bios_reset_cpl, pair;
 
 	/* Enable Power Aware Interrupt Routing */
@@ -423,7 +425,8 @@ static void systemagent_init(struct device *dev)
 
 	/* Configure turbo power limits 1ms after reset complete bit */
 	mdelay(1);
-	set_power_limits(28);
+	config = config_of_soc();
+	set_power_limits(MOBILE_SKU_PL1_TIME_SEC, config);
 }
 
 static struct device_operations systemagent_ops = {

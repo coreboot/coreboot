@@ -1,0 +1,15 @@
+chip northbridge/intel/sandybridge
+	device domain 0x0 on
+		chip southbridge/intel/bd82x6x # Intel Series 6 Cougar Point PCH
+			register "docking_supported" = "1"
+			device pci 1c.2 on
+				smbios_slot_desc "7" "3" "ExpressCard Slot" "8"
+			end # PCIe Port #3 (expresscard)
+			device pci 1f.0 on # LPC bridge
+				chip ec/lenovo/h8
+					register "eventa_enable" = "0x01"
+				end
+			end # LPC Controller
+		end
+	end
+end

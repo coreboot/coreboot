@@ -1,7 +1,7 @@
 Category: laptop
-Board name: ThinkPad X230 baseboard
+Board name: ThinkPad X230s
 ROM package: SOIC-8
 ROM protocol: SPI
 ROM socketed: n
 Flashrom support: n
-Release year: 2012
+Release year: 2013

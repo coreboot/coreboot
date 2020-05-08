@@ -24,6 +24,9 @@ chip soc/intel/cannonlake
 	register "FastPkgCRampDisableGt" = "1"
 	register "FastPkgCRampDisableSa" = "1"
 
+	register "tdp_pl1_override" = "25"
+	register "tdp_pl2_override" = "44"
+
 	# Intel Common SoC Config
 	#+-------------------+---------------------------+
 	#| Field             |  Value                    |

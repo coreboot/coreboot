@@ -1,9 +1,5 @@
 /* This file is part of the coreboot project. */
 /*
- * Copyright (C) 2008 Jordan Crouse <jordan@cosmicpenguin.net>
- * Copyright (C) 2011 secunet Security Networks AG
- *     (Written by Patrick Georgi <patrick.georgi@secunet.com>)
- *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; version 2 of the License.

@@ -1,9 +1,5 @@
+/* This file is part of the superiotool project */
 /*
- * This file is part of the superiotool project.
- *
- * Copyright (C) 2010 Google Inc.
- * Written by David Hendricks <dhendrix@google.com> for Nuvoton Technology Corp.
- *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or

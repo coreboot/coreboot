@@ -1,8 +1,5 @@
+/* uio_ehci_pci - UIO driver for PCI EHCI devices */
 /*
- * uio_ehci_pci - UIO driver for PCI EHCI devices
- *
- * Copyright (C) 2013 Nico Huber <nico.h@gmx.de>
- *
  * This only implements MMIO access (no interrupts).
  *
  * This program is free software; you can redistribute it and/or modify

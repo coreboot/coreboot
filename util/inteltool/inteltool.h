@@ -1,9 +1,5 @@
+/* inteltool - dump all registers on an Intel CPU + chipset based system */
 /*
- * inteltool - dump all registers on an Intel CPU + chipset based system.
- *
- * Copyright (C) 2008-2010 by coresystems GmbH
- * Copyright (C) 2009 Carl-Daniel Hailfinger
- *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; version 2 of the License.

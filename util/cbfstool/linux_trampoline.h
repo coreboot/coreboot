@@ -1,9 +1,5 @@
+/* This file is part of coreboot */
 /*
- * This file is part of coreboot..
- *
- * Based on work by Patrick Georgi <patrick@georgi-clan.de>
- * Copyright 2014 Curt Brune <curt@cumulusnetworks.com>
- *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; version 2 of the License.

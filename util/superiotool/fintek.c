@@ -1,12 +1,5 @@
+/* This file is part of the superiotool project */
 /*
- * This file is part of the superiotool project.
- *
- * Copyright (C) 2006 coresystems GmbH <info@coresystems.de>
- * Copyright (C) 2007-2008 Uwe Hermann <uwe@hermann-uwe.de>
- * Copyright (C) 2014 Edward O'Callaghan <eocallaghan@alterapraxis.com>
- * Copyright (C) 2014 Wilbert Duijvenvoorde <w.a.n.duijvenvoorde@gmail.com>
- * Copyright (C) 2017 Nicola Corna <nicola@corna.info>
- *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or

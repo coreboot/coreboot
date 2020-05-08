@@ -1,12 +1,6 @@
 /*****************************************************************************\
  * cmos_lowlevel.h
  *****************************************************************************
- *  Copyright (C) 2002-2005 The Regents of the University of California.
- *  Produced at the Lawrence Livermore National Laboratory.
- *  Written by David S. Peterson <dsp@llnl.gov> <dave_peterson@pobox.com>.
- *  UCRL-CODE-2003-012
- *  All rights reserved.
- *
  *  This file is part of nvramtool, a utility for reading/writing coreboot
  *  parameters and displaying information from the coreboot table.
  *  For details, see https://coreboot.org/nvramtool.

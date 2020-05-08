@@ -7,11 +7,6 @@
 
 /* hexdump.h
  *
- * Copyright (C) 2002
- *     David S. Peterson.  All rights reserved.
- *
- * Author: David S. Peterson <dave_peterson@pobox.com>
- *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
  * met:

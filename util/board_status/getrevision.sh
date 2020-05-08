@@ -3,9 +3,6 @@
 # This file is part of the coreboot project. It originated in the
 # flashrom project but has been heavily modified since then.
 #
-# Copyright (C) 2013 Stefan Tauner
-# Copyright (C) 2013 Google Inc.
-#
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or

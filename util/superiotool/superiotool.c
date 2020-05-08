@@ -1,11 +1,5 @@
+/* This file is part of the superiotool project */
 /*
- * This file is part of the superiotool project.
- *
- * Copyright (C) 2006 Ronald Minnich <rminnich@gmail.com>
- * Copyright (C) 2007 Uwe Hermann <uwe@hermann-uwe.de>
- * Copyright (C) 2007 Carl-Daniel Hailfinger
- * Copyright (C) 2008 Robinson P. Tryon <bishop.robinson@gmail.com>
- *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or

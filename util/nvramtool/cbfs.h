@@ -1,7 +1,5 @@
 /* This file is part of the coreboot project. */
 /*
- * Copyright (C) 2008 Jordan Crouse <jordan@cosmicpenguin.net>
- *
  * This file is dual-licensed. You can choose between:
  *   - The GNU GPL, version 2, as published by the Free Software Foundation
  *   - The revised BSD license (without advertising clause)

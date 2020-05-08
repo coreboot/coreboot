@@ -1,11 +1,5 @@
+/* CBFS Image Manipulation */
 /*
- * CBFS Image Manipulation
- *
- * Copyright (C) 2013 The Chromium OS Authors. All rights reserved.
- * Copyright (C) 2016 Siemens AG. All rights reserved.
- * Copyright (C) 2019 9elements Agency GmbH
- * Copyright (C) 2019 Facebook Inc.
- *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; version 2 of the License.

@@ -6,8 +6,6 @@
 # GENERAL DESCRIPTION
 #    Contains all MBN Utilities for image generation
 #
-# Copyright (c) 2016, 2018, The Linux Foundation. All rights reserved.
-#
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are
 # met:

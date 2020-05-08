@@ -1,8 +1,5 @@
+/* Compile and dump the device tree */
 /*
- * Compile and dump the device tree
- *
- * Copyright 2013 Google Inc.
- *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; version 2 of the License.

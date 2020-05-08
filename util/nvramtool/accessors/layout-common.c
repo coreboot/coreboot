@@ -1,12 +1,6 @@
 /*****************************************************************************\
  * layout_common.c
  *****************************************************************************
- *  Copyright (C) 2012, Vikram Narayanan
- *  Unified build_opt_tbl and nvramtool
- *  build_opt_tbl.c
- *  	Copyright (C) 2003 Eric Biederman (ebiederm@xmission.com)
- *  	Copyright (C) 2007-2010 coresystems GmbH
- *
  *  This file is part of nvramtool, a utility for reading/writing coreboot
  *  parameters and displaying information from the coreboot table.
  *  For details, see https://coreboot.org/nvramtool.

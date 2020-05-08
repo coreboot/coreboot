@@ -1,19 +1,6 @@
 /*****************************************************************************\
  * lbtable.c
  *****************************************************************************
- *  Copyright (C) 2012, Vikram Narayanan
- *  	Unified build_opt_tbl and nvramtool
- *  	build_opt_tbl.c
- *  	Copyright (C) 2003 Eric Biederman (ebiederm@xmission.com)
- *  	Copyright (C) 2007-2010 coresystems GmbH
- *
- *  Copyright (C) 2002-2005 The Regents of the University of California.
- *  Produced at the Lawrence Livermore National Laboratory.
- *  Written by Dave Peterson <dsp@llnl.gov> <dave_peterson@pobox.com>
- *  and Stefan Reinauer <stepan@openbios.org>.
- *  UCRL-CODE-2003-012
- *  All rights reserved.
- *
  *  This file is part of nvramtool, a utility for reading/writing coreboot
  *  parameters and displaying information from the coreboot table.
  *  For details, see https://coreboot.org/nvramtool.

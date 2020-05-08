@@ -1,8 +1,3 @@
-#
-# Copyright (C) 2014 Steve Shenton <sgsit@libreboot.org>
-#                    Leah Rowe <info@minifree.org>
-# Copyright (C) 2017 Damien Zammit <damien@zamaudio.com>
-#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or

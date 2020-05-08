@@ -87,12 +87,21 @@ Scope (\_SB.PCI0.I2C3)
 			},
 
 			ToUUID ("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
-			Package (0x01)
+			Package (0x02)
 			{
 				Package (0x02)
 				{
 					"clock-frequency",
 					0x0124F800
+				},
+
+				Package (0x02)
+				{
+					"lens-focus",
+					Package (0x01)
+					{
+						VCM0
+					}
 				}
 			}
 		})
@@ -168,6 +177,130 @@ Scope (\_SB.PCI0.I2C3)
 						One,
 						Zero
 					}
+				}
+			}
+		})
+	}
+
+	Device(VCM0)
+	{
+		Name (_HID, "PRP0001")  /* _HID: Hardware ID */
+
+		Name (_UID, 0x00)  /* _UID: Unique ID */
+
+		Name (_DDN, "DW9768 VCM")  /* _DDN: DOS Device Name */
+
+		Method (_STA, 0, NotSerialized)  /* _STA: Status */
+		{
+			Return (0x0F)
+		}
+
+		Name (_CRS, ResourceTemplate ()  /* _CRS: Current Resource Settings */
+		{
+			I2cSerialBusV2 (0x000C, ControllerInitiated, 0x00061A80,
+			AddressingMode7Bit, "\\_SB.PCI0.I2C3",
+			0x00, ResourceConsumer, , Exclusive,
+			)
+		})
+
+		Name (_DEP, Package (0x01)  /* _DEP: Dependencies */
+		{
+			CAM1
+		})
+
+		Name (_PR0, Package (0x01)  /* _PR0: Power Resources for D0 */
+		{
+			RCPR
+		})
+
+		Name (_PR3, Package (0x01)  /* _PR3: Power Resources for D3hot */
+		{
+			RCPR
+		})
+
+		Name (_DSD, Package (0x02)  /* _DSD: Device-Specific Data */
+		{
+			ToUUID ("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"), /* Device Properties for _DSD */
+			Package (0x01)
+			{
+				Package (0x02)
+				{
+					"compatible",
+					"dongwoon,dw9768"
+				}
+			}
+		})
+	}
+
+	Device (NVM0)
+	{
+		Name (_HID, "PRP0001")  /* _HID: Hardware ID */
+
+		Name (_UID, 0x01)  /* _UID: Unique ID */
+
+		Name (_DDN, "AT24 EEPROM")  /* _DDN: DOS Device Name */
+
+		Method (_STA, 0, NotSerialized)  /* _STA: Status*/
+		{
+			Return (0x0F)
+		}
+
+		Name (_CRS, ResourceTemplate ()  /* _CRS: Current Resource Settings */
+		{
+			I2cSerialBusV2 (0x0058, ControllerInitiated, 0x00061A80,
+			AddressingMode7Bit, "\\_SB.PCI0.I2C3",
+			0x00, ResourceConsumer, , Exclusive,
+			)
+		})
+
+		Name (_DEP, Package (0x01)  /* _DEP: Dependencies */
+		{
+			CAM1
+		})
+
+		Name (_PR0, Package (0x01)  /* _PR0: Power Resources for D0 */
+		{
+			RCPR
+		})
+
+		Name (_PR3, Package (0x01)  /* _PR3: Power Resources for D3hot */
+		{
+			RCPR
+		})
+
+		Name (_DSD, Package (0x02)  /* _DSD: Device-Specific Data */
+		{
+			ToUUID ("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"), /* Device Properties for _DSD */
+			Package (0x05)
+			{
+				Package (0x02)
+				{
+					"size",
+					0x2800
+				},
+
+				Package (0x02)
+				{
+					"pagesize",
+					One
+				},
+
+				Package (0x02)
+				{
+					"read-only",
+					One
+				},
+
+				Package (0x02)
+				{
+					"address-width",
+					0x0E
+				},
+
+				Package (0x02)
+				{
+					"compatible",
+					"atmel,24c1024"
 				}
 			}
 		})

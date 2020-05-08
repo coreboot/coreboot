@@ -154,6 +154,8 @@ static bool configure_display(void)
 	u32 mipi_dsi_flags = (MIPI_DSI_MODE_VIDEO |
 			      MIPI_DSI_MODE_VIDEO_SYNC_PULSE |
 			      MIPI_DSI_MODE_LPM);
+	if (CONFIG(DRIVER_ANALOGIX_ANX7625))
+		mipi_dsi_flags |= MIPI_DSI_MODE_EOT_PACKET;
 	if (mtk_dsi_init(mipi_dsi_flags, MIPI_DSI_FMT_RGB888, 4, edid,
 			 panel->s->init) < 0) {
 		printk(BIOS_ERR, "%s: Failed in DSI init.\n", __func__);

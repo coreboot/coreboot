@@ -40,9 +40,6 @@ chip northbridge/intel/sandybridge
 					register "ec_fan_ctrl_value" = "0x44"
 					device pnp ff.1 off end
 				end
-				chip drivers/pc80/tpm
-					device pnp 0c31.0 on end
-				end
 			end
 		end
 	end

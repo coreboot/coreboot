@@ -49,9 +49,6 @@ chip northbridge/intel/sandybridge
 					end
 					device pnp 4e.5 off end	# COM2
 				end
-				chip drivers/pc80/tpm
-					device pnp 0c31.0 on end
-				end
 			end
 		end
 	end

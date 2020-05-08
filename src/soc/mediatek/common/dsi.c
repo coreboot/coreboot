@@ -10,6 +10,9 @@
 #include <string.h>
 #include <timer.h>
 
+#define MIN_HFP_BYTE	2
+#define MIN_HBP_BYTE	2
+
 static unsigned int mtk_dsi_get_bits_per_pixel(u32 format)
 {
 	switch (format) {
@@ -165,8 +168,8 @@ static void mtk_dsi_config_vdo_timing(u32 mode_flags, u32 format, u32 lanes,
 	u32 hsync_active_byte;
 	u32 hbp;
 	u32 hfp;
-	u32 hbp_byte;
-	u32 hfp_byte;
+	s32 hbp_byte;
+	s32 hfp_byte;
 	u32 vbp_byte;
 	u32 vfp_byte;
 	u32 bytes_per_pixel;
@@ -213,6 +216,21 @@ static void mtk_dsi_config_vdo_timing(u32 mode_flags, u32 format, u32 lanes,
 	} else {
 		printk(BIOS_ERR, "HFP plus HBP is not greater than d_phy, "
 		       "the panel may not work properly.\n");
+	}
+
+	if (hfp_byte + hbp_byte < MIN_HFP_BYTE + MIN_HBP_BYTE) {
+		printk(BIOS_ERR, "Calculated hfp_byte and hbp_byte are too small, "
+		       "the panel may not work properly.\n");
+	} else if (hfp_byte < MIN_HFP_BYTE) {
+		printk(BIOS_NOTICE, "Calculated hfp_byte is too small, "
+		       "adjust it to the minimum value.\n");
+		hbp_byte -= MIN_HFP_BYTE - hfp_byte;
+		hfp_byte = MIN_HFP_BYTE;
+	} else if (hbp_byte < MIN_HBP_BYTE) {
+		printk(BIOS_NOTICE, "Calculated hbp_byte is too small, "
+		       "adjust it to the minimum value.\n");
+		hfp_byte -= MIN_HBP_BYTE - hbp_byte;
+		hbp_byte = MIN_HBP_BYTE;
 	}
 
 	write32(&dsi0->dsi_hsa_wc, hsync_active_byte);

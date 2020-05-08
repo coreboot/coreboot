@@ -36,6 +36,8 @@ ramstage-y += ../common/timer.c
 ramstage-y += ../common/uart.c
 ramstage-y += ../common/usb.c usb.c
 
+BL31_MAKEARGS += PLAT=mt8192
+
 CPPFLAGS_common += -Isrc/soc/mediatek/mt8192/include
 CPPFLAGS_common += -Isrc/soc/mediatek/common/include
 

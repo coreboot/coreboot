@@ -182,6 +182,7 @@ void lpc_disable_decodes(void)
 	reg = pci_read_config32(_LPCB_DEV, LPC_IO_OR_MEM_DECODE_ENABLE);
 	reg &= LPC_SYNC_TIMEOUT_COUNT_MASK | LPC_SYNC_TIMEOUT_COUNT_ENABLE;
 	pci_write_config32(_LPCB_DEV, LPC_IO_OR_MEM_DECODE_ENABLE, reg);
+	pci_write_config32(_LPCB_DEV, LPC_IO_PORT_DECODE_ENABLE, 0);
 
 	/* D14F3x48 enables ranges configured in additional registers */
 	pci_write_config32(_LPCB_DEV, LPC_MEM_PORT1, 0);

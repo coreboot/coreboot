@@ -18,6 +18,7 @@ bootblock-$(CONFIG_PICASSO_UART) += uart.c
 bootblock-y += tsc_freq.c
 bootblock-y += gpio.c
 bootblock-y += smi_util.c
+bootblock-y += config.c
 
 romstage-y += i2c.c
 romstage-y += romstage.c
@@ -31,10 +32,12 @@ romstage-$(CONFIG_HAVE_SMI_HANDLER) += smi_util.c
 romstage-y += soc_util.c
 romstage-y += psp.c
 romstage-y += mtrr.c
+romstage-y += config.c
 
 verstage-y += gpio.c
 verstage-y += i2c.c
 verstage-y += pmutil.c
+verstage-y += config.c
 verstage-$(CONFIG_PICASSO_UART) += uart.c
 verstage-y += tsc_freq.c
 
@@ -59,6 +62,7 @@ ramstage-y += finalize.c
 ramstage-y += soc_util.c
 ramstage-y += psp.c
 ramstage-y += fsp_params.c
+ramstage-y += config.c
 
 all-y += reset.c
 
@@ -68,6 +72,7 @@ smm-y += tsc_freq.c
 smm-$(CONFIG_DEBUG_SMI) += uart.c
 smm-y += gpio.c
 smm-y += psp.c
+smm-y += config.c
 
 CPPFLAGS_common += -I$(src)/soc/amd/picasso
 CPPFLAGS_common += -I$(src)/soc/amd/picasso/include

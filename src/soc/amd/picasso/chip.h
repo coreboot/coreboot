@@ -5,6 +5,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <amdblocks/chip.h>
 #include <commonlib/helpers.h>
 #include <drivers/i2c/designware/dw_i2c.h>
 #include <soc/i2c.h>
@@ -13,6 +14,7 @@
 #include <acpi/acpi_device.h>
 
 struct soc_amd_picasso_config {
+	struct soc_amd_common_config common_config;
 	/*
 	 * If sb_reset_i2c_slaves() is called, this devicetree register
 	 * defines which I2C SCL will be toggled 9 times at 100 KHz.

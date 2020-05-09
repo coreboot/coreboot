@@ -14,6 +14,7 @@
 #include <intelblocks/lpc_lib.h>
 #include <intelblocks/mp_init.h>
 #include <intelblocks/pcie_rp.h>
+#include <intelblocks/power_limit.h>
 #include <intelblocks/xdci.h>
 #include <intelblocks/p2sb.h>
 #include <intelpch/lockdown.h>
@@ -124,10 +125,14 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	config = config_of_soc();
 
 	mainboard_silicon_init_params(params);
+
+	struct soc_power_limits_config *soc_confg;
+	config_t *confg = config_of_soc();
+	soc_confg = &confg->power_limits_config;
 	/* Set PsysPmax if it is available from DT */
-	if (config->psys_pmax) {
+	if (soc_confg->psys_pmax) {
 		/* PsysPmax is in unit of 1/8 Watt */
-		tconfig->PsysPmax = config->psys_pmax * 8;
+		tconfig->PsysPmax = soc_confg->psys_pmax * 8;
 		printk(BIOS_DEBUG, "psys_pmax = %d\n", tconfig->PsysPmax);
 	}
 

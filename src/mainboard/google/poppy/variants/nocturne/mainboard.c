@@ -5,6 +5,7 @@
 #include <device/device.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
+#include <intelblocks/power_limit.h>
 
 /* PL2 limit in watts for AML and KBL */
 #define PL2_AML	18
@@ -26,8 +27,10 @@ static uint32_t get_pl2(void)
 /* Override dev tree settings per board */
 void variant_devtree_update(void)
 {
+	struct soc_power_limits_config *soc_conf;
 	config_t *cfg = config_of_soc();
 
+	soc_conf = &cfg->power_limits_config;
 	/* Update PL2 based on CPU */
-	cfg->tdp_pl2_override = get_pl2();
+	soc_conf->tdp_pl2_override = get_pl2();
 }

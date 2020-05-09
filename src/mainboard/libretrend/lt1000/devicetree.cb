@@ -171,7 +171,9 @@ chip soc/intel/skylake
 	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# F_USB3 header
 
 	# PL2 override 25W
-	register "tdp_pl2_override" = "25"
+	register "power_limits_config" = "{
+		.tdp_pl2_override = 25,
+	}"
 
 	# Send an extra VR mailbox command for the PS4 exit issue
 	register "SendVrMbxCmd" = "2"

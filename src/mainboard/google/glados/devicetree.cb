@@ -99,7 +99,9 @@ chip soc/intel/skylake
 	register "i2c_voltage[4]" = "I2C_VOLTAGE_1V8"
 
 	# PL2 override 25W
-	register "tdp_pl2_override" = "25"
+	register "power_limits_config" = "{
+		.tdp_pl2_override = 25,
+	}"
 
 	# Send an extra VR mailbox command for the PS4 exit issue
 	register "SendVrMbxCmd" = "2"

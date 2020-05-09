@@ -247,7 +247,9 @@ chip soc/intel/skylake
 	register "PcieRpHotPlug[6]" = "1"
 
 	# PL2 override 91W
-	register "tdp_pl2_override" = "91"
+	register "power_limits_config" = "{
+		.tdp_pl2_override = 91,
+	}"
 
 	# Send an extra VR mailbox command for the PS4 exit issue
 	register "SendVrMbxCmd" = "2"

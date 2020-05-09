@@ -18,7 +18,9 @@ chip soc/intel/skylake
 	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC1)"	# Type-A Port 2
 
 	# PL2 override 15W
-	register "tdp_pl2_override" = "15"
+	register "power_limits_config" = "{
+		.tdp_pl2_override = 15,
+	}"
 
 	# Send an extra VR mailbox command for the supported MPS IMVP8 model
 	register "SendVrMbxCmd" = "1"

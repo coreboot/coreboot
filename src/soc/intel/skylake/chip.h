@@ -11,6 +11,7 @@
 #include <intelblocks/cfg.h>
 #include <intelblocks/gspi.h>
 #include <intelblocks/lpc_lib.h>
+#include <intelblocks/power_limit.h>
 #include <stdint.h>
 #include <soc/gpe.h>
 #include <soc/gpio.h>
@@ -32,6 +33,9 @@ struct soc_intel_skylake_config {
 
 	/* Common struct containing soc config data required by common code */
 	struct soc_intel_common_config common_soc_config;
+
+	/* Common struct containing power limits configuration information */
+	struct soc_power_limits_config power_limits_config;
 
 	/* IGD panel configuration */
 	unsigned int gpu_pp_up_delay_ms;
@@ -99,27 +103,6 @@ struct soc_intel_skylake_config {
 
 	/* Package PL4 power limit in Watts */
 	u32 PowerLimit4;
-
-	/* PL2 Override value in Watts */
-	u32 tdp_pl2_override;
-	/* PL1 Override value in Watts */
-	u32 tdp_pl1_override;
-
-	/* SysPL2 Value in Watts */
-	u32 tdp_psyspl2;
-
-	/* SysPL3 Value in Watts */
-	u32 tdp_psyspl3;
-	/* SysPL3 window size */
-	u32 tdp_psyspl3_time;
-	/* SysPL3 duty cycle */
-	u32 tdp_psyspl3_dutycycle;
-
-	/* PL4 Value in Watts */
-	u32 tdp_pl4;
-
-	/* Estimated maximum platform power in Watts */
-	u16 psys_pmax;
 
 	/* Whether to ignore VT-d support of the SKU */
 	int ignore_vtd;

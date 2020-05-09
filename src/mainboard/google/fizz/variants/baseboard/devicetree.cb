@@ -325,8 +325,10 @@ chip soc/intel/skylake
 	}"
 
 	register "speed_shift_enable" = "1"
-	register "tdp_psyspl2" = "90"
-	register "psys_pmax" = "120"
+	register "power_limits_config" = "{
+		.tdp_psyspl2 = 90,
+		.psys_pmax = 120,
+	}"
 	register "tcc_offset" = "6"     # TCC of 94C
 
 	device cpu_cluster 0 on

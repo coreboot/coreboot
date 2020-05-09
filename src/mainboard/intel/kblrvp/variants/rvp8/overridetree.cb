@@ -156,7 +156,9 @@ chip soc/intel/skylake
 	}"
 
 	# PL2 override 25W
-	register "tdp_pl2_override" = "25"
+	register "power_limits_config" = "{
+		.tdp_pl2_override = 25,
+	}"
 
 	# Use default SD card detect GPIO configuration
 	#register "sdcard_cd_gpio_default" = "GPP_D10"

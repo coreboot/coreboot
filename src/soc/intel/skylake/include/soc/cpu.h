@@ -34,9 +34,6 @@
 	C_STATE_LATENCY_MICRO_SECONDS(C_STATE_LATENCY_CONTROL_ ##reg## _LIMIT, \
 				      (IRTL_1024_NS >> 10))
 
-/* Configure power limits for turbo mode */
-void set_power_limits(u8 power_limit_1_time);
-
 /* CPU identification */
 u32 cpu_family_model(void);
 u32 cpu_stepping(void);

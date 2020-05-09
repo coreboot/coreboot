@@ -246,9 +246,11 @@ chip soc/intel/skylake
 	}"
 
 	register "speed_shift_enable" = "1"
-	register "psys_pmax" = "45"
 	# PL2 override 18W for AML-Y
-	register "tdp_pl2_override" = "18"
+	register "power_limits_config" = "{
+		.tdp_pl2_override = 18,
+		.psys_pmax = 45,
+	}"
 	register "tcc_offset" = "10"     # TCC of 90C
 
 	# Use default SD card detect GPIO configuration

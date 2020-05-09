@@ -111,7 +111,9 @@ chip soc/intel/skylake
 	}"
 
 	# PL2 override 60W
-	register "tdp_pl2_override" = "60"
+	register "power_limits_config" = "{
+		.tdp_pl2_override = 60,
+	}"
 
 	# Power Limit Related
 	register "PowerLimit4" = "0"

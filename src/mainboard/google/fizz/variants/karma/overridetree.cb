@@ -17,7 +17,9 @@ chip soc/intel/skylake
 	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC2)"	# Type-A Side
 	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# Card reader
 
-	register "psys_pmax" = "151"
+	register "power_limits_config" = "{
+		.psys_pmax = 151,
+	}"
 
 	device domain 0 on
 		device pci 14.0 on

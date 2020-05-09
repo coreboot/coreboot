@@ -8,6 +8,7 @@
 #include <intelblocks/gpio.h>
 #include <intelblocks/gspi.h>
 #include <intelblocks/lpc_lib.h>
+#include <intelblocks/power_limit.h>
 #include <stdint.h>
 #include <soc/gpio.h>
 #include <soc/pch.h>
@@ -31,6 +32,9 @@ struct soc_intel_cannonlake_config {
 
 	/* Common struct containing soc config data required by common code */
 	struct soc_intel_common_config common_soc_config;
+
+	/* Common struct containing power limits configuration information */
+	struct soc_power_limits_config power_limits_config;
 
 	/* Gpio group routed to each dword of the GPE0 block. Values are
 	 * of the form GPP_[A:G] or GPD. */
@@ -230,23 +234,6 @@ struct soc_intel_cannonlake_config {
 
 	/* Enables support for Teton Glacier hybrid storage device */
 	uint8_t TetonGlacierMode;
-
-	/* PL1 Override value in Watts */
-	uint32_t tdp_pl1_override;
-	/* PL2 Override value in Watts */
-	uint32_t tdp_pl2_override;
-	/* SysPL2 Value in Watts */
-	uint32_t tdp_psyspl2;
-	/* SysPL3 Value in Watts */
-	uint32_t tdp_psyspl3;
-	/* SysPL3 window size */
-	uint32_t tdp_psyspl3_time;
-	/* SysPL3 duty cycle */
-	uint32_t tdp_psyspl3_dutycycle;
-	/* PL4 Value in Watts */
-	uint32_t tdp_pl4;
-	/* Estimated maximum platform power in Watts */
-	uint16_t psys_pmax;
 
 	/* Intel Speed Shift Technology */
 	uint8_t speed_shift_enable;

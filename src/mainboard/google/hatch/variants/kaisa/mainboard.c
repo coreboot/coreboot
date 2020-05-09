@@ -6,6 +6,7 @@
 #include <device/device.h>
 #include <ec/google/chromeec/ec.h>
 #include <gpio.h>
+#include <intelblocks/power_limit.h>
 #include <timer.h>
 
 #define GPIO_HDMI_HPD		GPP_E13
@@ -86,7 +87,7 @@ static void wait_for_hpd(gpio_t gpio, long timeout)
 #define PSYS_IMAX	9600
 #define BJ_VOLTS_MV	19000
 
-static void mainboard_set_power_limits(config_t *conf)
+static void mainboard_set_power_limits(struct soc_power_limits_config *conf)
 {
 	enum usb_chg_type type;
 	u32 watts;
@@ -123,7 +124,8 @@ static void mainboard_set_power_limits(config_t *conf)
 void variant_ramstage_init(void)
 {
 	static const long display_timeout_ms = 3000;
-	config_t *conf = config_of_soc();
+	struct soc_power_limits_config *soc_config;
+	config_t *confg = config_of_soc();
 
 	/* This is reconfigured back to whatever FSP-S expects by gpio_configure_pads. */
 	gpio_input(GPIO_HDMI_HPD);
@@ -136,5 +138,6 @@ void variant_ramstage_init(void)
 			wait_for_hpd(GPIO_DP_HPD, display_timeout_ms);
 	}
 	/* Psys_pmax needs to be setup before FSP-S */
-	mainboard_set_power_limits(conf);
+	soc_config = &confg->power_limits_config;
+	mainboard_set_power_limits(soc_config);
 }

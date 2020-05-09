@@ -42,11 +42,13 @@ chip soc/intel/cannonlake
 	register "PchUsb2PhySusPgDisable" = "1"
 
 	register "speed_shift_enable" = "1"
-	register "psys_pmax" = "140"
 	register "s0ix_enable" = "1"
 	register "dptf_enable" = "1"
-	register "tdp_pl1_override" = "25"
-	register "tdp_pl2_override" = "51"
+	register "power_limits_config" = "{
+		.tdp_pl1_override = 25,
+		.tdp_pl2_override = 51,
+		.psys_pmax = 140,
+	}"
 	register "Device4Enable" = "1"
 	register "AcousticNoiseMitigation" = "1"
 	register "SlowSlewRateForIa" = "2"

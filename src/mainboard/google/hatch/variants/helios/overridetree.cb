@@ -1,6 +1,8 @@
 chip soc/intel/cannonlake
-	register "tdp_pl1_override" = "15"
-	register "tdp_pl2_override" = "64"
+	register "power_limits_config" = "{
+		.tdp_pl1_override = 15,
+		.tdp_pl2_override = 64,
+	}"
 
 	register "SerialIoDevMode" = "{
 		[PchSerialIoIndexI2C0] = PchSerialIoPci,

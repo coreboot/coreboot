@@ -42,9 +42,11 @@ chip soc/intel/cannonlake
 	register "SlowSlewRateForGt" = "2"
 	register "SlowSlewRateForSa" = "2"
 	register "SlowSlewRateForFivr" = "2"
-	register "tdp_pl1_override" = "15"
-	register "tdp_pl2_override" = "51"
-	register "psys_pmax" = "136"
+	register "power_limits_config" = "{
+		.tdp_pl1_override = 15,
+		.tdp_pl2_override = 51,
+		.psys_pmax = 136,
+	}"
 	register "Device4Enable" = "1"
 	# Enable eDP device
 	register "DdiPortEdp" = "1"

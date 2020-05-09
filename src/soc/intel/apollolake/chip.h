@@ -9,6 +9,7 @@
 #include <soc/gpe.h>
 #include <soc/gpio.h>
 #include <intelblocks/lpc_lib.h>
+#include <intelblocks/power_limit.h>
 #include <device/i2c_simple.h>
 #include <drivers/i2c/designware/dw_i2c.h>
 #include <soc/pm.h>
@@ -27,6 +28,9 @@ struct soc_intel_apollolake_config {
 
 	/* Common structure containing soc config data required by common code*/
 	struct soc_intel_common_config common_soc_config;
+
+	/* Common struct containing power limits configuration info */
+	struct soc_power_limits_config power_limits_config;
 
 	/*
 	 * Mapping from PCIe root port to CLKREQ input on the SOC. The SOC has
@@ -98,11 +102,6 @@ struct soc_intel_apollolake_config {
 
 	/* TCC activation offset value in degrees Celsius */
 	int tcc_offset;
-
-	/* PL1 override value in mW for APL */
-	uint16_t tdp_pl1_override_mw;
-	/* PL2 override value in mW for APL */
-	uint16_t tdp_pl2_override_mw;
 
 	/* Configure Audio clk gate and power gate
 	 * IOSF-SB port ID 92 offset 0x530 [5] and [3]

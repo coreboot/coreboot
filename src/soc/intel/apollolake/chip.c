@@ -15,6 +15,7 @@
 #include <intelblocks/fast_spi.h>
 #include <intelblocks/msr.h>
 #include <intelblocks/p2sb.h>
+#include <intelblocks/power_limit.h>
 #include <intelblocks/xdci.h>
 #include <fsp/api.h>
 #include <fsp/util.h>
@@ -34,6 +35,7 @@
 #include <spi-generic.h>
 #include <timer.h>
 #include <soc/ramstage.h>
+#include <soc/soc_chip.h>
 
 #include "chip.h"
 
@@ -269,73 +271,6 @@ static void pcie_override_devicetree_after_silicon_init(void)
 	pcie_update_device_tree(PCH_DEVFN_PCIE5, 2);
 }
 
-/* Configure package power limits */
-static void set_power_limits(void)
-{
-	struct soc_intel_apollolake_config *cfg;
-	msr_t rapl_msr_reg, limit;
-	uint32_t power_unit;
-	uint32_t tdp, min_power, max_power;
-	uint32_t pl2_val;
-
-	cfg = config_of_soc();
-
-	if (CONFIG(APL_SKIP_SET_POWER_LIMITS)) {
-		printk(BIOS_INFO, "Skip the RAPL settings.\n");
-		return;
-	}
-
-	/* Get units */
-	rapl_msr_reg = rdmsr(MSR_PKG_POWER_SKU_UNIT);
-	power_unit = 1 << (rapl_msr_reg.lo & 0xf);
-
-	/* Get power defaults for this SKU */
-	rapl_msr_reg = rdmsr(MSR_PKG_POWER_SKU);
-	tdp = rapl_msr_reg.lo & PKG_POWER_LIMIT_MASK;
-	pl2_val = rapl_msr_reg.hi & PKG_POWER_LIMIT_MASK;
-	min_power = (rapl_msr_reg.lo >> 16) & PKG_POWER_LIMIT_MASK;
-	max_power = rapl_msr_reg.hi & PKG_POWER_LIMIT_MASK;
-
-	if (min_power > 0 && tdp < min_power)
-		tdp = min_power;
-
-	if (max_power > 0 && tdp > max_power)
-		tdp = max_power;
-
-	/* Set PL1 override value */
-	tdp = (cfg->tdp_pl1_override_mw == 0) ?
-		tdp : (cfg->tdp_pl1_override_mw * power_unit) / 1000;
-	/* Set PL2 override value */
-	pl2_val = (cfg->tdp_pl2_override_mw == 0) ?
-		pl2_val : (cfg->tdp_pl2_override_mw * power_unit) / 1000;
-
-	/* Set long term power limit to TDP */
-	limit.lo = tdp & PKG_POWER_LIMIT_MASK;
-	/* Set PL1 Pkg Power clamp bit */
-	limit.lo |= PKG_POWER_LIMIT_CLAMP;
-
-	limit.lo |= PKG_POWER_LIMIT_EN;
-	limit.lo |= (MB_POWER_LIMIT1_TIME_DEFAULT &
-		PKG_POWER_LIMIT_TIME_MASK) << PKG_POWER_LIMIT_TIME_SHIFT;
-
-	/* Set short term power limit PL2 */
-	limit.hi = pl2_val & PKG_POWER_LIMIT_MASK;
-	limit.hi |= PKG_POWER_LIMIT_EN;
-
-	/* Program package power limits in RAPL MSR */
-	wrmsr(MSR_PKG_POWER_LIMIT, limit);
-	printk(BIOS_INFO, "RAPL PL1 %d.%dW\n", tdp / power_unit,
-				100 * (tdp % power_unit) / power_unit);
-	printk(BIOS_INFO, "RAPL PL2 %d.%dW\n", pl2_val / power_unit,
-				100 * (pl2_val % power_unit) / power_unit);
-
-	/* Setting RAPL MMIO register for Power limits.
-	* RAPL driver is using MSR instead of MMIO.
-	* So, disabled LIMIT_EN bit for MMIO. */
-	MCHBAR32(MCHBAR_RAPL_PPL) = limit.lo & ~PKG_POWER_LIMIT_EN;
-	MCHBAR32(MCHBAR_RAPL_PPL + 4) =  limit.hi & ~PKG_POWER_LIMIT_EN;
-}
-
 /* Overwrites the SCI IRQ if another IRQ number is given by device tree. */
 static void set_sci_irq(void)
 {
@@ -355,6 +290,9 @@ static void set_sci_irq(void)
 
 static void soc_init(void *data)
 {
+	struct soc_power_limits_config *soc_config;
+	config_t *config;
+
 	/* Snapshot the current GPIO IRQ polarities. FSP is setting a
 	 * default policy that doesn't honor boards' requirements. */
 	itss_snapshot_irq_polarities(GPIO_IRQ_START, GPIO_IRQ_END);
@@ -384,8 +322,10 @@ static void soc_init(void *data)
 	/* Allocate ACPI NVS in CBMEM */
 	cbmem_add(CBMEM_ID_ACPI_GNVS, sizeof(struct global_nvs_t));
 
-	/* Set RAPL MSR for Package power limits*/
-	set_power_limits();
+	config = config_of_soc();
+	/* Set RAPL MSR for Package power limits */
+	soc_config = &config->power_limits_config;
+	set_power_limits(MOBILE_SKU_PL1_TIME_SEC, soc_config);
 
 	/*
 	* FSP-S routes SCI to IRQ 9. With the help of this function you can

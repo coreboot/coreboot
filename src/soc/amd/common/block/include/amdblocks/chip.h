@@ -4,7 +4,19 @@
 #ifndef __AMDBLOCKS_CHIP_H__
 #define __AMDBLOCKS_CHIP_H__
 
+#include <amdblocks/spi.h>
+
 struct soc_amd_common_config {
+	/*
+	 * SPI configuration
+	 * Default values if not overridden by mainboard:
+	 * Read mode - Normal 33MHz
+	 * Normal speed - 66MHz
+	 * Fast speed - 66MHz
+	 * Alt speed - 66MHz
+	 * TPM speed - 66MHz
+	 */
+	struct spi_config spi_config;
 };
 
 /*

@@ -1,8 +1,4 @@
-/*
- * Copyright 2016 The Chromium OS Authors. All rights reserved.
- * Use of this source code is governed by a BSD-style license that can be
- * found in the LICENSE file.
- */
+/* SPDX-License-Identifier: BSD-3-Clause */
 
 #ifndef __COREBOOT_SRC_DRIVERS_SPI_TPM_TPM_H
 #define __COREBOOT_SRC_DRIVERS_SPI_TPM_TPM_H

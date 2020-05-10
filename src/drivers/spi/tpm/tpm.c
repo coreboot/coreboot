@@ -1,9 +1,5 @@
-/*
- * Copyright 2016 The Chromium OS Authors. All rights reserved.
- * Use of this source code is governed by a BSD-style license that can be
- * found in the LICENSE file.
- *
- * This is a driver for a SPI interfaced TPM2 device.
+/* SPDX-License-Identifier: BSD-3-Clause */
+/* This is a driver for a SPI interfaced TPM2 device.
  *
  * It assumes that the required SPI interface has been initialized before the
  * driver is started. A 'sruct spi_slave' pointer passed at initialization is

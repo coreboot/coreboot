@@ -10,7 +10,7 @@ coreboot consists of multiple stages that are compiled as separate binaries and
 are inserted into the CBFS with custom compression. The bootblock usually doesn't
 have compression while the ramstage and payload are compressed with LZMA.
 
-Each stage loads the next stage a given address (possibly decompressing it).
+Each stage loads the next stage at given address (possibly decompressing it).
 
 Some stages are relocatable and can be placed anywhere in DRAM. Those stages are
 usually cached in CBMEM for faster loading times on ACPI S3 resume.

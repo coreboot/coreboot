@@ -8,6 +8,7 @@ romstage-y += romstage.c
 
 ramstage-$(CONFIG_CHROMEOS) += chromeos.c
 ramstage-y += ec.c
+ramstage-$(CONFIG_FW_CONFIG) += fw_config.c
 ramstage-y += mainboard.c
 
 smm-y += smihandler.c

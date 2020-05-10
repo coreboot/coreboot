@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-2.0-only
 # ${VERSION_NAME}: new version name
 # ${COMMIT_ID}: commit id (if not master)
 # ${USERNAME}: username (if not default to https)

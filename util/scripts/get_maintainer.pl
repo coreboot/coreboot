@@ -8,7 +8,7 @@
 # usage: perl scripts/get_maintainer.pl [OPTIONS] <patch>
 #        perl scripts/get_maintainer.pl [OPTIONS] -f <file>
 #
-# Licensed under the terms of the GNU GPL License version 2
+# SPDX-License-Identifier: GPL-2.0-only
 
 use strict;
 use warnings;

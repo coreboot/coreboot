@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
 include ../../.config
 
 ARCHDIR-$(CONFIG_ARCH_ARMV7)	:= armv7

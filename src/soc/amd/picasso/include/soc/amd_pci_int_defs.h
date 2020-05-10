@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #ifndef __AMD_PCI_INT_DEFS_H__
 #define __AMD_PCI_INT_DEFS_H__

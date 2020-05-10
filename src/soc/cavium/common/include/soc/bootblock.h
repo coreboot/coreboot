@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 #ifndef SRC_SOC_CAVIUM_COMMON_INCLUDE_SOC_BOOTBLOCK_H_
 #define SRC_SOC_CAVIUM_COMMON_INCLUDE_SOC_BOOTBLOCK_H_
 

@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #ifndef __INCLUDE_BOARDID_H__
 #define __INCLUDE_BOARDID_H__

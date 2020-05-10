@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 /*
  * The stub is a generic wrapper for bootstrapping a C-based SMM handler. Its

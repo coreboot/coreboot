@@ -1,6 +1,5 @@
 ################################################################################
 ##
-## This file is part of the coreboot project.
 ##
 ## Copyright (C) 2009-2010 coresystems GmbH
 ## Copyright (C) 2015 Google Inc.

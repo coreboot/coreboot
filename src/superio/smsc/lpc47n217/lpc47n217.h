@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
-/* This file is part of the coreboot project. */
 
 #ifndef SUPERIO_SMSC_LPC47N217_LPC47N217_H
 #define SUPERIO_SMSC_LPC47N217_LPC47N217_H

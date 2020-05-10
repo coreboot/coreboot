@@ -1,4 +1,3 @@
-/* This file is part of the coreboot project. */
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #ifndef __SOC_QUALCOMM_SDM845_ADDRESS_MAP_H__

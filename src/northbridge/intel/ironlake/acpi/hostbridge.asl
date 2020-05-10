@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 
 Name(_HID,EISAID("PNP0A08"))	// PCIe

@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #ifndef SOC_INTEL_COMMON_BLOCK_FAST_SPI_DEF_H
 #define SOC_INTEL_COMMON_BLOCK_FAST_SPI_DEF_H

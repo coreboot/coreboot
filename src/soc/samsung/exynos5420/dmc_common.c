@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 /* Mem setup common file for different types of DDR present on SMDK5420 boards.
  */

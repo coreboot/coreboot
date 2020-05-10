@@ -1,4 +1,3 @@
-/* This file is part of the coreboot project. */
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #ifndef I82801GX_SATA_H

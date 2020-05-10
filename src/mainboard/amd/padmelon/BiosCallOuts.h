@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #define FAN_INPUT_INTERNAL_DIODE	0
 #define FAN_INPUT_TEMP0			1

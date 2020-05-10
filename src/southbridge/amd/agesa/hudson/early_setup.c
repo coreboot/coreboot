@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #ifndef _HUDSON_EARLY_SETUP_C_
 #define _HUDSON_EARLY_SETUP_C_

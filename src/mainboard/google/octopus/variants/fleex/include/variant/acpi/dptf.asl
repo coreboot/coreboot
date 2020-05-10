@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #define DPTF_CPU_PASSIVE	100
 #define DPTF_CPU_CRITICAL	127

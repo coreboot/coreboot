@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 /*
  * We only use the ERAM region to retrieve the CPU temperature. Otherwise the EC is not enabled

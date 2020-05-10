@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #define FU540_MSEL		0x00001000
 #define FU540_DTIM		0x01000000

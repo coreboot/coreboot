@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: BSD-3-Clause */
-/* This file is part of the coreboot project. */
 
 #include <arch/asm.h>
 

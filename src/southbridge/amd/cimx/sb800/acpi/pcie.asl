@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 Scope(\) {
 	/* PCI IRQ mapping registers, C00h-C01h. */

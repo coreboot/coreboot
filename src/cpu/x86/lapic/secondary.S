@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/lapic_def.h>

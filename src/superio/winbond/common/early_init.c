@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
-/* This file is part of the coreboot project. */
 
 /*
  * A generic romstage (pre-ram) driver for various Winbond Super I/O chips.

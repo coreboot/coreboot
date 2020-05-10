@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 Name(STTM, Buffer(20) {
 	0x78, 0x00, 0x00, 0x00, 0x0f, 0x00, 0x00, 0x00,

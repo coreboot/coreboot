@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
-/* This file is part of the coreboot project. */
 
 #ifndef LT1000_GPIO_H
 #define LT1000_GPIO_H

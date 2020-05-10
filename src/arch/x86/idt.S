@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 	.section ".text._idt", "ax", @progbits
 #ifdef __x86_64__

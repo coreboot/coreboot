@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
-/* This file is part of the coreboot project. */
 
 /* Both NCT6776D and NCT6776F package variants are supported. */
 

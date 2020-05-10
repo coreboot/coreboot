@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
  /* Code taken from the Linux xgifb driver (v3.18.5) */
 

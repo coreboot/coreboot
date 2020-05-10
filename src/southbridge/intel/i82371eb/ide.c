@@ -1,4 +1,3 @@
-/* This file is part of the coreboot project. */
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 /* TODO: Check if this really works for all of the southbridges. */

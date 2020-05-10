@@ -1,5 +1,4 @@
 /*
- * This file is part of the libpayload project.
  * Copyright (c) 2020 Qualcomm Technologies.
  *
  * Redistribution and use in source and binary forms, with or without

@@ -1,4 +1,3 @@
-/* This file is part of pgtblgen. */
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <stdio.h>

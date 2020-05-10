@@ -1,4 +1,3 @@
-/* This file is part of the coreboot project. */
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 /* Note: This code supports the 82371FB/SB/MX/AB/EB/MB and 82437MX. */

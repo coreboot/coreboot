@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #ifndef INTEL_COMMON_PMUTIL_H
 #define INTEL_COMMON_PMUTIL_H

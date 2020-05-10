@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 /* PCIe reset pin */
 #define GEN1_PCI_RESET_RESUMEWELL_GPIO		3

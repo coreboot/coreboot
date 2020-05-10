@@ -1,4 +1,3 @@
-/* This file is part of the ectool project. */
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #ifndef _EC_H

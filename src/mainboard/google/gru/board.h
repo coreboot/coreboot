@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #ifndef __COREBOOT_SRC_MAINBOARD_GOOGLE_GRU_BOARD_H
 #define __COREBOOT_SRC_MAINBOARD_GOOGLE_GRU_BOARD_H

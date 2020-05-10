@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
-/* This file is part of the coreboot project. */
 
 #ifndef SUPERIO_NUVOTON_COMMON_HWM_H
 #define SUPERIO_NUVOTON_COMMON_HWM_H

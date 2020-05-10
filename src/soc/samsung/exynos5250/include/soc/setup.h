@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 /* Machine Specific Values for SMDK5250 board based on Exynos5 */
 

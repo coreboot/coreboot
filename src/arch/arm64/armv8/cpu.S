@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 /*
  * Optimized assembly for low-level CPU operations on ARM64 processors.
  */

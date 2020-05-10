@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #ifndef SOUTHBRIDGE_INTEL_DEFAULT_RCBA_H
 #define SOUTHBRIDGE_INTEL_DEFAULT_RCBA_H

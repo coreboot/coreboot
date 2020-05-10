@@ -1,4 +1,3 @@
-/* This file is part of the superiotool project */
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include "superiotool.h"

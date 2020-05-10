@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 OperationRegion (GRAM, SystemMemory, 0x0400, 0x0100)
 

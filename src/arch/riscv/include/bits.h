@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: BSD-4-Clause-UC */
-/* This file is part of the coreboot project. */
 
 #ifndef _BITS_H
 #define _BITS_H

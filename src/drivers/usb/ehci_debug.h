@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #ifndef _EHCI_DEBUG_H_
 #define _EHCI_DEBUG_H_

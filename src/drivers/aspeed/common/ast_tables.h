@@ -1,4 +1,3 @@
-/* This file is part of the coreboot project. */
 /*
  *
  * Permission to use, copy, modify, distribute, and sell this software and its

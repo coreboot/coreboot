@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #ifndef SOC_INTEL_APL_PCR_H
 #define SOC_INTEL_APL_PCR_H

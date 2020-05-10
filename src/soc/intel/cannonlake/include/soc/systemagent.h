@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #ifndef SOC_CANNONLAKE_SYSTEMAGENT_H
 #define SOC_CANNONLAKE_SYSTEMAGENT_H

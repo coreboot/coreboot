@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #ifndef __ARCH_MPIDR_H__
 #define __ARCH_MPIDR_H__

@@ -1,4 +1,3 @@
-/* This file is part of the coreboot project. */
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 /* The L2 cache definitions here only apply to SECC/SECC2 P6 family CPUs

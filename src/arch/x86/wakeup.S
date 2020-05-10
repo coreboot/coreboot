@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #define WAKEUP_BASE		0x600
 #define RELOCATED(x)	(x - __wakeup + WAKEUP_BASE)

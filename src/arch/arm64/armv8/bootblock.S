@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 /*
  * Early initialization code for aarch64 (a.k.a. armv8)
  */

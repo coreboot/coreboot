@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #ifndef _GPIO_X11SSH_TF_H
 #define _GPIO_X11SSH_TF_H

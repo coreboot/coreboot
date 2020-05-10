@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #include <northbridge/intel/i945/i945.h>
 #include <southbridge/intel/i82801gx/i82801gx.h>

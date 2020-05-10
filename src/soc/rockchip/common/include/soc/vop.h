@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #ifndef _ROCKCHIP_LCD_H_
 #define _ROCKCHIP_LCD_H_

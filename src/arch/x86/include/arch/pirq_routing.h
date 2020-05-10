@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
-/* This file is part of the coreboot project. */
 
 #ifndef ARCH_PIRQ_ROUTING_H
 #define ARCH_PIRQ_ROUTING_H

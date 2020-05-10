@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 /* Intel Cougar Point PCH support */
 #include <southbridge/intel/bd82x6x/pch.h>

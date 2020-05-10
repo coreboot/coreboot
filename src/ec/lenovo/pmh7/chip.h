@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #ifndef EC_LENOVO_PMH7_CHIP_H
 #define EC_LENOVO_PMH7_CHIP_H

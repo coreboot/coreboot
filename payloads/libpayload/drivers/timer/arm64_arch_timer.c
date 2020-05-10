@@ -1,5 +1,4 @@
 /*
- * This file is part of the libpayload project.
  *
  * Copyright (c) 2018, The Linux Foundation. All rights reserved.
  *

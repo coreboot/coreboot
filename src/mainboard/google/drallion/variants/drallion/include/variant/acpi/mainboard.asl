@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #define CAM_EN GPP_B11 /* Active low */
 #define TS_PD GPP_E7

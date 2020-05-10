@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 Name(\CBA1, 0x60)
 Name(\CBA2, 0x60)

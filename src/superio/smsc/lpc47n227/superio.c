@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 /* RAM-based driver for SMSC LPC47N227 Super I/O chip. */
 

@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 	/* PCI IRQ mapping registers, C00h-C01h. */
 	OperationRegion(PRQM, SystemIO, 0x00000c00, 0x00000002)

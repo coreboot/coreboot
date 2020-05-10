@@ -1,5 +1,4 @@
 /*
- * This file is part of the libpayload project.
  *
  *
  * Redistribution and use in source and binary forms, with or without

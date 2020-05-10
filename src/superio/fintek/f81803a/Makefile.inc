@@ -1,5 +1,4 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
-# This file is part of the coreboot project.
 
 ifeq ($(CONFIG_BOOTBLOCK_CONSOLE),y)
 bootblock-$(CONFIG_SUPERIO_FINTEK_F81803A) += ../common/early_serial.c

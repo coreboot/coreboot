@@ -1,4 +1,3 @@
-/* This file is part of the coreboot project. */
 /*
  *
  * Permission is hereby granted, free of charge, to any person obtaining a

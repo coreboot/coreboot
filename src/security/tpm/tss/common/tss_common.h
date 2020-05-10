@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #ifndef TCG_TSS_COMMON_H_
 #define TCG_TSS_COMMON_H_

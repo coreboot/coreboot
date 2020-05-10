@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: BSD-3-Clause */
-/* This file is part of the coreboot project. */
 
 #include <assert.h>
 #include <commonlib/helpers.h>

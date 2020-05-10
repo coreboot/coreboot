@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 /* Based on linux/arch/arm/lib/muldi3.S */
 
 #if defined __GNUC__

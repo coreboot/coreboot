@@ -1,5 +1,4 @@
 /*
- * This file is part of the coreinfo project.
  *
  * Copyright (C) 2009 Uwe Hermann <uwe@hermann-uwe.de>
  *

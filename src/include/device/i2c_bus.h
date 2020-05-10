@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #ifndef _DEVICE_I2C_BUS_H_
 #define _DEVICE_I2C_BUS_H_

@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 #ifndef FW_CFG_H
 #define FW_CFG_H
 #include "fw_cfg_if.h"

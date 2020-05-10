@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #define DPTF_CPU_DEVICE		TCPU
 #define DPTF_CPU_ADDR		0x00000001

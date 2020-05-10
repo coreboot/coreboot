@@ -1,5 +1,4 @@
 /*
- * This file is part of the libpayload project.
  *
  * Copyright (C) 2007 Uwe Hermann <uwe@hermann-uwe.de>
  * Copyright (C) 2008 Advanced Micro Devices, Inc.

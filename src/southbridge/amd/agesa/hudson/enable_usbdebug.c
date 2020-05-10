@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 // Use simple device model for this file even in ramstage
 #define __SIMPLE_DEVICE__

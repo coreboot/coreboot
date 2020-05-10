@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #ifndef _DRAMC_PI_API_H
 #define _DRAMC_PI_API_H

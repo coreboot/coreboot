@@ -1,5 +1,4 @@
 /*
- * This file is part of the libpayload project.
  *
  * Patrick Rudolph 2017 <siro@das-labor.org>
  *

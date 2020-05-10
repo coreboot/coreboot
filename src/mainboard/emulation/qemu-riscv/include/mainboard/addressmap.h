@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #define QEMU_VIRT_CLINT		0x02000000
 #define QEMU_VIRT_PLIC		0x0c000000

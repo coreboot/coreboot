@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 	/* Routing is in System Bus scope */
 	Name(PR0, Package(){

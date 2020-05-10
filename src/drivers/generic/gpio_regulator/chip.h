@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #ifndef __DRIVERS_GENERIC_GPIO_REGULATOR_H__
 #define __DRIVERS_GENERIC_GPIO_REGULATOR_H__

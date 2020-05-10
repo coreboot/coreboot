@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
-/* This file is part of the coreboot project. */
 
 #ifndef NORTHBRIDGE_INTEL_I440BX_I440BX_H
 #define NORTHBRIDGE_INTEL_I440BX_I440BX_H

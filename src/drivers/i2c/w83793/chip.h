@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 struct drivers_i2c_w83793_config {
 	u8 mfc;

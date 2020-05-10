@@ -1,5 +1,4 @@
 /*
- * This file is part of the coreinfo project.
  *
  * It is derived from the x86info project, which is GPLv2-licensed.
  *

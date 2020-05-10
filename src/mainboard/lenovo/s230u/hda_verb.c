@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 /* Bits 31:28 - Codec Address */
 /* Bits 27:20 - NID */

@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #ifndef SUPERIO_SMSC_SIO10N268_SIO10N268_H
 #define SUPERIO_SMSC_SIO10N268_SIO10N268_H

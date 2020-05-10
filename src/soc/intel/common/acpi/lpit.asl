@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #define LPID_DSM_ARG2_ENUM_FUNCTIONS 0
 #define LPID_DSM_ARG2_GET_DEVICE_CONSTRAINTS 1

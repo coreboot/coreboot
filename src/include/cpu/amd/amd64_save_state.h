@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #ifndef __AMD64_SAVE_STATE_H__
 #define __AMD64_SAVE_STATE_H__

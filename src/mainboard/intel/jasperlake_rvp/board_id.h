@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #ifndef _MAINBOARD_COMMON_BOARD_ID_H_
 #define _MAINBOARD_COMMON_BOARD_ID_H_

@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
-/* This file is part of the coreboot project. */
 
 #ifndef __EC_GOOGLE_CHROMEEC_I2C_TUNNEL__
 #define __EC_GOOGLE_CHROMEEC_I2C_TUNNEL__

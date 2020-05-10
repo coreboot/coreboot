@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
-/* This file is part of the coreboot project. */
 
 /* Nuvoton is a Winbond spin-off, so this code is for both */
 

@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
-/* This file is part of the coreboot project. */
 
 /* From glibc-2.14, sysdeps/i386/memset.c */
 

@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #ifndef _AGESA_00630F01_CHIP_H_
 #define _AGESA_00630F01_CHIP_H_

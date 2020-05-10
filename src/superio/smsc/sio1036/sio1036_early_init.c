@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 /* Pre-RAM driver for the SMSC KBC1100 Super I/O chip */
 

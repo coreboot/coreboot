@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #ifndef __PI_STONEYRIDGE_PCI_DEVS_H__
 #define __PI_STONEYRIDGE_PCI_DEVS_H__

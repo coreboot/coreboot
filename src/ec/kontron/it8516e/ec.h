@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #ifndef EC_KONTRON_IT8516E_EC_H
 #define EC_KONTRON_IT8516E_EC_H

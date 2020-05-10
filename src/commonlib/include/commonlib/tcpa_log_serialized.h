@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #ifndef __TCPA_LOG_SERIALIZED_H__
 #define __TCPA_LOG_SERIALIZED_H__

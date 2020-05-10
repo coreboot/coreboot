@@ -1,6 +1,5 @@
 #!/bin/sh
 #
-# This file is part of the coreboot project.
 #
 
 EXIT_SUCCESS=0

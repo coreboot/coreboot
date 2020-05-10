@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #ifndef GLADOS_VARIANT_H
 #define GLADOS_VARIANT_H

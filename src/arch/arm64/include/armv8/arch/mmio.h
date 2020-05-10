@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 /*
  * Originally imported from linux/include/asm-arm/io.h. This file has changed
  * substantially since then.

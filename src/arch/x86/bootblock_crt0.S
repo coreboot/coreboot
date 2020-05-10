@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
-/* This file is part of the coreboot project. */
 /*
  * This is the modern bootblock. It prepares the system for C environment runtime
  * setup. The actual setup is done by hardware-specific code.

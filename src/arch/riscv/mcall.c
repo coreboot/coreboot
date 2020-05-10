@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: BSD-4-Clause-UC */
-/* This file is part of the coreboot project. */
 
 #include <mcall.h>
 #include <string.h>

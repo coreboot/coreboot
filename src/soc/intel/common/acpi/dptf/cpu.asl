@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 External (\_SB.CP00._PSS, PkgObj)
 External (\_SB.CP00._TSS, PkgObj)

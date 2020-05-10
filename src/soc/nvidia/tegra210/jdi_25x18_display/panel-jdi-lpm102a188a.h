@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #ifndef _PANEL_JDI_LPM102A188A_H_
 #define _PANEL_JDI_LPM102A188A_H_

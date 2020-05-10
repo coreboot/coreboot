@@ -1,5 +1,4 @@
 /*
- * This file is part of the coreboot project.
  *
  *               2012 secunet Security Networks AG SPDX-License-Identifier: GPL-2.0-only */
 

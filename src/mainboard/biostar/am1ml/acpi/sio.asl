@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 OperationRegion (IOID, SystemIO, 0x2E, 0x02)
 Field (IOID, ByteAcc, NoLock, Preserve)

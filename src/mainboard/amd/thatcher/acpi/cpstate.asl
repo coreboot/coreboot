@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 /* This file defines the processor and performance state capability
  * for each core in the system.  It is included into the DSDT for each

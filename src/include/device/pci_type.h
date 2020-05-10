@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #ifndef DEVICE_PCI_TYPE_H
 #define DEVICE_PCI_TYPE_H

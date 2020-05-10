@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 /*
  * Mailbox EC communication interface for SMSC MEC1308 Embedded Controller.

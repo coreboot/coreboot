@@ -1,5 +1,4 @@
 ## SPDX-License-Identifier: GPL-2.0-only
-## This file is part of the coreboot project.
 
 if BOARD_ASUS_P8H61_M_LX3_R2_0
 

@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
-/* This file is part of the coreboot project. */
 
 #ifndef __SOUTHBRIDGE_AMD_PI_PICASSO_SMI_H__
 #define __SOUTHBRIDGE_AMD_PI_PICASSO_SMI_H__

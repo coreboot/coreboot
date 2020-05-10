@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #ifndef __CALLOUTS_AMD_AGESA_H__
 #define __CALLOUTS_AMD_AGESA_H__

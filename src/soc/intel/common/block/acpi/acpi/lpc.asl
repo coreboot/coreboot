@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 /* Intel LPC/eSPI Bus Device  - 0:1f.0 */
 #include <soc/iomap.h>

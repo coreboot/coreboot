@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 /* Compile this driver in place of common/spi.c for bitbang testing.
    NOTE: Also need to adjust board-specific code for GPIO pinmux! */

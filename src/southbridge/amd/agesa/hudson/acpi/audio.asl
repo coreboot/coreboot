@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 Device(AZHD) {	/* 0:14.2 - HD Audio */
 	Name(_ADR, 0x00140002)

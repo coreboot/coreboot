@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 /* S1 support: bit 0, S2 Support: bit 1, etc. S0 & S5 assumed */
 Name(SSFG, 0x09)

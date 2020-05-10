@@ -1,5 +1,4 @@
 # SPDX-License-Identifier: BSD-3-Clause
-# This file is part of the coreboot project.
 
 ifeq ($(CONFIG_SOC_AMD_STONEYRIDGE),y)
 

@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #ifndef ARCH_RISCV_INCLUDE_ARCH_BOOT_H
 #define ARCH_RISCV_INCLUDE_ARCH_BOOT_H

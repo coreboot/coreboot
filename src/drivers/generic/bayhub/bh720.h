@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 /* Driver for BayHub Technology BH720 PCI to eMMC 5.0 HS200 bridge */
 

@@ -1,4 +1,3 @@
-/* This file is part of the coreboot project. */
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #ifndef __SPI_QUP_QCOM_HEADER___

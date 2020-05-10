@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 // GPP_D9 SCI
 Method (_L29, 0, Serialized) {

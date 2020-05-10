@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #include <bootblock_common.h>
 #include <superio/smsc/lpc47m15x/lpc47m15x.h>

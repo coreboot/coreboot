@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 /*
  * This driver sets the macaddress of a Atheros AR8121/AR8113/AR8114

@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
-/* This file is part of the coreboot project. */
 
 #ifndef __SUPERIO_COMMON_SSDT_H__
 #define __SUPERIO_COMMON_SSDT_H__

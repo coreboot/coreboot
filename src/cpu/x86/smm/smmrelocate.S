@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 // FIXME: Is this piece of code southbridge specific, or
 // can it be cleaned up so this include is not required?

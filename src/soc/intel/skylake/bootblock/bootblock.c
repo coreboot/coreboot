@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #include <bootblock_common.h>
 #include <drivers/i2c/designware/dw_i2c.h>

@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
-/* This file is part of the coreboot project. */
 
 #ifndef SUPERIO_ITE_IT8528E_H
 #define SUPERIO_ITE_IT8528E_H

@@ -1,5 +1,4 @@
 /*
- * This file is part of the libpayload project.
  *
  * Copyright (c) 2012 The Chromium OS Authors.
  *

@@ -1,4 +1,3 @@
-/* This file is part of the coreboot project. */
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #ifndef SOUTHBRIDGE_INTEL_I82371EB_CHIP_H

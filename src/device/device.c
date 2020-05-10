@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 /*
  * Originally based on the Linux kernel (arch/i386/kernel/pci-pc.c).

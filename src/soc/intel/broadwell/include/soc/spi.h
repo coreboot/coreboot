@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #ifndef _BROADWELL_SPI_H_
 #define _BROADWELL_SPI_H_

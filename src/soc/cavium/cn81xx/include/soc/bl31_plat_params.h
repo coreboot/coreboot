@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #ifndef __BL31_PLAT_PARAMS_H__
 #define __BL31_PLAT_PARAMS_H__

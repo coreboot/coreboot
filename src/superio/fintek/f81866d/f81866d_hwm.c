@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
-/* This file is part of the coreboot project. */
 
 /* Setup only for Fan2
  * TODO: Add support for Fan1 and Fan3

@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #ifndef _SIEMENS_NC_FPGA_H_
 #define _SIEMENS_NC_FPGA_H_

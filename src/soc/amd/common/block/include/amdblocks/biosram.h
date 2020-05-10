@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #ifndef __AMDBLOCKS_BIOSRAM_H__
 #define __AMDBLOCKS_BIOSRAM_H__

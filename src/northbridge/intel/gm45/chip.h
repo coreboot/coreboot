@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #ifndef NORTHBRIDGE_INTEL_GM45_CHIP_H
 #define NORTHBRIDGE_INTEL_GM45_CHIP_H

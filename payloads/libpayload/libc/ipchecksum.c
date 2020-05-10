@@ -1,5 +1,4 @@
 /*
- * This file is part of the libpayload project.
  *
  * It has originally been taken from the FreeBSD project.
  *

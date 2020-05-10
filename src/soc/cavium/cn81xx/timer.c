@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 /*
  * Derived from Cavium's BSD-3 Clause OCTEONTX-SDK-6.2.0.

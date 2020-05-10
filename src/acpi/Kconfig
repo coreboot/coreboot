@@ -1,5 +1,4 @@
 # SPDX-License-Identifier: GPL-2.0-only
-# This file is part of the coreboot project.
 
 config ACPI_AMD_HARDWARE_SLEEP_VALUES
 	def_bool n

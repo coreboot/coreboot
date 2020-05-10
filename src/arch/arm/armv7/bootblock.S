@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 /*
  * This file is based off of the OMAP3530/ARM Cortex start.S file from Das
  * U-Boot, which itself got the file from armboot.

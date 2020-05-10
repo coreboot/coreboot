@@ -1,4 +1,3 @@
-/* This file is part of uio_usbdebug */
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <arch/io.h>

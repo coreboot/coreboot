@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #define THINKPAD_EC_GPE 28
 #define BRIGHTNESS_UP \BRTU

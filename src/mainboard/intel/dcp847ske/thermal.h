@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #ifndef DCP847SKE_THERMAL_H
 #define DPC847SKE_THERMAL_H

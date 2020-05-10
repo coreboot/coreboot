@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #ifndef __NORTHBRIDGE_INTEL_X4X_H__
 #define __NORTHBRIDGE_INTEL_X4X_H__

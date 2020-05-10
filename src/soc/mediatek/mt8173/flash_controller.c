@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 /* NOR Flash is clocked with 26MHz, from CLK26M -> TOP_SPINFI_IFR */
 

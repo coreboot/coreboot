@@ -1,4 +1,3 @@
-/* This file is part of the coreboot project */
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #define CONFIG_PCI_OPTION_ROM_RUN_YABEL 1

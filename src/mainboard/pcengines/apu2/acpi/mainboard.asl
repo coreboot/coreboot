@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 /* Memory related values */
 Name(LOMH, 0x0)	/* Start of unused memory in C0000-E0000 range */

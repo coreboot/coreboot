@@ -1,5 +1,4 @@
 /*
- * This file is part of the libpayload project.
  *
  * Copyright (C) 2008 Advanced Micro Devices, Inc.
  * Copyright (C) 2017 Patrick Rudolph <siro@das-labor.org>

@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #ifndef __SOC_NVIDIA_TEGRA210_PAD_CFG_H
 #define __SOC_NVIDIA_TEGRA210_PAD_CFG_H

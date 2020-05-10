@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #ifndef __DRIVERS_R8168_CHIP_H__
 #define __DRIVERS_R8168_CHIP_H__

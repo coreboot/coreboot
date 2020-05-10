@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #ifndef _TEGRA210_CLK_RST_H_
 #define _TEGRA210_CLK_RST_H_

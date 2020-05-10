@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #ifndef EC_KONTRON_KEMPLD_INTERNAL_H
 #define EC_KONTRON_KEMPLD_INTERNAL_H

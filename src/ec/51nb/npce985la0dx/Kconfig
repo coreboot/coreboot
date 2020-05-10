@@ -1,5 +1,4 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
-# This file is part of the coreboot project.
 
 config EC_51NB_NPCE985LA0DX
 	bool

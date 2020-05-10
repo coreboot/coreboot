@@ -1,4 +1,3 @@
-/* This file is part of the coreboot project. */
 /* DDR3 mem setup file for EXYNOS5 based board */
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 

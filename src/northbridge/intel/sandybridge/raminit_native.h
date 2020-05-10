@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #ifndef RAMINIT_NATIVE_H
 #define RAMINIT_NATIVE_H

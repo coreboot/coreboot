@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #ifndef BUTTERFLY_EC_H
 #define BUTTERFLY_EC_H

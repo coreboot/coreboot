@@ -1,5 +1,4 @@
 /*
- * This file is part of the coreinfo project.
  *
  * Copyright (C) 2008 Advanced Micro Devices, Inc.
  *

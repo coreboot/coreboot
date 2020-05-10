@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #ifndef __MAINBOARD_GOOGLE_NYAN_BIG_SDRAM_CONFIG_H__
 #define __MAINBOARD_GOOGLE_NYAN_BIG_SDRAM_CONFIG_H__

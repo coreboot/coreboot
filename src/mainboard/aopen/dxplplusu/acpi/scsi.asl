@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 /* PCI-X devices 04:04.0 and 04:04.1 : AIC-7902W
  * U320 SCSI dual-channel controller

@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 /* This was originally for the e7500, modified for e7501
  * The primary differences are that 7501 apparently can

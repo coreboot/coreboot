@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #ifndef DEVICE_PNP_HWM5_CONF_H
 #define DEVICE_PNP_HWM5_CONF_H

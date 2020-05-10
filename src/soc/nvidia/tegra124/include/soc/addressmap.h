@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #ifndef __SOC_NVIDIA_TEGRA124_INCLUDE_SOC_ADDRESS_MAP_H__
 #define __SOC_NVIDIA_TEGRA124_INCLUDE_SOC_ADDRESS_MAP_H__

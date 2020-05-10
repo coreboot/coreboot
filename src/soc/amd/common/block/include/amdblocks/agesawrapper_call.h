@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #ifndef __AGESAWRAPPER_CALL_H__
 #define __AGESAWRAPPER_CALL_H__

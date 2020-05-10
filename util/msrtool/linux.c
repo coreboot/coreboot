@@ -1,4 +1,3 @@
-/* This file is part of msrtool. */
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <sys/types.h>

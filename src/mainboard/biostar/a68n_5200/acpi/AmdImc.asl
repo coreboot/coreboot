@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 //BTDC Due to IMC Fan, ACPI control codes
 OperationRegion(IMIO, SystemIO, 0x3E, 0x02)

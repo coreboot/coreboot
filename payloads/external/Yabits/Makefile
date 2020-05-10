@@ -1,5 +1,4 @@
 ##
-## This file is part of the coreboot project.
 ##
 ## Copyright (C) 2016 Google Inc.
 ##

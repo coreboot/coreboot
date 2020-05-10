@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 /* These come from the dynamically created CPU SSDT */
 External (\_SB.CNOT, MethodObj)

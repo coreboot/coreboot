@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 #include "board_id.h"
 #include <boardid.h>
 #include <ec/acpi/ec.h>

@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 /* DDR3 mem setup file for SMDK5250 board based on EXYNOS5 */
 

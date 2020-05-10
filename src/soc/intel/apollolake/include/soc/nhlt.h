@@ -1,4 +1,3 @@
-/* This file is part of the coreboot project. */
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #ifndef _SOC_APOLLOLAKE_NHLT_H_

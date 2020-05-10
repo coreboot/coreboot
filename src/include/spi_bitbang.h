@@ -1,4 +1,3 @@
-/* This file is part of the coreboot project. */
 /* SPDX-License-Identifier: GPL-2.0-only */
 #ifndef _SPI_BITBANG_H_
 #define _SPI_BITBANG_H_

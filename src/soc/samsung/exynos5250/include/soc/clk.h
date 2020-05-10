@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #ifndef CPU_SAMSUNG_EXYNOS5250_CLK_H
 #define CPU_SAMSUNG_EXYNOS5250_CLK_H

@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #ifndef EMERALDLAKE2_THERMAL_H
 #define EMERALDLAKE2_THERMAL_H

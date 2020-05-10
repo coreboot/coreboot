@@ -1,6 +1,5 @@
 #!/bin/sh
 #
-# This file is part of the coreboot project. It originated in the
 # flashrom project but has been heavily modified since then.
 #
 # This program is free software; you can redistribute it and/or modify

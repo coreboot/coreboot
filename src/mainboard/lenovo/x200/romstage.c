@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #include <southbridge/intel/common/gpio.h>
 #include <northbridge/intel/gm45/gm45.h>

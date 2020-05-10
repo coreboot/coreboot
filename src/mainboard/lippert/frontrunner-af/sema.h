@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #ifndef __LIPPERT_SEMA_H__
 #define __LIPPERT_SEMA_H__

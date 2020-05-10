@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 #include <soc/clock.h>
 #include <device/mmio.h>
 #include <soc/addressmap.h>

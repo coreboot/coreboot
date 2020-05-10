@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #ifndef _BOOT_DEVICE_H_
 #define _BOOT_DEVICE_H_

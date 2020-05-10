@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #ifndef SIEMENS_HWI_LIB_H_
 #define SIEMENS_HWI_LIB_H_

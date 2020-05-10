@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 /* NOTE: This handler assumes the SMM window goes from 0xa0000
  * to 0xaffff. In fact, at least on Intel Core CPUs (i945 chipset)

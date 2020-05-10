@@ -1,6 +1,5 @@
 
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 Scope(\_SB.PCI0.I2C7) {
 // Touch Panels on I2C7

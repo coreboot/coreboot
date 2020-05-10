@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 /* This is board specific information:
  * IRQ routing for the 0:1e.0 PCI bridge of the ICH10

@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 
 /* Board powers on with button or PME# from on-board GbE wake-on-lan.

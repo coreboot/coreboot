@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #ifndef DRIVERS_I2C_NCT7802Y_H
 #define DRIVERS_I2C_NCT7802Y_H

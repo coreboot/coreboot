@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #define IT8516E_EC_DEV		EC0
 #define SUPERIO_PNP_BASE	0x20e

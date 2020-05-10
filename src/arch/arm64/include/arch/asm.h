@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #ifndef __ARM_ARM64_ASM_H
 #define __ARM_ARM64_ASM_H

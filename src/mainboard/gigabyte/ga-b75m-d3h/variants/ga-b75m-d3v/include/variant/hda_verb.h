@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #ifndef GA_B75M_D3V_HDA_VERB_H
 #define GA_B75M_D3V_HDA_VERB_H

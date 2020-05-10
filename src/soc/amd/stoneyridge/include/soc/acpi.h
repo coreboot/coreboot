@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
-/* This file is part of the coreboot project. */
 
 #ifndef __SOC_STONEYRIDGE_ACPI_H__
 #define __SOC_STONEYRIDGE_ACPI_H__

@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #ifndef __VENDORCODE_GOOGLE_CHROMEOS_GNVS_H
 #define __VENDORCODE_GOOGLE_CHROMEOS_GNVS_H

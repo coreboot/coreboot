@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #ifndef _BASEBOARD_X11_LGA1151_SERIES_H
 #define _BASEBOARD_X11_LGA1151_SERIES_H

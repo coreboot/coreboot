@@ -1,5 +1,4 @@
 /*
- * This file is part of the libpayload project.
  *
  * Copyright (C) 2012 secunet Security Networks AG
  * Copyright (C) 2013 Edward O'Callaghan <eocallaghan@alterapraxis.com>

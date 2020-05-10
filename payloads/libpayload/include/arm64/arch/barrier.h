@@ -1,5 +1,4 @@
 /*
- * This file is part of the coreboot project.
  *
  * Copyright 2014 Google Inc.
  * Copyright (C) 2003-2004 Olivier Houchard

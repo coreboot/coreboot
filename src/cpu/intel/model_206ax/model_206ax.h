@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #ifndef _CPU_INTEL_MODEL_206AX_H
 #define _CPU_INTEL_MODEL_206AX_H

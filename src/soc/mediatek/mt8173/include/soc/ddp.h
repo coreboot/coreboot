@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #ifndef _MT8173_SOC_DDP_H_
 #define _MT8173_SOC_DDP_H_

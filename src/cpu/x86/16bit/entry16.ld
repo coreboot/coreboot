@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 gdtptr16_offset = gdtptr16 & 0xffff;
 nullidt_offset = nullidt & 0xffff;

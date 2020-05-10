@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #ifndef MTK_MT8173_SPI_H
 #define MTK_MT8173_SPI_H

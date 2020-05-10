@@ -1,5 +1,4 @@
 /*
- * This file is part of the libpayload project.
  *
  * It was originally taken from the OpenBSD project.
  *

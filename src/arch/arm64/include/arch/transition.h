@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #ifndef __ARCH_ARM64_TRANSITION_H__
 #define __ARCH_ARM64_TRANSITION_H__

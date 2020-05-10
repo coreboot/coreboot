@@ -1,4 +1,3 @@
-/* This file is part of the depthcharge project. */
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #ifndef __I2C_QCOM_HEADER___

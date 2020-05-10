@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 /*
  * lib_helpers.h: All library function prototypes and macros are defined in this
  * file.

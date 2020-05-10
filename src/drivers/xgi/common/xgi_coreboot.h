@@ -1,4 +1,3 @@
-/* This file is part of the coreboot project. */
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 /* Portions marked below taken from XGI/SiS Linux kernel drivers */

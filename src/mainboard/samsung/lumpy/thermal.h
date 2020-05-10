@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #ifndef LUMPY_THERMAL_H
 #define LUMPY_THERMAL_H

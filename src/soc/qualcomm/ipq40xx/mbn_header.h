@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #ifndef __SOC_QCA_IPQ40XX_MBN_HEADER_H__
 #define __SOC_QCA_IPQ40XX_MBN_HEADER_H__

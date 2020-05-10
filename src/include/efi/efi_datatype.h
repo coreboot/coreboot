@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 /* Create EFI equivalent datatype in coreboot based on UEFI specification */
 #ifndef __EFI_DATATYPE_H__

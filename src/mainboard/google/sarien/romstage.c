@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #include <ec/google/wilco/romstage.h>
 #include <soc/cnl_memcfg_init.h>

@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #ifndef _CIMX_SB800_PCI_DEVS_H_
 #define _CIMX_SB800_PCI_DEVS_H_

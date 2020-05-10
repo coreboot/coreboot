@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #ifndef BAYTRAIL_XHCI_H
 #define BAYTRAIL_XHCI_H

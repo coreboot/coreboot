@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 /* The below definitions are used for customization
  * Some boards/devices may need different data hold time

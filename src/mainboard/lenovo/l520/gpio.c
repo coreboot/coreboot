@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #include <southbridge/intel/common/gpio.h>
 static const struct pch_gpio_set1 pch_gpio_set1_mode = {

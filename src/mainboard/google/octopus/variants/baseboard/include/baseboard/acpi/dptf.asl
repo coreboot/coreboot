@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 /* Below values might change after Thermal Tuning. */
 #define DPTF_CPU_PASSIVE	90

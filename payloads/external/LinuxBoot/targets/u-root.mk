@@ -1,4 +1,3 @@
-## This file is part of the coreboot project.
 ##
 ## Copyright (C) 2017 Facebook Inc.
 ## Copyright (C) 2018 9elements Cyber Security

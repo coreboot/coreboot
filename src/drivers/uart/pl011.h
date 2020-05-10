@@ -1,5 +1,4 @@
 /*
- * This file is part of the coreboot project.
  *
  *
  * SPDX-License-Identifier: BSD-3-Clause

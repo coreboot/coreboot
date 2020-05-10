@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 /* RAM driver for the SMSC SIO1036 Super I/O chip */
 

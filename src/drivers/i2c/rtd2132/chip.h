@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 struct drivers_i2c_rtd2132_config {
 	/* Panel Power Sequencing. All units in ms. */

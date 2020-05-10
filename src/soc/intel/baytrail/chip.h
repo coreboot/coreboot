@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 /* The devicetree parser expects chip.h to reside directly in the path
  * specified by the devicetree. */

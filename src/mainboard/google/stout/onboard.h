@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #ifndef STOUT_ONBOARD_H
 #define STOUT_ONBOARD_H

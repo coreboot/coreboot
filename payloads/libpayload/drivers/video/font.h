@@ -1,5 +1,4 @@
 /*
- * This file is part of the libpayload project.
  *
  * Copyright (C) 2017 Paul Kocialkowski <contact@paulk.fr>
  *

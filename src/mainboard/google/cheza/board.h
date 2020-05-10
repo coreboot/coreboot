@@ -1,4 +1,3 @@
-/* This file is part of the coreboot project. */
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #ifndef __COREBOOT_SRC_MAINBOARD_GOOGLE_CHEZA_BOARD_H

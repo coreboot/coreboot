@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #include <cpu/x86/smm.h>
 #include <cpu/intel/em64t100_save_state.h>

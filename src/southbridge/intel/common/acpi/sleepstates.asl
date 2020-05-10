@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 Name(\_S0, Package(){0x0,0x0,0x0,0x0})
 #if !CONFIG(HAVE_ACPI_RESUME)

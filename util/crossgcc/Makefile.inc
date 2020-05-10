@@ -1,5 +1,3 @@
-## This file is part of the coreboot project.
-##
 ## SPDX-License-Identifier: GPL-2.0-only
 
 TOOLCHAIN_ARCHES := i386 x64 arm aarch64 riscv ppc64 nds32le

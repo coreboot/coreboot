@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 #ifndef CPU_INTEL_FSB_H
 #define CPU_INTEL_FSB_H

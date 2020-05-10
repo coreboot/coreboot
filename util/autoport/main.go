@@ -214,7 +214,6 @@ func Create(ctx Context, name string) *os.File {
 
 func Add_gpl(f *os.File) {
 	fmt.Fprintln(f, "/* SPDX-License-Identifier: GPL-2.0-only */")
-	fmt.Fprintln(f, "/* This file is part of the coreboot project. */")
 	fmt.Fprintln(f)
 }
 
@@ -886,7 +885,6 @@ DefinitionBlock(
 		defer gma.Close()
 
 		gma.WriteString(`-- SPDX-License-Identifier: GPL-2.0-or-later
--- This file is part of the coreboot project.
 
 with HW.GFX.GMA;
 with HW.GFX.GMA.Display_Probing;

@@ -1,4 +1,3 @@
-/* This file is part of the coreboot project. */
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #define DOS_MAGIC 0x5a4d

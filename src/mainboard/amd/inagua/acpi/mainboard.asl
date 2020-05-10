@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* This file is part of the coreboot project. */
 
 /* Data to be patched by the BIOS during POST */
 /* FIXME the patching is not done yet! */

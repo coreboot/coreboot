@@ -1,5 +1,4 @@
 # SPDX-License-Identifier: GPL-2.0-only
-# This file is part of the coreboot project.
 
 ## include generic nuvoton pre-ram stage driver
 bootblock-$(CONFIG_SUPERIO_NUVOTON_COMMON_PRE_RAM) += common/early_serial.c

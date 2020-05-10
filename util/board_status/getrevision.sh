@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# flashrom project but has been heavily modified since then.
+# From the flashrom project but heavily modified since then.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

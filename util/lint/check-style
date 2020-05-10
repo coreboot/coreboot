@@ -5,7 +5,6 @@
 #  - create a patch of the proposed style changes
 #
 # modifications for clang-format by rene.milk@wwu.de
-# at github.
 # Link:    https://github.com/githubbrowser/Pre-commit-hooks
 # Contact: David Martin, david.martin.mailbox@googlemail.com
 

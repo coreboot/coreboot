@@ -1,4 +1,3 @@
-/* This file is part of the coreboot project. */
 /*
  * This file is dual-licensed. You can choose between:
  *   - The GNU GPL, version 2, as published by the Free Software Foundation

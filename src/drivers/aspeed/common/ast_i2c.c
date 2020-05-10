@@ -1,11 +1,4 @@
 /*
- * Copied from Linux drivers/gpu/drm/ast/ast_mode.c
- *
- * Copyright 2012 Red Hat Inc.
- * Parts based on xf86-video-ast
- * Copyright (c) 2005 ASPEED Technology Inc.
- * Copyright Dave Airlie <airlied@redhat.com>
- * Copyright 2019 9Elements Agency GmbH <patrick.rudolph@9elements.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the
@@ -29,6 +22,9 @@
  *
  */
 
+/*
+ * Copied from Linux drivers/gpu/drm/ast/ast_mode.c
+ */
 #include <delay.h>
 #include <device/i2c_simple.h>
 

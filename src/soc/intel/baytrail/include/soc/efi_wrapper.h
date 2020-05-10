@@ -1,5 +1,4 @@
 /*
- * PEI EFI entry point
  *
  *
  * Redistribution and use in source and binary forms, with or without

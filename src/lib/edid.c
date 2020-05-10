@@ -1,7 +1,4 @@
 /*
- * Copyright 2013 Google Inc.
- * Copyright 2006-2012 Red Hat, Inc.
- *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation
@@ -20,7 +17,6 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-/* Author: Adam Jackson <ajax@nwnk.net> */
 
 /* this is a pretty robust parser for EDID, and we're tasked with parsing
  * an arbitrary panel. We will pass it a raw EDID block and a struct which

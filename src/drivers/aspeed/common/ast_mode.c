@@ -1,12 +1,4 @@
 /*
- * Copied from Linux drivers/gpu/drm/ast/ast_mode.c
- *
- * Copyright 2012 Red Hat Inc.
- * Parts based on xf86-video-ast
- * Copyright (c) 2005 ASPEED Technology Inc.
- * Copyright Dave Airlie <airlied@redhat.com>
- * Copyright 2019 9Elements Agency GmbH <patrick.rudolph@9elements.com>
- *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the
  * "Software"), to deal in the Software without restriction, including
@@ -26,10 +18,12 @@
  * The above copyright notice and this permission notice (including the
  * next paragraph) shall be included in all copies or substantial portions
  * of the Software.
- *
- * Please try to keep as close as possible to the upstream source.
  */
 
+/*
+ * Copied from Linux drivers/gpu/drm/ast/ast_mode.c
+ * Please try to keep as close as possible to the upstream source.
+ */
 #include "ast_drv.h"
 #include "ast_tables.h"
 

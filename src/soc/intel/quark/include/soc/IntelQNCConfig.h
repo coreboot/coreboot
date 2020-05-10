@@ -1,15 +1,5 @@
-/** @file
-Some configuration of QNC Package
-
-
-This program and the accompanying materials are licensed and made available
-under the terms and conditions of the BSD License.  The full text of the license
-may be found at http://opensource.org/licenses/bsd-license.php
-
-THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "AS IS" BASIS,
-WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
-
-**/
+/* SPDX-License-Identifier: BSD-2-Clause */
+/* Some configuration of QNC Package */
 
 #ifndef __INTEL_QNC_CONFIG_H__
 #define __INTEL_QNC_CONFIG_H__

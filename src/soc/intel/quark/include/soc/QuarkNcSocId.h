@@ -1,21 +1,13 @@
-/** @file
-QuarkNcSocId Register Definitions
-
-
-This program and the accompanying materials are licensed and made available
-under the terms and conditions of the BSD License.  The full text of the license
-may be found at http://opensource.org/licenses/bsd-license.php
-
-THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "AS IS" BASIS,
-WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
-
-Definitions beginning with "R_" are registers
-Definitions beginning with "B_" are bits within registers
-Definitions beginning with "V_" are meaningful values of bits within registers
-Definitions beginning with "S_" are register sizes
-Definitions beginning with "N_" are the bit position
-
-**/
+/* SPDX-License-Identifier: BSD-2-Clause */
+/*
+ * QuarkNcSocId Register Definitions
+ * Definitions beginning with "R_" are registers
+ * Definitions beginning with "B_" are bits within registers
+ * Definitions beginning with "V_" are meaningful values of bits within registers
+ * Definitions beginning with "S_" are register sizes
+ * Definitions beginning with "N_" are the bit position
+ *
+ */
 
 #ifndef _QUARK_NC_SOC_ID_H_
 #define _QUARK_NC_SOC_ID_H_

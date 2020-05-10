@@ -11,10 +11,24 @@
 #include <stdint.h>
 #include <types.h>
 
+static uintptr_t espi_bar;
+
+void espi_update_static_bar(uintptr_t bar)
+{
+	espi_bar = bar;
+}
+
 static uintptr_t espi_get_bar(void)
 {
-	uintptr_t espi_spi_base = lpc_get_spibase();
-	return espi_spi_base + ESPI_OFFSET_FROM_BAR;
+	uintptr_t espi_spi_base;
+
+	if (espi_bar)
+		return espi_bar;
+
+	espi_spi_base = lpc_get_spibase();
+	espi_update_static_bar(espi_spi_base + ESPI_OFFSET_FROM_BAR);
+
+	return espi_bar;
 }
 
 static uint32_t espi_read32(int reg)

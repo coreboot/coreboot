@@ -55,4 +55,10 @@ int espi_open_mmio_window(uint32_t base, size_t size);
  */
 void espi_configure_decodes(void);
 
+/*
+ * In cases where eSPI BAR is statically provided by SoC, use that BAR instead of reading
+ * SPIBASE. This is required for cases where verstage runs on PSP.
+ */
+void espi_update_static_bar(uintptr_t bar);
+
 #endif /* __AMDBLOCKS_ESPI_H__ */

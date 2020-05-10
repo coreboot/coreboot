@@ -8,10 +8,20 @@
 
 # regex list of files and directories to exclude from the search
 HEADER_EXCLUDED="\
+^src/commonlib/bsd/lz4.c.inc\$|\
+^src/cpu/x86/16bit/entry16.inc\$|\
+^src/device/oprom/x86emu/|\
+^src/device/oprom/include/x86emu/|\
+^src/device/oprom/yabel/|\
+^src/drivers/xgi/common/initdef.h\$|\
+^src/drivers/xgi/common/vstruct.h\$|\
 ^src/lib/gnat/|\
+^src/lib/lzmadecode.[ch]\$|\
+^src/lib/stack.c\$|\
 ^src/vendorcode/|\
 ^util/amdtools/example_input/|\
 ^util/cbfstool/lzma/|\
+^util/cbfstool/lz4/|\
 ^util/kconfig/|\
 Kconfig|\
 \<COPYING\>|\

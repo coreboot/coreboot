@@ -100,6 +100,7 @@ check_for_license() {
 
 #search the files for license headers
 check_for_license 'SPDX-License-Identifier: Apache-2.0'
+check_for_license 'SPDX-License-Identifier: BSD-2-Clause'
 check_for_license 'SPDX-License-Identifier: BSD-3-Clause'
 check_for_license 'SPDX-License-Identifier: GPL-2.0-only'
 check_for_license 'SPDX-License-Identifier: GPL-2.0-or-later'

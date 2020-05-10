@@ -323,6 +323,33 @@ config BOOTSPLASH_FILE
 	  The path and filename of the file to use as graphical bootsplash
 	  screen. The file format has to be jpg.
 
+config FW_CONFIG
+	bool "Firmware Configuration Probing"
+	default n
+	help
+	  Enable support for probing devices with fw_config.  This is a simple
+	  bitmask broken into fields and options for probing.
+
+config FW_CONFIG_SOURCE_CBFS
+	bool "Obtain Firmware Configuration value from CBFS"
+	depends on FW_CONFIG
+	default n
+	help
+	  With this option enabled coreboot will look for the 32bit firmware
+	  configuration value in CBFS at the selected prefix with the file name
+	  "fw_config".  This option will override other sources and allow the
+	  local image to preempt the mainboard selected source.
+
+config FW_CONFIG_SOURCE_CHROMEEC_CBI
+	bool "Obtain Firmware Configuration value from Google Chrome EC CBI"
+	depends on FW_CONFIG && EC_GOOGLE_CHROMEEC
+	default n
+	help
+	  This option tells coreboot to read the firmware configuration value
+	  from the Google Chrome Embedded Controller CBI interface.  This source
+	  is not tried if FW_CONFIG_SOURCE_CBFS is enabled and the value was
+	  found in CBFS.
+
 config HAVE_RAMPAYLOAD
 	bool
 

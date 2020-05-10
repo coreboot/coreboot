@@ -8,6 +8,7 @@
 #include <smbios.h>
 #include <types.h>
 
+struct fw_config;
 struct device;
 struct pci_operations;
 struct i2c_bus_operations;
@@ -147,6 +148,9 @@ struct device {
 #endif
 #endif
 	DEVTREE_CONST void *chip_info;
+
+	/* Zero-terminated array of fields and options to probe. */
+	DEVTREE_CONST struct fw_config *probe_list;
 };
 
 /**

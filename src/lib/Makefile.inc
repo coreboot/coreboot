@@ -159,6 +159,11 @@ romstage-y += hexdump.c
 verstage-y += hexdump.c
 smm-y += hexdump.c
 
+bootblock-$(CONFIG_FW_CONFIG) += fw_config.c
+verstage-$(CONFIG_FW_CONFIG) += fw_config.c
+romstage-$(CONFIG_FW_CONFIG) += fw_config.c
+ramstage-$(CONFIG_FW_CONFIG) += fw_config.c
+
 bootblock-$(CONFIG_ESPI_DEBUG) += espi_debug.c
 verstage-$(CONFIG_ESPI_DEBUG) += espi_debug.c
 romstage-$(CONFIG_ESPI_DEBUG) += espi_debug.c

@@ -7,6 +7,7 @@
 #include <baseboard/variants.h>
 #include <ec/google/chromeec/ec.h>
 #include <fsp/soc_binding.h>
+#include <fw_config.h>
 #include <gpio.h>
 #include <memory_info.h>
 #include <soc/gpio.h>
@@ -25,6 +26,10 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 		.cbfs_index = variant_memory_sku(),
 	};
 	bool half_populated = gpio_get(GPIO_MEM_CH_SEL);
+
+	/* Disable HDA device if no audio board is present. */
+	if (fw_config_probe(FW_CONFIG(AUDIO, NONE)))
+		mem_cfg->PchHdaEnable = 0;
 
 	meminit_lpddr4x(mem_cfg, board_cfg, &spd_info, half_populated);
 }

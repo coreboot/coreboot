@@ -12,6 +12,7 @@
 #include <amdblocks/amd_pci_util.h>
 #include <amdblocks/reset.h>
 #include <amdblocks/acpimmio.h>
+#include <amdblocks/espi.h>
 #include <amdblocks/lpc.h>
 #include <amdblocks/acpi.h>
 #include <amdblocks/spi.h>
@@ -202,13 +203,20 @@ static void fch_smbus_init(void)
 	asf_write8(SMBSLVSTAT, SMBSLV_STAT_CLEAR);
 }
 
+static void lpc_configure_decodes(void)
+{
+	if (CONFIG(POST_IO) && (CONFIG_POST_IO_PORT == 0x80))
+		lpc_enable_port80();
+}
+
 /* Before console init */
 void fch_pre_init(void)
 {
 	lpc_early_init();
-	if (CONFIG(POST_IO) && (CONFIG_POST_IO_PORT == 0x80)
-					&& CONFIG(PICASSO_LPC_IOMUX))
-		lpc_enable_port80();
+
+	if (!CONFIG(SOC_AMD_COMMON_BLOCK_USE_ESPI))
+		lpc_configure_decodes();
+
 	fch_spi_early_init();
 	enable_acpimmio_decode_pm04();
 	fch_smbus_init();
@@ -280,6 +288,11 @@ void fch_early_init(void)
 
 	if (CONFIG(DISABLE_SPI_FLASH_ROM_SHARING))
 		lpc_disable_spi_rom_sharing();
+
+	if (CONFIG(SOC_AMD_COMMON_BLOCK_USE_ESPI)) {
+		espi_setup();
+		espi_configure_decodes();
+	}
 }
 
 void sb_enable(struct device *dev)

@@ -115,10 +115,12 @@ chip soc/intel/tigerlake
 	# HD Audio
 	register "PchHdaDspEnable" = "1"
 	register "PchHdaAudioLinkHdaEnable" = "0"
-	register "PchHdaAudioLinkDmicEnable[0]" = "1"
-	register "PchHdaAudioLinkDmicEnable[1]" = "1"
-	register "PchHdaAudioLinkSspEnable[0]" = "1"
-	register "PchHdaAudioLinkSspEnable[1]" = "1"
+	register "PchHdaAudioLinkDmicEnable[0]" = "0"
+	register "PchHdaAudioLinkDmicEnable[1]" = "0"
+	register "PchHdaAudioLinkSspEnable[0]" = "0"
+	register "PchHdaAudioLinkSspEnable[1]" = "0"
+	register "PchHdaAudioLinkSndwEnable[0]" = "0"
+	register "PchHdaAudioLinkSndwEnable[1]" = "0"
 
 	# TCSS USB3
 	register "TcssXhciEn" = "1"
@@ -256,21 +258,7 @@ chip soc/intel/tigerlake
 			register "wake" = "GPE0_PME_B0"
 			device pci 14.3 on end # CNVi: WiFi		0xA0F0 - A0F3
 		end
-
-		device pci 15.0 on
-			chip drivers/i2c/generic
-				register "hid" = ""10EC5682""
-				register "name" = ""RT58""
-				register "desc" = ""Realtek RT5682""
-				register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_BOTH(GPP_F8)"
-				# Set the jd_src to RT5668_JD1 for jack detection
-				register "property_count" = "1"
-				register "property_list[0].type" = "ACPI_DP_TYPE_INTEGER"
-				register "property_list[0].name" = ""realtek,jd-src""
-				register "property_list[0].integer" = "1"
-				device i2c 1a on end
-			end
-		end # I2C #0			0xA0E8
+		device pci 15.0  on end # I2C #0			0xA0E8
 		device pci 15.1 on
 			chip drivers/i2c/hid
 				register "generic.hid" = ""GDIX0000""
@@ -399,14 +387,7 @@ chip soc/intel/tigerlake
 		end # eSPI						0xA080 - A09F
 		device pci 1f.1 off end # P2SB				0xA0A0
 		device pci 1f.2 hidden end # PMC			0xA0A1
-		device pci 1f.3 on
-			chip drivers/generic/max98357a
-				register "hid" = ""MX98357A""
-				register "sdmode_gpio" =  "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_A10)"
-				register "sdmode_delay" = "5"
-				device generic 0 on end
-			end
-		end # Intel HD audio					0xA0C8-A0CF
+		device pci 1f.3 on  end # Intel HD audio		0xA0C8-A0CF
 		device pci 1f.4 off end # SMBus				0xA0A3
 		device pci 1f.5 on  end # SPI				0xA0A4
 		device pci 1f.6 off end # GbE				0x15E1/0x15E2

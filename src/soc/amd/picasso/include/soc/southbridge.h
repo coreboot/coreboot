@@ -240,61 +240,6 @@
 #define SATA_CAPABILITIES_REG		0xfc
 #define SATA_CAPABILITY_SPM		BIT(12)
 
-#define SPI_CNTRL0			0x00
-#define   SPI_BUSY			BIT(31)
-enum spi_read_mode {
-	SPI_READ_MODE_NORMAL33M = 0,
-	/* 1 is reserved. */
-	SPI_READ_MODE_DUAL112 = 2,
-	SPI_READ_MODE_QUAD114 = 3,
-	SPI_READ_MODE_DUAL122 = 4,
-	SPI_READ_MODE_QUAD144 = 5,
-	SPI_READ_MODE_NORMAL66M = 6,
-	SPI_READ_MODE_FAST_READ = 7,
-};
-/*
- * SPI read mode is split into bits 18, 29, 30 such that [30:29:18] correspond to bits [2:0] for
- * SpiReadMode.
- */
-#define   SPI_READ_MODE_MASK		(BIT(30) | BIT(29) | BIT(18))
-#define   SPI_READ_MODE_UPPER_BITS(x)	((((x) >> 1) & 0x3) << 29)
-#define   SPI_READ_MODE_LOWER_BITS(x)	(((x) & 0x1) << 18)
-#define   SPI_READ_MODE(x)		(SPI_READ_MODE_UPPER_BITS(x) | \
-					 SPI_READ_MODE_LOWER_BITS(x))
-#define   SPI_ACCESS_MAC_ROM_EN		BIT(22)
-#define   SPI_FIFO_PTR_CLR		BIT(20)
-#define   SPI_ARB_ENABLE		BIT(19)
-#define   EXEC_OPCODE			BIT(16)
-#define SPI_FIFO			0x80
-#define   SPI_FIFO_DEPTH		(0xc7 - SPI_FIFO)
-
-#define SPI100_ENABLE			0x20
-#define   SPI_USE_SPI100		BIT(0)
-
-/* Use SPI_SPEED_16M-SPI_SPEED_66M below for the southbridge */
-#define SPI100_SPEED_CONFIG		0x22
-enum spi100_speed {
-	SPI_SPEED_66M = 0,
-	SPI_SPEED_33M = 1,
-	SPI_SPEED_22M = 2,
-	SPI_SPEED_16M = 3,
-	SPI_SPEED_100M = 4,
-	SPI_SPEED_800K = 5,
-};
-
-#define   SPI_SPEED_MASK		0xf
-#define   SPI_SPEED_MODE(x, shift)	(((x) & SPI_SPEED_MASK) << (shift))
-#define   SPI_NORM_SPEED(x)		SPI_SPEED_MODE(x, 12)
-#define   SPI_FAST_SPEED(x)		SPI_SPEED_MODE(x, 8)
-#define   SPI_ALT_SPEED(x)		SPI_SPEED_MODE(x, 4)
-#define   SPI_TPM_SPEED(x)		SPI_SPEED_MODE(x, 0)
-
-#define   SPI_SPEED_CFG(n, f, a, t)	(SPI_NORM_SPEED(n) | SPI_FAST_SPEED(f) | \
-					 SPI_ALT_SPEED(a) | SPI_TPM_SPEED(t))
-
-#define SPI100_HOST_PREF_CONFIG		0x2c
-#define   SPI_RD4DW_EN_HOST		BIT(15)
-
 /* IO 0xcf9 - Reset control port*/
 #define   FULL_RST			BIT(3)
 #define   RST_CMD			BIT(2)
@@ -329,12 +274,9 @@ struct soc_power_reg {
 
 void enable_aoac_devices(void);
 void sb_clk_output_48Mhz(void);
-void sb_disable_4dw_burst(void);
 void sb_enable(struct device *dev);
 void southbridge_final(void *chip_info);
 void southbridge_init(void *chip_info);
-void sb_read_mode(u32 mode);
-void sb_set_spi100(u16 norm, u16 fast, u16 alt, u16 tpm);
 void fch_pre_init(void);
 void fch_early_init(void);
 void set_uart_config(int idx);

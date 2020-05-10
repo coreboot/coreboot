@@ -14,6 +14,7 @@
 #include <amdblocks/acpimmio.h>
 #include <amdblocks/lpc.h>
 #include <amdblocks/acpi.h>
+#include <amdblocks/spi.h>
 #include <soc/cpu.h>
 #include <soc/southbridge.h>
 #include <soc/smi.h>
@@ -197,77 +198,6 @@ void sb_clk_output_48Mhz(void)
 	misc_write32(MISC_CLK_CNTL1, ctrl);
 }
 
-static uintptr_t sb_init_spi_base(void)
-{
-	uintptr_t base;
-
-	/* Make sure the base address is predictable */
-	base = lpc_get_spibase();
-
-	if (base)
-		return base;
-
-	lpc_set_spibase(SPI_BASE_ADDRESS);
-	lpc_enable_spi_rom(SPI_ROM_ENABLE);
-
-	return SPI_BASE_ADDRESS;
-}
-
-void sb_set_spi100(u16 norm, u16 fast, u16 alt, u16 tpm)
-{
-	uintptr_t base = sb_init_spi_base();
-
-	write16((void *)(base + SPI100_SPEED_CONFIG), SPI_SPEED_CFG(norm, fast, alt, tpm));
-	write16((void *)(base + SPI100_ENABLE), SPI_USE_SPI100);
-}
-
-void sb_disable_4dw_burst(void)
-{
-	uintptr_t base = sb_init_spi_base();
-	write16((void *)(base + SPI100_HOST_PREF_CONFIG),
-			read16((void *)(base + SPI100_HOST_PREF_CONFIG))
-					& ~SPI_RD4DW_EN_HOST);
-}
-
-void sb_read_mode(u32 mode)
-{
-	uintptr_t base = sb_init_spi_base();
-	uint32_t val = (read32((void *)(base + SPI_CNTRL0)) & ~SPI_READ_MODE_MASK);
-
-	write32((void *)(base + SPI_CNTRL0), val | SPI_READ_MODE(mode));
-}
-
-static void sb_spi_config_mb_modes(void)
-{
-	const struct soc_amd_picasso_config *cfg = config_of_soc();
-
-	sb_read_mode(cfg->spi_read_mode);
-	sb_set_spi100(cfg->spi_normal_speed, cfg->spi_fast_speed, cfg->spi_altio_speed,
-		      cfg->spi_tpm_speed);
-}
-
-static void sb_spi_config_em100_modes(void)
-{
-	sb_read_mode(SPI_READ_MODE_NORMAL33M);
-	sb_set_spi100(SPI_SPEED_16M, SPI_SPEED_16M, SPI_SPEED_16M, SPI_SPEED_16M);
-}
-
-static void sb_spi_config_modes(void)
-{
-	if (CONFIG(EM100))
-		sb_spi_config_em100_modes();
-	else
-		sb_spi_config_mb_modes();
-}
-
-static void sb_spi_init(void)
-{
-	lpc_enable_spi_prefetch();
-	sb_init_spi_base();
-	sb_disable_4dw_burst();
-	sb_spi_config_modes();
-}
-
 static void fch_smbus_init(void)
 {
 	/* 400 kHz smbus speed. */
@@ -293,7 +223,7 @@ void fch_pre_init(void)
 	if (CONFIG(POST_IO) && (CONFIG_POST_IO_PORT == 0x80)
 					&& CONFIG(PICASSO_LPC_IOMUX))
 		lpc_enable_port80();
-	sb_spi_init();
+	fch_spi_early_init();
 	enable_acpimmio_decode_pm04();
 	fch_smbus_init();
 	sb_enable_cf9_io();

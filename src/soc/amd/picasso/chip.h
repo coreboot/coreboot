@@ -73,21 +73,6 @@ struct soc_amd_picasso_config {
 	uint8_t min_soc_vid_offset;
 	uint8_t aclk_dpm0_freq_400MHz;
 
-	/*
-	 * SPI config
-	 * Default values if not overridden by mainboard:
-	 * Read mode - Normal 33MHz
-	 * Normal speed - 66MHz
-	 * Fast speed - 66MHz
-	 * Alt speed - 66MHz
-	 * TPM speed - 66MHz
-	 */
-	enum spi_read_mode spi_read_mode;
-	enum spi100_speed spi_normal_speed;
-	enum spi100_speed spi_fast_speed;
-	enum spi100_speed spi_altio_speed;
-	enum spi100_speed spi_tpm_speed;
-
 	enum {
 		SD_EMMC_DISABLE,
 		SD_EMMC_SD_LOW_SPEED,

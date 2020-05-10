@@ -165,16 +165,6 @@ void enable_aoac_devices(void)
 	} while (!status);
 }
 
-static void sb_enable_lpc(void)
-{
-	u8 byte;
-
-	/* Enable LPC controller */
-	byte = pm_io_read8(PM_LPC_GATING);
-	byte |= PM_LPC_ENABLE;
-	pm_io_write8(PM_LPC_GATING, byte);
-}
-
 static void sb_enable_cf9_io(void)
 {
 	uint32_t reg = pm_read32(PM_DECODE_EN);
@@ -215,11 +205,7 @@ static void fch_smbus_init(void)
 /* Before console init */
 void fch_pre_init(void)
 {
-	/* Turn on LPC in case the PSP didn't use it.  However, ensure all
-	 * decoding is cleared as the PSP may have enabled decode paths. */
-	sb_enable_lpc();
-	lpc_disable_decodes();
-
+	lpc_early_init();
 	if (CONFIG(POST_IO) && (CONFIG_POST_IO_PORT == 0x80)
 					&& CONFIG(PICASSO_LPC_IOMUX))
 		lpc_enable_port80();

@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <arch/mmio.h>
 #include <console/console.h>
 #include <spi_flash.h>
 #include <soc/pci_devs.h>

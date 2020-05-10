@@ -322,19 +322,29 @@ uintptr_t lpc_get_spibase(void)
 	return (uintptr_t)base;
 }
 
-void lpc_set_spibase(u32 base, u32 enable)
+void lpc_set_spibase(uint32_t base)
 {
-	u32 reg32;
+	uint32_t reg32;
+
+	reg32 = pci_read_config32(_LPCB_DEV, SPIROM_BASE_ADDRESS_REGISTER);
+
+	reg32 &= SPI_BASE_ALIGNMENT - 1; /* preserve only reserved, enables */
+	reg32 |= ALIGN_DOWN(base, SPI_BASE_ALIGNMENT);
+
+	pci_write_config32(_LPCB_DEV, SPIROM_BASE_ADDRESS_REGISTER, reg32);
+}
+
+void lpc_enable_spi_rom(uint32_t enable)
+{
+	uint32_t reg32;
 
 	/* only two types of CS# enables are allowed */
 	enable &= SPI_ROM_ENABLE | SPI_ROM_ALT_ENABLE;
 
 	reg32 = pci_read_config32(_LPCB_DEV, SPIROM_BASE_ADDRESS_REGISTER);
 
-	reg32 &= SPI_BASE_ALIGNMENT - 1; /* preserve only reserved, enables */
 	reg32 &= ~(SPI_ROM_ENABLE | SPI_ROM_ALT_ENABLE);
 	reg32 |= enable;
-	reg32 |= ALIGN_DOWN(base, SPI_BASE_ALIGNMENT);
 
 	pci_write_config32(_LPCB_DEV, SPIROM_BASE_ADDRESS_REGISTER, reg32);
 }

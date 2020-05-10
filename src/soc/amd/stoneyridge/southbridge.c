@@ -265,7 +265,9 @@ static uintptr_t sb_init_spi_base(void)
 	if (base)
 		return base;
 
-	lpc_set_spibase(SPI_BASE_ADDRESS, SPI_ROM_ENABLE);
+	lpc_set_spibase(SPI_BASE_ADDRESS);
+	lpc_enable_spi_rom(SPI_ROM_ENABLE);
+
 	return SPI_BASE_ADDRESS;
 }
 

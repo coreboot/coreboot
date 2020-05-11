@@ -15,7 +15,7 @@ Copyright 2017 Google Inc.
 Copyright 2018 Generated Code
 Copyright 2018-present Facebook, Inc.
 Copyright 2019 9Elements Agency GmbH <patrick.rudolph@9elements.com>
-Copyright (C) 2002
+Copyright (C) 2002 David S. Peterson.  All rights reserved.
 Copyright (c) 2003-2016  Cavium Inc. (support@cavium.com). All rights
 Copyright (c) 2003-2017  Cavium Inc. (support@cavium.com). All rights
 Copyright (c) 2004, 2008 IBM Corporation

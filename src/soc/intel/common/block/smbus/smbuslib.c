@@ -4,7 +4,6 @@
 #include <spd_bin.h>
 #include <device/smbus_def.h>
 #include <device/smbus_host.h>
-#include <string.h>
 #include "smbuslib.h"
 
 static void update_spd_len(struct spd_block *blk)

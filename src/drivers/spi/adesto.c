@@ -7,7 +7,6 @@
 
 #include <console/console.h>
 #include <commonlib/helpers.h>
-#include <string.h>
 #include <spi_flash.h>
 #include <spi-generic.h>
 

@@ -10,7 +10,6 @@
 #include <soc/qupv3_config.h>
 #include <soc/qupv3_i2c.h>
 #include <stdint.h>
-#include <string.h>
 
 static void i2c_clk_configure(unsigned int bus, enum i2c_speed speed)
 {

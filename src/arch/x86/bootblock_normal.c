@@ -4,7 +4,6 @@
 #include <fallback.h>
 #include <program_loading.h>
 #include <stddef.h>
-#include <string.h>
 
 static const char *get_fallback(const char *stagelist)
 {

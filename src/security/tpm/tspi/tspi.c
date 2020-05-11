@@ -7,7 +7,6 @@
 #include <security/tpm/tss.h>
 #include <assert.h>
 #include <security/vboot/misc.h>
-#include <string.h>
 #include <vb2_api.h>
 #include <vb2_sha.h>
 

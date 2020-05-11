@@ -4,7 +4,6 @@
 #include <console/console.h>
 #include <ec/google/chromeec/ec.h>
 #include <smbios.h>
-#include <string.h>
 
 int board_info_get_fw_config(uint32_t *fw_config)
 {

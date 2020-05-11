@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <string.h>
 #include <acpi/acpigen.h>
 #include <southbridge/intel/i82801jx/nvs.h>
 

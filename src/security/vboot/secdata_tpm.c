@@ -7,7 +7,6 @@
 
 #include <security/vboot/antirollback.h>
 #include <security/vboot/tpm_common.h>
-#include <string.h>
 #include <security/tpm/tspi.h>
 #include <security/tpm/tss.h>
 #include <security/tpm/tss/tcg-1.2/tss_structures.h>

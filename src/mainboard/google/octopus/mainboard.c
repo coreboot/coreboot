@@ -18,7 +18,6 @@
 #include <soc/nhlt.h>
 #include <soc/pci_devs.h>
 #include <stdint.h>
-#include <string.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 #include <variant/ec.h>
 #include <variant/gpio.h>

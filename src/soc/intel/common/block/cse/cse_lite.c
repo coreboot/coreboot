@@ -4,7 +4,6 @@
 #include <soc/intel/common/reset.h>
 #include <intelblocks/cse.h>
 #include <security/vboot/vboot_common.h>
-#include <string.h>
 
 /* Converts bp index to boot partition string */
 #define GET_BP_STR(bp_index) (bp_index ? "RW" : "RO")

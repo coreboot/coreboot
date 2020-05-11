@@ -4,7 +4,6 @@
 #include <commonlib/helpers.h>
 #include <spi_flash.h>
 #include <spi-generic.h>
-#include <string.h>
 #include <delay.h>
 #include <lib.h>
 

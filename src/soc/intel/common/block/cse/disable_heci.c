@@ -10,7 +10,6 @@
 #include <intelblocks/pcr.h>
 #include <soc/pci_devs.h>
 #include <soc/pcr_ids.h>
-#include <string.h>
 
 #define CSME0_FBE	0xf
 #define CSME0_BAR	0x0

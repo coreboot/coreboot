@@ -2,7 +2,6 @@
 
 #include <device/mmio.h>
 #include <console/console.h>
-#include <stdlib.h>
 #include <soc/addressmap.h>
 #include <soc/dramc_common.h>
 #include <soc/dramc_register.h>

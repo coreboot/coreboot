@@ -12,7 +12,6 @@
  *
  */
 
-#include <stdlib.h>
 
 #include <vendorcode/amd/agesa/f14/AGESA.h>
 

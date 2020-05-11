@@ -16,7 +16,6 @@
 #include <soc/pci_devs.h>
 #include <soc/pcr_ids.h>
 #include <soc/soc_util.h>
-#include <stdlib.h>
 #include <soc/util.h>
 #include <timer.h>
 

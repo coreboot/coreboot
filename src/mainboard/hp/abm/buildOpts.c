@@ -16,7 +16,6 @@
  * @e \$Revision: 23714 $   @e \$Date: 2009-12-09 17:28:37 -0600 (Wed, 09 Dec 2009) $
  */
 
-#include <stdlib.h>
 #include <AGESA.h>
 
 #define INSTALL_FT3_SOCKET_SUPPORT           TRUE

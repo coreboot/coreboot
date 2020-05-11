@@ -12,7 +12,6 @@
  *
  */
 
-#include <stdlib.h>
 #include <AGESA.h>
 
 /*  Select the CPU family.  */

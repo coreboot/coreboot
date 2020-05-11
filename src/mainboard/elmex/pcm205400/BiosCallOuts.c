@@ -5,7 +5,6 @@
 #include <amdblocks/acpimmio.h>
 #include <northbridge/amd/agesa/BiosCallOuts.h>
 #include <SB800.h>
-#include <stdlib.h>
 
 static AGESA_STATUS board_BeforeDramInit (UINT32 Func, UINTN Data, VOID *ConfigPtr);
 static AGESA_STATUS board_GnbPcieSlotReset (UINT32 Func, UINTN Data, VOID *ConfigPtr);

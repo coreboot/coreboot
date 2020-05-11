@@ -12,7 +12,6 @@
  *
  */
 
-#include <stdlib.h>
 
 
 /*	Select the cpu family.	*/

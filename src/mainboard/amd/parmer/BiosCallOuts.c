@@ -4,7 +4,6 @@
 #include <northbridge/amd/agesa/BiosCallOuts.h>
 #include <northbridge/amd/agesa/state_machine.h>
 #include <FchPlatform.h>
-#include <stdlib.h>
 
 #include "imc.h"
 

@@ -1,0 +1,26 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+
+if BOARD_MSI_H81M_P33
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select BOARD_ROMSIZE_KB_8192
+	select CPU_INTEL_HASWELL
+	select HAVE_ACPI_RESUME
+	select HAVE_ACPI_TABLES
+	select INTEL_GMA_HAVE_VBT
+	select MAINBOARD_HAS_LIBGFXINIT
+	select NORTHBRIDGE_INTEL_HASWELL
+	select SERIRQ_CONTINUOUS_MODE
+	select SOUTHBRIDGE_INTEL_LYNXPOINT
+	select SUPERIO_NUVOTON_NCT6779D
+
+config MAINBOARD_DIR
+	string
+	default msi/h81m-p33
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "H81M-P33"
+
+endif

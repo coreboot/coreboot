@@ -1,0 +1,80 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+chip northbridge/intel/haswell
+	register "gpu_ddi_e_connected" = "1"
+	device cpu_cluster 0 on
+		chip cpu/intel/haswell
+			device lapic 0 on end
+			device lapic 0xacac off end
+		end
+	end
+	device domain 0 on
+		subsystemid 0x1462 0x7817 inherit
+		device pci 00.0 on  end		# Host bridge
+		device pci 01.0 on  end		# PEG
+		device pci 02.0 on  end		# iGPU
+		device pci 03.0 off end		# Mini-HD audio
+		chip southbridge/intel/lynxpoint
+			register "gen1_dec"      = "0x000c0291"
+			register "sata_port_map" = "0x33"
+			device pci 14.0 on  end		# xHCI Controller
+			device pci 16.0 on  end		# MEI #1
+			device pci 16.1 off end		# MEI #2
+			device pci 16.2 off end		# ME IDE-R
+			device pci 16.3 off end		# ME KT
+			device pci 19.0 off end		# Intel GbE
+			device pci 1a.0 on  end		# USB2 EHCI #2
+			device pci 1b.0 on  end		# HD Audio
+			device pci 1c.0 on  end		# RP #1
+			device pci 1c.1 off end		# RP #2
+			device pci 1c.2 on  end		# RP #3: RTL8111 GbE NIC
+			device pci 1c.3 on  end		# RP #4: PCIe x1
+			device pci 1c.4 off end		# RP #5
+			device pci 1c.5 off end		# RP #6
+			device pci 1d.0 on  end		# USB2 EHCI #1
+			device pci 1f.0 on		# LPC bridge
+				chip superio/nuvoton/nct6779d
+					device pnp 4e.1   off end	# Parallel
+					device pnp 4e.2   on		# UART A
+						io  0x60 = 0x3f8
+						irq 0x70 = 4
+					end
+					device pnp 4e.3   off end	# UART B, IR
+					device pnp 4e.5   on		# Keyboard
+						io  0x60 = 0x60
+						io  0x62 = 0x64
+						irq 0x70 = 1
+						irq 0x72 = 12
+					end
+					device pnp 4e.6   off end	# CIR
+					device pnp 4e.7   off end	# GPIO6-8
+					device pnp 4e.8   off end	# WDT1, GPIO0, GPIO1
+					device pnp 4e.108 on  end	# GPIO0
+					device pnp 4e.9   off end	# GPIO1-8
+					device pnp 4e.109 off end	# GPIO1
+					device pnp 4e.209 off end	# GPIO2
+					device pnp 4e.309 off end	# GPIO3
+					device pnp 4e.409 off end	# GPIO4
+					device pnp 4e.509 off end	# GPIO5
+					device pnp 4e.609 off end	# GPIO6
+					device pnp 4e.709 off end	# GPIO7
+					device pnp 4e.a   on  end	# ACPI
+					device pnp 4e.b   on		# H/W Monitor, FP LED
+						io  0x60 = 0x290
+						io  0x62 = 0
+						irq 0x70 = 0
+					end
+					device pnp 4e.d   off end	# WDT1
+					device pnp 4e.e   off end	# CIR Wake-up
+					device pnp 4e.f   off end	# Push-pull/Open-drain
+					device pnp 4e.14  off end	# Port 80 UART
+					device pnp 4e.16  off end	# Deep Sleep
+				end
+			end
+			device pci 1f.2 on  end		# SATA (AHCI)
+			device pci 1f.3 on  end		# SMBus
+			device pci 1f.5 off end		# SATA (Legacy)
+			device pci 1f.6 off end		# Thermal
+		end
+	end
+end

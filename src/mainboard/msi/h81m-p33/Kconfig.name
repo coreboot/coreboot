@@ -1,0 +1,2 @@
+config BOARD_MSI_H81M_P33
+	bool "H81M-P33 (MS-7817 v1.2)"

@@ -24,4 +24,6 @@
 #define NB_MMIO_LIMIT(reg)		((reg) * 4 * sizeof(uint32_t) + D18F0_MMIO_LIMIT0)
 #define NB_MMIO_CONTROL(reg)		((reg) * 4 * sizeof(uint32_t) + D18F0_MMIO_CTRL0)
 
+void data_fabric_set_mmio_np(void);
+
 #endif /* __SOC_PICASSO_DATAFABRIC_H__ */

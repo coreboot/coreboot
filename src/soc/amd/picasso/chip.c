@@ -8,6 +8,7 @@
 #include <romstage_handoff.h>
 #include <soc/acpi.h>
 #include <soc/cpu.h>
+#include <soc/data_fabric.h>
 #include <soc/pci_devs.h>
 #include <soc/southbridge.h>
 #include "chip.h"
@@ -100,6 +101,7 @@ static void soc_init(void *chip_info)
 {
 	fsp_silicon_init(acpi_is_wakeup_s3());
 
+	data_fabric_set_mmio_np();
 	southbridge_init(chip_info);
 	setup_bsp_ramtop();
 }

@@ -3,6 +3,7 @@
 #include <device/mmio.h>
 #include <assert.h>
 #include <soc/addressmap.h>
+#include <soc/flash_controller.h>
 #include <soc/gpio.h>
 #include <soc/spi.h>
 
@@ -128,11 +129,21 @@ void mtk_spi_set_timing(struct mtk_spi_regs *regs, u32 sck_ticks, u32 cs_ticks,
 		     ((cs_ticks - 1) << SPI_CFG1_CS_IDLE_SHIFT));
 }
 
+static const struct spi_ctrlr spi_flash_ctrlr = {
+	.max_xfer_size = 65535,
+	.flash_probe = mtk_spi_flash_probe,
+};
+
 const struct spi_ctrlr_buses spi_ctrlr_bus_map[] = {
 	{
 		.ctrlr = &spi_ctrlr,
 		.bus_start = 0,
 		.bus_end = SPI_BUS_NUMBER - 1,
+	},
+	{
+		.ctrlr = &spi_flash_ctrlr,
+		.bus_start = CONFIG_BOOT_DEVICE_SPI_FLASH_BUS,
+		.bus_end = CONFIG_BOOT_DEVICE_SPI_FLASH_BUS,
 	},
 };
 

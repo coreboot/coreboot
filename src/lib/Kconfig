@@ -75,3 +75,9 @@ config NO_FMAP_CACHE
 	  If your platform really doesn't want to use an FMAP cache (e.g. due to
 	  space constraints), you can select this to disable warnings and save
 	  a bit more code.
+
+config ESPI_DEBUG
+	bool
+	help
+	  This option enables eSPI library helper functions for displaying debug
+	  information.

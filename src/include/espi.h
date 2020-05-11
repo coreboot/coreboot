@@ -229,6 +229,12 @@
 #define  ESPI_VW_SIGNAL_HIGH(x)			(ESPI_VW_VALID(x) | ESPI_VW_VALUE(1, x))
 #define  ESPI_VW_SIGNAL_LOW(x)			(ESPI_VW_VALID(x) | ESPI_VW_VALUE(0, x))
 
+#if CONFIG(ESPI_DEBUG)
+void espi_show_slave_general_configuration(uint32_t config);
+#else
+static void espi_show_slave_general_configuration(uint32_t config) {}
+#endif
+
 static inline bool espi_slave_supports_quad_io(uint32_t gen_caps)
 {
 	uint32_t mode = gen_caps & ESPI_SLAVE_IO_MODE_SUPP_MASK;

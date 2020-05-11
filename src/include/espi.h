@@ -189,4 +189,41 @@
 #define  ESPI_SLAVE_CHANNEL_READY		(1 << 1)
 #define  ESPI_SLAVE_CHANNEL_ENABLE		(1 << 0)
 
+/* ESPI Slave Registers (Document # 327432-004 Revision 1.0 Chapter 5) */
+#define ESPI_VW_INDEX_INTERRUPT_EVENT_0		0	/* Interrupt lines 0 - 127 */
+#define ESPI_VW_INDEX_INTERRUPT_EVENT_1		1	/* Interrupt lines 128-255 */
+#define  ESPI_VW_INTERRUPT_LEVEL_HIGH		(1 << 7)
+#define  ESPI_VW_INTERRUPT_LEVEL_LOW		(0 << 7)
+
+#define ESPI_VW_INDEX_SYSTEM_EVENT_2		2
+#define  ESPI_VW_SLP_S5				2
+#define  ESPI_VW_SLP_S4				1
+#define  ESPI_VW_SLP_S3				0
+#define ESPI_VW_INDEX_SYSTEM_EVENT_3		3
+#define  ESPI_VW_OOB_RST_WARN			2
+#define  ESPI_VW_PLTRST				1
+#define  ESPI_VW_SUS_STAT			0
+#define ESPI_VW_INDEX_SYSTEM_EVENT_4		4
+#define  ESPI_VW_PME				3
+#define  ESPI_VW_WAKE				2
+#define  ESPI_VW_OOB_RST_ACK			0
+#define ESPI_VW_INDEX_SYSTEM_EVENT_5		5
+#define  ESPI_VW_SLAVE_BOOT_LOAD_STATUS		3
+#define  ESPI_VW_ERROR_NON_FATAL		2
+#define  ESPI_VW_ERROR_FATAL			1
+#define  ESPI_VW_SLV_BOOT_LOAD_DONE		0
+#define ESPI_VW_INDEX_SYSTEM_EVENT_6		6
+#define  ESPI_VW_HOST_RST_ACK			3
+#define  ESPI_VW_RCIN				2
+#define  ESPI_VW_SMI				1
+#define  ESPI_VW_SCI				0
+#define ESPI_VW_INDEX_SYSTEM_EVENT_7		7
+#define  ESPI_VW_NMIOUT				2
+#define  ESPI_VW_SMIOUT				1
+#define  ESPI_VW_HOST_RST_WARN			0
+
+#define  ESPI_VW_VALID(x)			(1 << ((x) + 4))
+#define  ESPI_VW_VALUE(x, v)			((v) << (x))
+#define  ESPI_VW_SIGNAL_HIGH(x)			(ESPI_VW_VALID(x) | ESPI_VW_VALUE(1, x))
+#define  ESPI_VW_SIGNAL_LOW(x)			(ESPI_VW_VALID(x) | ESPI_VW_VALUE(0, x))
 #endif /* __ESPI_H__ */

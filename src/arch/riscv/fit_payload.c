@@ -5,7 +5,6 @@
 #include <console/console.h>
 #include <bootmem.h>
 #include <program_loading.h>
-#include <lib.h>
 #include <fit.h>
 #include <endian.h>
 

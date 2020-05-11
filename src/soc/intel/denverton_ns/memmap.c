@@ -10,7 +10,6 @@
 #include <device/pci_ops.h>
 #include <soc/pci_devs.h>
 #include <soc/systemagent.h>
-#include <lib.h>
 
 /* Returns base of requested region encoded in the system agent. */
 static inline uintptr_t system_agent_region_base(size_t reg)

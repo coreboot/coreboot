@@ -33,6 +33,8 @@
 - Ultima (Lenovo Yoga 11e G3)
 - Wizpig
 - Daisy (Samsung Chromebook (2012))
+- Deltan
+- Deltaur
 - DragonEgg
 - Drallion
 - Eve (Google Pixelbook)
@@ -56,8 +58,10 @@
 - Rainier
 - Akemi
 - Dratini
+- Duffy
 - Hatch
 - Jinlon
+- Kaisa
 - Kohaku
 - Kindred
 - Helios
@@ -67,6 +71,7 @@
 - Puff
 - Helios_Diskswap
 - Stryke
+- Sushi
 - Guado (ASUS Chromebox CN62)
 - Jecht
 - Rikku (Acer Chromebox CXI2)
@@ -135,6 +140,8 @@
 - Storm (OnHub Router TGR1900)
 - Stout (Lenovo Thinkpad X131e Chromebook)
 - Trogdor
+- Lazor
+- Bubs
 - Veyron_Jaq (Haier Chromebook 11)
 - Veyron_Jerry (Hisense Chromebook 11)
 - Veyron_Mighty (Haier Chromebook 11(edu))
@@ -199,6 +206,7 @@
 - ThinkPad X1
 - ThinkPad X230
 - ThinkPad X230t
+- ThinkPad X60 / X60s / X60t
 
 ## OpenCellular
 - Elgon (GBCv2)

@@ -181,6 +181,15 @@ int lpc_set_wideio_range(uint16_t start, uint16_t size);
 uintptr_t lpc_get_spibase(void);
 
 /*
+ * Perform early initialization for LPC:
+ * 1. Enable LPC controller
+ * 2. Disable any LPC decodes
+ * 3. Set SPI Base which is the MMIO base for both SPI and eSPI controller (if supported by
+ * platform).
+ */
+void lpc_early_init(void);
+
+/*
  * Sets MMIO base address for SPI controller and eSPI controller (if supported by platform).
  *
  * eSPI base = SPI base + 0x10000

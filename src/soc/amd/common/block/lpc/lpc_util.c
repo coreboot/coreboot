@@ -5,6 +5,7 @@
 #include <device/device.h>
 #include <device/pci_ops.h>
 #include <device/pci_def.h>
+#include <amdblocks/acpimmio.h>
 #include <amdblocks/lpc.h>
 #include <soc/iomap.h>
 #include <soc/southbridge.h>
@@ -348,4 +349,21 @@ void lpc_enable_spi_rom(uint32_t enable)
 	reg32 |= enable;
 
 	pci_write_config32(_LPCB_DEV, SPIROM_BASE_ADDRESS_REGISTER, reg32);
+}
+
+static void lpc_enable_controller(void)
+{
+	u8 byte;
+
+	/* Enable LPC controller */
+	byte = pm_io_read8(PM_LPC_GATING);
+	byte |= PM_LPC_ENABLE;
+	pm_io_write8(PM_LPC_GATING, byte);
+}
+
+void lpc_early_init(void)
+{
+	lpc_enable_controller();
+	lpc_disable_decodes();
+	lpc_set_spibase(SPI_BASE_ADDRESS);
 }

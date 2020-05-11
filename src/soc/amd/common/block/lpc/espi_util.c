@@ -5,9 +5,11 @@
 #include <amdblocks/lpc.h>
 #include <arch/mmio.h>
 #include <console/console.h>
+#include <espi.h>
 #include <soc/pci_devs.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <timer.h>
 #include <types.h>
 
 static uintptr_t espi_bar;
@@ -301,4 +303,632 @@ void espi_configure_decodes(void)
 		espi_open_generic_io_window(cfg->generic_io_range[i].base,
 					    cfg->generic_io_range[i].size);
 	}
+}
+
+#define ESPI_DN_TX_HDR0			0x00
+enum espi_cmd_type {
+	CMD_TYPE_SET_CONFIGURATION = 0,
+	CMD_TYPE_GET_CONFIGURATION = 1,
+	CMD_TYPE_IN_BAND_RESET = 2,
+	CMD_TYPE_PERIPHERAL = 4,
+	CMD_TYPE_VW = 5,
+	CMD_TYPE_OOB = 6,
+	CMD_TYPE_FLASH = 7,
+};
+
+#define ESPI_DN_TX_HDR1				0x04
+#define ESPI_DN_TX_HDR2				0x08
+#define ESPI_DN_TX_DATA				0x0c
+
+#define ESPI_MASTER_CAP				0x2c
+#define  ESPI_VW_MAX_SIZE_SHIFT			13
+#define  ESPI_VW_MAX_SIZE_MASK			(0x3f << ESPI_VW_MAX_SIZE_SHIFT)
+
+#define ESPI_GLOBAL_CONTROL_1			0x34
+#define  ESPI_SUB_DECODE_SLV_SHIFT		3
+#define  ESPI_SUB_DECODE_SLV_MASK		(0x3 << ESPI_SUB_DECODE_SLV_SHIFT)
+#define  ESPI_SUB_DECODE_EN			(1 << 2)
+
+#define SLAVE0_INT_STS				0x70
+#define  ESPI_STATUS_DNCMD_COMPLETE		(1 << 28)
+#define  ESPI_STATUS_NON_FATAL_ERROR		(1 << 6)
+#define  ESPI_STATUS_FATAL_ERROR		(1 << 5)
+#define  ESPI_STATUS_NO_RESPONSE		(1 << 4)
+#define  ESPI_STATUS_CRC_ERR			(1 << 2)
+#define  ESPI_STATUS_WAIT_TIMEOUT		(1 << 1)
+#define  ESPI_STATUS_BUS_ERROR			(1 << 0)
+
+#define ESPI_RXVW_POLARITY			0xac
+
+#define ESPI_CMD_TIMEOUT_US			100
+#define ESPI_CH_READY_TIMEOUT_US		1000
+
+union espi_txhdr0 {
+	uint32_t val;
+	struct  {
+		uint32_t cmd_type:3;
+		uint32_t cmd_sts:1;
+		uint32_t slave_sel:2;
+		uint32_t rsvd:2;
+		uint32_t hdata0:8;
+		uint32_t hdata1:8;
+		uint32_t hdata2:8;
+	};
+} __packed;
+
+union espi_txhdr1 {
+	uint32_t val;
+	struct {
+		uint32_t hdata3:8;
+		uint32_t hdata4:8;
+		uint32_t hdata5:8;
+		uint32_t hdata6:8;
+	};
+} __packed;
+
+union espi_txhdr2 {
+	uint32_t val;
+	struct {
+		uint32_t hdata7:8;
+		uint32_t rsvd:24;
+	};
+} __packed;
+
+union espi_txdata {
+	uint32_t val;
+	struct {
+		uint32_t byte0:8;
+		uint32_t byte1:8;
+		uint32_t byte2:8;
+		uint32_t byte3:8;
+	};
+} __packed;
+
+struct espi_cmd {
+	union espi_txhdr0 hdr0;
+	union espi_txhdr1 hdr1;
+	union espi_txhdr2 hdr2;
+	union espi_txdata data;
+} __packed;
+
+/* Wait up to ESPI_CMD_TIMEOUT_US for hardware to clear DNCMD_STATUS bit. */
+static int espi_wait_ready(void)
+{
+	struct stopwatch sw;
+	union espi_txhdr0 hdr0;
+
+	stopwatch_init_usecs_expire(&sw, ESPI_CMD_TIMEOUT_US);
+	do {
+		hdr0.val = espi_read32(ESPI_DN_TX_HDR0);
+		if (!hdr0.cmd_sts)
+			return 0;
+	} while (!stopwatch_expired(&sw));
+
+	return -1;
+}
+
+/* Clear interrupt status register */
+static void espi_clear_status(void)
+{
+	uint32_t status = espi_read32(SLAVE0_INT_STS);
+	if (status)
+		espi_write32(SLAVE0_INT_STS, status);
+}
+
+/*
+ * Wait up to ESPI_CMD_TIMEOUT_US for interrupt status register to update after sending a
+ * command.
+ */
+static int espi_check_status(uint32_t *status)
+{
+	struct stopwatch sw;
+
+	stopwatch_init_usecs_expire(&sw, ESPI_CMD_TIMEOUT_US);
+	do {
+		*status = espi_read32(SLAVE0_INT_STS);
+		if (*status)
+			return 0;
+	} while (!stopwatch_expired(&sw));
+
+	printk(BIOS_ERR, "Error: eSPI timed out waiting for status update.\n");
+
+	return -1;
+}
+
+static void espi_show_failure(const struct espi_cmd *cmd, const char *str, uint32_t status)
+{
+	printk(BIOS_ERR, "eSPI cmd0-cmd2: %08x %08x %08x data: %08x.\n",
+	       cmd->hdr0.val, cmd->hdr1.val, cmd->hdr2.val, cmd->data.val);
+	printk(BIOS_ERR, "%s (Status = 0x%x)\n", str, status);
+}
+
+static int espi_send_command(const struct espi_cmd *cmd)
+{
+	uint32_t status;
+
+	if (CONFIG(ESPI_DEBUG))
+		printk(BIOS_ERR, "eSPI cmd0-cmd2: %08x %08x %08x data: %08x.\n",
+		       cmd->hdr0.val, cmd->hdr1.val, cmd->hdr2.val, cmd->data.val);
+
+	if (espi_wait_ready() == -1) {
+		espi_show_failure(cmd, "Error: eSPI was not ready to accept a command", 0);
+		return -1;
+	}
+
+	espi_clear_status();
+
+	espi_write32(ESPI_DN_TX_HDR1, cmd->hdr1.val);
+	espi_write32(ESPI_DN_TX_HDR2, cmd->hdr2.val);
+	espi_write32(ESPI_DN_TX_DATA, cmd->data.val);
+
+	/* Dword 0 must be last as this write triggers the transaction */
+	espi_write32(ESPI_DN_TX_HDR0, cmd->hdr0.val);
+
+	if (espi_wait_ready() == -1) {
+		espi_show_failure(cmd,
+				  "Error: eSPI timed out waiting for command to complete", 0);
+		return -1;
+	}
+
+	if (espi_check_status(&status) == -1) {
+		espi_show_failure(cmd, "Error: eSPI check status failed", 0);
+		return -1;
+	}
+
+	/* If command did not complete downstream, return error. */
+	if (!(status & ESPI_STATUS_DNCMD_COMPLETE)) {
+		espi_show_failure(cmd, "Error: eSPI downstream command completion failure",
+				  status);
+		return -1;
+	}
+
+	if (status & ~ESPI_STATUS_DNCMD_COMPLETE) {
+		espi_show_failure(cmd, "Error: eSPI status register bits set", status);
+		return -1;
+	}
+
+	return 0;
+}
+
+static int espi_send_reset(void)
+{
+	struct espi_cmd cmd = {
+		.hdr0 = {
+			.cmd_type = CMD_TYPE_IN_BAND_RESET,
+			.cmd_sts = 1,
+		},
+	};
+
+	return espi_send_command(&cmd);
+}
+
+static int espi_send_pltrst_deassert(const struct espi_config *mb_cfg)
+{
+	struct espi_cmd cmd = {
+		.hdr0 = {
+			.cmd_type = CMD_TYPE_VW,
+			.cmd_sts = 1,
+			.hdata0 = 0, /* 1 VW group */
+		},
+		.data = {
+			.byte0 = ESPI_VW_INDEX_SYSTEM_EVENT_3,
+			.byte1 = ESPI_VW_SIGNAL_HIGH(ESPI_VW_PLTRST),
+		},
+	};
+
+	if (!mb_cfg->vw_ch_en)
+		return 0;
+
+	return espi_send_command(&cmd);
+}
+
+/*
+ * In case of get configuration command, hdata0 contains bits 15:8 of the slave register address
+ * and hdata1 contains bits 7:0 of the slave register address.
+ */
+#define ESPI_CONFIGURATION_HDATA0(a)		(((a) >> 8) & 0xff)
+#define ESPI_CONFIGURATION_HDATA1(a)		((a) & 0xff)
+
+static int espi_get_configuration(uint16_t slave_reg_addr, uint32_t *config)
+{
+	struct espi_cmd cmd = {
+		.hdr0 = {
+			.cmd_type = CMD_TYPE_GET_CONFIGURATION,
+			.cmd_sts = 1,
+			.hdata0 = ESPI_CONFIGURATION_HDATA0(slave_reg_addr),
+			.hdata1 = ESPI_CONFIGURATION_HDATA1(slave_reg_addr),
+		},
+	};
+
+	*config = 0;
+
+	if (espi_send_command(&cmd))
+		return -1;
+
+	*config = espi_read32(ESPI_DN_TX_HDR1);
+
+	if (CONFIG(ESPI_DEBUG))
+		printk(BIOS_DEBUG, "Get configuration for slave register(0x%x): 0x%x\n",
+		       slave_reg_addr, *config);
+
+	return 0;
+}
+
+static int espi_set_configuration(uint16_t slave_reg_addr, uint32_t config)
+{
+	struct espi_cmd cmd = {
+		.hdr0 = {
+			.cmd_type = CMD_TYPE_SET_CONFIGURATION,
+			.cmd_sts = 1,
+			.hdata0 = ESPI_CONFIGURATION_HDATA0(slave_reg_addr),
+			.hdata1 = ESPI_CONFIGURATION_HDATA1(slave_reg_addr),
+		},
+		.hdr1 = {
+			 .val = config,
+		},
+	};
+
+	return espi_send_command(&cmd);
+}
+
+static int espi_get_general_configuration(uint32_t *config)
+{
+	int ret = espi_get_configuration(ESPI_SLAVE_GENERAL_CFG, config);
+	if (ret == -1)
+		return -1;
+
+	espi_show_slave_general_configuration(*config);
+	return 0;
+}
+
+static void espi_set_io_mode_config(enum espi_io_mode mb_io_mode, uint32_t slave_caps,
+				    uint32_t *slave_config, uint32_t *ctrlr_config)
+{
+	switch (mb_io_mode) {
+	case ESPI_IO_MODE_QUAD:
+		if (espi_slave_supports_quad_io(slave_caps)) {
+			*slave_config |= ESPI_SLAVE_IO_MODE_SEL_QUAD;
+			*ctrlr_config |= ESPI_IO_MODE_QUAD;
+			break;
+		}
+		printk(BIOS_ERR, "Error: eSPI Quad I/O not supported. Dropping to dual mode.\n");
+		/* Intentional fall-through */
+	case ESPI_IO_MODE_DUAL:
+		if (espi_slave_supports_dual_io(slave_caps)) {
+			*slave_config |= ESPI_SLAVE_IO_MODE_SEL_DUAL;
+			*ctrlr_config |= ESPI_IO_MODE_DUAL;
+			break;
+		}
+		printk(BIOS_ERR,
+		       "Error: eSPI Dual I/O not supported. Dropping to single mode.\n");
+		/* Intentional fall-through */
+	case ESPI_IO_MODE_SINGLE:
+		/* Single I/O mode is always supported. */
+		*slave_config |= ESPI_SLAVE_IO_MODE_SEL_SINGLE;
+		*ctrlr_config |= ESPI_IO_MODE_SINGLE;
+		break;
+	default:
+		die("No supported eSPI I/O modes!\n");
+	}
+}
+
+static void espi_set_op_freq_config(enum espi_op_freq mb_op_freq, uint32_t slave_caps,
+				    uint32_t *slave_config, uint32_t *ctrlr_config)
+{
+	int slave_max_speed_mhz = espi_slave_max_speed_mhz_supported(slave_caps);
+
+	switch (mb_op_freq) {
+	case ESPI_OP_FREQ_66_MHZ:
+		if (slave_max_speed_mhz >= 66) {
+			*slave_config |= ESPI_SLAVE_OP_FREQ_SEL_66_MHZ;
+			*ctrlr_config |= ESPI_OP_FREQ_66_MHZ;
+			break;
+		}
+		printk(BIOS_ERR, "Error: eSPI 66MHz not supported. Dropping to 33MHz.\n");
+		/* Intentional fall-through */
+	case ESPI_OP_FREQ_33_MHZ:
+		if (slave_max_speed_mhz >= 33) {
+			*slave_config |= ESPI_SLAVE_OP_FREQ_SEL_33_MHZ;
+			*ctrlr_config |= ESPI_OP_FREQ_33_MHZ;
+			break;
+		}
+		printk(BIOS_ERR, "Error: eSPI 33MHz not supported. Dropping to 16MHz.\n");
+		/* Intentional fall-through */
+	case ESPI_OP_FREQ_16_MHZ:
+		/*
+		 * eSPI spec says the minimum frequency is 20MHz, but AMD datasheets support
+		 * 16.7 Mhz.
+		 */
+		if (slave_max_speed_mhz > 0) {
+			*slave_config |= ESPI_SLAVE_OP_FREQ_SEL_20_MHZ;
+			*ctrlr_config |= ESPI_OP_FREQ_16_MHZ;
+			break;
+		}
+		/* Intentional fall-through */
+	default:
+		die("No supported eSPI Operating Frequency!\n");
+	}
+}
+
+static int espi_set_general_configuration(const struct espi_config *mb_cfg, uint32_t slave_caps)
+{
+	uint32_t slave_config = 0;
+	uint32_t ctrlr_config = 0;
+
+	if (mb_cfg->crc_check_enable) {
+		slave_config |= ESPI_SLAVE_CRC_ENABLE;
+		ctrlr_config |= ESPI_CRC_CHECKING_EN;
+	}
+
+	if (mb_cfg->dedicated_alert_pin) {
+		slave_config |= ESPI_SLAVE_ALERT_MODE_PIN;
+		ctrlr_config |= ESPI_ALERT_MODE;
+	}
+
+	espi_set_io_mode_config(mb_cfg->io_mode, slave_caps, &slave_config, &ctrlr_config);
+	espi_set_op_freq_config(mb_cfg->op_freq_mhz, slave_caps, &slave_config, &ctrlr_config);
+
+	if (CONFIG(ESPI_DEBUG))
+		printk(BIOS_INFO, "Setting general configuration: slave: 0x%x controller: 0x%x\n",
+		       slave_config, ctrlr_config);
+
+	if (espi_set_configuration(ESPI_SLAVE_GENERAL_CFG, slave_config) == -1)
+		return -1;
+
+	espi_write32(ESPI_SLAVE0_CONFIG, ctrlr_config);
+	return 0;
+}
+
+static int espi_wait_channel_ready(uint16_t slave_reg_addr)
+{
+	struct stopwatch sw;
+	uint32_t config;
+
+	stopwatch_init_usecs_expire(&sw, ESPI_CH_READY_TIMEOUT_US);
+	do {
+		espi_get_configuration(slave_reg_addr, &config);
+		if (espi_slave_is_channel_ready(config))
+			return 0;
+	} while (!stopwatch_expired(&sw));
+
+	printk(BIOS_ERR, "Error: Channel is not ready after %d usec (slave addr: 0x%x)\n",
+	       ESPI_CH_READY_TIMEOUT_US, slave_reg_addr);
+	return -1;
+
+}
+
+static void espi_enable_ctrlr_channel(uint32_t channel_en)
+{
+	uint32_t reg = espi_read32(ESPI_SLAVE0_CONFIG);
+
+	reg |= channel_en;
+
+	espi_write32(ESPI_SLAVE0_CONFIG, reg);
+}
+
+static int espi_set_channel_configuration(uint32_t slave_config, uint32_t slave_reg_addr,
+					  uint32_t ctrlr_enable)
+{
+	if (espi_set_configuration(slave_reg_addr, slave_config) == -1)
+		return -1;
+
+	if (!(slave_config & ESPI_SLAVE_CHANNEL_ENABLE))
+		return 0;
+
+	if (espi_wait_channel_ready(slave_reg_addr) == -1)
+		return -1;
+
+	espi_enable_ctrlr_channel(ctrlr_enable);
+	return 0;
+}
+
+static int espi_setup_vw_channel(const struct espi_config *mb_cfg, uint32_t slave_caps)
+{
+	uint32_t slave_vw_caps;
+	uint32_t ctrlr_vw_caps;
+	uint32_t slave_vw_count_supp;
+	uint32_t ctrlr_vw_count_supp;
+	uint32_t use_vw_count;
+	uint32_t slave_config;
+
+	if (!mb_cfg->vw_ch_en)
+		return 0;
+
+	if (!espi_slave_supports_vw_channel(slave_caps)) {
+		printk(BIOS_ERR, "Error: eSPI slave doesn't support VW channel!\n");
+		return -1;
+	}
+
+	if (espi_get_configuration(ESPI_SLAVE_VW_CFG, &slave_vw_caps) == -1)
+		return -1;
+
+	ctrlr_vw_caps = espi_read32(ESPI_MASTER_CAP);
+	ctrlr_vw_count_supp = (ctrlr_vw_caps & ESPI_VW_MAX_SIZE_MASK) >> ESPI_VW_MAX_SIZE_SHIFT;
+
+	slave_vw_count_supp = espi_slave_get_vw_count_supp(slave_vw_caps);
+	use_vw_count = MIN(ctrlr_vw_count_supp, slave_vw_count_supp);
+
+	slave_config = ESPI_SLAVE_CHANNEL_ENABLE | ESPI_SLAVE_VW_COUNT_SEL_VAL(use_vw_count);
+	return espi_set_channel_configuration(slave_config, ESPI_SLAVE_VW_CFG, ESPI_VW_CH_EN);
+}
+
+static int espi_setup_periph_channel(const struct espi_config *mb_cfg, uint32_t slave_caps)
+{
+	uint32_t slave_config;
+	/* Peripheral channel requires BME bit to be set when enabling the channel. */
+	const uint32_t slave_en_mask = ESPI_SLAVE_CHANNEL_READY |
+					ESPI_SLAVE_PERIPH_BUS_MASTER_ENABLE;
+
+	if (espi_get_configuration(ESPI_SLAVE_PERIPH_CFG, &slave_config) == -1)
+		return -1;
+
+	/*
+	 * Peripheral channel is the only one which is enabled on reset. So, if the mainboard
+	 * wants to disable it, set configuration to disable peripheral channel. It also
+	 * requires that BME bit be cleared.
+	 */
+	if (mb_cfg->periph_ch_en) {
+		if (!espi_slave_supports_periph_channel(slave_caps)) {
+			printk(BIOS_ERR, "Error: eSPI slave doesn't support periph channel!\n");
+			return -1;
+		}
+		slave_config |= slave_en_mask;
+	} else {
+		slave_config &= ~slave_en_mask;
+	}
+
+	return espi_set_channel_configuration(slave_config, ESPI_SLAVE_PERIPH_CFG,
+					      ESPI_PERIPH_CH_EN);
+}
+
+static int espi_setup_oob_channel(const struct espi_config *mb_cfg, uint32_t slave_caps)
+{
+	uint32_t slave_config;
+
+	if (!mb_cfg->oob_ch_en)
+		return 0;
+
+	if (!espi_slave_supports_oob_channel(slave_caps)) {
+		printk(BIOS_ERR, "Error: eSPI slave doesn't support OOB channel!\n");
+		return -1;
+	}
+
+	if (espi_get_configuration(ESPI_SLAVE_OOB_CFG, &slave_config) == -1)
+		return -1;
+
+	slave_config |= ESPI_SLAVE_CHANNEL_ENABLE;
+
+	return espi_set_channel_configuration(slave_config, ESPI_SLAVE_OOB_CFG,
+					      ESPI_OOB_CH_EN);
+}
+
+static int espi_setup_flash_channel(const struct espi_config *mb_cfg, uint32_t slave_caps)
+{
+	uint32_t slave_config;
+
+	if (!mb_cfg->flash_ch_en)
+		return 0;
+
+	if (!espi_slave_supports_flash_channel(slave_caps)) {
+		printk(BIOS_ERR, "Error: eSPI slave doesn't support flash channel!\n");
+		return -1;
+	}
+
+	if (espi_get_configuration(ESPI_SLAVE_FLASH_CFG, &slave_config) == -1)
+		return -1;
+
+	slave_config |= ESPI_SLAVE_CHANNEL_ENABLE;
+
+	return espi_set_channel_configuration(slave_config, ESPI_SLAVE_FLASH_CFG,
+					      ESPI_FLASH_CH_EN);
+}
+
+static void espi_set_initial_config(const struct espi_config *mb_cfg)
+{
+	uint32_t espi_initial_mode = ESPI_OP_FREQ_16_MHZ | ESPI_IO_MODE_SINGLE;
+
+	if (mb_cfg->dedicated_alert_pin)
+		espi_initial_mode |= ESPI_ALERT_MODE;
+
+	espi_write32(ESPI_SLAVE0_CONFIG, espi_initial_mode);
+}
+
+static void espi_setup_subtractive_decode(const struct espi_config *mb_cfg)
+{
+	uint32_t global_ctrl_reg;
+	global_ctrl_reg = espi_read32(ESPI_GLOBAL_CONTROL_1);
+
+	if (mb_cfg->subtractive_decode) {
+		global_ctrl_reg &= ~ESPI_SUB_DECODE_SLV_MASK;
+		global_ctrl_reg |= ESPI_SUB_DECODE_EN;
+
+	} else {
+		global_ctrl_reg &= ~ESPI_SUB_DECODE_EN;
+	}
+	espi_write32(ESPI_GLOBAL_CONTROL_1, global_ctrl_reg);
+}
+
+int espi_setup(void)
+{
+	uint32_t slave_caps;
+	const struct espi_config *cfg = espi_get_config();
+
+	/*
+	 * Boot sequence: Step 1
+	 * Set correct initial configuration to talk to the slave:
+	 * Set clock frequency to 16.7MHz and single IO mode.
+	 */
+	espi_set_initial_config(cfg);
+
+	/*
+	 * Boot sequence: Step 2
+	 * Send in-band reset
+	 * The resets affects both host and slave devices, so set initial config again.
+	 */
+	if (espi_send_reset() == -1) {
+		printk(BIOS_ERR, "Error: In-band reset failed!\n");
+		return -1;
+	}
+	espi_set_initial_config(cfg);
+
+	/*
+	 * Boot sequence: Step 3
+	 * Get configuration of slave device.
+	 */
+	if (espi_get_general_configuration(&slave_caps) == -1) {
+		printk(BIOS_ERR, "Error: Slave GET_CONFIGURATION failed!\n");
+		return -1;
+	}
+
+	/*
+	 * Boot sequence:
+	 * Step 4: Write slave device general config
+	 * Step 5: Set host slave config
+	 */
+	if (espi_set_general_configuration(cfg, slave_caps) == -1) {
+		printk(BIOS_ERR, "Error: Slave SET_CONFIGURATION failed!\n");
+		return -1;
+	}
+
+	/*
+	 * Setup polarity before enabling the VW channel so any interrupts
+	 * received will have the correct polarity.
+	 */
+	espi_write32(ESPI_RXVW_POLARITY, cfg->vw_irq_polarity);
+
+	/*
+	 * Boot Sequences: Steps 6 - 9
+	 * Channel setup
+	 */
+	/* Set up VW first so we can deassert PLTRST#. */
+	if (espi_setup_vw_channel(cfg, slave_caps) == -1) {
+		printk(BIOS_ERR, "Error: Setup VW channel failed!\n");
+		return -1;
+	}
+
+	/* De-assert PLTRST# if VW channel is enabled by mainboard. */
+	if (espi_send_pltrst_deassert(cfg) == -1) {
+		printk(BIOS_ERR, "Error: PLTRST deassertion failed!\n");
+		return -1;
+	}
+
+	if (espi_setup_periph_channel(cfg, slave_caps) == -1) {
+		printk(BIOS_ERR, "Error: Setup Periph channel failed!\n");
+		return -1;
+	}
+
+	if (espi_setup_oob_channel(cfg, slave_caps) == -1) {
+		printk(BIOS_ERR, "Error: Setup OOB channel failed!\n");
+		return -1;
+	}
+
+	if (espi_setup_flash_channel(cfg, slave_caps) == -1) {
+		printk(BIOS_ERR, "Error: Setup Flash channel failed!\n");
+		return -1;
+	}
+
+	/* Enable subtractive decode if configured */
+	espi_setup_subtractive_decode(cfg);
+
+	return 0;
 }

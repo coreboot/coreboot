@@ -26,6 +26,46 @@
 #define ESPI_GENERIC_MMIO_WIN_COUNT		4
 #define ESPI_GENERIC_MMIO_MAX_WIN_SIZE		0x10000
 
+#define ESPI_SLAVE0_CONFIG			0x68
+#define  ESPI_CRC_CHECKING_EN			(1 << 31)
+#define  ESPI_ALERT_MODE			(1 << 30)
+
+#define  ESPI_IO_MODE_SHIFT			28
+#define  ESPI_IO_MODE_MASK			(0x3 << ESPI_IO_MODE_SHIFT)
+#define  ESPI_IO_MODE_VALUE(x)			((x) << ESPI_IO_MODE_SHIFT)
+
+#define  ESPI_OP_FREQ_SHIFT			25
+#define  ESPI_OP_FREQ_MASK			(0x7 << ESPI_OP_FREQ_SHIFT)
+#define  ESPI_OP_FREQ_VALUE(x)			((x) << ESPI_OP_FREQ_SHIFT)
+
+#define  ESPI_PERIPH_CH_EN			(1 << 3)
+#define  ESPI_VW_CH_EN				(1 << 2)
+#define  ESPI_OOB_CH_EN				(1 << 1)
+#define  ESPI_FLASH_CH_EN			(1 << 0)
+
+/*
+ * Virtual wire interrupt polarity. If the interrupt is active level high or active falling
+ * edge, then controller expects its bit to be cleared in ESPI_RXVW_POLARITY whereas if the
+ * interrupt is active level low or active rising edge, then its bit needs to be set in
+ * ESPI_RXVW_POLARITY.
+ */
+#define ESPI_VW_IRQ_LEVEL_HIGH(x)		(0 << (x))
+#define ESPI_VW_IRQ_LEVEL_LOW(x)		(1 << (x))
+#define ESPI_VW_IRQ_EDGE_HIGH(x)		(1 << (x))
+#define ESPI_VW_IRQ_EDGE_LOW(x)			(0 << (x))
+
+enum espi_io_mode {
+	ESPI_IO_MODE_SINGLE = ESPI_IO_MODE_VALUE(0),
+	ESPI_IO_MODE_DUAL = ESPI_IO_MODE_VALUE(1),
+	ESPI_IO_MODE_QUAD = ESPI_IO_MODE_VALUE(2),
+};
+
+enum espi_op_freq {
+	ESPI_OP_FREQ_16_MHZ = ESPI_OP_FREQ_VALUE(0),
+	ESPI_OP_FREQ_33_MHZ = ESPI_OP_FREQ_VALUE(1),
+	ESPI_OP_FREQ_66_MHZ = ESPI_OP_FREQ_VALUE(2),
+};
+
 struct espi_config {
 	/* Bitmap for standard IO decodes. Use ESPI_DECODE_IO_* above. */
 	uint32_t std_io_decode_bitmap;
@@ -34,6 +74,21 @@ struct espi_config {
 		uint16_t base;
 		size_t size;
 	} generic_io_range[ESPI_GENERIC_IO_WIN_COUNT];
+
+	/* Slave configuration parameters */
+	enum espi_io_mode io_mode;
+	enum espi_op_freq op_freq_mhz;
+
+	uint32_t crc_check_enable:1;
+	uint32_t dedicated_alert_pin:1;
+	uint32_t periph_ch_en:1;
+	uint32_t vw_ch_en:1;
+	uint32_t oob_ch_en:1;
+	uint32_t flash_ch_en:1;
+	uint32_t subtractive_decode:1;
+
+	/* Use ESPI_VW_IRQ_* above */
+	uint32_t vw_irq_polarity;
 };
 
 /*
@@ -59,5 +114,11 @@ void espi_configure_decodes(void);
  * SPIBASE. This is required for cases where verstage runs on PSP.
  */
 void espi_update_static_bar(uintptr_t bar);
+
+/*
+ * Perform eSPI connection setup to the slave. Currently, this supports slave0 only.
+ * Returns 0 on success and -1 on error.
+ */
+int espi_setup(void);
 
 #endif /* __AMDBLOCKS_ESPI_H__ */

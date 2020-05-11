@@ -86,8 +86,6 @@ chip soc/intel/jasperlake
 	register "PcieClkSrcClkReq[4]" = "0x04"
 	register "PcieClkSrcClkReq[5]" = "0x05"
 
-	register "SataEnable" = "0"
-
 	register "SerialIoI2cMode" = "{
 		[PchSerialIoIndexI2C0]  = PchSerialIoPci,
 		[PchSerialIoIndexI2C1]  = PchSerialIoDisabled,

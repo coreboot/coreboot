@@ -47,6 +47,11 @@ if [ "$1" == "--help" ] || [ -z "$1" ] || [ -z "$2" ]; then
 else
 	OLD_GIT_VERSION="$1"
 	NEW_GIT_VERSION="$2"
+	if [ "$OLD_GIT_VERSION" = "HEAD" -o "$NEW_GIT_VERSION" = "HEAD" ]; then
+		echo "Error: using HEAD as a reference doesn't work"
+		echo
+		exit 1
+	fi
 	TOTAL_COMMITS=$(git log --pretty=oneline \
 		"${OLD_GIT_VERSION}..${NEW_GIT_VERSION}" 2>/dev/null | wc -l)
 fi

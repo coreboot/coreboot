@@ -4,6 +4,8 @@
 #ifndef __ESPI_H__
 #define __ESPI_H__
 
+#include <stdint.h>
+
 /* ESPI Slave Registers (Document # 327432-004 Revision 1.0 Chapter 7) */
 
 #define ESPI_SLAVE_DEVICE_ID				0x04
@@ -226,4 +228,94 @@
 #define  ESPI_VW_VALUE(x, v)			((v) << (x))
 #define  ESPI_VW_SIGNAL_HIGH(x)			(ESPI_VW_VALID(x) | ESPI_VW_VALUE(1, x))
 #define  ESPI_VW_SIGNAL_LOW(x)			(ESPI_VW_VALID(x) | ESPI_VW_VALUE(0, x))
+
+static inline bool espi_slave_supports_quad_io(uint32_t gen_caps)
+{
+	uint32_t mode = gen_caps & ESPI_SLAVE_IO_MODE_SUPP_MASK;
+	return (mode == ESPI_SLAVE_IO_MODE_SUPP_SINGLE_QUAD) ||
+		(mode == ESPI_SLAVE_IO_MODE_SUPP_SINGLE_DUAL_QUAD);
+}
+
+static inline bool espi_slave_supports_dual_io(uint32_t gen_caps)
+{
+	uint32_t mode = gen_caps & ESPI_SLAVE_IO_MODE_SUPP_MASK;
+	return (mode == ESPI_SLAVE_IO_MODE_SUPP_SINGLE_DUAL) ||
+		(mode == ESPI_SLAVE_IO_MODE_SUPP_SINGLE_DUAL_QUAD);
+}
+
+static inline bool espi_slave_supports_66_mhz(uint32_t gen_caps)
+{
+	uint32_t freq = gen_caps & ESPI_SLAVE_OP_FREQ_SUPP_MASK;
+	return freq == ESPI_SLAVE_OP_FREQ_SUPP_66_MHZ;
+}
+
+static inline bool espi_slave_supports_50_mhz(uint32_t gen_caps)
+{
+	uint32_t freq = gen_caps & ESPI_SLAVE_OP_FREQ_SUPP_MASK;
+	return freq == ESPI_SLAVE_OP_FREQ_SUPP_50_MHZ;
+}
+
+static inline bool espi_slave_supports_33_mhz(uint32_t gen_caps)
+{
+	uint32_t freq = gen_caps & ESPI_SLAVE_OP_FREQ_SUPP_MASK;
+	return freq == ESPI_SLAVE_OP_FREQ_SUPP_33_MHZ;
+}
+
+static inline bool espi_slave_supports_25_mhz(uint32_t gen_caps)
+{
+	uint32_t freq = gen_caps & ESPI_SLAVE_OP_FREQ_SUPP_MASK;
+	return freq == ESPI_SLAVE_OP_FREQ_SUPP_25_MHZ;
+}
+
+static inline bool espi_slave_supports_20_mhz(uint32_t gen_caps)
+{
+	uint32_t freq = gen_caps & ESPI_SLAVE_OP_FREQ_SUPP_MASK;
+	return freq == ESPI_SLAVE_OP_FREQ_SUPP_20_MHZ;
+}
+
+static inline int espi_slave_max_speed_mhz_supported(uint32_t gen_caps)
+{
+	if (espi_slave_supports_66_mhz(gen_caps))
+		return 66;
+	else if (espi_slave_supports_50_mhz(gen_caps))
+		return 50;
+	else if (espi_slave_supports_33_mhz(gen_caps))
+		return 33;
+	else if (espi_slave_supports_25_mhz(gen_caps))
+		return 25;
+	else if (espi_slave_supports_20_mhz(gen_caps))
+		return 20;
+	return 0;
+}
+
+static inline bool espi_slave_supports_vw_channel(uint32_t gen_caps)
+{
+	return !!(gen_caps & ESPI_SLAVE_VW_CH_SUPP);
+}
+
+static inline bool espi_slave_supports_periph_channel(uint32_t gen_caps)
+{
+	return !!(gen_caps & ESPI_SLAVE_PERIPH_CH_SUPP);
+}
+
+static inline bool espi_slave_supports_oob_channel(uint32_t gen_caps)
+{
+	return !!(gen_caps & ESPI_SLAVE_OOB_CH_SUPP);
+}
+
+static inline bool espi_slave_supports_flash_channel(uint32_t gen_caps)
+{
+	return !!(gen_caps & ESPI_SLAVE_FLASH_CH_SUPP);
+}
+
+static inline bool espi_slave_is_channel_ready(uint32_t config)
+{
+	return !!(config & ESPI_SLAVE_CHANNEL_READY);
+}
+
+static inline uint32_t espi_slave_get_vw_count_supp(uint32_t vw_caps)
+{
+	return (vw_caps & ESPI_SLAVE_VW_COUNT_SUPP_MASK) >> ESPI_SLAVE_VW_COUNT_SUPP_SHIFT;
+}
+
 #endif /* __ESPI_H__ */

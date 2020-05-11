@@ -16,7 +16,7 @@
 
 if ! ( git --version && cloc --version && rename --version ) > /dev/null 2>&1
 then
-	echo "ERROR: cloc or git is not installed.  Exiting"
+	echo "ERROR: cloc, git or rename is not installed.  Exiting"
 	exit 1
 fi
 

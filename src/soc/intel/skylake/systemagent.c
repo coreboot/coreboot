@@ -87,3 +87,17 @@ int soc_get_uncore_prmmr_base_and_mask(uint64_t *prmrr_base,
 	*prmrr_mask = (uint64_t) msr.hi << 32 | msr.lo;
 	return 0;
 }
+
+uint32_t soc_systemagent_max_chan_capacity_mib(u8 capid0_a_ddrsz)
+{
+	switch (capid0_a_ddrsz) {
+	case 1:
+		return 8192;
+	case 2:
+		return 4096;
+	case 3:
+		return 2048;
+	default:
+		return 32768;
+	}
+}

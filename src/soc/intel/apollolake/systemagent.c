@@ -88,3 +88,9 @@ int soc_get_uncore_prmmr_base_and_mask(uint64_t *prmrr_base,
 
 	return 0;
 }
+
+uint32_t soc_systemagent_max_chan_capacity_mib(u8 capid0_a_ddrsz)
+{
+	/* Max 4GiB per rank, 2 ranks per channel. Intel Document: 332092-002 */
+	return 8192;
+}

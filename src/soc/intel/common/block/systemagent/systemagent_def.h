@@ -17,6 +17,11 @@
 #define  DPR_EPM	(1 << 2)
 #define  DPR_PRS	(1 << 1)
 #define  DPR_SIZE_MASK	0xff0
+/* CAPID0_A */
+#define  CAPID_ECCDIS	(1 << 25)
+#define  CAPID_DDPCD	(1 << 14)
+#define  CAPID_PDCD	(1 << 12)
+#define  CAPID_DDRSZ(x)	(((x) >> 19) & 0x3)
 
 #define  PCIEXBAR_LENGTH_64MB	2
 #define  PCIEXBAR_LENGTH_128MB	1

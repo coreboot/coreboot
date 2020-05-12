@@ -41,6 +41,11 @@ __weak unsigned long sa_write_acpi_tables(const struct device *dev,
 	return current;
 }
 
+__weak uint32_t soc_systemagent_max_chan_capacity_mib(u8 capid0_a_ddrsz)
+{
+	return 32768;	/* 32 GiB per channel */
+}
+
 /*
  * Add all known fixed MMIO ranges that hang off the host bridge/memory
  * controller device.
@@ -258,11 +263,27 @@ static void systemagent_read_resources(struct device *dev)
 }
 
 #if CONFIG(GENERATE_SMBIOS_TABLES)
+static bool sa_supports_ecc(const uint32_t capida)
+{
+	return !(capida & CAPID_ECCDIS);
+}
+
+static size_t sa_slots_per_channel(const uint32_t capida)
+{
+	return !(capida & CAPID_DDPCD) + 1;
+}
+
+static size_t sa_number_of_channels(const uint32_t capida)
+{
+	return !(capida & CAPID_PDCD) + 1;
+}
+
 static int sa_smbios_write_type_16(struct device *dev, int *handle,
 		unsigned long *current)
 {
 	struct smbios_type16 *t = (struct smbios_type16 *)*current;
 	int len = sizeof(struct smbios_type16);
+	const uint32_t capida = pci_read_config32(dev, CAPID0_A);
 
 	struct memory_info *meminfo;
 	meminfo = cbmem_find(CBMEM_ID_MEMINFO);
@@ -275,12 +296,14 @@ static int sa_smbios_write_type_16(struct device *dev, int *handle,
 	t->length = len - 2;
 	t->location = MEMORY_ARRAY_LOCATION_SYSTEM_BOARD;
 	t->use = MEMORY_ARRAY_USE_SYSTEM;
-	/* TBD, meminfo hob have information about ECC */
-	t->memory_error_correction = MEMORY_ARRAY_ECC_NONE;
+	t->memory_error_correction = sa_supports_ecc(capida) ? MEMORY_ARRAY_ECC_SINGLE_BIT :
+		MEMORY_ARRAY_ECC_NONE;
 	/* no error information handle available */
 	t->memory_error_information_handle = 0xFFFE;
-	t->maximum_capacity = 32 * (GiB / KiB); /* 32GB as default */
-	t->number_of_memory_devices = meminfo->dimm_cnt;
+	t->maximum_capacity = soc_systemagent_max_chan_capacity_mib(CAPID_DDRSZ(capida)) *
+			      sa_number_of_channels(capida) * (MiB / KiB);
+	t->number_of_memory_devices = sa_slots_per_channel(capida) *
+				      sa_number_of_channels(capida);
 
 	*current += len;
 	*handle += 1;

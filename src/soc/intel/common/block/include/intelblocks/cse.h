@@ -130,10 +130,10 @@ int cse_request_global_reset(enum rst_req_type rst_type);
 /*
  * Sends HMRFPO_ENABLE command.
  * HMRFPO - Host ME Region Flash Protection Override.
- * For CSE Firmware SKU Custom, procedure to place CSE in HMRFPO (SECOVER_MEI_MSG) mode:
- *	1. Ensure CSE boots from BP1(RO).
- *		- Send set_next_boot_partition(BP1)
- *		- Issue CSE Only Reset
+ * For CSE Lite SKU, procedure to place CSE in HMRFPO (SECOVER_MEI_MSG) mode:
+ *	1. Ensure CSE boots from RO(BP1).
+ *		- Set CSE's next boot partition to RO
+ *		- Issue GLOBAL_RESET command to reset the system
  *	2. Send HMRFPO_ENABLE command to CSE. Further, no reset is required.
  *
  * The HMRFPO mode prevents CSE to execute SPI I/O cycles to CSE region, and unlocks

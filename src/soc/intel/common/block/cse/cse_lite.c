@@ -10,16 +10,16 @@
 #define GET_BP_STR(bp_index) (bp_index ? "RW" : "RO")
 
 /*
- * CSE Firmware supports 3 boot partitions. For CSE Custom SKU, only 2 boot partitions are
+ * CSE Firmware supports 3 boot partitions. For CSE Lite SKU, only 2 boot partitions are
  * used and 3rd boot partition is set to BP_STATUS_PARTITION_NOT_PRESENT.
- * CSE Custom SKU Image Layout:
+ * CSE Lite SKU Image Layout:
  * -------------    -------------------    ---------------------
  * |CSE REGION | => | RO |  RW | DATA | => | BP1 | BP2  | DATA |
  *  -------------   -------------------    ---------------------
  */
 #define CSE_MAX_BOOT_PARTITIONS 3
 
-/* CSE Custom SKU's valid bootable partition identifiers */
+/* CSE Lite SKU's valid bootable partition identifiers */
 enum boot_partition_id {
 	/* RO(BP1) contains recovery/minimal boot FW */
 	RO = 0,
@@ -299,9 +299,9 @@ void cse_fw_sync(void *unused)
 		return;
 	}
 
-	/* If CSE SKU type is not Custom, skip enabling CSE Custom SKU */
-	if (!cse_is_hfs3_fw_sku_custom()) {
-		printk(BIOS_ERR, "cse_bp: Not a CSE Custom SKU\n");
+	/* If CSE SKU type is not Lite, skip enabling CSE Lite SKU */
+	if (!cse_is_hfs3_fw_sku_lite()) {
+		printk(BIOS_ERR, "cse_bp: Not a CSE Lite SKU\n");
 		return;
 	}
 

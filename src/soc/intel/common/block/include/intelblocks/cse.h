@@ -40,7 +40,7 @@
 /* ME Firmware SKU Types */
 #define ME_HFS3_FW_SKU_CONSUMER	0x2
 #define ME_HFS3_FW_SKU_CORPORATE	0x3
-#define ME_HFS3_FW_SKU_CUSTOM	0x5
+#define ME_HFS3_FW_SKU_LITE	0x5
 
 /* HFSTS register offsets in PCI config space */
 enum {
@@ -201,10 +201,10 @@ bool cse_is_hfs1_com_secover_mei_msg(void);
 bool cse_is_hfs1_com_soft_temp_disable(void);
 
 /*
- * Checks CSE's Firmware SKU is Custom or not.
- * Returns true if CSE's Firmware SKU is Custom, otherwise false
+ * Checks CSE's Firmware SKU is Lite or not.
+ * Returns true if CSE's Firmware SKU is Lite, otherwise false
  */
-bool cse_is_hfs3_fw_sku_custom(void);
+bool cse_is_hfs3_fw_sku_lite(void);
 
 /*
  * Polls for CSE's current operation mode 'Soft Temp Disable'.
@@ -213,7 +213,7 @@ bool cse_is_hfs3_fw_sku_custom(void);
 uint8_t cse_wait_com_soft_temp_disable(void);
 
 /*
- * The CSE Custom SKU supports notion of RO and RW boot partitions. The function will set
+ * The CSE Lite SKU supports notion of RO and RW boot partitions. The function will set
  * CSE's boot partition as per Chrome OS boot modes. In normal mode, the function allows CSE to
  * boot from RW and triggers recovery mode if CSE fails to jump to RW.
  * In software triggered recovery mode, the function allows CSE to boot from whatever is

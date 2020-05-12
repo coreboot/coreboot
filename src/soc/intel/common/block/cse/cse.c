@@ -258,11 +258,11 @@ bool cse_is_hfs1_com_soft_temp_disable(void)
 	return cse_check_hfs1_com(ME_HFS1_COM_SOFT_TEMP_DISABLE);
 }
 
-bool cse_is_hfs3_fw_sku_custom(void)
+bool cse_is_hfs3_fw_sku_lite(void)
 {
 	union me_hfsts3 hfs3;
 	hfs3.data = me_read_config32(PCI_ME_HFSTS3);
-	return hfs3.fields.fw_sku == ME_HFS3_FW_SKU_CUSTOM;
+	return hfs3.fields.fw_sku == ME_HFS3_FW_SKU_LITE;
 }
 
 /* Makes the host ready to communicate with CSE */
@@ -600,7 +600,7 @@ static bool cse_is_global_reset_allowed(void)
 	 *  - CSE's current working state is Normal and current operation mode is Normal.
 	 *  - (or) CSE's current working state is normal and current operation mode can
 	 *    be Soft Temp Disable or Security Override Mode if CSE's Firmware SKU is
-	 *    Custom.
+	 *    Lite.
 	 */
 	if (!cse_is_hfs1_cws_normal())
 		return false;
@@ -608,7 +608,7 @@ static bool cse_is_global_reset_allowed(void)
 	if (cse_is_hfs1_com_normal())
 		return true;
 
-	if (cse_is_hfs3_fw_sku_custom()) {
+	if (cse_is_hfs3_fw_sku_lite()) {
 		if (cse_is_hfs1_com_soft_temp_disable() || cse_is_hfs1_com_secover_mei_msg())
 			return true;
 	}
@@ -669,7 +669,7 @@ static bool cse_is_hmrfpo_enable_allowed(void)
 	 * Allow sending HMRFPO ENABLE command only if:
 	 *  - CSE's current working state is Normal and current operation mode is Normal
 	 *  - (or) cse's current working state is normal and current operation mode is
-	 *    Soft Temp Disable if CSE's Firmware SKU is Custom
+	 *    Soft Temp Disable if CSE's Firmware SKU is Lite
 	 */
 	if (!cse_is_hfs1_cws_normal())
 		return false;
@@ -677,7 +677,7 @@ static bool cse_is_hmrfpo_enable_allowed(void)
 	if (cse_is_hfs1_com_normal())
 		return true;
 
-	if (cse_is_hfs3_fw_sku_custom() && cse_is_hfs1_com_soft_temp_disable())
+	if (cse_is_hfs3_fw_sku_lite() && cse_is_hfs1_com_soft_temp_disable())
 		return true;
 
 	return false;
@@ -818,10 +818,10 @@ void print_me_fw_version(void *unused)
 		return;
 
 	/*
-	 * Ignore if ME Firmware SKU type is custom since
+	 * Ignore if ME Firmware SKU type is Lite since
 	 * print_boot_partition_info() logs RO(BP1) and RW(BP2) versions.
 	 */
-	if (cse_is_hfs3_fw_sku_custom())
+	if (cse_is_hfs3_fw_sku_lite())
 		return;
 
 	/*

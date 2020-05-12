@@ -23,24 +23,34 @@ void espi_show_slave_general_configuration(uint32_t config)
 		printk(BIOS_DEBUG, "    IO bit1 pin used to signal alert event\n");
 
 	io_mode = config & ESPI_SLAVE_IO_MODE_SEL_MASK;
-	if (io_mode == ESPI_SLAVE_IO_MODE_SEL_SINGLE)
+	switch (io_mode) {
+	case ESPI_SLAVE_IO_MODE_SEL_SINGLE:
 		printk(BIOS_DEBUG, "    eSPI single IO mode selected\n");
-	else if (io_mode == ESPI_SLAVE_IO_MODE_SEL_DUAL)
+		break;
+	case ESPI_SLAVE_IO_MODE_SEL_DUAL:
 		printk(BIOS_DEBUG, "    eSPI dual IO mode selected\n");
-	else if (io_mode == ESPI_SLAVE_IO_MODE_SEL_QUAD)
+		break;
+	case ESPI_SLAVE_IO_MODE_SEL_QUAD:
 		printk(BIOS_DEBUG, "    eSPI quad IO mode selected\n");
-	else
+		break;
+	default:
 		printk(BIOS_DEBUG, "    Error: Invalid eSPI IO mode selected\n");
+	}
 
 	io_mode = config & ESPI_SLAVE_IO_MODE_SUPP_MASK;
-	if (io_mode == ESPI_SLAVE_IO_MODE_SUPP_SINGLE_QUAD)
+	switch (io_mode) {
+	case ESPI_SLAVE_IO_MODE_SUPP_SINGLE_QUAD:
 		printk(BIOS_DEBUG, "    eSPI quad and single IO modes supported\n");
-	else if (io_mode == ESPI_SLAVE_IO_MODE_SUPP_SINGLE_DUAL)
-		printk(BIOS_DEBUG, "    eSPI dual and single IO mode supported\n");
-	else if (io_mode == ESPI_SLAVE_IO_MODE_SUPP_SINGLE_DUAL_QUAD)
-		printk(BIOS_DEBUG, "    eSPI quad, dual, and single IO modes supported\n");
-	else
+		break;
+	case ESPI_SLAVE_IO_MODE_SUPP_SINGLE_DUAL:
+		printk(BIOS_DEBUG, "    eSPI dual and single IO modes supported\n");
+		break;
+	case ESPI_SLAVE_IO_MODE_SUPP_SINGLE_DUAL_QUAD:
+		printk(BIOS_DEBUG, "    eSPI quad, dual and single IO modes supported\n");
+		break;
+	default:
 		printk(BIOS_DEBUG, "    Only eSPI single IO mode supported\n");
+	}
 
 	if (config & ESPI_SLAVE_OPEN_DRAIN_ALERT_SEL)
 		printk(BIOS_DEBUG, "    Alert# pin is open-drain\n");
@@ -48,35 +58,49 @@ void espi_show_slave_general_configuration(uint32_t config)
 		printk(BIOS_DEBUG, "    Alert# pin is driven\n");
 
 	op_freq = config & ESPI_SLAVE_OP_FREQ_SEL_MASK;
-	if (op_freq == ESPI_SLAVE_OP_FREQ_SEL_20_MHZ)
+	switch (op_freq) {
+	case ESPI_SLAVE_OP_FREQ_SEL_20_MHZ:
 		printk(BIOS_DEBUG, "    eSPI 20MHz selected\n");
-	else if (op_freq == ESPI_SLAVE_OP_FREQ_SEL_25_MHZ)
+		break;
+	case ESPI_SLAVE_OP_FREQ_SEL_25_MHZ:
 		printk(BIOS_DEBUG, "    eSPI 25MHz selected\n");
-	else if (op_freq == ESPI_SLAVE_OP_FREQ_SEL_33_MHZ)
+		break;
+	case ESPI_SLAVE_OP_FREQ_SEL_33_MHZ:
 		printk(BIOS_DEBUG, "    eSPI 33MHz selected\n");
-	else if (op_freq == ESPI_SLAVE_OP_FREQ_SEL_50_MHZ)
+		break;
+	case ESPI_SLAVE_OP_FREQ_SEL_50_MHZ:
 		printk(BIOS_DEBUG, "    eSPI 50MHz selected\n");
-	else if (op_freq == ESPI_SLAVE_OP_FREQ_SEL_66_MHZ)
+		break;
+	case ESPI_SLAVE_OP_FREQ_SEL_66_MHZ:
 		printk(BIOS_DEBUG, "    eSPI 66MHz selected\n");
-	else
+		break;
+	default:
 		printk(BIOS_DEBUG, "    Error: Invalid eSPI frequency\n");
+	}
 
 	if (config & ESPI_SLAVE_OPEN_DRAIN_ALERT_SUPP)
 		printk(BIOS_DEBUG, "    Open-drain Alert# pin supported\n");
 
 	op_freq = config & ESPI_SLAVE_OP_FREQ_SUPP_MASK;
-	if (op_freq == ESPI_SLAVE_OP_FREQ_SUPP_20_MHZ)
-		printk(BIOS_DEBUG, "    eSPI 20MHz supported\n");
-	else if (op_freq == ESPI_SLAVE_OP_FREQ_SUPP_25_MHZ)
-		printk(BIOS_DEBUG, "    eSPI 25MHz supported\n");
-	else if (op_freq == ESPI_SLAVE_OP_FREQ_SUPP_33_MHZ)
-		printk(BIOS_DEBUG, "    eSPI 33MHz supported\n");
-	else if (op_freq == ESPI_SLAVE_OP_FREQ_SUPP_50_MHZ)
-		printk(BIOS_DEBUG, "    eSPI 50MHz supported\n");
-	else if (op_freq == ESPI_SLAVE_OP_FREQ_SUPP_66_MHZ)
-		printk(BIOS_DEBUG, "    eSPI 66MHz supported\n");
-	else
+	switch (op_freq) {
+	case ESPI_SLAVE_OP_FREQ_SUPP_20_MHZ:
+		printk(BIOS_DEBUG, "    eSPI up to 20MHz supported\n");
+		break;
+	case ESPI_SLAVE_OP_FREQ_SUPP_25_MHZ:
+		printk(BIOS_DEBUG, "    eSPI up to 25MHz supported\n");
+		break;
+	case ESPI_SLAVE_OP_FREQ_SUPP_33_MHZ:
+		printk(BIOS_DEBUG, "    eSPI up to 33MHz supported\n");
+		break;
+	case ESPI_SLAVE_OP_FREQ_SUPP_50_MHZ:
+		printk(BIOS_DEBUG, "    eSPI up to 50MHz supported\n");
+		break;
+	case ESPI_SLAVE_OP_FREQ_SUPP_66_MHZ:
+		printk(BIOS_DEBUG, "    eSPI up to 66MHz supported\n");
+		break;
+	default:
 		printk(BIOS_DEBUG, "    Error: Invalid eSPI frequency\n");
+	}
 
 	printk(BIOS_DEBUG, "    Maximum Wait state: %d\n",
 	       (config & ESPI_SLAVE_MAX_WAIT_MASK) >> ESPI_SLAVE_MAX_WAIT_SHIFT);

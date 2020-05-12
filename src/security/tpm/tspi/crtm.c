@@ -88,17 +88,18 @@ static bool is_runtime_data(const char *name)
 	const char *whitelist = CONFIG_TPM_MEASURED_BOOT_RUNTIME_DATA;
 	size_t whitelist_len = sizeof(CONFIG_TPM_MEASURED_BOOT_RUNTIME_DATA) - 1;
 	size_t name_len = strlen(name);
-	int i;
+	const char *end;
 
 	if (!whitelist_len || !name_len)
 		return false;
 
-	for (i = 0; (i + name_len) <= whitelist_len; i++) {
-		if (!strcmp(whitelist + i, name))
+	while ((end = strchr(whitelist, ' '))) {
+		if (end - whitelist == name_len && !strncmp(whitelist, name, name_len))
 			return true;
+		whitelist = end + 1;
 	}
 
-	return false;
+	return !strcmp(whitelist, name);
 }
 
 uint32_t tspi_measure_cbfs_hook(struct cbfsf *fh, const char *name)

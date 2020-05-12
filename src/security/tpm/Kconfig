@@ -112,6 +112,6 @@ config TPM_MEASURED_BOOT_RUNTIME_DATA
 	depends on TPM_MEASURED_BOOT
 	help
 	  Runtime data whitelist of cbfs filenames. Needs to be a
-	  comma separated list
+	  space delimited list
 
 endmenu # Trusted Platform Module (tpm)

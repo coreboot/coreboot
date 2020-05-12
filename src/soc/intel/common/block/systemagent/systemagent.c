@@ -2,6 +2,7 @@
 
 #include <cbmem.h>
 #include <console/console.h>
+#include <cpu/cpu.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
@@ -102,8 +103,8 @@ void sa_fill_gnvs(global_nvs_t *gnvs)
 	struct device *sa_dev = pcidev_path_on_root(SA_DEVFN_ROOT);
 
 	sa_read_map_entry(sa_dev, &sa_memory_map[SA_TOUUD_REG], &gnvs->a4gb);
-	gnvs->a4gs = ABOVE_4GB_MEM_BASE_SIZE;
-	printk(BIOS_DEBUG, "PCI space above 4GB MMIO is from 0x%llx  to len = 0x%llx\n",
+	gnvs->a4gs = POWER_OF_2(cpu_phys_address_size()) - gnvs->a4gb;
+	printk(BIOS_DEBUG, "PCI space above 4GB MMIO is at 0x%llx, len = 0x%llx\n",
 	       gnvs->a4gb, gnvs->a4gs);
 }
 

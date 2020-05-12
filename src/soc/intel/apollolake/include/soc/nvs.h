@@ -32,10 +32,9 @@ typedef struct global_nvs_t {
 	uint8_t		ecps; /* 0x2C - SGX Enabled status */
 	uint64_t	emna; /* 0x2D - 0x34 EPC base address */
 	uint64_t	elng; /* 0x35 - 0x3C EPC Length */
-	uint8_t		e4gm; /* 0x3D - Enable above 4GB MMIO Resource */
-	uint64_t	a4gb; /* 0x3E - 0x45 Base of above 4GB MMIO Resource */
-	uint64_t	a4gs; /* 0x46 - 0x4D Length of above 4GB MMIO Resource */
-	uint8_t		unused[178];
+	uint64_t	a4gb; /* 0x3D - 0x44 Base of above 4GB MMIO Resource */
+	uint64_t	a4gs; /* 0x45 - 0x4C Length of above 4GB MMIO Resource */
+	uint8_t		unused[179];
 
 	/* ChromeOS specific (0x100 - 0xfff) */
 	chromeos_acpi_t chromeos;

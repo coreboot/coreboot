@@ -30,9 +30,8 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	EPCS,   8,      // 0x2C - SGX Enabled status
 	EMNA,   64,     // 0x2D - 0x34 EPC base address
 	ELNG,   64,     // 0x35 - 0x3C EPC Length
-	E4GM,	8,	// 0x3D - Enable above 4GB MMIO Resource
-	A4GB,	64,	// 0x3E - 0x45 Base of above 4GB MMIO Resource
-	A4GS,	64,	// 0x46 - 0x4D Length of above 4GB MMIO Resource
+	A4GB,	64,	// 0x3D - 0x44 Base of above 4GB MMIO Resource
+	A4GS,	64,	// 0x45 - 0x4C Length of above 4GB MMIO Resource
 
 	/* ChromeOS stuff (0x100 -> 0xfff, size 0xeff) */
 	Offset (0x100),

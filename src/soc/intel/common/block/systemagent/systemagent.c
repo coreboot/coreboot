@@ -96,30 +96,11 @@ static void sa_read_map_entry(struct device *dev,
 	*result = value;
 }
 
-/*
- * This function will get above 4GB mmio enable config specific to soc.
- *
- * Return values:
- *  0 = Above 4GB memory is not enable
- *  1 = Above 4GB memory is enable
- */
-static int get_enable_above_4GB_mmio(void)
-{
-	const struct soc_intel_common_config *common_config;
-	common_config = chip_get_common_soc_structure();
-
-	return common_config->enable_above_4GB_mmio;
-}
-
 /* Fill MMIO resource above 4GB into GNVS */
 void sa_fill_gnvs(global_nvs_t *gnvs)
 {
-	if (!get_enable_above_4GB_mmio())
-		return;
-
 	struct device *sa_dev = pcidev_path_on_root(SA_DEVFN_ROOT);
 
-	gnvs->e4gm = 1;
 	sa_read_map_entry(sa_dev, &sa_memory_map[SA_TOUUD_REG], &gnvs->a4gb);
 	gnvs->a4gs = ABOVE_4GB_MEM_BASE_SIZE;
 	printk(BIOS_DEBUG, "PCI space above 4GB MMIO is from 0x%llx  to len = 0x%llx\n",

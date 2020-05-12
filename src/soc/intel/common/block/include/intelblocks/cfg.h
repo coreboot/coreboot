@@ -24,7 +24,6 @@ struct soc_intel_common_config {
 	/* PCH Thermal Trip Temperature in deg C */
 	uint8_t pch_thermal_trip;
 	struct mmc_dll_params emmc_dll;
-	int enable_above_4GB_mmio;
 };
 
 /* This function to retrieve soc config structure required by common code */

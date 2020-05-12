@@ -45,10 +45,9 @@ typedef struct global_nvs_t {
 	u8	ecps; /* 0x43 - SGX Enabled status */
 	u64	emna; /* 0x44 - 0x4B EPC base address */
 	u64	elng; /* 0x4C - 0x53 EPC Length */
-	u8	e4gm; /* 0x54 - Enable above 4GB MMIO Resource */
-	u64	a4gb; /* 0x55 - 0x5C Base of above 4GB MMIO Resource */
-	u64	a4gs; /* 0x5D - 0x64 Length of above 4GB MMIO Resource */
-	u8	rsvd[79];
+	u64	a4gb; /* 0x54 - 0x5B Base of above 4GB MMIO Resource */
+	u64	a4gs; /* 0x5C - 0x63 Length of above 4GB MMIO Resource */
+	u8	rsvd[80];
 
 	/* IGD OpRegion */
 	u32	aslb; /* 0xb4 - IGD OpRegion Base Address */

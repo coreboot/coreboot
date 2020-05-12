@@ -67,6 +67,9 @@ be more frequent than was needed, so we scaled it back to twice a year.
       ask for testing.
 - [ ] Test the commit selected for release.
 - [ ] Update release notes with actual commit id, push to repo.
+- [ ] Create new release notes doc template for the next version.
+- [ ] Fill in the release date, remove "Upcoming release" and other filler
+      from the current release notes.
 - [ ] Run release script.
 - [ ] Run vboot_list script.
 - [ ] Test the release from the actual release tarballs.

@@ -1,5 +1,5 @@
-Upcoming release - coreboot 4.12
-================================
+coreboot 4.12
+=============
 
 coreboot 4.12 was released on May 12th, 2020.
 

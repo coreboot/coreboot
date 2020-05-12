@@ -243,7 +243,7 @@ chip soc/intel/tigerlake
 				register "hid" = ""10EC5682""
 				register "name" = ""RT58""
 				register "desc" = ""Realtek RT5682""
-				register "irq" = "ACPI_IRQ_EDGE_HIGH(GPP_F8_IRQ)"
+				register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_BOTH(GPP_F8)"
 				# Set the jd_src to RT5668_JD1 for jack detection
 				register "property_count" = "1"
 				register "property_list[0].type" = "ACPI_DP_TYPE_INTEGER"

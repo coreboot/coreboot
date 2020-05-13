@@ -94,7 +94,7 @@ config VGA_BIOS_ID
 
 config VGA_BIOS_FILE
 	string
-	default "3rdparty/blobs/soc/amd/picasso/PicassoGenericVbios.bin"
+	default "3rdparty/amd_blobs/picasso/PicassoGenericVbios.bin"
 
 config S3_VGA_ROM_RUN
 	bool
@@ -297,7 +297,7 @@ comment "AMD Firmware Directory Table set to location for 16MB ROM"
 
 config AMD_PUBKEY_FILE
 	string
-	default "3rdparty/blobs/soc/amd/picasso/PSP/AmdPubKeyRV.bin"
+	default "3rdparty/amd_blobs/picasso/PSP/AmdPubKeyRV.bin"
 
 config PSP_APCB_FILE
 	string
@@ -383,7 +383,7 @@ config HAVE_PSP_WHITELIST_FILE
 config PSP_WHITELIST_FILE
 	string "Debug whitelist file name"
 	depends on HAVE_PSP_WHITELIST_FILE
-	default "3rdparty/blobs/soc/amd/picasso/PSP/wtl-rvn.sbin"
+	default "3rdparty/amd_blobs/picasso/PSP/wtl-rvn.sbin"
 
 config PSP_UNLOCK_SECURE_DEBUG
 	bool "Unlock secure debug"

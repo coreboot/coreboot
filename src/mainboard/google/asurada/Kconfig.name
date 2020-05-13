@@ -1,0 +1,5 @@
+comment "Asurada"
+
+config BOARD_GOOGLE_ASURADA
+	bool "->  Asurada"
+	select BOARD_GOOGLE_ASURADA_COMMON

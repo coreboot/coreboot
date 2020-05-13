@@ -1,6 +1,8 @@
 ifeq ($(CONFIG_SOC_MEDIATEK_MT8192),y)
 
+bootblock-y += bootblock.c
 bootblock-y += ../common/gpio.c gpio.c
+bootblock-y += ../common/mmu_operations.c
 bootblock-$(CONFIG_SPI_FLASH) += ../common/spi.c spi.c
 bootblock-y += ../common/timer.c
 bootblock-y += ../common/uart.c

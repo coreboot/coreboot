@@ -11,13 +11,13 @@
 #include "../common/aspeed_coreboot.h"
 #include "../common/ast_drv.h"
 
-static void aspeed_ast2050_set_resources(struct device *dev)
+static void aspeed_ast2050_read_resources(struct device *dev)
 {
 	/* Reserve VGA regions */
 	mmio_resource(dev, 3, 0xa0000 >> 10, 0x1ffff >> 10);
 
-	/* Run standard resource set routine */
-	pci_dev_set_resources(dev);
+	/* Run standard resource read routine */
+	pci_dev_read_resources(dev);
 }
 
 static void aspeed_ast2050_init(struct device *dev)
@@ -52,8 +52,8 @@ static void aspeed_ast2050_init(struct device *dev)
 }
 
 static struct device_operations aspeed_ast2050_ops  = {
-	.read_resources   = pci_dev_read_resources,
-	.set_resources    = aspeed_ast2050_set_resources,
+	.read_resources   = aspeed_ast2050_read_resources,
+	.set_resources    = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.init             = aspeed_ast2050_init,
 };

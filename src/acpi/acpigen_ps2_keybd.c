@@ -168,6 +168,8 @@ static uint32_t rest_of_keymaps[] = {
 	KEYMAP(0xd0, KEY_DOWN),
 	KEYMAP(0xcd, KEY_RIGHT),
 	KEYMAP(0xc8, KEY_UP),
+	/* Power Key */
+	KEYMAP(0xde, KEY_POWER),
 };
 
 static void ssdt_generate_physmap(struct acpi_dp *dp, uint8_t num_top_row_keys,

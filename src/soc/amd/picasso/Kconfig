@@ -81,6 +81,10 @@ config MMCONF_BUS_NUMBER
 	int
 	default 64
 
+config VERSTAGE_ADDR
+	hex
+	default 0x4000000
+
 config VGA_BIOS_ID
 	string
 	default "1002,15d8"

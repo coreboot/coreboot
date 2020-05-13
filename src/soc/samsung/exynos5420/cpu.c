@@ -97,8 +97,6 @@ static void exynos_displayport_init(struct device *dev, u32 lcdbase,
 
 	dcache_clean_invalidate_by_mva((void *)lower, upper - lower);
 	mmu_config_range(lower / MiB, (upper - lower) / MiB, DCACHE_OFF);
-
-	mmio_resource(dev, 1, lcdbase/KiB, DIV_ROUND_UP(fb_size, KiB));
 }
 
 static void tps65090_thru_ec_fet_disable(int index)
@@ -117,9 +115,6 @@ static void cpu_enable(struct device *dev)
 	unsigned long fb_size = FB_SIZE_KB * KiB;
 	u32 lcdbase = get_fb_base_kb() * KiB;
 
-	ram_resource(dev, 0, RAM_BASE_KB, RAM_SIZE_KB - FB_SIZE_KB);
-	mmio_resource(dev, 1, lcdbase / KiB, DIV_ROUND_UP(fb_size, KiB));
-
 	/*
 	 * Disable LCD FETs before we do anything with the display.
 	 * FIXME(dhendrix): This is a gross hack and should be done
@@ -133,6 +128,15 @@ static void cpu_enable(struct device *dev)
 	set_cpu_id();
 }
 
+static void cpu_read_resources(struct device *dev)
+{
+	unsigned long fb_size = FB_SIZE_KB * KiB;
+	u32 lcdbase = get_fb_base_kb() * KiB;
+
+	ram_resource(dev, 0, RAM_BASE_KB, RAM_SIZE_KB - FB_SIZE_KB);
+	mmio_resource(dev, 1, lcdbase / KiB, DIV_ROUND_UP(fb_size, KiB));
+}
+
 static void cpu_init(struct device *dev)
 {
 	printk(BIOS_INFO, "CPU:   S5P%X @ %ldMHz\n",
@@ -140,7 +144,7 @@ static void cpu_init(struct device *dev)
 }
 
 static struct device_operations cpu_ops = {
-	.read_resources   = noop_read_resources,
+	.read_resources   = cpu_read_resources,
 	.set_resources    = noop_set_resources,
 	.enable_resources = cpu_enable,
 	.init             = cpu_init,

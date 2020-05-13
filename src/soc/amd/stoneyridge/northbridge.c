@@ -414,7 +414,7 @@ void domain_enable_resources(struct device *dev)
 		do_agesawrapper(AMD_INIT_MID, "amdinitmid");
 }
 
-void domain_set_resources(struct device *dev)
+void domain_read_resources(struct device *dev)
 {
 	uint64_t uma_base = get_uma_base();
 	uint32_t uma_size = get_uma_size();
@@ -423,6 +423,8 @@ void domain_set_resources(struct device *dev)
 	msr_t high_tom = rdmsr(TOP_MEM2);
 	uint64_t high_mem_useable;
 	int idx = 0x10;
+
+	pci_domain_read_resources(dev);
 
 	/* 0x0 -> 0x9ffff */
 	ram_resource(dev, idx++, 0, 0xa0000 / KiB);
@@ -462,8 +464,6 @@ void domain_set_resources(struct device *dev)
 						uma_size / KiB);
 		}
 	}
-
-	assign_resources(dev->link_list);
 }
 
 /*********************************************************************

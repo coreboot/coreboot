@@ -305,7 +305,7 @@ chip soc/intel/tigerlake
 			end
 		end # eSPI
 		device pci 1f.1 off end # P2SB
-		device pci 1f.2 on  end # PMC
+		device pci 1f.2 hidden end # PMC
 		device pci 1f.3 on  end # Intel HDA
 		device pci 1f.4 on  end # SMBus
 		device pci 1f.5 on  end # PCH SPI Flash Controller

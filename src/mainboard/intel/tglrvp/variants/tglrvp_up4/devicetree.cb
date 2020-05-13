@@ -239,7 +239,7 @@ chip soc/intel/tigerlake
 		device pci 1e.3 off end # GSPI1			0xA0AB
 		device pci 1f.0 on  end # eSPI			0xA080 - A09F
 		device pci 1f.1 on  end # P2SB			0xA0A0
-		device pci 1f.2 on  end # PMC			0xA0A1
+		device pci 1f.2 hidden end # PMC		0xA0A1
 		device pci 1f.3 on  end # Intel HD audio	0xA0C8-A0CF
 		device pci 1f.4 on  end # SMBus			0xA0A3
 		device pci 1f.5 on  end # SPI			0xA0A4

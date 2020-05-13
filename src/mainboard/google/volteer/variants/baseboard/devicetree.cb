@@ -370,7 +370,7 @@ chip soc/intel/tigerlake
 				register "irq" = "ACPI_IRQ_EDGE_LOW(GPP_C21_IRQ)"
 				device spi 0 on end
 			end
-		end # GSPI0				0xA0AA
+		end # GSPI0						0xA0AA
 		device pci 1e.3 on
 			chip drivers/spi/acpi
 				register "name" = ""CRFP""
@@ -380,14 +380,14 @@ chip soc/intel/tigerlake
 				register "irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW_WAKE(GPP_C20)"
 				device spi 0 on end
 			end # FPMCU
-		end # GSPI1				0xA0AB
+		end # GSPI1						0xA0AB
 		device pci 1f.0 on
 			chip ec/google/chromeec
 				device pnp 0c09.0 on end
 			end
-		end # eSPI				0xA080 - A09F
+		end # eSPI						0xA080 - A09F
 		device pci 1f.1 off end # P2SB				0xA0A0
-		device pci 1f.2 on  end # PMC				0xA0A1
+		device pci 1f.2 hidden end # PMC			0xA0A1
 		device pci 1f.3 on
 			chip drivers/generic/max98357a
 				register "hid" = ""MX98357A""
@@ -395,7 +395,7 @@ chip soc/intel/tigerlake
 				register "sdmode_delay" = "5"
 				device generic 0 on end
 			end
-		end # Intel HD audio		0xA0C8-A0CF
+		end # Intel HD audio					0xA0C8-A0CF
 		device pci 1f.4 off end # SMBus				0xA0A3
 		device pci 1f.5 on  end # SPI				0xA0A4
 		device pci 1f.6 off end # GbE				0x15E1/0x15E2

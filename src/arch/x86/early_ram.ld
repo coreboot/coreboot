@@ -23,7 +23,7 @@ _FMAP_SIZE = 0;
  * The stack area is not shared between stages, but is defined here for
  * convenience.
  */
-. = CONFIG_X86_RESET_VECTOR - ARCH_STACK_ALIGN_SIZE - _STACK_SIZE - _CONSOLE_SIZE - _TIMESTAMPS_SIZE - _FMAP_SIZE;
+. = CONFIG_X86_RESET_VECTOR - ARCH_STACK_ALIGN_SIZE - _STACK_SIZE - _CONSOLE_SIZE - _TIMESTAMPS_SIZE - _FMAP_SIZE - VB2_FIRMWARE_WORKBUF_RECOMMENDED_SIZE;
 
 _ = ASSERT(. > _eprogram, "Not enough room for .earlyram.data. Try increasing C_ENV_BOOTBLOCK_SIZE, or decreasing either EARLYRAM_BSP_STACK_SIZE or PRERAM_CBMEM_CONSOLE_SIZE.");
 
@@ -36,6 +36,11 @@ _ = ASSERT(. > _eprogram, "Not enough room for .earlyram.data. Try increasing C_
 	TIMESTAMP(., _TIMESTAMPS_SIZE)
 	#if !CONFIG(NO_FMAP_CACHE)
 		FMAP_CACHE(., FMAP_SIZE)
+	#endif
+
+	#if CONFIG(VBOOT_STARTS_IN_BOOTBLOCK)
+		ALIGN_COUNTER(16);
+		VBOOT2_WORK(., VB2_FIRMWARE_WORKBUF_RECOMMENDED_SIZE)
 	#endif
 }
 

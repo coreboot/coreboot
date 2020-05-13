@@ -135,6 +135,7 @@ static void mc_read_resources(struct device *dev)
 	uint32_t tseg_base, uma_size, tolud;
 	uint16_t ggc;
 	unsigned long long tomk;
+	unsigned long index = 3;
 
 	pci_dev_read_resources(dev);
 
@@ -238,9 +239,9 @@ static void mc_read_resources(struct device *dev)
 	printk(BIOS_INFO, "Available memory below 4GB: %lluM\n", tomk >> 10);
 
 	/* Report the memory regions */
-	ram_resource(dev, 3, 0, legacy_hole_base_k);
-	ram_resource(dev, 4, legacy_hole_base_k + legacy_hole_size_k,
-		    (tomk - (legacy_hole_base_k + legacy_hole_size_k)));
+	ram_resource(dev, index++, 0, legacy_hole_base_k);
+	ram_resource(dev, index++, legacy_hole_base_k + legacy_hole_size_k,
+			  (tomk - (legacy_hole_base_k + legacy_hole_size_k)));
 
 	/*
 	 * If >= 4GB installed, then memory from TOLUD to 4GB is remapped above TOM.
@@ -248,11 +249,11 @@ static void mc_read_resources(struct device *dev)
 	 */
 	touud >>= 10; /* Convert to KB */
 	if (touud > 4096 * 1024) {
-		ram_resource(dev, 5, 4096 * 1024, touud - (4096 * 1024));
+		ram_resource(dev, index++, 4096 * 1024, touud - (4096 * 1024));
 		printk(BIOS_INFO, "Available memory above 4GB: %lluM\n", (touud >> 10) - 4096);
 	}
 
-	add_fixed_resources(dev, 6);
+	add_fixed_resources(dev, index++);
 }
 
 static void northbridge_dmi_init(struct device *dev)

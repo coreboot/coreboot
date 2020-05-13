@@ -45,10 +45,10 @@ Scope (\_SB)
 	}
 
 	/*
-	 * Define PCH ACPIBASE I/O as an ACPI operating region. The base address can be
+	 * Define PCH ACPIBASE as an ACPI operating region. The base address can be
 	 * found in Device 31, Function 2, Offset 40h.
 	 */
-	OperationRegion (PMIO, SystemIO, PCH_PWRM_BASE_ADDRESS, 0x80)
+	OperationRegion (PMIO, SystemMemory, PCH_PWRM_BASE_ADDRESS, 0x80)
 	Field (PMIO, ByteAcc, NoLock, Preserve) {
 		Offset(0x6C),   /* 0x6C, General Purpose Event 0 Status [127:96] */
 		    ,  19,
@@ -74,7 +74,7 @@ Scope (\_SB)
 	 */
 	Method (C2PM, 4, NotSerialized)
 	{
-		Local0 = 0x1 << Arg3
+		Local0 = 1 << Arg3
 		/* This method is used to enable/disable wake from Tcss Device (WKEN). */
 		If (Arg0 && Arg1)
 		{  /* If entering Sx and enabling wake, need to enable WAKE capability. */

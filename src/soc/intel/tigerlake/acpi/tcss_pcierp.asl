@@ -64,7 +64,7 @@ Field (PXCS, AnyAcc, NoLock, WriteAsZeros)
  */
 Method (_DSM, 4, Serialized)
 {
-	return (Buffer() {0x00})
+	Return (Buffer() {0x00})
 }
 
 Device (PXSX)

@@ -27,10 +27,12 @@ static const struct pci_driver northbridge_driver __pci_driver = {
 	.device = 0x7190,
 };
 
-static void i440bx_domain_set_resources(struct device *dev)
+static void i440bx_domain_read_resources(struct device *dev)
 {
 	struct device *mc_dev;
 	uint32_t pci_tolm;
+
+	pci_domain_read_resources(dev);
 
 	pci_tolm = find_pci_tolm(dev->link_list);
 	mc_dev = dev->link_list->children;
@@ -62,12 +64,11 @@ static void i440bx_domain_set_resources(struct device *dev)
 		ram_resource(dev, idx++, 0, 640);
 		ram_resource(dev, idx++, 768, tolmk - 768);
 	}
-	assign_resources(dev->link_list);
 }
 
 static struct device_operations pci_domain_ops = {
-	.read_resources		= pci_domain_read_resources,
-	.set_resources		= i440bx_domain_set_resources,
+	.read_resources		= i440bx_domain_read_resources,
+	.set_resources		= pci_domain_set_resources,
 	.scan_bus		= pci_domain_scan_bus,
 };
 

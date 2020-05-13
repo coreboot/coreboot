@@ -95,12 +95,18 @@ static void cpu_enable(struct device *dev)
 	unsigned long fb_size = FB_SIZE_KB * KiB;
 	u32 lcdbase = get_fb_base_kb() * KiB;
 
-	ram_resource(dev, 0, RAM_BASE_KB, RAM_SIZE_KB - FB_SIZE_KB);
-	mmio_resource(dev, 1, lcdbase / KiB, DIV_ROUND_UP(fb_size, KiB));
-
 	exynos_displayport_init(dev, lcdbase, fb_size);
 
 	set_cpu_id();
+}
+
+static void cpu_read_resources(struct device *dev)
+{
+	unsigned long fb_size = FB_SIZE_KB * KiB;
+	u32 lcdbase = get_fb_base_kb() * KiB;
+
+	ram_resource(dev, 0, RAM_BASE_KB, RAM_SIZE_KB - FB_SIZE_KB);
+	mmio_resource(dev, 1, lcdbase / KiB, DIV_ROUND_UP(fb_size, KiB));
 }
 
 static void cpu_init(struct device *dev)
@@ -110,7 +116,7 @@ static void cpu_init(struct device *dev)
 }
 
 static struct device_operations cpu_ops = {
-	.read_resources   = noop_read_resources,
+	.read_resources   = cpu_read_resources,
 	.set_resources    = noop_set_resources,
 	.enable_resources = cpu_enable,
 	.init             = cpu_init,

@@ -20,6 +20,8 @@
 
 struct mux {
 	void *reg;
+	void *set_reg;
+	void *clr_reg;
 	void *upd_reg;
 	u8 mux_shift;
 	u8 mux_width;

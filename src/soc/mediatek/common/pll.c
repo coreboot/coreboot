@@ -12,9 +12,15 @@ void mux_set_sel(const struct mux *mux, u32 sel)
 	u32 mask = GENMASK(mux->mux_width - 1, 0);
 	u32 val = read32(mux->reg);
 
-	val &= ~(mask << mux->mux_shift);
-	val |= (sel & mask) << mux->mux_shift;
-	write32(mux->reg, val);
+	if (mux->set_reg && mux->clr_reg) {
+		write32(mux->clr_reg, mask << mux->mux_shift);
+		write32(mux->set_reg, sel << mux->mux_shift);
+	} else {
+		val &= ~(mask << mux->mux_shift);
+		val |= (sel & mask) << mux->mux_shift;
+		write32(mux->reg, val);
+	}
+
 	if (mux->upd_reg)
 		write32(mux->upd_reg, 1 << mux->upd_shift);
 }

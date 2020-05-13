@@ -213,9 +213,13 @@ struct soc_intel_tigerlake_config {
 		FORCE_ENABLE,
 	} CnviBtAudioOffload;
 
-	/* Tcss */
+	/* Tcss USB */
 	uint8_t TcssXhciEn;
 	uint8_t TcssXdciEn;
+
+	/* Tcss DMA */
+	uint8_t TcssDma0En;
+	uint8_t TcssDma1En;
 
 	/*
 	 * SOC Aux orientation override:

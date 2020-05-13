@@ -111,9 +111,13 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 	/* Image clock: disable all clocks for bypassing FSP pin mux */
 	memset(m_cfg->ImguClkOutEn, 0, sizeof(m_cfg->ImguClkOutEn));
 
-	/* Tcss */
+	/* Tcss USB */
 	m_cfg->TcssXhciEn = config->TcssXhciEn;
 	m_cfg->TcssXdciEn = config->TcssXdciEn;
+
+	/* TCSS DMA */
+	m_cfg->TcssDma0En = config->TcssDma0En;
+	m_cfg->TcssDma1En = config->TcssDma1En;
 
 	/* USB4/TBT */
 	dev = pcidev_path_on_root(SA_DEVFN_TBT0);

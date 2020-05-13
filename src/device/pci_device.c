@@ -778,6 +778,13 @@ struct device_operations default_pci_ops_bus = {
 	.reset_bus        = pci_bus_reset,
 };
 
+/** Default device operations for PCI devices marked 'hidden' */
+static struct device_operations default_hidden_pci_ops_dev = {
+	.read_resources   = noop_read_resources,
+	.set_resources    = noop_set_resources,
+	.scan_bus         = scan_static_bus,
+};
+
 /**
  * Check for compatibility to route legacy VGA cycles through a bridge.
  *
@@ -1147,6 +1154,46 @@ unsigned int pci_match_simple_dev(struct device *dev, pci_devfn_t sdev)
 }
 
 /**
+ * PCI devices that are marked as "hidden" do not get probed. However, the same
+ * initialization logic is still performed as if it were. This is useful when
+ * devices would like to be described in the devicetree.cb file, and/or present
+ * static PCI resources to the allocator, but the platform firmware hides the
+ * device (makes the device invisible to PCI enumeration) before PCI enumeration
+ * takes place.
+ *
+ * The expected semantics of PCI devices marked as 'hidden':
+ * 1) The device is actually present under the specified BDF
+ * 2) The device config space can still be accessed somehow, but the Vendor ID
+ *     indicates there is no device there (it reads as 0xffffffff).
+ * 3) The device may still consume PCI resources. Typically, these would have
+ *     been hardcoded elsewhere.
+ *
+ * @param dev Pointer to the device structure.
+ */
+static void pci_scan_hidden_device(struct device *dev)
+{
+	if (dev->chip_ops && dev->chip_ops->enable_dev)
+		dev->chip_ops->enable_dev(dev);
+
+	/*
+	 * If chip_ops->enable_dev did not set dev->ops, then set to a default
+	 * .ops, because PCI enumeration is effectively being skipped, therefore
+	 * no PCI driver will bind to this device. However, children may want to
+	 * be enumerated, so this provides scan_static_bus for the .scan_bus
+	 * callback.
+	 */
+	if (dev->ops == NULL)
+		dev->ops = &default_hidden_pci_ops_dev;
+
+	if (dev->ops->enable)
+		dev->ops->enable(dev);
+
+	/* Display the device almost as if it were probed normally */
+	printk(BIOS_DEBUG, "%s [0000/%04x] hidden%s\n", dev_path(dev),
+	       dev->device, dev->ops ? "" : " No operations");
+}
+
+/**
  * Scan a PCI bus.
  *
  * Determine the existence of devices and bridges on a PCI bus. If there are
@@ -1190,6 +1237,14 @@ void pci_scan_bus(struct bus *bus, unsigned int min_devfn,
 		/* First thing setup the device structure. */
 		dev = pci_scan_get_dev(bus, devfn);
 
+		/* Devices marked 'hidden' do not get probed */
+		if (dev && dev->hidden) {
+			pci_scan_hidden_device(dev);
+
+			/* Skip pci_probe_dev, go to next devfn */
+			continue;
+		}
+
 		/* See if a device is present and setup the device structure. */
 		dev = pci_probe_dev(dev, bus, devfn);
 
@@ -1213,8 +1268,12 @@ void pci_scan_bus(struct bus *bus, unsigned int min_devfn,
 
 	prev = &bus->children;
 	for (dev = bus->children; dev; dev = dev->sibling) {
-		/* If we read valid vendor id, it is not leftover device. */
-		if (dev->vendor != 0) {
+		/*
+		 * The device is only considered leftover if it is not hidden
+		 * and it has a Vendor ID of 0 (the default for a device that
+		 * could not be probed).
+		 */
+		if (dev->vendor != 0 || dev->hidden) {
 			prev = &dev->sibling;
 			continue;
 		}

@@ -777,9 +777,21 @@ typedef struct {
 **/
   UINT8                       TcssXdciEn;
 
-/** Offset 0x05BC - Reserved
+/** Offset 0x05BC - TCSS DMA0 Enable
+  Set TCSS DMA0. 0:Disabled  1:Enabled
+  $EN_DIS
 **/
-  UINT8                       Reserved29[4];
+  UINT8                       TcssDma0En;
+
+/** Offset 0x05BD - TCSS DMA1 Enable
+  Set TCSS DMA1. 0:Disabled  1:Enabled
+  $EN_DIS
+**/
+  UINT8                       TcssDma1En;
+
+/** Offset 0x05BE - Reserved
+**/
+  UINT8                       Reserved29[2];
 
 /** Offset 0x05C0 - Early Command Training
   Enables/Disable Early Command Training

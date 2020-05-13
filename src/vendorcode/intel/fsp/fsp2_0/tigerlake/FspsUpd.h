@@ -325,7 +325,45 @@ typedef struct {
 
 /** Offset 0x0370 - Reserved
 **/
-  UINT8                       Reserved10[73];
+  UINT8                       Reserved10[58];
+
+/** Offset 0x03AA - Mask to enable the usage of external V1p05 VR rail in specific S0ix or Sx states
+  Enable External V1P05 Rail in: BIT0:S0i1/S0i2, BIT1:S0i3, BIT2:S3, BIT3:S4, BIT5:S5
+**/
+  UINT8                       PchFivrExtV1p05RailEnabledStates;
+
+/** Offset 0x03AB - Mask to enable the platform configuration of external V1p05 VR rail
+  External V1P05 Rail Supported Configuration
+**/
+  UINT8                       PchFivrExtV1p05RailSupportedVoltageStates;
+
+/** Offset 0x03AC - Reserved
+**/
+  UINT8                      Reserved11[3];
+
+/** Offset 0x03AF - Mask to enable the usage of external Vnn VR rail in specific S0ix or Sx states
+  Enable External Vnn Rail in: BIT0:S0i1/S0i2, BIT1:S0i3, BIT2:S3, BIT3:S4, BIT5:S5
+**/
+  UINT8                       PchFivrExtVnnRailEnabledStates;
+
+/** Offset 0x03B0 - Mask to enable the platform configuration of external Vnn VR rail
+  External Vnn Rail Supported Configuration
+**/
+  UINT8                       PchFivrExtVnnRailSupportedVoltageStates;
+
+/** Offset 0x03B1 - Reserved
+**/
+  UINT8                       Reserved12[5];
+
+/** Offset 0x03B6 - External Vnn Voltage Value that will be used in Sx states
+  Use only if Ext Vnn Rail config is different in Sx. Value is given in 2.5mV increments
+  (0=0mV, 1=2.5mV, 2=5mV...)
+**/
+  UINT16                      PchFivrExtVnnRailSxVoltage;
+
+/** Offset 0x03B8 - Reserved
+**/
+  UINT8                       Reserved13;
 
 /** Offset 0x03B9 - Transition time in microseconds from Low Current Mode Voltage to High Current Mode Voltage
   This field has 1us resolution. When value is 0 PCH will not transition VCCIN_AUX
@@ -341,7 +379,7 @@ typedef struct {
 
 /** Offset 0x03BB - Reserved
 **/
-  UINT8                       Reserved11;
+  UINT8                       Reserved14;
 
 /** Offset 0x03BC - Transition time in microseconds from Off (0V) to High Current Mode Voltage
   This field has 1us resolution. When value is 0 Transition to 0V is disabled.
@@ -350,7 +388,16 @@ typedef struct {
 
 /** Offset 0x03BE - Reserved
 **/
-  UINT8                       Reserved12[38];
+  UINT8                       Reserved15[20];
+
+/** Offset 0x03D2 - External V1P05 Icc Max Value
+  Granularity of this setting is 1mA and maximal possible value is 500mA
+**/
+  UINT16                      PchFivrExtV1p05RailIccMaximum;
+
+/** Offset 0x03D4 - Reserved
+**/
+  UINT8                      Reserved16[16];
 
 /** Offset 0x03E4 - CNVi Configuration
   This option allows for automatic detection of Connectivity Solution. [Auto Detection]
@@ -373,7 +420,7 @@ typedef struct {
 
 /** Offset 0x03E7 - Reserved
 **/
-  UINT8                       Reserved13;
+  UINT8                       Reserved17;
 
 /** Offset 0x03E8 - CNVi RF_RESET pin muxing
   Select CNVi RF_RESET# pin depending on board routing. TGP-LP: GPP_A8 = 0x2942E408(default)
@@ -390,7 +437,7 @@ typedef struct {
 
 /** Offset 0x03F0 - Reserved
 **/
-  UINT8                       Reserved14[14];
+  UINT8                       Reserved18[14];
 
 /** Offset 0x03FE - HECI3 state
   The HECI3 state from Mbp for reference in S3 path or when MbpHob is not installed.
@@ -401,7 +448,7 @@ typedef struct {
 
 /** Offset 0x03FF - Reserved
 **/
-  UINT8                       Reserved15[141];
+  UINT8                       Reserved19[141];
 
 /** Offset 0x048C - CdClock Frequency selection
   0 (Default) Auto (Max based on reference clock frequency),  0: 192, 1: 307.2, 2:
@@ -426,7 +473,7 @@ typedef struct {
 
 /** Offset 0x048F - Reserved
 **/
-  UINT8                       Reserved16;
+  UINT8                       Reserved20;
 
 /** Offset 0x0490 - TypeC port GPIO setting
   GPIO Ping number for Type C Aux Oritation setting, use the GpioPad that is defined
@@ -437,7 +484,7 @@ typedef struct {
 
 /** Offset 0x04B0 - Reserved
 **/
-  UINT8                       Reserved17[8];
+  UINT8                       Reserved21[8];
 
 /** Offset 0x04B8 - Enable D3 Cold in TCSS
   This policy will enable/disable D3 cold support in IOM
@@ -447,7 +494,17 @@ typedef struct {
 
 /** Offset 0x04B9 - Reserved
 **/
-  UINT8                       Reserved18[21];
+  UINT8                       Reserved22[8];
+
+/** Offset 0x04C1 - Enable VMD controller
+  Enable/disable to VMD controller.0: Disable(Default); 1: Enable
+  $EN_DIS
+**/
+  UINT8                       VmdEnable;
+
+/** Offset 0x04C2 - Reserved
+**/
+  UINT8                       Reserved23[12];
 
 /** Offset 0x04CE - TCSS Aux Orientation Override Enable
   Bits 0, 2, ... 10 control override enables, bits 1, 3, ... 11 control overrides
@@ -461,7 +518,7 @@ typedef struct {
 
 /** Offset 0x04D2 - Reserved
 **/
-  UINT8                       Reserved19[2];
+  UINT8                       Reserved24[2];
 
 /** Offset 0x04D4 - ITBT Root Port Enable
   ITBT Root Port Enable, 0:Disable, 1:Enable
@@ -471,7 +528,7 @@ typedef struct {
 
 /** Offset 0x04D8 - Reserved
 **/
-  UINT8                      Reserved20[11];
+  UINT8                      Reserved25[11];
 
 /** Offset 0x04E3 - Enable/Disable PTM
   This policy will enable/disable Precision Time Measurement for TCSS PCIe Root Ports
@@ -481,7 +538,7 @@ typedef struct {
 
 /** Offset 0x04E7 - Reserved
 **/
-  UINT8                       Reserved21[194];
+  UINT8                       Reserved26[194];
 
 /** Offset 0x05A9 - Skip Multi-Processor Initialization
   When this is skipped, boot loader must initialize processors before SilicionInit
@@ -492,7 +549,7 @@ typedef struct {
 
 /** Offset 0x05AA - Reserved
 **/
-  UINT8                      Reserved22[10];
+  UINT8                      Reserved27[10];
 
 /** Offset 0x05B4 - CpuMpPpi
   <b>Optional</b> pointer to the boot loader's implementation of EFI_PEI_MP_SERVICES_PPI.
@@ -503,7 +560,7 @@ typedef struct {
 
 /** Offset 0x05B8 - Reserved
 **/
-  UINT8                      Reserved23[46];
+  UINT8                      Reserved28[46];
 
 /** Offset 0x05E6 - Enable Power Optimizer
   Enable DMI Power Optimizer on PCH side.
@@ -513,7 +570,7 @@ typedef struct {
 
 /** Offset 0x05E7 - Reserved
 **/
-  UINT8                       Reserved24[36];
+  UINT8                       Reserved29[36];
 
 /** Offset 0x060B - Enable PCH ISH SPI Cs0 pins assigned
   Set if ISH SPI Cs0 pins are to be enabled by BIOS. 0: Disable; 1: Enable.
@@ -522,7 +579,7 @@ typedef struct {
 
 /** Offset 0x060C - Reserved
 **/
-  UINT8                       Reserved25[2];
+  UINT8                       Reserved30[2];
 
 /** Offset 0x060E - Enable PCH ISH SPI pins assigned
   Set if ISH SPI native pins are to be enabled by BIOS. 0: Disable; 1: Enable.
@@ -546,7 +603,7 @@ typedef struct {
 
 /** Offset 0x061C - Reserved
 **/
-  UINT8                       Reserved26[2];
+  UINT8                       Reserved31[2];
 
 /** Offset 0x061E - Enable LOCKDOWN BIOS LOCK
   Enable the BIOS Lock feature and set EISS bit (D31:F5:RegDCh[5]) for the BIOS region
@@ -557,7 +614,7 @@ typedef struct {
 
 /** Offset 0x061F - Reserved
 **/
-  UINT8                       Reserved27[2];
+  UINT8                       Reserved32[2];
 
 /** Offset 0x0621 - RTC Cmos Memory Lock
   Enable RTC lower and upper 128 byte Lock bits to lock Bytes 38h-3Fh in the upper
@@ -568,7 +625,7 @@ typedef struct {
 
 /** Offset 0x0622 - Reserved
 **/
-  UINT8                       Reserved28[24];
+  UINT8                       Reserved33[24];
 
 /** Offset 0x063A - Enable PCIE RP Pm Sci
   Indicate whether the root port power manager SCI is enabled.
@@ -577,7 +634,7 @@ typedef struct {
 
 /** Offset 0x0652 - Reserved
 **/
-  UINT8                       Reserved29[24];
+  UINT8                       Reserved34[24];
 
 /** Offset 0x066A - Enable PCIE RP Clk Req Detect
   Probe CLKREQ# signal before enabling CLKREQ# based power management.
@@ -591,7 +648,7 @@ typedef struct {
 
 /** Offset 0x069A - Reserved
 **/
-  UINT8                       Reserved30[168];
+  UINT8                       Reserved35[168];
 
 /** Offset 0x0742 - PCIE RP Max Payload
   Max Payload Size supported, Default 128B, see enum PCH_PCIE_MAX_PAYLOAD.
@@ -606,7 +663,7 @@ typedef struct {
 
 /** Offset 0x075B - Reserved
 **/
-  UINT8                       Reserved31[5];
+  UINT8                       Reserved36[5];
 
 /** Offset 0x0760 - Touch Host Controller Port 1 Assignment
   Assign THC Port 1
@@ -616,7 +673,7 @@ typedef struct {
 
 /** Offset 0x0761 - Reserved
 **/
-  UINT8                       Reserved32[79];
+  UINT8                       Reserved37[79];
 
 /** Offset 0x07B0 - PCIE RP Aspm
   The ASPM configuration of the root port (see: PCH_PCIE_ASPM_CONTROL). Default is
@@ -637,7 +694,7 @@ typedef struct {
 
 /** Offset 0x07F8 - Reserved
 **/
-  UINT8                       Reserved33[79];
+  UINT8                       Reserved38[79];
 
 /** Offset 0x0847 - PCH Pm WoW lan Enable
   Determine if WLAN wake from Sx, corresponds to the HOST_WLAN_PP_EN bit in the PWRM_CFG3 register.
@@ -660,7 +717,7 @@ typedef struct {
 
 /** Offset 0x084A - Reserved
 **/
-  UINT8                       Reserved34[16];
+  UINT8                       Reserved39[16];
 
 /** Offset 0x085A - PCH Sata Pwr Opt Enable
   SATA Power Optimizer on PCH side.
@@ -670,7 +727,7 @@ typedef struct {
 
 /** Offset 0x085B - Reserved
 **/
-  UINT8                       Reserved35[50];
+  UINT8                       Reserved40[50];
 
 /** Offset 0x088D - Enable SATA Port DmVal
   DITO multiplier. Default is 15.
@@ -679,7 +736,7 @@ typedef struct {
 
 /** Offset 0x0895 - Reserved
 **/
-  UINT8                       Reserved36;
+  UINT8                       Reserved41;
 
 /** Offset 0x0896 - Enable SATA Port DmVal
   DEVSLP Idle Timeout (DITO), Default is 625.
@@ -688,7 +745,7 @@ typedef struct {
 
 /** Offset 0x08A6 - Reserved
 **/
-  UINT8                       Reserved37[72];
+  UINT8                       Reserved42[72];
 
 /** Offset 0x08EE - USB2 Port Over Current Pin
   Describe the specific over current pin number of USB 2.0 Port N.
@@ -702,7 +759,7 @@ typedef struct {
 
 /** Offset 0x0908 - Reserved
 **/
-  UINT8                       Reserved38[16];
+  UINT8                       Reserved43[16];
 
 /** Offset 0x0918 - Enable 8254 Static Clock Gating
   Set 8254CGE=1 is required for SLP_S0 support. However, set 8254CGE=1 in POST time
@@ -722,7 +779,7 @@ typedef struct {
 
 /** Offset 0x091A - Reserved
 **/
-  UINT8                       Reserved39[3];
+  UINT8                       Reserved44[3];
 
 /** Offset 0x091D - Hybrid Storage Detection and Configuration Mode
   Enables support for Hybrid storage devices. 0: Disabled; 1: Dynamic Configuration.
@@ -733,7 +790,16 @@ typedef struct {
 
 /** Offset 0x091E - Reserved
 **/
-  UINT8                       Reserved40[434];
+  UINT8                       Reserved45[96];
+
+/** Offset 0x097E - USB2 Port Reset Message Enable
+  0: Disable USB2 Port Reset Message; 1: Enable USB2 Port Reset Message
+**/
+  UINT8                       PortResetMessageEnable[16];
+
+/** Offset 0x098E - Reserved
+**/
+  UINT8                       Reserved46[322];
 
 /** Offset 0x0AD0 - RpPtmBytes
 **/
@@ -741,7 +807,7 @@ typedef struct {
 
 /** Offset 0x0AD4 - Reserved
 **/
-  UINT8                      Reserved41[101];
+  UINT8                      Reserved47[101];
 
 /** Offset 0x0B39 - GT Frequency Limit
   0xFF: Auto(Default), 2: 100 Mhz, 3: 150 Mhz, 4: 200 Mhz, 5: 250 Mhz, 6: 300 Mhz,
@@ -759,7 +825,17 @@ typedef struct {
 
 /** Offset 0x0B3A - Reserved
 **/
-  UINT8                       Reserved42[260];
+  UINT8                       Reserved48[80];
+
+/** Offset 0x0B8A - TimeUnit for C-State Latency Control5
+  TimeUnit for C-State Latency Control5;Valid values 0 - 1ns , 1 - 32ns , 2 - 1024ns
+  , 3 - 32768ns , 4 - 1048576ns , 5 - 33554432ns
+**/
+  UINT8                       CstateLatencyControl5TimeUnit;
+
+/** Offset 0x0B8B - Reserved
+**/
+  UINT8                       Reserved49[179];
 
 /** Offset 0x0C3E - Enable LOCKDOWN SMI
   Enable SMI_LOCK bit to prevent writes to the Global SMI Enable bit.
@@ -781,7 +857,7 @@ typedef struct {
 
 /** Offset 0x0C41 - Reserved
 **/
-  UINT8                       Reserved43;
+  UINT8                       Reserved50;
 
 /** Offset 0x0C42 - PCIE RP Ltr Max Snoop Latency
   Latency Tolerance Reporting, Max Snoop Latency.
@@ -795,7 +871,7 @@ typedef struct {
 
 /** Offset 0x0CA2 - Reserved
 **/
-  UINT8                       Reserved44[269];
+  UINT8                       Reserved51[269];
 
 /** Offset 0x0DAF - LpmStateEnableMask
 **/
@@ -803,7 +879,7 @@ typedef struct {
 
 /** Offset 0x0DB0 - Reserved
 **/
-  UINT8                       Reserved45[224];
+  UINT8                       Reserved52[224];
 } FSP_S_CONFIG;
 
 /** Fsp S UPD Configuration

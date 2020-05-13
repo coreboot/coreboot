@@ -1,6 +1,3 @@
-#
-#
-#
 # SPDX-License-Identifier: GPL-2.0-only
 
 chip northbridge/amd/agesa/family14/root_complex

@@ -1,6 +1,3 @@
-##
-##
-##
 ## SPDX-License-Identifier: GPL-2.0-only
 
 ifneq ($(filter y,$(CONFIG_VENDORCODE_ELTAN_VBOOT) $(CONFIG_VENDORCODE_ELTAN_MBOOT)),)

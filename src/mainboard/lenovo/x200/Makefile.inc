@@ -1,6 +1,3 @@
-##
-##
-##
 ## SPDX-License-Identifier: GPL-2.0-only
 
 ramstage-$(CONFIG_BOARD_LENOVO_X200) += variants/$(VARIANT_DIR)/dock.c

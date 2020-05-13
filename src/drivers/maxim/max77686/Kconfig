@@ -1,5 +1,3 @@
-##
-##
 ## SPDX-License-Identifier: GPL-2.0-only
 
 config DRIVER_MAXIM_MAX77686

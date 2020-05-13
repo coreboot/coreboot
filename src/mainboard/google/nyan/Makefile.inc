@@ -1,6 +1,3 @@
-##
-##
-##
 ## SPDX-License-Identifier: GPL-2.0-only
 
 # Add a handler for BCT config files

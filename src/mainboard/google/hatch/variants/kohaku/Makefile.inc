@@ -1,5 +1,3 @@
-##
-##
 ## SPDX-License-Identifier: GPL-2.0-only
 
 SPD_SOURCES = LP_8G_2133		# 0b000

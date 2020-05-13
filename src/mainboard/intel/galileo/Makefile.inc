@@ -1,6 +1,3 @@
-##
-##
-##
 ## SPDX-License-Identifier: GPL-2.0-only
 
 CPPFLAGS_common += -I$(src)/vendorcode/intel/fsp/fsp2_0/quark

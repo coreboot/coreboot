@@ -1,5 +1,3 @@
-##
-##
 ## SPDX-License-Identifier: GPL-2.0-only
 
 config CPU_INTEL_SLOT_1

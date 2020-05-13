@@ -1,7 +1,4 @@
-##
-##
 ## SPDX-License-Identifier: GPL-2.0-or-later
-##
 
 bootblock-y += bootblock.c
 bootblock-$(CONFIG_CHROMEOS) += chromeos.c

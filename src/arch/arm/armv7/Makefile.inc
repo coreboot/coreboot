@@ -1,8 +1,4 @@
-################################################################################
-##
 ## SPDX-License-Identifier: GPL-2.0-only
-##
-###############################################################################
 
 armv7_flags = -mthumb -I$(src)/arch/arm/include/armv7/ -D__COREBOOT_ARM_ARCH__=7
 armv7-a_flags = -march=armv7-a $(armv7_flags) -D__COREBOOT_ARM_V7_A__

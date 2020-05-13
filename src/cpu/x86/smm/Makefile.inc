@@ -1,5 +1,3 @@
-##
-##
 ## SPDX-License-Identifier: GPL-2.0-only
 
 ramstage-y += smm_module_loader.c

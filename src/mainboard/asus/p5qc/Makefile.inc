@@ -1,5 +1,3 @@
-#
-#
 # SPDX-License-Identifier: GPL-2.0-only
 
 CONFIG_GPIO_C:=$(call strip_quotes, $(CONFIG_GPIO_C))

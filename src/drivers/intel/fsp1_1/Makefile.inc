@@ -1,5 +1,3 @@
-#
-#
 # SPDX-License-Identifier: GPL-2.0-only
 
 ifeq ($(CONFIG_PLATFORM_USES_FSP1_1),y)

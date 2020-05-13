@@ -1,6 +1,3 @@
-##
-##
-##
 ## SPDX-License-Identifier: GPL-2.0-only
 
 bootblock-$(CONFIG_ENABLE_BUILTIN_COM1) += com_init.c

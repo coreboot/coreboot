@@ -1,5 +1,3 @@
-#
-#
 # SPDX-License-Identifier: GPL-2.0-only
 
 subdirs-$(CONFIG_CPU_AMD_AGESA_FAMILY14) += family14

@@ -1,6 +1,3 @@
-##
-##
-##
 ## SPDX-License-Identifier: GPL-2.0-only
 
 ifeq ($(CONFIG_EC_HP_KBC1126),y)

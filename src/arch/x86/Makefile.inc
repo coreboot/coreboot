@@ -1,6 +1,4 @@
-##
 ## SPDX-License-Identifier: GPL-2.0-only
-##
 
 ifeq ($(CONFIG_POSTCAR_STAGE),y)
 $(eval $(call init_standard_toolchain,postcar))

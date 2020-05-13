@@ -1,6 +1,3 @@
-#
-#
-#
 # SPDX-License-Identifier: GPL-2.0-only
 
 ifeq ($(CONFIG_NORTHBRIDGE_INTEL_X4X),y)

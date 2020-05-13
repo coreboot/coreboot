@@ -1,6 +1,3 @@
-##
-##
-##
 ## SPDX-License-Identifier: GPL-2.0-only
 
 ## GPP_F12-F16 indicates mem_id to match specific spd file

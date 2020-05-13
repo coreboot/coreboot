@@ -1,6 +1,3 @@
-##
-##
-##
 ## SPDX-License-Identifier: GPL-2.0-only
 
 # CONFIG_HAVE_INTEL_FIRMWARE protects doing anything to the build.

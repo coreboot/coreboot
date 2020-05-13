@@ -1,5 +1,3 @@
-#
-#
 # SPDX-License-Identifier: GPL-2.0-only
 
 ifeq ($(CONFIG_DRIVERS_AMD_PI),y)

@@ -1,6 +1,3 @@
-##
-##
-##
 ## SPDX-License-Identifier: GPL-2.0-only
 
 bct-cfg-$(CONFIG_NYAN_BLAZE_BCT_CFG_EMMC) += emmc.cfg

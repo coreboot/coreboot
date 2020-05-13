@@ -1,5 +1,3 @@
-##
-##
 ## SPDX-License-Identifier: GPL-2.0-only
 
 ramstage-$(CONFIG_PCI_OPTION_ROM_RUN_REALMODE) += x86.c

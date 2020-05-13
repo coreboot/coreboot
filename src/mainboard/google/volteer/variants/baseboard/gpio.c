@@ -265,10 +265,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_F9, NONE),
 	/* F10 : GPPF10_STRAP */
 	PAD_NC(GPP_F10, DN_20K),
-	/* F11 : THC1_SPI2_CLK ==> EN_PP3300_WWAN */
-	PAD_CFG_GPO(GPP_F11, 1, DEEP),
 	/* F12 : GSXDOUT ==> WWAN_RST_ODL */
-	PAD_CFG_GPO(GPP_F12, 1, DEEP),
+	PAD_CFG_GPI(GPP_F12, NONE, DEEP),
 	/* F13 : GSXDOUT ==> WiFi_DISABLE_L */
 	PAD_CFG_GPO(GPP_F13, 1, DEEP),
 	/* F14 : GSXDIN ==> SAR0_INT_L */
@@ -434,6 +432,14 @@ static const struct pad_config early_gpio_table[] = {
 
 	/* E12 : SPI1_MISO_IO1 ==> EN_PP3300_SSD */
 	PAD_CFG_GPO(GPP_E12, 1, DEEP),
+
+	/* F11 : THC1_SPI2_CLK ==> EN_PP3300_WWAN */
+	PAD_CFG_GPO(GPP_F11, 1, DEEP),
+
+	/* F12 : GSXDOUT ==> WWAN_RST_ODL
+	   To meet timing constrains - drive reset low.
+	   Deasserted in ramstage. */
+	PAD_CFG_GPO(GPP_F12, 0, DEEP),
 
 	/* H11 : SRCCLKREQ5# ==> WLAN_PERST_L */
 	PAD_CFG_GPO(GPP_H11, 1, DEEP),

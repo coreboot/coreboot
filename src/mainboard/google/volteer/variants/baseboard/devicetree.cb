@@ -132,7 +132,6 @@ chip soc/intel/tigerlake
 	register "IomTypeCPortPadCfg[6]" = "0x0"
 	register "IomTypeCPortPadCfg[7]" = "0x0"
 
-
 	# D3Hot and D3Cold for TCSS
 	register "TcssD3HotEnable" = "1"
 	register "TcssD3ColdEnable" = "1"
@@ -227,16 +226,16 @@ chip soc/intel/tigerlake
 		device pci 04.0 on  end # DPTF				0x9A03
 		device pci 05.0 off end # IPU				0x9A19
 		device pci 06.0 off end # PEG60				0x9A09
-		device pci 07.0 on end # TBT_PCIe0			0x9A23
-		device pci 07.1 on end # TBT_PCIe1			0x9A25
-		device pci 07.2 on end # TBT_PCIe2			0x9A27
-		device pci 07.3 on end # TBT_PCIe3			0x9A29
+		device pci 07.0 on  end # TBT_PCIe0			0x9A23
+		device pci 07.1 on  end # TBT_PCIe1			0x9A25
+		device pci 07.2 off end # TBT_PCIe2			0x9A27
+		device pci 07.3 off end # TBT_PCIe3			0x9A29
 		device pci 08.0 on  end # GNA				0x9A11
 		device pci 09.0 off end # NPK				0x9A33
 		device pci 0a.0 off end # Crash-log SRAM		0x9A0D
 		device pci 0d.0 on  end # USB xHCI			0x9A13
 		device pci 0d.1 off end # USB xDCI (OTG)		0x9A15
-		device pci 0d.2 off end # TBT DMA0			0x9A1B
+		device pci 0d.2 on  end # TBT DMA0			0x9A1B
 		device pci 0d.3 off end # TBT DMA1			0x9A1D
 		device pci 0e.0 off end # VMD				0x9A0B
 
